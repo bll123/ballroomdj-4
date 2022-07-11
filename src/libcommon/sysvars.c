@@ -494,6 +494,16 @@ sysvarsInit (const char *argv0)
 
   lsysvars [SVL_BDJIDX] = 0;
   lsysvars [SVL_BASEPORT] = 32548;
+  strlcpy (buff, "data/baseport.txt", sizeof (buff));
+  if (fileopFileExists (buff)) {
+    FILE    *fh;
+
+    fh = fopen (buff, "r");
+    fgets (tbuff, sizeof (tbuff), fh);
+    stringTrim (tbuff);
+    fclose (fh);
+    lsysvars [SVL_BASEPORT] = atoi (tbuff);
+  }
 
   lsysvars [SVL_NUM_PROC] = 2;
   if (isWindows ()) {

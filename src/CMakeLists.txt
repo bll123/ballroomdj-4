@@ -87,66 +87,12 @@ add_subdirectory (libvol)
 add_subdirectory (libbdj4ui)
 add_subdirectory (libuigtk3)
 # executables
+add_subdirectory (utility)
+add_subdirectory (installer)
+add_subdirectory (player)
 add_subdirectory (manageui)
-add_subdirectory (bpmcounter)
 # testing
 add_subdirectory (check)
-
-
-add_executable (bdj4info bdj4info.c)
-if (WIN32)
-  target_compile_options (bdj4info PRIVATE -municode)
-endif()
-target_link_libraries (bdj4info
-  libbdj4common
-)
-addIntlLibrary (bdj4info)
-
-add_executable (bdj4tags bdj4tags.c)
-if (WIN32)
-  target_compile_options (bdj4tags PRIVATE -municode)
-endif()
-target_link_libraries (bdj4tags
-  libbdj4common libbdj4
-)
-addIntlLibrary (bdj4tags)
-
-add_executable (bdj4updater bdj4updater.c)
-if (WIN32)
-  target_compile_options (bdj4updater PRIVATE -municode)
-  target_compile_options (bdj4updater PRIVATE -mwindows)
-endif()
-target_link_libraries (bdj4updater
-  libbdj4common libbdj4
-)
-addIntlLibrary (bdj4updater)
-
-if (WIN32)
-  # the bdj4se executable
-  # for cmake, must use the .o file extension, not .res
-  add_custom_command (
-    OUTPUT selauncher.o
-    COMMAND cp -f ${PROJECT_SOURCE_DIR}/../img/${BDJ4INSTICON} .
-    COMMAND echo "id ICON ${BDJ4INSTICON}" > selauncher.rc
-    COMMAND windres selauncher.rc -O coff -o selauncher.o
-    MAIN_DEPENDENCY ${PROJECT_SOURCE_DIR}/../img/${BDJ4INSTICON}
-    BYPRODUCTS selauncher.rc ${BDJ4INSTICON}
-    VERBATIM
-  )
-endif()
-
-add_executable (bdj4se bdj4se.c)
-if (WIN32)
-  target_compile_options (bdj4se PRIVATE -municode)
-endif()
-target_link_libraries (bdj4se
-  libbdj4fileop
-  libbdj4osutils
-  libbdj4string
-)
-if (WIN32)
-  target_sources (bdj4se PRIVATE selauncher.o)
-endif()
 
 if (WIN32)
   # the bdj4 executable
@@ -197,133 +143,6 @@ target_link_libraries (bdj4g
 )
 addWinSockLibrary (bdj4g)
 addWinNtdllLibrary (bdj4g)
-
-add_executable (bdj4dbupdate bdj4dbupdate.c)
-if (WIN32)
-  target_compile_options (bdj4dbupdate PRIVATE -municode)
-  target_compile_options (bdj4dbupdate PRIVATE -mwindows)
-endif()
-target_link_libraries (bdj4dbupdate
-  libbdjregex libbdj4 libbdj4common
-  m
-)
-if (WIN32)
-  target_link_libraries (bdj4dbupdate -lregex)
-endif()
-addIntlLibrary (bdj4dbupdate)
-addWinSockLibrary (bdj4dbupdate)
-
-add_executable (bdj4dbtag bdj4dbtag.c)
-if (WIN32)
-  target_compile_options (bdj4dbtag PRIVATE -municode)
-  target_compile_options (bdj4dbtag PRIVATE -mwindows)
-endif()
-target_link_libraries (bdj4dbtag
-  libbdj4 libbdj4common
-  m
-)
-target_compile_options (bdj4dbtag PRIVATE -pthread)
-target_link_options (bdj4dbtag PRIVATE -pthread)
-addIntlLibrary (bdj4dbtag)
-addWinSockLibrary (bdj4dbtag)
-
-add_executable (bdj4main bdj4main.c)
-if (WIN32)
-  target_compile_options (bdj4main PRIVATE -municode)
-  target_compile_options (bdj4dbtag PRIVATE -mwindows)
-endif()
-target_link_libraries (bdj4main
-  libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  m
-)
-addIntlLibrary (bdj4main)
-addWinSockLibrary (bdj4main)
-
-add_executable (bdj4player bdj4player.c)
-if (WIN32)
-  target_compile_options (bdj4player PRIVATE -municode)
-  target_compile_options (bdj4dbtag PRIVATE -mwindows)
-endif()
-target_link_libraries (bdj4player
-  libbdj4pli libbdj4vol libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  m
-)
-addIntlLibrary (bdj4player)
-addWinSockLibrary (bdj4player)
-
-add_executable(bdj4mobmq bdj4mobmq.c)
-target_include_directories (bdj4mobmq
-  PRIVATE "${MONGOOSE_INC_DIR}"
-)
-if (WIN32)
-  target_compile_options (bdj4mobmq PRIVATE -municode)
-  target_compile_options (bdj4mobmq PRIVATE -mwindows)
-endif()
-target_link_libraries (bdj4mobmq
-  libwebsrv
-  libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  m
-)
-addWinSockLibrary (bdj4mobmq)
-
-add_executable(bdj4rc bdj4rc.c)
-target_include_directories (bdj4rc
-  PRIVATE "${MONGOOSE_INC_DIR}"
-)
-if (WIN32)
-  target_compile_options (bdj4rc PRIVATE -municode)
-  target_compile_options (bdj4rc PRIVATE -mwindows)
-endif()
-target_link_libraries (bdj4rc
-  libwebsrv
-  libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  m
-)
-addWinSockLibrary (bdj4rc)
-
-add_executable (bdj4marquee bdj4marquee.c)
-if (WIN32)
-  target_compile_options (bdj4marquee PRIVATE -municode)
-  target_compile_options (bdj4marquee PRIVATE -mwindows)
-endif()
-target_link_libraries (bdj4marquee
-  libbdj4ui libuigtk3 libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  ${GTK_LDFLAGS}
-  m
-)
-addIntlLibrary (bdj4marquee)
-addWinSockLibrary (bdj4marquee)
-
-add_executable (bdj4installer bdj4installer.c)
-if (WIN32)
-  target_compile_options (bdj4installer PRIVATE -municode)
-endif()
-target_link_libraries (bdj4installer
-  liblocatebdj3
-  libbdj4ui libuigtk3 libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  ${GTK_LDFLAGS}
-  m
-)
-addIntlLibrary (bdj4installer)
-
-add_executable (bdj4altinst bdj4altinst.c)
-if (WIN32)
-  target_compile_options (bdj4altinst PRIVATE -municode)
-endif()
-target_link_libraries (bdj4altinst
-  liblocatebdj3
-  libbdj4ui libuigtk3 libbdj4 libbdj4common
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  ${GTK_LDFLAGS}
-  m
-)
-addIntlLibrary (bdj4altinst)
 
 add_executable (bdj4starterui bdj4starterui.c)
 if (WIN32)
@@ -385,11 +204,7 @@ addWinSockLibrary (bdj4helperui)
 
 install (TARGETS
   bdj4 bdj4g
-  bdj4se bdj4installer bdj4altinst bdj4updater
-  bdj4info bdj4tags
-  bdj4dbupdate bdj4dbtag
   bdj4starterui
-  bdj4main bdj4player bdj4mobmq bdj4rc bdj4marquee
   bdj4playerui bdj4configui bdj4helperui
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
@@ -397,18 +212,7 @@ install (TARGETS
 if (APPLE)
   macUpdateRPath (bdj4)
   macUpdateRPath (bdj4g)
-  macUpdateRPath (bdj4installer)
-  macUpdateRPath (bdj4updater)
-  macUpdateRPath (bdj4info)
-  macUpdateRPath (bdj4tags)
-  macUpdateRPath (bdj4dbupdate)
-  macUpdateRPath (bdj4dbtag)
   macUpdateRPath (bdj4helperui)
-  macUpdateRPath (bdj4main)
-  macUpdateRPath (bdj4player)
-  macUpdateRPath (bdj4mobmq)
-  macUpdateRPath (bdj4rc)
-  macUpdateRPath (bdj4marquee)
   macUpdateRPath (bdj4starterui)
   macUpdateRPath (bdj4playerui)
   macUpdateRPath (bdj4configui)

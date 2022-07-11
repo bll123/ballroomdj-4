@@ -31,3 +31,5 @@ BallroomDJ 4 Change Log
   - fix various issues with installation folder.
 - configuration : themes
   - add built-in themes to theme list.
+  - fixed theme selection issue
+- bdj3/bdj4 volume interactions handled.
