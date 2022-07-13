@@ -1094,8 +1094,8 @@ installerVerifyInstall (installer_t *installer)
   } else {
     targv [0] = "./install/verifychksum.sh";
     targv [1] = NULL;
+    osProcessPipe (targv, OS_PROC_DETACH, tmp, sizeof (tmp));
   }
-  osProcessPipe (targv, OS_PROC_DETACH, tmp, sizeof (tmp));
 
   if (strncmp (tmp, "OK", 2) == 0) {
     /* CONTEXT: installer: status message */
@@ -2507,16 +2507,17 @@ installerCheckAndFixTarget (char *buff, size_t sz)
 static bool
 installerWinVerifyProcess (installer_t *installer)
 {
-  FILE       *fh;
-  char       tbuff [1024];
-  char       tmp [1024];
-  int        rc = true;
-  const char *targv [10];
-  int        targc = 0;
-  char       *p;
-  char       *fn;
-  char       *chksum;
-  char       *tokstr;
+  FILE        *fh;
+  char        tbuff [1024];
+  char        tmp [1024];
+  int         rc = true;
+  const char  *targv [10];
+  int         targc = 0;
+  char        *p;
+  char        *fn;
+  char        *chksum;
+  char        *tokstr;
+  int         fnidx;
 
   if (! chdir ("bdj4-install")) {
     return false;
@@ -2526,6 +2527,14 @@ installerWinVerifyProcess (installer_t *installer)
   if (fh == NULL) {
     return false;
   }
+
+//    targv [targc++] = ".\\plocal\\bin\\openssl.exe";
+  targv [targc++] = "/usr/bin/openssl";
+  targv [targc++] = "sha512";
+  targv [targc++] = "-r";
+  fnidx = targc;
+  targv [targc++] = NULL;
+  targv [targc++] = NULL;
 
   while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
     p = strtok_r (tbuff, " ", &tokstr);
@@ -2537,18 +2546,10 @@ installerWinVerifyProcess (installer_t *installer)
     fn = p;
     stringTrim (fn);
 
-    targv [targc++] = ".\\plocal\\bin\\openssl.exe";
-    targv [targc++] = "sha512";
-    targv [targc++] = "-r";
-    targv [targc++] = fn;
-    targv [targc++] = NULL;
+    targv [fnidx] = fn;
     osProcessPipe (targv, OS_PROC_WAIT, tmp, sizeof (tmp));
     p = strtok_r (tmp, " ", &tokstr);
     if (strcmp (p, chksum) != 0) {
-fprintf (stderr, "chk: %s\n", fn);
-fprintf (stderr, "   failed\n");
-fprintf (stderr, "   f-chksum: %s\n", chksum);
-fprintf (stderr, "     chksum: %s\n", p);
       rc = false;
       break;
     }
