@@ -42,18 +42,18 @@ target_link_libraries (bdj4installer
 )
 addIntlLibrary (bdj4installer)
 
-add_executable (bdj4altinst bdj4altinst.c)
+add_executable (bdj4altsetup bdj4altsetup.c)
 if (WIN32)
-  target_compile_options (bdj4altinst PRIVATE -municode)
+  target_compile_options (bdj4altsetup PRIVATE -municode)
 endif()
-target_link_libraries (bdj4altinst
+target_link_libraries (bdj4altsetup
   liblocatebdj3
   libbdj4ui libuigtk3 libbdj4 libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
 )
-addIntlLibrary (bdj4altinst)
+addIntlLibrary (bdj4altsetup)
 
 add_executable (bdj4updater bdj4updater.c)
 if (WIN32)
@@ -66,13 +66,13 @@ target_link_libraries (bdj4updater
 addIntlLibrary (bdj4updater)
 
 install (TARGETS
-  bdj4se bdj4installer bdj4altinst bdj4updater
+  bdj4se bdj4installer bdj4altsetup bdj4updater
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 if (APPLE)
   macUpdateRPath (bdj4se)
   macUpdateRPath (bdj4installer)
-  macUpdateRPath (bdj4altinst)
+  macUpdateRPath (bdj4altsetup)
   macUpdateRPath (bdj4updater)
 endif()

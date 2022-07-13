@@ -1,11 +1,12 @@
 [Desktop Entry]
 Encoding=UTF-8
 Version=1.0
-Name=BDJ4
-GenericName=BDJ4
+Name=#APPNAME#
+GenericName=#APPNAME#
 Exec=#INSTALLPATH#/bin/bdj4
-Terminal=false
 Icon=#INSTALLPATH#/img/bdj4_icon.svg
+Path=#WORKDIR#
+Terminal=false
 Type=Application
 Categories=Audio;Player
 Comment=Ballroom Music Player

@@ -309,7 +309,7 @@ marqueeBuildUI (marquee_t *marquee)
 
   uiutilsUICallbackInit (&marquee->exitcb, marqueeCloseCallback, marquee);
   uiCreateMainWindow (&uiwidget, &marquee->exitcb,
-      /* CONTEXT: marquee window title */
+      /* CONTEXT: marquee: marquee window title */
       _("Marquee"), imgbuff);
   uiWindowNoFocusOnStartup (&uiwidget);
 

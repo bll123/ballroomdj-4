@@ -559,7 +559,7 @@ playlistGetPlaylistList (int flag)
 
     pathInfoFree (pi);
     if (flag == PL_LIST_NORMAL &&
-        /* CONTEXT: the name for the special playlist used for the 'queue dance' button */
+        /* CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button */
         strcmp (tfn, _("QueueDance")) == 0) {
       continue;
     }

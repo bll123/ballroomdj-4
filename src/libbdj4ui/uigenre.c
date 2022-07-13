@@ -152,7 +152,7 @@ uigenreCreateGenreList (uigenre_t *uigenre)
   genrelist = genreGetList (uigenre->genres);
   dispptr = NULL;
   if (uigenre->allflag) {
-      /* CONTEXT: a filter: all genres are displayed in the song selection */
+      /* CONTEXT: genre: a filter: all genres are displayed in the song selection */
       dispptr = _("All Genres");
   }
   uiDropDownSetNumList (uigenre->dropdown, genrelist, dispptr);

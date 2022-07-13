@@ -953,14 +953,22 @@ tagdefInit (void)
   }
   tagdefinfo.initialized = true;
 
-  /* CONTEXT: label: audio file modification time */
-  tagdefs [TAG_AFMODTIME].displayname = _("Audio File Date");
+  /* listing display is true */
+
   /* CONTEXT: label: album */
   tagdefs [TAG_ALBUM].displayname = _("Album");
   /* CONTEXT: label: album artist */
   tagdefs [TAG_ALBUMARTIST].displayname = _("Album Artist");
   /* CONTEXT: label: artist */
   tagdefs [TAG_ARTIST].displayname = _("Artist");
+  if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+    /* CONTEXT: label: beats per minute */
+    tagdefs [TAG_BPM].displayname = _("BPM");
+  }
+  if (bdjoptGetNum (OPT_G_BPM) == BPM_MPM) {
+    /* CONTEXT: label: measures per minute */
+    tagdefs [TAG_BPM].displayname = _("MPM");
+  }
   /* CONTEXT: label: composer */
   tagdefs [TAG_COMPOSER].displayname = _("Composer");
   /* CONTEXT: label: conductor */
@@ -985,16 +993,8 @@ tagdefInit (void)
   tagdefs [TAG_GENRE].displayname = _("Genre");
   /* CONTEXT: label: keyword (used to filter out songs) */
   tagdefs [TAG_KEYWORD].displayname = _("Keyword");
-  /* CONTEXT: label: marquee display (alternate display for the marquee, replaces dance) */
-  tagdefs [TAG_MQDISPLAY].displayname = _("Marquee Display");
   /* CONTEXT: label: notes */
   tagdefs [TAG_NOTES].displayname = _("Notes");
-  /* CONTEXT: label: time to end the song */
-  tagdefs [TAG_SONGEND].displayname = _("Song End");
-  /* CONTEXT: label: time to start the song */
-  tagdefs [TAG_SONGSTART].displayname = _("Song Start");
-  /* CONTEXT: label: speed adjustment for playback */
-  tagdefs [TAG_SPEEDADJUSTMENT].displayname = _("Speed Adjustment");
   /* CONTEXT: label: status */
   tagdefs [TAG_STATUS].displayname = _("Status");
   /* CONTEXT: label: tags (for use by the user) */
@@ -1003,19 +1003,26 @@ tagdefInit (void)
   tagdefs [TAG_TITLE].displayname = _("Title");
   /* CONTEXT: label: track number */
   tagdefs [TAG_TRACKNUMBER].displayname = _("Track");
-  /* CONTEXT: when the database entry was last updated */
-  tagdefs [TAG_LAST_UPDATED].displayname = _("Last Updated");
+
+  /* editable */
+
+  /* CONTEXT: label: marquee display (alternate display for the marquee, replaces dance) */
+  tagdefs [TAG_MQDISPLAY].displayname = _("Marquee Display");
+  /* CONTEXT: label: time to end the song */
+  tagdefs [TAG_SONGEND].displayname = _("Song End");
+  /* CONTEXT: label: time to start the song */
+  tagdefs [TAG_SONGSTART].displayname = _("Song Start");
+  /* CONTEXT: label: speed adjustment for playback */
+  tagdefs [TAG_SPEEDADJUSTMENT].displayname = _("Speed Adjustment");
   /* CONTEXT: label: volume adjustment for playback */
   tagdefs [TAG_VOLUMEADJUSTPERC].displayname = _("Volume Adjustment");
 
-  if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
-    /* CONTEXT: label: beats per minute */
-    tagdefs [TAG_BPM].displayname = _("BPM");
-  }
-  if (bdjoptGetNum (OPT_G_BPM) == BPM_MPM) {
-    /* CONTEXT: label: measures per minute */
-    tagdefs [TAG_BPM].displayname = _("MPM");
-  }
+  /* search item */
+
+  /* CONTEXT: label: audio file modification time */
+  tagdefs [TAG_AFMODTIME].displayname = _("Audio File Date");
+  /* CONTEXT: label: when the database entry was last updated */
+  tagdefs [TAG_LAST_UPDATED].displayname = _("Last Updated");
 
   tagdefinfo.taglookup = slistAlloc ("tagdef", LIST_UNORDERED, NULL);
   slistSetSize (tagdefinfo.taglookup, TAG_KEY_MAX);

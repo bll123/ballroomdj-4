@@ -345,7 +345,7 @@ pluiBuildUI (playerui_t *plui)
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_CLOSE],
       pluiCloseWin, plui);
-  /* CONTEXT: player: main window title */
+  /* CONTEXT: playerui: main window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Player"),
       bdjoptGetStr (OPT_P_PROFILENAME));
   uiCreateMainWindow (&plui->window, &plui->callbacks [PLUI_CB_CLOSE],
@@ -380,40 +380,40 @@ pluiBuildUI (playerui_t *plui)
   uiBoxPackEnd (&hbox, &plui->clock);
   uiWidgetDisable (&plui->clock);
 
-  /* CONTEXT: menu selection: options for the player */
+  /* CONTEXT: playerui: menu selection: options for the player */
   uiMenuCreateItem (&menubar, &menuitem, _("Options"), NULL);
 
   uiCreateSubMenu (&menuitem, &menu);
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_PLAY_QUEUE],
       pluiTogglePlayWhenQueued, plui);
-  /* CONTEXT: menu checkbox: start playback when a dance or playlist is queued */
+  /* CONTEXT: playerui: menu checkbox: start playback when a dance or playlist is queued */
   uiMenuCreateCheckbox (&menu, &menuitem, _("Play When Queued"),
       nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED),
       &plui->callbacks [PLUI_MENU_CB_PLAY_QUEUE]);
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE],
       pluiToggleExtraQueues, plui);
-  /* CONTEXT: menu checkbox: show the extra queues (in addition to the main music queue) */
+  /* CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue) */
   uiMenuCreateCheckbox (&menu, &menuitem, _("Show Extra Queues"),
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES),
       &plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE]);
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE],
       pluiToggleSwitchQueue, plui);
-  /* CONTEXT: menu checkbox: when a queue is emptied, switch playback to the next queue */
+  /* CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue */
   uiMenuCreateCheckbox (&menu, &menuitem, _("Switch Queue When Empty"),
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
       &plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE]);
 
-  /* CONTEXT: menu selection: marquee related options */
+  /* CONTEXT: playerui: menu selection: marquee related options */
   uiMenuCreateItem (&menubar, &menuitem, _("Marquee"), NULL);
 
   uiCreateSubMenu (&menuitem, &menu);
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ],
       pluiMarqueeFontSizeDialog, plui);
-  /* CONTEXT: menu selection: marquee: change the marquee font size */
+  /* CONTEXT: playerui: menu selection: marquee: change the marquee font size */
   uiMenuCreateItem (&menu, &menuitem, _("Font Size"),
       &plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ]);
 
@@ -431,7 +431,7 @@ pluiBuildUI (playerui_t *plui)
   uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
       pluiProcessSetPlaybackQueue, plui);
   uiCreateButton (&uiwidget, &plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
-      /* CONTEXT: select the current queue for playback */
+      /* CONTEXT: playerui: select the current queue for playback */
       _("Set Queue for Playback"), NULL);
   uiNotebookSetActionWidget (&plui->notebook, &uiwidget);
   uiWidgetShowAll (&uiwidget);
@@ -458,7 +458,7 @@ pluiBuildUI (playerui_t *plui)
 
   /* request tab */
   uiwidgetp = uisongselBuildUI (plui->uisongsel, &plui->window);
-  /* CONTEXT: name of request tab : lists the songs in the database */
+  /* CONTEXT: playerui: name of request tab : lists the songs in the database */
   uiCreateLabel (&uiwidget, _("Request"));
   uiNotebookAppendPage (&plui->notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_SONGSEL);
@@ -987,9 +987,9 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
       pluiMarqueeFontSizeDialogResponse, plui);
   uiCreateDialog (&plui->marqueeFontSizeDialog, &plui->window,
       &plui->callbacks [PLUI_CB_FONT_SIZE],
-      /* CONTEXT: marquee font size dialog: window title */
+      /* CONTEXT: playerui: marquee font size dialog: window title */
       _("Marquee Font Size"),
-      /* CONTEXT: marquee font size dialog: action button */
+      /* CONTEXT: playerui: marquee font size dialog: action button */
       _("Close"),
       RESPONSE_CLOSE,
       NULL
@@ -1001,7 +1001,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  /* CONTEXT: marquee font size dialog: the font size selector */
+  /* CONTEXT: playerui: marquee font size dialog: the font size selector */
   uiCreateColonLabel (&uiwidget, _("Font Size"));
   uiBoxPackStart (&hbox, &uiwidget);
 

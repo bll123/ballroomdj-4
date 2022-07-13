@@ -671,7 +671,7 @@ main (int argc, char *argv[])
 
   tlist = nlistAlloc ("cu-audio-out", LIST_ORDERED, free);
   llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, free);
-  /* CONTEXT: audio: The default audio sink (audio output) */
+  /* CONTEXT: configuration: audio: The default audio sink (audio output) */
   nlistSetStr (tlist, 0, _("Default"));
   nlistSetStr (llist, 0, "default");
   confui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = 0;
@@ -690,63 +690,63 @@ main (int argc, char *argv[])
 
   confuiSpinboxTextInitDataNum (&confui, "cu-audio-file-tags",
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
-      /* CONTEXT: write audio file tags: do not write any tags to the audio file */
+      /* CONTEXT: configuration: write audio file tags: do not write any tags to the audio file */
       WRITE_TAGS_NONE, _("Don't Write"),
-      /* CONTEXT: write audio file tags: only write BDJ tags to the audio file */
+      /* CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file */
       WRITE_TAGS_BDJ_ONLY, _("BDJ Tags Only"),
-      /* CONTEXT: write audio file tags: write all tags (BDJ and standard) to the audio file */
+      /* CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file */
       WRITE_TAGS_ALL, _("All Tags"),
       -1);
 
   confuiSpinboxTextInitDataNum (&confui, "cu-bpm",
       CONFUI_SPINBOX_BPM,
-      /* CONTEXT: BPM: beats per minute (not bars per minute) */
+      /* CONTEXT: configuration: BPM: beats per minute (not bars per minute) */
       BPM_BPM, "BPM",
-      /* CONTEXT: MPM: measures per minute (aka bars per minute) */
+      /* CONTEXT: configuration: MPM: measures per minute (aka bars per minute) */
       BPM_MPM, "MPM",
       -1);
 
   confuiSpinboxTextInitDataNum (&confui, "cu-dance-speed",
       CONFUI_SPINBOX_DANCE_SPEED,
-      /* CONTEXT: dance speed */
+      /* CONTEXT: configuration: dance speed */
       DANCE_SPEED_SLOW, _("slow"),
-      /* CONTEXT: dance speed */
+      /* CONTEXT: configuration: dance speed */
       DANCE_SPEED_NORMAL, _("normal"),
-      /* CONTEXT: dance speed */
+      /* CONTEXT: configuration: dance speed */
       DANCE_SPEED_FAST, _("fast"),
       -1);
 
   confuiSpinboxTextInitDataNum (&confui, "cu-dance-time-sig",
       CONFUI_SPINBOX_DANCE_TIME_SIG,
-      /* CONTEXT: dance time signature */
+      /* CONTEXT: configuration: dance time signature */
       DANCE_TIMESIG_24, _("2/4"),
-      /* CONTEXT: dance time signature */
+      /* CONTEXT: configuration: dance time signature */
       DANCE_TIMESIG_34, _("3/4"),
-      /* CONTEXT: dance time signature */
+      /* CONTEXT: configuration: dance time signature */
       DANCE_TIMESIG_44, _("4/4"),
-      /* CONTEXT: dance time signature */
+      /* CONTEXT: configuration: dance time signature */
       DANCE_TIMESIG_48, _("4/8"),
       -1);
 
-  /* CONTEXT: display settings for: song editor column N */
+  /* CONTEXT: configuration: display settings for: song editor column N */
   snprintf (tbuff, sizeof (tbuff), _("Song Editor - Column %d"), 1);
   snprintf (tbuffb, sizeof (tbuffb), _("Song Editor - Column %d"), 2);
   snprintf (tbuffc, sizeof (tbuffc), _("Song Editor - Column %d"), 3);
   confuiSpinboxTextInitDataNum (&confui, "cu-disp-settings",
       CONFUI_SPINBOX_DISP_SEL,
-      /* CONTEXT: display settings for: music queue */
+      /* CONTEXT: configuration: display settings for: music queue */
       DISP_SEL_MUSICQ, _("Music Queue"),
-      /* CONTEXT: display settings for: requests */
+      /* CONTEXT: configuration: display settings for: requests */
       DISP_SEL_REQUEST, _("Request"),
-      /* CONTEXT: display settings for: song list */
+      /* CONTEXT: configuration: display settings for: song list */
       DISP_SEL_SONGLIST, _("Song List"),
-      /* CONTEXT: display settings for: song selection */
+      /* CONTEXT: configuration: display settings for: song selection */
       DISP_SEL_SONGSEL, _("Song Selection"),
-      /* CONTEXT: display settings for: easy song list */
+      /* CONTEXT: configuration: display settings for: easy song list */
       DISP_SEL_EZSONGLIST, _("Easy Song List"),
-      /* CONTEXT: display settings for: easy song selection */
+      /* CONTEXT: configuration: display settings for: easy song selection */
       DISP_SEL_EZSONGSEL, _("Easy Song Selection"),
-      /* CONTEXT: display settings for: music manager */
+      /* CONTEXT: configuration: display settings for: music manager */
       DISP_SEL_MM, _("Music Manager"),
       DISP_SEL_SONGEDIT_A, tbuff,
       DISP_SEL_SONGEDIT_B, tbuffb,
@@ -764,11 +764,11 @@ main (int argc, char *argv[])
 
   confuiSpinboxTextInitDataNum (&confui, "cu-mob-mq",
       CONFUI_SPINBOX_MOBILE_MQ,
-      /* CONTEXT: mobile marquee: off */
+      /* CONTEXT: configuration: mobile marquee: off */
       MOBILEMQ_OFF, _("Off"),
-      /* CONTEXT: mobile marquee: use local router */
+      /* CONTEXT: configuration: mobile marquee: use local router */
       MOBILEMQ_LOCAL, _("Local"),
-      /* CONTEXT: mobile marquee: route via the internet */
+      /* CONTEXT: configuration: mobile marquee: route via the internet */
       MOBILEMQ_INTERNET, _("Internet"),
       -1);
 
@@ -968,7 +968,7 @@ confuiBuildUI (configui_t *confui)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".svg", PATHBLD_MP_IMGDIR);
-  /* CONTEXT: configuration user interface window title */
+  /* CONTEXT: configuration: configuration user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"),
       bdjoptGetStr (OPT_P_PROFILENAME));
   uiutilsUICallbackInit (&confui->closecb, confuiCloseWin, confui);
@@ -1087,7 +1087,7 @@ confuiBuildUIGeneral (configui_t *confui)
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS, OPT_G_WRITETAGS,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_WRITETAGS), NULL);
   confuiMakeItemSwitch (confui, &vbox, &sg,
-      /* CONTEXT: checkbox: the database will load the dance from the audio file genre tag */
+      /* CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag */
       _("Database Loads Dance From Genre"),
       CONFUI_SWITCH_DB_LOAD_FROM_GENRE, OPT_G_LOADDANCEFROMGENRE,
       bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE), NULL);
@@ -3221,7 +3221,7 @@ confuiUpdateMobmqQrcode (configui_t *confui)
     tag = bdjoptGetStr (OPT_P_MOBILEMQTAG);
     valstr = validate (tag, VAL_NOT_EMPTY | VAL_NO_SPACES);
     if (valstr != NULL) {
-      /* CONTEXT: mobile marquee: the name to use for internet routing */
+      /* CONTEXT: configuration: mobile marquee: the name to use for internet routing */
       snprintf (tbuff, sizeof (tbuff), valstr, _("Name"));
       confuiSetStatusMsg (confui, tbuff);
     }

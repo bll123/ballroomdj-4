@@ -228,7 +228,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiScaleSetCallback (&uiplayer->speedScale, &uiplayer->speedcb);
 
   /* size group D */
-  /* CONTEXT: the current speed for song playback */
+  /* CONTEXT: playerui: the current speed for song playback */
   uiCreateColonLabel (&uiwidget, _("Speed"));
   uiLabelAlignEnd (&uiwidget);
   uiWidgetSetMarginEnd (&uiwidget, uiBaseMarginSz);
@@ -282,7 +282,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiScaleSetCallback (&uiplayer->seekScale, &uiplayer->seekcb);
 
   /* size group D */
-  /* CONTEXT: the current position of the song during song playback */
+  /* CONTEXT: playerui: the current position of the song during song playback */
   uiCreateColonLabel (&uiwidget, _("Position"));
   uiLabelAlignEnd (&uiwidget);
   uiWidgetSetMarginEnd (&uiwidget, uiBaseMarginSz);
@@ -304,7 +304,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       uiplayerFadeProcess, uiplayer);
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CB_FADE],
-      /* CONTEXT: button: fade out the song and stop playing it */
+      /* CONTEXT: playerui: button: fade out the song and stop playing it */
       _("Fade"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
@@ -312,14 +312,14 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       uiplayerPlayPauseProcess, uiplayer);
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CB_PLAYPAUSE],
-      /* CONTEXT: button: tooltip: play or pause the song */
+      /* CONTEXT: playerui: button: tooltip: play or pause the song */
       _("Play / Pause"), "button_playpause");
   uiBoxPackStart (&hbox, &uiwidget);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
   uiCreateToggleButton (&uiplayer->repeatButton, "",
-      /* CONTEXT: button: tooltip: toggle the repeat song on and off */
+      /* CONTEXT: playerui: button: tooltip: toggle the repeat song on and off */
       tbuff, _("Toggle Repeat"), NULL, 0);
   uiBoxPackStart (&hbox, &uiplayer->repeatButton);
   uiutilsUICallbackInit (&uiplayer->repeatcb, uiplayerRepeatCallback, uiplayer);
@@ -329,7 +329,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       uiplayerSongBeginProcess, uiplayer);
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CB_BEGSONG],
-      /* CONTEXT: button: tooltip: return to the beginning of the song */
+      /* CONTEXT: playerui: button: tooltip: return to the beginning of the song */
       _("Return to beginning of song"), "button_begin");
   uiBoxPackStart (&hbox, &uiwidget);
 
@@ -337,7 +337,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       uiplayerNextSongProcess, uiplayer);
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CB_NEXTSONG],
-      /* CONTEXT: button: tooltip: start playing the next song (immediate) */
+      /* CONTEXT: playerui: button: tooltip: start playing the next song (immediate) */
       _("Next Song"), "button_nextsong");
   uiBoxPackStart (&hbox, &uiwidget);
 
@@ -351,7 +351,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageFromFile (&uiplayer->ledoffImg, tbuff);
   uiWidgetMakePersistent (&uiplayer->ledoffImg);
 
-  /* CONTEXT: button: pause at the end of the song (toggle) */
+  /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
   uiCreateToggleButton (&uiplayer->pauseatendButton, _("Pause at End"),
       NULL, NULL, &uiplayer->ledoffImg, 0);
   uiBoxPackStart (&hbox, &uiplayer->pauseatendButton);
@@ -380,7 +380,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiScaleSetCallback (&uiplayer->volumeScale, &uiplayer->volumecb);
 
   /* size group D */
-  /* CONTEXT: The current volume of the song */
+  /* CONTEXT: playerui: The current volume of the song */
   uiCreateColonLabel (&uiwidget, _("Volume"));
   uiLabelAlignEnd (&uiwidget);
   uiWidgetSetMarginEnd (&uiwidget, uiBaseMarginSz);

@@ -207,6 +207,7 @@ static void installerFailWorkingDir (installer_t *installer, const char *dir);
 static void installerSetTargetDir (installer_t *installer, const char *fn);
 static void installerSetBDJ3LocDir (installer_t *installer, const char *fn);
 static void installerCheckAndFixTarget (char *buff, size_t sz);
+static bool installerWinVerifyProcess (installer_t *installer);
 
 int
 main (int argc, char *argv[])
@@ -585,7 +586,7 @@ installerBuildUI (installer_t *installer)
 
   uiCreateButton (&uiwidget,
       &installer->callbacks [INST_CALLBACK_EXIT],
-      /* CONTEXT: exits the installer */
+      /* CONTEXT: installer: exits the installer */
       _("Exit"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
@@ -895,7 +896,7 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
 
   if (! locok) {
     rc = UIENTRY_ERROR;
-    /* CONTEXT: the location entered is not a valid BDJ3 location. */
+    /* CONTEXT: installer: the location entered is not a valid BDJ3 location. */
     snprintf (tbuff, sizeof (tbuff), _("Not a valid %s folder."), BDJ3_NAME);
     uiLabelSetText (&installer->convFeedbackMsg, tbuff);
     installerSetConvert (installer, FALSE);
@@ -1081,12 +1082,15 @@ installerVerifyInstInit (installer_t *installer)
 static void
 installerVerifyInstall (installer_t *installer)
 {
-  char        tmp [2048];
+  char        tmp [40];
   const char  *targv [2];
 
   if (isWindows ()) {
-    targv [0] = ".\\install\\verifychksum.bat";
-    targv [1] = NULL;
+    if (installerWinVerifyProcess (installer)) {
+      strlcpy (tmp, "OK", sizeof (tmp));
+    } else {
+      strlcpy (tmp, "NG", sizeof (tmp));
+    }
   } else {
     targv [0] = "./install/verifychksum.sh";
     targv [1] = NULL;
@@ -1766,7 +1770,9 @@ installerConvertFinish (installer_t *installer)
 static void
 installerCreateShortcut (installer_t *installer)
 {
-  char buff [MAXPATHLEN];
+  char        buff [MAXPATHLEN];
+  const char  *targv [7];
+  int         targc = 0;
 
   if (chdir (installer->rundir)) {
     installerFailWorkingDir (installer, installer->rundir);
@@ -1777,9 +1783,13 @@ installerCreateShortcut (installer_t *installer)
   installerDisplayText (installer, "-- ", _("Creating shortcut."), false);
   if (isWindows ()) {
     if (! chdir ("install")) {
-      snprintf (buff, sizeof (buff), ".\\makeshortcut.bat \"%s\"",
-          installer->rundir);
-      system (buff);
+      targv [targc++] = ".\\makeshortcut.bat";
+      targv [targc++] = "%USERPROFILE%\\Desktop\\BDJ4.lnk";
+      snprintf (buff, sizeof (buff), "%s\\bin\\bdj4.exe", installer->rundir);
+      targv [targc++] = buff;
+      targv [targc++] = installer->rundir;
+      targv [targc++] = NULL;
+      osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
       chdir (installer->rundir);
     }
   }
@@ -1795,8 +1805,9 @@ installerCreateShortcut (installer_t *installer)
 #endif
   }
   if (isLinux ()) {
-    snprintf (buff, sizeof (buff), "./install/linuxshortcut.sh '%s'",
-        installer->rundir);
+    snprintf (buff, sizeof (buff),
+        "./install/linuxshortcut.sh %s '%s' '%s'",
+        BDJ4_NAME, installer->rundir, installer->rundir);
     system (buff);
   }
 
@@ -2491,4 +2502,58 @@ installerCheckAndFixTarget (char *buff, size_t sz)
     strlcat (buff, nm, sz);
   }
   pathInfoFree (pi);
+}
+
+static bool
+installerWinVerifyProcess (installer_t *installer)
+{
+  FILE       *fh;
+  char       tbuff [1024];
+  char       tmp [1024];
+  int        rc = true;
+  const char *targv [10];
+  int        targc = 0;
+  char       *p;
+  char       *fn;
+  char       *chksum;
+  char       *tokstr;
+
+  if (! chdir ("bdj4-install")) {
+    return false;
+  }
+
+  fh = fopen ("install/checksum.txt", "r");
+  if (fh == NULL) {
+    return false;
+  }
+
+  while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
+    p = strtok_r (tbuff, " ", &tokstr);
+    chksum = p;
+    p = strtok_r (NULL, " ", &tokstr);
+    if (*p == '*') {
+      ++p;
+    }
+    fn = p;
+    stringTrim (fn);
+
+    targv [targc++] = ".\\plocal\\bin\\openssl.exe";
+    targv [targc++] = "sha512";
+    targv [targc++] = "-r";
+    targv [targc++] = fn;
+    targv [targc++] = NULL;
+    osProcessPipe (targv, OS_PROC_WAIT, tmp, sizeof (tmp));
+    p = strtok_r (tmp, " ", &tokstr);
+    if (strcmp (p, chksum) != 0) {
+fprintf (stderr, "chk: %s\n", fn);
+fprintf (stderr, "   failed\n");
+fprintf (stderr, "   f-chksum: %s\n", chksum);
+fprintf (stderr, "     chksum: %s\n", p);
+      rc = false;
+      break;
+    }
+  }
+  fclose (fh);
+
+  return rc;
 }

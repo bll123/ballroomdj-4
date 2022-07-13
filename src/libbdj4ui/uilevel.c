@@ -44,7 +44,7 @@ uilevelSpinboxCreate (UIWidget *boxp, bool allflag)
   start = 0;
   maxw = levelGetMaxWidth (uilevel->levels);
   if (allflag) {
-    /* CONTEXT: a filter: all dance levels will be listed */
+    /* CONTEXT: level: a filter: all dance levels will be listed */
     len = istrlen (_("All Levels"));
     if (len > maxw) {
       maxw = len;
@@ -126,7 +126,7 @@ uilevelLevelGet (void *udata, int idx)
 
   if (idx == -1) {
     if (uilevel->allflag) {
-      /* CONTEXT: a filter: all dance levels are displayed in the song selection */
+      /* CONTEXT: level: a filter: all dance levels are displayed in the song selection */
       return _("All Levels");
     }
     idx = 0;

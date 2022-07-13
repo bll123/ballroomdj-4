@@ -1135,7 +1135,7 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   snprintf (plname, sizeof (plname), "_main_dance_%d_%ld",
       danceIdx, globalCounter++);
   playlist = playlistAlloc (mainData->musicdb);
-  /* CONTEXT: the name of the special playlist for queueing a dance */
+  /* CONTEXT: player: the name of the special playlist for queueing a dance */
   if (playlistLoad (playlist, _("QueueDance")) < 0) {
     playlistCreate (playlist, plname, PLTYPE_AUTO);
   }

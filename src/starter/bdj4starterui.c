@@ -60,18 +60,18 @@ enum {
 };
 
 enum {
-  START_CALLBACK_PLAYER,
-  START_CALLBACK_MANAGE,
-  START_CALLBACK_CONFIG,
-  START_CALLBACK_RAFFLE,
-  START_CALLBACK_SUPPORT,
-  START_CALLBACK_EXIT,
-  START_CALLBACK_SEND_SUPPORT,
-  START_CALLBACK_MENU_STOP_ALL,
-  START_CALLBACK_MENU_INST_ALT,
-  START_CALLBACK_SUPPORT_RESP,
-  START_CALLBACK_SUPPORT_MSG_RESP,
-  START_CALLBACK_MAX,
+  START_CB_PLAYER,
+  START_CB_MANAGE,
+  START_CB_CONFIG,
+  START_CB_RAFFLE,
+  START_CB_SUPPORT,
+  START_CB_EXIT,
+  START_CB_SEND_SUPPORT,
+  START_CB_MENU_STOP_ALL,
+  START_CB_MENU_ALT_SETUP,
+  START_CB_SUPPORT_RESP,
+  START_CB_SUPPORT_MSG_RESP,
+  START_CB_MAX,
 };
 
 enum {
@@ -111,7 +111,7 @@ typedef struct {
   int             stopwaitcount;
   nlist_t         *proflist;
   nlist_t         *profidxlist;
-  UICallback      callbacks [START_CALLBACK_MAX];
+  UICallback      callbacks [START_CB_MAX];
   startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
   uispinbox_t     *profilesel;
   UIWidget        supportDialog;
@@ -196,7 +196,7 @@ static void     starterLinkHandler (void *udata, int cbidx);
 
 static void     starterSetWindowPosition (startui_t *starter);
 static void     starterLoadOptions (startui_t *starter);
-static bool     starterInstallAlternate (void *udata);
+static bool     starterSetUpAlternate (void *udata);
 
 static bool gKillReceived = false;
 static bool gNewProfile = false;
@@ -441,11 +441,11 @@ starterBuildUI (startui_t  *starter)
   uiCreateSizeGroupHoriz (&sg);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_EXIT],
+      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_IMGDIR);
+  uiutilsUICallbackInit (&starter->callbacks [START_CB_EXIT],
       starterCloseCallback, starter);
   uiCreateMainWindow (&starter->window,
-      &starter->callbacks [START_CALLBACK_EXIT],
+      &starter->callbacks [START_CB_EXIT],
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff);
 
   uiCreateVertBox (&vbox);
@@ -471,31 +471,35 @@ starterBuildUI (startui_t  *starter)
   uiCreateMenubar (&menubar);
   uiBoxPackStart (&hbox, &menubar);
 
-  /* CONTEXT: action menu for the starter user interface */
+  /* CONTEXT: starterui: action menu for the starter user interface */
   uiMenuCreateItem (&menubar, &menuitem, _("Actions"), NULL);
 
   uiCreateSubMenu (&menuitem, &menu);
 
-  /* CONTEXT: menu item: stop all BDJ4 processes */
+  /* CONTEXT: starterui: menu item: stop all BDJ4 processes */
   snprintf (tbuff, sizeof (tbuff), _("Stop All %s Processes"), BDJ4_NAME);
-  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_MENU_STOP_ALL],
+  uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_STOP_ALL],
       starterStopAllProcesses, starter);
   uiMenuCreateItem (&menu, &menuitem, tbuff,
-      &starter->callbacks [START_CALLBACK_MENU_STOP_ALL]);
+      &starter->callbacks [START_CB_MENU_STOP_ALL]);
 
-  /* CONTEXT: menu item: install in alternate folder */
-  snprintf (tbuff, sizeof (tbuff), _("Install in Alternate Folder"));
-  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_MENU_INST_ALT],
-      starterInstallAlternate, starter);
-  uiMenuCreateItem (&menu, &menuitem, tbuff,
-      &starter->callbacks [START_CALLBACK_MENU_INST_ALT]);
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+  if (fileopFileExists (tbuff)) {
+    /* CONTEXT: starterui: menu item: install in alternate folder */
+    snprintf (tbuff, sizeof (tbuff), _("Set Up Alternate Folder"));
+    uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_ALT_SETUP],
+        starterSetUpAlternate, starter);
+    uiMenuCreateItem (&menu, &menuitem, tbuff,
+        &starter->callbacks [START_CB_MENU_ALT_SETUP]);
+  }
 
   /* main display */
   uiCreateHorizBox (&hbox);
   uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
   uiBoxPackStart (&vbox, &hbox);
 
-  /* CONTEXT: starter: profile to be used when starting BDJ4 */
+  /* CONTEXT: starterui: profile to be used when starting BDJ4 */
   uiCreateColonLabel (&uiwidget, _("Profile"));
   uiBoxPackStart (&hbox, &uiwidget);
 
@@ -525,11 +529,11 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetAllMargins (&uiwidget, uiBaseMarginSz * 10);
   uiBoxPackStart (&hbox, &uiwidget);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_PLAYER],
+  uiutilsUICallbackInit (&starter->callbacks [START_CB_PLAYER],
       starterStartPlayerui, starter);
   uiCreateButton (&uiwidget,
-      &starter->callbacks [START_CALLBACK_PLAYER],
-      /* CONTEXT: button: starts the player user interface */
+      &starter->callbacks [START_CB_PLAYER],
+      /* CONTEXT: starterui: button: starts the player user interface */
       _("Player"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
@@ -537,11 +541,11 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&bvbox, &uiwidget);
   uiButtonAlignLeft (&uiwidget);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_MANAGE],
+  uiutilsUICallbackInit (&starter->callbacks [START_CB_MANAGE],
       starterStartManageui, starter);
   uiCreateButton (&uiwidget,
-      &starter->callbacks [START_CALLBACK_MANAGE],
-      /* CONTEXT: button: starts the management user interface */
+      &starter->callbacks [START_CB_MANAGE],
+      /* CONTEXT: starterui: button: starts the management user interface */
       _("Manage"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
@@ -549,11 +553,11 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&bvbox, &uiwidget);
   uiButtonAlignLeft (&uiwidget);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_CONFIG],
+  uiutilsUICallbackInit (&starter->callbacks [START_CB_CONFIG],
       starterStartConfig, starter);
   uiCreateButton (&uiwidget,
-      &starter->callbacks [START_CALLBACK_CONFIG],
-      /* CONTEXT: button: starts the configuration user interface */
+      &starter->callbacks [START_CB_CONFIG],
+      /* CONTEXT: starterui: button: starts the configuration user interface */
       _("Configure"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
@@ -561,11 +565,11 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&bvbox, &uiwidget);
   uiButtonAlignLeft (&uiwidget);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_RAFFLE],
+  uiutilsUICallbackInit (&starter->callbacks [START_CB_RAFFLE],
       starterStartRaffleGames, starter);
   uiCreateButton (&uiwidget,
-      &starter->callbacks [START_CALLBACK_RAFFLE],
-      /* CONTEXT: button: support : starts raffle games  */
+      &starter->callbacks [START_CB_RAFFLE],
+      /* CONTEXT: starterui: button: support : starts raffle games  */
       _("Raffle Games"), NULL);
   uiWidgetDisable (&uiwidget);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
@@ -574,11 +578,11 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&bvbox, &uiwidget);
   uiButtonAlignLeft (&uiwidget);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_SUPPORT],
+  uiutilsUICallbackInit (&starter->callbacks [START_CB_SUPPORT],
       starterProcessSupport, starter);
   uiCreateButton (&uiwidget,
-      &starter->callbacks [START_CALLBACK_SUPPORT],
-      /* CONTEXT: button: support : support information */
+      &starter->callbacks [START_CB_SUPPORT],
+      /* CONTEXT: starterui: button: support : support information */
       _("Support"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
@@ -587,8 +591,8 @@ starterBuildUI (startui_t  *starter)
   uiButtonAlignLeft (&uiwidget);
 
   uiCreateButton (&uiwidget,
-      &starter->callbacks [START_CALLBACK_EXIT],
-      /* CONTEXT: button: exits BDJ4 (exits everything) */
+      &starter->callbacks [START_CB_EXIT],
+      /* CONTEXT: starterui: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
@@ -1040,13 +1044,13 @@ starterProcessSupport (void *udata)
     stringTrim (starter->latestversion);
   }
 
-  uiutilsUICallbackLongInit (&starter->callbacks [START_CALLBACK_SUPPORT_RESP],
+  uiutilsUICallbackLongInit (&starter->callbacks [START_CB_SUPPORT_RESP],
       starterSupportResponseHandler, starter);
   uiCreateDialog (&uidialog, &starter->window,
-      &starter->callbacks [START_CALLBACK_SUPPORT_RESP],
-      /* CONTEXT: title for the support dialog */
+      &starter->callbacks [START_CB_SUPPORT_RESP],
+      /* CONTEXT: starterui: title for the support dialog */
       _("Support"),
-      /* CONTEXT: support dialog: closes the dialog */
+      /* CONTEXT: starterui: support dialog: closes the dialog */
       _("Close"),
       RESPONSE_CLOSE,
       NULL
@@ -1145,10 +1149,10 @@ starterProcessSupport (void *udata)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CALLBACK_SEND_SUPPORT],
+  uiutilsUICallbackInit (&starter->callbacks [START_CB_SEND_SUPPORT],
       starterCreateSupportDialog, starter);
   uiCreateButton (&uiwidget,
-      &starter->callbacks [START_CALLBACK_SEND_SUPPORT],
+      &starter->callbacks [START_CB_SEND_SUPPORT],
       /* CONTEXT: starterui: basic support dialog: button: support option */
       _("Send Support Message"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
@@ -1256,7 +1260,7 @@ starterGetProfiles (startui_t *starter)
     }
   }
 
-  /* CONTEXT: starter: selection to create a new profile */
+  /* CONTEXT: starterui: selection to create a new profile */
   nlistSetStr (proflist, count, _("Create Profile"));
   nlistSetNum (profidxlist, count, availidx);
   starter->newprofile = availidx;
@@ -1333,7 +1337,7 @@ starterCheckProfile (startui_t *starter)
     bdjoptInit ();
     profidx = sysvarsGetNum (SVL_BDJIDX);
 
-    /* CONTEXT: starter: name of the new profile (New profile 9) */
+    /* CONTEXT: starterui: name of the new profile (New profile 9) */
     snprintf (tbuff, sizeof (tbuff), _("New Profile %d"), profidx);
     bdjoptSetStr (OPT_P_PROFILENAME, tbuff);
     uiWindowSetTitle (&starter->window, tbuff);
@@ -1357,7 +1361,7 @@ starterCheckProfile (startui_t *starter)
 
   rc = lockAcquire (lockName (ROUTE_STARTERUI), PATHBLD_MP_USEIDX);
   if (rc < 0) {
-    /* CONTEXT: starter: profile is already in use */
+    /* CONTEXT: starterui: profile is already in use */
     uiLabelSetText (&starter->statusMsg, _("Profile in use"));
   } else {
     uiWidgetDisable (uiSpinboxGetUIWidget (starter->profilesel));
@@ -1382,16 +1386,16 @@ starterCreateSupportDialog (void *udata)
   uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);
 
-  uiutilsUICallbackLongInit (&starter->callbacks [START_CALLBACK_SUPPORT_MSG_RESP],
+  uiutilsUICallbackLongInit (&starter->callbacks [START_CB_SUPPORT_MSG_RESP],
       starterSupportMsgHandler, starter);
   uiCreateDialog (&uidialog, &starter->window,
-      &starter->callbacks [START_CALLBACK_SUPPORT_MSG_RESP],
-      /* CONTEXT: title for the support message dialog */
+      &starter->callbacks [START_CB_SUPPORT_MSG_RESP],
+      /* CONTEXT: starterui: title for the support message dialog */
       _("Support Message"),
-      /* CONTEXT: support message dialog: closes the dialog */
+      /* CONTEXT: starterui: support message dialog: closes the dialog */
       _("Close"),
       RESPONSE_CLOSE,
-      /* CONTEXT: support message dialog: sends the support message */
+      /* CONTEXT: starterui: support message dialog: sends the support message */
       _("Send Support Message"),
       RESPONSE_APPLY,
       NULL
@@ -1408,7 +1412,7 @@ starterCreateSupportDialog (void *udata)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  /* CONTEXT: sending support message: user's e-mail address */
+  /* CONTEXT: starterui: sending support message: user's e-mail address */
   uiCreateColonLabel (&uiwidget, _("E-Mail Address"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -1421,7 +1425,7 @@ starterCreateSupportDialog (void *udata)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  /* CONTEXT: sending support message: subject of message */
+  /* CONTEXT: starterui: sending support message: subject of message */
   uiCreateColonLabel (&uiwidget, _("Subject"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -1431,7 +1435,7 @@ starterCreateSupportDialog (void *udata)
   uiBoxPackStart (&hbox, uiEntryGetUIWidget (starter->supportsubject));
 
   /* line 3 */
-  /* CONTEXT: sending support message: message text */
+  /* CONTEXT: starterui: sending support message: message text */
   uiCreateColonLabel (&uiwidget, _("Message"));
   uiBoxPackStart (&vbox, &uiwidget);
 
@@ -1443,12 +1447,12 @@ starterCreateSupportDialog (void *udata)
   starter->supporttb = tb;
 
   /* line 5 */
-  /* CONTEXT: sending support message: checkbox: option to send data files */
+  /* CONTEXT: starterui: sending support message: checkbox: option to send data files */
   uiCreateCheckButton (&starter->supportSendFiles, _("Attach Data Files"), 0);
   uiBoxPackStart (&vbox, &starter->supportSendFiles);
 
   /* line 6 */
-  /* CONTEXT: sending support message: checkbox: option to send database */
+  /* CONTEXT: starterui: sending support message: checkbox: option to send database */
   uiCreateCheckButton (&starter->supportSendDB, _("Attach Database"), 0);
   uiBoxPackStart (&vbox, &starter->supportSendDB);
 
@@ -1925,23 +1929,23 @@ starterLoadOptions (startui_t *starter)
 }
 
 static bool
-starterInstallAlternate (void *udata)
+starterSetUpAlternate (void *udata)
 {
   char        prog [MAXPATHLEN];
   const char  *targv [5];
   int         targc = 0;
 
 
-  logProcBegin (LOG_PROC, "starterInstallAlternate");
+  logProcBegin (LOG_PROC, "starterSetUpAlternate");
 
   pathbldMakePath (prog, sizeof (prog),
       "bdj4", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
   targv [targc++] = prog;
-  targv [targc++] = "--bdj4altinst";
+  targv [targc++] = "--bdj4altsetup";
   targv [targc++] = NULL;
   osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
 
-  logProcEnd (LOG_PROC, "starterInstallAlternate", "");
+  logProcEnd (LOG_PROC, "starterSetUpAlternate", "");
   return UICB_CONT;
 }
 

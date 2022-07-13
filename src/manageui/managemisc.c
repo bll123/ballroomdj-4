@@ -61,7 +61,7 @@ manageCheckAndCreatePlaylist (const char *name, pltype_t pltype)
   pathbldMakePath (onm, sizeof (onm),
       name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   if (! fileopFileExists (onm) &&
-      /* CONTEXT: name of the special song list for raffle songs */
+      /* CONTEXT: manageui: name of the special song list for raffle songs */
       strcmp (name, _("Raffle Songs")) != 0) {
     playlist_t    *pl;
 
@@ -82,7 +82,7 @@ manageCreatePlaylistCopy (UIWidget *statusMsg,
   pathbldMakePath (tbuff, sizeof (tbuff),
       newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   if (fileopFileExists (tbuff)) {
-    /* CONTEXT: failure status message */
+    /* CONTEXT: manageui: failure status message */
     snprintf (tbuff, sizeof (tbuff), _("Copy already exists."));
     uiLabelSetText (statusMsg, tbuff);
     rc = false;

@@ -1,11 +1,13 @@
 #!/bin/bash
 
-if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 <install-path>"
+if [[ $# -ne 3 ]]; then
+  echo "Usage: $0 <shortcut-name> <install-path> <working-dir>"
   exit 1
 fi
 
-tgtpath=$1
+scname=$1
+tgtpath=$2
+workdir=$3
 
 if [[ ! -d "$tgtpath" ]]; then
   echo "Could not locate $tgtpath"
@@ -15,9 +17,11 @@ fi
 desktop=$(xdg-user-dir DESKTOP)
 for idir in "$desktop" "$HOME/.local/share/applications"; do
   if [ -d "$idir" ]; then
-    cp -f install/bdj4.desktop "$idir"
+    cp -f install/bdj4.desktop "$idir/${scname}.desktop"
     sed -i -e "s,#INSTALLPATH#,${tgtpath},g" \
-        "$idir/bdj4.desktop"
+        -e "s,#APPNAME#,${scname},g" \
+        -e "s,#WORKDIR#,${workdir},g" \
+        "$idir/${scname}.desktop"
   fi
 done
 

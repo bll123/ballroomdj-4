@@ -422,15 +422,15 @@ uisfCreateDialog (uisongfilter_t *uisf)
       uisfResponseHandler, uisf);
   uiCreateDialog (&uisf->filterDialog, uisf->parentwin,
       &uisf->callbacks [UISF_CB_FILTER],
-      /* CONTEXT: title for the filter dialog */
+      /* CONTEXT: song selection filter: title for the filter dialog */
       _("Filter Songs"),
-      /* CONTEXT: filter dialog: closes the dialog */
+      /* CONTEXT: song selection filter: filter dialog: closes the dialog */
       _("Close"),
       RESPONSE_CLOSE,
-      /* CONTEXT: filter dialog: resets the selections */
+      /* CONTEXT: song selection filter: filter dialog: resets the selections */
       _("Reset"),
       RESPONSE_RESET,
-      /* CONTEXT: filter dialog: applies the selections */
+      /* CONTEXT: song selection filter: filter dialog: applies the selections */
       _("Apply"),
       RESPONSE_APPLY,
       NULL
@@ -445,7 +445,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiBoxPackStart (&vbox, &hbox);
   uiutilsUIWidgetCopy (&uisf->playlistdisp, &hbox);
 
-  /* CONTEXT: a filter: select a playlist to work with (music manager) */
+  /* CONTEXT: song selection filter: a filter: select a playlist to work with (music manager) */
   uiCreateColonLabel (&uiwidget, _("Playlist"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -462,7 +462,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  /* CONTEXT: a filter: select the method to sort the song selection display */
+  /* CONTEXT: song selection filter: a filter: select the method to sort the song selection display */
   uiCreateColonLabel (&uiwidget, _("Sort by"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -480,7 +480,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  /* CONTEXT: a filter: filter the song selection with a search for text */
+  /* CONTEXT: song selection filter: a filter: filter the song selection with a search for text */
   uiCreateColonLabel (&uiwidget, _("Search"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -497,7 +497,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiCreateHorizBox (&hbox);
     uiBoxPackStart (&vbox, &hbox);
 
-    /* CONTEXT: a filter: select the genre displayed in the song selection */
+    /* CONTEXT: song selection filter: a filter: select the genre displayed in the song selection */
     uiCreateColonLabel (&uiwidget, _("Genre"));
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
@@ -514,7 +514,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  /* CONTEXT: a filter: select the dance displayed in the song selection */
+  /* CONTEXT: song selection filter: a filter: select the dance displayed in the song selection */
   uiCreateColonLabel (&uiwidget, _("Dance"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -523,7 +523,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiutilsUICallbackLongInit (&uisf->callbacks [UISF_CB_DANCE_SEL],
       uisfDanceSelectHandler, uisf);
   uisf->uidance = uidanceDropDownCreate (&hbox, &uisf->filterDialog,
-      /* CONTEXT: a filter: all dances are selected */
+      /* CONTEXT: song selection filter: a filter: all dances are selected */
       UIDANCE_ALL_DANCES,  _("All Dances"), UIDANCE_PACK_START);
   uidanceSetCallback (uisf->uidance, &uisf->callbacks [UISF_CB_DANCE_SEL]);
   /* adding to the size group makes it look weird */
@@ -532,7 +532,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  /* CONTEXT: a filter: select the dance rating displayed in the song selection */
+  /* CONTEXT: song selection filter: a filter: select the dance rating displayed in the song selection */
   uiCreateColonLabel (&uiwidget, _("Dance Rating"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -546,7 +546,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiCreateHorizBox (&hbox);
     uiBoxPackStart (&vbox, &hbox);
 
-    /* CONTEXT: a filter: select the dance level displayed in the song selection */
+    /* CONTEXT: song selection filter: a filter: select the dance level displayed in the song selection */
     uiCreateColonLabel (&uiwidget, _("Dance Level"));
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
@@ -561,7 +561,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiCreateHorizBox (&hbox);
     uiBoxPackStart (&vbox, &hbox);
 
-    /* CONTEXT: a filter: select the status displayed in the song selection */
+    /* CONTEXT: song selection filter: a filter: select the status displayed in the song selection */
     uiCreateColonLabel (&uiwidget, _("Status"));
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
@@ -576,7 +576,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiCreateHorizBox (&hbox);
     uiBoxPackStart (&vbox, &hbox);
 
-    /* CONTEXT: a filter: select the 'favorite' displayed in the song selection */
+    /* CONTEXT: song selection filter: a filter: select the 'favorite' displayed in the song selection */
     uiCreateColonLabel (&uiwidget, _("Favorite"));
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
@@ -590,7 +590,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiCreateHorizBox (&hbox);
     uiBoxPackStart (&vbox, &hbox);
 
-    /* CONTEXT: a filter: the song status is marked as playable */
+    /* CONTEXT: song selection filter: a filter: the song status is marked as playable */
     uiCreateColonLabel (&uiwidget, _("Playable Status"));
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);

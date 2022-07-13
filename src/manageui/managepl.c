@@ -355,26 +355,26 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
 
   if (! managepl->plmenu.initialized) {
     uiMenuAddMainItem (uimenubar, &menuitem,
-        /* CONTEXT: menu selection: sequence: edit menu */
+        /* CONTEXT: playlist management: menu selection: playlist: edit menu */
         &managepl->plmenu, _("Edit"));
 
     uiCreateSubMenu (&menuitem, &menu);
 
     uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_LOAD],
         managePlaylistLoad, managepl);
-    /* CONTEXT: menu selection: playlist: edit menu: load */
+    /* CONTEXT: playlist management: menu selection: playlist: edit menu: load */
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
         &managepl->callbacks [MPL_CB_MENU_PL_LOAD]);
 
     uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_COPY],
         managePlaylistCopy, managepl);
-    /* CONTEXT: menu selection: playlist: edit menu: create copy */
+    /* CONTEXT: playlist management: menu selection: playlist: edit menu: create copy */
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
         &managepl->callbacks [MPL_CB_MENU_PL_COPY]);
 
     uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_NEW],
         managePlaylistNew, managepl);
-    /* CONTEXT: menu selection: playlist: edit menu: new automatic sequence */
+    /* CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic sequence */
     uiMenuCreateItem (&menu, &menuitem, _("New Automatic Playlist"),
         &managepl->callbacks [MPL_CB_MENU_PL_NEW]);
 
@@ -542,7 +542,7 @@ managePlaylistCopy (void *udata)
   managePlaylistSave (managepl);
 
   oname = uiEntryGetValue (managepl->plname);
-  /* CONTEXT: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
+  /* CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
   if (manageCreatePlaylistCopy (managepl->statusMsg, oname, newname)) {
     manageSetPlaylistName (managepl, newname);
@@ -565,7 +565,7 @@ managePlaylistNew (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new playlist");
   managePlaylistSave (managepl);
 
-  /* CONTEXT: playlist: default name for a new playlist */
+  /* CONTEXT: playlist management: default name for a new playlist */
   snprintf (tbuff, sizeof (tbuff), _("New Playlist"));
   manageSetPlaylistName (managepl, tbuff);
   managepl->plbackupcreated = false;

@@ -505,7 +505,7 @@ manageBuildUI (manageui_t *manage)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  /* CONTEXT: management user interface window title */
+  /* CONTEXT: managementui: management user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Management"),
       bdjoptGetStr (OPT_P_PROFILENAME));
 
@@ -551,7 +551,7 @@ manageBuildUI (manageui_t *manage)
 
   uiCreateVertBox (&vbox);
   manageBuildUIUpdateDatabase (manage->managedb, &vbox);
-  /* CONTEXT: notebook tab title: update database */
+  /* CONTEXT: managementui: notebook tab title: update database */
   uiCreateLabel (&uiwidget, _("Update Database"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
@@ -562,7 +562,7 @@ manageBuildUI (manageui_t *manage)
 
   uiCreateVertBox (&vbox);
   manageBuildUIPlaylist (manage->managepl, &vbox);
-  /* CONTEXT: notebook tab title: playlist management */
+  /* CONTEXT: managementui: notebook tab title: playlist management */
   uiCreateLabel (&uiwidget, _("Playlist Management"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_PL);
@@ -573,7 +573,7 @@ manageBuildUI (manageui_t *manage)
 
   uiCreateVertBox (&vbox);
   manageBuildUISequence (manage->manageseq, &vbox);
-  /* CONTEXT: notebook tab title: edit sequences */
+  /* CONTEXT: managementui: notebook tab title: edit sequences */
   uiCreateLabel (&uiwidget, _("Edit Sequences"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SEQ);
@@ -581,7 +581,7 @@ manageBuildUI (manageui_t *manage)
   /* file manager */
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
-  /* CONTEXT: notebook tab title: file manager */
+  /* CONTEXT: managementui: notebook tab title: file manager */
   uiCreateLabel (&uiwidget, _("File Manager"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_FILEMGR);
@@ -733,7 +733,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
 
-  /* CONTEXT: notebook tab title: edit song lists */
+  /* CONTEXT: managementui: notebook tab title: edit song lists */
   uiCreateLabel (&uiwidget, _("Edit Song Lists"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SL);
@@ -749,7 +749,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   /* song list editor: easy song list tab */
   uiCreateHorizBox (&mainhbox);
 
-  /* CONTEXT: name of easy song list song selection tab */
+  /* CONTEXT: managementui: name of easy song list song selection tab */
   uiCreateLabel (&uiwidget, _("Song List"));
   uiNotebookAppendPage (&notebook, &mainhbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
@@ -771,7 +771,7 @@ manageBuildUISongListEditor (manageui_t *manage)
       uisongselSelectCallback, manage->slezsongsel);
   uiCreateButton (&uiwidget,
       &manage->callbacks [MANAGE_CB_EZ_SELECT],
-      /* CONTEXT: config: button: add the selected songs to the song list */
+      /* CONTEXT: managementui: config: button: add the selected songs to the song list */
       _("Select"), "button_left");
   uiBoxPackStart (&vbox, &uiwidget);
 
@@ -781,7 +781,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   /* song list editor: music queue tab */
   uiwidgetp = uimusicqBuildUI (manage->slmusicq, &manage->window, MUSICQ_SL,
       &manage->statusMsg, manageValidateName);
-  /* CONTEXT: name of song list notebook tab */
+  /* CONTEXT: managementui: name of song list notebook tab */
   uiCreateLabel (&uiwidget, _("Song List"));
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
@@ -789,7 +789,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* song list editor: song selection tab*/
   uiwidgetp = uisongselBuildUI (manage->slsongsel, &manage->window);
-  /* CONTEXT: name of song selection notebook tab */
+  /* CONTEXT: managementui: name of song selection notebook tab */
   uiCreateLabel (&uiwidget, _("Song Selection"));
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_OTHER);
@@ -799,7 +799,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* song list editor: statistics tab */
   uiwidgetp = manageBuildUIStats (manage->slstats);
-  /* CONTEXT: name of statistics tab */
+  /* CONTEXT: managementui: name of statistics tab */
   uiCreateLabel (&uiwidget, _("Statistics"));
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_STATISTICS);
@@ -820,7 +820,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   /* music manager */
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
-  /* CONTEXT: name of music manager notebook tab */
+  /* CONTEXT: managementui: name of music manager notebook tab */
   uiCreateLabel (&uiwidget, _("Music Manager"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
@@ -836,14 +836,14 @@ manageBuildUIMusicManager (manageui_t *manage)
   /* music manager: song selection tab*/
   uiwidgetp = uisongselBuildUI (manage->mmsongsel, &manage->window);
   uiWidgetExpandHoriz (uiwidgetp);
-  /* CONTEXT: name of song selection notebook tab */
+  /* CONTEXT: managementui: name of song selection notebook tab */
   uiCreateLabel (&uiwidget, _("Music Manager"));
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_OTHER);
 
   /* music manager: song editor tab */
   uiwidgetp = uisongeditBuildUI (manage->mmsongsel, manage->mmsongedit, &manage->window, &manage->statusMsg);
-  /* CONTEXT: name of song editor notebook tab */
+  /* CONTEXT: managementui: name of song editor notebook tab */
   uiCreateLabel (&uiwidget, _("Song Editor"));
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
@@ -968,7 +968,7 @@ manageHandshakeCallback (void *udata, programstate_t programState)
     progstateLogTime (manage->progstate, "time-to-start-gui");
     manageDbChg (manage->managedb);
     manageSetEasySonglist (manage);
-    /* CONTEXT: song list: default name for a new song list */
+    /* CONTEXT: managementui: song list: default name for a new song list */
     manageSetSonglistName (manage, _("New Song List"));
     rc = STATE_FINISHED;
   }
@@ -1120,7 +1120,7 @@ manageSongEditMenu (manageui_t *manage)
 
   if (! manage->songeditmenu.initialized) {
     uiMenuAddMainItem (&manage->menubar, &menuitem,
-        /* CONTEXT: menu selection: actions for song editor */
+        /* CONTEXT: managementui: menu selection: actions for song editor */
         &manage->songeditmenu, _("Actions"));
 
     uiCreateSubMenu (&menuitem, &menu);
@@ -1133,15 +1133,15 @@ manageSongEditMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, tagdefs [TAG_BPM].displayname,
         &manage->callbacks [MANAGE_MENU_CB_BPM]);
 
-    /* CONTEXT: menu selection: song editor: edit all */
+    /* CONTEXT: managementui: menu selection: song editor: edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Edit All"), NULL);
     uiWidgetDisable (&menuitem);
 
-    /* CONTEXT: menu selection: song editor: apply edit all */
+    /* CONTEXT: managementui: menu selection: song editor: apply edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Apply Edit All"), NULL);
     uiWidgetDisable (&menuitem);
 
-    /* CONTEXT: menu selection: song editor: cancel edit all */
+    /* CONTEXT: managementui: menu selection: song editor: cancel edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Cancel Edit All"), NULL);
     uiWidgetDisable (&menuitem);
 
@@ -1163,85 +1163,85 @@ manageSonglistMenu (manageui_t *manage)
 
   if (! manage->slmenu.initialized) {
     uiMenuAddMainItem (&manage->menubar, &menuitem,
-        /* CONTEXT: menu selection: song list: options menu */
+        /* CONTEXT: managementui: menu selection: song list: options menu */
         &manage->slmenu, _("Options"));
 
     uiCreateSubMenu (&menuitem, &menu);
 
     manageSetMenuCallback (manage, MANAGE_MENU_CB_EZ_SL_EDIT,
         manageToggleEasySonglist);
-    /* CONTEXT: menu checkbox: easy song list editor */
+    /* CONTEXT: managementui: menu checkbox: easy song list editor */
     uiMenuCreateCheckbox (&menu, &menuitem, _("Easy Song List Editor"),
         nlistGetNum (manage->options, MANAGE_EASY_SONGLIST),
         &manage->callbacks [MANAGE_MENU_CB_EZ_SL_EDIT]);
 
     uiMenuAddMainItem (&manage->menubar, &menuitem,
-        /* CONTEXT: menu selection: song list: edit menu */
+        /* CONTEXT: managementui: menu selection: song list: edit menu */
         &manage->slmenu, _("Edit"));
 
     uiCreateSubMenu (&menuitem, &menu);
 
     manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_LOAD, manageSonglistLoad);
-    /* CONTEXT: menu selection: song list: edit menu: load */
+    /* CONTEXT: managementui: menu selection: song list: edit menu: load */
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
         &manage->callbacks [MANAGE_MENU_CB_SL_LOAD]);
 
     manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_COPY, manageSonglistCopy);
-    /* CONTEXT: menu selection: song list: edit menu: create copy */
+    /* CONTEXT: managementui: menu selection: song list: edit menu: create copy */
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
         &manage->callbacks [MANAGE_MENU_CB_SL_COPY]);
 
     manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_NEW, manageSonglistNew);
-    /* CONTEXT: menu selection: song list: edit menu: start new song list */
+    /* CONTEXT: managementui: menu selection: song list: edit menu: start new song list */
     uiMenuCreateItem (&menu, &menuitem, _("Start New Song List"),
         &manage->callbacks [MANAGE_MENU_CB_SL_NEW]);
 
     uiMenuAddMainItem (&manage->menubar, &menuitem,
-        /* CONTEXT: menu selection: actions for song list */
+        /* CONTEXT: managementui: menu selection: actions for song list */
         &manage->slmenu, _("Actions"));
 
     uiCreateSubMenu (&menuitem, &menu);
 
-    /* CONTEXT: menu selection: song list: actions menu: rearrange the songs and create a new mix */
+    /* CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix */
     uiMenuCreateItem (&menu, &menuitem, _("Mix"), NULL);
     uiWidgetDisable (&menuitem);
 
     manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_TRUNCATE,
         manageSonglistTruncate);
-    /* CONTEXT: menu selection: song list: actions menu: truncate the song list */
+    /* CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list */
     uiMenuCreateItem (&menu, &menuitem, _("Truncate"),
         &manage->callbacks [MANAGE_MENU_CB_SL_TRUNCATE]);
 
     uiMenuAddMainItem (&manage->menubar, &menuitem,
-        /* CONTEXT: menu selection: export actions for song list */
+        /* CONTEXT: managementui: menu selection: export actions for song list */
         &manage->slmenu, _("Export"));
 
     uiCreateSubMenu (&menuitem, &menu);
 
     manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_EXP_M3U,
         manageSonglistExportM3U);
-    /* CONTEXT: menu selection: song list: export: export as m3u */
+    /* CONTEXT: managementui: menu selection: song list: export: export as m3u */
     uiMenuCreateItem (&menu, &menuitem, _("Export as M3U Playlist"),
         &manage->callbacks [MANAGE_MENU_CB_SL_EXP_M3U]);
 
-    /* CONTEXT: menu selection: song list: export: export for ballroomdj */
+    /* CONTEXT: managementui: menu selection: song list: export: export for ballroomdj */
     snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
     uiMenuCreateItem (&menu, &menuitem, tbuff, NULL);
     uiWidgetDisable (&menuitem);
 
     uiMenuAddMainItem (&manage->menubar, &menuitem,
-        /* CONTEXT: menu selection: import actions for song list */
+        /* CONTEXT: managementui: menu selection: import actions for song list */
         &manage->slmenu, _("Import"));
 
     uiCreateSubMenu (&menuitem, &menu);
 
-    /* CONTEXT: menu selection: song list: import: import m3u */
+    /* CONTEXT: managementui: menu selection: song list: import: import m3u */
     manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_IMP_M3U,
         manageSonglistImportM3U);
     uiMenuCreateItem (&menu, &menuitem, _("Import M3U"),
         &manage->callbacks [MANAGE_MENU_CB_SL_IMP_M3U]);
 
-    /* CONTEXT: menu selection: song list: import: import from ballroomdj */
+    /* CONTEXT: managementui: menu selection: song list: import: import from ballroomdj */
     snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
     uiMenuCreateItem (&menu, &menuitem, tbuff, NULL);
     uiWidgetDisable (&menuitem);
@@ -1275,7 +1275,7 @@ manageSonglistCopy (void *udata)
   manageSonglistSave (manage);
 
   oname = uimusicqGetSonglistName (manage->slmusicq);
-  /* CONTEXT: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
+  /* CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
   if (manageCreatePlaylistCopy (&manage->statusMsg, oname, newname)) {
     manageSetSonglistName (manage, newname);
@@ -1293,7 +1293,7 @@ manageSonglistNew (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
   manageSonglistSave (manage);
 
-  /* CONTEXT: song list: default name for a new song list */
+  /* CONTEXT: managementui: song list: default name for a new song list */
   snprintf (tbuff, sizeof (tbuff), _("New Song List"));
   manageSetSonglistName (manage, tbuff);
   manage->slbackupcreated = false;
@@ -1973,12 +1973,12 @@ manageSonglistExportM3U (void *udata)
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export m3u");
   name = uimusicqGetSonglistName (manage->slmusicq);
-  /* CONTEXT: song list export: title of save dialog */
+  /* CONTEXT: managementui: song list export: title of save dialog */
   snprintf (tbuff, sizeof (tbuff), _("Export as M3U Playlist"));
   snprintf (tname, sizeof (tname), "%s.m3u", name);
   selectdata = uiDialogCreateSelect (&manage->window,
       tbuff, sysvarsGetStr (SV_BDJ4DATATOPDIR), tname,
-      /* CONTEXT: song list export: name of file save type */
+      /* CONTEXT: managementui: song list export: name of file save type */
       _("M3U Files"), "audio/x-mpegurl");
   fn = uiSaveFileDialog (selectdata);
   if (fn != NULL) {
@@ -2002,14 +2002,14 @@ manageSonglistImportM3U (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import m3u");
   manageSonglistSave (manage);
 
-  /* CONTEXT: song list: default name for a new song list */
+  /* CONTEXT: managementui: song list: default name for a new song list */
   manageSetSonglistName (manage, _("New Song List"));
   strlcpy (nplname, manage->sloldname, sizeof (nplname));
 
   selectdata = uiDialogCreateSelect (&manage->window,
-      /* CONTEXT: song list import: title of dialog */
+      /* CONTEXT: managementui: song list import: title of dialog */
       _("Import M3U"), sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL,
-      /* CONTEXT: song list import: name of file type */
+      /* CONTEXT: managementui: song list import: name of file type */
       _("M3U Files"), "audio/x-mpegurl");
 
   fn = uiSelectFileDialog (selectdata);

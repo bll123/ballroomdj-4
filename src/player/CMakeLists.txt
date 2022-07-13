@@ -5,7 +5,7 @@ include (../utils/bdj4macros.cmake)
 add_executable (bdj4main bdj4main.c)
 if (WIN32)
   target_compile_options (bdj4main PRIVATE -municode)
-  target_compile_options (bdj4dbtag PRIVATE -mwindows)
+  target_compile_options (bdj4main PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4main
   libbdj4 libbdj4common
@@ -18,7 +18,7 @@ addWinSockLibrary (bdj4main)
 add_executable (bdj4player bdj4player.c)
 if (WIN32)
   target_compile_options (bdj4player PRIVATE -municode)
-  target_compile_options (bdj4dbtag PRIVATE -mwindows)
+  target_compile_options (bdj4player PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4player
   libbdj4pli libbdj4vol libbdj4 libbdj4common

@@ -185,7 +185,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
-    /* CONTEXT: select a song to be added to the song list */
+    /* CONTEXT: song-selection: select a song to be added to the song list */
     strlcpy (tbuff, _("Select"), sizeof (tbuff));
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_SELECT],
         uisongselSelectCallback, uisongsel);
@@ -199,13 +199,13 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_EDIT_LOCAL],
         uisongselSongEditCallback, uisongsel);
     uiCreateButton (&uiwidget, &uiw->callbacks [SONGSEL_CB_EDIT_LOCAL],
-        /* CONTEXT: edit the selected song */
+        /* CONTEXT: song-selection: edit the selected song */
         _("Edit"), "button_edit");
     uiBoxPackStart (&hbox, &uiwidget);
   }
 
   if (uisongsel->dispselType == DISP_SEL_REQUEST) {
-    /* CONTEXT: queue a song to be played */
+    /* CONTEXT: song-selection: queue a song to be played */
     strlcpy (tbuff, _("Queue"), sizeof (tbuff));
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_QUEUE],
         uisongselQueueCallback, uisongsel);
@@ -216,7 +216,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
       uisongsel->dispselType == DISP_SEL_MM) {
-    /* CONTEXT: play the selected songs */
+    /* CONTEXT: song-selection: play the selected songs */
     strlcpy (tbuff, _("Play"), sizeof (tbuff));
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_PLAY],
         uisongselPlayCallback, uisongsel);
@@ -228,7 +228,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   uiutilsUICallbackLongInit (&uiw->callbacks [SONGSEL_CB_DANCE_SEL],
       uisongselUIDanceSelectCallback, uisongsel);
   uisongsel->uidance = uidanceDropDownCreate (&hbox, parentwin,
-      /* CONTEXT: filter: all dances are selected */
+      /* CONTEXT: song-selection: filter: all dances are selected */
       UIDANCE_ALL_DANCES, _("All Dances"), UIDANCE_PACK_END);
   uidanceSetCallback (uisongsel->uidance,
       &uiw->callbacks [SONGSEL_CB_DANCE_SEL]);
@@ -237,7 +237,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       uisfDialog, uisongsel->uisongfilter);
   uiCreateButton (&uiwidget,
       &uiw->callbacks [SONGSEL_CB_FILTER],
-      /* CONTEXT: a button that starts the filters (narrowing down song selections) dialog */
+      /* CONTEXT: song-selection: a button that starts the filters (narrowing down song selections) dialog */
       _("Filters"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 

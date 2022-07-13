@@ -77,7 +77,7 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
   if (cb != NULL) {
     filelist = playlistGetPlaylistList (playlistSel);
 
-    /* CONTEXT: file type for the file selection dialog (song list) */
+    /* CONTEXT: select file: file type for the file selection dialog (song list) */
     selectFileCreateDialog (selectfile, filelist, _("Song List"), cb);
     uiWidgetShowAll (&selectfile->uidialog);
 
@@ -119,13 +119,13 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiutilsUICallbackLongInit (&selectfile->cb,
       selectFileResponseHandler, selectfile);
 
-  /* CONTEXT: file select dialog, title of window: select <file-type> */
+  /* CONTEXT: select file: title of window: select <file-type> */
   snprintf (tbuff, sizeof (tbuff), _("Select %s"), filetype);
   uiCreateDialog (&selectfile->uidialog,
       selectfile->parentwinp, &selectfile->cb, tbuff,
-      /* CONTEXT: file select dialog: closes the dialog */
+      /* CONTEXT: select file: closes the dialog */
       _("Close"), RESPONSE_CLOSE,
-      /* CONTEXT: file select dialog: selects the file */
+      /* CONTEXT: select file: selects the file */
       _("Select"), RESPONSE_APPLY,
       NULL
       );

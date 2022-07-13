@@ -146,7 +146,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (vboxp, &hbox);
 
-  /* CONTEXT: manage db: select database update action */
+  /* CONTEXT: update database: select database update action */
   uiCreateColonLabel (&uiwidget, _("Action"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -166,7 +166,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (vboxp, &hbox);
 
-  /* CONTEXT: manage db: music folder to process */
+  /* CONTEXT: update database: music folder to process */
   uiCreateColonLabel (&uiwidget, _("Music Folder"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -330,7 +330,7 @@ manageDbSelectDirCallback (void *udata)
   char        tbuff [100];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db select top dir");
-  /* CONTEXT: manage: dialog title for selecting database music folder */
+  /* CONTEXT: update database: dialog title for selecting database music folder */
   snprintf (tbuff, sizeof (tbuff), _("Select Music Folder Location"));
   selectdata = uiDialogCreateSelect (managedb->windowp,
       tbuff, uiEntryGetValue (managedb->dbtopdir), NULL, NULL, NULL);

@@ -44,7 +44,7 @@ uistatusSpinboxCreate (UIWidget *boxp, bool allflag)
   start = 0;
   maxw = statusGetMaxWidth (uistatus->status);
   if (allflag) {
-    /* CONTEXT: a filter: all dance status will be listed */
+    /* CONTEXT: status: a filter: all dance status will be listed */
     len = istrlen (_("Any Status"));
     if (len > maxw) {
       maxw = len;
@@ -126,7 +126,7 @@ uistatusStatusGet (void *udata, int idx)
 
   if (idx == -1) {
     if (uistatus->allflag) {
-      /* CONTEXT: a filter: all dance status are displayed in the song selection */
+      /* CONTEXT: status: a filter: all dance status are displayed in the song selection */
       return _("Any Status");
     }
     idx = 0;

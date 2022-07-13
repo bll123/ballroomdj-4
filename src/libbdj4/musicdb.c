@@ -306,7 +306,7 @@ dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
     strlcat (tbuff, tagdefs [TAG_STATUS].tag, sizeof (tbuff));
     strlcat (tbuff, "\n", sizeof (tbuff));
     strlcat (tbuff, "..", sizeof (tbuff));
-    /* CONTEXT: default status */
+    /* CONTEXT: music database: default status */
     strlcat (tbuff, _("New"), sizeof (tbuff));
     strlcat (tbuff, "\n", sizeof (tbuff));
   }

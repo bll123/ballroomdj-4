@@ -33,6 +33,7 @@ enum {
 #define BDJ4_PL_DANCE_EXT ".pldances"
 #define BDJ4_CONFIG_EXT   ".txt"
 #define BDJ4_DB_EXT       ".dat"
+#define BDJ4_IMG_SVG_EXT  ".svg"
 #define BDJ4_SONGLIST_EXT ".songlist"
 #define BDJ4_SEQUENCE_EXT ".sequence"
 
@@ -41,7 +42,9 @@ enum {
 #define STARTERUI_OPT_FN  "ui-starter"
 #define BPMCOUNTER_OPT_FN "ui-bpmcounter"
 #define VOLREG_FN         "volreg"
-#define VOLREG_BDJ4_EXT_FN     "volbdj4"
-#define VOLREG_BDJ3_EXT_FN     "volbdj3"
+#define VOLREG_BDJ4_EXT_FN    "volbdj4"
+#define VOLREG_BDJ3_EXT_FN    "volbdj3"
+#define ALT_COUNT_FN          "altcount"
+#define BASE_PORT_FN          "baseport"
 
 #endif /* INC_BDJ4_H */

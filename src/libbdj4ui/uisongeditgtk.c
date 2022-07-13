@@ -266,7 +266,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiWidgetAlignHorizFill (&hbox);
   uiBoxPackStart (&uiw->vbox, &hbox);
 
-  /* CONTEXT: the audio file */
+  /* CONTEXT: song editor: label for displaying the audio file path */
   uiCreateColonLabel (&uiwidget, _("File"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiWidgetDisable (&uiwidget);

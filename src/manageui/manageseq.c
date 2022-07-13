@@ -122,7 +122,7 @@ manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp)
   uiEntrySetValidate (manageseq->seqname, manageValidateName,
       manageseq->statusMsg, false);
   uiEntrySetColor (manageseq->seqname, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  /* CONTEXT: sequence: default name for a new sequence */
+  /* CONTEXT: sequence editor: default name for a new sequence */
   manageSetSequenceName (manageseq, _("New Sequence"));
   uiBoxPackStart (&hbox, uiEntryGetUIWidget (manageseq->seqname));
 
@@ -144,26 +144,26 @@ manageSequenceMenu (manageseq_t *manageseq, UIWidget *uimenubar)
 
   if (! manageseq->seqmenu.initialized) {
     uiMenuAddMainItem (uimenubar, &menuitem,
-        /* CONTEXT: menu selection: sequence: edit menu */
+        /* CONTEXT: sequence editor: menu selection: sequence: edit menu */
         &manageseq->seqmenu, _("Edit"));
 
     uiCreateSubMenu (&menuitem, &menu);
 
     uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_LOAD],
         manageSequenceLoad, manageseq);
-    /* CONTEXT: menu selection: sequence: edit menu: load */
+    /* CONTEXT: sequence editor: menu selection: sequence: edit menu: load */
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
         &manageseq->callback [MSEQ_MENU_CB_SEQ_LOAD]);
 
     uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_COPY],
         manageSequenceCopy, manageseq);
-    /* CONTEXT: menu selection: sequence: edit menu: create copy */
+    /* CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy */
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
         &manageseq->callback [MSEQ_MENU_CB_SEQ_COPY]);
 
     uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_NEW],
         manageSequenceNew, manageseq);
-    /* CONTEXT: menu selection: sequence: edit menu: start new sequence */
+    /* CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence */
     uiMenuCreateItem (&menu, &menuitem, _("Start New Sequence"),
         &manageseq->callback [MSEQ_MENU_CB_SEQ_NEW]);
 
@@ -316,7 +316,7 @@ manageSequenceCopy (void *udata)
   manageSequenceSave (manageseq);
 
   oname = uiEntryGetValue (manageseq->seqname);
-  /* CONTEXT: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
+  /* CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
   if (manageCreatePlaylistCopy (manageseq->statusMsg, oname, newname)) {
     manageSetSequenceName (manageseq, newname);
@@ -336,7 +336,7 @@ manageSequenceNew (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new sequence");
   manageSequenceSave (manageseq);
 
-  /* CONTEXT: sequence: default name for a new sequence */
+  /* CONTEXT: sequence editor: default name for a new sequence */
   snprintf (tbuff, sizeof (tbuff), _("New Sequence"));
   manageSetSequenceName (manageseq, tbuff);
   manageseq->seqbackupcreated = false;

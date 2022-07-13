@@ -75,8 +75,7 @@ function copyreleasefiles {
       ${stage}/plocal/bin/checkmk \
       ${stage}/plocal/bin/curl-config \
       ${stage}/plocal/bin/libcheck-*.dll \
-      ${stage}/plocal/bin/ocspcheck.exe \
-      ${stage}/plocal/bin/openssl.exe
+      ${stage}/plocal/bin/ocspcheck.exe
   rm -rf ${stage}/img/profile0[1-9]
 }
 
@@ -290,9 +289,11 @@ case $systype in
     touch ${manfnpath}
     ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
 
-    echo "-- $(date +%T) creating checksums"
-    ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
-    mv -f ${chksumfntmp} ${chksumfnpath}
+    if [[ $preskip == F ]]; then
+      echo "-- $(date +%T) creating checksums"
+      ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
+      mv -f ${chksumfntmp} ${chksumfnpath}
+    fi
 
     echo "-- $(date +%T) creating install package"
     test -f $tmpcab && rm -f $tmpcab
