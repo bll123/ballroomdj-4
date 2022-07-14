@@ -297,6 +297,8 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   origvol = volregClear (playerData->currentSink);
   bdj3flag = volregCheckBDJ3Flag ();
   if (origvol > 0) {
+    /* note that if there are BDJ4 instances with different sinks */
+    /* the bdj4 flag will be improperly cleared */
     volregClearBDJ4Flag ();
     if (! bdj3flag) {
       volumeSet (playerData->volume, playerData->currentSink, origvol);

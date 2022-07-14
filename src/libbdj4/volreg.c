@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "bdj4.h"
+#include "bdjstring.h"
 #include "datafile.h"
 #include "fileop.h"
 #include "lock.h"
@@ -24,8 +25,6 @@ enum {
   VOLREG_KEY_MAX,
 };
 
-#define VOLREG_LOCK   "volreg"
-
 static datafilekey_t volregdfkeys [VOLREG_KEY_MAX] = {
   { "COUNT",              VOLREG_COUNT,     VALUE_NUM, NULL, -1 },
   { "ORIGVOL",            VOLREG_ORIG_VOL,  VALUE_NUM, NULL, -1 },
@@ -34,7 +33,10 @@ static datafilekey_t volregdfkeys [VOLREG_KEY_MAX] = {
 
 static void volregLockWait (void);
 static void volregUnlock (void);
+static int  volregLockFilename (char *tfn, size_t sz);
 static int  volregUpdate (const char *sink, int originalVolume, int inc);
+static void volregDataFilename (char *tfn, size_t sz);
+static int  volregGetFilename (char *tfn, size_t sz, char *fn);
 
 /* returns the number of processes registered to this sink */
 int
@@ -105,9 +107,14 @@ static void
 volregLockWait (void)
 {
   int     count;
+  char    tfn [MAXPATHLEN];
+  int     flags = PATHBLD_MP_NONE;
+
+  flags = volregLockFilename (tfn, sizeof (tfn));
+fprintf (stderr, "volreg-get-lock: %s\n", tfn);
 
   count = 0;
-  while (lockAcquire (VOLREG_LOCK, PATHBLD_MP_NONE) < 0 &&
+  while (lockAcquire (tfn, flags) < 0 &&
       count < 2000) {
     mssleep (10);
     ++count;
@@ -117,8 +124,24 @@ volregLockWait (void)
 static void
 volregUnlock (void)
 {
-  lockRelease (VOLREG_LOCK, PATHBLD_MP_NONE);
+  char  tfn [MAXPATHLEN];
+  int   flags;
+
+  flags = volregLockFilename (tfn, sizeof (tfn));
+fprintf (stderr, "volreg-clr-lock: %s\n", tfn);
+
+  lockRelease (tfn, flags);
 }
+
+static int
+volregLockFilename (char *tfn, size_t sz)
+{
+  int   flags = PATHBLD_MP_NONE;
+
+  flags = volregGetFilename (tfn, sz, VOLREG_LOCK);
+  return flags;
+}
+
 
 static int
 volregUpdate (const char *sink, int originalVolume, int inc)
@@ -134,8 +157,8 @@ volregUpdate (const char *sink, int originalVolume, int inc)
 
 
   volregLockWait ();
-  pathbldMakePath (fn, sizeof (fn),
-      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+  volregDataFilename (fn, sizeof (fn));
+fprintf (stderr, "volreg-fn: %s\n", fn);
   df = datafileAllocParse ("volreg", DFTYPE_INDIRECT, fn,
       volregdfkeys, VOLREG_KEY_MAX, DATAFILE_NO_LOOKUP);
   vlist = datafileGetList (df);
@@ -169,10 +192,12 @@ volregUpdate (const char *sink, int originalVolume, int inc)
       ilistSetStr (vlist, vkey, VOLREG_SINK, sink);
       ilistSetNum (vlist, vkey, VOLREG_COUNT, 1);
       ilistSetNum (vlist, vkey, VOLREG_ORIG_VOL, originalVolume);
+fprintf (stderr, "volreg-set: %d %s\n", 1, sink);
     } else {
       count = ilistGetNum (vlist, vkey, VOLREG_COUNT);
       ++count;
       ilistSetNum (vlist, vkey, VOLREG_COUNT, count);
+fprintf (stderr, "volreg-inc: %d %s\n", count, sink);
     }
     count = ilistGetNum (vlist, vkey, VOLREG_COUNT);
     rval = count;
@@ -199,3 +224,37 @@ volregUpdate (const char *sink, int originalVolume, int inc)
   volregUnlock ();
   return rval;
 }
+
+static void
+volregDataFilename (char *tfn, size_t sz)
+{
+  volregGetFilename (tfn, sz, VOLREG_FN);
+  if (strcmp (tfn, VOLREG_FN) == 0) {
+    pathbldMakePath (tfn, sz, VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+  }
+}
+
+static int
+volregGetFilename (char *tfn, size_t sz, char *fn)
+{
+  int   flags = PATHBLD_MP_NONE;
+  char  tbuff [MAXPATHLEN];
+
+  strlcpy (tfn, fn, sz);
+  pathbldMakePath (tbuff, sizeof (tbuff), fn, BDJ4_LINK_EXT, PATHBLD_MP_DATA);
+  if (fileopFileExists (tbuff)) {
+    FILE    *fh;
+
+    fh = fopen (tbuff, "r");
+    fgets (tfn, sz, fh);
+    stringTrim (tfn);
+    fclose (fh);
+    fn = tfn;
+    flags |= PATHBLD_LOCK_FFN;
+  }
+
+  return flags;
+}
+
+
+

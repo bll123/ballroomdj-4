@@ -28,23 +28,28 @@ enum {
 #define BDJ4_NAME       "BDJ4"
 #define BDJ3_NAME       "BallroomDJ 3"
 
+#define BDJ4_DB_EXT       ".dat"
 #define BDJ4_LOCK_EXT     ".lck"
+#define BDJ4_LINK_EXT     ".link"
 #define BDJ4_PLAYLIST_EXT ".pl"
 #define BDJ4_PL_DANCE_EXT ".pldances"
-#define BDJ4_CONFIG_EXT   ".txt"
-#define BDJ4_DB_EXT       ".dat"
-#define BDJ4_IMG_SVG_EXT  ".svg"
-#define BDJ4_SONGLIST_EXT ".songlist"
 #define BDJ4_SEQUENCE_EXT ".sequence"
+#define BDJ4_SONGLIST_EXT ".songlist"
+#define BDJ4_IMG_SVG_EXT  ".svg"
+#define BDJ4_CONFIG_EXT   ".txt"
 
-#define MANAGEUI_OPT_FN   "ui-manage"
-#define PLAYERUI_OPT_FN   "ui-player"
-#define STARTERUI_OPT_FN  "ui-starter"
-#define BPMCOUNTER_OPT_FN "ui-bpmcounter"
-#define VOLREG_FN         "volreg"
-#define VOLREG_BDJ4_EXT_FN    "volbdj4"
-#define VOLREG_BDJ3_EXT_FN    "volbdj3"
-#define ALT_COUNT_FN          "altcount"
-#define BASE_PORT_FN          "baseport"
+/* option data files */
+#define MANAGEUI_OPT_FN     "ui-manage"
+#define PLAYERUI_OPT_FN     "ui-player"
+#define STARTERUI_OPT_FN    "ui-starter"
+#define BPMCOUNTER_OPT_FN   "ui-bpmcounter"
+/* volume registration */
+#define VOLREG_FN           "volreg"
+#define VOLREG_LOCK         "volreglock"
+#define VOLREG_BDJ4_EXT_FN  "volbdj4"
+#define VOLREG_BDJ3_EXT_FN  "volbdj3"
+/* alternates/base port */
+#define ALT_COUNT_FN        "altcount"
+#define BASE_PORT_FN        "baseport"
 
 #endif /* INC_BDJ4_H */

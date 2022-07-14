@@ -1926,7 +1926,9 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = false;
-          progstateShutdownProcess (confui->progstate);
+          if (progstateCurrState (confui->progstate) <= STATE_RUNNING) {
+            progstateShutdownProcess (confui->progstate);
+          }
           break;
         }
         default: {

@@ -38,5 +38,6 @@ bool            progstateIsRunning (progstate_t *progstate);
 programstate_t  progstateShutdownProcess (progstate_t *progstate);
 programstate_t  progstateCurrState (progstate_t *progstate);
 void            progstateLogTime (progstate_t *progstate, char *label);
+const char      *progstateDebug (progstate_t *progstate);
 
 #endif /* INC_PROGSTATE_H */

@@ -10,30 +10,32 @@
 
 typedef uint32_t   loglevel_t;
 
-#define LOG_NONE        0x00000000
-#define LOG_IMPORTANT   0x00000001  // 1
-#define LOG_BASIC       0x00000002  // 2
-#define LOG_MSGS        0x00000004  // 4
-#define LOG_MAIN        0x00000008  // 8
-#define LOG_ACTIONS     0x00000010  // 16
-#define LOG_LIST        0x00000020  // 32
-#define LOG_SONGSEL     0x00000040  // 64
-#define LOG_DANCESEL    0x00000080  // 128
-#define LOG_VOLUME      0x00000100  // 256
-#define LOG_SOCKET      0x00000200  // 512
-#define LOG_DB          0x00000400  // 1024
-#define LOG_RAFILE      0x00000800  // 2048
-#define LOG_PROC        0x00001000  // 4096
-#define LOG_PLAYER      0x00002000  // 8192
-#define LOG_DATAFILE    0x00004000  // 16384
-#define LOG_PROCESS     0x00008000  // 32768
-#define LOG_WEBSRV      0x00010000  // 65536
-#define LOG_WEBCLIENT   0x00020000  // 131072
-#define LOG_DBUPDATE    0x00040000  // 262144
-#define LOG_PROGSTATE   0x00080000  // 524288
-#define LOG_STDERR      0x00100000  // 1048576
-#define LOG_REDIR_INST  0x00200000  // 2097152
-#define LOG_ALL         (~LOG_STDERR & ~LOG_REDIR_INST)
+enum {
+  LOG_NONE            = 0x00000000,
+  LOG_IMPORTANT       = 0x00000001,  // 1
+  LOG_BASIC           = 0x00000002,  // 2
+  LOG_MSGS            = 0x00000004,  // 4
+  LOG_MAIN            = 0x00000008,  // 8
+  LOG_ACTIONS         = 0x00000010,  // 16
+  LOG_LIST            = 0x00000020,  // 32
+  LOG_SONGSEL         = 0x00000040,  // 64
+  LOG_DANCESEL        = 0x00000080,  // 128
+  LOG_VOLUME          = 0x00000100,  // 256
+  LOG_SOCKET          = 0x00000200,  // 512
+  LOG_DB              = 0x00000400,  // 1024
+  LOG_RAFILE          = 0x00000800,  // 2048
+  LOG_PROC            = 0x00001000,  // 4096
+  LOG_PLAYER          = 0x00002000,  // 8192
+  LOG_DATAFILE        = 0x00004000,  // 16384
+  LOG_PROCESS         = 0x00008000,  // 32768
+  LOG_WEBSRV          = 0x00010000,  // 65536
+  LOG_WEBCLIENT       = 0x00020000,  // 131072
+  LOG_DBUPDATE        = 0x00040000,  // 262144
+  LOG_PROGSTATE       = 0x00080000,  // 524288
+  LOG_STDERR          = 0x00100000,  // 1048576
+  LOG_REDIR_INST      = 0x00200000,  // 2097152
+  LOG_ALL             = (~LOG_STDERR & ~LOG_REDIR_INST),
+};
 
 typedef enum {
   LOG_ERR,

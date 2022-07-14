@@ -197,6 +197,7 @@ static void     starterLinkHandler (void *udata, int cbidx);
 static void     starterSetWindowPosition (startui_t *starter);
 static void     starterLoadOptions (startui_t *starter);
 static bool     starterSetUpAlternate (void *udata);
+static void     starterQuickConnect (startui_t *starter, bdjmsgroute_t route);
 
 static bool gKillReceived = false;
 static bool gNewProfile = false;
@@ -329,17 +330,14 @@ starterStoppingCallback (void *udata, programstate_t programState)
     starter->mainstarted = false;
   }
 
-  if (starter->processes [ROUTE_PLAYERUI] != NULL &&
-      ! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
-    connConnect (starter->conn, ROUTE_PLAYERUI);
+  if (starter->processes [ROUTE_PLAYERUI] != NULL) {
+    starterQuickConnect (starter, ROUTE_PLAYERUI);
   }
-  if (starter->processes [ROUTE_MANAGEUI] != NULL &&
-      ! connIsConnected (starter->conn, ROUTE_MANAGEUI)) {
-    connConnect (starter->conn, ROUTE_MANAGEUI);
+  if (starter->processes [ROUTE_MANAGEUI] != NULL) {
+    starterQuickConnect (starter, ROUTE_MANAGEUI);
   }
-  if (starter->processes [ROUTE_CONFIGUI] != NULL &&
-      ! connIsConnected (starter->conn, ROUTE_CONFIGUI)) {
-    connConnect (starter->conn, ROUTE_CONFIGUI);
+  if (starter->processes [ROUTE_CONFIGUI] != NULL) {
+    starterQuickConnect (starter, ROUTE_CONFIGUI);
   }
 
   uiWindowGetSize (&starter->window, &x, &y);
@@ -643,9 +641,8 @@ starterMainLoop (void *tstarter)
 
   connProcessUnconnected (starter->conn);
 
-  if (starter->mainstarted &&
-      ! connIsConnected (starter->conn, ROUTE_MAIN)) {
-    connConnect (starter->conn, ROUTE_MAIN);
+  if (starter->mainstarted) {
+    starterQuickConnect (starter, ROUTE_MAIN);
   }
 
   switch (starter->startState) {
@@ -1687,19 +1684,13 @@ starterStopAllProcesses (void *udata)
   /* send the standard exit request to the main controlling processes first */
   logMsg (LOG_DBG, LOG_IMPORTANT, "send exit request to ui");
   fprintf (stderr, "send exit request to ui\n");
-  if (! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
-    connConnect (starter->conn, ROUTE_PLAYERUI);
-  }
+  starterQuickConnect (starter, ROUTE_PLAYERUI);
   connSendMessage (starter->conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
 
-  if (! connIsConnected (starter->conn, ROUTE_MANAGEUI)) {
-    connConnect (starter->conn, ROUTE_MANAGEUI);
-  }
+  starterQuickConnect (starter, ROUTE_MANAGEUI);
   connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_EXIT_REQUEST, NULL);
 
-  if (! connIsConnected (starter->conn, ROUTE_CONFIGUI)) {
-    connConnect (starter->conn, ROUTE_CONFIGUI);
-  }
+  starterQuickConnect (starter, ROUTE_CONFIGUI);
   connSendMessage (starter->conn, ROUTE_CONFIGUI, MSG_EXIT_REQUEST, NULL);
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
@@ -1719,9 +1710,7 @@ starterStopAllProcesses (void *udata)
   }
 
   /* send the exit request to main */
-  if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
-    connConnect (starter->conn, ROUTE_MAIN);
-  }
+  starterQuickConnect (starter, ROUTE_MAIN);
   logMsg (LOG_DBG, LOG_IMPORTANT, "send exit request to main");
   fprintf (stderr, "send exit request to main\n");
   connSendMessage (starter->conn, ROUTE_MAIN, MSG_EXIT_REQUEST, NULL);
@@ -1750,9 +1739,7 @@ starterStopAllProcesses (void *udata)
           route, msgRouteDebugText (route));
       fprintf (stderr, "route %d %s exists; send exit request\n",
           route, msgRouteDebugText (route));
-      if (! connIsConnected (starter->conn, route)) {
-        connConnect (starter->conn, route);
-      }
+      starterQuickConnect (starter, route);
       connSendMessage (starter->conn, route, MSG_EXIT_REQUEST, NULL);
       ++count;
     }
@@ -1949,3 +1936,18 @@ starterSetUpAlternate (void *udata)
   return UICB_CONT;
 }
 
+static void
+starterQuickConnect (startui_t *starter, bdjmsgroute_t route)
+{
+  int   count;
+
+  count = 0;
+  while (! connIsConnected (starter->conn, route)) {
+    connConnect (starter->conn, route);
+    if (count > 5) {
+      break;
+    }
+    mssleep (10);
+    ++count;
+  }
+}

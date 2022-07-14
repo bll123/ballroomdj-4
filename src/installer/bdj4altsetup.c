@@ -43,7 +43,7 @@
 
 /* setup states */
 typedef enum {
-  ALT_INITIALIZE,
+  ALT_PRE_INIT,
   ALT_PREPARE,
   ALT_WAIT_USER,
   ALT_INIT,
@@ -51,7 +51,7 @@ typedef enum {
   ALT_CHDIR,
   ALT_CREATE_DIRS,
   ALT_COPY_TEMPLATES,
-  ALT_INITIAL_SETUP,
+  ALT_SETUP,
   ALT_CREATE_SHORTCUT,
   ALT_UPDATE_PROCESS_INIT,
   ALT_UPDATE_PROCESS,
@@ -88,6 +88,7 @@ typedef struct {
   /* flags */
   bool            uiBuilt : 1;
   bool            scrolltoend : 1;
+  bool            newinstall : 1;
   bool            reinstall : 1;
 } altsetup_t;
 
@@ -100,12 +101,12 @@ static int  altsetupValidateTarget (uientry_t *entry, void *udata);
 static bool altsetupSetupCallback (void *udata);
 static void altsetupSetPaths (altsetup_t *altsetup);
 
-static void altsetupSetupInit (altsetup_t *altsetup);
+static void altsetupInit (altsetup_t *altsetup);
 static void altsetupMakeTarget (altsetup_t *altsetup);
 static void altsetupChangeDir (altsetup_t *altsetup);
 static void altsetupCreateDirs (altsetup_t *altsetup);
 static void altsetupCopyTemplates (altsetup_t *altsetup);
-static void altsetupInitialSetup (altsetup_t *altsetup);
+static void altsetupSetup (altsetup_t *altsetup);
 static void altsetupCreateShortcut (altsetup_t *altsetup);
 static void altsetupUpdateProcessInit (altsetup_t *altsetup);
 static void altsetupUpdateProcess (altsetup_t *altsetup);
@@ -126,13 +127,15 @@ main (int argc, char *argv[])
   buff [0] = '\0';
 
   uiutilsUIWidgetInit (&altsetup.window);
-  altsetup.instState = ALT_INITIALIZE;
+  altsetup.instState = ALT_PRE_INIT;
   altsetup.target = strdup ("");
   altsetup.uiBuilt = false;
   altsetup.scrolltoend = false;
   altsetup.maindir = NULL;
   altsetup.home = NULL;
   altsetup.hostname = NULL;
+  altsetup.newinstall = false;
+  altsetup.reinstall = false;
   uiutilsUIWidgetInit (&altsetup.reinstWidget);
   uiutilsUIWidgetInit (&altsetup.feedbackMsg);
 
@@ -302,7 +305,7 @@ altsetupMainLoop (void *udata)
   }
 
   switch (altsetup->instState) {
-    case ALT_INITIALIZE: {
+    case ALT_PRE_INIT: {
       altsetup->instState = ALT_PREPARE;
       break;
     }
@@ -316,7 +319,7 @@ altsetupMainLoop (void *udata)
       break;
     }
     case ALT_INIT: {
-      altsetupSetupInit (altsetup);
+      altsetupInit (altsetup);
       break;
     }
     case ALT_MAKE_TARGET: {
@@ -340,8 +343,8 @@ altsetupMainLoop (void *udata)
       altsetupCopyTemplates (altsetup);
       break;
     }
-    case ALT_INITIAL_SETUP: {
-      altsetupInitialSetup (altsetup);
+    case ALT_SETUP: {
+      altsetupSetup (altsetup);
       break;
     }
     case ALT_CREATE_SHORTCUT: {
@@ -395,18 +398,36 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
 
   dir = uiEntryGetValue (altsetup->targetEntry);
   tbool = uiToggleButtonIsActive (&altsetup->reinstWidget);
+  altsetup->newinstall = false;
   altsetup->reinstall = tbool;
 
   exists = fileopIsDirectory (dir);
 
+  strlcpy (tbuff, dir, sizeof (tbuff));
+  strlcat (tbuff, "/data", sizeof (tbuff));
+  if (! fileopIsDirectory (tbuff)) {
+    exists = false;
+  }
+
   if (exists) {
-    /* CONTEXT: set up alternate: message indicating the action that will be taken */
-    snprintf (tbuff, sizeof (tbuff), _("Updating existing alternate."));
-    uiLabelSetText (&altsetup->feedbackMsg, tbuff);
+    if (tbool) {
+      /* CONTEXT: set up alternate: message indicating the action that will be taken */
+      snprintf (tbuff, sizeof (tbuff), _("Re-install existing alternate."));
+      uiLabelSetText (&altsetup->feedbackMsg, tbuff);
+    } else {
+      /* CONTEXT: set up alternate: message indicating the action that will be taken */
+      snprintf (tbuff, sizeof (tbuff), _("Updating existing alternate."));
+      uiLabelSetText (&altsetup->feedbackMsg, tbuff);
+    }
   } else {
+    altsetup->newinstall = true;
     /* CONTEXT: set up alternate: message indicating the action that will be taken */
-    snprintf (tbuff, sizeof (tbuff), _("Set up alternate."));
+    snprintf (tbuff, sizeof (tbuff), _("New alternate folder."));
     uiLabelSetText (&altsetup->feedbackMsg, tbuff);
+  }
+
+  if (! *dir || ! fileopIsDirectory (dir)) {
+    rc = UIENTRY_ERROR;
   }
 
   if (rc == UIENTRY_OK) {
@@ -467,7 +488,7 @@ altsetupSetPaths (altsetup_t *altsetup)
 }
 
 static void
-altsetupSetupInit (altsetup_t *altsetup)
+altsetupInit (altsetup_t *altsetup)
 {
   altsetupSetPaths (altsetup);
   altsetup->reinstall = uiToggleButtonIsActive (&altsetup->reinstWidget);
@@ -490,7 +511,11 @@ altsetupChangeDir (altsetup_t *altsetup)
     return;
   }
 
-  altsetup->instState = ALT_CREATE_DIRS;
+  if (altsetup->newinstall || altsetup->reinstall) {
+    altsetup->instState = ALT_CREATE_DIRS;
+  } else {
+    altsetup->instState = ALT_UPDATE_PROCESS_INIT;
+  }
 }
 
 static void
@@ -505,6 +530,8 @@ altsetupCreateDirs (altsetup_t *altsetup)
   bdjoptCreateDirectories ();
   fileopMakeDir ("tmp");
   fileopMakeDir ("http");
+  /* there are profile specific image files */
+  fileopMakeDir ("img/profile00");
 
   altsetup->instState = ALT_COPY_TEMPLATES;
 }
@@ -517,9 +544,9 @@ altsetupCopyTemplates (altsetup_t *altsetup)
   char            to [MAXPATHLEN];
   char            tbuff [MAXPATHLEN];
   const char      *fname;
+  pathinfo_t      *pi;
   slist_t         *dirlist;
   slistidx_t      iteridx;
-  pathinfo_t      *pi;
   datafile_t      *srdf;
   datafile_t      *qddf;
   datafile_t      *autodf;
@@ -576,12 +603,14 @@ altsetupCopyTemplates (altsetup_t *altsetup)
     strlcpy (from, fname, sizeof (from));
 
     if (strcmp (fname, "bdj-flex-dark.html") == 0) {
-      snprintf (to, sizeof (to), "http/bdj4remote.html");
+      pathbldMakePath (to, sizeof (to),
+          "bdj4remote.html", "", PATHBLD_MP_HTTPDIR);
       altsetupTemplateCopy (dir, from, to);
       continue;
     }
     if (strcmp (fname, "mobilemq.html") == 0) {
-      snprintf (to, sizeof (to), "http/%s", fname);
+      pathbldMakePath (to, sizeof (to),
+          "mobilemq.html", "", PATHBLD_MP_HTTPDIR);
       altsetupTemplateCopy (dir, from, to);
       continue;
     }
@@ -593,23 +622,34 @@ altsetupCopyTemplates (altsetup_t *altsetup)
     }
 
     if (pathInfoExtCheck (pi, ".crt")) {
-      snprintf (to, sizeof (to), "http/%s", fname);
+      pathbldMakePath (to, sizeof (to),
+          fname, "", PATHBLD_MP_HTTPDIR);
     } else if (pathInfoExtCheck (pi, ".svg")) {
-      snprintf (to, sizeof (to), "%s/img/%s",
-          altsetup->target, fname);
+      pathbldMakePath (to, sizeof (to),
+          fname, "", PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+  //      snprintf (to, sizeof (to), "%s/img/profile00/%s",
+  //          altsetup->target, fname);
     } else if (strncmp (fname, "bdjconfig", 9) == 0) {
       snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
       if (pathInfoExtCheck (pi, ".g")) {
-        snprintf (to, sizeof (to), "data/%s", tbuff);
+        pathbldMakePath (to, sizeof (to),
+            tbuff, "", PATHBLD_MP_DATA);
+  //        snprintf (to, sizeof (to), "data/%s", tbuff);
       } else if (pathInfoExtCheck (pi, ".p")) {
-        snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
+        pathbldMakePath (to, sizeof (to),
+            tbuff, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+  //        snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
       } else if (pathInfoExtCheck (pi, ".m")) {
-        snprintf (to, sizeof (to), "data/%s/%s", altsetup->hostname, tbuff);
+        pathbldMakePath (to, sizeof (to),
+            tbuff, "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME);
+  //        snprintf (to, sizeof (to), "data/%s/%s", altsetup->hostname, tbuff);
       } else if (pathInfoExtCheck (pi, ".mp")) {
-        snprintf (to, sizeof (to), "data/%s/profile00/%s",
-            altsetup->hostname, tbuff);
+        pathbldMakePath (to, sizeof (to),
+            tbuff, "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+  //        snprintf (to, sizeof (to), "data/%s/profile00/%s",
+  //            altsetup->hostname, tbuff);
       } else {
-        /* one of the localized versions */
+        /* unknown extension */
         free (pi);
         continue;
       }
@@ -642,8 +682,12 @@ altsetupCopyTemplates (altsetup_t *altsetup)
 
       strlcpy (from, tbuff, sizeof (from));
       if (strncmp (pi->basename, "ds-", 3) == 0) {
-        snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
+        pathbldMakePath (to, sizeof (to),
+            fname, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+  //        snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
       } else {
+        pathbldMakePath (to, sizeof (to),
+            fname, "", PATHBLD_MP_DATA);
         snprintf (to, sizeof (to), "data/%s", tbuff);
       }
     } else {
@@ -661,19 +705,27 @@ altsetupCopyTemplates (altsetup_t *altsetup)
   snprintf (dir, sizeof (dir), "%s/img", altsetup->maindir);
 
   strlcpy (from, "favicon.ico", sizeof (from));
-  snprintf (to, sizeof (to), "http/favicon.ico");
+  pathbldMakePath (to, sizeof (to),
+      "favicon.ico", "", PATHBLD_MP_HTTPDIR);
+//  snprintf (to, sizeof (to), "http/favicon.ico");
   altsetupTemplateCopy (dir, from, to);
 
   strlcpy (from, "led_on.svg", sizeof (from));
-  snprintf (to, sizeof (to), "http/led_on.svg");
+  pathbldMakePath (to, sizeof (to),
+      "led_on", BDJ4_IMG_SVG_EXT, PATHBLD_MP_HTTPDIR);
+//  snprintf (to, sizeof (to), "http/led_on.svg");
   altsetupTemplateCopy (dir, from, to);
 
   strlcpy (from, "led_off.svg", sizeof (from));
-  snprintf (to, sizeof (to), "http/led_off.svg");
+  pathbldMakePath (to, sizeof (to),
+      "led_off", BDJ4_IMG_SVG_EXT, PATHBLD_MP_HTTPDIR);
+//  snprintf (to, sizeof (to), "http/led_off.svg");
   altsetupTemplateCopy (dir, from, to);
 
   strlcpy (from, "ballroomdj4.svg", sizeof (from));
-  snprintf (to, sizeof (to), "http/ballroomdj4.svg");
+  pathbldMakePath (to, sizeof (to),
+      "ballroomdj", BDJ4_IMG_SVG_EXT, PATHBLD_MP_HTTPDIR);
+//  snprintf (to, sizeof (to), "http/ballroomdj4.svg");
   altsetupTemplateCopy (dir, from, to);
 
   snprintf (from, sizeof (from), "%s/img/mrc", altsetup->maindir);
@@ -694,13 +746,14 @@ altsetupCopyTemplates (altsetup_t *altsetup)
   datafileFree (autodf);
   datafileFree (qddf);
 
-  altsetup->instState = ALT_INITIAL_SETUP;
+  altsetup->instState = ALT_SETUP;
 }
 
 static void
-altsetupInitialSetup (altsetup_t *altsetup)
+altsetupSetup (altsetup_t *altsetup)
 {
   char    buff [MAXPATHLEN];
+  char    tbuff [MAXPATHLEN];
   FILE    *fh;
   char    str [40];
   int     altcount;
@@ -712,12 +765,14 @@ altsetupInitialSetup (altsetup_t *altsetup)
   /* the altcount.txt file should only exist for the initial installation */
   pathbldMakePath (buff, sizeof (buff),
       ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+fprintf (stderr, "alt-count: %s\n", buff);
   if (fileopFileExists (buff)) {
     fileopDelete (buff);
   }
 
   pathbldMakePath (buff, sizeof (buff),
       "data/altcount", BDJ4_CONFIG_EXT, PATHBLD_MP_MAINDIR);
+fprintf (stderr, "orig-alt-count: %s\n", buff);
 
   /* read the current altcount */
   fh = fopen (buff, "r");
@@ -743,6 +798,7 @@ altsetupInitialSetup (altsetup_t *altsetup)
   /* write the new base port out */
   pathbldMakePath (buff, sizeof (buff),
       BASE_PORT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+fprintf (stderr, "base-port: %s\n", buff);
   fh = fopen (buff, "w");
   fputs (str, fh);
   fclose (fh);
@@ -753,11 +809,35 @@ altsetupInitialSetup (altsetup_t *altsetup)
   } else {
 #if _lib_symlink
     fileopMakeDir ("bin");
+
     pathbldMakePath (buff, sizeof (buff),
         "bdj4", "", PATHBLD_MP_EXECDIR);
     symlink (buff, "bin/bdj4");
 #endif
   }
+
+  /* create the link files that point to the volreg.txt and lock file */
+  pathbldMakePath (buff, sizeof (buff),
+      VOLREG_FN, BDJ4_LINK_EXT, PATHBLD_MP_DATA);
+fprintf (stderr, "volreg-link: %s\n", buff);
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "data/volreg", BDJ4_CONFIG_EXT, PATHBLD_MP_MAINDIR);
+fprintf (stderr, "orig-volreg: %s\n", tbuff);
+  fh = fopen (buff, "w");
+  fputs (tbuff, fh);
+  fputs ("\n", fh);
+  fclose (fh);
+
+  pathbldMakePath (buff, sizeof (buff),
+      "volreglock", BDJ4_LINK_EXT, PATHBLD_MP_DATA);
+fprintf (stderr, "volreg-lock-link: %s\n", buff);
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "tmp/volreg", BDJ4_LOCK_EXT, PATHBLD_MP_MAINDIR);
+fprintf (stderr, "orig-volreg-lock: %s\n", tbuff);
+  fh = fopen (buff, "w");
+  fputs (tbuff, fh);
+  fputs ("\n", fh);
+  fclose (fh);
 
   altsetup->instState = ALT_CREATE_SHORTCUT;
 }
@@ -801,7 +881,7 @@ altsetupCreateShortcut (altsetup_t *altsetup)
     system (buff);
   }
 
-  altsetup->instState = ALT_UPDATE_PROCESS;
+  altsetup->instState = ALT_UPDATE_PROCESS_INIT;
 }
 
 static void
@@ -834,10 +914,9 @@ altsetupUpdateProcess (altsetup_t *altsetup)
 
   /* only need to run the 'newinstall' update process when the template */
   /* files have been copied */
-// ### fix
-//  if (altsetup->newinstall || altsetup->reinstall) {
-//    targv [targc++] = "--newinstall";
-//  }
+  if (altsetup->newinstall || altsetup->reinstall) {
+    targv [targc++] = "--newinstall";
+  }
   targv [targc++] = NULL;
   osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
 
@@ -898,6 +977,8 @@ altsetupTemplateCopy (const char *dir, const char *from, const char *to)
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", from);
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
   filemanipBackup (to, 1);
+fprintf (stderr, "- copy: %s\n", from);
+fprintf (stderr, "      : %s\n", to);
   filemanipCopy (from, to);
 }
 

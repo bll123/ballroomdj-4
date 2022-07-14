@@ -12,6 +12,7 @@
 #include <assert.h>
 
 #include "bdj4.h"
+#include "bdjstring.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "lock.h"
@@ -90,8 +91,12 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   procutil_t process;
 
 
-  pathbldMakePath (tfn, sizeof (tfn), fn, BDJ4_LOCK_EXT,
-      flags | PATHBLD_MP_TMPDIR);
+  if ((flags & PATHBLD_LOCK_FFN) == PATHBLD_LOCK_FFN) {
+    strlcpy (tfn, fn, sizeof (tfn));
+  } else {
+    pathbldMakePath (tfn, sizeof (tfn), fn, BDJ4_LOCK_EXT,
+        flags | PATHBLD_MP_TMPDIR);
+  }
 
   fd = open (tfn, O_CREAT | O_EXCL | O_RDWR, 0600);
   count = 0;
@@ -140,8 +145,13 @@ lockReleasePid (char *fn, pid_t pid, int flags)
   int       rc;
   pid_t     fpid;
 
-  pathbldMakePath (tfn, sizeof (tfn), fn, BDJ4_LOCK_EXT,
-      flags | PATHBLD_MP_TMPDIR);
+  if ((flags & PATHBLD_LOCK_FFN) == PATHBLD_LOCK_FFN) {
+    strlcpy (tfn, fn, sizeof (tfn));
+  } else {
+    pathbldMakePath (tfn, sizeof (tfn), fn, BDJ4_LOCK_EXT,
+        flags | PATHBLD_MP_TMPDIR);
+  }
+
   rc = -1;
   fpid = getPidFromFile (tfn);
   if (fpid == pid) {

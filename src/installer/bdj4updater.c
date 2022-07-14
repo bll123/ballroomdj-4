@@ -104,10 +104,10 @@ main (int argc, char *argv [])
         tval != NULL &&
         strcmp (tval, "") == 0) {
       pathbldMakePath (tbuff, sizeof (tbuff),
-        "scripts/linux/bdjstartup", ".sh", PATHBLD_MP_MAINDIR);
+          "scripts/linux/bdjstartup", ".sh", PATHBLD_MP_MAINDIR);
       bdjoptSetStr (OPT_M_STARTUPSCRIPT, tbuff);
       pathbldMakePath (tbuff, sizeof (tbuff),
-        "scripts/linux/bdjshutdown", ".sh", PATHBLD_MP_MAINDIR);
+          "scripts/linux/bdjshutdown", ".sh", PATHBLD_MP_MAINDIR);
       bdjoptSetStr (OPT_M_SHUTDOWNSCRIPT, tbuff);
     }
 
