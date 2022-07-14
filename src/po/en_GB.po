@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-07-13\n"
-"PO-Revision-Date: 2022-07-13\n"
+"POT-Creation-Date: 2022-07-14\n"
+"PO-Revision-Date: 2022-07-14\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -1039,6 +1039,11 @@ msgstr ""
 msgid "New Status"
 msgstr ""
 
+#. CONTEXT: set up alternate: message indicating the action that will be taken
+#, c-format
+msgid "New alternate folder."
+msgstr ""
+
 #. CONTEXT: song editor : next song
 #. CONTEXT: helperui: proceed to the next step
 msgid "Next"
@@ -1291,6 +1296,11 @@ msgstr ""
 msgid "Re-install %s."
 msgstr ""
 
+#. CONTEXT: set up alternate: message indicating the action that will be taken
+#, c-format
+msgid "Re-install existing alternate."
+msgstr ""
+
 #. CONTEXT: database update: rebuilds the database
 msgid "Rebuild Database"
 msgstr ""
@@ -1446,11 +1456,6 @@ msgstr ""
 #. CONTEXT: starterui: menu item: install in alternate folder
 #, c-format
 msgid "Set Up Alternate Folder"
-msgstr ""
-
-#. CONTEXT: set up alternate: message indicating the action that will be taken
-#, c-format
-msgid "Set up alternate."
 msgstr ""
 
 #. CONTEXT: set up alternate: status message
