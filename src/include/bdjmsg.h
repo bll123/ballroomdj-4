@@ -107,6 +107,8 @@ typedef enum {
   /* to/from starterui */
   MSG_START_MAIN,           // arg: true for --nomarquee
   MSG_STOP_MAIN,
+  MSG_PLAYER_ACTIVE,        // arg: true/false
+  MSG_REQ_PLAYER_ACTIVE,
 
   /* to/from web servers */
   MSG_DANCE_LIST_DATA,      // args: html option list

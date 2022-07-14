@@ -92,6 +92,7 @@ void  uisongselDanceSelectHandler (uisongsel_t *uisongsel, ssize_t idx);
 bool  uisongselDanceSelectCallback (void *udata, long danceIdx);
 void  uisongselSaveSelections (uisongsel_t *uisongsel);
 void  uisongselRestoreSelections (uisongsel_t *uisongsel);
+void  uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active);
 
 /* uisongselcommon.c */
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);

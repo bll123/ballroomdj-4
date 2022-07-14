@@ -80,6 +80,7 @@ typedef struct uimusicqgtk {
   GtkTreeSelection  *sel;
   char          *selPathStr;
   UICallback    callback [UIMUSICQ_CB_MAX];
+  UIWidget      playbutton;
   GtkTreeModel  *model;
   GtkTreeIter   *iter;
   GType         *typelist;
@@ -97,6 +98,7 @@ uimusicqUIInit (uimusicq_t *uimusicq)
     uiw->uidance = NULL;
     uiw->selPathStr = NULL;
     uiw->musicqTree = NULL;
+    uiutilsUIWidgetInit (&uiw->playbutton);
   }
 }
 
@@ -234,6 +236,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
         /* CONTEXT: music queue: play the selected song */
         _("Play"), NULL);
     uiBoxPackStart (&hbox, &uiwidget);
+    uiutilsUIWidgetCopy (&uiw->playbutton, &uiwidget);
   }
 
   if (uimusicq->dispselType == DISP_SEL_MUSICQ) {
@@ -540,6 +543,23 @@ uimusicqClearQueueCallback (void *udata)
   uimusicqClearQueue (uimusicq, ci, idx);
   logProcEnd (LOG_PROC, "uimusicqClearQueueCallback", "");
   return UICB_CONT;
+}
+
+void
+uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active)
+{
+  uimusicqgtk_t *uiw;
+  int           ci;
+
+  ci = uimusicq->musicqManageIdx;
+  uiw = uimusicq->ui [ci].uiWidgets;
+
+  /* if the player is active, disable the button */
+  if (active) {
+    uiWidgetDisable (&uiw->playbutton);
+  } else {
+    uiWidgetEnable (&uiw->playbutton);
+  }
 }
 
 /* internal routines */

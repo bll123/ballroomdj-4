@@ -965,6 +965,7 @@ manageHandshakeCallback (void *udata, programstate_t programState)
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tmp);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_LEN, "999");
+    connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_REQ_PLAYER_ACTIVE, NULL);
     progstateLogTime (manage->progstate, "time-to-start-gui");
     manageDbChg (manage->managedb);
     manageSetEasySonglist (manage);
@@ -1044,6 +1045,18 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           /* force a database update message */
           routefrom = ROUTE_MANAGEUI;
           msg = MSG_DATABASE_UPDATE;
+          break;
+        }
+        case MSG_PLAYER_ACTIVE: {
+          int   val;
+
+          val = atoi (args);
+          uimusicqSetPlayButtonState (manage->slmusicq, val);
+          uisongselSetPlayButtonState (manage->slsongsel, val);
+          uimusicqSetPlayButtonState (manage->slezmusicq, val);
+          uisongselSetPlayButtonState (manage->slezsongsel, val);
+          uisongselSetPlayButtonState (manage->mmsongsel, val);
+          uisongeditSetPlayButtonState (manage->mmsongedit, val);
           break;
         }
         default: {

@@ -37,6 +37,7 @@ UIWidget  * uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 void  uisongeditLoadData (uisongedit_t *uisongedit, song_t *song);
 void  uisongeditUIMainLoop (uisongedit_t *uisongedit);
 void  uisongeditSetBPMValue (uisongedit_t *uisongedit, const char *args);
+void  uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active);
 
 #endif /* INC_UISONGEDIT_H */
 

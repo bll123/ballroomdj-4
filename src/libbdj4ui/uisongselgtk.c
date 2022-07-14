@@ -70,6 +70,7 @@ typedef struct uisongselgtk {
   GtkEventController  *scrollController;
   GtkTreeViewColumn   *favColumn;
   UIWidget            scrolledwin;
+  UIWidget            playbutton;
   /* other data */
   int               lastTreeSize;
   double            lastRowHeight;
@@ -136,6 +137,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
     uiutilsUICallbackInit (&uiw->callbacks [i], NULL, NULL);
   }
+  uiutilsUIWidgetInit (&uiw->playbutton);
 
   uisongsel->uiWidgetData = uiw;
 }
@@ -223,6 +225,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     uiCreateButton (&uiwidget,
         &uiw->callbacks [SONGSEL_CB_PLAY], tbuff, NULL);
     uiBoxPackStart (&hbox, &uiwidget);
+    uiutilsUIWidgetCopy (&uiw->playbutton, &uiwidget);
   }
 
   uiutilsUICallbackLongInit (&uiw->callbacks [SONGSEL_CB_DANCE_SEL],
@@ -667,6 +670,21 @@ uisongselPlayCallback (void *udata)
   /* the manageui callback clears the queue and plays */
   uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_PLAY);
   return UICB_CONT;
+}
+
+void
+uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active)
+{
+  uisongselgtk_t  *uiw;
+
+  uiw = uisongsel->uiWidgetData;
+
+  /* if the player is active, disable the button */
+  if (active) {
+    uiWidgetDisable (&uiw->playbutton);
+  } else {
+    uiWidgetEnable (&uiw->playbutton);
+  }
 }
 
 /* internal routines */

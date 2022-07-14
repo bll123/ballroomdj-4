@@ -125,6 +125,7 @@ void      uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqi
 long      uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx);
 void      uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc);
 bool      uimusicqClearQueueCallback (void *udata);
+void      uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active);
 
 /* uimusicqcommon.c */
 void  uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx);

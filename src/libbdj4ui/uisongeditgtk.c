@@ -82,6 +82,7 @@ typedef struct {
   UIWidget            sgscale;
   UIWidget            sgscaledisp;
   UICallback          callbacks [UISONGEDIT_CB_MAX];
+  UIWidget            playbutton;
   level_t             *levels;
   song_t              *song;
   int                 itemcount;
@@ -116,6 +117,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uiw->bpmidx = -1;
 
   uiutilsUIWidgetInit (&uiw->vbox);
+  uiutilsUIWidgetInit (&uiw->playbutton);
 
   uiCreateSizeGroupHoriz (&uiw->sgentry);
   uiCreateSizeGroupHoriz (&uiw->sgsbint);
@@ -253,6 +255,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       /* CONTEXT: song editor : play song */
       _("Play"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&uiw->playbutton, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_SAVE],
       uisongeditSaveCallback, uisongedit);
@@ -587,6 +590,21 @@ uisongeditSetBPMValue (uisongedit_t *uisongedit, const char *args)
 
   val = atoi (args);
   uiSpinboxSetValue (&uiw->items [uiw->bpmidx].uiwidget, val);
+}
+
+void
+uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active)
+{
+  uisongeditgtk_t *uiw;
+
+  uiw = uisongedit->uiWidgetData;
+
+  /* if the player is active, disable the button */
+  if (active) {
+    uiWidgetDisable (&uiw->playbutton);
+  } else {
+    uiWidgetEnable (&uiw->playbutton);
+  }
 }
 
 /* internal routines */
