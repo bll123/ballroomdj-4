@@ -872,7 +872,7 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           gKillReceived = false;
           break;
         }
-        case MSG_REQ_PLAYER_ACTIVE: {
+        case MSG_REQ_PLAYERUI_ACTIVE: {
           if (routefrom == ROUTE_MANAGEUI) {
             starterSendPlayerActive (starter);
           }
@@ -1982,5 +1982,5 @@ starterSendPlayerActive (startui_t *starter)
   char  tmp [40];
 
   snprintf (tmp, sizeof (tmp), "%d", starter->playeruistarted);
-  connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_PLAYER_ACTIVE, tmp);
+  connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_PLAYERUI_ACTIVE, tmp);
 }
