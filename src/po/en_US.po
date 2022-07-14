@@ -278,6 +278,10 @@ msgstr ""
 msgid "BDJ Tags Only"
 msgstr ""
 
+#. CONTEXT: installer: status message
+msgid "BDJ3 database version is too old."
+msgstr ""
+
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
 #. CONTEXT: bpm counter: BPM
@@ -1672,6 +1676,10 @@ msgstr ""
 #. CONTEXT: installer: failure message
 #, c-format
 msgid "Unable to locate %s."
+msgstr ""
+
+#. CONTEXT: installer: status message
+msgid "Unable to locate BDJ3 database."
 msgstr ""
 
 #. CONTEXT: configuration file: rating

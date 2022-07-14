@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-14 12:25-0700\n"
+"POT-Creation-Date: 2022-07-14 13:58-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -280,6 +280,10 @@ msgstr ""
 
 #. CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file
 msgid "BDJ Tags Only"
+msgstr ""
+
+#. CONTEXT: installer: status message
+msgid "BDJ3 database version is too old."
 msgstr ""
 
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
@@ -1676,6 +1680,10 @@ msgstr ""
 #. CONTEXT: installer: failure message
 #, c-format
 msgid "Unable to locate %s."
+msgstr ""
+
+#. CONTEXT: installer: status message
+msgid "Unable to locate BDJ3 database."
 msgstr ""
 
 #. CONTEXT: configuration file: rating

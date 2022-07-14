@@ -1595,6 +1595,7 @@ installerConvertStart (installer_t *installer)
   char    *tokptr;
   char    *tokptrb;
   char    *vnm;
+  int     ok;
 
 
   if (! installer->convprocess) {
@@ -1641,6 +1642,36 @@ installerConvertStart (installer_t *installer)
 
   if (chdir (installer->rundir)) {
     installerFailWorkingDir (installer, installer->rundir);
+    return;
+  }
+
+// ### needs to work on mac os
+  ok = false;
+  snprintf (tbuff, sizeof (tbuff), "%s/data/musicdb.txt", installer->bdj3loc);
+  if (fileopFileExists (tbuff)) {
+    FILE  *fh;
+    char  tmp [200];
+    int   ver;
+
+    fh = fopen (tbuff, "r");
+    if (fh != NULL) {
+      fgets (tmp, sizeof (tmp), fh);
+      fclose (fh);
+      sscanf (tmp, "#VERSION=%d", &ver);
+      if (ver < 6) {
+        /* CONTEXT: installer: status message */
+        installerDisplayText (installer, "   ", _("BDJ3 database version is too old."), false);
+      } else {
+        ok = true;
+      }
+    } else {
+      /* CONTEXT: installer: status message */
+      installerDisplayText (installer, "   ", _("Unable to locate BDJ3 database."), false);
+    }
+  }
+
+  if (! ok) {
+    installer->instState = INST_CREATE_SHORTCUT;
     return;
   }
 
