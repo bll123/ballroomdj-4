@@ -765,14 +765,12 @@ altsetupSetup (altsetup_t *altsetup)
   /* the altcount.txt file should only exist for the initial installation */
   pathbldMakePath (buff, sizeof (buff),
       ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
-fprintf (stderr, "alt-count: %s\n", buff);
   if (fileopFileExists (buff)) {
     fileopDelete (buff);
   }
 
   pathbldMakePath (buff, sizeof (buff),
       "data/altcount", BDJ4_CONFIG_EXT, PATHBLD_MP_MAINDIR);
-fprintf (stderr, "orig-alt-count: %s\n", buff);
 
   /* read the current altcount */
   fh = fopen (buff, "r");
@@ -798,7 +796,6 @@ fprintf (stderr, "orig-alt-count: %s\n", buff);
   /* write the new base port out */
   pathbldMakePath (buff, sizeof (buff),
       BASE_PORT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
-fprintf (stderr, "base-port: %s\n", buff);
   fh = fopen (buff, "w");
   fputs (str, fh);
   fclose (fh);
@@ -819,10 +816,8 @@ fprintf (stderr, "base-port: %s\n", buff);
   /* create the link files that point to the volreg.txt and lock file */
   pathbldMakePath (buff, sizeof (buff),
       VOLREG_FN, BDJ4_LINK_EXT, PATHBLD_MP_DATA);
-fprintf (stderr, "volreg-link: %s\n", buff);
   pathbldMakePath (tbuff, sizeof (tbuff),
       "data/volreg", BDJ4_CONFIG_EXT, PATHBLD_MP_MAINDIR);
-fprintf (stderr, "orig-volreg: %s\n", tbuff);
   fh = fopen (buff, "w");
   fputs (tbuff, fh);
   fputs ("\n", fh);
@@ -830,10 +825,8 @@ fprintf (stderr, "orig-volreg: %s\n", tbuff);
 
   pathbldMakePath (buff, sizeof (buff),
       "volreglock", BDJ4_LINK_EXT, PATHBLD_MP_DATA);
-fprintf (stderr, "volreg-lock-link: %s\n", buff);
   pathbldMakePath (tbuff, sizeof (tbuff),
       "tmp/volreg", BDJ4_LOCK_EXT, PATHBLD_MP_MAINDIR);
-fprintf (stderr, "orig-volreg-lock: %s\n", tbuff);
   fh = fopen (buff, "w");
   fputs (tbuff, fh);
   fputs ("\n", fh);
@@ -977,8 +970,6 @@ altsetupTemplateCopy (const char *dir, const char *from, const char *to)
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", from);
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
   filemanipBackup (to, 1);
-fprintf (stderr, "- copy: %s\n", from);
-fprintf (stderr, "      : %s\n", to);
   filemanipCopy (from, to);
 }
 

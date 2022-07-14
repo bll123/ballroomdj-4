@@ -111,7 +111,6 @@ volregLockWait (void)
   int     flags = PATHBLD_MP_NONE;
 
   flags = volregLockFilename (tfn, sizeof (tfn));
-fprintf (stderr, "volreg-get-lock: %s\n", tfn);
 
   count = 0;
   while (lockAcquire (tfn, flags) < 0 &&
@@ -128,7 +127,6 @@ volregUnlock (void)
   int   flags;
 
   flags = volregLockFilename (tfn, sizeof (tfn));
-fprintf (stderr, "volreg-clr-lock: %s\n", tfn);
 
   lockRelease (tfn, flags);
 }
@@ -158,7 +156,6 @@ volregUpdate (const char *sink, int originalVolume, int inc)
 
   volregLockWait ();
   volregDataFilename (fn, sizeof (fn));
-fprintf (stderr, "volreg-fn: %s\n", fn);
   df = datafileAllocParse ("volreg", DFTYPE_INDIRECT, fn,
       volregdfkeys, VOLREG_KEY_MAX, DATAFILE_NO_LOOKUP);
   vlist = datafileGetList (df);
@@ -192,12 +189,10 @@ fprintf (stderr, "volreg-fn: %s\n", fn);
       ilistSetStr (vlist, vkey, VOLREG_SINK, sink);
       ilistSetNum (vlist, vkey, VOLREG_COUNT, 1);
       ilistSetNum (vlist, vkey, VOLREG_ORIG_VOL, originalVolume);
-fprintf (stderr, "volreg-set: %d %s\n", 1, sink);
     } else {
       count = ilistGetNum (vlist, vkey, VOLREG_COUNT);
       ++count;
       ilistSetNum (vlist, vkey, VOLREG_COUNT, count);
-fprintf (stderr, "volreg-inc: %d %s\n", count, sink);
     }
     count = ilistGetNum (vlist, vkey, VOLREG_COUNT);
     rval = count;

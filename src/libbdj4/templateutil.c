@@ -129,8 +129,6 @@ templateCopy (const char *from, const char *to, const char *color)
     }
   }
 
-fprintf (stderr, "copy: %s\n", from);
-fprintf (stderr, "    : %s\n", to);
   if (color == NULL ||
       strcmp (color, "#ffa600") == 0) {
     filemanipCopy (from, to);
