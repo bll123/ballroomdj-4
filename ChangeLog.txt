@@ -2,22 +2,22 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-xxxx
 
-- main/player
+- player
   - fixed song start not being sent to the player.
   - fixed volume not being applied.
-  - move audio sink from machine to machine-profile
 - Fixed duration calculations for the music queue.
 - song list editor
   - statistics tab.
   - export as M3U.
   - import M3U.
-  - ez song list song list name will expand.
+  - ez song list: song list name will expand.
 - song editor
+  - bpm counter working.
   - fixed start start/song end input.
 - marquee: Cleaned up the artist/title display.
+  - add non-exposed configuration items for marquee
+    artist/title colors and fade type.
 - Internal: rework fade-out timer.
-- Internal: add non-exposed configuration items for marquee
-  artist/title colors and fade type.
 - profiles
   - Added configuration option for profile accent color.
   - starterui: profile handling.
@@ -26,10 +26,25 @@ BallroomDJ 4 Change Log
   - change window titles to reflect current profile.
   - handle default volume/original system volume.
   - lowered max profiles to 10.
+- management ui
+  - allow management ui to be active when the player ui is
+    active (and vice-versa).
+  - disable play buttons when the player ui is active.
 - installer
   - add folder selection button for installation folder.
   - fix various issues with installation folder.
+  - checksum verification is working.
 - configuration : themes
   - add built-in themes to theme list.
   - fixed theme selection issue
-- bdj3/bdj4 volume interactions handled.
+- alternate folder installer is working (linux, windows)
+- volume
+  - bdj4 volume interactions handled on a per-sink basis.
+  - bdj3/bdj4 volume interactions handled (in most cases).
+  - macos: volume sinks (via vlc) are working.
+  - windows: fixed volume sink handling.
+  - move audio sink from machine to machine-profile
+- installer
+  - windows
+    - change python install to be automatic.
+    - change python install to be minimal.

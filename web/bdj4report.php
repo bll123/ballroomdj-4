@@ -34,6 +34,7 @@ foreach ($darr as $line) {
     $adata[$fver]['-locale'] = $data['-locale'];
     $adata[$fver]['-systemlocale'] = $data['-systemlocale'];
     $adata[$fver]['-oldversion'] = $data['-oldversion'];
+    preg_replace (' ', $data[$fver]['-oldversion'], '-');
     $adata[$fver]['-bdj3version'] = $data['-bdj3version'];
     $adata[$fver]['-new'] += $data['-new'];
     if (isset ($data['-overwrite'])) {

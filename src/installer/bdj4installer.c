@@ -91,6 +91,10 @@ enum {
   INST_BDJ3LOC,
 };
 
+#define INST_DISP_ACTION "-- "
+#define INST_DISP_STATUS "   "
+#define INST_DISP_ERROR "** "
+
 typedef struct {
   installstate_t  instState;
   UICallback      callbacks [INST_CALLBACK_MAX];
@@ -135,6 +139,7 @@ typedef struct {
   bool            guienabled : 1;
   bool            vlcinstalled : 1;
   bool            pythoninstalled : 1;
+  bool            updatepython : 1;
   bool            inSetConvert : 1;
   bool            uiBuilt : 1;
   bool            scrolltoend : 1;
@@ -157,6 +162,7 @@ static bool installerCheckDirConv (void *udata);
 static bool installerTargetDirDialog (void *udata);
 static bool installerBDJ3LocDirDialog (void *udata);
 static int  installerValidateTarget (uientry_t *entry, void *udata);
+static int  installerValidateProcessTarget (installer_t *installer, const char *dir);
 static int  installerValidateBDJ3Loc (uientry_t *entry, void *udata);
 static void installerSetConvert (installer_t *installer, int val);
 static void installerDisplayConvert (installer_t *installer);
@@ -255,6 +261,7 @@ main (int argc, char *argv[])
   installer.guienabled = true;
   installer.vlcinstalled = false;
   installer.pythoninstalled = false;
+  installer.updatepython = false;
   installer.inSetConvert = false;
   installer.uiBuilt = false;
   installer.scrolltoend = false;
@@ -373,6 +380,8 @@ main (int argc, char *argv[])
 
   if (installer.guienabled) {
     installerBuildUI (&installer);
+    /* to get initial feedback messages displayed */
+    installerValidateProcessTarget (&installer, installer.target);
   } else {
     installer.instState = INST_INIT;
   }
@@ -816,10 +825,7 @@ installerValidateTarget (uientry_t *entry, void *udata)
 {
   installer_t   *installer = udata;
   const char    *dir;
-  bool          exists = false;
   bool          tbool;
-  char          tbuff [MAXPATHLEN];
-  int           rc = UIENTRY_OK;
 
   if (! installer->guienabled) {
     return UIENTRY_ERROR;
@@ -832,6 +838,22 @@ installerValidateTarget (uientry_t *entry, void *udata)
   dir = uiEntryGetValue (installer->targetEntry);
   tbool = uiToggleButtonIsActive (&installer->reinstWidget);
   installer->reinstall = tbool;
+
+  if (strcmp (dir, installer->target) == 0) {
+    /* no change */
+    /* prevent the convprocess flag from bouncing between different states */
+    return UIENTRY_OK;
+  }
+
+  return installerValidateProcessTarget (installer, dir);
+}
+
+static int
+installerValidateProcessTarget (installer_t *installer, const char *dir)
+{
+  bool          exists = false;
+  char          tbuff [MAXPATHLEN];
+  int           rc = UIENTRY_OK;
 
   exists = fileopIsDirectory (dir);
 
@@ -1065,9 +1087,9 @@ static void
 installerVerifyInstInit (installer_t *installer)
 {
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "", _("Verifying installation."), false);
+  installerDisplayText (installer, INST_DISP_ACTION, _("Verifying installation."), false);
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "   ", _("Please wait..."), false);
+  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait..."), false);
 
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
@@ -1099,11 +1121,11 @@ installerVerifyInstall (installer_t *installer)
 
   if (strncmp (tmp, "OK", 2) == 0) {
     /* CONTEXT: installer: status message */
-    installerDisplayText (installer, "", _("Verification complete."), false);
+    installerDisplayText (installer, INST_DISP_STATUS, _("Verification complete."), false);
     installer->instState = INST_PREPARE;
   } else {
     /* CONTEXT: installer: status message */
-    installerDisplayText (installer, " * ", _("Verification failed."), false);
+    installerDisplayText (installer, INST_DISP_ERROR, _("Verification failed."), false);
     installer->instState = INST_PREPARE;
   }
 }
@@ -1191,9 +1213,9 @@ installerInstInit (installer_t *installer)
       /* CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation */
       snprintf (tbuff, sizeof (tbuff), _("Error: Folder %s already exists."),
           installer->target);
-      installerDisplayText (installer, "", tbuff, false);
+      installerDisplayText (installer, INST_DISP_ERROR, tbuff, false);
       /* CONTEXT: installer: command line interface: status message */
-      installerDisplayText (installer, " * ", _("Installation aborted."), false);
+      installerDisplayText (installer, INST_DISP_ERROR, _("Installation aborted."), false);
       installer->instState = INST_WAIT_USER;
       return;
     }
@@ -1213,7 +1235,7 @@ installerSaveTargetDir (installer_t *installer)
   FILE        *fh;
 
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Saving install location."), false);
+  installerDisplayText (installer, INST_DISP_ACTION, _("Saving install location."), false);
 
   installerGetTargetSaveFname (installer, tbuff, sizeof (tbuff));
 
@@ -1299,9 +1321,9 @@ static void
 installerCopyStart (installer_t *installer)
 {
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Copying files."), false);
+  installerDisplayText (installer, INST_DISP_ACTION, _("Copying files."), false);
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "   ", _("Please wait..."), false);
+  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait..."), false);
 
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
@@ -1333,7 +1355,7 @@ installerCopyFiles (installer_t *installer)
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
   system (tbuff);
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "   ", _("Copy finished."), false);
+  installerDisplayText (installer, INST_DISP_STATUS, _("Copy finished."), false);
   installer->instState = INST_CHDIR;
 }
 
@@ -1361,7 +1383,7 @@ static void
 installerCreateDirs (installer_t *installer)
 {
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Creating folder structure."), false);
+  installerDisplayText (installer, INST_DISP_ACTION, _("Creating folder structure."), false);
 
   /* create the directories that are not included in the distribution */
   fileopMakeDir ("data");
@@ -1396,7 +1418,7 @@ installerCopyTemplates (installer_t *installer)
   }
 
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Copying template files."), false);
+  installerDisplayText (installer, INST_DISP_ACTION, _("Copying template files."), false);
 
   if (chdir (installer->datatopdir)) {
     installerFailWorkingDir (installer, installer->datatopdir);
@@ -1660,13 +1682,14 @@ installerConvertStart (installer_t *installer)
       sscanf (tmp, "#VERSION=%d", &ver);
       if (ver < 6) {
         /* CONTEXT: installer: status message */
-        installerDisplayText (installer, "   ", _("BDJ3 database version is too old."), false);
+        installerDisplayText (installer, INST_DISP_STATUS, _("BDJ3 database version is too old."), false);
       } else {
         ok = true;
       }
     } else {
-      /* CONTEXT: installer: status message */
-      installerDisplayText (installer, "   ", _("Unable to locate BDJ3 database."), false);
+      installerDisplayText (installer, INST_DISP_STATUS,
+          /* CONTEXT: installer: status message */
+          _("Unable to locate BDJ3 database."), false);
     }
   }
 
@@ -1694,8 +1717,9 @@ installerConvertStart (installer_t *installer)
     free (data);
   }
 
-  /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Starting conversion process."), false);
+  installerDisplayText (installer, INST_DISP_ACTION,
+      /* CONTEXT: installer: status message */
+      _("Starting conversion process."), false);
 
   installer->convlist = diropBasicDirList ("conv", ".tcl");
   /* the sort order doesn't matter, but there's a need to run */
@@ -1738,7 +1762,7 @@ installerConvertStart (installer_t *installer)
       }
       installer->tclshloc = strdup (tbuff);
       /* CONTEXT: installer: status message */
-      installerDisplayText (installer, "   ", _("Located 'tclsh'."), false);
+      installerDisplayText (installer, INST_DISP_STATUS, _("Located 'tclsh'."), false);
     }
 
     free (locs [locidx]);
@@ -1748,9 +1772,9 @@ installerConvertStart (installer_t *installer)
   if (installer->tclshloc == NULL) {
     /* CONTEXT: installer: failure message */
     snprintf (tbuff, sizeof (tbuff), _("Unable to locate %s."), "tclsh");
-    installerDisplayText (installer, "   ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_STATUS, tbuff, false);
     /* CONTEXT: installer: status message */
-    installerDisplayText (installer, "   ", _("Skipping conversion."), false);
+    installerDisplayText (installer, INST_DISP_STATUS, _("Skipping conversion."), false);
     installer->instState = INST_CREATE_SHORTCUT;
     return;
   }
@@ -1774,7 +1798,7 @@ installerConvert (installer_t *installer)
 
   /* CONTEXT: installer: status message */
   snprintf (buffa, sizeof (buffa), _("Running conversion script: %s."), fn);
-  installerDisplayText (installer, "   ", buffa, false);
+  installerDisplayText (installer, INST_DISP_STATUS, buffa, false);
 
   targv [0] = installer->tclshloc;
   snprintf (buffa, sizeof (buffa), "conv/%s", fn);
@@ -1794,7 +1818,7 @@ static void
 installerConvertFinish (installer_t *installer)
 {
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "   ", _("Conversion complete."), false);
+  installerDisplayText (installer, INST_DISP_STATUS, _("Conversion complete."), false);
   installer->instState = INST_CREATE_SHORTCUT;
 }
 
@@ -1802,6 +1826,7 @@ static void
 installerCreateShortcut (installer_t *installer)
 {
   char        buff [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
   const char  *targv [7];
   int         targc = 0;
 
@@ -1811,14 +1836,16 @@ installerCreateShortcut (installer_t *installer)
   }
 
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "-- ", _("Creating shortcut."), false);
+  installerDisplayText (installer, INST_DISP_ACTION, _("Creating shortcut."), false);
   if (isWindows ()) {
     if (! chdir ("install")) {
       targv [targc++] = ".\\makeshortcut.bat";
       targv [targc++] = "%USERPROFILE%\\Desktop\\BDJ4.lnk";
-      snprintf (buff, sizeof (buff), "%s\\bin\\bdj4.exe", installer->rundir);
+      strlcpy (tbuff, installer->rundir, sizeof (tbuff));
+      pathWinPath (tbuff, sizeof (tbuff));
+      snprintf (buff, sizeof (buff), "%s\\bin\\bdj4.exe", tbuff);
       targv [targc++] = buff;
-      targv [targc++] = installer->rundir;
+      targv [targc++] = tbuff;
       targv [targc++] = NULL;
       osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
       chdir (installer->rundir);
@@ -1864,13 +1891,13 @@ installerVLCCheck (installer_t *installer)
   if (*installer->vlcversion) {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "VLC");
-    installerDisplayText (installer, "-- ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installer->instState = INST_VLC_DOWNLOAD;
   } else {
     snprintf (tbuff, sizeof (tbuff),
         /* CONTEXT: installer: status message */
         _("Unable to determine %s version."), "VLC");
-    installerDisplayText (installer, "-- ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installer->instState = INST_PYTHON_CHECK;
   }
 }
@@ -1906,14 +1933,14 @@ installerVLCDownload (installer_t *installer)
   if (fileopFileExists (installer->dlfname)) {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "VLC");
-    installerDisplayText (installer, "-- ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     /* CONTEXT: installer: status message */
-    installerDisplayText (installer, "   ", _("Please wait..."), false);
+    installerDisplayText (installer, INST_DISP_STATUS, _("Please wait..."), false);
     installer->instState = INST_VLC_INSTALL;
   } else {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "VLC");
-    installerDisplayText (installer, "-- ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installer->instState = INST_PYTHON_CHECK;
   }
 }
@@ -1922,6 +1949,8 @@ static void
 installerVLCInstall (installer_t *installer)
 {
   char    tbuff [MAXPATHLEN];
+  int         targc = 0;
+  const char  *targv [5];
 
   if (fileopFileExists (installer->dlfname)) {
     if (isWindows ()) {
@@ -1930,10 +1959,13 @@ installerVLCInstall (installer_t *installer)
     if (isMacOS ()) {
       snprintf (tbuff, sizeof (tbuff), "./%s", installer->dlfname);
     }
-    system (tbuff);
+    targv [targc++] = tbuff;
+    targv [targc++] = NULL;
+    osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("%s installed."), "VLC");
-    installerDisplayText (installer, "-- ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
+    installer->vlcinstalled = true;
   }
   fileopDelete (installer->dlfname);
   installerCheckPackages (installer);
@@ -1945,32 +1977,48 @@ installerPythonCheck (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
 
-  if (installer->pythoninstalled) {
-    installer->instState = INST_MUTAGEN_CHECK;
-    return;
-  }
-
   if (chdir (installer->datatopdir)) {
     installerFailWorkingDir (installer, installer->datatopdir);
     return;
   }
 
   installerPythonGetVersion (installer);
-  /* windows 7 must have an earlier versoin */
-  if (strcmp (sysvarsGetStr (SV_OSVERS), "6.1") == 0) {
-    strlcpy (installer->pyversion, "3.8.12", sizeof (installer->pyversion));
+
+/* this code will not be in use at this time, as a method to remove the */
+/* old versions of python is needed */
+#if 0
+  if (installer->pythoninstalled) {
+    char    *p;
+
+    strlcpy (tbuff, installer->pyversion, sizeof (tbuff));
+    p = strstr (tbuff, ".");
+    if (p != NULL) {
+      p = strstr (p + 1, ".");
+      if (p != NULL) {
+        *p = '\0';
+      }
+      if (versionCompare (sysvarsGetStr (SV_PYTHON_DOT_VERSION), tbuff) < 0) {
+        installer->updatepython = true;
+      }
+    }
+  }
+#endif
+
+  if (installer->pythoninstalled && ! installer->updatepython) {
+    installer->instState = INST_MUTAGEN_CHECK;
+    return;
   }
 
   if (*installer->pyversion) {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Downloading %s."), "Python");
-    installerDisplayText (installer, "-- ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installer->instState = INST_PYTHON_DOWNLOAD;
   } else {
     snprintf (tbuff, sizeof (tbuff),
         /* CONTEXT: installer: status message */
         _("Unable to determine %s version."), "Python");
-    installerDisplayText (installer, "-- ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installer->instState = INST_MUTAGEN_CHECK;
   }
 }
@@ -2006,14 +2054,14 @@ installerPythonDownload (installer_t *installer)
   if (fileopFileExists (installer->dlfname)) {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Python");
-    installerDisplayText (installer, "-- ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     /* CONTEXT: installer: status message */
-    installerDisplayText (installer, "   ", _("Please wait..."), false);
+    installerDisplayText (installer, INST_DISP_STATUS, _("Please wait..."), false);
     installer->instState = INST_PYTHON_INSTALL;
   } else {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "Python");
-    installerDisplayText (installer, "-- ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installer->instState = INST_MUTAGEN_CHECK;
   }
 }
@@ -2021,16 +2069,30 @@ installerPythonDownload (installer_t *installer)
 static void
 installerPythonInstall (installer_t *installer)
 {
-  char    tbuff [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
+  int         targc = 0;
+  const char  *targv [20];
 
   if (fileopFileExists (installer->dlfname)) {
-    if (isWindows ()) {
-      snprintf (tbuff, sizeof (tbuff), ".\\%s", installer->dlfname);
-    }
-    system (tbuff);
+    snprintf (tbuff, sizeof (tbuff), ".\\%s", installer->dlfname);
+    targv [targc++] = tbuff;
+    targv [targc++] = "/quiet";
+    //targv [targc++] = "/passive";
+    targv [targc++] = "InstallAllUsers=0";
+    targv [targc++] = "Shortcuts=0";
+    targv [targc++] = "CompileAll=1";
+    targv [targc++] = "PrependPath=1";
+    targv [targc++] = "Include_doc=0";
+    targv [targc++] = "Include_launcher=0";
+    targv [targc++] = "InstallLauncherAllUsers=0";
+    targv [targc++] = "Include_tcltk=0";
+    targv [targc++] = "Include_test=0";
+    targv [targc++] = NULL;
+    osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Python");
-    installerDisplayText (installer, "-- ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
+    installer->pythoninstalled = true;
   }
   fileopDelete (installer->dlfname);
   installerCheckPackages (installer);
@@ -2058,9 +2120,9 @@ installerMutagenCheck (installer_t *installer)
 
   /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Mutagen");
-  installerDisplayText (installer, "-- ", tbuff, false);
+  installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, "   ", _("Please wait..."), false);
+  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait..."), false);
   installer->instState = INST_MUTAGEN_INSTALL;
 }
 
@@ -2083,7 +2145,7 @@ installerMutagenInstall (installer_t *installer)
   system (tbuff);
   /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
-  installerDisplayText (installer, "-- ", tbuff, false);
+  installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
   installerCheckPackages (installer);
   if (isWindows ()) {
     installer->instState = INST_UPDATE_CA_FILE_INIT;
@@ -2104,7 +2166,7 @@ installerUpdateCAFileInit (installer_t *installer)
 
   /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("Updating certificates."));
-  installerDisplayText (installer, "-- ", tbuff, false);
+  installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
   installer->instState = INST_UPDATE_CA_FILE;
 }
 
@@ -2127,7 +2189,7 @@ installerUpdateProcessInit (installer_t *installer)
 
   /* CONTEXT: installer: status message */
   snprintf (buff, sizeof (buff), _("Updating %s."), BDJ4_LONG_NAME);
-  installerDisplayText (installer, "-- ", buff, false);
+  installerDisplayText (installer, INST_DISP_ACTION, buff, false);
   installer->instState = INST_UPDATE_PROCESS;
 }
 
@@ -2175,12 +2237,12 @@ installerRegisterInit (installer_t *installer)
       strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "") != 0) {
     /* no need to translate */
     snprintf (tbuff, sizeof (tbuff), "Registration Skipped.");
-    installerDisplayText (installer, "-- ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installer->instState = INST_FINISH;
   } else {
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Registering %s."), BDJ4_NAME);
-    installerDisplayText (installer, "-- ", tbuff, false);
+    installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installer->instState = INST_REGISTER;
   }
 }
@@ -2415,8 +2477,39 @@ installerCheckPackages (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
   char  *tmp;
+  char  pypath [2048];
 
-  sysvarsCheckPaths ();
+
+  tmp = sysvarsGetStr (SV_PATH_PYTHON);
+  *pypath = '\0';
+  if (! *tmp && *installer->pyversion) {
+    char tver [40];
+    int  tverlen;
+    int  dotflag;
+
+    tverlen = 0;
+    dotflag = 0;
+    for (size_t i = 0; i < strlen (installer->pyversion); ++i) {
+      if (installer->pyversion [i] == '.') {
+        if (dotflag) {
+          break;
+        }
+        dotflag = 1;
+        continue;
+      }
+      tver [tverlen] = installer->pyversion [i];
+      ++tverlen;
+    }
+    tver [tverlen] = '\0';
+    snprintf (pypath, sizeof (pypath),
+        "%s/AppData/Local/Programs/Python/Python%s;"
+        "%s/AppData/Local/Programs/Python/Python%s/Scripts",
+        installer->home, tver,
+        installer->home, tver);
+  }
+  sysvarsCheckPaths (pypath);
+  sysvarsCheckPython ();
+  sysvarsCheckMutagen ();
 
   tmp = sysvarsGetStr (SV_PATH_VLC);
 
@@ -2488,9 +2581,9 @@ installerFailWorkingDir (installer_t *installer, const char *dir)
 {
   fprintf (stderr, "Unable to set working dir: %s\n", dir);
   /* CONTEXT: installer: failure message */
-  installerDisplayText (installer, "", _("Error: Unable to set working folder."), false);
+  installerDisplayText (installer, INST_DISP_ERROR, _("Error: Unable to set working folder."), false);
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, " * ", _("Installation aborted."), false);
+  installerDisplayText (installer, INST_DISP_ERROR, _("Installation aborted."), false);
   installer->instState = INST_WAIT_USER;
 }
 
@@ -2559,8 +2652,7 @@ installerWinVerifyProcess (installer_t *installer)
     return false;
   }
 
-//    targv [targc++] = ".\\plocal\\bin\\openssl.exe";
-  targv [targc++] = "/usr/bin/openssl";
+  targv [targc++] = ".\\plocal\\bin\\openssl.exe";
   targv [targc++] = "sha512";
   targv [targc++] = "-r";
   fnidx = targc;

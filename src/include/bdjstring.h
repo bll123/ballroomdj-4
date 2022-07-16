@@ -10,6 +10,7 @@ char *    stringToLower (char *s);
 char *    stringToUpper (char *s);
 void      stringTrim (char *s);
 void      stringTrimChar (char *s, unsigned char c);
+int       versionCompare (const char *v1, const char *v2);
 
 #if ! _lib_strlcat
 size_t strlcat(char *dst, const char *src, size_t siz);

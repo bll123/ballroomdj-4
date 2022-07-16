@@ -1,5 +1,8 @@
 #include "config.h"
 
+#pragma clang diagnostic ignored "-Wformat-extra-args"
+#pragma gcc diagnostic ignored "-Wformat-extra-args"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -252,6 +255,7 @@ START_TEST(rafile_cleanup)
 {
   unlink (RAFN);
 }
+END_TEST
 
 Suite *
 rafile_suite (void)

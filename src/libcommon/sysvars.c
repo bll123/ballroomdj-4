@@ -377,7 +377,7 @@ sysvarsInit (const char *argv0)
       "%s/%s ( https://ballroomdj.org/ )", BDJ4_NAME,
       sysvars [SV_BDJ4_VERSION]);
 
-  sysvarsCheckPaths ();
+  sysvarsCheckPaths (NULL);
 
   if (strcmp (sysvars [SV_OSNAME], "darwin") == 0) {
     char *data;
@@ -424,73 +424,8 @@ sysvarsInit (const char *argv0)
 
   svGetSystemFont ();
 
-  if (*sysvars [SV_PATH_PYTHON]) {
-    char    *data;
-    int     j;
-
-    data = osRunProgram (sysvars [SV_PATH_PYTHON], "--version", NULL);
-
-    p = NULL;
-    if (data != NULL) {
-      p = strstr (data, "3");
-    }
-
-    if (p != NULL) {
-      strlcpy (buff, p, sizeof (buff));
-      p = strstr (buff, ".");
-      if (p != NULL) {
-        p = strstr (p + 1, ".");
-        if (p != NULL) {
-          *p = '\0';
-          strlcpy (sysvars [SV_PYTHON_DOT_VERSION], buff, SV_MAX_SZ);
-          j = 0;
-          for (size_t i = 0; i < strlen (buff); ++i) {
-            if (buff [i] != '.') {
-              sysvars [SV_PYTHON_VERSION][j++] = buff [i];
-            }
-          }
-          sysvars [SV_PYTHON_VERSION][j] = '\0';
-        }
-      } /* found the first '.' */
-    } else {
-      /* possibly the windows store version that is not installed */
-      /* clear the path */
-      strcpy (sysvars [SV_PATH_PYTHON], "");
-    }
-    free (data);
-  } /* if python was found */
-
-  // $HOME/.local/bin/mutagen-inspect
-  // %USERPROFILE%/AppData/Local/Programs/Python/Python<pyver>/Scripts/mutagen-inspect-script.py
-  // $HOME/Library/Python/<pydotver>/bin/mutagen-inspect
-  // msys2: $HOME/.local/bin/mutagen-inspect (use $HOME, not %USERPROFILE%)
-
-  if (isLinux ()) {
-    snprintf (buff, sizeof (buff),
-        "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
-  }
-  if (isWindows ()) {
-    snprintf (buff, sizeof (buff),
-        "%s/AppData/Local/Programs/Python/Python%s/Scripts/%s",
-        sysvars [SV_HOME], sysvars [SV_PYTHON_VERSION], "mutagen-inspect-script.py");
-  }
-  if (isMacOS ()) {
-    snprintf (buff, sizeof (buff),
-        "%s/Library/Python/%s/bin/%s",
-        sysvars [SV_HOME], sysvars [SV_PYTHON_DOT_VERSION], "mutagen-inspect");
-  }
-  if (fileopFileExists (buff)) {
-    strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
-  } else {
-    if (isWindows ()) {
-      /* for msys2 testing */
-      snprintf (buff, sizeof (buff),
-          "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
-      if (fileopFileExists (buff)) {
-        strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
-      }
-    }
-  }
+  sysvarsCheckPython ();
+  sysvarsCheckMutagen ();
 
   lsysvars [SVL_BDJIDX] = 0;
   lsysvars [SVL_BASEPORT] = 32548;
@@ -526,13 +461,13 @@ sysvarsInit (const char *argv0)
 }
 
 void
-sysvarsCheckPaths (void)
+sysvarsCheckPaths (const char *otherpaths)
 {
-  char    *tptr;
   char    *p;
   char    *tsep;
   char    *tokstr;
   char    tbuff [MAXPATHLEN];
+  char    tpath [4096];
 
   strlcpy (sysvars [SV_PATH_GSETTINGS], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_PATH_PYTHON], "", SV_MAX_SZ);
@@ -540,12 +475,17 @@ sysvarsCheckPaths (void)
   strlcpy (sysvars [SV_PATH_XDGUSERDIR], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_TEMP_A], "", SV_MAX_SZ);
 
-  tptr = strdup (getenv ("PATH"));
   tsep = ":";
   if (isWindows ()) {
     tsep = ";";
   }
-  p = strtok_r (tptr, tsep, &tokstr);
+  strlcpy (tpath, getenv ("PATH"), sizeof (tpath));
+  stringTrimChar (tpath, *tsep);
+  strlcat (tpath, tsep, sizeof (tpath));
+  if (otherpaths != NULL && *otherpaths) {
+    strlcat (tpath, otherpaths, sizeof (tpath));
+  }
+  p = strtok_r (tpath, tsep, &tokstr);
   while (p != NULL) {
     if (strstr (p, "WindowsApps") != NULL) {
       /* the windows python does not have a regular path for the pip3 user */
@@ -580,7 +520,6 @@ sysvarsCheckPaths (void)
 
     p = strtok_r (NULL, tsep, &tokstr);
   }
-  free (tptr);
 
   strlcpy (sysvars [SV_PATH_VLC], "", SV_MAX_SZ);
   if (isWindows ()) {
@@ -594,6 +533,86 @@ sysvarsCheckPaths (void)
   }
   if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
     strlcpy (sysvars [SV_PATH_VLC], tbuff, SV_MAX_SZ);
+  }
+}
+
+void
+sysvarsCheckPython (void)
+{
+  if (*sysvars [SV_PATH_PYTHON]) {
+    char    buff [SV_MAX_SZ];
+    char    *data;
+    char    *p;
+    int     j;
+
+    data = osRunProgram (sysvars [SV_PATH_PYTHON], "--version", NULL);
+
+    p = NULL;
+    if (data != NULL) {
+      p = strstr (data, "3");
+    }
+
+    if (p != NULL) {
+      strlcpy (buff, p, sizeof (buff));
+      p = strstr (buff, ".");
+      if (p != NULL) {
+        p = strstr (p + 1, ".");
+        if (p != NULL) {
+          *p = '\0';
+          strlcpy (sysvars [SV_PYTHON_DOT_VERSION], buff, SV_MAX_SZ);
+          j = 0;
+          for (size_t i = 0; i < strlen (buff); ++i) {
+            if (buff [i] != '.') {
+              sysvars [SV_PYTHON_VERSION][j++] = buff [i];
+            }
+          }
+          sysvars [SV_PYTHON_VERSION][j] = '\0';
+        }
+      } /* found the first '.' */
+    } else {
+      /* possibly the windows store version that is not installed */
+      /* clear the path */
+      strcpy (sysvars [SV_PATH_PYTHON], "");
+    }
+    free (data);
+  } /* if python was found */
+}
+
+void
+sysvarsCheckMutagen (void)
+{
+  char  buff [SV_MAX_SZ];
+
+  // $HOME/.local/bin/mutagen-inspect
+  // %USERPROFILE%/AppData/Local/Programs/Python/Python<pyver>/Scripts/mutagen-inspect-script.py
+  // $HOME/Library/Python/<pydotver>/bin/mutagen-inspect
+  // msys2: $HOME/.local/bin/mutagen-inspect (use $HOME, not %USERPROFILE%)
+
+  if (isLinux ()) {
+    snprintf (buff, sizeof (buff),
+        "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
+  }
+  if (isWindows ()) {
+    snprintf (buff, sizeof (buff),
+        "%s/AppData/Local/Programs/Python/Python%s/Scripts/%s",
+        sysvars [SV_HOME], sysvars [SV_PYTHON_VERSION], "mutagen-inspect-script.py");
+  }
+  if (isMacOS ()) {
+    snprintf (buff, sizeof (buff),
+        "%s/Library/Python/%s/bin/%s",
+        sysvars [SV_HOME], sysvars [SV_PYTHON_DOT_VERSION], "mutagen-inspect");
+  }
+  if (fileopFileExists (buff)) {
+    strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
+  } else {
+    if (isWindows ()) {
+      /* for msys2 testing */
+      snprintf (buff, sizeof (buff),
+          "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
+      if (fileopFileExists (buff)) {
+        strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
+      }
+    }
   }
 }
 

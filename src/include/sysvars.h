@@ -69,8 +69,10 @@ typedef enum {
   SVL_MAX
 } sysvarlkey_t;
 
-void    sysvarsInit (const char *);
-void    sysvarsCheckPaths (void);
+void    sysvarsInit (const char *argv0);
+void    sysvarsCheckPaths (const char *otherpaths);
+void    sysvarsCheckPython (void);
+void    sysvarsCheckMutagen (void);
 char    * sysvarsGetStr (sysvarkey_t idx);
 ssize_t sysvarsGetNum (sysvarlkey_t idx);
 void    sysvarsSetStr (sysvarkey_t, const char *value);

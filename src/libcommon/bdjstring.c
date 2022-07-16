@@ -9,6 +9,8 @@
 
 #include "bdjstring.h"
 
+static const char *versionNext (const char *tv1);
+
 /* not for use on localized strings */
 char *
 stringToLower (char * s)
@@ -106,4 +108,36 @@ istrlen (const char *str)
   return len;
 }
 
+int
+versionCompare (const char *v1, const char *v2)
+{
+  const char  *tv1, *tv2;
+  int         iv1, iv2, rc;
 
+  tv1 = v1;
+  tv2 = v2;
+  iv1 = atoi (tv1);
+  iv2 = atoi (tv2);
+  rc = iv1 - iv2;
+  while (rc == 0 && *tv1) {
+    tv1 = versionNext (tv1);
+    tv2 = versionNext (tv2);
+    iv1 = atoi (tv1);
+    iv2 = atoi (tv2);
+    rc = iv1 - iv2;
+  }
+
+  return rc;
+}
+
+inline static const char *
+versionNext (const char *tv1)
+{
+  tv1 = strstr (tv1, ".");
+  if (tv1 == NULL) {
+    tv1 = "";
+  } else {
+    tv1 += 1;
+  }
+  return tv1;
+}
