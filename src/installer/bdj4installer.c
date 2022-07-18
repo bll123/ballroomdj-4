@@ -1115,6 +1115,9 @@ installerVerifyInstall (installer_t *installer)
     }
   } else {
     targv [0] = "./install/verifychksum.sh";
+    if (isMacOS ()) {
+      targv [0] = "./Contents/MacOS/install/verifychksum.sh";
+    }
     targv [1] = NULL;
     osProcessPipe (targv, OS_PROC_DETACH, tmp, sizeof (tmp));
   }

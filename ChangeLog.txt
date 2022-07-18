@@ -1,6 +1,6 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha 2022-xxxx
+4.0.0 alpha 2022-07-18
 
 - player
   - fixed song start not being sent to the player.
@@ -13,7 +13,7 @@ BallroomDJ 4 Change Log
   - ez song list: song list name will expand.
 - song editor
   - bpm counter working.
-  - fixed start start/song end input.
+  - fixed song start/song end input.
 - marquee: Cleaned up the artist/title display.
   - add non-exposed configuration items for marquee artist/title colors.
 - Internal: rework fade-out timer.

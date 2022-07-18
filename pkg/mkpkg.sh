@@ -11,7 +11,7 @@ function copysrcfiles {
   systype=$1
   stage=$2
 
-  filelist="LICENSE.txt README.txt VERSION.txt
+  filelist="ChangeLog.txt LICENSE.txt README.txt VERSION.txt
       packages/mongoose/mongoose.[ch]"
   dirlist="src conv img install licenses scripts locale pkg templates web wiki"
 
@@ -36,7 +36,7 @@ function copyreleasefiles {
   systype=$1
   stage=$2
 
-  filelist="LICENSE.txt README.txt VERSION.txt"
+  filelist="ChangeLog.txt LICENSE.txt README.txt VERSION.txt"
   dirlist="bin conv img install licenses scripts locale templates"
 
   case ${systype} in

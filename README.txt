@@ -2,7 +2,7 @@ BDJ4 4.0.0
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 20220627
+Alpha Release: 20220718
 
   Alpha releases are mostly untested works in progress.
 
@@ -35,7 +35,7 @@ Installation:
       [ I have not tested with 'brew'.  That's in the future someday. ]
     b) Run the BallroomDJ 4 installer.
 
-Release Notes: 20220623
+Release Notes: 20220718
   This release represents a working player user interface,
   the configuration user interface,
   and a partly functional management interface:
