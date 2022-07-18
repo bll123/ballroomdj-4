@@ -227,7 +227,10 @@ pliiState (plidata_t *pliData)
 int
 pliiSetAudioDevice (plidata_t *pliData, const char *dev)
 {
-  return vlcAudioDevSet (pliData->plData, dev);
+  int   rc;
+
+  rc = vlcAudioDevSet (pliData->plData, dev);
+  return rc;
 }
 
 int

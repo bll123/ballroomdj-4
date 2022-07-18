@@ -73,9 +73,6 @@ main (int argc, char * argv[])
     { "bdj4tags",       no_argument,        NULL,   17 },
     { "bdj4updater",    no_argument,        NULL,   16 },
     { "check_all",      no_argument,        NULL,   1 },
-    { "installer",      no_argument,        NULL,   12 },
-    { "main",           no_argument,        NULL,   5 },
-    { "playerui",       no_argument,        NULL,   10 },
     /* bdj4updater */
     { "newinstall",     no_argument,        NULL,   0 },
     /* used by installer */
@@ -127,12 +124,6 @@ main (int argc, char * argv[])
     switch (c) {
       case 1: {
         prog = "check_all";
-        ++validargs;
-        nodetach = true;
-        break;
-      }
-      case 2: {
-        prog = "bdj4cli";
         ++validargs;
         nodetach = true;
         break;

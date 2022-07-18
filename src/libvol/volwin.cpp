@@ -29,9 +29,8 @@
     if (FAILED(hr)) { printf ("error %ld occurred\n", -hr); goto Exit; }
 #define RETURN_ON_ERROR(hr)  \
     if (FAILED(hr)) { printf ("error %ld occurred\n", -hr); goto SinkListExit; }
-
-#define SAFE_RELEASE(punk)  \
-    if ((punk) != NULL) { (punk)->Release(); (punk) = NULL; }
+#define SAFE_RELEASE(data)  \
+    if ((data) != NULL) { (data)->Release(); (data) = NULL; }
 
 extern "C" {
 

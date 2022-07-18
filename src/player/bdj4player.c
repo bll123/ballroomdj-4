@@ -1280,13 +1280,15 @@ playerSetAudioSink (playerdata_t *playerData, char *sinkname)
 
 
   logProcBegin (LOG_PROC, "playerSetAudioSink");
-  /* the sink list is not ordered */
-  found = 0;
-  for (size_t i = 0; i < playerData->sinklist.count; ++i) {
-    if (strcmp (sinkname, playerData->sinklist.sinklist [i].name) == 0) {
-      found = 1;
-      idx = (int) i;
-      break;
+  if (sinkname != NULL) {
+    /* the sink list is not ordered */
+    found = 0;
+    for (size_t i = 0; i < playerData->sinklist.count; ++i) {
+      if (strcmp (sinkname, playerData->sinklist.sinklist [i].name) == 0) {
+        found = 1;
+        idx = (int) i;
+        break;
+      }
     }
   }
 

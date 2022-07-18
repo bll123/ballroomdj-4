@@ -15,8 +15,7 @@ BallroomDJ 4 Change Log
   - bpm counter working.
   - fixed start start/song end input.
 - marquee: Cleaned up the artist/title display.
-  - add non-exposed configuration items for marquee
-    artist/title colors and fade type.
+  - add non-exposed configuration items for marquee artist/title colors.
 - Internal: rework fade-out timer.
 - profiles
   - Added configuration option for profile accent color.
