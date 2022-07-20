@@ -6,6 +6,9 @@ BallroomDJ 4 Change Log
   - playlist : fix save of a playlist stop time.
   - song list editor : add : create song list from playlist.
 
+- configuration ui
+  - fix direct text input to numeric spinboxes.
+
 4.0.0 alpha 2022-07-18
 
 - player

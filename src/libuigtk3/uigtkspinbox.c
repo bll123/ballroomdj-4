@@ -29,6 +29,7 @@ typedef struct uispinbox {
   bool            changed : 1;
 } uispinbox_t;
 
+static gint uiSpinboxTextInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gint uiSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gint uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gboolean uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata);
@@ -84,7 +85,7 @@ uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata)
   g_signal_connect (spinbox->uispinbox.widget, "output",
       G_CALLBACK (uiSpinboxTextDisplay), spinbox);
   g_signal_connect (spinbox->uispinbox.widget, "input",
-      G_CALLBACK (uiSpinboxInput), spinbox);
+      G_CALLBACK (uiSpinboxTextInput), spinbox);
   spinbox->udata = udata;
   /* for some reason, if the selection background color alone is set, the */
   /* text color temporarily becomes white on light colored themes */
@@ -273,6 +274,8 @@ uiSpinboxIntCreate (UIWidget *uiwidget)
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox), FALSE);
   gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
   gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
+  g_signal_connect (spinbox, "input",
+      G_CALLBACK (uiSpinboxInput), NULL);
   uiwidget->widget = spinbox;
 }
 
@@ -395,17 +398,34 @@ uiSpinboxGetUIWidget (uispinbox_t *spinbox)
 
 /* gtk spinboxes are a bit bizarre */
 static gint
-uiSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
+uiSpinboxTextInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
 {
   uispinbox_t   *spinbox = udata;
   GtkAdjustment *adjustment;
   gdouble       value;
 
+  /* text spinboxes do not allow text entry, so the value from the */
+  /* adjustment is correct */
 
-  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->uispinbox.widget));
+  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (sb));
   value = gtk_adjustment_get_value (adjustment);
   *newval = value;
-  spinbox->changed = true;
+  if (spinbox != NULL) {
+    spinbox->changed = true;
+  }
+  return UICB_CONVERTED;
+}
+
+/* gtk spinboxes are definitely bizarre */
+static gint
+uiSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
+{
+  const char    *newtext;
+
+  newtext = gtk_entry_get_text (GTK_ENTRY (sb));
+  if (newtext != NULL && *newtext) {
+    *newval = atol (newtext);
+  }
   return UICB_CONVERTED;
 }
 
