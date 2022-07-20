@@ -85,6 +85,7 @@ typedef struct {
   int               pbfinishType;
   bdjmsgroute_t     pbfinishRoute;
   int               pbfinishrcv;
+  long              ploverridestoptime;
   int               musicqChanged [MUSICQ_MAX];
   bool              marqueeChanged [MUSICQ_MAX];
   bool              playWhenQueued : 1;
@@ -183,6 +184,7 @@ main (int argc, char *argv[])
   mainData.waitforpbfinish = false;
   mainData.pbfinishrcv = 0;
   mainData.stopwaitcount = 0;
+  mainData.ploverridestoptime = 0;
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     mainData.playlistQueue [i] = NULL;
     mainData.musicqChanged [i] = MAIN_CHG_CLEAR;
@@ -385,6 +387,13 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_QUEUE_PLAYLIST: {
           logMsg (LOG_DBG, LOG_MSGS, "got: playlist-queue %s", targs);
           mainQueuePlaylist (mainData, targs);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_PL_OVERRIDE_STOP_TIME: {
+          /* this message overrides the stop time for the */
+          /* next queue-playlist message */
+          mainData->ploverridestoptime = atol (targs);
           dbgdisp = true;
           break;
         }
@@ -1181,6 +1190,15 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
 
   playlist = playlistAlloc (mainData->musicdb);
   rc = playlistLoad (playlist, plname);
+
+  /* check and see if a stop time override is in effect */
+  /* if so, set the playlist's stop time */
+  if (mainData->ploverridestoptime > 0) {
+    playlistSetConfigNum (playlist, PLAYLIST_STOP_TIME,
+        mainData->ploverridestoptime);
+  }
+  mainData->ploverridestoptime = 0;
+
   if (rc == 0) {
     logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %d %s", mi, plname);
     slistSetData (mainData->playlistCache, plname, playlist);
@@ -1245,8 +1263,8 @@ mainMusicQueueFill (maindata_t *mainData)
 
   /* want current + playerqLen songs */
   while (playlist != NULL && currlen <= playerqLen && stopatflag == false) {
-    ssize_t     stopTime;
-    song_t      *song = NULL;
+    time_t  stopTime;
+    song_t  *song = NULL;
 
     song = playlistGetNextSong (playlist, mainData->danceCounts,
         currlen, mainCheckMusicQueue, mainMusicQueueHistory, mainData);
@@ -1274,9 +1292,9 @@ mainMusicQueueFill (maindata_t *mainData)
 
     stopTime = playlistGetConfigNum (playlist, PLAYLIST_STOP_TIME);
     if (stopTime > 0) {
-      ssize_t       currTime;
-      ssize_t       qDuration;
-      ssize_t       nStopTime;
+      time_t  currTime;
+      time_t  qDuration;
+      time_t  nStopTime;
 
       currTime = mstime ();
       /* stop time is in hours+minutes; need to convert it to real time */

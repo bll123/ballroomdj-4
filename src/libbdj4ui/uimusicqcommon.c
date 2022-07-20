@@ -188,11 +188,17 @@ uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char *args)
 
     musicqupdate->dispidx = atoi (p);
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-    musicqupdate->uniqueidx = atoi (p);
+    if (p != NULL) {
+      musicqupdate->uniqueidx = atoi (p);
+    }
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-    musicqupdate->dbidx = atol (p);
+    if (p != NULL) {
+      musicqupdate->dbidx = atol (p);
+    }
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-    musicqupdate->pflag = atoi (p);
+    if (p != NULL) {
+      musicqupdate->pflag = atoi (p);
+    }
 
     nlistSetData (uimusicq->uniqueList, musicqupdate->uniqueidx, musicqupdate);
     nlistSetData (uimusicq->dispList, idx, musicqupdate);

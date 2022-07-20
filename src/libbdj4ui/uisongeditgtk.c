@@ -783,6 +783,7 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
   sbp = uiSpinboxTimeInit (SB_TIME_PRECISE);
   uiw->items [uiw->itemcount].spinbox = sbp;
   uiSpinboxTimeCreate (sbp, uisongedit, NULL);
+  uiSpinboxSetRange (sbp, 0, 1200000);
   uiSpinboxTimeSetValue (sbp, 0);
   uiwidgetp = uiSpinboxGetUIWidget (sbp);
   uiSizeGroupAdd (&uiw->sgsbtime, uiwidgetp);

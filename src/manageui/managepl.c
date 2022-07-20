@@ -515,8 +515,9 @@ managePlaylistUpdateData (managepl_t *managepl)
 
   uiSpinboxTimeSetValue (managepl->uimaxplaytime,
       playlistGetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME));
+  /* convert the hh:mm value to mm:ss for the spinbox */
   uiSpinboxTimeSetValue (managepl->uistopat,
-      playlistGetConfigNum (pl, PLAYLIST_STOP_TIME));
+      playlistGetConfigNum (pl, PLAYLIST_STOP_TIME) / 60);
   uiSpinboxSetValue (&managepl->uistopafter,
       playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER));
   uiSpinboxSetValue (&managepl->uigap,
@@ -649,6 +650,8 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   playlistSetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME, tval);
 
   tval = uiSpinboxGetValue (uiSpinboxGetUIWidget (managepl->uistopat));
+  /* convert the mm:ss value to hh:mm for stop-time */
+  tval *= 60;
   playlistSetConfigNum (pl, PLAYLIST_STOP_TIME, tval);
 
   tval = uiSpinboxGetValue (&managepl->uistopafter);

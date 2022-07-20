@@ -107,7 +107,7 @@ foreach {fn} $flist {
           if { $hr eq {} } { set hr 0 }
           regsub {^0*} $min {} min
           if { $min eq {} } { set min 0 }
-          set value [expr {($hr * 3600 + $min * 60)*1000}]
+          set value [expr {($hr * 3600 + $min * 60) * 1000}]
         } else {
           set value 0
         }

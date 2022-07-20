@@ -79,6 +79,7 @@ enum {
   MANAGE_MENU_CB_SL_NEW,
   MANAGE_MENU_CB_SL_MIX,
   MANAGE_MENU_CB_SL_TRUNCATE,
+  MANAGE_MENU_CB_SL_MK_FROM_PL,
   MANAGE_MENU_CB_SL_EXP_M3U,
   MANAGE_MENU_CB_SL_EXP_BDJ,
   MANAGE_MENU_CB_SL_IMP_M3U,
@@ -103,6 +104,8 @@ enum {
   MANAGE_CB_SEQ_LOAD,
   MANAGE_CB_PL_LOAD,
   MANAGE_CB_SAVE,
+  MANAGE_CB_CFPL_DIALOG,
+  MANAGE_CB_CFPL_PLAYLIST_SEL,
   MANAGE_CB_MAX,
 };
 
@@ -133,9 +136,6 @@ typedef struct manage {
   dispsel_t       *dispsel;
   int             stopwaitcount;
   UIWidget        statusMsg;
-  int             dbchangecount;
-  int             currbpmsel;
-  int             currtimesig;
   /* notebook tab handling */
   int               mainlasttab;
   int               sllasttab;
@@ -166,18 +166,25 @@ typedef struct manage {
   UIWidget        *slsongseltabwidget;
   char            *sloldname;
   uisongfilter_t  *uisongfilter;
+  UIWidget        cfplDialog;
+  uidropdown_t    *cfplsel;
+  uispinbox_t     *cfpltmlimit;
   /* music manager ui */
   uiplayer_t      *mmplayer;
   uimusicq_t      *mmmusicq;
   uisongsel_t     *mmsongsel;
   uisongedit_t    *mmsongedit;
   int             lastdisp;
+  int             dbchangecount;
   /* sequence */
   manageseq_t     *manageseq;
   /* playlist management */
   managepl_t      *managepl;
   /* update database */
   managedb_t      *managedb;
+  /* bpm counter */
+  int             currbpmsel;
+  int             currtimesig;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -193,6 +200,8 @@ static datafilekey_t manageuidfkeys [] = {
   { "EASY_SONGLIST",    MANAGE_EASY_SONGLIST,       VALUE_NUM, convBoolean, -1 },
   { "FILTER_POS_X",     SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, -1 },
   { "FILTER_POS_Y",     SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, -1 },
+  { "MNG_CFPL_POS_X",   MANAGE_CFPL_POSITION_X,     VALUE_NUM, NULL, -1 },
+  { "MNG_CFPL_POS_Y",   MANAGE_CFPL_POSITION_X,     VALUE_NUM, NULL, -1 },
   { "MNG_SELFILE_POS_X",MANAGE_SELFILE_POSITION_X,  VALUE_NUM, NULL, -1 },
   { "MNG_SELFILE_POS_Y",MANAGE_SELFILE_POSITION_Y,  VALUE_NUM, NULL, -1 },
   { "PLUI_POS_X",       PLUI_POSITION_X,            VALUE_NUM, NULL, -1 },
@@ -227,6 +236,11 @@ static bool     manageSonglistLoad (void *udata);
 static bool     manageSonglistCopy (void *udata);
 static bool     manageSonglistNew (void *udata);
 static bool     manageSonglistTruncate (void *udata);
+static bool     manageSonglistCreateFromPlaylist (void *udata);
+static void     manageSongListCFPLCreateDialog (manageui_t *manage);
+static void     manageCFPLCreatePlaylistList (manageui_t *manage);
+static bool     manageCFPLPlaylistSelectHandler (void *udata, long idx);
+static bool     manageCFPLResponseHandler (void *udata, long responseid);
 static void     manageSonglistLoadFile (void *udata, const char *fn);
 static long     manageLoadPlaylist (void *udata, const char *fn);
 static long     manageLoadSonglist (void *udata, const char *fn);
@@ -317,6 +331,9 @@ main (int argc, char *argv[])
   manage.bpmcounterstarted = false;
   manage.currbpmsel = BPM_BPM;
   manage.currtimesig = DANCE_TIMESIG_44;
+  uiutilsUIWidgetInit (&manage.cfplDialog);
+  manage.cfplsel = uiDropDownInit ();
+  manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
 
   procutilInitProcesses (manage.processes);
 
@@ -349,6 +366,8 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, MANAGE_SELFILE_POSITION_X, -1);
     nlistSetNum (manage.options, MANAGE_SELFILE_POSITION_Y, -1);
     nlistSetNum (manage.options, MANAGE_EASY_SONGLIST, true);
+    nlistSetNum (manage.options, MANAGE_CFPL_POSITION_X, -1);
+    nlistSetNum (manage.options, MANAGE_CFPL_POSITION_Y, -1);
   }
 
   uiUIInitialize ();
@@ -478,6 +497,8 @@ manageClosingCallback (void *udata, programstate_t programState)
   uisongselFree (manage->mmsongsel);
   uisongeditFree (manage->mmsongedit);
 
+  uiDropDownFree (manage->cfplsel);
+  uiSpinboxTimeFree (manage->cfpltmlimit);
   dispselFree (manage->dispsel);
   datafileFree (manage->optiondf);
 
@@ -1225,6 +1246,12 @@ manageSonglistMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, _("Truncate"),
         &manage->callbacks [MANAGE_MENU_CB_SL_TRUNCATE]);
 
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_MK_FROM_PL,
+        manageSonglistCreateFromPlaylist);
+    /* CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist */
+    uiMenuCreateItem (&menu, &menuitem, _("Create from Playlist"),
+        &manage->callbacks [MANAGE_MENU_CB_SL_MK_FROM_PL]);
+
     uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: managementui: menu selection: export actions for song list */
         &manage->slmenu, _("Export"));
@@ -1325,6 +1352,160 @@ manageSonglistTruncate (void *udata)
   return UICB_CONT;
 }
 
+static bool
+manageSonglistCreateFromPlaylist (void *udata)
+{
+  manageui_t  *manage = udata;
+  int         x, y;
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: create from playlist");
+  manageSonglistSave (manage);
+  manageSongListCFPLCreateDialog (manage);
+  uiDropDownSelectionSetNum (manage->cfplsel, -1);
+  uiWidgetShowAll (&manage->cfplDialog);
+
+  x = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_X);
+  y = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_Y);
+  uiWindowMove (&manage->cfplDialog, x, y);
+
+  return UICB_CONT;
+}
+
+static void
+manageSongListCFPLCreateDialog (manageui_t *manage)
+{
+  UIWidget    vbox;
+  UIWidget    hbox;
+  UIWidget    uiwidget;
+  UIWidget    *uiwidgetp;
+  UIWidget    sg;  // labels
+
+  if (uiutilsUIWidgetSet (&manage->cfplDialog)) {
+    return;
+  }
+
+  uiCreateSizeGroupHoriz (&sg);
+
+  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_CFPL_DIALOG],
+      manageCFPLResponseHandler, manage);
+  uiCreateDialog (&manage->cfplDialog, &manage->window,
+      &manage->callbacks [MANAGE_CB_CFPL_DIALOG],
+      /* CONTEXT: create from playlist: title for the dialog */
+      _("Create from Playlist"),
+      /* CONTEXT: create from playlist: closes the dialog */
+      _("Close"),
+      RESPONSE_CLOSE,
+      /* CONTEXT: create from playlist: creates the new songlist */
+      _("Create"),
+      RESPONSE_APPLY,
+      NULL
+      );
+
+  uiCreateVertBox (&vbox);
+  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 4);
+  uiDialogPackInDialog (&manage->cfplDialog, &vbox);
+
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+
+  /* CONTEXT: create from playlist: select the playlist to use */
+  uiCreateColonLabel (&uiwidget, _("Playlist"));
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
+
+  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL],
+      manageCFPLPlaylistSelectHandler, manage);
+  uiwidgetp = uiComboboxCreate (&manage->cfplDialog, "",
+      &manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL],
+      manage->cfplsel, manage);
+  manageCFPLCreatePlaylistList (manage);
+  uiBoxPackStart (&hbox, uiwidgetp);
+
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+
+  /* CONTEXT: create from playlist: set the maximum time for the song list */
+  uiCreateColonLabel (&uiwidget, _("Time Limit"));
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
+
+  uiSpinboxTimeCreate (manage->cfpltmlimit, manage, NULL);
+  uiSpinboxTimeSetValue (manage->cfpltmlimit, 3 * 60 * 1000);
+  uiSpinboxSetRange (manage->cfpltmlimit, 0, 600000);
+  uiwidgetp = uiSpinboxGetUIWidget (manage->cfpltmlimit);
+  uiBoxPackStart (&hbox, uiwidgetp);
+}
+
+static void
+manageCFPLCreatePlaylistList (manageui_t *manage)
+{
+  slist_t           *pllist;
+
+  logProcBegin (LOG_PROC, "manageCreatePlaylistList");
+
+  /* any type of playlist is fine */
+  /* don't really need song list, but leave it for now */
+  pllist = playlistGetPlaylistList (PL_LIST_ALL);
+  /* what text is best to use for 'no selection'? */
+  uiDropDownSetList (manage->cfplsel, pllist, "");
+  slistFree (pllist);
+  logProcEnd (LOG_PROC, "manageCFPLCreatePlaylistList", "");
+}
+
+static bool
+manageCFPLPlaylistSelectHandler (void *udata, long idx)
+{
+  return UICB_CONT;
+}
+
+static bool
+manageCFPLResponseHandler (void *udata, long responseid)
+{
+  manageui_t  *manage = udata;
+  int         x, y;
+
+  uiWindowGetPosition (&manage->cfplDialog, &x, &y);
+  nlistSetNum (manage->options, MANAGE_CFPL_POSITION_X, x);
+  nlistSetNum (manage->options, MANAGE_CFPL_POSITION_Y, y);
+
+  switch (responseid) {
+    case RESPONSE_DELETE_WIN: {
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: del window");
+      uiutilsUIWidgetInit (&manage->cfplDialog);
+      break;
+    }
+    case RESPONSE_CLOSE: {
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: close window");
+      uiWidgetHide (&manage->cfplDialog);
+      break;
+    }
+    case RESPONSE_APPLY: {
+      char          *fn;
+      long          stoptime;
+      char          tbuff [40];
+
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: create");
+      fn = uiDropDownGetString (manage->cfplsel);
+      stoptime = uiSpinboxTimeGetValue (manage->cfpltmlimit);
+      /* convert from mm:ss to hh:mm */
+      stoptime *= 60;
+      /* add in the current hh:mm time to the time limit */
+      stoptime += mstime () - mstimestartofday ();
+      snprintf (tbuff, sizeof (tbuff), "%ld", stoptime);
+      connSendMessage (manage->conn, ROUTE_MAIN,
+          MSG_PL_OVERRIDE_STOP_TIME, tbuff);
+      manageSonglistLoadFile (manage, fn);
+      /* CONTEXT: managementui: song list: default name for a new song list */
+      manageSetSonglistName (manage, _("New Song List"));
+      manage->slbackupcreated = false;
+      uiWidgetHide (&manage->cfplDialog);
+      break;
+    }
+  }
+
+  return UICB_CONT;
+}
+
 static void
 manageSonglistLoadFile (void *udata, const char *fn)
 {
@@ -1367,7 +1548,7 @@ manageLoadPlaylist (void *udata, const char *fn)
 {
   manageui_t    *manage = udata;
 
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: seq: load playlist");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: songlist/seq: load playlist");
   managePlaylistLoadFile (manage->managepl, fn);
   return UICB_CONT;
 }

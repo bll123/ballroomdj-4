@@ -1,5 +1,11 @@
 BallroomDJ 4 Change Log
 
+4.0.0 alpha 2022-??
+
+- management ui
+  - playlist : fix save of a playlist stop time.
+  - song list editor : add : create song list from playlist.
+
 4.0.0 alpha 2022-07-18
 
 - player
