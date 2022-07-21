@@ -7,6 +7,8 @@ BallroomDJ 4 Change Log
     song list.
 - management ui
   - added 'delete' to song list, playlist and sequence edit menus.
+- starter ui
+  - added 'delete profile' to the menu.
 
 4.0.0 alpha 2022-07-21
 

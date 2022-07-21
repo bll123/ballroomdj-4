@@ -58,7 +58,9 @@ if (WIN32)
   target_compile_options (bdj4starterui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4starterui
-  libbdj4ui libuigtk3 libbdj4common
+  libbdj4ui
+  libuigtk3
+  libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   z

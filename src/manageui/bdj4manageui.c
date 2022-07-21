@@ -602,14 +602,6 @@ manageBuildUI (manageui_t *manage)
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SEQ);
 
-  /* file manager */
-  uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
-  /* CONTEXT: managementui: notebook tab title: file manager */
-  uiCreateLabel (&uiwidget, _("File Manager"));
-  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_FILEMGR);
-
   x = nlistGetNum (manage->options, PLUI_SIZE_X);
   y = nlistGetNum (manage->options, PLUI_SIZE_Y);
   uiWindowSetDefaultSize (&manage->window, x, y);

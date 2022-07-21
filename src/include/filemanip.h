@@ -11,7 +11,6 @@ enum {
 int     filemanipCopy (const char *from, const char *to);
 int     filemanipLinkCopy (const char *from, const char *to);
 int     filemanipMove (const char *from, const char *to);
-void    filemanipDeleteDir (const char *dir);
 slist_t * filemanipBasicDirList (const char *dir, const char *extension);
 slist_t * filemanipRecursiveDirList (const char *dir, int flags);
 void    filemanipBackup (const char *fname, int count);

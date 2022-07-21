@@ -23,7 +23,6 @@
 #include "conn.h"
 #include "dirop.h"
 #include "fileop.h"
-#include "filemanip.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -68,6 +67,7 @@ enum {
   START_CB_EXIT,
   START_CB_SEND_SUPPORT,
   START_CB_MENU_STOP_ALL,
+  START_CB_MENU_DEL_PROFILE,
   START_CB_MENU_ALT_SETUP,
   START_CB_SUPPORT_RESP,
   START_CB_SUPPORT_MSG_RESP,
@@ -201,6 +201,7 @@ static void     starterLoadOptions (startui_t *starter);
 static bool     starterSetUpAlternate (void *udata);
 static void     starterQuickConnect (startui_t *starter, bdjmsgroute_t route);
 static void     starterSendPlayerActive (startui_t *starter);
+static bool     starterDeleteProfile (void *udata);
 
 static bool gKillReceived = false;
 static bool gNewProfile = false;
@@ -484,6 +485,12 @@ starterBuildUI (startui_t  *starter)
       starterStopAllProcesses, starter);
   uiMenuCreateItem (&menu, &menuitem, tbuff,
       &starter->callbacks [START_CB_MENU_STOP_ALL]);
+
+  uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_DEL_PROFILE],
+      starterDeleteProfile, starter);
+  /* CONTEXT: starterui: menu item: delete profile */
+  uiMenuCreateItem (&menu, &menuitem, _("Delete Profile"),
+      &starter->callbacks [START_CB_MENU_DEL_PROFILE]);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
@@ -1218,7 +1225,7 @@ starterGetProfiles (startui_t *starter)
   size_t      len;
   nlist_t     *dflist = NULL;
   char        *pname = NULL;
-  int         availidx = -1;
+  int         availprof = -1;
   nlist_t     *proflist = NULL;
   nlist_t     *profidxlist = NULL;
   bool        profileinuse = false;
@@ -1273,27 +1280,33 @@ starterGetProfiles (startui_t *starter)
       }
       datafileFree (df);
       ++count;
-    } else if (availidx == -1) {
+    } else if (availprof == -1) {
       if (i == starter->currprofile) {
         profileinuse = true;
       }
-      availidx = i;
+      availprof = i;
     }
   }
 
   /* CONTEXT: starterui: selection to create a new profile */
   nlistSetStr (proflist, count, _("Create Profile"));
-  nlistSetNum (profidxlist, count, availidx);
-  starter->newprofile = availidx;
+  nlistSetNum (profidxlist, count, availprof);
+  starter->newprofile = availprof;
   len = strlen (nlistGetStr (proflist, count));
   max = len > max ? len : max;
   starter->maxProfileWidth = (int) max;
   if (profileinuse) {
     dispidx = count;
-    starter->currprofile = availidx;
+    starter->currprofile = availprof;
   }
 
+  if (starter->proflist != NULL) {
+    nlistFree (starter->proflist);
+  }
   starter->proflist = proflist;
+  if (starter->profidxlist != NULL) {
+    nlistFree (starter->profidxlist);
+  }
   starter->profidxlist = profidxlist;
 
   sysvarsSetNum (SVL_BDJIDX, starter->currprofile);
@@ -1983,4 +1996,41 @@ starterSendPlayerActive (startui_t *starter)
 
   snprintf (tmp, sizeof (tmp), "%d", starter->playeruistarted);
   connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_PLAYERUI_ACTIVE, tmp);
+}
+
+
+static bool
+starterDeleteProfile (void *udata)
+{
+  startui_t *starter = udata;
+  int       dispidx;
+  char      tbuff [MAXPATHLEN];
+
+  if (starter->currprofile == 0 ||
+     starter->currprofile == starter->newprofile) {
+    uiLabelSetText (&starter->statusMsg, _("Profile may not be deleted."));
+    return UICB_STOP;
+  }
+
+  logEnd ();
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
+      PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+  if (fileopIsDirectory (tbuff)) {
+    diropDeleteDir (tbuff);
+  }
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
+      PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+  if (fileopIsDirectory (tbuff)) {
+    diropDeleteDir (tbuff);
+  }
+
+  dispidx = starterGetProfiles (starter);
+  uiSpinboxTextSet (starter->profilesel, 0,
+      nlistGetCount (starter->proflist), starter->maxProfileWidth,
+      starter->proflist, NULL, starterSetProfile);
+  uiSpinboxTextSetValue (starter->profilesel, dispidx);
+
+  snprintf (tbuff, sizeof (tbuff), _("Restart %s."), BDJ4_NAME);
+  uiLabelSetText (&starter->statusMsg, tbuff);
+  return UICB_CONT;
 }
