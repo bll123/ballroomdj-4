@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-21 05:45-0700\n"
+"POT-Creation-Date: 2022-07-21 11:11-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -494,7 +494,14 @@ msgid "Default Volume"
 msgstr ""
 
 #. CONTEXT: configuration: table edit: button: delete selection
+#. CONTEXT: managementui: menu selection: song list: edit menu: delete song list
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
 msgid "Delete"
+msgstr ""
+
+#. CONTEXT: starterui: menu item: delete profile
+msgid "Delete Profile"
 msgstr ""
 
 #. CONTEXT: label: disc number
@@ -681,10 +688,6 @@ msgstr ""
 
 #. CONTEXT: song editor: label for displaying the audio file path
 msgid "File"
-msgstr ""
-
-#. CONTEXT: managementui: notebook tab title: file manager
-msgid "File Manager"
 msgstr ""
 
 #. CONTEXT: configuration: song filter display settings
@@ -1009,7 +1012,7 @@ msgstr ""
 msgid "New %s installation."
 msgstr ""
 
-#. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic sequence
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
 msgid "New Automatic Playlist"
 msgstr ""
 
@@ -1242,6 +1245,10 @@ msgstr ""
 msgid "Profile in use"
 msgstr ""
 
+#. CONTEXT: starter: status message
+msgid "Profile may not be deleted."
+msgstr ""
+
 #. CONTEXT: configuration: remote control: the link to display the QR code for remote control
 #. CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee
 msgid "QR Code"
@@ -1370,6 +1377,11 @@ msgstr ""
 #. CONTEXT: song selection filter: filter dialog: resets the selections
 #. CONTEXT: bpm counter: reset button
 msgid "Reset"
+msgstr ""
+
+#. CONTEXT: starter: status message (restart BDJ4)
+#, c-format
+msgid "Restart %s."
 msgstr ""
 
 #. CONTEXT: playerui: button: tooltip: return to the beginning of the song

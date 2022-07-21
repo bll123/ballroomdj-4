@@ -2007,7 +2007,8 @@ starterDeleteProfile (void *udata)
   char      tbuff [MAXPATHLEN];
 
   if (starter->currprofile == 0 ||
-     starter->currprofile == starter->newprofile) {
+      starter->currprofile == starter->newprofile) {
+    /* CONTEXT: starter: status message */
     uiLabelSetText (&starter->statusMsg, _("Profile may not be deleted."));
     return UICB_STOP;
   }
@@ -2030,6 +2031,7 @@ starterDeleteProfile (void *udata)
       starter->proflist, NULL, starterSetProfile);
   uiSpinboxTextSetValue (starter->profilesel, dispidx);
 
+  /* CONTEXT: starter: status message (restart BDJ4) */
   snprintf (tbuff, sizeof (tbuff), _("Restart %s."), BDJ4_NAME);
   uiLabelSetText (&starter->statusMsg, tbuff);
   return UICB_CONT;

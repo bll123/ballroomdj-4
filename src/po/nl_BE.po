@@ -496,8 +496,15 @@ msgid "Default Volume"
 msgstr "Standaard Volume"
 
 #. CONTEXT: configuration: table edit: button: delete selection
+#. CONTEXT: managementui: menu selection: song list: edit menu: delete song list
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist
+#. CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence
 msgid "Delete"
 msgstr "Verwijderen"
+
+#. CONTEXT: starterui: menu item: delete profile
+msgid "Delete Profile"
+msgstr ""
 
 #. CONTEXT: label: disc number
 msgid "Disc"
@@ -684,10 +691,6 @@ msgstr ""
 #. CONTEXT: song editor: label for displaying the audio file path
 msgid "File"
 msgstr ""
-
-#. CONTEXT: managementui: notebook tab title: file manager
-msgid "File Manager"
-msgstr "File Manager"
 
 #. CONTEXT: configuration: song filter display settings
 msgid "Filter Display"
@@ -1012,7 +1015,7 @@ msgstr "Nieuw"
 msgid "New %s installation."
 msgstr ""
 
-#. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic sequence
+#. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
 msgid "New Automatic Playlist"
 msgstr ""
 
@@ -1245,6 +1248,10 @@ msgstr "Profielnaam"
 msgid "Profile in use"
 msgstr ""
 
+#. CONTEXT: starter: status message
+msgid "Profile may not be deleted."
+msgstr ""
+
 #. CONTEXT: configuration: remote control: the link to display the QR code for remote control
 #. CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee
 msgid "QR Code"
@@ -1374,6 +1381,11 @@ msgstr "Externe Aanvraag"
 #. CONTEXT: bpm counter: reset button
 msgid "Reset"
 msgstr "Resetten"
+
+#. CONTEXT: starter: status message (restart BDJ4)
+#, c-format
+msgid "Restart %s."
+msgstr ""
 
 #. CONTEXT: playerui: button: tooltip: return to the beginning of the song
 msgid "Return to beginning of song"
