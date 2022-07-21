@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-06-08\n"
-"PO-Revision-Date: 2022-07-18\n"
+"PO-Revision-Date: 2022-07-21\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -354,6 +354,7 @@ msgstr "Klik met de muisaanwijzer in het blauwe vak op de maat van de muziek."
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: bpm counter: close button
+#. CONTEXT: create from playlist: closes the dialog
 #. CONTEXT: playerui: marquee font size dialog: action button
 #. CONTEXT: helperui: close the helper window
 #. CONTEXT: starterui: support dialog: closes the dialog
@@ -420,6 +421,10 @@ msgstr ""
 msgid "Count"
 msgstr "Tellen"
 
+#. CONTEXT: create from playlist: creates the new songlist
+msgid "Create"
+msgstr "Maak"
+
 #. CONTEXT: managementui: menu selection: song list: edit menu: create copy
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
@@ -428,6 +433,11 @@ msgstr "Kopie maken"
 
 #. CONTEXT: starterui: selection to create a new profile
 msgid "Create Profile"
+msgstr ""
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
+#. CONTEXT: create from playlist: title for the dialog
+msgid "Create from Playlist"
 msgstr ""
 
 #. CONTEXT: set up alternate: status message
@@ -1170,6 +1180,7 @@ msgid "Player Options"
 msgstr "Speler Opties"
 
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
+#. CONTEXT: create from playlist: select the playlist to use
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist"
 msgstr "Afspeellijst"
@@ -1637,6 +1648,10 @@ msgstr ""
 #. CONTEXT: configuration: the theme to use for the user interface
 msgid "Theme"
 msgstr "Thema"
+
+#. CONTEXT: create from playlist: set the maximum time for the song list
+msgid "Time Limit"
+msgstr "Tijdslimiet"
 
 #. CONTEXT: configuration: dances: time signature for the dance
 msgid "Time Signature"

@@ -2,7 +2,7 @@ BDJ4 4.0.0
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 20220718
+Alpha Release: 20220721
 
   Alpha releases are mostly untested works in progress.
 
@@ -35,14 +35,16 @@ Installation:
       [ I have not tested with 'brew'.  That's in the future someday. ]
     b) Run the BallroomDJ 4 installer.
 
-Release Notes: 20220718
+Release Notes: 20220721
   This release represents a working player user interface,
   the configuration user interface,
   and a partly functional management interface:
-    - song list editor (not all features present)
+    - song list editor
+      (some features are not implemented)
     - sequence editor
     - playlist management
-    - music manager / song editor
+    - music manager / song editor / bpm counter
+      (batch editing is not implemented)
 
   This installation will not affect any BallroomDJ 3 installation.
   (The features that rename audio files and write audio file tags are

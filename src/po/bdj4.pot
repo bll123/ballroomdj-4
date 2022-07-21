@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-18 07:55-0700\n"
+"POT-Creation-Date: 2022-07-21 05:30-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -352,6 +352,7 @@ msgstr ""
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: bpm counter: close button
+#. CONTEXT: create from playlist: closes the dialog
 #. CONTEXT: playerui: marquee font size dialog: action button
 #. CONTEXT: helperui: close the helper window
 #. CONTEXT: starterui: support dialog: closes the dialog
@@ -418,6 +419,10 @@ msgstr ""
 msgid "Count"
 msgstr ""
 
+#. CONTEXT: create from playlist: creates the new songlist
+msgid "Create"
+msgstr ""
+
 #. CONTEXT: managementui: menu selection: song list: edit menu: create copy
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: create copy
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy
@@ -426,6 +431,11 @@ msgstr ""
 
 #. CONTEXT: starterui: selection to create a new profile
 msgid "Create Profile"
+msgstr ""
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
+#. CONTEXT: create from playlist: title for the dialog
+msgid "Create from Playlist"
 msgstr ""
 
 #. CONTEXT: set up alternate: status message
@@ -1167,6 +1177,7 @@ msgid "Player Options"
 msgstr ""
 
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
+#. CONTEXT: create from playlist: select the playlist to use
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist"
 msgstr ""
@@ -1633,6 +1644,10 @@ msgstr ""
 
 #. CONTEXT: configuration: the theme to use for the user interface
 msgid "Theme"
+msgstr ""
+
+#. CONTEXT: create from playlist: set the maximum time for the song list
+msgid "Time Limit"
 msgstr ""
 
 #. CONTEXT: configuration: dances: time signature for the dance
