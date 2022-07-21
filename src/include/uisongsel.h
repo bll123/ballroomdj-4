@@ -40,6 +40,7 @@ typedef struct uisongsel {
   UICallback        *editcb;
   dbidx_t           lastdbidx;
   nlist_t           *songlistdbidxlist;
+  slist_t           *samesonglist;
   /* peers */
   int               peercount;
   uisongsel_t       *peers [UISONGSEL_PEER_MAX];

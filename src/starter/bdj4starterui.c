@@ -26,6 +26,7 @@
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
+#include "misc.h"
 #include "nlist.h"
 #include "osuiutils.h"
 #include "osutils.h"
@@ -1377,10 +1378,7 @@ starterCheckProfile (startui_t *starter)
     uiWindowSetTitle (&starter->window, tbuff);
 
     /* select a completely random color */
-    r = (int) (dRandom () * 256.0);
-    g = (int) (dRandom () * 256.0);
-    b = (int) (dRandom () * 256.0);
-    snprintf (tbuff, sizeof (tbuff), "#%02x%02x%02x", r, g, b);
+    createRandomColor (tbuff, sizeof (tbuff));
     bdjoptSetStr (OPT_P_UI_PROFILE_COL, tbuff);
     uiLabelSetBackgroundColor (&starter->profileAccent,
         bdjoptGetStr (OPT_P_UI_PROFILE_COL));

@@ -18,6 +18,7 @@
 #include "bdj4ui.h"
 #include "conn.h"
 #include "log.h"
+#include "misc.h"
 #include "musicq.h"
 #include "nlist.h"
 #include "songfilter.h"
@@ -62,6 +63,9 @@ enum {
   SONGSEL_CB_DANCE_SEL,
   SONGSEL_CB_MAX,
 };
+
+#define MARK_DISPLAY "\xe2\x96\x8B"  // left five-eights block
+
 
 typedef struct uisongselgtk {
   UICallback          callbacks [SONGSEL_CB_MAX];
@@ -318,7 +322,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   }
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", SONGSEL_COL_MARK,
-      "foreground", SONGSEL_COL_MARK_COLOR,
+      "foreground", col,
       "font", SONGSEL_COL_FONT,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
@@ -386,6 +390,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   char                * listingFont;
   slist_t             * sellist;
   double              tupper;
+  char                * sscolor = "#000000";
 
   logProcBegin (LOG_PROC, "uisongselPopulateData");
   uiw = uisongsel->uiWidgetData;
@@ -416,12 +421,31 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         char    *mark;
 
         mark = "";
-        if (uisongsel->songlistdbidxlist != NULL) {
+        if (uisongsel->dispselType != DISP_SEL_MM &&
+            uisongsel->songlistdbidxlist != NULL) {
           /* check and see if the song is in the song list */
           if (nlistGetNum (uisongsel->songlistdbidxlist, dbidx) >= 0) {
-            mark = "\xe2\x96\x8B"; // left five-eights block
+            mark = MARK_DISPLAY;
           }
         }
+
+        if (uisongsel->dispselType == DISP_SEL_MM) {
+          char  *samesong;
+          char  tbuff [100];
+
+          samesong = songGetStr (song, TAG_SAMESONG);
+          if (samesong != NULL && *samesong) {
+            sscolor = slistGetStr (uisongsel->samesonglist, samesong);
+            if (sscolor == NULL) {
+              createRandomColor (tbuff, sizeof (tbuff));
+              slistSetStr (uisongsel->samesonglist, samesong, tbuff);
+              sscolor = slistGetStr (uisongsel->samesonglist, samesong);
+            }
+            mark = MARK_DISPLAY;
+          }
+        }
+
+        /* favorite color processing */
         favorite = songGetFavoriteData (song);
         color = favorite->color;
         if (strcmp (color, "") == 0) {
@@ -438,7 +462,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
             SONGSEL_COL_FAV_COLOR, color,
             SONGSEL_COL_MARK_COLOR, uiw->markcolor,
             SONGSEL_COL_MARK, mark,
-            SONGSEL_COL_SAMESONG_COLOR, uiw->markcolor,
+            SONGSEL_COL_SAMESONG_COLOR, sscolor,
             -1);
 
         sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);

@@ -19,6 +19,7 @@ add_library (libbdj4common SHARED
   localeutil.c
   lock.c
   log.c
+  misc.c
   nlist.c
   osnetutils.c
   osutils.c

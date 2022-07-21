@@ -64,6 +64,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->playcb = NULL;
   uisongsel->editcb = NULL;
   uisongsel->songlistdbidxlist = NULL;
+  uisongsel->samesonglist = slistAlloc ("samesong-list", LIST_ORDERED, free);
 
   uisongselUIInit (uisongsel);
 
@@ -93,6 +94,12 @@ uisongselFree (uisongsel_t *uisongsel)
   logProcBegin (LOG_PROC, "uisongselFree");
 
   if (uisongsel != NULL) {
+    if (uisongsel->songlistdbidxlist != NULL) {
+      nlistFree (uisongsel->songlistdbidxlist);
+    }
+    if (uisongsel->samesonglist != NULL) {
+      slistFree (uisongsel->samesonglist);
+    }
     uidanceFree (uisongsel->uidance);
     uisongselUIFree (uisongsel);
     free (uisongsel);
