@@ -3,7 +3,7 @@ BallroomDJ 4 Change Log
 4.0.0 alpha 2022-??
 
 - player ui / management ui
-  - song selection will now display a mark when the song is in the
+  - song selection / request will now display a mark when the song is in the
     song list.
 
 4.0.0 alpha 2022-07-21

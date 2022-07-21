@@ -36,6 +36,7 @@ enum {
   SONGSEL_COL_FAV_COLOR,
   SONGSEL_COL_MARK_COLOR,
   SONGSEL_COL_MARK,
+  SONGSEL_COL_SAMESONG_COLOR,
   SONGSEL_COL_MAX,
 };
 
@@ -83,6 +84,7 @@ typedef struct uisongselgtk {
   GtkTreeIter       *iterp;
   GType             *typelist;
   int               col;        // for the display type callback
+  const char        *markcolor;
   bool              controlPressed : 1;
   bool              shiftPressed : 1;
   bool              inscroll : 1;
@@ -140,6 +142,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
     uiutilsUICallbackInit (&uiw->callbacks [i], NULL, NULL);
   }
   uiutilsUIWidgetInit (&uiw->playbutton);
+  uiw->markcolor = bdjoptGetStr (OPT_P_UI_MARK_COL);
 
   uisongsel->uiWidgetData = uiw;
 }
@@ -175,6 +178,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   double            tupper;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
+  int               col;
 
   logProcBegin (LOG_PROC, "uisongselBuildUI");
 
@@ -308,6 +312,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
 
   /* the mark display is a special case, it always exists */
   renderer = gtk_cell_renderer_text_new ();
+  col = SONGSEL_COL_MARK_COLOR;
+  if (uisongsel->dispselType == DISP_SEL_MM) {
+    col = SONGSEL_COL_SAMESONG_COLOR;
+  }
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", SONGSEL_COL_MARK,
       "foreground", SONGSEL_COL_MARK_COLOR,
@@ -372,7 +380,6 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   song_t              * song;
   songfavoriteinfo_t  * favorite;
   char                * color;
-  char                * markcolor = "#2222ff";
   char                tmp [40];
   char                tbuff [100];
   dbidx_t             dbidx;
@@ -429,8 +436,9 @@ uisongselPopulateData (uisongsel_t *uisongsel)
             SONGSEL_COL_SORTIDX, (glong) idx,
             SONGSEL_COL_DBIDX, (glong) dbidx,
             SONGSEL_COL_FAV_COLOR, color,
-            SONGSEL_COL_MARK_COLOR, markcolor,
+            SONGSEL_COL_MARK_COLOR, uiw->markcolor,
             SONGSEL_COL_MARK, mark,
+            SONGSEL_COL_SAMESONG_COLOR, uiw->markcolor,
             -1);
 
         sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
@@ -812,10 +820,12 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   /* attributes ellipsize/align/font*/
   uiw->typelist [uiw->col++] = G_TYPE_INT;
   uiw->typelist [uiw->col++] = G_TYPE_STRING;
-  /* internal idx/sortidx/dbidx/fav color/mark color/mark */
+  /* internal idx/sortidx/dbidx */
   uiw->typelist [uiw->col++] = G_TYPE_LONG,
   uiw->typelist [uiw->col++] = G_TYPE_LONG,
   uiw->typelist [uiw->col++] = G_TYPE_LONG,
+  /* fav color/mark color/mark/samesong color */
+  uiw->typelist [uiw->col++] = G_TYPE_STRING,
   uiw->typelist [uiw->col++] = G_TYPE_STRING,
   uiw->typelist [uiw->col++] = G_TYPE_STRING,
   uiw->typelist [uiw->col++] = G_TYPE_STRING,
