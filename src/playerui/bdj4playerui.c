@@ -25,6 +25,7 @@
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
+#include "msgparse.h"
 #include "musicq.h"
 #include "osuiutils.h"
 #include "osutils.h"
@@ -698,6 +699,24 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_SONG_SELECT: {
+          mp_songselect_t   *songselect;
+
+          songselect = msgparseSongSelect (args);
+          /* the display is offset by 1, as the 0 index is the current song */
+          --songselect->loc;
+          uimusicqProcessSongSelect (plui->uimusicq, songselect);
+          msgparseSongSelectFree (songselect);
+          dbgdisp = true;
+        }
+        case MSG_MUSIC_QUEUE_DATA: {
+          mp_musicqupdate_t  *musicqupdate;
+
+          musicqupdate = msgparseMusicQueueData (args);
+          uimusicqProcessMusicQueueData (plui->uimusicq, musicqupdate);
+          msgparseMusicQueueDataFree (musicqupdate);
+          break;
+        }
         case MSG_DATABASE_UPDATE: {
           plui->musicdb = bdj4ReloadDatabase (plui->musicdb);
           uiplayerSetDatabase (plui->uiplayer, plui->musicdb);
@@ -729,7 +748,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   /* due to the db update message, these must be applied afterwards */
   uiplayerProcessMsg (routefrom, route, msg, args, plui->uiplayer);
   uisongselProcessMsg (routefrom, route, msg, args, plui->uisongsel);
-  uimusicqProcessMsg (routefrom, route, msg, args, plui->uimusicq);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

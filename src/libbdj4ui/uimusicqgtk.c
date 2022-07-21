@@ -12,6 +12,7 @@
 #include "bdjopt.h"
 #include "dispsel.h"
 #include "log.h"
+#include "msgparse.h"
 #include "musicdb.h"
 #include "pathbld.h"
 #include "uimusicq.h"
@@ -39,9 +40,9 @@ enum {
 
 static bool   uimusicqQueueDanceCallback (void *udata, long idx);
 static bool   uimusicqQueuePlaylistCallback (void *udata, long idx);
-static void   uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, int ci, int newdispflag);
+static void   uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate, int newdispflag);
 static void   uimusicqProcessMusicQueueDataNewCallback (int type, void *udata);
-static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, int ci);
+static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
 static void   uimusicqSetMusicqDisplay (uimusicq_t *uimusicq,
     GtkTreeModel *model, GtkTreeIter *iter, song_t *song, int ci);
 static void   uimusicqSetMusicqDisplayCallback (int col, long num, const char *str, void *udata);
@@ -440,7 +441,7 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
 
 
 void
-uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args)
+uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate)
 {
   int               ci;
   GtkTreeModel      *model = NULL;
@@ -449,7 +450,7 @@ uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args)
 
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueData");
 
-  ci = uimusicqMusicQueueDataParse (uimusicq, args);
+  ci = musicqupdate->mqidx;
   if (! uimusicq->ui [ci].hasui) {
     logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "no-ui");
     return;
@@ -461,8 +462,7 @@ uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, char * args)
   if (model == NULL) {
     newdispflag = MUSICQ_NEW_DISP;
   }
-  uimusicqProcessMusicQueueDataUpdate (uimusicq, ci, newdispflag);
-  uimusicqMusicQueueDataFree (uimusicq);
+  uimusicqProcessMusicQueueDataUpdate (uimusicq, musicqupdate, newdispflag);
   logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "");
 }
 
@@ -583,14 +583,17 @@ uimusicqQueuePlaylistCallback (void *udata, long idx)
 }
 
 static void
-uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, int ci, int newdispflag)
+uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
+    mp_musicqupdate_t *musicqupdate, int newdispflag)
 {
   GtkListStore      *store = NULL;
   slist_t           *sellist;
   uimusicqgtk_t     *uiw;
+  int               ci;
 
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDataUpdate");
 
+  ci = musicqupdate->mqidx;
   uiw = uimusicq->ui [ci].uiWidgets;
 
   if (newdispflag == MUSICQ_NEW_DISP) {
@@ -617,7 +620,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, int ci, int newdispfl
     g_object_unref (G_OBJECT (store));
   }
 
-  uimusicqProcessMusicQueueDisplay (uimusicq, ci);
+  uimusicqProcessMusicQueueDisplay (uimusicq, musicqupdate);
   logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDataUpdate", "");
 }
 
@@ -633,42 +636,44 @@ uimusicqProcessMusicQueueDataNewCallback (int type, void *udata)
 }
 
 static void
-uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, int ci)
+uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
+    mp_musicqupdate_t *musicqupdate)
 {
   GtkTreeModel  *model;
   GtkTreeIter   iter;
   bool          valid;
   const char    *listingFont;
-  musicqupdate_t *musicqupdate;
+  mp_musicqupditem_t *musicqupditem;
   nlistidx_t    iteridx;
   uimusicqgtk_t *uiw;
+  int           ci;
 
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDisplay");
 
+  ci = musicqupdate->mqidx;
   uiw = uimusicq->ui [ci].uiWidgets;
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->musicqTree));
   if (model == NULL) {
     logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDisplay", "null-model");
-    uimusicqMusicQueueDataFree (uimusicq);
     return;
   }
 
   valid = gtk_tree_model_get_iter_first (model, &iter);
 
-  uimusicq->ui [ci].count = nlistGetCount (uimusicq->dispList);
-  nlistStartIterator (uimusicq->dispList, &iteridx);
-  while ((musicqupdate = nlistIterateValueData (uimusicq->dispList, &iteridx)) != NULL) {
+  uimusicq->ui [ci].count = nlistGetCount (musicqupdate->dispList);
+  nlistStartIterator (musicqupdate->dispList, &iteridx);
+  while ((musicqupditem = nlistIterateValueData (musicqupdate->dispList, &iteridx)) != NULL) {
     song_t        *song;
     GdkPixbuf     *pixbuf;
 
     pixbuf = NULL;
-    if (musicqupdate->pflag) {
+    if (musicqupditem->pflag) {
       pixbuf = uimusicq->pausePixbuf.pixbuf;
     }
 
-    song = dbGetByIdx (uimusicq->musicdb, musicqupdate->dbidx);
+    song = dbGetByIdx (uimusicq->musicdb, musicqupditem->dbidx);
 
     /* there's no need to determine if the entry is new or not    */
     /* simply overwrite everything until the end of the gtk-store */
@@ -678,17 +683,17 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, int ci)
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
           MUSICQ_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
           MUSICQ_COL_FONT, listingFont,
-          MUSICQ_COL_DISP_IDX, (glong) musicqupdate->dispidx,
-          MUSICQ_COL_UNIQUE_IDX, (glong) musicqupdate->uniqueidx,
-          MUSICQ_COL_DBIDX, (glong) musicqupdate->dbidx,
+          MUSICQ_COL_DISP_IDX, (glong) musicqupditem->dispidx,
+          MUSICQ_COL_UNIQUE_IDX, (glong) musicqupditem->uniqueidx,
+          MUSICQ_COL_DBIDX, (glong) musicqupditem->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           -1);
     } else {
       /* all data must be updated */
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-          MUSICQ_COL_DISP_IDX, (glong) musicqupdate->dispidx,
-          MUSICQ_COL_UNIQUE_IDX, (glong) musicqupdate->uniqueidx,
-          MUSICQ_COL_DBIDX, (glong) musicqupdate->dbidx,
+          MUSICQ_COL_DISP_IDX, (glong) musicqupditem->dispidx,
+          MUSICQ_COL_UNIQUE_IDX, (glong) musicqupditem->uniqueidx,
+          MUSICQ_COL_DBIDX, (glong) musicqupditem->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           -1);
     }

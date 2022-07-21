@@ -22,7 +22,6 @@
 #include "uimusicq.h"
 #include "ui.h"
 
-static void   uimusicqProcessSongSelect (uimusicq_t *uimusicq, char * args);
 static void   uimusicqSaveListCallback (uimusicq_t *uimusicq, dbidx_t dbidx);
 
 uimusicq_t *
@@ -43,9 +42,6 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq->dispsel = dispsel;
   uimusicq->musicdb = musicdb;
   uimusicq->dispselType = dispselType;
-  uimusicq->uniqueList = NULL;
-  uimusicq->dispList = NULL;
-  uimusicq->workList = NULL;
   uimusicq->statusMsg = NULL;
 
   for (int i = 0; i < MUSICQ_MAX; ++i) {
@@ -103,7 +99,6 @@ uimusicqFree (uimusicq_t *uimusicq)
 {
   logProcBegin (LOG_PROC, "uimusicqFree");
   if (uimusicq != NULL) {
-    uimusicqMusicQueueDataFree (uimusicq);
     uiWidgetClearPersistent (&uimusicq->pausePixbuf);
     for (int i = 0; i < MUSICQ_MAX; ++i) {
       uiDropDownFree (uimusicq->ui [i].playlistsel);
@@ -120,56 +115,6 @@ uimusicqMainLoop (uimusicq_t *uimusicq)
 {
   uimusicqUIMainLoop (uimusicq);
   return;
-}
-
-int
-uimusicqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
-    bdjmsgmsg_t msg, char *args, void *udata)
-{
-  uimusicq_t    *uimusicq = udata;
-  bool          dbgdisp = false;
-  char          *targs = NULL;
-
-  if (args != NULL) {
-    targs = strdup (args);
-  }
-
-  switch (route) {
-    case ROUTE_NONE:
-    case ROUTE_MANAGEUI:
-    case ROUTE_PLAYERUI: {
-      switch (msg) {
-        case MSG_MUSIC_QUEUE_DATA: {
-          uimusicqProcessMusicQueueData (uimusicq, targs);
-          // dbgdisp = true;
-          break;
-        }
-        case MSG_SONG_SELECT: {
-          uimusicqProcessSongSelect (uimusicq, targs);
-          dbgdisp = true;
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-      break;
-    }
-    default: {
-      break;
-    }
-  }
-
-  if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "uimusicq (%d): rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-        uimusicq->dispselType, routefrom, msgRouteDebugText (routefrom),
-        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
-  }
-  if (args != NULL) {
-    free (targs);
-  }
-
-  return 0;
 }
 
 void
@@ -288,22 +233,14 @@ uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname)
   uimusicq->savelist = NULL;
 }
 
-/* internal routines */
-
-static void
-uimusicqProcessSongSelect (uimusicq_t *uimusicq, char * args)
+void
+uimusicqProcessSongSelect (uimusicq_t *uimusicq, mp_songselect_t *songselect)
 {
-  char    *p;
-  char    *tokstr;
-  int     mqidx;
-
-  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  mqidx = atoi (p);
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  uimusicq->ui [mqidx].haveselloc = true;
-  uimusicq->ui [mqidx].selectLocation = atol (p);
+  uimusicq->ui [songselect->mqidx].haveselloc = true;
+  uimusicq->ui [songselect->mqidx].selectLocation = songselect->loc;
 }
 
+/* internal routines */
 
 static void
 uimusicqSaveListCallback (uimusicq_t *uimusicq, dbidx_t dbidx)

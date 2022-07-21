@@ -15,6 +15,7 @@
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
 #include "manageui.h"
+#include "msgparse.h"
 #include "musicdb.h"
 #include "musicq.h"
 #include "nlist.h"
@@ -41,7 +42,6 @@ typedef struct managestats {
   long        tottime;
 } managestats_t;
 
-static void manageStatsProcessData (managestats_t *managestats, char *data);
 static void manageStatsDisplayStats (managestats_t *managestats);
 
 
@@ -151,82 +151,33 @@ manageBuildUIStats (managestats_t *managestats)
 }
 
 void
-manageStatsProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
-    bdjmsgmsg_t msg, char *args, managestats_t *managestats)
-{
-  char          *targs = NULL;
-
-  if (args != NULL) {
-    targs = strdup (args);
-  }
-
-  switch (route) {
-    case ROUTE_NONE:
-    case ROUTE_MANAGEUI:
-    case ROUTE_PLAYERUI: {
-      switch (msg) {
-        case MSG_MUSIC_QUEUE_DATA: {
-          manageStatsProcessData (managestats, targs);
-          // dbgdisp = true;
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-    }
-    default: {
-      break;
-    }
-  }
-
-  if (targs != NULL) {
-    free (targs);
-  }
-}
-
-static void
-manageStatsProcessData (managestats_t *managestats, char *data)
+manageStatsProcessData (managestats_t *managestats, mp_musicqupdate_t *musicqupdate)
 {
   int               ci;
-  char              *p;
-  char              *tokstr;
-  dbidx_t           dbidx;
   ilistidx_t        danceIdx;
   song_t            *song;
   nlist_t           *dcounts;
+  nlistidx_t        iteridx;
+  mp_musicqupditem_t   *musicqupditem;
 
+  ci = musicqupdate->mqidx;
   managestats->songcount = 0;
   managestats->tottime = 0;
 
-  p = strtok_r (data, MSG_ARGS_RS_STR, &tokstr);
-  ci = atoi (p);
   if (ci != MUSICQ_SL) {
     return;
   }
 
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  managestats->tottime = atol (p);
+  managestats->tottime = musicqupdate->tottime;
 
   dcounts = nlistAlloc ("stats", LIST_ORDERED, NULL);
 
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  while (p != NULL) {
-    /* dispidx */
-    p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-    /* uniqueidx */
-    p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-    /* database idx */
-    dbidx = atol (p);
-    p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-    /* pause flag */
-
-    song = dbGetByIdx (managestats->musicdb, dbidx);
+  nlistStartIterator (musicqupdate->dispList, &iteridx);
+  while ((musicqupditem = nlistIterateValueData (musicqupdate->dispList, &iteridx)) != NULL) {
+    song = dbGetByIdx (managestats->musicdb, musicqupditem->dbidx);
     danceIdx = songGetNum (song, TAG_DANCE);
     nlistIncrement (dcounts, danceIdx);
     ++managestats->songcount;
-
-    p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   }
 
   if (managestats->dancecounts != NULL) {

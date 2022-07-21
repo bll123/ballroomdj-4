@@ -1680,8 +1680,6 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
     if (loc > 0) {
       char  tbuff [40];
 
-      /* the display is offset by 1, as the 0 index is the current song */
-      --loc;
       snprintf (tbuff, sizeof (tbuff), "%d%c%ld",
           mainData->musicqManageIdx, MSG_ARGS_RS, loc);
       connSendMessage (mainData->conn, routefrom, MSG_SONG_SELECT, tbuff);

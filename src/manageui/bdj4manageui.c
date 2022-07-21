@@ -30,6 +30,7 @@
 #include "log.h"
 #include "manageui.h"
 #include "m3u.h"
+#include "msgparse.h"
 #include "musicq.h"
 #include "osuiutils.h"
 #include "osutils.h"
@@ -1068,6 +1069,29 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           msg = MSG_DATABASE_UPDATE;
           break;
         }
+        case MSG_MUSIC_QUEUE_DATA: {
+          mp_musicqupdate_t  *musicqupdate;
+
+          musicqupdate = msgparseMusicQueueData (args);
+          uimusicqProcessMusicQueueData (manage->slmusicq, musicqupdate);
+          uimusicqProcessMusicQueueData (manage->slezmusicq, musicqupdate);
+          uimusicqProcessMusicQueueData (manage->mmmusicq, musicqupdate);
+          manageStatsProcessData (manage->slstats, musicqupdate);
+          msgparseMusicQueueDataFree (musicqupdate);
+          break;
+        }
+        case MSG_SONG_SELECT: {
+          mp_songselect_t   *songselect;
+
+          songselect = msgparseSongSelect (args);
+          /* the display is offset by 1, as the 0 index is the current song */
+          --songselect->loc;
+          uimusicqProcessSongSelect (manage->slmusicq, songselect);
+          uimusicqProcessSongSelect (manage->slezmusicq, songselect);
+          uimusicqProcessSongSelect (manage->mmmusicq, songselect);
+          msgparseSongSelectFree (songselect);
+          break;
+        }
         case MSG_PLAYERUI_ACTIVE: {
           int   val;
 
@@ -1095,14 +1119,10 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   /* due to the db update message, these must be applied afterwards */
   uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
-  uimusicqProcessMsg (routefrom, route, msg, args, manage->slmusicq);
-  manageStatsProcessMsg (routefrom, route, msg, args, manage->slstats);
   uisongselProcessMsg (routefrom, route, msg, args, manage->slsongsel);
   uisongselProcessMsg (routefrom, route, msg, args, manage->slezsongsel);
-  uimusicqProcessMsg (routefrom, route, msg, args, manage->slezmusicq);
   uiplayerProcessMsg (routefrom, route, msg, args, manage->mmplayer);
   uisongselProcessMsg (routefrom, route, msg, args, manage->mmsongsel);
-  uimusicqProcessMsg (routefrom, route, msg, args, manage->mmmusicq);
   uisongeditProcessMsg (routefrom, route, msg, args, manage->mmsongedit);
 
   /* reset the bypass flag after a music queue update has been received */

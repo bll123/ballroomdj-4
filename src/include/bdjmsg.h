@@ -148,6 +148,8 @@ typedef enum {
   PREP_ANNOUNCE,
 } bdjmsgprep_t;
 
+/* make the message size large enough to handle a */
+/* 10 hour create-from-playlist message */
 enum {
   BDJMSG_MAX_ARGS = 16384,
   BDJMSG_MAX = (8 * 2 + 3 + BDJMSG_MAX_ARGS),
