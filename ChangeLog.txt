@@ -6,7 +6,8 @@ BallroomDJ 4 Change Log
   - song selection / request will now display a mark when the song is in the
     song list.
 - management ui
-  - added 'delete' to song list, playlist and sequence edit menus.
+  - song list, playlist and sequence editor: add delete to menu.
+  - music manager: display same song marks.
 - starter ui
   - added 'delete profile' to the menu.
 
