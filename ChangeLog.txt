@@ -5,6 +5,8 @@ BallroomDJ 4 Change Log
 - player ui / management ui
   - song selection / request will now display a mark when the song is in the
     song list.
+- management ui
+  - added 'delete' to song list, playlist and sequence edit menus.
 
 4.0.0 alpha 2022-07-21
 

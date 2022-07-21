@@ -29,6 +29,7 @@ enum {
   MSEQ_MENU_CB_SEQ_LOAD,
   MSEQ_MENU_CB_SEQ_COPY,
   MSEQ_MENU_CB_SEQ_NEW,
+  MSEQ_MENU_CB_SEQ_DELETE,
   MSEQ_CB_SEQ_LOAD,
   MSEQ_CB_MAX,
 };
@@ -51,6 +52,7 @@ static bool   manageSequenceLoad (void *udata);
 static bool   manageSequenceCopy (void *udata);
 static void   manageSequenceLoadFile (void *udata, const char *fn);
 static bool   manageSequenceNew (void *udata);
+static bool   manageSequenceDelete (void *udata);
 static void   manageSetSequenceName (manageseq_t *manageseq, const char *nm);
 
 manageseq_t *
@@ -155,17 +157,23 @@ manageSequenceMenu (manageseq_t *manageseq, UIWidget *uimenubar)
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
         &manageseq->callback [MSEQ_MENU_CB_SEQ_LOAD]);
 
+    uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_NEW],
+        manageSequenceNew, manageseq);
+    /* CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence */
+    uiMenuCreateItem (&menu, &menuitem, _("Start New Sequence"),
+        &manageseq->callback [MSEQ_MENU_CB_SEQ_NEW]);
+
     uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_COPY],
         manageSequenceCopy, manageseq);
     /* CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy */
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
         &manageseq->callback [MSEQ_MENU_CB_SEQ_COPY]);
 
-    uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_NEW],
-        manageSequenceNew, manageseq);
-    /* CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence */
-    uiMenuCreateItem (&menu, &menuitem, _("Start New Sequence"),
-        &manageseq->callback [MSEQ_MENU_CB_SEQ_NEW]);
+    uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_DELETE],
+        manageSequenceDelete, manageseq);
+    /* CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence */
+    uiMenuCreateItem (&menu, &menuitem, _("Delete"),
+        &manageseq->callback [MSEQ_MENU_CB_SEQ_DELETE]);
 
     manageseq->seqmenu.initialized = true;
   }
@@ -344,6 +352,20 @@ manageSequenceNew (void *udata)
   uiduallistSet (manageseq->seqduallist, tlist, DUALLIST_TREE_TARGET);
   uiduallistClearChanged (manageseq->seqduallist);
   slistFree (tlist);
+  return UICB_CONT;
+}
+
+static bool
+manageSequenceDelete (void *udata)
+{
+  manageseq_t *manageseq = udata;
+  const char  *oname;
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete sequence");
+  oname = uiEntryGetValue (manageseq->seqname);
+  manageDeletePlaylist (manageseq->statusMsg, oname);
+  uiduallistClearChanged (manageseq->seqduallist);
+  manageSequenceNew (manageseq);
   return UICB_CONT;
 }
 

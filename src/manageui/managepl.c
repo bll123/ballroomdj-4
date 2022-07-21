@@ -29,6 +29,7 @@ enum {
   MPL_CB_MENU_PL_LOAD,
   MPL_CB_MENU_PL_COPY,
   MPL_CB_MENU_PL_NEW,
+  MPL_CB_MENU_PL_DELETE,
   MPL_CB_MAXPLAYTIME,
   MPL_CB_STOPAT,
   MPL_CB_PL_LOAD,
@@ -69,6 +70,7 @@ static bool managePlaylistLoad (void *udata);
 static bool managePlaylistCopy (void *udata);
 static void managePlaylistUpdateData (managepl_t *managepl);
 static bool managePlaylistNew (void *udata);
+static bool managePlaylistDelete (void *udata);
 static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
 static long managePlaylistValMSCallback (void *udata, const char *txt);
 static long managePlaylistValHMCallback (void *udata, const char *txt);
@@ -365,17 +367,23 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
         &managepl->callbacks [MPL_CB_MENU_PL_LOAD]);
 
+    uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_NEW],
+        managePlaylistNew, managepl);
+    /* CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist */
+    uiMenuCreateItem (&menu, &menuitem, _("New Automatic Playlist"),
+        &managepl->callbacks [MPL_CB_MENU_PL_NEW]);
+
     uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_COPY],
         managePlaylistCopy, managepl);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: create copy */
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
         &managepl->callbacks [MPL_CB_MENU_PL_COPY]);
 
-    uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_NEW],
-        managePlaylistNew, managepl);
-    /* CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic sequence */
-    uiMenuCreateItem (&menu, &menuitem, _("New Automatic Playlist"),
-        &managepl->callbacks [MPL_CB_MENU_PL_NEW]);
+    uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_DELETE],
+        managePlaylistDelete, managepl);
+    /* CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist */
+    uiMenuCreateItem (&menu, &menuitem, _("Delete"),
+        &managepl->callbacks [MPL_CB_MENU_PL_DELETE]);
 
     managepl->plmenu.initialized = true;
   }
@@ -579,6 +587,25 @@ managePlaylistNew (void *udata)
   uiSpinboxResetChanged (managepl->uimaxplaytime);
   uiSpinboxResetChanged (managepl->uistopat);
   managepl->changed = false;
+  managePlaylistUpdateData (managepl);
+
+  return UICB_CONT;
+}
+
+static bool
+managePlaylistDelete (void *udata)
+{
+  managepl_t  *managepl = udata;
+  const char  *oname;
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: new playlist");
+  oname = uiEntryGetValue (managepl->plname);
+  manageDeletePlaylist (managepl->statusMsg, oname);
+  uiSpinboxResetChanged (managepl->uimaxplaytime);
+  uiSpinboxResetChanged (managepl->uistopat);
+  managepl->changed = false;
+
+  managePlaylistNew (managepl);
   managePlaylistUpdateData (managepl);
 
   return UICB_CONT;

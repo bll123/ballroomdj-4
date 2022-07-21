@@ -66,6 +66,7 @@ bool manageCreatePlaylistCopy (UIWidget *statusMsg,
     const char *oname, const char *newname);
 bool managePlaylistExists (const char *name);
 int manageValidateName (uientry_t *entry, void *udata);
+void manageDeletePlaylist (UIWidget *statusMsg, const char *name);
 
 /* managestats.c */
 typedef struct managestats managestats_t;

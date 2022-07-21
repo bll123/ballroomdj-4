@@ -129,6 +129,32 @@ manageValidateName (uientry_t *entry, void *udata)
   return rc;
 }
 
+void
+manageDeletePlaylist (UIWidget *statusMsg, const char *name)
+{
+  char  tnm [MAXPATHLEN];
+  char  tbuff [MAXPATHLEN];
+
+
+  pathbldMakePath (tnm, sizeof (tnm),
+      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  fileopDelete (tnm);
+  pathbldMakePath (tnm, sizeof (tnm),
+      name, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+  fileopDelete (tnm);
+  pathbldMakePath (tnm, sizeof (tnm),
+      name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  fileopDelete (tnm);
+  pathbldMakePath (tnm, sizeof (tnm),
+      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  fileopDelete (tnm);
+
+  snprintf (tbuff, sizeof (tbuff), "%s deleted.", name);
+  if (statusMsg != NULL) {
+    uiLabelSetText (statusMsg, tbuff);
+  }
+}
+
 /* internal routines */
 
 static void

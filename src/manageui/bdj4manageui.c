@@ -78,6 +78,7 @@ enum {
   MANAGE_MENU_CB_SL_LOAD,
   MANAGE_MENU_CB_SL_COPY,
   MANAGE_MENU_CB_SL_NEW,
+  MANAGE_MENU_CB_SL_DELETE,
   MANAGE_MENU_CB_SL_MIX,
   MANAGE_MENU_CB_SL_TRUNCATE,
   MANAGE_MENU_CB_SL_MK_FROM_PL,
@@ -236,6 +237,7 @@ static void     manageSonglistMenu (manageui_t *manage);
 static bool     manageSonglistLoad (void *udata);
 static bool     manageSonglistCopy (void *udata);
 static bool     manageSonglistNew (void *udata);
+static bool     manageSonglistDelete (void *udata);
 static bool     manageSonglistTruncate (void *udata);
 static bool     manageSonglistCreateFromPlaylist (void *udata);
 static void     manageSongListCFPLCreateDialog (manageui_t *manage);
@@ -1244,15 +1246,20 @@ manageSonglistMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
         &manage->callbacks [MANAGE_MENU_CB_SL_LOAD]);
 
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_NEW, manageSonglistNew);
+    /* CONTEXT: managementui: menu selection: song list: edit menu: start new song list */
+    uiMenuCreateItem (&menu, &menuitem, _("Start New Song List"),
+        &manage->callbacks [MANAGE_MENU_CB_SL_NEW]);
+
     manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_COPY, manageSonglistCopy);
     /* CONTEXT: managementui: menu selection: song list: edit menu: create copy */
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
         &manage->callbacks [MANAGE_MENU_CB_SL_COPY]);
 
-    manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_NEW, manageSonglistNew);
-    /* CONTEXT: managementui: menu selection: song list: edit menu: start new song list */
-    uiMenuCreateItem (&menu, &menuitem, _("Start New Song List"),
-        &manage->callbacks [MANAGE_MENU_CB_SL_NEW]);
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_DELETE, manageSonglistDelete);
+    /* CONTEXT: managementui: menu selection: song list: edit menu: delete song list */
+    uiMenuCreateItem (&menu, &menuitem, _("Delete"),
+        &manage->callbacks [MANAGE_MENU_CB_SL_DELETE]);
 
     uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: managementui: menu selection: actions for song list */
@@ -1363,6 +1370,21 @@ manageSonglistNew (void *udata)
   manage->slbackupcreated = false;
   uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
   uimusicqTruncateQueueCallback (manage->slmusicq);
+  return UICB_CONT;
+}
+
+static bool
+manageSonglistDelete (void *udata)
+{
+  manageui_t  *manage = udata;
+  const char  *oname;
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
+  oname = uimusicqGetSonglistName (manage->slmusicq);
+  manageDeletePlaylist (&manage->statusMsg, oname);
+  /* no save */
+  manage->sloldname = NULL;
+  manageSonglistNew (manage);
   return UICB_CONT;
 }
 
