@@ -567,18 +567,6 @@ manageBuildUI (manageui_t *manage)
   uiBoxPackStartExpand (&vbox, &manage->mainnotebook);
 
   manageBuildUISongListEditor (manage);
-  manageBuildUIMusicManager (manage);
-
-  /* update database */
-  manage->managedb = manageDbAlloc (&manage->window,
-      manage->options, &manage->statusMsg, manage->conn);
-
-  uiCreateVertBox (&vbox);
-  manageBuildUIUpdateDatabase (manage->managedb, &vbox);
-  /* CONTEXT: managementui: notebook tab title: update database */
-  uiCreateLabel (&uiwidget, _("Update Database"));
-  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
 
   /* playlist management */
   manage->managepl = managePlaylistAlloc (&manage->window,
@@ -601,6 +589,19 @@ manageBuildUI (manageui_t *manage)
   uiCreateLabel (&uiwidget, _("Edit Sequences"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SEQ);
+
+  manageBuildUIMusicManager (manage);
+
+  /* update database */
+  manage->managedb = manageDbAlloc (&manage->window,
+      manage->options, &manage->statusMsg, manage->conn);
+
+  uiCreateVertBox (&vbox);
+  manageBuildUIUpdateDatabase (manage->managedb, &vbox);
+  /* CONTEXT: managementui: notebook tab title: update database */
+  uiCreateLabel (&uiwidget, _("Update Database"));
+  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_OTHER);
 
   x = nlistGetNum (manage->options, PLUI_SIZE_X);
   y = nlistGetNum (manage->options, PLUI_SIZE_Y);
