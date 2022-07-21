@@ -185,7 +185,6 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiEntrySetValidate (managepl->plname, manageValidateName,
       managepl->statusMsg, false);
   uiEntrySetColor (managepl->plname, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  /* CONTEXT: playlist management: default name for a new playlist */
   uiBoxPackStart (&hbox, uiEntryGetUIWidget (managepl->plname));
 
   uiCreateHorizBox (&hbox);

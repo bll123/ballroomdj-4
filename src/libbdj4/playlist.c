@@ -76,6 +76,7 @@ static datafilekey_t playlistdancedfkeys [PLDANCE_KEY_MAX] = {
   { "SELECTED",       PLDANCE_SELECTED,     VALUE_NUM, convBoolean, -1 },
 };
 
+static void playlistFreeData (playlist_t *pl);
 static void playlistSetSongFilter (playlist_t *pl);
 static void playlistCountList (playlist_t *pl);
 
@@ -109,41 +110,8 @@ playlistFree (void *tpl)
   playlist_t      *pl = tpl;
 
   if (pl != NULL) {
-    if (pl->plinfodf != NULL) {
-      datafileFree (pl->plinfodf);
-    } else {
-      if (pl->plinfo != NULL) {
-        nlistFree (pl->plinfo);
-      }
-    }
-    if (pl->pldancesdf != NULL) {
-      datafileFree (pl->pldancesdf);
-    } else {
-      if (pl->pldances != NULL) {
-        ilistFree (pl->pldances);
-      }
-    }
-    if (pl->songlist != NULL) {
-      songlistFree (pl->songlist);
-    }
-    if (pl->songfilter != NULL) {
-      songfilterFree (pl->songfilter);
-    }
-    if (pl->sequence != NULL) {
-      sequenceFree (pl->sequence);
-    }
-    if (pl->songsel != NULL) {
-      songselFree (pl->songsel);
-    }
-    if (pl->dancesel != NULL) {
-      danceselFree (pl->dancesel);
-    }
-    if (pl->countList != NULL) {
-      nlistFree (pl->countList);
-    }
-    if (pl->name != NULL) {
-      free (pl->name);
-    }
+fprintf (stderr, "pl: free %s\n", pl->name);
+    playlistFreeData (pl);
     free (pl);
   }
 }
@@ -163,6 +131,7 @@ playlistLoad (playlist_t *pl, const char *fname)
     return -1;
   }
 
+fprintf (stderr, "pl: load %s\n", fname);
   pathbldMakePath (tfn, sizeof (tfn), fname,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   if (pl == NULL) {
@@ -173,6 +142,9 @@ playlistLoad (playlist_t *pl, const char *fname)
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
     return -1;
   }
+
+  /* a load for a playlist can be called more than once */
+  playlistFreeData (pl);
 
   pl->name = strdup (fname);
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
@@ -269,6 +241,7 @@ playlistCreate (playlist_t *pl, const char *plname, pltype_t type)
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   pl->name = strdup (plname);
+fprintf (stderr, "pl: create %s\n", pl->name);
   snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plname);
   pl->plinfo = nlistAlloc (tbuff, LIST_UNORDERED, free);
   nlistSetSize (pl->plinfo, PLAYLIST_KEY_MAX);
@@ -342,6 +315,19 @@ playlistGetConfigNum (playlist_t *pl, playlistkey_t key)
 
   val = nlistGetNum (pl->plinfo, key);
   return val;
+}
+
+void
+playlistSetName (playlist_t *pl, const char *plname)
+{
+  if (pl == NULL) {
+    return;
+  }
+
+  if (pl->name != NULL) {
+    free (pl->name);
+  }
+  pl->name = strdup (plname);
 }
 
 void
@@ -487,6 +473,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
       logMsg (LOG_DBG, LOG_BASIC, "sequence: select: %s", sfname);
     }
   }
+
   if (type == PLTYPE_SONGLIST) {
     ilistidx_t    slkey;
 
@@ -639,6 +626,50 @@ playlistSave (playlist_t *pl, const char *name)
 }
 
 /* internal routines */
+
+void
+playlistFreeData (playlist_t *pl)
+{
+  if (pl != NULL) {
+fprintf (stderr, "pl: free-data %s\n", pl->name);
+    if (pl->plinfodf != NULL) {
+      datafileFree (pl->plinfodf);
+    } else {
+      if (pl->plinfo != NULL) {
+        nlistFree (pl->plinfo);
+      }
+    }
+    if (pl->pldancesdf != NULL) {
+      datafileFree (pl->pldancesdf);
+    } else {
+      if (pl->pldances != NULL) {
+        ilistFree (pl->pldances);
+      }
+    }
+    if (pl->songlist != NULL) {
+      songlistFree (pl->songlist);
+    }
+    if (pl->songfilter != NULL) {
+      songfilterFree (pl->songfilter);
+    }
+    if (pl->sequence != NULL) {
+      sequenceFree (pl->sequence);
+    }
+    if (pl->songsel != NULL) {
+      songselFree (pl->songsel);
+    }
+    if (pl->dancesel != NULL) {
+      danceselFree (pl->dancesel);
+    }
+    if (pl->countList != NULL) {
+      nlistFree (pl->countList);
+    }
+    if (pl->name != NULL) {
+      free (pl->name);
+    }
+  }
+}
+
 
 static void
 plConvType (datafileconv_t *conv)

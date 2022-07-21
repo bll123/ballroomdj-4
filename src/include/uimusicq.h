@@ -124,7 +124,7 @@ void      uimusicqRemoveHandler (GtkButton *b, gpointer udata);
 void      uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx);
 long      uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx);
 void      uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc);
-bool      uimusicqClearQueueCallback (void *udata);
+bool      uimusicqTruncateQueueCallback (void *udata);
 void      uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active);
 
 /* uimusicqcommon.c */
@@ -137,7 +137,7 @@ void  uimusicqMoveDown (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqTogglePause (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqRemove (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqCreatePlaylistList (uimusicq_t *uimusicq);
-void  uimusicqClearQueue (uimusicq_t *uimusicq, int mqidx, long idx);
+void  uimusicqTruncateQueue (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);
 int   uimusicqMusicQueueDataParse (uimusicq_t *uimusicq, char * args);
 void  uimusicqMusicQueueDataFree (uimusicq_t *uimusicq);

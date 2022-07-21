@@ -296,7 +296,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   if (uimusicq->dispselType == DISP_SEL_MUSICQ) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_CLEAR_QUEUE],
-        uimusicqClearQueueCallback, uimusicq);
+        uimusicqTruncateQueueCallback, uimusicq);
     uiCreateButton (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_CLEAR_QUEUE],
         /* CONTEXT: music queue: button: clear the queue */
@@ -517,15 +517,16 @@ uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc)
 }
 
 bool
-uimusicqClearQueueCallback (void *udata)
+uimusicqTruncateQueueCallback (void *udata)
 {
   uimusicq_t    *uimusicq = udata;
   int           ci;
   long          idx;
 
 
-  logProcBegin (LOG_PROC, "uimusicqClearQueueCallback");
+  logProcBegin (LOG_PROC, "uimusicqTruncateQueueCallback");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: clear queue");
+fprintf (stderr, "uimusicq: clr-queue-cb\n");
 
   ci = uimusicq->musicqManageIdx;
 
@@ -540,8 +541,8 @@ uimusicqClearQueueCallback (void *udata)
     ++idx;
   }
 
-  uimusicqClearQueue (uimusicq, ci, idx);
-  logProcEnd (LOG_PROC, "uimusicqClearQueueCallback", "");
+  uimusicqTruncateQueue (uimusicq, ci, idx);
+  logProcEnd (LOG_PROC, "uimusicqTruncateQueueCallback", "");
   return UICB_CONT;
 }
 

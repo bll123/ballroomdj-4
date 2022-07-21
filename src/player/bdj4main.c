@@ -360,6 +360,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_QUEUE_CLEAR: {
           /* clears both the playlist queue and the music queue */
           logMsg (LOG_DBG, LOG_MSGS, "got: queue-clear");
+fprintf (stderr, "got queue-clear\n");
           mainQueueClear (mainData, targs);
           dbgdisp = true;
           break;
@@ -1114,6 +1115,7 @@ mainQueueClear (maindata_t *mainData, char *args)
   mi = atoi (p);
 
   mainData->musicqManageIdx = mi;
+fprintf (stderr, "queue-clear %d\n", mi);
 
   logMsg (LOG_DBG, LOG_BASIC, "clear music queue");
   queueClear (mainData->playlistQueue [mi], 0);
@@ -1147,6 +1149,9 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   /* CONTEXT: player: the name of the special playlist for queueing a dance */
   if (playlistLoad (playlist, _("QueueDance")) < 0) {
     playlistCreate (playlist, plname, PLTYPE_AUTO);
+  } else {
+    /* set the name so that multiple queue-dance playlists can be used */
+    playlistSetName (playlist, plname);
   }
   playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);
   /* clear all dance selected/counts */
@@ -1188,7 +1193,14 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
   mainParseIntStr (args, &mi, &plname);
   mainData->musicqManageIdx = mi;
 
-  playlist = playlistAlloc (mainData->musicdb);
+  playlist = slistGetData (mainData->playlistCache, plname);
+  if (playlist == NULL) {
+    playlist = playlistAlloc (mainData->musicdb);
+fprintf (stderr, "new load: %s\n", plname);
+  } else {
+fprintf (stderr, "found in cache: %s\n", plname);
+  }
+fprintf (stderr, "queue playlist: %s to %d\n", plname, mi);
   rc = playlistLoad (playlist, plname);
 
   /* check and see if a stop time override is in effect */
@@ -1244,6 +1256,7 @@ mainMusicQueueFill (maindata_t *mainData)
 
   playlist = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
   pltype = (pltype_t) playlistGetConfigNum (playlist, PLAYLIST_TYPE);
+fprintf (stderr, "fill: from pl %s\n", playlistGetName (playlist));
 
   playerqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
   currlen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);

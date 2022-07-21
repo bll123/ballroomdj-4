@@ -201,7 +201,7 @@ static datafilekey_t manageuidfkeys [] = {
   { "FILTER_POS_X",     SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, -1 },
   { "FILTER_POS_Y",     SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, -1 },
   { "MNG_CFPL_POS_X",   MANAGE_CFPL_POSITION_X,     VALUE_NUM, NULL, -1 },
-  { "MNG_CFPL_POS_Y",   MANAGE_CFPL_POSITION_X,     VALUE_NUM, NULL, -1 },
+  { "MNG_CFPL_POS_Y",   MANAGE_CFPL_POSITION_Y,     VALUE_NUM, NULL, -1 },
   { "MNG_SELFILE_POS_X",MANAGE_SELFILE_POSITION_X,  VALUE_NUM, NULL, -1 },
   { "MNG_SELFILE_POS_Y",MANAGE_SELFILE_POSITION_Y,  VALUE_NUM, NULL, -1 },
   { "PLUI_POS_X",       PLUI_POSITION_X,            VALUE_NUM, NULL, -1 },
@@ -1338,7 +1338,7 @@ manageSonglistNew (void *udata)
   manageSetSonglistName (manage, tbuff);
   manage->slbackupcreated = false;
   uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
-  uimusicqClearQueueCallback (manage->slmusicq);
+  uimusicqTruncateQueueCallback (manage->slmusicq);
   return UICB_CONT;
 }
 
@@ -1348,7 +1348,7 @@ manageSonglistTruncate (void *udata)
   manageui_t  *manage = udata;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: truncate songlist");
-  uimusicqClearQueueCallback (manage->slmusicq);
+  uimusicqTruncateQueueCallback (manage->slmusicq);
   return UICB_CONT;
 }
 
@@ -1362,6 +1362,7 @@ manageSonglistCreateFromPlaylist (void *udata)
   manageSonglistSave (manage);
   manageSongListCFPLCreateDialog (manage);
   uiDropDownSelectionSetNum (manage->cfplsel, -1);
+
   uiWidgetShowAll (&manage->cfplDialog);
 
   x = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_X);
@@ -1491,6 +1492,10 @@ manageCFPLResponseHandler (void *udata, long responseid)
       stoptime *= 60;
       /* add in the current hh:mm time to the time limit */
       stoptime += mstime () - mstimestartofday ();
+
+      snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
+      connSendMessage (manage->conn, ROUTE_MAIN,
+          MSG_QUEUE_CLEAR, tbuff);
       snprintf (tbuff, sizeof (tbuff), "%ld", stoptime);
       connSendMessage (manage->conn, ROUTE_MAIN,
           MSG_PL_OVERRIDE_STOP_TIME, tbuff);
@@ -1530,7 +1535,8 @@ manageSonglistLoadFile (void *udata, const char *fn)
 
   /* truncate from the first selection */
   uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
-  uimusicqClearQueueCallback (manage->slmusicq);
+fprintf (stderr, "mu: call clr-queue\n");
+  uimusicqTruncateQueueCallback (manage->slmusicq);
 
   snprintf (tbuff, sizeof (tbuff), "%d%c%s",
       manage->musicqManageIdx, MSG_ARGS_RS, fn);
@@ -1629,6 +1635,7 @@ manageSonglistSave (manageui_t *manage)
   }
 
   name = strdup (uimusicqGetSonglistName (manage->slmusicq));
+fprintf (stderr, "save: %s\n", name);
 
   /* the song list has been renamed */
   if (strcmp (manage->sloldname, name) != 0) {
@@ -2230,7 +2237,7 @@ manageSonglistImportM3U (void *udata)
       mqidx = manage->musicqManageIdx;
 
       /* clear the entire queue */
-      uimusicqClearQueue (manage->slmusicq, mqidx, 1);
+      uimusicqTruncateQueueCallback (manage->slmusicq);
 
       nlistStartIterator (list, &iteridx);
       while ((dbidx = nlistIterateKey (list, &iteridx)) >= 0) {
