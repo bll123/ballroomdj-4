@@ -42,24 +42,28 @@ sanitizeundef:
 cmake:
 	if test $$(uname -s) = Linux; then \
 	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-unix; \
+	  pmode=--parallel $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
 	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  pmode=--parallel $(MAKE) build; \
 	else \
 	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-windows; \
+	  $(MAKE) build; \
 	fi
-	$(MAKE) build
 
 cmakeclang:
 	if test $$(uname -s) = Linux; then \
 	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  pmode=--parallel $(MAKE) build \
 	elif test $$(uname -s) = Darwin; then \
 	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  pmode=--parallel $(MAKE) build; \
 	else \
 	  COMP=/mingw64/bin/clang.exe \
 	  COMPXX=/mingw64/bin/clang++.exe \
 	  $(MAKE) cmake-windows; \
+	  $(MAKE) build; \
 	fi
-	$(MAKE) build
 
 cmake-unix:
 	cmake \
@@ -77,10 +81,11 @@ cmake-windows:
 		-S . -B $(BUILDDIR) -Werror=deprecated
 
 # windows installs extra unneeded crap
+# --parallel does not work correctly on msys2
 build:
-	cmake --build $(BUILDDIR)
+	cmake --build $(BUILDDIR) $(pmode)
 	cmake --install $(BUILDDIR)
-	@-rm -f ../bin/liblib*.a 
+	@-rm -f ../bin/liblib*.a
 
 # testing
 .PHONY: check
