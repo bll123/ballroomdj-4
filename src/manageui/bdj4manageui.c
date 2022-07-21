@@ -1529,13 +1529,12 @@ manageSonglistLoadFile (void *udata, const char *fn)
   /* two messages are received in response to the changes below */
   /* (clear queue and queue playlist) */
   /* this is gross */
-  manage->selbypass = 2;
+  manage->selbypass += 2;
 
   manageSonglistSave (manage);
 
   /* truncate from the first selection */
   uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
-fprintf (stderr, "mu: call clr-queue\n");
   uimusicqTruncateQueueCallback (manage->slmusicq);
 
   snprintf (tbuff, sizeof (tbuff), "%d%c%s",
@@ -1635,7 +1634,6 @@ manageSonglistSave (manageui_t *manage)
   }
 
   name = strdup (uimusicqGetSonglistName (manage->slmusicq));
-fprintf (stderr, "save: %s\n", name);
 
   /* the song list has been renamed */
   if (strcmp (manage->sloldname, name) != 0) {

@@ -76,7 +76,6 @@ static datafilekey_t playlistdancedfkeys [PLDANCE_KEY_MAX] = {
   { "SELECTED",       PLDANCE_SELECTED,     VALUE_NUM, convBoolean, -1 },
 };
 
-static void playlistFreeData (playlist_t *pl);
 static void playlistSetSongFilter (playlist_t *pl);
 static void playlistCountList (playlist_t *pl);
 
@@ -111,7 +110,41 @@ playlistFree (void *tpl)
 
   if (pl != NULL) {
 fprintf (stderr, "pl: free %s\n", pl->name);
-    playlistFreeData (pl);
+    if (pl->plinfodf != NULL) {
+      datafileFree (pl->plinfodf);
+    } else {
+      if (pl->plinfo != NULL) {
+        nlistFree (pl->plinfo);
+      }
+    }
+    if (pl->pldancesdf != NULL) {
+      datafileFree (pl->pldancesdf);
+    } else {
+      if (pl->pldances != NULL) {
+        ilistFree (pl->pldances);
+      }
+    }
+    if (pl->songlist != NULL) {
+      songlistFree (pl->songlist);
+    }
+    if (pl->songfilter != NULL) {
+      songfilterFree (pl->songfilter);
+    }
+    if (pl->sequence != NULL) {
+      sequenceFree (pl->sequence);
+    }
+    if (pl->songsel != NULL) {
+      songselFree (pl->songsel);
+    }
+    if (pl->dancesel != NULL) {
+      danceselFree (pl->dancesel);
+    }
+    if (pl->countList != NULL) {
+      nlistFree (pl->countList);
+    }
+    if (pl->name != NULL) {
+      free (pl->name);
+    }
     free (pl);
   }
 }
@@ -142,9 +175,6 @@ fprintf (stderr, "pl: load %s\n", fname);
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
     return -1;
   }
-
-  /* a load for a playlist can be called more than once */
-  playlistFreeData (pl);
 
   pl->name = strdup (fname);
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
@@ -315,19 +345,6 @@ playlistGetConfigNum (playlist_t *pl, playlistkey_t key)
 
   val = nlistGetNum (pl->plinfo, key);
   return val;
-}
-
-void
-playlistSetName (playlist_t *pl, const char *plname)
-{
-  if (pl == NULL) {
-    return;
-  }
-
-  if (pl->name != NULL) {
-    free (pl->name);
-  }
-  pl->name = strdup (plname);
 }
 
 void
@@ -626,49 +643,6 @@ playlistSave (playlist_t *pl, const char *name)
 }
 
 /* internal routines */
-
-void
-playlistFreeData (playlist_t *pl)
-{
-  if (pl != NULL) {
-fprintf (stderr, "pl: free-data %s\n", pl->name);
-    if (pl->plinfodf != NULL) {
-      datafileFree (pl->plinfodf);
-    } else {
-      if (pl->plinfo != NULL) {
-        nlistFree (pl->plinfo);
-      }
-    }
-    if (pl->pldancesdf != NULL) {
-      datafileFree (pl->pldancesdf);
-    } else {
-      if (pl->pldances != NULL) {
-        ilistFree (pl->pldances);
-      }
-    }
-    if (pl->songlist != NULL) {
-      songlistFree (pl->songlist);
-    }
-    if (pl->songfilter != NULL) {
-      songfilterFree (pl->songfilter);
-    }
-    if (pl->sequence != NULL) {
-      sequenceFree (pl->sequence);
-    }
-    if (pl->songsel != NULL) {
-      songselFree (pl->songsel);
-    }
-    if (pl->dancesel != NULL) {
-      danceselFree (pl->dancesel);
-    }
-    if (pl->countList != NULL) {
-      nlistFree (pl->countList);
-    }
-    if (pl->name != NULL) {
-      free (pl->name);
-    }
-  }
-}
 
 
 static void

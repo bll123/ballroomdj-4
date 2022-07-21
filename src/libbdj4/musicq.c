@@ -21,7 +21,7 @@ typedef struct {
   int           dispidx;
   int           uniqueidx;
   dbidx_t       dbidx;
-  char          *playlistName;
+  int           playlistIdx;
   musicqflag_t  flags;
   char          *announce;
   long          dur;
@@ -85,7 +85,7 @@ musicqSetDatabase (musicq_t *musicq, musicdb_t *db)
 
 void
 musicqPush (musicq_t *musicq, musicqidx_t musicqidx, dbidx_t dbidx,
-    const char *plname, long dur)
+    int playlistIdx, long dur)
 {
   musicqitem_t      *musicqitem;
   song_t            *song = NULL;
@@ -110,10 +110,7 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, dbidx_t dbidx,
   musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
   ++(musicq->uniqueidx [musicqidx]);
   musicqitem->dbidx = dbidx;
-  musicqitem->playlistName = NULL;
-  if (plname != NULL) {
-    musicqitem->playlistName = strdup (plname);
-  }
+  musicqitem->playlistIdx = playlistIdx;
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_NONE;
   musicqitem->dur = dur;
@@ -139,7 +136,7 @@ musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t musicqidx)
   musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
   ++(musicq->uniqueidx [musicqidx]);
   musicqitem->dbidx = -1;
-  musicqitem->playlistName = NULL;
+  musicqitem->playlistIdx = -1;
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_EMPTY;
   musicqitem->dur = 0;
@@ -186,7 +183,7 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx,
   }
 
   if (idx >= queueGetCount (musicq->q [musicqidx])) {
-    musicqPush (musicq, musicqidx, dbidx, NULL, dur);
+    musicqPush (musicq, musicqidx, dbidx, -1, dur);
     logProcEnd (LOG_PROC, "musicqInsert", "idx>q-count; push");
     return (queueGetCount (musicq->q [musicqidx]) - 1);
   }
@@ -196,7 +193,7 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx,
   musicqitem = malloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
   musicqitem->dbidx = dbidx;
-  musicqitem->playlistName = NULL;
+  musicqitem->playlistIdx = -1;
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_REQUEST;
   musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
@@ -390,20 +387,20 @@ musicqSetAnnounce (musicq_t *musicq, musicqidx_t musicqidx,
   return;
 }
 
-char *
-musicqGetPlaylistName (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
+int
+musicqGetPlaylistIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
 {
   musicqitem_t      *musicqitem;
 
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
-    return NULL;
+    return -1;
   }
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
   if (musicqitem != NULL) {
-    return musicqitem->playlistName;
+    return musicqitem->playlistIdx;
   }
-  return NULL;
+  return -1;
 }
 
 void
@@ -584,9 +581,6 @@ musicqQueueItemFree (void *titem)
 
   logProcBegin (LOG_PROC, "musicqQueueItemFree");
   if (musicqitem != NULL) {
-    if (musicqitem->playlistName != NULL) {
-      free (musicqitem->playlistName);
-    }
     if (musicqitem->announce != NULL) {
       free (musicqitem->announce);
     }

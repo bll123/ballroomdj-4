@@ -60,15 +60,20 @@ enum {
   MAIN_NOT_SET = -1,
 };
 
-/* playlistCache contains all of the playlists that have been seen */
-/* so that playlist lookups can be processed */
+typedef struct {
+  playlist_t        *playlist;
+  int               playlistIdx;
+} playlistitem_t;
+
 typedef struct {
   progstate_t       *progstate;
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
   int               startflags;
   musicdb_t         *musicdb;
-  slist_t           *playlistCache;
+  /* playlistCache contains all of the playlists that are used */
+  /* so that playlist lookups can be processed */
+  nlist_t           *playlistCache;
   queue_t           *playlistQueue [MUSICQ_MAX];
   musicq_t          *musicQueue;
   nlist_t           *danceCounts;
@@ -115,7 +120,7 @@ static void mainQueuePlaylist (maindata_t *mainData, char *plname);
 static void mainSigHandler (int sig);
 static void mainMusicQueueFill (maindata_t *mainData);
 static void mainMusicQueuePrep (maindata_t *mainData);
-static char *mainPrepSong (maindata_t *maindata, song_t *song, char *sfname, char *plname, bdjmsgprep_t flag);
+static char *mainPrepSong (maindata_t *maindata, song_t *song, char *sfname, int playlistIdx, bdjmsgprep_t flag);
 static void mainTogglePause (maindata_t *mainData, char *args);
 static void mainMusicqMove (maindata_t *mainData, char *args, mainmove_t direction);
 static void mainMusicqMoveTop (maindata_t *mainData, char *args);
@@ -140,7 +145,9 @@ static void mainDanceCountsInit (maindata_t *mainData);
 static void mainParseIntNum (char *args, int *a, ilistidx_t *b);
 static void mainParseIntStr (char *args, int *a, char **b);
 static void mainSendFinished (maindata_t *mainData);
-static long mainCalculateSongDuration (maindata_t *mainData, song_t *song, const char *plname);
+static long mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx);
+static playlistitem_t * mainPlaylistItemCache (maindata_t *mainData, playlist_t *pl, int playlistIdx);
+static void mainPlaylistItemFree (void *tplitem);
 
 
 static long globalCounter = 0;
@@ -204,10 +211,10 @@ main (int argc, char *argv[])
 
   mainData.conn = connInit (ROUTE_MAIN);
   mainData.gap = bdjoptGetNum (OPT_P_GAP);
-  mainData.playlistCache = slistAlloc ("playlist-list", LIST_ORDERED,
+  mainData.playlistCache = nlistAlloc ("playlist-list", LIST_ORDERED,
       playlistFree);
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
-    mainData.playlistQueue [i] = queueAlloc (NULL);
+    mainData.playlistQueue [i] = queueAlloc (mainPlaylistItemFree);
   }
   mainData.musicQueue = musicqAlloc (mainData.musicdb);
   mainDanceCountsInit (&mainData);
@@ -257,7 +264,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
 
   if (mainData->playlistCache != NULL) {
     /* the playlists get freed here */
-    slistFree (mainData->playlistCache);
+    nlistFree (mainData->playlistCache);
   }
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     if (mainData->playlistQueue [i] != NULL) {
@@ -360,7 +367,6 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_QUEUE_CLEAR: {
           /* clears both the playlist queue and the music queue */
           logMsg (LOG_DBG, LOG_MSGS, "got: queue-clear");
-fprintf (stderr, "got queue-clear\n");
           mainQueueClear (mainData, targs);
           dbgdisp = true;
           break;
@@ -1115,7 +1121,6 @@ mainQueueClear (maindata_t *mainData, char *args)
   mi = atoi (p);
 
   mainData->musicqManageIdx = mi;
-fprintf (stderr, "queue-clear %d\n", mi);
 
   logMsg (LOG_DBG, LOG_BASIC, "clear music queue");
   queueClear (mainData->playlistQueue [mi], 0);
@@ -1128,6 +1133,7 @@ fprintf (stderr, "queue-clear %d\n", mi);
 static void
 mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
 {
+  playlistitem_t  *plitem;
   playlist_t      *playlist;
   char            plname [60];
   int             mi;
@@ -1149,9 +1155,6 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   /* CONTEXT: player: the name of the special playlist for queueing a dance */
   if (playlistLoad (playlist, _("QueueDance")) < 0) {
     playlistCreate (playlist, plname, PLTYPE_AUTO);
-  } else {
-    /* set the name so that multiple queue-dance playlists can be used */
-    playlistSetName (playlist, plname);
   }
   playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);
   /* clear all dance selected/counts */
@@ -1159,8 +1162,8 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   /* this will also set 'selected' */
   playlistSetDanceCount (playlist, danceIdx, 1);
   logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %s", plname);
-  slistSetData (mainData->playlistCache, plname, playlist);
-  queuePush (mainData->playlistQueue [mi], playlist);
+  plitem = mainPlaylistItemCache (mainData, playlist, globalCounter++);
+  queuePush (mainData->playlistQueue [mi], plitem);
   logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
   mainMusicQueueFill (mainData);
   mainMusicQueuePrep (mainData);
@@ -1180,7 +1183,8 @@ static void
 mainQueuePlaylist (maindata_t *mainData, char *args)
 {
   int             mi;
-  playlist_t      *playlist;
+  playlistitem_t  *plitem = NULL;
+  playlist_t      *playlist = NULL;
   char            *plname;
   int             rc;
   ilistidx_t      musicqLen;
@@ -1193,14 +1197,7 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
   mainParseIntStr (args, &mi, &plname);
   mainData->musicqManageIdx = mi;
 
-  playlist = slistGetData (mainData->playlistCache, plname);
-  if (playlist == NULL) {
-    playlist = playlistAlloc (mainData->musicdb);
-fprintf (stderr, "new load: %s\n", plname);
-  } else {
-fprintf (stderr, "found in cache: %s\n", plname);
-  }
-fprintf (stderr, "queue playlist: %s to %d\n", plname, mi);
+  playlist = playlistAlloc (mainData->musicdb);
   rc = playlistLoad (playlist, plname);
 
   /* check and see if a stop time override is in effect */
@@ -1213,8 +1210,8 @@ fprintf (stderr, "queue playlist: %s to %d\n", plname, mi);
 
   if (rc == 0) {
     logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %d %s", mi, plname);
-    slistSetData (mainData->playlistCache, plname, playlist);
-    queuePush (mainData->playlistQueue [mainData->musicqManageIdx], playlist);
+    plitem = mainPlaylistItemCache (mainData, playlist, globalCounter++);
+    queuePush (mainData->playlistQueue [mainData->musicqManageIdx], plitem);
     logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
     mainMusicQueueFill (mainData);
     mainMusicQueuePrep (mainData);
@@ -1244,19 +1241,22 @@ mainSigHandler (int sig)
 static void
 mainMusicQueueFill (maindata_t *mainData)
 {
-  ssize_t     playerqLen;
-  ssize_t     currlen;
-  playlist_t  *playlist = NULL;
-  pltype_t    pltype;
-  bool        stopatflag = false;
-  const char  *plname;
-  long        dur;
+  ssize_t         playerqLen;
+  ssize_t         currlen;
+  playlistitem_t  *plitem = NULL;
+  playlist_t      *playlist = NULL;
+  pltype_t        pltype;
+  bool            stopatflag = false;
+  long            dur;
 
   logProcBegin (LOG_PROC, "mainMusicQueueFill");
 
-  playlist = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
+  plitem = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
+  playlist = NULL;
+  if (plitem != NULL) {
+    playlist = plitem->playlist;
+  }
   pltype = (pltype_t) playlistGetConfigNum (playlist, PLAYLIST_TYPE);
-fprintf (stderr, "fill: from pl %s\n", playlistGetName (playlist));
 
   playerqLen = bdjoptGetNum (OPT_G_PLAYERQLEN);
   currlen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);
@@ -1284,20 +1284,27 @@ fprintf (stderr, "fill: from pl %s\n", playlistGetName (playlist));
     if (song == NULL) {
       logMsg (LOG_DBG, LOG_MAIN, "song is null");
       queuePop (mainData->playlistQueue [mainData->musicqManageIdx]);
-      playlist = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
+      plitem = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
+      playlist = NULL;
+      if (plitem != NULL) {
+        playlist = plitem->playlist;
+      }
       continue;
     }
     logMsg (LOG_DBG, LOG_MAIN, "push song to musicq");
-    plname = playlistGetName (playlist);
-    dur = mainCalculateSongDuration (mainData, song, plname);
+    dur = mainCalculateSongDuration (mainData, song, plitem->playlistIdx);
     musicqPush (mainData->musicQueue, mainData->musicqManageIdx,
-        songGetNum (song, TAG_DBIDX), plname, dur);
+        songGetNum (song, TAG_DBIDX), plitem->playlistIdx, dur);
     mainData->musicqChanged [mainData->musicqManageIdx] = MAIN_CHG_START;
     mainData->marqueeChanged [mainData->musicqManageIdx] = true;
     currlen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);
 
     if (pltype == PLTYPE_AUTO) {
-      playlist = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
+      plitem = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
+      playlist = NULL;
+      if (plitem != NULL) {
+        playlist = plitem->playlist;
+      }
       if (playlist != NULL && song != NULL) {
         playlistAddCount (playlist, song);
       }
@@ -1335,19 +1342,19 @@ mainMusicQueuePrep (maindata_t *mainData)
 
   logProcBegin (LOG_PROC, "mainMusicQueuePrep");
 
-    /* 5 is the number of songs to prep ahead of time */
+  /* 5 is the number of songs to prep ahead of time */
   for (ssize_t i = 0; i < MAIN_PREP_SIZE; ++i) {
     char          *sfname = NULL;
     dbidx_t       dbidx;
     song_t        *song = NULL;
     musicqflag_t  flags;
-    char          *plname = NULL;
     char          *annfname = NULL;
+    int           playlistIdx;
 
     dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqManageIdx, i);
     song = dbGetByIdx (mainData->musicdb, dbidx);
     flags = musicqGetFlags (mainData->musicQueue, mainData->musicqManageIdx, i);
-    plname = musicqGetPlaylistName (mainData->musicQueue, mainData->musicqManageIdx, i);
+    playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mainData->musicqManageIdx, i);
 
     if (song != NULL &&
         (flags & MUSICQ_FLAG_PREP) != MUSICQ_FLAG_PREP) {
@@ -1355,11 +1362,11 @@ mainMusicQueuePrep (maindata_t *mainData)
           i, MUSICQ_FLAG_PREP);
 
       plannounce = false;
-      if (plname != NULL) {
-        playlist = slistGetData (mainData->playlistCache, plname);
+      if (playlistIdx != -1) {
+        playlist = nlistGetData (mainData->playlistCache, playlistIdx);
         plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
       }
-      annfname = mainPrepSong (mainData, song, sfname, plname, PREP_SONG);
+      annfname = mainPrepSong (mainData, song, sfname, playlistIdx, PREP_SONG);
 
       if (plannounce == 1) {
         if (annfname != NULL && strcmp (annfname, "") != 0 ) {
@@ -1377,7 +1384,7 @@ mainMusicQueuePrep (maindata_t *mainData)
 
 static char *
 mainPrepSong (maindata_t *mainData, song_t *song,
-    char *sfname, char *plname, bdjmsgprep_t flag)
+    char *sfname, int playlistIdx, bdjmsgprep_t flag)
 {
   char          tbuff [MAXPATHLEN];
   playlist_t    *playlist = NULL;
@@ -1411,7 +1418,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
 
   /* announcements don't need any of the following... */
   if (flag != PREP_ANNOUNCE) {
-    dur = mainCalculateSongDuration (mainData, song, plname);
+    dur = mainCalculateSongDuration (mainData, song, playlistIdx);
 
     gap = mainData->gap;
     plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
@@ -1435,7 +1442,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
           tval = slistGetNum (mainData->announceList, annfname);
           if (tval == LIST_VALUE_INVALID) {
             /* only prep the announcement if it has not been prepped before */
-            mainPrepSong (mainData, tsong, annfname, plname, PREP_ANNOUNCE);
+            mainPrepSong (mainData, tsong, annfname, playlistIdx, PREP_ANNOUNCE);
           }
           slistSetNum (mainData->announceList, annfname, 1);
         } else {
@@ -1659,7 +1666,7 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
     long  loc;
     long  dur;
 
-    dur = mainCalculateSongDuration (mainData, song, NULL);
+    dur = mainCalculateSongDuration (mainData, song, -1);
     loc = musicqInsert (mainData->musicQueue, mainData->musicqManageIdx,
         idx, dbidx, dur);
     mainData->musicqChanged [mainData->musicqManageIdx] = MAIN_CHG_START;
@@ -1879,7 +1886,7 @@ mainMusicQueueFinish (maindata_t *mainData)
   dbidx_t       dbidx;
   song_t        *song;
   ilistidx_t    danceIdx;
-  char          *plname;
+  int           playlistIdx;
 
   logProcBegin (LOG_PROC, "mainMusicQueueFinish");
 
@@ -1888,9 +1895,9 @@ mainMusicQueueFinish (maindata_t *mainData)
   /* let the playlist know this song has been played */
   dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
   song = dbGetByIdx (mainData->musicdb, dbidx);
-  plname = musicqGetPlaylistName (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-  if (plname != NULL) {
-    playlist = slistGetData (mainData->playlistCache, plname);
+  playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+  if (playlistIdx != -1) {
+    playlist = nlistGetData (mainData->playlistCache, playlistIdx);
     if (playlist != NULL && song != NULL) {
       playlistAddPlayed (playlist, song);
     }
@@ -2259,7 +2266,7 @@ mainSendFinished (maindata_t *mainData)
 }
 
 static long
-mainCalculateSongDuration (maindata_t *mainData, song_t *song, const char *plname)
+mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx)
 {
   long  maxdur;
   long  dur;
@@ -2302,10 +2309,10 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song, const char *plnam
   }
 
   plmaxdur = LIST_VALUE_INVALID;
-  if (plname != NULL) {
+  if (playlistIdx != -1) {
     playlist_t    *playlist = NULL;
 
-    playlist = slistGetData (mainData->playlistCache, plname);
+    playlist = nlistGetData (mainData->playlistCache, playlistIdx);
     plmaxdur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
   }
 
@@ -2357,4 +2364,27 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song, const char *plnam
   songSetDurCache (song, dur);
   logProcEnd (LOG_PROC, "mainCalculateSongDuration", "");
   return dur;
+}
+
+static playlistitem_t *
+mainPlaylistItemCache (maindata_t *mainData, playlist_t *pl, int playlistIdx)
+{
+  playlistitem_t  *plitem;
+
+  plitem = malloc (sizeof (playlistitem_t));
+  plitem->playlist = pl;
+  plitem->playlistIdx = playlistIdx;
+  nlistSetData (mainData->playlistCache, playlistIdx, pl);
+  return plitem;
+}
+
+static void
+mainPlaylistItemFree (void *tplitem)
+{
+  playlistitem_t *plitem = tplitem;
+
+  if (plitem != NULL) {
+    /* the playlist data is owned by the playlistCache and is freed by it */
+    free (plitem);
+  }
 }

@@ -32,7 +32,7 @@ musicq_t *  musicqAlloc (musicdb_t *db);
 void        musicqFree (musicq_t *musicq);
 void        musicqSetDatabase (musicq_t *musicq, musicdb_t *db);
 void        musicqPush (musicq_t *musicq, musicqidx_t idx, dbidx_t dbidx,
-                const char *plname, long dur);
+                int playlistIdx, long dur);
 void        musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t idx);
 void        musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
                 ssize_t fromidx, ssize_t toidx);
@@ -46,7 +46,7 @@ void        musicqSetFlag (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey
 void        musicqClearFlag (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey, musicqflag_t flags);
 char        *musicqGetAnnounce (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
 void        musicqSetAnnounce (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey, char *annfname);
-char        *musicqGetPlaylistName (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
+int         musicqGetPlaylistIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
 dbidx_t     musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
 void        musicqPop (musicq_t *musicq, musicqidx_t musicqidx);
 void        musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx);
