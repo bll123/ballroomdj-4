@@ -34,6 +34,8 @@ enum {
   SONGSEL_COL_SORTIDX,
   SONGSEL_COL_DBIDX,
   SONGSEL_COL_FAV_COLOR,
+  SONGSEL_COL_MARK_COLOR,
+  SONGSEL_COL_MARK,
   SONGSEL_COL_MAX,
 };
 
@@ -171,6 +173,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   slist_t           *sellist;
   char              tbuff [200];
   double            tupper;
+  GtkCellRenderer   *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
 
   logProcBegin (LOG_PROC, "uisongselBuildUI");
 
@@ -301,6 +305,17 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
+
+  /* the mark display is a special case, it always exists */
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", SONGSEL_COL_MARK,
+      "foreground", SONGSEL_COL_MARK_COLOR,
+      "font", SONGSEL_COL_FONT,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uiw->songselTree), column);
+
   uiw->favColumn = uiAddDisplayColumns (
       uiw->songselTree, sellist, SONGSEL_COL_MAX,
       SONGSEL_COL_FONT, SONGSEL_COL_ELLIPSIZE);
@@ -357,6 +372,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   song_t              * song;
   songfavoriteinfo_t  * favorite;
   char                * color;
+  char                * markcolor = "#2222ff";
   char                tmp [40];
   char                tbuff [100];
   dbidx_t             dbidx;
@@ -390,6 +406,12 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         song = dbGetByIdx (uisongsel->musicdb, dbidx);
       }
       if (song != NULL && (double) count < uisongsel->dfilterCount) {
+        char    *mark;
+
+        mark = "";
+        if (0) {
+          mark = "\xe2\x96\x88"; // full block
+        }
         favorite = songGetFavoriteData (song);
         color = favorite->color;
         if (strcmp (color, "") == 0) {
@@ -404,6 +426,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
             SONGSEL_COL_SORTIDX, (glong) idx,
             SONGSEL_COL_DBIDX, (glong) dbidx,
             SONGSEL_COL_FAV_COLOR, color,
+            SONGSEL_COL_MARK_COLOR, markcolor,
+            SONGSEL_COL_MARK, mark,
             -1);
 
         sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
@@ -417,6 +441,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
     ++idx;
     ++count;
   }
+
   logProcEnd (LOG_PROC, "uisongselPopulateData", "");
 }
 
@@ -784,10 +809,12 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   /* attributes ellipsize/align/font*/
   uiw->typelist [uiw->col++] = G_TYPE_INT;
   uiw->typelist [uiw->col++] = G_TYPE_STRING;
-  /* internal idx/sortidx/dbidx/fav color */
+  /* internal idx/sortidx/dbidx/fav color/mark color/mark */
   uiw->typelist [uiw->col++] = G_TYPE_LONG,
   uiw->typelist [uiw->col++] = G_TYPE_LONG,
   uiw->typelist [uiw->col++] = G_TYPE_LONG,
+  uiw->typelist [uiw->col++] = G_TYPE_STRING,
+  uiw->typelist [uiw->col++] = G_TYPE_STRING,
   uiw->typelist [uiw->col++] = G_TYPE_STRING,
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
