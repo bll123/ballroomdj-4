@@ -409,8 +409,11 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         char    *mark;
 
         mark = "";
-        if (0) {
-          mark = "\xe2\x96\x88"; // full block
+        if (uisongsel->songlistdbidxlist != NULL) {
+          /* check and see if the song is in the song list */
+          if (nlistGetNum (uisongsel->songlistdbidxlist, dbidx) >= 0) {
+            mark = "\xe2\x96\x8B"; // left five-eights block
+          }
         }
         favorite = songGetFavoriteData (song);
         color = favorite->color;

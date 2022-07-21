@@ -1077,6 +1077,10 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uimusicqProcessMusicQueueData (manage->slezmusicq, musicqupdate);
           uimusicqProcessMusicQueueData (manage->mmmusicq, musicqupdate);
           manageStatsProcessData (manage->slstats, musicqupdate);
+          /* the music queue data is used to display the mark */
+          /* indicating that the song is already in the song list */
+          uisongselProcessMusicQueueData (manage->slsongsel, musicqupdate);
+          uisongselProcessMusicQueueData (manage->slezsongsel, musicqupdate);
           msgparseMusicQueueDataFree (musicqupdate);
           break;
         }

@@ -63,6 +63,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->queuecb = NULL;
   uisongsel->playcb = NULL;
   uisongsel->editcb = NULL;
+  uisongsel->songlistdbidxlist = NULL;
 
   uisongselUIInit (uisongsel);
 
@@ -186,3 +187,25 @@ uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb)
   uisongsel->editcb = uicb;
 }
 
+void
+uisongselProcessMusicQueueData (uisongsel_t *uisongsel,
+    mp_musicqupdate_t *musicqupdate)
+{
+  nlistidx_t  iteridx;
+  mp_musicqupditem_t   *musicqupditem;
+
+  if (uisongsel->songlistdbidxlist != NULL) {
+    nlistFree (uisongsel->songlistdbidxlist);
+    uisongsel->songlistdbidxlist = NULL;
+  }
+
+  uisongsel->songlistdbidxlist = nlistAlloc ("songlist-dbidx",
+      LIST_ORDERED, NULL);
+
+  nlistStartIterator (musicqupdate->dispList, &iteridx);
+  while ((musicqupditem = nlistIterateValueData (musicqupdate->dispList, &iteridx)) != NULL) {
+    nlistSetNum (uisongsel->songlistdbidxlist, musicqupditem->dbidx, 0);
+  }
+
+  uisongselPopulateData (uisongsel);
+}

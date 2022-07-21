@@ -1135,7 +1135,6 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
 {
   playlistitem_t  *plitem;
   playlist_t      *playlist;
-  char            plname [60];
   int             mi;
   ilistidx_t      danceIdx;
   ilistidx_t      musicqLen;
@@ -1149,22 +1148,20 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   mainData->musicqManageIdx = mi;
 
   logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %d %d", mi, danceIdx, count);
-  snprintf (plname, sizeof (plname), "_main_dance_%d_%ld",
-      danceIdx, globalCounter++);
   playlist = playlistAlloc (mainData->musicdb);
   /* CONTEXT: player: the name of the special playlist for queueing a dance */
   if (playlistLoad (playlist, _("QueueDance")) < 0) {
-    playlistCreate (playlist, plname, PLTYPE_AUTO);
+    playlistCreate (playlist, "main_queue_dance", PLTYPE_AUTO);
   }
   playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);
   /* clear all dance selected/counts */
   playlistResetAll (playlist);
   /* this will also set 'selected' */
   playlistSetDanceCount (playlist, danceIdx, 1);
-  logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %s", plname);
+  logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %s", "queue-dance");
   plitem = mainPlaylistItemCache (mainData, playlist, globalCounter++);
   queuePush (mainData->playlistQueue [mi], plitem);
-  logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
+  logMsg (LOG_DBG, LOG_MAIN, "push pl %s", "queue-dance");
   mainMusicQueueFill (mainData);
   mainMusicQueuePrep (mainData);
   mainData->marqueeChanged [mi] = true;

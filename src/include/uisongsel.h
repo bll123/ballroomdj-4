@@ -8,6 +8,7 @@
 
 #include "conn.h"
 #include "dispsel.h"
+#include "msgparse.h"
 #include "musicdb.h"
 #include "musicq.h"
 #include "nlist.h"
@@ -38,6 +39,7 @@ typedef struct uisongsel {
   UICallback        *playcb;
   UICallback        *editcb;
   dbidx_t           lastdbidx;
+  nlist_t           *songlistdbidxlist;
   /* peers */
   int               peercount;
   uisongsel_t       *peers [UISONGSEL_PEER_MAX];
@@ -70,7 +72,7 @@ void  uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicb);
 void  uisongselSetPlayCallback (uisongsel_t *uisongsel, UICallback *uicb);
 /* song filter */
 void  uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb);
-
+void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t *musicqupdate);
 
 /* uisongselgtk.c */
 void  uisongselUIInit (uisongsel_t *uisongsel);
