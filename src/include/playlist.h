@@ -49,7 +49,8 @@ typedef enum {
 
 enum {
   PL_LIST_NORMAL = 1,   // excludes the special QueueDance playlist
-  PL_LIST_ALL,
+  PL_LIST_ALL,          // everything, include QueueDance and 'Raffle Songs'
+  PL_LIST_AUTO_SEQ,
   PL_LIST_SONGLIST,
   PL_LIST_SEQUENCE,
 };

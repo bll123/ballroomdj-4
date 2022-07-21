@@ -526,7 +526,6 @@ uimusicqTruncateQueueCallback (void *udata)
 
   logProcBegin (LOG_PROC, "uimusicqTruncateQueueCallback");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: clear queue");
-fprintf (stderr, "uimusicq: clr-queue-cb\n");
 
   ci = uimusicq->musicqManageIdx;
 

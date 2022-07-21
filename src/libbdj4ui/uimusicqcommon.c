@@ -142,7 +142,6 @@ uimusicqTruncateQueue (uimusicq_t *uimusicq, int mqidx, long idx)
 {
   char          tbuff [40];
 
-fprintf (stderr, "uimusicq: clr-queue\n");
   snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_TRUNCATE, tbuff);
 }

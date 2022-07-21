@@ -109,7 +109,6 @@ playlistFree (void *tpl)
   playlist_t      *pl = tpl;
 
   if (pl != NULL) {
-fprintf (stderr, "pl: free %s\n", pl->name);
     if (pl->plinfodf != NULL) {
       datafileFree (pl->plinfodf);
     } else {
@@ -164,7 +163,6 @@ playlistLoad (playlist_t *pl, const char *fname)
     return -1;
   }
 
-fprintf (stderr, "pl: load %s\n", fname);
   pathbldMakePath (tfn, sizeof (tfn), fname,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   if (pl == NULL) {
@@ -271,7 +269,6 @@ playlistCreate (playlist_t *pl, const char *plname, pltype_t type)
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   pl->name = strdup (plname);
-fprintf (stderr, "pl: create %s\n", pl->name);
   snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plname);
   pl->plinfo = nlistAlloc (tbuff, LIST_UNORDERED, free);
   nlistSetSize (pl->plinfo, PLAYLIST_KEY_MAX);
@@ -533,6 +530,7 @@ playlistGetPlaylistList (int flag)
 {
   char        *tplfnm;
   char        tfn [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
   slist_t     *filelist;
   slist_t     *pnlist;
   pathinfo_t  *pi;
@@ -562,10 +560,16 @@ playlistGetPlaylistList (int flag)
     tfn [pi->blen] = '\0';
 
     pathInfoFree (pi);
-    if (flag == PL_LIST_NORMAL &&
+    if ((flag == PL_LIST_NORMAL || flag == PL_LIST_AUTO_SEQ) &&
         /* CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button */
         strcmp (tfn, _("QueueDance")) == 0) {
       continue;
+    }
+    if (flag == PL_LIST_AUTO_SEQ) {
+      pathbldMakePath (tbuff, sizeof (tbuff), tfn, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+      if (fileopFileExists (tbuff)) {
+        continue;
+      }
     }
     slistSetStr (pnlist, tfn, tfn);
   }

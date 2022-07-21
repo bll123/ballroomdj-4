@@ -1444,9 +1444,7 @@ manageCFPLCreatePlaylistList (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageCreatePlaylistList");
 
-  /* any type of playlist is fine */
-  /* don't really need song list, but leave it for now */
-  pllist = playlistGetPlaylistList (PL_LIST_ALL);
+  pllist = playlistGetPlaylistList (PL_LIST_AUTO_SEQ);
   /* what text is best to use for 'no selection'? */
   uiDropDownSetList (manage->cfplsel, pllist, "");
   slistFree (pllist);
