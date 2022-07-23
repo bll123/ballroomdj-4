@@ -133,12 +133,12 @@ dbLoad (musicdb_t *musicdb)
     ok = false;
     if (fileopFileExists (ffn)) {
       ok = true;
+    } else {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found", fstr);
+      songFree (song);
+      song = NULL;
     }
     free (ffn);
-
-    if (! ok) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found", fstr);
-    }
 
     if (ok) {
       srrn = songGetNum (song, TAG_RRN);
@@ -151,8 +151,8 @@ dbLoad (musicdb_t *musicdb)
         songSetNum (song, TAG_RRN, i);
       }
       slistSetData (musicdb->songs, fstr, song);
+      ++musicdb->count;
     }
-    ++musicdb->count;
   }
   slistSort (musicdb->songs);
 
@@ -239,8 +239,14 @@ dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
 size_t
 dbWriteSong (musicdb_t *musicdb, song_t *song)
 {
-  return dbWrite (musicdb, songGetStr (song, TAG_FILE),
-      songTagList (song), songGetNum (song, TAG_RRN));
+  slist_t   *taglist;
+  int       rc;
+
+  taglist = songTagList (song);
+  rc = dbWrite (musicdb, songGetStr (song, TAG_FILE),
+      taglist, songGetNum (song, TAG_RRN));
+  slistFree (taglist);
+  return rc;
 }
 
 size_t

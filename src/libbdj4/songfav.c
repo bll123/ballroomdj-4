@@ -22,7 +22,7 @@ static songfavoriteinfo_t songfavoriteinfo [SONG_FAVORITE_MAX] = {
   { SONG_FAVORITE_NONE, "\xE2\x98\x86", "", NULL },
   { SONG_FAVORITE_RED, "\xE2\x98\x85", "#9b3128", NULL },
   { SONG_FAVORITE_ORANGE, "\xE2\x98\x85", "#c26a1a", NULL },
-  { SONG_FAVORITE_GREEN, "\xE2\x98\x85", "#00b25d", NULL },
+  { SONG_FAVORITE_GREEN, "\xE2\x98\x85", "#007223", NULL },
   { SONG_FAVORITE_BLUE, "\xE2\x98\x85", "#2f2ad7", NULL },
   { SONG_FAVORITE_PURPLE, "\xE2\x98\x85", "#901ba3", NULL },
 };

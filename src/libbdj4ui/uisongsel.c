@@ -114,49 +114,6 @@ uisongselMainLoop (uisongsel_t *uisongsel)
   return;
 }
 
-int
-uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
-    bdjmsgmsg_t msg, char *args, void *udata)
-{
-  uisongsel_t   *uisongsel = udata;
-  bool          dbgdisp = false;
-
-  /* if a message is added that has arguments, then the args var */
-  /* needs to be strdup'd (see uimusicq.c) */
-
-  switch (route) {
-    case ROUTE_NONE:
-    case ROUTE_MANAGEUI:
-    case ROUTE_PLAYERUI: {
-      switch (msg) {
-        case MSG_DB_ENTRY_UPDATE:
-        case MSG_DATABASE_UPDATE: {
-          /* re-filter the display */
-          uisongselApplySongFilter (uisongsel);
-          dbgdisp = true;
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-      break;
-    }
-    default: {
-      break;
-    }
-  }
-
-  if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "uisongsel %s (%d): rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-        uisongsel->tag, uisongsel->dispselType,
-        routefrom, msgRouteDebugText (routefrom),
-        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
-  }
-
-  return 0;
-}
-
 void
 uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx)
 {
@@ -216,12 +173,14 @@ uisongselProcessMusicQueueData (uisongsel_t *uisongsel,
   }
 
   uisongsel->songlistdbidxlist = nlistAlloc ("songlist-dbidx",
-      LIST_ORDERED, NULL);
+      LIST_UNORDERED, NULL);
+  nlistSetSize (uisongsel->songlistdbidxlist, nlistGetCount (musicqupdate->dispList));
 
   nlistStartIterator (musicqupdate->dispList, &iteridx);
   while ((musicqupditem = nlistIterateValueData (musicqupdate->dispList, &iteridx)) != NULL) {
     nlistSetNum (uisongsel->songlistdbidxlist, musicqupditem->dbidx, 0);
   }
+  nlistSort (uisongsel->songlistdbidxlist);
 
   uisongselPopulateData (uisongsel);
 }

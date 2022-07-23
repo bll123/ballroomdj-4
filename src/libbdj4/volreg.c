@@ -152,6 +152,7 @@ volregUpdate (const char *sink, int originalVolume, int inc)
   ilistidx_t  vkey;
   char        *dsink;
   int         rval;
+  bool        newvlist = false;
 
 
   volregLockWait ();
@@ -159,18 +160,22 @@ volregUpdate (const char *sink, int originalVolume, int inc)
   df = datafileAllocParse ("volreg", DFTYPE_INDIRECT, fn,
       volregdfkeys, VOLREG_KEY_MAX, DATAFILE_NO_LOOKUP);
   vlist = datafileGetList (df);
-  if (vlist == NULL) {
-    vlist = ilistAlloc ("volreg", LIST_ORDERED);
+
+  vkey = -1;
+  if (vlist != NULL) {
+    ilistStartIterator (vlist, &viteridx);
+    while ((key = ilistIterateKey (vlist, &viteridx)) >= 0) {
+      dsink = ilistGetStr (vlist, key, VOLREG_SINK);
+      if (strcmp (sink, dsink) == 0) {
+        vkey = key;
+        break;
+      }
+    }
   }
 
-  ilistStartIterator (vlist, &viteridx);
-  vkey = -1;
-  while ((key = ilistIterateKey (vlist, &viteridx)) >= 0) {
-    dsink = ilistGetStr (vlist, key, VOLREG_SINK);
-    if (strcmp (sink, dsink) == 0) {
-      vkey = key;
-      break;
-    }
+  if (vlist == NULL) {
+    vlist = ilistAlloc ("volreg", LIST_ORDERED);
+    newvlist = true;
   }
 
   rval = -1;
@@ -216,6 +221,10 @@ volregUpdate (const char *sink, int originalVolume, int inc)
   }
 
   datafileSaveIndirect ("volreg", fn, volregdfkeys, VOLREG_KEY_MAX, vlist);
+  datafileFree (df);
+  if (newvlist) {
+    ilistFree (vlist);
+  }
   volregUnlock ();
   return rval;
 }

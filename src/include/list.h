@@ -12,8 +12,8 @@ typedef enum {
 } keytype_t;
 
 typedef enum {
-  LIST_ORDERED,
   LIST_UNORDERED,
+  LIST_ORDERED,
 } listorder_t;
 
 typedef enum {

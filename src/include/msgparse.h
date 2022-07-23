@@ -3,6 +3,7 @@
 
 #include "nlist.h"
 #include "musicdb.h"
+#include "musicq.h"
 
 /* used for music queue update processing */
 typedef struct {
@@ -13,7 +14,7 @@ typedef struct {
 } mp_musicqupditem_t;
 
 typedef struct {
-  int             mqidx;
+  musicqidx_t     mqidx;
   long            tottime;
   nlist_t         *dispList;
 } mp_musicqupdate_t;

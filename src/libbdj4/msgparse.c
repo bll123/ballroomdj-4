@@ -30,7 +30,7 @@ msgparseMusicQueueData (char *args)
   musicqupdate = malloc (sizeof (mp_musicqupdate_t));
 
   /* first, build ourselves a list to work with */
-  musicqupdate->dispList = nlistAlloc ("temp-musicq-disp", LIST_ORDERED, NULL);
+  musicqupdate->dispList = nlistAlloc ("temp-musicq-disp", LIST_ORDERED, free);
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   mqidx = atoi (p);

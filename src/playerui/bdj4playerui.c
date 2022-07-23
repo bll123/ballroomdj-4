@@ -728,10 +728,12 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mp_musicqupdate_t  *musicqupdate;
 
           musicqupdate = msgparseMusicQueueData (args);
-          uimusicqProcessMusicQueueData (plui->uimusicq, musicqupdate);
-          /* the music queue data is used to display the mark */
-          /* indicating that the song is already in the song list */
-          uisongselProcessMusicQueueData (plui->uisongsel, musicqupdate);
+          if (musicqupdate->mqidx < MUSICQ_PB_MAX) {
+            uimusicqProcessMusicQueueData (plui->uimusicq, musicqupdate);
+            /* the music queue data is used to display the mark */
+            /* indicating that the song is already in the song list */
+            uisongselProcessMusicQueueData (plui->uisongsel, musicqupdate);
+          }
           msgparseMusicQueueDataFree (musicqupdate);
           break;
         }
@@ -740,6 +742,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uiplayerSetDatabase (plui->uiplayer, plui->musicdb);
           uisongselSetDatabase (plui->uisongsel, plui->musicdb);
           uimusicqSetDatabase (plui->uimusicq, plui->musicdb);
+          uisongselApplySongFilter (plui->uisongsel);
           dbgdisp = true;
           break;
         }
@@ -765,7 +768,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   /* due to the db update message, these must be applied afterwards */
   uiplayerProcessMsg (routefrom, route, msg, args, plui->uiplayer);
-  uisongselProcessMsg (routefrom, route, msg, args, plui->uisongsel);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

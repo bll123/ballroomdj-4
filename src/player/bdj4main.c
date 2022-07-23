@@ -93,6 +93,7 @@ typedef struct {
   long              ploverridestoptime;
   int               musicqChanged [MUSICQ_MAX];
   bool              marqueeChanged [MUSICQ_MAX];
+  bool              changeSuspend [MUSICQ_MAX];
   bool              playWhenQueued : 1;
   bool              switchQueueWhenEmpty : 1;
   bool              finished : 1;
@@ -148,6 +149,7 @@ static void mainSendFinished (maindata_t *mainData);
 static long mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx);
 static playlistitem_t * mainPlaylistItemCache (maindata_t *mainData, playlist_t *pl, int playlistIdx);
 static void mainPlaylistItemFree (void *tplitem);
+static void mainMusicqSetSuspend (maindata_t *mainData, char *args, bool value);
 
 
 static long globalCounter = 0;
@@ -196,6 +198,7 @@ main (int argc, char *argv[])
     mainData.playlistQueue [i] = NULL;
     mainData.musicqChanged [i] = MAIN_CHG_CLEAR;
     mainData.marqueeChanged [i] = false;
+    mainData.changeSuspend [i] = false;
   }
   procutilInitProcesses (mainData.processes);
 
@@ -513,6 +516,16 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_MUSICQ_DATA_SUSPEND: {
+          mainMusicqSetSuspend (mainData, targs, true);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_MUSICQ_DATA_RESUME: {
+          mainMusicqSetSuspend (mainData, targs, false);
+          dbgdisp = true;
+          break;
+        }
         case MSG_PLAYER_STATE: {
           mainData->playerState = (playerstate_t) atol (targs);
           logMsg (LOG_DBG, LOG_MSGS, "got: pl-state: %d/%s",
@@ -607,7 +620,8 @@ mainProcessing (void *udata)
   connProcessUnconnected (mainData->conn);
 
   for (int i = 0; i < MUSICQ_MAX; ++i) {
-    if (mainData->musicqChanged [i] == MAIN_CHG_FINAL) {
+    if (mainData->changeSuspend [i] == false &&
+        mainData->musicqChanged [i] == MAIN_CHG_FINAL) {
       mainSendMusicQueueData (mainData, i);
       mainData->musicqChanged [i] = MAIN_CHG_CLEAR;
     }
@@ -1280,7 +1294,8 @@ mainMusicQueueFill (maindata_t *mainData)
         currlen, mainCheckMusicQueue, mainMusicQueueHistory, mainData);
     if (song == NULL) {
       logMsg (LOG_DBG, LOG_MAIN, "song is null");
-      queuePop (mainData->playlistQueue [mainData->musicqManageIdx]);
+      plitem = queuePop (mainData->playlistQueue [mainData->musicqManageIdx]);
+      mainPlaylistItemFree (plitem);
       plitem = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
       playlist = NULL;
       if (plitem != NULL) {
@@ -2382,4 +2397,16 @@ mainPlaylistItemFree (void *tplitem)
     /* the playlist data is owned by the playlistCache and is freed by it */
     free (plitem);
   }
+}
+
+static void
+mainMusicqSetSuspend (maindata_t *mainData, char *args, bool value)
+{
+  int     mqidx;
+
+  mqidx = atoi (args);
+  if (mqidx < 0 || mqidx >= MUSICQ_MAX) {
+    return;
+  }
+  mainData->changeSuspend [mqidx] = value;
 }

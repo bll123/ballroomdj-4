@@ -915,6 +915,7 @@ uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
   uisongselgtk_t    * uiw;
 
   logProcBegin (LOG_PROC, "uisongselCheckFavChgSignal");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: change favorite");
 
   uiw = uisongsel->uiWidgetData;
   if (column != uiw->favColumn) {

@@ -1062,6 +1062,7 @@ uimusicqCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
   song_t        *song;
 
   logProcBegin (LOG_PROC, "uimusicqCheckFavChgSignal");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: musicq: change favorite");
 
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;

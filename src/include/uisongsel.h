@@ -68,7 +68,6 @@ void  uisongselInitializeSongFilter (uisongsel_t *uisongsel, songfilter_t *songf
 void  uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb);
 void  uisongselFree (uisongsel_t *uisongsel);
 void  uisongselMainLoop (uisongsel_t *uisongsel);
-int   uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, char *args, void *udata);
 void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicb);
 void  uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicb);
 void  uisongselSetPlayCallback (uisongsel_t *uisongsel, UICallback *uicb);

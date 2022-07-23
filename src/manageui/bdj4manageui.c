@@ -1013,7 +1013,6 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   manageui_t  *manage = udata;
-  char        *targs;
 
   logProcBegin (LOG_PROC, "manageProcessMsg");
 
@@ -1022,8 +1021,6 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
-
-  targs = strdup (args);
 
   switch (route) {
     case ROUTE_NONE:
@@ -1047,11 +1044,11 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_PROGRESS: {
-          manageDbProgressMsg (manage->managedb, targs);
+          manageDbProgressMsg (manage->managedb, args);
           break;
         }
         case MSG_DB_STATUS_MSG: {
-          manageDbStatusMsg (manage->managedb, targs);
+          manageDbStatusMsg (manage->managedb, args);
           break;
         }
         case MSG_DB_FINISH: {
@@ -1072,23 +1069,25 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           /* reload it, and reload it ourselves */
           connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
 
-          /* force a database update message */
-          routefrom = ROUTE_MANAGEUI;
-          msg = MSG_DATABASE_UPDATE;
+          uisongselApplySongFilter (manage->slsongsel);
           break;
         }
         case MSG_MUSIC_QUEUE_DATA: {
           mp_musicqupdate_t  *musicqupdate;
 
           musicqupdate = msgparseMusicQueueData (args);
-          uimusicqProcessMusicQueueData (manage->slmusicq, musicqupdate);
-          uimusicqProcessMusicQueueData (manage->slezmusicq, musicqupdate);
-          uimusicqProcessMusicQueueData (manage->mmmusicq, musicqupdate);
-          manageStatsProcessData (manage->slstats, musicqupdate);
+          if (musicqupdate->mqidx == manage->musicqManageIdx) {
+            uimusicqProcessMusicQueueData (manage->slmusicq, musicqupdate);
+            uimusicqProcessMusicQueueData (manage->slezmusicq, musicqupdate);
+            uimusicqProcessMusicQueueData (manage->mmmusicq, musicqupdate);
+            manageStatsProcessData (manage->slstats, musicqupdate);
+          }
           /* the music queue data is used to display the mark */
           /* indicating that the song is already in the song list */
-          uisongselProcessMusicQueueData (manage->slsongsel, musicqupdate);
-          uisongselProcessMusicQueueData (manage->slezsongsel, musicqupdate);
+          if (musicqupdate->mqidx == manage->musicqManageIdx) {
+            uisongselProcessMusicQueueData (manage->slsongsel, musicqupdate);
+            uisongselProcessMusicQueueData (manage->slezsongsel, musicqupdate);
+          }
           msgparseMusicQueueDataFree (musicqupdate);
           break;
         }
@@ -1116,6 +1115,13 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uisongeditSetPlayButtonState (manage->mmsongedit, val);
           break;
         }
+        case MSG_DB_ENTRY_UPDATE: {
+          /* re-filter the display */
+          /* this only needs to be called once, as applysongfilter will */
+          /* have all the peers re-process also */
+          uisongselApplySongFilter (manage->slsongsel);
+          break;
+        }
         default: {
           break;
         }
@@ -1124,23 +1130,6 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     }
     default: {
       break;
-    }
-  }
-
-  free (targs);
-
-  /* due to the db update message, these must be applied afterwards */
-  uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
-  uisongselProcessMsg (routefrom, route, msg, args, manage->slsongsel);
-  uisongselProcessMsg (routefrom, route, msg, args, manage->slezsongsel);
-  uiplayerProcessMsg (routefrom, route, msg, args, manage->mmplayer);
-  uisongselProcessMsg (routefrom, route, msg, args, manage->mmsongsel);
-  uisongeditProcessMsg (routefrom, route, msg, args, manage->mmsongedit);
-
-  /* reset the bypass flag after a music queue update has been received */
-  if (msg == MSG_MUSIC_QUEUE_DATA) {
-    if (manage->selbypass) {
-      --manage->selbypass;
     }
   }
 
@@ -1576,12 +1565,11 @@ manageSonglistLoadFile (void *udata, const char *fn)
 
   /* any selection made by the load process should not trigger */
   /* a change in the song editor */
-  /* the next two updates received from main will decrement the bypass flag */
   manage->selusesonglist = false;
-  /* two messages are received in response to the changes below */
-  /* (clear queue and queue playlist) */
-  /* this is gross */
-  manage->selbypass += 2;
+  /* ask the main player process to not send music queue updates */
+  /* the selbypass flag cannot be used due to timing issues */
+  snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
+  connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_DATA_SUSPEND, tbuff);
 
   manageSonglistSave (manage);
 
@@ -1592,6 +1580,9 @@ manageSonglistLoadFile (void *udata, const char *fn)
   snprintf (tbuff, sizeof (tbuff), "%d%c%s",
       manage->musicqManageIdx, MSG_ARGS_RS, fn);
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
+
+  snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
+  connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_DATA_RESUME, tbuff);
 
   manageSetSonglistName (manage, fn);
   manageLoadPlaylist (manage, fn);

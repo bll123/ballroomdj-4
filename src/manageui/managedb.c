@@ -220,7 +220,7 @@ manageDbChg (void *udata)
   nval = (ssize_t) value;
 
   sval = nlistGetStr (managedb->dbhelp, nval);
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector %s", sval);
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector : %s", sval);
   uiTextBoxSetValue (managedb->dbhelpdisp, sval);
   return UICB_CONT;
 }
