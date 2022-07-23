@@ -131,6 +131,7 @@ enum {
   CONFUI_SPINBOX_UI_THEME,
   CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
   CONFUI_SPINBOX_MAX,
+  CONFUI_SWITCH_BDJ3_COMPAT_TAGS,
   CONFUI_SWITCH_DB_LOAD_FROM_GENRE,
   CONFUI_SWITCH_ENABLE_ITUNES,
   CONFUI_SWITCH_AUTO_ORGANIZE,
@@ -1082,15 +1083,24 @@ confuiBuildUIGeneral (configui_t *confui)
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_BPM), NULL);
 
   /* database */
+
   /* CONTEXT: configuration: which audio tags will be written to the audio file */
   confuiMakeItemSpinboxText (confui, &vbox, &sg, NULL, _("Write Audio File Tags"),
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS, OPT_G_WRITETAGS,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_WRITETAGS), NULL);
+
+  confuiMakeItemSwitch (confui, &vbox, &sg,
+      /* CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode */
+      _("BallroomDJ 3 Compatible Audio File Tags"),
+      CONFUI_SWITCH_BDJ3_COMPAT_TAGS, OPT_G_BDJ3_COMPAT_TAGS,
+      bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS), NULL);
+
   confuiMakeItemSwitch (confui, &vbox, &sg,
       /* CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag */
       _("Database Loads Dance From Genre"),
       CONFUI_SWITCH_DB_LOAD_FROM_GENRE, OPT_G_LOADDANCEFROMGENRE,
       bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE), NULL);
+
   confuiMakeItemSwitch (confui, &vbox, &sg,
       /* CONTEXT: configuration: enable itunes support */
       _("Enable iTunes Support"),

@@ -1367,7 +1367,6 @@ starterCheckProfile (startui_t *starter)
   if (sysvarsGetNum (SVL_BDJIDX) == starter->newprofile) {
     char  tbuff [100];
     int   profidx;
-    int   r, g, b;
 
     bdjoptInit ();
     profidx = sysvarsGetNum (SVL_BDJIDX);
