@@ -95,23 +95,23 @@ enum {
   MARQUEE_UNMAX_WAIT_COUNT = 3,
 };
 
-static bool     marqueeConnectingCallback (void *udata, programstate_t programState);
-static bool     marqueeHandshakeCallback (void *udata, programstate_t programState);
-static bool     marqueeStoppingCallback (void *udata, programstate_t programState);
-static bool     marqueeStopWaitCallback (void *udata, programstate_t programState);
-static bool     marqueeClosingCallback (void *udata, programstate_t programState);
-static void     marqueeBuildUI (marquee_t *marquee);
-static int      marqueeMainLoop  (void *tmarquee);
-static int      marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
-                    bdjmsgmsg_t msg, char *args, void *udata);
-static bool     marqueeCloseCallback (void *udata);
-static bool     marqueeToggleFullscreen (void *udata);
-static void     marqueeSetMaximized (marquee_t *marquee);
-static void     marqueeSetNotMaximized (marquee_t *marquee);
-static void     marqueeSetNotMaximizeFinish (marquee_t *marquee);
-static void     marqueeSendMaximizeState (marquee_t *marquee);
-static bool     marqueeWinState (void *udata, int isicon, int ismax);
-static bool     marqueeWinMapped (void *udata);
+static bool marqueeConnectingCallback (void *udata, programstate_t programState);
+static bool marqueeHandshakeCallback (void *udata, programstate_t programState);
+static bool marqueeStoppingCallback (void *udata, programstate_t programState);
+static bool marqueeStopWaitCallback (void *udata, programstate_t programState);
+static bool marqueeClosingCallback (void *udata, programstate_t programState);
+static void marqueeBuildUI (marquee_t *marquee);
+static int  marqueeMainLoop  (void *tmarquee);
+static int  marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
+                bdjmsgmsg_t msg, char *args, void *udata);
+static bool marqueeCloseCallback (void *udata);
+static bool marqueeToggleFullscreen (void *udata);
+static void marqueeSetMaximized (marquee_t *marquee);
+static void marqueeSetNotMaximized (marquee_t *marquee);
+static void marqueeSetNotMaximizeFinish (marquee_t *marquee);
+static void marqueeSendMaximizeState (marquee_t *marquee);
+static bool marqueeWinState (void *udata, int isicon, int ismax);
+static bool marqueeWinMapped (void *udata);
 static void marqueeSaveWindowPosition (marquee_t *);
 static void marqueeMoveWindow (marquee_t *);
 static void marqueeSigHandler (int sig);
@@ -119,6 +119,7 @@ static void marqueeSetFontSize (marquee_t *marquee, UIWidget *lab, const char *f
 static void marqueePopulate (marquee_t *marquee, char *args);
 static void marqueeSetTimer (marquee_t *marquee, char *args);
 static void marqueeSetFont (marquee_t *marquee, int sz);
+static void marqueeFind (marquee_t *marquee);
 static void marqueeDisplayCompletion (marquee_t *marquee);
 
 static int gKillReceived = 0;
@@ -572,6 +573,11 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_MARQUEE_FIND: {
+          marqueeFind (marquee);
+          dbgdisp = true;
+          break;
+        }
         case MSG_FINISHED: {
           marqueeDisplayCompletion (marquee);
           dbgdisp = true;
@@ -675,6 +681,7 @@ marqueeSetNotMaximized (marquee_t *marquee)
   marquee->isMaximized = false;
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ));
   marquee->unMaximize = MARQUEE_UNMAX_WAIT_COUNT;
+  logProcEnd (LOG_PROC, "marqueeSetNotMaximized", "");
 }
 
 static void
@@ -944,6 +951,24 @@ marqueeSetFont (marquee_t *marquee, int sz)
   }
 
   logProcEnd (LOG_PROC, "marqueeSetFont", "");
+}
+
+static void
+marqueeFind (marquee_t *marquee)
+{
+  /* on linux XFCE, this will position the window at this location in */
+  /* its current workspace */
+
+  nlistSetNum (marquee->options, MQ_POSITION_X, 200);
+  nlistSetNum (marquee->options, MQ_POSITION_Y, 200);
+
+  if (marquee->isIconified) {
+    uiWindowDeIconify (&marquee->window);
+  }
+  marqueeSetNotMaximized (marquee);
+  uiWindowMoveToCurrentWorkspace (&marquee->window);
+  marqueeMoveWindow (marquee);
+  uiWindowPresent (&marquee->window);
 }
 
 static void

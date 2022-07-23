@@ -48,6 +48,7 @@ enum {
   PLUI_MENU_CB_EXTRA_QUEUE,
   PLUI_MENU_CB_SWITCH_QUEUE,
   PLUI_MENU_CB_MQ_FONT_SZ,
+  PLUI_MENU_CB_MQ_FIND,
   PLUI_CB_NOTEBOOK,
   PLUI_CB_CLOSE,
   PLUI_CB_PLAYBACK_QUEUE,
@@ -145,6 +146,7 @@ static bool     pluiMarqueeFontSizeDialog (void *udata);
 static void     pluiCreateMarqueeFontSizeDialog (playerui_t *plui);
 static bool     pluiMarqueeFontSizeDialogResponse (void *udata, long responseid);
 static void     pluiMarqueeFontSizeChg (GtkSpinButton *fb, gpointer udata);
+static bool     pluiMarqueeFind (void *udata);
 static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
 static bool     pluiQueueProcess (void *udata, long dbidx, int mqidx);
@@ -417,6 +419,12 @@ pluiBuildUI (playerui_t *plui)
   /* CONTEXT: playerui: menu selection: marquee: change the marquee font size */
   uiMenuCreateItem (&menu, &menuitem, _("Font Size"),
       &plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ]);
+
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_MQ_FIND],
+      pluiMarqueeFind, plui);
+  /* CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen */
+  uiMenuCreateItem (&menu, &menuitem, _("Recover Marquee"),
+      &plui->callbacks [PLUI_MENU_CB_MQ_FIND]);
 
   /* player */
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
@@ -1080,6 +1088,16 @@ pluiMarqueeFontSizeChg (GtkSpinButton *sb, gpointer udata)
   }
   mstimeset (&plui->marqueeFontSizeCheck, 100);
 }
+
+static bool
+pluiMarqueeFind (void *udata)
+{
+  playerui_t      *plui = udata;
+
+  connSendMessage (plui->conn, ROUTE_MARQUEE, MSG_MARQUEE_FIND, NULL);
+  return UICB_CONT;
+}
+
 
 static void
 pluisetMarqueeIsMaximized (playerui_t *plui, char *args)

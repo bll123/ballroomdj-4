@@ -11,6 +11,7 @@
 #cmakedefine01 _hdr_execinfo
 #cmakedefine01 _hdr_endpointvolume
 #cmakedefine01 _hdr_fcntl
+#cmakedefine01 _hdr_gdk_gdkx
 #cmakedefine01 _hdr_gtk_gtk
 #cmakedefine01 _hdr_io
 #cmakedefine01 _hdr_libintl

@@ -222,6 +222,7 @@ check_include_file (vlc/vlc.h _hdr_vlc_vlc)
 set (CMAKE_REQUIRED_INCLUDES "")
 
 set (CMAKE_REQUIRED_INCLUDES ${GTK_INCLUDE_DIRS})
+check_include_file (gdk/gdk.h _hdr_gdk_gdkx)
 check_include_file (gtk/gtk.h _hdr_gtk_gtk)
 set (CMAKE_REQUIRED_INCLUDES "")
 

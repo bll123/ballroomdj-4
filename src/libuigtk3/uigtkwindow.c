@@ -10,6 +10,9 @@
 #include <math.h>
 
 #include <gtk/gtk.h>
+#if _hdr_gdk_gdkx
+# include <gdk/gdkx.h>
+#endif
 
 #include "ui.h"
 
@@ -72,6 +75,12 @@ uiWindowIconify (UIWidget *uiwindow)
 }
 
 inline void
+uiWindowDeIconify (UIWidget *uiwindow)
+{
+  gtk_window_deiconify (GTK_WINDOW (uiwindow->widget));
+}
+
+inline void
 uiWindowMaximize (UIWidget *uiwindow)
 {
   gtk_window_maximize (GTK_WINDOW (uiwindow->widget));
@@ -120,6 +129,21 @@ uiWindowMove (UIWidget *uiwindow, int x, int y)
 {
   if (x != -1 && y != -1) {
     gtk_window_move (GTK_WINDOW (uiwindow->widget), x, y);
+  }
+}
+
+void
+uiWindowMoveToCurrentWorkspace (UIWidget *uiwindow)
+{
+  GdkWindow *gdkwin;
+
+  gdkwin = gtk_widget_get_window (uiwindow->widget);
+
+  if (gdkwin != NULL) {
+/* being lazy here, just check for the header to see if it is x11 */
+#if _hdr_gdk_gdkx
+    gdk_x11_window_move_to_current_desktop (gdkwin);
+#endif
   }
 }
 

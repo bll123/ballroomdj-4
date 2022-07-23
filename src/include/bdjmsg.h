@@ -124,6 +124,7 @@ typedef enum {
   MSG_MARQUEE_SET_FONT_SZ,  // args: font-size
   MSG_MARQUEE_IS_MAX,       // args: boolean flag
   MSG_MARQUEE_FONT_SIZES,   // args: font-size, font-size-fs
+  MSG_MARQUEE_FIND,
 
   /* to/from dbudpate */
   MSG_DB_FILE_TAGS,         // args: filename, tag data
