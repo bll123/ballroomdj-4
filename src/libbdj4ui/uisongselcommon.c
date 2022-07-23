@@ -10,6 +10,8 @@
 #include <assert.h>
 #include <math.h>
 
+#include "musicdb.h"
+#include "song.h"
 #include "uisongsel.h"
 #include "ui.h"
 
@@ -40,9 +42,12 @@ uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx)
 {
   song_t    *song;
 
-  song = dbGetByIdx (uisongsel->musicdb, (ssize_t) dbidx);
-  songChangeFavorite (song);
-// ### TODO song data must be saved to the database.
+  song = dbGetByIdx (uisongsel->musicdb, dbidx);
+  if (song != NULL) {
+    songChangeFavorite (song);
+    if (uisongsel->songsavecb != NULL) {
+      uiutilsCallbackHandler (uisongsel->songsavecb);
+    }
+  }
 }
-
 

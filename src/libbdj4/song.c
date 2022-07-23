@@ -76,15 +76,6 @@ enum {
   SONG_DFKEY_COUNT = (sizeof (songdfkeys) / sizeof (datafilekey_t))
 };
 
-static songfavoriteinfo_t songfavoriteinfo [SONG_FAVORITE_MAX] = {
-  { SONG_FAVORITE_NONE, "\xE2\x98\x86", "", NULL },
-  { SONG_FAVORITE_RED, "\xE2\x98\x85", "#9b3128", NULL },
-  { SONG_FAVORITE_ORANGE, "\xE2\x98\x85", "#c26a1a", NULL },
-  { SONG_FAVORITE_GREEN, "\xE2\x98\x85", "#00b25d", NULL },
-  { SONG_FAVORITE_BLUE, "\xE2\x98\x85", "#2f2ad7", NULL },
-  { SONG_FAVORITE_PURPLE, "\xE2\x98\x85", "#901ba3", NULL },
-};
-
 typedef struct {
   size_t   songcount;
   level_t  *levels;
@@ -214,20 +205,14 @@ songGetFavoriteData (song_t *song)
   ssize_t       value;
 
   if (song == NULL || song->songInfo == NULL) {
-    return &songfavoriteinfo [SONG_FAVORITE_NONE];
+    return songFavoriteGet (SONG_FAVORITE_NONE);
   }
 
   value = nlistGetNum (song->songInfo, TAG_FAVORITE);
   if (value == LIST_VALUE_INVALID) {
     value = SONG_FAVORITE_NONE;
   }
-  return songGetFavorite (value);
-}
-
-songfavoriteinfo_t *
-songGetFavorite (int value)
-{
-  return &songfavoriteinfo [value];
+  return songFavoriteGet (value);
 }
 
 void
@@ -371,9 +356,6 @@ songGetDurCache (song_t *song)
 static void
 songInit (void)
 {
-  char  *col;
-  char  tbuff [100];
-
   if (gsonginit != NULL) {
     return;
   }
@@ -381,17 +363,7 @@ songInit (void)
   gsonginit = malloc (sizeof (songinit_t));
   assert (gsonginit != NULL);
 
-  for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
-    if (i == 0) {
-      col = "#ffffff";
-    } else {
-      col = songfavoriteinfo [i].color;
-    }
-    snprintf (tbuff, sizeof (tbuff), "<span color=\"%s\">%s</span>",
-        col, songfavoriteinfo [i].dispStr);
-    songfavoriteinfo [i].spanStr = strdup (tbuff);
-  }
-
+  songFavoriteInit ();
   gsonginit->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   gsonginit->status = bdjvarsdfGet (BDJVDF_STATUS);
   gsonginit->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
@@ -405,13 +377,7 @@ songCleanup (void)
     return;
   }
 
-  for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
-    if (songfavoriteinfo [i].spanStr != NULL) {
-      free (songfavoriteinfo [i].spanStr);
-      songfavoriteinfo [i].spanStr = NULL;
-    }
-  }
-
+  songFavoriteCleanup ();
   free (gsonginit);
   gsonginit = NULL;
 }

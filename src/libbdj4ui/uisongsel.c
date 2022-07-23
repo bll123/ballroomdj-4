@@ -195,6 +195,15 @@ uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb)
 }
 
 void
+uisongselSetSongSaveCallback (uisongsel_t *uisongsel, UICallback *uicb)
+{
+  if (uisongsel == NULL) {
+    return;
+  }
+  uisongsel->songsavecb = uicb;
+}
+
+void
 uisongselProcessMusicQueueData (uisongsel_t *uisongsel,
     mp_musicqupdate_t *musicqupdate)
 {

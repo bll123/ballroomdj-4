@@ -18,6 +18,44 @@ static datafilekey_t favoritedfkeys [SONG_FAVORITE_MAX] = {
   { "redstar",    SONG_FAVORITE_RED,      VALUE_STR, NULL, -1 },
 };
 
+static songfavoriteinfo_t songfavoriteinfo [SONG_FAVORITE_MAX] = {
+  { SONG_FAVORITE_NONE, "\xE2\x98\x86", "", NULL },
+  { SONG_FAVORITE_RED, "\xE2\x98\x85", "#9b3128", NULL },
+  { SONG_FAVORITE_ORANGE, "\xE2\x98\x85", "#c26a1a", NULL },
+  { SONG_FAVORITE_GREEN, "\xE2\x98\x85", "#00b25d", NULL },
+  { SONG_FAVORITE_BLUE, "\xE2\x98\x85", "#2f2ad7", NULL },
+  { SONG_FAVORITE_PURPLE, "\xE2\x98\x85", "#901ba3", NULL },
+};
+
+void
+songFavoriteInit (void)
+{
+  char  *col;
+  char  tbuff [100];
+
+  for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
+    if (i == 0) {
+      col = "#ffffff";
+    } else {
+      col = songfavoriteinfo [i].color;
+    }
+    snprintf (tbuff, sizeof (tbuff), "<span color=\"%s\">%s</span>",
+        col, songfavoriteinfo [i].dispStr);
+    songfavoriteinfo [i].spanStr = strdup (tbuff);
+  }
+}
+
+void
+songFavoriteCleanup (void)
+{
+  for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
+    if (songfavoriteinfo [i].spanStr != NULL) {
+      free (songfavoriteinfo [i].spanStr);
+      songfavoriteinfo [i].spanStr = NULL;
+    }
+  }
+}
+
 void
 songConvFavorite (datafileconv_t *conv)
 {
@@ -42,7 +80,18 @@ songConvFavorite (datafileconv_t *conv)
     if (idx < 0 || idx >= SONG_FAVORITE_MAX) {
       idx = SONG_FAVORITE_NONE;
     }
-    conv->str = favoritedfkeys [idx].name;
+    for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
+      if (favoritedfkeys [i].itemkey == idx) {
+        conv->str = favoritedfkeys [i].name;
+        break;
+      }
+    }
   }
+}
+
+songfavoriteinfo_t *
+songFavoriteGet (int value)
+{
+  return &songfavoriteinfo [value];
 }
 

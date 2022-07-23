@@ -139,6 +139,15 @@ uimusicqSetSelectionCallback (uimusicq_t *uimusicq, UICallback *uicbdbidx)
 }
 
 void
+uimusicqSetSongSaveCallback (uimusicq_t *uimusicq, UICallback *uicb)
+{
+  if (uimusicq == NULL) {
+    return;
+  }
+  uimusicq->songsavecb = uicb;
+}
+
+void
 uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm)
 {
   int   ci;

@@ -18,6 +18,7 @@
 #include "uimusicq.h"
 #include "ui.h"
 #include "uidance.h"
+#include "uifavorite.h"
 #include "uisong.h"
 
 enum {
@@ -49,7 +50,7 @@ static void   uimusicqSetMusicqDisplayCallback (int col, long num, const char *s
 static int    uimusicqIterateCallback (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static bool   uimusicqPlayCallback (void *udata);
-static long   uimusicqGetSelectionDbidx (uimusicq_t *uimusicq);
+static dbidx_t uimusicqGetSelectionDbidx (uimusicq_t *uimusicq);
 static void   uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udata);
 static void   uimusicqSetDefaultSelection (uimusicq_t *uimusicq);
 static void   uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx);
@@ -59,6 +60,7 @@ static bool   uimusicqMoveUpCallback (void *udata);
 static bool   uimusicqMoveDownCallback (void *udata);
 static bool   uimusicqTogglePauseCallback (void *udata);
 static bool   uimusicqRemoveCallback (void *udata);
+static void   uimusicqCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
 
 enum {
   UIMUSICQ_CB_MOVE_TOP,
@@ -79,6 +81,7 @@ typedef struct uimusicqgtk {
   uidance_t     *uidance;
   GtkWidget     *musicqTree;
   GtkTreeSelection  *sel;
+  GtkTreeViewColumn   *favColumn;
   char          *selPathStr;
   UICallback    callback [UIMUSICQ_CB_MAX];
   UIWidget      playbutton;
@@ -99,6 +102,7 @@ uimusicqUIInit (uimusicq_t *uimusicq)
     uiw->uidance = NULL;
     uiw->selPathStr = NULL;
     uiw->musicqTree = NULL;
+    uiw->favColumn = NULL;
     uiutilsUIWidgetInit (&uiw->playbutton);
   }
 }
@@ -321,6 +325,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   uiWidgetExpandHorizW (uiw->musicqTree);
   uiWidgetExpandVertW (uiw->musicqTree);
   uiBoxPackInWindowUW (&uiwidget, uiw->musicqTree);
+  g_signal_connect (uiw->musicqTree, "row-activated",
+      G_CALLBACK (uimusicqCheckFavChgSignal), uimusicq);
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
@@ -341,7 +347,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   gtk_tree_view_append_column (GTK_TREE_VIEW (uiw->musicqTree), column);
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->dispselType);
-  uiAddDisplayColumns (uiw->musicqTree, sellist,
+  uiw->favColumn = uiAddDisplayColumns (uiw->musicqTree, sellist,
       MUSICQ_COL_MAX, MUSICQ_COL_FONT, MUSICQ_COL_ELLIPSIZE);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (uiw->musicqTree), NULL);
@@ -787,14 +793,14 @@ uimusicqPlayCallback (void *udata)
   return UICB_CONT;
 }
 
-static long
+static dbidx_t
 uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
 {
   int             ci;
   uimusicqgtk_t   *uiw;
   GtkTreeModel    *model;
   GtkTreeIter     iter;
-  long            dbidx;
+  dbidx_t         dbidx;
   int             count;
 
   ci = uimusicq->musicqManageIdx;
@@ -1043,6 +1049,35 @@ uimusicqRemoveCallback (void *udata)
   uimusicqRemove (uimusicq, ci, idx);
   logProcEnd (LOG_PROC, "uimusicqRemove", "");
   return UICB_CONT;
+}
+
+static void
+uimusicqCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
+    GtkTreeViewColumn* column, gpointer udata)
+{
+  uimusicq_t    * uimusicq = udata;
+  uimusicqgtk_t * uiw;
+  int           ci;
+  dbidx_t       dbidx;
+  song_t        *song;
+
+  logProcBegin (LOG_PROC, "uimusicqCheckFavChgSignal");
+
+  ci = uimusicq->musicqManageIdx;
+  uiw = uimusicq->ui [ci].uiWidgets;
+  if (column != uiw->favColumn) {
+    logProcEnd (LOG_PROC, "uimusicqCheckFavChgSignal", "not-fav-col");
+    return;
+  }
+
+  dbidx = uimusicqGetSelectionDbidx (uimusicq);
+  song = dbGetByIdx (uimusicq->musicdb, dbidx);
+  if (song != NULL) {
+    songChangeFavorite (song);
+    if (uimusicq->songsavecb != NULL) {
+      uiutilsCallbackHandler (uimusicq->songsavecb);
+    }
+  }
 }
 
 

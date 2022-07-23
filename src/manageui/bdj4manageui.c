@@ -741,6 +741,10 @@ manageInitializeUI (manageui_t *manage)
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_SAVE],
       manageSongEditSaveCallback, manage);
   uisongeditSetSaveCallback (manage->mmsongedit, &manage->callbacks [MANAGE_CB_SAVE]);
+  uisongselSetSongSaveCallback (manage->slsongsel, &manage->callbacks [MANAGE_CB_SAVE]);
+  uisongselSetSongSaveCallback (manage->slezsongsel, &manage->callbacks [MANAGE_CB_SAVE]);
+  uimusicqSetSongSaveCallback (manage->slmusicq, &manage->callbacks [MANAGE_CB_SAVE]);
+  uimusicqSetSongSaveCallback (manage->slezmusicq, &manage->callbacks [MANAGE_CB_SAVE]);
 }
 
 static void

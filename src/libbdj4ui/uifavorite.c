@@ -13,6 +13,7 @@
 #include "bdj4intl.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
+#include "musicdb.h"
 #include "song.h"
 #include "ui.h"
 #include "uifavorite.h"
@@ -106,7 +107,7 @@ uifavoriteFavoriteGet (void *udata, int idx)
   uifavorite_t        *uifavorite = udata;
   songfavoriteinfo_t  *favorite;
 
-  favorite = songGetFavorite (idx);
+  favorite = songFavoriteGet (idx);
   uifavoriteSetFavoriteForeground (uifavorite, favorite->color);
   return favorite->dispStr;
 }

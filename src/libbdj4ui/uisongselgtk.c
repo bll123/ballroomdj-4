@@ -25,6 +25,7 @@
 #include "uidance.h"
 #include "uisongsel.h"
 #include "ui.h"
+#include "uifavorite.h"
 #include "uisong.h"
 #include "uisongfilter.h"
 
@@ -922,8 +923,6 @@ uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
   }
 
   uisongselChangeFavorite (uisongsel, uisongsel->lastdbidx);
-  uisongselPopulateData (uisongsel);
-
   logProcEnd (LOG_PROC, "uisongselCheckFavChgSignal", "");
 }
 

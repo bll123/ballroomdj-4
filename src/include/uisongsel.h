@@ -38,6 +38,7 @@ typedef struct uisongsel {
   UICallback        *queuecb;
   UICallback        *playcb;
   UICallback        *editcb;
+  UICallback        *songsavecb;
   dbidx_t           lastdbidx;
   nlist_t           *songlistdbidxlist;
   slist_t           *samesonglist;
@@ -71,6 +72,7 @@ int   uisongselProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgm
 void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicb);
 void  uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicb);
 void  uisongselSetPlayCallback (uisongsel_t *uisongsel, UICallback *uicb);
+void  uisongselSetSongSaveCallback (uisongsel_t *uisongsel, UICallback *uicb);
 /* song filter */
 void  uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb);
 void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t *musicqupdate);
