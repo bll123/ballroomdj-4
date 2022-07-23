@@ -37,6 +37,7 @@
 enum {
   MQ_POSITION_X,
   MQ_POSITION_Y,
+  MQ_WORKSPACE,
   MQ_SIZE_X,
   MQ_SIZE_Y,
   MQ_FONT_SZ,
@@ -52,6 +53,7 @@ static datafilekey_t mqdfkeys [MQ_KEY_MAX] = {
   { "MQ_POS_Y",     MQ_POSITION_Y,    VALUE_NUM, NULL, -1 },
   { "MQ_SIZE_X",    MQ_SIZE_X,        VALUE_NUM, NULL, -1 },
   { "MQ_SIZE_Y",    MQ_SIZE_Y,        VALUE_NUM, NULL, -1 },
+  { "MQ_WORKSPACE", MQ_WORKSPACE,     VALUE_NUM, NULL, -1 },
 };
 
 typedef struct {
@@ -193,6 +195,7 @@ main (int argc, char *argv[])
   if (marquee.options == NULL) {
     marquee.options = nlistAlloc ("marquee-opt", LIST_ORDERED, free);
 
+    nlistSetNum (marquee.options, MQ_WORKSPACE, -1);
     nlistSetNum (marquee.options, MQ_POSITION_X, -1);
     nlistSetNum (marquee.options, MQ_POSITION_Y, -1);
     nlistSetNum (marquee.options, MQ_SIZE_X, 600);
@@ -660,7 +663,7 @@ marqueeSetMaximized (marquee_t *marquee)
 
   marquee->isMaximized = true;
   if (! isWindows()) {
-    /* does not work on windows platforms */
+    /* decorations are not recovered after disabling on windows */
     uiWindowDisableDecorations (&marquee->window);
   }
   uiWindowMaximize (&marquee->window);
@@ -768,21 +771,23 @@ marqueeWinMapped (void *udata)
 static void
 marqueeSaveWindowPosition (marquee_t *marquee)
 {
-  int   x, y;
+  int   x, y, ws;
 
-  uiWindowGetPosition (&marquee->window, &x, &y);
+  uiWindowGetPosition (&marquee->window, &x, &y, &ws);
   nlistSetNum (marquee->options, MQ_POSITION_X, x);
   nlistSetNum (marquee->options, MQ_POSITION_Y, y);
+  nlistSetNum (marquee->options, MQ_WORKSPACE, ws);
 }
 
 static void
 marqueeMoveWindow (marquee_t *marquee)
 {
-  int   x, y;
+  int   x, y, ws;
 
   x = nlistGetNum (marquee->options, MQ_POSITION_X);
   y = nlistGetNum (marquee->options, MQ_POSITION_Y);
-  uiWindowMove (&marquee->window, x, y);
+  ws = nlistGetNum (marquee->options, MQ_WORKSPACE);
+  uiWindowMove (&marquee->window, x, y, ws);
 }
 
 static void

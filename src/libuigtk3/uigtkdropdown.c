@@ -338,7 +338,7 @@ static bool
 uiDropDownWindowShow (void *udata)
 {
   uidropdown_t  *dropdown = udata;
-  int           x, y;
+  int           x, y, ws;
   int           bx, by;
 
 
@@ -348,12 +348,12 @@ uiDropDownWindowShow (void *udata)
 
   bx = 0;
   by = 0;
-  uiWindowGetPosition (dropdown->parentwin, &x, &y);
+  uiWindowGetPosition (dropdown->parentwin, &x, &y, &ws);
   if (uiutilsUIWidgetSet (&dropdown->button)) {
     uiWidgetGetPosition (&dropdown->button, &bx, &by);
   }
   uiWidgetShowAll (&dropdown->window);
-  uiWindowMove (&dropdown->window, bx + x + 4, by + y + 4 + 30);
+  uiWindowMove (&dropdown->window, bx + x + 4, by + y + 4 + 30, -1);
   dropdown->open = true;
   return UICB_CONT;
 }

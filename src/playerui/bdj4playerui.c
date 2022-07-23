@@ -103,11 +103,13 @@ typedef struct {
 static datafilekey_t playeruidfkeys [] = {
   { "FILTER_POS_X",             SONGSEL_FILTER_POSITION_X,    VALUE_NUM, NULL, -1 },
   { "FILTER_POS_Y",             SONGSEL_FILTER_POSITION_Y,    VALUE_NUM, NULL, -1 },
+  { "FILTER_WORKSPACE",         SONGSEL_FILTER_WORKSPACE,     VALUE_NUM, NULL, -1 },
   { "PLAY_WHEN_QUEUED",         PLUI_PLAY_WHEN_QUEUED,        VALUE_NUM, NULL, -1 },
   { "PLUI_POS_X",               PLUI_POSITION_X,              VALUE_NUM, NULL, -1 },
   { "PLUI_POS_Y",               PLUI_POSITION_Y,              VALUE_NUM, NULL, -1 },
   { "PLUI_SIZE_X",              PLUI_SIZE_X,                  VALUE_NUM, NULL, -1 },
   { "PLUI_SIZE_Y",              PLUI_SIZE_Y,                  VALUE_NUM, NULL, -1 },
+  { "PLUI_WORKSPACE",           PLUI_WORKSPACE,               VALUE_NUM, NULL, -1 },
   { "SHOW_EXTRA_QUEUES",        PLUI_SHOW_EXTRA_QUEUES,       VALUE_NUM, NULL, -1 },
   { "SORT_BY",                  SONGSEL_SORT_BY,              VALUE_STR, NULL, -1 },
   { "SWITCH_QUEUE_WHEN_EMPTY",  PLUI_SWITCH_QUEUE_WHEN_EMPTY, VALUE_NUM, NULL, -1 },
@@ -211,8 +213,10 @@ main (int argc, char *argv[])
     nlistSetNum (plui.options, PLUI_PLAY_WHEN_QUEUED, true);
     nlistSetNum (plui.options, PLUI_SHOW_EXTRA_QUEUES, false);
     nlistSetNum (plui.options, PLUI_SWITCH_QUEUE_WHEN_EMPTY, false);
+    nlistSetNum (plui.options, SONGSEL_FILTER_WORKSPACE, -1);
     nlistSetNum (plui.options, SONGSEL_FILTER_POSITION_X, -1);
     nlistSetNum (plui.options, SONGSEL_FILTER_POSITION_Y, -1);
+    nlistSetNum (plui.options, PLUI_WORKSPACE, -1);
     nlistSetNum (plui.options, PLUI_POSITION_X, -1);
     nlistSetNum (plui.options, PLUI_POSITION_Y, -1);
     nlistSetNum (plui.options, PLUI_SIZE_X, 1000);
@@ -249,7 +253,7 @@ static bool
 pluiStoppingCallback (void *udata, programstate_t programState)
 {
   playerui_t    * plui = udata;
-  int           x, y;
+  int           x, y, ws;
 
   logProcBegin (LOG_PROC, "pluiStoppingCallback");
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
@@ -257,9 +261,10 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   uiWindowGetSize (&plui->window, &x, &y);
   nlistSetNum (plui->options, PLUI_SIZE_X, x);
   nlistSetNum (plui->options, PLUI_SIZE_Y, y);
-  uiWindowGetPosition (&plui->window, &x, &y);
+  uiWindowGetPosition (&plui->window, &x, &y, &ws);
   nlistSetNum (plui->options, PLUI_POSITION_X, x);
   nlistSetNum (plui->options, PLUI_POSITION_Y, y);
+  nlistSetNum (plui->options, PLUI_WORKSPACE, ws);
 
   connDisconnect (plui->conn, ROUTE_STARTERUI);
   logProcEnd (LOG_PROC, "pluiStoppingCallback", "");
@@ -328,7 +333,7 @@ pluiBuildUI (playerui_t *plui)
   char        *str;
   char        imgbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
-  int         x, y;
+  int         x, y, ws;
 
   logProcBegin (LOG_PROC, "pluiBuildUI");
 
@@ -480,7 +485,8 @@ pluiBuildUI (playerui_t *plui)
 
   x = nlistGetNum (plui->options, PLUI_POSITION_X);
   y = nlistGetNum (plui->options, PLUI_POSITION_Y);
-  uiWindowMove (&plui->window, x, y);
+  ws = nlistGetNum (plui->options, PLUI_WORKSPACE);
+  uiWindowMove (&plui->window, x, y, ws);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);

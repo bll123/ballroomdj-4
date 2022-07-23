@@ -46,7 +46,7 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
 {
   uiselectfile_t *selectfile;
   slist_t     *filelist;
-  int         x, y;
+  int         x, y, ws;
   int         playlistSel;
 
   selectfile = malloc (sizeof (uiselectfile_t));
@@ -83,7 +83,8 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
 
     x = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_X);
     y = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_Y);
-    uiWindowMove (&selectfile->uidialog, x, y);
+    ws = nlistGetNum (selectfile->options, MANAGE_SELFILE_WORKSPACE);
+    uiWindowMove (&selectfile->uidialog, x, y, ws);
 
     slistFree (filelist);
   }
@@ -202,15 +203,16 @@ static bool
 selectFileResponseHandler (void *udata, long responseid)
 {
   uiselectfile_t  *selectfile = udata;
-  int           x, y;
+  int           x, y, ws;
   char          *str;
   GtkTreeModel  *model;
   GtkTreeIter   iter;
   int           count;
 
-  uiWindowGetPosition (&selectfile->uidialog, &x, &y);
+  uiWindowGetPosition (&selectfile->uidialog, &x, &y, &ws);
   nlistSetNum (selectfile->options, MANAGE_SELFILE_POSITION_X, x);
   nlistSetNum (selectfile->options, MANAGE_SELFILE_POSITION_Y, y);
+  nlistSetNum (selectfile->options, MANAGE_SELFILE_WORKSPACE, ws);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {

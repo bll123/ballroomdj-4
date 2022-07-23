@@ -101,6 +101,8 @@ uiWindowDisableDecorations (UIWidget *uiwindow)
 inline void
 uiWindowEnableDecorations (UIWidget *uiwindow)
 {
+  /* this does not work on windows, the decorations are not recovered */
+  /* after being disabled. */
   gtk_window_set_decorated (GTK_WINDOW (uiwindow->widget), TRUE);
 }
 
@@ -113,22 +115,42 @@ uiWindowGetSize (UIWidget *uiwindow, int *x, int *y)
 inline void
 uiWindowSetDefaultSize (UIWidget *uiwindow, int x, int y)
 {
-  if (x != -1 && y != -1) {
+  if (x >= 0 && y >= 0) {
     gtk_window_set_default_size (GTK_WINDOW (uiwindow->widget), x, y);
   }
 }
 
 inline void
-uiWindowGetPosition (UIWidget *uiwindow, int *x, int *y)
+uiWindowGetPosition (UIWidget *uiwindow, int *x, int *y, int *ws)
 {
+  GdkWindow *gdkwin;
+
   gtk_window_get_position (GTK_WINDOW (uiwindow->widget), x, y);
+  gdkwin = gtk_widget_get_window (uiwindow->widget);
+  *ws = -1;
+  if (gdkwin != NULL) {
+/* being lazy here, just check for the header to see if it is x11 */
+#if _hdr_gdk_gdkx
+    *ws = gdk_x11_window_get_desktop (gdkwin);
+#endif
+  }
 }
 
 inline void
-uiWindowMove (UIWidget *uiwindow, int x, int y)
+uiWindowMove (UIWidget *uiwindow, int x, int y, int ws)
 {
+  GdkWindow *gdkwin;
+
   if (x != -1 && y != -1) {
     gtk_window_move (GTK_WINDOW (uiwindow->widget), x, y);
+  }
+  if (ws != -1) {
+    gdkwin = gtk_widget_get_window (uiwindow->widget);
+    if (gdkwin != NULL) {
+#if _hdr_gdk_gdkx
+      gdk_x11_window_move_to_desktop (gdkwin, ws);
+#endif
+    }
   }
 }
 
@@ -152,7 +174,6 @@ uiWindowNoFocusOnStartup (UIWidget *uiwindow)
 {
   gtk_window_set_focus_on_map (GTK_WINDOW (uiwindow->widget), FALSE);
 }
-
 
 void
 uiCreateScrolledWindow (UIWidget *uiwidget, int minheight)

@@ -133,6 +133,7 @@ typedef struct {
 } startui_t;
 
 enum {
+  STARTERUI_WORKSPACE,
   STARTERUI_POSITION_X,
   STARTERUI_POSITION_Y,
   STARTERUI_SIZE_X,
@@ -145,6 +146,7 @@ static datafilekey_t starteruidfkeys [STARTERUI_KEY_MAX] = {
   { "STARTERUI_POS_Y",     STARTERUI_POSITION_Y,    VALUE_NUM, NULL, -1 },
   { "STARTERUI_SIZE_X",    STARTERUI_SIZE_X,        VALUE_NUM, NULL, -1 },
   { "STARTERUI_SIZE_Y",    STARTERUI_SIZE_Y,        VALUE_NUM, NULL, -1 },
+  { "STARTERUI_WORKSPACE", STARTERUI_WORKSPACE,     VALUE_NUM, NULL, -1 },
 };
 
 enum {
@@ -326,7 +328,7 @@ static bool
 starterStoppingCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
-  int         x, y;
+  int         x, y, ws;
 
   logProcBegin (LOG_PROC, "starterStoppingCallback");
 
@@ -349,9 +351,10 @@ starterStoppingCallback (void *udata, programstate_t programState)
   uiWindowGetSize (&starter->window, &x, &y);
   nlistSetNum (starter->options, STARTERUI_SIZE_X, x);
   nlistSetNum (starter->options, STARTERUI_SIZE_Y, y);
-  uiWindowGetPosition (&starter->window, &x, &y);
+  uiWindowGetPosition (&starter->window, &x, &y, &ws);
   nlistSetNum (starter->options, STARTERUI_POSITION_X, x);
   nlistSetNum (starter->options, STARTERUI_POSITION_Y, y);
+  nlistSetNum (starter->options, STARTERUI_WORKSPACE, ws);
 
   procutilStopAllProcess (starter->processes, starter->conn, false);
 
@@ -1914,11 +1917,12 @@ starterLinkHandler (void *udata, int cbidx)
 static void
 starterSetWindowPosition (startui_t *starter)
 {
-  int   x, y;
+  int   x, y, ws;
 
   x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
   y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
-  uiWindowMove (&starter->window, x, y);
+  ws = nlistGetNum (starter->options, STARTERUI_WORKSPACE);
+  uiWindowMove (&starter->window, x, y, ws);
 }
 
 static void
@@ -1942,6 +1946,7 @@ starterLoadOptions (startui_t *starter)
   if (starter->options == NULL) {
     starter->options = nlistAlloc ("starterui-opt", LIST_ORDERED, free);
 
+    nlistSetNum (starter->options, STARTERUI_WORKSPACE, -1);
     nlistSetNum (starter->options, STARTERUI_POSITION_X, -1);
     nlistSetNum (starter->options, STARTERUI_POSITION_Y, -1);
     nlistSetNum (starter->options, STARTERUI_SIZE_X, 1200);

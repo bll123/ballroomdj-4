@@ -221,7 +221,7 @@ bool
 uisfDialog (void *udata)
 {
   uisongfilter_t *uisf = udata;
-  int         x, y;
+  int             x, y, ws;
 
   logProcBegin (LOG_PROC, "uisfDialog");
 
@@ -236,7 +236,8 @@ uisfDialog (void *udata)
 
   x = nlistGetNum (uisf->options, SONGSEL_FILTER_POSITION_X);
   y = nlistGetNum (uisf->options, SONGSEL_FILTER_POSITION_Y);
-  uiWindowMove (&uisf->filterDialog, x, y);
+  ws = nlistGetNum (uisf->options, SONGSEL_FILTER_WORKSPACE);
+  uiWindowMove (&uisf->filterDialog, x, y, ws);
   logProcEnd (LOG_PROC, "uisfDialog", "");
   return UICB_CONT;
 }
@@ -613,25 +614,24 @@ uisfCreateDialog (uisongfilter_t *uisf)
 static bool
 uisfResponseHandler (void *udata, long responseid)
 {
-  uisongfilter_t   *uisf = udata;
-  int           x, y;
+  uisongfilter_t  *uisf = udata;
+  int             x, y, ws;
 
   logProcBegin (LOG_PROC, "uisfResponseHandler");
+
+  uiWindowGetPosition (&uisf->filterDialog, &x, &y, &ws);
+  nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_X, x);
+  nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_Y, y);
+  nlistSetNum (uisf->options, SONGSEL_FILTER_WORKSPACE, ws);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: sf: del window");
-      uiWindowGetPosition (&uisf->filterDialog, &x, &y);
-      nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_X, x);
-      nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_Y, y);
       uiutilsUIWidgetInit (&uisf->filterDialog);
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: sf: close window");
-      uiWindowGetPosition (&uisf->filterDialog, &x, &y);
-      nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_X, x);
-      nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_Y, y);
       uiWidgetHide (&uisf->filterDialog);
       break;
     }

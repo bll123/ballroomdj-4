@@ -365,6 +365,7 @@ typedef struct {
 typedef void (*savefunc_t) (configui_t *);
 
 enum {
+  CONFUI_WORKSPACE,
   CONFUI_POSITION_X,
   CONFUI_POSITION_Y,
   CONFUI_SIZE_X,
@@ -377,6 +378,7 @@ static datafilekey_t configuidfkeys [CONFUI_KEY_MAX] = {
   { "CONFUI_POS_Y",     CONFUI_POSITION_Y,    VALUE_NUM, NULL, -1 },
   { "CONFUI_SIZE_X",    CONFUI_SIZE_X,        VALUE_NUM, NULL, -1 },
   { "CONFUI_SIZE_Y",    CONFUI_SIZE_Y,        VALUE_NUM, NULL, -1 },
+  { "CONFUI_WORKSPACE", CONFUI_WORKSPACE,     VALUE_NUM, NULL, -1 },
 };
 
 static bool     confuiHandshakeCallback (void *udata, programstate_t programState);
@@ -798,6 +800,7 @@ main (int argc, char *argv[])
   if (confui.options == NULL) {
     confui.options = nlistAlloc ("configui-opt", LIST_ORDERED, free);
 
+    nlistSetNum (confui.options, CONFUI_WORKSPACE, -1);
     nlistSetNum (confui.options, CONFUI_POSITION_X, -1);
     nlistSetNum (confui.options, CONFUI_POSITION_Y, -1);
     nlistSetNum (confui.options, CONFUI_SIZE_X, 1200);
@@ -834,7 +837,7 @@ static bool
 confuiStoppingCallback (void *udata, programstate_t programState)
 {
   configui_t    * confui = udata;
-  int           x, y;
+  int           x, y, ws;
   char          fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "confuiStoppingCallback");
@@ -848,9 +851,10 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   uiWindowGetSize (&confui->window, &x, &y);
   nlistSetNum (confui->options, CONFUI_SIZE_X, x);
   nlistSetNum (confui->options, CONFUI_SIZE_Y, y);
-  uiWindowGetPosition (&confui->window, &x, &y);
+  uiWindowGetPosition (&confui->window, &x, &y, &ws);
   nlistSetNum (confui->options, CONFUI_POSITION_X, x);
   nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
+  nlistSetNum (confui->options, CONFUI_WORKSPACE, ws);
 
   pathbldMakePath (fn, sizeof (fn),
       "configui", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
@@ -963,7 +967,7 @@ confuiBuildUI (configui_t *confui)
   UIWidget      uiwidget;
   char          imgbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
-  int           x, y;
+  int           x, y, ws;
 
   logProcBegin (LOG_PROC, "confuiBuildUI");
 
@@ -1030,7 +1034,8 @@ confuiBuildUI (configui_t *confui)
 
   x = nlistGetNum (confui->options, CONFUI_POSITION_X);
   y = nlistGetNum (confui->options, CONFUI_POSITION_Y);
-  uiWindowMove (&confui->window, x, y);
+  ws = nlistGetNum (confui->options, CONFUI_WORKSPACE);
+  uiWindowMove (&confui->window, x, y, ws);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".png", PATHBLD_MP_IMGDIR);
