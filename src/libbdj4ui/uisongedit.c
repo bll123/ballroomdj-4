@@ -103,7 +103,7 @@ uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx)
   song_t      *song;
 
   song = dbGetByIdx (uisongedit->musicdb, dbidx);
-  uisongeditLoadData (uisongedit, song);
+  uisongeditLoadData (uisongedit, song, dbidx);
 }
 
 void

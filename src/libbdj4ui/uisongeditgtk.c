@@ -85,6 +85,7 @@ typedef struct {
   UIWidget            playbutton;
   level_t             *levels;
   song_t              *song;
+  dbidx_t             dbidx;
   int                 itemcount;
   uisongedititem_t    *items;
   int                 changed;
@@ -115,6 +116,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uiw->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   mstimeset (&uiw->mainlooptimer, UISONGEDIT_MAIN_TIMER);
   uiw->bpmidx = -1;
+  uiw->dbidx = -1;
 
   uiutilsUIWidgetInit (&uiw->vbox);
   uiutilsUIWidgetInit (&uiw->playbutton);
@@ -322,7 +324,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 }
 
 void
-uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
+uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
 {
   uisongeditgtk_t *uiw;
   char            *data;
@@ -331,6 +333,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song)
 
   uiw = uisongedit->uiWidgetData;
   uiw->song = song;
+  uiw->dbidx = dbidx;
   uiw->changed = 0;
 
   data = uisongGetDisplay (song, TAG_FILE, &val, &dval);
@@ -963,7 +966,7 @@ uisongeditSaveCallback (void *udata)
   }
 
   if (valid && uisongedit->savecb != NULL) {
-    uiutilsCallbackHandler (uisongedit->savecb);
+    uiutilsCallbackLongHandler (uisongedit->savecb, uiw->dbidx);
   }
 
   return UICB_CONT;

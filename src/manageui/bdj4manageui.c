@@ -273,7 +273,7 @@ static void     manageSonglistLoadCheck (manageui_t *manage);
 static bool     manageNewSelectionSonglist (void *udata, long dbidx);
 static bool     manageNewSelectionSongSel (void *udata, long dbidx);
 static bool     manageSwitchToSongEditor (void *udata);
-static bool     manageSongEditSaveCallback (void *udata);
+static bool     manageSongEditSaveCallback (void *udata, long dbidx);
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
 static void     manageSendBPMCounter (manageui_t *manage);
@@ -738,7 +738,7 @@ manageInitializeUI (manageui_t *manage)
   uimusicqSetEditCallback (manage->slmusicq, &manage->callbacks [MANAGE_CB_EDIT]);
   uimusicqSetEditCallback (manage->slezmusicq, &manage->callbacks [MANAGE_CB_EDIT]);
 
-  uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_SAVE],
+  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_SAVE],
       manageSongEditSaveCallback, manage);
   uisongeditSetSaveCallback (manage->mmsongedit, &manage->callbacks [MANAGE_CB_SAVE]);
   uisongselSetSongSaveCallback (manage->slsongsel, &manage->callbacks [MANAGE_CB_SAVE]);
@@ -2004,7 +2004,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     }
 
     song = dbGetByIdx (manage->musicdb, dbidx);
-    uisongeditLoadData (manage->mmsongedit, song);
+    uisongeditLoadData (manage->mmsongedit, song, dbidx);
     manageSetBPMCounter (manage, song);
   }
 }
@@ -2053,7 +2053,7 @@ manageNewSelectionSongSel (void *udata, long dbidx)
   manage->seldbidx = dbidx;
 
   song = dbGetByIdx (manage->musicdb, dbidx);
-  uisongeditLoadData (manage->mmsongedit, song);
+  uisongeditLoadData (manage->mmsongedit, song, dbidx);
   manageSetBPMCounter (manage, song);
 
   return UICB_CONT;
@@ -2097,10 +2097,9 @@ manageSwitchToSongEditor (void *udata)
 }
 
 static bool
-manageSongEditSaveCallback (void *udata)
+manageSongEditSaveCallback (void *udata, long dbidx)
 {
   manageui_t  *manage = udata;
-  dbidx_t     dbidx;
   song_t      *song = NULL;
   char        tmp [40];
 
@@ -2111,16 +2110,20 @@ manageSongEditSaveCallback (void *udata)
   }
 
   if (manage->selusesonglist) {
-    dbidx = manage->songlistdbidx;
+    if (manage->songlistdbidx != dbidx) {
+      fprintf (stderr, "fail: incorrect dbidx (songlist)\n");
+    }
   } else {
-    dbidx = manage->seldbidx;
+    if (manage->seldbidx != dbidx) {
+      fprintf (stderr, "fail: incorrect dbidx (sel)\n");
+    }
   }
   song = dbGetByIdx (manage->musicdb, dbidx);
   dbWriteSong (manage->musicdb, song);
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */
-  snprintf (tmp, sizeof (tmp), "%d", dbidx);
+  snprintf (tmp, sizeof (tmp), "%ld", dbidx);
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
   /* re-populate the song selection displays to display the updated info */

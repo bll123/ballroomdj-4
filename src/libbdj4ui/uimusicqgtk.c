@@ -1076,7 +1076,7 @@ uimusicqCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
   if (song != NULL) {
     songChangeFavorite (song);
     if (uimusicq->songsavecb != NULL) {
-      uiutilsCallbackHandler (uimusicq->songsavecb);
+      uiutilsCallbackLongHandler (uimusicq->songsavecb, dbidx);
     }
   }
 }

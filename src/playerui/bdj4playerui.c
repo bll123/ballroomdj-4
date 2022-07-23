@@ -54,6 +54,7 @@ enum {
   PLUI_CB_PLAYBACK_QUEUE,
   PLUI_CB_FONT_SIZE,
   PLUI_CB_QUEUE_SL,
+  PLUI_CB_SONG_SAVE,
   PLUI_CB_MAX,
 };
 
@@ -152,6 +153,7 @@ static bool     pluiMarqueeFind (void *udata);
 static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
 static bool     pluiQueueProcess (void *udata, long dbidx, int mqidx);
+static bool     pluiSongSaveCallback (void *udata, long dbidx);
 
 static int gKillReceived = 0;
 
@@ -492,6 +494,10 @@ pluiBuildUI (playerui_t *plui)
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
   osuiSetIcon (imgbuff);
   pluiPlaybackButtonHideShow (plui, 0);
+
+  uiutilsUICallbackLongInit (&plui->callbacks [PLUI_CB_SONG_SAVE],
+      pluiSongSaveCallback, plui);
+  uimusicqSetSongSaveCallback (plui->uimusicq, &plui->callbacks [PLUI_CB_SONG_SAVE]);
 
   plui->uibuilt = true;
 
@@ -1146,3 +1152,21 @@ pluiQueueProcess (void *udata, long dbidx, int mqidx)
   return UICB_CONT;
 }
 
+static bool
+pluiSongSaveCallback (void *udata, long dbidx)
+{
+  playerui_t  *plui = udata;
+  song_t      *song = NULL;
+  char        tmp [40];
+
+  song = dbGetByIdx (plui->musicdb, dbidx);
+  dbWriteSong (plui->musicdb, song);
+// ### todo write audio tags
+
+  /* the database has been updated, tell the other processes to reload  */
+  /* this particular entry */
+  snprintf (tmp, sizeof (tmp), "%ld", dbidx);
+  connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
+  uisongselPopulateData (plui->uisongsel);
+  return UICB_CONT;
+}
