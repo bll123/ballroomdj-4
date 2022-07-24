@@ -45,10 +45,12 @@ case $systype in
     ;;
 esac
 
-echo -n "sourceforge Password: "
-read -s SSHPASS
-echo ""
-export SSHPASS
+if [[ $platform != windows ]]; then
+  echo -n "sourceforge Password: "
+  read -s SSHPASS
+  echo ""
+  export SSHPASS
+fi
 
 . ./VERSION.txt
 
@@ -66,8 +68,18 @@ if [[ $rlstag != "" ]]; then
   datetag=-$BUILDDATE
 fi
 
-sshpass -e rsync -v -e ssh bdj4-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx} \
-  bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+if [[ ! -f bdj4-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx} ]]; then
+  echo "Failed: no release package found."
+  exit 1
+fi
+
+if [[ $platform != windows ]]; then
+  sshpass -e rsync -v -e ssh bdj4-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx} \
+    bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+else
+  rsync -v -e ssh bdj4-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx} \
+    bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+fi
 
 if [[ $tag == macos ]]; then
   sshpass -e rsync -v -e ssh install/macos-pre-install.sh \
