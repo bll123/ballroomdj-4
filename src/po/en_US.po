@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-07-22\n"
-"PO-Revision-Date: 2022-07-22\n"
+"POT-Creation-Date: 2022-07-24\n"
+"PO-Revision-Date: 2022-07-24\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -16,6 +16,11 @@ msgstr ""
 #. CONTEXT: database update: status message
 #, c-format
 msgid "%d files found"
+msgstr ""
+
+#. CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode
+#, c-format
+msgid "%s Compatible Audio File Tags"
 msgstr ""
 
 #. CONTEXT: configuration: configuration user interface window title
@@ -1325,6 +1330,10 @@ msgstr ""
 
 #. CONTEXT: database update: rebuilds the database
 msgid "Rebuild Database"
+msgstr ""
+
+#. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
+msgid "Recover Marquee"
 msgstr ""
 
 #. CONTEXT: installer: status message

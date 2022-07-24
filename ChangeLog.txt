@@ -2,14 +2,20 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-??
 
-- player ui / management ui
-  - song selection / request will now display a mark when the song is in the
-    song list.
+- player ui
+  - request: displays a mark when the song is in the song list.
+  - marquee menu: there is now a 'recover marquee' selection to bring
+    the marquee display back to the current screen.
+  - favorite: working in both the music queue and song selection.
 - management ui
   - song list, playlist and sequence editor: add delete to menu.
+  - song selection: displays a mark when the song is in the song list.
   - music manager: display same song marks.
+  - favorite: working in the song list editor and song selection.
 - starter ui
   - added 'delete profile' to the menu.
+- linux
+  - all windows will be re-opened in the same desktop workspace.
 
 4.0.0 alpha 2022-07-21
 

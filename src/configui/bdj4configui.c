@@ -1094,9 +1094,9 @@ confuiBuildUIGeneral (configui_t *confui)
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS, OPT_G_WRITETAGS,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_WRITETAGS), NULL);
 
-  confuiMakeItemSwitch (confui, &vbox, &sg,
-      /* CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode */
-      _("BallroomDJ 3 Compatible Audio File Tags"),
+  /* CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode */
+  snprintf (tbuff, sizeof (tbuff), _("%s Compatible Audio File Tags"), BDJ3_NAME);
+  confuiMakeItemSwitch (confui, &vbox, &sg, tbuff,
       CONFUI_SWITCH_BDJ3_COMPAT_TAGS, OPT_G_BDJ3_COMPAT_TAGS,
       bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS), NULL);
 

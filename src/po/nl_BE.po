@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-06-08\n"
-"PO-Revision-Date: 2022-07-22\n"
+"POT-Creation-Date: 2022-07-24\n"
+"PO-Revision-Date: 2022-07-24 13:48\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -23,6 +23,11 @@ msgstr ""
 #, c-format
 msgid "%d files found"
 msgstr "%d bestanden gevonden"
+
+#. CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode
+#, c-format
+msgid "%s Compatible Audio File Tags"
+msgstr ""
 
 #. CONTEXT: configuration: configuration user interface window title
 #, c-format
@@ -937,8 +942,7 @@ msgid "Marquee Theme"
 msgstr ""
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Maximale\n"
 "afspeeltijd"
@@ -954,7 +958,7 @@ msgstr "Bericht"
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
-msgstr "Mix"
+msgstr ""
 
 #. CONTEXT: configuration: options associated with the mobile marquee
 #. CONTEXT: configuration: set mobile marquee mode (off/local/internet)
@@ -1334,6 +1338,10 @@ msgstr ""
 msgid "Rebuild Database"
 msgstr "Database heropbouwen"
 
+#. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
+msgid "Recover Marquee"
+msgstr ""
+
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Registering %s."
@@ -1357,15 +1365,11 @@ msgid "Repeat"
 msgstr "Herhalen"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr ""
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Replaces the information in the BallroomDJ database with the audio file tag "
-"information."
+msgid "Replaces the information in the BallroomDJ database with the audio file tag information."
 msgstr ""
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1541,11 +1545,11 @@ msgstr "Song selectie"
 
 #. CONTEXT: label: time to start the song
 msgid "Song Start"
-msgstr "Song Start"
+msgstr ""
 
 #. CONTEXT: statistics: Label for number of songs in song list
 msgid "Songs"
-msgstr "Songs"
+msgstr ""
 
 #. CONTEXT: song selection filter: a filter: select the method to sort the song selection display
 msgid "Sort by"
@@ -1564,7 +1568,7 @@ msgstr "Tempo aanpassing"
 #. CONTEXT: set up alternate: start the set-up process
 #. CONTEXT: update database: button to start the database update process
 msgid "Start"
-msgstr "Start"
+msgstr ""
 
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence
 msgid "Start New Sequence"
@@ -1645,16 +1649,12 @@ msgid "The conversion process will not be run."
 msgstr ""
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr ""
 
 #. CONTEXT: installer: command line interface: instructions
 #, c-format
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installs."
+msgid "The conversion process will only run for new installations and for re-installs."
 msgstr ""
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1700,7 +1700,7 @@ msgstr "Inkorten"
 
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
 msgid "Type"
-msgstr "Type"
+msgstr ""
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -1733,9 +1733,7 @@ msgid "Updated"
 msgstr ""
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Updates the audio file tags with the information from the BallroomDJ "
-"database."
+msgid "Updates the audio file tags with the information from the BallroomDJ database."
 msgstr ""
 
 #. CONTEXT: set up alternate: status message
@@ -1864,18 +1862,7 @@ msgstr ""
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
-msgstr ""
-"=> Select 'Music Manager' on the left side of the 'BDJ4 Management' window."
-" Scroll through the list of songs and check to make sure the dance is set"
-" for each song.  To set the dance for a song:"
-" => Select the song."
-" => Select the 'Song Editor' tab (below the player, above the list of songs)."
-" => Next to the 'Dance' label, use the dance drop-down selection and"
-" select the dance for the song."
-" => In the upper right of the 'Song Editor' tab, select the 'Save' button."
-" You can switch back to the 'Music Manager' tab and check for other"
-" songs that need to have the dance set."
-" => Leave the 'BDJ4 Management' window open."
+msgstr "=> Select 'Music Manager' on the left side of the 'BDJ4 Management' window. Scroll through the list of songs and check to make sure the dance is set for each song.  To set the dance for a song: => Select the song. => Select the 'Song Editor' tab (below the player, above the list of songs). => Next to the 'Dance' label, use the dance drop-down selection and select the dance for the song. => In the upper right of the 'Song Editor' tab, select the 'Save' button. You can switch back to the 'Music Manager' tab and check for other songs that need to have the dance set. => Leave the 'BDJ4 Management' window open."
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
