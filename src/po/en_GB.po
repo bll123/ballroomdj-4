@@ -1884,6 +1884,7 @@ msgstr ""
 " songs that need to have the dance set."
 " => Leave the 'BDJ4 Management' window open."
 
+
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
 msgstr ""

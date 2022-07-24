@@ -16,6 +16,9 @@ syntax: regexp
 ^locale/nl
 ^locale/nl_BE/
 ^locale/de
+^locale/de_DE/
+^locale/tr
+^locale/tr_TR/
 ^packages/
 ^plocal/
 ^scripts/linux/.ballroomdj-ss-restore
