@@ -1,6 +1,6 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha 2022-??
+4.0.0 alpha 2022-7-24
 
 - player ui
   - request: displays a mark when the song is in the song list.
@@ -12,10 +12,12 @@ BallroomDJ 4 Change Log
   - song selection: displays a mark when the song is in the song list.
   - music manager: display same song marks.
   - favorite: working in the song list editor and song selection.
+  - song editor: fix check of song-start/song-end.
 - starter ui
   - added 'delete profile' to the menu.
-- linux
-  - all windows will be re-opened in the same desktop workspace.
+- marquee
+  - fixed iconify and maximize event processing.
+  - windows : fixed de-iconify of marquee.
 
 4.0.0 alpha 2022-07-21
 

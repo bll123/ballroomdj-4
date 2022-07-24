@@ -73,7 +73,6 @@ enum {
   BPMCOUNTER_POSITION_Y,
   BPMCOUNTER_SIZE_X,
   BPMCOUNTER_SIZE_Y,
-  BPMCOUNTER_WORKSPACE,
   BPMCOUNTER_KEY_MAX,
 };
 
@@ -82,7 +81,6 @@ static datafilekey_t bpmcounteruidfkeys [BPMCOUNTER_KEY_MAX] = {
   { "BPMCOUNTER_POS_Y",     BPMCOUNTER_POSITION_Y,    VALUE_NUM, NULL, -1 },
   { "BPMCOUNTER_SIZE_X",    BPMCOUNTER_SIZE_X,        VALUE_NUM, NULL, -1 },
   { "BPMCOUNTER_SIZE_Y",    BPMCOUNTER_SIZE_Y,        VALUE_NUM, NULL, -1 },
-  { "BPMCOUNTER_WORKSPACE", BPMCOUNTER_WORKSPACE,     VALUE_NUM, NULL, -1 },
 };
 
 static bool     bpmcounterConnectingCallback (void *udata, programstate_t programState);
@@ -175,7 +173,6 @@ main (int argc, char *argv[])
   if (bpmcounter.options == NULL) {
     bpmcounter.options = nlistAlloc ("bpmcounterui-opt", LIST_ORDERED, free);
 
-    nlistSetNum (bpmcounter.options, BPMCOUNTER_WORKSPACE, -1);
     nlistSetNum (bpmcounter.options, BPMCOUNTER_POSITION_X, -1);
     nlistSetNum (bpmcounter.options, BPMCOUNTER_POSITION_Y, -1);
     nlistSetNum (bpmcounter.options, BPMCOUNTER_SIZE_X, 1200);
@@ -249,7 +246,6 @@ bpmcounterStoppingCallback (void *udata, programstate_t programState)
   uiWindowGetPosition (&bpmcounter->window, &x, &y, &ws);
   nlistSetNum (bpmcounter->options, BPMCOUNTER_POSITION_X, x);
   nlistSetNum (bpmcounter->options, BPMCOUNTER_POSITION_Y, y);
-  nlistSetNum (bpmcounter->options, BPMCOUNTER_WORKSPACE, ws);
 
   logProcEnd (LOG_PROC, "bpmcounterStoppingCallback", "");
   return STATE_FINISHED;
@@ -304,7 +300,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   UIWidget    sg;
   UIWidget    sgb;
   char        imgbuff [MAXPATHLEN];
-  int         x, y, ws;
+  int         x, y;
 
   logProcBegin (LOG_PROC, "bpmcounterBuildUI");
   uiutilsUIWidgetInit (&grpuiwidget);
@@ -432,8 +428,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   x = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_X);
   y = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_Y);
-  ws = nlistGetNum (bpmcounter->options, BPMCOUNTER_WORKSPACE);
-  uiWindowMove (&bpmcounter->window, x, y, ws);
+  uiWindowMove (&bpmcounter->window, x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);

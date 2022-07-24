@@ -202,18 +202,14 @@ static datafilekey_t manageuidfkeys [] = {
   { "EASY_SONGLIST",    MANAGE_EASY_SONGLIST,       VALUE_NUM, convBoolean, -1 },
   { "FILTER_POS_X",     SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, -1 },
   { "FILTER_POS_Y",     SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, -1 },
-  { "FILTER_WORKSPACE", SONGSEL_FILTER_WORKSPACE,   VALUE_NUM, NULL, -1 },
   { "MNG_CFPL_POS_X",   MANAGE_CFPL_POSITION_X,     VALUE_NUM, NULL, -1 },
   { "MNG_CFPL_POS_Y",   MANAGE_CFPL_POSITION_Y,     VALUE_NUM, NULL, -1 },
-  { "MNG_CFPL_WORKSPACE", MANAGE_CFPL_WORKSPACE,    VALUE_NUM, NULL, -1 },
   { "MNG_POS_X",        MANAGE_POSITION_X,          VALUE_NUM, NULL, -1 },
   { "MNG_POS_Y",        MANAGE_POSITION_Y,          VALUE_NUM, NULL, -1 },
   { "MNG_SELFILE_POS_X",MANAGE_SELFILE_POSITION_X,  VALUE_NUM, NULL, -1 },
   { "MNG_SELFILE_POS_Y",MANAGE_SELFILE_POSITION_Y,  VALUE_NUM, NULL, -1 },
-  { "MNG_SELFILE_WORKSPACE",MANAGE_SELFILE_WORKSPACE, VALUE_NUM, NULL, -1 },
   { "MNG_SIZE_X",       MANAGE_SIZE_X,              VALUE_NUM, NULL, -1 },
   { "MNG_SIZE_Y",       MANAGE_SIZE_Y,              VALUE_NUM, NULL, -1 },
-  { "MNG_WORKSPACE",    MANAGE_POSITION_Y,          VALUE_NUM, NULL, -1 },
   { "SORT_BY",          SONGSEL_SORT_BY,            VALUE_STR, NULL, -1 },
 };
 enum {
@@ -363,10 +359,8 @@ main (int argc, char *argv[])
   if (manage.options == NULL) {
     manage.options = nlistAlloc ("manageui-opt", LIST_ORDERED, free);
 
-    nlistSetNum (manage.options, SONGSEL_FILTER_WORKSPACE, -1);
     nlistSetNum (manage.options, SONGSEL_FILTER_POSITION_X, -1);
     nlistSetNum (manage.options, SONGSEL_FILTER_POSITION_Y, -1);
-    nlistSetNum (manage.options, MANAGE_WORKSPACE, -1);
     nlistSetNum (manage.options, MANAGE_POSITION_X, -1);
     nlistSetNum (manage.options, MANAGE_POSITION_Y, -1);
     nlistSetNum (manage.options, MANAGE_SIZE_X, 1000);
@@ -375,7 +369,6 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, MANAGE_SELFILE_POSITION_X, -1);
     nlistSetNum (manage.options, MANAGE_SELFILE_POSITION_Y, -1);
     nlistSetNum (manage.options, MANAGE_EASY_SONGLIST, true);
-    nlistSetNum (manage.options, MANAGE_CFPL_WORKSPACE, -1);
     nlistSetNum (manage.options, MANAGE_CFPL_POSITION_X, -1);
     nlistSetNum (manage.options, MANAGE_CFPL_POSITION_Y, -1);
   }
@@ -431,7 +424,6 @@ manageStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (manage->options, MANAGE_SIZE_X, x);
   nlistSetNum (manage->options, MANAGE_SIZE_Y, y);
   uiWindowGetPosition (&manage->window, &x, &y, &ws);
-  nlistSetNum (manage->options, MANAGE_WORKSPACE, ws);
   nlistSetNum (manage->options, MANAGE_POSITION_X, x);
   nlistSetNum (manage->options, MANAGE_POSITION_Y, y);
 
@@ -527,7 +519,7 @@ manageBuildUI (manageui_t *manage)
   UIWidget            uiwidget;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
-  int                 x, y, ws;
+  int                 x, y;
 
   logProcBegin (LOG_PROC, "manageBuildUI");
   *imgbuff = '\0';
@@ -624,8 +616,7 @@ manageBuildUI (manageui_t *manage)
 
   x = nlistGetNum (manage->options, MANAGE_POSITION_X);
   y = nlistGetNum (manage->options, MANAGE_POSITION_Y);
-  ws = nlistGetNum (manage->options, MANAGE_WORKSPACE);
-  uiWindowMove (&manage->window, x, y, ws);
+  uiWindowMove (&manage->window, x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
@@ -1397,7 +1388,7 @@ static bool
 manageSonglistCreateFromPlaylist (void *udata)
 {
   manageui_t  *manage = udata;
-  int         x, y, ws;
+  int         x, y;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: create from playlist");
   manageSonglistSave (manage);
@@ -1408,8 +1399,7 @@ manageSonglistCreateFromPlaylist (void *udata)
 
   x = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_X);
   y = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_Y);
-  ws = nlistGetNum (manage->options, MANAGE_CFPL_WORKSPACE);
-  uiWindowMove (&manage->cfplDialog, x, y, ws);
+  uiWindowMove (&manage->cfplDialog, x, y, -1);
 
   return UICB_CONT;
 }
@@ -1508,7 +1498,6 @@ manageCFPLResponseHandler (void *udata, long responseid)
   uiWindowGetPosition (&manage->cfplDialog, &x, &y, &ws);
   nlistSetNum (manage->options, MANAGE_CFPL_POSITION_X, x);
   nlistSetNum (manage->options, MANAGE_CFPL_POSITION_Y, y);
-  nlistSetNum (manage->options, MANAGE_CFPL_WORKSPACE, ws);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {

@@ -133,7 +133,6 @@ typedef struct {
 } startui_t;
 
 enum {
-  STARTERUI_WORKSPACE,
   STARTERUI_POSITION_X,
   STARTERUI_POSITION_Y,
   STARTERUI_SIZE_X,
@@ -146,7 +145,6 @@ static datafilekey_t starteruidfkeys [STARTERUI_KEY_MAX] = {
   { "STARTERUI_POS_Y",     STARTERUI_POSITION_Y,    VALUE_NUM, NULL, -1 },
   { "STARTERUI_SIZE_X",    STARTERUI_SIZE_X,        VALUE_NUM, NULL, -1 },
   { "STARTERUI_SIZE_Y",    STARTERUI_SIZE_Y,        VALUE_NUM, NULL, -1 },
-  { "STARTERUI_WORKSPACE", STARTERUI_WORKSPACE,     VALUE_NUM, NULL, -1 },
 };
 
 enum {
@@ -354,7 +352,6 @@ starterStoppingCallback (void *udata, programstate_t programState)
   uiWindowGetPosition (&starter->window, &x, &y, &ws);
   nlistSetNum (starter->options, STARTERUI_POSITION_X, x);
   nlistSetNum (starter->options, STARTERUI_POSITION_Y, y);
-  nlistSetNum (starter->options, STARTERUI_WORKSPACE, ws);
 
   procutilStopAllProcess (starter->processes, starter->conn, false);
 
@@ -1917,12 +1914,11 @@ starterLinkHandler (void *udata, int cbidx)
 static void
 starterSetWindowPosition (startui_t *starter)
 {
-  int   x, y, ws;
+  int   x, y;
 
   x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
   y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
-  ws = nlistGetNum (starter->options, STARTERUI_WORKSPACE);
-  uiWindowMove (&starter->window, x, y, ws);
+  uiWindowMove (&starter->window, x, y, -1);
 }
 
 static void
@@ -1946,7 +1942,6 @@ starterLoadOptions (startui_t *starter)
   if (starter->options == NULL) {
     starter->options = nlistAlloc ("starterui-opt", LIST_ORDERED, free);
 
-    nlistSetNum (starter->options, STARTERUI_WORKSPACE, -1);
     nlistSetNum (starter->options, STARTERUI_POSITION_X, -1);
     nlistSetNum (starter->options, STARTERUI_POSITION_Y, -1);
     nlistSetNum (starter->options, STARTERUI_SIZE_X, 1200);

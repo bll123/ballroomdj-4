@@ -728,7 +728,7 @@ marqueeWinState (void *udata, int isIconified, int isMaximized)
       marquee->isIconified = true;
     } else {
       marquee->isIconified = false;
-      marqueeMoveWindow (marquee);
+//      marqueeMoveWindow (marquee);
     }
     logProcEnd (LOG_PROC, "marqueeWinState", "iconified/deiconified");
     return UICB_CONT;
@@ -760,12 +760,14 @@ marqueeWinMapped (void *udata)
 
   logProcBegin (LOG_PROC, "marqueeWinMapped");
 
+// is this process needed?
+// need to check on windows and mac os.
   if (! marquee->isMaximized && ! marquee->isIconified) {
-    marqueeMoveWindow (marquee);
+//    marqueeMoveWindow (marquee);
   }
 
   logProcEnd (LOG_PROC, "marqueeWinMapped", "");
-  return UICB_STOP;
+  return UICB_CONT;
 }
 
 static void
@@ -774,9 +776,13 @@ marqueeSaveWindowPosition (marquee_t *marquee)
   int   x, y, ws;
 
   uiWindowGetPosition (&marquee->window, &x, &y, &ws);
-  nlistSetNum (marquee->options, MQ_POSITION_X, x);
-  nlistSetNum (marquee->options, MQ_POSITION_Y, y);
-  nlistSetNum (marquee->options, MQ_WORKSPACE, ws);
+  /* on windows, when the window is iconified, the position cannot be */
+  /* fetched like on linux; -32000 is returned for the position */
+  if (x != -32000 && y != -32000 ) {
+    nlistSetNum (marquee->options, MQ_POSITION_X, x);
+    nlistSetNum (marquee->options, MQ_POSITION_Y, y);
+    nlistSetNum (marquee->options, MQ_WORKSPACE, ws);
+  }
 }
 
 static void
@@ -963,7 +969,6 @@ marqueeFind (marquee_t *marquee)
 {
   /* on linux XFCE, this will position the window at this location in */
   /* its current workspace */
-
   nlistSetNum (marquee->options, MQ_POSITION_X, 200);
   nlistSetNum (marquee->options, MQ_POSITION_Y, 200);
 
@@ -971,9 +976,10 @@ marqueeFind (marquee_t *marquee)
     uiWindowDeIconify (&marquee->window);
   }
   marqueeSetNotMaximized (marquee);
-  uiWindowMoveToCurrentWorkspace (&marquee->window);
   marqueeMoveWindow (marquee);
+  uiWindowMoveToCurrentWorkspace (&marquee->window);
   uiWindowPresent (&marquee->window);
+  marqueeSaveWindowPosition (marquee);
 }
 
 static void

@@ -221,7 +221,7 @@ bool
 uisfDialog (void *udata)
 {
   uisongfilter_t *uisf = udata;
-  int             x, y, ws;
+  int             x, y;
 
   logProcBegin (LOG_PROC, "uisfDialog");
 
@@ -236,8 +236,7 @@ uisfDialog (void *udata)
 
   x = nlistGetNum (uisf->options, SONGSEL_FILTER_POSITION_X);
   y = nlistGetNum (uisf->options, SONGSEL_FILTER_POSITION_Y);
-  ws = nlistGetNum (uisf->options, SONGSEL_FILTER_WORKSPACE);
-  uiWindowMove (&uisf->filterDialog, x, y, ws);
+  uiWindowMove (&uisf->filterDialog, x, y, -1);
   logProcEnd (LOG_PROC, "uisfDialog", "");
   return UICB_CONT;
 }
@@ -622,7 +621,6 @@ uisfResponseHandler (void *udata, long responseid)
   uiWindowGetPosition (&uisf->filterDialog, &x, &y, &ws);
   nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_X, x);
   nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_Y, y);
-  nlistSetNum (uisf->options, SONGSEL_FILTER_WORKSPACE, ws);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {

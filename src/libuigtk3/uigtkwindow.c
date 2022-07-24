@@ -334,7 +334,7 @@ uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer
     return UICB_CONT;
   }
 
-  if (event->changed_mask == GDK_WINDOW_STATE_ICONIFIED) {
+  if ((event->changed_mask & GDK_WINDOW_STATE_ICONIFIED) == GDK_WINDOW_STATE_ICONIFIED) {
     isicon = false;
     if ((event->new_window_state & GDK_WINDOW_STATE_ICONIFIED) ==
         GDK_WINDOW_STATE_ICONIFIED) {
@@ -342,7 +342,7 @@ uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer
     }
     process = true;
   }
-  if (event->changed_mask == GDK_WINDOW_STATE_MAXIMIZED) {
+  if ((event->changed_mask & GDK_WINDOW_STATE_MAXIMIZED) == GDK_WINDOW_STATE_MAXIMIZED) {
     ismax = false;
     if ((event->new_window_state & GDK_WINDOW_STATE_MAXIMIZED) ==
         GDK_WINDOW_STATE_MAXIMIZED) {

@@ -953,7 +953,7 @@ uisongeditSaveCallback (void *udata)
 
     songstart = songGetNum (uiw->song, TAG_SONGSTART);
     songend = songGetNum (uiw->song, TAG_SONGEND);
-    if (songstart != 0 && songend != 0 && songstart >= songend) {
+    if (songstart > 0 && songend > 0 && songstart >= songend) {
       valid = false;
       if (uisongedit->statusMsg != NULL) {
         /* CONTEXT: song editor: status msg: (song end must be greater than song start) */

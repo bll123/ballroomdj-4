@@ -53,6 +53,9 @@ Release Notes: 20220721
 Known Issues:
   MacOS
     - The windows will not de-iconify (use right-click, show all windows).
+  Windows
+    - The marquee position is not saved when it is iconified (close the
+      window instead).
 
 Feedback:
   Leave your feedback, thoughts and ruminations at :
