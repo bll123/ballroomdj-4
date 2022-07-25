@@ -25,17 +25,23 @@ typedef enum {
 } tagedittype_t;
 
 enum {
-  TAG_TYPE_VORBIS,
-  TAG_TYPE_M4A,
+  TAG_TYPE_VORBIS,    // .ogg, .flac, et. al.
+  TAG_TYPE_MPEG4,     // .m4a
   TAG_TYPE_MP3,
   TAG_TYPE_WMA,
   TAG_TYPE_MAX,
 };
 
 typedef struct {
+  char  *tag;
+  char  *base;
+  char  *desc;
+} tagaudiotag_t;
+
+typedef struct {
   char                *tag;
   char                *displayname;
-  char                *audiotags [TAG_TYPE_MAX];
+  tagaudiotag_t       audiotags [TAG_TYPE_MAX];
   unsigned int        editWidth;
   tagedittype_t       editType;
   valuetype_t         valueType;
@@ -44,7 +50,7 @@ typedef struct {
   bool                listingDisplay : 1;
   bool                ellipsize : 1;
   bool                alignRight : 1;
-  bool                isBdjTag : 1;
+  bool                isBDJTag : 1;
   bool                isNormTag : 1;
   bool                albumEdit : 1;
   bool                allEdit : 1;

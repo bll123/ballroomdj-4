@@ -1303,6 +1303,7 @@ mainMusicQueueFill (maindata_t *mainData)
       }
       continue;
     }
+
     logMsg (LOG_DBG, LOG_MAIN, "push song to musicq");
     dur = mainCalculateSongDuration (mainData, song, plitem->playlistIdx);
     musicqPush (mainData->musicQueue, mainData->musicqManageIdx,
@@ -1615,7 +1616,6 @@ mainMusicqRemove (maindata_t *mainData, char *args)
   mainParseIntNum (args, &mi, &idx);
   mainData->musicqManageIdx = mi;
 
-// get calculated duration for the song
   musicqRemove (mainData->musicQueue, mainData->musicqManageIdx, idx);
   mainMusicQueueFill (mainData);
   mainMusicQueuePrep (mainData);

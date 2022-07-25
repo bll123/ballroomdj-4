@@ -1683,7 +1683,7 @@ installerConvertStart (installer_t *installer)
       fgets (tmp, sizeof (tmp), fh);
       fclose (fh);
       sscanf (tmp, "#VERSION=%d", &ver);
-      if (ver < 6) {
+      if (ver < 8) {
         /* CONTEXT: installer: status message */
         installerDisplayText (installer, INST_DISP_STATUS, _("BDJ3 database version is too old."), false);
       } else {

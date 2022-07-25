@@ -9,6 +9,7 @@
 
 #include "audiotag.h"
 #include "bdj4.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "filedata.h"
 #include "fileop.h"
@@ -20,11 +21,45 @@
 #include "sysvars.h"
 #include "tagdef.h"
 
+enum {
+  AFILE_TYPE_UNKNOWN,
+  AFILE_TYPE_FLAC,
+  AFILE_TYPE_MPEG4,
+  AFILE_TYPE_MP3,
+  AFILE_TYPE_OGGOPUS,
+  AFILE_TYPE_OGGVORBIS,
+  AFILE_TYPE_WMA,
+};
+
+static void audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype);
 static void audiotagParseTags (slist_t *tagdata, char *data, int tagtype);
 static void audiotagCreateLookupTable (int tagtype);
 static void audiotagParseNumberPair (char *data, int *a, int *b);
+static void audiotagWriteMP3Tags (const char *ffn, slist_t *tagdata, int writetags);
+static void audiotagWriteOtherTags (const char *ffn, slist_t *tagdata, int tagtype, int filetype, int writetags);
+static void audiotagPreparePair (slist_t *tagdata, char *buff, size_t sz,
+    tagdefkey_t taga, tagdefkey_t tagb, int tagtype);
 
-static slist_t    * tagLookup [TAG_TYPE_MAX] = { NULL, NULL, NULL };
+static slist_t    * tagLookup [TAG_TYPE_MAX];
+
+void
+audiotagInit (void)
+{
+  for (int i = 0; i < TAG_TYPE_MAX; ++i) {
+    tagLookup [i] = NULL;
+  }
+}
+
+void
+audiotagCleanup (void)
+{
+  for (int i = 0; i < TAG_TYPE_MAX; ++i) {
+    if (tagLookup [i] != NULL) {
+      slistFree (tagLookup [i]);
+      tagLookup [i] = NULL;
+    }
+  }
+}
 
 /*
  * .m4a:
@@ -34,7 +69,7 @@ static slist_t    * tagLookup [TAG_TYPE_MAX] = { NULL, NULL, NULL };
  */
 
 char *
-audiotagReadTags (char *ffn)
+audiotagReadTags (const char *ffn)
 {
   char        * data;
   const char  * targv [5];
@@ -50,33 +85,96 @@ audiotagReadTags (char *ffn)
 }
 
 slist_t *
-audiotagParseData (char *ffn, char *data)
+audiotagParseData (const char *ffn, char *data)
 {
   slist_t     *tagdata;
-  pathinfo_t  *pi;
   int         tagtype;
-
+  int         filetype;
 
   tagdata = slistAlloc ("atag", LIST_ORDERED, free);
+  audiotagDetermineTagType (ffn, &tagtype, &filetype);
+  audiotagParseTags (tagdata, data, tagtype);
+  return tagdata;
+}
+
+void
+audiotagWriteTags (const char *ffn, slist_t *tagdata)
+{
+  int         tagtype;
+  int         filetype;
+  int         writetags;
+
+  logProcBegin (LOG_PROC, "audiotagsWriteTags");
+
+  writetags = bdjoptGetNum (OPT_G_WRITETAGS);
+  if (writetags == WRITE_TAGS_NONE) {
+    logProcEnd (LOG_PROC, "audiotagsWriteTags", "write-none");
+    return;
+  }
+
+  audiotagDetermineTagType (ffn, &tagtype, &filetype);
+
+  if (tagtype != TAG_TYPE_VORBIS &&
+      tagtype != TAG_TYPE_MP3 &&
+      tagtype != TAG_TYPE_MPEG4) {
+    logProcEnd (LOG_PROC, "audiotagsWriteTags", "not-supported-tag");
+    return;
+  }
+
+  if (filetype != AFILE_TYPE_OGGOPUS &&
+      filetype != AFILE_TYPE_OGGVORBIS &&
+      filetype != AFILE_TYPE_FLAC &&
+      filetype != AFILE_TYPE_MP3 &&
+      filetype != AFILE_TYPE_MPEG4) {
+    logProcEnd (LOG_PROC, "audiotagsWriteTags", "not-supported-file");
+    return;
+  }
+
+  if (tagtype == TAG_TYPE_MP3 && filetype == AFILE_TYPE_MP3) {
+    audiotagWriteMP3Tags (ffn, tagdata, writetags);
+  } else {
+    audiotagWriteOtherTags (ffn, tagdata, tagtype, filetype, writetags);
+  }
+}
+
+static void
+audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
+{
+  pathinfo_t  *pi;
+
   pi = pathInfo (ffn);
 
-  tagtype = TAG_TYPE_VORBIS;
+  *filetype = AFILE_TYPE_UNKNOWN;
+  *tagtype = TAG_TYPE_VORBIS;
   if (pathInfoExtCheck (pi, ".mp3") ||
       pathInfoExtCheck (pi, ".MP3")) {
-    tagtype = TAG_TYPE_MP3;
+    *tagtype = TAG_TYPE_MP3;
+    *filetype = AFILE_TYPE_MP3;
   }
   if (pathInfoExtCheck (pi, ".m4a") ||
       pathInfoExtCheck (pi, ".M4A")) {
-    tagtype = TAG_TYPE_M4A;
+    *tagtype = TAG_TYPE_MPEG4;
+    *filetype = AFILE_TYPE_MPEG4;
   }
   if (pathInfoExtCheck (pi, ".wma") ||
       pathInfoExtCheck (pi, ".WMA")) {
-    tagtype = TAG_TYPE_WMA;
+    *tagtype = TAG_TYPE_WMA;
+    *filetype = AFILE_TYPE_WMA;
   }
-  audiotagParseTags (tagdata, data, tagtype);
+  if (pathInfoExtCheck (pi, ".ogg") ||
+      pathInfoExtCheck (pi, ".OGG")) {
+    *filetype = AFILE_TYPE_OGGVORBIS;
+  }
+  if (pathInfoExtCheck (pi, ".opus") ||
+      pathInfoExtCheck (pi, ".OPUS")) {
+    *filetype = AFILE_TYPE_OGGOPUS;
+  }
+  if (pathInfoExtCheck (pi, ".flac") ||
+      pathInfoExtCheck (pi, ".FLAC")) {
+    *filetype = AFILE_TYPE_FLAC;
+  }
 
   pathInfoFree (pi);
-  return tagdata;
 }
 
 static void
@@ -134,7 +232,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
         tm = atof (p);
         tm *= 1000.0;
         snprintf (duration, sizeof (duration), "%.0f", tm);
-        slistSetStr (tagdata, "DURATION", duration);
+        slistSetStr (tagdata, tagdefs [TAG_DURATION].tag, duration);
         haveduration = true;
       } else {
         logMsg (LOG_DBG, LOG_DBUPDATE, "no 'seconds' found");
@@ -148,6 +246,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
         ++count;
         continue;
       }
+
       if (strcmp (p, "TXXX") == 0 || strcmp (p, "UFID") == 0) {
         /* find the next = */
         strtok_r (NULL, "=", &tokstrB);
@@ -244,13 +343,13 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
         /* musicbrainz_trackid handling */
         if (strcmp (tagname, tagdefs [TAG_RECORDING_ID].tag) == 0) {
           /* note that MUSICBRAINZ_TRACKID may appear in a TXXX tag */
+          /* mutagen-inspect dumps the UFID tag with the b'' python marker */
+          /* it is not saved in the MP3 file */
           if (p != NULL) {
             if (strncmp (p, "b\"", 2) == 0) {
-              rewrite = true;
               p += 2;
             }
             if (strncmp (p, "b'", 2) == 0) {
-              rewrite = true;
               p += 2;
             }
             stringTrimChar (p, '\'');
@@ -269,6 +368,9 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
   }
 }
 
+/*
+ * for looking up the audio file tag, converting to the internal tag name
+ */
 static void
 audiotagCreateLookupTable (int tagtype)
 {
@@ -286,12 +388,12 @@ audiotagCreateLookupTable (int tagtype)
   taglist = tagLookup [tagtype];
 
   for (int i = 0; i < TAG_KEY_MAX; ++i) {
-    if (tagdefs [i].audiotags [tagtype] != NULL &&
-        strcmp (tagdefs [i].audiotags [tagtype], "TXXX") != 0) {
-      slistSetStr (taglist, tagdefs [i].audiotags [tagtype], tagdefs [i].tag);
+    if (! tagdefs [i].isNormTag && ! tagdefs [i].isBDJTag) {
+      continue;
     }
-    /* always add the tag/tag mapping to handle flac, ogg, etc. */
-    slistSetStr (taglist, tagdefs [i].tag, tagdefs [i].tag);
+    if (tagdefs [i].audiotags [tagtype].tag != NULL) {
+      slistSetStr (taglist, tagdefs [i].audiotags [tagtype].tag, tagdefs [i].tag);
+    }
   }
 }
 
@@ -322,5 +424,182 @@ audiotagParseNumberPair (char *data, int *a, int *b)
   if (p != NULL) {
     ++p;
     *b = atoi (p);
+  }
+}
+
+static void
+audiotagWriteMP3Tags (const char *ffn, slist_t *tagdata, int writetags)
+{
+  char        track [50];
+  char        disc [50];
+  int         tagkey;
+  slistidx_t  iteridx;
+  char        *tag;
+  char        *value;
+  FILE        *ofh;
+
+  logProcBegin (LOG_PROC, "audiotagsWriteMP3Tags");
+  audiotagPreparePair (tagdata, track, sizeof (track),
+      TAG_TRACKNUMBER, TAG_TRACKTOTAL, TAG_TYPE_MP3);
+  audiotagPreparePair (tagdata, disc, sizeof (disc),
+      TAG_DISCNUMBER, TAG_DISCTOTAL, TAG_TYPE_MP3);
+
+  ofh = fopen ("tmp.py", "w");
+  fprintf (ofh, "from mutagen.id3 import ID3,TXXX,UFID");
+  for (int i = 0; i < TAG_KEY_MAX; ++i) {
+    if (tagdefs [i].audiotags [TAG_TYPE_MP3].tag != NULL &&
+        tagdefs [i].audiotags [TAG_TYPE_MP3].desc == NULL) {
+      fprintf (ofh, ",%s", tagdefs [i].audiotags [TAG_TYPE_MP3].tag);
+    }
+  }
+  fprintf (ofh, "\n");
+  fprintf (ofh, "audio = ID3(\"%s\")\n", ffn);
+
+  slistStartIterator (tagdata, &iteridx);
+  while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
+    tagkey = tagdefLookup (tag);
+    if (tagkey < 0) {
+      /* unknown tag */
+      continue;
+    }
+    if (! tagdefs [tagkey].isNormTag && ! tagdefs [tagkey].isBDJTag) {
+      continue;
+    }
+    if (writetags == WRITE_TAGS_BDJ_ONLY && tagdefs [tagkey].isNormTag) {
+      continue;
+    }
+
+    value = slistGetStr (tagdata, tag);
+    if (tagkey == TAG_TRACKNUMBER) {
+      value = track;
+    }
+    if (tagkey == TAG_DISCNUMBER) {
+      value = disc;
+    }
+    if (tagkey == TAG_RECORDING_ID) {
+    }
+
+    if (tagkey == TAG_RECORDING_ID) {
+      fprintf (ofh, "audio.delall('%s:%s')\n",
+          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
+          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc);
+      fprintf (ofh, "audio.add(%s(encoding=3, owner=u'%s', data=b'%s'))\n",
+          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
+          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc, value);
+    } else if (tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc != NULL) {
+      fprintf (ofh, "audio.add(%s(encoding=3, desc=u'%s', text=u'%s'))\n",
+          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
+          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc, value);
+    } else {
+      fprintf (ofh, "audio.add(%s(encoding=3, text=u'%s'))\n",
+          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
+    }
+  }
+
+  fprintf (ofh, "audio.save()\n");
+  fclose (ofh);
+
+  logProcEnd (LOG_PROC, "audiotagsWriteTags", "");
+}
+
+static void
+audiotagWriteOtherTags (const char *ffn, slist_t *tagdata,
+    int tagtype, int filetype, int writetags)
+{
+  char        track [50];
+  char        disc [50];
+  int         tagkey;
+  slistidx_t  iteridx;
+  char        *tag;
+  char        *value;
+  FILE        *ofh;
+
+  logProcBegin (LOG_PROC, "audiotagsWriteOtherTags");
+  audiotagPreparePair (tagdata, track, sizeof (track),
+      TAG_TRACKNUMBER, TAG_TRACKTOTAL, tagtype);
+  audiotagPreparePair (tagdata, disc, sizeof (disc),
+      TAG_DISCNUMBER, TAG_DISCTOTAL, tagtype);
+
+  ofh = fopen ("tmp.py", "w");
+  if (filetype == AFILE_TYPE_FLAC) {
+    fprintf (ofh, "from mutagen.flac import FLAC\n");
+    fprintf (ofh, "audio = FLAC(\"%s\")\n", ffn);
+  }
+  if (filetype == AFILE_TYPE_MPEG4) {
+    fprintf (ofh, "from mutagen.mp4 import MP4\n");
+    fprintf (ofh, "audio = MP4(\"%s\")\n", ffn);
+  }
+  if (filetype == AFILE_TYPE_OGGOPUS) {
+    fprintf (ofh, "from mutagen.oggopus import OggOpus\n");
+    fprintf (ofh, "audio = OggOpus(\"%s\")\n", ffn);
+  }
+  if (filetype == AFILE_TYPE_OGGVORBIS) {
+    fprintf (ofh, "from mutagen.oggvorbis import OggVorbis\n");
+    fprintf (ofh, "audio = OggVorbis(\"%s\")\n", ffn);
+  }
+
+  slistStartIterator (tagdata, &iteridx);
+  while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
+    tagkey = tagdefLookup (tag);
+    if (tagkey < 0) {
+      /* unknown tag */
+      continue;
+    }
+    if (! tagdefs [tagkey].isNormTag && ! tagdefs [tagkey].isBDJTag) {
+      continue;
+    }
+    if (writetags == WRITE_TAGS_BDJ_ONLY && tagdefs [tagkey].isNormTag) {
+      continue;
+    }
+    if (tagdefs [tagkey].audiotags [tagtype].tag == NULL) {
+      /* not a supported tag */
+      continue;
+    }
+
+    value = slistGetStr (tagdata, tag);
+    if (tagkey == TAG_TRACKNUMBER) {
+      value = track;
+    }
+    if (tagkey == TAG_DISCNUMBER) {
+      value = disc;
+    }
+    if (tagkey == TAG_RECORDING_ID) {
+    }
+
+    if (tagtype == TAG_TYPE_MPEG4 &&
+        tagdefs [tagkey].audiotags [tagtype].base != NULL) {
+      fprintf (ofh, "audio[\"%s\"] = bytes ('%s', 'UTF-8')\n",
+          tagdefs [tagkey].audiotags [tagtype].tag, value);
+    } else {
+      fprintf (ofh, "audio[\"%s\"] = u'%s'\n",
+          tagdefs [tagkey].audiotags [tagtype].tag, value);
+    }
+  }
+
+  fprintf (ofh, "audio.save()\n");
+  fclose (ofh);
+
+  logProcEnd (LOG_PROC, "audiotagsWriteOtherTags", "");
+}
+
+static void
+audiotagPreparePair (slist_t *tagdata, char *buff, size_t sz,
+    tagdefkey_t taga, tagdefkey_t tagb, int tagtype)
+{
+  char        *tdata;
+  char        *tdatab;
+
+  *buff = '\0';
+  tdata = slistGetStr (tagdata, tagdefs [taga].tag);
+  if (tdata != NULL) {
+    strlcpy (buff, tdata, sz);
+    tdatab = slistGetStr (tagdata, tagdefs [tagb].tag);
+    if (tdatab != NULL) {
+      if (tagtype == TAG_TYPE_MPEG4) {
+        snprintf (buff, sz, "(%s,%s)", tdata, tdatab);
+      } else {
+        snprintf (buff, sz, "%s/%s", tdata, tdatab);
+      }
+    }
   }
 }
