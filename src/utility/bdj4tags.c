@@ -77,19 +77,6 @@ main (int argc, char *argv [])
     break;
   }
 
-  fprintf (stdout, "-- %s\n", argv [fidx]);
-  data = audiotagReadTags (argv [fidx]);
-  if (rawdata) {
-    fprintf (stdout, "%s\n", data);
-  }
-
-  list = audiotagParseData (argv [fidx], data);
-  slistStartIterator (list, &iteridx);
-  while ((key = slistIterateKey (list, &iteridx)) != NULL) {
-    val = slistGetStr (list, key);
-    fprintf (stdout, "%-20s %s\n", key, val);
-  }
-
   wlist = slistAlloc ("write-tags", LIST_ORDERED, free);
   for (int i = fidx + 1; i < argc; ++i) {
     char    *p;
@@ -108,6 +95,21 @@ main (int argc, char *argv [])
   if (slistGetCount (wlist) > 0) {
     audiotagWriteTags (argv [fidx], wlist);
   }
+  slistFree (wlist);
+
+  /* output the tags after writing the new ones */
+  data = audiotagReadTags (argv [fidx]);
+  fprintf (stdout, "-- %s\n", argv [fidx]);
+  if (rawdata) {
+    fprintf (stdout, "%s\n", data);
+  }
+  list = audiotagParseData (argv [fidx], data);
+  slistStartIterator (list, &iteridx);
+  while ((key = slistIterateKey (list, &iteridx)) != NULL) {
+    val = slistGetStr (list, key);
+    fprintf (stdout, "%-20s %s\n", key, val);
+  }
+  slistFree (list);
 
   audiotagCleanup ();
   return 0;
