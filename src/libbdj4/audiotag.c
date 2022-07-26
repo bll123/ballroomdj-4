@@ -39,8 +39,12 @@ static void audiotagWriteMP3Tags (const char *ffn, slist_t *tagdata, int writeta
 static void audiotagWriteOtherTags (const char *ffn, slist_t *tagdata, int tagtype, int filetype, int writetags);
 static void audiotagPreparePair (slist_t *tagdata, char *buff, size_t sz,
     tagdefkey_t taga, tagdefkey_t tagb, int tagtype);
+static void audiotagRunUpdate (const char *fn);
+static void audiotagMakeTempFilename (char *fn, size_t sz);
 
 static slist_t    * tagLookup [TAG_TYPE_MAX];
+
+static ssize_t globalCounter = 0;
 
 void
 audiotagInit (void)
@@ -199,6 +203,10 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
 /*
  * mutagen output:
  *
+ * mp4 output is very bizarre:
+ * ----:BDJ4:DANCE=MP4FreeForm(b'Waltz', <AtomDataType.UTF8: 1>)
+ * ----:com.apple.iTunes:MusicBrainz Track Id=MP4FreeForm(b'blah', <AtomDataType.UTF8: 1>)
+ *
  * -- /home/bll/s/ballroomdj/test.dir/music dir/05 Rumba.mp3
  * - MPEG 1 layer 3, 64000 bps (CBR?), 48000 Hz, 1 chn, 304.54 seconds (audio/mp3)
  * TALB=130.01-alb
@@ -271,6 +279,38 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
           p = "";
         }
 
+        if (strstr (p, "MP4FreeForm(") != NULL) {
+          p = strstr (p, "(");
+          ++p;
+          if (strncmp (p, "b'", 2) == 0) {
+            p += 2;
+            pC = strstr (p, "'");
+            if (pC != NULL) {
+              *pC = '\0';
+            }
+          }
+          if (strncmp (p, "b\"", 2) == 0) {
+            p += 2;
+            pC = strstr (p, "\"");
+            if (pC != NULL) {
+              *pC = '\0';
+            }
+          }
+        }
+
+        /* put in some extra checks for odd mutagen python output */
+        /* this stuff always appears in the UFID tag output */
+        if (p != NULL) {
+          if (strncmp (p, "b\"", 2) == 0) {
+            p += 2;
+            stringTrimChar (p, '"');
+          }
+          if (strncmp (p, "b'", 2) == 0) {
+            p += 2;
+            stringTrimChar (p, '\'');
+          }
+        }
+
         if (strcmp (tagname, tagdefs [TAG_DURATION].tag) == 0) {
           if (haveduration) {
             if (strcmp (p, duration) != 0) {
@@ -337,23 +377,6 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
             tm /= 10;
             snprintf (pbuff, sizeof (pbuff), "%.1f", tm);
             p = pbuff;
-          }
-        }
-
-        /* musicbrainz_trackid handling */
-        if (strcmp (tagname, tagdefs [TAG_RECORDING_ID].tag) == 0) {
-          /* note that MUSICBRAINZ_TRACKID may appear in a TXXX tag */
-          /* mutagen-inspect dumps the UFID tag with the b'' python marker */
-          /* it is not saved in the MP3 file */
-          if (p != NULL) {
-            if (strncmp (p, "b\"", 2) == 0) {
-              p += 2;
-            }
-            if (strncmp (p, "b'", 2) == 0) {
-              p += 2;
-            }
-            stringTrimChar (p, '\'');
-            stringTrimChar (p, '"');
           }
         }
 
@@ -430,6 +453,7 @@ audiotagParseNumberPair (char *data, int *a, int *b)
 static void
 audiotagWriteMP3Tags (const char *ffn, slist_t *tagdata, int writetags)
 {
+  char        fn [MAXPATHLEN];
   char        track [50];
   char        disc [50];
   int         tagkey;
@@ -444,7 +468,8 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *tagdata, int writetags)
   audiotagPreparePair (tagdata, disc, sizeof (disc),
       TAG_DISCNUMBER, TAG_DISCTOTAL, TAG_TYPE_MP3);
 
-  ofh = fopen ("tmp.py", "w");
+  audiotagMakeTempFilename (fn, sizeof (fn));
+  ofh = fopen (fn, "w");
   fprintf (ofh, "from mutagen.id3 import ID3,TXXX,UFID");
   for (int i = 0; i < TAG_KEY_MAX; ++i) {
     if (tagdefs [i].audiotags [TAG_TYPE_MP3].tag != NULL &&
@@ -498,6 +523,7 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *tagdata, int writetags)
 
   fprintf (ofh, "audio.save()\n");
   fclose (ofh);
+  audiotagRunUpdate (fn);
 
   logProcEnd (LOG_PROC, "audiotagsWriteTags", "");
 }
@@ -506,6 +532,7 @@ static void
 audiotagWriteOtherTags (const char *ffn, slist_t *tagdata,
     int tagtype, int filetype, int writetags)
 {
+  char        fn [MAXPATHLEN];
   char        track [50];
   char        disc [50];
   int         tagkey;
@@ -520,7 +547,8 @@ audiotagWriteOtherTags (const char *ffn, slist_t *tagdata,
   audiotagPreparePair (tagdata, disc, sizeof (disc),
       TAG_DISCNUMBER, TAG_DISCTOTAL, tagtype);
 
-  ofh = fopen ("tmp.py", "w");
+  audiotagMakeTempFilename (fn, sizeof (fn));
+  ofh = fopen (fn, "w");
   if (filetype == AFILE_TYPE_FLAC) {
     fprintf (ofh, "from mutagen.flac import FLAC\n");
     fprintf (ofh, "audio = FLAC(\"%s\")\n", ffn);
@@ -578,6 +606,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *tagdata,
 
   fprintf (ofh, "audio.save()\n");
   fclose (ofh);
+  audiotagRunUpdate (fn);
 
   logProcEnd (LOG_PROC, "audiotagsWriteOtherTags", "");
 }
@@ -602,4 +631,27 @@ audiotagPreparePair (slist_t *tagdata, char *buff, size_t sz,
       }
     }
   }
+}
+
+
+static void
+audiotagRunUpdate (const char *fn)
+{
+  const char  *targv [5];
+  int         targc = 0;
+
+  targv [targc++] = sysvarsGetStr (SV_PATH_PYTHON);
+  targv [targc++] = fn;
+  targv [targc++] = NULL;
+  osProcessStart (targv, OS_PROC_WAIT | OS_PROC_DETACH, NULL, NULL);
+  fileopDelete (fn);
+}
+
+static void
+audiotagMakeTempFilename (char *fn, size_t sz)
+{
+  char        tbuff [MAXPATHLEN];
+
+  snprintf (tbuff, sizeof (tbuff), "audiotag-%zd.py", globalCounter++);
+  pathbldMakePath (fn, sz, tbuff, "", PATHBLD_MP_TMPDIR);
 }
