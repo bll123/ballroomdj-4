@@ -366,7 +366,6 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
           tmp = strdup (p);
           pC = strtok_r (tmp, ":", &tokstrC);
           if (pC != NULL) {
-            rewrite = true;
             tm += atof (pC) * 60.0;
             pC = strtok_r (NULL, ":", &tokstrC);
             tm += atof (pC);
@@ -383,7 +382,6 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
 
           pC = strstr (p, ".");
           if (pC == NULL) {
-            rewrite = true;
             tm += atof (p);
             tm /= 10;
             snprintf (pbuff, sizeof (pbuff), "%.1f", tm);

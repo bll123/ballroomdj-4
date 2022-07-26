@@ -1,5 +1,9 @@
 BallroomDJ 4 Change Log
 
+4.0.0 alpha 2022-??
+
+- bdj4tags : add ability to write tags.
+
 4.0.0 alpha 2022-7-24
 
 - player ui
