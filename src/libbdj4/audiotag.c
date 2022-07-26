@@ -203,11 +203,22 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
 /*
  * mutagen output:
  *
- * mp4 output is very bizarre:
+ * mp4 output is very bizarre for freeform tags
+ * - MPEG-4 audio (ALAC), 210.81 seconds, 1536000 bps (audio/mp4)
  * ----:BDJ4:DANCE=MP4FreeForm(b'Waltz', <AtomDataType.UTF8: 1>)
  * ----:com.apple.iTunes:MusicBrainz Track Id=MP4FreeForm(b'blah', <AtomDataType.UTF8: 1>)
+ * trkn=(1, 0)
+ * ©ART=2NE1
+ * ©alb=2nd Mini Album
+ * ©day=2011
+ * ©gen=Electronic
+ * ©nam=xyzzy
+ * ©too=Lavf56.15.102
  *
- * -- /home/bll/s/ballroomdj/test.dir/music dir/05 Rumba.mp3
+ * - FLAC, 20.80 seconds, 44100 Hz (audio/flac)
+ * ARTIST=artist
+ * TITLE=zzz
+ *
  * - MPEG 1 layer 3, 64000 bps (CBR?), 48000 Hz, 1 chn, 304.54 seconds (audio/mp3)
  * TALB=130.01-alb
  * TIT2=05 Rumba
