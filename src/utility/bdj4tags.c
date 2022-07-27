@@ -32,11 +32,13 @@ main (int argc, char *argv [])
   int         option_index = 0;
   int         fidx = -1;
   tagdefkey_t tagkey;
+  bool        bdj3tags = false;
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
     { "bdj4tags",     no_argument,      NULL,   0 },
     { "rawdata",      no_argument,      NULL,   'r' },
+    { "bdj3tags",     no_argument,      NULL,   '3' },
     { "debugself",    no_argument,      NULL,   0 },
     { "nodetach",     no_argument,      NULL,   0, },
     { "theme",        no_argument,      NULL,   0 },
@@ -45,6 +47,10 @@ main (int argc, char *argv [])
 
   while ((c = getopt_long_only (argc, argv, "BCp:d:mnNRs", bdj_options, &option_index)) != -1) {
     switch (c) {
+      case '3': {
+        bdj3tags = true;
+        break;
+      }
       case 'B': {
         isbdj4 = true;
         break;
@@ -68,6 +74,8 @@ main (int argc, char *argv [])
   localeInit ();
   bdjoptInit ();
   audiotagInit ();
+  /* always override the bdj3 compat flag */
+  bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, bdj3tags);
 
   for (int i = 1; i < argc; ++i) {
     if (strncmp (argv [i], "--", 2) == 0) {
@@ -99,7 +107,7 @@ main (int argc, char *argv [])
 
   /* output the tags after writing the new ones */
   data = audiotagReadTags (argv [fidx]);
-  fprintf (stdout, "-- %s\n", argv [fidx]);
+//  fprintf (stdout, "-- %s\n", argv [fidx]);
   if (rawdata) {
     fprintf (stdout, "%s\n", data);
   }

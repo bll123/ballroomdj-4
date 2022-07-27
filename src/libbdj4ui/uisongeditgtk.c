@@ -732,7 +732,7 @@ uisongeditAddEntry (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
   uisongeditgtk_t *uiw;
 
   uiw = uisongedit->uiWidgetData;
-  entryp = uiEntryInit (tagdefs [tagkey].editWidth, 100);
+  entryp = uiEntryInit (20, 100);
   uiw->items [uiw->itemcount].entry = entryp;
   uiEntryCreate (entryp);
   uiwidgetp = uiEntryGetUIWidget (entryp);

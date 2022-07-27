@@ -45,6 +45,7 @@ main (int argc, char * argv[])
   char      *prog;
   bool      debugself = false;
   bool      nodetach = false;
+  bool      wait = false;
   bool      forcenodetach = false;
   bool      isinstaller = false;
   bool      usemsys = false;
@@ -101,6 +102,7 @@ main (int argc, char * argv[])
     { "dbtopdir",       required_argument,  NULL,   0 },
     /* bdjtags */
     { "rawdata",        no_argument,        NULL,   0 },
+    { "bdj3tags",       no_argument,        NULL,   0 },
     { NULL,             0,                  NULL,   0 }
   };
 
@@ -126,6 +128,7 @@ main (int argc, char * argv[])
         prog = "check_all";
         ++validargs;
         nodetach = true;
+        wait = true;
         break;
       }
       case 3: {
@@ -183,6 +186,7 @@ main (int argc, char * argv[])
       case 13: {
         prog = "bdj4info";
         nodetach = true;
+        wait = true;
         ++validargs;
         break;
       }
@@ -205,6 +209,7 @@ main (int argc, char * argv[])
       case 17: {
         prog = "bdj4tags";
         nodetach = true;
+        wait = true;
         ++validargs;
         break;
       }
@@ -441,9 +446,13 @@ main (int argc, char * argv[])
     fprintf (stderr, "cmd: %s\n", buff);
   }
 
-  flags = OS_PROC_DETACH;
-  if (forcenodetach || nodetach) {
-    flags = OS_PROC_NONE;
+  flags = OS_PROC_NONE;
+  if (! forcenodetach && ! nodetach) {
+    flags |= OS_PROC_DETACH;
+  }
+  if (wait) {
+    flags |= OS_PROC_WAIT;
+    flags &= ~OS_PROC_DETACH;
   }
   osProcessStart (targv, flags, NULL, NULL);
   return 0;

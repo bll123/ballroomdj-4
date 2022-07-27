@@ -20,6 +20,7 @@
 #include "slist.h"
 #include "sysvars.h"
 #include "tagdef.h"
+#include "tmutil.h"
 
 enum {
   AFILE_TYPE_UNKNOWN,
@@ -39,6 +40,7 @@ static void audiotagWriteMP3Tags (const char *ffn, slist_t *tagdata, int writeta
 static void audiotagWriteOtherTags (const char *ffn, slist_t *tagdata, int tagtype, int filetype, int writetags);
 static void audiotagPreparePair (slist_t *tagdata, char *buff, size_t sz,
     tagdefkey_t taga, tagdefkey_t tagb, int tagtype);
+static bool audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value);
 static void audiotagRunUpdate (const char *fn);
 static void audiotagMakeTempFilename (char *fn, size_t sz);
 
@@ -363,17 +365,19 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
           char      *tmp;
           double    tm = 0.0;
 
-          tmp = strdup (p);
-          pC = strtok_r (tmp, ":", &tokstrC);
-          if (pC != NULL) {
-            tm += atof (pC) * 60.0;
-            pC = strtok_r (NULL, ":", &tokstrC);
-            tm += atof (pC);
-            tm *= 1000;
-            snprintf (pbuff, sizeof (pbuff), "%.0f", tm);
-            p = pbuff;
+          if (strstr (p, ":") != NULL) {
+            tmp = strdup (p);
+            pC = strtok_r (tmp, ":", &tokstrC);
+            if (pC != NULL) {
+              tm += atof (pC) * 60.0;
+              pC = strtok_r (NULL, ":", &tokstrC);
+              tm += atof (pC);
+              tm *= 1000;
+              snprintf (pbuff, sizeof (pbuff), "%.0f", tm);
+              p = pbuff;
+            }
+            free (tmp);
           }
-          free (tmp);
         }
 
         /* old volumeadjustperc handling */
@@ -465,6 +469,7 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *tagdata, int writetags)
   char        fn [MAXPATHLEN];
   char        track [50];
   char        disc [50];
+  char        tmp [50];
   int         tagkey;
   slistidx_t  iteridx;
   char        *tag;
@@ -510,7 +515,9 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *tagdata, int writetags)
     if (tagkey == TAG_DISCNUMBER) {
       value = disc;
     }
-    if (tagkey == TAG_RECORDING_ID) {
+
+    if (audiotagBDJ3CompatCheck (tmp, sizeof (tmp), tagkey, value)) {
+      value = tmp;
     }
 
     if (tagkey == TAG_RECORDING_ID) {
@@ -544,6 +551,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *tagdata,
   char        fn [MAXPATHLEN];
   char        track [50];
   char        disc [50];
+  char        tmp [50];
   int         tagkey;
   slistidx_t  iteridx;
   char        *tag;
@@ -579,7 +587,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *tagdata,
   while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
     tagkey = tagdefLookup (tag);
     if (tagkey < 0) {
-      /* unknown tag */
+      /* unknown tag  */
       continue;
     }
     if (! tagdefs [tagkey].isNormTag && ! tagdefs [tagkey].isBDJTag) {
@@ -589,7 +597,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *tagdata,
       continue;
     }
     if (tagdefs [tagkey].audiotags [tagtype].tag == NULL) {
-      /* not a supported tag */
+      /* not a supported tag for this audio tag type */
       continue;
     }
 
@@ -600,7 +608,9 @@ audiotagWriteOtherTags (const char *ffn, slist_t *tagdata,
     if (tagkey == TAG_DISCNUMBER) {
       value = disc;
     }
-    if (tagkey == TAG_RECORDING_ID) {
+
+    if (audiotagBDJ3CompatCheck (tmp, sizeof (tmp), tagkey, value)) {
+      value = tmp;
     }
 
     if (tagtype == TAG_TYPE_MPEG4 &&
@@ -640,6 +650,36 @@ audiotagPreparePair (slist_t *tagdata, char *buff, size_t sz,
       }
     }
   }
+}
+
+
+static bool
+audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value)
+{
+  bool    rc = false;
+
+  if (bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS)) {
+    if (tagkey == TAG_SONGSTART ||
+        tagkey == TAG_SONGEND) {
+      ssize_t   val;
+
+      /* bdj3 song start/song end are stored as mm:ss.d */
+      val = atoll (value);
+      tmutilToMSD (val, tmp, sz);
+      rc = true;
+    }
+    if (tagkey == TAG_VOLUMEADJUSTPERC) {
+      double    val;
+
+      val = atof (value);
+      val *= 10;
+      /* bdj3 volume adjust percentage is stored without a decimal point */
+      snprintf (tmp, sz, "%ld", (long) val);
+      rc = true;
+    }
+  }
+
+  return rc;
 }
 
 

@@ -42,7 +42,6 @@ typedef struct {
   char                *tag;
   char                *displayname;
   tagaudiotag_t       audiotags [TAG_TYPE_MAX];
-  unsigned int        editWidth;
   tagedittype_t       editType;
   valuetype_t         valueType;
   dfConvFunc_t        convfunc;

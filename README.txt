@@ -1,5 +1,14 @@
 BDJ4 4.0.0
 
+Contents
+  Release Information
+  Installation
+  Converting BallroomDJ 3
+  Release Notes
+  Known Issues
+  Feedback
+  Licenses
+
 BallroomDJ 4 is currently under development.
 
 Alpha Release: 20220724
@@ -35,7 +44,36 @@ Installation:
       [ I have not tested with 'brew'.  That's in the future someday. ]
     b) Run the BallroomDJ 4 installer.
 
+Converting BallroomDJ 3:
+  If you have a recent version of BallroomDJ 3, and the installer is
+  able to locate your installation, the BallroomDJ 3 data files will
+  automatically be converted during the installation process.
+  The BallroomDJ 3 installation is not changed and may still be used.
+
+  If you have an older version of BallroomDJ 3, and the installer says
+  that your "BDJ3 database version is too old", use the following
+  process.  This process is set up to preserve your original BallroomDJ
+  installation and make sure it is not changed.
+    - Copy your entire BallroomDJ 3 folder to another location and/or name.
+      (e.g. BallroomDJ to BDJ3Temp)
+    - Rename the BallroomDJ shortcut on the desktop to a new name
+      (e.g. "BallroomDJ original").
+    - Download the latest version of BallroomDJ 3.
+    - Run the installer, but choose the new location as the installation
+      location.  The BallroomDJ 3 installation process will upgrade your
+      database and data files to the latest version.
+    - Delete the BallroomDJ shortcut on the desktop (it is pointing to
+      the new location).
+    - Rename the original BallroomDJ shortcut back the way it was
+      (e.g. "BallroomDJ original" to BallroomDJ).
+    - Now run the BDJ4 installation process again.  For the BallroomDJ 3
+      location, choose the new location for BallroomDJ 3.
+    - Remove the new location of BallroomDJ 3 (e.g. BDJ3Temp).  Your
+      original BallroomDJ installation is untouched and can still be used.
+
 Release Notes: 20220724
+  See the file ChangeLog.txt for a full list of changes.
+
   This release represents a working player user interface,
   the configuration user interface,
   and a partly functional management interface:
@@ -52,7 +90,8 @@ Release Notes: 20220724
 
 Known Issues:
   MacOS
-    - The windows will not de-iconify (use right-click, show all windows).
+    - The windows will not de-iconify (click and hold on the dock icon,
+      then select 'show all windows').
   Windows
     - The marquee position is not saved when it is iconified (close the
       window instead).
