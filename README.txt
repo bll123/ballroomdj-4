@@ -11,7 +11,7 @@ Contents
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 20220724
+Alpha Release: 20220728
 
   Alpha releases are mostly untested works in progress.
 
@@ -71,7 +71,7 @@ Converting BallroomDJ 3:
     - Remove the new location of BallroomDJ 3 (e.g. BDJ3Temp).  Your
       original BallroomDJ installation is untouched and can still be used.
 
-Release Notes: 20220724
+Release Notes: 20220728
   See the file ChangeLog.txt for a full list of changes.
 
   This release represents a working player user interface,
@@ -85,8 +85,9 @@ Release Notes: 20220724
       (batch editing is not implemented)
 
   This installation will not affect any BallroomDJ 3 installation.
-  (The features that rename audio files and write audio file tags are
-   not implemented yet).
+  (The features that rename audio files is not implemented yet).
+  (Writing audio file tags is turned off upon conversion, and the
+   'Write BDJ3 Compatible Audio Tags' is on).
 
 Known Issues:
   MacOS

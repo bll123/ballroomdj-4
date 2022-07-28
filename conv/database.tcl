@@ -97,25 +97,11 @@ dict for {fn data} $musicdbList {
       }
     }
 
-    # various renames from long ago
-    # volumeadjustment renamed in version 3.29
-    # this is the most recent change.
-    if { $tag eq "VOLUMEADJUSTMENT" } {
-      set tag VOLUMEADJUSTPERC
-      # would need the user's default volume to do this properly
-      # this needs fixing.  it would be better for the user to
-      # upgrade first.
-      set defvol 70
-      set nva [expr {double($value)/double($defvol)*100.0}]
-      set nva [expr {round($nva*10.0)}]
-      set value $nva
-    }
-
     if { $tag eq "VOLUMEADJUSTPERC" } {
       set value [expr {int ($value)}]
       set value [expr {double ($value) / 10.0}]
       # make sure the volume-adjust-perc has a decimal point in it.
-      set value [format {%.1f} $value]
+      set value [format {%.2f} $value]
     }
 
     if { $tag eq "SONGSTART" || $tag eq "SONGEND" } {

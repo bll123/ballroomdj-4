@@ -33,6 +33,7 @@ main (int argc, char *argv [])
   int         fidx = -1;
   tagdefkey_t tagkey;
   bool        bdj3tags = false;
+  bool        clbdj3tags = false;
   slist_t     *tagdata;
 
 
@@ -50,7 +51,7 @@ main (int argc, char *argv [])
   while ((c = getopt_long_only (argc, argv, "BCp:d:mnNRs", bdj_options, &option_index)) != -1) {
     switch (c) {
       case '3': {
-        bdj3tags = true;
+        clbdj3tags = true;
         break;
       }
       case 'B': {
@@ -76,8 +77,12 @@ main (int argc, char *argv [])
   localeInit ();
   bdjoptInit ();
   audiotagInit ();
-  /* always override the bdj3 compat flag */
-  bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, bdj3tags);
+
+  bdj3tags = bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS);
+  if (clbdj3tags) {
+    bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, clbdj3tags);
+    bdj3tags = clbdj3tags;
+  }
 
   for (int i = 1; i < argc; ++i) {
     if (strncmp (argv [i], "--", 2) == 0) {

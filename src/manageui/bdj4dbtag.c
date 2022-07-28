@@ -122,8 +122,6 @@ main (int argc, char *argv[])
   dbtag.sent = 0;
   dbtag.maxqueuelen = 0;
 
-  audiotagInit ();
-
   progstateSetCallback (dbtag.progstate, STATE_CONNECTING,
       dbtagConnectingCallback, &dbtag);
   progstateSetCallback (dbtag.progstate, STATE_WAIT_HANDSHAKE,
@@ -145,7 +143,6 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, dbtagProcessMsg, dbtagProcessing, &dbtag);
   connFree (dbtag.conn);
   progstateFree (dbtag.progstate);
-  audiotagCleanup ();
 
   logProcEnd (LOG_PROC, "dbtag", "");
   logEnd ();

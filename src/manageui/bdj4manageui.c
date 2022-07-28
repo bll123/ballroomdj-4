@@ -43,6 +43,8 @@
 #include "slist.h"
 #include "sock.h"
 #include "sockh.h"
+#include "song.h"
+#include "songdb.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
@@ -2092,6 +2094,7 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   song_t      *song = NULL;
   char        tmp [40];
 
+
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit save");
   if (manage->dbchangecount > MANAGE_DB_COUNT_SAVE) {
     dbBackup ();
@@ -2100,15 +2103,17 @@ manageSongEditSaveCallback (void *udata, long dbidx)
 
   if (manage->selusesonglist) {
     if (manage->songlistdbidx != dbidx) {
-      fprintf (stderr, "fail: incorrect dbidx (songlist)\n");
+      fprintf (stderr, "fail: incorrect dbidx (songlist %d %ld)\n", manage->songlistdbidx, dbidx);
     }
   } else {
     if (manage->seldbidx != dbidx) {
-      fprintf (stderr, "fail: incorrect dbidx (sel)\n");
+      fprintf (stderr, "fail: incorrect dbidx (sel %d %ld)\n", manage->seldbidx, dbidx);
     }
   }
+  /* this fetches the song from in-memory, which has already been updated */
   song = dbGetByIdx (manage->musicdb, dbidx);
   dbWriteSong (manage->musicdb, song);
+  songWriteAudioTags (song);
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */

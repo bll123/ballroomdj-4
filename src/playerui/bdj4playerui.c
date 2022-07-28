@@ -34,6 +34,8 @@
 #include "slist.h"
 #include "sock.h"
 #include "sockh.h"
+#include "song.h"
+#include "songdb.h"
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
@@ -1155,7 +1157,7 @@ pluiSongSaveCallback (void *udata, long dbidx)
 
   song = dbGetByIdx (plui->musicdb, dbidx);
   dbWriteSong (plui->musicdb, song);
-// ### todo write audio tags
+  songWriteAudioTags (song);
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */

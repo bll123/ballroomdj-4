@@ -175,11 +175,9 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist)
 
     value = slistGetStr (tagdata, tag);
     if (*newvalue && value == NULL) {
-fprintf (stderr, "  new value: %s\n", newvalue);
       upd = true;
     }
     if (value != NULL && *newvalue && strcmp (newvalue, value) != 0) {
-fprintf (stderr, "  chg value: /%s/%s/\n", newvalue, value);
       upd = true;
     }
     if (nlistGetNum (datalist, tagkey) == 1) {
@@ -194,7 +192,6 @@ fprintf (stderr, "  chg value: /%s/%s/\n", newvalue, value);
 
     if (upd) {
       slistSetStr (updatelist, tag, newvalue);
-fprintf (stderr, "add to upd: %s %s\n", tag, newvalue);
     }
   }
 
@@ -206,12 +203,10 @@ fprintf (stderr, "add to upd: %s %s\n", tag, newvalue);
     newvalue = slistGetStr (newtaglist, tag);
     if (newvalue == NULL) {
       slistSetNum (dellist, tag, 0);
-fprintf (stderr, "add to del: %s %s\n", tag, value);
     } else {
       value = slistGetStr (tagdata, tag);
       if (! *newvalue && *value) {
         slistSetNum (dellist, tag, 0);
-fprintf (stderr, "add to del-b: %s %s\n", tag, value);
       }
     }
   }
@@ -476,8 +471,8 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
           pC = strstr (p, ".");
           if (pC == NULL) {
             tm += atof (p);
-            tm /= 10;
-            snprintf (pbuff, sizeof (pbuff), "%.1f", tm);
+            tm /= 10.0;
+            snprintf (pbuff, sizeof (pbuff), "%.2f", tm);
             p = pbuff;
           }
         }
@@ -584,8 +579,6 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
       continue;
     }
 
-fprintf (stderr, "del: %s\n",
-tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag);
     if (tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc != NULL) {
       fprintf (ofh, "audio.delall('%s:%s')\n",
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
@@ -605,9 +598,6 @@ tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag);
 
     value = slistGetStr (updatelist, tag);
 
-fprintf (stderr, "write: %s %s\n",
-tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag,
-value);
     logMsg (LOG_DBG, LOG_DBUPDATE, "  write: %s %s",
         tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
     if (tagkey == TAG_RECORDING_ID) {
@@ -689,8 +679,6 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
     if (tagkey < 0) {
       continue;
     }
-fprintf (stderr, "pop: %s\n",
-tagdefs [tagkey].audiotags [tagtype].tag);
     fprintf (ofh, "audio.pop('%s')\n",
         tagdefs [tagkey].audiotags [tagtype].tag);
   }
@@ -704,9 +692,6 @@ tagdefs [tagkey].audiotags [tagtype].tag);
 
     value = slistGetStr (updatelist, tag);
 
-fprintf (stderr, "write: %s %s\n",
-tagdefs [tagkey].audiotags [tagtype].tag,
-value);
     logMsg (LOG_DBG, LOG_DBUPDATE, "  write: %s %s",
         tagdefs [tagkey].audiotags [tagtype].tag, value);
     if (tagtype == TAG_TYPE_MP4 &&
@@ -767,7 +752,7 @@ audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value)
       double    val;
 
       val = atof (value);
-      val *= 10;
+      val *= 10.0;
       /* bdj3 volume adjust percentage is stored without a decimal point */
       snprintf (tmp, sz, "%ld", (long) val);
       rc = true;
@@ -808,24 +793,20 @@ audiotagTagCheck (int writetags, int tagtype, const char *tag)
   tagkey = tagdefLookup (tag);
   if (tagkey < 0) {
     /* unknown tag  */
-fprintf (stdout, "unknown-tag: %s\n", tag);
-    logMsg (LOG_DBG, LOG_DBUPDATE, "unknown-tag: %s", tag);
+    //logMsg (LOG_DBG, LOG_DBUPDATE, "unknown-tag: %s", tag);
     return tagkey;
   }
   if (! tagdefs [tagkey].isNormTag && ! tagdefs [tagkey].isBDJTag) {
-fprintf (stdout, "not-written: %s\n", tag);
-    logMsg (LOG_DBG, LOG_DBUPDATE, "not-written: %s", tag);
+    //logMsg (LOG_DBG, LOG_DBUPDATE, "not-written: %s", tag);
     return -1;
   }
   if (writetags == WRITE_TAGS_BDJ_ONLY && tagdefs [tagkey].isNormTag) {
-fprintf (stdout, "bdj-only: %s\n", tag);
-    logMsg (LOG_DBG, LOG_DBUPDATE, "bdj-only: %s\n", tag);
+    //logMsg (LOG_DBG, LOG_DBUPDATE, "bdj-only: %s\n", tag);
     return -1;
   }
   if (tagdefs [tagkey].audiotags [tagtype].tag == NULL) {
     /* not a supported tag for this audio tag type */
-fprintf (stdout, "unsupported: %d %s\n", tagtype, tag);
-    logMsg (LOG_DBG, LOG_DBUPDATE, "unsupported: %s", tag);
+    //logMsg (LOG_DBG, LOG_DBUPDATE, "unsupported: %s", tag);
     return -1;
   }
 

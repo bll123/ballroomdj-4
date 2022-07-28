@@ -10,9 +10,9 @@
 #include "songfav.h"
 
 static datafilekey_t favoritedfkeys [SONG_FAVORITE_MAX] = {
+  { "",           SONG_FAVORITE_NONE,     VALUE_STR, NULL, -1 },
   { "bluestar",   SONG_FAVORITE_BLUE,     VALUE_STR, NULL, -1 },
   { "greenstar",  SONG_FAVORITE_GREEN,    VALUE_STR, NULL, -1 },
-  { "none",       SONG_FAVORITE_NONE,     VALUE_STR, NULL, -1 },
   { "orangestar", SONG_FAVORITE_ORANGE,   VALUE_STR, NULL, -1 },
   { "purplestar", SONG_FAVORITE_PURPLE,   VALUE_STR, NULL, -1 },
   { "redstar",    SONG_FAVORITE_RED,      VALUE_STR, NULL, -1 },

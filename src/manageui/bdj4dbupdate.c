@@ -177,8 +177,6 @@ main (int argc, char *argv[])
 
   dbupdate.dancefromgenre = bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE);
 
-  audiotagInit ();
-
   dbupdate.progstate = progstateInit ("dbupdate");
   progstateSetCallback (dbupdate.progstate, STATE_LISTENING,
       dbupdateListeningCallback, &dbupdate);
@@ -242,7 +240,6 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, dbupdateProcessMsg, dbupdateProcessing, &dbupdate);
   connFree (dbupdate.conn);
   progstateFree (dbupdate.progstate);
-  audiotagCleanup ();
 
   logProcEnd (LOG_PROC, "dbupdate", "");
   logEnd ();
@@ -754,6 +751,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   /* write-tags has its own processing */
   if (dbupdate->writetags) {
     dbupdateWriteTags (dbupdate, ffn, tagdata);
+    slistFree (tagdata);
     return;
   }
 

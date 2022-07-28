@@ -24,6 +24,7 @@ add_library (libbdj4 SHARED
   rating.c
   sequence.c
   song.c
+  songdb.c
   songfav.c
   songfilter.c
   songlist.c

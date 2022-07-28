@@ -10,6 +10,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdjmsg.h"
@@ -88,6 +89,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   sysvarsInit (argv[0]);
   localeInit ();
   bdjvarsInit ();
+  audiotagInit ();
 
   while ((c = getopt_long_only (argc, argv, "BCPOUWcld:p:mnNRsh", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -291,6 +293,7 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   bdjvarsdfloadCleanup ();
   bdjvarsCleanup ();
   tagdefCleanup ();
+  audiotagCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
   lockRelease (lockName (route), PATHBLD_MP_USEIDX);
   logProcEnd (LOG_PROC, "bdj4shutdown", "");

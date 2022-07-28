@@ -46,7 +46,7 @@ uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx)
   if (song != NULL) {
     songChangeFavorite (song);
     if (uisongsel->songsavecb != NULL) {
-      uiutilsCallbackHandler (uisongsel->songsavecb);
+      uiutilsCallbackLongHandler (uisongsel->songsavecb, dbidx);
     }
   }
 }

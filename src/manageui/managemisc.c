@@ -17,6 +17,9 @@
 #include "manageui.h"
 #include "pathbld.h"
 #include "playlist.h"
+#include "slist.h"
+#include "song.h"
+#include "songutil.h"
 #include "ui.h"
 #include "validate.h"
 
@@ -187,5 +190,3 @@ manageCopyPlaylistFiles (const char *oldname, const char *newname)
       newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
   filemanipCopy (onm, nnm);
 }
-
-
