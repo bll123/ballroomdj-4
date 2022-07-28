@@ -1009,7 +1009,7 @@ tagdefCleanup (void)
 }
 
 tagdefkey_t
-tagdefLookup (char *str)
+tagdefLookup (const char *str)
 {
   tagdefInit ();
 

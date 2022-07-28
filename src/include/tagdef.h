@@ -26,7 +26,7 @@ typedef enum {
 
 enum {
   TAG_TYPE_VORBIS,    // .ogg, .flac, et. al.
-  TAG_TYPE_MPEG4,     // .m4a
+  TAG_TYPE_MP4,     // .m4a
   TAG_TYPE_MP3,
   TAG_TYPE_WMA,
   TAG_TYPE_MAX,
@@ -104,6 +104,6 @@ extern tagdef_t tagdefs [TAG_KEY_MAX];
 
 void        tagdefInit (void);
 void        tagdefCleanup (void);
-tagdefkey_t tagdefLookup (char *str);
+tagdefkey_t tagdefLookup (const char *str);
 
 #endif /* INC_TAGDEF_H */

@@ -77,6 +77,7 @@ enum {
   C_IN_DB,
   C_NEW,
   C_UPDATED,
+  C_WRITE_TAGS,
   C_BAD,
   C_NON_AUDIO,
   C_BDJ_SKIP,
@@ -95,7 +96,7 @@ typedef struct {
   int               startflags;
   int               state;
   musicdb_t         *musicdb;
-  musicdb_t         *nmusicdb;
+  musicdb_t         *newmusicdb;
   char              *musicdir;
   size_t            musicdirlen;
   char              *dbtopdir;
@@ -136,9 +137,10 @@ static bool     dbupdateStoppingCallback (void *tdbupdate, programstate_t progra
 static bool     dbupdateStopWaitCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateClosingCallback (void *tdbupdate, programstate_t programState);
 static void     dbupdateProcessTagData (dbupdate_t *dbupdate, char *args);
+static void     dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
 static void     dbupdateSigHandler (int sig);
 static void     dbupdateOutputProgress (dbupdate_t *dbupdate);
-static char *   dbupdateGetRelativePath (dbupdate_t *dbupdate, char *fn);
+static const char *dbupdateGetRelativePath (dbupdate_t *dbupdate, const char *fn);
 static bool     checkOldDirList (dbupdate_t *dbupdate, const char *fn);
 
 static int  gKillReceived = 0;
@@ -153,7 +155,7 @@ main (int argc, char *argv[])
 
   dbupdate.state = DB_UPD_INIT;
   dbupdate.musicdb = NULL;
-  dbupdate.nmusicdb = NULL;
+  dbupdate.newmusicdb = NULL;
   for (int i = 0; i < C_MAX; ++i) {
     dbupdate.counts [i] = 0;
   }
@@ -333,9 +335,9 @@ dbupdateProcessing (void *udata)
       pathbldMakePath (tbuff, sizeof (tbuff),
           MUSICDB_TMP_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
       fileopDelete (tbuff);
-      dbupdate->nmusicdb = dbOpen (tbuff);
-      assert (dbupdate->nmusicdb != NULL);
-      dbStartBatch (dbupdate->nmusicdb);
+      dbupdate->newmusicdb = dbOpen (tbuff);
+      assert (dbupdate->newmusicdb != NULL);
+      dbStartBatch (dbupdate->newmusicdb);
     } else {
       dbStartBatch (dbupdate->musicdb);
     }
@@ -355,7 +357,7 @@ dbupdateProcessing (void *udata)
     dbupdate->musicdirlen = strlen (dbupdate->musicdir);
     dbupdate->dbtopdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
     tstr = bdjvarsGetStr (BDJV_DB_TOP_DIR);
-    if (tstr != NULL && *tstr) {
+    if (strcmp (tstr, dbupdate->musicdir) != 0) {
       dbupdate->usingmusicdir = false;
       dbupdate->dbtopdir = tstr;
     }
@@ -418,13 +420,12 @@ dbupdateProcessing (void *udata)
         continue;
       }
 
-
       /* check to see if the audio file is already in the database */
       /* this is done for all modes except for rebuild */
       /* 'checknew' skips any processing for an audio file */
       /* that is already present */
       if (! dbupdate->rebuild && fn != NULL) {
-        char  *p;
+        const char  *p;
 
         p = dbupdateGetRelativePath (dbupdate, fn);
         if (dbGetByName (dbupdate->musicdb, p) != NULL) {
@@ -494,9 +495,9 @@ dbupdateProcessing (void *udata)
         MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
 
     if (dbupdate->newdatabase) {
-      dbEndBatch (dbupdate->nmusicdb);
-      dbClose (dbupdate->nmusicdb);
-      dbupdate->nmusicdb = NULL;
+      dbEndBatch (dbupdate->newmusicdb);
+      dbClose (dbupdate->newmusicdb);
+      dbupdate->newmusicdb = NULL;
       /* rename the database file */
       filemanipMove (tbuff, dbfname);
     } else {
@@ -515,9 +516,15 @@ dbupdateProcessing (void *udata)
     /* CONTEXT: database update: status message: new files saved to the database */
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("New Files"), dbupdate->counts [C_NEW]);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
-    if (! dbupdate->rebuild) {
+    if (! dbupdate->rebuild && ! dbupdate->writetags) {
       /* CONTEXT: database update: status message: number of files updated in the database */
       snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Updated"), dbupdate->counts [C_UPDATED]);
+      connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+    }
+    if (dbupdate->writetags) {
+      /* re-use the 'Updated' label for write-tags */
+      /* CONTEXT: database update: status message: number of files updated */
+      snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Updated"), dbupdate->counts [C_WRITE_TAGS]);
       connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     }
     /* CONTEXT: database update: status message: other files that cannot be processed */
@@ -540,6 +547,7 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "    in-db: %u", dbupdate->counts [C_IN_DB]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %u", dbupdate->counts [C_NEW]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  updated: %u", dbupdate->counts [C_UPDATED]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "write-tag: %u", dbupdate->counts [C_WRITE_TAGS]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %u", dbupdate->counts [C_BAD]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %u", dbupdate->counts [C_NULL_DATA]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %u", dbupdate->counts [C_NO_TAGS]);
@@ -681,8 +689,8 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
   logProcBegin (LOG_PROC, "dbupdateClosingCallback");
 
   bdj4shutdown (ROUTE_DBUPDATE, dbupdate->musicdb);
-  if (dbupdate->nmusicdb != NULL) {
-    dbClose (dbupdate->nmusicdb);
+  if (dbupdate->newmusicdb != NULL) {
+    dbClose (dbupdate->newmusicdb);
   }
 
   procutilStopAllProcess (dbupdate->processes, dbupdate->conn, true);
@@ -705,7 +713,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
 {
   slist_t   *tagdata;
   char      *ffn;
-  char      *dbfname;
+  const char *dbfname;
   char      *data;
   char      *tokstr;
   slistidx_t orgiteridx;
@@ -740,6 +748,12 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     logMsg (LOG_DBG, LOG_DBUPDATE, "  no tags");
     IncCount (C_NO_TAGS);
     IncCount (C_FILE_PROC);
+    return;
+  }
+
+  /* write-tags has its own processing */
+  if (dbupdate->writetags) {
+    dbupdateWriteTags (dbupdate, ffn, tagdata);
     return;
   }
 
@@ -778,7 +792,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   logMsg (LOG_DBG, LOG_DBUPDATE, "regex-parse:");
   orgStartIterator (dbupdate->org, &orgiteridx);
   while ((tagkey = orgIterateTagKey (dbupdate->org, &orgiteridx)) >= 0) {
-    char  *relfname;
+    const char  *relfname;
 
     val = slistGetStr (tagdata, tagdefs [tagkey].tag);
     if (val != NULL && *val) {
@@ -817,7 +831,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   /* the dbWrite() procedure will set the FILE tag */
   currdb = dbupdate->musicdb;
   if (dbupdate->newdatabase) {
-    currdb = dbupdate->nmusicdb;
+    currdb = dbupdate->newmusicdb;
   }
   len = dbWrite (currdb, dbfname, tagdata, rrn);
   if (rrn == MUSICDB_ENTRY_NEW) {
@@ -831,6 +845,35 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
 
   slistFree (tagdata);
   IncCount (C_FILE_PROC);
+}
+
+static void
+dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
+{
+  const char  *dbfname;
+  song_t      *song;
+  slist_t     *newtaglist;
+
+  if (ffn == NULL) {
+    return;
+  }
+
+  dbfname = ffn;
+  if (dbupdate->usingmusicdir) {
+    dbfname = dbupdateGetRelativePath (dbupdate, ffn);
+  }
+  song = dbGetByName (dbupdate->musicdb, dbfname);
+  if (song == NULL) {
+    IncCount (C_FILE_PROC);
+    return;
+  }
+
+  newtaglist = songTagList (song);
+  audiotagWriteTags (ffn, tagdata, newtaglist);
+  slistFree (tagdata);
+  slistFree (newtaglist);
+  IncCount (C_FILE_PROC);
+  IncCount (C_WRITE_TAGS);
 }
 
 static void
@@ -869,10 +912,10 @@ dbupdateOutputProgress (dbupdate_t *dbupdate)
   connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, tbuff);
 }
 
-static char *
-dbupdateGetRelativePath (dbupdate_t *dbupdate, char *fn)
+static const char *
+dbupdateGetRelativePath (dbupdate_t *dbupdate, const char *fn)
 {
-  char    *p;
+  const char  *p;
 
   p = fn;
   if (strncmp (fn, dbupdate->dbtopdir, dbupdate->dbtopdirlen) == 0) {

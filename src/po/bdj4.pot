@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-24 10:23-0700\n"
+"POT-Creation-Date: 2022-07-28 11:05-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1368,12 +1368,6 @@ msgid ""
 "database will be lost."
 msgstr ""
 
-#. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Replaces the information in the BallroomDJ database with the audio file tag "
-"information."
-msgstr ""
-
 #. CONTEXT: configuration: display settings for: requests
 #. CONTEXT: playerui: name of request tab : lists the songs in the database
 msgid "Request"
@@ -1735,13 +1729,13 @@ msgid "Update from Audio File Tags"
 msgstr ""
 
 #. CONTEXT: database update: status message: number of files updated in the database
+#. CONTEXT: database update: status message: number of files updated
 msgid "Updated"
 msgstr ""
 
-#. CONTEXT: database update: write tags to audio files: help text
+#. CONTEXT: database update: update from audio file tags: help text
 msgid ""
-"Updates the audio file tags with the information from the BallroomDJ "
-"database."
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr ""
 
 #. CONTEXT: set up alternate: status message
@@ -1822,6 +1816,12 @@ msgstr ""
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
 msgid "Write Tags to Audio Files"
+msgstr ""
+
+#. CONTEXT: database update: write tags to audio files: help text
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr ""
 
 #. CONTEXT: The name of the 'automatic' playlist file

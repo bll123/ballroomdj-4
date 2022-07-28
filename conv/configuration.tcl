@@ -291,6 +291,9 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..#ffa600"
         puts $ofh UI_ERROR_COL
         puts $ofh "..#ff2222"
+        puts $ofh UI_MARK_COL
+        puts $ofh "..#2222ff"
+
         set col "#ffa600"
         if { $sfx ne ".txt" } {
           set col [mkrandcolor]

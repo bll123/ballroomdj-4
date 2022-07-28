@@ -85,12 +85,12 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
   nlistSetStr (tlist, MANAGE_DB_UPD_FROM_TAGS, _("Update from Audio File Tags"));
   nlistSetStr (hlist, MANAGE_DB_UPD_FROM_TAGS,
       /* CONTEXT: database update: update from audio file tags: help text */
-      _("Replaces the information in the BallroomDJ database with the audio file tag information."));
+      _("Updates the information in the BallroomDJ database from the audio file tags."));
   /* CONTEXT: database update: writes the tags in the database to the audio files */
   nlistSetStr (tlist, MANAGE_DB_WRITE_TAGS, _("Write Tags to Audio Files"));
   nlistSetStr (hlist, MANAGE_DB_WRITE_TAGS,
       /* CONTEXT: database update: write tags to audio files: help text */
-      _("Updates the audio file tags with the information from the BallroomDJ database."));
+      _("Writes the audio file tags using the information from the BallroomDJ database."));
   /* CONTEXT: database update: rebuilds the database */
   nlistSetStr (tlist, MANAGE_DB_REBUILD, _("Rebuild Database"));
   nlistSetStr (hlist, MANAGE_DB_REBUILD,

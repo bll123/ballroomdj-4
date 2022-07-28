@@ -1,11 +1,11 @@
-# == Türkçe‬
+# == Türkçe
 # -- turkish
 msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-07-24\n"
-"PO-Revision-Date: 2022-07-24 13:48\n"
+"PO-Revision-Date: 2022-07-28\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -942,7 +942,8 @@ msgid "Marquee Theme"
 msgstr "Temayı seçin"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Maksimum oynatma süresi"
 
@@ -1364,12 +1365,10 @@ msgid "Repeat"
 msgstr "Tekrarla"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
-msgstr "BallroomDJ veritabanını bütünüyle değiştirir. Veritabanındaki tüm değişiklikler kaybolacaktır."
-
-#. CONTEXT: database update: update from audio file tags: help text
-msgid "Replaces the information in the BallroomDJ database with the audio file tag information."
-msgstr "BallroomDJ veritabanındaki bilgileri ses dosyası etiketli bilgileriyle değiştirir."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
+msgstr ""
 
 #. CONTEXT: configuration: display settings for: requests
 #. CONTEXT: playerui: name of request tab : lists the songs in the database
@@ -1648,12 +1647,16 @@ msgid "The conversion process will not be run."
 msgstr ""
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr ""
 
 #. CONTEXT: installer: command line interface: instructions
 #, c-format
-msgid "The conversion process will only run for new installations and for re-installs."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installs."
 msgstr ""
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1728,11 +1731,13 @@ msgid "Update from Audio File Tags"
 msgstr ""
 
 #. CONTEXT: database update: status message: number of files updated in the database
+#. CONTEXT: database update: status message: number of files updated
 msgid "Updated"
 msgstr ""
 
-#. CONTEXT: database update: write tags to audio files: help text
-msgid "Updates the audio file tags with the information from the BallroomDJ database."
+#. CONTEXT: database update: update from audio file tags: help text
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr ""
 
 #. CONTEXT: set up alternate: status message
@@ -1813,6 +1818,12 @@ msgstr ""
 
 #. CONTEXT: database update: writes the tags in the database to the audio files
 msgid "Write Tags to Audio Files"
+msgstr ""
+
+#. CONTEXT: database update: write tags to audio files: help text
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr ""
 
 #. CONTEXT: The name of the 'automatic' playlist file

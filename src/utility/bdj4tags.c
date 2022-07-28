@@ -12,6 +12,7 @@
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdjopt.h"
+#include "fileop.h"
 #include "localeutil.h"
 #include "slist.h"
 #include "sysvars.h"
@@ -21,7 +22,6 @@ int
 main (int argc, char *argv [])
 {
   char        *data;
-  slist_t     *list;
   slist_t     *wlist;
   slistidx_t  iteridx;
   char        *key;
@@ -33,6 +33,8 @@ main (int argc, char *argv [])
   int         fidx = -1;
   tagdefkey_t tagkey;
   bool        bdj3tags = false;
+  slist_t     *tagdata;
+
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
@@ -85,7 +87,24 @@ main (int argc, char *argv [])
     break;
   }
 
-  wlist = slistAlloc ("write-tags", LIST_ORDERED, free);
+  if (! fileopFileExists (argv [fidx])) {
+    fprintf (stderr, "no file %s\n", argv [fidx]);
+    bdjoptFree ();
+    audiotagCleanup ();
+    exit (1);
+  }
+
+  data = audiotagReadTags (argv [fidx]);
+  tagdata = audiotagParseData (argv [fidx], data);
+
+  wlist = slistAlloc ("bdj4tags-write", LIST_ORDERED, free);
+  /* need a copy of the tag list for the write */
+  slistStartIterator (tagdata, &iteridx);
+  while ((key = slistIterateKey (tagdata, &iteridx)) != NULL) {
+    val = slistGetStr (tagdata, key);
+    slistSetStr (wlist, key, val);
+  }
+
   for (int i = fidx + 1; i < argc; ++i) {
     char    *p;
     char    *tokstr;
@@ -101,24 +120,25 @@ main (int argc, char *argv [])
     }
   }
   if (slistGetCount (wlist) > 0) {
-    audiotagWriteTags (argv [fidx], wlist);
+    audiotagWriteTags (argv [fidx], tagdata, wlist);
+  }
+  slistFree (tagdata);
+
+  /* output the tags after writing the new ones */
+  if (rawdata) {
+    data = audiotagReadTags (argv [fidx]);
+    fprintf (stdout, "%s\n", data);
+  }
+
+//  fprintf (stdout, "-- %s\n", argv [fidx]);
+  slistStartIterator (wlist, &iteridx);
+  while ((key = slistIterateKey (wlist, &iteridx)) != NULL) {
+    val = slistGetStr (wlist, key);
+    fprintf (stdout, "%-20s %s\n", key, val);
   }
   slistFree (wlist);
 
-  /* output the tags after writing the new ones */
-  data = audiotagReadTags (argv [fidx]);
-//  fprintf (stdout, "-- %s\n", argv [fidx]);
-  if (rawdata) {
-    fprintf (stdout, "%s\n", data);
-  }
-  list = audiotagParseData (argv [fidx], data);
-  slistStartIterator (list, &iteridx);
-  while ((key = slistIterateKey (list, &iteridx)) != NULL) {
-    val = slistGetStr (list, key);
-    fprintf (stdout, "%-20s %s\n", key, val);
-  }
-  slistFree (list);
-
+  bdjoptFree ();
   audiotagCleanup ();
   return 0;
 }

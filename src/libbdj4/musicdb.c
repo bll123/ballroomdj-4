@@ -217,7 +217,7 @@ dbEndBatch (musicdb_t *musicdb)
 }
 
 song_t *
-dbGetByName (musicdb_t *musicdb, char *songname)
+dbGetByName (musicdb_t *musicdb, const char *songname)
 {
   song_t *song = slistGetData (musicdb->songs, songname);
   return song;
@@ -250,7 +250,7 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
 }
 
 size_t
-dbWrite (musicdb_t *musicdb, char *fn, slist_t *tagList, dbidx_t rrn)
+dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
 {
   slistidx_t    iteridx;
   char          *tag;
