@@ -229,6 +229,7 @@ main (int argc, char *argv[])
   uiSetUIFont (uifont);
 
   pluiBuildUI (&plui);
+  osuiFinalize ();
 
   /* register these after calling the sub-window initialization */
   /* then these will be run last, after the other closing callbacks */

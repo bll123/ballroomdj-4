@@ -209,6 +209,8 @@ main (int argc, char *argv[])
   uiSetUIFont (mqfont);
 
   marqueeBuildUI (&marquee);
+  osuiFinalize ();
+
   sockhMainLoop (listenPort, marqueeProcessMsg, marqueeMainLoop, &marquee);
   connFree (marquee.conn);
   progstateFree (marquee.progstate);

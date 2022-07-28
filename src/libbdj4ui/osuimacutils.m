@@ -26,4 +26,11 @@ osuiSetIcon (char *fname)
   [image release];
 }
 
+void
+osuiFinalize (void)
+{
+  [NSApp finishLaunching];
+  return;
+}
+
 #endif /* __APPLE__ */

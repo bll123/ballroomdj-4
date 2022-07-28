@@ -380,6 +380,7 @@ main (int argc, char *argv[])
 
   if (installer.guienabled) {
     installerBuildUI (&installer);
+    osuiFinalize ();
     /* to get initial feedback messages displayed */
     installerValidateProcessTarget (&installer, installer.target);
   } else {

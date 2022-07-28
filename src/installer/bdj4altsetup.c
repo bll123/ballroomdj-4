@@ -159,6 +159,7 @@ main (int argc, char *argv[])
   uiSetUIFont (uifont);
 
   altsetupBuildUI (&altsetup);
+  osuiFinalize ();
 
   while (altsetup.instState != ALT_EXIT) {
     altsetupMainLoop (&altsetup);

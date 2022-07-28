@@ -184,6 +184,8 @@ main (int argc, char *argv[])
   uiSetUIFont (uifont);
 
   bpmcounterBuildUI (&bpmcounter);
+  osuiFinalize ();
+
   sockhMainLoop (listenPort, bpmcounterProcessMsg, bpmcounterMainLoop, &bpmcounter);
   connFree (bpmcounter.conn);
   progstateFree (bpmcounter.progstate);

@@ -14,7 +14,13 @@
 inline void
 osuiSetIcon (char *fname)
 {
+  return;
+}
 
+void
+osuiFinalize (void)
+{
+  return;
 }
 
 #endif

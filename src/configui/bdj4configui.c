@@ -818,6 +818,8 @@ main (int argc, char *argv[])
   uiSetUIFont (uifont);
 
   confuiBuildUI (&confui);
+  osuiFinalize ();
+
   sockhMainLoop (listenPort, confuiProcessMsg, confuiMainLoop, &confui);
   connFree (confui.conn);
   progstateFree (confui.progstate);

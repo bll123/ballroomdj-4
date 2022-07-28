@@ -380,6 +380,7 @@ main (int argc, char *argv[])
   uiSetUIFont (uifont);
 
   manageBuildUI (&manage);
+  osuiFinalize ();
 
   /* will be propagated */
   uisongselSetDefaultSelection (manage.slsongsel);

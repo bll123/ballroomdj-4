@@ -274,6 +274,7 @@ main (int argc, char *argv[])
   uiSetUIFont (uifont);
 
   starterBuildUI (&starter);
+  osuiFinalize ();
 
   while (! gStopProgram) {
     long loglevel;

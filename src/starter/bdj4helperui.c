@@ -113,6 +113,8 @@ main (int argc, char *argv[])
   uiSetUIFont (uifont);
 
   helperBuildUI (&helper);
+  osuiFinalize ();
+
   helpDisplay (&helper);
   sockhMainLoop (listenPort, helperProcessMsg, helperMainLoop, &helper);
   connFree (helper.conn);
