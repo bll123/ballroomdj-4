@@ -174,10 +174,11 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist)
     newvalue = slistGetStr (newtaglist, tag);
 
     value = slistGetStr (tagdata, tag);
-    if (*newvalue && value == NULL) {
+    if (newvalue != NULL && *newvalue && value == NULL) {
       upd = true;
     }
-    if (value != NULL && *newvalue && strcmp (newvalue, value) != 0) {
+    if (newvalue != NULL && value != NULL &&
+        *newvalue && strcmp (newvalue, value) != 0) {
       upd = true;
     }
     if (nlistGetNum (datalist, tagkey) == 1) {

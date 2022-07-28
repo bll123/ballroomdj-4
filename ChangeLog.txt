@@ -2,20 +2,23 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-07-28
 
-- database update
-  - fixed incorrect processing of music folder.
-  - write audio file tags.
-- installer : change database version check to be at least version 9.
-- bdj3 conversion : fix missing mark color item.
-- bdj4tags : add ability to write tags.
-- song editor
-  - write audio file tags.
+- installer
+  - change database version check to be at least version 9
+    (due to volume-adjust-percentage).
+- bdj3 conversion: fix missing mark color item.
+- song editor: write audio file tags.
 - management ui
   - favorite
     - write audio file tags.
     - fix save from song selection.
+    - fix save from music manager.
+  - database update
+    - fixed incorrect processing of music folder.
+    - write audio file tags.
 - player ui
-  - favorite : write audio file tags.
+  - favorite: write audio file tags.
+- bdj4tags
+  - add ability to write tags.
 
 4.0.0 alpha 2022-7-24
 

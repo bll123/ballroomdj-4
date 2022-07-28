@@ -63,6 +63,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->queuecb = NULL;
   uisongsel->playcb = NULL;
   uisongsel->editcb = NULL;
+  uisongsel->songsavecb = NULL;
   uisongsel->songlistdbidxlist = NULL;
   uisongsel->samesonglist = slistAlloc ("samesong-list", LIST_ORDERED, free);
 

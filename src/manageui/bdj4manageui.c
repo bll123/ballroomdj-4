@@ -736,6 +736,7 @@ manageInitializeUI (manageui_t *manage)
   uisongeditSetSaveCallback (manage->mmsongedit, &manage->callbacks [MANAGE_CB_SAVE]);
   uisongselSetSongSaveCallback (manage->slsongsel, &manage->callbacks [MANAGE_CB_SAVE]);
   uisongselSetSongSaveCallback (manage->slezsongsel, &manage->callbacks [MANAGE_CB_SAVE]);
+  uisongselSetSongSaveCallback (manage->mmsongsel, &manage->callbacks [MANAGE_CB_SAVE]);
   uimusicqSetSongSaveCallback (manage->slmusicq, &manage->callbacks [MANAGE_CB_SAVE]);
   uimusicqSetSongSaveCallback (manage->slezmusicq, &manage->callbacks [MANAGE_CB_SAVE]);
 }
@@ -2127,8 +2128,10 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   uisongselPopulateData (manage->mmsongsel);
   manage->selbypass = 0;
 
-  /* if write-tags is not 'none', write the tags to the audio file */
-  // ### TODO
+  /* re-load the song */
+  /* it is unknown if called from saving a favorite or from the song editor */
+  /* the overhead is minor */
+  uisongeditLoadData (manage->mmsongedit, song, dbidx);
 
   ++manage->dbchangecount;
 

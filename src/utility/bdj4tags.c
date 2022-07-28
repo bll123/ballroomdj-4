@@ -139,7 +139,9 @@ main (int argc, char *argv [])
   slistStartIterator (wlist, &iteridx);
   while ((key = slistIterateKey (wlist, &iteridx)) != NULL) {
     val = slistGetStr (wlist, key);
-    fprintf (stdout, "%-20s %s\n", key, val);
+    if (val != NULL) {
+      fprintf (stdout, "%-20s %s\n", key, val);
+    }
   }
   slistFree (wlist);
 
