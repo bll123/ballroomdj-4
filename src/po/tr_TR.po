@@ -1202,7 +1202,7 @@ msgstr "Oynatma Listesi Türü"
 
 #. CONTEXT: installer: status message
 msgid "Please wait…"
-msgstr ""
+msgstr "Lütfen bekleyin…"
 
 #. CONTEXT: configuration file: rating
 msgid "Poor"
