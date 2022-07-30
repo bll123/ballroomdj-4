@@ -888,16 +888,21 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
     if (! found) {
       strlcpy (tbuff, dir, sizeof (tbuff));
       installerCheckAndFixTarget (tbuff, sizeof (tbuff));
-      uiEntrySetValue (installer->targetEntry, tbuff);
       exists = fileopIsDirectory (tbuff);
       if (exists) {
+        /* cannot set the display, as the user may be typing */
+        installerSetTargetDir (installer, tbuff);
         found = installerCheckTarget (installer, tbuff);
       }
+    } else {
+      installerSetTargetDir (installer, dir);
     }
   } else {
     strlcpy (tbuff, dir, sizeof (tbuff));
     installerCheckAndFixTarget (tbuff, sizeof (tbuff));
-    uiEntrySetValue (installer->targetEntry, tbuff);
+    found = installerCheckTarget (installer, tbuff);
+    /* cannot set the display, as the user may be typing */
+    installerSetTargetDir (installer, tbuff);
   }
 
   if (exists) {
@@ -1108,7 +1113,7 @@ installerCheckTarget (installer_t *installer, const char *dir)
 static void
 installerSetPaths (installer_t *installer)
 {
-  installerSetTargetDir (installer, uiEntryGetValue (installer->targetEntry));
+  /* the target dir should already be set by the validation process */
   installerSetBDJ3LocDir (installer, uiEntryGetValue (installer->bdj3locEntry));
   installerDisplayConvert (installer);
 }
@@ -1267,31 +1272,13 @@ static void
 installerSaveTargetDir (installer_t *installer)
 {
   char        tbuff [MAXPATHLEN];
-  char        nfn [MAXPATHLEN];
-  pathinfo_t  *pi;
-  int         rc;
   FILE        *fh;
-  const char  *nm;
-
-  nm = BDJ4_NAME;
-  if (isMacOS ()) {
-    nm = BDJ4_MACOS_DIR;
-  }
 
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Saving install location."), false);
 
   installerGetTargetSaveFname (installer, tbuff, sizeof (tbuff));
-
-  strlcpy (nfn, installer->target, sizeof (nfn));
-  pi = pathInfo (nfn);
-  rc = strncmp (pi->filename, nm, pi->flen) == 0 &&
-      pi->flen == strlen (nm);
-  if (! rc) {
-    snprintf (nfn, sizeof (nfn), "%s/%s", installer->target, nm);
-  }
-  pathInfoFree (pi);
-  uiEntrySetValue (installer->targetEntry, nfn);
+  uiEntrySetValue (installer->targetEntry, installer->target);
 
   fh = fileopOpen (tbuff, "w");
   if (fh != NULL) {
@@ -2675,6 +2662,7 @@ installerCheckAndFixTarget (char *buff, size_t sz)
   rc = strncmp (pi->filename, nm, pi->flen) == 0 &&
       pi->flen == strlen (nm);
   if (! rc) {
+    stringTrimChar (buff, '/');
     strlcat (buff, "/", sz);
     strlcat (buff, nm, sz);
   }
