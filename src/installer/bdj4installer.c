@@ -95,6 +95,9 @@ enum {
 #define INST_DISP_STATUS "   "
 #define INST_DISP_ERROR "** "
 
+#define BDJ4_MACOS_DIR    "BDJ4.app"
+#define MACOS_PREFIX      "/Contents/MacOS"
+
 typedef struct {
   installstate_t  instState;
   UICallback      callbacks [INST_CALLBACK_MAX];
@@ -120,6 +123,7 @@ typedef struct {
   slist_t         *convlist;
   slistidx_t      convidx;
   UIWidget        window;
+  UIWidget        statusMsg;
   uientry_t       *targetEntry;
   UIWidget        reinstWidget;
   UICallback      reinstcb;
@@ -265,6 +269,7 @@ main (int argc, char *argv[])
   installer.inSetConvert = false;
   installer.uiBuilt = false;
   installer.scrolltoend = false;
+  uiutilsUIWidgetInit (&installer.statusMsg);
   uiutilsUIWidgetInit (&installer.reinstWidget);
   uiutilsUIWidgetInit (&installer.feedbackMsg);
   uiutilsUIWidgetInit (&installer.convFeedbackMsg);
@@ -437,6 +442,15 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (&vbox);
   uiWidgetExpandVert (&vbox);
   uiBoxPackInWindow (&installer->window, &vbox);
+
+  uiCreateHorizBox (&hbox);
+  uiWidgetExpandHoriz (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+
+  uiCreateLabel (&installer->statusMsg, "");
+  uiWidgetAlignHorizEnd (&installer->statusMsg);
+  uiLabelSetColor (&installer->statusMsg, INST_HL_COLOR);
+  uiBoxPackEndExpand (&hbox, &installer->statusMsg);
 
   uiCreateLabel (&uiwidget,
       /* CONTEXT: installer: where BDJ4 gets installed */
@@ -855,13 +869,39 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
   bool          exists = false;
   char          tbuff [MAXPATHLEN];
   int           rc = UIENTRY_OK;
+  bool          found = false;
+
+  /* base possibilities: */
+  /*  a) exists, has a bdj4 installation (r/u) */
+  /*  b) exists, no bdj4, append bdj4-name, has bdj4 installation (r/u) */
+  /*  c) exists, no bdj4, append bdj4-name, no bdj4 (f) */
+  /*  d) does not exist, append bdj4-name (n) */
+  /* r/u = re-install/update */
+  /* f = fail */
+  /* n = new */
+  /* in cases b, c, and d the bdj4-name should be appended */
 
   exists = fileopIsDirectory (dir);
 
   if (exists) {
-    exists = installerCheckTarget (installer, dir);
+    found = installerCheckTarget (installer, dir);
+    if (! found) {
+      strlcpy (tbuff, dir, sizeof (tbuff));
+      installerCheckAndFixTarget (tbuff, sizeof (tbuff));
+      uiEntrySetValue (installer->targetEntry, tbuff);
+      exists = fileopIsDirectory (tbuff);
+      if (exists) {
+        found = installerCheckTarget (installer, tbuff);
+      }
+    }
+  } else {
+    strlcpy (tbuff, dir, sizeof (tbuff));
+    installerCheckAndFixTarget (tbuff, sizeof (tbuff));
+    uiEntrySetValue (installer->targetEntry, tbuff);
+  }
 
-    if (exists) {
+  if (exists) {
+    if (found) {
       if (installer->reinstall) {
         /* CONTEXT: installer: message indicating the action that will be taken */
         snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
@@ -879,7 +919,8 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
       installerSetConvert (installer, FALSE);
       rc = UIENTRY_ERROR;
     }
-  } else {
+  }
+  if (! exists) {
     /* CONTEXT: installer: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
     uiLabelSetText (&installer->feedbackMsg, tbuff);
@@ -940,14 +981,13 @@ installerTargetDirDialog (void *udata)
   selectdata = uiDialogCreateSelect (&installer->window,
       /* CONTEXT: installer: dialog title for selecting install location */
       _("Install Location"),
-      uiEntryGetValue (installer->targetEntry), NULL, NULL, NULL);
+      uiEntryGetValue (installer->targetEntry),
+      NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     char        tbuff [MAXPATHLEN];
 
     strlcpy (tbuff, fn, sizeof (tbuff));
-    installerCheckAndFixTarget (tbuff, sizeof (tbuff));
-    /* validation gets called again upon set */
     uiEntrySetValue (installer->targetEntry, tbuff);
     free (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", installer->target);
@@ -1049,21 +1089,12 @@ installerCheckTarget (installer_t *installer, const char *dir)
   char        tbuff [MAXPATHLEN];
   bool        exists;
 
+  /* setrundir includes the macos prefix */
   installerSetrundir (installer, dir);
 
   snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4%s",
       installer->rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
   exists = fileopFileExists (tbuff);
-
-  if (! exists) {
-    snprintf (tbuff, sizeof (tbuff), "%s/%s/bin/bdj4%s",
-        dir, BDJ4_NAME, sysvarsGetStr (SV_OS_EXEC_EXT));
-    exists = fileopFileExists (tbuff);
-    if (exists) {
-      snprintf (tbuff, sizeof (tbuff), "%s/%s", dir, BDJ4_NAME);
-      installerSetrundir (installer, tbuff);
-    }
-  }
 
   if (exists) {
     installer->newinstall = false;
@@ -1090,7 +1121,8 @@ installerVerifyInstInit (installer_t *installer)
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Verifying installation."), false);
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait..."), false);
+  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait\xe2\x80\xa6"), false);
+  uiLabelSetText (&installer->statusMsg, _("Please wait\xe2\x80\xa6"));
 
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
@@ -1123,6 +1155,7 @@ installerVerifyInstall (installer_t *installer)
     osProcessPipe (targv, OS_PROC_DETACH, tmp, sizeof (tmp));
   }
 
+  uiLabelSetText (&installer->statusMsg, "");
   if (strncmp (tmp, "OK", 2) == 0) {
     /* CONTEXT: installer: status message */
     installerDisplayText (installer, INST_DISP_STATUS, _("Verification complete."), false);
@@ -1138,6 +1171,7 @@ static void
 installerInstInit (installer_t *installer)
 {
   bool        exists = false;
+  bool        found = false;
   char        tbuff [MAXPATHLEN];
 
   if (installer->guienabled) {
@@ -1170,9 +1204,9 @@ installerInstInit (installer_t *installer)
 
   exists = fileopIsDirectory (installer->target);
   if (exists) {
-    exists = installerCheckTarget (installer, installer->target);
+    found = installerCheckTarget (installer, installer->target);
 
-    if (exists && ! installer->guienabled) {
+    if (found && ! installer->guienabled) {
       printf ("\n");
       if (installer->reinstall) {
         /* CONTEXT: installer: command line interface: indicating action */
@@ -1204,7 +1238,7 @@ installerInstInit (installer_t *installer)
       }
     }
 
-    if (! exists) {
+    if (! found) {
       /* CONTEXT: installer: command line interface: indicating action */
       printf (_("New %s installation."), BDJ4_NAME);
 
@@ -1237,6 +1271,12 @@ installerSaveTargetDir (installer_t *installer)
   pathinfo_t  *pi;
   int         rc;
   FILE        *fh;
+  const char  *nm;
+
+  nm = BDJ4_NAME;
+  if (isMacOS ()) {
+    nm = BDJ4_MACOS_DIR;
+  }
 
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Saving install location."), false);
@@ -1245,10 +1285,10 @@ installerSaveTargetDir (installer_t *installer)
 
   strlcpy (nfn, installer->target, sizeof (nfn));
   pi = pathInfo (nfn);
-  rc = strncmp (pi->filename, BDJ4_NAME, pi->flen) == 0 &&
-      pi->flen == strlen (BDJ4_NAME);
+  rc = strncmp (pi->filename, nm, pi->flen) == 0 &&
+      pi->flen == strlen (nm);
   if (! rc) {
-    snprintf (nfn, sizeof (nfn), "%s/%s", installer->target, BDJ4_NAME);
+    snprintf (nfn, sizeof (nfn), "%s/%s", installer->target, nm);
   }
   pathInfoFree (pi);
   uiEntrySetValue (installer->targetEntry, nfn);
@@ -1327,7 +1367,8 @@ installerCopyStart (installer_t *installer)
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Copying files."), false);
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait..."), false);
+  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait\xe2\x80\xa6"), false);
+  uiLabelSetText (&installer->statusMsg, _("Please wait\xe2\x80\xa6"));
 
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
@@ -1358,6 +1399,7 @@ installerCopyFiles (installer_t *installer)
   }
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
   system (tbuff);
+  uiLabelSetText (&installer->statusMsg, "");
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_STATUS, _("Copy finished."), false);
   installer->instState = INST_CHDIR;
@@ -1939,7 +1981,8 @@ installerVLCDownload (installer_t *installer)
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "VLC");
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     /* CONTEXT: installer: status message */
-    installerDisplayText (installer, INST_DISP_STATUS, _("Please wait..."), false);
+    installerDisplayText (installer, INST_DISP_STATUS, _("Please wait\xe2\x80\xa6"), false);
+    uiLabelSetText (&installer->statusMsg, _("Please wait\xe2\x80\xa6"));
     installer->instState = INST_VLC_INSTALL;
   } else {
     /* CONTEXT: installer: status message */
@@ -1972,6 +2015,7 @@ installerVLCInstall (installer_t *installer)
     installer->vlcinstalled = true;
   }
   fileopDelete (installer->dlfname);
+  uiLabelSetText (&installer->statusMsg, "");
   installerCheckPackages (installer);
   installer->instState = INST_PYTHON_CHECK;
 }
@@ -2060,7 +2104,8 @@ installerPythonDownload (installer_t *installer)
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Python");
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     /* CONTEXT: installer: status message */
-    installerDisplayText (installer, INST_DISP_STATUS, _("Please wait..."), false);
+    installerDisplayText (installer, INST_DISP_STATUS, _("Please wait\xe2\x80\xa6"), false);
+    uiLabelSetText (&installer->statusMsg, _("Please wait\xe2\x80\xa6"));
     installer->instState = INST_PYTHON_INSTALL;
   } else {
     /* CONTEXT: installer: status message */
@@ -2099,6 +2144,7 @@ installerPythonInstall (installer_t *installer)
     installer->pythoninstalled = true;
   }
   fileopDelete (installer->dlfname);
+  uiLabelSetText (&installer->statusMsg, "");
   installerCheckPackages (installer);
   installer->instState = INST_MUTAGEN_CHECK;
 }
@@ -2126,7 +2172,8 @@ installerMutagenCheck (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Mutagen");
   installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
   /* CONTEXT: installer: status message */
-  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait..."), false);
+  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait\xe2\x80\xa6"), false);
+  uiLabelSetText (&installer->statusMsg, _("Please wait\xe2\x80\xa6"));
   installer->instState = INST_MUTAGEN_INSTALL;
 }
 
@@ -2147,6 +2194,7 @@ installerMutagenInstall (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff),
       "%s --quiet install --user --upgrade mutagen", pipnm);
   system (tbuff);
+  uiLabelSetText (&installer->statusMsg, "");
   /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
   installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
@@ -2421,7 +2469,7 @@ installerSetrundir (installer_t *installer, const char *dir)
   if (*dir) {
     strlcpy (installer->rundir, dir, sizeof (installer->rundir));
     if (isMacOS ()) {
-      strlcat (installer->rundir, "/Contents/MacOS", sizeof (installer->rundir));
+      strlcat (installer->rundir, MACOS_PREFIX, sizeof (installer->rundir));
     }
     pathNormPath (installer->rundir, sizeof (installer->rundir));
   }
@@ -2615,14 +2663,15 @@ static void
 installerCheckAndFixTarget (char *buff, size_t sz)
 {
   pathinfo_t  *pi;
-  char        *nm;
+  const char  *nm;
   int         rc;
 
   pi = pathInfo (buff);
   nm = BDJ4_NAME;
   if (isMacOS ()) {
-    nm = "BDJ4.app";
+    nm = BDJ4_MACOS_DIR;
   }
+
   rc = strncmp (pi->filename, nm, pi->flen) == 0 &&
       pi->flen == strlen (nm);
   if (! rc) {

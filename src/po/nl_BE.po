@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-07-24\n"
-"PO-Revision-Date: 2022-07-28\n"
+"PO-Revision-Date: 2022-07-30\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -1202,8 +1202,8 @@ msgid "Playlist Type"
 msgstr ""
 
 #. CONTEXT: installer: status message
-msgid "Please wait..."
-msgstr "Even geduld..."
+msgid "Please wait…"
+msgstr "Even geduld…"
 
 #. CONTEXT: configuration file: rating
 msgid "Poor"

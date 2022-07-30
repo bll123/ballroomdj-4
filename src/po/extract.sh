@@ -121,6 +121,7 @@ mv -f $TMP.n $TMP
 
 echo "-- $(date +%T) extracting"
 xgettext -s -d bdj4 \
+    --from-code=UTF-8 \
     --language=C \
     --add-comments=CONTEXT: \
     --no-location \

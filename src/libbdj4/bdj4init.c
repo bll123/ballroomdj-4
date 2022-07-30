@@ -73,6 +73,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "nostart",      no_argument,      NULL,   'n' },
     { "nomarquee",    no_argument,      NULL,   'm' },
     { "nodetach",     no_argument,      NULL,   'N' },
+    { "wait",         no_argument,      NULL,   'w' },
     /* dbupdate options */
     { "rebuild",      no_argument,      NULL,   'R' },
     { "checknew",     no_argument,      NULL,   'C' },
@@ -156,6 +157,10 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 'N': {
         flags |= BDJ4_INIT_NO_DETACH;
+        break;
+      }
+      case 'w': {
+        flags |= BDJ4_INIT_WAIT;
         break;
       }
       case 'R': {

@@ -47,6 +47,7 @@ main (int argc, char * argv[])
   bool      nodetach = false;
   bool      wait = false;
   bool      forcenodetach = false;
+  bool      forcewait = true;
   bool      isinstaller = false;
   bool      usemsys = false;
   int       flags;
@@ -92,6 +93,7 @@ main (int argc, char * argv[])
     /* this process */
     { "debugself",      no_argument,        NULL,   'D' },
     { "nodetach",       no_argument,        NULL,   'N' },
+    { "wait",           no_argument,        NULL,   'w' },
     { "msys",           no_argument,        NULL,   'M' },
     /* dbupdate options */
     { "rebuild",        no_argument,        NULL,   0 },
@@ -241,6 +243,10 @@ main (int argc, char * argv[])
       }
       case 'N': {
         forcenodetach = true;
+        break;
+      }
+      case 'w': {
+        forcewait = true;
         break;
       }
       case 'M': {
@@ -450,7 +456,7 @@ main (int argc, char * argv[])
   if (! forcenodetach && ! nodetach) {
     flags |= OS_PROC_DETACH;
   }
-  if (wait) {
+  if (forcewait || wait) {
     flags |= OS_PROC_WAIT;
     flags &= ~OS_PROC_DETACH;
   }
