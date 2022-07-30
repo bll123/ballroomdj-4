@@ -47,7 +47,7 @@ main (int argc, char * argv[])
   bool      nodetach = false;
   bool      wait = false;
   bool      forcenodetach = false;
-  bool      forcewait = true;
+  bool      forcewait = false;
   bool      isinstaller = false;
   bool      usemsys = false;
   int       flags;
