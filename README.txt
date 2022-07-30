@@ -11,7 +11,7 @@ Contents
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 20220728
+Alpha Release: 20220730
 
   Alpha releases are mostly untested works in progress.
 
@@ -71,7 +71,7 @@ Converting BallroomDJ 3:
     - Remove the new location of BallroomDJ 3 (e.g. BDJ3Temp).  Your
       original BallroomDJ installation is untouched and can still be used.
 
-Release Notes: 20220728
+Release Notes: 20220730
   See the file ChangeLog.txt for a full list of changes.
 
   This release represents a working player user interface,
@@ -90,9 +90,6 @@ Release Notes: 20220728
    'Write BDJ3 Compatible Audio Tags' is on).
 
 Known Issues:
-  MacOS
-    - The windows will not de-iconify (click and hold on the dock icon,
-      then select 'show all windows').
   Windows
     - The marquee position is not saved when it is iconified (close the
       window instead).

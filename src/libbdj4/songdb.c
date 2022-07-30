@@ -11,6 +11,7 @@
 #include "audiotag.h"
 #include "slist.h"
 #include "song.h"
+#include "songdb.h"
 #include "songutil.h"
 
 void

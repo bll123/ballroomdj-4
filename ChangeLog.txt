@@ -1,5 +1,12 @@
 BallroomDJ 4 Change Log
 
+4.0.0 alpha 2022-07-30
+
+- installer
+  - fixed macos installation
+  - fixed target installation folder handling
+- macos: fixed dock minimize/restore issue.
+
 4.0.0 alpha 2022-07-28
 
 - installer
