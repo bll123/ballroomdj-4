@@ -12,8 +12,8 @@
 #include "slist.h"
 #include "bdjstring.h"
 
-static void   slistSetKey (list_t *list, listkey_t *key, char *keydata);
-static void   slistUpdateMaxKeyWidth (list_t *list, char *keydata);
+static void   slistSetKey (list_t *list, listkey_t *key, const char *keydata);
+static void   slistUpdateMaxKeyWidth (list_t *list, const char *keydata);
 
 /* key/value list, keyed by a listidx_t */
 
@@ -49,7 +49,7 @@ slistSetSize (slist_t *list, ssize_t siz)
 }
 
 void
-slistSetData (slist_t *list, char *sidx, void *data)
+slistSetData (slist_t *list, const char *sidx, void *data)
 {
   listitem_t    item;
 
@@ -63,7 +63,7 @@ slistSetData (slist_t *list, char *sidx, void *data)
 }
 
 void
-slistSetStr (slist_t *list, char *sidx, const char *data)
+slistSetStr (slist_t *list, const char *sidx, const char *data)
 {
   listitem_t    item;
 
@@ -80,7 +80,7 @@ slistSetStr (slist_t *list, char *sidx, const char *data)
 }
 
 void
-slistSetNum (slist_t *list, char *sidx, ssize_t data)
+slistSetNum (slist_t *list, const char *sidx, ssize_t data)
 {
   listitem_t    item;
 
@@ -94,7 +94,7 @@ slistSetNum (slist_t *list, char *sidx, ssize_t data)
 }
 
 void
-slistSetDouble (slist_t *list, char *sidx, double data)
+slistSetDouble (slist_t *list, const char *sidx, double data)
 {
   listitem_t    item;
 
@@ -108,7 +108,7 @@ slistSetDouble (slist_t *list, char *sidx, double data)
 }
 
 void
-slistSetList (slist_t *list, char *sidx, slist_t *data)
+slistSetList (slist_t *list, const char *sidx, slist_t *data)
 {
   listitem_t    item;
 
@@ -122,7 +122,7 @@ slistSetList (slist_t *list, char *sidx, slist_t *data)
 }
 
 slistidx_t
-slistGetIdx (slist_t *list, char *sidx)
+slistGetIdx (slist_t *list, const char *sidx)
 {
   listkey_t   key;
 
@@ -194,13 +194,13 @@ slistGetNum (slist_t *list, const char *sidx)
 }
 
 double
-slistGetDouble (slist_t *list, char *sidx)
+slistGetDouble (slist_t *list, const char *sidx)
 {
   double         value = LIST_DOUBLE_INVALID;
   listkey_t      key;
   slistidx_t      idx;
 
-  key.strkey = sidx;
+  key.strkey = (char *) sidx;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.dval;
@@ -301,13 +301,13 @@ slistDumpInfo (slist_t *list)
 /* internal routines */
 
 static void
-slistSetKey (list_t *list, listkey_t *key, char *keydata)
+slistSetKey (list_t *list, listkey_t *key, const char *keydata)
 {
   key->strkey = strdup (keydata);
 }
 
 static void
-slistUpdateMaxKeyWidth (list_t *list, char *keydata)
+slistUpdateMaxKeyWidth (list_t *list, const char *keydata)
 {
   if (list == NULL) {
     return;

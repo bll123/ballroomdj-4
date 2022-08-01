@@ -33,15 +33,16 @@ enum {
 };
 
 typedef struct {
-  char  *tag;
-  char  *base;
-  char  *desc;
+  const char  *tag;
+  const char  *base;
+  const char  *desc;
 } tagaudiotag_t;
 
 typedef struct {
-  char                *tag;
-  char                *displayname;
+  const char          *tag;
+  const char          *displayname;
   tagaudiotag_t       audiotags [TAG_TYPE_MAX];
+  const char          *itunesName;
   tagedittype_t       editType;
   valuetype_t         valueType;
   dfConvFunc_t        convfunc;

@@ -15,23 +15,23 @@ void      slistFree (void * list);
 ssize_t   slistGetCount (slist_t *list);
 void      slistSetSize (slist_t *, ssize_t);
   /* set routines */
-void      slistSetData (slist_t *, char *sidx, void *data);
-void      slistSetStr (slist_t *, char *sidx, const char *data);
-void      slistSetNum (slist_t *, char *sidx, ssize_t lval);
-void      slistSetDouble (slist_t *, char *sidx, double dval);
-void      slistSetList (slist_t *, char *sidx, slist_t *listval);
+void      slistSetData (slist_t *, const char *sidx, void *data);
+void      slistSetStr (slist_t *, const char *sidx, const char *data);
+void      slistSetNum (slist_t *, const char *sidx, ssize_t lval);
+void      slistSetDouble (slist_t *, const char *sidx, double dval);
+void      slistSetList (slist_t *, const char *sidx, slist_t *listval);
   /* get routines */
-slistidx_t  slistGetIdx (slist_t *, char *sidx);
+slistidx_t  slistGetIdx (slist_t *, const char *sidx);
 void      *slistGetData (slist_t *, const char *sidx);
 char      *slistGetStr (slist_t *, const char *sidx);
 void      *slistGetDataByIdx (slist_t *, slistidx_t idx);
 ssize_t   slistGetNumByIdx (slist_t *list, slistidx_t idx);
 char *    slistGetKeyByIdx (slist_t *list, slistidx_t lidx);
 ssize_t   slistGetNum (slist_t *, const char *sidx);
-double    slistGetDouble (slist_t *, char *sidx);
+double    slistGetDouble (slist_t *, const char *sidx);
 int       slistGetMaxKeyWidth (slist_t *);
 int       slistGetMaxDataWidth (slist_t *);
-slist_t   *slistGetList (slist_t *, char *sidx);
+slist_t   *slistGetList (slist_t *, const char *sidx);
   /* iterators */
 void      slistStartIterator (slist_t *list, slistidx_t *idx);
 char      *slistIterateKey (slist_t *list, slistidx_t *idx);

@@ -1429,7 +1429,7 @@ confuiBuildUIEditDances (configui_t *confui)
   UIWidget      sg;
   UIWidget      sgB;
   UIWidget      sgC;
-  char          *bpmstr;
+  const char    *bpmstr;
   char          tbuff [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditDances");
@@ -5043,7 +5043,7 @@ confuiDispSaveTable (configui_t *confui, int selidx)
   slist_t       *nlist;
   slistidx_t    val;
   slistidx_t    iteridx;
-  char          *tstr;
+  const char    *tstr;
 
   logProcBegin (LOG_PROC, "confuiDispSaveTable");
 

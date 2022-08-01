@@ -99,7 +99,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
   GtkCellRenderer *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
   int         val;
-  char        *bpmstr;
+  const char  *bpmstr;
   char        tbuff [100];
 
   uiCreateHorizBox (&hbox);

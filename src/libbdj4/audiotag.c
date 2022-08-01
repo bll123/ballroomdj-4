@@ -818,9 +818,9 @@ static void
 audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
     nlist_t *datalist, int totkey, int tagkey)
 {
-  char    *tag;
-  char    *newvalue;
-  char    *value;
+  const char  *tag;
+  char        *newvalue;
+  char        *value;
 
 
   tag = tagdefs [totkey].tag;
