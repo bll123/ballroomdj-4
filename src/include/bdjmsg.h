@@ -65,6 +65,7 @@ typedef enum {
   MSG_QUEUE_PLAYLIST,       // args: music-q-idx, playlist name
   MSG_QUEUE_PLAY_ON_ADD,    // args: true/false
   MSG_QUEUE_SWITCH_EMPTY,   // args: true/false
+  MSG_QUEUE_MIX,            // args: music-q-idx
   MSG_START_MARQUEE,
   MSG_PL_OVERRIDE_STOP_TIME,  // args: stop-time
 

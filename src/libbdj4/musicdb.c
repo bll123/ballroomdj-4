@@ -39,7 +39,7 @@ musicdb_t *
 dbOpen (char *fn)
 {
   dance_t       *dances;
-  int32_t       dcount;
+  dbidx_t       dcount;
   musicdb_t     *musicdb;
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);

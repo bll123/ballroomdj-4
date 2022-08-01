@@ -29,13 +29,12 @@ static bool     danceselProcessHistory (dancesel_t *dancesel,
                     slist_t *tags, ssize_t histCount);
 static bool     matchTag (slist_t *tags, slist_t *otags);
 
+/* the countlist should contain a danceIdx/count pair */
 dancesel_t *
 danceselAlloc (nlist_t *countList)
 {
   dancesel_t  *dancesel;
   ilistidx_t  didx;
-  double      dcount = 0.0;
-  double      dtemp;
   nlistidx_t  iteridx;
 
 
@@ -48,12 +47,11 @@ danceselAlloc (nlist_t *countList)
   assert (dancesel != NULL);
   dancesel->dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancesel->autosel = bdjvarsdfGet (BDJVDF_AUTO_SEL);
-  dcount = (double) danceGetCount (dancesel->dances);
   dancesel->base = nlistAlloc ("dancesel-base", LIST_ORDERED, NULL);
   dancesel->basetotal = 0.0;
   dancesel->distance = nlistAlloc ("dancesel-dist", LIST_ORDERED, NULL);
   dancesel->maxDistance = 0.0;
-  dancesel->selectedCounts = nlistAlloc ("dancesel-dist", LIST_ORDERED, NULL);
+  dancesel->selectedCounts = nlistAlloc ("dancesel-sel-count", LIST_ORDERED, NULL);
   dancesel->playedDances = queueAlloc (free);
   dancesel->totalSelCount = 0.0;
   dancesel->adjustBase = NULL;
@@ -68,19 +66,28 @@ danceselAlloc (nlist_t *countList)
 
   nlistStartIterator (countList, &iteridx);
   while ((didx = nlistIterateKey (countList, &iteridx)) >= 0) {
-    dcount = nlistGetDouble (countList, didx);
-    nlistSetDouble (dancesel->base, didx, dcount);
-    dancesel->basetotal += dcount;
-    logMsg (LOG_DBG, LOG_DANCESEL, "base: %ld: %.2f", didx, dcount);
+    long    count;
+
+    count = nlistGetNum (countList, didx);
+    if (count <= 0) {
+      continue;
+    }
+    nlistSetNum (dancesel->base, didx, count);
+    dancesel->basetotal += (double) count;
+    logMsg (LOG_DBG, LOG_DANCESEL, "base: %d/%s: %d", didx,
+        danceGetStr (dancesel->dances, didx, DANCE_DANCE), count);
     nlistSetNum (dancesel->selectedCounts, didx, 0);
   }
 
   nlistStartIterator (dancesel->base, &iteridx);
   while ((didx = nlistIterateKey (dancesel->base, &iteridx)) >= 0) {
-    dcount = nlistGetDouble (dancesel->base, didx);
+    double  dcount, dtemp;
+
+    dcount = (double) nlistGetNum (dancesel->base, didx);
     dtemp = floor (dancesel->basetotal / dcount);
     nlistSetDouble (dancesel->distance, didx, dtemp);
-    logMsg (LOG_DBG, LOG_DANCESEL, "dist:%ld: %.2f", didx, dtemp);
+    logMsg (LOG_DBG, LOG_DANCESEL, "dist: %d/%s: %.2f", didx,
+        danceGetStr (dancesel->dances, didx, DANCE_DANCE), dtemp);
     dancesel->maxDistance = (ssize_t)
         (dtemp > dancesel->maxDistance ? dtemp : dancesel->maxDistance);
   }
@@ -158,24 +165,24 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
   nlistidx_t    iteridx;
   ssize_t       qiteridx;
   playedDance_t *pd;
-    /* expected counts */
+  /* expected counts */
   double        expcount;
   double        dcount;
-    /* current dance values */
+  /* current dance values */
   slist_t       *tags = NULL;
   double        speed;
   double        type;
-    /* previous dance data */
+  /* previous dance data */
   ilistidx_t    pddanceIdx = -1;
   slist_t       *pdtags = NULL;
-  ssize_t       pdspeed = 0;
-  ssize_t       pdtype = 0;
-    /* history */
-  ssize_t       priorIdx;
-  ssize_t       histCount;
+  int           pdspeed = 0;
+  int           pdtype = 0;
+  /* history */
+  dbidx_t       priorIdx;
+  dbidx_t       histCount;
   ilistidx_t    hdidx;
   bool          hdone;
-    /* probability calculation */
+  /* probability calculation */
   double        adjTotal;
   double        tval;
 
@@ -193,7 +200,8 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
   /* data from the previous dance */
   if (priorCount > 0) {
     pddanceIdx = historyProc (userdata, priorCount - 1);
-    logMsg (LOG_DBG, LOG_DANCESEL, "found previous dance");
+    logMsg (LOG_DBG, LOG_DANCESEL, "found previous dance %d/%s", pddanceIdx,
+        danceGetStr (dancesel->dances, pddanceIdx, DANCE_DANCE));
     pdspeed = danceGetNum (dancesel->dances, pddanceIdx, DANCE_SPEED);
     pdtags = danceGetList (dancesel->dances, pddanceIdx, DANCE_TAGS);
     pdtype = danceGetNum (dancesel->dances, pddanceIdx, DANCE_TYPE);
@@ -203,17 +211,20 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
 
   nlistStartIterator (dancesel->base, &iteridx);
   while ((didx = nlistIterateKey (dancesel->base, &iteridx)) >= 0) {
-    tbase = nlistGetDouble (dancesel->base, didx);
+    tbase = (double) nlistGetNum (dancesel->base, didx);
     tprob = tbase / dancesel->basetotal;
     abase = tbase;
-    logMsg (LOG_DBG, LOG_DANCESEL, "didx:%ld base:%.2f tprob:%.6f", didx, tbase, tprob);
+    logMsg (LOG_DBG, LOG_DANCESEL, "didx:%d/%s base:%.2f tprob:%.6f",
+        didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE),
+        tbase, tprob);
 
     /* are any dances of this type still available ? */
     dcount = (double) nlistGetNum (danceCounts, didx);
     if (dcount <= 0) {
       abase = 0.0;
       nlistSetDouble (dancesel->adjustBase, didx, abase);
-      logMsg (LOG_DBG, LOG_DANCESEL, "no more %ld left", didx);
+      logMsg (LOG_DBG, LOG_DANCESEL, "  no more %d/%s left", didx,
+          danceGetStr (dancesel->dances, didx, DANCE_DANCE));
       /* no need to do the other checks */
       continue;
     }
@@ -225,13 +236,13 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
     /* expected count high ( / 800 ) */
     if (dcount > expcount) {
       abase = abase / autoselGetDouble (dancesel->autosel, AUTOSEL_LIMIT);
-      logMsg (LOG_DBG, LOG_DANCESEL, "dcount %.6f > expcount %.6f / %.6f", dcount, expcount, abase);
+      logMsg (LOG_DBG, LOG_DANCESEL, "  dcount %.6f > expcount %.6f / %.6f", dcount, expcount, abase);
     }
 
     /* expected count low ( / 0.5 ) */
     if (dcount < expcount - 1) {
       abase = abase / autoselGetDouble (dancesel->autosel, AUTOSEL_LOW);
-      logMsg (LOG_DBG, LOG_DANCESEL, "dcount %.6f < expcount %.6f / %.6f", dcount, expcount - 1, abase);
+      logMsg (LOG_DBG, LOG_DANCESEL, "  dcount %.6f < expcount %.6f / %.6f", dcount, expcount - 1, abase);
     }
 
     /* if this selection is at the beginning of the playlist */
@@ -239,7 +250,7 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
       /* if this dance is a fast dance ( / 1000) */
       if (speed == DANCE_SPEED_FAST) {
         abase = abase / autoselGetDouble (dancesel->autosel, AUTOSEL_BEG_FAST);
-        logMsg (LOG_DBG, LOG_DANCESEL, "fast / begin of playlist / %.6f", abase);
+        logMsg (LOG_DBG, LOG_DANCESEL, "  fast / begin of playlist / %.6f", abase);
       }
     }
 
@@ -247,7 +258,7 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
     if (priorCount > 0 && pddanceIdx >= 0 &&
         pdspeed == speed && speed == DANCE_SPEED_FAST) {
       abase = abase / autoselGetDouble (dancesel->autosel, AUTOSEL_BOTHFAST);
-      logMsg (LOG_DBG, LOG_DANCESEL, "speed is fast and same as previous / %.6f", abase);
+      logMsg (LOG_DBG, LOG_DANCESEL, "  speed is fast and same as previous / %.6f", abase);
     }
 
     /* if there is a tag match between the previous dance and this one */
@@ -255,14 +266,14 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
     tags = danceGetList (dancesel->dances, didx, DANCE_TAGS);
     if (priorCount > 0 && pddanceIdx >= 0 && matchTag (tags, pdtags)) {
       abase = abase / dancesel->tagMatch;
-      logMsg (LOG_DBG, LOG_DANCESEL, "matched tags with previous / %.6f", abase);
+      logMsg (LOG_DBG, LOG_DANCESEL, "  matched tags with previous / %.6f", abase);
     }
 
     /* if this dance and the previous dance have matching types ( / 600 ) */
     type = danceGetNum (dancesel->dances, didx, DANCE_TYPE);
     if (priorCount > 0 && pddanceIdx >= 0 && pdtype == type) {
       abase = abase / autoselGetDouble (dancesel->autosel, AUTOSEL_TYPE_MATCH);
-      logMsg (LOG_DBG, LOG_DANCESEL, "matched type with previous / %.6f", abase);
+      logMsg (LOG_DBG, LOG_DANCESEL, "  matched type with previous / %.6f", abase);
     }
 
     nlistSetDouble (dancesel->adjustBase, didx, abase);
@@ -278,14 +289,13 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
       while (! hdone &&
           histCount < dancesel->maxDistance &&
           (hdidx = historyProc (userdata, priorIdx)) >= 0) {
-        logMsg (LOG_DBG, LOG_DANCESEL, "process history via callback (%ld) prioridx: %ld", histCount, priorIdx);
         hdone = danceselProcessHistory (dancesel, didx, hdidx,
             tags, histCount);
         ++histCount;
         --priorIdx;
       } /* for each of the history */
 
-      logMsg (LOG_DBG, LOG_DANCESEL, "process played dances (%ld)", histCount);
+      logMsg (LOG_DBG, LOG_DANCESEL, "  played dance (%d)", histCount);
       while (! hdone &&
           histCount < dancesel->maxDistance &&
           (pd = queueIterateData (dancesel->playedDances, &qiteridx)) != NULL) {
@@ -312,12 +322,15 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
     abase = nlistGetDouble (dancesel->adjustBase, didx);
     tval = abase / adjTotal;
     tprob += tval;
-    logMsg (LOG_DBG, LOG_DANCESEL, "final prob: %ld: %.6f", didx, tprob);
+    logMsg (LOG_DBG, LOG_DANCESEL, "final prob: %d/%s: %.6f",
+        didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE), tprob);
     nlistSetDouble (dancesel->danceProbTable, didx, tprob);
   }
 
   tval = dRandom ();
   didx = nlistSearchProbTable (dancesel->danceProbTable, tval);
+  logMsg (LOG_DBG, LOG_DANCESEL, "select %d/%s",
+        didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE));
 
   logProcEnd (LOG_PROC, "danceselSelect", "");
   return didx;
@@ -339,7 +352,9 @@ danceselProcessHistory (dancesel_t *dancesel, ilistidx_t didx,
   abase = nlistGetDouble (dancesel->adjustBase, didx);
 
   logProcBegin (LOG_PROC, "danceselProcessHistory");
-  logMsg (LOG_DBG, LOG_DANCESEL, "process history (%ld) didx:%ld hdidx:%ld", histCount, didx, hdidx);
+  logMsg (LOG_DBG, LOG_DANCESEL, "  history (%d) didx:%d hdidx:%d/%s",
+      histCount, didx,
+      hdidx, danceGetStr (dancesel->dances, hdidx, DANCE_DANCE));
 
   /* the tags of the first few dances in the history are checked */
   /* the previous dance's tags have already been adjusted */
@@ -349,7 +364,7 @@ danceselProcessHistory (dancesel_t *dancesel, ilistidx_t didx,
       tval = pow (dancesel->tagAdjust, (double) histCount);
       abase = abase / dancesel->tagMatch * tval;
       nlistSetDouble (dancesel->adjustBase, didx, abase);
-      logMsg (LOG_DBG, LOG_DANCESEL, "matched tags with history (%ld) / %.6f", histCount, abase);
+      logMsg (LOG_DBG, LOG_DANCESEL, "    matched history tags (%d) / %.6f", histCount, abase);
     }
   }
 
@@ -359,7 +374,7 @@ danceselProcessHistory (dancesel_t *dancesel, ilistidx_t didx,
   }
 
   /* found the matching dance */
-  logMsg (LOG_DBG, LOG_DANCESEL, "history: matched dance (%ld) hdidx:%ld", histCount, hdidx);
+  logMsg (LOG_DBG, LOG_DANCESEL, "    matched dance (%d) hdidx:%d", histCount, hdidx);
 
   dist = nlistGetDouble (dancesel->distance, hdidx);
   tval = (double) (histCount - 1);
@@ -367,7 +382,7 @@ danceselProcessHistory (dancesel_t *dancesel, ilistidx_t didx,
   /* if the dance hasn't appeared within 'dist', then no adjustment */
   /* is needed */
   if (dist < tval || abase == 0.0) {
-    logMsg (LOG_DBG, LOG_DANCESEL, "dist %.2f < tval %.2f", dist, tval);
+    logMsg (LOG_DBG, LOG_DANCESEL, "    dist %.2f < tval %.2f", dist, tval);
     if (histCount > dancesel->histDistance) {
       /* no more history needs to be checked */
       logProcEnd (LOG_PROC, "danceselProcessHistory", "no-adjust-fin");
@@ -380,10 +395,10 @@ danceselProcessHistory (dancesel_t *dancesel, ilistidx_t didx,
   /* logarithmic */
   findex = fmax (0.0, fmin (1.0, tval / dist));
   findex = 1.0 - (pow (0.1, (1.0 - findex) * dancesel->logValue));
-  logMsg (LOG_DBG, LOG_DANCESEL, "dist adjust: tval:%.6f dist:%.6f findex:%.6f", tval, dist, findex);
+  logMsg (LOG_DBG, LOG_DANCESEL, "    dist adjust: tval:%.6f dist:%.6f findex:%.6f", tval, dist, findex);
 
   abase = fmax (0.0, abase - (findex * abase));
-  logMsg (LOG_DBG, LOG_DANCESEL, "adjust due to distance / %.6f", abase);
+  logMsg (LOG_DBG, LOG_DANCESEL, "    adjust due to distance / %.6f", abase);
   nlistSetDouble (dancesel->adjustBase, hdidx, abase);
 
   /* having reached this point, the dance has been found  */

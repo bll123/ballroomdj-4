@@ -84,10 +84,10 @@ enum {
   MANAGE_MENU_CB_SL_MIX,
   MANAGE_MENU_CB_SL_TRUNCATE,
   MANAGE_MENU_CB_SL_MK_FROM_PL,
-  MANAGE_MENU_CB_SL_EXP_M3U,
-  MANAGE_MENU_CB_SL_EXP_BDJ,
   MANAGE_MENU_CB_SL_IMP_M3U,
+  MANAGE_MENU_CB_SL_EXP_M3U,
   MANAGE_MENU_CB_SL_IMP_BDJ,
+  MANAGE_MENU_CB_SL_EXP_BDJ,
   MANAGE_MENU_CB_START_EDITALL,
   MANAGE_MENU_CB_APPLY_EDITALL,
   MANAGE_MENU_CB_CANCEL_EDITALL,
@@ -246,6 +246,7 @@ static void     manageSongListCFPLCreateDialog (manageui_t *manage);
 static void     manageCFPLCreatePlaylistList (manageui_t *manage);
 static bool     manageCFPLPlaylistSelectHandler (void *udata, long idx);
 static bool     manageCFPLResponseHandler (void *udata, long responseid);
+static bool     manageSonglistMix (void *udata);
 static void     manageSonglistLoadFile (void *udata, const char *fn);
 static long     manageLoadPlaylist (void *udata, const char *fn);
 static long     manageLoadSonglist (void *udata, const char *fn);
@@ -1257,9 +1258,11 @@ manageSonglistMenu (manageui_t *manage)
 
     uiCreateSubMenu (&menuitem, &menu);
 
+    manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_MIX,
+        manageSonglistMix);
     /* CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix */
-    uiMenuCreateItem (&menu, &menuitem, _("Mix"), NULL);
-    uiWidgetDisable (&menuitem);
+    uiMenuCreateItem (&menu, &menuitem, _("Mix"),
+        &manage->callbacks [MANAGE_MENU_CB_SL_MIX]);
 
     manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_TRUNCATE,
         manageSonglistTruncate);
@@ -1542,6 +1545,18 @@ manageCFPLResponseHandler (void *udata, long responseid)
     }
   }
 
+  return UICB_CONT;
+}
+
+static bool
+manageSonglistMix (void *udata)
+{
+  manageui_t  *manage = udata;
+  char        tbuff [40];
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: mix songlist");
+  snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
+  connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_MIX, tbuff);
   return UICB_CONT;
 }
 

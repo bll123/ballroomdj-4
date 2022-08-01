@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -9,6 +8,7 @@
 
 #include "autosel.h"
 #include "bdjvarsdf.h"
+#include "ilist.h"
 #include "level.h"
 #include "nlist.h"
 #include "log.h"
@@ -103,10 +103,10 @@ static void   calcAttributePerc (songsel_t *songsel,
  */
 
 songsel_t *
-songselAlloc (musicdb_t *musicdb, list_t *dancelist, songfilter_t *songfilter)
+songselAlloc (musicdb_t *musicdb, nlist_t *dancelist, songfilter_t *songfilter)
 {
   songsel_t       *songsel;
-  nlistidx_t      danceIdx;
+  ilistidx_t      danceIdx;
   song_t          *song;
   dbidx_t         dbidx;
   songseldance_t  *songseldance;
@@ -169,7 +169,8 @@ songselAlloc (musicdb_t *musicdb, list_t *dancelist, songfilter_t *songfilter)
       continue;
     }
 
-    if (! songfilterFilterSong (songfilter, song)) {
+    if (songfilter != NULL &&
+        ! songfilterFilterSong (songfilter, song)) {
       continue;
     }
 
@@ -262,7 +263,7 @@ songselFree (songsel_t *songsel)
 }
 
 song_t *
-songselSelect (songsel_t *songsel, nlistidx_t danceIdx)
+songselSelect (songsel_t *songsel, ilistidx_t danceIdx)
 {
   songseldance_t      *songseldance = NULL;
   songselsongdata_t   *songdata = NULL;
@@ -295,7 +296,7 @@ songselSelect (songsel_t *songsel, nlistidx_t danceIdx)
 }
 
 void
-songselSelectFinalize (songsel_t *songsel, nlistidx_t danceIdx)
+songselSelectFinalize (songsel_t *songsel, ilistidx_t danceIdx)
 {
   songseldance_t      *songseldance = NULL;
   songselsongdata_t   *songdata = NULL;

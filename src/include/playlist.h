@@ -59,8 +59,6 @@ typedef struct playlist playlist_t;
 
 #define VALID_SONG_ATTEMPTS   40
 
-typedef bool (*playlistCheck_t)(song_t *, void *);
-
 playlist_t *playlistAlloc (musicdb_t *musicdb);
 int       playlistLoad (playlist_t *pl, const char *);
 void      playlistCreate (playlist_t *pl, const char *plname, pltype_t type);
@@ -74,8 +72,7 @@ ssize_t   playlistGetDanceNum (playlist_t *pl, ilistidx_t dancekey, pldancekey_t
 void      playlistSetDanceCount (playlist_t *pl, ilistidx_t dancekey, ssize_t value);
 void      playlistSetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key, ssize_t value);
 song_t    *playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
-    ssize_t priorCount, playlistCheck_t checkProc,
-    danceselHistory_t historyProc, void *userdata);
+    ssize_t priorCount, danceselHistory_t historyProc, void *userdata);
 slist_t   *playlistGetPlaylistList (int flag);
 bool      playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist);
 void      playlistAddCount (playlist_t *, song_t *song);

@@ -40,6 +40,7 @@
 #include "slist.h"
 #include "sock.h"
 #include "sockh.h"
+#include "songsel.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
@@ -136,7 +137,6 @@ static void mainPlaybackBegin (maindata_t *mainData);
 static void mainMusicQueuePlay (maindata_t *mainData);
 static void mainMusicQueueFinish (maindata_t *mainData);
 static void mainMusicQueueNext (maindata_t *mainData);
-static bool mainCheckMusicQueue (song_t *song, void *tdata);
 static ilistidx_t mainMusicQueueHistory (void *mainData, ilistidx_t idx);
 static void mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route);
 static void mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route);
@@ -150,6 +150,7 @@ static long mainCalculateSongDuration (maindata_t *mainData, song_t *song, int p
 static playlistitem_t * mainPlaylistItemCache (maindata_t *mainData, playlist_t *pl, int playlistIdx);
 static void mainPlaylistItemFree (void *tplitem);
 static void mainMusicqSetSuspend (maindata_t *mainData, char *args, bool value);
+static void mainMusicQueueMix (maindata_t *mainData, char *args);
 
 
 static long globalCounter = 0;
@@ -424,6 +425,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_QUEUE_SWITCH_EMPTY: {
           mainData->switchQueueWhenEmpty = atoi (targs);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_QUEUE_MIX: {
+          mainMusicQueueMix (mainData, targs);
           dbgdisp = true;
           break;
         }
@@ -1291,7 +1297,7 @@ mainMusicQueueFill (maindata_t *mainData)
     song_t  *song = NULL;
 
     song = playlistGetNextSong (playlist, mainData->danceCounts,
-        currlen, mainCheckMusicQueue, mainMusicQueueHistory, mainData);
+        currlen, mainMusicQueueHistory, mainData);
     if (song == NULL) {
       logMsg (LOG_DBG, LOG_MAIN, "song is null");
       plitem = queuePop (mainData->playlistQueue [mainData->musicqManageIdx]);
@@ -1951,14 +1957,6 @@ mainMusicQueueNext (maindata_t *mainData)
   logProcEnd (LOG_PROC, "mainMusicQueueNext", "");
 }
 
-static bool
-mainCheckMusicQueue (song_t *song, void *tdata)
-{
-//  maindata_t  *mainData = tdata;
-
-  return true;
-}
-
 static ilistidx_t
 mainMusicQueueHistory (void *tmaindata, ilistidx_t idx)
 {
@@ -1980,6 +1978,7 @@ mainMusicQueueHistory (void *tmaindata, ilistidx_t idx)
   if (song != NULL) {
     didx = songGetNum (song, TAG_DANCE);
   }
+logMsg (LOG_DBG, LOG_IMPORTANT, "hist: %d dbidx:%d didx:%d", idx, dbidx, didx);
   logProcEnd (LOG_PROC, "mainMusicQueueHistory", "");
   return didx;
 }
@@ -2409,4 +2408,97 @@ mainMusicqSetSuspend (maindata_t *mainData, char *args, bool value)
     return;
   }
   mainData->changeSuspend [mqidx] = value;
+}
+
+static void
+mainMusicQueueMix (maindata_t *mainData, char *args)
+{
+  int           mqidx;
+  dbidx_t       musicqLen;
+  dbidx_t       dbidx;
+  int           danceIdx;
+  song_t        *song = NULL;
+  nlist_t       *songList = NULL;
+  nlist_t       *danceCounts = NULL;
+  nlist_t       *newlist = NULL;
+  dancesel_t    *dancesel = NULL;
+  songsel_t     *songsel = NULL;
+  int           totcount;
+  int           currlen;
+
+  mqidx = atoi (args);
+  if (mqidx < 0 || mqidx >= MUSICQ_MAX) {
+    return;
+  }
+
+  mainData->musicqManageIdx = mqidx;
+
+  danceCounts = nlistAlloc ("mq-mix-counts", LIST_ORDERED, NULL);
+  songList = nlistAlloc ("mq-mix-song-list", LIST_ORDERED, NULL);
+  newlist = nlistAlloc ("mq-mix-new-list", LIST_UNORDERED, NULL);
+
+  musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
+  logMsg (LOG_DBG, LOG_BASIC, "mix: mq len: %d", musicqLen);
+  totcount = 0;
+  for (ssize_t i = 1; i <= musicqLen; ++i) {
+    int   plidx;
+
+    dbidx = musicqGetByIdx (mainData->musicQueue, mqidx, i);
+    plidx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, i);
+    nlistSetNum (songList, dbidx, plidx);
+    song = dbGetByIdx (mainData->musicdb, dbidx);
+    danceIdx = songGetNum (song, TAG_DANCE);
+    if (danceIdx >= 0) {
+      nlistIncrement (danceCounts, danceIdx);
+      ++totcount;
+    } else {
+      logMsg (LOG_DBG, LOG_BASIC, "mix: unknown dance skipped dbidx:%d", dbidx);
+    }
+  }
+  logMsg (LOG_DBG, LOG_BASIC, "mix: total count: %d", totcount);
+  logMsg (LOG_DBG, LOG_BASIC, "mix: counts len: %d", nlistGetCount (danceCounts));
+
+  /* for the purposes of a mix, the countlist passed to the dancesel alloc */
+  /* and the dance counts used for selection are identical */
+
+  musicqClear (mainData->musicQueue, mqidx, 1);
+  /* should already be an empty head on the queue */
+
+  dancesel = danceselAlloc (danceCounts);
+  songsel = songselAlloc (mainData->musicdb, danceCounts, NULL);
+
+  currlen = nlistGetCount (newlist);
+fprintf (stderr, "%d < %d\n", currlen, totcount);
+  while (currlen < totcount) {
+    danceIdx = danceselSelect (dancesel, danceCounts, currlen,
+        mainMusicQueueHistory, mainData);
+    song = songselSelect (songsel, danceIdx);
+    if (song != NULL) {
+      int   plidx;
+      long  dur;
+
+      songselSelectFinalize (songsel, danceIdx);
+      logMsg (LOG_DBG, LOG_BASIC, "mix: (%d) d:%d/%s select: %s",
+          currlen, danceIdx,
+          danceGetStr (dancesel->dances, danceIdx, DANCE_DANCE),
+          songGetStr (song, TAG_FILE));
+      dbidx = songGetNum (song, TAG_DBIDX);
+      nlistSetNum (newlist, dbidx, 0);
+      danceselAddCount (dancesel, danceIdx);
+      nlistDecrement (danceCounts, danceIdx);
+      plidx = nlistGetNum (songList, dbidx);
+      dur = mainCalculateSongDuration (mainData, song, plidx);
+      musicqPush (mainData->musicQueue, mqidx, dbidx, plidx, dur);
+    }
+    currlen = nlistGetCount (newlist);
+fprintf (stderr, "%d < %d\n", currlen, totcount);
+  }
+
+  songselFree (songsel);
+  danceselFree (dancesel);
+  nlistFree (danceCounts);
+  nlistFree (newlist);
+
+  mainData->musicqChanged [mqidx] = MAIN_CHG_START;
+  mainData->marqueeChanged [mqidx] = true;
 }

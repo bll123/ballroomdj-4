@@ -35,6 +35,7 @@
 typedef struct playlist {
   char          *name;
   musicdb_t     *musicdb;
+  dance_t       *dances;
   datafile_t    *plinfodf;
   datafile_t    *pldancesdf;
   songlist_t    *songlist;
@@ -99,6 +100,7 @@ playlistAlloc (musicdb_t *musicdb)
   pl->countList = NULL;
   pl->count = 0;
   pl->musicdb = musicdb;
+  pl->dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   return pl;
 }
@@ -415,14 +417,14 @@ playlistSetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key, ssiz
 
 song_t *
 playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
-    ssize_t priorCount, playlistCheck_t checkProc,
+    ssize_t priorCount,
     danceselHistory_t historyProc, void *userdata)
 {
   pltype_t    type;
   song_t      *song = NULL;
   int         count;
   char        *sfname;
-  ssize_t     stopAfter;
+  int         stopAfter;
 
 
   if (pl == NULL) {
@@ -449,7 +451,8 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
       }
       danceIdx = danceselSelect (pl->dancesel, danceCounts,
           priorCount, historyProc, userdata);
-      logMsg (LOG_DBG, LOG_BASIC, "automatic: dance: %zd", danceIdx);
+      logMsg (LOG_DBG, LOG_BASIC, "automatic: dance: %d/%s", danceIdx,
+          danceGetStr (pl->dances, danceIdx, DANCE_DANCE));
       if (pl->songsel == NULL) {
         playlistSetSongFilter (pl);
         pl->songsel = songselAlloc (pl->musicdb,
@@ -463,16 +466,15 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
             sequenceGetDanceList (pl->sequence), pl->songfilter);
       }
       danceIdx = sequenceIterate (pl->sequence, &pl->seqiteridx);
-      logMsg (LOG_DBG, LOG_BASIC, "sequence: dance: %zd", danceIdx);
+      logMsg (LOG_DBG, LOG_BASIC, "sequence: dance: %d/%s", danceIdx,
+          danceGetStr (pl->dances, danceIdx, DANCE_DANCE));
     }
 
     song = songselSelect (pl->songsel, danceIdx);
     count = 0;
     while (song != NULL && count < VALID_SONG_ATTEMPTS) {
       if (songAudioFileExists (song)) {
-        if (checkProc (song, userdata)) {
-          break;
-        }
+        break;
       }
       song = songselSelect (pl->songsel, danceIdx);
       ++count;
@@ -484,7 +486,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
       songselSelectFinalize (pl->songsel, danceIdx);
       sfname = songGetStr (song, TAG_FILE);
       ++pl->count;
-      logMsg (LOG_DBG, LOG_BASIC, "sequence: select: %s", sfname);
+      logMsg (LOG_DBG, LOG_BASIC, "select: %s", sfname);
     }
   }
 
@@ -742,8 +744,8 @@ playlistSetSongFilter (playlist_t *pl)
 static void
 playlistCountList (playlist_t *pl)
 {
-  ssize_t     sel;
-  ssize_t     count;
+  int         sel;
+  dbidx_t     count;
   ilistidx_t  didx;
   ilistidx_t  iteridx;
 
@@ -758,7 +760,7 @@ playlistCountList (playlist_t *pl)
     sel = ilistGetNum (pl->pldances, didx, PLDANCE_SELECTED);
     if (sel == 1) {
       count = ilistGetNum (pl->pldances, didx, PLDANCE_COUNT);
-      nlistSetDouble (pl->countList, didx, (double) count);
+      nlistSetNum (pl->countList, didx, count);
     }
   }
   logProcEnd (LOG_PROC, "playlistCountList", "");
