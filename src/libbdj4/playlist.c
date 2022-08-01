@@ -456,14 +456,14 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
       if (pl->songsel == NULL) {
         playlistSetSongFilter (pl);
         pl->songsel = songselAlloc (pl->musicdb,
-            pl->countList, pl->songfilter);
+            pl->countList, NULL, pl->songfilter);
       }
     }
     if (type == PLTYPE_SEQUENCE) {
       if (pl->songsel == NULL) {
         playlistSetSongFilter (pl);
         pl->songsel = songselAlloc (pl->musicdb,
-            sequenceGetDanceList (pl->sequence), pl->songfilter);
+            sequenceGetDanceList (pl->sequence), NULL, pl->songfilter);
       }
       danceIdx = sequenceIterate (pl->sequence, &pl->seqiteridx);
       logMsg (LOG_DBG, LOG_BASIC, "sequence: dance: %d/%s", danceIdx,
@@ -486,7 +486,8 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
       songselSelectFinalize (pl->songsel, danceIdx);
       sfname = songGetStr (song, TAG_FILE);
       ++pl->count;
-      logMsg (LOG_DBG, LOG_BASIC, "select: %s", sfname);
+      logMsg (LOG_DBG, LOG_BASIC, "select: %d/%s %s", danceIdx,
+          danceGetStr (pl->dances, danceIdx, DANCE_DANCE), sfname);
     }
   }
 

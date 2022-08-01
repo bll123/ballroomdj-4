@@ -1978,7 +1978,6 @@ mainMusicQueueHistory (void *tmaindata, ilistidx_t idx)
   if (song != NULL) {
     didx = songGetNum (song, TAG_DANCE);
   }
-logMsg (LOG_DBG, LOG_IMPORTANT, "hist: %d dbidx:%d didx:%d", idx, dbidx, didx);
   logProcEnd (LOG_PROC, "mainMusicQueueHistory", "");
   return didx;
 }
@@ -2420,7 +2419,6 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
   song_t        *song = NULL;
   nlist_t       *songList = NULL;
   nlist_t       *danceCounts = NULL;
-  nlist_t       *newlist = NULL;
   dancesel_t    *dancesel = NULL;
   songsel_t     *songsel = NULL;
   int           totcount;
@@ -2435,15 +2433,18 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
 
   danceCounts = nlistAlloc ("mq-mix-counts", LIST_ORDERED, NULL);
   songList = nlistAlloc ("mq-mix-song-list", LIST_ORDERED, NULL);
-  newlist = nlistAlloc ("mq-mix-new-list", LIST_UNORDERED, NULL);
 
   musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
   logMsg (LOG_DBG, LOG_BASIC, "mix: mq len: %d", musicqLen);
   totcount = 0;
-  for (ssize_t i = 1; i <= musicqLen; ++i) {
+  /* skip the empty head; there is no idx = musicqLen */
+  for (ssize_t i = 1; i < musicqLen; ++i) {
     int   plidx;
 
     dbidx = musicqGetByIdx (mainData->musicQueue, mqidx, i);
+    if (dbidx < 0) {
+      continue;
+    }
     plidx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, i);
     nlistSetNum (songList, dbidx, plidx);
     song = dbGetByIdx (mainData->musicdb, dbidx);
@@ -2465,12 +2466,13 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
   /* should already be an empty head on the queue */
 
   dancesel = danceselAlloc (danceCounts);
-  songsel = songselAlloc (mainData->musicdb, danceCounts, NULL);
+  songsel = songselAlloc (mainData->musicdb, danceCounts, songList, NULL);
 
-  currlen = nlistGetCount (newlist);
-fprintf (stderr, "%d < %d\n", currlen, totcount);
+  currlen = 0;
   while (currlen < totcount) {
-    danceIdx = danceselSelect (dancesel, danceCounts, currlen,
+    /* as there is always an empty head on the music queue, */
+    /* the prior-index must point at currlen + 1 */
+    danceIdx = danceselSelect (dancesel, danceCounts, currlen + 1,
         mainMusicQueueHistory, mainData);
     song = songselSelect (songsel, danceIdx);
     if (song != NULL) {
@@ -2483,21 +2485,19 @@ fprintf (stderr, "%d < %d\n", currlen, totcount);
           danceGetStr (dancesel->dances, danceIdx, DANCE_DANCE),
           songGetStr (song, TAG_FILE));
       dbidx = songGetNum (song, TAG_DBIDX);
-      nlistSetNum (newlist, dbidx, 0);
       danceselAddCount (dancesel, danceIdx);
       nlistDecrement (danceCounts, danceIdx);
       plidx = nlistGetNum (songList, dbidx);
       dur = mainCalculateSongDuration (mainData, song, plidx);
       musicqPush (mainData->musicQueue, mqidx, dbidx, plidx, dur);
+      ++currlen;
     }
-    currlen = nlistGetCount (newlist);
-fprintf (stderr, "%d < %d\n", currlen, totcount);
   }
 
   songselFree (songsel);
   danceselFree (dancesel);
   nlistFree (danceCounts);
-  nlistFree (newlist);
+  nlistFree (songList);
 
   mainData->musicqChanged [mqidx] = MAIN_CHG_START;
   mainData->marqueeChanged [mqidx] = true;

@@ -24,7 +24,7 @@ typedef struct songseldance songseldance_t;
 
 typedef struct songsel songsel_t;
 
-songsel_t * songselAlloc (musicdb_t *musicdb, nlist_t *dancelist, songfilter_t *songfilter);
+songsel_t * songselAlloc (musicdb_t *musicdb, nlist_t *dancelist, nlist_t *songlist, songfilter_t *songfilter);
 void      songselFree (songsel_t *songsel);
 song_t    * songselSelect (songsel_t *songsel, ilistidx_t danceIdx);
 void      songselSelectFinalize (songsel_t *songsel, ilistidx_t danceIdx);
