@@ -2,7 +2,18 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-add_executable (bdj4configui bdj4configui.c)
+add_executable (bdj4configui
+  bdj4configui.c
+  confcommon.c
+  confdance.c
+  confgeneral.c
+  confgenre.c
+  confgui.c
+  conflevel.c
+  confrating.c
+  confstatus.c
+  conftable.c
+)
 if (WIN32)
   target_compile_options (bdj4configui PRIVATE -municode)
   target_compile_options (bdj4configui PRIVATE -mwindows)
