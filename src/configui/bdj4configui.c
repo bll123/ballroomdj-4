@@ -189,6 +189,7 @@ main (int argc, char *argv[])
   confui.gui.uiitem [CONFUI_ENTRY_RC_USER_ID].entry = uiEntryInit (10, 30);
   confui.gui.uiitem [CONFUI_ENTRY_STARTUP].entry = uiEntryInit (50, 300);
   confui.gui.uiitem [CONFUI_ENTRY_SHUTDOWN].entry = uiEntryInit (50, 300);
+  confui.gui.uiitem [CONFUI_ENTRY_ITUNES_DIR].entry = uiEntryInit (50, 300);
 
   osSetStandardSignals (confuiSigHandler);
 

@@ -18,7 +18,7 @@ static void   slistUpdateMaxKeyWidth (list_t *list, const char *keydata);
 /* key/value list, keyed by a listidx_t */
 
 slist_t *
-slistAlloc (char *name, listorder_t ordered, slistFree_t valueFreeHook)
+slistAlloc (const char *name, listorder_t ordered, slistFree_t valueFreeHook)
 {
   slist_t    *list;
 

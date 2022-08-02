@@ -191,6 +191,10 @@ while read -r line; do
   sed -n -e '/^STATUS/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
+  fn=${TMPLDIR}/itunes-stars.txt
+  sed -n -e '/^[0-9]/ {n;p;}' $fn > $TMP
+  mksub $fn $TMP $locale $pofile
+
   for fn in ${TMPLDIR}/*.pldances; do
     sed -n -e '/^DANCE/ {n;p;}' $fn > $TMP
     sort -u $TMP > $TMP.n

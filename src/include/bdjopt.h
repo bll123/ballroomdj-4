@@ -39,16 +39,19 @@ typedef enum {
   OPT_G_AUTOORGANIZE,             //   d s
   OPT_G_BPM,                      // u d s
   OPT_G_DEBUGLVL,                 // u d s
-  OPT_G_ITUNESSUPPORT,            //   d s
+  OPT_G_ITUNES_DISLIKED,
+  OPT_G_ITUNES_LIKED,
   OPT_G_LOADDANCEFROMGENRE,       // u d s
   OPT_G_PLAYERQLEN,               // u d s
   OPT_G_REMCONTROLHTML,           // u d s
   OPT_G_WRITETAGS,                //   d s
   OPT_G_BDJ3_COMPAT_TAGS,         //   d s
+  OPT_M_DIR_ITUNES_MEDIA,
   OPT_M_DIR_MUSIC,                // u d s
   /* DIR_OLD_SKIP will be used for a time until the conversion from bdj3 to */
   /* bdj4 is complete.  It will be removed in a later version */
   OPT_M_DIR_OLD_SKIP,             // u - -
+  OPT_M_ITUNES_XML_FILE,
   OPT_M_PLAYER_INTFC,             // u d s
   OPT_M_SHUTDOWNSCRIPT,           // u d s
   OPT_M_STARTUPSCRIPT,            // u d s
@@ -98,28 +101,15 @@ typedef enum {
   OPTTYPE_GLOBAL,
   OPTTYPE_PROFILE,
   OPTTYPE_MACHINE,
-  OPTTYPE_MACH_PROF
+  OPTTYPE_MACH_PROF,
+  OPTTYPE_MAX,
 } bdjopttype_t;
 
-typedef struct {
-  ssize_t       currprofile;
-  datafile_t    *df;
-  nlist_t       *bdjoptList;
-  char          *globalFname;
-  char          *profileFname;
-  char          *machineFname;
-  char          *machineProfileFname;
-} bdjopt_t;
-
 #define BDJ_CONFIG_BASEFN   "bdjconfig"
-#define BDJ_CONFIG_EXT      ".txt"
 
 enum {
   BDJOPT_MAX_PROFILES = 10,
 };
-
-extern datafilekey_t  bdjoptprofiledfkeys[];
-extern int            bdjoptprofiledfcount;
 
 void    bdjoptInit (void);
 void    bdjoptFree (void);
@@ -131,5 +121,7 @@ void    bdjoptCreateDirectories (void);
 void    bdjoptSave (void);
 void    bdjoptConvBPM (datafileconv_t *conv);
 void    bdjoptDump (void);
+bool    bdjoptProfileExists (void);
+char    * bdjoptGetProfileName (void);
 
 #endif /* INC_BDJOPT_H */

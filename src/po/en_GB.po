@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-07-30\n"
-"PO-Revision-Date: 2022-07-30\n"
+"POT-Creation-Date: 2022-08-02\n"
+"PO-Revision-Date: 2022-08-02\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -56,6 +56,11 @@ msgstr ""
 #. CONTEXT: managementui: management user interface window title
 #, c-format
 msgid "%s Management"
+msgstr ""
+
+#. CONTEXT: configuration: itunes: the itunes media folder
+#, c-format
+msgid "%s Media Folder"
 msgstr ""
 
 #. CONTEXT: playerui: main window title
@@ -521,10 +526,10 @@ msgstr ""
 msgid "Don't Write"
 msgstr ""
 
+#. CONTEXT: configuration: genres: information on how to edit a genre entry
+#. CONTEXT: configuration: dance levels: information on how to edit a level entry
 #. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
 #. CONTEXT: configuration: status: information on how to edit a status entry
-#. CONTEXT: configuration: dance levels: information on how to edit a level entry
-#. CONTEXT: configuration: genres: information on how to edit a genre entry
 msgid "Double click on a field to edit."
 msgstr ""
 
@@ -604,10 +609,6 @@ msgstr ""
 
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
-msgstr ""
-
-#. CONTEXT: configuration: enable itunes support
-msgid "Enable iTunes Support"
 msgstr ""
 
 #. CONTEXT: set up alternate: ask for alternate folder
@@ -954,14 +955,14 @@ msgstr ""
 msgid "Mix"
 msgstr ""
 
+#. CONTEXT: configuration: qr code: title display for mobile marquee
 #. CONTEXT: configuration: options associated with the mobile marquee
 #. CONTEXT: configuration: set mobile marquee mode (off/local/internet)
-#. CONTEXT: configuration: qr code: title display for mobile marquee
 msgid "Mobile Marquee"
 msgstr ""
 
-#. CONTEXT: configuration: options associated with mobile remote control
 #. CONTEXT: configuration: qr code: title display for mobile remote control
+#. CONTEXT: configuration: options associated with mobile remote control
 msgid "Mobile Remote Control"
 msgstr ""
 
@@ -997,8 +998,8 @@ msgstr ""
 msgid "Music Queue"
 msgstr ""
 
-#. CONTEXT: configuration: the name to use for the mobile marquee internet mode
 #. CONTEXT: configuration: mobile marquee: the name to use for internet routing
+#. CONTEXT: configuration: the name to use for the mobile marquee internet mode
 msgid "Name"
 msgstr ""
 
@@ -1202,8 +1203,8 @@ msgstr ""
 msgid "Poor"
 msgstr ""
 
-#. CONTEXT: configuration: remote control: the port to use for remote control
 #. CONTEXT: configuration: the port to use for the mobile marquee
+#. CONTEXT: configuration: remote control: the port to use for remote control
 msgid "Port"
 msgstr ""
 
@@ -1250,8 +1251,8 @@ msgstr ""
 msgid "Profile may not be deleted."
 msgstr ""
 
-#. CONTEXT: configuration: remote control: the link to display the QR code for remote control
 #. CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee
+#. CONTEXT: configuration: remote control: the link to display the QR code for remote control
 msgid "QR Code"
 msgstr ""
 
@@ -1280,8 +1281,8 @@ msgstr ""
 msgid "Queue Dance"
 msgstr ""
 
-#. CONTEXT: configuration: the &sgB, of the music queue to display
 #. CONTEXT: configuration: the length of the queue displayed on the marquee
+#. CONTEXT: configuration: the &sgB, of the music queue to display
 msgid "Queue Length"
 msgstr ""
 
@@ -1442,6 +1443,11 @@ msgstr ""
 #. CONTEXT: installer: dialog title for selecting BDJ3 location
 #, c-format
 msgid "Select %s Location"
+msgstr ""
+
+#. CONTEXT: configuration: itunes media folder selection dialog: window title
+#, c-format
+msgid "Select %s Media Location"
 msgstr ""
 
 #. CONTEXT: configuration: file selection dialog: window title
@@ -1793,8 +1799,8 @@ msgstr ""
 msgid "Waltz"
 msgstr ""
 
-#. CONTEXT: configuration: rating: title of the weight column
 #. CONTEXT: configuration: level: title of the weight column
+#. CONTEXT: configuration: rating: title of the weight column
 msgid "Weight"
 msgstr ""
 

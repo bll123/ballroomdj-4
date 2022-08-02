@@ -40,12 +40,12 @@ typedef struct datafile {
 
 static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype);
 static void     datafileFreeInternal (datafile_t *df);
-static bool     datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount);
-static FILE *   datafileSavePrep (char *fn, char *tag);
+static bool     datafileCheckDfkeys (const char *name, datafilekey_t *dfkeys, ssize_t dfkeycount);
+static FILE *   datafileSavePrep (char *fn, const char *tag);
 static void     datafileSaveItem (char *buff, size_t sz, char *name, dfConvFunc_t convFunc, datafileconv_t *conv);
 static void     datafileLoadConv (datafilekey_t *dfkey, nlist_t *list, datafileconv_t *conv);
 static void     datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc, datafileconv_t *conv);
-static void     datafileDumpItem (char *tag, char *name, dfConvFunc_t convFunc, datafileconv_t *conv);
+static void     datafileDumpItem (const char *tag, const char *name, dfConvFunc_t convFunc, datafileconv_t *conv);
 
 /* parsing routines */
 
@@ -210,7 +210,7 @@ convMS (datafileconv_t *conv)
 /* datafile loading routines */
 
 datafile_t *
-datafileAlloc (char *name)
+datafileAlloc (const char *name)
 {
   datafile_t      *df;
 
@@ -227,7 +227,7 @@ datafileAlloc (char *name)
 }
 
 datafile_t *
-datafileAllocParse (char *name, datafiletype_t dftype, const char *fname,
+datafileAllocParse (const char *name, datafiletype_t dftype, const char *fname,
     datafilekey_t *dfkeys, ssize_t dfkeycount, listidx_t lookupKey)
 {
   datafile_t      *df;
@@ -290,7 +290,7 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
 }
 
 list_t *
-datafileParse (char *data, char *name, datafiletype_t dftype,
+datafileParse (char *data, const char *name, datafiletype_t dftype,
     datafilekey_t *dfkeys, ssize_t dfkeycount, slistidx_t lookupKey,
     slist_t **lookup)
 {
@@ -302,7 +302,7 @@ datafileParse (char *data, char *name, datafiletype_t dftype,
 }
 
 list_t *
-datafileParseMerge (list_t *datalist, char *data, char *name,
+datafileParseMerge (list_t *datalist, char *data, const char *name,
     datafiletype_t dftype, datafilekey_t *dfkeys,
     ssize_t dfkeycount, slistidx_t lookupKey, slist_t **lookup)
 {
@@ -568,7 +568,7 @@ datafileParseMerge (list_t *datalist, char *data, char *name,
 }
 
 slist_t *
-datafileSaveKeyValList (char *tag,
+datafileSaveKeyValList (const char *tag,
     datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list)
 {
   datafileconv_t  conv;
@@ -587,7 +587,7 @@ datafileSaveKeyValList (char *tag,
 }
 
 void
-datafileSaveKeyValBuffer (char *buff, size_t sz, char *tag,
+datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag,
     datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list)
 {
   datafileconv_t  conv;
@@ -601,7 +601,7 @@ datafileSaveKeyValBuffer (char *buff, size_t sz, char *tag,
 }
 
 void
-datafileSaveKeyVal (char *tag, char *fn, datafilekey_t *dfkeys,
+datafileSaveKeyVal (const char *tag, char *fn, datafilekey_t *dfkeys,
     ssize_t dfkeycount, nlist_t *list)
 {
   FILE    *fh;
@@ -619,7 +619,7 @@ datafileSaveKeyVal (char *tag, char *fn, datafilekey_t *dfkeys,
 }
 
 void
-datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
+datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys,
     ssize_t dfkeycount, ilist_t *list)
 {
   FILE            *fh;
@@ -681,7 +681,7 @@ datafileSaveIndirect (char *tag, char *fn, datafilekey_t *dfkeys,
 }
 
 void
-datafileSaveList (char *tag, char *fn, slist_t *list)
+datafileSaveList (const char *tag, char *fn, slist_t *list)
 {
   FILE            *fh;
   slistidx_t      iteridx;
@@ -760,7 +760,7 @@ datafileSetData (datafile_t *df, void *data)
 }
 
 void
-datafileDumpKeyVal (char *tag, datafilekey_t *dfkeys,
+datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys,
     ssize_t dfkeycount, nlist_t *list)
 {
   datafileconv_t  conv;
@@ -894,7 +894,7 @@ datafileFreeInternal (datafile_t *df)
 }
 
 static bool
-datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount)
+datafileCheckDfkeys (const char *name, datafilekey_t *dfkeys, ssize_t dfkeycount)
 {
   char  *last = "";
   bool  ok = true;
@@ -911,7 +911,7 @@ datafileCheckDfkeys (char *name, datafilekey_t *dfkeys, ssize_t dfkeycount)
 }
 
 static FILE *
-datafileSavePrep (char *fn, char *tag)
+datafileSavePrep (char *fn, const char *tag)
 {
   FILE    *fh;
   char    tbuff [100];
@@ -1003,7 +1003,7 @@ datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc,
 }
 
 static void
-datafileDumpItem (char *tag, char *name, dfConvFunc_t convFunc,
+datafileDumpItem (const char *tag, const char *name, dfConvFunc_t convFunc,
     datafileconv_t *conv)
 {
   char    tbuff [1024];

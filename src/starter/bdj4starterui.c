@@ -1220,12 +1220,9 @@ starterSupportResponseHandler (void *udata, long responseid)
 static int
 starterGetProfiles (startui_t *starter)
 {
-  char        tbuff [MAXPATHLEN];
-  datafile_t  *df;
   int         count;
   size_t      max;
   size_t      len;
-  nlist_t     *dflist = NULL;
   char        *pname = NULL;
   int         availprof = -1;
   nlist_t     *proflist = NULL;
@@ -1246,9 +1243,8 @@ starterGetProfiles (startui_t *starter)
   count = 0;
   for (int i = 0; i < BDJOPT_MAX_PROFILES; ++i) {
     sysvarsSetNum (SVL_BDJIDX, i);
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        BDJ_CONFIG_BASEFN, BDJ_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
-    if (fileopFileExists (tbuff)) {
+
+    if (bdjoptProfileExists ()) {
       pid_t   pid;
 
       pid = lockExists (lockName (ROUTE_STARTERUI), PATHBLD_MP_USEIDX);
@@ -1269,18 +1265,14 @@ starterGetProfiles (startui_t *starter)
         dispidx = count;
       }
 
-      df = datafileAllocParse ("bdjopt-prof", DFTYPE_KEY_VAL, tbuff,
-          bdjoptprofiledfkeys, bdjoptprofiledfcount, DATAFILE_NO_LOOKUP);
-      dflist = datafileGetList (df);
-      pname = nlistGetStr (dflist, OPT_P_PROFILENAME);
-
+      pname = bdjoptGetProfileName ();
       if (pname != NULL) {
         len = strlen (pname);
         max = len > max ? len : max;
         nlistSetStr (proflist, count, pname);
         nlistSetNum (profidxlist, count, i);
+        free (pname);
       }
-      datafileFree (df);
       ++count;
     } else if (availprof == -1) {
       if (i == starter->currprofile) {

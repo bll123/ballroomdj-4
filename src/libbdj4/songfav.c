@@ -14,6 +14,7 @@ static datafilekey_t favoritedfkeys [SONG_FAVORITE_MAX] = {
   { "bluestar",   SONG_FAVORITE_BLUE,     VALUE_STR, NULL, -1 },
   { "greenstar",  SONG_FAVORITE_GREEN,    VALUE_STR, NULL, -1 },
   { "orangestar", SONG_FAVORITE_ORANGE,   VALUE_STR, NULL, -1 },
+  { "pinkheart",  SONG_FAVORITE_PINK_HEART, VALUE_STR, NULL, -1 },
   { "purplestar", SONG_FAVORITE_PURPLE,   VALUE_STR, NULL, -1 },
   { "redstar",    SONG_FAVORITE_RED,      VALUE_STR, NULL, -1 },
 };
@@ -25,6 +26,7 @@ static songfavoriteinfo_t songfavoriteinfo [SONG_FAVORITE_MAX] = {
   { SONG_FAVORITE_GREEN, "\xE2\x98\x85", "#007223", NULL },
   { SONG_FAVORITE_BLUE, "\xE2\x98\x85", "#2f2ad7", NULL },
   { SONG_FAVORITE_PURPLE, "\xE2\x98\x85", "#901ba3", NULL },
+  { SONG_FAVORITE_PINK_HEART, "\xE2\x99\xa5", "#ee00e1", NULL },
 };
 
 void

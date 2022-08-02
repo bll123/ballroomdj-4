@@ -1,0 +1,24 @@
+# itunes-stars
+# 2022-8-2
+0
+..Slecht
+10
+..Slecht
+20
+..Slecht
+30
+..Goed
+40
+..Goed
+50
+..Goed
+60
+..Goed
+70
+..Uitstekend
+80
+..Uitstekend
+90
+..Uitstekend
+100
+..Uitstekend

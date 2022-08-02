@@ -9,7 +9,7 @@ typedef listorder_t slistorder_t;
 typedef listFree_t  slistFree_t;
 
   /* keyed by a string */
-slist_t   *slistAlloc (char *name, slistorder_t ordered,
+slist_t   *slistAlloc (const char *name, slistorder_t ordered,
               slistFree_t valueFreeHook);
 void      slistFree (void * list);
 ssize_t   slistGetCount (slist_t *list);

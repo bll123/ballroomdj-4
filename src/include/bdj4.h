@@ -24,6 +24,7 @@ enum {
   INSERT_AT_SELECTION = -2,
 };
 
+#define ITUNES_NAME     "iTunes"
 #define BDJ4_LONG_NAME  "BallroomDJ 4"
 #define BDJ4_NAME       "BDJ4"
 #define BDJ3_NAME       "BallroomDJ 3"

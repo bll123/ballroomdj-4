@@ -1,0 +1,24 @@
+# itunes-stars
+# 2022-8-2
+0
+..Poor
+10
+..Poor
+20
+..Poor
+30
+..Good
+40
+..Good
+50
+..Good
+60
+..Good
+70
+..Great
+80
+..Great
+90
+..Great
+100
+..Great
