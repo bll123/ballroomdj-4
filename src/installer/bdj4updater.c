@@ -42,8 +42,12 @@ main (int argc, char *argv [])
   bool    newinstall = false;
   int     c = 0;
   int     option_index = 0;
+  char    *home;
+  char    homemusicdir [MAXPATHLEN];
   char    tbuff [MAXPATHLEN];
+  char    *tval;
   bool    isbdj4 = false;
+  bool    bdjoptchanged = false;
 
   static struct option bdj_options [] = {
     { "newinstall", no_argument,        NULL,   'n' },
@@ -82,12 +86,64 @@ main (int argc, char *argv [])
   localeInit ();
   bdjoptInit ();
 
-  if (newinstall) {
-    char  *tval;
+  /* always figure out where the home music dir is */
+  /* this is used on new intalls to set the music dir */
+  /* also needed to check for the itunes dir every time */
+  home = sysvarsGetStr (SV_HOME);
+  if (isLinux ()) {
+    char  *data = NULL;
+    char  *prog = NULL;
+    char  *arg = "MUSIC";
 
+    prog = sysvarsGetStr (SV_PATH_XDGUSERDIR);
+    if (*prog) {
+      data = filedataGetProgOutput (prog, arg, UPDATER_TMP_FILE);
+      stringTrim (data);
+      stringTrimChar (data, '/');
+    }
+
+    /* xdg-user-dir returns the home folder if the music dir does */
+    /* not exist */
+    if (data != NULL &&
+        strcmp (data, home) != 0) {
+      strlcpy (homemusicdir, data, sizeof (homemusicdir));
+    } else {
+      snprintf (homemusicdir, sizeof (homemusicdir), "%s/Music", home);
+    }
+    if (data != NULL) {
+      free (data);
+    }
+  }
+  if (isWindows ()) {
+    char    *data;
+
+    snprintf (homemusicdir, sizeof (homemusicdir), "%s/Music", home);
+    data = osRegistryGet (
+        "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders",
+        "My Music");
+    if (data != NULL && *data) {
+      /* windows returns the path with %USERPROFILE% */
+      strlcpy (homemusicdir, home, sizeof (homemusicdir));
+      strlcat (homemusicdir, data + 13, sizeof (homemusicdir));
+    } else {
+      data = osRegistryGet (
+          "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders",
+          "My Music");
+      if (data != NULL && *data) {
+        /* windows returns the path with %USERPROFILE% */
+        strlcpy (homemusicdir, home, sizeof (homemusicdir));
+        strlcat (homemusicdir, data + 13, sizeof (homemusicdir));
+      }
+    }
+  }
+  if (isMacOS ()) {
+    snprintf (homemusicdir, sizeof (homemusicdir), "%s/Music", home);
+  }
+  pathNormPath (homemusicdir, sizeof (homemusicdir));
+
+  if (newinstall) {
     tval = bdjoptGetStr (OPT_M_VOLUME_INTFC);
-    if (tval != NULL &&
-        strcmp (tval, "libvolnull") == 0) {
+    if (tval == NULL || ! *tval || strcmp (tval, "libvolnull") == 0) {
       if (isWindows ()) {
         bdjoptSetStr (OPT_M_VOLUME_INTFC, "libvolwin");
       }
@@ -97,78 +153,55 @@ main (int argc, char *argv [])
       if (isLinux ()) {
         bdjoptSetStr (OPT_M_VOLUME_INTFC, "libvolpa");
       }
+      bdjoptchanged = true;
     }
 
     tval = bdjoptGetStr (OPT_M_STARTUPSCRIPT);
-    if (isLinux () &&
-        tval != NULL &&
-        strcmp (tval, "") == 0) {
+    if (isLinux () && (tval == NULL || ! *tval)) {
       pathbldMakePath (tbuff, sizeof (tbuff),
           "scripts/linux/bdjstartup", ".sh", PATHBLD_MP_MAINDIR);
       bdjoptSetStr (OPT_M_STARTUPSCRIPT, tbuff);
       pathbldMakePath (tbuff, sizeof (tbuff),
           "scripts/linux/bdjshutdown", ".sh", PATHBLD_MP_MAINDIR);
       bdjoptSetStr (OPT_M_SHUTDOWNSCRIPT, tbuff);
+      bdjoptchanged = true;
     }
 
     tval = bdjoptGetStr (OPT_M_DIR_MUSIC);
-    if (tval != NULL && strcmp (tval, "") == 0) {
-      char  *home;
-
-      home = sysvarsGetStr (SV_HOME);
-
-      if (isLinux ()) {
-        char  *data = NULL;
-        char  *prog = NULL;
-        char  *arg = "MUSIC";
-
-        prog = sysvarsGetStr (SV_PATH_XDGUSERDIR);
-        if (*prog) {
-          data = filedataGetProgOutput (prog, arg, UPDATER_TMP_FILE);
-          stringTrim (data);
-        }
-
-        snprintf (tbuff, sizeof (tbuff), "%s/", home);
-        if (data != NULL &&
-            strcmp (data, home) != 0 &&
-            strcmp (data, tbuff) != 0) {
-          strlcpy (tbuff, data, sizeof (tbuff));
-        } else {
-          snprintf (tbuff, sizeof (tbuff), "%s/Music", home);
-        }
-        if (data != NULL) {
-          free (data);
-        }
-      }
-      if (isWindows ()) {
-        char    *data;
-
-        snprintf (tbuff, sizeof (tbuff), "%s/Music", home);
-        data = osRegistryGet (
-            "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders",
-            "My Music");
-        if (data != NULL && *data) {
-          /* windows returns the path with %USERPROFILE% */
-          strlcpy (tbuff, home, sizeof (tbuff));
-          strlcat (tbuff, data + 13, sizeof (tbuff));
-        } else {
-          data = osRegistryGet (
-              "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders",
-              "My Music");
-          if (data != NULL && *data) {
-            /* windows returns the path with %USERPROFILE% */
-            strlcpy (tbuff, home, sizeof (tbuff));
-            strlcat (tbuff, data + 13, sizeof (tbuff));
-          }
-        }
-      }
-      if (isMacOS ()) {
-        snprintf (tbuff, sizeof (tbuff), "%s/Music", home);
-      }
-      pathNormPath (tbuff, sizeof (tbuff));
-      bdjoptSetStr (OPT_M_DIR_MUSIC, tbuff);
+    if (tval == NULL || ! *tval) {
+      bdjoptSetStr (OPT_M_DIR_MUSIC, homemusicdir);
+      bdjoptchanged = true;
     }
+  }
 
+  /* always check and see if itunes exists */
+  /* support for old versions of itunes is minimal */
+
+  tval = bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA);
+  if (tval == NULL || ! *tval) {
+    snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
+        homemusicdir, ITUNES_NAME, "iTunes Media");
+    if (fileopIsDirectory (tbuff)) {
+      bdjoptSetStr (OPT_M_DIR_ITUNES_MEDIA, tbuff);
+      bdjoptchanged = true;
+    }
+    snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
+        homemusicdir, ITUNES_NAME, "iTunes Music Library.xml");
+    if (fileopFileExists (tbuff)) {
+      bdjoptSetStr (OPT_M_ITUNES_XML_FILE, tbuff);
+      bdjoptchanged = true;
+    } else {
+      /* this is an ancient itunes name */
+      snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
+          homemusicdir, ITUNES_NAME, "iTunes Library.xml");
+      if (fileopFileExists (tbuff)) {
+        bdjoptSetStr (OPT_M_ITUNES_XML_FILE, tbuff);
+        bdjoptchanged = true;
+      }
+    }
+  }
+
+  if (bdjoptchanged) {
     bdjoptSave ();
   }
 

@@ -39,8 +39,6 @@ typedef enum {
   OPT_G_AUTOORGANIZE,             //   d s
   OPT_G_BPM,                      // u d s
   OPT_G_DEBUGLVL,                 // u d s
-  OPT_G_ITUNES_DISLIKED,
-  OPT_G_ITUNES_LIKED,
   OPT_G_LOADDANCEFROMGENRE,       // u d s
   OPT_G_PLAYERQLEN,               // u d s
   OPT_G_REMCONTROLHTML,           // u d s

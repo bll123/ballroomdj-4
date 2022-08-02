@@ -101,6 +101,10 @@ typedef enum {
   TAG_KEY_MAX,
 } tagdefkey_t;
 
+enum {
+  TAG_ITUNES_MAX = 18,
+};
+
 extern tagdef_t tagdefs [TAG_KEY_MAX];
 
 void        tagdefInit (void);

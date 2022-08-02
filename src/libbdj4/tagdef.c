@@ -20,6 +20,8 @@
 /* as of 2022-6-13 the tag names may no longer match the vorbis tag names */
 /* the tag name is used in the internal database and for debugging */
 
+/* if any itunes names are added, TAG_ITUNES_MAX must be updated in tagdef.h */
+
 tagdef_t tagdefs [TAG_KEY_MAX] = {
   [TAG_ADJUSTFLAGS] =
   { "ADJUSTFLAGS",                /* tag */
@@ -821,7 +823,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       { NULL, NULL, NULL },
       { NULL, NULL, NULL }
     },         /* audio tags */
-    "Track Total",                /* itunes name          */
+    "Track Count",                /* itunes name          */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
@@ -985,6 +987,8 @@ tagdefInit (void)
   tagdefs [TAG_DBADDDATE].displayname = _("Date Added");
   /* CONTEXT: label: disc number */
   tagdefs [TAG_DISCNUMBER].displayname = _("Disc");
+  /* CONTEXT: label: disc count */
+  tagdefs [TAG_DISCTOTAL].displayname = _("Disc Count");
   /* CONTEXT: label: duration of the song */
   tagdefs [TAG_DURATION].displayname = _("Duration");
   /* CONTEXT: label: favorite marker */
@@ -1003,6 +1007,8 @@ tagdefInit (void)
   tagdefs [TAG_TITLE].displayname = _("Title");
   /* CONTEXT: label: track number */
   tagdefs [TAG_TRACKNUMBER].displayname = _("Track");
+  /* CONTEXT: label: track count */
+  tagdefs [TAG_TRACKTOTAL].displayname = _("Track Count");
 
   /* editable */
 

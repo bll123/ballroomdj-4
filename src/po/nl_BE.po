@@ -79,6 +79,11 @@ msgstr ""
 msgid "%s Set Up Alternate"
 msgstr ""
 
+#. CONTEXT: configuration: itunes rating in stars (0, 0.5, 1, 1.5, etc.)
+#, c-format
+msgid "%s Stars"
+msgstr ""
+
 #. CONTEXT: starterui: basic support dialog: support option
 #, c-format
 msgid "%s Support Tickets"
@@ -93,6 +98,11 @@ msgstr ""
 #, c-format
 msgid "%s Wiki"
 msgstr "%s Wiki"
+
+#. CONTEXT: configuration: itunes: the itunes xml file
+#, c-format
+msgid "%s XML File"
+msgstr ""
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 #, c-format
@@ -519,6 +529,10 @@ msgstr ""
 #. CONTEXT: label: disc number
 msgid "Disc"
 msgstr "Schijf"
+
+#. CONTEXT: label: disc count
+msgid "Disc Count"
+msgstr ""
 
 #. CONTEXT: configuration: display settings: which set of display settings to update
 msgid "Display"
@@ -1457,6 +1471,11 @@ msgstr ""
 msgid "Select %s Media Location"
 msgstr ""
 
+#. CONTEXT: configuration: itunes xml file selection dialog: window title
+#, c-format
+msgid "Select %s XML File"
+msgstr ""
+
 #. CONTEXT: configuration: file selection dialog: window title
 msgid "Select File"
 msgstr "Selecteer bestand"
@@ -1702,6 +1721,10 @@ msgstr "Totale tijd"
 #. CONTEXT: label: track number
 msgid "Track"
 msgstr "Track"
+
+#. CONTEXT: label: track count
+msgid "Track Count"
+msgstr ""
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list
 msgid "Truncate"

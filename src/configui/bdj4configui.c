@@ -190,6 +190,7 @@ main (int argc, char *argv[])
   confui.gui.uiitem [CONFUI_ENTRY_STARTUP].entry = uiEntryInit (50, 300);
   confui.gui.uiitem [CONFUI_ENTRY_SHUTDOWN].entry = uiEntryInit (50, 300);
   confui.gui.uiitem [CONFUI_ENTRY_ITUNES_DIR].entry = uiEntryInit (50, 300);
+  confui.gui.uiitem [CONFUI_ENTRY_ITUNES_XML].entry = uiEntryInit (50, 300);
 
   osSetStandardSignals (confuiSigHandler);
 
@@ -311,6 +312,16 @@ main (int argc, char *argv[])
       DISP_SEL_SONGEDIT_C, tbuffc,
       -1);
   confui.gui.uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = DISP_SEL_MUSICQ;
+
+  for (int i = 0; i < CONFUI_ITUNES_STARS_MAX; ++i) {
+    confuiSpinboxTextInitDataNum (&confui.gui, "itunes-stars",
+        CONFUI_SPINBOX_ITUNES_STARS_0 + i,
+// ### Fix: use actual ratings
+        0, _("Poor"),
+        1, _("Good"),
+        2, _("Great"),
+        -1);
+  }
 
   confuiLoadHTMLList (&confui.gui);
   confuiLoadVolIntfcList (&confui.gui);

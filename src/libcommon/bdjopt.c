@@ -40,8 +40,6 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "BDJ3COMPATTAGS",     OPT_G_BDJ3_COMPAT_TAGS,   VALUE_NUM, convBoolean, -1 },
   { "BPM",                OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, -1 },
   { "DEBUGLVL",           OPT_G_DEBUGLVL,           VALUE_NUM, NULL, -1 },
-  { "ITUNESDISLIKED",     OPT_G_ITUNES_DISLIKED,    VALUE_STR, NULL, -1 },
-  { "ITUNESLIKED",        OPT_G_ITUNES_LIKED,       VALUE_STR, NULL, -1 },
   { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_NUM, convBoolean, -1 },
   { "PATHFMT",            OPT_G_AO_PATHFMT,         VALUE_STR, NULL, -1 },
   { "PLAYERQLEN",         OPT_G_PLAYERQLEN,         VALUE_NUM, NULL, -1 },
