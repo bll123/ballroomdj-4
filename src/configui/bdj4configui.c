@@ -112,11 +112,10 @@ static void confuiPopulateOptions (configui_t *confui);
 
 /* display settings */
 static bool   confuiDispSettingChg (void *udata);
-static void   confuiDispSaveTable (configui_t *confui, int selidx);
+static void   confuiDispSaveTable (confuigui_t *gui, int selidx);
 
 /* misc */
 static void confuiLoadTagList (configui_t *confui);
-static bool confuiOrgPathSelect (void *udata, long idx);
 static bool confuiMobmqTypeChg (void *udata);
 static bool confuiMobmqPortChg (void *udata);
 static int  confuiMobmqNameChg (uientry_t *entry, void *udata);
@@ -623,7 +622,7 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIMobileMarquee (confui);
   confuiBuildUIDebugOptions (confui);
 
-  uiutilsUICallbackLongInit (&confui->gui.nbcb, confuiSwitchTable, confui);
+  uiutilsUICallbackLongInit (&confui->gui.nbcb, confuiSwitchTable, &confui->gui);
   uiNotebookSetCallback (&confui->gui.notebook, &confui->gui.nbcb);
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);
@@ -1012,14 +1011,14 @@ confuiBuildUIMobileMarquee (configui_t *confui)
       CONFUI_ENTRY_MM_NAME, OPT_P_MOBILEMQTAG,
       bdjoptGetStr (OPT_P_MOBILEMQTAG));
   uiEntrySetValidate (confui->gui.uiitem [CONFUI_ENTRY_MM_NAME].entry,
-      confuiMobmqNameChg, confui, UIENTRY_IMMEDIATE);
+      confuiMobmqNameChg, &confui->gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: the title to display on the mobile marquee */
   confuiMakeItemEntry (&confui->gui, &vbox, &sg, _("Title"),
       CONFUI_ENTRY_MM_TITLE, OPT_P_MOBILEMQTITLE,
       bdjoptGetStr (OPT_P_MOBILEMQTITLE));
   uiEntrySetValidate (confui->gui.uiitem [CONFUI_ENTRY_MM_TITLE].entry,
-      confuiMobmqTitleChg, confui, UIENTRY_IMMEDIATE);
+      confuiMobmqTitleChg, &confui->gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee */
   confuiMakeItemLink (&confui->gui, &vbox, &sg, _("QR Code"),
@@ -1481,7 +1480,7 @@ confuiPopulateOptions (configui_t *confui)
 
   selidx = uiSpinboxTextGetValue (
       confui->gui.uiitem [CONFUI_SPINBOX_DISP_SEL].spinbox);
-  confuiDispSaveTable (confui, selidx);
+  confuiDispSaveTable (&confui->gui, selidx);
 
   bdjoptSetNum (OPT_G_DEBUGLVL, debug);
   logProcEnd (LOG_PROC, "confuiPopulateOptions", "");
@@ -1493,28 +1492,28 @@ confuiPopulateOptions (configui_t *confui)
 static bool
 confuiDispSettingChg (void *udata)
 {
-  configui_t  *confui = udata;
+  confuigui_t *gui = udata;
   int         oselidx;
   int         nselidx;
 
   logProcBegin (LOG_PROC, "confuiDispSettingChg");
 
 
-  oselidx = confui->gui.uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
+  oselidx = gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx;
   nselidx = uiSpinboxTextGetValue (
-      confui->gui.uiitem [CONFUI_SPINBOX_DISP_SEL].spinbox);
-  confui->gui.uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nselidx;
+      gui->uiitem [CONFUI_SPINBOX_DISP_SEL].spinbox);
+  gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = nselidx;
 
-  confuiDispSaveTable (confui, oselidx);
+  confuiDispSaveTable (gui, oselidx);
   /* be sure to create the listing first */
-  confuiCreateTagListingDisp (&confui->gui);
-  confuiCreateTagSelectedDisp (&confui->gui);
+  confuiCreateTagListingDisp (gui);
+  confuiCreateTagSelectedDisp (gui);
   logProcEnd (LOG_PROC, "confuiDispSettingChg", "");
   return UICB_CONT;
 }
 
 static void
-confuiDispSaveTable (configui_t *confui, int selidx)
+confuiDispSaveTable (confuigui_t *gui, int selidx)
 {
   slist_t       *tlist;
   slist_t       *nlist;
@@ -1524,20 +1523,20 @@ confuiDispSaveTable (configui_t *confui, int selidx)
 
   logProcBegin (LOG_PROC, "confuiDispSaveTable");
 
-  if (! uiduallistIsChanged (confui->gui.dispselduallist)) {
+  if (! uiduallistIsChanged (gui->dispselduallist)) {
     logProcEnd (LOG_PROC, "confuiDispSaveTable", "not-changed");
     return;
   }
 
   nlist = slistAlloc ("dispsel-save-tmp", LIST_UNORDERED, NULL);
-  tlist = uiduallistGetList (confui->gui.dispselduallist);
+  tlist = uiduallistGetList (gui->dispselduallist);
   slistStartIterator (tlist, &iteridx);
   while ((val = slistIterateValueNum (tlist, &iteridx)) >= 0) {
     tstr = tagdefs [val].tag;
     slistSetNum (nlist, tstr, 0);
   }
 
-  dispselSave (confui->gui.dispsel, selidx, nlist);
+  dispselSave (gui->dispsel, selidx, nlist);
 
   slistFree (tlist);
   slistFree (nlist);
@@ -1573,36 +1572,17 @@ confuiLoadTagList (configui_t *confui)
 }
 
 static bool
-confuiOrgPathSelect (void *udata, long idx)
-{
-  configui_t  *confui = udata;
-  char        *sval = NULL;
-  int         widx;
-
-  logProcBegin (LOG_PROC, "confuiOrgPathSelect");
-  widx = CONFUI_COMBOBOX_AO_PATHFMT;
-  sval = slistGetDataByIdx (confui->gui.uiitem [widx].displist, idx);
-  confui->gui.uiitem [widx].listidx = idx;
-  if (sval != NULL && *sval) {
-    bdjoptSetStr (OPT_G_AO_PATHFMT, sval);
-  }
-  confuiUpdateOrgExamples (&confui->gui, sval);
-  logProcEnd (LOG_PROC, "confuiOrgPathSelect", "");
-  return UICB_CONT;
-}
-
-static bool
 confuiMobmqTypeChg (void *udata)
 {
-  configui_t    *confui = udata;
+  confuigui_t   *gui = udata;
   double        value;
   long          nval;
 
   logProcBegin (LOG_PROC, "confuiMobmqTypeChg");
-  value = uiSpinboxGetValue (&confui->gui.uiitem [CONFUI_SPINBOX_MOBILE_MQ].uiwidget);
+  value = uiSpinboxGetValue (&gui->uiitem [CONFUI_SPINBOX_MOBILE_MQ].uiwidget);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBILEMARQUEE, nval);
-  confuiUpdateMobmqQrcode (&confui->gui);
+  confuiUpdateMobmqQrcode (gui);
   logProcEnd (LOG_PROC, "confuiMobmqTypeChg", "");
   return UICB_CONT;
 }
@@ -1610,15 +1590,15 @@ confuiMobmqTypeChg (void *udata)
 static bool
 confuiMobmqPortChg (void *udata)
 {
-  configui_t    *confui = udata;
+  confuigui_t   *gui = udata;
   double        value;
   long          nval;
 
   logProcBegin (LOG_PROC, "confuiMobmqPortChg");
-  value = uiSpinboxGetValue (&confui->gui.uiitem [CONFUI_WIDGET_MMQ_PORT].uiwidget);
+  value = uiSpinboxGetValue (&gui->uiitem [CONFUI_WIDGET_MMQ_PORT].uiwidget);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBILEMQPORT, nval);
-  confuiUpdateMobmqQrcode (&confui->gui);
+  confuiUpdateMobmqQrcode (gui);
   logProcEnd (LOG_PROC, "confuiMobmqPortChg", "");
   return UICB_CONT;
 }
@@ -1626,13 +1606,13 @@ confuiMobmqPortChg (void *udata)
 static int
 confuiMobmqNameChg (uientry_t *entry, void *udata)
 {
-  configui_t    *confui = udata;
+  confuigui_t     *gui = udata;
   const char      *sval;
 
   logProcBegin (LOG_PROC, "confuiMobmqNameChg");
   sval = uiEntryGetValue (entry);
   bdjoptSetStr (OPT_P_MOBILEMQTAG, sval);
-  confuiUpdateMobmqQrcode (&confui->gui);
+  confuiUpdateMobmqQrcode (gui);
   logProcEnd (LOG_PROC, "confuiMobmqNameChg", "");
   return UIENTRY_OK;
 }
@@ -1640,13 +1620,13 @@ confuiMobmqNameChg (uientry_t *entry, void *udata)
 static int
 confuiMobmqTitleChg (uientry_t *entry, void *udata)
 {
-  configui_t      *confui = udata;
+  confuigui_t     *gui = udata;
   const char      *sval;
 
   logProcBegin (LOG_PROC, "confuiMobmqTitleChg");
   sval = uiEntryGetValue (entry);
   bdjoptSetStr (OPT_P_MOBILEMQTITLE, sval);
-  confuiUpdateMobmqQrcode (&confui->gui);
+  confuiUpdateMobmqQrcode (gui);
   logProcEnd (LOG_PROC, "confuiMobmqTitleChg", "");
   return UIENTRY_OK;
 }
@@ -1654,11 +1634,11 @@ confuiMobmqTitleChg (uientry_t *entry, void *udata)
 static bool
 confuiRemctrlChg (void *udata, int value)
 {
-  configui_t  *confui = udata;
+  confuigui_t  *gui = udata;
 
   logProcBegin (LOG_PROC, "confuiRemctrlChg");
   bdjoptSetNum (OPT_P_REMOTECONTROL, value);
-  confuiUpdateRemctrlQrcode (&confui->gui);
+  confuiUpdateRemctrlQrcode (gui);
   logProcEnd (LOG_PROC, "confuiRemctrlChg", "");
   return UICB_CONT;
 }
@@ -1666,15 +1646,15 @@ confuiRemctrlChg (void *udata, int value)
 static bool
 confuiRemctrlPortChg (void *udata)
 {
-  configui_t    *confui = udata;
+  confuigui_t   *gui = udata;
   double        value;
   long          nval;
 
   logProcBegin (LOG_PROC, "confuiRemctrlPortChg");
-  value = uiSpinboxGetValue (&confui->gui.uiitem [CONFUI_WIDGET_RC_PORT].uiwidget);
+  value = uiSpinboxGetValue (&gui->uiitem [CONFUI_WIDGET_RC_PORT].uiwidget);
   nval = (long) value;
   bdjoptSetNum (OPT_P_REMCONTROLPORT, nval);
-  confuiUpdateRemctrlQrcode (&confui->gui);
+  confuiUpdateRemctrlQrcode (gui);
   logProcEnd (LOG_PROC, "confuiRemctrlPortChg", "");
   return UICB_CONT;
 }

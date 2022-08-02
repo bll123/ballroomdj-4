@@ -447,6 +447,34 @@ confuiMakeItemLabel (UIWidget *boxp, UIWidget *sg, const char *txt)
   logProcEnd (LOG_PROC, "confuiMakeItemLabel", "");
 }
 
+void
+confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...)
+{
+  va_list     valist;
+  nlistidx_t  key;
+  char        *disp;
+  int         sbidx;
+  nlist_t     *tlist;
+  nlist_t     *llist;
+
+  va_start (valist, widx);
+
+  tlist = nlistAlloc (tag, LIST_ORDERED, free);
+  llist = nlistAlloc (tag, LIST_ORDERED, free);
+  sbidx = 0;
+  while ((key = va_arg (valist, nlistidx_t)) != -1) {
+    disp = va_arg (valist, char *);
+
+    nlistSetStr (tlist, sbidx, disp);
+    nlistSetNum (llist, sbidx, key);
+    ++sbidx;
+  }
+  gui->uiitem [widx].displist = tlist;
+  gui->uiitem [widx].sbkeylist = llist;
+
+  va_end (valist);
+}
+
 /* internal routines */
 
 static bool
@@ -499,3 +527,4 @@ confuiValMSCallback (void *udata, const char *txt)
   logProcEnd (LOG_PROC, "confuiValMSCallback", "");
   return val;
 }
+

@@ -425,7 +425,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   char          *tag;
   const char    *valstr;
   bdjmobilemq_t type;
-  UIWidget      *uiwidgetp;
+  UIWidget      *uiwidgetp = NULL;
 
   logProcBegin (LOG_PROC, "confuiUpdateMobmqQrcode");
 
@@ -556,34 +556,6 @@ void
 confuiSetStatusMsg (confuigui_t *gui, const char *msg)
 {
   uiLabelSetText (&gui->statusMsg, msg);
-}
-
-void
-confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...)
-{
-  va_list     valist;
-  nlistidx_t  key;
-  char        *disp;
-  int         sbidx;
-  nlist_t     *tlist;
-  nlist_t     *llist;
-
-  va_start (valist, widx);
-
-  tlist = nlistAlloc (tag, LIST_ORDERED, free);
-  llist = nlistAlloc (tag, LIST_ORDERED, free);
-  sbidx = 0;
-  while ((key = va_arg (valist, nlistidx_t)) != -1) {
-    disp = va_arg (valist, char *);
-
-    nlistSetStr (tlist, sbidx, disp);
-    nlistSetNum (llist, sbidx, key);
-    ++sbidx;
-  }
-  gui->uiitem [widx].displist = tlist;
-  gui->uiitem [widx].sbkeylist = llist;
-
-  va_end (valist);
 }
 
 void
@@ -733,5 +705,24 @@ confuiUpdateOrgExample (org_t *org, char *data, UIWidget *uiwidgetp)
   free (disp);
   free (tdata);
   logProcEnd (LOG_PROC, "confuiUpdateOrgExample", "");
+}
+
+bool
+confuiOrgPathSelect (void *udata, long idx)
+{
+  confuigui_t *gui = udata;
+  char        *sval = NULL;
+  int         widx;
+
+  logProcBegin (LOG_PROC, "confuiOrgPathSelect");
+  widx = CONFUI_COMBOBOX_AO_PATHFMT;
+  sval = slistGetDataByIdx (gui->uiitem [widx].displist, idx);
+  gui->uiitem [widx].listidx = idx;
+  if (sval != NULL && *sval) {
+    bdjoptSetStr (OPT_G_AO_PATHFMT, sval);
+  }
+  confuiUpdateOrgExamples (gui, sval);
+  logProcEnd (LOG_PROC, "confuiOrgPathSelect", "");
+  return UICB_CONT;
 }
 

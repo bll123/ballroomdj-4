@@ -323,12 +323,12 @@ void confuiLoadDanceTypeList (confuigui_t *gui);
 void confuiLoadThemeList (confuigui_t *gui);
 void confuiUpdateMobmqQrcode (confuigui_t *gui);
 void confuiUpdateRemctrlQrcode (confuigui_t *gui);
-void confuiUpdateOrgExamples (confuigui_t *gui, char *pathfmt);
 void confuiSetStatusMsg (confuigui_t *gui, const char *msg);
-void confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
 void confuiSelectFileDialog (confuigui_t *gui, int widx, char *startpath, char *mimefiltername, char *mimetype);
 void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
+void confuiUpdateOrgExamples (confuigui_t *gui, char *pathfmt);
+bool confuiOrgPathSelect (void *udata, long idx);
 
 /* confdance.c */
 void confuiBuildUIEditDances (confuigui_t *gui);
@@ -360,6 +360,7 @@ void confuiMakeItemSwitch (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, char 
 void confuiMakeItemLabelDisp (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, char *txt, int widx, int bdjoptIdx);
 void confuiMakeItemCheckButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, int value);
 void confuiMakeItemLabel (UIWidget *boxp, UIWidget *sg, const char *txt);
+void confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
 
 /* conflevel.c */
 void confuiBuildUIEditLevels (confuigui_t *gui);
