@@ -12,6 +12,7 @@ add_executable (bdj4configui
   confgeneral.c
   confgenre.c
   confgui.c
+  confitunes.c
   conflevel.c
   confmarquee.c
   confmobmq.c
@@ -21,6 +22,9 @@ add_executable (bdj4configui
   confrc.c
   confstatus.c
   conftable.c
+  conftableadd.c
+  conftabledance.c
+  conftableset.c
   confui.c
 )
 if (WIN32)

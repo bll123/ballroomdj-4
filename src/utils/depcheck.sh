@@ -1,7 +1,12 @@
 #!/bin/bash
 
-TIN=si-in.txt
-TSORT=si-sort.txt
+keep=F
+if [[ $1 == --keep ]]; then
+  keep=T
+fi
+
+TIN=dep-in.txt
+TSORT=dep-sort.txt
 grc=0
 
 # a) check the include file hierarchy for problems.
@@ -14,11 +19,14 @@ for fn in */*.c */*.h build/config.h; do
 done
 tsort < $TIN > $TSORT
 rc=$?
+
+if [[ keep == F ]]; then
+  rm -f $TIN $TSORT > /dev/null 2>&1
+fi
 if [[ $rc -ne 0 ]]; then
   grc=$rc
+  exit $grc
 fi
-
-rm -f $TIN $TSORT > /dev/null 2>&1
 
 # b) check the .o file hierarchy for problems.
 $HOME/bin/lorder $(find ./build -name '*.o') > $TIN
@@ -28,6 +36,8 @@ if [[ $rc -ne 0 ]]; then
   grc=$rc
 fi
 
-rm -f $TIN $TSORT > /dev/null 2>&1
+if [[ keep == F ]]; then
+  rm -f $TIN $TSORT > /dev/null 2>&1
+fi
 
-exit $rc
+exit $grc

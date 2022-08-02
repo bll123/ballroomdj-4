@@ -150,25 +150,6 @@ confuiCreateLevelTable (confuigui_t *gui)
   logProcEnd (LOG_PROC, "confuiCreateLevelTable", "");
 }
 
-void
-confuiLevelSet (GtkListStore *store, GtkTreeIter *iter,
-    int editable, char *leveldisp, long weight, int def)
-{
-  GtkAdjustment     *adjustment;
-
-  logProcBegin (LOG_PROC, "confuiLevelSet");
-  adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
-  gtk_list_store_set (store, iter,
-      CONFUI_LEVEL_COL_EDITABLE, editable,
-      CONFUI_LEVEL_COL_LEVEL, leveldisp,
-      CONFUI_LEVEL_COL_WEIGHT, weight,
-      CONFUI_LEVEL_COL_ADJUST, adjustment,
-      CONFUI_LEVEL_COL_DIGITS, 0,
-      CONFUI_LEVEL_COL_DEFAULT, def,
-      -1);
-  logProcEnd (LOG_PROC, "confuiLevelSet", "");
-}
-
 static gboolean
 confuiLevelListCreate (GtkTreeModel *model, GtkTreePath *path,
     GtkTreeIter *iter, gpointer udata)

@@ -87,12 +87,6 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_SWITCH_DB_LOAD_FROM_GENRE, OPT_G_LOADDANCEFROMGENRE,
       bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE), NULL);
 
-  confuiMakeItemSwitch (gui, &vbox, &sg,
-      /* CONTEXT: configuration: enable itunes support */
-      _("Enable iTunes Support"),
-      CONFUI_SWITCH_ENABLE_ITUNES, OPT_G_ITUNESSUPPORT,
-      bdjoptGetNum (OPT_G_ITUNESSUPPORT), NULL);
-
   /* bdj4 */
   /* CONTEXT: configuration: the locale to use (e.g. English or Nederlands) */
   confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Locale"),

@@ -130,19 +130,6 @@ confuiCreateGenreTable (confuigui_t *gui)
 }
 
 
-void
-confuiGenreSet (GtkListStore *store, GtkTreeIter *iter,
-    int editable, char *genredisp, int clflag)
-{
-  logProcBegin (LOG_PROC, "confuiGenreSet");
-  gtk_list_store_set (store, iter,
-      CONFUI_GENRE_COL_EDITABLE, editable,
-      CONFUI_GENRE_COL_GENRE, genredisp,
-      CONFUI_GENRE_COL_CLASSICAL, clflag,
-      -1);
-  logProcEnd (LOG_PROC, "confuiGenreSet", "");
-}
-
 static gboolean
 confuiGenreListCreate (GtkTreeModel *model, GtkTreePath *path,
     GtkTreeIter *iter, gpointer udata)

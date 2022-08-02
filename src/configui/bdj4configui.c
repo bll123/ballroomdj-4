@@ -573,6 +573,7 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIEditStatus (&confui->gui);
   confuiBuildUIEditLevels (&confui->gui);
   confuiBuildUIEditGenres (&confui->gui);
+  confuiBuildUIiTunes (&confui->gui);
   confuiBuildUIMobileRemoteControl (&confui->gui);
   confuiBuildUIMobileMarquee (&confui->gui);
   confuiBuildUIDebugOptions (&confui->gui);

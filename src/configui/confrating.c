@@ -135,25 +135,6 @@ confuiCreateRatingTable (confuigui_t *gui)
   logProcEnd (LOG_PROC, "confuiCreateRatingTable", "");
 }
 
-void
-confuiRatingSet (GtkListStore *store, GtkTreeIter *iter,
-    int editable, char *ratingdisp, long weight)
-{
-  GtkAdjustment     *adjustment;
-
-  logProcBegin (LOG_PROC, "confuiRatingSet");
-  adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
-  gtk_list_store_set (store, iter,
-      CONFUI_RATING_COL_R_EDITABLE, editable,
-      CONFUI_RATING_COL_W_EDITABLE, TRUE,
-      CONFUI_RATING_COL_RATING, ratingdisp,
-      CONFUI_RATING_COL_WEIGHT, weight,
-      CONFUI_RATING_COL_ADJUST, adjustment,
-      CONFUI_RATING_COL_DIGITS, 0,
-      -1);
-  logProcEnd (LOG_PROC, "confuiRatingSet", "");
-}
-
 static gboolean
 confuiRatingListCreate (GtkTreeModel *model, GtkTreePath *path,
     GtkTreeIter *iter, gpointer udata)

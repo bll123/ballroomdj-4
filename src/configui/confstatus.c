@@ -131,19 +131,6 @@ confuiCreateStatusTable (confuigui_t *gui)
   logProcEnd (LOG_PROC, "confuiCreateStatusTable", "");
 }
 
-void
-confuiStatusSet (GtkListStore *store, GtkTreeIter *iter,
-    int editable, char *statusdisp, int playflag)
-{
-  logProcBegin (LOG_PROC, "confuiStatusSet");
-  gtk_list_store_set (store, iter,
-      CONFUI_STATUS_COL_EDITABLE, editable,
-      CONFUI_STATUS_COL_STATUS, statusdisp,
-      CONFUI_STATUS_COL_PLAY_FLAG, playflag,
-      -1);
-  logProcEnd (LOG_PROC, "confuiStatusSet", "");
-}
-
 static gboolean
 confuiStatusListCreate (GtkTreeModel *model, GtkTreePath *path,
     GtkTreeIter *iter, gpointer udata)

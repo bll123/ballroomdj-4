@@ -334,8 +334,6 @@ bool confuiOrgPathSelect (void *udata, long idx);
 
 /* confdance.c */
 void confuiBuildUIEditDances (confuigui_t *gui);
-void confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
-void confuiDanceSet (GtkListStore *store, GtkTreeIter *iter, char *dancedisp, ilistidx_t key);
 
 /* confdebug.c */
 void confuiBuildUIDebugOptions (confuigui_t *gui);
@@ -352,7 +350,6 @@ void confuiBuildUIGeneral (confuigui_t *gui);
 /* confgenre.c */
 void confuiBuildUIEditGenres (confuigui_t *gui);
 void confuiCreateGenreTable (confuigui_t *gui);
-void confuiGenreSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *genredisp, int clflag);
 
 /* confgui.c */
 void confuiMakeNotebookTab (UIWidget *boxp, confuigui_t *gui, char *txt, int);
@@ -373,10 +370,12 @@ void confuiMakeItemCheckButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, 
 void confuiMakeItemLabel (UIWidget *boxp, UIWidget *sg, const char *txt);
 void confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
 
+/* confitunes.c */
+void confuiBuildUIiTunes (confuigui_t *gui);
+
 /* conflevel.c */
 void confuiBuildUIEditLevels (confuigui_t *gui);
 void confuiCreateLevelTable (confuigui_t *gui);
-void confuiLevelSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *leveldisp, long weight, int def);
 
 /* confmarquee.c */
 void confuiBuildUIMarquee (confuigui_t *gui);
@@ -397,12 +396,10 @@ void confuiBuildUIMobileRemoteControl (confuigui_t *gui);
 /* confrating.c */
 void confuiBuildUIEditRatings (confuigui_t *gui);
 void confuiCreateRatingTable (confuigui_t *gui);
-void confuiRatingSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *ratingdisp, long weight);
 
 /* confstatus.c */
 void confuiBuildUIEditStatus (confuigui_t *gui);
 void confuiCreateStatusTable (confuigui_t *gui);
-void confuiStatusSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *statusdisp, int playflag);
 
 /* conftable.c */
 void confuiMakeItemTable (confuigui_t *gui, UIWidget *box, confuiident_t id, int flags);
@@ -412,6 +409,19 @@ void confuiTableToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer u
 void confuiTableEditSpinbox (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 void confuiTableRadioToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer udata);
 bool confuiSwitchTable (void *udata, long pagenum);
+
+/* conftableadd.c */
+bool confuiTableAdd (void *udata);
+
+/* conftabledance.c */
+void confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
+
+/* conftableset.c */
+void confuiDanceSet (GtkListStore *store, GtkTreeIter *iter, char *dancedisp, ilistidx_t key);
+void confuiGenreSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *genredisp, int clflag);
+void confuiLevelSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *leveldisp, long weight, int def);
+void confuiRatingSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *ratingdisp, long weight);
+void confuiStatusSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *statusdisp, int playflag);
 
 /* confui.c */
 void confuiBuildUIUserInterface (confuigui_t *gui);
