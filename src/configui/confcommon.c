@@ -14,6 +14,7 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
+#include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "configui.h"
 #include "dirop.h"

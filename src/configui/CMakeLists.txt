@@ -6,13 +6,22 @@ add_executable (bdj4configui
   bdj4configui.c
   confcommon.c
   confdance.c
+  confdebug.c
+  confdispset.c
+  conffilter.c
   confgeneral.c
   confgenre.c
   confgui.c
   conflevel.c
+  confmarquee.c
+  confmobmq.c
+  conforg.c
+  confplayer.c
   confrating.c
+  confrc.c
   confstatus.c
   conftable.c
+  confui.c
 )
 if (WIN32)
   target_compile_options (bdj4configui PRIVATE -municode)

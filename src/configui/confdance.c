@@ -11,15 +11,22 @@
 #include <math.h>
 #include <stdarg.h>
 
+#include <gtk/gtk.h>
+
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdjstring.h"
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
 #include "configui.h"
 #include "dance.h"
+#include "datafile.h"
 #include "fileop.h"
+#include "ilist.h"
 #include "log.h"
+#include "nlist.h"
 #include "pathutil.h"
+#include "slist.h"
 
 /* dance table */
 static void confuiCreateDanceTable (confuigui_t *gui);

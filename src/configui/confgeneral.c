@@ -13,6 +13,7 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdjstring.h"
 #include "bdjopt.h"
 #include "configui.h"
 #include "log.h"

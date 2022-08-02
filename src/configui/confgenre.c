@@ -11,11 +11,14 @@
 #include <math.h>
 #include <stdarg.h>
 
+#include <gtk/gtk.h>
+
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjvarsdf.h"
 #include "configui.h"
 #include "genre.h"
+#include "ilist.h"
 #include "log.h"
 #include "ui.h"
 

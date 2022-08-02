@@ -305,6 +305,8 @@ typedef struct confuigui {
   uiduallist_t      *dispselduallist;
   slist_t           *edittaglist;
   slist_t           *listingtaglist;
+  /* filter */
+  nlist_t           *filterDisplaySel;
   /* tables */
   confuiident_t     tablecurr;
   confuitable_t     tables [CONFUI_ID_TABLE_MAX];
@@ -334,6 +336,15 @@ bool confuiOrgPathSelect (void *udata, long idx);
 void confuiBuildUIEditDances (confuigui_t *gui);
 void confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
 void confuiDanceSet (GtkListStore *store, GtkTreeIter *iter, char *dancedisp, ilistidx_t key);
+
+/* confdebug.c */
+void confuiBuildUIDebugOptions (confuigui_t *gui);
+
+/* confdispset.c */
+void confuiBuildUIDispSettings (confuigui_t *gui);
+
+/* conffilter.c */
+void confuiBuildUIFilterDisplay (confuigui_t *gui);
 
 /* confgeneral.c */
 void confuiBuildUIGeneral (confuigui_t *gui);
@@ -367,6 +378,22 @@ void confuiBuildUIEditLevels (confuigui_t *gui);
 void confuiCreateLevelTable (confuigui_t *gui);
 void confuiLevelSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *leveldisp, long weight, int def);
 
+/* confmarquee.c */
+void confuiBuildUIMarquee (confuigui_t *gui);
+
+/* confmobmq.c */
+void confuiBuildUIMobileMarquee (confuigui_t *gui);
+
+/* conforg.c */
+void confuiBuildUIOrganization (confuigui_t *gui);
+void confuiDispSaveTable (confuigui_t *gui, int selidx);
+
+/* confplayer.c */
+void confuiBuildUIPlayer (confuigui_t *gui);
+
+/* confrc.c */
+void confuiBuildUIMobileRemoteControl (confuigui_t *gui);
+
 /* confrating.c */
 void confuiBuildUIEditRatings (confuigui_t *gui);
 void confuiCreateRatingTable (confuigui_t *gui);
@@ -377,7 +404,7 @@ void confuiBuildUIEditStatus (confuigui_t *gui);
 void confuiCreateStatusTable (confuigui_t *gui);
 void confuiStatusSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *statusdisp, int playflag);
 
-/* confguitable.c */
+/* conftable.c */
 void confuiMakeItemTable (confuigui_t *gui, UIWidget *box, confuiident_t id, int flags);
 void confuiTableSave (confuigui_t *gui, confuiident_t id);
 void confuiTableEditText (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
@@ -385,5 +412,8 @@ void confuiTableToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer u
 void confuiTableEditSpinbox (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 void confuiTableRadioToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer udata);
 bool confuiSwitchTable (void *udata, long pagenum);
+
+/* confui.c */
+void confuiBuildUIUserInterface (confuigui_t *gui);
 
 #endif /* INC_CONFIGUI_H */
