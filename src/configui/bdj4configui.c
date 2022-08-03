@@ -280,6 +280,7 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   for (confuiident_t i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confuiTableSave (&confui->gui, i);
   }
+  confuiSaveiTunes (&confui->gui);
 
   uiWindowGetSize (&confui->gui.window, &x, &y);
   nlistSetNum (confui->options, CONFUI_SIZE_X, x);

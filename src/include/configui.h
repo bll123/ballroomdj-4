@@ -414,6 +414,7 @@ void confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
 void confuiInitiTunes (confuigui_t *gui);
 void confuiCleaniTunes (confuigui_t *gui);
 void confuiBuildUIiTunes (confuigui_t *gui);
+void confuiSaveiTunes (confuigui_t *gui);
 
 /* conflevel.c */
 void confuiBuildUIEditLevels (confuigui_t *gui);

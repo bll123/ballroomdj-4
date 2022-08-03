@@ -101,7 +101,7 @@ confuiInitiTunes (confuigui_t *gui)
     int     val;
 
     val = tagdefLookup (key);
-    nlistSetNum (gui->itunes->fields, val, 0);
+    nlistSetNum (gui->itunes->fields, val, 1);
   }
 }
 
@@ -128,6 +128,79 @@ confuiCleaniTunes (confuigui_t *gui)
   }
 }
 
+
+void
+confuiSaveiTunes (confuigui_t *gui)
+{
+  bool    changed;
+  int     count;
+  char    tbuff [MAXPATHLEN];
+
+  changed = false;
+  for (int i = 0; i < CONFUI_STARS_MAX; ++i) {
+    int     tval, oval;
+
+    tval = uiratingGetValue (gui->itunes->uirating [i]);
+    oval = nlistGetNum (gui->itunes->stars, CONFUI_STARS_0 + i);
+    if (tval != oval) {
+      changed = true;
+      nlistSetNum (gui->itunes->stars, CONFUI_STARS_0 + i, tval);
+    }
+  }
+
+  if (changed) {
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        ITUNES_STARS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+    datafileSaveKeyVal ("itunes-stars", tbuff, starsdfkeys,
+        CONFUI_STARS_MAX, gui->itunes->stars);
+  }
+
+  changed = false;
+  count = 0;
+  for (int i = 0; i < TAG_KEY_MAX; ++i) {
+    bool   tval;
+    bool   oval;
+
+    if (tagdefs [i].itunesName == NULL) {
+      continue;
+    }
+    if (i == TAG_FILE || i == TAG_DURATION) {
+      continue;
+    }
+
+    oval = false;
+    if (nlistGetNum (gui->itunes->fields, i) >= 0) {
+      oval = true;
+    }
+    tval = uiToggleButtonIsActive (
+        &gui->uiitem [CONFUI_WIDGET_ITUNES_FIELD_1 + count].uiwidget);
+    if (oval != tval) {
+      changed = true;
+      nlistSetNum (gui->itunes->fields, i, tval);
+    }
+    ++count;
+  }
+
+  if (changed) {
+    int         key;
+    int         tval;
+    nlistidx_t  iteridx;
+    slist_t     *nlist;
+
+    nlist = slistAlloc ("itunes-fields", LIST_ORDERED, NULL);
+    nlistStartIterator (gui->itunes->fields, &iteridx);
+    while ((key = nlistIterateKey (gui->itunes->fields, &iteridx)) >= 0) {
+      tval = nlistGetNum (gui->itunes->fields, key);
+      if (tval > 0) {
+        slistSetNum (nlist, tagdefs [key].tag, 0);
+      }
+    }
+
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+    datafileSaveList ("itunes-fields", tbuff, nlist);
+  }
+}
 
 void
 confuiBuildUIiTunes (confuigui_t *gui)
@@ -217,13 +290,20 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   uiBoxPackStart (&mhbox, &vbox);
 
-  uiCreateVertBox (&vboxb);
-  uiWidgetSetAllMargins (&vboxb, uiBaseMarginSz * 2);
-  uiBoxPackStart (&mhbox, &vboxb);
-
   /* CONTEXT: configuration: itunes: which fields should be imported from itunes */
   uiCreateLabel (&uiwidget, _("Fields to Import"));
-  uiBoxPackStart (&vboxb, &uiwidget);
+  uiBoxPackStart (&vbox, &uiwidget);
+
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+
+  uiCreateVertBox (&vbox);
+  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
+  uiBoxPackStart (&hbox, &vbox);
+
+  uiCreateVertBox (&vboxb);
+  uiWidgetSetAllMargins (&vboxb, uiBaseMarginSz * 2);
+  uiBoxPackStart (&hbox, &vboxb);
 
   count = 0;
   vboxp = &vbox;
