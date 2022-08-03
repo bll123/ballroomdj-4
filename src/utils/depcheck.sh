@@ -20,7 +20,7 @@ done
 tsort < $TIN > $TSORT
 rc=$?
 
-if [[ keep == F ]]; then
+if [[ $keep == F ]]; then
   rm -f $TIN $TSORT > /dev/null 2>&1
 fi
 if [[ $rc -ne 0 ]]; then
@@ -36,7 +36,7 @@ if [[ $rc -ne 0 ]]; then
   grc=$rc
 fi
 
-if [[ keep == F ]]; then
+if [[ $keep == F ]]; then
   rm -f $TIN $TSORT > /dev/null 2>&1
 fi
 

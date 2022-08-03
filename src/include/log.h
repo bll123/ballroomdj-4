@@ -72,22 +72,20 @@ enum {
 
 bdjlog_t *  logOpen (const char *fn, const char *processtag);
 bdjlog_t *  logOpenAppend (const char *fn, const char *processtag);
-void        logClose (logidx_t idx);
-bool        logCheck (logidx_t idx, loglevel_t level);
-void        rlogProcBegin (loglevel_t level, const char *tag,
-                const char *fn, int line);
-void        rlogProcEnd (loglevel_t level, const char *tag,
-                const char *suffix, const char *fn, int line);
-void        rlogError (const char *msg, int err, const char *fn, int line);
-void        rlogVarMsg (logidx_t, loglevel_t level,
-                const char *fn, int line, const char *fmt, ...);
-void        logSetLevel (logidx_t idx, loglevel_t level, const char *processtag);
-void        logStart (const char *processnm,
-                const char *processtag, loglevel_t level);
-void        logStartAppend (const char *processnm,
-                const char *processtag, loglevel_t level);
-void        logEnd (void);
-void        logBacktraceHandler (int sig);
-char *      plstateDebugText (playerstate_t plstate);
+void logClose (logidx_t idx);
+bool logCheck (logidx_t idx, loglevel_t level);
+void logSetLevel (logidx_t idx, loglevel_t level, const char *processtag);
+void logStart (const char *processnm, const char *processtag, loglevel_t level);
+void logStartAppend (const char *processnm, const char *processtag, loglevel_t level);
+void logEnd (void);
+void logBacktraceHandler (int sig);
+char * plstateDebugText (playerstate_t plstate);
+void logBasic (const char *fmt, ...);
+
+/* needed by the #defines */
+void rlogProcBegin (loglevel_t level, const char *tag, const char *fn, int line);
+void rlogProcEnd (loglevel_t level, const char *tag, const char *suffix, const char *fn, int line);
+void rlogError (const char *msg, int err, const char *fn, int line);
+void rlogVarMsg (logidx_t, loglevel_t level, const char *fn, int line, const char *fmt, ...);
 
 #endif /* INC_BDJLOG_H */

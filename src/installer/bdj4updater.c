@@ -24,6 +24,7 @@
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "log.h"
 #include "localeutil.h"
 #include "osutils.h"
 #include "pathbld.h"
@@ -181,14 +182,14 @@ main (int argc, char *argv [])
   tval = bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA);
   if (tval == NULL || ! *tval) {
     snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
-        homemusicdir, ITUNES_NAME, "iTunes Media");
+        homemusicdir, ITUNES_NAME, ITUNES_MEDIA_NAME);
     if (fileopIsDirectory (tbuff)) {
       bdjoptSetStr (OPT_M_DIR_ITUNES_MEDIA, tbuff);
       bdjoptchanged = true;
       ++haveitunes;
     }
     snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
-        homemusicdir, ITUNES_NAME, "iTunes Music Library.xml");
+        homemusicdir, ITUNES_NAME, ITUNES_XML_NAME);
     if (fileopFileExists (tbuff)) {
       bdjoptSetStr (OPT_M_ITUNES_XML_FILE, tbuff);
       bdjoptchanged = true;

@@ -36,6 +36,8 @@ static ftest_t tests [] = {
   { "/home/bll/stuff.x", 9, 7, 5, 2 },
   { "/home/bll/x.stuff", 9, 7, 1, 6 },
   { "/home/bll/stuff.x/", 9, 7, 7, 0 },
+//   1234567890123456789012345678901234567890
+  { "/home/bll/s/bdj4/src", 16, 3, 3, 0 },
   { "bdjconfig.txt.g", 0, 15, 13, 2 },
   { "dances.txt.nl", 0, 13, 10, 3 },
 //   1234567890123456789012345678901234567890

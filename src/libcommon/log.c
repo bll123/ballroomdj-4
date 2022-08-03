@@ -38,12 +38,11 @@ static char *playerstatetxt [PL_STATE_MAX] = {
   [PL_STATE_IN_GAP] = "pl-in-gap",
 };
 
-static void rlogStart (const char *processnm,
-    const char *processtag, int truncflag, loglevel_t level);
-static void rlogOpen (logidx_t idx, const char *fn,
-    const char *processtag, int truncflag);
+static void rlogStart (const char *processnm, const char *processtag, int truncflag, loglevel_t level);
+static void rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag);
 static void logInit (void);
 static const char * logTail (const char *fn);
+
 static bdjlog_t *syslogs [LOG_MAX];
 static char * logbasenm [LOG_MAX];
 static int  initialized = 0;
@@ -231,6 +230,19 @@ logBacktraceHandler (int sig)
   free (out);
   exit (1);
 #endif
+}
+
+void
+logBasic (const char *fmt, ...)
+{
+  FILE      *fh;
+  va_list   args;
+
+  fh = fopen ("out.txt", "a");
+  va_start (args, fmt);
+  vfprintf (fh, fmt, args);
+  va_end (args);
+  fclose (fh);
 }
 
 /* internal routines */

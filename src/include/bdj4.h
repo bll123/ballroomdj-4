@@ -24,10 +24,13 @@ enum {
   INSERT_AT_SELECTION = -2,
 };
 
-#define ITUNES_NAME     "iTunes"
-#define BDJ4_LONG_NAME  "BallroomDJ 4"
-#define BDJ4_NAME       "BDJ4"
-#define BDJ3_NAME       "BallroomDJ 3"
+#define ITUNES_NAME       "iTunes"
+#define ITUNES_MEDIA_NAME "iTunes Media"
+#define ITUNES_XML_NAME   "iTunes Music Library.xml"
+
+#define BDJ4_LONG_NAME    "BallroomDJ 4"
+#define BDJ4_NAME         "BDJ4"
+#define BDJ3_NAME         "BallroomDJ 3"
 
 #define BDJ4_DB_EXT       ".dat"
 #define BDJ4_LOCK_EXT     ".lck"

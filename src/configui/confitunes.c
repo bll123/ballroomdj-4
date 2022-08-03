@@ -17,9 +17,11 @@
 #include "bdjstring.h"
 #include "configui.h"
 #include "datafile.h"
+#include "fileop.h"
 #include "log.h"
 #include "nlist.h"
 #include "pathbld.h"
+#include "pathutil.h"
 #include "rating.h"
 #include "slist.h"
 #include "tagdef.h"
@@ -66,6 +68,7 @@ static datafilekey_t starsdfkeys [CONFUI_STARS_MAX] = {
 
 static bool confuiSelectiTunesDir (void *udata);
 static bool confuiSelectiTunesFile (void *udata);
+static int  confuiValidateMediaDir (uientry_t *entry, void *udata);
 
 void
 confuiInitiTunes (confuigui_t *gui)
@@ -207,7 +210,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
 {
   char          tmp [200];
   char          tbuff [MAXPATHLEN];
-  char          *dir;
+  char          *tdata;
   UIWidget      mvbox;
   UIWidget      vbox;
   UIWidget      vboxb;
@@ -228,9 +231,9 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiCreateSizeGroupHoriz (&sgr);
 
   *tbuff = '\0';
-  dir = bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA);
-  if (dir != NULL) {
-    strlcpy (tbuff, dir, sizeof (tbuff));
+  tdata = bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA);
+  if (tdata != NULL) {
+    strlcpy (tbuff, tdata, sizeof (tbuff));
   }
 
   /* CONTEXT: configuration: itunes: the itunes media folder */
@@ -239,7 +242,13 @@ confuiBuildUIiTunes (confuigui_t *gui)
       CONFUI_ENTRY_ITUNES_DIR, OPT_M_DIR_ITUNES_MEDIA,
       tbuff, confuiSelectiTunesDir);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_ITUNES_DIR].entry,
-      uiEntryValidateDir, gui, UIENTRY_DELAYED);
+      confuiValidateMediaDir, gui, UIENTRY_DELAYED);
+
+  *tbuff = '\0';
+  tdata = bdjoptGetStr (OPT_M_ITUNES_XML_FILE);
+  if (tdata != NULL) {
+    strlcpy (tbuff, tdata, sizeof (tbuff));
+  }
 
   /* CONTEXT: configuration: itunes: the itunes xml file */
   snprintf (tmp, sizeof (tmp), _("%s XML File"), ITUNES_NAME);
@@ -373,7 +382,8 @@ confuiSelectiTunesFile (void *udata)
   /* CONTEXT: configuration: itunes xml file selection dialog: window title */
   snprintf (tbuff, sizeof (tbuff), _("Select %s XML File"), ITUNES_NAME);
   selectdata = uiDialogCreateSelect (&gui->window, tbuff,
-      bdjoptGetStr (OPT_M_ITUNES_XML_FILE), NULL, NULL, NULL);
+      /* CONTEXT: configuration: dialog: XML file types */
+      bdjoptGetStr (OPT_M_ITUNES_XML_FILE), NULL, _("XML Files"), "application/xml");
   fn = uiSelectFileDialog (selectdata);
   if (fn != NULL) {
     uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_ITUNES_XML].entry, fn);
@@ -383,5 +393,33 @@ confuiSelectiTunesFile (void *udata)
   free (selectdata);
   logProcEnd (LOG_PROC, "confuiSelectiTunesFile", "");
   return UICB_CONT;
+}
+
+static int
+confuiValidateMediaDir (uientry_t *entry, void *udata)
+{
+  confuigui_t *gui = udata;
+  const char  *sval;
+  char        tbuff [MAXPATHLEN];
+  pathinfo_t  *pi;
+
+  logProcBegin (LOG_PROC, "confuiValidateMediaDir");
+  sval = uiEntryGetValue (entry);
+  if (! fileopIsDirectory (sval)) {
+    return UIENTRY_ERROR;
+  }
+
+  pi = pathInfo (sval);
+  snprintf (tbuff, sizeof (tbuff), "%.*s/%s",
+      (int) pi->dlen, pi->dirname, ITUNES_XML_NAME);
+  if (fileopFileExists (tbuff)) {
+    sval = uiEntryGetValue (gui->uiitem [CONFUI_ENTRY_ITUNES_XML].entry);
+    if (sval == NULL || ! *sval) {
+      uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_ITUNES_XML].entry, tbuff);
+    }
+  }
+  pathInfoFree (pi);
+  logProcEnd (LOG_PROC, "confuiValidateMediaDir", "");
+  return UIENTRY_OK;
 }
 
