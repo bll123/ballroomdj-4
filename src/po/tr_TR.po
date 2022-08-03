@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-07-24\n"
-"PO-Revision-Date: 2022-08-02\n"
+"PO-Revision-Date: 2022-08-03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -506,8 +506,8 @@ msgstr "Eklenme Tarihi"
 msgid "Debug Options"
 msgstr "Ayıklama Seçenekleri"
 
-#. CONTEXT: configuration: audio: The default audio sink (audio output)
 #. CONTEXT: configuration: level: title of the default selection column
+#. CONTEXT: configuration: audio: The default audio sink (audio output)
 msgid "Default"
 msgstr "Varsayılan"
 
@@ -707,6 +707,10 @@ msgstr "Dışında soldur"
 #. CONTEXT: song selection filter: a filter: select the 'favorite' displayed in the song selection
 msgid "Favorite"
 msgstr "Favorilere Ekle"
+
+#. CONTEXT: configuration: itunes: which fields should be imported from itunes
+msgid "Fields to Import"
+msgstr ""
 
 #. CONTEXT: song editor: label for displaying the audio file path
 msgid "File"
@@ -1329,6 +1333,7 @@ msgstr "Çekiliş Oyunları"
 msgid "Raffle Songs"
 msgstr "Çekiliş Şarkıları"
 
+#. CONTEXT: configuration: itunes: label for itunes rating conversion
 #. CONTEXT: configuration: rating: title of the rating name column
 msgid "Rating"
 msgstr "Reyting"

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-07-24\n"
-"PO-Revision-Date: 2022-08-02\n"
+"PO-Revision-Date: 2022-08-03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -506,8 +506,8 @@ msgstr "Datum toegevoegd"
 msgid "Debug Options"
 msgstr ""
 
-#. CONTEXT: configuration: audio: The default audio sink (audio output)
 #. CONTEXT: configuration: level: title of the default selection column
+#. CONTEXT: configuration: audio: The default audio sink (audio output)
 msgid "Default"
 msgstr "Standaard"
 
@@ -706,6 +706,10 @@ msgstr "Fade-Out tijd"
 #. CONTEXT: label: favorite marker
 #. CONTEXT: song selection filter: a filter: select the 'favorite' displayed in the song selection
 msgid "Favorite"
+msgstr ""
+
+#. CONTEXT: configuration: itunes: which fields should be imported from itunes
+msgid "Fields to Import"
 msgstr ""
 
 #. CONTEXT: song editor: label for displaying the audio file path
@@ -1330,6 +1334,7 @@ msgstr "Loterij spellen"
 msgid "Raffle Songs"
 msgstr "Loterij liedjes"
 
+#. CONTEXT: configuration: itunes: label for itunes rating conversion
 #. CONTEXT: configuration: rating: title of the rating name column
 msgid "Rating"
 msgstr "Beoordeling"
