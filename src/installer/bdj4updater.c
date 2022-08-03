@@ -48,6 +48,7 @@ main (int argc, char *argv [])
   char    *tval;
   bool    isbdj4 = false;
   bool    bdjoptchanged = false;
+  int     haveitunes = 0;
 
   static struct option bdj_options [] = {
     { "newinstall", no_argument,        NULL,   'n' },
@@ -184,21 +185,36 @@ main (int argc, char *argv [])
     if (fileopIsDirectory (tbuff)) {
       bdjoptSetStr (OPT_M_DIR_ITUNES_MEDIA, tbuff);
       bdjoptchanged = true;
+      ++haveitunes;
     }
     snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
         homemusicdir, ITUNES_NAME, "iTunes Music Library.xml");
     if (fileopFileExists (tbuff)) {
       bdjoptSetStr (OPT_M_ITUNES_XML_FILE, tbuff);
       bdjoptchanged = true;
+      ++haveitunes;
     } else {
-      /* this is an ancient itunes name */
+      /* this is an ancient itunes name, no idea it needs to be supported */
       snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
           homemusicdir, ITUNES_NAME, "iTunes Library.xml");
       if (fileopFileExists (tbuff)) {
         bdjoptSetStr (OPT_M_ITUNES_XML_FILE, tbuff);
         bdjoptchanged = true;
+        ++haveitunes;
       }
     }
+  }
+
+  /* a new installation, and the itunes folder and xml file */
+  /* have been found. */
+  if (newinstall && haveitunes == 2) {
+    /* set the music dir to the itunes media folder */
+    bdjoptSetStr (OPT_M_DIR_MUSIC, bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA));
+    /* set the organization path to the itunes standard */
+    /* album-artist / album / disc-tracknum0 title */
+    bdjoptSetStr (OPT_G_AO_PATHFMT,
+        "{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0% }{%TITLE%}");
+    bdjoptchanged = true;
   }
 
   if (bdjoptchanged) {

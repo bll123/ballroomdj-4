@@ -310,6 +310,24 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh PLAYER
         set value libplivlc
         puts $ofh "..$value"
+
+        set value {}
+        set tfn [file join $musicdir iTunes {iTunes Media}]
+        if { [file isdirectory $tfn] } {
+          set value $tfn
+        }
+        puts $ofh DIRITUNESMEDIA
+        puts $ofh "..$value"
+
+        if { $value ne {} } {
+          set value {}
+          set tfn [file normalize [file join $tfn .. {iTunes Music Library.xml}]]
+          if { [file exists $tfn] } {
+            set value $tfn
+          }
+        }
+        puts $ofh ITUNESXMLFILE
+        puts $ofh "..$value"
       }
       if { $path eq $mppath } {
         # audiosink is moved from machine to machine-profile

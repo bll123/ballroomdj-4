@@ -76,4 +76,11 @@ foreach prof $proflist {
   }
 }
 
+# itunes-* is a known good match
+set fnlist [glob -directory templates itunes-*.txt]
+foreach fn $fnlist {
+  set nfn [file join $datatopdir data [file tail $fn]]
+  file copy -force $fn $nfn
+}
+
 exit 0

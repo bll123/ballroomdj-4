@@ -24,6 +24,8 @@
 # version 2
 ## album artist
 {%ALBUMARTIST% - }{%TITLE%}
+# used by itunes
+{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0% }{%TITLE%}
 # {%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER%.}{%TITLE%}
 # {%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0%.}{%TITLE%}
 {%ALBUMARTIST%/}{%TITLE%}
