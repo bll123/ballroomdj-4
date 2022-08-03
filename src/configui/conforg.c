@@ -16,7 +16,46 @@
 #include "bdjopt.h"
 #include "configui.h"
 #include "log.h"
+#include "orgopt.h"
+#include "slist.h"
 #include "ui.h"
+
+typedef struct conforg {
+  orgopt_t    *orgopt;
+} conforg_t;
+
+void
+confuiInitOrganization (confuigui_t *gui)
+{
+  slist_t     *tlist;
+  slistidx_t  iteridx;
+  char        *p = NULL;
+  int         count;
+
+  gui->org = malloc (sizeof (conforg_t));
+  gui->org->orgopt = orgoptAlloc ();
+  tlist = orgoptGetList (gui->org->orgopt);
+
+  gui->uiitem [CONFUI_COMBOBOX_AO_PATHFMT].displist = tlist;
+  slistStartIterator (tlist, &iteridx);
+  gui->uiitem [CONFUI_COMBOBOX_AO_PATHFMT].listidx = 0;
+  count = 0;
+  while ((p = slistIterateValueData (tlist, &iteridx)) != NULL) {
+    if (strcmp (p, bdjoptGetStr (OPT_G_AO_PATHFMT)) == 0) {
+      gui->uiitem [CONFUI_COMBOBOX_AO_PATHFMT].listidx = count;
+      break;
+    }
+    ++count;
+  }
+}
+
+void
+confuiCleanOrganization (confuigui_t *gui)
+{
+  if (gui->org->orgopt != NULL) {
+    orgoptFree (gui->org->orgopt);
+  }
+}
 
 void
 confuiBuildUIOrganization (confuigui_t *gui)

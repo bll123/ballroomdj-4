@@ -22,6 +22,40 @@
 static bool confuiDispSettingChg (void *udata);
 
 void
+confuiInitDispSettings (confuigui_t *gui)
+{
+  char  tbuff [MAXPATHLEN];
+  char  tbuffb [MAXPATHLEN];
+  char  tbuffc [MAXPATHLEN];
+
+  /* CONTEXT: configuration: display settings for: song editor column N */
+  snprintf (tbuff, sizeof (tbuff), _("Song Editor - Column %d"), 1);
+  snprintf (tbuffb, sizeof (tbuffb), _("Song Editor - Column %d"), 2);
+  snprintf (tbuffc, sizeof (tbuffc), _("Song Editor - Column %d"), 3);
+  confuiSpinboxTextInitDataNum (gui, "cu-disp-settings",
+      CONFUI_SPINBOX_DISP_SEL,
+      /* CONTEXT: configuration: display settings for: music queue */
+      DISP_SEL_MUSICQ, _("Music Queue"),
+      /* CONTEXT: configuration: display settings for: requests */
+      DISP_SEL_REQUEST, _("Request"),
+      /* CONTEXT: configuration: display settings for: song list */
+      DISP_SEL_SONGLIST, _("Song List"),
+      /* CONTEXT: configuration: display settings for: song selection */
+      DISP_SEL_SONGSEL, _("Song Selection"),
+      /* CONTEXT: configuration: display settings for: easy song list */
+      DISP_SEL_EZSONGLIST, _("Easy Song List"),
+      /* CONTEXT: configuration: display settings for: easy song selection */
+      DISP_SEL_EZSONGSEL, _("Easy Song Selection"),
+      /* CONTEXT: configuration: display settings for: music manager */
+      DISP_SEL_MM, _("Music Manager"),
+      DISP_SEL_SONGEDIT_A, tbuff,
+      DISP_SEL_SONGEDIT_B, tbuffb,
+      DISP_SEL_SONGEDIT_C, tbuffc,
+      -1);
+  gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = DISP_SEL_MUSICQ;
+}
+
+void
 confuiBuildUIDispSettings (confuigui_t *gui)
 {
   UIWidget      vbox;

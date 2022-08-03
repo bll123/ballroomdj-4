@@ -26,6 +26,28 @@ static bool confuiSelectStartup (void *udata);
 static bool confuiSelectShutdown (void *udata);
 
 void
+confuiInitGeneral (confuigui_t *gui)
+{
+  confuiSpinboxTextInitDataNum (gui, "cu-audio-file-tags",
+      CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
+      /* CONTEXT: configuration: write audio file tags: do not write any tags to the audio file */
+      WRITE_TAGS_NONE, _("Don't Write"),
+      /* CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file */
+      WRITE_TAGS_BDJ_ONLY, _("BDJ Tags Only"),
+      /* CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file */
+      WRITE_TAGS_ALL, _("All Tags"),
+      -1);
+
+  confuiSpinboxTextInitDataNum (gui, "cu-bpm",
+      CONFUI_SPINBOX_BPM,
+      /* CONTEXT: configuration: BPM: beats per minute (not bars per minute) */
+      BPM_BPM, "BPM",
+      /* CONTEXT: configuration: MPM: measures per minute (aka bars per minute) */
+      BPM_MPM, "MPM",
+      -1);
+}
+
+void
 confuiBuildUIGeneral (confuigui_t *gui)
 {
   UIWidget      vbox;

@@ -11,8 +11,6 @@
 #include <math.h>
 #include <stdarg.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
@@ -27,12 +25,10 @@
 #include "fileop.h"
 #include "log.h"
 #include "nlist.h"
-#include "orgopt.h"
 #include "osuiutils.h"
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
-#include "pli.h"          // needed for volume sinklist
 #include "progstate.h"
 #include "sockh.h"
 #include "songfilter.h"
@@ -40,8 +36,6 @@
 #include "templateutil.h"
 #include "ui.h"
 #include "uinbutil.h"
-#include "volsink.h"
-#include "volume.h"     // needed for volume sink list
 
 typedef struct configui {
   progstate_t       *progstate;
@@ -86,19 +80,11 @@ main (int argc, char *argv[])
   int             status = 0;
   uint16_t        listenPort;
   char            *uifont = NULL;
-  nlist_t         *tlist = NULL;
   nlist_t         *llist = NULL;
   nlistidx_t      iteridx;
-  int             count;
-  char            *p = NULL;
-  volsinklist_t   sinklist;
   configui_t      confui;
-  volume_t        *volume = NULL;
-  orgopt_t        *orgopt = NULL;
   int             flags;
   char            tbuff [MAXPATHLEN];
-  char            tbuffb [MAXPATHLEN];
-  char            tbuffc [MAXPATHLEN];
 
 
   confui.progstate = progstateInit ("configui");
@@ -201,127 +187,11 @@ main (int argc, char *argv[])
 
   confui.gui.dispsel = dispselAlloc ();
 
-  orgopt = orgoptAlloc ();
-  assert (orgopt != NULL);
-  tlist = orgoptGetList (orgopt);
-
-  confui.gui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].displist = tlist;
-  slistStartIterator (tlist, &iteridx);
-  confui.gui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].listidx = 0;
-  count = 0;
-  while ((p = slistIterateValueData (tlist, &iteridx)) != NULL) {
-    if (strcmp (p, bdjoptGetStr (OPT_G_AO_PATHFMT)) == 0) {
-      confui.gui.uiitem [CONFUI_COMBOBOX_AO_PATHFMT].listidx = count;
-      break;
-    }
-    ++count;
-  }
-
-  volume = volumeInit ();
-  assert (volume != NULL);
-  volumeSinklistInit (&sinklist);
-  volumeGetSinkList (volume, "", &sinklist);
-  if (! volumeHaveSinkList (volume)) {
-    pli_t     *pli;
-
-    pli = pliInit (bdjoptGetStr (OPT_M_VOLUME_INTFC), "default");
-    pliAudioDeviceList (pli, &sinklist);
-  }
-
-  tlist = nlistAlloc ("cu-audio-out", LIST_ORDERED, free);
-  llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, free);
-  /* CONTEXT: configuration: audio: The default audio sink (audio output) */
-  nlistSetStr (tlist, 0, _("Default"));
-  nlistSetStr (llist, 0, "default");
-  confui.gui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = 0;
-  for (size_t i = 0; i < sinklist.count; ++i) {
-    if (strcmp (sinklist.sinklist [i].name, bdjoptGetStr (OPT_MP_AUDIOSINK)) == 0) {
-      confui.gui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx = i + 1;
-    }
-    nlistSetStr (tlist, i + 1, sinklist.sinklist [i].description);
-    nlistSetStr (llist, i + 1, sinklist.sinklist [i].name);
-  }
-  confui.gui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].displist = tlist;
-  confui.gui.uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].sbkeylist = llist;
-
-  volumeFreeSinkList (&sinklist);
-  volumeFree (volume);
-
-  confuiSpinboxTextInitDataNum (&confui.gui, "cu-audio-file-tags",
-      CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
-      /* CONTEXT: configuration: write audio file tags: do not write any tags to the audio file */
-      WRITE_TAGS_NONE, _("Don't Write"),
-      /* CONTEXT: configuration: write audio file tags: only write BDJ tags to the audio file */
-      WRITE_TAGS_BDJ_ONLY, _("BDJ Tags Only"),
-      /* CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file */
-      WRITE_TAGS_ALL, _("All Tags"),
-      -1);
-
-  confuiSpinboxTextInitDataNum (&confui.gui, "cu-bpm",
-      CONFUI_SPINBOX_BPM,
-      /* CONTEXT: configuration: BPM: beats per minute (not bars per minute) */
-      BPM_BPM, "BPM",
-      /* CONTEXT: configuration: MPM: measures per minute (aka bars per minute) */
-      BPM_MPM, "MPM",
-      -1);
-
-  confuiSpinboxTextInitDataNum (&confui.gui, "cu-dance-speed",
-      CONFUI_SPINBOX_DANCE_SPEED,
-      /* CONTEXT: configuration: dance speed */
-      DANCE_SPEED_SLOW, _("slow"),
-      /* CONTEXT: configuration: dance speed */
-      DANCE_SPEED_NORMAL, _("normal"),
-      /* CONTEXT: configuration: dance speed */
-      DANCE_SPEED_FAST, _("fast"),
-      -1);
-
-  confuiSpinboxTextInitDataNum (&confui.gui, "cu-dance-time-sig",
-      CONFUI_SPINBOX_DANCE_TIME_SIG,
-      /* CONTEXT: configuration: dance time signature */
-      DANCE_TIMESIG_24, _("2/4"),
-      /* CONTEXT: configuration: dance time signature */
-      DANCE_TIMESIG_34, _("3/4"),
-      /* CONTEXT: configuration: dance time signature */
-      DANCE_TIMESIG_44, _("4/4"),
-      /* CONTEXT: configuration: dance time signature */
-      DANCE_TIMESIG_48, _("4/8"),
-      -1);
-
-  /* CONTEXT: configuration: display settings for: song editor column N */
-  snprintf (tbuff, sizeof (tbuff), _("Song Editor - Column %d"), 1);
-  snprintf (tbuffb, sizeof (tbuffb), _("Song Editor - Column %d"), 2);
-  snprintf (tbuffc, sizeof (tbuffc), _("Song Editor - Column %d"), 3);
-  confuiSpinboxTextInitDataNum (&confui.gui, "cu-disp-settings",
-      CONFUI_SPINBOX_DISP_SEL,
-      /* CONTEXT: configuration: display settings for: music queue */
-      DISP_SEL_MUSICQ, _("Music Queue"),
-      /* CONTEXT: configuration: display settings for: requests */
-      DISP_SEL_REQUEST, _("Request"),
-      /* CONTEXT: configuration: display settings for: song list */
-      DISP_SEL_SONGLIST, _("Song List"),
-      /* CONTEXT: configuration: display settings for: song selection */
-      DISP_SEL_SONGSEL, _("Song Selection"),
-      /* CONTEXT: configuration: display settings for: easy song list */
-      DISP_SEL_EZSONGLIST, _("Easy Song List"),
-      /* CONTEXT: configuration: display settings for: easy song selection */
-      DISP_SEL_EZSONGSEL, _("Easy Song Selection"),
-      /* CONTEXT: configuration: display settings for: music manager */
-      DISP_SEL_MM, _("Music Manager"),
-      DISP_SEL_SONGEDIT_A, tbuff,
-      DISP_SEL_SONGEDIT_B, tbuffb,
-      DISP_SEL_SONGEDIT_C, tbuffc,
-      -1);
-  confui.gui.uiitem [CONFUI_SPINBOX_DISP_SEL].listidx = DISP_SEL_MUSICQ;
-
-  for (int i = 0; i < CONFUI_ITUNES_STARS_MAX; ++i) {
-    confuiSpinboxTextInitDataNum (&confui.gui, "itunes-stars",
-        CONFUI_SPINBOX_ITUNES_STARS_0 + i,
-// ### Fix: use actual ratings
-        0, _("Poor"),
-        1, _("Good"),
-        2, _("Great"),
-        -1);
-  }
+  confuiInitOrganization (&confui.gui);
+  confuiInitGeneral (&confui.gui);
+  confuiInitEditDances (&confui.gui);
+  confuiInitDispSettings (&confui.gui);
+  confuiInitiTunes (&confui.gui);
 
   confuiLoadHTMLList (&confui.gui);
   confuiLoadVolIntfcList (&confui.gui);
@@ -331,15 +201,7 @@ main (int argc, char *argv[])
   confuiLoadTagList (&confui);
   confuiLoadThemeList (&confui.gui);
 
-  confuiSpinboxTextInitDataNum (&confui.gui, "cu-mob-mq",
-      CONFUI_SPINBOX_MOBILE_MQ,
-      /* CONTEXT: configuration: mobile marquee: off */
-      MOBILEMQ_OFF, _("Off"),
-      /* CONTEXT: configuration: mobile marquee: use local router */
-      MOBILEMQ_LOCAL, _("Local"),
-      /* CONTEXT: configuration: mobile marquee: route via the internet */
-      MOBILEMQ_INTERNET, _("Internet"),
-      -1);
+  confuiInitMobileMarquee (&confui.gui);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
@@ -391,7 +253,7 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, confuiProcessMsg, confuiMainLoop, &confui);
   connFree (confui.conn);
   progstateFree (confui.progstate);
-  orgoptFree (orgopt);
+  confuiCleanOrganization (&confui.gui);
 
   logProcEnd (LOG_PROC, "configui", "");
   logEnd ();

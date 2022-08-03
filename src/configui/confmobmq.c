@@ -24,6 +24,20 @@ static int  confuiMobmqNameChg (uientry_t *entry, void *udata);
 static int  confuiMobmqTitleChg (uientry_t *entry, void *udata);
 
 void
+confuiInitMobileMarquee (confuigui_t *gui)
+{
+  confuiSpinboxTextInitDataNum (gui, "cu-mob-mq",
+      CONFUI_SPINBOX_MOBILE_MQ,
+      /* CONTEXT: configuration: mobile marquee: off */
+      MOBILEMQ_OFF, _("Off"),
+      /* CONTEXT: configuration: mobile marquee: use local router */
+      MOBILEMQ_LOCAL, _("Local"),
+      /* CONTEXT: configuration: mobile marquee: route via the internet */
+      MOBILEMQ_INTERNET, _("Internet"),
+      -1);
+}
+
+void
 confuiBuildUIMobileMarquee (confuigui_t *gui)
 {
   UIWidget      vbox;

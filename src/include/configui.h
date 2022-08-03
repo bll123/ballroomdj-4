@@ -318,6 +318,8 @@ enum {
   CONFUI_KEY_MAX,
 };
 
+typedef struct conforg conforg_t;
+
 typedef struct confuigui {
   confuiitem_t      uiitem [CONFUI_ITEM_MAX];
   char              *localip;
@@ -341,6 +343,8 @@ typedef struct confuigui {
   /* tables */
   confuiident_t     tablecurr;
   confuitable_t     tables [CONFUI_ID_TABLE_MAX];
+  /* organization */
+  conforg_t         *org;
   /* dances */
   bool              indancechange : 1;
 } confuigui_t;
@@ -364,18 +368,21 @@ void confuiUpdateOrgExamples (confuigui_t *gui, char *pathfmt);
 bool confuiOrgPathSelect (void *udata, long idx);
 
 /* confdance.c */
+void confuiInitEditDances (confuigui_t *gui);
 void confuiBuildUIEditDances (confuigui_t *gui);
 
 /* confdebug.c */
 void confuiBuildUIDebugOptions (confuigui_t *gui);
 
 /* confdispset.c */
+void confuiInitDispSettings (confuigui_t *gui);
 void confuiBuildUIDispSettings (confuigui_t *gui);
 
 /* conffilter.c */
 void confuiBuildUIFilterDisplay (confuigui_t *gui);
 
 /* confgeneral.c */
+void confuiInitGeneral (confuigui_t *gui);
 void confuiBuildUIGeneral (confuigui_t *gui);
 
 /* confgenre.c */
@@ -402,6 +409,7 @@ void confuiMakeItemLabel (UIWidget *boxp, UIWidget *sg, const char *txt);
 void confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
 
 /* confitunes.c */
+void confuiInitiTunes (confuigui_t *gui);
 void confuiBuildUIiTunes (confuigui_t *gui);
 
 /* conflevel.c */
@@ -412,13 +420,17 @@ void confuiCreateLevelTable (confuigui_t *gui);
 void confuiBuildUIMarquee (confuigui_t *gui);
 
 /* confmobmq.c */
+void confuiInitMobileMarquee (confuigui_t *gui);
 void confuiBuildUIMobileMarquee (confuigui_t *gui);
 
 /* conforg.c */
+void confuiInitOrganization (confuigui_t *gui);
+void confuiCleanOrganization (confuigui_t *gui);
 void confuiBuildUIOrganization (confuigui_t *gui);
 void confuiDispSaveTable (confuigui_t *gui, int selidx);
 
 /* confplayer.c */
+void confuiInitPlayer (confuigui_t *gui);
 void confuiBuildUIPlayer (confuigui_t *gui);
 
 /* confrc.c */

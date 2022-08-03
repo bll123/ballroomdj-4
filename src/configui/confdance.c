@@ -45,6 +45,33 @@ static void confuiDanceSave (confuigui_t *gui);
 static bool confuiSelectAnnouncement (void *udata);
 
 void
+confuiInitEditDances (confuigui_t *gui)
+{
+  confuiSpinboxTextInitDataNum (gui, "cu-dance-speed",
+      CONFUI_SPINBOX_DANCE_SPEED,
+      /* CONTEXT: configuration: dance speed */
+      DANCE_SPEED_SLOW, _("slow"),
+      /* CONTEXT: configuration: dance speed */
+      DANCE_SPEED_NORMAL, _("normal"),
+      /* CONTEXT: configuration: dance speed */
+      DANCE_SPEED_FAST, _("fast"),
+      -1);
+
+  confuiSpinboxTextInitDataNum (gui, "cu-dance-time-sig",
+      CONFUI_SPINBOX_DANCE_TIME_SIG,
+      /* CONTEXT: configuration: dance time signature */
+      DANCE_TIMESIG_24, _("2/4"),
+      /* CONTEXT: configuration: dance time signature */
+      DANCE_TIMESIG_34, _("3/4"),
+      /* CONTEXT: configuration: dance time signature */
+      DANCE_TIMESIG_44, _("4/4"),
+      /* CONTEXT: configuration: dance time signature */
+      DANCE_TIMESIG_48, _("4/8"),
+      -1);
+}
+
+
+void
 confuiBuildUIEditDances (confuigui_t *gui)
 {
   UIWidget      vbox;

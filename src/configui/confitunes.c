@@ -17,11 +17,29 @@
 #include "bdjstring.h"
 #include "configui.h"
 #include "log.h"
+#include "rating.h"
 #include "tagdef.h"
 #include "ui.h"
 
 static bool confuiSelectiTunesDir (void *udata);
 static bool confuiSelectiTunesFile (void *udata);
+
+void
+confuiInitiTunes (confuigui_t *gui)
+{
+  rating_t    *rating;
+
+
+  for (int i = 0; i < CONFUI_ITUNES_STARS_MAX; ++i) {
+    confuiSpinboxTextInitDataNum (gui, "itunes-stars",
+        CONFUI_SPINBOX_ITUNES_STARS_0 + i,
+// ### Fix: use actual ratings
+        0, _("Poor"),
+        1, _("Good"),
+        2, _("Great"),
+        -1);
+  }
+}
 
 void
 confuiBuildUIiTunes (confuigui_t *gui)
