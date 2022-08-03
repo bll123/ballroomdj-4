@@ -39,6 +39,9 @@ enum {
 #define BDJ4_IMG_SVG_EXT  ".svg"
 #define BDJ4_CONFIG_EXT   ".txt"
 
+/* data files */
+#define ITUNES_STARS_FN     "itunes-stars"
+#define ITUNES_FIELDS_FN    "itunes-fields"
 /* option data files */
 #define MANAGEUI_OPT_FN     "ui-manage"
 #define PLAYERUI_OPT_FN     "ui-player"

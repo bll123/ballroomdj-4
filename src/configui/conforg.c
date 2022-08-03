@@ -55,6 +55,9 @@ confuiCleanOrganization (confuigui_t *gui)
   if (gui->org->orgopt != NULL) {
     orgoptFree (gui->org->orgopt);
   }
+  if (gui->org != NULL) {
+    free (gui->org);
+  }
 }
 
 void

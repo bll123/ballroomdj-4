@@ -112,6 +112,8 @@ main (int argc, char *argv[])
   confui.gui.edittaglist = NULL;
   confui.gui.listingtaglist = NULL;
   confui.gui.indancechange = false;
+  confui.gui.org = NULL;
+  confui.gui.itunes = NULL;
 
   confui.optiondf = NULL;
   confui.options = NULL;
@@ -253,6 +255,8 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, confuiProcessMsg, confuiMainLoop, &confui);
   connFree (confui.conn);
   progstateFree (confui.progstate);
+
+  confuiCleaniTunes (&confui.gui);
   confuiCleanOrganization (&confui.gui);
 
   logProcEnd (LOG_PROC, "configui", "");

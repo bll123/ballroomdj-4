@@ -209,7 +209,6 @@ enum {
   CONFUI_MOVE_NEXT,
   CONFUI_TABLE_TEXT,
   CONFUI_TABLE_NUM,
-  CONFUI_ITUNES_STARS_MAX = 11,
 };
 
 enum {
@@ -319,6 +318,7 @@ enum {
 };
 
 typedef struct conforg conforg_t;
+typedef struct confitunes confitunes_t;
 
 typedef struct confuigui {
   confuiitem_t      uiitem [CONFUI_ITEM_MAX];
@@ -345,6 +345,8 @@ typedef struct confuigui {
   confuitable_t     tables [CONFUI_ID_TABLE_MAX];
   /* organization */
   conforg_t         *org;
+  /* itunes */
+  confitunes_t      *itunes;
   /* dances */
   bool              indancechange : 1;
 } confuigui_t;
@@ -410,6 +412,7 @@ void confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
 
 /* confitunes.c */
 void confuiInitiTunes (confuigui_t *gui);
+void confuiCleaniTunes (confuigui_t *gui);
 void confuiBuildUIiTunes (confuigui_t *gui);
 
 /* conflevel.c */

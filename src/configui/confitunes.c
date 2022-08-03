@@ -16,10 +16,53 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "configui.h"
+#include "datafile.h"
 #include "log.h"
+#include "nlist.h"
+#include "pathbld.h"
 #include "rating.h"
+#include "slist.h"
 #include "tagdef.h"
 #include "ui.h"
+#include "uirating.h"
+
+enum {
+  CONFUI_STARS_0,
+  CONFUI_STARS_10,
+  CONFUI_STARS_20,
+  CONFUI_STARS_30,
+  CONFUI_STARS_40,
+  CONFUI_STARS_50,
+  CONFUI_STARS_60,
+  CONFUI_STARS_70,
+  CONFUI_STARS_80,
+  CONFUI_STARS_90,
+  CONFUI_STARS_100,
+  CONFUI_STARS_MAX,
+};
+
+typedef struct confitunes {
+  datafile_t    *starsdf;
+  nlist_t       *stars;
+  datafile_t    *fieldsdf;
+  nlist_t       *fields;
+  uirating_t    *uirating [CONFUI_STARS_MAX];
+} confitunes_t;
+
+/* must be sorted in ascii order */
+static datafilekey_t starsdfkeys [CONFUI_STARS_MAX] = {
+  { "0",    CONFUI_STARS_0,       VALUE_NUM,  ratingConv, -1 },
+  { "10",   CONFUI_STARS_10,      VALUE_NUM,  ratingConv, -1 },
+  { "100",  CONFUI_STARS_100,     VALUE_NUM,  ratingConv, -1 },
+  { "20",   CONFUI_STARS_20,      VALUE_NUM,  ratingConv, -1 },
+  { "30",   CONFUI_STARS_30,      VALUE_NUM,  ratingConv, -1 },
+  { "40",   CONFUI_STARS_40,      VALUE_NUM,  ratingConv, -1 },
+  { "50",   CONFUI_STARS_50,      VALUE_NUM,  ratingConv, -1 },
+  { "60",   CONFUI_STARS_60,      VALUE_NUM,  ratingConv, -1 },
+  { "70",   CONFUI_STARS_70,      VALUE_NUM,  ratingConv, -1 },
+  { "80",   CONFUI_STARS_80,      VALUE_NUM,  ratingConv, -1 },
+  { "90",   CONFUI_STARS_90,      VALUE_NUM,  ratingConv, -1 },
+};
 
 static bool confuiSelectiTunesDir (void *udata);
 static bool confuiSelectiTunesFile (void *udata);
@@ -27,19 +70,64 @@ static bool confuiSelectiTunesFile (void *udata);
 void
 confuiInitiTunes (confuigui_t *gui)
 {
-  rating_t    *rating;
+  char        tbuff [MAXPATHLEN];
+  slist_t     *tlist;
+  slistidx_t  iteridx;
+  char        *key;
 
+  gui->itunes = malloc (sizeof (confitunes_t));
 
-  for (int i = 0; i < CONFUI_ITUNES_STARS_MAX; ++i) {
-    confuiSpinboxTextInitDataNum (gui, "itunes-stars",
-        CONFUI_SPINBOX_ITUNES_STARS_0 + i,
-// ### Fix: use actual ratings
-        0, _("Poor"),
-        1, _("Good"),
-        2, _("Great"),
-        -1);
+  for (int i = 0; i < CONFUI_STARS_MAX; ++i) {
+    gui->itunes->uirating [i] = NULL;
+  }
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      ITUNES_STARS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+  gui->itunes->starsdf = datafileAllocParse ("itunes-stars",
+      DFTYPE_KEY_VAL, tbuff, starsdfkeys, CONFUI_STARS_MAX, DATAFILE_NO_LOOKUP);
+  gui->itunes->stars = datafileGetList (gui->itunes->starsdf);
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+  gui->itunes->fieldsdf = datafileAllocParse ("itunes-fields",
+      DFTYPE_LIST, tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
+  tlist = datafileGetList (gui->itunes->fieldsdf);
+
+  gui->itunes->fields = nlistAlloc ("itunes-fields", LIST_ORDERED, NULL);
+  nlistSetSize (gui->itunes->fields, slistGetCount (tlist));
+
+  slistStartIterator (tlist, &iteridx);
+  while ((key = slistIterateKey (tlist, &iteridx)) != NULL) {
+    int     val;
+
+    val = tagdefLookup (key);
+    nlistSetNum (gui->itunes->fields, val, 0);
   }
 }
+
+void
+confuiCleaniTunes (confuigui_t *gui)
+{
+  for (int i = 0; i < CONFUI_STARS_MAX; ++i) {
+    if (gui->itunes->uirating [i] != NULL) {
+      uiratingFree (gui->itunes->uirating [i]);
+      gui->itunes->uirating [i] = NULL;
+    }
+  }
+  if (gui->itunes->starsdf != NULL) {
+    datafileFree (gui->itunes->starsdf);
+  }
+  if (gui->itunes->fieldsdf != NULL) {
+    datafileFree (gui->itunes->fieldsdf);
+  }
+  if (gui->itunes->fields != NULL) {
+    nlistFree (gui->itunes->fields);
+  }
+  if (gui->itunes != NULL) {
+    free (gui->itunes);
+  }
+}
+
 
 void
 confuiBuildUIiTunes (confuigui_t *gui)
@@ -50,10 +138,12 @@ confuiBuildUIiTunes (confuigui_t *gui)
   UIWidget      mvbox;
   UIWidget      vbox;
   UIWidget      vboxb;
+  UIWidget      mhbox;
   UIWidget      hbox;
   UIWidget      uiwidget;
   UIWidget      *vboxp;
   UIWidget      sg;
+  UIWidget      sgr;
   int           count;
 
   logProcBegin (LOG_PROC, "confuiBuildUIiTunes");
@@ -62,6 +152,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   /* filter display */
   confuiMakeNotebookTab (&mvbox, gui, ITUNES_NAME, CONFUI_ID_FILTER);
   uiCreateSizeGroupHoriz (&sg);
+  uiCreateSizeGroupHoriz (&sgr);
 
   *tbuff = '\0';
   dir = bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA);
@@ -85,19 +176,19 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_ITUNES_XML].entry,
       uiEntryValidateFile, gui, UIENTRY_DELAYED);
 
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&mvbox, &hbox);
+  uiCreateHorizBox (&mhbox);
+  uiBoxPackStart (&mvbox, &mhbox);
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
-  uiBoxPackStart (&hbox, &vbox);
+  uiBoxPackStart (&mhbox, &vbox);
 
+  /* CONTEXT: configuration: itunes: label for itunes rating conversion */
   uiCreateLabel (&uiwidget, _("Rating"));
   uiBoxPackStart (&vbox, &uiwidget);
 
-  /* the loop traverses from [0..10] */
   /* itunes uses 0..100 mapping to 0,0.5,1,1.5,...,4.5,5 stars */
-  for (int i = 0; i < CONFUI_ITUNES_STARS_MAX; ++i) {
+  for (int i = 0; i < CONFUI_STARS_MAX; ++i) {
     double  starval;
 
     starval = (double) i / 2.0;
@@ -109,25 +200,36 @@ confuiBuildUIiTunes (confuigui_t *gui)
     /* CONTEXT: configuration: itunes rating in stars (0, 0.5, 1, 1.5, etc.) */
     snprintf (tbuff, sizeof (tbuff), _("%s Stars"), tmp);
 
-    /* CONTEXT: configuration: itunes rating */
-    confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, tbuff,
-        CONFUI_SPINBOX_ITUNES_STARS_0 + i, -1,
-// ### fix, need ratings list */
-// ### fix, need ratings value from itunes-stars file */
-        CONFUI_OUT_NUM, 1, NULL);
+    uiCreateHorizBox (&hbox);
+    uiBoxPackStart (&vbox, &hbox);
+
+    uiCreateLabel (&uiwidget, tbuff);
+    uiSizeGroupAdd (&sgr, &uiwidget);
+    uiBoxPackStart (&hbox, &uiwidget);
+
+    gui->itunes->uirating [i] = uiratingSpinboxCreate (&hbox, false);
+
+    uiratingSetValue (gui->itunes->uirating [i],
+        nlistGetNum (gui->itunes->stars, CONFUI_STARS_0 + i));
   }
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
-  uiBoxPackStart (&hbox, &vbox);
+  uiBoxPackStart (&mhbox, &vbox);
 
   uiCreateVertBox (&vboxb);
   uiWidgetSetAllMargins (&vboxb, uiBaseMarginSz * 2);
-  uiBoxPackStart (&hbox, &vboxb);
+  uiBoxPackStart (&mhbox, &vboxb);
+
+  /* CONTEXT: configuration: itunes: which fields should be imported from itunes */
+  uiCreateLabel (&uiwidget, _("Fields to Import"));
+  uiBoxPackStart (&vboxb, &uiwidget);
 
   count = 0;
   vboxp = &vbox;
   for (int i = 0; i < TAG_KEY_MAX; ++i) {
+    bool   tval;
+
     if (tagdefs [i].itunesName == NULL) {
       continue;
     }
@@ -135,9 +237,12 @@ confuiBuildUIiTunes (confuigui_t *gui)
       continue;
     }
 
-// ### fix, set the value appropriately.
+    tval = false;
+    if (nlistGetNum (gui->itunes->fields, i) >= 0) {
+      tval = true;
+    }
     confuiMakeItemCheckButton (gui, vboxp, &sg, tagdefs [i].displayname,
-        CONFUI_WIDGET_ITUNES_FIELD_1 + count, -1, 0);
+        CONFUI_WIDGET_ITUNES_FIELD_1 + count, -1, tval);
     ++count;
     if (count > TAG_ITUNES_MAX / 2) {
       vboxp = &vboxb;
