@@ -1,4 +1,5 @@
-# BDJ4 organization options
+# org-opt
+# 2022-8-4
 #
 # There are many entries that are commented out that can be easily added
 # by removing the # <space> from in front of the line.
@@ -21,7 +22,7 @@
 #   If the composer is the same as the albumartist or the artist, then
 #     the composer group is omitted.
 #
-# version 2
+# version 1
 ## album artist
 {%ALBUMARTIST% - }{%TITLE%}
 # used by itunes

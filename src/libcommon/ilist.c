@@ -37,13 +37,16 @@ ilistFree (void *list)
   listFree (list);
 }
 
+inline void
+ilistSetVersion (ilist_t *list, int version)
+{
+  listSetVersion (list, version);
+}
+
 inline int
 ilistGetVersion (ilist_t *list)
 {
-  if (list == NULL) {
-    return 0;
-  }
-  return list->version;
+  return listGetVersion (list);
 }
 
 inline ilistidx_t

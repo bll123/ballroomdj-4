@@ -86,7 +86,7 @@ listFree (void *tlist)
 }
 
 inline void
-listSetVersion (list_t *list, listidx_t version)
+listSetVersion (list_t *list, int version)
 {
   if (list == NULL) {
     return;
@@ -112,6 +112,15 @@ listSetSize (list_t *list, listidx_t siz)
     assert (list->data != NULL);
     memset (list->data + tsiz, '\0', sizeof (listitem_t) * (siz - tsiz));
   }
+}
+
+inline int
+listGetVersion (list_t *list)
+{
+  if (list == NULL) {
+    return -1;
+  }
+  return list->version;
 }
 
 void *

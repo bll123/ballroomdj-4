@@ -67,7 +67,7 @@ enum {
 parseinfo_t * parseInit (void);
 void          parseFree (parseinfo_t *);
 char **       parseGetData (parseinfo_t *);
-ssize_t       parseSimple (parseinfo_t *, char *);
+ssize_t       parseSimple (parseinfo_t *, char *, int *vers);
 ssize_t       parseKeyValue (parseinfo_t *, char *);
 void          convBoolean (datafileconv_t *conv);
 void          convTextList (datafileconv_t *conv);

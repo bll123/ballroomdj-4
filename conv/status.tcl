@@ -23,8 +23,8 @@ if { ! [file exists $infn] } {
 
 source $infn
 set fh [open $nfn w]
-puts $fh "# BDJ4 status"
-puts $fh "# [clock format [clock seconds] -gmt 1]"
+puts $fh "# status"
+puts $fh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
 puts $fh version
 puts $fh "..1"
 puts $fh count

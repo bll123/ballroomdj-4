@@ -23,9 +23,9 @@ foreach {fn} $flist {
 #  puts "   - [file tail $fn] : [file rootname [file tail $fn]].songlist"
   source $fn
   set fh [open $nfn w]
-  puts $fh "# BDJ4 songlist"
+  puts $fh "# songlist"
   puts $fh "# Converted from $fn"
-  puts $fh "# [clock format [clock seconds] -gmt 1]"
+  puts $fh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
   puts $fh version
   puts $fh "..1"
   puts $fh count

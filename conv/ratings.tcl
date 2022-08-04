@@ -21,8 +21,8 @@ if { ! [file exists $infn] } {
 set nfn [file join $datatopdir data ratings.txt]
 source $infn
 set fh [open $nfn w]
-puts $fh "# BDJ4 ratings"
-puts $fh "# [clock format [clock seconds] -gmt 1]"
+puts $fh "# ratings"
+puts $fh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
 puts $fh version
 puts $fh "..1"
 puts $fh count

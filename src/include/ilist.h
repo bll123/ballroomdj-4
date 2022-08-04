@@ -11,6 +11,7 @@ typedef listorder_t ilistorder_t;
   /* keyed by a ilistidx_t */
 ilist_t   *ilistAlloc (const char *name, ilistorder_t);
 void      ilistFree (void * list);
+void      ilistSetVersion (ilist_t *list, int version);
 int       ilistGetVersion (ilist_t *list);
 ilistidx_t   ilistGetCount (ilist_t *list);
 void      ilistSetSize (ilist_t *, ilistidx_t);

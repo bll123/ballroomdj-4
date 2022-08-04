@@ -4,6 +4,7 @@ BallroomDJ 4 Change Log
 
 - song list editor: added mix function.
 - configuration: added itunes configuration.
+- internal: datafile versioning is working.
 
 4.0.0 alpha 2022-07-30
 

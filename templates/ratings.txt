@@ -1,8 +1,9 @@
-# BDJ4 ratings
+# ratings
+# 2022-8-4
 version
 ..1
 count
-..5
+..4
 KEY
 ..0
 RATING

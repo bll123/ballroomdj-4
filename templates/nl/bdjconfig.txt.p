@@ -1,5 +1,7 @@
 # config-profile
-# 2022-07-04
+# 2022-8-4
+version
+..1
 DEFAULTVOLUME
 ..30
 COMPLETEMSG

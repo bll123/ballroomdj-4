@@ -30,6 +30,18 @@ nlistFree (void *list)
   listFree (list);
 }
 
+inline void
+nlistSetVersion (nlist_t *list, int version)
+{
+  listSetVersion (list, version);
+}
+
+inline int
+nlistGetVersion (nlist_t *list)
+{
+  return listGetVersion (list);
+}
+
 inline ssize_t
 nlistGetCount (nlist_t *list)
 {

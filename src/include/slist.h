@@ -12,6 +12,8 @@ typedef listFree_t  slistFree_t;
 slist_t   *slistAlloc (const char *name, slistorder_t ordered,
               slistFree_t valueFreeHook);
 void      slistFree (void * list);
+void      slistSetVersion (slist_t *list, int version);
+int       slistGetVersion (slist_t *list);
 ssize_t   slistGetCount (slist_t *list);
 void      slistSetSize (slist_t *, ssize_t);
   /* set routines */

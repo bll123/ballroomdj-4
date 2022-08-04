@@ -35,10 +35,13 @@ typedef struct datafile {
   datafiletype_t  dftype;
   list_t          *data;
   list_t          *lookup;
-  long            version;
 } datafile_t;
 
-static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype);
+#define DF_VERSION_STR      "version"
+#define DF_VERSION_SIMP_STR "# version "
+#define DF_VERSION_FMT      "# version %d"
+
+static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers);
 static void     datafileFreeInternal (datafile_t *df);
 static bool     datafileCheckDfkeys (const char *name, datafilekey_t *dfkeys, ssize_t dfkeycount);
 static FILE *   datafileSavePrep (char *fn, const char *tag);
@@ -84,15 +87,15 @@ parseGetData (parseinfo_t *pi)
 }
 
 ssize_t
-parseSimple (parseinfo_t *pi, char *data)
+parseSimple (parseinfo_t *pi, char *data, int *vers)
 {
-  return parse (pi, data, PARSE_SIMPLE);
+  return parse (pi, data, PARSE_SIMPLE, vers);
 }
 
 ssize_t
 parseKeyValue (parseinfo_t *pi, char *data)
 {
-  return parse (pi, data, PARSE_KEYVALUE);
+  return parse (pi, data, PARSE_KEYVALUE, NULL);
 }
 
 void
@@ -322,6 +325,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
   char          *tvalstr = NULL;
   char          *tlookupkey = NULL;
   datafileconv_t conv;
+  int           simpvers;
 
 
   logProcBegin (LOG_PROC, "datafileParseMerge");
@@ -333,7 +337,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
 
   pi = parseInit ();
   if (dftype == DFTYPE_LIST) {
-    dataCount = parseSimple (pi, data);
+    dataCount = parseSimple (pi, data, &simpvers);
   } else {
     dataCount = parseKeyValue (pi, data);
   }
@@ -349,6 +353,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
       } else {
         slistSetSize (datalist, dataCount + slistGetCount (datalist));
       }
+      listSetVersion (datalist, simpvers);
       break;
     }
     case DFTYPE_INDIRECT: {
@@ -404,8 +409,8 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
       tvalstr = strdata [i + 1];
     }
 
-    if (inc == 2 && strcmp (tkeystr, "version") == 0) {
-      ssize_t version = atol (tvalstr);
+    if (inc == 2 && strcmp (tkeystr, DF_VERSION_STR) == 0) {
+      int version = atoi (tvalstr);
       listSetVersion (datalist, version);
       continue;
     }
@@ -497,6 +502,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
           }
         }
       } else {
+fprintf (stderr, "%s unable to locate key %s\n", name, tkeystr);
         logMsg (LOG_DBG, LOG_DATAFILE, "ERR: Unable to locate key: %s", tkeystr);
         continue;
       }
@@ -613,6 +619,7 @@ datafileSaveKeyVal (const char *tag, char *fn, datafilekey_t *dfkeys,
     return;
   }
 
+  fprintf (fh, "%s\n..%d\n", DF_VERSION_STR, listGetVersion (list));
   datafileSaveKeyValBuffer (buff, sizeof (buff), tag, dfkeys, dfkeycount, list);
   fprintf (fh, "%s", buff);
   fclose (fh);
@@ -639,7 +646,7 @@ datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys,
   count = ilistGetCount (list);
   ilistStartIterator (list, &iteridx);
 
-  fprintf (fh, "version\n..1\n");
+  fprintf (fh, "%s\n..%d\n", DF_VERSION_STR, listGetVersion (list));
   fprintf (fh, "count\n..%d\n", count);
 
   count = 0;
@@ -694,6 +701,9 @@ datafileSaveList (const char *tag, char *fn, slist_t *list)
   if (fh == NULL) {
     return;
   }
+
+  fprintf (fh, DF_VERSION_FMT, listGetVersion (list));
+  fprintf (fh, "\n");
 
   slistStartIterator (list, &iteridx);
 
@@ -800,7 +810,7 @@ parseGetAllocCount (parseinfo_t *pi)
 /* internal parse routines */
 
 static ssize_t
-parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
+parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers)
 {
   char        *tokptr;
   char        *str;
@@ -824,6 +834,11 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype)
   str = strtok_r (data, "\r\n", &tokptr);
   while (str != NULL) {
     if (*str == '#') {
+      if (parsetype == PARSE_SIMPLE &&
+          vers != NULL &&
+          strncmp (str, DF_VERSION_SIMP_STR, strlen (DF_VERSION_SIMP_STR)) == 0) {
+        sscanf (str, DF_VERSION_FMT, vers);
+      }
       str = strtok_r (NULL, "\r\n", &tokptr);
       continue;
     }

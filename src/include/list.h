@@ -52,7 +52,7 @@ typedef struct {
 
 typedef struct {
   char            *name;
-  listidx_t       version;
+  int             version;
   listidx_t       count;
   listidx_t       allocCount;
   int             maxKeyWidth;
@@ -78,7 +78,8 @@ typedef struct {
 list_t      *listAlloc (const char *name, listorder_t ordered,
                 listFree_t valueFreeHook);
 void        listFree (void *list);
-listidx_t     listGetVersion (list_t *list);
+void        listSetVersion (list_t *list, int version);
+int         listGetVersion (list_t *list);
 listidx_t     listGetCount (list_t *list);
 listidx_t   listGetIdx (list_t *list, listkey_t *key);
 void        listSetSize (list_t *list, listidx_t size);

@@ -33,7 +33,7 @@ set dbfn [file join $bdj3dir musicdb.txt]
 set fh [open $dbfn r]
 gets $fh line
 if { [regexp {^# ?VERSION=(\d+)\s*$} $line all vers] } {
-  if { $vers < 6 } {
+  if { $vers < 9 } {
     puts "Database version is too old to convert."
     exit 1
   }
@@ -76,6 +76,7 @@ dict for {fn data} $musicdbList {
     if { $tag eq "NOMAXPLAYTIME" } { continue }
     if { $tag eq "VARIOUSARTISTS" } { continue }
     if { $tag eq "UPDATEFLAG" } { continue }
+    if { $tag eq "VOLUMEADJUSTMENT" } { continue }
     if { $tag eq "WRITETIME" } { continue }
     # not going to do the sort-of-odd sometimes re-org stuff
     if { $tag eq "AUTOORGFLAG" } { continue }

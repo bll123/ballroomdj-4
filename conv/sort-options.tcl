@@ -24,8 +24,8 @@ if { ! [file exists $infn] } {
 source $infn
 
 set fh [open $nfn w]
-puts $fh "# BDJ4 sort options"
-puts $fh "# [clock format [clock seconds] -gmt 1]"
+puts $fh "# sort-options"
+puts $fh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
 puts $fh "# version 1"
 foreach {item} $sortOptionList {
   regsub -all {/} $item { } item

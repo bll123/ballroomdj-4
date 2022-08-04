@@ -22,11 +22,10 @@ if { ! [file exists $infn] } {
 set nfn [file join $datatopdir data autoselection.txt]
 set ifh [open $infn r]
 set ofh [open $nfn w]
-puts $ofh "# BDJ4 autoselection"
-puts $ofh "# [clock format [clock seconds] -gmt 1]"
+puts $ofh "# autoselection"
+puts $ofh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
 while { [gets $ifh line] >= 0 } {
   if { [regexp {^#} $line] } {
-    puts $ofh $line
     continue
   }
   regexp {^([^=]*)=(.*)$} $line all key value

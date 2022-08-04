@@ -1,5 +1,7 @@
 # ds-songfilter
-# sort-by, search, dance and dance rating are always active
+# 2022-8-4
+version
+..1
 GENRE
 ..no
 DANCELEVEL

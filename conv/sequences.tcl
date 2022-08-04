@@ -23,9 +23,9 @@ foreach {fn} $flist {
   set nfn [file join $datatopdir data [file rootname [file tail $fn]].sequence]
 #  puts "   - [file tail $fn] : [file rootname [file tail $fn]].sequence"
   set ofh [open $nfn w]
-  puts $ofh "# BDJ4 sequence"
+  puts $ofh "# sequence"
   puts $ofh "# Converted from $fn"
-  puts $ofh "# [clock format [clock seconds] -gmt 1]"
+  puts $ofh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
   puts $ofh "# version 1"
   while { [gets $ifh line] >= 0 } {
     puts $ofh $line

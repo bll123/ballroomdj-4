@@ -1,5 +1,7 @@
 # config-global
-# 2022-4-18
+# 2022-8-4
+version
+..1
 AUTOORGANIZE
 ..no
 BDJ3COMPATTAGS

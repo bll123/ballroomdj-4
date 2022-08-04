@@ -24,8 +24,8 @@ if { ! [file exists $infn] } {
 
 source $infn
 set fh [open $nfn w]
-puts $fh "# BDJ4 dance types"
-puts $fh "# [clock format [clock seconds] -gmt 1]"
+puts $fh "# dance-types"
+puts $fh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
 puts $fh "# version 1"
 foreach {item} $typevals {
   if { $item eq "rhythm" } { set item latin }

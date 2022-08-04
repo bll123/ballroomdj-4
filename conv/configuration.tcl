@@ -61,12 +61,24 @@ foreach path [list {} profiles $mpath $mppath] {
       file mkdir [file dirname $nfn]
       set ofh [open $nfn w]
 
-      puts $ofh "# BDJ4 [file join $path $nnm]"
-      puts $ofh "# [clock format [clock seconds] -gmt 1]"
+      if { $path eq "" } {
+        puts $ofh "# config-global"
+      }
+      if { $path eq "profiles" } {
+        puts $ofh "# config-profile"
+      }
+      if { $path eq $mpath } {
+        puts $ofh "# config-machine"
+      }
+      if { $path eq $mppath } {
+        puts $ofh "# config-machine-profile"
+      }
+      puts $ofh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
+      puts $ofh "version"
+      puts $ofh "..1"
 
       while { [gets $ifh line] >= 0 } {
         if { [regexp {^#} $line] } {
-          puts $ofh $line
           continue
         }
         regexp {^([^:]*):(.*)$} $line all key value
@@ -82,6 +94,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "FONTSIZE" } { continue }
         if { $key eq "HOST" } { continue }
         if { $key eq "INSTPASSWORD" } { continue }
+        if { $key eq "ITUNESSUPPORT" } { continue }
         if { $key eq "MQCLOCKFONTSIZE" } { continue }
         if { $key eq "MQDANCEFONT" } { continue }
         if { $key eq "MQDANCEFONTMULT" } { continue }

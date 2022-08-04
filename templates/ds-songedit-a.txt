@@ -1,5 +1,6 @@
 # ds-songedit-a
-# song related
+# 2022-8-4
+# version 1
 ALBUMARTIST
 ARTIST
 TITLE

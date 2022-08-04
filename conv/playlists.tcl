@@ -26,14 +26,19 @@ foreach {fn} $flist {
   set dfn [file join $datatopdir data ${basename}.pldances]
   set ofh [open $nfn w]
   set dfh [open $dfn w]
-  puts $ofh "# BDJ4 playlist settings"
+  puts $ofh "# playlist"
   puts $ofh "# Converted from $fn"
-  puts $ofh "# [clock format [clock seconds] -gmt 1]"
-  puts $dfh "# BDJ4 playlist dances"
+  puts $ofh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
+  puts $ofh "version"
+  puts $ofh "..1"
+
+  puts $dfh "# playlist-dances"
   puts $dfh "# Converted from $fn"
-  puts $dfh "# [clock format [clock seconds] -gmt 1]"
+  puts $dfh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
   puts $dfh "version"
   puts $dfh "..1"
+  # count is unknown
+
   set pltype automatic
   set keyidx 0
   while { [gets $ifh line] >= 0 } {

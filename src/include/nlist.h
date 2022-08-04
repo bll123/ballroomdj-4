@@ -11,6 +11,8 @@ typedef listFree_t  nlistFree_t;
   /* keyed by a nlistidx_t */
 nlist_t   *nlistAlloc (const char *name, nlistorder_t, nlistFree_t valueFreeHook);
 void      nlistFree (void * list);
+void      nlistSetVersion (nlist_t *list, int version);
+int       nlistGetVersion (nlist_t *list);
 ssize_t   nlistGetCount (nlist_t *list);
 void      nlistSetSize (nlist_t *, ssize_t);
 void      nlistSetFreeHook (nlist_t *, nlistFree_t valueFreeHook);

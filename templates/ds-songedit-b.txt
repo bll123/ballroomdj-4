@@ -1,5 +1,6 @@
 # ds-songedit-b
-# playback related
+# 2022-8-4
+# version 1
 SONGSTART
 SONGEND
 KEYWORD

@@ -1,4 +1,4 @@
-# BDJ4 autoselection
+# autoselection
 version
 ..1
 #

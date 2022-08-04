@@ -1,5 +1,9 @@
 # helpdata
 # 2022-6-16
+version
+..1
+count
+..8
 KEY
 ..0
 TITLE

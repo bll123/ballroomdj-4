@@ -37,13 +37,15 @@ START_TEST(parse_simple)
   char            *tstr = NULL;
   ssize_t          count;
   char            **strdata = NULL;
+  int             vers;
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_simple");
-  tstr = strdup ("# comment\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1.2\n");
+  tstr = strdup ("# comment\n# version 2\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1.2\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
-  count = parseSimple (pi, tstr);
+  count = parseSimple (pi, tstr, &vers);
+  ck_assert_int_eq (vers, 2);
   ck_assert_int_eq (count, 14);
   ck_assert_int_ge (parseGetAllocCount (pi), 14);
   strdata = parseGetData (pi);
@@ -76,28 +78,30 @@ START_TEST(parse_keyvalue)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_keyvalue");
-  tstr = strdup ("A\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\nG\n..1.2\n");
+  tstr = strdup ("version\n..3\nA\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\nG\n..1.2\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   count = parseKeyValue (pi, tstr);
-  ck_assert_int_eq (count, 14);
-  ck_assert_int_ge (parseGetAllocCount (pi), 14);
+  ck_assert_int_eq (count, 16);
+  ck_assert_int_ge (parseGetAllocCount (pi), 16);
   strdata = parseGetData (pi);
   ck_assert_ptr_eq (parseGetData (pi), strdata);
-  ck_assert_str_eq (strdata[0], "A");
-  ck_assert_str_eq (strdata[1], "a");
-  ck_assert_str_eq (strdata[2], "B");
-  ck_assert_str_eq (strdata[3], "b");
-  ck_assert_str_eq (strdata[4], "C");
-  ck_assert_str_eq (strdata[5], "c");
-  ck_assert_str_eq (strdata[6], "D");
-  ck_assert_str_eq (strdata[7], "d");
-  ck_assert_str_eq (strdata[8], "E");
-  ck_assert_str_eq (strdata[9], "e");
-  ck_assert_str_eq (strdata[10], "F");
-  ck_assert_str_eq (strdata[11], "f");
-  ck_assert_str_eq (strdata[12], "G");
-  ck_assert_str_eq (strdata[13], "1.2");
+  ck_assert_str_eq (strdata[0], "version");
+  ck_assert_str_eq (strdata[1], "3");
+  ck_assert_str_eq (strdata[2], "A");
+  ck_assert_str_eq (strdata[3], "a");
+  ck_assert_str_eq (strdata[4], "B");
+  ck_assert_str_eq (strdata[5], "b");
+  ck_assert_str_eq (strdata[6], "C");
+  ck_assert_str_eq (strdata[7], "c");
+  ck_assert_str_eq (strdata[8], "D");
+  ck_assert_str_eq (strdata[9], "d");
+  ck_assert_str_eq (strdata[10], "E");
+  ck_assert_str_eq (strdata[11], "e");
+  ck_assert_str_eq (strdata[12], "F");
+  ck_assert_str_eq (strdata[13], "f");
+  ck_assert_str_eq (strdata[14], "G");
+  ck_assert_str_eq (strdata[15], "1.2");
   parseFree (pi);
   free (tstr);
 }
@@ -111,28 +115,30 @@ START_TEST(parse_with_comments)
   char            **strdata = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_with_comments");
-  tstr = strdup ("# comment\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1.2\n");
+  tstr = strdup ("# comment\nversion\n..4\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1.2\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   count = parseKeyValue (pi, tstr);
-  ck_assert_int_eq (count, 14);
-  ck_assert_int_ge (parseGetAllocCount (pi), 14);
+  ck_assert_int_eq (count, 16);
+  ck_assert_int_ge (parseGetAllocCount (pi), 16);
   strdata = parseGetData (pi);
   ck_assert_ptr_eq (parseGetData (pi), strdata);
-  ck_assert_str_eq (strdata[0], "A");
-  ck_assert_str_eq (strdata[1], "a");
-  ck_assert_str_eq (strdata[2], "B");
-  ck_assert_str_eq (strdata[3], "b");
-  ck_assert_str_eq (strdata[4], "C");
-  ck_assert_str_eq (strdata[5], "c");
-  ck_assert_str_eq (strdata[6], "D");
-  ck_assert_str_eq (strdata[7], "d");
-  ck_assert_str_eq (strdata[8], "E");
-  ck_assert_str_eq (strdata[9], "e");
-  ck_assert_str_eq (strdata[10], "F");
-  ck_assert_str_eq (strdata[11], "f");
-  ck_assert_str_eq (strdata[12], "G");
-  ck_assert_str_eq (strdata[13], "1.2");
+  ck_assert_str_eq (strdata[0], "version");
+  ck_assert_str_eq (strdata[1], "4");
+  ck_assert_str_eq (strdata[2], "A");
+  ck_assert_str_eq (strdata[3], "a");
+  ck_assert_str_eq (strdata[4], "B");
+  ck_assert_str_eq (strdata[5], "b");
+  ck_assert_str_eq (strdata[6], "C");
+  ck_assert_str_eq (strdata[7], "c");
+  ck_assert_str_eq (strdata[8], "D");
+  ck_assert_str_eq (strdata[9], "d");
+  ck_assert_str_eq (strdata[10], "E");
+  ck_assert_str_eq (strdata[11], "e");
+  ck_assert_str_eq (strdata[12], "F");
+  ck_assert_str_eq (strdata[13], "f");
+  ck_assert_str_eq (strdata[14], "G");
+  ck_assert_str_eq (strdata[15], "1.2");
   parseFree (pi);
   free (tstr);
 }
@@ -147,11 +153,12 @@ START_TEST(datafile_simple)
   FILE            *fh;
   list_t          *list;
   slistidx_t      iteridx;
+  int             vers;
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_simple");
   fn = "tmp/dftesta.txt";
-  tstr = strdup ("# comment\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1.2\n");
+  tstr = strdup ("# comment\n# version 5\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1.2\n");
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -165,6 +172,8 @@ START_TEST(datafile_simple)
 
   list = datafileGetList (df);
   slistStartIterator (list, &iteridx);
+  vers = slistGetVersion (list);
+  ck_assert_int_eq (vers, 5);
   value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "A");
   value = slistIterateKey (list, &iteridx);
@@ -232,11 +241,12 @@ START_TEST(datafile_keyval_dfkey)
   slist_t         *slist;
   nlistidx_t      iteridx;
   slistidx_t      siteridx;
+  int             vers;
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_dfkey");
   fn = "tmp/dftestb.txt";
-  tstr = strdup ("A\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1.2\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n");
+  tstr = strdup ("version\n..6\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1.2\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n");
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -249,6 +259,9 @@ START_TEST(datafile_keyval_dfkey)
   ck_assert_ptr_nonnull (datafileGetData (df));
 
   list = datafileGetList (df);
+  vers = nlistGetVersion (list);
+  ck_assert_int_eq (vers, 6);
+
   nlistStartIterator (list, &iteridx);
 
   key = nlistIterateKey (list, &iteridx);
@@ -340,23 +353,28 @@ START_TEST(datafile_keyval_df_extra)
   slist_t         *slist;
   nlistidx_t      iteridx;
   slistidx_t      siteridx;
+  int             vers;
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_df_extra");
   fn = "tmp/dftestb.txt";
-  tstr = strdup ("A\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1.2\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n");
+  tstr = strdup ("version\n..7\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1.2\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n");
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
   free (tstr);
 
-  df = datafileAllocParse ("chk-df-b", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+  df = datafileAllocParse ("chk-df-c", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (datafileGetType (df), DFTYPE_KEY_VAL);
   ck_assert_str_eq (datafileGetFname (df), fn);
   ck_assert_ptr_nonnull (datafileGetData (df));
 
   list = datafileGetList (df);
+
+  vers = nlistGetVersion (list);
+  ck_assert_int_eq (vers, 7);
+
   nlistStartIterator (list, &iteridx);
 
   key = nlistIterateKey (list, &iteridx);
@@ -445,10 +463,11 @@ START_TEST(datafile_indirect)
   FILE            *fh;
   list_t          *list;
   ilistidx_t      iteridx;
+  int             vers;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_indirect");
   fn = "tmp/dftestb.txt";
-  tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\n"
+  tstr = strdup ("version\n..8\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\nB\n..1\n"
       "KEY\n..2\nA\n..a\nB\n..2\n"
       "KEY\n..3\nA\n..a\nB\n..3\n");
@@ -457,13 +476,17 @@ START_TEST(datafile_indirect)
   fclose (fh);
   free (tstr);
 
-  df = datafileAllocParse ("chk-df-c", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+  df = datafileAllocParse ("chk-df-d", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (datafileGetType (df), DFTYPE_INDIRECT);
   ck_assert_str_eq (datafileGetFname (df), fn);
   ck_assert_ptr_nonnull (datafileGetData (df));
 
   list = datafileGetList (df);
+
+  vers = ilistGetVersion (list);
+  ck_assert_int_eq (vers, 8);
+
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 0);
@@ -531,11 +554,12 @@ START_TEST(datafile_indirect_lookup)
   FILE            *fh;
   slist_t          *lookup;
   ilistidx_t      iteridx;
+  int             vers;
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_indirect_lookup");
   fn = "tmp/dftestb.txt";
-  tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\nC\n..4\nD\n..on\n"
+  tstr = strdup ("version\n..9\nKEY\n..0\nA\n..a\nB\n..0\nC\n..4\nD\n..on\n"
       "KEY\n..1\nA\n..b\nB\n..1\nC\n..5\nD\n..off\n"
       "KEY\n..2\nA\n..c\nB\n..2\nC\n..6\nD\n..on\n"
       "KEY\n..3\nA\n..d\nB\n..3\nC\n..7\nD\n..off\n");
@@ -543,7 +567,7 @@ START_TEST(datafile_indirect_lookup)
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
-  df = datafileAllocParse ("chk-df-d", DFTYPE_INDIRECT, fn,
+  df = datafileAllocParse ("chk-df-e", DFTYPE_INDIRECT, fn,
       dfkeyskl, DFKEY_COUNT, 14);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (datafileGetType (df), DFTYPE_INDIRECT);
@@ -552,6 +576,9 @@ START_TEST(datafile_indirect_lookup)
   ck_assert_ptr_nonnull (datafileGetLookup (df));
 
   list = datafileGetList (df);
+
+  vers = ilistGetVersion (list);
+  ck_assert_int_eq (vers, 9);
 
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);
@@ -697,10 +724,11 @@ START_TEST(datafile_indirect_missing)
   FILE            *fh;
   list_t          *list;
   ilistidx_t      iteridx;
+  int             vers;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_indirect_missing");
   fn = "tmp/dftestb.txt";
-  tstr = strdup ("KEY\n..0\nA\n..a\nB\n..0\n"
+  tstr = strdup ("version\n..10\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\n"
       "KEY\n..2\nA\n..a\nB\n..2\n"
       "KEY\n..3\nB\n..3\n");
@@ -709,13 +737,17 @@ START_TEST(datafile_indirect_missing)
   fclose (fh);
   free (tstr);
 
-  df = datafileAllocParse ("chk-df-c", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+  df = datafileAllocParse ("chk-df-f", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT, DATAFILE_NO_LOOKUP);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (datafileGetType (df), DFTYPE_INDIRECT);
   ck_assert_str_eq (datafileGetFname (df), fn);
   ck_assert_ptr_nonnull (datafileGetData (df));
 
   list = datafileGetList (df);
+
+  vers = ilistGetVersion (list);
+  ck_assert_int_eq (vers, 10);
+
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 0);
@@ -795,8 +827,8 @@ datafile_suite (void)
   tcase_add_test (tc, datafile_keyval_dfkey);
   tcase_add_test (tc, datafile_keyval_df_extra);
   tcase_add_test (tc, datafile_indirect);
-  tcase_add_test (tc, datafile_indirect_missing);
   tcase_add_test (tc, datafile_indirect_lookup);
+  tcase_add_test (tc, datafile_indirect_missing);
   suite_add_tcase (s, tc);
   return s;
 }

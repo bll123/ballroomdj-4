@@ -1,7 +1,7 @@
 # itunes-stars
-# 2022-8-2
-0
-..Poor
+# 2022-8-4
+version
+..1
 10
 ..Poor
 20
