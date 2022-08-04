@@ -24,6 +24,11 @@
 #include "tmutil.h"
 
 enum {
+  AF_REWRITE_NONE = 0x0000,
+  AF_REWRITE_MB   = 0x0001,
+};
+
+enum {
   AFILE_TYPE_UNKNOWN,
   AFILE_TYPE_FLAC,
   AFILE_TYPE_MP4,
@@ -34,7 +39,7 @@ enum {
 };
 
 static void audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype);
-static void audiotagParseTags (slist_t *tagdata, char *data, int tagtype);
+static void audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite);
 static void audiotagCreateLookupTable (int tagtype);
 static void audiotagParseNumberPair (char *data, int *a, int *b);
 static void audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int writetags);
@@ -93,20 +98,21 @@ audiotagReadTags (const char *ffn)
 }
 
 slist_t *
-audiotagParseData (const char *ffn, char *data)
+audiotagParseData (const char *ffn, char *data, int *rewrite)
 {
   slist_t     *tagdata;
   int         tagtype;
   int         filetype;
 
+  *rewrite = 0;
   tagdata = slistAlloc ("atag", LIST_ORDERED, free);
   audiotagDetermineTagType (ffn, &tagtype, &filetype);
-  audiotagParseTags (tagdata, data, tagtype);
+  audiotagParseTags (tagdata, data, tagtype, rewrite);
   return tagdata;
 }
 
 void
-audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist)
+audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist, int rewrite)
 {
   char        tmp [50];
   int         tagtype;
@@ -119,6 +125,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist)
   slist_t     *updatelist;
   slist_t     *dellist;
   nlist_t     *datalist;
+  int         tagkey;
 
 
   logProcBegin (LOG_PROC, "audiotagsWriteTags");
@@ -163,7 +170,6 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist)
   slistStartIterator (newtaglist, &iteridx);
   while ((tag = slistIterateKey (newtaglist, &iteridx)) != NULL) {
     bool  upd;
-    int   tagkey;
 
     upd = false;
     tagkey = audiotagTagCheck (writetags, tagtype, tag);
@@ -191,6 +197,13 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist)
       newvalue = tmp;
     }
 
+    /* special case */
+    if (tagkey == TAG_RECORDING_ID &&
+        (rewrite & AF_REWRITE_MB) == AF_REWRITE_MB &&
+        newvalue != NULL && *newvalue) {
+      upd = true;
+    }
+
     if (upd) {
       slistSetStr (updatelist, tag, newvalue);
     }
@@ -198,9 +211,11 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist)
 
   slistStartIterator (tagdata, &iteridx);
   while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
-    int   tagkey;
+    tagkey = audiotagTagCheck (writetags, tagtype, tag);
+    if (tagkey < 0) {
+      continue;
+    }
 
-    tagkey = tagdefLookup (tag);
     newvalue = slistGetStr (newtaglist, tag);
     if (newvalue == NULL) {
       slistSetNum (dellist, tag, 0);
@@ -209,6 +224,15 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist)
       if (! *newvalue && *value) {
         slistSetNum (dellist, tag, 0);
       }
+    }
+  }
+
+  /* special case */
+  if ((rewrite & AF_REWRITE_MB) == AF_REWRITE_MB) {
+    newvalue = slistGetStr (newtaglist, tagdefs [TAG_RECORDING_ID].tag);
+    value = slistGetStr (tagdata, tagdefs [TAG_RECORDING_ID].tag);
+    if ((newvalue == NULL || ! *newvalue) && ! *value) {
+      slistSetNum (dellist, tag, 0);
     }
   }
 
@@ -269,7 +293,7 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 }
 
 static void
-audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
+audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
 {
   char      *tstr;
   char      *tokstr;
@@ -282,9 +306,11 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
   char      pbuff [40];
   int       count;
   bool      haveduration;
-  bool      rewrite;
   bool      skip;
+  int       tagkey;
+  int       writetags;
 
+  writetags = bdjoptGetNum (OPT_G_WRITETAGS);
   audiotagCreateLookupTable (tagtype);
 
 /*
@@ -321,7 +347,6 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
   tstr = strtok_r (data, "\r\n", &tokstr);
   count = 0;
   haveduration = false;
-  rewrite = false;
   while (tstr != NULL) {
     logMsg (LOG_DBG, LOG_DBUPDATE, "raw: %s", tstr);
     skip = false;
@@ -361,13 +386,15 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
 
         /* handle TXXX=MUSICBRAINZ_TRACKID (should be UFID) */
         if (strcmp (p, "TXXX=MUSICBRAINZ_TRACKID") == 0) {
-          rewrite = true;
           p = "UFID=http://musicbrainz.org";
         }
       }
 
       /* p is pointing to the tag name */
       tagname = slistGetStr (tagLookup [tagtype], p);
+      if (tagname != NULL) {
+        tagkey = audiotagTagCheck (writetags, tagtype, tagname);
+      }
       logMsg (LOG_DBG, LOG_DBUPDATE, "tag: %s raw-tag: %s", tagname, p);
 
       if (tagname != NULL && *tagname != '\0') {
@@ -399,11 +426,24 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
         /* put in some extra checks for odd mutagen python output */
         /* this stuff always appears in the UFID tag output */
         if (p != NULL) {
-          if (strncmp (p, "b\"", 2) == 0) {
+          if (tagkey == TAG_RECORDING_ID) {
+            /* check for old mangled data */
+            /* note that mutagen-inspect always outputs the b', */
+            /* so we need to look for b"", b'', b'b', etc. */
+            if (strncmp (p, "b\"'", 3) == 0 ||
+                strncmp (p, "b''", 3) == 0 ||
+                strncmp (p, "b'b'", 4) == 0 ||
+                strncmp (p, "b\"\"", 3) == 0 ||
+                strncmp (p, "b\"b\"", 4) == 0 ||
+                strncmp (p, "b'\"", 3) == 0) {
+              *rewrite |= AF_REWRITE_MB;
+            }
+          }
+          while (strncmp (p, "b\"", 2) == 0) {
             p += 2;
             stringTrimChar (p, '"');
           }
-          if (strncmp (p, "b'", 2) == 0) {
+          while (strncmp (p, "b'", 2) == 0) {
             p += 2;
             stringTrimChar (p, '\'');
           }
@@ -411,9 +451,6 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype)
 
         if (strcmp (tagname, tagdefs [TAG_DURATION].tag) == 0) {
           if (haveduration) {
-            if (strcmp (p, duration) != 0) {
-              rewrite = true;
-            }
             skip = true;
           }
         }
@@ -774,7 +811,7 @@ audiotagRunUpdate (const char *fn)
   targv [targc++] = fn;
   targv [targc++] = NULL;
   osProcessStart (targv, OS_PROC_WAIT | OS_PROC_DETACH, NULL, NULL);
-//  fileopDelete (fn);
+  fileopDelete (fn);
 }
 
 static void

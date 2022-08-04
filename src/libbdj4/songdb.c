@@ -25,11 +25,12 @@ songWriteAudioTags (song_t *song)
   if (data != NULL) {
     slist_t *tagdata;
     slist_t *newtaglist;
+    int     rewrite;
 
-    tagdata = audiotagParseData (ffn, data);
+    tagdata = audiotagParseData (ffn, data, &rewrite);
     free (data);
     newtaglist = songTagList (song);
-    audiotagWriteTags (ffn, tagdata, newtaglist);
+    audiotagWriteTags (ffn, tagdata, newtaglist, 0);
     slistFree (tagdata);
     slistFree (newtaglist);
   }

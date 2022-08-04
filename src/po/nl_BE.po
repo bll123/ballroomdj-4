@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-07-24\n"
-"PO-Revision-Date: 2022-08-03\n"
+"PO-Revision-Date: 2022-08-04\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -1859,6 +1859,10 @@ msgstr "Schrijf Tag info naar audiobestanden"
 msgid ""
 "Writes the audio file tags using the information from the BallroomDJ "
 "database."
+msgstr ""
+
+#. CONTEXT: configuration: dialog: XML file types
+msgid "XML Files"
 msgstr ""
 
 #. CONTEXT: The name of the 'automatic' playlist file

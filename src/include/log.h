@@ -8,6 +8,29 @@
 #include "bdj4.h"
 #include "fileutil.h"
 
+/*
+ * log tags:
+ *  ck - check_all
+ *  in - installer
+ *  up - updater
+ *  ai - alt-installer
+ *  st - starter
+ *  hp - helper
+ *  pu - player ui
+ *  mu - management ui
+ *  bc - bpm counter
+ *  db - database update
+ *  dt - database tag
+ *  cu - configuration ui
+ *  m  - main
+ *  p  - player
+ *  mq - marquee
+ *  rc - mobile remote control
+ *  mm - mobile marquee
+ *
+ */
+
+
 typedef uint32_t   loglevel_t;
 
 enum {

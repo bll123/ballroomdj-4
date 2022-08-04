@@ -722,7 +722,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   time_t    mtime;
   char      tmtime [40];
   char      *val;
-
+  int       rewrite;
 
 
   ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
@@ -738,7 +738,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     return;
   }
 
-  tagdata = audiotagParseData (ffn, data);
+  tagdata = audiotagParseData (ffn, data, &rewrite);
   if (slistGetCount (tagdata) == 0) {
     /* if there is not even a duration, then file is no good */
     /* probably not an audio file */
@@ -867,7 +867,7 @@ dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
   }
 
   newtaglist = songTagList (song);
-  audiotagWriteTags (ffn, tagdata, newtaglist);
+  audiotagWriteTags (ffn, tagdata, newtaglist, 0);
   slistFree (tagdata);
   slistFree (newtaglist);
   IncCount (C_FILE_PROC);

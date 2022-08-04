@@ -502,7 +502,6 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
           }
         }
       } else {
-fprintf (stderr, "%s unable to locate key %s\n", name, tkeystr);
         logMsg (LOG_DBG, LOG_DATAFILE, "ERR: Unable to locate key: %s", tkeystr);
         continue;
       }

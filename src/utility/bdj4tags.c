@@ -35,6 +35,8 @@ main (int argc, char *argv [])
   bool        bdj3tags = false;
   bool        clbdj3tags = false;
   slist_t     *tagdata;
+  bool        writetags;
+  int         rewrite;
 
 
   static struct option bdj_options [] = {
@@ -100,7 +102,10 @@ main (int argc, char *argv [])
   }
 
   data = audiotagReadTags (argv [fidx]);
-  tagdata = audiotagParseData (argv [fidx], data);
+  if (rawdata) {
+    fprintf (stdout, "%s\n", data);
+  }
+  tagdata = audiotagParseData (argv [fidx], data, &rewrite);
 
   wlist = slistAlloc ("bdj4tags-write", LIST_ORDERED, free);
   /* need a copy of the tag list for the write */
@@ -110,6 +115,7 @@ main (int argc, char *argv [])
     slistSetStr (wlist, key, val);
   }
 
+  writetags = false;
   for (int i = fidx + 1; i < argc; ++i) {
     char    *p;
     char    *tokstr;
@@ -121,11 +127,17 @@ main (int argc, char *argv [])
       tagkey = tagdefLookup (val);
       if (tagkey >= 0) {
         slistSetStr (wlist, val, p);
+        writetags = true;
       }
     }
   }
-  if (slistGetCount (wlist) > 0) {
-    audiotagWriteTags (argv [fidx], tagdata, wlist);
+
+  if (writetags || rewrite) {
+    int   value;
+    value = bdjoptGetNum (OPT_G_WRITETAGS);
+    bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
+    audiotagWriteTags (argv [fidx], tagdata, wlist, rewrite);
+    bdjoptSetNum (OPT_G_WRITETAGS, value);
   }
   slistFree (tagdata);
 

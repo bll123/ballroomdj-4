@@ -77,6 +77,7 @@ main (int argc, char * argv[])
     { "check_all",      no_argument,        NULL,   1 },
     /* bdj4updater */
     { "newinstall",     no_argument,        NULL,   0 },
+    { "converted",      no_argument,        NULL,   0 },
     /* used by installer */
     { "unpackdir",      required_argument,  NULL,   'u' },
     { "reinstall",      no_argument,        NULL,   'r' },
@@ -205,6 +206,7 @@ main (int argc, char * argv[])
       case 16: {
         prog = "bdj4updater";
         nodetach = true;
+        wait = true;
         ++validargs;
         break;
       }

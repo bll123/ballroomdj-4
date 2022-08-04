@@ -56,6 +56,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "bdj4",         no_argument,      NULL,   'B' },
     { "bdj4playerui", no_argument,      NULL,   0 },
     { "bdj4starterui", no_argument,     NULL,   0 },
+    { "bdj4updater",  no_argument,      NULL,   0 },
     { "main",         no_argument,      NULL,   0 },
     { "playerui",     no_argument,      NULL,   0 },
     /* bdj4 loader options to ignore */
@@ -74,6 +75,9 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "nomarquee",    no_argument,      NULL,   'm' },
     { "nodetach",     no_argument,      NULL,   'N' },
     { "wait",         no_argument,      NULL,   'w' },
+    /* bdj4updater */
+    { "newinstall",   no_argument,      NULL,   0 },
+    { "converted",    no_argument,      NULL,   0 },
     /* dbupdate options */
     { "rebuild",      no_argument,      NULL,   'R' },
     { "checknew",     no_argument,      NULL,   'C' },
@@ -92,6 +96,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   bdjvarsInit ();
   audiotagInit ();
 
+  optind = 0;
   while ((c = getopt_long_only (argc, argv, "BCPOUWcld:p:mnNRsh", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'B': {
@@ -182,7 +187,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   }
 
   if (! isbdj4) {
-    fprintf (stderr, "not started with launcher\n");
+    fprintf (stderr, "bdj4init: not started with launcher\n");
     exit (1);
   }
 
@@ -300,6 +305,8 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   tagdefCleanup ();
   audiotagCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
-  lockRelease (lockName (route), PATHBLD_MP_USEIDX);
+  if (route != ROUTE_NONE) {
+    lockRelease (lockName (route), PATHBLD_MP_USEIDX);
+  }
   logProcEnd (LOG_PROC, "bdj4shutdown", "");
 }

@@ -2229,6 +2229,8 @@ installerUpdateProcessInit (installer_t *installer)
   /* CONTEXT: installer: status message */
   snprintf (buff, sizeof (buff), _("Updating %s."), BDJ4_LONG_NAME);
   installerDisplayText (installer, INST_DISP_ACTION, buff, false);
+  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait\xe2\x80\xa6"), false);
+  uiLabelSetText (&installer->statusMsg, _("Please wait\xe2\x80\xa6"));
   installer->instState = INST_UPDATE_PROCESS;
 }
 
@@ -2242,14 +2244,19 @@ installerUpdateProcess (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), "%s/bin/bdj4%s",
       installer->rundir, sysvarsGetStr (SV_OS_EXEC_EXT));
   targv [targc++] = tbuff;
+  targv [targc++] = "--wait";
   targv [targc++] = "--bdj4updater";
   /* only need to run the 'newinstall' update process when the template */
   /* files have been copied */
   if (installer->newinstall || installer->reinstall) {
     targv [targc++] = "--newinstall";
   }
+  if (installer->convprocess) {
+    targv [targc++] = "--converted";
+  }
   targv [targc++] = NULL;
   osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
+  uiLabelSetText (&installer->statusMsg, "");
 
   installer->instState = INST_REGISTER_INIT;
 }

@@ -8,7 +8,7 @@
 void audiotagInit (void);
 void audiotagCleanup (void);
 char * audiotagReadTags (const char *ffn);
-slist_t * audiotagParseData (const char *ffn, char *data);
-void audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist);
+slist_t * audiotagParseData (const char *ffn, char *data, int *rewrite);
+void audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist, int rewrite);
 
 #endif /* INC_AUDIOTAG_H */
