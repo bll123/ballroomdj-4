@@ -40,11 +40,12 @@ add_library (libbdj4 SHARED
 )
 target_include_directories (libbdj4
   PUBLIC "${CURL_INCLUDE_DIRS}"
+  PUBLIC "${XML2_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4
   libbdjregex libbdj4common
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  ${GLIB_LDFLAGS}
+  ${GLIB_LDFLAGS} ${XML2_LDFLAGS}
   m
 )
 if (APPLE)

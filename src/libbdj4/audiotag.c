@@ -429,22 +429,18 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
           if (tagkey == TAG_RECORDING_ID) {
             /* check for old mangled data */
             /* note that mutagen-inspect always outputs the b', */
-            /* so we need to look for b"", b'', b'b', etc. */
-            if (strncmp (p, "b\"'", 3) == 0 ||
-                strncmp (p, "b''", 3) == 0 ||
-                strncmp (p, "b'b'", 4) == 0 ||
-                strncmp (p, "b\"\"", 3) == 0 ||
-                strncmp (p, "b\"b\"", 4) == 0 ||
-                strncmp (p, "b'\"", 3) == 0) {
+            /* so we need to look for b'', b'b', etc. */
+            if (strncmp (p, "b''", 3) == 0 ||
+                strncmp (p, "b'b'", 4) == 0) {
               *rewrite |= AF_REWRITE_MB;
             }
           }
-          while (strncmp (p, "b\"", 2) == 0) {
-            p += 2;
-            stringTrimChar (p, '"');
-          }
+          /* the while loops are to handle old messed-up data */
           while (strncmp (p, "b'", 2) == 0) {
             p += 2;
+            while (*p == '\'') {
+              ++p;
+            }
             stringTrimChar (p, '\'');
           }
         }

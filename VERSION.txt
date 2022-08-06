@@ -1,4 +1,8 @@
 VERSION=4.0.0
-BUILD=732
-BUILDDATE=20220804
+<<<<<<< working copy
+BUILD=693
+=======
+BUILD=733
+>>>>>>> destination
+BUILDDATE=20220805
 RELEASELEVEL=alpha
