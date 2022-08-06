@@ -16,10 +16,19 @@
 #include "bdjopt.h"
 #include "configui.h"
 #include "log.h"
+#include "nlist.h"
+#include "pathbld.h"
 #include "ui.h"
 
 static bool confuiRemctrlChg (void *udata, int value);
 static bool confuiRemctrlPortChg (void *udata);
+static void confuiLoadHTMLList (confuigui_t *gui);
+
+void
+confuiInitMobileRemoteControl (confuigui_t *gui)
+{
+  confuiLoadHTMLList (gui);
+}
 
 void
 confuiBuildUIMobileRemoteControl (confuigui_t *gui)
@@ -99,4 +108,48 @@ confuiRemctrlPortChg (void *udata)
   return UICB_CONT;
 }
 
+
+static void
+confuiLoadHTMLList (confuigui_t *gui)
+{
+  char          tbuff [MAXPATHLEN];
+  nlist_t       *tlist = NULL;
+  datafile_t    *df = NULL;
+  slist_t       *list = NULL;
+  slistidx_t    iteridx;
+  char          *key;
+  char          *data;
+  char          *tstr;
+  nlist_t       *llist;
+  int           count;
+
+  logProcBegin (LOG_PROC, "confuiLoadHTMLList");
+
+  tlist = nlistAlloc ("cu-html-list", LIST_ORDERED, free);
+  llist = nlistAlloc ("cu-html-list-l", LIST_ORDERED, free);
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "html-list", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
+  df = datafileAllocParse ("conf-html-list", DFTYPE_KEY_VAL, tbuff,
+      NULL, 0, DATAFILE_NO_LOOKUP);
+  list = datafileGetList (df);
+
+  tstr = bdjoptGetStr (OPT_G_REMCONTROLHTML);
+  slistStartIterator (list, &iteridx);
+  count = 0;
+  while ((key = slistIterateKey (list, &iteridx)) != NULL) {
+    data = slistGetStr (list, key);
+    if (tstr != NULL && strcmp (data, bdjoptGetStr (OPT_G_REMCONTROLHTML)) == 0) {
+      gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx = count;
+    }
+    nlistSetStr (tlist, count, key);
+    nlistSetStr (llist, count, data);
+    ++count;
+  }
+  datafileFree (df);
+
+  gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].displist = tlist;
+  gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].sbkeylist = llist;
+  logProcEnd (LOG_PROC, "confuiLoadHTMLList", "");
+}
 

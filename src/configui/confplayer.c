@@ -18,10 +18,15 @@
 #include "log.h"
 #include "musicq.h"
 #include "nlist.h"
+#include "pathbld.h"
 #include "pli.h"
+#include "sysvars.h"
 #include "ui.h"
 #include "volsink.h"
 #include "volume.h"
+
+static void confuiLoadVolIntfcList (confuigui_t *gui);
+static void confuiLoadPlayerIntfcList (confuigui_t *gui);
 
 void
 confuiInitPlayer (confuigui_t *gui)
@@ -30,6 +35,9 @@ confuiInitPlayer (confuigui_t *gui)
   volume_t        *volume = NULL;
   nlist_t         *tlist = NULL;
   nlist_t         *llist = NULL;
+
+  confuiLoadVolIntfcList (gui);
+  confuiLoadPlayerIntfcList (gui);
 
   volume = volumeInit ();
   assert (volume != NULL);
@@ -141,5 +149,115 @@ confuiBuildUIPlayer (confuigui_t *gui)
         bdjoptGetStr (OPT_P_QUEUE_NAME_A + i));
   }
   logProcEnd (LOG_PROC, "confuiBuildUIPlayer", "");
+}
+
+static void
+confuiLoadVolIntfcList (confuigui_t *gui)
+{
+  char          tbuff [MAXPATHLEN];
+  nlist_t       *tlist = NULL;
+  datafile_t    *df = NULL;
+  ilist_t       *list = NULL;
+  ilistidx_t    iteridx;
+  ilistidx_t    key;
+  char          *os;
+  char          *intfc;
+  char          *desc;
+  nlist_t       *llist;
+  int           count;
+
+  static datafilekey_t dfkeys [CONFUI_VOL_MAX] = {
+    { "DESC",   CONFUI_VOL_DESC,  VALUE_STR, NULL, -1 },
+    { "INTFC",  CONFUI_VOL_INTFC, VALUE_STR, NULL, -1 },
+    { "OS",     CONFUI_VOL_OS,    VALUE_STR, NULL, -1 },
+  };
+
+  logProcBegin (LOG_PROC, "confuiLoadVolIntfcList");
+
+  tlist = nlistAlloc ("cu-volintfc-list", LIST_ORDERED, free);
+  llist = nlistAlloc ("cu-volintfc-list-l", LIST_ORDERED, free);
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "volintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
+  df = datafileAllocParse ("conf-volintfc-list", DFTYPE_INDIRECT, tbuff,
+      dfkeys, CONFUI_VOL_MAX, DATAFILE_NO_LOOKUP);
+  list = datafileGetList (df);
+
+  ilistStartIterator (list, &iteridx);
+  count = 0;
+  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
+    intfc = ilistGetStr (list, key, CONFUI_VOL_INTFC);
+    desc = ilistGetStr (list, key, CONFUI_VOL_DESC);
+    os = ilistGetStr (list, key, CONFUI_VOL_OS);
+    if (strcmp (os, sysvarsGetStr (SV_OSNAME)) == 0 ||
+        strcmp (os, "all") == 0) {
+      if (strcmp (intfc, bdjoptGetStr (OPT_M_VOLUME_INTFC)) == 0) {
+        gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx = count;
+      }
+      nlistSetStr (tlist, count, desc);
+      nlistSetStr (llist, count, intfc);
+      ++count;
+    }
+  }
+  datafileFree (df);
+
+  gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].displist = tlist;
+  gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].sbkeylist = llist;
+  logProcEnd (LOG_PROC, "confuiLoadVolIntfcList", "");
+}
+
+static void
+confuiLoadPlayerIntfcList (confuigui_t *gui)
+{
+  char          tbuff [MAXPATHLEN];
+  nlist_t       *tlist = NULL;
+  datafile_t    *df = NULL;
+  ilist_t       *list = NULL;
+  ilistidx_t    iteridx;
+  ilistidx_t    key;
+  char          *os;
+  char          *intfc;
+  char          *desc;
+  nlist_t       *llist;
+  int           count;
+
+  static datafilekey_t dfkeys [CONFUI_PLAYER_MAX] = {
+    { "DESC",   CONFUI_PLAYER_DESC,  VALUE_STR, NULL, -1 },
+    { "INTFC",  CONFUI_PLAYER_INTFC, VALUE_STR, NULL, -1 },
+    { "OS",     CONFUI_PLAYER_OS,    VALUE_STR, NULL, -1 },
+  };
+
+  logProcBegin (LOG_PROC, "confuiLoadPlayerIntfcList");
+
+  tlist = nlistAlloc ("cu-playerintfc-list", LIST_ORDERED, free);
+  llist = nlistAlloc ("cu-playerintfc-list-l", LIST_ORDERED, free);
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "playerintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
+  df = datafileAllocParse ("conf-playerintfc-list", DFTYPE_INDIRECT, tbuff,
+      dfkeys, CONFUI_PLAYER_MAX, DATAFILE_NO_LOOKUP);
+  list = datafileGetList (df);
+
+  ilistStartIterator (list, &iteridx);
+  count = 0;
+  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
+    intfc = ilistGetStr (list, key, CONFUI_PLAYER_INTFC);
+    desc = ilistGetStr (list, key, CONFUI_PLAYER_DESC);
+    os = ilistGetStr (list, key, CONFUI_PLAYER_OS);
+    if (strcmp (os, sysvarsGetStr (SV_OSNAME)) == 0 ||
+        strcmp (os, "all") == 0) {
+      if (strcmp (intfc, bdjoptGetStr (OPT_M_PLAYER_INTFC)) == 0) {
+        gui->uiitem [CONFUI_SPINBOX_PLAYER].listidx = count;
+      }
+      nlistSetStr (tlist, count, desc);
+      nlistSetStr (llist, count, intfc);
+      ++count;
+    }
+  }
+  datafileFree (df);
+
+  gui->uiitem [CONFUI_SPINBOX_PLAYER].displist = tlist;
+  gui->uiitem [CONFUI_SPINBOX_PLAYER].sbkeylist = llist;
+  logProcEnd (LOG_PROC, "confuiLoadPlayerIntfcList", "");
 }
 

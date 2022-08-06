@@ -17,6 +17,8 @@
 #include "bdjopt.h"
 #include "configui.h"
 #include "log.h"
+#include "nlist.h"
+#include "pathbld.h"
 #include "pathutil.h"
 #include "sysvars.h"
 #include "ui.h"
@@ -24,10 +26,13 @@
 static bool confuiSelectMusicDir (void *udata);
 static bool confuiSelectStartup (void *udata);
 static bool confuiSelectShutdown (void *udata);
+static void confuiLoadLocaleList (confuigui_t *gui);
 
 void
 confuiInitGeneral (confuigui_t *gui)
 {
+  confuiLoadLocaleList (gui);
+
   confuiSpinboxTextInitDataNum (gui, "cu-audio-file-tags",
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
       /* CONTEXT: configuration: write audio file tags: do not write any tags to the audio file */
@@ -180,4 +185,64 @@ confuiSelectShutdown (void *udata)
   logProcEnd (LOG_PROC, "confuiSelectShutdown", "");
   return UICB_CONT;
 }
+
+static void
+confuiLoadLocaleList (confuigui_t *gui)
+{
+  char          tbuff [MAXPATHLEN];
+  nlist_t       *tlist = NULL;
+  datafile_t    *df = NULL;
+  slist_t       *list = NULL;
+  slistidx_t    iteridx;
+  char          *key;
+  char          *data;
+  nlist_t       *llist;
+  int           count;
+  bool          found;
+  int           engbidx = 0;
+  int           shortidx = 0;
+
+  logProcBegin (LOG_PROC, "confuiLoadLocaleList");
+
+  tlist = nlistAlloc ("cu-locale-list", LIST_ORDERED, free);
+  llist = nlistAlloc ("cu-locale-list-l", LIST_ORDERED, free);
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "locales", BDJ4_CONFIG_EXT, PATHBLD_MP_LOCALEDIR);
+  df = datafileAllocParse ("conf-locale-list", DFTYPE_KEY_VAL, tbuff,
+      NULL, 0, DATAFILE_NO_LOOKUP);
+  list = datafileGetList (df);
+
+  slistStartIterator (list, &iteridx);
+  count = 0;
+  found = false;
+  shortidx = -1;
+  while ((key = slistIterateKey (list, &iteridx)) != NULL) {
+    data = slistGetStr (list, key);
+    if (strcmp (data, "en_GB") == 0) {
+      engbidx = count;
+    }
+    if (strcmp (data, sysvarsGetStr (SV_LOCALE)) == 0) {
+      gui->uiitem [CONFUI_SPINBOX_LOCALE].listidx = count;
+      found = true;
+    }
+    if (strncmp (data, sysvarsGetStr (SV_LOCALE_SHORT), 2) == 0) {
+      shortidx = count;
+    }
+    nlistSetStr (tlist, count, key);
+    nlistSetStr (llist, count, data);
+    ++count;
+  }
+  if (! found && shortidx >= 0) {
+    gui->uiitem [CONFUI_SPINBOX_LOCALE].listidx = shortidx;
+  } else if (! found) {
+    gui->uiitem [CONFUI_SPINBOX_LOCALE].listidx = engbidx;
+  }
+  datafileFree (df);
+
+  gui->uiitem [CONFUI_SPINBOX_LOCALE].displist = tlist;
+  gui->uiitem [CONFUI_SPINBOX_LOCALE].sbkeylist = llist;
+  logProcEnd (LOG_PROC, "confuiLoadLocaleList", "");
+}
+
 

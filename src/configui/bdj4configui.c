@@ -189,17 +189,14 @@ main (int argc, char *argv[])
 
   confui.gui.dispsel = dispselAlloc ();
 
-  confuiInitOrganization (&confui.gui);
   confuiInitGeneral (&confui.gui);
-  confuiInitEditDances (&confui.gui);
+  confuiInitPlayer (&confui.gui);
+  confuiInitOrganization (&confui.gui);
   confuiInitDispSettings (&confui.gui);
+  confuiInitEditDances (&confui.gui);
   confuiInitiTunes (&confui.gui);
+  confuiInitMobileRemoteControl (&confui.gui);
 
-  confuiLoadHTMLList (&confui.gui);
-  confuiLoadVolIntfcList (&confui.gui);
-  confuiLoadPlayerIntfcList (&confui.gui);
-  confuiLoadLocaleList (&confui.gui);
-  confuiLoadDanceTypeList (&confui.gui);
   confuiLoadTagList (&confui);
   confuiLoadThemeList (&confui.gui);
 
@@ -256,8 +253,8 @@ main (int argc, char *argv[])
   connFree (confui.conn);
   progstateFree (confui.progstate);
 
-  confuiCleaniTunes (&confui.gui);
   confuiCleanOrganization (&confui.gui);
+  confuiCleaniTunes (&confui.gui);
 
   logProcEnd (LOG_PROC, "configui", "");
   logEnd ();

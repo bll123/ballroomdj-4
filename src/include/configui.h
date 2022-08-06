@@ -76,7 +76,6 @@ enum {
   CONFUI_SPINBOX_RC_HTML_TEMPLATE,
   CONFUI_SPINBOX_UI_THEME,
   CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
-  CONFUI_SPINBOX_ITUNES_STARS_0,
   CONFUI_SPINBOX_ITUNES_STARS_10,
   CONFUI_SPINBOX_ITUNES_STARS_20,
   CONFUI_SPINBOX_ITUNES_STARS_30,
@@ -352,13 +351,6 @@ typedef struct confuigui {
 } confuigui_t;
 
 /* confcommon.c */
-nlist_t  * confuiGetThemeList (void);
-slist_t  * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
-void confuiLoadHTMLList (confuigui_t *gui);
-void confuiLoadVolIntfcList (confuigui_t *gui);
-void confuiLoadPlayerIntfcList (confuigui_t *gui);
-void confuiLoadLocaleList (confuigui_t *gui);
-void confuiLoadDanceTypeList (confuigui_t *gui);
 void confuiLoadThemeList (confuigui_t *gui);
 void confuiUpdateMobmqQrcode (confuigui_t *gui);
 void confuiUpdateRemctrlQrcode (confuigui_t *gui);
@@ -438,6 +430,7 @@ void confuiInitPlayer (confuigui_t *gui);
 void confuiBuildUIPlayer (confuigui_t *gui);
 
 /* confrc.c */
+void confuiInitMobileRemoteControl (confuigui_t *gui);
 void confuiBuildUIMobileRemoteControl (confuigui_t *gui);
 
 /* confrating.c */

@@ -33,352 +33,14 @@
 #include "validate.h"
 #include "webclient.h"
 
+static nlist_t * confuiGetThemeList (void);
+static slist_t * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
 static char * confuiGetLocalIP (confuigui_t *gui);
 static char * confuiMakeQRCodeFile (char *title, char *uri);
 static void confuiUpdateOrgExample (org_t *org, char *data, UIWidget *uiwidgetp);
 
-nlist_t *
-confuiGetThemeList (void)
-{
-  slist_t     *filelist = NULL;
-  nlist_t     *themelist = NULL;
-  char        tbuff [MAXPATHLEN];
-  slist_t     *sthemelist = NULL;
-  slistidx_t  iteridx;
-  char        *nm;
-  int         count;
 
-
-  logProcBegin (LOG_PROC, "confuiGetThemeList");
-  sthemelist = slistAlloc ("cu-themes-s", LIST_ORDERED, NULL);
-  themelist = nlistAlloc ("cu-themes", LIST_ORDERED, free);
-
-  if (isWindows ()) {
-    snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",
-        sysvarsGetStr (SV_BDJ4MAINDIR));
-    filelist = diropRecursiveDirList (tbuff, FILEMANIP_DIRS);
-    confuiGetThemeNames (sthemelist, filelist);
-    slistFree (filelist);
-  } else {
-    /* for macos */
-    filelist = diropRecursiveDirList ("/opt/local/share/themes", FILEMANIP_DIRS);
-    confuiGetThemeNames (sthemelist, filelist);
-    slistFree (filelist);
-
-    filelist = diropRecursiveDirList ("/usr/local/share/themes", FILEMANIP_DIRS);
-    confuiGetThemeNames (sthemelist, filelist);
-    slistFree (filelist);
-
-    filelist = diropRecursiveDirList ("/usr/share/themes", FILEMANIP_DIRS);
-    confuiGetThemeNames (sthemelist, filelist);
-    slistFree (filelist);
-
-    snprintf (tbuff, sizeof (tbuff), "%s/.themes", sysvarsGetStr (SV_HOME));
-    filelist = diropRecursiveDirList (tbuff, FILEMANIP_DIRS);
-    confuiGetThemeNames (sthemelist, filelist);
-    slistFree (filelist);
-  }
-  /* make sure the built-in themes are present */
-  slistSetStr (sthemelist, "Adwaita", 0);
-  /* adwaita-dark does not appear to work on macos w/macports */
-  if (! isMacOS()) {
-    slistSetStr (sthemelist, "Adwaita-dark", 0);
-  }
-  slistSetStr (sthemelist, "HighContrast", 0);
-  slistSetStr (sthemelist, "HighContrastInverse", 0);
-  slistSort (sthemelist);
-
-  slistStartIterator (sthemelist, &iteridx);
-  count = 0;
-  while ((nm = slistIterateKey (sthemelist, &iteridx)) != NULL) {
-    nlistSetStr (themelist, count++, nm);
-  }
-
-  logProcEnd (LOG_PROC, "confuiGetThemeList", "");
-  return themelist;
-}
-
-slist_t *
-confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
-{
-  slistidx_t    iteridx;
-  char          *fn;
-  pathinfo_t    *pi;
-  static char   *srchdir = "gtk-3.0";
-  char          tbuff [MAXPATHLEN];
-  char          tmp [MAXPATHLEN];
-
-  logProcBegin (LOG_PROC, "confuiGetThemeNames");
-  if (filelist == NULL) {
-    logProcEnd (LOG_PROC, "confuiGetThemeNames", "no-filelist");
-    return NULL;
-  }
-
-  slistStartIterator (filelist, &iteridx);
-
-  /* the key value used here is meaningless */
-  while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
-    if (fileopIsDirectory (fn)) {
-      pi = pathInfo (fn);
-      if (pi->flen == strlen (srchdir) &&
-          strncmp (pi->filename, srchdir, strlen (srchdir)) == 0) {
-        strlcpy (tbuff, pi->dirname, pi->dlen + 1);
-        pathInfoFree (pi);
-        pi = pathInfo (tbuff);
-        strlcpy (tmp, pi->filename, pi->flen + 1);
-        slistSetStr (themelist, tmp, 0);
-      }
-      pathInfoFree (pi);
-    } /* is directory */
-  } /* for each file */
-
-  logProcEnd (LOG_PROC, "confuiGetThemeNames", "");
-  return themelist;
-}
-
-void
-confuiLoadHTMLList (confuigui_t *gui)
-{
-  char          tbuff [MAXPATHLEN];
-  nlist_t       *tlist = NULL;
-  datafile_t    *df = NULL;
-  slist_t       *list = NULL;
-  slistidx_t    iteridx;
-  char          *key;
-  char          *data;
-  char          *tstr;
-  nlist_t       *llist;
-  int           count;
-
-  logProcBegin (LOG_PROC, "confuiLoadHTMLList");
-
-  tlist = nlistAlloc ("cu-html-list", LIST_ORDERED, free);
-  llist = nlistAlloc ("cu-html-list-l", LIST_ORDERED, free);
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "html-list", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
-  df = datafileAllocParse ("conf-html-list", DFTYPE_KEY_VAL, tbuff,
-      NULL, 0, DATAFILE_NO_LOOKUP);
-  list = datafileGetList (df);
-
-  tstr = bdjoptGetStr (OPT_G_REMCONTROLHTML);
-  slistStartIterator (list, &iteridx);
-  count = 0;
-  while ((key = slistIterateKey (list, &iteridx)) != NULL) {
-    data = slistGetStr (list, key);
-    if (tstr != NULL && strcmp (data, bdjoptGetStr (OPT_G_REMCONTROLHTML)) == 0) {
-      gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].listidx = count;
-    }
-    nlistSetStr (tlist, count, key);
-    nlistSetStr (llist, count, data);
-    ++count;
-  }
-  datafileFree (df);
-
-  gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_RC_HTML_TEMPLATE].sbkeylist = llist;
-  logProcEnd (LOG_PROC, "confuiLoadHTMLList", "");
-}
-
-void
-confuiLoadVolIntfcList (confuigui_t *gui)
-{
-  char          tbuff [MAXPATHLEN];
-  nlist_t       *tlist = NULL;
-  datafile_t    *df = NULL;
-  ilist_t       *list = NULL;
-  ilistidx_t    iteridx;
-  ilistidx_t    key;
-  char          *os;
-  char          *intfc;
-  char          *desc;
-  nlist_t       *llist;
-  int           count;
-
-  static datafilekey_t dfkeys [CONFUI_VOL_MAX] = {
-    { "DESC",   CONFUI_VOL_DESC,  VALUE_STR, NULL, -1 },
-    { "INTFC",  CONFUI_VOL_INTFC, VALUE_STR, NULL, -1 },
-    { "OS",     CONFUI_VOL_OS,    VALUE_STR, NULL, -1 },
-  };
-
-  logProcBegin (LOG_PROC, "confuiLoadVolIntfcList");
-
-  tlist = nlistAlloc ("cu-volintfc-list", LIST_ORDERED, free);
-  llist = nlistAlloc ("cu-volintfc-list-l", LIST_ORDERED, free);
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "volintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
-  df = datafileAllocParse ("conf-volintfc-list", DFTYPE_INDIRECT, tbuff,
-      dfkeys, CONFUI_VOL_MAX, DATAFILE_NO_LOOKUP);
-  list = datafileGetList (df);
-
-  ilistStartIterator (list, &iteridx);
-  count = 0;
-  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
-    intfc = ilistGetStr (list, key, CONFUI_VOL_INTFC);
-    desc = ilistGetStr (list, key, CONFUI_VOL_DESC);
-    os = ilistGetStr (list, key, CONFUI_VOL_OS);
-    if (strcmp (os, sysvarsGetStr (SV_OSNAME)) == 0 ||
-        strcmp (os, "all") == 0) {
-      if (strcmp (intfc, bdjoptGetStr (OPT_M_VOLUME_INTFC)) == 0) {
-        gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx = count;
-      }
-      nlistSetStr (tlist, count, desc);
-      nlistSetStr (llist, count, intfc);
-      ++count;
-    }
-  }
-  datafileFree (df);
-
-  gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].sbkeylist = llist;
-  logProcEnd (LOG_PROC, "confuiLoadVolIntfcList", "");
-}
-
-void
-confuiLoadPlayerIntfcList (confuigui_t *gui)
-{
-  char          tbuff [MAXPATHLEN];
-  nlist_t       *tlist = NULL;
-  datafile_t    *df = NULL;
-  ilist_t       *list = NULL;
-  ilistidx_t    iteridx;
-  ilistidx_t    key;
-  char          *os;
-  char          *intfc;
-  char          *desc;
-  nlist_t       *llist;
-  int           count;
-
-  static datafilekey_t dfkeys [CONFUI_PLAYER_MAX] = {
-    { "DESC",   CONFUI_PLAYER_DESC,  VALUE_STR, NULL, -1 },
-    { "INTFC",  CONFUI_PLAYER_INTFC, VALUE_STR, NULL, -1 },
-    { "OS",     CONFUI_PLAYER_OS,    VALUE_STR, NULL, -1 },
-  };
-
-  logProcBegin (LOG_PROC, "confuiLoadPlayerIntfcList");
-
-  tlist = nlistAlloc ("cu-playerintfc-list", LIST_ORDERED, free);
-  llist = nlistAlloc ("cu-playerintfc-list-l", LIST_ORDERED, free);
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "playerintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
-  df = datafileAllocParse ("conf-playerintfc-list", DFTYPE_INDIRECT, tbuff,
-      dfkeys, CONFUI_PLAYER_MAX, DATAFILE_NO_LOOKUP);
-  list = datafileGetList (df);
-
-  ilistStartIterator (list, &iteridx);
-  count = 0;
-  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
-    intfc = ilistGetStr (list, key, CONFUI_PLAYER_INTFC);
-    desc = ilistGetStr (list, key, CONFUI_PLAYER_DESC);
-    os = ilistGetStr (list, key, CONFUI_PLAYER_OS);
-    if (strcmp (os, sysvarsGetStr (SV_OSNAME)) == 0 ||
-        strcmp (os, "all") == 0) {
-      if (strcmp (intfc, bdjoptGetStr (OPT_M_PLAYER_INTFC)) == 0) {
-        gui->uiitem [CONFUI_SPINBOX_PLAYER].listidx = count;
-      }
-      nlistSetStr (tlist, count, desc);
-      nlistSetStr (llist, count, intfc);
-      ++count;
-    }
-  }
-  datafileFree (df);
-
-  gui->uiitem [CONFUI_SPINBOX_PLAYER].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_PLAYER].sbkeylist = llist;
-  logProcEnd (LOG_PROC, "confuiLoadPlayerIntfcList", "");
-}
-
-void
-confuiLoadLocaleList (confuigui_t *gui)
-{
-  char          tbuff [MAXPATHLEN];
-  nlist_t       *tlist = NULL;
-  datafile_t    *df = NULL;
-  slist_t       *list = NULL;
-  slistidx_t    iteridx;
-  char          *key;
-  char          *data;
-  nlist_t       *llist;
-  int           count;
-  bool          found;
-  int           engbidx = 0;
-  int           shortidx = 0;
-
-  logProcBegin (LOG_PROC, "confuiLoadLocaleList");
-
-  tlist = nlistAlloc ("cu-locale-list", LIST_ORDERED, free);
-  llist = nlistAlloc ("cu-locale-list-l", LIST_ORDERED, free);
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "locales", BDJ4_CONFIG_EXT, PATHBLD_MP_LOCALEDIR);
-  df = datafileAllocParse ("conf-locale-list", DFTYPE_KEY_VAL, tbuff,
-      NULL, 0, DATAFILE_NO_LOOKUP);
-  list = datafileGetList (df);
-
-  slistStartIterator (list, &iteridx);
-  count = 0;
-  found = false;
-  shortidx = -1;
-  while ((key = slistIterateKey (list, &iteridx)) != NULL) {
-    data = slistGetStr (list, key);
-    if (strcmp (data, "en_GB") == 0) {
-      engbidx = count;
-    }
-    if (strcmp (data, sysvarsGetStr (SV_LOCALE)) == 0) {
-      gui->uiitem [CONFUI_SPINBOX_LOCALE].listidx = count;
-      found = true;
-    }
-    if (strncmp (data, sysvarsGetStr (SV_LOCALE_SHORT), 2) == 0) {
-      shortidx = count;
-    }
-    nlistSetStr (tlist, count, key);
-    nlistSetStr (llist, count, data);
-    ++count;
-  }
-  if (! found && shortidx >= 0) {
-    gui->uiitem [CONFUI_SPINBOX_LOCALE].listidx = shortidx;
-  } else if (! found) {
-    gui->uiitem [CONFUI_SPINBOX_LOCALE].listidx = engbidx;
-  }
-  datafileFree (df);
-
-  gui->uiitem [CONFUI_SPINBOX_LOCALE].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_LOCALE].sbkeylist = llist;
-  logProcEnd (LOG_PROC, "confuiLoadLocaleList", "");
-}
-
-
-void
-confuiLoadDanceTypeList (confuigui_t *gui)
-{
-  nlist_t       *tlist = NULL;
-  nlist_t       *llist = NULL;
-  dnctype_t     *dnctypes;
-  slistidx_t    iteridx;
-  char          *key;
-  int           count;
-
-  logProcBegin (LOG_PROC, "confuiLoadDanceTypeList");
-
-  tlist = nlistAlloc ("cu-dance-type", LIST_ORDERED, free);
-  llist = nlistAlloc ("cu-dance-type-l", LIST_ORDERED, free);
-
-  dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
-  dnctypesStartIterator (dnctypes, &iteridx);
-  count = 0;
-  while ((key = dnctypesIterate (dnctypes, &iteridx)) != NULL) {
-    nlistSetStr (tlist, count, key);
-    nlistSetNum (llist, count, count);
-    ++count;
-  }
-
-  gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].sbkeylist = llist;
-  logProcEnd (LOG_PROC, "confuiLoadDanceTypeList", "");
-}
-
+/* the theme list is used by both the ui and the marquee selections */
 void
 confuiLoadThemeList (confuigui_t *gui)
 {
@@ -415,7 +77,6 @@ confuiLoadThemeList (confuigui_t *gui)
   gui->uiitem [CONFUI_SPINBOX_UI_THEME].displist = tlist;
   gui->uiitem [CONFUI_SPINBOX_MQ_THEME].displist = tlist;
 }
-
 
 void
 confuiUpdateMobmqQrcode (confuigui_t *gui)
@@ -622,6 +283,105 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
 }
 
 /* internal routines */
+
+static nlist_t *
+confuiGetThemeList (void)
+{
+  slist_t     *filelist = NULL;
+  nlist_t     *themelist = NULL;
+  char        tbuff [MAXPATHLEN];
+  slist_t     *sthemelist = NULL;
+  slistidx_t  iteridx;
+  char        *nm;
+  int         count;
+
+
+  logProcBegin (LOG_PROC, "confuiGetThemeList");
+  sthemelist = slistAlloc ("cu-themes-s", LIST_ORDERED, NULL);
+  themelist = nlistAlloc ("cu-themes", LIST_ORDERED, free);
+
+  if (isWindows ()) {
+    snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",
+        sysvarsGetStr (SV_BDJ4MAINDIR));
+    filelist = diropRecursiveDirList (tbuff, FILEMANIP_DIRS);
+    confuiGetThemeNames (sthemelist, filelist);
+    slistFree (filelist);
+  } else {
+    /* for macos */
+    filelist = diropRecursiveDirList ("/opt/local/share/themes", FILEMANIP_DIRS);
+    confuiGetThemeNames (sthemelist, filelist);
+    slistFree (filelist);
+
+    filelist = diropRecursiveDirList ("/usr/local/share/themes", FILEMANIP_DIRS);
+    confuiGetThemeNames (sthemelist, filelist);
+    slistFree (filelist);
+
+    filelist = diropRecursiveDirList ("/usr/share/themes", FILEMANIP_DIRS);
+    confuiGetThemeNames (sthemelist, filelist);
+    slistFree (filelist);
+
+    snprintf (tbuff, sizeof (tbuff), "%s/.themes", sysvarsGetStr (SV_HOME));
+    filelist = diropRecursiveDirList (tbuff, FILEMANIP_DIRS);
+    confuiGetThemeNames (sthemelist, filelist);
+    slistFree (filelist);
+  }
+  /* make sure the built-in themes are present */
+  slistSetStr (sthemelist, "Adwaita", 0);
+  /* adwaita-dark does not appear to work on macos w/macports */
+  if (! isMacOS()) {
+    slistSetStr (sthemelist, "Adwaita-dark", 0);
+  }
+  slistSetStr (sthemelist, "HighContrast", 0);
+  slistSetStr (sthemelist, "HighContrastInverse", 0);
+  slistSort (sthemelist);
+
+  slistStartIterator (sthemelist, &iteridx);
+  count = 0;
+  while ((nm = slistIterateKey (sthemelist, &iteridx)) != NULL) {
+    nlistSetStr (themelist, count++, nm);
+  }
+
+  logProcEnd (LOG_PROC, "confuiGetThemeList", "");
+  return themelist;
+}
+
+static slist_t *
+confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
+{
+  slistidx_t    iteridx;
+  char          *fn;
+  pathinfo_t    *pi;
+  static char   *srchdir = "gtk-3.0";
+  char          tbuff [MAXPATHLEN];
+  char          tmp [MAXPATHLEN];
+
+  logProcBegin (LOG_PROC, "confuiGetThemeNames");
+  if (filelist == NULL) {
+    logProcEnd (LOG_PROC, "confuiGetThemeNames", "no-filelist");
+    return NULL;
+  }
+
+  slistStartIterator (filelist, &iteridx);
+
+  /* the key value used here is meaningless */
+  while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
+    if (fileopIsDirectory (fn)) {
+      pi = pathInfo (fn);
+      if (pi->flen == strlen (srchdir) &&
+          strncmp (pi->filename, srchdir, strlen (srchdir)) == 0) {
+        strlcpy (tbuff, pi->dirname, pi->dlen + 1);
+        pathInfoFree (pi);
+        pi = pathInfo (tbuff);
+        strlcpy (tmp, pi->filename, pi->flen + 1);
+        slistSetStr (themelist, tmp, 0);
+      }
+      pathInfoFree (pi);
+    } /* is directory */
+  } /* for each file */
+
+  logProcEnd (LOG_PROC, "confuiGetThemeNames", "");
+  return themelist;
+}
 
 static char *
 confuiGetLocalIP (confuigui_t *gui)

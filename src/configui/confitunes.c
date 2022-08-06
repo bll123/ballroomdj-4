@@ -29,7 +29,6 @@
 #include "uirating.h"
 
 enum {
-  CONFUI_STARS_0,
   CONFUI_STARS_10,
   CONFUI_STARS_20,
   CONFUI_STARS_30,
@@ -53,7 +52,6 @@ typedef struct confitunes {
 
 /* must be sorted in ascii order */
 static datafilekey_t starsdfkeys [CONFUI_STARS_MAX] = {
-  { "0",    CONFUI_STARS_0,       VALUE_NUM,  ratingConv, -1 },
   { "10",   CONFUI_STARS_10,      VALUE_NUM,  ratingConv, -1 },
   { "100",  CONFUI_STARS_100,     VALUE_NUM,  ratingConv, -1 },
   { "20",   CONFUI_STARS_20,      VALUE_NUM,  ratingConv, -1 },
@@ -144,10 +142,10 @@ confuiSaveiTunes (confuigui_t *gui)
     int     tval, oval;
 
     tval = uiratingGetValue (gui->itunes->uirating [i]);
-    oval = nlistGetNum (gui->itunes->stars, CONFUI_STARS_0 + i);
+    oval = nlistGetNum (gui->itunes->stars, CONFUI_STARS_10 + i);
     if (tval != oval) {
       changed = true;
-      nlistSetNum (gui->itunes->stars, CONFUI_STARS_0 + i, tval);
+      nlistSetNum (gui->itunes->stars, CONFUI_STARS_10 + i, tval);
     }
   }
 
@@ -269,17 +267,17 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiCreateLabel (&uiwidget, _("Rating"));
   uiBoxPackStart (&vbox, &uiwidget);
 
-  /* itunes uses 0..100 mapping to 0,0.5,1,1.5,...,4.5,5 stars */
+  /* itunes uses 10..100 mapping to 0.5,1,1.5,...,4.5,5 stars */
   for (int i = 0; i < CONFUI_STARS_MAX; ++i) {
     double  starval;
 
-    starval = (double) i / 2.0;
-    if (i % 2 == 0) {
+    starval = (double) i / 2.0 + 0.5;
+    if (i % 2 == 1) {
       snprintf (tmp, sizeof (tmp), "%0.0f", starval);
     } else {
       snprintf (tmp, sizeof (tmp), "%0.1f", starval);
     }
-    /* CONTEXT: configuration: itunes rating in stars (0, 0.5, 1, 1.5, etc.) */
+    /* CONTEXT: configuration: itunes rating in stars (0.5, 1, 1.5, etc.) */
     snprintf (tbuff, sizeof (tbuff), _("%s Stars"), tmp);
 
     uiCreateHorizBox (&hbox);
@@ -292,7 +290,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
     gui->itunes->uirating [i] = uiratingSpinboxCreate (&hbox, false);
 
     uiratingSetValue (gui->itunes->uirating [i],
-        nlistGetNum (gui->itunes->stars, CONFUI_STARS_0 + i));
+        nlistGetNum (gui->itunes->stars, CONFUI_STARS_10 + i));
   }
 
   uiCreateVertBox (&vbox);

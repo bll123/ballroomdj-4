@@ -21,6 +21,7 @@
 #include "configui.h"
 #include "dance.h"
 #include "datafile.h"
+#include "dnctypes.h"
 #include "fileop.h"
 #include "ilist.h"
 #include "log.h"
@@ -43,10 +44,13 @@ static void confuiDanceSpinboxChg (void *udata, int widx);
 static int  confuiDanceValidateAnnouncement (uientry_t *entry, confuigui_t *gui);
 static void confuiDanceSave (confuigui_t *gui);
 static bool confuiSelectAnnouncement (void *udata);
+static void confuiLoadDanceTypeList (confuigui_t *gui);
 
 void
 confuiInitEditDances (confuigui_t *gui)
 {
+  confuiLoadDanceTypeList (gui);
+
   confuiSpinboxTextInitDataNum (gui, "cu-dance-speed",
       CONFUI_SPINBOX_DANCE_SPEED,
       /* CONTEXT: configuration: dance speed */
@@ -481,5 +485,34 @@ confuiSelectAnnouncement (void *udata)
       bdjoptGetStr (OPT_M_DIR_MUSIC), _("Audio Files"), "audio/*");
   logProcEnd (LOG_PROC, "confuiSelectAnnouncement", "");
   return UICB_CONT;
+}
+
+static void
+confuiLoadDanceTypeList (confuigui_t *gui)
+{
+  nlist_t       *tlist = NULL;
+  nlist_t       *llist = NULL;
+  dnctype_t     *dnctypes;
+  slistidx_t    iteridx;
+  char          *key;
+  int           count;
+
+  logProcBegin (LOG_PROC, "confuiLoadDanceTypeList");
+
+  tlist = nlistAlloc ("cu-dance-type", LIST_ORDERED, free);
+  llist = nlistAlloc ("cu-dance-type-l", LIST_ORDERED, free);
+
+  dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
+  dnctypesStartIterator (dnctypes, &iteridx);
+  count = 0;
+  while ((key = dnctypesIterate (dnctypes, &iteridx)) != NULL) {
+    nlistSetStr (tlist, count, key);
+    nlistSetNum (llist, count, count);
+    ++count;
+  }
+
+  gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].displist = tlist;
+  gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].sbkeylist = llist;
+  logProcEnd (LOG_PROC, "confuiLoadDanceTypeList", "");
 }
 
