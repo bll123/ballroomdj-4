@@ -1,11 +1,14 @@
 #include "config.h"
 
-#pragma clang diagnostic ignored "-Wformat-extra-args"
-#pragma gcc diagnostic ignored "-Wformat-extra-args"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
+#pragma clang diagnostic push
+#pragma gcc diagnostic push
+#pragma clang diagnostic ignored "-Wformat-extra-args"
+#pragma gcc diagnostic ignored "-Wformat-extra-args"
+
 #include <check.h>
 
 #include "ilist.h"

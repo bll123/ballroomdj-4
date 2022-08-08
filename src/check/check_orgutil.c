@@ -1,14 +1,17 @@
 #include "config.h"
 
-#pragma clang diagnostic ignored "-Wformat-extra-args"
-#pragma gcc diagnostic ignored "-Wformat-extra-args"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <check.h>
 #include <sys/types.h>
 #include <time.h>
+
+#pragma clang diagnostic push
+#pragma gcc diagnostic push
+#pragma clang diagnostic ignored "-Wformat-extra-args"
+#pragma gcc diagnostic ignored "-Wformat-extra-args"
+
+#include <check.h>
 
 #include "orgutil.h"
 #include "check_bdj.h"

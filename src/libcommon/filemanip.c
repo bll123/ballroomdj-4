@@ -77,7 +77,7 @@ filemanipCopy (const char *fname, const char *nfn)
 
     data = filedataReadAll (fname, &len);
     if (data != NULL) {
-      fh = fopen (nfn, "w");
+      fh = fileopOpen (nfn, "w");
       if (fh != NULL) {
         trc = fwrite (data, len, 1, fh);
         fclose (fh);

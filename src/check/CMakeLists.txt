@@ -4,7 +4,9 @@ include (../utils/bdj4macros.cmake)
 
 add_executable (check_all
   check_all.c
+  check_bdjstring.c
   check_datafile.c
+  check_dirop.c
   check_filedata.c
   check_filemanip.c
   check_fileop.c

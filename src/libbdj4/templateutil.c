@@ -139,7 +139,7 @@ templateCopy (const char *from, const char *to, const char *color)
     char    *ndata;
 
     data = filedataReadAll (from, &len);
-    fh = fopen (to, "w");
+    fh = fileopOpen (to, "w");
     ndata = filedataReplace (data, &len, "#ffa600", color);
     fwrite (ndata, len, 1, fh);
     fclose (fh);

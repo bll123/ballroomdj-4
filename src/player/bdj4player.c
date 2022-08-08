@@ -26,6 +26,7 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "fileop.h"
 #include "osutils.h"
 #include "pathbld.h"
 #include "progstate.h"
@@ -874,7 +875,7 @@ playerProcessPrepRequest (playerdata_t *playerData)
   /* filesystem cache */
   sz = fileopSize (npq->songfullpath);
   buff = malloc (sz);
-  fh = fopen (npq->songfullpath, "rb");
+  fh = fileopOpen (npq->songfullpath, "rb");
   fread (buff, sz, 1, fh);
   fclose (fh);
   free (buff);

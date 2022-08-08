@@ -109,7 +109,7 @@ webclientDownload (webclient_t *webclient, char *uri, char *outfile)
   webclient->dlSize = 0;
   webclient->dlChunks = 0;
   mstimeset (&webclient->dlStart, 0);
-  fh = fopen (outfile, "wb");
+  fh = fileopOpen (outfile, "wb");
   if (fh == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "download: unable to open %s %d %s\n",
         outfile, errno, strerror (errno));

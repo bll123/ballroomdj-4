@@ -10,12 +10,14 @@
 # define ck_assert_float_eq(f,val) ck_assert_int_eq((long)(f*1000.0),(long)(val*1000.0))
 #endif
 
+/* libcommon */
+Suite *     bdjstring_suite (void);
 Suite *     datafile_suite (void);
+Suite *     dirop_suite (void);
 Suite *     filedata_suite (void);
 Suite *     filemanip_suite (void);
 Suite *     fileop_suite (void);
 Suite *     ilist_suite (void);
-//Suite *     list_suite (void);
 Suite *     lock_suite (void);
 Suite *     nlist_suite (void);
 Suite *     pathutil_suite (void);
@@ -25,6 +27,8 @@ Suite *     rafile_suite (void);
 Suite *     slist_suite (void);
 Suite *     sock_suite (void);
 Suite *     tmutil_suite (void);
+
+/* libbdj4 */
 Suite *     orgutil_suite (void);
 Suite *     validate_suite (void);
 

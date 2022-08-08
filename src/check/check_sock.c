@@ -1,13 +1,9 @@
 #include "config.h"
 
-#pragma clang diagnostic ignored "-Wformat-extra-args"
-#pragma gcc diagnostic ignored "-Wformat-extra-args"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <check.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -42,6 +38,13 @@
 #if _hdr_pthread
 # include <pthread.h>
 #endif
+
+#pragma clang diagnostic push
+#pragma gcc diagnostic push
+#pragma clang diagnostic ignored "-Wformat-extra-args"
+#pragma gcc diagnostic ignored "-Wformat-extra-args"
+
+#include <check.h>
 
 #include "sock.h"
 #include "check_bdj.h"

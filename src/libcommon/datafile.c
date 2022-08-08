@@ -725,7 +725,7 @@ dfkeyBinarySearch (const datafilekey_t *dfkeys, ssize_t count, char *key)
   while (l <= r) {
     m = l + (r - l) / 2;
 
-    rc = stringCompare (dfkeys [m].name, key);
+    rc = strcmp (dfkeys [m].name, key);
     if (rc == 0) {
       return m;
     }

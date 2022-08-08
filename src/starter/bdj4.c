@@ -96,6 +96,8 @@ main (int argc, char * argv[])
     { "nodetach",       no_argument,        NULL,   'N' },
     { "wait",           no_argument,        NULL,   'w' },
     { "msys",           no_argument,        NULL,   'M' },
+    /* check */
+    { "skiplong",       no_argument,        NULL,   0 },
     /* dbupdate options */
     { "rebuild",        no_argument,        NULL,   0 },
     { "checknew",       no_argument,        NULL,   0 },
@@ -452,6 +454,9 @@ main (int argc, char * argv[])
   targv [0] = buff;
   if (debugself) {
     fprintf (stderr, "cmd: %s\n", buff);
+    for (int i = 1; i < targc; ++i) {
+      fprintf (stderr, "  arg: %s\n", targv [i]);
+    }
   }
 
   flags = OS_PROC_NONE;

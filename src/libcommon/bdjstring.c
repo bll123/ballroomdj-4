@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <errno.h>
 #include <wchar.h>
 #include <string.h>
 #include <ctype.h>
@@ -61,16 +62,6 @@ stringTrimChar (char *s, unsigned char c)
   return;
 }
 
-/* standard C comparison */
-int
-stringCompare (void *str1, void *str2)
-{
-  int       rc;
-
-  rc = strcmp ((char *) str1, (char *) str2);
-  return rc;
-}
-
 /* collated comparison */
 int
 istringCompare (void *str1, void *str2)
@@ -91,8 +82,8 @@ istrlen (const char *str)
   mbstate_t         ps;
   const char        *tstr;
 
-  len = 0;
   memset (&ps, 0, sizeof (mbstate_t));
+  len = 0;
   bytelen = strlen (str);
   slen = bytelen;
   tstr = str;

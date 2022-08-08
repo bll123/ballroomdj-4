@@ -32,7 +32,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
   char        *str;
   char        *ffn;
 
-  fh = fopen (fname, "w");
+  fh = fileopOpen (fname, "w");
   if (fh == NULL) {
     return;
   }
@@ -80,7 +80,7 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
   char        tbuff [MAXPATHLEN];
 
 
-  fh = fopen (fname, "r");
+  fh = fileopOpen (fname, "r");
   if (fh == NULL) {
     return NULL;
   }

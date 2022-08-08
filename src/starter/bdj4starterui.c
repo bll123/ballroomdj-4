@@ -1613,11 +1613,11 @@ starterCompressFile (char *infn, char *outfn)
   size_t    olen;
   z_stream  *zs;
 
-  infh = fopen (infn, "rb");
+  infh = fileopOpen (infn, "rb");
   if (infh == NULL) {
     return;
   }
-  outfh = fopen (outfn, "wb");
+  outfh = fileopOpen (outfn, "wb");
   if (outfh == NULL) {
     return;
   }
