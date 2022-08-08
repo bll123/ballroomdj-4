@@ -169,13 +169,18 @@ main (int argc, char *argv [])
   /* also needed to check for the itunes dir every time */
   home = sysvarsGetStr (SV_HOME);
   if (isLinux ()) {
-    char  *data = NULL;
-    char  *prog = NULL;
-    char  *arg = "MUSIC";
+    const char  *targv [5];
+    int         targc = 0;
+    char        data [200];
+    char        *prog;
 
     prog = sysvarsGetStr (SV_PATH_XDGUSERDIR);
     if (*prog) {
-      data = filedataGetProgOutput (prog, arg, UPDATER_TMP_FILE);
+      targc = 0;
+      targv [targc++] = prog;
+      targv [targc++] = "MUSIC";
+      targv [targc++] = NULL;
+      osProcessPipe (targv, OS_PROC_DETACH, data, sizeof (data));
       stringTrim (data);
       stringTrimChar (data, '/');
     }
@@ -187,9 +192,6 @@ main (int argc, char *argv [])
       strlcpy (homemusicdir, data, sizeof (homemusicdir));
     } else {
       snprintf (homemusicdir, sizeof (homemusicdir), "%s/Music", home);
-    }
-    if (data != NULL) {
-      free (data);
     }
   }
   if (isWindows ()) {

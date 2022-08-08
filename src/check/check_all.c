@@ -26,8 +26,6 @@ main (int argc, char *argv [])
   int     option_index = 0;
   int     number_failed = 0;
   bool    skiplong = false;
-  Suite   *s;
-  SRunner *sr;
 
   static struct option coptions [] = {
     { "check_all",  no_argument, NULL, 0 },
@@ -55,115 +53,8 @@ main (int argc, char *argv [])
 
   logStart ("check_all", "ck", LOG_ALL);
 
-  /* libcommon:
-   *  bdjstring
-   *  osutils
-   *  fileop
-   *  filedata
-   *  osnetutils
-   *  pathutil
-   *  sysvars
-   *  tmutil
-   *  pathbld
-   *  filemanip
-   *  fileutil
-   *  log
-   *  nlist
-   *  ilist
-   *  slist
-   *  bdjmsg
-   *  sock
-   *  datafile
-   *  bdjvars
-   *  sockh
-   *  bdjopt
-   *  conn
-   *  procutil
-   *  lock
-   *  rafile
-   *  queue
-   *  dirop
-   *  misc
-   *  localeutil
-   *  progstate
-   */
-
-  fprintf (stdout, "=== libcommon\n");
-
-  s = bdjstring_suite();
-  sr = srunner_create (s);
-
-  s = fileop_suite();
-  srunner_add_suite (sr, s);
-
-  s = filedata_suite();
-  srunner_add_suite (sr, s);
-
-  s = pathutil_suite();
-  srunner_add_suite (sr, s);
-
-  if (! skiplong) {
-    s = tmutil_suite();
-    srunner_add_suite (sr, s);
-  }
-
-  s = filemanip_suite();
-  srunner_add_suite (sr, s);
-
-  if (! skiplong) {
-    s = sock_suite();
-    srunner_add_suite (sr, s);
-  }
-
-  s = datafile_suite();
-  srunner_add_suite (sr, s);
-
-  s = nlist_suite();
-  srunner_add_suite (sr, s);
-
-  s = slist_suite();
-  srunner_add_suite (sr, s);
-
-  s = ilist_suite();
-  srunner_add_suite (sr, s);
-
-  if (! skiplong) {
-    s = procutil_suite();
-    srunner_add_suite (sr, s);
-  }
-
-  if (! skiplong) {
-    s = lock_suite();
-    srunner_add_suite (sr, s);
-  }
-
-  s = rafile_suite();
-  srunner_add_suite (sr, s);
-
-  s = queue_suite();
-  srunner_add_suite (sr, s);
-
-  s = dirop_suite();
-  srunner_add_suite (sr, s);
-
-  srunner_run_all (sr, CK_ENV);
-  number_failed += srunner_ntests_failed (sr);
-  srunner_free (sr);
-
-  /* libbdj4
-   */
-
-  fprintf (stdout, "=== libbdj4\n");
-
-  s = orgutil_suite();
-  sr = srunner_create (s);
-
-  s = validate_suite();
-  srunner_add_suite (sr, s);
-
-  srunner_run_all (sr, CK_ENV);
-  number_failed += srunner_ntests_failed (sr);
-  srunner_free (sr);
+  number_failed += check_libcommon (skiplong);
+  number_failed += check_libbdj4 (skiplong);
 
   logEnd ();
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;

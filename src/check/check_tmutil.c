@@ -91,7 +91,7 @@ START_TEST(tmutil_check)
 }
 END_TEST
 
-START_TEST(tmutilDstamp_chk)
+START_TEST(tmutildstamp_chk)
 {
   char        buff [80];
 
@@ -100,7 +100,16 @@ START_TEST(tmutilDstamp_chk)
 }
 END_TEST
 
-START_TEST(tmutilTstamp_chk)
+START_TEST(tmutildisp_chk)
+{
+  char        buff [80];
+
+  tmutilDisp (buff, sizeof (buff));
+  ck_assert_int_ge (strlen (buff), 16);
+}
+END_TEST
+
+START_TEST(tmutiltstamp_chk)
 {
   char        buff [80];
 
@@ -109,7 +118,16 @@ START_TEST(tmutilTstamp_chk)
 }
 END_TEST
 
-START_TEST(tmutilToMS_chk)
+START_TEST(tmutilshorttstamp_chk)
+{
+  char        buff [80];
+
+  tmutilShortTstamp (buff, sizeof (buff));
+  ck_assert_int_eq (strlen (buff), 4);
+}
+END_TEST
+
+START_TEST(tmutiltoms_chk)
 {
   char        buff [80];
 
@@ -121,6 +139,47 @@ START_TEST(tmutilToMS_chk)
   ck_assert_str_eq (buff, " 1:00");
   tmutilToMS (119000, buff, sizeof (buff));
   ck_assert_str_eq (buff, " 1:59");
+}
+END_TEST
+
+START_TEST(tmutiltomsd_chk)
+{
+  char        buff [80];
+
+  tmutilToMSD (0, buff, sizeof (buff));
+  ck_assert_str_eq (buff, "0:00.000");
+  tmutilToMSD (59001, buff, sizeof (buff));
+  ck_assert_str_eq (buff, "0:59.001");
+  tmutilToMSD (60002, buff, sizeof (buff));
+  ck_assert_str_eq (buff, "1:00.002");
+  tmutilToMSD (119003, buff, sizeof (buff));
+  ck_assert_str_eq (buff, "1:59.003");
+}
+END_TEST
+
+START_TEST(tmutiltodatehm_chk)
+{
+  char        buff [80];
+
+  tmutilToDateHM (mstime(), buff, sizeof (buff));
+  ck_assert_int_ge (strlen (buff), 14);
+}
+END_TEST
+
+START_TEST(tmutil_strtoms)
+{
+  long  value;
+
+  value = tmutilStrToMS ("0:00");
+  ck_assert_int_eq (value, 0);
+  value = tmutilStrToMS ("1:00");
+  ck_assert_int_eq (value, 60000);
+  value = tmutilStrToMS ("2:00");
+  ck_assert_int_eq (value, 120000);
+  value = tmutilStrToMS ("1:59");
+  ck_assert_int_eq (value, 119000);
+  value = tmutilStrToMS ("1:00.005");
+  ck_assert_int_eq (value, 60005);
 }
 END_TEST
 
@@ -161,9 +220,14 @@ tmutil_suite (void)
   tcase_add_test (tc, tmutil_start_end);
   tcase_add_test (tc, tmutil_set);
   tcase_add_test (tc, tmutil_check);
-  tcase_add_test (tc, tmutilDstamp_chk);
-  tcase_add_test (tc, tmutilTstamp_chk);
-  tcase_add_test (tc, tmutilToMS_chk);
+  tcase_add_test (tc, tmutildstamp_chk);
+  tcase_add_test (tc, tmutildisp_chk);
+  tcase_add_test (tc, tmutiltstamp_chk);
+  tcase_add_test (tc, tmutilshorttstamp_chk);
+  tcase_add_test (tc, tmutiltoms_chk);
+  tcase_add_test (tc, tmutiltomsd_chk);
+  tcase_add_test (tc, tmutiltodatehm_chk);
+  tcase_add_test (tc, tmutil_strtoms);
   tcase_add_test (tc, tmutil_strtohm);
   suite_add_tcase (s, tc);
   return s;

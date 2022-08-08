@@ -64,8 +64,8 @@ START_TEST(fileop_modtime)
   time_t    ctm;
   time_t    tm;
 
-  ctm = time (NULL);
   char *fn = "tmp/def.txt";
+  ctm = time (NULL);
   unlink (fn);
   fn = "tmp/abc.txt";
   fh = fopen (fn, "w");

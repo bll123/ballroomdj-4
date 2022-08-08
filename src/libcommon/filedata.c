@@ -11,7 +11,6 @@
 
 #include "filedata.h"
 #include "fileop.h"
-#include "osutils.h"
 
 char *
 filedataReadAll (const char *fname, size_t *rlen)
@@ -92,20 +91,3 @@ filedataReplace (char *data, size_t *dlen, const char *target, const char *repl)
 
   return ndata;
 }
-
-
-char *
-filedataGetProgOutput (char *prog, char *arg, char *tmpfn)
-{
-  const char  *targv [3];
-  char        *data;
-
-  targv [0] = prog;
-  targv [1] = arg;
-  targv [2] = NULL;
-  osProcessStart (targv, OS_PROC_WAIT, NULL, tmpfn);
-  data = filedataReadAll (tmpfn, NULL);
-  fileopDelete (tmpfn);
-  return data;
-}
-

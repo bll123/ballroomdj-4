@@ -93,6 +93,67 @@ START_TEST(path_winpath)
   strlcpy (to, "/tmp/abc.txt", sizeof (to));
   pathWinPath (to, sizeof (to));
   ck_assert_str_eq (to, "\\tmp\\abc.txt");
+
+  strlcpy (to, "C:/tmp/abc.txt", sizeof (to));
+  pathWinPath (to, sizeof (to));
+  ck_assert_str_eq (to, "C:\\tmp\\abc.txt");
+}
+END_TEST
+
+START_TEST(path_normpath)
+{
+  char    to [MAXPATHLEN];
+
+  strlcpy (to, "/tmp/abc.txt", sizeof (to));
+  pathNormPath (to, sizeof (to));
+  ck_assert_str_eq (to, "/tmp/abc.txt");
+
+  strlcpy (to, "\\tmp\\abc.txt", sizeof (to));
+  pathNormPath (to, sizeof (to));
+  ck_assert_str_eq (to, "/tmp/abc.txt");
+
+  strlcpy (to, "C:/tmp/abc.txt", sizeof (to));
+  pathNormPath (to, sizeof (to));
+  ck_assert_str_eq (to, "C:/tmp/abc.txt");
+
+  strlcpy (to, "C:\\tmp\\abc.txt", sizeof (to));
+  pathNormPath (to, sizeof (to));
+  ck_assert_str_eq (to, "C:/tmp/abc.txt");
+}
+END_TEST
+
+START_TEST(path_realpath)
+{
+  FILE    *fh;
+  char    to [MAXPATHLEN];
+  char    from [MAXPATHLEN];
+  char    cwd [MAXPATHLEN];
+  char    actual [MAXPATHLEN];
+
+  getcwd (cwd, sizeof (cwd));
+  strlcpy (from, "tmp/abc.txt", sizeof (from));
+  fh = fopen (from, "w");
+  fclose (fh);
+  snprintf (actual, sizeof (actual), "%s/%s", cwd, from);
+
+  pathRealPath (to, from, sizeof (to));
+  ck_assert_str_eq (to, actual);
+
+  strlcpy (from, "tmp/../tmp/abc.txt", sizeof (from));
+  pathRealPath (to, from, sizeof (to));
+  ck_assert_str_eq (to, actual);
+
+  strlcpy (from, actual, sizeof (from));
+  pathRealPath (to, from, sizeof (to));
+  ck_assert_str_eq (to, actual);
+
+#if _lib_symlink
+  symlink (from, "tmp/def.txt");
+  pathRealPath (to, "tmp/def.txt", sizeof (to));
+  ck_assert_str_eq (to, actual);
+#endif
+  unlink ("tmp/def.txt");
+  unlink ("tmp/abc.txt");
 }
 END_TEST
 
@@ -106,6 +167,8 @@ pathutil_suite (void)
   tc = tcase_create ("Path Utils");
   tcase_add_test (tc, pathinfo_chk);
   tcase_add_test (tc, path_winpath);
+  tcase_add_test (tc, path_normpath);
+  tcase_add_test (tc, path_realpath);
   suite_add_tcase (s, tc);
   return s;
 }
