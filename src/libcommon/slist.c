@@ -133,35 +133,25 @@ slistSetList (slist_t *list, const char *sidx, slist_t *data)
   listSet (list, &item);
 }
 
-slistidx_t
+inline slistidx_t
 slistGetIdx (slist_t *list, const char *sidx)
 {
-  listkey_t   key;
+  listkeylookup_t   key;
 
-  key.strkey = (char *) sidx;
+  key.strkey = sidx;
   return listGetIdx (list, &key);
 }
 
-void *
+inline void *
 slistGetData (slist_t *list, const char *sidx)
 {
-  void            *value = NULL;
-  listkey_t       key;
-  slistidx_t      idx;
-
-  key.strkey = (char *) sidx;
-  idx = listGetIdx (list, &key);
-  if (idx >= 0) {
-    value = (char *) list->data [idx].value.data;
-  }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%ld", list->name, sidx, idx);
-  return value;
+  return listGetData (list, sidx);
 }
 
-char *
+inline char *
 slistGetStr (slist_t *list, const char *sidx)
 {
-  return slistGetData (list, sidx);
+  return listGetData (list, sidx);
 }
 
 inline void *
@@ -193,10 +183,10 @@ ssize_t
 slistGetNum (slist_t *list, const char *sidx)
 {
   ssize_t         value = LIST_VALUE_INVALID;
-  listkey_t       key;
+  listkeylookup_t key;
   slistidx_t      idx;
 
-  key.strkey = (char *) sidx;
+  key.strkey = sidx;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.num;
@@ -208,11 +198,11 @@ slistGetNum (slist_t *list, const char *sidx)
 double
 slistGetDouble (slist_t *list, const char *sidx)
 {
-  double         value = LIST_DOUBLE_INVALID;
-  listkey_t      key;
+  double          value = LIST_DOUBLE_INVALID;
+  listkeylookup_t key;
   slistidx_t      idx;
 
-  key.strkey = (char *) sidx;
+  key.strkey = sidx;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.dval;
@@ -259,37 +249,10 @@ slistStartIterator (slist_t *list, slistidx_t *iteridx)
   *iteridx = -1;
 }
 
-char *
+inline char *
 slistIterateKey (slist_t *list, slistidx_t *iteridx)
 {
-  char    *value = NULL;
-
-  logProcBegin (LOG_PROC, "slistIterateKey");
-  if (list == NULL || list->keytype == LIST_KEY_NUM) {
-    logProcEnd (LOG_PROC, "slistIterateKey", "null-list/key-num");
-    return NULL;
-  }
-
-  ++(*iteridx);
-  if (*iteridx >= list->count) {
-    *iteridx = -1;
-    logProcEnd (LOG_PROC, "slistIterateKey", "end-list");
-    return NULL;
-  }
-
-  value = list->data [*iteridx].key.strkey;
-
-  if (list->keyCache.strkey != NULL) {
-    free (list->keyCache.strkey);
-    list->keyCache.strkey = NULL;
-    list->locCache = LIST_LOC_INVALID;
-  }
-
-  list->keyCache.strkey = strdup (value);
-  list->locCache = *iteridx;
-
-  logProcEnd (LOG_PROC, "slistIterateKey", "");
-  return value;
+  return listIterateKeyStr (list, iteridx);
 }
 
 inline void *
@@ -301,7 +264,7 @@ slistIterateValueData (slist_t *list, slistidx_t *iteridx)
 inline ssize_t
 slistIterateValueNum (slist_t *list, slistidx_t *iteridx)
 {
-  return listIterateNum (list, iteridx);
+  return listIterateValueNum (list, iteridx);
 }
 
 void

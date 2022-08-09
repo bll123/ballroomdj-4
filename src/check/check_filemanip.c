@@ -21,6 +21,30 @@
 #include "slist.h"
 #include "sysvars.h"
 
+START_TEST(filemanip_move)
+{
+  FILE      *fh;
+  int       rc;
+
+  char *ofn = "tmp/abc.txt.c";
+  char *nfn = "tmp/abc.txt.d";
+  unlink (ofn);
+  unlink (nfn);
+  fh = fopen (ofn, "w");
+  ck_assert_ptr_nonnull (fh);
+  fclose (fh);
+  rc = filemanipMove (ofn, nfn);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (ofn);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (nfn);
+  ck_assert_int_eq (rc, 1);
+  unlink (ofn);
+  unlink (nfn);
+}
+END_TEST
+
+
 START_TEST(filemanip_copy)
 {
   FILE      *fh;
@@ -58,30 +82,6 @@ START_TEST(filemanip_copy)
   unlink (nfn);
 }
 END_TEST
-
-START_TEST(filemanip_move)
-{
-  FILE      *fh;
-  int       rc;
-
-  char *ofn = "tmp/abc.txt.c";
-  char *nfn = "tmp/abc.txt.d";
-  unlink (ofn);
-  unlink (nfn);
-  fh = fopen (ofn, "w");
-  ck_assert_ptr_nonnull (fh);
-  fclose (fh);
-  rc = filemanipMove (ofn, nfn);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (nfn);
-  ck_assert_int_eq (rc, 1);
-  unlink (ofn);
-  unlink (nfn);
-}
-END_TEST
-
 
 START_TEST(filemanip_backup)
 {
@@ -231,6 +231,10 @@ START_TEST(filemanip_backup)
 }
 END_TEST
 
+START_TEST(filemanip_renameall)
+{
+}
+
 Suite *
 filemanip_suite (void)
 {
@@ -239,9 +243,10 @@ filemanip_suite (void)
 
   s = suite_create ("File Manip Suite");
   tc = tcase_create ("File Manip");
-  tcase_add_test (tc, filemanip_copy);
   tcase_add_test (tc, filemanip_move);
+  tcase_add_test (tc, filemanip_copy);
   tcase_add_test (tc, filemanip_backup);
+  tcase_add_test (tc, filemanip_renameall);
   suite_add_tcase (s, tc);
   return s;
 }

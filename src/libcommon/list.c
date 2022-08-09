@@ -14,9 +14,9 @@
 static void     listFreeItem (list_t *, listidx_t);
 static void     listInsert (list_t *, listidx_t loc, listitem_t *item);
 static void     listReplace (list_t *, listidx_t, listitem_t *item);
-static int      listBinarySearch (const list_t *, listkey_t *key, listidx_t *);
+static int      listBinarySearch (const list_t *, listkeylookup_t *key, listidx_t *);
 static int      idxCompare (listidx_t, listidx_t);
-static int      listCompare (const list_t *, listkey_t *a, listkey_t *b);
+static int      listCompare (const list_t *, const listkey_t *a, const listkey_t *b);
 static void     merge (list_t *, listidx_t, listidx_t, listidx_t);
 static void     mergeSort (list_t *, listidx_t, listidx_t);
 
@@ -118,17 +118,24 @@ inline int
 listGetVersion (list_t *list)
 {
   if (list == NULL) {
-    return -1;
+    return LIST_NO_VERSION;
   }
   return list->version;
 }
 
 void *
-listGetData (list_t *list, char *keydata)
+listGetData (list_t *list, const char *keydata)
 {
   void            *value = NULL;
-  listkey_t       key;
-  listidx_t            idx;
+  listkeylookup_t key;
+  listidx_t       idx;
+
+  if (list == NULL) {
+    return value;
+  }
+  if (keydata == NULL) {
+    return value;
+  }
 
   key.strkey = keydata;
   idx = listGetIdx (list, &key);
@@ -142,14 +149,14 @@ listGetData (list_t *list, char *keydata)
 void *
 listGetDataByIdx (list_t *list, listidx_t idx)
 {
-  void    *value;
+  void  *value = NULL;
 
 
   if (list == NULL) {
-    return NULL;
+    return value;
   }
   if (idx < 0 || idx >= list->count) {
-    return NULL;
+    return value;
   }
   value = list->data [idx].value.data;
   logMsg (LOG_DBG, LOG_LIST, "list:%s idx:%ld", list->name, idx);
@@ -159,14 +166,13 @@ listGetDataByIdx (list_t *list, listidx_t idx)
 ssize_t
 listGetNumByIdx (list_t *list, listidx_t idx)
 {
-  ssize_t     value;
-
+  ssize_t     value = LIST_VALUE_INVALID;
 
   if (list == NULL) {
-    return LIST_VALUE_INVALID;
+    return value;
   }
   if (idx < 0 || idx >= list->count) {
-    return LIST_VALUE_INVALID;
+    return value;
   }
   value = list->data [idx].value.num;
   logMsg (LOG_DBG, LOG_LIST, "list:%s idx:%ld", list->name, idx);
@@ -174,11 +180,18 @@ listGetNumByIdx (list_t *list, listidx_t idx)
 }
 
 ssize_t
-listGetNum (list_t *list, char *keydata)
+listGetNum (list_t *list, const char *keydata)
 {
-  ssize_t     value = LIST_VALUE_INVALID;
-  listkey_t   key;
-  listidx_t   idx;
+  ssize_t         value = LIST_VALUE_INVALID;
+  listkeylookup_t key;
+  listidx_t       idx;
+
+  if (list == NULL) {
+    return value;
+  }
+  if (keydata == NULL) {
+    return value;
+  }
 
   key.strkey = keydata;
   idx = listGetIdx (list, &key);
@@ -230,7 +243,7 @@ listSort (list_t *list)
 inline void
 listStartIterator (list_t *list, listidx_t *iteridx)
 {
-  *iteridx = -1;
+  *iteridx = LIST_END_LIST;
 }
 
 inline void
@@ -240,10 +253,70 @@ listDumpInfo (list_t *list)
       list->name, list->count, list->keytype, list->ordered);
 }
 
+listidx_t
+listIterateKeyNum (list_t *list, listidx_t *iteridx)
+{
+  listidx_t   value = LIST_LOC_INVALID;
+
+  logProcBegin (LOG_PROC, "listIterateKeyNum");
+  if (list == NULL || list->keytype == LIST_KEY_STR) {
+    logProcEnd (LOG_PROC, "listIterateKeyNum", "null-list/key-str");
+    return LIST_LOC_INVALID;
+  }
+
+  ++(*iteridx);
+  if (*iteridx >= list->count) {
+    *iteridx = LIST_END_LIST;
+    logProcEnd (LOG_PROC, "listIterateKeyNum", "end-list");
+    return LIST_LOC_INVALID;      /* indicate the end of the list */
+  }
+
+  value = list->data [*iteridx].key.idx;
+
+  list->keyCache.idx = value;
+  list->locCache = *iteridx;
+
+  logProcEnd (LOG_PROC, "listIterateKeyNum", "");
+  return value;
+}
+
+char *
+listIterateKeyStr (list_t *list, listidx_t *iteridx)
+{
+  char    *value = NULL;
+
+  logProcBegin (LOG_PROC, "listIterateKeyStr");
+  if (list == NULL || list->keytype == LIST_KEY_NUM) {
+    logProcEnd (LOG_PROC, "listIterateKeyStr", "null-list/key-num");
+    return NULL;
+  }
+
+  ++(*iteridx);
+  if (*iteridx >= list->count) {
+    *iteridx = LIST_END_LIST;
+    logProcEnd (LOG_PROC, "listIterateKeyStr", "end-list");
+    return NULL;
+  }
+
+  value = list->data [*iteridx].key.strkey;
+
+  if (list->keyCache.strkey != NULL) {
+    free (list->keyCache.strkey);
+    list->keyCache.strkey = NULL;
+    list->locCache = LIST_LOC_INVALID;
+  }
+
+  list->keyCache.strkey = strdup (value);
+  list->locCache = *iteridx;
+
+  logProcEnd (LOG_PROC, "listIterateKeyStr", "");
+  return value;
+}
+
 void *
 listIterateValue (list_t *list, listidx_t *iteridx)
 {
-  void      *value = NULL;
+  void  *value = NULL;
 
   logProcBegin (LOG_PROC, "listIterateValue");
   if (list == NULL) {
@@ -253,7 +326,7 @@ listIterateValue (list_t *list, listidx_t *iteridx)
 
   ++(*iteridx);
   if (*iteridx >= list->count) {
-    *iteridx = -1;
+    *iteridx = LIST_END_LIST;
     logProcEnd (LOG_PROC, "listIterateValue", "end-list");
     return NULL;  /* indicate the end of the list */
   }
@@ -264,7 +337,7 @@ listIterateValue (list_t *list, listidx_t *iteridx)
 }
 
 ssize_t
-listIterateNum (list_t *list, listidx_t *iteridx)
+listIterateValueNum (list_t *list, listidx_t *iteridx)
 {
   ssize_t     value = LIST_VALUE_INVALID;
 
@@ -276,7 +349,7 @@ listIterateNum (list_t *list, listidx_t *iteridx)
 
   ++(*iteridx);
   if (*iteridx >= list->count) {
-    *iteridx = -1;
+    *iteridx = LIST_END_LIST;
     logProcEnd (LOG_PROC, "listIterateNum", "end-list");
     return LIST_VALUE_INVALID;  /* indicate the end of the list */
   }
@@ -297,7 +370,7 @@ listIterateGetIdx (list_t *list, listidx_t *iteridx)
 }
 
 listidx_t
-listGetIdx (list_t *list, listkey_t *key)
+listGetIdx (list_t *list, listkeylookup_t *key)
 {
   listidx_t   idx;
   listidx_t   ridx;
@@ -386,7 +459,7 @@ listSet (list_t *list, listitem_t *item)
 
   if (! found && list->count > 0) {
     if (list->ordered == LIST_ORDERED) {
-      rc = listBinarySearch (list, &item->key, &loc);
+      rc = listBinarySearch (list, (listkeylookup_t *) &item->key, &loc);
     } else {
       loc = list->count;
     }
@@ -497,7 +570,7 @@ idxCompare (listidx_t la, listidx_t lb)
 }
 
 static int
-listCompare (const list_t *list, listkey_t *a, listkey_t *b)
+listCompare (const list_t *list, const listkey_t *a, const listkey_t *b)
 {
   int         rc;
 
@@ -517,7 +590,7 @@ listCompare (const list_t *list, listkey_t *a, listkey_t *b)
 
 /* returns the location after as a negative number if not found */
 static int
-listBinarySearch (const list_t *list, listkey_t *key, listidx_t *loc)
+listBinarySearch (const list_t *list, listkeylookup_t *key, listidx_t *loc)
 {
   listidx_t     l = 0;
   listidx_t     r = list->count - 1;
@@ -529,7 +602,7 @@ listBinarySearch (const list_t *list, listkey_t *key, listidx_t *loc)
   while (l <= r) {
     m = l + (r - l) / 2;
 
-    rc = listCompare (list, &list->data [m].key, key);
+    rc = listCompare (list, &list->data [m].key, (listkey_t *) key);
     if (rc == 0) {
       *loc = (listidx_t) m;
       return 0;

@@ -34,6 +34,11 @@ typedef enum {
 typedef void (*listFree_t)(void *);
 
 typedef union {
+  const char  *strkey;
+  listidx_t   idx;
+} listkeylookup_t;
+
+typedef union {
   char        *strkey;
   listidx_t   idx;
 } listkey_t;
@@ -68,9 +73,13 @@ typedef struct {
   bool            replace : 1;
 } list_t;
 
-#define LIST_LOC_INVALID        -1L
-#define LIST_VALUE_INVALID      -65534L
-#define LIST_DOUBLE_INVALID     -65534.0
+enum {
+  LIST_LOC_INVALID    = -1,
+  LIST_VALUE_INVALID  = -65534,
+  LIST_END_LIST       = -1,
+  LIST_NO_VERSION     = -1,
+};
+#define LIST_DOUBLE_INVALID -65534.0
 
   /*
    * simple lists only store a list of data.
@@ -81,19 +90,21 @@ void        listFree (void *list);
 void        listSetVersion (list_t *list, int version);
 int         listGetVersion (list_t *list);
 listidx_t     listGetCount (list_t *list);
-listidx_t   listGetIdx (list_t *list, listkey_t *key);
+listidx_t   listGetIdx (list_t *list, listkeylookup_t *key);
 void        listSetSize (list_t *list, listidx_t size);
 void        listSetVersion (list_t *list, listidx_t version);
 void        listSet (list_t *list, listitem_t *item);
-void        *listGetData (list_t *list, char *keystr);
+void        *listGetData (list_t *list, const char *keystr);
 void        *listGetDataByIdx (list_t *list, listidx_t idx);
 ssize_t     listGetNumByIdx (list_t *list, listidx_t idx);
-ssize_t     listGetNum (list_t *list, char *keystr);
+ssize_t     listGetNum (list_t *list, const char *keystr);
 void        listDeleteByIdx (list_t *, listidx_t idx);
 void        listSort (list_t *list);
 void        listStartIterator (list_t *list, listidx_t *iteridx);
-void *      listIterateValue (list_t *list, listidx_t *iteridx);
-ssize_t     listIterateNum (list_t *list, listidx_t *iteridx);
+listidx_t   listIterateKeyNum (list_t *list, listidx_t *iteridx);
+char        *listIterateKeyStr (list_t *list, listidx_t *iteridx);
+void        *listIterateValue (list_t *list, listidx_t *iteridx);
+ssize_t     listIterateValueNum (list_t *list, listidx_t *iteridx);
 listidx_t   listIterateGetIdx (list_t *list, listidx_t *iteridx);
 void        listDumpInfo (list_t *list);
 

@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -128,12 +127,13 @@ nlistSetList (nlist_t *list, nlistidx_t lkey, nlist_t *data)
 void
 nlistIncrement (nlist_t *list, nlistidx_t lkey)
 {
+  listkeylookup_t key;
   listitem_t      item;
   nlistidx_t      idx;
   ssize_t         value = 0;
 
-  item.key.idx = lkey;
-  idx = listGetIdx (list, &item.key);
+  key.idx = lkey;
+  idx = listGetIdx (list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
@@ -147,12 +147,13 @@ nlistIncrement (nlist_t *list, nlistidx_t lkey)
 void
 nlistDecrement (nlist_t *list, nlistidx_t lkey)
 {
+  listkeylookup_t key;
   listitem_t      item;
   nlistidx_t      idx;
   ssize_t         value = 0;
 
-  item.key.idx = lkey;
-  idx = listGetIdx (list, &item.key);
+  key.idx = lkey;
+  idx = listGetIdx (list, &key);
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
@@ -166,9 +167,9 @@ nlistDecrement (nlist_t *list, nlistidx_t lkey)
 void *
 nlistGetData (nlist_t *list, nlistidx_t lkey)
 {
-  void        *value = NULL;
-  listkey_t   key;
-  nlistidx_t  idx;
+  void            *value = NULL;
+  listkeylookup_t key;
+  nlistidx_t      idx;
 
   if (list == NULL) {
     return NULL;
@@ -177,7 +178,7 @@ nlistGetData (nlist_t *list, nlistidx_t lkey)
   key.idx = lkey;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
-    value = (char *) list->data [idx].value.data;
+    value = list->data [idx].value.data;
   }
   logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", list->name, lkey, idx);
   return value;
@@ -192,13 +193,10 @@ nlistGetStr (nlist_t *list, nlistidx_t lkey)
 nlistidx_t
 nlistGetIdx (nlist_t *list, nlistidx_t lkey)
 {
-  listkey_t   key;
-  nlistidx_t  idx;
+  listkeylookup_t key;
+  nlistidx_t      idx;
 
   if (list == NULL) {
-    return LIST_LOC_INVALID;
-  }
-  if (lkey < 0 || lkey >= list->count) {
     return LIST_LOC_INVALID;
   }
 
@@ -236,7 +234,7 @@ ssize_t
 nlistGetNum (nlist_t *list, nlistidx_t lidx)
 {
   ssize_t         value = LIST_VALUE_INVALID;
-  listkey_t       key;
+  listkeylookup_t key;
   nlistidx_t      idx;
 
   if (list == NULL) {
@@ -255,8 +253,8 @@ nlistGetNum (nlist_t *list, nlistidx_t lidx)
 double
 nlistGetDouble (nlist_t *list, nlistidx_t lidx)
 {
-  double         value = LIST_DOUBLE_INVALID;
-  listkey_t      key;
+  double          value = LIST_DOUBLE_INVALID;
+  listkeylookup_t key;
   nlistidx_t      idx;
 
   if (list == NULL) {
@@ -276,7 +274,7 @@ nlist_t *
 nlistGetList (nlist_t *list, nlistidx_t lidx)
 {
   void            *value = NULL;
-  listkey_t       key;
+  listkeylookup_t key;
   nlistidx_t      idx;
 
   if (list == NULL) {
@@ -286,7 +284,7 @@ nlistGetList (nlist_t *list, nlistidx_t lidx)
   key.idx = lidx;
   idx = listGetIdx (list, &key);
   if (idx >= 0) {
-    value = (char *) list->data [idx].value.data;
+    value = list->data [idx].value.data;
   }
   logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", list->name, lidx, idx);
   return value;
@@ -301,34 +299,13 @@ nlistSort (nlist_t *list)
 inline void
 nlistStartIterator (nlist_t *list, nlistidx_t *iteridx)
 {
-  *iteridx = -1;
+  *iteridx = LIST_END_LIST;
 }
 
-nlistidx_t
+inline nlistidx_t
 nlistIterateKey (nlist_t *list, nlistidx_t *iteridx)
 {
-  ssize_t      value = LIST_LOC_INVALID;
-
-  logProcBegin (LOG_PROC, "nlistIterateKey");
-  if (list == NULL || list->keytype == LIST_KEY_STR) {
-    logProcEnd (LOG_PROC, "nlistIterateKey", "null-list/key-str");
-    return LIST_LOC_INVALID;
-  }
-
-  ++(*iteridx);
-  if (*iteridx >= list->count) {
-    *iteridx = -1;
-    logProcEnd (LOG_PROC, "nlistIterateKey", "end-list");
-    return LIST_LOC_INVALID;      /* indicate the end of the list */
-  }
-
-  value = list->data [*iteridx].key.idx;
-
-  list->keyCache.idx = value;
-  list->locCache = *iteridx;
-
-  logProcEnd (LOG_PROC, "nlistIterateKey", "");
-  return value;
+  return listIterateKeyNum (list, iteridx);
 }
 
 inline void *
@@ -340,10 +317,10 @@ nlistIterateValueData (nlist_t *list, nlistidx_t *iteridx)
 inline ssize_t
 nlistIterateValueNum (nlist_t *list, nlistidx_t *iteridx)
 {
-  return listIterateNum (list, iteridx);
+  return listIterateValueNum (list, iteridx);
 }
 
-void
+inline void
 nlistDumpInfo (nlist_t *list)
 {
   listDumpInfo (list);

@@ -25,16 +25,16 @@ check_libcommon (bool skiplong)
   SRunner *sr;
 
   /* libcommon:
-   *  bdjstring
+   *  bdjstring   done
    *  osutils
-   *  fileop
-   *  filedata
+   *  fileop      done
+   *  filedata    done
    *  osnetutils
-   *  pathutil
+   *  pathutil    done
    *  sysvars
-   *  tmutil
-   *  pathbld
-   *  filemanip
+   *  tmutil      done
+   *  pathbld     done
+   *  filemanip   done
    *  fileutil
    *  log
    *  nlist

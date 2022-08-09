@@ -139,7 +139,7 @@ void *
 ilistGetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 {
   void            *value = NULL;
-  listkey_t       key;
+  listkeylookup_t  key;
   ilistidx_t       idx = 0;
   ilist_t          *datalist = NULL;
 
@@ -152,7 +152,7 @@ ilistGetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
     key.idx = lidx;
     idx = listGetIdx (datalist, &key);
     if (idx >= 0) {
-      value = (char *) datalist->data [idx].value.data;
+      value = datalist->data [idx].value.data;
     }
     logMsg (LOG_DBG, LOG_LIST, "ilist:%s key:%ld idx:%ld", datalist->name, lidx, idx);
   }
@@ -168,10 +168,10 @@ ilistGetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 ilistidx_t
 ilistGetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 {
-  ilistidx_t     value = LIST_VALUE_INVALID;
-  listkey_t   key;
-  ilistidx_t   idx;
-  nlist_t     *datalist;
+  ilistidx_t      value = LIST_VALUE_INVALID;
+  listkeylookup_t key;
+  ilistidx_t      idx;
+  nlist_t         *datalist;
 
   if (list == NULL) {
     return LIST_VALUE_INVALID;
@@ -193,7 +193,7 @@ double
 ilistGetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
 {
   double          value = LIST_DOUBLE_INVALID;
-  listkey_t       key;
+  listkeylookup_t key;
   ilistidx_t      idx;
   nlist_t         *datalist;
 
@@ -223,7 +223,7 @@ void
 ilistDelete (list_t *list, ilistidx_t ikey)
 {
   ilistidx_t      idx;
-  listkey_t       key;
+  listkeylookup_t key;
 
   if (list == NULL) {
     return;
@@ -248,31 +248,10 @@ ilistStartIterator (ilist_t *list, ilistidx_t *iteridx)
   *iteridx = -1;
 }
 
-ilistidx_t
+inline ilistidx_t
 ilistIterateKey (ilist_t *list, ilistidx_t *iteridx)
 {
-  ilistidx_t      value = LIST_LOC_INVALID;
-
-  logProcBegin (LOG_PROC, "ilistIterateKey");
-  if (list == NULL || list->keytype == LIST_KEY_STR) {
-    logProcEnd (LOG_PROC, "ilistIterateKey", "null-list/key-str");
-    return LIST_LOC_INVALID;
-  }
-
-  ++(*iteridx);
-  if (*iteridx >= list->count) {
-    *iteridx = -1;
-    logProcEnd (LOG_PROC, "ilistIterateKey", "end-list");
-    return LIST_LOC_INVALID;      /* indicate the end of the list */
-  }
-
-  value = list->data [*iteridx].key.idx;
-
-  list->keyCache.idx = value;
-  list->locCache = *iteridx;
-
-  logProcEnd (LOG_PROC, "ilistIterateKey", "");
-  return value;
+  return listIterateKeyNum (list, iteridx);
 }
 
 void
