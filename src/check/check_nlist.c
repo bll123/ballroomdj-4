@@ -451,13 +451,13 @@ START_TEST(nlist_free_str)
 
   list = nlistAlloc ("chk", LIST_UNORDERED, free);
   ck_assert_ptr_nonnull (list);
-  nlistSetStr (list, 6, strdup ("0L"));
-  nlistSetStr (list, 26, strdup ("1L"));
-  nlistSetStr (list, 18, strdup ("2L"));
-  nlistSetStr (list, 11, strdup ("3L"));
-  nlistSetStr (list, 3, strdup ("4L"));
-  nlistSetStr (list, 1, strdup ("5L"));
-  nlistSetStr (list, 2, strdup ("6L"));
+  nlistSetStr (list, 6, "0L");
+  nlistSetStr (list, 26, "1L");
+  nlistSetStr (list, 18, "2L");
+  nlistSetStr (list, 11, "3L");
+  nlistSetStr (list, 3, "4L");
+  nlistSetStr (list, 1, "5L");
+  nlistSetStr (list, 2, "6L");
   ck_assert_int_eq (list->count, 7);
   nlistFree (list);
 }
@@ -531,7 +531,7 @@ START_TEST(nlist_set_get_mixed)
   ck_assert_ptr_nonnull (list);
   nlistSetNum (list, 6, 0);
   nlistSetDouble (list, 26, 1.0);
-  nlistSetStr (list, 18, strdup ("2"));
+  nlistSetStr (list, 18, "2");
   ck_assert_int_eq (list->count, 3);
   ck_assert_int_eq (list->allocCount, 3);
 

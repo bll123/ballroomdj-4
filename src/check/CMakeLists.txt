@@ -6,6 +6,7 @@ add_executable (check_all
   check_all.c
   check_libcommon.c
   check_libbdj4.c
+  check_bdjmsg.c
   check_bdjstring.c
   check_datafile.c
   check_dirop.c

@@ -25,22 +25,22 @@ check_libcommon (bool skiplong)
   SRunner *sr;
 
   /* libcommon:
-   *  bdjstring   done
+   *  bdjstring   complete
    *  osutils
-   *  fileop      done
+   *  fileop      need utf-8 filenames
    *  filedata    done
    *  osnetutils
    *  pathutil    done
    *  sysvars
    *  tmutil      done
    *  pathbld     done
-   *  filemanip   done
+   *  filemanip   need utf-8 filenames
    *  fileutil
    *  log
-   *  nlist
-   *  ilist
-   *  slist
-   *  bdjmsg
+   *  nlist       done
+   *  ilist       done
+   *  slist       done
+   *  bdjmsg      complete
    *  sock
    *  datafile
    *  bdjvars
@@ -82,14 +82,6 @@ check_libcommon (bool skiplong)
   s = filemanip_suite();
   srunner_add_suite (sr, s);
 
-  if (! skiplong) {
-    s = sock_suite();
-    srunner_add_suite (sr, s);
-  }
-
-  s = datafile_suite();
-  srunner_add_suite (sr, s);
-
   s = nlist_suite();
   srunner_add_suite (sr, s);
 
@@ -97,6 +89,17 @@ check_libcommon (bool skiplong)
   srunner_add_suite (sr, s);
 
   s = ilist_suite();
+  srunner_add_suite (sr, s);
+
+  s = bdjmsg_suite();
+  srunner_add_suite (sr, s);
+
+  if (! skiplong) {
+    s = sock_suite();
+    srunner_add_suite (sr, s);
+  }
+
+  s = datafile_suite();
   srunner_add_suite (sr, s);
 
   if (! skiplong) {

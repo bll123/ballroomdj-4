@@ -100,14 +100,14 @@ START_TEST(ilist_get_data_str_sub)
 }
 END_TEST
 
-START_TEST(ilist_add_str_iterate)
+START_TEST(ilist_iterate)
 {
   ilist_t *      list;
   char *        value;
   ilistidx_t          key;
   ilistidx_t    iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_add_str_iterate");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_iterate");
 
   list = ilistAlloc ("chk-d", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);
@@ -117,6 +117,7 @@ START_TEST(ilist_add_str_iterate)
   ilistSetStr (list, 4, 0, "333");
   ilistSetStr (list, 1, 0, "000");
   ilistSetStr (list, 2, 0, "111");
+
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);
   ck_assert_int_eq (key, 1);
@@ -148,18 +149,19 @@ START_TEST(ilist_add_str_iterate)
   ck_assert_int_eq (key, 1);
   value = ilistGetStr (list, key, 0);
   ck_assert_str_eq (value, "000");
+
   ilistFree (list);
 }
 END_TEST
 
-START_TEST(ilist_add_sort_str)
+START_TEST(ilist_u_sort)
 {
   ilist_t *      list;
   ssize_t          value;
   ilistidx_t          key;
   ilistidx_t      iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_add_sort_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_u_sort");
 
   list = ilistAlloc ("chk-e", LIST_UNORDERED);
   ck_assert_ptr_nonnull (list);
@@ -318,6 +320,35 @@ START_TEST(ilist_free_str)
   ilistSetStr (list, 1, 2, "5L");
   ilistSetStr (list, 2, 2, "6L");
   ck_assert_int_eq (list->count, 7);
+
+  ilistFree (list);
+}
+END_TEST
+
+START_TEST(ilist_exists)
+{
+  ilist_t   *list;
+  bool      val;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_exists");
+
+  list = ilistAlloc ("chk-g", LIST_ORDERED);
+  ck_assert_ptr_nonnull (list);
+  ilistSetStr (list, 6, 2, "0-2L");
+  ilistSetStr (list, 6, 3, "0-3L");
+  ilistSetStr (list, 26, 2, "1L");
+  ilistSetStr (list, 18, 2, "2L");
+  ilistSetStr (list, 11, 2, "3L");
+  ilistSetStr (list, 3, 2, "4L");
+  ilistSetStr (list, 1, 2, "5L");
+  ilistSetStr (list, 2, 2, "6L");
+  ck_assert_int_eq (list->count, 7);
+
+  val = ilistExists (list, 6);
+  ck_assert_int_eq (val, 1);
+  val = ilistExists (list, 21);
+  ck_assert_int_eq (val, 0);
+
   ilistFree (list);
 }
 END_TEST
@@ -333,10 +364,11 @@ ilist_suite (void)
   tcase_add_test (tc, ilist_create_free);
   tcase_add_test (tc, ilist_get_data_str);
   tcase_add_test (tc, ilist_get_data_str_sub);
-  tcase_add_test (tc, ilist_add_str_iterate);
-  tcase_add_test (tc, ilist_add_sort_str);
+  tcase_add_test (tc, ilist_iterate);
+  tcase_add_test (tc, ilist_u_sort);
   tcase_add_test (tc, ilist_replace_str);
   tcase_add_test (tc, ilist_free_str);
+  tcase_add_test (tc, ilist_exists);
   suite_add_tcase (s, tc);
   return s;
 }
