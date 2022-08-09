@@ -42,7 +42,7 @@ check_libcommon (bool skiplong)
    *  slist       done
    *  bdjmsg      complete
    *  sock
-   *  datafile
+   *  datafile    done
    *  bdjvars
    *  sockh
    *  bdjopt
