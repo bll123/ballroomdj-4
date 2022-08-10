@@ -429,6 +429,7 @@ main (int argc, char * argv[])
     fprintf (stderr, "GTK_CSD=%s\n", getenv ("GTK_CSD"));
     fprintf (stderr, "PANGOCAIRO_BACKEND=%s\n", getenv ("PANGOCAIRO_BACKEND"));
 #endif
+    fprintf (stderr, "LC_ALL=%s\n", getenv ("LC_ALL"));
   }
 
   targc = 0;

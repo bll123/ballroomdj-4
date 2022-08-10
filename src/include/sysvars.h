@@ -66,6 +66,7 @@ typedef enum {
   SVL_BASEPORT,
   SVL_OSBITS,
   SVL_NUM_PROC,
+  SVL_LOCALE_SET,
   SVL_MAX
 } sysvarlkey_t;
 

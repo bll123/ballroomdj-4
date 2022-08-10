@@ -16,8 +16,9 @@
 #include <check.h>
 
 #include "check_bdj.h"
-#include "sysvars.h"
 #include "log.h"
+#include "osutils.h"
+#include "sysvars.h"
 
 int
 main (int argc, char *argv [])
@@ -31,10 +32,13 @@ main (int argc, char *argv [])
     { "check_all",  no_argument, NULL, 0 },
     { "bdj4",       no_argument, NULL, 0 },
     { "skiplong",   no_argument, NULL, 's' },
-    { NULL,             0,                  NULL,   0 }
+    { NULL,         0,           NULL, 0 }
   };
 
   setlocale (LC_ALL, "");
+  if (isWindows ()) {
+    osSetEnv ("LC_ALL", "en-US");
+  }
 
   while ((c = getopt_long_only (argc, argv, "s", coptions, &option_index)) != -1) {
     switch (c) {

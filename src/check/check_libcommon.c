@@ -25,7 +25,7 @@ check_libcommon (bool skiplong)
   SRunner *sr;
 
   /* libcommon:
-   *  bdjstring   complete
+   *  bdjstring   needs istringCompare
    *  osutils
    *  fileop      complete
    *  filedata    done
@@ -51,7 +51,7 @@ check_libcommon (bool skiplong)
    *  lock
    *  rafile
    *  queue
-   *  dirop
+   *  dirop       complete
    *  dirlist     needs utf-8 basic/recursive
    *  misc
    *  localeutil

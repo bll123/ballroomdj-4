@@ -131,25 +131,31 @@ START_TEST(path_realpath)
   char    actual [MAXPATHLEN];
 
   getcwd (cwd, sizeof (cwd));
+  pathNormPath (cwd, sizeof (cwd));
+
   strlcpy (from, "tmp/abc.txt", sizeof (from));
   fh = fopen (from, "w");
   fclose (fh);
   snprintf (actual, sizeof (actual), "%s/%s", cwd, from);
 
   pathRealPath (to, from, sizeof (to));
+  pathNormPath (to, sizeof (to));
   ck_assert_str_eq (to, actual);
 
   strlcpy (from, "tmp/../tmp/abc.txt", sizeof (from));
   pathRealPath (to, from, sizeof (to));
+  pathNormPath (to, sizeof (to));
   ck_assert_str_eq (to, actual);
 
   strlcpy (from, actual, sizeof (from));
   pathRealPath (to, from, sizeof (to));
+  pathNormPath (to, sizeof (to));
   ck_assert_str_eq (to, actual);
 
 #if _lib_symlink
   symlink (from, "tmp/def.txt");
   pathRealPath (to, "tmp/def.txt", sizeof (to));
+  pathNormPath (to, sizeof (to));
   ck_assert_str_eq (to, actual);
 #endif
   unlink ("tmp/def.txt");

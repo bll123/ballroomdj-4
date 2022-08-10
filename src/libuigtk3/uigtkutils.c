@@ -12,6 +12,7 @@
 #include <gtk/gtk.h>
 
 #include "bdjstring.h"
+#include "localeutil.h"
 #include "log.h"  // needed for glogwriteroutput
 #include "sysvars.h"
 #include "ui.h"
@@ -28,8 +29,11 @@ void
 uiUIInitialize (void)
 {
   int argc = 0;
+
   uiInitUILog ();
   gtk_init (&argc, NULL);
+  /* gtk mucks up the locale settings */
+  localeInit ();
 }
 
 void

@@ -10,18 +10,14 @@
 #include <math.h>
 
 #include <locale.h>
-#if _hdr_libintl
-# include <libintl.h>
-#endif
+/* libintl.h is included by localeutil.h */
 
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"
-#include "datafile.h"
 #include "localeutil.h"
 #include "osutils.h"
 #include "pathbld.h"
-#include "slist.h"
 #include "sysvars.h"
 
 void
@@ -39,11 +35,16 @@ localeInit (void)
 
   sysvarsSetStr (SV_LOCALE_SYSTEM, osGetLocale (tbuff, sizeof (tbuff)));
   snprintf (tbuff, sizeof (tbuff), "%-.5s", sysvarsGetStr (SV_LOCALE_SYSTEM));
-  /* windows uses en-US rather than en_US */
-  tbuff [2] = '_';
-  sysvarsSetStr (SV_LOCALE, tbuff);
-  snprintf (tbuff, sizeof (tbuff), "%-.2s", sysvarsGetStr (SV_LOCALE_SYSTEM));
-  sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
+
+  /* if sysvars has already read the locale.txt file, do not override */
+  /* the locale setting */
+  if (sysvarsGetNum (SVL_LOCALE_SET) == 0) {
+    /* windows uses en-US rather than en_US */
+    tbuff [2] = '_';
+    sysvarsSetStr (SV_LOCALE, tbuff);
+    snprintf (tbuff, sizeof (tbuff), "%-.2s", sysvarsGetStr (SV_LOCALE));
+    sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
+  }
 
   strlcpy (lbuff, sysvarsGetStr (SV_LOCALE), sizeof (lbuff));
 
@@ -80,4 +81,20 @@ localeInit (void)
   }
 
   return;
+}
+
+void
+localeDebug (void)
+{
+  char    tbuff [200];
+
+  fprintf (stderr, "-- locale\n");
+  fprintf (stderr, "  set-locale:%s\n", setlocale (LC_ALL, NULL));
+  osGetLocale (tbuff, sizeof (tbuff));
+  fprintf (stderr, "  os-locale:%s\n", tbuff);
+  fprintf (stderr, "  locale-system:%s\n", sysvarsGetStr (SV_LOCALE_SYSTEM));
+  fprintf (stderr, "  locale:%s\n", sysvarsGetStr (SV_LOCALE));
+  fprintf (stderr, "  locale-short:%s\n", sysvarsGetStr (SV_LOCALE_SHORT));
+  fprintf (stderr, "  env-all:%s\n", getenv ("LC_ALL"));
+  fprintf (stderr, "  env-mess:%s\n", getenv ("LC_MESSAGES"));
 }

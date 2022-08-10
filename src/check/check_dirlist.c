@@ -38,11 +38,11 @@ START_TEST(dirlist_basic)
   char *fcfn = "tmp/abc/ghi/ghi.txt";
   diropMakeDir (dbfn);
   diropMakeDir (dcfn);
-  fh = fopen (fafn, "w");
+  fh = fileopOpen (fafn, "w");
   fclose (fh);
-  fh = fopen (fbfn, "w");
+  fh = fileopOpen (fbfn, "w");
   fclose (fh);
-  fh = fopen (fcfn, "w");
+  fh = fileopOpen (fcfn, "w");
   fclose (fh);
 
   slist = dirlistBasicDirList (dafn, NULL);
@@ -94,11 +94,11 @@ START_TEST(dirlist_recursive)
     filemanipLinkCopy ("ghi.txt", fdfn);
     num = 6;
   }
-  fh = fopen (fafn, "w");
+  fh = fileopOpen (fafn, "w");
   fclose (fh);
-  fh = fopen (fbfn, "w");
+  fh = fileopOpen (fbfn, "w");
   fclose (fh);
-  fh = fopen (fcfn, "w");
+  fh = fileopOpen (fcfn, "w");
   fclose (fh);
 
   slist = dirlistRecursiveDirList (dafn, FILEMANIP_FILES);
@@ -128,10 +128,11 @@ START_TEST(dirlist_recursive)
 }
 END_TEST
 
-/* update the fnlist in check_fileop.c and check_filemanip.c also */
+/* update the fnlist in fileop/filemanip/dirop/dirlist also */
 static char *fnlist [] = {
+  "tmp/abc-def",
   "tmp/ÜÄÑÖ",
-  "tmp/I Am the Best (내가 제일 잘 나가)",
+  "tmp/I Am the Best_내가 제일 잘 나가",
   "tmp/ははは",
   "tmp/夕陽伴我歸",
   "tmp/Ne_Русский_Шторм",

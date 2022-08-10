@@ -98,10 +98,11 @@ START_TEST(fileop_delete_a)
 }
 END_TEST
 
-/* update the fnlist in check_fileop.c and check_dirop.c also */
+/* update the fnlist in fileop/filemanip/dirop/dirlist also */
 static char *fnlist [] = {
+  "tmp/abc-def",
   "tmp/ÜÄÑÖ",
-  "tmp/I Am the Best (내가 제일 잘 나가)",
+  "tmp/I Am the Best_내가 제일 잘 나가",
   "tmp/ははは",
   "tmp/夕陽伴我歸",
   "tmp/Ne_Русский_Шторм",

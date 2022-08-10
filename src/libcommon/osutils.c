@@ -406,16 +406,19 @@ osDefaultSignal (int sig)
 char *
 osGetLocale (char *buff, size_t sz)
 {
-#if _lib_GetSystemDefaultLocaleName
+#if _lib_GetUserDefaultUILanguage
   wchar_t locbuff [LOCALE_NAME_MAX_LENGTH];
   char    *tbuff;
+  long    langid;
 
-  GetSystemDefaultLocaleName (locbuff, LOCALE_NAME_MAX_LENGTH);
+  langid = GetUserDefaultUILanguage ();
+  LCIDToLocaleName ((LCID) langid, locbuff, LOCALE_NAME_MAX_LENGTH,
+      LOCALE_ALLOW_NEUTRAL_NAMES);
   tbuff = osFromFSFilename (locbuff);
   strlcpy (buff, tbuff, sz);
   free (tbuff);
 #else
-  strlcpy (buff, setlocale (LC_ALL, NULL), sz);
+  strlcpy (buff, setlocale (LC_MESSAGES, NULL), sz);
 #endif
   return buff;
 }

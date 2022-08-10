@@ -24,7 +24,6 @@
 #include "dirlist.h"
 #include "dirop.h"
 #include "fileop.h"
-#include "localeutil.h"
 #include "lock.h"
 #include "log.h"
 #include "misc.h"

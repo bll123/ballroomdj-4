@@ -233,6 +233,11 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   }
   logProcBegin (LOG_PROC, "bdj4startup");
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
+  if (startlog || route == ROUTE_STARTERUI) {
+    logMsg (LOG_SESS, LOG_IMPORTANT, "locale: %s", sysvarsGetStr (SV_LOCALE));
+    logMsg (LOG_SESS, LOG_IMPORTANT, "locale-short: %s", sysvarsGetStr (SV_LOCALE_SHORT));
+    logMsg (LOG_SESS, LOG_IMPORTANT, "locale-system: %s", sysvarsGetStr (SV_LOCALE_SYSTEM));
+  }
 
   if ((flags & BDJ4_INIT_NO_DATAFILE_LOAD) != BDJ4_INIT_NO_DATAFILE_LOAD) {
     rc = bdjvarsdfloadInit ();

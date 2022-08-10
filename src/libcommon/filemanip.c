@@ -40,7 +40,20 @@ filemanipMove (const char *fname, const char *nfn)
   if (isWindows()) {
     fileopDelete (nfn);
   }
+#if _lib__wrename
+  {
+    wchar_t   *wfname;
+    wchar_t   *wnfn;
+
+    wfname = osToFSFilename (fname);
+    wnfn = osToFSFilename (nfn);
+    rc = _wrename (wfname, wnfn);
+    free (wfname);
+    free (wnfn);
+  }
+#else
   rc = rename (fname, nfn);
+#endif
   return rc;
 }
 

@@ -18,6 +18,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "pathbld.h"
+#include "pathutil.h"
 #include "check_bdj.h"
 #include "sysvars.h"
 
@@ -60,6 +61,7 @@ START_TEST(pathbld_chk)
   char    cwd [MAXPATHLEN];
 
   getcwd (cwd, sizeof (cwd));
+  pathNormPath (cwd, sizeof (cwd));
 
   for (size_t i = 0; i < TCOUNT; ++i) {
     pathbldMakePath (tbuff, sizeof (tbuff),

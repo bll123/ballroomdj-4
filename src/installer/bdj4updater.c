@@ -177,6 +177,7 @@ main (int argc, char *argv [])
 
     prog = sysvarsGetStr (SV_PATH_XDGUSERDIR);
     if (*prog) {
+      *data = '\0';
       targc = 0;
       targv [targc++] = prog;
       targv [targc++] = "MUSIC";
@@ -184,15 +185,14 @@ main (int argc, char *argv [])
       osProcessPipe (targv, OS_PROC_DETACH, data, sizeof (data));
       stringTrim (data);
       stringTrimChar (data, '/');
-    }
 
-    /* xdg-user-dir returns the home folder if the music dir does */
-    /* not exist */
-    if (data != NULL &&
-        strcmp (data, home) != 0) {
-      strlcpy (homemusicdir, data, sizeof (homemusicdir));
-    } else {
-      snprintf (homemusicdir, sizeof (homemusicdir), "%s/Music", home);
+      /* xdg-user-dir returns the home folder if the music dir does */
+      /* not exist */
+      if (*data && strcmp (data, home) != 0) {
+        strlcpy (homemusicdir, data, sizeof (homemusicdir));
+      } else {
+        snprintf (homemusicdir, sizeof (homemusicdir), "%s/Music", home);
+      }
     }
   }
   if (isWindows ()) {

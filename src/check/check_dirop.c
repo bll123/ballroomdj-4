@@ -97,10 +97,11 @@ START_TEST(dirop_del_dir_a)
 }
 END_TEST
 
-/* update the fnlist in check_fileop.c and check_filemanip.c also */
+/* update the fnlist in fileop/filemanip/dirop/dirlist also */
 static char *fnlist [] = {
+  "tmp/abc-def",
   "tmp/ÜÄÑÖ",
-  "tmp/I Am the Best (내가 제일 잘 나가)",
+  "tmp/I Am the Best_내가 제일 잘 나가",
   "tmp/ははは",
   "tmp/夕陽伴我歸",
   "tmp/Ne_Русский_Шторм",
@@ -115,6 +116,9 @@ START_TEST(dirop_mk_is_del_u)
 
   for (int i = 0; i < fnlistsz; ++i) {
     char *fn = fnlist [i];
+    fileopDelete (fn);
+    diropDeleteDir (fn);
+
     rc = diropMakeDir (fn);
     ck_assert_int_eq (rc, 0);
     rc = fileopFileExists (fn);

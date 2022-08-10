@@ -326,6 +326,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_LOCALE], "en_GB", SV_MAX_SZ);
 
   snprintf (buff, sizeof (buff), "%s/locale.txt", sysvars [SV_BDJ4DATADIR]);
+  lsysvars [SVL_LOCALE_SET] = 0;
   if (fileopFileExists (buff)) {
     FILE    *fh;
 
@@ -335,6 +336,7 @@ sysvarsInit (const char *argv0)
     fclose (fh);
     if (*tbuff) {
       strlcpy (sysvars [SV_LOCALE], tbuff, SV_MAX_SZ);
+      lsysvars [SVL_LOCALE_SET] = 1;
     }
   }
 
