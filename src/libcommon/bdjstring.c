@@ -8,6 +8,13 @@
 #include <string.h>
 #include <ctype.h>
 
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
+#if _hdr_windows
+# include <windows.h>
+#endif
+
 #include "bdjstring.h"
 
 static const char *versionNext (const char *tv1);
@@ -76,11 +83,18 @@ size_t
 istrlen (const char *str)
 {
   size_t            len;
+
+#if _lib_MultiByteToWideChar
+  /* this is not quite correct. */
+  /* single-glyph characters that use 4 bytes will probably */
+  /* need 2 wide chars */
+  len = MultiByteToWideChar (CP_UTF8, 0, str, strlen (str), NULL, 0);
+#else
   size_t            mlen;
   size_t            slen;
   size_t            bytelen;
-  mbstate_t         ps;
   const char        *tstr;
+  mbstate_t         ps;
 
   memset (&ps, 0, sizeof (mbstate_t));
   len = 0;
@@ -96,6 +110,7 @@ istrlen (const char *str)
     tstr += mlen;
     slen -= mlen;
   }
+#endif
   return len;
 }
 

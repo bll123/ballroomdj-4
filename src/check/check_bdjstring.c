@@ -17,6 +17,7 @@
 
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "sysvars.h"
 
 START_TEST(bdjstring_string_to_lower)
 {
@@ -97,7 +98,12 @@ START_TEST(bdjstring_istrlen)
 
   strcpy (buff, "ab" "\xF0\x9F\x92\x94" "cd");
   ck_assert_int_eq (strlen (buff), 8);
-  ck_assert_int_eq (istrlen (buff), 5);
+  if (isWindows ()) {
+    /* windows requires two characters to hold this glyph */
+    ck_assert_int_eq (istrlen (buff), 6);
+  } else {
+    ck_assert_int_eq (istrlen (buff), 5);
+  }
 
   strcpy (buff, "ab" "\xE2\x99\xa5" "cd");
   ck_assert_int_eq (strlen (buff), 7);

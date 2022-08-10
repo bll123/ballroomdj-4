@@ -37,7 +37,7 @@ main (int argc, char *argv [])
 
   setlocale (LC_ALL, "");
   if (isWindows ()) {
-    osSetEnv ("LC_ALL", "en-US");
+    osSetEnv ("LC_ALL", "en_US.UTF-8");
   }
 
   while ((c = getopt_long_only (argc, argv, "s", coptions, &option_index)) != -1) {
