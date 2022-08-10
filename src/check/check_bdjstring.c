@@ -153,8 +153,8 @@ bdjstring_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("string Suite");
-  tc = tcase_create ("string");
+  s = suite_create ("bdjstring Suite");
+  tc = tcase_create ("bdjstring");
   tcase_add_test (tc, bdjstring_string_to_lower);
   tcase_add_test (tc, bdjstring_string_to_upper);
   tcase_add_test (tc, bdjstring_string_trim);

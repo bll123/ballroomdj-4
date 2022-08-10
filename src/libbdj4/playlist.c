@@ -11,7 +11,7 @@
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "datafile.h"
-#include "dirop.h"
+#include "dirlist.h"
 #include "pathbld.h"
 #include "filemanip.h"
 #include "fileop.h"
@@ -554,7 +554,7 @@ playlistGetPlaylistList (int flag)
   if (flag == PL_LIST_ALL) {
     ext = BDJ4_PLAYLIST_EXT;
   }
-  filelist = diropBasicDirList (tfn, ext);
+  filelist = dirlistBasicDirList (tfn, ext);
 
   slistStartIterator (filelist, &iteridx);
   while ((tplfnm = slistIterateKey (filelist, &iteridx)) != NULL) {

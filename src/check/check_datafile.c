@@ -1153,8 +1153,8 @@ datafile_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("Datafile Suite");
-  tc = tcase_create ("Datafile");
+  s = suite_create ("datafile Suite");
+  tc = tcase_create ("datafile");
   tcase_add_test (tc, parse_init_free);
   tcase_add_test (tc, parse_simple);
   tcase_add_test (tc, parse_keyvalue);

@@ -15,6 +15,7 @@
 
 #include <check.h>
 
+#include "dirlist.h"
 #include "dirop.h"
 #include "filemanip.h"
 #include "fileop.h"
@@ -22,7 +23,48 @@
 #include "slist.h"
 #include "sysvars.h"
 
-START_TEST(dirop_del_dir)
+START_TEST(dirop_mkdir_isdir_a)
+{
+  int       rc;
+
+  char *fn = "tmp/def";
+  unlink (fn);
+  rmdir (fn);
+  fn = "tmp/abc/def";
+  rc = diropMakeDir (fn);
+  ck_assert_int_eq (rc, 0);
+  fn = "tmp/abc/xyz";
+  rc = diropMakeDir (fn);
+  ck_assert_int_eq (rc, 0);
+
+  rc = fileopIsDirectory ("tmp/def");
+  ck_assert_int_eq (rc, 0);
+
+  rc = fileopFileExists ("tmp/def");
+  ck_assert_int_eq (rc, 0);
+
+  rc = fileopIsDirectory ("tmp/abc");
+  ck_assert_int_eq (rc, 1);
+
+  rc = fileopFileExists ("tmp/abc");
+  ck_assert_int_eq (rc, 0);
+
+  rc = fileopIsDirectory (fn);
+  ck_assert_int_eq (rc, 1);
+  /* exists will return false on a directory */
+  rc = fileopFileExists ("fn");
+  ck_assert_int_eq (rc, 0);
+
+  rc = fileopIsDirectory ("tmp/abc/xyz");
+  ck_assert_int_eq (rc, 1);
+
+  rmdir (fn);
+  rmdir ("tmp/abc/xyz");
+  rmdir ("tmp/abc");
+}
+END_TEST
+
+START_TEST(dirop_del_dir_a)
 {
   FILE      *fh;
   int       rc;
@@ -31,9 +73,9 @@ START_TEST(dirop_del_dir)
   char *dfn = "tmp/abc";
   char *ofn = "tmp/abc/def";
   char *nfn = "tmp/abc/def/xyz.txt";
-  rc = fileopMakeDir (dfn);
+  rc = diropMakeDir (dfn);
   ck_assert_int_eq (rc, 0);
-  rc = fileopMakeDir (ofn);
+  rc = diropMakeDir (ofn);
   ck_assert_int_eq (rc, 0);
   fh = fopen (nfn, "w");
   ck_assert_ptr_nonnull (fh);
@@ -55,112 +97,35 @@ START_TEST(dirop_del_dir)
 }
 END_TEST
 
-START_TEST(dirop_basic_dirlist)
+/* update the fnlist in check_fileop.c and check_filemanip.c also */
+static char *fnlist [] = {
+  "tmp/ÜÄÑÖ",
+  "tmp/I Am the Best (내가 제일 잘 나가)",
+  "tmp/ははは",
+  "tmp/夕陽伴我歸",
+  "tmp/Ne_Русский_Шторм",
+};
+enum {
+  fnlistsz = sizeof (fnlist) / sizeof (char *),
+};
+
+START_TEST(dirop_mk_is_del_u)
 {
-  FILE      *fh;
-  slist_t   *slist;
-  slistidx_t  iteridx;
-  char      *fn;
+  int     rc;
 
-  char *dafn = "tmp/abc";
-  char *fafn = "tmp/abc/abc.txt";
-  char *dbfn = "tmp/abc/def";
-  char *fbfn = "tmp/abc/def/def.txt";
-  char *dcfn = "tmp/abc/ghi";
-  char *fcfn = "tmp/abc/ghi/ghi.txt";
-  fileopMakeDir (dbfn);
-  fileopMakeDir (dcfn);
-  fh = fopen (fafn, "w");
-  fclose (fh);
-  fh = fopen (fbfn, "w");
-  fclose (fh);
-  fh = fopen (fcfn, "w");
-  fclose (fh);
-
-  slist = diropBasicDirList (dafn, NULL);
-
-  ck_assert_int_eq (slistGetCount (slist), 1);
-  slistStartIterator (slist, &iteridx);
-  while ((fn = slistIterateKey (slist, &iteridx)) != NULL) {
-    ck_assert_str_eq (fn, "abc.txt");
+  for (int i = 0; i < fnlistsz; ++i) {
+    char *fn = fnlist [i];
+    rc = diropMakeDir (fn);
+    ck_assert_int_eq (rc, 0);
+    rc = fileopFileExists (fn);
+    ck_assert_int_eq (rc, 0);
+    rc = fileopIsDirectory (fn);
+    ck_assert_int_eq (rc, 1);
+    diropDeleteDir (fn);
+    rc = fileopIsDirectory (fn);
+    ck_assert_int_eq (rc, 0);
   }
-  slistFree (slist);
-
-  slist = diropBasicDirList (dcfn, NULL);
-  ck_assert_int_eq (slistGetCount (slist), 1);
-  slistStartIterator (slist, &iteridx);
-  while ((fn = slistIterateKey (slist, &iteridx)) != NULL) {
-    ck_assert_str_eq (fn, "ghi.txt");
-  }
-  slistFree (slist);
-
-  diropDeleteDir (dafn);
 }
-END_TEST
-
-
-START_TEST(dirop_recursive_dirlist)
-{
-  FILE      *fh;
-  slist_t   *slist;
-  slistidx_t  iteridx;
-  char      *fn;
-  int       num = 3;
-
-  char *dafn = "tmp/abc";
-  char *fafn = "tmp/abc/abc.txt";
-  char *dbfn = "tmp/abc/def";
-  char *fbfn = "tmp/abc/def/def.txt";
-  char *dcfn = "tmp/abc/ghi";
-  char *ddfn = "tmp/abc/jkl";
-  char *fcfn = "tmp/abc/ghi/ghi.txt";
-  char *fdfn = "tmp/abc/ghi/jkl.txt";
-
-  sysvarsInit ("check_filemanip");
-
-  diropDeleteDir (dafn);
-
-  fileopMakeDir (dbfn);
-  fileopMakeDir (dcfn);
-  if (! isWindows ()) {
-    filemanipLinkCopy ("ghi", ddfn);
-    filemanipLinkCopy ("ghi.txt", fdfn);
-    num = 6;
-  }
-  fh = fopen (fafn, "w");
-  fclose (fh);
-  fh = fopen (fbfn, "w");
-  fclose (fh);
-  fh = fopen (fcfn, "w");
-  fclose (fh);
-
-  slist = diropRecursiveDirList (dafn, FILEMANIP_FILES);
-
-
-  ck_assert_int_eq (slistGetCount (slist), num);
-  /* the list is unordered; for checks, sort it */
-  slistSort (slist);
-  slistStartIterator (slist, &iteridx);
-  fn = slistIterateKey (slist, &iteridx);
-  ck_assert_str_eq (fn, "tmp/abc/abc.txt");
-  fn = slistIterateKey (slist, &iteridx);
-  ck_assert_str_eq (fn, "tmp/abc/def/def.txt");
-  fn = slistIterateKey (slist, &iteridx);
-  ck_assert_str_eq (fn, "tmp/abc/ghi/ghi.txt");
-  if (! isWindows ()) {
-    fn = slistIterateKey (slist, &iteridx);
-    ck_assert_str_eq (fn, "tmp/abc/ghi/jkl.txt");
-    fn = slistIterateKey (slist, &iteridx);
-    ck_assert_str_eq (fn, "tmp/abc/jkl/ghi.txt");
-    fn = slistIterateKey (slist, &iteridx);
-    ck_assert_str_eq (fn, "tmp/abc/jkl/jkl.txt");
-  }
-
-  diropDeleteDir (dafn);
-  slistFree (slist);
-}
-END_TEST
-
 
 Suite *
 dirop_suite (void)
@@ -168,11 +133,11 @@ dirop_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("Directory Op Suite");
-  tc = tcase_create ("Directory Op");
-  tcase_add_test (tc, dirop_del_dir);
-  tcase_add_test (tc, dirop_basic_dirlist);
-  tcase_add_test (tc, dirop_recursive_dirlist);
+  s = suite_create ("dirop Suite");
+  tc = tcase_create ("dirop");
+  tcase_add_test (tc, dirop_mkdir_isdir_a);
+  tcase_add_test (tc, dirop_del_dir_a);
+  tcase_add_test (tc, dirop_mk_is_del_u);
   suite_add_tcase (s, tc);
   return s;
 }

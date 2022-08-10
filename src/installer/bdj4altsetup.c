@@ -25,6 +25,7 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "datafile.h"
+#include "dirlist.h"
 #include "dirop.h"
 #include "filedata.h"
 #include "fileop.h"
@@ -499,7 +500,7 @@ altsetupInit (altsetup_t *altsetup)
 static void
 altsetupMakeTarget (altsetup_t *altsetup)
 {
-  fileopMakeDir (altsetup->target);
+  diropMakeDir (altsetup->target);
 
   altsetup->instState = ALT_CHDIR;
 }
@@ -526,13 +527,13 @@ altsetupCreateDirs (altsetup_t *altsetup)
   altsetupDisplayText (altsetup, "-- ", _("Creating folder structure."), false);
 
   /* create the directories that are not included in the distribution */
-  fileopMakeDir ("data");
+  diropMakeDir ("data");
   /* this will create the directories necessary for the configs */
   bdjoptCreateDirectories ();
-  fileopMakeDir ("tmp");
-  fileopMakeDir ("http");
+  diropMakeDir ("tmp");
+  diropMakeDir ("http");
   /* there are profile specific image files */
-  fileopMakeDir ("img/profile00");
+  diropMakeDir ("img/profile00");
 
   altsetup->instState = ALT_COPY_TEMPLATES;
 }
@@ -579,7 +580,7 @@ altsetupCopyTemplates (altsetup_t *altsetup)
 
   pathbldMakePath (dir, sizeof (dir),
       "", "", PATHBLD_MP_TEMPLATEDIR);
-  dirlist = diropBasicDirList (dir, NULL);
+  dirlist = dirlistBasicDirList (dir, NULL);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
     if (strcmp (fname, "qrcode") == 0) {
@@ -806,7 +807,7 @@ altsetupSetup (altsetup_t *altsetup)
     /* handled by the desktop shortcut */
   } else {
 #if _lib_symlink
-    fileopMakeDir ("bin");
+    diropMakeDir ("bin");
 
     pathbldMakePath (buff, sizeof (buff),
         "bdj4", "", PATHBLD_MP_EXECDIR);

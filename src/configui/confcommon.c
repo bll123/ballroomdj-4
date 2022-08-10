@@ -17,7 +17,7 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "configui.h"
-#include "dirop.h"
+#include "dirlist.h"
 #include "dispsel.h"
 #include "dnctypes.h"
 #include "filedata.h"
@@ -303,25 +303,25 @@ confuiGetThemeList (void)
   if (isWindows ()) {
     snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",
         sysvarsGetStr (SV_BDJ4MAINDIR));
-    filelist = diropRecursiveDirList (tbuff, FILEMANIP_DIRS);
+    filelist = dirlistRecursiveDirList (tbuff, FILEMANIP_DIRS);
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
   } else {
     /* for macos */
-    filelist = diropRecursiveDirList ("/opt/local/share/themes", FILEMANIP_DIRS);
+    filelist = dirlistRecursiveDirList ("/opt/local/share/themes", FILEMANIP_DIRS);
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
 
-    filelist = diropRecursiveDirList ("/usr/local/share/themes", FILEMANIP_DIRS);
+    filelist = dirlistRecursiveDirList ("/usr/local/share/themes", FILEMANIP_DIRS);
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
 
-    filelist = diropRecursiveDirList ("/usr/share/themes", FILEMANIP_DIRS);
+    filelist = dirlistRecursiveDirList ("/usr/share/themes", FILEMANIP_DIRS);
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
 
     snprintf (tbuff, sizeof (tbuff), "%s/.themes", sysvarsGetStr (SV_HOME));
-    filelist = diropRecursiveDirList (tbuff, FILEMANIP_DIRS);
+    filelist = dirlistRecursiveDirList (tbuff, FILEMANIP_DIRS);
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
   }

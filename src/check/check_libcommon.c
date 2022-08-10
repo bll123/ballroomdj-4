@@ -27,7 +27,7 @@ check_libcommon (bool skiplong)
   /* libcommon:
    *  bdjstring   complete
    *  osutils
-   *  fileop      need utf-8 filenames
+   *  fileop      complete
    *  filedata    done
    *  osnetutils
    *  pathutil    done
@@ -52,6 +52,7 @@ check_libcommon (bool skiplong)
    *  rafile
    *  queue
    *  dirop
+   *  dirlist     needs utf-8 basic/recursive
    *  misc
    *  localeutil
    *  progstate
@@ -119,6 +120,9 @@ check_libcommon (bool skiplong)
   srunner_add_suite (sr, s);
 
   s = dirop_suite();
+  srunner_add_suite (sr, s);
+
+  s = dirlist_suite();
   srunner_add_suite (sr, s);
 
   srunner_run_all (sr, CK_ENV);

@@ -17,6 +17,7 @@ int   check_libbdj4 (bool skiplong);
 Suite *     bdjmsg_suite (void);
 Suite *     bdjstring_suite (void);
 Suite *     datafile_suite (void);
+Suite *     dirlist_suite (void);
 Suite *     dirop_suite (void);
 Suite *     filedata_suite (void);
 Suite *     filemanip_suite (void);

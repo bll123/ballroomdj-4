@@ -266,8 +266,8 @@ rafile_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("RAFile Suite");
-  tc = tcase_create ("RA-File");
+  s = suite_create ("rafile Suite");
+  tc = tcase_create ("rafile");
   tcase_add_test (tc, rafile_create_new);
   tcase_add_test (tc, rafile_reopen);
   tcase_add_test (tc, rafile_write);

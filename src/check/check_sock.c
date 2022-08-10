@@ -828,8 +828,8 @@ sock_suite (void)
   TCase     *tc;
 
 //  logStderr ();
-  s = suite_create ("Sock Suite");
-  tc = tcase_create ("Sock");
+  s = suite_create ("sock Suite");
+  tc = tcase_create ("sock");
   tcase_add_test (tc, sock_server_create);
   tcase_add_test (tc, sock_server_create_check);
   tcase_add_test (tc, sock_server_check);

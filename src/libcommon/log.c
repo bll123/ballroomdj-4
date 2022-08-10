@@ -17,6 +17,7 @@
 #endif
 
 #include "bdj4.h"
+#include "dirop.h"
 #include "log.h"
 #include "tmutil.h"
 #include "fileop.h"
@@ -283,7 +284,7 @@ rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
   pi = pathInfo (fn);
   strlcpy (tbuff, pi->dirname, pi->dlen + 1);
   if ( ! fileopIsDirectory (tbuff)) {
-    fileopMakeDir (tbuff);
+    diropMakeDir (tbuff);
   }
   pathInfoFree (pi);
 

@@ -24,6 +24,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "datafile.h"
+#include "dirlist.h"
 #include "dirop.h"
 #include "filedata.h"
 #include "fileop.h"
@@ -1299,8 +1300,8 @@ installerMakeTarget (installer_t *installer)
   char    *tokptr;
   char    *tokptrb;
 
-  fileopMakeDir (installer->target);
-  fileopMakeDir (installer->rundir);
+  diropMakeDir (installer->target);
+  diropMakeDir (installer->rundir);
 
   *installer->oldversion = '\0';
   snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt",
@@ -1402,7 +1403,7 @@ installerChangeDir (installer_t *installer)
         installer->home);
   }
 
-  fileopMakeDir (installer->datatopdir);
+  diropMakeDir (installer->datatopdir);
 
   if (chdir (installer->datatopdir)) {
     installerFailWorkingDir (installer, installer->datatopdir);
@@ -1419,11 +1420,11 @@ installerCreateDirs (installer_t *installer)
   installerDisplayText (installer, INST_DISP_ACTION, _("Creating folder structure."), false);
 
   /* create the directories that are not included in the distribution */
-  fileopMakeDir ("data");
+  diropMakeDir ("data");
   /* this will create the directories necessary for the configs */
   bdjoptCreateDirectories ();
-  fileopMakeDir ("tmp");
-  fileopMakeDir ("http");
+  diropMakeDir ("tmp");
+  diropMakeDir ("http");
 
   installer->instState = INST_COPY_TEMPLATES;
 }
@@ -1476,7 +1477,7 @@ installerCopyTemplates (installer_t *installer)
   snprintf (dir, sizeof (dir), "%s/templates", installer->rundir);
 
   snprintf (tbuff, sizeof (tbuff), "%s/templates", installer->rundir);
-  dirlist = diropBasicDirList (tbuff, NULL);
+  dirlist = dirlistBasicDirList (tbuff, NULL);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
     if (strcmp (fname, "qrcode") == 0) {
@@ -1754,7 +1755,7 @@ installerConvertStart (installer_t *installer)
       /* CONTEXT: installer: status message */
       _("Starting conversion process."), false);
 
-  installer->convlist = diropBasicDirList ("conv", ".tcl");
+  installer->convlist = dirlistBasicDirList ("conv", ".tcl");
   /* the sort order doesn't matter, but there's a need to run */
   /* a check after everything has finished to make sure the user's */
   /* organization path is in orgopt.txt */
@@ -2405,7 +2406,7 @@ installerDisplayText (installer_t *installer, char *pfx, char *txt, bool bold)
 static void
 installerGetTargetSaveFname (installer_t *installer, char *buff, size_t sz)
 {
-  fileopMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
+  diropMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
   snprintf (buff, sz, "%s/%s", sysvarsGetStr (SV_CONFIG_DIR), INST_SAVE_FNAME);
 }
 

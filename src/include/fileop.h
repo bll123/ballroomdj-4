@@ -10,7 +10,6 @@ ssize_t fileopSize (const char *fname);
 time_t  fileopModTime (const char *fname);
 bool  fileopIsDirectory (const char *fname);
 int   fileopDelete (const char *fname);
-int   fileopMakeDir (const char *dirname);
 FILE  * fileopOpen (const char *fname, const char *mode);
 
 #endif /* INC_FILEOP_H */

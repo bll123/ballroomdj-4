@@ -21,7 +21,7 @@
 #include "slist.h"
 #include "sysvars.h"
 
-START_TEST(filemanip_move)
+START_TEST(filemanip_move_a)
 {
   FILE      *fh;
   int       rc;
@@ -44,8 +44,7 @@ START_TEST(filemanip_move)
 }
 END_TEST
 
-
-START_TEST(filemanip_copy)
+START_TEST(filemanip_copy_a)
 {
   FILE      *fh;
   int       rc;
@@ -83,7 +82,7 @@ START_TEST(filemanip_copy)
 }
 END_TEST
 
-START_TEST(filemanip_backup)
+START_TEST(filemanip_backup_a)
 {
   FILE      *fh;
   int       rc;
@@ -231,9 +230,21 @@ START_TEST(filemanip_backup)
 }
 END_TEST
 
-START_TEST(filemanip_renameall)
+START_TEST(filemanip_renameall_a)
 {
 }
+
+/* update the fnlist in check_fileop.c and check_dirop.c also */
+static char *fnlist [] = {
+  "tmp/ÜÄÑÖ",
+  "tmp/I Am the Best (내가 제일 잘 나가)",
+  "tmp/ははは",
+  "tmp/夕陽伴我歸",
+  "tmp/Ne_Русский_Шторм",
+};
+enum {
+  fnlistsz = sizeof (fnlist) / sizeof (char *),
+};
 
 Suite *
 filemanip_suite (void)
@@ -241,12 +252,12 @@ filemanip_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("File Manip Suite");
-  tc = tcase_create ("File Manip");
-  tcase_add_test (tc, filemanip_move);
-  tcase_add_test (tc, filemanip_copy);
-  tcase_add_test (tc, filemanip_backup);
-  tcase_add_test (tc, filemanip_renameall);
+  s = suite_create ("filemanip Suite");
+  tc = tcase_create ("filemanip");
+  tcase_add_test (tc, filemanip_move_a);
+  tcase_add_test (tc, filemanip_copy_a);
+  tcase_add_test (tc, filemanip_backup_a);
+  tcase_add_test (tc, filemanip_renameall_a);
   suite_add_tcase (s, tc);
   return s;
 }

@@ -31,9 +31,6 @@
 #include "fileop.h"
 #include "osutils.h"
 
-static int fileopMakeRecursiveDir (const char *dirname);
-static int fileopMkdir (const char *dirname);
-
 /* note that the windows code will fail on a directory */
 /* the unix code has been modified to match */
 bool
@@ -174,14 +171,6 @@ fileopDelete (const char *fname)
   return rc;
 }
 
-int
-fileopMakeDir (const char *dirname)
-{
-  int rc;
-  rc = fileopMakeRecursiveDir (dirname);
-  return rc;
-}
-
 FILE *
 fileopOpen (const char *fname, const char *mode)
 {
@@ -204,45 +193,5 @@ fileopOpen (const char *fname, const char *mode)
   }
 #endif
   return fh;
-}
-
-/* internal routines */
-
-static int
-fileopMakeRecursiveDir (const char *dirname)
-{
-  char    tbuff [MAXPATHLEN];
-  char    *p = NULL;
-
-  strlcpy (tbuff, dirname, MAXPATHLEN);
-  stringTrimChar (tbuff, '/');
-
-  for (p = tbuff + 1; *p; p++) {
-    if (*p == '/') {
-      *p = 0;
-      fileopMkdir (tbuff);
-      *p = '/';
-    }
-  }
-  fileopMkdir (tbuff);
-  return 0;
-}
-
-static int
-fileopMkdir (const char *dirname)
-{
-  int   rc;
-
-#if _args_mkdir == 1      // windows
-  wchar_t   *tdirname = NULL;
-
-  tdirname = osToFSFilename (dirname);
-  rc = _wmkdir (tdirname);
-  free (tdirname);
-#endif
-#if _args_mkdir == 2 && _define_S_IRWXU
-  rc = mkdir (dirname, S_IRWXU);
-#endif
-  return rc;
 }
 

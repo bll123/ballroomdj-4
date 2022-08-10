@@ -163,8 +163,8 @@ pathutil_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("Path Utils Suite");
-  tc = tcase_create ("Path Utils");
+  s = suite_create ("pathutil Suite");
+  tc = tcase_create ("pathutil");
   tcase_add_test (tc, pathinfo_chk);
   tcase_add_test (tc, path_winpath);
   tcase_add_test (tc, path_normpath);

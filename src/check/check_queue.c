@@ -992,8 +992,8 @@ queue_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("Queue Suite");
-  tc = tcase_create ("Queue Op");
+  s = suite_create ("queue Suite");
+  tc = tcase_create ("queue");
   tcase_add_test (tc, queue_alloc_free);
   tcase_add_test (tc, queue_push_one);
   tcase_add_test (tc, queue_push_two);

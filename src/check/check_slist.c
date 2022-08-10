@@ -557,8 +557,8 @@ slist_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("sList Suite");
-  tc = tcase_create ("sList");
+  s = suite_create ("slist Suite");
+  tc = tcase_create ("slist");
   tcase_add_test (tc, simple_list_create_free);
   tcase_add_test (tc, simple_list_add_unordered);
   tcase_add_test (tc, simple_list_add_unordered_iterate);

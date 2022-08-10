@@ -141,8 +141,8 @@ filedata_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("File Data Utils Suite");
-  tc = tcase_create ("File Data Utils");
+  s = suite_create ("filedata Suite");
+  tc = tcase_create ("filedata");
   tcase_add_test (tc, filedata_readall);
   tcase_add_test (tc, filedata_repl);
   suite_add_tcase (s, tc);

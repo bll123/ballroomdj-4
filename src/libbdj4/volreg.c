@@ -10,6 +10,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "datafile.h"
+#include "dirop.h"
 #include "fileop.h"
 #include "lock.h"
 #include "ilist.h"
@@ -65,7 +66,7 @@ volregCheckBDJ3Flag (void)
   char  fn [MAXPATHLEN];
   int   rc = false;
 
-  fileopMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
+  diropMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
   pathbldMakePath (fn, sizeof (fn),
       VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_CONFIGDIR);
   if (fileopFileExists (fn)) {
@@ -81,7 +82,7 @@ volregCreateBDJ4Flag (void)
   char  fn [MAXPATHLEN];
   FILE  *fh;
 
-  fileopMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
+  diropMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
   pathbldMakePath (fn, sizeof (fn),
       VOLREG_BDJ4_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_CONFIGDIR);
   fh = fopen (fn, "w");
@@ -95,7 +96,7 @@ volregClearBDJ4Flag (void)
 {
   char  fn [MAXPATHLEN];
 
-  fileopMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
+  diropMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
   pathbldMakePath (fn, sizeof (fn),
       VOLREG_BDJ4_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_CONFIGDIR);
   fileopDelete (fn);

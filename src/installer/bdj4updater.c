@@ -23,6 +23,7 @@
 #include "bdjregex.h"
 #include "bdjstring.h"
 #include "datafile.h"
+#include "dirlist.h"
 #include "dirop.h"
 #include "filedata.h"
 #include "filemanip.h"
@@ -499,7 +500,7 @@ updaterCleanRegex (const char *basedir, const char *pattern)
   if (dlen > 0) { ++dlen; }
   rx = regexInit (pattern + dlen);
 
-  filelist = diropBasicDirList (tdir, NULL);
+  filelist = dirlistBasicDirList (tdir, NULL);
   slistStartIterator (filelist, &iteridx);
   while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
     if (regexMatch (rx, fn)) {

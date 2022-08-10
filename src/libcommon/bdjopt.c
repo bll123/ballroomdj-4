@@ -11,6 +11,7 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "datafile.h"
+#include "dirop.h"
 #include "pathbld.h"
 #include "filemanip.h"
 #include "fileop.h"
@@ -252,14 +253,14 @@ bdjoptCreateDirectories (void)
   char      path [MAXPATHLEN];
 
   pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DATA);
-  fileopMakeDir (path);
+  diropMakeDir (path);
   pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
-  fileopMakeDir (path);
+  diropMakeDir (path);
   pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME);
-  fileopMakeDir (path);
+  diropMakeDir (path);
   pathbldMakePath (path, sizeof (path), "", "",
       PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-  fileopMakeDir (path);
+  diropMakeDir (path);
 }
 
 void
