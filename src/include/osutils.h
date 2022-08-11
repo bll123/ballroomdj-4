@@ -7,8 +7,6 @@ extern "C" {
 
 #include "config.h"
 
-#include <sys/types.h>
-#include <dirent.h>
 #include <wchar.h>
 
 #if _hdr_winsock2
@@ -21,20 +19,6 @@ extern "C" {
 # include <windows.h>
 #endif
 
-enum {
-  OS_PROC_NONE    = 0x0000,
-  OS_PROC_DETACH  = 0x0001,
-  OS_PROC_WAIT    = 0x0002,
-};
-
-typedef struct {
-  DIR       *dh;
-  char      *dirname;
-#if _typ_HANDLE
-  HANDLE    dhandle;
-#endif
-} dirhandle_t;
-
 #if _lib_MultiByteToWideChar
 # define OS_FS_CHAR_TYPE wchar_t
 #else
@@ -42,23 +26,9 @@ typedef struct {
 #endif
 #define OS_FS_CHAR_SIZE sizeof (OS_FS_CHAR_TYPE)
 
-double        dRandom (void);
-void          sRandom (void);
-pid_t         osProcessStart (const char *targv[], int flags,
-                void **handle, char *outfname);
-pid_t         osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz);
-void          * osToFSFilename (const char *fname);
-char          * osFromFSFilename (const void *fname);
-dirhandle_t   * osDirOpen (const char *dir);
-char          * osDirIterate (dirhandle_t *dirh);
-void          osDirClose (dirhandle_t *dirh);
+void          * osToWideChar (const char *fname);
+char          * osFromWideChar (const void *fname);
 int           osSetEnv (const char *name, const char *value);
-void          osSetStandardSignals (void (*sigHandler)(int));
-void          osCatchSignal (void (*sigHandler)(int), int signal);
-void          osIgnoreSignal (int signal);
-void          osDefaultSignal (int signal);
-char          *osGetLocale (char *buff, size_t sz);
-char *        osRunProgram (const char *prog, ...);
 int           osCreateLink (const char *target, const char *linkpath);
 
 /* system specific functions in separate files */

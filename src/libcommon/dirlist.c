@@ -20,7 +20,7 @@
 #include "dirlist.h"
 #include "fileop.h"
 #include "slist.h"
-#include "osutils.h"
+#include "osdir.h"
 #include "pathutil.h"
 #include "queue.h"
 

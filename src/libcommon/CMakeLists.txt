@@ -22,10 +22,16 @@ add_library (libbdj4common SHARED
   log.c
   misc.c
   nlist.c
+  osdir.c
+  oslocale.c
   osnetutils.c
+  osprocess.c
+  osrandom.c
+  ossignal.c
   osutils.c
   oslinuxutils.c
   osmacutils.m
+  oswinprocess.c
   oswinutils.c
   pathbld.c
   pathutil.c

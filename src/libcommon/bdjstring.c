@@ -16,6 +16,7 @@
 #endif
 
 #include "bdjstring.h"
+#include "osutils.h"
 
 static const char *versionNext (const char *tv1);
 
@@ -75,7 +76,40 @@ istringCompare (void *str1, void *str2)
 {
   int       rc;
 
+#if _lib_CompareStringEx
+  int     trc;
+  int     len;
+  wchar_t *wstr1;
+  wchar_t *wstr2;
+
+  wstr1 = osToWideChar (str1);
+  wstr2 = osToWideChar (str2);
+
+  trc = CompareStringEx (
+      sysvarsGetStr (SV_LOCALE),
+      wstr1, -1,
+      wstr2, -1,
+      NORM_LINGUISTIC_CASING
+      NULL, NULL, 0);
+  switch (trc) {
+    case CSTR_EQUAL: {
+      rc = 0;
+      break;
+    }
+    case CSTR_LESS_THAN: {
+      rc = -1;
+      break;
+    }
+    case CSTR_GREATER_THAN: {
+      rc = 1;
+      break;
+    }
+  }
+  free (wstr1);
+  free (wstr2);
+#else
   rc = strcoll ((char *) str1, (char *) str2);
+#endif
   return rc;
 }
 

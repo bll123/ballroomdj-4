@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "osprocess.h"
 #include "osutils.h"
 
 enum {

@@ -25,7 +25,7 @@
 #include "log.h"
 #include "musicdb.h"
 #include "pathbld.h"
-#include "osutils.h"
+#include "osrandom.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"

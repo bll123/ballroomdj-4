@@ -32,6 +32,7 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "osnetutils.h"
+#include "osprocess.h"
 #include "osutils.h"
 #include "pathutil.h"
 

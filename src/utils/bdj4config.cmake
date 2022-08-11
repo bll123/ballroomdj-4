@@ -238,6 +238,7 @@ check_include_file (sys/wait.h _sys_wait)
 
 set (CMAKE_REQUIRED_INCLUDES windows.h)
 check_function_exists (CloseHandle _lib_CloseHandle)
+check_function_exists (CompareStringEx _lib_CompareStringEx)
 check_function_exists (CopyFileW _lib_CopyFileW)
 check_function_exists (CreateFile _lib_CreateFile)
 check_function_exists (CreateProcess _lib_CreateProcess)

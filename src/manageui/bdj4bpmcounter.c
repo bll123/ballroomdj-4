@@ -19,7 +19,7 @@
 #include "bdjvars.h"
 #include "conn.h"
 #include "log.h"
-#include "osutils.h"
+#include "ossignal.h"
 #include "osuiutils.h"
 #include "pathbld.h"
 #include "procutil.h"

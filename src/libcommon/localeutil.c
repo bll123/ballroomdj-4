@@ -16,6 +16,7 @@
 #include "bdj4intl.h"
 #include "bdjstring.h"
 #include "localeutil.h"
+#include "oslocale.h"
 #include "osutils.h"
 #include "pathbld.h"
 #include "sysvars.h"
@@ -31,7 +32,9 @@ localeInit (void)
 
   /* get the locale from the environment */
   /* this will fail on windows with utf-8 code pages */
-  setlocale (LC_ALL, "");
+  if (setlocale (LC_ALL, "") == NULL) {
+    fprintf (stderr, "set of locale from env failed\n");
+  }
 
   /* these will be incorrect for windows */
 

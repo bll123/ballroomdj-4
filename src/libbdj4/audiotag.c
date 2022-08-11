@@ -15,7 +15,7 @@
 #include "fileop.h"
 #include "log.h"
 #include "nlist.h"
-#include "osutils.h"
+#include "osprocess.h"
 #include "pathutil.h"
 #include "pathbld.h"
 #include "slist.h"

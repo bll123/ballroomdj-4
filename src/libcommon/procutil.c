@@ -26,7 +26,7 @@
 #include "bdjstring.h"
 #include "conn.h"
 #include "log.h"
-#include "osutils.h"
+#include "osprocess.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "sysvars.h"

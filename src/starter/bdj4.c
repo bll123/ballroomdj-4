@@ -26,6 +26,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
+#include "osprocess.h"
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"

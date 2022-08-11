@@ -26,7 +26,7 @@
 #include "conn.h"
 #include "lock.h"
 #include "log.h"
-#include "osutils.h"
+#include "ossignal.h"
 #include "pathbld.h"
 #include "progstate.h"
 #include "procutil.h"

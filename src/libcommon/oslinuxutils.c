@@ -10,6 +10,7 @@
 #include <assert.h>
 
 #include "bdjstring.h"
+#include "osprocess.h"
 #include "osutils.h"
 
 char *

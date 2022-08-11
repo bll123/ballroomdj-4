@@ -15,7 +15,7 @@
 #include "ilist.h"
 #include "log.h"
 #include "nlist.h"
-#include "osutils.h"
+#include "osrandom.h"
 #include "playlist.h"
 #include "queue.h"
 #include "slist.h"

@@ -15,7 +15,7 @@
 #include "log.h"
 #include "manageui.h"
 #include "nlist.h"
-#include "osutils.h"
+#include "osprocess.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "sysvars.h"

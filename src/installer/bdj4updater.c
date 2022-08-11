@@ -32,6 +32,7 @@
 #include "localeutil.h"
 #include "musicdb.h"
 #include "nlist.h"
+#include "osprocess.h"
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"

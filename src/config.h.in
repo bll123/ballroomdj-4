@@ -41,6 +41,7 @@
 
 /* windows specific */
 #cmakedefine01 _lib_CloseHandle
+#cmakedefine01 _lib_CompareStringEx
 #cmakedefine01 _lib_CopyFileW
 #cmakedefine01 _lib_CreateFile
 #cmakedefine01 _lib_CreateProcess

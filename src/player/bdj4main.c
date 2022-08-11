@@ -31,6 +31,8 @@
 #include "log.h"
 #include "musicdb.h"
 #include "musicq.h"
+#include "osprocess.h"
+#include "ossignal.h"
 #include "osutils.h"
 #include "pathbld.h"
 #include "playlist.h"

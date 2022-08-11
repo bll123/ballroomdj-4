@@ -17,7 +17,7 @@
 
 #include "bdj4.h"
 #include "check_bdj.h"
-#include "osutils.h"
+#include "ossignal.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "sysvars.h"

@@ -45,8 +45,8 @@ filemanipMove (const char *fname, const char *nfn)
     wchar_t   *wfname;
     wchar_t   *wnfn;
 
-    wfname = osToFSFilename (fname);
-    wnfn = osToFSFilename (nfn);
+    wfname = osToWideChar (fname);
+    wnfn = osToWideChar (nfn);
     rc = _wrename (wfname, wnfn);
     free (wfname);
     free (wnfn);
@@ -73,8 +73,8 @@ filemanipCopy (const char *fname, const char *nfn)
     {
       wchar_t   *wtfname;
       wchar_t   *wtnfn;
-      wtfname = osToFSFilename (tfname);
-      wtnfn = osToFSFilename (tnfn);
+      wtfname = osToWideChar (tfname);
+      wtnfn = osToWideChar (tnfn);
 
       rc = CopyFileW (wtfname, wtnfn, 0);
       rc = rc != 0 ? 0 : -1;

@@ -24,7 +24,7 @@
 #include "lock.h"
 #include "log.h"
 #include "osuiutils.h"
-#include "osutils.h"
+#include "ossignal.h"
 #include "pathbld.h"
 #include "progstate.h"
 #include "sock.h"

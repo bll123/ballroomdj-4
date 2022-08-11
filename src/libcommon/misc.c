@@ -11,7 +11,7 @@
 #include <stdarg.h>
 
 #include "misc.h"
-#include "osutils.h"
+#include "osrandom.h"
 
 char *
 createRandomColor (char *tbuff, size_t sz)

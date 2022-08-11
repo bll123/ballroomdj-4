@@ -43,7 +43,7 @@ fileopFileExists (const char *fname)
     struct _stat  statbuf;
     wchar_t       *tfname = NULL;
 
-    tfname = osToFSFilename (fname);
+    tfname = osToWideChar (fname);
     rc = _wstat (tfname, &statbuf);
     if (rc == 0 && (statbuf.st_mode & S_IFDIR) == S_IFDIR) {
       rc = -1;
@@ -73,7 +73,7 @@ fileopSize (const char *fname)
     wchar_t       *tfname = NULL;
     int           rc;
 
-    tfname = osToFSFilename (fname);
+    tfname = osToWideChar (fname);
     rc = _wstat (tfname, &statbuf);
     if (rc == 0) {
       sz = statbuf.st_size;
@@ -105,7 +105,7 @@ fileopModTime (const char *fname)
     wchar_t       *tfname = NULL;
     int           rc;
 
-    tfname = osToFSFilename (fname);
+    tfname = osToWideChar (fname);
     rc = _wstat (tfname, &statbuf);
     if (rc == 0) {
       mtime = statbuf.st_mtime;
@@ -136,7 +136,7 @@ fileopIsDirectory (const char *fname)
     struct _stat  statbuf;
     wchar_t       *tfname = NULL;
 
-    tfname = osToFSFilename (fname);
+    tfname = osToWideChar (fname);
     rc = _wstat (tfname, &statbuf);
     if (rc == 0 && (statbuf.st_mode & S_IFDIR) != S_IFDIR) {
       rc = -1;
@@ -162,7 +162,7 @@ fileopDelete (const char *fname)
 
 #if _lib__wunlink
   wchar_t *tname;
-  tname = osToFSFilename (fname);
+  tname = osToWideChar (fname);
   rc = _wunlink (tname);
   free (tname);
 #else
@@ -181,8 +181,8 @@ fileopOpen (const char *fname, const char *mode)
     wchar_t       *tfname = NULL;
     wchar_t       *tmode = NULL;
 
-    tfname = osToFSFilename (fname);
-    tmode = osToFSFilename (mode);
+    tfname = osToWideChar (fname);
+    tmode = osToWideChar (mode);
     fh = _wfopen (tfname, tmode);
     free (tfname);
     free (tmode);

@@ -19,7 +19,7 @@
 #include "bdjstring.h"
 #include "fileop.h"
 #include "dirop.h"
-#include "osutils.h"
+#include "osdir.h"
 
 #if _hdr_windows
 # include <windows.h>
@@ -73,7 +73,7 @@ diropDeleteDir (const char *dirname)
   {
     wchar_t       * tdirname;
 
-    tdirname = osToFSFilename (dirname);
+    tdirname = osToWideChar (dirname);
     RemoveDirectoryW (tdirname);
     free (tdirname);
   }
@@ -112,7 +112,7 @@ diropMkdir (const char *dirname)
 #if _args_mkdir == 1      // windows
   wchar_t   *tdirname = NULL;
 
-  tdirname = osToFSFilename (dirname);
+  tdirname = osToWideChar (dirname);
   rc = _wmkdir (tdirname);
   free (tdirname);
 #endif

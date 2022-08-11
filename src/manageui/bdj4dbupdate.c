@@ -48,7 +48,7 @@
 #include "log.h"
 #include "musicdb.h"
 #include "orgutil.h"
-#include "osutils.h"
+#include "ossignal.h"
 #include "pathbld.h"
 #include "pathutil.h"
 #include "progstate.h"

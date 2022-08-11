@@ -13,7 +13,7 @@
 #include "nlist.h"
 #include "log.h"
 #include "musicdb.h"
-#include "osutils.h"
+#include "osrandom.h"
 #include "queue.h"
 #include "rating.h"
 #include "song.h"
