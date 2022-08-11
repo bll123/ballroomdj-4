@@ -15,7 +15,7 @@ set datatopdir [lindex $argv 1]
 # install the orgopt.txt file.
 # this is always new
 
-foreach fn [list orgopt.txt] {
+foreach fn [list orgopt.txt autoselection.txt] {
   set nfn [file join $datatopdir data $fn]
 
   if { ! [file exists templates/$fn] } {
@@ -23,6 +23,8 @@ foreach fn [list orgopt.txt] {
   }
   file copy -force templates/$fn $nfn
 }
+
+# orgopt.txt
 
 # get the user's PATHFMT
 set ifh [open [file join $datatopdir data bdjconfig.txt] r]
@@ -58,6 +60,8 @@ if { $ok == 0 } {
 }
 
 # finished with orgopt.txt
+
+# ds-*
 
 # ds-* is a known good match
 set fnlist [glob -directory templates ds-*.txt]

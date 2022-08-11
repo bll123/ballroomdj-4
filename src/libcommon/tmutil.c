@@ -7,9 +7,13 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <locale.h>
 
 #include "tmutil.h"
 #include "bdjstring.h"
+
+static char radixchar [2] = { "." };
+static bool initialized = false;
 
 void
 mssleep (size_t mt)
@@ -233,10 +237,18 @@ tmutilToMSD (time_t ms, char *buff, size_t max)
 {
   time_t     m, s, d;
 
+  if (! initialized) {
+    struct lconv *lconv;
+
+    lconv = localeconv ();
+    strlcpy (radixchar, lconv->decimal_point, sizeof (radixchar));
+    initialized = true;
+  }
+
   m = ms / 1000 / 60;
   s = (ms - (m * 1000 * 60)) / 1000;
   d = (ms - (m * 1000 * 60) - (s * 1000));
-  snprintf (buff, max, "%zd:%02zd.%03zd", m, s, d);
+  snprintf (buff, max, "%zd:%02zd%s%03zd", m, s, radixchar, d);
   return buff;
 }
 
@@ -261,7 +273,7 @@ tmutilToDateHM (time_t ms, char *buff, size_t max)
   return buff;
 }
 
-/* handles H:M:S.d, M:S.d, M:S.d */
+/* handles H:M:S.d, M:S.d, H:M:S,d, M:S,d */
 long
 tmutilStrToMS (const char *str)
 {
@@ -269,16 +281,25 @@ tmutilStrToMS (const char *str)
   char    *tokstr;
   char    *p;
   double  dval = 0.0;
+  double  tval = 0.0;
   long    value;
+  int     count;
   double  mult = 1.0;
 
   tstr = strdup (str);
-  p = strtok_r (tstr, ":", &tokstr);
+  p = strtok_r (tstr, ":.,", &tokstr);
+  count = 0;
   while (p != NULL) {
-    dval *= mult;
-    dval += atof (p);
+    tval = atof (p);
+    if (count == 2) {
+      tval /= 1000.0;
+    } else {
+      dval *= mult;
+    }
+    dval += tval;
     mult = 60.0;
-    p = strtok_r (NULL, ":", &tokstr);
+    p = strtok_r (NULL, ":.,", &tokstr);
+    ++count;
   }
   dval *= 1000.0;
   value = (long) dval;

@@ -15,7 +15,7 @@
 
 #include "tmutil.h"
 #include "check_bdj.h"
-
+#include "sysvars.h"
 
 START_TEST(msleep_chk)
 {
@@ -145,15 +145,20 @@ END_TEST
 START_TEST(tmutiltomsd_chk)
 {
   char        buff [80];
+  char        tmp [80];
 
   tmutilToMSD (0, buff, sizeof (buff));
-  ck_assert_str_eq (buff, "0:00.000");
+  snprintf (tmp, sizeof (tmp), "0:00%s000", sysvarsGetStr (SV_LOCALE_RADIX));
+  ck_assert_str_eq (buff, tmp);
   tmutilToMSD (59001, buff, sizeof (buff));
-  ck_assert_str_eq (buff, "0:59.001");
+  snprintf (tmp, sizeof (tmp), "0:59%s001", sysvarsGetStr (SV_LOCALE_RADIX));
+  ck_assert_str_eq (buff, tmp);
   tmutilToMSD (60002, buff, sizeof (buff));
-  ck_assert_str_eq (buff, "1:00.002");
+  snprintf (tmp, sizeof (tmp), "1:00%s002", sysvarsGetStr (SV_LOCALE_RADIX));
+  ck_assert_str_eq (buff, tmp);
   tmutilToMSD (119003, buff, sizeof (buff));
-  ck_assert_str_eq (buff, "1:59.003");
+  snprintf (tmp, sizeof (tmp), "1:59%s003", sysvarsGetStr (SV_LOCALE_RADIX));
+  ck_assert_str_eq (buff, tmp);
 }
 END_TEST
 
@@ -178,8 +183,10 @@ START_TEST(tmutil_strtoms)
   ck_assert_int_eq (value, 120000);
   value = tmutilStrToMS ("1:59");
   ck_assert_int_eq (value, 119000);
-  value = tmutilStrToMS ("1:00.005");
-  ck_assert_int_eq (value, 60005);
+  value = tmutilStrToMS ("1:01.005");
+  ck_assert_int_eq (value, 61005);
+  value = tmutilStrToMS ("1:02,005");
+  ck_assert_int_eq (value, 62005);
 }
 END_TEST
 

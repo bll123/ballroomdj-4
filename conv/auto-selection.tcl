@@ -12,14 +12,17 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 1]
 
+# chances are very good that no changes were made to auto selection.
+# simply copy over the template file (z-new.tcl).
+# this code will be left here in case it is needed.
+
+exit 0
+
 set fn autosel.txt
 set infn [file join $bdj3dir $fn]
-if { ! [file exists $infn] } {
-  puts "   no auto selection file"
-  exit 1
-}
 
 set nfn [file join $datatopdir data autoselection.txt]
+
 set ifh [open $infn r]
 set ofh [open $nfn w]
 puts $ofh "# autoselection"
@@ -34,7 +37,12 @@ while { [gets $ifh line] >= 0 } {
   }
   if { $key eq "tagdistance" } { set key histdistance }
   puts $ofh $key
-  puts $ofh "..$value"
+  if { $key eq "histdistance" || $key eq "version" || $key eq "begincount" } {
+    puts $ofh "..$value"
+  } else {
+    set value [expr {int($value * 1000)}];
+    puts $ofh "..$value"
+  }
 }
 close $ifh
 close $ofh

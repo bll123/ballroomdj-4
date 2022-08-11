@@ -63,6 +63,7 @@ enum {
   /* a database entry is 2k */
   DATAFILE_MAX_SIZE = 16384,
 };
+#define DF_DOUBLE_MULT 1000.0
 
 parseinfo_t * parseInit (void);
 void          parseFree (parseinfo_t *);

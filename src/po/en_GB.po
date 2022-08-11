@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-08-05\n"
-"PO-Revision-Date: 2022-08-05\n"
+"POT-Creation-Date: 2022-08-11\n"
+"PO-Revision-Date: 2022-08-11\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -73,7 +73,7 @@ msgstr ""
 msgid "%s Set Up Alternate"
 msgstr ""
 
-#. CONTEXT: configuration: itunes rating in stars (0, 0.5, 1, 1.5, etc.)
+#. CONTEXT: configuration: itunes rating in stars (0.5, 1, 1.5, etc.)
 #, c-format
 msgid "%s Stars"
 msgstr ""

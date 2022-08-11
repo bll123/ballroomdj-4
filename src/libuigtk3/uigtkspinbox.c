@@ -30,7 +30,8 @@ typedef struct uispinbox {
 } uispinbox_t;
 
 static gint uiSpinboxTextInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
-static gint uiSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
+static gint uiSpinboxNumInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
+static gint uiSpinboxDoubleInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gint uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata);
 static gboolean uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata);
@@ -275,7 +276,7 @@ uiSpinboxIntCreate (UIWidget *uiwidget)
   gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
   gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
   g_signal_connect (spinbox, "input",
-      G_CALLBACK (uiSpinboxInput), NULL);
+      G_CALLBACK (uiSpinboxNumInput), NULL);
   uiwidget->widget = spinbox;
 }
 
@@ -291,6 +292,8 @@ uiSpinboxDoubleCreate (UIWidget *uiwidget)
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (spinbox), FALSE);
   gtk_widget_set_margin_top (spinbox, uiBaseMarginSz);
   gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
+  g_signal_connect (spinbox, "input",
+      G_CALLBACK (uiSpinboxDoubleInput), NULL);
   uiwidget->widget = spinbox;
 }
 
@@ -418,13 +421,25 @@ uiSpinboxTextInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
 
 /* gtk spinboxes are definitely bizarre */
 static gint
-uiSpinboxInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
+uiSpinboxNumInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
 {
   const char    *newtext;
 
   newtext = gtk_entry_get_text (GTK_ENTRY (sb));
   if (newtext != NULL && *newtext) {
-    *newval = atol (newtext);
+    *newval = (gdouble) atol (newtext);
+  }
+  return UICB_CONVERTED;
+}
+
+static gint
+uiSpinboxDoubleInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
+{
+  const char    *newtext;
+
+  newtext = gtk_entry_get_text (GTK_ENTRY (sb));
+  if (newtext != NULL && *newtext) {
+    *newval = atof (newtext);
   }
   return UICB_CONVERTED;
 }

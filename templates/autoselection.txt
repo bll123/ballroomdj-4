@@ -10,53 +10,58 @@ version
 #    1000.0 essentially turns the dance off
 #  < 1.0 increases the chance
 #
+# All double value are stored with a multiplier of 1000
+# to avoid localization issues.
+#   0.5 = 500
+#   1000.0 = 1000000
 #
-# if the dance has exceeded the expected count
+# if the dance has exceeded the expected count (1000.0)
 limit
-..1000.0
+..1000000
 #
-# if the dance is lower than the expected count
+# if the dance is lower than the expected count (0.5)
 low
-..0.5
+..500
 #
-# if the previous dance and the dance are both fast
+# if the previous dance and the dance are both fast (1000.0)
 bothfast
-..1000.0
+..1000000
 #
-# if the dance has a tag that matches the previous dance
+# if the dance has a tag that matches the previous dance (600.0)
 tagmatch
-..600.0
-# how many songs to search back in history
+..600000
+# how many songs to search back in history (3)
 histdistance
 ..3
-# tagmatch reduction multiplier (tagmatch*(tagadjust^distance))
+# tagmatch reduction multiplier (tagmatch*(tagadjust^distance)) (0.4)
 tagadjust
-..0.4
+..400
 #
-# if the dance's type matches the previous dance
+# if the dance's type matches the previous dance (600.0)
 typematch
-..600.0
+..600000
 #
 # same dance log function value
 # a higher number will reduce the chance of the same dance
 # higher numbers make the mix more regular/repetitive
 # a lower number will allow the same dance sooner
-# adjust by very small increments (0.05).
+# adjust by very small increments (0.05).  (1.95).
 logvalue
-..1.95
+..1950
 #
-# number of beginning dances
+# number of beginning dances (3)
 begincount
 ..3
-# if < begincount, then set the chance of a fast dance
+# if < begincount, then set the chance of a fast dance (1000.0)
 beginfast
-..1000.0
+..1000000
 #
 # song selection
 #
 # the weight of a rating and level.  These should add to 1.
 # the percentages here adjust which song (for the dance) is selected
+# (rating: 0.90, level: 0.10)
 ratingweight
-..0.90
+..900
 levelweight
-..0.10
+..100

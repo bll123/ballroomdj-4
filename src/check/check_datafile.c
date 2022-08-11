@@ -44,7 +44,7 @@ START_TEST(parse_simple)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_simple");
-  tstr = strdup ("# comment\n# version 2\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1.2\n");
+  tstr = strdup ("# comment\n# version 2\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   count = parseSimple (pi, tstr, &vers);
@@ -66,7 +66,7 @@ START_TEST(parse_simple)
   ck_assert_str_eq (strdata[10], "F");
   ck_assert_str_eq (strdata[11], "f");
   ck_assert_str_eq (strdata[12], "G");
-  ck_assert_str_eq (strdata[13], "1.2");
+  ck_assert_str_eq (strdata[13], "1200");
   parseFree (pi);
   free (tstr);
 }
@@ -81,7 +81,7 @@ START_TEST(parse_keyvalue)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_keyvalue");
-  tstr = strdup ("version\n..3\nA\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\nG\n..1.2\n");
+  tstr = strdup ("version\n..3\nA\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   count = parseKeyValue (pi, tstr);
@@ -104,7 +104,7 @@ START_TEST(parse_keyvalue)
   ck_assert_str_eq (strdata[12], "F");
   ck_assert_str_eq (strdata[13], "f");
   ck_assert_str_eq (strdata[14], "G");
-  ck_assert_str_eq (strdata[15], "1.2");
+  ck_assert_str_eq (strdata[15], "1200");
   parseFree (pi);
   free (tstr);
 }
@@ -118,7 +118,7 @@ START_TEST(parse_with_comments)
   char            **strdata = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_with_comments");
-  tstr = strdup ("# comment\nversion\n..4\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1.2\n");
+  tstr = strdup ("# comment\nversion\n..4\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   count = parseKeyValue (pi, tstr);
@@ -141,7 +141,7 @@ START_TEST(parse_with_comments)
   ck_assert_str_eq (strdata[12], "F");
   ck_assert_str_eq (strdata[13], "f");
   ck_assert_str_eq (strdata[14], "G");
-  ck_assert_str_eq (strdata[15], "1.2");
+  ck_assert_str_eq (strdata[15], "1200");
   parseFree (pi);
   free (tstr);
 }
@@ -161,7 +161,7 @@ START_TEST(datafile_simple)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_simple");
   fn = "tmp/dftesta.txt";
-  tstr = "# comment\n# version 5\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1.2\n";
+  tstr = "# comment\n# version 5\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -203,7 +203,7 @@ START_TEST(datafile_simple)
   value = slistIterateKey (list, &iteridx);
   ck_assert_str_eq (value, "G");
   value = slistIterateKey (list, &iteridx);
-  ck_assert_str_eq (value, "1.2");
+  ck_assert_str_eq (value, "1200");
   value = slistIterateKey (list, &iteridx);
   ck_assert_ptr_null (value);
   value = slistIterateKey (list, &iteridx);
@@ -248,7 +248,7 @@ START_TEST(datafile_keyval_dfkey)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_dfkey");
   fn = "tmp/dftestb.txt";
-  tstr = "version\n..6\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1.2\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "version\n..6\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -359,7 +359,7 @@ START_TEST(datafile_keyval_df_extra)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_df_extra");
   fn = "tmp/dftestb.txt";
-  tstr = "version\n..7\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1.2\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "version\n..7\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -823,7 +823,7 @@ START_TEST(datafile_keyval_savelist)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_savelist");
   fn = "tmp/dftestb.txt";
-  tstr = "version\n..11\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1.2\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "version\n..11\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -843,8 +843,8 @@ START_TEST(datafile_keyval_savelist)
       ck_assert_str_eq (value, tstr);
     }
     if (dfkeyskl [i].valuetype == VALUE_DOUBLE) {
-      snprintf (tmp, sizeof (tmp), "%.2f",
-          nlistGetDouble (list, dfkeyskl [i].itemkey));
+      snprintf (tmp, sizeof (tmp), "%.0f",
+          nlistGetDouble (list, dfkeyskl [i].itemkey) * DF_DOUBLE_MULT);
       ck_assert_str_eq (tmp, tstr);
     }
     if (dfkeyskl [i].valuetype == VALUE_NUM) {
@@ -903,7 +903,7 @@ START_TEST(datafile_keyval_savebuffer)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_savebuffer");
   fn = "tmp/dftestb.txt";
-  tstr = "version\n..12\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1.2\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "version\n..12\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -979,9 +979,9 @@ START_TEST(datafile_keyval_save)
   int             vers;
 
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_savebuffer");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_save");
   fn = "tmp/dftestb.txt";
-  tstr = "version\n..13\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1.2\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "version\n..13\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
@@ -1118,7 +1118,7 @@ START_TEST(datafile_simple_save)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_simple_save");
   fn = "tmp/dftesta.txt";
-  tstr = "# comment\n# version 15\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1.2\n";
+  tstr = "# comment\n# version 15\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);

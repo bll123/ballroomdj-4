@@ -16,6 +16,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "localeutil.h"
 #include "log.h"
 #include "osutils.h"
 #include "sysvars.h"
@@ -35,11 +36,6 @@ main (int argc, char *argv [])
     { NULL,         0,           NULL, 0 }
   };
 
-  setlocale (LC_ALL, "");
-  if (isWindows ()) {
-    osSetEnv ("LC_ALL", "en_US.UTF-8");
-  }
-
   while ((c = getopt_long_only (argc, argv, "s", coptions, &option_index)) != -1) {
     switch (c) {
       case 's': {
@@ -50,6 +46,8 @@ main (int argc, char *argv [])
   }
 
   sysvarsInit (argv [0]);
+  localeInit ();
+
   if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
     fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
     exit (1);

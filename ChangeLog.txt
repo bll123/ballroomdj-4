@@ -1,11 +1,16 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha 2022-08-??
+4.0.0 alpha 2022-08-?
+
+- localization fixes (ui).
+
+4.0.0 alpha 2022-08-11
 
 - song list editor: added mix function.
 - bdj4 updater: fix old mb tag issues if present.
 - configuration: added itunes configuration.
 - windows: fixed file handling issues (international characters).
+- various locale fixes.
 - windows: locale: get user's display language instead of system locale.
 - internationalization: fixed locale override (broken around Apr 20).
 

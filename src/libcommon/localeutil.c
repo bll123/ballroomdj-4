@@ -26,9 +26,11 @@ localeInit (void)
   char        lbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   bool        useutf8ext = false;
+  struct lconv *lconv;
 
 
   /* get the locale from the environment */
+  /* this will fail on windows with utf-8 code pages */
   setlocale (LC_ALL, "");
 
   /* these will be incorrect for windows */
@@ -66,7 +68,9 @@ localeInit (void)
 
   if (isWindows ()) {
     /* windows doesn't work without this */
-    osSetEnv ("LC_ALL", tbuff);
+    /* note that this is an msys2 extension */
+    /* windows normally has no LC_MESSAGES setting */
+    osSetEnv ("LC_MESSAGES", tbuff);
   }
 
   pathbldMakePath (lbuff, sizeof (lbuff), "", "", PATHBLD_MP_LOCALEDIR);
@@ -76,7 +80,10 @@ localeInit (void)
   bind_textdomain_codeset (GETTEXT_DOMAIN, "UTF-8");
 #endif
 
-  if (setlocale (LOC_LC_MESSAGES, tbuff) == NULL) {
+  lconv = localeconv ();
+  sysvarsSetStr (SV_LOCALE_RADIX, lconv->decimal_point);
+
+  if (setlocale (LC_MESSAGES, tbuff) == NULL) {
     fprintf (stderr, "set of locale failed; unknown locale %s\n", tbuff);
   }
 

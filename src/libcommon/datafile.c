@@ -496,7 +496,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
             if (strcmp (tvalstr, "") == 0) {
               dval = LIST_DOUBLE_INVALID;
             } else {
-              dval = atof (tvalstr);
+              dval = atof (tvalstr) / DF_DOUBLE_MULT;
             }
             logMsg (LOG_DBG, LOG_DATAFILE, "value: %.2f", dval);
           }
@@ -1003,7 +1003,7 @@ datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc,
   }
   if (vt == VALUE_DOUBLE) {
     if (conv->dval != LIST_DOUBLE_INVALID) {
-      snprintf (buff, sz, "%.2f", conv->dval);
+      snprintf (buff, sz, "%.0f", conv->dval * DF_DOUBLE_MULT);
     }
   }
   if (vt == VALUE_STR) {

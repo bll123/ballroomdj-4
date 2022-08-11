@@ -2,16 +2,16 @@ BDJ4 4.0.0
 
 Contents
   Release Information
+  Release Notes
   Installation
   Converting BallroomDJ 3
-  Release Notes
   Known Issues
   Feedback
   Licenses
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 20220730
+Alpha Release: 20220811
 
   Alpha releases are mostly untested works in progress.
 
@@ -22,6 +22,31 @@ Alpha Release: 20220730
   Do a re-install rather than an upgrade.
 
   Anything can and will change.
+
+Release Notes:
+  See the file ChangeLog.txt for a full list of changes.
+
+  Not yet implemented:
+    - Auto-Organization.
+    - Player: Request External (queue a song not in the database).
+    - iTunes:
+      - Database Update: Update from iTunes data.
+      - Song List Editor: Import from iTunes.
+    - Automatic/Sequenced Playlists: Same-song mark handling.
+    - Song List Editor:
+      - Batch editing.
+      - Export for BDJ/Import from BDJ.
+    - Music Manager:
+      - Mark as same song.
+      - Apply Adjustments (speed, song start, song end) to a song.
+      - Audio Identification.
+    - Player: History Display.
+    - Export a playlist as MP3 files.
+
+  This installation will not affect any BallroomDJ 3 installation.
+  (The features that rename audio files is not implemented yet).
+  (Writing audio file tags is turned off upon conversion, and the
+   'Write BDJ3 Compatible Audio Tags' is on).
 
 Installation:
   Windows:
@@ -70,24 +95,6 @@ Converting BallroomDJ 3:
       location, choose the new location for BallroomDJ 3.
     - Remove the new location of BallroomDJ 3 (e.g. BDJ3Temp).  Your
       original BallroomDJ installation is untouched and can still be used.
-
-Release Notes: 20220730
-  See the file ChangeLog.txt for a full list of changes.
-
-  This release represents a working player user interface,
-  the configuration user interface,
-  and a partly functional management interface:
-    - song list editor
-      (some features are not implemented)
-    - sequence editor
-    - playlist management
-    - music manager / song editor / bpm counter
-      (batch editing is not implemented)
-
-  This installation will not affect any BallroomDJ 3 installation.
-  (The features that rename audio files is not implemented yet).
-  (Writing audio file tags is turned off upon conversion, and the
-   'Write BDJ3 Compatible Audio Tags' is on).
 
 Known Issues:
   Windows
