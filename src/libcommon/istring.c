@@ -23,22 +23,23 @@
 int
 istringCompare (void *str1, void *str2)
 {
-  int       rc;
+  int       rc = 0;
 
 #if _lib_CompareStringEx
   int     trc;
-  int     len;
+  wchar_t *wlocale;
   wchar_t *wstr1;
   wchar_t *wstr2;
 
+  wlocale = osToWideChar (sysvarsGetStr (SV_LOCALE));
   wstr1 = osToWideChar (str1);
   wstr2 = osToWideChar (str2);
 
   trc = CompareStringEx (
-      sysvarsGetStr (SV_LOCALE),
+      wlocale,
+      NORM_LINGUISTIC_CASING,
       wstr1, -1,
       wstr2, -1,
-      NORM_LINGUISTIC_CASING
       NULL, NULL, 0);
   switch (trc) {
     case CSTR_EQUAL: {
@@ -56,6 +57,7 @@ istringCompare (void *str1, void *str2)
   }
   free (wstr1);
   free (wstr2);
+  free (wlocale);
 #else
   rc = strcoll ((char *) str1, (char *) str2);
 #endif

@@ -2,7 +2,7 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-08-?
 
-- localization fixes (ui).
+- localization fixes (ui, windows string sorting).
 
 4.0.0 alpha 2022-08-11
 

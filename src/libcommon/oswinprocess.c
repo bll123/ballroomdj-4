@@ -20,6 +20,8 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "osprocess.h"
+#include "osutils.h"
+#include "tmutil.h"
 
 
 pid_t

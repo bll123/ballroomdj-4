@@ -21,6 +21,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "oslocale.h"
+#include "osutils.h"
 
 /* windows setlocale() returns the old style long locale name */
 char *

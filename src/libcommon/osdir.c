@@ -24,6 +24,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "osdir.h"
+#include "osutils.h"
 
 dirhandle_t *
 osDirOpen (const char *dirname)

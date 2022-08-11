@@ -20,6 +20,7 @@
 #include "fileop.h"
 #include "dirop.h"
 #include "osdir.h"
+#include "osutils.h"
 
 #if _hdr_windows
 # include <windows.h>

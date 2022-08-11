@@ -99,7 +99,7 @@ volumeProcess (volaction_t action, char *sinkname,
     hr = defDevice->GetId (&defid);
     RETURN_ON_ERROR (hr)
 
-    sinklist->defname = osFromFSFilename (defid);
+    sinklist->defname = osFromWideChar (defid);
 
     for (UINT i = 0; i < count; ++i) {
       LPWSTR      devid = NULL;
@@ -126,7 +126,7 @@ volumeProcess (volaction_t action, char *sinkname,
       hr = pProps->GetValue (PKEY_Device_FriendlyName, &dispName);
       RETURN_ON_ERROR (hr)
 
-      sinklist->sinklist [i].name = osFromFSFilename (devid);
+      sinklist->sinklist [i].name = osFromWideChar (devid);
 
       if (strcmp (sinklist->defname, sinklist->sinklist [i].name) == 0) {
         sinklist->sinklist [i].defaultFlag = true;
@@ -136,7 +136,7 @@ volumeProcess (volaction_t action, char *sinkname,
         sinklist->defname = strdup (sinklist->sinklist [i].name);
       }
 
-      sinklist->sinklist [i].description = osFromFSFilename (dispName.pwszVal);
+      sinklist->sinklist [i].description = osFromWideChar (dispName.pwszVal);
 
       CoTaskMemFree (devid);
       devid = NULL;
@@ -155,7 +155,7 @@ SinkListExit:
     return 0;
   }
 
-  wdevnm = (wchar_t *) osToFSFilename (sinkname);
+  wdevnm = (wchar_t *) osToWideChar (sinkname);
   hr = pEnumerator->GetDevice (wdevnm, &volDevice);
   EXIT_ON_ERROR (hr)
   free (wdevnm);
