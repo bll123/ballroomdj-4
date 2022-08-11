@@ -16,6 +16,7 @@
 #include <check.h>
 
 #include "bdjstring.h"
+#include "istring.h"
 #include "check_bdj.h"
 #include "sysvars.h"
 

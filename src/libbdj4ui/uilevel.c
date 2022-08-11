@@ -13,6 +13,7 @@
 #include "bdj4intl.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
+#include "istring.h"
 #include "level.h"
 #include "ui.h"
 #include "uilevel.h"

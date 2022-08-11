@@ -7,10 +7,10 @@
 #include <assert.h>
 
 #include "bdjstring.h"
+#include "istring.h"
 #include "list.h"
 #include "log.h"
 #include "slist.h"
-#include "bdjstring.h"
 
 static void   slistSetKey (list_t *list, listkey_t *key, const char *keydata);
 static void   slistUpdateMaxKeyWidth (list_t *list, const char *keydata);

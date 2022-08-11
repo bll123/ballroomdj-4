@@ -11,6 +11,7 @@
 #include "bdjvarsdf.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "istring.h"
 #include "log.h"
 #include "ilist.h"
 #include "pathbld.h"

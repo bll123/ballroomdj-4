@@ -7,8 +7,6 @@ char *    stringToLower (char *s);
 char *    stringToUpper (char *s);
 void      stringTrim (char *s);
 void      stringTrimChar (char *s, unsigned char c);
-int       istringCompare (void *, void *);
-size_t    istrlen (const char *);
 int       versionCompare (const char *v1, const char *v2);
 
 #if ! _lib_strlcat

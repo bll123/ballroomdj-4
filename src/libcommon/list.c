@@ -6,9 +6,10 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdjstring.h"
+#include "istring.h"
 #include "list.h"
 #include "log.h"
-#include "bdjstring.h"
 #include "tmutil.h"
 
 static void     listFreeItem (list_t *, listidx_t);

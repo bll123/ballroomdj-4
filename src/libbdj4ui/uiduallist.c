@@ -14,6 +14,7 @@
 
 #include "bdj4intl.h"
 #include "bdjstring.h"
+#include "istring.h"
 #include "slist.h"
 #include "ui.h"
 #include "uiduallist.h"

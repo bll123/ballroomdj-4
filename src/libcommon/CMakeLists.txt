@@ -16,6 +16,7 @@ add_library (libbdj4common SHARED
   fileop.c
   fileutil.c
   ilist.c
+  istring.c
   list.c
   localeutil.c
   lock.c
