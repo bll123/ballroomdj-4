@@ -25,17 +25,20 @@ check_libcommon (bool skiplong)
   SRunner *sr;
 
   /* libcommon:
-   *  bdjstring   needs istringCompare
    *  osutils
    *  fileop      complete
+   *  bdjstring   needs istringCompare (test w/de_DE, sv_SE)
+   *  osprocess
    *  filedata    done
    *  osnetutils
    *  pathutil    done
    *  sysvars
    *  tmutil      done
-   *  pathbld     done
-   *  filemanip   need utf-8 filenames
+   *  osdir
+   *  dirop       complete
+   *  filemanip   need renameall test
    *  fileutil
+   *  pathbld     done
    *  log
    *  nlist       done
    *  ilist       done
@@ -50,11 +53,12 @@ check_libcommon (bool skiplong)
    *  procutil
    *  lock
    *  rafile
+   *  localeutil
+   *  osrandom
    *  queue
-   *  dirop       complete
    *  dirlist     needs utf-8 basic/recursive
    *  misc
-   *  localeutil
+   *  ossignal
    *  progstate
    */
 

@@ -26,8 +26,6 @@
 # include <windows.h>
 #endif
 
-#include "bdj4.h"
-#include "bdjstring.h"
 #include "fileop.h"
 #include "osutils.h"
 

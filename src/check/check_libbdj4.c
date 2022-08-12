@@ -25,6 +25,40 @@ check_libbdj4 (bool skiplong)
   SRunner *sr;
 
   /* libbdj4
+   *  bdjvarsdf
+   *  dnctypes
+   *  dance
+   *  genre
+   *  level
+   *  rating
+   *  songfav
+   *  status
+   *  songutil
+   *  tagdef
+   *  song
+   *  musicdb
+   *  songlist
+   *  autosel
+   *  songfilter
+   *  dancesel
+   *  sequence
+   *  songsel
+   *  playlist
+   *  sortopt
+   *  dispsel
+   *  orgutil
+   *  validate
+   *  webclient
+   *  audiotag
+   *  bdjvarsdfload
+   *  m3u
+   *  orgopt
+   *  bdj4init
+   *  templateutil
+   *  msgparse
+   *  songdb
+   *  volreg
+   *  musicq
    */
 
   fprintf (stdout, "=== libbdj4\n");
