@@ -63,8 +63,11 @@ check_libbdj4 (bool skiplong)
 
   fprintf (stdout, "=== libbdj4\n");
 
-  s = orgutil_suite();
+  s = dnctypes_suite();
   sr = srunner_create (s);
+
+  s = orgutil_suite();
+  srunner_add_suite (sr, s);
 
   s = validate_suite();
   srunner_add_suite (sr, s);

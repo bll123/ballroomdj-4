@@ -82,24 +82,8 @@ dnctypesConv (datafileconv_t *conv)
     num = slistGetIdx (dnctypes->dnctypes, conv->str);
     conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
-    slistidx_t  iteridx;
-    char        *val = NULL;
-    int         count;
-
     conv->valuetype = VALUE_STR;
-    slistStartIterator (dnctypes->dnctypes, &iteridx);
-    count = 0;
-    while ((val = slistIterateKey (dnctypes->dnctypes, &iteridx)) != NULL) {
-      if (count == 0) {
-        /* in case of a bad value */
-        sval = val;
-      }
-      if (count == conv->num) {
-        sval = val;
-        break;
-      }
-      ++count;
-    }
+    sval = slistGetKeyByIdx (dnctypes->dnctypes, conv->num);
     conv->str = sval;
   }
 }

@@ -56,7 +56,9 @@ main (int argc, char *argv [])
   logStart ("check_all", "ck", LOG_ALL);
 
   number_failed += check_libcommon (skiplong);
-  number_failed += check_libbdj4 (skiplong);
+  if (number_failed == 0) {
+    number_failed += check_libbdj4 (skiplong);
+  }
 
   logEnd ();
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;

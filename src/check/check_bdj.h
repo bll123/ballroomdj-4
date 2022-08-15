@@ -35,6 +35,7 @@ Suite *     sock_suite (void);
 Suite *     tmutil_suite (void);
 
 /* libbdj4 */
+Suite *     dnctypes_suite (void);
 Suite *     orgutil_suite (void);
 Suite *     validate_suite (void);
 
