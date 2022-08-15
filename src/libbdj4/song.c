@@ -50,7 +50,7 @@ static datafilekey_t songdfkeys [] = {
   { "DISC",                 TAG_DISCNUMBER,           VALUE_NUM, NULL, -1 },
   { "DISCTOTAL",            TAG_DISCTOTAL,            VALUE_NUM, NULL, -1 },
   { "DURATION",             TAG_DURATION,             VALUE_NUM, NULL, -1 },
-  { "FAVORITE",             TAG_FAVORITE,             VALUE_NUM, songConvFavorite, -1 },
+  { "FAVORITE",             TAG_FAVORITE,             VALUE_NUM, songFavoriteConv, -1 },
   { "FILE",                 TAG_FILE,                 VALUE_STR, NULL, -1 },
   { "GENRE",                TAG_GENRE,                VALUE_NUM, genreConv, -1 },
   { "KEYWORD",              TAG_KEYWORD,              VALUE_STR, NULL, -1 },

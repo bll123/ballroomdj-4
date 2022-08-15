@@ -442,7 +442,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     "Favorite",                   /* itunes name          */
     ET_SPINBOX_TEXT,              /* edit type            */
     VALUE_NUM,                    /* value type           */
-    songConvFavorite,             /* conv func            */
+    songFavoriteConv,             /* conv func            */
     DISP_NO,                      /* audio id disp        */
     1,                            /* listing display      */
     0,                            /* ellipsize            */

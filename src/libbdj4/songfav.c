@@ -31,37 +31,46 @@ static songfavoriteinfo_t songfavoriteinfo [SONG_FAVORITE_MAX] = {
   { SONG_FAVORITE_BROKEN_HEART, "\xF0\x9F\x92\x94", "#6d2828", NULL },
 };
 
+static bool initialized = false;
+
 void
 songFavoriteInit (void)
 {
   char  *col;
   char  tbuff [100];
 
-  for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
-    if (i == 0) {
-      col = "#ffffff";
-    } else {
-      col = songfavoriteinfo [i].color;
+  if (! initialized) {
+    for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
+      if (i == 0) {
+        col = "#ffffff";
+      } else {
+        col = songfavoriteinfo [i].color;
+      }
+      snprintf (tbuff, sizeof (tbuff), "<span color=\"%s\">%s</span>",
+          col, songfavoriteinfo [i].dispStr);
+      songfavoriteinfo [i].spanStr = strdup (tbuff);
     }
-    snprintf (tbuff, sizeof (tbuff), "<span color=\"%s\">%s</span>",
-        col, songfavoriteinfo [i].dispStr);
-    songfavoriteinfo [i].spanStr = strdup (tbuff);
+
+    initialized = true;
   }
 }
 
 void
 songFavoriteCleanup (void)
 {
-  for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
-    if (songfavoriteinfo [i].spanStr != NULL) {
-      free (songfavoriteinfo [i].spanStr);
-      songfavoriteinfo [i].spanStr = NULL;
+  if (initialized) {
+    for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
+      if (songfavoriteinfo [i].spanStr != NULL) {
+        free (songfavoriteinfo [i].spanStr);
+        songfavoriteinfo [i].spanStr = NULL;
+      }
     }
+    initialized = false;
   }
 }
 
 void
-songConvFavorite (datafileconv_t *conv)
+songFavoriteConv (datafileconv_t *conv)
 {
   nlistidx_t       idx;
 

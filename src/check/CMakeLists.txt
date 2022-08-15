@@ -33,6 +33,7 @@ add_executable (check_all
   check_level.c
   check_orgutil.c
   check_rating.c
+  check_songfav.c
   check_status.c
   check_validate.c
 )

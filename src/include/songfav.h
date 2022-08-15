@@ -25,7 +25,7 @@ typedef struct songfavoriteinfo {
 
 void songFavoriteInit (void);
 void songFavoriteCleanup (void);
-void songConvFavorite (datafileconv_t *conv);
+void songFavoriteConv (datafileconv_t *conv);
 songfavoriteinfo_t  * songFavoriteGet (int value);
 
 #endif /* INC_SONGFAV_H */
