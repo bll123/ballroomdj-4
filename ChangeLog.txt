@@ -1,5 +1,10 @@
 BallroomDJ 4 Change Log
 
+4.0.0 alpha 2022-08-??
+
+- various tests added
+- fixed an infrastructure bug (list cache 2022-8-15).
+
 4.0.0 alpha 2022-08-12
 
 - user interface: fix direct entry of floating point values.

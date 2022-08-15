@@ -17,6 +17,7 @@ typedef enum {
   DANCE_KEY_MAX,
 } dancekey_t;
 
+/* keep ordering (same as datafile table) */
 typedef enum {
   DANCE_SPEED_FAST,
   DANCE_SPEED_NORMAL,
@@ -24,6 +25,7 @@ typedef enum {
   DANCE_SPEED_MAX,
 } dancespeed_t;
 
+/* keep ordering (same as datafile table) */
 typedef enum {
   DANCE_TIMESIG_24,
   DANCE_TIMESIG_34,

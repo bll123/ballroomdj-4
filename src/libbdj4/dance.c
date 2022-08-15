@@ -41,23 +41,16 @@ static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
 };
 
 static datafilekey_t dancespeeddfkeys [DANCE_SPEED_MAX] = {
-  [DANCE_SPEED_FAST] =
-      { "fast",       DANCE_SPEED_FAST,   VALUE_NUM, NULL, -1 },
-  [DANCE_SPEED_NORMAL] =
-      { "normal",     DANCE_SPEED_NORMAL, VALUE_NUM, NULL, -1 },
-  [DANCE_SPEED_SLOW] =
-      { "slow",       DANCE_SPEED_SLOW,   VALUE_NUM, NULL, -1 },
+  { "fast",       DANCE_SPEED_FAST,   VALUE_NUM, NULL, -1 },
+  { "normal",     DANCE_SPEED_NORMAL, VALUE_NUM, NULL, -1 },
+  { "slow",       DANCE_SPEED_SLOW,   VALUE_NUM, NULL, -1 },
 };
 
 static datafilekey_t dancetimesigdfkeys [DANCE_TIMESIG_MAX] = {
-  [DANCE_TIMESIG_24] =
-      { "2/4",       DANCE_TIMESIG_24,   VALUE_NUM, NULL, -1 },
-  [DANCE_TIMESIG_34] =
-      { "3/4",       DANCE_TIMESIG_34,   VALUE_NUM, NULL, -1 },
-  [DANCE_TIMESIG_44] =
-      { "4/4",       DANCE_TIMESIG_44,   VALUE_NUM, NULL, -1 },
-  [DANCE_TIMESIG_48] =
-      { "4/8",       DANCE_TIMESIG_48,   VALUE_NUM, NULL, -1 },
+  { "2/4",       DANCE_TIMESIG_24,   VALUE_NUM, NULL, -1 },
+  { "3/4",       DANCE_TIMESIG_34,   VALUE_NUM, NULL, -1 },
+  { "4/4",       DANCE_TIMESIG_44,   VALUE_NUM, NULL, -1 },
+  { "4/8",       DANCE_TIMESIG_48,   VALUE_NUM, NULL, -1 },
 };
 
 dance_t *
