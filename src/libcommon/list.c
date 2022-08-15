@@ -459,7 +459,7 @@ listSet (list_t *list, listitem_t *item)
   if (list->locCache >= 0L) {
     if ((list->keytype == LIST_KEY_STR &&
          item->key.strkey != NULL &&
-         item->keyCache.strkey != NULL &&
+         list->keyCache.strkey != NULL &&
          strcmp (item->key.strkey, list->keyCache.strkey) == 0) ||
         (list->keytype == LIST_KEY_NUM &&
          item->key.idx == list->keyCache.idx)) {
