@@ -83,7 +83,11 @@ dnctypesConv (datafileconv_t *conv)
     conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    sval = slistGetKeyByIdx (dnctypes->dnctypes, conv->num);
+    if (conv->num == LIST_VALUE_INVALID) {
+      sval = NULL;
+    } else {
+      sval = slistGetKeyByIdx (dnctypes->dnctypes, conv->num);
+    }
     conv->str = sval;
   }
 }

@@ -21,6 +21,7 @@
 typedef struct level {
   datafile_t  *df;
   ilist_t     *level;
+  slist_t     *levelList;
   int         maxWidth;
   char        *path;
   char        *defaultName;
@@ -54,11 +55,14 @@ levelAlloc ()
 
   level->path = strdup (fname);
   level->df = datafileAllocParse ("level", DFTYPE_INDIRECT, fname,
-      leveldfkeys, LEVEL_KEY_MAX, LEVEL_LEVEL);
+      leveldfkeys, LEVEL_KEY_MAX, DATAFILE_NO_LOOKUP);
   level->level = datafileGetList (level->df);
   ilistDumpInfo (level->level);
 
   level->maxWidth = 0;
+  level->levelList = slistAlloc ("level-disp", LIST_UNORDERED, NULL);
+  slistSetSize (level->levelList, slistGetCount (level->level));
+
   ilistStartIterator (level->level, &iteridx);
   while ((key = ilistIterateKey (level->level, &iteridx)) >= 0) {
     char    *val;
@@ -66,6 +70,7 @@ levelAlloc ()
     int     len;
 
     val = ilistGetStr (level->level, key, LEVEL_LEVEL);
+    slistSetNum (level->levelList, val, key);
     len = istrlen (val);
     if (len > level->maxWidth) {
       level->maxWidth = len;
@@ -76,6 +81,8 @@ levelAlloc ()
       level->defaultKey = nval;
     }
   }
+
+  slistSort (level->levelList);
 
   return level;
 }
@@ -92,6 +99,9 @@ levelFree (level_t *level)
     }
     if (level->defaultName != NULL) {
       free (level->defaultName);
+    }
+    if (level->levelList != NULL) {
+      slistFree (level->levelList);
     }
     free (level);
   }
@@ -167,7 +177,6 @@ void
 levelConv (datafileconv_t *conv)
 {
   level_t     *level;
-  slist_t     *lookup;
   ssize_t     num;
 
   level = bdjvarsdfGet (BDJVDF_LEVELS);
@@ -176,8 +185,7 @@ levelConv (datafileconv_t *conv)
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
-    lookup = datafileGetLookup (level->df);
-    num = slistGetNum (lookup, conv->str);
+    num = slistGetNum (level->levelList, conv->str);
     conv->num = num;
     if (conv->num == LIST_VALUE_INVALID) {
       /* unknown levels are dumped into bucket 1 */

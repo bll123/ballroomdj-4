@@ -4,7 +4,7 @@ include (../utils/bdj4macros.cmake)
 
 add_executable (check_all
   check_all.c
-  check_dnctypes.c
+  # libcommon
   check_libcommon.c
   check_libbdj4.c
   check_bdjmsg.c
@@ -17,7 +17,6 @@ add_executable (check_all
   check_fileop.c
   check_ilist.c
   check_lock.c
-  check_orgutil.c
   check_nlist.c
   check_pathbld.c
   check_pathutil.c
@@ -27,6 +26,12 @@ add_executable (check_all
   check_slist.c
   check_sock.c
   check_tmutil.c
+  # libbdj4
+  check_dnctypes.c
+  check_genre.c
+  check_level.c
+  check_orgutil.c
+  check_rating.c
   check_validate.c
 )
 target_link_libraries (check_all

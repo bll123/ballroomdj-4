@@ -26,11 +26,11 @@ check_libbdj4 (bool skiplong)
 
   /* libbdj4
    *  bdjvarsdf
-   *  dnctypes
+   *  dnctypes      complete
    *  dance
-   *  genre
-   *  level
-   *  rating
+   *  genre         complete
+   *  level         complete
+   *  rating        complete
    *  songfav
    *  status
    *  songutil
@@ -65,6 +65,15 @@ check_libbdj4 (bool skiplong)
 
   s = dnctypes_suite();
   sr = srunner_create (s);
+
+  s = genre_suite();
+  srunner_add_suite (sr, s);
+
+  s = rating_suite();
+  srunner_add_suite (sr, s);
+
+  s = level_suite();
+  srunner_add_suite (sr, s);
 
   s = orgutil_suite();
   srunner_add_suite (sr, s);

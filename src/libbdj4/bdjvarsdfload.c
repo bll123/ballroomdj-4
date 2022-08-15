@@ -43,6 +43,7 @@ bdjvarsdfloadInit (void)
   /* the database load depends on genres */
   bdjvarsdfSet (BDJVDF_GENRES, genreAlloc ());
 
+  /* auto selection numbers are used by dancesel.c and autosel.c */
   bdjvarsdfSet (BDJVDF_AUTO_SEL, autoselAlloc ());
 
   rc = 0;

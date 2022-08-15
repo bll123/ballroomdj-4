@@ -54,12 +54,14 @@ genreAlloc (void)
   genre->genreList = NULL;
 
   genre->df = datafileAllocParse ("genre", DFTYPE_INDIRECT, fname,
-      genredfkeys, GENRE_KEY_MAX, GENRE_GENRE);
+      genredfkeys, GENRE_KEY_MAX, DATAFILE_NO_LOOKUP);
   genre->genre = datafileGetList (genre->df);
   ilistDumpInfo (genre->genre);
 
   dflist = datafileGetList (genre->df);
   genre->genreList = slistAlloc ("genre-disp", LIST_UNORDERED, NULL);
+  slistSetSize (genre->genreList, slistGetCount (genre->genre));
+
   ilistStartIterator (dflist, &iteridx);
   while ((gkey = ilistIterateKey (dflist, &iteridx)) >= 0) {
     slistSetNum (genre->genreList,
@@ -115,7 +117,6 @@ void
 genreConv (datafileconv_t *conv)
 {
   genre_t     *genre;
-  slist_t     *lookup;
   ssize_t     num;
 
   genre = bdjvarsdfGet (BDJVDF_GENRES);
@@ -123,8 +124,7 @@ genreConv (datafileconv_t *conv)
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
-    lookup = datafileGetLookup (genre->df);
-    num = slistGetNum (lookup, conv->str);
+    num = slistGetNum (genre->genreList, conv->str);
     conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
