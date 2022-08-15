@@ -21,6 +21,7 @@
 typedef struct status {
   datafile_t  *df;
   ilist_t     *status;
+  slist_t     *statusList;
   int         maxWidth;
   char        *path;
 } status_t;
@@ -52,23 +53,28 @@ statusAlloc (void)
 
   status->path = strdup (fname);
   status->df = datafileAllocParse ("status", DFTYPE_INDIRECT, fname,
-      statusdfkeys, STATUS_KEY_MAX, STATUS_STATUS);
+      statusdfkeys, STATUS_KEY_MAX, DATAFILE_NO_LOOKUP);
   status->status = datafileGetList (status->df);
   ilistDumpInfo (status->status);
 
   status->maxWidth = 0;
+  status->statusList = slistAlloc ("status-disp", LIST_UNORDERED, NULL);
+  slistSetSize (status->statusList, slistGetCount (status->status));
+
   ilistStartIterator (status->status, &iteridx);
   while ((key = ilistIterateKey (status->status, &iteridx)) >= 0) {
     char    *val;
     int     len;
 
     val = ilistGetStr (status->status, key, STATUS_STATUS);
+    slistSetNum (status->statusList, val, key);
     len = istrlen (val);
     if (len > status->maxWidth) {
       status->maxWidth = len;
     }
   }
 
+  slistSort (status->statusList);
   return status;
 }
 
@@ -126,7 +132,6 @@ void
 statusConv (datafileconv_t *conv)
 {
   status_t      *status;
-  slist_t       *lookup;
   ssize_t       num;
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
@@ -140,8 +145,7 @@ statusConv (datafileconv_t *conv)
       return;
     }
 
-    lookup = datafileGetLookup (status->df);
-    num = slistGetNum (lookup, conv->str);
+    num = slistGetNum (status->statusList, conv->str);
     conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;

@@ -32,6 +32,7 @@ add_executable (check_all
   check_level.c
   check_orgutil.c
   check_rating.c
+  check_status.c
   check_validate.c
 )
 target_link_libraries (check_all

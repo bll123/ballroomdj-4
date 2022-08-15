@@ -75,6 +75,9 @@ check_libbdj4 (bool skiplong)
   s = level_suite();
   srunner_add_suite (sr, s);
 
+  s = status_suite();
+  srunner_add_suite (sr, s);
+
   s = orgutil_suite();
   srunner_add_suite (sr, s);
 
