@@ -54,7 +54,7 @@ genreAlloc (void)
   genre->genreList = NULL;
 
   genre->df = datafileAllocParse ("genre", DFTYPE_INDIRECT, fname,
-      genredfkeys, GENRE_KEY_MAX, DATAFILE_NO_LOOKUP);
+      genredfkeys, GENRE_KEY_MAX);
   genre->genre = datafileGetList (genre->df);
   ilistDumpInfo (genre->genre);
 

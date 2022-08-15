@@ -164,14 +164,13 @@ bdjoptInit (void)
 
   df = datafileAllocParse (bdjopt->tag [OPTTYPE_GLOBAL], DFTYPE_KEY_VAL,
       bdjopt->fname [OPTTYPE_GLOBAL], bdjopt->dfkeys [OPTTYPE_GLOBAL],
-      bdjopt->dfcount [OPTTYPE_GLOBAL], DATAFILE_NO_LOOKUP);
+      bdjopt->dfcount [OPTTYPE_GLOBAL]);
 
   for (int i = 1; i < OPTTYPE_MAX; ++i) {
     ddata = datafileLoad (df, DFTYPE_KEY_VAL, bdjopt->fname [i]);
     tlist = datafileGetList (df);
     datafileParseMerge (tlist, ddata, bdjopt->tag [i], DFTYPE_KEY_VAL,
-        bdjopt->dfkeys [i], bdjopt->dfcount [i],
-        DATAFILE_NO_LOOKUP, NULL);
+        bdjopt->dfkeys [i], bdjopt->dfcount [i]);
     datafileSetData (df, tlist);
     free (ddata);
   }
@@ -334,7 +333,7 @@ bdjoptGetProfileName (void)
       BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   df = datafileAllocParse (bdjopt->tag [OPTTYPE_PROFILE], DFTYPE_KEY_VAL,
       tbuff, bdjopt->dfkeys [OPTTYPE_PROFILE],
-      bdjopt->dfcount [OPTTYPE_PROFILE], DATAFILE_NO_LOOKUP);
+      bdjopt->dfcount [OPTTYPE_PROFILE]);
   dflist = datafileGetList (df);
   pname = strdup (nlistGetStr (dflist, OPT_P_PROFILENAME));
   datafileFree (df);

@@ -18,10 +18,13 @@
 #include "datafile.h"
 #include "dnctypes.h"
 #include "slist.h"
+#include "templateutil.h"
 
 START_TEST(dnctypes_alloc)
 {
   dnctype_t *dt = NULL;
+
+  templateFileCopy ("dancetypes.txt", "dancetypes.txt");
 
   dt = dnctypesAlloc ();
   ck_assert_ptr_nonnull (dt);

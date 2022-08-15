@@ -19,11 +19,14 @@
 #include "genre.h"
 #include "ilist.h"
 #include "slist.h"
+#include "templateutil.h"
 
 START_TEST(genre_alloc)
 {
   genre_t   *genre = NULL;
   slist_t   *gl = NULL;
+
+  templateFileCopy ("genres.txt", "genres.txt");
 
   genre = genreAlloc ();
   ck_assert_ptr_nonnull (genre);
@@ -143,6 +146,8 @@ START_TEST(genre_save)
 
   gl = genreGetList (genre);
 
+  ck_assert_int_eq (ilistGetCount (tlist), slistGetCount (gl));
+
   genreStartIterator (genre, &giteridx);
   ilistStartIterator (tlist, &iiteridx);
   while ((key = genreIterate (genre, &giteridx)) >= 0) {
@@ -158,6 +163,7 @@ START_TEST(genre_save)
     ck_assert_int_eq (cf, tcf);
   }
 
+  ilistFree (tlist);
   genreFree (genre);
   bdjvarsdfloadCleanup ();
 }

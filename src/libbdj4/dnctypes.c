@@ -37,7 +37,7 @@ dnctypesAlloc (void)
   assert (dnctypes != NULL);
 
   dnctypes->df = datafileAllocParse ("dance-types", DFTYPE_LIST, fname,
-      NULL, 0, DATAFILE_NO_LOOKUP);
+      NULL, 0);
   dnctypes->dnctypes = datafileGetList (dnctypes->df);
   listSort (dnctypes->dnctypes);
   listDumpInfo (dnctypes->dnctypes);
@@ -75,11 +75,16 @@ dnctypesConv (datafileconv_t *conv)
   char            *sval = NULL;
 
   dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
+  assert (dnctypes != NULL);
 
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
-    num = slistGetIdx (dnctypes->dnctypes, conv->str);
+    if (conv->str == NULL) {
+      num = LIST_VALUE_INVALID;
+    } else {
+      num = slistGetIdx (dnctypes->dnctypes, conv->str);
+    }
     conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;

@@ -205,7 +205,7 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff),
       "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   confui.filterDisplayDf = datafileAllocParse ("cu-filter",
-      DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX, DATAFILE_NO_LOOKUP);
+      DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX);
   confui.gui.filterDisplaySel = datafileGetList (confui.filterDisplayDf);
   llist = nlistAlloc ("cu-filter-out", LIST_ORDERED, free);
   nlistStartIterator (confui.gui.filterDisplaySel, &iteridx);
@@ -222,7 +222,7 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff),
       "configui", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   confui.optiondf = datafileAllocParse ("configui-opt", DFTYPE_KEY_VAL, tbuff,
-      configuidfkeys, CONFUI_KEY_MAX, DATAFILE_NO_LOOKUP);
+      configuidfkeys, CONFUI_KEY_MAX);
   confui.options = datafileGetList (confui.optiondf);
   if (confui.options == NULL) {
     confui.options = nlistAlloc ("configui-opt", LIST_ORDERED, free);

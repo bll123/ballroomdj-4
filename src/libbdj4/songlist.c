@@ -61,7 +61,7 @@ songlistLoad (const char *fname)
     return NULL;
   }
   sl->df = datafileAllocParse ("songlist", DFTYPE_INDIRECT, sl->path,
-      songlistdfkeys, SONGLIST_KEY_MAX, DATAFILE_NO_LOOKUP);
+      songlistdfkeys, SONGLIST_KEY_MAX);
   if (sl->df == NULL) {
     songlistFree (sl);
     return NULL;

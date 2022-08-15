@@ -55,7 +55,7 @@ levelAlloc ()
 
   level->path = strdup (fname);
   level->df = datafileAllocParse ("level", DFTYPE_INDIRECT, fname,
-      leveldfkeys, LEVEL_KEY_MAX, DATAFILE_NO_LOOKUP);
+      leveldfkeys, LEVEL_KEY_MAX);
   level->level = datafileGetList (level->df);
   ilistDumpInfo (level->level);
 

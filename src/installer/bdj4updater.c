@@ -154,7 +154,7 @@ main (int argc, char *argv [])
   pathbldMakePath (tbuff, sizeof (tbuff),
       "updater", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
   df = datafileAllocParse ("updater", DFTYPE_KEY_VAL, tbuff,
-      upddfkeys, UPD_DF_COUNT, DATAFILE_NO_LOOKUP);
+      upddfkeys, UPD_DF_COUNT);
   updlist = datafileGetList (df);
 
   tval = nlistGetStr (updlist, UPD_FIRST_VERS);

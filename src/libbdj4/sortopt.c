@@ -48,8 +48,7 @@ sortoptAlloc (void)
   sortopt = malloc (sizeof (sortopt_t));
   assert (sortopt != NULL);
 
-  sortopt->df = datafileAllocParse ("sortopt", DFTYPE_LIST, fname, NULL, 0,
-      DATAFILE_NO_LOOKUP);
+  sortopt->df = datafileAllocParse ("sortopt", DFTYPE_LIST, fname, NULL, 0);
   dflist = datafileGetList (sortopt->df);
 
   list = slistAlloc ("sortopt-disp", LIST_UNORDERED, free);

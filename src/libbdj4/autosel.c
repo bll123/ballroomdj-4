@@ -51,7 +51,7 @@ autoselAlloc (void)
   assert (autosel != NULL);
 
   autosel->df = datafileAllocParse ("autosel", DFTYPE_KEY_VAL, fname,
-      autoseldfkeys, AUTOSEL_KEY_MAX, DATAFILE_NO_LOOKUP);
+      autoseldfkeys, AUTOSEL_KEY_MAX);
   autosel->autosel = datafileGetList (autosel->df);
   return autosel;
 }

@@ -57,6 +57,7 @@ listFree (void *tlist)
   list_t *list = (list_t *) tlist;
 
   if (list != NULL) {
+    logMsg (LOG_DBG, LOG_LIST, "free list %s", list->name);
     if (list->readCacheHits > 0 || list->writeCacheHits > 0) {
       logMsg (LOG_DBG, LOG_LIST,
           "list %s: cache read:%ld write:%ld",
@@ -218,6 +219,14 @@ listDeleteByIdx (list_t *list, listidx_t idx)
   copycount = list->count - idx - 1;
   listFreeItem (list, idx);
   list->count -= 1;
+
+  if (list->keytype == LIST_KEY_STR &&
+      list->keyCache.strkey != NULL) {
+    free (list->keyCache.strkey);
+    list->keyCache.strkey = NULL;
+  }
+  list->locCache = LIST_LOC_INVALID;
+
   if (copycount > 0) {
     for (listidx_t i = idx; i < list->count; ++i) {
        memcpy (list->data + i, list->data + i + 1, sizeof (listitem_t));
@@ -420,8 +429,8 @@ listGetIdx (list_t *list, listkeylookup_t *key)
       list->keyCache.strkey != NULL) {
     free (list->keyCache.strkey);
     list->keyCache.strkey = NULL;
-    list->locCache = LIST_LOC_INVALID;
   }
+  list->locCache = LIST_LOC_INVALID;
 
   if (ridx >= 0) {
     if (list->keytype == LIST_KEY_STR) {

@@ -22,7 +22,7 @@ START_TEST(simple_list_create_free)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_create_free");
 
-  list = slistAlloc ("chk", LIST_UNORDERED, NULL);
+  list = slistAlloc ("chk-a", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->count, 0);
   ck_assert_int_eq (list->allocCount, 0);
@@ -39,7 +39,7 @@ START_TEST(simple_list_add_unordered)
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_unordered");
 
 
-  list = slistAlloc ("chk", LIST_UNORDERED, NULL);
+  list = slistAlloc ("chk-b", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->ordered, LIST_UNORDERED);
   slistSetStr (list, "ffff", NULL);
@@ -70,7 +70,7 @@ START_TEST(simple_list_add_unordered_iterate)
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_unordered_iterate");
 
 
-  list = slistAlloc ("chk", LIST_UNORDERED, NULL);
+  list = slistAlloc ("chk-c", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   slistSetStr (list, "ffff", NULL);
   slistSetStr (list, "zzzz", NULL);
@@ -111,7 +111,7 @@ START_TEST(simple_list_add_ordered_iterate)
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_ordered_iterate");
 
 
-  list = slistAlloc ("chk", LIST_ORDERED, NULL);
+  list = slistAlloc ("chk-d", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->ordered, LIST_ORDERED);
   slistSetStr (list, "ffff", NULL);
@@ -149,7 +149,7 @@ START_TEST(simple_list_add_ordered_beg)
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_ordered_beg");
 
 
-  list = slistAlloc ("chk", LIST_ORDERED, NULL);
+  list = slistAlloc ("chk-e", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   slistSetStr (list, "cccc", NULL);
   ck_assert_int_eq (list->count, 1);
@@ -178,7 +178,7 @@ START_TEST(simple_list_add_ordered_end)
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_ordered_end");
 
 
-  list = slistAlloc ("chk", LIST_ORDERED, NULL);
+  list = slistAlloc ("chk-f", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   slistSetStr (list, "aaaa", NULL);
   ck_assert_int_eq (list->count, 1);
@@ -207,7 +207,7 @@ START_TEST(simple_list_add_ordered_prealloc)
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_ordered_prealloc");
 
 
-  list = slistAlloc ("chk", LIST_ORDERED, NULL);
+  list = slistAlloc ("chk-g", LIST_ORDERED, NULL);
   listSetSize (list, 7);
   ck_assert_ptr_nonnull (list);
   ck_assert_int_eq (list->count, 0);
@@ -249,7 +249,7 @@ START_TEST(simple_list_add_sort)
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_sort");
 
 
-  list = slistAlloc ("chk", LIST_UNORDERED, NULL);
+  list = slistAlloc ("chk-h", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   slistSetStr (list, "ffff", NULL);
   slistSetStr (list, "zzzz", NULL);
@@ -305,7 +305,7 @@ START_TEST(slist_get_data_str)
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== slist_get_data_str");
 
 
-  list = slistAlloc ("chk", LIST_UNORDERED, NULL);
+  list = slistAlloc ("chk-i", LIST_UNORDERED, NULL);
   listSetSize (list, 7);
   ck_assert_int_eq (list->count, 0);
   ck_assert_int_eq (list->allocCount, 7);
@@ -336,7 +336,7 @@ START_TEST(slist_add_str_iterate)
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== slist_add_str_iterate");
 
 
-  list = slistAlloc ("chk", LIST_ORDERED, NULL);
+  list = slistAlloc ("chk-j", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   slistSetStr (list, "ffff", "555");
   slistSetStr (list, "cccc", "222");
@@ -389,7 +389,7 @@ START_TEST(slist_add_sort_str)
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== slist_add_sort_str");
 
 
-  list = slistAlloc ("chk", LIST_UNORDERED, NULL);
+  list = slistAlloc ("chk-k", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   slistSetNum (list, "ffff", 0L);
   slistSetNum (list, "zzzz", 1L);
@@ -438,7 +438,7 @@ START_TEST(slist_replace_str)
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== slist_replace_str");
 
 
-  list = slistAlloc ("chk", LIST_ORDERED, NULL);
+  list = slistAlloc ("chk-l", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
 
   slistSetStr (list, "aaaa", "000");
@@ -537,7 +537,7 @@ START_TEST(slist_free_str)
   logMsg (LOG_DBG, LOG_IMPORTANT, "==== slist_free_str");
 
 
-  list = slistAlloc ("chk", LIST_UNORDERED, free);
+  list = slistAlloc ("chk-m", LIST_UNORDERED, free);
   ck_assert_ptr_nonnull (list);
   slistSetStr (list, "ffff", "0L");
   slistSetStr (list, "zzzz", "1L");

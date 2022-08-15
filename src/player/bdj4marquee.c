@@ -190,7 +190,7 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff),
       "marquee", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   marquee.optiondf = datafileAllocParse ("marquee-opt", DFTYPE_KEY_VAL, tbuff,
-      mqdfkeys, MQ_KEY_MAX, DATAFILE_NO_LOOKUP);
+      mqdfkeys, MQ_KEY_MAX);
   marquee.options = datafileGetList (marquee.optiondf);
   if (marquee.options == NULL) {
     marquee.options = nlistAlloc ("marquee-opt", LIST_ORDERED, free);

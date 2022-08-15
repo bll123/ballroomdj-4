@@ -353,6 +353,51 @@ START_TEST(ilist_exists)
 }
 END_TEST
 
+START_TEST(ilist_delete)
+{
+  ilist_t   *list;
+  bool      val;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_delete");
+
+  list = ilistAlloc ("chk-g", LIST_ORDERED);
+  ck_assert_ptr_nonnull (list);
+  ilistSetStr (list, 6, 2, "0-2L");
+  ilistSetStr (list, 6, 3, "0-3L");
+  ilistSetStr (list, 26, 2, "1L");
+  ilistSetStr (list, 18, 2, "2L");
+  ilistSetStr (list, 11, 2, "3L");
+  ilistSetStr (list, 3, 2, "4L");
+  ilistSetStr (list, 1, 2, "5L");
+  ilistSetStr (list, 2, 2, "6L");
+  ck_assert_int_eq (list->count, 7);
+
+  val = ilistExists (list, 6);
+  ck_assert_int_eq (val, 1);
+  val = ilistExists (list, 21);
+  ck_assert_int_eq (val, 0);
+
+  ilistDelete (list, 6);
+
+  val = ilistExists (list, 6);
+  ck_assert_int_eq (val, 0);
+  val = ilistExists (list, 1);
+  ck_assert_int_eq (val, 1);
+  val = ilistExists (list, 2);
+  ck_assert_int_eq (val, 1);
+  val = ilistExists (list, 3);
+  ck_assert_int_eq (val, 1);
+  val = ilistExists (list, 11);
+  ck_assert_int_eq (val, 1);
+  val = ilistExists (list, 18);
+  ck_assert_int_eq (val, 1);
+  val = ilistExists (list, 26);
+  ck_assert_int_eq (val, 1);
+
+  ilistFree (list);
+}
+END_TEST
+
 Suite *
 ilist_suite (void)
 {
@@ -369,6 +414,7 @@ ilist_suite (void)
   tcase_add_test (tc, ilist_replace_str);
   tcase_add_test (tc, ilist_free_str);
   tcase_add_test (tc, ilist_exists);
+  tcase_add_test (tc, ilist_delete);
   suite_add_tcase (s, tc);
   return s;
 }

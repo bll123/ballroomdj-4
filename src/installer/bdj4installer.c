@@ -1464,16 +1464,13 @@ installerCopyTemplates (installer_t *installer)
 
   snprintf (tbuff, sizeof (tbuff), "%s/install/%s",
       installer->rundir, "localized-sr.txt");
-  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL,
-      tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
+  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
   snprintf (tbuff, sizeof (tbuff), "%s/install/%s",
       installer->rundir, "localized-auto.txt");
-  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL,
-      tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
+  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
   snprintf (tbuff, sizeof (tbuff), "%s/install/%s",
       installer->rundir, "localized-qd.txt");
-  qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL,
-      tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
+  qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL, tbuff, NULL, 0);
 
   snprintf (dir, sizeof (dir), "%s/templates", installer->rundir);
 

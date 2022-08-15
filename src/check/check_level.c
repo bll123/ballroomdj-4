@@ -16,12 +16,16 @@
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
 #include "datafile.h"
+#include "ilist.h"
 #include "level.h"
 #include "slist.h"
+#include "templateutil.h"
 
 START_TEST(level_alloc)
 {
   level_t   *level = NULL;
+
+  templateFileCopy ("levels.txt", "levels.txt");
 
   level = levelAlloc ();
   ck_assert_ptr_nonnull (level);
@@ -102,6 +106,7 @@ START_TEST(level_conv)
     ++count;
   }
   levelFree (level);
+  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -143,6 +148,8 @@ START_TEST(level_save)
   bdjvarsdfloadInit ();
   level = levelAlloc ();
 
+  ck_assert_int_eq (ilistGetCount (tlist), levelGetCount (level));
+
   levelStartIterator (level, &giteridx);
   ilistStartIterator (tlist, &iiteridx);
   while ((key = levelIterate (level, &giteridx)) >= 0) {
@@ -161,6 +168,7 @@ START_TEST(level_save)
     ck_assert_int_eq (df, tdf);
   }
 
+  ilistFree (tlist);
   levelFree (level);
   bdjvarsdfloadCleanup ();
 }

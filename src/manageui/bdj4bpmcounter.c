@@ -168,7 +168,7 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff),
       BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   bpmcounter.optiondf = datafileAllocParse ("bpmcounter-opt", DFTYPE_KEY_VAL, tbuff,
-      bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX, DATAFILE_NO_LOOKUP);
+      bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX);
   bpmcounter.options = datafileGetList (bpmcounter.optiondf);
   if (bpmcounter.options == NULL) {
     bpmcounter.options = nlistAlloc ("bpmcounterui-opt", LIST_ORDERED, free);

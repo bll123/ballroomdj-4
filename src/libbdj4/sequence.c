@@ -41,8 +41,7 @@ sequenceAlloc (const char *fname)
   sequence->name = strdup (fname);
   sequence->path = strdup (fn);
 
-  df = datafileAllocParse ("sequence", DFTYPE_LIST, fn,
-      NULL, 0, DATAFILE_NO_LOOKUP);
+  df = datafileAllocParse ("sequence", DFTYPE_LIST, fn, NULL, 0);
   tlist = datafileGetList (df);
 
   sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, free);

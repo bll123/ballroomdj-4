@@ -16,12 +16,16 @@
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
 #include "datafile.h"
+#include "ilist.h"
 #include "rating.h"
 #include "slist.h"
+#include "templateutil.h"
 
 START_TEST(rating_alloc)
 {
   rating_t   *rating = NULL;
+
+  templateFileCopy ("ratings.txt", "ratings.txt");
 
   rating = ratingAlloc ();
   ck_assert_ptr_nonnull (rating);
@@ -88,6 +92,7 @@ START_TEST(rating_conv)
     ++count;
   }
   ratingFree (rating);
+  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -125,6 +130,8 @@ START_TEST(rating_save)
   bdjvarsdfloadInit ();
   rating = ratingAlloc ();
 
+  ck_assert_int_eq (ilistGetCount (tlist), ratingGetCount (rating));
+
   ratingStartIterator (rating, &giteridx);
   ilistStartIterator (tlist, &iiteridx);
   while ((key = ratingIterate (rating, &giteridx)) >= 0) {
@@ -140,6 +147,7 @@ START_TEST(rating_save)
     ck_assert_int_eq (w, tw);
   }
 
+  ilistFree (tlist);
   ratingFree (rating);
   bdjvarsdfloadCleanup ();
 }

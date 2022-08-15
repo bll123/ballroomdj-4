@@ -178,7 +178,7 @@ playlistLoad (playlist_t *pl, const char *fname)
 
   pl->name = strdup (fname);
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
-      playlistdfkeys, PLAYLIST_KEY_MAX, DATAFILE_NO_LOOKUP);
+      playlistdfkeys, PLAYLIST_KEY_MAX);
   pl->plinfo = datafileGetList (pl->plinfodf);
   nlistDumpInfo (pl->plinfo);
 
@@ -191,7 +191,7 @@ playlistLoad (playlist_t *pl, const char *fname)
   }
 
   pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_INDIRECT, tfn,
-      playlistdancedfkeys, PLDANCE_KEY_MAX, DATAFILE_NO_LOOKUP);
+      playlistdancedfkeys, PLDANCE_KEY_MAX);
   if (pl->pldancesdf == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad playlist-dance %s", tfn);
     playlistFree (pl);

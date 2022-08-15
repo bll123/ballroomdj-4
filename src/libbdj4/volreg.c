@@ -159,7 +159,7 @@ volregUpdate (const char *sink, int originalVolume, int inc)
   volregLockWait ();
   volregDataFilename (fn, sizeof (fn));
   df = datafileAllocParse ("volreg", DFTYPE_INDIRECT, fn,
-      volregdfkeys, VOLREG_KEY_MAX, DATAFILE_NO_LOOKUP);
+      volregdfkeys, VOLREG_KEY_MAX);
   vlist = datafileGetList (df);
 
   vkey = -1;

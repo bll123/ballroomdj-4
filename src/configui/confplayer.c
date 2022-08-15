@@ -180,7 +180,7 @@ confuiLoadVolIntfcList (confuigui_t *gui)
   pathbldMakePath (tbuff, sizeof (tbuff),
       "volintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
   df = datafileAllocParse ("conf-volintfc-list", DFTYPE_INDIRECT, tbuff,
-      dfkeys, CONFUI_VOL_MAX, DATAFILE_NO_LOOKUP);
+      dfkeys, CONFUI_VOL_MAX);
   list = datafileGetList (df);
 
   ilistStartIterator (list, &iteridx);
@@ -235,7 +235,7 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
   pathbldMakePath (tbuff, sizeof (tbuff),
       "playerintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
   df = datafileAllocParse ("conf-playerintfc-list", DFTYPE_INDIRECT, tbuff,
-      dfkeys, CONFUI_PLAYER_MAX, DATAFILE_NO_LOOKUP);
+      dfkeys, CONFUI_PLAYER_MAX);
   list = datafileGetList (df);
 
   ilistStartIterator (list, &iteridx);

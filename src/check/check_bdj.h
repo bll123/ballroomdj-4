@@ -36,6 +36,7 @@ Suite *     tmutil_suite (void);
 
 /* libbdj4 */
 Suite *     dnctypes_suite (void);
+Suite *     dance_suite (void);
 Suite *     genre_suite (void);
 Suite *     level_suite (void);
 Suite *     orgutil_suite (void);

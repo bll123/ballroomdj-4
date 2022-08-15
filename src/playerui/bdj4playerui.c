@@ -207,7 +207,7 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff),
       PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   plui.optiondf = datafileAllocParse ("playerui-opt", DFTYPE_KEY_VAL, tbuff,
-      playeruidfkeys, PLAYERUI_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+      playeruidfkeys, PLAYERUI_DFKEY_COUNT);
   plui.options = datafileGetList (plui.optiondf);
   if (plui.options == NULL) {
     plui.options = nlistAlloc ("playerui-opt", LIST_ORDERED, free);

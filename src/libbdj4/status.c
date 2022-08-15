@@ -53,7 +53,7 @@ statusAlloc (void)
 
   status->path = strdup (fname);
   status->df = datafileAllocParse ("status", DFTYPE_INDIRECT, fname,
-      statusdfkeys, STATUS_KEY_MAX, DATAFILE_NO_LOOKUP);
+      statusdfkeys, STATUS_KEY_MAX);
   status->status = datafileGetList (status->df);
   ilistDumpInfo (status->status);
 

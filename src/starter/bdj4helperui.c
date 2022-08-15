@@ -102,8 +102,7 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff),
       "helpdata", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
   helper.helpdf = datafileAllocParse ("helpdata",
-        DFTYPE_INDIRECT, tbuff, helptextdfkeys, HELP_TEXT_MAX,
-        DATAFILE_NO_LOOKUP);
+        DFTYPE_INDIRECT, tbuff, helptextdfkeys, HELP_TEXT_MAX);
   helper.helplist = datafileGetList (helper.helpdf);
   ilistStartIterator (helper.helplist, &helper.helpiter);
   helper.helpkey = ilistIterateKey (helper.helplist, &helper.helpiter);

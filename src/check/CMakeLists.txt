@@ -29,6 +29,7 @@ add_executable (check_all
   # libbdj4
   check_dnctypes.c
   check_genre.c
+  check_dance.c
   check_level.c
   check_orgutil.c
   check_rating.c

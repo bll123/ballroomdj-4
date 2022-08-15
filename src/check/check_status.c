@@ -16,12 +16,16 @@
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
 #include "datafile.h"
+#include "ilist.h"
 #include "status.h"
 #include "slist.h"
+#include "templateutil.h"
 
 START_TEST(status_alloc)
 {
   status_t   *status = NULL;
+
+  templateFileCopy ("status.txt", "status.txt");
 
   status = statusAlloc ();
   ck_assert_ptr_nonnull (status);
@@ -89,6 +93,7 @@ START_TEST(status_conv)
     ++count;
   }
   statusFree (status);
+  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -126,6 +131,8 @@ START_TEST(status_save)
   bdjvarsdfloadInit ();
   status = statusAlloc ();
 
+  ck_assert_int_eq (ilistGetCount (tlist), statusGetCount (status));
+
   statusStartIterator (status, &giteridx);
   ilistStartIterator (tlist, &iiteridx);
   while ((key = statusIterate (status, &giteridx)) >= 0) {
@@ -141,6 +148,7 @@ START_TEST(status_save)
     ck_assert_int_eq (pf, tpf);
   }
 
+  ilistFree (tlist);
   statusFree (status);
   bdjvarsdfloadCleanup ();
 }

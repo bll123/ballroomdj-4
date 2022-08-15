@@ -51,8 +51,7 @@ orgoptAlloc (void)
   orgopt = malloc (sizeof (orgopt_t));
   assert (orgopt != NULL);
 
-  orgopt->df = datafileAllocParse ("org", DFTYPE_LIST, path, NULL, 0,
-      DATAFILE_NO_LOOKUP);
+  orgopt->df = datafileAllocParse ("org", DFTYPE_LIST, path, NULL, 0);
   dflist = datafileGetList (orgopt->df);
 
   list = slistAlloc ("org-disp", LIST_UNORDERED, free);

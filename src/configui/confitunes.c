@@ -85,13 +85,13 @@ confuiInitiTunes (confuigui_t *gui)
   pathbldMakePath (tbuff, sizeof (tbuff),
       ITUNES_STARS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
   gui->itunes->starsdf = datafileAllocParse ("itunes-stars",
-      DFTYPE_KEY_VAL, tbuff, starsdfkeys, CONFUI_STARS_MAX, DATAFILE_NO_LOOKUP);
+      DFTYPE_KEY_VAL, tbuff, starsdfkeys, CONFUI_STARS_MAX);
   gui->itunes->stars = datafileGetList (gui->itunes->starsdf);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
   gui->itunes->fieldsdf = datafileAllocParse ("itunes-fields",
-      DFTYPE_LIST, tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
+      DFTYPE_LIST, tbuff, NULL, 0);
   tlist = datafileGetList (gui->itunes->fieldsdf);
 
   gui->itunes->fields = nlistAlloc ("itunes-fields", LIST_ORDERED, NULL);

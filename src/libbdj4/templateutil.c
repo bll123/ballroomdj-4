@@ -56,6 +56,7 @@ templateImageCopy (const char *color)
   slistFree (dirlist);
 }
 
+/* used by the test suite */
 void
 templateFileCopy (const char *fromfn, const char *tofn)
 {

@@ -568,16 +568,13 @@ altsetupCopyTemplates (altsetup_t *altsetup)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "localized-sr", BDJ4_CONFIG_EXT, PATHBLD_MP_INSTDIR);
-  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL,
-      tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
+  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
   pathbldMakePath (tbuff, sizeof (tbuff),
       "localized-auto", BDJ4_CONFIG_EXT, PATHBLD_MP_INSTDIR);
-  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL,
-      tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
+  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
   pathbldMakePath (tbuff, sizeof (tbuff),
       "localized-qd", BDJ4_CONFIG_EXT, PATHBLD_MP_INSTDIR);
-  qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL,
-      tbuff, NULL, 0, DATAFILE_NO_LOOKUP);
+  qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL, tbuff, NULL, 0);
 
   pathbldMakePath (dir, sizeof (dir),
       "", "", PATHBLD_MP_TEMPLATEDIR);

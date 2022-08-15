@@ -126,7 +126,7 @@ songParse (song_t *song, char *data, ssize_t didx)
 
   snprintf (tbuff, sizeof (tbuff), "song-%zd", didx);
   song->songInfo = datafileParse (data, tbuff, DFTYPE_KEY_VAL,
-      songdfkeys, SONG_DFKEY_COUNT, DATAFILE_NO_LOOKUP, NULL);
+      songdfkeys, SONG_DFKEY_COUNT);
   nlistSort (song->songInfo);
 
   /* check and set some defaults */

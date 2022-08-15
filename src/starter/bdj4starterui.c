@@ -1931,7 +1931,7 @@ starterLoadOptions (startui_t *starter)
   pathbldMakePath (tbuff, sizeof (tbuff),
       STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   starter->optiondf = datafileAllocParse ("starterui-opt", DFTYPE_KEY_VAL, tbuff,
-      starteruidfkeys, STARTERUI_KEY_MAX, DATAFILE_NO_LOOKUP);
+      starteruidfkeys, STARTERUI_KEY_MAX);
   starter->options = datafileGetList (starter->optiondf);
   if (starter->options == NULL) {
     starter->options = nlistAlloc ("starterui-opt", LIST_ORDERED, free);

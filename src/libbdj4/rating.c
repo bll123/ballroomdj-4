@@ -52,7 +52,7 @@ ratingAlloc (void)
 
   rating->path = strdup (fname);
   rating->df = datafileAllocParse ("rating", DFTYPE_INDIRECT, fname,
-      ratingdfkeys, RATING_KEY_MAX, DATAFILE_NO_LOOKUP);
+      ratingdfkeys, RATING_KEY_MAX);
   rating->rating = datafileGetList (rating->df);
   ilistDumpInfo (rating->rating);
 

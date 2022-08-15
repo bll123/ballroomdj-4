@@ -357,7 +357,7 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff),
       MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   manage.optiondf = datafileAllocParse ("manageui-opt", DFTYPE_KEY_VAL, tbuff,
-      manageuidfkeys, MANAGEUI_DFKEY_COUNT, DATAFILE_NO_LOOKUP);
+      manageuidfkeys, MANAGEUI_DFKEY_COUNT);
   manage.options = datafileGetList (manage.optiondf);
   if (manage.options == NULL) {
     manage.options = nlistAlloc ("manageui-opt", LIST_ORDERED, free);

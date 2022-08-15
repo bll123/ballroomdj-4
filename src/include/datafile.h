@@ -56,7 +56,6 @@ typedef struct {
 } datafilekey_t;
 
 enum {
-  DATAFILE_NO_LOOKUP = -1,
   DATAFILE_NO_BACKUPKEY = -1,
   DATAFILE_NO_WRITE = -2,
   /* the largest standard datafile is 3.6k in size */
@@ -76,21 +75,17 @@ void          convMS (datafileconv_t *conv);
 
 datafile_t *  datafileAlloc (const char *name);
 datafile_t *  datafileAllocParse (const char *name, datafiletype_t dftype,
-                  const char *fname, datafilekey_t *dfkeys, ssize_t dfkeycount,
-                  listidx_t lookupKey);
+                  const char *fname, datafilekey_t *dfkeys, ssize_t dfkeycount);
 void          datafileFree (void *);
 char *        datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname);
 list_t        *datafileParse (char *data, const char *name, datafiletype_t dftype,
-                  datafilekey_t *dfkeys, ssize_t dfkeycount,
-                  listidx_t lookupKey, list_t **lookup);
+                  datafilekey_t *dfkeys, ssize_t dfkeycount);
 list_t        *datafileParseMerge (list_t *nlist, char *data, const char *name,
                   datafiletype_t dftype,
-                  datafilekey_t *dfkeys, ssize_t dfkeycount,
-                  listidx_t lookupKey, list_t **lookup);
+                  datafilekey_t *dfkeys, ssize_t dfkeycount);
 listidx_t     dfkeyBinarySearch (const datafilekey_t *dfkeys,
                   ssize_t count, char *key);
 list_t *      datafileGetList (datafile_t *);
-list_t *      datafileGetLookup (datafile_t *);
 void          datafileSetData (datafile_t *df, void *data);
 slist_t *     datafileSaveKeyValList (const char *tag, datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list);
 void          datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag, datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list);

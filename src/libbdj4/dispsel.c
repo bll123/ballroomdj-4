@@ -60,7 +60,7 @@ dispselAlloc (void)
     dispsel->name [i] = strdup (fn);
 
     dispsel->df [i] = datafileAllocParse (dispselmap [i],
-        DFTYPE_LIST, fn, NULL, 0, DATAFILE_NO_LOOKUP);
+        DFTYPE_LIST, fn, NULL, 0);
     tlist = datafileGetList (dispsel->df [i]);
 
     dispselCreateList (dispsel, tlist, i);

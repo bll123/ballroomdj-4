@@ -41,23 +41,33 @@ static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
 };
 
 static datafilekey_t dancespeeddfkeys [DANCE_SPEED_MAX] = {
-  { "fast",       DANCE_SPEED_FAST,   VALUE_NUM, NULL, -1 },
-  { "normal",     DANCE_SPEED_NORMAL, VALUE_NUM, NULL, -1 },
-  { "slow",       DANCE_SPEED_SLOW,   VALUE_NUM, NULL, -1 },
+  [DANCE_SPEED_FAST] =
+      { "fast",       DANCE_SPEED_FAST,   VALUE_NUM, NULL, -1 },
+  [DANCE_SPEED_NORMAL] =
+      { "normal",     DANCE_SPEED_NORMAL, VALUE_NUM, NULL, -1 },
+  [DANCE_SPEED_SLOW] =
+      { "slow",       DANCE_SPEED_SLOW,   VALUE_NUM, NULL, -1 },
 };
 
 static datafilekey_t dancetimesigdfkeys [DANCE_TIMESIG_MAX] = {
-  { "2/4",       DANCE_TIMESIG_24,   VALUE_NUM, NULL, -1 },
-  { "3/4",       DANCE_TIMESIG_34,   VALUE_NUM, NULL, -1 },
-  { "4/4",       DANCE_TIMESIG_44,   VALUE_NUM, NULL, -1 },
-  { "4/8",       DANCE_TIMESIG_48,   VALUE_NUM, NULL, -1 },
+  [DANCE_TIMESIG_24] =
+      { "2/4",       DANCE_TIMESIG_24,   VALUE_NUM, NULL, -1 },
+  [DANCE_TIMESIG_34] =
+      { "3/4",       DANCE_TIMESIG_34,   VALUE_NUM, NULL, -1 },
+  [DANCE_TIMESIG_44] =
+      { "4/4",       DANCE_TIMESIG_44,   VALUE_NUM, NULL, -1 },
+  [DANCE_TIMESIG_48] =
+      { "4/8",       DANCE_TIMESIG_48,   VALUE_NUM, NULL, -1 },
 };
 
 dance_t *
 danceAlloc (void)
 {
-  dance_t   *dance;
-  char      fname [MAXPATHLEN];
+  dance_t     *dance;
+  char        fname [MAXPATHLEN];
+  char        *val;
+  int         key;
+  ilistidx_t  iteridx;
 
   pathbldMakePath (fname, sizeof (fname), "dances",
       BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
@@ -72,8 +82,19 @@ danceAlloc (void)
   dance->path = strdup (fname);
   dance->danceList = NULL;
   dance->df = datafileAllocParse ("dance", DFTYPE_INDIRECT, fname,
-      dancedfkeys, DANCE_KEY_MAX, DANCE_DANCE);
+      dancedfkeys, DANCE_KEY_MAX);
   dance->dances = datafileGetList (dance->df);
+
+  dance->danceList = slistAlloc ("dance-list", LIST_UNORDERED, NULL);
+  slistSetSize (dance->danceList, ilistGetCount (dance->dances));
+
+  ilistStartIterator (dance->dances, &iteridx);
+  while ((key = ilistIterateKey (dance->dances, &iteridx)) >= 0) {
+    val = ilistGetStr (dance->dances, key, DANCE_DANCE);
+    slistSetNum (dance->danceList, val, key);
+  }
+  slistSort (dance->danceList);
+
   return dance;
 }
 
@@ -162,33 +183,13 @@ danceSetList (dance_t *dances, ilistidx_t dkey, ilistidx_t idx, slist_t *list)
 slist_t *
 danceGetDanceList (dance_t *dance)
 {
-  slist_t     *dl;
-  ilistidx_t  key;
-  char        *nm;
-  ilistidx_t  iteridx;
-
-  if (dance->danceList != NULL) {
-    return dance->danceList;
-  }
-
-  dl = slistAlloc ("dancelist", LIST_UNORDERED, NULL);
-  slistSetSize (dl, ilistGetCount (dance->dances));
-  ilistStartIterator (dance->dances, &iteridx);
-  while ((key = ilistIterateKey (dance->dances, &iteridx)) >= 0) {
-    nm = ilistGetStr (dance->dances, key, DANCE_DANCE);
-    slistSetNum (dl, nm, key);
-  }
-  slistSort (dl);
-
-  dance->danceList = dl;
-  return dl;
+  return dance->danceList;
 }
 
 void
 danceConvDance (datafileconv_t *conv)
 {
   dance_t   *dance;
-  slist_t   *lookup;
   ssize_t   num;
 
   dance = bdjvarsdfGet (BDJVDF_DANCES);
@@ -196,11 +197,7 @@ danceConvDance (datafileconv_t *conv)
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
-    num = -1;
-    lookup = datafileGetLookup (dance->df);
-    if (lookup != NULL) {
-      num = slistGetNum (lookup, conv->str);
-    }
+    num = slistGetNum (dance->danceList, conv->str);
     conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
@@ -257,15 +254,16 @@ danceConvSpeed (datafileconv_t *conv)
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_MAX, conv->str);
-    conv->num = dancespeeddfkeys [idx].itemkey;
+    conv->num = LIST_VALUE_INVALID;
+    if (idx >= 0) {
+      conv->num = dancespeeddfkeys [idx].itemkey;
+    }
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    sval = dancespeeddfkeys [1].name;  // unknown -> normal
-    for (int i = 0; i < DANCE_SPEED_MAX; ++i) {
-      if (conv->num == dancespeeddfkeys [i].itemkey) {
-        sval = dancespeeddfkeys [i].name;
-        break;
-      }
+    if (conv->num < 0 || conv->num >= DANCE_SPEED_MAX) {
+      sval = dancespeeddfkeys [DANCE_SPEED_NORMAL].name;  // unknown -> normal
+    } else {
+      sval = dancespeeddfkeys [conv->num].name;
     }
     conv->str = sval;
   }
@@ -280,10 +278,17 @@ danceConvTimeSig (datafileconv_t *conv)
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     idx = dfkeyBinarySearch (dancetimesigdfkeys, DANCE_TIMESIG_MAX, conv->str);
-    conv->num = dancetimesigdfkeys [idx].itemkey;
+    conv->num = LIST_VALUE_INVALID;
+    if (idx >= 0) {
+      conv->num = dancetimesigdfkeys [idx].itemkey;
+    }
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    conv->str = dancetimesigdfkeys [conv->num].name;
+    if (conv->num < 0 || conv->num >= DANCE_TIMESIG_MAX) {
+      conv->str = NULL;
+    } else {
+      conv->str = dancetimesigdfkeys [conv->num].name;
+    }
   }
 }
 

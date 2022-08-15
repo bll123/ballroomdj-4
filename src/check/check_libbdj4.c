@@ -26,13 +26,18 @@ check_libbdj4 (bool skiplong)
 
   /* libbdj4
    *  bdjvarsdf
-   *  dnctypes      complete
-   *  dance
-   *  genre         complete
-   *  level         complete
-   *  rating        complete
+   *    needed by tests
+   *  bdjvarsdfload
+   *    needed by tests
+   *  dnctypes              complete
+   *  templateutil
+   *    needed by tests
+   *  dance                 complete
+   *  genre                 complete
+   *  level                 complete
+   *  rating                complete
    *  songfav
-   *  status
+   *  status                complete
    *  songutil
    *  tagdef
    *  song
@@ -50,11 +55,9 @@ check_libbdj4 (bool skiplong)
    *  validate
    *  webclient
    *  audiotag
-   *  bdjvarsdfload
    *  m3u
    *  orgopt
    *  bdj4init
-   *  templateutil
    *  msgparse
    *  songdb
    *  volreg
@@ -65,6 +68,9 @@ check_libbdj4 (bool skiplong)
 
   s = dnctypes_suite();
   sr = srunner_create (s);
+
+  s = dance_suite();
+  srunner_add_suite (sr, s);
 
   s = genre_suite();
   srunner_add_suite (sr, s);
