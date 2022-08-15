@@ -487,6 +487,21 @@ listSet (list_t *list, listitem_t *item)
   return;
 }
 
+/* used by the test suite */
+bool
+listDebugIsCached (list_t *list, listidx_t key)
+{
+  bool  rc;
+
+  if (list == NULL) {
+    return false;
+  }
+
+  rc = list->locCache != LIST_LOC_INVALID &&
+      list->keyCache.idx == key;
+  return rc;
+}
+
 /* internal routines */
 
 static void

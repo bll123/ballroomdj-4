@@ -640,6 +640,36 @@ START_TEST(nlist_byidx)
 }
 END_TEST
 
+START_TEST(nlist_byidx_bug_20220815)
+{
+  nlist_t *     list;
+  nlistidx_t    key;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_byidx_bug_20220815");
+
+  list = nlistAlloc ("chk-n", LIST_ORDERED, NULL);
+  ck_assert_ptr_nonnull (list);
+  nlistSetNum (list, 6, 0);
+  nlistSetNum (list, 26, 1);
+  nlistSetNum (list, 18, 2);
+  nlistSetNum (list, 11, 3);
+  nlistSetNum (list, 3, 4);
+  nlistSetNum (list, 1, 5);
+  nlistSetNum (list, 2, 6);
+
+  key = nlistGetIdx (list, 3);
+  ck_assert_int_eq (key, 2);
+  /* should be in cache */
+  ck_assert_int_eq (listDebugIsCached (list, 3), 1);
+  /* not found, returns -1 */
+  key = nlistGetIdx (list, 99);
+  ck_assert_int_lt (key, 0);
+  ck_assert_int_eq (listDebugIsCached (list, 3), 0);
+
+  nlistFree (list);
+}
+END_TEST
+
 START_TEST(nlist_prob_search)
 {
   nlist_t *     list;
@@ -694,6 +724,7 @@ nlist_suite (void)
   tcase_add_test (tc, nlist_set_get_mixed);
   tcase_add_test (tc, nlist_inc_dec);
   tcase_add_test (tc, nlist_byidx);
+  tcase_add_test (tc, nlist_byidx_bug_20220815);
   tcase_add_test (tc, nlist_prob_search);
   suite_add_tcase (s, tc);
   return s;

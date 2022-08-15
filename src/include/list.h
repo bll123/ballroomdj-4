@@ -107,5 +107,6 @@ void        *listIterateValue (list_t *list, listidx_t *iteridx);
 ssize_t     listIterateValueNum (list_t *list, listidx_t *iteridx);
 listidx_t   listIterateGetIdx (list_t *list, listidx_t *iteridx);
 void        listDumpInfo (list_t *list);
+bool        listDebugIsCached (list_t *list, listidx_t key);
 
 #endif /* INC_LIST_H */
