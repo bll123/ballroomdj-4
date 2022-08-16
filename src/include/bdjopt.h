@@ -110,7 +110,7 @@ enum {
 };
 
 void    bdjoptInit (void);
-void    bdjoptFree (void);
+void    bdjoptCleanup (void);
 char    *bdjoptGetStr (ssize_t idx);
 ssize_t bdjoptGetNum (ssize_t idx);
 void    bdjoptSetStr (ssize_t idx, const char *value);

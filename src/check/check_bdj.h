@@ -42,6 +42,7 @@ Suite *     level_suite (void);
 Suite *     orgutil_suite (void);
 Suite *     rating_suite (void);
 Suite *     songfav_suite (void);
+Suite *     songutil_suite (void);
 Suite *     status_suite (void);
 Suite *     validate_suite (void);
 

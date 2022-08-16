@@ -108,7 +108,7 @@ bdjoptInit (void)
   nlist_t       *tlist;
 
   if (bdjopt != NULL) {
-    bdjoptFree ();
+    bdjoptCleanup ();
   }
 
   bdjopt = malloc (sizeof (bdjopt_t));
@@ -180,7 +180,7 @@ bdjoptInit (void)
 }
 
 void
-bdjoptFree (void)
+bdjoptCleanup (void)
 {
   if (bdjopt != NULL) {
     datafileFree (bdjopt->df);

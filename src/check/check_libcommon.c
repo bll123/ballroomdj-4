@@ -33,26 +33,26 @@ check_libcommon (bool skiplong)
    *  osnetutils
    *  pathutil    done
    *  sysvars
-   *  tmutil      done
+   *  tmutil      complete (check)
    *  osdir
    *  dirop       complete
    *  filemanip   need renameall test
    *  fileutil
-   *  pathbld     done
+   *  pathbld     complete
    *  log
-   *  nlist       done
-   *  ilist       done
-   *  slist       done
+   *  nlist       partial
+   *  ilist       partial
+   *  slist       partial
    *  bdjmsg      complete
-   *  sock
-   *  datafile    done
+   *  sock        mostly
+   *  datafile    partial
    *  bdjvars
    *  sockh
    *  bdjopt
    *  conn
    *  procutil
-   *  lock
-   *  rafile
+   *  lock        partial
+   *  rafile      partial
    *  localeutil
    *  osrandom
    *  queue

@@ -96,7 +96,7 @@ main (int argc, char *argv [])
 
   if (! fileopFileExists (argv [fidx])) {
     fprintf (stderr, "no file %s\n", argv [fidx]);
-    bdjoptFree ();
+    bdjoptCleanup ();
     audiotagCleanup ();
     exit (1);
   }
@@ -157,7 +157,7 @@ main (int argc, char *argv [])
   }
   slistFree (wlist);
 
-  bdjoptFree ();
+  bdjoptCleanup ();
   audiotagCleanup ();
   return 0;
 }

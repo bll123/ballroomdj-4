@@ -64,7 +64,7 @@ main (int argc, char *argv [])
 
   bdjoptInit ();
   bdjoptDump ();
-  bdjoptFree ();
+  bdjoptCleanup ();
 
   return 0;
 }

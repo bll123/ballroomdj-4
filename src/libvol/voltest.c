@@ -54,6 +54,6 @@ main (int argc, char *argv [])
   }
 
   volumeFree (volume);
-  bdjoptFree ();
+  bdjoptCleanup ();
   return 0;
 }

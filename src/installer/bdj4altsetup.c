@@ -173,7 +173,7 @@ main (int argc, char *argv[])
 
   altsetupCleanup (&altsetup);
   bdjvarsCleanup ();
-  bdjoptFree ();
+  bdjoptCleanup ();
   logEnd ();
   return 0;
 }

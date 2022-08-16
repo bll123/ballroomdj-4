@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -18,6 +17,7 @@ char *
 songFullFileName (char *sfname)
 {
   char      *tname;
+  size_t    len;
 
   if (sfname == NULL) {
     return NULL;
@@ -26,7 +26,9 @@ songFullFileName (char *sfname)
   tname = malloc (MAXPATHLEN);
   assert (tname != NULL);
 
-  if (sfname [0] == '/' || (sfname [1] == ':' && sfname [2] == '/')) {
+  len = strlen (sfname);
+  if ((len > 0 && sfname [0] == '/') ||
+      (len > 2 && sfname [1] == ':' && sfname [2] == '/')) {
     strlcpy (tname, sfname, MAXPATHLEN);
   } else {
     snprintf (tname, MAXPATHLEN, "%s/%s",

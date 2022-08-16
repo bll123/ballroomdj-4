@@ -301,7 +301,7 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   }
 
   mstimestart (&mt);
-  bdjoptFree ();
+  bdjoptCleanup ();
   if (musicdb != NULL) {
     dbClose (musicdb);
   }

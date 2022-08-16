@@ -406,7 +406,7 @@ main (int argc, char *argv [])
   datafileSaveKeyVal ("updater", tbuff, upddfkeys, UPD_DF_COUNT, updlist);
 
   bdj4shutdown (ROUTE_NONE, NULL);
-  bdjoptFree ();
+  bdjoptCleanup ();
 
   return 0;
 }
