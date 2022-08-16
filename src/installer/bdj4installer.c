@@ -658,7 +658,12 @@ installerMainLoop (void *udata)
 
   switch (installer->instState) {
     case INST_INITIALIZE: {
-      installer->instState = INST_VERIFY_INST_INIT;
+      if (isWindows ()) {
+        /* windows checksum verification is too slow, don't use it */
+        installer->instState = INST_PREPARE;
+      } else {
+        installer->instState = INST_VERIFY_INST_INIT;
+      }
       break;
     }
     case INST_VERIFY_INST_INIT: {

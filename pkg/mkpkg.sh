@@ -289,7 +289,9 @@ case $systype in
     touch ${manfnpath}
     ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
 
-    if [[ $preskip == F ]]; then
+    # windows checksums are too slow to process during bdj4 installation
+    # leave them off.
+    if [[ 0 && $preskip == F ]]; then
       echo "-- $(date +%T) creating checksums"
       ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
       mv -f ${chksumfntmp} ${chksumfnpath}
