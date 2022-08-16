@@ -14,6 +14,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "genre.h"
+#include "ilist.h"
 #include "level.h"
 #include "nlist.h"
 #include "log.h"
@@ -77,13 +78,12 @@ enum {
 };
 
 typedef struct {
-  size_t   songcount;
-  level_t  *levels;
-  status_t *status;
-  rating_t *ratings;
+  bool      initialized;
+  long      songcount;
+  level_t   *levels;
 } songinit_t;
 
-static songinit_t *gsonginit = NULL;
+static songinit_t gsonginit = { false, 0, NULL };
 
 static void songInit (void);
 static void songCleanup (void);
@@ -97,7 +97,8 @@ songAlloc (void)
 
   song = malloc (sizeof (song_t));
   assert (song != NULL);
-  ++gsonginit->songcount;
+  song->songInfo = NULL;
+  ++gsonginit.songcount;
   song->durcache = -1;
   return song;
 }
@@ -106,23 +107,28 @@ void
 songFree (void *tsong)
 {
   song_t  *song = (song_t *) tsong;
+
   if (song != NULL) {
+    --gsonginit.songcount;
+    if (gsonginit.songcount <= 0) {
+      songCleanup ();
+    }
     if (song->songInfo != NULL) {
       nlistFree (song->songInfo);
     }
     free (song);
-    --gsonginit->songcount;
-    if (gsonginit->songcount <= 0) {
-      songCleanup ();
-    }
   }
 }
 
 void
 songParse (song_t *song, char *data, ssize_t didx)
 {
-  char    tbuff [100];
-  ssize_t lkey;
+  char        tbuff [40];
+  ilistidx_t  lkey;
+
+  if (song == NULL || data == NULL) {
+    return;
+  }
 
   snprintf (tbuff, sizeof (tbuff), "song-%zd", didx);
   song->songInfo = datafileParse (data, tbuff, DFTYPE_KEY_VAL,
@@ -132,7 +138,7 @@ songParse (song_t *song, char *data, ssize_t didx)
   /* check and set some defaults */
   lkey = nlistGetNum (song->songInfo, TAG_DANCELEVEL);
   if (lkey < 0) {
-    lkey = levelGetDefaultKey (gsonginit->levels);
+    lkey = levelGetDefaultKey (gsonginit.levels);
     nlistSetNum (song->songInfo, TAG_DANCELEVEL, lkey);
   }
 
@@ -282,6 +288,10 @@ songAudioFileExists (song_t *song)
   return exists;
 }
 
+/* used by the song editor via uisong to get the values for display */
+/* only used for tags that have a conversion set */
+/* favorite returns the span-display string used by gtk */
+/*     <span color="...">X</span> */
 char *
 songDisplayString (song_t *song, int tagidx)
 {
@@ -298,6 +308,7 @@ songDisplayString (song_t *song, int tagidx)
   }
 
   vt = tagdefs [tagidx].valueType;
+
   convfunc = tagdefs [tagidx].convfunc;
   if (convfunc != NULL) {
     conv.allocated = false;
@@ -314,9 +325,8 @@ songDisplayString (song_t *song, int tagidx)
       free (conv.str);
     }
   } else {
-    str = songGetStr (song, tagidx);
-    if (str == NULL) { str = ""; }
-    str = strdup (str);
+    /* just in case... */
+    return strdup ("");
   }
 
   return str;
@@ -356,29 +366,24 @@ songGetDurCache (song_t *song)
 static void
 songInit (void)
 {
-  if (gsonginit != NULL) {
+  if (gsonginit.initialized) {
     return;
   }
-
-  gsonginit = malloc (sizeof (songinit_t));
-  assert (gsonginit != NULL);
+  gsonginit.initialized = true;
+  gsonginit.songcount = 0;
 
   songFavoriteInit ();
-  gsonginit->levels = bdjvarsdfGet (BDJVDF_LEVELS);
-  gsonginit->status = bdjvarsdfGet (BDJVDF_STATUS);
-  gsonginit->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
-  gsonginit->songcount = 0;
+  gsonginit.levels = bdjvarsdfGet (BDJVDF_LEVELS);
 }
 
 static void
 songCleanup (void)
 {
-  if (! gsonginit) {
+  if (! gsonginit.initialized) {
     return;
   }
 
+  gsonginit.songcount = 0;
   songFavoriteCleanup ();
-  free (gsonginit);
-  gsonginit = NULL;
 }
 

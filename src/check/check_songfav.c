@@ -26,6 +26,8 @@ START_TEST(songfav_init)
   songFavoriteInit ();
   songFavoriteCleanup ();
   songFavoriteCleanup ();
+  songFavoriteInit ();
+  songFavoriteCleanup ();
 }
 END_TEST
 

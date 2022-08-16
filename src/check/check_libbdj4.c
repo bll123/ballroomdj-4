@@ -40,7 +40,7 @@ check_libbdj4 (bool skiplong)
    *  status                complete
    *  songutil              complete
    *  tagdef                complete
-   *  song
+   *  song                  need audio-file, tag-list checks
    *  musicdb
    *  songlist
    *  autosel
@@ -91,6 +91,9 @@ check_libbdj4 (bool skiplong)
   srunner_add_suite (sr, s);
 
   s = tagdef_suite();
+  srunner_add_suite (sr, s);
+
+  s = song_suite();
   srunner_add_suite (sr, s);
 
   s = orgutil_suite();
