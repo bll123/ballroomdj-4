@@ -28,6 +28,7 @@ Suite *     nlist_suite (void);
 Suite *     pathbld_suite (void);
 Suite *     pathutil_suite (void);
 Suite *     procutil_suite (void);
+Suite *     progstate_suite (void);
 Suite *     queue_suite (void);
 Suite *     rafile_suite (void);
 Suite *     slist_suite (void);

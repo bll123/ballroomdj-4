@@ -59,7 +59,7 @@ check_libcommon (bool skiplong)
    *  dirlist     needs utf-8 basic/recursive
    *  misc
    *  ossignal
-   *  progstate
+   *  progstate   complete (no log checks)
    */
 
   fprintf (stdout, "=== libcommon\n");
@@ -127,6 +127,9 @@ check_libcommon (bool skiplong)
   srunner_add_suite (sr, s);
 
   s = dirlist_suite();
+  srunner_add_suite (sr, s);
+
+  s = progstate_suite();
   srunner_add_suite (sr, s);
 
   srunner_run_all (sr, CK_ENV);

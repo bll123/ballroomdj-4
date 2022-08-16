@@ -21,6 +21,7 @@ add_executable (check_all
   check_pathbld.c
   check_pathutil.c
   check_procutil.c
+  check_progstate.c
   check_queue.c
   check_rafile.c
   check_slist.c
