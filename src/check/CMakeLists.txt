@@ -36,6 +36,7 @@ add_executable (check_all
   check_songfav.c
   check_songutil.c
   check_status.c
+  check_tagdef.c
   check_validate.c
 )
 target_link_libraries (check_all

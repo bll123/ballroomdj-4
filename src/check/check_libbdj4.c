@@ -39,7 +39,7 @@ check_libbdj4 (bool skiplong)
    *  songfav               complete
    *  status                complete
    *  songutil              complete
-   *  tagdef
+   *  tagdef                complete
    *  song
    *  musicdb
    *  songlist
@@ -88,6 +88,9 @@ check_libbdj4 (bool skiplong)
   srunner_add_suite (sr, s);
 
   s = songutil_suite();
+  srunner_add_suite (sr, s);
+
+  s = tagdef_suite();
   srunner_add_suite (sr, s);
 
   s = orgutil_suite();
