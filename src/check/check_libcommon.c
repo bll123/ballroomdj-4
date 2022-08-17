@@ -29,7 +29,7 @@ check_libcommon (bool skiplong)
    *  fileop      complete
    *  bdjstring   needs istringCompare (test w/de_DE, sv_SE)
    *  osprocess
-   *  filedata    done
+   *  filedata    complete
    *  osnetutils
    *  pathutil    done
    *  sysvars
@@ -37,7 +37,7 @@ check_libcommon (bool skiplong)
    *  osdir
    *  dirop       complete
    *  filemanip   need renameall test
-   *  fileutil
+   *  fileutil                        // open/write/close shared
    *  pathbld     complete
    *  log
    *  nlist       partial
@@ -50,12 +50,12 @@ check_libcommon (bool skiplong)
    *  sockh
    *  bdjopt
    *  conn
-   *  procutil
+   *  procutil    partial
    *  lock        partial
    *  rafile      partial
    *  localeutil
    *  osrandom
-   *  queue
+   *  queue       partial
    *  dirlist     needs utf-8 basic/recursive
    *  misc
    *  ossignal

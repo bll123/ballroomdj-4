@@ -17,36 +17,60 @@
 #include "check_bdj.h"
 #include "sysvars.h"
 
-START_TEST(msleep_chk)
+START_TEST(mstime_chk)
+{
+  time_t      tm_s;
+  time_t      tm_chk;
+
+  tm_s = time (NULL);
+  tm_s *= 1000;
+  tm_chk = mstime ();
+  /* the granularity of the time() call is high */
+  ck_assert_int_lt (tm_chk - tm_s, 1000);
+  tm_s = mstime ();
+  tm_chk = mstime ();
+  ck_assert_int_lt (tm_chk - tm_s, 10);
+}
+END_TEST
+
+START_TEST(mssleep_chk)
 {
   time_t      tm_s;
   time_t      tm_e;
 
-  tm_s = time (NULL);
+  tm_s = mstime ();
   mssleep (2000);
-  tm_e = time (NULL);
-  ck_assert_int_ge (tm_e - tm_s, 2);
+  tm_e = mstime ();
+  ck_assert_int_lt (tm_e - tm_s - 2000, 20);
 }
 END_TEST
 
-START_TEST(tmutil_start_end)
+START_TEST(mstimestartofday_chk)
+{
+  time_t    tm_s;
+  time_t    tm_chk;
+
+  tm_s = mstime ();
+  tm_chk = mstimestartofday ();
+  /* this needs a test */
+  ck_assert_int_ge (tm_s, tm_chk);
+}
+END_TEST
+
+START_TEST(mstime_start_end)
 {
   time_t      tm_s;
   time_t      tm_e;
   mstime_t    mi;
   time_t      m, d;
 
-  tm_s = time (NULL);
+  tm_s = mstime ();
   mstimestart (&mi);
   mssleep (2000);
   m = mstimeend (&mi);
-  tm_e = time (NULL);
-  d = (long) tm_e - (long) tm_s;
-  if (d >= 3) {
-    --d;
-  }
-  d *= 1000;
-  d -= (long) m;
+  tm_e = mstime ();
+  d = tm_e - tm_s;
+  d -= m;
   if (d < 0) {
     d = - d;
   }
@@ -54,27 +78,46 @@ START_TEST(tmutil_start_end)
 }
 END_TEST
 
-START_TEST(tmutil_set)
+START_TEST(mstime_set)
 {
-  mstime_t    tmstart;
   mstime_t    tmset;
-  time_t      diffa;
-  time_t      diffb;
+  time_t      tm_s;
+  time_t      tm_e;
+  time_t      m, d;
 
+  tm_s = mstime ();
   mstimeset (&tmset, 2000);
   mssleep (2000);
-  mstimestart (&tmstart);
-  diffa = mstimeend (&tmstart);
-  diffb = mstimeend (&tmset);
-  diffa -= diffb;
-  if (diffa < 0) {
-    diffa = - diffa;
+  m = mstimeend (&tmset);
+  tm_e = mstime ();
+  d = tm_e - tm_s;
+  d -= m;
+  d -= 2000;
+  if (d < 0) {
+    d = - d;
   }
-  ck_assert_int_lt (diffa, 50);
+  ck_assert_int_lt (d, 30);
 }
 END_TEST
 
-START_TEST(tmutil_check)
+START_TEST(mstime_set_tm)
+{
+  mstime_t    tmset;
+  time_t      m, s, d;
+
+  s = mstime ();
+  /* sets tmset to the value supplied */
+  mstimesettm (&tmset, 2000);
+  m = mstimeend (&tmset);
+  d = s - m - 2000;
+  if (d < 0) {
+    d = -d;
+  }
+  ck_assert_int_lt (d, 30);
+}
+END_TEST
+
+START_TEST(mstime_check)
 {
   mstime_t    tmset;
   bool        rc;
@@ -223,10 +266,13 @@ tmutil_suite (void)
 
   s = suite_create ("tmutil Suite");
   tc = tcase_create ("tmutil");
-  tcase_add_test (tc, msleep_chk);
-  tcase_add_test (tc, tmutil_start_end);
-  tcase_add_test (tc, tmutil_set);
-  tcase_add_test (tc, tmutil_check);
+  tcase_add_test (tc, mstime_chk);
+  tcase_add_test (tc, mssleep_chk);
+  tcase_add_test (tc, mstimestartofday_chk);
+  tcase_add_test (tc, mstime_start_end);
+  tcase_add_test (tc, mstime_set);
+  tcase_add_test (tc, mstime_set_tm);
+  tcase_add_test (tc, mstime_check);
   tcase_add_test (tc, tmutildstamp_chk);
   tcase_add_test (tc, tmutildisp_chk);
   tcase_add_test (tc, tmutiltstamp_chk);

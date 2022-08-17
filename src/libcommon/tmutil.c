@@ -94,15 +94,15 @@ mstimeset (mstime_t *mt, time_t addTime)
 }
 
 void
-mstimesettm (mstime_t *mt, time_t addTime)
+mstimesettm (mstime_t *mt, time_t setTime)
 {
   time_t            s;
 
   mt->tm.tv_sec = 0;
   mt->tm.tv_usec = 0;
-  s = addTime / 1000;
+  s = setTime / 1000;
   mt->tm.tv_sec += s;
-  mt->tm.tv_usec += (addTime - (s * 1000)) * 1000;
+  mt->tm.tv_usec += (setTime - (s * 1000)) * 1000;
 }
 
 bool

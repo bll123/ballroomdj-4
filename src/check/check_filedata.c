@@ -58,80 +58,39 @@ START_TEST(filedata_readall)
 }
 END_TEST
 
+typedef struct {
+  char  *str;
+  char  *repl;
+  char  *result;
+} chk_filedata_t;
+
+static chk_filedata_t tvalues [] = {
+  { "", "", "abc123def456ghi789qwertyzzz123def456ghi789" },
+  { "qwerty", "ASDFGH", "abc123def456ghi789ASDFGHzzz123def456ghi789" },
+  { "qwerty", "ABC", "abc123def456ghi789ABCzzz123def456ghi789" },
+  { "qwerty", "ABCDEFGHIJKL", "abc123def456ghi789ABCDEFGHIJKLzzz123def456ghi789" },
+  { "456", "ABC", "abc123defABCghi789qwertyzzz123defABCghi789" },
+  { "123", "Z", "abcZdef456ghi789qwertyzzzZdef456ghi789" },
+  { "123", "VWXYZ", "abcVWXYZdef456ghi789qwertyzzzVWXYZdef456ghi789" }
+};
+enum {
+  tvaluesz = sizeof (tvalues) / sizeof (chk_filedata_t),
+};
+
 START_TEST(filedata_repl)
 {
-  FILE    *fh = NULL;
   char    *data = NULL;
-  char    *tdata = NULL;
   size_t  len;
-  size_t  dlen;
   char    *ndata = NULL;
-  char    *ndatachk1 = NULL;
-  char    *ndatachk2 = NULL;
-  char    *ndatachk3 = NULL;
-  char    *ndatachk4 = NULL;
-  char    *ndatachk5 = NULL;
-  char    *ndatachk6 = NULL;
-  char    *fn = "tmp/abc.txt";
 
-      tdata = "abc123def456ghi789qwertyzzz123def456ghi789";
-  ndatachk1 = "abc123def456ghi789ASDFGHzzz123def456ghi789";
-  ndatachk2 = "abc123def456ghi789ABCzzz123def456ghi789";
-  ndatachk3 = "abc123def456ghi789ABCDEFGHIJKLzzz123def456ghi789";
-  ndatachk4 = "abc123defABCghi789qwertyzzz123defABCghi789";
-  ndatachk5 = "abcZdef456ghi789qwertyzzzZdef456ghi789";
-  ndatachk6 = "abcVWXYZdef456ghi789qwertyzzzVWXYZdef456ghi789";
-  fh = fopen (fn, "w");
-  fprintf (fh, "%s", tdata);
-  fclose (fh);
-  data = filedataReadAll (fn, &dlen);
-  ck_assert_int_eq (strlen (data), dlen);
-  ck_assert_mem_eq (data, tdata, strlen (tdata));
-
-  /* equal length : 1 */
-  len = dlen;
-  ndata = filedataReplace (data, &len, "qwerty", "ASDFGH");
-  ck_assert_int_eq (strlen (ndatachk1), len);
-  ck_assert_mem_eq (ndata, ndatachk1, len);
-  free (ndata);
-
-  /* shorter length : 1 */
-  len = dlen;
-  ndata = filedataReplace (data, &len, "qwerty", "ABC");
-  ck_assert_int_eq (strlen (ndatachk2), len);
-  ck_assert_mem_eq (ndata, ndatachk2, len);
-  free (ndata);
-
-  /* longer length : 1 */
-  len = dlen;
-  ndata = filedataReplace (data, &len, "qwerty", "ABCDEFGHIJKL");
-  ck_assert_int_eq (strlen (ndatachk3), len);
-  ck_assert_mem_eq (ndata, ndatachk3, len);
-  free (ndata);
-
-  /* equal length : multiple */
-  len = dlen;
-  ndata = filedataReplace (data, &len, "456", "ABC");
-  ck_assert_int_eq (strlen (ndatachk4), len);
-  ck_assert_mem_eq (ndata, ndatachk4, len);
-  free (ndata);
-
-  /* shorter length : multiple */
-  len = dlen;
-  ndata = filedataReplace (data, &len, "123", "Z");
-  ck_assert_int_eq (strlen (ndatachk5), len);
-  ck_assert_mem_eq (ndata, ndatachk5, len);
-  free (ndata);
-
-  /* longer length : multiple */
-  len = dlen;
-  ndata = filedataReplace (data, &len, "123", "VWXYZ");
-  ck_assert_int_eq (strlen (ndatachk6), len);
-  ck_assert_mem_eq (ndata, ndatachk6, len);
-  free (ndata);
-
-  free (data);
-  unlink (fn);
+  for (int i = 1; i < tvaluesz; ++i) {
+    data = tvalues [0].result;
+    len = strlen (data);
+    ndata = filedataReplace (data, &len, tvalues [i].str, tvalues [i].repl);
+    ck_assert_int_eq (strlen (tvalues [i].result), len);
+    ck_assert_mem_eq (ndata, tvalues [i].result, len);
+    free (ndata);
+  }
 }
 END_TEST
 
