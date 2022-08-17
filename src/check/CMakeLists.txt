@@ -9,6 +9,7 @@ add_executable (check_all
   check_libbdj4.c
   check_bdjmsg.c
   check_bdjstring.c
+  check_bdjvars.c
   check_datafile.c
   check_dirlist.c
   check_dirop.c

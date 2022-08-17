@@ -44,9 +44,9 @@ check_libcommon (bool skiplong)
    *  ilist       partial
    *  slist       partial
    *  bdjmsg      complete
-   *  sock        mostly
+   *  sock        partial
    *  datafile    partial
-   *  bdjvars
+   *  bdjvars     complete
    *  sockh
    *  bdjopt
    *  conn
@@ -105,6 +105,9 @@ check_libcommon (bool skiplong)
   }
 
   s = datafile_suite();
+  srunner_add_suite (sr, s);
+
+  s = bdjvars_suite();
   srunner_add_suite (sr, s);
 
   if (! skiplong) {

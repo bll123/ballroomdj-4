@@ -29,9 +29,9 @@ check_libbdj4 (bool skiplong)
    *    needed by tests
    *  bdjvarsdfload
    *    needed by tests
-   *  dnctypes              complete
    *  templateutil
    *    needed by tests
+   *  dnctypes              complete
    *  dance                 complete
    *  genre                 complete
    *  level                 complete

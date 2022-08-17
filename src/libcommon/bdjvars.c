@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -34,11 +33,14 @@ bdjvarsInit (void)
 void
 bdjvarsCleanup (void)
 {
-  for (int i = 0; i < BDJV_MAX; ++i) {
-    if (bdjvars [i] != NULL) {
-      free (bdjvars [i]);
-      bdjvars [i] = NULL;
+  if (initialized) {
+    for (int i = 0; i < BDJV_MAX; ++i) {
+      if (bdjvars [i] != NULL) {
+        free (bdjvars [i]);
+        bdjvars [i] = NULL;
+      }
     }
+    initialized = false;
   }
   return;
 }
@@ -63,6 +65,15 @@ bdjvarsGetNum (bdjvarkeyl_t idx)
   return bdjvarsl [idx];
 }
 
+void
+bdjvarsSetNum (bdjvarkeyl_t idx, ssize_t value)
+{
+  if (idx >= BDJVL_MAX) {
+    return;
+  }
+
+  bdjvarsl [idx] = value;
+}
 
 void
 bdjvarsSetStr (bdjvarkey_t idx, const char *str)
@@ -86,8 +97,6 @@ bdjvarsAdjustPorts (void)
     bdjvarsl [i] = port++;
   }
 }
-
-/* internal routines */
 
 inline bool
 bdjvarsIsInitialized (void)

@@ -31,6 +31,7 @@ void    bdjvarsInit (void);
 bool    bdjvarsIsInitialized (void);
 void    bdjvarsCleanup (void);
 char *  bdjvarsGetStr (bdjvarkey_t idx);
+void    bdjvarsSetNum (bdjvarkeyl_t idx, ssize_t value);
 void    bdjvarsSetStr (bdjvarkey_t idx, const char *str);
 ssize_t bdjvarsGetNum (bdjvarkeyl_t idx);
 void    bdjvarsAdjustPorts (void);

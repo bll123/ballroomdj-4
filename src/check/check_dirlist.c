@@ -83,8 +83,6 @@ START_TEST(dirlist_recursive)
   char *fcfn = "tmp/abc/ghi/ghi.txt";
   char *fdfn = "tmp/abc/ghi/jkl.txt";
 
-  sysvarsInit ("check_filemanip");
-
   diropDeleteDir (dafn);
 
   diropMakeDir (dbfn);

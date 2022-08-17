@@ -16,6 +16,7 @@ int   check_libbdj4 (bool skiplong);
 /* libcommon */
 Suite *     bdjmsg_suite (void);
 Suite *     bdjstring_suite (void);
+Suite *     bdjvars_suite (void);
 Suite *     datafile_suite (void);
 Suite *     dirlist_suite (void);
 Suite *     dirop_suite (void);

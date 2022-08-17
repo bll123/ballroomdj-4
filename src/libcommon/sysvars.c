@@ -243,13 +243,19 @@ sysvarsInit (const char *argv0)
 
   /* strip off the filename */
   p = strrchr (buff, '/');
-  *p = '\0';
-  strlcpy (sysvars [SV_BDJ4EXECDIR], buff, SV_MAX_SZ);
+  *sysvars [SV_BDJ4EXECDIR] = '\0';
+  if (p != NULL) {
+    *p = '\0';
+    strlcpy (sysvars [SV_BDJ4EXECDIR], buff, SV_MAX_SZ);
+  }
 
   /* strip off '/bin' */
   p = strrchr (buff, '/');
-  *p = '\0';
-  strlcpy (sysvars [SV_BDJ4MAINDIR], buff, SV_MAX_SZ);
+  *sysvars [SV_BDJ4MAINDIR] = '\0';
+  if (p != NULL) {
+    *p = '\0';
+    strlcpy (sysvars [SV_BDJ4MAINDIR], buff, SV_MAX_SZ);
+  }
 
   if (fileopIsDirectory ("data")) {
     /* if there is a data directory in the current working directory  */
