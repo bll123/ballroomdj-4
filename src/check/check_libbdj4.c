@@ -40,7 +40,7 @@ check_libbdj4 (bool skiplong)
    *  status                complete
    *  songutil              complete
    *  tagdef                complete
-   *  song                  need audio-file, tag-list checks
+   *  song                  complete
    *  musicdb
    *  songlist
    *  autosel

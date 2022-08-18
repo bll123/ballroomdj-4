@@ -13,9 +13,12 @@
 
 #include <check.h>
 
+#include "bdjopt.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
 #include "datafile.h"
+#include "dirop.h"
+#include "fileop.h"
 #include "ilist.h"
 #include "nlist.h"
 #include "slist.h"
@@ -53,7 +56,7 @@ END_TEST
 
 static char *songparsedata [] = {
     /* unix line endings */
-    "FILE\n..01 Argentine Tango.mp3\n"
+    "FILE\n..music/argentinetango.mp3\n"
       "ADJUSTFLAGS\n..\n"
       "AFMODTIME\n..1660237221\n"
       "ALBUM\n..album\n"
@@ -91,7 +94,7 @@ static char *songparsedata [] = {
       "LASTUPDATED\n..1660237307\n"
       "RRN\n..1\n",
     /* windows line endings */
-    "FILE\r\n..01 Argentine Tango.mp3\r\n"
+    "FILE\n..music/waltz.mp3\n"
       "ADJUSTFLAGS\r\n..\r\n"
       "AFMODTIME\r\n..1660237221\r\n"
       "ALBUM\r\n..album\r\n"
@@ -127,7 +130,45 @@ static char *songparsedata [] = {
       "VOLUMEADJUSTPERC\r\n..4400\r\n"
       "WORK_ID\r\n..\r\n"
       "LASTUPDATED\r\n..1660237307\r\n"
-      "RRN\r\n..1\r\n"
+      "RRN\r\n..1\r\n",
+    /* unix line endings, unicode filename */
+    "FILE\n..music/IAmtheBest_내가제일잘나가.mp3\n"
+      "ADJUSTFLAGS\n..\n"
+      "AFMODTIME\n..1660237221\n"
+      "ALBUM\n..album\n"
+      "ALBUMARTIST\n..albumartist\n"
+      "ARTIST\n..artist\n"
+      "BPM\n..200\n"
+      "COMPOSER\n..composer\n"
+      "CONDUCTOR\n..conductor\n"
+      "DANCE\n..Waltz\n"
+      "DANCELEVEL\n..Normal\n"
+      "DANCERATING\n..Good\n"
+      "DATE\n..2022-8-16\n"
+      "DBADDDATE\n..2022-08-16\n"
+      "DISC\n..1\n"
+      "DISCTOTAL\n..3\n"
+      "DURATION\n..304540\n"
+      "FAVORITE\n..bluestar\n"
+      "GENRE\n..Classical\n"
+      "KEYWORD\n..keyword\n"
+      "MQDISPLAY\n..Waltz\n"
+      "NOTES\n..notes\n"
+      "RECORDING_ID\n..\n"
+      "SAMESONG\n..ss-0001\n"
+      "SONGEND\n..\n"
+      "SONGSTART\n..\n"
+      "SPEEDADJUSTMENT\n..\n"
+      "STATUS\n..New\n"
+      "TAGS\n..tag1 tag2\n"
+      "TITLE\n..title\n"
+      "TRACK_ID\n..\n"
+      "TRACKNUMBER\n..5\n"
+      "TRACKTOTAL\n..10\n"
+      "VOLUMEADJUSTPERC\n..4400\n"
+      "WORK_ID\n..\n"
+      "LASTUPDATED\n..1660237307\n"
+      "RRN\n..1\n"
 };
 enum {
   songparsedatasz = sizeof (songparsedata) / sizeof (char *),
@@ -242,6 +283,42 @@ END_TEST
 
 START_TEST(song_audio_file)
 {
+  song_t      *song = NULL;
+  char        *data;
+  FILE        *fh;
+  char        tbuff [200];
+  bool        rc;
+
+  bdjoptInit ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp");
+  bdjvarsdfloadInit ();
+
+  snprintf (tbuff, sizeof (tbuff), "%s/music", bdjoptGetStr (OPT_M_DIR_MUSIC));
+  diropMakeDir (tbuff);
+
+  song = songAlloc ();
+  ck_assert_ptr_nonnull (song);
+
+  for (int i = 0; i < songparsedatasz; ++i) {
+    data = strdup (songparsedata [i]);
+    songParse (song, data, i);
+    free (data);
+
+    snprintf (tbuff, sizeof (tbuff), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
+        songGetStr (song, TAG_FILE));
+    fh = fileopOpen (tbuff, "w");
+    fclose (fh);
+
+    rc = songAudioFileExists (song);
+    ck_assert_int_eq (rc, 1);
+    fileopDelete (tbuff);
+    rc = songAudioFileExists (song);
+    ck_assert_int_eq (rc, 0);
+  }
+  songFree (song);
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
 }
 END_TEST
 
@@ -299,6 +376,79 @@ END_TEST
 
 START_TEST(song_tag_list)
 {
+  song_t      *song = NULL;
+  char        *data;
+  slist_t     *tlist;
+  slistidx_t  iteridx;
+  songfavoriteinfo_t *sfav;
+  char        tbuff [3096];
+  char        *tag;
+
+  bdjvarsdfloadInit ();
+
+  song = songAlloc ();
+  ck_assert_ptr_nonnull (song);
+
+  for (int i = 0; i < songparsedatasz; ++i) {
+    data = strdup (songparsedata [i]);
+    songParse (song, data, i);
+    free (data);
+
+    tlist = songTagList (song);
+
+    /* this duplicates what the dbWrite() routine does */
+    /* to generate the output string for the database */
+    snprintf (tbuff, sizeof (tbuff), "%s\n..%s\n", tagdefs [TAG_FILE].tag,
+        slistGetStr (tlist, tagdefs [TAG_FILE].tag));
+    slistStartIterator (tlist, &iteridx);
+    while ((tag = slistIterateKey (tlist, &iteridx)) != NULL) {
+      if (strcmp (tag, tagdefs [TAG_FILE].tag) == 0) {
+        continue;
+      }
+      if (strcmp (tag, tagdefs [TAG_LAST_UPDATED].tag) == 0 ||
+          strcmp (tag, tagdefs [TAG_RRN].tag) == 0) {
+        continue;
+      }
+      strlcat (tbuff, tag, sizeof (tbuff));
+      strlcat (tbuff, "\n", sizeof (tbuff));
+      strlcat (tbuff, "..", sizeof (tbuff));
+      data = slistGetStr (tlist, tag);
+      strlcat (tbuff, data, sizeof (tbuff));
+      strlcat (tbuff, "\n", sizeof (tbuff));
+    }
+
+    songFree (song);
+    song = songAlloc ();
+    songParse (song, tbuff, i);
+
+    /* everything (not updated, rrn) should be identical to the original */
+    /* not an exhaustive check */
+
+    ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "artist");
+    ck_assert_str_eq (songGetStr (song, TAG_ALBUM), "album");
+    ck_assert_int_eq (songGetNum (song, TAG_DISCNUMBER), 1);
+    ck_assert_int_eq (songGetNum (song, TAG_TRACKNUMBER), 5);
+    ck_assert_int_eq (songGetNum (song, TAG_TRACKTOTAL), 10);
+    ck_assert_float_eq (songGetDouble (song, TAG_VOLUMEADJUSTPERC), 4.4);
+    tlist = songGetList (song, TAG_TAGS);
+    slistStartIterator (tlist, &iteridx);
+    data = slistIterateKey (tlist, &iteridx);
+    ck_assert_str_eq (data, "tag1");
+    data = slistIterateKey (tlist, &iteridx);
+    ck_assert_str_eq (data, "tag2");
+    /* converted - these assume the standard data files */
+    ck_assert_int_eq (songGetNum (song, TAG_GENRE), 2);
+    ck_assert_int_eq (songGetNum (song, TAG_DANCE), 12);
+    ck_assert_int_eq (songGetNum (song, TAG_DANCERATING), 2);
+    ck_assert_int_eq (songGetNum (song, TAG_DANCELEVEL), 1);
+    ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);
+    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_BLUE);
+    sfav = songGetFavoriteData (song);
+    ck_assert_int_eq (sfav->idx, SONG_FAVORITE_BLUE);
+  }
+  songFree (song);
+
+  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
