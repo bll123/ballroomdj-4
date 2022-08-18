@@ -829,17 +829,26 @@ sock_suite (void)
 
 //  logStderr ();
   s = suite_create ("sock");
-  tc = tcase_create ("sock");
+  tc = tcase_create ("sock-server");
   tcase_add_test (tc, sock_server_create);
   tcase_add_test (tc, sock_server_create_check);
   tcase_add_test (tc, sock_server_check);
+  suite_add_tcase (s, tc);
+  tc = tcase_create ("sock-conn");
+  tcase_set_tags (tc, "slow");
   tcase_add_test (tc, sock_connect_accept);
   tcase_add_test (tc, sock_check_connect_accept);
+  suite_add_tcase (s, tc);
+  tc = tcase_create ("sock-write");
+  tcase_set_tags (tc, "slow");
   tcase_add_test (tc, sock_write);
   tcase_add_test (tc, sock_write_read);
   tcase_add_test (tc, sock_write_read_buff);
   tcase_add_test (tc, sock_write_read_buff_fail);
   tcase_add_test (tc, sock_write_check_read);
+  suite_add_tcase (s, tc);
+  tc = tcase_create ("sock-close");
+  tcase_set_tags (tc, "slow");
   tcase_add_test (tc, sock_close);
   tcase_add_test (tc, sock_write_close);
   tcase_add_test (tc, sock_server_close);

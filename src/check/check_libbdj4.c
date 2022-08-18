@@ -17,12 +17,10 @@
 
 #include "check_bdj.h"
 
-int
-check_libbdj4 (bool skiplong)
+void
+check_libbdj4 (SRunner *sr)
 {
-  int     number_failed = 0;
   Suite   *s;
-  SRunner *sr;
 
   /* libbdj4
    *  bdjvarsdf
@@ -51,8 +49,8 @@ check_libbdj4 (bool skiplong)
    *  playlist
    *  sortopt
    *  dispsel
-   *  orgutil
-   *  validate
+   *  orgutil               partial
+   *  validate              partial
    *  webclient
    *  audiotag
    *  m3u
@@ -64,10 +62,8 @@ check_libbdj4 (bool skiplong)
    *  musicq
    */
 
-  fprintf (stdout, "=== libbdj4\n");
-
   s = dnctypes_suite();
-  sr = srunner_create (s);
+  srunner_add_suite (sr, s);
 
   s = dance_suite();
   srunner_add_suite (sr, s);
@@ -104,10 +100,4 @@ check_libbdj4 (bool skiplong)
 
   s = validate_suite();
   srunner_add_suite (sr, s);
-
-  srunner_run_all (sr, CK_ENV);
-  number_failed += srunner_ntests_failed (sr);
-  srunner_free (sr);
-
-  return number_failed;
 }

@@ -98,7 +98,7 @@ main (int argc, char * argv[])
     { "wait",           no_argument,        NULL,   'w' },
     { "msys",           no_argument,        NULL,   'M' },
     /* check */
-    { "skiplong",       no_argument,        NULL,   0 },
+    { "skipslow",       no_argument,        NULL,   0 },
     /* dbupdate options */
     { "rebuild",        no_argument,        NULL,   0 },
     { "checknew",       no_argument,        NULL,   0 },

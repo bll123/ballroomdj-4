@@ -149,9 +149,14 @@ lock_suite (void)
   TCase     *tc;
 
   s = suite_create ("lock");
-  tc = tcase_create ("lock");
+  tc = tcase_create ("lock-base");
   tcase_add_test (tc, lock_acquire_release);
+  suite_add_tcase (s, tc);
+  tc = tcase_create ("lock-already");
+  tcase_set_tags (tc, "slow");
   tcase_add_test (tc, lock_already);
+  suite_add_tcase (s, tc);
+  tc = tcase_create ("lock-more");
   tcase_add_test (tc, lock_other_dead);
   tcase_add_test (tc, lock_unlock_fail);
   tcase_add_test (tc, lock_exists);

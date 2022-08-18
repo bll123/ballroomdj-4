@@ -10,8 +10,8 @@
 # define ck_assert_float_eq(f,val) ck_assert_int_eq((long)(f*1000.0),(long)(val*1000.0))
 #endif
 
-int   check_libcommon (bool skiplong);
-int   check_libbdj4 (bool skiplong);
+void check_libcommon (SRunner *sr);
+void check_libbdj4 (SRunner *sr);
 
 /* libcommon */
 Suite *     bdjmsg_suite (void);

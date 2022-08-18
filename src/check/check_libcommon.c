@@ -17,12 +17,10 @@
 
 #include "check_bdj.h"
 
-int
-check_libcommon (bool skiplong)
+void
+check_libcommon (SRunner *sr)
 {
-  int     number_failed = 0;
   Suite   *s;
-  SRunner *sr;
 
   /* libcommon:
    *  osutils
@@ -33,7 +31,7 @@ check_libcommon (bool skiplong)
    *  osnetutils
    *  pathutil    done
    *  sysvars
-   *  tmutil      complete (check)
+   *  tmutil      complete
    *  osdir
    *  dirop       complete
    *  filemanip   need renameall test
@@ -62,10 +60,8 @@ check_libcommon (bool skiplong)
    *  progstate   complete (no log checks)
    */
 
-  fprintf (stdout, "=== libcommon\n");
-
   s = bdjstring_suite();
-  sr = srunner_create (s);
+  srunner_add_suite (sr, s);
 
   s = fileop_suite();
   srunner_add_suite (sr, s);
@@ -76,10 +72,8 @@ check_libcommon (bool skiplong)
   s = pathutil_suite();
   srunner_add_suite (sr, s);
 
-  if (! skiplong) {
-    s = tmutil_suite();
-    srunner_add_suite (sr, s);
-  }
+  s = tmutil_suite();
+  srunner_add_suite (sr, s);
 
   s = pathbld_suite();
   srunner_add_suite (sr, s);
@@ -99,10 +93,8 @@ check_libcommon (bool skiplong)
   s = bdjmsg_suite();
   srunner_add_suite (sr, s);
 
-  if (! skiplong) {
-    s = sock_suite();
-    srunner_add_suite (sr, s);
-  }
+  s = sock_suite();
+  srunner_add_suite (sr, s);
 
   s = datafile_suite();
   srunner_add_suite (sr, s);
@@ -110,15 +102,11 @@ check_libcommon (bool skiplong)
   s = bdjvars_suite();
   srunner_add_suite (sr, s);
 
-  if (! skiplong) {
-    s = procutil_suite();
-    srunner_add_suite (sr, s);
-  }
+  s = procutil_suite();
+  srunner_add_suite (sr, s);
 
-  if (! skiplong) {
-    s = lock_suite();
-    srunner_add_suite (sr, s);
-  }
+  s = lock_suite();
+  srunner_add_suite (sr, s);
 
   s = rafile_suite();
   srunner_add_suite (sr, s);
@@ -134,10 +122,4 @@ check_libcommon (bool skiplong)
 
   s = progstate_suite();
   srunner_add_suite (sr, s);
-
-  srunner_run_all (sr, CK_ENV);
-  number_failed += srunner_ntests_failed (sr);
-  srunner_free (sr);
-
-  return number_failed;
 }

@@ -24,22 +24,23 @@
 int
 main (int argc, char *argv [])
 {
+  SRunner *sr = NULL;
   int     c = 0;
   int     option_index = 0;
   int     number_failed = 0;
-  bool    skiplong = false;
+  bool    skipslow = false;
 
   static struct option coptions [] = {
     { "check_all",  no_argument, NULL, 0 },
     { "bdj4",       no_argument, NULL, 0 },
-    { "skiplong",   no_argument, NULL, 's' },
+    { "skipslow",   no_argument, NULL, 's' },
     { NULL,         0,           NULL, 0 }
   };
 
   while ((c = getopt_long_only (argc, argv, "s", coptions, &option_index)) != -1) {
     switch (c) {
       case 's': {
-        skiplong = true;
+        skipslow = true;
         break;
       }
     }
@@ -55,10 +56,15 @@ main (int argc, char *argv [])
 
   logStart ("check_all", "ck", LOG_ALL);
 
-  number_failed += check_libcommon (skiplong);
-  if (number_failed == 0) {
-    number_failed += check_libbdj4 (skiplong);
-  }
+  sr = srunner_create (NULL);
+  check_libcommon (sr);
+  check_libbdj4 (sr);
+  /* if the durations are needed */
+//  srunner_set_xml (sr, "tmp/check.xml");
+  srunner_set_log (sr, "tmp/check.xml");
+  srunner_run_all (sr, CK_ENV);
+  number_failed += srunner_ntests_failed (sr);
+  srunner_free (sr);
 
   logEnd ();
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
