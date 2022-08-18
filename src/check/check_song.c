@@ -38,6 +38,7 @@ START_TEST(song_alloc)
   templateFileCopy ("ratings.txt", "ratings.txt");
 
   bdjvarsdfloadInit ();
+  songFavoriteInit ();
 
   song = songAlloc ();
   ck_assert_ptr_nonnull (song);
@@ -56,7 +57,7 @@ END_TEST
 
 static char *songparsedata [] = {
     /* unix line endings */
-    "FILE\n..music/argentinetango.mp3\n"
+    "FILE\n..argentinetango.mp3\n"
       "ADJUSTFLAGS\n..\n"
       "AFMODTIME\n..1660237221\n"
       "ALBUM\n..album\n"
@@ -94,7 +95,7 @@ static char *songparsedata [] = {
       "LASTUPDATED\n..1660237307\n"
       "RRN\n..1\n",
     /* windows line endings */
-    "FILE\n..music/waltz.mp3\n"
+    "FILE\r\n..waltz.mp3\r\n"
       "ADJUSTFLAGS\r\n..\r\n"
       "AFMODTIME\r\n..1660237221\r\n"
       "ALBUM\r\n..album\r\n"
@@ -132,7 +133,7 @@ static char *songparsedata [] = {
       "LASTUPDATED\r\n..1660237307\r\n"
       "RRN\r\n..1\r\n",
     /* unix line endings, unicode filename */
-    "FILE\n..music/IAmtheBest_내가제일잘나가.mp3\n"
+    "FILE\n..IAmtheBest_내가제일잘나가.mp3\n"
       "ADJUSTFLAGS\n..\n"
       "AFMODTIME\n..1660237221\n"
       "ALBUM\n..album\n"
@@ -181,15 +182,14 @@ START_TEST(song_parse)
 
   bdjvarsdfloadInit ();
 
-  song = songAlloc ();
-  ck_assert_ptr_nonnull (song);
 
   for (int i = 0; i < songparsedatasz; ++i) {
+    song = songAlloc ();
     data = strdup (songparsedata [i]);
     songParse (song, data, i);
     free (data);
+    songFree (song);
   }
-  songFree (song);
 
   bdjvarsdfloadCleanup ();
 }
@@ -205,10 +205,9 @@ START_TEST(song_parse_get)
 
   bdjvarsdfloadInit ();
 
-  song = songAlloc ();
-  ck_assert_ptr_nonnull (song);
 
   for (int i = 0; i < songparsedatasz; ++i) {
+    song = songAlloc ();
     data = strdup (songparsedata [i]);
     songParse (song, data, i);
     free (data);
@@ -233,8 +232,8 @@ START_TEST(song_parse_get)
     ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_BLUE);
     sfav = songGetFavoriteData (song);
     ck_assert_int_eq (sfav->idx, SONG_FAVORITE_BLUE);
+    songFree (song);
   }
-  songFree (song);
 
   bdjvarsdfloadCleanup ();
 }
@@ -248,10 +247,8 @@ START_TEST(song_parse_set)
 
   bdjvarsdfloadInit ();
 
-  song = songAlloc ();
-  ck_assert_ptr_nonnull (song);
-
   for (int i = 0; i < songparsedatasz; ++i) {
+    song = songAlloc ();
     data = strdup (songparsedata [i]);
     songParse (song, data, i);
     free (data);
@@ -274,8 +271,8 @@ START_TEST(song_parse_set)
     ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_PURPLE);
     sfav = songGetFavoriteData (song);
     ck_assert_int_eq (sfav->idx, SONG_FAVORITE_PURPLE);
+    songFree (song);
   }
-  songFree (song);
 
   bdjvarsdfloadCleanup ();
 }
@@ -290,16 +287,12 @@ START_TEST(song_audio_file)
   bool        rc;
 
   bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp");
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
+  diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
   bdjvarsdfloadInit ();
 
-  snprintf (tbuff, sizeof (tbuff), "%s/music", bdjoptGetStr (OPT_M_DIR_MUSIC));
-  diropMakeDir (tbuff);
-
-  song = songAlloc ();
-  ck_assert_ptr_nonnull (song);
-
   for (int i = 0; i < songparsedatasz; ++i) {
+    song = songAlloc ();
     data = strdup (songparsedata [i]);
     songParse (song, data, i);
     free (data);
@@ -314,8 +307,10 @@ START_TEST(song_audio_file)
     fileopDelete (tbuff);
     rc = songAudioFileExists (song);
     ck_assert_int_eq (rc, 0);
+    songFree (song);
   }
-  songFree (song);
+
+  diropDeleteDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
 
   bdjvarsdfloadCleanup ();
   bdjoptCleanup ();
@@ -330,10 +325,8 @@ START_TEST(song_display)
 
   bdjvarsdfloadInit ();
 
-  song = songAlloc ();
-  ck_assert_ptr_nonnull (song);
-
   for (int i = 0; i < songparsedatasz; ++i) {
+    song = songAlloc ();
     data = strdup (songparsedata [i]);
     songParse (song, data, i);
     free (data);
@@ -367,8 +360,8 @@ START_TEST(song_display)
     data = songDisplayString (song, TAG_TAGS);
     ck_assert_str_eq (songDisplayString (song, TAG_TAGS), "tag1 tag2");
     free (data);
+    songFree (song);
   }
-  songFree (song);
 
   bdjvarsdfloadCleanup ();
 }
@@ -386,10 +379,8 @@ START_TEST(song_tag_list)
 
   bdjvarsdfloadInit ();
 
-  song = songAlloc ();
-  ck_assert_ptr_nonnull (song);
-
   for (int i = 0; i < songparsedatasz; ++i) {
+    song = songAlloc ();
     data = strdup (songparsedata [i]);
     songParse (song, data, i);
     free (data);
@@ -445,8 +436,8 @@ START_TEST(song_tag_list)
     ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_BLUE);
     sfav = songGetFavoriteData (song);
     ck_assert_int_eq (sfav->idx, SONG_FAVORITE_BLUE);
+    songFree (song);
   }
-  songFree (song);
 
   bdjvarsdfloadCleanup ();
 }

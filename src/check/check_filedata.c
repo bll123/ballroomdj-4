@@ -64,8 +64,8 @@ typedef struct {
   char  *result;
 } chk_filedata_t;
 
+static char *teststr = "abc123def456ghi789qwertyzzz123def456ghi789";
 static chk_filedata_t tvalues [] = {
-  { "", "", "abc123def456ghi789qwertyzzz123def456ghi789" },
   { "qwerty", "ASDFGH", "abc123def456ghi789ASDFGHzzz123def456ghi789" },
   { "qwerty", "ABC", "abc123def456ghi789ABCzzz123def456ghi789" },
   { "qwerty", "ABCDEFGHIJKL", "abc123def456ghi789ABCDEFGHIJKLzzz123def456ghi789" },
@@ -83,8 +83,8 @@ START_TEST(filedata_repl)
   size_t  len;
   char    *ndata = NULL;
 
-  for (int i = 1; i < tvaluesz; ++i) {
-    data = tvalues [0].result;
+  for (int i = 0; i < tvaluesz; ++i) {
+    data = teststr;
     len = strlen (data);
     ndata = filedataReplace (data, &len, tvalues [i].str, tvalues [i].repl);
     ck_assert_int_eq (strlen (tvalues [i].result), len);

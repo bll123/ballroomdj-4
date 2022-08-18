@@ -298,12 +298,18 @@ songDisplayString (song_t *song, int tagidx)
   valuetype_t     vt;
   dfConvFunc_t    convfunc;
   datafileconv_t  conv;
-  char            *str;
+  char            *str = NULL;
   songfavoriteinfo_t  * favorite;
+
+  if (song == NULL) {
+    return NULL;
+  }
 
   if (tagidx == TAG_FAVORITE) {
     favorite = songGetFavoriteData (song);
-    str = strdup (favorite->spanStr);
+    if (favorite != NULL) {
+      str = strdup (favorite->spanStr);
+    }
     return str;
   }
 
@@ -384,6 +390,7 @@ songCleanup (void)
   }
 
   gsonginit.songcount = 0;
+  gsonginit.initialized = false;
   songFavoriteCleanup ();
 }
 
