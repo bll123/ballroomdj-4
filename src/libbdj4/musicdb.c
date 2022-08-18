@@ -378,7 +378,6 @@ dbBackup (void)
   pathbldMakePath (dbfname, sizeof (dbfname),
       MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
   filemanipBackup (dbfname, 4);
-
 }
 
 static song_t *

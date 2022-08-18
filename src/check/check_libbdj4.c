@@ -41,7 +41,7 @@ check_libbdj4 (bool skiplong)
    *  songutil              complete
    *  tagdef                complete
    *  song                  complete
-   *  musicdb
+   *  musicdb               complete
    *  songlist
    *  autosel
    *  songfilter

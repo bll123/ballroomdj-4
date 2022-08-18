@@ -136,7 +136,7 @@ START_TEST(musicdb_write)
   FILE      *fh;
   slist_t   *tlist;
 
-  fprintf (stdout, "  write\n");
+  // fprintf (stdout, "  write\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
@@ -187,7 +187,7 @@ START_TEST(musicdb_overwrite)
   FILE      *fh;
   slist_t   *tlist;
 
-  fprintf (stdout, "  overwrite\n");
+  // fprintf (stdout, "  overwrite\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
@@ -240,7 +240,7 @@ START_TEST(musicdb_batch_write)
   FILE      *fh;
   slist_t   *tlist;
 
-  fprintf (stdout, "  batch write\n");
+  // fprintf (stdout, "  batch write\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
@@ -293,7 +293,7 @@ START_TEST(musicdb_batch_overwrite)
   FILE      *fh;
   slist_t   *tlist;
 
-  fprintf (stdout, "  batch overwrite\n");
+  // fprintf (stdout, "  batch overwrite\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
@@ -350,7 +350,7 @@ START_TEST(musicdb_write_song)
   /* this method of adding a song to the database is not currently in use */
   /* 2022-8-18 */
 
-  fprintf (stdout, "  write song\n");
+  // fprintf (stdout, "  write song\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
@@ -397,7 +397,7 @@ START_TEST(musicdb_overwrite_song)
   char      *ndata;
   FILE      *fh;
 
-  fprintf (stdout, "  overwrite song\n");
+  // fprintf (stdout, "  overwrite song\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
@@ -444,11 +444,14 @@ START_TEST(musicdb_load_get_byidx)
   int       count;
   char      *ndata;
 
-  fprintf (stdout, "   load byidx\n");
+  // fprintf (stdout, "   load byidx\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
+
+  count = dbCount (db);
+  ck_assert_int_eq (count, songparsedatasz * TEST_MAX);
 
   count = 0;
   for (int i = 0; i < songparsedatasz; ++i) {
@@ -463,7 +466,7 @@ START_TEST(musicdb_load_get_byidx)
       free (ndata);
 
       dbsong = dbGetByIdx (db, count);
-      ck_assert_int_eq (songGetNum (song, TAG_RRN), count + 1);
+      ck_assert_int_eq (songGetNum (dbsong, TAG_RRN), count + 1);
       ck_assert_str_eq (songGetStr (song, TAG_ARTIST),
           songGetStr (dbsong, TAG_ARTIST));
       songFree (song);
@@ -488,11 +491,14 @@ START_TEST(musicdb_load_get_byname)
   int       count;
   char      *ndata;
 
-  fprintf (stdout, "   load byname\n");
+  // fprintf (stdout, "   load byname\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
+
+  count = dbCount (db);
+  ck_assert_int_eq (count, songparsedatasz * TEST_MAX);
 
   count = 0;
   for (int i = 0; i < songparsedatasz; ++i) {
@@ -507,7 +513,7 @@ START_TEST(musicdb_load_get_byname)
       free (ndata);
 
       dbsong = dbGetByName (db, songGetStr (song, TAG_FILE));
-      ck_assert_int_eq (songGetNum (song, TAG_RRN), count + 1);
+      ck_assert_int_eq (songGetNum (dbsong, TAG_RRN), count + 1);
       ck_assert_str_eq (songGetStr (song, TAG_ARTIST),
           songGetStr (dbsong, TAG_ARTIST));
       songFree (song);
@@ -523,9 +529,86 @@ START_TEST(musicdb_load_get_byname)
 END_TEST
 
 
+START_TEST(musicdb_iterate)
+{
+  musicdb_t *db;
+  char      tmp [40];
+  size_t    len;
+  song_t    *song;
+  song_t    *dbsong;
+  int       count;
+  char      *ndata;
+  dbidx_t   iteridx;
+  dbidx_t   curridx;
+
+  // fprintf (stdout, "   iterate\n");
+  bdjoptInit ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
+  bdjvarsdfloadInit ();
+
+  db = dbOpen (dbfn);
+
+  dbStartIterator (db, &iteridx);
+  count = 0;
+  for (int i = 0; i < songparsedatasz; ++i) {
+    for (int j = 0; j < TEST_MAX; ++j) {
+      song = songAlloc ();
+      ck_assert_ptr_nonnull (song);
+      snprintf (tmp, sizeof (tmp), "%02d", count);
+      len = strlen (songparsedata [i]);
+      ndata = filedataReplace (songparsedata [i], &len, "%d", tmp);
+      songParse (song, ndata, count);
+      songSetNum (song, TAG_RRN, count + 1);
+      free (ndata);
+
+      dbsong = dbIterate (db, &curridx, &iteridx);
+      ck_assert_int_eq (songGetNum (dbsong, TAG_RRN), count + 1);
+      ck_assert_str_eq (songGetStr (song, TAG_ARTIST),
+          songGetStr (dbsong, TAG_ARTIST));
+      songFree (song);
+      ++count;
+    }
+  }
+
+  dbClose (db);
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+}
+END_TEST
+
+START_TEST(musicdb_load_entry)
+{
+  musicdb_t *db;
+  song_t    *song;
+
+  bdjoptInit ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
+  bdjvarsdfloadInit ();
+  db = dbOpen (dbfn);
+
+  song = dbGetByName (db, "argentinetango05.mp3");
+  ck_assert_ptr_nonnull (song);
+  ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "artist05");
+
+  songSetStr (song, TAG_ARTIST, "newartist");
+  ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "newartist");
+  dbWriteSong (db, song);
+  dbLoadEntry (db, songGetNum (song, TAG_DBIDX));
+
+  song = dbGetByName (db, "argentinetango05.mp3");
+  ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "newartist");
+  dbClose (db);
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+}
+END_TEST
+
+
 START_TEST(musicdb_cleanup)
 {
-  fprintf (stdout, "   cleanup\n");
+  // fprintf (stdout, "   cleanup\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   fileopDelete (dbfn);
@@ -548,27 +631,36 @@ musicdb_suite (void)
   tcase_add_test (tc, musicdb_write);
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);
+  tcase_add_test (tc, musicdb_iterate);
   tcase_add_test (tc, musicdb_overwrite);
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);
+  tcase_add_test (tc, musicdb_iterate);
   tcase_add_test (tc, musicdb_cleanup);
   suite_add_tcase (s, tc);
   tc = tcase_create ("musicdb-batch-write");
   tcase_add_test (tc, musicdb_batch_write);
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);
+  tcase_add_test (tc, musicdb_iterate);
   tcase_add_test (tc, musicdb_batch_overwrite);
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);
+  tcase_add_test (tc, musicdb_iterate);
   tcase_add_test (tc, musicdb_cleanup);
   tc = tcase_create ("musicdb-write-song");
   suite_add_tcase (s, tc);
   tcase_add_test (tc, musicdb_write_song);
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);
+  tcase_add_test (tc, musicdb_iterate);
   tcase_add_test (tc, musicdb_overwrite_song);
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);
+  tcase_add_test (tc, musicdb_iterate);
+  tc = tcase_create ("musicdb-load-entry");
+  suite_add_tcase (s, tc);
+  tcase_add_test (tc, musicdb_load_entry);
   tcase_add_test (tc, musicdb_cleanup);
   suite_add_tcase (s, tc);
   return s;
