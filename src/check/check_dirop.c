@@ -137,7 +137,7 @@ dirop_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("dirop Suite");
+  s = suite_create ("dirop");
   tc = tcase_create ("dirop");
   tcase_add_test (tc, dirop_mkdir_isdir_a);
   tcase_add_test (tc, dirop_del_dir_a);

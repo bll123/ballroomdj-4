@@ -129,7 +129,7 @@ procutil_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("procutil Suite");
+  s = suite_create ("procutil");
   tc = tcase_create ("procutil");
   tcase_add_test (tc, procutil_exists);
   tcase_add_test (tc, procutil_start);

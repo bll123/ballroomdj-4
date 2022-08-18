@@ -495,7 +495,7 @@ filemanip_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("filemanip Suite");
+  s = suite_create ("filemanip");
   tc = tcase_create ("filemanip");
   tcase_add_test (tc, filemanip_move_a);
   tcase_add_test (tc, filemanip_copy_a);

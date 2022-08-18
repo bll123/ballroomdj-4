@@ -211,7 +211,7 @@ validate_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("validate Suite");
+  s = suite_create ("validate");
   tc = tcase_create ("validate");
   tcase_add_test (tc, validate_empty);
   tcase_add_test (tc, validate_nospace);

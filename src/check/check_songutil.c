@@ -54,7 +54,7 @@ songutil_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("songutil Suite");
+  s = suite_create ("songutil");
   tc = tcase_create ("songutil");
   tcase_add_test (tc, songutil_chk);
   suite_add_tcase (s, tc);

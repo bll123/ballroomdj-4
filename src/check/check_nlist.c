@@ -708,7 +708,7 @@ nlist_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("nlist Suite");
+  s = suite_create ("nlist");
   tc = tcase_create ("nlist");
   tcase_add_test (tc, nlist_create_free);
   tcase_add_test (tc, nlist_version);

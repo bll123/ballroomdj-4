@@ -264,7 +264,7 @@ tmutil_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("tmutil Suite");
+  s = suite_create ("tmutil");
   tc = tcase_create ("tmutil");
   tcase_add_test (tc, mstime_chk);
   tcase_add_test (tc, mssleep_chk);

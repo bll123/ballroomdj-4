@@ -96,6 +96,9 @@ check_libbdj4 (bool skiplong)
   s = song_suite();
   srunner_add_suite (sr, s);
 
+  s = musicdb_suite();
+  srunner_add_suite (sr, s);
+
   s = orgutil_suite();
   srunner_add_suite (sr, s);
 

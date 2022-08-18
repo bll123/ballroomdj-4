@@ -100,7 +100,7 @@ pathbld_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("pathbld Suite");
+  s = suite_create ("pathbld");
   tc = tcase_create ("pathbld");
   tcase_add_test (tc, pathbld_chk);
   suite_add_tcase (s, tc);

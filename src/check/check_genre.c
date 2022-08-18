@@ -175,7 +175,7 @@ genre_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("genre Suite");
+  s = suite_create ("genre");
   tc = tcase_create ("genre");
   tcase_add_test (tc, genre_alloc);
   tcase_add_test (tc, genre_iterate);

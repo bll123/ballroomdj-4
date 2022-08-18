@@ -428,7 +428,7 @@ dance_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("dance Suite");
+  s = suite_create ("dance");
   tc = tcase_create ("dance");
   tcase_add_test (tc, dance_alloc);
   tcase_add_test (tc, dance_iterate);

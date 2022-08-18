@@ -72,7 +72,7 @@ bdjvars_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("bdjvars Suite");
+  s = suite_create ("bdjvars");
   tc = tcase_create ("bdjvars");
   tcase_add_test (tc, bdjvars_init);
   tcase_add_test (tc, bdjvars_init_idx);

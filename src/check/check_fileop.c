@@ -198,7 +198,7 @@ fileop_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("fileop Suite");
+  s = suite_create ("fileop");
   tc = tcase_create ("fileop");
   tcase_add_test (tc, fileop_exists_a);
   tcase_add_test (tc, fileop_size_a);

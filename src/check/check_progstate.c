@@ -166,7 +166,7 @@ progstate_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("progstate Suite");
+  s = suite_create ("progstate");
   tc = tcase_create ("progstate");
   tcase_add_test (tc, progstate_chk);
   tcase_add_test (tc, progstate_multi_skip);

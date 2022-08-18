@@ -145,7 +145,7 @@ dirlist_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("dirlist Suite");
+  s = suite_create ("dirlist");
   tc = tcase_create ("dirlist");
   tcase_add_test (tc, dirlist_basic);
   tcase_add_test (tc, dirlist_recursive);

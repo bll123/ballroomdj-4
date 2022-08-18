@@ -180,7 +180,7 @@ level_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("level Suite");
+  s = suite_create ("level");
   tc = tcase_create ("level");
   tcase_add_test (tc, level_alloc);
   tcase_add_test (tc, level_iterate);

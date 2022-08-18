@@ -96,7 +96,7 @@ songfav_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("songfav Suite");
+  s = suite_create ("songfav");
   tc = tcase_create ("songfav");
   tcase_add_test (tc, songfav_init);
   tcase_add_test (tc, songfav_conv);

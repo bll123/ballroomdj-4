@@ -92,7 +92,7 @@ dnctypes_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("dnctypes Suite");
+  s = suite_create ("dnctypes");
   tc = tcase_create ("dnctypes");
   tcase_add_test (tc, dnctypes_alloc);
   tcase_add_test (tc, dnctypes_iterate);

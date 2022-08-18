@@ -160,7 +160,7 @@ status_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("status Suite");
+  s = suite_create ("status");
   tc = tcase_create ("status");
   tcase_add_test (tc, status_alloc);
   tcase_add_test (tc, status_iterate);

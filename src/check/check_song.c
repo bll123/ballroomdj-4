@@ -476,7 +476,7 @@ song_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("song Suite");
+  s = suite_create ("song");
   tc = tcase_create ("song");
   tcase_add_test (tc, song_alloc);
   tcase_add_test (tc, song_parse);

@@ -404,7 +404,7 @@ ilist_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("ilist Suite");
+  s = suite_create ("ilist");
   tc = tcase_create ("ilist");
   tcase_add_test (tc, ilist_create_free);
   tcase_add_test (tc, ilist_get_data_str);

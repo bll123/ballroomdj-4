@@ -45,7 +45,7 @@ tagdef_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("tagdef Suite");
+  s = suite_create ("tagdef");
   tc = tcase_create ("tagdef");
   tcase_add_test (tc, tagdef_init);
   tcase_add_test (tc, tagdef_lookup);

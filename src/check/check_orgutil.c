@@ -206,7 +206,7 @@ orgutil_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("orgutil Suite");
+  s = suite_create ("orgutil");
   tc = tcase_create ("orgutil");
   tcase_add_test (tc, orgutil_parse);
   tcase_add_test (tc, orgutil_regex);

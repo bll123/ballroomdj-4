@@ -982,7 +982,7 @@ datafile_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("datafile Suite");
+  s = suite_create ("datafile");
   tc = tcase_create ("datafile");
   tcase_add_test (tc, parse_init_free);
   tcase_add_test (tc, parse_simple);

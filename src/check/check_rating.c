@@ -159,7 +159,7 @@ rating_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("rating Suite");
+  s = suite_create ("rating");
   tc = tcase_create ("rating");
   tcase_add_test (tc, rating_alloc);
   tcase_add_test (tc, rating_iterate);

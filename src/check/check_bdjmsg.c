@@ -52,7 +52,7 @@ bdjmsg_suite (void)
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("bdjmsg Suite");
+  s = suite_create ("bdjmsg");
   tc = tcase_create ("bdjmsg");
   tcase_add_test (tc, bdjmsg_encode);
   tcase_add_test (tc, bdjmsg_decode);
