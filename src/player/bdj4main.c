@@ -153,7 +153,7 @@ static playlistitem_t * mainPlaylistItemCache (maindata_t *mainData, playlist_t 
 static void mainPlaylistItemFree (void *tplitem);
 static void mainMusicqSetSuspend (maindata_t *mainData, char *args, bool value);
 static void mainMusicQueueMix (maindata_t *mainData, char *args);
-
+static void mainPlaybackFinishProcess (maindata_t *mainData, const char *args);
 
 static long globalCounter = 0;
 static int  gKillReceived = 0;
@@ -468,8 +468,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAYBACK_FINISH: {
-          mainMusicQueueNext (mainData);
-          ++mainData->pbfinishrcv;
+          mainPlaybackFinishProcess (mainData, targs);
           dbgdisp = true;
           break;
         }
@@ -2503,4 +2502,22 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
 
   mainData->musicqChanged [mqidx] = MAIN_CHG_START;
   mainData->marqueeChanged [mqidx] = true;
+}
+
+static void
+mainPlaybackFinishProcess (maindata_t *mainData, const char *args)
+{
+  char    tmp [40];
+  int     flag;
+  dbidx_t dbidx;
+
+  flag = atoi (args);
+  if (flag) {
+    dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
+    snprintf (tmp, sizeof (tmp), "%d", dbidx);
+    connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_SONG_FINISH, tmp);
+  }
+
+  mainMusicQueueNext (mainData);
+  ++mainData->pbfinishrcv;
 }

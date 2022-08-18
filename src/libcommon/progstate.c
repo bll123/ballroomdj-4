@@ -23,7 +23,6 @@ enum {
 typedef struct progstate {
   programstate_t      programState;
   ilist_t             *callbacks [STATE_MAX];
-  bool                cbexecuted [STATE_MAX];
   mstime_t            tm;
   char                *progtag;
 } progstate_t;
@@ -57,7 +56,6 @@ progstateInit (char *progtag)
   for (programstate_t i = STATE_NOT_RUNNING; i < STATE_MAX; ++i) {
     snprintf (tbuff, sizeof (tbuff), "progstate-cb-%d", i);
     progstate->callbacks [i] = ilistAlloc (tbuff, LIST_ORDERED);
-    progstate->cbexecuted [i] = false;
   }
 
   progstate->progtag = progtag;
@@ -146,15 +144,6 @@ progstateLogTime (progstate_t *progstate, char *label)
       progstate->progtag, label, mstimeend (&progstate->tm));
 }
 
-const char *
-progstateDebug (progstate_t *progstate)
-{
-  if (progstate == NULL) {
-    return progstatetext [STATE_NOT_RUNNING];
-  }
-  return progstatetext [progstate->programState];
-}
-
 /* internal routines */
 
 static programstate_t
@@ -164,24 +153,20 @@ progstateProcessLoop (progstate_t *progstate)
   bool                  tsuccess;
   progstateCallback_t   cb = NULL;
   void                  *userdata = NULL;
-  ilistidx_t            count;
-
-  if (progstate->cbexecuted [progstate->programState]) {
-    /* if the callback has already been run, return */
-    /* this happens for the running and closed states */
-    /* and running and closed states should not progress */
-    return progstate->programState;
-  }
+  ssize_t               count;
 
   /* skip over empty states */
   while (ilistGetCount (progstate->callbacks [progstate->programState]) == 0 &&
       progstate->programState != STATE_RUNNING &&
       progstate->programState != STATE_CLOSED) {
-    progstate->cbexecuted [progstate->programState] = true;
     ++progstate->programState;
   }
 
-  progstate->cbexecuted [progstate->programState] = true;
+  if (progstate->programState == STATE_RUNNING ||
+      progstate->programState == STATE_CLOSED) {
+    /* running and closed do not have callbacks */
+    return progstate->programState;
+  }
 
   count = ilistGetCount (progstate->callbacks [progstate->programState]);
   if (count > 0) {
@@ -208,7 +193,6 @@ progstateProcessLoop (progstate_t *progstate)
       }
     }
   }
-
   if (success) {
     if (progstate->programState != STATE_RUNNING &&
         progstate->programState != STATE_CLOSED) {
@@ -218,5 +202,14 @@ progstateProcessLoop (progstate_t *progstate)
         progstate->programState, progstatetext [progstate->programState]);
   }
   return progstate->programState;
+}
+
+const char *
+progstateDebug (progstate_t *progstate)
+{
+  if (progstate == NULL) {
+    return progstatetext [STATE_NOT_RUNNING];
+  }
+  return progstatetext [progstate->programState];
 }
 

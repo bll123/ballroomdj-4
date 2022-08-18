@@ -36,6 +36,7 @@ typedef struct uimusicqgtk uimusicqgtk_t;
 
 typedef struct {
   int           count;          // how many songs displayed in queue
+  dispselsel_t  dispselType;
   long          selectLocation;
   /* music queue tab */
   UIWidget      mainbox;
@@ -59,7 +60,6 @@ typedef struct uimusicq {
   conn_t          *conn;
   dispsel_t       *dispsel;
   musicdb_t       *musicdb;
-  dispselsel_t    dispselType;
   UIWidget        *parentwin;
   UIWidget        pausePixbuf;
   UIWidget        *statusMsg;

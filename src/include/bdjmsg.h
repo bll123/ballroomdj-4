@@ -106,7 +106,8 @@ typedef enum {
   MSG_MUSIC_QUEUE_DATA,
   MSG_QUEUE_SWITCH,         // args: queue number
   MSG_SONG_SELECT,          // args: queue number, position
-  MSG_FINISHED,             // also sent to marquee
+  MSG_FINISHED,             // no more songs, also sent to marquee
+  MSG_SONG_FINISH,          // args: dbidx, for history
 
   /* to/from starterui */
   MSG_START_MAIN,           // arg: true for --nomarquee

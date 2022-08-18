@@ -650,9 +650,9 @@ playerProcessing (void *udata)
             }
           } else {
             if (! playerData->repeat) {
-              /* done, go on to next song */
+              /* done, go on to next song, with history */
               connSendMessage (playerData->conn, ROUTE_MAIN,
-                  MSG_PLAYBACK_FINISH, NULL);
+                  MSG_PLAYBACK_FINISH, "1");
             }
           }
 
@@ -1071,9 +1071,8 @@ playerNextSong (playerdata_t *playerData)
       logMsg (LOG_DBG, LOG_BASIC, "pl-state: (was paused; next-song) %d/%s",
           playerData->playerState, plstateDebugText (playerData->playerState));
     }
-    /* tell main to go to the next song */
-    connSendMessage (playerData->conn, ROUTE_MAIN,
-        MSG_PLAYBACK_FINISH, NULL);
+    /* tell main to go to the next song, no history */
+    connSendMessage (playerData->conn, ROUTE_MAIN, MSG_PLAYBACK_FINISH, "0");
   }
   logProcEnd (LOG_PROC, "playerNextSong", "");
 }

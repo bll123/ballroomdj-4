@@ -6,14 +6,18 @@
 #include "tagdef.h"
 
 typedef enum {
+  /* if the number of music queues is changed (i.e. MUSICQ_PB_MAX), */
+  /* bdjopt.h and configui/confplayer.c must be updated */
   MUSICQ_PB_A,
   MUSICQ_PB_B,
-  /* if the number of music queues is changed, bdjopt.h and bdj4configui.c */
-  /* must be updated */
+  /* keep the history music queue after the last player music queue */
+  /* this makes processing easier */
+  MUSICQ_HISTORY,
   MUSICQ_SL,        // for the song list editor
   MUSICQ_MNG_PB,    // used by manageui for playback
   MUSICQ_MAX,
-  MUSICQ_PB_MAX = MUSICQ_SL,
+  MUSICQ_PB_MAX = MUSICQ_HISTORY,   // music queues not including history
+  MUSICQ_DISP_MAX = MUSICQ_SL,      // music queues including history
   MUSICQ_CURRENT,
 } musicqidx_t;
 

@@ -36,6 +36,8 @@ confuiInitDispSettings (confuigui_t *gui)
       CONFUI_SPINBOX_DISP_SEL,
       /* CONTEXT: configuration: display settings for: music queue */
       DISP_SEL_MUSICQ, _("Music Queue"),
+      /* CONTEXT: configuration: display settings for: history */
+      DISP_SEL_HISTORY, _("History"),
       /* CONTEXT: configuration: display settings for: requests */
       DISP_SEL_REQUEST, _("Request"),
       /* CONTEXT: configuration: display settings for: song list */

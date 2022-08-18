@@ -41,21 +41,25 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq->repeatButton = UIMUSICQ_REPEAT_NONE;
   uimusicq->dispsel = dispsel;
   uimusicq->musicdb = musicdb;
-  uimusicq->dispselType = dispselType;
   uimusicq->statusMsg = NULL;
 
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     int     sz;
 
+    uimusicq->ui [i].dispselType = dispselType;
+    if (i == MUSICQ_HISTORY) {
+      /* override the setting from the player ui */
+      uimusicq->ui [i].dispselType = DISP_SEL_HISTORY;
+    }
     uimusicq->ui [i].hasui = false;
     uimusicq->ui [i].count = 0;
     uimusicq->ui [i].haveselloc = false;
     uimusicq->ui [i].playlistsel = uiDropDownInit ();
     sz = 20;
-    if (uimusicq->dispselType == DISP_SEL_SONGLIST) {
+    if (uimusicq->ui [i].dispselType == DISP_SEL_SONGLIST) {
       sz = 25;
     }
-    if (uimusicq->dispselType == DISP_SEL_EZSONGLIST) {
+    if (uimusicq->ui [i].dispselType == DISP_SEL_EZSONGLIST) {
       sz = 15;
     }
     uimusicq->ui [i].slname = uiEntryInit (sz, 40);

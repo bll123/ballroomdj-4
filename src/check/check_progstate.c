@@ -19,13 +19,16 @@
 #include "progstate.h"
 
 static bool pscb (void *udata, programstate_t state);
+static bool pscbmulti (void *udata, programstate_t state);
 static int statetab [STATE_MAX];
 
 START_TEST(progstate_chk)
 {
   progstate_t     *ps;
   programstate_t  currstate = STATE_NOT_RUNNING;
+  programstate_t  pstate = STATE_NOT_RUNNING;
   int             userdata = 1;
+  int             mcount;
 
   for (int i = 0; i < STATE_MAX; ++i) {
     statetab [i] = 0;
@@ -35,40 +38,49 @@ START_TEST(progstate_chk)
   progstateSetCallback (ps, STATE_NOT_RUNNING, pscb, &userdata);
   progstateSetCallback (ps, STATE_INITIALIZING, pscb, &userdata);
   progstateSetCallback (ps, STATE_LISTENING, pscb, &userdata);
-  progstateSetCallback (ps, STATE_CONNECTING, pscb, &userdata);
+  progstateSetCallback (ps, STATE_CONNECTING, pscbmulti, &userdata);
   progstateSetCallback (ps, STATE_WAIT_HANDSHAKE, pscb, &userdata);
   progstateSetCallback (ps, STATE_INITIALIZE_DATA, pscb, &userdata);
   progstateSetCallback (ps, STATE_RUNNING, pscb, &userdata);
-  progstateSetCallback (ps, STATE_STOPPING, pscb, &userdata);
+  progstateSetCallback (ps, STATE_STOPPING, pscbmulti, &userdata);
   progstateSetCallback (ps, STATE_STOP_WAIT, pscb, &userdata);
   progstateSetCallback (ps, STATE_CLOSING, pscb, &userdata);
   progstateSetCallback (ps, STATE_CLOSED, pscb, &userdata);
 
   ck_assert_int_eq (progstateCurrState (ps), currstate);
 
+  mcount = 0;
   while (! progstateIsRunning (ps)) {
-    ck_assert_int_eq (statetab [currstate], 0);
+    ck_assert_int_eq (statetab [currstate], mcount);
     progstateProcess (ps);
     /* prior state check */
-    ck_assert_int_eq (statetab [currstate], 1);
-    ++currstate;
-    /* current state */
-    ck_assert_int_eq (progstateCurrState (ps), currstate);
-    ck_assert_int_eq (statetab [currstate], 0);
+    ck_assert_int_eq (statetab [currstate], mcount + 1);
+    pstate = progstateCurrState (ps);
+    /* for these tests, connecting and stopping are set to multi */
+    if (pstate == currstate && pstate == STATE_CONNECTING) {
+      ++mcount;
+    } else {
+      ck_assert_int_lt (statetab [currstate], 3);
+      mcount = 0;
+      ++currstate;
+      /* current state */
+      ck_assert_int_eq (progstateCurrState (ps), currstate);
+      ck_assert_int_eq (statetab [currstate], 0);
+    }
   }
 
   ck_assert_int_eq (currstate, STATE_RUNNING);
   ck_assert_int_eq (statetab [currstate], 0);
   /* should not progress from the running state */
-  /* but should call callback once */
+  /* should never call the running callback */
   /* bdj4 usual processing never does this */
   progstateProcess (ps);
   ck_assert_int_eq (currstate, STATE_RUNNING);
-  ck_assert_int_eq (statetab [currstate], 1);
+  ck_assert_int_eq (statetab [currstate], 0);
   progstateProcess (ps);
   /* and should not call the callback again */
   ck_assert_int_eq (currstate, STATE_RUNNING);
-  ck_assert_int_eq (statetab [currstate], 1);
+  ck_assert_int_eq (statetab [currstate], 0);
 
   ck_assert_int_eq (statetab [STATE_STOPPING], 0);
   progstateShutdownProcess (ps);
@@ -78,28 +90,35 @@ START_TEST(progstate_chk)
   /* callback has not been run as yet -- only the state has changed */
   ck_assert_int_eq (statetab [currstate], 0);
 
+  mcount = 0;
   while (progstateCurrState (ps) != STATE_CLOSED) {
-    ck_assert_int_eq (statetab [currstate], 0);
+    ck_assert_int_eq (statetab [currstate], mcount);
     progstateProcess (ps);
     /* prior state check */
-    ck_assert_int_eq (statetab [currstate], 1);
-    ++currstate;
-    /* current state */
-    ck_assert_int_eq (progstateCurrState (ps), currstate);
-    ck_assert_int_eq (statetab [currstate], 0);
+    ck_assert_int_eq (statetab [currstate], mcount + 1);
+    pstate = progstateCurrState (ps);
+    if (pstate == currstate && pstate == STATE_STOPPING) {
+      ++mcount;
+    } else {
+      ck_assert_int_lt (statetab [currstate], 3);
+      mcount = 0;
+      ++currstate;
+      /* current state */
+      ck_assert_int_eq (progstateCurrState (ps), currstate);
+      ck_assert_int_eq (statetab [currstate], 0);
+    }
   }
 
   ck_assert_int_eq (currstate, STATE_CLOSED);
   ck_assert_int_eq (statetab [currstate], 0);
   /* should not progress from the closed state */
-  /* but should call the callback */
-  /* bdj4 usual processing never does this */
+  /* should never call the callback */
   progstateProcess (ps);
   ck_assert_int_eq (currstate, STATE_CLOSED);
-  ck_assert_int_eq (statetab [currstate], 1);
+  ck_assert_int_eq (statetab [currstate], 0);
   progstateProcess (ps);
   ck_assert_int_eq (currstate, STATE_CLOSED);
-  ck_assert_int_eq (statetab [currstate], 1);
+  ck_assert_int_eq (statetab [currstate], 0);
 
   progstateFree (ps);
 }
@@ -185,3 +204,19 @@ pscb (void *udata, programstate_t state)
   statetab [state] += 1;
   return STATE_FINISHED;
 }
+
+static bool
+pscbmulti (void *udata, programstate_t state)
+{
+  int     *userdata;
+
+  userdata = udata;
+  ck_assert_int_eq (*userdata, 1);
+
+  statetab [state] += 1;
+  if (statetab [state] == 2) {
+    return STATE_FINISHED;
+  }
+  return STATE_NOT_FINISH;
+}
+

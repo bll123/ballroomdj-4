@@ -109,14 +109,14 @@ songFree (void *tsong)
   song_t  *song = (song_t *) tsong;
 
   if (song != NULL) {
-    --gsonginit.songcount;
-    if (gsonginit.songcount <= 0) {
-      songCleanup ();
-    }
     if (song->songInfo != NULL) {
       nlistFree (song->songInfo);
     }
     free (song);
+    --gsonginit.songcount;
+    if (gsonginit.songcount <= 0) {
+      songCleanup ();
+    }
   }
 }
 
@@ -289,7 +289,8 @@ songAudioFileExists (song_t *song)
 }
 
 /* used by the song editor via uisong to get the values for display */
-/* only used for tags that have a conversion set */
+/* used for tags that have a conversion set and for strings */
+/* also used for string tags */
 /* favorite returns the span-display string used by gtk */
 /*     <span color="...">X</span> */
 char *
@@ -331,8 +332,9 @@ songDisplayString (song_t *song, int tagidx)
       free (conv.str);
     }
   } else {
-    /* just in case... */
-    return strdup ("");
+    str = songGetStr (song, tagidx);
+    if (str == NULL) { str = ""; }
+    str = strdup (str);
   }
 
   return str;

@@ -331,6 +331,11 @@ START_TEST(song_display)
     songParse (song, data, i);
     free (data);
 
+    /* standard string */
+    data = songDisplayString (song, TAG_ARTIST);
+    ck_assert_str_eq (data, "artist");
+    free (data);
+
     /* converted - these assume the standard data files */
     data = songDisplayString (song, TAG_GENRE);
     ck_assert_str_eq (data, "Classical");

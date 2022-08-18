@@ -154,6 +154,7 @@ static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
 static bool     pluiQueueProcess (void *udata, long dbidx, int mqidx);
 static bool     pluiSongSaveCallback (void *udata, long dbidx);
+static void     pluiPushHistory (playerui_t *plui, const char *args);
 
 static int gKillReceived = 0;
 
@@ -451,22 +452,35 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetShowAll (&uiwidget);
   uiutilsUIWidgetCopy (&plui->setPlaybackButton, &uiwidget);
 
-  for (musicqidx_t i = 0; i < MUSICQ_PB_MAX; ++i) {
+  for (musicqidx_t i = 0; i < MUSICQ_DISP_MAX; ++i) {
+    int   tabtype;
     /* music queue tab */
+
+    tabtype = UI_TAB_MUSICQ;
+    if (i == MUSICQ_HISTORY) {
+      tabtype = UI_TAB_HISTORY;
+    }
 
     uiwidgetp = uimusicqBuildUI (plui->uimusicq, &plui->window, i,
         &plui->statusMsg, NULL);
     uiCreateHorizBox (&hbox);
-    str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
+    if (tabtype == UI_TAB_HISTORY) {
+      /* CONTEXT: playerui: name of the history tab : displayed played songs */
+      str = _("History");
+    } else {
+      str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
+    }
     uiCreateLabel (&uiwidget, str);
     uiBoxPackStart (&hbox, &uiwidget);
-    uiImageNew (&plui->musicqImage [i]);
-    uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
-    uiWidgetSetMarginStart (&plui->musicqImage [i], uiBaseMarginSz);
-    uiBoxPackStart (&hbox, &plui->musicqImage [i]);
+    if (i < MUSICQ_HISTORY) {
+      uiImageNew (&plui->musicqImage [i]);
+      uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
+      uiWidgetSetMarginStart (&plui->musicqImage [i], uiBaseMarginSz);
+      uiBoxPackStart (&hbox, &plui->musicqImage [i]);
+    }
 
     uiNotebookAppendPage (&plui->notebook, uiwidgetp, &hbox);
-    uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_MUSICQ);
+    uiutilsNotebookIDAdd (plui->nbtabid, tabtype);
     uiWidgetShowAll (&hbox);
   }
 
@@ -516,7 +530,6 @@ pluiInitializeUI (playerui_t *plui)
       pluiQueueProcess, plui);
   uisongselSetQueueCallback (plui->uisongsel,
       &plui->callbacks [PLUI_CB_QUEUE_SL]);
-
 }
 
 
@@ -731,7 +744,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mp_musicqupdate_t  *musicqupdate;
 
           musicqupdate = msgparseMusicQueueData (args);
-          if (musicqupdate->mqidx < MUSICQ_PB_MAX) {
+          if (musicqupdate->mqidx < MUSICQ_DISP_MAX) {
             uimusicqProcessMusicQueueData (plui->uimusicq, musicqupdate);
             /* the music queue data is used to display the mark */
             /* indicating that the song is already in the song list */
@@ -746,6 +759,11 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uisongselSetDatabase (plui->uisongsel, plui->musicdb);
           uimusicqSetDatabase (plui->uimusicq, plui->musicdb);
           uisongselApplySongFilter (plui->uisongsel);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_SONG_FINISH: {
+          pluiPushHistory (plui, targs);
           dbgdisp = true;
           break;
         }
@@ -1166,4 +1184,19 @@ pluiSongSaveCallback (void *udata, long dbidx)
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
   uisongselPopulateData (plui->uisongsel);
   return UICB_CONT;
+}
+
+static void
+pluiPushHistory (playerui_t *plui, const char *args)
+{
+  dbidx_t   dbidx;
+  char      tbuff [100];
+
+  dbidx = atol (args);
+
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", MUSICQ_HISTORY,
+      MSG_ARGS_RS, 999, MSG_ARGS_RS, dbidx);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
+  /* reset the managed queue */
+  pluiSetManageQueue (plui, plui->musicqManageIdx);
 }
