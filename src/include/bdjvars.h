@@ -20,7 +20,6 @@ typedef enum {
   BDJVL_STARTERUI_PORT,
   BDJVL_DBUPDATE_PORT,
   BDJVL_DBTAG_PORT,
-  BDJVL_RAFFLE_PORT,
   BDJVL_BPM_COUNTER_PORT,
   BDJVL_NUM_PORTS,
   /* insert non-port keys here */

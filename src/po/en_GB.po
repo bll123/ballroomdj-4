@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-08-15\n"
-"PO-Revision-Date: 2022-08-15\n"
+"POT-Creation-Date: 2022-08-18\n"
+"PO-Revision-Date: 2022-08-18\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -792,6 +792,11 @@ msgstr ""
 msgid "High Dance Level"
 msgstr ""
 
+#. CONTEXT: configuration: display settings for: history
+#. CONTEXT: playerui: name of the history tab : displayed played songs
+msgid "History"
+msgstr ""
+
 #. CONTEXT: installer: command line interface: instructions
 #, c-format
 msgid "If there is no %s installation, enter a single '-'."
@@ -1275,6 +1280,7 @@ msgid "QR Code"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: history: re-queue the selected song
 #. CONTEXT: song-selection: queue a song to be played
 msgid "Queue"
 msgstr ""
@@ -1316,15 +1322,6 @@ msgstr ""
 
 #. CONTEXT: configuration file: dance
 msgid "Quickstep"
-msgstr ""
-
-#. CONTEXT: starterui: button: support : starts raffle games
-msgid "Raffle Games"
-msgstr ""
-
-#. CONTEXT: The name of the 'raffle songs' playlist file
-#. CONTEXT: manageui: name of the special song list for raffle songs
-msgid "Raffle Songs"
 msgstr ""
 
 #. CONTEXT: configuration: itunes: label for itunes rating conversion

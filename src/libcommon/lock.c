@@ -33,7 +33,6 @@ static char *locknames [ROUTE_MAX] = {
   [ROUTE_DBUPDATE] = "dbupdate",
   [ROUTE_DBTAG] = "dbtag",
   [ROUTE_MARQUEE] = "marquee",
-  [ROUTE_RAFFLE] = "raffle",
   [ROUTE_HELPERUI] = "helperui",
   [ROUTE_BPM_COUNTER] = "bpmcounter",
 };

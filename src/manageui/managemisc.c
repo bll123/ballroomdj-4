@@ -63,9 +63,7 @@ manageCheckAndCreatePlaylist (const char *name, pltype_t pltype)
 
   pathbldMakePath (onm, sizeof (onm),
       name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  if (! fileopFileExists (onm) &&
-      /* CONTEXT: manageui: name of the special song list for raffle songs */
-      strcmp (name, _("Raffle Songs")) != 0) {
+  if (! fileopFileExists (onm)) {
     playlist_t    *pl;
 
     pl = playlistAlloc (NULL);

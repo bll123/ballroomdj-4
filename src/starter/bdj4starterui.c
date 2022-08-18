@@ -64,7 +64,6 @@ enum {
   START_CB_PLAYER,
   START_CB_MANAGE,
   START_CB_CONFIG,
-  START_CB_RAFFLE,
   START_CB_SUPPORT,
   START_CB_EXIT,
   START_CB_SEND_SUPPORT,
@@ -170,7 +169,6 @@ static void     starterSigHandler (int sig);
 static bool     starterStartPlayerui (void *udata);
 static bool     starterStartManageui (void *udata);
 static bool     starterStartConfig (void *udata);
-static bool     starterStartRaffleGames (void *udata);
 
 static int      starterGetProfiles (startui_t *starter);
 static char     * starterSetProfile (void *udata, int idx);
@@ -571,19 +569,6 @@ starterBuildUI (startui_t  *starter)
       &starter->callbacks [START_CB_CONFIG],
       /* CONTEXT: starterui: button: starts the configuration user interface */
       _("Configure"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
-  uiWidgetAlignHorizStart (&uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
-  uiBoxPackStart (&bvbox, &uiwidget);
-  uiButtonAlignLeft (&uiwidget);
-
-  uiutilsUICallbackInit (&starter->callbacks [START_CB_RAFFLE],
-      starterStartRaffleGames, starter);
-  uiCreateButton (&uiwidget,
-      &starter->callbacks [START_CB_RAFFLE],
-      /* CONTEXT: starterui: button: support : starts raffle games  */
-      _("Raffle Games"), NULL);
-  uiWidgetDisable (&uiwidget);
   uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -1017,19 +1002,6 @@ starterStartManageui (void *udata)
   }
   starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
       ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH, NULL);
-  return UICB_CONT;
-}
-
-static bool
-starterStartRaffleGames (void *udata)
-{
-  startui_t      *starter = udata;
-
-  if (starterCheckProfile (starter) < 0) {
-    return UICB_STOP;
-  }
-//  starter->processes [ROUTE_RAFFLE] = procutilStartProcess (
-//      ROUTE_RAFFLE, "bdj4raffle", NULL);
   return UICB_CONT;
 }
 
