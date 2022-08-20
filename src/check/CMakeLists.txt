@@ -21,6 +21,7 @@ add_executable (check_all
   check_istring.c
   check_lock.c
   check_nlist.c
+  check_osprocess.c
   check_osrandom.c
   check_ossignal.c
   check_pathbld.c

@@ -28,6 +28,7 @@ Suite *     ilist_suite (void);
 Suite *     istring_suite (void);
 Suite *     lock_suite (void);
 Suite *     nlist_suite (void);
+Suite *     osprocess_suite (void);
 Suite *     osrandom_suite (void);
 Suite *     ossignal_suite (void);
 Suite *     pathbld_suite (void);

@@ -26,7 +26,7 @@ check_libcommon (SRunner *sr)
    *  osutils
    *  fileop      complete
    *  bdjstring   complete
-   *  osprocess
+   *  osprocess   complete    // uses procutil
    *  filedata    complete
    *  osnetutils
    *  pathutil    complete
@@ -62,6 +62,9 @@ check_libcommon (SRunner *sr)
    */
 
   s = bdjstring_suite();
+  srunner_add_suite (sr, s);
+
+  s = osprocess_suite();
   srunner_add_suite (sr, s);
 
   s = fileop_suite();

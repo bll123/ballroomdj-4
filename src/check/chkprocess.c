@@ -13,12 +13,15 @@ main (int argc, char *argv[])
   unsigned int val = 1;
   int   c = 0;
   int   option_index = 0;
+  char  *sval = NULL;
 
-  /* abuse processstart and use the --profile arg to pass in the sleep time */
+  /* abuse --profile to pass in the sleep time */
+  /* abuse --theme to pass in data to output */
   static struct option bdj_options [] = {
     { "bdj4",       no_argument,        NULL,   'B' },
     { "profile",    required_argument,  NULL,   'p' },
-    { "debug"  ,    required_argument,  NULL,   'd' },
+    { "debug",      required_argument,  NULL,   'd' },
+    { "theme",      required_argument,  NULL,   't' },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -33,12 +36,23 @@ main (int argc, char *argv[])
         }
         break;
       }
+      case 't': {
+        if (optarg) {
+          sval = optarg;
+        }
+        break;
+      }
       default: {
         break;
       }
     }
   }
 
-  sleep (val);
+  if (val > 0) {
+    sleep (val);
+  }
+  if (sval != NULL) {
+    fprintf (stdout, "%s\n", sval);
+  }
   return 0;
 }
