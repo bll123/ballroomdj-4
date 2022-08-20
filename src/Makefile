@@ -88,9 +88,15 @@ build:
 	@-rm -f ../bin/liblib*.a
 
 # testing
-.PHONY: check
+.PHONY: check checkfast checksuite
 check:
-	../bin/check_all 2>&1 | tee w
+	../bin/bdj4 --check_all 2>&1 | tee ww
+
+checkfast:
+	CK_EXCLUDE_TAGS=slow ../bin/bdj4 --check_all 2>&1 | tee ww
+
+checksuite:
+	CK_RUN_SUITE=$(suite) ../bin/bdj4 --check_all 2>&1 | tee ww
 
 # recommended to change PLAYER and VOLUME in data/bdjconfig.txt to
 # be the null libraries.

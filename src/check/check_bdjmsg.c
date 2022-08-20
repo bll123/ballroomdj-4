@@ -20,11 +20,14 @@
 
 START_TEST(bdjmsg_encode)
 {
-  char    buff [2048];
+  char    tmp [100];
+  char    buff [100];
 
   msgEncode (ROUTE_MAIN, ROUTE_STARTERUI, MSG_EXIT_REQUEST,
       "def", buff, sizeof (buff));
-  ck_assert_str_eq (buff, "0004~0012~0001~def");
+  snprintf (tmp, sizeof (tmp), "%04d~%04d~%04d~def",
+      ROUTE_MAIN, ROUTE_STARTERUI, MSG_EXIT_REQUEST);
+  ck_assert_str_eq (buff, tmp);
 }
 END_TEST
 

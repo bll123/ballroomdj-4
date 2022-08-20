@@ -21,11 +21,15 @@
 #include "slist.h"
 #include "templateutil.h"
 
+static void
+setup (void)
+{
+  templateFileCopy ("ratings.txt", "ratings.txt");
+}
+
 START_TEST(rating_alloc)
 {
   rating_t   *rating = NULL;
-
-  templateFileCopy ("ratings.txt", "ratings.txt");
 
   rating = ratingAlloc ();
   ck_assert_ptr_nonnull (rating);
@@ -161,6 +165,7 @@ rating_suite (void)
 
   s = suite_create ("rating");
   tc = tcase_create ("rating");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, rating_alloc);
   tcase_add_test (tc, rating_iterate);
   tcase_add_test (tc, rating_conv);

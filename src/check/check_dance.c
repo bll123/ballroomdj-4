@@ -23,14 +23,18 @@
 #include "slist.h"
 #include "templateutil.h"
 
+static void
+setup (void)
+{
+  templateFileCopy ("dancetypes.txt", "dancetypes.txt");
+  templateFileCopy ("dances.txt", "dances.txt");
+}
+
 START_TEST(dance_alloc)
 {
   dance_t   *dance = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "=== dance_alloc");
-
-  templateFileCopy ("dancetypes.txt", "dancetypes.txt");
-  templateFileCopy ("dances.txt", "dances.txt");
 
   bdjvarsdfloadInit ();
   dance = danceAlloc ();
@@ -430,6 +434,7 @@ dance_suite (void)
 
   s = suite_create ("dance");
   tc = tcase_create ("dance");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, dance_alloc);
   tcase_add_test (tc, dance_iterate);
   tcase_add_test (tc, dance_set);

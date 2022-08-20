@@ -26,16 +26,20 @@
 #include "tagdef.h"
 #include "templateutil.h"
 
-START_TEST(song_alloc)
+static void
+setup (void)
 {
-  song_t   *song = NULL;
-  song_t   *songb = NULL;
-
   templateFileCopy ("dancetypes.txt", "dancetypes.txt");
   templateFileCopy ("dances.txt", "dances.txt");
   templateFileCopy ("genres.txt", "genres.txt");
   templateFileCopy ("levels.txt", "levels.txt");
   templateFileCopy ("ratings.txt", "ratings.txt");
+}
+
+START_TEST(song_alloc)
+{
+  song_t   *song = NULL;
+  song_t   *songb = NULL;
 
   bdjvarsdfloadInit ();
   songFavoriteInit ();
@@ -474,6 +478,7 @@ song_suite (void)
 
   s = suite_create ("song");
   tc = tcase_create ("song");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, song_alloc);
   tcase_add_test (tc, song_parse);
   tcase_add_test (tc, song_parse_get);

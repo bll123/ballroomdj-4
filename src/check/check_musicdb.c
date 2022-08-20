@@ -108,15 +108,19 @@ enum {
   TEST_MAX = 20,
 };
 
-START_TEST(musicdb_open_new)
+static void
+setup (void)
 {
-  musicdb_t *db;
-
   templateFileCopy ("dancetypes.txt", "dancetypes.txt");
   templateFileCopy ("dances.txt", "dances.txt");
   templateFileCopy ("genres.txt", "genres.txt");
   templateFileCopy ("levels.txt", "levels.txt");
   templateFileCopy ("ratings.txt", "ratings.txt");
+}
+
+START_TEST(musicdb_open_new)
+{
+  musicdb_t *db;
 
   bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
@@ -624,10 +628,12 @@ musicdb_suite (void)
 
   s = suite_create ("musicdb");
   tc = tcase_create ("musicdb-basic");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, musicdb_cleanup);
   tcase_add_test (tc, musicdb_open_new);
   suite_add_tcase (s, tc);
   tc = tcase_create ("musicdb-write");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, musicdb_write);
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);
@@ -639,6 +645,7 @@ musicdb_suite (void)
   tcase_add_test (tc, musicdb_cleanup);
   suite_add_tcase (s, tc);
   tc = tcase_create ("musicdb-batch-write");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, musicdb_batch_write);
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);
@@ -649,6 +656,7 @@ musicdb_suite (void)
   tcase_add_test (tc, musicdb_iterate);
   tcase_add_test (tc, musicdb_cleanup);
   tc = tcase_create ("musicdb-write-song");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   suite_add_tcase (s, tc);
   tcase_add_test (tc, musicdb_write_song);
   tcase_add_test (tc, musicdb_load_get_byidx);
@@ -658,8 +666,7 @@ musicdb_suite (void)
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);
   tcase_add_test (tc, musicdb_iterate);
-  tc = tcase_create ("musicdb-load-entry");
-  suite_add_tcase (s, tc);
+  /* load entry needs a database */
   tcase_add_test (tc, musicdb_load_entry);
   tcase_add_test (tc, musicdb_cleanup);
   suite_add_tcase (s, tc);

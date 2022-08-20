@@ -84,38 +84,6 @@ START_TEST(bdjstring_string_trim_char)
 }
 END_TEST
 
-/* note that this does not work within the C locale */
-START_TEST(bdjstring_istrlen)
-{
-  char    buff [20];
-
-  strcpy (buff, "\xc2\xbf");
-  ck_assert_int_eq (strlen (buff), 2);
-  ck_assert_int_eq (istrlen (buff), 1);
-
-  strcpy (buff, "ab" "\xc2\xbf" "cd");
-  ck_assert_int_eq (strlen (buff), 6);
-  ck_assert_int_eq (istrlen (buff), 5);
-
-  strcpy (buff, "ab" "\xF0\x9F\x92\x94" "cd");
-  ck_assert_int_eq (strlen (buff), 8);
-  if (isWindows ()) {
-    /* windows requires two characters to hold this glyph */
-    ck_assert_int_eq (istrlen (buff), 6);
-  } else {
-    ck_assert_int_eq (istrlen (buff), 5);
-  }
-
-  strcpy (buff, "ab" "\xE2\x99\xa5" "cd");
-  ck_assert_int_eq (strlen (buff), 7);
-  ck_assert_int_eq (istrlen (buff), 5);
-
-  strcpy (buff, "ab" "\xe2\x87\x92" "cd");
-  ck_assert_int_eq (strlen (buff), 7);
-  ck_assert_int_eq (istrlen (buff), 5);
-}
-END_TEST
-
 START_TEST(bdjstring_version_compare)
 {
   int   rc;
@@ -166,7 +134,6 @@ bdjstring_suite (void)
   tcase_add_test (tc, bdjstring_string_to_upper);
   tcase_add_test (tc, bdjstring_string_trim);
   tcase_add_test (tc, bdjstring_string_trim_char);
-  tcase_add_test (tc, bdjstring_istrlen);
   tcase_add_test (tc, bdjstring_version_compare);
   suite_add_tcase (s, tc);
   return s;

@@ -17,6 +17,7 @@ add_executable (check_all
   check_filemanip.c
   check_fileop.c
   check_ilist.c
+  check_istring.c
   check_lock.c
   check_nlist.c
   check_pathbld.c

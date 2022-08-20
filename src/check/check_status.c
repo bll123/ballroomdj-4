@@ -21,11 +21,15 @@
 #include "slist.h"
 #include "templateutil.h"
 
+static void
+setup (void)
+{
+  templateFileCopy ("status.txt", "status.txt");
+}
+
 START_TEST(status_alloc)
 {
   status_t   *status = NULL;
-
-  templateFileCopy ("status.txt", "status.txt");
 
   status = statusAlloc ();
   ck_assert_ptr_nonnull (status);
@@ -162,6 +166,7 @@ status_suite (void)
 
   s = suite_create ("status");
   tc = tcase_create ("status");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, status_alloc);
   tcase_add_test (tc, status_iterate);
   tcase_add_test (tc, status_conv);

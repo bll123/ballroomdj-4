@@ -21,11 +21,15 @@
 #include "slist.h"
 #include "templateutil.h"
 
+static void
+setup (void)
+{
+  templateFileCopy ("levels.txt", "levels.txt");
+}
+
 START_TEST(level_alloc)
 {
   level_t   *level = NULL;
-
-  templateFileCopy ("levels.txt", "levels.txt");
 
   level = levelAlloc ();
   ck_assert_ptr_nonnull (level);
@@ -182,6 +186,7 @@ level_suite (void)
 
   s = suite_create ("level");
   tc = tcase_create ("level");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, level_alloc);
   tcase_add_test (tc, level_iterate);
   tcase_add_test (tc, level_conv);

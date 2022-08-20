@@ -25,7 +25,7 @@ check_libcommon (SRunner *sr)
   /* libcommon:
    *  osutils
    *  fileop      complete
-   *  bdjstring   needs istringCompare (test w/de_DE, sv_SE)
+   *  bdjstring   complete
    *  osprocess
    *  filedata    complete
    *  osnetutils
@@ -52,6 +52,7 @@ check_libcommon (SRunner *sr)
    *  lock        complete
    *  rafile      partial
    *  localeutil
+   *  istring     need windows support // requires localeutil
    *  osrandom
    *  queue       complete
    *  dirlist     needs utf-8 basic/recursive
@@ -76,6 +77,9 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = pathbld_suite();
+  srunner_add_suite (sr, s);
+
+  s = istring_suite();
   srunner_add_suite (sr, s);
 
   s = filemanip_suite();

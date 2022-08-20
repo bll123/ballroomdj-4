@@ -20,11 +20,15 @@
 #include "slist.h"
 #include "templateutil.h"
 
+static void
+setup (void)
+{
+  templateFileCopy ("dancetypes.txt", "dancetypes.txt");
+}
+
 START_TEST(dnctypes_alloc)
 {
   dnctype_t *dt = NULL;
-
-  templateFileCopy ("dancetypes.txt", "dancetypes.txt");
 
   dt = dnctypesAlloc ();
   ck_assert_ptr_nonnull (dt);
@@ -94,6 +98,7 @@ dnctypes_suite (void)
 
   s = suite_create ("dnctypes");
   tc = tcase_create ("dnctypes");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, dnctypes_alloc);
   tcase_add_test (tc, dnctypes_iterate);
   tcase_add_test (tc, dnctypes_conv);

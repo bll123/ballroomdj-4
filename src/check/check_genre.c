@@ -21,12 +21,16 @@
 #include "slist.h"
 #include "templateutil.h"
 
+static void
+setup (void)
+{
+  templateFileCopy ("genres.txt", "genres.txt");
+}
+
 START_TEST(genre_alloc)
 {
   genre_t   *genre = NULL;
   slist_t   *gl = NULL;
-
-  templateFileCopy ("genres.txt", "genres.txt");
 
   genre = genreAlloc ();
   ck_assert_ptr_nonnull (genre);
@@ -177,6 +181,7 @@ genre_suite (void)
 
   s = suite_create ("genre");
   tc = tcase_create ("genre");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, genre_alloc);
   tcase_add_test (tc, genre_iterate);
   tcase_add_test (tc, genre_conv);

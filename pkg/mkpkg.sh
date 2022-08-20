@@ -139,6 +139,15 @@ case $systype in
 esac
 
 if [[ $preskip == F ]]; then
+  (
+    cd src
+    make check
+  )
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "tests failed"
+    exit 1
+  fi
   ./pkg/prepkg.sh
 fi
 
