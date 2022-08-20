@@ -37,6 +37,7 @@ check_libcommon (SRunner *sr)
    *  filemanip   need renameall test
    *  fileutil                        // open/write/close shared
    *  pathbld     complete
+   *  istring     need windows support
    *  log
    *  nlist       partial
    *  ilist       partial
@@ -52,10 +53,9 @@ check_libcommon (SRunner *sr)
    *  lock        complete
    *  rafile      complete
    *  localeutil
-   *  istring     need windows support    // requires localeutil
    *  osrandom
    *  queue       complete
-   *  dirlist     needs utf-8 basic/recursive
+   *  dirlist     complete
    *  colorutils
    *  ossignal
    *  progstate   complete (no log checks)

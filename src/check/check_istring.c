@@ -18,7 +18,6 @@
 
 #include "check_bdj.h"
 #include "istring.h"
-#include "localeutil.h"
 #include "osutils.h"
 #include "sysvars.h"
 

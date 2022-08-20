@@ -23,121 +23,148 @@
 #include "slist.h"
 #include "sysvars.h"
 
+typedef struct {
+  int       type;
+  int       count;
+  char      *name;
+  char      *fname;
+} dirlist_chk_t;
+
+enum {
+  CHK_DIR,
+  CHK_FILE,
+  CHK_DLINK,
+  CHK_LINK,
+};
+
+dirlist_chk_t tvalues [] = {
+  { CHK_DIR,  1, "tmp/abc", NULL },
+  { CHK_FILE, 0, "tmp/abc/abc.txt", "abc.txt" },
+  { CHK_DIR,  1, "tmp/abc/def", NULL },
+  { CHK_FILE, 0, "tmp/abc/def/def.txt", "def.txt" },
+  { CHK_DIR,  2, "tmp/abc/ghi", "chk" },
+  { CHK_FILE, 0, "tmp/abc/ghi/ghi.txt", "ghi.txt" },
+  { CHK_DLINK, 2, "tmp/abc/jkl", "ghi" },
+  { CHK_LINK, 0, "tmp/abc/ghi/jkl.txt", "ghi.txt" },
+  { CHK_DIR,  2, "tmp/abc/ÄÑÄÑ", NULL },
+  { CHK_FILE, 0, "tmp/abc/ÄÑÄÑ/abc-def.txt", "abc-def.txt" },
+  { CHK_FILE, 0, "tmp/abc/ÄÑÄÑ/ÜÄÑÖ.txt", "ÜÄÑÖ.txt" },
+  { CHK_DIR,  4, "tmp/abc/夕陽伴我歸", NULL },
+  { CHK_FILE, 0, "tmp/abc/夕陽伴我歸/내가제일잘나가.txt", "내가제일잘나가.txt" },
+  { CHK_FILE, 0, "tmp/abc/夕陽伴我歸/ははは.txt", "ははは.txt" },
+  { CHK_FILE, 0, "tmp/abc/夕陽伴我歸/夕陽伴我歸.txt", "夕陽伴我歸.txt" },
+  { CHK_FILE, 0, "tmp/abc/夕陽伴我歸/Ne_Русский_Шторм.txt", "Ne_Русский_Шторм.txt" }
+};
+enum {
+  tvaluesz = sizeof (tvalues) / sizeof (dirlist_chk_t),
+};
+static int fcount = 0;
+static int dcount = 0;
+
+static void
+teardown (void)
+{
+  for (int i = 0; i < tvaluesz; ++i) {
+    if (tvalues [i].type == CHK_LINK) {
+      fileopDelete (tvalues [i].name);
+    }
+    if (tvalues [i].type == CHK_DIR) {
+      diropDeleteDir (tvalues [i].name);
+    }
+  }
+}
+
+static void
+setup (void)
+{
+  FILE *fh;
+
+  teardown ();
+
+  for (int i = 0; i < tvaluesz; ++i) {
+    if (tvalues [i].type == CHK_LINK) {
+      if (! isWindows ()) {
+        filemanipLinkCopy (tvalues [i].fname, tvalues [i].name);
+      }
+    }
+    if (tvalues [i].type == CHK_DLINK) {
+      if (isWindows ()) {
+        diropMakeDir (tvalues [i].name);
+      } else {
+        filemanipLinkCopy (tvalues [i].fname, tvalues [i].name);
+      }
+      if (isWindows ()) {
+        tvalues [i].count = 0;
+      }
+      ++dcount;
+      fcount += tvalues [i].count;
+    }
+    if (tvalues [i].type == CHK_FILE) {
+      fh = fileopOpen (tvalues [i].name, "w");
+      fclose (fh);
+    }
+    if (tvalues [i].type == CHK_DIR) {
+      diropMakeDir (tvalues [i].name);
+      ++dcount;
+      if (isWindows () && tvalues [i].fname != NULL) {
+        tvalues [i].count -= 1;
+      }
+      fcount += tvalues [i].count;
+    }
+  }
+
+  --dcount; // don't count top level
+}
+
 START_TEST(dirlist_basic)
 {
-  FILE      *fh;
   slist_t   *slist;
-  slistidx_t  iteridx;
-  char      *fn;
 
-  char *dafn = "tmp/abc";
-  char *fafn = "tmp/abc/abc.txt";
-  char *dbfn = "tmp/abc/def";
-  char *fbfn = "tmp/abc/def/def.txt";
-  char *dcfn = "tmp/abc/ghi";
-  char *fcfn = "tmp/abc/ghi/ghi.txt";
-  diropMakeDir (dbfn);
-  diropMakeDir (dcfn);
-  fh = fileopOpen (fafn, "w");
-  fclose (fh);
-  fh = fileopOpen (fbfn, "w");
-  fclose (fh);
-  fh = fileopOpen (fcfn, "w");
-  fclose (fh);
+  slist = NULL;
+  for (int i = 0; i < tvaluesz; ++i) {
+    if (tvalues [i].type == CHK_DIR ||
+        tvalues [i].type == CHK_DLINK) {
+      if (slist != NULL) {
+        slistFree (slist);
+      }
+      slist = dirlistBasicDirList (tvalues [i].name, NULL);
+      ck_assert_int_eq (slistGetCount (slist), tvalues [i].count);
+      slistSort (slist); // for testing
+    }
+    if (tvalues [i].type == CHK_FILE) {
+      int val;
 
-  slist = dirlistBasicDirList (dafn, NULL);
+      val = slistGetNum (slist, tvalues [i].fname);
+      ck_assert_int_eq (val, 0);
+    }
+    if (! isWindows() && tvalues [i].type == CHK_LINK) {
+      int val;
 
-  ck_assert_int_eq (slistGetCount (slist), 1);
-  slistStartIterator (slist, &iteridx);
-  while ((fn = slistIterateKey (slist, &iteridx)) != NULL) {
-    ck_assert_str_eq (fn, "abc.txt");
+      val = slistGetNum (slist, tvalues [i].fname);
+      ck_assert_int_eq (val, 0);
+    }
   }
-  slistFree (slist);
-
-  slist = dirlistBasicDirList (dcfn, NULL);
-  ck_assert_int_eq (slistGetCount (slist), 1);
-  slistStartIterator (slist, &iteridx);
-  while ((fn = slistIterateKey (slist, &iteridx)) != NULL) {
-    ck_assert_str_eq (fn, "ghi.txt");
+  if (slist != NULL) {
+    slistFree (slist);
   }
-  slistFree (slist);
-
-  diropDeleteDir (dafn);
 }
 END_TEST
 
 START_TEST(dirlist_recursive)
 {
-  FILE      *fh;
   slist_t   *slist;
-  slistidx_t  iteridx;
-  char      *fn;
-  int       num = 3;
 
-  char *dafn = "tmp/abc";
-  char *fafn = "tmp/abc/abc.txt";
-  char *dbfn = "tmp/abc/def";
-  char *fbfn = "tmp/abc/def/def.txt";
-  char *dcfn = "tmp/abc/ghi";
-  char *ddfn = "tmp/abc/jkl";
-  char *fcfn = "tmp/abc/ghi/ghi.txt";
-  char *fdfn = "tmp/abc/ghi/jkl.txt";
+  slist = dirlistRecursiveDirList ("tmp/abc", FILEMANIP_DIRS);
+  slistSort (slist);  // for testing
+  ck_assert_int_eq (slistGetCount (slist), dcount);
+  slistFree (slist);
 
-  diropDeleteDir (dafn);
-
-  diropMakeDir (dbfn);
-  diropMakeDir (dcfn);
-  if (! isWindows ()) {
-    filemanipLinkCopy ("ghi", ddfn);
-    filemanipLinkCopy ("ghi.txt", fdfn);
-    num = 6;
-  }
-  fh = fileopOpen (fafn, "w");
-  fclose (fh);
-  fh = fileopOpen (fbfn, "w");
-  fclose (fh);
-  fh = fileopOpen (fcfn, "w");
-  fclose (fh);
-
-  slist = dirlistRecursiveDirList (dafn, FILEMANIP_FILES);
-
-
-  ck_assert_int_eq (slistGetCount (slist), num);
-  /* the list is unordered; for checks, sort it */
-  slistSort (slist);
-  slistStartIterator (slist, &iteridx);
-  fn = slistIterateKey (slist, &iteridx);
-  ck_assert_str_eq (fn, "tmp/abc/abc.txt");
-  fn = slistIterateKey (slist, &iteridx);
-  ck_assert_str_eq (fn, "tmp/abc/def/def.txt");
-  fn = slistIterateKey (slist, &iteridx);
-  ck_assert_str_eq (fn, "tmp/abc/ghi/ghi.txt");
-  if (! isWindows ()) {
-    fn = slistIterateKey (slist, &iteridx);
-    ck_assert_str_eq (fn, "tmp/abc/ghi/jkl.txt");
-    fn = slistIterateKey (slist, &iteridx);
-    ck_assert_str_eq (fn, "tmp/abc/jkl/ghi.txt");
-    fn = slistIterateKey (slist, &iteridx);
-    ck_assert_str_eq (fn, "tmp/abc/jkl/jkl.txt");
-  }
-
-  diropDeleteDir (dafn);
+  slist = dirlistRecursiveDirList ("tmp/abc", FILEMANIP_FILES);
+  slistSort (slist);  // for testing
+  ck_assert_int_eq (slistGetCount (slist), fcount);
   slistFree (slist);
 }
 END_TEST
-
-/* update the fnlist in fileop/filemanip/dirop/dirlist also */
-static char *fnlist [] = {
-  "tmp/abc-def",
-  "tmp/ÜÄÑÖ",
-  "tmp/I Am the Best_내가 제일 잘 나가",
-  "tmp/ははは",
-  "tmp/夕陽伴我歸",
-  "tmp/Ne_Русский_Шторм",
-};
-enum {
-  fnlistsz = sizeof (fnlist) / sizeof (char *),
-};
 
 Suite *
 dirlist_suite (void)
@@ -147,6 +174,7 @@ dirlist_suite (void)
 
   s = suite_create ("dirlist");
   tc = tcase_create ("dirlist");
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, dirlist_basic);
   tcase_add_test (tc, dirlist_recursive);
   suite_add_tcase (s, tc);
