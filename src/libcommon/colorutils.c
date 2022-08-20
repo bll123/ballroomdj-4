@@ -7,10 +7,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
-#include <stdarg.h>
 
-#include "misc.h"
+#include "colorutils.h"
 #include "osrandom.h"
 
 char *

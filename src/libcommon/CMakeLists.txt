@@ -7,6 +7,7 @@ add_library (libbdj4common SHARED
   bdjopt.c
   bdjstring.c
   bdjvars.c
+  colorutils.c
   conn.c
   datafile.c
   dirlist.c
@@ -21,7 +22,6 @@ add_library (libbdj4common SHARED
   localeutil.c
   lock.c
   log.c
-  misc.c
   nlist.c
   osdir.c
   oslocale.c
