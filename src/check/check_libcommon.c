@@ -53,11 +53,11 @@ check_libcommon (SRunner *sr)
    *  lock        complete
    *  rafile      complete
    *  localeutil
-   *  osrandom
+   *  osrandom    complete
    *  queue       complete
    *  dirlist     complete
    *  colorutils  complete
-   *  ossignal
+   *  ossignal    complete
    *  progstate   complete (no log checks)
    */
 
@@ -115,6 +115,9 @@ check_libcommon (SRunner *sr)
   s = rafile_suite();
   srunner_add_suite (sr, s);
 
+  s = osrandom_suite();
+  srunner_add_suite (sr, s);
+
   s = queue_suite();
   srunner_add_suite (sr, s);
 
@@ -125,6 +128,9 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = colorutils_suite();
+  srunner_add_suite (sr, s);
+
+  s = ossignal_suite();
   srunner_add_suite (sr, s);
 
   s = progstate_suite();
