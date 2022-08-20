@@ -140,6 +140,68 @@ START_TEST(queue_push_pop_two)
 }
 END_TEST
 
+START_TEST(queue_push_head)
+{
+  ssize_t   count;
+  char      *data;
+  queue_t       *q;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_push_head");
+  q = queueAlloc (NULL);
+  queuePush (q, "aaaa");
+  queuePushHead (q, "bbbb");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 2);
+  data = queuePop (q);
+  ck_assert_ptr_nonnull (data);
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 1);
+  ck_assert_str_eq (data, "bbbb");
+  data = queuePop (q);
+  ck_assert_ptr_nonnull (data);
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 0);
+  ck_assert_str_eq (data, "aaaa");
+  data = queuePop (q);
+  ck_assert_ptr_null (data);
+  queueFree (q);
+}
+END_TEST
+
+START_TEST(queue_get_current)
+{
+  ssize_t   count;
+  char      *data;
+  queue_t       *q;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "=== queue_get_current");
+  q = queueAlloc (NULL);
+  queuePush (q, "aaaa");
+  queuePush (q, "bbbb");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 2);
+
+  data = queueGetCurrent (q);
+  count = queueGetCount (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_int_eq (count, 2);
+  ck_assert_str_eq (data, "aaaa");
+
+  data = queuePop (q);
+
+  data = queueGetCurrent (q);
+  count = queueGetCount (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_int_eq (count, 1);
+  ck_assert_str_eq (data, "bbbb");
+
+  data = queuePop (q);
+  data = queuePop (q);
+  ck_assert_ptr_null (data);
+  queueFree (q);
+}
+END_TEST
+
 START_TEST(queue_multi_one)
 {
   ssize_t   count;
@@ -615,7 +677,7 @@ START_TEST(queue_remove_node)
   data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
-  // remove fa, &qiteridxil
+  // remove fail
   data = queueIterateRemoveNode (q, &qiteridx);
   ck_assert_ptr_null (data);
 
@@ -1000,6 +1062,8 @@ queue_suite (void)
   tcase_add_test (tc, queue_push_many);
   tcase_add_test (tc, queue_push_pop_one);
   tcase_add_test (tc, queue_push_pop_two);
+  tcase_add_test (tc, queue_push_head);
+  tcase_add_test (tc, queue_get_current);
   tcase_add_test (tc, queue_multi_one);
   tcase_add_test (tc, queue_multi_two);
   tcase_add_test (tc, queue_multi_many);

@@ -53,7 +53,7 @@ check_libcommon (SRunner *sr)
    *  rafile      partial
    *  localeutil
    *  osrandom
-   *  queue       partial
+   *  queue       complete
    *  dirlist     needs utf-8 basic/recursive
    *  colorutils
    *  ossignal
