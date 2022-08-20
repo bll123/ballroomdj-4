@@ -56,7 +56,7 @@ check_libcommon (SRunner *sr)
    *  osrandom
    *  queue       complete
    *  dirlist     complete
-   *  colorutils
+   *  colorutils  complete
    *  ossignal
    *  progstate   complete (no log checks)
    */
@@ -122,6 +122,9 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = dirlist_suite();
+  srunner_add_suite (sr, s);
+
+  s = colorutils_suite();
   srunner_add_suite (sr, s);
 
   s = progstate_suite();
