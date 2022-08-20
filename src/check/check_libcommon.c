@@ -50,9 +50,9 @@ check_libcommon (SRunner *sr)
    *  conn
    *  procutil    partial
    *  lock        complete
-   *  rafile      partial
+   *  rafile      complete
    *  localeutil
-   *  istring     need windows support // requires localeutil
+   *  istring     need windows support    // requires localeutil
    *  osrandom
    *  queue       complete
    *  dirlist     needs utf-8 basic/recursive

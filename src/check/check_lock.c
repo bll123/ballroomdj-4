@@ -133,6 +133,10 @@ START_TEST(lock_exists)
   tpid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (tpid, 0);
 
+  /* lock file exists, same process */
+  tpid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_SKIP_SELF);
+  ck_assert_int_ne (tpid, 0);
+
   rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (rc, 0);
   /* lock file does not exist */

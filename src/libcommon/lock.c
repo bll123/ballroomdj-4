@@ -66,8 +66,10 @@ lockExists (char *fn, int flags)
     fileopDelete (tfn);
     fpid = 0;
   }
-  if (fpid == getpid ()) {
-    fpid = 0;
+  if ((flags & LOCK_TEST_SKIP_SELF) != LOCK_TEST_SKIP_SELF) {
+    if (fpid == getpid ()) {
+      fpid = 0;
+    }
   }
   return fpid;
 }
