@@ -81,6 +81,14 @@ START_TEST(pathinfo_chk)
         "blen: %s: i:%zd have: %zd want: %zd", "blen", i, pi->blen, tests[i].blen);
     ck_assert_msg (pi->elen == tests[i].elen,
         "elen: %s: i:%zd have: %zd want: %zd", "elen", i, pi->elen, tests[i].elen);
+
+    /* the dirname pointer always points to the beginning */
+    ck_assert_ptr_eq (pi->dirname, tests [i].path);
+
+    /* check against self */
+    ck_assert_int_eq (pathInfoExtCheck (pi, pi->extension), 1);
+    ck_assert_int_eq (pathInfoExtCheck (pi, ".junk"), 0);
+
     pathInfoFree (pi);
   }
 }

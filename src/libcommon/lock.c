@@ -37,7 +37,9 @@ static char *locknames [ROUTE_MAX] = {
   [ROUTE_BPM_COUNTER] = "bpmcounter",
 };
 
-static pid_t   getPidFromFile (char *);
+static int    lockAcquirePid (char *fn, pid_t pid, int flags);
+static int    lockReleasePid (char *fn, pid_t pid, int flags);
+static pid_t  getPidFromFile (char *fn);
 
 inline char *
 lockName (bdjmsgroute_t route)
@@ -78,6 +80,14 @@ lockAcquire (char *fn, int flags)
 }
 
 int
+lockRelease (char *fn, int flags)
+{
+  return lockReleasePid (fn, getpid(), flags);
+}
+
+/* internal routines */
+
+static int
 lockAcquirePid (char *fn, pid_t pid, int flags)
 {
   int       fd;
@@ -89,6 +99,9 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   char      tfn [MAXPATHLEN];
   procutil_t process;
 
+  if ((flags & LOCK_TEST_OTHER_PID) == LOCK_TEST_OTHER_PID) {
+    pid = 5;
+  }
 
   if ((flags & PATHBLD_LOCK_FFN) == PATHBLD_LOCK_FFN) {
     strlcpy (tfn, fn, sizeof (tfn));
@@ -102,9 +115,12 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   while (fd < 0 && count < 30) {
     /* check for detached lock file */
     pid_t fpid = getPidFromFile (tfn);
-    if (fpid == pid) {
-      /* our own lock, this is ok */
-      return 0;
+
+    if ((flags & LOCK_TEST_SKIP_SELF) != LOCK_TEST_SKIP_SELF) {
+      if (fpid == pid) {
+        /* our own lock, this is ok */
+        return 0;
+      }
     }
     if (fpid > 0) {
       process.pid = fpid;
@@ -130,19 +146,16 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   return fd;
 }
 
-
-int
-lockRelease (char *fn, int flags)
-{
-  return lockReleasePid (fn, getpid(), flags);
-}
-
-int
+static int
 lockReleasePid (char *fn, pid_t pid, int flags)
 {
   char      tfn [MAXPATHLEN];
   int       rc;
   pid_t     fpid;
+
+  if ((flags & LOCK_TEST_OTHER_PID) == LOCK_TEST_OTHER_PID) {
+    pid = 5;
+  }
 
   if ((flags & PATHBLD_LOCK_FFN) == PATHBLD_LOCK_FFN) {
     strlcpy (tfn, fn, sizeof (tfn));
@@ -159,8 +172,6 @@ lockReleasePid (char *fn, pid_t pid, int flags)
   }
   return rc;
 }
-
-/* internal routines */
 
 static pid_t
 getPidFromFile (char *fn)

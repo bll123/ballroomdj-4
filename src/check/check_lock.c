@@ -14,6 +14,7 @@
 
 #include <check.h>
 
+#include "bdjmsg.h"
 #include "bdjstring.h"
 #include "check_bdj.h"
 #include "lock.h"
@@ -22,6 +23,11 @@
 
 #define FULL_LOCK_FN "tmp/test_lock.lck"
 #define LOCK_FN "test_lock"
+
+START_TEST(lock_name)
+{
+  ck_assert_str_eq (lockName (ROUTE_PLAYERUI), "playerui");
+}
 
 START_TEST(lock_acquire_release)
 {
@@ -34,7 +40,7 @@ START_TEST(lock_acquire_release)
 
   pid = getpid ();
   unlink (FULL_LOCK_FN);
-  rc = lockAcquirePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_gt (rc, 0);
   rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_eq (rc, 0);
@@ -44,10 +50,11 @@ START_TEST(lock_acquire_release)
   fpid = (pid_t) temp;
   fclose (fh);
   ck_assert_int_eq (fpid, pid);
-  rc = lockReleasePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
+  rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (rc, 0);
   rc = stat (LOCK_FN, &statbuf);
   ck_assert_int_lt (rc, 0);
+  unlink (FULL_LOCK_FN);
 }
 END_TEST
 
@@ -55,17 +62,16 @@ START_TEST(lock_already)
 {
   int           rc;
   pid_t         pid;
-  pid_t         tpid;
 
   pid = getpid ();
-  tpid = pid + 1;
   unlink (FULL_LOCK_FN);
-  rc = lockAcquirePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_gt (rc, 0);
-  rc = lockAcquirePid (LOCK_FN, tpid, PATHBLD_MP_TMPDIR);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_SKIP_SELF);
   ck_assert_int_lt (rc, 0);
-  rc = lockReleasePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
+  rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (rc, 0);
+  unlink (FULL_LOCK_FN);
 }
 END_TEST
 
@@ -76,12 +82,13 @@ START_TEST(lock_other_dead)
 
   pid = getpid ();
   unlink (FULL_LOCK_FN);
-  rc = lockAcquirePid (LOCK_FN, 5, PATHBLD_MP_TMPDIR);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_OTHER_PID);
   ck_assert_int_gt (rc, 0);
-  rc = lockAcquirePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_gt (rc, 0);
-  rc = lockReleasePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
+  rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (rc, 0);
+  unlink (FULL_LOCK_FN);
 }
 END_TEST
 
@@ -92,12 +99,13 @@ START_TEST(lock_unlock_fail)
 
   pid = getpid ();
   unlink (FULL_LOCK_FN);
-  rc = lockAcquirePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_gt (rc, 0);
-  rc = lockReleasePid (LOCK_FN, 5, PATHBLD_MP_TMPDIR);
+  rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_OTHER_PID);
   ck_assert_int_lt (rc, 0);
-  rc = lockReleasePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
+  rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (rc, 0);
+  unlink (FULL_LOCK_FN);
 }
 END_TEST
 
@@ -112,7 +120,7 @@ START_TEST(lock_exists)
 
   pid = getpid ();
   unlink (FULL_LOCK_FN);
-  rc = lockAcquirePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_gt (rc, 0);
 
   fh = fopen (FULL_LOCK_FN, "r");
@@ -125,7 +133,7 @@ START_TEST(lock_exists)
   tpid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (tpid, 0);
 
-  rc = lockReleasePid (LOCK_FN, pid, PATHBLD_MP_TMPDIR);
+  rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (rc, 0);
   /* lock file does not exist */
   tpid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);
@@ -150,6 +158,7 @@ lock_suite (void)
 
   s = suite_create ("lock");
   tc = tcase_create ("lock-base");
+  tcase_add_test (tc, lock_name);
   tcase_add_test (tc, lock_acquire_release);
   suite_add_tcase (s, tc);
   tc = tcase_create ("lock-already");

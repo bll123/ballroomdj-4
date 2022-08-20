@@ -111,11 +111,21 @@ pathInfoFree (pathinfo_t *pi)
 bool
 pathInfoExtCheck (pathinfo_t *pi, const char *extension)
 {
+  if (pi == NULL) {
+    return false;
+  }
+
+  if (pi->elen == 0 && extension == NULL) {
+    return true;
+  }
+
   if (pi->elen != strlen (extension)) {
     return false;
   }
 
-  if (strncmp (pi->extension, extension, pi->elen) == 0) {
+  if (pi->elen > 0 &&
+      extension != NULL &&
+      strncmp (pi->extension, extension, pi->elen) == 0) {
     return true;
   }
 

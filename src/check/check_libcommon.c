@@ -29,7 +29,7 @@ check_libcommon (SRunner *sr)
    *  osprocess
    *  filedata    complete
    *  osnetutils
-   *  pathutil    done
+   *  pathutil    complete
    *  sysvars
    *  tmutil      complete
    *  osdir
@@ -49,13 +49,13 @@ check_libcommon (SRunner *sr)
    *  bdjopt
    *  conn
    *  procutil    partial
-   *  lock        partial
+   *  lock        complete
    *  rafile      partial
    *  localeutil
    *  osrandom
    *  queue       partial
    *  dirlist     needs utf-8 basic/recursive
-   *  misc
+   *  colorutils
    *  ossignal
    *  progstate   complete (no log checks)
    */

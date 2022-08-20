@@ -60,8 +60,8 @@ main (int argc, char *argv [])
   check_libcommon (sr);
   check_libbdj4 (sr);
   /* if the durations are needed */
-//  srunner_set_xml (sr, "tmp/check.xml");
-  srunner_set_log (sr, "tmp/check.log");
+  srunner_set_xml (sr, "tmp/check.xml");
+//  srunner_set_log (sr, "tmp/check.log");
   srunner_run_all (sr, CK_ENV);
   number_failed += srunner_ntests_failed (sr);
   srunner_free (sr);

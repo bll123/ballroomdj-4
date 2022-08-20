@@ -26,6 +26,9 @@ typedef enum {
   PATHBLD_MP_HOSTNAME     = 0x00001000,   // adds hostname to path
   PATHBLD_MP_USEIDX       = 0x00002000,   // adds profile dir to path
   PATHBLD_LOCK_FFN        = 0x00004000,   // used by lock.c
+  /* for testing locks */
+  LOCK_TEST_OTHER_PID     = 0x00008000,   // other process id
+  LOCK_TEST_SKIP_SELF     = 0x00010000,   // for 'already' test
 } pathbld_mp_t;
 
 #define PATH_PROFILES   "profiles"
