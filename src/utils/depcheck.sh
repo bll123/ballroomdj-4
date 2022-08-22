@@ -13,9 +13,10 @@ grc=0
 > $TIN
 for fn in */*.c */*.h build/config.h; do
   echo $fn $fn >> $TIN
-  sed -n -e '/^#include "/p' $fn |
-      sed -e 's,^#include ",,' -e 's, *//.*,,' \
-      -e 's,"$,,' -e "s,^,$fn ," >> $TIN
+  egrep '^#include "' $fn |
+      sed -e 's,^#include ",,' \
+      -e 's,".*$,,' \
+      -e "s,^,$fn include/," >> $TIN
 done
 tsort < $TIN > $TSORT
 rc=$?

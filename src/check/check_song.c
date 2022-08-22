@@ -62,7 +62,7 @@ END_TEST
 static char *songparsedata [] = {
     /* unix line endings */
     "FILE\n..argentinetango.mp3\n"
-      "ADJUSTFLAGS\n..\n"
+      "ADJUSTFLAGS\n..NTS\n"
       "AFMODTIME\n..1660237221\n"
       "ALBUM\n..album\n"
       "ALBUMARTIST\n..albumartist\n"
@@ -84,7 +84,7 @@ static char *songparsedata [] = {
       "MQDISPLAY\n..Waltz\n"
       "NOTES\n..notes\n"
       "RECORDING_ID\n..\n"
-      "SAMESONG\n..ss-0001\n"
+      "SAMESONG\n..3\n"
       "SONGEND\n..\n"
       "SONGSTART\n..\n"
       "SPEEDADJUSTMENT\n..\n"
@@ -100,7 +100,7 @@ static char *songparsedata [] = {
       "RRN\n..1\n",
     /* windows line endings */
     "FILE\r\n..waltz.mp3\r\n"
-      "ADJUSTFLAGS\r\n..\r\n"
+      "ADJUSTFLAGS\r\n..NT\r\n"
       "AFMODTIME\r\n..1660237221\r\n"
       "ALBUM\r\n..album\r\n"
       "ALBUMARTIST\r\n..albumartist\r\n"
@@ -122,7 +122,7 @@ static char *songparsedata [] = {
       "MQDISPLAY\r\n..Waltz\r\n"
       "NOTES\r\n..notes\r\n"
       "RECORDING_ID\r\n..\r\n"
-      "SAMESONG\r\n..ss-0001\r\n"
+      "SAMESONG\r\n..4\r\n"
       "SONGEND\r\n..\r\n"
       "SONGSTART\r\n..\r\n"
       "SPEEDADJUSTMENT\r\n..\r\n"
@@ -160,7 +160,7 @@ static char *songparsedata [] = {
       "MQDISPLAY\n..Waltz\n"
       "NOTES\n..notes\n"
       "RECORDING_ID\n..\n"
-      "SAMESONG\n..ss-0001\n"
+      "SAMESONG\n..5\n"
       "SONGEND\n..\n"
       "SONGSTART\n..\n"
       "SPEEDADJUSTMENT\n..\n"
@@ -217,6 +217,15 @@ START_TEST(song_parse_get)
     free (data);
     ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "artist");
     ck_assert_str_eq (songGetStr (song, TAG_ALBUM), "album");
+    if (i == 0) {
+      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 7);
+    }
+    if (i == 1) {
+      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 3);
+    }
+    if (i == 2) {
+      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 0);
+    }
     ck_assert_int_eq (songGetNum (song, TAG_DISCNUMBER), 1);
     ck_assert_int_eq (songGetNum (song, TAG_TRACKNUMBER), 5);
     ck_assert_int_eq (songGetNum (song, TAG_TRACKTOTAL), 10);
@@ -270,6 +279,15 @@ START_TEST(song_parse_set)
     ck_assert_int_eq (songGetNum (song, TAG_DISCNUMBER), 2);
     ck_assert_int_eq (songGetNum (song, TAG_TRACKNUMBER), 6);
     ck_assert_int_eq (songGetNum (song, TAG_TRACKTOTAL), 11);
+    if (i == 0) {
+      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 7);
+    }
+    if (i == 1) {
+      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 3);
+    }
+    if (i == 2) {
+      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 0);
+    }
     ck_assert_float_eq (songGetDouble (song, TAG_VOLUMEADJUSTPERC), 5.5);
     /* converted - these assume the standard data files */
     ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_PURPLE);
@@ -429,6 +447,15 @@ START_TEST(song_tag_list)
     ck_assert_int_eq (songGetNum (song, TAG_DISCNUMBER), 1);
     ck_assert_int_eq (songGetNum (song, TAG_TRACKNUMBER), 5);
     ck_assert_int_eq (songGetNum (song, TAG_TRACKTOTAL), 10);
+    if (i == 0) {
+      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 7);
+    }
+    if (i == 1) {
+      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 3);
+    }
+    if (i == 2) {
+      ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 0);
+    }
     ck_assert_float_eq (songGetDouble (song, TAG_VOLUMEADJUSTPERC), 4.4);
     tlist = songGetList (song, TAG_TAGS);
     slistStartIterator (tlist, &iteridx);

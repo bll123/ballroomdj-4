@@ -50,8 +50,28 @@ if { [info exists masterList] } {
   unset masterList
 }
 
+set ssdict [dict create]
+set sscount 1
+
 set c 0
 dict for {fn data} $musicdbList {
+  # build the ssdict now so that singletons can be identified
+  if { [dict exists $data SAMESONG] } {
+    set value [dict get $data SAMESONG]
+    if { $value ne {} } {
+      if { ! [dict exists $ssdict $value] } {
+        dict set ssdict $value samesong $sscount
+        dict set ssdict $value count 1
+        set value $sscount
+        incr sscount
+      } else {
+        set count [dict get $ssdict $value count]
+        incr count
+        dict set ssdict $value count $count
+      }
+    }
+  }
+  # get the total count
   incr c
 }
 
@@ -91,10 +111,29 @@ dict for {fn data} $musicdbList {
       set value $newrrn
     }
 
-    if { $tag eq "TRACKTOTAL" } {
+    if { $tag eq "TRACKTOTAL" || $tag eq "DISCTOTAL" } {
       if { $value == 0 } {
         # no point in writing not-useful data
         continue;
+      }
+    }
+
+    if { $tag eq "ADJUSTFLAGS" } {
+      # adjustflags is saved as a string of NTS characters.
+      # spaces are no longer used.
+      regsub -all { } $value {} value
+      regsub -all {A} $value {S} value
+    }
+
+    if { $tag eq "SAMESONG" } {
+      if { $value eq {} } {
+        continue
+      }
+      if { [dict get $ssdict $value count] == 1 } {
+        # singleton, clear the samesong setting
+        continue;
+      } else {
+        set value [dict get $ssdict $value samesong]
       }
     }
 

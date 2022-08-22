@@ -6,13 +6,6 @@
 #include "slist.h"
 #include "songfav.h"
 
-typedef enum {
-  SONG_ADJUST_NONE    = 0x0000,
-  SONG_ADJUST_NORM    = 0x0001,
-  SONG_ADJUST_TRIM    = 0x0002,
-  SONG_ADJUST_SPEED   = 0x0004,
-} songadjust_t;
-
 typedef struct song song_t;
 
 song_t *  songAlloc (void);

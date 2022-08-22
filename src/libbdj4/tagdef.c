@@ -14,6 +14,7 @@
 #include "rating.h"
 #include "slist.h"
 #include "songfav.h"
+#include "songutil.h"
 #include "status.h"
 #include "tagdef.h"
 
@@ -33,8 +34,8 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
-    VALUE_STR,                    /* value type           */
-    NULL,                         /* conv func            */ // ###
+    VALUE_NUM,                    /* value type           */
+    songConvAdjustFlags,          /* conv func            */
     DISP_NO,                      /* audio id disp        */
     0,                            /* listing display      */
     0,                            /* ellipsize            */

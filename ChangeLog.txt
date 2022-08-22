@@ -4,6 +4,8 @@ BallroomDJ 4 Change Log
 
 - various tests added
 - fixed an infrastructure bug (list cache 2022-8-15).
+- conversion: database: cleaned up and fixed samesong and adjustflags
+  processing.
 
 4.0.0 alpha 2022-08-12
 

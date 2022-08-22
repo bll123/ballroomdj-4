@@ -33,9 +33,12 @@ typedef struct song {
   long        durcache;
 } song_t;
 
+static void songInit (void);
+static void songCleanup (void);
+
 /* must be sorted in ascii order */
 static datafilekey_t songdfkeys [] = {
-  { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_STR, NULL, -1 },
+  { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_NUM, songConvAdjustFlags, -1 },
   { "AFMODTIME",            TAG_AFMODTIME,            VALUE_NUM, NULL, -1 },
   { "ALBUM",                TAG_ALBUM,                VALUE_STR, NULL, -1 },
   { "ALBUMARTIST",          TAG_ALBUMARTIST,          VALUE_STR, NULL, -1 },
@@ -60,7 +63,7 @@ static datafilekey_t songdfkeys [] = {
   { "NOTES",                TAG_NOTES,                VALUE_STR, NULL, -1 },
   { "RECORDING_ID",         TAG_RECORDING_ID,         VALUE_STR, NULL, -1 },
   { "RRN",                  TAG_RRN,                  VALUE_NUM, NULL, -1 },
-  { "SAMESONG",             TAG_SAMESONG,             VALUE_STR, NULL, -1 },
+  { "SAMESONG",             TAG_SAMESONG,             VALUE_NUM, NULL, -1 },
   { "SONGEND",              TAG_SONGEND,              VALUE_NUM, NULL, -1 },
   { "SONGSTART",            TAG_SONGSTART,            VALUE_NUM, NULL, -1 },
   { "SPEEDADJUSTMENT",      TAG_SPEEDADJUSTMENT,      VALUE_NUM, NULL, -1 },
@@ -84,9 +87,6 @@ typedef struct {
 } songinit_t;
 
 static songinit_t gsonginit = { false, 0, NULL };
-
-static void songInit (void);
-static void songCleanup (void);
 
 song_t *
 songAlloc (void)
@@ -289,8 +289,7 @@ songAudioFileExists (song_t *song)
 }
 
 /* used by the song editor via uisong to get the values for display */
-/* used for tags that have a conversion set and for strings */
-/* also used for string tags */
+/* used for tags that have a conversion set and also for strings */
 /* favorite returns the span-display string used by gtk */
 /*     <span color="...">X</span> */
 char *
@@ -395,4 +394,5 @@ songCleanup (void)
   gsonginit.initialized = false;
   songFavoriteCleanup ();
 }
+
 

@@ -431,16 +431,16 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         }
 
         if (uisongsel->dispselType == DISP_SEL_MM) {
-          char  *samesong;
-          char  tbuff [100];
+          ssize_t samesong;
+          char    tbuff [40];
 
-          samesong = songGetStr (song, TAG_SAMESONG);
-          if (samesong != NULL && *samesong) {
-            sscolor = slistGetStr (uisongsel->samesonglist, samesong);
+          samesong = songGetNum (song, TAG_SAMESONG);
+          if (samesong > 0) {
+            sscolor = nlistGetStr (uisongsel->samesonglist, samesong);
             if (sscolor == NULL) {
               createRandomColor (tbuff, sizeof (tbuff));
-              slistSetStr (uisongsel->samesonglist, samesong, tbuff);
-              sscolor = slistGetStr (uisongsel->samesonglist, samesong);
+              nlistSetStr (uisongsel->samesonglist, samesong, tbuff);
+              sscolor = nlistGetStr (uisongsel->samesonglist, samesong);
             }
             mark = MARK_DISPLAY;
           }
