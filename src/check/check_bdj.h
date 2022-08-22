@@ -42,6 +42,8 @@ Suite *     sock_suite (void);
 Suite *     tmutil_suite (void);
 
 /* libbdj4 */
+Suite *     bdjvarsdf_suite (void);
+Suite *     bdjvarsdfload_suite (void);
 Suite *     dnctypes_suite (void);
 Suite *     dance_suite (void);
 Suite *     genre_suite (void);

@@ -34,6 +34,8 @@ add_executable (check_all
   check_sock.c
   check_tmutil.c
   # libbdj4
+  check_bdjvarsdf.c
+  check_bdjvarsdfload.c
   check_dnctypes.c
   check_genre.c
   check_dance.c

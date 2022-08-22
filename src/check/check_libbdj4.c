@@ -23,10 +23,8 @@ check_libbdj4 (SRunner *sr)
   Suite   *s;
 
   /* libbdj4
-   *  bdjvarsdf
-   *    needed by tests
-   *  bdjvarsdfload
-   *    needed by tests
+   *  bdjvarsdf             complete // needed by tests
+   *  bdjvarsdfload         complete // needed by tests
    *  templateutil
    *    needed by tests
    *  dnctypes              complete
@@ -61,6 +59,12 @@ check_libbdj4 (SRunner *sr)
    *  volreg
    *  musicq
    */
+
+  s = bdjvarsdf_suite();
+  srunner_add_suite (sr, s);
+
+  s = bdjvarsdfload_suite();
+  srunner_add_suite (sr, s);
 
   s = dnctypes_suite();
   srunner_add_suite (sr, s);
