@@ -18,6 +18,7 @@
 #include "check_bdj.h"
 #include "dirop.h"
 #include "filedata.h"
+#include "filemanip.h"
 #include "fileop.h"
 #include "musicdb.h"
 #include "slist.h"
@@ -610,6 +611,39 @@ START_TEST(musicdb_load_entry)
 END_TEST
 
 
+START_TEST(musicdb_db)
+{
+  musicdb_t *db;
+  FILE      *fh;
+  char      tbuff [200];
+  int       count;
+  int       racount;
+
+  filemanipCopy ("test-templates/musicdb.dat", "data/musicdb.dat");
+
+  bdjoptInit ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
+  bdjvarsdfloadInit ();
+  db = dbOpen (dbfn);
+
+  fh = fileopOpen ("data/musicdb.dat", "r");
+  fgets (tbuff, sizeof (tbuff), fh); // version
+  fgets (tbuff, sizeof (tbuff), fh); // comment
+  fgets (tbuff, sizeof (tbuff), fh); // rasize
+  fgets (tbuff, sizeof (tbuff), fh); // racount
+  racount = atoi (tbuff);
+  fclose (fh);
+
+  count = dbCount (db);
+  ck_assert_int_eq (count, racount);
+
+  dbClose (db);
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+}
+END_TEST
+
 START_TEST(musicdb_cleanup)
 {
   // fprintf (stdout, "   cleanup\n");
@@ -669,6 +703,7 @@ musicdb_suite (void)
   /* load entry needs a database */
   tcase_add_test (tc, musicdb_load_entry);
   tcase_add_test (tc, musicdb_cleanup);
+  tcase_add_test (tc, musicdb_db);
   suite_add_tcase (s, tc);
   return s;
 }

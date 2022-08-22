@@ -113,6 +113,21 @@ songlistIterate (songlist_t *sl, ilistidx_t *iteridx)
   return key;
 }
 
+ilistidx_t
+songlistGetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
+{
+  ilistidx_t    val;
+
+  if (sl == NULL) {
+    return LIST_VALUE_INVALID;
+  }
+  if (sl->songlist == NULL) {
+    return LIST_VALUE_INVALID;
+  }
+  val = ilistGetNum (sl->songlist, ikey, lidx);
+  return val;
+}
+
 char *
 songlistGetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
 {

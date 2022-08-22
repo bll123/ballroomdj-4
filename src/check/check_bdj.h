@@ -51,6 +51,7 @@ Suite *     orgutil_suite (void);
 Suite *     rating_suite (void);
 Suite *     song_suite (void);
 Suite *     songfav_suite (void);
+Suite *     songlist_suite (void);
 Suite *     songutil_suite (void);
 Suite *     status_suite (void);
 Suite *     tagdef_suite (void);

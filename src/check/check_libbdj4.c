@@ -40,7 +40,7 @@ check_libbdj4 (SRunner *sr)
    *  tagdef                complete
    *  song                  complete
    *  musicdb               complete
-   *  songlist
+   *  songlist              complete
    *  autosel
    *  songfilter
    *  dancesel
@@ -50,7 +50,7 @@ check_libbdj4 (SRunner *sr)
    *  sortopt
    *  dispsel
    *  orgutil               partial
-   *  validate              partial
+   *  validate              complete
    *  webclient
    *  audiotag
    *  m3u
@@ -93,6 +93,9 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = musicdb_suite();
+  srunner_add_suite (sr, s);
+
+  s = songlist_suite();
   srunner_add_suite (sr, s);
 
   s = orgutil_suite();

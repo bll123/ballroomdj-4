@@ -13,7 +13,8 @@ function copysrcfiles {
 
   filelist="ChangeLog.txt LICENSE.txt README.txt VERSION.txt
       packages/mongoose/mongoose.[ch]"
-  dirlist="src conv img install licenses scripts locale pkg templates web wiki"
+  dirlist="src conv img install licenses scripts locale pkg
+      templates test-templates web wiki"
 
   echo "-- $(date +%T) copying files to $stage"
   for f in $filelist; do
