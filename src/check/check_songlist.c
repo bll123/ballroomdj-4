@@ -19,6 +19,7 @@
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "ilist.h"
 #include "songlist.h"
 #include "templateutil.h"
 

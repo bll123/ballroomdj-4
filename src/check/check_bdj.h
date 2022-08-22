@@ -51,6 +51,7 @@ Suite *     level_suite (void);
 Suite *     musicdb_suite (void);
 Suite *     orgutil_suite (void);
 Suite *     rating_suite (void);
+Suite *     sequence_suite (void);
 Suite *     song_suite (void);
 Suite *     songfav_suite (void);
 Suite *     songlist_suite (void);

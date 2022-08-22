@@ -42,7 +42,7 @@ check_libbdj4 (SRunner *sr)
    *  autosel
    *  songfilter
    *  dancesel
-   *  sequence
+   *  sequence              complete
    *  songsel
    *  playlist
    *  sortopt
@@ -100,6 +100,9 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = songlist_suite();
+  srunner_add_suite (sr, s);
+
+  s = sequence_suite();
   srunner_add_suite (sr, s);
 
   s = orgutil_suite();

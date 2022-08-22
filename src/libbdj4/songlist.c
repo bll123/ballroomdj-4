@@ -15,6 +15,10 @@
 #include "pathbld.h"
 #include "songlist.h"
 
+enum {
+  SONGLIST_VERSION = 1,
+};
+
 typedef struct songlist {
   datafile_t      *df;
   ilist_t         *songlist;
@@ -45,6 +49,7 @@ songlistAlloc (const char *fname)
       BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
   sl->path = strdup (tfn);
   sl->songlist = ilistAlloc (fname, LIST_ORDERED);
+  ilistSetVersion (sl->songlist, SONGLIST_VERSION);
   return sl;
 }
 
@@ -174,6 +179,7 @@ songlistSave (songlist_t *sl)
     return;
   }
 
+  ilistSetVersion (sl->songlist, SONGLIST_VERSION);
   datafileSaveIndirect ("songlist", sl->path, songlistdfkeys,
       SONGLIST_KEY_MAX, sl->songlist);
 }

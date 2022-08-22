@@ -17,6 +17,10 @@
 #include "sequence.h"
 #include "slist.h"
 
+enum {
+  SEQUENCE_VERSION = 1,
+};
+
 sequence_t *
 sequenceAlloc (const char *fname)
 {
@@ -77,6 +81,7 @@ sequenceCreate (const char *fname)
   sequence->path = strdup (fn);
 
   sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, free);
+  nlistSetVersion (sequence->sequence, SEQUENCE_VERSION);
   return sequence;
 }
 
@@ -98,7 +103,7 @@ sequenceFree (sequence_t *sequence)
   }
 }
 
-list_t *
+nlist_t *
 sequenceGetDanceList (sequence_t *sequence)
 {
   if (sequence == NULL || sequence->sequence == NULL) {
@@ -118,10 +123,10 @@ sequenceStartIterator (sequence_t *sequence, nlistidx_t *iteridx)
   nlistStartIterator (sequence->sequence, iteridx);
 }
 
-listidx_t
+nlistidx_t
 sequenceIterate (sequence_t *sequence, nlistidx_t *iteridx)
 {
-  listidx_t     lkey;
+  nlistidx_t     lkey;
 
   if (sequence == NULL || sequence->sequence == NULL) {
     return -1L;
@@ -142,5 +147,6 @@ sequenceSave (sequence_t *sequence, slist_t *slist)
     return;
   }
 
+  slistSetVersion (slist, SEQUENCE_VERSION);
   datafileSaveList ("sequence", sequence->path, slist);
 }

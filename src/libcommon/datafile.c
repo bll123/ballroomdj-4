@@ -649,9 +649,11 @@ datafileSaveList (const char *tag, char *fn, slist_t *list)
   char            buff [DATAFILE_MAX_SIZE];
   char            tbuff [1024];
 
+  logProcBegin (LOG_PROC, "datafileSaveList");
   *buff = '\0';
   fh = datafileSavePrep (fn, tag);
   if (fh == NULL) {
+    logProcEnd (LOG_PROC, "datafileSaveList", "no-file");
     return;
   }
 
@@ -661,11 +663,13 @@ datafileSaveList (const char *tag, char *fn, slist_t *list)
   slistStartIterator (list, &iteridx);
 
   while ((str = slistIterateKey (list, &iteridx)) != NULL) {
+    logMsg (LOG_DBG, LOG_DATAFILE, "save-list: %s", str);
     snprintf (tbuff, sizeof (tbuff), "%s\n", str);
     strlcat (buff, tbuff, sizeof (buff));
   }
   fprintf (fh, "%s", buff);
   fclose (fh);
+  logProcEnd (LOG_PROC, "datafileSaveList", "");
 }
 
 listidx_t
