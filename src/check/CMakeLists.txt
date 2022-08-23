@@ -39,6 +39,7 @@ add_executable (check_all
   check_dnctypes.c
   check_genre.c
   check_dance.c
+  check_dispsel.c
   check_level.c
   check_musicdb.c
   check_orgutil.c

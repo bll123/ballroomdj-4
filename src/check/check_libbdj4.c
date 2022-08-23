@@ -44,8 +44,8 @@ check_libbdj4 (SRunner *sr)
    *  sequence              complete
    *  songsel
    *  playlist
-   *  sortopt
-   *  dispsel
+   *  sortopt               complete
+   *  dispsel               complete
    *  orgutil               partial
    *  validate              complete
    *  webclient
@@ -108,6 +108,9 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = sortopt_suite();
+  srunner_add_suite (sr, s);
+
+  s = dispsel_suite();
   srunner_add_suite (sr, s);
 
   s = orgutil_suite();
