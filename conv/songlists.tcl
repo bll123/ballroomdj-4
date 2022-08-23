@@ -19,6 +19,11 @@ try {
 }
 
 foreach {fn} $flist {
+  if { [file rootname [file tail $fn]] eq "Raffle Songs" } {
+    # raffle games are no longer needed
+    continue;
+  }
+
   set nfn [file join $datatopdir data [file rootname [file tail $fn]].songlist]
 #  puts "   - [file tail $fn] : [file rootname [file tail $fn]].songlist"
   source $fn
