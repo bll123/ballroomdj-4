@@ -6,6 +6,7 @@ BallroomDJ 4 Change Log
 - fixed an infrastructure bug (list cache 2022-8-15).
 - conversion: database: cleaned up and fixed samesong and adjustflags
   processing.
+- removed any mention of raffle games/songs.
 
 4.0.0 alpha 2022-08-12
 

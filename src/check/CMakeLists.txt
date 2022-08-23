@@ -48,6 +48,7 @@ add_executable (check_all
   check_songfav.c
   check_songlist.c
   check_songutil.c
+  check_sortopt.c
   check_status.c
   check_tagdef.c
   check_templateutil.c

@@ -107,6 +107,9 @@ check_libbdj4 (SRunner *sr)
   s = sequence_suite();
   srunner_add_suite (sr, s);
 
+  s = sortopt_suite();
+  srunner_add_suite (sr, s);
+
   s = orgutil_suite();
   srunner_add_suite (sr, s);
 
