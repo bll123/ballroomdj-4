@@ -58,6 +58,7 @@ Suite *     songlist_suite (void);
 Suite *     songutil_suite (void);
 Suite *     status_suite (void);
 Suite *     tagdef_suite (void);
+Suite *     templateutil_suite (void);
 Suite *     validate_suite (void);
 
 #endif /* INC_CHECK_BDJ */

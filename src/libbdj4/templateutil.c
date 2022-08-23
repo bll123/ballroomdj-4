@@ -38,13 +38,9 @@ templateImageCopy (const char *color)
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_TEMPLATEDIR);
 
-  dirlist = dirlistBasicDirList (tbuff, ".svg");
+  dirlist = dirlistBasicDirList (tbuff, BDJ4_IMG_SVG_EXT);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
-    if (strcmp (fname, "fades.svg") == 0) {
-      continue;
-    }
-
     pathbldMakePath (to, sizeof (to), "", "", PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
     diropMakeDir (to);
 

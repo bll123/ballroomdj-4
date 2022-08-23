@@ -24,9 +24,8 @@ check_libbdj4 (SRunner *sr)
 
   /* libbdj4
    *  bdjvarsdf             complete // needed by tests
-   *  bdjvarsdfload         complete // needed by tests
-   *  templateutil
-   *    needed by tests
+   *  templateutil          complete // needed by tests; no tests for localized
+   *  bdjvarsdfload         complete // needed by tests; uses templateutil
    *  dnctypes              complete
    *  dance                 complete
    *  genre                 complete
@@ -61,6 +60,9 @@ check_libbdj4 (SRunner *sr)
    */
 
   s = bdjvarsdf_suite();
+  srunner_add_suite (sr, s);
+
+  s = templateutil_suite();
   srunner_add_suite (sr, s);
 
   s = bdjvarsdfload_suite();
