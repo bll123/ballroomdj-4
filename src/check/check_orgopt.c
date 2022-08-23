@@ -15,7 +15,7 @@
 
 #include <check.h>
 
-#include "sortopt.h"
+#include "orgopt.h"
 #include "check_bdj.h"
 #include "slist.h"
 #include "templateutil.h"
@@ -23,42 +23,42 @@
 static void
 setup (void)
 {
-  templateFileCopy ("sortopt.txt", "sortopt.txt");
+  templateFileCopy ("orgopt.txt", "orgopt.txt");
 }
 
-START_TEST(sortopt_alloc)
+START_TEST(orgopt_alloc)
 {
-  sortopt_t   *so;
+  orgopt_t   *oopt;
 
-  so = sortoptAlloc ();
-  sortoptFree (so);
+  oopt = orgoptAlloc ();
+  orgoptFree (oopt);
 }
 END_TEST
 
-START_TEST(sortopt_chk)
+START_TEST(orgopt_chk)
 {
-  sortopt_t   *so;
+  orgopt_t   *oopt;
   slist_t     *tlist;
 
 
-  so = sortoptAlloc ();
-  tlist = sortoptGetList (so);
+  oopt = orgoptAlloc ();
+  tlist = orgoptGetList (oopt);
   ck_assert_int_gt (slistGetCount (tlist), 0);
-  sortoptFree (so);
+  orgoptFree (oopt);
 }
 END_TEST
 
 Suite *
-sortopt_suite (void)
+orgopt_suite (void)
 {
   Suite     *s;
   TCase     *tc;
 
-  s = suite_create ("sortopt");
-  tc = tcase_create ("sortopt");
+  s = suite_create ("orgopt");
+  tc = tcase_create ("orgopt");
   tcase_add_unchecked_fixture (tc, setup, NULL);
-  tcase_add_test (tc, sortopt_alloc);
-  tcase_add_test (tc, sortopt_chk);
+  tcase_add_test (tc, orgopt_alloc);
+  tcase_add_test (tc, orgopt_chk);
   suite_add_tcase (s, tc);
   return s;
 }

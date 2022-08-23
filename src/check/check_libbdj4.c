@@ -51,7 +51,7 @@ check_libbdj4 (SRunner *sr)
    *  webclient
    *  audiotag
    *  m3u
-   *  orgopt
+   *  orgopt                complete
    *  bdj4init
    *  msgparse
    *  songdb
@@ -117,5 +117,8 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = validate_suite();
+  srunner_add_suite (sr, s);
+
+  s = orgopt_suite();
   srunner_add_suite (sr, s);
 }

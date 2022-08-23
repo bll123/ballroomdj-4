@@ -42,6 +42,7 @@ add_executable (check_all
   check_dispsel.c
   check_level.c
   check_musicdb.c
+  check_orgopt.c
   check_orgutil.c
   check_rating.c
   check_sequence.c
