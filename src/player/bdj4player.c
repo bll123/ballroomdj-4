@@ -208,6 +208,7 @@ main (int argc, char *argv[])
   volumeSinklistInit (&playerData.sinklist);
   playerData.currentSpeed = 100;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "volume interface: %s", bdjoptGetStr (OPT_M_VOLUME_INTFC));
   playerData.volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
   assert (playerData.volume != NULL);
 
@@ -233,7 +234,9 @@ main (int argc, char *argv[])
     osSetEnv ("PULSE_SINK", playerData.currentSink);
   }
 
-  playerData.pli = pliInit (bdjoptGetStr (OPT_M_VOLUME_INTFC),
+  logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", bdjoptGetStr (OPT_M_PLAYER_INTFC));
+  logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s", playerData.currentSink);
+  playerData.pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
       playerData.currentSink);
   /* some audio device interfaces may not have the audio device enumeration. */
   /* (e.g. I don't know how to do this on macos) */
