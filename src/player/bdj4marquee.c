@@ -523,7 +523,7 @@ marqueeHandshakeCallback (void *udata, programstate_t programState)
       connHaveHandshake (marquee->conn, ROUTE_PLAYERUI)) {
     char    tbuff [100];
 
-    snprintf (tbuff, sizeof (tbuff), "%ld%c%ld",
+    snprintf (tbuff, sizeof (tbuff), "%zd%c%zd",
         nlistGetNum (marquee->options, MQ_FONT_SZ),
         MSG_ARGS_RS,
         nlistGetNum (marquee->options, MQ_FONT_SZ_FS));

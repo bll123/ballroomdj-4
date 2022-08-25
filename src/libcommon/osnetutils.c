@@ -34,7 +34,7 @@ getHostname (char *buff, size_t sz)
     char *hn = getenv ("COMPUTERNAME");
     if (hn != NULL) {
       strlcpy (buff, hn, sz);
-      stringToLower (buff);
+      stringAsciiToLower (buff);
     }
   }
 

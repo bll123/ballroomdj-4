@@ -174,6 +174,7 @@ main (int argc, char *argv[])
   altsetupCleanup (&altsetup);
   bdjvarsCleanup ();
   bdjoptCleanup ();
+  localeCleanup ();
   logEnd ();
   return 0;
 }

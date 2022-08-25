@@ -662,11 +662,14 @@ musicdb_suite (void)
 
   s = suite_create ("musicdb");
   tc = tcase_create ("musicdb-basic");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, musicdb_cleanup);
   tcase_add_test (tc, musicdb_open_new);
   suite_add_tcase (s, tc);
+
   tc = tcase_create ("musicdb-write");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, musicdb_write);
   tcase_add_test (tc, musicdb_load_get_byidx);
@@ -678,7 +681,9 @@ musicdb_suite (void)
   tcase_add_test (tc, musicdb_iterate);
   tcase_add_test (tc, musicdb_cleanup);
   suite_add_tcase (s, tc);
+
   tc = tcase_create ("musicdb-batch-write");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, musicdb_batch_write);
   tcase_add_test (tc, musicdb_load_get_byidx);
@@ -689,7 +694,9 @@ musicdb_suite (void)
   tcase_add_test (tc, musicdb_load_get_byname);
   tcase_add_test (tc, musicdb_iterate);
   tcase_add_test (tc, musicdb_cleanup);
+
   tc = tcase_create ("musicdb-write-song");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   suite_add_tcase (s, tc);
   tcase_add_test (tc, musicdb_write_song);

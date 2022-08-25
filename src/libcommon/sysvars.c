@@ -198,7 +198,7 @@ sysvarsInit (const char *argv0)
   strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
   strlcat (sysvars [SV_OSDISP], sysvars [SV_OSBUILD], SV_MAX_SZ);
 #endif
-  stringToLower (sysvars [SV_OSNAME]);
+  stringAsciiToLower (sysvars [SV_OSNAME]);
   if (sizeof (void *) == 8) {
     lsysvars [SVL_OSBITS] = 64;
   } else {

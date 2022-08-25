@@ -8,10 +8,12 @@
 #include <sys/types.h>
 
 #include "bdj4.h"
+#include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "datafile.h"
 #include "ilist.h"
+#include "istring.h"
 #include "level.h"
 #include "log.h"
 #include "musicdb.h"
@@ -265,7 +267,7 @@ songfilterSetData (songfilter_t *sf, int filterType, void *value)
     }
     sf->datafilter [filterType] = strdup (value);
     if (filterType == SONG_FILTER_SEARCH) {
-      stringToLower ((char *) sf->datafilter [filterType]);
+      istringToLower ((char *) sf->datafilter [filterType]);
     }
   }
   sf->inuse [filterType] = true;
@@ -719,7 +721,7 @@ songfilterCheckStr (char *str, char *searchstr)
   }
 
   strlcpy (tbuff, str, sizeof (tbuff));
-  stringToLower (tbuff);
+  istringToLower (tbuff);
   if (strstr (tbuff, searchstr) != NULL) {
     found = true;
   }

@@ -56,6 +56,7 @@ orgopt_suite (void)
 
   s = suite_create ("orgopt");
   tc = tcase_create ("orgopt");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, orgopt_alloc);
   tcase_add_test (tc, orgopt_chk);

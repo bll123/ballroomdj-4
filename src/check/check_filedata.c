@@ -102,6 +102,7 @@ filedata_suite (void)
 
   s = suite_create ("filedata");
   tc = tcase_create ("filedata");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, filedata_readall);
   tcase_add_test (tc, filedata_repl);
   suite_add_tcase (s, tc);

@@ -51,6 +51,18 @@ cmake:
 	  $(MAKE) build; \
 	fi
 
+cmakesinglecpu:
+	if test $$(uname -s) = Linux; then \
+	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-unix; \
+	  $(MAKE) build; \
+	elif test $$(uname -s) = Darwin; then \
+	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  $(MAKE) build; \
+	else \
+	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-windows; \
+	  $(MAKE) build; \
+	fi
+
 cmakeclang:
 	if test $$(uname -s) = Linux; then \
 	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
@@ -90,13 +102,13 @@ build:
 # testing
 .PHONY: check checkfast checksuite
 check:
-	../bin/bdj4 --check_all 2>&1 | tee ww
+	(cd ..;./bin/bdj4 --check_all 2>&1 | tee ww)
 
 checkfast:
-	CK_EXCLUDE_TAGS=slow ../bin/bdj4 --check_all 2>&1 | tee ww
+	(cd ..;CK_EXCLUDE_TAGS=slow ./bin/bdj4 --check_all 2>&1 | tee ww)
 
 checksuite:
-	CK_RUN_SUITE=$(suite) ../bin/bdj4 --check_all 2>&1 | tee ww
+	(cd ..;CK_RUN_SUITE=$(suite) ./bin/bdj4 --check_all 2>&1 | tee ww)
 
 # recommended to change PLAYER and VOLUME in data/bdjconfig.txt to
 # be the null libraries.

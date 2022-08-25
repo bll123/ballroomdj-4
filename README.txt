@@ -11,7 +11,7 @@ Contents
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 20220812
+Alpha Release: 202208??
 
   Alpha releases are mostly untested works in progress.
 
@@ -62,8 +62,8 @@ Installation:
   MacOS:
     The BallroomDJ 4 installer will not work on MacOS without step (a).
 
-    a) Download the macos-pre-install.sh script from:
-        https://sourceforge.net/projects/ballroomdj4/files/macos-pre-install.sh/download
+    a) Download the macos-pre-install-macports.sh script from:
+        https://sourceforge.net/projects/ballroomdj4/files/macos-pre-install-macports.sh/download
       and run it.
       This script uses sudo to install the required packages (from MacPorts).
       [ I have not tested with 'brew'.  That's in the future someday. ]
@@ -97,6 +97,9 @@ Converting BallroomDJ 3:
       original BallroomDJ installation is untouched and can still be used.
 
 Known Issues:
+  All Platforms
+    - The song selection display may display strange values for numeric
+      columns (will be fixed at a later date).
   Windows
     - The marquee position is not saved when it is iconified (close the
       window instead).

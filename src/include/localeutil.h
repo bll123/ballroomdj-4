@@ -4,6 +4,7 @@
 char *_gettext (const char *str);
 
 void localeInit (void);
+void localeCleanup (void);
 void localeDebug (void);
 
 #endif /* INC_LOCALEUTIL_H */

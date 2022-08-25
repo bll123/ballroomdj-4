@@ -710,6 +710,7 @@ nlist_suite (void)
 
   s = suite_create ("nlist");
   tc = tcase_create ("nlist");
+  tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, nlist_create_free);
   tcase_add_test (tc, nlist_version);
   tcase_add_test (tc, nlist_u_set);

@@ -8,10 +8,9 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "bdjstring.h"
 #include "bdjvars.h"
 #include "sysvars.h"
-#include "bdjstring.h"
-#include "bdjopt.h"
 
 static char *   bdjvars [BDJV_MAX];
 static ssize_t  bdjvarsl [BDJVL_MAX];

@@ -7,6 +7,8 @@ BallroomDJ 4 Change Log
 - conversion: database: cleaned up and fixed samesong and adjustflags
   processing.
 - removed any mention of raffle games/songs.
+- player: added history (basic).
+- song selection: fix filter search to handle international characters.
 
 4.0.0 alpha 2022-08-12
 

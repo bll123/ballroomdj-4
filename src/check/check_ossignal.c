@@ -69,6 +69,7 @@ ossignal_suite (void)
 
   s = suite_create ("ossignal");
   tc = tcase_create ("ossignal");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, ossignal_chk);
   suite_add_tcase (s, tc);
   return s;

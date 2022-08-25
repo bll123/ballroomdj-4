@@ -102,6 +102,7 @@ pathbld_suite (void)
 
   s = suite_create ("pathbld");
   tc = tcase_create ("pathbld");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, pathbld_chk);
   suite_add_tcase (s, tc);
   return s;

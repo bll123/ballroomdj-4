@@ -22,7 +22,7 @@ typedef struct {
   void        (*volumeDisconnect) (void);
 } volume_t;
 
-volume_t  *volumeInit (void);
+volume_t  *volumeInit (const char *volpkg);
 void      volumeFree (volume_t *volume);
 bool      volumeHaveSinkList (volume_t *volume);
 void      volumeSinklistInit (volsinklist_t *sinklist);

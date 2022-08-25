@@ -57,6 +57,7 @@ bdjmsg_suite (void)
 
   s = suite_create ("bdjmsg");
   tc = tcase_create ("bdjmsg");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, bdjmsg_encode);
   tcase_add_test (tc, bdjmsg_decode);
   suite_add_tcase (s, tc);

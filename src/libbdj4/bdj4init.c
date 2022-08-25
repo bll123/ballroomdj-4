@@ -309,6 +309,7 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   bdjvarsCleanup ();
   tagdefCleanup ();
   audiotagCleanup ();
+  localeCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
   if (route != ROUTE_NONE) {
     lockRelease (lockName (route), PATHBLD_MP_USEIDX);

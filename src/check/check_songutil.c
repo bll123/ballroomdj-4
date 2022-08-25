@@ -56,6 +56,7 @@ songutil_suite (void)
 
   s = suite_create ("songutil");
   tc = tcase_create ("songutil");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_test (tc, songutil_chk);
   suite_add_tcase (s, tc);
   return s;

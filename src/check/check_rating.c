@@ -165,6 +165,7 @@ rating_suite (void)
 
   s = suite_create ("rating");
   tc = tcase_create ("rating");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, rating_alloc);
   tcase_add_test (tc, rating_iterate);

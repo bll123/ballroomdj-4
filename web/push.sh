@@ -82,7 +82,7 @@ else
 fi
 
 if [[ $tag == macos ]]; then
-  sshpass -e rsync -v -e ssh install/macos-pre-install.sh \
+  sshpass -e rsync -v -e ssh install/macos-pre-install-macports.sh \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 fi
 

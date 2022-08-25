@@ -7,7 +7,8 @@ if (WIN32)
   target_compile_options (bdj4info PRIVATE -municode)
 endif()
 target_link_libraries (bdj4info
-  libbdj4common
+  libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
 )
 addIntlLibrary (bdj4info)
 
@@ -16,7 +17,8 @@ if (WIN32)
   target_compile_options (bdj4tags PRIVATE -municode)
 endif()
 target_link_libraries (bdj4tags
-  libbdj4common libbdj4
+  libbdj4 libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
 )
 addIntlLibrary (bdj4tags)
 

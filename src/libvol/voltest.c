@@ -29,7 +29,7 @@ main (int argc, char *argv [])
   sysvarsInit (argv [0]);
   bdjoptInit ();
 
-  volume = volumeInit ();
+  volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
   volumeSinklistInit (&sinklist);
 
   if (argc == 2 && strcmp (argv [1], "getsinklist") == 0) {

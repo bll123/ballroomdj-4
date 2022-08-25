@@ -35,6 +35,11 @@ macro (macUpdateRPath name)
             $<TARGET_FILE:${name}>
       COMMAND
         ${CMAKE_INSTALL_NAME_TOOL} -change
+            "@rpath/libbdj4basic.dylib"
+            "@executable_path/libbdj4basic.dylib"
+            $<TARGET_FILE:${name}>
+      COMMAND
+        ${CMAKE_INSTALL_NAME_TOOL} -change
             "@rpath/libbdj4pli.dylib"
             "@executable_path/libbdj4pli.dylib"
             $<TARGET_FILE:${name}>

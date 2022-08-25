@@ -114,6 +114,7 @@ templateutil_suite (void)
 
   s = suite_create ("templateutil");
   tc = tcase_create ("templateutil");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_test (tc, templateutil_file_copy);
   tcase_add_test (tc, templateutil_image_copy);
   tcase_add_test (tc, templateutil_http_copy);

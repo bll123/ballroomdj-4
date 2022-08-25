@@ -497,6 +497,7 @@ filemanip_suite (void)
 
   s = suite_create ("filemanip");
   tc = tcase_create ("filemanip");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, filemanip_move_a);
   tcase_add_test (tc, filemanip_copy_a);
   tcase_add_test (tc, filemanip_backup_a);

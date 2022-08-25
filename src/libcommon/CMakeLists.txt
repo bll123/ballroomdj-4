@@ -4,25 +4,16 @@ include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4common SHARED
   bdjmsg.c
-  bdjopt.c
   bdjstring.c
   bdjvars.c
   colorutils.c
   conn.c
-  datafile.c
-  dirlist.c
   dirop.c
   filedata.c
   filemanip.c
   fileop.c
   fileutil.c
-  ilist.c
-  istring.c
-  list.c
-  localeutil.c
-  lock.c
   log.c
-  nlist.c
   osdir.c
   oslocale.c
   osnetutils.c
@@ -36,11 +27,7 @@ add_library (libbdj4common SHARED
   oswinutils.c
   pathbld.c
   pathutil.c
-  procutil.c
-  progstate.c
   queue.c
-  rafile.c
-  slist.c
   sock.c
   sockh.c
   strlcat.c

@@ -333,6 +333,7 @@ rafile_suite (void)
 
   s = suite_create ("rafile");
   tc = tcase_create ("rafile");
+  tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, rafile_create_new);
   tcase_add_test (tc, rafile_reopen);
   tcase_add_test (tc, rafile_write);

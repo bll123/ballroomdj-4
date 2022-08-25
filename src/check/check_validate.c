@@ -213,6 +213,7 @@ validate_suite (void)
 
   s = suite_create ("validate");
   tc = tcase_create ("validate");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_test (tc, validate_empty);
   tcase_add_test (tc, validate_nospace);
   tcase_add_test (tc, validate_noslash);

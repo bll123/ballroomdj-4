@@ -40,6 +40,7 @@ bdjvarsdfload_suite (void)
 
   s = suite_create ("bdjvarsdfload");
   tc = tcase_create ("bdjvarsdfload");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_test (tc, bdjvarsdfload_chk);
   suite_add_tcase (s, tc);
   return s;

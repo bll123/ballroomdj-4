@@ -34,9 +34,12 @@ pkg_check_modules (GTK gtk+-3.0)
 pkg_check_modules (OPENSSL openssl)
 pkg_check_modules (PA libpulse)
 pkg_check_modules (XML2 libxml-2.0)
+pkg_check_modules (ICU icu-i18n)
 
 add_compile_options (-DGDK_DISABLE_DEPRECATED)
 add_compile_options (-DGTK_DISABLE_DEPRECATED)
+# does not work.
+# add_compile_options (-DU_FORCE_HIDE_DEPRECATED_API)
 
 add_compile_options (-fPIC)
 
@@ -99,6 +102,10 @@ add_compile_options (-g)
 add_link_options (-g)
 if (NOT WIN32)
   add_link_options (-rdynamic)
+endif()
+if (WIN32)
+  # msys2 puts the include files for ICU in /usr/include
+  add_compile_options (-I/usr/include)
 endif()
 
 set (BDJ4_NO_FORTIFY F)

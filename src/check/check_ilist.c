@@ -406,6 +406,7 @@ ilist_suite (void)
 
   s = suite_create ("ilist");
   tc = tcase_create ("ilist");
+  tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, ilist_create_free);
   tcase_add_test (tc, ilist_get_data_str);
   tcase_add_test (tc, ilist_get_data_str_sub);

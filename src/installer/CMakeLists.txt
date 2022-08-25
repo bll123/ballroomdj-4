@@ -35,7 +35,8 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4installer
   liblocatebdj3
-  libbdj4ui libuigtk3 libbdj4 libbdj4common
+  libbdj4ui libuigtk3 libbdj4 libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -48,7 +49,8 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4altsetup
   liblocatebdj3
-  libbdj4ui libuigtk3 libbdj4 libbdj4common
+  libbdj4ui libuigtk3 libbdj4 libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
   m
@@ -61,7 +63,8 @@ if (WIN32)
   target_compile_options (bdj4updater PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4updater
-  libbdj4common libbdj4
+  libbdj4 libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
 )
 addIntlLibrary (bdj4updater)
 

@@ -139,6 +139,7 @@ dirop_suite (void)
 
   s = suite_create ("dirop");
   tc = tcase_create ("dirop");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, dirop_mkdir_isdir_a);
   tcase_add_test (tc, dirop_del_dir_a);
   tcase_add_test (tc, dirop_mk_is_del_u);

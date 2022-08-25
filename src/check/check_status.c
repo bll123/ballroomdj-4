@@ -166,6 +166,7 @@ status_suite (void)
 
   s = suite_create ("status");
   tc = tcase_create ("status");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, status_alloc);
   tcase_add_test (tc, status_iterate);

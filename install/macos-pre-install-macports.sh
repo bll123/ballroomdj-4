@@ -143,6 +143,7 @@ sudo port install gtk3 +quartz -x11
 sudo port install adwaita-icon-theme
 sudo port install ffmpeg +nonfree -x11
 sudo port install python${pyver} py${pyver}-pip py${pyver}-wheel
+sudo port install icu
 sudo port select --set python python${pyver}
 sudo port select --set python3 python${pyver}
 sudo port select --set pip py${pyver}-pip

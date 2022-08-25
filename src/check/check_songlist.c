@@ -159,6 +159,7 @@ songlist_suite (void)
 
   s = suite_create ("songlist");
   tc = tcase_create ("songlist");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, songlist_alloc);
   tcase_add_test (tc, songlist_load);

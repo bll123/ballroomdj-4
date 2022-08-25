@@ -187,6 +187,7 @@ progstate_suite (void)
 
   s = suite_create ("progstate");
   tc = tcase_create ("progstate");
+  tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, progstate_chk);
   tcase_add_test (tc, progstate_multi_skip);
   suite_add_tcase (s, tc);

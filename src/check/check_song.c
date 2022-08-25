@@ -505,6 +505,7 @@ song_suite (void)
 
   s = suite_create ("song");
   tc = tcase_create ("song");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, song_alloc);
   tcase_add_test (tc, song_parse);

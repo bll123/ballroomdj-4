@@ -179,6 +179,7 @@ pathutil_suite (void)
 
   s = suite_create ("pathutil");
   tc = tcase_create ("pathutil");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, pathinfo_chk);
   tcase_add_test (tc, path_winpath);
   tcase_add_test (tc, path_normpath);

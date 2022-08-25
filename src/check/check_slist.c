@@ -559,6 +559,7 @@ slist_suite (void)
 
   s = suite_create ("slist");
   tc = tcase_create ("slist");
+  tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, simple_list_create_free);
   tcase_add_test (tc, simple_list_add_unordered);
   tcase_add_test (tc, simple_list_add_unordered_iterate);

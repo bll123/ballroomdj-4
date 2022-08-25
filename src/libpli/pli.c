@@ -8,7 +8,6 @@
 #include <errno.h>
 
 #include "bdj4.h"
-#include "bdjopt.h"
 #include "pathbld.h"
 #include "dylib.h"
 #include "pli.h"
@@ -40,8 +39,7 @@ pliInit (const char *volpkg, const char *sinkname)
   pli->pliiAudioDeviceList = NULL;
 
   pathbldMakePath (dlpath, sizeof (dlpath),
-      bdjoptGetStr (OPT_M_PLAYER_INTFC),
-      sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_EXECDIR);
+      volpkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_EXECDIR);
   pli->dlHandle = dylibLoad (dlpath);
   if (pli->dlHandle == NULL) {
     fprintf (stderr, "Unable to open library %s\n", dlpath);

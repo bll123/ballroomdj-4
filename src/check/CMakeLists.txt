@@ -11,29 +11,32 @@ add_executable (check_all
   check_bdjstring.c
   check_bdjvars.c
   check_colorutils.c
-  check_datafile.c
-  check_dirlist.c
   check_dirop.c
   check_filedata.c
   check_filemanip.c
   check_fileop.c
-  check_ilist.c
-  check_istring.c
   check_lock.c
-  check_nlist.c
   check_osprocess.c
   check_osrandom.c
   check_ossignal.c
   check_pathbld.c
   check_pathutil.c
   check_procutil.c
-  check_progstate.c
   check_queue.c
   check_rafile.c
-  check_slist.c
   check_sock.c
   check_tmutil.c
+  # libbasic
+  check_libbasic.c
+  check_datafile.c
+  check_dirlist.c
+  check_ilist.c
+  check_istring.c
+  check_nlist.c
+  check_progstate.c
+  check_slist.c
   # libbdj4
+  check_libbdj4.c
   check_bdjvarsdf.c
   check_bdjvarsdfload.c
   check_dnctypes.c
@@ -57,7 +60,8 @@ add_executable (check_all
   check_validate.c
 )
 target_link_libraries (check_all
-  libbdj4 libbdj4common
+  libbdj4 libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${CHECK_LDFLAGS}
   pthread

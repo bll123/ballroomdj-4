@@ -56,6 +56,7 @@ sortopt_suite (void)
 
   s = suite_create ("sortopt");
   tc = tcase_create ("sortopt");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, sortopt_alloc);
   tcase_add_test (tc, sortopt_chk);

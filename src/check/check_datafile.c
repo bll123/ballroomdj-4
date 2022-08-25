@@ -984,6 +984,7 @@ datafile_suite (void)
 
   s = suite_create ("datafile");
   tc = tcase_create ("datafile");
+  tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, parse_init_free);
   tcase_add_test (tc, parse_simple);
   tcase_add_test (tc, parse_keyvalue);

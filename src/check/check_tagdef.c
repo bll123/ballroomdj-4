@@ -47,6 +47,7 @@ tagdef_suite (void)
 
   s = suite_create ("tagdef");
   tc = tcase_create ("tagdef");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_test (tc, tagdef_init);
   tcase_add_test (tc, tagdef_lookup);
   suite_add_tcase (s, tc);

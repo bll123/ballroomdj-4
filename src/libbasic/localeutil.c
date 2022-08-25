@@ -15,6 +15,7 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"
+#include "istring.h"
 #include "localeutil.h"
 #include "oslocale.h"
 #include "osutils.h"
@@ -31,7 +32,7 @@ localeInit (void)
 
 
   /* get the locale from the environment */
-  /* this will fail on windows with utf-8 code pages */
+  /* this does work on windows */
   if (setlocale (LC_ALL, "") == NULL) {
     fprintf (stderr, "set of locale from env failed\n");
   }
@@ -71,9 +72,10 @@ localeInit (void)
 
   if (isWindows ()) {
     /* windows doesn't work without this */
-    /* note that this is an msys2 extension */
+    /* note that LC_MESSAGES is an msys2 extension */
     /* windows normally has no LC_MESSAGES setting */
     osSetEnv ("LC_MESSAGES", tbuff);
+    osSetEnv ("LC_COLLATE", tbuff);
   }
 
   pathbldMakePath (lbuff, sizeof (lbuff), "", "", PATHBLD_MP_LOCALEDIR);
@@ -86,11 +88,25 @@ localeInit (void)
   lconv = localeconv ();
   sysvarsSetStr (SV_LOCALE_RADIX, lconv->decimal_point);
 
-  if (setlocale (LC_MESSAGES, tbuff) == NULL) {
-    fprintf (stderr, "set of locale failed; unknown locale %s\n", tbuff);
+  /* setlocale on windows cannot handle utf-8 strings */
+  /* nor will it handle the sv_SE style format */
+  if (! isWindows ()) {
+    if (setlocale (LC_MESSAGES, tbuff) == NULL) {
+      fprintf (stderr, "set of locale failed; unknown locale %s\n", tbuff);
+    }
+    if (setlocale (LC_COLLATE, tbuff) == NULL) {
+      fprintf (stderr, "set of locale failed; unknown locale %s\n", tbuff);
+    }
   }
 
+  istringInit (sysvarsGetStr (SV_LOCALE));
   return;
+}
+
+void
+localeCleanup (void)
+{
+  istringCleanup ();
 }
 
 void
@@ -99,7 +115,9 @@ localeDebug (void)
   char    tbuff [200];
 
   fprintf (stderr, "-- locale\n");
-  fprintf (stderr, "  set-locale:%s\n", setlocale (LC_ALL, NULL));
+  fprintf (stderr, "  set-locale-all:%s\n", setlocale (LC_ALL, NULL));
+  fprintf (stderr, "  set-locale-collate:%s\n", setlocale (LC_COLLATE, NULL));
+  fprintf (stderr, "  set-locale-messages:%s\n", setlocale (LC_MESSAGES, NULL));
   osGetLocale (tbuff, sizeof (tbuff));
   fprintf (stderr, "  os-locale:%s\n", tbuff);
   fprintf (stderr, "  locale-system:%s\n", sysvarsGetStr (SV_LOCALE_SYSTEM));

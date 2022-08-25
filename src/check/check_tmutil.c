@@ -269,7 +269,7 @@ tmutil_suite (void)
   tcase_add_test (tc, mstime_chk);
   suite_add_tcase (s, tc);
   tc = tcase_create ("tmutil-timers");
-  tcase_set_tags (tc, "slow");
+  tcase_set_tags (tc, "libcommon slow");
   tcase_add_test (tc, mssleep_chk);
   tcase_add_test (tc, mstimestartofday_chk);
   tcase_add_test (tc, mstime_start_end);
@@ -277,7 +277,9 @@ tmutil_suite (void)
   tcase_add_test (tc, mstime_set_tm);
   tcase_add_test (tc, mstime_check);
   suite_add_tcase (s, tc);
+
   tc = tcase_create ("tmutil-disp");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, tmutildstamp_chk);
   tcase_add_test (tc, tmutildisp_chk);
   tcase_add_test (tc, tmutiltstamp_chk);

@@ -14,7 +14,7 @@ static const char *versionNext (const char *tv1);
 
 /* not for use on localized strings */
 char *
-stringToLower (char * s)
+stringAsciiToLower (char * s)
 {
   for (char *p = s; *p; p++) {
     *p = tolower (*p);
@@ -24,7 +24,7 @@ stringToLower (char * s)
 
 /* not for use on localized strings */
 char *
-stringToUpper (char * s)
+stringAsciiToUpper (char * s)
 {
   for (char *p = s; *p; p++) {
     *p = toupper (*p);

@@ -20,22 +20,24 @@
 #include "check_bdj.h"
 #include "sysvars.h"
 
+/* note that to-lower will not work on localized strings */
 START_TEST(bdjstring_string_to_lower)
 {
   char  buff [20];
 
   strcpy (buff, "ABCD");
-  stringToLower (buff);
+  stringAsciiToLower (buff);
   ck_assert_str_eq (buff, "abcd");
 }
 END_TEST
 
+/* note that to-upper will not work on localized strings */
 START_TEST(bdjstring_string_to_upper)
 {
   char  buff [20];
 
   strcpy (buff, "abcd");
-  stringToUpper (buff);
+  stringAsciiToUpper (buff);
   ck_assert_str_eq (buff, "ABCD");
 }
 END_TEST

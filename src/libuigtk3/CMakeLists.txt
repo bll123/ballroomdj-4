@@ -32,7 +32,8 @@ target_include_directories (libuigtk3
   PUBLIC ${GTK_INCLUDE_DIRS}
 )
 target_link_libraries (libuigtk3
-  libbdj4 libbdj4common
+  libbdj4 libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
   ${GTK_LDFLAGS}
   m
 )

@@ -83,7 +83,9 @@ START_TEST(osprocess_start_wait)
 
   runchk (OS_PROC_WAIT, &pid, &exists);
   ck_assert_int_gt (pid, 0);
-  ck_assert_int_lt (exists, 0);
+  if (! isWindows ()) {
+    ck_assert_int_lt (exists, 0);
+  }
 }
 END_TEST
 
@@ -126,7 +128,9 @@ START_TEST(osprocess_start_handle)
   }
 #endif
   ck_assert_int_gt (pid, 0);
-  ck_assert_int_lt (rc, 0);
+  if (! isWindows ()) {
+    ck_assert_int_lt (rc, 0);
+  }
 }
 END_TEST
 
@@ -238,7 +242,7 @@ osprocess_suite (void)
 
   s = suite_create ("osprocess");
   tc = tcase_create ("osprocess");
-  tcase_set_tags (tc, "slow");
+  tcase_set_tags (tc, "libcommon slow");
   tcase_add_test (tc, osprocess_start);
   tcase_add_test (tc, osprocess_start_detach);
   tcase_add_test (tc, osprocess_start_wait);

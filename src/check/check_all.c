@@ -66,6 +66,7 @@ main (int argc, char *argv [])
   number_failed += srunner_ntests_failed (sr);
   srunner_free (sr);
 
+  localeCleanup ();
   logEnd ();
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

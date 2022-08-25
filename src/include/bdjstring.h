@@ -3,8 +3,8 @@
 
 #include "config.h"
 
-char *    stringToLower (char *s);
-char *    stringToUpper (char *s);
+char *    stringAsciiToLower (char *s);
+char *    stringAsciiToUpper (char *s);
 void      stringTrim (char *s);
 void      stringTrimChar (char *s, unsigned char c);
 int       versionCompare (const char *v1, const char *v2);

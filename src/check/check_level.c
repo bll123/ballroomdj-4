@@ -186,6 +186,7 @@ level_suite (void)
 
   s = suite_create ("level");
   tc = tcase_create ("level");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, level_alloc);
   tcase_add_test (tc, level_iterate);

@@ -1056,6 +1056,7 @@ queue_suite (void)
 
   s = suite_create ("queue");
   tc = tcase_create ("queue");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, queue_alloc_free);
   tcase_add_test (tc, queue_push_one);
   tcase_add_test (tc, queue_push_two);

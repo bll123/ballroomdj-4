@@ -185,6 +185,7 @@ sequence_suite (void)
 
   s = suite_create ("sequence");
   tc = tcase_create ("sequence");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, sequence_create);
   tcase_add_test (tc, sequence_alloc);

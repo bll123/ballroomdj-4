@@ -9,7 +9,6 @@
 #include <assert.h>
 
 #include "bdj4.h"
-#include "bdjopt.h"
 #include "pathbld.h"
 #include "dylib.h"
 #include "sysvars.h"
@@ -17,7 +16,7 @@
 #include "volume.h"
 
 volume_t *
-volumeInit (void)
+volumeInit (const char *volpkg)
 {
   volume_t      *volume;
 
@@ -29,8 +28,7 @@ volumeInit (void)
   volume->volumeDisconnect = NULL;
 
   pathbldMakePath (dlpath, sizeof (dlpath),
-      bdjoptGetStr (OPT_M_VOLUME_INTFC),
-      sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_EXECDIR);
+      volpkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_EXECDIR);
   volume->dlHandle = dylibLoad (dlpath);
   if (volume->dlHandle == NULL) {
     fprintf (stderr, "Unable to open library %s\n", dlpath);

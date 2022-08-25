@@ -208,7 +208,7 @@ main (int argc, char *argv[])
   volumeSinklistInit (&playerData.sinklist);
   playerData.currentSpeed = 100;
 
-  playerData.volume = volumeInit ();
+  playerData.volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
   assert (playerData.volume != NULL);
 
   playerInitSinklist (&playerData);

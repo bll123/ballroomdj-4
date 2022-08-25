@@ -40,6 +40,7 @@ osrandom_suite (void)
 
   s = suite_create ("osrandom");
   tc = tcase_create ("osrandom");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, osrandom_chk);
   suite_add_tcase (s, tc);
   return s;

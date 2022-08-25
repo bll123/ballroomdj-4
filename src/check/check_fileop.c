@@ -200,6 +200,7 @@ fileop_suite (void)
 
   s = suite_create ("fileop");
   tc = tcase_create ("fileop");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, fileop_exists_a);
   tcase_add_test (tc, fileop_size_a);
   tcase_add_test (tc, fileop_modtime_a);

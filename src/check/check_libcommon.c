@@ -37,28 +37,17 @@ check_libcommon (SRunner *sr)
    *  filemanip   need renameall test
    *  fileutil                        // open/write/close shared
    *  pathbld     complete
-   *  istring     need windows support
    *  log
-   *  nlist       partial
-   *  ilist       partial
-   *  slist       partial
    *  bdjmsg      complete
    *  sock        partial
-   *  datafile    partial
    *  bdjvars     complete
    *  sockh
-   *  bdjopt
    *  conn
-   *  procutil    partial
-   *  lock        complete
-   *  rafile      complete
-   *  localeutil
    *  osrandom    complete
    *  queue       complete
    *  dirlist     complete
    *  colorutils  complete
    *  ossignal    complete
-   *  progstate   complete (no log checks)
    */
 
   s = bdjstring_suite();
@@ -82,19 +71,7 @@ check_libcommon (SRunner *sr)
   s = pathbld_suite();
   srunner_add_suite (sr, s);
 
-  s = istring_suite();
-  srunner_add_suite (sr, s);
-
   s = filemanip_suite();
-  srunner_add_suite (sr, s);
-
-  s = nlist_suite();
-  srunner_add_suite (sr, s);
-
-  s = slist_suite();
-  srunner_add_suite (sr, s);
-
-  s = ilist_suite();
   srunner_add_suite (sr, s);
 
   s = bdjmsg_suite();
@@ -103,19 +80,7 @@ check_libcommon (SRunner *sr)
   s = sock_suite();
   srunner_add_suite (sr, s);
 
-  s = datafile_suite();
-  srunner_add_suite (sr, s);
-
   s = bdjvars_suite();
-  srunner_add_suite (sr, s);
-
-  s = procutil_suite();
-  srunner_add_suite (sr, s);
-
-  s = lock_suite();
-  srunner_add_suite (sr, s);
-
-  s = rafile_suite();
   srunner_add_suite (sr, s);
 
   s = osrandom_suite();
@@ -127,15 +92,9 @@ check_libcommon (SRunner *sr)
   s = dirop_suite();
   srunner_add_suite (sr, s);
 
-  s = dirlist_suite();
-  srunner_add_suite (sr, s);
-
   s = colorutils_suite();
   srunner_add_suite (sr, s);
 
   s = ossignal_suite();
-  srunner_add_suite (sr, s);
-
-  s = progstate_suite();
   srunner_add_suite (sr, s);
 }

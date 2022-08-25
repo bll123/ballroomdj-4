@@ -101,6 +101,7 @@ dispsel_suite (void)
 
   s = suite_create ("dispsel");
   tc = tcase_create ("dispsel");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, dispsel_alloc);
   tcase_add_test (tc, dispsel_get_list);

@@ -37,7 +37,7 @@ enum {
   CHK_LINK,
 };
 
-dirlist_chk_t tvalues [] = {
+static dirlist_chk_t tvalues [] = {
   { CHK_DIR,  1, "tmp/abc", NULL },
   { CHK_FILE, 0, "tmp/abc/abc.txt", "abc.txt" },
   { CHK_DIR,  1, "tmp/abc/def", NULL },
@@ -174,6 +174,7 @@ dirlist_suite (void)
 
   s = suite_create ("dirlist");
   tc = tcase_create ("dirlist");
+  tcase_set_tags (tc, "libbasic");
   tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, dirlist_basic);
   tcase_add_test (tc, dirlist_recursive);

@@ -98,6 +98,7 @@ songfav_suite (void)
 
   s = suite_create ("songfav");
   tc = tcase_create ("songfav");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_test (tc, songfav_init);
   tcase_add_test (tc, songfav_conv);
   tcase_add_test (tc, songfav_get);

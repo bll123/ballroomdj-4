@@ -405,6 +405,7 @@ main (int argc, char *argv[])
   }
 
   installerCleanup (&installer);
+  localeCleanup ();
   logEnd ();
   return 0;
 }

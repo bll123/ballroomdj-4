@@ -159,5 +159,6 @@ main (int argc, char *argv [])
 
   bdjoptCleanup ();
   audiotagCleanup ();
+  localeCleanup ();
   return 0;
 }

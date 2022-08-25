@@ -40,6 +40,7 @@ colorutils_suite (void)
 
   s = suite_create ("colorutils");
   tc = tcase_create ("colorutils");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, colorutils_chk);
   suite_add_tcase (s, tc);
   return s;

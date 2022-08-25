@@ -74,6 +74,7 @@ bdjvars_suite (void)
 
   s = suite_create ("bdjvars");
   tc = tcase_create ("bdjvars");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, bdjvars_init);
   tcase_add_test (tc, bdjvars_init_idx);
   tcase_add_test (tc, bdjvars_adjust);

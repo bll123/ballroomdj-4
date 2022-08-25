@@ -98,6 +98,7 @@ dnctypes_suite (void)
 
   s = suite_create ("dnctypes");
   tc = tcase_create ("dnctypes");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, dnctypes_alloc);
   tcase_add_test (tc, dnctypes_iterate);

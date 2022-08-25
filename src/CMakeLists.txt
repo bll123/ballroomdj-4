@@ -83,6 +83,7 @@ add_subdirectory (liblocbdj3)
 add_subdirectory (libwebsrv)
 # shared libraries that ship
 add_subdirectory (libcommon)
+add_subdirectory (libbasic)
 add_subdirectory (libbdj4)
 add_subdirectory (libpli)
 add_subdirectory (libvol)

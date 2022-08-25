@@ -208,6 +208,7 @@ orgutil_suite (void)
 
   s = suite_create ("orgutil");
   tc = tcase_create ("orgutil");
+  tcase_set_tags (tc, "libbdj4");
   tcase_add_test (tc, orgutil_parse);
   tcase_add_test (tc, orgutil_regex);
   suite_add_tcase (s, tc);

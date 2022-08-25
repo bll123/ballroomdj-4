@@ -39,7 +39,7 @@ confuiInitPlayer (confuigui_t *gui)
   confuiLoadVolIntfcList (gui);
   confuiLoadPlayerIntfcList (gui);
 
-  volume = volumeInit ();
+  volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
   assert (volume != NULL);
   volumeSinklistInit (&sinklist);
   volumeGetSinkList (volume, "", &sinklist);
