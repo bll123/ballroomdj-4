@@ -78,12 +78,12 @@
        transform="matrix(0.35794986,0,0,0.35794986,-5.76696,-12.303683)"
        id="g870">
       <path
-         style="fill:#0000ff;fill-opacity:1"
+         style="fill:#ffa600;fill-opacity:1"
          inkscape:connector-curvature="0"
          id="path21"
          d="M 100.40119,90.372881 H 90.141186 c -1.03,0 -1.87,-0.84 -1.87,-1.87 v -52.26 c 0,-1.03 0.84,-1.87 1.87,-1.87 h 10.260004 c 1.03,0 1.87,0.84 1.87,1.87 v 52.26 c 0,1.03 -0.84,1.87 -1.87,1.87 z" />
       <path
-         style="fill:#0000ff;fill-opacity:1"
+         style="fill:#ffa600;fill-opacity:1"
          inkscape:connector-curvature="0"
          id="path23"
          d="m 122.40119,90.372881 h -10.26 c -1.03,0 -1.87,-0.84 -1.87,-1.87 v -52.26 c 0,-1.03 0.84,-1.87 1.87,-1.87 h 10.26 c 1.03,0 1.87,0.84 1.87,1.87 v 52.26 c 0,1.03 -0.84,1.87 -1.87,1.87 z" />
@@ -92,11 +92,11 @@
        d="M 0,10.021703 V 0.8367081 C 0,0.195978 0.6765251,-0.2049254 1.2170296,0.1100704 L 16.76995,9.2950652 c 0.547664,0.322155 0.547664,1.1311218 0,1.4496958 L 1.2170296,19.933335 C 0.6729456,20.25191 0,19.851005 0,19.206697 Z"
        id="path25"
        inkscape:connector-curvature="0"
-       style="fill:#0000ff;fill-opacity:1;stroke-width:0.35794985" />
+       style="fill:#ffa600;fill-opacity:1;stroke-width:0.35794985" />
     <path
        d="m 18.593513,20.045362 h -2.414041 c -0.242346,0 -0.363418,-0.300682 -0.269532,-0.669372 L 20.673552,0.6693711 C 20.767442,0.3006804 21.041649,5e-7 21.283993,5e-7 h 2.41404 c 0.242346,0 0.363419,0.3006799 0.269531,0.6693706 L 19.203953,19.37599 c -0.09389,0.36869 -0.368095,0.669372 -0.61044,0.669372 z"
        id="path21-3"
        inkscape:connector-curvature="0"
-       style="fill:#0000ff;fill-opacity:1;stroke:#0000ff;stroke-width:0;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal" />
+       style="fill:#ffa600;fill-opacity:1;stroke:#ffa600;stroke-width:0;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal" />
   </g>
 </svg>
