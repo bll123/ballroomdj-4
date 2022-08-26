@@ -301,7 +301,7 @@ case $systype in
 
     # windows checksums are too slow to process during bdj4 installation
     # leave them off.
-    if [[ 0 && $preskip == F ]]; then
+    if [[ 0 == 1 && $preskip == F ]]; then
       echo "-- $(date +%T) creating checksums"
       ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
       mv -f ${chksumfntmp} ${chksumfnpath}

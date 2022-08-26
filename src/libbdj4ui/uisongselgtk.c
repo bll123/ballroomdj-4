@@ -526,7 +526,7 @@ void
 uisongselSetSelection (uisongsel_t *uisongsel, long idx)
 {
   uisongselgtk_t  *uiw;
-  GtkTreePath     *path;
+  GtkTreePath     *path = NULL;
   char            tbuff [40];
 
   uiw = uisongsel->uiWidgetData;
@@ -541,8 +541,10 @@ uisongselSetSelection (uisongsel_t *uisongsel, long idx)
   uisongselClearAllSelections (uisongsel);
   snprintf (tbuff, sizeof (tbuff), "%ld", idx);
   path = gtk_tree_path_new_from_string (tbuff);
-  gtk_tree_selection_select_path (uiw->sel, path);
-  gtk_tree_path_free (path);
+  if (path != NULL) {
+    gtk_tree_selection_select_path (uiw->sel, path);
+    gtk_tree_path_free (path);
+  }
 }
 
 bool

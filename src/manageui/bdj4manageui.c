@@ -1009,6 +1009,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   manageui_t  *manage = udata;
+  char        *targs;
 
   logProcBegin (LOG_PROC, "manageProcessMsg");
 
@@ -1017,6 +1018,8 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
+
+  targs = strdup (args);
 
   switch (route) {
     case ROUTE_NONE:
@@ -1040,11 +1043,11 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_PROGRESS: {
-          manageDbProgressMsg (manage->managedb, args);
+          manageDbProgressMsg (manage->managedb, targs);
           break;
         }
         case MSG_DB_STATUS_MSG: {
-          manageDbStatusMsg (manage->managedb, args);
+          manageDbStatusMsg (manage->managedb, targs);
           break;
         }
         case MSG_DB_FINISH: {
@@ -1071,7 +1074,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_MUSIC_QUEUE_DATA: {
           mp_musicqupdate_t  *musicqupdate;
 
-          musicqupdate = msgparseMusicQueueData (args);
+          musicqupdate = msgparseMusicQueueData (targs);
           if (musicqupdate->mqidx == manage->musicqManageIdx) {
             uimusicqProcessMusicQueueData (manage->slmusicq, musicqupdate);
             uimusicqProcessMusicQueueData (manage->slezmusicq, musicqupdate);
@@ -1090,7 +1093,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_SONG_SELECT: {
           mp_songselect_t   *songselect;
 
-          songselect = msgparseSongSelect (args);
+          songselect = msgparseSongSelect (targs);
           /* the display is offset by 1, as the 0 index is the current song */
           --songselect->loc;
           uimusicqProcessSongSelect (manage->slmusicq, songselect);
@@ -1102,7 +1105,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAYERUI_ACTIVE: {
           int   val;
 
-          val = atoi (args);
+          val = atoi (targs);
           uimusicqSetPlayButtonState (manage->slmusicq, val);
           uisongselSetPlayButtonState (manage->slsongsel, val);
           uimusicqSetPlayButtonState (manage->slezmusicq, val);
@@ -1128,6 +1131,12 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       break;
     }
   }
+
+  free (targs);
+
+  uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
+  uiplayerProcessMsg (routefrom, route, msg, args, manage->mmplayer);
+  uisongeditProcessMsg (routefrom, route, msg, args, manage->mmsongedit);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
@@ -2054,7 +2063,6 @@ manageNewSelectionSongSel (void *udata, long dbidx)
     return UICB_CONT;
   }
 
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: edit new selection");
   if (manage->mainlasttab != MANAGE_TAB_MAIN_MM) {
     manage->selusesonglist = false;
   }

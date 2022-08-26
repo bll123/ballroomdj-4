@@ -449,18 +449,20 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
   }
 
   if (valid) {
-    GtkTreePath *path;
+    GtkTreePath *path = NULL;
 
     gtk_tree_selection_select_iter (uiw->sel, &iter);
     path = gtk_tree_model_get_path (model, &iter);
-    uiw->selPathStr = gtk_tree_path_to_string (path);
+    if (path != NULL) {
+      uiw->selPathStr = gtk_tree_path_to_string (path);
 
-    if (uimusicq->ui [mqidx].count > 0 &&
-        GTK_IS_TREE_VIEW (uiw->musicqTree)) {
-      gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uiw->musicqTree),
-          path, NULL, FALSE, 0.0, 0.0);
+      if (uimusicq->ui [mqidx].count > 0 &&
+          GTK_IS_TREE_VIEW (uiw->musicqTree)) {
+        gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uiw->musicqTree),
+            path, NULL, FALSE, 0.0, 0.0);
+      }
+      gtk_tree_path_free (path);
     }
-    gtk_tree_path_free (path);
   }
   logProcEnd (LOG_PROC, "uimusicqMusicQueueSetSelected", "");
 }

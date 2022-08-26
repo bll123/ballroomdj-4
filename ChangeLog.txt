@@ -9,6 +9,8 @@ BallroomDJ 4 Change Log
 - removed any mention of raffle games/songs.
 - player: added history (basic).
 - song selection: fix filter search to handle international characters.
+- windows: installer: turned off validation (too slow).
+- management ui: fixed player display (broken jul 21).
 
 4.0.0 alpha 2022-08-12
 

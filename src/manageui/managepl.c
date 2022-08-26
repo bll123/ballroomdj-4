@@ -598,7 +598,7 @@ managePlaylistDelete (void *udata)
   managepl_t  *managepl = udata;
   const char  *oname;
 
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: new playlist");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete playlist");
   oname = uiEntryGetValue (managepl->plname);
   manageDeletePlaylist (managepl->statusMsg, oname);
   uiSpinboxResetChanged (managepl->uimaxplaytime);
