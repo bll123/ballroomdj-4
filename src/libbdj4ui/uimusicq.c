@@ -72,6 +72,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uiutilsUIWidgetInit (&uimusicq->pausePixbuf);
   uimusicqUIInit (uimusicq);
   uimusicq->newselcb = NULL;
+  uimusicq->queuecb = NULL;
   uimusicq->peercount = 0;
   uimusicq->ispeercall = false;
   for (int i = 0; i < UIMUSICQ_PEER_MAX; ++i) {
@@ -251,6 +252,15 @@ uimusicqProcessSongSelect (uimusicq_t *uimusicq, mp_songselect_t *songselect)
 {
   uimusicq->ui [songselect->mqidx].haveselloc = true;
   uimusicq->ui [songselect->mqidx].selectLocation = songselect->loc;
+}
+
+void
+uimusicqSetQueueCallback (uimusicq_t *uimusicq, UICallback *uicb)
+{
+  if (uimusicq == NULL) {
+    return;
+  }
+  uimusicq->queuecb = uicb;
 }
 
 /* internal routines */

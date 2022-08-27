@@ -50,6 +50,7 @@ static void   uimusicqSetMusicqDisplayCallback (int col, long num, const char *s
 static int    uimusicqIterateCallback (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static bool   uimusicqPlayCallback (void *udata);
+static bool   uimusicqQueueCallback (void *udata);
 static dbidx_t uimusicqGetSelectionDbidx (uimusicq_t *uimusicq);
 static void   uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udata);
 static void   uimusicqSetDefaultSelection (uimusicq_t *uimusicq);
@@ -74,6 +75,7 @@ enum {
   UIMUSICQ_CB_CLEAR_QUEUE,
   UIMUSICQ_CB_EDIT_LOCAL,
   UIMUSICQ_CB_PLAY,
+  UIMUSICQ_CB_QUEUE,
   UIMUSICQ_CB_MAX,
 };
 
@@ -255,10 +257,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_HISTORY) {
-// ### TODO change this to a queue callback
-    uiutilsUICallbackInit (&uiw->callback [UIMUSICQ_CB_PLAY],
-        uimusicqPlayCallback, uimusicq);
-    uiCreateButton (&uiwidget, &uiw->callback [UIMUSICQ_CB_PLAY],
+    uiutilsUICallbackInit (&uiw->callback [UIMUSICQ_CB_QUEUE],
+        uimusicqQueueCallback, uimusicq);
+    uiCreateButton (&uiwidget, &uiw->callback [UIMUSICQ_CB_QUEUE],
         /* CONTEXT: history: re-queue the selected song */
         _("Queue"), NULL);
     uiBoxPackStart (&hbox, &uiwidget);
@@ -812,6 +813,33 @@ uimusicqPlayCallback (void *udata)
 
   /* queue to the hidden music queue */
   uimusicqPlay (uimusicq, MUSICQ_MNG_PB, dbidx);
+  return UICB_CONT;
+}
+
+/* used by history */
+static bool
+uimusicqQueueCallback (void *udata)
+{
+  uimusicq_t    *uimusicq = udata;
+  uimusicqgtk_t *uiw;
+  musicqidx_t   ci;
+  dbidx_t       dbidx;
+  int           count;
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: history: queue");
+  ci = uimusicq->musicqManageIdx;
+  uiw = uimusicq->ui [ci].uiWidgets;
+
+  count = gtk_tree_selection_count_selected_rows (uiw->sel);
+  if (count != 1) {
+    return UICB_CONT;
+  }
+
+  dbidx = uimusicqGetSelectionDbidx (uimusicq);
+
+  if (uimusicq->queuecb != NULL) {
+    uiutilsCallbackLongIntHandler (uimusicq->queuecb, dbidx, MUSICQ_LAST);
+  }
   return UICB_CONT;
 }
 

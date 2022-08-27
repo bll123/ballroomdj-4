@@ -66,6 +66,7 @@ typedef struct uimusicq {
   UICallback      *newselcb;
   UICallback      *editcb;
   UICallback      *songsavecb;
+  UICallback      *queuecb;
   UICallback      queueplcb;
   UICallback      queuedancecb;
   uimusicqui_t    ui [MUSICQ_MAX];
@@ -101,6 +102,7 @@ long  uimusicqGetCount (uimusicq_t *uimusicq);
 void  uimusicqSave (uimusicq_t *uimusicq, const char *name);
 void  uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb);
 void  uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname);
+void  uimusicqSetQueueCallback (uimusicq_t *uimusicq, UICallback *uicb);
 
 /* uimusicqgtk.c */
 void      uimusicqUIInit (uimusicq_t *uimusicq);
@@ -130,6 +132,7 @@ void  uimusicqRemove (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqCreatePlaylistList (uimusicq_t *uimusicq);
 void  uimusicqTruncateQueue (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);
+void  uimusicqQueue (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);
 void  uimusicqSetPeerFlag (uimusicq_t *uimusicq, bool val);
 
 #endif /* INC_UIMUSICQ_H */

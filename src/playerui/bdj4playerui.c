@@ -66,6 +66,7 @@ typedef struct {
   conn_t          *conn;
   musicdb_t       *musicdb;
   musicqidx_t     musicqPlayIdx;
+  musicqidx_t     musicqLastManageIdx;
   musicqidx_t     musicqManageIdx;
   dispsel_t       *dispsel;
   int             dbgflags;
@@ -181,6 +182,7 @@ main (int argc, char *argv[])
   plui.uimusicq = NULL;
   plui.uisongsel = NULL;
   plui.musicqPlayIdx = MUSICQ_PB_A;
+  plui.musicqLastManageIdx = MUSICQ_PB_A;
   plui.musicqManageIdx = MUSICQ_PB_A;
   plui.marqueeIsMaximized = false;
   plui.marqueeFontSize = 36;
@@ -530,6 +532,8 @@ pluiInitializeUI (playerui_t *plui)
       pluiQueueProcess, plui);
   uisongselSetQueueCallback (plui->uisongsel,
       &plui->callbacks [PLUI_CB_QUEUE_SL]);
+  uimusicqSetQueueCallback (plui->uimusicq,
+      &plui->callbacks [PLUI_CB_QUEUE_SL]);
 }
 
 
@@ -825,6 +829,7 @@ static bool
 pluiSwitchPage (void *udata, long pagenum)
 {
   playerui_t  *plui = udata;
+  int         tabid;
 
   logProcBegin (LOG_PROC, "pluiSwitchPage");
 
@@ -832,6 +837,10 @@ pluiSwitchPage (void *udata, long pagenum)
     logProcEnd (LOG_PROC, "pluiSwitchPage", "no-ui");
     return UICB_STOP;
   }
+
+  tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
+  plui->currpage = pagenum;
+  pluiSetManageQueue (plui, pagenum);
 
   pluiPlaybackButtonHideShow (plui, pagenum);
   logProcEnd (LOG_PROC, "pluiSwitchPage", "");
@@ -845,10 +854,8 @@ pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum)
 
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
 
-  plui->currpage = pagenum;
   uiWidgetHide (&plui->setPlaybackButton);
   if (tabid == UI_TAB_MUSICQ) {
-    pluiSetManageQueue (plui, pagenum);
     if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
       uiWidgetShow (&plui->setPlaybackButton);
     }
@@ -895,6 +902,8 @@ pluiSetManageQueue (playerui_t *plui, musicqidx_t mqidx)
 {
   char  tbuff [40];
 
+  /* need to save the last managed to handle history queue button */
+  plui->musicqLastManageIdx = plui->musicqManageIdx;
   plui->musicqManageIdx = mqidx;
   uimusicqSetManageIdx (plui->uimusicq, mqidx);
   snprintf (tbuff, sizeof (tbuff), "%d", mqidx);
@@ -1157,6 +1166,9 @@ pluiQueueProcess (void *udata, long dbidx, int mqidx)
 
   if (mqidx == MUSICQ_CURRENT) {
     mqidx = plui->musicqManageIdx;
+  }
+  if (mqidx == MUSICQ_LAST) {
+    mqidx = plui->musicqLastManageIdx;
   }
 
   loc = uimusicqGetSelectLocation (plui->uimusicq, mqidx);

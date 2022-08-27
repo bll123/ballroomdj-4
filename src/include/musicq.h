@@ -19,6 +19,7 @@ typedef enum {
   MUSICQ_PB_MAX = MUSICQ_HISTORY,   // music queues not including history
   MUSICQ_DISP_MAX = MUSICQ_SL,      // music queues including history
   MUSICQ_CURRENT,
+  MUSICQ_LAST,                      // to handle history queue button
 } musicqidx_t;
 
 typedef enum {
