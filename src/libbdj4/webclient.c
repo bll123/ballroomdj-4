@@ -131,15 +131,15 @@ webclientDownload (webclient_t *webclient, char *uri, char *outfile)
 
 void
 webclientUploadFile (webclient_t *webclient, char *uri,
-    char *query [], char *fn)
+    const char *query [], char *fn)
 {
   curl_off_t  speed_upload;
   curl_off_t  total_time;
   curl_off_t  fsize;
   curl_mime   *mime = NULL;
   curl_mimepart *part = NULL;
-  char        *key;
-  char        *val;
+  const char  *key;
+  const char  *val;
   int         count;
 
   if (! fileopFileExists (fn)) {

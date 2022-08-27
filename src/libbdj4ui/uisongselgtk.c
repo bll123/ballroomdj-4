@@ -513,10 +513,13 @@ uisongselSetDefaultSelection (uisongsel_t *uisongsel)
   if (count < 1) {
     GtkTreeModel  *model;
     GtkTreeIter   iter;
+    int           valid;
 
     model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
-    gtk_tree_model_get_iter_first (model, &iter);
-    gtk_tree_selection_select_iter (uiw->sel, &iter);
+    valid = gtk_tree_model_get_iter_first (model, &iter);
+    if (valid) {
+      gtk_tree_selection_select_iter (uiw->sel, &iter);
+    }
   }
 
   return;

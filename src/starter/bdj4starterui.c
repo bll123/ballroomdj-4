@@ -32,6 +32,7 @@
 #include "ossignal.h"
 #include "osuiutils.h"
 #include "pathbld.h"
+#include "pathutil.h"
 #include "procutil.h"
 #include "progstate.h"
 #include "sockh.h"
@@ -46,10 +47,11 @@ typedef enum {
   START_STATE_SUPPORT_INIT,
   START_STATE_SUPPORT_SEND_MSG,
   START_STATE_SUPPORT_SEND_INFO,
-  START_STATE_SUPPORT_SEND_FILES_A,
-  START_STATE_SUPPORT_SEND_FILES_B,
-  START_STATE_SUPPORT_SEND_FILES_C,
-  START_STATE_SUPPORT_SEND_FILES_D,
+  START_STATE_SUPPORT_SEND_FILES_DATA,
+  START_STATE_SUPPORT_SEND_FILES_PROFILE,
+  START_STATE_SUPPORT_SEND_FILES_MACHINE,
+  START_STATE_SUPPORT_SEND_FILES_MACH_PROF,
+  START_STATE_SUPPORT_SEND_DIAG,
   START_STATE_SUPPORT_SEND_DB_PRE,
   START_STATE_SUPPORT_SEND_DB,
   START_STATE_SUPPORT_FINISH,
@@ -58,6 +60,9 @@ typedef enum {
 
 enum {
   MAX_WEB_RESP_SZ = 2048,
+  SF_CONF_ONLY,
+  SF_ALL,
+  SF_MAC_DIAG,
 };
 
 enum {
@@ -101,6 +106,7 @@ typedef struct {
   int             delayCount;
   char            *supportDir;
   slist_t         *supportFileList;
+  int             sendType;
   slistidx_t      supportFileIterIdx;
   char            *supportInFname;
   char            *supportOutFname;
@@ -179,7 +185,7 @@ static void     starterWebResponseCallback (void *userdata, char *resp, size_t l
 static bool     starterSupportResponseHandler (void *udata, long responseid);
 static bool     starterCreateSupportDialog (void *udata);
 static bool     starterSupportMsgHandler (void *udata, long responseid);
-static void     starterSendFilesInit (startui_t *starter, char *dir, bool basic);
+static void     starterSendFilesInit (startui_t *starter, char *dir, int type);
 static void     starterSendFiles (startui_t *starter);
 static void     starterSendFile (startui_t *starter, char *origfn, char *fn);
 
@@ -234,6 +240,7 @@ main (int argc, char *argv[])
   starter.delayCount = 0;
   starter.supportDir = NULL;
   starter.supportFileList = NULL;
+  starter.sendType = SF_CONF_ONLY;
   starter.supportInFname = NULL;
   starter.supportOutFname = NULL;
   starter.webclient = NULL;
@@ -731,59 +738,69 @@ starterMainLoop (void *tstarter)
       starterSendFile (starter, tbuff, ofn);
       fileopDelete (tbuff);
 
-      starter->startState = START_STATE_SUPPORT_SEND_FILES_A;
+      starter->startState = START_STATE_SUPPORT_SEND_FILES_DATA;
       break;
     }
-    case START_STATE_SUPPORT_SEND_FILES_A: {
+    case START_STATE_SUPPORT_SEND_FILES_DATA: {
       bool        sendfiles;
 
       sendfiles = uiToggleButtonIsActive (&starter->supportSendFiles);
       if (! sendfiles) {
-        starter->startState = START_STATE_SUPPORT_SEND_DB_PRE;
+        starter->startState = START_STATE_SUPPORT_SEND_DIAG;
         break;
       }
 
       pathbldMakePath (tbuff, sizeof (tbuff),
           "", "", PATHBLD_MP_DATA);
-      starterSendFilesInit (starter, tbuff, true);
+      starterSendFilesInit (starter, tbuff, SF_CONF_ONLY);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
-      starter->nextState = START_STATE_SUPPORT_SEND_FILES_B;
+      starter->nextState = START_STATE_SUPPORT_SEND_FILES_PROFILE;
       break;
     }
-    case START_STATE_SUPPORT_SEND_FILES_B: {
+    case START_STATE_SUPPORT_SEND_FILES_PROFILE: {
       pathbldMakePath (tbuff, sizeof (tbuff),
           "", "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
-      starterSendFilesInit (starter, tbuff, true);
+      starterSendFilesInit (starter, tbuff, SF_CONF_ONLY);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
-      starter->nextState = START_STATE_SUPPORT_SEND_FILES_C;
+      starter->nextState = START_STATE_SUPPORT_SEND_FILES_MACHINE;
       break;
     }
-    case START_STATE_SUPPORT_SEND_FILES_C: {
+    case START_STATE_SUPPORT_SEND_FILES_MACHINE: {
       pathbldMakePath (tbuff, sizeof (tbuff),
           "", "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME);
-      starterSendFilesInit (starter, tbuff, true);
+      starterSendFilesInit (starter, tbuff, SF_CONF_ONLY);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
-      starter->nextState = START_STATE_SUPPORT_SEND_FILES_D;
+      starter->nextState = START_STATE_SUPPORT_SEND_FILES_MACH_PROF;
       break;
     }
-    case START_STATE_SUPPORT_SEND_FILES_D: {
+    case START_STATE_SUPPORT_SEND_FILES_MACH_PROF: {
       pathbldMakePath (tbuff, sizeof (tbuff),
           "", "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
       /* will end up with the backup bdjconfig.txt file also, but that's ok */
-      starterSendFilesInit (starter, tbuff, false);
+      /* need all of the log files */
+      starterSendFilesInit (starter, tbuff, SF_ALL);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
-      starter->nextState = START_STATE_SUPPORT_SEND_DB_PRE;
+      starter->nextState = START_STATE_SUPPORT_SEND_DIAG;
       break;
     }
-    case START_STATE_SUPPORT_SEND_DB_PRE: {
-      bool        senddb;
-
+    case START_STATE_SUPPORT_SEND_DIAG: {
       pathbldMakePath (ofn, sizeof (ofn),
           "core", "", PATHBLD_MP_DATATOPDIR);
       if (fileopFileExists (ofn)) {
         strlcpy (tbuff, "core", sizeof (tbuff));
         starterSendFile (starter, tbuff, ofn);
       }
+
+      snprintf (tbuff, sizeof (tbuff), "%s/Library/Logs/DiagnosticReports",
+          sysvarsGetStr (SV_HOME));
+      starterSendFilesInit (starter, tbuff, SF_MAC_DIAG);
+
+      starter->startState = START_STATE_SUPPORT_SEND_FILE;
+      starter->nextState = START_STATE_SUPPORT_SEND_DB_PRE;
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_DB_PRE: {
+      bool        senddb;
 
       senddb = uiToggleButtonIsActive (&starter->supportSendDB);
       if (! senddb) {
@@ -1456,6 +1473,7 @@ starterCreateSupportDialog (void *udata)
   /* line 7 */
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStart (&vbox, &uiwidget);
+  uiLabelEllipsizeOn (&uiwidget);
   uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiutilsUIWidgetCopy (&starter->supportStatus, &uiwidget);
 
@@ -1487,14 +1505,18 @@ starterSupportMsgHandler (void *udata, long responseid)
 }
 
 static void
-starterSendFilesInit (startui_t *starter, char *dir, bool basic)
+starterSendFilesInit (startui_t *starter, char *dir, int type)
 {
   slist_t     *list;
   char        *ext = BDJ4_CONFIG_EXT;
 
-  if (! basic) {
+  if (type == SF_ALL) {
     ext = NULL;
   }
+  if (type == SF_MAC_DIAG) {
+    ext = ".crash";
+  }
+  starter->sendType = type;
   list = dirlistBasicDirList (dir, ext);
   starter->supportFileList = list;
   slistStartIterator (list, &starter->supportFileIterIdx);
@@ -1514,6 +1536,9 @@ starterSendFiles (startui_t *starter)
 
   if (starter->supportInFname != NULL) {
     starterSendFile (starter, starter->supportInFname, starter->supportOutFname);
+    if (starter->sendType == SF_MAC_DIAG) {
+      fileopDelete (starter->supportInFname);
+    }
     free (starter->supportInFname);
     free (starter->supportOutFname);
     starter->supportInFname = NULL;
@@ -1533,6 +1558,13 @@ starterSendFiles (startui_t *starter)
     return;
   }
 
+  if (starter->sendType == SF_MAC_DIAG) {
+    if (strncmp (fn, "bdj4", 4) != 0) {
+      /* skip any .crash file that is not a bdj4 crash */
+      return;
+    }
+  }
+
   strlcpy (ifn, starter->supportDir, sizeof (ifn));
   strlcat (ifn, "/", sizeof (ifn));
   strlcat (ifn, fn, sizeof (ifn));
@@ -1548,8 +1580,8 @@ starterSendFiles (startui_t *starter)
 static void
 starterSendFile (startui_t *starter, char *origfn, char *fn)
 {
-  char      uri [1024];
-  char      *query [7];
+  char        uri [1024];
+  const char  *query [7];
 
   starterCompressFile (origfn, fn);
   snprintf (uri, sizeof (uri), "%s%s",
@@ -1559,7 +1591,15 @@ starterSendFile (startui_t *starter, char *origfn, char *fn)
   query [2] = "ident";
   query [3] = starter->ident;
   query [4] = "origfn";
-  query [5] = origfn;
+  if (starter->sendType == SF_MAC_DIAG) {
+    pathinfo_t    *pi;
+
+    pi = pathInfo (origfn);
+    query [5] = pi->filename;
+    pathInfoFree (pi);
+  } else {
+    query [5] = origfn;
+  }
   query [6] = NULL;
   webclientUploadFile (starter->webclient, uri, query, fn);
   fileopDelete (fn);

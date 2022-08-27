@@ -11,6 +11,8 @@ BallroomDJ 4 Change Log
 - song selection: fix filter search to handle international characters.
 - windows: installer: turned off validation (too slow).
 - management ui: fixed player display (broken jul 21).
+- prevent some possible crashes in the music queue and song selection.
+- support: macos: send crash diagnostic files in support message.
 
 4.0.0 alpha 2022-08-12
 
