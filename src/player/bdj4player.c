@@ -48,6 +48,11 @@
 #include "volsink.h"
 #include "volume.h"
 
+enum {
+  STOP_NEXTSONG = 0,
+  STOP_NORMAL = 1,
+};
+
 typedef struct {
   char          *songfullpath;
   char          *songname;
@@ -97,6 +102,7 @@ typedef struct {
   int             fadeSamples;
   time_t          fadeTimeStart;
   mstime_t        fadeTimeNext;
+  int             stopNextsongFlag;
   bool            inFade : 1;
   bool            inFadeIn : 1;
   bool            inFadeOut : 1;
@@ -183,6 +189,7 @@ main (int argc, char *argv[])
   playerData.mute = false;
   playerData.pauseAtEnd = false;
   playerData.repeat = false;
+  playerData.stopNextsongFlag = STOP_NORMAL;
   playerData.stopPlaying = false;
 
   progstateSetCallback (playerData.progstate, STATE_CONNECTING,
@@ -627,11 +634,17 @@ playerProcessing (void *udata)
           playerData->stopPlaying ||
           plitm >= plidur ||
           mstimeCheck (&playerData->playEndCheck)) {
+        char  nsflag [20];
+
+        /* done, go on to next song, history is determined by */
+        /* the stopnextsongflag */
+        snprintf (nsflag, sizeof (nsflag), "%d", playerData->stopNextsongFlag);
 
         /* stop any fade */
         playerData->inFade = false;
         playerData->inFadeOut = false;
         playerData->inFadeIn = false;
+        playerData->stopNextsongFlag = STOP_NORMAL;
         playerData->stopPlaying = false;
         playerData->currentSpeed = 100;
 
@@ -649,13 +662,12 @@ playerProcessing (void *udata)
               logMsg (LOG_DBG, LOG_BASIC, "pl-state: (pause at end) %d/%s",
                   playerData->playerState, plstateDebugText (playerData->playerState));
               connSendMessage (playerData->conn, ROUTE_MAIN,
-                  MSG_PLAYBACK_STOP, NULL);
+                  MSG_PLAYBACK_STOP, nsflag);
             }
           } else {
             if (! playerData->repeat) {
-              /* done, go on to next song, with history */
               connSendMessage (playerData->conn, ROUTE_MAIN,
-                  MSG_PLAYBACK_FINISH, "1");
+                  MSG_PLAYBACK_FINISH, nsflag);
             }
           }
 
@@ -1059,6 +1071,7 @@ playerNextSong (playerdata_t *playerData)
       playerData->playerState == PL_STATE_IN_FADEOUT) {
     /* the song will stop playing, and the normal logic will move */
     /* to the next song and continue playing */
+    playerData->stopNextsongFlag = STOP_NEXTSONG;
     playerData->stopPlaying = true;
   } else {
     if (playerData->playerState == PL_STATE_PAUSED) {

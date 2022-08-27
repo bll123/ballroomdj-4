@@ -1209,6 +1209,4 @@ pluiPushHistory (playerui_t *plui, const char *args)
   snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", MUSICQ_HISTORY,
       MSG_ARGS_RS, 999, MSG_ARGS_RS, dbidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
-  /* reset the managed queue */
-  pluiSetManageQueue (plui, plui->musicqManageIdx);
 }

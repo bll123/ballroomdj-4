@@ -137,8 +137,8 @@ static void mainMusicqSetPlayback (maindata_t *mainData, char *args);
 static void mainMusicqSwitch (maindata_t *mainData, musicqidx_t newidx);
 static void mainPlaybackBegin (maindata_t *mainData);
 static void mainMusicQueuePlay (maindata_t *mainData);
-static void mainMusicQueueFinish (maindata_t *mainData);
-static void mainMusicQueueNext (maindata_t *mainData);
+static void mainMusicQueueFinish (maindata_t *mainData, const char *args);
+static void mainMusicQueueNext (maindata_t *mainData, const char *args);
 static ilistidx_t mainMusicQueueHistory (void *mainData, ilistidx_t idx);
 static void mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route);
 static void mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route);
@@ -154,6 +154,7 @@ static void mainPlaylistItemFree (void *tplitem);
 static void mainMusicqSetSuspend (maindata_t *mainData, char *args, bool value);
 static void mainMusicQueueMix (maindata_t *mainData, char *args);
 static void mainPlaybackFinishProcess (maindata_t *mainData, const char *args);
+static void mainPlaybackSendSongFinish (maindata_t *mainData, const char *args);
 
 static long globalCounter = 0;
 static int  gKillReceived = 0;
@@ -463,7 +464,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAYBACK_STOP: {
-          mainMusicQueueFinish (mainData);
+          mainMusicQueueFinish (mainData, targs);
           dbgdisp = true;
           break;
         }
@@ -651,7 +652,7 @@ mainProcessing (void *udata)
   }
 
   /* do this after sending the latest musicq / marquee data */
-  /* wait for both the PLAYBACK_FINISHED message and for the player to stop */
+  /* wait for both the PLAYBACK_FINISH message and for the player to stop */
   /* the 'finished' message is sent to the playerui after the player has */
   /* stopped, and it is necessary to wait for after it is sent before */
   /* queueing the next song or playlist */
@@ -1868,7 +1869,8 @@ mainMusicQueuePlay (maindata_t *mainData)
         snprintf (tmp, sizeof (tmp), "%d", mainData->musicqPlayIdx);
         connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_QUEUE_SWITCH, tmp);
         /* and start up playback for the new queue */
-        mainMusicQueueNext (mainData);
+        /* the next-song flag is always 0 here */
+        mainMusicQueueNext (mainData, "0");
         /* since the player state is stopped, must re-start playback */
         mainMusicQueuePlay (mainData);
       } else {
@@ -1897,7 +1899,7 @@ mainMusicQueuePlay (maindata_t *mainData)
 }
 
 static void
-mainMusicQueueFinish (maindata_t *mainData)
+mainMusicQueueFinish (maindata_t *mainData, const char *args)
 {
   playlist_t    *playlist;
   dbidx_t       dbidx;
@@ -1908,6 +1910,8 @@ mainMusicQueueFinish (maindata_t *mainData)
   logProcBegin (LOG_PROC, "mainMusicQueueFinish");
 
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
+
+  mainPlaybackSendSongFinish (mainData, args);
 
   /* let the playlist know this song has been played */
   dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
@@ -1935,13 +1939,13 @@ mainMusicQueueFinish (maindata_t *mainData)
 }
 
 static void
-mainMusicQueueNext (maindata_t *mainData)
+mainMusicQueueNext (maindata_t *mainData, const char *args)
 {
   logProcBegin (LOG_PROC, "mainMusicQueueNext");
 
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
 
-  mainMusicQueueFinish (mainData);
+  mainMusicQueueFinish (mainData, args);
   if (mainData->playerState != PL_STATE_STOPPED &&
       mainData->playerState != PL_STATE_PAUSED) {
     mainMusicQueuePlay (mainData);
@@ -2507,6 +2511,13 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
 static void
 mainPlaybackFinishProcess (maindata_t *mainData, const char *args)
 {
+  mainMusicQueueNext (mainData, args);
+  ++mainData->pbfinishrcv;
+}
+
+static void
+mainPlaybackSendSongFinish (maindata_t *mainData, const char *args)
+{
   char    tmp [40];
   int     flag;
   dbidx_t dbidx;
@@ -2517,7 +2528,4 @@ mainPlaybackFinishProcess (maindata_t *mainData, const char *args)
     snprintf (tmp, sizeof (tmp), "%d", dbidx);
     connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_SONG_FINISH, tmp);
   }
-
-  mainMusicQueueNext (mainData);
-  ++mainData->pbfinishrcv;
 }
