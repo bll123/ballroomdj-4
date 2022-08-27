@@ -166,6 +166,7 @@ static bool installerExitCallback (void *udata);
 static bool installerCheckDirTarget (void *udata);
 static bool installerCheckDirConv (void *udata);
 static bool installerTargetDirDialog (void *udata);
+static void installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc);
 static bool installerBDJ3LocDirDialog (void *udata);
 static int  installerValidateTarget (uientry_t *entry, void *udata);
 static int  installerValidateProcessTarget (installer_t *installer, const char *dir);
@@ -528,7 +529,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiEntryCreate (installer->bdj3locEntry);
-  uiEntrySetValue (installer->bdj3locEntry, installer->bdj3loc);
+  installerSetBDJ3LocEntry (installer, installer->bdj3loc);
   uiwidgetp = uiEntryGetUIWidget (installer->bdj3locEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
@@ -951,7 +952,6 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
 {
   installer_t   *installer = udata;
   bool          locok = false;
-  const char    *fn;
   char          tbuff [200];
   int           rc = UIENTRY_OK;
 
@@ -965,9 +965,10 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
 
   /* bdj3 location validation */
 
-  fn = uiEntryGetValue (installer->bdj3locEntry);
-  if (*fn == '\0' || strcmp (fn, "-") == 0 ||
-      locationcheck (fn)) {
+  strlcpy (tbuff, uiEntryGetValue (installer->bdj3locEntry), sizeof (tbuff));
+  pathNormPath (tbuff, strlen (tbuff));
+  if (*tbuff == '\0' || strcmp (tbuff, "-") == 0 ||
+      locationcheck (tbuff)) {
     locok = true;
   }
 
@@ -1009,6 +1010,18 @@ installerTargetDirDialog (void *udata)
   return UICB_CONT;
 }
 
+static void
+installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc)
+{
+  char    tbuff [MAXPATHLEN];
+
+  strlcpy (tbuff, bdj3loc, sizeof (tbuff));
+  if (isWindows ()) {
+    pathWinPath (tbuff, sizeof (tbuff));
+  }
+  uiEntrySetValue (installer->bdj3locEntry, tbuff);
+}
+
 static bool
 installerBDJ3LocDirDialog (void *udata)
 {
@@ -1023,7 +1036,7 @@ installerBDJ3LocDirDialog (void *udata)
       tbuff, uiEntryGetValue (installer->bdj3locEntry), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
-    uiEntrySetValue (installer->bdj3locEntry, fn);
+    installerSetBDJ3LocEntry (installer, fn);
     free (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected bdj3 loc: %s", installer->bdj3loc);
   }

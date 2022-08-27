@@ -257,35 +257,37 @@ main (int argc, char *argv [])
     }
   }
 
-  /* always check and see if itunes exists */
+  /* always check and see if itunes exists, unless a conversion was run */
   /* support for old versions of itunes is minimal */
 
-  tval = bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA);
-  if (tval == NULL || ! *tval) {
-    snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
-        homemusicdir, ITUNES_NAME, ITUNES_MEDIA_NAME);
-    if (fileopIsDirectory (tbuff)) {
-      bdjoptSetStr (OPT_M_DIR_ITUNES_MEDIA, tbuff);
-      bdjoptchanged = true;
-      ++haveitunes;
-    }
-    snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
-        homemusicdir, ITUNES_NAME, ITUNES_XML_NAME);
-    if (fileopFileExists (tbuff)) {
-      bdjoptSetStr (OPT_M_ITUNES_XML_FILE, tbuff);
-      bdjoptchanged = true;
-      ++haveitunes;
-    } else {
-      /* this is an ancient itunes name, no idea it needs to be supported */
+  if (! converted) {
+    tval = bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA);
+    if (tval == NULL || ! *tval) {
       snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
-          homemusicdir, ITUNES_NAME, "iTunes Library.xml");
+          homemusicdir, ITUNES_NAME, ITUNES_MEDIA_NAME);
+      if (fileopIsDirectory (tbuff)) {
+        bdjoptSetStr (OPT_M_DIR_ITUNES_MEDIA, tbuff);
+        bdjoptchanged = true;
+        ++haveitunes;
+      }
+      snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
+          homemusicdir, ITUNES_NAME, ITUNES_XML_NAME);
       if (fileopFileExists (tbuff)) {
         bdjoptSetStr (OPT_M_ITUNES_XML_FILE, tbuff);
         bdjoptchanged = true;
         ++haveitunes;
+      } else {
+        /* this is an ancient itunes name, no idea if it needs to be supported */
+        snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
+            homemusicdir, ITUNES_NAME, "iTunes Library.xml");
+        if (fileopFileExists (tbuff)) {
+          bdjoptSetStr (OPT_M_ITUNES_XML_FILE, tbuff);
+          bdjoptchanged = true;
+          ++haveitunes;
+        }
       }
-    }
-  }
+    } // if itunes dir is not set
+  } // if not converted
 
   /* a new installation, and the itunes folder and xml file */
   /* have been found. */

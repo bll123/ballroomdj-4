@@ -1,6 +1,6 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha 2022-08-??
+4.0.0 alpha 2022-08-27
 
 - various tests added
 - fixed an infrastructure bug (list cache 2022-8-15).
@@ -8,11 +8,13 @@ BallroomDJ 4 Change Log
   processing.
 - removed any mention of raffle games/songs.
 - player: added history (basic).
-- song selection: fix filter search to handle international characters.
-- windows: installer: turned off validation (too slow).
+- localization: song selection: fix filter search to handle international
+  characters properly.
+- installer: windows: turned off validation (too slow).
 - management ui: fixed player display (broken jul 21).
-- prevent some possible crashes in the music queue and song selection.
+- prevent some possible crashes in the music queue and in song selection.
 - support: macos: send crash diagnostic files in support message.
+- updater: don't set music dir to itunes dir if a conversion was run.
 
 4.0.0 alpha 2022-08-12
 
