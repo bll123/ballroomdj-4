@@ -57,6 +57,7 @@ check_libbdj4 (SRunner *sr)
    *  songdb
    *  volreg
    *  musicq
+   *  samesong
    */
 
   s = bdjvarsdf_suite();
@@ -120,5 +121,8 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = orgopt_suite();
+  srunner_add_suite (sr, s);
+
+  s = samesong_suite();
   srunner_add_suite (sr, s);
 }

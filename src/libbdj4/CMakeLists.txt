@@ -22,6 +22,7 @@ add_library (libbdj4 SHARED
   orgutil.c
   playlist.c
   rating.c
+  samesong.c
   sequence.c
   song.c
   songdb.c

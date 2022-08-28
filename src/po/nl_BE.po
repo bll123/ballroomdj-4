@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-07-24\n"
-"PO-Revision-Date: 2022-08-27\n"
+"POT-Creation-Date: 2022-08-11\n"
+"PO-Revision-Date: 2022-08-28\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -27,7 +27,7 @@ msgstr "%d bestanden gevonden"
 #. CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode
 #, c-format
 msgid "%s Compatible Audio File Tags"
-msgstr ""
+msgstr "%s Compatibele audiobestand-tags"
 
 #. CONTEXT: configuration: configuration user interface window title
 #, c-format
@@ -47,52 +47,52 @@ msgstr "%s Forums"
 #. CONTEXT: helperui: the window title for the BDJ4 helper
 #, c-format
 msgid "%s Helper"
-msgstr ""
+msgstr "%s Hulp"
 
 #. CONTEXT: installer: window title
 #, c-format
 msgid "%s Installer"
-msgstr ""
+msgstr "%s Installatiebestand"
 
 #. CONTEXT: installer: label for entry field asking for BDJ3 location
 #, c-format
 msgid "%s Location"
-msgstr ""
+msgstr "%s Locatie"
 
 #. CONTEXT: managementui: management user interface window title
 #, c-format
 msgid "%s Management"
-msgstr ""
+msgstr "%s Beheer"
 
 #. CONTEXT: configuration: itunes: the itunes media folder
 #, c-format
 msgid "%s Media Folder"
-msgstr ""
+msgstr "%s Media Folder"
 
 #. CONTEXT: playerui: main window title
 #, c-format
 msgid "%s Player"
-msgstr ""
+msgstr "%s Speler"
 
 #. CONTEXT: set up alternate: window title
 #, c-format
 msgid "%s Set Up Alternate"
-msgstr ""
+msgstr "%s Alternatief instellen"
 
 #. CONTEXT: configuration: itunes rating in stars (0.5, 1, 1.5, etc.)
 #, c-format
 msgid "%s Stars"
-msgstr ""
+msgstr "%s Sterren"
 
 #. CONTEXT: starterui: basic support dialog: support option
 #, c-format
 msgid "%s Support Tickets"
-msgstr ""
+msgstr "%s Support Tickets"
 
 #. CONTEXT: starterui: basic support dialog, version display
 #, c-format
 msgid "%s Version"
-msgstr ""
+msgstr "%s Versie"
 
 #. CONTEXT: starterui: basic support dialog: support option
 #, c-format
@@ -102,22 +102,22 @@ msgstr "%s Wiki"
 #. CONTEXT: configuration: itunes: the itunes xml file
 #, c-format
 msgid "%s XML File"
-msgstr ""
+msgstr "%s XML Bestand"
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 #, c-format
 msgid "%s data will be converted."
-msgstr ""
+msgstr "%s data zal geconverteerd worden."
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "%s installed."
-msgstr ""
+msgstr "%s geïnstalleerd."
 
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is installed"
-msgstr ""
+msgstr "%s is geïnstalleerd"
 
 #. CONTEXT: installer: display of package status
 #, c-format
@@ -127,32 +127,32 @@ msgstr "%s is niet geïnstalleerd"
 #. CONTEXT: song editor: status msg: (song end must be greater than song start)
 #, c-format
 msgid "%s must be greater than %s"
-msgstr ""
+msgstr "%s moet groeter zijn dan %s"
 
 #. CONTEXT: validation: must be a numeric value
 #, c-format
 msgid "%s must be numeric."
-msgstr ""
+msgstr "%s moet numeriek zijn."
 
 #. CONTEXT: validation: a value must be set
 #, c-format
 msgid "%s must be set."
-msgstr ""
+msgstr "%s moet ingesteld zijn."
 
 #. CONTEXT: validation: invalid time (minutes/seconds)
 #, c-format
 msgid "%s: Invalid duration."
-msgstr ""
+msgstr "%s: Ongeldige duur."
 
 #. CONTEXT: validation: invalid time (hours/minutes)
 #, c-format
 msgid "%s: Invalid time."
-msgstr ""
+msgstr "%s: Ongeldige tijd."
 
 #. CONTEXT: validation: slashes ( / and \\ ) are not allowed
 #, c-format
 msgid "%s: Slashes are not allowed"
-msgstr ""
+msgstr "%s: Slashes zijn niet toegestaan"
 
 #. CONTEXT: validation: spaces are not allowed
 #, c-format
@@ -162,7 +162,7 @@ msgstr "%s: Spaties zijn niet toegestaan."
 #. CONTEXT: validation: must be numeric
 #, c-format
 msgid "%s: must be numeric."
-msgstr ""
+msgstr "%s: moet numeriek zijn."
 
 #. CONTEXT: configuration: dance time signature
 msgid "2/4"
@@ -183,7 +183,7 @@ msgstr "4/8"
 #. CONTEXT: configuration: marquee: the accent color used for the marquee
 #. CONTEXT: configuration: the accent color to use for the user interface
 msgid "Accent Colour"
-msgstr ""
+msgstr "Accentkleur"
 
 #. CONTEXT: update database: select database update action
 msgid "Action"
@@ -214,21 +214,21 @@ msgstr "Album Artiest"
 #. CONTEXT: song selection filter: a filter: all dances are selected
 #. CONTEXT: song-selection: filter: all dances are selected
 msgid "All Dances"
-msgstr ""
+msgstr "Alle Dansen"
 
 #. CONTEXT: genre: a filter: all genres are displayed in the song selection
 msgid "All Genres"
-msgstr ""
+msgstr "Alle Genres"
 
 #. CONTEXT: level: a filter: all dance levels will be listed
 #. CONTEXT: level: a filter: all dance levels are displayed in the song selection
 msgid "All Levels"
-msgstr ""
+msgstr "Alle Niveaus"
 
 #. CONTEXT: rating: a filter: all dance ratings will be listed
 #. CONTEXT: rating: a filter: all dance ratings are displayed in the song selection
 msgid "All Ratings"
-msgstr ""
+msgstr "Alle Waarderingen"
 
 #. CONTEXT: configuration: write audio file tags: write all tags (BDJ and standard) to the audio file
 msgid "All Tags"
@@ -240,7 +240,7 @@ msgstr "Toegestane zoekwoorden"
 
 #. CONTEXT: set up alternate: dialog title for selecting location
 msgid "Alternate Location"
-msgstr ""
+msgstr "Alternatieve Locatie"
 
 #. CONTEXT: configuration: dances: play the selected announcement before the dance is played
 msgid "Announcement"
@@ -249,11 +249,11 @@ msgstr "Mededeling"
 #. CONTEXT: status: a filter: all dance status will be listed
 #. CONTEXT: status: a filter: all dance status are displayed in the song selection
 msgid "Any Status"
-msgstr ""
+msgstr "Elke Status"
 
 #. CONTEXT: song selection filter: filter dialog: applies the selections
 msgid "Apply"
-msgstr ""
+msgstr "Toepassen"
 
 #. CONTEXT: managementui: menu selection: song editor: apply edit all
 msgid "Apply Edit All"

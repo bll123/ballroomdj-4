@@ -25,6 +25,7 @@ for f in *.po; do
 
   echo "$f found"
   mv -f $f $f.bak
+  echo "Unpacking $f"
   sed -n '1,2 p' $f.bak > $f
   sed -n '3,$ p' $TMP/$base/en_GB.po >> $f
 done

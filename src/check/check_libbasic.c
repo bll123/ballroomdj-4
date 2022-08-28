@@ -23,7 +23,7 @@ check_libbasic (SRunner *sr)
   Suite   *s;
 
   /* libbasic:
-   *  istring     need windows support
+   *  istring     complete
    *  list
    *  nlist       partial
    *  ilist       partial

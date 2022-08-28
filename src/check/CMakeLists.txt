@@ -48,6 +48,7 @@ add_executable (check_all
   check_orgopt.c
   check_orgutil.c
   check_rating.c
+  check_samesong.c
   check_sequence.c
   check_song.c
   check_songfav.c
