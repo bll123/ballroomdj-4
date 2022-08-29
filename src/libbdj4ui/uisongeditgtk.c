@@ -957,7 +957,7 @@ uisongeditSaveCallback (void *udata)
       valid = false;
       if (uisongedit->statusMsg != NULL) {
         /* CONTEXT: song editor: status msg: (song end must be greater than song start) */
-        snprintf (tbuff, sizeof (tbuff), _("%s must be greater than %s"),
+        snprintf (tbuff, sizeof (tbuff), _("%1$s must be greater than %2$s"),
             tagdefs [TAG_SONGEND].displayname,
             tagdefs [TAG_SONGSTART].displayname);
         uiLabelSetText (uisongedit->statusMsg, tbuff);

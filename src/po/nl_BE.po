@@ -126,8 +126,8 @@ msgstr "%s is niet geïnstalleerd"
 
 #. CONTEXT: song editor: status msg: (song end must be greater than song start)
 #, c-format
-msgid "%s must be greater than %s"
-msgstr "%s moet groeter zijn dan %s"
+msgid "%1$s must be greater than %2$s"
+msgstr "%1$s moet groeter zijn dan %2$s"
 
 #. CONTEXT: validation: must be a numeric value
 #, c-format

@@ -24,6 +24,7 @@ for f in *.po; do
   fi
 
   echo "$f found"
+  cp -f $f $f.backup
   mv -f $f $f.bak
   echo "Unpacking $f"
   sed -n '1,2 p' $f.bak > $f
