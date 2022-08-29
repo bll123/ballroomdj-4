@@ -27,7 +27,11 @@
 #include "tagdef.h"
 #include "templateutil.h"
 
+static bool updateSSList (nlist_t *tlist, ssize_t ssidx);
+static void ssListGetCounts (nlist_t *tlist, int *ucount, int *totcount);
+
 static char *dbfn = "data/musicdb.dat";
+static musicdb_t *db = NULL;
 
 static void
 setup (void)
@@ -38,28 +42,32 @@ setup (void)
   templateFileCopy ("levels.txt", "levels.txt");
   templateFileCopy ("ratings.txt", "ratings.txt");
   filemanipCopy ("test-templates/musicdb.dat", "data/musicdb.dat");
-}
-
-START_TEST(samesong_alloc)
-{
-  musicdb_t     *db;
-  samesong_t    *ss;
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
-  ss = samesongAlloc (db);
-  samesongFree (ss);
+}
+
+static void
+teardown (void)
+{
   dbClose (db);
   bdjvarsdfloadCleanup ();
   bdjoptCleanup ();
+}
+
+START_TEST(samesong_alloc)
+{
+  samesong_t    *ss;
+
+  ss = samesongAlloc (db);
+  samesongFree (ss);
 }
 END_TEST
 
 START_TEST(samesong_basic)
 {
-  musicdb_t     *db;
   samesong_t    *ss;
   dbidx_t       dbidx;
   ssize_t       ssidx;
@@ -69,13 +77,8 @@ START_TEST(samesong_basic)
   int           count;
   int           tcount;
   nlist_t       *tlist;
-  nlistidx_t    iteridx;
   int           val;
 
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
-  db = dbOpen (dbfn);
   ss = samesongAlloc (db);
 
   tlist = nlistAlloc ("chk-ss-basic", LIST_ORDERED, NULL);
@@ -86,14 +89,8 @@ START_TEST(samesong_basic)
     ssidx = songGetNum (song, TAG_SAMESONG);
     if (ssidx > 0) {
       ++count;
-      val = nlistGetNum (tlist, ssidx);
-      if (val < 0) {
+      if (updateSSList (tlist, ssidx)) {
         ++ucount;
-        nlistSetNum (tlist, ssidx, 1);
-      } else {
-        val = nlistGetNum (tlist, ssidx);
-        ++val;
-        nlistSetNum (tlist, ssidx, val);
       }
     }
   }
@@ -102,23 +99,16 @@ START_TEST(samesong_basic)
   ck_assert_int_eq (ucount, 3);
   ck_assert_int_ge (count, 7);
 
-  tcount = 0;
-  nlistStartIterator (tlist, &iteridx);
-  while ((ssidx = nlistIterateKey (tlist, &iteridx)) > 0) {
-    tcount += nlistGetNum (tlist, ssidx);
-  }
-  ck_assert_int_eq (count, tcount);
+  ssListGetCounts (tlist, &tcount, &val);
+  ck_assert_int_eq (ucount, tcount);
+  ck_assert_int_eq (count, val);
 
   samesongFree (ss);
-  dbClose (db);
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
 START_TEST(samesong_get_by_ssidx)
 {
-  musicdb_t     *db;
   samesong_t    *ss;
   dbidx_t       dbidx;
   ssize_t       ssidx;
@@ -129,12 +119,7 @@ START_TEST(samesong_get_by_ssidx)
   nlist_t       *tlist;
   nlistidx_t    iteridx;
   slist_t       *clist;
-  int           val;
 
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
-  db = dbOpen (dbfn);
   ss = samesongAlloc (db);
 
   ucount = 0;
@@ -143,14 +128,8 @@ START_TEST(samesong_get_by_ssidx)
   while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
     ssidx = songGetNum (song, TAG_SAMESONG);
     if (ssidx > 0) {
-      val = nlistGetNum (tlist, ssidx);
-      if (val < 0) {
+      if (updateSSList (tlist, ssidx)) {
         ++ucount;
-        nlistSetNum (tlist, ssidx, 1);
-      } else {
-        val = nlistGetNum (tlist, ssidx);
-        ++val;
-        nlistSetNum (tlist, ssidx, val);
       }
     }
   }
@@ -173,15 +152,11 @@ START_TEST(samesong_get_by_ssidx)
   ck_assert_int_eq (ucount, slistGetCount (clist));
 
   samesongFree (ss);
-  dbClose (db);
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
 START_TEST(samesong_get_by_dbidx)
 {
-  musicdb_t     *db;
   samesong_t    *ss;
   dbidx_t       dbidx;
   song_t        *song;
@@ -193,12 +168,7 @@ START_TEST(samesong_get_by_dbidx)
   nlist_t       *dbidxlist;
   nlistidx_t    iteridx;
   slist_t       *clist;
-  int           val;
 
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
-  db = dbOpen (dbfn);
   ss = samesongAlloc (db);
 
   ucount = 0;
@@ -209,14 +179,8 @@ START_TEST(samesong_get_by_dbidx)
     ssidx = songGetNum (song, TAG_SAMESONG);
     if (ssidx > 0) {
       nlistSetNum (dbidxlist, dbidx, 1);
-      val = nlistGetNum (tlist, ssidx);
-      if (val < 0) {
+      if (updateSSList (tlist, ssidx)) {
         ++ucount;
-        nlistSetNum (tlist, ssidx, 1);
-      } else {
-        val = nlistGetNum (tlist, ssidx);
-        ++val;
-        nlistSetNum (tlist, ssidx, val);
       }
     }
   }
@@ -244,15 +208,13 @@ START_TEST(samesong_get_by_dbidx)
   ck_assert_int_eq (ucount, slistGetCount (clist));
 
   samesongFree (ss);
-  dbClose (db);
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
 }
 END_TEST
 
+/* this test should not exercise the singleton checks */
+/* a separate test is used */
 START_TEST(samesong_set)
 {
-  musicdb_t     *db;
   samesong_t    *ss;
   dbidx_t       dbidx;
   song_t        *song;
@@ -265,18 +227,12 @@ START_TEST(samesong_set)
   int           ucount;
   int           totcount;
   int           tcount;
-  int           tucount;
   nlist_t       *tlist;
   nlist_t       *ndbidxlist;
   nlist_t       *dbidxlist;
   nlistidx_t    iteridx;
   slist_t       *clist;
-  int           val;
 
-  bdjoptInit ();
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
-  bdjvarsdfloadInit ();
-  db = dbOpen (dbfn);
   ss = samesongAlloc (db);
 
   ucount = 0;
@@ -294,15 +250,8 @@ START_TEST(samesong_set)
       }
       ++totcount;
       nlistSetNum (dbidxlist, dbidx, 1);
-      val = nlistGetNum (tlist, ssidx);
-      if (val < 0) {
+      if (updateSSList (tlist, ssidx)) {
         ++ucount;
-        nlistSetNum (tlist, ssidx, 1);
-        val = 1;
-      } else {
-        val = nlistGetNum (tlist, ssidx);
-        ++val;
-        nlistSetNum (tlist, ssidx, val);
       }
     } else {
       nlistSetNum (ndbidxlist, dbidx, 1);
@@ -321,6 +270,7 @@ START_TEST(samesong_set)
       break;
     }
   }
+  ck_assert_int_eq (nlistGetCount (tlist), 3);
 
   samesongSet (ss, tlist);
 
@@ -360,6 +310,7 @@ START_TEST(samesong_set)
       break;
     }
   }
+  ck_assert_int_eq (nlistGetCount (tlist), 4);
 
   samesongSet (ss, tlist);
 
@@ -396,6 +347,7 @@ START_TEST(samesong_set)
       break;
     }
   }
+  ck_assert_int_eq (nlistGetCount (tlist), 2);
 
   samesongSet (ss, tlist);
 
@@ -417,11 +369,26 @@ START_TEST(samesong_set)
   }
   nlistFree (tlist);
 
+  /* now iterate through the entire db and make sure the counts are correct */
+  tcount = 0;
+  tlist = nlistAlloc ("chk-ss-set-chk-db-a", LIST_ORDERED, NULL);
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    ssidx = songGetNum (song, TAG_SAMESONG);
+    if (ssidx > 0) {
+      nlistSetNum (tlist, ssidx, 1);
+      ++tcount;
+    }
+  }
+  ck_assert_int_eq (totcount + 5, tcount);
+  ck_assert_int_eq (ucount + 1, nlistGetCount (tlist));
+  nlistFree (tlist);
+
   /* zero marks */
   /* choose 6-8 from the n-db-list.  */
   /* the first five have been marked already */
   /* this set is needed for the following test */
-  tlist = nlistAlloc ("chk-ss-set-n67", LIST_ORDERED, NULL);
+  tlist = nlistAlloc ("chk-ss-set-n678", LIST_ORDERED, NULL);
   tcount = 0;
   nlistStartIterator (ndbidxlist, &iteridx);
   while ((dbidx = nlistIterateKey (ndbidxlist, &iteridx)) >= 0) {
@@ -433,6 +400,7 @@ START_TEST(samesong_set)
       break;
     }
   }
+  ck_assert_int_eq (nlistGetCount (tlist), 3);
 
   samesongSet (ss, tlist);
 
@@ -457,6 +425,21 @@ START_TEST(samesong_set)
     ck_assert_str_eq (sscolor, lastsscolor);
   }
   maxssidx = lastssidx;
+  nlistFree (tlist);
+
+  /* now iterate through the entire db and make sure the counts are correct */
+  tcount = 0;
+  tlist = nlistAlloc ("chk-ss-set-chk-db-b", LIST_ORDERED, NULL);
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    ssidx = songGetNum (song, TAG_SAMESONG);
+    if (ssidx > 0) {
+      updateSSList (tlist, ssidx);
+      ++tcount;
+    }
+  }
+  ck_assert_int_eq (totcount + 8, tcount);
+  ck_assert_int_eq (ucount + 2, nlistGetCount (tlist));
   nlistFree (tlist);
 
   /* many marks */
@@ -501,34 +484,73 @@ START_TEST(samesong_set)
   maxssidx = lastssidx;
   nlistFree (tlist);
 
-  /* at this point, the following sets from the n-db-list should have a mark */
-  /* 1-4, 5-6, 7-8 */
-  tlist = nlistAlloc ("chk-ss-set-c", LIST_ORDERED, NULL);
-  tucount = 0;
+  /* now iterate through the entire db and make sure the counts are correct */
+  tcount = 0;
+  tlist = nlistAlloc ("chk-ss-set-chk-db-b", LIST_ORDERED, NULL);
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    ssidx = songGetNum (song, TAG_SAMESONG);
+    if (ssidx > 0) {
+      nlistSetNum (tlist, ssidx, 1);
+      ++tcount;
+    }
+  }
+  ck_assert_int_eq (totcount + 8, tcount);
+  ck_assert_int_eq (ucount + 3, nlistGetCount (tlist));
+  nlistFree (tlist);
+
+  /* one mark, no unset */
+  /* choose the first two in the n-db-list */
+  tlist = nlistAlloc ("chk-ss-set-n2", LIST_ORDERED, NULL);
   tcount = 0;
   nlistStartIterator (ndbidxlist, &iteridx);
   while ((dbidx = nlistIterateKey (ndbidxlist, &iteridx)) >= 0) {
-    song = dbGetByIdx (db, dbidx);
-    ssidx = songGetNum (song, TAG_SAMESONG);
-    if (ssidx > 0) {
-      ++tcount;
-      val = nlistGetNum (tlist, ssidx);
-      if (val < 0) {
-        ++tucount;
-        nlistSetNum (tlist, ssidx, 1);
-      } else {
-        val = nlistGetNum (tlist, ssidx);
-        ++val;
-        nlistSetNum (tlist, ssidx, val);
-      }
-    }
-    if (tcount > 7) {
+    nlistSetNum (tlist, dbidx, 0);
+    ++tcount;
+    if (tcount > 1) {
       break;
     }
   }
-  /* from among the first 8 songs in the n-db-list */
-  ck_assert_int_eq (ucount, 3);
-  ck_assert_int_eq (tcount, 8);
+  ck_assert_int_eq (nlistGetCount (tlist), 2);
+
+  samesongSet (ss, tlist);
+
+  lastssidx = -1;
+  lastsscolor = NULL;
+  nlistStartIterator (tlist, &iteridx);
+  while ((dbidx = nlistIterateKey (tlist, &iteridx)) >= 0) {
+    song = dbGetByIdx (db, dbidx);
+    ssidx = songGetNum (song, TAG_SAMESONG);
+    if (lastssidx == -1) {
+      lastssidx = ssidx;
+      lastsscolor = samesongGetColorBySSIdx (ss, ssidx);
+    }
+    /* should be set */
+    ck_assert_int_gt (ssidx, 0);
+    /* with one mark, no unset, the ss-idx should be new and largest */
+    ck_assert_int_gt (ssidx, maxssidx);
+    /* should all have the same idx */
+    ck_assert_int_eq (ssidx, lastssidx);
+    /* and the same color */
+    sscolor = samesongGetColorBySSIdx (ss, ssidx);
+    ck_assert_str_eq (sscolor, lastsscolor);
+  }
+  maxssidx = lastssidx;
+  nlistFree (tlist);
+
+  /* now iterate through the entire db and make sure the counts are correct */
+  tcount = 0;
+  tlist = nlistAlloc ("chk-ss-set-chk-db-b", LIST_ORDERED, NULL);
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    ssidx = songGetNum (song, TAG_SAMESONG);
+    if (ssidx > 0) {
+      nlistSetNum (tlist, ssidx, 1);
+      ++tcount;
+    }
+  }
+  ck_assert_int_eq (totcount + 8, tcount);
+  ck_assert_int_eq (ucount + 4, nlistGetCount (tlist));
   nlistFree (tlist);
 
   /* check to make sure the colors are unique */
@@ -549,13 +571,221 @@ START_TEST(samesong_set)
       }
     }
   }
-  ck_assert_int_eq (ucount + 3, tcount);
-  ck_assert_int_eq (ucount + 3, slistGetCount (clist));
+  ck_assert_int_eq (ucount + 4, tcount);
+  ck_assert_int_eq (ucount + 4, slistGetCount (clist));
 
   samesongFree (ss);
-  dbClose (db);
-  bdjvarsdfloadCleanup ();
-  bdjoptCleanup ();
+}
+END_TEST
+
+START_TEST(samesong_singleton)
+{
+  samesong_t    *ss;
+  dbidx_t       dbidx;
+  dbidx_t       dbidxa;
+  dbidx_t       dbidxb;
+  dbidx_t       dbidxc;
+  song_t        *song;
+  ssize_t       ssidx;
+  const char    *sscolor;
+  dbidx_t       dbiteridx;
+  nlist_t       *tlist;
+  int           tcount;
+  nlist_t       *ndbidxlist;
+  nlist_t       *dbidxlist;
+  nlistidx_t    iteridx;
+
+  ss = samesongAlloc (db);
+
+  dbidxa = -1;
+  dbidxb = -1;
+  dbidxc = -1;
+  tlist = nlistAlloc ("chk-ss-set-a", LIST_ORDERED, NULL);
+  dbidxlist = nlistAlloc ("chk-ss-set-db", LIST_ORDERED, NULL);
+  ndbidxlist = nlistAlloc ("chk-ss-set-ndb", LIST_ORDERED, NULL);
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    ssidx = songGetNum (song, TAG_SAMESONG);
+    if (ssidx > 0) {
+      nlistSetNum (dbidxlist, dbidx, 1);
+      updateSSList (tlist, ssidx);
+    } else {
+      nlistSetNum (ndbidxlist, dbidx, 1);
+    }
+  }
+  nlistFree (tlist);
+
+  /* choose 1-3 from the n-db-list.  */
+  tlist = nlistAlloc ("chk-ss-s-set-n13", LIST_ORDERED, NULL);
+  tcount = 0;
+  nlistStartIterator (ndbidxlist, &iteridx);
+  while ((dbidx = nlistIterateKey (ndbidxlist, &iteridx)) >= 0) {
+    ++tcount;
+    nlistSetNum (tlist, dbidx, 0);
+    if (tcount == 1) {
+      dbidxa = dbidx;
+    }
+    if (tcount == 2) {
+      dbidxb = dbidx;
+    }
+    if (tcount == 3) {
+      dbidxc = dbidx;
+    }
+    if (tcount > 2) {
+      break;
+    }
+  }
+
+  samesongSet (ss, tlist);
+  nlistFree (tlist);
+
+  sscolor = samesongGetColorByDBIdx (ss, dbidxa);
+  ck_assert_ptr_nonnull (sscolor);
+  sscolor = samesongGetColorByDBIdx (ss, dbidxb);
+  ck_assert_ptr_nonnull (sscolor);
+
+  /* choose 2-3 from the n-db-list.  */
+  /* this will leave 1 as a singleton */
+  tlist = nlistAlloc ("chk-ss-s-set-n12", LIST_ORDERED, NULL);
+  tcount = 0;
+  nlistStartIterator (ndbidxlist, &iteridx);
+  while ((dbidx = nlistIterateKey (ndbidxlist, &iteridx)) >= 0) {
+    ++tcount;
+    if (tcount > 1) {
+      nlistSetNum (tlist, dbidx, 0);
+    }
+    if (tcount > 2) {
+      break;
+    }
+  }
+
+  samesongSet (ss, tlist);
+  nlistFree (tlist);
+
+  sscolor = samesongGetColorByDBIdx (ss, dbidxa);
+  ck_assert_ptr_null (sscolor);
+  sscolor = samesongGetColorByDBIdx (ss, dbidxb);
+  ck_assert_ptr_nonnull (sscolor);
+  sscolor = samesongGetColorByDBIdx (ss, dbidxc);
+  ck_assert_ptr_nonnull (sscolor);
+
+  samesongFree (ss);
+}
+END_TEST
+
+START_TEST(samesong_clear)
+{
+  samesong_t    *ss;
+  dbidx_t       dbidx;
+  song_t        *song;
+  ssize_t       ssidx;
+  int           ucount;
+  int           totcount;
+  int           tcount;
+  dbidx_t       dbiteridx;
+  nlist_t       *tlist;
+  nlist_t       *ndbidxlist;
+  nlist_t       *dbidxlist;
+  nlistidx_t    iteridx;
+
+  ss = samesongAlloc (db);
+
+  ucount = 0;
+  totcount = 0;
+  tlist = nlistAlloc ("chk-ss-set-a", LIST_ORDERED, NULL);
+  dbidxlist = nlistAlloc ("chk-ss-set-db", LIST_ORDERED, NULL);
+  ndbidxlist = nlistAlloc ("chk-ss-set-ndb", LIST_ORDERED, NULL);
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    ssidx = songGetNum (song, TAG_SAMESONG);
+    if (ssidx > 0) {
+      ++totcount;
+      nlistSetNum (dbidxlist, dbidx, 1);
+      if (updateSSList (tlist, ssidx)) {
+        ++ucount;
+      }
+    } else {
+      nlistSetNum (ndbidxlist, dbidx, 1);
+    }
+  }
+  nlistFree (tlist);
+
+  /* zero marks, choose the first 3 from the n-db-list */
+  tlist = nlistAlloc ("chk-ss-set-n13", LIST_ORDERED, NULL);
+  tcount = 0;
+  nlistStartIterator (ndbidxlist, &iteridx);
+  while ((dbidx = nlistIterateKey (ndbidxlist, &iteridx)) >= 0) {
+    ++tcount;
+    nlistSetNum (tlist, dbidx, 0);
+    if (tcount > 2) {
+      break;
+    }
+  }
+  ck_assert_int_eq (nlistGetCount (tlist), 3);
+  samesongSet (ss, tlist);
+  nlistFree (tlist);
+
+  /* zero marks, choose the second 3 from the n-db-list */
+  tlist = nlistAlloc ("chk-ss-set-n46", LIST_ORDERED, NULL);
+  tcount = 0;
+  nlistStartIterator (ndbidxlist, &iteridx);
+  while ((dbidx = nlistIterateKey (ndbidxlist, &iteridx)) >= 0) {
+    ++tcount;
+    if (tcount > 3) {
+      nlistSetNum (tlist, dbidx, 0);
+    }
+    if (tcount > 5) {
+      break;
+    }
+  }
+  ck_assert_int_eq (nlistGetCount (tlist), 3);
+  samesongSet (ss, tlist);
+  nlistFree (tlist);
+
+  tlist = nlistAlloc ("chk-ss-set-n23", LIST_ORDERED, NULL);
+  tcount = 0;
+  nlistStartIterator (ndbidxlist, &iteridx);
+  while ((dbidx = nlistIterateKey (ndbidxlist, &iteridx)) >= 0) {
+    ++tcount;
+    if (tcount > 2) {
+      nlistSetNum (tlist, dbidx, 0);
+    }
+    if (tcount > 3) {
+      break;
+    }
+  }
+  ck_assert_int_eq (nlistGetCount (tlist), 2);
+  samesongClear (ss, tlist);
+
+  nlistStartIterator (tlist, &iteridx);
+  while ((dbidx = nlistIterateKey (tlist, &iteridx)) >= 0) {
+    const char *sscolor;
+
+    sscolor = samesongGetColorByDBIdx (ss, dbidx);
+    ck_assert_ptr_null (sscolor);
+  }
+
+  nlistFree (tlist);
+
+  /* now iterate through the entire db and make sure the counts are correct */
+  tcount = 0;
+  tlist = nlistAlloc ("chk-ss-set-chk-db-b", LIST_ORDERED, NULL);
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    ssidx = songGetNum (song, TAG_SAMESONG);
+    if (ssidx > 0) {
+      nlistSetNum (tlist, ssidx, 1);
+      ++tcount;
+    }
+  }
+  ck_assert_int_eq (totcount + 4, tcount);
+  ck_assert_int_eq (ucount + 2, nlistGetCount (tlist));
+  nlistFree (tlist);
+}
+END_TEST
+
+START_TEST(ss_check_alloc)
+{
 }
 END_TEST
 
@@ -567,14 +797,54 @@ samesong_suite (void)
 
   s = suite_create ("samesong");
   tc = tcase_create ("samesong");
-  tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_set_tags (tc, "libbdj4");
   tcase_add_test (tc, samesong_alloc);
   tcase_add_test (tc, samesong_basic);
   tcase_add_test (tc, samesong_get_by_ssidx);
   tcase_add_test (tc, samesong_get_by_dbidx);
   tcase_add_test (tc, samesong_set);
+  tcase_add_test (tc, samesong_singleton);
+  tcase_add_test (tc, samesong_clear);
   suite_add_tcase (s, tc);
+
+  tc = tcase_create ("samesong-check");
+  tcase_add_unchecked_fixture (tc, setup, teardown);
+  tcase_add_test (tc, ss_check_alloc);
+  suite_add_tcase (s, tc);
+
   return s;
 }
 
+static bool
+updateSSList (nlist_t *tlist, ssize_t ssidx)
+{
+  int   val;
+  bool  u = false;
+
+  val = nlistGetNum (tlist, ssidx);
+  if (val < 0) {
+    u = true;
+    val = 1;
+  } else {
+    val = nlistGetNum (tlist, ssidx);
+    ++val;
+  }
+  nlistSetNum (tlist, ssidx, val);
+  return u;
+}
+
+static void
+ssListGetCounts (nlist_t *tlist, int *ucount, int *totcount)
+{
+  nlistidx_t  iteridx;
+  ssize_t     ssidx;
+
+  *totcount = 0;
+  *ucount = 0;
+  nlistStartIterator (tlist, &iteridx);
+  while ((ssidx = nlistIterateKey (tlist, &iteridx)) > 0) {
+    ++(*ucount);
+    *totcount += nlistGetNum (tlist, ssidx);
+  }
+}

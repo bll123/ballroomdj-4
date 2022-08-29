@@ -216,14 +216,14 @@ dbEndBatch (musicdb_t *musicdb)
   musicdb->radb = NULL;
 }
 
-song_t *
+inline song_t *
 dbGetByName (musicdb_t *musicdb, const char *songname)
 {
   song_t *song = slistGetData (musicdb->songs, songname);
   return song;
 }
 
-song_t *
+inline song_t *
 dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
 {
   song_t  *song;

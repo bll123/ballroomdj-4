@@ -54,12 +54,12 @@ samesongAlloc (musicdb_t *musicdb)
       if (sscolor == NULL) {
         createRandomColor (tbuff, sizeof (tbuff));
         nlistSetStr (ss->sscolors, ssidx, tbuff);
-        nlistSetNum (ss->sscounts, ssidx, 1);
+        val = 1;
       } else {
         val = nlistGetNum (ss->sscounts, ssidx);
         ++val;
-        nlistSetNum (ss->sscounts, ssidx, val);
       }
+      nlistSetNum (ss->sscounts, ssidx, val);
       if (ssidx >= ss->nextssidx) {
         ss->nextssidx = ssidx + 1;
       }
@@ -116,7 +116,8 @@ samesongSet (samesong_t *ss, nlist_t *dbidxlist)
   nlistidx_t  iteridx;
   const char  *sscolor;
   char        tbuff [80];
-  int         count;
+  int         count = 0;
+  bool        hasunset = false;
   ssize_t     lastssidx;
   ssize_t     usessidx;
   ssize_t     ssidx;
@@ -124,16 +125,22 @@ samesongSet (samesong_t *ss, nlist_t *dbidxlist)
   /* this is more complicated than it might seem */
   /* using the following process makes the same-song */
   /* marks more user-friendly */
-  /* first, if there is a single same-song mark already set in */
-  /*   in the target list, change all of the targets to be that same mark */
-  /*   re-use the color of this mark */
-  /* second, if there is more than one same-song mark set in */
-  /*   the target list, remove all the marks set in the target list */
-  /* in the second case, or if there are no marks set, choose a new color */
-  /* set the marks */
+  /* a) if there is a single same-song mark already set in the target list */
+  /*   a-1) there are no unset marks in the target list */
+  /*      change all of the targets to be a new mark */
+  /*      set a new color */
+  /*   a-2) there is an unset mark in the target list */
+  /*      change all of the targets to be that same mark */
+  /*      re-use the color of this mark */
+  /*      the assumption here is that the unset mark is being added to */
+  /*      the selected mark */
+  /* b) if there is more than one same-song mark set in the target list */
+  /*    remove all the marks set in the target list */
+  /*    set a new color */
 
   /* count how many different same-song marks there are */
   /* only need to know 0, 1, or many */
+  /* also check and see if there are any unset marks in the target list */
   lastssidx = -1;
   count = 0;
   nlistStartIterator (dbidxlist, &iteridx);
@@ -149,12 +156,16 @@ samesongSet (samesong_t *ss, nlist_t *dbidxlist)
           break;
         }
       }
+    } else {
+      hasunset = true;
     }
   }
 
   /* more than one different mark */
+  /* or a single mark with no unset marks */
   /* adjust the current counts for the entire target list */
-  if (count > 1) {
+  if (count > 1 ||
+     (count == 1 && ! hasunset)) {
     int   val;
 
     nlistStartIterator (dbidxlist, &iteridx);
@@ -167,14 +178,18 @@ samesongSet (samesong_t *ss, nlist_t *dbidxlist)
   }
 
   /* more than one different mark or zero marks */
-  if (count > 1 || count == 0) {
+  /* or one mark and no unset */
+  if (count > 1 ||
+     (count == 1 && ! hasunset) ||
+      count == 0) {
     createRandomColor (tbuff, sizeof (tbuff));
     sscolor = tbuff;
     usessidx = ss->nextssidx;
     ++ss->nextssidx;
   }
   /* only one mark found in the target list */
-  if (count == 1) {
+  /* and there are unset marks */
+  if (count == 1 && hasunset) {
     sscolor = nlistGetStr (ss->sscolors, lastssidx);
     usessidx = lastssidx;
   }
@@ -182,21 +197,79 @@ samesongSet (samesong_t *ss, nlist_t *dbidxlist)
   nlistStartIterator (dbidxlist, &iteridx);
   while ((dbidx = nlistIterateKey (dbidxlist, &iteridx)) >= 0) {
     int     val;
+    ssize_t oldssidx;
     song_t  *song;
 
     song = dbGetByIdx (ss->musicdb, dbidx);
+    if (song == NULL) {
+      continue;
+    }
+
+    oldssidx = songGetNum (song, TAG_SAMESONG);
     songSetNum (song, TAG_SAMESONG, usessidx);
+    dbWriteSong (ss->musicdb, song);
     nlistSetStr (ss->sscolors, usessidx, sscolor);
     val = nlistGetNum (ss->sscounts, usessidx);
     if (val < 0) {
-      nlistSetNum (ss->sscounts, usessidx, 1);
+      val = 1;
     } else {
-      ++val;
-      nlistSetNum (ss->sscounts, usessidx, val);
+      if (oldssidx != usessidx) {
+        ++val;
+      }
     }
+    nlistSetNum (ss->sscounts, usessidx, val);
   }
 
   samesongCleanSingletons (ss);
+}
+
+void
+samesongClear (samesong_t *ss, nlist_t *dbidxlist)
+{
+  int           val;
+  dbidx_t       dbidx;
+  nlistidx_t    iteridx;
+  ssize_t       ssidx;
+  song_t        *song;
+
+  nlistStartIterator (dbidxlist, &iteridx);
+  while ((dbidx = nlistIterateKey (dbidxlist, &iteridx)) >= 0) {
+    song = dbGetByIdx (ss->musicdb, dbidx);
+    if (song == NULL) {
+      continue;
+    }
+
+    songSetNum (song, TAG_SAMESONG, LIST_VALUE_INVALID);
+    dbWriteSong (ss->musicdb, song);
+    ssidx = samesongGetSSIdx (ss, dbidx);
+    val = nlistGetNum (ss->sscounts, ssidx);
+    --val;
+    nlistSetNum (ss->sscounts, ssidx, val);
+  }
+
+  samesongCleanSingletons (ss);
+}
+
+sscheck_t *
+ssCheckAlloc (void)
+{
+  return NULL;
+}
+
+void
+ssCheckFree (sscheck_t *ss)
+{
+}
+
+void
+ssCheckAdd (sscheck_t *ss, dbidx_t dbidx)
+{
+}
+
+bool
+ssCheckCheck (sscheck_t *ss, dbidx_t dbidx)
+{
+  return false;
 }
 
 /* internal routines */
@@ -208,6 +281,10 @@ samesongGetSSIdx (samesong_t *ss, dbidx_t dbidx)
   ssize_t ssidx;
 
   song = dbGetByIdx (ss->musicdb, dbidx);
+  if (song == NULL) {
+    return LIST_VALUE_INVALID;
+  }
+
   ssidx = songGetNum (song, TAG_SAMESONG);
   return ssidx;
 }

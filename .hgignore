@@ -24,6 +24,7 @@ syntax: regexp
 ^scripts/linux/.ballroomdj-ss-restore
 ^src/build/
 ^src/po/.*\.bak$
+^src/po/.*\.backup$
 ^src/w$
 ^test-music/
 ^tmp/
