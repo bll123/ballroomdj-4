@@ -22,8 +22,15 @@ typedef struct samesong {
   ssize_t   nextssidx;
 } samesong_t;
 
+typedef struct sscheck {
+  musicdb_t *musicdb;
+  nlist_t   *sslist;
+} sscheck_t;
+
 static ssize_t  samesongGetSSIdx (samesong_t *ss, dbidx_t dbidx);
 static void     samesongCleanSingletons (samesong_t *ss);
+static void     ssCheckListAdd (nlist_t *list, ssize_t ssidx);
+static void     ssCheckListRemove (nlist_t *list, ssize_t ssidx);
 
 samesong_t *
 samesongAlloc (musicdb_t *musicdb)
@@ -119,7 +126,7 @@ samesongSet (samesong_t *ss, nlist_t *dbidxlist)
   int         count = 0;
   bool        hasunset = false;
   ssize_t     lastssidx;
-  ssize_t     usessidx;
+  ssize_t     usessidx = -1;
   ssize_t     ssidx;
 
   /* this is more complicated than it might seem */
@@ -251,24 +258,66 @@ samesongClear (samesong_t *ss, nlist_t *dbidxlist)
 }
 
 sscheck_t *
-ssCheckAlloc (void)
+ssCheckAlloc (musicdb_t *musicdb)
 {
-  return NULL;
+  sscheck_t *sschk;
+
+  sschk = malloc (sizeof (sscheck_t));
+  sschk->sslist = nlistAlloc ("sscheck", LIST_ORDERED, NULL);
+  sschk->musicdb = musicdb;
+  return sschk;
 }
 
 void
-ssCheckFree (sscheck_t *ss)
+ssCheckFree (sscheck_t *sschk)
 {
+  if (sschk != NULL) {
+    if (sschk->sslist != NULL) {
+      nlistFree (sschk->sslist);
+    }
+    free (sschk);
+  }
 }
 
 void
-ssCheckAdd (sscheck_t *ss, dbidx_t dbidx)
+ssCheckAdd (sscheck_t *sschk, dbidx_t dbidx)
 {
+  song_t    *song;
+  ssize_t   ssidx;
+
+  song = dbGetByIdx (sschk->musicdb, dbidx);
+  ssidx = songGetNum (song, TAG_SAMESONG);
+  ssCheckListAdd (sschk->sslist, ssidx);
+}
+
+void
+ssCheckRemove (sscheck_t *sschk, dbidx_t dbidx)
+{
+  song_t    *song;
+  ssize_t   ssidx;
+
+  song = dbGetByIdx (sschk->musicdb, dbidx);
+  ssidx = songGetNum (song, TAG_SAMESONG);
+  ssCheckListRemove (sschk->sslist, ssidx);
 }
 
 bool
-ssCheckCheck (sscheck_t *ss, dbidx_t dbidx)
+ssCheckCheck (sscheck_t *sschk, dbidx_t dbidx)
 {
+  song_t    *song;
+  ssize_t   ssidx;
+  int       val;
+
+  song = dbGetByIdx (sschk->musicdb, dbidx);
+  ssidx = songGetNum (song, TAG_SAMESONG);
+  if (ssidx < 0) {
+    return false;
+  }
+
+  val = nlistGetNum (sschk->sslist, ssidx);
+  if (val > 0) {
+    return true;
+  }
   return false;
 }
 
@@ -304,3 +353,38 @@ samesongCleanSingletons (samesong_t *ss)
     }
   }
 }
+
+static void
+ssCheckListAdd (nlist_t *list, ssize_t ssidx)
+{
+  int     val;
+
+  if (ssidx < 0) {
+    return;
+  }
+
+  val = nlistGetNum (list, ssidx);
+  if (val < 0) {
+    val = 1;
+  } else {
+    ++val;
+  }
+  nlistSetNum (list, ssidx, val);
+}
+
+static void
+ssCheckListRemove (nlist_t *list, ssize_t ssidx)
+{
+  int     val;
+
+  if (ssidx < 0) {
+    return;
+  }
+
+  val = nlistGetNum (list, ssidx);
+  if (val > 0) {
+    --val;
+    nlistSetNum (list, ssidx, val);
+  }
+}
+

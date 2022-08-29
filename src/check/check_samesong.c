@@ -786,6 +786,137 @@ END_TEST
 
 START_TEST(ss_check_alloc)
 {
+  sscheck_t   *sschk;
+
+  sschk = ssCheckAlloc (db);
+  ck_assert_ptr_nonnull (sschk);
+  ssCheckFree (sschk);
+}
+END_TEST
+
+START_TEST(ss_check_add)
+{
+  sscheck_t   *sschk;
+  dbidx_t     dbiteridx;
+  dbidx_t     dbidx;
+  int         tcount;
+  song_t      *song;
+  ssize_t     ssidx;
+  bool        none = true;
+
+  sschk = ssCheckAlloc (db);
+
+  tcount = 0;
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    ssidx = songGetNum (song, TAG_SAMESONG);
+    if (ssidx < 0 && none) {
+      ssCheckAdd (sschk, dbidx);
+      none = false;
+    }
+    if (ssidx > 0) {
+      ++tcount;
+      ssCheckAdd (sschk, dbidx);
+      if (tcount > 3) {
+        break;
+      }
+    }
+  }
+
+  ssCheckFree (sschk);
+}
+END_TEST
+
+START_TEST(ss_check_add_chk)
+{
+  sscheck_t   *sschk;
+  dbidx_t     dbiteridx;
+  dbidx_t     dbidx;
+  int         tcount;
+  song_t      *song;
+  ssize_t     ssidx;
+
+  sschk = ssCheckAlloc (db);
+
+  tcount = 0;
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    ssidx = songGetNum (song, TAG_SAMESONG);
+    if (ssidx > 0) {
+      if (ssCheckCheck (sschk, dbidx)) {
+        continue;
+      }
+      ++tcount;
+      ssCheckAdd (sschk, dbidx);
+    }
+  }
+  /* as of 2022-8-29, there are three same-song marks in the test db */
+  ck_assert_int_eq (tcount, 3);
+
+  tcount = 0;
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    if (ssCheckCheck (sschk, dbidx)) {
+      ++tcount;
+    }
+  }
+  /* as of 2022-8-29, there are seven songs with marks in the test db */
+  ck_assert_int_eq (tcount, 7);
+
+  ssCheckFree (sschk);
+}
+END_TEST
+
+START_TEST(ss_check_remove_chk)
+{
+  sscheck_t   *sschk;
+  dbidx_t     dbiteridx;
+  dbidx_t     dbidx;
+  int         tcount;
+  song_t      *song;
+  ssize_t     ssidx;
+  int         state = 0;
+  dbidx_t     odbidx;
+  ssize_t     ossidx;
+
+  sschk = ssCheckAlloc (db);
+
+  tcount = 0;
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    ssidx = songGetNum (song, TAG_SAMESONG);
+    if (ssidx > 0) {
+      if (ssCheckCheck (sschk, dbidx)) {
+        continue;
+      }
+      ++tcount;
+      ssCheckAdd (sschk, dbidx);
+    }
+  }
+  /* as of 2022-8-29, there are three same-song marks in the test db */
+  ck_assert_int_eq (tcount, 3);
+
+  tcount = 0;
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    ssidx = songGetNum (song, TAG_SAMESONG);
+    if (ssidx > 0 && state == 0) {
+      ck_assert_int_eq (ssCheckCheck (sschk, dbidx), 1);
+      ssCheckRemove (sschk, dbidx);
+      ck_assert_int_eq (ssCheckCheck (sschk, dbidx), 0);
+      odbidx = dbidx;
+      ossidx = ssidx;
+      state = 1;
+    }
+    if (ssidx > 0 && ssidx == ossidx && state == 1) {
+      ssCheckAdd (sschk, dbidx);
+      ck_assert_int_eq (ssCheckCheck (sschk, odbidx), 1);
+      ck_assert_int_eq (ssCheckCheck (sschk, dbidx), 1);
+      break;
+    }
+  }
+
+  ssCheckFree (sschk);
 }
 END_TEST
 
@@ -811,6 +942,9 @@ samesong_suite (void)
   tc = tcase_create ("samesong-check");
   tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, ss_check_alloc);
+  tcase_add_test (tc, ss_check_add);
+  tcase_add_test (tc, ss_check_add_chk);
+  tcase_add_test (tc, ss_check_remove_chk);
   suite_add_tcase (s, tc);
 
   return s;

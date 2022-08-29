@@ -14,9 +14,10 @@ const char  * samesongGetColorBySSIdx (samesong_t *ss, ssize_t ssidx);
 void        samesongSet (samesong_t *ss, nlist_t *dbidxlist);
 void        samesongClear (samesong_t *ss, nlist_t *dbidxlist);
 
-sscheck_t   *ssCheckAlloc (void);
-void        ssCheckFree (sscheck_t *ss);
-void        ssCheckAdd (sscheck_t *ss, dbidx_t dbidx);
-bool        ssCheckCheck (sscheck_t *ss, dbidx_t dbidx);
+sscheck_t   *ssCheckAlloc (musicdb_t *musicdb);
+void        ssCheckFree (sscheck_t *sschk);
+void        ssCheckAdd (sscheck_t *sschk, dbidx_t dbidx);
+void        ssCheckRemove (sscheck_t *sschk, dbidx_t dbidx);
+bool        ssCheckCheck (sscheck_t *sschk, dbidx_t dbidx);
 
 #endif /* INC_SAMESONG_H */
