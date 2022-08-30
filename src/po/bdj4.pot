@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-28 12:25-0700\n"
+"POT-Creation-Date: 2022-08-30 16:35-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,11 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#. CONTEXT: song editor: status msg: (song end must be greater than song start)
+#, c-format
+msgid "%1$s must be greater than %2$s"
+msgstr ""
 
 #. CONTEXT: database update: status message
 #, c-format
@@ -122,11 +127,6 @@ msgstr ""
 msgid "%s is not installed"
 msgstr ""
 
-#. CONTEXT: song editor: status msg: (song end must be greater than song start)
-#, c-format
-msgid "%s must be greater than %s"
-msgstr ""
-
 #. CONTEXT: validation: must be a numeric value
 #, c-format
 msgid "%s must be numeric."
@@ -188,6 +188,7 @@ msgid "Action"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: actions for song editor
+#. CONTEXT: managementui: menu selection: actions for music manager
 #. CONTEXT: managementui: menu selection: actions for song list
 #. CONTEXT: starterui: action menu for the starter user interface
 msgid "Actions"
@@ -363,6 +364,10 @@ msgstr ""
 #. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: music queue: button: clear the queue
 msgid "Clear Queue"
+msgstr ""
+
+#. CONTEXT: managementui: menu selection: music manager: clear same-song mark
+msgid "Clear Same Song Mark"
 msgstr ""
 
 #. CONTEXT: bpm counter: instructions, line 1
@@ -676,8 +681,8 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-#. CONTEXT: managementui: menu selection: song list: export: export as m3u
 #. CONTEXT: managementui: song list export: title of save dialog
+#. CONTEXT: managementui: menu selection: song list: export: export as m3u
 #, c-format
 msgid "Export as M3U Playlist"
 msgstr ""
@@ -936,6 +941,10 @@ msgstr ""
 
 #. CONTEXT: starterui: button: starts the management user interface
 msgid "Manage"
+msgstr ""
+
+#. CONTEXT: managementui: menu selection: music manager: set same-song mark
+msgid "Mark as Same Song"
 msgstr ""
 
 #. CONTEXT: marquee: marquee window title

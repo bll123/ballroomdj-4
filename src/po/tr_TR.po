@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-08-11\n"
-"PO-Revision-Date: 2022-08-28\n"
+"PO-Revision-Date: 2022-08-30\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -18,6 +18,11 @@ msgstr ""
 "X-Crowdin-Language: tr\n"
 "X-Crowdin-File: en_GB.po\n"
 "X-Crowdin-File-ID: 126\n"
+
+#. CONTEXT: song editor: status msg: (song end must be greater than song start)
+#, c-format
+msgid "%1$s must be greater than %2$s"
+msgstr "%1$s %2$s'den daha iyi olmalı"
 
 #. CONTEXT: database update: status message
 #, c-format
@@ -124,11 +129,6 @@ msgstr "%s yüklendi"
 msgid "%s is not installed"
 msgstr "%s yüklenmedi"
 
-#. CONTEXT: song editor: status msg: (song end must be greater than song start)
-#, c-format
-msgid "%1$s must be greater than %2$s"
-msgstr "%1$s %2$s'den daha iyi olmalı"
-
 #. CONTEXT: validation: must be a numeric value
 #, c-format
 msgid "%s must be numeric."
@@ -190,6 +190,7 @@ msgid "Action"
 msgstr "Eylem"
 
 #. CONTEXT: managementui: menu selection: actions for song editor
+#. CONTEXT: managementui: menu selection: actions for music manager
 #. CONTEXT: managementui: menu selection: actions for song list
 #. CONTEXT: starterui: action menu for the starter user interface
 msgid "Actions"
@@ -366,6 +367,10 @@ msgstr "Temizle & Oynat"
 #. CONTEXT: music queue: button: clear the queue
 msgid "Clear Queue"
 msgstr "Kuyruğu Temizle"
+
+#. CONTEXT: managementui: menu selection: music manager: clear same-song mark
+msgid "Clear Same Song Mark"
+msgstr ""
 
 #. CONTEXT: bpm counter: instructions, line 1
 msgid "Click the mouse in the blue box in time with the beat."
@@ -678,8 +683,8 @@ msgstr "Çık"
 msgid "Export"
 msgstr "Dışa Aktar"
 
-#. CONTEXT: managementui: menu selection: song list: export: export as m3u
 #. CONTEXT: managementui: song list export: title of save dialog
+#. CONTEXT: managementui: menu selection: song list: export: export as m3u
 #, c-format
 msgid "Export as M3U Playlist"
 msgstr "M3U Çalma Listesi Olarak Dışa Aktar"
@@ -938,6 +943,10 @@ msgstr ""
 
 #. CONTEXT: starterui: button: starts the management user interface
 msgid "Manage"
+msgstr ""
+
+#. CONTEXT: managementui: menu selection: music manager: set same-song mark
+msgid "Mark as Same Song"
 msgstr ""
 
 #. CONTEXT: marquee: marquee window title
