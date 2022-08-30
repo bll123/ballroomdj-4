@@ -340,6 +340,130 @@ START_TEST(nlist_set_get_num)
 }
 END_TEST
 
+START_TEST(nlist_s_iterate_num)
+{
+  nlist_t *     list;
+  nlistidx_t    value;
+  nlistidx_t    key;
+  nlistidx_t    iteridx;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_s_iterate_num");
+
+  list = nlistAlloc ("chk-g", LIST_ORDERED, NULL);
+  ck_assert_ptr_nonnull (list);
+  nlistSetNum (list, 6, 555);
+  nlistSetNum (list, 3, 222);
+  nlistSetNum (list, 5, 444);
+  nlistSetNum (list, 4, 333);
+  nlistSetNum (list, 1, 0);
+  nlistSetNum (list, 2, 111);
+
+  nlistStartIterator (list, &iteridx);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 0);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 111);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 3);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 222);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 4);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 333);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 5);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 444);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 6);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 555);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, -1);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 0);
+
+  nlistStartIterator (list, &iteridx);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 0);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 111);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 3);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 222);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 4);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 333);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 5);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 444);
+  key = nlistIterateKey (list, &iteridx);
+  ck_assert_int_eq (key, 6);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 555);
+
+  key = nlistIterateKeyPrevious (list, &iteridx);
+  ck_assert_int_eq (key, 5);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 444);
+  key = nlistIterateKeyPrevious (list, &iteridx);
+  ck_assert_int_eq (key, 4);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 333);
+  key = nlistIterateKeyPrevious (list, &iteridx);
+  ck_assert_int_eq (key, 3);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 222);
+  key = nlistIterateKeyPrevious (list, &iteridx);
+  ck_assert_int_eq (key, 2);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 111);
+  key = nlistIterateKeyPrevious (list, &iteridx);
+  ck_assert_int_eq (key, 1);
+  value = nlistGetNum (list, key);
+  ck_assert_int_eq (value, 0);
+  /* previous does not wrap at this time */
+  key = nlistIterateKeyPrevious (list, &iteridx);
+  ck_assert_int_eq (key, -1);
+  key = nlistIterateKeyPrevious (list, &iteridx);
+  ck_assert_int_eq (key, -1);
+
+  nlistStartIterator (list, &iteridx);
+  value = nlistIterateValueNum (list, &iteridx);
+  ck_assert_int_eq (value, 0);
+  value = nlistIterateValueNum (list, &iteridx);
+  ck_assert_int_eq (value, 111);
+  value = nlistIterateValueNum (list, &iteridx);
+  ck_assert_int_eq (value, 222);
+  value = nlistIterateValueNum (list, &iteridx);
+  ck_assert_int_eq (value, 333);
+  value = nlistIterateValueNum (list, &iteridx);
+  ck_assert_int_eq (value, 444);
+  value = nlistIterateValueNum (list, &iteridx);
+  ck_assert_int_eq (value, 555);
+  value = nlistIterateValueNum (list, &iteridx);
+  ck_assert_int_eq (value, -1);
+  value = nlistIterateValueNum (list, &iteridx);
+  ck_assert_int_eq (value, 0);
+
+  nlistFree (list);
+}
+END_TEST
+
 START_TEST(nlist_s_replace_str)
 {
   nlist_t       *list;
@@ -745,6 +869,7 @@ nlist_suite (void)
   tcase_add_test (tc, nlist_s_get_str);
   tcase_add_test (tc, nlist_s_iterate_str);
   tcase_add_test (tc, nlist_set_get_num);
+  tcase_add_test (tc, nlist_s_iterate_num);
   tcase_add_test (tc, nlist_s_replace_str);
   tcase_add_test (tc, nlist_free_str);
   tcase_add_test (tc, nlist_free_item);

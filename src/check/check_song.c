@@ -192,6 +192,7 @@ START_TEST(song_parse)
     data = strdup (songparsedata [i]);
     songParse (song, data, i);
     free (data);
+    ck_assert_int_eq (songIsChanged (song), 0);
     songFree (song);
   }
 
@@ -215,6 +216,7 @@ START_TEST(song_parse_get)
     data = strdup (songparsedata [i]);
     songParse (song, data, i);
     free (data);
+    ck_assert_int_eq (songIsChanged (song), 0);
     ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "artist");
     ck_assert_str_eq (songGetStr (song, TAG_ALBUM), "album");
     if (i == 0) {
@@ -266,6 +268,7 @@ START_TEST(song_parse_set)
     songParse (song, data, i);
     free (data);
 
+    ck_assert_int_eq (songIsChanged (song), 0);
     songSetStr (song, TAG_ARTIST, "artistb");
     songSetStr (song, TAG_ALBUM, "albumb");
     songSetNum (song, TAG_DISCNUMBER, 2);
@@ -273,6 +276,9 @@ START_TEST(song_parse_set)
     songSetNum (song, TAG_TRACKTOTAL, 11);
     songSetDouble (song, TAG_VOLUMEADJUSTPERC, 5.5);
     songChangeFavorite (song);
+    ck_assert_int_eq (songIsChanged (song), 1);
+    songClearChanged (song);
+    ck_assert_int_eq (songIsChanged (song), 0);
 
     ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "artistb");
     ck_assert_str_eq (songGetStr (song, TAG_ALBUM), "albumb");

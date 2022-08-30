@@ -37,6 +37,7 @@ nlist_t   *nlistGetList (nlist_t *, nlistidx_t idx);
   /* iterators */
 void      nlistStartIterator (nlist_t *list, nlistidx_t *idx);
 nlistidx_t nlistIterateKey (nlist_t *list, nlistidx_t *idx);
+nlistidx_t nlistIterateKeyPrevious (nlist_t *list, nlistidx_t *idx);
 void      *nlistIterateValueData (nlist_t *list, nlistidx_t *idx);
 ssize_t   nlistIterateValueNum (nlist_t *list, nlistidx_t *idx);
   /* aux routines */

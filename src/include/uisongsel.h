@@ -12,6 +12,7 @@
 #include "musicdb.h"
 #include "musicq.h"
 #include "nlist.h"
+#include "samesong.h"
 #include "songfilter.h"
 #include "uidance.h"
 #include "uisongfilter.h"
@@ -32,6 +33,7 @@ typedef struct uisongsel {
   nlist_t           *options;
   dispsel_t         *dispsel;
   musicdb_t         *musicdb;
+  samesong_t        *samesong;
   dispselsel_t      dispselType;
   double            dfilterCount;
   UIWidget          *windowp;
@@ -41,7 +43,6 @@ typedef struct uisongsel {
   UICallback        *songsavecb;
   dbidx_t           lastdbidx;
   nlist_t           *songlistdbidxlist;
-  slist_t           *samesonglist;
   /* peers */
   int               peercount;
   uisongsel_t       *peers [UISONGSEL_PEER_MAX];
@@ -61,7 +62,7 @@ typedef struct uisongsel {
 
 /* uisongsel.c */
 uisongsel_t * uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
-    dispsel_t *dispsel, nlist_t *opts,
+    dispsel_t *dispsel, samesong_t *samesong, nlist_t *opts,
     uisongfilter_t *uisf, dispselsel_t dispselType);
 void  uisongselSetPeer (uisongsel_t *uisongsel, uisongsel_t *peer);
 void  uisongselInitializeSongFilter (uisongsel_t *uisongsel, songfilter_t *songfilter);
@@ -97,6 +98,7 @@ bool  uisongselDanceSelectCallback (void *udata, long danceIdx);
 void  uisongselSaveSelections (uisongsel_t *uisongsel);
 void  uisongselRestoreSelections (uisongsel_t *uisongsel);
 void  uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active);
+nlist_t *uisongselGetSelectedList (uisongsel_t *uisongsel);
 
 /* uisongselcommon.c */
 void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);

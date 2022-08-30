@@ -526,7 +526,7 @@ pluiInitializeUI (playerui_t *plui)
   plui->uisongfilter = uisfInit (&plui->window, plui->options,
       SONG_FILTER_FOR_PLAYBACK);
   plui->uisongsel = uisongselInit ("plui-req", plui->conn, plui->musicdb,
-      plui->dispsel, plui->options,
+      plui->dispsel, NULL, plui->options,
       plui->uisongfilter, DISP_SEL_REQUEST);
   uiutilsUICallbackLongIntInit (&plui->callbacks [PLUI_CB_QUEUE_SL],
       pluiQueueProcess, plui);

@@ -16,13 +16,14 @@
 #include "bdjopt.h"
 #include "datafile.h"
 #include "log.h"
+#include "samesong.h"
 #include "uimusicq.h"
 #include "uisongsel.h"
 #include "ui.h"
 
 uisongsel_t *
 uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
-    dispsel_t *dispsel, nlist_t *options,
+    dispsel_t *dispsel, samesong_t *samesong, nlist_t *options,
     uisongfilter_t *uisf, dispselsel_t dispselType)
 {
   uisongsel_t   *uisongsel;
@@ -48,6 +49,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->conn = conn;
   uisongsel->dispsel = dispsel;
   uisongsel->musicdb = musicdb;
+  uisongsel->samesong = samesong;
   uisongsel->dispselType = dispselType;
   uisongsel->options = options;
   uisongsel->idxStart = 0;
@@ -65,7 +67,6 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->editcb = NULL;
   uisongsel->songsavecb = NULL;
   uisongsel->songlistdbidxlist = NULL;
-  uisongsel->samesonglist = nlistAlloc ("samesong-list", LIST_ORDERED, free);
 
   uisongselUIInit (uisongsel);
 
@@ -97,9 +98,6 @@ uisongselFree (uisongsel_t *uisongsel)
   if (uisongsel != NULL) {
     if (uisongsel->songlistdbidxlist != NULL) {
       nlistFree (uisongsel->songlistdbidxlist);
-    }
-    if (uisongsel->samesonglist != NULL) {
-      nlistFree (uisongsel->samesonglist);
     }
     uidanceFree (uisongsel->uidance);
     uisongselUIFree (uisongsel);

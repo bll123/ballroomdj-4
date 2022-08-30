@@ -37,7 +37,6 @@ Release Notes:
       - Batch editing.
       - Export for BDJ/Import from BDJ.
     - Music Manager:
-      - Mark as same song.
       - Apply Adjustments (speed, song start, song end) to a song.
       - Audio Identification.
     - Player: History Display.

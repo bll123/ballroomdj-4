@@ -102,6 +102,7 @@ void        listDeleteByIdx (list_t *, listidx_t idx);
 void        listSort (list_t *list);
 void        listStartIterator (list_t *list, listidx_t *iteridx);
 listidx_t   listIterateKeyNum (list_t *list, listidx_t *iteridx);
+listidx_t   listIterateKeyPreviousNum (list_t *list, listidx_t *iteridx);
 char        *listIterateKeyStr (list_t *list, listidx_t *iteridx);
 void        *listIterateValue (list_t *list, listidx_t *iteridx);
 ssize_t     listIterateValueNum (list_t *list, listidx_t *iteridx);

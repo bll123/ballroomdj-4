@@ -1,5 +1,13 @@
 BallroomDJ 4 Change Log
 
+4.0.0 alpha 2022-08-??
+
+- various tests added
+- music manager: mark as same song, clear same song marks implemented.
+- music manager/song selection: fixed a minor scrolling issue.
+- song editor: the song editor will now traverse the selected songs if
+  there is more than one song selected.
+
 4.0.0 alpha 2022-08-27
 
 - various tests added

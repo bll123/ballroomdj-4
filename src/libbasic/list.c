@@ -13,6 +13,7 @@
 #include "tmutil.h"
 
 static void     listFreeItem (list_t *, listidx_t);
+static listidx_t listIterateKeyGetNum (list_t *list, listidx_t *iteridx);
 static void     listInsert (list_t *, listidx_t loc, listitem_t *item);
 static void     listReplace (list_t *, listidx_t, listitem_t *item);
 static int      listBinarySearch (const list_t *, listkeylookup_t *key, listidx_t *);
@@ -266,8 +267,6 @@ listDumpInfo (list_t *list)
 listidx_t
 listIterateKeyNum (list_t *list, listidx_t *iteridx)
 {
-  listidx_t   value = LIST_LOC_INVALID;
-
   logProcBegin (LOG_PROC, "listIterateKeyNum");
   if (list == NULL || list->keytype == LIST_KEY_STR) {
     logProcEnd (LOG_PROC, "listIterateKeyNum", "null-list/key-str");
@@ -275,19 +274,28 @@ listIterateKeyNum (list_t *list, listidx_t *iteridx)
   }
 
   ++(*iteridx);
-  if (*iteridx >= list->count) {
-    *iteridx = LIST_END_LIST;
-    logProcEnd (LOG_PROC, "listIterateKeyNum", "end-list");
-    return LIST_LOC_INVALID;      /* indicate the end of the list */
-  }
-
-  value = list->data [*iteridx].key.idx;
-
-  list->keyCache.idx = value;
-  list->locCache = *iteridx;
 
   logProcEnd (LOG_PROC, "listIterateKeyNum", "");
-  return value;
+  return listIterateKeyGetNum (list, iteridx);
+}
+
+listidx_t
+listIterateKeyPreviousNum (list_t *list, listidx_t *iteridx)
+{
+  logProcBegin (LOG_PROC, "listIterateKeyPreviousNum");
+  if (list == NULL || list->keytype == LIST_KEY_STR) {
+    logProcEnd (LOG_PROC, "listIterateKeyNum", "null-list/key-str");
+    return LIST_LOC_INVALID;
+  }
+
+  --(*iteridx);
+  if (*iteridx < 0) {
+    /* do not decrement further! */
+    *iteridx = -1;
+  }
+
+  logProcEnd (LOG_PROC, "listIterateKeyPreviousNum", "");
+  return listIterateKeyGetNum (list, iteridx);
 }
 
 char *
@@ -545,6 +553,26 @@ listFreeItem (list_t *list, listidx_t idx)
       listFree (dp->value.data);
     }
   } /* if the data pointer is not null */
+}
+
+inline static listidx_t
+listIterateKeyGetNum (list_t *list, listidx_t *iteridx)
+{
+  listidx_t   value = LIST_LOC_INVALID;
+
+  logProcBegin (LOG_PROC, "listIterateKeyGetNum");
+  if (*iteridx < 0 || *iteridx >= list->count) {
+    *iteridx = LIST_END_LIST;
+    logProcEnd (LOG_PROC, "listIterateKeyGetNum", "end-list");
+    return LIST_LOC_INVALID;      /* indicate the beg/end of the list */
+  }
+
+  value = list->data [*iteridx].key.idx;
+
+  list->keyCache.idx = value;
+  list->locCache = *iteridx;
+  logProcEnd (LOG_PROC, "listIterateKeyGetNum", "");
+  return value;
 }
 
 static void

@@ -308,6 +308,12 @@ nlistIterateKey (nlist_t *list, nlistidx_t *iteridx)
   return listIterateKeyNum (list, iteridx);
 }
 
+inline nlistidx_t
+nlistIterateKeyPrevious (nlist_t *list, nlistidx_t *iteridx)
+{
+  return listIterateKeyPreviousNum (list, iteridx);
+}
+
 inline void *
 nlistIterateValueData (nlist_t *list, nlistidx_t *iteridx)
 {

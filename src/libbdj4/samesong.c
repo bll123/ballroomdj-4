@@ -110,9 +110,11 @@ samesongGetColorByDBIdx (samesong_t *ss, dbidx_t dbidx)
 inline const char *
 samesongGetColorBySSIdx  (samesong_t *ss, ssize_t ssidx)
 {
-  const char  *sscolor;
+  const char  *sscolor = NULL;
 
-  sscolor = nlistGetStr (ss->sscolors, ssidx);
+  if (ssidx > 0) {
+    sscolor = nlistGetStr (ss->sscolors, ssidx);
+  }
   return sscolor;
 }
 
@@ -121,7 +123,7 @@ samesongSet (samesong_t *ss, nlist_t *dbidxlist)
 {
   dbidx_t     dbidx;
   nlistidx_t  iteridx;
-  const char  *sscolor;
+  const char  *sscolor = NULL;
   char        tbuff [80];
   int         count = 0;
   bool        hasunset = false;
@@ -160,7 +162,6 @@ samesongSet (samesong_t *ss, nlist_t *dbidxlist)
       } else {
         if (lastssidx != ssidx) {
           ++count;
-          break;
         }
       }
     } else {
@@ -178,11 +179,15 @@ samesongSet (samesong_t *ss, nlist_t *dbidxlist)
     nlistStartIterator (dbidxlist, &iteridx);
     while ((dbidx = nlistIterateKey (dbidxlist, &iteridx)) >= 0) {
       ssidx = samesongGetSSIdx (ss, dbidx);
-      val = nlistGetNum (ss->sscounts, ssidx);
-      --val;
-      nlistSetNum (ss->sscounts, ssidx, val);
+      if (ssidx > 0) {
+        val = nlistGetNum (ss->sscounts, ssidx);
+        --val;
+        nlistSetNum (ss->sscounts, ssidx, val);
+      }
     }
   }
+
+  *tbuff = '\0';
 
   /* more than one different mark or zero marks */
   /* or one mark and no unset */
@@ -192,6 +197,7 @@ samesongSet (samesong_t *ss, nlist_t *dbidxlist)
     createRandomColor (tbuff, sizeof (tbuff));
     sscolor = tbuff;
     usessidx = ss->nextssidx;
+    nlistSetStr (ss->sscolors, usessidx, sscolor);
     ++ss->nextssidx;
   }
   /* only one mark found in the target list */
@@ -214,12 +220,11 @@ samesongSet (samesong_t *ss, nlist_t *dbidxlist)
 
     oldssidx = songGetNum (song, TAG_SAMESONG);
     songSetNum (song, TAG_SAMESONG, usessidx);
-    dbWriteSong (ss->musicdb, song);
-    nlistSetStr (ss->sscolors, usessidx, sscolor);
     val = nlistGetNum (ss->sscounts, usessidx);
     if (val < 0) {
       val = 1;
     } else {
+      /* if not already set or changed */
       if (oldssidx != usessidx) {
         ++val;
       }
@@ -247,7 +252,6 @@ samesongClear (samesong_t *ss, nlist_t *dbidxlist)
     }
 
     songSetNum (song, TAG_SAMESONG, LIST_VALUE_INVALID);
-    dbWriteSong (ss->musicdb, song);
     ssidx = samesongGetSSIdx (ss, dbidx);
     val = nlistGetNum (ss->sscounts, ssidx);
     --val;

@@ -45,6 +45,7 @@ setup (void)
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
+  bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_NONE);
   bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
 }
@@ -232,6 +233,7 @@ START_TEST(samesong_set)
   nlist_t       *dbidxlist;
   nlistidx_t    iteridx;
   slist_t       *clist;
+  int           rc;
 
   ss = samesongAlloc (db);
 
@@ -283,6 +285,8 @@ START_TEST(samesong_set)
     if (lastssidx == -1) {
       lastssidx = ssidx;
       lastsscolor = samesongGetColorBySSIdx (ss, ssidx);
+      rc = strncmp (lastsscolor, "#", 1);
+      ck_assert_int_eq (rc, 0);
     }
     /* should be set */
     ck_assert_int_gt (ssidx, 0);
@@ -321,6 +325,8 @@ START_TEST(samesong_set)
     ssidx = songGetNum (song, TAG_SAMESONG);
     if (lastsscolor == NULL) {
       lastsscolor = samesongGetColorBySSIdx (ss, ssidx);
+      rc = strncmp (lastsscolor, "#", 1);
+      ck_assert_int_eq (rc, 0);
     }
     /* should be set */
     ck_assert_int_gt (ssidx, 0);
@@ -358,6 +364,8 @@ START_TEST(samesong_set)
     ssidx = songGetNum (song, TAG_SAMESONG);
     if (lastsscolor == NULL) {
       lastsscolor = samesongGetColorBySSIdx (ss, ssidx);
+      rc = strncmp (lastsscolor, "#", 1);
+      ck_assert_int_eq (rc, 0);
     }
     /* should be set */
     ck_assert_int_gt (ssidx, 0);
