@@ -36,6 +36,7 @@ add_executable (check_all
   check_progstate.c
   check_slist.c
   # libbdj4
+  check_autosel.c
   check_libbdj4.c
   check_bdjvarsdf.c
   check_bdjvarsdfload.c

@@ -24,7 +24,7 @@ check_libbdj4 (SRunner *sr)
 
   /* libbdj4
    *  bdjvarsdf             complete // needed by tests
-   *  templateutil          complete // needed by tests; no tests for localized
+   *  templateutil          complete // needed by tests; needs localized tests
    *  bdjvarsdfload         complete // needed by tests; uses templateutil
    *  dnctypes              complete
    *  dance                 complete
@@ -38,7 +38,7 @@ check_libbdj4 (SRunner *sr)
    *  song                  complete
    *  musicdb               complete
    *  songlist              complete
-   *  autosel
+   *  autosel               complete
    *  songfilter
    *  dancesel
    *  sequence              complete
@@ -57,7 +57,7 @@ check_libbdj4 (SRunner *sr)
    *  songdb
    *  volreg
    *  musicq
-   *  samesong
+   *  samesong              complete
    */
 
   s = bdjvarsdf_suite();
@@ -103,6 +103,9 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = songlist_suite();
+  srunner_add_suite (sr, s);
+
+  s = autosel_suite();
   srunner_add_suite (sr, s);
 
   s = sequence_suite();

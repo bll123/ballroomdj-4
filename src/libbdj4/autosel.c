@@ -20,18 +20,18 @@ typedef struct autosel {
 } autosel_t;
 
 static datafilekey_t autoseldfkeys [AUTOSEL_KEY_MAX] = {
-  { "begincount",     AUTOSEL_BEG_COUNT,        VALUE_NUM,    NULL, -1 },
-  { "beginfast",      AUTOSEL_BEG_FAST,         VALUE_DOUBLE, NULL, -1 },
-  { "bothfast",       AUTOSEL_BOTHFAST,         VALUE_DOUBLE, NULL, -1 },
-  { "histdistance",   AUTOSEL_HIST_DISTANCE,    VALUE_NUM,   NULL, -1 },
-  { "levelweight",    AUTOSEL_LEVEL_WEIGHT,     VALUE_DOUBLE, NULL, -1 },
-  { "limit",          AUTOSEL_LIMIT,            VALUE_DOUBLE, NULL, -1 },
-  { "logvalue",       AUTOSEL_LOG_VALUE,        VALUE_DOUBLE, NULL, -1 },
-  { "low",            AUTOSEL_LOW,              VALUE_DOUBLE, NULL, -1 },
-  { "ratingweight",   AUTOSEL_RATING_WEIGHT,    VALUE_DOUBLE, NULL, -1 },
-  { "tagadjust",      AUTOSEL_TAGADJUST,        VALUE_DOUBLE, NULL, -1 },
-  { "tagmatch",       AUTOSEL_TAGMATCH,         VALUE_DOUBLE, NULL, -1 },
-  { "typematch",      AUTOSEL_TYPE_MATCH,       VALUE_DOUBLE, NULL, -1 },
+  { "BEGINCOUNT",     AUTOSEL_BEG_COUNT,        VALUE_NUM,    NULL, -1 },
+  { "BEGINFAST",      AUTOSEL_BEG_FAST,         VALUE_DOUBLE, NULL, -1 },
+  { "BOTHFAST",       AUTOSEL_BOTHFAST,         VALUE_DOUBLE, NULL, -1 },
+  { "COUNTLOW",       AUTOSEL_LOW,              VALUE_DOUBLE, NULL, -1 },
+  { "HISTDISTANCE",   AUTOSEL_HIST_DISTANCE,    VALUE_NUM,   NULL, -1 },
+  { "LEVELWEIGHT",    AUTOSEL_LEVEL_WEIGHT,     VALUE_DOUBLE, NULL, -1 },
+  { "LIMIT",          AUTOSEL_LIMIT,            VALUE_DOUBLE, NULL, -1 },
+  { "LOGVALUE",       AUTOSEL_LOG_VALUE,        VALUE_DOUBLE, NULL, -1 },
+  { "RATINGWEIGHT",   AUTOSEL_RATING_WEIGHT,    VALUE_DOUBLE, NULL, -1 },
+  { "TAGADJUST",      AUTOSEL_TAGADJUST,        VALUE_DOUBLE, NULL, -1 },
+  { "TAGMATCH",       AUTOSEL_TAGMATCH,         VALUE_DOUBLE, NULL, -1 },
+  { "TYPEMATCH",      AUTOSEL_TYPE_MATCH,       VALUE_DOUBLE, NULL, -1 },
 };
 
 autosel_t *

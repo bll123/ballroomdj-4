@@ -34,10 +34,13 @@ while { [gets $ifh line] >= 0 } {
   regexp {^([^=]*)=(.*)$} $line all key value
   if { $key eq "version" } {
     set value 1
+  } else {
+    set key [string toupper $key]
   }
-  if { $key eq "tagdistance" } { set key histdistance }
+  if { $key eq "TAGDISTANCE" } { set key HISTDISTANCE }
+  if { $key eq "LOW" } { set key COUNTLOW }
   puts $ofh $key
-  if { $key eq "histdistance" || $key eq "version" || $key eq "begincount" } {
+  if { $key eq "HISTDISTANCE" || $key eq "version" || $key eq "BEGINCOUNT" } {
     puts $ofh "..$value"
   } else {
     set value [expr {int($value * 1000)}];
@@ -46,3 +49,4 @@ while { [gets $ifh line] >= 0 } {
 }
 close $ifh
 close $ofh
+exit 0

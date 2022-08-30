@@ -16,29 +16,29 @@ version
 #   1000.0 = 1000000
 #
 # if the dance has exceeded the expected count (1000.0)
-limit
+LIMIT
 ..1000000
 #
 # if the dance is lower than the expected count (0.5)
-low
+COUNTLOW
 ..500
 #
 # if the previous dance and the dance are both fast (1000.0)
-bothfast
+BOTHFAST
 ..1000000
 #
 # if the dance has a tag that matches the previous dance (600.0)
-tagmatch
+TAGMATCH
 ..600000
 # how many songs to search back in history (3)
-histdistance
+HISTDISTANCE
 ..3
 # tagmatch reduction multiplier (tagmatch*(tagadjust^distance)) (0.4)
-tagadjust
+TAGADJUST
 ..400
 #
 # if the dance's type matches the previous dance (600.0)
-typematch
+TYPEMATCH
 ..600000
 #
 # same dance log function value
@@ -46,14 +46,14 @@ typematch
 # higher numbers make the mix more regular/repetitive
 # a lower number will allow the same dance sooner
 # adjust by very small increments (0.05).  (1.95).
-logvalue
+LOGVALUE
 ..1950
 #
 # number of beginning dances (3)
-begincount
+BEGINCOUNT
 ..3
 # if < begincount, then set the chance of a fast dance (1000.0)
-beginfast
+BEGINFAST
 ..1000000
 #
 # song selection
@@ -61,7 +61,7 @@ beginfast
 # the weight of a rating and level.  These should add to 1.
 # the percentages here adjust which song (for the dance) is selected
 # (rating: 0.90, level: 0.10)
-ratingweight
+RATINGWEIGHT
 ..900
-levelweight
+LEVELWEIGHT
 ..100

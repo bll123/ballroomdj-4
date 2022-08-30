@@ -45,6 +45,7 @@ Suite *     progstate_suite (void);
 Suite *     slist_suite (void);
 
 /* libbdj4 */
+Suite *     autosel_suite (void);
 Suite *     bdjvarsdf_suite (void);
 Suite *     bdjvarsdfload_suite (void);
 Suite *     dispsel_suite (void);

@@ -74,6 +74,9 @@ START_TEST(templateutil_image_copy)
   p = strstr (data, "#ffa600");
   ck_assert_ptr_null (p);
   free (data);
+
+  /* reset the images */
+  templateImageCopy (NULL);
 }
 END_TEST
 
