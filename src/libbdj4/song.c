@@ -265,6 +265,33 @@ songSetStr (song_t *song, nlistidx_t tagidx, const char *str)
 }
 
 void
+songSetList (song_t *song, nlistidx_t tagidx, const char *str)
+{
+  dfConvFunc_t    convfunc;
+  datafileconv_t  conv;
+  slist_t         *slist = NULL;
+
+  if (song == NULL || song->songInfo == NULL) {
+    return;
+  }
+
+  conv.allocated = false;
+  conv.str = (char *) str;
+  conv.valuetype = VALUE_STR;
+  convfunc = tagdefs [tagidx].convfunc;
+  if (convfunc != NULL) {
+    convfunc (&conv);
+  }
+  if (conv.valuetype != VALUE_LIST) {
+    return;
+  }
+
+  slist = conv.list;
+  nlistSetList (song->songInfo, tagidx, slist);
+  song->changed = true;
+}
+
+void
 songChangeFavorite (song_t *song)
 {
   ssize_t fav = SONG_FAVORITE_NONE;

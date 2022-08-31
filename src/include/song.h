@@ -19,6 +19,7 @@ songfavoriteinfo_t  * songGetFavoriteData (song_t *);
 void      songSetNum (song_t *, nlistidx_t, ssize_t val);
 void      songSetDouble (song_t *, nlistidx_t, double val);
 void      songSetStr (song_t *song, nlistidx_t tagidx, const char *str);
+void      songSetList (song_t *song, nlistidx_t tagidx, const char *str);
 void      songChangeFavorite (song_t *song);
 bool      songAudioFileExists (song_t *song);
 char *    songDisplayString (song_t *song, int tagidx);

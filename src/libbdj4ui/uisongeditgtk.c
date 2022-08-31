@@ -36,6 +36,7 @@ enum {
   SONGEDIT_CHK_NUM,
   SONGEDIT_CHK_DOUBLE,
   SONGEDIT_CHK_STR,
+  SONGEDIT_CHK_LIST,
 };
 
 typedef struct {
@@ -943,6 +944,9 @@ uisongeditSaveCallback (void *udata)
       case ET_ENTRY: {
         ndata = uiEntryGetValue (uiw->items [count].entry);
         chkvalue = SONGEDIT_CHK_STR;
+        if (tagkey == TAG_TAGS) {
+          chkvalue = SONGEDIT_CHK_LIST;
+        }
         break;
       }
       case ET_COMBOBOX: {
@@ -1006,6 +1010,10 @@ uisongeditSaveCallback (void *udata)
 
     if (chkvalue == SONGEDIT_CHK_DOUBLE) {
       songSetDouble (uiw->song, tagkey, ndval);
+    }
+
+    if (chkvalue == SONGEDIT_CHK_LIST) {
+      songSetList (uiw->song, tagkey, ndata);
     }
 
     uichgindMarkNormal (uiw->items [count].chgind);
