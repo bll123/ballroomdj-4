@@ -36,9 +36,8 @@ enum {
   SONGSEL_COL_SORTIDX,
   SONGSEL_COL_DBIDX,
   SONGSEL_COL_FAV_COLOR,
-  SONGSEL_COL_MARK_COLOR,
-  SONGSEL_COL_MARK,
-  SONGSEL_COL_SAMESONG_COLOR,
+  SONGSEL_COL_MARK_MARKUP,
+  SONGSEL_COL_SAMESONG_MARKUP,
   SONGSEL_COL_MAX,
 };
 
@@ -329,13 +328,12 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
 
   /* the mark display is a special case, it always exists */
   renderer = gtk_cell_renderer_text_new ();
-  col = SONGSEL_COL_MARK_COLOR;
+  col = SONGSEL_COL_MARK_MARKUP;
   if (uisongsel->dispselType == DISP_SEL_MM) {
-    col = SONGSEL_COL_SAMESONG_COLOR;
+    col = SONGSEL_COL_SAMESONG_MARKUP;
   }
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", SONGSEL_COL_MARK,
-      "foreground", col,
+      "markup", col,
       "font", SONGSEL_COL_FONT,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
@@ -403,7 +401,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   char                * listingFont;
   slist_t             * sellist;
   double              tupper;
-  const char          * sscolor = "#000000";
+  const char          * sscolor = ""; // "#000000";
 
   logProcBegin (LOG_PROC, "uisongselPopulateData");
   uiw = uisongsel->uiWidgetData;
@@ -425,20 +423,22 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   while (count < uiw->maxRows) {
     snprintf (tbuff, sizeof (tbuff), "%d", count);
     if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
+      char    colorbuff [200];
+
       dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
       song = NULL;
       if (dbidx >= 0) {
         song = dbGetByIdx (uisongsel->musicdb, dbidx);
       }
       if (song != NULL && (double) count < uisongsel->dfilterCount) {
-        char    *mark;
 
-        mark = "";
+        *colorbuff = '\0';
         if (uisongsel->dispselType != DISP_SEL_MM &&
             uisongsel->songlistdbidxlist != NULL) {
           /* check and see if the song is in the song list */
           if (nlistGetNum (uisongsel->songlistdbidxlist, dbidx) >= 0) {
-            mark = MARK_DISPLAY;
+            snprintf (colorbuff, sizeof (colorbuff),
+                "<span color=\"%s\">%s</span>", uiw->markcolor, MARK_DISPLAY);
           }
         }
 
@@ -447,7 +447,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
           tsscolor = samesongGetColorByDBIdx (uisongsel->samesong, dbidx);
           if (tsscolor != NULL) {
             sscolor = tsscolor;
-            mark = MARK_DISPLAY;
+            snprintf (colorbuff, sizeof (colorbuff),
+                "<span color=\"%s\">%s</span>", sscolor, MARK_DISPLAY);
           }
         }
 
@@ -466,9 +467,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
             SONGSEL_COL_SORTIDX, (glong) idx,
             SONGSEL_COL_DBIDX, (glong) dbidx,
             SONGSEL_COL_FAV_COLOR, color,
-            SONGSEL_COL_MARK_COLOR, uiw->markcolor,
-            SONGSEL_COL_MARK, mark,
-            SONGSEL_COL_SAMESONG_COLOR, sscolor,
+            SONGSEL_COL_MARK_MARKUP, colorbuff,
+            SONGSEL_COL_SAMESONG_MARKUP, colorbuff,
             -1);
 
         sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);

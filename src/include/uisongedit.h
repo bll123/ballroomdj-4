@@ -18,6 +18,7 @@ typedef struct {
   void              *uiWidgetData;
   UIWidget          *statusMsg;
   UICallback        *savecb;
+  uisongsel_t       *uisongsel;
 } uisongedit_t;
 
 /* uisongedit.c */
