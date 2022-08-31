@@ -1294,6 +1294,7 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   /* re-load the song */
   /* it is unknown if called from saving a favorite or from the song editor */
   /* the overhead is minor */
+  song = dbGetByIdx (manage->musicdb, dbidx);
   uisongeditLoadData (manage->mmsongedit, song, dbidx);
 
   ++manage->dbchangecount;

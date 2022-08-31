@@ -905,11 +905,30 @@ uisongeditSaveCallback (void *udata)
   const char      *ndata = NULL;
   int             chkvalue;
   char            tbuff [200];
-  bool            valid;
 
   logProcBegin (LOG_PROC, "uisongeditSaveCallback");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: save");
   uiw = uisongedit->uiWidgetData;
+
+  /* do some validations */
+  {
+    long      songstart;
+    long      songend;
+
+    songstart = songGetNum (uiw->song, TAG_SONGSTART);
+    songend = songGetNum (uiw->song, TAG_SONGEND);
+    if (songstart > 0 && songend > 0 && songstart >= songend) {
+      if (uisongedit->statusMsg != NULL) {
+        /* CONTEXT: song editor: status msg: (song end must be greater than song start) */
+        snprintf (tbuff, sizeof (tbuff), _("%1$s must be greater than %2$s"),
+            tagdefs [TAG_SONGEND].displayname,
+            tagdefs [TAG_SONGSTART].displayname);
+        uiLabelSetText (uisongedit->statusMsg, tbuff);
+        logProcEnd (LOG_PROC, "uisongeditSaveCallback", "song-end-<-song-start");
+        return UICB_CONT;
+      }
+    }
+  }
 
   for (int count = 0; count < uiw->itemcount; ++count) {
     int tagkey = uiw->items [count].tagkey;
@@ -994,29 +1013,9 @@ uisongeditSaveCallback (void *udata)
     uiw->items [count].lastchanged = false;
   }
 
-  valid = true;
   uiLabelSetText (uisongedit->statusMsg, "");
 
-  /* do some validations */
-  {
-    long      songstart;
-    long      songend;
-
-    songstart = songGetNum (uiw->song, TAG_SONGSTART);
-    songend = songGetNum (uiw->song, TAG_SONGEND);
-    if (songstart > 0 && songend > 0 && songstart >= songend) {
-      valid = false;
-      if (uisongedit->statusMsg != NULL) {
-        /* CONTEXT: song editor: status msg: (song end must be greater than song start) */
-        snprintf (tbuff, sizeof (tbuff), _("%1$s must be greater than %2$s"),
-            tagdefs [TAG_SONGEND].displayname,
-            tagdefs [TAG_SONGSTART].displayname);
-        uiLabelSetText (uisongedit->statusMsg, tbuff);
-      }
-    }
-  }
-
-  if (valid && uisongedit->savecb != NULL) {
+  if (uisongedit->savecb != NULL) {
     uiutilsCallbackLongHandler (uisongedit->savecb, uiw->dbidx);
   }
 
