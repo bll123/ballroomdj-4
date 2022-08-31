@@ -26,6 +26,7 @@ slist_t * songTagList (song_t *song);
 void      songSetDurCache (song_t *song, long dur);
 long      songGetDurCache (song_t *song);
 bool      songIsChanged (song_t *song);
+bool      songHasSonglistChange (song_t *song);
 void      songClearChanged (song_t *song);
 
 #endif /* INC_SONG */

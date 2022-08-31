@@ -70,6 +70,11 @@ dirlistBasicDirList (const char *dirname, const char *extension)
     }
 
     gerr = NULL;
+    // ### can this be replaced with a call to the ICU library?
+    // macos-NFD to utf8
+    // the ICU library would need to convert to unicode and
+    // back again.
+    // glib is not a major issue.
     cvtname = g_filename_to_utf8 (fname, strlen (fname),
         &bread, &bwrite, &gerr);
     if (cvtname != NULL) {

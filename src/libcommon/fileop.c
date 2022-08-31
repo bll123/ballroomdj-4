@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <utime.h>
 #include <wchar.h>
 
 #if _hdr_io
@@ -122,6 +123,41 @@ fileopModTime (const char *fname)
   }
 #endif
   return mtime;
+}
+
+void
+fileopSetModTime (const char *fname, time_t mtime)
+{
+#if _lib__wstat && _lib__wutime
+  {
+    struct _stat  statbuf;
+    struct _utimbuf utimebuf;
+    wchar_t       *tfname = NULL;
+    int           rc;
+
+    tfname = osToWideChar (fname);
+    rc = _wstat (tfname, &statbuf);
+    if (rc == 0) {
+      utimebuf.actime = statbuf.st_atime;
+      utimebuf.modtime = mtime;
+      _wutime (tfname, &utimebuf);
+    }
+    free (tfname);
+  }
+#else
+  {
+    int rc;
+    struct stat statbuf;
+    struct utimbuf utimebuf;
+
+    rc = stat (fname, &statbuf);
+    if (rc == 0) {
+      utimebuf.actime = statbuf.st_atime;
+      utimebuf.modtime = mtime;
+      utime (fname, &utimebuf);
+    }
+  }
+#endif
 }
 
 bool

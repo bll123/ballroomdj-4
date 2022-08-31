@@ -1261,7 +1261,6 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   char        tmp [40];
 
 
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit save");
   if (manage->dbchangecount > MANAGE_DB_COUNT_SAVE) {
     dbBackup ();
     manage->dbchangecount = 0;
@@ -1276,10 +1275,9 @@ manageSongEditSaveCallback (void *udata, long dbidx)
       fprintf (stderr, "fail: incorrect dbidx (sel %d %ld)\n", manage->seldbidx, dbidx);
     }
   }
+
   /* this fetches the song from in-memory, which has already been updated */
-  song = dbGetByIdx (manage->musicdb, dbidx);
-  dbWriteSong (manage->musicdb, song);
-  songWriteAudioTags (song);
+  songWriteDB (manage->musicdb, dbidx);
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */
@@ -2398,7 +2396,6 @@ manageSameSongChangeMark (manageui_t *manage, int flag)
   nlist_t     *sellist;
   nlistidx_t  iteridx;
   dbidx_t     dbidx;
-  song_t      *song;
 
   sellist = uisongselGetSelectedList (manage->mmsongsel);
 
@@ -2411,14 +2408,7 @@ manageSameSongChangeMark (manageui_t *manage, int flag)
 
   nlistStartIterator (sellist, &iteridx);
   while ((dbidx = nlistIterateKey (sellist, &iteridx)) >= 0) {
-    song = dbGetByIdx (manage->musicdb, dbidx);
-    if (song == NULL) {
-      continue;
-    }
-
-    if (songIsChanged (song)) {
-      dbWriteSong (manage->musicdb, song);
-    }
+    songWriteDB (manage->musicdb, dbidx);
   }
 
   nlistFree (sellist);

@@ -22,8 +22,10 @@
 #include "ilist.h"
 #include "songlist.h"
 #include "templateutil.h"
+#include "tmutil.h"
 
 #define SLFN "test-songlist"
+#define SLFFN "data/test-songlist.songlist"
 
 static void
 setup (void)
@@ -115,6 +117,7 @@ START_TEST(songlist_save)
   ilistidx_t    iteridx;
   ilistidx_t    iteridxb;
   ilistidx_t    key;
+  time_t        tma, tmb;
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
@@ -122,7 +125,14 @@ START_TEST(songlist_save)
 
   sl = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (sl);
-  songlistSave (sl);
+  tma = fileopModTime (SLFFN);
+  songlistSave (sl, SONGLIST_PRESERVE_TIMESTAMP);
+  tmb = fileopModTime (SLFFN);
+  ck_assert_int_eq (tma, tmb);
+  mssleep (1000);
+  songlistSave (sl, SONGLIST_UPDATE_TIMESTAMP);
+  tmb = fileopModTime (SLFFN);
+  ck_assert_int_ne (tma, tmb);
 
   slb = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (slb);
@@ -164,6 +174,11 @@ songlist_suite (void)
   tcase_add_test (tc, songlist_alloc);
   tcase_add_test (tc, songlist_load);
   tcase_add_test (tc, songlist_iterate);
+  suite_add_tcase (s, tc);
+
+  tc = tcase_create ("songlist-save");
+  tcase_set_tags (tc, "libbdj4 slow");
+  tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, songlist_save);
   suite_add_tcase (s, tc);
   return s;

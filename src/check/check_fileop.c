@@ -79,6 +79,30 @@ START_TEST(fileop_modtime_a)
 }
 END_TEST
 
+START_TEST(fileop_setmodtime_a)
+{
+  FILE      *fh;
+  time_t    ctm;
+  time_t    tm;
+
+  char *fn = "tmp/def.txt";
+  ctm = time (NULL);
+  unlink (fn);
+  fn = "tmp/abc.txt";
+  fh = fopen (fn, "w");
+  ck_assert_ptr_nonnull (fh);
+  fclose (fh);
+  tm = fileopModTime (fn);
+  ck_assert_int_ne (tm, 0);
+  ck_assert_int_ge (tm, ctm);
+  fileopSetModTime (fn, 12);
+  tm = fileopModTime (fn);
+  ck_assert_int_ne (tm, 0);
+  ck_assert_int_eq (tm, 12);
+  unlink (fn);
+}
+END_TEST
+
 START_TEST(fileop_delete_a)
 {
   FILE      *fh;
@@ -192,6 +216,29 @@ START_TEST(fileop_modtime_u)
   }
 }
 
+START_TEST(fileop_setmodtime_u)
+{
+  FILE      *fh;
+  time_t    ctm;
+  time_t    tm;
+
+  ctm = time (NULL);
+  for (int i = 0; i < fnlistsz; ++i) {
+    char *fn = fnlist [i];
+    fh = fileopOpen (fn, "w");
+    ck_assert_ptr_nonnull (fh);
+    fclose (fh);
+    tm = fileopModTime (fn);
+    ck_assert_int_ne (tm, 0);
+    ck_assert_int_ge (tm, ctm);
+    fileopSetModTime (fn, 14);
+    tm = fileopModTime (fn);
+    ck_assert_int_ne (tm, 0);
+    ck_assert_int_eq (tm, 14);
+    fileopDelete (fn);
+  }
+}
+
 Suite *
 fileop_suite (void)
 {
@@ -204,12 +251,14 @@ fileop_suite (void)
   tcase_add_test (tc, fileop_exists_a);
   tcase_add_test (tc, fileop_size_a);
   tcase_add_test (tc, fileop_modtime_a);
+  tcase_add_test (tc, fileop_setmodtime_a);
   tcase_add_test (tc, fileop_delete_a);
   tcase_add_test (tc, fileop_open_u);
   tcase_add_test (tc, fileop_exists_u);
   tcase_add_test (tc, fileop_del_u);
   tcase_add_test (tc, fileop_size_u);
   tcase_add_test (tc, fileop_modtime_u);
+  tcase_add_test (tc, fileop_setmodtime_u);
   suite_add_tcase (s, tc);
   return s;
 }

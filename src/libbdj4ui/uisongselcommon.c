@@ -10,6 +10,7 @@
 #include <assert.h>
 #include <math.h>
 
+#include "log.h"
 #include "musicdb.h"
 #include "song.h"
 #include "uisongsel.h"
@@ -42,6 +43,7 @@ uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx)
 {
   song_t    *song;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: chg favorite");
   song = dbGetByIdx (uisongsel->musicdb, dbidx);
   if (song != NULL) {
     songChangeFavorite (song);

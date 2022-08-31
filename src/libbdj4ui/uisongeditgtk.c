@@ -858,6 +858,7 @@ uisongeditSaveCallback (void *udata)
   char            tbuff [200];
   bool            valid;
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: save");
   uiw = uisongedit->uiWidgetData;
 
   for (int count = 0; count < uiw->itemcount; ++count) {

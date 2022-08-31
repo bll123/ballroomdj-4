@@ -32,6 +32,7 @@ typedef struct song {
   nlist_t     *songInfo;
   long        durcache;
   bool        changed;
+  bool        songlistchange;
 } song_t;
 
 static void songInit (void);
@@ -99,6 +100,7 @@ songAlloc (void)
   song = malloc (sizeof (song_t));
   assert (song != NULL);
   song->changed = false;
+  song->songlistchange = false;
   song->songInfo = NULL;
   ++gsonginit.songcount;
   song->durcache = -1;
@@ -232,6 +234,9 @@ songSetNum (song_t *song, nlistidx_t tagidx, ssize_t value)
 
   nlistSetNum (song->songInfo, tagidx, value);
   song->changed = true;
+  if (tagidx == TAG_DANCE) {
+    song->songlistchange = true;
+  }
 }
 
 void
@@ -254,6 +259,9 @@ songSetStr (song_t *song, nlistidx_t tagidx, const char *str)
 
   nlistSetStr (song->songInfo, tagidx, str);
   song->changed = true;
+  if (tagidx == TAG_TITLE || tagidx == TAG_FILE) {
+    song->songlistchange = true;
+  }
 }
 
 void
@@ -380,10 +388,17 @@ songIsChanged (song_t *song)
   return song->changed;
 }
 
+inline bool
+songHasSonglistChange (song_t *song)
+{
+  return song->songlistchange;
+}
+
 inline void
 songClearChanged (song_t *song)
 {
   song->changed = false;
+  song->songlistchange = false;
 }
 
 /* internal routines */

@@ -1183,12 +1183,9 @@ static bool
 pluiSongSaveCallback (void *udata, long dbidx)
 {
   playerui_t  *plui = udata;
-  song_t      *song = NULL;
   char        tmp [40];
 
-  song = dbGetByIdx (plui->musicdb, dbidx);
-  dbWriteSong (plui->musicdb, song);
-  songWriteAudioTags (song);
+  songWriteDB (plui->musicdb, dbidx);
 
   /* the database has been updated, tell the other processes to reload  */
   /* this particular entry */

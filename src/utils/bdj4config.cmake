@@ -265,6 +265,7 @@ check_function_exists (_wfopen _lib__wfopen)
 check_function_exists (_wrename _lib__wrename)
 check_function_exists (_wstat _lib__wstat)
 check_function_exists (_wunlink _lib__wunlink)
+check_function_exists (_wutime _lib__wutime)
 set (CMAKE_REQUIRED_INCLUDES "")
 
 # cmake weirdness

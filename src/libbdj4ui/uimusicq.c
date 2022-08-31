@@ -219,7 +219,7 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
     ++key;
   }
 
-  songlistSave (songlist);
+  songlistSave (songlist, SONGLIST_UPDATE_TIMESTAMP);
   songlistFree (songlist);
   nlistFree (uimusicq->savelist);
   uimusicq->savelist = NULL;

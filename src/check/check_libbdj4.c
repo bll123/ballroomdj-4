@@ -46,6 +46,7 @@ check_libbdj4 (SRunner *sr)
    *  playlist
    *  sortopt               complete
    *  dispsel               complete
+   *  samesong              complete
    *  orgutil               partial
    *  validate              complete
    *  webclient
@@ -57,7 +58,6 @@ check_libbdj4 (SRunner *sr)
    *  songdb
    *  volreg
    *  musicq
-   *  samesong              complete
    */
 
   s = bdjvarsdf_suite();
@@ -117,6 +117,9 @@ check_libbdj4 (SRunner *sr)
   s = dispsel_suite();
   srunner_add_suite (sr, s);
 
+  s = samesong_suite();
+  srunner_add_suite (sr, s);
+
   s = orgutil_suite();
   srunner_add_suite (sr, s);
 
@@ -124,8 +127,5 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = orgopt_suite();
-  srunner_add_suite (sr, s);
-
-  s = samesong_suite();
   srunner_add_suite (sr, s);
 }
