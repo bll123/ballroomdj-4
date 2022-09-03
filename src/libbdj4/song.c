@@ -155,6 +155,8 @@ songParse (song_t *song, char *data, ssize_t didx)
   if (lkey < 0) {
     nlistSetNum (song->songInfo, TAG_DANCERATING, 0);
   }
+  song->changed = false;
+  song->songlistchange = false;
 }
 
 char *

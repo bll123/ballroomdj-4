@@ -193,6 +193,7 @@ START_TEST(song_parse)
     songParse (song, data, i);
     free (data);
     ck_assert_int_eq (songIsChanged (song), 0);
+    ck_assert_int_eq (songHasSonglistChange (song), 0);
     songFree (song);
   }
 
@@ -217,6 +218,7 @@ START_TEST(song_parse_get)
     songParse (song, data, i);
     free (data);
     ck_assert_int_eq (songIsChanged (song), 0);
+    ck_assert_int_eq (songHasSonglistChange (song), 0);
     ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "artist");
     ck_assert_str_eq (songGetStr (song, TAG_ALBUM), "album");
     if (i == 0) {
@@ -259,6 +261,8 @@ START_TEST(song_parse_set)
   song_t      *song = NULL;
   char        *data;
   songfavoriteinfo_t *sfav;
+  slist_t     *tlist;
+  slistidx_t  iteridx;
 
   bdjvarsdfloadInit ();
 
@@ -269,14 +273,21 @@ START_TEST(song_parse_set)
     free (data);
 
     ck_assert_int_eq (songIsChanged (song), 0);
+    ck_assert_int_eq (songHasSonglistChange (song), 0);
     songSetStr (song, TAG_ARTIST, "artistb");
     songSetStr (song, TAG_ALBUM, "albumb");
     songSetNum (song, TAG_DISCNUMBER, 2);
     songSetNum (song, TAG_TRACKNUMBER, 6);
     songSetNum (song, TAG_TRACKTOTAL, 11);
     songSetDouble (song, TAG_VOLUMEADJUSTPERC, 5.5);
+    data = strdup ("tag5 tag4");
+    songSetList (song, TAG_TAGS, data);
+    free (data);
     songChangeFavorite (song);
     ck_assert_int_eq (songIsChanged (song), 1);
+    ck_assert_int_eq (songHasSonglistChange (song), 0);
+    songSetStr (song, TAG_TITLE, "title");
+    ck_assert_int_eq (songHasSonglistChange (song), 1);
     songClearChanged (song);
     ck_assert_int_eq (songIsChanged (song), 0);
 
@@ -295,6 +306,12 @@ START_TEST(song_parse_set)
       ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 0);
     }
     ck_assert_float_eq (songGetDouble (song, TAG_VOLUMEADJUSTPERC), 5.5);
+    tlist = songGetList (song, TAG_TAGS);
+    slistStartIterator (tlist, &iteridx);
+    data = slistIterateKey (tlist, &iteridx);
+    ck_assert_str_eq (data, "tag4");
+    data = slistIterateKey (tlist, &iteridx);
+    ck_assert_str_eq (data, "tag5");
     /* converted - these assume the standard data files */
     ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_PURPLE);
     sfav = songGetFavoriteData (song);

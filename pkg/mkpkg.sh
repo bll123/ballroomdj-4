@@ -8,7 +8,7 @@ pkgnameuc=$(echo ${pkgname} | tr 'a-z' 'A-Z')
 pkgnamelc=$(echo ${pkgname} | tr 'A-Z' 'a-z')
 
 function copysrcfiles {
-  systype=$1
+  tag=$1
   stage=$2
 
   filelist="ChangeLog.txt LICENSE.txt README.txt VERSION.txt
@@ -34,21 +34,30 @@ function copysrcfiles {
 }
 
 function copyreleasefiles {
-  systype=$1
+  tag=$1
   stage=$2
 
   filelist="ChangeLog.txt LICENSE.txt README.txt VERSION.txt"
   dirlist="bin conv img install licenses scripts locale templates"
 
-  case ${systype} in
-    Darwin)
-      dirlist="$dirlist plocal/share/themes/macOS*"
+  test -d plocal/bin || mkdir plocal/bin
+  case ${tag} in
+    linux)
+      cp -f packages/fpcalc-${tag} plocal/bin/fpcalc
+      filelist+=" plocal/bin/fpcalc"
       ;;
-    MSYS*|MINGW*)
-      dirlist="$dirlist plocal/bin plocal/share/themes/Wind*"
-      dirlist="$dirlist plocal/share/icons plocal/lib/gdk-pixbuf-2.0"
-      dirlist="$dirlist plocal/share/glib-2.0/schemas plocal/etc/gtk-3.0"
-      dirlist="$dirlist plocal/lib/girepository-1.0 plocal/etc/fonts"
+    macos)
+      cp -f packages/fpcalc-${tag} plocal/bin/fpcalc
+      filelist+=" plocal/bin/fpcalc"
+      dirlist+=" plocal/share/themes/macOS*"
+      ;;
+    win64|win32)
+      cp -f packages/fpcalc-windows.exe plocal/bin/fpcalc.exe
+      filelist+=" plocal/bin/fpcalc.exe"
+      dirlist+=" plocal/bin plocal/share/themes/Wind*"
+      dirlist+=" plocal/share/icons plocal/lib/gdk-pixbuf-2.0"
+      dirlist+=" plocal/share/glib-2.0/schemas plocal/etc/gtk-3.0"
+      dirlist+=" plocal/lib/girepository-1.0 plocal/etc/fonts"
       ;;
   esac
 
@@ -187,14 +196,14 @@ chksumfn=checksum.txt
 chksumfntmp=tmp/${chksumfn}
 chksumfnpath=${stagedir}/install/${chksumfn}
 
-case $systype in
-  Linux)
+case $tag in
+  linux)
     echo "-- $(date +%T) create source package"
     test -d ${stagedir} && rm -rf ${stagedir}
     mkdir -p ${stagedir}
     nm=${spkgnm}-${VERSION}-src${rlstag}.tar.gz
 
-    copysrcfiles ${systype} ${stagedir}
+    copysrcfiles ${tag} ${stagedir}
 
     echo "-- $(date +%T) creating source manifest"
     touch ${manfnpath}
@@ -218,8 +227,8 @@ test -d ${stagedir} && rm -rf ${stagedir}
 mkdir -p ${stagedir}
 
 macosbase=""
-case $systype in
-  Darwin)
+case $tag in
+  macos)
     macosbase=/Contents/MacOS
     ;;
 esac
@@ -246,9 +255,9 @@ mkdir ${stagedir}
 
 echo -n '!~~BDJ4~~!' > ${tmpsep}
 
-case $systype in
-  Linux)
-    copyreleasefiles ${systype} ${stagedir}
+case $tag in
+  linux)
+    copyreleasefiles ${tag} ${stagedir}
 
     echo "-- $(date +%T) creating release manifest"
     touch ${manfnpath}
@@ -276,7 +285,7 @@ case $systype in
         pkg/macos/Info.plist \
         > ${stagedir}/Contents/Info.plist
     echo -n 'APPLBDJ4' > ${stagedir}/Contents/PkgInfo
-    copyreleasefiles ${systype} ${stagedir}${macosbase}
+    copyreleasefiles ${tag} ${stagedir}${macosbase}
 
     echo "-- $(date +%T) creating release manifest"
     touch ${manfnpath}
@@ -293,7 +302,7 @@ case $systype in
     rm -f ${tmpnm} ${tmpsep}
     ;;
   MINGW64*|MINGW32*)
-    copyreleasefiles ${systype} ${stagedir}
+    copyreleasefiles ${tag} ${stagedir}
 
     echo "-- $(date +%T) creating release manifest"
     touch ${manfnpath}
@@ -329,5 +338,7 @@ chmod a+rx ${nm}
 
 echo "## $(date +%T) release package ${nm} created"
 rm -rf ${stagedir}
+# clean up copied file
+rm -f plocal/bin/fpcalc*
 
 exit 0
