@@ -16,6 +16,8 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "log.h"
+
 
 void
 check_libcommon (SRunner *sr)
@@ -49,6 +51,8 @@ check_libcommon (SRunner *sr)
    *  colorutils  complete
    *  ossignal    complete
    */
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libcommon");
 
   s = bdjstring_suite();
   srunner_add_suite (sr, s);

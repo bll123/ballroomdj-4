@@ -15,6 +15,7 @@
 #include <check.h>
 
 #include "lock.h"
+#include "log.h"
 #include "pathbld.h"
 #include "rafile.h"
 #include "check_bdj.h"
@@ -26,6 +27,8 @@ START_TEST(rafile_create_new)
   rafile_t      *rafile;
   struct stat   statbuf;
   int           rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_create_new");
 
   unlink (RAFN);
   rafile = raOpen (RAFN, 10);
@@ -45,6 +48,8 @@ START_TEST(rafile_reopen)
 {
   rafile_t      *rafile;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_reopen");
+
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
   ck_assert_int_eq (raGetVersion (rafile), 10);
@@ -61,6 +66,8 @@ START_TEST(rafile_write)
   struct stat   statbuf;
   int           rc;
   off_t         lastsize;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_write");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -108,6 +115,8 @@ START_TEST(rafile_write_batch)
   struct stat   statbuf;
   int           rc;
   off_t         lastsize;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_write_batch");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -163,6 +172,8 @@ START_TEST(rafile_read)
   char          data [RAFILE_REC_SIZE];
   int           rc;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_read");
+
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
   ck_assert_int_eq (raGetCount (rafile), 6);
@@ -187,6 +198,8 @@ START_TEST(rafile_rewrite)
   struct stat   statbuf;
   ssize_t       rc;
   off_t         lastsize;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_rewrite");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -223,6 +236,8 @@ START_TEST(rafile_reread)
   char          data [RAFILE_REC_SIZE];
   ssize_t       rc;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_reread");
+
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
   ck_assert_int_eq (raGetCount (rafile), 6);
@@ -247,6 +262,8 @@ START_TEST(rafile_bad_write_len)
   ssize_t       rc;
   char          data [2 * RAFILE_REC_SIZE];
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_bad_write_len");
+
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
 
@@ -263,6 +280,8 @@ START_TEST(rafile_clear)
   rafile_t      *rafile;
   ssize_t       rc;
   char          data [2 * RAFILE_REC_SIZE];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_clear");
 
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
@@ -290,6 +309,8 @@ START_TEST(rafile_bad_read)
   ssize_t        rc;
   char          data [RAFILE_REC_SIZE];
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_bad_read");
+
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
 
@@ -307,6 +328,8 @@ START_TEST(rafile_bad_clear)
   rafile_t      *rafile;
   ssize_t       rc;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_bad_clear");
+
   rafile = raOpen (RAFN, 10);
   ck_assert_ptr_nonnull (rafile);
 
@@ -321,6 +344,8 @@ END_TEST
 
 START_TEST(rafile_cleanup)
 {
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_cleanup");
+
   unlink (RAFN);
 }
 END_TEST

@@ -15,6 +15,7 @@
 
 #include "bdjopt.h"
 #include "check_bdj.h"
+#include "log.h"
 #include "songutil.h"
 
 typedef struct {
@@ -35,6 +36,8 @@ enum {
 START_TEST(songutil_chk)
 {
   char  *val;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songutil_chk");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "/testpath");

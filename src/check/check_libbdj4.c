@@ -16,6 +16,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "log.h"
 
 void
 check_libbdj4 (SRunner *sr)
@@ -59,6 +60,8 @@ check_libbdj4 (SRunner *sr)
    *  volreg
    *  musicq
    */
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libbdj4");
 
   s = bdjvarsdf_suite();
   srunner_add_suite (sr, s);
@@ -106,6 +109,9 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = autosel_suite();
+  srunner_add_suite (sr, s);
+
+  s = songfilter_suite();
   srunner_add_suite (sr, s);
 
   s = sequence_suite();

@@ -17,11 +17,14 @@
 
 #include "check_bdj.h"
 #include "colorutils.h"
+#include "log.h"
 
 START_TEST(colorutils_chk)
 {
   char    c [200];
   char    cb [200];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- colorutils_chk");
 
   createRandomColor (c, sizeof (c));
   ck_assert_int_eq (strlen (c), 7);

@@ -16,14 +16,17 @@
 #include <check.h>
 
 #include "bdjstring.h"
-#include "istring.h"
 #include "check_bdj.h"
+#include "istring.h"
+#include "log.h"
 #include "sysvars.h"
 
 /* note that to-lower will not work on localized strings */
 START_TEST(bdjstring_string_to_lower)
 {
   char  buff [20];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjstring_string_to_lower");
 
   strcpy (buff, "ABCD");
   stringAsciiToLower (buff);
@@ -36,6 +39,8 @@ START_TEST(bdjstring_string_to_upper)
 {
   char  buff [20];
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjstring_string_to_upper");
+
   strcpy (buff, "abcd");
   stringAsciiToUpper (buff);
   ck_assert_str_eq (buff, "ABCD");
@@ -45,6 +50,8 @@ END_TEST
 START_TEST(bdjstring_string_trim)
 {
   char  buff [20];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjstring_string_trim");
 
   strcpy (buff, "abcd\n");
   stringTrim (buff);
@@ -76,6 +83,8 @@ START_TEST(bdjstring_string_trim_char)
 {
   char  buff [20];
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjstring_string_trim_char");
+
   strcpy (buff, "abcdz");
   stringTrimChar (buff, 'z');
   ck_assert_str_eq (buff, "abcd");
@@ -89,6 +98,8 @@ END_TEST
 START_TEST(bdjstring_version_compare)
 {
   int   rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjstring_version_compare");
 
   rc = versionCompare ("1", "1");
   ck_assert_int_eq (rc, 0);

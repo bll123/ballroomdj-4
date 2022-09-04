@@ -18,6 +18,7 @@
 #include "datafile.h"
 #include "genre.h"
 #include "ilist.h"
+#include "log.h"
 #include "slist.h"
 #include "templateutil.h"
 
@@ -31,6 +32,8 @@ START_TEST(genre_alloc)
 {
   genre_t   *genre = NULL;
   slist_t   *gl = NULL;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_alloc");
 
   genre = genreAlloc ();
   ck_assert_ptr_nonnull (genre);
@@ -50,6 +53,8 @@ START_TEST(genre_iterate)
   int         key;
   int         tkey;
   int         cf;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_iterate");
 
   genre = genreAlloc ();
   gl = genreGetList (genre);
@@ -79,6 +84,8 @@ START_TEST(genre_conv)
   datafileconv_t conv;
   int         count;
   int         key;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_conv");
 
   /* required for the genre conversion function */
   bdjvarsdfloadInit ();
@@ -125,6 +132,8 @@ START_TEST(genre_save)
   int         tkey;
   char        *tval;
   int         tcf;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- genre_save");
 
   /* required for the genre conversion function */
   bdjvarsdfloadInit ();

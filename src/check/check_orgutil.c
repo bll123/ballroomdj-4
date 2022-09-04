@@ -13,8 +13,9 @@
 
 #include <check.h>
 
-#include "orgutil.h"
 #include "check_bdj.h"
+#include "log.h"
+#include "orgutil.h"
 
 char *orgpaths [] = {
   "{%ALBUM%/}{%ALBUMARTIST%/}{%TRACKNUMBER% - }{%TITLE%}",
@@ -68,6 +69,8 @@ START_TEST(orgutil_parse)
   int       i = 0;
   org_t     *org;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- orgutil_parse");
+
   while (orgpaths [i] != NULL) {
     org = orgAlloc (orgpaths[i]);
     ck_assert_ptr_nonnull (org);
@@ -83,6 +86,8 @@ START_TEST(orgutil_regex)
   org_t     *org;
   char      *path;
   char      *val;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- orgutil_regex");
 
   path = "{%DANCE%/}{%TITLE%}";
 

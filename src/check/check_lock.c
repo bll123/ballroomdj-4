@@ -18,6 +18,7 @@
 #include "bdjstring.h"
 #include "check_bdj.h"
 #include "lock.h"
+#include "log.h"
 #include "pathbld.h"
 #include "sysvars.h"
 
@@ -26,6 +27,9 @@
 
 START_TEST(lock_name)
 {
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_name");
+
   ck_assert_str_eq (lockName (ROUTE_PLAYERUI), "playerui");
 }
 
@@ -37,6 +41,8 @@ START_TEST(lock_acquire_release)
   pid_t         pid;
   pid_t         fpid;
   size_t        temp;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_acquire_release");
 
   pid = getpid ();
   unlink (FULL_LOCK_FN);
@@ -63,6 +69,8 @@ START_TEST(lock_already)
   int           rc;
   pid_t         pid;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_already");
+
   pid = getpid ();
   unlink (FULL_LOCK_FN);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
@@ -80,6 +88,8 @@ START_TEST(lock_other_dead)
   int           rc;
   pid_t         pid;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_other_dead");
+
   pid = getpid ();
   unlink (FULL_LOCK_FN);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_OTHER_PID);
@@ -96,6 +106,8 @@ START_TEST(lock_unlock_fail)
 {
   int           rc;
   pid_t         pid;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_unlock_fail");
 
   pid = getpid ();
   unlink (FULL_LOCK_FN);
@@ -117,6 +129,8 @@ START_TEST(lock_exists)
   pid_t         fpid;
   size_t        temp;
   FILE          *fh;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_exists");
 
   pid = getpid ();
   unlink (FULL_LOCK_FN);

@@ -61,6 +61,7 @@ Suite *     samesong_suite (void);
 Suite *     sequence_suite (void);
 Suite *     song_suite (void);
 Suite *     songfav_suite (void);
+Suite *     songfilter_suite (void);
 Suite *     songlist_suite (void);
 Suite *     songutil_suite (void);
 Suite *     sortopt_suite (void);

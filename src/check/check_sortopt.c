@@ -15,9 +15,10 @@
 
 #include <check.h>
 
-#include "sortopt.h"
 #include "check_bdj.h"
+#include "log.h"
 #include "slist.h"
+#include "sortopt.h"
 #include "templateutil.h"
 
 static void
@@ -30,6 +31,8 @@ START_TEST(sortopt_alloc)
 {
   sortopt_t   *so;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sortopt_alloc");
+
   so = sortoptAlloc ();
   sortoptFree (so);
 }
@@ -39,6 +42,8 @@ START_TEST(sortopt_chk)
 {
   sortopt_t   *so;
   slist_t     *tlist;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sortopt_chk");
 
 
   so = sortoptAlloc ();

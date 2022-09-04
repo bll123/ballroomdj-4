@@ -13,6 +13,7 @@
 
 #include <check.h>
 
+#include "log.h"
 #include "tmutil.h"
 #include "check_bdj.h"
 #include "sysvars.h"
@@ -21,6 +22,8 @@ START_TEST(mstime_chk)
 {
   time_t      tm_s;
   time_t      tm_chk;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mstime_chk");
 
   tm_s = time (NULL);
   tm_s *= 1000;
@@ -38,6 +41,8 @@ START_TEST(mssleep_chk)
   time_t      tm_s;
   time_t      tm_e;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mssleep_chk");
+
   tm_s = mstime ();
   mssleep (2000);
   tm_e = mstime ();
@@ -49,6 +54,8 @@ START_TEST(mstimestartofday_chk)
 {
   time_t    tm_s;
   time_t    tm_chk;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mstimestartofday_chk");
 
   tm_s = mstime ();
   tm_chk = mstimestartofday ();
@@ -63,6 +70,8 @@ START_TEST(mstime_start_end)
   time_t      tm_e;
   mstime_t    mi;
   time_t      m, d;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mstime_start_end");
 
   tm_s = mstime ();
   mstimestart (&mi);
@@ -85,6 +94,8 @@ START_TEST(mstime_set)
   time_t      tm_e;
   time_t      m, d;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mstime_set");
+
   tm_s = mstime ();
   mstimeset (&tmset, 2000);
   mssleep (2000);
@@ -105,6 +116,8 @@ START_TEST(mstime_set_tm)
   mstime_t    tmset;
   time_t      m, s, d;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mstime_set_tm");
+
   s = mstime ();
   /* sets tmset to the value supplied */
   mstimesettm (&tmset, 2000);
@@ -122,6 +135,8 @@ START_TEST(mstime_check)
   mstime_t    tmset;
   bool        rc;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mstime_check");
+
   mstimeset (&tmset, 2000);
   rc = mstimeCheck (&tmset);
   ck_assert_int_eq (rc, false);
@@ -138,6 +153,8 @@ START_TEST(tmutildstamp_chk)
 {
   char        buff [80];
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutildstamp_chk");
+
   tmutilDstamp (buff, sizeof (buff));
   ck_assert_int_eq (strlen (buff), 10);
 }
@@ -146,6 +163,8 @@ END_TEST
 START_TEST(tmutildisp_chk)
 {
   char        buff [80];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutildisp_chk");
 
   tmutilDisp (buff, sizeof (buff));
   ck_assert_int_ge (strlen (buff), 16);
@@ -156,6 +175,8 @@ START_TEST(tmutiltstamp_chk)
 {
   char        buff [80];
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutiltstamp_chk");
+
   tmutilTstamp (buff, sizeof (buff));
   ck_assert_int_eq (strlen (buff), 12);
 }
@@ -165,6 +186,8 @@ START_TEST(tmutilshorttstamp_chk)
 {
   char        buff [80];
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutilshorttstamp_chk");
+
   tmutilShortTstamp (buff, sizeof (buff));
   ck_assert_int_eq (strlen (buff), 4);
 }
@@ -173,6 +196,8 @@ END_TEST
 START_TEST(tmutiltoms_chk)
 {
   char        buff [80];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutiltoms_chk");
 
   tmutilToMS (0, buff, sizeof (buff));
   ck_assert_str_eq (buff, " 0:00");
@@ -189,6 +214,8 @@ START_TEST(tmutiltomsd_chk)
 {
   char        buff [80];
   char        tmp [80];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutiltomsd_chk");
 
   tmutilToMSD (0, buff, sizeof (buff));
   snprintf (tmp, sizeof (tmp), "0:00%s000", sysvarsGetStr (SV_LOCALE_RADIX));
@@ -209,6 +236,8 @@ START_TEST(tmutiltodatehm_chk)
 {
   char        buff [80];
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutiltodatehm_chk");
+
   tmutilToDateHM (mstime(), buff, sizeof (buff));
   ck_assert_int_ge (strlen (buff), 14);
 }
@@ -217,6 +246,8 @@ END_TEST
 START_TEST(tmutil_strtoms)
 {
   long  value;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutil_strtoms");
 
   value = tmutilStrToMS ("0:00");
   ck_assert_int_eq (value, 0);
@@ -236,6 +267,8 @@ END_TEST
 START_TEST(tmutil_strtohm)
 {
   long  value;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutil_strtohm");
 
   value = tmutilStrToHM ("0:00");
   ck_assert_int_eq (value, 0);

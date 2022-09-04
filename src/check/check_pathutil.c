@@ -17,6 +17,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "log.h"
 #include "pathutil.h"
 #include "check_bdj.h"
 
@@ -54,6 +55,8 @@ enum {
 START_TEST(pathinfo_chk)
 {
   pathinfo_t    *pi;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- pathinfo_chk");
 
   for (size_t i = 0; i < TCOUNT; ++i) {
     pi = pathInfo (tests[i].path);
@@ -98,6 +101,8 @@ START_TEST(path_winpath)
 {
   char    to [MAXPATHLEN];
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_winpath");
+
   strlcpy (to, "/tmp/abc.txt", sizeof (to));
   pathWinPath (to, sizeof (to));
   ck_assert_str_eq (to, "\\tmp\\abc.txt");
@@ -111,6 +116,8 @@ END_TEST
 START_TEST(path_normpath)
 {
   char    to [MAXPATHLEN];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_normpath");
 
   strlcpy (to, "/tmp/abc.txt", sizeof (to));
   pathNormPath (to, sizeof (to));
@@ -137,6 +144,8 @@ START_TEST(path_realpath)
   char    from [MAXPATHLEN];
   char    cwd [MAXPATHLEN];
   char    actual [MAXPATHLEN];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_realpath");
 
   getcwd (cwd, sizeof (cwd));
   pathNormPath (cwd, sizeof (cwd));

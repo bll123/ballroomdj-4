@@ -15,8 +15,9 @@
 
 #include <check.h>
 
-#include "dispsel.h"
 #include "check_bdj.h"
+#include "dispsel.h"
+#include "log.h"
 #include "slist.h"
 #include "templateutil.h"
 
@@ -30,6 +31,8 @@ START_TEST(dispsel_alloc)
 {
   dispsel_t   *dsel;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dispsel_alloc");
+
   dsel = dispselAlloc ();
   dispselFree (dsel);
 }
@@ -39,6 +42,8 @@ START_TEST(dispsel_get_list)
 {
   dispsel_t   *dsel;
   slist_t     *tlist;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dispsel_get_list");
 
 
   dsel = dispselAlloc ();
@@ -62,6 +67,8 @@ START_TEST(dispsel_save)
   slistidx_t  iteridx;
   slistidx_t  iteridxb;
   char        *vala, *valb;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dispsel_save");
 
   dsel = dispselAlloc ();
   tlist = dispselGetList (dsel, DISP_SEL_MUSICQ);

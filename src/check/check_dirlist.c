@@ -15,11 +15,12 @@
 
 #include <check.h>
 
+#include "check_bdj.h"
 #include "dirlist.h"
 #include "dirop.h"
 #include "filemanip.h"
 #include "fileop.h"
-#include "check_bdj.h"
+#include "log.h"
 #include "slist.h"
 #include "sysvars.h"
 
@@ -120,6 +121,8 @@ START_TEST(dirlist_basic)
 {
   slist_t   *slist;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirlist_basic");
+
   slist = NULL;
   for (int i = 0; i < tvaluesz; ++i) {
     if (tvalues [i].type == CHK_DIR ||
@@ -153,6 +156,8 @@ END_TEST
 START_TEST(dirlist_recursive)
 {
   slist_t   *slist;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirlist_recursive");
 
   slist = dirlistRecursiveDirList ("tmp/abc", FILEMANIP_DIRS);
   slistSort (slist);  // for testing

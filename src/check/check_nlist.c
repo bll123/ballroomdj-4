@@ -11,10 +11,10 @@
 
 #include <check.h>
 
-#include "nlist.h"
 #include "bdjstring.h"
 #include "check_bdj.h"
 #include "log.h"
+#include "nlist.h"
 
 typedef struct {
   int     alloc;
@@ -28,7 +28,7 @@ START_TEST(nlist_create_free)
 {
   nlist_t    *list;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_create_free");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_create_free");
 
 
   list = nlistAlloc ("chk-a", LIST_ORDERED, NULL);
@@ -46,7 +46,7 @@ START_TEST(nlist_version)
   nlist_t *list;
   int     vers;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_version");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_version");
 
   list = nlistAlloc ("chk-b", LIST_ORDERED, NULL);
   nlistSetVersion (list, 20);
@@ -61,7 +61,7 @@ START_TEST(nlist_u_set)
 {
   nlist_t        *list;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_u_set");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_u_set");
 
   list = nlistAlloc ("chk-c", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
@@ -85,7 +85,7 @@ START_TEST(nlist_u_getbyidx)
   const char    *value;
   ssize_t       key;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_u_getbyidx");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_u_getbyidx");
 
   list = nlistAlloc ("chk-d", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
@@ -122,7 +122,7 @@ START_TEST(nlist_u_iterate)
   char          *value;
   ssize_t       key;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_u_iterate");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_u_iterate");
 
   list = nlistAlloc ("chk-e", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
@@ -172,7 +172,7 @@ START_TEST(nlist_s_get_str)
   nlist_t        *list;
   const char     *value;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_s_get_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_s_get_str");
 
   list = nlistAlloc ("chk-f", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);
@@ -203,7 +203,7 @@ START_TEST(nlist_s_iterate_str)
   nlistidx_t          key;
   nlistidx_t    iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_s_iterate_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_s_iterate_str");
 
 
   list = nlistAlloc ("chk-g", LIST_ORDERED, NULL);
@@ -276,7 +276,7 @@ START_TEST(nlist_set_get_num)
   nlistidx_t          key;
   nlistidx_t      iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_set_get_num");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_set_get_num");
 
   list = nlistAlloc ("chk-h", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);
@@ -347,7 +347,7 @@ START_TEST(nlist_s_iterate_num)
   nlistidx_t    key;
   nlistidx_t    iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_s_iterate_num");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_s_iterate_num");
 
   list = nlistAlloc ("chk-g", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
@@ -471,7 +471,7 @@ START_TEST(nlist_s_replace_str)
   const char    *value;
   nlistidx_t    iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_s_replace_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_s_replace_str");
 
   list = nlistAlloc ("chk-i", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
@@ -569,7 +569,7 @@ START_TEST(nlist_free_str)
 {
   nlist_t        *list;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_free_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_free_str");
 
 
   list = nlistAlloc ("chk-j", LIST_UNORDERED, free);
@@ -592,7 +592,7 @@ START_TEST(nlist_free_item)
   chk_item_t    *item [20];
   int           itemc = 0;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_free_item");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_free_item");
 
 
   list = nlistAlloc ("chk-k", LIST_UNORDERED, freeItem);
@@ -648,7 +648,7 @@ START_TEST(nlist_set_get_mixed)
   char            *sval;
   double          dval;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_set_get_mixed");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_set_get_mixed");
 
   list = nlistAlloc ("chk-l", LIST_ORDERED, free);
   ck_assert_ptr_nonnull (list);
@@ -674,7 +674,7 @@ START_TEST(nlist_inc_dec)
   nlist_t *       list;
   ssize_t         nval;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_inc_dec");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_inc_dec");
 
   list = nlistAlloc ("chk-m", LIST_ORDERED, free);
   ck_assert_ptr_nonnull (list);
@@ -715,7 +715,7 @@ START_TEST(nlist_byidx)
   ssize_t       value;
   nlistidx_t    key;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_byidx");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_byidx");
 
   list = nlistAlloc ("chk-n", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
@@ -768,7 +768,7 @@ START_TEST(nlist_byidx_bug_20220815)
   nlist_t *     list;
   nlistidx_t    key;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_byidx_bug_20220815");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_byidx_bug_20220815");
 
   list = nlistAlloc ("chk-n", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
@@ -798,7 +798,7 @@ START_TEST(nlist_prob_search)
   nlist_t *     list;
   nlistidx_t    key;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_prob_search");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_prob_search");
 
   list = nlistAlloc ("chk-o", LIST_ORDERED, NULL);
   ck_assert_ptr_nonnull (list);
@@ -830,7 +830,7 @@ START_TEST(nlist_set_null)
   nlist_t        *list;
   const char     *value;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== nlist_s_get_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_set_null");
 
   list = nlistAlloc ("chk-f", LIST_UNORDERED, NULL);
   nlistSetSize (list, 7);

@@ -14,10 +14,13 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "log.h"
 #include "tagdef.h"
 
 START_TEST(tagdef_init)
 {
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tagdef_init");
+
   ck_assert_ptr_null (tagdefs [TAG_ALBUM].displayname);
   tagdefInit ();
   ck_assert_ptr_nonnull (tagdefs [TAG_ALBUM].displayname);
@@ -31,6 +34,8 @@ END_TEST
 START_TEST(tagdef_lookup)
 {
   tagdefkey_t   val;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tagdef_lookup");
 
   tagdefInit ();
   val = tagdefLookup ("ALBUM");

@@ -18,10 +18,13 @@
 #include "bdjvarsdf.h"
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
+#include "log.h"
 
 START_TEST(bdjvarsdfload_chk)
 {
   char    *data = NULL;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjvarsdfload_chk");
 
   bdjvarsdfloadInit ();
   for (int i = 0; i < BDJVDF_MAX; ++i) {

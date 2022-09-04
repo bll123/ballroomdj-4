@@ -19,6 +19,7 @@
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "log.h"
 #include "nlist.h"
 #include "slist.h"
 #include "sequence.h"
@@ -45,6 +46,8 @@ START_TEST(sequence_create)
   sequence_t    *seq;
   slist_t       *tlist;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_create");
+
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjvarsdfloadInit ();
@@ -64,6 +67,8 @@ START_TEST(sequence_alloc)
 {
   sequence_t    *seq;
   slist_t       *tlist;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_alloc");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
@@ -87,6 +92,8 @@ START_TEST(sequence_iterate)
   nlistidx_t    fkey;
   nlistidx_t    key;
   int           count;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_iterate");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
@@ -126,6 +133,8 @@ START_TEST(sequence_save)
   slist_t       *tslist;
   char          *stra;
   char          *strb;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_save");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");

@@ -11,16 +11,16 @@
 
 #include <check.h>
 
-#include "ilist.h"
 #include "bdjstring.h"
 #include "check_bdj.h"
+#include "ilist.h"
 #include "log.h"
 
 START_TEST(ilist_create_free)
 {
   ilist_t    *list;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_create_free");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_create_free");
 
   list = ilistAlloc ("chk-a", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);
@@ -37,7 +37,7 @@ START_TEST(ilist_get_data_str)
   ilist_t        *list;
   char          *value;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_get_data_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_get_data_str");
 
   list = ilistAlloc ("chk-b", LIST_ORDERED);
   ilistSetSize (list, 7);
@@ -63,7 +63,7 @@ START_TEST(ilist_get_data_str_sub)
   ilist_t        *list;
   char          *value;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_get_data_str_sub");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_get_data_str_sub");
 
   list = ilistAlloc ("chk-c", LIST_ORDERED);
   ilistSetSize (list, 7);
@@ -107,7 +107,7 @@ START_TEST(ilist_iterate)
   ilistidx_t          key;
   ilistidx_t    iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_iterate");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_iterate");
 
   list = ilistAlloc ("chk-d", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);
@@ -161,7 +161,7 @@ START_TEST(ilist_u_sort)
   ilistidx_t          key;
   ilistidx_t      iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_u_sort");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_u_sort");
 
   list = ilistAlloc ("chk-e", LIST_UNORDERED);
   ck_assert_ptr_nonnull (list);
@@ -209,7 +209,7 @@ START_TEST(ilist_replace_str)
   char          *value;
   ilistidx_t    iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_replace_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_replace_str");
 
   list = ilistAlloc ("chk-f", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);
@@ -307,7 +307,7 @@ START_TEST(ilist_free_str)
 {
   ilist_t        *list;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_free_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_free_str");
 
   list = ilistAlloc ("chk-g", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);
@@ -330,7 +330,7 @@ START_TEST(ilist_exists)
   ilist_t   *list;
   bool      val;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_exists");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_exists");
 
   list = ilistAlloc ("chk-g", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);
@@ -358,7 +358,7 @@ START_TEST(ilist_delete)
   ilist_t   *list;
   bool      val;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== ilist_delete");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ilist_delete");
 
   list = ilistAlloc ("chk-g", LIST_ORDERED);
   ck_assert_ptr_nonnull (list);

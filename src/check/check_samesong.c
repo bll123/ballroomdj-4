@@ -19,6 +19,7 @@
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
 #include "filemanip.h"
+#include "log.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "samesong.h"
@@ -62,6 +63,8 @@ START_TEST(samesong_alloc)
 {
   samesong_t    *ss;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_alloc");
+
   ss = samesongAlloc (db);
   samesongFree (ss);
 }
@@ -79,6 +82,8 @@ START_TEST(samesong_basic)
   int           tcount;
   nlist_t       *tlist;
   int           val;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_basic");
 
   ss = samesongAlloc (db);
 
@@ -120,6 +125,8 @@ START_TEST(samesong_get_by_ssidx)
   nlist_t       *tlist;
   nlistidx_t    iteridx;
   slist_t       *clist;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_get_by_ssidx");
 
   ss = samesongAlloc (db);
 
@@ -169,6 +176,8 @@ START_TEST(samesong_get_by_dbidx)
   nlist_t       *dbidxlist;
   nlistidx_t    iteridx;
   slist_t       *clist;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_get_by_dbidx");
 
   ss = samesongAlloc (db);
 
@@ -234,6 +243,8 @@ START_TEST(samesong_set)
   nlistidx_t    iteridx;
   slist_t       *clist;
   int           rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_set");
 
   ss = samesongAlloc (db);
 
@@ -603,6 +614,8 @@ START_TEST(samesong_singleton)
   nlist_t       *dbidxlist;
   nlistidx_t    iteridx;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_singleton");
+
   ss = samesongAlloc (db);
 
   dbidxa = -1;
@@ -695,6 +708,8 @@ START_TEST(samesong_clear)
   nlist_t       *ndbidxlist;
   nlist_t       *dbidxlist;
   nlistidx_t    iteridx;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- samesong_clear");
 
   ss = samesongAlloc (db);
 
@@ -796,6 +811,8 @@ START_TEST(ss_check_alloc)
 {
   sscheck_t   *sschk;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ss_check_alloc");
+
   sschk = ssCheckAlloc (db);
   ck_assert_ptr_nonnull (sschk);
   ssCheckFree (sschk);
@@ -811,6 +828,8 @@ START_TEST(ss_check_add)
   song_t      *song;
   ssize_t     ssidx;
   bool        none = true;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ss_check_add");
 
   sschk = ssCheckAlloc (db);
 
@@ -843,6 +862,8 @@ START_TEST(ss_check_add_chk)
   int         tcount;
   song_t      *song;
   ssize_t     ssidx;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ss_check_add_chk");
 
   sschk = ssCheckAlloc (db);
 
@@ -886,6 +907,8 @@ START_TEST(ss_check_remove_chk)
   int         state = 0;
   dbidx_t     odbidx;
   ssize_t     ossidx;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ss_check_remove_chk");
 
   sschk = ssCheckAlloc (db);
 

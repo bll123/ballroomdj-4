@@ -25,7 +25,7 @@ START_TEST(parse_init_free)
 {
   parseinfo_t     *pi;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_init_free");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_init_free");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   ck_assert_int_eq (parseGetAllocCount (pi), 0);
@@ -43,7 +43,7 @@ START_TEST(parse_simple)
   int             vers;
 
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_simple");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_simple");
   tstr = strdup ("# comment\n# version 2\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
@@ -80,7 +80,7 @@ START_TEST(parse_keyvalue)
   char            **strdata = NULL;
 
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_keyvalue");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_keyvalue");
   tstr = strdup ("version\n..3\nA\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
@@ -117,7 +117,7 @@ START_TEST(parse_with_comments)
   ssize_t          count;
   char            **strdata = NULL;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== parse_with_comments");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_with_comments");
   tstr = strdup ("# comment\nversion\n..4\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
@@ -159,7 +159,7 @@ START_TEST(datafile_simple)
   int             vers;
 
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_simple");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_simple");
   fn = "tmp/dftesta.txt";
   tstr = "# comment\n# version 5\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n";
   fh = fopen (fn, "w");
@@ -246,7 +246,7 @@ START_TEST(datafile_keyval_dfkey)
   int             vers;
 
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_dfkey");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_dfkey");
   fn = "tmp/dftestb.txt";
   tstr = "version\n..6\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
@@ -357,7 +357,7 @@ START_TEST(datafile_keyval_df_extra)
   int             vers;
 
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_df_extra");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_df_extra");
   fn = "tmp/dftestb.txt";
   tstr = "version\n..7\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
@@ -465,7 +465,7 @@ START_TEST(datafile_indirect)
   ilistidx_t      iteridx;
   int             vers;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_indirect");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect");
   fn = "tmp/dftestb.txt";
   tstr = "version\n..8\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\nB\n..1\n"
@@ -553,7 +553,7 @@ START_TEST(datafile_indirect_missing)
   ilistidx_t      iteridx;
   int             vers;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_indirect_missing");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect_missing");
   fn = "tmp/dftestb.txt";
   tstr = "version\n..10\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\n"
@@ -650,7 +650,7 @@ START_TEST(datafile_keyval_savelist)
   char            tmp [40];
 
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_savelist");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_savelist");
   fn = "tmp/dftestb.txt";
   tstr = "version\n..11\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
@@ -730,7 +730,7 @@ START_TEST(datafile_keyval_savebuffer)
   char            tbuff [4096];
 
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_savebuffer");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_savebuffer");
   fn = "tmp/dftestb.txt";
   tstr = "version\n..12\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
@@ -808,7 +808,7 @@ START_TEST(datafile_keyval_save)
   int             vers;
 
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_keyval_save");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_save");
   fn = "tmp/dftestb.txt";
   tstr = "version\n..13\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
@@ -891,7 +891,7 @@ START_TEST(datafile_indirect_save)
   char            *tsval;
 
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_indirect_save");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect_save");
   fn = "tmp/dftestb.txt";
   tstr = "version\n..14\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..b\nB\n..2\n"
@@ -945,7 +945,7 @@ START_TEST(datafile_simple_save)
   int             vers;
 
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "=== datafile_simple_save");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_simple_save");
   fn = "tmp/dftesta.txt";
   tstr = "# comment\n# version 15\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n";
   fh = fopen (fn, "w");
@@ -983,12 +983,17 @@ datafile_suite (void)
   TCase     *tc;
 
   s = suite_create ("datafile");
-  tc = tcase_create ("datafile");
+
+  tc = tcase_create ("datafile-parse");
   tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, parse_init_free);
   tcase_add_test (tc, parse_simple);
   tcase_add_test (tc, parse_keyvalue);
   tcase_add_test (tc, parse_with_comments);
+  suite_add_tcase (s, tc);
+
+  tc = tcase_create ("datafile");
+  tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, datafile_simple);
   tcase_add_test (tc, datafile_keyval_dfkey);
   tcase_add_test (tc, datafile_keyval_df_extra);

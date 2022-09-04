@@ -16,6 +16,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "log.h"
 #include "progstate.h"
 
 static bool pscb (void *udata, programstate_t state);
@@ -29,6 +30,8 @@ START_TEST(progstate_chk)
   programstate_t  pstate = STATE_NOT_RUNNING;
   int             userdata = 1;
   int             mcount;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- progstate_chk");
 
   for (int i = 0; i < STATE_MAX; ++i) {
     statetab [i] = 0;
@@ -129,6 +132,8 @@ START_TEST(progstate_multi_skip)
   progstate_t     *ps;
   programstate_t  currstate = STATE_NOT_RUNNING;
   int             userdata = 1;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- progstate_multi_skip");
 
   for (int i = 0; i < STATE_MAX; ++i) {
     statetab [i] = 0;

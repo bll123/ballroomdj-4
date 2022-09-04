@@ -11,16 +11,16 @@
 
 #include <check.h>
 
-#include "slist.h"
 #include "bdjstring.h"
 #include "check_bdj.h"
 #include "log.h"
+#include "slist.h"
 
 START_TEST(simple_list_create_free)
 {
   slist_t    *list;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_create_free");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_create_free");
 
   list = slistAlloc ("chk-a", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);
@@ -36,7 +36,7 @@ START_TEST(simple_list_add_unordered)
 {
   slist_t    *list;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_unordered");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_unordered");
 
 
   list = slistAlloc ("chk-b", LIST_UNORDERED, NULL);
@@ -67,7 +67,7 @@ START_TEST(simple_list_add_unordered_iterate)
   char *    value;
   slistidx_t  iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_unordered_iterate");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_unordered_iterate");
 
 
   list = slistAlloc ("chk-c", LIST_UNORDERED, NULL);
@@ -108,7 +108,7 @@ START_TEST(simple_list_add_ordered_iterate)
   char *    value;
   slistidx_t  iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_ordered_iterate");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_ordered_iterate");
 
 
   list = slistAlloc ("chk-d", LIST_ORDERED, NULL);
@@ -146,7 +146,7 @@ START_TEST(simple_list_add_ordered_beg)
   char *    value;
   slistidx_t  iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_ordered_beg");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_ordered_beg");
 
 
   list = slistAlloc ("chk-e", LIST_ORDERED, NULL);
@@ -175,7 +175,7 @@ START_TEST(simple_list_add_ordered_end)
   char *    value;
   slistidx_t  iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_ordered_end");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_ordered_end");
 
 
   list = slistAlloc ("chk-f", LIST_ORDERED, NULL);
@@ -204,7 +204,7 @@ START_TEST(simple_list_add_ordered_prealloc)
   char *    value;
   slistidx_t  iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_ordered_prealloc");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_ordered_prealloc");
 
 
   list = slistAlloc ("chk-g", LIST_ORDERED, NULL);
@@ -246,7 +246,7 @@ START_TEST(simple_list_add_sort)
   char *    value;
   slistidx_t  iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== simple_list_add_sort");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- simple_list_add_sort");
 
 
   list = slistAlloc ("chk-h", LIST_UNORDERED, NULL);
@@ -302,7 +302,7 @@ START_TEST(slist_get_data_str)
   slist_t        *list;
   char          *value;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== slist_get_data_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_get_data_str");
 
 
   list = slistAlloc ("chk-i", LIST_UNORDERED, NULL);
@@ -333,7 +333,7 @@ START_TEST(slist_add_str_iterate)
   char *        key;
   slistidx_t    iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== slist_add_str_iterate");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_add_str_iterate");
 
 
   list = slistAlloc ("chk-j", LIST_ORDERED, NULL);
@@ -386,7 +386,7 @@ START_TEST(slist_add_sort_str)
   char          *key;
   slistidx_t    iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== slist_add_sort_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_add_sort_str");
 
 
   list = slistAlloc ("chk-k", LIST_UNORDERED, NULL);
@@ -435,7 +435,7 @@ START_TEST(slist_replace_str)
   char          *value;
   slistidx_t    iteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== slist_replace_str");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_replace_str");
 
 
   list = slistAlloc ("chk-l", LIST_ORDERED, NULL);
@@ -534,8 +534,7 @@ START_TEST(slist_free_str)
 {
   slist_t        *list;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "==== slist_free_str");
-
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_free_str");
 
   list = slistAlloc ("chk-m", LIST_UNORDERED, free);
   ck_assert_ptr_nonnull (list);

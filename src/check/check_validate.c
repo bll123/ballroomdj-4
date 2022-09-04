@@ -13,6 +13,7 @@
 
 #include <check.h>
 
+#include "log.h"
 #include "validate.h"
 #include "check_bdj.h"
 
@@ -20,6 +21,8 @@
 START_TEST(validate_empty)
 {
   const char *valstr;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_empty");
 
   valstr = validate (NULL, VAL_NOT_EMPTY);
   ck_assert_ptr_nonnull (valstr);
@@ -33,6 +36,8 @@ END_TEST
 START_TEST(validate_nospace)
 {
   const char *valstr;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_nospace");
 
   valstr = validate ("stuff", VAL_NO_SPACES);
   ck_assert_ptr_null (valstr);
@@ -48,6 +53,8 @@ END_TEST
 START_TEST(validate_noslash)
 {
   const char *valstr;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_noslash");
 
   valstr = validate ("stuff", VAL_NO_SLASHES);
   ck_assert_ptr_null (valstr);
@@ -65,6 +72,8 @@ END_TEST
 START_TEST(validate_numeric)
 {
   const char *valstr;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_numeric");
 
   valstr = validate ("1234", VAL_NUMERIC);
   ck_assert_ptr_null (valstr);
@@ -84,6 +93,8 @@ END_TEST
 START_TEST(validate_float)
 {
   const char *valstr;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_float");
 
   valstr = validate ("1234", VAL_FLOAT);
   ck_assert_ptr_null (valstr);
@@ -117,6 +128,8 @@ END_TEST
 START_TEST(validate_hour_min)
 {
   const char *valstr;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_hour_min");
 
   valstr = validate ("1:00", VAL_HOUR_MIN);
   ck_assert_ptr_null (valstr);
@@ -180,6 +193,8 @@ END_TEST
 START_TEST(validate_min_sec)
 {
   const char *valstr;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- validate_min_sec");
 
   valstr = validate ("1:00", VAL_MIN_SEC);
   ck_assert_ptr_null (valstr);

@@ -20,6 +20,7 @@
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "log.h"
 #include "musicdb.h"
 #include "slist.h"
 #include "song.h"
@@ -123,6 +124,8 @@ START_TEST(musicdb_open_new)
 {
   musicdb_t *db;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_open_new");
+
   bdjvarsdfloadInit ();
   db = dbOpen (dbfn);
   dbClose (db);
@@ -140,6 +143,8 @@ START_TEST(musicdb_write)
   char      *ndata;
   FILE      *fh;
   slist_t   *tlist;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_write");
 
   // fprintf (stdout, "  write\n");
   bdjoptInit ();
@@ -191,6 +196,8 @@ START_TEST(musicdb_overwrite)
   char      *ndata;
   FILE      *fh;
   slist_t   *tlist;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_overwrite");
 
   // fprintf (stdout, "  overwrite\n");
   bdjoptInit ();
@@ -245,6 +252,8 @@ START_TEST(musicdb_batch_write)
   FILE      *fh;
   slist_t   *tlist;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_batch_write");
+
   // fprintf (stdout, "  batch write\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
@@ -297,6 +306,8 @@ START_TEST(musicdb_batch_overwrite)
   char      *ndata;
   FILE      *fh;
   slist_t   *tlist;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_batch_overwrite");
 
   // fprintf (stdout, "  batch overwrite\n");
   bdjoptInit ();
@@ -352,6 +363,8 @@ START_TEST(musicdb_write_song)
   char      *ndata;
   FILE      *fh;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_write_song");
+
   /* this method of adding a song to the database is not currently in use */
   /* 2022-8-18 */
 
@@ -402,6 +415,8 @@ START_TEST(musicdb_overwrite_song)
   char      *ndata;
   FILE      *fh;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_overwrite_song");
+
   // fprintf (stdout, "  overwrite song\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
@@ -449,6 +464,8 @@ START_TEST(musicdb_load_get_byidx)
   int       count;
   char      *ndata;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_load_get_byidx");
+
   // fprintf (stdout, "   load byidx\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
@@ -495,6 +512,8 @@ START_TEST(musicdb_load_get_byname)
   song_t    *dbsong;
   int       count;
   char      *ndata;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_load_get_byname");
 
   // fprintf (stdout, "   load byname\n");
   bdjoptInit ();
@@ -546,6 +565,8 @@ START_TEST(musicdb_iterate)
   dbidx_t   iteridx;
   dbidx_t   curridx;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_iterate");
+
   // fprintf (stdout, "   iterate\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
@@ -587,6 +608,8 @@ START_TEST(musicdb_load_entry)
   musicdb_t *db;
   song_t    *song;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_load_entry");
+
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   bdjvarsdfloadInit ();
@@ -619,6 +642,8 @@ START_TEST(musicdb_db)
   int       count;
   int       racount;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_db");
+
   filemanipCopy ("test-templates/musicdb.dat", "data/musicdb.dat");
 
   bdjoptInit ();
@@ -646,7 +671,10 @@ END_TEST
 
 START_TEST(musicdb_cleanup)
 {
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_cleanup");
+
   // fprintf (stdout, "   cleanup\n");
+
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   fileopDelete (dbfn);

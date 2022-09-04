@@ -18,6 +18,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
+#include "log.h"
 #include "osprocess.h"
 #include "check_bdj.h"
 /* procutil hasn't had its tests run, but need the procutilExists routine */
@@ -59,6 +60,8 @@ START_TEST(osprocess_start)
   int   pid;
   int   exists;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start");
+
   runchk (0, &pid, &exists);
   ck_assert_int_gt (pid, 0);
   ck_assert_int_eq (exists, 0);
@@ -70,6 +73,8 @@ START_TEST(osprocess_start_detach)
   int   pid;
   int   exists;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start_detach");
+
   runchk (OS_PROC_DETACH, &pid, &exists);
   ck_assert_int_gt (pid, 0);
   ck_assert_int_eq (exists, 0);
@@ -80,6 +85,8 @@ START_TEST(osprocess_start_wait)
 {
   int   pid;
   int   exists;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start_wait");
 
   runchk (OS_PROC_WAIT, &pid, &exists);
   ck_assert_int_gt (pid, 0);
@@ -99,6 +106,8 @@ START_TEST(osprocess_start_handle)
   char        *extension;
   int         rc;
   int         flags = 0;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start_handle");
 
   extension = "";
   if (isWindows ()) {
@@ -147,6 +156,8 @@ START_TEST(osprocess_start_redirect)
   char        *outfn = "tmp/chkosprocess.txt";
   FILE        *fh;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start_redirect");
+
   extension = "";
   if (isWindows ()) {
     extension = ".exe";
@@ -190,6 +201,8 @@ START_TEST(osprocess_pipe)
   char        *extension;
   int         flags = 0;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_pipe");
+
   extension = "";
   if (isWindows ()) {
     extension = ".exe";
@@ -218,6 +231,8 @@ START_TEST(osprocess_run)
   char        *extension;
   int         flags = 0;
   char        *data;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_run");
 
   extension = "";
   if (isWindows ()) {

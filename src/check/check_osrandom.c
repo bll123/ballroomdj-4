@@ -15,12 +15,15 @@
 
 #include <check.h>
 
-#include "osrandom.h"
 #include "check_bdj.h"
+#include "log.h"
+#include "osrandom.h"
 
 START_TEST(osrandom_chk)
 {
   double    dval, dvalb;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osrandom_chk");
 
   sRandom ();
   dval = dRandom ();

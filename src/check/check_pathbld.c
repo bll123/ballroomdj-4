@@ -17,9 +17,10 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "check_bdj.h"
+#include "log.h"
 #include "pathbld.h"
 #include "pathutil.h"
-#include "check_bdj.h"
 #include "sysvars.h"
 
 typedef struct {
@@ -59,6 +60,8 @@ START_TEST(pathbld_chk)
   char    tbuff [MAXPATHLEN];
   char    f [MAXPATHLEN];
   char    cwd [MAXPATHLEN];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- pathbld_chk");
 
   getcwd (cwd, sizeof (cwd));
   pathNormPath (cwd, sizeof (cwd));

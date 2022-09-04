@@ -16,8 +16,9 @@
 
 #include <check.h>
 
-#include "ossignal.h"
 #include "check_bdj.h"
+#include "log.h"
+#include "ossignal.h"
 
 static int gsig = 0;
 
@@ -27,6 +28,8 @@ static void sigh (int sig);
 START_TEST(ossignal_chk)
 {
   int   count = 0;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- ossignal_chk");
 
   osSetStandardSignals (sigh);
 

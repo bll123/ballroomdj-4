@@ -16,14 +16,17 @@
 
 #include <check.h>
 
-#include "fileop.h"
 #include "check_bdj.h"
+#include "fileop.h"
+#include "log.h"
 #include "sysvars.h"
 
 START_TEST(fileop_exists_a)
 {
   FILE      *fh;
   int       rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_exists_a");
 
   char *fn = "tmp/def.txt";
   unlink (fn);
@@ -43,6 +46,8 @@ START_TEST(fileop_size_a)
 {
   FILE      *fh;
   ssize_t   sz;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_size_a");
 
   char *fn = "tmp/def.txt";
   unlink (fn);
@@ -65,6 +70,8 @@ START_TEST(fileop_modtime_a)
   time_t    ctm;
   time_t    tm;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_modtime_a");
+
   char *fn = "tmp/def.txt";
   ctm = time (NULL);
   unlink (fn);
@@ -84,6 +91,8 @@ START_TEST(fileop_setmodtime_a)
   FILE      *fh;
   time_t    ctm;
   time_t    tm;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_setmodtime_a");
 
   char *fn = "tmp/def.txt";
   ctm = time (NULL);
@@ -107,6 +116,8 @@ START_TEST(fileop_delete_a)
 {
   FILE      *fh;
   int       rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_delete_a");
 
   char *fn = "tmp/def.txt";
   unlink (fn);
@@ -139,6 +150,8 @@ START_TEST(fileop_open_u)
 {
   FILE    *fh;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_open_u");
+
   for (int i = 0; i < fnlistsz; ++i) {
     char *fn = fnlist [i];
     fh = fileopOpen (fn, "w");
@@ -151,6 +164,8 @@ START_TEST(fileop_exists_u)
 {
   FILE    *fh;
   int     rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_exists_u");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char *fn = fnlist [i];
@@ -166,6 +181,8 @@ START_TEST(fileop_del_u)
 {
   FILE    *fh;
   int     rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_del_u");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char *fn = fnlist [i];
@@ -185,6 +202,8 @@ START_TEST(fileop_size_u)
   FILE      *fh;
   ssize_t   sz;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_size_u");
+
   for (int i = 0; i < fnlistsz; ++i) {
     char *fn = fnlist [i];
     fh = fileopOpen (fn, "w");
@@ -202,6 +221,8 @@ START_TEST(fileop_modtime_u)
   FILE      *fh;
   time_t    ctm;
   time_t    tm;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_modtime_u");
 
   ctm = time (NULL);
   for (int i = 0; i < fnlistsz; ++i) {
@@ -221,6 +242,8 @@ START_TEST(fileop_setmodtime_u)
   FILE      *fh;
   time_t    ctm;
   time_t    tm;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_setmodtime_u");
 
   ctm = time (NULL);
   for (int i = 0; i < fnlistsz; ++i) {

@@ -15,8 +15,9 @@
 
 #include <check.h>
 
-#include "filedata.h"
 #include "check_bdj.h"
+#include "filedata.h"
+#include "log.h"
 
 START_TEST(filedata_readall)
 {
@@ -24,6 +25,8 @@ START_TEST(filedata_readall)
   char    *data;
   char    *tdata;
   size_t  len;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filedata_readall");
 
   char *fn = "tmp/abc.txt";
   fh = fopen (fn, "w");
@@ -82,6 +85,8 @@ START_TEST(filedata_repl)
   char    *data = NULL;
   size_t  len;
   char    *ndata = NULL;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filedata_repl");
 
   for (int i = 0; i < tvaluesz; ++i) {
     data = teststr;

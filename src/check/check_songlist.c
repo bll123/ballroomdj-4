@@ -20,6 +20,7 @@
 #include "filemanip.h"
 #include "fileop.h"
 #include "ilist.h"
+#include "log.h"
 #include "songlist.h"
 #include "templateutil.h"
 #include "tmutil.h"
@@ -45,6 +46,8 @@ START_TEST(songlist_alloc)
 {
   songlist_t    *sl;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_alloc");
+
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjvarsdfloadInit ();
@@ -61,6 +64,8 @@ END_TEST
 START_TEST(songlist_load)
 {
   songlist_t    *sl;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_load");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
@@ -81,6 +86,8 @@ START_TEST(songlist_iterate)
   ilistidx_t    iteridx;
   int           count;
   ilistidx_t    key;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_iterate");
 
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
@@ -119,6 +126,8 @@ START_TEST(songlist_save)
   ilistidx_t    key;
   time_t        tma, tmb;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_save");
+
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
   bdjvarsdfloadInit ();
@@ -129,6 +138,7 @@ START_TEST(songlist_save)
   songlistSave (sl, SONGLIST_PRESERVE_TIMESTAMP);
   tmb = fileopModTime (SLFFN);
   ck_assert_int_eq (tma, tmb);
+  /* the timestamp has a granularity of one second */
   mssleep (1000);
   songlistSave (sl, SONGLIST_UPDATE_TIMESTAMP);
   tmb = fileopModTime (SLFFN);

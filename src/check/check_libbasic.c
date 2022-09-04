@@ -16,6 +16,7 @@
 #include <check.h>
 
 #include "check_bdj.h"
+#include "log.h"
 
 void
 check_libbasic (SRunner *sr)
@@ -37,6 +38,8 @@ check_libbasic (SRunner *sr)
    *  dirlist     complete
    *  progstate   complete (no log checks)
    */
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libbasic");
 
   s = istring_suite();
   srunner_add_suite (sr, s);

@@ -17,11 +17,14 @@
 
 #include "bdjmsg.h"
 #include "check_bdj.h"
+#include "log.h"
 
 START_TEST(bdjmsg_encode)
 {
   char    tmp [100];
   char    buff [100];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjmsg_encode");
 
   msgEncode (ROUTE_MAIN, ROUTE_STARTERUI, MSG_EXIT_REQUEST,
       "def", buff, sizeof (buff));
@@ -38,6 +41,8 @@ START_TEST(bdjmsg_decode)
   bdjmsgroute_t rt;
   bdjmsgmsg_t   msg;
   char    args [200];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjmsg_decode");
 
   msgEncode (ROUTE_MAIN, ROUTE_STARTERUI, MSG_EXIT_REQUEST,
       "def", buff, sizeof (buff));

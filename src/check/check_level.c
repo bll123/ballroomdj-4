@@ -18,6 +18,7 @@
 #include "datafile.h"
 #include "ilist.h"
 #include "level.h"
+#include "log.h"
 #include "slist.h"
 #include "templateutil.h"
 
@@ -30,6 +31,8 @@ setup (void)
 START_TEST(level_alloc)
 {
   level_t   *level = NULL;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- level_alloc");
 
   level = levelAlloc ();
   ck_assert_ptr_nonnull (level);
@@ -47,6 +50,8 @@ START_TEST(level_iterate)
   int         w;
   int         df;
   int         dcount;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- level_iterate");
 
   level = levelAlloc ();
   levelStartIterator (level, &iteridx);
@@ -83,6 +88,8 @@ START_TEST(level_conv)
   datafileconv_t conv;
   int         count;
   int         key;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- level_conv");
 
   bdjvarsdfloadInit ();
 
@@ -128,6 +135,8 @@ START_TEST(level_save)
   char        *tval;
   int         tw;
   int         tdf;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- level_save");
 
   /* required for the level conversion function */
   bdjvarsdfloadInit ();

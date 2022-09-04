@@ -17,10 +17,13 @@
 
 #include "bdjvarsdf.h"
 #include "check_bdj.h"
+#include "log.h"
 
 START_TEST(bdjvarsdf_set_get)
 {
   char    *data = NULL;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- bdjvarsdf_set_get");
 
   bdjvarsdfSet (BDJVDF_DANCES, "test");
   data = bdjvarsdfGet (BDJVDF_DANCES);

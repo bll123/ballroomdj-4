@@ -17,19 +17,9 @@
 #include "check_bdj.h"
 #include "datafile.h"
 #include "ilist.h"
+#include "log.h"
 #include "songfav.h"
 #include "slist.h"
-
-START_TEST(songfav_init)
-{
-  songFavoriteInit ();
-  songFavoriteInit ();
-  songFavoriteCleanup ();
-  songFavoriteCleanup ();
-  songFavoriteInit ();
-  songFavoriteCleanup ();
-}
-END_TEST
 
 typedef struct {
   char  *value;
@@ -47,9 +37,24 @@ enum {
   tvaluesz = sizeof (tvalues) / sizeof (sf_test_t),
 };
 
+START_TEST(songfav_init)
+{
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_init");
+
+  songFavoriteInit ();
+  songFavoriteInit ();
+  songFavoriteCleanup ();
+  songFavoriteCleanup ();
+  songFavoriteInit ();
+  songFavoriteCleanup ();
+}
+END_TEST
+
 START_TEST(songfav_conv)
 {
   datafileconv_t    conv;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_conv");
 
   for (int i = 0; i < tvaluesz; ++i) {
     conv.allocated = false;
@@ -71,6 +76,8 @@ END_TEST
 START_TEST(songfav_get)
 {
   songfavoriteinfo_t  *sfi;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_get");
 
   for (int i = 0; i < tvaluesz; ++i) {
     sfi = songFavoriteGet (tvalues [i].key);

@@ -18,6 +18,7 @@
 #include "bdj4.h"
 #include "filedata.h"
 #include "fileop.h"
+#include "log.h"
 #include "pathbld.h"
 #include "templateutil.h"
 #include "check_bdj.h"
@@ -28,6 +29,8 @@ START_TEST(templateutil_file_copy)
   size_t  szb;
   char    from [MAXPATHLEN];
   char    to [MAXPATHLEN];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- templateutil_file_copy");
 
   pathbldMakePath (from, sizeof (from), "dances",
       BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
@@ -50,6 +53,8 @@ START_TEST(templateutil_image_copy)
   char    *data;
   char    *p;
   size_t  rlen;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- templateutil_image_copy");
 
   pathbldMakePath (to, sizeof (to), "button_play",
       BDJ4_IMG_SVG_EXT, PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
@@ -84,6 +89,8 @@ START_TEST(templateutil_http_copy)
 {
   char    to [MAXPATHLEN];
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- templateutil_http_copy");
+
   pathbldMakePath (to, sizeof (to), "mobilemq",
       ".html", PATHBLD_MP_HTTPDIR);
 
@@ -97,6 +104,8 @@ END_TEST
 START_TEST(templateutil_dispset_copy)
 {
   char    to [MAXPATHLEN];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- templateutil_dispset_copy");
 
   pathbldMakePath (to, sizeof (to), "ds-musicq",
       BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);

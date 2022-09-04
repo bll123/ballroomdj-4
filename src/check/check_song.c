@@ -20,6 +20,7 @@
 #include "dirop.h"
 #include "fileop.h"
 #include "ilist.h"
+#include "log.h"
 #include "nlist.h"
 #include "slist.h"
 #include "song.h"
@@ -40,6 +41,8 @@ START_TEST(song_alloc)
 {
   song_t   *song = NULL;
   song_t   *songb = NULL;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_alloc");
 
   bdjvarsdfloadInit ();
   songFavoriteInit ();
@@ -184,6 +187,8 @@ START_TEST(song_parse)
   song_t    *song = NULL;
   char      *data;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse");
+
   bdjvarsdfloadInit ();
 
 
@@ -208,6 +213,8 @@ START_TEST(song_parse_get)
   slist_t     *tlist;
   slistidx_t  iteridx;
   songfavoriteinfo_t *sfav;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse_get");
 
   bdjvarsdfloadInit ();
 
@@ -263,6 +270,8 @@ START_TEST(song_parse_set)
   songfavoriteinfo_t *sfav;
   slist_t     *tlist;
   slistidx_t  iteridx;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse_set");
 
   bdjvarsdfloadInit ();
 
@@ -331,6 +340,8 @@ START_TEST(song_audio_file)
   char        tbuff [200];
   bool        rc;
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_audio_file");
+
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   diropMakeDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
@@ -367,6 +378,8 @@ START_TEST(song_display)
   song_t      *song = NULL;
   char        *data;
   int         rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_display");
 
   bdjvarsdfloadInit ();
 
@@ -426,6 +439,8 @@ START_TEST(song_tag_list)
   songfavoriteinfo_t *sfav;
   char        tbuff [3096];
   char        *tag;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_tag_list");
 
   bdjvarsdfloadInit ();
 
@@ -505,6 +520,8 @@ END_TEST
 START_TEST(song_dur_cache)
 {
   song_t      *song = NULL;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_dur_cache");
 
   bdjvarsdfloadInit ();
 

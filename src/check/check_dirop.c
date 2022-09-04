@@ -15,17 +15,20 @@
 
 #include <check.h>
 
+#include "check_bdj.h"
 #include "dirlist.h"
 #include "dirop.h"
 #include "filemanip.h"
 #include "fileop.h"
-#include "check_bdj.h"
+#include "log.h"
 #include "slist.h"
 #include "sysvars.h"
 
 START_TEST(dirop_mkdir_isdir_a)
 {
   int       rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_mkdir_isdir_a");
 
   char *fn = "tmp/def";
   unlink (fn);
@@ -68,6 +71,8 @@ START_TEST(dirop_del_dir_a)
 {
   FILE      *fh;
   int       rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_del_dir_a");
 
   /* note that this fails on windows running under msys2 */
   char *dfn = "tmp/abc";
@@ -113,6 +118,8 @@ enum {
 START_TEST(dirop_mk_is_del_u)
 {
   int     rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_mk_is_del_u");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char *fn = fnlist [i];

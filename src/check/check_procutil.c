@@ -17,6 +17,7 @@
 
 #include "bdj4.h"
 #include "check_bdj.h"
+#include "log.h"
 #include "ossignal.h"
 #include "pathbld.h"
 #include "procutil.h"
@@ -28,6 +29,8 @@ START_TEST(procutil_exists)
   pid_t     pid;
   int       rc;
   procutil_t process;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- procutil_exists");
 
   pid = getpid ();
   process.pid = pid;
@@ -48,6 +51,8 @@ START_TEST(procutil_start)
   char      *extension;
   char      tbuff [MAXPATHLEN];
   procutil_t *process;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- procutil_start");
 
   ppid = getpid ();
 
@@ -82,6 +87,8 @@ START_TEST(procutil_kill)
   char      *extension;
   char      tbuff [MAXPATHLEN];
   procutil_t *process;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- procutil_kill");
 
   ppid = getpid ();
 

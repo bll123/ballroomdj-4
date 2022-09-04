@@ -16,9 +16,10 @@
 #include <check.h>
 
 #include "bdj4.h"
+#include "check_bdj.h"
 #include "filemanip.h"
 #include "fileop.h"
-#include "check_bdj.h"
+#include "log.h"
 #include "slist.h"
 #include "sysvars.h"
 
@@ -26,9 +27,11 @@ START_TEST(filemanip_move_a)
 {
   FILE      *fh;
   int       rc;
-
   char *ofn = "tmp/abc.txt.c";
   char *nfn = "tmp/abc.txt.d";
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_move_a");
+
   unlink (ofn);
   unlink (nfn);
   fh = fopen (ofn, "w");
@@ -49,10 +52,12 @@ START_TEST(filemanip_copy_a)
 {
   FILE      *fh;
   int       rc;
-
   char *nullfn = "tmp/abc-z.txt";
   char *ofn = "tmp/abc-a.txt";
   char *nfn = "tmp/abc-b.txt";
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_copy_a");
+
   unlink (ofn);
   unlink (nfn);
 
@@ -88,13 +93,15 @@ START_TEST(filemanip_backup_a)
   FILE      *fh;
   int       rc;
   char      buff [10];
-
   char *ofn = "tmp/abc.txt";
   char *ofn0a = "tmp/abc.txt.0";
   char *ofn0 = "tmp/abc.txt.bak.0";
   char *ofn1 = "tmp/abc.txt.bak.1";
   char *ofn2 = "tmp/abc.txt.bak.2";
   char *ofn3 = "tmp/abc.txt.bak.3";
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_backup_a");
+
   unlink (ofn);
   unlink (ofn0a);
   unlink (ofn0);
@@ -233,6 +240,7 @@ END_TEST
 
 START_TEST(filemanip_renameall_a)
 {
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_renameall_a");
 }
 
 /* update the fnlist in fileop/filemanip/dirop/dirlist also */
@@ -254,6 +262,8 @@ START_TEST(filemanip_move_u)
   int       rc;
   ssize_t   osz;
   ssize_t   nsz;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_move_u");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  *ofn;
@@ -293,6 +303,8 @@ START_TEST(filemanip_copy_u)
   ssize_t   osz;
   ssize_t   nsz;
   char      *nullfn = "tmp/not-exist.txt";
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_copy_u");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  *ofn;
@@ -337,6 +349,8 @@ START_TEST(filemanip_backup_u)
   FILE      *fh;
   int       rc;
   char      buff [10];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_backup_u");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  ofn0a [MAXPATHLEN];

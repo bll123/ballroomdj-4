@@ -17,6 +17,7 @@
 #include "check_bdj.h"
 #include "datafile.h"
 #include "ilist.h"
+#include "log.h"
 #include "status.h"
 #include "slist.h"
 #include "templateutil.h"
@@ -30,6 +31,8 @@ setup (void)
 START_TEST(status_alloc)
 {
   status_t   *status = NULL;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- status_alloc");
 
   status = statusAlloc ();
   ck_assert_ptr_nonnull (status);
@@ -45,6 +48,8 @@ START_TEST(status_iterate)
   int         count;
   int         key;
   int         pf;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- status_iterate");
 
   status = statusAlloc ();
   statusStartIterator (status, &iteridx);
@@ -70,6 +75,8 @@ START_TEST(status_conv)
   datafileconv_t conv;
   int         count;
   int         key;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- status_conv");
 
   bdjvarsdfloadInit ();
 
@@ -113,6 +120,8 @@ START_TEST(status_save)
   int         tkey;
   char        *tval;
   int         tpf;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- status_save");
 
   /* required for the status conversion function */
   bdjvarsdfloadInit ();
