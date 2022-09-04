@@ -95,8 +95,10 @@ istringToLower (char *str)
   size_t      rsz;
 
   sz = strlen (str);
+  ++sz;
   dest = malloc (sz + 1);
-  rsz = ucasemap_utf8ToLower (ucsm, dest, sz, str, sz, &status);
+  *dest = '\0';
+  rsz = ucasemap_utf8ToLower (ucsm, dest, sz + 1, str, sz, &status);
   if (rsz <= sz && status == U_ZERO_ERROR) {
     strlcpy (str, dest, sz);
     free (dest);
@@ -112,8 +114,10 @@ istringToUpper (char *str)
   size_t      rsz;
 
   sz = strlen (str);
+  ++sz;
   dest = malloc (sz + 1);
-  rsz = ucasemap_utf8ToUpper (ucsm, dest, sz, str, sz, &status);
+  *dest = '\0';
+  rsz = ucasemap_utf8ToUpper (ucsm, dest, sz + 1, str, sz, &status);
   if (rsz <= sz && status == U_ZERO_ERROR) {
     strlcpy (str, dest, sz);
     free (dest);

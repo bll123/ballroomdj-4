@@ -456,7 +456,7 @@ START_TEST(nlist_s_iterate_num)
   value = nlistIterateValueNum (list, &iteridx);
   ck_assert_int_eq (value, 555);
   value = nlistIterateValueNum (list, &iteridx);
-  ck_assert_int_eq (value, -1);
+  ck_assert_int_eq (value, LIST_VALUE_INVALID);
   value = nlistIterateValueNum (list, &iteridx);
   ck_assert_int_eq (value, 0);
 

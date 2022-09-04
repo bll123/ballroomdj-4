@@ -28,6 +28,8 @@ START_TEST(istring_istrlen)
 {
   char    buff [20];
 
+  istringInit ("de_DE");
+
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_istrlen");
 
   strcpy (buff, "\xc2\xbf");
@@ -49,16 +51,17 @@ START_TEST(istring_istrlen)
   strcpy (buff, "ab" "\xe2\x87\x92" "cd");
   ck_assert_int_eq (strlen (buff), 7);
   ck_assert_int_eq (istrlen (buff), 5);
+
+  istringCleanup ();
 }
 END_TEST
 
-START_TEST(istring_istr_comp)
+START_TEST(istring_comp)
 {
   int     rc;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_istr_comp");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_comp");
 
-  istringCleanup ();
   istringInit ("de_DE");
 
   rc = istringCompare ("ÄÄÄÄ", "ÖÖÖÖ");
@@ -75,33 +78,37 @@ START_TEST(istring_istr_comp)
 
   rc = istringCompare ("ZZZZ", "ÖÖÖÖ");
   ck_assert_int_lt (rc, 0);
+
+  istringCleanup ();
 }
 END_TEST
 
 typedef struct {
   char  *u;
   char  *l;
-} chk_istr_text_t;
+} chk_text_t;
 
-static chk_istr_text_t tvalues [] = {
+static chk_text_t tvalues [] = {
   { "ÄÄÄÄ", "ääää", },
   { "ÖÖÖÖ", "öööö", },
   { "ZZZZ", "zzzz" },
   { "내가제일잘나가", "내가제일잘나가" },
   { "ははは", "ははは" },
   { "夕陽伴我歸", "夕陽伴我歸" },
-  { "Ne_Русский_Шторм", "Ne_Русский_Шторм" }
+  { "NE_РУССКИЙ_ШТОРМ", "ne_русский_шторм" },
 };
 enum {
-  tvaluesz = sizeof (tvalues) / sizeof (chk_istr_text_t),
+  tvaluesz = sizeof (tvalues) / sizeof (chk_text_t),
 };
 
-START_TEST(istring_istr_tolower)
+START_TEST(istring_tolower)
 {
   int     rc;
   char    tbuff [200];
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_istr_tolower");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_tolower");
+
+  istringInit ("de_DE");
 
   for (int i = 0; i < tvaluesz; ++i) {
     strlcpy (tbuff, tvalues [i].u, sizeof (tbuff));
@@ -109,14 +116,18 @@ START_TEST(istring_istr_tolower)
     rc = strcmp (tbuff, tvalues [i].l);
     ck_assert_int_eq (rc, 0);
   }
+
+  istringCleanup ();
 }
 
-START_TEST(istring_istr_toupper)
+START_TEST(istring_toupper)
 {
   int     rc;
   char    tbuff [200];
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_istr_toupper");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_toupper");
+
+  istringInit ("de_DE");
 
   for (int i = 0; i < tvaluesz; ++i) {
     strlcpy (tbuff, tvalues [i].l, sizeof (tbuff));
@@ -124,6 +135,8 @@ START_TEST(istring_istr_toupper)
     rc = strcmp (tbuff, tvalues [i].u);
     ck_assert_int_eq (rc, 0);
   }
+
+  istringCleanup ();
 }
 
 
@@ -137,9 +150,9 @@ istring_suite (void)
   tc = tcase_create ("istring");
   tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, istring_istrlen);
-  tcase_add_test (tc, istring_istr_comp);
-  tcase_add_test (tc, istring_istr_tolower);
-  tcase_add_test (tc, istring_istr_toupper);
+  tcase_add_test (tc, istring_comp);
+  tcase_add_test (tc, istring_tolower);
+  tcase_add_test (tc, istring_toupper);
   suite_add_tcase (s, tc);
   return s;
 }
