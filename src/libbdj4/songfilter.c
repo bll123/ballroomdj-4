@@ -650,7 +650,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
   /* keywords are always checked */
   /* a song with a keyword set is automatically rejected, unless */
   /* there is a keyword filter set, and the song's keyword is in */
-  /* the kwyword filter list */
+  /* the keyword filter list */
   {
     char    *keyword;
 
@@ -683,6 +683,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     found = false;
     searchstr = (char *) sf->datafilter [SONG_FILTER_SEARCH];
 
+    /* put the most likely places first */
     if (! found) {
       found = songfilterCheckStr (songGetStr (song, TAG_TITLE), searchstr);
     }
@@ -693,15 +694,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
       found = songfilterCheckStr (songGetStr (song, TAG_ALBUMARTIST), searchstr);
     }
     if (! found) {
-      char        *dancestr;
-      ilistidx_t  idx;
-
-      idx = songGetNum (song, TAG_DANCE);
-      dancestr = danceGetStr (sf->dances, idx, DANCE_DANCE);
-      found = songfilterCheckStr (dancestr, searchstr);
-    }
-    if (! found) {
-      found = songfilterCheckStr (songGetStr (song, TAG_KEYWORD), searchstr);
+      found = songfilterCheckStr (songGetStr (song, TAG_NOTES), searchstr);
     }
     if (! found) {
       slist_t     *tagList;
@@ -713,9 +706,6 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
       while (! found && (tag = slistIterateKey (tagList, &iteridx)) != NULL) {
         found = songfilterCheckStr (tag, searchstr);
       }
-    }
-    if (! found) {
-      found = songfilterCheckStr (songGetStr (song, TAG_NOTES), searchstr);
     }
     if (! found) {
       found = songfilterCheckStr (songGetStr (song, TAG_ALBUM), searchstr);
@@ -841,7 +831,7 @@ songfilterCheckStr (char *str, char *searchstr)
 
   logProcBegin (LOG_PROC, "songfilterCheckStr");
 
-  if (str == NULL) {
+  if (str == NULL || searchstr == NULL) {
     logProcEnd (LOG_PROC, "songfilterCheckStr", "null-str");
     return found;
   }

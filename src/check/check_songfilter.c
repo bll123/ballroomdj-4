@@ -26,6 +26,7 @@
 #include "log.h"
 #include "musicdb.h"
 #include "rating.h"
+#include "songfav.h"
 #include "songfilter.h"
 #include "status.h"
 #include "templateutil.h"
@@ -511,6 +512,188 @@ START_TEST(songfilter_dance_list)
 }
 END_TEST
 
+START_TEST(songfilter_favorite)
+{
+  songfilter_t  *sf;
+  dbidx_t       arv, rv;
+  dbidx_t       dbiteridx;
+  dbidx_t       dbidx;
+  int           i;
+  song_t        *song;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_favorite");
+
+  i = 0;
+  dbStartIterator (db, &dbiteridx);
+  while ((song = dbIterate (db, &dbidx, &dbiteridx)) != NULL) {
+    if (i == 0) {
+      songSetNum (song, TAG_FAVORITE, SONG_FAVORITE_RED);
+    }
+    if (i == 1) {
+      songSetNum (song, TAG_FAVORITE, SONG_FAVORITE_BLUE);
+    }
+    if (i == 2) {
+      ; // nothing
+    }
+    if (i == 3) {
+      songSetNum (song, TAG_FAVORITE, SONG_FAVORITE_PURPLE);
+    }
+    ++i;
+    if (i > 3) {
+      i = 0;
+    }
+  }
+
+  sf = songfilterAlloc ();
+  arv = songfilterProcess (sf, db);
+
+  ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_FAVORITE), 0);
+
+  for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
+    songfilterSetNum (sf, SONG_FILTER_FAVORITE, i);
+
+    rv = songfilterProcess (sf, db);
+    ck_assert_int_lt (rv, arv);
+  }
+
+  ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_FAVORITE), 1);
+
+  songfilterFree (sf);
+}
+END_TEST
+
+START_TEST(songfilter_search)
+{
+  songfilter_t  *sf;
+  dbidx_t       arv, rv, temprv [8];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_search");
+
+  sf = songfilterAlloc ();
+  arv = songfilterProcess (sf, db);
+
+  ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_SEARCH), 0);
+
+  /* find in tags, tag5 is upper case, tag8 does not exist */
+  for (int i = 0; i < 8; ++i) {
+    char  tmp [40];
+
+    snprintf (tmp, sizeof (tmp), "tag%d", i + 1);
+    songfilterSetData (sf, SONG_FILTER_SEARCH, tmp);
+    rv = songfilterProcess (sf, db);
+    ck_assert_int_lt (rv, arv);
+    temprv [i] = rv;
+  }
+  ck_assert_int_eq (temprv [0], temprv [1]); // 1, 2, 3
+  ck_assert_int_eq (temprv [1], temprv [2]); // 1, 2, 3
+  ck_assert_int_eq (temprv [3], temprv [4]); // 4, 5
+  ck_assert_int_eq (temprv [5], temprv [6]); // 6, 7
+  ck_assert_int_eq (temprv [7], 0);  // "tag8"
+
+  /* find in tags */
+  songfilterSetData (sf, SONG_FILTER_SEARCH, "tag");
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, temprv [0] + temprv [1] + temprv [2] + temprv [3] +
+      temprv [4] + temprv [5] + temprv [6] + temprv [7]);
+
+  /* find in album-artist, artist */
+  songfilterSetData (sf, SONG_FILTER_SEARCH, "artist");
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, arv);
+  ck_assert_int_gt (rv, 0);
+
+  /* failed search */
+  songfilterSetData (sf, SONG_FILTER_SEARCH, "title");
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, arv);
+  ck_assert_int_eq (rv, 0);
+
+  /* find in album-artist, album */
+  songfilterSetData (sf, SONG_FILTER_SEARCH, "album");
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, arv);
+  ck_assert_int_gt (rv, 0);
+
+  /* find in title */
+  songfilterSetData (sf, SONG_FILTER_SEARCH, "argentinetango");
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, arv);
+  ck_assert_int_gt (rv, 0);
+
+  /* find in notes */
+  songfilterSetData (sf, SONG_FILTER_SEARCH, "notes1");
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, arv);
+  ck_assert_int_gt (rv, 0);
+
+  /* notes3 and notes4 are upper case */
+  songfilterSetData (sf, SONG_FILTER_SEARCH, "notes3");
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, arv);
+  ck_assert_int_gt (rv, 0);
+
+  /* some upper/lower unicode in notes */
+  songfilterSetData (sf, SONG_FILTER_SEARCH, "ÄÄÄÄääää");
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, arv);
+  ck_assert_int_gt (rv, 0);
+
+  /* keywords are not checked */
+
+  ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_SEARCH), 1);
+
+  songfilterFree (sf);
+}
+END_TEST
+
+START_TEST(songfilter_multi)
+{
+  songfilter_t  *sf;
+  dbidx_t       arv, rv;
+  dance_t       *dances;
+  slist_t       *dlist;
+  ilistidx_t    wkey;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_dance_idx");
+
+  sf = songfilterAlloc ();
+  arv = songfilterProcess (sf, db);
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  dlist = danceGetDanceList (dances);
+  wkey = slistGetNum (dlist, "Waltz");
+
+  /* waltz + search */
+  songfilterSetNum (sf, SONG_FILTER_DANCE_IDX, wkey);
+  songfilterSetData (sf, SONG_FILTER_SEARCH, "notes3");
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, arv);
+  ck_assert_int_gt (rv, 0);
+
+  /* waltz + search */
+  songfilterSetNum (sf, SONG_FILTER_DANCE_IDX, wkey);
+  songfilterSetData (sf, SONG_FILTER_SEARCH, "tag2");
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, arv);
+  ck_assert_int_gt (rv, 0);
+
+  /* waltz + rating */
+  songfilterOff (sf, SONG_FILTER_SEARCH);
+  songfilterSetNum (sf, SONG_FILTER_RATING, 3); // great
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, arv);
+  ck_assert_int_gt (rv, 0);
+
+  /* waltz + search + rating */
+  songfilterOn (sf, SONG_FILTER_SEARCH);
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, arv);
+  ck_assert_int_gt (rv, 0);
+
+  songfilterFree (sf);
+}
+END_TEST
+
 Suite *
 songfilter_suite (void)
 {
@@ -536,6 +719,9 @@ songfilter_suite (void)
   tcase_add_test (tc, songfilter_keyword);
   tcase_add_test (tc, songfilter_dance_idx);
   tcase_add_test (tc, songfilter_dance_list);
+  tcase_add_test (tc, songfilter_favorite);
+  tcase_add_test (tc, songfilter_search);
+  tcase_add_test (tc, songfilter_multi);
   suite_add_tcase (s, tc);
   return s;
 }

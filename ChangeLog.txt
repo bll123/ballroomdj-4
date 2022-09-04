@@ -8,6 +8,7 @@ BallroomDJ 4 Change Log
   - fixed a minor scrolling issue.
   - fix mark color display when selected.
   - fixed keyword filter.
+  - the search filter will not search dances or keywords.
 - song editor:
   - will now traverse the selected songs if there is more than
     one song selected.
