@@ -1,0 +1,24 @@
+# status
+# 2022-9-4
+version
+..1
+count
+..2
+KEY
+..0
+STATUS
+..New
+PLAYFLAG
+..1
+KEY
+..1
+STATUS
+..Edit
+PLAYFLAG
+..0
+KEY
+..2
+STATUS
+..Complete
+PLAYFLAG
+..1

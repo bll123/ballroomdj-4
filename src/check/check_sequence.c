@@ -35,6 +35,7 @@ setup (void)
   templateFileCopy ("genres.txt", "genres.txt");
   templateFileCopy ("levels.txt", "levels.txt");
   templateFileCopy ("ratings.txt", "ratings.txt");
+  filemanipCopy ("test-templates/status.txt", "data/status.txt");
   filemanipCopy ("test-templates/musicdb.dat", "data/musicdb.dat");
   filemanipCopy ("test-templates/test-sequence.sequence", "data/test-sequence.sequence");
   filemanipCopy ("test-templates/test-sequence.pl", "data/test-sequence.pl");

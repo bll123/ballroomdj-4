@@ -841,7 +841,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     0,                            /* is org tag           */
   },
   [TAG_LAST_UPDATED] =
-  { "LASTUPDATED",                /* tag */
+  { "LASTUPDATE",                 /* tag */
     NULL,                         /* display name         */
     { { NULL, NULL, NULL },
       { NULL, NULL, NULL },

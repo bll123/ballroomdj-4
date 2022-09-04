@@ -18,6 +18,7 @@
 #include "check_bdj.h"
 #include "datafile.h"
 #include "dirop.h"
+#include "filemanip.h"
 #include "fileop.h"
 #include "ilist.h"
 #include "log.h"
@@ -35,6 +36,7 @@ setup (void)
   templateFileCopy ("genres.txt", "genres.txt");
   templateFileCopy ("levels.txt", "levels.txt");
   templateFileCopy ("ratings.txt", "ratings.txt");
+  filemanipCopy ("test-templates/status.txt", "data/status.txt");
 }
 
 START_TEST(song_alloc)

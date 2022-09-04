@@ -16,16 +16,16 @@
 #include "bdjvarsdfload.h"
 #include "check_bdj.h"
 #include "datafile.h"
+#include "filemanip.h"
 #include "ilist.h"
 #include "log.h"
 #include "status.h"
 #include "slist.h"
-#include "templateutil.h"
 
 static void
 setup (void)
 {
-  templateFileCopy ("status.txt", "status.txt");
+  filemanipCopy ("test-templates/status.txt", "data/status.txt");
 }
 
 START_TEST(status_alloc)
@@ -57,8 +57,18 @@ START_TEST(status_iterate)
   while ((key = statusIterate (status, &iteridx)) >= 0) {
     val = statusGetStatus (status, key);
     pf = statusGetPlayFlag (status, key);
-    ck_assert_int_ge (pf, 0);
-    ck_assert_int_le (pf, 1);
+    if (key == 1) {
+      ck_assert_str_eq (val, "Edit");
+      ck_assert_int_eq (pf, 0);
+    } else {
+      ck_assert_int_eq (pf, 1);
+      if (key == 0) {
+        ck_assert_str_eq (val, "New");
+      }
+      if (key == 2) {
+        ck_assert_str_eq (val, "Complete");
+      }
+    }
     ++count;
   }
   ck_assert_int_eq (count, statusGetCount (status));

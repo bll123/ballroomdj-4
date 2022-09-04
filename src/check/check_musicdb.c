@@ -118,6 +118,7 @@ setup (void)
   templateFileCopy ("genres.txt", "genres.txt");
   templateFileCopy ("levels.txt", "levels.txt");
   templateFileCopy ("ratings.txt", "ratings.txt");
+  filemanipCopy ("test-templates/status.txt", "data/status.txt");
 }
 
 START_TEST(musicdb_open_new)

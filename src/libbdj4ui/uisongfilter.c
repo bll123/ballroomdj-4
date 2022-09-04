@@ -274,15 +274,8 @@ uisfSetDanceIdx (uisongfilter_t *uisf, int danceIdx)
   uidanceSetValue (uisf->uidance, danceIdx);
 
   if (danceIdx >= 0) {
-    ilist_t   *danceList;
-
-    danceList = ilistAlloc ("songfilter-dance", LIST_ORDERED);
-    /* any value will do; only interested in the dance index at this point */
-    ilistSetNum (danceList, danceIdx, 0, 0);
-    songfilterSetData (uisf->songfilter, SONG_FILTER_DANCE, danceList);
     songfilterSetNum (uisf->songfilter, SONG_FILTER_DANCE_IDX, danceIdx);
   } else {
-    songfilterClear (uisf->songfilter, SONG_FILTER_DANCE);
     songfilterClear (uisf->songfilter, SONG_FILTER_DANCE_IDX);
   }
 }

@@ -696,7 +696,6 @@ playlistSetSongFilter (playlist_t *pl)
   ilistidx_t    iteridx;
 
 
-
   logMsg (LOG_DBG, LOG_SONGSEL, "initializing song filter");
   pl->songfilter = songfilterAlloc ();
   assert (pl->songfilter != NULL);
@@ -739,7 +738,7 @@ playlistSetSongFilter (playlist_t *pl)
     }
   }
 
-  songfilterSetData (pl->songfilter, SONG_FILTER_DANCE, danceList);
+  songfilterSetData (pl->songfilter, SONG_FILTER_DANCE_LIST, danceList);
 }
 
 static void

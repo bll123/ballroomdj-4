@@ -89,25 +89,31 @@ genreFree (genre_t *genre)
   }
 }
 
-char *
+inline int
+genreGetCount (genre_t *genre)
+{
+  return ilistGetCount (genre->genre);
+}
+
+inline char *
 genreGetGenre (genre_t *genre, ilistidx_t ikey)
 {
   return ilistGetStr (genre->genre, ikey, GENRE_GENRE);
 }
 
-ssize_t
+inline ssize_t
 genreGetClassicalFlag (genre_t *genre, ilistidx_t ikey)
 {
   return ilistGetNum (genre->genre, ikey, GENRE_CLASSICAL_FLAG);
 }
 
-void
+inline void
 genreStartIterator (genre_t *genre, ilistidx_t *iteridx)
 {
   ilistStartIterator (genre->genre, iteridx);
 }
 
-ilistidx_t
+inline ilistidx_t
 genreIterate (genre_t *genre, ilistidx_t *iteridx)
 {
   return ilistIterateKey (genre->genre, iteridx);

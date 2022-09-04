@@ -11,7 +11,7 @@
 enum {
   SONG_FILTER_BPM_HIGH,
   SONG_FILTER_BPM_LOW,
-  SONG_FILTER_DANCE,
+  SONG_FILTER_DANCE_LIST,
   SONG_FILTER_DANCE_IDX,
   SONG_FILTER_FAVORITE,
   SONG_FILTER_GENRE,
@@ -62,6 +62,6 @@ bool          songfilterFilterSong (songfilter_t *sf, song_t *song);
 dbidx_t       songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx);
 char *        songfilterGetSort (songfilter_t *sf);
 ssize_t       songfilterGetNum (songfilter_t *sf, int filterType);
-long          songfilterGetCount (songfilter_t *sf);
+dbidx_t       songfilterGetCount (songfilter_t *sf);
 
 #endif /* INC_SONGFILTER_H */

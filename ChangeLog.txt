@@ -7,6 +7,7 @@ BallroomDJ 4 Change Log
 - music manager/song selection:
   - fixed a minor scrolling issue.
   - fix mark color display when selected.
+  - fixed keyword filter.
 - song editor:
   - will now traverse the selected songs if there is more than
     one song selected.

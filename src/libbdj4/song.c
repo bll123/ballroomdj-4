@@ -140,21 +140,26 @@ songParse (song_t *song, char *data, ssize_t didx)
   nlistSort (song->songInfo);
 
   /* check and set some defaults */
+
   lkey = nlistGetNum (song->songInfo, TAG_DANCELEVEL);
   if (lkey < 0) {
     lkey = levelGetDefaultKey (gsonginit.levels);
+    // Use default setting
     nlistSetNum (song->songInfo, TAG_DANCELEVEL, lkey);
   }
 
   lkey = nlistGetNum (song->songInfo, TAG_STATUS);
   if (lkey < 0) {
+    // New
     nlistSetNum (song->songInfo, TAG_STATUS, 0);
   }
 
   lkey = nlistGetNum (song->songInfo, TAG_DANCERATING);
   if (lkey < 0) {
+    // Unrated
     nlistSetNum (song->songInfo, TAG_DANCERATING, 0);
   }
+
   song->changed = false;
   song->songlistchange = false;
 }
