@@ -41,6 +41,9 @@ enum {
 #define BDJ4_SONGLIST_EXT ".songlist"
 #define BDJ4_IMG_SVG_EXT  ".svg"
 #define BDJ4_CONFIG_EXT   ".txt"
+/* when an audio file is modified, the original is saved with the */
+/* .original extension in the same directory */
+#define BDJ4_ORIGINAL_EXT ".original"
 
 /* data files */
 #define ITUNES_STARS_FN     "itunes-stars"

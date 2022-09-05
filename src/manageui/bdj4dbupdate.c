@@ -400,8 +400,7 @@ dbupdateProcessing (void *udata)
         pathInfoFree (pi);
         continue;
       }
-      if (pathInfoExtCheck (pi, ".mp3-original") ||
-          pathInfoExtCheck (pi, ".mp3-delete")) {
+      if (pathInfoExtCheck (pi, BDJ4_ORIGINAL_EXT)) {
         IncCount (C_FILE_SKIPPED);
         IncCount (C_BDJ_SKIP);
         logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-orig/del");
