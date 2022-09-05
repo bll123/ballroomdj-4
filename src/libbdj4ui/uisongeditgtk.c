@@ -17,7 +17,10 @@
 #include "level.h"
 #include "log.h"
 #include "nlist.h"
+#include "pathbld.h"
 #include "slist.h"
+#include "song.h"
+#include "songutil.h"
 #include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
@@ -75,6 +78,9 @@ enum {
 typedef struct {
   UIWidget            *parentwin;
   UIWidget            vbox;
+  UIWidget            musicbrainzPixbuf;
+  UIWidget            modified;
+  UIWidget            audioidImg;
   UIWidget            filedisp;
   UIWidget            sgentry;
   UIWidget            sgsbint;
@@ -126,6 +132,8 @@ uisongeditUIInit (uisongedit_t *uisongedit)
 
   uiutilsUIWidgetInit (&uiw->vbox);
   uiutilsUIWidgetInit (&uiw->playbutton);
+  uiutilsUIWidgetInit (&uiw->audioidImg);
+  uiutilsUIWidgetInit (&uiw->modified);
 
   uiCreateSizeGroupHoriz (&uiw->sgentry);
   uiCreateSizeGroupHoriz (&uiw->sgsbint);
@@ -225,6 +233,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   UIWidget          sg;
   UIWidget          uiwidget;
   int               count;
+  char              tbuff [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "uisongeditBuildUI");
   logProcBegin (LOG_PROC, "uisongeditBuildUI");
@@ -295,6 +304,23 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiLabelDarkenColor (&uiw->filedisp, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiLabelSetSelectable (&uiw->filedisp);
 
+  pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", ".svg",
+      PATHBLD_MP_IMGDIR);
+  uiImageFromFile (&uiw->musicbrainzPixbuf, tbuff);
+  uiImageGetPixbuf (&uiw->musicbrainzPixbuf);
+  uiWidgetMakePersistent (&uiw->musicbrainzPixbuf);
+
+  uiImageNew (&uiw->audioidImg);
+  uiImageClear (&uiw->audioidImg);
+  uiWidgetSetSizeRequest (&uiw->audioidImg, 24, -1);
+  uiWidgetSetMarginStart (&uiw->audioidImg, uiBaseMarginSz);
+  uiBoxPackEnd (&hbox, &uiw->audioidImg);
+
+  uiCreateLabel (&uiwidget, "");
+  uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&uiw->modified, &uiwidget);
+  uiLabelDarkenColor (&uiw->modified, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
   uiWidgetAlignHorizFill (&hbox);
@@ -354,6 +380,18 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
   if (data != NULL) {
     free (data);
     data = NULL;
+  }
+
+  uiImageClear (&uiw->audioidImg);
+  data = songGetStr (song, TAG_RECORDING_ID);
+  if (data != NULL && *data) {
+    uiImageSetFromPixbuf (&uiw->audioidImg, &uiw->musicbrainzPixbuf);
+  }
+  val = songGetNum (song, TAG_ADJUSTFLAGS);
+
+  uiLabelSetText (&uiw->modified, "");
+  if (val != SONG_ADJUST_NONE) {
+    uiLabelSetText (&uiw->modified, "*");
   }
 
   for (int count = 0; count < uiw->itemcount; ++count) {

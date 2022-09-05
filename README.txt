@@ -113,6 +113,7 @@ LICENSES
     BDJ4    : zlib/libpng License
     mutagen : GPLv2 License
     qrcode  : MIT License (templates/qrcode/LICENSE)
+    img/musicbrainz-logo.svg : GPLv2
     Windows:
       msys2      : BSD 3-Clause ( https://github.com/msys2/MSYS2-packages/blob/master/LICENSE )
       libmad     : GPL License

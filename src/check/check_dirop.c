@@ -27,10 +27,10 @@
 START_TEST(dirop_mkdir_isdir_a)
 {
   int       rc;
+  char *fn = "tmp/def";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_mkdir_isdir_a");
 
-  char *fn = "tmp/def";
   unlink (fn);
   rmdir (fn);
   fn = "tmp/abc/def";
@@ -71,13 +71,13 @@ START_TEST(dirop_del_dir_a)
 {
   FILE      *fh;
   int       rc;
+  char *dfn = "tmp/abc";
+  char *ofn = "tmp/abc/def";
+  char *nfn = "tmp/abc/def/xyz.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirop_del_dir_a");
 
   /* note that this fails on windows running under msys2 */
-  char *dfn = "tmp/abc";
-  char *ofn = "tmp/abc/def";
-  char *nfn = "tmp/abc/def/xyz.txt";
   rc = diropMakeDir (dfn);
   ck_assert_int_eq (rc, 0);
   rc = diropMakeDir (ofn);

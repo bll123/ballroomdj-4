@@ -41,7 +41,6 @@ songFullFileName (char *sfname)
 void
 songConvAdjustFlags (datafileconv_t *conv)
 {
-
   if (conv->valuetype == VALUE_STR) {
     int   num;
     char  *str;
