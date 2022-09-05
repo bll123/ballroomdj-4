@@ -14,6 +14,8 @@ BallroomDJ 4 Change Log
     one song selected.
   - clear all change markers on first/next/previous.
   - fixed save of song tags.
+  - added indicator for modified files.
+  - added indicator for audio identification.
 
 4.0.0 alpha 2022-08-27
 

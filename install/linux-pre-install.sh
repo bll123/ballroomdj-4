@@ -202,11 +202,11 @@ fi
 pconf=/etc/pulse/daemon.conf
 upconf=$HOME/.config/pulse/daemon.conf
 if [[ -f $pconf ]]; then
-  egrep '^flat-volumes *= *no$' $pconf > /dev/null 2>&1
+  grep -E '^flat-volumes *= *no$' $pconf > /dev/null 2>&1
   grc=$?
   urc=1
   if [[ -f $upconf ]]; then
-    egrep '^flat-volumes *= *no$' $upconf > /dev/null 2>&1
+    grep -E '^flat-volumes *= *no$' $upconf > /dev/null 2>&1
     urc=$?
   fi
   if [[ $grc -ne 0 && $urc -ne 0 ]]; then
@@ -218,14 +218,14 @@ if [[ -f $pconf ]]; then
     if [[ "$answer" = "y" || "$answer" = "Y" ]]; then
       if [[ -f $upconf ]]; then
         # $upconf exists
-        egrep '^flat-volumes' $upconf > /dev/null 2>&1
+        grep -E '^flat-volumes' $upconf > /dev/null 2>&1
         rc=$?
         if [[ $rc -eq 0 ]]; then
           # there's already a flat-volumes configuration in $upconf, modify it
           sed -i '/flat-volumes/ s,=.*,= no,' $upconf >> $LOG 2>&1
         else
           echo "-- updating flat-volumes in $upconf" >> $LOG
-          egrep 'flat-volumes' $upconf > /dev/null 2>&1
+          grep -E 'flat-volumes' $upconf > /dev/null 2>&1
           rc=$?
           if [[ $rc -eq 0 ]]; then
             # there exists some flat-volumes text in $upconf,

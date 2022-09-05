@@ -226,9 +226,9 @@ while read -r line; do
         continue
         ;;
     esac
-    egrep 'value=' $fn |
+    grep -E 'value=' $fn |
         sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' > $TMP
-    egrep '<p[^>]*>[A-Za-z][A-Za-z]*</p>' $fn |
+    grep -E '<p[^>]*>[A-Za-z][A-Za-z]*</p>' $fn |
         sed -e 's, *<p[^>]*>,,' -e 's,</p>,,' >> $TMP
     sort -u $TMP > $TMP.n
     mv -f $TMP.n $TMP

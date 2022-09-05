@@ -13,7 +13,7 @@ grc=0
 > $TIN
 for fn in */*.c */*.h build/config.h; do
   echo $fn $fn >> $TIN
-  egrep '^#include "' $fn |
+  grep -E '^#include "' $fn |
       sed -e 's,^#include ",,' \
       -e 's,".*$,,' \
       -e "s,^,$fn include/," >> $TIN

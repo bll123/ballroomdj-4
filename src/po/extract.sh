@@ -33,7 +33,7 @@ function mkpo {
 
     sed -n '1,/^$/ p' ${out}.old >> ${out}
     # "POT-Creation-Date: 2022-05-26"
-    cdt=$(egrep '^"POT-Creation-Date:' bdj4.pot)
+    cdt=$(grep -E '^"POT-Creation-Date:' bdj4.pot)
     # "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE"
     # "PO-Revision-Date: 2022-05-27 14:09"
     sed -i \
@@ -94,10 +94,10 @@ echo "// CONTEXT: configuration file: The completion message displayed on the ma
 sed -n -e '/^COMPLETEMSG/ {n;p}' $fn >> $TMP
 
 ctxt="// CONTEXT: text from the HTML templates (buttons and labels)"
-egrep 'value=' ../templates/*.html |
+grep -E 'value=' ../templates/*.html |
   sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' \
       -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMP
-egrep '<p[^>]*>[A-Za-z][A-Za-z]*</p>' ../templates/*.html |
+grep -E '<p[^>]*>[A-Za-z][A-Za-z]*</p>' ../templates/*.html |
   sed -e 's,.*: *<,<,' -e 's,<[^>]*>,,g' -e 's,^ *,,' -e 's, *$,,' \
       -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMP
 
@@ -111,7 +111,7 @@ echo "..QueueDance" >> $TMP
 
 # linux desktop shortcut
 echo "// CONTEXT: tooltip for desktop icon" >> $TMP
-egrep '^Comment=' ../install/bdj4.desktop |
+grep -E '^Comment=' ../install/bdj4.desktop |
   sed -e 's,Comment=,,' -e 's,^,..,' >> $TMP
 
 sed -e '/^\.\./ {s,^\.\.,, ; s,^,_(", ; s,$,"),}' $TMP > $TMP.n
