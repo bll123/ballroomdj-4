@@ -76,14 +76,16 @@ songConvAdjustFlags (datafileconv_t *conv)
     num = conv->num;
 
     str = tbuff;
-    if ((num & SONG_ADJUST_SPEED) == SONG_ADJUST_SPEED) {
-      *str++ = SONG_ADJUST_STR_SPEED;
-    }
-    if ((num & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
-      *str++ = SONG_ADJUST_STR_TRIM;
-    }
-    if ((num & SONG_ADJUST_NORM) == SONG_ADJUST_NORM) {
-      *str++ = SONG_ADJUST_STR_NORM;
+    if (num > 0 && ! (num & SONG_ADJUST_INVALID)) {
+      if ((num & SONG_ADJUST_SPEED) == SONG_ADJUST_SPEED) {
+        *str++ = SONG_ADJUST_STR_SPEED;
+      }
+      if ((num & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
+        *str++ = SONG_ADJUST_STR_TRIM;
+      }
+      if ((num & SONG_ADJUST_NORM) == SONG_ADJUST_NORM) {
+        *str++ = SONG_ADJUST_STR_NORM;
+      }
     }
     *str = '\0';
 

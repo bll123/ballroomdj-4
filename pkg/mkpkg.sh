@@ -74,8 +74,12 @@ function copyreleasefiles {
   done
 
   echo "   removing exclusions"
+  # bdj4se is only used for packaging
+  # testing: bdj4msetup, check_all, chkprocess, voltest
+  # img/profile[1-9] may be left over from testing
   rm -f \
       ${stage}/bin/bdj4se \
+      ${stage}/bin/bdj4msetup \
       ${stage}/bin/check_all \
       ${stage}/bin/chkprocess \
       ${stage}/bin/voltest \
@@ -83,7 +87,6 @@ function copyreleasefiles {
       ${stage}/img/mkicon.sh \
       ${stage}/img/README.txt \
       ${stage}/plocal/bin/checkmk \
-      ${stage}/plocal/bin/curl-config \
       ${stage}/plocal/bin/libcheck-*.dll \
       ${stage}/plocal/bin/ocspcheck.exe
   rm -rf ${stage}/img/profile0[1-9]

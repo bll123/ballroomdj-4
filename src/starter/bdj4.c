@@ -69,6 +69,7 @@ main (int argc, char * argv[])
     { "bdj4manageui",   no_argument,        NULL,   6 },
     { "bdj4marquee",    no_argument,        NULL,   7 },
     { "bdj4mobilemq",   no_argument,        NULL,   8 },
+    { "bdj4msetup",     no_argument,        NULL,   21 },
     { "bdj4player",     no_argument,        NULL,   9 },
     { "bdj4playerui",   no_argument,        NULL,   10 },
     { "bdj4remctrl",    no_argument,        NULL,   11 },
@@ -109,6 +110,7 @@ main (int argc, char * argv[])
     /* bdjtags */
     { "rawdata",        no_argument,        NULL,   0 },
     { "bdj3tags",       no_argument,        NULL,   0 },
+    { "noecho",         no_argument,        NULL,   0 },
     { NULL,             0,                  NULL,   0 }
   };
 
@@ -232,6 +234,11 @@ main (int argc, char * argv[])
       }
       case 20: {
         prog = "bdj4altsetup";
+        ++validargs;
+        break;
+      }
+      case 21: {
+        prog = "bdj4msetup";
         ++validargs;
         break;
       }

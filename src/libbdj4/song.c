@@ -101,7 +101,7 @@ songAlloc (void)
   assert (song != NULL);
   song->changed = false;
   song->songlistchange = false;
-  song->songInfo = NULL;
+  song->songInfo = nlistAlloc ("song", LIST_ORDERED, free);
   ++gsonginit.songcount;
   song->durcache = -1;
   return song;
@@ -129,17 +129,26 @@ songParse (song_t *song, char *data, ssize_t didx)
 {
   char        tbuff [40];
   ilistidx_t  lkey;
+  ssize_t     tval;
 
   if (song == NULL || data == NULL) {
     return;
   }
 
   snprintf (tbuff, sizeof (tbuff), "song-%zd", didx);
+  if (song->songInfo != NULL) {
+    nlistFree (song->songInfo);
+  }
   song->songInfo = datafileParse (data, tbuff, DFTYPE_KEY_VAL,
       songdfkeys, SONG_DFKEY_COUNT);
   nlistSort (song->songInfo);
 
   /* check and set some defaults */
+
+  tval = nlistGetNum (song->songInfo, TAG_ADJUSTFLAGS);
+  if (tval != LIST_VALUE_INVALID && (tval & SONG_ADJUST_INVALID)) {
+    nlistSetNum (song->songInfo, TAG_ADJUSTFLAGS, LIST_VALUE_INVALID);
+  }
 
   lkey = nlistGetNum (song->songInfo, TAG_DANCELEVEL);
   if (lkey < 0) {

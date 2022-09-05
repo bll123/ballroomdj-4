@@ -112,7 +112,8 @@ audiotagParseData (const char *ffn, char *data, int *rewrite)
 }
 
 void
-audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist, int rewrite)
+audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
+    int rewrite)
 {
   char        tmp [50];
   int         tagtype;
@@ -261,9 +262,8 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
   pi = pathInfo (ffn);
 
   *tmp = '\0';
-  if (pi->elen > 0 && pi->elen < sizeof (tmp)) {
-    strlcpy (tmp, pi->extension, pi->elen);
-    tmp [pi->elen] = '\0';
+  if (pi->elen > 0 && pi->elen + 1 < sizeof (tmp)) {
+    strlcpy (tmp, pi->extension, pi->elen + 1);
   }
 
   *filetype = AFILE_TYPE_UNKNOWN;
@@ -320,7 +320,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
 /*
  * mutagen output:
  *
- * mp4 output is very bizarre for freeform tags
+ * mp4 output from mutagen is very bizarre for freeform tags
  * - MPEG-4 audio (ALAC), 210.81 seconds, 1536000 bps (audio/mp4)
  * ----:BDJ4:DANCE=MP4FreeForm(b'Waltz', <AtomDataType.UTF8: 1>)
  * ----:com.apple.iTunes:MusicBrainz Track Id=MP4FreeForm(b'blah', <AtomDataType.UTF8: 1>)
@@ -734,21 +734,31 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
         tagdefs [tagkey].audiotags [tagtype].tag, value);
     if (tagtype == TAG_TYPE_MP4 &&
         tagkey == TAG_BPM) {
-      fprintf (ofh, "audio['%s'] = %s\n",
+      fprintf (ofh, "audio['%s'] = [%s]\n",
           tagdefs [tagkey].audiotags [tagtype].tag, value);
     } else if (tagtype == TAG_TYPE_MP4 &&
         tagkey == TAG_TRACKNUMBER) {
       if (value != NULL && *value) {
+        const char  *tot;
+
+        tot = nlistGetStr (datalist, TAG_TRACKTOTAL);
+        if (tot == NULL) {
+          tot = "0";
+        }
         fprintf (ofh, "audio['%s'] = [(%s,%s)]\n",
-            tagdefs [tagkey].audiotags [tagtype].tag, value,
-            nlistGetStr (datalist, TAG_TRACKTOTAL));
+            tagdefs [tagkey].audiotags [tagtype].tag, value, tot);
       }
     } else if (tagtype == TAG_TYPE_MP4 &&
         tagkey == TAG_DISCNUMBER) {
       if (value != NULL && *value) {
+        const char  *tot;
+
+        tot = nlistGetStr (datalist, TAG_DISCTOTAL);
+        if (tot == NULL) {
+          tot = "0";
+        }
         fprintf (ofh, "audio['%s'] = [(%s,%s)]\n",
-            tagdefs [tagkey].audiotags [tagtype].tag, value,
-            nlistGetStr (datalist, TAG_DISCTOTAL));
+            tagdefs [tagkey].audiotags [tagtype].tag, value, tot);
       }
     } else if (tagtype == TAG_TYPE_MP4 &&
         tagdefs [tagkey].audiotags [tagtype].base != NULL) {

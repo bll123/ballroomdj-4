@@ -37,6 +37,7 @@ main (int argc, char *argv [])
   slist_t     *tagdata;
   bool        writetags;
   int         rewrite;
+  bool        echo = true;
 
 
   static struct option bdj_options [] = {
@@ -45,6 +46,7 @@ main (int argc, char *argv [])
     { "rawdata",      no_argument,      NULL,   'r' },
     { "bdj3tags",     no_argument,      NULL,   '3' },
     { "debugself",    no_argument,      NULL,   0 },
+    { "noecho",       no_argument,      NULL,   'e', },
     { "nodetach",     no_argument,      NULL,   0, },
     { "theme",        no_argument,      NULL,   0 },
     { "msys",         no_argument,      NULL,   0 },
@@ -62,6 +64,10 @@ main (int argc, char *argv [])
       }
       case 'r': {
         rawdata = true;
+        break;
+      }
+      case 'e': {
+        echo = false;
         break;
       }
       default: {
@@ -102,7 +108,7 @@ main (int argc, char *argv [])
   }
 
   data = audiotagReadTags (argv [fidx]);
-  if (rawdata) {
+  if (echo && rawdata) {
     fprintf (stdout, "%s\n", data);
   }
   tagdata = audiotagParseData (argv [fidx], data, &rewrite);
@@ -134,25 +140,29 @@ main (int argc, char *argv [])
 
   if (writetags || rewrite) {
     int   value;
+
     value = bdjoptGetNum (OPT_G_WRITETAGS);
     bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
+fprintf (stderr, "== writing tags\n");
     audiotagWriteTags (argv [fidx], tagdata, wlist, rewrite);
     bdjoptSetNum (OPT_G_WRITETAGS, value);
   }
   slistFree (tagdata);
 
   /* output the tags after writing the new ones */
-  if (rawdata) {
+  if (echo && rawdata) {
     data = audiotagReadTags (argv [fidx]);
     fprintf (stdout, "%s\n", data);
   }
 
-//  fprintf (stdout, "-- %s\n", argv [fidx]);
-  slistStartIterator (wlist, &iteridx);
-  while ((key = slistIterateKey (wlist, &iteridx)) != NULL) {
-    val = slistGetStr (wlist, key);
-    if (val != NULL) {
-      fprintf (stdout, "%-20s %s\n", key, val);
+  if (echo) {
+//    fprintf (stdout, "-- %s\n", argv [fidx]);
+    slistStartIterator (wlist, &iteridx);
+    while ((key = slistIterateKey (wlist, &iteridx)) != NULL) {
+      val = slistGetStr (wlist, key);
+      if (val != NULL) {
+        fprintf (stdout, "%-20s %s\n", key, val);
+      }
     }
   }
   slistFree (wlist);
