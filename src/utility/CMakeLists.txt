@@ -22,23 +22,23 @@ target_link_libraries (bdj4tags
 )
 addIntlLibrary (bdj4tags)
 
-add_executable (bdj4msetup bdj4msetup.c)
+add_executable (tmusicsetup tmusicsetup.c)
 if (WIN32)
-  target_compile_options (bdj4msetup PRIVATE -municode)
+  target_compile_options (tmusicsetup PRIVATE -municode)
 endif()
-target_link_libraries (bdj4msetup
+target_link_libraries (tmusicsetup
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
 )
-addIntlLibrary (bdj4msetup)
+addIntlLibrary (tmusicsetup)
 
 install (TARGETS
-  bdj4info bdj4tags bdj4msetup
+  bdj4info bdj4tags tmusicsetup
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 if (APPLE)
   macUpdateRPath (bdj4info)
   macUpdateRPath (bdj4tags)
-  macUpdateRPath (bdj4msetup)
+  macUpdateRPath (tmusicsetup)
 endif()

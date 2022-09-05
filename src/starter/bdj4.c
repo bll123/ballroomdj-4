@@ -69,7 +69,7 @@ main (int argc, char * argv[])
     { "bdj4manageui",   no_argument,        NULL,   6 },
     { "bdj4marquee",    no_argument,        NULL,   7 },
     { "bdj4mobilemq",   no_argument,        NULL,   8 },
-    { "bdj4msetup",     no_argument,        NULL,   21 },
+    { "tmusicsetup",    no_argument,        NULL,   21 },
     { "bdj4player",     no_argument,        NULL,   9 },
     { "bdj4playerui",   no_argument,        NULL,   10 },
     { "bdj4remctrl",    no_argument,        NULL,   11 },
@@ -238,7 +238,9 @@ main (int argc, char * argv[])
         break;
       }
       case 21: {
-        prog = "bdj4msetup";
+        prog = "tmusicsetup";
+        nodetach = true;
+        wait = true;
         ++validargs;
         break;
       }

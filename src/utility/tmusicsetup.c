@@ -90,7 +90,7 @@ main (int argc, char *argv [])
   static struct option bdj_options [] = {
     { "bdj3tags",     no_argument,      NULL,   '3' },
     { "bdj4",         no_argument,      NULL,   'B' },
-    { "bdj4msetup",   no_argument,      NULL,   0 },
+    { "tmusicsetup",  no_argument,      NULL,   0 },
     { "debugself",    no_argument,      NULL,   0 },
     { "msys",         no_argument,      NULL,   0 },
     { "nodetach",     no_argument,      NULL,   0, },
