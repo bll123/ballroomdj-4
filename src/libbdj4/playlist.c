@@ -715,9 +715,9 @@ playlistSetSongFilter (playlist_t *pl)
   }
 
   kwList = nlistGetList (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS);
-  if (slistGetCount (kwList) > 0) {
-    songfilterSetData (pl->songfilter, SONG_FILTER_KEYWORD, kwList);
-  }
+  /* the keyword list is always set as in-use, so that songs with */
+  /* keywords will be rejected.  It's ok to send a null kwList. */
+  songfilterSetData (pl->songfilter, SONG_FILTER_KEYWORD, kwList);
 
   danceList = ilistAlloc ("pl-dance-filter", LIST_ORDERED);
   ilistStartIterator (pl->pldances, &iteridx);

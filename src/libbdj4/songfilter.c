@@ -647,11 +647,14 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
   /* put the most expensive filters last */
 
-  /* keywords are always checked */
-  /* a song with a keyword set is automatically rejected, unless */
-  /* there is a keyword filter set, and the song's keyword is in */
-  /* the keyword filter list */
-  {
+  /* keywords are a bit of a pain to handle */
+  /* auto song selection needs to reject any song with a keyword */
+  /*  unless it is in the keyword list */
+  /*  auto song selection will need to make the keyword filter as in use */
+  /*  and use an empty keyword list if necessary */
+  /* song selection display on the other hand, should show everything */
+  /* unless it is in playlist mode. */
+  if (sf->inuse [SONG_FILTER_KEYWORD]) {
     char    *keyword;
 
     keyword = songGetStr (song, TAG_KEYWORD);
@@ -695,6 +698,9 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     }
     if (! found) {
       found = songfilterCheckStr (songGetStr (song, TAG_NOTES), searchstr);
+    }
+    if (! found) {
+      found = songfilterCheckStr (songGetStr (song, TAG_KEYWORD), searchstr);
     }
     if (! found) {
       slist_t     *tagList;
@@ -833,6 +839,10 @@ songfilterCheckStr (char *str, char *searchstr)
 
   if (str == NULL || searchstr == NULL) {
     logProcEnd (LOG_PROC, "songfilterCheckStr", "null-str");
+    return found;
+  }
+  if (*searchstr == '\0') {
+    logProcEnd (LOG_PROC, "songfilterCheckStr", "no-data");
     return found;
   }
 

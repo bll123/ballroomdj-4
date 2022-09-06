@@ -61,7 +61,6 @@ typedef struct {
 
 typedef enum {
   TAG_ADJUSTFLAGS,            //
-  TAG_AFMODTIME,
   TAG_ALBUM,                  //
   TAG_ALBUMARTIST,            //
   TAG_ARTIST,                 //
@@ -71,31 +70,31 @@ typedef enum {
   TAG_DANCE,                  //
   TAG_DANCELEVEL,             //
   TAG_DANCERATING,            //
-  TAG_DATE,
+  TAG_DATE,                   //
   TAG_DBADDDATE,              //
   TAG_DBIDX,                  // not saved
   TAG_DISCNUMBER,             //
   TAG_DISCTOTAL,              //
   TAG_DURATION,               //
-  TAG_FAVORITE,
+  TAG_FAVORITE,               //
   TAG_FILE,                   //
-  TAG_GENRE,
+  TAG_GENRE,                  //
   TAG_KEYWORD,                //
   TAG_MQDISPLAY,              //
-  TAG_NOTES,
+  TAG_NOTES,                  //
   TAG_RECORDING_ID,           // musicbrainz_trackid
   TAG_RRN,                    //
-  TAG_SAMESONG,
+  TAG_SAMESONG,               //
   TAG_SONGEND,                //
   TAG_SONGSTART,              //
   TAG_SPEEDADJUSTMENT,        //
   TAG_STATUS,                 //
-  TAG_TAGS,
-  TAG_TITLE,
+  TAG_TAGS,                   //
+  TAG_TITLE,                  //
   TAG_TRACK_ID,               // musicbrainz_releasetrackid
-  TAG_TRACKNUMBER,
-  TAG_TRACKTOTAL,
-  TAG_LAST_UPDATED,
+  TAG_TRACKNUMBER,            //
+  TAG_TRACKTOTAL,             //
+  TAG_LAST_UPDATED,           //
   TAG_VOLUMEADJUSTPERC,       //
   TAG_WORK_ID,                // musicbrainz_workid
   TAG_KEY_MAX,

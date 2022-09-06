@@ -719,8 +719,6 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   musicdb_t *currdb;
   song_t    *song = NULL;
   size_t    len;
-  time_t    mtime;
-  char      tmtime [40];
   char      *val;
   int       rewrite;
 
@@ -820,11 +818,6 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
       rrn = songGetNum (song, TAG_RRN);
     }
   }
-
-  /* convert to a string for the dbwrite procedure */
-  mtime = fileopModTime (ffn);
-  snprintf (tmtime, sizeof (tmtime), "%zd", mtime);
-  slistSetStr (tagdata, tagdefs [TAG_AFMODTIME].tag, tmtime);
 
   /* the dbWrite() procedure will set the FILE tag */
   currdb = dbupdate->musicdb;

@@ -68,7 +68,6 @@ static char *songparsedata [] = {
     /* unix line endings */
     "FILE\n..argentinetango.mp3\n"
       "ADJUSTFLAGS\n..NTS\n"
-      "AFMODTIME\n..1660237221\n"
       "ALBUM\n..album\n"
       "ALBUMARTIST\n..albumartist\n"
       "ARTIST\n..artist\n"
@@ -106,7 +105,6 @@ static char *songparsedata [] = {
     /* windows line endings */
     "FILE\r\n..waltz.mp3\r\n"
       "ADJUSTFLAGS\r\n..NT\r\n"
-      "AFMODTIME\r\n..1660237221\r\n"
       "ALBUM\r\n..album\r\n"
       "ALBUMARTIST\r\n..albumartist\r\n"
       "ARTIST\r\n..artist\r\n"
@@ -144,7 +142,6 @@ static char *songparsedata [] = {
     /* unix line endings, unicode filename */
     "FILE\n..IAmtheBest_내가제일잘나가.mp3\n"
       "ADJUSTFLAGS\n..\n"
-      "AFMODTIME\n..1660237221\n"
       "ALBUM\n..album\n"
       "ALBUMARTIST\n..albumartist\n"
       "ARTIST\n..artist\n"

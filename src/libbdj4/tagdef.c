@@ -48,30 +48,6 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     0,                            /* text search          */
     0,                            /* is org tag           */
   },
-  [TAG_AFMODTIME] =
-  { "AFMODTIME",                  /* tag */
-    NULL,                         /* display name         */
-    { { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL },
-      { NULL, NULL, NULL }
-    },         /* audio tags */
-    NULL,                         /* itunes name          */
-    ET_NA,                        /* edit type            */
-    VALUE_NUM,                    /* value type           */
-    NULL,                         /* conv func            */
-    DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* album edit           */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
-  },
   [TAG_ALBUM] =
   { "ALBUM",                      /* tag */
     NULL,                         /* display name         */
@@ -1026,8 +1002,6 @@ tagdefInit (void)
 
   /* search item */
 
-  /* CONTEXT: label: audio file modification time */
-  tagdefs [TAG_AFMODTIME].displayname = _("Audio File Date");
   /* CONTEXT: label: when the database entry was last updated */
   tagdefs [TAG_LAST_UPDATED].displayname = _("Last Updated");
 

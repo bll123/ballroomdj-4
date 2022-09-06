@@ -41,7 +41,6 @@ static void songCleanup (void);
 /* must be sorted in ascii order */
 static datafilekey_t songdfkeys [] = {
   { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_NUM, songConvAdjustFlags, -1 },
-  { "AFMODTIME",            TAG_AFMODTIME,            VALUE_NUM, NULL, -1 },
   { "ALBUM",                TAG_ALBUM,                VALUE_STR, NULL, -1 },
   { "ALBUMARTIST",          TAG_ALBUMARTIST,          VALUE_STR, NULL, -1 },
   { "ARTIST",               TAG_ARTIST,               VALUE_STR, NULL, -1 },

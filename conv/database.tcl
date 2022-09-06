@@ -88,14 +88,15 @@ dict for {fn data} $musicdbList {
 
   # sort it now, make it easier
   foreach {tag} [lsort [dict keys $data]] {
-    if { $tag eq "BDJSYNCID" } { continue }
+    if { $tag eq "AFMODTIME" } { continue }
     if { $tag eq "ALBART" } { continue }
+    if { $tag eq "BDJSYNCID" } { continue }
+    if { $tag eq "DISPLAYIMG" } { continue }
     if { $tag eq "DURATION_HMS" } { continue }
     if { $tag eq "DURATION_STR" } { continue }
-    if { $tag eq "DISPLAYIMG" } { continue }
     if { $tag eq "NOMAXPLAYTIME" } { continue }
-    if { $tag eq "VARIOUSARTISTS" } { continue }
     if { $tag eq "UPDATEFLAG" } { continue }
+    if { $tag eq "VARIOUSARTISTS" } { continue }
     if { $tag eq "VOLUMEADJUSTMENT" } { continue }
     if { $tag eq "WRITETIME" } { continue }
     # not going to do the sort-of-odd sometimes re-org stuff

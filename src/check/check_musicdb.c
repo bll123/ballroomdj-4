@@ -31,7 +31,6 @@ static char *dbfn = "tmp/musicdb.dat";
 static char *songparsedata [] = {
     "FILE\n..argentinetango%d.mp3\n"
       "ADJUSTFLAGS\n..\n"
-      "AFMODTIME\n..1660237221\n"
       "ALBUM\n..album%d\n"
       "ALBUMARTIST\n..albumartist%d\n"
       "ARTIST\n..artist%d\n"
@@ -69,7 +68,6 @@ static char *songparsedata [] = {
     /* unicode filename */
     "FILE\n..IAmtheBest_내가제일잘나가%d.mp3\n"
       "ADJUSTFLAGS\n..\n"
-      "AFMODTIME\n..1660237221\n"
       "ALBUM\n..album%d\n"
       "ALBUMARTIST\n..albumartist%d\n"
       "ARTIST\n..artist%d\n"
