@@ -246,7 +246,8 @@ danceConvSpeed (datafileconv_t *conv)
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
-    idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_MAX, conv->str);
+    sval = conv->str;
+    idx = dfkeyBinarySearch (dancespeeddfkeys, DANCE_SPEED_MAX, sval);
     conv->num = LIST_VALUE_INVALID;
     if (idx >= 0) {
       conv->num = dancespeeddfkeys [idx].itemkey;

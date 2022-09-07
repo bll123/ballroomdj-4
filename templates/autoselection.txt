@@ -14,6 +14,7 @@ version
 # to avoid localization issues.
 #   0.5 = 500
 #   1000.0 = 1000000
+#   10000.0 = 10000000
 #
 # if the dance has exceeded the expected count (1000.0)
 LIMIT
@@ -23,9 +24,9 @@ LIMIT
 COUNTLOW
 ..500
 #
-# if the previous dance and the dance are both fast (1000.0)
+# if the previous dance and the dance are both fast (2000.0)
 BOTHFAST
-..1000000
+..2000000
 #
 # if the dance has a tag that matches the previous dance (600.0)
 TAGMATCH
@@ -52,9 +53,9 @@ LOGVALUE
 # number of beginning dances (3)
 BEGINCOUNT
 ..3
-# if < begincount, then set the chance of a fast dance (1000.0)
+# if < begincount, then set the chance of a fast dance (10000.0)
 BEGINFAST
-..1000000
+..10000000
 #
 # song selection
 #

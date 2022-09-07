@@ -41,7 +41,10 @@ check_libbdj4 (SRunner *sr)
    *  songlist              complete
    *  autosel               complete
    *  songfilter            complete
-   *  dancesel      in-progress
+   *  dancesel  in-progress
+// played dances checking
+//   this would occur when the queue is quite short.
+//   will need to add to played dances, and not the queue.
    *  sequence              complete
    *  songsel
    *  playlist
