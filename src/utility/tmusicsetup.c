@@ -69,6 +69,7 @@ static const char *createFile (const char *src, const char *dest);
 
 static int  gtracknum [TM_MAX_DANCE];
 static int  gseqnum [TM_MAX_DANCE];
+static char *tmusicdir = "test-music/";
 
 int
 main (int argc, char *argv [])
@@ -142,7 +143,7 @@ main (int argc, char *argv [])
   }
   empty = slistAlloc ("tm-empty", LIST_ORDERED, free);
 
-  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
+  bdjoptSetStr (OPT_M_DIR_MUSIC, tmusicdir);
   bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
   bdjvarsdfloadInit ();
 
@@ -169,7 +170,7 @@ main (int argc, char *argv [])
     dest = ilistGetStr (tmlist, key, TAG_TITLE);
     fn = createFile (src, dest);
     audiotagWriteTags (fn, empty, tagdata, 0);
-    dbWrite (db, dest, tagdata, MUSICDB_ENTRY_NEW);
+    dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
   }
 
   dbClose (db);
@@ -238,9 +239,9 @@ createFile (const char *src, const char *dest)
   char        to [MAXPATHLEN];
   pathinfo_t  *pi;
 
-  snprintf (from, sizeof (from), "test-music/%s", src);
+  snprintf (from, sizeof (from), "%s/%s", tmusicdir, src);
   pi = pathInfo (src);
-  snprintf (to, sizeof (to), "test-music/%s%*s", dest,
+  snprintf (to, sizeof (to), "%s/%s%*s", tmusicdir, dest,
       (int) pi->elen, pi->extension);
   filemanipCopy (from, to);
   pathInfoFree (pi);

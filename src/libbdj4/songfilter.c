@@ -181,6 +181,7 @@ songfilterReset (songfilter_t *sf)
   logProcEnd (LOG_PROC, "songfilterReset", "");
 }
 
+/* checks to see if the song-filter is turned on in the display settings */
 inline bool
 songfilterCheckSelection (songfilter_t *sf, int type)
 {
@@ -420,7 +421,6 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     ilistidx_t  sliter;
     ilistidx_t  slkey;
 
-
     sl = songlistLoad (sf->datafilter [SONG_FILTER_PLAYLIST]);
     songlistStartIterator (sl, &sliter);
     while ((slkey = songlistIterate (sl, &sliter)) >= 0) {
@@ -605,8 +605,8 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     listidx_t     sstatus;
 
     status = bdjvarsdfGet (BDJVDF_STATUS);
-
     sstatus = songGetNum (song, TAG_STATUS);
+
     if (status != NULL &&
         ! statusGetPlayFlag (status, sstatus)) {
       logMsg (LOG_DBG, LOG_SONGSEL, "reject %zd status not playable", dbidx);
@@ -650,7 +650,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
   /* keywords are a bit of a pain to handle */
   /* auto song selection needs to reject any song with a keyword */
   /*  unless it is in the keyword list */
-  /*  auto song selection will need to make the keyword filter as in use */
+  /*  auto song selection will need to mark the keyword filter as in use */
   /*  and use an empty keyword list if necessary */
   /* song selection display on the other hand, should show everything */
   /* unless it is in playlist mode. */
@@ -742,29 +742,6 @@ songfilterGetSort (songfilter_t *sf)
   return sf->sortselection;
 }
 
-ssize_t
-songfilterGetNum (songfilter_t *sf, int filterType)
-{
-  int         valueType;
-
-  logProcBegin (LOG_PROC, "songfilterGetNum");
-
-  if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterGetNum", "null");
-    return -1;
-  }
-
-  valueType = valueTypeLookup [filterType];
-  if (! sf->inuse [filterType]) {
-    logProcEnd (LOG_PROC, "songfilterGetNum", "not-in-use");
-    return -1;
-  }
-
-  logProcEnd (LOG_PROC, "songfilterGetNum", "");
-  return sf->numfilter [filterType];
-}
-
-
 dbidx_t
 songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx)
 {
@@ -795,7 +772,6 @@ songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx)
 inline dbidx_t
 songfilterGetCount (songfilter_t *sf)
 {
-
   logProcBegin (LOG_PROC, "songfilterGetCount");
 
   if (sf == NULL) {

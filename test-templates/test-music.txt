@@ -3152,7 +3152,7 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..%03d-waltz
+..%03d-waltz-kw
 KEY
 ..105
 SOURCE
@@ -3184,7 +3184,7 @@ DANCERATING
 FAVORITE
 ..redstar
 TITLE
-..%03d-waltz
+..%03d-waltz-kw
 KEY
 ..106
 SOURCE
@@ -3218,7 +3218,7 @@ DANCERATING
 FAVORITE
 ..bluestar
 TITLE
-..%03d-waltz
+..%03d-waltz-kw
 KEY
 ..107
 SOURCE
@@ -3250,7 +3250,7 @@ DANCERATING
 FAVORITE
 ..purplestar
 TITLE
-..%03d-waltz
+..%03d-waltz-kw
 KEY
 ..108
 SOURCE
@@ -3284,7 +3284,7 @@ DANCERATING
 SAMESONG
 ..5
 TITLE
-..%03d-waltz
+..%03d-waltz-kw
 KEY
 ..109
 SOURCE
@@ -3314,7 +3314,7 @@ DANCE
 DANCERATING
 ..Good
 TITLE
-..%03d-waltz
+..%03d-waltz-kw
 KEY
 ..110
 SOURCE
@@ -3346,7 +3346,7 @@ DANCERATING
 FAVORITE
 ..redstar
 TITLE
-..%03d-tango
+..%03d-tango-kw
 KEY
 ..111
 SOURCE
@@ -3378,7 +3378,7 @@ DANCERATING
 FAVORITE
 ..bluestar
 TITLE
-..%03d-tango
+..%03d-tango-kw
 KEY
 ..112
 SOURCE
@@ -3410,7 +3410,7 @@ DANCERATING
 FAVORITE
 ..purplestar
 TITLE
-..%03d-tango
+..%03d-tango-kw
 KEY
 ..113
 SOURCE
@@ -3438,7 +3438,7 @@ DANCE
 DANCERATING
 ..Good
 TITLE
-..%03d-tango
+..%03d-tango-kw
 KEY
 ..114
 SOURCE
@@ -3470,7 +3470,7 @@ DANCERATING
 SAMESONG
 ..9
 TITLE
-..%03d-tango
+..%03d-tango-kw
 KEY
 ..115
 SOURCE
@@ -3504,7 +3504,7 @@ FAVORITE
 SAMESONG
 ..9
 TITLE
-..%03d-tango
+..%03d-tango-kw
 
 # .ogg
 

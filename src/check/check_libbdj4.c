@@ -40,7 +40,7 @@ check_libbdj4 (SRunner *sr)
    *  musicdb               complete
    *  songlist              complete
    *  autosel               complete
-   *  songfilter
+   *  songfilter            complete
    *  dancesel
    *  sequence              complete
    *  songsel

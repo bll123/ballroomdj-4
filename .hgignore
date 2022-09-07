@@ -26,7 +26,7 @@ syntax: regexp
 ^src/po/.*\.bak$
 ^src/po/.*\.backup$
 ^src/w$
-^test-music/
+^test-music
 ^tmp/
 ^web/marquee4.html$
 ^x/

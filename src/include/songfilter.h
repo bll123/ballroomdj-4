@@ -61,7 +61,6 @@ dbidx_t       songfilterProcess (songfilter_t *sf, musicdb_t *musicdb);
 bool          songfilterFilterSong (songfilter_t *sf, song_t *song);
 dbidx_t       songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx);
 char *        songfilterGetSort (songfilter_t *sf);
-ssize_t       songfilterGetNum (songfilter_t *sf, int filterType);
 dbidx_t       songfilterGetCount (songfilter_t *sf);
 
 #endif /* INC_SONGFILTER_H */
