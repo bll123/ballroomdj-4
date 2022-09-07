@@ -156,7 +156,7 @@ danceselAddPlayed (dancesel_t *dancesel, ilistidx_t danceIdx)
 
 ilistidx_t
 danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
-    ssize_t priorCount, danceselHistory_t historyProc, void *userdata)
+    ssize_t priorHistIdx, danceselHistory_t historyProc, void *userdata)
 {
   ilistidx_t    didx;
   double        tbase;
@@ -198,8 +198,8 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
   dancesel->danceProbTable = nlistAlloc ("dancesel-prob-table", LIST_ORDERED, NULL);
 
   /* data from the previous dance */
-  if (priorCount > 0) {
-    pddanceIdx = historyProc (userdata, priorCount - 1);
+  if (priorHistIdx > 0 && historyProc != NULL) {
+    pddanceIdx = historyProc (userdata, priorHistIdx - 1);
     logMsg (LOG_DBG, LOG_DANCESEL, "found previous dance %d/%s", pddanceIdx,
         danceGetStr (dancesel->dances, pddanceIdx, DANCE_DANCE));
     pdspeed = danceGetNum (dancesel->dances, pddanceIdx, DANCE_SPEED);
@@ -255,7 +255,7 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
     }
 
     /* if this dance and the previous dance were both fast ( / 1000) */
-    if (priorCount > 0 && pddanceIdx >= 0 &&
+    if (priorHistIdx > 0 && pddanceIdx >= 0 &&
         pdspeed == speed && speed == DANCE_SPEED_FAST) {
       abase = abase / autoselGetDouble (dancesel->autosel, AUTOSEL_BOTHFAST);
       logMsg (LOG_DBG, LOG_DANCESEL, "  speed is fast and same as previous / %.6f", abase);
@@ -264,23 +264,23 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
     /* if there is a tag match between the previous dance and this one */
     /* ( / 600 ) */
     tags = danceGetList (dancesel->dances, didx, DANCE_TAGS);
-    if (priorCount > 0 && pddanceIdx >= 0 && matchTag (tags, pdtags)) {
+    if (priorHistIdx > 0 && pddanceIdx >= 0 && matchTag (tags, pdtags)) {
       abase = abase / dancesel->tagMatch;
       logMsg (LOG_DBG, LOG_DANCESEL, "  matched tags with previous / %.6f", abase);
     }
 
     /* if this dance and the previous dance have matching types ( / 600 ) */
     type = danceGetNum (dancesel->dances, didx, DANCE_TYPE);
-    if (priorCount > 0 && pddanceIdx >= 0 && pdtype == type) {
+    if (priorHistIdx > 0 && pddanceIdx >= 0 && pdtype == type) {
       abase = abase / autoselGetDouble (dancesel->autosel, AUTOSEL_TYPE_MATCH);
       logMsg (LOG_DBG, LOG_DANCESEL, "  matched type with previous / %.6f", abase);
     }
 
     nlistSetDouble (dancesel->adjustBase, didx, abase);
 
-    if (priorCount > 0) {
+    if (priorHistIdx > 0) {
       /* now go back through the history */
-      priorIdx = priorCount - 1;
+      priorIdx = priorHistIdx - 1;
 
       queueStartIterator (dancesel->playedDances, &qiteridx);
 
@@ -329,7 +329,7 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
 
   tval = dRandom ();
   didx = nlistSearchProbTable (dancesel->danceProbTable, tval);
-  logMsg (LOG_DBG, LOG_DANCESEL, "select %d/%s",
+  logMsg (LOG_DBG, LOG_BASIC, "== select %d/%s",
         didx, danceGetStr (dancesel->dances, didx, DANCE_DANCE));
 
   logProcEnd (LOG_PROC, "danceselSelect", "");

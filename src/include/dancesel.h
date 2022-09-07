@@ -37,7 +37,7 @@ void            danceselFree (dancesel_t *dancesel);
 void            danceselAddCount (dancesel_t *dancesel, ilistidx_t danceIdx);
 void            danceselAddPlayed (dancesel_t *dancesel, ilistidx_t danceIdx);
 ilistidx_t      danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
-                    ssize_t priorCount, danceselHistory_t historyProc,
+                    ssize_t priorHistIdx, danceselHistory_t historyProc,
                     void *userdata);
 
 #endif /* INC_DANCESEL_H */

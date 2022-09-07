@@ -18,6 +18,7 @@
 #include "check_bdj.h"
 #include "localeutil.h"
 #include "log.h"
+#include "osrandom.h"
 #include "osutils.h"
 #include "sysvars.h"
 
@@ -46,6 +47,7 @@ main (int argc, char *argv [])
     }
   }
 
+  sRandom ();
   sysvarsInit (argv [0]);
   localeInit ();
 
