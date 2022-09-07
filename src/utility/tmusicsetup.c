@@ -54,6 +54,7 @@ static datafilekey_t tmdfkeys [] = {
   { "GENRE",                TAG_GENRE,                VALUE_STR, NULL, -1 },
   { "KEYWORD",              TAG_KEYWORD,              VALUE_STR, NULL, -1 },
   { "NOTES",                TAG_NOTES,                VALUE_STR, NULL, -1 },
+  { "SAMESONG",             TAG_SAMESONG,             VALUE_STR, NULL, -1 },
   { "SOURCE",               TM_SOURCE,                VALUE_STR, NULL, -1 },
   { "STATUS",               TAG_STATUS,               VALUE_STR, NULL, -1 },
   { "TAGS",                 TAG_TAGS,                 VALUE_STR, NULL, -1 },
@@ -146,6 +147,8 @@ main (int argc, char *argv [])
   bdjoptSetStr (OPT_M_DIR_MUSIC, tmusicdir);
   bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
   bdjvarsdfloadInit ();
+
+  logStart ("tmusicsetup", "tm", LOG_ALL);
 
   snprintf (dbfn, sizeof (dbfn), "test-templates/musicdb.dat");
   /* create an entirely new database */

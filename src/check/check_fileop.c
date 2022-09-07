@@ -25,10 +25,10 @@ START_TEST(fileop_exists_a)
 {
   FILE      *fh;
   int       rc;
+  char *fn = "tmp/def.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_exists_a");
 
-  char *fn = "tmp/def.txt";
   unlink (fn);
   fn = "tmp/abc.txt";
   fh = fopen (fn, "w");
@@ -46,10 +46,10 @@ START_TEST(fileop_size_a)
 {
   FILE      *fh;
   ssize_t   sz;
+  char *fn = "tmp/def.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_size_a");
 
-  char *fn = "tmp/def.txt";
   unlink (fn);
   fn = "tmp/abc.txt";
   fh = fopen (fn, "w");
@@ -69,10 +69,10 @@ START_TEST(fileop_modtime_a)
   FILE      *fh;
   time_t    ctm;
   time_t    tm;
+  char *fn = "tmp/def.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_modtime_a");
 
-  char *fn = "tmp/def.txt";
   ctm = time (NULL);
   unlink (fn);
   fn = "tmp/abc.txt";
@@ -91,10 +91,10 @@ START_TEST(fileop_setmodtime_a)
   FILE      *fh;
   time_t    ctm;
   time_t    tm;
+  char *fn = "tmp/def.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_setmodtime_a");
 
-  char *fn = "tmp/def.txt";
   ctm = time (NULL);
   unlink (fn);
   fn = "tmp/abc.txt";
@@ -116,10 +116,10 @@ START_TEST(fileop_delete_a)
 {
   FILE      *fh;
   int       rc;
+  char *fn = "tmp/def.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_delete_a");
 
-  char *fn = "tmp/def.txt";
   unlink (fn);
   fn = "tmp/abc.txt";
   fh = fopen (fn, "w");

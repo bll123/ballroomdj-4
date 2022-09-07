@@ -48,6 +48,7 @@ Suite *     slist_suite (void);
 Suite *     autosel_suite (void);
 Suite *     bdjvarsdf_suite (void);
 Suite *     bdjvarsdfload_suite (void);
+Suite *     dancesel_suite (void);
 Suite *     dispsel_suite (void);
 Suite *     dnctypes_suite (void);
 Suite *     dance_suite (void);

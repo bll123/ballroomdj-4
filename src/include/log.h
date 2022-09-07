@@ -10,23 +10,24 @@
 
 /*
  * log tags:
- *  ck - check_all
- *  in - installer
- *  up - updater
  *  ai - alt-installer
- *  st - starter
- *  hp - helper
- *  pu - player ui
- *  mu - management ui
  *  bc - bpm counter
+ *  ck - check_all
+ *  cu - configuration ui
  *  db - database update
  *  dt - database tag
- *  cu - configuration ui
+ *  hp - helper
+ *  in - installer
  *  m  - main
- *  p  - player
- *  mq - marquee
- *  rc - mobile remote control
  *  mm - mobile marquee
+ *  mq - marquee
+ *  mu - management ui
+ *  p  - player
+ *  pu - player ui
+ *  rc - mobile remote control
+ *  st - starter
+ *  tm - tmusicsetup
+ *  up - updater
  *
  */
 

@@ -41,7 +41,7 @@ check_libbdj4 (SRunner *sr)
    *  songlist              complete
    *  autosel               complete
    *  songfilter            complete
-   *  dancesel
+   *  dancesel      in-progress
    *  sequence              complete
    *  songsel
    *  playlist
@@ -112,6 +112,9 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = songfilter_suite();
+  srunner_add_suite (sr, s);
+
+  s = dancesel_suite();
   srunner_add_suite (sr, s);
 
   s = sequence_suite();

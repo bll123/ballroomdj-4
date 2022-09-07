@@ -167,7 +167,7 @@ NOTES
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -342,7 +342,7 @@ SOURCE
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -519,7 +519,7 @@ NOTES
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -694,7 +694,7 @@ SOURCE
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -869,7 +869,7 @@ NOTES
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -1042,7 +1042,7 @@ SOURCE
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -1219,7 +1219,7 @@ NOTES
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -1394,7 +1394,7 @@ SOURCE
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -1571,7 +1571,7 @@ NOTES
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -1620,7 +1620,7 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..%03d-tango
+..%03d-tango-ss
 KEY
 ..55
 SOURCE
@@ -1648,7 +1648,7 @@ DANCERATING
 FAVORITE
 ..redstar
 TITLE
-..%03d-tango
+..%03d-tango-ss
 KEY
 ..56
 SOURCE
@@ -1678,7 +1678,7 @@ DANCERATING
 FAVORITE
 ..bluestar
 TITLE
-..%03d-tango
+..%03d-tango-ss
 KEY
 ..57
 SOURCE
@@ -1708,7 +1708,7 @@ DANCERATING
 FAVORITE
 ..purplestar
 TITLE
-..%03d-tango
+..%03d-tango-ss
 KEY
 ..58
 SOURCE
@@ -1738,7 +1738,7 @@ DANCERATING
 SAMESONG
 ..9
 TITLE
-..%03d-tango
+..%03d-tango-ss
 KEY
 ..59
 SOURCE
@@ -1746,7 +1746,7 @@ SOURCE
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -1766,7 +1766,7 @@ DANCERATING
 SAMESONG
 ..9
 TITLE
-..%03d-tango
+..%03d-tango-ss
 
 # .flac
 
@@ -1926,7 +1926,7 @@ NOTES
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -2104,7 +2104,7 @@ NOTES
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -2287,7 +2287,7 @@ BPM
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -2367,7 +2367,7 @@ DANCERATING
 SAMESONG
 ..5
 TITLE
-..%03d-waltz
+..%03d-waltz-ss
 KEY
 ..80
 SOURCE
@@ -2476,7 +2476,7 @@ BPM
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -2664,7 +2664,7 @@ BPM
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -2717,7 +2717,7 @@ FAVORITE
 SAMESONG
 ..4
 TITLE
-..%03d-westcoastswing
+..%03d-westcoastswing-ss
 KEY
 ..91
 SOURCE
@@ -2749,7 +2749,7 @@ FAVORITE
 SAMESONG
 ..4
 TITLE
-..%03d-westcoastswing
+..%03d-westcoastswing-ss
 KEY
 ..92
 SOURCE
@@ -2843,7 +2843,7 @@ NOTES
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -2901,7 +2901,7 @@ FAVORITE
 SAMESONG
 ..5
 TITLE
-..%03d-ははは-ja
+..%03d-こんにちは-ja-ss
 KEY
 ..97
 SOURCE
@@ -2933,7 +2933,7 @@ FAVORITE
 SAMESONG
 ..5
 TITLE
-..%03d-夕陽伴我歸-zh
+..%03d-夕陽伴我歸-zh-ss
 KEY
 ..98
 SOURCE
@@ -3035,7 +3035,7 @@ BPM
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -3281,8 +3281,6 @@ DANCE
 ..Waltz
 DANCERATING
 ..Good
-SAMESONG
-..5
 TITLE
 ..%03d-waltz-kw
 KEY
@@ -3296,7 +3294,7 @@ KEYWORD
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -3467,8 +3465,6 @@ DANCE
 ..Tango
 DANCERATING
 ..Good
-SAMESONG
-..9
 TITLE
 ..%03d-tango-kw
 KEY
@@ -3482,7 +3478,7 @@ KEYWORD
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE
@@ -3501,8 +3497,6 @@ DANCERATING
 ..Good
 FAVORITE
 ..redstar
-SAMESONG
-..9
 TITLE
 ..%03d-tango-kw
 
@@ -3667,7 +3661,7 @@ BPM
 TAGS
 ..tag6 tag7
 STATUS
-..Edit
+..Complete
 DANCELEVEL
 ..Advanced
 GENRE

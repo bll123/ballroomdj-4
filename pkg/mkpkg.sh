@@ -152,6 +152,7 @@ case $systype in
 esac
 
 if [[ $preskip == F ]]; then
+  ./src/utils/mktestdb.sh
   (
     cd src
     make check

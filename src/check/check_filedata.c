@@ -25,10 +25,10 @@ START_TEST(filedata_readall)
   char    *data;
   char    *tdata;
   size_t  len;
+  char *fn = "tmp/abc.txt";
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filedata_readall");
 
-  char *fn = "tmp/abc.txt";
   fh = fopen (fn, "w");
   fclose (fh);
   /* empty file */
