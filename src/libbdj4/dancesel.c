@@ -125,6 +125,7 @@ danceselFree (dancesel_t *dancesel)
   logProcEnd (LOG_PROC, "danceselFree", "");
 }
 
+/* must be called if the selected dance was used */
 void
 danceselAddCount (dancesel_t *dancesel, ilistidx_t danceIdx)
 {
@@ -139,6 +140,8 @@ danceselAddCount (dancesel_t *dancesel, ilistidx_t danceIdx)
   ++dancesel->selCount;
 }
 
+/* played history queue */
+/* this is only relevant if there is nothing queued by the caller */
 void
 danceselAddPlayed (dancesel_t *dancesel, ilistidx_t danceIdx)
 {
@@ -155,6 +158,8 @@ danceselAddPlayed (dancesel_t *dancesel, ilistidx_t danceIdx)
   logProcEnd (LOG_PROC, "danceselAddPlayed", "");
 }
 
+/* after selecting a dance, call danceselAddCount() if the dance will */
+/* be used as a selection */
 ilistidx_t
 danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
     ssize_t priorHistCount, danceselHistory_t historyProc, void *userdata)
@@ -298,6 +303,12 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
 
       queueStartIterator (dancesel->playedDances, &qiteridx);
 
+      /* check both the queue and the played history may have been */
+      /* necessary when the default queue length in bdj3 was 5. */
+      /* now, maybe not necessary.  */
+      /* the inefficiencies of asking bdj4main to look up the history */
+      /* in its queue needs to be reviewed and possibly reworked.  */
+      /* this will be done at a later date. */
       histCount = 1;
       hdone = false;
       while (historyProc != NULL &&

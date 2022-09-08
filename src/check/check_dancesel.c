@@ -160,7 +160,7 @@ START_TEST(dancesel_choose_two_no_hist)
 }
 END_TEST
 
-/* the following are checking against the queue, and not what was played */
+/* the following are checking against the queue */
 /* dance selection doesn't work well due to the limited number of dances */
 /* being selected in these tests */
 

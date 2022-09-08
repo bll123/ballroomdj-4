@@ -296,9 +296,12 @@ songfilterSetData (songfilter_t *sf, int filterType, void *value)
   sf->changeTime = mstime ();
 
   if (valueType == SONG_FILTER_SLIST) {
-    if (sf->datafilter [filterType] != NULL) {
-      slistFree (sf->datafilter [filterType]);
-      sf->datafilter [filterType] = NULL;
+    if (filterType != SONG_FILTER_KEYWORD) {
+      /* songfilter is not the owner of the keyword list */
+      if (sf->datafilter [filterType] != NULL) {
+        slistFree (sf->datafilter [filterType]);
+        sf->datafilter [filterType] = NULL;
+      }
     }
     sf->datafilter [filterType] = value;
   }
@@ -795,7 +798,10 @@ songfilterFreeData (songfilter_t *sf, int i)
       free (sf->datafilter [i]);
     }
     if (valueTypeLookup [i] == SONG_FILTER_SLIST) {
-      slistFree (sf->datafilter [i]);
+      /* songfilter is not the owner of the keyword list */
+      if (i != SONG_FILTER_KEYWORD) {
+        slistFree (sf->datafilter [i]);
+      }
     }
     if (valueTypeLookup [i] == SONG_FILTER_ILIST) {
       ilistFree (sf->datafilter [i]);

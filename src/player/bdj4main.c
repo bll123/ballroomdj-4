@@ -1962,6 +1962,10 @@ mainMusicQueueNext (maindata_t *mainData, const char *args)
   logProcEnd (LOG_PROC, "mainMusicQueueNext", "");
 }
 
+/* this is terribly inefficient */
+/* for the time being, it will be left as is until such time */
+/* that the structure of 'dancesel' can be reviewed and possibly */
+/* reworked */
 static ilistidx_t
 mainMusicQueueHistory (void *tmaindata, ilistidx_t idx)
 {
@@ -1978,6 +1982,7 @@ mainMusicQueueHistory (void *tmaindata, ilistidx_t idx)
     return -1;
   }
 
+fprintf (stderr, "main: history: lookup %d\n", idx);
   dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqManageIdx, idx);
   song = dbGetByIdx (mainData->musicdb, dbidx);
   if (song != NULL) {
