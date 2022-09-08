@@ -9,6 +9,7 @@ BallroomDJ 4 Change Log
   - fix mark color display when selected.
   - fixed keyword filter.
   - the 'search' string filter will no longer search dances.
+  - fixed a bug switching from the music manager to song list.
 - song editor:
   - will now traverse the selected songs if there is more than
     one song selected.
@@ -16,8 +17,15 @@ BallroomDJ 4 Change Log
   - fixed save of song tags.
   - added indicator for modified files.
   - added indicator for audio identification.
+  - fixed display of negative volume adjustment.
+  - fixed change indicator for speed adjustments and volume adjustment.
 - audio tags
   - fixed some issues writing .m4a tags.
+  - fixed some issues writing .mp3 tags.
+- automatic / sequenced playlists
+  - check same-song marks.
+- player
+  - fixed handling of negative volume adjustment.
 
 4.0.0 alpha 2022-08-27
 

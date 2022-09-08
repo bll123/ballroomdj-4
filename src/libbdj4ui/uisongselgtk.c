@@ -88,7 +88,7 @@ typedef struct uisongselgtk {
   nlist_t           *selectedList;
   nlistidx_t        selectListIter;
   nlistidx_t        selectListKey;
-  GtkTreeIter       moveIter;
+  GtkTreeIter       currIter;
   GtkTreeModel      *model;
   GtkTreeIter       *iterp;
   GType             *typelist;
@@ -575,13 +575,11 @@ uisongselFirstSelection (void *udata)
   return UICB_CONT;
 }
 
-/* only works for single selection */
 long
 uisongselGetSelectLocation (uisongsel_t *uisongsel)
 {
   uisongselgtk_t  *uiw;
   GtkTreeModel    *model = NULL;
-  GtkTreeIter     iter;
   GtkTreePath     *path;
   char            *pathstr;
   int             count;
@@ -592,8 +590,10 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   if (count != 1) {
     return 0;
   }
-  gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
-  path = gtk_tree_model_get_path (model, &iter);
+  gtk_tree_selection_selected_foreach (uiw->sel,
+      uisongselGetIter, uisongsel);
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
+  path = gtk_tree_model_get_path (model, &uiw->currIter);
   loc = 0;
   if (path != NULL) {
     pathstr = gtk_tree_path_to_string (path);
@@ -1371,10 +1371,10 @@ uisongselMoveSelection (void *udata, int where)
     gtk_tree_selection_selected_foreach (uiw->sel,
         uisongselGetIter, uisongsel);
 
-    gtk_tree_selection_unselect_iter (uiw->sel, &uiw->moveIter);
+    gtk_tree_selection_unselect_iter (uiw->sel, &uiw->currIter);
 
     model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
-    path = gtk_tree_model_get_path (model, &uiw->moveIter);
+    path = gtk_tree_model_get_path (model, &uiw->currIter);
     if (path != NULL) {
       pathstr = gtk_tree_path_to_string (path);
       loc = atol (pathstr);
@@ -1384,7 +1384,7 @@ uisongselMoveSelection (void *udata, int where)
     valid = false;
     if (where == UISONGSEL_FIRST) {
       scrolled = uisongselScrollSelection (uisongsel, 0, UISONGSEL_SCROLL_FORCE);
-      valid = gtk_tree_model_get_iter_first (model, &uiw->moveIter);
+      valid = gtk_tree_model_get_iter_first (model, &uiw->currIter);
     }
     if (where == UISONGSEL_NEXT) {
       nidx = uisongsel->idxStart + 1;
@@ -1392,10 +1392,10 @@ uisongselMoveSelection (void *udata, int where)
       if (! scrolled) {
         long    idx;
 
-        gtk_tree_model_get (model, &uiw->moveIter, SONGSEL_COL_IDX, &idx, -1);
+        gtk_tree_model_get (model, &uiw->currIter, SONGSEL_COL_IDX, &idx, -1);
         if (loc < uiw->maxRows - 1 &&
            idx < uisongsel->dfilterCount - 1) {
-          valid = gtk_tree_model_iter_next (model, &uiw->moveIter);
+          valid = gtk_tree_model_iter_next (model, &uiw->currIter);
         }
       } else {
         valid = true;
@@ -1407,14 +1407,14 @@ uisongselMoveSelection (void *udata, int where)
       if (! scrolled) {
 
         if (loc > 0) {
-          valid = gtk_tree_model_iter_previous (model, &uiw->moveIter);
+          valid = gtk_tree_model_iter_previous (model, &uiw->currIter);
         }
       } else {
         valid = true;
       }
     }
     /* if not valid, re-select the original */
-    gtk_tree_selection_select_iter (uiw->sel, &uiw->moveIter);
+    gtk_tree_selection_select_iter (uiw->sel, &uiw->currIter);
   }
 }
 
@@ -1426,7 +1426,7 @@ uisongselGetIter (GtkTreeModel *model,
   uisongselgtk_t  *uiw = NULL;
 
   uiw = uisongsel->uiWidgetData;
-  memcpy (&uiw->moveIter, iter, sizeof (GtkTreeIter));
+  memcpy (&uiw->currIter, iter, sizeof (GtkTreeIter));
 }
 
 /* have to handle the case where the user switches tabs back to the */

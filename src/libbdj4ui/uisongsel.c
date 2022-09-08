@@ -91,6 +91,12 @@ uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb)
 }
 
 void
+uisongselSetSamesong (uisongsel_t *uisongsel, samesong_t *samesong)
+{
+  uisongsel->samesong = samesong;
+}
+
+void
 uisongselFree (uisongsel_t *uisongsel)
 {
   logProcBegin (LOG_PROC, "uisongselFree");

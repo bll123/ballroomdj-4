@@ -1423,7 +1423,7 @@ mainPrepSong (maindata_t *mainData, song_t *song,
 
   sfname = songGetStr (song, TAG_FILE);
   voladjperc = songGetDouble (song, TAG_VOLUMEADJUSTPERC);
-  if (voladjperc < 0.0) {
+  if (voladjperc == LIST_DOUBLE_INVALID) {
     voladjperc = 0.0;
   }
   gap = 0;
@@ -1982,7 +1982,6 @@ mainMusicQueueHistory (void *tmaindata, ilistidx_t idx)
     return -1;
   }
 
-fprintf (stderr, "main: history: lookup %d\n", idx);
   dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqManageIdx, idx);
   song = dbGetByIdx (mainData->musicdb, dbidx);
   if (song != NULL) {

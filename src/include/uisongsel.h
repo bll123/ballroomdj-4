@@ -67,6 +67,7 @@ uisongsel_t * uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
 void  uisongselSetPeer (uisongsel_t *uisongsel, uisongsel_t *peer);
 void  uisongselInitializeSongFilter (uisongsel_t *uisongsel, songfilter_t *songfilter);
 void  uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb);
+void  uisongselSetSamesong (uisongsel_t *uisongsel, samesong_t *samesong);
 void  uisongselFree (uisongsel_t *uisongsel);
 void  uisongselMainLoop (uisongsel_t *uisongsel);
 void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicb);

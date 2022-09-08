@@ -79,7 +79,7 @@ enum {
   LIST_END_LIST       = -1,
   LIST_NO_VERSION     = -1,
 };
-#define LIST_DOUBLE_INVALID -65534.0
+#define LIST_DOUBLE_INVALID -665534.0
 
   /*
    * simple lists only store a list of data.

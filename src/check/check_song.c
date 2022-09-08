@@ -135,7 +135,7 @@ static char *songparsedata [] = {
       "TRACK_ID\r\n..\r\n"
       "TRACKNUMBER\r\n..5\r\n"
       "TRACKTOTAL\r\n..10\r\n"
-      "VOLUMEADJUSTPERC\r\n..4400\r\n"
+      "VOLUMEADJUSTPERC\r\n..-4400\r\n"
       "WORK_ID\r\n..\r\n"
       "LASTUPDATED\r\n..1660237307\r\n"
       "RRN\r\n..1\r\n",
@@ -219,6 +219,10 @@ START_TEST(song_parse_get)
 
 
   for (int i = 0; i < songparsedatasz; ++i) {
+    double  dval;
+    int     rc;
+
+
     song = songAlloc ();
     data = strdup (songparsedata [i]);
     songParse (song, data, i);
@@ -239,7 +243,9 @@ START_TEST(song_parse_get)
     ck_assert_int_eq (songGetNum (song, TAG_DISCNUMBER), 1);
     ck_assert_int_eq (songGetNum (song, TAG_TRACKNUMBER), 5);
     ck_assert_int_eq (songGetNum (song, TAG_TRACKTOTAL), 10);
-    ck_assert_float_eq (songGetDouble (song, TAG_VOLUMEADJUSTPERC), 4.4);
+    dval = songGetDouble (song, TAG_VOLUMEADJUSTPERC);
+    rc = dval == 4.4 || dval == -4.4;
+    ck_assert_int_eq (rc, 1);
     tlist = songGetList (song, TAG_TAGS);
     slistStartIterator (tlist, &iteridx);
     data = slistIterateKey (tlist, &iteridx);
@@ -287,7 +293,7 @@ START_TEST(song_parse_set)
     songSetNum (song, TAG_DISCNUMBER, 2);
     songSetNum (song, TAG_TRACKNUMBER, 6);
     songSetNum (song, TAG_TRACKTOTAL, 11);
-    songSetDouble (song, TAG_VOLUMEADJUSTPERC, 5.5);
+    songSetDouble (song, TAG_VOLUMEADJUSTPERC, -5.5);
     data = strdup ("tag5 tag4");
     songSetList (song, TAG_TAGS, data);
     free (data);
@@ -313,7 +319,7 @@ START_TEST(song_parse_set)
     if (i == 2) {
       ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 0);
     }
-    ck_assert_float_eq (songGetDouble (song, TAG_VOLUMEADJUSTPERC), 5.5);
+    ck_assert_float_eq (songGetDouble (song, TAG_VOLUMEADJUSTPERC), -5.5);
     tlist = songGetList (song, TAG_TAGS);
     slistStartIterator (tlist, &iteridx);
     data = slistIterateKey (tlist, &iteridx);
@@ -444,6 +450,9 @@ START_TEST(song_tag_list)
   bdjvarsdfloadInit ();
 
   for (int i = 0; i < songparsedatasz; ++i) {
+    double  dval;
+    int     rc;
+
     song = songAlloc ();
     data = strdup (songparsedata [i]);
     songParse (song, data, i);
@@ -457,6 +466,7 @@ START_TEST(song_tag_list)
         slistGetStr (tlist, tagdefs [TAG_FILE].tag));
     slistStartIterator (tlist, &iteridx);
     while ((tag = slistIterateKey (tlist, &iteridx)) != NULL) {
+
       if (strcmp (tag, tagdefs [TAG_FILE].tag) == 0) {
         continue;
       }
@@ -493,7 +503,9 @@ START_TEST(song_tag_list)
     if (i == 2) {
       ck_assert_int_eq (songGetNum (song, TAG_ADJUSTFLAGS), 0);
     }
-    ck_assert_float_eq (songGetDouble (song, TAG_VOLUMEADJUSTPERC), 4.4);
+    dval = songGetDouble (song, TAG_VOLUMEADJUSTPERC);
+    rc = dval == 4.4 || dval == -4.4;
+    ck_assert_int_eq (rc, 1);
     tlist = songGetList (song, TAG_TAGS);
     slistStartIterator (tlist, &iteridx);
     data = slistIterateKey (tlist, &iteridx);

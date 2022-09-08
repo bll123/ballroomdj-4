@@ -453,8 +453,10 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
         break;
       }
       case ET_SCALE: {
-        if (dval < 0.0) { dval = 0.0; }
+        /* volume adjust percentage may be a negative value */
+        if (dval == LIST_DOUBLE_INVALID) { dval = 0.0; }
         if (tagkey == TAG_SPEEDADJUSTMENT) {
+          if (dval < 0.0) { dval = 100.0; }
           if (dval == 0.0) { dval = 100.0; }
         }
         if (data != NULL) {
@@ -562,8 +564,9 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
         break;
       }
       case ET_SCALE: {
-        if (dval < 0.0) { dval = 0.0; }
         ndval = uiScaleGetValue (&uiw->items [count].uiwidget);
+        if (ndval == LIST_DOUBLE_INVALID) { ndval = 0.0; }
+        if (dval == LIST_DOUBLE_INVALID) { dval = 0.0; }
         chkvalue = SONGEDIT_CHK_DOUBLE;
         break;
       }
@@ -589,6 +592,9 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
 
       rcdisc = (tagkey == TAG_DISCNUMBER && val == 0.0 && nval == 1.0);
       rctrk = (tagkey == TAG_TRACKNUMBER && val == 0.0 && nval == 1.0);
+      if (tagkey == TAG_FAVORITE) {
+        if (val < 0) { val = 0; }
+      }
       if (! rcdisc && ! rctrk && nval != val) {
         uiw->items [count].changed = true;
       } else {
@@ -603,7 +609,7 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
 
       /* for the speed adjustment, 0.0 (no setting) is changed to 100.0 */
       rc = (tagkey == TAG_SPEEDADJUSTMENT && ndval == 100.0 && dval == 0.0);
-      if (! rc && ndval != dval) {
+      if (! rc && fabs (ndval - dval) > 0.009 ) {
         uiw->items [count].changed = true;
       } else {
         if (uiw->items [count].changed) {

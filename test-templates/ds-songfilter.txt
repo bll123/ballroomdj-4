@@ -1,0 +1,14 @@
+# ds-songfilter
+# 2022-8-4
+version
+..1
+GENRE
+..yes
+DANCELEVEL
+..yes
+STATUS
+..yes
+FAVORITE
+..yes
+STATUSPLAYABLE
+..yes

@@ -645,17 +645,24 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
       fprintf (ofh, "audio.add(%s(encoding=3, owner=u'%s', data=b'%s'))\n",
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc, value);
-    } else if (tagkey == TAG_TRACKNUMBER) {
+    } else if (tagkey == TAG_TRACKNUMBER ||
+        tagkey == TAG_DISCNUMBER) {
       if (value != NULL && *value) {
-        fprintf (ofh, "audio.add(%s(encoding=3, text=u'%s/%s'))\n",
-            tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value,
-            nlistGetStr (datalist, TAG_TRACKTOTAL));
-      }
-    } else if (tagkey == TAG_DISCNUMBER) {
-      if (value != NULL && *value) {
-        fprintf (ofh, "audio.add(%s(encoding=3, text=u'%s/%s'))\n",
-            tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value,
-            nlistGetStr (datalist, TAG_DISCTOTAL));
+        const char  *tot = NULL;
+
+        if (tagkey == TAG_TRACKNUMBER) {
+          tot = nlistGetStr (datalist, TAG_TRACKTOTAL);
+        }
+        if (tagkey == TAG_DISCNUMBER) {
+          tot = nlistGetStr (datalist, TAG_DISCTOTAL);
+        }
+        if (tot != NULL) {
+          fprintf (ofh, "audio.add(%s(encoding=3, text=u'%s/%s'))\n",
+              tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value, tot);
+        } else {
+          fprintf (ofh, "audio.add(%s(encoding=3, text=u'%s'))\n",
+              tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
+        }
       }
     } else if (tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc != NULL) {
       fprintf (ofh, "audio.add(%s(encoding=3, desc=u'%s', text=u'%s'))\n",
@@ -737,23 +744,17 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
       fprintf (ofh, "audio['%s'] = [%s]\n",
           tagdefs [tagkey].audiotags [tagtype].tag, value);
     } else if (tagtype == TAG_TYPE_MP4 &&
-        tagkey == TAG_TRACKNUMBER) {
+        (tagkey == TAG_TRACKNUMBER ||
+        tagkey == TAG_DISCNUMBER)) {
       if (value != NULL && *value) {
-        const char  *tot;
+        const char  *tot = NULL;
 
-        tot = nlistGetStr (datalist, TAG_TRACKTOTAL);
-        if (tot == NULL) {
-          tot = "0";
+        if (tagkey == TAG_TRACKNUMBER) {
+          tot = nlistGetStr (datalist, TAG_TRACKTOTAL);
         }
-        fprintf (ofh, "audio['%s'] = [(%s,%s)]\n",
-            tagdefs [tagkey].audiotags [tagtype].tag, value, tot);
-      }
-    } else if (tagtype == TAG_TYPE_MP4 &&
-        tagkey == TAG_DISCNUMBER) {
-      if (value != NULL && *value) {
-        const char  *tot;
-
-        tot = nlistGetStr (datalist, TAG_DISCTOTAL);
+        if (tagkey == TAG_DISCNUMBER) {
+          tot = nlistGetStr (datalist, TAG_DISCTOTAL);
+        }
         if (tot == NULL) {
           tot = "0";
         }

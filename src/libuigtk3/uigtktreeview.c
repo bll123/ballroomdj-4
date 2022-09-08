@@ -132,6 +132,7 @@ uiTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count == 1) {
+    /* this only works if the treeview is in single-selection mode */
     gtk_tree_selection_get_selected (sel, model, iter);
   }
   return count;

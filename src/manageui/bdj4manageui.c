@@ -1035,13 +1035,18 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_DB_FINISH: {
           manageDbFinish (manage->managedb, routefrom);
 
+          samesongFree (manage->samesong);
           manage->musicdb = bdj4ReloadDatabase (manage->musicdb);
+          manage->samesong = samesongAlloc (manage->musicdb);
 
           uiplayerSetDatabase (manage->slplayer, manage->musicdb);
           uiplayerSetDatabase (manage->mmplayer, manage->musicdb);
           uisongselSetDatabase (manage->slsongsel, manage->musicdb);
+          uisongselSetSamesong (manage->slsongsel, manage->samesong);
           uisongselSetDatabase (manage->slezsongsel, manage->musicdb);
+          uisongselSetSamesong (manage->slezsongsel, manage->samesong);
           uisongselSetDatabase (manage->mmsongsel, manage->musicdb);
+          uisongselSetSamesong (manage->mmsongsel, manage->samesong);
           uimusicqSetDatabase (manage->slmusicq, manage->musicdb);
           uimusicqSetDatabase (manage->slezmusicq, manage->musicdb);
           uimusicqSetDatabase (manage->mmmusicq, manage->musicdb);

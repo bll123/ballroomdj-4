@@ -8,20 +8,6 @@
 #include "song.h"
 #include "songfilter.h"
 
-typedef enum {
-  SONGSEL_ATTR_RATING,
-  SONGSEL_ATTR_LEVEL,
-  SONGSEL_ATTR_MAX,
-} songselattr_t;
-
-typedef struct songselidx songselidx_t;
-
-typedef struct songselsongdata songselsongdata_t;
-
-typedef struct songselperc songselperc_t;
-
-typedef struct songseldance songseldance_t;
-
 typedef struct songsel songsel_t;
 
 songsel_t * songselAlloc (musicdb_t *musicdb, nlist_t *dancelist, nlist_t *songlist, songfilter_t *songfilter);

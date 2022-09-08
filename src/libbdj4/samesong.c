@@ -99,7 +99,7 @@ samesongFree (samesong_t *ss)
 const char *
 samesongGetColorByDBIdx (samesong_t *ss, dbidx_t dbidx)
 {
-  const char  *sscolor;
+  const char  *sscolor = NULL;
   ssize_t     ssidx;
 
   ssidx = samesongGetSSIdx (ss, dbidx);
@@ -112,6 +112,9 @@ samesongGetColorBySSIdx  (samesong_t *ss, ssize_t ssidx)
 {
   const char  *sscolor = NULL;
 
+  if (ss == NULL || ss->sscolors == NULL) {
+    return sscolor;
+  }
   if (ssidx > 0) {
     sscolor = nlistGetStr (ss->sscolors, ssidx);
   }

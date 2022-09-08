@@ -21,11 +21,20 @@
 #include "songsel.h"
 #include "tagdef.h"
 
-typedef struct songselidx {
+enum {
+  SONGSEL_ATTR_RATING,
+  SONGSEL_ATTR_LEVEL,
+  SONGSEL_ATTR_MAX,
+  SONGSEL_SS_DBIDX_LIST,
+  SONGSEL_SS_COUNT,
+  SONGSEL_SS_DBIDX,
+};
+
+typedef struct {
   nlistidx_t     idx;
 } songselidx_t;
 
-typedef struct songselsongdata {
+typedef struct {
   nlistidx_t    idx;
   dbidx_t       dbidx;
   nlistidx_t    rating;
@@ -35,14 +44,14 @@ typedef struct songselsongdata {
 } songselsongdata_t;
 
 /* used for both ratings and levels */
-typedef struct songselperc {
-  ssize_t       origCount;      // count of number of songs for this idx
-  ssize_t       weight;         // weight for this idx
-  ssize_t       count;          // current count of number of songs
+typedef struct {
+  dbidx_t       origCount;      // count of number of songs for this idx
+  int           weight;         // weight for this idx
+  dbidx_t       count;          // current count of number of songs
   double        calcperc;       // current percentage adjusted by weight
 } songselperc_t;
 
-typedef struct songseldance {
+typedef struct {
   nlistidx_t  danceIdx;
   nlist_t     *songIdxList;
   queue_t     *currentIndexes;
@@ -66,7 +75,7 @@ static void   songselIdxFree (void *titem);
 static void   songselSongDataFree (void *titem);
 static void   songselPercFree (void *titem);
 static void   calcPercentages (songseldance_t *songseldance);
-static void   calcAttributePerc (songsel_t *songsel, songseldance_t *songseldance, songselattr_t attridx);
+static void   calcAttributePerc (songsel_t *songsel, songseldance_t *songseldance, int attridx);
 
 /*
  *  danceSelList:
@@ -77,8 +86,8 @@ static void   calcAttributePerc (songsel_t *songsel, songseldance_t *songseldanc
  *    contains:
  *      danceidx
  *      song index list
- *      current index list
  *      current indexes
+ *      current index list
  *      attribute lists (rating, level)
  *        these have the weights by rating/level.
  *  song index list:
@@ -143,22 +152,111 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist,
 
   songsel->musicdb = musicdb;
 
+  /* when songlist is not null, it is a song-list, and all songs should */
+  /* be used. */
   if (songlist != NULL) {
-    /* for each song in the supplied song list */
     logMsg (LOG_DBG, LOG_SONGSEL, "processing songs from songlist (%d)",
         nlistGetCount (songlist));
+
     nlistStartIterator (songlist, &iteridx);
     while ((dbidx = nlistIterateKey (songlist, &iteridx)) >= 0) {
       song = dbGetByIdx (musicdb, dbidx);
       songselAllocAddSong (songsel, dbidx, song, songfilter);
     }
   } else {
-    /* for each song in the database */
-    logMsg (LOG_DBG, LOG_SONGSEL, "processing songs from database");
+    ssize_t   ss;
+    ilist_t   *ssmarks;
+    nlist_t   *tmpdbidxlist;
+
+    /* for each song in the supplied song list */
+    /* check for samesong marks and save the count for that same-song mark. */
+    /* also save a list of dbidx for that same-song mark. */
+    /* at the same time, build a list of dbidx's so that the songfilter */
+    /* does not have to be checked yet again. */
+    ssmarks = ilistAlloc ("samesong-temp", LIST_ORDERED);
+    /* the temp dbidx list doesn't need to be sorted */
+    tmpdbidxlist = nlistAlloc ("dbidx-temp", LIST_UNORDERED, NULL);
     dbStartIterator (musicdb, &dbiteridx);
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
+      ilistidx_t    danceIdx;
+
+      /* if the dance is not in the songsel dance list, don't bother */
+      /* with it. */
+      danceIdx = songGetNum (song, TAG_DANCE);
+      songseldance = nlistGetData (songsel->danceSelList, danceIdx);
+      if (songseldance == NULL) {
+        continue;
+      }
+
+      /* check this song with the song filter */
+      if (songfilter != NULL &&
+          ! songfilterFilterSong (songfilter, song)) {
+        continue;
+      }
+
+      /* this song is a viable candidate.  Add it to the temp list */
+      nlistSetNum (tmpdbidxlist, dbidx, 0);
+
+      ss = songGetNum (song, TAG_SAMESONG);
+      if (ss > 0) {
+        int     val;
+        nlist_t *dbidxlist;
+
+        dbidxlist = ilistGetList (ssmarks, ss, SONGSEL_SS_DBIDX_LIST);
+        if (dbidxlist == NULL) {
+          dbidxlist = nlistAlloc ("ss-dbidx-list", LIST_ORDERED, NULL);
+          ilistSetList (ssmarks, ss, SONGSEL_SS_DBIDX_LIST, dbidxlist);
+        }
+        nlistSetNum (dbidxlist, dbidx, 0);
+        val = ilistGetNum (ssmarks, ss, SONGSEL_SS_COUNT);
+        if (val < 0) {
+          val = 1;
+        } else {
+          ++val;
+        }
+        ilistSetNum (ssmarks, ss, SONGSEL_SS_COUNT, val);
+      }
+    }
+
+    /* now, for each same-song mark, choose one of the songs from the */
+    /* dbidx-list at random */
+    ilistStartIterator (ssmarks, &iteridx);
+    while ((ss = ilistIterateKey (ssmarks, &iteridx)) >= 0) {
+      int     count;
+      int     idx;
+      nlist_t *dbidxlist;
+
+      count = ilistGetNum (ssmarks, ss, SONGSEL_SS_COUNT);
+      /* note that it is quite possible for count to be 1, as */
+      /* a song could have been kicked out due to the wrong dance, */
+      /* or due to the song filters */
+      idx = (int) (dRandom () * (double) count);
+      dbidxlist = ilistGetData (ssmarks, ss, SONGSEL_SS_DBIDX_LIST);
+      dbidx = nlistGetKeyByIdx (dbidxlist, idx);
+      ilistSetNum (ssmarks, ss, SONGSEL_SS_DBIDX, dbidx);
+    }
+
+    /* now iterate through the temporary list */
+    logMsg (LOG_DBG, LOG_SONGSEL, "processing songs from database");
+    nlistStartIterator (tmpdbidxlist, &iteridx);
+    while ((dbidx = nlistIterateKey (tmpdbidxlist, &iteridx)) >= 0) {
+      song = dbGetByIdx (musicdb, dbidx);
+
+      /* and the final filter to skip any songs with same-song marks */
+      ss = songGetNum (song, TAG_SAMESONG);
+      if (ss > 0) {
+        dbidx_t   tdbidx;
+
+        tdbidx = ilistGetNum (ssmarks, ss, SONGSEL_SS_DBIDX);
+        if (tdbidx != dbidx) {
+          /* skip this same-song, dbidx was not chosen */
+          continue;
+        }
+      }
       songselAllocAddSong (songsel, dbidx, song, songfilter);
     }
+
+    ilistFree (ssmarks);
   }
 
   /* for each dance */
@@ -291,11 +389,11 @@ songselAllocAddSong (songsel_t *songsel, dbidx_t dbidx,
 {
   songselperc_t     *perc = NULL;
   songselsongdata_t *songdata = NULL;
+  ilistidx_t        danceIdx;
   songseldance_t    *songseldance;
   nlistidx_t        rating = 0;
   nlistidx_t        level = 0;
   int               weight = 0;
-  int               danceIdx;
   rating_t          *ratings;
   level_t           *levels;
 
@@ -303,16 +401,10 @@ songselAllocAddSong (songsel_t *songsel, dbidx_t dbidx,
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
+  /* the dance and song filter are processed in the main loop */
+
   danceIdx = songGetNum (song, TAG_DANCE);
   songseldance = nlistGetData (songsel->danceSelList, danceIdx);
-  if (songseldance == NULL) {
-    return;
-  }
-
-  if (songfilter != NULL &&
-      ! songfilterFilterSong (songfilter, song)) {
-    return;
-  }
 
   weight = ratingGetWeight (ratings, rating);
   perc = nlistGetData (songseldance->attrList [SONGSEL_ATTR_RATING], rating);
@@ -455,7 +547,7 @@ calcPercentages (songseldance_t *songseldance)
   nlistStartIterator (currentIdxList, &iteridx);
   while ((dataidx = nlistIterateValueNum (currentIdxList, &iteridx)) >= 0) {
     songdata = nlistGetDataByIdx (songIdxList, dataidx);
-    for (songselattr_t i = 0; i < SONGSEL_ATTR_MAX; ++i) {
+    for (int i = 0; i < SONGSEL_ATTR_MAX; ++i) {
       perc = nlistGetData (songseldance->attrList [i], songdata->attrIdx [i]);
       if (perc != NULL) {
         wsum += perc->calcperc;
@@ -474,7 +566,7 @@ calcPercentages (songseldance_t *songseldance)
 
 static void
 calcAttributePerc (songsel_t *songsel, songseldance_t *songseldance,
-    songselattr_t attridx)
+    int attridx)
 {
   songselperc_t       *perc = NULL;
   double              tot = 0.0;
@@ -537,7 +629,7 @@ songselDanceFree (void *titem)
     if (songseldance->currentIdxList != NULL) {
       nlistFree (songseldance->currentIdxList);
     }
-    for (songselattr_t i = 0; i < SONGSEL_ATTR_MAX; ++i) {
+    for (int i = 0; i < SONGSEL_ATTR_MAX; ++i) {
       if (songseldance->attrList [i] != NULL) {
         nlistFree (songseldance->attrList [i]);
       }

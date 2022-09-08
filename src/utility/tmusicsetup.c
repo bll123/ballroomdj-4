@@ -50,6 +50,7 @@ static datafilekey_t tmdfkeys [] = {
   { "DANCELEVEL",           TAG_DANCELEVEL,           VALUE_STR, NULL, -1 },
   { "DANCERATING",          TAG_DANCERATING,          VALUE_STR, NULL, -1 },
   { "DISC",                 TAG_DISCNUMBER,           VALUE_STR, NULL, -1 },
+  { "DISCTOTAL",            TAG_DISCTOTAL,            VALUE_STR, NULL, -1 },
   { "FAVORITE",             TAG_FAVORITE,             VALUE_STR, NULL, -1 },
   { "GENRE",                TAG_GENRE,                VALUE_STR, NULL, -1 },
   { "KEYWORD",              TAG_KEYWORD,              VALUE_STR, NULL, -1 },
@@ -60,6 +61,7 @@ static datafilekey_t tmdfkeys [] = {
   { "TAGS",                 TAG_TAGS,                 VALUE_STR, NULL, -1 },
   { "TITLE",                TAG_TITLE,                VALUE_STR, NULL, -1 },
   { "TRACKNUMBER",          TAG_TRACKNUMBER,          VALUE_STR, NULL, -1 },
+  { "TRACKTOTAL",           TAG_TRACKTOTAL,           VALUE_STR, NULL, -1 },
 };
 enum {
   tmdfcount = sizeof (tmdfkeys) / sizeof (datafilekey_t),
