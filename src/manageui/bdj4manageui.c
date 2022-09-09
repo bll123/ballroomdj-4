@@ -63,7 +63,6 @@ enum {
   MANAGE_TAB_MAIN_MM,
   MANAGE_TAB_MAIN_PL,
   MANAGE_TAB_MAIN_SEQ,
-  MANAGE_TAB_MAIN_FILEMGR,
   MANAGE_TAB_MM,
   MANAGE_TAB_OTHER,
   MANAGE_TAB_SONGLIST,
@@ -1271,16 +1270,6 @@ manageSongEditSaveCallback (void *udata, long dbidx)
     manage->dbchangecount = 0;
   }
 
-  if (manage->selusesonglist) {
-    if (manage->songlistdbidx != dbidx) {
-      fprintf (stderr, "fail: incorrect dbidx (songlist %d %ld)\n", manage->songlistdbidx, dbidx);
-    }
-  } else {
-    if (manage->seldbidx != dbidx) {
-      fprintf (stderr, "fail: incorrect dbidx (sel %d %ld)\n", manage->seldbidx, dbidx);
-    }
-  }
-
   /* this fetches the song from in-memory, which has already been updated */
   songWriteDB (manage->musicdb, dbidx);
 
@@ -2133,7 +2122,6 @@ manageSwitchPageMain (void *udata, long pagenum)
 {
   manageui_t  *manage = udata;
 
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: switch main nb page");
   manageSwitchPage (manage, pagenum, MANAGE_NB_MAIN);
   return UICB_CONT;
 }
@@ -2229,9 +2217,6 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
     case MANAGE_TAB_MAIN_SEQ: {
       manageSequenceLoadCheck (manage->manageseq);
       manage->currmenu = manageSequenceMenu (manage->manageseq, &manage->menubar);
-      break;
-    }
-    case MANAGE_TAB_MAIN_FILEMGR: {
       break;
     }
     default: {
@@ -2330,6 +2315,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 
         /* these match because they are displaying the same list */
         idx = uimusicqGetSelectLocation (manage->slmusicq, manage->musicqManageIdx);
+        uisongselClearAllSelections (manage->mmsongsel);
         uisongselSetSelection (manage->mmsongsel, idx);
       }
       manage->selbypass = 0;

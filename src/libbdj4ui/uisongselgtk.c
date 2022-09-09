@@ -114,7 +114,6 @@ static void uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path, GtkT
 static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation, gpointer user_data);
 static gboolean uisongselScroll (GtkRange *range, GtkScrollType scrolltype, gdouble value, gpointer udata);
 static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata);
-static void uisongselClearAllSelections (uisongsel_t *uisongsel);
 static void uisongselClearSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static void uisongselClearSingleSelection (uisongsel_t *uisongsel);
 static gboolean uisongselKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata);
@@ -777,6 +776,16 @@ uisongselGetSelectedList (uisongsel_t *uisongsel)
   return tlist;
 }
 
+void
+uisongselClearAllSelections (uisongsel_t *uisongsel)
+{
+  uisongselgtk_t  *uiw;
+
+  uiw = uisongsel->uiWidgetData;
+  gtk_tree_selection_selected_foreach (uiw->sel,
+      uisongselClearSelection, uisongsel);
+}
+
 /* internal routines */
 
 static void
@@ -1134,16 +1143,6 @@ uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
   return TRUE;
 }
 
-static void
-uisongselClearAllSelections (uisongsel_t *uisongsel)
-{
-  uisongselgtk_t  *uiw;
-
-  uiw = uisongsel->uiWidgetData;
-  gtk_tree_selection_selected_foreach (uiw->sel,
-      uisongselClearSelection, uisongsel);
-}
-
 /* used by clear all selections */
 static void
 uisongselClearSelection (GtkTreeModel *model,
@@ -1166,7 +1165,6 @@ uisongselClearSingleSelection (uisongsel_t *uisongsel)
   gtk_tree_selection_selected_foreach (uiw->sel,
       uisongselGetIter, uisongsel);
 
-fprintf (stderr, "  do unselect\n");
   gtk_tree_selection_unselect_iter (uiw->sel, &uiw->currIter);
 }
 
@@ -1332,23 +1330,19 @@ uisongselMoveSelection (void *udata, int where)
   int             valid;
   bool            scrolled = false;
 
-fprintf (stderr, "== move selection\n");
   uiw = uisongsel->uiWidgetData;
 
   if (uiw->sel == NULL) {
-fprintf (stderr, "  null\n");
     return;
   }
 
   count = nlistGetCount (uiw->selectedList);
 
   if (count == 0) {
-fprintf (stderr, "  no selection\n");
     return;
   }
 
   if (count > 1) {
-fprintf (stderr, "  > 1 selections\n");
     /* need to be able to move forwards and backwards within the select-list */
     /* do not change the gtk selection */
 
@@ -1387,7 +1381,6 @@ fprintf (stderr, "  > 1 selections\n");
   }
 
   if (count == 1) {
-fprintf (stderr, "  1 selection\n");
     uisongselClearSingleSelection (uisongsel);
 
     model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
@@ -1395,23 +1388,19 @@ fprintf (stderr, "  1 selection\n");
     if (path != NULL) {
       pathstr = gtk_tree_path_to_string (path);
       loc = atol (pathstr);
-fprintf (stderr, "  have loc %ld\n", loc);
       free (pathstr);
     }
 
     valid = false;
     if (where == UISONGSEL_FIRST) {
-fprintf (stderr, "  select first\n");
       scrolled = uisongselScrollSelection (uisongsel, 0, UISONGSEL_SCROLL_FORCE);
       valid = gtk_tree_model_get_iter_first (model, &uiw->currIter);
     }
     if (where == UISONGSEL_NEXT) {
-fprintf (stderr, "  select next\n");
       nidx = uisongsel->idxStart + 1;
       scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_FORCE);
       if (! scrolled) {
         long    idx;
-fprintf (stderr, "  ! scrolled\n");
 
         gtk_tree_model_get (model, &uiw->currIter, SONGSEL_COL_IDX, &idx, -1);
         if (loc < uiw->maxRows - 1 &&
@@ -1423,13 +1412,10 @@ fprintf (stderr, "  ! scrolled\n");
       }
     }
     if (where == UISONGSEL_PREVIOUS) {
-fprintf (stderr, "  select previous\n");
       nidx = uisongsel->idxStart - 1;
       scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_FORCE);
       if (! scrolled) {
-fprintf (stderr, "  ! scrolled\n");
-        if (loc >= 0 &&
-            loc < uiw->maxRows) {
+        if (loc > 0) {
           valid = gtk_tree_model_iter_previous (model, &uiw->currIter);
         }
       } else {
