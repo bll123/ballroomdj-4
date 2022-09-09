@@ -135,7 +135,7 @@ main (int argc, char *argv[])
     uiutilsUIWidgetInit (&bpmcounter.dispvalue [i]);
   }
   for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
-    uiutilsUICallbackInit (&bpmcounter.callbacks [i], NULL, NULL);
+    uiutilsUICallbackInit (&bpmcounter.callbacks [i], NULL, NULL, NULL);
   }
 
   bpmcounter.stopwaitcount = 0;
@@ -312,7 +312,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
-      bpmcounterCloseCallback, bpmcounter);
+      bpmcounterCloseCallback, bpmcounter, NULL);
   uiCreateMainWindow (&bpmcounter->window,
       &bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: title of window*/
@@ -350,7 +350,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackStart (&vbox, &uiwidget);
 
   uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_RADIO],
-      bpmcounterRadioChanged, bpmcounter);
+      bpmcounterRadioChanged, bpmcounter, NULL);
 
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     uiCreateHorizBox (&hbox);
@@ -389,7 +389,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackStart (&vbox, &hbox);
 
   uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_CLICK],
-      bpmcounterProcessClick, bpmcounter);
+      bpmcounterProcessClick, bpmcounter, NULL);
   uiCreateButton (&uiwidget,
       &bpmcounter->callbacks [BPMCOUNT_CB_CLICK],
       NULL, "bluebox");
@@ -404,7 +404,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackStart (&vboxmain, &hbox);
 
   uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
-      bpmcounterProcessSave, bpmcounter);
+      bpmcounterProcessSave, bpmcounter, NULL);
   uiCreateButton (&uiwidget,
       &bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
       /* CONTEXT: bpm counter: save button */
@@ -413,7 +413,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_RESET],
-      bpmcounterProcessReset, bpmcounter);
+      bpmcounterProcessReset, bpmcounter, NULL);
   uiCreateButton (&uiwidget,
       &bpmcounter->callbacks [BPMCOUNT_CB_RESET],
       /* CONTEXT: bpm counter: reset button */

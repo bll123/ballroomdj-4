@@ -252,28 +252,28 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiBoxPackStart (&uiw->vbox, &hbox);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_FIRST],
-      uisongeditFirstSelection, uisongedit);
+      uisongeditFirstSelection, uisongedit, NULL);
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_FIRST],
       /* CONTEXT: song editor : first song */
       _("First"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PREVIOUS],
-      uisongeditPreviousSelection, uisongedit);
+      uisongeditPreviousSelection, uisongedit, NULL);
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_PREVIOUS],
       /* CONTEXT: song editor : previous song */
       _("Previous"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_NEXT],
-      uisongeditNextSelection, uisongedit);
+      uisongeditNextSelection, uisongedit, NULL);
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_NEXT],
       /* CONTEXT: song editor : next song */
       _("Next"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PLAY],
-      uisongselPlayCallback, uisongsel);
+      uisongselPlayCallback, uisongsel, NULL);
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_PLAY],
       /* CONTEXT: song editor : play song */
       _("Play"), NULL);
@@ -281,7 +281,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiutilsUIWidgetCopy (&uiw->playbutton, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_SAVE],
-      uisongeditSaveCallback, uisongedit);
+      uisongeditSaveCallback, uisongedit, NULL);
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_SAVE],
       /* CONTEXT: song editor : save data */
       _("Save"), NULL);
@@ -341,7 +341,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     uiutilsUIWidgetInit (&uiw->items [i].uiwidget);
     uiw->items [i].entry = NULL;
     uiw->items [i].chgind = NULL;
-    uiutilsUICallbackInit (&uiw->items [i].callback, NULL, NULL);
+    uiutilsUICallbackInit (&uiw->items [i].callback, NULL, NULL, NULL);
     uiw->items [i].lastchanged = false;
     uiw->items [i].changed = false;
   }

@@ -434,7 +434,7 @@ installerBuildUI (installer_t *installer)
   /* CONTEXT: installer: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
   uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_EXIT],
-      installerExitCallback, installer);
+      installerExitCallback, installer, NULL);
   uiCreateMainWindow (&installer->window,
       &installer->callbacks [INST_CALLBACK_EXIT],
       tbuff, imgbuff);
@@ -475,7 +475,7 @@ installerBuildUI (installer_t *installer)
       installerValidateTarget, installer, UIENTRY_DELAYED);
 
   uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_TARGET_DIR],
-      installerTargetDirDialog, installer);
+      installerTargetDirDialog, installer, NULL);
   uiCreateButton (&uiwidget,
       &installer->callbacks [INST_CALLBACK_TARGET_DIR],
       "", NULL);
@@ -491,7 +491,7 @@ installerBuildUI (installer_t *installer)
   uiCreateCheckButton (&installer->reinstWidget, _("Re-Install"),
       installer->reinstall);
   uiBoxPackStart (&hbox, &installer->reinstWidget);
-  uiutilsUICallbackInit (&installer->reinstcb, installerCheckDirTarget, installer);
+  uiutilsUICallbackInit (&installer->reinstcb, installerCheckDirTarget, installer, NULL);
   uiToggleButtonSetCallback (&installer->reinstWidget, &installer->reinstcb);
 
   uiCreateLabel (&installer->feedbackMsg, "");
@@ -538,7 +538,7 @@ installerBuildUI (installer_t *installer)
       installerValidateBDJ3Loc, installer, UIENTRY_DELAYED);
 
   uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_BDJ3LOC_DIR],
-      installerBDJ3LocDirDialog, installer);
+      installerBDJ3LocDirDialog, installer, NULL);
   uiCreateButton (&uiwidget,
       &installer->callbacks [INST_CALLBACK_BDJ3LOC_DIR],
       "", NULL);
@@ -554,7 +554,7 @@ installerBuildUI (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), _("Convert %s"), BDJ3_NAME);
   uiCreateCheckButton (&installer->convWidget, tbuff, 0);
   uiBoxPackStart (&hbox, &installer->convWidget);
-  uiutilsUICallbackInit (&installer->convcb, installerCheckDirConv, installer);
+  uiutilsUICallbackInit (&installer->convcb, installerCheckDirConv, installer, NULL);
   uiToggleButtonSetCallback (&installer->convWidget, &installer->convcb);
 
   uiCreateLabel (&installer->convFeedbackMsg, "");
@@ -619,7 +619,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_INSTALL],
-      installerInstallCallback, installer);
+      installerInstallCallback, installer, NULL);
   uiCreateButton (&uiwidget,
       &installer->callbacks [INST_CALLBACK_INSTALL],
       /* CONTEXT: installer: start the installation process */

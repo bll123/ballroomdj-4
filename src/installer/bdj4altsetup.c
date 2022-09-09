@@ -201,7 +201,7 @@ altsetupBuildUI (altsetup_t *altsetup)
   /* CONTEXT: set up alternate: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Set Up Alternate"), BDJ4_NAME);
   uiutilsUICallbackInit (&altsetup->callbacks [ALT_CB_EXIT],
-      altsetupExitCallback, altsetup);
+      altsetupExitCallback, altsetup, NULL);
   uiCreateMainWindow (&altsetup->window,
       &altsetup->callbacks [ALT_CB_EXIT],
       tbuff, imgbuff);
@@ -233,7 +233,7 @@ altsetupBuildUI (altsetup_t *altsetup)
       altsetupValidateTarget, altsetup, UIENTRY_DELAYED);
 
   uiutilsUICallbackInit (&altsetup->callbacks [ALT_CB_TARGET_DIR],
-      altsetupTargetDirDialog, altsetup);
+      altsetupTargetDirDialog, altsetup, NULL);
   uiCreateButton (&uiwidget,
       &altsetup->callbacks [ALT_CB_TARGET_DIR],
       "", NULL);
@@ -249,7 +249,7 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiCreateCheckButton (&altsetup->reinstWidget, _("Re-Install"),
       altsetup->reinstall);
   uiBoxPackStart (&hbox, &altsetup->reinstWidget);
-  uiutilsUICallbackInit (&altsetup->reinstcb, altsetupCheckDirTarget, altsetup);
+  uiutilsUICallbackInit (&altsetup->reinstcb, altsetupCheckDirTarget, altsetup, NULL);
   uiToggleButtonSetCallback (&altsetup->reinstWidget, &altsetup->reinstcb);
 
   uiCreateLabel (&altsetup->feedbackMsg, "");
@@ -272,7 +272,7 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&altsetup->callbacks [ALT_CB_START],
-      altsetupSetupCallback, altsetup);
+      altsetupSetupCallback, altsetup, NULL);
   uiCreateButton (&uiwidget,
       &altsetup->callbacks [ALT_CB_START],
       /* CONTEXT: set up alternate: start the set-up process */

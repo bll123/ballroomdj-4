@@ -68,7 +68,7 @@ confuiMakeItemTable (confuigui_t *gui, UIWidget *boxp, confuiident_t id,
   if ((flags & CONFUI_TABLE_NO_UP_DOWN) != CONFUI_TABLE_NO_UP_DOWN) {
     uiutilsUICallbackInit (
         &gui->tables [id].callback [CONFUI_TABLE_CB_UP],
-        confuiTableMoveUp, gui);
+        confuiTableMoveUp, gui, NULL);
     uiCreateButton (&uiwidget,
         &gui->tables [id].callback [CONFUI_TABLE_CB_UP],
         /* CONTEXT: configuration: table edit: button: move selection up */
@@ -77,7 +77,7 @@ confuiMakeItemTable (confuigui_t *gui, UIWidget *boxp, confuiident_t id,
 
     uiutilsUICallbackInit (
         &gui->tables [id].callback [CONFUI_TABLE_CB_DOWN],
-        confuiTableMoveDown, gui);
+        confuiTableMoveDown, gui, NULL);
     uiCreateButton (&uiwidget,
         &gui->tables [id].callback [CONFUI_TABLE_CB_DOWN],
         /* CONTEXT: configuration: table edit: button: move selection down */
@@ -87,7 +87,7 @@ confuiMakeItemTable (confuigui_t *gui, UIWidget *boxp, confuiident_t id,
 
   uiutilsUICallbackInit (
       &gui->tables [id].callback [CONFUI_TABLE_CB_REMOVE],
-      confuiTableRemove, gui);
+      confuiTableRemove, gui, NULL);
   uiCreateButton (&uiwidget,
       &gui->tables [id].callback [CONFUI_TABLE_CB_REMOVE],
       /* CONTEXT: configuration: table edit: button: delete selection */
@@ -96,7 +96,7 @@ confuiMakeItemTable (confuigui_t *gui, UIWidget *boxp, confuiident_t id,
 
   uiutilsUICallbackInit (
       &gui->tables [id].callback [CONFUI_TABLE_CB_ADD],
-      confuiTableAdd, gui);
+      confuiTableAdd, gui, NULL);
   uiCreateButton (&uiwidget,
       &gui->tables [id].callback [CONFUI_TABLE_CB_ADD],
       /* CONTEXT: configuration: table edit: button: add new selection */

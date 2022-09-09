@@ -39,7 +39,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->songfilter = uisfGetSongFilter (uisf);
 
   uiutilsUICallbackInit (&uisongsel->sfapplycb,
-      uisongselApplySongFilter, uisongsel);
+      uisongselApplySongFilter, uisongsel, NULL);
   uisfSetApplyCallback (uisf, &uisongsel->sfapplycb);
 
   uiutilsUICallbackLongInit (&uisongsel->sfdanceselcb,

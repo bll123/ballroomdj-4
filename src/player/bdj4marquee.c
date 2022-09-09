@@ -313,14 +313,14 @@ marqueeBuildUI (marquee_t *marquee)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_marquee", ".svg", PATHBLD_MP_IMGDIR);
 
-  uiutilsUICallbackInit (&marquee->exitcb, marqueeCloseCallback, marquee);
+  uiutilsUICallbackInit (&marquee->exitcb, marqueeCloseCallback, marquee, NULL);
   uiCreateMainWindow (&uiwidget, &marquee->exitcb,
       /* CONTEXT: marquee: marquee window title */
       _("Marquee"), imgbuff);
   uiWindowNoFocusOnStartup (&uiwidget);
 
   uiutilsUICallbackInit (&marquee->dclickcb,
-      marqueeToggleFullscreen, marquee);
+      marqueeToggleFullscreen, marquee, NULL);
   uiWindowSetDoubleClickCallback (&uiwidget, &marquee->dclickcb);
 
   uiutilsUICallbackIntIntInit (&marquee->winstatecb,
@@ -328,7 +328,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiWindowSetWinStateCallback (&uiwidget, &marquee->winstatecb);
 
   uiutilsUICallbackInit (&marquee->winmapcb,
-      marqueeWinMapped, marquee);
+      marqueeWinMapped, marquee, NULL);
   uiWindowSetMappedCallback (&uiwidget, &marquee->winmapcb);
 
   uiWindowNoDim (&uiwidget);

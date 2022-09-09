@@ -560,7 +560,7 @@ manageBuildUI (manageui_t *manage)
       bdjoptGetStr (OPT_P_PROFILENAME));
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_CLOSE],
-      manageCloseWin, manage);
+      manageCloseWin, manage, NULL);
   uiCreateMainWindow (&manage->window,
       &manage->callbacks [MANAGE_CB_CLOSE], tbuff, imgbuff);
 
@@ -752,7 +752,7 @@ manageInitializeUI (manageui_t *manage)
   uimusicqSetPeer (manage->slezmusicq, manage->slmusicq);
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_EDIT],
-      manageSwitchToSongEditor, manage);
+      manageSwitchToSongEditor, manage, NULL);
   uisongselSetEditCallback (manage->slsongsel, &manage->callbacks [MANAGE_CB_EDIT]);
   uisongselSetEditCallback (manage->slezsongsel, &manage->callbacks [MANAGE_CB_EDIT]);
   uisongselSetEditCallback (manage->mmsongsel, &manage->callbacks [MANAGE_CB_EDIT]);
@@ -820,7 +820,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStart (&hbox, &vbox);
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_EZ_SELECT],
-      uisongselSelectCallback, manage->slezsongsel);
+      uisongselSelectCallback, manage->slezsongsel, NULL);
   uiCreateButton (&uiwidget,
       &manage->callbacks [MANAGE_CB_EZ_SELECT],
       /* CONTEXT: managementui: config: button: add the selected songs to the song list */
@@ -1176,7 +1176,7 @@ manageSongEditMenu (manageui_t *manage)
     /* gtk does not appear to have a way to create a top-level */
     /* menu item in the menu bar. */
     uiutilsUICallbackInit (&manage->callbacks [MANAGE_MENU_CB_BPM],
-        manageStartBPMCounter, manage);
+        manageStartBPMCounter, manage, NULL);
     uiMenuCreateItem (&menu, &menuitem, tagdefs [TAG_BPM].displayname,
         &manage->callbacks [MANAGE_MENU_CB_BPM]);
 
@@ -2350,7 +2350,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 static void
 manageSetMenuCallback (manageui_t *manage, int midx, UICallbackFunc cb)
 {
-  uiutilsUICallbackInit (&manage->callbacks [midx], cb, manage);
+  uiutilsUICallbackInit (&manage->callbacks [midx], cb, manage, NULL);
 }
 
 /* the current songlist may be renamed or deleted. */

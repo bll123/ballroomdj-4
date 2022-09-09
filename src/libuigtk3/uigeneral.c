@@ -43,7 +43,8 @@ uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source)
 }
 
 void
-uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata)
+uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata,
+    const char *actiontext)
 {
   if (uicb == NULL) {
     return;
@@ -51,6 +52,7 @@ uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata)
 
   uicb->cb = cb;
   uicb->udata = udata;
+  uicb->actiontext = actiontext;
 }
 void
 uiutilsUICallbackDoubleInit (UICallback *uicb, UIDoubleCallbackFunc cb, void *udata)
@@ -61,6 +63,7 @@ uiutilsUICallbackDoubleInit (UICallback *uicb, UIDoubleCallbackFunc cb, void *ud
 
   uicb->doublecb = cb;
   uicb->udata = udata;
+  uicb->actiontext = NULL;
 }
 
 void
@@ -72,6 +75,7 @@ uiutilsUICallbackIntIntInit (UICallback *uicb, UIIntIntCallbackFunc cb, void *ud
 
   uicb->intintcb = cb;
   uicb->udata = udata;
+  uicb->actiontext = NULL;
 }
 
 void
@@ -83,6 +87,7 @@ uiutilsUICallbackLongInit (UICallback *uicb, UILongCallbackFunc cb, void *udata)
 
   uicb->longcb = cb;
   uicb->udata = udata;
+  uicb->actiontext = NULL;
 }
 
 void
@@ -94,6 +99,7 @@ uiutilsUICallbackLongIntInit (UICallback *uicb, UILongIntCallbackFunc cb, void *
 
   uicb->longintcb = cb;
   uicb->udata = udata;
+  uicb->actiontext = NULL;
 }
 
 void
@@ -105,6 +111,7 @@ uiutilsUICallbackStrInit (UICallback *uicb, UIStrCallbackFunc cb, void *udata)
 
   uicb->strcb = cb;
   uicb->udata = udata;
+  uicb->actiontext = NULL;
 }
 
 bool

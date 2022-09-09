@@ -68,7 +68,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp,
   uiCreateHorizBox (&hbox);
   confuiMakeItemEntryBasic (gui, &hbox, sg, txt, widx, bdjoptIdx, disp);
   uiutilsUICallbackInit (&gui->uiitem [widx].callback,
-      dialogFunc, gui);
+      dialogFunc, gui, NULL);
   uiCreateButton (&uiwidget, &gui->uiitem [widx].callback,
       "", NULL);
   uiButtonSetImageIcon (&uiwidget, "folder");
@@ -146,7 +146,7 @@ confuiMakeItemLink (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   uiCreateLink (&uiwidget, disp, NULL);
   if (isMacOS ()) {
     uiutilsUICallbackInit (&gui->uiitem [widx].callback,
-        confuiLinkCallback, gui);
+        confuiLinkCallback, gui, NULL);
     gui->uiitem [widx].uri = NULL;
     uiLinkSetActivateCallback (&uiwidget, &gui->uiitem [widx].callback);
   }
@@ -263,7 +263,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   if (cb != NULL) {
-    uiutilsUICallbackInit (&gui->uiitem [widx].callback, cb, gui);
+    uiutilsUICallbackInit (&gui->uiitem [widx].callback, cb, gui, NULL);
     uiSpinboxTextSetValueChangedCallback (gui->uiitem [widx].spinbox,
         &gui->uiitem [widx].callback);
   }
@@ -327,7 +327,7 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   uiBoxPackStart (boxp, &hbox);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   if (cb != NULL) {
-    uiutilsUICallbackInit (&gui->uiitem [widx].callback, cb, gui);
+    uiutilsUICallbackInit (&gui->uiitem [widx].callback, cb, gui, NULL);
     uiSpinboxSetValueChangedCallback (&uiwidget, &gui->uiitem [widx].callback);
   }
   uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
@@ -384,7 +384,7 @@ confuiMakeItemSwitch (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   if (cb != NULL) {
-    uiutilsUICallbackInit (&gui->uiitem [widx].callback, cb, gui);
+    uiutilsUICallbackInit (&gui->uiitem [widx].callback, cb, gui, NULL);
     uiSwitchSetCallback (gui->uiitem [widx].uiswitch,
         &gui->uiitem [widx].callback);
   }

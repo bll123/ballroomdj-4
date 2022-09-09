@@ -362,25 +362,25 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
     uiCreateSubMenu (&menuitem, &menu);
 
     uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_LOAD],
-        managePlaylistLoad, managepl);
+        managePlaylistLoad, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: load */
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
         &managepl->callbacks [MPL_CB_MENU_PL_LOAD]);
 
     uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_NEW],
-        managePlaylistNew, managepl);
+        managePlaylistNew, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist */
     uiMenuCreateItem (&menu, &menuitem, _("New Automatic Playlist"),
         &managepl->callbacks [MPL_CB_MENU_PL_NEW]);
 
     uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_COPY],
-        managePlaylistCopy, managepl);
+        managePlaylistCopy, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: create copy */
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
         &managepl->callbacks [MPL_CB_MENU_PL_COPY]);
 
     uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_DELETE],
-        managePlaylistDelete, managepl);
+        managePlaylistDelete, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist */
     uiMenuCreateItem (&menu, &menuitem, _("Delete"),
         &managepl->callbacks [MPL_CB_MENU_PL_DELETE]);

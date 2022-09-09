@@ -53,7 +53,7 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
   selectfile->parentwinp = window;
   uiutilsUIWidgetInit (&selectfile->uidialog);
   selectfile->selfiletree = NULL;
-  uiutilsUICallbackInit (&selectfile->cb, NULL, NULL);
+  uiutilsUICallbackInit (&selectfile->cb, NULL, NULL, NULL);
   selectfile->selfilecb = NULL;
   selectfile->options = options;
   selectfile->cbudata = udata;

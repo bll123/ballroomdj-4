@@ -176,7 +176,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
       uimusicq->ui [ci].dispselType == DISP_SEL_EZSONGLIST) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_MOVE_TOP],
-        uimusicqMoveTopCallback, uimusicq);
+        uimusicqMoveTopCallback, uimusicq, NULL);
     uiCreateButton (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_MOVE_TOP],
         /* CONTEXT: music queue: button: move the selected song to the top of the queue */
@@ -187,12 +187,12 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     uiCreateButton (&uiwidget, NULL, _("Move Up"), "button_up");
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_MOVE_UP_PRESS],
-        uimusicqMoveUpCallback, uimusicq);
+        uimusicqMoveUpCallback, uimusicq, NULL);
     uiButtonSetPressCallback (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_MOVE_UP_PRESS]);
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_MOVE_UP_RELEASE],
-        uimusicqStopRepeat, uimusicq);
+        uimusicqStopRepeat, uimusicq, NULL);
     uiButtonSetReleaseCallback (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_MOVE_UP_RELEASE]);
     uiBoxPackStart (&hbox, &uiwidget);
@@ -201,12 +201,12 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     uiCreateButton (&uiwidget, NULL, _("Move Down"), "button_down");
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_MOVE_DOWN_PRESS],
-        uimusicqMoveDownCallback, uimusicq);
+        uimusicqMoveDownCallback, uimusicq, NULL);
     uiButtonSetPressCallback (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_MOVE_DOWN_PRESS]);
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_MOVE_DOWN_RELEASE],
-        uimusicqStopRepeat, uimusicq);
+        uimusicqStopRepeat, uimusicq, NULL);
     uiButtonSetReleaseCallback (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_MOVE_DOWN_RELEASE]);
     uiBoxPackStart (&hbox, &uiwidget);
@@ -215,7 +215,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_TOGGLE_PAUSE],
-        uimusicqTogglePauseCallback, uimusicq);
+        uimusicqTogglePauseCallback, uimusicq, NULL);
     uiCreateButton (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_TOGGLE_PAUSE],
         /* CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle) */
@@ -228,7 +228,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
       uimusicq->ui [ci].dispselType == DISP_SEL_EZSONGLIST) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_AUDIO_REMOVE],
-        uimusicqRemoveCallback, uimusicq);
+        uimusicqRemoveCallback, uimusicq, NULL);
     uiCreateButton (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_AUDIO_REMOVE],
         /* CONTEXT: music queue: button: remove the song from the queue */
@@ -241,14 +241,14 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_EZSONGLIST) {
     uiutilsUICallbackInit (&uiw->callback [UIMUSICQ_CB_EDIT_LOCAL],
-        uimusicqSongEditCallback, uimusicq);
+        uimusicqSongEditCallback, uimusicq, NULL);
     uiCreateButton (&uiwidget, &uiw->callback [UIMUSICQ_CB_EDIT_LOCAL],
         /* CONTEXT: music queue: edit the selected song */
         _("Edit"), "button_edit");
     uiBoxPackStart (&hbox, &uiwidget);
 
     uiutilsUICallbackInit (&uiw->callback [UIMUSICQ_CB_PLAY],
-        uimusicqPlayCallback, uimusicq);
+        uimusicqPlayCallback, uimusicq, NULL);
     uiCreateButton (&uiwidget, &uiw->callback [UIMUSICQ_CB_PLAY],
         /* CONTEXT: music queue: play the selected song */
         _("Play"), NULL);
@@ -258,7 +258,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_HISTORY) {
     uiutilsUICallbackInit (&uiw->callback [UIMUSICQ_CB_QUEUE],
-        uimusicqQueueCallback, uimusicq);
+        uimusicqQueueCallback, uimusicq, NULL);
     uiCreateButton (&uiwidget, &uiw->callback [UIMUSICQ_CB_QUEUE],
         /* CONTEXT: history: re-queue the selected song */
         _("Queue"), NULL);
@@ -268,7 +268,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_REQ_EXTERNAL],
-        NULL, uimusicq);
+        NULL, uimusicq, NULL);
     uiCreateButton (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_REQ_EXTERNAL],
         /* CONTEXT: music queue: button: request playback of a song external to BDJ4 (not in the database) */
@@ -322,7 +322,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_CLEAR_QUEUE],
-        uimusicqTruncateQueueCallback, uimusicq);
+        uimusicqTruncateQueueCallback, uimusicq, NULL);
     uiCreateButton (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_CLEAR_QUEUE],
         /* CONTEXT: music queue: button: clear the queue */

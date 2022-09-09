@@ -28,6 +28,7 @@ typedef struct {
     UIStrCallbackFunc     strcb;
   };
   void            *udata;
+  const char      *actiontext;
 } UICallback;
 
 /* these are defined based on the gtk values */
@@ -65,7 +66,7 @@ extern int uiBaseMarginSz;
 void uiutilsUIWidgetInit (UIWidget *uiwidget);
 bool uiutilsUIWidgetSet (UIWidget *uiwidget);
 void uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source);
-void uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata);
+void uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata, const char *actiontext);
 void uiutilsUICallbackDoubleInit (UICallback *uicb, UIDoubleCallbackFunc cb, void *udata);
 void uiutilsUICallbackIntIntInit (UICallback *uicb, UIIntIntCallbackFunc cb, void *udata);
 void uiutilsUICallbackLongInit (UICallback *uicb, UILongCallbackFunc cb, void *udata);

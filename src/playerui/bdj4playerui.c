@@ -355,7 +355,7 @@ pluiBuildUI (playerui_t *plui)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_CLOSE],
-      pluiCloseWin, plui);
+      pluiCloseWin, plui, NULL);
   /* CONTEXT: playerui: main window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Player"),
       bdjoptGetStr (OPT_P_PROFILENAME));
@@ -397,21 +397,21 @@ pluiBuildUI (playerui_t *plui)
   uiCreateSubMenu (&menuitem, &menu);
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_PLAY_QUEUE],
-      pluiTogglePlayWhenQueued, plui);
+      pluiTogglePlayWhenQueued, plui, NULL);
   /* CONTEXT: playerui: menu checkbox: start playback when a dance or playlist is queued */
   uiMenuCreateCheckbox (&menu, &menuitem, _("Play When Queued"),
       nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED),
       &plui->callbacks [PLUI_MENU_CB_PLAY_QUEUE]);
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE],
-      pluiToggleExtraQueues, plui);
+      pluiToggleExtraQueues, plui, NULL);
   /* CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue) */
   uiMenuCreateCheckbox (&menu, &menuitem, _("Show Extra Queues"),
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES),
       &plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE]);
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE],
-      pluiToggleSwitchQueue, plui);
+      pluiToggleSwitchQueue, plui, NULL);
   /* CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue */
   uiMenuCreateCheckbox (&menu, &menuitem, _("Switch Queue When Empty"),
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
@@ -423,13 +423,13 @@ pluiBuildUI (playerui_t *plui)
   uiCreateSubMenu (&menuitem, &menu);
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ],
-      pluiMarqueeFontSizeDialog, plui);
+      pluiMarqueeFontSizeDialog, plui, NULL);
   /* CONTEXT: playerui: menu selection: marquee: change the marquee font size */
   uiMenuCreateItem (&menu, &menuitem, _("Font Size"),
       &plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ]);
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_MQ_FIND],
-      pluiMarqueeFind, plui);
+      pluiMarqueeFind, plui, NULL);
   /* CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen */
   uiMenuCreateItem (&menu, &menuitem, _("Recover Marquee"),
       &plui->callbacks [PLUI_MENU_CB_MQ_FIND]);
@@ -446,7 +446,7 @@ pluiBuildUI (playerui_t *plui)
   uiNotebookSetCallback (&plui->notebook, &plui->callbacks [PLUI_CB_NOTEBOOK]);
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
-      pluiProcessSetPlaybackQueue, plui);
+      pluiProcessSetPlaybackQueue, plui, NULL);
   uiCreateButton (&uiwidget, &plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
       /* CONTEXT: playerui: select the current queue for playback */
       _("Set Queue for Playback"), NULL);

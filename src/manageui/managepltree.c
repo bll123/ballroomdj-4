@@ -108,7 +108,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
   /* CONTEXT: playlist management: hide unselected dances */
   uiCreateCheckButton (&uiwidget, _("Hide Unselected"), 0);
   uiutilsUICallbackInit (&managepltree->unselcb,
-      managePlaylistTreeHideUnselectedCallback, managepltree);
+      managePlaylistTreeHideUnselectedCallback, managepltree, NULL);
   uiToggleButtonSetCallback (&uiwidget, &managepltree->unselcb);
   uiBoxPackStart (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&managepltree->uihideunsel, &uiwidget);

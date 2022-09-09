@@ -158,7 +158,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
       managedb->dblist, NULL, NULL);
   uiSpinboxTextSetValue (managedb->dbspinbox, MANAGE_DB_CHECK_NEW);
   uiwidgetp = uiSpinboxGetUIWidget (managedb->dbspinbox);
-  uiutilsUICallbackInit (&managedb->dbchgcb, manageDbChg, managedb);
+  uiutilsUICallbackInit (&managedb->dbchgcb, manageDbChg, managedb, NULL);
   uiSpinboxTextSetValueChangedCallback (managedb->dbspinbox, &managedb->dbchgcb);
   uiBoxPackStart (&hbox, uiwidgetp);
 
@@ -176,7 +176,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiBoxPackStart (&hbox, uiEntryGetUIWidget (managedb->dbtopdir));
 
   uiutilsUICallbackInit (&managedb->topdirselcb,
-      manageDbSelectDirCallback, managedb);
+      manageDbSelectDirCallback, managedb, NULL);
   uiCreateButton (&uiwidget, &managedb->topdirselcb, "", NULL);
   uiButtonSetImageIcon (&uiwidget, "folder");
   uiBoxPackStart (&hbox, &uiwidget);
@@ -189,7 +189,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiutilsUICallbackInit (&managedb->dbstartcb, manageDbStart, managedb);
+  uiutilsUICallbackInit (&managedb->dbstartcb, manageDbStart, managedb, NULL);
   uiCreateButton (&uiwidget, &managedb->dbstartcb,
       /* CONTEXT: update database: button to start the database update process */
       _("Start"), NULL);

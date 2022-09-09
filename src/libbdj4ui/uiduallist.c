@@ -73,10 +73,10 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   duallist->savelist = NULL;
   duallist->changed = false;
 
-  uiutilsUICallbackInit (&duallist->moveprevcb, uiduallistMovePrev, duallist);
-  uiutilsUICallbackInit (&duallist->movenextcb, uiduallistMoveNext, duallist);
-  uiutilsUICallbackInit (&duallist->selectcb, uiduallistDispSelect, duallist);
-  uiutilsUICallbackInit (&duallist->removecb, uiduallistDispRemove, duallist);
+  uiutilsUICallbackInit (&duallist->moveprevcb, uiduallistMovePrev, duallist, NULL);
+  uiutilsUICallbackInit (&duallist->movenextcb, uiduallistMoveNext, duallist, NULL);
+  uiutilsUICallbackInit (&duallist->selectcb, uiduallistDispSelect, duallist, NULL);
+  uiutilsUICallbackInit (&duallist->removecb, uiduallistDispRemove, duallist, NULL);
 
   uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);

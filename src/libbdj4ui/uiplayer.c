@@ -301,7 +301,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (&sgE, &uiwidget);
 
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_FADE],
-      uiplayerFadeProcess, uiplayer);
+      uiplayerFadeProcess, uiplayer, NULL);
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CB_FADE],
       /* CONTEXT: playerui: button: fade out the song and stop playing it */
@@ -309,7 +309,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_PLAYPAUSE],
-      uiplayerPlayPauseProcess, uiplayer);
+      uiplayerPlayPauseProcess, uiplayer, NULL);
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CB_PLAYPAUSE],
       /* CONTEXT: playerui: button: tooltip: play or pause the song */
@@ -322,11 +322,11 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       /* CONTEXT: playerui: button: tooltip: toggle the repeat song on and off */
       tbuff, _("Toggle Repeat"), NULL, 0);
   uiBoxPackStart (&hbox, &uiplayer->repeatButton);
-  uiutilsUICallbackInit (&uiplayer->repeatcb, uiplayerRepeatCallback, uiplayer);
+  uiutilsUICallbackInit (&uiplayer->repeatcb, uiplayerRepeatCallback, uiplayer, NULL);
   uiToggleButtonSetCallback (&uiplayer->repeatButton, &uiplayer->repeatcb);
 
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_BEGSONG],
-      uiplayerSongBeginProcess, uiplayer);
+      uiplayerSongBeginProcess, uiplayer, NULL);
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CB_BEGSONG],
       /* CONTEXT: playerui: button: tooltip: return to the beginning of the song */
@@ -334,7 +334,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_NEXTSONG],
-      uiplayerNextSongProcess, uiplayer);
+      uiplayerNextSongProcess, uiplayer, NULL);
   uiCreateButton (&uiwidget,
       &uiplayer->callbacks [UIPLAYER_CB_NEXTSONG],
       /* CONTEXT: playerui: button: tooltip: start playing the next song (immediate) */
@@ -355,7 +355,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiCreateToggleButton (&uiplayer->pauseatendButton, _("Pause at End"),
       NULL, NULL, &uiplayer->ledoffImg, 0);
   uiBoxPackStart (&hbox, &uiplayer->pauseatendButton);
-  uiutilsUICallbackInit (&uiplayer->pauseatendcb, uiplayerPauseatendCallback, uiplayer);
+  uiutilsUICallbackInit (&uiplayer->pauseatendcb, uiplayerPauseatendCallback, uiplayer, NULL);
   uiToggleButtonSetCallback (&uiplayer->pauseatendButton, &uiplayer->pauseatendcb);
 
   /* volume controls / display */

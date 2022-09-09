@@ -170,7 +170,7 @@ helperBuildUI (helperui_t  *helper)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
-  uiutilsUICallbackInit (&helper->closeCallback, helperCloseCallback, helper);
+  uiutilsUICallbackInit (&helper->closeCallback, helperCloseCallback, helper, NULL);
   /* CONTEXT: helperui: the window title for the BDJ4 helper */
   snprintf (tbuff, sizeof (tbuff), _("%s Helper"), BDJ4_LONG_NAME);
   uiCreateMainWindow (&helper->window, &helper->closeCallback,
@@ -189,7 +189,7 @@ helperBuildUI (helperui_t  *helper)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  uiutilsUICallbackInit (&helper->nextCallback, helperNextCallback, helper);
+  uiutilsUICallbackInit (&helper->nextCallback, helperNextCallback, helper, NULL);
   uiCreateButton (&uiwidget, &helper->nextCallback,
       /* CONTEXT: helperui: proceed to the next step */
       _("Next"), NULL);

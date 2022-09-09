@@ -375,7 +375,7 @@ uiDropDownClose (void *udata)
 static void
 uiDropDownButtonCreate (uidropdown_t *dropdown)
 {
-  uiutilsUICallbackInit (&dropdown->buttoncb, uiDropDownWindowShow, dropdown);
+  uiutilsUICallbackInit (&dropdown->buttoncb, uiDropDownWindowShow, dropdown, NULL);
   uiCreateButton (&dropdown->button, &dropdown->buttoncb, NULL,
       "button_down_small");
   uiButtonAlignLeft (&dropdown->button);
@@ -394,7 +394,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   UIWidget          uiscwin;
 
 
-  uiutilsUICallbackInit (&dropdown->closecb, uiDropDownClose, dropdown);
+  uiutilsUICallbackInit (&dropdown->closecb, uiDropDownClose, dropdown, NULL);
   uiCreateDialogWindow (&dropdown->window, dropdown->parentwin,
       &dropdown->button, &dropdown->closecb, "");
 

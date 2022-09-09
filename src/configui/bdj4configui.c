@@ -99,9 +99,9 @@ main (int argc, char *argv[])
 
   confui.gui.localip = NULL;
   uiutilsUIWidgetInit (&confui.gui.window);
-  uiutilsUICallbackInit (&confui.gui.closecb, NULL, NULL);
+  uiutilsUICallbackInit (&confui.gui.closecb, NULL, NULL, NULL);
   uiutilsUIWidgetInit (&confui.gui.notebook);
-  uiutilsUICallbackInit (&confui.gui.nbcb, NULL, NULL);
+  uiutilsUICallbackInit (&confui.gui.nbcb, NULL, NULL, NULL);
   confui.gui.nbtabid = uiutilsNotebookIDInit ();
   uiutilsUIWidgetInit (&confui.gui.vbox);
   uiutilsUIWidgetInit (&confui.gui.statusMsg);
@@ -120,7 +120,7 @@ main (int argc, char *argv[])
 
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     for (int j = 0; j < CONFUI_TABLE_CB_MAX; ++j) {
-      uiutilsUICallbackInit (&confui.gui.tables [i].callback [j], NULL, NULL);
+      uiutilsUICallbackInit (&confui.gui.tables [i].callback [j], NULL, NULL, NULL);
     }
     confui.gui.tables [i].tree = NULL;
     confui.gui.tables [i].sel = NULL;
@@ -145,7 +145,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].sbkeylist = NULL;
     confui.gui.uiitem [i].danceidx = DANCE_DANCE;
     uiutilsUIWidgetInit (&confui.gui.uiitem [i].uiwidget);
-    uiutilsUICallbackInit (&confui.gui.uiitem [i].callback, NULL, NULL);
+    uiutilsUICallbackInit (&confui.gui.uiitem [i].callback, NULL, NULL, NULL);
     confui.gui.uiitem [i].uri = NULL;
 
     if (i > CONFUI_BEGIN && i < CONFUI_COMBOBOX_MAX) {
@@ -406,7 +406,7 @@ confuiBuildUI (configui_t *confui)
   /* CONTEXT: configuration: configuration user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"),
       bdjoptGetStr (OPT_P_PROFILENAME));
-  uiutilsUICallbackInit (&confui->gui.closecb, confuiCloseWin, confui);
+  uiutilsUICallbackInit (&confui->gui.closecb, confuiCloseWin, confui, NULL);
   uiCreateMainWindow (&confui->gui.window, &confui->gui.closecb, tbuff, imgbuff);
 
   uiCreateVertBox (&confui->gui.vbox);

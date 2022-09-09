@@ -116,6 +116,7 @@ static gboolean uisongselScroll (GtkRange *range, GtkScrollType scrolltype, gdou
 static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata);
 static void uisongselClearAllSelections (uisongsel_t *uisongsel);
 static void uisongselClearSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
+static void uisongselClearSingleSelection (uisongsel_t *uisongsel);
 static gboolean uisongselKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata);
 static void uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata);
 static void uisongselProcessSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
@@ -151,7 +152,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   nlistStartIterator (uiw->selectedList, &uiw->selectListIter);
   uiw->selectListKey = -1;
   for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
-    uiutilsUICallbackInit (&uiw->callbacks [i], NULL, NULL);
+    uiutilsUICallbackInit (&uiw->callbacks [i], NULL, NULL, NULL);
   }
   uiutilsUIWidgetInit (&uiw->playbutton);
   uiw->markcolor = bdjoptGetStr (OPT_P_UI_MARK_COL);
@@ -210,7 +211,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     /* CONTEXT: song-selection: select a song to be added to the song list */
     strlcpy (tbuff, _("Select"), sizeof (tbuff));
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_SELECT],
-        uisongselSelectCallback, uisongsel);
+        uisongselSelectCallback, uisongsel, NULL);
     uiCreateButton (&uiwidget,
         &uiw->callbacks [SONGSEL_CB_SELECT], tbuff, NULL);
     uiBoxPackStart (&hbox, &uiwidget);
@@ -219,7 +220,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_EDIT_LOCAL],
-        uisongselSongEditCallback, uisongsel);
+        uisongselSongEditCallback, uisongsel, NULL);
     uiCreateButton (&uiwidget, &uiw->callbacks [SONGSEL_CB_EDIT_LOCAL],
         /* CONTEXT: song-selection: edit the selected song */
         _("Edit"), "button_edit");
@@ -230,7 +231,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     /* CONTEXT: song-selection: queue a song to be played */
     strlcpy (tbuff, _("Queue"), sizeof (tbuff));
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_QUEUE],
-        uisongselQueueCallback, uisongsel);
+        uisongselQueueCallback, uisongsel, NULL);
     uiCreateButton (&uiwidget,
         &uiw->callbacks [SONGSEL_CB_QUEUE], tbuff, NULL);
     uiBoxPackStart (&hbox, &uiwidget);
@@ -241,7 +242,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     /* CONTEXT: song-selection: play the selected songs */
     strlcpy (tbuff, _("Play"), sizeof (tbuff));
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_PLAY],
-        uisongselPlayCallback, uisongsel);
+        uisongselPlayCallback, uisongsel, NULL);
     uiCreateButton (&uiwidget,
         &uiw->callbacks [SONGSEL_CB_PLAY], tbuff, NULL);
     uiBoxPackStart (&hbox, &uiwidget);
@@ -257,7 +258,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       &uiw->callbacks [SONGSEL_CB_DANCE_SEL]);
 
   uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_FILTER],
-      uisfDialog, uisongsel->uisongfilter);
+      uisfDialog, uisongsel->uisongfilter, NULL);
   uiCreateButton (&uiwidget,
       &uiw->callbacks [SONGSEL_CB_FILTER],
       /* CONTEXT: song-selection: a button that starts the filters (narrowing down song selections) dialog */
@@ -1143,6 +1144,7 @@ uisongselClearAllSelections (uisongsel_t *uisongsel)
       uisongselClearSelection, uisongsel);
 }
 
+/* used by clear all selections */
 static void
 uisongselClearSelection (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
@@ -1152,6 +1154,20 @@ uisongselClearSelection (GtkTreeModel *model,
 
   uiw = uisongsel->uiWidgetData;
   gtk_tree_selection_unselect_iter (uiw->sel, iter);
+}
+
+/* clears a single selection.  use when only one item is selected */
+static void
+uisongselClearSingleSelection (uisongsel_t *uisongsel)
+{
+  uisongselgtk_t  *uiw;
+
+  uiw = uisongsel->uiWidgetData;
+  gtk_tree_selection_selected_foreach (uiw->sel,
+      uisongselGetIter, uisongsel);
+
+fprintf (stderr, "  do unselect\n");
+  gtk_tree_selection_unselect_iter (uiw->sel, &uiw->currIter);
 }
 
 static gboolean
@@ -1316,19 +1332,23 @@ uisongselMoveSelection (void *udata, int where)
   int             valid;
   bool            scrolled = false;
 
+fprintf (stderr, "== move selection\n");
   uiw = uisongsel->uiWidgetData;
 
   if (uiw->sel == NULL) {
+fprintf (stderr, "  null\n");
     return;
   }
 
   count = nlistGetCount (uiw->selectedList);
 
   if (count == 0) {
+fprintf (stderr, "  no selection\n");
     return;
   }
 
   if (count > 1) {
+fprintf (stderr, "  > 1 selections\n");
     /* need to be able to move forwards and backwards within the select-list */
     /* do not change the gtk selection */
 
@@ -1367,34 +1387,35 @@ uisongselMoveSelection (void *udata, int where)
   }
 
   if (count == 1) {
-    /* the tree is set for multiple selection */
-    gtk_tree_selection_selected_foreach (uiw->sel,
-        uisongselGetIter, uisongsel);
-
-    gtk_tree_selection_unselect_iter (uiw->sel, &uiw->currIter);
+fprintf (stderr, "  1 selection\n");
+    uisongselClearSingleSelection (uisongsel);
 
     model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
     path = gtk_tree_model_get_path (model, &uiw->currIter);
     if (path != NULL) {
       pathstr = gtk_tree_path_to_string (path);
       loc = atol (pathstr);
+fprintf (stderr, "  have loc %ld\n", loc);
       free (pathstr);
     }
 
     valid = false;
     if (where == UISONGSEL_FIRST) {
+fprintf (stderr, "  select first\n");
       scrolled = uisongselScrollSelection (uisongsel, 0, UISONGSEL_SCROLL_FORCE);
       valid = gtk_tree_model_get_iter_first (model, &uiw->currIter);
     }
     if (where == UISONGSEL_NEXT) {
+fprintf (stderr, "  select next\n");
       nidx = uisongsel->idxStart + 1;
       scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_FORCE);
       if (! scrolled) {
         long    idx;
+fprintf (stderr, "  ! scrolled\n");
 
         gtk_tree_model_get (model, &uiw->currIter, SONGSEL_COL_IDX, &idx, -1);
         if (loc < uiw->maxRows - 1 &&
-           idx < uisongsel->dfilterCount - 1) {
+            idx < uisongsel->dfilterCount - 1) {
           valid = gtk_tree_model_iter_next (model, &uiw->currIter);
         }
       } else {
@@ -1402,11 +1423,13 @@ uisongselMoveSelection (void *udata, int where)
       }
     }
     if (where == UISONGSEL_PREVIOUS) {
+fprintf (stderr, "  select previous\n");
       nidx = uisongsel->idxStart - 1;
       scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_FORCE);
       if (! scrolled) {
-
-        if (loc > 0) {
+fprintf (stderr, "  ! scrolled\n");
+        if (loc >= 0 &&
+            loc < uiw->maxRows) {
           valid = gtk_tree_model_iter_previous (model, &uiw->currIter);
         }
       } else {
