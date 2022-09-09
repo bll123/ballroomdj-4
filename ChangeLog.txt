@@ -25,6 +25,8 @@ BallroomDJ 4 Change Log
   - check same-song marks.
 - player
   - fixed handling of negative volume adjustment.
+- conversion: profiles: fixed setup of the images for alternate profiles.
+- starterui: fixed 'delete profile'.
 
 4.0.0 alpha 2022-08-27
 

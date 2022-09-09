@@ -2017,6 +2017,7 @@ starterDeleteProfile (void *udata)
   }
 
   logEnd ();
+
   pathbldMakePath (tbuff, sizeof (tbuff), "", "",
       PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   if (fileopIsDirectory (tbuff)) {
@@ -2027,12 +2028,17 @@ starterDeleteProfile (void *udata)
   if (fileopIsDirectory (tbuff)) {
     diropDeleteDir (tbuff);
   }
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
+      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+  if (fileopIsDirectory (tbuff)) {
+    diropDeleteDir (tbuff);
+  }
 
   dispidx = starterGetProfiles (starter);
+  uiSpinboxTextSetValue (starter->profilesel, dispidx);
   uiSpinboxTextSet (starter->profilesel, 0,
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
       starter->proflist, NULL, starterSetProfile);
-  uiSpinboxTextSetValue (starter->profilesel, dispidx);
 
   /* CONTEXT: starter: status message (restart BDJ4) */
   snprintf (tbuff, sizeof (tbuff), _("Restart %s."), BDJ4_NAME);
