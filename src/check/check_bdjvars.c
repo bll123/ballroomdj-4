@@ -45,6 +45,7 @@ START_TEST(bdjvars_init_idx)
   ck_assert_int_eq (sysvarsGetNum (SVL_BASEPORT) +
       bdjvarsGetNum (BDJVL_NUM_PORTS) * sysvarsGetNum (SVL_BDJIDX),
       bdjvarsGetNum (BDJVL_MAIN_PORT));
+  sysvarsSetNum (SVL_BDJIDX, 0);
   bdjvarsCleanup ();
 }
 END_TEST
@@ -60,6 +61,7 @@ START_TEST(bdjvars_adjust)
   ck_assert_int_eq (sysvarsGetNum (SVL_BASEPORT) +
       bdjvarsGetNum (BDJVL_NUM_PORTS) * sysvarsGetNum (SVL_BDJIDX),
       bdjvarsGetNum (BDJVL_MAIN_PORT));
+  sysvarsSetNum (SVL_BDJIDX, 0);
   bdjvarsCleanup ();
 }
 END_TEST

@@ -284,7 +284,7 @@ case $tag in
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
     rm -f ${tmpnm} ${tmpsep}
     ;;
-  Darwin)
+  macos)
     mkdir -p ${stagedir}${macosbase}
     mkdir -p ${stagedir}/Contents/Resources
     mkdir -p ${tmpmac}
@@ -312,7 +312,7 @@ case $tag in
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
     rm -f ${tmpnm} ${tmpsep}
     ;;
-  MINGW64*|MINGW32*)
+  win64)
     copyreleasefiles ${tag} ${stagedir}
 
     echo "-- $(date +%T) creating release manifest"
