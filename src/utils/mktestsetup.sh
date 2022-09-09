@@ -53,7 +53,7 @@ cp -f test-templates/ds-songfilter.txt data/profile00
 
 cwd=$(pwd)
 
-ed data/profile00/bdjconfig.txt << _HERE_
+ed data/profile00/bdjconfig.txt << _HERE_ > /dev/null
 /^HIDEMARQUEEONSTART/
 +1
 s,.*,..on,
@@ -64,7 +64,7 @@ w
 q
 _HERE_
 
-ed data/${hostname}/bdjconfig.txt << _HERE_
+ed data/${hostname}/bdjconfig.txt << _HERE_ > /dev/null
 /^DIRMUSIC/
 +1
 s,.*,..${cwd}/test-music,

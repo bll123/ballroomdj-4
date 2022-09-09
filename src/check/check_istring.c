@@ -148,7 +148,10 @@ istring_suite (void)
 
   s = suite_create ("istring");
   tc = tcase_create ("istring");
-  tcase_set_tags (tc, "libbasic");
+  /* for some reason, running this test inline with the other tests */
+  /* causes a crash on windows. */
+  /* tag it as 'notwin' */
+  tcase_set_tags (tc, "libbasic notwin");
   tcase_add_test (tc, istring_istrlen);
   tcase_add_test (tc, istring_comp);
   tcase_add_test (tc, istring_tolower);

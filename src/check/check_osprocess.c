@@ -89,10 +89,8 @@ START_TEST(osprocess_start_wait)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start_wait");
 
   runchk (OS_PROC_WAIT, &pid, &exists);
-  ck_assert_int_gt (pid, 0);
-  if (! isWindows ()) {
-    ck_assert_int_lt (exists, 0);
-  }
+  /* in this case, the pid is the return code from the program */
+  ck_assert_int_eq (pid, 0);
 }
 END_TEST
 
@@ -121,8 +119,8 @@ START_TEST(osprocess_start_handle)
   targv [targc++] = "--bdj4";
   targv [targc++] = NULL;
   process.processHandle = NULL;
-  flags = OS_PROC_WAIT;
   pid = osProcessStart (targv, flags, &process.processHandle, NULL);
+  ck_assert_int_gt (pid, 0);
   if (process.processHandle != NULL) {
     process.hasHandle = true;
   }
@@ -131,15 +129,12 @@ START_TEST(osprocess_start_handle)
   }
   process.pid = pid;
   rc = procutilExists (&process);
+  ck_assert_int_eq (rc, 0);
 #if _typ_HANDLE
   if (process.processHandle != NULL) {
     CloseHandle (process.processHandle);
   }
 #endif
-  ck_assert_int_gt (pid, 0);
-  if (! isWindows ()) {
-    ck_assert_int_lt (rc, 0);
-  }
 }
 END_TEST
 
@@ -149,9 +144,7 @@ START_TEST(osprocess_start_redirect)
   const char  *targv [10];
   int         targc = 0;
   int         pid = 0;
-  procutil_t  process;
   char        *extension;
-  int         rc;
   int         flags = 0;
   char        *outfn = "tmp/chkosprocess.txt";
   FILE        *fh;
@@ -173,10 +166,8 @@ START_TEST(osprocess_start_redirect)
   targv [targc++] = NULL;
   flags = OS_PROC_WAIT;
   pid = osProcessStart (targv, flags, NULL, outfn);
-  process.pid = pid;
-  rc = procutilExists (&process);
-  ck_assert_int_gt (pid, 0);
-  ck_assert_int_lt (rc, 0);
+  /* waited, pid is the return code */
+  ck_assert_int_eq (pid, 0);
   if (isWindows ()) {
     sleep (1);    // give windows a bit more time
   }

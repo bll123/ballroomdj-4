@@ -34,6 +34,8 @@
 #include "bdjstring.h"
 #include "osprocess.h"
 
+static int osProcessWaitStatus (int wstatus);
+
 /* identical on linux and mac os */
 #if _lib_fork
 
@@ -83,7 +85,11 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
 
   pid = tpid;
   if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
-    waitpid (pid, NULL, 0);
+    int   rc, wstatus;
+
+    waitpid (pid, &wstatus, 0);
+    rc = osProcessWaitStatus (wstatus);
+    return rc;
   }
 
   return pid;
@@ -145,7 +151,12 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz)
 
   pid = tpid;
   if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
-    waitpid (pid, NULL, 0);
+    int   rc, wstatus;
+
+    waitpid (pid, &wstatus, 0);
+    rc = osProcessWaitStatus (wstatus);
+    /* more processing to do, so overload the pid return */
+    pid = rc;
   }
 
   if (rbuff != NULL) {
@@ -188,4 +199,18 @@ osRunProgram (const char *prog, ...)
 
   osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data));
   return strdup (data);
+}
+
+static int
+osProcessWaitStatus (int wstatus)
+{
+  int rc = 0;
+
+  if (WIFEXITED (wstatus)) {
+    rc = WEXITSTATUS (wstatus);
+  }
+  if (WIFSIGNALED (wstatus)) {
+    rc = WTERMSIG (wstatus);
+  }
+  return rc;
 }

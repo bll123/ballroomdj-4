@@ -16,12 +16,14 @@
 #include <check.h>
 
 #include "bdj4.h"
+#include "check_bdj.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "log.h"
 #include "pathbld.h"
+#include "sysvars.h"
 #include "templateutil.h"
-#include "check_bdj.h"
+#include "tmutil.h"
 
 START_TEST(templateutil_file_copy)
 {
@@ -113,6 +115,9 @@ START_TEST(templateutil_dispset_copy)
   fileopDelete (to);
   ck_assert_int_eq (fileopFileExists (to), 0);
   templateDisplaySettingsCopy ();
+  if (isWindows ()) {
+    mssleep (200);
+  }
   ck_assert_int_eq (fileopFileExists (to), 1);
 }
 END_TEST

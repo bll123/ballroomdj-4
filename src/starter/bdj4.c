@@ -56,6 +56,7 @@ main (int argc, char * argv[])
   int       targc;
   bool      havetheme = false;
   FILE      *fh = NULL;
+  int       rc;
 
   static struct option bdj_options [] = {
     { "bdj4bpmcounter", no_argument,        NULL,   19 },
@@ -478,7 +479,10 @@ main (int argc, char * argv[])
     flags |= OS_PROC_WAIT;
     flags &= ~OS_PROC_DETACH;
   }
-  osProcessStart (targv, flags, NULL, NULL);
+  rc = osProcessStart (targv, flags, NULL, NULL);
+  if (forcewait || wait) {
+    return rc;
+  }
   return 0;
 }
 

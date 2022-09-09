@@ -75,13 +75,13 @@ function copyreleasefiles {
 
   echo "   removing exclusions"
   # bdj4se is only used for packaging
-  # testing: bdj4msetup, check_all, chkprocess, voltest
+  # testing: tmusicsetup, check_all, chkprocess, voltest
   # img/profile[1-9] may be left over from testing
   rm -f \
       ${stage}/bin/bdj4se \
-      ${stage}/bin/bdj4msetup \
       ${stage}/bin/check_all \
       ${stage}/bin/chkprocess \
+      ${stage}/bin/tmusicsetup \
       ${stage}/bin/voltest \
       ${state}/img/*-base.svg \
       ${stage}/img/mkicon.sh \
@@ -152,15 +152,22 @@ case $systype in
 esac
 
 if [[ $preskip == F ]]; then
-  ./src/utils/mktestdb.sh
-  (
-    cd src
-    make check
-  )
+  ./src/utils/mktestsetup.sh
+  ./bin/bdj4 --check_all
   rc=$?
   if [[ $rc -ne 0 ]]; then
-    echo "tests failed"
+    echo "pkg: tests failed"
     exit 1
+  fi
+  if [[ $platform == windows ]]; then
+    # istring causes issues on windows when run in conjunction with
+    # the other tests.  run it separately.
+    CK_RUN_SUITE=istring ./bin/bdj4 --check_all
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+      echo "pkg: tests failed"
+      exit 1
+    fi
   fi
   ./pkg/prepkg.sh
 fi
