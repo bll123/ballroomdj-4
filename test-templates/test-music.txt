@@ -2366,6 +2366,8 @@ KEY
 ..75
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 BPM
@@ -2404,6 +2406,8 @@ KEY
 ..76
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
@@ -2442,6 +2446,8 @@ KEY
 ..77
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
@@ -2480,6 +2486,8 @@ KEY
 ..78
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 BPM
 ..84
 TAGS
@@ -2514,6 +2522,8 @@ KEY
 ..79
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 BPM
@@ -2552,6 +2562,8 @@ KEY
 ..80
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
@@ -2894,6 +2906,8 @@ KEY
 ..90
 SOURCE
 ..westcoastswing.mp3
+DURATION
+..30150
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
@@ -2926,6 +2940,8 @@ KEY
 ..91
 SOURCE
 ..westcoastswing.mp3
+DURATION
+..30150
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
@@ -2958,6 +2974,8 @@ KEY
 ..92
 SOURCE
 ..westcoastswing.mp3
+DURATION
+..30150
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
@@ -2988,6 +3006,8 @@ KEY
 ..93
 SOURCE
 ..westcoastswing.mp3
+DURATION
+..30150
 TAGS
 ..tag1 tag2 tag3
 STATUS
@@ -3014,6 +3034,8 @@ KEY
 ..94
 SOURCE
 ..westcoastswing.mp3
+DURATION
+..30150
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
@@ -3042,6 +3064,8 @@ KEY
 ..95
 SOURCE
 ..westcoastswing.mp3
+DURATION
+..30150
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
@@ -3076,6 +3100,8 @@ KEY
 ..96
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
@@ -3110,6 +3136,8 @@ KEY
 ..97
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 BPM
 ..87
 TAGS
@@ -3142,6 +3170,8 @@ KEY
 ..98
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 BPM
@@ -3172,6 +3202,8 @@ KEY
 ..99
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
@@ -3202,6 +3234,8 @@ KEY
 ..100
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
@@ -3234,6 +3268,8 @@ KEY
 ..101
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 BPM
 ..84
 TAGS
@@ -3264,6 +3300,8 @@ KEY
 ..102
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 BPM
@@ -3296,6 +3334,8 @@ KEY
 ..103
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
@@ -3329,6 +3369,8 @@ KEY
 ..104
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
@@ -3361,6 +3403,8 @@ KEY
 ..105
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 BPM
 ..84
 KEYWORD
@@ -3393,6 +3437,8 @@ KEY
 ..106
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 BPM
@@ -3427,6 +3473,8 @@ KEY
 ..107
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
@@ -3459,6 +3507,8 @@ KEY
 ..108
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 BPM
@@ -3491,6 +3541,8 @@ KEY
 ..109
 SOURCE
 ..waltz.mp3
+DURATION
+..31150
 BPM
 ..87
 KEYWORD

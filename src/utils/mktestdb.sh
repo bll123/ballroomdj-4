@@ -10,6 +10,10 @@ case ${cwd} in
     ;;
 esac
 
+if [[ ! -d data ]]; then
+  exit 1
+fi
+
 if [[ $1 == --force ]]; then
   rm -f data/mktestdb.txt
 fi

@@ -57,6 +57,9 @@ ed data/profile00/bdjconfig.txt << _HERE_
 /^HIDEMARQUEEONSTART/
 +1
 s,.*,..on,
+/^PROFILENAME/
++1
+s,.*,..Test-Setup,
 w
 q
 _HERE_
