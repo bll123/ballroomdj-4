@@ -30,7 +30,6 @@ main (int argc, char *argv [])
   int     option_index = 0;
   int     number_failed = 0;
   bool    skipslow = false;
-  const char *exclude;
 
   static struct option coptions [] = {
     { "check_all",  no_argument, NULL, 0 },
@@ -66,15 +65,7 @@ main (int argc, char *argv [])
   /* if the durations are needed */
 //  srunner_set_xml (sr, "tmp/check.xml");
   srunner_set_log (sr, "tmp/check.log");
-
-  /* for a normal run, always exclude the notwin tag on windows */
-  exclude = NULL;
-  if (isWindows () && getenv ("CK_RUN_SUITE") == NULL) {
-    /* exclude tests that cause problems. note that these tests can be */
-    /* run stand-alone */
-    exclude = "notwin";
-  }
-  srunner_run_tagged (sr, NULL, NULL, NULL, exclude, CK_ENV);
+  srunner_run_all (sr, CK_ENV);
   number_failed += srunner_ntests_failed (sr);
   srunner_free (sr);
 

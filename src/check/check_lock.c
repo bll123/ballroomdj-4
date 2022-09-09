@@ -32,6 +32,7 @@ START_TEST(lock_name)
 
   ck_assert_str_eq (lockName (ROUTE_PLAYERUI), "playerui");
 }
+END_TEST
 
 START_TEST(lock_acquire_release)
 {

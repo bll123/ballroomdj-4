@@ -312,7 +312,7 @@ case $tag in
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
     rm -f ${tmpnm} ${tmpsep}
     ;;
-  win64)
+  win64|win32)
     copyreleasefiles ${tag} ${stagedir}
 
     echo "-- $(date +%T) creating release manifest"

@@ -164,6 +164,7 @@ START_TEST(fileop_open_u)
 
   }
 }
+END_TEST
 
 START_TEST(fileop_exists_u)
 {
@@ -181,6 +182,7 @@ START_TEST(fileop_exists_u)
     ck_assert_int_eq (rc, 1);
   }
 }
+END_TEST
 
 START_TEST(fileop_del_u)
 {
@@ -201,6 +203,7 @@ START_TEST(fileop_del_u)
     ck_assert_int_eq (rc, 0);
   }
 }
+END_TEST
 
 START_TEST(fileop_size_u)
 {
@@ -223,6 +226,7 @@ START_TEST(fileop_size_u)
     fileopDelete (fn);
   }
 }
+END_TEST
 
 START_TEST(fileop_modtime_u)
 {
@@ -247,6 +251,7 @@ START_TEST(fileop_modtime_u)
     fileopDelete (fn);
   }
 }
+END_TEST
 
 START_TEST(fileop_setmodtime_u)
 {
@@ -275,6 +280,7 @@ START_TEST(fileop_setmodtime_u)
     fileopDelete (fn);
   }
 }
+END_TEST
 
 Suite *
 fileop_suite (void)

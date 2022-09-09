@@ -115,9 +115,6 @@ START_TEST(templateutil_dispset_copy)
   fileopDelete (to);
   ck_assert_int_eq (fileopFileExists (to), 0);
   templateDisplaySettingsCopy ();
-  if (isWindows ()) {
-    mssleep (200);
-  }
   ck_assert_int_eq (fileopFileExists (to), 1);
 }
 END_TEST

@@ -28,6 +28,7 @@ START_TEST(istring_istrlen)
 {
   char    buff [20];
 
+  istringCleanup ();
   istringInit ("de_DE");
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_istrlen");
@@ -53,6 +54,7 @@ START_TEST(istring_istrlen)
   ck_assert_int_eq (istrlen (buff), 5);
 
   istringCleanup ();
+  istringInit (sysvarsGetStr (SV_LOCALE));
 }
 END_TEST
 
@@ -62,6 +64,7 @@ START_TEST(istring_comp)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_comp");
 
+  istringCleanup ();
   istringInit ("de_DE");
 
   rc = istringCompare ("ÄÄÄÄ", "ÖÖÖÖ");
@@ -80,6 +83,7 @@ START_TEST(istring_comp)
   ck_assert_int_lt (rc, 0);
 
   istringCleanup ();
+  istringInit (sysvarsGetStr (SV_LOCALE));
 }
 END_TEST
 
@@ -108,6 +112,7 @@ START_TEST(istring_tolower)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_tolower");
 
+  istringCleanup ();
   istringInit ("de_DE");
 
   for (int i = 0; i < tvaluesz; ++i) {
@@ -118,7 +123,9 @@ START_TEST(istring_tolower)
   }
 
   istringCleanup ();
+  istringInit (sysvarsGetStr (SV_LOCALE));
 }
+END_TEST
 
 START_TEST(istring_toupper)
 {
@@ -127,6 +134,7 @@ START_TEST(istring_toupper)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- istring_toupper");
 
+  istringCleanup ();
   istringInit ("de_DE");
 
   for (int i = 0; i < tvaluesz; ++i) {
@@ -137,7 +145,9 @@ START_TEST(istring_toupper)
   }
 
   istringCleanup ();
+  istringInit (sysvarsGetStr (SV_LOCALE));
 }
+END_TEST
 
 
 Suite *
@@ -148,10 +158,7 @@ istring_suite (void)
 
   s = suite_create ("istring");
   tc = tcase_create ("istring");
-  /* for some reason, running this test inline with the other tests */
-  /* causes a crash on windows. */
-  /* tag it as 'notwin' */
-  tcase_set_tags (tc, "libbasic notwin");
+  tcase_set_tags (tc, "libbasic");
   tcase_add_test (tc, istring_istrlen);
   tcase_add_test (tc, istring_comp);
   tcase_add_test (tc, istring_tolower);

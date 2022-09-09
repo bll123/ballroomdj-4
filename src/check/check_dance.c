@@ -397,6 +397,7 @@ START_TEST(dance_delete)
   danceFree (dance);
   bdjvarsdfloadCleanup ();
 }
+END_TEST
 
 
 START_TEST(dance_add)
@@ -427,6 +428,7 @@ START_TEST(dance_add)
   danceFree (dance);
   bdjvarsdfloadCleanup ();
 }
+END_TEST
 
 
 Suite *

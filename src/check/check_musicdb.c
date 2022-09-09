@@ -678,6 +678,7 @@ START_TEST(musicdb_cleanup)
   diropDeleteDir (bdjoptGetStr (OPT_M_DIR_MUSIC));
   bdjoptCleanup ();
 }
+END_TEST
 
 Suite *
 musicdb_suite (void)

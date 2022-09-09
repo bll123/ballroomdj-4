@@ -100,6 +100,7 @@ START_TEST(dispsel_save)
   slistFree (tlistb);
   dispselFree (dsel);
 }
+END_TEST
 
 Suite *
 dispsel_suite (void)

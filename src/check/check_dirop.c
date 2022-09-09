@@ -137,6 +137,7 @@ START_TEST(dirop_mk_is_del_u)
     ck_assert_int_eq (rc, 0);
   }
 }
+END_TEST
 
 Suite *
 dirop_suite (void)

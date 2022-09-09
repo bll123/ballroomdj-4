@@ -242,6 +242,7 @@ START_TEST(filemanip_renameall_a)
 {
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_renameall_a");
 }
+END_TEST
 
 /* update the fnlist in fileop/filemanip/dirop/dirlist also */
 static char *fnlist [] = {
