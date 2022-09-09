@@ -102,13 +102,16 @@ build:
 # testing
 .PHONY: check checkfast checksuite
 check:
-	(cd ..;./bin/bdj4 --check_all 2>&1 | tee src/ww)
+	(cd ..;./bin/bdj4 --check_all)
 
 checkfast:
-	(cd ..;CK_EXCLUDE_TAGS=slow ./bin/bdj4 --check_all 2>&1 | tee src/ww)
+	(cd ..;CK_EXCLUDE_TAGS=slow ./bin/bdj4 --check_all)
+
+checktag:
+	(cd ..;CK_INCLUDE_TAGS=$(tag) ./bin/bdj4 --check_all)
 
 checksuite:
-	(cd ..;CK_RUN_SUITE=$(suite) ./bin/bdj4 --check_all 2>&1 | tee src/ww)
+	(cd ..;CK_RUN_SUITE=$(suite) ./bin/bdj4 --check_all)
 
 # recommended to change PLAYER and VOLUME in data/bdjconfig.txt to
 # be the null libraries.

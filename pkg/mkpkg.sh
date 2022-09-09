@@ -338,6 +338,7 @@ case $tag in
     rm -f ${tmpcab} ${tmpsep}
     ;;
 esac
+
 chmod a+rx ${nm}
 
 echo "## $(date +%T) release package ${nm} created"

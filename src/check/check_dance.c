@@ -128,20 +128,22 @@ START_TEST(dance_set)
   danceStartIterator (dance, &iteridx);
   count = 0;
   while ((key = danceIterate (dance, &iteridx)) >= 0) {
-    val = danceGetStr (dance, key, DANCE_DANCE);
+    val = strdup (danceGetStr (dance, key, DANCE_DANCE));
     danceSetStr (dance, key, DANCE_DANCE, "abc123");
     tval = danceGetStr (dance, key, DANCE_DANCE);
     ck_assert_ptr_nonnull (tval);
     ck_assert_str_ne (val, tval);
     ck_assert_str_eq (tval, "abc123");
     danceSetStr (dance, key, DANCE_DANCE, val);
+    free (val);
 
-    ann = danceGetStr (dance, key, DANCE_ANNOUNCE);
+    ann = strdup (danceGetStr (dance, key, DANCE_ANNOUNCE));
     danceSetStr (dance, key, DANCE_ANNOUNCE, "abc123");
     tann = danceGetStr (dance, key, DANCE_ANNOUNCE);
     ck_assert_ptr_nonnull (tann);
     ck_assert_str_ne (ann, tann);
     ck_assert_str_eq (tann, "abc123");
+    free (ann);
 
     hbpm = danceGetNum (dance, key, DANCE_HIGH_BPM);
     danceSetNum (dance, key, DANCE_HIGH_BPM, 5);
@@ -183,6 +185,7 @@ START_TEST(dance_set)
     ++count;
   }
   ck_assert_int_eq (count, danceGetCount (dance));
+
   danceFree (dance);
   bdjvarsdfloadCleanup ();
 }

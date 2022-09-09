@@ -493,6 +493,9 @@ START_TEST(songfilter_keyword)
   ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_KEYWORD), 1);
 
   songfilterFree (sf);
+  slistFree (lista);
+  slistFree (listb);
+  slistFree (listall);
 }
 END_TEST
 
@@ -801,7 +804,7 @@ START_TEST(songfilter_sort)
   int           c, count;
   dbidx_t       dbidx, ldbidx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_set_sort");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_sort");
 
   for (int i = 0; i < sorttypesz; ++i) {
     sf [i] = songfilterAlloc ();
@@ -874,11 +877,31 @@ songfilter_suite (void)
   tcase_add_test (tc, songfilter_dance_idx);
   tcase_add_test (tc, songfilter_dance_list);
   tcase_add_test (tc, songfilter_favorite);
+  suite_add_tcase (s, tc);
+
+  tc = tcase_create ("songfilter-search");
+  tcase_set_tags (tc, "libbdj4 slow");
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, songfilter_search);
+  /* for some reason the mac is really slow */
+  tcase_set_timeout (tc, 20.0);
+  suite_add_tcase (s, tc);
+
+  tc = tcase_create ("songfilter-b");
+  tcase_set_tags (tc, "libbdj4");
+  tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, songfilter_multi);
   tcase_add_test (tc, songfilter_bpm);
-  tcase_add_test (tc, songfilter_sort);
   suite_add_tcase (s, tc);
+
+  tc = tcase_create ("songfilter-sort");
+  tcase_set_tags (tc, "libbdj4 slow");
+  tcase_add_unchecked_fixture (tc, setup, teardown);
+  tcase_add_test (tc, songfilter_sort);
+  /* for some reason the mac is really slow */
+  tcase_set_timeout (tc, 20.0);
+  suite_add_tcase (s, tc);
+
   return s;
 }
 

@@ -88,6 +88,9 @@ statusFree (status_t *status)
     if (status->df != NULL) {
       datafileFree (status->df);
     }
+    if (status->statusList != NULL) {
+      slistFree (status->statusList);
+    }
     free (status);
   }
 }
@@ -136,19 +139,25 @@ statusConv (datafileconv_t *conv)
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
 
-  conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
 
     if (status == NULL) {
       conv->num = 0;
+      if (conv->allocated) {
+        free (conv->str);
+      }
       return;
     }
 
     num = slistGetNum (status->statusList, conv->str);
+    if (conv->allocated) {
+      free (conv->str);
+    }
     conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
+    conv->allocated = false;
 
     if (status == NULL || conv->num == LIST_VALUE_INVALID) {
       conv->str = "New";

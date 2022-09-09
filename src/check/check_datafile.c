@@ -713,6 +713,7 @@ START_TEST(datafile_keyval_savelist)
   }
 
   datafileFree (df);
+  slistFree (slist);
   unlink (fn);
 }
 END_TEST
@@ -792,6 +793,7 @@ START_TEST(datafile_keyval_savebuffer)
   }
 
   datafileFree (df);
+  datafileFree (tdf);
   unlink (fn);
 }
 END_TEST
@@ -869,6 +871,7 @@ START_TEST(datafile_keyval_save)
   }
 
   datafileFree (df);
+  datafileFree (tdf);
   unlink (fn);
 }
 END_TEST
@@ -925,6 +928,7 @@ START_TEST(datafile_indirect_save)
   }
 
   datafileFree (df);
+  datafileFree (tdf);
   unlink (fn);
 }
 END_TEST
@@ -972,6 +976,7 @@ START_TEST(datafile_simple_save)
   }
 
   datafileFree (df);
+  datafileFree (tdf);
   unlink (fn);
 }
 END_TEST

@@ -104,10 +104,10 @@ START_TEST(fileop_setmodtime_a)
   tm = fileopModTime (fn);
   ck_assert_int_ne (tm, 0);
   ck_assert_int_ge (tm, ctm);
-  fileopSetModTime (fn, 12);
+  fileopSetModTime (fn, 28800 * 2 + 12);
   tm = fileopModTime (fn);
   ck_assert_int_ne (tm, 0);
-  ck_assert_int_eq (tm, 12);
+  ck_assert_int_eq (tm, 28800 * 2 + 12);
   unlink (fn);
 }
 END_TEST
@@ -125,7 +125,11 @@ START_TEST(fileop_delete_a)
   fh = fopen (fn, "w");
   ck_assert_ptr_nonnull (fh);
   fclose (fh);
+  rc = fileopFileExists (fn);
+  ck_assert_int_eq (rc, 1);
   rc = fileopDelete (fn);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (fn);
   ck_assert_int_eq (rc, 0);
   rc = fileopDelete ("tmp/def.txt");
   ck_assert_int_lt (rc, 0);
@@ -135,12 +139,12 @@ END_TEST
 
 /* update the fnlist in fileop/filemanip/dirop/dirlist also */
 static char *fnlist [] = {
-  "tmp/abc-def",
-  "tmp/ÜÄÑÖ",
-  "tmp/I Am the Best_내가 제일 잘 나가",
-  "tmp/ははは",
-  "tmp/夕陽伴我歸",
-  "tmp/Ne_Русский_Шторм",
+  "tmp/abc-def.txt",
+  "tmp/ÜÄÑÖ.txt",
+  "tmp/I Am the Best_내가 제일 잘 나가.txt",
+  "tmp/ははは.txt",
+  "tmp/夕陽伴我歸.txt",
+  "tmp/Ne_Русский_Шторм.txt",
 };
 enum {
   fnlistsz = sizeof (fnlist) / sizeof (char *),
@@ -157,6 +161,7 @@ START_TEST(fileop_open_u)
     fh = fileopOpen (fn, "w");
     ck_assert_ptr_nonnull (fh);
     fclose (fh);
+
   }
 }
 
@@ -201,6 +206,7 @@ START_TEST(fileop_size_u)
 {
   FILE      *fh;
   ssize_t   sz;
+  int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_size_u");
 
@@ -210,6 +216,8 @@ START_TEST(fileop_size_u)
     ck_assert_ptr_nonnull (fh);
     fprintf (fh, "abcdef");
     fclose (fh);
+    rc = fileopFileExists (fn);
+    ck_assert_int_eq (rc, 1);
     sz = fileopSize (fn);
     ck_assert_int_eq (sz, 6);
     fileopDelete (fn);
@@ -221,6 +229,7 @@ START_TEST(fileop_modtime_u)
   FILE      *fh;
   time_t    ctm;
   time_t    tm;
+  int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_modtime_u");
 
@@ -230,6 +239,8 @@ START_TEST(fileop_modtime_u)
     fh = fileopOpen (fn, "w");
     ck_assert_ptr_nonnull (fh);
     fclose (fh);
+    rc = fileopFileExists (fn);
+    ck_assert_int_eq (rc, 1);
     tm = fileopModTime (fn);
     ck_assert_int_ne (tm, 0);
     ck_assert_int_ge (tm, ctm);
@@ -242,6 +253,7 @@ START_TEST(fileop_setmodtime_u)
   FILE      *fh;
   time_t    ctm;
   time_t    tm;
+  int       rc;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_setmodtime_u");
 
@@ -251,13 +263,15 @@ START_TEST(fileop_setmodtime_u)
     fh = fileopOpen (fn, "w");
     ck_assert_ptr_nonnull (fh);
     fclose (fh);
+    rc = fileopFileExists (fn);
+    ck_assert_int_eq (rc, 1);
     tm = fileopModTime (fn);
     ck_assert_int_ne (tm, 0);
     ck_assert_int_ge (tm, ctm);
-    fileopSetModTime (fn, 14);
+    fileopSetModTime (fn, 28800 * 2 + 14);
     tm = fileopModTime (fn);
     ck_assert_int_ne (tm, 0);
-    ck_assert_int_eq (tm, 14);
+    ck_assert_int_eq (tm, 28800 * 2 + 14);
     fileopDelete (fn);
   }
 }

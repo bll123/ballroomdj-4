@@ -426,7 +426,7 @@ START_TEST(song_display)
     free (data);
 
     data = songDisplayString (song, TAG_TAGS);
-    ck_assert_str_eq (songDisplayString (song, TAG_TAGS), "tag1 tag2");
+    ck_assert_str_eq (data, "tag1 tag2");
     free (data);
     songFree (song);
   }
@@ -481,6 +481,7 @@ START_TEST(song_tag_list)
       strlcat (tbuff, data, sizeof (tbuff));
       strlcat (tbuff, "\n", sizeof (tbuff));
     }
+    slistFree (tlist);
 
     songFree (song);
     song = songAlloc ();
@@ -506,6 +507,7 @@ START_TEST(song_tag_list)
     dval = songGetDouble (song, TAG_VOLUMEADJUSTPERC);
     rc = dval == 4.4 || dval == -4.4;
     ck_assert_int_eq (rc, 1);
+
     tlist = songGetList (song, TAG_TAGS);
     slistStartIterator (tlist, &iteridx);
     data = slistIterateKey (tlist, &iteridx);
@@ -521,6 +523,7 @@ START_TEST(song_tag_list)
     ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_BLUE);
     sfav = songGetFavoriteData (song);
     ck_assert_int_eq (sfav->idx, SONG_FAVORITE_BLUE);
+
     songFree (song);
   }
 

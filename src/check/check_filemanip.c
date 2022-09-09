@@ -245,12 +245,12 @@ START_TEST(filemanip_renameall_a)
 
 /* update the fnlist in fileop/filemanip/dirop/dirlist also */
 static char *fnlist [] = {
-  "tmp/abc-def",
-  "tmp/ÜÄÑÖ",
-  "tmp/I Am the Best_내가 제일 잘 나가",
-  "tmp/ははは",
-  "tmp/夕陽伴我歸",
-  "tmp/Ne_Русский_Шторм",
+  "tmp/abc-def.txt",
+  "tmp/ÜÄÑÖ.txt",
+  "tmp/I Am the Best_내가 제일 잘 나가.txt",
+  "tmp/ははは.txt",
+  "tmp/夕陽伴我歸.txt",
+  "tmp/Ne_Русский_Шторм.txt",
 };
 enum {
   fnlistsz = sizeof (fnlist) / sizeof (char *),

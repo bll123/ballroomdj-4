@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-09-03\n"
-"PO-Revision-Date: 2022-09-03\n"
+"POT-Creation-Date: 2022-09-08\n"
+"PO-Revision-Date: 2022-09-08\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -272,10 +272,6 @@ msgstr ""
 
 #. CONTEXT: configuration: which audio interface to use
 msgid "Audio"
-msgstr ""
-
-#. CONTEXT: label: audio file modification time
-msgid "Audio File Date"
 msgstr ""
 
 #. CONTEXT: configuration: announcement selection dialog: audio file filter

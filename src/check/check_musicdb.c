@@ -170,10 +170,9 @@ START_TEST(musicdb_write)
       fclose (fh);
 
       tlist = songTagList (song);
-
-      dbWrite (db, songGetStr (song, TAG_FILE),
-          tlist, MUSICDB_ENTRY_NEW);
+      dbWrite (db, songGetStr (song, TAG_FILE), tlist, MUSICDB_ENTRY_NEW);
       songFree (song);
+      slistFree (tlist);
       ++count;
     }
   }
@@ -223,10 +222,10 @@ START_TEST(musicdb_overwrite)
       fclose (fh);
 
       tlist = songTagList (song);
-
       dbWrite (db, songGetStr (song, TAG_FILE),
           tlist, songGetNum (song, TAG_RRN));
       songFree (song);
+      slistFree (tlist);
       ++count;
     }
   }
@@ -279,10 +278,9 @@ START_TEST(musicdb_batch_write)
       fclose (fh);
 
       tlist = songTagList (song);
-
-      dbWrite (db, songGetStr (song, TAG_FILE),
-          tlist, MUSICDB_ENTRY_NEW);
+      dbWrite (db, songGetStr (song, TAG_FILE), tlist, MUSICDB_ENTRY_NEW);
       songFree (song);
+      slistFree (tlist);
       ++count;
     }
   }
@@ -334,10 +332,10 @@ START_TEST(musicdb_batch_overwrite)
       fclose (fh);
 
       tlist = songTagList (song);
-
       dbWrite (db, songGetStr (song, TAG_FILE),
           tlist, songGetNum (song, TAG_RRN));
       songFree (song);
+      slistFree (tlist);
       ++count;
     }
   }

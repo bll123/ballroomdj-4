@@ -94,6 +94,8 @@ START_TEST(dnctypes_conv)
     ++count;
   }
   dnctypesFree (dt);
+
+  bdjvarsdfloadCleanup ();
 }
 END_TEST
 

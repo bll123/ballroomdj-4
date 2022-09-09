@@ -22,7 +22,7 @@ BallroomDJ 4 Change Log
 - audio tags
   - fixed some issues writing .m4a tags.
   - fixed some issues writing .mp3 tags.
-- automatic / sequenced playlists
+- automatic / sequenced playlists song selection.
   - check same-song marks.
 - player
   - fixed handling of negative volume adjustment.

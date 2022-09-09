@@ -97,6 +97,7 @@ START_TEST(dispsel_save)
     ck_assert_str_eq (vala, valb);
   }
 
+  slistFree (tlistb);
   dispselFree (dsel);
 }
 
