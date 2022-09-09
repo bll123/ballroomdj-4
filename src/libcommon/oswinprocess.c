@@ -106,7 +106,12 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   CloseHandle (pi.hThread);
 
   if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
+    DWORD rc;
+
     WaitForSingleObject (pi.hProcess, INFINITE);
+    GetExitCodeProcess (pi.hProcess, &rc);
+    /* more to be done, overload the pid */
+    pid = rc;
   }
 
   if (outfname != NULL) {
@@ -217,7 +222,12 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz)
   CloseHandle (pi.hThread);
 
   if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
+    DWORD   rc;
+
     WaitForSingleObject (pi.hProcess, INFINITE);
+    GetExitCodeProcess (pi.hProcess, &rc);
+    /* more to be done, overload the pid */
+    pid = rc;
   }
 
   CloseHandle (handleStdoutWrite);
