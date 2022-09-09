@@ -8,6 +8,31 @@ proc mkrandcolor { } {
   return $col;
 }
 
+proc copyimages { todir col } {
+  set fnlist [glob -directory templates button*.svg]
+  foreach fn $fnlist {
+    set nfn [file join $todir [file tail $fn]]
+    set fh [open $fn r]
+    set data [read $fh [file size $fn]]
+    close $fh
+    regsub -all {#ffa600} $data $col data
+    set fh [open $nfn w]
+    puts $fh $data
+    close $fh
+  }
+  set fnlist [glob -directory templates switch-*.svg]
+  foreach fn $fnlist {
+    set nfn [file join $todir [file tail $fn]]
+    set fh [open $fn r]
+    set data [read $fh [file size $fn]]
+    close $fh
+    regsub -all {#ffa600} $data $col data
+    set fh [open $nfn w]
+    puts $fh $data
+    close $fh
+  }
+}
+
 if { $argc != 2 } {
   puts "usage: $argv0 <bdj3dir> <datatopdir>"
   exit 1
@@ -42,6 +67,7 @@ set cnm bdj_config
 set nnm bdjconfig
 set mpath $hostname
 set mppath [file join $hostname profiles]
+set col {}
 foreach path [list {} profiles $mpath $mppath] {
   foreach sfx $suffixlist pfx $nprefixlist {
     set fn "[file join $bdj3dir $path $cnm]$sfx"
@@ -59,9 +85,17 @@ foreach path [list {} profiles $mpath $mppath] {
 
       set ifh [open $fn r]
       file mkdir [file dirname $nfn]
+      set imgdir {}
+      if { $tdir eq {.} && $pfx ne {} } {
+        set imgdir [file join $datatopdir img $pfx]
+        file mkdir $imgdir
+        if { $imgdir ne {} && $col ne {} } {
+          copyimages $imgdir $col
+        }
+      }
       set ofh [open $nfn w]
 
-      if { $path eq "" } {
+      if { $path eq {} } {
         puts $ofh "# config-global"
       }
       if { $path eq "profiles" } {
@@ -133,6 +167,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { [regexp {^UI.*COLOR$} $key] } { continue }
         # renamed; moved to MP
         if { $key eq "AUDIOSINK" } {
+          # audiosink is moved from machine to machine-profile
           set audiosink $value
           continue
         }
@@ -287,7 +322,7 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..$value"
       }
 
-      if { $path eq "" } {
+      if { $path eq {} } {
         puts $ofh DEBUGLVL
         puts $ofh "..11"
       }
