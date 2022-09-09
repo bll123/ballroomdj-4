@@ -732,7 +732,8 @@ uisfUpdate (uisongfilter_t *uisf)
     nval = uisf->dfltpbflag;
   }
   if (nval) {
-    songfilterSetNum (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE, nval);
+    songfilterSetNum (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE,
+        SONG_FILTER_FOR_PLAYBACK);
   } else {
     songfilterClear (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE);
   }

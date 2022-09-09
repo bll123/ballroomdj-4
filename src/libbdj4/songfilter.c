@@ -610,12 +610,11 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     status = bdjvarsdfGet (BDJVDF_STATUS);
     sstatus = songGetNum (song, TAG_STATUS);
 
-    if (status != NULL &&
+    if (sf->numfilter [SONG_FILTER_STATUS_PLAYABLE] == SONG_FILTER_FOR_PLAYBACK &&
         ! statusGetPlayFlag (status, sstatus)) {
       logMsg (LOG_DBG, LOG_SONGSEL, "reject %zd status not playable", dbidx);
       logProcEnd (LOG_PROC, "songfilterFilterSong", "playable-reject");
       return false;
-    } else {
     }
   }
 

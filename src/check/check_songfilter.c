@@ -426,15 +426,12 @@ START_TEST(songfilter_playable)
   sf = songfilterAlloc ();
   arv = songfilterProcess (sf, db);
 
-  /* the status playable flag does not receive a value, it is simply */
-  /* turned on or off */
-  /* if off, no check is done */
-  songfilterOff (sf, SONG_FILTER_STATUS_PLAYABLE);
-  ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_STATUS_PLAYABLE), 0);
+  songfilterSetNum (sf, SONG_FILTER_STATUS_PLAYABLE, SONG_FILTER_FOR_SELECTION);
+  ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_STATUS_PLAYABLE), 1);
   rv = songfilterProcess (sf, db);
   ck_assert_int_eq (rv, arv);
 
-  songfilterOn (sf, SONG_FILTER_STATUS_PLAYABLE);
+  songfilterSetNum (sf, SONG_FILTER_STATUS_PLAYABLE, SONG_FILTER_FOR_PLAYBACK);
   ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_STATUS_PLAYABLE), 1);
   rv = songfilterProcess (sf, db);
   ck_assert_int_lt (rv, arv);
