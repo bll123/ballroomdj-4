@@ -13,8 +13,8 @@ typedef enum {
   /* keep the history music queue after the last player music queue */
   /* this makes processing easier */
   MUSICQ_HISTORY,
-  MUSICQ_SL,        // for the song list editor
-  MUSICQ_MNG_PB,    // used by manageui for playback
+  MUSICQ_SL,                        // for the song list editor
+  MUSICQ_MNG_PB,                    // hidden q used by manageui for playback
   MUSICQ_MAX,
   MUSICQ_PB_MAX = MUSICQ_HISTORY,   // music queues not including history
   MUSICQ_DISP_MAX = MUSICQ_SL,      // music queues including history

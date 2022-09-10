@@ -210,7 +210,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     /* CONTEXT: song-selection: select a song to be added to the song list */
     strlcpy (tbuff, _("Select"), sizeof (tbuff));
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_SELECT],
-        uisongselSelectCallback, uisongsel, NULL);
+        uisongselSelectCallback, uisongsel, "songsel: select");
     uiCreateButton (&uiwidget,
         &uiw->callbacks [SONGSEL_CB_SELECT], tbuff, NULL);
     uiBoxPackStart (&hbox, &uiwidget);
@@ -219,7 +219,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_EDIT_LOCAL],
-        uisongselSongEditCallback, uisongsel, NULL);
+        uisongselSongEditCallback, uisongsel, "songsel: edit");
     uiCreateButton (&uiwidget, &uiw->callbacks [SONGSEL_CB_EDIT_LOCAL],
         /* CONTEXT: song-selection: edit the selected song */
         _("Edit"), "button_edit");
@@ -230,7 +230,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     /* CONTEXT: song-selection: queue a song to be played */
     strlcpy (tbuff, _("Queue"), sizeof (tbuff));
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_QUEUE],
-        uisongselQueueCallback, uisongsel, NULL);
+        uisongselQueueCallback, uisongsel, "songsel: queue");
     uiCreateButton (&uiwidget,
         &uiw->callbacks [SONGSEL_CB_QUEUE], tbuff, NULL);
     uiBoxPackStart (&hbox, &uiwidget);
@@ -241,7 +241,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     /* CONTEXT: song-selection: play the selected songs */
     strlcpy (tbuff, _("Play"), sizeof (tbuff));
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_PLAY],
-        uisongselPlayCallback, uisongsel, NULL);
+        uisongselPlayCallback, uisongsel, "songsel: play");
     uiCreateButton (&uiwidget,
         &uiw->callbacks [SONGSEL_CB_PLAY], tbuff, NULL);
     uiBoxPackStart (&hbox, &uiwidget);
@@ -257,7 +257,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       &uiw->callbacks [SONGSEL_CB_DANCE_SEL]);
 
   uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_FILTER],
-      uisfDialog, uisongsel->uisongfilter, NULL);
+      uisfDialog, uisongsel->uisongfilter, "songsel: filters");
   uiCreateButton (&uiwidget,
       &uiw->callbacks [SONGSEL_CB_FILTER],
       /* CONTEXT: song-selection: a button that starts the filters (narrowing down song selections) dialog */
@@ -733,7 +733,6 @@ uisongselPlayCallback (void *udata)
   musicqidx_t mqidx;
   uisongsel_t *uisongsel = udata;
 
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: play button");
   /* only song selection, ez song sel and music manager have a play button */
   /* use the hidden manage playback music queue */
   mqidx = MUSICQ_MNG_PB;
@@ -839,7 +838,6 @@ uisongselQueueCallback (void *udata)
   musicqidx_t mqidx;
   uisongsel_t *uisongsel = udata;
 
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: queue button");
   mqidx = MUSICQ_CURRENT;
   uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_QUEUE);
   return UICB_CONT;
@@ -889,7 +887,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   uiw = uisongsel->uiWidgetData;
   uiw->typelist = malloc (sizeof (GType) * SONGSEL_COL_MAX);
   uiw->col = 0;
-  /* attributes ellipsize/align/font*/
+  /* attributes ellipsize/font*/
   uiw->typelist [uiw->col++] = G_TYPE_INT;
   uiw->typelist [uiw->col++] = G_TYPE_STRING;
   /* internal idx/sortidx/dbidx */
@@ -900,7 +898,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   uiw->typelist [uiw->col++] = G_TYPE_STRING,
   uiw->typelist [uiw->col++] = G_TYPE_STRING,
   uiw->typelist [uiw->col++] = G_TYPE_STRING,
-  uiw->typelist [uiw->col++] = G_TYPE_STRING,
+  assert (uiw->col == SONGSEL_COL_MAX);
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
   uisongAddDisplayTypes (sellist, uisongselInitializeStoreCallback, uisongsel);
@@ -962,7 +960,6 @@ uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
   uisongselgtk_t    * uiw;
 
   logProcBegin (LOG_PROC, "uisongselCheckFavChgSignal");
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: change favorite");
 
   uiw = uisongsel->uiWidgetData;
   if (column != uiw->favColumn) {
@@ -970,6 +967,7 @@ uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
     return;
   }
 
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: change favorite");
   uisongselChangeFavorite (uisongsel, uisongsel->lastdbidx);
   logProcEnd (LOG_PROC, "uisongselCheckFavChgSignal", "");
 }
@@ -1446,7 +1444,6 @@ uisongselSongEditCallback (void *udata)
   uisongsel_t     *uisongsel = udata;
   long            dbidx;
 
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: edit button");
   if (uisongsel->newselcb != NULL) {
     dbidx = uisongsel->lastdbidx;
     if (dbidx < 0) {

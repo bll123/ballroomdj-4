@@ -12,6 +12,7 @@
 #include <gtk/gtk.h>
 
 #include "bdj4.h"
+#include "log.h"
 #include "pathbld.h"
 #include "ui.h"
 
@@ -150,6 +151,9 @@ uiButtonSignalHandler (GtkButton *b, gpointer udata)
 {
   UICallback *uicb = udata;
 
+  if (uicb->actiontext != NULL) {
+    logMsg (LOG_DBG, LOG_ACTIONS, "= action: button: %s", uicb->actiontext);
+  }
   uiutilsCallbackHandler (uicb);
 }
 

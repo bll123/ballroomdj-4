@@ -840,7 +840,10 @@ pluiSwitchPage (void *udata, long pagenum)
 
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
   plui->currpage = pagenum;
-  pluiSetManageQueue (plui, pagenum);
+  if (tabid == UI_TAB_MUSICQ || tabid == UI_TAB_HISTORY) {
+    /* do not call this on the request tab */
+    pluiSetManageQueue (plui, pagenum);
+  }
 
   pluiPlaybackButtonHideShow (plui, pagenum);
   logProcEnd (LOG_PROC, "pluiSwitchPage", "");

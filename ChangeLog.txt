@@ -18,13 +18,16 @@ BallroomDJ 4 Change Log
   - added indicator for audio identification.
   - fixed display of negative volume adjustment.
   - fixed change indicator for speed adjustments and volume adjustment.
-- audio tags
+- audio tags:
   - fixed some issues writing .m4a tags.
   - fixed some issues writing .mp3 tags.
 - automatic / sequenced playlists song selection.
   - check same-song marks.
-- player
+- player:
   - fixed handling of negative volume adjustment.
+- player user interface:
+  - fixed request crash (introduced with history changes).
+  - fixed request handling (broken for a while).
 - conversion: profiles: fixed setup of the images for alternate profiles.
 - starterui: fixed 'delete profile'.
 

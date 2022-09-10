@@ -1661,17 +1661,29 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
   logProcBegin (LOG_PROC, "mainMusicqInsert");
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  if (p == NULL) {
+    logProcEnd (LOG_PROC, "mainMusicqInsert", "parse-fail-a");
+    return;
+  }
   mi = atoi (p);
   if (mi != MUSICQ_CURRENT) {
     /* the managed queue is changed to the requested queue */
     mainData->musicqManageIdx = mi;
   }
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p == NULL) {
+    logProcEnd (LOG_PROC, "mainMusicqInsert", "parse-fail-b");
+    return;
+  }
   idx = atol (p);
   /* the display selection is offset by 1 */
   /* and want to insert after the selection */
   idx += 2;
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p == NULL) {
+    logProcEnd (LOG_PROC, "mainMusicqInsert", "parse-fail-c");
+    return;
+  }
   dbidx = atol (p);
 
   song = dbGetByIdx (mainData->musicdb, dbidx);
@@ -1693,8 +1705,9 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
     mainData->marqueeChanged [mainData->musicqManageIdx] = true;
     mainMusicQueuePrep (mainData);
     mainSendMusicqStatus (mainData);
-    if (mainData->playWhenQueued &&
-        mainData->musicqPlayIdx == (musicqidx_t) mainData->musicqManageIdx) {
+    if (mainData->playerState == PL_STATE_STOPPED &&
+        mainData->playWhenQueued &&
+        mainData->musicqPlayIdx == mainData->musicqManageIdx) {
       mainMusicQueuePlay (mainData);
     }
     if (loc > 0) {
