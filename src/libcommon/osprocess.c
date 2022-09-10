@@ -12,7 +12,6 @@
 #include <unistd.h>
 #include <locale.h>
 #include <stdarg.h>
-
 #if _hdr_fcntl
 # include <fcntl.h>
 #endif
@@ -34,7 +33,11 @@
 #include "bdjstring.h"
 #include "osprocess.h"
 
+#if _define_WIFEXITED
+
 static int osProcessWaitStatus (int wstatus);
+
+#endif
 
 /* identical on linux and mac os */
 #if _lib_fork
@@ -201,6 +204,8 @@ osRunProgram (const char *prog, ...)
   return strdup (data);
 }
 
+#if _define_WIFEXITED
+
 static int
 osProcessWaitStatus (int wstatus)
 {
@@ -214,3 +219,5 @@ osProcessWaitStatus (int wstatus)
   }
   return rc;
 }
+
+#endif

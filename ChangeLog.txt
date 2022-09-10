@@ -1,6 +1,6 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha 2022-09-??
+4.0.0 alpha 2022-09-10
 
 - various tests added
 - music manager: mark as same song, clear same song marks implemented.

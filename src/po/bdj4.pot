@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-09 09:06-0700\n"
+"POT-Creation-Date: 2022-09-10 16:21-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1360,6 +1360,10 @@ msgstr ""
 
 #. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
 msgid "Recover Marquee"
+msgstr ""
+
+#. CONTEXT: player-ui: status message
+msgid "Recovered from crash."
 msgstr ""
 
 #. CONTEXT: installer: status message

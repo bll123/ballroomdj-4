@@ -361,6 +361,7 @@ check_symbol_exists (SIGHUP signal.h _define_SIGHUP)
 check_symbol_exists (S_IRWXU sys/stat.h _define_S_IRWXU)
 check_symbol_exists (SOCK_CLOEXEC sys/socket.h _define_SOCK_CLOEXEC)
 check_symbol_exists (SO_REUSEPORT sys/socket.h _define_SO_REUSEPORT)
+check_symbol_exists (WIFEXITED sys/wait.h _define_WIFEXITED)
 
 check_type_size (suseconds_t _typ_suseconds_t)
 set (CMAKE_EXTRA_INCLUDE_FILES winsock2.h windows.h)

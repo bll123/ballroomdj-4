@@ -11,7 +11,7 @@ Contents
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 202209??
+Alpha Release: 20220910
 
   Alpha releases are mostly untested works in progress.
 
@@ -39,7 +39,6 @@ Release Notes:
     - Music Manager:
       - Apply Adjustments (speed, song start, song end) to a song.
       - Audio Identification.
-    - Player: History Display.
     - Export a playlist as MP3 files.
 
   This installation will not affect any BallroomDJ 3 installation.

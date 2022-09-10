@@ -112,6 +112,7 @@
 #cmakedefine01 _define_S_IRWXU
 #cmakedefine01 _define_SOCK_CLOEXEC
 #cmakedefine01 _define_SO_REUSEPORT
+#cmakedefine01 _define_WIFEXITED
 
 #cmakedefine01 _typ_HANDLE
 #cmakedefine01 _typ_SOCKET

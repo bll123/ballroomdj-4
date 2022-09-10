@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-08-11\n"
-"PO-Revision-Date: 2022-09-09\n"
+"PO-Revision-Date: 2022-09-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -1362,6 +1362,10 @@ msgstr "Veritabanını yeniden oluştur"
 
 #. CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen
 msgid "Recover Marquee"
+msgstr ""
+
+#. CONTEXT: player-ui: status message
+msgid "Recovered from crash."
 msgstr ""
 
 #. CONTEXT: installer: status message

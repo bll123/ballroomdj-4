@@ -159,16 +159,6 @@ if [[ $preskip == F ]]; then
     echo "pkg: tests failed"
     exit 1
   fi
-  if [[ $platform == windows ]]; then
-    # istring causes issues on windows when run in conjunction with
-    # the other tests.  run it separately.
-    CK_RUN_SUITE=istring ./bin/bdj4 --check_all
-    rc=$?
-    if [[ $rc -ne 0 ]]; then
-      echo "pkg: tests failed"
-      exit 1
-    fi
-  fi
   ./pkg/prepkg.sh
 fi
 
