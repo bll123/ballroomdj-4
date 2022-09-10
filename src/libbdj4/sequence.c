@@ -36,7 +36,7 @@ sequenceAlloc (const char *fname)
 
   pathbldMakePath (fn, sizeof (fn), fname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
   if (! fileopFileExists (fn)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: sequence: missing %s", fname);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sequence: missing %s", fname);
     return false;
   }
 

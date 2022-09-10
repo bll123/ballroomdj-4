@@ -139,6 +139,12 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
     fprintf (stderr, "%s\n", wbuff);
   } else {
     fileWriteShared (&l->fhandle, wbuff, wlen);
+    if (idx == LOG_ERR) {
+      l = syslogs [LOG_DBG];
+      if (l->opened) {
+        fileWriteShared (&l->fhandle, wbuff, wlen);
+      }
+    }
   }
 }
 

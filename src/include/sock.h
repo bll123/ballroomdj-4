@@ -48,6 +48,7 @@
 typedef struct {
   int             count;
   Sock_t          max;
+  fd_set          readfdsbase;
   fd_set          readfds;
   Sock_t          *socklist;
 } sockinfo_t;
@@ -79,5 +80,6 @@ char *        sockReadBuff (Sock_t, size_t *, char *data, size_t dlen);
 int           sockWriteStr (Sock_t, char *s, size_t slen);
 int           sockWriteBinary (Sock_t, char *data, size_t dlen);
 bool          socketInvalid (Sock_t sock);
+bool          sockWritable (Sock_t sock);
 
 #endif /* INC_SOCK_H */

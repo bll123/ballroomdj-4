@@ -168,11 +168,11 @@ playlistLoad (playlist_t *pl, const char *fname)
   pathbldMakePath (tfn, sizeof (tfn), fname,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   if (pl == NULL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Null playlist %s", tfn);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Null playlist %s", tfn);
     return -1;
   }
   if (! fileopFileExists (tfn)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
     return -1;
   }
 
@@ -185,7 +185,7 @@ playlistLoad (playlist_t *pl, const char *fname)
   pathbldMakePath (tfn, sizeof (tfn), fname,
       BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
   if (! fileopFileExists (tfn)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
     playlistFree (pl);
     return -1;
   }
@@ -193,7 +193,7 @@ playlistLoad (playlist_t *pl, const char *fname)
   pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_INDIRECT, tfn,
       playlistdancedfkeys, PLDANCE_KEY_MAX);
   if (pl->pldancesdf == NULL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Bad playlist-dance %s", tfn);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Bad playlist-dance %s", tfn);
     playlistFree (pl);
     return -1;
   }
@@ -224,7 +224,7 @@ playlistLoad (playlist_t *pl, const char *fname)
     logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: load songlist %s", fname);
     pl->songlist = songlistLoad (fname);
     if (pl->songlist == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: missing songlist %s", tfn);
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing songlist %s", tfn);
       playlistFree (pl);
       return -1;
     }
@@ -236,7 +236,7 @@ playlistLoad (playlist_t *pl, const char *fname)
     logMsg (LOG_DBG, LOG_IMPORTANT, "sequence: load sequence %s", fname);
     pl->sequence = sequenceAlloc (fname);
     if (pl->sequence == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: missing sequence %s", fname);
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing sequence %s", fname);
       playlistFree (pl);
       return -1;
     }

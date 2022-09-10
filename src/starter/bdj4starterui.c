@@ -35,6 +35,7 @@
 #include "pathutil.h"
 #include "procutil.h"
 #include "progstate.h"
+#include "sock.h"
 #include "sockh.h"
 #include "sysvars.h"
 #include "templateutil.h"
@@ -87,6 +88,11 @@ enum {
   START_LINK_CB_MAX,
 };
 
+enum {
+  CLOSE_REQUEST,
+  CLOSE_CRASH,
+};
+
 typedef struct {
   UICallback    cb;
   char          *uri;
@@ -114,8 +120,8 @@ typedef struct {
   char            ident [80];
   char            latestversion [40];
   char            *webresponse;
-  int             mainstarted;
-  bool            playeruistarted;
+  int             mainstart [ROUTE_MAX];
+  int             started [ROUTE_MAX];
   int             stopwaitcount;
   nlist_t         *proflist;
   nlist_t         *profidxlist;
@@ -166,9 +172,9 @@ static void     starterBuildUI (startui_t *starter);
 static int      starterMainLoop  (void *tstarter);
 static int      starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
-static void     starterCloseProcess (startui_t *starter, bdjmsgroute_t routefrom);
-static void     starterStartMain (startui_t *starter, char *args);
-static void     starterStopMain (startui_t *starter);
+static void     starterCloseProcess (startui_t *starter, bdjmsgroute_t routefrom, int reason);
+static void     starterStartMain (startui_t *starter, bdjmsgroute_t routefrom, char *args);
+static void     starterStopMain (startui_t *starter, bdjmsgroute_t routefrom);
 static bool     starterCloseCallback (void *udata);
 static void     starterSigHandler (int sig);
 
@@ -247,8 +253,10 @@ main (int argc, char *argv[])
   starter.supporttb = NULL;
   strcpy (starter.ident, "");
   strcpy (starter.latestversion, "");
-  starter.mainstarted = 0;
-  starter.playeruistarted = false;
+  for (int i = 0; i < ROUTE_MAX; ++i) {
+    starter.mainstart [i] = 0;
+    starter.started [i] = 0;
+  }
   starter.stopwaitcount = 0;
   starter.proflist = NULL;
   starter.profidxlist = NULL;
@@ -337,20 +345,12 @@ starterStoppingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "starterStoppingCallback");
 
-  if (starter->mainstarted > 0) {
-    procutilStopProcess (starter->processes [ROUTE_MAIN],
-        starter->conn, ROUTE_MAIN, false);
-    starter->mainstarted = false;
-  }
-
-  if (starter->processes [ROUTE_PLAYERUI] != NULL) {
-    starterQuickConnect (starter, ROUTE_PLAYERUI);
-  }
-  if (starter->processes [ROUTE_MANAGEUI] != NULL) {
-    starterQuickConnect (starter, ROUTE_MANAGEUI);
-  }
-  if (starter->processes [ROUTE_CONFIGUI] != NULL) {
-    starterQuickConnect (starter, ROUTE_CONFIGUI);
+  for (int route = 0; route < ROUTE_MAX; ++route) {
+    if (starter->started [route] > 0) {
+      procutilStopProcess (starter->processes [route],
+          starter->conn, route, false);
+      starter->started [route] = 0;
+    }
   }
 
   uiWindowGetSize (&starter->window, &x, &y);
@@ -645,11 +645,24 @@ starterMainLoop (void *tstarter)
     return stop;
   }
 
+  /* will connect to any process from which handshakes have been received */
   connProcessUnconnected (starter->conn);
 
-  if (starter->mainstarted) {
-    if (! connIsConnected (starter->conn, ROUTE_MAIN)) {
-      connConnect (starter->conn, ROUTE_MAIN);
+  /* try to connect if not connected */
+  for (int route = 0; route < ROUTE_MAX; ++route) {
+    if (starter->started [route]) {
+      if (! connIsConnected (starter->conn, route)) {
+        connConnect (starter->conn, route);
+      }
+    }
+  }
+
+  if (starter->started [ROUTE_PLAYERUI] &&
+      connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
+    /* check and see if the playerui is still connected */
+    connSendMessage (starter->conn, ROUTE_PLAYERUI, MSG_NULL, NULL);
+    if (! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
+      starterCloseProcess (starter, ROUTE_PLAYERUI, CLOSE_CRASH);
     }
   }
 
@@ -871,11 +884,14 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_STARTERUI: {
       switch (msg) {
         case MSG_HANDSHAKE: {
+          if (! connIsConnected (starter->conn, routefrom)) {
+            connConnect (starter->conn, routefrom);
+          }
           connProcessHandshake (starter->conn, routefrom);
           break;
         }
         case MSG_SOCKET_CLOSE: {
-          starterCloseProcess (starter, routefrom);
+          starterCloseProcess (starter, routefrom, CLOSE_REQUEST);
           break;
         }
         case MSG_EXIT_REQUEST: {
@@ -891,11 +907,11 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_START_MAIN: {
-          starterStartMain (starter, args);
+          starterStartMain (starter, routefrom, args);
           break;
         }
         case MSG_STOP_MAIN: {
-          starterStopMain (starter);
+          starterStopMain (starter, routefrom);
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
@@ -928,27 +944,46 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 }
 
 static void
-starterCloseProcess (startui_t *starter, bdjmsgroute_t routefrom)
+starterCloseProcess (startui_t *starter, bdjmsgroute_t routefrom, int request)
 {
+  int   wasstarted;
+
+  if (request == CLOSE_CRASH) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: %d/%s crashed", routefrom,
+        msgRouteDebugText (routefrom));
+  }
+
+  wasstarted = starter->started [routefrom];
+
   procutilCloseProcess (starter->processes [routefrom],
       starter->conn, routefrom);
   procutilFreeRoute (starter->processes, routefrom);
   starter->processes [routefrom] = NULL;
   connDisconnect (starter->conn, routefrom);
+  starter->started [routefrom] = 0;
+  if (routefrom == ROUTE_MAIN) {
+    starter->started [ROUTE_MAIN] = 0;
+    starter->mainstart [ROUTE_PLAYERUI] = 0;
+    starter->mainstart [ROUTE_MANAGEUI] = 0;
+  }
   if (routefrom == ROUTE_PLAYERUI) {
-    starter->playeruistarted = false;
     starterSendPlayerActive (starter);
+  }
+
+  /* most likely to crash */
+  if (request == CLOSE_CRASH && wasstarted && routefrom == ROUTE_PLAYERUI) {
+    starterStartPlayerui (starter);
   }
 }
 
 static void
-starterStartMain (startui_t *starter, char *args)
+starterStartMain (startui_t *starter, bdjmsgroute_t routefrom, char *args)
 {
   int         flags;
   const char  *targv [2];
   int         targc = 0;
 
-  if (starter->mainstarted == 0) {
+  if (starter->started [ROUTE_MAIN] == 0) {
     flags = PROCUTIL_DETACH;
     if (atoi (args)) {
       targv [targc++] = "--nomarquee";
@@ -958,19 +993,30 @@ starterStartMain (startui_t *starter, char *args)
     starter->processes [ROUTE_MAIN] = procutilStartProcess (
         ROUTE_MAIN, "bdj4main", flags, targv);
   }
-  ++starter->mainstarted;
+
+  /* if this ui already requested a start, let the ui know */
+  if ( starter->mainstart [routefrom] ) {
+    connSendMessage (starter->conn, routefrom, MSG_MAIN_ALREADY, NULL);
+  }
+  /* prevent multiple starts from the same ui */
+  if ( ! starter->mainstart [routefrom] ) {
+    ++starter->started [ROUTE_MAIN];
+  }
+  ++starter->mainstart [routefrom];
 }
 
 
 static void
-starterStopMain (startui_t *starter)
+starterStopMain (startui_t *starter, bdjmsgroute_t routefrom)
 {
-  if (starter->mainstarted) {
-    --starter->mainstarted;
-    if (starter->mainstarted == 0) {
+  if (starter->started [ROUTE_MAIN]) {
+    --starter->started [ROUTE_MAIN];
+    if (starter->started [ROUTE_MAIN] <= 0) {
       procutilStopProcess (starter->processes [ROUTE_MAIN],
           starter->conn, ROUTE_MAIN, false);
+      starter->started [ROUTE_MAIN] = 0;
     }
+    starter->mainstart [routefrom] = 0;
   }
 }
 
@@ -1004,7 +1050,7 @@ starterStartPlayerui (void *udata)
   }
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
       ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH, NULL);
-  starter->playeruistarted = true;
+  starter->started [ROUTE_PLAYERUI] = true;
   starterSendPlayerActive (starter);
   return UICB_CONT;
 }
@@ -1019,6 +1065,7 @@ starterStartManageui (void *udata)
   }
   starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
       ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH, NULL);
+  starter->started [ROUTE_MANAGEUI] = true;
   return UICB_CONT;
 }
 
@@ -1032,6 +1079,7 @@ starterStartConfig (void *udata)
   }
   starter->processes [ROUTE_CONFIGUI] = procutilStartProcess (
       ROUTE_CONFIGUI, "bdj4configui", PROCUTIL_DETACH, NULL);
+  starter->started [ROUTE_CONFIGUI] = true;
   return UICB_CONT;
 }
 
@@ -1726,10 +1774,8 @@ starterStopAllProcesses (void *udata)
   fprintf (stderr, "send exit request to ui\n");
   starterQuickConnect (starter, ROUTE_PLAYERUI);
   connSendMessage (starter->conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
-
   starterQuickConnect (starter, ROUTE_MANAGEUI);
   connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_EXIT_REQUEST, NULL);
-
   starterQuickConnect (starter, ROUTE_CONFIGUI);
   connSendMessage (starter->conn, ROUTE_CONFIGUI, MSG_EXIT_REQUEST, NULL);
 
@@ -1997,7 +2043,7 @@ starterSendPlayerActive (startui_t *starter)
 {
   char  tmp [40];
 
-  snprintf (tmp, sizeof (tmp), "%d", starter->playeruistarted);
+  snprintf (tmp, sizeof (tmp), "%d", starter->started [ROUTE_PLAYERUI]);
   connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_PLAYERUI_ACTIVE, tmp);
 }
 
@@ -2045,3 +2091,4 @@ starterDeleteProfile (void *udata)
   uiLabelSetText (&starter->statusMsg, tbuff);
   return UICB_CONT;
 }
+

@@ -102,6 +102,7 @@ typedef struct {
   /* flags */
   bool            uibuilt : 1;
   bool            fontszdialogcreated : 1;
+  bool            mainalready : 1;
 } playerui_t;
 
 static datafilekey_t playeruidfkeys [] = {
@@ -117,7 +118,9 @@ static datafilekey_t playeruidfkeys [] = {
   { "SWITCH_QUEUE_WHEN_EMPTY",  PLUI_SWITCH_QUEUE_WHEN_EMPTY, VALUE_NUM, NULL, -1 },
 };
 enum {
-  PLAYERUI_DFKEY_COUNT = (sizeof (playeruidfkeys) / sizeof (datafilekey_t))
+  PLAYERUI_DFKEY_COUNT = (sizeof (playeruidfkeys) / sizeof (datafilekey_t)),
+  PLUI_UPDATE_MAIN,
+  PLUI_NO_UPDATE,
 };
 
 static bool     pluiConnectingCallback (void *udata, programstate_t programState);
@@ -137,7 +140,7 @@ static void     pluiSigHandler (int sig);
 static bool     pluiSwitchPage (void *udata, long pagenum);
 static void     pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum);
 static bool     pluiProcessSetPlaybackQueue (void *udata);
-static void     pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newqueue);
+static void     pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newqueue, int updateFlag);
 static void     pluiSetManageQueue (playerui_t *plui, musicqidx_t newqueue);
 /* option handlers */
 static bool     pluiTogglePlayWhenQueued (void *udata);
@@ -195,6 +198,7 @@ main (int argc, char *argv[])
   plui.uibuilt = false;
   plui.fontszdialogcreated = false;
   plui.currpage = 0;
+  plui.mainalready = false;
 
   osSetStandardSignals (pluiSigHandler);
 
@@ -373,23 +377,24 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&plui->vbox, &hbox);
 
+  uiCreateMenubar (&menubar);
+  uiBoxPackStart (&hbox, &menubar);
+
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetSizeRequest (&uiwidget, 25, 25);
   uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
   uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
 
+  uiCreateLabel (&plui->clock, "");
+  uiBoxPackEnd (&hbox, &plui->clock);
+  uiWidgetSetMarginStart (&plui->clock, uiBaseMarginSz * 4);
+  uiWidgetDisable (&plui->clock);
+
   uiCreateLabel (&uiwidget, "");
   uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&plui->statusMsg, &uiwidget);
-
-  uiCreateMenubar (&menubar);
-  uiBoxPackStart (&hbox, &menubar);
-
-  uiCreateLabel (&plui->clock, "");
-  uiBoxPackEnd (&hbox, &plui->clock);
-  uiWidgetDisable (&plui->clock);
 
   /* CONTEXT: playerui: menu selection: options for the player */
   uiMenuCreateItem (&menubar, &menuitem, _("Options"), NULL);
@@ -667,8 +672,13 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
       connHaveHandshake (plui->conn, ROUTE_MARQUEE)) {
     pluiSetPlayWhenQueued (plui);
     pluiSetSwitchQueue (plui);
-    pluiSetPlaybackQueue (plui, plui->musicqPlayIdx);
-    pluiSetManageQueue (plui, plui->musicqManageIdx);
+    if (plui->mainalready) {
+      connSendMessage (plui->conn, ROUTE_MAIN, MSG_MAIN_REQ_STATUS, NULL);
+    }
+    if (! plui->mainalready) {
+      pluiSetPlaybackQueue (plui, plui->musicqPlayIdx, PLUI_UPDATE_MAIN);
+      pluiSetManageQueue (plui, plui->musicqManageIdx);
+    }
     pluiSetExtraQueues (plui);
     progstateLogTime (plui->progstate, "time-to-start-gui");
     rc = STATE_FINISHED;
@@ -714,7 +724,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_QUEUE_SWITCH: {
-          pluiSetPlaybackQueue (plui, atoi (targs));
+          pluiSetPlaybackQueue (plui, atoi (targs), PLUI_UPDATE_MAIN);
           dbgdisp = true;
           break;
         }
@@ -767,7 +777,33 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_SONG_FINISH: {
+          uiLabelSetText (&plui->statusMsg, "");
           pluiPushHistory (plui, targs);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_MAIN_ALREADY: {
+          plui->mainalready = true;
+          /* CONTEXT: player-ui: status message */
+          uiLabelSetText (&plui->statusMsg, _("Recovered from crash."));
+          dbgdisp = true;
+          break;
+        }
+        case MSG_MAIN_CURR_MANAGE: {
+          int     mqidx;
+
+          mqidx = atoi (args);
+          plui->musicqLastManageIdx = mqidx;
+          plui->musicqManageIdx = mqidx;
+          uimusicqSetManageIdx (plui->uimusicq, mqidx);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_MAIN_CURR_PLAY: {
+          int     mqidx;
+
+          mqidx = atoi (args);
+          pluiSetPlaybackQueue (plui, mqidx, PLUI_NO_UPDATE);
           dbgdisp = true;
           break;
         }
@@ -783,7 +819,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   }
 
   if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+    logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
@@ -871,13 +907,13 @@ pluiProcessSetPlaybackQueue (void *udata)
   playerui_t      *plui = udata;
 
   logProcBegin (LOG_PROC, "pluiProcessSetPlaybackQueue");
-  pluiSetPlaybackQueue (plui, plui->musicqManageIdx);
+  pluiSetPlaybackQueue (plui, plui->musicqManageIdx, PLUI_UPDATE_MAIN);
   logProcEnd (LOG_PROC, "pluiProcessSetPlaybackQueue", "");
   return UICB_CONT;
 }
 
 static void
-pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue)
+pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue, int updateFlag)
 {
   char            tbuff [40];
 
@@ -895,8 +931,10 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue)
   /* if showextraqueues is off, reject any attempt to switch playback. */
   /* let main know what queue is being used */
   uimusicqSetPlayIdx (plui->uimusicq, plui->musicqPlayIdx);
-  snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
-  connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
+  if (updateFlag == PLUI_UPDATE_MAIN) {
+    snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
+  }
   logProcEnd (LOG_PROC, "pluiSetPlaybackQueue", "");
 }
 
@@ -954,7 +992,7 @@ pluiToggleExtraQueues (void *udata)
   /* calls the switch page handler, the managed music queue will be set */
   pluiSetExtraQueues (plui);
   if (! val) {
-    pluiSetPlaybackQueue (plui, MUSICQ_PB_A);
+    pluiSetPlaybackQueue (plui, MUSICQ_PB_A, PLUI_UPDATE_MAIN);
   }
   logProcEnd (LOG_PROC, "pluiToggleExtraQueues", "");
   return UICB_CONT;

@@ -953,7 +953,7 @@ songfilterParseSortKey (songfilter_t *sf)
     if (tagkey >= 0) {
       nlistSetNum (parsed, tagkey, 0);
     } else {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: invalid sort key: %s", p);
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: invalid sort key: %s", p);
     }
     p = strtok_r (NULL, " ", &tokstr);
   }

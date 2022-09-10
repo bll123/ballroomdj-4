@@ -479,7 +479,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
           }
         }
       } else {
-        logMsg (LOG_DBG, LOG_DATAFILE, "ERR: Unable to locate key: %s", tkeystr);
+        logMsg (LOG_ERR, LOG_DATAFILE, "ERR: Unable to locate key: %s", tkeystr);
         continue;
       }
 
@@ -862,7 +862,7 @@ datafileCheckDfkeys (const char *name, datafilekey_t *dfkeys, ssize_t dfkeycount
   for (ssize_t i = 0; i < dfkeycount; ++i) {
     if (strcmp (dfkeys [i].name, last) <= 0) {
       fprintf (stderr, "datafile: %s dfkey out of order: %s\n", name, dfkeys [i].name);
-      logMsg (LOG_DBG, LOG_IMPORTANT | LOG_DATAFILE, "ERR: datafile: %s dfkey out of order: %s", name, dfkeys [i].name);
+      logMsg (LOG_ERR, LOG_IMPORTANT | LOG_DATAFILE, "ERR: datafile: %s dfkey out of order: %s", name, dfkeys [i].name);
       ok = false;
     }
     last = dfkeys [i].name;

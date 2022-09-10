@@ -46,7 +46,7 @@ levelAlloc ()
   pathbldMakePath (fname, sizeof (fname), "levels",
       BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
   if (! fileopFileExists (fname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: level: missing %s", fname);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: level: missing %s", fname);
     return NULL;
   }
 

@@ -29,6 +29,13 @@ typedef struct conn {
 static bool     initialized = false;
 static uint16_t connports [ROUTE_MAX];
 
+/**
+ * Check and see if there are any connections active.
+ * @param[in] conn The connection.
+ * @return true if all connections are disconnected.  false otherwise.
+ */
+static bool connCheckAll (conn_t *conn);
+
 /* note that connInit() must be called after bdjvarsInit() */
 conn_t *
 connInit (bdjmsgroute_t routefrom)
@@ -171,21 +178,6 @@ connDisconnectAll (conn_t *conn)
   }
 }
 
-bool
-connCheckAll (conn_t *conn)
-{
-  bool      rc = true;
-
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    if (conn [i].connected) {
-      rc = false;
-      break;
-    }
-  }
-
-  return rc;
-}
-
 void
 connProcessHandshake (conn_t *conn, bdjmsgroute_t route)
 {
@@ -194,6 +186,16 @@ connProcessHandshake (conn_t *conn, bdjmsgroute_t route)
   }
 
   conn [route].handshakerecv = true;
+
+  if (conn [route].handshakesent) {
+    /* send a null message and see if the connection is valid */
+    if (sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
+        MSG_NULL, NULL) < 0) {
+      conn [route].handshakesent = false;
+      conn [route].connected = false;
+    }
+  }
+
   if (conn [route].handshakesent) {
     conn [route].handshake = true;
   }
@@ -221,6 +223,7 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
   if (route >= ROUTE_MAX) {
     return;
   }
+
   if (! conn [route].connected) {
     logMsg (LOG_DBG, LOG_SOCKET, "msg not sent: not connected from:%d/%s route:%d/%s msg:%d/%s args:%s",
         conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
@@ -293,6 +296,23 @@ connWaitClosed (conn_t *conn, int *stopwaitcount)
 
   if (rc == STATE_FINISHED) {
     connDisconnectAll (conn);
+  }
+
+  return rc;
+}
+
+/* internal routines */
+
+static bool
+connCheckAll (conn_t *conn)
+{
+  bool      rc = true;
+
+  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
+    if (conn [i].connected) {
+      rc = false;
+      break;
+    }
   }
 
   return rc;

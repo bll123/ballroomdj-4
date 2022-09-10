@@ -44,7 +44,7 @@ orgoptAlloc (void)
   tagdefInit ();
 
   if (! fileopFileExists (path)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: org: missing %s", path);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: org: missing %s", path);
     return NULL;
   }
 

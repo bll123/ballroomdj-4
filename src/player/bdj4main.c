@@ -155,6 +155,7 @@ static void mainMusicqSetSuspend (maindata_t *mainData, char *args, bool value);
 static void mainMusicQueueMix (maindata_t *mainData, char *args);
 static void mainPlaybackFinishProcess (maindata_t *mainData, const char *args);
 static void mainPlaybackSendSongFinish (maindata_t *mainData, const char *args);
+static void mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom);
 
 static long globalCounter = 0;
 static int  gKillReceived = 0;
@@ -584,6 +585,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_MAIN_REQ_STATUS: {
+          mainStatusRequest (mainData, routefrom);
+          dbgdisp = true;
+          break;
+        }
         default: {
           break;
         }
@@ -967,9 +973,7 @@ mainSendMarqueeData (maindata_t *mainData)
     }
   }
 
-  connSendMessage (mainData->conn, ROUTE_MARQUEE,
-      MSG_MARQUEE_DATA, sbuff);
-
+  connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_DATA, sbuff);
   logProcEnd (LOG_PROC, "mainSendMarqueeData", "");
 }
 
@@ -1108,7 +1112,7 @@ mainMobilePostCallback (void *userdata, char *resp, size_t len)
   if (strncmp (resp, "OK", 2) == 0) {
     ;
   } else if (strncmp (resp, "NG", 2) == 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: unable to post mobmq data: %.*s", (int) len, resp);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to post mobmq data: %.*s", (int) len, resp);
     /* just turn it off since there is a failure response */
     bdjoptSetNum (OPT_P_MOBILEMARQUEE, MOBILEMQ_OFF);
   } else {
@@ -1245,7 +1249,7 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
       mainMusicQueuePlay (mainData);
     }
   } else {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Queue Playlist failed: %s", plname);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Queue Playlist failed: %s", plname);
   }
 
   logProcEnd (LOG_PROC, "mainQueuePlaylist", "");
@@ -1639,8 +1643,7 @@ mainNextSong (maindata_t *mainData)
 
   currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
   if (currlen > 0) {
-    connSendMessage (mainData->conn, ROUTE_PLAYER,
-        MSG_PLAY_NEXTSONG, NULL);
+    connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
     mainData->waitforpbfinish = true;
     mainData->pbfinishrcv = 0;
   }
@@ -1849,8 +1852,7 @@ mainMusicQueuePlay (maindata_t *mainData)
 
       annfname = musicqGetAnnounce (mainData->musicQueue, mainData->musicqPlayIdx, 0);
       if (annfname != NULL) {
-        connSendMessage (mainData->conn, ROUTE_PLAYER,
-            MSG_SONG_PLAY, annfname);
+        connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, annfname);
       }
     }
     sfname = songGetStr (song, TAG_FILE);
@@ -2545,4 +2547,22 @@ mainPlaybackSendSongFinish (maindata_t *mainData, const char *args)
     snprintf (tmp, sizeof (tmp), "%d", dbidx);
     connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_SONG_FINISH, tmp);
   }
+}
+
+static void
+mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom)
+{
+  char  tmp [40];
+
+  for (int i = 0; i < MUSICQ_MAX; ++i) {
+    mainData->musicqChanged [i] = MAIN_CHG_START;
+  }
+  snprintf (tmp, sizeof (tmp), "%d", mainData->musicqManageIdx);
+  connSendMessage (mainData->conn, routefrom, MSG_MAIN_CURR_MANAGE, tmp);
+  snprintf (tmp, sizeof (tmp), "%d", mainData->musicqPlayIdx);
+  connSendMessage (mainData->conn, routefrom, MSG_MAIN_CURR_PLAY, tmp);
+  mainSendMusicqStatus (mainData);
+  /* send the last player state that has been recorded */
+  snprintf (tmp, sizeof (tmp), "%d", mainData->playerState);
+  connSendMessage (mainData->conn, routefrom, MSG_PLAYER_STATE, tmp);
 }

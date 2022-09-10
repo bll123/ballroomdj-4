@@ -61,13 +61,6 @@ void      connDisconnect (conn_t *conn, bdjmsgroute_t route);
 void      connDisconnectAll (conn_t *conn);
 
 /**
- * Check and see if there are any connections active.
- * @param[in] conn The connection.
- * @return true if all connections are disconnected.  false otherwise.
- */
-bool      connCheckAll (conn_t *conn);
-
-/**
  * Called on receipt of a handshake message to update the connection.
  *
  * @param[in] conn The connection.

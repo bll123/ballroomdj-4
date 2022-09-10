@@ -61,7 +61,7 @@ songlistLoad (const char *fname)
   sl = songlistAlloc (fname);
 
   if (! fileopFileExists (sl->path)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: songlist: missing %s", sl->path);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: songlist: missing %s", sl->path);
     songlistFree (sl);
     return NULL;
   }

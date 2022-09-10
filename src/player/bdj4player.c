@@ -350,7 +350,6 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   switch (route) {
     case ROUTE_NONE:
     case ROUTE_PLAYER: {
-      logMsg (LOG_DBG, LOG_MSGS, "got: route-player");
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (playerData->conn, routefrom);
@@ -880,7 +879,7 @@ playerProcessPrepRequest (playerdata_t *playerData)
   fileopDelete (npq->tempname);
   filemanipLinkCopy (npq->songfullpath, npq->tempname);
   if (! fileopFileExists (npq->tempname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: file copy failed: %s", npq->tempname);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: file copy failed: %s", npq->tempname);
     logProcEnd (LOG_PROC, "playerSongPrep", "copy-failed");
     playerPrepQueueFree (npq);
     logProcEnd (LOG_PROC, "playerProcessPrepRequest", "copy-fail");
@@ -913,12 +912,12 @@ playerSongPlay (playerdata_t *playerData, char *sfname)
   logMsg (LOG_DBG, LOG_BASIC, "play request: %s", sfname);
   pq = playerLocatePreppedSong (playerData, sfname);
   if (pq == NULL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: not prepped: %s", sfname);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: not prepped: %s", sfname);
     logProcEnd (LOG_PROC, "playerSongPlay", "not-prepped");
     return;
   }
   if (! fileopFileExists (pq->tempname)) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: no file: %s", pq->tempname);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: no file: %s", pq->tempname);
     logProcEnd (LOG_PROC, "playerSongPlay", "no-file");
     return;
   }
@@ -949,13 +948,13 @@ playerLocatePreppedSong (playerdata_t *playerData, char *sfname)
       pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);
     }
     if (! found) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: song %s not prepped; processing queue", sfname);
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: song %s not prepped; processing queue", sfname);
       playerProcessPrepRequest (playerData);
       ++count;
     }
   }
   if (! found) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: unable to locate song %s", sfname);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to locate song %s", sfname);
     logProcEnd (LOG_PROC, "playerSongPlay", "not-found");
     return NULL;
   }
@@ -1565,7 +1564,7 @@ playerSendStatus (playerdata_t *playerData)
       }
       case PL_STATE_MAX: {
         /* this would be an error */
-        logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: invalid player state");
+        logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: invalid player state");
         playstate = "stop";
         break;
       }

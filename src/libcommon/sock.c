@@ -61,6 +61,7 @@ static int      sockSetNonblocking (Sock_t sock);
 static void     sockInit (void);
 static void     sockCleanup (void);
 static Sock_t   sockSetOptions (Sock_t sock, int *err);
+static void     sockUpdateReadCheck (sockinfo_t *sockinfo);
 
 static int      sockInitialized = 0;
 static int      sockCount = 0;
@@ -174,6 +175,8 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
     sockinfo->max = sock;
   }
 
+  sockUpdateReadCheck (sockinfo);
+
   return sockinfo;
 }
 
@@ -195,6 +198,8 @@ sockRemoveCheck (sockinfo_t *sockinfo, Sock_t sock)
       break;
     }
   }
+
+  sockUpdateReadCheck (sockinfo);
 }
 
 void
@@ -219,14 +224,7 @@ sockCheck (sockinfo_t *sockinfo)
     return INVALID_SOCKET;
   }
 
-  FD_ZERO (&(sockinfo->readfds));
-  for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
-    Sock_t tsock = sockinfo->socklist [i];
-    if (socketInvalid (tsock)) {
-      continue;
-    }
-    FD_SET (tsock, &(sockinfo->readfds));
-  }
+  memcpy (&(sockinfo->readfds), &sockinfo->readfdsbase, sizeof (fd_set));
 
   tv.tv_sec = 0;
   tv.tv_usec = (suseconds_t)
@@ -496,6 +494,18 @@ socketInvalid (Sock_t sock)
 #else
   return (sock < 0);
 #endif
+}
+
+inline bool
+sockWritable (Sock_t sock)
+{
+  Sock_t        sval;
+
+  sval = sockCanWrite (sock);
+  if (sval != sock) {
+    return false;
+  }
+  return true;
 }
 
 /* internal routines */
@@ -812,3 +822,17 @@ sockSetOptions (Sock_t sock, int *err)
 #endif
   return sock;
 }
+
+static void
+sockUpdateReadCheck (sockinfo_t *sockinfo)
+{
+  FD_ZERO (&(sockinfo->readfdsbase));
+  for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
+    Sock_t tsock = sockinfo->socklist [i];
+    if (socketInvalid (tsock)) {
+      continue;
+    }
+    FD_SET (tsock, &(sockinfo->readfdsbase));
+  }
+}
+

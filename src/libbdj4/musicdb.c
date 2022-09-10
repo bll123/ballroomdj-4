@@ -120,7 +120,7 @@ dbLoad (musicdb_t *musicdb)
     /* but bdj4main crashes, and I don't know why */
     rc = raRead (musicdb->radb, i, data);
     if (rc != 1) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Unable to access rrn %zd", i);
+      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Unable to access rrn %zd", i);
     }
     if (rc == 0 || ! *data) {
       continue;
@@ -390,7 +390,7 @@ dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)
   *data = '\0';
   rc = raRead (musicdb->radb, rrn, data);
   if (rc != 1) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "ERR: Unable to access rrn %zd", rrn);
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Unable to access rrn %zd", rrn);
   }
   if (rc == 0 || ! *data) {
     return NULL;

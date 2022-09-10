@@ -107,11 +107,16 @@ typedef enum {
   MSG_SONG_SELECT,          // args: queue number, position
   MSG_FINISHED,             // no more songs, also sent to marquee
   MSG_SONG_FINISH,          // args: dbidx, for history
+  MSG_MAIN_ALREADY,         // the main process was already started
+                            // this message occurs after a crash or the ui.
+  MSG_MAIN_REQ_STATUS,      // request current status from main
+  MSG_MAIN_CURR_MANAGE,     // status response: current manage idx
+  MSG_MAIN_CURR_PLAY,       // status response: current play idx
 
   /* to/from starterui */
   MSG_START_MAIN,           // arg: true for --nomarquee
   MSG_STOP_MAIN,
-  MSG_PLAYERUI_ACTIVE,        // arg: true/false
+  MSG_PLAYERUI_ACTIVE,      // arg: true/false
   MSG_REQ_PLAYERUI_ACTIVE,
 
   /* to/from web servers */

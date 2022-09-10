@@ -14,9 +14,11 @@
 #include "log.h"
 #include "bdjmsg.h"
 
+static int   sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgProc, void *userData);
+
 void
 sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc,
-            sockhProcessFunc_t processFunc, void *userData)
+    sockhProcessFunc_t processFunc, void *userData)
 {
   int           done = 0;
   int           tdone = 0;
@@ -77,6 +79,52 @@ sockhCloseServer (sockserver_t *sockserver)
 }
 
 int
+sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
+    bdjmsgroute_t route, bdjmsgmsg_t msg, char *args)
+{
+  char        msgbuff [BDJMSG_MAX];
+  size_t      len;
+  int         rc;
+
+  if (sock == INVALID_SOCKET) {
+    return -1;
+  }
+
+  /* this is only to keep the log clean */
+  if (msg != MSG_MUSICQ_STATUS_DATA && msg != MSG_PLAYER_STATUS_DATA) {
+    logMsg (LOG_DBG, LOG_SOCKET, "route:%d/%s msg:%d/%s args:%s",
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  }
+  len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
+  rc = sockWriteBinary (sock, msgbuff, len);
+  logMsg (LOG_DBG, LOG_SOCKET, "sent: msg:%d/%s to %d/%s len:%zd rc:%d",
+      msg, msgDebugText (msg), route, msgRouteDebugText (route), len, rc);
+  return rc;
+}
+
+void
+sockhCloseClients (sockinfo_t *sockinfo)
+{
+  if (sockinfo == NULL) {
+    return;
+  }
+
+  for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
+    Sock_t tsock = sockinfo->socklist[i];
+    if (socketInvalid (tsock)) {
+      continue;
+    }
+
+    sockRemoveCheck (sockinfo, tsock);
+    sockClose (tsock);
+  }
+
+  return;
+}
+
+/* internal routines */
+
+static int
 sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
     void *userData)
 {
@@ -119,7 +167,7 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
         sockClose (msgsock);
         return done;
       }
-      logMsg (LOG_DBG, LOG_SOCKET, "got message: %s", rval);
+      logMsg (LOG_DBG, LOG_SOCKET, "rcvd message: %s", rval);
 
       msgDecode (msgbuff, &routefrom, &route, &msg, args, sizeof (args));
       logMsg (LOG_DBG, LOG_SOCKET,
@@ -131,7 +179,7 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
           break;
         }
         case MSG_SOCKET_CLOSE: {
-          logMsg (LOG_DBG, LOG_SOCKET, "got: close socket");
+          logMsg (LOG_DBG, LOG_SOCKET, "rcvd close socket");
           sockRemoveCheck (sockserver->si, msgsock);
           /* the caller will close the socket */
           done = msgFunc (routefrom, route, msg, args, userData);
@@ -145,50 +193,5 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
   } /* have message */
 
   return done;
-}
-
-
-int
-sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
-    bdjmsgroute_t route, bdjmsgmsg_t msg, char *args)
-{
-  char        msgbuff [BDJMSG_MAX];
-  size_t      len;
-  int         rc;
-
-  if (sock == INVALID_SOCKET) {
-    return -1;
-  }
-
-  /* this is only to keep the log clean */
-  if (msg != MSG_MUSICQ_STATUS_DATA && msg != MSG_PLAYER_STATUS_DATA) {
-    logMsg (LOG_DBG, LOG_SOCKET, "route:%d/%s msg:%d/%s args:%s",
-        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
-  }
-  len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
-  rc = sockWriteBinary (sock, msgbuff, len);
-  logMsg (LOG_DBG, LOG_SOCKET, "sent: msg:%d/%s to %d/%s len:%zd rc:%d",
-      msg, msgDebugText (msg), route, msgRouteDebugText (route), len, rc);
-  return rc;
-}
-
-void
-sockhCloseClients (sockinfo_t *sockinfo)
-{
-  if (sockinfo == NULL) {
-    return;
-  }
-
-  for (size_t i = 0; i < (size_t) sockinfo->count; ++i) {
-    Sock_t tsock = sockinfo->socklist[i];
-    if (socketInvalid (tsock)) {
-      continue;
-    }
-
-    sockRemoveCheck (sockinfo, tsock);
-    sockClose (tsock);
-  }
-
-  return;
 }
 
