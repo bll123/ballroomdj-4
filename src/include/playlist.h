@@ -48,6 +48,7 @@ typedef enum {
 } pltype_t;
 
 enum {
+  PL_VALID_SONG_ATTEMPTS = 40,
   PL_LIST_NORMAL = 1,   // excludes the special QueueDance playlist
   PL_LIST_ALL,          // everything, include QueueDance
   PL_LIST_AUTO_SEQ,
@@ -56,8 +57,6 @@ enum {
 };
 
 typedef struct playlist playlist_t;
-
-#define VALID_SONG_ATTEMPTS   40
 
 playlist_t *playlistAlloc (musicdb_t *musicdb);
 int       playlistLoad (playlist_t *pl, const char *);

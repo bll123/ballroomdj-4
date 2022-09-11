@@ -11,7 +11,10 @@ typedef int32_t dbidx_t;
 
 typedef struct musicdb musicdb_t;
 
-#define MUSICDB_VERSION   10
+enum {
+  MUSICDB_VERSION = 10,
+};
+
 #define MUSICDB_FNAME     "musicdb"
 #define MUSICDB_TMP_FNAME "musicdb-tmp"
 #define MUSICDB_EXT       ".dat"

@@ -472,7 +472,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
 
     song = songselSelect (pl->songsel, danceIdx);
     count = 0;
-    while (song != NULL && count < VALID_SONG_ATTEMPTS) {
+    while (song != NULL && count < PL_VALID_SONG_ATTEMPTS) {
       if (songAudioFileExists (song)) {
         break;
       }
@@ -480,7 +480,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
       ++count;
     }
 
-    if (count >= VALID_SONG_ATTEMPTS) {
+    if (count >= PL_VALID_SONG_ATTEMPTS) {
       song = NULL;
     } else {
       songselSelectFinalize (pl->songsel, danceIdx);

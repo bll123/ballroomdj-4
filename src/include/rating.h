@@ -12,7 +12,9 @@ typedef enum {
 
 typedef struct rating rating_t;
 
-#define RATING_UNRATED_IDX 0
+enum {
+  RATING_UNRATED_IDX = 0,
+};
 
 rating_t    *ratingAlloc (void);
 void        ratingFree (rating_t *rating);
