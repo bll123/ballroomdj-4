@@ -365,7 +365,7 @@ main (int argc, char *argv [])
 
       if (processflags [UPD_FIX_AF_MB_TAG] && rewrite) {
         logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix mb: %d %s", dbidx, ffn);
-        audiotagWriteTags (ffn, taglist, taglist, rewrite);
+        audiotagWriteTags (ffn, taglist, taglist, rewrite, AT_KEEP_MOD_TIME);
       }
 
       free (data);

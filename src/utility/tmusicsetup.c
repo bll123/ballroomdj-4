@@ -175,7 +175,7 @@ main (int argc, char *argv [])
     src = ilistGetStr (tmlist, key, TM_SOURCE);
     dest = ilistGetStr (tmlist, key, TAG_TITLE);
     fn = createFile (src, dest);
-    audiotagWriteTags (fn, empty, tagdata, 0);
+    audiotagWriteTags (fn, empty, tagdata, 0, AT_UPDATE_MOD_TIME);
     dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
   }
 

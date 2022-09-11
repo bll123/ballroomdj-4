@@ -143,7 +143,7 @@ main (int argc, char *argv [])
 
     value = bdjoptGetNum (OPT_G_WRITETAGS);
     bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
-    audiotagWriteTags (argv [fidx], tagdata, wlist, rewrite);
+    audiotagWriteTags (argv [fidx], tagdata, wlist, rewrite, AT_UPDATE_MOD_TIME);
     bdjoptSetNum (OPT_G_WRITETAGS, value);
   }
   slistFree (tagdata);

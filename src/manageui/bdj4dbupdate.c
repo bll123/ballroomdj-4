@@ -860,7 +860,7 @@ dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
   }
 
   newtaglist = songTagList (song);
-  audiotagWriteTags (ffn, tagdata, newtaglist, 0);
+  audiotagWriteTags (ffn, tagdata, newtaglist, 0, AT_UPDATE_MOD_TIME);
   slistFree (tagdata);
   slistFree (newtaglist);
   IncCount (C_FILE_PROC);

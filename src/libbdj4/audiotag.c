@@ -113,7 +113,7 @@ audiotagParseData (const char *ffn, char *data, int *rewrite)
 
 void
 audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
-    int rewrite)
+    int rewrite, int modTimeFlag)
 {
   char        tmp [50];
   int         tagtype;
@@ -239,12 +239,18 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
 
   if (slistGetCount (updatelist) > 0 ||
       slistGetCount (dellist) > 0) {
+    time_t    origtm;
+
     logMsg (LOG_DBG, LOG_DBUPDATE, "writing tags");
     logMsg (LOG_DBG, LOG_DBUPDATE, "  %s", ffn);
+    origtm = fileopModTime (ffn);
     if (tagtype == TAG_TYPE_MP3 && filetype == AFILE_TYPE_MP3) {
       audiotagWriteMP3Tags (ffn, updatelist, dellist, datalist, writetags);
     } else {
       audiotagWriteOtherTags (ffn, updatelist, dellist, datalist, tagtype, filetype, writetags);
+    }
+    if (modTimeFlag == AT_KEEP_MOD_TIME) {
+      fileopSetModTime (ffn, origtm);
     }
   }
   slistFree (updatelist);
@@ -676,9 +682,10 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
 
   fprintf (ofh, "audio.save()\n");
   fclose (ofh);
+
   audiotagRunUpdate (fn);
 
-  logProcEnd (LOG_PROC, "audiotagsWriteTags", "");
+  logProcEnd (LOG_PROC, "audiotagsWriteMP3Tags", "");
 }
 
 static void
