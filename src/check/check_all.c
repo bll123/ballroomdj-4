@@ -26,26 +26,7 @@ int
 main (int argc, char *argv [])
 {
   SRunner *sr = NULL;
-  int     c = 0;
-  int     option_index = 0;
   int     number_failed = 0;
-  bool    skipslow = false;
-
-  static struct option coptions [] = {
-    { "check_all",  no_argument, NULL, 0 },
-    { "bdj4",       no_argument, NULL, 0 },
-    { "skipslow",   no_argument, NULL, 's' },
-    { NULL,         0,           NULL, 0 }
-  };
-
-  while ((c = getopt_long_only (argc, argv, "s", coptions, &option_index)) != -1) {
-    switch (c) {
-      case 's': {
-        skipslow = true;
-        break;
-      }
-    }
-  }
 
   sRandom ();
   sysvarsInit (argv [0]);

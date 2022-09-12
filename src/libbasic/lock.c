@@ -35,6 +35,7 @@ static char *locknames [ROUTE_MAX] = {
   [ROUTE_MARQUEE] = "marquee",
   [ROUTE_HELPERUI] = "helperui",
   [ROUTE_BPM_COUNTER] = "bpmcounter",
+  [ROUTE_TEST_SUITE] = "testsuite",
 };
 
 static int    lockAcquirePid (char *fn, pid_t pid, int flags);

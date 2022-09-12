@@ -59,6 +59,9 @@ istringCompare (const char *str1, const char *str2)
   UErrorCode status = U_ZERO_ERROR;
   int   rc = 0;
 
+  if (ucoll == NULL) {
+    return 0;
+  }
   rc = ucol_strcollUTF8 (ucoll, str1, -1, str2, -1, &status);
   return rc;
 }
@@ -94,6 +97,10 @@ istringToLower (char *str)
   size_t      sz;
   size_t      rsz;
 
+  if (ucsm == NULL) {
+    return;
+  }
+
   sz = strlen (str);
   ++sz;
   dest = malloc (sz + 1);
@@ -112,6 +119,10 @@ istringToUpper (char *str)
   char        *dest = NULL;
   size_t      sz;
   size_t      rsz;
+
+  if (ucsm == NULL) {
+    return;
+  }
 
   sz = strlen (str);
   ++sz;

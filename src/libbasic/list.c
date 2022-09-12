@@ -19,8 +19,8 @@ static void     listReplace (list_t *, listidx_t, listitem_t *item);
 static int      listBinarySearch (const list_t *, listkeylookup_t *key, listidx_t *);
 static int      idxCompare (listidx_t, listidx_t);
 static int      listCompare (const list_t *, const listkey_t *a, const listkey_t *b);
-static void     merge (list_t *, listidx_t, listidx_t, listidx_t);
-static void     mergeSort (list_t *, listidx_t, listidx_t);
+static long     merge (list_t *, listidx_t, listidx_t, listidx_t);
+static long     mergeSort (list_t *, listidx_t, listidx_t);
 
 list_t *
 listAlloc (const char *name, listorder_t ordered, listFree_t valueFreeHook)
@@ -241,13 +241,14 @@ listSort (list_t *list)
 {
   mstime_t      tm;
   time_t        elapsed;
+  long          swaps;
 
   mstimestart (&tm);
   list->ordered = LIST_ORDERED;
-  mergeSort (list, 0, list->count - 1);
+  swaps = mergeSort (list, 0, list->count - 1);
   elapsed = mstimeend (&tm);
   if (elapsed > 0) {
-    logMsg (LOG_DBG, LOG_LIST, "sort of %s took %ld ms", list->name, elapsed);
+    logMsg (LOG_DBG, LOG_LIST, "sort of %s took %ld ms with %ld swaps", list->name, elapsed, swaps);
   }
 }
 
@@ -682,15 +683,16 @@ listBinarySearch (const list_t *list, listkeylookup_t *key, listidx_t *loc)
  * https://www.geeksforgeeks.org/in-place-merge-sort/
  */
 
-static void
+static long
 merge (list_t *list, listidx_t start, listidx_t mid, listidx_t end)
 {
-  listidx_t      start2 = mid + 1;
+  listidx_t   start2 = mid + 1;
   listitem_t  value;
+  long        swaps = 0;
 
   int rc = listCompare (list, &list->data [mid].key, &list->data [start2].key);
   if (rc <= 0) {
-    return;
+    return swaps;
   }
 
   while (start <= mid && start2 <= end) {
@@ -700,7 +702,7 @@ merge (list_t *list, listidx_t start, listidx_t mid, listidx_t end)
     } else {
       listidx_t       index;
 
-
+      ++swaps;
       value = list->data [start2];
       index = start2;
 
@@ -715,16 +717,22 @@ merge (list_t *list, listidx_t start, listidx_t mid, listidx_t end)
       start2++;
     }
   }
+
+  return swaps;
 }
 
-static void
+static long
 mergeSort (list_t *list, listidx_t l, listidx_t r)
 {
+  long swaps = 0;
+
   if (list->count > 0 && l < r) {
     listidx_t m = l + (r - l) / 2;
-    mergeSort (list, l, m);
-    mergeSort (list, m + 1, r);
-    merge (list, l, m, r);
+    swaps += mergeSort (list, l, m);
+    swaps += mergeSort (list, m + 1, r);
+    swaps += merge (list, l, m, r);
   }
+
+  return swaps;
 }
 

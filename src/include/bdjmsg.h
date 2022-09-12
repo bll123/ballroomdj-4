@@ -21,6 +21,7 @@ typedef enum {
   ROUTE_STARTERUI,
   ROUTE_HELPERUI,
   ROUTE_BPM_COUNTER,
+  ROUTE_TEST_SUITE,
   ROUTE_MAX,
 } bdjmsgroute_t;
 
@@ -169,11 +170,15 @@ enum {
 #define MSG_ARGS_EMPTY      0x03      // ETX
 #define MSG_ARGS_EMPTY_STR  "\x03"
 
+/* exposed for use in testing */
+extern const char *bdjmsgroutetxt [ROUTE_MAX];
+extern const char *bdjmsgtxt [MSG_MAX];
+
 size_t    msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route,
               bdjmsgmsg_t msg, char *args, char *msgbuff, size_t mlen);
 void      msgDecode (char *msgbuff, bdjmsgroute_t *routefrom,
               bdjmsgroute_t *route, bdjmsgmsg_t *msg, char *args, size_t alen);
-char *    msgDebugText (bdjmsgmsg_t msg);
-char *    msgRouteDebugText (bdjmsgroute_t route);
+const char *msgDebugText (bdjmsgmsg_t msg);
+const char *msgRouteDebugText (bdjmsgroute_t route);
 
 #endif /* INC_BDJMSG_H */

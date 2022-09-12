@@ -27,6 +27,7 @@
  *  rc - mobile remote control
  *  st - starter
  *  tm - tmusicsetup
+ *  ts - testsuite
  *  up - updater
  *
  */

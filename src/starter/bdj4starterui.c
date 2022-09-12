@@ -118,11 +118,12 @@ typedef struct {
   char            *supportOutFname;
   webclient_t     *webclient;
   char            ident [80];
-  char            latestversion [40];
+  char            latestversion [60];
   char            *webresponse;
   int             mainstart [ROUTE_MAX];
   int             started [ROUTE_MAX];
   int             stopwaitcount;
+  mstime_t        pluiCheckTime;
   nlist_t         *proflist;
   nlist_t         *profidxlist;
   UICallback      callbacks [START_CB_MAX];
@@ -258,6 +259,7 @@ main (int argc, char *argv[])
     starter.started [i] = 0;
   }
   starter.stopwaitcount = 0;
+  mstimeset (&starter.pluiCheckTime, 0);
   starter.proflist = NULL;
   starter.profidxlist = NULL;
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
@@ -658,12 +660,14 @@ starterMainLoop (void *tstarter)
   }
 
   if (starter->started [ROUTE_PLAYERUI] &&
+      mstimeCheck (&starter->pluiCheckTime) &&
       connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
     /* check and see if the playerui is still connected */
     connSendMessage (starter->conn, ROUTE_PLAYERUI, MSG_NULL, NULL);
     if (! connIsConnected (starter->conn, ROUTE_PLAYERUI)) {
       starterCloseProcess (starter, ROUTE_PLAYERUI, CLOSE_CRASH);
     }
+    mstimeset (&starter->pluiCheckTime, 500);
   }
 
   switch (starter->startState) {
@@ -970,7 +974,6 @@ starterCloseProcess (startui_t *starter, bdjmsgroute_t routefrom, int request)
     starterSendPlayerActive (starter);
   }
 
-  /* most likely to crash */
   if (request == CLOSE_CRASH && wasstarted && routefrom == ROUTE_PLAYERUI) {
     starterStartPlayerui (starter);
   }
@@ -1051,6 +1054,7 @@ starterStartPlayerui (void *udata)
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
       ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH, NULL);
   starter->started [ROUTE_PLAYERUI] = true;
+  mstimeset (&starter->pluiCheckTime, 500);
   starterSendPlayerActive (starter);
   return UICB_CONT;
 }

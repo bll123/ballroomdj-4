@@ -78,6 +78,7 @@ main (int argc, char * argv[])
     { "bdj4tags",       no_argument,        NULL,   17 },
     { "bdj4updater",    no_argument,        NULL,   16 },
     { "check_all",      no_argument,        NULL,   1 },
+    { "testsuite",      no_argument,        NULL,   22 },
     /* bdj4updater */
     { "newinstall",     no_argument,        NULL,   0 },
     { "converted",      no_argument,        NULL,   0 },
@@ -99,8 +100,6 @@ main (int argc, char * argv[])
     { "nodetach",       no_argument,        NULL,   'N' },
     { "wait",           no_argument,        NULL,   'w' },
     { "msys",           no_argument,        NULL,   'M' },
-    /* check */
-    { "skipslow",       no_argument,        NULL,   0 },
     /* dbupdate options */
     { "rebuild",        no_argument,        NULL,   0 },
     { "checknew",       no_argument,        NULL,   0 },
@@ -240,6 +239,13 @@ main (int argc, char * argv[])
       }
       case 21: {
         prog = "tmusicsetup";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 22: {
+        prog = "testsuite";
         nodetach = true;
         wait = true;
         ++validargs;

@@ -37,7 +37,7 @@ check_libcommon (SRunner *sr)
    *  osdir
    *  dirop       complete
    *  filemanip   need renameall test
-   *  fileutil                        // open/write/close shared
+   *  fileutil                // open/write/close shared
    *  pathbld     complete
    *  log
    *  bdjmsg      complete
