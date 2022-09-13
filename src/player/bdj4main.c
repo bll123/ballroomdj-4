@@ -2586,13 +2586,42 @@ mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom)
 static void
 mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
 {
-  char  tmp [200];
+  char    tmp [200];
+  dbidx_t dbidx;
+  char    *title;
+  char    *dance;
+  song_t  *song;
+  char    *songfn;
 
-  snprintf (tmp, sizeof (tmp), "manage%c%d%cplay%c%d%cmlen%c%ld%cplen%c%ld",
+  dbidx = -1;
+  title = MSG_ARGS_EMPTY_STR;
+  dance = MSG_ARGS_EMPTY_STR;
+  songfn = MSG_ARGS_EMPTY_STR;
+  if (mainData->playerState == PL_STATE_PLAYING) {
+    dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+    title = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_TITLE);
+    dance = mainSongGetDanceDisplay (mainData, 0);
+    song = dbGetByIdx (mainData->musicdb, dbidx);
+    songfn = songGetStr (song, TAG_FILE);
+  }
+
+  snprintf (tmp, sizeof (tmp),
+      "mqmanage%c%d%c"
+      "mqplay%c%d%c"
+      "mqmlen%c%ld%c"
+      "mqplen%c%ld%c"
+      "dbidx%c%d%c"
+      "m-songfn%c%s%c"
+      "title%c%s%c"
+      "dance%c%s",
       MSG_ARGS_RS, mainData->musicqManageIdx, MSG_ARGS_RS,
       MSG_ARGS_RS, mainData->musicqPlayIdx, MSG_ARGS_RS,
       MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx), MSG_ARGS_RS,
-      MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx));
+      MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx), MSG_ARGS_RS,
+      MSG_ARGS_RS, dbidx, MSG_ARGS_RS,
+      MSG_ARGS_RS, songfn, MSG_ARGS_RS,
+      MSG_ARGS_RS, title, MSG_ARGS_RS,
+      MSG_ARGS_RS, dance);
   connSendMessage (mainData->conn, routefrom, MSG_CHK_MAIN_MUSICQ, tmp);
 }
 

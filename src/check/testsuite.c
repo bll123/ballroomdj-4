@@ -49,8 +49,7 @@ typedef enum {
 
 enum {
   TS_TYPE_MSG,
-  TS_TYPE_CHK,
-  TS_TYPE_WAIT,
+  TS_TYPE_GET,
   TS_CHK_TIMEOUT = 200,
 };
 
@@ -75,6 +74,7 @@ typedef struct {
   FILE        *fh;
   int         step;
   int         lineno;
+  int         expectcount;
   bool        waitresponse : 1;
   bool        haveresponse : 1;
   bool        wait : 1;
@@ -96,13 +96,16 @@ static void tallyResults (testsuite_t *testsuite);
 static void printResults (testsuite_t *testsuite, results_t *results);
 static int  tsProcessScript (testsuite_t *testsuite);
 static int  tsScriptMsg (testsuite_t *testsuite, const char *tcmd);
+static int  tsScriptGet (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptChk (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptWait (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptSleep (testsuite_t *testsuite, const char *tcmd);
+static int  tsParseExpect (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptChkResponse (testsuite_t *testsuite);
 static int  tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type);
 static void tsProcessChkResponse (testsuite_t *testsuite, char *args);
 static void tsDisplayCommandResult (testsuite_t *testsuite, ts_return_t ok);
+static void resetChkResponse (testsuite_t *testsuite);
 static void tsSigHandler (int sig);
 
 int
@@ -129,9 +132,10 @@ main (int argc, char *argv [])
   testsuite.progstate = progstateInit ("testsuite");
   testsuite.stopwaitcount = 0;
   testsuite.waitresponse = false;
+  testsuite.expectcount = 0;
   testsuite.haveresponse = false;
   testsuite.wait = false;
-  testsuite.chkresponse = NULL;
+  testsuite.chkresponse = slistAlloc ("ts-chk-response", LIST_ORDERED, free);
   testsuite.chkexpect = NULL;
   mstimeset (&testsuite.waitCheck, 100);
   mstimeset (&testsuite.responseTimeoutCheck, TS_CHK_TIMEOUT);
@@ -222,7 +226,8 @@ tsProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CHK_MAIN_MUSICQ:
         case MSG_CHK_MAIN_STATUS:
-        case MSG_CHK_PLAYER_STATUS: {
+        case MSG_CHK_PLAYER_STATUS:
+        case MSG_CHK_PLAYER_SONG: {
           tsProcessChkResponse (testsuite, args);
           break;
         }
@@ -265,33 +270,38 @@ tsProcessing (void *udata)
 
     logMsg (LOG_DBG, LOG_BASIC, "process chk response");
     ok = tsScriptChkResponse (testsuite);
+
     if (ok != TS_OK) {
       ++testsuite->results.chkfail;
     }
     tsDisplayCommandResult (testsuite, ok);
+    resetChkResponse (testsuite);
   }
 
   if (testsuite->wait && testsuite->haveresponse) {
     ts_return_t ok;
 
     logMsg (LOG_DBG, LOG_BASIC, "process wait response");
+    testsuite->haveresponse = false;
     ok = tsScriptChkResponse (testsuite);
     if (ok == TS_OK) {
       logMsg (LOG_DBG, LOG_BASIC, "wait response ok");
-      testsuite->haveresponse = false;
+      resetChkResponse (testsuite);
       testsuite->waitresponse = false;
       testsuite->wait = false;
+    } else {
+      ++testsuite->expectcount;
     }
   }
 
   if ((testsuite->waitresponse || testsuite->wait) &&
       mstimeCheck (&testsuite->responseTimeoutCheck)) {
     logMsg (LOG_DBG, LOG_BASIC, "timed out %d", testsuite->lineno);
-    testsuite->haveresponse = false;
     testsuite->waitresponse = false;
     testsuite->wait = false;
     ++testsuite->results.chkfail;
     tsDisplayCommandResult (testsuite, TS_CHECK_TIMEOUT);
+    resetChkResponse (testsuite);
   }
 
   if ((testsuite->wait) &&
@@ -465,6 +475,10 @@ tsProcessScript (testsuite_t *testsuite)
     ok = tsScriptMsg (testsuite, tcmd);
     disp = true;
   }
+  if (strncmp (tcmd, "get", 3) == 0) {
+    ok = tsScriptGet (testsuite, tcmd);
+    disp = true;
+  }
   if (strncmp (tcmd, "chk", 3) == 0) {
     ok = tsScriptChk (testsuite, tcmd);
     disp = true;
@@ -541,11 +555,25 @@ tsScriptMsg (testsuite_t *testsuite, const char *tcmd)
 }
 
 static int
+tsScriptGet (testsuite_t *testsuite, const char *tcmd)
+{
+  ++testsuite->expectcount;
+  testsuite->haveresponse = false;
+  tsSendMessage (testsuite, tcmd, TS_TYPE_GET);
+  return TS_OK;
+}
+
+static int
 tsScriptChk (testsuite_t *testsuite, const char *tcmd)
 {
+  int   ok;
+
+
   testsuite->waitresponse = true;
-  testsuite->haveresponse = false;
-  tsSendMessage (testsuite, tcmd, TS_TYPE_CHK);
+  ok = tsParseExpect (testsuite, tcmd);
+  if (ok != TS_OK) {
+    return ok;
+  }
   ++testsuite->results.chkcount;
   mstimeset (&testsuite->responseTimeoutCheck, TS_CHK_TIMEOUT);
   return TS_OK;
@@ -554,12 +582,62 @@ tsScriptChk (testsuite_t *testsuite, const char *tcmd)
 static int
 tsScriptWait (testsuite_t *testsuite, const char *tcmd)
 {
+  int   ok;
+
+  if (testsuite->expectcount == 0 && ! testsuite->haveresponse) {
+    ++testsuite->expectcount;
+  }
   testsuite->wait = true;
-  testsuite->haveresponse = false;
-  tsSendMessage (testsuite, tcmd, TS_TYPE_WAIT);
+  ok = tsParseExpect (testsuite, tcmd);
+  if (ok != TS_OK) {
+    return ok;
+  }
   ++testsuite->results.chkcount;
   mstimeset (&testsuite->waitCheck, 100);
   mstimeset (&testsuite->responseTimeoutCheck, testsuite->responseTimeout);
+  return TS_OK;
+}
+
+static int
+tsScriptSleep (testsuite_t *testsuite, const char *tcmd)
+{
+  char  *tstr;
+  char  *p;
+  char  *tokstr;
+
+  tstr = strdup (tcmd);
+  p = strtok_r (tstr, " ", &tokstr);
+  p = strtok_r (NULL, " ", &tokstr);
+  mssleep (atol (p));
+  free (tstr);
+  return TS_OK;
+}
+
+static int
+tsParseExpect (testsuite_t *testsuite, const char *tcmd)
+{
+  char    *p;
+  char    *tokstr;
+  char    *tstr;
+
+  if (testsuite->chkexpect != NULL) {
+    slistFree (testsuite->chkexpect);
+  }
+  testsuite->chkexpect = slistAlloc ("ts-chk-expect", LIST_ORDERED, free);
+
+  tstr = strdup (tcmd);
+  p = strtok_r (tstr, " ", &tokstr);
+  p = strtok_r (NULL, " ", &tokstr);
+  while (p != NULL) {
+    char    *a;
+    a = strtok_r (NULL, " ", &tokstr);
+    if (a == NULL) {
+      return TS_BAD_COMMAND;
+    }
+    slistSetStr (testsuite->chkexpect, p, a);
+    p = strtok_r (NULL, " ", &tokstr);
+  }
+  free (tstr);
   return TS_OK;
 }
 
@@ -590,25 +668,11 @@ tsScriptChkResponse (testsuite_t *testsuite)
   }
 
   testsuite->waitresponse = false;
+  testsuite->expectcount = 0;
   testsuite->haveresponse = false;
   return rc;
 }
 
-
-static int
-tsScriptSleep (testsuite_t *testsuite, const char *tcmd)
-{
-  char  *tstr;
-  char  *p;
-  char  *tokstr;
-
-  tstr = strdup (tcmd);
-  p = strtok_r (tstr, " ", &tokstr);
-  p = strtok_r (NULL, " ", &tokstr);
-  mssleep (atol (p));
-  free (tstr);
-  return TS_OK;
-}
 
 static void
 tsProcessChkResponse (testsuite_t *testsuite, char *args)
@@ -618,17 +682,21 @@ tsProcessChkResponse (testsuite_t *testsuite, char *args)
   char    *tokstr;
 
   logMsg (LOG_DBG, LOG_BASIC, "resp: %s", args);
-  if (testsuite->chkresponse != NULL) {
-    slistFree (testsuite->chkresponse);
+  if (testsuite->expectcount > 0) {
+    --testsuite->expectcount;
+    if (testsuite->expectcount == 0) {
+      testsuite->haveresponse = true;
+    }
   }
-  testsuite->chkresponse = slistAlloc ("ts-chk-response", LIST_ORDERED, free);
-  testsuite->haveresponse = true;
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   while (p != NULL) {
     a = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     if (a == NULL) {
       return;
+    }
+    if (*a == MSG_ARGS_EMPTY) {
+      *a = '\0';
     }
     slistSetStr (testsuite->chkresponse, p, a);
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
@@ -680,26 +748,9 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
     dlen = strlen (p);
     d = filedataReplace (p, &dlen, "~", MSG_ARGS_RS_STR);
   }
-  if ((type == TS_TYPE_CHK || type == TS_TYPE_WAIT) && p != NULL) {
-    if (testsuite->chkexpect != NULL) {
-      slistFree (testsuite->chkexpect);
-    }
-    testsuite->chkexpect = slistAlloc ("ts-chk-expect", LIST_ORDERED, free);
-
-    while (p != NULL) {
-      char    *a;
-      a = strtok_r (NULL, " ", &tokstr);
-      if (a == NULL) {
-        return TS_BAD_COMMAND;
-      }
-      slistSetStr (testsuite->chkexpect, p, a);
-      p = strtok_r (NULL, " ", &tokstr);
-    }
-
-    if (type == TS_TYPE_WAIT) {
-      testsuite->waitRoute = route;
-      testsuite->waitMessage = msg;
-    }
+  if (type == TS_TYPE_GET) {
+    testsuite->waitRoute = route;
+    testsuite->waitMessage = msg;
   }
 
   connSendMessage (testsuite->conn, route, msg, d);
@@ -752,6 +803,16 @@ tsDisplayCommandResult (testsuite_t *testsuite, ts_return_t ok)
     fprintf (stdout, "       %s\n", tmsg);
     fflush (stdout);
   }
+}
+
+static void
+resetChkResponse (testsuite_t *testsuite)
+{
+  if (testsuite->chkresponse != NULL) {
+    slistFree (testsuite->chkresponse);
+  }
+  testsuite->chkresponse = slistAlloc ("ts-chk-response", LIST_ORDERED, free);
+  testsuite->haveresponse = false;
 }
 
 

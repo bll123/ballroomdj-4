@@ -645,10 +645,6 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
 
   logProcBegin (LOG_PROC, "uiplayerProcessPlayerStatusData");
 
-  /* player state */
-  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  /* this is handled by the MSG_PLAYER_STATE message */
-
   /* repeat */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
