@@ -1650,7 +1650,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       MSG_ARGS_RS, playerData->currentVolume, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->realVolume, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentSpeed, MSG_ARGS_RS,
-      MSG_ARGS_RS, playerData->playTimePlayed, MSG_ARGS_RS,
+      MSG_ARGS_RS, playerCalcPlayedTime (playerData), MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->pauseAtEnd, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->repeat, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->defaultSink, MSG_ARGS_RS,

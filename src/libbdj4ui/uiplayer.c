@@ -646,7 +646,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   logProcBegin (LOG_PROC, "uiplayerProcessPlayerStatusData");
 
   /* repeat */
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
     uiplayer->repeatLock = true;
     if (atol (p)) {

@@ -57,6 +57,9 @@ ed data/profile00/bdjconfig.txt << _HERE_ > /dev/null
 /^DEFAULTVOLUME/
 +1
 s,.*,..20,
+/^FADEOUTTIME/
++1
+s,.*,..4000,
 /^HIDEMARQUEEONSTART/
 +1
 s,.*,..on,

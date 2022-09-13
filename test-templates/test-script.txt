@@ -1,5 +1,14 @@
-# 2022-9-11
+# 2022-9-13
+#
 # test songs are all approximately 30 seconds long
+# fade-out default: 4000
+# gap default: 2000
+#
+# 32 seconds + 4 + 2 = 38, so a timeout of 40 seconds is used if
+# playing the entire song.
+#
+# commands:
+#   section test msg get chk wait mssleep resptimeout reset end
 #
 # main:
 #   status:
@@ -10,6 +19,7 @@
 #     pauseatend repeat defaultsink currentsink
 #   song:
 #     p-duration p-songfn
+#
 
 section Basic
 
@@ -23,7 +33,7 @@ reset
 test Insert-Play
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
-msg main MUSICQ_INSERT 0~99~0
+msg main MUSICQ_INSERT 0~999~0
 get main CHK_MAIN_MUSICQ
 chk mqplen 1
 msg main CMD_PLAY
@@ -34,8 +44,11 @@ chk mqplen 1 dbidx 0 playstate playing
 mssleep 2000
 get player CHK_PLAYER_STATUS
 chk playstate playing
-resptimeout 35000
+resptimeout 40000
 get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+resptimeout 5000
+wait playstate in-gap
 wait playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
@@ -44,7 +57,7 @@ end
 test Insert-Play-2
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
-msg main MUSICQ_INSERT 0~99~1
+msg main MUSICQ_INSERT 0~999~1
 get main CHK_MAIN_MUSICQ
 chk mqplen 1
 msg main CMD_PLAY
@@ -53,19 +66,53 @@ get main CHK_MAIN_MUSICQ
 get player CHK_PLAYER_STATUS
 chk mqplen 1 dbidx 1 playstate playing
 mssleep 2000
-msg main MUSICQ_INSERT 0~99~2
+msg main MUSICQ_INSERT 0~999~2
 get main CHK_MAIN_MUSICQ
 get player CHK_PLAYER_STATUS
 chk mqplen 2 dbidx 1 playstate playing
-resptimeout 35000
+resptimeout 40000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
+resptimeout 5000
 wait playstate in-gap
 wait playstate playing
 get main CHK_MAIN_MUSICQ
 chk mqplen 1 dbidx 2
 get player CHK_PLAYER_STATUS
+resptimeout 40000
 wait playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
+end
+
+section Controls
+
+test Position
+msg main MUSICQ_INSERT 0~999~3
+msg main MUSICQ_INSERT 0~999~4
+get main CHK_MAIN_MUSICQ
+chk mqplen 2
+msg main CMD_PLAY
+mssleep 500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+msg player PLAY_SEEK 25000
+get player CHK_PLAYER_STATUS
+cgt playtimeplayed 25000
+get player CHK_PLAYER_STATUS
+clt playtimeplayed 26000
+msg player PLAY_SEEK 5000
+get player CHK_PLAYER_STATUS
+cgt playtimeplayed 5000
+get player CHK_PLAYER_STATUS
+clt playtimeplayed 6000
+msg player PLAY_SEEK 10000
+get player CHK_PLAYER_STATUS
+cgt playtimeplayed 10000
+get player CHK_PLAYER_STATUS
+clt playtimeplayed 11000
+msg player PLAY_SEEK 28000
+resptimeout 4000
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
 end

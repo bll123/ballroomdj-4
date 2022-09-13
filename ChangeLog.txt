@@ -2,6 +2,7 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-09-??
 
+- test suite in progress
 
 4.0.0 alpha 2022-09-10
 

@@ -75,9 +75,12 @@ typedef struct {
   int         step;
   int         lineno;
   int         expectcount;
-  bool        waitresponse : 1;
+  bool        greaterthan : 1;
   bool        haveresponse : 1;
+  bool        lessthan : 1;
+  bool        skiptoend : 1;
   bool        wait : 1;
+  bool        waitresponse : 1;
 } testsuite_t;
 
 static int  gKillReceived = 0;
@@ -106,6 +109,7 @@ static int  tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type);
 static void tsProcessChkResponse (testsuite_t *testsuite, char *args);
 static void tsDisplayCommandResult (testsuite_t *testsuite, ts_return_t ok);
 static void resetChkResponse (testsuite_t *testsuite);
+static void resetPlayer (testsuite_t *testsuite);
 static void tsSigHandler (int sig);
 
 int
@@ -115,6 +119,7 @@ main (int argc, char *argv [])
   int         flags;
   int         listenPort;
   char        *state;
+  int         rc;
 
   osSetStandardSignals (tsSigHandler);
   osCatchSignal (tsSigHandler, SIGINT);
@@ -135,6 +140,9 @@ main (int argc, char *argv [])
   testsuite.expectcount = 0;
   testsuite.haveresponse = false;
   testsuite.wait = false;
+  testsuite.skiptoend = false;
+  testsuite.lessthan = false;
+  testsuite.greaterthan = false;
   testsuite.chkresponse = slistAlloc ("ts-chk-response", LIST_ORDERED, free);
   testsuite.chkexpect = NULL;
   mstimeset (&testsuite.waitCheck, 100);
@@ -179,8 +187,10 @@ main (int argc, char *argv [])
   strlcpy (testsuite.tsection, "Final", sizeof (testsuite.tsection));
   strlcpy (testsuite.tname, "", sizeof (testsuite.tname));
   state = "FAIL";
+  rc = 1;
   if (testsuite.gresults.testfail == 0) {
     state = "OK";
+    rc = 0;
   }
   printResults (&testsuite, &testsuite.gresults);
   fprintf (stdout, "%s %s tests: %d failed: %d\n",
@@ -192,7 +202,10 @@ main (int argc, char *argv [])
 
   if (fileopFileExists ("core")) {
     fprintf (stdout, "core dumped\n");
+    rc = 1;
   }
+
+  return rc;
 }
 
 
@@ -287,8 +300,6 @@ tsProcessing (void *udata)
     if (ok == TS_OK) {
       logMsg (LOG_DBG, LOG_BASIC, "wait response ok");
       resetChkResponse (testsuite);
-      testsuite->waitresponse = false;
-      testsuite->wait = false;
     } else {
       ++testsuite->expectcount;
     }
@@ -297,9 +308,8 @@ tsProcessing (void *udata)
   if ((testsuite->waitresponse || testsuite->wait) &&
       mstimeCheck (&testsuite->responseTimeoutCheck)) {
     logMsg (LOG_DBG, LOG_BASIC, "timed out %d", testsuite->lineno);
-    testsuite->waitresponse = false;
-    testsuite->wait = false;
     ++testsuite->results.chkfail;
+    testsuite->skiptoend = true;
     tsDisplayCommandResult (testsuite, TS_CHECK_TIMEOUT);
     resetChkResponse (testsuite);
   }
@@ -466,40 +476,53 @@ tsProcessScript (testsuite_t *testsuite)
     fflush (stdout);
     ok = TS_OK;
   }
-  if (strncmp (tcmd, "resptimeout", 11) == 0) {
-    testsuite->responseTimeout = atol (tcmd + 12);
-    ok = TS_OK;
-    disp = true;
-  }
-  if (strncmp (tcmd, "msg", 3) == 0) {
-    ok = tsScriptMsg (testsuite, tcmd);
-    disp = true;
-  }
-  if (strncmp (tcmd, "get", 3) == 0) {
-    ok = tsScriptGet (testsuite, tcmd);
-    disp = true;
-  }
-  if (strncmp (tcmd, "chk", 3) == 0) {
-    ok = tsScriptChk (testsuite, tcmd);
-    disp = true;
-  }
-  if (strncmp (tcmd, "wait", 4) == 0) {
-    ok = tsScriptWait (testsuite, tcmd);
-    disp = true;
-  }
-  if (strncmp (tcmd, "mssleep", 7) == 0) {
-    ok = tsScriptSleep (testsuite, tcmd);
-    disp = true;
-  }
   if (strncmp (tcmd, "end", 3) == 0) {
     ++testsuite->results.testcount;
     printResults (testsuite, &testsuite->results);
     tallyResults (testsuite);
     clearResults (&testsuite->results);
+    resetPlayer (testsuite);
+    resetChkResponse (testsuite);
     ok = TS_OK;
+    testsuite->skiptoend = false;
   }
   if (strncmp (tcmd, "reset", 5) == 0) {
     clearResults (&testsuite->results);
+    resetPlayer (testsuite);
+    resetChkResponse (testsuite);
+    ok = TS_OK;
+    testsuite->skiptoend = false;
+  }
+
+  if (testsuite->skiptoend == false) {
+    if (strncmp (tcmd, "resptimeout", 11) == 0) {
+      testsuite->responseTimeout = atol (tcmd + 12);
+      ok = TS_OK;
+      disp = true;
+    }
+    if (strncmp (tcmd, "msg", 3) == 0) {
+      ok = tsScriptMsg (testsuite, tcmd);
+      disp = true;
+    }
+    if (strncmp (tcmd, "get", 3) == 0) {
+      ok = tsScriptGet (testsuite, tcmd);
+      disp = true;
+    }
+    if (strncmp (tcmd, "chk", 3) == 0 ||
+        strncmp (tcmd, "cgt", 3) == 0 ||
+        strncmp (tcmd, "clt", 3) == 0) {
+      ok = tsScriptChk (testsuite, tcmd);
+      disp = true;
+    }
+    if (strncmp (tcmd, "wait", 4) == 0) {
+      ok = tsScriptWait (testsuite, tcmd);
+      disp = true;
+    }
+    if (strncmp (tcmd, "mssleep", 7) == 0) {
+      ok = tsScriptSleep (testsuite, tcmd);
+      disp = true;
+    }
+  } else {
     ok = TS_OK;
   }
 
@@ -550,17 +573,21 @@ printResults (testsuite_t *testsuite, results_t *results)
 static int
 tsScriptMsg (testsuite_t *testsuite, const char *tcmd)
 {
-  tsSendMessage (testsuite, tcmd, TS_TYPE_MSG);
-  return TS_OK;
+  int   ok;
+
+  ok = tsSendMessage (testsuite, tcmd, TS_TYPE_MSG);
+  return ok;
 }
 
 static int
 tsScriptGet (testsuite_t *testsuite, const char *tcmd)
 {
+  int   ok;
+
   ++testsuite->expectcount;
   testsuite->haveresponse = false;
-  tsSendMessage (testsuite, tcmd, TS_TYPE_GET);
-  return TS_OK;
+  ok = tsSendMessage (testsuite, tcmd, TS_TYPE_GET);
+  return ok;
 }
 
 static int
@@ -569,11 +596,11 @@ tsScriptChk (testsuite_t *testsuite, const char *tcmd)
   int   ok;
 
 
-  testsuite->waitresponse = true;
   ok = tsParseExpect (testsuite, tcmd);
   if (ok != TS_OK) {
     return ok;
   }
+  testsuite->waitresponse = true;
   ++testsuite->results.chkcount;
   mstimeset (&testsuite->responseTimeoutCheck, TS_CHK_TIMEOUT);
   return TS_OK;
@@ -584,14 +611,14 @@ tsScriptWait (testsuite_t *testsuite, const char *tcmd)
 {
   int   ok;
 
-  if (testsuite->expectcount == 0 && ! testsuite->haveresponse) {
-    ++testsuite->expectcount;
-  }
-  testsuite->wait = true;
   ok = tsParseExpect (testsuite, tcmd);
   if (ok != TS_OK) {
     return ok;
   }
+  if (testsuite->expectcount == 0 && ! testsuite->haveresponse) {
+    ++testsuite->expectcount;
+  }
+  testsuite->wait = true;
   ++testsuite->results.chkcount;
   mstimeset (&testsuite->waitCheck, 100);
   mstimeset (&testsuite->responseTimeoutCheck, testsuite->responseTimeout);
@@ -608,6 +635,9 @@ tsScriptSleep (testsuite_t *testsuite, const char *tcmd)
   tstr = strdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
   p = strtok_r (NULL, " ", &tokstr);
+  if (p == NULL) {
+    return TS_BAD_COMMAND;
+  }
   mssleep (atol (p));
   free (tstr);
   return TS_OK;
@@ -627,6 +657,13 @@ tsParseExpect (testsuite_t *testsuite, const char *tcmd)
 
   tstr = strdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
+  if (strcmp (p, "cgt") == 0) {
+    testsuite->greaterthan = true;
+  }
+  if (strcmp (p, "clt") == 0) {
+    testsuite->lessthan = true;
+  }
+
   p = strtok_r (NULL, " ", &tokstr);
   while (p != NULL) {
     char    *a;
@@ -657,8 +694,34 @@ tsScriptChkResponse (testsuite_t *testsuite)
     val = slistGetStr (testsuite->chkexpect, key);
     valchk = slistGetStr (testsuite->chkresponse, key);
     logMsg (LOG_DBG, LOG_BASIC, "exp-resp: %s %s %s", key, val, valchk);
-    if (valchk != NULL && strcmp (val, valchk) == 0) {
+    if (testsuite->lessthan) {
+      long  a, b;
+
+      a = atol (valchk);
+      b = atol (val);
+      if (a < b) {
+        ++countok;
+      } else {
+        fprintf (stdout, "             clt-fail: %ld < %ld\n", a, b);
+      }
+    }
+    if (testsuite->greaterthan) {
+      long  a, b;
+
+      a = atol (valchk);
+      b = atol (val);
+      if (a > b) {
+        ++countok;
+      } else {
+        fprintf (stdout, "             cgt-fail: %ld > %ld\n", a, b);
+      }
+    }
+    if (! testsuite->lessthan && ! testsuite->greaterthan &&
+        valchk != NULL && strcmp (val, valchk) == 0) {
       ++countok;
+    } else if (testsuite->waitresponse &&
+        ! testsuite->lessthan && ! testsuite->greaterthan) {
+      fprintf (stdout, "             chk-fail: %s != %s\n", val, valchk);
     }
     ++count;
   }
@@ -667,9 +730,6 @@ tsScriptChkResponse (testsuite_t *testsuite)
     rc = TS_OK;
   }
 
-  testsuite->waitresponse = false;
-  testsuite->expectcount = 0;
-  testsuite->haveresponse = false;
   return rc;
 }
 
@@ -800,7 +860,7 @@ tsDisplayCommandResult (testsuite_t *testsuite, ts_return_t ok)
     }
   }
   if (ok != TS_OK) {
-    fprintf (stdout, "       %s\n", tmsg);
+    fprintf (stdout, "          %s\n", tmsg);
     fflush (stdout);
   }
 }
@@ -813,6 +873,18 @@ resetChkResponse (testsuite_t *testsuite)
   }
   testsuite->chkresponse = slistAlloc ("ts-chk-response", LIST_ORDERED, free);
   testsuite->haveresponse = false;
+  testsuite->lessthan = false;
+  testsuite->greaterthan = false;
+  testsuite->waitresponse = false;
+  testsuite->wait = false;
+  testsuite->expectcount = 0;
+}
+
+static void
+resetPlayer (testsuite_t *testsuite)
+{
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "0");
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
 }
 
 
