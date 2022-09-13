@@ -1,34 +1,45 @@
 # 2022-9-11
 # test songs are all approximately 30 seconds long
 
+section Basic
+
+test Init
 msg main QUEUE_PLAY_ON_ADD 0
+msg main QUEUE_SWITCH_EMPTY 0
+msg main MUSICQ_SET_MANAGE 0
+msg main MUSICQ_SET_PLAYBACK 0
+reset
 
-name Player-Basic-Insert-Play
-msg main MUSICQ_INSERT 99 001-waltz.mp3
-chk main CHK_MUSICQ len 1
+test Insert-Play
+chk main CHK_MAIN_MUSICQ plen 0
+msg main MUSICQ_INSERT 0~99~0
+chk main CHK_MAIN_MUSICQ plen 1
 msg main CMD_PLAY
 mssleep 500
-chk player CHK_PLAY_STATUS playstate playing title 001-waltz.mp3
-mssleep 10000
-chk player CHK_PLAY_STATUS playstate playing title 001-waltz.mp3
-waitchk player CHK_PLAY_STATUS playstate stopped
-chk main CHK_MUSICQ len 0
+chk player CHK_PLAYER_STATUS playstate playing
+mssleep 2000
+chk player CHK_PLAYER_STATUS playstate playing
+resptimeout 35000
+wait player CHK_PLAYER_STATUS playstate stopped
+chk main CHK_MAIN_MUSICQ plen 0
 end
 
-name Player-Basic-Insert-Play-2
-msg main MUSICQ_INSERT 99 001-waltz.mp3
-chk main CHK_MUSICQ len 1
+test Insert-Play-2
+chk main CHK_MAIN_MUSICQ plen 0
+msg main MUSICQ_INSERT 0~99~1
+chk main CHK_MAIN_MUSICQ plen 1
 msg main CMD_PLAY
 mssleep 500
-chk player CHK_PLAY_STATUS playstate playing title 001-waltz.mp3
-mssleep 10000
-msg main MUSICQ_INSERT 99 002-foxtrot.mp3
-chk main CHK_MUSICQ len 2
-chk player CHK_PLAY_STATUS playstate playing title 001-waltz.mp3
-waitchk player CHK_PLAY_STATUS playstate stopped
-waitchk player CHK_PLAY_STATUS playstate playing title 002-foxtrot.mp3
-chk main CHK_MUSICQ len 1
-waitchk player CHK_PLAY_STATUS playstate stopped
-chk main CHK_MUSICQ len 0
+chk player CHK_PLAYER_STATUS playstate playing
+mssleep 2000
+msg main MUSICQ_INSERT 0~99~2
+chk main CHK_MAIN_MUSICQ plen 2
+chk player CHK_PLAYER_STATUS playstate playing
+resptimeout 35000
+wait player CHK_PLAYER_STATUS playstate in-fadeout
+wait player CHK_PLAYER_STATUS playstate in-gap
+wait player CHK_PLAYER_STATUS playstate playing
+chk main CHK_MAIN_MUSICQ plen 1
+wait player CHK_PLAYER_STATUS playstate stopped
+chk main CHK_MAIN_MUSICQ plen 0
 end
-

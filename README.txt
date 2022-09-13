@@ -11,7 +11,7 @@ Contents
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 20220910
+Alpha Release: 202209??
 
   Alpha releases are mostly untested works in progress.
 
@@ -32,7 +32,6 @@ Release Notes:
     - iTunes:
       - Database Update: Update from iTunes data.
       - Song List Editor: Import from iTunes.
-    - Automatic/Sequenced Playlists: Same-song mark handling.
     - Song List Editor:
       - Batch editing.
       - Export for BDJ/Import from BDJ.

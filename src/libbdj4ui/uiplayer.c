@@ -19,6 +19,7 @@
 #include "log.h"
 #include "musicdb.h"
 #include "pathbld.h"
+#include "player.h"
 #include "progstate.h"
 #include "song.h"
 #include "tagdef.h"

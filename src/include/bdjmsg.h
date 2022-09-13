@@ -148,6 +148,11 @@ typedef enum {
   MSG_BPM_TIMESIG,          // args: bpm/mpm time-signature(mpm)
   MSG_BPM_SET,              // args: bpm
 
+  /* test-suite */
+  MSG_CHK_MAIN_MUSICQ,
+  MSG_CHK_MAIN_STATUS,
+  MSG_CHK_PLAYER_STATUS,
+
   /* when a new message is added, update: */
   /* bdjmsg.c: debugging information for the msg */
   MSG_MAX,

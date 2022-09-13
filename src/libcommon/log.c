@@ -26,17 +26,18 @@
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
+#include "player.h"
 #include "bdjstring.h"
 
-/* for debugging */
-static char *playerstatetxt [PL_STATE_MAX] = {
-  [PL_STATE_UNKNOWN] = "pl-unknown",
-  [PL_STATE_STOPPED] = "pl-stopped",
-  [PL_STATE_LOADING] = "pl-loading",
-  [PL_STATE_PLAYING] = "pl-playing",
-  [PL_STATE_PAUSED] = "pl-paused",
-  [PL_STATE_IN_FADEOUT] = "pl-in-fadeout",
-  [PL_STATE_IN_GAP] = "pl-in-gap",
+/* for debugging and for test suite */
+char *playerstateTxt [PL_STATE_MAX] = {
+  [PL_STATE_UNKNOWN] = "unknown",
+  [PL_STATE_STOPPED] = "stopped",
+  [PL_STATE_LOADING] = "loading",
+  [PL_STATE_PLAYING] = "playing",
+  [PL_STATE_PAUSED] = "paused",
+  [PL_STATE_IN_FADEOUT] = "in-fadeout",
+  [PL_STATE_IN_GAP] = "in-gap",
 };
 
 static void rlogStart (const char *processnm, const char *processtag, int truncflag, loglevel_t level);
@@ -209,7 +210,7 @@ logCheck (logidx_t idx, loglevel_t level)
 inline char *
 plstateDebugText (playerstate_t plstate)
 {
-  return playerstatetxt [plstate];
+  return playerstateTxt [plstate];
 }
 
 enum {

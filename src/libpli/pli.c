@@ -14,6 +14,17 @@
 #include "sysvars.h"
 #include "volsink.h"
 
+char *plistateTxt [PLI_STATE_MAX] = {
+  [PLI_STATE_NONE] = "none",
+  [PLI_STATE_OPENING] = "opening",
+  [PLI_STATE_BUFFERING] = "buffering",
+  [PLI_STATE_PLAYING] = "playing",
+  [PLI_STATE_PAUSED] = "paused",
+  [PLI_STATE_STOPPED] = "stopped",
+  [PLI_STATE_ENDED] = "ended",
+  [PLI_STATE_ERROR] = "error",
+};
+
 pli_t *
 pliInit (const char *volpkg, const char *sinkname)
 {

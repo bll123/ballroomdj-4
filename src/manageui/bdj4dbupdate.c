@@ -314,6 +314,7 @@ dbupdateProcessing (void *udata)
     if (gKillReceived) {
       progstateShutdownProcess (dbupdate->progstate);
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+      gKillReceived = 0;
     }
     return stop;
   }
@@ -564,6 +565,7 @@ dbupdateProcessing (void *udata)
   if (gKillReceived) {
     progstateShutdownProcess (dbupdate->progstate);
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    gKillReceived = 0;
   }
   return stop;
 }

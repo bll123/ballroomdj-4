@@ -35,6 +35,7 @@
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
+#include "player.h"
 #include "pli.h"
 #include "progstate.h"
 #include "queue.h"
@@ -80,7 +81,7 @@ typedef struct {
   int             originalSystemVolume;
   int             realVolume;     // the real volume that is set (+voladjperc).
   int             currentVolume;  // current volume settings, no adjustments.
-  ssize_t         currentSpeed;
+  int             currentSpeed;
   char            *defaultSink;
   char            *currentSink;
   mstime_t        statusCheck;
@@ -156,6 +157,7 @@ static void     playerSendStatus (playerdata_t *playerData);
 static int      playerLimitVolume (int vol);
 static ssize_t  playerCalcPlayedTime (playerdata_t *playerData);
 static void     playerSetDefaultVolume (playerdata_t *playerData);
+static void     playerChkPlayerStatus (playerdata_t *playerData, int routefrom);
 
 static int  gKillReceived = 0;
 
@@ -425,7 +427,8 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerSendPauseAtEndState (playerData);
           playerSetPlayerState (playerData, PL_STATE_STOPPED);
           logMsg (LOG_DBG, LOG_BASIC, "pl-state: (msg-req) %d/%s",
-              playerData->playerState, plstateDebugText (playerData->playerState));
+              playerData->playerState,
+              plstateDebugText (playerData->playerState));
           break;
         }
         case MSG_PLAY_SONG_BEGIN: {
@@ -448,6 +451,10 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MAIN_READY: {
           mstimeset (&playerData->statusCheck, 0);
+          break;
+        }
+        case MSG_CHK_PLAYER_STATUS: {
+          playerChkPlayerStatus (playerData, routefrom);
           break;
         }
         default: {
@@ -1573,7 +1580,7 @@ playerSendStatus (playerdata_t *playerData)
 
   tm = playerCalcPlayedTime (playerData);
 
-  snprintf (rbuff, sizeof (rbuff), "%s%c%d%c%d%c%d%c%zd%c%zd%c%zd",
+  snprintf (rbuff, sizeof (rbuff), "%s%c%d%c%d%c%d%c%d%c%zd%c%zd",
       playstate, MSG_ARGS_RS,
       playerData->repeat, MSG_ARGS_RS,
       playerData->pauseAtEnd, MSG_ARGS_RS,
@@ -1643,4 +1650,31 @@ playerSetDefaultVolume (playerdata_t *playerData)
 
   volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
   logMsg (LOG_DBG, LOG_MAIN, "set volume: %d", playerData->realVolume);
+}
+
+static void
+playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
+{
+  char  tmp [200];
+
+  snprintf (tmp, sizeof (tmp),
+      "playstate%c%s%c"
+      "plistate%c%s%c"
+      "currvolume%c%d%c"
+      "realvolume%c%d%c"
+      "speed%c%d%c"
+      "playTimePlayed%c%ld%c"
+      "pauseatend%c%d%c"
+      "repeat%c%d%c"
+      "sink%c%s",
+      MSG_ARGS_RS, plstateDebugText (playerData->playerState), MSG_ARGS_RS,
+      MSG_ARGS_RS, plistateTxt [pliState (playerData->pli)], MSG_ARGS_RS,
+      MSG_ARGS_RS, playerData->currentVolume, MSG_ARGS_RS,
+      MSG_ARGS_RS, playerData->realVolume, MSG_ARGS_RS,
+      MSG_ARGS_RS, playerData->currentSpeed, MSG_ARGS_RS,
+      MSG_ARGS_RS, playerData->playTimePlayed, MSG_ARGS_RS,
+      MSG_ARGS_RS, playerData->pauseAtEnd, MSG_ARGS_RS,
+      MSG_ARGS_RS, playerData->repeat, MSG_ARGS_RS,
+      MSG_ARGS_RS, playerData->currentSink);
+  connSendMessage (playerData->conn, routefrom, MSG_CHK_PLAYER_STATUS, tmp);
 }

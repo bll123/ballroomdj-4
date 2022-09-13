@@ -7,6 +7,7 @@
 
 #include "bdj4.h"
 #include "fileutil.h"
+#include "player.h"
 
 /*
  * log tags:
@@ -89,6 +90,9 @@ typedef struct {
 enum {
   LOG_MAX_BUFF    = 1024,
 };
+
+/* exists in log.c so that bdj4main and bdj4player and testsuite can access it */
+extern char *playerstateTxt [PL_STATE_MAX]; // for debugging and test suite
 
 #define logProcBegin(lvl,tag)   rlogProcBegin (lvl, tag, __FILE__, __LINE__)
 #define logProcEnd(lvl,tag,suffix)  rlogProcEnd (lvl, tag, suffix, __FILE__, __LINE__)

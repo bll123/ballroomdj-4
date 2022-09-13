@@ -35,6 +35,7 @@
 #include "ossignal.h"
 #include "osutils.h"
 #include "pathbld.h"
+#include "player.h"
 #include "playlist.h"
 #include "procutil.h"
 #include "progstate.h"
@@ -156,6 +157,7 @@ static void mainMusicQueueMix (maindata_t *mainData, char *args);
 static void mainPlaybackFinishProcess (maindata_t *mainData, const char *args);
 static void mainPlaybackSendSongFinish (maindata_t *mainData, const char *args);
 static void mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom);
+static void mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom);
 
 static long globalCounter = 0;
 static int  gKillReceived = 0;
@@ -590,6 +592,15 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_CHK_MAIN_MUSICQ: {
+          mainChkMusicq (mainData, routefrom);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_CHK_MAIN_STATUS: {
+          dbgdisp = true;
+          break;
+        }
         default: {
           break;
         }
@@ -602,7 +613,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   }
 
   if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+    logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
@@ -819,8 +830,13 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
       connHaveHandshake (mainData->conn, ROUTE_MANAGEUI)) {
     ++conn;
   }
+  if (connHaveHandshake (mainData->conn, ROUTE_TEST_SUITE)) {
+    /* no connection to starterui or playerui/manageui */
+    conn += 2;
+  }
   /* main must have a connection to the player, starterui, and */
   /* one of manageui and playerui */
+  /* alternatively, a connection to the player and the testsuite */
   if (conn == 3) {
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_MAIN_READY, NULL);
     rc = STATE_FINISHED;
@@ -2566,3 +2582,17 @@ mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom)
   snprintf (tmp, sizeof (tmp), "%d", mainData->playerState);
   connSendMessage (mainData->conn, routefrom, MSG_PLAYER_STATE, tmp);
 }
+
+static void
+mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
+{
+  char  tmp [200];
+
+  snprintf (tmp, sizeof (tmp), "manage%c%d%cplay%c%d%cmlen%c%ld%cplen%c%ld",
+      MSG_ARGS_RS, mainData->musicqManageIdx, MSG_ARGS_RS,
+      MSG_ARGS_RS, mainData->musicqPlayIdx, MSG_ARGS_RS,
+      MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx), MSG_ARGS_RS,
+      MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx));
+  connSendMessage (mainData->conn, routefrom, MSG_CHK_MAIN_MUSICQ, tmp);
+}
+

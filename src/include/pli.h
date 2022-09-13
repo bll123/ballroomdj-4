@@ -19,7 +19,10 @@ typedef enum {
   PLI_STATE_STOPPED,
   PLI_STATE_ENDED,
   PLI_STATE_ERROR,
+  PLI_STATE_MAX,
 } plistate_t;
+
+extern char *plistateTxt [PLI_STATE_MAX];  // for testing
 
 typedef struct {
   char              *name;

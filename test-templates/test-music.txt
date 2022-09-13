@@ -8,7 +8,7 @@
 version
 ..1
 count
-..122
+..123
 
 # standard dances
 
@@ -1899,7 +1899,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 flac
 STATUS
 ..New
 DANCELEVEL
@@ -1931,7 +1931,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
-..tag4 TAG5
+..tag4 TAG5 flac
 STATUS
 ..Complete
 DANCELEVEL
@@ -1963,7 +1963,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag6 tag7
+..tag6 tag7 flac
 STATUS
 ..Edit
 DANCELEVEL
@@ -1996,7 +1996,7 @@ SOURCE
 DURATION
 ..30450
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 m4a
 STATUS
 ..New
 DANCELEVEL
@@ -2026,7 +2026,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag4 TAG5
+..tag4 TAG5 m4a
 STATUS
 ..Complete
 DANCELEVEL
@@ -2056,7 +2056,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
-..tag6 tag7
+..tag6 tag7 m4a
 STATUS
 ..Complete
 DANCELEVEL
@@ -2089,7 +2089,7 @@ SOURCE
 DURATION
 ..30420
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 opus
 STATUS
 ..New
 DANCELEVEL
@@ -2121,7 +2121,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag4 TAG5
+..tag4 TAG5 opus
 STATUS
 ..Complete
 DANCELEVEL
@@ -2153,7 +2153,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
-..tag6 tag7
+..tag6 tag7 opus
 STATUS
 ..Complete
 DANCELEVEL
@@ -2373,7 +2373,7 @@ NOTES
 BPM
 ..84
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 bpm
 STATUS
 ..New
 DANCELEVEL
@@ -2413,7 +2413,7 @@ NOTES
 BPM
 ..87
 TAGS
-..tag4 TAG5
+..tag4 TAG5 bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -2453,7 +2453,7 @@ NOTES
 BPM
 ..84
 TAGS
-..tag6 tag7
+..tag6 tag7 bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -2491,7 +2491,7 @@ DURATION
 BPM
 ..84
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 bpm
 STATUS
 ..New
 DANCELEVEL
@@ -2529,7 +2529,7 @@ NOTES
 BPM
 ..87
 TAGS
-..tag4 TAG5
+..tag4 TAG5 bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -2569,7 +2569,7 @@ NOTES
 BPM
 ..84
 TAGS
-..tag6 tag7
+..tag6 tag7 bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -2612,7 +2612,7 @@ NOTES
 BPM
 ..84
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 flac bpm
 STATUS
 ..New
 DANCELEVEL
@@ -2644,7 +2644,7 @@ DURATION
 BPM
 ..87
 TAGS
-..tag4 TAG5
+..tag4 TAG5 flac bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -2678,7 +2678,7 @@ NOTES
 BPM
 ..84
 TAGS
-..tag6 tag7
+..tag6 tag7 flac bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -2713,7 +2713,7 @@ NOTES
 BPM
 ..84
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 m4a bpm
 STATUS
 ..New
 DANCELEVEL
@@ -2745,7 +2745,7 @@ NOTES
 BPM
 ..87
 TAGS
-..tag4 TAG5
+..tag4 TAG5 m4a bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -2777,7 +2777,7 @@ DURATION
 BPM
 ..84
 TAGS
-..tag6 tag7
+..tag6 tag7 m4a bpm
 STATUS
 ..Edit
 DANCELEVEL
@@ -2814,7 +2814,7 @@ NOTES
 BPM
 ..84
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 opus bpm
 STATUS
 ..New
 DANCELEVEL
@@ -2848,7 +2848,7 @@ NOTES
 BPM
 ..87
 TAGS
-..tag4 TAG5
+..tag4 TAG5 opus bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -2878,7 +2878,7 @@ DURATION
 BPM
 ..84
 TAGS
-..tag6 tag7
+..tag6 tag7 opus bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -3094,7 +3094,6 @@ TITLE
 ..%03d-westcoastswing
 
 # various international names
-# utf8 for searching/sorting
 
 KEY
 ..96
@@ -3107,7 +3106,7 @@ NOTES
 BPM
 ..84
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 utf8 bpm
 STATUS
 ..New
 DANCELEVEL
@@ -3141,7 +3140,7 @@ DURATION
 BPM
 ..87
 TAGS
-..tag4 TAG5
+..tag4 TAG5 utf8 bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -3177,7 +3176,7 @@ NOTES
 BPM
 ..84
 TAGS
-..tag6 tag7
+..tag6 tag7 utf8 bpm
 STATUS
 ..Edit
 DANCELEVEL
@@ -3209,7 +3208,7 @@ NOTES
 BPM
 ..84
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 utf8 bpm
 STATUS
 ..New
 DANCELEVEL
@@ -3237,111 +3236,11 @@ SOURCE
 DURATION
 ..31150
 NOTES
-..notes5 notes6  ÄääääÄÄÄ
-BPM
-..87
-TAGS
-..tag4 TAG5
-STATUS
-..Complete
-DANCELEVEL
-..Normal
-GENRE
-..Jazz
-ALBUMARTIST
-..%03d-utf8-albartist
-ARTIST
-..%03d-utf8-artist
-ALBUM
-..%03d-album
-TRACKNUMBER
-..%d
-DANCE
-..Waltz
-DANCERATING
-..Great
-FAVORITE
-..redstar
-TITLE
-..%03d-ÄÄÄÄ
-KEY
-..101
-SOURCE
-..waltz.mp3
-DURATION
-..31150
-BPM
-..84
-TAGS
-..tag6 tag7
-STATUS
-..Complete
-DANCELEVEL
-..Advanced
-GENRE
-..Rock
-ALBUMARTIST
-..%03d-utf8-albartist
-ARTIST
-..%03d-utf8-artist
-ALBUM
-..%03d-album
-TRACKNUMBER
-..%d
-DANCE
-..Waltz
-DANCERATING
-..Great
-FAVORITE
-..bluestar
-TITLE
-..%03d-ÖÖÖÖ
-KEY
-..102
-SOURCE
-..waltz.mp3
-DURATION
-..31150
-NOTES
-..notes1 notes2 ÄÄÄÄääää
-BPM
-..84
-TAGS
-..tag1 tag2 tag3
-STATUS
-..New
-DANCELEVEL
-..Easy
-GENRE
-..Jazz
-ALBUMARTIST
-..%03d-utf8-albartist
-ARTIST
-..%03d-utf8-artist
-ALBUM
-..%03d-album
-TRACKNUMBER
-..%d
-DANCE
-..Waltz
-DANCERATING
-..Great
-FAVORITE
-..purplestar
-TITLE
-..%03d-ZZZZ
-KEY
-..103
-SOURCE
-..waltz.mp3
-DURATION
-..31150
-NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
 ..87
 TAGS
-..tag4 TAG5
+..tag4 TAG5 spaces utf8 bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -3363,6 +3262,105 @@ DANCERATING
 TITLE
 ..%03d-medium – dash
 
+# utf8 sort check
+
+KEY
+..101
+SOURCE
+..rumba.mp3
+DURATION
+..30950
+NOTES
+..notes1 notes2 ÄÄÄÄääää
+TAGS
+..tag1 tag2 tag3 utf8 sort
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Jazz
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Rumba
+DANCERATING
+..Great
+FAVORITE
+..purplestar
+TITLE
+..900-ZZZZ
+KEY
+..102
+SOURCE
+..waltz.mp3
+DURATION
+..31150
+NOTES
+..notes5 notes6  ÄääääÄÄÄ
+BPM
+..87
+TAGS
+..tag4 TAG5 utf8 sort bpm
+STATUS
+..Complete
+DANCELEVEL
+..Normal
+GENRE
+..Jazz
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+FAVORITE
+..redstar
+TITLE
+..900-ÄÄÄÄ
+KEY
+..103
+SOURCE
+..tango.mp3
+DURATION
+..30420
+TAGS
+..tag6 tag7 utf8 sort
+STATUS
+..Complete
+DANCELEVEL
+..Advanced
+GENRE
+..Rock
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Tango
+DANCERATING
+..Great
+FAVORITE
+..bluestar
+TITLE
+..900-ÖÖÖÖ
+
 # keywords
 
 KEY
@@ -3378,7 +3376,7 @@ BPM
 KEYWORD
 ..aaa
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 kw bpm
 STATUS
 ..New
 DANCELEVEL
@@ -3410,7 +3408,7 @@ BPM
 KEYWORD
 ..aaa
 TAGS
-..tag4 TAG5
+..tag4 TAG5 kw bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -3446,7 +3444,7 @@ BPM
 KEYWORD
 ..aaa
 TAGS
-..tag6 tag7
+..tag6 tag7 kw bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -3479,8 +3477,10 @@ NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 BPM
 ..84
+KEYWORD
+..bbb
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 kw bpm
 STATUS
 ..New
 DANCELEVEL
@@ -3516,7 +3516,7 @@ BPM
 KEYWORD
 ..bbb
 TAGS
-..tag4 TAG5
+..tag4 TAG5 kw bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -3548,7 +3548,7 @@ BPM
 KEYWORD
 ..bbb
 TAGS
-..tag6 tag7
+..tag6 tag7 kw bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -3580,7 +3580,7 @@ NOTES
 KEYWORD
 ..aaa
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 kw
 STATUS
 ..New
 DANCELEVEL
@@ -3614,7 +3614,7 @@ NOTES
 KEYWORD
 ..aaa
 TAGS
-..tag4 TAG5
+..tag4 TAG5 kw
 STATUS
 ..Complete
 DANCELEVEL
@@ -3648,7 +3648,7 @@ NOTES
 KEYWORD
 ..aaa
 TAGS
-..tag6 tag7
+..tag6 tag7 kw
 STATUS
 ..Edit
 DANCELEVEL
@@ -3680,7 +3680,7 @@ DURATION
 KEYWORD
 ..bbb
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 kw
 STATUS
 ..New
 DANCELEVEL
@@ -3712,7 +3712,7 @@ NOTES
 KEYWORD
 ..bbb
 TAGS
-..tag4 TAG5
+..tag4 TAG5 kw
 STATUS
 ..Complete
 DANCELEVEL
@@ -3744,7 +3744,7 @@ NOTES
 KEYWORD
 ..bbb
 TAGS
-..tag6 tag7
+..tag6 tag7 kw
 STATUS
 ..Complete
 DANCELEVEL
@@ -3779,7 +3779,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 ogg
 STATUS
 ..New
 DANCELEVEL
@@ -3811,7 +3811,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
-..tag4 TAG5
+..tag4 TAG5 ogg
 STATUS
 ..Complete
 DANCELEVEL
@@ -3843,7 +3843,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag6 tag7
+..tag6 tag7 ogg
 STATUS
 ..Complete
 DANCELEVEL
@@ -3875,7 +3875,7 @@ NOTES
 BPM
 ..84
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 ogg bpm
 STATUS
 ..New
 DANCELEVEL
@@ -3907,7 +3907,7 @@ NOTES
 BPM
 ..87
 TAGS
-..tag4 TAG5
+..tag4 TAG5 ogg bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -3939,7 +3939,7 @@ DURATION
 BPM
 ..84
 TAGS
-..tag6 tag7
+..tag6 tag7 ogg bpm
 STATUS
 ..Complete
 DANCELEVEL
@@ -3962,4 +3962,39 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-waltz-ogg
+
+# other filenames
+
+KEY
+..122
+SOURCE
+..waltz.mp3
+DURATION
+..31150
+NOTES
+..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
+BPM
+..87
+TAGS
+..tag4 TAG5 spaces bpm
+STATUS
+..Complete
+DANCELEVEL
+..Normal
+GENRE
+..Rock
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+TITLE
+..%03d-name with space
 

@@ -21,7 +21,7 @@ fi
 if [[ test-templates/test-music.txt -nt test-templates/musicdb.dat ||
     test-templates/test-music.txt -nt data/mktestdb.txt ||
     ! -f test-music/001-argentinetango.mp3 ]]; then
-  rm -f test-music/0[0-9][0-9]*
+  rm -f test-music/0[0-9][0-9]-*
   ./bin/bdj4 --tmusicsetup
   touch data/mktestdb.txt
 fi

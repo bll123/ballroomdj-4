@@ -133,10 +133,7 @@ main (int argc, char *argv[])
   progstateSetCallback (dbtag.progstate, STATE_CLOSING,
       dbtagClosingCallback, &dbtag);
 
-  for (bdjmsgroute_t i = ROUTE_NONE; i < ROUTE_MAX; ++i) {
-    dbtag.processes [i] = NULL;
-  }
-
+  procutilInitProcesses (dbtag.processes);
   dbtag.conn = connInit (ROUTE_DBTAG);
 
   listenPort = bdjvarsGetNum (BDJVL_DBTAG_PORT);
@@ -219,6 +216,7 @@ dbtagProcessing (void *udata)
     if (gKillReceived) {
       progstateShutdownProcess (dbtag->progstate);
       logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+      gKillReceived = 0;
     }
     return stop;
   }
@@ -300,6 +298,7 @@ dbtagProcessing (void *udata)
   if (gKillReceived) {
     progstateShutdownProcess (dbtag->progstate);
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
+    gKillReceived = 0;
   }
   return stop;
 }

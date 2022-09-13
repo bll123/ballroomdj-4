@@ -54,6 +54,9 @@ cp -f test-templates/ds-songfilter.txt data/profile00
 cwd=$(pwd)
 
 ed data/profile00/bdjconfig.txt << _HERE_ > /dev/null
+/^DEFAULTVOLUME/
++1
+s,.*,..20,
 /^HIDEMARQUEEONSTART/
 +1
 s,.*,..on,
@@ -68,6 +71,14 @@ ed data/${hostname}/bdjconfig.txt << _HERE_ > /dev/null
 /^DIRMUSIC/
 +1
 s,.*,..${cwd}/test-music,
+w
+q
+_HERE_
+
+ed data/bdjconfig.txt << _HERE_ > /dev/null
+/^DEBUGLVL/
++1
+s,.*,..31,
 w
 q
 _HERE_
