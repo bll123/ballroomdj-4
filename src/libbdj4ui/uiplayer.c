@@ -592,13 +592,17 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
   logProcBegin (LOG_PROC, "uiplayerProcessPlayerState");
 
   uiplayer->playerState = playerState;
+  if (playerState == PL_STATE_IN_FADEOUT ||
+      playerState == PL_STATE_PAUSED) {
+    uiWidgetDisable (&uiplayer->seekScale);
+  } else {
+    uiWidgetEnable (&uiplayer->seekScale);
+  }
   if (playerState == PL_STATE_IN_FADEOUT) {
     uiWidgetDisable (&uiplayer->volumeScale);
-    uiWidgetDisable (&uiplayer->seekScale);
     uiWidgetDisable (&uiplayer->speedScale);
   } else {
     uiWidgetEnable (&uiplayer->volumeScale);
-    uiWidgetEnable (&uiplayer->seekScale);
     uiWidgetEnable (&uiplayer->speedScale);
   }
 

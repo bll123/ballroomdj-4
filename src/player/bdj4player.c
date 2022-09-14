@@ -1596,9 +1596,8 @@ playerCalcPlayedTime (playerdata_t *playerData)
   ssize_t   tm;
 
   tm = 0;
-  if (playerData->playerState == PL_STATE_PAUSED) {
-    tm = playerData->playTimePlayed;
-  } else if (playerData->playerState == PL_STATE_PLAYING ||
+  if (playerData->playerState == PL_STATE_PAUSED ||
+      playerData->playerState == PL_STATE_PLAYING ||
       playerData->playerState == PL_STATE_IN_FADEOUT) {
     tm = playerData->playTimePlayed + mstimeend (&playerData->playTimeStart);
   } else {
