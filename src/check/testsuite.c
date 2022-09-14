@@ -81,6 +81,7 @@ typedef struct {
   bool        lessthan : 1;
   bool        runsection : 1;
   bool        endnextsection : 1;
+  bool        priorruntest : 1;
   bool        runtest : 1;
   bool        endnexttest : 1;
   bool        skiptoend : 1;
@@ -110,6 +111,7 @@ static int  tsScriptGet (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptChk (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptWait (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptSleep (testsuite_t *testsuite, const char *tcmd);
+static int  tsScriptDisp (testsuite_t *testsuite, const char *tcmd);
 static int  tsParseExpect (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptChkResponse (testsuite_t *testsuite);
 static int  tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type);
@@ -129,6 +131,9 @@ main (int argc, char *argv [])
   int         rc;
 
   osSetStandardSignals (tsSigHandler);
+#if _define_SIGCHLD
+  osDefaultSignal (SIGCHLD);
+#endif
   osCatchSignal (tsSigHandler, SIGINT);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
@@ -161,6 +166,7 @@ main (int argc, char *argv [])
   strlcpy (testsuite.testname, "Init", sizeof (testsuite.testname));
   testsuite.runsection = false;
   testsuite.endnextsection = false;
+  testsuite.priorruntest = false;
   testsuite.runtest = false;
   testsuite.endnexttest = false;
 
@@ -217,12 +223,14 @@ main (int argc, char *argv [])
   fprintf (stdout, "%s %s tests: %d failed: %d\n",
       state, testsuite.sectionname,
       testsuite.gresults.testcount, testsuite.gresults.testfail);
+  fflush (stdout);
 
   progstateFree (testsuite.progstate);
   logEnd ();
 
   if (fileopFileExists ("core")) {
     fprintf (stdout, "core dumped\n");
+    fflush (stdout);
     rc = 1;
   }
 
@@ -484,8 +492,22 @@ tsProcessScript (testsuite_t *testsuite)
   logMsg (LOG_DBG, LOG_BASIC, "-- cmd: %3d %s", testsuite->lineno, tcmd);
   if (strncmp (tcmd, "section", 7) == 0) {
     if (testsuite->endnextsection) {
-      /* done */
-      return true;
+      if (strcmp (testsuite->sectionnum, "0") == 0) {
+        if (testsuite->priorruntest) {
+          /* continue on and look for the test to run */
+          testsuite->priorruntest = false;
+          testsuite->runtest = true;
+          testsuite->endnextsection = false;
+          testsuite->runsection = false;
+        } else {
+          /* continue on and look for the section to run */
+          testsuite->endnextsection = false;
+          testsuite->runsection = true;
+        }
+      } else {
+        /* done */
+        return true;
+      }
     }
 
     ok = tsScriptSection (testsuite, tcmd);
@@ -555,12 +577,19 @@ tsProcessScript (testsuite_t *testsuite)
       ok = tsScriptSleep (testsuite, tcmd);
       disp = true;
     }
+    if (strncmp (tcmd, "disp", 4) == 0) {
+      ok = tsScriptDisp (testsuite, tcmd);
+      disp = true;
+    }
   } else {
     ok = TS_OK;
   }
 
   if (disp) {
-    fprintf (stdout, "   %3d %s\n", testsuite->lineno, tcmd);
+    char  ttm [40];
+
+    tmutilTstamp (ttm, sizeof (ttm));
+    fprintf (stdout, "   %3d %s %s\n", testsuite->lineno, ttm, tcmd);
     fflush (stdout);
   }
   tsDisplayCommandResult (testsuite, ok);
@@ -626,6 +655,16 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
 
   clearResults (&testsuite->results);
 
+  if (testsuite->runsection || testsuite->runtest) {
+    /* always run section 0 */
+    if (strcmp (testsuite->sectionnum, "0") == 0) {
+      testsuite->runsection = false;
+      testsuite->priorruntest = testsuite->runtest;
+      testsuite->runtest = false;
+      testsuite->endnextsection = true;
+    }
+  }
+
   if (testsuite->runsection) {
     if (strcmp (testsuite->sectionnum, bdjvarsGetStr (BDJV_TS_SECTION)) == 0) {
       testsuite->runsection = false;
@@ -638,6 +677,7 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
     fflush (stdout);
   }
 
+  free (tstr);
   return TS_OK;
 }
 
@@ -678,6 +718,7 @@ tsScriptTest (testsuite_t *testsuite, const char *tcmd)
     fflush (stdout);
   }
 
+  free (tstr);
   return TS_OK;
 }
 
@@ -740,9 +781,10 @@ tsScriptWait (testsuite_t *testsuite, const char *tcmd)
 static int
 tsScriptSleep (testsuite_t *testsuite, const char *tcmd)
 {
-  char  *tstr;
-  char  *p;
-  char  *tokstr;
+  char    *tstr;
+  char    *p;
+  char    *tokstr;
+  time_t  t;
 
   tstr = strdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
@@ -751,7 +793,31 @@ tsScriptSleep (testsuite_t *testsuite, const char *tcmd)
     free (tstr);
     return TS_BAD_COMMAND;
   }
-  mssleep (atol (p));
+  t = atol (p);
+  mssleep (t);
+  free (tstr);
+  return TS_OK;
+}
+
+static int
+tsScriptDisp (testsuite_t *testsuite, const char *tcmd)
+{
+  char  *valchk;
+  char  *p;
+  char  *tokstr;
+  char  *tstr;
+
+  tstr = strdup (tcmd);
+  p = strtok_r (tstr, " ", &tokstr);
+  p = strtok_r (NULL, " ", &tokstr);
+  while (p != NULL) {
+    valchk = slistGetStr (testsuite->chkresponse, p);
+    if (valchk != NULL) {
+      fprintf (stdout, "       %s %s\n", p, valchk);
+      fflush (stdout);
+    }
+    p = strtok_r (NULL, " ", &tokstr);
+  }
   free (tstr);
   return TS_OK;
 }
@@ -816,7 +882,8 @@ tsScriptChkResponse (testsuite_t *testsuite)
       if (a < b) {
         ++countok;
       } else {
-        fprintf (stdout, "             clt-fail: %ld < %ld\n", a, b);
+        fprintf (stdout, "          clt-fail: %s: %ld < %ld\n", key, a, b);
+        fflush (stdout);
       }
     }
     if (testsuite->greaterthan) {
@@ -827,7 +894,8 @@ tsScriptChkResponse (testsuite_t *testsuite)
       if (a > b) {
         ++countok;
       } else {
-        fprintf (stdout, "             cgt-fail: %ld > %ld\n", a, b);
+        fprintf (stdout, "          cgt-fail: %s: %ld > %ld\n", key, a, b);
+        fflush (stdout);
       }
     }
     if (! testsuite->lessthan && ! testsuite->greaterthan &&
@@ -835,7 +903,8 @@ tsScriptChkResponse (testsuite_t *testsuite)
       ++countok;
     } else if (testsuite->waitresponse &&
         ! testsuite->lessthan && ! testsuite->greaterthan) {
-      fprintf (stdout, "             chk-fail: %s != %s\n", val, valchk);
+      fprintf (stdout, "          chk-fail: %s: %s != %s\n", key, val, valchk);
+      fflush (stdout);
     }
     ++count;
   }

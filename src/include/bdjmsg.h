@@ -153,6 +153,7 @@ typedef enum {
   MSG_CHK_MAIN_STATUS,
   MSG_CHK_PLAYER_STATUS,
   MSG_CHK_PLAYER_SONG,
+  MSG_CHK_MAIN_RESET,
 
   /* when a new message is added, update: */
   /* bdjmsg.c: debugging information for the msg */

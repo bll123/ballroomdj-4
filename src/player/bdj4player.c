@@ -1667,7 +1667,7 @@ static void
 playerChkPlayerSong (playerdata_t *playerData, int routefrom)
 {
   prepqueue_t *pq = playerData->currentSong;
-  char        tmp [200];
+  char        tmp [2000];
   char        *sn = MSG_ARGS_EMPTY_STR;
   long        dur;
 

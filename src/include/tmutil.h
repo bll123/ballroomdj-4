@@ -14,7 +14,7 @@ typedef struct {
   struct timeval    tm;
 } mstime_t;
 
-void      mssleep (size_t);
+void      mssleep (time_t);
 time_t    mstime (void);
 time_t    mstimestartofday (void);
 void      mstimestart (mstime_t *tm);

@@ -4,10 +4,14 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 #include <locale.h>
+#if _sys_select
+# include <sys/select.h>
+#endif
 
 #include "tmutil.h"
 #include "bdjstring.h"
@@ -16,10 +20,17 @@ static char radixchar [2] = { "." };
 static bool initialized = false;
 
 void
-mssleep (size_t mt)
+mssleep (time_t mt)
 {
-  size_t t = mt * 1000;
-  usleep ((useconds_t) t);
+  struct timeval  tv;
+  int             rc;
+
+  tv.tv_sec = mt / 1000;
+  tv.tv_usec = (mt - (tv.tv_sec * 1000)) * 1000;
+  while (tv.tv_usec > 0 || tv.tv_sec > 0) {
+    /* select will replace the contents of tv with the remaining time */
+    rc = select (0, NULL, NULL, NULL, &tv);
+  }
 }
 
 time_t

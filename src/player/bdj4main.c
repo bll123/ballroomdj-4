@@ -95,6 +95,7 @@ typedef struct {
   bdjmsgroute_t     pbfinishRoute;
   int               pbfinishrcv;
   long              ploverridestoptime;
+  int               songplaysentcount;        // for testsuite
   int               musicqChanged [MUSICQ_MAX];
   bool              marqueeChanged [MUSICQ_MAX];
   bool              changeSuspend [MUSICQ_MAX];
@@ -201,6 +202,7 @@ main (int argc, char *argv[])
   mainData.pbfinishrcv = 0;
   mainData.stopwaitcount = 0;
   mainData.ploverridestoptime = 0;
+  mainData.songplaysentcount = 0;
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     mainData.playlistQueue [i] = NULL;
     mainData.musicqChanged [i] = MAIN_CHG_CLEAR;
@@ -452,8 +454,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_CMD_PLAYPAUSE: {
           if (mainData->playerState == PL_STATE_PLAYING ||
               mainData->playerState == PL_STATE_IN_FADEOUT) {
-            connSendMessage (mainData->conn, ROUTE_PLAYER,
-                MSG_PLAY_PAUSE, NULL);
+            connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_PAUSE, NULL);
           } else {
             mainMusicQueuePlay (mainData);
           }
@@ -599,6 +600,10 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CHK_MAIN_STATUS: {
           dbgdisp = true;
+          break;
+        }
+        case MSG_CHK_MAIN_RESET: {
+          mainData->songplaysentcount = 0;
           break;
         }
         default: {
@@ -1857,66 +1862,69 @@ mainMusicQueuePlay (maindata_t *mainData)
   logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
       mainData->playerState, plstateDebugText (mainData->playerState));
 
-  /* grab a song out of the music queue and start playing */
-  logMsg (LOG_DBG, LOG_MAIN, "player sent a finish; get song, start");
-  dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
-  song = dbGetByIdx (mainData->musicdb, dbidx);
-  if (song != NULL) {
-    flags = musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-    if ((flags & MUSICQ_FLAG_ANNOUNCE) == MUSICQ_FLAG_ANNOUNCE) {
-      char      *annfname;
+  if (mainData->playerState != PL_STATE_PAUSED) {
+    /* grab a song out of the music queue and start playing */
+    logMsg (LOG_DBG, LOG_MAIN, "player sent a finish; get song, start");
+    dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
+    song = dbGetByIdx (mainData->musicdb, dbidx);
+    if (song != NULL) {
+      flags = musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+      if ((flags & MUSICQ_FLAG_ANNOUNCE) == MUSICQ_FLAG_ANNOUNCE) {
+        char      *annfname;
 
-      annfname = musicqGetAnnounce (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-      if (annfname != NULL) {
-        connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, annfname);
+        annfname = musicqGetAnnounce (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+        if (annfname != NULL) {
+          connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, annfname);
+        }
       }
+      sfname = songGetStr (song, TAG_FILE);
+      connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, sfname);
+      ++mainData->songplaysentcount;
     }
-    sfname = songGetStr (song, TAG_FILE);
-    connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, sfname);
-  }
 
-  currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
-  origMusicqPlayIdx = mainData->musicqPlayIdx;
+    currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+    origMusicqPlayIdx = mainData->musicqPlayIdx;
 
-  if (song == NULL && currlen == 0) {
-    logMsg (LOG_DBG, LOG_MAIN, "no songs left in queue");
-    if (mainData->switchQueueWhenEmpty) {
-      char    tmp [40];
+    if (song == NULL && currlen == 0) {
+      logMsg (LOG_DBG, LOG_MAIN, "no songs left in queue");
+      if (mainData->switchQueueWhenEmpty) {
+        char    tmp [40];
 
-      logMsg (LOG_DBG, LOG_MAIN, "switch queues");
-      mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
-      mainData->musicqManageIdx = mainData->musicqPlayIdx;
-      currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
-
-      /* locate a queue that has songs in it */
-      while (mainData->musicqPlayIdx != origMusicqPlayIdx &&
-          currlen == 0) {
+        logMsg (LOG_DBG, LOG_MAIN, "switch queues");
         mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
         mainData->musicqManageIdx = mainData->musicqPlayIdx;
         currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
-      }
 
-      if (currlen > 0) {
-        snprintf (tmp, sizeof (tmp), "%d", mainData->musicqPlayIdx);
-        connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_QUEUE_SWITCH, tmp);
-        /* and start up playback for the new queue */
-        /* the next-song flag is always 0 here */
-        mainMusicQueueNext (mainData, "0");
-        /* since the player state is stopped, must re-start playback */
-        mainMusicQueuePlay (mainData);
+        /* locate a queue that has songs in it */
+        while (mainData->musicqPlayIdx != origMusicqPlayIdx &&
+            currlen == 0) {
+          mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
+          mainData->musicqManageIdx = mainData->musicqPlayIdx;
+          currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+        }
+
+        if (currlen > 0) {
+          snprintf (tmp, sizeof (tmp), "%d", mainData->musicqPlayIdx);
+          connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_QUEUE_SWITCH, tmp);
+          /* and start up playback for the new queue */
+          /* the next-song flag is always 0 here */
+          mainMusicQueueNext (mainData, "0");
+          /* since the player state is stopped, must re-start playback */
+          mainMusicQueuePlay (mainData);
+        } else {
+          /* there is no music to play; tell the player to clear its display */
+          logMsg (LOG_DBG, LOG_MAIN, "sqwe:true no music to play: finished <= true");
+          mainData->finished = true;
+          mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
+        }
       } else {
-        /* there is no music to play; tell the player to clear its display */
-        logMsg (LOG_DBG, LOG_MAIN, "sqwe:true no music to play: finished <= true");
+        logMsg (LOG_DBG, LOG_MAIN, "no more songs; pl-state: %d/%s; finished <= true",
+            mainData->playerState, plstateDebugText (mainData->playerState));
         mainData->finished = true;
         mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
       }
-    } else {
-      logMsg (LOG_DBG, LOG_MAIN, "no more songs; pl-state: %d/%s; finished <= true",
-          mainData->playerState, plstateDebugText (mainData->playerState));
-      mainData->finished = true;
-      mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
-    }
-  } /* if the song was null and the queue is empty */
+    } /* if the song was null and the queue is empty */
+  } /* song is not paused */
 
   /* this handles the user-selected play button when the song is paused */
   /* it no longer handles in-gap due to some changes */
@@ -2586,14 +2594,16 @@ mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom)
 static void
 mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
 {
-  char    tmp [200];
+  char    tmp [2000];
   dbidx_t dbidx;
+  dbidx_t qdbidx;
   char    *title;
   char    *dance;
   song_t  *song;
   char    *songfn;
 
   dbidx = -1;
+  qdbidx = -1;
   title = MSG_ARGS_EMPTY_STR;
   dance = MSG_ARGS_EMPTY_STR;
   songfn = MSG_ARGS_EMPTY_STR;
@@ -2603,6 +2613,8 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
     dance = mainSongGetDanceDisplay (mainData, 0);
     song = dbGetByIdx (mainData->musicdb, dbidx);
     songfn = songGetStr (song, TAG_FILE);
+  } else {
+    qdbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
   }
 
   snprintf (tmp, sizeof (tmp),
@@ -2611,17 +2623,21 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
       "mqmlen%c%ld%c"
       "mqplen%c%ld%c"
       "dbidx%c%d%c"
+      "qdbidx%c%d%c"
       "m-songfn%c%s%c"
       "title%c%s%c"
-      "dance%c%s",
+      "dance%c%s%c"
+      "songplaysentcount%c%d",
       MSG_ARGS_RS, mainData->musicqManageIdx, MSG_ARGS_RS,
       MSG_ARGS_RS, mainData->musicqPlayIdx, MSG_ARGS_RS,
       MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx), MSG_ARGS_RS,
       MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx), MSG_ARGS_RS,
       MSG_ARGS_RS, dbidx, MSG_ARGS_RS,
+      MSG_ARGS_RS, qdbidx, MSG_ARGS_RS,
       MSG_ARGS_RS, songfn, MSG_ARGS_RS,
       MSG_ARGS_RS, title, MSG_ARGS_RS,
-      MSG_ARGS_RS, dance);
+      MSG_ARGS_RS, dance, MSG_ARGS_RS,
+      MSG_ARGS_RS, mainData->songplaysentcount);
   connSendMessage (mainData->conn, routefrom, MSG_CHK_MAIN_MUSICQ, tmp);
 }
 

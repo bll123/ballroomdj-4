@@ -47,7 +47,7 @@ osIgnoreSignal (int sig)
   sigact.sa_handler = SIG_IGN;
   sigaction (sig, &sigact, &oldact);
 #endif
-#if _lib_signal
+#if ! _lib_sigaction && _lib_signal
   signal (sig, SIG_IGN);
 #endif
 }
@@ -63,7 +63,7 @@ osDefaultSignal (int sig)
   sigact.sa_handler = SIG_DFL;
   sigaction (sig, &sigact, &oldact);
 #endif
-#if _lib_signal
+#if ! _lib_sigaction && _lib_signal
   signal (sig, SIG_DFL);
 #endif
 }
