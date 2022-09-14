@@ -158,6 +158,7 @@ static int      playerLimitVolume (int vol);
 static ssize_t  playerCalcPlayedTime (playerdata_t *playerData);
 static void     playerSetDefaultVolume (playerdata_t *playerData);
 static void     playerChkPlayerStatus (playerdata_t *playerData, int routefrom);
+static void     playerChkPlayerSong (playerdata_t *playerData, int routefrom);
 
 static int  gKillReceived = 0;
 
@@ -455,6 +456,10 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CHK_PLAYER_STATUS: {
           playerChkPlayerStatus (playerData, routefrom);
+          break;
+        }
+        case MSG_CHK_PLAYER_SONG: {
+          playerChkPlayerSong (playerData, routefrom);
           break;
         }
         default: {

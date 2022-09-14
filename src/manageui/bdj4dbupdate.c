@@ -607,7 +607,7 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
     if (! connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
       connConnect (dbupdate->conn, ROUTE_DBTAG);
     }
-    if ((dbupdate->startflags & BDJ4_CLI) != BDJ4_CLI) {
+    if ((dbupdate->startflags & BDJ4_DB_CLI) != BDJ4_DB_CLI) {
       if (! connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
         connConnect (dbupdate->conn, ROUTE_MANAGEUI);
       }
@@ -620,7 +620,7 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
   if (connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
     ++c;
   }
-  if ((dbupdate->startflags & BDJ4_CLI) == BDJ4_CLI) {
+  if ((dbupdate->startflags & BDJ4_DB_CLI) == BDJ4_DB_CLI) {
     if (c == 1) { rc = STATE_FINISHED; }
   } else {
     if (c == 2) { rc = STATE_FINISHED; }
@@ -647,7 +647,7 @@ dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState)
   if (connHaveHandshake (dbupdate->conn, ROUTE_MANAGEUI)) {
     ++c;
   }
-  if ((dbupdate->startflags & BDJ4_CLI) == BDJ4_CLI) {
+  if ((dbupdate->startflags & BDJ4_DB_CLI) == BDJ4_DB_CLI) {
     if (c == 1) { rc = STATE_FINISHED; }
   } else {
     if (c == 2) { rc = STATE_FINISHED; }

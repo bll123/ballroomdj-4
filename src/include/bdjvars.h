@@ -3,6 +3,8 @@
 
 typedef enum {
   BDJV_DB_TOP_DIR,    // temporary
+  BDJV_TS_SECTION,    // temporary
+  BDJV_TS_TEST,       // temporary
   BDJV_MAX,
 } bdjvarkey_t;
 

@@ -94,7 +94,6 @@ main (int argc, char * argv[])
     { "startlog",       no_argument,        NULL,   0 },
     { "logstderr",      no_argument,        NULL,   0 },
     { "nostart",        no_argument,        NULL,   0 },
-    { "cli",            no_argument,        NULL,   'c' },
     /* this process */
     { "debugself",      no_argument,        NULL,   'D' },
     { "nodetach",       no_argument,        NULL,   'N' },
@@ -107,10 +106,14 @@ main (int argc, char * argv[])
     { "updfromtags",    no_argument,        NULL,   0 },
     { "writetags",      no_argument,        NULL,   0 },
     { "dbtopdir",       required_argument,  NULL,   0 },
+    { "cli",            no_argument,        NULL,   'c' },
     /* bdjtags */
     { "rawdata",        no_argument,        NULL,   0 },
     { "bdj3tags",       no_argument,        NULL,   0 },
     { "noecho",         no_argument,        NULL,   0 },
+    /* test suite options */
+    { "runsection",     required_argument,  NULL,   0 },
+    { "runtest",        required_argument,  NULL,   0 },
     { NULL,             0,                  NULL,   0 }
   };
 

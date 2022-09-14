@@ -15,22 +15,26 @@
 #     mqmanage mqplay mqmlen mqplen dbidx m-songfn title dance
 # player:
 #   status:
-#     playstate plistate currvolume realvolume speed playtimeplayed
+#     playstate
+#       unknown stopped loading playing paused in-fadeout in-gap
+#     plistate
+#       none opening buffering playing paused stopped ended error
+#     currvolume realvolume speed playtimeplayed
 #     pauseatend repeat defaultsink currentsink
 #   song:
 #     p-duration p-songfn
 #
 
-section Basic
+section 1 Basic
 
-test Init
+test 1-1 Init
 msg main QUEUE_PLAY_ON_ADD 0
 msg main QUEUE_SWITCH_EMPTY 0
 msg main MUSICQ_SET_MANAGE 0
 msg main MUSICQ_SET_PLAYBACK 0
 reset
 
-test Insert-Play
+test 1-2 Insert-Play
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
 msg main MUSICQ_INSERT 0~999~0
@@ -54,7 +58,7 @@ get main CHK_MAIN_MUSICQ
 chk mqplen 0
 end
 
-test Insert-Play-2
+test 1-3 Insert-Play-2
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
 msg main MUSICQ_INSERT 0~999~1
@@ -85,9 +89,9 @@ get main CHK_MAIN_MUSICQ
 chk mqplen 0
 end
 
-section Controls
+section 2 Controls
 
-test Position
+test 2-1 Position
 msg main MUSICQ_INSERT 0~999~3
 msg main MUSICQ_INSERT 0~999~4
 get main CHK_MAIN_MUSICQ
