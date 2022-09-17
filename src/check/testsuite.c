@@ -87,6 +87,7 @@ typedef struct {
   bool        skiptoend : 1;
   bool        wait : 1;
   bool        waitresponse : 1;
+  bool        verbose : 1;
 } testsuite_t;
 
 static int  gKillReceived = 0;
@@ -112,6 +113,7 @@ static int  tsScriptChk (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptWait (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptSleep (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptDisp (testsuite_t *testsuite, const char *tcmd);
+static int  tsScriptPrint (testsuite_t *testsuite, const char *tcmd);
 static int  tsParseExpect (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptChkResponse (testsuite_t *testsuite);
 static int  tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type);
@@ -169,6 +171,7 @@ main (int argc, char *argv [])
   testsuite.priorruntest = false;
   testsuite.runtest = false;
   testsuite.endnexttest = false;
+  testsuite.verbose = false;
 
   if ((flags & BDJ4_TS_RUNSECTION) == BDJ4_TS_RUNSECTION) {
     testsuite.runsection = true;
@@ -176,6 +179,10 @@ main (int argc, char *argv [])
 
   if ((flags & BDJ4_TS_RUNTEST) == BDJ4_TS_RUNTEST) {
     testsuite.runtest = true;
+  }
+
+  if ((flags & BDJ4_TS_VERBOSE) == BDJ4_TS_VERBOSE) {
+    testsuite.verbose = true;
   }
 
   testsuite.routetxtlist = slistAlloc ("ts-route-txt", LIST_UNORDERED, NULL);
@@ -581,11 +588,14 @@ tsProcessScript (testsuite_t *testsuite)
       ok = tsScriptDisp (testsuite, tcmd);
       disp = true;
     }
+    if (strncmp (tcmd, "print", 4) == 0) {
+      ok = tsScriptPrint (testsuite, tcmd);
+    }
   } else {
     ok = TS_OK;
   }
 
-  if (disp) {
+  if (testsuite->verbose && disp) {
     char  ttm [40];
 
     tmutilTstamp (ttm, sizeof (ttm));
@@ -672,7 +682,8 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
     }
   }
 
-  if (testsuite->runsection == false && testsuite->runtest == false) {
+  if (testsuite->runsection == false && testsuite->runtest == false &&
+      testsuite->endnextsection == false && testsuite->endnexttest == false) {
     fprintf (stdout, "== %s %s\n", testsuite->sectionnum, testsuite->sectionname);
     fflush (stdout);
   }
@@ -823,6 +834,26 @@ tsScriptDisp (testsuite_t *testsuite, const char *tcmd)
 }
 
 static int
+tsScriptPrint (testsuite_t *testsuite, const char *tcmd)
+{
+  char  *p;
+  char  *tokstr;
+  char  *tstr;
+
+  tstr = strdup (tcmd);
+  p = strtok_r (tstr, " ", &tokstr);
+  p += strlen (p) + 1;
+  if (p == NULL) {
+    free (tstr);
+    return TS_BAD_COMMAND;
+  }
+  fprintf (stdout, "   # %s\n", p);
+  fflush (stdout);
+  free (tstr);
+  return TS_OK;
+}
+
+static int
 tsParseExpect (testsuite_t *testsuite, const char *tcmd)
 {
   char    *p;
@@ -882,7 +913,8 @@ tsScriptChkResponse (testsuite_t *testsuite)
       if (a < b) {
         ++countok;
       } else {
-        fprintf (stdout, "          clt-fail: %s: %ld < %ld\n", key, a, b);
+        fprintf (stdout, "          %3d clt-fail: %s: %ld < %ld\n",
+            testsuite->lineno, key, a, b);
         fflush (stdout);
       }
     }
@@ -894,7 +926,8 @@ tsScriptChkResponse (testsuite_t *testsuite)
       if (a > b) {
         ++countok;
       } else {
-        fprintf (stdout, "          cgt-fail: %s: %ld > %ld\n", key, a, b);
+        fprintf (stdout, "          %3d cgt-fail: %s: %ld < %ld\n",
+            testsuite->lineno, key, a, b);
         fflush (stdout);
       }
     }
@@ -903,7 +936,8 @@ tsScriptChkResponse (testsuite_t *testsuite)
       ++countok;
     } else if (testsuite->waitresponse &&
         ! testsuite->lessthan && ! testsuite->greaterthan) {
-      fprintf (stdout, "          chk-fail: %s: %s != %s\n", key, val, valchk);
+      fprintf (stdout, "          %3d chk-fail: %s: %s != %s\n",
+            testsuite->lineno, key, val, valchk);
       fflush (stdout);
     }
     ++count;

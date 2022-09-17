@@ -90,6 +90,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     /* test suite options */
     { "runsection",   required_argument,NULL,   'S' },
     { "runtest",      required_argument,NULL,   'T' },
+    { "verbose",      no_argument,      NULL,   'V' },
     { NULL,           0,                NULL,   0 }
   };
 
@@ -192,6 +193,10 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
           bdjvarsSetStr (BDJV_TS_TEST, optarg);
         }
         flags |= BDJ4_TS_RUNTEST;
+        break;
+      }
+      case 'V': {
+        flags |= BDJ4_TS_VERBOSE;
         break;
       }
       case 'c': {

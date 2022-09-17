@@ -109,7 +109,7 @@ end
 section 2 Controls
 
 # play/pause is needed for testing nextsong and position
-test 2-1 PlayPause
+test 2-1 Play-Pause
 msg main MUSICQ_INSERT 0~999~9
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
@@ -172,8 +172,9 @@ end
 
 # nextsong can be used to shorten the time taken for many tests
 # nextsong is also used internally by the 'end' command
-test 2-3 NextSong
+test 2-3 Next-Song
 # first test when the player is stopped
+print player stopped
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~6
 msg main MUSICQ_INSERT 0~999~7
@@ -203,6 +204,7 @@ chk playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
 # next test when the player is playing
+print player playing
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~6
 msg main MUSICQ_INSERT 0~999~7
@@ -234,6 +236,71 @@ get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
+# next test when the player is paused
+print player paused
+msg main MUSICQ_INSERT 0~999~5
+msg main MUSICQ_INSERT 0~999~6
+msg main MUSICQ_INSERT 0~999~7
+msg main MUSICQ_INSERT 0~999~8
+msg main CMD_PLAY
+mssleep 1000
+msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+wait playstate paused
+get main CHK_MAIN_MUSICQ
+chk mqplen 4 qdbidx 5
+get player CHK_PLAYER_STATUS
+chk playstate paused
+msg main CMD_NEXTSONG
+get player CHK_PLAYER_STATUS
+chk playstate stopped
+get main CHK_MAIN_MUSICQ
+chk mqplen 3 qdbidx 6
+msg main CMD_NEXTSONG
+get player CHK_PLAYER_STATUS
+chk playstate stopped
+get main CHK_MAIN_MUSICQ
+chk mqplen 2 qdbidx 7
+msg main CMD_NEXTSONG
+get player CHK_PLAYER_STATUS
+chk playstate stopped
+get main CHK_MAIN_MUSICQ
+chk mqplen 1 qdbidx 8
+msg main CMD_NEXTSONG
+get player CHK_PLAYER_STATUS
+chk playstate stopped
+get main CHK_MAIN_MUSICQ
+chk mqplen 0
+end
+
+# fade is also useful for shortening the time tests take.
+test 2-4 Fade
+msg main MUSICQ_INSERT 0~999~11
+msg main CMD_PLAY
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk playstate playing
+msg player PLAY_FADE
+resptimeout 5000
+get player CHK_PLAYER_STATUS
+chk playstate in-fadeout
+wait playstate in-gap
+resptimeout 35000
+end
+
+test 2-5 Repeat
+end
+
+test 2-6 Beginning-of-Song
+end
+
+test 2-7 Pause-at-End
+end
+
+test 2-8 Volume
+end
+
+test 2-9 Speed
 end
 
 section 3 Basic-Bugs
@@ -241,7 +308,7 @@ section 3 Basic-Bugs
 # 2022-9-14 the main player would send the song-play command to the player
 # when paused.  Can't seem to duplicate the actual playback w/o going
 # through the playerui, but the 'songplaysentcount' tells the story.
-test 3-1 Bug-DupPlayback-2022-9-14
+test 3-1 Bug-Dup-Playback-2022-9-14
 msg main CHK_MAIN_RESET
 msg main MUSICQ_INSERT 0~999~10
 msg main CMD_PLAY
@@ -262,5 +329,98 @@ chk playstate playing
 get main CHK_MAIN_MUSICQ
 # this must be 1.
 chk mqplen 1 dbidx 10 songplaysentcount 1
+end
+
+section 4 Music-Queue
+
+test 4-1 Move-Top
+end
+
+test 4-2 Move-Down
+end
+
+test 4-3 Move-Up
+end
+
+test 4-4 Remove
+end
+
+test 4-5 Toggle-Pause
+end
+
+section 5 Music-Queue-Dual
+
+section 6 Music-Queue-Switch
+
+section 8 Player-Config
+
+test 8-1 Gap
+end
+
+test 8-2 Fade-In
+end
+
+test 8-3 Fade-Out
+end
+
+test 8-4 Maximum-Play-Time
+end
+
+section 11 Song-List
+
+section 12 Sequence
+
+section 13 Automatic
+
+section 14 Queue-Dance
+
+section 15 Announcements
+
+section 16 Song-Controls
+
+test 16-1 Song-Start
+end
+
+test 16-2 Song-End
+end
+
+test 16-3 Volume-Adjustment
+end
+
+test 16-4 Speed-Adjustment
+end
+
+section 17 Playlist-Controls
+
+test 17-1 Maximum-Play-Time
+end
+
+test 17-2 Stop-At
+end
+
+test 17-3 Stop-After
+end
+
+test 17-4 Gap
+end
+
+section 18 Song-Filter
+
+test 18-1 Dance-Filter
+end
+
+test 18-2 Rating-Filter
+end
+
+test 18-3 Level-Filter
+end
+
+test 18-4 Status-Filter
+end
+
+test 18-5 Favorite-Filter
+end
+
+test 18-6 Keyword-Filter
 end
 

@@ -34,8 +34,8 @@ SET (CMAKE_SKIP_BUILD_RPATH FALSE)
 SET (CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 
 set (SHLIB_EXT ${CMAKE_SHARED_LIBRARY_SUFFIX})
-set (MONGOOSE_INC_DIR ${PROJECT_SOURCE_DIR}/../packages/mongoose)
-set (MONGOOSE_SRC ${PROJECT_SOURCE_DIR}/../packages/mongoose/mongoose.c)
+set (MONGOOSE_INC_DIR ${PROJECT_SOURCE_DIR}/mongoose)
+set (MONGOOSE_SRC ${PROJECT_SOURCE_DIR}/mongoose/mongoose.c)
 
 # does all the configuration
 include (utils/bdj4config.cmake)
