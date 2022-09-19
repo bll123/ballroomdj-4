@@ -110,6 +110,7 @@ typedef struct {
   startstate_t    nextState;
   startstate_t    delayState;
   int             delayCount;
+  time_t          lastPluiStart;
   char            *supportDir;
   slist_t         *supportFileList;
   int             sendType;
@@ -252,6 +253,7 @@ main (int argc, char *argv[])
   starter.supportOutFname = NULL;
   starter.webclient = NULL;
   starter.supporttb = NULL;
+  starter.lastPluiStart = mstime ();
   strcpy (starter.ident, "");
   strcpy (starter.latestversion, "");
   for (int i = 0; i < ROUTE_MAX; ++i) {
@@ -975,7 +977,12 @@ starterCloseProcess (startui_t *starter, bdjmsgroute_t routefrom, int request)
   }
 
   if (request == CLOSE_CRASH && wasstarted && routefrom == ROUTE_PLAYERUI) {
-    starterStartPlayerui (starter);
+    time_t  curr;
+
+    curr = mstime ();
+    if (curr > starter->lastPluiStart + 60000) {
+      starterStartPlayerui (starter);
+    }
   }
 }
 
@@ -1051,6 +1058,9 @@ starterStartPlayerui (void *udata)
   if (starterCheckProfile (starter) < 0) {
     return UICB_STOP;
   }
+
+  starter->lastPluiStart = mstime ();
+
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
       ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH, NULL);
   starter->started [ROUTE_PLAYERUI] = true;
