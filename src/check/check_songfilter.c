@@ -112,23 +112,6 @@ START_TEST(songfilter_set_sort)
 }
 END_TEST
 
-START_TEST(songfilter_changed)
-{
-  songfilter_t  *sf;
-  time_t        ctm;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_changed");
-
-  sf = songfilterAlloc ();
-  ctm = mstime ();
-  ck_assert_int_eq (songfilterIsChanged (sf, ctm), 0);
-  mssleep (10);
-  songfilterSetSort (sf, sorttypes [0]);
-  ck_assert_int_eq (songfilterIsChanged (sf, ctm), 1);
-  songfilterFree (sf);
-}
-END_TEST
-
 START_TEST(songfilter_process)
 {
   songfilter_t  *sf;
@@ -859,7 +842,6 @@ songfilter_suite (void)
   tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, songfilter_alloc);
   tcase_add_test (tc, songfilter_set_sort);
-  tcase_add_test (tc, songfilter_changed);
   tcase_add_test (tc, songfilter_process);
   tcase_add_test (tc, songfilter_rating);
   tcase_add_test (tc, songfilter_clear);

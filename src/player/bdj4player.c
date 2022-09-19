@@ -1644,7 +1644,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "currvolume%c%d%c"
       "realvolume%c%d%c"
       "speed%c%d%c"
-      "playtimeplayed%c%ld%c"
+      "playtimeplayed%c%zd%c"
       "pauseatend%c%d%c"
       "repeat%c%d%c"
       "defaultsink%c%s%c"

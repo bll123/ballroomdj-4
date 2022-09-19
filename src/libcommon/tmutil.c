@@ -13,6 +13,10 @@
 # include <sys/select.h>
 #endif
 
+#if _hdr_windows
+# include <windows.h>
+#endif
+
 #include "tmutil.h"
 #include "bdjstring.h"
 
@@ -22,14 +26,28 @@ static bool initialized = false;
 void
 mssleep (time_t mt)
 {
-  struct timeval  tv;
+/* windows seems to have a large amount of overhead when calling */
+/* nanosleep() or Sleep().  Since there's no difference, may as well */
+/* use the nanosleep call. */
+/* macos seems to have a minor amount of overhead when calling nanosleep() */
+#if _lib_nanosleep
+  int               rc;
+  struct timespec   ts;
+  struct timespec   rem;
 
-  tv.tv_sec = mt / 1000;
-  tv.tv_usec = (mt - (tv.tv_sec * 1000)) * 1000;
-  while (tv.tv_usec > 0 || tv.tv_sec > 0) {
-    /* select will replace the contents of tv with the remaining time */
-    select (0, NULL, NULL, NULL, &tv);
+  ts.tv_sec = mt / 1000;
+  ts.tv_nsec = (mt - (ts.tv_sec * 1000)) * 1000 * 1000;
+  while (ts.tv_sec > 0 || ts.tv_nsec > 0) {
+    rc = nanosleep (&ts, &rem);
+    ts.tv_sec = 0;
+    ts.tv_nsec = 0;
+    /* remainder is only valid when EINTR is returned */
+    if (rc < 0 && errno == EINTR) {
+      ts.tv_sec = rem.tv_sec;
+      ts.tv_nsec = rem.tv_nsec;
+    }
   }
+#endif
 }
 
 time_t

@@ -112,7 +112,6 @@ songfilterAlloc (void)
   sf->indexList = NULL;
   sf->filterDisplayDf = NULL;
   sf->filterDisplaySel = NULL;
-  sf->changeTime = mstime ();
   songfilterLoadFilterDisplay (sf);
   songfilterReset (sf);
   sf->dances = bdjvarsdfGet (BDJVDF_DANCES);
@@ -162,7 +161,6 @@ songfilterSetSort (songfilter_t *sf, char *sortselection)
     nlistFree (sf->parsed);
   }
   sf->parsed = songfilterParseSortKey (sf);
-  sf->changeTime = mstime ();
   logProcEnd (LOG_PROC, "songfilterSetSort", "");
 }
 
@@ -177,7 +175,6 @@ songfilterReset (songfilter_t *sf)
   for (int i = 0; i < SONG_FILTER_MAX; ++i) {
     sf->inuse [i] = false;
   }
-  sf->changeTime = mstime ();
   logProcEnd (LOG_PROC, "songfilterReset", "");
 }
 
@@ -186,26 +183,6 @@ inline bool
 songfilterCheckSelection (songfilter_t *sf, int type)
 {
   return nlistGetNum (sf->filterDisplaySel, type);
-}
-
-bool
-songfilterIsChanged (songfilter_t *sf, time_t tm)
-{
-  bool  rc = false;
-
-  logProcBegin (LOG_PROC, "songfilterIsChanged");
-
-  if (sf == NULL) {
-    logProcEnd (LOG_PROC, "songfilterIsChanged", "null");
-    return false;
-  }
-
-  if (tm < sf->changeTime) {
-    rc = true;
-  }
-
-  logProcEnd (LOG_PROC, "songfilterIsChanged", "");
-  return rc;
 }
 
 void
@@ -221,7 +198,6 @@ songfilterClear (songfilter_t *sf, int filterType)
   songfilterFreeData (sf, filterType);
   sf->numfilter [filterType] = 0;
   sf->inuse [filterType] = false;
-  sf->changeTime = mstime ();
   logProcEnd (LOG_PROC, "songfilterClear", "");
 }
 
@@ -293,7 +269,6 @@ songfilterSetData (songfilter_t *sf, int filterType, void *value)
   }
 
   valueType = valueTypeLookup [filterType];
-  sf->changeTime = mstime ();
 
   if (valueType == SONG_FILTER_SLIST) {
     if (filterType != SONG_FILTER_KEYWORD) {
@@ -344,7 +319,6 @@ songfilterSetNum (songfilter_t *sf, int filterType, ssize_t value)
     sf->numfilter [filterType] = (nlistidx_t) value;
     sf->inuse [filterType] = true;
   }
-  sf->changeTime = mstime ();
   logProcEnd (LOG_PROC, "songfilterSetNum", "");
 }
 
@@ -376,7 +350,6 @@ songfilterDanceSet (songfilter_t *sf, ilistidx_t danceIdx,
     ilistSetNum (danceFilterList, danceIdx, filterType, (ssize_t) value);
   }
   sf->inuse [filterType] = true;
-  sf->changeTime = mstime ();
   logProcEnd (LOG_PROC, "songfilterDanceSet", "");
 }
 

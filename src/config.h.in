@@ -81,6 +81,7 @@
 #cmakedefine01 _lib_kill
 #cmakedefine01 _lib_localtime_r
 #cmakedefine01 _lib_mkdir
+#cmakedefine01 _lib_nanosleep
 #cmakedefine01 _lib_pthread_create
 #cmakedefine01 _lib_rand
 #cmakedefine01 _lib_random

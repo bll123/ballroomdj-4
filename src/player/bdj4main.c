@@ -2620,8 +2620,8 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
   snprintf (tmp, sizeof (tmp),
       "mqmanage%c%d%c"
       "mqplay%c%d%c"
-      "mqmlen%c%ld%c"
-      "mqplen%c%ld%c"
+      "mqmlen%c%zd%c"
+      "mqplen%c%zd%c"
       "dbidx%c%d%c"
       "qdbidx%c%d%c"
       "m-songfn%c%s%c"

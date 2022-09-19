@@ -1,6 +1,6 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha 2022-09-??
+4.0.0 alpha 2022-09-19
 
 - test suite in progress
 - player: bug-fix: song playback was duplicated after the pause button

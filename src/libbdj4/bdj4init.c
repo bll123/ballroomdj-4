@@ -78,6 +78,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     /* bdj4updater */
     { "newinstall",   no_argument,      NULL,   0 },
     { "converted",    no_argument,      NULL,   0 },
+    { "musicdir",     required_argument,NULL,   0 },
     /* dbupdate options */
     { "rebuild",      no_argument,      NULL,   'R' },
     { "checknew",     no_argument,      NULL,   'C' },

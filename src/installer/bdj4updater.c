@@ -81,6 +81,7 @@ main (int argc, char *argv [])
   bool        converted = false;
   int         c = 0;
   int         option_index = 0;
+  char        *musicdir = NULL;
   char        *home = NULL;
   char        homemusicdir [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
@@ -101,6 +102,7 @@ main (int argc, char *argv [])
   static struct option bdj_options [] = {
     { "newinstall", no_argument,        NULL,   'n' },
     { "converted",  no_argument,        NULL,   'c' },
+    { "musicdir",   required_argument,  NULL,   'm' },
     { "bdj4updater",no_argument,        NULL,   0 },
     { "bdj4",       no_argument,        NULL,   'B' },
     /* ignored */
@@ -113,7 +115,7 @@ main (int argc, char *argv [])
   };
 
   optind = 0;
-  while ((c = getopt_long_only (argc, argv, "Bnc", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "Bncm", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'B': {
         isbdj4 = true;
@@ -125,6 +127,12 @@ main (int argc, char *argv [])
       }
       case 'c': {
         converted = true;
+        break;
+      }
+      case 'm': {
+        if (optarg) {
+          musicdir = strdup (optarg);
+        }
         break;
       }
       default: {
@@ -308,6 +316,10 @@ main (int argc, char *argv [])
     bdjoptchanged = true;
   }
 
+  if (musicdir != NULL) {
+    bdjoptSetStr (OPT_M_DIR_MUSIC, musicdir);
+  }
+
   updaterCleanFiles ();
 
   /* audio file conversions */
@@ -415,6 +427,9 @@ main (int argc, char *argv [])
 
   bdj4shutdown (ROUTE_NONE, NULL);
   bdjoptCleanup ();
+  if (musicdir != NULL) {
+    free (musicdir);
+  }
 
   return 0;
 }

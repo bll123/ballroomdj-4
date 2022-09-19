@@ -53,7 +53,9 @@ msg main MUSICQ_INSERT 0~999~0
 get main CHK_MAIN_MUSICQ
 chk mqplen 1
 msg main CMD_PLAY
-mssleep 500
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
 get main CHK_MAIN_MUSICQ
 get player CHK_PLAYER_STATUS
 chk mqplen 1 dbidx 0 playstate playing

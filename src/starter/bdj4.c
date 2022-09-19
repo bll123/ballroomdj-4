@@ -14,10 +14,7 @@
 #endif
 
 #if _hdr_winsock2
-# pragma clang diagnostic push
-# pragma clang diagnostic ignored "-Wmissing-declarations"
 # include <winsock2.h>
-# pragma clang diagnostic pop
 #endif
 #if _hdr_windows
 # include <windows.h>
@@ -82,6 +79,7 @@ main (int argc, char * argv[])
     /* bdj4updater */
     { "newinstall",     no_argument,        NULL,   0 },
     { "converted",      no_argument,        NULL,   0 },
+    { "musicdir",       required_argument,  NULL,   0 },
     /* used by installer */
     { "unpackdir",      required_argument,  NULL,   'u' },
     { "reinstall",      no_argument,        NULL,   'r' },
@@ -114,6 +112,7 @@ main (int argc, char * argv[])
     /* test suite options */
     { "runsection",     required_argument,  NULL,   0 },
     { "runtest",        required_argument,  NULL,   0 },
+    { "verbose",        no_argument,        NULL,   0 },
     { NULL,             0,                  NULL,   0 }
   };
 

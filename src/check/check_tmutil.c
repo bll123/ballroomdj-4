@@ -36,17 +36,58 @@ START_TEST(mstime_chk)
 }
 END_TEST
 
-START_TEST(mssleep_chk)
+START_TEST(mssleep_sec)
 {
   time_t      tm_s;
   time_t      tm_e;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mssleep_chk");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mssleep_sec");
 
   tm_s = mstime ();
   mssleep (2000);
   tm_e = mstime ();
-  ck_assert_int_lt (tm_e - tm_s - 2000, 30);
+  ck_assert_int_lt (abs ((int) (tm_e - tm_s - 2000)), 20);
+}
+END_TEST
+
+START_TEST(mssleep_ms)
+{
+  time_t      tm_s;
+  time_t      tm_e;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mssleep_ms");
+
+  tm_s = mstime ();
+  mssleep (200);
+  tm_e = mstime ();
+  ck_assert_int_lt (abs ((int) (tm_e - tm_s - 200)), 20);
+}
+END_TEST
+
+START_TEST(mssleep_ms_b)
+{
+  time_t      tm_s;
+  time_t      tm_e;
+  int         val;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- mssleep_ms");
+
+  tm_s = mstime ();
+  for (int i = 0; i < 40; ++i) {
+    mssleep (5);
+  }
+  tm_e = mstime ();
+  /* this works fine on linux */
+  val = 20;
+  /* macos is off a bit */
+  if (isMacOS ()) {
+    val = 60;
+  }
+  /* windows is way off */
+  if (isWindows ()) {
+    val = 600;
+  }
+  ck_assert_int_lt (abs ((int) (tm_e - tm_s - 200)), val);
 }
 END_TEST
 
@@ -143,7 +184,7 @@ START_TEST(mstime_check)
   mssleep (1000);
   rc = mstimeCheck (&tmset);
   ck_assert_int_eq (rc, false);
-  mssleep (1000);
+  mssleep (1100);
   rc = mstimeCheck (&tmset);
   ck_assert_int_eq (rc, true);
 }
@@ -303,7 +344,9 @@ tmutil_suite (void)
   suite_add_tcase (s, tc);
   tc = tcase_create ("tmutil-timers");
   tcase_set_tags (tc, "libcommon slow");
-  tcase_add_test (tc, mssleep_chk);
+  tcase_add_test (tc, mssleep_sec);
+  tcase_add_test (tc, mssleep_ms);
+  tcase_add_test (tc, mssleep_ms_b);
   tcase_add_test (tc, mstimestartofday_chk);
   tcase_add_test (tc, mstime_start_end);
   tcase_add_test (tc, mstime_set);

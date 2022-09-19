@@ -22,6 +22,7 @@
 #include "log.h"
 #include "osrandom.h"
 #include "ossignal.h"
+#include "pathbld.h"
 #include "procutil.h"
 #include "progstate.h"
 #include "slist.h"
@@ -131,6 +132,7 @@ main (int argc, char *argv [])
   int         listenPort;
   char        *state;
   int         rc;
+  char        tbuff [MAXPATHLEN];
 
   osSetStandardSignals (tsSigHandler);
 #if _define_SIGCHLD
@@ -144,6 +146,10 @@ main (int argc, char *argv [])
 
   logStart ("testsuite", "ts",
       LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_MSGS | LOG_ACTIONS);
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+  fileopDelete (tbuff);
 
   procutilInitProcesses (testsuite.processes);
   testsuite.conn = connInit (ROUTE_TEST_SUITE);
@@ -913,7 +919,7 @@ tsScriptChkResponse (testsuite_t *testsuite)
       if (a < b) {
         ++countok;
       } else {
-        fprintf (stdout, "          %3d clt-fail: %s: %ld < %ld\n",
+        fprintf (stdout, "          %3d clt-fail: %s: exp: %ld < resp: %ld\n",
             testsuite->lineno, key, a, b);
         fflush (stdout);
       }
@@ -926,7 +932,7 @@ tsScriptChkResponse (testsuite_t *testsuite)
       if (a > b) {
         ++countok;
       } else {
-        fprintf (stdout, "          %3d cgt-fail: %s: %ld < %ld\n",
+        fprintf (stdout, "          %3d cgt-fail: %s: exp: %ld < resp: %ld\n",
             testsuite->lineno, key, a, b);
         fflush (stdout);
       }
@@ -936,7 +942,7 @@ tsScriptChkResponse (testsuite_t *testsuite)
       ++countok;
     } else if (testsuite->waitresponse &&
         ! testsuite->lessthan && ! testsuite->greaterthan) {
-      fprintf (stdout, "          %3d chk-fail: %s: %s != %s\n",
+      fprintf (stdout, "          %3d chk-fail: %s: exp: %s != resp: %s\n",
             testsuite->lineno, key, val, valchk);
       fflush (stdout);
     }
