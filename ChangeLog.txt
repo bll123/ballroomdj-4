@@ -8,6 +8,7 @@ BallroomDJ 4 Change Log
 - player user interface: disable position slider when a song is paused.
 - player user interface: fix display of position slider when paused.
 - macos: fixed issue in pre-install script.
+- music manager: fix playlist display in song selection filter.
 
 4.0.0 alpha 2022-09-10
 

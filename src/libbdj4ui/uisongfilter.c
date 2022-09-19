@@ -60,6 +60,7 @@ enum {
 
 
 typedef struct uisongfilter {
+  char              *playlistname;
   rating_t          *ratings;
   level_t           *levels;
   status_t          *status;
@@ -113,6 +114,7 @@ uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag)
 
   uisf = malloc (sizeof (uisongfilter_t));
 
+  uisf->playlistname = NULL;
   uisf->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uisf->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uisf->status = bdjvarsdfGet (BDJVDF_STATUS);
@@ -150,6 +152,9 @@ void
 uisfFree (uisongfilter_t *uisf)
 {
   if (uisf != NULL) {
+    if (uisf->playlistname != NULL) {
+      free (uisf->playlistname);
+    }
     uiDialogDestroy (&uisf->filterDialog);
     uiDropDownFree (uisf->playlistfilter);
     uiDropDownFree (uisf->sortbyfilter);
@@ -249,6 +254,10 @@ uisfSetPlaylist (uisongfilter_t *uisf, char *slname)
   }
 
   uiDropDownSelectionSetStr (uisf->playlistfilter, slname);
+  if (uisf->playlistname != NULL) {
+    free (uisf->playlistname);
+  }
+  uisf->playlistname = strdup (slname);
   songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, slname);
 }
 
@@ -260,6 +269,10 @@ uisfClearPlaylist (uisongfilter_t *uisf)
   }
 
   uiDropDownSelectionSetNum (uisf->playlistfilter, -1);
+  if (uisf->playlistname != NULL) {
+    free (uisf->playlistname);
+  }
+  uisf->playlistname = NULL;
   songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
 }
 
@@ -304,6 +317,9 @@ uisfInitDisplay (uisongfilter_t *uisf)
   /* sort-by and dance are important, the others can be reset */
 
   uiDropDownSelectionSetNum (uisf->playlistfilter, -1);
+  if (uisf->playlistname != NULL) {
+    uiDropDownSelectionSetStr (uisf->playlistfilter, uisf->playlistname);
+  }
 
   sortby = songfilterGetSort (uisf->songfilter);
   uiDropDownSelectionSetStr (uisf->sortbyfilter, sortby);
