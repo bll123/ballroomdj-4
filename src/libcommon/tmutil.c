@@ -23,13 +23,12 @@ void
 mssleep (time_t mt)
 {
   struct timeval  tv;
-  int             rc;
 
   tv.tv_sec = mt / 1000;
   tv.tv_usec = (mt - (tv.tv_sec * 1000)) * 1000;
   while (tv.tv_usec > 0 || tv.tv_sec > 0) {
     /* select will replace the contents of tv with the remaining time */
-    rc = select (0, NULL, NULL, NULL, &tv);
+    select (0, NULL, NULL, NULL, &tv);
   }
 }
 

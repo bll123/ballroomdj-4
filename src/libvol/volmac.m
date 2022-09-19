@@ -27,7 +27,6 @@ volumeProcess (volaction_t action, char *sinkname,
 {
   AudioDeviceID   outputDeviceID;
   UInt32          outputDeviceIDSize = sizeof (outputDeviceID);
-  OSStatus        status;
   AudioObjectPropertyAddress propertyAOPA;
   Float32         volume;
   UInt32          volumeSize = sizeof (volume);
@@ -41,7 +40,7 @@ volumeProcess (volaction_t action, char *sinkname,
   propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
   propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
 
-  status = AudioObjectGetPropertyData(
+  AudioObjectGetPropertyData(
       kAudioObjectSystemObject,
       &propertyAOPA,
       0,
@@ -53,6 +52,8 @@ volumeProcess (volaction_t action, char *sinkname,
     return -1;
   }
 
+// ### this is marked as deprecated.
+// what is the replacement?
   propertyAOPA.mSelector = kAudioHardwareServiceDeviceProperty_VirtualMasterVolume;
   propertyAOPA.mScope = kAudioDevicePropertyScopeOutput;
   propertyAOPA.mElement = kAudioObjectPropertyElementMaster;

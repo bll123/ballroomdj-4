@@ -1420,8 +1420,10 @@ uisongselMoveSelection (void *udata, int where)
         valid = true;
       }
     }
-    /* if not valid, re-select the original */
-    gtk_tree_selection_select_iter (uiw->sel, &uiw->currIter);
+    if (! valid) {
+      /* if not valid, re-select the original */
+      gtk_tree_selection_select_iter (uiw->sel, &uiw->currIter);
+    }
   }
 }
 

@@ -63,7 +63,6 @@ Installation:
         https://sourceforge.net/projects/ballroomdj4/files/macos-pre-install-macports.sh/download
       and run it.
       This script uses sudo to install the required packages (from MacPorts).
-      [ I have not tested with 'brew'.  That's in the future someday. ]
     b) Run the BallroomDJ 4 installer.
 
 Converting BallroomDJ 3:

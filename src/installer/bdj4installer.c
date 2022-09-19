@@ -1796,7 +1796,6 @@ installerConvertStart (installer_t *installer)
       installer->bdj3loc, sysvarsGetStr (SV_OSNAME), sysvarsGetNum (SVL_OSBITS));
   locs [locidx++] = strdup (tbuff);
   locs [locidx++] = strdup ("/opt/local/bin/tclsh");
-  locs [locidx++] = strdup ("/usr/local/bin/tclsh");
   locs [locidx++] = strdup ("/usr/bin/tclsh");
   locs [locidx++] = NULL;
 

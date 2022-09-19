@@ -312,10 +312,6 @@ confuiGetThemeList (void)
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
 
-    filelist = dirlistRecursiveDirList ("/usr/local/share/themes", FILEMANIP_DIRS);
-    confuiGetThemeNames (sthemelist, filelist);
-    slistFree (filelist);
-
     filelist = dirlistRecursiveDirList ("/usr/share/themes", FILEMANIP_DIRS);
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);

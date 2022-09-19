@@ -116,7 +116,6 @@ static ssize_t    lsysvars [SVL_MAX];
 static char *cacertFiles [] = {
   "/etc/ssl/certs/ca-certificates.crt",
   "/opt/local/etc/openssl/cert.pem",
-  "/usr/local/etc/openssl/cert.pem",
   "http/curl-ca-bundle.crt",
   "templates/curl-ca-bundle.crt",
   "plocal/etc/ssl/cert.pem",
@@ -401,6 +400,8 @@ sysvarsInit (const char *argv0)
       if (strcmp (data, "13") > 0) {
         strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
         strlcat (sysvars [SV_OSDISP], data, SV_MAX_SZ);
+      } else if (strcmp (data, "13") > 0) {
+        strlcat (sysvars [SV_OSDISP], " Ventura", SV_MAX_SZ);
       } else if (strcmp (data, "12") > 0) {
         strlcat (sysvars [SV_OSDISP], " Monterey", SV_MAX_SZ);
       } else if (strcmp (data, "11") > 0) {
@@ -409,9 +410,7 @@ sysvarsInit (const char *argv0)
         strlcat (sysvars [SV_OSDISP], " Catalina", SV_MAX_SZ);
       } else if (strcmp (data, "10.14") > 0) {
         strlcat (sysvars [SV_OSDISP], " Mojave", SV_MAX_SZ);
-      } else if (strcmp (data, "10.13") > 0) {
-        strlcat (sysvars [SV_OSDISP], " High Sierra", SV_MAX_SZ);
-      } else if (strcmp (data, "10.12") > 0) {
+      } else {
         strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
         strlcat (sysvars [SV_OSDISP], data, SV_MAX_SZ);
       }

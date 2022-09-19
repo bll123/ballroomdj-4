@@ -37,7 +37,7 @@ fi
 vers=$(sw_vers -productVersion)
 
 cltinstpath=/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-xcode-select -p >/dev/null
+xcode-select -p >/dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "Unable to locate MacOS Command Line Tools"
@@ -65,7 +65,7 @@ pyver=310
 
 skipmpinst=F
 case $vers in
-  1[3456789]*)
+  1[456789]*)
     mp_os_nm=$vers
     mp_os_vers=$vers
     echo "This script has no knowledge of this version of MacOS (too new)."
@@ -76,6 +76,10 @@ case $vers in
       exit 1
     fi
     skipmpinst=T
+    ;;
+  13*)
+    mp_os_nm=Ventura
+    mp_os_vers=13
     ;;
   12*)
     mp_os_nm=Monterey
@@ -132,6 +136,8 @@ if [[ $skipmpinst == F ]]; then
     rm -f ${pkgnm}
   fi
 fi
+
+PATH=$PATH:/opt/local/bin
 
 echo "-- Running MacPorts 'port selfupdate' with sudo"
 sudo port selfupdate

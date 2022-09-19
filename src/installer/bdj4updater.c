@@ -166,6 +166,12 @@ main (int argc, char *argv [])
     converted = nlistGetNum (updlist, UPD_CONVERTED);
   }
 
+  /* Always remove the volreg.txt file on an update.  */
+  /* This helps prevents any issues with the volreg count. */
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+  fileopDelete (tbuff);
+
   /* always figure out where the home music dir is */
   /* this is used on new intalls to set the music dir */
   /* also needed to check for the itunes dir every time */

@@ -170,7 +170,7 @@ endif()
 if (NOT WIN32)
   SET (CMAKE_INSTALL_RPATH "\${ORIGIN}")
   if (APPLE)
-    add_compile_options (-mmacosx-version-min=10.13)
+    add_compile_options (-mmacosx-version-min=10.14)
     # does not work.
     # SET (CMAKE_INSTALL_RPATH "@executable_path")
   endif()
