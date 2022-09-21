@@ -2597,6 +2597,7 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
   char    tmp [2000];
   dbidx_t dbidx;
   dbidx_t qdbidx;
+  dbidx_t mqdbidx [MUSICQ_PB_MAX][6];
   char    *title;
   char    *dance;
   song_t  *song;
@@ -2617,6 +2618,13 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
     qdbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
   }
 
+  for (int mqidx = 0; mqidx < MUSICQ_PB_MAX; ++mqidx) {
+    for (int idx = 0; idx < 6; ++idx) {
+      mqdbidx [mqidx][idx] = musicqGetByIdx (mainData->musicQueue, mqidx, idx);
+    }
+  }
+
+
   snprintf (tmp, sizeof (tmp),
       "mqmanage%c%d%c"
       "mqplay%c%d%c"
@@ -2627,6 +2635,18 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
       "m-songfn%c%s%c"
       "title%c%s%c"
       "dance%c%s%c"
+      "mq0idx0%c%d%c"
+      "mq0idx1%c%d%c"
+      "mq0idx2%c%d%c"
+      "mq0idx3%c%d%c"
+      "mq0idx4%c%d%c"
+      "mq0idx5%c%d%c"
+      "mq1idx0%c%d%c"
+      "mq1idx1%c%d%c"
+      "mq1idx2%c%d%c"
+      "mq1idx3%c%d%c"
+      "mq1idx4%c%d%c"
+      "mq1idx5%c%d%c"
       "songplaysentcount%c%d",
       MSG_ARGS_RS, mainData->musicqManageIdx, MSG_ARGS_RS,
       MSG_ARGS_RS, mainData->musicqPlayIdx, MSG_ARGS_RS,
@@ -2637,6 +2657,18 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
       MSG_ARGS_RS, songfn, MSG_ARGS_RS,
       MSG_ARGS_RS, title, MSG_ARGS_RS,
       MSG_ARGS_RS, dance, MSG_ARGS_RS,
+      MSG_ARGS_RS, mqdbidx [0][0], MSG_ARGS_RS,
+      MSG_ARGS_RS, mqdbidx [0][1], MSG_ARGS_RS,
+      MSG_ARGS_RS, mqdbidx [0][2], MSG_ARGS_RS,
+      MSG_ARGS_RS, mqdbidx [0][3], MSG_ARGS_RS,
+      MSG_ARGS_RS, mqdbidx [0][4], MSG_ARGS_RS,
+      MSG_ARGS_RS, mqdbidx [0][5], MSG_ARGS_RS,
+      MSG_ARGS_RS, mqdbidx [1][0], MSG_ARGS_RS,
+      MSG_ARGS_RS, mqdbidx [1][1], MSG_ARGS_RS,
+      MSG_ARGS_RS, mqdbidx [1][2], MSG_ARGS_RS,
+      MSG_ARGS_RS, mqdbidx [1][3], MSG_ARGS_RS,
+      MSG_ARGS_RS, mqdbidx [1][4], MSG_ARGS_RS,
+      MSG_ARGS_RS, mqdbidx [1][5], MSG_ARGS_RS,
       MSG_ARGS_RS, mainData->songplaysentcount);
   connSendMessage (mainData->conn, routefrom, MSG_CHK_MAIN_MUSICQ, tmp);
 }
