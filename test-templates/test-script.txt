@@ -33,6 +33,24 @@
 #   song:
 #     p-duration p-songfn
 #
+# sections
+#   0 init
+#   10 music-queue
+#   20 basic-playback
+#   30 playback-controls
+#   40 basic-bugs
+#   60 music-queue-dual
+#   70 music-queue-switch
+#   90 player-config
+#   110 song-list
+#   120 sequence
+#   130 automatic
+#   140 queue-dance
+#   150 announcements
+#   170 song-controls
+#   180 playlist-controls
+#   190 song-filter
+#
 
 # Section 0 is special.  It is always run for all sections and all tests.
 section 0 Init
@@ -267,7 +285,7 @@ get main CHK_MAIN_MUSICQ
 chk mqplen 0
 end
 
-section 30 Controls
+section 30 Playback-Controls
 
 # play/pause is needed for testing nextsong and position
 test 30-1 Play-Pause
