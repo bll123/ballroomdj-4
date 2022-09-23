@@ -2110,17 +2110,38 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     strlcpy (jsbuff, "{ ", sizeof (jsbuff));
   }
 
-  p = strtok_r (playerResp, MSG_ARGS_RS_STR, &tokstr);
+  p = "stop";
+  switch (mainData->playerState) {
+    case PL_STATE_UNKNOWN:
+    case PL_STATE_STOPPED: {
+      p = "stop";
+      break;
+    }
+    case PL_STATE_LOADING:
+    case PL_STATE_PLAYING:
+    case PL_STATE_IN_FADEOUT:
+    case PL_STATE_IN_GAP: {
+      p = "play";
+      break;
+    }
+    case PL_STATE_PAUSED: {
+      p = "pause";
+      break;
+    }
+    default: {
+      /* invalid state - this would be an error */
+      p = "stop";
+      break;
+    }
+  }
   if (jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"playstate\" : \"%s\"", p);
     strlcat (jsbuff, tbuff, sizeof (jsbuff));
   }
-  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-  strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (jsonflag) {
+  p = strtok_r (playerResp, MSG_ARGS_RS_STR, &tokstr);
+  if (p != NULL && jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"repeat\" : \"%s\"", p);
     strlcat (jsbuff, ", ", sizeof (jsbuff));
@@ -2130,7 +2151,7 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (jsonflag) {
+  if (p != NULL && jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"pauseatend\" : \"%s\"", p);
     strlcat (jsbuff, ", ", sizeof (jsbuff));
@@ -2140,7 +2161,7 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (jsonflag) {
+  if (p != NULL && jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"vol\" : \"%s%%\"", p);
     strlcat (jsbuff, ", ", sizeof (jsbuff));
@@ -2150,7 +2171,7 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (jsonflag) {
+  if (p != NULL && jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"speed\" : \"%s%%\"", p);
     strlcat (jsbuff, ", ", sizeof (jsbuff));
@@ -2160,35 +2181,39 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (jsonflag) {
+  if (p != NULL && jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"playedtime\" : \"%s\"", tmutilToMS (atol (p), tbuff2, sizeof (tbuff2)));
     strlcat (jsbuff, ", ", sizeof (jsbuff));
     strlcat (jsbuff, tbuff, sizeof (jsbuff));
   }
 
-  /* for marquee */
-  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-  strlcpy (timerbuff, tbuff, sizeof (timerbuff));
+  if (p != NULL) {
+    /* for marquee */
+    snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
+    strlcpy (timerbuff, tbuff, sizeof (timerbuff));
 
-  /* for player */
-  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-  strlcat (statusbuff, tbuff, sizeof (statusbuff));
+    /* for player */
+    snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
+    strlcat (statusbuff, tbuff, sizeof (statusbuff));
+  }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  if (jsonflag) {
+  if (p != NULL && jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"duration\" : \"%s\"", tmutilToMS (atol (p), tbuff2, sizeof (tbuff2)));
     strlcat (jsbuff, ", ", sizeof (jsbuff));
     strlcat (jsbuff, tbuff, sizeof (jsbuff));
   }
 
-  /* for marquee */
-  snprintf (tbuff, sizeof (tbuff), "%s", p);
-  strlcat (timerbuff, tbuff, sizeof (timerbuff));
+  if (p != NULL) {
+    /* for marquee */
+    snprintf (tbuff, sizeof (tbuff), "%s", p);
+    strlcat (timerbuff, tbuff, sizeof (timerbuff));
 
-  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-  strlcat (statusbuff, tbuff, sizeof (statusbuff));
+    snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
+    strlcat (statusbuff, tbuff, sizeof (statusbuff));
+  }
 
   if (jsonflag) {
     char    *data;
