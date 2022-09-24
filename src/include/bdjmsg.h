@@ -68,6 +68,9 @@ typedef enum {
   MSG_QUEUE_MIX,            // args: music-q-idx
   MSG_START_MARQUEE,
   MSG_PL_OVERRIDE_STOP_TIME,  // args: stop-time
+  MSG_PL_CLEAR_QUEUE,       // args: music-q-idx
+                            // tells main to clear the playlist queue.
+                            //   used by the song list editor.
 
   /* to player */
   MSG_PLAYER_VOL_MUTE,      // to player. toggle.

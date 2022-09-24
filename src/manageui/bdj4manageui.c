@@ -1857,14 +1857,19 @@ manageCFPLResponseHandler (void *udata, long responseid)
       stoptime += mstime () - mstimestartofday ();
 
       snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
-      connSendMessage (manage->conn, ROUTE_MAIN,
-          MSG_QUEUE_CLEAR, tbuff);
+      connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tbuff);
+      /* overriding the stop time will set the stop time for the next */
+      /* playlist that is loaded */
       snprintf (tbuff, sizeof (tbuff), "%ld", stoptime);
       connSendMessage (manage->conn, ROUTE_MAIN,
           MSG_PL_OVERRIDE_STOP_TIME, tbuff);
       manageSonglistLoadFile (manage, fn);
       /* CONTEXT: managementui: song list: default name for a new song list */
       manageSetSonglistName (manage, _("New Song List"));
+      /* now tell main to clear the playlist queue so that the */
+      /* automatic/sequenced playlist is no longer present */
+      snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
+      connSendMessage (manage->conn, ROUTE_MAIN, MSG_PL_CLEAR_QUEUE, tbuff);
       manage->slbackupcreated = false;
       uiWidgetHide (&manage->cfplDialog);
       break;

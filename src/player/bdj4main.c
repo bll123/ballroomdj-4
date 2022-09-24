@@ -127,6 +127,7 @@ static void mainSigHandler (int sig);
 static void mainMusicQueueFill (maindata_t *mainData);
 static void mainMusicQueuePrep (maindata_t *mainData);
 static char *mainPrepSong (maindata_t *maindata, song_t *song, char *sfname, int playlistIdx, bdjmsgprep_t flag);
+static void mainPlaylistClearQueue (maindata_t *mainData, char *args);
 static void mainTogglePause (maindata_t *mainData, char *args);
 static void mainMusicqMove (maindata_t *mainData, char *args, mainmove_t direction);
 static void mainMusicqMoveTop (maindata_t *mainData, char *args);
@@ -409,13 +410,6 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
-        case MSG_PL_OVERRIDE_STOP_TIME: {
-          /* this message overrides the stop time for the */
-          /* next queue-playlist message */
-          mainData->ploverridestoptime = atol (targs);
-          dbgdisp = true;
-          break;
-        }
         case MSG_QUEUE_DANCE: {
           mainQueueDance (mainData, targs, 1);
           dbgdisp = true;
@@ -474,6 +468,18 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_PLAYBACK_FINISH: {
           mainPlaybackFinishProcess (mainData, targs);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_PL_OVERRIDE_STOP_TIME: {
+          /* this message overrides the stop time for the */
+          /* next queue-playlist message */
+          mainData->ploverridestoptime = atol (targs);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_PL_CLEAR_QUEUE: {
+          mainPlaylistClearQueue (mainData, targs);
           dbgdisp = true;
           break;
         }
@@ -1511,6 +1517,23 @@ mainPrepSong (maindata_t *mainData, song_t *song,
   connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PREP, tbuff);
   logProcEnd (LOG_PROC, "mainPrepSong", "");
   return annfname;
+}
+
+static void
+mainPlaylistClearQueue (maindata_t *mainData, char *args)
+{
+  int   mi;
+
+  logProcBegin (LOG_PROC, "mainPlaylistClearQueue");
+
+  /* used by the song list editor */
+  /* after a song list is created via a sequenced or automatic playlist */
+  /* then the playlist queue needs to be reset */
+
+  mi = atoi (args);
+
+  queueClear (mainData->playlistQueue [mi], 0);
+  logProcEnd (LOG_PROC, "mainPlaylistClearQueue", "");
 }
 
 static void
