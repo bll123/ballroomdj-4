@@ -2118,46 +2118,48 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   char    tbuff2 [40];
   char    jsbuff [3096];
   char    timerbuff [1024];
-  char    statusbuff [1024];
   char    *tokstr = NULL;
   char    *p;
   int     jsonflag;
   int     musicqLen;
+  char    *data;
+  dbidx_t dbidx;
+  song_t  *song;
 
   logProcBegin (LOG_PROC, "mainSendPlayerStatus");
 
+  connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_PLAYER_STATUS_DATA, playerResp);
+  connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_PLAYER_STATUS_DATA, playerResp);
+
   jsonflag = bdjoptGetNum (OPT_P_REMOTECONTROL);
-  statusbuff [0] = '\0';
 
   if (jsonflag) {
     strlcpy (jsbuff, "{ ", sizeof (jsbuff));
-  }
 
-  p = "stop";
-  switch (mainData->playerState) {
-    case PL_STATE_UNKNOWN:
-    case PL_STATE_STOPPED: {
-      p = "stop";
-      break;
+    p = "stop";
+    switch (mainData->playerState) {
+      case PL_STATE_UNKNOWN:
+      case PL_STATE_STOPPED: {
+        p = "stop";
+        break;
+      }
+      case PL_STATE_LOADING:
+      case PL_STATE_PLAYING:
+      case PL_STATE_IN_FADEOUT:
+      case PL_STATE_IN_GAP: {
+        p = "play";
+        break;
+      }
+      case PL_STATE_PAUSED: {
+        p = "pause";
+        break;
+      }
+      default: {
+        /* invalid state - this would be an error */
+        p = "stop";
+        break;
+      }
     }
-    case PL_STATE_LOADING:
-    case PL_STATE_PLAYING:
-    case PL_STATE_IN_FADEOUT:
-    case PL_STATE_IN_GAP: {
-      p = "play";
-      break;
-    }
-    case PL_STATE_PAUSED: {
-      p = "pause";
-      break;
-    }
-    default: {
-      /* invalid state - this would be an error */
-      p = "stop";
-      break;
-    }
-  }
-  if (jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"playstate\" : \"%s\"", p);
     strlcat (jsbuff, tbuff, sizeof (jsbuff));
@@ -2170,8 +2172,6 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     strlcat (jsbuff, ", ", sizeof (jsbuff));
     strlcat (jsbuff, tbuff, sizeof (jsbuff));
   }
-  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-  strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL && jsonflag) {
@@ -2180,8 +2180,6 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     strlcat (jsbuff, ", ", sizeof (jsbuff));
     strlcat (jsbuff, tbuff, sizeof (jsbuff));
   }
-  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-  strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL && jsonflag) {
@@ -2190,8 +2188,6 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     strlcat (jsbuff, ", ", sizeof (jsbuff));
     strlcat (jsbuff, tbuff, sizeof (jsbuff));
   }
-  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-  strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL && jsonflag) {
@@ -2200,8 +2196,6 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     strlcat (jsbuff, ", ", sizeof (jsbuff));
     strlcat (jsbuff, tbuff, sizeof (jsbuff));
   }
-  snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-  strlcat (statusbuff, tbuff, sizeof (statusbuff));
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL && jsonflag) {
@@ -2215,10 +2209,6 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     /* for marquee */
     snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
     strlcpy (timerbuff, tbuff, sizeof (timerbuff));
-
-    /* for player */
-    snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-    strlcat (statusbuff, tbuff, sizeof (statusbuff));
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
@@ -2233,59 +2223,53 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     /* for marquee */
     snprintf (tbuff, sizeof (tbuff), "%s", p);
     strlcat (timerbuff, tbuff, sizeof (timerbuff));
-
-    snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-    strlcat (statusbuff, tbuff, sizeof (statusbuff));
   }
 
-  if (jsonflag) {
-    char    *data;
-    dbidx_t dbidx;
-    song_t  *song;
-
-    musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
-    snprintf (tbuff, sizeof (tbuff),
-        "\"qlength\" : \"%d\"", musicqLen);
-    strlcat (jsbuff, ", ", sizeof (jsbuff));
-    strlcat (jsbuff, tbuff, sizeof (jsbuff));
-
-    /* dance */
-    data = musicqGetDance (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-    if (data == NULL) { data = ""; }
-    snprintf (tbuff, sizeof (tbuff),
-        "\"dance\" : \"%s\"", data);
-    strlcat (jsbuff, ", ", sizeof (jsbuff));
-    strlcat (jsbuff, tbuff, sizeof (jsbuff));
-
-    dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-    song = dbGetByIdx (mainData->musicdb, dbidx);
-
-    /* artist */
-    data = songGetStr (song, TAG_ARTIST);
-    if (data == NULL) { data = ""; }
-    snprintf (tbuff, sizeof (tbuff),
-        "\"artist\" : \"%s\"", data);
-    strlcat (jsbuff, ", ", sizeof (jsbuff));
-    strlcat (jsbuff, tbuff, sizeof (jsbuff));
-
-    /* title */
-    data = songGetStr (song, TAG_TITLE);
-    if (data == NULL) { data = ""; }
-    snprintf (tbuff, sizeof (tbuff),
-        "\"title\" : \"%s\"", data);
-    strlcat (jsbuff, ", ", sizeof (jsbuff));
-    strlcat (jsbuff, tbuff, sizeof (jsbuff));
-
-    strlcat (jsbuff, " }", sizeof (jsbuff));
-
-    connSendMessage (mainData->conn, ROUTE_REMCTRL, MSG_PLAYER_STATUS_DATA, jsbuff);
-  }
-
-  connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_PLAYER_STATUS_DATA, statusbuff);
-  connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_PLAYER_STATUS_DATA, statusbuff);
   if (mainData->marqueestarted) {
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_TIMER, timerbuff);
   }
+
+  if (! jsonflag) {
+    logProcEnd (LOG_PROC, "mainSendPlayerStatus", "no-json");
+    return;
+  }
+
+  musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
+  snprintf (tbuff, sizeof (tbuff),
+      "\"qlength\" : \"%d\"", musicqLen);
+  strlcat (jsbuff, ", ", sizeof (jsbuff));
+  strlcat (jsbuff, tbuff, sizeof (jsbuff));
+
+  /* dance */
+  data = musicqGetDance (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+  if (data == NULL) { data = ""; }
+  snprintf (tbuff, sizeof (tbuff),
+      "\"dance\" : \"%s\"", data);
+  strlcat (jsbuff, ", ", sizeof (jsbuff));
+  strlcat (jsbuff, tbuff, sizeof (jsbuff));
+
+  dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+  song = dbGetByIdx (mainData->musicdb, dbidx);
+
+  /* artist */
+  data = songGetStr (song, TAG_ARTIST);
+  if (data == NULL) { data = ""; }
+  snprintf (tbuff, sizeof (tbuff),
+      "\"artist\" : \"%s\"", data);
+  strlcat (jsbuff, ", ", sizeof (jsbuff));
+  strlcat (jsbuff, tbuff, sizeof (jsbuff));
+
+  /* title */
+  data = songGetStr (song, TAG_TITLE);
+  if (data == NULL) { data = ""; }
+  snprintf (tbuff, sizeof (tbuff),
+      "\"title\" : \"%s\"", data);
+  strlcat (jsbuff, ", ", sizeof (jsbuff));
+  strlcat (jsbuff, tbuff, sizeof (jsbuff));
+
+  strlcat (jsbuff, " }", sizeof (jsbuff));
+
+  connSendMessage (mainData->conn, ROUTE_REMCTRL, MSG_PLAYER_STATUS_DATA, jsbuff);
   logProcEnd (LOG_PROC, "mainSendPlayerStatus", "");
 }
 

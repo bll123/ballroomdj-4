@@ -317,6 +317,7 @@ playerClosingCallback (void *tpdata, programstate_t programState)
     volregClearBDJ4Flag ();
     if (! bdj3flag) {
       volumeSet (playerData->volume, playerData->currentSink, origvol);
+fprintf (stderr, "vol: set to orig: %d\n", origvol);
       logMsg (LOG_DBG, LOG_MAIN, "set to orig volume: (was:%d) %d", playerData->originalSystemVolume, origvol);
     }
   }
@@ -557,6 +558,7 @@ playerProcessing (void *udata)
         ! playerData->mute) {
       playerData->realVolume = playerData->currentVolume;
       volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
+fprintf (stderr, "vol: ann: set to: %d\n", playerData->realVolume);
       logMsg (LOG_DBG, LOG_MAIN, "no fade-in set volume: %d", playerData->currentVolume);
     }
     pliMediaSetup (playerData->pli, pq->tempname);
@@ -710,6 +712,7 @@ playerProcessing (void *udata)
               playerData->playerState, plstateDebugText (playerData->playerState));
           playerData->realVolume = 0;
           volumeSet (playerData->volume, playerData->currentSink, 0);
+fprintf (stderr, "vol: in-gap: set to: %d\n", 0);
           logMsg (LOG_DBG, LOG_MAIN, "gap set volume: %d", 0);
           playerData->inGap = true;
           mstimeset (&playerData->gapFinishTime, playerData->gap);
@@ -1031,6 +1034,7 @@ playerPause (playerdata_t *playerData)
       playerData->inFadeIn = false;
       if (! playerData->mute) {
         volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
+fprintf (stderr, "vol: in-fade-in: set to: %d\n", playerData->realVolume);
       }
     }
   }
@@ -1250,6 +1254,7 @@ playerVolumeSet (playerdata_t *playerData, char *tvol)
   playerData->currentVolume += voldiff;
   playerData->currentVolume = playerLimitVolume (playerData->currentVolume);
   volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
+fprintf (stderr, "vol: set to: %d\n", playerData->realVolume);
   logProcEnd (LOG_PROC, "playerVolumeSet", "");
 }
 
@@ -1377,6 +1382,7 @@ playerFadeVolSet (playerdata_t *playerData)
   }
   if (! playerData->mute) {
     volumeSet (playerData->volume, playerData->currentSink, newvol);
+fprintf (stderr, "vol: fade set to: %d\n", newvol);
   }
   logMsg (LOG_DBG, LOG_MAIN, "fade set volume: %d count:%d",
       newvol, playerData->fadeCount);
@@ -1394,6 +1400,7 @@ playerFadeVolSet (playerdata_t *playerData)
       /* the player stop condition will reset the inFade flag */
       playerData->inFadeOut = false;
       volumeSet (playerData->volume, playerData->currentSink, 0);
+fprintf (stderr, "vol: in-fade-out-fin: set to: %d\n", 0);
       logMsg (LOG_DBG, LOG_MAIN, "fade-out done volume: %d time: %zd", 0, mstimeend (&playerData->playEndCheck));
     }
   }
@@ -1622,6 +1629,7 @@ playerSetDefaultVolume (playerdata_t *playerData)
   logMsg (LOG_DBG, LOG_MAIN, "Original system volume: %d", playerData->originalSystemVolume);
 
   count = volregSave (playerData->currentSink, playerData->originalSystemVolume);
+fprintf (stderr, "vol: dflt: count: %d bdj3flag: %d\n", count, bdj3flag);
   if (count > 1 || bdj3flag) {
     playerData->currentVolume = playerData->originalSystemVolume;
   } else {
@@ -1630,6 +1638,7 @@ playerSetDefaultVolume (playerdata_t *playerData)
   playerData->realVolume = playerData->currentVolume;
 
   volumeSet (playerData->volume, playerData->currentSink, playerData->realVolume);
+fprintf (stderr, "vol: dflt: set to: %d\n", playerData->realVolume);
   logMsg (LOG_DBG, LOG_MAIN, "set volume: %d", playerData->realVolume);
 }
 
