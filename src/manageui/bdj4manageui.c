@@ -210,6 +210,7 @@ typedef struct {
   bool            selusesonglist : 1;
   bool            inload : 1;
   bool            bpmcounterstarted : 1;
+  bool            pluiActive : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -360,6 +361,7 @@ main (int argc, char *argv[])
   uiutilsUIWidgetInit (&manage.cfplDialog);
   manage.cfplsel = uiDropDownInit ();
   manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
+  manage.pluiActive = false;
 
   procutilInitProcesses (manage.processes);
 
@@ -965,13 +967,6 @@ manageHandshakeCallback (void *udata, programstate_t programState)
   if (connHaveHandshake (manage->conn, ROUTE_STARTERUI) &&
       connHaveHandshake (manage->conn, ROUTE_MAIN) &&
       connHaveHandshake (manage->conn, ROUTE_PLAYER)) {
-    char  tmp [40];
-
-    connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "1");
-    snprintf (tmp, sizeof (tmp), "%d", MUSICQ_MNG_PB);
-    connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tmp);
-    connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
-    connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_LEN, "999");
     connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_REQ_PLAYERUI_ACTIVE, NULL);
     progstateLogTime (manage->progstate, "time-to-start-gui");
     manageDbChg (manage->managedb);
@@ -1090,14 +1085,24 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_PLAYERUI_ACTIVE: {
           int   val;
+          char  tmp [40];
+
 
           val = atoi (targs);
+          manage->pluiActive = val;
           uimusicqSetPlayButtonState (manage->slmusicq, val);
           uisongselSetPlayButtonState (manage->slsongsel, val);
           uimusicqSetPlayButtonState (manage->slezmusicq, val);
           uisongselSetPlayButtonState (manage->slezsongsel, val);
           uisongselSetPlayButtonState (manage->mmsongsel, val);
           uisongeditSetPlayButtonState (manage->mmsongedit, val);
+          if (! manage->pluiActive) {
+            connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "1");
+            snprintf (tmp, sizeof (tmp), "%d", MUSICQ_MNG_PB);
+            connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tmp);
+            connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
+            connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_LEN, "999");
+          }
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
