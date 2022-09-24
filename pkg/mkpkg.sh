@@ -81,6 +81,7 @@ function copyreleasefiles {
       ${stage}/bin/bdj4se \
       ${stage}/bin/check_all \
       ${stage}/bin/chkprocess \
+      ${stage}/bin/testsuite \
       ${stage}/bin/tmusicsetup \
       ${stage}/bin/voltest \
       ${state}/img/*-base.svg \

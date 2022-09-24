@@ -241,12 +241,9 @@ get player CHK_PLAYER_STATUS
 chk playstate playing
 resptimeout 35000
 get player CHK_PLAYER_STATUS
-disp playstate
 wait playstate in-fadeout
 resptimeout 5000
-disp playstate
 wait playstate in-gap
-disp playstate
 wait playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 0

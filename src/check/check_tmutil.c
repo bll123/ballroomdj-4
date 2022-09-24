@@ -60,7 +60,8 @@ START_TEST(mssleep_ms)
   tm_s = mstime ();
   mssleep (200);
   tm_e = mstime ();
-  ck_assert_int_lt (abs ((int) (tm_e - tm_s - 200)), 20);
+  /* windows may return 20+ */
+  ck_assert_int_lt (abs ((int) (tm_e - tm_s - 200)), 25);
 }
 END_TEST
 
