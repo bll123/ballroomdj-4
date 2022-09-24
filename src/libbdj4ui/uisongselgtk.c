@@ -1215,8 +1215,8 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
   /* then this is a new selection and not a modification */
   tlist = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
 
-  /* if the control-key or the shift-key are pressed, add any selection */
-  /* that is not in view to the new selection list */
+  /* if the control-key or the shift-key are pressed, add any current */
+  /* selection that is not in view to the new selection list */
   if (uiw->controlPressed || uiw->shiftPressed) {
     nlistStartIterator (uiw->selectedList, &iteridx);
     while ((idx = nlistIterateKey (uiw->selectedList, &iteridx)) >= 0) {
@@ -1243,13 +1243,6 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
 
   nlistStartIterator (uiw->selectedList, &uiw->selectListIter);
   uiw->selectListKey = nlistIterateKey (uiw->selectedList, &uiw->selectListIter);
-  if (uisongsel->newselcb != NULL) {
-    dbidx_t   dbidx;
-
-    /* the song editor points to the first selected */
-    dbidx = nlistGetNum (uiw->selectedList, uiw->selectListKey);
-    uiutilsCallbackLongHandler (uisongsel->newselcb, dbidx);
-  }
 
   /* and now process the selections from gtk */
   gtk_tree_selection_selected_foreach (sel,
@@ -1264,7 +1257,9 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
 
     /* the song editor points to the first selected */
     dbidx = nlistGetNum (uiw->selectedList, uiw->selectListKey);
-    uiutilsCallbackLongHandler (uisongsel->newselcb, dbidx);
+    if (dbidx >= 0) {
+      uiutilsCallbackLongHandler (uisongsel->newselcb, dbidx);
+    }
   }
 }
 
@@ -1374,12 +1369,15 @@ uisongselMoveSelection (void *udata, int where)
       dbidx_t   dbidx;
 
       dbidx = nlistGetNum (uiw->selectedList, uiw->selectListKey);
-      uiutilsCallbackLongHandler (uisongsel->newselcb, dbidx);
+      if (dbidx >= 0) {
+        uiutilsCallbackLongHandler (uisongsel->newselcb, dbidx);
+      }
     }
   }
 
   if (count == 1) {
-    uisongselClearSingleSelection (uisongsel);
+    /* calling getSelectLocation() will set currIter */
+    uisongselGetSelectLocation (uisongsel);
 
     model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiw->songselTree));
     path = gtk_tree_model_get_path (model, &uiw->currIter);
@@ -1387,7 +1385,10 @@ uisongselMoveSelection (void *udata, int where)
       pathstr = gtk_tree_path_to_string (path);
       loc = atol (pathstr);
       free (pathstr);
+    } else {
     }
+
+    uisongselClearSingleSelection (uisongsel);
 
     valid = false;
     if (where == UISONGSEL_FIRST) {
@@ -1420,10 +1421,12 @@ uisongselMoveSelection (void *udata, int where)
         valid = true;
       }
     }
-    if (! valid) {
-      /* if not valid, re-select the original */
-      gtk_tree_selection_select_iter (uiw->sel, &uiw->currIter);
-    }
+
+    /* if the scroll was bumped, 'currIter' is still pointing to the same */
+    /* row (but a new dbidx), re-select it */
+    /* if the iter was moved, currIter is pointing at the new selection */
+    /* if the iter was not moved, the original must be re-selected */
+    gtk_tree_selection_select_iter (uiw->sel, &uiw->currIter);
   }
 }
 

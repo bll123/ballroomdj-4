@@ -1208,6 +1208,10 @@ manageNewSelectionSongSel (void *udata, long dbidx)
     return UICB_CONT;
   }
 
+  if (dbidx < 0) {
+    return UICB_CONT;
+  }
+
   if (manage->mainlasttab != MANAGE_TAB_MAIN_MM) {
     manage->selusesonglist = false;
   }
