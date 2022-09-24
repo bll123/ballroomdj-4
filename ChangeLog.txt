@@ -1,12 +1,11 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha 2022-09-??
+4.0.0 alpha 2022-09-24
 
 - player: fixed broken processing preventing the player from working.
-    (broken in alpha 2022-9-19).
-- song list editor:
-  - fix issues when creating a song list from a playlist.
-  - fix broken next/previous.
+- song list editor: fix issues when creating a song list from a playlist.
+- song editor: fix broken next/previous.
+- management: prevent interference with playerui.
 
 4.0.0 alpha 2022-09-19
 

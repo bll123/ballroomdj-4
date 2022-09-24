@@ -102,7 +102,7 @@ main (int argc, char *argv [])
     { "theme",        no_argument,      NULL,   0 },
   };
 
-  while ((c = getopt_long_only (argc, argv, "BCp:d:mnNRs", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "B3", bdj_options, &option_index)) != -1) {
     switch (c) {
       case '3': {
         clbdj3tags = true;

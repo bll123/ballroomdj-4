@@ -42,6 +42,7 @@
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
+#include "volreg.h"
 
 #define UPDATER_TMP_FILE "tmpupdater.txt"
 
@@ -174,10 +175,14 @@ main (int argc, char *argv [])
     converted = nlistGetNum (updlist, UPD_CONVERTED);
   }
 
-  /* Always remove the volreg.txt file on an update.  */
-  /* This helps prevents any issues with the volreg count. */
+  /* Always remove the volreg.txt and flag files on an update.  */
+  /* This helps prevents any issues with the volume. */
   pathbldMakePath (tbuff, sizeof (tbuff),
       VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+  fileopDelete (tbuff);
+  volregClearBDJ4Flag ();
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_CONFIGDIR);
   fileopDelete (tbuff);
 
   /* always figure out where the home music dir is */
