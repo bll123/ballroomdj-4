@@ -72,7 +72,10 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uiutilsUIWidgetInit (&uimusicq->pausePixbuf);
   uimusicqUIInit (uimusicq);
   uimusicq->newselcb = NULL;
+  uimusicq->editcb = NULL;
+  uimusicq->songsavecb = NULL;
   uimusicq->queuecb = NULL;
+  uimusicq->clearqueuecb = NULL;
   uimusicq->peercount = 0;
   uimusicq->ispeercall = false;
   for (int i = 0; i < UIMUSICQ_PEER_MAX; ++i) {
@@ -150,6 +153,15 @@ uimusicqSetSongSaveCallback (uimusicq_t *uimusicq, UICallback *uicb)
     return;
   }
   uimusicq->songsavecb = uicb;
+}
+
+void
+uimusicqSetClearQueueCallback (uimusicq_t *uimusicq, UICallback *uicb)
+{
+  if (uimusicq == NULL) {
+    return;
+  }
+  uimusicq->clearqueuecb = uicb;
 }
 
 void

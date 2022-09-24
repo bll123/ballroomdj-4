@@ -83,9 +83,9 @@ START_TEST(mssleep_ms_b)
   if (isMacOS ()) {
     val = 60;
   }
-  /* windows is way off */
+  /* windows is way, way off */
   if (isWindows ()) {
-    val = 600;
+    val = 700;
   }
   ck_assert_int_lt (abs ((int) (tm_e - tm_s - 200)), val);
 }

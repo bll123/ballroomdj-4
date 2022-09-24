@@ -57,6 +57,7 @@ enum {
   PLUI_CB_FONT_SIZE,
   PLUI_CB_QUEUE_SL,
   PLUI_CB_SONG_SAVE,
+  PLUI_CB_CLEAR_QUEUE,
   PLUI_CB_MAX,
 };
 
@@ -158,6 +159,7 @@ static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
 static bool     pluiQueueProcess (void *udata, long dbidx, int mqidx);
 static bool     pluiSongSaveCallback (void *udata, long dbidx);
+static bool     pluiClearQueueCallback (void *udata);
 static void     pluiPushHistory (playerui_t *plui, const char *args);
 
 static int gKillReceived = 0;
@@ -516,6 +518,10 @@ pluiBuildUI (playerui_t *plui)
   uiutilsUICallbackLongInit (&plui->callbacks [PLUI_CB_SONG_SAVE],
       pluiSongSaveCallback, plui);
   uimusicqSetSongSaveCallback (plui->uimusicq, &plui->callbacks [PLUI_CB_SONG_SAVE]);
+
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_CLEAR_QUEUE],
+      pluiClearQueueCallback, plui, NULL);
+  uimusicqSetClearQueueCallback (plui->uimusicq, &plui->callbacks [PLUI_CB_CLEAR_QUEUE]);
 
   plui->uibuilt = true;
 
@@ -1233,6 +1239,17 @@ pluiSongSaveCallback (void *udata, long dbidx)
   snprintf (tmp, sizeof (tmp), "%ld", dbidx);
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
   uisongselPopulateData (plui->uisongsel);
+  return UICB_CONT;
+}
+
+static bool
+pluiClearQueueCallback (void *udata)
+{
+  playerui_t  *plui = udata;
+  char        tmp [40];
+
+  snprintf (tmp, sizeof (tmp), "%d", plui->musicqManageIdx);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_PL_CLEAR_QUEUE, tmp);
   return UICB_CONT;
 }
 

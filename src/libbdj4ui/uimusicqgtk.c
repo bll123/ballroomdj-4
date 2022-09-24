@@ -554,8 +554,13 @@ uimusicqTruncateQueueCallback (void *udata)
 
 
   logProcBegin (LOG_PROC, "uimusicqTruncateQueueCallback");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: musicq: %s: clear queue", uimusicq->tag);
 
   ci = uimusicq->musicqManageIdx;
+
+  if (uimusicq->clearqueuecb != NULL) {
+    uiutilsCallbackHandler (uimusicq->clearqueuecb);
+  }
 
   idx = uimusicqGetSelectLocation (uimusicq, ci);
   if (idx < 0) {

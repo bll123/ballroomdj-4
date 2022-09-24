@@ -6,6 +6,7 @@ BallroomDJ 4 Change Log
 - song list editor: fix issues when creating a song list from a playlist.
 - song editor: fix broken next/previous.
 - management: prevent interference with playerui.
+- player: fix automatic/sequenced playlists and 'clear queue' button.
 
 4.0.0 alpha 2022-09-19
 

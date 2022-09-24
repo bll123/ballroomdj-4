@@ -67,6 +67,7 @@ typedef struct uimusicq {
   UICallback      *editcb;
   UICallback      *songsavecb;
   UICallback      *queuecb;
+  UICallback      *clearqueuecb;
   UICallback      queueplcb;
   UICallback      queuedancecb;
   uimusicqui_t    ui [MUSICQ_MAX];
@@ -95,6 +96,7 @@ void  uimusicqSetPlayIdx (uimusicq_t *uimusicq, int playIdx);
 void  uimusicqSetManageIdx (uimusicq_t *uimusicq, int manageIdx);
 void  uimusicqSetSelectionCallback (uimusicq_t *uimusicq, UICallback *uicbdbidx);
 void  uimusicqSetSongSaveCallback (uimusicq_t *uimusicq, UICallback *uicb);
+void  uimusicqSetClearQueueCallback (uimusicq_t *uimusicq, UICallback *uicb);
 void  uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm);
 const char * uimusicqGetSonglistName (uimusicq_t *uimusicq);
 void  uimusicqPeerSonglistName (uimusicq_t *targetqueue, uimusicq_t *sourcequeue);
