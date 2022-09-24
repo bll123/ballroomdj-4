@@ -207,6 +207,9 @@ playlistLoad (playlist_t *pl, const char *fname)
   ilistStartIterator (tpldances, &iteridx);
   while ((tidx = ilistIterateKey (tpldances, &iteridx)) >= 0) {
     /* have to make a clone of the data */
+    /* tidx is a generic key and has no relation to what was loaded */
+    /* into dances.txt. Want to have pl->pldances use the danceidx as */
+    /* the key. */
     didx = ilistGetNum (tpldances, tidx, PLDANCE_DANCE);
     for (size_t i = 0; i < PLDANCE_KEY_MAX; ++i) {
       ilistSetNum (pl->pldances, didx, playlistdancedfkeys [i].itemkey,

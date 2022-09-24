@@ -241,9 +241,12 @@ get player CHK_PLAYER_STATUS
 chk playstate playing
 resptimeout 35000
 get player CHK_PLAYER_STATUS
+disp playstate
 wait playstate in-fadeout
 resptimeout 5000
+disp playstate
 wait playstate in-gap
+disp playstate
 wait playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
@@ -292,6 +295,7 @@ test 30-1 Play-Pause
 msg main MUSICQ_INSERT 0~999~9
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
+resptimeout 2000
 wait playstate playing
 get main CHK_MAIN_MUSICQ
 chk mqplen 1 dbidx 9
@@ -322,6 +326,7 @@ chk mqplen 2
 msg main CMD_PLAY
 mssleep 500
 get player CHK_PLAYER_STATUS
+resptimeout 2000
 wait playstate playing
 msg player PLAY_SEEK 25000
 get player CHK_PLAYER_STATUS
@@ -354,6 +359,7 @@ end
 test 30-3 Next-Song
 # first test when the player is stopped
 print player stopped
+msg main CHK_MAIN_RESET
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~6
 msg main MUSICQ_INSERT 0~999~7
@@ -363,60 +369,71 @@ chk mqplen 4 qdbidx 5
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 msg main CMD_NEXTSONG
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 3 qdbidx 6
 msg main CMD_NEXTSONG
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 2 qdbidx 7
 msg main CMD_NEXTSONG
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 1 qdbidx 8
 msg main CMD_NEXTSONG
+mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
 # next test when the player is playing
 print player playing
+msg main CHK_MAIN_RESET
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~6
 msg main MUSICQ_INSERT 0~999~7
 msg main MUSICQ_INSERT 0~999~8
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
+resptimeout 2000
 wait playstate playing
 get main CHK_MAIN_MUSICQ
 chk mqplen 4 dbidx 5
 get player CHK_PLAYER_STATUS
-wait playstate playing
+chk playstate playing
 msg main CMD_NEXTSONG
+mssleep 500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get main CHK_MAIN_MUSICQ
 chk mqplen 3 dbidx 6
 msg main CMD_NEXTSONG
+mssleep 500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get main CHK_MAIN_MUSICQ
 chk mqplen 2 dbidx 7
 msg main CMD_NEXTSONG
+mssleep 500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get main CHK_MAIN_MUSICQ
 chk mqplen 1 dbidx 8
 msg main CMD_NEXTSONG
+mssleep 500
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
 # next test when the player is paused
 print player paused
+msg main CHK_MAIN_RESET
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~6
 msg main MUSICQ_INSERT 0~999~7
@@ -425,27 +442,32 @@ msg main CMD_PLAY
 mssleep 1000
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
+resptimeout 2000
 wait playstate paused
 get main CHK_MAIN_MUSICQ
 chk mqplen 4 qdbidx 5
 get player CHK_PLAYER_STATUS
 chk playstate paused
 msg main CMD_NEXTSONG
+mssleep 300
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 3 qdbidx 6
 msg main CMD_NEXTSONG
+mssleep 300
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 2 qdbidx 7
 msg main CMD_NEXTSONG
+mssleep 300
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 1 qdbidx 8
 msg main CMD_NEXTSONG
+mssleep 300
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
@@ -464,7 +486,6 @@ resptimeout 5000
 get player CHK_PLAYER_STATUS
 chk playstate in-fadeout
 wait playstate in-gap
-resptimeout 35000
 end
 
 test 30-5 Repeat
@@ -497,6 +518,7 @@ msg main CHK_MAIN_RESET
 msg main MUSICQ_INSERT 0~999~10
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
+resptimeout 2000
 wait playstate playing
 get main CHK_MAIN_MUSICQ
 chk mqplen 1 dbidx 10 songplaysentcount 1

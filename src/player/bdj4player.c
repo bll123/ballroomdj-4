@@ -1636,7 +1636,7 @@ playerSetDefaultVolume (playerdata_t *playerData)
 static void
 playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
 {
-  char  tmp [200];
+  char  tmp [2000];
 
   snprintf (tmp, sizeof (tmp),
       "playstate%c%s%c"

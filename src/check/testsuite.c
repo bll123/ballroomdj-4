@@ -350,6 +350,8 @@ tsProcessing (void *udata)
   if ((testsuite->waitresponse || testsuite->wait) &&
       mstimeCheck (&testsuite->responseTimeoutCheck)) {
     logMsg (LOG_DBG, LOG_BASIC, "timed out %d", testsuite->lineno);
+    fprintf (stdout, "       %d %d/%d (%ld)\n", testsuite->lineno,
+        testsuite->waitresponse, testsuite->wait, testsuite->responseTimeout);
     ++testsuite->results.chkfail;
     testsuite->skiptoend = true;
     tsDisplayCommandResult (testsuite, TS_CHECK_TIMEOUT);
@@ -670,6 +672,7 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
   strlcpy (testsuite->sectionname, p, sizeof (testsuite->sectionname));
 
   clearResults (&testsuite->results);
+  clearResults (&testsuite->gresults);
 
   if (testsuite->runsection || testsuite->runtest) {
     /* always run section 0 */
@@ -914,9 +917,12 @@ tsScriptChkResponse (testsuite_t *testsuite)
     if (testsuite->lessthan) {
       long  a, b;
 
-      a = atol (valchk);
+      a = -2;
+      if (valchk != NULL) {
+        a = atol (valchk);
+      }
       b = atol (val);
-      if (a < b) {
+      if (valchk != NULL && a < b) {
         ++countok;
       } else {
         fprintf (stdout, "          %3d clt-fail: %s: exp: %ld < resp: %ld\n",
@@ -927,9 +933,12 @@ tsScriptChkResponse (testsuite_t *testsuite)
     if (testsuite->greaterthan) {
       long  a, b;
 
-      a = atol (valchk);
+      a = -2;
+      if (valchk != NULL) {
+        a = atol (valchk);
+      }
       b = atol (val);
-      if (a > b) {
+      if (valchk != NULL && a > b) {
         ++countok;
       } else {
         fprintf (stdout, "          %3d cgt-fail: %s: exp: %ld < resp: %ld\n",
@@ -943,6 +952,11 @@ tsScriptChkResponse (testsuite_t *testsuite)
     } else if (testsuite->waitresponse &&
         ! testsuite->lessthan && ! testsuite->greaterthan) {
       fprintf (stdout, "          %3d chk-fail: %s: exp: %s != resp: %s\n",
+            testsuite->lineno, key, val, valchk);
+      fflush (stdout);
+    } else if (testsuite->wait && testsuite->verbose &&
+        ! testsuite->lessthan && ! testsuite->greaterthan) {
+      fprintf (stdout, "          %3d wait-test: %s: exp: %s != resp: %s\n",
             testsuite->lineno, key, val, valchk);
       fflush (stdout);
     }

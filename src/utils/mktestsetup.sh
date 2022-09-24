@@ -50,6 +50,12 @@ cp -f templates/standardrounds.* data
 cp -f test-templates/musicdb.dat data
 cp -f test-templates/status.txt data
 cp -f test-templates/ds-songfilter.txt data/profile00
+cp -f test-templates/test-songlist.pl data
+cp -f test-templates/test-songlist.pldances data
+cp -f test-templates/test-songlist.songlist data
+cp -f test-templates/test-sequence.pl data
+cp -f test-templates/test-sequence.pldances data
+cp -f test-templates/test-sequence.sequence data
 
 cwd=$(pwd)
 

@@ -1,5 +1,4 @@
 # playlist
-# Converted from /home/bll/s/ballroomdj/test.dir/data/m130-01.playlist
 # 2022-08-22 19:14:32
 version
 ..1

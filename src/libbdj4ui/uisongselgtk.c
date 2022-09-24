@@ -1320,7 +1320,6 @@ uisongselMoveSelection (void *udata, int where)
   long            loc = -1;
   char            *pathstr;
   dbidx_t         nidx;
-  int             valid;
   bool            scrolled = false;
 
   uiw = uisongsel->uiWidgetData;
@@ -1385,15 +1384,13 @@ uisongselMoveSelection (void *udata, int where)
       pathstr = gtk_tree_path_to_string (path);
       loc = atol (pathstr);
       free (pathstr);
-    } else {
     }
 
     uisongselClearSingleSelection (uisongsel);
 
-    valid = false;
     if (where == UISONGSEL_FIRST) {
       scrolled = uisongselScrollSelection (uisongsel, 0, UISONGSEL_SCROLL_FORCE);
-      valid = gtk_tree_model_get_iter_first (model, &uiw->currIter);
+      gtk_tree_model_get_iter_first (model, &uiw->currIter);
     }
     if (where == UISONGSEL_NEXT) {
       nidx = uisongsel->idxStart + 1;
@@ -1404,10 +1401,8 @@ uisongselMoveSelection (void *udata, int where)
         gtk_tree_model_get (model, &uiw->currIter, SONGSEL_COL_IDX, &idx, -1);
         if (loc < uiw->maxRows - 1 &&
             idx < uisongsel->dfilterCount - 1) {
-          valid = gtk_tree_model_iter_next (model, &uiw->currIter);
+          gtk_tree_model_iter_next (model, &uiw->currIter);
         }
-      } else {
-        valid = true;
       }
     }
     if (where == UISONGSEL_PREVIOUS) {
@@ -1415,10 +1410,8 @@ uisongselMoveSelection (void *udata, int where)
       scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_FORCE);
       if (! scrolled) {
         if (loc > 0) {
-          valid = gtk_tree_model_iter_previous (model, &uiw->currIter);
+          gtk_tree_model_iter_previous (model, &uiw->currIter);
         }
-      } else {
-        valid = true;
       }
     }
 
@@ -1426,6 +1419,7 @@ uisongselMoveSelection (void *udata, int where)
     /* row (but a new dbidx), re-select it */
     /* if the iter was moved, currIter is pointing at the new selection */
     /* if the iter was not moved, the original must be re-selected */
+    /* no need to check the return value from the iter change */
     gtk_tree_selection_select_iter (uiw->sel, &uiw->currIter);
   }
 }
