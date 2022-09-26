@@ -1,4 +1,4 @@
-# 2022-9-13
+# 2022-9-26
 #
 # test songs are all between 29 and 32 seconds long
 # fade-out default: 4000
@@ -309,7 +309,7 @@ end
 test 30-20 Pause-at-End
 msg main MUSICQ_INSERT 0~999~10
 msg main CMD_PLAY
-resptimeout 1000
+resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 500
@@ -324,6 +324,7 @@ chk pauseatend 0 playstate playing
 msg player PLAY_PAUSEATEND
 get player CHK_PLAYER_STATUS
 chk pauseatend 1 playstate playing
+# after the song stops, the player will be in the stopped state
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 chk pauseatend 1 playstate in-fadeout
@@ -417,7 +418,7 @@ end
 # nextsong is used internally by the 'end' command
 test 30-50 Next-Song
 # first test when the player is stopped
-print player stopped
+print stopped
 msg main CHK_MAIN_RESET
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~6
@@ -452,7 +453,7 @@ chk playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
 # next test when the player is playing
-print player playing
+print playing
 msg main CHK_MAIN_RESET
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~6
@@ -491,7 +492,7 @@ chk playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
 # next test when the player is paused
-print player paused
+print paused
 msg main CHK_MAIN_RESET
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~6
@@ -578,15 +579,100 @@ chk dbidx 13
 end
 
 test 30-70 Beginning-of-Song
-print TBD
+msg main MUSICQ_INSERT 0~999~13
+get main CHK_MAIN_MUSICQ
+chk mqplen 1
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate playing
+mssleep 500
+get player CHK_PLAYER_STATUS
+clt playtimeplayed 1000
+msg player PLAY_SONG_BEGIN
+get player CHK_PLAYER_STATUS
+clt playtimeplayed 200
+mssleep 2000
+get player CHK_PLAYER_STATUS
+cgt playtimeplayed 2000
+msg player PLAY_SONG_BEGIN
+get player CHK_PLAYER_STATUS
+clt playtimeplayed 200
+get player CHK_PLAYER_STATUS
+chk playstate playing
+## this needs to be implemented in the player
+## song-begin during a fade does nothing
+#mssleep 2000
+#get player CHK_PLAYER_STATUS
+#cgt playtimeplayed 2000
+#msg player PLAY_FADE
+#get player CHK_PLAYER_STATUS
+#wait playstate in-fadeout
+#msg player PLAY_SONG_BEGIN
+#get player CHK_PLAYER_STATUS
+#chk playstate in-fadeout
+#get player CHK_PLAYER_STATUS
+#disp playtimeplayed
+#cgt playtimeplayed 2000
 end
 
 test 30-80 Volume
-print TBD
+msg main MUSICQ_INSERT 0~999~14
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk currvolume 20 realvolume 20
+msg player PLAYER_VOLUME 30
+get player CHK_PLAYER_STATUS
+chk currvolume 30 realvolume 30
+msg player PLAYER_VOLUME 40
+get player CHK_PLAYER_STATUS
+chk currvolume 40 realvolume 40
+msg player PLAYER_VOLUME 20
+get player CHK_PLAYER_STATUS
+chk currvolume 20 realvolume 20
 end
 
 test 30-90 Speed
-print TBD
+msg main MUSICQ_INSERT 0~999~15
+msg main MUSICQ_INSERT 0~999~16
+msg main MUSICQ_INSERT 0~999~17
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk speed 100
+msg player PLAY_SPEED 110
+get player CHK_PLAYER_STATUS
+chk speed 110
+msg player PLAY_SPEED 90
+get player CHK_PLAYER_STATUS
+chk speed 90
+msg player PLAY_FADE
+resptimeout 8000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+msg player PLAY_SPEED 130
+mssleep 2000
+get player CHK_PLAYER_STATUS
+cgt playtimeplayed 2000
+get player CHK_PLAYER_STATUS
+clt playtimeplayed 2200
+msg player PLAY_FADE
+resptimeout 8000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+msg player PLAY_SPEED 70
+mssleep 2000
+get player CHK_PLAYER_STATUS
+cgt playtimeplayed 2000
+get player CHK_PLAYER_STATUS
+clt playtimeplayed 2200
 end
 
 section 40 Basic-Bugs

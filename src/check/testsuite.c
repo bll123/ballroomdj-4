@@ -69,6 +69,7 @@ typedef struct {
   bdjmsgmsg_t waitMessage;
   mstime_t    waitCheck;
   results_t   results;
+  results_t   sresults;
   results_t   gresults;
   char        sectionnum [10];
   char        sectionname [80];
@@ -154,6 +155,7 @@ main (int argc, char *argv [])
   procutilInitProcesses (testsuite.processes);
   testsuite.conn = connInit (ROUTE_TEST_SUITE);
   clearResults (&testsuite.results);
+  clearResults (&testsuite.sresults);
   clearResults (&testsuite.gresults);
   testsuite.progstate = progstateInit ("testsuite");
   testsuite.stopwaitcount = 0;
@@ -224,8 +226,11 @@ main (int argc, char *argv [])
   listenPort = bdjvarsGetNum (BDJVL_TEST_SUITE_PORT);
   sockhMainLoop (listenPort, tsProcessMsg, tsProcessing, &testsuite);
 
-  strlcpy (testsuite.sectionname, "Final", sizeof (testsuite.sectionname));
+  strlcpy (testsuite.testnum, "", sizeof (testsuite.testnum));
   strlcpy (testsuite.testname, "", sizeof (testsuite.testname));
+  printResults (&testsuite, &testsuite.sresults);
+
+  strlcpy (testsuite.sectionname, "Final", sizeof (testsuite.sectionname));
   state = "FAIL";
   rc = 1;
   if (testsuite.gresults.testfail == 0) {
@@ -352,6 +357,7 @@ tsProcessing (void *udata)
     logMsg (LOG_DBG, LOG_BASIC, "timed out %d", testsuite->lineno);
     fprintf (stdout, "       %d %d/%d (%ld)\n", testsuite->lineno,
         testsuite->waitresponse, testsuite->wait, testsuite->responseTimeout);
+    fflush (stdout);
     ++testsuite->results.chkfail;
     testsuite->skiptoend = true;
     tsDisplayCommandResult (testsuite, TS_CHECK_TIMEOUT);
@@ -532,6 +538,12 @@ tsProcessScript (testsuite_t *testsuite)
       }
     }
 
+    if (testsuite->runsection == false &&
+        strcmp (testsuite->sectionnum, "0") != 0) {
+      strlcpy (testsuite->testnum, "", sizeof (testsuite->testnum));
+      strlcpy (testsuite->testname, "", sizeof (testsuite->testname));
+      printResults (testsuite, &testsuite->sresults);
+    }
     ok = tsScriptSection (testsuite, tcmd);
   }
 
@@ -558,6 +570,7 @@ tsProcessScript (testsuite_t *testsuite)
       testsuite->skiptoend = false;
     }
     if (strncmp (tcmd, "reset", 5) == 0) {
+      fprintf (stdout, "\n");
       clearResults (&testsuite->results);
       resetPlayer (testsuite);
       resetChkResponse (testsuite);
@@ -634,6 +647,10 @@ clearResults (results_t *results)
 static void
 tallyResults (testsuite_t *testsuite)
 {
+  testsuite->sresults.testcount += testsuite->results.testcount;
+  testsuite->sresults.testfail += testsuite->results.testfail;
+  testsuite->sresults.chkcount += testsuite->results.chkcount;
+  testsuite->sresults.chkfail += testsuite->results.chkfail;
   testsuite->gresults.testcount += testsuite->results.testcount;
   testsuite->gresults.testfail += testsuite->results.testfail;
   testsuite->gresults.chkcount += testsuite->results.chkcount;
@@ -650,9 +667,11 @@ printResults (testsuite_t *testsuite, results_t *results)
   } else {
     ++results->testfail;
   }
-  fprintf (stdout, "   %s %s %s %s checks: %d failed: %d\n",
-      state, testsuite->testnum, testsuite->sectionname, testsuite->testname,
-      results->chkcount, results->chkfail);
+  if (! *testsuite->testname) {
+    fprintf (stdout, "   %s", testsuite->sectionname);
+  }
+  fprintf (stdout, "   checks: %d failed: %d %s\n",
+      results->chkcount, results->chkfail, state);
   fflush (stdout);
 }
 
@@ -679,7 +698,7 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
   strlcpy (testsuite->sectionname, p, sizeof (testsuite->sectionname));
 
   clearResults (&testsuite->results);
-  clearResults (&testsuite->gresults);
+  clearResults (&testsuite->sresults);
 
   if (testsuite->runsection || testsuite->runtest) {
     /* always run section 0 */
@@ -698,8 +717,7 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
     }
   }
 
-  if (testsuite->runsection == false && testsuite->runtest == false &&
-      testsuite->endnextsection == false && testsuite->endnexttest == false) {
+  if (testsuite->runsection == false && testsuite->runtest == false) {
     fprintf (stdout, "== %s %s\n", testsuite->sectionnum, testsuite->sectionname);
     fflush (stdout);
   }
@@ -740,7 +758,7 @@ tsScriptTest (testsuite_t *testsuite, const char *tcmd)
   }
 
   if (testsuite->runtest == false) {
-    fprintf (stdout, "-- %s %s %s\n", testsuite->testnum,
+    fprintf (stdout, "   -- %s %s %s", testsuite->testnum,
         testsuite->sectionname, testsuite->testname);
     fflush (stdout);
   }
@@ -861,7 +879,7 @@ tsScriptPrint (testsuite_t *testsuite, const char *tcmd)
     free (tstr);
     return TS_BAD_COMMAND;
   }
-  fprintf (stdout, "   # %s\n", p);
+  fprintf (stdout, " %s", p);
   fflush (stdout);
   free (tstr);
   return TS_OK;
