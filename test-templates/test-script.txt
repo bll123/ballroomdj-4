@@ -55,7 +55,7 @@
 # Section 0 is special.  It is always run for all sections and all tests.
 section 0 Init
 
-test 0-1 Init
+test 0-10 Init
 msg main QUEUE_PLAY_ON_ADD 0
 msg main QUEUE_SWITCH_EMPTY 0
 msg main MUSICQ_SET_MANAGE 0
@@ -64,7 +64,7 @@ reset
 
 section 10 Music-Queue
 
-test 10-1 Insert-End
+test 10-10 Insert-End
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
 msg main MUSICQ_INSERT 0~999~0
@@ -87,7 +87,7 @@ get main CHK_MAIN_MUSICQ
 chk mqplen 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
 end
 
-test 10-2 Insert-Begin
+test 10-20 Insert-Begin
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
 msg main MUSICQ_INSERT 0~0~0
@@ -110,7 +110,7 @@ get main CHK_MAIN_MUSICQ
 chk mqplen 6 mq0idx0 0 mq0idx1 1 mq0idx2 5 mq0idx3 4 mq0idx4 3 mq0idx5 2
 end
 
-test 10-3 Move-Up
+test 10-30 Move-Up
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
@@ -137,7 +137,7 @@ get main CHK_MAIN_MUSICQ
 chk mqplen 6 mq0idx0 5 mq0idx1 0 mq0idx2 1 mq0idx3 2 mq0idx4 3 mq0idx5 4
 end
 
-test 10-4 Move-Down
+test 10-40 Move-Down
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
@@ -160,7 +160,7 @@ get main CHK_MAIN_MUSICQ
 chk mqplen 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 5 mq0idx5 1
 end
 
-test 10-5 Move-Top
+test 10-50 Move-Top
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
@@ -195,7 +195,7 @@ get main CHK_MAIN_MUSICQ
 chk mqplen 6 mq0idx0 0 mq0idx1 5 mq0idx2 4 mq0idx3 2 mq0idx4 3 mq0idx5 1
 end
 
-test 10-6 Remove
+test 10-60 Remove
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
@@ -223,7 +223,7 @@ end
 
 section 20 Basic-Playback
 
-test 20-1 Insert-Play
+test 20-10 Insert-Play
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
 msg main MUSICQ_INSERT 0~999~0
@@ -254,7 +254,7 @@ get main CHK_MAIN_MUSICQ
 chk mqplen 0
 end
 
-test 20-2 Insert-Play-2
+test 20-20 Insert-Play-2
 get main CHK_MAIN_MUSICQ
 chk mqplen 0
 msg main MUSICQ_INSERT 0~999~1
@@ -287,34 +287,97 @@ end
 
 section 30 Playback-Controls
 
-# play/pause is needed for testing nextsong and position
-test 30-1 Play-Pause
+test 30-10 Fade
 msg main MUSICQ_INSERT 0~999~9
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+resptimeout 1000
+wait playstate playing
+mssleep 500
+msg player PLAY_FADE
+resptimeout 5000
+get player CHK_PLAYER_STATUS
+chk playstate in-fadeout
+# a fade during in-fadeout does nothing
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+chk playstate in-fadeout
+get player CHK_PLAYER_STATUS
+wait playstate in-gap
+end
+
+test 30-20 Pause-at-End
+msg main MUSICQ_INSERT 0~999~10
+msg main CMD_PLAY
+resptimeout 1000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk pauseatend 0 playstate playing
+msg player PLAY_PAUSEATEND
+get player CHK_PLAYER_STATUS
+chk pauseatend 1 playstate playing
+msg player PLAY_PAUSEATEND
+get player CHK_PLAYER_STATUS
+chk pauseatend 0 playstate playing
+msg player PLAY_PAUSEATEND
+get player CHK_PLAYER_STATUS
+chk pauseatend 1 playstate playing
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+chk pauseatend 1 playstate in-fadeout
+get player CHK_PLAYER_STATUS
+resptimeout 5000
+wait playstate stopped
+get player CHK_PLAYER_STATUS
+chk pauseatend 0 playstate stopped
+end
+
+test 30-30 Play-Pause
+msg main MUSICQ_INSERT 0~999~11
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 dbidx 9
+chk mqplen 1 dbidx 11
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 chk playstate paused
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 qdbidx 9
+chk mqplen 1 qdbidx 11
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 chk playstate playing
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 dbidx 9
+chk mqplen 1 dbidx 11
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 chk playstate paused
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 qdbidx 9
+chk mqplen 1 qdbidx 11
+msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+chk playstate playing
+get main CHK_MAIN_MUSICQ
+chk mqplen 1 dbidx 11
+# a pause during in-fadeout creates a pause-at-end condition
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 1000
+wait playstate in-fadeout
+get player CHK_PLAYER_STATUS
+chk pauseatend 0 playstate in-fadeout
+msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+chk pauseatend 1 playstate in-fadeout
+resptimeout 8000
+get player CHK_PLAYER_STATUS
+wait playstate stopped
 end
 
-# seek can be used to shorten the time taken for many tests
-test 30-2 Position
+test 30-40 Position
 # test while playing
 msg main MUSICQ_INSERT 0~999~3
 msg main MUSICQ_INSERT 0~999~4
@@ -351,9 +414,8 @@ get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
 end
 
-# nextsong can be used to shorten the time taken for many tests
-# nextsong is also used internally by the 'end' command
-test 30-3 Next-Song
+# nextsong is used internally by the 'end' command
+test 30-50 Next-Song
 # first test when the player is stopped
 print player stopped
 msg main CHK_MAIN_RESET
@@ -471,37 +533,59 @@ get main CHK_MAIN_MUSICQ
 chk mqplen 0
 end
 
-# fade is also useful for shortening the time tests take.
-test 30-4 Fade
-msg main MUSICQ_INSERT 0~999~11
+test 30-60 Repeat
+msg main MUSICQ_INSERT 0~999~12
+msg main MUSICQ_INSERT 0~999~13
 msg main CMD_PLAY
-mssleep 1000
+resptimeout 2000
 get player CHK_PLAYER_STATUS
-chk playstate playing
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk dbidx 12
+mssleep 500
+get player CHK_PLAYER_STATUS
+chk repeat 0 playstate playing
+get main CHK_MAIN_MUSICQ
+chk dbidx 12
+msg player PLAY_REPEAT
+get player CHK_PLAYER_STATUS
+chk repeat 1 playstate playing
+get main CHK_MAIN_MUSICQ
+chk dbidx 12
+# same song
 msg player PLAY_FADE
-resptimeout 5000
+resptimeout 8000
 get player CHK_PLAYER_STATUS
-chk playstate in-fadeout
-wait playstate in-gap
+wait playstate playing
+get player CHK_PLAYER_STATUS
+chk repeat 1 playstate playing
+get main CHK_MAIN_MUSICQ
+chk dbidx 12
+# next song
+msg player PLAY_REPEAT
+get player CHK_PLAYER_STATUS
+chk repeat 0 playstate playing
+get main CHK_MAIN_MUSICQ
+chk dbidx 12
+msg player PLAY_FADE
+resptimeout 8000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get player CHK_PLAYER_STATUS
+chk repeat 0 playstate playing
+get main CHK_MAIN_MUSICQ
+chk dbidx 13
 end
 
-test 30-5 Repeat
+test 30-70 Beginning-of-Song
 print TBD
 end
 
-test 30-6 Beginning-of-Song
+test 30-80 Volume
 print TBD
 end
 
-test 30-7 Pause-at-End
-print TBD
-end
-
-test 30-8 Volume
-print TBD
-end
-
-test 30-9 Speed
+test 30-90 Speed
 print TBD
 end
 
@@ -510,7 +594,7 @@ section 40 Basic-Bugs
 # 2022-9-14 the main player would send the song-play command to the player
 # when paused.  Can't seem to duplicate the actual playback w/o going
 # through the playerui, but the 'songplaysentcount' tells the story.
-test 40-1 Bug-Dup-Playback-2022-9-14
+test 40-10 Bug-Dup-Playback-2022-9-14
 msg main CHK_MAIN_RESET
 msg main MUSICQ_INSERT 0~999~10
 msg main CMD_PLAY
@@ -540,19 +624,19 @@ section 70 Music-Queue-Switch
 
 section 90 Player-Config
 
-test 90-1 Gap
+test 90-10 Gap
 print TBD
 end
 
-test 90-2 Fade-In
+test 90-20 Fade-In
 print TBD
 end
 
-test 90-3 Fade-Out
+test 90-30 Fade-Out
 print TBD
 end
 
-test 90-4 Maximum-Play-Time
+test 90-40 Maximum-Play-Time
 print TBD
 end
 
@@ -568,63 +652,63 @@ section 150 Announcements
 
 section 170 Song-Controls
 
-test 170-1 Song-Start
+test 170-10 Song-Start
 print TBD
 end
 
-test 170-2 Song-End
+test 170-20 Song-End
 print TBD
 end
 
-test 170-3 Volume-Adjustment
+test 170-30 Volume-Adjustment
 print TBD
 end
 
-test 170-4 Speed-Adjustment
+test 170-40 Speed-Adjustment
 print TBD
 end
 
 section 180 Playlist-Controls
 
-test 180-1 Maximum-Play-Time
+test 180-10 Maximum-Play-Time
 print TBD
 end
 
-test 180-2 Stop-At
+test 180-20 Stop-At
 print TBD
 end
 
-test 180-3 Stop-After
+test 180-30 Stop-After
 print TBD
 end
 
-test 18--4 Gap
+test 180-40 Gap
 print TBD
 end
 
 section 190 Song-Filter
 
-test 190-1 Dance-Filter
+test 190-10 Dance-Filter
 print TBD
 end
 
-test 190-2 Rating-Filter
+test 190-20 Rating-Filter
 print TBD
 end
 
-test 190-3 Level-Filter
+test 190-30 Level-Filter
 print TBD
 end
 
-test 190-4 Status-Filter
+test 190-40 Status-Filter
 print TBD
 end
 
-test 190-5 Favorite-Filter
+test 190-50 Favorite-Filter
 print TBD
 end
 
-test 190-6 Keyword-Filter
+test 190-60 Keyword-Filter
 print TBD
 end
 

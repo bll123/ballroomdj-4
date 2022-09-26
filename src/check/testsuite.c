@@ -366,9 +366,16 @@ tsProcessing (void *udata)
   }
 
   if (testsuite->wait == false && testsuite->waitresponse == false) {
-    if (tsProcessScript (testsuite)) {
-      progstateShutdownProcess (testsuite->progstate);
-      logMsg (LOG_DBG, LOG_BASIC, "finished script");
+    int   count = 1;
+
+    while (count == 1 || testsuite->runtest || testsuite->runsection) {
+      if (! testsuite->runtest && ! testsuite->runsection) {
+        count = 0;
+      }
+      if (tsProcessScript (testsuite)) {
+        progstateShutdownProcess (testsuite->progstate);
+        logMsg (LOG_DBG, LOG_BASIC, "finished script");
+      }
     }
   }
 
@@ -832,10 +839,8 @@ tsScriptDisp (testsuite_t *testsuite, const char *tcmd)
   p = strtok_r (NULL, " ", &tokstr);
   while (p != NULL) {
     valchk = slistGetStr (testsuite->chkresponse, p);
-    if (valchk != NULL) {
-      fprintf (stdout, "       %s %s\n", p, valchk);
-      fflush (stdout);
-    }
+    fprintf (stdout, "       %s %s\n", p, valchk);
+    fflush (stdout);
     p = strtok_r (NULL, " ", &tokstr);
   }
   free (tstr);
@@ -1099,7 +1104,7 @@ tsDisplayCommandResult (testsuite_t *testsuite, ts_return_t ok)
     }
   }
   if (ok != TS_OK) {
-    fprintf (stdout, "          %s\n", tmsg);
+    fprintf (stdout, "          %3d %s\n", testsuite->lineno, tmsg);
     fflush (stdout);
   }
 }
