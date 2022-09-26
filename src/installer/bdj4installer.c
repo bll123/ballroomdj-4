@@ -2036,25 +2036,31 @@ installerPythonCheck (installer_t *installer)
 
   installerPythonGetVersion (installer);
 
-/* this code will not be in use at this time, as a method to remove the */
-/* old versions of python is needed */
-#if 0
   if (installer->pythoninstalled) {
     char    *p;
+    int     majvers;
 
     strlcpy (tbuff, installer->pyversion, sizeof (tbuff));
     p = strstr (tbuff, ".");
     if (p != NULL) {
+      majvers = atoi (p);
       p = strstr (p + 1, ".");
       if (p != NULL) {
         *p = '\0';
       }
+#if 0
+      /* there's no way to easily uninstall older versions, so comparing */
+      /* versions is not very helpful. */
       if (versionCompare (sysvarsGetStr (SV_PYTHON_DOT_VERSION), tbuff) < 0) {
+        installer->updatepython = true;
+      }
+#endif
+      /* if a very old version of python is installed, do an update */
+      if (majvers < 3) {
         installer->updatepython = true;
       }
     }
   }
-#endif
 
   if (installer->pythoninstalled && ! installer->updatepython) {
     installer->instState = INST_MUTAGEN_CHECK;

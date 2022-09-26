@@ -2,7 +2,9 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-09-26
 
-- windows installer: Fix problem with run-time library requirements.
+- windows installer:
+  - Fix problem with run-time library requirements.
+  - If a very old version of python is found, install a new version.
 - localization:
   - Fixed an issue with text replacement.
   - Update Nederlands to latest.

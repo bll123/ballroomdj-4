@@ -60,7 +60,10 @@ _HERE_
 unix2dos -q $MCDIR
 unix2dos -q $FLIST
 
-cmd.exe /c "makecab /V1 /F $MCDIR /f $FLIST > $MCLOG"
+# avoid strange 'bad address' errors from executing cmd.exe
+# from within msys2.
+CEXE=$(which cmd.exe)
+$CEXE \\/c "makecab /V2 /F $MCDIR /f $FLIST > $MCLOG"
 if [[ ! -f $MCOUT ]]; then
   echo "ERR: cabinet creation failed."
   exit 1
