@@ -26,11 +26,16 @@ static bool initialized = false;
 void
 mssleep (time_t mt)
 {
-/* windows seems to have a large amount of overhead when calling */
-/* nanosleep() or Sleep().  Since there's no difference, may as well */
-/* use the nanosleep call. */
+/* windows seems to have a very large amount of overhead when calling */
+/* nanosleep() or Sleep(). */
 /* macos seems to have a minor amount of overhead when calling nanosleep() */
-#if _lib_nanosleep
+
+/* on windows, nanosleep is within the libwinpthread msys2 library which */
+/* is not wanted for bdj4se &etc. So use the Windows API Sleep() function */
+#if _lib_Sleep
+  Sleep ((DWORD) mt);
+#endif
+#if ! _lib_Sleep && _lib_nanosleep
   int               rc;
   struct timespec   ts;
   struct timespec   rem;

@@ -54,6 +54,7 @@
 #cmakedefine01 _lib_LoadLibrary
 #cmakedefine01 _lib_MultiByteToWideChar
 #cmakedefine01 _lib_OpenProcess
+#cmakedefine01 _lib_Sleep
 #cmakedefine01 _lib_TerminateProcess
 #cmakedefine01 _lib_WideCharToMultiByte
 #cmakedefine01 _lib_WriteFile
