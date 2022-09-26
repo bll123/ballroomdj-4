@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-08-11\n"
-"PO-Revision-Date: 2022-09-24\n"
+"POT-Creation-Date: 2022-09-10\n"
+"PO-Revision-Date: 2022-09-26\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -270,15 +270,15 @@ msgstr "Artiest"
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send data files
 msgid "Attach Data Files"
-msgstr ""
+msgstr "Databestanden toevoegen"
 
 #. CONTEXT: starterui: sending support message: checkbox: option to send database
 msgid "Attach Database"
-msgstr ""
+msgstr "Database koppelen"
 
 #. CONTEXT: configuration: which audio interface to use
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #. CONTEXT: configuration: announcement selection dialog: audio file filter
 msgid "Audio Files"
@@ -303,7 +303,7 @@ msgstr "Enkel BDJ Tags"
 
 #. CONTEXT: installer: status message
 msgid "BDJ3 database version is too old."
-msgstr ""
+msgstr "BDJ3 database versie is te oud."
 
 #. CONTEXT: configuration: Whether to display BPM as BPM or MPM
 #. CONTEXT: label: beats per minute
@@ -313,7 +313,7 @@ msgstr "BPM"
 
 #. CONTEXT: bpm counter: title of window
 msgid "BPM Counter"
-msgstr ""
+msgstr "BPM Counter"
 
 #. CONTEXT: configuration file: dance
 msgid "Bachata"
@@ -345,7 +345,7 @@ msgstr "Controleren op nieuwe"
 
 #. CONTEXT: database update: check for new: help text
 msgid "Checks for new audio files."
-msgstr ""
+msgstr "Controleert op nieuwe audiobestanden."
 
 #. CONTEXT: configuration file: genre
 msgid "Classical"
@@ -357,12 +357,12 @@ msgstr "Klassiek?"
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
 msgid "Clear & Play"
-msgstr ""
+msgstr "Wissen & Afspelen"
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: music queue: button: clear the queue
 msgid "Clear Queue"
-msgstr ""
+msgstr "Wachtrij wissen"
 
 #. CONTEXT: managementui: menu selection: music manager: clear same-song mark
 msgid "Clear Same Song Mark"
@@ -402,41 +402,41 @@ msgstr "Uitvoerend artiest"
 
 #. CONTEXT: starterui: button: starts the configuration user interface
 msgid "Configure"
-msgstr ""
+msgstr "Configureren"
 
 #. CONTEXT: installer: status message
 msgid "Conversion complete."
-msgstr ""
+msgstr "Conversie voltooid."
 
 #. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
 #, c-format
 msgid "Convert %s"
-msgstr ""
+msgstr "Converteer %s"
 
 #. CONTEXT: manageui: failure status message
 #, c-format
 msgid "Copy already exists."
-msgstr ""
+msgstr "Kopij bestaat al."
 
 #. CONTEXT: installer: status message
 msgid "Copy finished."
-msgstr ""
+msgstr "Kopiëren voltooid."
 
 #. CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #. CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04")
 #, c-format
 msgid "Copy of %s"
-msgstr ""
+msgstr "Kopij van %s"
 
 #. CONTEXT: installer: status message
 msgid "Copying files."
-msgstr ""
+msgstr "Bestanden kopiëren."
 
 #. CONTEXT: set up alternate: status message
 #. CONTEXT: installer: status message
 msgid "Copying template files."
-msgstr ""
+msgstr "Kopiëren van sjabloonbestanden."
 
 #. CONTEXT: playlist management: count column header
 msgid "Count"
@@ -454,7 +454,7 @@ msgstr "Kopie maken"
 
 #. CONTEXT: starterui: selection to create a new profile
 msgid "Create Profile"
-msgstr ""
+msgstr "Profiel aanmaken"
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
 #. CONTEXT: create from playlist: title for the dialog

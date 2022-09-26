@@ -32,7 +32,7 @@ function mksub {
         continue
         ;;
     esac
-    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,')
+    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,' -e 's,\&,\\&,g')
     case $line in
       ..*)
         xl=$(echo "..$xl")
@@ -54,6 +54,7 @@ function mkhtmlsub {
   set -o noglob
   echo "-- Processing $tmpl"
   sedcmd=""
+set -x
   while read -r line; do
     nl=$line
     case $nl in
@@ -67,10 +68,11 @@ function mkhtmlsub {
         continue
         ;;
     esac
-    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,')
+    xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,' -e 's,\&,\\&amp;,g')
     sedcmd+="-e '\~value=\"${nl}\"~ s~value=\"${nl}\"~value=\"${xl}\"~' "
     sedcmd+="-e '\~>${nl}</p>~ s~${nl}~${xl}~' "
   done < $tempf
+set +x
 
   eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
   set +o noglob

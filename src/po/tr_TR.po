@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-08-11\n"
-"PO-Revision-Date: 2022-09-24\n"
+"POT-Creation-Date: 2022-09-10\n"
+"PO-Revision-Date: 2022-09-26\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -22,7 +22,7 @@ msgstr ""
 #. CONTEXT: song editor: status msg: (song end must be greater than song start)
 #, c-format
 msgid "%1$s must be greater than %2$s"
-msgstr "%1$s %2$s'den daha iyi olmalı"
+msgstr ""
 
 #. CONTEXT: database update: status message
 #, c-format

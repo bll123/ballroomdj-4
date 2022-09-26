@@ -1,5 +1,12 @@
 BallroomDJ 4 Change Log
 
+4.0.0 alpha 2022-09-26
+
+- windows installer: Fix problem with run-time library requirements.
+- localization:
+  - Fixed an issue with text replacement.
+  - Update Nederlands to latest.
+
 4.0.0 alpha 2022-09-24
 
 - player: fixed broken processing preventing the player from working.
