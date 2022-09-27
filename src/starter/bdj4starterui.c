@@ -757,6 +757,11 @@ starterMainLoop (void *tstarter)
       starterSendFile (starter, tbuff, ofn);
       fileopDelete (tbuff);
 
+      strlcpy (tbuff, "VERSION.txt", sizeof (tbuff));
+      pathbldMakePath (ofn, sizeof (ofn),
+          tbuff, ".gz.b64", PATHBLD_MP_TMPDIR);
+      starterSendFile (starter, tbuff, ofn);
+
       starter->startState = START_STATE_SUPPORT_SEND_FILES_DATA;
       break;
     }
