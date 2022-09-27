@@ -18,7 +18,8 @@
 #
 # main:
 #   status:
-#     mqmanage mqplay mqmlen mqplen dbidx m-songfn title dance
+#     mqmanage mqplay mq0len mq1len dbidx m-songfn title dance
+#     mqXidxN (mq 0-1 idx 0-5)
 # player:
 #   status:
 #     playstate
@@ -58,56 +59,54 @@ section 0 Init
 test 0-10 Init
 msg main QUEUE_PLAY_ON_ADD 0
 msg main QUEUE_SWITCH_EMPTY 0
-msg main MUSICQ_SET_MANAGE 0
-msg main MUSICQ_SET_PLAYBACK 0
 reset
 
 section 10 Music-Queue
 
 test 10-10 Insert-End
 get main CHK_MAIN_MUSICQ
-chk mqplen 0
+chk mq0len 0
 msg main MUSICQ_INSERT 0~999~0
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 mq0idx0 0
+chk mq0len 1 mq0idx0 0
 msg main MUSICQ_INSERT 0~999~1
 get main CHK_MAIN_MUSICQ
-chk mqplen 2 mq0idx0 0 mq0idx1 1
+chk mq0len 2 mq0idx0 0 mq0idx1 1
 msg main MUSICQ_INSERT 0~999~2
 get main CHK_MAIN_MUSICQ
-chk mqplen 3 mq0idx0 0 mq0idx1 1 mq0idx2 2
+chk mq0len 3 mq0idx0 0 mq0idx1 1 mq0idx2 2
 msg main MUSICQ_INSERT 0~999~3
 get main CHK_MAIN_MUSICQ
-chk mqplen 4 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3
+chk mq0len 4 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3
 msg main MUSICQ_INSERT 0~999~4
 get main CHK_MAIN_MUSICQ
-chk mqplen 5 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4
+chk mq0len 5 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4
 msg main MUSICQ_INSERT 0~999~5
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
+chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
 end
 
 test 10-20 Insert-Begin
 get main CHK_MAIN_MUSICQ
-chk mqplen 0
+chk mq0len 0
 msg main MUSICQ_INSERT 0~0~0
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 mq0idx0 0
+chk mq0len 1 mq0idx0 0
 msg main MUSICQ_INSERT 0~0~1
 get main CHK_MAIN_MUSICQ
-chk mqplen 2 mq0idx1 0 mq0idx1 1
+chk mq0len 2 mq0idx1 0 mq0idx1 1
 msg main MUSICQ_INSERT 0~0~2
 get main CHK_MAIN_MUSICQ
-chk mqplen 3 mq0idx0 0 mq0idx1 1 mq0idx2 2
+chk mq0len 3 mq0idx0 0 mq0idx1 1 mq0idx2 2
 msg main MUSICQ_INSERT 0~0~3
 get main CHK_MAIN_MUSICQ
-chk mqplen 4 mq0idx0 0 mq0idx1 1 mq0idx2 3 mq0idx3 2
+chk mq0len 4 mq0idx0 0 mq0idx1 1 mq0idx2 3 mq0idx3 2
 msg main MUSICQ_INSERT 0~0~4
 get main CHK_MAIN_MUSICQ
-chk mqplen 5 mq0idx0 0 mq0idx1 1 mq0idx2 4 mq0idx3 3 mq0idx4 2
+chk mq0len 5 mq0idx0 0 mq0idx1 1 mq0idx2 4 mq0idx3 3 mq0idx4 2
 msg main MUSICQ_INSERT 0~0~5
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 1 mq0idx2 5 mq0idx3 4 mq0idx4 3 mq0idx5 2
+chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 5 mq0idx3 4 mq0idx4 3 mq0idx5 2
 end
 
 test 10-30 Move-Up
@@ -118,23 +117,23 @@ msg main MUSICQ_INSERT 0~999~3
 msg main MUSICQ_INSERT 0~999~4
 msg main MUSICQ_INSERT 0~999~5
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
+chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
 msg main MUSICQ_MOVE_UP 0~5
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 5 mq0idx5 4
+chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 5 mq0idx5 4
 msg main MUSICQ_MOVE_UP 0~4
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 5 mq0idx4 3 mq0idx5 4
+chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 5 mq0idx4 3 mq0idx5 4
 msg main MUSICQ_MOVE_UP 0~3
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 1 mq0idx2 5 mq0idx3 2 mq0idx4 3 mq0idx5 4
+chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 5 mq0idx3 2 mq0idx4 3 mq0idx5 4
 msg main MUSICQ_MOVE_UP 0~2
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 5 mq0idx2 1 mq0idx3 2 mq0idx4 3 mq0idx5 4
+chk mq0len 6 mq0idx0 0 mq0idx1 5 mq0idx2 1 mq0idx3 2 mq0idx4 3 mq0idx5 4
 # a swap is possible as the player is stopped
 msg main MUSICQ_MOVE_UP 0~1
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 5 mq0idx1 0 mq0idx2 1 mq0idx3 2 mq0idx4 3 mq0idx5 4
+chk mq0len 6 mq0idx0 5 mq0idx1 0 mq0idx2 1 mq0idx3 2 mq0idx4 3 mq0idx5 4
 end
 
 test 10-40 Move-Down
@@ -145,19 +144,19 @@ msg main MUSICQ_INSERT 0~999~3
 msg main MUSICQ_INSERT 0~999~4
 msg main MUSICQ_INSERT 0~999~5
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
+chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
 msg main MUSICQ_MOVE_DOWN 0~1
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 2 mq0idx2 1 mq0idx3 3 mq0idx4 4 mq0idx5 5
+chk mq0len 6 mq0idx0 0 mq0idx1 2 mq0idx2 1 mq0idx3 3 mq0idx4 4 mq0idx5 5
 msg main MUSICQ_MOVE_DOWN 0~2
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 1 mq0idx4 4 mq0idx5 5
+chk mq0len 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 1 mq0idx4 4 mq0idx5 5
 msg main MUSICQ_MOVE_DOWN 0~3
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 1 mq0idx5 5
+chk mq0len 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 1 mq0idx5 5
 msg main MUSICQ_MOVE_DOWN 0~4
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 5 mq0idx5 1
+chk mq0len 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 5 mq0idx5 1
 end
 
 test 10-50 Move-Top
@@ -168,31 +167,31 @@ msg main MUSICQ_INSERT 0~999~3
 msg main MUSICQ_INSERT 0~999~4
 msg main MUSICQ_INSERT 0~999~5
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
+chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
 msg main MUSICQ_MOVE_TOP 0~5
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 5 mq0idx2 1 mq0idx3 2 mq0idx4 3 mq0idx5 4
+chk mq0len 6 mq0idx0 0 mq0idx1 5 mq0idx2 1 mq0idx3 2 mq0idx4 3 mq0idx5 4
 msg main MUSICQ_MOVE_TOP 0~5
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 4 mq0idx2 5 mq0idx3 1 mq0idx4 2 mq0idx5 3
+chk mq0len 6 mq0idx0 0 mq0idx1 4 mq0idx2 5 mq0idx3 1 mq0idx4 2 mq0idx5 3
 msg main MUSICQ_MOVE_TOP 0~5
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 3 mq0idx2 4 mq0idx3 5 mq0idx4 1 mq0idx5 2
+chk mq0len 6 mq0idx0 0 mq0idx1 3 mq0idx2 4 mq0idx3 5 mq0idx4 1 mq0idx5 2
 msg main MUSICQ_MOVE_TOP 0~5
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 5 mq0idx5 1
+chk mq0len 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 5 mq0idx5 1
 msg main MUSICQ_MOVE_TOP 0~4
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 5 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 1
+chk mq0len 6 mq0idx0 0 mq0idx1 5 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 1
 msg main MUSICQ_MOVE_TOP 0~4
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 4 mq0idx2 5 mq0idx3 2 mq0idx4 3 mq0idx5 1
+chk mq0len 6 mq0idx0 0 mq0idx1 4 mq0idx2 5 mq0idx3 2 mq0idx4 3 mq0idx5 1
 msg main MUSICQ_MOVE_TOP 0~2
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 5 mq0idx2 4 mq0idx3 2 mq0idx4 3 mq0idx5 1
+chk mq0len 6 mq0idx0 0 mq0idx1 5 mq0idx2 4 mq0idx3 2 mq0idx4 3 mq0idx5 1
 msg main MUSICQ_MOVE_TOP 0~1
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 5 mq0idx2 4 mq0idx3 2 mq0idx4 3 mq0idx5 1
+chk mq0len 6 mq0idx0 0 mq0idx1 5 mq0idx2 4 mq0idx3 2 mq0idx4 3 mq0idx5 1
 end
 
 test 10-60 Remove
@@ -203,39 +202,39 @@ msg main MUSICQ_INSERT 0~999~3
 msg main MUSICQ_INSERT 0~999~4
 msg main MUSICQ_INSERT 0~999~5
 get main CHK_MAIN_MUSICQ
-chk mqplen 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
+chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
 msg main MUSICQ_REMOVE 0~1
 get main CHK_MAIN_MUSICQ
-chk mqplen 5 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 5
+chk mq0len 5 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 5
 msg main MUSICQ_REMOVE 0~4
 get main CHK_MAIN_MUSICQ
-chk mqplen 4 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4
+chk mq0len 4 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4
 msg main MUSICQ_REMOVE 0~1
 get main CHK_MAIN_MUSICQ
-chk mqplen 3 mq0idx0 0 mq0idx1 3 mq0idx2 4
+chk mq0len 3 mq0idx0 0 mq0idx1 3 mq0idx2 4
 msg main MUSICQ_REMOVE 0~1
 get main CHK_MAIN_MUSICQ
-chk mqplen 2 mq0idx0 0 mq0idx1 4
+chk mq0len 2 mq0idx0 0 mq0idx1 4
 msg main MUSICQ_REMOVE 0~1
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 mq0idx0 0
+chk mq0len 1 mq0idx0 0
 end
 
 section 20 Basic-Playback
 
 test 20-10 Insert-Play
 get main CHK_MAIN_MUSICQ
-chk mqplen 0
+chk mq0len 0
 msg main MUSICQ_INSERT 0~999~0
 get main CHK_MAIN_MUSICQ
-chk mqplen 1
+chk mq0len 1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get main CHK_MAIN_MUSICQ
 get player CHK_PLAYER_STATUS
-chk mqplen 1 dbidx 0 playstate playing
+chk mq0len 1 dbidx 0 playstate playing
 mssleep 2000
 get player CHK_PLAYER_STATUS
 chk playstate playing
@@ -246,30 +245,30 @@ resptimeout 5000
 wait playstate in-gap
 wait playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqplen 0
+chk mq0len 0
 mssleep 3000
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqplen 0
+chk mq0len 0
 end
 
 test 20-20 Insert-Play-2
 get main CHK_MAIN_MUSICQ
-chk mqplen 0
+chk mq0len 0
 msg main MUSICQ_INSERT 0~999~1
 get main CHK_MAIN_MUSICQ
-chk mqplen 1
+chk mq0len 1
 msg main CMD_PLAY
 mssleep 500
 get main CHK_MAIN_MUSICQ
 get player CHK_PLAYER_STATUS
-chk mqplen 1 dbidx 1 playstate playing
+chk mq0len 1 dbidx 1 playstate playing
 mssleep 2000
 msg main MUSICQ_INSERT 0~999~2
 get main CHK_MAIN_MUSICQ
 get player CHK_PLAYER_STATUS
-chk mqplen 2 dbidx 1 playstate playing
+chk mq0len 2 dbidx 1 playstate playing
 resptimeout 35000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
@@ -277,12 +276,12 @@ resptimeout 5000
 wait playstate in-gap
 wait playstate playing
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 dbidx 2
+chk mq0len 1 dbidx 2
 get player CHK_PLAYER_STATUS
 resptimeout 35000
 wait playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqplen 0
+chk mq0len 0
 end
 
 section 30 Playback-Controls
@@ -342,27 +341,27 @@ get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 dbidx 11
+chk mq0len 1 dbidx 11
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 chk playstate paused
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 qdbidx 11
+chk mq0len 1 qdbidx 11
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 chk playstate playing
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 dbidx 11
+chk mq0len 1 dbidx 11
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 chk playstate paused
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 qdbidx 11
+chk mq0len 1 qdbidx 11
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 chk playstate playing
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 dbidx 11
+chk mq0len 1 dbidx 11
 # a pause during in-fadeout creates a pause-at-end condition
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
@@ -383,7 +382,7 @@ test 30-40 Position
 msg main MUSICQ_INSERT 0~999~3
 msg main MUSICQ_INSERT 0~999~4
 get main CHK_MAIN_MUSICQ
-chk mqplen 2
+chk mq0len 2
 msg main CMD_PLAY
 mssleep 500
 get player CHK_PLAYER_STATUS
@@ -425,7 +424,7 @@ msg main MUSICQ_INSERT 0~999~6
 msg main MUSICQ_INSERT 0~999~7
 msg main MUSICQ_INSERT 0~999~8
 get main CHK_MAIN_MUSICQ
-chk mqplen 4 qdbidx 5
+chk mq0len 4 qdbidx 5
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 msg main CMD_NEXTSONG
@@ -433,25 +432,25 @@ mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqplen 3 qdbidx 6
+chk mq0len 3 qdbidx 6
 msg main CMD_NEXTSONG
 mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqplen 2 qdbidx 7
+chk mq0len 2 qdbidx 7
 msg main CMD_NEXTSONG
 mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 qdbidx 8
+chk mq0len 1 qdbidx 8
 msg main CMD_NEXTSONG
 mssleep 100
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqplen 0
+chk mq0len 0
 # next test when the player is playing
 print playing
 msg main CHK_MAIN_RESET
@@ -464,7 +463,7 @@ get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
 get main CHK_MAIN_MUSICQ
-chk mqplen 4 dbidx 5
+chk mq0len 4 dbidx 5
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main CMD_NEXTSONG
@@ -472,25 +471,25 @@ mssleep 500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get main CHK_MAIN_MUSICQ
-chk mqplen 3 dbidx 6
+chk mq0len 3 dbidx 6
 msg main CMD_NEXTSONG
 mssleep 500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get main CHK_MAIN_MUSICQ
-chk mqplen 2 dbidx 7
+chk mq0len 2 dbidx 7
 msg main CMD_NEXTSONG
 mssleep 500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 dbidx 8
+chk mq0len 1 dbidx 8
 msg main CMD_NEXTSONG
 mssleep 500
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqplen 0
+chk mq0len 0
 # next test when the player is paused
 print paused
 msg main CHK_MAIN_RESET
@@ -505,7 +504,7 @@ get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate paused
 get main CHK_MAIN_MUSICQ
-chk mqplen 4 qdbidx 5
+chk mq0len 4 qdbidx 5
 get player CHK_PLAYER_STATUS
 chk playstate paused
 msg main CMD_NEXTSONG
@@ -513,25 +512,25 @@ mssleep 300
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqplen 3 qdbidx 6
+chk mq0len 3 qdbidx 6
 msg main CMD_NEXTSONG
 mssleep 300
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqplen 2 qdbidx 7
+chk mq0len 2 qdbidx 7
 msg main CMD_NEXTSONG
 mssleep 300
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 qdbidx 8
+chk mq0len 1 qdbidx 8
 msg main CMD_NEXTSONG
 mssleep 300
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mqplen 0
+chk mq0len 0
 end
 
 test 30-60 Repeat
@@ -581,7 +580,7 @@ end
 test 30-70 Beginning-of-Song
 msg main MUSICQ_INSERT 0~999~13
 get main CHK_MAIN_MUSICQ
-chk mqplen 1
+chk mq0len 1
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
 resptimeout 2000
@@ -688,23 +687,161 @@ get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 dbidx 10 songplaysentcount 1
+chk mq0len 1 dbidx 10 songplaysentcount 1
 mssleep 2000
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 chk playstate paused
 get main CHK_MAIN_MUSICQ
-chk mqplen 1 qdbidx 10 songplaysentcount 1
+chk mq0len 1 qdbidx 10 songplaysentcount 1
 mssleep 300
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 chk playstate playing
 get main CHK_MAIN_MUSICQ
 # this must be 1.
-chk mqplen 1 dbidx 10 songplaysentcount 1
+chk mq0len 1 dbidx 10 songplaysentcount 1
 end
 
 section 60 Music-Queue-Dual
+
+test 60-10 Insert-Current
+# MUSICQ_CURRENT == 6
+msg main MUSICQ_INSERT 6~999~0
+get main CHK_MAIN_MUSICQ
+chk mqmanage 0 mq0len 1 mq1len 0 mq0idx0 0
+msg main MUSICQ_SET_MANAGE 1
+msg main MUSICQ_INSERT 6~999~1
+get main CHK_MAIN_MUSICQ
+# note that an empty entry has been pushed on to the head of
+# the non-playback queue
+chk mqmanage 1 mq0len 1 mq1len 2 mq0idx0 0 mq1idx1 1
+msg main MUSICQ_SET_MANAGE 0
+msg main MUSICQ_INSERT 6~999~2
+get main CHK_MAIN_MUSICQ
+chk mqmanage 0 mq0len 2 mq1len 2 mq0idx0 0 mq0idx1 2 mq1idx1 1
+msg main MUSICQ_SET_MANAGE 1
+msg main MUSICQ_INSERT 6~999~3
+get main CHK_MAIN_MUSICQ
+chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
+end
+
+test 60-20 Insert-Specific
+msg main MUSICQ_INSERT 0~999~0
+get main CHK_MAIN_MUSICQ
+chk mqmanage 0 mq0len 1 mq1len 0 mq0idx0 0
+msg main MUSICQ_INSERT 1~999~1
+get main CHK_MAIN_MUSICQ
+# note that an empty entry has been pushed on to the head of
+# the non-playback queue
+chk mqmanage 1 mq0len 1 mq1len 2 mq0idx0 0 mq1idx1 1
+msg main MUSICQ_INSERT 0~999~2
+get main CHK_MAIN_MUSICQ
+chk mqmanage 0 mq0len 2 mq1len 2 mq0idx0 0 mq0idx1 2 mq1idx1 1
+msg main MUSICQ_INSERT 1~999~3
+get main CHK_MAIN_MUSICQ
+chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
+end
+
+test 60-21 Insert-Specific-Current
+# MUSICQ_CURRENT == 6
+msg main MUSICQ_INSERT 0~999~0
+get main CHK_MAIN_MUSICQ
+chk mqmanage 0 mq0len 1 mq1len 0 mq0idx0 0
+msg main MUSICQ_INSERT 6~999~2
+get main CHK_MAIN_MUSICQ
+chk mqmanage 0 mq0len 2 mq1len 0 mq0idx0 0 mq0idx1 2
+msg main MUSICQ_INSERT 1~999~1
+get main CHK_MAIN_MUSICQ
+# note that an empty entry has been pushed on to the head of
+# the non-playback queue
+chk mqmanage 1 mq0len 2 mq1len 2 mq0idx0 0 mq0idx1 2 mq1idx1 1
+msg main MUSICQ_INSERT 6~999~3
+get main CHK_MAIN_MUSICQ
+chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
+end
+
+test 60-30 Playback
+# MUSICQ_CURRENT == 6
+msg main MUSICQ_INSERT 6~999~2
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mqmanage 0 mqplay 0 mq0len 1 mq1len 0 mq0idx0 2 dbidx 2
+get player CHK_PLAYER_STATUS
+chk playstate playing
+msg main MUSICQ_SET_MANAGE 1
+msg main MUSICQ_INSERT 6~999~3
+get main CHK_MAIN_MUSICQ
+# note that an empty entry has been pushed on to the head of
+# the non-playback queue
+chk mqmanage 1 mqplay 0 mq0len 1 mq1len 2 mq0idx0 2 mq1idx1 3
+msg main MUSICQ_SET_MANAGE 0
+msg main MUSICQ_INSERT 6~999~4
+get main CHK_MAIN_MUSICQ
+chk mqmanage 0 mqplay 0 mq0len 2 mq1len 2 mq0idx0 2 mq0idx1 4 mq1idx1 3 dbidx 2
+get player CHK_PLAYER_STATUS
+chk playstate playing
+msg main MUSICQ_SET_MANAGE 1
+msg main MUSICQ_INSERT 6~999~5
+get main CHK_MAIN_MUSICQ
+chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
+get player CHK_PLAYER_STATUS
+chk playstate playing
+msg player PLAY_FADE
+resptimeout 8000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 2000
+get main CHK_MAIN_MUSICQ
+# playback of the next song switches management to queue 0
+chk mqmanage 0 mqplay 0 mq0len 1 mq1len 3 mq0idx0 4 mq1idx1 3 mq1idx2 5 dbidx 4
+end
+
+test 60-40 Select-Playback-Queue
+# MUSICQ_CURRENT == 6
+msg main MUSICQ_INSERT 6~999~2
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mqmanage 0 mqplay 0 mq0len 1 mq1len 0 mq0idx0 2 dbidx 2
+get player CHK_PLAYER_STATUS
+chk playstate playing
+msg main MUSICQ_SET_MANAGE 1
+msg main MUSICQ_INSERT 6~999~3
+get main CHK_MAIN_MUSICQ
+# note that an empty entry has been pushed on to the head of
+# the non-playback queue
+chk mqmanage 1 mqplay 0 mq0len 1 mq1len 2 mq0idx0 2 mq1idx1 3
+msg main MUSICQ_SET_MANAGE 0
+msg main MUSICQ_INSERT 6~999~4
+get main CHK_MAIN_MUSICQ
+chk mqmanage 0 mqplay 0 mq0len 2 mq1len 2 mq0idx0 2 mq0idx1 4 mq1idx1 3 dbidx 2
+get player CHK_PLAYER_STATUS
+chk playstate playing
+msg main MUSICQ_SET_MANAGE 1
+msg main MUSICQ_INSERT 6~999~5
+get main CHK_MAIN_MUSICQ
+chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
+get player CHK_PLAYER_STATUS
+chk playstate playing
+msg main MUSICQ_SET_PLAYBACK 1
+msg player PLAY_FADE
+resptimeout 8000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 2000
+get main CHK_MAIN_MUSICQ
+# queue 0 now has the empty head
+# queue 1 no longer has the empty head
+chk mqmanage 1 mqplay 1 mq0len 2 mq1len 2 mq0idx1 4 mq1idx0 3 mq1idx1 5 dbidx 3
+end
 
 section 70 Music-Queue-Switch
 
