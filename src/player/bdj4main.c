@@ -60,6 +60,9 @@ enum {
   MAIN_CHG_CLEAR,
   MAIN_CHG_START,
   MAIN_CHG_FINAL,
+};
+
+enum {
   MAIN_PREP_SIZE = 5,
   MAIN_NOT_SET = -1,
 };
@@ -2660,8 +2663,8 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
   snprintf (tmp, sizeof (tmp),
       "mqmanage%c%d%c"
       "mqplay%c%d%c"
-      "mqmlen%c%zd%c"
-      "mqplen%c%zd%c"
+      "mq0len%c%zd%c"
+      "mq1len%c%zd%c"
       "dbidx%c%d%c"
       "qdbidx%c%d%c"
       "m-songfn%c%s%c"
@@ -2682,8 +2685,8 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
       "songplaysentcount%c%d",
       MSG_ARGS_RS, mainData->musicqManageIdx, MSG_ARGS_RS,
       MSG_ARGS_RS, mainData->musicqPlayIdx, MSG_ARGS_RS,
-      MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx), MSG_ARGS_RS,
-      MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx), MSG_ARGS_RS,
+      MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, 0), MSG_ARGS_RS,
+      MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, 1), MSG_ARGS_RS,
       MSG_ARGS_RS, dbidx, MSG_ARGS_RS,
       MSG_ARGS_RS, qdbidx, MSG_ARGS_RS,
       MSG_ARGS_RS, songfn, MSG_ARGS_RS,

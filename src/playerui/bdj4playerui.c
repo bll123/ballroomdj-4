@@ -120,6 +120,9 @@ static datafilekey_t playeruidfkeys [] = {
 };
 enum {
   PLAYERUI_DFKEY_COUNT = (sizeof (playeruidfkeys) / sizeof (datafilekey_t)),
+};
+
+enum {
   PLUI_UPDATE_MAIN,
   PLUI_NO_UPDATE,
 };
@@ -461,7 +464,7 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetShowAll (&uiwidget);
   uiutilsUIWidgetCopy (&plui->setPlaybackButton, &uiwidget);
 
-  for (musicqidx_t i = 0; i < MUSICQ_DISP_MAX; ++i) {
+  for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
     int   tabtype;
     /* music queue tab */
 
@@ -764,7 +767,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mp_musicqupdate_t  *musicqupdate;
 
           musicqupdate = msgparseMusicQueueData (args);
-          if (musicqupdate->mqidx < MUSICQ_DISP_MAX) {
+          if ((int) musicqupdate->mqidx < MUSICQ_DISP_MAX) {
             uimusicqProcessMusicQueueData (plui->uimusicq, musicqupdate);
             /* the music queue data is used to display the mark */
             /* indicating that the song is already in the song list */
@@ -926,8 +929,8 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue, int updateFlag)
   logProcBegin (LOG_PROC, "pluiSetPlaybackQueue");
 
   plui->musicqPlayIdx = newQueue;
-  for (musicqidx_t i = 0; i < MUSICQ_PB_MAX; ++i) {
-    if (plui->musicqPlayIdx == i) {
+  for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
+    if ((int) plui->musicqPlayIdx == i) {
       uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
     } else {
       uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledoffPixbuf);

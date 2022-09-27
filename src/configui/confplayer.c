@@ -143,7 +143,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
       bdjoptGetStr (OPT_P_COMPLETE_MSG));
 
-  for (musicqidx_t i = 0; i < MUSICQ_PB_MAX; ++i) {
+  for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
     confuiMakeItemEntry (gui, &vbox, &sg, mqnames [i],
         CONFUI_ENTRY_QUEUE_NM_A + i, OPT_P_QUEUE_NAME_A + i,
         bdjoptGetStr (OPT_P_QUEUE_NAME_A + i));

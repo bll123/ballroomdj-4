@@ -565,7 +565,7 @@ musicqidx_t
 musicqNextQueue (musicqidx_t musicqidx)
 {
   ++musicqidx;
-  if (musicqidx >= MUSICQ_PB_MAX) {
+  if ((int) musicqidx >= MUSICQ_PB_MAX) {
     musicqidx = MUSICQ_PB_A;
   }
 

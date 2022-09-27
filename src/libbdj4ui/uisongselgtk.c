@@ -42,17 +42,17 @@ enum {
 };
 
 enum {
-  STORE_ROWS = 60,
-  UISONGSEL_SCROLL_NORM,
-  UISONGSEL_SCROLL_FORCE,
-};
-
-enum {
   UISONGSEL_FIRST,
   UISONGSEL_NEXT,
   UISONGSEL_PREVIOUS,
   UISONGSEL_PLAY,
   UISONGSEL_QUEUE,
+  UISONGSEL_SCROLL_NORM,
+  UISONGSEL_SCROLL_FORCE,
+};
+
+enum {
+  STORE_ROWS = 60,
 };
 
 /* for callbacks */
@@ -67,7 +67,6 @@ enum {
 };
 
 #define MARK_DISPLAY "\xe2\x96\x8B"  // left five-eights block
-
 
 typedef struct uisongselgtk {
   UICallback          callbacks [SONGSEL_CB_MAX];

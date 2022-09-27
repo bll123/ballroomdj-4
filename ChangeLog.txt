@@ -1,5 +1,9 @@
 BallroomDJ 4 Change Log
 
+4.0.0 alpha --
+
+- Fix .wma author and title tags.
+
 4.0.0 alpha 2022-09-26
 
 - windows installer:

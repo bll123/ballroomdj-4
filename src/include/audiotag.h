@@ -4,9 +4,12 @@
 #include "slist.h"
 
 enum {
-  AUDIOTAG_TAG_BUFF_SIZE = 16384,
   AT_KEEP_MOD_TIME,
   AT_UPDATE_MOD_TIME,
+};
+
+enum {
+  AUDIOTAG_TAG_BUFF_SIZE = 16384,
 };
 
 void audiotagInit (void);

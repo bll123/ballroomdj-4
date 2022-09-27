@@ -60,10 +60,15 @@ typedef enum {
 } startstate_t;
 
 enum {
-  MAX_WEB_RESP_SZ = 2048,
   SF_CONF_ONLY,
   SF_ALL,
   SF_MAC_DIAG,
+  CLOSE_REQUEST,
+  CLOSE_CRASH,
+};
+
+enum {
+  MAX_WEB_RESP_SZ = 2048,
 };
 
 enum {
@@ -86,11 +91,6 @@ enum {
   START_LINK_CB_FORUM,
   START_LINK_CB_TICKETS,
   START_LINK_CB_MAX,
-};
-
-enum {
-  CLOSE_REQUEST,
-  CLOSE_CRASH,
 };
 
 typedef struct {

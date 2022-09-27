@@ -48,12 +48,15 @@ typedef enum {
 } pltype_t;
 
 enum {
-  PL_VALID_SONG_ATTEMPTS = 40,
-  PL_LIST_NORMAL = 1,   // excludes the special QueueDance playlist
   PL_LIST_ALL,          // everything, include QueueDance
   PL_LIST_AUTO_SEQ,
-  PL_LIST_SONGLIST,
+  PL_LIST_NORMAL,       // excludes the special QueueDance playlist
   PL_LIST_SEQUENCE,
+  PL_LIST_SONGLIST,
+};
+
+enum {
+  PL_VALID_SONG_ATTEMPTS = 40,
 };
 
 typedef struct playlist playlist_t;

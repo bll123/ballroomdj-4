@@ -81,11 +81,11 @@ typedef enum {
 } installstate_t;
 
 enum {
-  INST_CALLBACK_TARGET_DIR,
-  INST_CALLBACK_BDJ3LOC_DIR,
-  INST_CALLBACK_EXIT,
-  INST_CALLBACK_INSTALL,
-  INST_CALLBACK_MAX,
+  INST_CB_TARGET_DIR,
+  INST_CB_BDJ3LOC_DIR,
+  INST_CB_EXIT,
+  INST_CB_INSTALL,
+  INST_CB_MAX,
 };
 
 enum {
@@ -102,7 +102,7 @@ enum {
 
 typedef struct {
   installstate_t  instState;
-  UICallback      callbacks [INST_CALLBACK_MAX];
+  UICallback      callbacks [INST_CB_MAX];
   char            *home;
   char            *target;
   char            *hostname;
@@ -433,10 +433,10 @@ installerBuildUI (installer_t *installer)
   strlcpy (imgbuff, "img/bdj4_icon_inst.svg", sizeof (imgbuff));
   /* CONTEXT: installer: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
-  uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_EXIT],
+  uiutilsUICallbackInit (&installer->callbacks [INST_CB_EXIT],
       installerExitCallback, installer, NULL);
   uiCreateMainWindow (&installer->window,
-      &installer->callbacks [INST_CALLBACK_EXIT],
+      &installer->callbacks [INST_CB_EXIT],
       tbuff, imgbuff);
   uiWindowSetDefaultSize (&installer->window, 1000, 600);
 
@@ -474,10 +474,10 @@ installerBuildUI (installer_t *installer)
   uiEntrySetValidate (installer->targetEntry,
       installerValidateTarget, installer, UIENTRY_DELAYED);
 
-  uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_TARGET_DIR],
+  uiutilsUICallbackInit (&installer->callbacks [INST_CB_TARGET_DIR],
       installerTargetDirDialog, installer, NULL);
   uiCreateButton (&uiwidget,
-      &installer->callbacks [INST_CALLBACK_TARGET_DIR],
+      &installer->callbacks [INST_CB_TARGET_DIR],
       "", NULL);
   uiButtonSetImageIcon (&uiwidget, "folder");
   uiWidgetSetMarginStart (&uiwidget, 0);
@@ -537,10 +537,10 @@ installerBuildUI (installer_t *installer)
   uiEntrySetValidate (installer->bdj3locEntry,
       installerValidateBDJ3Loc, installer, UIENTRY_DELAYED);
 
-  uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_BDJ3LOC_DIR],
+  uiutilsUICallbackInit (&installer->callbacks [INST_CB_BDJ3LOC_DIR],
       installerBDJ3LocDirDialog, installer, NULL);
   uiCreateButton (&uiwidget,
-      &installer->callbacks [INST_CALLBACK_BDJ3LOC_DIR],
+      &installer->callbacks [INST_CB_BDJ3LOC_DIR],
       "", NULL);
   uiButtonSetImageIcon (&uiwidget, "folder");
   uiWidgetSetMarginStart (&uiwidget, 0);
@@ -613,15 +613,15 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (&vbox, &hbox);
 
   uiCreateButton (&uiwidget,
-      &installer->callbacks [INST_CALLBACK_EXIT],
+      &installer->callbacks [INST_CB_EXIT],
       /* CONTEXT: installer: exits the installer */
       _("Exit"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
-  uiutilsUICallbackInit (&installer->callbacks [INST_CALLBACK_INSTALL],
+  uiutilsUICallbackInit (&installer->callbacks [INST_CB_INSTALL],
       installerInstallCallback, installer, NULL);
   uiCreateButton (&uiwidget,
-      &installer->callbacks [INST_CALLBACK_INSTALL],
+      &installer->callbacks [INST_CB_INSTALL],
       /* CONTEXT: installer: start the installation process */
       _("Install"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
