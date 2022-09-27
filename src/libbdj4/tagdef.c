@@ -102,7 +102,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     { { "ARTIST", NULL, NULL },
       { "©ART", NULL, NULL },
       { "TPE1", NULL, NULL },
-      { "WM/Author", NULL, NULL }
+      { "Author", NULL, NULL }
     },       /* audio tags */
     "Artist",                     /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -750,7 +750,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     { { "TITLE", NULL, NULL },
       { "©nam", NULL, NULL },
       { "TIT2", NULL, NULL },
-      { "WM/Title", NULL, NULL }
+      { "Title", NULL, NULL }
     },       /* audio tags */
     "Name",                       /* itunes name          */
     ET_ENTRY,                     /* edit type            */
