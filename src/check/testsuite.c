@@ -15,6 +15,7 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "dirlist.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "istring.h"
@@ -76,6 +77,8 @@ typedef struct {
   char        sectionname [80];
   char        testnum [10];
   char        testname [80];
+  slist_t     *testlist;
+  slistidx_t  tliteridx;
   FILE        *fh;
   int         lineno;
   int         expectcount;
@@ -86,7 +89,6 @@ typedef struct {
   bool        runtest : 1;            // --runtest was specified
   bool        processsection : 1;     // process the current section
   bool        processtest : 1;        // process the current test
-  bool        processinit : 1;        // process the init section
   bool        wait : 1;
   bool        waitresponse : 1;
   bool        skiptoend : 1;          // used for test timeout
@@ -124,6 +126,7 @@ static void tsProcessChkResponse (testsuite_t *testsuite, char *args);
 static void tsDisplayCommandResult (testsuite_t *testsuite, ts_return_t ok);
 static void resetChkResponse (testsuite_t *testsuite);
 static void resetPlayer (testsuite_t *testsuite);
+static bool tsNextFile (testsuite_t *testsuite);
 static void tsSigHandler (int sig);
 
 int
@@ -175,6 +178,7 @@ main (int argc, char *argv [])
   strlcpy (testsuite.sectionname, "Init", sizeof (testsuite.sectionname));
   strlcpy (testsuite.testnum, "1", sizeof (testsuite.testnum));
   strlcpy (testsuite.testname, "Init", sizeof (testsuite.testname));
+  testsuite.fh = NULL;
   testsuite.runsection = false;
   testsuite.runtest = false;
   testsuite.processsection = false;
@@ -207,7 +211,10 @@ main (int argc, char *argv [])
   }
   slistSort (testsuite.msgtxtlist);
 
-  testsuite.fh = fopen ("test-templates/test-script.txt", "r");
+  testsuite.testlist = dirlistBasicDirList ("test-templates/tests", ".txt");
+  slistSort (testsuite.testlist);
+  slistStartIterator (testsuite.testlist, &testsuite.tliteridx);
+  tsNextFile (&testsuite);
   testsuite.lineno = 0;
 
   progstateSetCallback (testsuite.progstate, STATE_LISTENING,
@@ -447,6 +454,7 @@ tsHandshakeCallback (void *tts, programstate_t programState)
 
   if (connHaveHandshake (testsuite->conn, ROUTE_MAIN) &&
       connHaveHandshake (testsuite->conn, ROUTE_PLAYER)) {
+    resetPlayer (testsuite);
     rc = STATE_FINISHED;
   }
 
@@ -481,6 +489,10 @@ tsClosingCallback (void *tts, programstate_t programState)
 {
   testsuite_t *testsuite = tts;
 
+  if (testsuite->fh != NULL) {
+    fclose (testsuite->fh);
+    testsuite->fh = NULL;
+  }
   bdj4shutdown (ROUTE_TEST_SUITE, NULL);
   procutilStopAllProcess (testsuite->processes, testsuite->conn, true);
   procutilFreeAll (testsuite->processes);
@@ -507,7 +519,9 @@ tsProcessScript (testsuite_t *testsuite)
   bool        processtest;
 
   if (fgets (tcmd, sizeof (tcmd), testsuite->fh) == NULL) {
-    return true;
+    if (tsNextFile (testsuite)) {
+      return true;
+    }
   }
 
   ++testsuite->lineno;
@@ -545,7 +559,7 @@ tsProcessScript (testsuite_t *testsuite)
       resetChkResponse (testsuite);
       ok = TS_OK;
       testsuite->skiptoend = false;
-      if (testsuite->runtest && ! testsuite->processinit) {
+      if (testsuite->runtest) {
         ok = TS_FINISHED;
       }
     }
@@ -669,11 +683,11 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
   char    *tokstr = NULL;
   char    *tstr = NULL;
 
-  if (testsuite->processsection && ! testsuite->processinit) {
+  if (testsuite->processsection) {
     strlcpy (testsuite->testnum, "", sizeof (testsuite->testnum));
     strlcpy (testsuite->testname, "", sizeof (testsuite->testname));
     printResults (testsuite, &testsuite->sresults);
-    if (testsuite->runsection && ! testsuite->processinit) {
+    if (testsuite->runsection) {
       testsuite->processsection = false;
       return TS_FINISHED;
     }
@@ -699,12 +713,6 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
   clearResults (&testsuite->sresults);
 
   testsuite->processsection = false;
-  testsuite->processinit = false;
-
-  if (strcmp (testsuite->sectionnum, "0") == 0) {
-    testsuite->processsection = true;
-    testsuite->processinit = true;
-  }
 
   if (testsuite->runsection) {
     if (strcmp (testsuite->sectionnum, bdjvarsGetStr (BDJV_TS_SECTION)) == 0) {
@@ -933,6 +941,7 @@ tsScriptChkResponse (testsuite_t *testsuite)
   int         rc = TS_CHECK_FAILED;
   int         count = 0;
   int         countok = 0;
+  bool        fail = false;
   slistidx_t  iteridx;
   const char  *key;
   const char  *val;
@@ -954,6 +963,10 @@ tsScriptChkResponse (testsuite_t *testsuite)
       if (valchk != NULL && a < b) {
         ++countok;
       } else {
+        if (! fail) {
+          fprintf (stdout, "\n");
+          fail = true;
+        }
         fprintf (stdout, "          %3d clt-fail: %s: exp: %ld < resp: %ld\n",
             testsuite->lineno, key, a, b);
         fflush (stdout);
@@ -970,6 +983,10 @@ tsScriptChkResponse (testsuite_t *testsuite)
       if (valchk != NULL && a > b) {
         ++countok;
       } else {
+        if (! fail) {
+          fprintf (stdout, "\n");
+          fail = true;
+        }
         fprintf (stdout, "          %3d cgt-fail: %s: exp: %ld < resp: %ld\n",
             testsuite->lineno, key, a, b);
         fflush (stdout);
@@ -980,6 +997,10 @@ tsScriptChkResponse (testsuite_t *testsuite)
       ++countok;
     } else if (testsuite->waitresponse &&
         ! testsuite->lessthan && ! testsuite->greaterthan) {
+      if (! fail) {
+        fprintf (stdout, "\n");
+        fail = true;
+      }
       fprintf (stdout, "          %3d chk-fail: %s: exp: %s != resp: %s\n",
             testsuite->lineno, key, val, valchk);
       fflush (stdout);
@@ -1158,11 +1179,46 @@ resetPlayer (testsuite_t *testsuite)
   /* clears both queue and playlist queue, resets manage idx */
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "1");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "0");
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "0");
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_MANAGE, "0");
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "0");
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
 }
 
+static bool
+tsNextFile (testsuite_t *testsuite)
+{
+  const char  *fn;
+  bool        rc = false;
+  char        tbuff [MAXPATHLEN];
+
+  testsuite->lineno = 0;
+
+  if (testsuite->fh != NULL) {
+    fclose (testsuite->fh);
+    testsuite->fh = NULL;
+  }
+
+  while (1) {
+    fn = slistIterateKey (testsuite->testlist, &testsuite->tliteridx);
+    if (strcmp (fn, "README.txt") == 0) {
+      continue;
+    }
+    break;
+  }
+
+  if (fn != NULL) {
+    snprintf (tbuff, sizeof (tbuff), "test-templates/tests/%s", fn);
+    testsuite->fh = fopen (tbuff, "r");
+  } else {
+    rc = true;
+  }
+
+  return rc;
+}
 
 static void
 tsSigHandler (int sig)

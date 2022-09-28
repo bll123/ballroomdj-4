@@ -1,0 +1,18 @@
+section 180 Playlist-Controls
+
+test 180-10 Maximum-Play-Time
+print TBD
+end
+
+test 180-20 Stop-At
+print TBD
+end
+
+test 180-30 Stop-After
+print TBD
+end
+
+test 180-40 Gap
+print TBD
+end
+

@@ -1,0 +1,18 @@
+section 170 Song-Controls
+
+test 170-10 Song-Start
+print TBD
+end
+
+test 170-20 Song-End
+print TBD
+end
+
+test 170-30 Volume-Adjustment
+print TBD
+end
+
+test 170-40 Speed-Adjustment
+print TBD
+end
+

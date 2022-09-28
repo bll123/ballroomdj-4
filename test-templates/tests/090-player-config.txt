@@ -1,0 +1,18 @@
+section 90 Player-Config
+
+test 90-10 Gap
+print TBD
+end
+
+test 90-20 Fade-In
+print TBD
+end
+
+test 90-30 Fade-Out
+print TBD
+end
+
+test 90-40 Maximum-Play-Time
+print TBD
+end
+
