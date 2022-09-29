@@ -158,6 +158,9 @@ typedef enum {
   MSG_CHK_PLAYER_SONG,
   MSG_CHK_MAIN_RESET,
   MSG_CHK_MAIN_GAP,         // args: gap
+  MSG_CHK_PLAYER_FADEIN,    // args: fade-in
+  MSG_CHK_PLAYER_FADEOUT,   // args: fade-out
+  MSG_CHK_MAIN_MAXPLAYTIME, // args: max-play-time
 
   /* when a new message is added, update: */
   /* bdjmsg.c: debugging information for the msg */

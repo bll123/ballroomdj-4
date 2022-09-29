@@ -86,24 +86,21 @@ case $vers in
     mp_os_vers=12
     ;;
   11*)
-    mp_os_nm="BigSur"
+    mp_os_nm=BigSur
     mp_os_vers=11
     ;;
   10.15*)
-    mp_os_nm="Catalina"
+    mp_os_nm=Catalina
     mp_os_vers=10.15
     ;;
   10.14*)
-    mp_os_nm="Mojave"
+    mp_os_nm=Mojave
     mp_os_vers=10.14
-    ;;
-  10.13*)
-    mp_os_nm="HighSierra"
-    mp_os_vers=10.13
     ;;
   *)
     echo "BallroomDJ 4 cannot be installed on this version of MacOS."
     echo "This version of MacOS is too old."
+    echo "MacOS Mojave and later are supported."
     exit 1
     ;;
 esac

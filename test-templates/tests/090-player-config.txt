@@ -23,7 +23,6 @@ msg main CHK_MAIN_GAP 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
-msg main CHK_MAIN_GAP 2000
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -34,14 +33,62 @@ get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
 # --verbose helps here to validate that the in-gap state is not set.
 wait playstate playing
+msg main CHK_MAIN_GAP 2000
 end
 
-test 90-20 Fade-In
-print TBD
+test 90-20 No-Fade-In
+msg player CHK_PLAYER_FADEIN 0
+msg main MUSICQ_INSERT 0~999~0
+msg main MUSICQ_INSERT 0~999~1
+msg main MUSICQ_INSERT 0~999~2
+msg main CHK_MAIN_GAP 2000
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+resptimeout 6500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate playing
+msg player CHK_PLAYER_FADEIN 400
 end
 
-test 90-30 Fade-Out
-print TBD
+test 90-30 No-Fade-Out
+msg player CHK_PLAYER_FADEOUT 0
+msg main MUSICQ_INSERT 0~999~0
+msg main MUSICQ_INSERT 0~999~1
+msg main MUSICQ_INSERT 0~999~2
+msg main CHK_MAIN_GAP 2000
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+resptimeout 2500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+# --verbose can be used to show that in-fadeout is not used
+wait playstate in-gap
+wait playstate playing
+msg player CHK_PLAYER_FADEOUT 4000
+end
+
+test 90-31 No-Gap-No-Fade-Out
+msg main CHK_MAIN_GAP 0
+msg player CHK_PLAYER_FADEOUT 0
+msg main MUSICQ_INSERT 0~999~0
+msg main MUSICQ_INSERT 0~999~1
+msg main MUSICQ_INSERT 0~999~2
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+resptimeout 500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+# --verbose helps here to validate that neither in-fadeout nor in-gap is set.
+wait playstate playing
+msg main CHK_MAIN_GAP 2000
+msg player CHK_PLAYER_FADEOUT 4000
 end
 
 test 90-40 Maximum-Play-Time

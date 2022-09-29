@@ -462,6 +462,14 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerChkPlayerSong (playerData, routefrom);
           break;
         }
+        case MSG_CHK_PLAYER_FADEIN: {
+          playerData->fadeinTime = atol (args);
+          break;
+        }
+        case MSG_CHK_PLAYER_FADEOUT: {
+          playerData->fadeoutTime = atol (args);
+          break;
+        }
         default: {
           break;
         }
