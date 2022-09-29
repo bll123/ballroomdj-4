@@ -614,6 +614,12 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CHK_MAIN_RESET: {
           mainData->songplaysentcount = 0;
+          dbgdisp = true;
+          break;
+        }
+        case MSG_CHK_MAIN_GAP: {
+          mainData->gap = atoi (targs);
+          dbgdisp = true;
           break;
         }
         default: {

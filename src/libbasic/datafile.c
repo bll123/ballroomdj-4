@@ -673,7 +673,7 @@ datafileSaveList (const char *tag, char *fn, slist_t *list)
 }
 
 listidx_t
-dfkeyBinarySearch (const datafilekey_t *dfkeys, ssize_t count, char *key)
+dfkeyBinarySearch (const datafilekey_t *dfkeys, ssize_t count, const char *key)
 {
   listidx_t     l = 0;
   listidx_t     r = count - 1;

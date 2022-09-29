@@ -86,7 +86,7 @@ chk pauseatend 0 playstate in-fadeout
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 chk pauseatend 1 playstate in-fadeout
-resptimeout 8000
+resptimeout 6500
 get player CHK_PLAYER_STATUS
 wait playstate stopped
 end
@@ -268,7 +268,7 @@ get main CHK_MAIN_MUSICQ
 chk dbidx 12
 # same song
 msg player PLAY_FADE
-resptimeout 8000
+resptimeout 6500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get player CHK_PLAYER_STATUS
@@ -282,7 +282,7 @@ chk repeat 0 playstate playing
 get main CHK_MAIN_MUSICQ
 chk dbidx 12
 msg player PLAY_FADE
-resptimeout 8000
+resptimeout 6500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get player CHK_PLAYER_STATUS
@@ -368,7 +368,7 @@ msg player PLAY_SPEED 90
 get player CHK_PLAYER_STATUS
 chk speed 90
 msg player PLAY_FADE
-resptimeout 8000
+resptimeout 6500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 msg player PLAY_SPEED 130
@@ -378,7 +378,7 @@ cgt playtimeplayed 2000
 get player CHK_PLAYER_STATUS
 clt playtimeplayed 2200
 msg player PLAY_FADE
-resptimeout 8000
+resptimeout 6500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 msg player PLAY_SPEED 70

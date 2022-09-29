@@ -2,6 +2,7 @@
 #define INC_BDJOPT_H
 
 #include "datafile.h"
+#include "nlist.h"
 
 typedef enum {
   WRITE_TAGS_NONE,
@@ -111,10 +112,10 @@ enum {
 
 void    bdjoptInit (void);
 void    bdjoptCleanup (void);
-char    *bdjoptGetStr (ssize_t idx);
-ssize_t bdjoptGetNum (ssize_t idx);
-void    bdjoptSetStr (ssize_t idx, const char *value);
-void    bdjoptSetNum (ssize_t idx, ssize_t value);
+char    *bdjoptGetStr (nlistidx_t idx);
+ssize_t bdjoptGetNum (nlistidx_t idx);
+void    bdjoptSetStr (nlistidx_t idx, const char *value);
+void    bdjoptSetNum (nlistidx_t idx, ssize_t value);
 void    bdjoptCreateDirectories (void);
 void    bdjoptSave (void);
 void    bdjoptConvBPM (datafileconv_t *conv);

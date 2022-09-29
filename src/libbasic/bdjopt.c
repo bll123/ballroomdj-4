@@ -196,7 +196,7 @@ bdjoptCleanup (void)
 }
 
 char *
-bdjoptGetStr (ssize_t idx)
+bdjoptGetStr (nlistidx_t idx)
 {
   void      *value = NULL;
 
@@ -211,7 +211,7 @@ bdjoptGetStr (ssize_t idx)
 }
 
 ssize_t
-bdjoptGetNum (ssize_t idx)
+bdjoptGetNum (nlistidx_t idx)
 {
   ssize_t       value;
 
@@ -226,7 +226,7 @@ bdjoptGetNum (ssize_t idx)
 }
 
 void
-bdjoptSetStr (ssize_t idx, const char *value)
+bdjoptSetStr (nlistidx_t idx, const char *value)
 {
   if (bdjopt == NULL) {
     return;
@@ -238,7 +238,7 @@ bdjoptSetStr (ssize_t idx, const char *value)
 }
 
 void
-bdjoptSetNum (ssize_t idx, ssize_t value)
+bdjoptSetNum (nlistidx_t idx, ssize_t value)
 {
   if (bdjopt == NULL) {
     return;

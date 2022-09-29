@@ -92,7 +92,7 @@ chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg player PLAY_FADE
-resptimeout 8000
+resptimeout 6500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 2000
@@ -133,7 +133,7 @@ get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_SET_PLAYBACK 1
 msg player PLAY_FADE
-resptimeout 8000
+resptimeout 6500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 2000

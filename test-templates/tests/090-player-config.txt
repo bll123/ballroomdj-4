@@ -1,7 +1,39 @@
 section 90 Player-Config
 
 test 90-10 Gap
-print TBD
+msg main CHK_MAIN_GAP 1000
+msg main MUSICQ_INSERT 0~999~0
+msg main MUSICQ_INSERT 0~999~1
+msg main MUSICQ_INSERT 0~999~2
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+resptimeout 5500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+wait playstate in-gap
+wait playstate playing
+msg main CHK_MAIN_GAP 2000
+end
+
+test 90-11 No-Gap
+msg main CHK_MAIN_GAP 0
+msg main MUSICQ_INSERT 0~999~0
+msg main MUSICQ_INSERT 0~999~1
+msg main MUSICQ_INSERT 0~999~2
+msg main CHK_MAIN_GAP 2000
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+resptimeout 4500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# --verbose helps here to validate that the in-gap state is not set.
+wait playstate playing
 end
 
 test 90-20 Fade-In

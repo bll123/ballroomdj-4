@@ -84,7 +84,7 @@ list_t        *datafileParseMerge (list_t *nlist, char *data, const char *name,
                   datafiletype_t dftype,
                   datafilekey_t *dfkeys, ssize_t dfkeycount);
 listidx_t     dfkeyBinarySearch (const datafilekey_t *dfkeys,
-                  ssize_t count, char *key);
+                  ssize_t count, const char *key);
 list_t *      datafileGetList (datafile_t *);
 void          datafileSetData (datafile_t *df, void *data);
 slist_t *     datafileSaveKeyValList (const char *tag, datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list);

@@ -12,6 +12,7 @@
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdjmsg.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "conn.h"
@@ -21,6 +22,7 @@
 #include "istring.h"
 #include "localeutil.h"
 #include "log.h"
+#include "nlist.h"
 #include "osrandom.h"
 #include "ossignal.h"
 #include "pathbld.h"
@@ -1204,7 +1206,7 @@ tsNextFile (testsuite_t *testsuite)
 
   while (1) {
     fn = slistIterateKey (testsuite->testlist, &testsuite->tliteridx);
-    if (strcmp (fn, "README.txt") == 0) {
+    if (fn != NULL && strcmp (fn, "README.txt") == 0) {
       continue;
     }
     break;
