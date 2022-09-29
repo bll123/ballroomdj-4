@@ -523,6 +523,7 @@ tsProcessScript (testsuite_t *testsuite)
     if (tsNextFile (testsuite)) {
       return true;
     }
+    return false;
   }
 
   ++testsuite->lineno;
@@ -536,7 +537,6 @@ tsProcessScript (testsuite_t *testsuite)
   stringTrim (tcmd);
 
   ok = TS_UNKNOWN;
-  logMsg (LOG_DBG, LOG_BASIC, "-- cmd: %3d %s", testsuite->lineno, tcmd);
 
   if (strncmp (tcmd, "section", 7) == 0) {
     ok = tsScriptSection (testsuite, tcmd);
@@ -544,6 +544,10 @@ tsProcessScript (testsuite_t *testsuite)
 
   if (ok == TS_FINISHED) {
     return true;
+  }
+
+  if (testsuite->processtest) {
+    logMsg (LOG_DBG, LOG_BASIC, "-- cmd: %3d %s", testsuite->lineno, tcmd);
   }
 
   if (strncmp (tcmd, "test", 4) == 0) {
@@ -770,6 +774,7 @@ tsScriptTest (testsuite_t *testsuite, const char *tcmd)
   }
 
   if (testsuite->processtest) {
+    logMsg (LOG_DBG, LOG_BASIC, "-- test: %3d %s", testsuite->lineno, tcmd);
     fprintf (stdout, "   -- %s %s %s", testsuite->testnum,
         testsuite->sectionname, testsuite->testname);
     if (testsuite->verbose) {
@@ -1212,6 +1217,7 @@ tsNextFile (testsuite_t *testsuite)
   }
 
   if (fn != NULL) {
+    logMsg (LOG_DBG, LOG_BASIC, "-- file: %s", fn);
     snprintf (tbuff, sizeof (tbuff), "test-templates/tests/%s", fn);
     testsuite->fh = fopen (tbuff, "r");
   } else {

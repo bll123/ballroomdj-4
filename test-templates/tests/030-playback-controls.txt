@@ -6,7 +6,7 @@ msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
 resptimeout 1000
 wait playstate playing
-mssleep 500
+mssleep 1000
 msg player PLAY_FADE
 resptimeout 5000
 get player CHK_PLAYER_STATUS
@@ -25,7 +25,7 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 500
+mssleep 1000
 get player CHK_PLAYER_STATUS
 chk pauseatend 0 playstate playing
 msg player PLAY_PAUSEATEND
@@ -54,6 +54,7 @@ msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dbidx 11
 msg main CMD_PLAYPAUSE
@@ -102,6 +103,7 @@ mssleep 500
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
+mssleep 1000
 msg player PLAY_SEEK 25000
 get player CHK_PLAYER_STATUS
 cgt playtimeplayed 25000
@@ -176,6 +178,7 @@ msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk mq0len 4 dbidx 5
 get player CHK_PLAYER_STATUS
@@ -184,18 +187,21 @@ msg main CMD_NEXTSONG
 mssleep 500
 get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk mq0len 3 dbidx 6
 msg main CMD_NEXTSONG
 mssleep 500
 get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk mq0len 2 dbidx 7
 msg main CMD_NEXTSONG
 mssleep 500
 get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dbidx 8
 msg main CMD_NEXTSONG
@@ -254,6 +260,7 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk dbidx 12
 mssleep 500
@@ -271,6 +278,7 @@ msg player PLAY_FADE
 resptimeout 6500
 get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 1000
 get player CHK_PLAYER_STATUS
 chk repeat 1 playstate playing
 get main CHK_MAIN_MUSICQ
@@ -285,6 +293,7 @@ msg player PLAY_FADE
 resptimeout 6500
 get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 1000
 get player CHK_PLAYER_STATUS
 chk repeat 0 playstate playing
 get main CHK_MAIN_MUSICQ
@@ -299,9 +308,9 @@ msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
-mssleep 500
+mssleep 1000
 get player CHK_PLAYER_STATUS
-clt playtimeplayed 1000
+clt playtimeplayed 1500
 msg player PLAY_SONG_BEGIN
 get player CHK_PLAYER_STATUS
 clt playtimeplayed 200
@@ -336,7 +345,7 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 500
+mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume 20 realvolume 20
 msg player PLAYER_VOLUME 30
@@ -358,7 +367,7 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 500
+mssleep 1000
 get player CHK_PLAYER_STATUS
 chk speed 100
 msg player PLAY_SPEED 110
@@ -371,21 +380,20 @@ msg player PLAY_FADE
 resptimeout 6500
 get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 1000
 msg player PLAY_SPEED 130
-mssleep 2000
 get player CHK_PLAYER_STATUS
-cgt playtimeplayed 2000
+cgt playtimeplayed 1000
 get player CHK_PLAYER_STATUS
-clt playtimeplayed 2200
+clt playtimeplayed 1200
 msg player PLAY_FADE
 resptimeout 6500
 get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 1000
 msg player PLAY_SPEED 70
-mssleep 2000
 get player CHK_PLAYER_STATUS
-cgt playtimeplayed 2000
+cgt playtimeplayed 1000
 get player CHK_PLAYER_STATUS
-clt playtimeplayed 2200
+clt playtimeplayed 1200
 end
-

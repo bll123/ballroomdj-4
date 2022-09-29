@@ -10,6 +10,7 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 get player CHK_PLAYER_STATUS
 chk mq0len 1 dbidx 0 playstate playing
@@ -53,6 +54,7 @@ wait playstate in-fadeout
 resptimeout 5000
 wait playstate in-gap
 wait playstate playing
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dbidx 2
 get player CHK_PLAYER_STATUS

@@ -2399,15 +2399,11 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx)
   }
 
   logProcBegin (LOG_PROC, "mainCalculateSongDuration");
-  dur = songGetDurCache (song);
-  if (dur >= 1) {
-    logProcEnd (LOG_PROC, "mainCalculateSongDuration", "from-cache");
-    return dur;
-  }
 
   songstart = 0;
   speed = 100;
   dur = songGetNum (song, TAG_DURATION);
+  logMsg (LOG_DBG, LOG_MAIN, "song base-dur: %ld\n", dur);
 
   maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
   songstart = songGetNum (song, TAG_SONGSTART);
@@ -2423,25 +2419,17 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx)
     speed = 100;
   }
 
-  plmaxdur = LIST_VALUE_INVALID;
-  if (playlistIdx != -1) {
-    playlist_t    *playlist = NULL;
-
-    playlist = nlistGetData (mainData->playlistCache, playlistIdx);
-    plmaxdur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
-  }
-
   /* apply songend if set to a reasonable value */
   logMsg (LOG_DBG, LOG_MAIN, "dur: %zd songstart: %zd songend: %zd",
       dur, songstart, songend);
   if (songend >= 10000 && dur > songend) {
     dur = songend;
-    logMsg (LOG_DBG, LOG_MAIN, "dur-songend: %zd", dur);
+    logMsg (LOG_DBG, LOG_MAIN, "dur-songend: %ld", dur);
   }
   /* adjust the song's duration by the songstart value */
   if (songstart > 0) {
     dur -= songstart;
-    logMsg (LOG_DBG, LOG_MAIN, "dur-songstart: %zd", dur);
+    logMsg (LOG_DBG, LOG_MAIN, "dur-songstart: %ld", dur);
   }
 
   /* after adjusting the duration by song start/end, then adjust */
@@ -2454,29 +2442,35 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx)
     drate = (double) speed / 100.0;
     ddur = (double) dur / drate;
     dur = (ssize_t) ddur;
+    logMsg (LOG_DBG, LOG_MAIN, "dur-speed: %ld", dur);
+  }
+
+  plmaxdur = LIST_VALUE_INVALID;
+  if (playlistIdx != -1) {
+    playlist_t    *playlist = NULL;
+
+    playlist = nlistGetData (mainData->playlistCache, playlistIdx);
+    plmaxdur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
   }
 
   /* if the playlist has a maximum play time specified for a dance */
   /* it overrides any of the other max play times */
   danceidx = songGetNum (song, TAG_DANCE);
   pldncmaxdur = playlistGetDanceNum (playlist, danceidx, PLDANCE_MAXPLAYTIME);
-  if (pldncmaxdur >= 5000) {
+  if (pldncmaxdur >= 5000 && dur > pldncmaxdur) {
     dur = pldncmaxdur;
-    logMsg (LOG_DBG, LOG_MAIN, "dur-plmaxdncdur: %zd", dur);
+    logMsg (LOG_DBG, LOG_MAIN, "dur-plmaxdncdur: %ld", dur);
   } else {
     /* the playlist max-play-time overrides the global max-play-time */
-    if (plmaxdur >= 5000) {
-      if (dur > plmaxdur) {
-        dur = plmaxdur;
-        logMsg (LOG_DBG, LOG_MAIN, "dur-plmaxdur: %zd", dur);
-      }
-    } else if (dur > maxdur) {
+    if (plmaxdur >= 5000 && dur > plmaxdur) {
+      dur = plmaxdur;
+      logMsg (LOG_DBG, LOG_MAIN, "dur-plmaxdur: %ld", dur);
+    } else if (maxdur >= 5000 && dur > maxdur) {
       dur = maxdur;
-      logMsg (LOG_DBG, LOG_MAIN, "dur-maxdur: %zd", dur);
+      logMsg (LOG_DBG, LOG_MAIN, "dur-maxdur: %ld", dur);
     }
   }
 
-  songSetDurCache (song, dur);
   logProcEnd (LOG_PROC, "mainCalculateSongDuration", "");
   return dur;
 }

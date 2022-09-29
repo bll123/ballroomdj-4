@@ -531,26 +531,6 @@ START_TEST(song_tag_list)
 }
 END_TEST
 
-START_TEST(song_dur_cache)
-{
-  song_t      *song = NULL;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_dur_cache");
-
-  bdjvarsdfloadInit ();
-
-  ck_assert_int_eq (songGetDurCache (song), -1);
-  song = songAlloc ();
-  ck_assert_ptr_nonnull (song);
-  ck_assert_int_eq (songGetDurCache (song), -1);
-  songSetDurCache (song, 20000);
-  ck_assert_int_eq (songGetDurCache (song), 20000);
-  songFree (song);
-
-  bdjvarsdfloadCleanup ();
-}
-END_TEST
-
 Suite *
 song_suite (void)
 {
@@ -568,7 +548,6 @@ song_suite (void)
   tcase_add_test (tc, song_audio_file);
   tcase_add_test (tc, song_display);
   tcase_add_test (tc, song_tag_list);
-  tcase_add_test (tc, song_dur_cache);
   suite_add_tcase (s, tc);
   return s;
 }

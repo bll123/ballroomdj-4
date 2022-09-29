@@ -24,8 +24,6 @@ void      songChangeFavorite (song_t *song);
 bool      songAudioFileExists (song_t *song);
 char *    songDisplayString (song_t *song, int tagidx);
 slist_t * songTagList (song_t *song);
-void      songSetDurCache (song_t *song, long dur);
-long      songGetDurCache (song_t *song);
 bool      songIsChanged (song_t *song);
 bool      songHasSonglistChange (song_t *song);
 void      songClearChanged (song_t *song);

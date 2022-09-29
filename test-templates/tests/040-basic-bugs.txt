@@ -10,9 +10,9 @@ msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
+mssleep 2000
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dbidx 10 songplaysentcount 1
-mssleep 2000
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 chk playstate paused

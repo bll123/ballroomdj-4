@@ -3,6 +3,7 @@ BallroomDJ 4 Change Log
 4.0.0 alpha --
 
 - Fix .wma author and title tags.
+- player: Fix incorrect duration calculations (playlist max, dance max).
 
 4.0.0 alpha 2022-09-26
 

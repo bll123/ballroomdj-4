@@ -9,12 +9,17 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 1000
 resptimeout 5500
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
 wait playstate in-gap
+get player CHK_PLAYER_STATUS
+chk realvolume 0
+get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 1000
 msg main CHK_MAIN_GAP 2000
 end
 
@@ -27,16 +32,19 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-resptimeout 4500
+mssleep 1000
+resptimeout 5000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
 # --verbose helps here to validate that the in-gap state is not set.
 wait playstate playing
+mssleep 1000
 msg main CHK_MAIN_GAP 2000
 end
 
 test 90-20 No-Fade-In
+msg player PLAYER_VOLUME 30
 msg player CHK_PLAYER_FADEIN 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
@@ -46,10 +54,16 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
+get player CHK_PLAYER_STATUS
+chk currvolume 30 realvolume 30
+mssleep 1000
 resptimeout 6500
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
+get player CHK_PLAYER_STATUS
+chk currvolume 30 realvolume 30
+mssleep 1000
 msg player CHK_PLAYER_FADEIN 400
 end
 
@@ -63,12 +77,14 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-resptimeout 2500
+mssleep 1000
+resptimeout 3000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 # --verbose can be used to show that in-fadeout is not used
 wait playstate in-gap
 wait playstate playing
+mssleep 1000
 msg player CHK_PLAYER_FADEOUT 4000
 end
 
@@ -82,11 +98,13 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-resptimeout 500
+mssleep 1000
+resptimeout 1000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 # --verbose helps here to validate that neither in-fadeout nor in-gap is set.
 wait playstate playing
+mssleep 1000
 msg main CHK_MAIN_GAP 2000
 msg player CHK_PLAYER_FADEOUT 4000
 end
@@ -98,6 +116,7 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
+mssleep 1000
 get player CHK_PLAYER_SONG
 chk p-duration 10000
 resptimeout 14500

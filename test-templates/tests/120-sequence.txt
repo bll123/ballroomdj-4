@@ -1,2 +1,57 @@
 
 section 120 Sequence
+
+test 120-10 Basic
+msg main QUEUE_PLAYLIST 0~test-sequence
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Waltz
+msg player PLAY_FADE
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Tango
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Foxtrot
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Quickstep
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Waltz
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Tango
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Foxtrot
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Quickstep
+end
+

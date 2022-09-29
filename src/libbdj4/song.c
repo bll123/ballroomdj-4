@@ -30,7 +30,6 @@
 
 typedef struct song {
   nlist_t     *songInfo;
-  long        durcache;
   bool        changed;
   bool        songlistchange;
 } song_t;
@@ -102,7 +101,6 @@ songAlloc (void)
   song->songlistchange = false;
   song->songInfo = nlistAlloc ("song", LIST_ORDERED, free);
   ++gsonginit.songcount;
-  song->durcache = -1;
   return song;
 }
 
@@ -402,26 +400,6 @@ songTagList (song_t *song)
 
   taglist = datafileSaveKeyValList ("song-tag", songdfkeys, SONG_DFKEY_COUNT, song->songInfo);
   return taglist;
-}
-
-void
-songSetDurCache (song_t *song, long dur)
-{
-  if (song == NULL) {
-    return;
-  }
-
-  song->durcache = dur;
-}
-
-long
-songGetDurCache (song_t *song)
-{
-  if (song == NULL) {
-    return -1;
-  }
-
-  return song->durcache;
 }
 
 inline bool
