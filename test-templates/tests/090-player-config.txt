@@ -92,6 +92,19 @@ msg player CHK_PLAYER_FADEOUT 4000
 end
 
 test 90-40 Maximum-Play-Time
-print TBD
+msg main CHK_MAIN_MAXPLAYTIME 10000
+msg main MUSICQ_INSERT 0~999~0
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get player CHK_PLAYER_SONG
+chk p-duration 10000
+resptimeout 14500
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+wait playstate in-gap
+wait playstate stopped
+msg main CHK_MAIN_MAXPLAYTIME 360000
 end
 

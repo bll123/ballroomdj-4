@@ -622,6 +622,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_CHK_MAIN_MAXPLAYTIME: {
+          bdjoptSetNum (OPT_P_MAXPLAYTIME, atol (targs));
+          dbgdisp = true;
+          break;
+        }
         default: {
           break;
         }

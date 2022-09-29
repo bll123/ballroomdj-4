@@ -15,6 +15,7 @@
 #     ends the test
 #   disp
 #     display responses before using 'chk' or 'wait'
+#   opt {set-num|set-str} OPTNAME value
 #
 # main:
 #   status:
