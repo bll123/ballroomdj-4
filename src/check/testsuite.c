@@ -298,7 +298,6 @@ tsProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CHK_MAIN_MUSICQ:
-        case MSG_CHK_MAIN_STATUS:
         case MSG_CHK_PLAYER_STATUS:
         case MSG_CHK_PLAYER_SONG: {
           tsProcessChkResponse (testsuite, args);

@@ -153,7 +153,6 @@ typedef enum {
 
   /* test-suite */
   MSG_CHK_MAIN_MUSICQ,
-  MSG_CHK_MAIN_STATUS,
   MSG_CHK_PLAYER_STATUS,
   MSG_CHK_PLAYER_SONG,
   MSG_CHK_MAIN_RESET,

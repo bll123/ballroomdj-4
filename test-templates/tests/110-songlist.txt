@@ -1,0 +1,23 @@
+
+section 110 Songlist
+
+test 110-10 Basic
+msg main QUEUE_PLAYLIST 0~test-songlist
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 78 m-songfn 001-argentinetango.mp3
+msg player PLAY_FADE
+resptimeout 6500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 77 m-songfn 001-bachata.mp3
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 76 m-songfn 001-chacha.mp3
+end

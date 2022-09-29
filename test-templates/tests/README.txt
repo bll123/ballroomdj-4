@@ -18,7 +18,7 @@
 #   opt {set-num|set-str} OPTNAME value
 #
 # main:
-#   status:
+#   musicq:
 #     mqmanage mqplay mq0len mq1len m-songfn title dance
 #     dbidx
 #       only if playing, from the musicq-play-idx

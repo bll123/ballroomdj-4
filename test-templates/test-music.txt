@@ -46,6 +46,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-argentinetango
+
 KEY
 ..1
 SOURCE
@@ -78,6 +79,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-argentinetango
+
 KEY
 ..2
 SOURCE
@@ -110,6 +112,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-argentinetango
+
 KEY
 ..3
 SOURCE
@@ -138,6 +141,7 @@ DANCERATING
 ..Good
 TITLE
 ..%03d-argentinetango
+
 KEY
 ..4
 SOURCE
@@ -168,6 +172,7 @@ DANCERATING
 ..Good
 TITLE
 ..%03d-argentinetango
+
 KEY
 ..5
 SOURCE
@@ -235,6 +240,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-bachata
+
 KEY
 ..7
 SOURCE
@@ -265,6 +271,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-bachata
+
 KEY
 ..8
 SOURCE
@@ -295,6 +302,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-bachata
+
 KEY
 ..9
 SOURCE
@@ -325,6 +333,7 @@ DANCERATING
 ..Good
 TITLE
 ..%03d-bachata
+
 KEY
 ..10
 SOURCE
@@ -357,6 +366,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-bachata
+
 KEY
 ..11
 SOURCE
@@ -422,6 +432,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-chacha
+
 KEY
 ..13
 SOURCE
@@ -452,6 +463,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-chacha
+
 KEY
 ..14
 SOURCE
@@ -482,6 +494,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-chacha
+
 KEY
 ..15
 SOURCE
@@ -512,6 +525,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-chacha
+
 KEY
 ..16
 SOURCE
@@ -544,6 +558,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-chacha
+
 KEY
 ..17
 SOURCE
@@ -609,6 +624,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-foxtrot
+
 KEY
 ..19
 SOURCE
@@ -637,6 +653,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-foxtrot
+
 KEY
 ..20
 SOURCE
@@ -669,6 +686,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-foxtrot
+
 KEY
 ..21
 SOURCE
@@ -701,6 +719,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-foxtrot
+
 KEY
 ..22
 SOURCE
@@ -733,6 +752,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-foxtrot
+
 KEY
 ..23
 SOURCE
@@ -794,6 +814,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-jive
+
 KEY
 ..25
 SOURCE
@@ -826,6 +847,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-jive
+
 KEY
 ..26
 SOURCE
@@ -858,6 +880,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-jive
+
 KEY
 ..27
 SOURCE
@@ -888,6 +911,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-jive
+
 KEY
 ..28
 SOURCE
@@ -918,6 +942,7 @@ DANCERATING
 ..Good
 TITLE
 ..%03d-jive
+
 KEY
 ..29
 SOURCE
@@ -983,6 +1008,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-quickstep
+
 KEY
 ..31
 SOURCE
@@ -1013,6 +1039,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-quickstep
+
 KEY
 ..32
 SOURCE
@@ -1045,6 +1072,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-quickstep
+
 KEY
 ..33
 SOURCE
@@ -1075,6 +1103,7 @@ DANCERATING
 ..Good
 TITLE
 ..%03d-quickstep
+
 KEY
 ..34
 SOURCE
@@ -1105,6 +1134,7 @@ DANCERATING
 ..Good
 TITLE
 ..%03d-quickstep
+
 KEY
 ..35
 SOURCE
@@ -1170,6 +1200,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-rumba
+
 KEY
 ..37
 SOURCE
@@ -1202,6 +1233,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-rumba
+
 KEY
 ..38
 SOURCE
@@ -1232,6 +1264,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-rumba
+
 KEY
 ..39
 SOURCE
@@ -1260,6 +1293,7 @@ DANCERATING
 ..Good
 TITLE
 ..%03d-rumba
+
 KEY
 ..40
 SOURCE
@@ -1292,6 +1326,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-rumba
+
 KEY
 ..41
 SOURCE
@@ -1359,6 +1394,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-salsa
+
 KEY
 ..43
 SOURCE
@@ -1387,6 +1423,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-salsa
+
 KEY
 ..44
 SOURCE
@@ -1417,6 +1454,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-salsa
+
 KEY
 ..45
 SOURCE
@@ -1449,6 +1487,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-salsa
+
 KEY
 ..46
 SOURCE
@@ -1481,6 +1520,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-salsa
+
 KEY
 ..47
 SOURCE
@@ -1544,6 +1584,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-samba
+
 KEY
 ..49
 SOURCE
@@ -1574,6 +1615,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-samba
+
 KEY
 ..50
 SOURCE
@@ -1606,6 +1648,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-samba
+
 KEY
 ..51
 SOURCE
@@ -1636,6 +1679,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-samba
+
 KEY
 ..52
 SOURCE
@@ -1668,6 +1712,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-samba
+
 KEY
 ..53
 SOURCE
@@ -1730,7 +1775,8 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..%03d-tango-ss
+..%03d-tango
+
 KEY
 ..55
 SOURCE
@@ -1738,7 +1784,7 @@ SOURCE
 DURATION
 ..30420
 TAGS
-..tag4 TAG5
+..tag4 TAG5 ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -1760,7 +1806,8 @@ DANCERATING
 FAVORITE
 ..redstar
 TITLE
-..%03d-tango-ss
+..%03d-tango
+
 KEY
 ..56
 SOURCE
@@ -1770,7 +1817,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag6 tag7
+..tag6 tag7 ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -1792,7 +1839,8 @@ DANCERATING
 FAVORITE
 ..bluestar
 TITLE
-..%03d-tango-ss
+..%03d-tango
+
 KEY
 ..57
 SOURCE
@@ -1802,7 +1850,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 ss
 STATUS
 ..New
 DANCELEVEL
@@ -1824,7 +1872,8 @@ DANCERATING
 FAVORITE
 ..purplestar
 TITLE
-..%03d-tango-ss
+..%03d-tango
+
 KEY
 ..58
 SOURCE
@@ -1834,7 +1883,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 TAGS
-..tag4 TAG5
+..tag4 TAG5 ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -1856,7 +1905,8 @@ DANCERATING
 SAMESONG
 ..9
 TITLE
-..%03d-tango-ss
+..%03d-tango
+
 KEY
 ..59
 SOURCE
@@ -1864,7 +1914,7 @@ SOURCE
 DURATION
 ..30420
 TAGS
-..tag6 tag7
+..tag6 tag7 ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -1886,7 +1936,7 @@ DANCERATING
 SAMESONG
 ..9
 TITLE
-..%03d-tango-ss
+..%03d-tango
 
 # .flac
 
@@ -1922,6 +1972,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-tango-flac
+
 KEY
 ..61
 SOURCE
@@ -1954,6 +2005,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-tango-flac
+
 KEY
 ..62
 SOURCE
@@ -2017,6 +2069,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-tango-m4a
+
 KEY
 ..64
 SOURCE
@@ -2047,6 +2100,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-tango-m4a
+
 KEY
 ..65
 SOURCE
@@ -2112,6 +2166,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-tango-opus
+
 KEY
 ..67
 SOURCE
@@ -2144,6 +2199,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-tango-opus
+
 KEY
 ..68
 SOURCE
@@ -2207,6 +2263,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-viennesewaltz
+
 KEY
 ..70
 SOURCE
@@ -2237,6 +2294,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-viennesewaltz
+
 KEY
 ..71
 SOURCE
@@ -2269,6 +2327,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-viennesewaltz
+
 KEY
 ..72
 SOURCE
@@ -2301,6 +2360,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-viennesewaltz
+
 KEY
 ..73
 SOURCE
@@ -2331,6 +2391,7 @@ DANCERATING
 ..Good
 TITLE
 ..%03d-viennesewaltz
+
 KEY
 ..74
 SOURCE
@@ -2402,6 +2463,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-waltz
+
 KEY
 ..76
 SOURCE
@@ -2442,6 +2504,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-waltz
+
 KEY
 ..77
 SOURCE
@@ -2482,6 +2545,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-waltz
+
 KEY
 ..78
 SOURCE
@@ -2518,6 +2582,7 @@ DANCERATING
 ..Good
 TITLE
 ..%03d-waltz
+
 KEY
 ..79
 SOURCE
@@ -2529,7 +2594,7 @@ NOTES
 BPM
 ..87
 TAGS
-..tag4 TAG5 bpm
+..tag4 TAG5 bpm ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -2557,7 +2622,8 @@ DANCERATING
 SAMESONG
 ..5
 TITLE
-..%03d-waltz-ss
+..%03d-waltz
+
 KEY
 ..80
 SOURCE
@@ -2635,6 +2701,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-waltz-flac
+
 KEY
 ..82
 SOURCE
@@ -2667,6 +2734,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-waltz-flac
+
 KEY
 ..83
 SOURCE
@@ -2734,6 +2802,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-waltz
+
 KEY
 ..85
 SOURCE
@@ -2768,6 +2837,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-waltz
+
 KEY
 ..86
 SOURCE
@@ -2837,6 +2907,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-waltz-opus
+
 KEY
 ..88
 SOURCE
@@ -2869,6 +2940,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-waltz-opus
+
 KEY
 ..89
 SOURCE
@@ -2911,7 +2983,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 TAGS
-..tag1 tag2 tag3
+..tag1 tag2 tag3 ss
 STATUS
 ..New
 DANCELEVEL
@@ -2935,7 +3007,8 @@ FAVORITE
 SAMESONG
 ..4
 TITLE
-..%03d-westcoastswing-ss
+..%03d-westcoastswing
+
 KEY
 ..91
 SOURCE
@@ -2945,7 +3018,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 TAGS
-..tag4 TAG5
+..tag4 TAG5 ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -2969,7 +3042,8 @@ FAVORITE
 SAMESONG
 ..4
 TITLE
-..%03d-westcoastswing-ss
+..%03d-westcoastswing
+
 KEY
 ..92
 SOURCE
@@ -3002,6 +3076,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-westcoastswing
+
 KEY
 ..93
 SOURCE
@@ -3030,6 +3105,7 @@ DANCERATING
 ..Good
 TITLE
 ..%03d-westcoastswing
+
 KEY
 ..94
 SOURCE
@@ -3060,6 +3136,7 @@ DANCERATING
 ..Good
 TITLE
 ..%03d-westcoastswing
+
 KEY
 ..95
 SOURCE
@@ -3106,7 +3183,7 @@ NOTES
 BPM
 ..84
 TAGS
-..tag1 tag2 tag3 utf8 bpm
+..tag1 tag2 tag3 utf8 bpm ss
 STATUS
 ..New
 DANCELEVEL
@@ -3130,7 +3207,8 @@ FAVORITE
 SAMESONG
 ..5
 TITLE
-..%03d-こんにちは-ja-ss
+..%03d-こんにちは-ja
+
 KEY
 ..97
 SOURCE
@@ -3140,7 +3218,7 @@ DURATION
 BPM
 ..87
 TAGS
-..tag4 TAG5 utf8 bpm
+..tag4 TAG5 utf8 bpm ss
 STATUS
 ..Complete
 DANCELEVEL
@@ -3164,7 +3242,8 @@ FAVORITE
 SAMESONG
 ..5
 TITLE
-..%03d-夕陽伴我歸-zh-ss
+..%03d-夕陽伴我歸-zh
+
 KEY
 ..98
 SOURCE
@@ -3197,6 +3276,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-내가제일잘나가-ko
+
 KEY
 ..99
 SOURCE
@@ -3229,6 +3309,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-Ne_Русский_Шторм-ru
+
 KEY
 ..100
 SOURCE
@@ -3296,6 +3377,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..900-ZZZZ
+
 KEY
 ..102
 SOURCE
@@ -3330,6 +3412,7 @@ FAVORITE
 ..redstar
 TITLE
 ..900-ÄÄÄÄ
+
 KEY
 ..103
 SOURCE
@@ -3396,7 +3479,8 @@ DANCE
 DANCERATING
 ..Great
 TITLE
-..%03d-waltz-kw
+..%03d-waltz
+
 KEY
 ..105
 SOURCE
@@ -3430,7 +3514,8 @@ DANCERATING
 FAVORITE
 ..redstar
 TITLE
-..%03d-waltz-kw
+..%03d-waltz
+
 KEY
 ..106
 SOURCE
@@ -3466,7 +3551,8 @@ DANCERATING
 FAVORITE
 ..bluestar
 TITLE
-..%03d-waltz-kw
+..%03d-waltz
+
 KEY
 ..107
 SOURCE
@@ -3502,7 +3588,8 @@ DANCERATING
 FAVORITE
 ..purplestar
 TITLE
-..%03d-waltz-kw
+..%03d-waltz
+
 KEY
 ..108
 SOURCE
@@ -3536,7 +3623,8 @@ DANCE
 DANCERATING
 ..Good
 TITLE
-..%03d-waltz-kw
+..%03d-waltz
+
 KEY
 ..109
 SOURCE
@@ -3568,7 +3656,8 @@ DANCE
 DANCERATING
 ..Good
 TITLE
-..%03d-waltz-kw
+..%03d-waltz
+
 KEY
 ..110
 SOURCE
@@ -3602,7 +3691,8 @@ DANCERATING
 FAVORITE
 ..redstar
 TITLE
-..%03d-tango-kw
+..%03d-tango
+
 KEY
 ..111
 SOURCE
@@ -3636,7 +3726,8 @@ DANCERATING
 FAVORITE
 ..bluestar
 TITLE
-..%03d-tango-kw
+..%03d-tango
+
 KEY
 ..112
 SOURCE
@@ -3670,7 +3761,8 @@ DANCERATING
 FAVORITE
 ..purplestar
 TITLE
-..%03d-tango-kw
+..%03d-tango
+
 KEY
 ..113
 SOURCE
@@ -3700,7 +3792,8 @@ DANCE
 DANCERATING
 ..Good
 TITLE
-..%03d-tango-kw
+..%03d-tango
+
 KEY
 ..114
 SOURCE
@@ -3732,7 +3825,8 @@ DANCE
 DANCERATING
 ..Good
 TITLE
-..%03d-tango-kw
+..%03d-tango
+
 KEY
 ..115
 SOURCE
@@ -3766,7 +3860,7 @@ DANCERATING
 FAVORITE
 ..redstar
 TITLE
-..%03d-tango-kw
+..%03d-tango
 
 # .ogg
 
@@ -3802,6 +3896,7 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-tango-ogg
+
 KEY
 ..117
 SOURCE
@@ -3834,6 +3929,7 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-tango-ogg
+
 KEY
 ..118
 SOURCE
@@ -3864,6 +3960,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-tango-ogg
+
 KEY
 ..119
 SOURCE
@@ -3896,6 +3993,7 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-waltz-ogg
+
 KEY
 ..120
 SOURCE
@@ -3930,6 +4028,7 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-waltz-ogg
+
 KEY
 ..121
 SOURCE
