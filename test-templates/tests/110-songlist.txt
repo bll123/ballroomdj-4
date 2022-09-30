@@ -11,7 +11,7 @@ mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk mq0len 78 m-songfn 001-argentinetango.mp3
 msg player PLAY_FADE
-resptimeout 6500
+resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000

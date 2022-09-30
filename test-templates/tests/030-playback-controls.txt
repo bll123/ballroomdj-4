@@ -15,7 +15,6 @@ chk playstate in-fadeout
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 chk playstate in-fadeout
-get player CHK_PLAYER_STATUS
 wait playstate in-gap
 end
 
@@ -106,24 +105,24 @@ wait playstate playing
 mssleep 1000
 msg player PLAY_SEEK 25000
 get player CHK_PLAYER_STATUS
-cgt playtimeplayed 25000
+chk-gt playtimeplayed 25000
 get player CHK_PLAYER_STATUS
-clt playtimeplayed 26000
+chk-lt playtimeplayed 26000
 msg player PLAY_SEEK 5000
 get player CHK_PLAYER_STATUS
-cgt playtimeplayed 5000
+chk-gt playtimeplayed 5000
 get player CHK_PLAYER_STATUS
-clt playtimeplayed 6000
+chk-lt playtimeplayed 6000
 msg player PLAY_SEEK 10000
 get player CHK_PLAYER_STATUS
-cgt playtimeplayed 10000
+chk-gt playtimeplayed 10000
 get player CHK_PLAYER_STATUS
-clt playtimeplayed 11000
+chk-lt playtimeplayed 11000
 msg player PLAY_SEEK 0
 get player CHK_PLAYER_STATUS
-cgt playtimeplayed 0
+chk-gt playtimeplayed 0
 get player CHK_PLAYER_STATUS
-clt playtimeplayed 1000
+chk-lt playtimeplayed 1000
 msg player PLAY_SEEK 28000
 resptimeout 4000
 get player CHK_PLAYER_STATUS
@@ -310,23 +309,23 @@ resptimeout 2000
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-clt playtimeplayed 1500
+chk-lt playtimeplayed 1500
 msg player PLAY_SONG_BEGIN
 get player CHK_PLAYER_STATUS
-clt playtimeplayed 200
+chk-lt playtimeplayed 200
 mssleep 2000
 get player CHK_PLAYER_STATUS
-cgt playtimeplayed 2000
+chk-gt playtimeplayed 2000
 msg player PLAY_SONG_BEGIN
 get player CHK_PLAYER_STATUS
-clt playtimeplayed 200
+chk-lt playtimeplayed 200
 get player CHK_PLAYER_STATUS
 chk playstate playing
 ## this needs to be implemented in the player
 ## song-begin during a fade does nothing
 #mssleep 2000
 #get player CHK_PLAYER_STATUS
-#cgt playtimeplayed 2000
+#chk-gt playtimeplayed 2000
 #msg player PLAY_FADE
 #get player CHK_PLAYER_STATUS
 #wait playstate in-fadeout
@@ -335,7 +334,7 @@ chk playstate playing
 #chk playstate in-fadeout
 #get player CHK_PLAYER_STATUS
 #disp playtimeplayed
-#cgt playtimeplayed 2000
+#chk-gt playtimeplayed 2000
 end
 
 test 30-80 Volume
@@ -357,6 +356,7 @@ chk currvolume 40 realvolume 40
 msg player PLAYER_VOLUME 20
 get player CHK_PLAYER_STATUS
 chk currvolume 20 realvolume 20
+msg player PLAYER_VOLUME 35
 end
 
 test 30-90 Speed
@@ -383,17 +383,17 @@ wait playstate playing
 mssleep 1000
 msg player PLAY_SPEED 130
 get player CHK_PLAYER_STATUS
-cgt playtimeplayed 1000
+chk-gt playtimeplayed 1000
 get player CHK_PLAYER_STATUS
-clt playtimeplayed 1200
+chk-lt playtimeplayed 1200
 msg player PLAY_FADE
-resptimeout 6500
+resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 msg player PLAY_SPEED 70
 get player CHK_PLAYER_STATUS
-cgt playtimeplayed 1000
+chk-gt playtimeplayed 1000
 get player CHK_PLAYER_STATUS
-clt playtimeplayed 1200
+chk-lt playtimeplayed 1200
 end

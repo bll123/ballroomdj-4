@@ -36,7 +36,9 @@ mssleep 1000
 resptimeout 5000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
+chk-or playstate in-fadeout playing
 wait playstate in-fadeout
+chk-or playstate in-fadeout playing
 # --verbose helps here to validate that the in-gap state is not set.
 wait playstate playing
 mssleep 1000
@@ -54,14 +56,12 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-get player CHK_PLAYER_STATUS
 chk currvolume 30 realvolume 30
 mssleep 1000
 resptimeout 6500
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-get player CHK_PLAYER_STATUS
 chk currvolume 30 realvolume 30
 mssleep 1000
 msg player CHK_PLAYER_FADEIN 400
@@ -81,8 +81,10 @@ mssleep 1000
 resptimeout 3000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
+chk-or playstate in-gap playing
 # --verbose can be used to show that in-fadeout is not used
 wait playstate in-gap
+chk-or playstate in-gap playing
 wait playstate playing
 mssleep 1000
 msg player CHK_PLAYER_FADEOUT 4000

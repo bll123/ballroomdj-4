@@ -32,7 +32,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 1 mq0idx0 0
 msg main MUSICQ_INSERT 0~0~1
 get main CHK_MAIN_MUSICQ
-chk mq0len 2 mq0idx1 0 mq0idx1 1
+chk mq0len 2 mq0idx0 0 mq0idx1 1
 msg main MUSICQ_INSERT 0~0~2
 get main CHK_MAIN_MUSICQ
 chk mq0len 3 mq0idx0 0 mq0idx1 1 mq0idx2 2

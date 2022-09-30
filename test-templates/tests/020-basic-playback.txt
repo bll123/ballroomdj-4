@@ -12,8 +12,9 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 get main CHK_MAIN_MUSICQ
+chk mq0len 1 dbidx 0
 get player CHK_PLAYER_STATUS
-chk mq0len 1 dbidx 0 playstate playing
+chk playstate playing
 mssleep 2000
 get player CHK_PLAYER_STATUS
 chk playstate playing
@@ -39,15 +40,19 @@ msg main MUSICQ_INSERT 0~999~1
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
 msg main CMD_PLAY
-mssleep 500
-get main CHK_MAIN_MUSICQ
 get player CHK_PLAYER_STATUS
-chk mq0len 1 dbidx 1 playstate playing
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 1 dbidx 1
+get player CHK_PLAYER_STATUS
+chk playstate playing
 mssleep 2000
 msg main MUSICQ_INSERT 0~999~2
 get main CHK_MAIN_MUSICQ
+chk mq0len 2 dbidx 1
 get player CHK_PLAYER_STATUS
-chk mq0len 2 dbidx 1 playstate playing
+chk playstate playing
 resptimeout 35000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout

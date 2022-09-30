@@ -56,13 +56,15 @@ cp -f test-templates/test-songlist.songlist data
 cp -f test-templates/test-sequence.pl data
 cp -f test-templates/test-sequence.pldances data
 cp -f test-templates/test-sequence.sequence data
+cp -f test-templates/test-auto-a.pl data
+cp -f test-templates/test-auto-a.pldances data
 
 cwd=$(pwd)
 
 ed data/profile00/bdjconfig.txt << _HERE_ > /dev/null
 /^DEFAULTVOLUME/
 +1
-s,.*,..20,
+s,.*,..35,
 /^FADEOUTTIME/
 +1
 s,.*,..4000,
