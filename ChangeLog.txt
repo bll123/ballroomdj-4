@@ -4,6 +4,8 @@ BallroomDJ 4 Change Log
 
 - Fix .wma author and title tags.
 - player: Fix incorrect duration calculations (playlist max, dance max).
+- BDJ3 conversion: Fix incorrect conversion of volume adjust percentage.
+- database update: Fix incorrect conversion of BDJ3 volume adjust percentage.
 
 4.0.0 alpha 2022-09-26
 

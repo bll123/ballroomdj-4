@@ -196,6 +196,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     /* convert to bdj3 form after the update check */
     if (audiotagBDJ3CompatCheck (tmp, sizeof (tmp), tagkey, newvalue)) {
       newvalue = tmp;
+      upd = true;
     }
 
     /* special case */
@@ -512,11 +513,24 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
         if (strcmp (tagname, tagdefs [TAG_VOLUMEADJUSTPERC].tag) == 0) {
           double    tm = 0.0;
 
+          /* the BDJ3 volume adjust percentage is a double */
+          /* with or without a decimal point */
+          /* convert it to BDJ4 style */
+          /* this will fail for large BDJ3 values w/no decimal */
           pC = strstr (p, ".");
-          if (pC == NULL) {
-            tm += atof (p);
+          if (pC != NULL || strlen (p) <= 3) {
+            if (pC != NULL) {
+              char  *tmp;
+
+              tmp = sysvarsGetStr (SV_LOCALE_RADIX);
+              if (tmp != NULL) {
+                *pC = *tmp;
+              }
+            }
+            tm = atof (p);
             tm /= 10.0;
-            snprintf (pbuff, sizeof (pbuff), "%.2f", tm);
+            tm *= DF_DOUBLE_MULT;
+            snprintf (pbuff, sizeof (pbuff), "%.0f", tm);
             p = pbuff;
           }
         }
@@ -806,18 +820,26 @@ audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value)
     }
     if (tagkey == TAG_VOLUMEADJUSTPERC) {
       double    val;
+      char      *radix;
+      char      *tptr;
 
       val = atof (value);
+      val /= DF_DOUBLE_MULT;
       val *= 10.0;
-      /* bdj3 volume adjust percentage is stored without a decimal point */
-      snprintf (tmp, sz, "%ld", (long) val);
+      /* bdj3 volume adjust percentage should be stored */
+      /* with a decimal point if possible */
+      snprintf (tmp, sz, "%.2f", val);
+      radix = sysvarsGetStr (SV_LOCALE_RADIX);
+      tptr = strstr (tmp, radix);
+      if (tptr != NULL) {
+        *tptr = '.';
+      }
       rc = true;
     }
   }
 
   return rc;
 }
-
 
 static void
 audiotagRunUpdate (const char *fn)
@@ -829,7 +851,7 @@ audiotagRunUpdate (const char *fn)
   targv [targc++] = fn;
   targv [targc++] = NULL;
   osProcessStart (targv, OS_PROC_WAIT | OS_PROC_DETACH, NULL, NULL);
-  fileopDelete (fn);
+//  fileopDelete (fn);
 }
 
 static void

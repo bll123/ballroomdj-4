@@ -139,10 +139,10 @@ dict for {fn data} $musicdbList {
     }
 
     if { $tag eq "VOLUMEADJUSTPERC" } {
-      set value [expr {int ($value)}]
-      set value [expr {double ($value) / 10.0}]
-      # make sure the volume-adjust-perc has a decimal point in it.
-      set value [format {%.2f} $value]
+      # 10.0 converts the bdj3 value, 1000.0 is the bdj4 double multiplier
+      set value [expr {$value / 10.0 * 1000.0}]
+      # make sure the volume-adjust-perc has no decimal point in it.
+      set value [format {%.0f} $value]
     }
 
     if { $tag eq "SONGSTART" || $tag eq "SONGEND" } {
