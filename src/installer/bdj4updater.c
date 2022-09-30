@@ -274,6 +274,8 @@ main (int argc, char *argv [])
       bdjoptSetStr (OPT_M_DIR_MUSIC, homemusicdir);
       bdjoptchanged = true;
     }
+
+    bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, false);
   }
 
   /* always check and see if itunes exists, unless a conversion was run */

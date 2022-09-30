@@ -6,6 +6,7 @@ BallroomDJ 4 Change Log
 - player: Fix incorrect duration calculations (playlist max, dance max).
 - BDJ3 conversion: Fix incorrect conversion of volume adjust percentage.
 - database update: Fix incorrect conversion of BDJ3 volume adjust percentage.
+- install: bdj3 compatible tags are turned off for new installs.
 
 4.0.0 alpha 2022-09-26
 

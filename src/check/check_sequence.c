@@ -78,7 +78,7 @@ START_TEST(sequence_alloc)
   seq = sequenceAlloc (SEQFN);
   ck_assert_ptr_nonnull (seq);
   tlist = sequenceGetDanceList (seq);
-  ck_assert_int_eq (slistGetCount (tlist), 5);
+  ck_assert_int_eq (slistGetCount (tlist), 4);
   sequenceFree (seq);
 
   bdjvarsdfloadCleanup ();
@@ -110,7 +110,7 @@ START_TEST(sequence_iterate)
     ck_assert_int_ge (key, 0);
     ++count;
   }
-  ck_assert_int_eq (count, 5);
+  ck_assert_int_eq (count, 4);
   sequenceFree (seq);
 
   bdjvarsdfloadCleanup ();
@@ -144,11 +144,10 @@ START_TEST(sequence_save)
   seq = sequenceAlloc (SEQFN);
   ck_assert_ptr_nonnull (seq);
   tlist = sequenceGetDanceList (seq);
-  ck_assert_int_eq (slistGetCount (tlist), 5);
+  ck_assert_int_eq (slistGetCount (tlist), 4);
   tslist = slistAlloc ("chk-seq-save", LIST_UNORDERED, free);
   slistSetStr (tslist, "Waltz", 0);
   slistSetStr (tslist, "Tango", 0);
-  slistSetStr (tslist, "Viennese Waltz", 0);
   slistSetStr (tslist, "Foxtrot", 0);
   slistSetStr (tslist, "Quickstep", 0);
   sequenceSave (seq, tslist);
@@ -158,10 +157,10 @@ START_TEST(sequence_save)
 
   tlist = sequenceGetDanceList (seq);
   slistStartIterator (tlist, &siteridx);
-  ck_assert_int_eq (slistGetCount (tlist), 5);
+  ck_assert_int_eq (slistGetCount (tlist), 4);
   tlistb = sequenceGetDanceList (seqb);
   slistStartIterator (tlistb, &siteridxb);
-  ck_assert_int_eq (slistGetCount (tlistb), 5);
+  ck_assert_int_eq (slistGetCount (tlistb), 4);
 
   sequenceStartIterator (seq, &iteridx);
   sequenceStartIterator (seqb, &iteridxb);
