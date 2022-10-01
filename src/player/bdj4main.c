@@ -1397,12 +1397,12 @@ static void
 mainMusicQueuePrep (maindata_t *mainData)
 {
   playlist_t    *playlist;
-  ssize_t       plannounce;
+  int           plannounce;
 
   logProcBegin (LOG_PROC, "mainMusicQueuePrep");
 
   /* 5 is the number of songs to prep ahead of time */
-  for (ssize_t i = 0; i < MAIN_PREP_SIZE; ++i) {
+  for (int i = 0; i < MAIN_PREP_SIZE; ++i) {
     char          *sfname = NULL;
     dbidx_t       dbidx;
     song_t        *song = NULL;
@@ -1410,14 +1410,18 @@ mainMusicQueuePrep (maindata_t *mainData)
     char          *annfname = NULL;
     int           playlistIdx;
 
-    dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqManageIdx, i);
+    dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
+    if (dbidx < 0) {
+      continue;
+    }
+
     song = dbGetByIdx (mainData->musicdb, dbidx);
-    flags = musicqGetFlags (mainData->musicQueue, mainData->musicqManageIdx, i);
-    playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mainData->musicqManageIdx, i);
+    flags = musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, i);
+    playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
 
     if (song != NULL &&
         (flags & MUSICQ_FLAG_PREP) != MUSICQ_FLAG_PREP) {
-      musicqSetFlag (mainData->musicQueue, mainData->musicqManageIdx,
+      musicqSetFlag (mainData->musicQueue, mainData->musicqPlayIdx,
           i, MUSICQ_FLAG_PREP);
 
       plannounce = false;
@@ -1429,9 +1433,9 @@ mainMusicQueuePrep (maindata_t *mainData)
 
       if (plannounce == 1) {
         if (annfname != NULL && strcmp (annfname, "") != 0 ) {
-          musicqSetFlag (mainData->musicQueue, mainData->musicqManageIdx,
+          musicqSetFlag (mainData->musicQueue, mainData->musicqPlayIdx,
               i, MUSICQ_FLAG_ANNOUNCE);
-          musicqSetAnnounce (mainData->musicQueue, mainData->musicqManageIdx,
+          musicqSetAnnounce (mainData->musicQueue, mainData->musicqPlayIdx,
               i, annfname);
         }
       }
@@ -1829,6 +1833,9 @@ mainMusicqSwitch (maindata_t *mainData, musicqidx_t newMusicqIdx)
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
   mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
 
+  /* having switched the playback music queue, the songs must be prepped */
+  mainMusicQueuePrep (mainData);
+
   dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
   song = dbGetByIdx (mainData->musicdb, dbidx);
   if (song == NULL) {
@@ -1911,6 +1918,7 @@ mainMusicQueuePlay (maindata_t *mainData)
 
         logMsg (LOG_DBG, LOG_MAIN, "switch queues");
         mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
+
 //        mainData->musicqManageIdx = mainData->musicqPlayIdx;
         currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
 
@@ -1921,6 +1929,9 @@ mainMusicQueuePlay (maindata_t *mainData)
 //          mainData->musicqManageIdx = mainData->musicqPlayIdx;
           currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
         }
+
+        /* the songs must be prepped */
+        mainMusicQueuePrep (mainData);
 
         if (currlen > 0) {
           snprintf (tmp, sizeof (tmp), "%d", mainData->musicqPlayIdx);
