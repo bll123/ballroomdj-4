@@ -148,6 +148,11 @@ queuePushHead (queue_t *q, void *data)
   }
   q->head = node;
   q->count++;
+
+  /* push-head invalidates the cache */
+  q->cacheNode = NULL;
+  q->cacheIdx = QUEUE_NO_IDX;
+
   logProcEnd (LOG_PROC, "queuePushHead", "");
 }
 
@@ -223,6 +228,10 @@ queuePop (queue_t *q)
   }
   node = q->head;
 
+  /* a pop invalidates the cache */
+  q->cacheNode = NULL;
+  q->cacheIdx = QUEUE_NO_IDX;
+
   data = queueRemove (q, node);
   logProcEnd (LOG_PROC, "queuePop", "");
   return data;
@@ -249,6 +258,11 @@ queueClear (queue_t *q, ssize_t startIdx)
     }
     queueRemove (q, tnode);
   }
+
+  /* invalidate the cache */
+  q->cacheNode = NULL;
+  q->cacheIdx = QUEUE_NO_IDX;
+
   logProcEnd (LOG_PROC, "queueClear", "");
   return;
 }
@@ -291,6 +305,10 @@ queueMove (queue_t *q, ssize_t fromidx, ssize_t toidx)
     fromnode->data = tonode->data;
     tonode->data = tdata;
   }
+
+  /* a move invalidates the cache */
+  q->cacheNode = NULL;
+  q->cacheIdx = QUEUE_NO_IDX;
 
   logProcEnd (LOG_PROC, "queueMove", "");
   return;
@@ -342,6 +360,10 @@ queueInsert (queue_t *q, ssize_t idx, void *data)
   }
   ++q->count;
 
+  /* an insert invalidates the cache */
+  q->cacheNode = NULL;
+  q->cacheIdx = QUEUE_NO_IDX;
+
   logProcEnd (LOG_PROC, "queueInsert", "");
   return;
 }
@@ -370,6 +392,11 @@ queueRemoveByIdx (queue_t *q, ssize_t idx)
   if (node != NULL) {
     data = queueRemove (q, node);
   }
+
+  /* a removal invalidates the cache */
+  q->cacheNode = NULL;
+  q->cacheIdx = QUEUE_NO_IDX;
+
   logProcEnd (LOG_PROC, "queueRemoveByIdx", "");
   return data;
 }
@@ -417,6 +444,11 @@ queueIterateRemoveNode (queue_t *q, ssize_t *iteridx)
   }
   data = queueRemove (q, q->currentNode);
   q->currentNode = q->iteratorNode;
+
+  /* a removal invalidates the cache */
+  q->cacheNode = NULL;
+  q->cacheIdx = QUEUE_NO_IDX;
+
   return data;
 }
 
@@ -435,11 +467,6 @@ queueRemove (queue_t *q, queuenode_t *node)
   }
   if (q->head == NULL) {
     return NULL;
-  }
-
-  if (node == q->cacheNode) {
-    q->cacheIdx = QUEUE_NO_IDX;
-    q->cacheNode = NULL;
   }
 
   data = node->data;
