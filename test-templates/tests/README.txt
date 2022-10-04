@@ -4,18 +4,25 @@
 # fade-out default: 4000
 # gap default: 2000
 #
-# 32+ seconds + 2 = 34, so a timeout of 35 seconds is used if
+# 32+ seconds - 4 = 28, timeout 29000 to in-fadeout
+# 32+ seconds + 2 = 34, timeout 35000 to next song
 # playing the entire song.
 #
 # commands:
-#   section test msg get chk wait mssleep
-#   resptimeout
+#   section <num> <name>
+#   test <num> <name>
+#   msg <route> <msg>
+#   get <route> <msg>
+#   chk {key value} ...
+#     special values: defaultvol
+#   wait {key value}
+#   mssleep <time>
+#   resptimeout <time>
 #     set the response timeout for 'wait'
-#   reset end
+#   reset, end
 #     ends the test
-#   disp
+#   disp, dispall
 #     display responses before using 'chk' or 'wait'
-#   opt {set-num|set-str} OPTNAME value
 #
 # main:
 #   musicq:
@@ -31,11 +38,15 @@
 #       unknown stopped loading playing paused in-fadeout in-gap
 #     plistate
 #       none opening buffering playing paused stopped ended error
-#         note that these may be specific to vlc.
+#         note that these may be specific to the particular player interface.
 #         the only states that should be used in tests
 #         are playing and paused.
-#     currvolume realvolume speed playtimeplayed
-#     pauseatend repeat defaultsink currentsink
+#     currvolume realvolume actualvolume
+#       actualvolume is used to test fade-in and fade-out
+#     speed playtimeplayed
+#     pauseatend repeat
+#     defaultsink currentsink
+#     prepqueuecount
 #   song:
 #     p-duration p-songfn
 #

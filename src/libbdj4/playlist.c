@@ -55,16 +55,16 @@ static void plConvType (datafileconv_t *conv);
 
 /* must be sorted in ascii order */
 static datafilekey_t playlistdfkeys [PLAYLIST_KEY_MAX] = {
-  { "ALLOWEDKEYWORDS",PLAYLIST_ALLOWED_KEYWORDS, VALUE_LIST, convTextList, -1 },
-  { "DANCELEVELHIGH", PLAYLIST_LEVEL_HIGH, VALUE_NUM, levelConv, -1 },
-  { "DANCELEVELLOW",  PLAYLIST_LEVEL_LOW, VALUE_NUM, levelConv, -1 },
-  { "DANCERATING",    PLAYLIST_RATING, VALUE_NUM, ratingConv, -1 },
-  { "GAP",            PLAYLIST_GAP, VALUE_NUM, NULL, -1 },
-  { "MAXPLAYTIME",    PLAYLIST_MAX_PLAY_TIME, VALUE_NUM, NULL, -1 },
-  { "PLAYANNOUNCE",   PLAYLIST_ANNOUNCE, VALUE_NUM, convBoolean, -1 },
-  { "STOPAFTER",      PLAYLIST_STOP_AFTER, VALUE_NUM, NULL, -1 },
-  { "STOPTIME",       PLAYLIST_STOP_TIME, VALUE_NUM, NULL, -1 },
-  { "TYPE",           PLAYLIST_TYPE, VALUE_NUM, plConvType, -1 },
+  { "ALLOWEDKEYWORDS",PLAYLIST_ALLOWED_KEYWORDS,  VALUE_LIST, convTextList, -1 },
+  { "DANCELEVELHIGH", PLAYLIST_LEVEL_HIGH,        VALUE_NUM, levelConv, -1 },
+  { "DANCELEVELLOW",  PLAYLIST_LEVEL_LOW,         VALUE_NUM, levelConv, -1 },
+  { "DANCERATING",    PLAYLIST_RATING,            VALUE_NUM, ratingConv, -1 },
+  { "GAP",            PLAYLIST_GAP,               VALUE_NUM, NULL, -1 },
+  { "MAXPLAYTIME",    PLAYLIST_MAX_PLAY_TIME,     VALUE_NUM, NULL, -1 },
+  { "PLAYANNOUNCE",   PLAYLIST_ANNOUNCE,          VALUE_NUM, convBoolean, -1 },
+  { "STOPAFTER",      PLAYLIST_STOP_AFTER,        VALUE_NUM, NULL, -1 },
+  { "STOPTIME",       PLAYLIST_STOP_TIME,         VALUE_NUM, NULL, -1 },
+  { "TYPE",           PLAYLIST_TYPE,              VALUE_NUM, plConvType, -1 },
 };
 
 /* must be sorted in ascii order */

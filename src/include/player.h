@@ -12,4 +12,8 @@ typedef enum {
   PL_STATE_MAX,
 } playerstate_t;
 
+enum {
+  PL_UNIQUE_ANN = 0,
+};
+
 #endif /* INC_PLAYER_H */

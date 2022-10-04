@@ -64,7 +64,7 @@ cwd=$(pwd)
 ed data/profile00/bdjconfig.txt << _HERE_ > /dev/null
 /^DEFAULTVOLUME/
 +1
-s,.*,..35,
+s,.*,..25,
 /^FADEOUTTIME/
 +1
 s,.*,..4000,

@@ -7,6 +7,10 @@ BallroomDJ 4 Change Log
 - BDJ3 conversion: Fix incorrect conversion of volume adjust percentage.
 - database update: Fix incorrect conversion of BDJ3 volume adjust percentage.
 - install: bdj3 compatible tags are turned off for new installs.
+- management: playlist management: fix gap spinbox to allow
+  fractions of a second.
+- conversion: fix playlist gap conversion.
+o player: fix volume when no fade-out and no gap.
 
 4.0.0 alpha 2022-09-26
 

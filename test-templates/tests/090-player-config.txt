@@ -7,19 +7,36 @@ msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
 msg main CMD_PLAY
 resptimeout 2000
+# check normal song-end processing
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
-resptimeout 5500
+get player CHK_PLAYER_STATUS
+chk actualvolume defaultvol
+resptimeout 29000
+wait playstate in-fadeout
+resptimeout 5000
+wait playstate in-gap
+chk actualvolume 0
+resptimeout 1500
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk actualvolume defaultvol
+# check manual fade processing
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
+resptimeout 5000
 wait playstate in-gap
 get player CHK_PLAYER_STATUS
-chk realvolume 0
-get player CHK_PLAYER_STATUS
+chk actualvolume 0
+resptimeout 1500
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk actualvolume defaultvol
+chk currvolume defaultvol
 msg main CHK_MAIN_GAP 2000
 end
 
@@ -33,15 +50,25 @@ resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 resptimeout 5000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
-chk-or playstate in-fadeout playing
-wait playstate in-fadeout
-chk-or playstate in-fadeout playing
-# --verbose helps here to validate that the in-gap state is not set.
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 5000
+chk-or playstate in-fadeout stopped loading playing
+wait playstate in-fadeout
+chk-or playstate in-fadeout stopped loading playing
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 msg main CHK_MAIN_GAP 2000
 end
 
@@ -56,15 +83,16 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-chk currvolume 30 realvolume 30
+chk actualvolume 30
 mssleep 1000
 resptimeout 6500
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-chk currvolume 30 realvolume 30
+chk actualvolume 30
 mssleep 1000
 msg player CHK_PLAYER_FADEIN 400
+msg player PLAYER_VOLUME defaultvol
 end
 
 test 90-30 No-Fade-Out
@@ -78,13 +106,26 @@ resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+# first check the standard end-song processing
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+resptimeout 35000
+wait playstate in-gap
+chk actualvolume 0
+chk-or playstate in-gap stopped loading playing
 resptimeout 3000
+# check the manual fade button
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
-chk-or playstate in-gap playing
-# --verbose can be used to show that in-fadeout is not used
+chk-or playstate in-gap stopped loading playing
 wait playstate in-gap
-chk-or playstate in-gap playing
+chk actualvolume 0
+chk-or playstate in-gap stopped loading playing
 wait playstate playing
 mssleep 1000
 msg player CHK_PLAYER_FADEOUT 4000
@@ -101,11 +142,22 @@ resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
-resptimeout 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+resptimeout 35000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
-# --verbose helps here to validate that neither in-fadeout nor in-gap is set.
+# the first song that plays may have the gap from the prior song
+# so just skip it, and check the gap in the next song.
 wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+chk-or playstate stopped loading playing
+wait playstate playing
+chk-or playstate stopped loading playing
 mssleep 1000
 msg main CHK_MAIN_GAP 2000
 msg player CHK_PLAYER_FADEOUT 4000
@@ -114,18 +166,31 @@ end
 test 90-40 Maximum-Play-Time
 msg main CHK_MAIN_MAXPLAYTIME 10000
 msg main MUSICQ_INSERT 0~999~0
+msg main MUSICQ_INSERT 0~999~1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_SONG
+# duration of 10 seconds + 2 second gap - 1 second played
 chk p-duration 10000
-resptimeout 14500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+msg player PLAY_FADE
+resptimeout 5000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
-wait playstate in-gap
+resptimeout 7000
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+get player CHK_PLAYER_SONG
+chk p-duration 10000
+# duration of 10 seconds + 2 second gap - 1 second played
+resptimeout 11500
+get player CHK_PLAYER_STATUS
 wait playstate stopped
 msg main CHK_MAIN_MAXPLAYTIME 360000
 end
-

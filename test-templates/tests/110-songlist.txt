@@ -8,6 +8,8 @@ resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 78 m-songfn 001-argentinetango.mp3
 msg player PLAY_FADE
@@ -15,24 +17,32 @@ resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 77 m-songfn 001-bachata.mp3
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 76 m-songfn 001-chacha.mp3
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 75 m-songfn 001-foxtrot.mp3
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 74 m-songfn 001-jive.mp3
 end

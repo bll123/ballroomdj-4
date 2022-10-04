@@ -1,16 +1,18 @@
-section 40 Basic-Bugs
+section 60 Basic-Bugs
 
 # 2022-9-14 the main player would send the song-play command to the player
 # when paused.  Can't seem to duplicate the actual playback w/o going
 # through the playerui, but the 'songplaysentcount' tells the story.
-test 40-10 Bug-Dup-Playback-2022-9-14
-msg main CHK_MAIN_RESET
+test 60-10 Bug-Dup-Playback-2022-9-14
+msg main CHK_MAIN_RESET_SENT
 msg main MUSICQ_INSERT 0~999~10
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
 mssleep 2000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dbidx 10 songplaysentcount 1
 msg main CMD_PLAYPAUSE

@@ -7,6 +7,8 @@ resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
@@ -15,6 +17,8 @@ resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
@@ -22,6 +26,8 @@ msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
@@ -29,6 +35,8 @@ msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
@@ -36,6 +44,8 @@ msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
@@ -43,6 +53,8 @@ msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
@@ -50,6 +62,8 @@ msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
@@ -57,6 +71,8 @@ msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot

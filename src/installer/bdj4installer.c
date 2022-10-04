@@ -862,6 +862,9 @@ installerValidateTarget (uientry_t *entry, void *udata)
   dir = uiEntryGetValue (installer->targetEntry);
   tbool = uiToggleButtonIsActive (&installer->reinstWidget);
   installer->reinstall = tbool;
+  if (installer->newinstall) {
+    installer->reinstall = false;
+  }
 
   if (strcmp (dir, installer->target) == 0) {
     /* no change */
@@ -1206,6 +1209,9 @@ installerInstInit (installer_t *installer)
 
   if (installer->guienabled) {
     installer->reinstall = uiToggleButtonIsActive (&installer->reinstWidget);
+    if (installer->newinstall) {
+      installer->reinstall = false;
+    }
   }
 
   if (! installer->guienabled) {
@@ -2329,6 +2335,7 @@ installerRegister (installer_t *installer)
   }
   snprintf (uri, sizeof (uri), "%s/%s",
       sysvarsGetStr (SV_HOST_SUPPORTMSG), sysvarsGetStr (SV_URI_REGISTER));
+
   snprintf (tbuff, sizeof (tbuff),
       "key=%s"
       "&version=%s&build=%s&builddate=%s&releaselevel=%s"

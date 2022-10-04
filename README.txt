@@ -96,6 +96,7 @@ Known Issues:
   All Platforms
     - The song selection display may display strange values for numeric
       columns (will be fixed at a later date).
+    - playlist management: The UI for the gap default can be improved.
   Windows
     - The marquee position is not saved when it is iconified (close the
       window instead).

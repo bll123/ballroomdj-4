@@ -69,12 +69,14 @@ typedef struct {
   mstime_t    responseTimeoutCheck;
   slist_t     *chkresponse;
   slist_t     *chkexpect;
+  char        *lastResponse;
   bdjmsgroute_t waitRoute;
   bdjmsgmsg_t waitMessage;
   mstime_t    waitCheck;
   results_t   results;
   results_t   sresults;
   results_t   gresults;
+  slist_t     *failedlist;
   char        sectionnum [10];
   char        sectionname [80];
   char        testnum [10];
@@ -83,9 +85,11 @@ typedef struct {
   slistidx_t  tliteridx;
   FILE        *fh;
   int         lineno;
+  long        defaultVol;
   bool        greaterthan : 1;
   bool        lessthan : 1;
   bool        checkor : 1;
+  bool        checknot : 1;
   bool        expectresponse : 1;
   bool        haveresponse : 1;
   bool        runsection : 1;         // --runsection was specified
@@ -147,6 +151,7 @@ main (int argc, char *argv [])
   osDefaultSignal (SIGCHLD);
 #endif
   osCatchSignal (tsSigHandler, SIGINT);
+  osCatchSignal (tsSigHandler, SIGTERM);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   flags = bdj4startup (argc, argv, NULL, "ts", ROUTE_TEST_SUITE, flags);
@@ -164,6 +169,7 @@ main (int argc, char *argv [])
   clearResults (&testsuite.results);
   clearResults (&testsuite.sresults);
   clearResults (&testsuite.gresults);
+  testsuite.failedlist = slistAlloc ("ts-failed", LIST_ORDERED, NULL);
   testsuite.progstate = progstateInit ("testsuite");
   testsuite.stopwaitcount = 0;
   testsuite.skiptoend = false;
@@ -183,8 +189,11 @@ main (int argc, char *argv [])
   testsuite.chkresponse = NULL;
   testsuite.expectresponse = false;
   testsuite.wait = false;
-  /* chkresponse, haveresponse, lessthan, greaterthan, checkor, chkwait */
+  testsuite.lastResponse = NULL;
+  /* chkresponse, haveresponse, lessthan, greaterthan, */
+  /* checkor, chkwait, checknot */
   resetChkResponse (&testsuite);
+  testsuite.defaultVol = bdjoptGetNum (OPT_P_DEFAULTVOLUME);
 
   if ((flags & BDJ4_TS_RUNSECTION) == BDJ4_TS_RUNSECTION) {
     testsuite.runsection = true;
@@ -253,8 +262,20 @@ main (int argc, char *argv [])
   fprintf (stdout, "%s %s tests: %d failed: %d\n",
       state, testsuite.sectionname,
       testsuite.gresults.testcount, testsuite.gresults.testfail);
+  if (testsuite.gresults.testfail > 0) {
+    slistidx_t  iteridx;
+    char        *key;
+
+    fprintf (stdout, "Failed: ");
+    slistStartIterator (testsuite.failedlist, &iteridx);
+    while ((key = slistIterateKey (testsuite.failedlist, &iteridx)) != NULL) {
+      fprintf (stdout, "%s ", key);
+    }
+    fprintf (stdout, "\n");
+  }
   fflush (stdout);
 
+  slistFree (testsuite.failedlist);
   progstateFree (testsuite.progstate);
   logEnd ();
 
@@ -511,6 +532,9 @@ tsClosingCallback (void *tts, programstate_t programState)
   if (testsuite->chkexpect != NULL) {
     slistFree (testsuite->chkexpect);
   }
+  if (testsuite->lastResponse != NULL) {
+    free (testsuite->lastResponse);
+  }
 
   return STATE_FINISHED;
 }
@@ -607,7 +631,7 @@ tsProcessScript (testsuite_t *testsuite)
       ok = tsScriptGet (testsuite, tcmd);
       disp = true;
     }
-    /* chk, chk-or, chk-lt, chk-gt */
+    /* chk, chk-or, chk-lt, chk-gt, chk-not */
     if (strncmp (tcmd, "chk", 3) == 0) {
       ok = tsScriptChk (testsuite, tcmd);
       disp = true;
@@ -672,7 +696,8 @@ printResults (testsuite_t *testsuite, results_t *results)
 
   if (results->chkcount == 0 || results->chkfail == 0) {
     state = "OK";
-  } else {
+  } else if (results->testfail == 0) {
+    slistSetStr (testsuite->failedlist, testsuite->testnum, NULL);
     ++results->testfail;
   }
   if (! *testsuite->testname) {
@@ -823,13 +848,13 @@ tsScriptChk (testsuite_t *testsuite, const char *tcmd)
 {
   int   ok;
 
-
   ok = tsParseExpect (testsuite, tcmd);
   if (ok != TS_OK) {
     return ok;
   }
   testsuite->chkwait = true;
   ++testsuite->results.chkcount;
+  logMsg (LOG_DBG, LOG_BASIC, "start response timer 200");
   mstimeset (&testsuite->responseTimeoutCheck, TS_CHK_TIMEOUT);
   return TS_OK;
 }
@@ -842,6 +867,7 @@ tsScriptWait (testsuite_t *testsuite, const char *tcmd)
   testsuite->lessthan = false;
   testsuite->greaterthan = false;
   testsuite->checkor = false;
+  testsuite->checknot = false;
 
   ok = tsParseExpect (testsuite, tcmd);
   if (ok != TS_OK) {
@@ -853,6 +879,7 @@ tsScriptWait (testsuite_t *testsuite, const char *tcmd)
   testsuite->wait = true;
   ++testsuite->results.chkcount;
   mstimeset (&testsuite->waitCheck, 100);
+  logMsg (LOG_DBG, LOG_BASIC, "start response timer %d", testsuite->responseTimeout);
   mstimeset (&testsuite->responseTimeoutCheck, testsuite->responseTimeout);
   return TS_OK;
 }
@@ -881,20 +908,31 @@ tsScriptSleep (testsuite_t *testsuite, const char *tcmd)
 static int
 tsScriptDisp (testsuite_t *testsuite, const char *tcmd)
 {
-  char  *valchk;
-  char  *p;
-  char  *tokstr;
-  char  *tstr;
+  char        *tstr;
+  char        *p;
+  char        *tokstr;
+  char        *key;
+  char        *valchk;
+  slistidx_t  iteridx;
 
   tstr = strdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
-  p = strtok_r (NULL, " ", &tokstr);
-  while (p != NULL) {
-    valchk = slistGetStr (testsuite->chkresponse, p);
-    fprintf (stdout, "       %s %s\n", p, valchk);
-    fflush (stdout);
+  if (strcmp (p, "dispall") == 0) {
+    slistStartIterator (testsuite->chkresponse, &iteridx);
+    while ((key = slistIterateKey (testsuite->chkresponse, &iteridx)) != NULL) {
+      valchk = slistGetStr (testsuite->chkresponse, key);
+      fprintf (stdout, "       %s %s\n", key, valchk);
+    }
+  } else {
     p = strtok_r (NULL, " ", &tokstr);
+    while (p != NULL) {
+      valchk = slistGetStr (testsuite->chkresponse, p);
+      fprintf (stdout, "       %s %s\n", p, valchk);
+      p = strtok_r (NULL, " ", &tokstr);
+    }
   }
+
+  fflush (stdout);
   free (tstr);
   return TS_OK;
 }
@@ -942,6 +980,9 @@ tsParseExpect (testsuite_t *testsuite, const char *tcmd)
   if (strcmp (p, "chk-or") == 0) {
     testsuite->checkor = true;
   }
+  if (strcmp (p, "chk-not") == 0) {
+    testsuite->checknot = true;
+  }
 
   p = strtok_r (NULL, " ", &tokstr);
   while (p != NULL) {
@@ -978,6 +1019,8 @@ tsScriptChkResponse (testsuite_t *testsuite)
   const char  *key;
   const char  *val;
   const char  *valchk;
+  char        tmp [40];
+  bool        retchk = false;
 
   slistStartIterator (testsuite->chkexpect, &iteridx);
 
@@ -1001,9 +1044,17 @@ tsScriptChkResponse (testsuite_t *testsuite)
       fflush (stdout);
     }
   } else {
+    char  *compdisp;
+
     while ((key = slistIterateKey (testsuite->chkexpect, &iteridx)) != NULL) {
       val = slistGetStr (testsuite->chkexpect, key);
       valchk = slistGetStr (testsuite->chkresponse, key);
+
+      if (strcmp (val, "defaultvol") == 0) {
+        snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
+        val = tmp;
+      }
+
       logMsg (LOG_DBG, LOG_BASIC, "exp-resp: %s %s %s", key, val, valchk);
       if (testsuite->lessthan) {
         long  a, b;
@@ -1045,32 +1096,61 @@ tsScriptChkResponse (testsuite_t *testsuite)
           fflush (stdout);
         }
       }
+      retchk = false;
+      if (val != NULL && valchk != NULL) {
+        if (testsuite->checknot) {
+          retchk = strcmp (val, valchk) != 0;
+        } else {
+          retchk = strcmp (val, valchk) == 0;
+        }
+      }
       if (! testsuite->lessthan && ! testsuite->greaterthan &&
-          val != NULL && valchk != NULL && strcmp (val, valchk) == 0) {
+          val != NULL && valchk != NULL && retchk) {
         if (testsuite->verbose) {
+          compdisp = "==";
+          if (testsuite->checknot) {
+            compdisp = "!=";
+          }
           if (! dispflag) {
             fprintf (stdout, "\n");
             dispflag = true;
           }
-          fprintf (stdout, "          %3d chk-ok: %s: exp: %s == resp: %s\n",
-                testsuite->lineno, key, val, valchk);
+          fprintf (stdout, "          %3d chk-ok: %s: exp: %s %s resp: %s\n",
+                testsuite->lineno, key, val, compdisp, valchk);
           fflush (stdout);
         }
         ++countok;
       } else if (testsuite->chkwait &&
           ! testsuite->lessthan && ! testsuite->greaterthan) {
+        compdisp = "!=";
+        if (testsuite->checknot) {
+          compdisp = "==";
+        }
         if (! dispflag) {
           fprintf (stdout, "\n");
           dispflag = true;
         }
-        fprintf (stdout, "          %3d chk-fail: %s: exp: %s != resp: %s\n",
-              testsuite->lineno, key, val, valchk);
+        fprintf (stdout, "          %3d chk-fail: %s: exp: %s %s resp: %s\n",
+              testsuite->lineno, key, val, compdisp, valchk);
         fflush (stdout);
       } else if (testsuite->wait && testsuite->verbose &&
           ! testsuite->lessthan && ! testsuite->greaterthan) {
-        fprintf (stdout, "          %3d wait-test: %s: exp: %s != resp: %s\n",
-              testsuite->lineno, key, val, valchk);
-        fflush (stdout);
+        compdisp = "!=";
+        if (testsuite->checknot) {
+          compdisp = "==";
+        }
+        if (testsuite->lastResponse == NULL ||
+            (valchk != NULL && strcmp (valchk, testsuite->lastResponse) != 0)) {
+          fprintf (stdout, "          %3d wait-test: %s: exp: %s %s resp: %s\n",
+                testsuite->lineno, key, val, compdisp, valchk);
+          fflush (stdout);
+          if (valchk != NULL) {
+            if (testsuite->lastResponse != NULL) {
+              free (testsuite->lastResponse);
+            }
+            testsuite->lastResponse = strdup (valchk);
+          }
+        }
       }
       ++count;
     }
@@ -1121,6 +1201,7 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
   char    *tokstr;
   int     route;
   int     msg;
+  char    tmp [40];
 
   tstr = strdup (tcmd);
 
@@ -1130,6 +1211,7 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
     return TS_BAD_COMMAND;
   }
 
+  /* route */
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
     free (tstr);
@@ -1141,6 +1223,8 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
     free (tstr);
     return TS_BAD_ROUTE;
   }
+
+  /* message */
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
     free (tstr);
@@ -1152,9 +1236,16 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
     free (tstr);
     return TS_BAD_MSG;
   }
+
+  /* args */
   p = strtok_r (NULL, " ", &tokstr);
   d = NULL;
   if (type == TS_TYPE_MSG && p != NULL) {
+    if (strcmp (p, "defaultvol") == 0) {
+      snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
+      p = tmp;
+    }
+
     dlen = strlen (p);
     d = filedataReplace (p, &dlen, "~", MSG_ARGS_RS_STR);
   }
@@ -1214,6 +1305,7 @@ tsDisplayCommandResult (testsuite_t *testsuite, ts_return_t ok)
     }
   }
   if (ok != TS_OK && ok != TS_FINISHED) {
+    fprintf (stdout, "\n");
     fprintf (stdout, "          %3d %s\n", testsuite->lineno, tmsg);
     fflush (stdout);
   }
@@ -1230,6 +1322,7 @@ resetChkResponse (testsuite_t *testsuite)
   testsuite->lessthan = false;
   testsuite->greaterthan = false;
   testsuite->checkor = false;
+  testsuite->checknot = false;
   testsuite->chkwait = false;
 }
 

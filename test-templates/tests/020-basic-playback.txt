@@ -1,71 +1,111 @@
 section 20 Basic-Playback
 
 test 20-10 Insert-Play
+msg main CHK_MAIN_RESET_SENT
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
 msg main MUSICQ_INSERT 0~999~0
 get main CHK_MAIN_MUSICQ
-chk mq0len 1
+chk mq0len 1 songplaysentcount 0
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol realvolume defaultvol actualvolume defaultvol
 get main CHK_MAIN_MUSICQ
-chk mq0len 1 dbidx 0
+chk mq0len 1 dbidx 0 songplaysentcount 1
 get player CHK_PLAYER_STATUS
 chk playstate playing
 mssleep 2000
 get player CHK_PLAYER_STATUS
+chk currvolume defaultvol realvolume defaultvol actualvolume defaultvol
+get player CHK_PLAYER_STATUS
 chk playstate playing
-resptimeout 35000
+resptimeout 29000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
-resptimeout 5000
-wait playstate in-gap
+resptimeout 7000
 wait playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mq0len 0
+chk mq0len 0 songplaysentcount 1
 mssleep 3000
 get player CHK_PLAYER_STATUS
 chk playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mq0len 0
+chk mq0len 0 songplaysentcount 1
 end
 
 test 20-20 Insert-Play-2
+msg main CHK_MAIN_RESET_SENT
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
 msg main MUSICQ_INSERT 0~999~1
 get main CHK_MAIN_MUSICQ
-chk mq0len 1
+chk mq0len 1 songplaysentcount 0
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol realvolume defaultvol actualvolume defaultvol
 get main CHK_MAIN_MUSICQ
-chk mq0len 1 dbidx 1
+chk mq0len 1 dbidx 1 songplaysentcount 1
 get player CHK_PLAYER_STATUS
 chk playstate playing
 mssleep 2000
 msg main MUSICQ_INSERT 0~999~2
 get main CHK_MAIN_MUSICQ
-chk mq0len 2 dbidx 1
+chk mq0len 2 dbidx 1 songplaysentcount 1
 get player CHK_PLAYER_STATUS
 chk playstate playing
-resptimeout 35000
+resptimeout 29000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
 resptimeout 5000
 wait playstate in-gap
+resptimeout 3000
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol realvolume defaultvol actualvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dbidx 2
 get player CHK_PLAYER_STATUS
-resptimeout 35000
+resptimeout 29000
+wait playstate in-fadeout
+resptimeout 7000
 wait playstate stopped
 get main CHK_MAIN_MUSICQ
-chk mq0len 0
+chk mq0len 0 songplaysentcount 2
+end
+
+test 20-30 Fade-In-Out-Gap
+msg main MUSICQ_INSERT 0~999~0
+msg main MUSICQ_INSERT 0~999~1
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+chk-not actualvolume defaultvol
+# check normal song-end processing
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol realvolume defaultvol actualvolume defaultvol
+resptimeout 29000
+wait playstate in-fadeout
+mssleep 200
+get player CHK_PLAYER_STATUS
+chk-not actualvolume defaultvol
+resptimeout 5000
+wait playstate in-gap
+chk actualvolume 0
+resptimeout 3000
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
 end
 

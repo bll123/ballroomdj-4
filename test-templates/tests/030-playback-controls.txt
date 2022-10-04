@@ -7,15 +7,24 @@ get player CHK_PLAYER_STATUS
 resptimeout 1000
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 msg player PLAY_FADE
 resptimeout 5000
 get player CHK_PLAYER_STATUS
 chk playstate in-fadeout
+mssleep 200
+get player CHK_PLAYER_STATUS
+chk-not actualvolume defaultvol
 # a fade during in-fadeout does nothing
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 chk playstate in-fadeout
-wait playstate in-gap
+mssleep 200
+get player CHK_PLAYER_STATUS
+chk-not actualvolume defaultvol
+resptimeout 7000
+wait playstate stopped
 end
 
 test 30-20 Pause-at-End
@@ -25,6 +34,8 @@ resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get player CHK_PLAYER_STATUS
 chk pauseatend 0 playstate playing
 msg player PLAY_PAUSEATEND
@@ -54,6 +65,8 @@ get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dbidx 11
 msg main CMD_PLAYPAUSE
@@ -103,6 +116,8 @@ get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 msg player PLAY_SEEK 25000
 get player CHK_PLAYER_STATUS
 chk-gt playtimeplayed 25000
@@ -133,7 +148,7 @@ end
 test 30-50 Next-Song
 # first test when the player is stopped
 print stopped
-msg main CHK_MAIN_RESET
+msg main CHK_MAIN_RESET_SENT
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~6
 msg main MUSICQ_INSERT 0~999~7
@@ -168,7 +183,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 0
 # next test when the player is playing
 print playing
-msg main CHK_MAIN_RESET
+msg main CHK_MAIN_RESET_SENT
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~6
 msg main MUSICQ_INSERT 0~999~7
@@ -178,6 +193,8 @@ get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 4 dbidx 5
 get player CHK_PLAYER_STATUS
@@ -187,6 +204,8 @@ mssleep 500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 3 dbidx 6
 msg main CMD_NEXTSONG
@@ -194,6 +213,8 @@ mssleep 500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 2 dbidx 7
 msg main CMD_NEXTSONG
@@ -201,6 +222,8 @@ mssleep 500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dbidx 8
 msg main CMD_NEXTSONG
@@ -211,13 +234,15 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 0
 # next test when the player is paused
 print paused
-msg main CHK_MAIN_RESET
+msg main CHK_MAIN_RESET_SENT
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~6
 msg main MUSICQ_INSERT 0~999~7
 msg main MUSICQ_INSERT 0~999~8
 msg main CMD_PLAY
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 resptimeout 2000
@@ -260,6 +285,8 @@ resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk dbidx 12
 mssleep 500
@@ -279,6 +306,8 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+get player CHK_PLAYER_STATUS
 chk repeat 1 playstate playing
 get main CHK_MAIN_MUSICQ
 chk dbidx 12
@@ -294,6 +323,8 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+get player CHK_PLAYER_STATUS
 chk repeat 0 playstate playing
 get main CHK_MAIN_MUSICQ
 chk dbidx 13
@@ -308,6 +339,8 @@ get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get player CHK_PLAYER_STATUS
 chk-lt playtimeplayed 1500
 msg player PLAY_SONG_BEGIN
@@ -356,9 +389,13 @@ chk currvolume 40 realvolume 40
 msg player PLAYER_VOLUME 20
 get player CHK_PLAYER_STATUS
 chk currvolume 20 realvolume 20
-msg player PLAYER_VOLUME 35
+msg player PLAYER_VOLUME defaultvol
 end
 
+# only checks that the speed control functions.
+# to test speed changes, a song will need to be modified.
+# then main will know about the speed change and will send
+# the adjusted duration.
 test 30-90 Speed
 msg main MUSICQ_INSERT 0~999~15
 msg main MUSICQ_INSERT 0~999~16
@@ -368,6 +405,8 @@ resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get player CHK_PLAYER_STATUS
 chk speed 100
 msg player PLAY_SPEED 110
@@ -381,6 +420,8 @@ resptimeout 6500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 msg player PLAY_SPEED 130
 get player CHK_PLAYER_STATUS
 chk-gt playtimeplayed 1000
@@ -391,6 +432,8 @@ resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 msg player PLAY_SPEED 70
 get player CHK_PLAYER_STATUS
 chk-gt playtimeplayed 1000

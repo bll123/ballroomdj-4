@@ -265,8 +265,8 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiSpinboxIntCreate (&uiwidget);
-  uiSpinboxSet (&uiwidget, 0.0, 60.0);
+  uiSpinboxDoubleCreate (&uiwidget);
+  uiSpinboxSet (&uiwidget, -0.1, 60.0);
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sgB, &uiwidget);
   uiutilsUIWidgetCopy (&managepl->uigap, &uiwidget);
@@ -528,7 +528,7 @@ managePlaylistUpdateData (managepl_t *managepl)
   uiSpinboxSetValue (&managepl->uistopafter,
       playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER));
   uiSpinboxSetValue (&managepl->uigap,
-      playlistGetConfigNum (pl, PLAYLIST_GAP));
+      (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0);
   uiratingSetValue (managepl->uirating,
       playlistGetConfigNum (pl, PLAYLIST_RATING));
   uilevelSetValue (managepl->uihighlevel,
@@ -666,6 +666,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
 {
   playlist_t    *pl;
   long          tval;
+  double        dval;
   const char    *tstr;
 
   pl = managepl->playlist;
@@ -683,8 +684,8 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   tval = uiSpinboxGetValue (&managepl->uistopafter);
   playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, tval);
 
-  tval = uiSpinboxGetValue (&managepl->uigap);
-  playlistSetConfigNum (pl, PLAYLIST_GAP, tval);
+  dval = uiSpinboxGetValue (&managepl->uigap);
+  playlistSetConfigNum (pl, PLAYLIST_GAP, (long) (dval * 1000.0));
 
   tval = uiratingGetValue (managepl->uirating);
   playlistSetConfigNum (pl, PLAYLIST_RATING, tval);
@@ -704,6 +705,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
 {
   playlist_t    *pl;
   long          tval;
+  double        dval;
 
   if (managePlaylistTreeIsChanged (managepl->managepltree)) {
     managepl->changed = true;
@@ -724,8 +726,8 @@ managePlaylistCheckChanged (managepl_t *managepl)
     managepl->changed = true;
   }
 
-  tval = uiSpinboxGetValue (&managepl->uigap);
-  if (tval != playlistGetConfigNum (pl, PLAYLIST_GAP)) {
+  dval = uiSpinboxGetValue (&managepl->uigap);
+  if (dval != (double) playlistGetConfigNum (pl, PLAYLIST_GAP) * 1000.0 ) {
     managepl->changed = true;
   }
 

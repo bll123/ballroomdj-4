@@ -19,7 +19,7 @@
 
 typedef struct {
   int           dispidx;
-  int           uniqueidx;
+  long          uniqueidx;
   dbidx_t       dbidx;
   int           playlistIdx;
   musicqflag_t  flags;
@@ -31,13 +31,14 @@ typedef struct musicq {
   musicdb_t       *musicdb;
   queue_t         *q [MUSICQ_MAX];
   int             dispidx [MUSICQ_MAX];
-  int             uniqueidx [MUSICQ_MAX];
   long            duration [MUSICQ_MAX];
 } musicq_t;
 
 static void musicqQueueItemFree (void *tqitem);
 static int  musicqRenumberStart (musicq_t *musicq, musicqidx_t musicqidx);
 static void musicqRenumber (musicq_t *musicq, musicqidx_t musicqidx, int olddispidx);
+
+static long   guniqueidx = 0;
 
 musicq_t *
 musicqAlloc (musicdb_t *db)
@@ -50,7 +51,6 @@ musicqAlloc (musicdb_t *db)
   musicq->musicdb = db;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     musicq->q [i] = queueAlloc (musicqQueueItemFree);
-    musicq->uniqueidx [i] = 0;
     musicq->dispidx [i] = 1;
     musicq->duration [i] = 0;
   }
@@ -107,8 +107,7 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, dbidx_t dbidx,
 
   musicqitem->dispidx = musicq->dispidx [musicqidx];
   ++(musicq->dispidx [musicqidx]);
-  musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
-  ++(musicq->uniqueidx [musicqidx]);
+  musicqitem->uniqueidx = guniqueidx++;
   musicqitem->dbidx = dbidx;
   musicqitem->playlistIdx = playlistIdx;
   musicqitem->announce = NULL;
@@ -133,8 +132,7 @@ musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t musicqidx)
   musicqitem = malloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
   musicqitem->dispidx = 0;
-  musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
-  ++(musicq->uniqueidx [musicqidx]);
+  musicqitem->uniqueidx = guniqueidx++;
   musicqitem->dbidx = -1;
   musicqitem->playlistIdx = -1;
   musicqitem->announce = NULL;
@@ -196,8 +194,7 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx,
   musicqitem->playlistIdx = -1;
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_REQUEST;
-  musicqitem->uniqueidx = musicq->uniqueidx [musicqidx];
-  ++musicq->uniqueidx [musicqidx];
+  musicqitem->uniqueidx = guniqueidx++;
   musicqitem->dur = dur;
   musicq->duration [musicqidx] += dur;
 

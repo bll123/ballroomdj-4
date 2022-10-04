@@ -1,6 +1,6 @@
-section 60 Music-Queue-Dual
+section 70 Music-Queue-Dual
 
-test 60-10 Insert-Current
+test 70-10 Insert-Current
 # MUSICQ_CURRENT == 6
 msg main MUSICQ_INSERT 6~999~0
 get main CHK_MAIN_MUSICQ
@@ -22,7 +22,7 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
 end
 
-test 60-20 Insert-Specific
+test 70-20 Insert-Specific
 get main CHK_MAIN_MUSICQ
 msg main MUSICQ_INSERT 0~999~0
 get main CHK_MAIN_MUSICQ
@@ -41,7 +41,7 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
 end
 
-test 60-21 Insert-Specific-Current
+test 70-21 Insert-Specific-Current
 # MUSICQ_CURRENT == 6
 msg main MUSICQ_INSERT 0~999~0
 get main CHK_MAIN_MUSICQ
@@ -60,7 +60,7 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
 end
 
-test 60-30 Playback
+test 70-30 Playback
 # MUSICQ_CURRENT == 6
 msg main MUSICQ_INSERT 6~999~2
 msg main CMD_PLAY
@@ -68,6 +68,8 @@ resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 # mq 1 has an empty head pushed
 chk mqmanage 0 mqplay 0 mq0len 1 mq1len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
@@ -92,7 +94,7 @@ chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg player PLAY_FADE
-resptimeout 6500
+resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 2000
@@ -100,7 +102,7 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mqplay 0 mq0len 1 mq1len 3 mq0idx0 4 mq1idx1 3 mq1idx2 5 dbidx 4
 end
 
-test 60-40 Select-Playback-Queue
+test 70-40 Select-Playback-Queue
 # MUSICQ_CURRENT == 6
 msg main MUSICQ_INSERT 6~999~2
 msg main CMD_PLAY
@@ -108,6 +110,8 @@ resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 # mq 1 has an empty head pushed
 chk mqmanage 0 mqplay 0 mq0len 1 mq1len 1 mq0idx0 2 mq1idx1 -1 dbidx 2

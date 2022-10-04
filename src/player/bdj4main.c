@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
+#include <signal.h>
 
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -89,7 +90,8 @@ typedef struct {
   int               musicqDeferredPlayIdx;
   slist_t           *announceList;
   playerstate_t     playerState;
-  ssize_t           gap;
+  long              gap;
+  long              lastGapSent;
   webclient_t       *webclient;
   char              *mobmqUserkey;
   int               stopwaitcount;
@@ -128,8 +130,10 @@ static void mainQueueDance (maindata_t *mainData, char *args, ssize_t count);
 static void mainQueuePlaylist (maindata_t *mainData, char *plname);
 static void mainSigHandler (int sig);
 static void mainMusicQueueFill (maindata_t *mainData);
-static void mainMusicQueuePrep (maindata_t *mainData);
-static char *mainPrepSong (maindata_t *maindata, song_t *song, char *sfname, int playlistIdx, bdjmsgprep_t flag);
+static void mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx);
+static void mainMusicqClearPreppedSongs (maindata_t *mainData, musicqidx_t mqidx, int idx);
+static void mainMusicqClearPrep (maindata_t *mainData, musicqidx_t mqidx, int idx);
+static char *mainPrepSong (maindata_t *maindata, bdjmsgprep_t flag, song_t *song, char *sfname, int playlistIdx, long uniqueidx);
 static void mainPlaylistClearQueue (maindata_t *mainData, char *args);
 static void mainTogglePause (maindata_t *mainData, char *args);
 static void mainMusicqMove (maindata_t *mainData, char *args, mainmove_t direction);
@@ -214,20 +218,23 @@ main (int argc, char *argv[])
     mainData.marqueeChanged [i] = false;
     mainData.changeSuspend [i] = false;
   }
-  procutilInitProcesses (mainData.processes);
 
+  procutilInitProcesses (mainData.processes);
   osSetStandardSignals (mainSigHandler);
 
   mainData.startflags = bdj4startup (argc, argv, &mainData.musicdb,
       "m", ROUTE_MAIN, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "main");
 
+  mainData.gap = bdjoptGetNum (OPT_P_GAP);
+  mainData.lastGapSent = -2;
+
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_INTERNET) {
     mainData.webclient = webclientAlloc (&mainData, mainMobilePostCallback);
   }
 
   mainData.conn = connInit (ROUTE_MAIN);
-  mainData.gap = bdjoptGetNum (OPT_P_GAP);
+
   mainData.playlistCache = nlistAlloc ("playlist-list", LIST_ORDERED,
       playlistFree);
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
@@ -608,13 +615,17 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
-        case MSG_CHK_MAIN_RESET: {
+        case MSG_CHK_MAIN_RESET_SENT: {
           mainData->songplaysentcount = 0;
           dbgdisp = true;
           break;
         }
         case MSG_CHK_MAIN_GAP: {
+          char  tmp [40];
+
           mainData->gap = atoi (targs);
+          snprintf (tmp, sizeof (tmp), "%ld", mainData->gap);
+          connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, tmp);
           dbgdisp = true;
           break;
         }
@@ -860,6 +871,13 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
   /* one of manageui and playerui */
   /* alternatively, a connection to the player and the testsuite */
   if (conn == 3) {
+    char  tmp [40];
+
+    if (mainData->gap != mainData->lastGapSent) {
+      snprintf (tmp, sizeof (tmp), "%ld", mainData->gap);
+      connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, tmp);
+      mainData->lastGapSent = mainData->gap;
+    }
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_MAIN_READY, NULL);
     rc = STATE_FINISHED;
   }
@@ -1186,6 +1204,7 @@ mainQueueClear (maindata_t *mainData, char *args)
 
   logMsg (LOG_DBG, LOG_BASIC, "clear music queue");
   queueClear (mainData->playlistQueue [mi], 0);
+  mainMusicqClearPreppedSongs (mainData, mi, 1);
   musicqClear (mainData->musicQueue, mi, 1);
   mainData->musicqChanged [mi] = MAIN_CHG_START;
   mainData->marqueeChanged [mi] = true;
@@ -1224,7 +1243,7 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   queuePush (mainData->playlistQueue [mi], plitem);
   logMsg (LOG_DBG, LOG_MAIN, "push pl %s", "queue-dance");
   mainMusicQueueFill (mainData);
-  mainMusicQueuePrep (mainData);
+  mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
   mainData->marqueeChanged [mi] = true;
   mainData->musicqChanged [mi] = MAIN_CHG_START;
   mainSendMusicqStatus (mainData);
@@ -1271,7 +1290,7 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
     queuePush (mainData->playlistQueue [mainData->musicqManageIdx], plitem);
     logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
     mainMusicQueueFill (mainData);
-    mainMusicQueuePrep (mainData);
+    mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
     mainData->marqueeChanged [mi] = true;
     mainData->musicqChanged [mi] = MAIN_CHG_START;
 
@@ -1394,9 +1413,9 @@ mainMusicQueueFill (maindata_t *mainData)
 }
 
 static void
-mainMusicQueuePrep (maindata_t *mainData)
+mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx)
 {
-  playlist_t    *playlist;
+  playlist_t    *playlist = NULL;
   int           plannounce;
 
   logProcBegin (LOG_PROC, "mainMusicQueuePrep");
@@ -1410,33 +1429,50 @@ mainMusicQueuePrep (maindata_t *mainData)
     char          *annfname = NULL;
     int           playlistIdx;
 
-    dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
+    dbidx = musicqGetByIdx (mainData->musicQueue, mqidx, i);
     if (dbidx < 0) {
       continue;
     }
 
     song = dbGetByIdx (mainData->musicdb, dbidx);
-    flags = musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, i);
-    playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
+    flags = musicqGetFlags (mainData->musicQueue, mqidx, i);
+    playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, i);
+    plannounce = false;
+    if (playlistIdx != -1) {
+      playlist = nlistGetData (mainData->playlistCache, playlistIdx);
+      plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
+    }
+
+    if (i == 1) {
+      long  gap;
+      double plgap = -1;
+      char  tmp [40];
+
+      gap = mainData->gap;
+      plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
+      if (plgap >= 0.0) {
+        gap = plgap;
+      }
+
+      snprintf (tmp, sizeof (tmp), "%ld", gap);
+      connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, tmp);
+    }
 
     if (song != NULL &&
         (flags & MUSICQ_FLAG_PREP) != MUSICQ_FLAG_PREP) {
-      musicqSetFlag (mainData->musicQueue, mainData->musicqPlayIdx,
-          i, MUSICQ_FLAG_PREP);
+      long uniqueidx;
 
-      plannounce = false;
-      if (playlistIdx != -1) {
-        playlist = nlistGetData (mainData->playlistCache, playlistIdx);
-        plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
-      }
-      annfname = mainPrepSong (mainData, song, sfname, playlistIdx, PREP_SONG);
+      musicqSetFlag (mainData->musicQueue, mqidx, i, MUSICQ_FLAG_PREP);
+      uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, mqidx, i);
+      sfname = songGetStr (song, TAG_FILE);
+      annfname = mainPrepSong (mainData, PREP_SONG, song, sfname,
+          playlistIdx, uniqueidx);
 
       if (plannounce == 1) {
         if (annfname != NULL && strcmp (annfname, "") != 0 ) {
-          musicqSetFlag (mainData->musicQueue, mainData->musicqPlayIdx,
+          musicqSetFlag (mainData->musicQueue, mqidx,
               i, MUSICQ_FLAG_ANNOUNCE);
-          musicqSetAnnounce (mainData->musicQueue, mainData->musicqPlayIdx,
-              i, annfname);
+          musicqSetAnnounce (mainData->musicQueue, mqidx, i, annfname);
         }
       }
     }
@@ -1444,19 +1480,55 @@ mainMusicQueuePrep (maindata_t *mainData)
   logProcEnd (LOG_PROC, "mainMusicQueuePrep", "");
 }
 
+static void
+mainMusicqClearPreppedSongs (maindata_t *mainData, musicqidx_t mqidx, int idx)
+{
+  for (int i = idx; i < MAIN_PREP_SIZE * 3; ++i) {
+    mainMusicqClearPrep (mainData, mqidx, i);
+  }
+}
+
+static void
+mainMusicqClearPrep (maindata_t *mainData, musicqidx_t mqidx, int idx)
+{
+  dbidx_t       dbidx;
+  song_t        *song;
+  musicqflag_t  flags;
+  long          uniqueidx;
+
+
+  flags = musicqGetFlags (mainData->musicQueue, mqidx, idx);
+  uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, mqidx, idx);
+
+  if ((flags & MUSICQ_FLAG_PREP) == MUSICQ_FLAG_PREP) {
+    musicqClearFlag (mainData->musicQueue, mqidx, idx, MUSICQ_FLAG_PREP);
+
+    dbidx = musicqGetByIdx (mainData->musicQueue, mqidx, idx);
+    if (dbidx < 0) {
+      return;
+    }
+
+    song = dbGetByIdx (mainData->musicdb, dbidx);
+    if (song != NULL) {
+      char  tmp [200];
+
+      snprintf (tmp, sizeof (tmp), "%ld%c%s",
+          uniqueidx, MSG_ARGS_RS, songGetStr (song, TAG_FILE));
+      connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_CLEAR_PREP, tmp);
+    }
+  }
+}
 
 static char *
-mainPrepSong (maindata_t *mainData, song_t *song,
-    char *sfname, int playlistIdx, bdjmsgprep_t flag)
+mainPrepSong (maindata_t *mainData, bdjmsgprep_t flag, song_t *song,
+    char *sfname, int playlistIdx, long uniqueidx)
 {
-  char          tbuff [MAXPATHLEN];
+  char          tbuff [1024];
   playlist_t    *playlist = NULL;
   ssize_t       dur = 0;
-  ssize_t       plgap = -1;
   ssize_t       songstart = 0;
   ssize_t       speed = 100;
   double        voladjperc = 0;
-  ssize_t       gap = 0;
   ssize_t       plannounce = 0;
   ilistidx_t    danceidx;
   char          *annfname = NULL;
@@ -1468,7 +1540,6 @@ mainPrepSong (maindata_t *mainData, song_t *song,
   if (voladjperc == LIST_DOUBLE_INVALID) {
     voladjperc = 0.0;
   }
-  gap = 0;
 
   songstart = songGetNum (song, TAG_SONGSTART);
   if (songstart < 0) { songstart = 0; }
@@ -1482,12 +1553,6 @@ mainPrepSong (maindata_t *mainData, song_t *song,
   /* announcements don't need any of the following... */
   if (flag != PREP_ANNOUNCE) {
     dur = mainCalculateSongDuration (mainData, song, playlistIdx);
-
-    gap = mainData->gap;
-    plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
-    if (plgap >= 0) {
-      gap = plgap;
-    }
 
     plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
     if (plannounce == 1) {
@@ -1505,7 +1570,8 @@ mainPrepSong (maindata_t *mainData, song_t *song,
           tval = slistGetNum (mainData->announceList, annfname);
           if (tval == LIST_VALUE_INVALID) {
             /* only prep the announcement if it has not been prepped before */
-            mainPrepSong (mainData, tsong, annfname, playlistIdx, PREP_ANNOUNCE);
+            /* announcements are prepped with a uniqueidx = PL_UNIQUE_ANN */
+            mainPrepSong (mainData, PREP_ANNOUNCE, tsong, annfname, playlistIdx, PL_UNIQUE_ANN);
           }
           slistSetNum (mainData->announceList, annfname, 1);
         } else {
@@ -1515,14 +1581,14 @@ mainPrepSong (maindata_t *mainData, song_t *song,
     } /* announcements are on in the playlist */
   } /* if this is a normal song */
 
-  snprintf (tbuff, sizeof (tbuff), "%s%c%zd%c%zd%c%zd%c%.1f%c%zd%c%d",
+  snprintf (tbuff, sizeof (tbuff), "%s%c%zd%c%zd%c%zd%c%.1f%c%d%c%ld",
       sfname, MSG_ARGS_RS,
       dur, MSG_ARGS_RS,
       songstart, MSG_ARGS_RS,
       speed, MSG_ARGS_RS,
       voladjperc, MSG_ARGS_RS,
-      gap, MSG_ARGS_RS,
-      flag);
+      flag, MSG_ARGS_RS,
+      uniqueidx);
 
   logMsg (LOG_DBG, LOG_MAIN, "prep song %s", sfname);
   connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PREP, tbuff);
@@ -1608,7 +1674,7 @@ mainMusicqMove (maindata_t *mainData, char *args, mainmove_t direction)
   musicqMove (mainData->musicQueue, mainData->musicqManageIdx, fromidx, toidx);
   mainData->musicqChanged [mi] = MAIN_CHG_START;
   mainData->marqueeChanged [mi] = true;
-  mainMusicQueuePrep (mainData);
+  mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
 
   if (toidx == 0) {
     mainSendMusicqStatus (mainData);
@@ -1643,7 +1709,7 @@ mainMusicqMoveTop (maindata_t *mainData, char *args)
   }
   mainData->musicqChanged [mi] = MAIN_CHG_START;
   mainData->marqueeChanged [mi] = true;
-  mainMusicQueuePrep (mainData);
+  mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
   logProcEnd (LOG_PROC, "mainMusicqMoveTop", "");
 }
 
@@ -1657,10 +1723,11 @@ mainMusicqClear (maindata_t *mainData, char *args)
 
   mi = mainParseMqidxNum (mainData, args, &idx);
 
+  mainMusicqClearPreppedSongs (mainData, mainData->musicqManageIdx, idx);
   musicqClear (mainData->musicQueue, mainData->musicqManageIdx, idx);
   /* there may be other playlists in the playlist queue */
   mainMusicQueueFill (mainData);
-  mainMusicQueuePrep (mainData);
+  mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
   mainData->musicqChanged [mi] = MAIN_CHG_START;
   mainData->marqueeChanged [mi] = true;
   logProcEnd (LOG_PROC, "mainMusicqClear", "");
@@ -1669,17 +1736,18 @@ mainMusicqClear (maindata_t *mainData, char *args)
 static void
 mainMusicqRemove (maindata_t *mainData, char *args)
 {
-  int         mi;
-  ilistidx_t  idx;
+  int           mi;
+  ilistidx_t    idx;
+
 
   logProcBegin (LOG_PROC, "mainMusicqRemove");
 
-
   mi = mainParseMqidxNum (mainData, args, &idx);
 
+  mainMusicqClearPrep (mainData, mainData->musicqManageIdx, idx);
   musicqRemove (mainData->musicQueue, mainData->musicqManageIdx, idx);
   mainMusicQueueFill (mainData);
-  mainMusicQueuePrep (mainData);
+  mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
   mainData->musicqChanged [mi] = MAIN_CHG_START;
   mainData->marqueeChanged [mi] = true;
   logProcEnd (LOG_PROC, "mainMusicqRemove", "");
@@ -1692,6 +1760,7 @@ mainNextSong (maindata_t *mainData)
 
   currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
   if (currlen > 0) {
+    mainMusicqClearPrep (mainData, mainData->musicqPlayIdx, 0);
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
     mainData->waitforpbfinish = true;
     mainData->pbfinishrcv = 0;
@@ -1750,7 +1819,7 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
         idx, dbidx, dur);
     mainData->musicqChanged [mainData->musicqManageIdx] = MAIN_CHG_START;
     mainData->marqueeChanged [mainData->musicqManageIdx] = true;
-    mainMusicQueuePrep (mainData);
+    mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
     mainSendMusicqStatus (mainData);
     if (mainData->playerState == PL_STATE_STOPPED &&
         mainData->playWhenQueued &&
@@ -1804,6 +1873,7 @@ mainMusicqSetPlayback (maindata_t *mainData, char *args)
     /* if the player is playing something, the musicq index cannot */
     /* be changed as yet */
     mainData->musicqDeferredPlayIdx = mqidx;
+    mainMusicQueuePrep (mainData, mqidx);
   } else {
     mainMusicqSwitch (mainData, mqidx);
   }
@@ -1834,7 +1904,7 @@ mainMusicqSwitch (maindata_t *mainData, musicqidx_t newMusicqIdx)
   mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
 
   /* having switched the playback music queue, the songs must be prepped */
-  mainMusicQueuePrep (mainData);
+  mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
 
   dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
   song = dbGetByIdx (mainData->musicdb, dbidx);
@@ -1872,6 +1942,7 @@ mainMusicQueuePlay (maindata_t *mainData)
   musicqflag_t      flags;
   char              *sfname;
   dbidx_t           dbidx;
+  long              uniqueidx;
   song_t            *song;
   int               currlen;
   musicqidx_t       origMusicqPlayIdx;
@@ -1883,8 +1954,6 @@ mainMusicQueuePlay (maindata_t *mainData)
     mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
   }
 
-//  mainData->musicqManageIdx = mainData->musicqPlayIdx;
-
   logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
       mainData->playerState, plstateDebugText (mainData->playerState));
 
@@ -1894,17 +1963,22 @@ mainMusicQueuePlay (maindata_t *mainData)
     dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
     song = dbGetByIdx (mainData->musicdb, dbidx);
     if (song != NULL) {
+      char  tmp [1024];
+
       flags = musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 0);
+      uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
       if ((flags & MUSICQ_FLAG_ANNOUNCE) == MUSICQ_FLAG_ANNOUNCE) {
         char      *annfname;
 
         annfname = musicqGetAnnounce (mainData->musicQueue, mainData->musicqPlayIdx, 0);
         if (annfname != NULL) {
-          connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, annfname);
+          snprintf (tmp, sizeof (tmp), "%d%c%s", 0, MSG_ARGS_RS, annfname);
+          connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, tmp);
         }
       }
       sfname = songGetStr (song, TAG_FILE);
-      connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, sfname);
+      snprintf (tmp, sizeof (tmp), "%ld%c%s", uniqueidx, MSG_ARGS_RS, sfname);
+      connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, tmp);
       ++mainData->songplaysentcount;
     }
 
@@ -1919,28 +1993,26 @@ mainMusicQueuePlay (maindata_t *mainData)
         logMsg (LOG_DBG, LOG_MAIN, "switch queues");
         mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
 
-//        mainData->musicqManageIdx = mainData->musicqPlayIdx;
         currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
 
         /* locate a queue that has songs in it */
         while (mainData->musicqPlayIdx != origMusicqPlayIdx &&
             currlen == 0) {
           mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
-//          mainData->musicqManageIdx = mainData->musicqPlayIdx;
           currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
         }
 
         /* the songs must be prepped */
-        mainMusicQueuePrep (mainData);
+        mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
 
         if (currlen > 0) {
           snprintf (tmp, sizeof (tmp), "%d", mainData->musicqPlayIdx);
           connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_QUEUE_SWITCH, tmp);
           /* and start up playback for the new queue */
           /* the next-song flag is always 0 here */
+          /* if the state is stopped or paused, music-q-next will start up */
+          /* playback */
           mainMusicQueueNext (mainData, "0");
-          /* since the player state is stopped, must re-start playback */
-          mainMusicQueuePlay (mainData);
         } else {
           /* there is no music to play; tell the player to clear its display */
           logMsg (LOG_DBG, LOG_MAIN, "sqwe:true no music to play: finished <= true");
@@ -1978,8 +2050,6 @@ mainMusicQueueFinish (maindata_t *mainData, const char *args)
 
   logProcBegin (LOG_PROC, "mainMusicQueueFinish");
 
-//  mainData->musicqManageIdx = mainData->musicqPlayIdx;
-
   mainPlaybackSendSongFinish (mainData, args);
 
   /* let the playlist know this song has been played */
@@ -2012,15 +2082,13 @@ mainMusicQueueNext (maindata_t *mainData, const char *args)
 {
   logProcBegin (LOG_PROC, "mainMusicQueueNext");
 
-//  mainData->musicqManageIdx = mainData->musicqPlayIdx;
-
   mainMusicQueueFinish (mainData, args);
   if (mainData->playerState != PL_STATE_STOPPED &&
       mainData->playerState != PL_STATE_PAUSED) {
     mainMusicQueuePlay (mainData);
   }
   mainMusicQueueFill (mainData);
-  mainMusicQueuePrep (mainData);
+  mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
 
   if (mainData->playerState == PL_STATE_STOPPED ||
       mainData->playerState == PL_STATE_PAUSED) {
@@ -2569,6 +2637,7 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
   /* for the purposes of a mix, the countlist passed to the dancesel alloc */
   /* and the dance counts used for selection are identical */
 
+  mainMusicqClearPreppedSongs (mainData, mqidx, 1);
   musicqClear (mainData->musicQueue, mqidx, 1);
   /* should already be an empty head on the queue */
 
@@ -2605,6 +2674,8 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
   danceselFree (dancesel);
   nlistFree (danceCounts);
   nlistFree (songList);
+
+  mainMusicQueuePrep (mainData, mqidx);
 
   mainData->musicqChanged [mqidx] = MAIN_CHG_START;
   mainData->marqueeChanged [mqidx] = true;
@@ -2667,7 +2738,8 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
   title = MSG_ARGS_EMPTY_STR;
   dance = MSG_ARGS_EMPTY_STR;
   songfn = MSG_ARGS_EMPTY_STR;
-  if (mainData->playerState == PL_STATE_PLAYING) {
+  if (mainData->playerState == PL_STATE_PLAYING ||
+      mainData->playerState == PL_STATE_IN_FADEOUT) {
     dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
     title = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_TITLE);
     dance = mainSongGetDanceDisplay (mainData, 0);

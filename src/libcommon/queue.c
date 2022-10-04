@@ -11,6 +11,10 @@
 #include "log.h"
 #include "queue.h"
 
+enum {
+  QUEUE_NO_IDX = -1,
+};
+
 typedef struct queuenode {
   void              *data;
   struct queuenode  *prev;
@@ -19,6 +23,9 @@ typedef struct queuenode {
 
 typedef struct queue {
   ssize_t       count;
+  queuenode_t   *cacheNode;
+  ssize_t       cacheIdx;
+  long          cacheHits;
   queuenode_t   *iteratorNode;
   queuenode_t   *currentNode;
   queuenode_t   *head;
@@ -37,6 +44,9 @@ queueAlloc (queueFree_t freeHook)
   q = malloc (sizeof (queue_t));
   assert (q != NULL);
   q->count = 0;
+  q->cacheNode = NULL;
+  q->cacheIdx = QUEUE_NO_IDX;
+  q->cacheHits = 0;
   q->iteratorNode = NULL;
   q->currentNode = NULL;
   q->head = NULL;
@@ -54,6 +64,9 @@ queueFree (queue_t *q)
 
   logProcBegin (LOG_PROC, "queueFree");
   if (q != NULL) {
+    if (q->cacheHits > 0) {
+      logMsg (LOG_DBG, LOG_BASIC, "queue: cache hits: %ld\n", q->cacheHits);
+    }
     node = q->head;
     tnode = node;
     while (node != NULL && node->next != NULL) {
@@ -169,12 +182,22 @@ queueGetByIdx (queue_t *q, ssize_t idx)
     logProcEnd (LOG_PROC, "queueGetByIdx", "bad-idx");
     return NULL;
   }
+
+  if (idx == q->cacheIdx && q->cacheNode != NULL) {
+    data = q->cacheNode->data;
+    q->cacheHits++;
+    logProcEnd (LOG_PROC, "queueGetByIdx", "from-cache");
+    return data;
+  }
+
   node = q->head;
   while (node != NULL && count != idx) {
     ++count;
     node = node->next;
   }
   if (node != NULL) {
+    q->cacheIdx = idx;
+    q->cacheNode = node;
     data = node->data;
   }
   logProcEnd (LOG_PROC, "queueGetByIdx", "");
@@ -185,7 +208,7 @@ queueGetByIdx (queue_t *q, ssize_t idx)
 void *
 queuePop (queue_t *q)
 {
-  void          *data;
+  void          *data = NULL;
   queuenode_t   *node;
 
   logProcBegin (LOG_PROC, "queuePop");
@@ -407,6 +430,11 @@ queueRemove (queue_t *q, queuenode_t *node)
   }
   if (q->head == NULL) {
     return NULL;
+  }
+
+  if (node == q->cacheNode) {
+    q->cacheIdx = QUEUE_NO_IDX;
+    q->cacheNode = NULL;
   }
 
   data = node->data;

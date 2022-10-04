@@ -851,7 +851,7 @@ audiotagRunUpdate (const char *fn)
   targv [targc++] = fn;
   targv [targc++] = NULL;
   osProcessStart (targv, OS_PROC_WAIT | OS_PROC_DETACH, NULL, NULL);
-//  fileopDelete (fn);
+  fileopDelete (fn);
 }
 
 static void

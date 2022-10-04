@@ -72,7 +72,7 @@ foreach {fn} $flist {
 
     if { $tkey eq "GAP" } {
       if { $value eq {} } {
-        set value 0
+        set value -100
       } else {
         set value [expr {int ($value * 1000)}]
       }
