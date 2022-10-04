@@ -3,14 +3,16 @@ BallroomDJ 4 Change Log
 4.0.0 alpha --
 
 - Fix .wma author and title tags.
-- player: Fix incorrect duration calculations (playlist max, dance max).
 - BDJ3 conversion: Fix incorrect conversion of volume adjust percentage.
 - database update: Fix incorrect conversion of BDJ3 volume adjust percentage.
 - install: bdj3 compatible tags are turned off for new installs.
-- management: playlist management: fix gap spinbox to allow
-  fractions of a second.
+- playlist management: fix gap spinbox to allow fractions of a second.
 - conversion: fix playlist gap conversion.
-o player: fix volume when no fade-out and no gap.
+- player
+  - Fix incorrect duration calculations (playlist max, dance max).
+  - Fix volume when no fade-out and no gap.
+  - Fix issues with incorrect gap setting.
+  - Fix internal issues with song preparation.
 
 4.0.0 alpha 2022-09-26
 

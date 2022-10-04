@@ -100,8 +100,8 @@ typedef enum {
   MSG_PLAYBACK_BEGIN,       // to main: player has started playing the
                             //    song.  This message is sent after the
                             //    any announcement has finished.
-  MSG_PLAYBACK_STOP,        // to main: player has stopped playing song
-                            //    do not continue.
+  MSG_PLAYBACK_FINISH_STOP, // to main: player has finished playing song,
+                            //    stop playing, do not continue
   MSG_PLAYBACK_FINISH,      // to main: player has finished playing song
                             //    args: song fname
   MSG_PLAYER_STATE,         // args: player state

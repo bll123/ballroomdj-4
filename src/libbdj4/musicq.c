@@ -50,7 +50,10 @@ musicqAlloc (musicdb_t *db)
   assert (musicq != NULL);
   musicq->musicdb = db;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
-    musicq->q [i] = queueAlloc (musicqQueueItemFree);
+    char  tmp [40];
+
+    snprintf (tmp, sizeof (tmp), "music-q-%d", i);
+    musicq->q [i] = queueAlloc (tmp, musicqQueueItemFree);
     musicq->dispidx [i] = 1;
     musicq->duration [i] = 0;
   }

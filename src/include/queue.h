@@ -7,7 +7,7 @@ typedef struct queuenode queuenode_t;
 
 typedef struct queue queue_t;
 
-queue_t *queueAlloc (queueFree_t freeHook);
+queue_t *queueAlloc (const char *name, queueFree_t freeHook);
 void    queueFree (queue_t *q);
 void    queuePush (queue_t *q, void *data);
 void    queuePushHead (queue_t *q, void *data);

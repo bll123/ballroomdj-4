@@ -117,7 +117,7 @@ main (int argc, char *argv[])
     dbtag.threads [i].fn = NULL;
     dbtag.threads [i].data = NULL;
   }
-  dbtag.fileQueue = queueAlloc (free);
+  dbtag.fileQueue = queueAlloc ("file-q", free);
   dbtag.received = 0;
   dbtag.sent = 0;
   dbtag.maxqueuelen = 0;

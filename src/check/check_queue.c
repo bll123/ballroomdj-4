@@ -25,7 +25,7 @@ START_TEST(queue_alloc_free)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_alloc_free");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("alloc-free", NULL);
   ck_assert_ptr_nonnull (q);
   count = queueGetCount (q);
   ck_assert_int_eq (count, 0);
@@ -39,7 +39,7 @@ START_TEST(queue_push_one)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_one");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("push-one", NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
@@ -53,7 +53,7 @@ START_TEST(queue_push_two)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_two");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("push-two", NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
@@ -70,7 +70,7 @@ START_TEST(queue_push_many)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_many");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("push-many", NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
@@ -97,7 +97,7 @@ START_TEST(queue_push_pop_one)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_pop_one");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("push-pop-1", NULL);
   queuePush (q, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
@@ -119,7 +119,7 @@ START_TEST(queue_push_pop_two)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_pop_two");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("push-pop-2", NULL);
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
   count = queueGetCount (q);
@@ -147,7 +147,7 @@ START_TEST(queue_push_head)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_head");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("push-head", NULL);
   queuePush (q, "aaaa");
   queuePushHead (q, "bbbb");
   count = queueGetCount (q);
@@ -175,7 +175,7 @@ START_TEST(queue_get_current)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_get_current");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("get-curr", NULL);
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
   count = queueGetCount (q);
@@ -209,7 +209,7 @@ START_TEST(queue_multi_one)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_multi_one");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("multi-1", NULL);
 
   queuePush (q, "aaaa");
   count = queueGetCount (q);
@@ -248,7 +248,7 @@ START_TEST(queue_multi_two)
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_multi_two");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("multi-2", NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -324,8 +324,8 @@ START_TEST(queue_multi_many)
   char      *data;
   queue_t       *q;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_multi_two");
-  q = queueAlloc (NULL);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_multi_many");
+  q = queueAlloc ("multi-many", NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -414,7 +414,7 @@ START_TEST(queue_iterate)
   ssize_t   qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_iterate");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("iterate", NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -459,7 +459,7 @@ START_TEST(queue_remove_by_idx)
   ssize_t   qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_remove_by_idx");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("remove-by-idx", NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -591,7 +591,7 @@ START_TEST(queue_remove_node)
   ssize_t   qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_remove_node");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("remove-node", NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -741,7 +741,7 @@ START_TEST(queue_getbyidx)
   ssize_t   i;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_getbyidx");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("get-by-idx", NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -786,7 +786,7 @@ START_TEST(queue_clear)
   ssize_t   i;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_clear");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("clear", NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -842,7 +842,7 @@ START_TEST(queue_move)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_move");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("move", NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
@@ -934,7 +934,7 @@ START_TEST(queue_insert_node)
   ssize_t   qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_insert_node");
-  q = queueAlloc (NULL);
+  q = queueAlloc ("insert", NULL);
 
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");

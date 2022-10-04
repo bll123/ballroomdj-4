@@ -52,7 +52,7 @@ danceselAlloc (nlist_t *countList)
   dancesel->distance = nlistAlloc ("dancesel-dist", LIST_ORDERED, NULL);
   dancesel->maxDistance = 0.0;
   dancesel->selectedCounts = nlistAlloc ("dancesel-sel-count", LIST_ORDERED, NULL);
-  dancesel->playedDances = queueAlloc (free);
+  dancesel->playedDances = queueAlloc ("played-dances", free);
   dancesel->totalSelCount = 0.0;
   dancesel->adjustBase = NULL;
   dancesel->danceProbTable = NULL;

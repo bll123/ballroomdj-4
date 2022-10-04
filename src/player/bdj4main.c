@@ -238,7 +238,10 @@ main (int argc, char *argv[])
   mainData.playlistCache = nlistAlloc ("playlist-list", LIST_ORDERED,
       playlistFree);
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
-    mainData.playlistQueue [i] = queueAlloc (mainPlaylistItemFree);
+    char  tmp [40];
+
+    snprintf (tmp, sizeof (tmp), "playlist-q-%d", i);
+    mainData.playlistQueue [i] = queueAlloc (tmp, mainPlaylistItemFree);
   }
   mainData.musicQueue = musicqAlloc (mainData.musicdb);
   mainDanceCountsInit (&mainData);
@@ -472,7 +475,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
-        case MSG_PLAYBACK_STOP: {
+        case MSG_PLAYBACK_FINISH_STOP: {
           mainMusicQueueFinish (mainData, targs);
           dbgdisp = true;
           break;
@@ -2637,7 +2640,6 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
   /* for the purposes of a mix, the countlist passed to the dancesel alloc */
   /* and the dance counts used for selection are identical */
 
-  mainMusicqClearPreppedSongs (mainData, mqidx, 1);
   musicqClear (mainData->musicQueue, mqidx, 1);
   /* should already be an empty head on the queue */
 
@@ -2674,8 +2676,6 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
   danceselFree (dancesel);
   nlistFree (danceCounts);
   nlistFree (songList);
-
-  mainMusicQueuePrep (mainData, mqidx);
 
   mainData->musicqChanged [mqidx] = MAIN_CHG_START;
   mainData->marqueeChanged [mqidx] = true;

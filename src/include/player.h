@@ -13,7 +13,7 @@ typedef enum {
 } playerstate_t;
 
 enum {
-  PL_UNIQUE_ANN = 0,
+  PL_UNIQUE_ANN = -2,
 };
 
 #endif /* INC_PLAYER_H */

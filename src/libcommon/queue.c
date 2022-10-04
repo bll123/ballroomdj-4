@@ -22,6 +22,7 @@ typedef struct queuenode {
 } queuenode_t;
 
 typedef struct queue {
+  char          *name;
   ssize_t       count;
   queuenode_t   *cacheNode;
   ssize_t       cacheIdx;
@@ -36,13 +37,14 @@ typedef struct queue {
 static void * queueRemove (queue_t *q, queuenode_t *node);
 
 queue_t *
-queueAlloc (queueFree_t freeHook)
+queueAlloc (const char *name, queueFree_t freeHook)
 {
   queue_t     *q;
 
   logProcBegin (LOG_PROC, "queueAlloc");
   q = malloc (sizeof (queue_t));
   assert (q != NULL);
+  q->name = strdup (name);
   q->count = 0;
   q->cacheNode = NULL;
   q->cacheIdx = QUEUE_NO_IDX;
@@ -65,7 +67,10 @@ queueFree (queue_t *q)
   logProcBegin (LOG_PROC, "queueFree");
   if (q != NULL) {
     if (q->cacheHits > 0) {
-      logMsg (LOG_DBG, LOG_BASIC, "queue: cache hits: %ld\n", q->cacheHits);
+      logMsg (LOG_DBG, LOG_BASIC, "queue: %s cache hits: %ld", q->name, q->cacheHits);
+    }
+    if (q->name != NULL) {
+      free (q->name);
     }
     node = q->head;
     tnode = node;

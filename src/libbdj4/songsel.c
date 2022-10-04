@@ -140,7 +140,7 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist,
     songseldance->danceIdx = danceIdx;
     songseldance->songIdxList = nlistAlloc ("songsel-songidx",
         LIST_ORDERED, songselSongDataFree);
-    songseldance->currentIndexes = queueAlloc (songselIdxFree);
+    songseldance->currentIndexes = queueAlloc ("songsel-curr-idxs", songselIdxFree);
     songseldance->currentIdxList = nlistAlloc ("songsel-curridx",
         LIST_UNORDERED, NULL);
     songseldance->attrList [SONGSEL_ATTR_RATING] =
@@ -450,7 +450,7 @@ songselRemoveSong (songsel_t *songsel,
   if (count == 1) {
       /* need a complete rebuild */
     queueFree (songseldance->currentIndexes);
-    songseldance->currentIndexes = queueAlloc (songselIdxFree);
+    songseldance->currentIndexes = queueAlloc ("songsel-curr-idxs", songselIdxFree);
     count = nlistGetCount (songseldance->songIdxList);
     nlistSetSize (nlist, count);
     nlistStartIterator (songseldance->songIdxList, &iteridx);

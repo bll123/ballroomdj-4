@@ -109,7 +109,7 @@ dirlistRecursiveDirList (const char *dirname, int flags)
   dirnamelen = strlen (dirname);
   snprintf (temp, sizeof (temp), "rec-dir-%s", dirname);
   fileList = slistAlloc (temp, LIST_UNORDERED, NULL);
-  dirQueue = queueAlloc (free);
+  dirQueue = queueAlloc ("dir-q", free);
 
   queuePush (dirQueue, strdup (dirname));
   while (queueGetCount (dirQueue) > 0) {
