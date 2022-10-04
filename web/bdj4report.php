@@ -17,76 +17,80 @@ $html = <<<_HERE_
 <body>
 _HERE_;
 
+$gidx = 0;
 $in = 0;
 foreach ($darr as $line) {
   if (preg_match ("/^===END/", $line)) {
-    $fver = $data['-version'] . '-' . $data['-releaselevel'] .
-        '-' . $data['-builddate'];
-    if (! isset ($adata[$fver]['-new'])) {
-      foreach (array ('-new', '-reinstall', '-update', '-convert') as $tkey) {
-        $adata[$fver][$tkey] = 0;
+    $fver = $idata['-version'] . '-' . $idata['-releaselevel'] .
+        '-' . $idata['-builddate'];
+    $idata['-fullversion'] = $fver;
+
+    $idata['-country'] = 'unknown';
+    if (1) {
+      $turl = 'https://ipinfo.io/' .
+          $idata['-ip'] . '?token=3e323f77a7a9fd';
+      $curl = curl_init ($turl);
+      curl_setopt ($curl, CURLOPT_RETURNTRANSFER, true);
+      $resp = curl_exec ($curl);
+      curl_close ($curl);
+      $ipdata = json_decode ($resp, true);
+
+      if (! empty ($ipdata)) {
+        $c = $ipdata ['country'];
+        $idata['-country'] = $c;
       }
     }
-    $adata[$fver]['-country'] = geoip_country_code_by_name ($data['-ip']);
-    $adata[$fver]['-osdisp'] = $data['-osdisp'];
-    $adata[$fver]['-date'] = $data['-date'];
-    $adata[$fver]['-pythonvers'] = $data['-pythonvers'];
-    $adata[$fver]['-locale'] = $data['-locale'];
-    $adata[$fver]['-systemlocale'] = $data['-systemlocale'];
-    $adata[$fver]['-oldversion'] = $data['-oldversion'];
-    preg_replace (' ', $data[$fver]['-oldversion'], '-');
-    $adata[$fver]['-bdj3version'] = $data['-bdj3version'];
-    $adata[$fver]['-new'] += $data['-new'];
-    if (isset ($data['-overwrite'])) {
-      $adata[$fver]['-reinstall'] += $data['-overwrite'];
+
+    if (isset ($idata['-oldversion'])) {
+      preg_replace ('/ /', $idata['-oldversion'], '-');
     }
-    if (isset ($data['-reinstall'])) {
-      $adata[$fver]['-reinstall'] += $data['-reinstall'];
+    if (isset ($idata['-overwrite'])) {
+      $idata['-reinstall'] = $idata['-overwrite'];
     }
-    $adata[$fver]['-update'] += $data['-update'];
-    $adata[$fver]['-convert'] += $data['-convert'];
+    if (isset ($idata['-reinstall']) && isset ($idata['-new'])) {
+      $idata['-reinstall'] = 0;
+    }
     $in = 0;
+    $adata[$gidx] = $idata;
+    $gidx++;
   }
   if ($in == 1) {
     $key = $line;
     $in = 2;
   } else if ($in == 2) {
-    $data[$key] = $line;
+    $idata[$key] = $line;
     $in = 1;
   }
   if (preg_match ("/^===BEGIN/", $line)) {
-    unset ($data);
-    $data['-bdj3version'] = '';
-    $data['-oldversion'] = '';
-    $data['-locale'] = '';
-    $data['-systemlocale'] = '';
+    unset ($idata);
+    $idata['-bdj3version'] = '';
+    $idata['-oldversion'] = '';
+    $idata['-locale'] = '';
+    $idata['-systemlocale'] = '';
     $in = 1;
   }
 }
 
-uksort ($adata, 'acomp');
-
-$gdata = array ();
-
-foreach ($adata as $vkey => $tdata) {
-  if (! isset ($gdata[$vkey])) {
-    $gdata[$vkey]['-new'] = 0;
-    $gdata[$vkey]['-reinstall'] = 0;
-    $gdata[$vkey]['-update'] = 0;
-    $gdata[$vkey]['-convert'] = 0;
-    $gdata[$vkey]['-country'] = array ();
+foreach ($adata as $gidx => $tdata) {
+  $fver = $tdata['-fullversion'];
+  foreach ($tdata as $key => $val) {
+    if ($key == '-country') {
+      if (! isset ($vdata[$fver][$key][$val])) {
+        $vdata[$fver][$key][$val] = 0;
+      }
+      $vdata[$fver][$key][$val] += 1;
+    } else if (in_array ($key, array ('-new', '-reinstall', '-update', '-convert'), true)) {
+      if (! isset ($vdata[$fver][$key])) {
+        $vdata[$fver][$key] = 0;
+      }
+      $vdata[$fver][$key] += $val;
+    } else {
+      $vdata[$fver][$key] = $val;
+    }
   }
-  if (! isset ($gdata[$vkey]['-country'][$tdata[-country]])) {
-    $gdata[$vkey]['-country'][$tdata['-country']] = 0;
-  }
-  $gdata[$vkey]['-country'][$tdata['-country']] += $tdata['-new'];
-  $gdata[$vkey]['-country'][$tdata['-country']] += $tdata['-reinstall'];
-  $gdata[$vkey]['-country'][$tdata['-country']] += $tdata['-update'];
-  $gdata[$vkey]['-new'] += $tdata['-new'];
-  $gdata[$vkey]['-reinstall'] += $tdata['-reinstall'];
-  $gdata[$vkey]['-update'] += $tdata['-update'];
-  $gdata[$vkey]['-convert'] += $tdata['-convert'];
 }
+
+uksort ($vdata, 'acomp');
 
 $html .= <<<_HERE_
   <table>
@@ -97,10 +101,10 @@ $html .= <<<_HERE_
     </tr>
 _HERE_;
 
-foreach ($gdata as $vkey => $tdata) {
+foreach ($vdata as $fkey => $tdata) {
   foreach ($tdata['-country'] as $ckey => $count) {
     $html .= "    <tr>";
-    $html .= "      <td align=\"left\">${vkey}</td>";
+    $html .= "      <td align=\"left\">${fkey}</td>";
     $html .= "      <td align=\"left\">${ckey}</td>";
     $html .= "      <td align=\"right\">${count}</td>";
     $html .= "    </tr>";
@@ -122,9 +126,9 @@ $html .= <<<_HERE_
     </tr>
 _HERE_;
 
-foreach ($gdata as $vkey => $tdata) {
+foreach ($vdata as $fkey => $tdata) {
   $html .= "    <tr>";
-  $html .= "      <td align=\"left\">$vkey</td>";
+  $html .= "      <td align=\"left\">$fkey</td>";
   $html .= "      <td align=\"right\">${tdata['-new']}</td>";
   $html .= "      <td align=\"right\">${tdata['-reinstall']}</td>";
   $html .= "      <td align=\"right\">${tdata['-update']}</td>";
@@ -156,9 +160,9 @@ $html .= <<<_HERE_
 _HERE_;
 
 $count = 0;
-foreach ($adata as $vkey => $tdata) {
+foreach (array_reverse ($adata) as $gidx => $tdata) {
   $html .= "    <tr>";
-  $html .= "      <td align=\"left\">$vkey</td>";
+  $html .= "      <td align=\"left\">${tdata['-fullversion']}</td>";
   $html .= "      <td align=\"left\">${tdata['-date']}</td>";
   $html .= "      <td align=\"left\">${tdata['-country']}</td>";
   $html .= "      <td align=\"left\">${tdata['-osdisp']}</td>";
@@ -172,7 +176,7 @@ foreach ($adata as $vkey => $tdata) {
   $html .= "      <td align=\"left\">${tdata['-oldversion']}</td>";
   $html .= "      <td align=\"left\">${tdata['-bdj3version']}</td>";
   $html .= "    </tr>";
-  ++$count;
+  $count++;
   if ($count > 30) {
     break;
   }
