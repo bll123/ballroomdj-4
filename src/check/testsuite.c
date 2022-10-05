@@ -722,7 +722,7 @@ printResults (testsuite_t *testsuite, results_t *results)
   }
   fprintf (stdout, "checks: %d failed: %d %s",
       results->chkcount, results->chkfail, state);
-  fprintf (stdout, "  (%ld)", mstimeend (&results->start));
+  fprintf (stdout, "  (%zd)", mstimeend (&results->start));
   fprintf (stdout, "\n");
   fflush (stdout);
 }
