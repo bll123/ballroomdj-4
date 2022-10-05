@@ -122,6 +122,7 @@ typedef struct {
   bool              dancefromgenre : 1;
   bool              usingmusicdir : 1;
   bool              haveolddirlist : 1;
+  bool              stoprequest : 1;
 } dbupdate_t;
 
 enum {
@@ -173,6 +174,7 @@ main (int argc, char *argv[])
   dbupdate.usingmusicdir = true;
   dbupdate.olddirlist = NULL;
   dbupdate.haveolddirlist = false;
+  dbupdate.stoprequest = false;
   mstimeset (&dbupdate.outputTimer, 0);
   dbupdate.org = NULL;
 
@@ -281,6 +283,12 @@ dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           progstateShutdownProcess (dbupdate->progstate);
           break;
         }
+        case MSG_DB_STOP_REQ: {
+          logMsg (LOG_DBG, LOG_MAIN, "stop request received");
+          dbupdate->state = DB_UPD_FINISH;
+          dbupdate->stoprequest = true;
+          break;
+        }
         case MSG_DB_FILE_TAGS: {
           dbupdateProcessTagData (dbupdate, args);
           break;
@@ -304,6 +312,7 @@ dbupdateProcessing (void *udata)
 {
   dbupdate_t  *dbupdate = (dbupdate_t *) udata;
   int         stop = false;
+  char        *msg = NULL;
 
 
   if (! progstateIsRunning (dbupdate->progstate)) {
@@ -532,12 +541,18 @@ dbupdateProcessing (void *udata)
         dbupdate->counts [C_BDJ_SKIP] + dbupdate->counts [C_BDJ_OLD_DIR]);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
-    /* CONTEXT: database update: status message */
-    snprintf (tbuff, sizeof (tbuff), "-- %s", _("Complete"));
+    if (dbupdate->stoprequest) {
+      /* CONTEXT: database update: status message */
+      msg = _("Stopped by User");
+    } else {
+      /* CONTEXT: database update: status message */
+      msg = _("Complete");
+    }
+    snprintf (tbuff, sizeof (tbuff), "-- %s", msg);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
-    logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %ld ms",
-        mstimeend (&dbupdate->starttm));
+    logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %ld ms stop-req: %d",
+        mstimeend (&dbupdate->starttm), dbupdate->stoprequest);
     logMsg (LOG_DBG, LOG_IMPORTANT, "    found: %u", dbupdate->counts [C_FILE_COUNT]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %u", dbupdate->counts [C_FILE_SKIPPED]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "     sent: %u", dbupdate->counts [C_FILE_SENT]);

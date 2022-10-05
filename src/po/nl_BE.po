@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-10-01\n"
+"PO-Revision-Date: 2022-10-05\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -1632,6 +1632,10 @@ msgstr ""
 msgid "Status"
 msgstr "Status"
 
+#. CONTEXT: update database: button to stop the database update process
+msgid "Stop"
+msgstr "Stop"
+
 #. CONTEXT: playlist management: stop after
 msgid "Stop After"
 msgstr ""
@@ -1644,6 +1648,10 @@ msgstr ""
 #. CONTEXT: playlist management: stop at
 msgid "Stop At"
 msgstr ""
+
+#. CONTEXT: database update: status message
+msgid "Stopped by User"
+msgstr "Gestopt door gebruiker"
 
 #. CONTEXT: starterui: sending support message: subject of message
 msgid "Subject"

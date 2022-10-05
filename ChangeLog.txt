@@ -4,7 +4,9 @@ BallroomDJ 4 Change Log
 
 - Fix .wma author and title tags.
 - BDJ3 conversion: Fix incorrect conversion of volume adjust percentage.
-- database update: Fix incorrect conversion of BDJ3 volume adjust percentage.
+- database update
+  - Fix incorrect conversion of BDJ3 volume adjust percentage.
+  - Added stop button to user interface.
 - install: bdj3 compatible tags are turned off for new installs.
 - playlist management: fix gap spinbox to allow fractions of a second.
 - conversion: fix playlist gap conversion.

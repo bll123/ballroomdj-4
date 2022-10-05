@@ -40,14 +40,18 @@ typedef struct managedb {
   uispinbox_t       *dbspinbox;
   UICallback        dbchgcb;
   UICallback        dbstartcb;
+  UICallback        dbstopcb;
   uitextbox_t       *dbhelpdisp;
   uitextbox_t       *dbstatus;
   nlist_t           *dblist;
   nlist_t           *dbhelp;
   UIWidget          dbpbar;
+  UIWidget          dbstart;
+  UIWidget          dbstop;
 } managedb_t;
 
 static bool manageDbStart (void *udata);
+static bool manageDbStop (void *udata);
 static bool manageDbSelectDirCallback (void *udata);
 
 managedb_t *
@@ -66,6 +70,8 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
   managedb->dblist = NULL;
   managedb->dbhelp = NULL;
   uiutilsUIWidgetInit (&managedb->dbpbar);
+  uiutilsUIWidgetInit (&managedb->dbstart);
+  uiutilsUIWidgetInit (&managedb->dbstop);
   managedb->dbtopdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxTextInit ();
 
@@ -190,10 +196,17 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   uiutilsUICallbackInit (&managedb->dbstartcb, manageDbStart, managedb, NULL);
-  uiCreateButton (&uiwidget, &managedb->dbstartcb,
+  uiCreateButton (&managedb->dbstart, &managedb->dbstartcb,
       /* CONTEXT: update database: button to start the database update process */
       _("Start"), NULL);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (&hbox, &managedb->dbstart);
+
+  uiutilsUICallbackInit (&managedb->dbstopcb, manageDbStop, managedb, NULL);
+  uiCreateButton (&managedb->dbstop, &managedb->dbstopcb,
+      /* CONTEXT: update database: button to stop the database update process */
+      _("Stop"), NULL);
+  uiBoxPackStart (&hbox, &managedb->dbstop);
+  uiWidgetDisable (&managedb->dbstop);
 
   uiCreateProgressBar (&managedb->dbpbar, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiBoxPackStart (vboxp, &managedb->dbpbar);
@@ -276,6 +289,9 @@ manageDbStart (void *udata)
   char        tbuff [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db start");
+  uiWidgetDisable (&managedb->dbstart);
+  uiWidgetEnable (&managedb->dbstop);
+
   pathbldMakePath (tbuff, sizeof (tbuff),
       "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
 
@@ -320,6 +336,21 @@ manageDbStart (void *udata)
       ROUTE_DBUPDATE, "bdj4dbupdate", OS_PROC_DETACH, targv);
   return UICB_CONT;
 }
+
+static bool
+manageDbStop (void *udata)
+{
+  managedb_t  *managedb = udata;
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: db stop");
+  connSendMessage (managedb->conn, ROUTE_DBUPDATE, MSG_DB_STOP_REQ, NULL);
+
+  uiWidgetDisable (&managedb->dbstop);
+  uiWidgetEnable (&managedb->dbstart);
+
+  return UICB_CONT;
+}
+
 
 static bool
 manageDbSelectDirCallback (void *udata)

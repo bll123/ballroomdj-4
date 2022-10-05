@@ -141,6 +141,7 @@ typedef enum {
   MSG_MARQUEE_FIND,
 
   /* to/from dbudpate */
+  MSG_DB_STOP_REQ,
   MSG_DB_FILE_TAGS,         // args: filename, tag data
   MSG_DB_PROGRESS,          // args: % complete
   MSG_DB_STATUS_MSG,        // args: status message
