@@ -1,6 +1,6 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha --
+4.0.0 alpha 2022-10---
 
 - Fix .wma author and title tags.
 - BDJ3 conversion: Fix incorrect conversion of volume adjust percentage.
@@ -13,6 +13,7 @@ BallroomDJ 4 Change Log
   - Fix volume when no fade-out and no gap.
   - Fix issues with incorrect gap setting.
   - Fix internal issues with song preparation.
+  - Fix repeat + pause at end interactions.
 
 4.0.0 alpha 2022-09-26
 

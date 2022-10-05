@@ -34,10 +34,11 @@
 #include "tmutil.h"
 
 typedef struct {
-  int     testcount;
-  int     testfail;
-  int     chkcount;
-  int     chkfail;
+  int       testcount;
+  int       testfail;
+  int       chkcount;
+  int       chkfail;
+  mstime_t  start;
 } results_t;
 
 typedef enum {
@@ -114,6 +115,7 @@ static bool tsStoppingCallback (void *tts, programstate_t programState);
 static bool tsStopWaitCallback (void *tts, programstate_t programState);
 static bool tsClosingCallback (void *tts, programstate_t programState);
 static void clearResults (results_t *results);
+static void startResultTimer (results_t *results);
 static void tallyResults (testsuite_t *testsuite);
 static void printResults (testsuite_t *testsuite, results_t *results);
 static int  tsProcessScript (testsuite_t *testsuite);
@@ -169,6 +171,7 @@ main (int argc, char *argv [])
   clearResults (&testsuite.results);
   clearResults (&testsuite.sresults);
   clearResults (&testsuite.gresults);
+  startResultTimer (&testsuite.gresults);
   testsuite.failedlist = slistAlloc ("ts-failed", LIST_ORDERED, NULL);
   testsuite.progstate = progstateInit ("testsuite");
   testsuite.stopwaitcount = 0;
@@ -677,6 +680,12 @@ clearResults (results_t *results)
 }
 
 static void
+startResultTimer (results_t *results)
+{
+  mstimestart (&results->start);
+}
+
+static void
 tallyResults (testsuite_t *testsuite)
 {
   testsuite->sresults.testcount += testsuite->results.testcount;
@@ -711,8 +720,10 @@ printResults (testsuite_t *testsuite, results_t *results)
       fprintf (stdout, "   ");
     }
   }
-  fprintf (stdout, "checks: %d failed: %d %s\n",
+  fprintf (stdout, "checks: %d failed: %d %s",
       results->chkcount, results->chkfail, state);
+  fprintf (stdout, "  (%ld)", mstimeend (&results->start));
+  fprintf (stdout, "\n");
   fflush (stdout);
 }
 
@@ -751,6 +762,7 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
 
   clearResults (&testsuite->results);
   clearResults (&testsuite->sresults);
+  startResultTimer (&testsuite->sresults);
 
   testsuite->processsection = false;
 
@@ -795,6 +807,7 @@ tsScriptTest (testsuite_t *testsuite, const char *tcmd)
   strlcpy (testsuite->testname, p, sizeof (testsuite->testname));
 
   clearResults (&testsuite->results);
+  startResultTimer (&testsuite->results);
 
   testsuite->processtest = false;
 
@@ -1059,40 +1072,50 @@ tsScriptChkResponse (testsuite_t *testsuite)
       if (testsuite->lessthan) {
         long  a, b;
 
-        a = -2;
+        a = atol (val);
+        b = -2;
         if (valchk != NULL) {
-          a = atol (valchk);
+          b = atol (valchk);
         }
-        b = atol (val);
-        if (valchk != NULL && a < b) {
+        if (valchk != NULL && b < a) {
+          if (testsuite->verbose) {
+            fprintf (stdout, "          %3d chk-ok: %s: resp: %ld < exp: %ld\n",
+                  testsuite->lineno, key, b, a);
+            fflush (stdout);
+          }
           ++countok;
         } else {
           if (! dispflag) {
             fprintf (stdout, "\n");
             dispflag = true;
           }
-          fprintf (stdout, "          %3d chk-lt-fail: %s: exp: %ld < resp: %ld\n",
-              testsuite->lineno, key, a, b);
+          fprintf (stdout, "          %3d chk-lt-fail: %s: resp: %ld > exp: %ld\n",
+              testsuite->lineno, key, b, a);
           fflush (stdout);
         }
       }
       if (testsuite->greaterthan) {
         long  a, b;
 
-        a = -2;
+        a = atol (val);
+        b = -2;
         if (valchk != NULL) {
-          a = atol (valchk);
+          b = atol (valchk);
         }
-        b = atol (val);
-        if (valchk != NULL && a > b) {
+        if (valchk != NULL && b > a) {
+          if (testsuite->verbose) {
+            fprintf (stdout, "          %3d chk-ok: %s: resp: %ld > exp: %ld\n",
+                  testsuite->lineno, key, b, a);
+            fflush (stdout);
+          }
           ++countok;
         } else {
           if (! dispflag) {
             fprintf (stdout, "\n");
             dispflag = true;
           }
-          fprintf (stdout, "          %3d chk-gt-fail: %s: exp: %ld < resp: %ld\n",
-              testsuite->lineno, key, a, b);
+          fprintf (stdout, "          %3d chk-gt-fail: %s: resp: %ld < exp: %ld\n",
+              testsuite->lineno, key, b, a);
           fflush (stdout);
         }
       }
@@ -1338,6 +1361,13 @@ resetPlayer (testsuite_t *testsuite)
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_MANAGE, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "0");
+  /* macos seems to need this sleep. */
+  /* there may be a race condition between the 'end' and  */
+  /* the start of the next test. or main needs to wait to receive a */
+  /* message from the player. */
+  /* this should be researched at a later date to find out exactly */
+  /* what's going on. */
+  mssleep (200);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
 }
 

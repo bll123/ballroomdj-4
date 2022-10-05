@@ -1,6 +1,8 @@
 section 30 Playback-Controls
 
 test 30-10 Fade
+# a minimum volume is required to check fade-in/out
+msg player PLAYER_VOLUME 20
 msg main MUSICQ_INSERT 0~999~9
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
@@ -8,23 +10,24 @@ resptimeout 1000
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
+chk currvolume 20
 msg player PLAY_FADE
 resptimeout 5000
 get player CHK_PLAYER_STATUS
 chk playstate in-fadeout
 mssleep 200
 get player CHK_PLAYER_STATUS
-chk-not actualvolume defaultvol
+chk-not actualvolume 20
 # a fade during in-fadeout does nothing
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 chk playstate in-fadeout
 mssleep 200
 get player CHK_PLAYER_STATUS
-chk-not actualvolume defaultvol
+chk-not actualvolume 20
 resptimeout 7000
 wait playstate stopped
+msg player PLAYER_VOLUME defaultvol
 end
 
 test 30-20 Pause-at-End
@@ -99,7 +102,7 @@ chk pauseatend 0 playstate in-fadeout
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
 chk pauseatend 1 playstate in-fadeout
-resptimeout 6500
+resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate stopped
 end
@@ -301,8 +304,8 @@ get main CHK_MAIN_MUSICQ
 chk dbidx 12
 # same song
 msg player PLAY_FADE
-resptimeout 6500
 get player CHK_PLAYER_STATUS
+resptimeout 7000
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
@@ -318,7 +321,7 @@ chk repeat 0 playstate playing
 get main CHK_MAIN_MUSICQ
 chk dbidx 12
 msg player PLAY_FADE
-resptimeout 6500
+resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
@@ -416,7 +419,7 @@ msg player PLAY_SPEED 90
 get player CHK_PLAYER_STATUS
 chk speed 90
 msg player PLAY_FADE
-resptimeout 6500
+resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
@@ -426,7 +429,7 @@ msg player PLAY_SPEED 130
 get player CHK_PLAYER_STATUS
 chk-gt playtimeplayed 1000
 get player CHK_PLAYER_STATUS
-chk-lt playtimeplayed 1200
+chk-lt playtimeplayed 1400
 msg player PLAY_FADE
 resptimeout 7000
 get player CHK_PLAYER_STATUS
@@ -438,5 +441,5 @@ msg player PLAY_SPEED 70
 get player CHK_PLAYER_STATUS
 chk-gt playtimeplayed 1000
 get player CHK_PLAYER_STATUS
-chk-lt playtimeplayed 1200
+chk-lt playtimeplayed 1400
 end

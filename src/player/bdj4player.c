@@ -320,6 +320,11 @@ playerClosingCallback (void *tpdata, programstate_t programState)
     pliFree (playerData->pli);
   }
 
+  if (playerData->currentSong != NULL) {
+    playerPrepQueueFree (playerData->currentSong);
+    playerData->currentSong = NULL;
+  }
+
   origvol = volregClear (playerData->currentSink);
   bdj3flag = volregCheckBDJ3Flag ();
   if (origvol > 0) {

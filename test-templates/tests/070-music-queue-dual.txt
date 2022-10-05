@@ -137,7 +137,7 @@ get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_SET_PLAYBACK 1
 msg player PLAY_FADE
-resptimeout 6500
+resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 2000

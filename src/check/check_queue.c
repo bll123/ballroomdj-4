@@ -753,6 +753,10 @@ START_TEST(queue_getbyidx)
   ck_assert_int_eq (count, 6);
 
   i = 0;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  /* should be cached */
   data = queueGetByIdx (q, i++);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "aaaa");
@@ -762,6 +766,10 @@ START_TEST(queue_getbyidx)
   data = queueGetByIdx (q, i++);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "cccc");
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  /* should be cached */
   data = queueGetByIdx (q, i++);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "dddd");

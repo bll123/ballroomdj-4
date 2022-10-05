@@ -85,7 +85,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 chk actualvolume 30
 mssleep 1000
-resptimeout 6500
+resptimeout 7000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing

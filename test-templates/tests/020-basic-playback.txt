@@ -82,23 +82,25 @@ chk mq0len 0 songplaysentcount 2
 end
 
 test 20-30 Fade-In-Out-Gap
+# a minimum volume is required to check fade-in/out
+msg player PLAYER_VOLUME 20
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
-chk-not actualvolume defaultvol
+chk-not actualvolume 20
 # check normal song-end processing
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol realvolume defaultvol actualvolume defaultvol
+chk currvolume 20 realvolume 20 actualvolume 20
 resptimeout 29000
 wait playstate in-fadeout
 mssleep 200
 get player CHK_PLAYER_STATUS
-chk-not actualvolume defaultvol
+chk-not actualvolume 20
 resptimeout 5000
 wait playstate in-gap
 chk actualvolume 0
@@ -106,6 +108,7 @@ resptimeout 3000
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol actualvolume defaultvol
+chk currvolume 20 actualvolume 20
+msg player PLAYER_VOLUME defaultvol
 end
 
