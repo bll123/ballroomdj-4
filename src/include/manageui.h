@@ -5,6 +5,7 @@
 #include "msgparse.h"
 #include "nlist.h"
 #include "playlist.h"
+#include "procutil.h"
 #include "ui.h"
 
 enum {
@@ -49,7 +50,7 @@ void manageSequenceLoadCheck (manageseq_t *manageseq);
 /* managedb.c */
 typedef struct managedb managedb_t;
 
-managedb_t *manageDbAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg, conn_t *conn);
+managedb_t *manageDbAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg, conn_t *conn, procutil_t **processes);
 void  manageDbFree (managedb_t *managedb);
 void  manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp);
 bool  manageDbChg (void *udata);

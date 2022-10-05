@@ -279,6 +279,8 @@ dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_EXIT_REQUEST: {
+          dbupdate->state = DB_UPD_FINISH;
+          dbupdate->stoprequest = true;
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           progstateShutdownProcess (dbupdate->progstate);
           break;

@@ -7,6 +7,7 @@ BallroomDJ 4 Change Log
 - database update
   - Fix incorrect conversion of BDJ3 volume adjust percentage.
   - Added stop button to user interface.
+  - Fix dbtag process not shutting down.
 - install: bdj3 compatible tags are turned off for new installs.
 - playlist management: fix gap spinbox to allow fractions of a second.
 - conversion: fix playlist gap conversion.
@@ -16,6 +17,7 @@ BallroomDJ 4 Change Log
   - Fix issues with incorrect gap setting.
   - Fix internal issues with song preparation.
   - Fix repeat + pause at end interactions.
+- Fix slow shutdown issues.
 
 4.0.0 alpha 2022-09-26
 

@@ -33,7 +33,7 @@ typedef struct managedb {
   UIWidget          *windowp;
   nlist_t           *options;
   UIWidget          *statusMsg;
-  procutil_t        *processes [ROUTE_MAX];
+  procutil_t        **processes;
   conn_t            *conn;
   uientry_t         *dbtopdir;
   UICallback        topdirselcb;
@@ -56,7 +56,7 @@ static bool manageDbSelectDirCallback (void *udata);
 
 managedb_t *
 manageDbAlloc (UIWidget *window, nlist_t *options,
-    UIWidget *statusMsg, conn_t *conn)
+    UIWidget *statusMsg, conn_t *conn, procutil_t **processes)
 {
   managedb_t      *managedb;
   nlist_t         *tlist;
@@ -65,8 +65,8 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
   managedb = malloc (sizeof (managedb_t));
 
   managedb->windowp = window;
-  procutilInitProcesses (managedb->processes);
   managedb->conn = conn;
+  managedb->processes = processes;
   managedb->dblist = NULL;
   managedb->dbhelp = NULL;
   uiutilsUIWidgetInit (&managedb->dbpbar);

@@ -266,7 +266,7 @@ mainStoppingCallback (void *tmaindata, programstate_t programState)
   logProcBegin (LOG_PROC, "mainStoppingCallback");
 
   procutilStopAllProcess (mainData->processes, mainData->conn, false);
-  connDisconnect (mainData->conn, ROUTE_STARTERUI);
+  connDisconnectAll (mainData->conn);
   logProcEnd (LOG_PROC, "mainStoppingCallback", "");
   return STATE_FINISHED;
 }

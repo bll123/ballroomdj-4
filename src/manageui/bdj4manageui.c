@@ -436,11 +436,15 @@ manageStoppingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "manageStoppingCallback");
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
+  procutilStopAllProcess (manage->processes, manage->conn, false);
+
   if (manage->bpmcounterstarted > 0) {
     procutilStopProcess (manage->processes [ROUTE_BPM_COUNTER],
         manage->conn, ROUTE_BPM_COUNTER, false);
     manage->bpmcounterstarted = false;
   }
+
+  connDisconnectAll (manage->conn);
 
   manageSonglistSave (manage);
   manageSequenceSave (manage->manageseq);
@@ -452,10 +456,6 @@ manageStoppingCallback (void *udata, programstate_t programState)
   uiWindowGetPosition (&manage->window, &x, &y, &ws);
   nlistSetNum (manage->options, MANAGE_POSITION_X, x);
   nlistSetNum (manage->options, MANAGE_POSITION_Y, y);
-
-  connDisconnect (manage->conn, ROUTE_STARTERUI);
-
-  procutilStopAllProcess (manage->processes, manage->conn, false);
 
   logProcEnd (LOG_PROC, "manageStoppingCallback", "");
   return STATE_FINISHED;
@@ -621,7 +621,7 @@ manageBuildUI (manageui_t *manage)
 
   /* update database */
   manage->managedb = manageDbAlloc (&manage->window,
-      manage->options, &manage->statusMsg, manage->conn);
+      manage->options, &manage->statusMsg, manage->conn, manage->processes);
 
   uiCreateVertBox (&vbox);
   manageBuildUIUpdateDatabase (manage->managedb, &vbox);
@@ -1318,7 +1318,7 @@ manageStartBPMCounter (void *udata)
     flags = PROCUTIL_DETACH;
     targv [targc++] = NULL;
 
-    manage->processes [ROUTE_MAIN] = procutilStartProcess (
+    manage->processes [ROUTE_BPM_COUNTER] = procutilStartProcess (
         ROUTE_MAIN, "bdj4bpmcounter", flags, targv);
   }
 

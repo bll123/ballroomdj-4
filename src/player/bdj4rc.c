@@ -137,7 +137,7 @@ remctrlStoppingCallback (void *udata, programstate_t programState)
 {
   remctrldata_t   *remctrlData = udata;
 
-  connDisconnect (remctrlData->conn, ROUTE_MAIN);
+  connDisconnectAll (remctrlData->conn);
   return STATE_FINISHED;
 }
 

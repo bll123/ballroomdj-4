@@ -129,7 +129,7 @@ mobmqStoppingCallback (void *tmmdata, programstate_t programState)
 {
   mobmqdata_t   *mobmqData = tmmdata;
 
-  connDisconnect (mobmqData->conn, ROUTE_MAIN);
+  connDisconnectAll (mobmqData->conn);
   return STATE_FINISHED;
 }
 

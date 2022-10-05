@@ -112,9 +112,6 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
   }
 
   if (connports [route] != 0 && ! conn [route].connected) {
-    logMsg (LOG_DBG, LOG_SOCKET, "connect %d/%s to:%d/%s",
-        conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
-        route, msgRouteDebugText (route));
     conn [route].sock = sockConnect (connports [route], &connerr, conn [route].sock);
     if (connerr != SOCK_CONN_OK && connerr != SOCK_CONN_IN_PROGRESS) {
       sockClose (conn [route].sock);
@@ -124,6 +121,9 @@ connConnect (conn_t *conn, bdjmsgroute_t route)
 
   if (connerr == SOCK_CONN_OK &&
       ! socketInvalid (conn [route].sock)) {
+    logMsg (LOG_DBG, LOG_SOCKET, "connect %d/%s to:%d/%s",
+        conn [route].routefrom, msgRouteDebugText (conn [route].routefrom),
+        route, msgRouteDebugText (route));
     if (sockhSendMessage (conn [route].sock, conn [route].routefrom, route,
         MSG_HANDSHAKE, NULL) < 0) {
       logMsg (LOG_DBG, LOG_SOCKET, "connect-send-handshake-fail %d/%s to:%d/%s",
