@@ -901,6 +901,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   npq->tempname = strdup (stname);
   assert (npq->tempname != NULL);
   queuePush (playerData->prepRequestQueue, npq);
+  logMsg (LOG_DBG, LOG_MAIN, "prep-add: %ld %s r:%ld p:%ld\n", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   logProcEnd (LOG_PROC, "playerSongPrep", "");
 }
 
@@ -925,6 +926,7 @@ playerSongClearPrep (playerdata_t *playerData, char *args)
   tpq = playerLocatePreppedSong (playerData, uniqueidx, p);
   if (tpq != NULL) {
     tpq = queueIterateRemoveNode (playerData->prepQueue, &playerData->prepiteridx);
+    logMsg (LOG_DBG, LOG_MAIN, "prep-clear: %ld %s r:%ld p:%ld\n", tpq->uniqueidx, tpq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
     playerPrepQueueFree (tpq);
   }
 }
@@ -974,8 +976,9 @@ playerProcessPrepRequest (playerdata_t *playerData)
   free (buff);
 
   queuePush (playerData->prepQueue, npq);
+  logMsg (LOG_DBG, LOG_MAIN, "prep-do: %ld %s r:%ld p:%ld\n", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   tm = mstimeend (&mstm);
-  logMsg (LOG_DBG, LOG_BASIC, "prep time %zd %s", tm, npq->songname);
+  logMsg (LOG_DBG, LOG_BASIC, "prep-time (%zd) %ld %s", tm, npq->uniqueidx, npq->songname);
   logProcEnd (LOG_PROC, "playerProcessPrepRequest", "");
 }
 
@@ -1391,6 +1394,7 @@ playerPrepQueueFree (void *data)
   logProcBegin (LOG_PROC, "playerPrepQueueFree");
 
   if (pq != NULL) {
+    logMsg (LOG_DBG, LOG_MAIN, "prep-free: %ld %s\n", pq->uniqueidx, pq->songname);
     if (pq->songfullpath != NULL) {
       free (pq->songfullpath);
     }

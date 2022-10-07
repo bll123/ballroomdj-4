@@ -56,6 +56,9 @@ typedef enum {
 enum {
   TS_TYPE_MSG,
   TS_TYPE_GET,
+};
+
+enum {
   TS_CHK_TIMEOUT = 200,
 };
 

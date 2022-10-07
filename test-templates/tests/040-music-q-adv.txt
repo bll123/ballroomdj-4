@@ -2,7 +2,79 @@
 section 40 Music-Queue-Adv
 
 test 40-10 Clear-Queue
-print TBD
+get main CHK_MAIN_MUSICQ
+chk mq0len 0
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0
+msg main MUSICQ_INSERT 0~999~2
+msg main MUSICQ_INSERT 0~999~4
+msg main MUSICQ_INSERT 0~999~6
+msg main MUSICQ_INSERT 0~999~8
+msg main MUSICQ_INSERT 0~999~10
+msg main MUSICQ_INSERT 0~999~12
+msg main MUSICQ_INSERT 0~999~14
+get main CHK_MAIN_MUSICQ
+chk mq0len 7
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 5
+# queue_clear clears the playlist and the music q
+# it does not clear the currently playing song
+msg main QUEUE_CLEAR
+get main CHK_MAIN_MUSICQ
+chk mq0len 1
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 1
 end
 
+test 40-20 Remove
+get main CHK_MAIN_MUSICQ
+chk mq0len 0
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0
+msg main MUSICQ_INSERT 0~999~3
+msg main MUSICQ_INSERT 0~999~5
+msg main MUSICQ_INSERT 0~999~7
+msg main MUSICQ_INSERT 0~999~9
+msg main MUSICQ_INSERT 0~999~11
+msg main MUSICQ_INSERT 0~999~13
+msg main MUSICQ_INSERT 0~999~15
+get main CHK_MAIN_MUSICQ
+chk mq0len 7
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 5
+msg main MUSICQ_REMOVE 0~3
+get main CHK_MAIN_MUSICQ
+chk mq0len 6
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 5
+msg main MUSICQ_REMOVE 0~2
+get main CHK_MAIN_MUSICQ
+chk mq0len 5
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 5
+msg main MUSICQ_REMOVE 0~1
+get main CHK_MAIN_MUSICQ
+chk mq0len 4
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 4
+msg main MUSICQ_REMOVE 0~1
+get main CHK_MAIN_MUSICQ
+chk mq0len 3
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 3
+msg main MUSICQ_REMOVE 0~1
+get main CHK_MAIN_MUSICQ
+chk mq0len 2
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 2
+msg main MUSICQ_REMOVE 0~1
+get main CHK_MAIN_MUSICQ
+chk mq0len 1
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 1
+end
+
+test 40-30 Toggle-Pause
+print TBD
+end
 

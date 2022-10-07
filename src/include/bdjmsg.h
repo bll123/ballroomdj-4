@@ -56,7 +56,7 @@ typedef enum {
   MSG_QUEUE_CLEAR,          // args: music-q-idx
                             //    clears both the playlist queue and
                             //    all of the music queue.
-  MSG_QUEUE_CLEAR_PLAY,     // args: musicq--idx, start-idx, dbidx
+  MSG_QUEUE_CLEAR_PLAY,     // args: music-q-idx, start-idx, dbidx
                             //    does a msg_queue_clear + insert
                             //    start-idx is supplied to keep internal
                             //    processing consistent.
