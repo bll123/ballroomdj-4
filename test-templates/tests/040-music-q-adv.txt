@@ -75,6 +75,55 @@ chk prepqueuecount 1
 end
 
 test 40-30 Toggle-Pause
-print TBD
+msg main MUSICQ_INSERT 0~999~3
+msg main MUSICQ_INSERT 0~999~5
+msg main MUSICQ_INSERT 0~999~7
+msg main MUSICQ_INSERT 0~999~9
+msg main MUSICQ_INSERT 0~999~11
+msg main MUSICQ_INSERT 0~999~13
+msg main MUSICQ_INSERT 0~999~15
+msg main CMD_PLAY
+mssleep 1000
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate playing
+msg main MUSICQ_TOGGLE_PAUSE 0~1
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 1000
+wait playstate in-fadeout
+resptimeout 7000
+wait playstate playing
+mssleep 1000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 1000
+wait playstate in-fadeout
+resptimeout 7000
+wait playstate stopped
+msg main MUSICQ_TOGGLE_PAUSE 0~2
+msg main CMD_PLAY
+mssleep 1000
+get player CHK_PLAYER_STATUS
+resptimeout 1000
+wait playstate playing
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 1000
+wait playstate in-fadeout
+resptimeout 7000
+wait playstate playing
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 1000
+wait playstate in-fadeout
+resptimeout 7000
+wait playstate playing
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 1000
+wait playstate in-fadeout
+resptimeout 7000
+wait playstate stopped
 end
 

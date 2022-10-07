@@ -45,7 +45,7 @@ typedef enum {
   MSG_MUSICQ_SET_LEN,       // args: length
                             //    used to override the playerqlen in options
                             //    for the song list editor
-  MSG_MUSICQ_TOGGLE_PAUSE,  // args: music-q-idx
+  MSG_MUSICQ_TOGGLE_PAUSE,  // args: music-q-idx, idx
   MSG_MUSICQ_TRUNCATE,      // args: music-q-idx, start-idx
                             //    only truncates the music queue
   MSG_PLAYLIST_CLEARPLAY,   // args: playlist name

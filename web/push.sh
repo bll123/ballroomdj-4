@@ -20,27 +20,32 @@ case $cwd in
 esac
 
 systype=$(uname -s)
+arhc=$(uname -m)
 case $systype in
   Linux)
     tag=linux
     platform=unix
     sfx=
+    archtag=
     ;;
   Darwin)
     tag=macos
     platform=unix
     sfx=
+    archtag=-${arch}
     ;;
   MINGW64*)
     tag=win64
     platform=windows
     sfx=.exe
+    archtag=
     echo "sshpass is currently broken in msys2 "
     ;;
   MINGW32*)
     tag=win32
     platform=windows
     sfx=.exe
+    archtag=
     echo "sshpass is currently broken in msys2 "
     ;;
 esac
@@ -68,16 +73,18 @@ if [[ $rlstag != "" ]]; then
   datetag=-$BUILDDATE
 fi
 
-if [[ ! -f bdj4-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx} ]]; then
+pnm=bdj4-${VERSION}-installer-${tag}${archtag}${datetag}${rlstag}${sfx}
+
+if [[ ! -f ${pnm} ]]; then
   echo "Failed: no release package found."
   exit 1
 fi
 
 if [[ $platform != windows ]]; then
-  sshpass -e rsync -v -e ssh bdj4-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx} \
+  sshpass -e rsync -v -e ssh ${pnm} \
     bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 else
-  rsync -v -e ssh bdj4-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx} \
+  rsync -v -e ssh ${pnm} \
     bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 fi
 

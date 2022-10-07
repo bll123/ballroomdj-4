@@ -129,26 +129,31 @@ if [[ $1 == "--preskip" ]]; then
 fi
 
 systype=$(uname -s)
+arch=$(uname -m)
 case $systype in
   Linux)
     tag=linux
     platform=unix
     sfx=
+    archtag=
     ;;
   Darwin)
     tag=macos
     platform=unix
     sfx=
+    archtag=-${arch}
     ;;
   MINGW64*)
     tag=win64
     platform=windows
     sfx=.exe
+    archtag=
     ;;
   MINGW32*)
     tag=win32
     platform=windows
     sfx=.exe
+    archtag=
     ;;
 esac
 
@@ -250,7 +255,7 @@ if [[ $rlstag != "" ]]; then
   datetag=-$BUILDDATE
 fi
 
-nm=${spkgnm}-${VERSION}-installer-${tag}${datetag}${rlstag}${sfx}
+nm=${spkgnm}-${VERSION}-installer-${tag}${archtag}${datetag}${rlstag}${sfx}
 
 test -d ${stagedir} && rm -rf ${stagedir}
 mkdir ${stagedir}

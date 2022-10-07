@@ -97,6 +97,9 @@ Known Issues:
     - The song selection display may display strange values for numeric
       columns (will be fixed at a later date).
     - playlist management: The UI for the gap default can be improved.
+  MacOS
+    - I do not have access to a MacOS M1 (Apple Silicon / arm64)
+      machine at this time, so I cannot build for that platform.
   Windows
     - The marquee position is not saved when it is iconified (close the
       window instead).
