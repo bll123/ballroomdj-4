@@ -20,7 +20,7 @@ case $cwd in
 esac
 
 systype=$(uname -s)
-arhc=$(uname -m)
+arch=$(uname -m)
 case $systype in
   Linux)
     tag=linux
@@ -32,7 +32,14 @@ case $systype in
     tag=macos
     platform=unix
     sfx=
-    archtag=-${arch}
+    case $arch in
+      x86_64)
+        archtag=-intel
+        ;;
+      arm64)
+        archtag=-m1
+        ;;
+    esac
     ;;
   MINGW64*)
     tag=win64

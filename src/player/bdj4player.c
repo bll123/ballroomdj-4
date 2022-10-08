@@ -926,8 +926,10 @@ playerSongClearPrep (playerdata_t *playerData, char *args)
   tpq = playerLocatePreppedSong (playerData, uniqueidx, p);
   if (tpq != NULL) {
     tpq = queueIterateRemoveNode (playerData->prepQueue, &playerData->prepiteridx);
-    logMsg (LOG_DBG, LOG_MAIN, "prep-clear: %ld %s r:%ld p:%ld", tpq->uniqueidx, tpq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
-    playerPrepQueueFree (tpq);
+    if (tpq != NULL) {
+      logMsg (LOG_DBG, LOG_MAIN, "prep-clear: %ld %s r:%ld p:%ld", tpq->uniqueidx, tpq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+      playerPrepQueueFree (tpq);
+    }
   }
 }
 

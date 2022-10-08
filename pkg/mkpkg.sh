@@ -141,7 +141,14 @@ case $systype in
     tag=macos
     platform=unix
     sfx=
-    archtag=-${arch}
+    case $arch in
+      x86_64)
+        archtag=-intel
+        ;;
+      arm64)
+        archtag=-m1
+        ;;
+    esac
     ;;
   MINGW64*)
     tag=win64
