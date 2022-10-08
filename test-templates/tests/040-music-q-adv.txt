@@ -26,7 +26,7 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 1
 end
 
-test 40-11 Truncate-Queue
+test 40-12 Truncate-Queue
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
 get player CHK_PLAYER_STATUS
@@ -42,13 +42,75 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 7
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
-# queue_clear clears the playlist and the music q
+# musicq_truncate clears the playlist queue and the music q
 # it does not clear the currently playing song
-msg main MUSICQ_TRUNCATE 0~0
+msg main MUSICQ_TRUNCATE 0~1
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 1
+msg main MUSICQ_INSERT 0~999~2
+msg main MUSICQ_INSERT 0~999~4
+msg main MUSICQ_INSERT 0~999~6
+msg main MUSICQ_INSERT 0~999~8
+msg main MUSICQ_INSERT 0~999~10
+msg main MUSICQ_INSERT 0~999~12
+msg main MUSICQ_INSERT 0~999~14
+get main CHK_MAIN_MUSICQ
+chk mq0len 8
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 5
+msg main MUSICQ_TRUNCATE 0~4
+get main CHK_MAIN_MUSICQ
+chk mq0len 4
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 4
+end
+
+# The queue-clear-play is used by the management ui to play a selected song.
+# play-on-add must be true.
+# The queue-clear-play message acts upon
+# a) an empty queue
+# b) a queue where the song is playing
+# c) a queue where the song is paused
+# It does not work on a queue where a song is loaded and is stopped.
+# ( next-song will set the wait-for-pb-finish flag, and a stopped song
+#   does not receive the proper messages from the player )
+test 40-14 Clear-Play
+msg main QUEUE_PLAY_ON_ADD 1
+get main CHK_MAIN_MUSICQ
+chk mq0len 0
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0
+# empty queue
+msg main QUEUE_CLEAR_PLAY 0~999~16
+mssleep 1000
+get player CHK_PLAYER_STATUS
+resptimeout 1000
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 1
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0 playstate playing
+# playing song
+msg main QUEUE_CLEAR_PLAY 0~999~18
+mssleep 1000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 1
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0 playstate playing
+# paused song
+msg main CMD_PLAYPAUSE
+msg main QUEUE_CLEAR_PLAY 0~999~20
+mssleep 1000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk mq0len 1
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0 playstate playing
 end
 
 test 40-20 Remove
