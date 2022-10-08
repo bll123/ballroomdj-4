@@ -204,8 +204,9 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&uiw->vbox, &hbox);
 
-  if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
-      uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
+  /* The ez song selection does not need a select button, as it has */
+  /* the left-arrow button.  Saves real estate. */
+  if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
     /* CONTEXT: song-selection: select a song to be added to the song list */
     strlcpy (tbuff, _("Select"), sizeof (tbuff));
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_SELECT],

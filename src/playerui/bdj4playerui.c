@@ -1223,8 +1223,10 @@ pluiQueueProcess (void *udata, long dbidx, int mqidx)
 
   loc = uimusicqGetSelectLocation (plui->uimusicq, mqidx);
 
+  /* increment the location by 1 as the tree-view index is one less than */
+  /* the music queue index */
   snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%ld", mqidx,
-      MSG_ARGS_RS, loc, MSG_ARGS_RS, dbidx);
+      MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, dbidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
   return UICB_CONT;
 }

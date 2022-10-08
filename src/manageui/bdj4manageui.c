@@ -2117,8 +2117,10 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
   }
 
   if (action == MANAGE_QUEUE) {
+    /* add 1 to the index, as the tree-view index is one less than */
+    /* the music queue index */
     snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%ld", mqidx,
-        MSG_ARGS_RS, loc, MSG_ARGS_RS, dbidx);
+        MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
   }
 

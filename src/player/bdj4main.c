@@ -1795,9 +1795,8 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
     return;
   }
   idx = atol (p);
-  /* the display selection is offset by 1 */
-  /* and want to insert after the selection */
-  idx += 2;
+  /* want to insert after the selection */
+  idx += 1;
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p == NULL) {
     logProcEnd (LOG_PROC, "mainMusicqInsert", "parse-fail-c");

@@ -26,6 +26,31 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 1
 end
 
+test 40-11 Truncate-Queue
+get main CHK_MAIN_MUSICQ
+chk mq0len 0
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0
+msg main MUSICQ_INSERT 0~999~2
+msg main MUSICQ_INSERT 0~999~4
+msg main MUSICQ_INSERT 0~999~6
+msg main MUSICQ_INSERT 0~999~8
+msg main MUSICQ_INSERT 0~999~10
+msg main MUSICQ_INSERT 0~999~12
+msg main MUSICQ_INSERT 0~999~14
+get main CHK_MAIN_MUSICQ
+chk mq0len 7
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 5
+# queue_clear clears the playlist and the music q
+# it does not clear the currently playing song
+msg main MUSICQ_TRUNCATE 0~0
+get main CHK_MAIN_MUSICQ
+chk mq0len 1
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 1
+end
+
 test 40-20 Remove
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
