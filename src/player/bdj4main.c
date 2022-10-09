@@ -2731,9 +2731,11 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
   char    *dance;
   song_t  *song;
   char    *songfn;
+  int     bpm;
 
   dbidx = -1;
   qdbidx = -1;
+  bpm = -1;
   title = MSG_ARGS_EMPTY_STR;
   dance = MSG_ARGS_EMPTY_STR;
   songfn = MSG_ARGS_EMPTY_STR;
@@ -2744,6 +2746,7 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
     dance = mainSongGetDanceDisplay (mainData, 0);
     song = dbGetByIdx (mainData->musicdb, dbidx);
     songfn = songGetStr (song, TAG_FILE);
+    bpm = songGetNum (song, TAG_BPM);
   } else {
     qdbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
   }
@@ -2761,6 +2764,7 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
       "mq0len%c%zd%c"
       "mq1len%c%zd%c"
       "dbidx%c%d%c"
+      "bpm%c%d%c"
       "qdbidx%c%d%c"
       "m-songfn%c%s%c"
       "title%c%s%c"
@@ -2783,6 +2787,7 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
       MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, 0), MSG_ARGS_RS,
       MSG_ARGS_RS, musicqGetLen (mainData->musicQueue, 1), MSG_ARGS_RS,
       MSG_ARGS_RS, dbidx, MSG_ARGS_RS,
+      MSG_ARGS_RS, bpm, MSG_ARGS_RS,
       MSG_ARGS_RS, qdbidx, MSG_ARGS_RS,
       MSG_ARGS_RS, songfn, MSG_ARGS_RS,
       MSG_ARGS_RS, title, MSG_ARGS_RS,

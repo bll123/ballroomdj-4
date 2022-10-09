@@ -2,7 +2,7 @@
 section 110 Songlist
 
 test 110-10 Basic
-msg main QUEUE_PLAYLIST 0~test-songlist
+msg main QUEUE_PLAYLIST 0~test-sl-a
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -46,3 +46,40 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 68 m-songfn 001-quickstep.mp3
 end
+
+test 110-20 Dance-Max-Dur
+msg main QUEUE_PLAYLIST 0~test-sl-b
+msg main CMD_PLAY
+resptimeout 3000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+get main CHK_MAIN_MUSICQ
+chk mq0len 72 m-songfn 001-argentinetango.mp3
+msg player PLAY_FADE
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+get main CHK_MAIN_MUSICQ
+chk mq0len 71 m-songfn 001-chacha.mp3
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+get main CHK_MAIN_MUSICQ
+chk mq0len 70 m-songfn 001-foxtrot.mp3
+get player CHK_PLAYER_SONG
+chk p-duration 10000 p-songfn 001-foxtrot.mp3
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+end
+
