@@ -137,7 +137,7 @@ musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t musicqidx)
   musicqitem->dispidx = 0;
   musicqitem->uniqueidx = guniqueidx++;
   musicqitem->dbidx = -1;
-  musicqitem->playlistIdx = -1;
+  musicqitem->playlistIdx = MUSICQ_PLAYLIST_EMPTY;
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_EMPTY;
   musicqitem->dur = 0;
@@ -184,7 +184,7 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx,
   }
 
   if (idx >= queueGetCount (musicq->q [musicqidx])) {
-    musicqPush (musicq, musicqidx, dbidx, -1, dur);
+    musicqPush (musicq, musicqidx, dbidx, MUSICQ_PLAYLIST_EMPTY, dur);
     logProcEnd (LOG_PROC, "musicqInsert", "idx>q-count; push");
     return (queueGetCount (musicq->q [musicqidx]) - 1);
   }
@@ -194,7 +194,7 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx,
   musicqitem = malloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
   musicqitem->dbidx = dbidx;
-  musicqitem->playlistIdx = -1;
+  musicqitem->playlistIdx = MUSICQ_PLAYLIST_EMPTY;
   musicqitem->announce = NULL;
   musicqitem->flags = MUSICQ_FLAG_REQUEST;
   musicqitem->uniqueidx = guniqueidx++;
@@ -393,14 +393,14 @@ musicqGetPlaylistIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
   musicqitem_t      *musicqitem;
 
   if (musicq == NULL || musicq->q [musicqidx] == NULL) {
-    return -1;
+    return MUSICQ_PLAYLIST_EMPTY;
   }
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
   if (musicqitem != NULL) {
     return musicqitem->playlistIdx;
   }
-  return -1;
+  return MUSICQ_PLAYLIST_EMPTY;
 }
 
 void

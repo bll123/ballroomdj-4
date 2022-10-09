@@ -34,6 +34,10 @@ typedef enum {
   MUSICQ_FLAG_EMPTY     = 0x0010,
 } musicqflag_t;
 
+enum {
+  MUSICQ_PLAYLIST_EMPTY = -1,
+};
+
 typedef struct musicq musicq_t;
 
 musicq_t *  musicqAlloc (musicdb_t *db);

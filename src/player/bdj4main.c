@@ -1441,7 +1441,7 @@ mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx)
     flags = musicqGetFlags (mainData->musicQueue, mqidx, i);
     playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, i);
     plannounce = false;
-    if (playlistIdx != -1) {
+    if (playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
       playlist = nlistGetData (mainData->playlistCache, playlistIdx);
       plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
     }
@@ -2058,7 +2058,7 @@ mainMusicQueueFinish (maindata_t *mainData, const char *args)
   dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
   song = dbGetByIdx (mainData->musicdb, dbidx);
   playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-  if (playlistIdx != -1) {
+  if (playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
     playlist = nlistGetData (mainData->playlistCache, playlistIdx);
     if (playlist != NULL && song != NULL) {
       playlistAddPlayed (playlist, song);
@@ -2464,14 +2464,14 @@ mainSendFinished (maindata_t *mainData)
 static long
 mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx)
 {
-  long  maxdur;
-  long  dur;
+  long        maxdur;
+  long        dur;
   playlist_t  *playlist = NULL;
-  long  plmaxdur;
-  long  pldncmaxdur;
-  long  songstart;
-  long  songend;
-  int   speed;
+  long        plmaxdur;
+  long        pldncmaxdur;
+  long        songstart;
+  long        songend;
+  int         speed;
   ilistidx_t  danceidx;
 
 
@@ -2484,9 +2484,8 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx)
   songstart = 0;
   speed = 100;
   dur = songGetNum (song, TAG_DURATION);
-  logMsg (LOG_DBG, LOG_MAIN, "song base-dur: %ld\n", dur);
+  logMsg (LOG_DBG, LOG_MAIN, "song base-dur: %ld", dur);
 
-  maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
   songstart = songGetNum (song, TAG_SONGSTART);
   if (songstart < 0) {
     songstart = 0;
@@ -2527,12 +2526,13 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx)
   }
 
   plmaxdur = LIST_VALUE_INVALID;
-  if (playlistIdx != -1) {
-    playlist_t    *playlist = NULL;
 
+  if (playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
     playlist = nlistGetData (mainData->playlistCache, playlistIdx);
     plmaxdur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
   }
+
+  maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
 
   /* if the playlist has a maximum play time specified for a dance */
   /* it overrides any of the other max play times */

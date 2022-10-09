@@ -283,7 +283,8 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
     df->fname = strdup (fname);
     assert (df->fname != NULL);
   }
-    /* load the new filename */
+
+  /* load the new filename */
   data = filedataReadAll (fname, NULL);
   logProcEnd (LOG_PROC, "datafileLoad", "");
   return data;

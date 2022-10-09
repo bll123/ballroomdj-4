@@ -211,9 +211,12 @@ playlistLoad (playlist_t *pl, const char *fname)
     /* into dances.txt. Want to have pl->pldances use the danceidx as */
     /* the key. */
     didx = ilistGetNum (tpldances, tidx, PLDANCE_DANCE);
-    for (size_t i = 0; i < PLDANCE_KEY_MAX; ++i) {
-      ilistSetNum (pl->pldances, didx, playlistdancedfkeys [i].itemkey,
-          ilistGetNum (tpldances, tidx, playlistdancedfkeys [i].itemkey));
+    /* skip any unknown dances */
+    if (didx != LIST_VALUE_INVALID) {
+      for (size_t i = 0; i < PLDANCE_KEY_MAX; ++i) {
+        ilistSetNum (pl->pldances, didx, playlistdancedfkeys [i].itemkey,
+            ilistGetNum (tpldances, tidx, playlistdancedfkeys [i].itemkey));
+      }
     }
   }
   datafileFree (pl->pldancesdf);
