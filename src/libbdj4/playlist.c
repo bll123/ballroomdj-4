@@ -726,6 +726,10 @@ playlistSetSongFilter (playlist_t *pl)
   songfilterSetData (pl->songfilter, SONG_FILTER_KEYWORD, kwList);
 
   danceList = ilistAlloc ("pl-dance-filter", LIST_ORDERED);
+  /* the songfilter must have the dance-list set before the bpm settings */
+  /* are applied */
+  songfilterSetData (pl->songfilter, SONG_FILTER_DANCE_LIST, danceList);
+
   ilistStartIterator (pl->pldances, &iteridx);
   while ((danceIdx = ilistIterateKey (pl->pldances, &iteridx)) >= 0) {
     ssize_t       sel;
@@ -743,8 +747,6 @@ playlistSetSongFilter (playlist_t *pl)
       }
     }
   }
-
-  songfilterSetData (pl->songfilter, SONG_FILTER_DANCE_LIST, danceList);
 }
 
 static void

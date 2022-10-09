@@ -4,6 +4,7 @@ BallroomDJ 4 Change Log
 
 - player
   - Fix broken duration calculation (dance max).
+  - Fix broken BPM dance check.
 
 4.0.0 alpha 2022-10-05
 
