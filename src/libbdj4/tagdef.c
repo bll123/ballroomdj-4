@@ -364,8 +364,8 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
   { "DURATION",                   /* tag */
     NULL,                         /* display name         */
     { { "DURATION", NULL, NULL },
-      { "----:BDJ4:DURATION", "----", "DURATION" },
-      { "TXXX=DURATION", "TXXX", "DURATION" },
+      { NULL, NULL, NULL },
+      { NULL, NULL, NULL },
       { NULL, NULL, NULL }
     },       /* audio tags */
     "Total Time",                 /* itunes name          */
@@ -376,7 +376,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     1,                            /* listing display      */
     0,                            /* ellipsize            */
     1,                            /* align right          */
-    1,                            /* is bdj tag           */
+    0,                            /* is bdj tag           */
     0,                            /* is norm tag          */
     0,                            /* album edit           */
     0,                            /* all edit             */
