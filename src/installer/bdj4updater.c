@@ -202,7 +202,7 @@ main (int argc, char *argv [])
       targv [targc++] = prog;
       targv [targc++] = "MUSIC";
       targv [targc++] = NULL;
-      osProcessPipe (targv, OS_PROC_DETACH, data, sizeof (data));
+      osProcessPipe (targv, OS_PROC_DETACH, data, sizeof (data), NULL);
       stringTrim (data);
       stringTrimChar (data, '/');
 

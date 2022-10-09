@@ -136,7 +136,7 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
 
 /* creates a pipe for re-direction and grabs the output */
 pid_t
-osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz)
+osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *retsz)
 {
   pid_t   pid;
   STARTUPINFOW        si;
@@ -236,6 +236,9 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz)
     /* the application wants all the data in one chunk */
     ReadFile (handleStdoutRead, rbuff, sz, &bytesRead, NULL);
     rbuff [bytesRead] = '\0';
+    if (retsz != NULL) {
+      *retsz = bytesRead;
+    }
 
     CloseHandle (handleStdoutRead);
     CloseHandle (pi.hProcess);

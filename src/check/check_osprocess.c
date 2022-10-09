@@ -191,6 +191,7 @@ START_TEST(osprocess_pipe)
   procutil_t  process;
   char        *extension;
   int         flags = 0;
+  size_t      retsz;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_pipe");
 
@@ -208,11 +209,12 @@ START_TEST(osprocess_pipe)
   targv [targc++] = "--bdj4";
   targv [targc++] = NULL;
   flags = 0;
-  pid = osProcessPipe (targv, flags, tbuff, sizeof (tbuff));
+  pid = osProcessPipe (targv, flags, tbuff, sizeof (tbuff), &retsz);
   process.pid = pid;
   ck_assert_int_gt (pid, 0);
   stringTrim (tbuff);
   ck_assert_str_eq (tbuff, "xyzzy");
+  ck_assert_int_eq (retsz, 5);
 }
 END_TEST
 

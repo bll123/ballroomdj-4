@@ -102,7 +102,7 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
 
 /* creates a pipe for re-direction and grabs the output */
 pid_t
-osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz)
+osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *retsz)
 {
   pid_t   pid;
   int         rc;
@@ -166,6 +166,9 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz)
     if (bytesread < (ssize_t) sz) {
       rbuff [bytesread] = '\0';
     }
+    if (retsz != NULL) {
+      *retsz = bytesread;
+    }
     close (pipefd [0]);
   } else {
     /* set up so the application can read from stdin */
@@ -197,7 +200,7 @@ osRunProgram (const char *prog, ...)
   targv [targc++] = NULL;
   va_end (valist);
 
-  osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data));
+  osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data), NULL);
   return strdup (data);
 }
 

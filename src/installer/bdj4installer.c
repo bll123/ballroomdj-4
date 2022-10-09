@@ -1181,7 +1181,7 @@ installerVerifyInstall (installer_t *installer)
       targv [0] = "./Contents/MacOS/install/verifychksum.sh";
     }
     targv [1] = NULL;
-    osProcessPipe (targv, OS_PROC_DETACH, tmp, sizeof (tmp));
+    osProcessPipe (targv, OS_PROC_DETACH, tmp, sizeof (tmp), NULL);
   }
 
   uiLabelSetText (&installer->statusMsg, "");
@@ -2748,7 +2748,7 @@ installerWinVerifyProcess (installer_t *installer)
     stringTrim (fn);
 
     targv [fnidx] = fn;
-    osProcessPipe (targv, OS_PROC_WAIT, tmp, sizeof (tmp));
+    osProcessPipe (targv, OS_PROC_WAIT, tmp, sizeof (tmp), NULL);
     p = strtok_r (tmp, " ", &tokstr);
     if (strcmp (p, chksum) != 0) {
       rc = false;

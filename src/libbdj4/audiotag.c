@@ -86,6 +86,7 @@ audiotagReadTags (const char *ffn)
 {
   char        * data;
   const char  * targv [5];
+  size_t      retsz;
 
   targv [0] = sysvarsGetStr (SV_PATH_PYTHON);
   targv [1] = sysvarsGetStr (SV_PYTHON_MUTAGEN);
@@ -93,7 +94,12 @@ audiotagReadTags (const char *ffn)
   targv [3] = NULL;
 
   data = malloc (AUDIOTAG_TAG_BUFF_SIZE);
-  osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, AUDIOTAG_TAG_BUFF_SIZE);
+  osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, AUDIOTAG_TAG_BUFF_SIZE, &retsz);
+  for (size_t i = 0; i < retsz; ++i) {
+    if (data [i] == '\0') {
+      data [i] = 'X';
+    }
+  }
   return data;
 }
 
@@ -405,8 +411,8 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
       tagname = slistGetStr (tagLookup [tagtype], p);
       if (tagname != NULL) {
         tagkey = audiotagTagCheck (writetags, tagtype, tagname);
+        logMsg (LOG_DBG, LOG_DBUPDATE, "tag: %s raw-tag: %s", tagname, p);
       }
-      logMsg (LOG_DBG, LOG_DBUPDATE, "tag: %s raw-tag: %s", tagname, p);
 
       if (tagname != NULL && *tagname != '\0') {
         p = strtok_r (NULL, "=", &tokstrB);
