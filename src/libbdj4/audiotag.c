@@ -24,8 +24,10 @@
 #include "tmutil.h"
 
 enum {
-  AF_REWRITE_NONE = 0x0000,
-  AF_REWRITE_MB   = 0x0001,
+  AF_REWRITE_NONE     = 0x0000,
+  AF_REWRITE_MB       = 0x0001,
+  AF_REWRITE_DURATION = 0x0002,
+  AF_REWRITE_VARIOUS  = 0x0004,
 };
 
 enum {
@@ -235,6 +237,14 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     }
   }
 
+  /* special cases */
+  if ((rewrite & AF_REWRITE_VARIOUS) == AF_REWRITE_VARIOUS) {
+    slistSetNum (dellist, "VARIOUSARTISTS", 0);
+  }
+  if ((rewrite & AF_REWRITE_DURATION) == AF_REWRITE_DURATION) {
+    slistSetNum (dellist, "DURATION", 0);
+  }
+
   /* special case */
   if ((rewrite & AF_REWRITE_MB) == AF_REWRITE_MB) {
     newvalue = slistGetStr (newtaglist, tagdefs [TAG_RECORDING_ID].tag);
@@ -408,8 +418,22 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
       }
 
       /* p is pointing to the tag name */
+
+      /* some old audio file tag handling */
+      if (strcmp (p, "TXXX=VARIOUSARTISTS") == 0 ||
+          strcmp (p, "VARIOUSARTISTS") == 0) {
+        logMsg (LOG_DBG, LOG_DBUPDATE, "rewrite: various");
+        *rewrite |= AF_REWRITE_VARIOUS;
+      }
+      if (strcmp (p, "TXXX=DURATION") == 0 ||
+          strcmp (p, "DURATION") == 0) {
+        logMsg (LOG_DBG, LOG_DBUPDATE, "rewrite: duration");
+        *rewrite |= AF_REWRITE_DURATION;
+      }
+
       tagname = slistGetStr (tagLookup [tagtype], p);
       if (tagname != NULL) {
+        logMsg (LOG_DBG, LOG_DBUPDATE, "taglookup: %s %s", p, tagname);
         tagkey = audiotagTagCheck (writetags, tagtype, tagname);
         logMsg (LOG_DBG, LOG_DBUPDATE, "tag: %s raw-tag: %s", tagname, p);
       }
@@ -421,6 +445,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
           p = "";
         }
 
+        /* mutagen-inspect dumps out python code */
         if (strstr (p, "MP4FreeForm(") != NULL) {
           p = strstr (p, "(");
           ++p;
@@ -459,12 +484,6 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
               ++p;
             }
             stringTrimChar (p, '\'');
-          }
-        }
-
-        if (strcmp (tagname, tagdefs [TAG_DURATION].tag) == 0) {
-          if (haveduration) {
-            skip = true;
           }
         }
 
@@ -541,7 +560,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
           }
         }
 
-        if (! skip && p != NULL && *p != '\0') {
+        if (p != NULL && *p != '\0') {
           slistSetStr (tagdata, tagname, p);
         }
       } /* have a tag name */
@@ -638,6 +657,16 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
 
   slistStartIterator (dellist, &iteridx);
   while ((tag = slistIterateKey (dellist, &iteridx)) != NULL) {
+    /* special cases - old audio tags */
+    if (strcmp (tag, "VARIOUSARTISTS") == 0) {
+      fprintf (ofh, "audio.delall('TXXX:VARIOUSARTISTS')\n");
+      continue;
+    }
+    if (strcmp (tag, "DURATION") == 0) {
+      fprintf (ofh, "audio.delall('TXXX:DURATION')\n");
+      continue;
+    }
+
     tagkey = audiotagTagCheck (writetags, TAG_TYPE_MP3, tag);
     if (tagkey < 0) {
       continue;
@@ -747,6 +776,16 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
 
   slistStartIterator (dellist, &iteridx);
   while ((tag = slistIterateKey (dellist, &iteridx)) != NULL) {
+    /* special cases - old audio tags */
+    if (strcmp (tag, "ARIOUSARTIST") == 0) {
+      fprintf (ofh, "audio.pop('VARIOUSARTISTS')\n");
+      continue;
+    }
+    if (strcmp (tag, "DURATION") == 0) {
+      fprintf (ofh, "audio.pop('DURATION')\n");
+      continue;
+    }
+
     tagkey = audiotagTagCheck (writetags, tagtype, tag);
     if (tagkey < 0) {
       continue;

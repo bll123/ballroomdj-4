@@ -58,14 +58,14 @@ enum {
 enum {
   UPD_FIRST_VERS,
   UPD_CONVERTED,        // was the original installation converted ?
-  UPD_FIX_AF_MB_TAG,
+  UPD_FIX_AF_TAGS,
   UPD_MAX,
 };
 
 static datafilekey_t upddfkeys[] = {
   { "CONVERTED",        UPD_CONVERTED,      VALUE_NUM, NULL, -1 },
   { "FIRSTVERSION",     UPD_FIRST_VERS,     VALUE_STR, NULL, -1 },
-  { "FIX_AF_MB_TAG",    UPD_FIX_AF_MB_TAG,  VALUE_NUM, NULL, -1 },
+  { "FIX_AF_TAGS",      UPD_FIX_AF_TAGS,    VALUE_NUM, NULL, -1 },
 };
 enum {
   UPD_DF_COUNT = (sizeof (upddfkeys) / sizeof (datafilekey_t))
@@ -242,6 +242,8 @@ main (int argc, char *argv [])
   }
   pathNormPath (homemusicdir, sizeof (homemusicdir));
 
+  value = updateGetStatus (updlist, UPD_FIX_AF_TAGS);
+
   if (newinstall) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "new install or re-install");
     tval = bdjoptGetStr (OPT_M_VOLUME_INTFC);
@@ -275,7 +277,11 @@ main (int argc, char *argv [])
       bdjoptchanged = true;
     }
 
-    bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, false);
+    if (! converted) {
+      bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, false);
+      value = UPD_SKIP;
+      nlistSetNum (updlist, UPD_FIX_AF_TAGS, value);
+    }
   }
 
   /* always check and see if itunes exists, unless a conversion was run */
@@ -333,18 +339,14 @@ main (int argc, char *argv [])
 
   /* fix musicbrainz tags check */
 
-  value = updateGetStatus (updlist, UPD_FIX_AF_MB_TAG);
-  if (! converted && value == UPD_NOT_DONE) {
-    /* if a conversion was not done */
-    value = UPD_SKIP;
-    nlistSetNum (updlist, UPD_FIX_AF_MB_TAG, value);
-  }
-  statusflags [UPD_FIX_AF_MB_TAG] = value;
-  processflags [UPD_FIX_AF_MB_TAG] =
+  statusflags [UPD_FIX_AF_TAGS] = value;
+  processflags [UPD_FIX_AF_TAGS] =
       converted &&
       value == UPD_NOT_DONE &&
-      strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "alpha") != 0;
-  if (processflags [UPD_FIX_AF_MB_TAG]) { processaf = true; }
+      strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "alpha") != 0 &&
+      bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE &&
+      bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) == false;
+  if (processflags [UPD_FIX_AF_TAGS]) { processaf = true; }
 
   if (processaf || processdb) {
     pathbldMakePath (tbuff, sizeof (tbuff),
@@ -368,7 +370,7 @@ main (int argc, char *argv [])
       ffn = songFullFileName (songGetStr (song, TAG_FILE));
       process = false;
 
-      if (processflags [UPD_FIX_AF_MB_TAG]) {
+      if (processflags [UPD_FIX_AF_TAGS]) {
         pathinfo_t    *pi;
 
         pi = pathInfo (ffn);
@@ -388,7 +390,7 @@ main (int argc, char *argv [])
       data = audiotagReadTags (ffn);
       taglist = audiotagParseData (ffn, data, &rewrite);
 
-      if (processflags [UPD_FIX_AF_MB_TAG] && rewrite) {
+      if (processflags [UPD_FIX_AF_TAGS] && rewrite) {
         logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix mb: %d %s", dbidx, ffn);
         audiotagWriteTags (ffn, taglist, taglist, rewrite, AT_KEEP_MOD_TIME);
       }
@@ -414,8 +416,8 @@ main (int argc, char *argv [])
   }
 
   if (processaf || processdb) {
-    if (processflags [UPD_FIX_AF_MB_TAG]) {
-      nlistSetNum (updlist, UPD_FIX_AF_MB_TAG, UPD_COMPLETE);
+    if (processflags [UPD_FIX_AF_TAGS]) {
+      nlistSetNum (updlist, UPD_FIX_AF_TAGS, UPD_COMPLETE);
     }
 
     if (processdb) {

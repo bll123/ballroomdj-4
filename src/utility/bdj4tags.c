@@ -14,6 +14,7 @@
 #include "bdjopt.h"
 #include "fileop.h"
 #include "localeutil.h"
+#include "log.h"
 #include "slist.h"
 #include "sysvars.h"
 #include "tagdef.h"
@@ -85,6 +86,7 @@ main (int argc, char *argv [])
   localeInit ();
   bdjoptInit ();
   audiotagInit ();
+  logStart ("bdj4tags", "tg", LOG_DBUPDATE | LOG_IMPORTANT | LOG_BASIC | LOG_MAIN);
 
   bdj3tags = bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS);
   if (clbdj3tags) {
@@ -112,6 +114,7 @@ main (int argc, char *argv [])
     fprintf (stdout, "%s\n", data);
   }
   tagdata = audiotagParseData (argv [fidx], data, &rewrite);
+  logMsg (LOG_DBG, LOG_BASIC, "rewrite: %08x", rewrite);
 
   wlist = slistAlloc ("bdj4tags-write", LIST_ORDERED, free);
   /* need a copy of the tag list for the write */
@@ -166,6 +169,7 @@ main (int argc, char *argv [])
   }
   slistFree (wlist);
 
+  logEnd ();
   bdjoptCleanup ();
   audiotagCleanup ();
   localeCleanup ();
