@@ -25,7 +25,7 @@
 #include "sequence.h"
 #include "templateutil.h"
 
-#define SEQFN "test-sequence"
+#define SEQFN "test-seq-a"
 
 static void
 setup (void)

@@ -25,8 +25,8 @@
 #include "templateutil.h"
 #include "tmutil.h"
 
-#define SLFN "test-songlist"
-#define SLFFN "data/test-songlist.songlist"
+#define SLFN "test-sl-a"
+#define SLFFN "data/test-sl-a.songlist"
 
 static void
 setup (void)
@@ -110,7 +110,7 @@ START_TEST(songlist_iterate)
     ck_assert_ptr_nonnull (stra);
     ++count;
   }
-  ck_assert_int_eq (count, 78);
+  ck_assert_int_eq (count, 72);
   songlistFree (sl);
 
   bdjvarsdfloadCleanup ();

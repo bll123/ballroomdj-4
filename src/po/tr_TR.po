@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-10-05\n"
+"PO-Revision-Date: 2022-10-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -280,7 +280,12 @@ msgstr "Veritabanı ekle"
 msgid "Audio"
 msgstr "Ses"
 
+#. CONTEXT: request external: enter the audio file location
+msgid "Audio File"
+msgstr ""
+
 #. CONTEXT: configuration: announcement selection dialog: audio file filter
+#. CONTEXT: request external: file selection dialog: audio file filter
 msgid "Audio Files"
 msgstr "Ses dosyaları"
 
@@ -372,6 +377,7 @@ msgstr ""
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr "Mavi kutudaki fareyi ritimle zamanında tıklayın."
 
+#. CONTEXT: request external dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: bpm counter: close button
@@ -471,23 +477,15 @@ msgstr "Klasör yapısı oluşturuluyor."
 msgid "Creating shortcut."
 msgstr "Kısayol oluşturuluyor."
 
-#. CONTEXT: configuration: dances: the name of the dance
 #. CONTEXT: label: dance
-#. CONTEXT: song selection filter: a filter: select the dance displayed in the song selection
-#. CONTEXT: playlist management: dance column header
-#. CONTEXT: sequence editor: titles for the selection list and the sequence list
 msgid "Dance"
 msgstr "Dans"
 
-#. CONTEXT: configuration: filter display: checkbox: dance level
 #. CONTEXT: label: dance level
-#. CONTEXT: song selection filter: a filter: select the dance level displayed in the song selection
 msgid "Dance Level"
 msgstr "Dans Düzeyi"
 
 #. CONTEXT: label: dance rating
-#. CONTEXT: song selection filter: a filter: select the dance rating displayed in the song selection
-#. CONTEXT: playlist management: Dance Rating
 msgid "Dance Rating"
 msgstr "Dans Reytingi"
 
@@ -703,9 +701,7 @@ msgstr "İçinde Soldur"
 msgid "Fade Out Time"
 msgstr "Dışında soldur"
 
-#. CONTEXT: configuration: filter display: checkbox: favorite selection
 #. CONTEXT: label: favorite marker
-#. CONTEXT: song selection filter: a filter: select the 'favorite' displayed in the song selection
 msgid "Favorite"
 msgstr "Favorilere Ekle"
 
@@ -762,10 +758,7 @@ msgstr "Şarkılar arasındaki boşluk"
 msgid "General Options"
 msgstr "Genel Ayarlar"
 
-#. CONTEXT: configuration: filter display: checkbox: genre
-#. CONTEXT: configuration: genre: title of the genre name column
 #. CONTEXT: label: genre
-#. CONTEXT: song selection filter: a filter: select the genre displayed in the song selection
 msgid "Genre"
 msgstr "Tür"
 
@@ -1292,6 +1285,7 @@ msgstr "QR Kodu"
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: history: re-queue the selected song
+#. CONTEXT: request external dialog: queue the selected file
 #. CONTEXT: song-selection: queue a song to be played
 msgid "Queue"
 msgstr "Kuyruk"
@@ -1486,7 +1480,16 @@ msgstr ""
 msgid "Select %s XML File"
 msgstr ""
 
+#. CONTEXT: request external dialog: title for the dialog
+msgid "Select Audio File"
+msgstr ""
+
+#. CONTEXT: request external: dance drop-down
+msgid "Select Dance"
+msgstr ""
+
 #. CONTEXT: configuration: file selection dialog: window title
+#. CONTEXT: request external: file selection dialog: window title
 msgid "Select File"
 msgstr "Dosya Seç"
 
@@ -1518,6 +1521,7 @@ msgstr "Destek mesajı gönderiliyor"
 
 #. CONTEXT: playlist management: type of playlist
 #. CONTEXT: sequence editor: label for sequence name
+#. CONTEXT: sequence editor: title for the sequence list
 msgid "Sequence"
 msgstr "Sıra"
 
@@ -1624,10 +1628,7 @@ msgstr "Başlatma komutu"
 msgid "Statistics"
 msgstr "İstatistikler"
 
-#. CONTEXT: configuration: filter display: checkbox: status
-#. CONTEXT: configuration: status: title of the status name column
 #. CONTEXT: label: status
-#. CONTEXT: song selection filter: a filter: select the status displayed in the song selection
 msgid "Status"
 msgstr "Durum"
 
