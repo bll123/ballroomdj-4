@@ -14,8 +14,12 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdj4ui.h"
+#include "bdjopt.h"
+#include "fileop.h"
 #include "log.h"
 #include "nlist.h"
+#include "slist.h"
+#include "song.h"
 #include "tagdef.h"
 #include "ui.h"
 #include "uidance.h"
@@ -33,11 +37,11 @@ typedef struct uireqext {
   nlist_t         *options;
   UIWidget        reqextDialog;
   uientry_t       *afEntry;
-  char            *audiofile;
   UIWidget        artistDisp;
   UIWidget        titleDisp;
   uidance_t       *uidance;
   UICallback      callbacks [UIREQEXT_CB_MAX];
+  song_t          *song;
 } uireqext_t;
 
 /* request external */
@@ -45,7 +49,9 @@ static void   uireqextCreateDialog (uireqext_t *uireqext);
 static bool   uireqextAudioFileDialog (void *udata);
 static bool   uireqextDanceSelectHandler (void *udata, long idx);
 static void   uireqextInitDisplay (uireqext_t *uireqext);
+static void   uireqextClearSong (uireqext_t *uireqext);
 static bool   uireqextResponseHandler (void *udata, long responseid);
+static void   uireqextProcessAudioFile (uireqext_t *uireqext);
 
 uireqext_t *
 uireqextInit (UIWidget *windowp, nlist_t *opts)
@@ -57,10 +63,10 @@ uireqextInit (UIWidget *windowp, nlist_t *opts)
   uiutilsUIWidgetInit (&uireqext->artistDisp);
   uiutilsUIWidgetInit (&uireqext->titleDisp);
   uireqext->afEntry = uiEntryInit (50, MAXPATHLEN);
-  uireqext->audiofile = strdup ("");
   uireqext->uidance = NULL;
   uireqext->parentwin = windowp;
   uireqext->options = opts;
+  uireqext->song = NULL;
 
   return uireqext;
 }
@@ -69,11 +75,11 @@ void
 uireqextFree (uireqext_t *uireqext)
 {
   if (uireqext != NULL) {
+    if (uireqext->song != NULL) {
+      songFree (uireqext->song);
+    }
     if (uireqext->afEntry != NULL) {
       uiEntryFree (uireqext->afEntry);
-    }
-    if (uireqext->audiofile != NULL) {
-      free (uireqext->audiofile);
     }
     uiDialogDestroy (&uireqext->reqextDialog);
     uidanceFree (uireqext->uidance);
@@ -157,7 +163,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   uiEntryCreate (uireqext->afEntry);
-  uiEntrySetValue (uireqext->afEntry, uireqext->audiofile);
+  uiEntrySetValue (uireqext->afEntry, "");
   uiwidgetp = uiEntryGetUIWidget (uireqext->afEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
@@ -209,7 +215,8 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiutilsUICallbackLongInit (&uireqext->callbacks [UIREQEXT_CB_DANCE],
       uireqextDanceSelectHandler, uireqext);
   uireqext->uidance = uidanceDropDownCreate (&hbox, &uireqext->reqextDialog,
-      UIDANCE_EMPTY_DANCE, "", UIDANCE_PACK_START);
+      /* CONTEXT: request external: dance drop-down */
+      UIDANCE_EMPTY_DANCE, _("Select Dance"), UIDANCE_PACK_START);
   uidanceSetCallback (uireqext->uidance, &uireqext->callbacks [UIREQEXT_CB_DANCE]);
 
   logProcEnd (LOG_PROC, "uireqextCreateDialog", "");
@@ -233,6 +240,7 @@ uireqextAudioFileDialog (void *udata)
   if (fn != NULL) {
     uiEntrySetValue (uireqext->afEntry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
+    uireqextProcessAudioFile (uireqext);
     free (fn);
   }
   free (selectdata);
@@ -249,8 +257,20 @@ uireqextDanceSelectHandler (void *udata, long idx)
 static void
 uireqextInitDisplay (uireqext_t *uireqext)
 {
+  uireqextClearSong (uireqext);
+  uiEntrySetValue (uireqext->afEntry, "");
   uiLabelSetText (&uireqext->artistDisp, "");
   uiLabelSetText (&uireqext->titleDisp, "");
+  uidanceSetValue (uireqext->uidance, -1);
+}
+
+static void
+uireqextClearSong (uireqext_t *uireqext)
+{
+  if (uireqext->song != NULL) {
+    songFree (uireqext->song);
+    uireqext->song = NULL;
+  }
 }
 
 static bool
@@ -267,18 +287,80 @@ uireqextResponseHandler (void *udata, long responseid)
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: reqext: del window");
       uiutilsUIWidgetInit (&uireqext->reqextDialog);
+      uireqextClearSong (uireqext);
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: reqext: close window");
       uiWidgetHide (&uireqext->reqextDialog);
+      uireqextClearSong (uireqext);
       break;
     }
     case RESPONSE_APPLY: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: reqext: apply");
+      uiWidgetHide (&uireqext->reqextDialog);
       break;
     }
   }
 
   return UICB_CONT;
+}
+
+static void
+uireqextProcessAudioFile (uireqext_t *uireqext)
+{
+  const char  *ffn;
+
+  ffn = uiEntryGetValue (uireqext->afEntry);
+  if (*ffn) {
+    if (fileopFileExists (ffn)) {
+      char    *data;
+      slist_t *tagdata;
+      int     rewrite;
+
+      // ### determine if this is a song in the db, if so use the db entry
+
+      data = audiotagReadTags (ffn);
+      if (data == NULL) {
+        return;
+      }
+
+      tagdata = audiotagParseData (ffn, data, &rewrite);
+      free (data);
+      if (slistGetCount (tagdata) == 0) {
+        slistFree (tagdata);
+        return;
+      }
+
+      if (bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE)) {
+        const char  *val;
+
+        val = slistGetStr (tagdata, tagdefs [TAG_DANCE].tag);
+        if (val == NULL || ! *val) {
+          val = slistGetStr (tagdata, tagdefs [TAG_GENRE].tag);
+          if (val != NULL && *val) {
+            slistSetStr (tagdata, tagdefs [TAG_DANCE].tag, val);
+          }
+        }
+      }
+
+      uireqext->song = songAlloc ();
+      songSetStr (uireqext->song, TAG_DANCE,
+          slistGetStr (tagdata, tagdefs [TAG_DANCE].tag));
+      songSetStr (uireqext->song, TAG_ARTIST,
+          slistGetStr (tagdata, tagdefs [TAG_ARTIST].tag));
+      songSetStr (uireqext->song, TAG_TITLE,
+          slistGetStr (tagdata, tagdefs [TAG_TITLE].tag));
+      songSetNum (uireqext->song, TAG_TEMPORARY, true);
+      // ### need to set the song's dbidx to a proper value.
+
+      uiLabelSetText (&uireqext->artistDisp,
+          songGetStr (uireqext->song, TAG_ARTIST));
+      uiLabelSetText (&uireqext->titleDisp,
+          songGetStr (uireqext->song, TAG_TITLE));
+
+      // ### update the artist/title/dance display
+      // ### probably need to make artist/title entry fields.
+    }
+  }
 }
