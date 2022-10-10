@@ -276,6 +276,13 @@ manageDbClose (managedb_t *managedb)
   procutilFreeAll (managedb->processes);
 }
 
+void
+manageDbResetButtons (managedb_t *managedb)
+{
+  uiWidgetEnable (&managedb->dbstart);
+  uiWidgetDisable (&managedb->dbstop);
+}
+
 /* internal routines */
 
 static bool
@@ -344,10 +351,7 @@ manageDbStop (void *udata)
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db stop");
   connSendMessage (managedb->conn, ROUTE_DBUPDATE, MSG_DB_STOP_REQ, NULL);
-
-  uiWidgetDisable (&managedb->dbstop);
-  uiWidgetEnable (&managedb->dbstart);
-
+  manageDbResetButtons (managedb);
   return UICB_CONT;
 }
 

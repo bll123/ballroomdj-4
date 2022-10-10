@@ -1050,6 +1050,8 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
 
           uisongselApplySongFilter (manage->slsongsel);
+
+          manageDbResetButtons (manage->managedb);
           break;
         }
         case MSG_MUSIC_QUEUE_DATA: {

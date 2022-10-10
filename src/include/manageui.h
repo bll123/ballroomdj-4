@@ -58,6 +58,7 @@ void  manageDbProgressMsg (managedb_t *managedb, char *args);
 void  manageDbStatusMsg (managedb_t *managedb, char *args);
 void  manageDbFinish (managedb_t *managedb, int routefrom);
 void  manageDbClose (managedb_t *managedb);
+void  manageDbResetButtons (managedb_t *managedb);
 
 /* managemisc.c */
 void manageSetStatusMsg (UIWidget *statusMsg, const char *msg);
