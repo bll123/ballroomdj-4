@@ -98,7 +98,7 @@ uiDropDownFree (uidropdown_t *dropdown)
 
 UIWidget *
 uiDropDownCreate (UIWidget *parentwin,
-    char *title, UICallback *uicb,
+    const char *title, UICallback *uicb,
     uidropdown_t *dropdown, void *udata)
 {
   dropdown->parentwin = parentwin;
@@ -110,7 +110,7 @@ uiDropDownCreate (UIWidget *parentwin,
 
 UIWidget *
 uiComboboxCreate (UIWidget *parentwin,
-    char *title, UICallback *uicb,
+    const char *title, UICallback *uicb,
     uidropdown_t *dropdown, void *udata)
 {
   dropdown->iscombobox = true;

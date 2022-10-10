@@ -12,6 +12,7 @@
 #include "nlist.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uireqext.h"
 
 enum {
   UIMUSICQ_SEL_NONE,
@@ -54,39 +55,41 @@ typedef struct uimusicq uimusicq_t;
 typedef void (*uimusicqiteratecb_t)(uimusicq_t *uimusicq, dbidx_t dbidx);
 
 typedef struct uimusicq {
-  const char      *tag;
-  int             musicqPlayIdx;    // needed for clear queue
-  int             musicqManageIdx;
-  conn_t          *conn;
-  dispsel_t       *dispsel;
-  musicdb_t       *musicdb;
-  UIWidget        *parentwin;
-  UIWidget        pausePixbuf;
-  UIWidget        *statusMsg;
-  UICallback      *newselcb;
-  UICallback      *editcb;
-  UICallback      *songsavecb;
-  UICallback      *queuecb;
-  UICallback      *clearqueuecb;
-  UICallback      queueplcb;
-  UICallback      queuedancecb;
-  uimusicqui_t    ui [MUSICQ_MAX];
-  mstime_t        repeatTimer;
-  int             repeatButton;
+  uireqext_t        *uireqext;
+  const char        *tag;
+  int               musicqPlayIdx;    // needed for clear queue
+  int               musicqManageIdx;
+  conn_t            *conn;
+  dispsel_t         *dispsel;
+  musicdb_t         *musicdb;
+  UIWidget          *parentwin;
+  UIWidget          pausePixbuf;
+  UIWidget          *statusMsg;
+  UICallback        *newselcb;
+  UICallback        *editcb;
+  UICallback        *songsavecb;
+  UICallback        *queuecb;
+  UICallback        *clearqueuecb;
+  UICallback        queueplcb;
+  UICallback        queuedancecb;
+  uireqext_t        *reqext;
+  uimusicqui_t      ui [MUSICQ_MAX];
+  mstime_t          repeatTimer;
+  int               repeatButton;
   /* peers */
-  int           peercount;
-  uimusicq_t    *peers [UIMUSICQ_PEER_MAX];
-  bool          ispeercall;
+  int               peercount;
+  uimusicq_t        *peers [UIMUSICQ_PEER_MAX];
+  bool              ispeercall;
   /* temporary for save */
   uimusicqiteratecb_t iteratecb;
-  nlist_t         *savelist;
-  bool            backupcreated;
-  int             cbci;
+  nlist_t           *savelist;
+  bool              backupcreated;
+  int               cbci;
 } uimusicq_t;
 
 /* uimusicq.c */
 uimusicq_t  * uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
-    dispsel_t *dispsel, dispselsel_t dispselType);
+    dispsel_t *dispsel, uireqext_t *uireqext, dispselsel_t dispselType);
 void  uimusicqProcessSongSelect (uimusicq_t *uimusicq, mp_songselect_t *songselect);
 void  uimusicqSetPeer (uimusicq_t *uimusicq, uimusicq_t *peer);
 void  uimusicqSetDatabase (uimusicq_t *uimusicq, musicdb_t *musicdb);

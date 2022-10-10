@@ -27,6 +27,7 @@
 #include "songlist.h"
 #include "sortopt.h"
 #include "status.h"
+#include "tagdef.h"
 #include "ui.h"
 #include "uidance.h"
 #include "uifavorite.h"
@@ -506,8 +507,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiCreateHorizBox (&hbox);
     uiBoxPackStart (&vbox, &hbox);
 
-    /* CONTEXT: song selection filter: a filter: select the genre displayed in the song selection */
-    uiCreateColonLabel (&uiwidget, _("Genre"));
+    uiCreateColonLabel (&uiwidget, tagdefs [TAG_GENRE].displayname);
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
     uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_GENRE], &uiwidget);
@@ -523,8 +523,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  /* CONTEXT: song selection filter: a filter: select the dance displayed in the song selection */
-  uiCreateColonLabel (&uiwidget, _("Dance"));
+  uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCE].displayname);
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
   uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_DANCE], &uiwidget);
@@ -541,8 +540,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  /* CONTEXT: song selection filter: a filter: select the dance rating displayed in the song selection */
-  uiCreateColonLabel (&uiwidget, _("Dance Rating"));
+  uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCERATING].displayname);
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
   uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_DANCE_RATING], &uiwidget);
@@ -555,8 +553,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiCreateHorizBox (&hbox);
     uiBoxPackStart (&vbox, &hbox);
 
-    /* CONTEXT: song selection filter: a filter: select the dance level displayed in the song selection */
-    uiCreateColonLabel (&uiwidget, _("Dance Level"));
+    uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCELEVEL].displayname);
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
     uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_DANCE_LEVEL], &uiwidget);
@@ -570,8 +567,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiCreateHorizBox (&hbox);
     uiBoxPackStart (&vbox, &hbox);
 
-    /* CONTEXT: song selection filter: a filter: select the status displayed in the song selection */
-    uiCreateColonLabel (&uiwidget, _("Status"));
+    uiCreateColonLabel (&uiwidget, tagdefs [TAG_STATUS].displayname);
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
     uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_STATUS], &uiwidget);
@@ -585,8 +581,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiCreateHorizBox (&hbox);
     uiBoxPackStart (&vbox, &hbox);
 
-    /* CONTEXT: song selection filter: a filter: select the 'favorite' displayed in the song selection */
-    uiCreateColonLabel (&uiwidget, _("Favorite"));
+    uiCreateColonLabel (&uiwidget, tagdefs [TAG_FAVORITE].displayname);
     uiBoxPackStart (&hbox, &uiwidget);
     uiSizeGroupAdd (&sg, &uiwidget);
     uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_FAVORITE], &uiwidget);

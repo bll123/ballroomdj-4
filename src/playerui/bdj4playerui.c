@@ -78,6 +78,7 @@ typedef struct {
   int             stopwaitcount;
   mstime_t        clockCheck;
   uisongfilter_t  *uisongfilter;
+  uireqext_t      *uireqext;
   /* notebook */
   UIWidget        notebook;
   uiutilsnbtabid_t *nbtabid;
@@ -200,6 +201,7 @@ main (int argc, char *argv[])
   plui.stopwaitcount = 0;
   plui.nbtabid = uiutilsNotebookIDInit ();
   plui.uisongfilter = NULL;
+  plui.uireqext = NULL;
   plui.uibuilt = false;
   plui.fontszdialogcreated = false;
   plui.currpage = 0;
@@ -233,6 +235,8 @@ main (int argc, char *argv[])
     nlistSetNum (plui.options, PLUI_POSITION_Y, -1);
     nlistSetNum (plui.options, PLUI_SIZE_X, 1000);
     nlistSetNum (plui.options, PLUI_SIZE_Y, 600);
+    nlistSetNum (plui.options, MQ_REQ_EXT_POSITION_X, -1);
+    nlistSetNum (plui.options, MQ_REQ_EXT_POSITION_Y, -1);
     nlistSetStr (plui.options, SONGSEL_SORT_BY, "TITLE");
   }
 
@@ -317,6 +321,9 @@ pluiClosingCallback (void *udata, programstate_t programState)
   }
   if (plui->uisongfilter != NULL) {
     uisfFree (plui->uisongfilter);
+  }
+  if (plui->uireqext != NULL) {
+    uireqextFree (plui->uireqext);
   }
   if (plui->optiondf != NULL) {
     datafileFree (plui->optiondf);
@@ -535,8 +542,11 @@ static void
 pluiInitializeUI (playerui_t *plui)
 {
   plui->uiplayer = uiplayerInit (plui->progstate, plui->conn, plui->musicdb);
+
+  plui->uireqext = uireqextInit (&plui->window, plui->options);
   plui->uimusicq = uimusicqInit ("plui", plui->conn, plui->musicdb,
-      plui->dispsel, DISP_SEL_MUSICQ);
+      plui->dispsel, plui->uireqext, DISP_SEL_MUSICQ);
+
   plui->uisongfilter = uisfInit (&plui->window, plui->options,
       SONG_FILTER_FOR_PLAYBACK);
   plui->uisongsel = uisongselInit ("plui-req", plui->conn, plui->musicdb,

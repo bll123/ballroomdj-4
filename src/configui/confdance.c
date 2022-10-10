@@ -112,8 +112,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   uiWidgetSetMarginStart (&dvbox, uiBaseMarginSz * 8);
   uiBoxPackStart (&hbox, &dvbox);
 
-  /* CONTEXT: configuration: dances: the name of the dance */
-  confuiMakeItemEntry (gui, &dvbox, &sg, _("Dance"),
+  confuiMakeItemEntry (gui, &dvbox, &sg, tagdefs [TAG_DANCE].displayname,
       CONFUI_ENTRY_DANCE_DANCE, -1, "");
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].entry,
       confuiDanceEntryDanceChg, gui, UIENTRY_IMMEDIATE);

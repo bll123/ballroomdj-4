@@ -923,6 +923,9 @@ static void
 altsetupCleanup (altsetup_t *altsetup)
 {
   if (altsetup->target != NULL) {
+    if (altsetup->targetEntry != NULL) {
+      uiEntryFree (altsetup->targetEntry);
+    }
     free (altsetup->target);
   }
 }

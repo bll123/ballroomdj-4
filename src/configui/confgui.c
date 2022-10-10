@@ -27,7 +27,7 @@ static bool confuiLinkCallback (void *udata);
 static long confuiValMSCallback (void *udata, const char *txt);
 
 void
-confuiMakeNotebookTab (UIWidget *boxp, confuigui_t *gui, char *txt, int id)
+confuiMakeNotebookTab (UIWidget *boxp, confuigui_t *gui, const char *txt, int id)
 {
   UIWidget    uiwidget;
 
@@ -45,7 +45,7 @@ confuiMakeNotebookTab (UIWidget *boxp, confuigui_t *gui, char *txt, int id)
 
 void
 confuiMakeItemEntry (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    char *txt, int widx, int bdjoptIdx, char *disp)
+    const char *txt, int widx, int bdjoptIdx, const char *disp)
 {
   UIWidget    hbox;
 
@@ -58,8 +58,8 @@ confuiMakeItemEntry (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 
 void
 confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp,
-    UIWidget *sg, char *txt, int widx, int bdjoptIdx,
-    char *disp, void *dialogFunc)
+    UIWidget *sg, const char *txt, int widx, int bdjoptIdx,
+    const char *disp, void *dialogFunc)
 {
   UIWidget    hbox;
   UIWidget    uiwidget;
@@ -80,7 +80,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp,
 
 void
 confuiMakeItemEntryBasic (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    char *txt, int widx, int bdjoptIdx, char *disp)
+    const char *txt, int widx, int bdjoptIdx, const char *disp)
 {
   UIWidget  *uiwidgetp;
 
@@ -102,7 +102,8 @@ confuiMakeItemEntryBasic (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 
 void
 confuiMakeItemCombobox (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    char *txt, int widx, int bdjoptIdx, UILongCallbackFunc ddcb, char *value)
+    const char *txt, int widx, int bdjoptIdx, UILongCallbackFunc ddcb,
+    char *value)
 {
   UIWidget    hbox;
   UIWidget    uiwidget;
@@ -134,7 +135,7 @@ confuiMakeItemCombobox (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 
 void
 confuiMakeItemLink (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    char *txt, int widx, char *disp)
+    const char *txt, int widx, const char *disp)
 {
   UIWidget    hbox;
   UIWidget    uiwidget;
@@ -158,7 +159,7 @@ confuiMakeItemLink (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 
 void
 confuiMakeItemFontButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    char *txt, int widx, int bdjoptIdx, char *fontname)
+    const char *txt, int widx, int bdjoptIdx, const char *fontname)
 {
   UIWidget    hbox;
   GtkWidget   *widget;
@@ -183,7 +184,7 @@ confuiMakeItemFontButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 
 void
 confuiMakeItemColorButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    char *txt, int widx, int bdjoptIdx, char *color)
+    const char *txt, int widx, int bdjoptIdx, const char *color)
 {
   UIWidget    hbox;
   GtkWidget   *widget;
@@ -211,7 +212,7 @@ confuiMakeItemColorButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 
 void
 confuiMakeItemSpinboxText (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    UIWidget *sgB, char *txt, int widx, int bdjoptIdx,
+    UIWidget *sgB, const char *txt, int widx, int bdjoptIdx,
     confuiouttype_t outtype, ssize_t value, void *cb)
 {
   UIWidget    hbox;
@@ -272,7 +273,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 
 void
 confuiMakeItemSpinboxTime (confuigui_t *gui, UIWidget *boxp,
-    UIWidget *sg, UIWidget *sgB, char *txt, int widx,
+    UIWidget *sg, UIWidget *sgB, const char *txt, int widx,
     int bdjoptIdx, ssize_t value)
 {
   UIWidget    hbox;
@@ -336,7 +337,7 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 
 void
 confuiMakeItemSpinboxDouble (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    UIWidget *sgB, char *txt, int widx, int bdjoptIdx,
+    UIWidget *sgB, const char *txt, int widx, int bdjoptIdx,
     double min, double max, double value)
 {
   UIWidget    hbox;
@@ -364,7 +365,7 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 
 void
 confuiMakeItemSwitch (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    char *txt, int widx, int bdjoptIdx, int value, void *cb)
+    const char *txt, int widx, int bdjoptIdx, int value, void *cb)
 {
   UIWidget    hbox;
   UIWidget    *uiwidgetp;
@@ -394,7 +395,7 @@ confuiMakeItemSwitch (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 
 void
 confuiMakeItemLabelDisp (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    char *txt, int widx, int bdjoptIdx)
+    const char *txt, int widx, int bdjoptIdx)
 {
   UIWidget    hbox;
   UIWidget    uiwidget;

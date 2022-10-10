@@ -226,6 +226,8 @@ static datafilekey_t manageuidfkeys [] = {
   { "MNG_SELFILE_POS_Y",MANAGE_SELFILE_POSITION_Y,  VALUE_NUM, NULL, -1 },
   { "MNG_SIZE_X",       MANAGE_SIZE_X,              VALUE_NUM, NULL, -1 },
   { "MNG_SIZE_Y",       MANAGE_SIZE_Y,              VALUE_NUM, NULL, -1 },
+  { "MQ_REQ_EXT_X",     MQ_REQ_EXT_POSITION_X,      VALUE_NUM, NULL, -1 },
+  { "MQ_REQ_EXT_Y",     MQ_REQ_EXT_POSITION_Y,      VALUE_NUM, NULL, -1 },
   { "SORT_BY",          SONGSEL_SORT_BY,            VALUE_STR, NULL, -1 },
 };
 enum {
@@ -396,6 +398,8 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, MANAGE_EASY_SONGLIST, true);
     nlistSetNum (manage.options, MANAGE_CFPL_POSITION_X, -1);
     nlistSetNum (manage.options, MANAGE_CFPL_POSITION_Y, -1);
+    nlistSetNum (manage.options, MQ_REQ_EXT_POSITION_X, -1);
+    nlistSetNum (manage.options, MQ_REQ_EXT_POSITION_Y, -1);
   }
 
   uiUIInitialize ();
@@ -691,7 +695,7 @@ manageInitializeUI (manageui_t *manage)
   manage->slplayer = uiplayerInit (manage->progstate, manage->conn,
       manage->musicdb);
   manage->slmusicq = uimusicqInit ("m-songlist", manage->conn,
-      manage->musicdb, manage->dispsel, DISP_SEL_SONGLIST);
+      manage->musicdb, manage->dispsel, NULL, DISP_SEL_SONGLIST);
   uimusicqSetPlayIdx (manage->slmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->slmusicq, manage->musicqManageIdx);
   manage->slstats = manageStatsInit (manage->conn, manage->musicdb);
@@ -708,7 +712,7 @@ manageInitializeUI (manageui_t *manage)
       &manage->callbacks [MANAGE_CB_QUEUE_SL]);
 
   manage->slezmusicq = uimusicqInit ("m-ez-songlist", manage->conn,
-      manage->musicdb, manage->dispsel, DISP_SEL_EZSONGLIST);
+      manage->musicdb, manage->dispsel, NULL, DISP_SEL_EZSONGLIST);
   manage->slezsongsel = uisongselInit ("m-ez-songsel", manage->conn,
       manage->musicdb, manage->dispsel, manage->samesong, manage->options,
       manage->uisongfilter, DISP_SEL_EZSONGSEL);
@@ -726,7 +730,7 @@ manageInitializeUI (manageui_t *manage)
   manage->mmplayer = uiplayerInit (manage->progstate, manage->conn,
       manage->musicdb);
   manage->mmmusicq = uimusicqInit ("m-mm-songlist", manage->conn,
-      manage->musicdb, manage->dispsel, DISP_SEL_SONGLIST);
+      manage->musicdb, manage->dispsel, NULL, DISP_SEL_SONGLIST);
   manage->mmsongsel = uisongselInit ("m-mm-songsel", manage->conn,
       manage->musicdb, manage->dispsel, manage->samesong, manage->options,
       manage->uisongfilter, DISP_SEL_MM);

@@ -142,8 +142,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
       NULL);
   managepltree->dancecol = column;
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: playlist management: dance column header */
-  gtk_tree_view_column_set_title (column, _("Dance"));
+  gtk_tree_view_column_set_title (column, tagdefs [TAG_DANCE].displayname);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
   renderer = gtk_cell_renderer_spin_new ();

@@ -233,10 +233,10 @@ typedef struct uidropdown uidropdown_t;
 uidropdown_t *uiDropDownInit (void);
 void uiDropDownFree (uidropdown_t *dropdown);
 UIWidget *uiDropDownCreate (UIWidget *parentwin,
-    char *title, UICallback *uicb,
+    const char *title, UICallback *uicb,
     uidropdown_t *dropdown, void *udata);
 UIWidget *uiComboboxCreate (UIWidget *parentwin,
-    char *title, UICallback *uicb,
+    const char *title, UICallback *uicb,
     uidropdown_t *dropdown, void *udata);
 void uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel);
@@ -249,8 +249,8 @@ void uiDropDownEnable (uidropdown_t *dropdown);
 char *uiDropDownGetString (uidropdown_t *dropdown);
 
 /* uigtklink.c */
-void uiCreateLink (UIWidget *uiwidget, char *label, char *uri);
-void uiLinkSet (UIWidget *uilink, char *label, char *uri);
+void uiCreateLink (UIWidget *uiwidget, const char *label, const char *uri);
+void uiLinkSet (UIWidget *uilink, const char *label, const char *uri);
 void uiLinkSetActivateCallback (UIWidget *uilink, UICallback *uicb);
 
 /* uigtktextbox.c */

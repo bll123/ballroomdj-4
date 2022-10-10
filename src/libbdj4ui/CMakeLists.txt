@@ -20,6 +20,7 @@ add_library (libbdj4ui SHARED
   uinbutil.c
   uiplayer.c
   uirating.c
+  uireqext.c
   uiselectfile.c
   uisong.c
   uisongedit.c

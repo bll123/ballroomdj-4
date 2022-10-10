@@ -26,7 +26,7 @@ static void   uimusicqSaveListCallback (uimusicq_t *uimusicq, dbidx_t dbidx);
 
 uimusicq_t *
 uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
-    dispsel_t *dispsel, dispselsel_t dispselType)
+    dispsel_t *dispsel, uireqext_t *uireqext, dispselsel_t dispselType)
 {
   uimusicq_t    *uimusicq;
 
@@ -36,6 +36,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq = malloc (sizeof (uimusicq_t));
   assert (uimusicq != NULL);
 
+  uimusicq->uireqext = uireqext;
   uimusicq->tag = tag;
   uimusicq->conn = conn;
   uimusicq->repeatButton = UIMUSICQ_REPEAT_NONE;

@@ -21,6 +21,7 @@
 #include "manageui.h"
 #include "pathbld.h"
 #include "playlist.h"
+#include "tagdef.h"
 #include "ui.h"
 #include "uiduallist.h"
 #include "uiselectfile.h"
@@ -130,8 +131,9 @@ manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp)
 
   manageseq->seqduallist = uiCreateDualList (vboxp,
       DUALLIST_FLAGS_MULTIPLE | DUALLIST_FLAGS_PERSISTENT,
-      /* CONTEXT: sequence editor: titles for the selection list and the sequence list  */
-      _("Dance"), _("Sequence"));
+      tagdefs [TAG_DANCE].displayname,
+      /* CONTEXT: sequence editor: title for the sequence list  */
+      _("Sequence"));
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancelist = danceGetDanceList (dances);

@@ -9,6 +9,7 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdj4ui.h"
 #include "bdjopt.h"
 #include "dispsel.h"
 #include "log.h"
@@ -62,6 +63,7 @@ static bool   uimusicqMoveDownCallback (void *udata);
 static bool   uimusicqTogglePauseCallback (void *udata);
 static bool   uimusicqRemoveCallback (void *udata);
 static void   uimusicqCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
+
 
 enum {
   UIMUSICQ_CB_MOVE_TOP,
@@ -268,14 +270,12 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_REQ_EXTERNAL],
-        NULL, uimusicq, "musicq: request-external");
+        uireqextDialog, uimusicq->uireqext, "musicq: request-external");
     uiCreateButton (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_REQ_EXTERNAL],
         /* CONTEXT: music queue: button: request playback of a song external to BDJ4 (not in the database) */
         _("Request External"), NULL);
-    uiWidgetDisable (&uiwidget);
     uiBoxPackEnd (&hbox, &uiwidget);
-// ### TODO create code to handle the request external button
 
     uiutilsUICallbackLongInit (&uimusicq->queueplcb,
         uimusicqQueuePlaylistCallback, uimusicq);
@@ -1129,5 +1129,4 @@ uimusicqCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
     }
   }
 }
-
 

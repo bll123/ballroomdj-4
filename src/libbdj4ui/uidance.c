@@ -24,7 +24,7 @@ typedef struct uidance {
   UIWidget      *buttonp;
   UICallback    cb;
   UICallback    *selectcb;
-  char          *label;
+  const char    *label;
   long          selectedidx;
   int           flags;
 } uidance_t;
@@ -34,7 +34,7 @@ static void uidanceCreateDanceList (uidance_t *uidance);
 
 uidance_t *
 uidanceDropDownCreate (UIWidget *boxp, UIWidget *parentwin, int flags,
-    char *label, int where)
+    const char *label, int where)
 {
   uidance_t  *uidance;
 
