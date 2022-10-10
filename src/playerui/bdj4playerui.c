@@ -110,6 +110,8 @@ typedef struct {
 static datafilekey_t playeruidfkeys [] = {
   { "FILTER_POS_X",             SONGSEL_FILTER_POSITION_X,    VALUE_NUM, NULL, -1 },
   { "FILTER_POS_Y",             SONGSEL_FILTER_POSITION_Y,    VALUE_NUM, NULL, -1 },
+  { "MQ_REQ_EXT_X",             MQ_REQ_EXT_POSITION_X,        VALUE_NUM, NULL, -1 },
+  { "MQ_REQ_EXT_Y",             MQ_REQ_EXT_POSITION_Y,        VALUE_NUM, NULL, -1 },
   { "PLAY_WHEN_QUEUED",         PLUI_PLAY_WHEN_QUEUED,        VALUE_NUM, NULL, -1 },
   { "PLUI_POS_X",               PLUI_POSITION_X,              VALUE_NUM, NULL, -1 },
   { "PLUI_POS_Y",               PLUI_POSITION_Y,              VALUE_NUM, NULL, -1 },
@@ -224,6 +226,8 @@ main (int argc, char *argv[])
       playeruidfkeys, PLAYERUI_DFKEY_COUNT);
   plui.options = datafileGetList (plui.optiondf);
   if (plui.options == NULL) {
+    datafileFree (plui.optiondf);
+    plui.optiondf = NULL;
     plui.options = nlistAlloc ("playerui-opt", LIST_ORDERED, free);
 
     nlistSetNum (plui.options, PLUI_PLAY_WHEN_QUEUED, true);

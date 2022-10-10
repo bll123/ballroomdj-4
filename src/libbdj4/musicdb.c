@@ -31,6 +31,7 @@ typedef struct musicdb {
   dbidx_t       danceCount;
   rafile_t      *radb;
   char          *fn;
+  nlist_t       *tempSongs;
 } musicdb_t;
 
 static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn);
@@ -55,6 +56,8 @@ dbOpen (char *fn)
   musicdb->count = 0L;
   musicdb->radb = NULL;
   musicdb->fn = strdup (fn);
+  /* tempsongs is ordered by dbidx */
+  musicdb->tempSongs = nlistAlloc ("db-temp-songs", LIST_ORDERED, songFree);
   dbLoad (musicdb);
 
   return musicdb;
@@ -77,6 +80,9 @@ dbClose (musicdb_t *musicdb)
     if (musicdb->radb != NULL) {
       raClose (musicdb->radb);
       musicdb->radb = NULL;
+    }
+    if (musicdb->tempSongs != NULL) {
+      nlistFree (musicdb->tempSongs);
     }
     free (musicdb);
   }
@@ -232,7 +238,12 @@ dbGetByIdx (musicdb_t *musicdb, dbidx_t idx)
     return NULL;
   }
 
-  song = slistGetDataByIdx (musicdb->songs, idx);
+  if (idx < musicdb->count) {
+    song = slistGetDataByIdx (musicdb->songs, idx);
+  } else {
+    /* check the temporary list if the dbidx is greater than the count */
+    song = nlistGetData (musicdb->tempSongs, idx);
+  }
   return song;
 }
 
@@ -243,12 +254,10 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
   bool      rc;
 
   if (song == NULL) {
-fprintf (stderr, "dbwritesong: null-song\n");
     return 0;
   }
 
   if (songGetNum (song, TAG_TEMPORARY) == true) {
-fprintf (stderr, "dbwritesong: is temporary\n");
     return 0;
   }
 
@@ -273,7 +282,6 @@ dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
   bool          havestatus = false;
 
   if (musicdb == NULL) {
-fprintf (stderr, "null db\n");
     return false;
   }
 
@@ -395,6 +403,27 @@ dbBackup (void)
       MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
   filemanipBackup (dbfname, 4);
 }
+
+dbidx_t
+dbAddTemporarySong (musicdb_t *musicdb, song_t *song)
+{
+  const char  *fstr;
+  dbidx_t     dbidx;
+
+  if (song == NULL) {
+    return LIST_VALUE_INVALID;
+  }
+
+  songSetNum (song, TAG_TEMPORARY, true);
+  fstr = songGetStr (song, TAG_FILE);
+  dbidx = musicdb->count;
+  dbidx += nlistGetCount (musicdb->tempSongs);
+  songSetNum (song, TAG_DBIDX, dbidx);
+  nlistSetData (musicdb->tempSongs, dbidx, song);
+  return dbidx;
+}
+
+/* internal routines */
 
 static song_t *
 dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)

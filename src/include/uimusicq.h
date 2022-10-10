@@ -72,7 +72,6 @@ typedef struct uimusicq {
   UICallback        *clearqueuecb;
   UICallback        queueplcb;
   UICallback        queuedancecb;
-  uireqext_t        *reqext;
   uimusicqui_t      ui [MUSICQ_MAX];
   mstime_t          repeatTimer;
   int               repeatButton;

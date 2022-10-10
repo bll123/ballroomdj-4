@@ -226,8 +226,6 @@ static datafilekey_t manageuidfkeys [] = {
   { "MNG_SELFILE_POS_Y",MANAGE_SELFILE_POSITION_Y,  VALUE_NUM, NULL, -1 },
   { "MNG_SIZE_X",       MANAGE_SIZE_X,              VALUE_NUM, NULL, -1 },
   { "MNG_SIZE_Y",       MANAGE_SIZE_Y,              VALUE_NUM, NULL, -1 },
-  { "MQ_REQ_EXT_X",     MQ_REQ_EXT_POSITION_X,      VALUE_NUM, NULL, -1 },
-  { "MQ_REQ_EXT_Y",     MQ_REQ_EXT_POSITION_Y,      VALUE_NUM, NULL, -1 },
   { "SORT_BY",          SONGSEL_SORT_BY,            VALUE_STR, NULL, -1 },
 };
 enum {

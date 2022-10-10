@@ -23,7 +23,7 @@ uiutilsUIWidgetSet (UIWidget *uiwidget)
 {
   bool rc = true;
 
-  if (uiwidget->widget == NULL) {
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
     rc = false;
   }
   return rc;

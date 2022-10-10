@@ -630,6 +630,42 @@ START_TEST(musicdb_load_entry)
 END_TEST
 
 
+START_TEST(musicdb_temp)
+{
+  musicdb_t *db;
+  song_t    *song;
+  song_t    *dbsong;
+  dbidx_t   dbidx;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_temp");
+
+  bdjoptInit ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
+  bdjvarsdfloadInit ();
+  db = dbOpen (dbfn);
+
+  song = songAlloc ();
+  ck_assert_ptr_nonnull (song);
+  songSetStr (song, TAG_FILE, "tmp/waltz.mp3");
+  songSetNum (song, TAG_DURATION, 20000);
+  songSetNum (song, TAG_TEMPORARY, true);
+  songSetStr (song, TAG_ARTIST, "temp-artist");
+  songSetStr (song, TAG_TITLE, "temp-title");
+  dbidx = dbAddTemporarySong (db, song);
+  ck_assert_int_ne (dbidx, -1);
+
+  dbsong = dbGetByIdx (db, dbidx);
+  ck_assert_int_eq (dbidx, songGetNum (dbsong, TAG_DBIDX));
+  ck_assert_ptr_eq (dbsong, song);
+
+  dbClose (db);
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+}
+END_TEST
+
+
 START_TEST(musicdb_db)
 {
   musicdb_t *db;
@@ -732,8 +768,8 @@ musicdb_suite (void)
   tcase_add_test (tc, musicdb_load_get_byidx);
   tcase_add_test (tc, musicdb_load_get_byname);
   tcase_add_test (tc, musicdb_iterate);
-  /* load entry needs a database */
   tcase_add_test (tc, musicdb_load_entry);
+  tcase_add_test (tc, musicdb_temp);
   tcase_add_test (tc, musicdb_cleanup);
   tcase_add_test (tc, musicdb_db);
   suite_add_tcase (s, tc);

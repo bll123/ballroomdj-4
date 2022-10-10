@@ -17,6 +17,7 @@
 #include "bdjopt.h"
 #include "fileop.h"
 #include "log.h"
+#include "musicdb.h"
 #include "nlist.h"
 #include "slist.h"
 #include "song.h"
@@ -88,10 +89,13 @@ uireqextFree (uireqext_t *uireqext)
 }
 
 bool
-uireqextDialog (void *udata)
+uireqextDialog (uireqext_t *uireqext)
 {
-  uireqext_t  *uireqext = udata;
   int         x, y;
+
+  if (uireqext == NULL) {
+    return UICB_STOP;
+  }
 
   logProcBegin (LOG_PROC, "uireqextDialog");
   uireqextCreateDialog (uireqext);
@@ -103,6 +107,16 @@ uireqextDialog (void *udata)
   uiWindowMove (&uireqext->reqextDialog, x, y, -1);
   logProcEnd (LOG_PROC, "uireqextDialog", "");
   return UICB_CONT;
+}
+
+song_t *
+uireqextGetSong (uireqext_t *uireqext)
+{
+  if (uireqext == NULL) {
+    return NULL;
+  }
+
+  return uireqext->song;
 }
 
 /* internal routines */
@@ -229,6 +243,10 @@ uireqextAudioFileDialog (void *udata)
   char        *fn = NULL;
   uiselect_t  *selectdata;
 
+  if (uireqext == NULL) {
+    return UICB_STOP;
+  }
+
   selectdata = uiDialogCreateSelect (uireqext->parentwin,
       /* CONTEXT: request external: file selection dialog: window title */
       _("Select File"),
@@ -257,6 +275,10 @@ uireqextDanceSelectHandler (void *udata, long idx)
 static void
 uireqextInitDisplay (uireqext_t *uireqext)
 {
+  if (uireqext == NULL) {
+    return;
+  }
+
   uireqextClearSong (uireqext);
   uiEntrySetValue (uireqext->afEntry, "");
   uiLabelSetText (&uireqext->artistDisp, "");
@@ -267,6 +289,10 @@ uireqextInitDisplay (uireqext_t *uireqext)
 static void
 uireqextClearSong (uireqext_t *uireqext)
 {
+  if (uireqext == NULL) {
+    return;
+  }
+
   if (uireqext->song != NULL) {
     songFree (uireqext->song);
     uireqext->song = NULL;
@@ -311,7 +337,14 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
 {
   const char  *ffn;
 
+  if (uireqext == NULL) {
+fprintf (stderr, "null-req\n");
+    return;
+  }
+
+  uireqextClearSong (uireqext);
   ffn = uiEntryGetValue (uireqext->afEntry);
+fprintf (stderr, "ffn: %s\n", ffn);
   if (*ffn) {
     if (fileopFileExists (ffn)) {
       char    *data;
@@ -329,6 +362,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       free (data);
       if (slistGetCount (tagdata) == 0) {
         slistFree (tagdata);
+fprintf (stderr, "no tag data\n");
         return;
       }
 
@@ -345,6 +379,10 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       }
 
       uireqext->song = songAlloc ();
+fprintf (stderr, "created song\n");
+      songSetStr (uireqext->song, TAG_FILE, ffn);
+      songSetStr (uireqext->song, TAG_DURATION,
+          slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
       songSetStr (uireqext->song, TAG_DANCE,
           slistGetStr (tagdata, tagdefs [TAG_DANCE].tag));
       songSetStr (uireqext->song, TAG_ARTIST,
@@ -352,15 +390,13 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       songSetStr (uireqext->song, TAG_TITLE,
           slistGetStr (tagdata, tagdefs [TAG_TITLE].tag));
       songSetNum (uireqext->song, TAG_TEMPORARY, true);
-      // ### need to set the song's dbidx to a proper value.
 
       uiLabelSetText (&uireqext->artistDisp,
           songGetStr (uireqext->song, TAG_ARTIST));
       uiLabelSetText (&uireqext->titleDisp,
           songGetStr (uireqext->song, TAG_TITLE));
-
-      // ### update the artist/title/dance display
-      // ### probably need to make artist/title entry fields.
+    } else {
+fprintf (stderr, "no file %s\n", ffn);
     }
   }
 }

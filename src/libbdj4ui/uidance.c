@@ -162,8 +162,8 @@ uidanceSelectHandler (void *udata, long idx)
 static void
 uidanceCreateDanceList (uidance_t *uidance)
 {
-  slist_t   *danceList;
-  char      *selectLabel;
+  slist_t     *danceList;
+  const char  *selectLabel;
 
   danceList = danceGetDanceList (uidance->dances);
   selectLabel = NULL;

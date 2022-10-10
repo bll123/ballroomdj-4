@@ -922,15 +922,23 @@ marqueeSetTimer (marquee_t *marquee, char *args)
 static void
 marqueeSetFont (marquee_t *marquee, int sz)
 {
+  char    *f;
   char    fontname [200];
   char    tbuff [200];
-  size_t  i;
+  ssize_t i;
 
   logProcBegin (LOG_PROC, "marqueeSetFont");
 
-  strlcpy (fontname, bdjoptGetStr (OPT_MP_MQFONT), sizeof (fontname));
+  f = bdjoptGetStr (OPT_MP_MQFONT);
+  if (f == NULL) {
+    f = bdjoptGetStr (OPT_MP_UIFONT);
+  }
+  if (f == NULL) {
+    f = "";
+  }
+  strlcpy (fontname, f, sizeof (fontname));
   i = strlen (fontname) - 1;
-  while (isdigit (fontname [i]) || isspace (fontname [i])) {
+  while (i >= 0 && (isdigit (fontname [i]) || isspace (fontname [i]))) {
     fontname [i] = '\0';
     --i;
   }
