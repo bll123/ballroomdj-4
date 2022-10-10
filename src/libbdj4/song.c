@@ -142,6 +142,10 @@ songParse (song_t *song, char *data, ssize_t didx)
 
   /* check and set some defaults */
 
+  /* always set the temporary flag; if it needs to be true, the caller */
+  /* will set it */
+  nlistSetNum (song->songInfo, TAG_TEMPORARY, false);
+
   tval = nlistGetNum (song->songInfo, TAG_ADJUSTFLAGS);
   if (tval != LIST_VALUE_INVALID && (tval & SONG_ADJUST_INVALID)) {
     nlistSetNum (song->songInfo, TAG_ADJUSTFLAGS, LIST_VALUE_INVALID);

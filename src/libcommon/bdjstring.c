@@ -84,6 +84,25 @@ versionCompare (const char *v1, const char *v2)
   return rc;
 }
 
+/* a more efficient way of appending strings, the length must be tracked */
+/* used by musicdb.c */
+size_t
+stringAppend (char *str, size_t maxsz, size_t currsz, const char *data)
+{
+  size_t    dlen;
+
+  dlen = strlen (data);
+  if (dlen + currsz >= maxsz) {
+    return currsz;
+  }
+
+  memcpy (str + currsz, data, dlen);
+  currsz += dlen;
+  str [currsz] = '\0';
+  return currsz;
+}
+
+
 inline static const char *
 versionNext (const char *tv1)
 {

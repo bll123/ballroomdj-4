@@ -463,7 +463,6 @@ START_TEST(musicdb_load_get_byidx)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_load_get_byidx");
 
-  // fprintf (stdout, "   load byidx\n");
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "tmp/music");
   bdjvarsdfloadInit ();

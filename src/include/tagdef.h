@@ -52,7 +52,6 @@ typedef struct {
   bool                alignRight : 1;
   bool                isBDJTag : 1;
   bool                isNormTag : 1;
-  bool                albumEdit : 1;
   bool                allEdit : 1;
   bool                isEditable : 1;
   bool                textSearchable : 1;
@@ -75,7 +74,7 @@ typedef enum {
   TAG_DBIDX,                  // not saved
   TAG_DISCNUMBER,             //
   TAG_DISCTOTAL,              //
-  TAG_DURATION,               //
+  TAG_DURATION,               // not saved to af
   TAG_FAVORITE,               //
   TAG_FILE,                   //
   TAG_GENRE,                  //
@@ -83,13 +82,14 @@ typedef enum {
   TAG_MQDISPLAY,              //
   TAG_NOTES,                  //
   TAG_RECORDING_ID,           // musicbrainz_trackid
-  TAG_RRN,                    //
+  TAG_RRN,                    // not save to af
   TAG_SAMESONG,               //
   TAG_SONGEND,                //
   TAG_SONGSTART,              //
   TAG_SPEEDADJUSTMENT,        //
   TAG_STATUS,                 //
   TAG_TAGS,                   //
+  TAG_TEMPORARY,              //
   TAG_TITLE,                  //
   TAG_TRACK_ID,               // musicbrainz_releasetrackid
   TAG_TRACKNUMBER,            //

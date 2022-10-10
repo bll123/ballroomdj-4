@@ -8,6 +8,7 @@ char *    stringAsciiToUpper (char *s);
 void      stringTrim (char *s);
 void      stringTrimChar (char *s, unsigned char c);
 int       versionCompare (const char *v1, const char *v2);
+size_t    stringAppend (char *str, size_t maxsz, size_t currsz, const char *data);
 
 #if ! _lib_strlcat
 size_t strlcat(char *dst, const char *src, size_t siz);
