@@ -89,16 +89,16 @@ versionCompare (const char *v1, const char *v2)
 size_t
 stringAppend (char *str, size_t maxsz, size_t currsz, const char *data)
 {
-  size_t    dlen;
+  const char  *d = data;
+  char        *s = str;
 
-  dlen = strlen (data);
-  if (dlen + currsz >= maxsz) {
-    return currsz;
+  s += currsz;
+  --maxsz;
+  while (*d != '\0' && currsz < maxsz) {
+    *s++ = *d++;
+    ++currsz;
   }
-
-  memcpy (str + currsz, data, dlen);
-  currsz += dlen;
-  str [currsz] = '\0';
+  *s = '\0';
   return currsz;
 }
 

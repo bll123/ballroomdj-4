@@ -154,8 +154,8 @@ START_TEST(bdjstring_append)
   ck_assert_int_eq (blen, 5);
   ck_assert_str_eq (buff, "abcde");
   blen = stringAppend (buff, sizeof (buff), blen, "vwxyz");
-  ck_assert_int_eq (blen, 5);
-  ck_assert_str_eq (buff, "abcde");
+  ck_assert_int_eq (blen, 9);
+  ck_assert_str_eq (buff, "abcdevwxy");
 
   blen = 0;
   blen = stringAppend (buff, sizeof (buff), blen, "abcde");

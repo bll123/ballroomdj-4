@@ -1168,6 +1168,10 @@ mainMobilePostCallback (void *userdata, char *resp, size_t len)
 
   logProcBegin (LOG_PROC, "mainMobilePostCallback");
 
+  if (resp == NULL) {
+    return;
+  }
+
   if (strncmp (resp, "OK", 2) == 0) {
     ;
   } else if (strncmp (resp, "NG", 2) == 0) {
