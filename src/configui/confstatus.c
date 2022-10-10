@@ -20,6 +20,7 @@
 #include "ilist.h"
 #include "log.h"
 #include "status.h"
+#include "tagdef.h"
 #include "ui.h"
 
 static int  confuiStatusListCreate (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
@@ -110,8 +111,7 @@ confuiCreateStatusTable (confuigui_t *gui)
       "editable", CONFUI_STATUS_COL_EDITABLE,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: configuration: status: title of the status name column */
-  gtk_tree_view_column_set_title (column, _("Status"));
+  gtk_tree_view_column_set_title (column, tagdefs [TAG_STATUS].displayname);
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), gui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 

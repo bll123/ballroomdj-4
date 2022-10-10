@@ -16,6 +16,7 @@
 #include "configui.h"
 #include "log.h"
 #include "songfilter.h"
+#include "tagdef.h"
 #include "ui.h"
 
 void
@@ -36,25 +37,22 @@ confuiBuildUIFilterDisplay (confuigui_t *gui)
 
   val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_GENRE);
   /* CONTEXT: configuration: filter display: checkbox: genre */
-  confuiMakeItemCheckButton (gui, &vbox, &sg, _("Genre"),
+  confuiMakeItemCheckButton (gui, &vbox, &sg, tagdefs [TAG_GENRE].displayname,
       CONFUI_WIDGET_FILTER_GENRE, -1, val);
   gui->uiitem [CONFUI_WIDGET_FILTER_GENRE].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_DANCELEVEL);
-  /* CONTEXT: configuration: filter display: checkbox: dance level */
-  confuiMakeItemCheckButton (gui, &vbox, &sg, _("Dance Level"),
+  confuiMakeItemCheckButton (gui, &vbox, &sg, tagdefs [TAG_DANCELEVEL].displayname,
       CONFUI_WIDGET_FILTER_DANCELEVEL, -1, val);
   gui->uiitem [CONFUI_WIDGET_FILTER_DANCELEVEL].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_STATUS);
-  /* CONTEXT: configuration: filter display: checkbox: status */
-  confuiMakeItemCheckButton (gui, &vbox, &sg, _("Status"),
+  confuiMakeItemCheckButton (gui, &vbox, &sg, tagdefs [TAG_STATUS].displayname,
       CONFUI_WIDGET_FILTER_STATUS, -1, val);
   gui->uiitem [CONFUI_WIDGET_FILTER_STATUS].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_FAVORITE);
-  /* CONTEXT: configuration: filter display: checkbox: favorite selection */
-  confuiMakeItemCheckButton (gui, &vbox, &sg, _("Favorite"),
+  confuiMakeItemCheckButton (gui, &vbox, &sg, tagdefs [TAG_FAVORITE].displayname,
       CONFUI_WIDGET_FILTER_FAVORITE, -1, val);
   gui->uiitem [CONFUI_WIDGET_FILTER_FAVORITE].outtype = CONFUI_OUT_CB;
 

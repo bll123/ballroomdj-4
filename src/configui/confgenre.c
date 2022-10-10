@@ -20,6 +20,7 @@
 #include "genre.h"
 #include "ilist.h"
 #include "log.h"
+#include "tagdef.h"
 #include "ui.h"
 
 static int  confuiGenreListCreate (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
@@ -101,8 +102,7 @@ confuiCreateGenreTable (confuigui_t *gui)
       "editable", CONFUI_GENRE_COL_EDITABLE,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: configuration: genre: title of the genre name column */
-  gtk_tree_view_column_set_title (column, _("Genre"));
+  gtk_tree_view_column_set_title (column, tagdefs [TAG_GENRE].displayname);
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), gui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 

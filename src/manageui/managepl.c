@@ -19,6 +19,7 @@
 #include "pathbld.h"
 #include "playlist.h"
 #include "tmutil.h"
+#include "tagdef.h"
 #include "ui.h"
 #include "uilevel.h"
 #include "uirating.h"
@@ -289,8 +290,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&lcol, &hbox);
   uiutilsUIWidgetCopy (&managepl->uiratingitem, &hbox);
 
-  /* CONTEXT: playlist management: Dance Rating */
-  uiCreateColonLabel (&uiwidget, _("Dance Rating"));
+  uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCERATING].displayname);
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
