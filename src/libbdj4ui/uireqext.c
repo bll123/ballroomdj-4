@@ -15,6 +15,8 @@
 #include "bdj4intl.h"
 #include "bdj4ui.h"
 #include "bdjopt.h"
+#include "dance.h"
+#include "datafile.h"
 #include "fileop.h"
 #include "log.h"
 #include "musicdb.h"
@@ -42,6 +44,7 @@ typedef struct uireqext {
   UIWidget        titleDisp;
   uidance_t       *uidance;
   UICallback      callbacks [UIREQEXT_CB_MAX];
+  UICallback      *responsecb;
   song_t          *song;
 } uireqext_t;
 
@@ -68,6 +71,10 @@ uireqextInit (UIWidget *windowp, nlist_t *opts)
   uireqext->parentwin = windowp;
   uireqext->options = opts;
   uireqext->song = NULL;
+  for (int i = 0; i < UIREQEXT_CB_MAX; ++i) {
+    uiutilsUICallbackInit (&uireqext->callbacks [i], NULL, NULL, NULL);
+  }
+  uireqext->responsecb = NULL;
 
   return uireqext;
 }
@@ -86,6 +93,15 @@ uireqextFree (uireqext_t *uireqext)
     uidanceFree (uireqext->uidance);
     free (uireqext);
   }
+}
+
+void
+uireqextSetResponseCallback (uireqext_t *uireqext, UICallback *uicb)
+{
+  if (uireqext == NULL) {
+    return;
+  }
+  uireqext->responsecb = uicb;
 }
 
 bool
@@ -112,11 +128,16 @@ uireqextDialog (uireqext_t *uireqext)
 song_t *
 uireqextGetSong (uireqext_t *uireqext)
 {
+  song_t    *song;
+
   if (uireqext == NULL) {
     return NULL;
   }
 
-  return uireqext->song;
+  song = uireqext->song;
+  /* it is the caller's responsibility to free the song */
+  uireqext->song = NULL;
+  return song;
 }
 
 /* internal routines */
@@ -325,6 +346,9 @@ uireqextResponseHandler (void *udata, long responseid)
     case RESPONSE_APPLY: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: reqext: apply");
       uiWidgetHide (&uireqext->reqextDialog);
+      if (uireqext->responsecb != NULL) {
+        uiutilsCallbackHandler (uireqext->responsecb);
+      }
       break;
     }
   }
@@ -338,18 +362,17 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
   const char  *ffn;
 
   if (uireqext == NULL) {
-fprintf (stderr, "null-req\n");
     return;
   }
 
   uireqextClearSong (uireqext);
   ffn = uiEntryGetValue (uireqext->afEntry);
-fprintf (stderr, "ffn: %s\n", ffn);
   if (*ffn) {
     if (fileopFileExists (ffn)) {
-      char    *data;
-      slist_t *tagdata;
-      int     rewrite;
+      char            *data;
+      slist_t         *tagdata;
+      int             rewrite;
+      datafileconv_t  conv;
 
       // ### determine if this is a song in the db, if so use the db entry
 
@@ -362,7 +385,6 @@ fprintf (stderr, "ffn: %s\n", ffn);
       free (data);
       if (slistGetCount (tagdata) == 0) {
         slistFree (tagdata);
-fprintf (stderr, "no tag data\n");
         return;
       }
 
@@ -378,25 +400,33 @@ fprintf (stderr, "no tag data\n");
         }
       }
 
+      /* for a song that is not in the database, */
+      /* file, artist, title, dance and duration need to be populated */
       uireqext->song = songAlloc ();
-fprintf (stderr, "created song\n");
       songSetStr (uireqext->song, TAG_FILE, ffn);
       songSetStr (uireqext->song, TAG_DURATION,
           slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
-      songSetStr (uireqext->song, TAG_DANCE,
-          slistGetStr (tagdata, tagdefs [TAG_DANCE].tag));
+      conv.allocated = false;
+      conv.str = slistGetStr (tagdata, tagdefs [TAG_DANCE].tag);
+      conv.valuetype = VALUE_STR;
+      danceConvDance (&conv);
+      if (conv.num < 0) {
+        conv.num = -1;
+      }
+      songSetNum (uireqext->song, TAG_DANCE, conv.num);
       songSetStr (uireqext->song, TAG_ARTIST,
           slistGetStr (tagdata, tagdefs [TAG_ARTIST].tag));
       songSetStr (uireqext->song, TAG_TITLE,
           slistGetStr (tagdata, tagdefs [TAG_TITLE].tag));
       songSetNum (uireqext->song, TAG_TEMPORARY, true);
 
+      /* update the display */
       uiLabelSetText (&uireqext->artistDisp,
           songGetStr (uireqext->song, TAG_ARTIST));
       uiLabelSetText (&uireqext->titleDisp,
           songGetStr (uireqext->song, TAG_TITLE));
-    } else {
-fprintf (stderr, "no file %s\n", ffn);
+      uidanceSetValue (uireqext->uidance,
+          songGetNum (uireqext->song, TAG_DANCE));
     }
   }
 }

@@ -60,8 +60,20 @@ istringCompare (const char *str1, const char *str2)
   int   rc = 0;
 
   if (ucoll == NULL) {
+    return -1;
+  }
+
+  /* the unicode routine does not handle a null string */
+  if (str1 == NULL && str2 != NULL) {
+    return -1;
+  }
+  if (str1 != NULL && str2 == NULL) {
+    return 1;
+  }
+  if (str1 == NULL && str2 == NULL) {
     return 0;
   }
+
   rc = ucol_strcollUTF8 (ucoll, str1, -1, str2, -1, &status);
   return rc;
 }

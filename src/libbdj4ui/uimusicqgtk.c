@@ -272,7 +272,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_REQ_EXTERNAL],
-        uimusicqReqextDialog, uimusicq, "musicq: request-external");
+        uimusicqReqextDialog, uimusicq, "musicq: request external");
     uiCreateButton (&uiwidget,
         &uiw->callback [UIMUSICQ_CB_REQ_EXTERNAL],
         /* CONTEXT: music queue: button: request playback of a song external to BDJ4 (not in the database) */
@@ -1137,20 +1137,8 @@ uimusicqReqextDialog (void *udata)
 {
   uimusicq_t    *uimusicq = udata;
   bool          rc;
-  song_t        *song;
 
   rc = uireqextDialog (uimusicq->uireqext);
-  song = uireqextGetSong (uimusicq->uireqext);
-fprintf (stderr, "song: %p\n", song);
-  if (song != NULL) {
-    dbidx_t dbidx;
-
-    dbidx = dbAddTemporarySong (uimusicq->musicdb, song);
-fprintf (stderr, "dbidx: %d\n", dbidx);
-    if (uimusicq->queuecb != NULL) {
-fprintf (stderr, "   call cb\n");
-      uiutilsCallbackLongIntHandler (uimusicq->queuecb, dbidx, MUSICQ_CURRENT);
-    }
-  }
   return rc;
 }
+

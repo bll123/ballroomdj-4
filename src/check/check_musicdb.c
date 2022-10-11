@@ -658,6 +658,10 @@ START_TEST(musicdb_temp)
   ck_assert_int_eq (dbidx, songGetNum (dbsong, TAG_DBIDX));
   ck_assert_ptr_eq (dbsong, song);
 
+  ++dbidx;
+  dbsong = dbGetByIdx (db, dbidx);
+  ck_assert_ptr_null (dbsong);
+
   dbClose (db);
 
   bdjvarsdfloadCleanup ();

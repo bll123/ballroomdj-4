@@ -74,6 +74,7 @@ danceAlloc (void)
 
   dance->path = strdup (fname);
   dance->danceList = NULL;
+
   dance->df = datafileAllocParse ("dance", DFTYPE_INDIRECT, fname,
       dancedfkeys, DANCE_KEY_MAX);
   dance->dances = datafileGetList (dance->df);

@@ -167,6 +167,7 @@ static void mainMusicQueueMix (maindata_t *mainData, char *args);
 static void mainPlaybackFinishProcess (maindata_t *mainData, const char *args);
 static void mainPlaybackSendSongFinish (maindata_t *mainData, const char *args);
 static void mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom);
+static void mainAddTemporarySong (maindata_t *mainData, char *args);
 static void mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom);
 
 static long globalCounter = 0;
@@ -634,6 +635,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CHK_MAIN_MAXPLAYTIME: {
           bdjoptSetNum (OPT_P_MAXPLAYTIME, atol (targs));
+          dbgdisp = true;
+          break;
+        }
+        case MSG_DB_ENTRY_TEMP_ADD: {
+          mainAddTemporarySong (mainData, targs);
           dbgdisp = true;
           break;
         }
@@ -2722,6 +2728,66 @@ mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom)
   /* send the last player state that has been recorded */
   snprintf (tmp, sizeof (tmp), "%d", mainData->playerState);
   connSendMessage (mainData->conn, routefrom, MSG_PLAYER_STATE, tmp);
+}
+
+static void
+mainAddTemporarySong (maindata_t *mainData, char *args)
+{
+  char    *p;
+  char    *tokstr;
+  song_t  *song;
+  dbidx_t tdbidx;
+  dbidx_t dbidx;
+
+
+  song = songAlloc ();
+  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  if (p == NULL) {
+    songFree (song);
+    return;
+  }
+  songSetStr (song, TAG_FILE, p);
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p == NULL) {
+    songFree (song);
+    return;
+  }
+  tdbidx = atol (p);
+  songSetNum (song, TAG_DBIDX, tdbidx);
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p == NULL) {
+    songFree (song);
+    return;
+  }
+  songSetNum (song, TAG_DANCE, atol (p));
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p == NULL) {
+    songFree (song);
+    return;
+  }
+  songSetNum (song, TAG_DURATION, atol (p));
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p == NULL) {
+    songFree (song);
+    return;
+  }
+  songSetStr (song, TAG_ARTIST, p);
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p == NULL) {
+    songFree (song);
+    return;
+  }
+  songSetStr (song, TAG_TITLE, p);
+
+  dbidx = dbAddTemporarySong (mainData->musicdb, song);
+  if (dbidx != tdbidx) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: databases out of sync");
+  }
 }
 
 static void

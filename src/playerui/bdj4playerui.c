@@ -58,6 +58,7 @@ enum {
   PLUI_CB_QUEUE_SL,
   PLUI_CB_SONG_SAVE,
   PLUI_CB_CLEAR_QUEUE,
+  PLUI_CB_REQ_EXT,
   PLUI_CB_MAX,
 };
 
@@ -167,6 +168,7 @@ static bool     pluiQueueProcess (void *udata, long dbidx, int mqidx);
 static bool     pluiSongSaveCallback (void *udata, long dbidx);
 static bool     pluiClearQueueCallback (void *udata);
 static void     pluiPushHistory (playerui_t *plui, const char *args);
+static bool     pluiReqextCallback (void *udata);
 
 static int gKillReceived = 0;
 
@@ -548,6 +550,11 @@ pluiInitializeUI (playerui_t *plui)
   plui->uiplayer = uiplayerInit (plui->progstate, plui->conn, plui->musicdb);
 
   plui->uireqext = uireqextInit (&plui->window, plui->options);
+  uiutilsUICallbackInit (
+      &plui->callbacks [PLUI_CB_REQ_EXT], pluiReqextCallback,
+      plui, "musicq: request external response");
+  uireqextSetResponseCallback (plui->uireqext, &plui->callbacks [PLUI_CB_REQ_EXT]);
+
   plui->uimusicq = uimusicqInit ("plui", plui->conn, plui->musicdb,
       plui->dispsel, plui->uireqext, DISP_SEL_MUSICQ);
 
@@ -1283,4 +1290,29 @@ pluiPushHistory (playerui_t *plui, const char *args)
   snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", MUSICQ_HISTORY,
       MSG_ARGS_RS, 999, MSG_ARGS_RS, dbidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
+}
+
+static bool
+pluiReqextCallback (void *udata)
+{
+  playerui_t    *plui = udata;
+  song_t        *song;
+
+  song = uireqextGetSong (plui->uireqext);
+  if (song != NULL) {
+    dbidx_t dbidx;
+    char    tbuff [2048];
+
+    dbidx = dbAddTemporarySong (plui->musicdb, song);
+    snprintf (tbuff, sizeof (tbuff), "%s%c%d%c%ld%c%ld%c%s%c%s",
+        songGetStr (song, TAG_FILE), MSG_ARGS_RS,
+        dbidx, MSG_ARGS_RS,
+        songGetNum (song, TAG_DANCE), MSG_ARGS_RS,
+        songGetNum (song, TAG_DURATION), MSG_ARGS_RS,
+        songGetStr (song, TAG_ARTIST), MSG_ARGS_RS,
+        songGetStr (song, TAG_TITLE));
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_DB_ENTRY_TEMP_ADD, tbuff);
+    pluiQueueProcess (plui, dbidx, MUSICQ_CURRENT);
+  }
+  return UICB_CONT;
 }

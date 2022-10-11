@@ -67,6 +67,19 @@ START_TEST(istring_comp)
   istringCleanup ();
   istringInit ("de_DE");
 
+  /* the unicode routines do not handle nulls properly */
+  /* istringCompare is modified to handle the nulls */
+  rc = istringCompare ("aaaa", NULL);
+  ck_assert_int_eq (rc, 1);
+
+  rc = istringCompare (NULL, "aaaa");
+  ck_assert_int_eq (rc, -1);
+
+  rc = istringCompare (NULL, NULL);
+  ck_assert_int_eq (rc, 0);
+
+  /* de_DE */
+
   rc = istringCompare ("ÄÄÄÄ", "ÖÖÖÖ");
   ck_assert_int_lt (rc, 0);
 

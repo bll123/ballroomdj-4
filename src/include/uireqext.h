@@ -9,6 +9,7 @@ typedef struct uireqext uireqext_t;
 
 uireqext_t  *uireqextInit (UIWidget *windowp, nlist_t *opts);
 void    uireqextFree (uireqext_t *uireqext);
+void    uireqextSetResponseCallback (uireqext_t *uireqext, UICallback *uicb);
 bool    uireqextDialog (uireqext_t *uireqext);
 song_t  *uireqextGetSong (uireqext_t *uireqext);
 

@@ -443,7 +443,7 @@ listGetIdx (list_t *list, listkeylookup_t *key)
   list->locCache = LIST_LOC_INVALID;
 
   if (ridx >= 0) {
-    if (list->keytype == LIST_KEY_STR) {
+    if (list->keytype == LIST_KEY_STR && key->strkey != NULL) {
       list->keyCache.strkey = strdup (key->strkey);
     }
     if (list->keytype == LIST_KEY_NUM) {
