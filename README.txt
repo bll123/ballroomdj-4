@@ -11,7 +11,7 @@ Contents
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 2022-10-05
+Alpha Release: 2022-10---
 
   Alpha releases are mostly untested works in progress.
 
@@ -28,7 +28,6 @@ Release Notes:
 
   Not yet implemented:
     - Auto-Organization.
-    - Player: Request External (queue a song not in the database).
     - iTunes:
       - Database Update: Update from iTunes data.
       - Song List Editor: Import from iTunes.

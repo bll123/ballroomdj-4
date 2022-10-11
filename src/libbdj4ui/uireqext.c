@@ -39,9 +39,9 @@ typedef struct uireqext {
   UIWidget        *parentwin;
   nlist_t         *options;
   UIWidget        reqextDialog;
-  uientry_t       *afEntry;
-  UIWidget        artistDisp;
-  UIWidget        titleDisp;
+  uientry_t       *audioFileEntry;
+  uientry_t       *artistEntry;
+  uientry_t       *titleEntry;
   uidance_t       *uidance;
   UICallback      callbacks [UIREQEXT_CB_MAX];
   UICallback      *responsecb;
@@ -64,9 +64,9 @@ uireqextInit (UIWidget *windowp, nlist_t *opts)
 
   uireqext = malloc (sizeof (uireqext_t));
   uiutilsUIWidgetInit (&uireqext->reqextDialog);
-  uiutilsUIWidgetInit (&uireqext->artistDisp);
-  uiutilsUIWidgetInit (&uireqext->titleDisp);
-  uireqext->afEntry = uiEntryInit (50, MAXPATHLEN);
+  uireqext->audioFileEntry = uiEntryInit (50, MAXPATHLEN);
+  uireqext->artistEntry = uiEntryInit (40, MAXPATHLEN);
+  uireqext->titleEntry = uiEntryInit (40, MAXPATHLEN);
   uireqext->uidance = NULL;
   uireqext->parentwin = windowp;
   uireqext->options = opts;
@@ -86,8 +86,8 @@ uireqextFree (uireqext_t *uireqext)
     if (uireqext->song != NULL) {
       songFree (uireqext->song);
     }
-    if (uireqext->afEntry != NULL) {
-      uiEntryFree (uireqext->afEntry);
+    if (uireqext->audioFileEntry != NULL) {
+      uiEntryFree (uireqext->audioFileEntry);
     }
     uiDialogDestroy (&uireqext->reqextDialog);
     uidanceFree (uireqext->uidance);
@@ -197,13 +197,13 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiEntryCreate (uireqext->afEntry);
-  uiEntrySetValue (uireqext->afEntry, "");
-  uiwidgetp = uiEntryGetUIWidget (uireqext->afEntry);
+  uiEntryCreate (uireqext->audioFileEntry);
+  uiEntrySetValue (uireqext->audioFileEntry, "");
+  uiwidgetp = uiEntryGetUIWidget (uireqext->audioFileEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
-//  uiEntrySetValidate (uireqext->afEntry,
+//  uiEntrySetValidate (uireqext->audioFileEntry,
 //      uireqextValidateAudioFile, uireqext, UIENTRY_DELAYED);
 
   uiutilsUICallbackInit (&uireqext->callbacks [UIREQEXT_CB_AUDIO_FILE],
@@ -223,9 +223,15 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiCreateLabel (&uireqext->artistDisp, "");
-  uiBoxPackStart (&hbox, &uireqext->artistDisp);
-  uiSizeGroupAdd (&sgA, &uireqext->artistDisp);
+  uiEntryCreate (uireqext->artistEntry);
+  uiEntrySetValue (uireqext->artistEntry, "");
+  uiwidgetp = uiEntryGetUIWidget (uireqext->artistEntry);
+  uiWidgetAlignHorizFill (uiwidgetp);
+//  uiWidgetExpandHoriz (uiwidgetp);
+  uiBoxPackStart (&hbox, uiwidgetp);
+//  uiBoxPackStartExpand (&hbox, uiwidgetp);
+//  uiEntrySetValidate (uireqext->audioFileEntry,
+//      uireqextValidateAudioFile, uireqext, UIENTRY_DELAYED);
 
   /* title display */
   uiCreateHorizBox (&hbox);
@@ -235,9 +241,15 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiCreateLabel (&uireqext->titleDisp, "");
-  uiBoxPackStart (&hbox, &uireqext->titleDisp);
-  uiSizeGroupAdd (&sgA, &uireqext->titleDisp);
+  uiEntryCreate (uireqext->titleEntry);
+  uiEntrySetValue (uireqext->titleEntry, "");
+  uiwidgetp = uiEntryGetUIWidget (uireqext->titleEntry);
+  uiWidgetAlignHorizFill (uiwidgetp);
+//  uiWidgetExpandHoriz (uiwidgetp);
+  uiBoxPackStart (&hbox, uiwidgetp);
+//  uiBoxPackStartExpand (&hbox, uiwidgetp);
+//  uiEntrySetValidate (uireqext->audioFileEntry,
+//      uireqextValidateAudioFile, uireqext, UIENTRY_DELAYED);
 
   /* dance : always available */
   uiCreateHorizBox (&hbox);
@@ -277,7 +289,7 @@ uireqextAudioFileDialog (void *udata)
       _("Audio Files"), "audio/*");
   fn = uiSelectFileDialog (selectdata);
   if (fn != NULL) {
-    uiEntrySetValue (uireqext->afEntry, fn);
+    uiEntrySetValue (uireqext->audioFileEntry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
     uireqextProcessAudioFile (uireqext);
     free (fn);
@@ -301,9 +313,9 @@ uireqextInitDisplay (uireqext_t *uireqext)
   }
 
   uireqextClearSong (uireqext);
-  uiEntrySetValue (uireqext->afEntry, "");
-  uiLabelSetText (&uireqext->artistDisp, "");
-  uiLabelSetText (&uireqext->titleDisp, "");
+  uiEntrySetValue (uireqext->audioFileEntry, "");
+  uiEntrySetValue (uireqext->artistEntry, "");
+  uiEntrySetValue (uireqext->titleEntry, "");
   uidanceSetValue (uireqext->uidance, -1);
 }
 
@@ -366,7 +378,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
   }
 
   uireqextClearSong (uireqext);
-  ffn = uiEntryGetValue (uireqext->afEntry);
+  ffn = uiEntryGetValue (uireqext->audioFileEntry);
   if (*ffn) {
     if (fileopFileExists (ffn)) {
       char            *data;
@@ -421,9 +433,9 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       songSetNum (uireqext->song, TAG_TEMPORARY, true);
 
       /* update the display */
-      uiLabelSetText (&uireqext->artistDisp,
+      uiEntrySetValue (uireqext->artistEntry,
           songGetStr (uireqext->song, TAG_ARTIST));
-      uiLabelSetText (&uireqext->titleDisp,
+      uiEntrySetValue (uireqext->titleEntry,
           songGetStr (uireqext->song, TAG_TITLE));
       uidanceSetValue (uireqext->uidance,
           songGetNum (uireqext->song, TAG_DANCE));

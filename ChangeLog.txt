@@ -1,6 +1,6 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha 2022-10-??
+4.0.0 alpha 2022-10---
 
 - database update
   - add a fix for bad audio file data (null bytes).
@@ -8,6 +8,7 @@ BallroomDJ 4 Change Log
 - player
   - Fix broken duration calculation (dance max).
   - Fix broken BPM dance check.
+  - Request External is now working.
 
 4.0.0 alpha 2022-10-05
 
