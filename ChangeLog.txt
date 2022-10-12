@@ -2,13 +2,14 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-10---
 
+- fix tag name mismatch (conversion, tags, song)
 - database update
   - add a fix for bad audio file data (null bytes).
   - fix start/stop button states after completion.
 - player
   - Fix broken duration calculation (dance max).
   - Fix broken BPM dance check.
-  - Request External is now working.
+  - Request External is now implemented.
 
 4.0.0 alpha 2022-10-05
 

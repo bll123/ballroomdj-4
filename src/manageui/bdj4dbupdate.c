@@ -4,18 +4,20 @@
  *  there are various modes.
  *    - rebuild
  *      rebuild and replace the database in its entirety.
- *    - check-for-new
+ *    - check for new
  *      check for new files and changes and add them.
- *    - updfromtags
+ *    - update from tags
  *      update db from tags in audio files.
  *      this is the same as checknew, except that all audio files tags
  *      are loaded and updated in the database.
  *      so the processing is similar to a rebuild, but using the
  *      existing database and updating the records in the database.
- *    - writetags
+ *    - write tags
  *      write db tags to the audio files
  *    - reorganize
  *      use the organization settings to reorganize the files.
+ *    - update from itunes
+ *      update the database data from the data found in itunes.
  *
  */
 

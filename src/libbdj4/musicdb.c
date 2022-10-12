@@ -271,15 +271,9 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
 size_t
 dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
 {
-  slistidx_t    iteridx;
-  char          *tag;
-  char          *data;
   char          tbuff [RAFILE_REC_SIZE];
-  size_t        tblen = 0;
-  char          tmp [40];
   dbidx_t       newrrn = 0;
-  time_t        currtime;
-  bool          havestatus = false;
+  size_t        tblen;
 
   if (musicdb == NULL) {
     return false;
@@ -289,17 +283,36 @@ dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
 
-  currtime = time (NULL);
-
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, tagdefs [TAG_FILE].tag);
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "\n");
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "..");
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, fn);
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "\n");
   newrrn = rrn;
   if (rrn == MUSICDB_ENTRY_NEW) {
     newrrn = raGetNextRRN (musicdb->radb);
   }
+  tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn, newrrn);
+  /* rrn may be set to MUSICB_ENTRY_NEW */
+  raWrite (musicdb->radb, rrn, tbuff);
+  return tblen;
+}
+
+size_t
+dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
+    const char *fn, dbidx_t rrn)
+{
+  size_t        tblen = 0;
+  slistidx_t    iteridx;
+  char          tmp [60];
+  char          *tag;
+  char          *data;
+  time_t        currtime;
+  bool          havestatus = false;
+
+
+  tbuff [0] = '\0';
+
+  tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_FILE].tag);
+  tblen = stringAppend (tbuff, sz, tblen, "\n");
+  tblen = stringAppend (tbuff, sz, tblen, "..");
+  tblen = stringAppend (tbuff, sz, tblen, fn);
+  tblen = stringAppend (tbuff, sz, tblen, "\n");
 
   slistStartIterator (tagList, &iteridx);
   while ((tag = slistIterateKey (tagList, &iteridx)) != NULL) {
@@ -315,50 +328,50 @@ dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
     if (strcmp (tag, tagdefs [TAG_STATUS].tag) == 0) {
       havestatus = true;
     }
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, tag);
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "\n");
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "..");
+    tblen = stringAppend (tbuff, sz, tblen, tag);
+    tblen = stringAppend (tbuff, sz, tblen, "\n");
+    tblen = stringAppend (tbuff, sz, tblen, "..");
     data = slistGetStr (tagList, tag);
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, data);
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "\n");
+    tblen = stringAppend (tbuff, sz, tblen, data);
+    tblen = stringAppend (tbuff, sz, tblen, "\n");
   }
 
   if (rrn == MUSICDB_ENTRY_NEW) {
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, tagdefs [TAG_DBADDDATE].tag);
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "\n");
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "..");
+    tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_DBADDDATE].tag);
+    tblen = stringAppend (tbuff, sz, tblen, "\n");
+    tblen = stringAppend (tbuff, sz, tblen, "..");
     tmutilDstamp (tmp, sizeof (tmp));
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, tmp);
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "\n");
+    tblen = stringAppend (tbuff, sz, tblen, tmp);
+    tblen = stringAppend (tbuff, sz, tblen, "\n");
   }
 
   if (! havestatus) {
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, tagdefs [TAG_STATUS].tag);
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "\n");
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "..");
+    tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_STATUS].tag);
+    tblen = stringAppend (tbuff, sz, tblen, "\n");
+    tblen = stringAppend (tbuff, sz, tblen, "..");
     /* CONTEXT: music database: default status */
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, _("New"));
-    tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "\n");
+    tblen = stringAppend (tbuff, sz, tblen, _("New"));
+    tblen = stringAppend (tbuff, sz, tblen, "\n");
   }
 
   /* last-updated is always updated */
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, tagdefs [TAG_LAST_UPDATED].tag);
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "\n");
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "..");
+  tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_LAST_UPDATED].tag);
+  tblen = stringAppend (tbuff, sz, tblen, "\n");
+  tblen = stringAppend (tbuff, sz, tblen, "..");
+  currtime = time (NULL);
   snprintf (tmp, sizeof (tmp), "%zd", currtime);
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, tmp);
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "\n");
+  tblen = stringAppend (tbuff, sz, tblen, tmp);
+  tblen = stringAppend (tbuff, sz, tblen, "\n");
 
   /* rrn must exist, and might be new */
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, tagdefs [TAG_RRN].tag);
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "\n");
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "..");
-  snprintf (tmp, sizeof (tmp), "%d", newrrn);
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, tmp);
-  tblen = stringAppend (tbuff, sizeof (tbuff), tblen, "\n");
+  tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_RRN].tag);
+  tblen = stringAppend (tbuff, sz, tblen, "\n");
+  tblen = stringAppend (tbuff, sz, tblen, "..");
+  snprintf (tmp, sizeof (tmp), "%d", rrn);
+  tblen = stringAppend (tbuff, sz, tblen, tmp);
+  tblen = stringAppend (tbuff, sz, tblen, "\n");
 
-  raWrite (musicdb->radb, rrn, tbuff);
-  return strlen (tbuff);
+  return tblen;
 }
 
 void

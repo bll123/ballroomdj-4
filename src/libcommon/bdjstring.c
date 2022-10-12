@@ -92,6 +92,9 @@ stringAppend (char *str, size_t maxsz, size_t currsz, const char *data)
   const char  *d = data;
   char        *s = str;
 
+  if (str == NULL || data == NULL) {
+    return currsz;
+  }
   s += currsz;
   --maxsz;
   while (*d != '\0' && currsz < maxsz) {

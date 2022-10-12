@@ -29,6 +29,7 @@ void      dbStartBatch (musicdb_t *db);
 void      dbEndBatch (musicdb_t *db);
 size_t    dbWriteSong (musicdb_t *musicdb, song_t *song);
 size_t    dbWrite (musicdb_t *db, const char *fn, slist_t *tagList, dbidx_t rrn);
+size_t    dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList, const char *fn, dbidx_t rrn);
 song_t    *dbGetByName (musicdb_t *db, const char *);
 song_t    *dbGetByIdx (musicdb_t *db, dbidx_t idx);
 void      dbStartIterator (musicdb_t *db, slistidx_t *iteridx);

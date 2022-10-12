@@ -298,7 +298,7 @@ uireqextAudioFileDialog (void *udata)
   selectdata = uiDialogCreateSelect (uireqext->parentwin,
       /* CONTEXT: request external: file selection dialog: window title */
       _("Select File"),
-      "",   // ### FIX start path
+      bdjoptGetStr (OPT_M_DIR_MUSIC),
       NULL,
       /* CONTEXT: request external: file selection dialog: audio file filter */
       _("Audio Files"), "audio/*");
@@ -393,6 +393,8 @@ static void
 uireqextProcessAudioFile (uireqext_t *uireqext)
 {
   const char  *ffn;
+  char        tbuff [3096];
+  size_t      tblen;
 
   if (uireqext == NULL) {
     return;
@@ -405,9 +407,6 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       char            *data;
       slist_t         *tagdata;
       int             rewrite;
-      datafileconv_t  conv;
-
-      // ### determine if this is a song in the db, if so use the db entry
 
       data = audiotagReadTags (ffn);
       if (data == NULL) {
@@ -421,37 +420,16 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
         return;
       }
 
-      if (bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE)) {
-        const char  *val;
+      tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
+          ffn, MUSICDB_ENTRY_NEW);
 
-        val = slistGetStr (tagdata, tagdefs [TAG_DANCE].tag);
-        if (val == NULL || ! *val) {
-          val = slistGetStr (tagdata, tagdefs [TAG_GENRE].tag);
-          if (val != NULL && *val) {
-            slistSetStr (tagdata, tagdefs [TAG_DANCE].tag, val);
-          }
-        }
-      }
-
-      /* for a song that is not in the database, */
-      /* file, artist, title, dance and duration need to be populated */
       uireqext->song = songAlloc ();
-      songSetStr (uireqext->song, TAG_FILE, ffn);
-      songSetStr (uireqext->song, TAG_DURATION,
-          slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
-      conv.allocated = false;
-      conv.str = slistGetStr (tagdata, tagdefs [TAG_DANCE].tag);
-      conv.valuetype = VALUE_STR;
-      danceConvDance (&conv);
-      if (conv.num < 0) {
-        conv.num = -1;
-      }
-      songSetNum (uireqext->song, TAG_DANCE, conv.num);
-      songSetStr (uireqext->song, TAG_ARTIST,
-          slistGetStr (tagdata, tagdefs [TAG_ARTIST].tag));
-      songSetStr (uireqext->song, TAG_TITLE,
-          slistGetStr (tagdata, tagdefs [TAG_TITLE].tag));
+      /* populate the song from the tag data */
+      songParse (uireqext->song, tbuff, 0);
       songSetNum (uireqext->song, TAG_TEMPORARY, true);
+
+      /* even if the song tags are all there, only a few are sent to */
+      /* main for the add temporary song */
 
       /* update the display */
       uiEntrySetValue (uireqext->artistEntry,

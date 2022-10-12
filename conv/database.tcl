@@ -158,7 +158,7 @@ dict for {fn data} $musicdbList {
 
     if { $tag eq "MUSICBRAINZ_TRACKID" } { set tag RECORDING_ID }
     if { $tag eq "DISCNUMBER" } { set tag DISC }
-    if { $tag eq "UPDATETIME" } { set tag LASTUPDATE }
+    if { $tag eq "UPDATETIME" } { set tag LASTUPDATED }
     if { $tag eq "DURATION" } {
       set value [expr {int($value * 1000)}]
     }
