@@ -129,6 +129,10 @@ uiEntrySetValue (uientry_t *entry, const char *value)
     return;
   }
 
+  if (value == NULL) {
+    value = "";
+  }
+
   gtk_entry_buffer_set_text (entry->buffer, value, -1);
 }
 
@@ -154,7 +158,7 @@ uiEntrySetValidate (uientry_t *entry, uientryval_t valfunc, void *udata,
   entry->validateFunc = valfunc;
   entry->udata = udata;
   if (valfunc != NULL) {
-    if (valdelay) {
+    if (valdelay == UIENTRY_DELAYED) {
       mstimeset (&entry->validateTimer, 500);
       entry->valdelay = true;
     }

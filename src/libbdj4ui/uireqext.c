@@ -37,6 +37,7 @@ enum {
 
 typedef struct uireqext {
   UIWidget        *parentwin;
+  UIWidget        *statusMsg;
   nlist_t         *options;
   UIWidget        reqextDialog;
   uientry_t       *audioFileEntry;
@@ -46,6 +47,7 @@ typedef struct uireqext {
   UICallback      callbacks [UIREQEXT_CB_MAX];
   UICallback      *responsecb;
   song_t          *song;
+  bool            isactive : 1;
 } uireqext_t;
 
 /* request external */
@@ -56,6 +58,9 @@ static void   uireqextInitDisplay (uireqext_t *uireqext);
 static void   uireqextClearSong (uireqext_t *uireqext);
 static bool   uireqextResponseHandler (void *udata, long responseid);
 static void   uireqextProcessAudioFile (uireqext_t *uireqext);
+static int    uireqextValidateAudioFile (uientry_t *entry, void *udata);
+static int    uireqextValidateArtist (uientry_t *entry, void *udata);
+static int    uireqextValidateTitle (uientry_t *entry, void *udata);
 
 uireqext_t *
 uireqextInit (UIWidget *windowp, nlist_t *opts)
@@ -69,12 +74,14 @@ uireqextInit (UIWidget *windowp, nlist_t *opts)
   uireqext->titleEntry = uiEntryInit (40, MAXPATHLEN);
   uireqext->uidance = NULL;
   uireqext->parentwin = windowp;
+  uireqext->statusMsg = NULL;
   uireqext->options = opts;
   uireqext->song = NULL;
   for (int i = 0; i < UIREQEXT_CB_MAX; ++i) {
     uiutilsUICallbackInit (&uireqext->callbacks [i], NULL, NULL, NULL);
   }
   uireqext->responsecb = NULL;
+  uireqext->isactive = false;
 
   return uireqext;
 }
@@ -117,6 +124,7 @@ uireqextDialog (uireqext_t *uireqext)
   uireqextCreateDialog (uireqext);
   uireqextInitDisplay (uireqext);
   uiWidgetShowAll (&uireqext->reqextDialog);
+  uireqext->isactive = true;
 
   x = nlistGetNum (uireqext->options, MQ_REQ_EXT_POSITION_X);
   y = nlistGetNum (uireqext->options, MQ_REQ_EXT_POSITION_Y);
@@ -138,6 +146,17 @@ uireqextGetSong (uireqext_t *uireqext)
   /* it is the caller's responsibility to free the song */
   uireqext->song = NULL;
   return song;
+}
+
+/* delayed entry validation for the audio file needs to be run */
+void
+uireqextProcess (uireqext_t *uireqext)
+{
+  if (! uireqext->isactive) {
+    return;
+  }
+
+  uiEntryValidate (uireqext->audioFileEntry, false);
 }
 
 /* internal routines */
@@ -203,8 +222,8 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
-//  uiEntrySetValidate (uireqext->audioFileEntry,
-//      uireqextValidateAudioFile, uireqext, UIENTRY_DELAYED);
+  uiEntrySetValidate (uireqext->audioFileEntry, uireqextValidateAudioFile,
+      uireqext, UIENTRY_DELAYED);
 
   uiutilsUICallbackInit (&uireqext->callbacks [UIREQEXT_CB_AUDIO_FILE],
       uireqextAudioFileDialog, uireqext, NULL);
@@ -227,11 +246,9 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiEntrySetValue (uireqext->artistEntry, "");
   uiwidgetp = uiEntryGetUIWidget (uireqext->artistEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
-//  uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
-//  uiBoxPackStartExpand (&hbox, uiwidgetp);
-//  uiEntrySetValidate (uireqext->audioFileEntry,
-//      uireqextValidateAudioFile, uireqext, UIENTRY_DELAYED);
+  uiEntrySetValidate (uireqext->artistEntry, uireqextValidateArtist,
+      uireqext, UIENTRY_IMMEDIATE);
 
   /* title display */
   uiCreateHorizBox (&hbox);
@@ -245,11 +262,9 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiEntrySetValue (uireqext->titleEntry, "");
   uiwidgetp = uiEntryGetUIWidget (uireqext->titleEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
-//  uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
-//  uiBoxPackStartExpand (&hbox, uiwidgetp);
-//  uiEntrySetValidate (uireqext->audioFileEntry,
-//      uireqextValidateAudioFile, uireqext, UIENTRY_DELAYED);
+  uiEntrySetValidate (uireqext->titleEntry, uireqextValidateTitle,
+      uireqext, UIENTRY_IMMEDIATE);
 
   /* dance : always available */
   uiCreateHorizBox (&hbox);
@@ -302,6 +317,11 @@ uireqextAudioFileDialog (void *udata)
 static bool
 uireqextDanceSelectHandler (void *udata, long idx)
 {
+  uireqext_t  *uireqext = udata;
+
+  if (uireqext->song != NULL) {
+    songSetNum (uireqext->song, TAG_DANCE, idx);
+  }
   return UICB_CONT;
 }
 
@@ -365,6 +385,7 @@ uireqextResponseHandler (void *udata, long responseid)
     }
   }
 
+  uireqext->isactive = false;
   return UICB_CONT;
 }
 
@@ -442,3 +463,50 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
     }
   }
 }
+
+static int
+uireqextValidateAudioFile (uientry_t *entry, void *udata)
+{
+  uireqext_t  *uireqext = udata;
+  int         rc;
+
+  rc = uiEntryValidateFile (entry, NULL);
+  if (rc == UIENTRY_OK) {
+    uireqextProcessAudioFile (uireqext);
+  }
+
+  return rc;
+}
+
+static int
+uireqextValidateArtist (uientry_t *entry, void *udata)
+{
+  uireqext_t  *uireqext = udata;
+  const char  *str;
+
+  if (uireqext->statusMsg != NULL) {
+    uiLabelSetText (uireqext->statusMsg, "");
+  }
+  str = uiEntryGetValue (entry);
+  if (uireqext->song != NULL) {
+    songSetStr (uireqext->song, TAG_ARTIST, str);
+  }
+  return UIENTRY_OK;
+}
+
+static int
+uireqextValidateTitle (uientry_t *entry, void *udata)
+{
+  uireqext_t  *uireqext = udata;
+  const char  *str;
+
+  if (uireqext->statusMsg != NULL) {
+    uiLabelSetText (uireqext->statusMsg, "");
+  }
+  str = uiEntryGetValue (entry);
+  if (uireqext->song != NULL) {
+    songSetStr (uireqext->song, TAG_TITLE, str);
+  }
+  return UIENTRY_OK;
+}
+

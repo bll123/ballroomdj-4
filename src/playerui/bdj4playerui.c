@@ -138,7 +138,7 @@ static bool     pluiStopWaitCallback (void *udata, programstate_t programState);
 static bool     pluiClosingCallback (void *udata, programstate_t programState);
 static void     pluiBuildUI (playerui_t *plui);
 static void     pluiInitializeUI (playerui_t *plui);
-static int      pluiMainLoop  (void *tplui);
+static int      pluiMainLoop (void *tplui);
 static void     pluiClock (playerui_t *plui);
 static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
@@ -616,6 +616,7 @@ pluiMainLoop (void *tplui)
   uiplayerMainLoop (plui->uiplayer);
   uimusicqMainLoop (plui->uimusicq);
   uisongselMainLoop (plui->uisongsel);
+  uireqextProcess (plui->uireqext);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");

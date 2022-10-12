@@ -186,7 +186,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
 
   uiEntryCreate (managepl->plname);
   uiEntrySetValidate (managepl->plname, manageValidateName,
-      managepl->statusMsg, false);
+      managepl->statusMsg, UIENTRY_IMMEDIATE);
   uiEntrySetColor (managepl->plname, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiBoxPackStart (&hbox, uiEntryGetUIWidget (managepl->plname));
 

@@ -303,7 +303,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     entryp = uimusicq->ui [ci].slname;
     uiEntryCreate (entryp);
     if (validateFunc != NULL) {
-      uiEntrySetValidate (entryp, validateFunc, statusMsg, false);
+      uiEntrySetValidate (entryp, validateFunc, statusMsg, UIENTRY_IMMEDIATE);
     }
     uiEntrySetColor (entryp, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
     if (uimusicq->ui [ci].dispselType == DISP_SEL_EZSONGLIST) {
