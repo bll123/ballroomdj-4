@@ -366,7 +366,6 @@ main (int argc, char *argv[])
     installerSetBDJ3LocDir (&installer, fn);
     free (fn);
   }
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial bdj3loc: %s", installer.bdj3loc);
 
   if (isWindows ()) {
     pathWinPath (installer.target, strlen (installer.target));
@@ -720,6 +719,13 @@ installerMainLoop (void *udata)
           LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== installer started");
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", installer->target);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial bdj3loc: %s", installer->bdj3loc);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "new-install: %d", installer->newinstall);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "re-install: %d", installer->reinstall);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "convert: %d", installer->convprocess);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "vlc-inst: %d", installer->vlcinstalled);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "python-inst: %d", installer->pythoninstalled);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "python-upd: %d", installer->updatepython);
       break;
     }
     case INST_COPY_TEMPLATES: {

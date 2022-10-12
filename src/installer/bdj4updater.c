@@ -166,6 +166,8 @@ main (int argc, char *argv [])
       upddfkeys, UPD_DF_COUNT);
   updlist = datafileGetList (df);
 
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "converted: %d", converted);
+
   tval = nlistGetStr (updlist, UPD_FIRST_VERS);
   if (tval == NULL || ! *tval) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "first installation");
@@ -173,6 +175,7 @@ main (int argc, char *argv [])
     nlistSetNum (updlist, UPD_CONVERTED, converted);
   } else {
     converted = nlistGetNum (updlist, UPD_CONVERTED);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "converted (from-file): %d", converted);
   }
 
   /* Always remove the volreg.txt and flag files on an update.  */
@@ -337,7 +340,11 @@ main (int argc, char *argv [])
 
   /* audio file conversions */
 
-  /* fix musicbrainz tags check */
+  /* fix audio file tags check; this is only run if: */
+  /* - it has never been run */
+  /* - not an alpha release */
+  /* - write-tag is on */
+  /* - bdj3-compat-tags is off */
 
   statusflags [UPD_FIX_AF_TAGS] = value;
   processflags [UPD_FIX_AF_TAGS] =

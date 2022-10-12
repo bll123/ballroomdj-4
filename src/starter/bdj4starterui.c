@@ -834,6 +834,7 @@ starterMainLoop (void *tstarter)
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending %s"), "data/musicdb.dat");
       uiLabelSetText (&starter->supportStatus, tbuff);
+      starterSendFilesInit (starter, tbuff, SF_CONF_ONLY);
       starter->delayCount = 0;
       starter->delayState = START_STATE_SUPPORT_SEND_DB;
       starter->startState = START_STATE_DELAY;

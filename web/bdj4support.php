@@ -24,7 +24,7 @@ if (isset($_FILES['upfile']['name']) &&
   $fn = $dir . '/' . $_POST['origfn'];
   $fdata = file_get_contents ($tfn);
   $fdata = base64_decode ($fdata);
-  if (! file_exists ($fn)) {
+  if (! file_exists (dirname ($fn))) {
     mkdir (dirname ($fn));
   }
   $gzfn = $fn . '.gz';
@@ -38,9 +38,12 @@ if (isset($_FILES['upfile']['name']) &&
   if ($base == 'support.txt') {
     $msg = file_get_contents ($fn);
     $headers = '';
-    if (preg_match ("#Subject:\s*(.*)[\r\n]#m", $msg, $matches)) {
+    if (preg_match ("#Subject:\s*([^\r\n]*)[\r\n]#m", $msg, $matches)) {
       $subject = $matches[1];
     }
+    // clean up any possible html tags
+    preg_replace ('/</', $msg, '\&lt;');
+    preg_replace ('/>/', $msg, '\&gt;');
     mail ('brad.lanam.di@gmail.com', "BDJ4: Support: $subject", $msg, $headers);
   }
   echo "OK";
