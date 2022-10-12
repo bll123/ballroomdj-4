@@ -47,7 +47,6 @@ START_TEST(song_alloc)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_alloc");
 
   bdjvarsdfloadInit ();
-  songFavoriteInit ();
 
   song = songAlloc ();
   ck_assert_ptr_nonnull (song);
@@ -211,7 +210,7 @@ START_TEST(song_parse_get)
   char        *data;
   slist_t     *tlist;
   slistidx_t  iteridx;
-  songfavoriteinfo_t *sfav;
+//  songfavoriteinfo_t *sfav;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse_get");
 
@@ -258,9 +257,9 @@ START_TEST(song_parse_get)
     ck_assert_int_eq (songGetNum (song, TAG_DANCERATING), 2);
     ck_assert_int_eq (songGetNum (song, TAG_DANCELEVEL), 1);
     ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);
-    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_BLUE);
-    sfav = songGetFavoriteData (song);
-    ck_assert_int_eq (sfav->idx, SONG_FAVORITE_BLUE);
+//    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_BLUE);
+//    sfav = songGetFavoriteData (song);
+//    ck_assert_int_eq (sfav->idx, SONG_FAVORITE_BLUE);
     songFree (song);
   }
 
@@ -272,7 +271,7 @@ START_TEST(song_parse_set)
 {
   song_t      *song = NULL;
   char        *data;
-  songfavoriteinfo_t *sfav;
+//  songfavoriteinfo_t *sfav;
   slist_t     *tlist;
   slistidx_t  iteridx;
 
@@ -327,9 +326,9 @@ START_TEST(song_parse_set)
     data = slistIterateKey (tlist, &iteridx);
     ck_assert_str_eq (data, "tag5");
     /* converted - these assume the standard data files */
-    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_PURPLE);
-    sfav = songGetFavoriteData (song);
-    ck_assert_int_eq (sfav->idx, SONG_FAVORITE_PURPLE);
+//    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_PURPLE);
+//    sfav = songGetFavoriteData (song);
+//    ck_assert_int_eq (sfav->idx, SONG_FAVORITE_PURPLE);
     songFree (song);
   }
 
@@ -441,7 +440,7 @@ START_TEST(song_tag_list)
   char        *data;
   slist_t     *tlist;
   slistidx_t  iteridx;
-  songfavoriteinfo_t *sfav;
+//  songfavoriteinfo_t *sfav;
   char        tbuff [3096];
   char        *tag;
 
@@ -520,9 +519,9 @@ START_TEST(song_tag_list)
     ck_assert_int_eq (songGetNum (song, TAG_DANCERATING), 2);
     ck_assert_int_eq (songGetNum (song, TAG_DANCELEVEL), 1);
     ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);
-    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_BLUE);
-    sfav = songGetFavoriteData (song);
-    ck_assert_int_eq (sfav->idx, SONG_FAVORITE_BLUE);
+//    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_BLUE);
+//    sfav = songGetFavoriteData (song);
+//    ck_assert_int_eq (sfav->idx, SONG_FAVORITE_BLUE);
 
     songFree (song);
   }

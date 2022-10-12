@@ -1,0 +1,84 @@
+# favorites
+# 2022-10-12
+#
+#   There is no configuration tool to change the favorites, but they
+#     may be changed manually.
+#   The names must be unique.
+#   The display string should be a single character that can take a color.
+#
+version
+..1
+count
+..8
+# key 0 may not be changed, except for the display.
+# key 0 is used as the indicator that there is no favorite setting.
+KEY
+..0
+NAME
+..
+DISPLAY
+..☆
+COLOR
+..
+KEY
+..1
+NAME
+..redstar
+DISPLAY
+..★
+COLOR
+..#d2322a
+KEY
+..2
+NAME
+..orangestar
+DISPLAY
+..★
+COLOR
+..#d0711b
+KEY
+..3
+NAME
+..greenstar
+DISPLAY
+..★
+COLOR
+..#007d26
+KEY
+..4
+NAME
+..bluestar
+DISPLAY
+..★
+COLOR
+..#362bff
+KEY
+..5
+NAME
+..purplestar
+DISPLAY
+..★
+COLOR
+..#8c2e9c
+# pinkheart is used in itunes conversion
+# the name should be kept if itunes is in use
+# the symbol and color may be changed
+KEY
+..6
+NAME
+..pinkheart
+DISPLAY
+..♥
+COLOR
+..#ee00e1
+# brokenheart is used in itunes conversion
+# the name should be kept if itunes is in use
+# the symbol and color may be changed
+KEY
+..7
+NAME
+..brokenheart
+DISPLAY
+..💔
+COLOR
+..#6d2828

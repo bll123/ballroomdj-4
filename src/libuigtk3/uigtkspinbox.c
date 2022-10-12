@@ -481,7 +481,7 @@ uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata)
 {
   uispinbox_t  *spinbox = udata;
   GtkAdjustment     *adjustment;
-  char              *disp;
+  const char        *disp;
   double            value;
   char              tbuff [100];
 

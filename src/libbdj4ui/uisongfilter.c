@@ -23,6 +23,7 @@
 #include "nlist.h"
 #include "playlist.h"
 #include "rating.h"
+#include "songfav.h"
 #include "songfilter.h"
 #include "songlist.h"
 #include "sortopt.h"

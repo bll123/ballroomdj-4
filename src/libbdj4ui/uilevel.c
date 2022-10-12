@@ -24,7 +24,7 @@ typedef struct uilevel {
   bool          allflag;
 } uilevel_t;
 
-static char *uilevelLevelGet (void *udata, int idx);
+static const char *uilevelLevelGet (void *udata, int idx);
 
 uilevel_t *
 uilevelSpinboxCreate (UIWidget *boxp, bool allflag)
@@ -120,7 +120,7 @@ uilevelSizeGroupAdd (uilevel_t *uilevel, UIWidget *sg)
 
 /* internal routines */
 
-static char *
+static const char *
 uilevelLevelGet (void *udata, int idx)
 {
   uilevel_t  *uilevel = udata;

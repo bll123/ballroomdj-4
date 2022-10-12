@@ -24,6 +24,7 @@
 #include "musicdb.h"
 #include "slist.h"
 #include "song.h"
+#include "tagdef.h"
 #include "templateutil.h"
 
 static char *dbfn = "tmp/musicdb.dat";

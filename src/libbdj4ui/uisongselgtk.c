@@ -13,21 +13,23 @@
 #include <gtk/gtk.h>
 
 #include "bdj4intl.h"
-#include "bdjstring.h"
-#include "bdjopt.h"
 #include "bdj4ui.h"
+#include "bdjopt.h"
+#include "bdjstring.h"
+#include "bdjvarsdf.h"
 #include "colorutils.h"
 #include "conn.h"
 #include "log.h"
 #include "musicq.h"
 #include "nlist.h"
+#include "songfav.h"
 #include "songfilter.h"
 #include "uidance.h"
-#include "uisongsel.h"
-#include "ui.h"
 #include "uifavorite.h"
-#include "uisong.h"
+#include "ui.h"
 #include "uisongfilter.h"
+#include "uisong.h"
+#include "uisongsel.h"
 
 enum {
   SONGSEL_COL_ELLIPSIZE,
@@ -386,24 +388,27 @@ uisongselClearData (uisongsel_t *uisongsel)
 void
 uisongselPopulateData (uisongsel_t *uisongsel)
 {
-  uisongselgtk_t      * uiw;
-  GtkTreeModel        * model = NULL;
-  GtkTreeIter         iter;
-  GtkAdjustment       * adjustment;
-  long                idx;
-  int                 count;
-  song_t              * song;
-  songfavoriteinfo_t  * favorite;
-  char                * color;
-  char                tmp [40];
-  char                tbuff [100];
-  dbidx_t             dbidx;
-  char                * listingFont;
-  slist_t             * sellist;
-  double              tupper;
-  const char          * sscolor = ""; // "#000000";
+  uisongselgtk_t  * uiw;
+  GtkTreeModel    * model = NULL;
+  GtkTreeIter     iter;
+  GtkAdjustment   * adjustment;
+  long            idx;
+  int             count;
+  song_t          * song;
+  const char      * color;
+  char            tmp [40];
+  char            tbuff [100];
+  dbidx_t         dbidx;
+  char            * listingFont;
+  slist_t         * sellist;
+  double          tupper;
+  const char      * sscolor = ""; // "#000000";
+  songfav_t       *songfav;
 
   logProcBegin (LOG_PROC, "uisongselPopulateData");
+
+  songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
+
   uiw = uisongsel->uiWidgetData;
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
@@ -423,7 +428,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   while (count < uiw->maxRows) {
     snprintf (tbuff, sizeof (tbuff), "%d", count);
     if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
-      char    colorbuff [200];
+      char        colorbuff [200];
+      ilistidx_t  favidx;
 
       dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
       song = NULL;
@@ -453,9 +459,9 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         }
 
         /* favorite color processing */
-        favorite = songGetFavoriteData (song);
-        color = favorite->color;
-        if (strcmp (color, "") == 0) {
+        favidx = songGetNum (song, TAG_FAVORITE);
+        color = songFavoriteGetStr (songfav, favidx, SONGFAV_COLOR);
+        if (color == NULL || strcmp (color, "") == 0) {
           uiGetForegroundColorW (uiw->songselTree, tmp, sizeof (tmp));
           color = tmp;
         }

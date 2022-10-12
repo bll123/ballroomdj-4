@@ -19,6 +19,7 @@
 #include "level.h"
 #include "pathbld.h"
 #include "rating.h"
+#include "songfav.h"
 #include "status.h"
 
 int
@@ -34,14 +35,15 @@ bdjvarsdfloadInit (void)
   /* sequence loads depend on dances */
   bdjvarsdfSet (BDJVDF_DANCES, danceAlloc ());
 
-  /* the database load depends on ratings, levels and status*/
+  /* the database load depends on ratings, levels and status */
   /* playlist loads depend on ratings, levels and status */
   bdjvarsdfSet (BDJVDF_RATINGS, ratingAlloc ());
   bdjvarsdfSet (BDJVDF_LEVELS, levelAlloc ());
   bdjvarsdfSet (BDJVDF_STATUS, statusAlloc ());
 
-  /* the database load depends on genres */
+  /* the database load depends on genres and favorites */
   bdjvarsdfSet (BDJVDF_GENRES, genreAlloc ());
+  bdjvarsdfSet (BDJVDF_FAVORITES, songFavoriteAlloc ());
 
   /* auto selection numbers are used by dancesel.c and autosel.c */
   bdjvarsdfSet (BDJVDF_AUTO_SEL, autoselAlloc ());
@@ -62,9 +64,10 @@ void
 bdjvarsdfloadCleanup (void)
 {
   autoselFree (bdjvarsdfGet (BDJVDF_AUTO_SEL));
+  songFavoriteFree (bdjvarsdfGet (BDJVDF_FAVORITES));
+  genreFree (bdjvarsdfGet (BDJVDF_GENRES));
   statusFree (bdjvarsdfGet (BDJVDF_STATUS));
   levelFree (bdjvarsdfGet (BDJVDF_LEVELS));
-  genreFree (bdjvarsdfGet (BDJVDF_GENRES));
   ratingFree (bdjvarsdfGet (BDJVDF_RATINGS));
   danceFree (bdjvarsdfGet (BDJVDF_DANCES));
   dnctypesFree (bdjvarsdfGet (BDJVDF_DANCE_TYPES));

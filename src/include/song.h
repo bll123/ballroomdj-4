@@ -4,7 +4,7 @@
 #include "datafile.h"
 #include "nlist.h"
 #include "slist.h"
-#include "songfav.h"
+// #include "songfav.h"
 
 typedef struct song song_t;
 
@@ -15,7 +15,7 @@ char *    songGetStr (song_t *, nlistidx_t);
 ssize_t   songGetNum (song_t *, nlistidx_t);
 double    songGetDouble (song_t *, nlistidx_t);
 slist_t * songGetList (song_t *song, nlistidx_t idx);
-songfavoriteinfo_t  * songGetFavoriteData (song_t *);
+// songfavoriteinfo_t  * songGetFavoriteData (song_t *);
 void      songSetNum (song_t *, nlistidx_t, ssize_t val);
 void      songSetDouble (song_t *, nlistidx_t, double val);
 void      songSetStr (song_t *song, nlistidx_t tagidx, const char *str);

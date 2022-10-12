@@ -28,7 +28,6 @@
 #include "slist.h"
 #include "song.h"
 #include "songdb.h"
-#include "songfav.h"
 #include "status.h"
 #include "sysvars.h"
 #include "tagdef.h"

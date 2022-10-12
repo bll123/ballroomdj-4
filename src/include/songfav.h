@@ -2,30 +2,27 @@
 #define INC_SONGFAV_H
 
 #include "datafile.h"
-#include "tagdef.h"
 
-typedef enum {
-  SONG_FAVORITE_NONE,
-  SONG_FAVORITE_RED,
-  SONG_FAVORITE_ORANGE,
-  SONG_FAVORITE_GREEN,
-  SONG_FAVORITE_BLUE,
-  SONG_FAVORITE_PURPLE,
-  SONG_FAVORITE_PINK_HEART,
-  SONG_FAVORITE_BROKEN_HEART,
-  SONG_FAVORITE_MAX,
-} songfavorite_t;
+enum {
+  SONGFAV_NAME,
+  SONGFAV_DISPLAY,
+  SONGFAV_COLOR,
+  SONGFAV_KEY_MAX,
+};
 
-typedef struct songfavoriteinfo {
-  songfavorite_t      idx;
-  char                *dispStr;
-  char                *color;
-  char                *spanStr;
-} songfavoriteinfo_t;
+enum {
+  /* key 0 must be defined as the no-favorite selection in favorites.txt */
+  SONG_FAVORITE_NONE = 0,
+};
 
-void songFavoriteInit (void);
-void songFavoriteCleanup (void);
-void songFavoriteConv (datafileconv_t *conv);
-songfavoriteinfo_t  * songFavoriteGet (int value);
+typedef struct songfav songfav_t;
+
+songfav_t *songFavoriteAlloc (void);
+void  songFavoriteFree (songfav_t *songfav);
+int   songFavoriteGetCount (songfav_t *songfav);
+int   songFavoriteGetNextValue (songfav_t *songfav, int value);
+const char * songFavoriteGetStr (songfav_t *songfav, ilistidx_t key, int idx);
+const char * songFavoriteGetSpanStr (songfav_t *songfav, ilistidx_t key);
+void  songFavoriteConv (datafileconv_t *conv);
 
 #endif /* INC_SONGFAV_H */

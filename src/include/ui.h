@@ -190,7 +190,7 @@ enum {
   SB_TIME_PRECISE,
 };
 
-typedef char * (*uispinboxdisp_t)(void *, int);
+typedef const char * (*uispinboxdisp_t)(void *, int);
 typedef struct uispinbox uispinbox_t;
 
 uispinbox_t *uiSpinboxTextInit (void);

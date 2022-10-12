@@ -185,7 +185,7 @@ static bool     starterStartManageui (void *udata);
 static bool     starterStartConfig (void *udata);
 
 static int      starterGetProfiles (startui_t *starter);
-static char     * starterSetProfile (void *udata, int idx);
+static const char * starterSetProfile (void *udata, int idx);
 static int      starterCheckProfile (startui_t *starter);
 
 static bool     starterProcessSupport (void *udata);
@@ -1376,14 +1376,14 @@ starterGetProfiles (startui_t *starter)
   return dispidx;
 }
 
-static char *
+static const char *
 starterSetProfile (void *udata, int idx)
 {
-  startui_t *starter = udata;
-  char      *disp;
-  int       dispidx;
-  int       profidx;
-  int       chg;
+  startui_t   *starter = udata;
+  const char  *disp;
+  int         dispidx;
+  int         profidx;
+  int         chg;
 
   dispidx = uiSpinboxTextGetValue (starter->profilesel);
   disp = nlistGetStr (starter->proflist, dispidx);

@@ -569,12 +569,9 @@ START_TEST(songfilter_favorite)
 
   ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_FAVORITE), 0);
 
-  for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
-    songfilterSetNum (sf, SONG_FILTER_FAVORITE, i);
-
-    rv = songfilterProcess (sf, db);
-    ck_assert_int_lt (rv, arv);
-  }
+  songfilterSetNum (sf, SONG_FILTER_FAVORITE, 1);
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_lt (rv, arv);
 
   ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_FAVORITE), 1);
 

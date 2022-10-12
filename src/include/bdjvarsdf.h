@@ -11,6 +11,7 @@ typedef enum {
   BDJVDF_LEVELS,
   BDJVDF_RATINGS,
   BDJVDF_STATUS,
+  BDJVDF_FAVORITES,
   BDJVDF_MAX,
 } bdjvarkeydf_t;
 

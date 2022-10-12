@@ -15,16 +15,18 @@
 #include "bdjvarsdf.h"
 #include "musicdb.h"
 #include "song.h"
+#include "songfav.h"
 #include "ui.h"
 #include "uifavorite.h"
 
 typedef struct uifavorite {
   uispinbox_t   *spinbox;
+  songfav_t     *songfav;
   char          textcolor [40];
 } uifavorite_t;
 
-static char *uifavoriteFavoriteGet (void *udata, int idx);
-static void uifavoriteSetFavoriteForeground (uifavorite_t *uifavorite, char *color);
+static const char *uifavoriteFavoriteGet (void *udata, int idx);
+static void uifavoriteSetFavoriteForeground (uifavorite_t *uifavorite, const char *color);
 
 uifavorite_t *
 uifavoriteSpinboxCreate (UIWidget *boxp)
@@ -33,6 +35,7 @@ uifavoriteSpinboxCreate (UIWidget *boxp)
   UIWidget      *uispinboxp;
 
   uifavorite = malloc (sizeof (uifavorite_t));
+  uifavorite->songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
   uifavorite->spinbox = uiSpinboxTextInit ();
   uispinboxp = uiSpinboxGetUIWidget (uifavorite->spinbox);
   uiSpinboxTextCreate (uifavorite->spinbox, uifavorite);
@@ -41,7 +44,8 @@ uifavoriteSpinboxCreate (UIWidget *boxp)
       uifavorite->textcolor, sizeof (uifavorite->textcolor));
 
   uiSpinboxTextSet (uifavorite->spinbox, 0,
-      SONG_FAVORITE_MAX, 2, NULL, NULL, uifavoriteFavoriteGet);
+      songFavoriteGetCount (uifavorite->songfav),
+      2, NULL, NULL, uifavoriteFavoriteGet);
 
   uiBoxPackStart (boxp, uispinboxp);
 
@@ -101,21 +105,21 @@ uifavoriteEnable (uifavorite_t *uifavorite)
 
 /* internal routines */
 
-static char *
+static const char *
 uifavoriteFavoriteGet (void *udata, int idx)
 {
-  uifavorite_t        *uifavorite = udata;
-  songfavoriteinfo_t  *favorite;
+  uifavorite_t  *uifavorite = udata;
+  const char    *color;
 
-  favorite = songFavoriteGet (idx);
-  uifavoriteSetFavoriteForeground (uifavorite, favorite->color);
-  return favorite->dispStr;
+  color = songFavoriteGetStr (uifavorite->songfav, idx, SONGFAV_COLOR);
+  uifavoriteSetFavoriteForeground (uifavorite, color);
+  return songFavoriteGetStr (uifavorite->songfav, idx, SONGFAV_DISPLAY);
 }
 
 static void
-uifavoriteSetFavoriteForeground (uifavorite_t *uifavorite, char *color)
+uifavoriteSetFavoriteForeground (uifavorite_t *uifavorite, const char *color)
 {
-  if (strcmp (color, "") != 0) {
+  if (color != NULL && strcmp (color, "") != 0) {
     uiSpinboxSetColor (uifavorite->spinbox, color);
   } else {
     uiSpinboxSetColor (uifavorite->spinbox, uifavorite->textcolor);

@@ -24,7 +24,7 @@ typedef struct uirating {
   bool          allflag;
 } uirating_t;
 
-static char *uiratingRatingGet (void *udata, int idx);
+static const char *uiratingRatingGet (void *udata, int idx);
 
 uirating_t *
 uiratingSpinboxCreate (UIWidget *boxp, bool allflag)
@@ -120,7 +120,7 @@ uiratingSizeGroupAdd (uirating_t *uirating, UIWidget *sg)
 
 /* internal routines */
 
-static char *
+static const char *
 uiratingRatingGet (void *udata, int idx)
 {
   uirating_t  *uirating = udata;

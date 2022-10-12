@@ -24,7 +24,7 @@ typedef struct uistatus {
   bool          allflag;
 } uistatus_t;
 
-static char *uistatusStatusGet (void *udata, int idx);
+static const char *uistatusStatusGet (void *udata, int idx);
 
 uistatus_t *
 uistatusSpinboxCreate (UIWidget *boxp, bool allflag)
@@ -120,7 +120,7 @@ uistatusSizeGroupAdd (uistatus_t *uistatus, UIWidget *sg)
 
 /* internal routines */
 
-static char *
+static const char *
 uistatusStatusGet (void *udata, int idx)
 {
   uistatus_t  *uistatus = udata;

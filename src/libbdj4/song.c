@@ -84,9 +84,10 @@ typedef struct {
   bool      initialized;
   long      songcount;
   level_t   *levels;
+  songfav_t *songfav;
 } songinit_t;
 
-static songinit_t gsonginit = { false, 0, NULL };
+static songinit_t gsonginit = { false, 0, NULL, NULL };
 
 song_t *
 songAlloc (void)
@@ -226,22 +227,6 @@ songGetList (song_t *song, nlistidx_t idx)
   return value;
 }
 
-songfavoriteinfo_t *
-songGetFavoriteData (song_t *song)
-{
-  ssize_t       value;
-
-  if (song == NULL || song->songInfo == NULL) {
-    return songFavoriteGet (SONG_FAVORITE_NONE);
-  }
-
-  value = nlistGetNum (song->songInfo, TAG_FAVORITE);
-  if (value == LIST_VALUE_INVALID) {
-    value = SONG_FAVORITE_NONE;
-  }
-  return songFavoriteGet (value);
-}
-
 void
 songSetNum (song_t *song, nlistidx_t tagidx, ssize_t value)
 {
@@ -318,13 +303,7 @@ songChangeFavorite (song_t *song)
   }
 
   fav = nlistGetNum (song->songInfo, TAG_FAVORITE);
-  if (fav == LIST_VALUE_INVALID) {
-    fav = SONG_FAVORITE_NONE;
-  }
-  ++fav;
-  if (fav >= SONG_FAVORITE_MAX) {
-    fav = SONG_FAVORITE_NONE;
-  }
+  fav = songFavoriteGetNextValue (gsonginit.songfav, fav);
   nlistSetNum (song->songInfo, TAG_FAVORITE, fav);
   song->changed = true;
 }
@@ -357,16 +336,19 @@ songDisplayString (song_t *song, int tagidx)
   dfConvFunc_t    convfunc;
   datafileconv_t  conv;
   char            *str = NULL;
-  songfavoriteinfo_t  * favorite;
 
   if (song == NULL) {
     return NULL;
   }
 
   if (tagidx == TAG_FAVORITE) {
-    favorite = songGetFavoriteData (song);
-    if (favorite != NULL) {
-      str = strdup (favorite->spanStr);
+    ilistidx_t  favidx;
+    const char  *tstr;
+
+    favidx = songGetNum (song, tagidx);
+    tstr = songFavoriteGetSpanStr (gsonginit.songfav, favidx);
+    if (tstr != NULL) {
+      str = strdup (tstr);
     }
     return str;
   }
@@ -436,8 +418,8 @@ songInit (void)
   gsonginit.initialized = true;
   gsonginit.songcount = 0;
 
-  songFavoriteInit ();
   gsonginit.levels = bdjvarsdfGet (BDJVDF_LEVELS);
+  gsonginit.songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
 }
 
 static void
@@ -449,7 +431,6 @@ songCleanup (void)
 
   gsonginit.songcount = 0;
   gsonginit.initialized = false;
-  songFavoriteCleanup ();
 }
 
 

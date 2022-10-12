@@ -102,6 +102,7 @@ static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
   [SVL_BASEPORT] = { "Base-Port" },
   [SVL_OSBITS] = { "OS-Bits" },
   [SVL_NUM_PROC] = { "Number-of-Processors" },
+  [SVL_LOCALE_SET] = { "Locale-Set" },
 };
 
 enum {

@@ -6,105 +6,161 @@
 #include <string.h>
 #include <assert.h>
 
+#include "bdj4.h"
+#include "bdjvarsdf.h"
 #include "datafile.h"
+#include "fileop.h"
+#include "ilist.h"
+#include "log.h"
+#include "nlist.h"
+#include "pathbld.h"
+#include "slist.h"
 #include "songfav.h"
 
-static datafilekey_t favoritedfkeys [SONG_FAVORITE_MAX] = {
-  { "",           SONG_FAVORITE_NONE,     VALUE_STR, NULL, -1 },
-  { "bluestar",   SONG_FAVORITE_BLUE,     VALUE_STR, NULL, -1 },
-  { "brokenheart",SONG_FAVORITE_BROKEN_HEART, VALUE_STR, NULL, -1 },
-  { "greenstar",  SONG_FAVORITE_GREEN,    VALUE_STR, NULL, -1 },
-  { "orangestar", SONG_FAVORITE_ORANGE,   VALUE_STR, NULL, -1 },
-  { "pinkheart",  SONG_FAVORITE_PINK_HEART, VALUE_STR, NULL, -1 },
-  { "purplestar", SONG_FAVORITE_PURPLE,   VALUE_STR, NULL, -1 },
-  { "redstar",    SONG_FAVORITE_RED,      VALUE_STR, NULL, -1 },
+/* must be sorted in ascii order */
+static datafilekey_t songfavdfkeys [SONGFAV_KEY_MAX] = {
+  { "COLOR",    SONGFAV_COLOR,    VALUE_STR, NULL, -1 },
+  { "DISPLAY",  SONGFAV_DISPLAY,  VALUE_STR, NULL, -1 },
+  { "NAME",     SONGFAV_NAME,     VALUE_STR, NULL, -1 },
 };
 
-static songfavoriteinfo_t songfavoriteinfo [SONG_FAVORITE_MAX] = {
-  { SONG_FAVORITE_NONE, "\xE2\x98\x86", "", NULL },
-  { SONG_FAVORITE_RED, "\xE2\x98\x85", "#d2322a", NULL },
-  { SONG_FAVORITE_ORANGE, "\xE2\x98\x85", "#d0711b", NULL },
-  { SONG_FAVORITE_GREEN, "\xE2\x98\x85", "#007d26", NULL },
-  { SONG_FAVORITE_BLUE, "\xE2\x98\x85", "#362bff", NULL },
-  { SONG_FAVORITE_PURPLE, "\xE2\x98\x85", "#8c2e9c", NULL },
-  { SONG_FAVORITE_PINK_HEART, "\xE2\x99\xa5", "#ee00e1", NULL },
-  { SONG_FAVORITE_BROKEN_HEART, "\xF0\x9F\x92\x94", "#6d2828", NULL },
-};
+typedef struct songfav {
+  datafile_t    *df;
+  ilist_t       *songfavList;
+  slist_t       *songfavLookup;
+  nlist_t       *spanstrList;
+  int           count;
+} songfav_t;
 
-static bool initialized = false;
+// static bool initialized = false;
 
-void
-songFavoriteInit (void)
+songfav_t *
+songFavoriteAlloc (void)
 {
-  char  *col;
-  char  tbuff [100];
+  char        fname [MAXPATHLEN];
+  songfav_t   *songfav;
+  ilistidx_t  iteridx;
+  ilistidx_t  key;
 
-  if (! initialized) {
-    for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
-      if (i == 0) {
-        col = "#ffffff";
-      } else {
-        col = songfavoriteinfo [i].color;
-      }
-      snprintf (tbuff, sizeof (tbuff), "<span color=\"%s\">%s</span>",
-          col, songfavoriteinfo [i].dispStr);
-      songfavoriteinfo [i].spanStr = strdup (tbuff);
-    }
-
-    initialized = true;
+  pathbldMakePath (fname, sizeof (fname), "favorites",
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+  if (! fileopFileExists (fname)) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: favorites: missing %s", fname);
+    return NULL;
   }
+
+  songfav = malloc (sizeof (songfav_t));
+
+  songfav->df = datafileAllocParse ("favorites", DFTYPE_INDIRECT, fname,
+        songfavdfkeys, SONGFAV_KEY_MAX);
+  songfav->songfavList = datafileGetList (songfav->df);
+  songfav->count = ilistGetCount (songfav->songfavList);
+
+  songfav->spanstrList = nlistAlloc ("songfav-span", LIST_UNORDERED, free);
+  nlistSetSize (songfav->spanstrList, songfav->count);
+  songfav->songfavLookup = slistAlloc ("songfav-lookup", LIST_UNORDERED, NULL);
+  slistSetSize (songfav->songfavLookup, songfav->count);
+
+  ilistStartIterator (songfav->songfavList, &iteridx);
+  while ((key = ilistIterateKey (songfav->songfavList, &iteridx)) >= 0) {
+    char    *name;
+    char    *disp;
+    char    *color;
+    char  tbuff [100];
+
+    name = ilistGetStr (songfav->songfavList, key, SONGFAV_NAME);
+    disp = ilistGetStr (songfav->songfavList, key, SONGFAV_DISPLAY);
+    color = ilistGetStr (songfav->songfavList, key, SONGFAV_COLOR);
+    if (color == NULL) {
+      color = "#ffffff";
+    }
+    snprintf (tbuff, sizeof (tbuff), "<span color=\"%s\">%s</span>",
+          color, disp);
+    nlistSetStr (songfav->spanstrList, key, tbuff);
+    slistSetNum (songfav->songfavLookup, name, key);
+  }
+
+  nlistSort (songfav->spanstrList);
+  slistSort (songfav->songfavLookup);
+
+  return songfav;
 }
 
 void
-songFavoriteCleanup (void)
+songFavoriteFree (songfav_t *songfav)
 {
-  if (initialized) {
-    for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
-      if (songfavoriteinfo [i].spanStr != NULL) {
-        free (songfavoriteinfo [i].spanStr);
-        songfavoriteinfo [i].spanStr = NULL;
-      }
-    }
-    initialized = false;
+  if (songfav != NULL) {
+    datafileFree (songfav->df);
+    nlistFree (songfav->spanstrList);
+    free (songfav);
   }
+}
+
+int
+songFavoriteGetCount (songfav_t *songfav)
+{
+  if (songfav == NULL) {
+    return 0;
+  }
+
+  return songfav->count;
+}
+
+int
+songFavoriteGetNextValue (songfav_t *songfav, int value)
+{
+  if (value < 0) {
+    value = 0;
+  } else {
+    ++value;
+  }
+  if (value >= songfav->count) {
+    value = 0;
+  }
+
+  return value;
+}
+
+const char *
+songFavoriteGetStr (songfav_t *songfav, ilistidx_t key, int idx)
+{
+  if (songfav == NULL) {
+    return "";
+  }
+
+  return ilistGetStr (songfav->songfavList, key, idx);
+}
+
+const char *
+songFavoriteGetSpanStr (songfav_t *songfav, ilistidx_t key)
+{
+  if (songfav == NULL) {
+    return "";
+  }
+
+  return nlistGetStr (songfav->spanstrList, key);
 }
 
 void
 songFavoriteConv (datafileconv_t *conv)
 {
-  nlistidx_t       idx;
+  songfav_t   *songfav;
+  ssize_t     num;
+
+  songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
 
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
-    if (conv->str == NULL || strcmp (conv->str, "") == 0) {
-      conv->num = SONG_FAVORITE_NONE;
-      return;
+    num = slistGetNum (songfav->songfavLookup, conv->str);
+    if (num == LIST_VALUE_INVALID) {
+      num = 0;
     }
-    idx = dfkeyBinarySearch (favoritedfkeys, SONG_FAVORITE_MAX, conv->str);
-    if (idx < 0) {
-      conv->num = SONG_FAVORITE_NONE;
-    } else {
-      conv->num = favoritedfkeys [idx].itemkey;
-    }
+    conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
-    idx = conv->num;
-    if (idx < 0 || idx >= SONG_FAVORITE_MAX) {
-      idx = SONG_FAVORITE_NONE;
-    }
-    for (int i = 0; i < SONG_FAVORITE_MAX; ++i) {
-      if (favoritedfkeys [i].itemkey == idx) {
-        conv->str = favoritedfkeys [i].name;
-        break;
-      }
-    }
+    num = conv->num;
+    conv->str = ilistGetStr (songfav->songfavList, num, SONGFAV_NAME);
   }
-}
-
-songfavoriteinfo_t *
-songFavoriteGet (int value)
-{
-  return &songfavoriteinfo [value];
 }
 
