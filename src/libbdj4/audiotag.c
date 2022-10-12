@@ -860,7 +860,7 @@ audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value)
 
       /* bdj3 song start/song end are stored as mm:ss.d */
       val = atoll (value);
-      tmutilToMSD (val, tmp, sz);
+      tmutilToMSD (val, tmp, sz, 1);
       rc = true;
     }
     if (tagkey == TAG_VOLUMEADJUSTPERC) {

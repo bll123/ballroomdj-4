@@ -271,16 +271,16 @@ START_TEST(tmutiltomsd_chk)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutiltomsd_chk");
 
-  tmutilToMSD (0, buff, sizeof (buff));
+  tmutilToMSD (0, buff, sizeof (buff), 3);
   snprintf (tmp, sizeof (tmp), "0:00%s000", sysvarsGetStr (SV_LOCALE_RADIX));
   ck_assert_str_eq (buff, tmp);
-  tmutilToMSD (59001, buff, sizeof (buff));
+  tmutilToMSD (59001, buff, sizeof (buff), 3);
   snprintf (tmp, sizeof (tmp), "0:59%s001", sysvarsGetStr (SV_LOCALE_RADIX));
   ck_assert_str_eq (buff, tmp);
-  tmutilToMSD (60002, buff, sizeof (buff));
+  tmutilToMSD (60002, buff, sizeof (buff), 3);
   snprintf (tmp, sizeof (tmp), "1:00%s002", sysvarsGetStr (SV_LOCALE_RADIX));
   ck_assert_str_eq (buff, tmp);
-  tmutilToMSD (119003, buff, sizeof (buff));
+  tmutilToMSD (119003, buff, sizeof (buff), 3);
   snprintf (tmp, sizeof (tmp), "1:59%s003", sysvarsGetStr (SV_LOCALE_RADIX));
   ck_assert_str_eq (buff, tmp);
 }

@@ -530,7 +530,7 @@ uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
     tmutilToMS ((ssize_t) value, tbuff, sizeof (tbuff));
   }
   if (spinbox->sbtype == SB_TIME_PRECISE) {
-    tmutilToMSD ((ssize_t) value, tbuff, sizeof (tbuff));
+    tmutilToMSD ((ssize_t) value, tbuff, sizeof (tbuff), 1);
   }
   gtk_entry_set_text (GTK_ENTRY (spinbox->uispinbox.widget), tbuff);
   spinbox->processing = false;

@@ -266,7 +266,7 @@ tmutilToMS (time_t ms, char *buff, size_t max)
 }
 
 char *
-tmutilToMSD (time_t ms, char *buff, size_t max)
+tmutilToMSD (time_t ms, char *buff, size_t max, int decimals)
 {
   time_t     m, s, d;
 
@@ -281,7 +281,7 @@ tmutilToMSD (time_t ms, char *buff, size_t max)
   m = ms / 1000 / 60;
   s = (ms - (m * 1000 * 60)) / 1000;
   d = (ms - (m * 1000 * 60) - (s * 1000));
-  snprintf (buff, max, "%zd:%02zd%s%03zd", m, s, radixchar, d);
+  snprintf (buff, max, "%zd:%02zd%s%0*zd", m, s, radixchar, decimals, d);
   return buff;
 }
 
