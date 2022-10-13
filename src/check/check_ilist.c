@@ -173,7 +173,7 @@ START_TEST(ilist_u_sort)
   ilistSetNum (list, 1, 1, 5);
   ilistSetNum (list, 2, 1, 6);
   ck_assert_int_eq (list->count, 7);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (list->allocCount, 10);
 
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);

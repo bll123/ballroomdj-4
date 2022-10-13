@@ -147,12 +147,10 @@ songParse (song_t *song, char *data, ssize_t didx)
   /* will set it */
   nlistSetNum (song->songInfo, TAG_TEMPORARY, false);
 
-  /* adjustflags needs a default */
-  nlistSetNum (song->songInfo, TAG_ADJUSTFLAGS, 0);
-
   tval = nlistGetNum (song->songInfo, TAG_ADJUSTFLAGS);
-  if (tval != LIST_VALUE_INVALID && (tval & SONG_ADJUST_INVALID)) {
-    nlistSetNum (song->songInfo, TAG_ADJUSTFLAGS, LIST_VALUE_INVALID);
+  if (tval < 0 ||
+      (tval != LIST_VALUE_INVALID && (tval & SONG_ADJUST_INVALID))) {
+    nlistSetNum (song->songInfo, TAG_ADJUSTFLAGS, SONG_ADJUST_NONE);
   }
 
   lkey = nlistGetNum (song->songInfo, TAG_DANCELEVEL);
