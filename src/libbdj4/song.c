@@ -347,9 +347,7 @@ songDisplayString (song_t *song, int tagidx)
 
     favidx = songGetNum (song, tagidx);
     tstr = songFavoriteGetSpanStr (gsonginit.songfav, favidx);
-    if (tstr != NULL) {
-      str = strdup (tstr);
-    }
+    str = strdup (tstr);
     return str;
   }
 

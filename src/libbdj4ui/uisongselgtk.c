@@ -37,7 +37,6 @@ enum {
   SONGSEL_COL_IDX,
   SONGSEL_COL_SORTIDX,
   SONGSEL_COL_DBIDX,
-  SONGSEL_COL_FAV_COLOR,
   SONGSEL_COL_MARK_MARKUP,
   SONGSEL_COL_SAMESONG_MARKUP,
   SONGSEL_COL_MAX,
@@ -395,8 +394,6 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   long            idx;
   int             count;
   song_t          * song;
-  const char      * color;
-  char            tmp [40];
   char            tbuff [100];
   dbidx_t         dbidx;
   char            * listingFont;
@@ -429,7 +426,6 @@ uisongselPopulateData (uisongsel_t *uisongsel)
     snprintf (tbuff, sizeof (tbuff), "%d", count);
     if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
       char        colorbuff [200];
-      ilistidx_t  favidx;
 
       dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
       song = NULL;
@@ -437,8 +433,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
         song = dbGetByIdx (uisongsel->musicdb, dbidx);
       }
       if (song != NULL && (double) count < uisongsel->dfilterCount) {
-
         *colorbuff = '\0';
+
         if (uisongsel->dispselType != DISP_SEL_MM &&
             uisongsel->songlistdbidxlist != NULL) {
           /* check and see if the song is in the song list */
@@ -458,21 +454,12 @@ uisongselPopulateData (uisongsel_t *uisongsel)
           }
         }
 
-        /* favorite color processing */
-        favidx = songGetNum (song, TAG_FAVORITE);
-        color = songFavoriteGetStr (songfav, favidx, SONGFAV_COLOR);
-        if (color == NULL || strcmp (color, "") == 0) {
-          uiGetForegroundColorW (uiw->songselTree, tmp, sizeof (tmp));
-          color = tmp;
-        }
-
         gtk_list_store_set (GTK_LIST_STORE (model), &iter,
             SONGSEL_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
             SONGSEL_COL_FONT, listingFont,
             SONGSEL_COL_IDX, (glong) idx,
             SONGSEL_COL_SORTIDX, (glong) idx,
             SONGSEL_COL_DBIDX, (glong) dbidx,
-            SONGSEL_COL_FAV_COLOR, color,
             SONGSEL_COL_MARK_MARKUP, colorbuff,
             SONGSEL_COL_SAMESONG_MARKUP, colorbuff,
             -1);
@@ -901,7 +888,6 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   uiw->typelist [uiw->col++] = G_TYPE_LONG,
   uiw->typelist [uiw->col++] = G_TYPE_LONG,
   /* fav color/mark color/mark/samesong color */
-  uiw->typelist [uiw->col++] = G_TYPE_STRING,
   uiw->typelist [uiw->col++] = G_TYPE_STRING,
   uiw->typelist [uiw->col++] = G_TYPE_STRING,
   assert (uiw->col == SONGSEL_COL_MAX);

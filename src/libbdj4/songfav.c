@@ -66,16 +66,21 @@ songFavoriteAlloc (void)
     char    *name;
     char    *disp;
     char    *color;
-    char  tbuff [100];
+    char    tbuff [100];
 
     name = ilistGetStr (songfav->songfavList, key, SONGFAV_NAME);
     disp = ilistGetStr (songfav->songfavList, key, SONGFAV_DISPLAY);
     color = ilistGetStr (songfav->songfavList, key, SONGFAV_COLOR);
-    if (color == NULL) {
-      color = "#ffffff";
-    }
-    snprintf (tbuff, sizeof (tbuff), "<span color=\"%s\">%s</span>",
+    if (color == NULL || *color == '\0') {
+      /* for key 0, simply use the display string by itself. */
+      /* it will inherit the standard text color. */
+      snprintf (tbuff, sizeof (tbuff), "%s", disp);
+    } else {
+      /* otherwise use html span to set the color. */
+      /* this allows the color to show when selected. */
+      snprintf (tbuff, sizeof (tbuff), "<span color=\"%s\">%s</span>",
           color, disp);
+    }
     nlistSetStr (songfav->spanstrList, key, tbuff);
     slistSetNum (songfav->songfavLookup, name, key);
   }
@@ -138,6 +143,9 @@ songFavoriteGetSpanStr (songfav_t *songfav, ilistidx_t key)
     return "";
   }
 
+  if (key < 0) {
+    key = 0;
+  }
   return nlistGetStr (songfav->spanstrList, key);
 }
 
