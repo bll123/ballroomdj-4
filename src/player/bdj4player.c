@@ -1784,7 +1784,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "repeat%c%d%c"
       "defaultsink%c%s%c"
       "currentsink%c%s%c"
-      "prepqueuecount%c%ld",
+      "prepqueuecount%c%zd",
       MSG_ARGS_RS, plstateDebugText (playerData->playerState), MSG_ARGS_RS,
       MSG_ARGS_RS, plistateTxt [pliState (playerData->pli)], MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentVolume, MSG_ARGS_RS,
@@ -1819,7 +1819,7 @@ playerChkPlayerSong (playerdata_t *playerData, int routefrom)
   }
 
   snprintf (tmp, sizeof (tmp),
-      "p-duration%c%ld%c"
+      "p-duration%c%zd%c"
       "p-songfn%c%s",
       MSG_ARGS_RS, dur, MSG_ARGS_RS,
       MSG_ARGS_RS, sn);
