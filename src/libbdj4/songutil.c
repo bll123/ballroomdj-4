@@ -75,6 +75,7 @@ songConvAdjustFlags (datafileconv_t *conv)
     conv->valuetype = VALUE_STR;
     num = conv->num;
 
+    *tbuff = '\0';
     str = tbuff;
     if (num > 0 && ! (num & SONG_ADJUST_INVALID)) {
       if ((num & SONG_ADJUST_SPEED) == SONG_ADJUST_SPEED) {
