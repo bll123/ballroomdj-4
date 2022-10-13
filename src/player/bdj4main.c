@@ -710,11 +710,12 @@ mainProcessing (void *udata)
     mainData->marqueeChanged [mainData->musicqPlayIdx] = false;
   }
 
-  /* do this after sending the latest musicq / marquee data */
-  /* wait for both the PLAYBACK_FINISH message and for the player to stop */
-  /* the 'finished' message is sent to the playerui after the player has */
+  /* Do this after sending the latest musicq / marquee data. */
+  /* Wait for both the PLAYBACK_FINISH message and for the player to stop */
+  /* The 'finished' message is sent to the playerui after the player has */
   /* stopped, and it is necessary to wait for after it is sent before */
-  /* queueing the next song or playlist */
+  /* queueing the next song or playlist. */
+  /* Note that it is possible for the player to already be stopped. */
   if (mainData->waitforpbfinish) {
     if (mainData->pbfinishrcv == 2) {
       if (mainData->pbfinishArgs != NULL) {
@@ -1777,6 +1778,10 @@ mainNextSong (maindata_t *mainData)
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
     mainData->waitforpbfinish = true;
     mainData->pbfinishrcv = 0;
+    if (mainData->playerState == PL_STATE_STOPPED) {
+      /* already stopped, will not receive a stop message */
+      ++mainData->pbfinishrcv;
+    }
   }
 }
 

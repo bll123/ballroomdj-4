@@ -68,14 +68,12 @@ chk prepqueuecount 4
 end
 
 # The queue-clear-play is used by the management ui to play a selected song.
-# play-on-add must be true.
+# => play-on-add must be true.
 # The queue-clear-play message acts upon
 # a) an empty queue
 # b) a queue where the song is playing
 # c) a queue where the song is paused
-# It does not work on a queue where a song is loaded and is stopped.
-# ( next-song will set the wait-for-pb-finish flag, and a stopped song
-#   does not receive the proper messages from the player )
+# It may not work on a queue where a song is loaded and is stopped.
 test 40-14 Clear-Play
 msg main QUEUE_PLAY_ON_ADD 1
 get main CHK_MAIN_MUSICQ
@@ -86,7 +84,7 @@ chk prepqueuecount 0
 msg main QUEUE_CLEAR_PLAY 0~999~16
 mssleep 1000
 get player CHK_PLAYER_STATUS
-resptimeout 1000
+resptimeout 2000
 wait playstate playing
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
@@ -112,6 +110,9 @@ chk mq0len 1
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 0 playstate playing
 end
+
+# debugging
+stop
 
 test 40-20 Remove
 get main CHK_MAIN_MUSICQ

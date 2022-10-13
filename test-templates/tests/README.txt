@@ -23,6 +23,8 @@
 #     ends the test
 #   disp, dispall
 #     display responses before using 'chk' or 'wait'
+#   stop
+#     for debugging; stops processing
 #
 # main:
 #   musicq:

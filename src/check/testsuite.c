@@ -573,6 +573,10 @@ tsProcessScript (testsuite_t *testsuite)
 
   ok = TS_UNKNOWN;
 
+  if (strncmp (tcmd, "stop", 4) == 0) {
+    return true;
+  }
+
   if (strncmp (tcmd, "section", 7) == 0) {
     ok = tsScriptSection (testsuite, tcmd);
   }

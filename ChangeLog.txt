@@ -11,10 +11,12 @@ BallroomDJ 4 Change Log
   - Fix broken duration calculation (dance max).
   - Fix broken BPM dance check.
   - Request External is now implemented.
+  - Fix an issue where an internal state flag was not reset properly.
 - song editor
   - fix song start/song end spinbox display.
-- fix tag name mismatch (lastupdated).
-- internal: fix a caching bug in the list code.
+- fix tag name mismatch (lastupdated) (conversion/database).
+- internal
+  - fix a caching bug in the list code.
 
 4.0.0 alpha 2022-10-05
 
