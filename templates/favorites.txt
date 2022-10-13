@@ -5,6 +5,9 @@
 #     may be changed manually.
 #   The names must be unique.
 #   The display string should be a single character that can take a color.
+#   USERSEL is true if the symbol is selectable by the user.
+#     all of the false USERSEL entries should be placed after the
+#     true USERSEL entries.
 #
 version
 ..1
@@ -20,6 +23,8 @@ DISPLAY
 ..☆
 COLOR
 ..
+USERSEL
+..yes
 KEY
 ..1
 NAME
@@ -28,6 +33,8 @@ DISPLAY
 ..★
 COLOR
 ..#d2322a
+USERSEL
+..yes
 KEY
 ..2
 NAME
@@ -36,6 +43,8 @@ DISPLAY
 ..★
 COLOR
 ..#d0711b
+USERSEL
+..yes
 KEY
 ..3
 NAME
@@ -44,6 +53,8 @@ DISPLAY
 ..★
 COLOR
 ..#007d26
+USERSEL
+..yes
 KEY
 ..4
 NAME
@@ -52,6 +63,8 @@ DISPLAY
 ..★
 COLOR
 ..#362bff
+USERSEL
+..yes
 KEY
 ..5
 NAME
@@ -60,6 +73,8 @@ DISPLAY
 ..★
 COLOR
 ..#8c2e9c
+USERSEL
+..yes
 # pinkheart is used in itunes conversion
 # the name should be kept if itunes is in use
 # the symbol and color may be changed
@@ -71,6 +86,8 @@ DISPLAY
 ..♥
 COLOR
 ..#ee00e1
+USERSEL
+..yes
 # brokenheart is used in itunes conversion
 # the name should be kept if itunes is in use
 # the symbol and color may be changed
@@ -82,3 +99,16 @@ DISPLAY
 ..💔
 COLOR
 ..#6d2828
+USERSEL
+..yes
+# 'imported' is used to display
+KEY
+..8
+NAME
+..imported
+DISPLAY
+..⭹
+COLOR
+..
+USERSEL
+..no

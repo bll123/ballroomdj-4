@@ -2775,6 +2775,13 @@ mainAddTemporarySong (maindata_t *mainData, char *args)
     songFree (song);
     return;
   }
+  songSetNum (song, TAG_FAVORITE, atol (p));
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  if (p == NULL) {
+    songFree (song);
+    return;
+  }
   songSetStr (song, TAG_ARTIST, p);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);

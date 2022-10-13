@@ -108,6 +108,7 @@ convBoolean (datafileconv_t *conv)
     num = 0;
     if (strcmp (conv->str, "on") == 0 ||
         strcmp (conv->str, "yes") == 0 ||
+        strcmp (conv->str, "true") == 0 ||
         strcmp (conv->str, "1") == 0) {
       num = 1;
     }

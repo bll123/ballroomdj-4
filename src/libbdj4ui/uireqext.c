@@ -23,6 +23,7 @@
 #include "nlist.h"
 #include "slist.h"
 #include "song.h"
+#include "songfav.h"
 #include "tagdef.h"
 #include "ui.h"
 #include "uidance.h"
@@ -407,6 +408,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       char            *data;
       slist_t         *tagdata;
       int             rewrite;
+      datafileconv_t  conv;
 
       data = audiotagReadTags (ffn);
       if (data == NULL) {
@@ -427,6 +429,12 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       /* populate the song from the tag data */
       songParse (uireqext->song, tbuff, 0);
       songSetNum (uireqext->song, TAG_TEMPORARY, true);
+      /* set favorite to the imported symbol */
+      conv.allocated = false;
+      conv.str = "imported";
+      conv.valuetype = VALUE_STR;
+      songFavoriteConv (&conv);
+      songSetNum (uireqext->song, TAG_FAVORITE, conv.num);
 
       /* even if the song tags are all there, only a few are sent to */
       /* main for the add temporary song */

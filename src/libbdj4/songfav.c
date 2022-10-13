@@ -22,6 +22,7 @@ static datafilekey_t songfavdfkeys [SONGFAV_KEY_MAX] = {
   { "COLOR",    SONGFAV_COLOR,    VALUE_STR, NULL, -1 },
   { "DISPLAY",  SONGFAV_DISPLAY,  VALUE_STR, NULL, -1 },
   { "NAME",     SONGFAV_NAME,     VALUE_STR, NULL, -1 },
+  { "USERSEL",  SONGFAV_USERSEL,  VALUE_NUM, convBoolean, -1 },
 };
 
 typedef struct songfav {
@@ -29,10 +30,9 @@ typedef struct songfav {
   ilist_t       *songfavList;
   slist_t       *songfavLookup;
   nlist_t       *spanstrList;
+  /* count is the number of user selectable favorites */
   int           count;
 } songfav_t;
-
-// static bool initialized = false;
 
 songfav_t *
 songFavoriteAlloc (void)
@@ -54,6 +54,7 @@ songFavoriteAlloc (void)
   songfav->df = datafileAllocParse ("favorites", DFTYPE_INDIRECT, fname,
         songfavdfkeys, SONGFAV_KEY_MAX);
   songfav->songfavList = datafileGetList (songfav->df);
+  /* temporarily, count is the max number of favorites */
   songfav->count = ilistGetCount (songfav->songfavList);
 
   songfav->spanstrList = nlistAlloc ("songfav-span", LIST_UNORDERED, free);
@@ -66,11 +67,13 @@ songFavoriteAlloc (void)
     char    *name;
     char    *disp;
     char    *color;
+    int     usersel;
     char    tbuff [100];
 
     name = ilistGetStr (songfav->songfavList, key, SONGFAV_NAME);
     disp = ilistGetStr (songfav->songfavList, key, SONGFAV_DISPLAY);
     color = ilistGetStr (songfav->songfavList, key, SONGFAV_COLOR);
+    usersel = ilistGetNum (songfav->songfavList, key, SONGFAV_USERSEL);
     if (color == NULL || *color == '\0') {
       /* for key 0, simply use the display string by itself. */
       /* it will inherit the standard text color. */
@@ -83,6 +86,9 @@ songFavoriteAlloc (void)
     }
     nlistSetStr (songfav->spanstrList, key, tbuff);
     slistSetNum (songfav->songfavLookup, name, key);
+    if (! usersel) {
+      --songfav->count;
+    }
   }
 
   nlistSort (songfav->spanstrList);
@@ -117,10 +123,12 @@ songFavoriteGetNextValue (songfav_t *songfav, int value)
   if (value < 0) {
     value = 0;
   } else {
+    /* the assumption here is that any non user selectable favorite */
+    /* selections are placed at the end of the favorites.txt datafile */
     ++value;
-  }
-  if (value >= songfav->count) {
-    value = 0;
+    if (value >= songfav->count) {
+      value = 0;
+    }
   }
 
   return value;
@@ -161,6 +169,7 @@ songFavoriteConv (datafileconv_t *conv)
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     num = slistGetNum (songfav->songfavLookup, conv->str);
+fprintf (stderr, "str: %s num: %zd\n", conv->str, num);
     if (num == LIST_VALUE_INVALID) {
       num = 0;
     }
