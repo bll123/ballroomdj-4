@@ -25,6 +25,7 @@
 #include "nlist.h"
 #include "slist.h"
 #include "song.h"
+#include "songfav.h"
 #include "tagdef.h"
 #include "templateutil.h"
 
@@ -36,6 +37,7 @@ setup (void)
   templateFileCopy ("genres.txt", "genres.txt");
   templateFileCopy ("levels.txt", "levels.txt");
   templateFileCopy ("ratings.txt", "ratings.txt");
+  templateFileCopy ("favorites.txt", "favorites.txt");
   filemanipCopy ("test-templates/status.txt", "data/status.txt");
 }
 
@@ -210,7 +212,6 @@ START_TEST(song_parse_get)
   char        *data;
   slist_t     *tlist;
   slistidx_t  iteridx;
-//  songfavoriteinfo_t *sfav;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse_get");
 
@@ -218,8 +219,9 @@ START_TEST(song_parse_get)
 
 
   for (int i = 0; i < songparsedatasz; ++i) {
-    double  dval;
-    int     rc;
+    double          dval;
+    int             rc;
+    datafileconv_t  conv;
 
 
     song = songAlloc ();
@@ -257,9 +259,12 @@ START_TEST(song_parse_get)
     ck_assert_int_eq (songGetNum (song, TAG_DANCERATING), 2);
     ck_assert_int_eq (songGetNum (song, TAG_DANCELEVEL), 1);
     ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);
-//    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_BLUE);
-//    sfav = songGetFavoriteData (song);
-//    ck_assert_int_eq (sfav->idx, SONG_FAVORITE_BLUE);
+
+    conv.allocated = false;
+    conv.valuetype = VALUE_STR;
+    conv.str = "bluestar";
+    songFavoriteConv (&conv);
+    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), conv.num);
     songFree (song);
   }
 
@@ -271,9 +276,9 @@ START_TEST(song_parse_set)
 {
   song_t      *song = NULL;
   char        *data;
-//  songfavoriteinfo_t *sfav;
   slist_t     *tlist;
   slistidx_t  iteridx;
+  datafileconv_t conv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_parse_set");
 
@@ -325,10 +330,12 @@ START_TEST(song_parse_set)
     ck_assert_str_eq (data, "tag4");
     data = slistIterateKey (tlist, &iteridx);
     ck_assert_str_eq (data, "tag5");
-    /* converted - these assume the standard data files */
-//    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_PURPLE);
-//    sfav = songGetFavoriteData (song);
-//    ck_assert_int_eq (sfav->idx, SONG_FAVORITE_PURPLE);
+
+    conv.allocated = false;
+    conv.valuetype = VALUE_STR;
+    conv.str = "purplestar";
+    songFavoriteConv (&conv);
+    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), conv.num);
     songFree (song);
   }
 
@@ -440,9 +447,9 @@ START_TEST(song_tag_list)
   char        *data;
   slist_t     *tlist;
   slistidx_t  iteridx;
-//  songfavoriteinfo_t *sfav;
   char        tbuff [3096];
   char        *tag;
+  datafileconv_t conv;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- song_tag_list");
 
@@ -519,9 +526,12 @@ START_TEST(song_tag_list)
     ck_assert_int_eq (songGetNum (song, TAG_DANCERATING), 2);
     ck_assert_int_eq (songGetNum (song, TAG_DANCELEVEL), 1);
     ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);
-//    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), SONG_FAVORITE_BLUE);
-//    sfav = songGetFavoriteData (song);
-//    ck_assert_int_eq (sfav->idx, SONG_FAVORITE_BLUE);
+
+    conv.allocated = false;
+    conv.valuetype = VALUE_STR;
+    conv.str = "bluestar";
+    songFavoriteConv (&conv);
+    ck_assert_int_eq (songGetNum (song, TAG_FAVORITE), conv.num);
 
     songFree (song);
   }

@@ -87,8 +87,8 @@ check_libbdj4 (SRunner *sr)
   s = level_suite();
   srunner_add_suite (sr, s);
 
-//  s = songfav_suite();
-//  srunner_add_suite (sr, s);
+  s = songfav_suite();
+  srunner_add_suite (sr, s);
 
   s = status_suite();
   srunner_add_suite (sr, s);

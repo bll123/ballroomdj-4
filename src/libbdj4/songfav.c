@@ -165,6 +165,9 @@ songFavoriteConv (datafileconv_t *conv)
   ssize_t     num;
 
   songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
+  if (songfav == NULL) {
+    return;
+  }
 
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {

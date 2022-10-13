@@ -214,11 +214,12 @@ listDeleteByIdx (list_t *list, listidx_t idx)
     return;
   }
 
+  /* the cache must be invalidated */
+  listClearCache (list);
+
   copycount = list->count - idx - 1;
   listFreeItem (list, idx);
   list->count -= 1;
-
-  listClearCache (list);
 
   if (copycount > 0) {
     for (listidx_t i = idx; i < list->count; ++i) {

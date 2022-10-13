@@ -18,82 +18,119 @@
 #include "datafile.h"
 #include "ilist.h"
 #include "log.h"
-#include "songfav.h"
 #include "slist.h"
+#include "songfav.h"
+#include "templateutil.h"
 
-typedef struct {
-  char  *value;
-  int   key;
-} sf_test_t;
-
-static sf_test_t tvalues [] = {
-  { "bluestar", SONG_FAVORITE_BLUE },
-  { "unknown", SONG_FAVORITE_NONE },
-  { "redstar", SONG_FAVORITE_RED },
-  { "", SONG_FAVORITE_NONE },
-  { "purplestar", SONG_FAVORITE_PURPLE },
-  };
-enum {
-  tvaluesz = sizeof (tvalues) / sizeof (sf_test_t),
-};
-
-START_TEST(songfav_init)
+static void
+setup (void)
 {
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_init");
+  templateFileCopy ("favorites.txt", "favorites.txt");
+}
 
-  songFavoriteInit ();
-  songFavoriteInit ();
-  songFavoriteCleanup ();
-  songFavoriteCleanup ();
-  songFavoriteInit ();
-  songFavoriteCleanup ();
+START_TEST(songfav_alloc)
+{
+  songfav_t   *songfav = NULL;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_alloc");
+
+  songfav = songFavoriteAlloc ();
+  ck_assert_ptr_nonnull (songfav);
+  songFavoriteFree (songfav);
+}
+END_TEST
+
+START_TEST(songfav_count)
+{
+  songfav_t     *songfav = NULL;
+  int           count;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_count");
+  songfav = songFavoriteAlloc ();
+  count = songFavoriteGetCount (songfav);
+  ck_assert_int_ge (count, 1);
+  songFavoriteFree (songfav);
+}
+END_TEST
+
+START_TEST(songfav_next_value)
+{
+  songfav_t     *songfav = NULL;
+  int           value = 0;
+  int           tvalue = 0;
+  int           count;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_next_value");
+  songfav = songFavoriteAlloc ();
+  count = songFavoriteGetCount (songfav);
+  value = songFavoriteGetNextValue (songfav, value);
+  while (value != 0) {
+    ++tvalue;
+    ck_assert_int_eq (value, tvalue);
+    ck_assert_int_lt (value, count);
+    value = songFavoriteGetNextValue (songfav, value);
+  }
+  ck_assert_int_eq (value, 0);
+  ck_assert_int_lt (value, count);
+  songFavoriteFree (songfav);
+}
+END_TEST
+
+START_TEST(songfav_get_str)
+{
+  songfav_t     *songfav = NULL;
+  const char    *str;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_get-str");
+  songfav = songFavoriteAlloc ();
+
+  str = songFavoriteGetStr (songfav, 1, SONGFAV_COLOR);
+  ck_assert_ptr_nonnull (str);
+  str = songFavoriteGetStr (songfav, 1, SONGFAV_NAME);
+  ck_assert_ptr_nonnull (str);
+  str = songFavoriteGetStr (songfav, 1, SONGFAV_DISPLAY);
+  ck_assert_ptr_nonnull (str);
+
+  str = songFavoriteGetSpanStr (songfav, 1);
+  ck_assert_ptr_nonnull (str);
+
+  songFavoriteFree (songfav);
 }
 END_TEST
 
 START_TEST(songfav_conv)
 {
-  datafileconv_t    conv;
+  songfav_t     *songfav = NULL;
+  datafileconv_t conv;
+  int           count;
+
+  bdjvarsdfloadInit ();
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_conv");
 
-  for (int i = 0; i < tvaluesz; ++i) {
-    conv.allocated = false;
-    conv.valuetype = VALUE_STR;
-    conv.str = tvalues [i].value;
-    songFavoriteConv (&conv);
-    ck_assert_int_eq (conv.num, tvalues [i].key);
+  songfav = songFavoriteAlloc ();
 
-    songFavoriteConv (&conv);
-    if (tvalues [i].key == SONG_FAVORITE_NONE) {
-      ck_assert_str_eq (conv.str, "");
-    } else {
-      ck_assert_str_eq (conv.str, tvalues [i].value);
-    }
-  }
-}
-END_TEST
+  conv.allocated = false;
+  conv.valuetype = VALUE_STR;
+  conv.str = "bluestar";
+  songFavoriteConv (&conv);
+  ck_assert_int_ge (conv.num, 0);
 
-START_TEST(songfav_get)
-{
-  songfavoriteinfo_t  *sfi;
+  songFavoriteConv (&conv);
+  ck_assert_str_eq (conv.str, "bluestar");
+  if (conv.allocated) {
+    free (conv.str);
+  }
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfav_get");
+  count = songFavoriteGetCount (songfav);
+  conv.allocated = false;
+  conv.valuetype = VALUE_STR;
+  conv.str = "imported";
+  songFavoriteConv (&conv);
+  ck_assert_int_ge (conv.num, count);
 
-  for (int i = 0; i < tvaluesz; ++i) {
-    sfi = songFavoriteGet (tvalues [i].key);
-    ck_assert_ptr_null (sfi->spanStr);
-  }
-  songFavoriteInit ();
-  for (int i = 0; i < tvaluesz; ++i) {
-    sfi = songFavoriteGet (tvalues [i].key);
-    ck_assert_int_eq (sfi->idx, tvalues [i].key);
-    ck_assert_ptr_nonnull (sfi->spanStr);
-  }
-  songFavoriteCleanup ();
-  for (int i = 0; i < tvaluesz; ++i) {
-    sfi = songFavoriteGet (tvalues [i].key);
-    ck_assert_ptr_null (sfi->spanStr);
-  }
+  songFavoriteFree (songfav);
+  bdjvarsdfloadCleanup ();
 }
 END_TEST
 
@@ -106,9 +143,12 @@ songfav_suite (void)
   s = suite_create ("songfav");
   tc = tcase_create ("songfav");
   tcase_set_tags (tc, "libbdj4");
-  tcase_add_test (tc, songfav_init);
+  tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_test (tc, songfav_alloc);
+  tcase_add_test (tc, songfav_count);
+  tcase_add_test (tc, songfav_next_value);
+  tcase_add_test (tc, songfav_get_str);
   tcase_add_test (tc, songfav_conv);
-  tcase_add_test (tc, songfav_get);
   suite_add_tcase (s, tc);
   return s;
 }

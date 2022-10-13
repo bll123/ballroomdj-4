@@ -52,7 +52,7 @@ add_executable (check_all
   check_samesong.c
   check_sequence.c
   check_song.c
-#  check_songfav.c
+  check_songfav.c
   check_songfilter.c
   check_songlist.c
   check_songutil.c
