@@ -2,7 +2,7 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-10---
 
-- fix tag name mismatch (conversion, tags, song)
+- fix tag name mismatch (lastupdated).
 - database update
   - add a fix for bad audio file data (null bytes).
   - fix start/stop button states after completion.

@@ -328,10 +328,17 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
     if (strcmp (tag, tagdefs [TAG_STATUS].tag) == 0) {
       havestatus = true;
     }
+
+    data = slistGetStr (tagList, tag);
+
+    if (data == NULL || *data == '\0') {
+      /* do not write null data */
+      continue;
+    }
+
     tblen = stringAppend (tbuff, sz, tblen, tag);
     tblen = stringAppend (tbuff, sz, tblen, "\n");
     tblen = stringAppend (tbuff, sz, tblen, "..");
-    data = slistGetStr (tagList, tag);
     tblen = stringAppend (tbuff, sz, tblen, data);
     tblen = stringAppend (tbuff, sz, tblen, "\n");
   }
