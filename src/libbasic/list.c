@@ -21,6 +21,8 @@ static int      idxCompare (listidx_t, listidx_t);
 static int      listCompare (const list_t *, const listkey_t *a, const listkey_t *b);
 static long     merge (list_t *, listidx_t, listidx_t, listidx_t);
 static long     mergeSort (list_t *, listidx_t, listidx_t);
+static void     listClearCache (list_t *list);
+static listidx_t listCheckCache (list_t *list, listkeylookup_t *key);
 
 list_t *
 listAlloc (const char *name, listorder_t ordered, listFree_t valueFreeHook)
@@ -64,6 +66,7 @@ listFree (void *tlist)
           "list %s: cache read:%ld write:%ld",
           list->name, list->readCacheHits, list->writeCacheHits);
     }
+    listClearCache (list);
     if (list->data != NULL) {
       for (listidx_t i = 0; i < list->count; ++i) {
         listFreeItem (list, i);
@@ -74,12 +77,6 @@ listFree (void *tlist)
 
     list->count = 0;
     list->allocCount = 0;
-    if (list->keytype == LIST_KEY_STR &&
-        list->keyCache.strkey != NULL) {
-      free (list->keyCache.strkey);
-      list->keyCache.strkey = NULL;
-      list->locCache = LIST_LOC_INVALID;
-    }
     if (list->name != NULL) {
       free (list->name);
       list->name = NULL;
@@ -221,12 +218,7 @@ listDeleteByIdx (list_t *list, listidx_t idx)
   listFreeItem (list, idx);
   list->count -= 1;
 
-  if (list->keytype == LIST_KEY_STR &&
-      list->keyCache.strkey != NULL) {
-    free (list->keyCache.strkey);
-    list->keyCache.strkey = NULL;
-  }
-  list->locCache = LIST_LOC_INVALID;
+  listClearCache (list);
 
   if (copycount > 0) {
     for (listidx_t i = idx; i < list->count; ++i) {
@@ -319,11 +311,7 @@ listIterateKeyStr (list_t *list, listidx_t *iteridx)
 
   value = list->data [*iteridx].key.strkey;
 
-  if (list->keyCache.strkey != NULL) {
-    free (list->keyCache.strkey);
-    list->keyCache.strkey = NULL;
-    list->locCache = LIST_LOC_INVALID;
-  }
+  listClearCache (list);
 
   list->keyCache.strkey = strdup (value);
   list->locCache = *iteridx;
@@ -392,7 +380,7 @@ listidx_t
 listGetIdx (list_t *list, listkeylookup_t *key)
 {
   listidx_t   idx;
-  listidx_t   ridx;
+  listidx_t   ridx = LIST_LOC_INVALID;
   int         rc;
 
   if (list == NULL) {
@@ -400,20 +388,12 @@ listGetIdx (list_t *list, listkeylookup_t *key)
   }
 
   /* check the cache */
-  if (list->locCache >= 0L) {
-    if ((list->keytype == LIST_KEY_STR &&
-         key->strkey != NULL &&
-         list->keyCache.strkey != NULL &&
-         strcmp (key->strkey, list->keyCache.strkey) == 0) ||
-        (list->keytype == LIST_KEY_NUM &&
-         key->idx == list->keyCache.idx)) {
-      ridx = list->locCache;
-      ++list->readCacheHits;
-      return ridx;
-    }
+  ridx = listCheckCache (list, key);
+  if (ridx != LIST_LOC_INVALID) {
+    ++list->readCacheHits;
+    return ridx;
   }
 
-  ridx = LIST_LOC_INVALID;
   if (list->ordered == LIST_ORDERED) {
     rc = listBinarySearch (list, key, &idx);
     if (rc == 0) {
@@ -435,14 +415,10 @@ listGetIdx (list_t *list, listkeylookup_t *key)
     }
   }
 
-  if (list->keytype == LIST_KEY_STR &&
-      list->keyCache.strkey != NULL) {
-    free (list->keyCache.strkey);
-    list->keyCache.strkey = NULL;
-  }
-  list->locCache = LIST_LOC_INVALID;
+  listClearCache (list);
 
   if (ridx >= 0) {
+    list->keyCache.strkey = NULL;
     if (list->keytype == LIST_KEY_STR && key->strkey != NULL) {
       list->keyCache.strkey = strdup (key->strkey);
     }
@@ -457,7 +433,7 @@ listGetIdx (list_t *list, listkeylookup_t *key)
 void
 listSet (list_t *list, listitem_t *item)
 {
-  listidx_t       loc = 0L;
+  listidx_t       loc = 0;
   int             rc = -1;
   int             found = 0;
 
@@ -465,18 +441,15 @@ listSet (list_t *list, listitem_t *item)
     return;
   }
 
-  if (list->locCache >= 0L) {
-    if ((list->keytype == LIST_KEY_STR &&
-         item->key.strkey != NULL &&
-         list->keyCache.strkey != NULL &&
-         strcmp (item->key.strkey, list->keyCache.strkey) == 0) ||
-        (list->keytype == LIST_KEY_NUM &&
-         item->key.idx == list->keyCache.idx)) {
-      loc = list->locCache;
-      ++list->writeCacheHits;
-      found = 1;
-      rc = 0;
-    }
+  loc = listCheckCache (list, (listkeylookup_t *) &item->key);
+  if (loc != LIST_LOC_INVALID) {
+    ++list->writeCacheHits;
+    found = 1;
+    rc = 0;
+  }
+
+  if (! found) {
+    loc = 0;
   }
 
   if (! found && list->count > 0) {
@@ -581,9 +554,12 @@ listInsert (list_t *list, listidx_t loc, listitem_t *item)
 {
   listidx_t      copycount;
 
+  /* the cache must be invalidated */
+  listClearCache (list);
+
   ++list->count;
   if (list->count > list->allocCount) {
-    ++list->allocCount;
+    list->allocCount += 5;
     list->data = realloc (list->data,
         (size_t) list->allocCount * sizeof (listitem_t));
     assert (list->data != NULL);
@@ -594,9 +570,9 @@ listInsert (list_t *list, listidx_t loc, listitem_t *item)
           (list->count == 0 && loc == 0));
 
   copycount = list->count - (loc + 1);
-  if (copycount > 0) {
+  if (loc != -1 && copycount > 0) {
     for (listidx_t i = copycount - 1; i >= 0; --i) {
-       memcpy (list->data + loc + 1 + i, list->data + loc + i, sizeof (listitem_t));
+       memcpy (list->data + loc + i + 1, list->data + loc + i, sizeof (listitem_t));
     }
   }
   memcpy (&list->data [loc], item, sizeof (listitem_t));
@@ -736,3 +712,32 @@ mergeSort (list_t *list, listidx_t l, listidx_t r)
   return swaps;
 }
 
+inline static void
+listClearCache (list_t *list)
+{
+  if (list->keytype == LIST_KEY_STR &&
+      list->keyCache.strkey != NULL) {
+    free (list->keyCache.strkey);
+    list->keyCache.strkey = NULL;
+  }
+  list->locCache = LIST_LOC_INVALID;
+}
+
+inline static listidx_t
+listCheckCache (list_t *list, listkeylookup_t *key)
+{
+  listidx_t   ridx = LIST_LOC_INVALID;
+
+  if (list->locCache >= 0L) {
+    if ((list->keytype == LIST_KEY_STR &&
+         key->strkey != NULL &&
+         list->keyCache.strkey != NULL &&
+         strcmp (key->strkey, list->keyCache.strkey) == 0) ||
+        (list->keytype == LIST_KEY_NUM &&
+         key->idx == list->keyCache.idx)) {
+      ridx = list->locCache;
+    }
+  }
+
+  return ridx;
+}

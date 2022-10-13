@@ -75,6 +75,35 @@ START_TEST(nlist_u_set)
   nlistSetStr (list, 1, "5L");
   nlistSetStr (list, 2, "6L");
   ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (list->allocCount, 7);
+  nlistFree (list);
+}
+END_TEST
+
+START_TEST(nlist_u_set_no_size)
+{
+  nlist_t        *list;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_u_set_no_size");
+
+  list = nlistAlloc ("chk-c", LIST_UNORDERED, NULL);
+  ck_assert_int_eq (list->count, 0);
+  ck_assert_int_eq (list->allocCount, 0);
+  nlistSetStr (list, 6, "0L");
+  ck_assert_int_eq (list->allocCount, 5);
+  nlistSetStr (list, 26, "1L");
+  ck_assert_int_eq (list->allocCount, 5);
+  nlistSetStr (list, 18, "2L");
+  ck_assert_int_eq (list->allocCount, 5);
+  nlistSetStr (list, 11, "3L");
+  ck_assert_int_eq (list->allocCount, 5);
+  nlistSetStr (list, 3, "4L");
+  ck_assert_int_eq (list->allocCount, 5);
+  nlistSetStr (list, 1, "5L");
+  ck_assert_int_eq (list->allocCount, 10);
+  nlistSetStr (list, 2, "6L");
+  ck_assert_int_eq (list->allocCount, 10);
+  ck_assert_int_eq (list->count, 7);
   nlistFree (list);
 }
 END_TEST
@@ -196,6 +225,40 @@ START_TEST(nlist_s_get_str)
 }
 END_TEST
 
+START_TEST(nlist_s_cache_bug_20221013)
+{
+  nlist_t        *list;
+  const char     *value;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- nlist_s_cache_bug_20221013");
+
+  list = nlistAlloc ("chk-f", LIST_ORDERED, NULL);
+  ck_assert_int_eq (list->count, 0);
+  ck_assert_int_eq (list->allocCount, 0);
+  nlistSetStr (list, 6, "0L");
+  nlistSetStr (list, 26, "1L");
+  nlistSetStr (list, 18, "2L");
+  nlistSetStr (list, 11, "3L");
+  nlistSetStr (list, 3, "4L");
+  nlistSetStr (list, 1, "5L");
+  nlistSetStr (list, 2, "6L");
+  ck_assert_int_eq (list->count, 7);
+  ck_assert_int_eq (list->allocCount, 10);
+
+  value = nlistGetStr (list, 3);
+  ck_assert_ptr_nonnull (value);
+  ck_assert_str_eq (value, "4L");
+  /* should be in cache */
+  ck_assert_int_eq (listDebugIsCached (list, 3), 1);
+
+  nlistSetStr (list, 14, "7L");
+  /* should not be in cache after an insert */
+  ck_assert_int_eq (listDebugIsCached (list, 3), 0);
+
+  nlistFree (list);
+}
+END_TEST
+
 START_TEST(nlist_s_iterate_str)
 {
   nlist_t *      list;
@@ -288,7 +351,7 @@ START_TEST(nlist_set_get_num)
   nlistSetNum (list, 1, 5);
   nlistSetNum (list, 2, 6);
   ck_assert_int_eq (list->count, 7);
-  ck_assert_int_eq (list->allocCount, 7);
+  ck_assert_int_eq (list->allocCount, 10);
 
   /* unordered */
   nlistStartIterator (list, &iteridx);
@@ -656,7 +719,7 @@ START_TEST(nlist_set_get_mixed)
   nlistSetDouble (list, 26, 1.0);
   nlistSetStr (list, 18, "2");
   ck_assert_int_eq (list->count, 3);
-  ck_assert_int_eq (list->allocCount, 3);
+  ck_assert_int_eq (list->allocCount, 5);
 
   nval = nlistGetNum (list, 6);
   ck_assert_int_eq (nval, 0);
@@ -864,9 +927,11 @@ nlist_suite (void)
   tcase_add_test (tc, nlist_create_free);
   tcase_add_test (tc, nlist_version);
   tcase_add_test (tc, nlist_u_set);
+  tcase_add_test (tc, nlist_u_set_no_size);
   tcase_add_test (tc, nlist_u_getbyidx);
   tcase_add_test (tc, nlist_u_iterate);
   tcase_add_test (tc, nlist_s_get_str);
+  tcase_add_test (tc, nlist_s_cache_bug_20221013);
   tcase_add_test (tc, nlist_s_iterate_str);
   tcase_add_test (tc, nlist_set_get_num);
   tcase_add_test (tc, nlist_s_iterate_num);
