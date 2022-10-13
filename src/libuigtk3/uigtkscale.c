@@ -13,7 +13,7 @@
 
 #include "ui.h"
 
-static gboolean uiScaleChangeValueHandler (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata);
+static gboolean uiScaleChangeValueHandler (GtkRange *range, GtkScrollType scroll, gdouble value, gpointer udata);
 
 void
 uiCreateScale (UIWidget *uiwidget, double lower, double upper,
@@ -22,8 +22,7 @@ uiCreateScale (UIWidget *uiwidget, double lower, double upper,
   GtkWidget     *scale;
   GtkAdjustment *adjustment;
 
-  /* due to the gtk scale inversion bug, invert the stepinc and the pageinc */
-  adjustment = gtk_adjustment_new (0.0, lower, upper, - stepinc, - pageinc, 0.0);
+  adjustment = gtk_adjustment_new (0.0, lower, upper, stepinc, pageinc, 0.0);
   scale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, adjustment);
   assert (scale != NULL);
   gtk_widget_set_size_request (scale, 200, 5);
@@ -97,8 +96,9 @@ uiScaleSetRange (UIWidget *uiscale, double start, double end)
 
 /* internal routines */
 
+/* the gtk documentation is incorrect.  scrolltype is not a pointer. */
 static gboolean
-uiScaleChangeValueHandler (GtkRange *range, GtkScrollType *scroll, gdouble value, gpointer udata)
+uiScaleChangeValueHandler (GtkRange *range, GtkScrollType scroll, gdouble value, gpointer udata)
 {
   UICallback  *uicb = udata;
   bool        rc = UICB_CONT;
