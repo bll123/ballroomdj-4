@@ -1,22 +1,22 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha 2022-10---
+4.0.0 alpha 2022-10-13
 
 - user interface
   - Fix inverted slider controls.
 - database update
-  - add a fix for bad audio file data (null bytes).
-  - fix start/stop button states after completion.
+  - Add a fix for bad audio file data (null bytes).
+  - Fix start/stop button states after completion.
 - player
   - Fix broken duration calculation (dance max).
   - Fix broken BPM dance check.
   - Request External is now implemented.
   - Fix an issue where an internal state flag was not reset properly.
 - song editor
-  - fix song start/song end spinbox display.
-- fix tag name mismatch (lastupdated) (conversion/database).
-- internal
-  - fix a caching bug in the list code.
+  - Fix song start/song end spinbox display.
+- Fix tag name mismatch (lastupdated) (conversion/database).
+- Internal
+  - Fix a caching bug in the list code.
 
 4.0.0 alpha 2022-10-05
 
