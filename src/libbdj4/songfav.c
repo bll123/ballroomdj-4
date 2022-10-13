@@ -169,7 +169,6 @@ songFavoriteConv (datafileconv_t *conv)
   if (conv->valuetype == VALUE_STR) {
     conv->valuetype = VALUE_NUM;
     num = slistGetNum (songfav->songfavLookup, conv->str);
-fprintf (stderr, "str: %s num: %zd\n", conv->str, num);
     if (num == LIST_VALUE_INVALID) {
       num = 0;
     }
