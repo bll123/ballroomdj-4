@@ -214,7 +214,11 @@ START_TEST(osprocess_pipe)
   ck_assert_int_gt (pid, 0);
   stringTrim (tbuff);
   ck_assert_str_eq (tbuff, "xyzzy");
-  ck_assert_int_eq (retsz, 6);
+  if (isWindows ()) {
+    ck_assert_int_eq (retsz, 7);
+  } else {
+    ck_assert_int_eq (retsz, 6);
+  }
 }
 END_TEST
 

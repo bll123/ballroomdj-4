@@ -48,6 +48,7 @@ typedef struct uireqext {
   UICallback      callbacks [UIREQEXT_CB_MAX];
   UICallback      *responsecb;
   song_t          *song;
+  char            *songEntryText;
   bool            isactive : 1;
 } uireqext_t;
 
@@ -78,6 +79,7 @@ uireqextInit (UIWidget *windowp, nlist_t *opts)
   uireqext->statusMsg = NULL;
   uireqext->options = opts;
   uireqext->song = NULL;
+  uireqext->songEntryText = NULL;
   for (int i = 0; i < UIREQEXT_CB_MAX; ++i) {
     uiutilsUICallbackInit (&uireqext->callbacks [i], NULL, NULL, NULL);
   }
@@ -93,6 +95,9 @@ uireqextFree (uireqext_t *uireqext)
   if (uireqext != NULL) {
     if (uireqext->song != NULL) {
       songFree (uireqext->song);
+    }
+    if (uireqext->songEntryText != NULL) {
+      free (uireqext->songEntryText);
     }
     if (uireqext->audioFileEntry != NULL) {
       uiEntryFree (uireqext->audioFileEntry);
@@ -147,6 +152,16 @@ uireqextGetSong (uireqext_t *uireqext)
   /* it is the caller's responsibility to free the song */
   uireqext->song = NULL;
   return song;
+}
+
+char *
+uireqextGetSongEntryText (uireqext_t *uireqext)
+{
+  if (uireqext == NULL) {
+    return NULL;
+  }
+
+  return uireqext->songEntryText;
 }
 
 /* delayed entry validation for the audio file needs to be run */
@@ -408,7 +423,6 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       char            *data;
       slist_t         *tagdata;
       int             rewrite;
-      datafileconv_t  conv;
 
       data = audiotagReadTags (ffn);
       if (data == NULL) {
@@ -422,22 +436,22 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
         return;
       }
 
+      /* set favorite to the imported symbol */
+      /* do this in the tag-data so that the song-entry text will have */
+      /* the change */
+      slistSetStr (tagdata, tagdefs [TAG_FAVORITE].tag, "imported");
+
       tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
           ffn, MUSICDB_ENTRY_NEW);
+      if (uireqext->songEntryText != NULL) {
+        free (uireqext->songEntryText);
+      }
+      uireqext->songEntryText = strdup (tbuff);
 
       uireqext->song = songAlloc ();
       /* populate the song from the tag data */
       songParse (uireqext->song, tbuff, 0);
       songSetNum (uireqext->song, TAG_TEMPORARY, true);
-      /* set favorite to the imported symbol */
-      conv.allocated = false;
-      conv.str = "imported";
-      conv.valuetype = VALUE_STR;
-      songFavoriteConv (&conv);
-      songSetNum (uireqext->song, TAG_FAVORITE, conv.num);
-
-      /* even if the song tags are all there, only a few are sent to */
-      /* main for the add temporary song */
 
       /* update the display */
       uiEntrySetValue (uireqext->artistEntry,

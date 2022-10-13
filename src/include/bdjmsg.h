@@ -71,8 +71,7 @@ typedef enum {
   MSG_PL_CLEAR_QUEUE,       // args: music-q-idx
                             // tells main to clear the playlist queue.
                             //   used by the song list editor.
-  MSG_DB_ENTRY_TEMP_ADD,    // args: fn, dbidx, danceidx, duration,
-                            //   artist, title
+  MSG_DB_ENTRY_TEMP_ADD,    // args: fn, dbidx, song-entry-text
 
   /* to player */
   MSG_PLAYER_VOL_MUTE,      // to player. toggle.

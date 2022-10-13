@@ -103,6 +103,7 @@ songFavoriteFree (songfav_t *songfav)
   if (songfav != NULL) {
     datafileFree (songfav->df);
     nlistFree (songfav->spanstrList);
+    slistFree (songfav->songfavLookup);
     free (songfav);
   }
 }

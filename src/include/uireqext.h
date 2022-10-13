@@ -12,6 +12,7 @@ void    uireqextFree (uireqext_t *uireqext);
 void    uireqextSetResponseCallback (uireqext_t *uireqext, UICallback *uicb);
 bool    uireqextDialog (uireqext_t *uireqext);
 song_t  *uireqextGetSong (uireqext_t *uireqext);
+char    *uireqextGetSongEntryText (uireqext_t *uireqext);
 void    uireqextProcess (uireqext_t *uireqext);
 
 #endif /* INC_UIREQEXT_H */

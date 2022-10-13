@@ -2,7 +2,8 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-10---
 
-- fix tag name mismatch (lastupdated).
+- user interface
+  - Fix inverted slider controls.
 - database update
   - add a fix for bad audio file data (null bytes).
   - fix start/stop button states after completion.
@@ -12,6 +13,8 @@ BallroomDJ 4 Change Log
   - Request External is now implemented.
 - song editor
   - fix song start/song end spinbox display.
+- fix tag name mismatch (lastupdated).
+- internal: fix a caching bug in the list code.
 
 4.0.0 alpha 2022-10-05
 

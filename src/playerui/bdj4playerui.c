@@ -1301,20 +1301,22 @@ pluiReqextCallback (void *udata)
 
   song = uireqextGetSong (plui->uireqext);
   if (song != NULL) {
-    dbidx_t dbidx;
-    char    tbuff [2048];
+    dbidx_t     dbidx;
+    char        tbuff [3096];
+    char        *songentrytext;
 
+    /* add to the player's copy of the database */
     dbidx = dbAddTemporarySong (plui->musicdb, song);
-    snprintf (tbuff, sizeof (tbuff), "%s%c%d%c%ld%c%ld%c%ld%c%s%c%s",
-        songGetStr (song, TAG_FILE), MSG_ARGS_RS,
-        dbidx, MSG_ARGS_RS,
-        songGetNum (song, TAG_DANCE), MSG_ARGS_RS,
-        songGetNum (song, TAG_DURATION), MSG_ARGS_RS,
-        songGetNum (song, TAG_FAVORITE), MSG_ARGS_RS,
-        songGetStr (song, TAG_ARTIST), MSG_ARGS_RS,
-        songGetStr (song, TAG_TITLE));
-    connSendMessage (plui->conn, ROUTE_MAIN, MSG_DB_ENTRY_TEMP_ADD, tbuff);
-    pluiQueueProcess (plui, dbidx, MUSICQ_CURRENT);
+
+    songentrytext = uireqextGetSongEntryText (plui->uireqext);
+    if (songentrytext != NULL) {
+      snprintf (tbuff, sizeof (tbuff), "%s%c%d%c%s",
+          songGetStr (song, TAG_FILE), MSG_ARGS_RS,
+          dbidx, MSG_ARGS_RS,
+          songentrytext);
+      connSendMessage (plui->conn, ROUTE_MAIN, MSG_DB_ENTRY_TEMP_ADD, tbuff);
+      pluiQueueProcess (plui, dbidx, MUSICQ_CURRENT);
+    }
   }
   return UICB_CONT;
 }
