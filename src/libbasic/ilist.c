@@ -31,25 +31,25 @@ ilistAlloc (const char *name, ilistorder_t ordered)
   return list;
 }
 
-inline void
+void
 ilistFree (void *list)
 {
   listFree (list);
 }
 
-inline void
+void
 ilistSetVersion (ilist_t *list, int version)
 {
   listSetVersion (list, version);
 }
 
-inline int
+int
 ilistGetVersion (ilist_t *list)
 {
   return listGetVersion (list);
 }
 
-inline ilistidx_t
+ilistidx_t
 ilistGetCount (ilist_t *list)
 {
   if (list == NULL) {
@@ -58,7 +58,7 @@ ilistGetCount (ilist_t *list)
   return list->count;
 }
 
-inline void
+void
 ilistSetSize (ilist_t *list, ilistidx_t siz)
 {
   listSetSize (list, siz);
@@ -236,19 +236,19 @@ ilistDelete (list_t *list, ilistidx_t ikey)
   }
 }
 
-inline void
+void
 ilistSort (ilist_t *list)
 {
   listSort (list);
 }
 
-inline void
+void
 ilistStartIterator (ilist_t *list, ilistidx_t *iteridx)
 {
   *iteridx = -1;
 }
 
-inline ilistidx_t
+ilistidx_t
 ilistIterateKey (ilist_t *list, ilistidx_t *iteridx)
 {
   return listIterateKeyNum (list, iteridx);

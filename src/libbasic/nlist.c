@@ -23,25 +23,25 @@ nlistAlloc (const char *name, nlistorder_t ordered, nlistFree_t valueFreeHook)
   return list;
 }
 
-inline void
+void
 nlistFree (void *list)
 {
   listFree (list);
 }
 
-inline void
+void
 nlistSetVersion (nlist_t *list, int version)
 {
   listSetVersion (list, version);
 }
 
-inline int
+int
 nlistGetVersion (nlist_t *list)
 {
   return listGetVersion (list);
 }
 
-inline ssize_t
+ssize_t
 nlistGetCount (nlist_t *list)
 {
   if (list == NULL) {
@@ -50,7 +50,7 @@ nlistGetCount (nlist_t *list)
   return list->count;
 }
 
-inline void
+void
 nlistSetSize (nlist_t *list, ssize_t siz)
 {
   listSetSize (list, siz);
@@ -205,19 +205,19 @@ nlistGetIdx (nlist_t *list, nlistidx_t lkey)
   return idx;
 }
 
-inline void *
+void *
 nlistGetDataByIdx (nlist_t *list, nlistidx_t idx)
 {
   return listGetDataByIdx (list, idx);
 }
 
-inline ssize_t
+ssize_t
 nlistGetNumByIdx (nlist_t *list, nlistidx_t idx)
 {
   return listGetNumByIdx (list, idx);
 }
 
-inline nlistidx_t
+nlistidx_t
 nlistGetKeyByIdx (nlist_t *list, nlistidx_t idx)
 {
   if (list == NULL) {
@@ -290,43 +290,43 @@ nlistGetList (nlist_t *list, nlistidx_t lidx)
   return value;
 }
 
-inline void
+void
 nlistSort (nlist_t *list)
 {
   listSort (list);
 }
 
-inline void
+void
 nlistStartIterator (nlist_t *list, nlistidx_t *iteridx)
 {
   *iteridx = LIST_END_LIST;
 }
 
-inline nlistidx_t
+nlistidx_t
 nlistIterateKey (nlist_t *list, nlistidx_t *iteridx)
 {
   return listIterateKeyNum (list, iteridx);
 }
 
-inline nlistidx_t
+nlistidx_t
 nlistIterateKeyPrevious (nlist_t *list, nlistidx_t *iteridx)
 {
   return listIterateKeyPreviousNum (list, iteridx);
 }
 
-inline void *
+void *
 nlistIterateValueData (nlist_t *list, nlistidx_t *iteridx)
 {
   return listIterateValue (list, iteridx);
 }
 
-inline ssize_t
+ssize_t
 nlistIterateValueNum (nlist_t *list, nlistidx_t *iteridx)
 {
   return listIterateValueNum (list, iteridx);
 }
 
-inline void
+void
 nlistDumpInfo (nlist_t *list)
 {
   listDumpInfo (list);

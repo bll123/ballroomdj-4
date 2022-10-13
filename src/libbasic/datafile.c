@@ -733,25 +733,25 @@ datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys,
 
 /* for debugging only */
 
-inline datafiletype_t
+datafiletype_t
 datafileGetType (datafile_t *df)
 {
   return df->dftype;
 }
 
-inline char *
+char *
 datafileGetFname (datafile_t *df)
 {
   return df->fname;
 }
 
-inline list_t *
+list_t *
 datafileGetData (datafile_t *df)
 {
   return df->data;
 }
 
-inline listidx_t
+listidx_t
 parseGetAllocCount (parseinfo_t *pi)
 {
   return pi->allocCount;

@@ -87,7 +87,7 @@ uiLabelSetBackgroundColor (UIWidget *uiwidget, const char *color)
   uiSetCss (uiwidget->widget, tbuff);
 }
 
-inline void
+void
 uiLabelSetText (UIWidget *uiwidget, const char *text)
 {
   if (uiwidget == NULL || uiwidget->widget == NULL) {
@@ -97,7 +97,7 @@ uiLabelSetText (UIWidget *uiwidget, const char *text)
   gtk_label_set_text (GTK_LABEL (uiwidget->widget), text);
 }
 
-inline void
+void
 uiLabelEllipsizeOn (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -117,7 +117,7 @@ uiLabelSetSelectable (UIWidget *uiwidget)
   gtk_label_set_selectable (GTK_LABEL (uiwidget->widget), TRUE);
 }
 
-inline void
+void
 uiLabelSetMaxWidth (UIWidget *uiwidget, int width)
 {
   if (uiwidget->widget == NULL) {
@@ -127,7 +127,7 @@ uiLabelSetMaxWidth (UIWidget *uiwidget, int width)
   gtk_label_set_max_width_chars (GTK_LABEL (uiwidget->widget), width);
 }
 
-inline void
+void
 uiLabelAlignEnd (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {

@@ -58,7 +58,7 @@ uiTextBoxGetScrolledWindow (uitextbox_t *tb)
   return &tb->scw;
 }
 
-inline void
+void
 uiTextBoxSetReadonly (uitextbox_t *tb)
 {
   uiWidgetDisableFocus (&tb->textbox);

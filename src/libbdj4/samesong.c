@@ -100,7 +100,7 @@ samesongGetColorByDBIdx (samesong_t *ss, dbidx_t dbidx)
   return sscolor;
 }
 
-inline const char *
+const char *
 samesongGetColorBySSIdx  (samesong_t *ss, ssize_t ssidx)
 {
   const char  *sscolor = NULL;
@@ -259,7 +259,7 @@ samesongClear (samesong_t *ss, nlist_t *dbidxlist)
 
 /* internal routines */
 
-inline static ssize_t
+static inline ssize_t
 samesongGetSSIdx (samesong_t *ss, dbidx_t dbidx)
 {
   song_t  *song;

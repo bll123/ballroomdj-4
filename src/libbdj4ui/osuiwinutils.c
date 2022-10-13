@@ -11,7 +11,7 @@
 
 #include "osuiutils.h"
 
-inline void
+void
 osuiSetIcon (char *fname)
 {
   return;

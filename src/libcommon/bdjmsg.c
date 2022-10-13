@@ -176,13 +176,13 @@ msgDecode (char *msgbuff, bdjmsgroute_t *routefrom, bdjmsgroute_t *route,
   }
 }
 
-inline const char *
+const char *
 msgDebugText (bdjmsgmsg_t msg)
 {
   return bdjmsgtxt [msg];
 }
 
-inline const char *
+const char *
 msgRouteDebugText (bdjmsgroute_t route)
 {
   return bdjmsgroutetxt [route];

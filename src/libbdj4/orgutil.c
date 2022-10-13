@@ -459,7 +459,7 @@ orgMakeSongPath (org_t *org, song_t *song)
   return p;
 }
 
-inline bool
+bool
 orgHaveDance (org_t *org)
 {
   if (org == NULL) {

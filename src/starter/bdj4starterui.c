@@ -1948,21 +1948,21 @@ starterCountProcesses (startui_t *starter)
 }
 
 
-inline static bool
+static inline bool
 starterForumLinkHandler (void *udata)
 {
   starterLinkHandler (udata, START_LINK_CB_FORUM);
   return UICB_STOP;
 }
 
-inline static bool
+static inline bool
 starterWikiLinkHandler (void *udata)
 {
   starterLinkHandler (udata, START_LINK_CB_WIKI);
   return UICB_STOP;
 }
 
-inline static bool
+static inline bool
 starterTicketLinkHandler (void *udata)
 {
   starterLinkHandler (udata, START_LINK_CB_TICKETS);

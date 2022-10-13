@@ -103,7 +103,7 @@ raClose (rafile_t *rafile)
   logProcEnd (LOG_PROC, "raClose", "");
 }
 
-inline rafileidx_t
+rafileidx_t
 raGetCount (rafile_t *rafile)
 {
   return rafile->count;
@@ -308,13 +308,13 @@ raUnlock (rafile_t *rafile)
 
 /* for debugging only */
 
-inline rafileidx_t
+rafileidx_t
 raGetSize (rafile_t *rafile)
 {
   return rafile->size;
 }
 
-inline rafileidx_t
+rafileidx_t
 raGetVersion (rafile_t *rafile)
 {
   return rafile->version;

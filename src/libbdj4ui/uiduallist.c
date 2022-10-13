@@ -295,7 +295,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   g_object_unref (store);
 }
 
-inline bool
+bool
 uiduallistIsChanged (uiduallist_t *duallist)
 {
   if (duallist == NULL) {
@@ -305,7 +305,7 @@ uiduallistIsChanged (uiduallist_t *duallist)
   return duallist->changed;
 }
 
-inline void
+void
 uiduallistClearChanged (uiduallist_t *duallist)
 {
   if (duallist == NULL) {

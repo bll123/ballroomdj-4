@@ -109,7 +109,7 @@ uiToggleButtonSetState (UIWidget *uiwidget, int state)
 
 /* internal routines */
 
-inline static void
+static inline void
 uiToggleButtonToggleHandler (GtkButton *b, gpointer udata)
 {
   UICallback *uicb = udata;

@@ -119,7 +119,7 @@ progstateShutdownProcess (progstate_t *progstate)
   return progstate->programState;
 }
 
-inline bool
+bool
 progstateIsRunning (progstate_t *progstate)
 {
   if (progstate == NULL) {
@@ -128,7 +128,7 @@ progstateIsRunning (progstate_t *progstate)
   return (progstate->programState == STATE_RUNNING);
 }
 
-inline programstate_t
+programstate_t
 progstateCurrState (progstate_t *progstate)
 {
   if (progstate == NULL) {

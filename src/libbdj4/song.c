@@ -387,19 +387,19 @@ songTagList (song_t *song)
   return taglist;
 }
 
-inline bool
+bool
 songIsChanged (song_t *song)
 {
   return song->changed;
 }
 
-inline bool
+bool
 songHasSonglistChange (song_t *song)
 {
   return song->songlistchange;
 }
 
-inline void
+void
 songClearChanged (song_t *song)
 {
   song->changed = false;

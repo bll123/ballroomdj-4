@@ -54,7 +54,7 @@ uiWindowSetTitle (UIWidget *uiwidget, const char *title)
   }
 }
 
-inline void
+void
 uiCloseWindow (UIWidget *uiwindow)
 {
   if (GTK_IS_WIDGET (uiwindow->widget)) {
@@ -62,43 +62,43 @@ uiCloseWindow (UIWidget *uiwindow)
   }
 }
 
-inline bool
+bool
 uiWindowIsMaximized (UIWidget *uiwindow)
 {
   return (bool) gtk_window_is_maximized (GTK_WINDOW (uiwindow->widget));
 }
 
-inline void
+void
 uiWindowIconify (UIWidget *uiwindow)
 {
   gtk_window_iconify (GTK_WINDOW (uiwindow->widget));
 }
 
-inline void
+void
 uiWindowDeIconify (UIWidget *uiwindow)
 {
   gtk_window_deiconify (GTK_WINDOW (uiwindow->widget));
 }
 
-inline void
+void
 uiWindowMaximize (UIWidget *uiwindow)
 {
   gtk_window_maximize (GTK_WINDOW (uiwindow->widget));
 }
 
-inline void
+void
 uiWindowUnMaximize (UIWidget *uiwindow)
 {
   gtk_window_unmaximize (GTK_WINDOW (uiwindow->widget));
 }
 
-inline void
+void
 uiWindowDisableDecorations (UIWidget *uiwindow)
 {
   gtk_window_set_decorated (GTK_WINDOW (uiwindow->widget), FALSE);
 }
 
-inline void
+void
 uiWindowEnableDecorations (UIWidget *uiwindow)
 {
   /* this does not work on windows, the decorations are not recovered */
@@ -106,13 +106,13 @@ uiWindowEnableDecorations (UIWidget *uiwindow)
   gtk_window_set_decorated (GTK_WINDOW (uiwindow->widget), TRUE);
 }
 
-inline void
+void
 uiWindowGetSize (UIWidget *uiwindow, int *x, int *y)
 {
   gtk_window_get_size (GTK_WINDOW (uiwindow->widget), x, y);
 }
 
-inline void
+void
 uiWindowSetDefaultSize (UIWidget *uiwindow, int x, int y)
 {
   if (x >= 0 && y >= 0) {
@@ -120,7 +120,7 @@ uiWindowSetDefaultSize (UIWidget *uiwindow, int x, int y)
   }
 }
 
-inline void
+void
 uiWindowGetPosition (UIWidget *uiwindow, int *x, int *y, int *ws)
 {
   GdkWindow *gdkwin;
@@ -136,7 +136,7 @@ uiWindowGetPosition (UIWidget *uiwindow, int *x, int *y, int *ws)
   }
 }
 
-inline void
+void
 uiWindowMove (UIWidget *uiwindow, int x, int y, int ws)
 {
   GdkWindow *gdkwin;
@@ -169,7 +169,7 @@ uiWindowMoveToCurrentWorkspace (UIWidget *uiwindow)
   }
 }
 
-inline void
+void
 uiWindowNoFocusOnStartup (UIWidget *uiwindow)
 {
   gtk_window_set_focus_on_map (GTK_WINDOW (uiwindow->widget), FALSE);

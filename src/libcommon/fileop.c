@@ -186,7 +186,7 @@ fileopIsDirectory (const char *fname)
   return (rc == 0);
 }
 
-inline int
+int
 fileopDelete (const char *fname)
 {
   int     rc;

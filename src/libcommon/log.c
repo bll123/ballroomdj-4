@@ -207,7 +207,7 @@ logCheck (logidx_t idx, loglevel_t level)
 }
 
 /* for debugging */
-inline char *
+char *
 plstateDebugText (playerstate_t plstate)
 {
   return playerstateTxt [plstate];

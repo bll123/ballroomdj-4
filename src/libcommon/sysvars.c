@@ -625,7 +625,7 @@ sysvarsCheckMutagen (void)
   }
 }
 
-inline char *
+char *
 sysvarsGetStr (sysvarkey_t idx)
 {
   if (idx >= SV_MAX) {
@@ -635,7 +635,7 @@ sysvarsGetStr (sysvarkey_t idx)
   return sysvars [idx];
 }
 
-inline ssize_t
+ssize_t
 sysvarsGetNum (sysvarlkey_t idx)
 {
   if (idx >= SVL_MAX) {
@@ -646,7 +646,7 @@ sysvarsGetNum (sysvarlkey_t idx)
 }
 
 
-inline void
+void
 sysvarsSetStr (sysvarkey_t idx, const char *value)
 {
   if (idx >= SV_MAX) {
@@ -656,7 +656,7 @@ sysvarsSetStr (sysvarkey_t idx, const char *value)
   strlcpy (sysvars [idx], value, SV_MAX_SZ);
 }
 
-inline void
+void
 sysvarsSetNum (sysvarlkey_t idx, ssize_t value)
 {
   if (idx >= SVL_MAX) {
@@ -666,19 +666,19 @@ sysvarsSetNum (sysvarlkey_t idx, ssize_t value)
   lsysvars [idx] = value;
 }
 
-inline bool
+bool
 isMacOS (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "darwin") == 0);
 }
 
-inline bool
+bool
 isWindows (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "windows") == 0);
 }
 
-inline bool
+bool
 isLinux (void)
 {
   return (strcmp (sysvars[SV_OSNAME], "linux") == 0);

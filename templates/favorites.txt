@@ -12,7 +12,7 @@
 version
 ..1
 count
-..8
+..9
 # key 0 may not be changed, except for the display.
 # key 0 is used as the indicator that there is no favorite setting.
 KEY
@@ -101,7 +101,9 @@ COLOR
 ..#6d2828
 USERSEL
 ..yes
-# 'imported' is used to display
+# 'imported' is used to display a symbol
+# for external requests.
+# it is not user-selectable.
 KEY
 ..8
 NAME

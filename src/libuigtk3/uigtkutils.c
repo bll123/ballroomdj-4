@@ -130,7 +130,7 @@ uiSetUIFont (char *uifont)
   }
 }
 
-inline void
+void
 uiInitUILog (void)
 {
   g_log_set_writer_func (uiGtkLogger, NULL, NULL);

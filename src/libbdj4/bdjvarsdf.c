@@ -10,7 +10,7 @@
 
 static void *bdjvarsdf [BDJVDF_MAX];
 
-inline void *
+void *
 bdjvarsdfGet (bdjvarkeydf_t idx)
 {
   if (idx >= BDJVDF_MAX) {
@@ -20,7 +20,7 @@ bdjvarsdfGet (bdjvarkeydf_t idx)
   return bdjvarsdf [idx];
 }
 
-inline void
+void
 bdjvarsdfSet (bdjvarkeydf_t idx, void *data)
 {
   if (idx >= BDJVDF_MAX) {

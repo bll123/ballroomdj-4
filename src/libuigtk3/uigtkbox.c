@@ -31,31 +31,31 @@ uiCreateHorizBox (UIWidget *uiwidget)
   uiwidget->widget = box;
 }
 
-inline void
+void
 uiBoxPackInWindow (UIWidget *uiwindow, UIWidget *uibox)
 {
   gtk_container_add (GTK_CONTAINER (uiwindow->widget), uibox->widget);
 }
 
-inline void
+void
 uiBoxPackStart (UIWidget *uibox, UIWidget *uiwidget)
 {
   gtk_box_pack_start (GTK_BOX (uibox->widget), uiwidget->widget, FALSE, FALSE, 0);
 }
 
-inline void
+void
 uiBoxPackStartExpand (UIWidget *uibox, UIWidget *uiwidget)
 {
   gtk_box_pack_start (GTK_BOX (uibox->widget), uiwidget->widget, TRUE, TRUE, 0);
 }
 
-inline void
+void
 uiBoxPackEnd (UIWidget *uibox, UIWidget *uiwidget)
 {
   gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, FALSE, FALSE, 0);
 }
 
-inline void
+void
 uiBoxPackEndExpand (UIWidget *uibox, UIWidget *uiwidget)
 {
   gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, TRUE, TRUE, 0);
@@ -63,7 +63,7 @@ uiBoxPackEndExpand (UIWidget *uibox, UIWidget *uiwidget)
 
 /* these routines will be removed at a later date */
 
-inline void
+void
 uiBoxPackInWindowUW (UIWidget *uiwindow, GtkWidget *widget)
 {
   gtk_container_add (GTK_CONTAINER (uiwindow->widget), widget);
@@ -75,19 +75,19 @@ uiBoxPackInWindowWU (GtkWidget *window, UIWidget *uibox)
   gtk_container_add (GTK_CONTAINER (window), uibox->widget);
 }
 
-inline void
+void
 uiBoxPackStartUW (UIWidget *uibox, GtkWidget *widget)
 {
   gtk_box_pack_start (GTK_BOX (uibox->widget), widget, FALSE, FALSE, 0);
 }
 
-inline void
+void
 uiBoxPackStartExpandUW (UIWidget *uibox, GtkWidget *widget)
 {
   gtk_box_pack_start (GTK_BOX (uibox->widget), widget, TRUE, TRUE, 0);
 }
 
-inline void
+void
 uiBoxPackEndUW (UIWidget *uibox, GtkWidget *widget)
 {
   gtk_box_pack_end (GTK_BOX (uibox->widget), widget, FALSE, FALSE, 0);
@@ -95,19 +95,19 @@ uiBoxPackEndUW (UIWidget *uibox, GtkWidget *widget)
 
 /* these routines will be removed at a later date */
 
-inline void
+void
 uiBoxPackStartWU (GtkWidget *box, UIWidget *uiwidget)
 {
   gtk_box_pack_start (GTK_BOX (box), uiwidget->widget, FALSE, FALSE, 0);
 }
 
-inline void
+void
 uiBoxPackStartExpandWU (GtkWidget *box, UIWidget *uiwidget)
 {
   gtk_box_pack_start (GTK_BOX (box), uiwidget->widget, TRUE, TRUE, 0);
 }
 
-inline void
+void
 uiBoxPackEndWU (GtkWidget *box, UIWidget *uiwidget)
 {
   gtk_box_pack_end (GTK_BOX (box), uiwidget->widget, FALSE, FALSE, 0);
@@ -139,19 +139,19 @@ uiBoxPackInWindowWW (GtkWidget *window, GtkWidget *box)
   gtk_container_add (GTK_CONTAINER (window), box);
 }
 
-inline void
+void
 uiBoxPackStartWW (GtkWidget *box, GtkWidget *widget)
 {
   gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
 }
 
-inline void
+void
 uiBoxPackStartExpandWW (GtkWidget *box, GtkWidget *widget)
 {
   gtk_box_pack_start (GTK_BOX (box), widget, TRUE, TRUE, 0);
 }
 
-inline void
+void
 uiBoxPackEndWW (GtkWidget *box, GtkWidget *widget)
 {
   gtk_box_pack_end (GTK_BOX (box), widget, FALSE, FALSE, 0);

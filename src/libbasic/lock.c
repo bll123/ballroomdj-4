@@ -42,7 +42,7 @@ static int    lockAcquirePid (char *fn, pid_t pid, int flags);
 static int    lockReleasePid (char *fn, pid_t pid, int flags);
 static pid_t  getPidFromFile (char *fn);
 
-inline char *
+char *
 lockName (bdjmsgroute_t route)
 {
   return locknames [route];

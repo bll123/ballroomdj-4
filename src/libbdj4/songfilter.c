@@ -179,7 +179,7 @@ songfilterReset (songfilter_t *sf)
 }
 
 /* checks to see if the song-filter is turned on in the display settings */
-inline bool
+bool
 songfilterCheckSelection (songfilter_t *sf, int type)
 {
   return nlistGetNum (sf->filterDisplaySel, type);
@@ -702,7 +702,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
   return true;
 }
 
-inline char *
+char *
 songfilterGetSort (songfilter_t *sf)
 {
 
@@ -744,7 +744,7 @@ songfilterGetByIdx (songfilter_t *sf, nlistidx_t lookupIdx)
   return dbidx;
 }
 
-inline dbidx_t
+dbidx_t
 songfilterGetCount (songfilter_t *sf)
 {
   logProcBegin (LOG_PROC, "songfilterGetCount");

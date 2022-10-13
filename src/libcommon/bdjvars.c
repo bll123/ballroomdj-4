@@ -44,7 +44,7 @@ bdjvarsCleanup (void)
   return;
 }
 
-inline char *
+char *
 bdjvarsGetStr (bdjvarkey_t idx)
 {
   if (idx >= BDJV_MAX) {
@@ -54,7 +54,7 @@ bdjvarsGetStr (bdjvarkey_t idx)
   return bdjvars [idx];
 }
 
-inline ssize_t
+ssize_t
 bdjvarsGetNum (bdjvarkeyl_t idx)
 {
   if (idx >= BDJVL_MAX) {
@@ -97,7 +97,7 @@ bdjvarsAdjustPorts (void)
   }
 }
 
-inline bool
+bool
 bdjvarsIsInitialized (void)
 {
   return initialized;

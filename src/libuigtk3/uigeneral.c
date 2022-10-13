@@ -9,7 +9,7 @@
 
 #include "ui.h"
 
-inline void
+void
 uiutilsUIWidgetInit (UIWidget *uiwidget)
 {
   if (uiwidget == NULL) {
@@ -18,7 +18,7 @@ uiutilsUIWidgetInit (UIWidget *uiwidget)
   uiwidget->widget = NULL;
 }
 
-inline bool
+bool
 uiutilsUIWidgetSet (UIWidget *uiwidget)
 {
   bool rc = true;
@@ -30,7 +30,7 @@ uiutilsUIWidgetSet (UIWidget *uiwidget)
 }
 
 
-inline void
+void
 uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source)
 {
   if (target == NULL) {

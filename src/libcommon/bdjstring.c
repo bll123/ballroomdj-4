@@ -106,7 +106,7 @@ stringAppend (char *str, size_t maxsz, size_t currsz, const char *data)
 }
 
 
-inline static const char *
+static inline const char *
 versionNext (const char *tv1)
 {
   tv1 = strstr (tv1, ".");

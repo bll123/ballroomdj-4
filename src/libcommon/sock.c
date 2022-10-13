@@ -481,7 +481,7 @@ sockWriteBinary (Sock_t sock, char *data, size_t dlen)
   return 0;
 }
 
-inline bool
+bool
 socketInvalid (Sock_t sock)
 {
 #if _define_INVALID_SOCKET
@@ -491,7 +491,7 @@ socketInvalid (Sock_t sock)
 #endif
 }
 
-inline bool
+bool
 sockWritable (Sock_t sock)
 {
   Sock_t        sval;

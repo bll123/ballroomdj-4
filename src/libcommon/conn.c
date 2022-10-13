@@ -96,7 +96,7 @@ connFree (conn_t *conn)
   }
 }
 
-inline uint16_t
+uint16_t
 connPort (conn_t *conn, bdjmsgroute_t route)
 {
   return connports [route];
@@ -252,7 +252,7 @@ connSendMessage (conn_t *conn, bdjmsgroute_t route,
   }
 }
 
-inline bool
+bool
 connIsConnected (conn_t *conn, bdjmsgroute_t route)
 {
   if (conn == NULL) {
@@ -265,7 +265,7 @@ connIsConnected (conn_t *conn, bdjmsgroute_t route)
   return conn [route].connected;
 }
 
-inline bool
+bool
 connHaveHandshake (conn_t *conn, bdjmsgroute_t route)
 {
   if (conn == NULL) {

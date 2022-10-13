@@ -107,37 +107,37 @@ levelFree (level_t *level)
   }
 }
 
-inline ssize_t
+ssize_t
 levelGetCount (level_t *level)
 {
   return ilistGetCount (level->level);
 }
 
-inline int
+int
 levelGetMaxWidth (level_t *level)
 {
   return level->maxWidth;
 }
 
-inline char *
+char *
 levelGetLevel (level_t *level, ilistidx_t ikey)
 {
   return ilistGetStr (level->level, ikey, LEVEL_LEVEL);
 }
 
-inline ssize_t
+ssize_t
 levelGetWeight (level_t *level, ilistidx_t ikey)
 {
   return ilistGetNum (level->level, ikey, LEVEL_WEIGHT);
 }
 
-inline ssize_t
+ssize_t
 levelGetDefault (level_t *level, ilistidx_t ikey)
 {
   return ilistGetNum (level->level, ikey, LEVEL_DEFAULT_FLAG);
 }
 
-inline char *
+char *
 levelGetDefaultName (level_t *level)
 {
   if (level == NULL) {
@@ -146,7 +146,7 @@ levelGetDefaultName (level_t *level)
   return level->defaultName;
 }
 
-inline ssize_t
+ssize_t
 levelGetDefaultKey (level_t *level)
 {
   if (level == NULL) {
@@ -155,19 +155,19 @@ levelGetDefaultKey (level_t *level)
   return level->defaultKey;
 }
 
-inline ssize_t
+ssize_t
 levelGetMax (level_t *level)
 {
   return ilistGetCount (level->level) - 1;
 }
 
-inline void
+void
 levelStartIterator (level_t *level, ilistidx_t *iteridx)
 {
   ilistStartIterator (level->level, iteridx);
 }
 
-inline ilistidx_t
+ilistidx_t
 levelIterate (level_t *level, ilistidx_t *iteridx)
 {
   return ilistIterateKey (level->level, iteridx);

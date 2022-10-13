@@ -13,7 +13,7 @@
 
 /* widget interface */
 
-inline void
+void
 uiWidgetDisable (UIWidget *uiwidget)
 {
   if (uiwidget == NULL || uiwidget->widget == NULL) {
@@ -22,7 +22,7 @@ uiWidgetDisable (UIWidget *uiwidget)
   gtk_widget_set_sensitive (uiwidget->widget, FALSE);
 }
 
-inline void
+void
 uiWidgetEnable (UIWidget *uiwidget)
 {
   if (uiwidget == NULL || uiwidget->widget == NULL) {
@@ -31,19 +31,19 @@ uiWidgetEnable (UIWidget *uiwidget)
   gtk_widget_set_sensitive (uiwidget->widget, TRUE);
 }
 
-inline void
+void
 uiWidgetExpandHoriz (UIWidget *uiwidget)
 {
   gtk_widget_set_hexpand (uiwidget->widget, TRUE);
 }
 
-inline void
+void
 uiWidgetExpandVert (UIWidget *uiwidget)
 {
   gtk_widget_set_vexpand (uiwidget->widget, TRUE);
 }
 
-inline void
+void
 uiWidgetSetAllMargins (UIWidget *uiwidget, int margin)
 {
   gtk_widget_set_margin_top (uiwidget->widget, margin);
@@ -52,7 +52,7 @@ uiWidgetSetAllMargins (UIWidget *uiwidget, int margin)
   gtk_widget_set_margin_end (uiwidget->widget, margin);
 }
 
-inline void
+void
 uiWidgetSetMarginTop (UIWidget *uiwidget, int margin)
 {
   if (uiwidget->widget == NULL) {
@@ -62,7 +62,7 @@ uiWidgetSetMarginTop (UIWidget *uiwidget, int margin)
   gtk_widget_set_margin_top (uiwidget->widget, margin);
 }
 
-inline void
+void
 uiWidgetSetMarginBottom (UIWidget *uiwidget, int margin)
 {
   if (uiwidget->widget == NULL) {
@@ -72,7 +72,7 @@ uiWidgetSetMarginBottom (UIWidget *uiwidget, int margin)
   gtk_widget_set_margin_bottom (uiwidget->widget, margin);
 }
 
-inline void
+void
 uiWidgetSetMarginStart (UIWidget *uiwidget, int margin)
 {
   if (uiwidget->widget == NULL) {
@@ -83,7 +83,7 @@ uiWidgetSetMarginStart (UIWidget *uiwidget, int margin)
 }
 
 
-inline void
+void
 uiWidgetSetMarginEnd (UIWidget *uiwidget, int margin)
 {
   if (uiwidget->widget == NULL) {
@@ -93,7 +93,7 @@ uiWidgetSetMarginEnd (UIWidget *uiwidget, int margin)
   gtk_widget_set_margin_end (uiwidget->widget, margin);
 }
 
-inline void
+void
 uiWidgetAlignHorizFill (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -103,7 +103,7 @@ uiWidgetAlignHorizFill (UIWidget *uiwidget)
   gtk_widget_set_halign (uiwidget->widget, GTK_ALIGN_FILL);
 }
 
-inline void
+void
 uiWidgetAlignHorizStart (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -113,7 +113,7 @@ uiWidgetAlignHorizStart (UIWidget *uiwidget)
   gtk_widget_set_halign (uiwidget->widget, GTK_ALIGN_START);
 }
 
-inline void
+void
 uiWidgetAlignHorizEnd (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -123,7 +123,7 @@ uiWidgetAlignHorizEnd (UIWidget *uiwidget)
   gtk_widget_set_halign (uiwidget->widget, GTK_ALIGN_END);
 }
 
-inline void
+void
 uiWidgetAlignHorizCenter (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -133,7 +133,7 @@ uiWidgetAlignHorizCenter (UIWidget *uiwidget)
   gtk_widget_set_halign (uiwidget->widget, GTK_ALIGN_CENTER);
 }
 
-inline void
+void
 uiWidgetAlignVertFill (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -143,7 +143,7 @@ uiWidgetAlignVertFill (UIWidget *uiwidget)
   gtk_widget_set_valign (uiwidget->widget, GTK_ALIGN_FILL);
 }
 
-inline void
+void
 uiWidgetAlignVertStart (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -153,7 +153,7 @@ uiWidgetAlignVertStart (UIWidget *uiwidget)
   gtk_widget_set_valign (uiwidget->widget, GTK_ALIGN_START);
 }
 
-inline void
+void
 uiWidgetAlignVertCenter (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -163,7 +163,7 @@ uiWidgetAlignVertCenter (UIWidget *uiwidget)
   gtk_widget_set_valign (uiwidget->widget, GTK_ALIGN_CENTER);
 }
 
-inline void
+void
 uiWidgetDisableFocus (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -173,7 +173,7 @@ uiWidgetDisableFocus (UIWidget *uiwidget)
   gtk_widget_set_can_focus (uiwidget->widget, FALSE);
 }
 
-inline void
+void
 uiWidgetHide (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -183,7 +183,7 @@ uiWidgetHide (UIWidget *uiwidget)
   gtk_widget_hide (uiwidget->widget);
 }
 
-inline void
+void
 uiWidgetShow (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -193,7 +193,7 @@ uiWidgetShow (UIWidget *uiwidget)
   gtk_widget_show (uiwidget->widget);
 }
 
-inline void
+void
 uiWidgetShowAll (UIWidget *uiwidget)
 {
   if (uiwidget->widget == NULL) {
@@ -204,7 +204,7 @@ uiWidgetShowAll (UIWidget *uiwidget)
 }
 
 
-inline void
+void
 uiWidgetMakePersistent (UIWidget *uiwidget)
 {
   if (uiwidget == NULL) {
@@ -219,7 +219,7 @@ uiWidgetMakePersistent (UIWidget *uiwidget)
   }
 }
 
-inline void
+void
 uiWidgetClearPersistent (UIWidget *uiwidget)
 {
   if (uiwidget == NULL) {
@@ -234,7 +234,7 @@ uiWidgetClearPersistent (UIWidget *uiwidget)
   }
 }
 
-inline void
+void
 uiWidgetSetSizeRequest (UIWidget *uiwidget, int width, int height)
 {
   if (uiwidget == NULL) {
@@ -247,7 +247,7 @@ uiWidgetSetSizeRequest (UIWidget *uiwidget, int width, int height)
   gtk_widget_set_size_request (uiwidget->widget, width, height);
 }
 
-inline bool
+bool
 uiWidgetIsValid (UIWidget *uiwidget)
 {
   bool    rc = false;
@@ -269,19 +269,19 @@ uiWidgetGetPosition (UIWidget *uiwidget, int *x, int *y)
 
 /* these routines will be removed at a later date */
 
-inline void
+void
 uiWidgetExpandHorizW (GtkWidget *widget)
 {
   gtk_widget_set_hexpand (widget, TRUE);
 }
 
-inline void
+void
 uiWidgetExpandVertW (GtkWidget *widget)
 {
   gtk_widget_set_vexpand (widget, TRUE);
 }
 
-inline void
+void
 uiWidgetSetAllMarginsW (GtkWidget *widget, int margin)
 {
   gtk_widget_set_margin_top (widget, margin);
@@ -290,7 +290,7 @@ uiWidgetSetAllMarginsW (GtkWidget *widget, int margin)
   gtk_widget_set_margin_end (widget, margin);
 }
 
-inline void
+void
 uiWidgetSetMarginStartW (GtkWidget *widget, int margin)
 {
   if (widget == NULL) {
@@ -301,7 +301,7 @@ uiWidgetSetMarginStartW (GtkWidget *widget, int margin)
 }
 
 
-inline void
+void
 uiWidgetAlignHorizFillW (GtkWidget *widget)
 {
   if (widget == NULL) {
@@ -312,7 +312,7 @@ uiWidgetAlignHorizFillW (GtkWidget *widget)
 }
 
 
-inline void
+void
 uiWidgetAlignVertFillW (GtkWidget *widget)
 {
   if (widget == NULL) {

@@ -27,25 +27,25 @@ slistAlloc (const char *name, listorder_t ordered, slistFree_t valueFreeHook)
   return list;
 }
 
-inline void
+void
 slistFree (void *list)
 {
   listFree (list);
 }
 
-inline void
+void
 slistSetVersion (slist_t *list, int version)
 {
   listSetVersion (list, version);
 }
 
-inline int
+int
 slistGetVersion (slist_t *list)
 {
   return listGetVersion (list);
 }
 
-inline ssize_t
+ssize_t
 slistGetCount (slist_t *list)
 {
   if (list == NULL) {
@@ -54,7 +54,7 @@ slistGetCount (slist_t *list)
   return list->count;
 }
 
-inline void
+void
 slistSetSize (slist_t *list, ssize_t siz)
 {
   listSetSize (list, siz);
@@ -133,7 +133,7 @@ slistSetList (slist_t *list, const char *sidx, slist_t *data)
   listSet (list, &item);
 }
 
-inline slistidx_t
+slistidx_t
 slistGetIdx (slist_t *list, const char *sidx)
 {
   listkeylookup_t   key;
@@ -142,25 +142,25 @@ slistGetIdx (slist_t *list, const char *sidx)
   return listGetIdx (list, &key);
 }
 
-inline void *
+void *
 slistGetData (slist_t *list, const char *sidx)
 {
   return listGetData (list, sidx);
 }
 
-inline char *
+char *
 slistGetStr (slist_t *list, const char *sidx)
 {
   return listGetData (list, sidx);
 }
 
-inline void *
+void *
 slistGetDataByIdx (slist_t *list, slistidx_t idx)
 {
   return listGetDataByIdx (list, idx);
 }
 
-inline ssize_t
+ssize_t
 slistGetNumByIdx (slist_t *list, slistidx_t idx)
 {
   return listGetNumByIdx (list, idx);
@@ -237,31 +237,31 @@ slistIterateGetIdx (slist_t *list, slistidx_t *iteridx)
   return listIterateGetIdx (list, iteridx);
 }
 
-inline void
+void
 slistSort (slist_t *list)
 {
   listSort (list);
 }
 
-inline void
+void
 slistStartIterator (slist_t *list, slistidx_t *iteridx)
 {
   *iteridx = -1;
 }
 
-inline char *
+char *
 slistIterateKey (slist_t *list, slistidx_t *iteridx)
 {
   return listIterateKeyStr (list, iteridx);
 }
 
-inline void *
+void *
 slistIterateValueData (slist_t *list, slistidx_t *iteridx)
 {
   return listIterateValue (list, iteridx);
 }
 
-inline ssize_t
+ssize_t
 slistIterateValueNum (slist_t *list, slistidx_t *iteridx)
 {
   return listIterateValueNum (list, iteridx);

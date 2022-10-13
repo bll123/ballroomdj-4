@@ -146,7 +146,7 @@ uiButtonSetFlat (UIWidget *uiwidget)
   uiSetCss (aw, "widget { outline-width: 0; }");
 }
 
-inline static void
+static inline void
 uiButtonSignalHandler (GtkButton *b, gpointer udata)
 {
   UICallback *uicb = udata;

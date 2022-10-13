@@ -85,7 +85,7 @@ listFree (void *tlist)
   }
 }
 
-inline void
+void
 listSetVersion (list_t *list, int version)
 {
   if (list == NULL) {
@@ -114,7 +114,7 @@ listSetSize (list_t *list, listidx_t siz)
   }
 }
 
-inline int
+int
 listGetVersion (list_t *list)
 {
   if (list == NULL) {
@@ -245,13 +245,13 @@ listSort (list_t *list)
   }
 }
 
-inline void
+void
 listStartIterator (list_t *list, listidx_t *iteridx)
 {
   *iteridx = LIST_END_LIST;
 }
 
-inline void
+void
 listDumpInfo (list_t *list)
 {
   logMsg (LOG_DBG, LOG_LIST, "list: %s count: %ld key:%d ordered:%d",
@@ -530,7 +530,7 @@ listFreeItem (list_t *list, listidx_t idx)
   } /* if the data pointer is not null */
 }
 
-inline static listidx_t
+static inline listidx_t
 listIterateKeyGetNum (list_t *list, listidx_t *iteridx)
 {
   listidx_t   value = LIST_LOC_INVALID;
@@ -590,7 +590,7 @@ listReplace (list_t *list, listidx_t loc, listitem_t *item)
   memcpy (&list->data [loc], item, sizeof (listitem_t));
 }
 
-static int
+static inline int
 idxCompare (listidx_t la, listidx_t lb)
 {
   int rc = 0;
@@ -713,7 +713,7 @@ mergeSort (list_t *list, listidx_t l, listidx_t r)
   return swaps;
 }
 
-inline static void
+static inline void
 listClearCache (list_t *list)
 {
   if (list->keytype == LIST_KEY_STR &&
@@ -724,7 +724,7 @@ listClearCache (list_t *list)
   list->locCache = LIST_LOC_INVALID;
 }
 
-inline static listidx_t
+static inline listidx_t
 listCheckCache (list_t *list, listkeylookup_t *key)
 {
   listidx_t   ridx = LIST_LOC_INVALID;
