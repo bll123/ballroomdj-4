@@ -2053,9 +2053,16 @@ installerPythonCheck (installer_t *installer)
     int     majvers;
 
     strlcpy (tbuff, installer->pyversion, sizeof (tbuff));
+    majvers = atoi (installer->pyversion);
+
+    /* if a very old version of python is installed, do an update */
+    /* this is only applicable to windows */
+    if (majvers < 3 && isWindows ()) {
+      installer->updatepython = true;
+    }
+
     p = strstr (tbuff, ".");
     if (p != NULL) {
-      majvers = atoi (p);
       p = strstr (p + 1, ".");
       if (p != NULL) {
         *p = '\0';
@@ -2067,10 +2074,6 @@ installerPythonCheck (installer_t *installer)
         installer->updatepython = true;
       }
 #endif
-      /* if a very old version of python is installed, do an update */
-      if (majvers < 3) {
-        installer->updatepython = true;
-      }
     }
   }
 
@@ -2590,7 +2593,7 @@ installerCheckPackages (installer_t *installer)
         installer->home, tver);
   }
   sysvarsCheckPaths (pypath);
-  sysvarsCheckPython ();
+  sysvarsGetPythonVersion ();
   sysvarsCheckMutagen ();
 
   tmp = sysvarsGetStr (SV_PATH_VLC);

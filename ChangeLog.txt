@@ -1,5 +1,10 @@
 BallroomDJ 4 Change Log
 
+4.0.0 alpha 2022-10-??
+
+- installer
+  - Fixed python major version check.
+
 4.0.0 alpha 2022-10-13
 
 - user interface

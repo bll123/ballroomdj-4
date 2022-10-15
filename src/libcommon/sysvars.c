@@ -94,6 +94,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_USER_AGENT] = { "USER_AGENT" },
   [SV_USER_MUNGE] = { "USER_MUNGE" },
   [SV_USER] = { "USER" },
+  [SV_VLC_VERSION] = { "VLC_VERSION" },
   [SV_WEB_VERSION_FILE] = { "WEB_VERSION_FILE" },
 };
 
@@ -432,8 +433,7 @@ sysvarsInit (const char *argv0)
   }
 
   svGetSystemFont ();
-
-  sysvarsCheckPython ();
+  sysvarsGetPythonVersion ();
   sysvarsCheckMutagen ();
 
   lsysvars [SVL_BDJIDX] = 0;
@@ -546,7 +546,7 @@ sysvarsCheckPaths (const char *otherpaths)
 }
 
 void
-sysvarsCheckPython (void)
+sysvarsGetPythonVersion (void)
 {
   if (*sysvars [SV_PATH_PYTHON]) {
     char    buff [SV_MAX_SZ];
@@ -555,6 +555,8 @@ sysvarsCheckPython (void)
     int     j;
 
     data = osRunProgram (sysvars [SV_PATH_PYTHON], "--version", NULL);
+
+    // Python 3.9.2
 
     p = NULL;
     if (data != NULL) {

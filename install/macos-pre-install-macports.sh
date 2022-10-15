@@ -48,7 +48,7 @@ if [[ $rc -ne 0 ]]; then
   echo ""
   echo "Now run Software Update (from Settings)"
   echo "and install the Command Lines Tools update."
-  ehco ""
+  echo ""
   echo "After installation, run this script again."
   echo ""
   echo "Software Update will continue to list the"

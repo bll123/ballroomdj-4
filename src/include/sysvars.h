@@ -58,6 +58,7 @@ typedef enum {
   SV_USER,
   SV_USER_AGENT,
   SV_USER_MUNGE,
+  SV_VLC_VERSION,
   SV_WEB_VERSION_FILE,
   SV_MAX
 } sysvarkey_t;
@@ -73,7 +74,7 @@ typedef enum {
 
 void    sysvarsInit (const char *argv0);
 void    sysvarsCheckPaths (const char *otherpaths);
-void    sysvarsCheckPython (void);
+void    sysvarsGetPythonVersion (void);
 void    sysvarsCheckMutagen (void);
 char    * sysvarsGetStr (sysvarkey_t idx);
 ssize_t sysvarsGetNum (sysvarlkey_t idx);
