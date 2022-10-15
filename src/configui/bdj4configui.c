@@ -788,6 +788,11 @@ confuiPopulateOptions (configui_t *confui)
       templateImageCopy (sval);
     }
 
+    if (i == CONFUI_WIDGET_UI_PROFILE_COLOR &&
+        profilecolorchanged) {
+      templateImageCopy (sval);
+    }
+
     if (i == CONFUI_SPINBOX_RC_HTML_TEMPLATE) {
       sval = bdjoptGetStr (confui->gui.uiitem [i].bdjoptIdx);
       templateHttpCopy (sval, "bdj4remote.html");

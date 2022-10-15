@@ -47,13 +47,9 @@ END_TEST
 START_TEST(dance_iterate)
 {
   dance_t     *dance = NULL;
-  char        *val = NULL;
   slistidx_t  iteridx;
   int         count;
   int         key;
-  char        *ann;
-  int         hbpm;
-  int         lbpm;
   int         spd;
   slist_t     *tags;
   int         ts;
@@ -67,11 +63,11 @@ START_TEST(dance_iterate)
   danceStartIterator (dance, &iteridx);
   count = 0;
   while ((key = danceIterate (dance, &iteridx)) >= 0) {
-    val = danceGetStr (dance, key, DANCE_DANCE);
+    danceGetStr (dance, key, DANCE_DANCE);
 
-    ann = danceGetStr (dance, key, DANCE_ANNOUNCE);
-    hbpm = danceGetNum (dance, key, DANCE_HIGH_BPM);
-    lbpm = danceGetNum (dance, key, DANCE_LOW_BPM);
+    danceGetStr (dance, key, DANCE_ANNOUNCE);
+    danceGetNum (dance, key, DANCE_HIGH_BPM);
+    danceGetNum (dance, key, DANCE_LOW_BPM);
     spd = danceGetNum (dance, key, DANCE_SPEED);
     ck_assert_int_ge (spd, 0);
     ck_assert_int_le (spd, 2);
@@ -106,10 +102,6 @@ START_TEST(dance_set)
   char        *ann;
   int         hbpm;
   int         lbpm;
-  int         spd;
-  slist_t     *tags;
-  int         ts;
-  int         type;
   char        *tval;
   char        *tann;
   int         thbpm;
@@ -157,12 +149,12 @@ START_TEST(dance_set)
     ck_assert_int_eq (tlbpm, 5);
     ck_assert_int_ne (lbpm, tlbpm);
 
-    spd = danceGetNum (dance, key, DANCE_SPEED);
+    danceGetNum (dance, key, DANCE_SPEED);
     danceSetNum (dance, key, DANCE_SPEED, DANCE_SPEED_SLOW);
     tspd = danceGetNum (dance, key, DANCE_SPEED);
     ck_assert_int_eq (tspd, DANCE_SPEED_SLOW);
 
-    tags = danceGetList (dance, key, DANCE_TAGS);
+    danceGetList (dance, key, DANCE_TAGS);
     ttags = slistAlloc ("chk-dance-set-tags", LIST_ORDERED, NULL);
     slistSetNum (ttags, "tag", 0);
     danceSetList (dance, key, DANCE_TAGS, ttags);
@@ -172,12 +164,12 @@ START_TEST(dance_set)
     val = slistIterateKey (ttags, &ttiteridx);
     ck_assert_str_eq (val, "tag");
 
-    ts = danceGetNum (dance, key, DANCE_TIMESIG);
+    danceGetNum (dance, key, DANCE_TIMESIG);
     danceSetNum (dance, key, DANCE_TIMESIG, DANCE_TIMESIG_48);
     tts = danceGetNum (dance, key, DANCE_TIMESIG);
     ck_assert_int_eq (tts, DANCE_TIMESIG_48);
 
-    type = danceGetNum (dance, key, DANCE_TYPE);
+    danceGetNum (dance, key, DANCE_TYPE);
     danceSetNum (dance, key, DANCE_TYPE, 2);
     ttype = danceGetNum (dance, key, DANCE_TYPE);
     ck_assert_int_eq (ttype, 2);

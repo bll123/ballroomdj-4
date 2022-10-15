@@ -420,7 +420,6 @@ dbBackup (void)
 dbidx_t
 dbAddTemporarySong (musicdb_t *musicdb, song_t *song)
 {
-  const char  *fstr;
   dbidx_t     dbidx;
 
   if (song == NULL) {
@@ -428,7 +427,7 @@ dbAddTemporarySong (musicdb_t *musicdb, song_t *song)
   }
 
   songSetNum (song, TAG_TEMPORARY, true);
-  fstr = songGetStr (song, TAG_FILE);
+  songGetStr (song, TAG_FILE);
   dbidx = musicdb->count;
   dbidx += nlistGetCount (musicdb->tempSongs);
   songSetNum (song, TAG_DBIDX, dbidx);

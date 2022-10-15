@@ -226,7 +226,6 @@ START_TEST(osprocess_run)
 {
   char        tbuff [MAXPATHLEN];
   char        *extension;
-  int         flags = 0;
   char        *data;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_run");
@@ -237,7 +236,6 @@ START_TEST(osprocess_run)
   }
   snprintf (tbuff, sizeof (tbuff), "bin/chkprocess%s", extension);
 
-  flags = 0;
   data = osRunProgram (tbuff, "--profile", "0", "--theme", "xyzzy", "--bdj4", NULL);
   stringTrim (data);
   ck_assert_str_eq (data, "xyzzy");

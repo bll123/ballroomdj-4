@@ -68,11 +68,9 @@ END_TEST
 START_TEST(lock_already)
 {
   int           rc;
-  pid_t         pid;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_already");
 
-  pid = getpid ();
   unlink (FULL_LOCK_FN);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_gt (rc, 0);
@@ -87,11 +85,9 @@ END_TEST
 START_TEST(lock_other_dead)
 {
   int           rc;
-  pid_t         pid;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_other_dead");
 
-  pid = getpid ();
   unlink (FULL_LOCK_FN);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_OTHER_PID);
   ck_assert_int_gt (rc, 0);
@@ -106,11 +102,9 @@ END_TEST
 START_TEST(lock_unlock_fail)
 {
   int           rc;
-  pid_t         pid;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_unlock_fail");
 
-  pid = getpid ();
   unlink (FULL_LOCK_FN);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_gt (rc, 0);

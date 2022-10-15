@@ -552,7 +552,6 @@ playerProcessing (void *udata)
       ! playerData->inGap &&
       queueGetCount (playerData->playRequest) > 0) {
     prepqueue_t   *pq = NULL;
-    prepqueue_t   *tpq = NULL;
     playrequest_t *preq = NULL;
 
     if (! playerData->repeat) {
@@ -568,7 +567,7 @@ playerProcessing (void *udata)
       }
 
       playerData->currentSong = pq;
-      tpq = queueIterateRemoveNode (playerData->prepQueue, &playerData->prepiteridx);
+      queueIterateRemoveNode (playerData->prepQueue, &playerData->prepiteridx);
       /* do not free */
     }
 

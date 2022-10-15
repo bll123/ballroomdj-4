@@ -92,7 +92,6 @@ main (int argc, char *argv [])
   bool        isbdj4 = false;
   bool        bdjoptchanged = false;
   int         haveitunes = 0;
-  int         flags;
   int         statusflags [UPD_MAX];
   int         processflags [UPD_MAX];
   bool        processaf = false;
@@ -152,7 +151,7 @@ main (int argc, char *argv [])
     processflags [i] = 0;
   }
 
-  flags = bdj4startup (argc, argv, NULL, "up", ROUTE_NONE,
+  bdj4startup (argc, argv, NULL, "up", ROUTE_NONE,
       BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_DB_LOAD);
 
   audiotagInit ();

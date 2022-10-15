@@ -78,7 +78,6 @@ END_TEST
 START_TEST(genre_conv)
 {
   genre_t     *genre = NULL;
-  slist_t     *gl = NULL;
   char        *val = NULL;
   slistidx_t  iteridx;
   datafileconv_t conv;
@@ -91,7 +90,6 @@ START_TEST(genre_conv)
   bdjvarsdfloadInit ();
 
   genre = genreAlloc ();
-  gl = genreGetList (genre);
   genreStartIterator (genre, &iteridx);
   count = 0;
   while ((key = genreIterate (genre, &iteridx)) >= 0) {

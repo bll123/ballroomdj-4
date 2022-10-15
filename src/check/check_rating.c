@@ -43,7 +43,6 @@ END_TEST
 START_TEST(rating_iterate)
 {
   rating_t     *rating = NULL;
-  char        *val = NULL;
   slistidx_t  iteridx;
   int         count;
   int         key;
@@ -55,7 +54,7 @@ START_TEST(rating_iterate)
   ratingStartIterator (rating, &iteridx);
   count = 0;
   while ((key = ratingIterate (rating, &iteridx)) >= 0) {
-    val = ratingGetRating (rating, key);
+    ratingGetRating (rating, key);
     w = ratingGetWeight (rating, key);
     ck_assert_int_ge (w, 0);
     ++count;

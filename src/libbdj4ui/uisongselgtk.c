@@ -396,11 +396,8 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   slist_t         * sellist;
   double          tupper;
   const char      * sscolor = ""; // "#000000";
-  songfav_t       *songfav;
 
   logProcBegin (LOG_PROC, "uisongselPopulateData");
-
-  songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
 
   uiw = uisongsel->uiWidgetData;
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);

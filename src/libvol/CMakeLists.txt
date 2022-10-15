@@ -45,6 +45,10 @@ target_link_libraries (voltest
   m
 )
 
+if (APPLE)
+  macUpdateRPath (voltest)
+endif()
+
 install (TARGETS
   libbdj4vol libvolnull libvolpa libvolmac libvolwin
   voltest

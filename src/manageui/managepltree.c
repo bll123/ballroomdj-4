@@ -98,7 +98,6 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
   GtkWidget   *tree;
   GtkCellRenderer *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
-  int         val;
   const char  *bpmstr;
   char        tbuff [100];
 
@@ -191,7 +190,6 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
   managepltree->lowbpmcol = column;
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
 
-  val = bdjoptGetNum (OPT_G_BPM);
   bpmstr = tagdefs [TAG_BPM].displayname;
 
   /* CONTEXT: playlist management: low bpm/mpm column header */

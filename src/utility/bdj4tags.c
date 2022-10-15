@@ -33,7 +33,6 @@ main (int argc, char *argv [])
   int         option_index = 0;
   int         fidx = -1;
   tagdefkey_t tagkey;
-  bool        bdj3tags = false;
   bool        clbdj3tags = false;
   slist_t     *tagdata;
   bool        writetags;
@@ -88,10 +87,8 @@ main (int argc, char *argv [])
   audiotagInit ();
   logStart ("bdj4tags", "tg", LOG_DBUPDATE | LOG_IMPORTANT | LOG_BASIC | LOG_MAIN);
 
-  bdj3tags = bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS);
   if (clbdj3tags) {
     bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, clbdj3tags);
-    bdj3tags = clbdj3tags;
   }
 
   for (int i = 1; i < argc; ++i) {

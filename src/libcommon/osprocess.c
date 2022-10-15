@@ -46,8 +46,6 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   pid_t       pid;
   pid_t       tpid;
   int         rc;
-  int         ostdout;
-  int         ostderr;
 
   /* this may be slower, but it works; speed is not a major issue */
   tpid = fork ();
@@ -66,8 +64,6 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
       if (fd < 0) {
         outfname = NULL;
       } else {
-        ostdout = dup (STDOUT_FILENO);
-        ostderr = dup (STDERR_FILENO);
         dup2 (fd, STDOUT_FILENO);
         dup2 (fd, STDERR_FILENO);
         close (fd);
@@ -108,8 +104,6 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   int         rc;
   pid_t       tpid;
   int         pipefd [2];
-  int         ostdout;
-  int         ostderr;
   ssize_t     bytesread;
 
   if (pipe (pipefd) < 0) {
@@ -132,8 +126,6 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
       close (i);
     }
 
-    ostdout = dup (STDOUT_FILENO);
-    ostderr = dup (STDERR_FILENO);
     dup2 (pipefd [1], STDOUT_FILENO);
     dup2 (pipefd [1], STDERR_FILENO);
 

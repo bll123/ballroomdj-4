@@ -332,8 +332,6 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
   char      duration [40];
   char      pbuff [40];
   int       count;
-  bool      haveduration;
-  bool      skip;
   int       tagkey;
   int       writetags;
 
@@ -373,10 +371,8 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
 
   tstr = strtok_r (data, "\r\n", &tokstr);
   count = 0;
-  haveduration = false;
   while (tstr != NULL) {
     logMsg (LOG_DBG, LOG_DBUPDATE, "raw: %s", tstr);
-    skip = false;
     if (count == 1) {
       p = strstr (tstr, "seconds");
       if (p != NULL) {
@@ -391,7 +387,6 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
         tm *= 1000.0;
         snprintf (duration, sizeof (duration), "%.0f", tm);
         slistSetStr (tagdata, tagdefs [TAG_DURATION].tag, duration);
-        haveduration = true;
       } else {
         logMsg (LOG_DBG, LOG_DBUPDATE, "no 'seconds' found");
       }

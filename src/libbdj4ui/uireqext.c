@@ -409,7 +409,6 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
 {
   const char  *ffn;
   char        tbuff [3096];
-  size_t      tblen;
 
   if (uireqext == NULL) {
     return;
@@ -440,7 +439,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       /* the change */
       slistSetStr (tagdata, tagdefs [TAG_FAVORITE].tag, "imported");
 
-      tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
+      dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
           ffn, MUSICDB_ENTRY_NEW);
       dataFree (uireqext->songEntryText);
       uireqext->songEntryText = strdup (tbuff);
