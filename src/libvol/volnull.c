@@ -17,7 +17,7 @@ volumeDisconnect (void) {
 }
 
 int
-volumeProcess (volaction_t action, char *sinkname,
+volumeProcess (volaction_t action, const char *sinkname,
     int *vol, volsinklist_t *sinklist)
 {
   if (action == VOL_HAVE_SINK_LIST) {

@@ -4,6 +4,8 @@ BallroomDJ 4 Change Log
 
 - installer
   - Fixed python major version check.
+- macos
+  - The audio output device can now be selected.
 
 4.0.0 alpha 2022-10-13
 

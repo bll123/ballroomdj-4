@@ -55,19 +55,6 @@ pliiInit (const char *volpkg, const char *sinkname)
     char  tbuffb [200];
 
     vlcOptions [0] = NULL;
-    if (strcmp (volpkg, "libvolwin") == 0 && sinkname != NULL && *sinkname) {
-      snprintf (tbuff, sizeof (tbuff), "--directx-audio-device=%s", sinkname);
-      vlcOptions [0] = tbuff;
-      snprintf (tbuffb, sizeof (tbuffb), "--mmdevice-audio-device=%s", sinkname);
-      vlcOptions [1] = tbuffb;
-      vlcOptions [2] = NULL;
-    }
-    if (strcmp (volpkg, "libvolalsa") == 0 && sinkname != NULL && *sinkname) {
-      snprintf (tbuff, sizeof (tbuff), "--alsa-audio-device=%s\n", sinkname);
-      vlcOptions [0] = tbuff;
-      vlcOptions [1] = NULL;
-    }
-
     pliData->plData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions, vlcOptions);
   }
   pliData->name = "VLC Integrated";

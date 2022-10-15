@@ -88,8 +88,8 @@ typedef struct {
   int             currentVolume;  // current volume settings, no adjustments.
   int             actualVolume;   // testsuite: the actualvolume that is set
   int             currentSpeed;
-  char            *defaultSink;
-  char            *currentSink;
+  const char      *defaultSink;
+  const char      *currentSink;
   mstime_t        statusCheck;
   volsinklist_t   sinklist;
   playerstate_t   playerState;
@@ -154,7 +154,7 @@ static void     playerVolumeSet (playerdata_t *playerData, char *tvol);
 static void     playerVolumeMute (playerdata_t *playerData);
 static void     playerPrepQueueFree (void *);
 static void     playerSigHandler (int sig);
-static void     playerSetAudioSink (playerdata_t *playerData, char *sinkname);
+static void     playerSetAudioSink (playerdata_t *playerData, const char *sinkname);
 static void     playerInitSinklist (playerdata_t *playerData);
 static void     playerFadeVolSet (playerdata_t *playerData);
 static double   calcFadeIndex (playerdata_t *playerData);
@@ -177,6 +177,7 @@ main (int argc, char *argv[])
   playerdata_t    playerData;
   uint16_t        listenPort;
   int             flags;
+  const char      *audiosink;
 
   osSetStandardSignals (playerSigHandler);
 
@@ -247,20 +248,19 @@ main (int argc, char *argv[])
   }
 
   /* sets the current sink */
-  playerSetAudioSink (&playerData, bdjoptGetStr (OPT_MP_AUDIOSINK));
-
-  /* this works for pulse audio */
-  if (isLinux () &&
-      strcmp (bdjoptGetStr (OPT_M_VOLUME_INTFC), "libvolpa") == 0) {
-    osSetEnv ("PULSE_SINK", playerData.currentSink);
-  }
+  audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
+  playerSetAudioSink (&playerData, audiosink);
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", bdjoptGetStr (OPT_M_PLAYER_INTFC));
   logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s", playerData.currentSink);
   playerData.pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
       playerData.currentSink);
+
+  if (strcmp (audiosink, "default") != 0) {
+    pliSetAudioDevice (playerData.pli, playerData.currentSink);
+  }
+
   /* some audio device interfaces may not have the audio device enumeration. */
-  /* (e.g. I don't know how to do this on macos) */
   /* in this case, retrieve the list of devices from the player if possible. */
   if (! volumeHaveSinkList (playerData.volume)) {
     /* try getting the sink list from the player */
@@ -269,15 +269,16 @@ main (int argc, char *argv[])
       logMsg (LOG_DBG, LOG_BASIC, "vlc-sinklist");
       for (size_t i = 0; i < playerData.sinklist.count; ++i) {
         logMsg (LOG_DBG, LOG_BASIC, "  %d %3d %s %s",
-                 playerData.sinklist.sinklist [i].defaultFlag,
-                 playerData.sinklist.sinklist [i].idxNumber,
-                 playerData.sinklist.sinklist [i].name,
-                 playerData.sinklist.sinklist [i].description);
+            playerData.sinklist.sinklist [i].defaultFlag,
+            playerData.sinklist.sinklist [i].idxNumber,
+            playerData.sinklist.sinklist [i].name,
+            playerData.sinklist.sinklist [i].description);
       }
     }
     playerSetAudioSink (&playerData, bdjoptGetStr (OPT_MP_AUDIOSINK));
-    /* use the player to set the audio output device */
-    pliSetAudioDevice (playerData.pli, playerData.currentSink);
+    if (strcmp (audiosink, "default") != 0) {
+      pliSetAudioDevice (playerData.pli, playerData.currentSink);
+    }
   }
 
   playerSetDefaultVolume (&playerData);
@@ -1414,7 +1415,7 @@ playerSigHandler (int sig)
 }
 
 static void
-playerSetAudioSink (playerdata_t *playerData, char *sinkname)
+playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
 {
   int           found = 0;
   int           idx = -1;

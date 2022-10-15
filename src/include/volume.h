@@ -18,7 +18,7 @@ typedef enum {
 
 typedef struct {
   dlhandle_t  *dlHandle;
-  int         (*volumeProcess) (volaction_t, char *, int *, volsinklist_t *);
+  int         (*volumeProcess) (volaction_t, const char *, int *, volsinklist_t *);
   void        (*volumeDisconnect) (void);
 } volume_t;
 
@@ -26,12 +26,12 @@ volume_t  *volumeInit (const char *volpkg);
 void      volumeFree (volume_t *volume);
 bool      volumeHaveSinkList (volume_t *volume);
 void      volumeSinklistInit (volsinklist_t *sinklist);
-int       volumeGet (volume_t *volume, char *sinkname);
-int       volumeSet (volume_t *volume, char *sinkname, int vol);
-int       volumeGetSinkList (volume_t *volume, char *sinkname, volsinklist_t *sinklist);
+int       volumeGet (volume_t *volume, const char *sinkname);
+int       volumeSet (volume_t *volume, const char *sinkname, int vol);
+int       volumeGetSinkList (volume_t *volume, const char *sinkname, volsinklist_t *sinklist);
 void      volumeFreeSinkList (volsinklist_t *sinklist);
 
-int       volumeProcess (volaction_t action, char *sinkname,
+int       volumeProcess (volaction_t action, const char *sinkname,
               int *vol, volsinklist_t *sinklist);
 void      volumeDisconnect (void);
 

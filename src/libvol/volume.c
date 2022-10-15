@@ -75,7 +75,7 @@ volumeSinklistInit (volsinklist_t *sinklist)
 
 
 int
-volumeGet (volume_t *volume, char *sinkname)
+volumeGet (volume_t *volume, const char *sinkname)
 {
   int               vol;
 
@@ -86,7 +86,7 @@ volumeGet (volume_t *volume, char *sinkname)
 }
 
 int
-volumeSet (volume_t *volume, char *sinkname, int vol)
+volumeSet (volume_t *volume, const char *sinkname, int vol)
 {
   volume->volumeProcess (VOL_SET, sinkname, &vol, NULL);
   volume->volumeDisconnect ();
@@ -95,7 +95,7 @@ volumeSet (volume_t *volume, char *sinkname, int vol)
 
 
 int
-volumeGetSinkList (volume_t *volume, char *sinkname, volsinklist_t *sinklist)
+volumeGetSinkList (volume_t *volume, const char *sinkname, volsinklist_t *sinklist)
 {
   int               vol;
 
