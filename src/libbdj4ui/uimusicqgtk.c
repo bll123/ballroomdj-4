@@ -411,7 +411,7 @@ void
 uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
 {
   GtkTreeModel      *model;
-  gboolean          valid = false;
+  int               valid = false;
   GtkTreeIter       iter;
   int               count = 0;
   uimusicqgtk_t     *uiw;
@@ -429,11 +429,10 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
     logProcEnd (LOG_PROC, "uimusicqMusicQueueSetSelected", "count != 1");
     return;
   }
-  gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
+  valid = gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
 
   switch (which) {
     case UIMUSICQ_SEL_CURR: {
-      valid = true;
       break;
     }
     case UIMUSICQ_SEL_PREV: {
@@ -525,14 +524,17 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
     GtkTreeModel  *model;
     GtkTreeIter   iter;
     GtkTreePath   *path;
+    int           valid;
 
-    gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
-    path = gtk_tree_model_get_path (model, &iter);
-    if (path != NULL) {
-      pathstr = gtk_tree_path_to_string (path);
-      loc = atol (pathstr);
-      gtk_tree_path_free (path);
-      free (pathstr);
+    valid = gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
+    if (valid) {
+      path = gtk_tree_model_get_path (model, &iter);
+      if (path != NULL) {
+        pathstr = gtk_tree_path_to_string (path);
+        loc = atol (pathstr);
+        gtk_tree_path_free (path);
+        free (pathstr);
+      }
     }
   }
 
@@ -788,7 +790,7 @@ uimusicqIterateCallback (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
 {
   uimusicq_t  *uimusicq = udata;
-  long        dbidx;
+  glong       dbidx;
 
   gtk_tree_model_get (model, iter, MUSICQ_COL_DBIDX, &dbidx, -1);
   uimusicq->iteratecb (uimusicq, dbidx);
@@ -853,8 +855,9 @@ uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
   uimusicqgtk_t   *uiw;
   GtkTreeModel    *model;
   GtkTreeIter     iter;
-  dbidx_t         dbidx;
+  glong           dbidx = -1;
   int             count;
+  int             valid;
 
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
@@ -864,9 +867,10 @@ uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
     return -1;
   }
 
-  /* get the selection from the song list (queue A) */
-  gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
-  gtk_tree_model_get (model, &iter, MUSICQ_COL_DBIDX, &dbidx, -1);
+  valid = gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
+  if (valid) {
+    gtk_tree_model_get (model, &iter, MUSICQ_COL_DBIDX, &dbidx, -1);
+  }
   return dbidx;
 }
 

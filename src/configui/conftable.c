@@ -152,7 +152,7 @@ void
 confuiTableToggle (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata)
 {
   confuigui_t   *gui = udata;
-  gboolean      val;
+  int           val;
   GtkTreeIter   iter;
   GtkTreePath   *path;
   GtkTreeModel  *model;
@@ -309,7 +309,7 @@ confuiTableMove (confuigui_t *gui, int dir)
   GtkTreePath       *path = NULL;
   char              *pathstr = NULL;
   int               count;
-  gboolean          valid;
+  int               valid;
   int               idx;
   int               flags;
 
@@ -328,8 +328,12 @@ confuiTableMove (confuigui_t *gui, int dir)
     return;
   }
 
-  gtk_tree_selection_get_selected (
+  valid = gtk_tree_selection_get_selected (
       gui->tables [gui->tablecurr].sel, &model, &iter);
+
+  if (! valid) {
+    return;
+  }
 
   path = gtk_tree_model_get_path (model, &iter);
   if (path == NULL) {

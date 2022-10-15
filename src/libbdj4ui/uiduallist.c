@@ -362,7 +362,7 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
   GtkTreePath       *path;
   char              *pathstr;
   int               count;
-  gboolean          valid;
+  int               valid;
   int               idx;
 
   tree = duallist->trees [which].tree;
@@ -375,7 +375,10 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
   if (count != 1) {
     return;
   }
-  gtk_tree_selection_get_selected (sel, &model, &iter);
+  valid = gtk_tree_selection_get_selected (sel, &model, &iter);
+  if (! valid) {
+    return;
+  }
 
   path = gtk_tree_model_get_path (model, &iter);
   pathstr = gtk_tree_path_to_string (path);

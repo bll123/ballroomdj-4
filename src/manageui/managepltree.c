@@ -387,7 +387,7 @@ managePlaylistTreeToggleDance (GtkCellRendererToggle *renderer, gchar *spath, gp
   managepltree_t  *managepltree = udata;
   GtkTreeModel    *model;
   GtkTreeIter   iter;
-  gboolean      val;
+  int           val;
   int           col = MPLTREE_COL_DANCE_SELECT;
   long          dkey;
 
@@ -538,7 +538,7 @@ managePlaylistTreeSelectCheck (GtkTreeView* tv, GtkTreePath* path,
   managepltree_t  *managepltree = udata;
   GtkTreeModel    *model;
   GtkTreeIter     iter;
-  gboolean        val;
+  int             val;
   int             col = MPLTREE_COL_DANCE_SELECT;
 
   if (column != managepltree->dancecol) {

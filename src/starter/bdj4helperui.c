@@ -44,7 +44,7 @@ typedef struct {
 static bool     helperStoppingCallback (void *udata, programstate_t programState);
 static bool     helperClosingCallback (void *udata, programstate_t programState);
 static void     helperBuildUI (helperui_t *helper);
-gboolean        helperMainLoop  (void *thelper);
+static int      helperMainLoop  (void *thelper);
 static int      helperProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static void     helperSigHandler (int sig);
@@ -205,7 +205,7 @@ helperBuildUI (helperui_t  *helper)
   uiWidgetShowAll (&helper->window);
 }
 
-int
+static int
 helperMainLoop (void *thelper)
 {
   helperui_t   *helper = thelper;

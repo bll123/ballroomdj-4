@@ -52,12 +52,15 @@ confuiTableAdd (void *udata)
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
   count = gtk_tree_selection_count_selected_rows (
       gui->tables [gui->tablecurr].sel);
-  if (count != 1) {
-    titer = NULL;
-  } else {
-    gtk_tree_selection_get_selected (
+  titer = NULL;
+  if (count == 1) {
+    int   valid;
+
+    valid = gtk_tree_selection_get_selected (
         gui->tables [gui->tablecurr].sel, &model, &iter);
-    titer = &iter;
+    if (valid) {
+      titer = &iter;
+    }
   }
 
   if (titer != NULL) {
