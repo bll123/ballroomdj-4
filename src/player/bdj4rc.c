@@ -28,6 +28,7 @@
 #include "bdjvars.h"
 #include "conn.h"
 #include "fileop.h"
+#include "inline.h"
 #include "lock.h"
 #include "log.h"
 #include "ossignal.h"
@@ -159,20 +160,14 @@ remctrlClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_REMCTRL, NULL);
 
   websrvFree (remctrlData->websrv);
-  if (remctrlData->user != NULL) {
-    free (remctrlData->user);
-  }
-  if (remctrlData->pass != NULL) {
-    free (remctrlData->pass);
-  }
-  if (remctrlData->playerStatus != NULL) {
-    free (remctrlData->playerStatus);
-  }
+  dataFree (remctrlData->user);
+  dataFree (remctrlData->pass);
+  dataFree (remctrlData->playerStatus);
   if (*remctrlData->danceList) {
-    free (remctrlData->danceList);
+    dataFree (remctrlData->danceList);
   }
   if (*remctrlData->playlistList) {
-    free (remctrlData->playlistList);
+    dataFree (remctrlData->playlistList);
   }
 
   return STATE_FINISHED;
@@ -380,9 +375,7 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAYER_STATUS_DATA: {
-          if (remctrlData->playerStatus != NULL) {
-            free (remctrlData->playerStatus);
-          }
+          dataFree (remctrlData->playerStatus);
           remctrlData->playerStatus = strdup (args);
           break;
         }

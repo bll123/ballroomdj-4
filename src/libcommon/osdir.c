@@ -20,6 +20,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "inline.h"
 #include "osdir.h"
 #include "osutils.h"
 
@@ -102,10 +103,8 @@ osDirClose (dirhandle_t *dirh)
 #else
   closedir (dirh->dh);
 #endif
-  if (dirh->dirname != NULL) {
-    free (dirh->dirname);
-    dirh->dirname = NULL;
-  }
+  dataFree (dirh->dirname);
+  dirh->dirname = NULL;
   free (dirh);
 }
 

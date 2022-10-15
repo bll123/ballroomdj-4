@@ -1006,10 +1006,8 @@ tagdefCleanup (void)
     return;
   }
 
-  if (tagdefinfo.taglookup != NULL) {
-    slistFree (tagdefinfo.taglookup);
-    tagdefinfo.taglookup = NULL;
-  }
+  slistFree (tagdefinfo.taglookup);
+  tagdefinfo.taglookup = NULL;
   tagdefinfo.initialized = false;
 }
 

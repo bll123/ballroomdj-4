@@ -30,6 +30,7 @@ enum {
 #include <vlc/libvlc_version.h>
 
 #include "bdjstring.h"
+#include "inline.h"
 #include "vlci.h"
 #include "volsink.h"
 
@@ -235,9 +236,7 @@ vlcAudioDevSet (vlcData_t *vlcData, const char *dev)
     return -1;
   }
 
-  if (vlcData->device != NULL) {
-    free (vlcData->device);
-  }
+  dataFree (vlcData->device);
   vlcData->device = NULL;
   if (dev != NULL && strlen (dev) > 0) {
     vlcData->device = strdup (dev);
@@ -468,15 +467,13 @@ vlcClose (vlcData_t *vlcData)
     }
     if (vlcData->argv != NULL) {
       for (i = 0; i < vlcData->argc; ++i) {
-        free (vlcData->argv [i]);
+        dataFree (vlcData->argv [i]);
       }
       free (vlcData->argv);
       vlcData->argv = NULL;
     }
-    if (vlcData->device != NULL) {
-      free (vlcData->device);
-      vlcData->device = NULL;
-    }
+    dataFree (vlcData->device);
+    vlcData->device = NULL;
     vlcData->state = libvlc_NothingSpecial;
     free (vlcData);
   }

@@ -7,6 +7,7 @@
 #include <assert.h>
 
 #include "bdjstring.h"
+#include "inline.h"
 #include "istring.h"
 #include "list.h"
 #include "log.h"
@@ -77,10 +78,8 @@ listFree (void *tlist)
 
     list->count = 0;
     list->allocCount = 0;
-    if (list->name != NULL) {
-      free (list->name);
-      list->name = NULL;
-    }
+    dataFree (list->name);
+    list->name = NULL;
     free (list);
   }
 }

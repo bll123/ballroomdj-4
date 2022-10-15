@@ -25,6 +25,7 @@
 #include "dirlist.h"
 #include "dirop.h"
 #include "fileop.h"
+#include "inline.h"
 #include "lock.h"
 #include "log.h"
 #include "nlist.h"
@@ -394,12 +395,8 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_STARTERUI, NULL);
 
-  if (starter->webclient != NULL) {
-    webclientClose (starter->webclient);
-  }
-  if (starter->supporttb != NULL) {
-    uiTextBoxFree (starter->supporttb);
-  }
+  webclientClose (starter->webclient);
+  uiTextBoxFree (starter->supporttb);
   uiSpinboxTextFree (starter->profilesel);
 
   pathbldMakePath (fn, sizeof (fn),
@@ -407,27 +404,17 @@ starterClosingCallback (void *udata, programstate_t programState)
   datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options);
 
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
-    if (starter->macoslinkcb [i].uri != NULL) {
-      free (starter->macoslinkcb [i].uri);
-    }
+    dataFree (starter->macoslinkcb [i].uri);
   }
   if (starter->optiondf != NULL) {
     datafileFree (starter->optiondf);
   } else if (starter->options != NULL) {
     nlistFree (starter->options);
   }
-  if (starter->supportDir != NULL) {
-    free (starter->supportDir);
-  }
-  if (starter->supportFileList != NULL) {
-    slistFree (starter->supportFileList);
-  }
-  if (starter->proflist != NULL) {
-    nlistFree (starter->proflist);
-  }
-  if (starter->profidxlist != NULL) {
-    nlistFree (starter->profidxlist);
-  }
+  dataFree (starter->supportDir);
+  slistFree (starter->supportFileList);
+  nlistFree (starter->proflist);
+  nlistFree (starter->profidxlist);
 
   logProcEnd (LOG_PROC, "starterClosingCallback", "");
   return STATE_FINISHED;
@@ -1352,13 +1339,9 @@ starterGetProfiles (startui_t *starter)
     starter->currprofile = availprof;
   }
 
-  if (starter->proflist != NULL) {
-    nlistFree (starter->proflist);
-  }
+  nlistFree (starter->proflist);
   starter->proflist = proflist;
-  if (starter->profidxlist != NULL) {
-    nlistFree (starter->profidxlist);
-  }
+  nlistFree (starter->profidxlist);
   starter->profidxlist = profidxlist;
 
   sysvarsSetNum (SVL_BDJIDX, starter->currprofile);
@@ -1588,9 +1571,7 @@ starterSendFilesInit (startui_t *starter, char *dir, int type)
   list = dirlistBasicDirList (dir, ext);
   starter->supportFileList = list;
   slistStartIterator (list, &starter->supportFileIterIdx);
-  if (starter->supportDir != NULL) {
-    free (starter->supportDir);
-  }
+  dataFree (starter->supportDir);
   starter->supportDir = strdup (dir);
 }
 
@@ -1618,9 +1599,7 @@ starterSendFiles (startui_t *starter)
       &starter->supportFileIterIdx)) == NULL) {
     slistFree (starter->supportFileList);
     starter->supportFileList = NULL;
-    if (starter->supportDir != NULL) {
-      free (starter->supportDir);
-    }
+    dataFree (starter->supportDir);
     starter->supportDir = NULL;
     starter->startState = starter->nextState;
     return;

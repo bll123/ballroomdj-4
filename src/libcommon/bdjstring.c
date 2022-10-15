@@ -105,6 +105,7 @@ stringAppend (char *str, size_t maxsz, size_t currsz, const char *data)
   return currsz;
 }
 
+/* internal routines */
 
 static inline const char *
 versionNext (const char *tv1)

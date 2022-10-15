@@ -12,6 +12,7 @@
 #include "datafile.h"
 #include "pathbld.h"
 #include "fileop.h"
+#include "inline.h"
 #include "log.h"
 #include "nlist.h"
 #include "sequence.h"
@@ -90,15 +91,9 @@ void
 sequenceFree (sequence_t *sequence)
 {
   if (sequence != NULL) {
-    if (sequence->path != NULL) {
-      free (sequence->path);
-    }
-    if (sequence->name != NULL) {
-      free (sequence->name);
-    }
-    if (sequence->sequence != NULL) {
-      nlistFree (sequence->sequence);
-    }
+    dataFree (sequence->path);
+    dataFree (sequence->name);
+    nlistFree (sequence->sequence);
     free (sequence);
   }
 }

@@ -28,6 +28,7 @@
 #include "bdjvars.h"
 #include "conn.h"
 #include "fileop.h"
+#include "inline.h"
 #include "lock.h"
 #include "log.h"
 #include "ossignal.h"
@@ -151,15 +152,9 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
   bdj4shutdown (ROUTE_MOBILEMQ, NULL);
 
   websrvFree (mobmqData->websrv);
-  if (mobmqData->name != NULL) {
-    free (mobmqData->name);
-  }
-  if (mobmqData->title != NULL) {
-    free (mobmqData->title);
-  }
-  if (mobmqData->marqueeData != NULL) {
-    free (mobmqData->marqueeData);
-  }
+  dataFree (mobmqData->name);
+  dataFree (mobmqData->title);
+  dataFree (mobmqData->marqueeData);
 
   return STATE_FINISHED;
 }
@@ -252,9 +247,7 @@ mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MARQUEE_DATA: {
-          if (mobmqData->marqueeData != NULL) {
-            free (mobmqData->marqueeData);
-          }
+          dataFree (mobmqData->marqueeData);
           mobmqData->marqueeData = strdup (args);
           assert (mobmqData->marqueeData != NULL);
           break;

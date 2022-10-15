@@ -18,6 +18,7 @@
 #include "dance.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "inline.h"
 #include "log.h"
 #include "musicdb.h"
 #include "nlist.h"
@@ -96,9 +97,7 @@ uireqextFree (uireqext_t *uireqext)
     if (uireqext->song != NULL) {
       songFree (uireqext->song);
     }
-    if (uireqext->songEntryText != NULL) {
-      free (uireqext->songEntryText);
-    }
+    dataFree (uireqext->songEntryText);
     if (uireqext->audioFileEntry != NULL) {
       uiEntryFree (uireqext->audioFileEntry);
     }
@@ -443,9 +442,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
 
       tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
           ffn, MUSICDB_ENTRY_NEW);
-      if (uireqext->songEntryText != NULL) {
-        free (uireqext->songEntryText);
-      }
+      dataFree (uireqext->songEntryText);
       uireqext->songEntryText = strdup (tbuff);
 
       uireqext->song = songAlloc ();

@@ -28,6 +28,7 @@
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "inline.h"
 #include "log.h"
 #include "localeutil.h"
 #include "musicdb.h"
@@ -443,9 +444,7 @@ main (int argc, char *argv [])
 
   bdj4shutdown (ROUTE_NONE, NULL);
   bdjoptCleanup ();
-  if (musicdir != NULL) {
-    free (musicdir);
-  }
+  dataFree (musicdir);
 
   return 0;
 }

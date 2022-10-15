@@ -11,6 +11,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "ilist.h"
+#include "inline.h"
 #include "log.h"
 #include "pathbld.h"
 #include "songlist.h"
@@ -71,9 +72,7 @@ songlistLoad (const char *fname)
     songlistFree (sl);
     return NULL;
   }
-  if (sl->songlist != NULL) {
-    ilistFree (sl->songlist);
-  }
+  ilistFree (sl->songlist);
   sl->songlist = datafileGetList (sl->df);
   ilistDumpInfo (sl->songlist);
   return sl;
@@ -87,15 +86,9 @@ songlistFree (songlist_t *sl)
         sl->songlist != datafileGetList (sl->df)) {
       ilistFree (sl->songlist);
     }
-    if (sl->df != NULL) {
-      datafileFree (sl->df);
-    }
-    if (sl->fname != NULL) {
-      free (sl->fname);
-    }
-    if (sl->path != NULL) {
-      free (sl->path);
-    }
+    datafileFree (sl->df);
+    dataFree (sl->fname);
+    dataFree (sl->path);
     free (sl);
   }
 }

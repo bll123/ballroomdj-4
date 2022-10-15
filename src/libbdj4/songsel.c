@@ -311,9 +311,7 @@ songselFree (songsel_t *songsel)
 {
   logProcBegin (LOG_PROC, "songselFree");
   if (songsel != NULL) {
-    if (songsel->danceSelList != NULL) {
-      nlistFree (songsel->danceSelList);
-    }
+    nlistFree (songsel->danceSelList);
     free (songsel);
   }
   logProcEnd (LOG_PROC, "songselFree", "");
@@ -620,19 +618,13 @@ songselDanceFree (void *titem)
 
   logProcBegin (LOG_PROC, "songselDanceFree");
   if (songseldance != NULL) {
-    if (songseldance->songIdxList != NULL) {
-      nlistFree (songseldance->songIdxList);
-    }
+    nlistFree (songseldance->songIdxList);
     if (songseldance->currentIndexes != NULL) {
       queueFree (songseldance->currentIndexes);
     }
-    if (songseldance->currentIdxList != NULL) {
-      nlistFree (songseldance->currentIdxList);
-    }
+    nlistFree (songseldance->currentIdxList);
     for (int i = 0; i < SONGSEL_ATTR_MAX; ++i) {
-      if (songseldance->attrList [i] != NULL) {
-        nlistFree (songseldance->attrList [i]);
-      }
+      nlistFree (songseldance->attrList [i]);
     }
     free (songseldance);
   }

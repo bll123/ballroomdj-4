@@ -111,9 +111,7 @@ songFree (void *tsong)
   song_t  *song = (song_t *) tsong;
 
   if (song != NULL) {
-    if (song->songInfo != NULL) {
-      nlistFree (song->songInfo);
-    }
+    nlistFree (song->songInfo);
     free (song);
     --gsonginit.songcount;
     if (gsonginit.songcount <= 0) {
@@ -134,9 +132,7 @@ songParse (song_t *song, char *data, ssize_t didx)
   }
 
   snprintf (tbuff, sizeof (tbuff), "song-%zd", didx);
-  if (song->songInfo != NULL) {
-    nlistFree (song->songInfo);
-  }
+  nlistFree (song->songInfo);
   song->songInfo = datafileParse (data, tbuff, DFTYPE_KEY_VAL,
       songdfkeys, SONG_DFKEY_COUNT);
   nlistSort (song->songInfo);

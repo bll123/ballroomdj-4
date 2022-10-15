@@ -1,6 +1,5 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -8,6 +7,7 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "inline.h"
 #include "log.h"
 #include "queue.h"
 
@@ -69,9 +69,7 @@ queueFree (queue_t *q)
     if (q->cacheHits > 0) {
       logMsg (LOG_DBG, LOG_BASIC, "queue: %s cache hits: %ld", q->name, q->cacheHits);
     }
-    if (q->name != NULL) {
-      free (q->name);
-    }
+    dataFree (q->name);
     node = q->head;
     tnode = node;
     while (node != NULL && node->next != NULL) {

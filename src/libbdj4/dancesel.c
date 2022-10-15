@@ -102,24 +102,14 @@ danceselFree (dancesel_t *dancesel)
 {
   logProcBegin (LOG_PROC, "danceselFree");
   if (dancesel != NULL) {
-    if (dancesel->base != NULL) {
-      nlistFree (dancesel->base);
-    }
-    if (dancesel->distance != NULL) {
-      nlistFree (dancesel->distance);
-    }
-    if (dancesel->selectedCounts != NULL) {
-      nlistFree (dancesel->selectedCounts);
-    }
+    nlistFree (dancesel->base);
+    nlistFree (dancesel->distance);
+    nlistFree (dancesel->selectedCounts);
     if (dancesel->playedDances != NULL) {
       queueFree (dancesel->playedDances);
     }
-    if (dancesel->adjustBase != NULL) {
-      nlistFree (dancesel->adjustBase);
-    }
-    if (dancesel->danceProbTable != NULL) {
-      nlistFree (dancesel->danceProbTable);
-    }
+    nlistFree (dancesel->adjustBase);
+    nlistFree (dancesel->danceProbTable);
     free (dancesel);
   }
   logProcEnd (LOG_PROC, "danceselFree", "");
@@ -194,12 +184,8 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
 
 
   logProcBegin (LOG_PROC, "danceselSelect");
-  if (dancesel->adjustBase != NULL) {
-    nlistFree (dancesel->adjustBase);
-  }
-  if (dancesel->danceProbTable != NULL) {
-    nlistFree (dancesel->danceProbTable);
-  }
+  nlistFree (dancesel->adjustBase);
+  nlistFree (dancesel->danceProbTable);
   dancesel->adjustBase = nlistAlloc ("dancesel-adjust-base", LIST_ORDERED, NULL);
   dancesel->danceProbTable = nlistAlloc ("dancesel-prob-table", LIST_ORDERED, NULL);
 

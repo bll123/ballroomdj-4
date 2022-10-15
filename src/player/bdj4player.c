@@ -28,7 +28,7 @@
 #include "conn.h"
 #include "filemanip.h"
 #include "fileop.h"
-#include "fileop.h"
+#include "inline.h"
 #include "lock.h"
 #include "log.h"
 #include "ossignal.h"
@@ -1397,12 +1397,8 @@ playerPrepQueueFree (void *data)
 
   if (pq != NULL) {
     logMsg (LOG_DBG, LOG_MAIN, "prep-free: %ld %s", pq->uniqueidx, pq->songname);
-    if (pq->songfullpath != NULL) {
-      free (pq->songfullpath);
-    }
-    if (pq->songname != NULL) {
-      free (pq->songname);
-    }
+    dataFree (pq->songfullpath);
+    dataFree (pq->songname);
     if (pq->tempname != NULL) {
       fileopDelete (pq->tempname);
       free (pq->tempname);
@@ -1760,9 +1756,7 @@ playerFreePlayRequest (void *tpreq)
   playrequest_t *preq = tpreq;
 
   if (preq != NULL) {
-    if (preq->songname != NULL) {
-      free (preq->songname);
-    }
+    dataFree (preq->songname);
     free (preq);
   }
 }

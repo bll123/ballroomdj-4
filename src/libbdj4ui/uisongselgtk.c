@@ -166,12 +166,8 @@ uisongselUIFree (uisongsel_t *uisongsel)
     uisongselgtk_t    *uiw;
 
     uiw = uisongsel->uiWidgetData;
-    if (uiw->selectedBackup != NULL) {
-      nlistFree (uiw->selectedBackup);
-    }
-    if (uiw->selectedList != NULL) {
-      nlistFree (uiw->selectedList);
-    }
+    nlistFree (uiw->selectedBackup);
+    nlistFree (uiw->selectedList);
     free (uiw);
     uisongsel->uiWidgetData = NULL;
   }
@@ -699,9 +695,7 @@ uisongselRestoreSelections (uisongsel_t *uisongsel)
   uisongselgtk_t  *uiw;
 
   uiw = uisongsel->uiWidgetData;
-  if (uiw->selectedList != NULL) {
-    nlistFree (uiw->selectedList);
-  }
+  nlistFree (uiw->selectedList);
   uiw->selectedList = uiw->selectedBackup;
   uiw->selectedBackup = NULL;
   uisongselScrollSelection (uisongsel, uisongsel->idxStart, UISONGSEL_SCROLL_FORCE);

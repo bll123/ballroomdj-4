@@ -17,6 +17,7 @@
 #include "bdjvarsdf.h"
 #include "genre.h"
 #include "ilist.h"
+#include "inline.h"
 #include "level.h"
 #include "log.h"
 #include "musicq.h"
@@ -154,9 +155,7 @@ void
 uisfFree (uisongfilter_t *uisf)
 {
   if (uisf != NULL) {
-    if (uisf->playlistname != NULL) {
-      free (uisf->playlistname);
-    }
+    dataFree (uisf->playlistname);
     uiDialogDestroy (&uisf->filterDialog);
     uiDropDownFree (uisf->playlistfilter);
     uiDropDownFree (uisf->sortbyfilter);
@@ -256,9 +255,7 @@ uisfSetPlaylist (uisongfilter_t *uisf, char *slname)
   }
 
   uiDropDownSelectionSetStr (uisf->playlistfilter, slname);
-  if (uisf->playlistname != NULL) {
-    free (uisf->playlistname);
-  }
+  dataFree (uisf->playlistname);
   uisf->playlistname = strdup (slname);
   songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, slname);
 }
@@ -271,9 +268,7 @@ uisfClearPlaylist (uisongfilter_t *uisf)
   }
 
   uiDropDownSelectionSetNum (uisf->playlistfilter, -1);
-  if (uisf->playlistname != NULL) {
-    free (uisf->playlistname);
-  }
+  dataFree (uisf->playlistname);
   uisf->playlistname = NULL;
   songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
 }

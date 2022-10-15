@@ -241,9 +241,7 @@ orgFree (org_t *org)
     if (org->rxdata != NULL) {
       regexGetFree (org->rxdata);
     }
-    if (org->orgparsed != NULL) {
-      slistFree (org->orgparsed);
-    }
+    slistFree (org->orgparsed);
     free (org);
   }
 }

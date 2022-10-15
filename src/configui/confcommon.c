@@ -23,6 +23,7 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "inline.h"
 #include "log.h"
 #include "nlist.h"
 #include "orgutil.h"
@@ -126,9 +127,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
 
   uiwidgetp = &gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uiwidget;
   uiLinkSet (uiwidgetp, uridisp, qruri);
-  if (gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri != NULL) {
-    free (gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri);
-  }
+  dataFree (gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri);
   gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri = strdup (qruri);
   if (*qruri) {
     free (qruri);
@@ -169,9 +168,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
 
   uiwidgetp = &gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uiwidget;
   uiLinkSet (uiwidgetp, uridisp, qruri);
-  if (gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri != NULL) {
-    free (gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri);
-  }
+  dataFree (gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri);
   gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri = strdup (qruri);
   if (*qruri) {
     free (qruri);

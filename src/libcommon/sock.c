@@ -43,9 +43,10 @@
 # include <windows.h>
 #endif
 
+#include "inline.h"
+#include "log.h"
 #include "sock.h"
 #include "tmutil.h"
-#include "log.h"
 
 static ssize_t  sockReadData (Sock_t, char *, size_t);
 static int      sockWriteData (Sock_t, char *, size_t);
@@ -202,9 +203,7 @@ sockFreeCheck (sockinfo_t *sockinfo)
 {
   if (sockinfo != NULL) {
     sockinfo->count = 0;
-    if (sockinfo->socklist != NULL) {
-      free (sockinfo->socklist);
-    }
+    dataFree (sockinfo->socklist);
     free (sockinfo);
   }
 }

@@ -14,6 +14,7 @@
 #include "dnctypes.h"
 #include "fileop.h"
 #include "ilist.h"
+#include "inline.h"
 #include "log.h"
 #include "pathbld.h"
 #include "slist.h"
@@ -96,15 +97,9 @@ void
 danceFree (dance_t *dance)
 {
   if (dance != NULL) {
-    if (dance->path != NULL) {
-      free (dance->path);
-    }
-    if (dance->df != NULL) {
-      datafileFree (dance->df);
-    }
-    if (dance->danceList != NULL) {
-      slistFree (dance->danceList);
-    }
+    dataFree (dance->path);
+    datafileFree (dance->df);
+    slistFree (dance->danceList);
     free (dance);
   }
 }

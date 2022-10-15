@@ -102,9 +102,7 @@ uisongselFree (uisongsel_t *uisongsel)
   logProcBegin (LOG_PROC, "uisongselFree");
 
   if (uisongsel != NULL) {
-    if (uisongsel->songlistdbidxlist != NULL) {
-      nlistFree (uisongsel->songlistdbidxlist);
-    }
+    nlistFree (uisongsel->songlistdbidxlist);
     uidanceFree (uisongsel->uidance);
     uisongselUIFree (uisongsel);
     free (uisongsel);
@@ -172,10 +170,8 @@ uisongselProcessMusicQueueData (uisongsel_t *uisongsel,
   nlistidx_t  iteridx;
   mp_musicqupditem_t   *musicqupditem;
 
-  if (uisongsel->songlistdbidxlist != NULL) {
-    nlistFree (uisongsel->songlistdbidxlist);
-    uisongsel->songlistdbidxlist = NULL;
-  }
+  nlistFree (uisongsel->songlistdbidxlist);
+  uisongsel->songlistdbidxlist = NULL;
 
   uisongsel->songlistdbidxlist = nlistAlloc ("songlist-dbidx",
       LIST_UNORDERED, NULL);

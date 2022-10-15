@@ -12,6 +12,7 @@
 #include "bdj4ui.h"
 #include "bdjopt.h"
 #include "dispsel.h"
+#include "inline.h"
 #include "log.h"
 #include "msgparse.h"
 #include "musicdb.h"
@@ -120,11 +121,9 @@ uimusicqUIFree (uimusicq_t *uimusicq)
 
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     uiw = uimusicq->ui [i].uiWidgets;
-    if (uiw->selPathStr != NULL) {
-      free (uiw->selPathStr);
-    }
-    uidanceFree (uiw->uidance);
     if (uiw != NULL) {
+      dataFree (uiw->selPathStr);
+      uidanceFree (uiw->uidance);
       free (uiw);
     }
   }

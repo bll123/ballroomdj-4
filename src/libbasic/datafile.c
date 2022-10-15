@@ -13,6 +13,7 @@
 #include "filemanip.h"
 #include "fileop.h"
 #include "ilist.h"
+#include "inline.h"
 #include "log.h"
 #include "nlist.h"
 #include "slist.h"
@@ -71,9 +72,7 @@ parseFree (parseinfo_t *pi)
 {
   logProcBegin (LOG_PROC, "parseFree");
   if (pi != NULL) {
-    if (pi->strdata != NULL) {
-      free (pi->strdata);
-    }
+    dataFree (pi->strdata);
     free (pi);
   }
   logProcEnd (LOG_PROC, "parseFree", "");
@@ -264,9 +263,7 @@ datafileFree (void *tdf)
   logProcBegin (LOG_PROC, "datafileFree");
   if (df != NULL) {
     datafileFreeInternal (df);
-    if (df->name != NULL) {
-      free (df->name);
-    }
+    dataFree (df->name);
     free (df);
   }
   logProcEnd (LOG_PROC, "datafileFree", "");
@@ -819,10 +816,8 @@ datafileFreeInternal (datafile_t *df)
 {
   logProcBegin (LOG_PROC, "datafileFreeInternal");
   if (df != NULL) {
-    if (df->fname != NULL) {
-      free (df->fname);
-      df->fname = NULL;
-    }
+    dataFree (df->fname);
+    df->fname = NULL;
     if (df->data != NULL) {
       switch (df->dftype) {
         case DFTYPE_LIST: {

@@ -13,6 +13,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "inline.h"
 #include "ui.h"
 
 enum {
@@ -80,18 +81,10 @@ void
 uiDropDownFree (uidropdown_t *dropdown)
 {
   if (dropdown != NULL) {
-    if (dropdown->title != NULL) {
-      free (dropdown->title);
-    }
-    if (dropdown->strSelection != NULL) {
-      free (dropdown->strSelection);
-    }
-    if (dropdown->strIndexMap != NULL) {
-      slistFree (dropdown->strIndexMap);
-    }
-    if (dropdown->keylist != NULL) {
-      nlistFree (dropdown->keylist);
-    }
+    dataFree (dropdown->title);
+    dataFree (dropdown->strSelection);
+    slistFree (dropdown->strIndexMap);
+    nlistFree (dropdown->keylist);
     free (dropdown);
   }
 }
@@ -490,9 +483,7 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
   if (gtk_tree_model_get_iter (model, &iter, path)) {
     gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_IDX, &idx, -1);
     retval = idx;
-    if (dropdown->strSelection != NULL) {
-      free (dropdown->strSelection);
-    }
+    dataFree (dropdown->strSelection);
     gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_STR,
         &dropdown->strSelection, -1);
     if (dropdown->iscombobox) {

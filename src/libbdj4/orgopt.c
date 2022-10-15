@@ -98,12 +98,8 @@ void
 orgoptFree (orgopt_t *orgopt)
 {
   if (orgopt != NULL) {
-    if (orgopt->df != NULL) {
-      datafileFree (orgopt->df);
-    }
-    if (orgopt->orgList != NULL) {
-      slistFree (orgopt->orgList);
-    }
+    datafileFree (orgopt->df);
+    slistFree (orgopt->orgList);
     free (orgopt);
   }
 }

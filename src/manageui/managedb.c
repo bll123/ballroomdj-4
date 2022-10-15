@@ -113,12 +113,8 @@ manageDbFree (managedb_t *managedb)
 {
   if (managedb != NULL) {
     procutilStopAllProcess (managedb->processes, managedb->conn, false);
-    if (managedb->dblist != NULL) {
-      nlistFree (managedb->dblist);
-    }
-    if (managedb->dbhelp != NULL) {
-      nlistFree (managedb->dbhelp);
-    }
+    nlistFree (managedb->dblist);
+    nlistFree (managedb->dbhelp);
 
     uiTextBoxFree (managedb->dbhelpdisp);
     uiTextBoxFree (managedb->dbstatus);

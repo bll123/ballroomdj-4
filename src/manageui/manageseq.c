@@ -17,6 +17,7 @@
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "filemanip.h"
+#include "inline.h"
 #include "log.h"
 #include "manageui.h"
 #include "pathbld.h"
@@ -80,12 +81,8 @@ void
 manageSequenceFree (manageseq_t *manageseq)
 {
   if (manageseq != NULL) {
-    if (manageseq->seqduallist != NULL) {
-      uiduallistFree (manageseq->seqduallist);
-    }
-    if (manageseq->seqoldname != NULL) {
-      free (manageseq->seqoldname);
-    }
+    uiduallistFree (manageseq->seqduallist);
+    dataFree (manageseq->seqoldname);
     uiEntryFree (manageseq->seqname);
     free (manageseq);
   }
@@ -374,9 +371,7 @@ manageSequenceDelete (void *udata)
 static void
 manageSetSequenceName (manageseq_t *manageseq, const char *name)
 {
-  if (manageseq->seqoldname != NULL) {
-    free (manageseq->seqoldname);
-  }
+  dataFree (manageseq->seqoldname);
   manageseq->seqoldname = strdup (name);
   uiEntrySetValue (manageseq->seqname, name);
 }

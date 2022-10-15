@@ -77,14 +77,10 @@ void
 samesongFree (samesong_t *ss)
 {
   if (ss != NULL) {
-    if (ss->sscolors != NULL) {
-      nlistFree (ss->sscolors);
-      ss->sscolors = NULL;
-    }
-    if (ss->sscounts != NULL) {
-      nlistFree (ss->sscounts);
-      ss->sscounts = NULL;
-    }
+    nlistFree (ss->sscolors);
+    ss->sscolors = NULL;
+    nlistFree (ss->sscounts);
+    ss->sscounts = NULL;
     free (ss);
   }
 }

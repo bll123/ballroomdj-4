@@ -24,6 +24,7 @@
 #include "bdjvarsdf.h"
 #include "bdjvars.h"
 #include "conn.h"
+#include "inline.h"
 #include "lock.h"
 #include "log.h"
 #include "ossignal.h"
@@ -230,13 +231,9 @@ dbtagProcessing (void *udata)
           dbtag->threads [i].fn, MSG_ARGS_RS, dbtag->threads [i].data);
       ++dbtag->sent;
       connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_FILE_TAGS, sbuff);
-      if (dbtag->threads [i].fn != NULL) {
-        free (dbtag->threads [i].fn);
-      }
+      dataFree (dbtag->threads [i].fn);
       dbtag->threads [i].fn = NULL;
-      if (dbtag->threads [i].data != NULL) {
-        free (dbtag->threads [i].data);
-      }
+      dataFree (dbtag->threads [i].data);
       dbtag->threads [i].data = NULL;
       dbtag->threads [i].state = DBTAG_T_STATE_INIT;
       --dbtag->numActiveThreads;
@@ -265,10 +262,7 @@ dbtagProcessing (void *udata)
 
           dbtag->threads [i].state = DBTAG_T_STATE_ACTIVE;
           ++dbtag->numActiveThreads;
-          if (dbtag->threads [i].fn != NULL) {
-            free (dbtag->threads [i].fn);
-            dbtag->threads [i].fn = NULL;
-          }
+          dataFree (dbtag->threads [i].fn);
           /* fn is already allocated */
           dbtag->threads [i].fn = fn;
           logMsg (LOG_DBG, LOG_DBUPDATE, "process: %s", fn);

@@ -31,6 +31,7 @@
 #include "fileop.h"
 #include "filemanip.h"
 #include "fileutil.h"
+#include "inline.h"
 #include "localeutil.h"
 #include "log.h"
 #include "osprocess.h"
@@ -991,9 +992,7 @@ altsetupFailWorkingDir (altsetup_t *altsetup, const char *dir)
 static void
 altsetupSetTargetDir (altsetup_t *altsetup, const char *fn)
 {
-  if (altsetup->target != NULL) {
-    free (altsetup->target);
-  }
+  dataFree (altsetup->target);
   altsetup->target = strdup (fn);
   pathNormPath (altsetup->target, strlen (altsetup->target));
 }

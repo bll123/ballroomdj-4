@@ -25,6 +25,7 @@
 #include "dispsel.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "inline.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -497,21 +498,11 @@ manageClosingCallback (void *udata, programstate_t programState)
   managePlaylistFree (manage->managepl);
   manageDbFree (manage->managedb);
 
-  if (manage->uisongfilter != NULL) {
-    uisfFree (manage->uisongfilter);
-  }
-  if (manage->sloldname != NULL) {
-    free (manage->sloldname);
-  }
-  if (manage->mainnbtabid != NULL) {
-    uiutilsNotebookIDFree (manage->mainnbtabid);
-  }
-  if (manage->slnbtabid != NULL) {
-    uiutilsNotebookIDFree (manage->slnbtabid);
-  }
-  if (manage->mmnbtabid != NULL) {
-    uiutilsNotebookIDFree (manage->mmnbtabid);
-  }
+  uisfFree (manage->uisongfilter);
+  dataFree (manage->sloldname);
+  uiutilsNotebookIDFree (manage->mainnbtabid);
+  uiutilsNotebookIDFree (manage->slnbtabid);
+  uiutilsNotebookIDFree (manage->mmnbtabid);
   if (manage->options != datafileGetList (manage->optiondf)) {
     nlistFree (manage->options);
   }
@@ -2001,9 +1992,7 @@ manageSetEasySonglist (manageui_t *manage)
 static void
 manageSetSonglistName (manageui_t *manage, const char *nm)
 {
-  if (manage->sloldname != NULL) {
-    free (manage->sloldname);
-  }
+  dataFree (manage->sloldname);
   manage->sloldname = strdup (nm);
   uimusicqSetSonglistName (manage->slmusicq, nm);
 }

@@ -12,6 +12,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "ilist.h"
+#include "inline.h"
 #include "istring.h"
 #include "level.h"
 #include "log.h"
@@ -91,18 +92,10 @@ void
 levelFree (level_t *level)
 {
   if (level != NULL) {
-    if (level->path != NULL) {
-      free (level->path);
-    }
-    if (level->df != NULL) {
-      datafileFree (level->df);
-    }
-    if (level->defaultName != NULL) {
-      free (level->defaultName);
-    }
-    if (level->levelList != NULL) {
-      slistFree (level->levelList);
-    }
+    dataFree (level->path);
+    datafileFree (level->df);
+    dataFree (level->defaultName);
+    slistFree (level->levelList);
     free (level);
   }
 }

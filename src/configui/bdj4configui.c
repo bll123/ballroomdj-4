@@ -23,6 +23,7 @@
 #include "dance.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "inline.h"
 #include "log.h"
 #include "nlist.h"
 #include "ossignal.h"
@@ -335,12 +336,8 @@ confuiClosingCallback (void *udata, programstate_t programState)
     if (i == CONFUI_SPINBOX_UI_THEME) {
       continue;
     }
-    if (confui->gui.uiitem [i].displist != NULL) {
-      nlistFree (confui->gui.uiitem [i].displist);
-    }
-    if (confui->gui.uiitem [i].sbkeylist != NULL) {
-      nlistFree (confui->gui.uiitem [i].sbkeylist);
-    }
+    nlistFree (confui->gui.uiitem [i].displist);
+    nlistFree (confui->gui.uiitem [i].sbkeylist);
   }
 
   for (int i = CONFUI_SPINBOX_MAX + 1; i < CONFUI_SWITCH_MAX; ++i) {
@@ -348,38 +345,22 @@ confuiClosingCallback (void *udata, programstate_t programState)
   }
 
   for (int i = CONFUI_SWITCH_MAX + 1; i < CONFUI_ITEM_MAX; ++i) {
-    if (confui->gui.uiitem [i].uri != NULL) {
-      free (confui->gui.uiitem [i].uri);
-    }
+    dataFree (confui->gui.uiitem [i].uri);
   }
 
-  if (confui->gui.dispselduallist != NULL) {
-    uiduallistFree (confui->gui.dispselduallist);
-  }
-  if (confui->filterDisplayDf != NULL) {
-    datafileFree (confui->filterDisplayDf);
-  }
-  if (confui->filterLookup != NULL) {
-    nlistFree (confui->filterLookup);
-  }
+  uiduallistFree (confui->gui.dispselduallist);
+  datafileFree (confui->filterDisplayDf);
+  nlistFree (confui->filterLookup);
   dispselFree (confui->gui.dispsel);
-  if (confui->gui.localip != NULL) {
-    free (confui->gui.localip);
-  }
+  dataFree (confui->gui.localip);
   if (confui->optiondf != NULL) {
     datafileFree (confui->optiondf);
   } else if (confui->options != NULL) {
     nlistFree (confui->options);
   }
-  if (confui->gui.nbtabid != NULL) {
-    uiutilsNotebookIDFree (confui->gui.nbtabid);
-  }
-  if (confui->gui.listingtaglist != NULL) {
-    slistFree (confui->gui.listingtaglist);
-  }
-  if (confui->gui.edittaglist != NULL) {
-    slistFree (confui->gui.edittaglist);
-  }
+  uiutilsNotebookIDFree (confui->gui.nbtabid);
+  slistFree (confui->gui.listingtaglist);
+  slistFree (confui->gui.edittaglist);
 
   bdj4shutdown (ROUTE_CONFIGUI, NULL);
 

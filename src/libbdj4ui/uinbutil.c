@@ -12,6 +12,7 @@
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "datafile.h"
+#include "inline.h"
 #include "log.h"
 #include "uinbutil.h"
 
@@ -30,9 +31,7 @@ void
 uiutilsNotebookIDFree (uiutilsnbtabid_t *nbtabid)
 {
   if (nbtabid != NULL) {
-    if (nbtabid->tabids != NULL) {
-      free (nbtabid->tabids);
-    }
+    dataFree (nbtabid->tabids);
     free (nbtabid);
   }
 }

@@ -28,6 +28,7 @@
 #include "dancesel.h"
 #include "filedata.h"
 #include "fileop.h"
+#include "inline.h"
 #include "lock.h"
 #include "log.h"
 #include "musicdb.h"
@@ -290,10 +291,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "mainClosingCallback");
 
-  if (mainData->playlistCache != NULL) {
-    /* the playlists get freed here */
-    nlistFree (mainData->playlistCache);
-  }
+  nlistFree (mainData->playlistCache);
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     if (mainData->playlistQueue [i] != NULL) {
       queueFree (mainData->playlistQueue [i]);
@@ -302,21 +300,11 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   if (mainData->musicQueue != NULL) {
     musicqFree (mainData->musicQueue);
   }
-  if (mainData->announceList != NULL) {
-    slistFree (mainData->announceList);
-  }
-  if (mainData->webclient != NULL) {
-    webclientClose (mainData->webclient);
-  }
-  if (mainData->mobmqUserkey != NULL) {
-    free (mainData->mobmqUserkey);
-  }
-  if (mainData->danceCounts != NULL) {
-    nlistFree (mainData->danceCounts);
-  }
-  if (mainData->pbfinishArgs != NULL) {
-    free (mainData->pbfinishArgs);
-  }
+  slistFree (mainData->announceList);
+  webclientClose (mainData->webclient);
+  dataFree (mainData->mobmqUserkey);
+  nlistFree (mainData->danceCounts);
+  dataFree (mainData->pbfinishArgs);
 
   procutilStopAllProcess (mainData->processes, mainData->conn, true);
   procutilFreeAll (mainData->processes);
@@ -659,9 +647,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
-  if (targs != NULL) {
-    free (targs);
-  }
+  dataFree (targs);
 
   return 0;
 }
@@ -2397,9 +2383,7 @@ mainDanceCountsInit (maindata_t *mainData)
 
   dc = dbGetDanceCounts (mainData->musicdb);
 
-  if (mainData->danceCounts != NULL) {
-    nlistFree (mainData->danceCounts);
-  }
+  nlistFree (mainData->danceCounts);
 
   mainData->danceCounts = nlistAlloc ("main-dancecounts", LIST_ORDERED, NULL);
   nlistSetSize (mainData->danceCounts, nlistGetCount (dc));

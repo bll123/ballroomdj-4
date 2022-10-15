@@ -10,15 +10,16 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
-#include "fileop.h"
 #include "filemanip.h"
-#include "nlist.h"
-#include "slist.h"
+#include "fileop.h"
+#include "inline.h"
 #include "lock.h"
 #include "log.h"
 #include "musicdb.h"
+#include "nlist.h"
 #include "pathbld.h"
 #include "rafile.h"
+#include "slist.h"
 #include "song.h"
 #include "songutil.h"
 #include "tagdef.h"
@@ -68,22 +69,14 @@ dbClose (musicdb_t *musicdb)
 {
   /* for each song in db, free the song */
   if (musicdb != NULL) {
-    if (musicdb->songs != NULL) {
-      slistFree (musicdb->songs);
-    }
-    if (musicdb->danceCounts != NULL) {
-      nlistFree (musicdb->danceCounts);
-    }
-    if (musicdb->fn != NULL) {
-      free (musicdb->fn);
-    }
+    slistFree (musicdb->songs);
+    nlistFree (musicdb->danceCounts);
+    dataFree (musicdb->fn);
     if (musicdb->radb != NULL) {
       raClose (musicdb->radb);
       musicdb->radb = NULL;
     }
-    if (musicdb->tempSongs != NULL) {
-      nlistFree (musicdb->tempSongs);
-    }
+    nlistFree (musicdb->tempSongs);
     free (musicdb);
   }
   musicdb = NULL;

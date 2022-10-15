@@ -16,6 +16,7 @@
 #include "conn.h"
 #include "dance.h"
 #include "ilist.h"
+#include "inline.h"
 #include "log.h"
 #include "musicdb.h"
 #include "pathbld.h"
@@ -514,9 +515,7 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
-  if (args != NULL) {
-    free (targs);
-  }
+  dataFree (targs);
 
   logProcEnd (LOG_PROC, "uiplayerProcessMsg", "");
   return 0;

@@ -14,6 +14,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "filemanip.h"
+#include "inline.h"
 #include "log.h"
 #include "manageui.h"
 #include "pathbld.h"
@@ -119,9 +120,7 @@ void
 managePlaylistFree (managepl_t *managepl)
 {
   if (managepl != NULL) {
-    if (managepl->ploldname != NULL) {
-      free (managepl->ploldname);
-    }
+    dataFree (managepl->ploldname);
     if (managepl->managepltree != NULL) {
       managePlaylistTreeFree (managepl->managepltree);
     }
@@ -614,9 +613,7 @@ managePlaylistDelete (void *udata)
 static void
 manageSetPlaylistName (managepl_t *managepl, const char *name)
 {
-  if (managepl->ploldname != NULL) {
-    free (managepl->ploldname);
-  }
+  dataFree (managepl->ploldname);
   managepl->ploldname = strdup (name);
   uiEntrySetValue (managepl->plname, name);
 }

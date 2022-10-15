@@ -9,6 +9,7 @@
 #include <ctype.h>
 #include <math.h>
 
+#include "inline.h"
 #include "slist.h"
 #include "tagdef.h"
 #include "ui.h"
@@ -34,9 +35,7 @@ uisongSetDisplayColumns (slist_t *sellist, song_t *song, int col,
       cb (col, num, str, udata);
     }
     col += 1;
-    if (str != NULL) {
-      free (str);
-    }
+    dataFree (str);
   } /* for each tagidx in the display selection list */
 }
 
@@ -50,9 +49,7 @@ uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
   /* get the numeric values also in addition to the display string */
   str = uisongGetValue (song, tagidx, num, dval);
   if (tagdefs [tagidx].convfunc != NULL) {
-    if (str != NULL) {
-      free (str);
-    }
+    dataFree (str);
     str = songDisplayString (song, tagidx);
   }
 

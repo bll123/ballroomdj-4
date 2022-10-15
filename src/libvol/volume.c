@@ -11,6 +11,7 @@
 #include "bdj4.h"
 #include "pathbld.h"
 #include "dylib.h"
+#include "inline.h"
 #include "sysvars.h"
 #include "volsink.h"
 #include "volume.h"
@@ -109,12 +110,8 @@ volumeFreeSinkList (volsinklist_t *sinklist)
 {
   if (sinklist->sinklist != NULL) {
     for (size_t i = 0; i < sinklist->count; ++i) {
-      if (sinklist->sinklist [i].name != NULL) {
-        free (sinklist->sinklist [i].name);
-      }
-      if (sinklist->sinklist [i].description != NULL) {
-        free (sinklist->sinklist [i].description);
-      }
+      dataFree (sinklist->sinklist [i].name);
+      dataFree (sinklist->sinklist [i].description);
     }
     free (sinklist->sinklist);
     sinklist->defname = "";

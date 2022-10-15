@@ -30,6 +30,7 @@
 #include "fileop.h"
 #include "filemanip.h"
 #include "fileutil.h"
+#include "inline.h"
 #include "localeutil.h"
 #include "locatebdj3.h"
 #include "log.h"
@@ -2388,22 +2389,12 @@ installerCleanup (installer_t *installer)
   char  buff [MAXPATHLEN];
   const char  *targv [10];
 
-  if (installer->target != NULL) {
-    free (installer->target);
-  }
-  if (installer->bdj3loc != NULL) {
-    free (installer->bdj3loc);
-  }
-  if (installer->convlist != NULL) {
-    slistFree (installer->convlist);
-  }
-  if (installer->tclshloc != NULL) {
-    free (installer->tclshloc);
-  }
+  dataFree (installer->target);
+  dataFree (installer->bdj3loc);
+  slistFree (installer->convlist);
+  dataFree (installer->tclshloc);
 
-  if (installer->webclient != NULL) {
-    webclientClose (installer->webclient);
-  }
+  webclientClose (installer->webclient);
 
   if (! fileopIsDirectory (installer->unpackdir)) {
     return;
@@ -2675,9 +2666,7 @@ installerFailWorkingDir (installer_t *installer, const char *dir)
 static void
 installerSetTargetDir (installer_t *installer, const char *fn)
 {
-  if (installer->target != NULL) {
-    free (installer->target);
-  }
+  dataFree (installer->target);
   installer->target = strdup (fn);
   pathNormPath (installer->target, strlen (installer->target));
 }
@@ -2685,9 +2674,7 @@ installerSetTargetDir (installer_t *installer, const char *fn)
 static void
 installerSetBDJ3LocDir (installer_t *installer, const char *fn)
 {
-  if (installer->bdj3loc != NULL) {
-    free (installer->bdj3loc);
-  }
+  dataFree (installer->bdj3loc);
   installer->bdj3loc = strdup (fn);
   pathNormPath (installer->bdj3loc, strlen (installer->bdj3loc));
 }

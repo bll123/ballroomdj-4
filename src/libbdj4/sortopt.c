@@ -86,12 +86,8 @@ void
 sortoptFree (sortopt_t *sortopt)
 {
   if (sortopt != NULL) {
-    if (sortopt->df != NULL) {
-      datafileFree (sortopt->df);
-    }
-    if (sortopt->sortoptList != NULL) {
-      slistFree (sortopt->sortoptList);
-    }
+    datafileFree (sortopt->df);
+    slistFree (sortopt->sortoptList);
     free (sortopt);
   }
 }

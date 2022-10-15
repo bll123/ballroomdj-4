@@ -11,6 +11,7 @@
 #include <string.h>
 #include <errno.h>
 
+#include "inline.h"
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
@@ -95,9 +96,7 @@ raClose (rafile_t *rafile)
     fclose (rafile->fh);
     raUnlock (rafile);
     rafile->fh = NULL;
-    if (rafile->fname != NULL) {
-      free (rafile->fname);
-    }
+    dataFree (rafile->fname);
     free (rafile);
   }
   logProcEnd (LOG_PROC, "raClose", "");

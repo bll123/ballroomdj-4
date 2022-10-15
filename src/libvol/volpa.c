@@ -23,6 +23,7 @@
 #include <pulse/pulseaudio.h>
 
 #include "bdjstring.h"
+#include "inline.h"
 #include "tmutil.h"
 #include "volsink.h"
 #include "volume.h"
@@ -328,9 +329,7 @@ volumeProcess (volaction_t action, char *sinkname,
         /* the pointer is still the same, no default was found */
       sinklist->defname = "";
     }
-    if (defsinkname != NULL) {
-      free (defsinkname);
-    }
+    dataFree (defsinkname);
   } else {
     /* getvolume or setvolume */
     pa_volume_t     avgvol;

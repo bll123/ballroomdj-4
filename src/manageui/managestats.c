@@ -70,9 +70,7 @@ void
 manageStatsFree (managestats_t *managestats)
 {
   if (managestats != NULL) {
-    if (managestats->dancecounts != NULL) {
-      nlistFree (managestats->dancecounts);
-    }
+    nlistFree (managestats->dancecounts);
     free (managestats);
   }
 }
@@ -180,9 +178,7 @@ manageStatsProcessData (managestats_t *managestats, mp_musicqupdate_t *musicqupd
     ++managestats->songcount;
   }
 
-  if (managestats->dancecounts != NULL) {
-    nlistFree (managestats->dancecounts);
-  }
+  nlistFree (managestats->dancecounts);
   managestats->dancecounts = dcounts;
 
   /* this only needs to be called when the tab is displayed */

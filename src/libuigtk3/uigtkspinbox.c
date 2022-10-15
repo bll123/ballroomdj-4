@@ -67,9 +67,7 @@ void
 uiSpinboxTextFree (uispinbox_t *spinbox)
 {
   if (spinbox != NULL) {
-    if (spinbox->idxlist != NULL) {
-      nlistFree (spinbox->idxlist);
-    }
+    nlistFree (spinbox->idxlist);
     free (spinbox);
   }
 }

@@ -12,10 +12,11 @@
 #include "bdjopt.h"
 #include "datafile.h"
 #include "dirop.h"
-#include "pathbld.h"
+#include "inline.h"
 #include "filemanip.h"
 #include "fileop.h"
 #include "nlist.h"
+#include "pathbld.h"
 #include "sysvars.h"
 
 static void bdjoptConvFadeType (datafileconv_t *conv);
@@ -185,10 +186,8 @@ bdjoptCleanup (void)
   if (bdjopt != NULL) {
     datafileFree (bdjopt->df);
     for (int i = 0; i < OPTTYPE_MAX; ++i) {
-      if (bdjopt->fname [i] != NULL) {
-        free (bdjopt->fname [i]);
-        bdjopt->fname [i] = NULL;
-      }
+      dataFree (bdjopt->fname [i]);
+      bdjopt->fname [i] = NULL;
     }
     free (bdjopt);
   }

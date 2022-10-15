@@ -19,6 +19,7 @@
 #include "dirlist.h"
 #include "filedata.h"
 #include "fileop.h"
+#include "inline.h"
 #include "istring.h"
 #include "localeutil.h"
 #include "log.h"
@@ -532,15 +533,9 @@ tsClosingCallback (void *tts, programstate_t programState)
   connFree (testsuite->conn);
   slistFree (testsuite->routetxtlist);
   slistFree (testsuite->msgtxtlist);
-  if (testsuite->chkresponse != NULL) {
-    slistFree (testsuite->chkresponse);
-  }
-  if (testsuite->chkexpect != NULL) {
-    slistFree (testsuite->chkexpect);
-  }
-  if (testsuite->lastResponse != NULL) {
-    free (testsuite->lastResponse);
-  }
+  slistFree (testsuite->chkresponse);
+  slistFree (testsuite->chkexpect);
+  dataFree (testsuite->lastResponse);
 
   return STATE_FINISHED;
 }
@@ -1175,9 +1170,7 @@ tsScriptChkResponse (testsuite_t *testsuite)
                 testsuite->lineno, key, val, compdisp, valchk);
           fflush (stdout);
           if (valchk != NULL) {
-            if (testsuite->lastResponse != NULL) {
-              free (testsuite->lastResponse);
-            }
+            dataFree (testsuite->lastResponse);
             testsuite->lastResponse = strdup (valchk);
           }
         }

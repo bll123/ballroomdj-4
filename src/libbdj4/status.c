@@ -12,6 +12,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "ilist.h"
+#include "inline.h"
 #include "istring.h"
 #include "log.h"
 #include "pathbld.h"
@@ -82,15 +83,9 @@ void
 statusFree (status_t *status)
 {
   if (status != NULL) {
-    if (status->path != NULL) {
-      free (status->path);
-    }
-    if (status->df != NULL) {
-      datafileFree (status->df);
-    }
-    if (status->statusList != NULL) {
-      slistFree (status->statusList);
-    }
+    dataFree (status->path);
+    datafileFree (status->df);
+    slistFree (status->statusList);
     free (status);
   }
 }

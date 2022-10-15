@@ -11,6 +11,7 @@
 #include <curl/curl.h>
 
 #include "bdj4.h"
+#include "inline.h"
 #include "log.h"
 #include "filedata.h"
 #include "fileop.h"
@@ -194,9 +195,7 @@ void
 webclientClose (webclient_t *webclient)
 {
   if (webclient != NULL) {
-    if (webclient->resp != NULL) {
-      free (webclient->resp);
-    }
+    dataFree (webclient->resp);
     webclient->resp = NULL;
     if (webclient->curl != NULL) {
       curl_easy_cleanup (webclient->curl);

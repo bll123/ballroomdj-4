@@ -10,6 +10,7 @@
 
 #include "bdjstring.h"
 #include "bdjvars.h"
+#include "inline.h"
 #include "sysvars.h"
 
 static char *   bdjvars [BDJV_MAX];
@@ -34,10 +35,8 @@ bdjvarsCleanup (void)
 {
   if (initialized) {
     for (int i = 0; i < BDJV_MAX; ++i) {
-      if (bdjvars [i] != NULL) {
-        free (bdjvars [i]);
-        bdjvars [i] = NULL;
-      }
+      dataFree (bdjvars [i]);
+      bdjvars [i] = NULL;
     }
     initialized = false;
   }

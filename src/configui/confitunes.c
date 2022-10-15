@@ -18,6 +18,7 @@
 #include "configui.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "inline.h"
 #include "log.h"
 #include "nlist.h"
 #include "pathbld.h"
@@ -110,23 +111,13 @@ void
 confuiCleaniTunes (confuigui_t *gui)
 {
   for (int i = 0; i < CONFUI_STARS_MAX; ++i) {
-    if (gui->itunes->uirating [i] != NULL) {
-      uiratingFree (gui->itunes->uirating [i]);
-      gui->itunes->uirating [i] = NULL;
-    }
+    uiratingFree (gui->itunes->uirating [i]);
+    gui->itunes->uirating [i] = NULL;
   }
-  if (gui->itunes->starsdf != NULL) {
-    datafileFree (gui->itunes->starsdf);
-  }
-  if (gui->itunes->fieldsdf != NULL) {
-    datafileFree (gui->itunes->fieldsdf);
-  }
-  if (gui->itunes->fields != NULL) {
-    nlistFree (gui->itunes->fields);
-  }
-  if (gui->itunes != NULL) {
-    free (gui->itunes);
-  }
+  datafileFree (gui->itunes->starsdf);
+  datafileFree (gui->itunes->fieldsdf);
+  nlistFree (gui->itunes->fields);
+  dataFree (gui->itunes);
 }
 
 

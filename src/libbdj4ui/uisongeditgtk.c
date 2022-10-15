@@ -14,6 +14,7 @@
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
 #include "conn.h"
+#include "inline.h"
 #include "level.h"
 #include "log.h"
 #include "nlist.h"
@@ -214,9 +215,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
       }
     }
 
-    if (uiw->items != NULL) {
-      free (uiw->items);
-    }
+    dataFree (uiw->items);
     free (uiw);
     uisongedit->uiWidgetData = NULL;
   }
@@ -377,10 +376,8 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
 
   data = uisongGetDisplay (song, TAG_FILE, &val, &dval);
   uiLabelSetText (&uiw->filedisp, data);
-  if (data != NULL) {
-    free (data);
-    data = NULL;
-  }
+  dataFree (data);
+  data = NULL;
 
   uiImageClear (&uiw->audioidImg);
   data = songGetStr (song, TAG_RECORDING_ID);
@@ -477,10 +474,8 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
       }
     }
 
-    if (data != NULL) {
-      free (data);
-      data = NULL;
-    }
+    dataFree (data);
+    data = NULL;
   }
   logProcEnd (LOG_PROC, "uisongeditLoadData", "");
 }
@@ -629,9 +624,7 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
       uiw->items [count].lastchanged = uiw->items [count].changed;
     }
 
-    if (songdata != NULL) {
-      free (songdata);
-    }
+    dataFree (songdata);
   }
 
   return;

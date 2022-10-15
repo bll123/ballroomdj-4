@@ -22,6 +22,7 @@
 #include "conn.h"
 #include "datafile.h"
 #include "dispsel.h"
+#include "inline.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -322,15 +323,9 @@ pluiClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);
 
-  if (plui->nbtabid != NULL) {
-    uiutilsNotebookIDFree (plui->nbtabid);
-  }
-  if (plui->uisongfilter != NULL) {
-    uisfFree (plui->uisongfilter);
-  }
-  if (plui->uireqext != NULL) {
-    uireqextFree (plui->uireqext);
-  }
+  uiutilsNotebookIDFree (plui->nbtabid);
+  uisfFree (plui->uisongfilter);
+  uireqextFree (plui->uireqext);
   if (plui->optiondf != NULL) {
     datafileFree (plui->optiondf);
   } else if (plui->options != NULL) {
@@ -854,9 +849,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
-  if (targs != NULL) {
-    free (targs);
-  }
+  dataFree (targs);
 
   /* due to the db update message, these must be applied afterwards */
   uiplayerProcessMsg (routefrom, route, msg, args, plui->uiplayer);

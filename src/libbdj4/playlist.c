@@ -15,6 +15,7 @@
 #include "pathbld.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "inline.h"
 #include "ilist.h"
 #include "level.h"
 #include "log.h"
@@ -114,20 +115,14 @@ playlistFree (void *tpl)
     if (pl->plinfodf != NULL) {
       datafileFree (pl->plinfodf);
     } else {
-      if (pl->plinfo != NULL) {
-        nlistFree (pl->plinfo);
-      }
+      nlistFree (pl->plinfo);
     }
     if (pl->pldancesdf != NULL) {
       datafileFree (pl->pldancesdf);
     } else {
-      if (pl->pldances != NULL) {
-        ilistFree (pl->pldances);
-      }
+      ilistFree (pl->pldances);
     }
-    if (pl->songlist != NULL) {
-      songlistFree (pl->songlist);
-    }
+    songlistFree (pl->songlist);
     if (pl->songfilter != NULL) {
       songfilterFree (pl->songfilter);
     }
@@ -140,12 +135,8 @@ playlistFree (void *tpl)
     if (pl->dancesel != NULL) {
       danceselFree (pl->dancesel);
     }
-    if (pl->countList != NULL) {
-      nlistFree (pl->countList);
-    }
-    if (pl->name != NULL) {
-      free (pl->name);
-    }
+    nlistFree (pl->countList);
+    dataFree (pl->name);
     free (pl);
   }
 }
@@ -638,9 +629,7 @@ playlistSave (playlist_t *pl, const char *name)
   char  tfn [MAXPATHLEN];
 
   if (name != NULL) {
-    if (pl->name != NULL) {
-      free (pl->name);
-    }
+    dataFree (pl->name);
     pl->name = strdup (name);
   }
 

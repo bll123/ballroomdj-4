@@ -12,6 +12,7 @@
 #include <gtk/gtk.h>
 
 #include "bdjstring.h"
+#include "inline.h"
 #include "localeutil.h"
 #include "log.h"  // needed for glogwriteroutput
 #include "sysvars.h"
@@ -50,9 +51,7 @@ uiCleanup (void)
 {
   if (cssdata != NULL) {
     for (int i = 0; i < csscount; ++i) {
-      if (cssdata [i] != NULL) {
-        free (cssdata [i]);
-      }
+      dataFree (cssdata [i]);
     }
     free (cssdata);
     csscount = 0;

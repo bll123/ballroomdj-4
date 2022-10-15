@@ -48,9 +48,7 @@ void
 dnctypesFree (dnctype_t *dnctypes)
 {
   if (dnctypes != NULL) {
-    if (dnctypes->df != NULL) {
-      datafileFree (dnctypes->df);
-    }
+    datafileFree (dnctypes->df);
     free (dnctypes);
   }
 }

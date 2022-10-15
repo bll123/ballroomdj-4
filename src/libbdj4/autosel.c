@@ -60,9 +60,7 @@ void
 autoselFree (autosel_t *autosel)
 {
   if (autosel != NULL) {
-    if (autosel->df != NULL) {
-      datafileFree (autosel->df);
-    }
+    datafileFree (autosel->df);
     free (autosel);
   }
 }

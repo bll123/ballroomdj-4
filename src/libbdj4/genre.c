@@ -12,6 +12,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "genre.h"
+#include "inline.h"
 #include "ilist.h"
 #include "log.h"
 #include "pathbld.h"
@@ -76,15 +77,9 @@ void
 genreFree (genre_t *genre)
 {
   if (genre != NULL) {
-    if (genre->path != NULL) {
-      free (genre->path);
-    }
-    if (genre->df != NULL) {
-      datafileFree (genre->df);
-    }
-    if (genre->genreList != NULL) {
-      slistFree (genre->genreList);
-    }
+    dataFree (genre->path);
+    datafileFree (genre->df);
+    slistFree (genre->genreList);
     free (genre);
   }
 }

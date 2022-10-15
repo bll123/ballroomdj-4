@@ -13,6 +13,7 @@
 #include "dance.h"
 #include "datafile.h"
 #include "ilist.h"
+#include "inline.h"
 #include "istring.h"
 #include "level.h"
 #include "log.h"
@@ -128,21 +129,11 @@ songfilterFree (songfilter_t *sf)
 
   if (sf != NULL) {
     songfilterReset (sf);
-    if (sf->filterDisplayDf != NULL) {
-      datafileFree (sf->filterDisplayDf);
-    }
-    if (sf->sortselection != NULL) {
-      free (sf->sortselection);
-    }
-    if (sf->sortList != NULL) {
-      slistFree (sf->sortList);
-    }
-    if (sf->indexList != NULL) {
-      nlistFree (sf->indexList);
-    }
-    if (sf->parsed != NULL) {
-      nlistFree (sf->parsed);
-    }
+    datafileFree (sf->filterDisplayDf);
+    dataFree (sf->sortselection);
+    slistFree (sf->sortList);
+    nlistFree (sf->indexList);
+    nlistFree (sf->parsed);
     free (sf);
   }
   logProcEnd (LOG_PROC, "songfilterFree", "");
@@ -153,13 +144,9 @@ songfilterSetSort (songfilter_t *sf, char *sortselection)
 {
   logProcBegin (LOG_PROC, "songfilterSetSort");
 
-  if (sf->sortselection != NULL) {
-    free (sf->sortselection);
-  }
+  dataFree (sf->sortselection);
   sf->sortselection = strdup (sortselection);
-  if (sf->parsed != NULL) {
-    nlistFree (sf->parsed);
-  }
+  nlistFree (sf->parsed);
   sf->parsed = songfilterParseSortKey (sf);
   logProcEnd (LOG_PROC, "songfilterSetSort", "");
 }
@@ -273,25 +260,17 @@ songfilterSetData (songfilter_t *sf, int filterType, void *value)
   if (valueType == SONG_FILTER_SLIST) {
     if (filterType != SONG_FILTER_KEYWORD) {
       /* songfilter is not the owner of the keyword list */
-      if (sf->datafilter [filterType] != NULL) {
-        slistFree (sf->datafilter [filterType]);
-        sf->datafilter [filterType] = NULL;
-      }
+      slistFree (sf->datafilter [filterType]);
+      sf->datafilter [filterType] = NULL;
     }
     sf->datafilter [filterType] = value;
   }
   if (valueType == SONG_FILTER_ILIST) {
-    if (sf->datafilter [filterType] != NULL) {
-      ilistFree (sf->datafilter [filterType]);
-      sf->datafilter [filterType] = NULL;
-    }
+    ilistFree (sf->datafilter [filterType]);
     sf->datafilter [filterType] = value;
   }
   if (valueType == SONG_FILTER_STR) {
-    if (sf->datafilter [filterType] != NULL) {
-      free (sf->datafilter [filterType]);
-      sf->datafilter [filterType] = NULL;
-    }
+    dataFree (sf->datafilter [filterType]);
     sf->datafilter [filterType] = strdup (value);
     if (filterType == SONG_FILTER_SEARCH) {
       istringToLower ((char *) sf->datafilter [filterType]);
@@ -373,14 +352,10 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     return 0;
   }
 
-  if (sf->sortList != NULL) {
-    slistFree (sf->sortList);
-    sf->sortList = NULL;
-  }
-  if (sf->indexList != NULL) {
-    nlistFree (sf->indexList);
-    sf->indexList = NULL;
-  }
+  slistFree (sf->sortList);
+  sf->sortList = NULL;
+  nlistFree (sf->indexList);
+  sf->indexList = NULL;
 
   idx = 0;
   sf->sortList = slistAlloc ("songfilter-sort-idx", LIST_UNORDERED, NULL);

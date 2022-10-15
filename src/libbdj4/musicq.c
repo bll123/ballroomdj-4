@@ -10,9 +10,10 @@
 
 #include "bdjvarsdf.h"
 #include "dance.h"
+#include "inline.h"
+#include "log.h"
 #include "musicdb.h"
 #include "musicq.h"
-#include "log.h"
 #include "queue.h"
 #include "song.h"
 #include "tagdef.h"
@@ -581,9 +582,7 @@ musicqQueueItemFree (void *titem)
 
   logProcBegin (LOG_PROC, "musicqQueueItemFree");
   if (musicqitem != NULL) {
-    if (musicqitem->announce != NULL) {
-      free (musicqitem->announce);
-    }
+    dataFree (musicqitem->announce);
     free (musicqitem);
   }
   logProcEnd (LOG_PROC, "musicqQueueItemFree", "");

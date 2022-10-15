@@ -10,6 +10,7 @@
 #include "datafile.h"
 #include "dispsel.h"
 #include "fileop.h"
+#include "inline.h"
 #include "pathbld.h"
 #include "slist.h"
 #include "tagdef.h"
@@ -75,15 +76,9 @@ dispselFree (dispsel_t *dispsel)
 {
   if (dispsel != NULL) {
     for (dispselsel_t i = 0; i < DISP_SEL_MAX; ++i) {
-      if (dispsel->name [i] != NULL) {
-        free (dispsel->name [i]);
-      }
-      if (dispsel->df [i] != NULL) {
-        datafileFree (dispsel->df [i]);
-      }
-      if (dispsel->dispsel [i] != NULL) {
-        slistFree (dispsel->dispsel [i]);
-      }
+      dataFree (dispsel->name [i]);
+      datafileFree (dispsel->df [i]);
+      slistFree (dispsel->dispsel [i]);
     }
     free (dispsel);
   }
@@ -127,10 +122,8 @@ dispselCreateList (dispsel_t *dispsel, slist_t *tlist, int selidx)
   char          *keystr;
   char          tbuff [80];
 
-  if (dispsel->dispsel [selidx] != NULL) {
-    slistFree (dispsel->dispsel [selidx]);
-    dispsel->dispsel [selidx] = NULL;
-  }
+  slistFree (dispsel->dispsel [selidx]);
+  dispsel->dispsel [selidx] = NULL;
 
   snprintf (tbuff, sizeof (tbuff), "dispsel-%s", dispsel->name [selidx]);
   tsellist = slistAlloc (tbuff, LIST_UNORDERED, NULL);

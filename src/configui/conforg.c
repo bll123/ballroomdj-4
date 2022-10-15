@@ -15,6 +15,7 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "configui.h"
+#include "inline.h"
 #include "log.h"
 #include "orgopt.h"
 #include "slist.h"
@@ -55,9 +56,7 @@ confuiCleanOrganization (confuigui_t *gui)
   if (gui->org->orgopt != NULL) {
     orgoptFree (gui->org->orgopt);
   }
-  if (gui->org != NULL) {
-    free (gui->org);
-  }
+  dataFree (gui->org);
 }
 
 void

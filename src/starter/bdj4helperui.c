@@ -144,12 +144,8 @@ helperClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_HELPERUI, NULL);
 
-  if (helper->tb != NULL) {
-    uiTextBoxFree (helper->tb);
-  }
-  if (helper->helpdf != NULL) {
-    datafileFree (helper->helpdf);
-  }
+  uiTextBoxFree (helper->tb);
+  datafileFree (helper->helpdf);
 
   logProcEnd (LOG_PROC, "helperClosingCallback", "");
   return STATE_FINISHED;

@@ -20,6 +20,7 @@
 #include "bdjvars.h"
 #include "datafile.h"
 #include "conn.h"
+#include "inline.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -281,9 +282,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   connDisconnectAll (marquee->conn);
 
-  if (marquee->marqueeLabs != NULL) {
-    free (marquee->marqueeLabs);
-  }
+  dataFree (marquee->marqueeLabs);
   if (marquee->options != NULL) {
     if (marquee->options != datafileGetList (marquee->optiondf)) {
       nlistFree (marquee->options);
@@ -604,9 +603,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         routefrom, msgRouteDebugText (routefrom),
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
-  if (targs != NULL) {
-    free (targs);
-  }
+  dataFree (targs);
 
   logProcEnd (LOG_PROC, "marqueeProcessMsg", "");
 

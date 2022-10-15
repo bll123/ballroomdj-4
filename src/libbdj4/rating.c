@@ -12,6 +12,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "istring.h"
+#include "inline.h"
 #include "log.h"
 #include "ilist.h"
 #include "pathbld.h"
@@ -81,15 +82,9 @@ void
 ratingFree (rating_t *rating)
 {
   if (rating != NULL) {
-    if (rating->path != NULL) {
-      free (rating->path);
-    }
-    if (rating->df != NULL) {
-      datafileFree (rating->df);
-    }
-    if (rating->ratingList != NULL) {
-      slistFree (rating->ratingList);
-    }
+    dataFree (rating->path);
+    datafileFree (rating->df);
+    slistFree (rating->ratingList);
     free (rating);
   }
 }
