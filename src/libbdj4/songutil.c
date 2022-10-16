@@ -15,7 +15,7 @@
 #include "songutil.h"
 
 char *
-songFullFileName (char *sfname)
+songFullFileName (const char *sfname)
 {
   char      *tname;
   size_t    len;

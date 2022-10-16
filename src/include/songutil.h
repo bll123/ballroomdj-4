@@ -16,7 +16,7 @@ enum {
   SONG_ADJUST_STR_SPEED = 'S',
 };
 
-char  *songFullFileName (char *sfname);
+char  *songFullFileName (const char *sfname);
 void  songConvAdjustFlags (datafileconv_t *conv);
 
 #endif /* INC_SONGUTIL_H */

@@ -20,4 +20,6 @@ uiClipboardSet (const char *txt)
   // GDK_SELECTION_SECONDARY
   cb = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
   gtk_clipboard_set_text (cb, txt, -1);
+  cb = gtk_clipboard_get (GDK_SELECTION_PRIMARY);
+  gtk_clipboard_set_text (cb, txt, -1);
 }

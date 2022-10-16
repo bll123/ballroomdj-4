@@ -1130,14 +1130,15 @@ uisongeditCopyPath (void *udata)
   uisongedit_t  *uisongedit = udata;
   uisongeditgtk_t *uiw;
   const char    *txt;
+  char          *ffn;
   char          tbuff [MAXPATHLEN];
 
   uiw = uisongedit->uiWidgetData;
 
   txt = uiLabelGetText (&uiw->filedisp);
-  strlcpy (tbuff, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (tbuff));
-  strlcat (tbuff, "/", sizeof (tbuff));
-  strlcat (tbuff, txt, sizeof (tbuff));
+  ffn = songFullFileName (txt);
+  strlcpy (tbuff, ffn, sizeof (tbuff));
+  free (ffn);
   if (isWindows ()) {
     pathWinPath (tbuff, sizeof (tbuff));
   }
