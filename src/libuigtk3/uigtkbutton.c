@@ -99,7 +99,7 @@ uiButtonSetImageIcon (UIWidget *uiwidget, const char *nm)
 {
   GtkWidget *image;
 
-  image = gtk_image_new_from_icon_name ("folder", GTK_ICON_SIZE_BUTTON);
+  image = gtk_image_new_from_icon_name (nm, GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (uiwidget->widget), image);
   gtk_button_set_always_show_image (GTK_BUTTON (uiwidget->widget), TRUE);
 }

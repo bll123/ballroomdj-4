@@ -97,6 +97,19 @@ uiLabelSetText (UIWidget *uiwidget, const char *text)
   gtk_label_set_text (GTK_LABEL (uiwidget->widget), text);
 }
 
+const char *
+uiLabelGetText (UIWidget *uiwidget)
+{
+  const char *txt;
+
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return NULL;
+  }
+
+  txt = gtk_label_get_text (GTK_LABEL (uiwidget->widget));
+  return txt;
+}
+
 void
 uiLabelEllipsizeOn (UIWidget *uiwidget)
 {

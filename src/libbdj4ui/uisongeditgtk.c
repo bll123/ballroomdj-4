@@ -19,9 +19,11 @@
 #include "log.h"
 #include "nlist.h"
 #include "pathbld.h"
+#include "pathutil.h"
 #include "slist.h"
 #include "song.h"
 #include "songutil.h"
+#include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
@@ -69,6 +71,7 @@ enum {
   UISONGEDIT_CB_PREVIOUS,
   UISONGEDIT_CB_PLAY,
   UISONGEDIT_CB_SAVE,
+  UISONGEDIT_CB_COPY_TEXT,
   UISONGEDIT_CB_MAX,
 };
 
@@ -114,6 +117,7 @@ static bool uisongeditSaveCallback (void *udata);
 static bool uisongeditFirstSelection (void *udata);
 static bool uisongeditPreviousSelection (void *udata);
 static bool uisongeditNextSelection (void *udata);
+static bool uisongeditCopyPath (void *udata);
 
 void
 uisongeditUIInit (uisongedit_t *uisongedit)
@@ -251,28 +255,28 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiBoxPackStart (&uiw->vbox, &hbox);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_FIRST],
-      uisongeditFirstSelection, uisongedit, NULL);
+      uisongeditFirstSelection, uisongedit, "songedit: first");
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_FIRST],
       /* CONTEXT: song editor : first song */
       _("First"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PREVIOUS],
-      uisongeditPreviousSelection, uisongedit, NULL);
+      uisongeditPreviousSelection, uisongedit, "songedit: previous");
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_PREVIOUS],
       /* CONTEXT: song editor : previous song */
       _("Previous"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_NEXT],
-      uisongeditNextSelection, uisongedit, NULL);
+      uisongeditNextSelection, uisongedit, "songedit: next");
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_NEXT],
       /* CONTEXT: song editor : next song */
       _("Next"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PLAY],
-      uisongselPlayCallback, uisongsel, NULL);
+      uisongselPlayCallback, uisongsel, "songedit: play");
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_PLAY],
       /* CONTEXT: song editor : play song */
       _("Play"), NULL);
@@ -280,16 +284,44 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiutilsUIWidgetCopy (&uiw->playbutton, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_SAVE],
-      uisongeditSaveCallback, uisongedit, NULL);
+      uisongeditSaveCallback, uisongedit, "songedit: save");
   uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_SAVE],
       /* CONTEXT: song editor : save data */
       _("Save"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
+  /* audio-identification logo, modified indicator, */
+  /* copy button, file label, filename */
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
   uiWidgetAlignHorizFill (&hbox);
   uiBoxPackStart (&uiw->vbox, &hbox);
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", ".svg",
+      PATHBLD_MP_IMGDIR);
+  uiImageFromFile (&uiw->musicbrainzPixbuf, tbuff);
+  uiImageGetPixbuf (&uiw->musicbrainzPixbuf);
+  uiWidgetMakePersistent (&uiw->musicbrainzPixbuf);
+
+  uiImageNew (&uiw->audioidImg);
+  uiImageClear (&uiw->audioidImg);
+  uiWidgetSetSizeRequest (&uiw->audioidImg, 24, -1);
+  uiWidgetSetMarginStart (&uiw->audioidImg, uiBaseMarginSz);
+  uiBoxPackStart (&hbox, &uiw->audioidImg);
+
+  uiCreateLabel (&uiwidget, " ");
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&uiw->modified, &uiwidget);
+  uiLabelDarkenColor (&uiw->modified, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+
+  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_COPY_TEXT],
+      uisongeditCopyPath, uisongedit, "songedit: copy-text");
+  uiCreateButton (&uiwidget,
+      &uiw->callbacks [UISONGEDIT_CB_COPY_TEXT],
+      "", NULL);
+  uiButtonSetImageIcon (&uiwidget, "edit-copy");
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz);
+  uiBoxPackStart (&hbox, &uiwidget);
 
   /* CONTEXT: song editor: label for displaying the audio file path */
   uiCreateColonLabel (&uiwidget, _("File"));
@@ -302,23 +334,6 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiutilsUIWidgetCopy (&uiw->filedisp, &uiwidget);
   uiLabelDarkenColor (&uiw->filedisp, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiLabelSetSelectable (&uiw->filedisp);
-
-  pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", ".svg",
-      PATHBLD_MP_IMGDIR);
-  uiImageFromFile (&uiw->musicbrainzPixbuf, tbuff);
-  uiImageGetPixbuf (&uiw->musicbrainzPixbuf);
-  uiWidgetMakePersistent (&uiw->musicbrainzPixbuf);
-
-  uiImageNew (&uiw->audioidImg);
-  uiImageClear (&uiw->audioidImg);
-  uiWidgetSetSizeRequest (&uiw->audioidImg, 24, -1);
-  uiWidgetSetMarginStart (&uiw->audioidImg, uiBaseMarginSz);
-  uiBoxPackEnd (&hbox, &uiw->audioidImg);
-
-  uiCreateLabel (&uiwidget, "");
-  uiBoxPackEnd (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&uiw->modified, &uiwidget);
-  uiLabelDarkenColor (&uiw->modified, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
@@ -386,7 +401,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
   }
   val = songGetNum (song, TAG_ADJUSTFLAGS);
 
-  uiLabelSetText (&uiw->modified, "");
+  uiLabelSetText (&uiw->modified, " ");
   if (val != SONG_ADJUST_NONE) {
     uiLabelSetText (&uiw->modified, "*");
   }
@@ -1109,3 +1124,24 @@ uisongeditNextSelection (void *udata)
   return UICB_CONT;
 }
 
+static bool
+uisongeditCopyPath (void *udata)
+{
+  uisongedit_t  *uisongedit = udata;
+  uisongeditgtk_t *uiw;
+  const char    *txt;
+  char          tbuff [MAXPATHLEN];
+
+  uiw = uisongedit->uiWidgetData;
+
+  txt = uiLabelGetText (&uiw->filedisp);
+  strlcpy (tbuff, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (tbuff));
+  strlcat (tbuff, "/", sizeof (tbuff));
+  strlcat (tbuff, txt, sizeof (tbuff));
+  if (isWindows ()) {
+    pathWinPath (tbuff, sizeof (tbuff));
+  }
+  uiClipboardSet (tbuff);
+
+  return UICB_CONT;
+}

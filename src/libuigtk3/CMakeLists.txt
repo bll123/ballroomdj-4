@@ -7,6 +7,7 @@ add_library (libuigtk3 SHARED
   uigtkbox.c
   uigtkbutton.c
   uigtkchgind.c
+  uigtkclipboard.c
   uigtkdialog.c
   uigtkdropdown.c
   uigtkentry.c

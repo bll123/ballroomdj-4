@@ -6,6 +6,10 @@ BallroomDJ 4 Change Log
   - Fixed python major version check.
 - macos
   - The audio output device can now be selected.
+- conversion
+  - Fix missing datafile on conversion.
+- song editor
+  - Added a copy button to copy the file path.
 
 4.0.0 alpha 2022-10-13
 

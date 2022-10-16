@@ -15,7 +15,7 @@ set datatopdir [lindex $argv 1]
 # install the orgopt.txt file.
 # this is always new
 
-foreach fn [list orgopt.txt autoselection.txt] {
+foreach fn [list orgopt.txt autoselection.txt favorites.txt] {
   set nfn [file join $datatopdir data $fn]
 
   if { ! [file exists templates/$fn] } {

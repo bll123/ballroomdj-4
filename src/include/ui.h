@@ -124,6 +124,7 @@ void  uiLabelDarkenColor (UIWidget *uilabel, const char *color);
 void  uiLabelSetFont (UIWidget *uilabel, const char *font);
 void  uiLabelSetBackgroundColor (UIWidget *uiwidget, const char *color);
 void  uiLabelSetText (UIWidget *uilabel, const char *text);
+const char * uiLabelGetText (UIWidget *uiwidget);
 void  uiLabelEllipsizeOn (UIWidget *uiwidget);
 void  uiLabelSetSelectable (UIWidget *uiwidget);
 void  uiLabelSetMaxWidth (UIWidget *uiwidget, int width);
@@ -452,5 +453,8 @@ void uiImageSetFromPixbuf (UIWidget *uiwidget, UIWidget *uipixbuf);
 /* uigtksep.c */
 void uiCreateHorizSeparator (UIWidget *uiwidget);
 void uiSeparatorSetColor (UIWidget *uiwidget, const char *color);
+
+/* uigtkclipboard.c */
+void uiClipboardSet (const char *txt);
 
 #endif /* INC_UI_H */
