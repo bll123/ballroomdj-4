@@ -398,7 +398,7 @@ main (int argc, char *argv [])
       taglist = audiotagParseData (ffn, data, &rewrite);
 
       if (processflags [UPD_FIX_AF_TAGS] && rewrite) {
-        logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix mb: %d %s", dbidx, ffn);
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix audio tags: %d %s", dbidx, ffn);
         audiotagWriteTags (ffn, taglist, taglist, rewrite, AT_KEEP_MOD_TIME);
       }
 

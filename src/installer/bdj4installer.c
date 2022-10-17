@@ -379,7 +379,10 @@ main (int argc, char *argv[])
 
     uifont = sysvarsGetStr (SV_FONT_DEFAULT);
     if (uifont == NULL || ! *uifont) {
-      uifont = "Arial 12";
+      uifont = "Arial Regular 14";
+      if (isMacOS ()) {
+        uifont = "Arial Regular 17";
+      }
     }
     uiSetUIFont (uifont);
   }

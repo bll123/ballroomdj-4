@@ -127,6 +127,10 @@ preskip=F
 if [[ $1 == "--preskip" ]]; then
   preskip=T
 fi
+chkskip=F
+if [[ $1 == "--chkskip" ]]; then
+  chkskip=T
+fi
 
 systype=$(uname -s)
 arch=$(uname -m)
@@ -165,15 +169,19 @@ case $systype in
 esac
 
 if [[ $preskip == F ]]; then
-  ./src/utils/mktestsetup.sh
-  ./bin/bdj4 --check_all
-  rc=$?
-  if [[ $rc -ne 0 ]]; then
-    echo "pkg: tests failed"
-    exit 1
+  if [[ $chskip == F ]]; then
+    ./src/utils/mktestsetup.sh
+    ./bin/bdj4 --check_all
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+      echo "pkg: tests failed"
+      exit 1
+    fi
   fi
   ./pkg/prepkg.sh
 fi
+
+(cd src; make tclean > /dev/null 2>&1)
 
 # update build number
 
@@ -301,6 +309,14 @@ case $tag in
     echo -n 'APPLBDJ4' > ${stagedir}/Contents/PkgInfo
     copyreleasefiles ${tag} ${stagedir}${macosbase}
 
+    tfnl=$(find ${stagedir}${macosbase}/templates -name bdjconfig.txt.mp)
+    for tfn in ${tfnl}*; do
+      sed -e '/UI_THEME/ { n ; s/.*/..macOS-Mojave-dark/ ; }' \
+          -e '/UIFONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
+          -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 16/ ; }' ${tfn} > ${tfn}.n
+      mv -f ${tfn}.n ${tfn}
+    done
+
     echo "-- $(date +%T) creating release manifest"
     touch ${manfnpath}
     ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
@@ -310,6 +326,7 @@ case $tag in
     mv -f ${chksumfntmp} ${chksumfnpath}
 
     setLibVol $stagedir/${macosbase} libvolmac
+
     echo "-- $(date +%T) creating install package"
     (cd tmp;tar -c -J -f - $(basename $stagedir)) > ${tmpnm}
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
@@ -317,6 +334,16 @@ case $tag in
     ;;
   win64|win32)
     copyreleasefiles ${tag} ${stagedir}
+
+    tfnl=$(find ${stagedir}/templates -name bdjconfig.txt.mp)
+    for tfn in ${tfnl}*; do
+      sed -e '/UI_THEME/ { n ; s/.*/..Windows-10-Dark/ ; }' \
+          -e '/UIFONT/ { n ; s/.*/..Arial Regular 14/ ; }' \
+          -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 13/ ; }' ${tfn} > ${tfn}.n
+      mv -f ${tfn}.n ${tfn}
+    done
+
+    setLibVol $stagedir libvolwin
 
     echo "-- $(date +%T) creating release manifest"
     touch ${manfnpath}
@@ -332,7 +359,6 @@ case $tag in
 
     echo "-- $(date +%T) creating install package"
     test -f $tmpcab && rm -f $tmpcab
-    setLibVol $stagedir libvolwin
     (
       cd tmp;
       ../pkg/pkgmakecab.sh
