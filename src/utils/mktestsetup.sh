@@ -10,6 +10,38 @@ case ${cwd} in
     ;;
 esac
 
+systype=$(uname -s)
+arch=$(uname -m)
+case $systype in
+  Linux)
+    os=linux
+    platform=unix
+    archtag=
+    ;;
+  Darwin)
+    os=macos
+    platform=unix
+    case $arch in
+      x86_64)
+        archtag=-intel
+        ;;
+      arm64)
+        archtag=-m1
+        ;;
+    esac
+    ;;
+  MINGW64*)
+    os=win64
+    platform=windows
+    archtag=
+    ;;
+  MINGW32*)
+    os=win32
+    platform=windows
+    archtag=
+    ;;
+esac
+
 if [[ $1 == --force ]]; then
   rm -f data/mktestdb.txt
 fi
@@ -67,45 +99,52 @@ cp -f test-templates/test-auto-a.pldances data
 
 cwd=$(pwd)
 
-ed data/profile00/bdjconfig.txt << _HERE_ > /dev/null
-/^DEFAULTVOLUME/
-+1
-s,.*,..25,
-/^FADEOUTTIME/
-+1
-s,.*,..4000,
-/^HIDEMARQUEEONSTART/
-+1
-s,.*,..on,
-/^PROFILENAME/
-+1
-s,.*,..Test-Setup,
-w
-q
-_HERE_
+tfn=data/profile00/bdjconfig.txt
+sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
+    -e '/^FADEOUTTIME/ { n ; s/.*/..4000/ ; }' \
+    -e '/^HIDEMARQUEEONSTART/ { n ; s/.*/..on/ ; }' \
+    -e '/^PROFILENAME/ { n ; s/.*/..Test-Setup/ ; }' \
+    ${tfn} > ${tfn}.n
+mv -f ${tfn}.n ${tfn}
 
-ed data/${hostname}/bdjconfig.txt << _HERE_ > /dev/null
-/^DIRMUSIC/
-+1
-s,.*,..${cwd}/test-music,
-w
-q
-_HERE_
+tfn=data/${hostname}/bdjconfig.txt
+sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
+    -e '/^DIRMUSIC/ { n ; s,.*,..${cwd}/test-music, ; }' \
+    ${tfn} > ${tfn}.n
+mv -f ${tfn}.n ${tfn}
 
-ed data/bdjconfig.txt << _HERE_ > /dev/null
-/^DEBUGLVL/
-+1
-s,.*,..31,
-w
-q
-_HERE_
+tfn=data/bdjconfig.txt
+sed -e '/^DEBUGLVL/ { n ; s/.*/..31/ ; }' \
+    ${tfn} > ${tfn}.n
+mv -f ${tfn}.n ${tfn}
+
+if [[ $os == macos ]]; then
+  tfn=data/${hostname}/profile00/bdjconfig.txt
+  sed -e '/UI_THEME/ { n ; s/.*/..macOS-Mojave-dark/ ; }' \
+      -e '/UIFONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
+      -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 16/ ; }' \
+      ${tfn} > ${tfn}.n
+  mv -f ${tfn}.n ${tfn}
+fi
+
+if [[ $platform == windows ]]; then
+  tfn=data/${hostname}/profile00/bdjconfig.txt
+  sed -e '/UI_THEME/ { n ; s/.*/..Windows-10-Dark/ ; }' \
+      -e '/UIFONT/ { n ; s/.*/..Arial Regular 14/ ; }' \
+      -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 13/ ; }' \
+      ${tfn} > ${tfn}.n
+  mv -f ${tfn}.n ${tfn}
+fi
 
 for f in ds-history.txt ds-mm.txt ds-musicq.txt ds-ezsonglist.txt \
     ds-ezsongsel.txt ds-request.txt ds-songlist.txt ds-songsel.txt; do
-  cat >> data/profile00/$f << _HERE_
+  tfn=data/profile00/$f
+  if [[ -f $tfn ]]; then
+    cat >> $tfn << _HERE_
 KEYWORD
 FAVORITE
 _HERE_
+  fi
 done
 
 cat >> data/profile00/ds-songedit-b.txt << _HERE_

@@ -1379,7 +1379,7 @@ uisongselMoveSelection (void *udata, int where)
       nidx = uisongsel->idxStart + 1;
       scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_FORCE);
       if (! scrolled) {
-        long    idx;
+        glong    idx;
 
         gtk_tree_model_get (model, &uiw->currIter, SONGSEL_COL_IDX, &idx, -1);
         if (loc < uiw->maxRows - 1 &&

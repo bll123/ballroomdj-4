@@ -257,7 +257,7 @@ confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
   GtkTreeModel    *model;
   GtkTreeIter     iter;
   int             count;
-  long            key;
+  glong           key;
   dance_t         *dances;
   int             didx;
   datafileconv_t  conv;
@@ -362,7 +362,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
   GtkTreeModel    *model;
   GtkTreeIter     iter;
   int             count;
-  long            idx;
+  glong           idx;
   double          value;
   long            nval = 0;
   ilistidx_t      key;

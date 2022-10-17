@@ -156,7 +156,7 @@ confuiLevelListCreate (GtkTreeModel *model, GtkTreePath *path,
 {
   confuigui_t *gui = udata;
   char        *leveldisp;
-  long        weight;
+  glong       weight;
   gboolean    def;
 
   logProcBegin (LOG_PROC, "confuiLevelListCreate");

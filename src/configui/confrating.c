@@ -141,7 +141,7 @@ confuiRatingListCreate (GtkTreeModel *model, GtkTreePath *path,
 {
   confuigui_t *gui = udata;
   char        *ratingdisp;
-  long        weight;
+  glong       weight;
 
   logProcBegin (LOG_PROC, "confuiRatingListCreate");
   gtk_tree_model_get (model, iter,

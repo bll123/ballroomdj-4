@@ -33,7 +33,7 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   confuigui_t   *gui = udata;
   GtkTreeIter   iter;
   GtkTreeModel  *model = NULL;
-  unsigned long idx = 0;
+  gulong        idx = 0;
   ilistidx_t    key;
   int           widx;
   char          *sval;

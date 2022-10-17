@@ -152,7 +152,7 @@ void
 confuiTableToggle (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata)
 {
   confuigui_t   *gui = udata;
-  int           val;
+  gint          val;
   GtkTreeIter   iter;
   GtkTreePath   *path;
   GtkTreeModel  *model;
@@ -430,7 +430,7 @@ confuiTableRemove (void *udata)
   }
 
   if (gui->tablecurr == CONFUI_ID_DANCE) {
-    long          idx;
+    glong         idx;
     dance_t       *dances;
     GtkWidget     *tree;
     GtkTreeModel  *model;

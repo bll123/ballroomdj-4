@@ -467,7 +467,7 @@ uiduallistDispRemove (void *udata)
 
   if (count == 1) {
     char          *str;
-    long          tval;
+    glong         tval;
     GtkWidget     *stree;
     GtkTreeSelection *ssel;
     GtkTreeModel  *smodel;
@@ -550,7 +550,7 @@ uiduallistGetData (GtkTreeModel* model, GtkTreePath* path,
 {
   uiduallist_t  *duallist = udata;
   char          *str;
-  long          tval;
+  glong         tval;
 
   gtk_tree_model_get (model, iter, DUALLIST_COL_DISP, &str, -1);
   gtk_tree_model_get (model, iter, DUALLIST_COL_DISP_IDX, &tval, -1);

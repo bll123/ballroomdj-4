@@ -37,6 +37,8 @@ TEXT
 # Many people have their music organised by putting each dance into a
 # separate folder.
 # This is the default organisation: 'Dance/Title'.
+# If you have iTunes installed, the organization path will be set to
+# 'Album Artist/Album/Disc - Track0 Title'.
 # => Select the organisation method you use for your songs in the
 # 'Organisation Path' drop-down.
 # If the organisation path you need is not present, select the 'support'

@@ -313,7 +313,8 @@ case $tag in
     for tfn in ${tfnl}*; do
       sed -e '/UI_THEME/ { n ; s/.*/..macOS-Mojave-dark/ ; }' \
           -e '/UIFONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
-          -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 16/ ; }' ${tfn} > ${tfn}.n
+          -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 16/ ; }' \
+          ${tfn} > ${tfn}.n
       mv -f ${tfn}.n ${tfn}
     done
 
@@ -339,7 +340,8 @@ case $tag in
     for tfn in ${tfnl}*; do
       sed -e '/UI_THEME/ { n ; s/.*/..Windows-10-Dark/ ; }' \
           -e '/UIFONT/ { n ; s/.*/..Arial Regular 14/ ; }' \
-          -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 13/ ; }' ${tfn} > ${tfn}.n
+          -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 13/ ; }' \
+          ${tfn} > ${tfn}.n
       mv -f ${tfn}.n ${tfn}
     done
 

@@ -4,8 +4,10 @@ BallroomDJ 4 Change Log
 
 - installer
   - Fixed python major version check.
+  - Clean up macos/windows font/theme issues.
 - macos
   - The audio output device can now be selected.
+  - Fixed various crashes.
 - conversion
   - Fix missing datafile on conversion.
 - song editor

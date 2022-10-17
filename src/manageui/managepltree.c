@@ -284,11 +284,11 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
     snprintf (tbuff, sizeof (tbuff), "%d", count);
     if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-          MPLTREE_COL_DANCE_SELECT, sel,
-          MPLTREE_COL_MAXPLAYTIME, mptdisp,
-          MPLTREE_COL_COUNT, dcount,
-          MPLTREE_COL_LOWBPM, bpmlow,
-          MPLTREE_COL_HIGHBPM, bpmhigh,
+          MPLTREE_COL_DANCE_SELECT, (glong) sel,
+          MPLTREE_COL_MAXPLAYTIME, (glong) mptdisp,
+          MPLTREE_COL_COUNT, (glong) dcount,
+          MPLTREE_COL_LOWBPM, (glong) bpmlow,
+          MPLTREE_COL_HIGHBPM, (glong) bpmhigh,
           -1);
     }
     ++count;
@@ -309,7 +309,7 @@ managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree)
 {
   GtkTreeModel    *model;
   GtkTreeIter     iter;
-  long            tval;
+  glong            tval;
   char            *tstr;
   char            tbuff [40];
   ilistidx_t      dkey;
@@ -387,9 +387,9 @@ managePlaylistTreeToggleDance (GtkCellRendererToggle *renderer, gchar *spath, gp
   managepltree_t  *managepltree = udata;
   GtkTreeModel    *model;
   GtkTreeIter   iter;
-  int           val;
+  gint          val;
   int           col = MPLTREE_COL_DANCE_SELECT;
-  long          dkey;
+  glong         dkey;
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (managepltree->tree));
   gtk_tree_model_get_iter_from_string (model, &iter, spath);
@@ -538,7 +538,7 @@ managePlaylistTreeSelectCheck (GtkTreeView* tv, GtkTreePath* path,
   managepltree_t  *managepltree = udata;
   GtkTreeModel    *model;
   GtkTreeIter     iter;
-  int             val;
+  gint            val;
   int             col = MPLTREE_COL_DANCE_SELECT;
 
   if (column != managepltree->dancecol) {

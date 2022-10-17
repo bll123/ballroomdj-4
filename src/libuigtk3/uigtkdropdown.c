@@ -475,7 +475,7 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
 {
   GtkTreeIter   iter;
   GtkTreeModel  *model = NULL;
-  long          idx = 0;
+  glong         idx = 0;
   nlistidx_t    retval;
   char          tbuff [200];
 
