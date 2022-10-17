@@ -285,7 +285,7 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
     if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
           MPLTREE_COL_DANCE_SELECT, (glong) sel,
-          MPLTREE_COL_MAXPLAYTIME, (glong) mptdisp,
+          MPLTREE_COL_MAXPLAYTIME, mptdisp,
           MPLTREE_COL_COUNT, (glong) dcount,
           MPLTREE_COL_LOWBPM, (glong) bpmlow,
           MPLTREE_COL_HIGHBPM, (glong) bpmhigh,

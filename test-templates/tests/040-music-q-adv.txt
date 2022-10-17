@@ -111,9 +111,6 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 0 playstate playing
 end
 
-# debugging
-stop
-
 test 40-20 Remove
 get main CHK_MAIN_MUSICQ
 chk mq0len 0

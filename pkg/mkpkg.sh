@@ -169,7 +169,7 @@ case $systype in
 esac
 
 if [[ $preskip == F ]]; then
-  if [[ $chskip == F ]]; then
+  if [[ $chkskip == F ]]; then
     ./src/utils/mktestsetup.sh
     ./bin/bdj4 --check_all
     rc=$?

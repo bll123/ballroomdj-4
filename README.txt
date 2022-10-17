@@ -11,7 +11,7 @@ Contents
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 2022-10-??
+Alpha Release: 2022-10-17
 
   Alpha releases are mostly untested works in progress.
 
