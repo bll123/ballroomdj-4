@@ -772,7 +772,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
   slistStartIterator (dellist, &iteridx);
   while ((tag = slistIterateKey (dellist, &iteridx)) != NULL) {
     /* special cases - old audio tags */
-    if (strcmp (tag, "ARIOUSARTIST") == 0) {
+    if (strcmp (tag, "VARIOUSARTISTS") == 0) {
       fprintf (ofh, "audio.pop('VARIOUSARTISTS')\n");
       continue;
     }
