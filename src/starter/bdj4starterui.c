@@ -41,6 +41,7 @@
 #include "sysvars.h"
 #include "templateutil.h"
 #include "ui.h"
+#include "volreg.h"
 #include "webclient.h"
 
 typedef enum {
@@ -1756,6 +1757,7 @@ starterStopAllProcesses (void *udata)
   char          *locknm;
   pid_t         pid;
   int           count;
+  char          tbuff [MAXPATHLEN];
 
 
   logProcBegin (LOG_PROC, "starterStopAllProcesses");
@@ -1895,6 +1897,12 @@ starterStopAllProcesses (void *udata)
       fileopDelete (locknm);
     }
   }
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+  fileopDelete (tbuff);
+  volregClearBDJ4Flag ();
+
   fprintf (stderr, "done\n");
   logProcEnd (LOG_PROC, "starterStopAllProcesses", "");
   return UICB_CONT;
