@@ -36,28 +36,18 @@ fi
 
 vers=$(sw_vers -productVersion)
 
-cltinstpath=/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
 xcode-select -p >/dev/null 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
   echo "Unable to locate MacOS Command Line Tools"
-  echo "Setting up to install MacOS Command Line Tools"
-  echo "Please wait..."
-  touch $cltinstpath
-  softwareupdate -l >/dev/null 2>&1
+  echo "Attempting to bootstrap install of MacOS Command Line Tools"
+  make > /dev/null 2>&1
   echo ""
-  echo "Now run Software Update (from Settings)"
-  echo "and install the Command Lines Tools update."
-  echo ""
-  echo "After installation, run this script again."
-  echo ""
-  echo "Software Update will continue to list the"
-  echo "Command Lines Tools package as outdated."
-  echo "This will be fixed when this script is re-run."
+  echo "After MacOS Command Lines Tools has finished installing,"
+  echo "run this script again."
   echo ""
   exit 0
 fi
-test -f $cltinstpath && rm -f $cltinstpath
 
 # not sure if there's a way to determine the latest python version
 # this needs to be fixed.
@@ -142,11 +132,11 @@ echo "-- Running MacPorts 'port upgrade outdated' with sudo"
 sudo port upgrade outdated
 
 echo "-- Installing packages needed by BDJ4"
-sudo port install gtk3 +quartz -x11
-sudo port install adwaita-icon-theme
-sudo port install ffmpeg +nonfree -x11
-sudo port install python${pyver} py${pyver}-pip py${pyver}-wheel
-sudo port install icu
+sudo port -N install gtk3 +quartz -x11
+sudo port -N install adwaita-icon-theme
+sudo port -N install ffmpeg +nonfree -x11
+sudo port -N install python${pyver} py${pyver}-pip py${pyver}-wheel
+sudo port -N install icu
 sudo port select --set python python${pyver}
 sudo port select --set python3 python${pyver}
 sudo port select --set pip py${pyver}-pip

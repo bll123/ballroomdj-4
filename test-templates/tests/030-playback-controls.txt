@@ -2,7 +2,7 @@ section 30 Playback-Controls
 
 test 30-10 Fade
 # a minimum volume is required to check fade-in/out
-msg player PLAYER_VOLUME 20
+msg player PLAYER_VOLUME 25
 msg main MUSICQ_INSERT 0~999~9
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
@@ -10,21 +10,21 @@ resptimeout 1000
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume 20
+chk currvolume 25
 msg player PLAY_FADE
 resptimeout 5000
 get player CHK_PLAYER_STATUS
 chk playstate in-fadeout
 mssleep 200
 get player CHK_PLAYER_STATUS
-chk-not actualvolume 20
+chk-not actualvolume 25
 # a fade during in-fadeout does nothing
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 chk playstate in-fadeout
 mssleep 200
 get player CHK_PLAYER_STATUS
-chk-not actualvolume 20
+chk-not actualvolume 25
 resptimeout 7000
 wait playstate stopped
 msg player PLAYER_VOLUME defaultvol

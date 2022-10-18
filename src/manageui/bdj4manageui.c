@@ -1092,7 +1092,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uisongselSetPlayButtonState (manage->mmsongsel, val);
           uisongeditSetPlayButtonState (manage->mmsongedit, val);
           if (! manage->pluiActive) {
-            connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "1");
+            connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_WHEN_QUEUED, "1");
             snprintf (tmp, sizeof (tmp), "%d", MUSICQ_MNG_PB);
             connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tmp);
             connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");

@@ -423,7 +423,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
-        case MSG_QUEUE_PLAY_ON_ADD: {
+        case MSG_QUEUE_PLAY_WHEN_QUEUED: {
           mainData->playWhenQueued = atoi (targs);
           dbgdisp = true;
           break;
@@ -1816,6 +1816,7 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
   if (song != NULL) {
     long  loc;
     long  dur;
+    int   musicqLen;
 
     dur = mainCalculateSongDuration (mainData, song, -1);
     loc = musicqInsert (mainData->musicQueue, mainData->musicqManageIdx,
@@ -1824,9 +1825,11 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
     mainData->marqueeChanged [mainData->musicqManageIdx] = true;
     mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
     mainSendMusicqStatus (mainData);
+    musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
     if (mainData->playerState == PL_STATE_STOPPED &&
         mainData->playWhenQueued &&
-        mainData->musicqPlayIdx == mainData->musicqManageIdx) {
+        mainData->musicqPlayIdx == mainData->musicqManageIdx &&
+        musicqLen == 1) {
       mainMusicQueuePlay (mainData);
     }
     if (loc > 0) {

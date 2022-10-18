@@ -1360,7 +1360,7 @@ resetPlayer (testsuite_t *testsuite)
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_MANAGE, "0");
-  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, "0");
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_WHEN_QUEUED, "0");
   /* macos seems to need this sleep. */
   /* there may be a race condition between the 'end' and  */
   /* the start of the next test. or main needs to wait to receive a */

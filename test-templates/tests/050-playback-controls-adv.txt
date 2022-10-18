@@ -187,6 +187,7 @@ end
 test 50-30 Repeat-Pause-At-End
 msg main MUSICQ_INSERT 0~999~15
 msg main MUSICQ_INSERT 0~999~17
+# make sure the pause-at-end works w/repeat.
 msg main CMD_PLAY
 mssleep 1000
 get player CHK_PLAYER_STATUS
@@ -209,6 +210,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 2 mq0idx0 15 mq0idx1 17
 get player CHK_PLAYER_STATUS
 chk pauseatend 0 playstate stopped repeat 1
+# make sure the next playback continues on and does not pause
 msg main CMD_PLAY
 get player CHK_PLAYER_STATUS
 resptimeout 2000

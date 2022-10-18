@@ -63,7 +63,7 @@ typedef enum {
   MSG_QUEUE_DANCE_5,        // args: music-q-idx, dance idx
   MSG_QUEUE_DANCE,          // args: music-q-idx, dance idx
   MSG_QUEUE_PLAYLIST,       // args: music-q-idx, playlist name
-  MSG_QUEUE_PLAY_ON_ADD,    // args: true/false
+  MSG_QUEUE_PLAY_WHEN_QUEUED, // args: true/false
   MSG_QUEUE_SWITCH_EMPTY,   // args: true/false
   MSG_QUEUE_MIX,            // args: music-q-idx
   MSG_START_MARQUEE,

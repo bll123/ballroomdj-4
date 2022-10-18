@@ -67,15 +67,53 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 4
 end
 
-# The queue-clear-play is used by the management ui to play a selected song.
-# => play-on-add must be true.
+# if play-when-queued is on:
+# on an insert the player should only start playing if the queue is empty.
+test 40-14 Play-When-Queued-Insert
+msg main QUEUE_PLAY_WHEN_QUEUED 1
+msg main MUSICQ_INSERT 0~999~1
+# should auto-start playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+resptimeout 2000
+wait playstate playing
+# now pause; an additional insert should not start playing
+msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+chk playstate paused
+msg main MUSICQ_INSERT 0~999~3
+get player CHK_PLAYER_STATUS
+chk playstate paused
+msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+chk playstate playing
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 7000
+wait playstate playing
+mssleep 1000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+resptimeout 7000
+wait playstate stopped
+# the queue is now empty; an insert should start playing
+msg main MUSICQ_INSERT 0~999~5
+get player CHK_PLAYER_STATUS
+resptimeout 1000
+wait playstate playing
+end
+
+# The queue-clear-play message
+#   is used by the management ui to play a selected song.
+# => play-when-queued must be true.
 # The queue-clear-play message acts upon
 # a) an empty queue
 # b) a queue where the song is playing
 # c) a queue where the song is paused
 # It may not work on a queue where a song is loaded and is stopped.
-test 40-14 Clear-Play
-msg main QUEUE_PLAY_ON_ADD 1
+# (this could be fixed someday).
+test 40-16 Clear-Play
+msg main QUEUE_PLAY_WHEN_QUEUED 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
 get player CHK_PLAYER_STATUS
@@ -176,14 +214,14 @@ msg main MUSICQ_TOGGLE_PAUSE 0~1
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 1000
-wait playstate in-fadeout
+wait pauseatend 0 playstate in-fadeout
 resptimeout 7000
 wait playstate playing
 mssleep 1000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 1000
-wait playstate in-fadeout
+wait pauseatend 1 playstate in-fadeout
 resptimeout 7000
 wait playstate stopped
 msg main MUSICQ_TOGGLE_PAUSE 0~2
@@ -195,19 +233,19 @@ wait playstate playing
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 1000
-wait playstate in-fadeout
+wait pauseatend 0 playstate in-fadeout
 resptimeout 7000
 wait playstate playing
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 1000
-wait playstate in-fadeout
+wait pauseatend 0 playstate in-fadeout
 resptimeout 7000
 wait playstate playing
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 1000
-wait playstate in-fadeout
+wait pauseatend 1 playstate in-fadeout
 resptimeout 7000
 wait playstate stopped
 end

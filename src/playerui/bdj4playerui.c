@@ -998,7 +998,7 @@ pluiSetPlayWhenQueued (playerui_t *plui)
   logProcBegin (LOG_PROC, "pluiSetPlayWhenQueued");
   snprintf (tbuff, sizeof (tbuff), "%zd",
       nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED));
-  connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_ON_ADD, tbuff);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_WHEN_QUEUED, tbuff);
   logProcEnd (LOG_PROC, "pluiSetPlayWhenQueued", "");
 }
 
