@@ -223,6 +223,7 @@ updateData (ilist_t *tmlist, ilistidx_t key)
     } else {
       snprintf (nval, sizeof (nval), val, sn);
     }
+
     ilistSetStr (tmlist, key, dfkey->itemkey, nval);
     if (dfkey->itemkey != TM_SOURCE) {
       slistSetStr (tagdata, tagdefs [dfkey->itemkey].tag, nval);

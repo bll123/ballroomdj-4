@@ -42,14 +42,13 @@ case $systype in
     ;;
 esac
 
-if [[ $1 == --force ]]; then
-  rm -f data/mktestdb.txt
-fi
-./src/utils/mktestdb.sh
-
 if [[ ! -d data ]]; then
+  echo "No data dir"
   exit 1
 fi
+
+# copy this stuff before creating the database...
+# otherwise the dances.txt file may be incorrect.
 
 rm -rf data
 rm -rf img/profile0[1-9]
@@ -57,7 +56,6 @@ rm -rf img/profile0[1-9]
 hostname=$(hostname)
 mkdir -p data/profile00
 mkdir -p data/${hostname}/profile00
-touch data/mktestdb.txt
 
 for f in templates/ds-*.txt; do
   cp -f $f data/profile00
@@ -96,8 +94,6 @@ cp -f test-templates/test-seq-b.pldances data
 cp -f test-templates/test-seq-a.sequence data/test-seq-b.sequence
 cp -f test-templates/test-auto-a.pl data
 cp -f test-templates/test-auto-a.pldances data
-
-cwd=$(pwd)
 
 tfn=data/profile00/bdjconfig.txt
 sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
@@ -150,6 +146,13 @@ done
 cat >> data/profile00/ds-songedit-b.txt << _HERE_
 FAVORITE
 _HERE_
+
+if [[ $1 == --force ]]; then
+  rm -f data/mktestdb.txt
+fi
+./src/utils/mktestdb.sh
+
+cwd=$(pwd)
 
 # make sure various variables are set appropriately.
 ./bin/bdj4 --bdj4updater --newinstall \

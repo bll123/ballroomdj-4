@@ -11,6 +11,7 @@ case ${cwd} in
 esac
 
 if [[ ! -d data ]]; then
+  echo "No data dir"
   exit 1
 fi
 
