@@ -52,5 +52,3 @@
 #   song:
 #     p-duration p-songfn
 #
-# MUSICQ_CURRENT == 6
-#

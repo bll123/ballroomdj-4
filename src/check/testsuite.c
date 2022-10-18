@@ -23,6 +23,7 @@
 #include "istring.h"
 #include "localeutil.h"
 #include "log.h"
+#include "musicq.h"
 #include "nlist.h"
 #include "osrandom.h"
 #include "ossignal.h"
@@ -1224,7 +1225,7 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
   char    *tokstr;
   int     route;
   int     msg;
-  char    tmp [40];
+  char    tmp [200];
 
   tstr = strdup (tcmd);
 
@@ -1263,9 +1264,15 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
   /* args */
   p = strtok_r (NULL, " ", &tokstr);
   d = NULL;
+
   if (type == TS_TYPE_MSG && p != NULL) {
     if (strcmp (p, "defaultvol") == 0) {
       snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
+      p = tmp;
+    }
+
+    if (strncmp (p, "current~", 8) == 0) {
+      snprintf (tmp, sizeof (tmp), "%d~%s", MUSICQ_CURRENT, p + 8);
       p = tmp;
     }
 
