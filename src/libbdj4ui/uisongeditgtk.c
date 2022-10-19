@@ -1038,6 +1038,11 @@ uisongeditSaveCallback (void *udata)
     }
 
     if (chkvalue == SONGEDIT_CHK_NUM) {
+      if (tagkey == TAG_BPM) {
+        if (nval == 0) {
+          nval = LIST_VALUE_INVALID;
+        }
+      }
       songSetNum (uiw->song, tagkey, nval);
     }
 
