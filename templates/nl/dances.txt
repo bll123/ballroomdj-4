@@ -3,7 +3,7 @@
 version
 ..1
 count
-..14
+..13
 KEY
 ..0
 ANNOUNCE
@@ -27,24 +27,6 @@ KEY
 ANNOUNCE
 ..
 DANCE
-..Bachata
-LOWBPM
-..
-HIGHBPM
-..
-SPEED
-..normaal
-TAGS
-..club
-TIMESIG
-..4/4
-TYPE
-..latijn
-KEY
-..2
-ANNOUNCE
-..
-DANCE
 ..Cha Cha
 LOWBPM
 ..124
@@ -59,7 +41,7 @@ TIMESIG
 TYPE
 ..latijn
 KEY
-..3
+..2
 ANNOUNCE
 ..
 DANCE
@@ -77,7 +59,7 @@ TIMESIG
 TYPE
 ..standaard
 KEY
-..4
+..3
 ANNOUNCE
 ..
 DANCE
@@ -95,7 +77,7 @@ TIMESIG
 TYPE
 ..latijn
 KEY
-..5
+..4
 ANNOUNCE
 ..
 DANCE
@@ -113,7 +95,7 @@ TIMESIG
 TYPE
 ..latijn
 KEY
-..6
+..5
 ANNOUNCE
 ..
 DANCE
@@ -131,7 +113,7 @@ TIMESIG
 TYPE
 ..standaard
 KEY
-..7
+..6
 ANNOUNCE
 ..
 DANCE
@@ -149,7 +131,7 @@ TIMESIG
 TYPE
 ..latijn
 KEY
-..8
+..7
 ANNOUNCE
 ..
 DANCE
@@ -167,7 +149,7 @@ TIMESIG
 TYPE
 ..latijn
 KEY
-..9
+..8
 ANNOUNCE
 ..
 DANCE
@@ -185,7 +167,7 @@ TIMESIG
 TYPE
 ..latijn
 KEY
-..10
+..9
 ANNOUNCE
 ..
 DANCE
@@ -203,7 +185,7 @@ TIMESIG
 TYPE
 ..standaard
 KEY
-..11
+..10
 ANNOUNCE
 ..
 DANCE
@@ -221,7 +203,7 @@ TIMESIG
 TYPE
 ..standaard
 KEY
-..12
+..11
 ANNOUNCE
 ..
 DANCE
@@ -239,7 +221,7 @@ TIMESIG
 TYPE
 ..standaard
 KEY
-..13
+..12
 ANNOUNCE
 ..
 DANCE
