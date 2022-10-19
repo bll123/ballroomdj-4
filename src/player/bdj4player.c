@@ -928,8 +928,10 @@ playerSongClearPrep (playerdata_t *playerData, char *args)
 
   tpq = playerLocatePreppedSong (playerData, uniqueidx, p);
   if (tpq != NULL) {
+
     tpq = queueIterateRemoveNode (playerData->prepQueue, &playerData->prepiteridx);
-    if (tpq != NULL) {
+    /* prevent any issues by checking the uniqueidx again */
+    if (tpq != NULL && tpq->uniqueidx == uniqueidx) {
       logMsg (LOG_DBG, LOG_MAIN, "prep-clear: %ld %s r:%ld p:%ld", tpq->uniqueidx, tpq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
       playerPrepQueueFree (tpq);
     }
@@ -1048,7 +1050,8 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
   if (playerData->repeat) {
     pq = playerData->currentSong;
     if (uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
-      logMsg (LOG_DBG, LOG_BASIC, "song-play %s found as repeat", sfname);
+      logMsg (LOG_DBG, LOG_BASIC, "locate %s found %ld as repeat", sfname, uniqueidx);
+      logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
       found = true;
     }
   }
@@ -1058,11 +1061,15 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
     pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);
     while (pq != NULL) {
       if (uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
+        logMsg (LOG_DBG, LOG_BASIC, "locate %s found %ld", sfname, uniqueidx);
+        logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
         found = true;
         break;
       }
       if (uniqueidx == PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx &&
           strcmp (sfname, pq->songname) == 0) {
+        logMsg (LOG_DBG, LOG_BASIC, "locate %s found %ld", sfname, uniqueidx);
+        logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
         found = true;
         break;
       }
@@ -1081,6 +1088,7 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
     logProcEnd (LOG_PROC, "playerSongPlay", "not-found");
     return NULL;
   }
+  logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
   logProcEnd (LOG_PROC, "playerLocatePreppedSong", "");
   return pq;
 }

@@ -159,7 +159,7 @@ end
 #     playstate is stopped, the first paused song is just cleared
 # c)  playing; next-song immediately goes to the next song and
 #     starts playing it.  playstate is playing.
-test 50-20 Next-Song
+test 30-50 Next-Song
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
 get player CHK_PLAYER_STATUS

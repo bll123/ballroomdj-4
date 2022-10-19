@@ -1759,7 +1759,9 @@ mainNextSong (maindata_t *mainData)
 
   currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
   if (currlen > 0) {
-    mainMusicqClearPrep (mainData, mainData->musicqPlayIdx, 0);
+    if (mainData->playerState == PL_STATE_STOPPED) {
+      mainMusicqClearPrep (mainData, mainData->musicqPlayIdx, 0);
+    }
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
     mainData->waitforpbfinish = true;
     mainData->pbfinishrcv = 0;

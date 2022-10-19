@@ -1,5 +1,34 @@
 section 50 Playback-Controls-Advanced
 
+test 50-20 Repeat-Next-Song
+msg main MUSICQ_INSERT 0~999~15
+msg main MUSICQ_INSERT 0~999~17
+msg main MUSICQ_INSERT 0~999~19
+msg main CMD_PLAY
+mssleep 1000
+get player CHK_PLAYER_STATUS
+resptimeout 1000
+wait playstate playing
+chk pauseatend 0 playstate playing repeat 0
+get main CHK_MAIN_MUSICQ
+chk dbidx 15
+msg player PLAY_REPEAT
+get player CHK_PLAYER_STATUS
+chk pauseatend 0 playstate playing repeat 1
+msg main CMD_NEXTSONG
+get player CHK_PLAYER_STATUS
+disp playstate
+mssleep 1000
+get player CHK_PLAYER_STATUS
+disp playstate
+resptimeout 1000
+wait playstate playing
+get main CHK_MAIN_MUSICQ
+chk dbidx 17
+get player CHK_PLAYER_STATUS
+chk pauseatend 0 playstate playing repeat 0
+end
+
 # repeat and pause-at-end must work correctly together
 test 50-30 Repeat-Pause-At-End
 msg main MUSICQ_INSERT 0~999~15

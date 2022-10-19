@@ -4,8 +4,9 @@ BallroomDJ 4 Change Log
 
 - player
   - Fix play-when-queued so it only plays when the queue is empty.
-  - return to beginning of song: allowed when paused, not during fade-out.
-  - position slider changed to be active while paused.
+  - Return to beginning of song: allowed when paused, not during fade-out.
+  - Position slider changed to be active while paused.
+  - Fix bug in next song clearing a prepped song when it should not.
 
 4.0.0 alpha 2022-10-17
 

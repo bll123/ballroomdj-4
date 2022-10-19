@@ -103,6 +103,7 @@ START_TEST(queue_push_pop_one)
   ck_assert_int_eq (count, 1);
   data = queuePop (q);
   ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 0);
   ck_assert_str_eq (data, "aaaa");
@@ -126,6 +127,7 @@ START_TEST(queue_push_pop_two)
   ck_assert_int_eq (count, 2);
   data = queuePop (q);
   ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 1);
   ck_assert_str_eq (data, "aaaa");
@@ -188,6 +190,7 @@ START_TEST(queue_get_current)
   ck_assert_str_eq (data, "aaaa");
 
   data = queuePop (q);
+  ck_assert_str_eq (data, "aaaa");
 
   data = queueGetCurrent (q);
   count = queueGetCount (q);
@@ -196,6 +199,7 @@ START_TEST(queue_get_current)
   ck_assert_str_eq (data, "bbbb");
 
   data = queuePop (q);
+  ck_assert_str_eq (data, "bbbb");
   data = queuePop (q);
   ck_assert_ptr_null (data);
   queueFree (q);
