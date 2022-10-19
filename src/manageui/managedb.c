@@ -73,7 +73,7 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
   uiutilsUIWidgetInit (&managedb->dbstart);
   uiutilsUIWidgetInit (&managedb->dbstop);
   managedb->dbtopdir = uiEntryInit (50, 200);
-  managedb->dbspinbox = uiSpinboxTextInit ();
+  managedb->dbspinbox = uiSpinboxInit ();
 
   tlist = nlistAlloc ("db-action", LIST_ORDERED, free);
   hlist = nlistAlloc ("db-action-help", LIST_ORDERED, free);
@@ -119,7 +119,7 @@ manageDbFree (managedb_t *managedb)
     uiTextBoxFree (managedb->dbhelpdisp);
     uiTextBoxFree (managedb->dbstatus);
     uiEntryFree (managedb->dbtopdir);
-    uiSpinboxTextFree (managedb->dbspinbox);
+    uiSpinboxFree (managedb->dbspinbox);
     free (managedb);
   }
 }

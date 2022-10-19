@@ -521,7 +521,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uisongeditFree (manage->mmsongedit);
 
   uiDropDownFree (manage->cfplsel);
-  uiSpinboxTimeFree (manage->cfpltmlimit);
+  uiSpinboxFree (manage->cfpltmlimit);
   dispselFree (manage->dispsel);
   datafileFree (manage->optiondf);
 
@@ -1801,7 +1801,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
 
   uiSpinboxTimeCreate (manage->cfpltmlimit, manage, NULL);
   uiSpinboxTimeSetValue (manage->cfpltmlimit, 3 * 60 * 1000);
-  uiSpinboxSetRange (manage->cfpltmlimit, 0, 600000);
+  uiSpinboxSetRange (manage->cfpltmlimit, 0.0, 600000.0);
   uiwidgetp = uiSpinboxGetUIWidget (manage->cfpltmlimit);
   uiBoxPackStart (&hbox, uiwidgetp);
 }

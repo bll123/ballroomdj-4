@@ -38,7 +38,7 @@ uistatusSpinboxCreate (UIWidget *boxp, bool allflag)
   uistatus = malloc (sizeof (uistatus_t));
   uistatus->status = bdjvarsdfGet (BDJVDF_STATUS);
   uistatus->allflag = allflag;
-  uistatus->spinbox = uiSpinboxTextInit ();
+  uistatus->spinbox = uiSpinboxInit ();
 
   uiSpinboxTextCreate (uistatus->spinbox, uistatus);
 
@@ -66,7 +66,7 @@ void
 uistatusFree (uistatus_t *uistatus)
 {
   if (uistatus != NULL) {
-    uiSpinboxTextFree (uistatus->spinbox);
+    uiSpinboxFree (uistatus->spinbox);
     free (uistatus);
   }
 }

@@ -285,7 +285,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, NULL, "st", ROUTE_STARTERUI, flags);
   logProcBegin (LOG_PROC, "starterui");
 
-  starter.profilesel = uiSpinboxTextInit ();
+  starter.profilesel = uiSpinboxInit ();
 
   starterLoadOptions (&starter);
 
@@ -398,7 +398,7 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   webclientClose (starter->webclient);
   uiTextBoxFree (starter->supporttb);
-  uiSpinboxTextFree (starter->profilesel);
+  uiSpinboxFree (starter->profilesel);
 
   pathbldMakePath (fn, sizeof (fn),
       STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);

@@ -7,6 +7,9 @@ BallroomDJ 4 Change Log
   - Return to beginning of song: allowed when paused, not during fade-out.
   - Position slider changed to be active while paused.
   - Fix bug in next song clearing a prepped song when it should not.
+- playlist management
+  - Fix display of default gap.
+  - Fix some minor display issues.
 
 4.0.0 alpha 2022-10-17
 

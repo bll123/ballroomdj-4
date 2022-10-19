@@ -36,7 +36,7 @@ uifavoriteSpinboxCreate (UIWidget *boxp)
 
   uifavorite = malloc (sizeof (uifavorite_t));
   uifavorite->songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
-  uifavorite->spinbox = uiSpinboxTextInit ();
+  uifavorite->spinbox = uiSpinboxInit ();
   uispinboxp = uiSpinboxGetUIWidget (uifavorite->spinbox);
   uiSpinboxTextCreate (uifavorite->spinbox, uifavorite);
   /* get the foreground color once only before anything has been changed */
@@ -57,7 +57,7 @@ void
 uifavoriteFree (uifavorite_t *uifavorite)
 {
   if (uifavorite != NULL) {
-    uiSpinboxTextFree (uifavorite->spinbox);
+    uiSpinboxFree (uifavorite->spinbox);
     free (uifavorite);
   }
 }

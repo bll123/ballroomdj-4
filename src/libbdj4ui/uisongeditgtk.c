@@ -207,7 +207,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
         }
         case ET_SPINBOX_TIME: {
           if (uiw->items [count].spinbox != NULL) {
-            uiSpinboxTimeFree (uiw->items [count].spinbox);
+            uiSpinboxFree (uiw->items [count].spinbox);
           }
           break;
         }
@@ -868,7 +868,7 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
   sbp = uiSpinboxTimeInit (SB_TIME_PRECISE);
   uiw->items [uiw->itemcount].spinbox = sbp;
   uiSpinboxTimeCreate (sbp, uisongedit, NULL);
-  uiSpinboxSetRange (sbp, 0, 1200000);
+  uiSpinboxSetRange (sbp, 0.0, 1200000.0);
   uiSpinboxTimeSetValue (sbp, 0);
   uiwidgetp = uiSpinboxGetUIWidget (sbp);
   uiSizeGroupAdd (&uiw->sgsbtime, uiwidgetp);

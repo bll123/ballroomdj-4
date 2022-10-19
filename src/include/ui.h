@@ -194,8 +194,9 @@ enum {
 typedef const char * (*uispinboxdisp_t)(void *, int);
 typedef struct uispinbox uispinbox_t;
 
-uispinbox_t *uiSpinboxTextInit (void);
-void  uiSpinboxTextFree (uispinbox_t *spinbox);
+uispinbox_t *uiSpinboxInit (void);
+void  uiSpinboxFree (uispinbox_t *spinbox);
+
 void  uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata);
 void  uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
     int maxWidth, slist_t *list, nlist_t *keylist, uispinboxdisp_t textGetProc);
@@ -208,13 +209,14 @@ void  uiSpinboxTextEnable (uispinbox_t *spinbox);
 void  uiSpinboxIntCreate (UIWidget *uiwidget);
 void  uiSpinboxDoubleCreate (UIWidget *uiwidget);
 
+void  uiSpinboxDoubleDefaultCreate (uispinbox_t *spinbox);
+
 uispinbox_t *uiSpinboxTimeInit (int sbtype);
-void  uiSpinboxTimeFree (uispinbox_t *spinbox);
 void  uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, UICallback *convcb);
 ssize_t uiSpinboxTimeGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTimeSetValue (uispinbox_t *spinbox, ssize_t value);
 
-void  uiSpinboxSetRange (uispinbox_t *spinbox, long min, long max);
+void  uiSpinboxSetRange (uispinbox_t *spinbox, double min, double max);
 void  uiSpinboxWrap (uispinbox_t *spinbox);
 void  uiSpinboxSet (UIWidget *uispinbox, double min, double max);
 double uiSpinboxGetValue (UIWidget *uispinbox);

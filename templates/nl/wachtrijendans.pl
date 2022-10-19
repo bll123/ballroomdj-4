@@ -1,4 +1,7 @@
-# BDJ4 queuedance
+# playlist
+# 2022-10-19
+version
+..1
 ALLOWEDKEYWORDS
 ..
 DANCERATING

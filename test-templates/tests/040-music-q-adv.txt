@@ -1,7 +1,9 @@
 
 section 40 Music-Queue-Adv
 
-# test the clear queue command
+# test the queue clear command
+# the queue clear command is used internally by the test suite
+# used by management ui in the create-from-playlist dialog
 # clearing a queue acts upon the specified music queue
 # clearing the queue does not clear the currently playing song.
 # the playlist queue is also cleared (needs another test).

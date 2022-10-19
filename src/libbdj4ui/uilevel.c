@@ -38,7 +38,7 @@ uilevelSpinboxCreate (UIWidget *boxp, bool allflag)
   uilevel = malloc (sizeof (uilevel_t));
   uilevel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uilevel->allflag = allflag;
-  uilevel->spinbox = uiSpinboxTextInit ();
+  uilevel->spinbox = uiSpinboxInit ();
 
   uiSpinboxTextCreate (uilevel->spinbox, uilevel);
 
@@ -66,7 +66,7 @@ void
 uilevelFree (uilevel_t *uilevel)
 {
   if (uilevel != NULL) {
-    uiSpinboxTextFree (uilevel->spinbox);
+    uiSpinboxFree (uilevel->spinbox);
     free (uilevel);
   }
 }

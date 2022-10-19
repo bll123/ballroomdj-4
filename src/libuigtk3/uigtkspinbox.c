@@ -11,6 +11,7 @@
 
 #include <gtk/gtk.h>
 
+#include "bdj4intl.h"
 #include "tmutil.h"
 #include "ui.h"
 
@@ -39,9 +40,10 @@ static char * uiSpinboxTextGetDisp (slist_t *list, int idx);
 
 static gboolean uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata);
 static void uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata);
+static gboolean uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata);
 
 uispinbox_t *
-uiSpinboxTextInit (void)
+uiSpinboxInit (void)
 {
   uispinbox_t   *spinbox;
 
@@ -64,7 +66,7 @@ uiSpinboxTextInit (void)
 
 
 void
-uiSpinboxTextFree (uispinbox_t *spinbox)
+uiSpinboxFree (uispinbox_t *spinbox)
 {
   if (spinbox != NULL) {
     nlistFree (spinbox->idxlist);
@@ -186,15 +188,9 @@ uiSpinboxTimeInit (int sbtype)
 {
   uispinbox_t *uispinbox;
 
-  uispinbox = uiSpinboxTextInit ();
+  uispinbox = uiSpinboxInit ();
   uispinbox->sbtype = sbtype;
   return uispinbox;
-}
-
-void
-uiSpinboxTimeFree (uispinbox_t *spinbox)
-{
-  uiSpinboxTextFree (spinbox);
 }
 
 void
@@ -296,10 +292,29 @@ uiSpinboxDoubleCreate (UIWidget *uiwidget)
 }
 
 void
-uiSpinboxSetRange (uispinbox_t *spinbox, long min, long max)
+uiSpinboxDoubleDefaultCreate (uispinbox_t *spinbox)
+{
+  GtkWidget   *widget;
+
+  widget = gtk_spin_button_new (NULL, -0.1, 1);
+  gtk_spin_button_set_numeric (GTK_SPIN_BUTTON (widget), FALSE);
+  gtk_entry_set_alignment (GTK_ENTRY (widget), 1.0);
+  gtk_spin_button_set_increments (GTK_SPIN_BUTTON (widget), 0.1, 5.0);
+  gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (widget), FALSE);
+  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
+  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
+  g_signal_connect (widget, "output",
+      G_CALLBACK (uiSpinboxDoubleDefaultDisplay), spinbox);
+  g_signal_connect (widget, "input",
+      G_CALLBACK (uiSpinboxDoubleInput), NULL);
+  spinbox->uispinbox.widget = widget;
+}
+
+void
+uiSpinboxSetRange (uispinbox_t *spinbox, double min, double max)
 {
   gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->uispinbox.widget),
-      (double) min, (double) max);
+      min, max);
 }
 
 
@@ -436,8 +451,13 @@ uiSpinboxDoubleInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
   const char    *newtext;
 
   newtext = gtk_entry_get_text (GTK_ENTRY (sb));
-  if (newtext != NULL && *newtext) {
-    *newval = atof (newtext);
+  if (newtext != NULL) {
+    /* CONTEXT: default setting display */
+    if (strcmp (newtext, _("Default")) == 0) {
+      *newval = -0.1;
+    } else if (*newtext) {
+      *newval = atof (newtext);
+    }
   }
   return UICB_CONVERTED;
 }
@@ -575,3 +595,35 @@ uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata)
 
   uiutilsCallbackHandler (uicb);
 }
+
+static gboolean
+uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata)
+{
+  uispinbox_t   *spinbox = udata;
+  GtkAdjustment *adjustment;
+  double        value;
+  char          tbuff [100];
+
+  if (spinbox == NULL) {
+    return UICB_NO_DISP;
+  }
+  if (spinbox->processing) {
+    return UICB_NO_DISP;
+  }
+  if (spinbox->uispinbox.widget == NULL) {
+    return UICB_NO_DISP;
+  }
+  spinbox->processing = true;
+
+  *tbuff = '\0';
+  adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->uispinbox.widget));
+  value = gtk_adjustment_get_value (adjustment);
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), value);
+  if (value < 0) {
+    /* CONTEXT: default setting display */
+    gtk_entry_set_text (GTK_ENTRY (spinbox->uispinbox.widget), _("Default"));
+  }
+  spinbox->processing = false;
+  return UICB_DISPLAYED;
+}
+

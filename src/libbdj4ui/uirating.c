@@ -38,7 +38,7 @@ uiratingSpinboxCreate (UIWidget *boxp, bool allflag)
   uirating = malloc (sizeof (uirating_t));
   uirating->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uirating->allflag = allflag;
-  uirating->spinbox = uiSpinboxTextInit ();
+  uirating->spinbox = uiSpinboxInit ();
 
   uiSpinboxTextCreate (uirating->spinbox, uirating);
 
@@ -66,7 +66,7 @@ void
 uiratingFree (uirating_t *uirating)
 {
   if (uirating != NULL) {
-    uiSpinboxTextFree (uirating->spinbox);
+    uiSpinboxFree (uirating->spinbox);
     free (uirating);
   }
 }
