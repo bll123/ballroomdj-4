@@ -270,7 +270,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiSpinboxSetRange (managepl->uigap, -1.0, 60.0);
   uiwidgetp = uiSpinboxGetUIWidget (managepl->uigap);
   uiBoxPackStart (&hbox, uiwidgetp);
-  uiSizeGroupAdd (&sgA, uiwidgetp);
+  uiSizeGroupAdd (&sgC, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);

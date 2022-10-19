@@ -1056,11 +1056,11 @@ msgstr "Nieuwe bestanden"
 
 #. CONTEXT: configuration: genre name that is set when adding a new genre
 msgid "New Genre"
-msgstr ""
+msgstr "Nieuw genre"
 
 #. CONTEXT: configuration: level name that is set when adding a new level
 msgid "New Level"
-msgstr ""
+msgstr "Nieuw niveau"
 
 #. CONTEXT: playlist management: default name for a new playlist
 #, c-format
@@ -1074,12 +1074,12 @@ msgstr "Nieuw profiel %d"
 
 #. CONTEXT: configuration: rating name that is set when adding a new rating
 msgid "New Rating"
-msgstr ""
+msgstr "Nieuw beoordeling"
 
 #. CONTEXT: sequence editor: default name for a new sequence
 #, c-format
 msgid "New Sequence"
-msgstr ""
+msgstr "Nieuw sequentie"
 
 #. CONTEXT: managementui: song list: default name for a new song list
 #, c-format
