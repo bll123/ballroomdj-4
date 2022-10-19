@@ -103,6 +103,9 @@ cp -f test-templates/test-seq-a.sequence data/test-seq-c.sequence
 # auto a
 cp -f test-templates/test-auto-a.pl data
 cp -f test-templates/test-auto-a.pldances data
+# auto b
+cp -f test-templates/test-auto-a.pl data/test-auto-b.pl
+cp -f test-templates/test-auto-b.pldances data
 
 tfn=data/profile00/bdjconfig.txt
 sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
