@@ -451,6 +451,7 @@ get player CHK_PLAYER_STATUS
 chk-gt playtimeplayed 2000
 end
 
+# test volume and volume-mute
 test 30-80 Volume
 msg player PLAYER_VOLUME 20
 msg main MUSICQ_INSERT 0~999~14
@@ -460,16 +461,19 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume 20 realvolume 20
+chk currvolume 20 realvolume 20 actualvolume 20
 msg player PLAYER_VOLUME 30
 get player CHK_PLAYER_STATUS
-chk currvolume 30 realvolume 30
+chk currvolume 30 realvolume 30 actualvolume 30
 msg player PLAYER_VOLUME 40
 get player CHK_PLAYER_STATUS
-chk currvolume 40 realvolume 40
+chk currvolume 40 realvolume 40 actualvolume 40
 msg player PLAYER_VOLUME 20
 get player CHK_PLAYER_STATUS
-chk currvolume 20 realvolume 20
+chk currvolume 20 realvolume 20 actualvolume 20
+msg player PLAYER_VOL_MUTE
+get player CHK_PLAYER_STATUS
+chk currvolume 20 realvolume 20 actualvolume 0
 msg player PLAYER_VOLUME defaultvol
 end
 

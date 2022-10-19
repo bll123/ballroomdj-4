@@ -48,8 +48,8 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 68 m-songfn 001-quickstep.mp3
 end
 
-# songlist test with max duration set for 001-foxtrot
-test 110-20 Dance-Max-Dur
+# songlist test with max play time set for 001-foxtrot
+test 110-20 Dance-MaxPlayTime
 msg main QUEUE_PLAYLIST 0~test-sl-b
 msg main CMD_PLAY
 resptimeout 3000

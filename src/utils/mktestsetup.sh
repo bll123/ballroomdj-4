@@ -80,18 +80,27 @@ cp -f templates/standardrounds.* data
 cp -f test-templates/musicdb.dat data
 cp -f test-templates/status.txt data
 cp -f test-templates/ds-songfilter.txt data/profile00
+# songlist a
 cp -f test-templates/test-sl-a.pl data
 cp -f test-templates/test-sl-a.pldances data
 cp -f test-templates/test-sl-a.songlist data
+# songlist b
 cp -f test-templates/test-sl-a.pl data/test-sl-b.pl
 cp -f test-templates/test-sl-b.pldances data
 cp -f test-templates/test-sl-a.songlist data/test-sl-b.songlist
+# sequence a
 cp -f test-templates/test-seq-a.pl data
 cp -f test-templates/test-seq-a.pldances data
 cp -f test-templates/test-seq-a.sequence data
+# sequence b
 cp -f test-templates/test-seq-a.pl data/test-seq-b.pl
 cp -f test-templates/test-seq-b.pldances data
 cp -f test-templates/test-seq-a.sequence data/test-seq-b.sequence
+# sequence c
+cp -f test-templates/test-seq-a.pl data/test-seq-c.pl
+cp -f test-templates/test-seq-c.pldances data
+cp -f test-templates/test-seq-a.sequence data/test-seq-c.sequence
+# auto a
 cp -f test-templates/test-auto-a.pl data
 cp -f test-templates/test-auto-a.pldances data
 

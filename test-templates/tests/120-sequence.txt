@@ -142,3 +142,81 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz bpm 84
 end
 
+test 120-30 Dance-MaxPlaytime
+msg main QUEUE_PLAYLIST 0~test-seq-c
+msg main CMD_PLAY
+resptimeout 3000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+msg main CMD_NEXTSONG
+mssleep 200
+msg main CMD_NEXTSONG
+mssleep 200
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Foxtrot
+get player CHK_PLAYER_SONG
+chk p-duration 10000
+msg main CMD_NEXTSONG
+mssleep 200
+msg main CMD_NEXTSONG
+mssleep 1000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+get main CHK_MAIN_MUSICQ
+msg main CMD_NEXTSONG
+mssleep 200
+msg main CMD_NEXTSONG
+mssleep 200
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Foxtrot
+get player CHK_PLAYER_SONG
+chk p-duration 10000
+msg main CMD_NEXTSONG
+mssleep 200
+msg main CMD_NEXTSONG
+mssleep 1000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+get main CHK_MAIN_MUSICQ
+msg main CMD_NEXTSONG
+mssleep 200
+msg main CMD_NEXTSONG
+mssleep 200
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Foxtrot
+get player CHK_PLAYER_SONG
+chk p-duration 10000
+msg main CMD_NEXTSONG
+mssleep 200
+msg main CMD_NEXTSONG
+mssleep 1000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+get main CHK_MAIN_MUSICQ
+msg main CMD_NEXTSONG
+mssleep 200
+msg main CMD_NEXTSONG
+mssleep 200
+get main CHK_MAIN_MUSICQ
+chk mq0len 91 dance Foxtrot
+get player CHK_PLAYER_SONG
+chk p-duration 10000
+msg main CMD_NEXTSONG
+mssleep 200
+msg main CMD_NEXTSONG
+mssleep 1000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol
+end
+
