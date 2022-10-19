@@ -151,139 +151,197 @@ get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
 end
 
-# basic test of next song.
-# it is tested again in section 50.
-# nextsong is used internally by the 'end' command
-test 30-50 Next-Song
-# first test when the player is stopped
+# check the next-song command
+# used internally by the test suite
+# a)  stopped; next-song just goes to the next song in the queue
+#     playstate stays stopped
+# b)  paused; next-song just goes to the next song in the queue
+#     playstate is stopped, the first paused song is just cleared
+# c)  playing; next-song immediately goes to the next song and
+#     starts playing it.  playstate is playing.
+test 50-20 Next-Song
+get main CHK_MAIN_MUSICQ
+chk mq0len 0
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0
 print stopped
-msg main CHK_MAIN_RESET_SENT
-msg main MUSICQ_INSERT 0~999~5
+msg main MUSICQ_INSERT 0~999~2
+msg main MUSICQ_INSERT 0~999~4
 msg main MUSICQ_INSERT 0~999~6
-msg main MUSICQ_INSERT 0~999~7
 msg main MUSICQ_INSERT 0~999~8
+msg main MUSICQ_INSERT 0~999~10
+msg main MUSICQ_INSERT 0~999~12
+msg main MUSICQ_INSERT 0~999~14
 get main CHK_MAIN_MUSICQ
-chk mq0len 4 qdbidx 5
+chk mq0len 7 qdbidx 2
 get player CHK_PLAYER_STATUS
-chk playstate stopped
+chk prepqueuecount 5 playstate stopped
 msg main CMD_NEXTSONG
-mssleep 100
-get player CHK_PLAYER_STATUS
-chk playstate stopped
+mssleep 200
 get main CHK_MAIN_MUSICQ
-chk mq0len 3 qdbidx 6
-msg main CMD_NEXTSONG
-mssleep 100
+chk mq0len 6 qdbidx 4
 get player CHK_PLAYER_STATUS
-chk playstate stopped
+chk prepqueuecount 5 playstate stopped
+msg main CMD_NEXTSONG
+mssleep 200
 get main CHK_MAIN_MUSICQ
-chk mq0len 2 qdbidx 7
-msg main CMD_NEXTSONG
-mssleep 100
+chk mq0len 5 qdbidx 6
 get player CHK_PLAYER_STATUS
-chk playstate stopped
+chk prepqueuecount 5 playstate stopped
+msg main CMD_NEXTSONG
+mssleep 200
 get main CHK_MAIN_MUSICQ
-chk mq0len 1 qdbidx 8
-msg main CMD_NEXTSONG
-mssleep 100
+chk mq0len 4 qdbidx 8
 get player CHK_PLAYER_STATUS
-chk playstate stopped
+chk prepqueuecount 4 playstate stopped
+msg main CMD_NEXTSONG
+mssleep 200
+get main CHK_MAIN_MUSICQ
+chk mq0len 3 qdbidx 10
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 3 playstate stopped
+msg main CMD_NEXTSONG
+mssleep 200
+get main CHK_MAIN_MUSICQ
+chk mq0len 2 qdbidx 12
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 2 playstate stopped
+msg main CMD_NEXTSONG
+mssleep 200
+get main CHK_MAIN_MUSICQ
+chk mq0len 1 qdbidx 14
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 1 playstate stopped
+msg main CMD_NEXTSONG
+mssleep 200
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
-# next test when the player is playing
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0 playstate stopped
 print playing
-msg main CHK_MAIN_RESET_SENT
-msg main MUSICQ_INSERT 0~999~5
+msg main MUSICQ_INSERT 0~999~2
+msg main MUSICQ_INSERT 0~999~4
 msg main MUSICQ_INSERT 0~999~6
-msg main MUSICQ_INSERT 0~999~7
 msg main MUSICQ_INSERT 0~999~8
+msg main MUSICQ_INSERT 0~999~10
+msg main MUSICQ_INSERT 0~999~12
+msg main MUSICQ_INSERT 0~999~14
+get main CHK_MAIN_MUSICQ
+chk mq0len 7 qdbidx 2
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 5
 msg main CMD_PLAY
-get player CHK_PLAYER_STATUS
-resptimeout 2000
-wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
-get main CHK_MAIN_MUSICQ
-chk mq0len 4 dbidx 5
-get player CHK_PLAYER_STATUS
-chk playstate playing
-msg main CMD_NEXTSONG
-mssleep 500
-get player CHK_PLAYER_STATUS
+resptimeout 1000
 wait playstate playing
-mssleep 1000
-get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
-get main CHK_MAIN_MUSICQ
-chk mq0len 3 dbidx 6
 msg main CMD_NEXTSONG
-mssleep 500
-get player CHK_PLAYER_STATUS
-wait playstate playing
 mssleep 1000
-get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-chk mq0len 2 dbidx 7
-msg main CMD_NEXTSONG
-mssleep 500
+chk mq0len 6 dbidx 4
 get player CHK_PLAYER_STATUS
-wait playstate playing
+# when a song starts playing the prep-queue entry is cleared
+chk prepqueuecount 4 playstate playing
+msg main CMD_NEXTSONG
 mssleep 1000
-get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-chk mq0len 1 dbidx 8
-msg main CMD_NEXTSONG
-mssleep 500
+chk mq0len 5 dbidx 6
 get player CHK_PLAYER_STATUS
-chk playstate stopped
+chk prepqueuecount 4 playstate playing
+msg main CMD_NEXTSONG
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 4 dbidx 8
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 3 playstate playing
+msg main CMD_NEXTSONG
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 3 dbidx 10
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 2 playstate playing
+msg main CMD_NEXTSONG
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 2 dbidx 12
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 1 playstate playing
+msg main CMD_NEXTSONG
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 1 dbidx 14
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0 playstate playing
+msg main CMD_NEXTSONG
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
-# next test when the player is paused
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0 playstate stopped
+# paused is mostly identical to stopped except for the first song
 print paused
-msg main CHK_MAIN_RESET_SENT
-msg main MUSICQ_INSERT 0~999~5
+msg main MUSICQ_INSERT 0~999~2
+msg main MUSICQ_INSERT 0~999~4
 msg main MUSICQ_INSERT 0~999~6
-msg main MUSICQ_INSERT 0~999~7
 msg main MUSICQ_INSERT 0~999~8
+msg main MUSICQ_INSERT 0~999~10
+msg main MUSICQ_INSERT 0~999~12
+msg main MUSICQ_INSERT 0~999~14
+get main CHK_MAIN_MUSICQ
+chk mq0len 7 qdbidx 2
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 5 playstate stopped
 msg main CMD_PLAY
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
+resptimeout 1000
+wait playstate playing
 msg main CMD_PLAYPAUSE
 get player CHK_PLAYER_STATUS
-resptimeout 2000
 wait playstate paused
-get main CHK_MAIN_MUSICQ
-chk mq0len 4 qdbidx 5
-get player CHK_PLAYER_STATUS
-chk playstate paused
 msg main CMD_NEXTSONG
-mssleep 300
-get player CHK_PLAYER_STATUS
-chk playstate stopped
+mssleep 200
 get main CHK_MAIN_MUSICQ
-chk mq0len 3 qdbidx 6
-msg main CMD_NEXTSONG
-mssleep 300
+chk mq0len 6 qdbidx 4
 get player CHK_PLAYER_STATUS
-chk playstate stopped
+# when a song starts playing the prep-queue entry is cleared
+chk prepqueuecount 5 playstate stopped
+msg main CMD_NEXTSONG
+mssleep 200
 get main CHK_MAIN_MUSICQ
-chk mq0len 2 qdbidx 7
-msg main CMD_NEXTSONG
-mssleep 300
+chk mq0len 5 qdbidx 6
 get player CHK_PLAYER_STATUS
-chk playstate stopped
+chk prepqueuecount 5 playstate stopped
+msg main CMD_NEXTSONG
+mssleep 200
 get main CHK_MAIN_MUSICQ
-chk mq0len 1 qdbidx 8
-msg main CMD_NEXTSONG
-mssleep 300
+chk mq0len 4 qdbidx 8
 get player CHK_PLAYER_STATUS
-chk playstate stopped
+chk prepqueuecount 4 playstate stopped
+msg main CMD_NEXTSONG
+mssleep 200
+get main CHK_MAIN_MUSICQ
+chk mq0len 3 qdbidx 10
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 3 playstate stopped
+msg main CMD_NEXTSONG
+mssleep 200
+get main CHK_MAIN_MUSICQ
+chk mq0len 2 qdbidx 12
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 2 playstate stopped
+msg main CMD_NEXTSONG
+mssleep 200
+get main CHK_MAIN_MUSICQ
+chk mq0len 1 qdbidx 14
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 1 playstate stopped
+msg main CMD_NEXTSONG
+mssleep 200
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
+get player CHK_PLAYER_STATUS
+chk prepqueuecount 0 playstate stopped
 end
 
 # basic test of repeat toggle
