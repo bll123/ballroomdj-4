@@ -1198,7 +1198,6 @@ mainQueueClear (maindata_t *mainData, char *args)
 
   logProcBegin (LOG_PROC, "mainQueueClear");
 
-
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   mi = mainMusicqIndexParse (mainData, p);
 

@@ -1,5 +1,6 @@
 section 30 Playback-Controls
 
+# test the fade function
 test 30-10 Fade
 # a minimum volume is required to check fade-in/out
 msg player PLAYER_VOLUME 25
@@ -30,6 +31,7 @@ wait playstate stopped
 msg player PLAYER_VOLUME defaultvol
 end
 
+# test the pause at end function
 test 30-20 Pause-at-End
 msg main MUSICQ_INSERT 0~999~10
 msg main CMD_PLAY
@@ -61,6 +63,7 @@ get player CHK_PLAYER_STATUS
 chk pauseatend 0 playstate stopped
 end
 
+# test the play/pause function
 test 30-30 Play-Pause
 msg main MUSICQ_INSERT 0~999~11
 msg main CMD_PLAY
@@ -107,6 +110,7 @@ get player CHK_PLAYER_STATUS
 wait playstate stopped
 end
 
+# test the position slider
 test 30-40 Position
 # test while playing
 msg main MUSICQ_INSERT 0~999~3
@@ -147,6 +151,8 @@ get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
 end
 
+# basic test of next song.
+# it is tested again in section 50.
 # nextsong is used internally by the 'end' command
 test 30-50 Next-Song
 # first test when the player is stopped
@@ -280,6 +286,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 0
 end
 
+# basic test of repeat toggle
 test 30-60 Repeat
 msg main MUSICQ_INSERT 0~999~12
 msg main MUSICQ_INSERT 0~999~13
@@ -333,6 +340,9 @@ get main CHK_MAIN_MUSICQ
 chk dbidx 13
 end
 
+# basic test of beginning of song function
+# beginning of song while paused should reset the position
+# beginning of song while fade-out is active should not do anything.
 test 30-70 Beginning-of-Song
 msg main MUSICQ_INSERT 0~999~13
 get main CHK_MAIN_MUSICQ
@@ -357,20 +367,30 @@ get player CHK_PLAYER_STATUS
 chk-lt playtimeplayed 200
 get player CHK_PLAYER_STATUS
 chk playstate playing
-## this needs to be implemented in the player
-## song-begin during a fade does nothing
-#mssleep 2000
-#get player CHK_PLAYER_STATUS
-#chk-gt playtimeplayed 2000
-#msg player PLAY_FADE
-#get player CHK_PLAYER_STATUS
-#wait playstate in-fadeout
-#msg player PLAY_SONG_BEGIN
-#get player CHK_PLAYER_STATUS
-#chk playstate in-fadeout
-#get player CHK_PLAYER_STATUS
-#disp playtimeplayed
-#chk-gt playtimeplayed 2000
+# beginning of song while paused should reset the position
+mssleep 2000
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 2000
+msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+chk playstate paused
+msg player PLAY_SONG_BEGIN
+get player CHK_PLAYER_STATUS
+chk playstate paused
+chk-lt playtimeplayed 100
+msg main CMD_PLAY
+# beginning of song while in a fade out state should not work
+mssleep 2000
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 2000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+msg player PLAY_SONG_BEGIN
+get player CHK_PLAYER_STATUS
+chk playstate in-fadeout
+get player CHK_PLAYER_STATUS
+chk-gt playtimeplayed 2000
 end
 
 test 30-80 Volume

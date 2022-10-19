@@ -186,7 +186,9 @@ vlcSeek (vlcData_t *vlcData, ssize_t dpos)
     return -1.0;
   }
 
-  if (vlcData->state == libvlc_Playing && dpos >= 0) {
+  if ((vlcData->state == libvlc_Playing ||
+      vlcData->state == libvlc_Paused) &&
+      dpos >= 0) {
     dur = libvlc_media_player_get_length (vlcData->mp);
     pos = (float) ((double) dpos / (double) dur);
     libvlc_media_player_set_position (vlcData->mp, pos);

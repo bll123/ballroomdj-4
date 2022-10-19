@@ -1,5 +1,7 @@
 section 130 Automatic
 
+# basic automatic playlist test
+# test-auto-a only has waltz, tango, foxtrot
 test 130-10 Basic
 msg main QUEUE_PLAYLIST 0~test-auto-a
 msg main CMD_PLAY

@@ -1,5 +1,7 @@
 section 70 Music-Queue-Dual
 
+# dual musicq queues
+# check to make sure insertion to the current queue works
 test 70-10 Insert-Current
 msg main MUSICQ_INSERT current~999~0
 get main CHK_MAIN_MUSICQ
@@ -21,6 +23,8 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
 end
 
+# dual musicq queues
+# check to make sure insertion to a specific queue works
 test 70-20 Insert-Specific
 get main CHK_MAIN_MUSICQ
 msg main MUSICQ_INSERT 0~999~0
@@ -40,6 +44,8 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
 end
 
+# dual musicq queues
+# check to make sure insertion to a specific queue and the current queue works
 test 70-21 Insert-Specific-Current
 msg main MUSICQ_INSERT 0~999~0
 get main CHK_MAIN_MUSICQ
@@ -58,6 +64,8 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
 end
 
+# dual musicq queues
+# check to make sure playback while dual queues are active works.
 test 70-30 Playback
 msg main MUSICQ_INSERT current~999~2
 msg main CMD_PLAY
@@ -99,6 +107,8 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mqplay 0 mq0len 1 mq1len 3 mq0idx0 4 mq1idx1 3 mq1idx2 5 dbidx 4
 end
 
+# dual musicq queues
+# check to make sure queue selection works for playback
 test 70-40 Select-Playback-Queue
 msg main MUSICQ_INSERT current~999~2
 msg main CMD_PLAY

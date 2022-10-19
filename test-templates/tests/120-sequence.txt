@@ -1,6 +1,8 @@
 
 section 120 Sequence
 
+# basic sequence test
+# test-seq-a has: waltz, tango, foxtrot, quickstep
 test 120-10 Basic
 msg main QUEUE_PLAYLIST 0~test-seq-a
 msg main CMD_PLAY

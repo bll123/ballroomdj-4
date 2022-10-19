@@ -1,6 +1,10 @@
 
 section 40 Music-Queue-Adv
 
+# test the clear queue command
+# clearing a queue acts upon the specified music queue
+# clearing the queue does not clear the currently playing song.
+# the playlist queue is also cleared (needs another test).
 test 40-10 Clear-Queue
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
@@ -19,13 +23,14 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 5
 # queue_clear clears the playlist and the music q
 # it does not clear the currently playing song
-msg main QUEUE_CLEAR
+msg main QUEUE_CLEAR 0
 get main CHK_MAIN_MUSICQ
 chk mq0len 1
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 1
 end
 
+# truncate queue acts on the specified queue and index
 test 40-12 Truncate-Queue
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
@@ -149,6 +154,7 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 0 playstate playing
 end
 
+# check the music queue remove function
 test 40-20 Remove
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
@@ -197,6 +203,7 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 1
 end
 
+# check the music queue toggle pause function
 test 40-30 Toggle-Pause
 msg main MUSICQ_INSERT 0~999~3
 msg main MUSICQ_INSERT 0~999~5

@@ -13,6 +13,8 @@ enum {
   UIPLAYER_CB_PLAYPAUSE,
   UIPLAYER_CB_BEGSONG,
   UIPLAYER_CB_NEXTSONG,
+  UIPLAYER_CB_PAUSEATEND,
+  UIPLAYER_CB_REPEAT,
   UIPLAYER_CB_MAX,
 };
 
@@ -50,9 +52,8 @@ typedef struct {
   bool            repeatLock;
   bool            pauseatendLock;
   UIWidget        repeatButton;
-  UICallback      repeatcb;
+  UIWidget        songbeginButton;
   UIWidget        pauseatendButton;
-  UICallback      pauseatendcb;
   UIWidget        playPixbuf;
   UIWidget        stopPixbuf;
   UIWidget        pausePixbuf;

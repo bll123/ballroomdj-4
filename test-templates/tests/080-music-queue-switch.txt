@@ -1,5 +1,6 @@
 section 80 Music-Queue-Switch-Empty
 
+# check playback using the switch-on-empty flag set
 test 80-10 Playback-Switch-Empty
 msg main CHK_MAIN_RESET_SENT
 msg main QUEUE_SWITCH_EMPTY 1
@@ -59,6 +60,8 @@ get player CHK_PLAYER_STATUS
 wait playstate stopped
 end
 
+# check playback using the switch-on-empty flag set
+# switch queue b to a, then back to b.
 test 80-20 Playback-Switch-Switch
 msg main CHK_MAIN_RESET_SENT
 msg main QUEUE_SWITCH_EMPTY 1

@@ -1,6 +1,7 @@
 
 section 10 Music-Queue-Basic
 
+# insert into the music queue using a large index number
 test 10-10 Insert-End
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
@@ -30,6 +31,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 8 mq0idx0 0 mq0idx1 1 mq0idx2 2 mq0idx3 3 mq0idx4 4 mq0idx5 5
 end
 
+# insert into the music queue at position 1.
 test 10-20 Insert-Begin
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
@@ -53,6 +55,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 1 mq0idx2 5 mq0idx3 4 mq0idx4 3 mq0idx5 2
 end
 
+# move a song up in the music queue
 test 10-30 Move-Up
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
@@ -80,6 +83,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 5 mq0idx1 0 mq0idx2 1 mq0idx3 2 mq0idx4 3 mq0idx5 4
 end
 
+# move a song down in the music queue
 test 10-40 Move-Down
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
@@ -103,6 +107,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 2 mq0idx2 3 mq0idx3 4 mq0idx4 5 mq0idx5 1
 end
 
+# move a song to the top in the music queue
 test 10-50 Move-Top
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
@@ -138,6 +143,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 6 mq0idx0 0 mq0idx1 5 mq0idx2 4 mq0idx3 2 mq0idx4 3 mq0idx5 1
 end
 
+# remove a song from the music queue
 test 10-60 Remove
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1

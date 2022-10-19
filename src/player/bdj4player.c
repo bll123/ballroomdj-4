@@ -52,6 +52,8 @@
 enum {
   STOP_NEXTSONG = 0,
   STOP_NORMAL = 1,
+  STATUS_NO_FORCE = 0,
+  STATUS_FORCE = 1,
 };
 
 typedef struct {
@@ -150,6 +152,7 @@ static void     playerFade (playerdata_t *playerData);
 static void     playerSpeed (playerdata_t *playerData, char *trate);
 static void     playerSeek (playerdata_t *playerData, ssize_t pos);
 static void     playerStop (playerdata_t *playerData);
+static void     playerSongBegin (playerdata_t *playerData);
 static void     playerVolumeSet (playerdata_t *playerData, char *tvol);
 static void     playerVolumeMute (playerdata_t *playerData);
 static void     playerPrepQueueFree (void *);
@@ -161,7 +164,7 @@ static double   calcFadeIndex (playerdata_t *playerData);
 static void     playerStartFadeOut (playerdata_t *playerData);
 static void     playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq);
 static void     playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate);
-static void     playerSendStatus (playerdata_t *playerData);
+static void     playerSendStatus (playerdata_t *playerData, bool forceFlag);
 static int      playerLimitVolume (int vol);
 static ssize_t  playerCalcPlayedTime (playerdata_t *playerData);
 static void     playerSetDefaultVolume (playerdata_t *playerData);
@@ -449,7 +452,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_PLAY_SONG_BEGIN: {
           logMsg (LOG_DBG, LOG_MSGS, "got: song begin", args);
-          playerSeek (playerData, 0);
+          playerSongBegin (playerData);
           break;
         }
         case MSG_PLAY_SEEK: {
@@ -531,7 +534,7 @@ playerProcessing (void *udata)
 
   if (mstimeCheck (&playerData->statusCheck)) {
     /* the playerSendStatus() routine will set the statusCheck var */
-    playerSendStatus (playerData);
+    playerSendStatus (playerData, STATUS_NO_FORCE);
   }
 
   if (playerData->inFade) {
@@ -1344,6 +1347,18 @@ playerStop (playerdata_t *playerData)
 }
 
 static void
+playerSongBegin (playerdata_t *playerData)
+{
+  if (playerData->playerState != PL_STATE_PLAYING &&
+      playerData->playerState != PL_STATE_PAUSED) {
+    return;
+  }
+  playerSeek (playerData, 0);
+  /* there is a change in position */
+  playerSendStatus (playerData, STATUS_FORCE);
+}
+
+static void
 playerVolumeSet (playerdata_t *playerData, char *tvol)
 {
   int       newvol;
@@ -1630,13 +1645,13 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
   connSendMessage (playerData->conn, ROUTE_MANAGEUI,
       MSG_PLAYER_STATE, tbuff);
   /* any time there is a change of player state, send the status */
-  playerSendStatus (playerData);
+  playerSendStatus (playerData, STATUS_NO_FORCE);
   logProcEnd (LOG_PROC, "playerSetPlayerState", "");
 }
 
 
 static void
-playerSendStatus (playerdata_t *playerData)
+playerSendStatus (playerdata_t *playerData, bool forceFlag)
 {
   char        rbuff [3096];
   prepqueue_t *pq = playerData->currentSong;
@@ -1645,7 +1660,8 @@ playerSendStatus (playerdata_t *playerData)
 
   logProcBegin (LOG_PROC, "playerSendStatus");
 
-  if (playerData->playerState == playerData->lastPlayerState &&
+  if (forceFlag == STATUS_NO_FORCE &&
+      playerData->playerState == playerData->lastPlayerState &&
       playerData->playerState != PL_STATE_PLAYING &&
       playerData->playerState != PL_STATE_IN_FADEOUT) {
     logProcEnd (LOG_PROC, "playerSendStatus", "no-state-chg");
@@ -1819,3 +1835,4 @@ playerChkPlayerSong (playerdata_t *playerData, int routefrom)
       MSG_ARGS_RS, sn);
   connSendMessage (playerData->conn, routefrom, MSG_CHK_PLAYER_SONG, tmp);
 }
+

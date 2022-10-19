@@ -1,6 +1,7 @@
 
 section 110 Songlist
 
+# basic songlist test
 test 110-10 Basic
 msg main QUEUE_PLAYLIST 0~test-sl-a
 msg main CMD_PLAY
@@ -47,6 +48,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 68 m-songfn 001-quickstep.mp3
 end
 
+# songlist test with max duration set for 001-foxtrot
 test 110-20 Dance-Max-Dur
 msg main QUEUE_PLAYLIST 0~test-sl-b
 msg main CMD_PLAY

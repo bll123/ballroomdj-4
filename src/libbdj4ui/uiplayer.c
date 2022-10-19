@@ -79,6 +79,7 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiutilsUIWidgetInit (&uiplayer->speedScale);
   uiutilsUIWidgetInit (&uiplayer->seekScale);
   uiutilsUIWidgetInit (&uiplayer->repeatButton);
+  uiutilsUIWidgetInit (&uiplayer->songbeginButton);
   uiutilsUIWidgetInit (&uiplayer->pauseatendButton);
   uiutilsUIWidgetInit (&uiplayer->playPixbuf);
   uiutilsUIWidgetInit (&uiplayer->stopPixbuf);
@@ -320,12 +321,14 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+  uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_REPEAT],
+      uiplayerRepeatCallback, uiplayer, NULL);
   uiCreateToggleButton (&uiplayer->repeatButton, "",
       /* CONTEXT: playerui: button: tooltip: toggle the repeat song on and off */
       tbuff, _("Toggle Repeat"), NULL, 0);
   uiBoxPackStart (&hbox, &uiplayer->repeatButton);
-  uiutilsUICallbackInit (&uiplayer->repeatcb, uiplayerRepeatCallback, uiplayer, NULL);
-  uiToggleButtonSetCallback (&uiplayer->repeatButton, &uiplayer->repeatcb);
+  uiToggleButtonSetCallback (&uiplayer->repeatButton,
+      &uiplayer->callbacks [UIPLAYER_CB_REPEAT]);
 
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_BEGSONG],
       uiplayerSongBeginProcess, uiplayer, NULL);
@@ -354,11 +357,13 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiWidgetMakePersistent (&uiplayer->ledoffImg);
 
   /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
+  uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_PAUSEATEND],
+      uiplayerPauseatendCallback, uiplayer, NULL);
   uiCreateToggleButton (&uiplayer->pauseatendButton, _("Pause at End"),
       NULL, NULL, &uiplayer->ledoffImg, 0);
   uiBoxPackStart (&hbox, &uiplayer->pauseatendButton);
-  uiutilsUICallbackInit (&uiplayer->pauseatendcb, uiplayerPauseatendCallback, uiplayer, NULL);
-  uiToggleButtonSetCallback (&uiplayer->pauseatendButton, &uiplayer->pauseatendcb);
+  uiToggleButtonSetCallback (&uiplayer->pauseatendButton,
+      &uiplayer->callbacks [UIPLAYER_CB_PAUSEATEND]);
 
   /* volume controls / display */
 
@@ -591,18 +596,17 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
   logProcBegin (LOG_PROC, "uiplayerProcessPlayerState");
 
   uiplayer->playerState = playerState;
-  if (playerState == PL_STATE_IN_FADEOUT ||
-      playerState == PL_STATE_PAUSED) {
-    uiWidgetDisable (&uiplayer->seekScale);
-  } else {
-    uiWidgetEnable (&uiplayer->seekScale);
-  }
+
   if (playerState == PL_STATE_IN_FADEOUT) {
     uiWidgetDisable (&uiplayer->volumeScale);
     uiWidgetDisable (&uiplayer->speedScale);
+    uiWidgetDisable (&uiplayer->seekScale);
+    uiWidgetDisable (&uiplayer->songbeginButton);
   } else {
     uiWidgetEnable (&uiplayer->volumeScale);
     uiWidgetEnable (&uiplayer->speedScale);
+    uiWidgetEnable (&uiplayer->seekScale);
+    uiWidgetEnable (&uiplayer->songbeginButton);
   }
 
   switch (playerState) {

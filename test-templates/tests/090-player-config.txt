@@ -1,5 +1,6 @@
 section 90 Player-Config
 
+# check gap configuration
 test 90-10 Gap
 msg main CHK_MAIN_GAP 1000
 msg main MUSICQ_INSERT 0~999~0
@@ -40,6 +41,7 @@ chk currvolume defaultvol
 msg main CHK_MAIN_GAP 2000
 end
 
+# check playback with no gap set
 test 90-11 No-Gap
 msg main CHK_MAIN_GAP 0
 msg main MUSICQ_INSERT 0~999~0
@@ -72,6 +74,7 @@ chk currvolume defaultvol
 msg main CHK_MAIN_GAP 2000
 end
 
+# check playback with no fade-in set
 test 90-20 No-Fade-In
 msg player PLAYER_VOLUME 30
 msg player CHK_PLAYER_FADEIN 0
@@ -95,6 +98,7 @@ msg player CHK_PLAYER_FADEIN 400
 msg player PLAYER_VOLUME defaultvol
 end
 
+# check playback with no fade-out set
 test 90-30 No-Fade-Out
 msg player CHK_PLAYER_FADEOUT 0
 msg main MUSICQ_INSERT 0~999~0
@@ -131,6 +135,7 @@ mssleep 1000
 msg player CHK_PLAYER_FADEOUT 4000
 end
 
+# check playback with no gap and no fade-out set
 test 90-31 No-Gap-No-Fade-Out
 msg main CHK_MAIN_GAP 0
 msg player CHK_PLAYER_FADEOUT 0
@@ -163,6 +168,7 @@ msg main CHK_MAIN_GAP 2000
 msg player CHK_PLAYER_FADEOUT 4000
 end
 
+# check playback with max play time set
 test 90-40 Maximum-Play-Time
 msg main CHK_MAIN_MAXPLAYTIME 10000
 msg main MUSICQ_INSERT 0~999~0

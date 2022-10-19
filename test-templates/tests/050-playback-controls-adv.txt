@@ -1,5 +1,12 @@
 section 50 Playback-Controls-Advanced
 
+# check the next-song command
+# a)  stopped; next-song just goes to the next song in the queue
+#     playstate stays stopped
+# b)  paused; next-song just goes to the next song in the queue
+#     playstate is stopped, the first paused song is just cleared
+# c)  playing; next-song immediately goes to the next song and
+#     starts playing it.  playstate is playing.
 test 50-20 Next-Song
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
@@ -184,6 +191,7 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 0
 end
 
+# repeat and pause-at-end must work correctly together
 test 50-30 Repeat-Pause-At-End
 msg main MUSICQ_INSERT 0~999~15
 msg main MUSICQ_INSERT 0~999~17
