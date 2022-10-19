@@ -10,6 +10,8 @@ BallroomDJ 4 Change Log
 - playlist management
   - Fix display of default gap.
   - Fix some minor display issues.
+- song selection
+  - Fix display of empty numeric columns.
 
 4.0.0 alpha 2022-10-17
 

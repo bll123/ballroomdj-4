@@ -96,9 +96,15 @@ uiTreeViewSetDisplayColumn (GtkTreeModel *model, GtkTreeIter *iter,
     int col, long num, const char *str)
 {
   if (str != NULL) {
-    gtk_list_store_set (GTK_LIST_STORE (model), iter, col++, str, -1);
+    gtk_list_store_set (GTK_LIST_STORE (model), iter, col, str, -1);
   } else {
-    gtk_list_store_set (GTK_LIST_STORE (model), iter, col++, (glong) num, -1);
+    char    tstr [40];
+
+    *tstr = '\0';
+    if (num >= 0) {
+      snprintf (tstr, sizeof (tstr), "%ld", num);
+    }
+    gtk_list_store_set (GTK_LIST_STORE (model), iter, col, tstr, -1);
   }
 }
 
@@ -109,7 +115,9 @@ uiTreeViewAddDisplayType (GType *types, int valtype, int col)
   int     type;
 
   if (valtype == UITREE_TYPE_NUM) {
-    type = G_TYPE_LONG;
+    /* despite being a numeric type, the display needs a string */
+    /* so that empty values can be displayed */
+    type = G_TYPE_STRING;
   }
   if (valtype == UITREE_TYPE_STRING) {
     type = G_TYPE_STRING;
