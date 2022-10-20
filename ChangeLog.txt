@@ -12,6 +12,8 @@ BallroomDJ 4 Change Log
   - Fix some minor display issues.
 - song selection
   - Fix display of empty numeric columns.
+- conversion
+  - Convert ancient version of bdj3 dance levels correctly.
 
 4.0.0 alpha 2022-10-17
 

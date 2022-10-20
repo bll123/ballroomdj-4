@@ -27,13 +27,27 @@ puts $fh version
 puts $fh "..1"
 puts $fh count
 puts $fh "..[expr {[llength $Levels]/2}]"
-foreach {key data} $Levels {
-  puts $fh "KEY\n..$key"
-  foreach {k v} $data {
-    if { $k eq "label" } { set k level }
-    set k [string toupper $k]
-    puts $fh $k
-    puts $fh "..$v"
+if { [dict exists $Levels 0 label] } {
+  foreach {key data} $Levels {
+    puts $fh "KEY\n..$key"
+    foreach {k v} $data {
+      if { $k eq "label" } { set k level }
+      set k [string toupper $k]
+      puts $fh "$k\n..$v"
+    }
+  }
+} else {
+  # an old format of the levels file.
+  set key 0
+  set w 50
+  foreach {lvl dflt} $Levels {
+    puts $fh "KEY\n..$key"
+    puts $fh "LEVEL\n..$lvl"
+    puts $fh "DEFAULT\n..$dflt"
+    puts $fh "WEIGHT\n..$w"
+    incr key
+    if { $key == 1 } { set w 40 }
+    if { $key == 2 } { set w 10 }
   }
 }
 close $fh
