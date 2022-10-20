@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-10-17\n"
-"PO-Revision-Date: 2022-10-17\n"
+"POT-Creation-Date: 2022-10-20\n"
+"PO-Revision-Date: 2022-10-20\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -314,10 +314,6 @@ msgstr ""
 msgid "BPM Counter"
 msgstr ""
 
-#. CONTEXT: configuration file: dance
-msgid "Bachata"
-msgstr ""
-
 #. CONTEXT: configuration file: genre
 msgid "Ballroom Dance"
 msgstr ""
@@ -501,6 +497,7 @@ msgstr ""
 
 #. CONTEXT: configuration: level: title of the default selection column
 #. CONTEXT: configuration: audio: The default audio sink (audio output)
+#. CONTEXT: user interface: default setting display
 msgid "Default"
 msgstr ""
 

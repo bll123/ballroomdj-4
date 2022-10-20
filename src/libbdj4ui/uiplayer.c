@@ -356,9 +356,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageFromFile (&uiplayer->ledoffImg, tbuff);
   uiWidgetMakePersistent (&uiplayer->ledoffImg);
 
-  /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_PAUSEATEND],
       uiplayerPauseatendCallback, uiplayer, NULL);
+  /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
   uiCreateToggleButton (&uiplayer->pauseatendButton, _("Pause at End"),
       NULL, NULL, &uiplayer->ledoffImg, 0);
   uiBoxPackStart (&hbox, &uiplayer->pauseatendButton);

@@ -84,13 +84,14 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "checknew",     no_argument,      NULL,   'C' },
     { "progress",     no_argument,      NULL,   'P' },
     { "reorganize",   no_argument,      NULL,   'O' },
-    { "updfromtags",  no_argument,      NULL,   'U' },
+    { "updfromtags",  no_argument,      NULL,   'u' },
     { "writetags",    no_argument,      NULL,   'W' },
     { "dbtopdir",     required_argument,NULL,   'D' },
     { "cli",          no_argument,      NULL,   'c' },
     /* test suite options */
     { "runsection",   required_argument,NULL,   'S' },
     { "runtest",      required_argument,NULL,   'T' },
+    { "starttest",    required_argument,NULL,   'U' },
     { "verbose",      no_argument,      NULL,   'V' },
     { NULL,           0,                NULL,   0 }
   };
@@ -121,7 +122,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         flags |= BDJ4_DB_REORG;
         break;
       }
-      case 'U': {
+      case 'u': {
         flags |= BDJ4_DB_UPD_FROM_TAGS;
         break;
       }
@@ -194,6 +195,13 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
           bdjvarsSetStr (BDJV_TS_TEST, optarg);
         }
         flags |= BDJ4_TS_RUNTEST;
+        break;
+      }
+      case 'U': {
+        if (optarg) {
+          bdjvarsSetStr (BDJV_TS_TEST, optarg);
+        }
+        flags |= BDJ4_TS_STARTTEST;
         break;
       }
       case 'V': {

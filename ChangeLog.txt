@@ -1,19 +1,19 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha 2022-10-??
+4.0.0 alpha 2022-10-20
 
 - player
   - Fix play-when-queued so it only plays when the queue is empty.
   - Return to beginning of song: allowed when paused, not during fade-out.
   - Position slider changed to be active while paused.
-  - Fix bug in next song clearing a prepped song when it should not.
+  - Fix bug in 'next song' clearing a prepped song when it should not.
 - playlist management
   - Fix display of default gap.
   - Fix some minor display issues.
-- song selection
+- song selection, music queue
   - Fix display of empty numeric columns.
 - conversion
-  - Convert ancient version of bdj3 dance levels correctly.
+  - Convert ancient version of bdj3 dance levels data file correctly.
 
 4.0.0 alpha 2022-10-17
 

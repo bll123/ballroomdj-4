@@ -100,7 +100,7 @@ build:
 	@-rm -f ../bin/liblib*.a
 
 # testing
-.PHONY: check checkfast checksuite
+.PHONY: check checkfast checksuite testsuite
 check:
 	(cd ..;./bin/bdj4 --check_all)
 
@@ -112,6 +112,9 @@ checktag:
 
 checksuite:
 	(cd ..;CK_RUN_SUITE=$(suite) ./bin/bdj4 --check_all)
+
+testsuite:
+	(cd ..;./bin/bdj4 --testsuite)
 
 # recommended to change PLAYER and VOLUME in data/bdjconfig.txt to
 # be the null libraries.
@@ -176,7 +179,7 @@ eclean:
 tclean:
 	@find .. -name '*~' -print0 | xargs -0 rm -f
 	@find .. -name '*.orig' -print0 | xargs -0 rm -f
-	@-$(RM) -f w ww www ../w ../ww ../www ../*/w ../*/ww ../*/www 
+	@-$(RM) -f w ww www ../w ../ww ../www ../*/w ../*/ww ../*/www
 	@-$(RM) -f po/w po/ww ../asan.* ./asan.*
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f ../vgcore.* ../core gmon.out ../gmon.out

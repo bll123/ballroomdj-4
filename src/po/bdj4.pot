@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-17 11:12-0700\n"
+"POT-Creation-Date: 2022-10-20 11:39-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -318,10 +318,6 @@ msgstr ""
 msgid "BPM Counter"
 msgstr ""
 
-#. CONTEXT: configuration file: dance
-msgid "Bachata"
-msgstr ""
-
 #. CONTEXT: configuration file: genre
 msgid "Ballroom Dance"
 msgstr ""
@@ -505,6 +501,7 @@ msgstr ""
 
 #. CONTEXT: configuration: level: title of the default selection column
 #. CONTEXT: configuration: audio: The default audio sink (audio output)
+#. CONTEXT: user interface: default setting display
 msgid "Default"
 msgstr ""
 

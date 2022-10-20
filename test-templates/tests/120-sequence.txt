@@ -85,11 +85,11 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz bpm 84
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 msg main CMD_NEXTSONG
 mssleep 1000
 get player CHK_PLAYER_STATUS
@@ -99,11 +99,11 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz bpm 84
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 msg main CMD_NEXTSONG
 mssleep 1000
 get player CHK_PLAYER_STATUS
@@ -113,11 +113,11 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz bpm 84
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 msg main CMD_NEXTSONG
 mssleep 1000
 get player CHK_PLAYER_STATUS
@@ -127,11 +127,11 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz bpm 84
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 msg main CMD_NEXTSONG
 mssleep 1000
 get player CHK_PLAYER_STATUS
@@ -151,69 +151,80 @@ wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
+get main CHK_MAIN_MUSICQ
+chk dance Waltz
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk dance Tango
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Foxtrot
 get player CHK_PLAYER_SONG
 chk p-duration 10000
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk dance Quickstep
 msg main CMD_NEXTSONG
 mssleep 1000
-get player CHK_PLAYER_STATUS
-wait playstate playing
-get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
+chk dance Waltz
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk dance Tango
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Foxtrot
 get player CHK_PLAYER_SONG
 chk p-duration 10000
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk dance Quickstep
 msg main CMD_NEXTSONG
 mssleep 1000
-get player CHK_PLAYER_STATUS
-wait playstate playing
-get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
+chk dance Waltz
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk dance Tango
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Foxtrot
 get player CHK_PLAYER_SONG
 chk p-duration 10000
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk dance Quickstep
 msg main CMD_NEXTSONG
 mssleep 1000
-get player CHK_PLAYER_STATUS
-wait playstate playing
-get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
+chk dance Waltz
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk dance Tango
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Foxtrot
 get player CHK_PLAYER_SONG
 chk p-duration 10000
 msg main CMD_NEXTSONG
-mssleep 200
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk dance Quickstep
 msg main CMD_NEXTSONG
 mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk dance Waltz
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get player CHK_PLAYER_STATUS

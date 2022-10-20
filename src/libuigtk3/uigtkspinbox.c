@@ -452,7 +452,7 @@ uiSpinboxDoubleInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
 
   newtext = gtk_entry_get_text (GTK_ENTRY (sb));
   if (newtext != NULL) {
-    /* CONTEXT: default setting display */
+    /* CONTEXT: user interface: default setting display */
     if (strcmp (newtext, _("Default")) == 0) {
       *newval = -0.1;
     } else if (*newtext) {
@@ -620,7 +620,7 @@ uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata)
   value = gtk_adjustment_get_value (adjustment);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinbox->uispinbox.widget), value);
   if (value < 0) {
-    /* CONTEXT: default setting display */
+    /* CONTEXT: user interface: default setting display */
     gtk_entry_set_text (GTK_ENTRY (spinbox->uispinbox.widget), _("Default"));
   }
   spinbox->processing = false;

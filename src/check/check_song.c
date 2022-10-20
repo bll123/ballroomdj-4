@@ -255,7 +255,7 @@ START_TEST(song_parse_get)
     ck_assert_str_eq (data, "tag2");
     /* converted - these assume the standard data files */
     ck_assert_int_eq (songGetNum (song, TAG_GENRE), 2);
-    ck_assert_int_eq (songGetNum (song, TAG_DANCE), 12);
+    ck_assert_int_eq (songGetNum (song, TAG_DANCE), 11);
     ck_assert_int_eq (songGetNum (song, TAG_DANCERATING), 2);
     ck_assert_int_eq (songGetNum (song, TAG_DANCELEVEL), 1);
     ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);
@@ -522,7 +522,7 @@ START_TEST(song_tag_list)
     ck_assert_str_eq (data, "tag2");
     /* converted - these assume the standard data files */
     ck_assert_int_eq (songGetNum (song, TAG_GENRE), 2);
-    ck_assert_int_eq (songGetNum (song, TAG_DANCE), 12);
+    ck_assert_int_eq (songGetNum (song, TAG_DANCE), 11);
     ck_assert_int_eq (songGetNum (song, TAG_DANCERATING), 2);
     ck_assert_int_eq (songGetNum (song, TAG_DANCELEVEL), 1);
     ck_assert_int_eq (songGetNum (song, TAG_STATUS), 0);

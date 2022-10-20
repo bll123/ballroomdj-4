@@ -23,7 +23,8 @@ enum {
   BDJ4_DB_CLI                   = 0x00004000,
   BDJ4_TS_RUNSECTION            = 0x00008000,
   BDJ4_TS_RUNTEST               = 0x00010000,
-  BDJ4_TS_VERBOSE               = 0x00020000,
+  BDJ4_TS_STARTTEST             = 0x00020000,
+  BDJ4_TS_VERBOSE               = 0x00040000,
 };
 
 int bdj4startup (int argc, char *argv[], musicdb_t **musicdb,

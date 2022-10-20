@@ -112,6 +112,7 @@ main (int argc, char * argv[])
     /* test suite options */
     { "runsection",     required_argument,  NULL,   0 },
     { "runtest",        required_argument,  NULL,   0 },
+    { "starttest",      required_argument,  NULL,   0 },
     { "verbose",        no_argument,        NULL,   0 },
     { NULL,             0,                  NULL,   0 }
   };

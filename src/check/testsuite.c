@@ -100,6 +100,7 @@ typedef struct {
   bool        haveresponse : 1;
   bool        runsection : 1;         // --runsection was specified
   bool        runtest : 1;            // --runtest was specified
+  bool        starttest : 1;          // --starttest was specified
   bool        processsection : 1;     // process the current section
   bool        processtest : 1;        // process the current test
   bool        wait : 1;
@@ -191,6 +192,7 @@ main (int argc, char *argv [])
   testsuite.fh = NULL;
   testsuite.runsection = false;
   testsuite.runtest = false;
+  testsuite.starttest = false;
   testsuite.processsection = false;
   testsuite.processtest = false;
   testsuite.verbose = false;
@@ -208,6 +210,11 @@ main (int argc, char *argv [])
   }
 
   if ((flags & BDJ4_TS_RUNTEST) == BDJ4_TS_RUNTEST) {
+    testsuite.runtest = true;
+  }
+
+  if ((flags & BDJ4_TS_STARTTEST) == BDJ4_TS_STARTTEST) {
+    testsuite.starttest = true;
     testsuite.runtest = true;
   }
 
@@ -723,9 +730,14 @@ printResults (testsuite_t *testsuite, results_t *results)
       fprintf (stdout, "   ");
     }
   }
-  fprintf (stdout, "checks: %d failed: %d %s",
-      results->chkcount, results->chkfail, state);
-  fprintf (stdout, "  (%zd)", mstimeend (&results->start));
+  if (results->chkfail > 0 || testsuite->verbose) {
+    fprintf (stdout, "checks: %d failed: %d",
+        results->chkcount, results->chkfail);
+  }
+  fprintf (stdout, " %s", state);
+  if (testsuite->verbose) {
+    fprintf (stdout, "  (%zd)", mstimeend (&results->start));
+  }
   fprintf (stdout, "\n");
   fflush (stdout);
 }
@@ -817,6 +829,10 @@ tsScriptTest (testsuite_t *testsuite, const char *tcmd)
   if (testsuite->runtest) {
     if (strcmp (testsuite->testnum, bdjvarsGetStr (BDJV_TS_TEST)) == 0) {
       testsuite->processtest = true;
+      if (testsuite->starttest) {
+        testsuite->runtest = false;
+        testsuite->processsection = true;
+      }
     }
   }
 
@@ -1359,7 +1375,11 @@ resetChkResponse (testsuite_t *testsuite)
 static void
 resetPlayer (testsuite_t *testsuite)
 {
+  char  tmp [40];
+
   /* clears both queue and playlist queue, resets manage idx */
+  snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
+  connSendMessage (testsuite->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tmp);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "1");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");

@@ -2,10 +2,12 @@ section 90 Player-Config
 
 # check gap configuration
 test 90-10 Gap
+get player CHK_PLAYER_STATUS
 msg main CHK_MAIN_GAP 1000
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
+get player CHK_PLAYER_STATUS
 msg main CMD_PLAY
 resptimeout 2000
 # check normal song-end processing
@@ -60,7 +62,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 5000
@@ -70,7 +72,7 @@ chk-or playstate in-fadeout stopped loading playing
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol
 msg main CHK_MAIN_GAP 2000
 end
 
@@ -112,7 +114,7 @@ wait playstate playing
 mssleep 1000
 # first check the standard end-song processing
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol
 resptimeout 35000
 wait playstate in-gap
 chk actualvolume 0
@@ -123,7 +125,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 chk-or playstate in-gap stopped loading playing
@@ -148,7 +150,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol
 resptimeout 35000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
@@ -157,7 +159,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 chk-or playstate stopped loading playing
@@ -182,7 +184,7 @@ get player CHK_PLAYER_SONG
 # duration of 10 seconds + 2 second gap - 1 second played
 chk p-duration 10000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol
 msg player PLAY_FADE
 resptimeout 5000
 get player CHK_PLAYER_STATUS
@@ -191,7 +193,7 @@ resptimeout 7000
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
-chk currvolume defaultvol
+chk currvolume defaultvol actualvolume defaultvol
 get player CHK_PLAYER_SONG
 chk p-duration 10000
 # duration of 10 seconds + 2 second gap - 1 second played

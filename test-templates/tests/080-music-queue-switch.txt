@@ -123,4 +123,5 @@ msg player PLAY_FADE
 resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate stopped
+chk currvolume defaultvol actualvolume 0
 end

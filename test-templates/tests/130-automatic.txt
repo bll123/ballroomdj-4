@@ -190,7 +190,6 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
-disp bpm dance
 chk-or bpm 84 -65534
 msg player PLAY_FADE
 resptimeout 7000
@@ -202,7 +201,6 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
-disp bpm dance
 chk-or bpm 84 -65534
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
@@ -213,7 +211,6 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
-disp bpm dance
 chk-or bpm 84 -65534
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
@@ -224,7 +221,6 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
-disp bpm dance
 chk-or bpm 84 -65534
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
@@ -235,7 +231,6 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
-disp bpm dance
 chk-or bpm 84 -65534
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
@@ -246,7 +241,6 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
-disp bpm dance
 chk-or bpm 84 -65534
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
@@ -257,7 +251,6 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
-disp bpm dance
 chk-or bpm 84 -65534
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
@@ -268,7 +261,6 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
-disp bpm dance
 chk-or bpm 84 -65534
 end
 
