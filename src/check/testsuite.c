@@ -1072,7 +1072,8 @@ tsScriptChkResponse (testsuite_t *testsuite)
         fprintf (stdout, "\n");
         dispflag = true;
       }
-      fprintf (stdout, "          %3d chk-or-fail\n", testsuite->lineno);
+      fprintf (stdout, "          %3d chk-or-fail: %s: resp: %s\n",
+          testsuite->lineno, key, valchk);
       fflush (stdout);
     }
   } else {

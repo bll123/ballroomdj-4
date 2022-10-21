@@ -1,6 +1,6 @@
 section 140 Playlist-Controls
 
-test 140-10 Maximum-Play-Time
+test 140-10 Maximum-Play-Time-Basic
 msg main QUEUE_PLAYLIST 0~test-sl-c
 msg main CMD_PLAY
 resptimeout 2000
@@ -31,15 +31,63 @@ get player CHK_PLAYER_SONG
 chk p-duration 10000
 end
 
-test 140-20 Stop-At
-print TBD
+test 140-20 Gap
+msg main QUEUE_PLAYLIST 0~test-sl-d
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+chk-or playstate in-fadeout stopped loading playing
+wait playstate in-fadeout
+resptimeout 4500
+get player CHK_PLAYER_STATUS
+chk-or playstate in-fadeout stopped loading playing
+wait playstate playing
+chk-or playstate in-fadeout stopped loading playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+resptimeout 4500
+get player CHK_PLAYER_STATUS
+chk-or playstate in-fadeout stopped loading playing
+wait playstate playing
+chk-or playstate in-fadeout stopped loading playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
 end
 
 test 140-30 Stop-After
-print TBD
+msg main QUEUE_PLAYLIST 0~test-sl-e
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+wait playstate in-fadeout
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+chk-or playstate in-fadeout in-gap stopped
+wait playstate stopped
+chk-or playstate in-fadeout in-gap stopped
 end
 
-test 140-40 Gap
+test 140-40 Stop-At
 print TBD
 end
 

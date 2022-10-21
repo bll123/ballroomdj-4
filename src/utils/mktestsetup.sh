@@ -96,6 +96,21 @@ to=test-sl-c
 cp -f test-templates/test-sl-c.pl data/${to}.pl
 cp -f test-templates/test-sl-a.pldances data/${to}.pldances
 cp -f test-templates/test-sl-a.songlist data/${to}.songlist
+# songlist d
+to=test-sl-d
+cp -f test-templates/test-sl-d.pl data/${to}.pl
+cp -f test-templates/test-sl-a.pldances data/${to}.pldances
+cp -f test-templates/test-sl-a.songlist data/${to}.songlist
+# songlist e
+to=test-sl-e
+cp -f test-templates/test-sl-e.pl data/${to}.pl
+cp -f test-templates/test-sl-a.pldances data/${to}.pldances
+cp -f test-templates/test-sl-a.songlist data/${to}.songlist
+# songlist f
+to=test-sl-f
+cp -f test-templates/test-sl-f.pl data/${to}.pl
+cp -f test-templates/test-sl-a.pldances data/${to}.pldances
+cp -f test-templates/test-sl-a.songlist data/${to}.songlist
 
 # sequence a
 to=test-seq-a
