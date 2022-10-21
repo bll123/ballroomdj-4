@@ -258,11 +258,13 @@ remctrlEventHandler (struct mg_connection *c, int ev,
       } else if (strcmp (querystr, "playlistclearplay") == 0) {
         /* clear-play is always not in edit mode */
         /* the edit-flag will parse as a null; main handles this */
+        /* this may change at a future date */
         connSendMessage (remctrlData->conn,
             ROUTE_MAIN, MSG_PLAYLIST_CLEARPLAY, tbuff);
       } else if (strcmp (querystr, "playlistqueue") == 0) {
         /* queue-playlist is always not in edit mode */
         /* the edit-flag will parse as a null; main handles this */
+        /* this may change at a future date */
         connSendMessage (remctrlData->conn,
             ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
       } else if (strcmp (querystr, "queue") == 0) {

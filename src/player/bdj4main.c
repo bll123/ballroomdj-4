@@ -2457,6 +2457,10 @@ mainParseQueuePlaylist (maindata_t *mainData, char *args, char **b, int *editmod
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   *editmode = EDIT_FALSE;
+  /* one of the few messages where a null is allowed */
+  /* the remote-control module's playlist-clear-play and queue-playlist */
+  /* messages do not include the edit mode flag */
+  /* this may change at a future date */
   if (p != NULL) {
     *editmode = atoi (p);
   }
