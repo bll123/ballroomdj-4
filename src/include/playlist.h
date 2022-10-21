@@ -80,5 +80,7 @@ bool      playlistFilterSong (dbidx_t dbidx, song_t *song, void *tplaylist);
 void      playlistAddCount (playlist_t *, song_t *song);
 void      playlistAddPlayed (playlist_t *, song_t *song);
 void      playlistSave (playlist_t *, const char *name);
+void      playlistSetEditMode (playlist_t *pl, int editmode);
+int       playlistGetEditMode (playlist_t *pl);
 
 #endif /* INC_PLAYLIST_H */

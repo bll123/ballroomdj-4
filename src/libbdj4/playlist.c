@@ -48,6 +48,7 @@ typedef struct playlist {
   ilist_t       *pldances;
   nlist_t       *countList;
   ilistidx_t    songlistiter;
+  int           editmode;
   int           count;
   nlistidx_t    seqiteridx;
 } playlist_t;
@@ -100,6 +101,7 @@ playlistAlloc (musicdb_t *musicdb)
   pl->pldances = NULL;
   pl->countList = NULL;
   pl->count = 0;
+  pl->editmode = EDIT_FALSE;
   pl->musicdb = musicdb;
   pl->dances = bdjvarsdfGet (BDJVDF_DANCES);
 
@@ -431,8 +433,9 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
   logProcBegin (LOG_PROC, "playlistGetNextSong");
   type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
   stopAfter = nlistGetNum (pl->plinfo, PLAYLIST_STOP_AFTER);
-  if (stopAfter > 0 && pl->count >= stopAfter) {
-    logMsg (LOG_DBG, LOG_BASIC, "pl %s stop after %ld", pl->name, stopAfter);
+  if (pl->editmode == EDIT_FALSE && stopAfter > 0 && pl->count >= stopAfter) {
+fprintf (stderr, "pl %s stop after %d\n", pl->name, stopAfter);
+    logMsg (LOG_DBG, LOG_BASIC, "pl %s stop after %d", pl->name, stopAfter);
     return NULL;
   }
 
@@ -514,11 +517,13 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
         break;
       }
       song = NULL;
-      logMsg (LOG_DBG, LOG_IMPORTANT, "songlist: missing: %s", sfname);
+fprintf (stderr, "songlist: missing: %s\n", sfname);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: songlist: missing: %s", sfname);
       slkey = songlistIterate (pl->songlist, &pl->songlistiter);
       sfname = songlistGetStr (pl->songlist, slkey, SONGLIST_FILE);
     }
     ++pl->count;
+fprintf (stderr, "songlist: select: %s\n", sfname);
     logMsg (LOG_DBG, LOG_BASIC, "songlist: select: %s", sfname);
   }
   logProcEnd (LOG_PROC, "playlistGetNextSong", "");
@@ -642,6 +647,26 @@ playlistSave (playlist_t *pl, const char *name)
       BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
   datafileSaveIndirect ("playlist-dances", tfn, playlistdancedfkeys,
       PLDANCE_KEY_MAX, pl->pldances);
+}
+
+void
+playlistSetEditMode (playlist_t *pl, int editmode)
+{
+  if (pl == NULL) {
+    return;
+  }
+
+  pl->editmode = editmode;
+}
+
+int
+playlistGetEditMode (playlist_t *pl)
+{
+  if (pl == NULL) {
+    return EDIT_FALSE;
+  }
+
+  return pl->editmode;
 }
 
 /* internal routines */

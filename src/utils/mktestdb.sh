@@ -10,21 +10,29 @@ case ${cwd} in
     ;;
 esac
 
+TESTMUSIC=test-templates/test-music.txt
+TESTDB=test-templates/musicdb.dat
+FLAG=data/mktestdb.txt
+MUSICFILE=test-music/001-argentinetango.mp3
+
 if [[ ! -d data ]]; then
   echo "No data dir"
   exit 1
 fi
 
 if [[ $1 == --force ]]; then
-  rm -f data/mktestdb.txt
+  echo "force db"
+  rm -f $FLAG
 fi
 
-if [[ test-templates/test-music.txt -nt test-templates/musicdb.dat ||
-    test-templates/test-music.txt -nt data/mktestdb.txt ||
-    ! -f test-music/001-argentinetango.mp3 ]]; then
+if [[ ! -f $FLAG ||
+    $TESTMUSIC -nt $TESTDB ||
+    $TESTMUSIC -nt $FLAG ||
+    ! -f $MUSICFILE ]]; then
   rm -f test-music/0[0-9][0-9]-*
   ./bin/bdj4 --tmusicsetup
-  touch data/mktestdb.txt
+  touch $FLAG
+  ls -ld $FLAG
 fi
 
 exit 0

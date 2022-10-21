@@ -1920,8 +1920,8 @@ manageSonglistLoadFile (void *udata, const char *fn)
   uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
   uimusicqTruncateQueueCallback (manage->slmusicq);
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%s",
-      manage->musicqManageIdx, MSG_ARGS_RS, fn);
+  snprintf (tbuff, sizeof (tbuff), "%d%c%s%c%d",
+      manage->musicqManageIdx, MSG_ARGS_RS, fn, MSG_ARGS_RS, EDIT_TRUE);
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
 
   snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);

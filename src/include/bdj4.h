@@ -8,6 +8,12 @@ enum {
 #endif
 
 enum {
+  /* used for queueing playlists */
+  EDIT_TRUE,
+  EDIT_FALSE,
+};
+
+enum {
   STOP_WAIT_COUNT_MAX = 60,
   EXIT_WAIT_COUNT = 60,
   INSERT_AT_SELECTION = -2,

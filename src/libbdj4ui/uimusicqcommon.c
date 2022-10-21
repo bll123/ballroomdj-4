@@ -45,8 +45,10 @@ uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, long idx)
   ci = uimusicq->musicqManageIdx;
 
   if (idx >= 0) {
-    snprintf (tbuff, sizeof (tbuff), "%d%c%s", ci, MSG_ARGS_RS,
-        uiDropDownGetString (uimusicq->ui [ci].playlistsel));
+    snprintf (tbuff, sizeof (tbuff), "%d%c%s%c%d",
+        ci, MSG_ARGS_RS,
+        uiDropDownGetString (uimusicq->ui [ci].playlistsel), MSG_ARGS_RS,
+        EDIT_FALSE);
     connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
   }
   logProcEnd (LOG_PROC, "uimusicqQueuePlaylist", "");

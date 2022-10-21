@@ -63,8 +63,8 @@ dbidx_t     musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qke
 void        musicqPop (musicq_t *musicq, musicqidx_t musicqidx);
 void        musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx);
 void        musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx);
-ssize_t     musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx);
-ssize_t     musicqGetDuration (musicq_t *musicq, musicqidx_t musicqidx);
+int         musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx);
+time_t      musicqGetDuration (musicq_t *musicq, musicqidx_t musicqidx);
 char *      musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx);
 char *      musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t tagidx);
 musicqidx_t musicqNextQueue (musicqidx_t musicqidx);

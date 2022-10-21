@@ -62,7 +62,7 @@ typedef enum {
                             //    processing consistent.
   MSG_QUEUE_DANCE_5,        // args: music-q-idx, dance idx
   MSG_QUEUE_DANCE,          // args: music-q-idx, dance idx
-  MSG_QUEUE_PLAYLIST,       // args: music-q-idx, playlist name
+  MSG_QUEUE_PLAYLIST,       // args: music-q-idx, playlist name, edit-flag
   MSG_QUEUE_PLAY_WHEN_QUEUED, // args: true/false
   MSG_QUEUE_SWITCH_EMPTY,   // args: true/false
   MSG_QUEUE_MIX,            // args: music-q-idx
@@ -71,7 +71,6 @@ typedef enum {
   MSG_PL_CLEAR_QUEUE,       // args: music-q-idx
                             // tells main to clear the playlist queue.
                             //   used by the song list editor.
-  MSG_DB_ENTRY_TEMP_ADD,    // args: fn, dbidx, song-entry-text
 
   /* to player */
   MSG_PLAYER_VOL_MUTE,      // to player. toggle.
@@ -119,6 +118,7 @@ typedef enum {
   MSG_MAIN_REQ_STATUS,      // request current status from main
   MSG_MAIN_CURR_MANAGE,     // status response: current manage idx
   MSG_MAIN_CURR_PLAY,       // status response: current play idx
+  MSG_DB_ENTRY_TEMP_ADD,    // args: fn, dbidx, song-entry-text
 
   /* to/from starterui */
   MSG_START_MAIN,           // arg: true for --nomarquee
@@ -160,20 +160,21 @@ typedef enum {
   MSG_CHK_PLAYER_STATUS,
   MSG_CHK_PLAYER_SONG,
   MSG_CHK_MAIN_RESET_SENT,
-  MSG_CHK_MAIN_GAP,         // args: gap
+  MSG_CHK_MAIN_SET_GAP,     // args: gap
   MSG_CHK_PLAYER_FADEIN,    // args: fade-in
   MSG_CHK_PLAYER_FADEOUT,   // args: fade-out
-  MSG_CHK_MAIN_MAXPLAYTIME, // args: max-play-time
+  MSG_CHK_MAIN_SET_MAXPLAYTIME, // args: max-play-time
+  MSG_CHK_MAIN_SET_STOPTIME,    // args: playlist-name, stop-time
 
   /* when a new message is added, update: */
   /* bdjmsg.c: debugging information for the msg */
   MSG_MAX,
 } bdjmsgmsg_t;
 
-typedef enum {
+enum {
   PREP_SONG,
   PREP_ANNOUNCE,
-} bdjmsgprep_t;
+};
 
 /* make the message size large enough to handle a */
 /* 10 hour create-from-playlist message */
