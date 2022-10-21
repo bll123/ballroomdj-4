@@ -1,4 +1,5 @@
-# BDJ4 playlist settings
+# playlist
+# 2022-10-21
 ALLOWEDKEYWORDS
 ..
 DANCERATING

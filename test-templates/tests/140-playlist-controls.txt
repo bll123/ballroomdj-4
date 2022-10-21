@@ -1,7 +1,34 @@
 section 140 Playlist-Controls
 
 test 140-10 Maximum-Play-Time
-print TBD
+msg main QUEUE_PLAYLIST 0~test-sl-c
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+get player CHK_PLAYER_SONG
+chk p-duration 10000
+msg player PLAY_FADE
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+get player CHK_PLAYER_SONG
+chk p-duration 10000
+msg player PLAY_FADE
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+get player CHK_PLAYER_SONG
+chk p-duration 10000
 end
 
 test 140-20 Stop-At

@@ -1,4 +1,9 @@
-# BDJ4 playlist dances
+# playlist dances
+# 2022-10-21
+#
+# foxtrot/tango/waltz only
+# maximum-play-time set to 10 seconds for foxtrot/tango/waltz
+#
 version
 ..1
 count

@@ -80,35 +80,51 @@ cp -f templates/standardrounds.* data
 cp -f test-templates/musicdb.dat data
 cp -f test-templates/status.txt data
 cp -f test-templates/ds-songfilter.txt data/profile00
+
 # songlist a
-cp -f test-templates/test-sl-a.pl data
-cp -f test-templates/test-sl-a.pldances data
-cp -f test-templates/test-sl-a.songlist data
+to=test-sl-a
+cp -f test-templates/test-sl-a.pl data/${to}.pl
+cp -f test-templates/test-sl-a.pldances data/${to}.pldances
+cp -f test-templates/test-sl-a.songlist data/${to}.songlist
 # songlist b
-cp -f test-templates/test-sl-a.pl data/test-sl-b.pl
-cp -f test-templates/test-sl-b.pldances data
-cp -f test-templates/test-sl-a.songlist data/test-sl-b.songlist
+to=test-sl-b
+cp -f test-templates/test-sl-a.pl data/${to}.pl
+cp -f test-templates/test-sl-b.pldances data/${to}.pldances
+cp -f test-templates/test-sl-a.songlist data/${to}.songlist
+# songlist c
+to=test-sl-c
+cp -f test-templates/test-sl-c.pl data/${to}.pl
+cp -f test-templates/test-sl-a.pldances data/${to}.pldances
+cp -f test-templates/test-sl-a.songlist data/${to}.songlist
+
 # sequence a
-cp -f test-templates/test-seq-a.pl data
-cp -f test-templates/test-seq-a.pldances data
-cp -f test-templates/test-seq-a.sequence data
+to=test-seq-a
+cp -f test-templates/test-seq-a.pl data/${to}.pl
+cp -f test-templates/test-seq-a.pldances data/${to}.pldances
+cp -f test-templates/test-seq-a.sequence data/${to}.sequence
 # sequence b
-cp -f test-templates/test-seq-a.pl data/test-seq-b.pl
-cp -f test-templates/test-seq-b.pldances data
-cp -f test-templates/test-seq-a.sequence data/test-seq-b.sequence
+to=test-seq-b
+cp -f test-templates/test-seq-a.pl data/${to}.pl
+cp -f test-templates/test-seq-b.pldances data/${to}.pldances
+cp -f test-templates/test-seq-a.sequence data/${to}.sequence
 # sequence c
-cp -f test-templates/test-seq-a.pl data/test-seq-c.pl
-cp -f test-templates/test-seq-c.pldances data
-cp -f test-templates/test-seq-a.sequence data/test-seq-c.sequence
+to=test-seq-c
+cp -f test-templates/test-seq-a.pl data/${to}.pl
+cp -f test-templates/test-seq-c.pldances data/${to}.pldances
+cp -f test-templates/test-seq-a.sequence data/${to}.sequence
+
 # auto a
-cp -f test-templates/test-auto-a.pl data
-cp -f test-templates/test-auto-a.pldances data
+to=test-auto-a
+cp -f test-templates/test-auto-a.pl data/${to}.pl
+cp -f test-templates/test-auto-a.pldances data/${to}.pldances
 # auto b
-cp -f test-templates/test-auto-a.pl data/test-auto-b.pl
-cp -f test-templates/test-auto-b.pldances data
+to=test-auto-b
+cp -f test-templates/test-auto-a.pl data/${to}.pl
+cp -f test-templates/test-auto-b.pldances data/${to}.pldances
 # auto c
-cp -f test-templates/test-auto-a.pl data/test-auto-c.pl
-cp -f test-templates/test-auto-c.pldances data
+to=test-auto-c
+cp -f test-templates/test-auto-a.pl data/${to}.pl
+cp -f test-templates/test-auto-c.pldances data/${to}.pldances
 
 tfn=data/profile00/bdjconfig.txt
 sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
