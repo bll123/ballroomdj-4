@@ -3,7 +3,9 @@ BallroomDJ 4 Change Log
 4.0.0 alpha 2022-10-??
 
 - songlist editor
-  - fix load of playlist with stop after or stop time set.
+  - Fix load of playlist with stop after or stop time set.
+- player
+  - Fix stop time issues.
 
 4.0.0 alpha 2022-10-20
 

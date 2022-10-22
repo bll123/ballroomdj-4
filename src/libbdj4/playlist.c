@@ -434,7 +434,6 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
   type = (pltype_t) nlistGetNum (pl->plinfo, PLAYLIST_TYPE);
   stopAfter = nlistGetNum (pl->plinfo, PLAYLIST_STOP_AFTER);
   if (pl->editmode == EDIT_FALSE && stopAfter > 0 && pl->count >= stopAfter) {
-fprintf (stderr, "pl %s stop after %d\n", pl->name, stopAfter);
     logMsg (LOG_DBG, LOG_BASIC, "pl %s stop after %d", pl->name, stopAfter);
     return NULL;
   }
@@ -517,13 +516,11 @@ fprintf (stderr, "pl %s stop after %d\n", pl->name, stopAfter);
         break;
       }
       song = NULL;
-fprintf (stderr, "songlist: missing: %s\n", sfname);
       logMsg (LOG_DBG, LOG_IMPORTANT, "WARN: songlist: missing: %s", sfname);
       slkey = songlistIterate (pl->songlist, &pl->songlistiter);
       sfname = songlistGetStr (pl->songlist, slkey, SONGLIST_FILE);
     }
     ++pl->count;
-fprintf (stderr, "songlist: select: %s\n", sfname);
     logMsg (LOG_DBG, LOG_BASIC, "songlist: select: %s", sfname);
   }
   logProcEnd (LOG_PROC, "playlistGetNextSong", "");

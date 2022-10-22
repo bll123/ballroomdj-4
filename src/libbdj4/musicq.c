@@ -118,7 +118,6 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, dbidx_t dbidx,
   musicqitem->flags = MUSICQ_FLAG_NONE;
   musicqitem->dur = dur;
   musicq->duration [musicqidx] += dur;
-fprintf (stderr, "mq: push: %d %ld tot:%zd \n", musicq->dispidx [musicqidx], dur, musicq->duration [musicqidx]);
   queuePush (musicq->q [musicqidx], musicqitem);
   logProcEnd (LOG_PROC, "musicqPush", "");
 }
@@ -202,7 +201,6 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx,
   musicqitem->uniqueidx = guniqueidx++;
   musicqitem->dur = dur;
   musicq->duration [musicqidx] += dur;
-fprintf (stderr, "mq: ins: %d %ld tot:%zd \n", musicq->dispidx [musicqidx], dur, musicq->duration [musicqidx]);
 
   queueInsert (musicq->q [musicqidx], idx, musicqitem);
   musicqRenumber (musicq, musicqidx, olddispidx);
@@ -423,7 +421,6 @@ musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
   }
   if ((musicqitem->flags & MUSICQ_FLAG_EMPTY) != MUSICQ_FLAG_EMPTY) {
     musicq->duration [musicqidx] -= musicqitem->dur;
-fprintf (stderr, "mq: pop: %d tot:%zd \n", musicq->dispidx [musicqidx], musicq->duration [musicqidx]);
   }
   musicqQueueItemFree (musicqitem);
   logProcEnd (LOG_PROC, "musicqPop", "");
@@ -456,9 +453,10 @@ musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
   queueClear (musicq->q [musicqidx], startIdx);
 
   queueStartIterator (musicq->q [musicqidx], &iteridx);
+  /* just re-calculate the duration for the queue */
+  musicq->duration [musicqidx] = 0;
   while ((musicqitem = queueIterateData (musicq->q [musicqidx], &iteridx)) != NULL) {
-    musicq->duration [musicqidx] -= musicqitem->dur;
-fprintf (stderr, "mq: clr: %d tot:%zd \n", musicq->dispidx [musicqidx], musicq->duration [musicqidx]);
+    musicq->duration [musicqidx] += musicqitem->dur;
   }
 
   musicq->dispidx [musicqidx] = olddispidx + queueGetCount (musicq->q [musicqidx]);
@@ -481,7 +479,6 @@ musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], idx);
   musicq->duration [musicqidx] -= musicqitem->dur;
-fprintf (stderr, "mq: rm: %d tot:%zd \n", musicq->dispidx [musicqidx], musicq->duration [musicqidx]);
 
   olddispidx = musicqRenumberStart (musicq, musicqidx);
   queueRemoveByIdx (musicq->q [musicqidx], idx);

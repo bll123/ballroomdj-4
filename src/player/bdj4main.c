@@ -169,7 +169,9 @@ static void mainPlaybackFinishProcess (maindata_t *mainData, const char *args);
 static void mainPlaybackSendSongFinish (maindata_t *mainData, const char *args);
 static void mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom);
 static void mainAddTemporarySong (maindata_t *mainData, char *args);
-static void mainChkSetStopTime (maindata_t *mainData, char *args);
+static time_t mainCalcStopTime (time_t stopTime);
+static bool mainCheckStopTime (maindata_t *mainData, time_t nStopTime);
+static playlist_t * mainNextPlaylist (maindata_t *mainData);
 static void mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom);
 
 static long globalCounter = 0;
@@ -624,11 +626,6 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CHK_MAIN_SET_MAXPLAYTIME: {
           bdjoptSetNum (OPT_P_MAXPLAYTIME, atol (targs));
-          dbgdisp = true;
-          break;
-        }
-        case MSG_CHK_MAIN_SET_STOPTIME: {
-          mainChkSetStopTime (mainData, targs);
           dbgdisp = true;
           break;
         }
@@ -1333,6 +1330,8 @@ mainMusicQueueFill (maindata_t *mainData)
   bool            stopatflag = false;
   long            dur;
   int             editmode = EDIT_FALSE;
+  time_t          stopTime = 0;
+  time_t          nStopTime = 0;
 
   logProcBegin (LOG_PROC, "mainMusicQueueFill");
 
@@ -1362,71 +1361,57 @@ mainMusicQueueFill (maindata_t *mainData)
 
   logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, playerqLen);
 
+  stopTime = playlistGetConfigNum (playlist, PLAYLIST_STOP_TIME);
+  if (editmode == EDIT_FALSE && stopTime > 0) {
+    nStopTime = mainCalcStopTime (stopTime);
+    stopatflag = mainCheckStopTime (mainData, nStopTime);
+  }
+
   /* want current + playerqLen songs */
   while (playlist != NULL && currlen <= playerqLen && stopatflag == false) {
-    time_t  stopTime;
     song_t  *song = NULL;
 
     song = playlistGetNextSong (playlist, mainData->danceCounts,
         currlen, mainMusicQueueHistory, mainData);
-    if (song == NULL) {
-fprintf (stderr, "song is null\n");
+
+    if (song != NULL) {
+      logMsg (LOG_DBG, LOG_MAIN, "push song to musicq");
+      dur = mainCalculateSongDuration (mainData, song, plitem->playlistIdx);
+      musicqPush (mainData->musicQueue, mainData->musicqManageIdx,
+          songGetNum (song, TAG_DBIDX), plitem->playlistIdx, dur);
+      mainData->musicqChanged [mainData->musicqManageIdx] = MAIN_CHG_START;
+      mainData->marqueeChanged [mainData->musicqManageIdx] = true;
+      currlen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);
+
+      if (pltype == PLTYPE_AUTO) {
+        plitem = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
+        playlist = NULL;
+        if (plitem != NULL) {
+          playlist = plitem->playlist;
+        }
+        if (playlist != NULL && song != NULL) {
+          playlistAddCount (playlist, song);
+        }
+      }
+    }
+
+    if (editmode == EDIT_FALSE && stopTime > 0) {
+      stopatflag = mainCheckStopTime (mainData, nStopTime);
+    }
+
+    if (song == NULL || stopatflag) {
       logMsg (LOG_DBG, LOG_MAIN, "song is null");
-      plitem = queuePop (mainData->playlistQueue [mainData->musicqManageIdx]);
-      mainPlaylistItemFree (plitem);
-      plitem = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
-      playlist = NULL;
-      if (plitem != NULL) {
-        playlist = plitem->playlist;
+      playlist = mainNextPlaylist (mainData);
+      stopatflag = false;
+      stopTime = playlistGetConfigNum (playlist, PLAYLIST_STOP_TIME);
+      if (stopTime > 0) {
+        nStopTime = mainCalcStopTime (stopTime);
+      }
+      if (editmode == EDIT_FALSE && stopTime > 0) {
+        stopatflag = mainCheckStopTime (mainData, nStopTime);
       }
       continue;
     }
-
-    logMsg (LOG_DBG, LOG_MAIN, "push song to musicq");
-    dur = mainCalculateSongDuration (mainData, song, plitem->playlistIdx);
-fprintf (stderr, "push dur: %ld\n", dur);
-    musicqPush (mainData->musicQueue, mainData->musicqManageIdx,
-        songGetNum (song, TAG_DBIDX), plitem->playlistIdx, dur);
-    mainData->musicqChanged [mainData->musicqManageIdx] = MAIN_CHG_START;
-    mainData->marqueeChanged [mainData->musicqManageIdx] = true;
-    currlen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);
-
-    if (pltype == PLTYPE_AUTO) {
-      plitem = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
-      playlist = NULL;
-      if (plitem != NULL) {
-        playlist = plitem->playlist;
-      }
-      if (playlist != NULL && song != NULL) {
-        playlistAddCount (playlist, song);
-      }
-    }
-
-    stopTime = playlistGetConfigNum (playlist, PLAYLIST_STOP_TIME);
-fprintf (stderr, "stoptime: %zd\n", stopTime);
-    if (editmode == EDIT_FALSE && stopTime > 0) {
-      time_t  currTime;
-      time_t  qDuration;
-      time_t  nStopTime;
-
-      currTime = mstime ();
-fprintf (stderr, "currtime: %zd\n", currTime);
-      /* stop time is in hours+minutes; need to convert it to real time */
-      nStopTime = mstimestartofday ();
-      nStopTime += stopTime;
-      if (nStopTime < currTime) {
-        nStopTime += (24 * 3600 * 1000);
-      }
-fprintf (stderr, "nstoptime: %zd\n", nStopTime);
-
-      qDuration = musicqGetDuration (mainData->musicQueue, mainData->musicqManageIdx);
-fprintf (stderr, "currTime %zd + qDur %zd (%zd) > nStopTime %zd\n", currTime, qDuration, currTime + qDuration, nStopTime);
-      if (currTime + qDuration > nStopTime) {
-fprintf (stderr, "  stopat: true\n");
-        stopatflag = true;
-      }
-    }
-fprintf (stderr, "playlist: %p currlen %ld <= playerqLen %zd  stopatflag: %d\n", playlist, currlen, playerqLen, stopatflag);
   }
 
   logProcEnd (LOG_PROC, "mainMusicQueueFill", "");
@@ -2795,16 +2780,55 @@ mainAddTemporarySong (maindata_t *mainData, char *args)
   }
 }
 
-static void
-mainChkSetStopTime (maindata_t *mainData, char *args)
+static time_t
+mainCalcStopTime (time_t stopTime)
 {
-  char    *p;
-  char    *tokstr;
-  time_t  stoptime;
+  time_t    currTime;
+  time_t    nStopTime;
 
-  p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  stoptime = atol (p);
+
+  currTime = mstime ();
+  /* stop time is in hours+minutes; need to convert it to real time */
+  nStopTime = mstimestartofday ();
+  nStopTime += stopTime;
+  if (nStopTime < currTime) {
+    nStopTime += (24 * 3600 * 1000);
+  }
+
+  return nStopTime;
+}
+
+static bool
+mainCheckStopTime (maindata_t *mainData, time_t nStopTime)
+{
+  time_t  currTime;
+  time_t  qDuration;
+  bool    stopatflag = false;
+
+  currTime = mstime ();
+  qDuration = musicqGetDuration (mainData->musicQueue, mainData->musicqManageIdx);
+  if (currTime + qDuration > nStopTime) {
+    stopatflag = true;
+  }
+
+  return stopatflag;
+}
+
+static playlist_t *
+mainNextPlaylist (maindata_t *mainData)
+{
+  playlistitem_t  *plitem = NULL;
+  playlist_t      *playlist = NULL;
+
+  plitem = queuePop (mainData->playlistQueue [mainData->musicqManageIdx]);
+  mainPlaylistItemFree (plitem);
+  plitem = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
+  playlist = NULL;
+  if (plitem != NULL) {
+    playlist = plitem->playlist;
+  }
+
+  return playlist;
 }
 
 static void

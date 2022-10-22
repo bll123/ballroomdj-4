@@ -1283,6 +1283,18 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
   d = NULL;
 
   if (type == TS_TYPE_MSG && p != NULL) {
+    if (strcmp (p, "stoptime") == 0) {
+      time_t    stoptime;
+
+      /* get current hh:mm */
+      stoptime = mstime () - mstimestartofday ();
+      /* add two minutes */
+      stoptime += 2 * 60 * 1000;
+
+      snprintf (tmp, sizeof (tmp), "%zd", stoptime);
+      p = tmp;
+    }
+
     if (strcmp (p, "defaultvol") == 0) {
       snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
       p = tmp;
