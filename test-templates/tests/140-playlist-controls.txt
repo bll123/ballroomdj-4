@@ -125,3 +125,121 @@ get player CHK_PLAYER_STATUS
 wait playstate stopped
 end
 
+test 140-50 Stop-After-Multiple-Playlists
+msg main QUEUE_PLAYLIST 0~test-sl-e
+msg main CMD_PLAY
+msg main QUEUE_PLAYLIST 0~test-sl-e
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+wait playstate in-fadeout
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+wait playstate in-fadeout
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+wait playstate in-fadeout
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+chk-or playstate in-fadeout in-gap stopped
+wait playstate stopped
+chk-or playstate in-fadeout in-gap stopped
+end
+
+test 140-60 Gap-Multiple-Playlists
+msg main QUEUE_PLAYLIST 0~test-sl-e
+msg main QUEUE_PLAYLIST 0~test-sl-g
+msg main QUEUE_PLAYLIST 0~test-sl-e
+# ( 1 gap 2 ) ( no-gap 3 no-gap 4 ) ( gap 5 gap 6 )
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+# first song has a gap
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+wait playstate in-fadeout
+resptimeout 4500
+get player CHK_PLAYER_STATUS
+wait playstate in-gap
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+# second song has no gap
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+chk-or playstate in-fadeout stopped loading playing
+wait playstate in-fadeout
+resptimeout 4500
+get player CHK_PLAYER_STATUS
+chk-or playstate in-fadeout stopped loading playing
+wait playstate playing
+chk-or playstate in-fadeout stopped loading playing
+mssleep 1000
+# third song no gap
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+chk-or playstate in-fadeout stopped loading playing
+wait playstate in-fadeout
+resptimeout 4500
+get player CHK_PLAYER_STATUS
+chk-or playstate in-fadeout stopped loading playing
+wait playstate playing
+chk-or playstate in-fadeout stopped loading playing
+mssleep 1000
+# fourth song has a gap
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+resptimeout 4500
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+get player CHK_PLAYER_STATUS
+wait playstate in-gap
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+# fifth song has a gap
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+resptimeout 4500
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+get player CHK_PLAYER_STATUS
+wait playstate in-gap
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+# sixth song
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+wait playstate playing
+mssleep 1000
+end
+

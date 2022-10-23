@@ -122,6 +122,11 @@ to=test-sl-f
 cp -f test-templates/test-sl-f.pl data/${to}.pl
 cp -f test-templates/test-sl-a.pldances data/${to}.pldances
 cp -f test-templates/test-sl-a.songlist data/${to}.songlist
+# songlist g
+to=test-sl-g
+cp -f test-templates/test-sl-g.pl data/${to}.pl
+cp -f test-templates/test-sl-a.pldances data/${to}.pldances
+cp -f test-templates/test-sl-a.songlist data/${to}.songlist
 
 # sequence a
 to=test-seq-a

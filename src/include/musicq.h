@@ -1,6 +1,8 @@
 #ifndef INC_MUSICQ_H
 #define INC_MUSICQ_H
 
+#include <time.h>
+
 #include "musicdb.h"
 #include "queue.h"
 #include "tagdef.h"
