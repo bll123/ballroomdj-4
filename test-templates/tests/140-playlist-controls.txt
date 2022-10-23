@@ -87,37 +87,47 @@ wait playstate stopped
 chk-or playstate in-fadeout in-gap stopped
 end
 
+# stop-at pre-fills the music queue until there are enough
+# songs to get to the stop time.
+# therefore this test can simply check how many songs are
+# in the music queue w/o regards to the actual stop time.
 test 140-40 Stop-At-Basic
 msg main PL_OVERRIDE_STOP_TIME stoptime
 msg main QUEUE_PLAYLIST 0~test-sl-a
+get main CHK_MAIN_MUSICQ
+chk mq0len 4
 msg main CMD_PLAY
 resptimeout 2000
 # song 1
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
-resptimeout 35000
+msg player PLAY_FADE
+resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
-resptimeout 7000
 # song 2
 get player CHK_PLAYER_STATUS
 wait playstate playing
-resptimeout 35000
+mssleep 1000
+msg player PLAY_FADE
+resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
-resptimeout 7000
 # song 3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-resptimeout 35000
+mssleep 1000
+msg player PLAY_FADE
+resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
-resptimeout 7000
 # song 4
 get player CHK_PLAYER_STATUS
 wait playstate playing
-resptimeout 35000
+mssleep 1000
+msg player PLAY_FADE
+resptimeout 7000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
 resptimeout 7000
@@ -241,5 +251,119 @@ get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
 wait playstate playing
 mssleep 1000
+end
+
+# like 140-40, the music queue is pre-filled with the songs
+# needed to reach the stop time.  this test can just check
+# the number of songs queued w/o regards to the actual stop time.
+# in this test, queue the playlist with the stop-at time,
+# then queue a playlist with stop-after set to 2.
+test 140-70 Stop-At-Multiple-Playlists
+msg main PL_OVERRIDE_STOP_TIME stoptime
+msg main QUEUE_PLAYLIST 0~test-sl-a
+msg main QUEUE_PLAYLIST 0~test-sl-e
+get main CHK_MAIN_MUSICQ
+chk mq0len 6
+msg main CMD_PLAY
+resptimeout 2000
+# song 1
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+resptimeout 7000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 2
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+resptimeout 7000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 3
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+resptimeout 7000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 4
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+resptimeout 7000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 5
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+resptimeout 7000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 6
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+resptimeout 7000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+get player CHK_PLAYER_STATUS
+wait playstate stopped
+end
+
+# the music queue is pre-filled with the songs
+# needed to reach the stop time.  this test can just check
+# the number of songs queued w/o regards to the actual stop time.
+# in this test, queue the stop-after 2 playlist, then queue the playlist
+# with the stop-at time.
+test 140-80 Stop-At-Multiple-Second
+msg main QUEUE_PLAYLIST 0~test-sl-e
+msg main PL_OVERRIDE_STOP_TIME stoptime
+msg main QUEUE_PLAYLIST 0~test-sl-a
+get main CHK_MAIN_MUSICQ
+chk mq0len 4
+msg main CMD_PLAY
+resptimeout 2000
+# song 1
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+resptimeout 7000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 2
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+resptimeout 7000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 3
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+resptimeout 7000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 4
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+resptimeout 7000
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+get player CHK_PLAYER_STATUS
+wait playstate stopped
 end
 
