@@ -994,9 +994,11 @@ marqueeDisplayCompletion (marquee_t *marquee)
 {
   char  *disp;
 
-  disp = bdjoptGetStr (OPT_P_COMPLETE_MSG);
+  uiLabelSetText (&marquee->danceLab, "");
   uiLabelSetText (&marquee->infoArtistLab, "");
   uiLabelSetText (&marquee->infoSepLab, "");
+
+  disp = bdjoptGetStr (OPT_P_COMPLETE_MSG);
   uiLabelSetText (&marquee->infoTitleLab, disp);
 
   if (! marquee->mqShowInfo) {

@@ -13,6 +13,7 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "configui.h"
 #include "log.h"
@@ -25,6 +26,7 @@
 
 static bool confuiLinkCallback (void *udata);
 static long confuiValMSCallback (void *udata, const char *txt);
+static long confuiValHMCallback (void *udata, const char *txt);
 
 void
 confuiMakeNotebookTab (UIWidget *boxp, confuigui_t *gui, const char *txt, int id)
@@ -286,10 +288,20 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, UIWidget *boxp,
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
 
-  uiutilsUICallbackStrInit (&gui->uiitem [widx].callback,
-      confuiValMSCallback, gui);
+  if (bdjoptIdx == OPT_P_STOPATTIME) {
+    uiutilsUICallbackStrInit (&gui->uiitem [widx].callback,
+        confuiValHMCallback, gui);
+    /* convert value to mm:ss */
+    value /= 60;
+  } else {
+    uiutilsUICallbackStrInit (&gui->uiitem [widx].callback,
+        confuiValMSCallback, gui);
+  }
   uiSpinboxTimeCreate (gui->uiitem [widx].spinbox, gui,
       &gui->uiitem [widx].callback);
+  if (bdjoptIdx == OPT_P_STOPATTIME) {
+    uiSpinboxSetRange (gui->uiitem [widx].spinbox, 0.0, 1440000.0);
+  }
   uiSpinboxTimeSetValue (gui->uiitem [widx].spinbox, value);
   uiwidgetp = uiSpinboxGetUIWidget (gui->uiitem [widx].spinbox);
   uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
@@ -527,6 +539,29 @@ confuiValMSCallback (void *udata, const char *txt)
 
   val = tmutilStrToMS (txt);
   logProcEnd (LOG_PROC, "confuiValMSCallback", "");
+  return val;
+}
+
+static long
+confuiValHMCallback (void *udata, const char *txt)
+{
+  confuigui_t *gui = udata;
+  const char  *valstr;
+  char        tbuff [200];
+  long        val;
+
+  logProcBegin (LOG_PROC, "confuiValHMCallback");
+
+  uiLabelSetText (&gui->statusMsg, "");
+  valstr = validate (txt, VAL_HOUR_MIN);
+  if (valstr != NULL) {
+    snprintf (tbuff, sizeof (tbuff), valstr, txt);
+    uiLabelSetText (&gui->statusMsg, tbuff);
+    return -1;
+  }
+
+  val = tmutilStrToHM (txt);
+  logProcEnd (LOG_PROC, "confuiValHMCallback", "");
   return val;
 }
 

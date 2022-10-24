@@ -500,7 +500,6 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_FINISHED: {
-          uiplayerClearDisplay (uiplayer);
           dbgdisp = true;
           break;
         }
@@ -737,20 +736,22 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
+  if (! uiplayer->uibuilt) {
+    return;
+  }
+
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   dbidx = atol (p);
   if (dbidx < 0) {
-    logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "bad-idx");
+    uiplayerClearDisplay (uiplayer);
+    logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "no-dbidx");
     return;
   }
 
   song = dbGetByIdx (uiplayer->musicdb, dbidx);
   if (song == NULL) {
+    uiplayerClearDisplay (uiplayer);
     logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "null-song");
-    return;
-  }
-
-  if (! uiplayer->uibuilt) {
     return;
   }
 

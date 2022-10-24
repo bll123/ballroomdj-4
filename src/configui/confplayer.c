@@ -133,6 +133,11 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_SPINBOX_MAX_PLAY_TIME, OPT_P_MAXPLAYTIME,
       bdjoptGetNum (OPT_P_MAXPLAYTIME));
 
+  /* CONTEXT: configuration: the time when playback will stop */
+  confuiMakeItemSpinboxTime (gui, &vbox, &sg, &sgB, _("Stop At"),
+      CONFUI_SPINBOX_STOP_AT_TIME, OPT_P_STOPATTIME,
+      bdjoptGetNum (OPT_P_STOPATTIME));
+
   /* CONTEXT: configuration: the &sgB, of the music queue to display */
   confuiMakeItemSpinboxNum (gui, &vbox, &sg, &sgB, _("Queue Length"),
       CONFUI_WIDGET_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,

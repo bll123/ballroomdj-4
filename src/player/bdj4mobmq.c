@@ -23,6 +23,7 @@
 
 #include "bdj4.h"
 #include "bdj4init.h"
+#include "bdj4intl.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjvars.h"
@@ -51,6 +52,7 @@ typedef struct {
   char            *title;
   websrv_t        *websrv;
   char            *marqueeData;
+  bool            finished;
 } mobmqdata_t;
 
 static bool     mobmqConnectingCallback (void *tmmdata, programstate_t programState);
@@ -88,6 +90,7 @@ main (int argc, char *argv[])
   }
 
   mobmqData.progstate = progstateInit ("mobilemq");
+
   progstateSetCallback (mobmqData.progstate, STATE_CONNECTING,
       mobmqConnectingCallback, &mobmqData);
   progstateSetCallback (mobmqData.progstate, STATE_WAIT_HANDSHAKE,
@@ -99,19 +102,23 @@ main (int argc, char *argv[])
   progstateSetCallback (mobmqData.progstate, STATE_CLOSING,
       mobmqClosingCallback, &mobmqData);
   mobmqData.port = bdjoptGetNum (OPT_P_MOBILEMQPORT);
+
   mobmqData.name = NULL;
   tval = bdjoptGetStr (OPT_P_MOBILEMQTAG);
   if (tval != NULL) {
     mobmqData.name = strdup (tval);
   }
+
   tval = bdjoptGetStr (OPT_P_MOBILEMQTITLE);
   mobmqData.title = NULL;
   if (tval != NULL) {
     mobmqData.title = strdup (tval);
   }
+
   mobmqData.websrv = NULL;
   mobmqData.marqueeData = NULL;
   mobmqData.stopwaitcount = 0;
+  mobmqData.finished = false;
 
   mobmqData.websrv = websrvInit (mobmqData.port, mobmqEventHandler, &mobmqData);
 
@@ -171,19 +178,26 @@ mobmqEventHandler (struct mg_connection *c, int ev, void *ev_data, void *userdat
     struct mg_http_message *hm = (struct mg_http_message *) ev_data;
 
     if (mg_http_match_uri (hm, "/mmupdate")) {
+      const char  *disp;
+
       data = mobmqData->marqueeData;
       title = mobmqData->title;
-      if (data == NULL) {
+      if (data == NULL || mobmqData->finished) {
         if (title == NULL) {
           title = "";
+        }
+        /* CONTEXT: mobile marquee: playback is not active */
+        disp = _("Not Playing");
+        if (mobmqData->finished) {
+          disp = bdjoptGetStr (OPT_P_COMPLETE_MSG);
         }
         snprintf (tbuff, sizeof (tbuff),
             "{ "
             "\"title\" : \"%s\","
-            "\"current\" : \"Not Playing\","
+            "\"current\" : \"%s\","
             "\"skip\" : \"true\""
             "}",
-            title);
+            title, disp);
         data = tbuff;
       }
       mg_http_reply (c, 200, "Content-Type: application/json\r\n",
@@ -247,9 +261,14 @@ mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MARQUEE_DATA: {
+          mobmqData->finished = false;
           dataFree (mobmqData->marqueeData);
           mobmqData->marqueeData = strdup (args);
           assert (mobmqData->marqueeData != NULL);
+          break;
+        }
+        case MSG_FINISHED: {
+          mobmqData->finished = true;
           break;
         }
         default: {

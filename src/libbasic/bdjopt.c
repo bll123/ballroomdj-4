@@ -73,6 +73,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "REMCONTROLPORT",       OPT_P_REMCONTROLPORT,       VALUE_NUM, NULL, -1 },
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_STR, NULL, -1 },
   { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, convBoolean, -1 },
+  { "STOPATTIME",           OPT_P_STOPATTIME,           VALUE_NUM, NULL, -1 },
   { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,        VALUE_STR, NULL, -1 },
   { "UI_ERROR_COL",         OPT_P_UI_ERROR_COL,         VALUE_STR, NULL, -1 },
   { "UI_MARK_COL",          OPT_P_UI_MARK_COL,          VALUE_STR, NULL, -1 },

@@ -28,7 +28,7 @@ static valregex_t valregex [VAL_REGEX_MAX] = {
   [VAL_REGEX_FLOAT]   = { "^ *[0-9]*[,.]?[0-9]+ *$" },
   [VAL_REGEX_MIN_SEC]   = { "^ *[0-9]+[:.][0-5][0-9] *$" },
   /* americans are likely to type in am/pm */
-  [VAL_REGEX_HOUR_MIN]   = { "^ *([0-9]|[1][0-9]|[2][0-4])([:.][0-5][0-9])?( *([Aa]|[Pp])(\\.?[Mm]\\.?)?)? *$" },
+  [VAL_REGEX_HOUR_MIN]   = { "^ *(0?[0-9]|[1][0-9]|[2][0-4])([:.][0-5][0-9])?( *([Aa]|[Pp])(\\.?[Mm]\\.?)?)? *$" },
 };
 
 /**

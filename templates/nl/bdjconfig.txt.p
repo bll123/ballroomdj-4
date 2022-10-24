@@ -1,5 +1,5 @@
 # config-profile
-# 2022-8-4
+# 2022-10-23
 version
 ..1
 DEFAULTVOLUME
@@ -50,6 +50,8 @@ REMCONTROLUSER
 ..bdj
 REMOTECONTROL
 ..no
+STOPATTIME
+..0
 UI_ACCENT_COL
 ..#ffa600
 UI_ERROR_COL

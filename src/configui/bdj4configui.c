@@ -153,7 +153,8 @@ main (int argc, char *argv[])
       confui.gui.uiitem [i].dropdown = uiDropDownInit ();
     }
     if (i > CONFUI_ENTRY_MAX && i < CONFUI_SPINBOX_MAX) {
-      if (i == CONFUI_SPINBOX_MAX_PLAY_TIME) {
+      if (i == CONFUI_SPINBOX_MAX_PLAY_TIME ||
+          i == CONFUI_SPINBOX_STOP_AT_TIME) {
         confui.gui.uiitem [i].spinbox = uiSpinboxTimeInit (SB_TIME_BASIC);
       } else {
         confui.gui.uiitem [i].spinbox = uiSpinboxInit ();
@@ -637,6 +638,10 @@ confuiPopulateOptions (configui_t *confui)
       }
       case CONFUI_SPINBOX_TIME: {
         nval = (ssize_t) uiSpinboxTimeGetValue (confui->gui.uiitem [i].spinbox);
+        if (i == CONFUI_SPINBOX_STOP_AT_TIME) {
+          /* convert to hh:mm */
+          nval *= 60;
+        }
         break;
       }
       case CONFUI_COLOR: {

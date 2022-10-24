@@ -90,6 +90,7 @@ typedef enum {
   OPT_P_REMCONTROLPORT,           // u d s
   OPT_P_REMCONTROLUSER,           // u d s
   OPT_P_REMOTECONTROL,            // u d s
+  OPT_P_STOPATTIME,               // u d s
   OPT_P_UI_ACCENT_COL,            // u d s
   OPT_P_UI_ERROR_COL,             // u d s
   OPT_P_UI_MARK_COL,              // u d s

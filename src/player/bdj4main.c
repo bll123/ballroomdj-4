@@ -102,6 +102,8 @@ typedef struct {
   int               pbfinishrcv;
   long              ploverridestoptime;
   int               songplaysentcount;        // for testsuite
+  time_t            stopTime;
+  time_t            nStopTime;
   int               musicqChanged [MUSICQ_MAX];
   bool              marqueeChanged [MUSICQ_MAX];
   bool              changeSuspend [MUSICQ_MAX];
@@ -170,7 +172,7 @@ static void mainPlaybackSendSongFinish (maindata_t *mainData, const char *args);
 static void mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom);
 static void mainAddTemporarySong (maindata_t *mainData, char *args);
 static time_t mainCalcStopTime (time_t stopTime);
-static bool mainCheckStopTime (maindata_t *mainData, time_t nStopTime);
+static bool mainCheckMQStopTime (maindata_t *mainData, time_t nStopTime);
 static playlist_t * mainNextPlaylist (maindata_t *mainData);
 static void mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom);
 
@@ -233,6 +235,9 @@ main (int argc, char *argv[])
 
   mainData.gap = bdjoptGetNum (OPT_P_GAP);
   mainData.lastGapSent = -2;
+  /* calculate the stop time once only */
+  mainData.stopTime = bdjoptGetNum (OPT_P_STOPATTIME);
+  mainData.nStopTime = mainCalcStopTime (mainData.stopTime);
 
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_INTERNET) {
     mainData.webclient = webclientAlloc (&mainData, mainMobilePostCallback);
@@ -697,6 +702,9 @@ mainProcessing (void *udata)
     mainSendMarqueeData (mainData);
     mainSendMobileMarqueeData (mainData);
     mainData->marqueeChanged [mainData->musicqPlayIdx] = false;
+    if (mainData->finished && mainData->playerState == PL_STATE_STOPPED) {
+      mainData->finished = false;
+    }
   }
 
   /* Do this after sending the latest musicq / marquee data. */
@@ -982,6 +990,8 @@ mainSendMarqueeData (maindata_t *mainData)
   char        *tstr;
   ssize_t     mqLen;
   ssize_t     musicqLen;
+  time_t      currTime;
+  time_t      qdur = 0;
 
   logProcBegin (LOG_PROC, "mainSendMarqueeData");
 
@@ -989,7 +999,6 @@ mainSendMarqueeData (maindata_t *mainData)
       mainData->finished) {
     logMsg (LOG_DBG, LOG_MAIN, "sending finished");
     mainSendFinished (mainData);
-    mainData->finished = false;
     return;
   }
 
@@ -1012,15 +1021,29 @@ mainSendMarqueeData (maindata_t *mainData)
   snprintf (tbuff, sizeof (tbuff), "%s%c%s%c", dstr, MSG_ARGS_RS, tstr, MSG_ARGS_RS);
   strlcat (sbuff, tbuff, sizeof (sbuff));
 
+  currTime = mstime ();
   if (musicqLen > 0) {
     for (ssize_t i = 0; i <= mqLen; ++i) {
-      if ((i > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
+      dbidx_t   dbidx;
+      song_t    *song;
+
+      if (mainData->stopTime > 0 && (currTime + qdur) > mainData->nStopTime) {
+        /* process stoptime for the marquee display */
+        dstr = MSG_ARGS_EMPTY_STR;
+      } else if ((i > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
           (i > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
         dstr = MSG_ARGS_EMPTY_STR;
       } else if (i > musicqLen) {
         dstr = MSG_ARGS_EMPTY_STR;
       } else {
         dstr = mainSongGetDanceDisplay (mainData, i);
+      }
+
+      /* queue duration data needed for stoptime check */
+      dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
+      if (dbidx >= 0) {
+        song = dbGetByIdx (mainData->musicdb, dbidx);
+        qdur += mainCalculateSongDuration (mainData, song, mainData->musicqPlayIdx);
       }
 
       snprintf (tbuff, sizeof (tbuff), "%s%c", dstr, MSG_ARGS_RS);
@@ -1076,11 +1099,17 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   char        *tag = NULL;
   ssize_t     mqLen = 0;
   ssize_t     musicqLen = 0;
+  time_t      currTime;
+  time_t      qdur = 0;
 
   logProcBegin (LOG_PROC, "mainSendMobileMarqueeData");
 
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_OFF) {
     logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "is-off");
+    return;
+  }
+  if (mainData->finished) {
+    logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "finished");
     return;
   }
 
@@ -1098,9 +1127,16 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   snprintf (tbuff, sizeof (tbuff), "\"title\" : \"%s\"", title);
   strlcat (jbuff, tbuff, sizeof (jbuff));
 
+  currTime = mstime ();
   if (musicqLen > 0) {
     for (ssize_t i = 0; i <= mqLen; ++i) {
-      if ((i > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
+      dbidx_t   dbidx;
+      song_t    *song;
+
+      /* process stoptime for the marquee display */
+      if (mainData->stopTime > 0 && (currTime + qdur) > mainData->nStopTime) {
+        dstr = "";
+      } else if ((i > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
           (i > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
         dstr = "";
       } else if (i > musicqLen) {
@@ -1110,6 +1146,13 @@ mainSendMobileMarqueeData (maindata_t *mainData)
         if (dstr == NULL) {
           dstr = "";
         }
+      }
+
+      /* queue duration data needed for stoptime check */
+      dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
+      if (dbidx >= 0) {
+        song = dbGetByIdx (mainData->musicdb, dbidx);
+        qdur += mainCalculateSongDuration (mainData, song, mainData->musicqPlayIdx);
       }
 
       if (i == 0) {
@@ -1246,7 +1289,6 @@ mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
   logMsg (LOG_DBG, LOG_MAIN, "push pl %s", "queue-dance");
   mainMusicQueueFill (mainData);
   mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
-  mainData->marqueeChanged [mi] = true;
   mainData->musicqChanged [mi] = MAIN_CHG_START;
   mainSendMusicqStatus (mainData);
   if (mainData->playWhenQueued &&
@@ -1296,7 +1338,6 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
     logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
     mainMusicQueueFill (mainData);
     mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
-    mainData->marqueeChanged [mi] = true;
     mainData->musicqChanged [mi] = MAIN_CHG_START;
 
     mainSendMusicqStatus (mainData);
@@ -1364,7 +1405,7 @@ mainMusicQueueFill (maindata_t *mainData)
   stopTime = playlistGetConfigNum (playlist, PLAYLIST_STOP_TIME);
   if (editmode == EDIT_FALSE && stopTime > 0) {
     nStopTime = mainCalcStopTime (stopTime);
-    stopatflag = mainCheckStopTime (mainData, nStopTime);
+    stopatflag = mainCheckMQStopTime (mainData, nStopTime);
   }
 
   /* want current + playerqLen songs */
@@ -1396,7 +1437,7 @@ mainMusicQueueFill (maindata_t *mainData)
     }
 
     if (editmode == EDIT_FALSE && stopTime > 0) {
-      stopatflag = mainCheckStopTime (mainData, nStopTime);
+      stopatflag = mainCheckMQStopTime (mainData, nStopTime);
     }
 
     if (song == NULL || stopatflag) {
@@ -1408,7 +1449,7 @@ mainMusicQueueFill (maindata_t *mainData)
         nStopTime = mainCalcStopTime (stopTime);
       }
       if (editmode == EDIT_FALSE && stopTime > 0) {
-        stopatflag = mainCheckStopTime (mainData, nStopTime);
+        stopatflag = mainCheckMQStopTime (mainData, nStopTime);
       }
       continue;
     }
@@ -1959,8 +2000,19 @@ mainMusicQueuePlay (maindata_t *mainData)
   song_t            *song;
   int               currlen;
   musicqidx_t       origMusicqPlayIdx;
+  time_t            currTime;
 
   logProcBegin (LOG_PROC, "mainMusicQueuePlay");
+
+  currTime = mstime ();
+  if (mainData->stopTime > 0 && currTime > mainData->nStopTime) {
+    logMsg (LOG_DBG, LOG_MAIN, "past stop-at time: finished <= true");
+    mainData->finished = true;
+    mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
+    /* reset the stop time so that the player can be re-started */
+    mainData->stopTime = 0;
+    mainData->nStopTime = 0;
+  }
 
   if (mainData->musicqDeferredPlayIdx != MAIN_NOT_SET) {
     mainMusicqSwitch (mainData, mainData->musicqDeferredPlayIdx);
@@ -1970,7 +2022,7 @@ mainMusicQueuePlay (maindata_t *mainData)
   logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
       mainData->playerState, plstateDebugText (mainData->playerState));
 
-  if (mainData->playerState != PL_STATE_PAUSED) {
+  if (! mainData->finished && mainData->playerState != PL_STATE_PAUSED) {
     /* grab a song out of the music queue and start playing */
     logMsg (LOG_DBG, LOG_MAIN, "player sent a finish; get song, start");
     dbidx = musicqGetCurrent (mainData->musicQueue, mainData->musicqPlayIdx);
@@ -2044,7 +2096,7 @@ mainMusicQueuePlay (maindata_t *mainData)
   /* this handles the user-selected play button when the song is paused */
   /* it no longer handles in-gap due to some changes */
   /* this might need to be moved to the message handler */
-  if (mainData->playerState == PL_STATE_PAUSED) {
+  if (! mainData->finished && mainData->playerState == PL_STATE_PAUSED) {
     logMsg (LOG_DBG, LOG_MAIN, "player is paused, send play msg");
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_PLAY, NULL);
   }
@@ -2364,21 +2416,16 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
 static void
 mainSendMusicqStatus (maindata_t *mainData)
 {
-  char    tbuff [200];
-  char    statusbuff [40];
+  char    tbuff [40];
   dbidx_t dbidx;
 
   logProcBegin (LOG_PROC, "mainSendMusicqStatus");
 
-  statusbuff [0] = '\0';
   dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
-  snprintf (tbuff, sizeof (tbuff), "%d%c", dbidx, MSG_ARGS_RS);
-  strlcpy (statusbuff, tbuff, sizeof (statusbuff));
+  snprintf (tbuff, sizeof (tbuff), "%d", dbidx);
 
-  if (dbidx >= 0) {
-    connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSICQ_STATUS_DATA, statusbuff);
-    connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_MUSICQ_STATUS_DATA, statusbuff);
-  }
+  connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSICQ_STATUS_DATA, tbuff);
+  connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_MUSICQ_STATUS_DATA, tbuff);
   logProcEnd (LOG_PROC, "mainSendMusicqStatus", "");
 }
 
@@ -2478,6 +2525,9 @@ mainSendFinished (maindata_t *mainData)
   connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_FINISHED, NULL);
   if (mainData->marqueestarted) {
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_FINISHED, NULL);
+  }
+  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
+    connSendMessage (mainData->conn, ROUTE_MOBILEMQ, MSG_FINISHED, NULL);
   }
 }
 
@@ -2786,6 +2836,9 @@ mainCalcStopTime (time_t stopTime)
   time_t    currTime;
   time_t    nStopTime;
 
+  if (stopTime <= 0) {
+    return 0;
+  }
 
   currTime = mstime ();
   /* stop time is in hours+minutes; need to convert it to real time */
@@ -2799,7 +2852,7 @@ mainCalcStopTime (time_t stopTime)
 }
 
 static bool
-mainCheckStopTime (maindata_t *mainData, time_t nStopTime)
+mainCheckMQStopTime (maindata_t *mainData, time_t nStopTime)
 {
   time_t  currTime;
   time_t  qDuration;
