@@ -3,7 +3,7 @@ section 90 Player-Config
 # check gap configuration
 test 90-10 Gap
 get player CHK_PLAYER_STATUS
-msg main CHK_MAIN_GAP 1000
+msg main CHK_MAIN_SET_GAP 1000
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
@@ -40,12 +40,12 @@ mssleep 1000
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 chk currvolume defaultvol
-msg main CHK_MAIN_GAP 2000
+msg main CHK_MAIN_SET_GAP 2000
 end
 
 # check playback with no gap set
 test 90-11 No-Gap
-msg main CHK_MAIN_GAP 0
+msg main CHK_MAIN_SET_GAP 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
@@ -73,7 +73,7 @@ wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
-msg main CHK_MAIN_GAP 2000
+msg main CHK_MAIN_SET_GAP 2000
 end
 
 # check playback with no fade-in set
@@ -83,7 +83,7 @@ msg player CHK_PLAYER_FADEIN 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
-msg main CHK_MAIN_GAP 2000
+msg main CHK_MAIN_SET_GAP 2000
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -106,7 +106,7 @@ msg player CHK_PLAYER_FADEOUT 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
-msg main CHK_MAIN_GAP 2000
+msg main CHK_MAIN_SET_GAP 2000
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -139,7 +139,7 @@ end
 
 # check playback with no gap and no fade-out set
 test 90-31 No-Gap-No-Fade-Out
-msg main CHK_MAIN_GAP 0
+msg main CHK_MAIN_SET_GAP 0
 msg player CHK_PLAYER_FADEOUT 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
@@ -166,13 +166,13 @@ chk-or playstate stopped loading playing
 wait playstate playing
 chk-or playstate stopped loading playing
 mssleep 1000
-msg main CHK_MAIN_GAP 2000
+msg main CHK_MAIN_SET_GAP 2000
 msg player CHK_PLAYER_FADEOUT 4000
 end
 
 # check playback with max play time set
 test 90-40 Maximum-Play-Time
-msg main CHK_MAIN_MAXPLAYTIME 10000
+msg main CHK_MAIN_SET_MAXPLAYTIME 10000
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main CMD_PLAY
@@ -200,5 +200,61 @@ chk p-duration 10000
 resptimeout 11500
 get player CHK_PLAYER_STATUS
 wait playstate stopped
-msg main CHK_MAIN_MAXPLAYTIME 360000
+msg main CHK_MAIN_SET_MAXPLAYTIME 360000
 end
+
+# check playback with stop-at time set
+test 90-50 Stop-At
+msg main CHK_MAIN_SET_STOPATTIME stoptime
+msg main MUSICQ_INSERT 0~999~5
+msg main MUSICQ_INSERT 0~999~6
+msg main MUSICQ_INSERT 0~999~7
+msg main MUSICQ_INSERT 0~999~8
+msg main MUSICQ_INSERT 0~999~9
+msg main MUSICQ_INSERT 0~999~10
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+# song 1 playing
+mssleep 1000
+resptimeout 35000
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+# song 2 playing
+mssleep 1000
+resptimeout 35000
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+# song 3 playing
+mssleep 1000
+resptimeout 35000
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+# song 4 playing
+mssleep 1000
+resptimeout 35000
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+resptimeout 7000
+get player CHK_PLAYER_STATUS
+# should stop
+wait playstate stopped
+# should be able to start up playback afterwards
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+msg main CHK_MAIN_SET_STOPATTIME 0
+end
+

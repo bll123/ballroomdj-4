@@ -634,6 +634,12 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_CHK_MAIN_SET_STOPATTIME: {
+          mainData->stopTime = atol (targs);
+          mainData->nStopTime = mainCalcStopTime (mainData->stopTime);
+          dbgdisp = true;
+          break;
+        }
         case MSG_DB_ENTRY_TEMP_ADD: {
           mainAddTemporarySong (mainData, targs);
           dbgdisp = true;
