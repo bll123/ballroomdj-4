@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-20 11:39-0700\n"
+"POT-Creation-Date: 2022-10-25 04:49-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1112,6 +1112,7 @@ msgid "Normal"
 msgstr ""
 
 #. CONTEXT: marquee: displayed when nothing is set to be played
+#. CONTEXT: mobile marquee: playback is not active
 msgid "Not Playing"
 msgstr ""
 
@@ -1177,6 +1178,7 @@ msgstr ""
 msgid "Play / Pause"
 msgstr ""
 
+#. CONTEXT: configuration: whether to play announcements
 #. CONTEXT: playlist management: Play Announcements
 msgid "Play Announcements"
 msgstr ""
@@ -1306,7 +1308,7 @@ msgid "Queue Dance"
 msgstr ""
 
 #. CONTEXT: configuration: the length of the queue displayed on the marquee
-#. CONTEXT: configuration: the &sgB, of the music queue to display
+#. CONTEXT: configuration: the number of items displayed in the music queue
 msgid "Queue Length"
 msgstr ""
 
@@ -1640,6 +1642,7 @@ msgstr ""
 msgid "Stop All %s Processes"
 msgstr ""
 
+#. CONTEXT: configuration: the time when playback will stop
 #. CONTEXT: playlist management: stop at
 msgid "Stop At"
 msgstr ""

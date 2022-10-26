@@ -571,8 +571,12 @@ playerProcessing (void *udata)
       }
 
       playerData->currentSong = pq;
-      queueIterateRemoveNode (playerData->prepQueue, &playerData->prepiteridx);
-      /* do not free */
+      /* announcements are not removed from the prep queue */
+      if (pq->announce == PREP_SONG) {
+        logMsg (LOG_DBG, LOG_BASIC, "prep rm node (no free) %s", pq->songname);
+        queueIterateRemoveNode (playerData->prepQueue, &playerData->prepiteridx);
+        /* do not free */
+      }
     }
 
     if (playerData->repeat) {
@@ -653,7 +657,9 @@ playerProcessing (void *udata)
       playerData->playerState == PL_STATE_IN_FADEOUT) {
     prepqueue_t       *pq = playerData->currentSong;
 
-    if (playerData->fadeoutTime > 0 &&
+    /* announcements have no fade-out */
+    if (pq->announce == PREP_SONG &&
+        playerData->fadeoutTime > 0 &&
         ! playerData->inFade &&
         mstimeCheck (&playerData->fadeTimeCheck)) {
 
@@ -734,7 +740,7 @@ playerProcessing (void *udata)
 
         /* the play request for a song on repeat is left in the queue */
         /* so that the song will be re-played when finished. */
-        if (! playerData->repeat || pq->announce == PREP_ANNOUNCE) {
+        if (! playerData->repeat) {
           playrequest_t *preq;
 
           preq = queuePop (playerData->playRequest);
@@ -746,7 +752,9 @@ playerProcessing (void *udata)
           playerCheckSystemVolume (playerData);
         }
 
-        if (playerData->gap > 0) {
+        /* there is no gap after an announcement */
+        if (pq->announce == PREP_SONG &&
+            playerData->gap > 0) {
           playerSetPlayerState (playerData, PL_STATE_IN_GAP);
           playerData->realVolume = 0;
           volumeSet (playerData->volume, playerData->currentSink, 0);
@@ -1056,6 +1064,9 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
     }
   }
 
+  /* the prep queue is generally quite short, a brute force search is fine */
+  /* the maximum could be potentially ~twenty announcements + five songs */
+  /* with no announcements, five songs only */
   while (! found && count < 2) {
     queueStartIterator (playerData->prepQueue, &playerData->prepiteridx);
     pq = queueIterateData (playerData->prepQueue, &playerData->prepiteridx);

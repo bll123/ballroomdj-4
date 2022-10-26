@@ -537,6 +537,8 @@ managePlaylistUpdateData (managepl_t *managepl)
       playlistGetConfigNum (pl, PLAYLIST_LEVEL_LOW));
   uilevelSetValue (managepl->uihighlevel,
       playlistGetConfigNum (pl, PLAYLIST_LEVEL_HIGH));
+  uiSwitchSetValue (managepl->plannswitch,
+      playlistGetConfigNum (pl, PLAYLIST_ANNOUNCE));
 
   managepl->plbackupcreated = false;
 }
@@ -701,6 +703,9 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
 
   tstr = uiEntryGetValue (managepl->allowedkeywords);
   playlistSetConfigList (pl, PLAYLIST_ALLOWED_KEYWORDS, tstr);
+
+  tval = uiSwitchGetValue (managepl->plannswitch);
+  playlistSetConfigNum (pl, PLAYLIST_ANNOUNCE, tval);
 }
 
 static bool

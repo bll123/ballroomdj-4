@@ -66,6 +66,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "MQ_ACCENT_COL",        OPT_P_MQ_ACCENT_COL,        VALUE_STR, NULL, -1 },
   { "MQ_INFO_COL",          OPT_P_MQ_INFO_COL,          VALUE_STR, NULL, -1 },
   { "MQ_TEXT_COL",          OPT_P_MQ_TEXT_COL,          VALUE_STR, NULL, -1 },
+  { "PLAYANNOUNCE",         OPT_P_PLAY_ANNOUNCE,        VALUE_NUM, convBoolean, -1 },
   { "PROFILENAME",          OPT_P_PROFILENAME,          VALUE_STR, NULL, -1 },
   { "QUEUE_NAME_A",         OPT_P_QUEUE_NAME_A,         VALUE_STR, NULL, -1 },
   { "QUEUE_NAME_B",         OPT_P_QUEUE_NAME_B,         VALUE_STR, NULL, -1 },

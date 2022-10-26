@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-10-20\n"
-"PO-Revision-Date: 2022-10-20\n"
+"POT-Creation-Date: 2022-10-25\n"
+"PO-Revision-Date: 2022-10-25\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -1108,6 +1108,7 @@ msgid "Normal"
 msgstr ""
 
 #. CONTEXT: marquee: displayed when nothing is set to be played
+#. CONTEXT: mobile marquee: playback is not active
 msgid "Not Playing"
 msgstr ""
 
@@ -1173,6 +1174,7 @@ msgstr ""
 msgid "Play / Pause"
 msgstr ""
 
+#. CONTEXT: configuration: whether to play announcements
 #. CONTEXT: playlist management: Play Announcements
 msgid "Play Announcements"
 msgstr ""
@@ -1302,7 +1304,7 @@ msgid "Queue Dance"
 msgstr ""
 
 #. CONTEXT: configuration: the length of the queue displayed on the marquee
-#. CONTEXT: configuration: the &sgB, of the music queue to display
+#. CONTEXT: configuration: the number of items displayed in the music queue
 msgid "Queue Length"
 msgstr ""
 
@@ -1636,6 +1638,7 @@ msgstr ""
 msgid "Stop All %s Processes"
 msgstr ""
 
+#. CONTEXT: configuration: the time when playback will stop
 #. CONTEXT: playlist management: stop at
 msgid "Stop At"
 msgstr ""

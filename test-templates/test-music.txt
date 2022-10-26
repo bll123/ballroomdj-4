@@ -8,7 +8,7 @@
 version
 ..1
 count
-..123
+..125
 
 # standard dances
 
@@ -209,7 +209,7 @@ TITLE
 # Cha Cha
 
 KEY
-..12
+..6
 SOURCE
 ..chacha.mp3
 DURATION
@@ -242,7 +242,7 @@ TITLE
 ..%03d-chacha
 
 KEY
-..13
+..7
 SOURCE
 ..chacha.mp3
 DURATION
@@ -273,7 +273,7 @@ TITLE
 ..%03d-chacha
 
 KEY
-..14
+..8
 SOURCE
 ..chacha.mp3
 DURATION
@@ -304,7 +304,7 @@ TITLE
 ..%03d-chacha
 
 KEY
-..15
+..9
 SOURCE
 ..chacha.mp3
 DURATION
@@ -335,7 +335,7 @@ TITLE
 ..%03d-chacha
 
 KEY
-..16
+..10
 SOURCE
 ..chacha.mp3
 DURATION
@@ -368,7 +368,7 @@ TITLE
 ..%03d-chacha
 
 KEY
-..17
+..11
 SOURCE
 ..chacha.mp3
 DURATION
@@ -403,7 +403,7 @@ TITLE
 # Foxtrot
 
 KEY
-..18
+..12
 SOURCE
 ..foxtrot.mp3
 DURATION
@@ -434,7 +434,7 @@ TITLE
 ..%03d-foxtrot
 
 KEY
-..19
+..13
 SOURCE
 ..foxtrot.mp3
 DURATION
@@ -463,7 +463,7 @@ TITLE
 ..%03d-foxtrot
 
 KEY
-..20
+..14
 SOURCE
 ..foxtrot.mp3
 DURATION
@@ -496,7 +496,7 @@ TITLE
 ..%03d-foxtrot
 
 KEY
-..21
+..15
 SOURCE
 ..foxtrot.mp3
 DURATION
@@ -529,7 +529,7 @@ TITLE
 ..%03d-foxtrot
 
 KEY
-..22
+..16
 SOURCE
 ..foxtrot.mp3
 DURATION
@@ -562,7 +562,7 @@ TITLE
 ..%03d-foxtrot
 
 KEY
-..23
+..17
 SOURCE
 ..foxtrot.mp3
 DURATION
@@ -593,7 +593,7 @@ TITLE
 # Jive
 
 KEY
-..24
+..18
 SOURCE
 ..jive.mp3
 DURATION
@@ -624,7 +624,7 @@ TITLE
 ..%03d-jive
 
 KEY
-..25
+..19
 SOURCE
 ..jive.mp3
 DURATION
@@ -657,7 +657,7 @@ TITLE
 ..%03d-jive
 
 KEY
-..26
+..20
 SOURCE
 ..jive.mp3
 DURATION
@@ -690,7 +690,7 @@ TITLE
 ..%03d-jive
 
 KEY
-..27
+..21
 SOURCE
 ..jive.mp3
 DURATION
@@ -721,7 +721,7 @@ TITLE
 ..%03d-jive
 
 KEY
-..28
+..22
 SOURCE
 ..jive.mp3
 DURATION
@@ -752,7 +752,7 @@ TITLE
 ..%03d-jive
 
 KEY
-..29
+..23
 SOURCE
 ..jive.mp3
 DURATION
@@ -785,7 +785,7 @@ TITLE
 # Quickstep
 
 KEY
-..30
+..24
 SOURCE
 ..quickstep.mp3
 DURATION
@@ -818,7 +818,7 @@ TITLE
 ..%03d-quickstep
 
 KEY
-..31
+..25
 SOURCE
 ..quickstep.mp3
 DURATION
@@ -849,7 +849,7 @@ TITLE
 ..%03d-quickstep
 
 KEY
-..32
+..26
 SOURCE
 ..quickstep.mp3
 DURATION
@@ -882,7 +882,7 @@ TITLE
 ..%03d-quickstep
 
 KEY
-..33
+..27
 SOURCE
 ..quickstep.mp3
 DURATION
@@ -913,7 +913,7 @@ TITLE
 ..%03d-quickstep
 
 KEY
-..34
+..28
 SOURCE
 ..quickstep.mp3
 DURATION
@@ -944,7 +944,7 @@ TITLE
 ..%03d-quickstep
 
 KEY
-..35
+..29
 SOURCE
 ..quickstep.mp3
 DURATION
@@ -977,7 +977,7 @@ TITLE
 # Rumba
 
 KEY
-..36
+..30
 SOURCE
 ..rumba.mp3
 DURATION
@@ -1010,7 +1010,7 @@ TITLE
 ..%03d-rumba
 
 KEY
-..37
+..31
 SOURCE
 ..rumba.mp3
 DURATION
@@ -1043,7 +1043,7 @@ TITLE
 ..%03d-rumba
 
 KEY
-..38
+..32
 SOURCE
 ..rumba.mp3
 DURATION
@@ -1074,7 +1074,7 @@ TITLE
 ..%03d-rumba
 
 KEY
-..39
+..33
 SOURCE
 ..rumba.mp3
 DURATION
@@ -1103,7 +1103,7 @@ TITLE
 ..%03d-rumba
 
 KEY
-..40
+..34
 SOURCE
 ..rumba.mp3
 DURATION
@@ -1136,7 +1136,7 @@ TITLE
 ..%03d-rumba
 
 KEY
-..41
+..35
 SOURCE
 ..rumba.mp3
 DURATION
@@ -1171,7 +1171,7 @@ TITLE
 # Salsa
 
 KEY
-..42
+..36
 SOURCE
 ..salsa.mp3
 DURATION
@@ -1204,7 +1204,7 @@ TITLE
 ..%03d-salsa
 
 KEY
-..43
+..37
 SOURCE
 ..salsa.mp3
 DURATION
@@ -1233,7 +1233,7 @@ TITLE
 ..%03d-salsa
 
 KEY
-..44
+..38
 SOURCE
 ..salsa.mp3
 DURATION
@@ -1264,7 +1264,7 @@ TITLE
 ..%03d-salsa
 
 KEY
-..45
+..39
 SOURCE
 ..salsa.mp3
 DURATION
@@ -1297,7 +1297,7 @@ TITLE
 ..%03d-salsa
 
 KEY
-..46
+..40
 SOURCE
 ..salsa.mp3
 DURATION
@@ -1330,7 +1330,7 @@ TITLE
 ..%03d-salsa
 
 KEY
-..47
+..41
 SOURCE
 ..salsa.mp3
 DURATION
@@ -1363,7 +1363,7 @@ TITLE
 # Samba
 
 KEY
-..48
+..42
 SOURCE
 ..samba.mp3
 DURATION
@@ -1394,7 +1394,7 @@ TITLE
 ..%03d-samba
 
 KEY
-..49
+..43
 SOURCE
 ..samba.mp3
 DURATION
@@ -1425,7 +1425,7 @@ TITLE
 ..%03d-samba
 
 KEY
-..50
+..44
 SOURCE
 ..samba.mp3
 DURATION
@@ -1458,7 +1458,7 @@ TITLE
 ..%03d-samba
 
 KEY
-..51
+..45
 SOURCE
 ..samba.mp3
 DURATION
@@ -1489,7 +1489,7 @@ TITLE
 ..%03d-samba
 
 KEY
-..52
+..46
 SOURCE
 ..samba.mp3
 DURATION
@@ -1522,7 +1522,7 @@ TITLE
 ..%03d-samba
 
 KEY
-..53
+..47
 SOURCE
 ..samba.mp3
 DURATION
@@ -1555,7 +1555,7 @@ TITLE
 # Tango
 
 KEY
-..54
+..48
 SOURCE
 ..tango.mp3
 DURATION
@@ -1586,7 +1586,7 @@ TITLE
 ..%03d-tango
 
 KEY
-..55
+..49
 SOURCE
 ..tango.mp3
 DURATION
@@ -1617,7 +1617,7 @@ TITLE
 ..%03d-tango
 
 KEY
-..56
+..50
 SOURCE
 ..tango.mp3
 DURATION
@@ -1650,7 +1650,7 @@ TITLE
 ..%03d-tango
 
 KEY
-..57
+..51
 SOURCE
 ..tango.mp3
 DURATION
@@ -1683,7 +1683,7 @@ TITLE
 ..%03d-tango
 
 KEY
-..58
+..52
 SOURCE
 ..tango.mp3
 DURATION
@@ -1716,7 +1716,7 @@ TITLE
 ..%03d-tango
 
 KEY
-..59
+..53
 SOURCE
 ..tango.mp3
 DURATION
@@ -1749,7 +1749,7 @@ TITLE
 # .flac
 
 KEY
-..60
+..54
 SOURCE
 ..tango.flac
 DURATION
@@ -1782,7 +1782,7 @@ TITLE
 ..%03d-tango-flac
 
 KEY
-..61
+..55
 SOURCE
 ..tango.flac
 DURATION
@@ -1815,7 +1815,7 @@ TITLE
 ..%03d-tango-flac
 
 KEY
-..62
+..56
 SOURCE
 ..tango.flac
 DURATION
@@ -1850,7 +1850,7 @@ TITLE
 # .m4a
 
 KEY
-..63
+..57
 SOURCE
 ..tango.m4a
 DURATION
@@ -1879,7 +1879,7 @@ TITLE
 ..%03d-tango-m4a
 
 KEY
-..64
+..58
 SOURCE
 ..tango.m4a
 DURATION
@@ -1910,7 +1910,7 @@ TITLE
 ..%03d-tango-m4a
 
 KEY
-..65
+..59
 SOURCE
 ..tango.m4a
 DURATION
@@ -1945,7 +1945,7 @@ TITLE
 # .opus
 
 KEY
-..66
+..60
 SOURCE
 ..tango.opus
 DURATION
@@ -1976,7 +1976,7 @@ TITLE
 ..%03d-tango-opus
 
 KEY
-..67
+..61
 SOURCE
 ..tango.opus
 DURATION
@@ -2009,7 +2009,7 @@ TITLE
 ..%03d-tango-opus
 
 KEY
-..68
+..62
 SOURCE
 ..tango.opus
 DURATION
@@ -2042,7 +2042,7 @@ TITLE
 # Viennese Waltz
 
 KEY
-..69
+..63
 SOURCE
 ..viennesewaltz.mp3
 DURATION
@@ -2073,7 +2073,7 @@ TITLE
 ..%03d-viennesewaltz
 
 KEY
-..70
+..64
 SOURCE
 ..viennesewaltz.mp3
 DURATION
@@ -2104,7 +2104,7 @@ TITLE
 ..%03d-viennesewaltz
 
 KEY
-..71
+..65
 SOURCE
 ..viennesewaltz.mp3
 DURATION
@@ -2137,7 +2137,7 @@ TITLE
 ..%03d-viennesewaltz
 
 KEY
-..72
+..66
 SOURCE
 ..viennesewaltz.mp3
 DURATION
@@ -2170,7 +2170,7 @@ TITLE
 ..%03d-viennesewaltz
 
 KEY
-..73
+..67
 SOURCE
 ..viennesewaltz.mp3
 DURATION
@@ -2201,7 +2201,7 @@ TITLE
 ..%03d-viennesewaltz
 
 KEY
-..74
+..68
 SOURCE
 ..viennesewaltz.mp3
 DURATION
@@ -2232,7 +2232,7 @@ TITLE
 # Waltz
 
 KEY
-..75
+..69
 SOURCE
 ..waltz.mp3
 DURATION
@@ -2273,7 +2273,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..76
+..70
 SOURCE
 ..waltz.mp3
 DURATION
@@ -2314,7 +2314,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..77
+..71
 SOURCE
 ..waltz.mp3
 DURATION
@@ -2355,7 +2355,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..78
+..72
 SOURCE
 ..waltz.mp3
 DURATION
@@ -2392,7 +2392,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..79
+..73
 SOURCE
 ..waltz.mp3
 DURATION
@@ -2433,7 +2433,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..80
+..74
 SOURCE
 ..waltz.mp3
 DURATION
@@ -2476,7 +2476,7 @@ TITLE
 # .flac
 
 KEY
-..81
+..75
 SOURCE
 ..waltz.flac
 DURATION
@@ -2511,7 +2511,7 @@ TITLE
 ..%03d-waltz-flac
 
 KEY
-..82
+..76
 SOURCE
 ..waltz.flac
 DURATION
@@ -2544,7 +2544,7 @@ TITLE
 ..%03d-waltz-flac
 
 KEY
-..83
+..77
 SOURCE
 ..waltz.flac
 DURATION
@@ -2579,7 +2579,7 @@ TITLE
 # .m4a
 
 KEY
-..84
+..78
 SOURCE
 ..waltz.m4a
 DURATION
@@ -2612,7 +2612,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..85
+..79
 SOURCE
 ..waltz.m4a
 DURATION
@@ -2647,7 +2647,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..86
+..80
 SOURCE
 ..waltz.m4a
 DURATION
@@ -2682,7 +2682,7 @@ TITLE
 # .opus
 
 KEY
-..87
+..81
 SOURCE
 ..waltz.opus
 DURATION
@@ -2717,7 +2717,7 @@ TITLE
 ..%03d-waltz-opus
 
 KEY
-..88
+..82
 SOURCE
 ..waltz.opus
 DURATION
@@ -2750,7 +2750,7 @@ TITLE
 ..%03d-waltz-opus
 
 KEY
-..89
+..83
 SOURCE
 ..waltz.opus
 DURATION
@@ -2783,7 +2783,7 @@ TITLE
 # West Coast Swing
 
 KEY
-..90
+..84
 SOURCE
 ..westcoastswing.mp3
 DURATION
@@ -2818,7 +2818,7 @@ TITLE
 ..%03d-westcoastswing
 
 KEY
-..91
+..85
 SOURCE
 ..westcoastswing.mp3
 DURATION
@@ -2853,7 +2853,7 @@ TITLE
 ..%03d-westcoastswing
 
 KEY
-..92
+..86
 SOURCE
 ..westcoastswing.mp3
 DURATION
@@ -2886,7 +2886,7 @@ TITLE
 ..%03d-westcoastswing
 
 KEY
-..93
+..87
 SOURCE
 ..westcoastswing.mp3
 DURATION
@@ -2915,7 +2915,7 @@ TITLE
 ..%03d-westcoastswing
 
 KEY
-..94
+..88
 SOURCE
 ..westcoastswing.mp3
 DURATION
@@ -2946,7 +2946,7 @@ TITLE
 ..%03d-westcoastswing
 
 KEY
-..95
+..89
 SOURCE
 ..westcoastswing.mp3
 DURATION
@@ -2981,7 +2981,7 @@ TITLE
 # various international names
 
 KEY
-..96
+..90
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3018,7 +3018,7 @@ TITLE
 ..%03d-こんにちは-ja
 
 KEY
-..97
+..91
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3053,7 +3053,7 @@ TITLE
 ..%03d-夕陽伴我歸-zh
 
 KEY
-..98
+..92
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3086,7 +3086,7 @@ TITLE
 ..%03d-내가제일잘나가-ko
 
 KEY
-..99
+..93
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3119,7 +3119,7 @@ TITLE
 ..%03d-Ne_Русский_Шторм-ru
 
 KEY
-..100
+..94
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3154,7 +3154,7 @@ TITLE
 # utf8 sort check
 
 KEY
-..101
+..95
 SOURCE
 ..rumba.mp3
 DURATION
@@ -3187,7 +3187,7 @@ TITLE
 ..900-ZZZZ
 
 KEY
-..102
+..96
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3222,7 +3222,7 @@ TITLE
 ..900-ÄÄÄÄ
 
 KEY
-..103
+..97
 SOURCE
 ..tango.mp3
 DURATION
@@ -3255,7 +3255,7 @@ TITLE
 # keywords
 
 KEY
-..104
+..98
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3290,7 +3290,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..105
+..99
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3325,7 +3325,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..106
+..100
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3362,7 +3362,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..107
+..101
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3399,7 +3399,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..108
+..102
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3434,7 +3434,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..109
+..103
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3467,7 +3467,7 @@ TITLE
 ..%03d-waltz
 
 KEY
-..110
+..104
 SOURCE
 ..tango.mp3
 DURATION
@@ -3502,7 +3502,7 @@ TITLE
 ..%03d-tango
 
 KEY
-..111
+..105
 SOURCE
 ..tango.mp3
 DURATION
@@ -3537,7 +3537,7 @@ TITLE
 ..%03d-tango
 
 KEY
-..112
+..106
 SOURCE
 ..tango.mp3
 DURATION
@@ -3572,7 +3572,7 @@ TITLE
 ..%03d-tango
 
 KEY
-..113
+..107
 SOURCE
 ..tango.mp3
 DURATION
@@ -3603,7 +3603,7 @@ TITLE
 ..%03d-tango
 
 KEY
-..114
+..108
 SOURCE
 ..tango.mp3
 DURATION
@@ -3636,7 +3636,7 @@ TITLE
 ..%03d-tango
 
 KEY
-..115
+..109
 SOURCE
 ..tango.mp3
 DURATION
@@ -3673,7 +3673,7 @@ TITLE
 # .ogg
 
 KEY
-..116
+..110
 SOURCE
 ..tango.ogg
 DURATION
@@ -3706,7 +3706,7 @@ TITLE
 ..%03d-tango-ogg
 
 KEY
-..117
+..111
 SOURCE
 ..tango.ogg
 DURATION
@@ -3739,7 +3739,7 @@ TITLE
 ..%03d-tango-ogg
 
 KEY
-..118
+..112
 SOURCE
 ..tango.ogg
 DURATION
@@ -3770,7 +3770,7 @@ TITLE
 ..%03d-tango-ogg
 
 KEY
-..119
+..113
 SOURCE
 ..waltz.ogg
 DURATION
@@ -3803,7 +3803,7 @@ TITLE
 ..%03d-waltz-ogg
 
 KEY
-..120
+..114
 SOURCE
 ..waltz.ogg
 DURATION
@@ -3838,7 +3838,7 @@ TITLE
 ..%03d-waltz-ogg
 
 KEY
-..121
+..115
 SOURCE
 ..waltz.ogg
 DURATION
@@ -3873,7 +3873,7 @@ TITLE
 # other filenames
 
 KEY
-..122
+..116
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3905,3 +3905,70 @@ DANCERATING
 TITLE
 ..%03d-name with space
 
+# announcements
+
+KEY
+..117
+SOURCE
+..ann-waltz.mp3
+DURATION
+..680
+NOTES
+..
+BPM
+..
+TAGS
+..announcement
+STATUS
+..Complete
+DANCELEVEL
+..Normal
+GENRE
+..
+ALBUMARTIST
+..
+ARTIST
+..
+ALBUM
+..
+TRACKNUMBER
+..%d
+DANCE
+..
+DANCERATING
+..Great
+TITLE
+..ann-waltz
+
+KEY
+..118
+SOURCE
+..ann-tango.mp3
+DURATION
+..780
+NOTES
+..
+BPM
+..
+TAGS
+..announcement
+STATUS
+..Complete
+DANCELEVEL
+..Normal
+GENRE
+..
+ALBUMARTIST
+..
+ARTIST
+..
+ALBUM
+..
+TRACKNUMBER
+..%d
+DANCE
+..
+DANCERATING
+..Great
+TITLE
+..ann-tango

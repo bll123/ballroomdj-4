@@ -138,10 +138,15 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_SPINBOX_STOP_AT_TIME, OPT_P_STOPATTIME,
       bdjoptGetNum (OPT_P_STOPATTIME));
 
-  /* CONTEXT: configuration: the &sgB, of the music queue to display */
+  /* CONTEXT: configuration: the number of items loaded into the music queue */
   confuiMakeItemSpinboxNum (gui, &vbox, &sg, &sgB, _("Queue Length"),
       CONFUI_WIDGET_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
       20, 400, bdjoptGetNum (OPT_G_PLAYERQLEN), NULL);
+
+  /* CONTEXT: configuration: whether to play announcements */
+  confuiMakeItemSwitch (gui, &vbox, &sg, _("Play Announcements"),
+      CONFUI_SWITCH_PLAY_ANNOUNCE, OPT_P_PLAY_ANNOUNCE,
+      bdjoptGetNum (OPT_P_PLAY_ANNOUNCE), NULL);
 
   /* CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished */
   confuiMakeItemEntry (gui, &vbox, &sg, _("Completion Message"),

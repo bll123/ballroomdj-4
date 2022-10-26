@@ -72,7 +72,8 @@ static const char *createFile (const char *src, const char *dest);
 
 static int  gtracknum [TM_MAX_DANCE];
 static int  gseqnum [TM_MAX_DANCE];
-static char *tmusicdir = "test-music/";
+static char *tmusicorig = "test-music-orig";
+static char *tmusicdir = "test-music";
 
 int
 main (int argc, char *argv [])
@@ -121,13 +122,6 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  templateFileCopy ("dancetypes.txt", "dancetypes.txt");
-  templateFileCopy ("dances.txt", "dances.txt");
-  templateFileCopy ("genres.txt", "genres.txt");
-  templateFileCopy ("levels.txt", "levels.txt");
-  templateFileCopy ("ratings.txt", "ratings.txt");
-  filemanipCopy ("test-templates/status.txt", "data/status.txt");
-
   sysvarsInit (argv [0]);
   localeInit ();
   bdjoptInit ();
@@ -165,6 +159,7 @@ main (int argc, char *argv [])
     const char  *dest;
     const char  *fn;
     slist_t     *tagdata;
+    size_t      sz;
 
     tagdata = updateData (tmlist, key);
 
@@ -172,7 +167,7 @@ main (int argc, char *argv [])
     dest = ilistGetStr (tmlist, key, TAG_TITLE);
     fn = createFile (src, dest);
     audiotagWriteTags (fn, empty, tagdata, 0, AT_UPDATE_MOD_TIME);
-    dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
+    sz = dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
   }
 
   dbClose (db);
@@ -189,7 +184,7 @@ updateData (ilist_t *tmlist, ilistidx_t key)
   slist_t       *tagdata;
   datafilekey_t *dfkey;
   datafileconv_t  conv;
-  ilistidx_t    danceIdx;
+  ilistidx_t    danceIdx = LIST_VALUE_INVALID;
 
   conv.allocated = false;
   conv.str = ilistGetStr (tmlist, key, TAG_DANCE);
@@ -230,8 +225,10 @@ updateData (ilist_t *tmlist, ilistidx_t key)
     }
   }
 
-  gtracknum [danceIdx]++;
-  gseqnum [danceIdx]++;
+  if (danceIdx >= 0) {
+    gtracknum [danceIdx]++;
+    gseqnum [danceIdx]++;
+  }
   return tagdata;
 }
 
@@ -242,10 +239,14 @@ createFile (const char *src, const char *dest)
   char        to [MAXPATHLEN];
   pathinfo_t  *pi;
 
-  snprintf (from, sizeof (from), "%s/%s", tmusicdir, src);
+  snprintf (from, sizeof (from), "%s/%s", tmusicorig, src);
+  if (! fileopFileExists (from)) {
+    fprintf (stderr, "no source file: %s\n", src);
+  }
   pi = pathInfo (src);
   snprintf (to, sizeof (to), "%s/%s%*s", tmusicdir, dest,
       (int) pi->elen, pi->extension);
+
   filemanipCopy (from, to);
   pathInfoFree (pi);
   return strdup (to);

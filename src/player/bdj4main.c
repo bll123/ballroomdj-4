@@ -1468,7 +1468,7 @@ static void
 mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx)
 {
   playlist_t    *playlist = NULL;
-  int           plannounce;
+  int           announceflag = false;
 
   logProcBegin (LOG_PROC, "mainMusicQueuePrep");
 
@@ -1489,10 +1489,10 @@ mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx)
     song = dbGetByIdx (mainData->musicdb, dbidx);
     flags = musicqGetFlags (mainData->musicQueue, mqidx, i);
     playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, i);
-    plannounce = false;
-    if (playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
+    announceflag = bdjoptGetNum (OPT_P_PLAY_ANNOUNCE);
+    if (! announceflag && playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
       playlist = nlistGetData (mainData->playlistCache, playlistIdx);
-      plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
+      announceflag = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
     }
 
     if (i == 1) {
@@ -1520,7 +1520,7 @@ mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx)
       annfname = mainPrepSong (mainData, PREP_SONG, song, sfname,
           playlistIdx, uniqueidx);
 
-      if (plannounce == 1) {
+      if (announceflag) {
         if (annfname != NULL && strcmp (annfname, "") != 0 ) {
           musicqSetFlag (mainData->musicQueue, mqidx,
               i, MUSICQ_FLAG_ANNOUNCE);
@@ -1579,9 +1579,9 @@ mainPrepSong (maindata_t *mainData, int flag, song_t *song,
   playlist_t    *playlist = NULL;
   ssize_t       dur = 0;
   ssize_t       songstart = 0;
-  ssize_t       speed = 100;
+  int           speed = 100;
   double        voladjperc = 0;
-  ssize_t       plannounce = 0;
+  int           announceflag = false;
   ilistidx_t    danceidx;
   char          *annfname = NULL;
 
@@ -1606,15 +1606,19 @@ mainPrepSong (maindata_t *mainData, int flag, song_t *song,
   if (flag != PREP_ANNOUNCE) {
     dur = mainCalculateSongDuration (mainData, song, playlistIdx);
 
-    plannounce = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
-    if (plannounce == 1) {
+    announceflag = bdjoptGetNum (OPT_P_PLAY_ANNOUNCE);
+    if (! announceflag) {
+      playlist = nlistGetData (mainData->playlistCache, playlistIdx);
+      announceflag = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
+    }
+    if (announceflag) {
       dance_t       *dances;
       song_t        *tsong;
 
       danceidx = songGetNum (song, TAG_DANCE);
       dances = bdjvarsdfGet (BDJVDF_DANCES);
       annfname = danceGetStr (dances, danceidx, DANCE_ANNOUNCE);
-      if (annfname != NULL) {
+      if (annfname != NULL && *annfname) {
         ssize_t   tval;
 
         tsong = dbGetByName (mainData->musicdb, annfname);
@@ -1633,7 +1637,7 @@ mainPrepSong (maindata_t *mainData, int flag, song_t *song,
     } /* announcements are on in the playlist */
   } /* if this is a normal song */
 
-  snprintf (tbuff, sizeof (tbuff), "%s%c%zd%c%zd%c%zd%c%.1f%c%d%c%ld",
+  snprintf (tbuff, sizeof (tbuff), "%s%c%zd%c%zd%c%d%c%.1f%c%d%c%ld",
       sfname, MSG_ARGS_RS,
       dur, MSG_ARGS_RS,
       songstart, MSG_ARGS_RS,
@@ -2043,7 +2047,7 @@ mainMusicQueuePlay (maindata_t *mainData)
 
         annfname = musicqGetAnnounce (mainData->musicQueue, mainData->musicqPlayIdx, 0);
         if (annfname != NULL) {
-          snprintf (tmp, sizeof (tmp), "%d%c%s", 0, MSG_ARGS_RS, annfname);
+          snprintf (tmp, sizeof (tmp), "%d%c%s", PL_UNIQUE_ANN, MSG_ARGS_RS, annfname);
           connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, tmp);
         }
       }

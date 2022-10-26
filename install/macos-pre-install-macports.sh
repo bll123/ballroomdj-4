@@ -133,7 +133,7 @@ sudo port upgrade outdated
 
 echo "-- Installing packages needed by BDJ4"
 sudo port -N install gtk3 +quartz -x11
-sudo port -N install adwaita-icon-theme
+sudo port -N install adwaita-icon-theme curl curl-ca-bundle
 sudo port -N install ffmpeg +nonfree -x11
 sudo port -N install python${pyver} py${pyver}-pip py${pyver}-wheel
 sudo port -N install icu

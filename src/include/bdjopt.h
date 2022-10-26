@@ -29,72 +29,67 @@ typedef enum {
   BPM_MPM,
 } bdjbpm_t;
 
-/* development notes
- * u - in use
- * d - display working in configui
- * s - save working in configui
- */
-
 typedef enum {
-  OPT_G_AO_PATHFMT,               // u d s
-  OPT_G_AUTOORGANIZE,             //   d s
-  OPT_G_BPM,                      // u d s
-  OPT_G_DEBUGLVL,                 // u d s
-  OPT_G_LOADDANCEFROMGENRE,       // u d s
-  OPT_G_PLAYERQLEN,               // u d s
-  OPT_G_REMCONTROLHTML,           // u d s
-  OPT_G_WRITETAGS,                //   d s
-  OPT_G_BDJ3_COMPAT_TAGS,         //   d s
+  OPT_G_AO_PATHFMT,
+  OPT_G_AUTOORGANIZE,
+  OPT_G_BPM,
+  OPT_G_DEBUGLVL,
+  OPT_G_LOADDANCEFROMGENRE,
+  OPT_G_PLAYERQLEN,
+  OPT_G_REMCONTROLHTML,
+  OPT_G_WRITETAGS,
+  OPT_G_BDJ3_COMPAT_TAGS,
   OPT_M_DIR_ITUNES_MEDIA,
-  OPT_M_DIR_MUSIC,                // u d s
+  OPT_M_DIR_MUSIC,
   /* DIR_OLD_SKIP will be used for a time until the conversion from bdj3 to */
   /* bdj4 is complete.  It will be removed in a later version */
-  OPT_M_DIR_OLD_SKIP,             // u - -
+  OPT_M_DIR_OLD_SKIP,
   OPT_M_ITUNES_XML_FILE,
-  OPT_M_PLAYER_INTFC,             // u d s
-  OPT_M_SHUTDOWNSCRIPT,           // u d s
-  OPT_M_STARTUPSCRIPT,            // u d s
-  OPT_M_VOLUME_INTFC,             // u d s
-  OPT_MP_AUDIOSINK,               // u d s
-  OPT_MP_LISTING_FONT,            // u d s
-  OPT_MP_MQFONT,                  // u d s
-  OPT_MP_MQ_THEME,                // u d s
+  OPT_M_PLAYER_INTFC,
+  OPT_M_SHUTDOWNSCRIPT,
+  OPT_M_STARTUPSCRIPT,
+  OPT_M_VOLUME_INTFC,
+  OPT_MP_AUDIOSINK,
+  OPT_MP_LISTING_FONT,
+  OPT_MP_MQFONT,
+  OPT_MP_MQ_THEME,
   OPT_MP_PLAYEROPTIONS,
   OPT_MP_PLAYERSHUTDOWNSCRIPT,
   OPT_MP_PLAYERSTARTSCRIPT,
-  OPT_MP_UIFONT,                  // u d s
-  OPT_MP_UI_THEME,                // u d s
-  OPT_P_DEFAULTVOLUME,            // u d s
-  OPT_P_COMPLETE_MSG,             // u d s
-  OPT_P_FADEINTIME,               // u d s
-  OPT_P_FADEOUTTIME,              // u d s
-  OPT_P_FADETYPE,                 // u d s
-  OPT_P_GAP,                      // u d s
-  OPT_P_HIDE_MARQUEE_ON_START,    // u d s
-  OPT_P_MAXPLAYTIME,              // u d s
-  OPT_P_MOBILEMARQUEE,            // u d s
-  OPT_P_MOBILEMQPORT,             // u d s
-  OPT_P_MOBILEMQTAG,              // u d s
-  OPT_P_MOBILEMQTITLE,            // u d s
-  OPT_P_MQ_ACCENT_COL,            // u d s
-  OPT_P_MQ_INFO_COL,              // u d s
-  OPT_P_MQ_TEXT_COL,              // u d s
-  OPT_P_MQQLEN,                   // u d s
-  OPT_P_MQ_SHOW_INFO,             // u d s
-  OPT_P_PROFILENAME,              // u d s
+  OPT_MP_UIFONT,
+  OPT_MP_UI_THEME,
+  OPT_P_DEFAULTVOLUME,
+  OPT_P_COMPLETE_MSG,
+  OPT_P_FADEINTIME,
+  OPT_P_FADEOUTTIME,
+  OPT_P_FADETYPE,
+  OPT_P_GAP,
+  OPT_P_HIDE_MARQUEE_ON_START,
+  OPT_P_MAXPLAYTIME,
+  OPT_P_MOBILEMARQUEE,
+  OPT_P_MOBILEMQPORT,
+  OPT_P_MOBILEMQTAG,
+  OPT_P_MOBILEMQTITLE,
+  OPT_P_MQ_ACCENT_COL,
+  OPT_P_MQ_INFO_COL,
+  OPT_P_MQ_TEXT_COL,
+  OPT_P_MQQLEN,
+  OPT_P_MQ_SHOW_INFO,
+  OPT_P_PLAY_ANNOUNCE,
+  OPT_P_PROFILENAME,
   /* the queue name identifiers must be in sequence */
   /* the number of queue names must match MUSICQ_PB_MAX */
-  OPT_P_QUEUE_NAME_A,             // u d s
-  OPT_P_QUEUE_NAME_B,             // u d s
-  OPT_P_REMCONTROLPASS,           // u d s
-  OPT_P_REMCONTROLPORT,           // u d s
-  OPT_P_REMCONTROLUSER,           // u d s
-  OPT_P_REMOTECONTROL,            // u d s
-  OPT_P_STOPATTIME,               // u d s
-  OPT_P_UI_ACCENT_COL,            // u d s
-  OPT_P_UI_ERROR_COL,             // u d s
-  OPT_P_UI_MARK_COL,              // u d s
-  OPT_P_UI_PROFILE_COL,           // u d s
+  OPT_P_QUEUE_NAME_A,
+  OPT_P_QUEUE_NAME_B,
+  OPT_P_REMCONTROLPASS,
+  OPT_P_REMCONTROLPORT,
+  OPT_P_REMCONTROLUSER,
+  OPT_P_REMOTECONTROL,
+  OPT_P_STOPATTIME,
+  OPT_P_UI_ACCENT_COL,
+  OPT_P_UI_ERROR_COL,
+  OPT_P_UI_MARK_COL,
+  OPT_P_UI_PROFILE_COL,
 } bdjoptkey_t;
 
 typedef enum {

@@ -647,18 +647,19 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
       fprintf (ofh, ",%s", tagdefs [i].audiotags [TAG_TYPE_MP3].tag);
     }
   }
-  fprintf (ofh, "\n");
-  fprintf (ofh, "audio = ID3('%s')\n", ffn);
+  fprintf (ofh, ",ID3NoHeaderError\n");
+  fprintf (ofh, "try:\n");
+  fprintf (ofh, "  audio = ID3('%s')\n", ffn);
 
   slistStartIterator (dellist, &iteridx);
   while ((tag = slistIterateKey (dellist, &iteridx)) != NULL) {
     /* special cases - old audio tags */
     if (strcmp (tag, "VARIOUSARTISTS") == 0) {
-      fprintf (ofh, "audio.delall('TXXX:VARIOUSARTISTS')\n");
+      fprintf (ofh, "  audio.delall('TXXX:VARIOUSARTISTS')\n");
       continue;
     }
     if (strcmp (tag, "DURATION") == 0) {
-      fprintf (ofh, "audio.delall('TXXX:DURATION')\n");
+      fprintf (ofh, "  audio.delall('TXXX:DURATION')\n");
       continue;
     }
 
@@ -668,11 +669,11 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
     }
 
     if (tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc != NULL) {
-      fprintf (ofh, "audio.delall('%s:%s')\n",
+      fprintf (ofh, "  audio.delall('%s:%s')\n",
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc);
     } else {
-      fprintf (ofh, "audio.delall('%s')\n",
+      fprintf (ofh, "  audio.delall('%s')\n",
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag);
     }
   }
@@ -689,10 +690,10 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
     logMsg (LOG_DBG, LOG_DBUPDATE, "  write: %s %s",
         tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
     if (tagkey == TAG_RECORDING_ID) {
-      fprintf (ofh, "audio.delall('%s:%s')\n",
+      fprintf (ofh, "  audio.delall('%s:%s')\n",
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc);
-      fprintf (ofh, "audio.add(%s(encoding=3, owner=u'%s', data=b'%s'))\n",
+      fprintf (ofh, "  audio.add(%s(encoding=3, owner=u'%s', data=b'%s'))\n",
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc, value);
     } else if (tagkey == TAG_TRACKNUMBER ||
@@ -707,24 +708,26 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
           tot = nlistGetStr (datalist, TAG_DISCTOTAL);
         }
         if (tot != NULL) {
-          fprintf (ofh, "audio.add(%s(encoding=3, text=u'%s/%s'))\n",
+          fprintf (ofh, "  audio.add(%s(encoding=3, text=u'%s/%s'))\n",
               tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value, tot);
         } else {
-          fprintf (ofh, "audio.add(%s(encoding=3, text=u'%s'))\n",
+          fprintf (ofh, "  audio.add(%s(encoding=3, text=u'%s'))\n",
               tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
         }
       }
     } else if (tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc != NULL) {
-      fprintf (ofh, "audio.add(%s(encoding=3, desc=u'%s', text=u'%s'))\n",
+      fprintf (ofh, "  audio.add(%s(encoding=3, desc=u'%s', text=u'%s'))\n",
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc, value);
     } else {
-      fprintf (ofh, "audio.add(%s(encoding=3, text=u'%s'))\n",
+      fprintf (ofh, "  audio.add(%s(encoding=3, text=u'%s'))\n",
           tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
     }
   }
 
-  fprintf (ofh, "audio.save()\n");
+  fprintf (ofh, "  audio.save()\n");
+  fprintf (ofh, "except ID3NoHeaderError as e:\n");
+  fprintf (ofh, "  exit (1)\n");
   fclose (ofh);
 
   audiotagRunUpdate (fn);

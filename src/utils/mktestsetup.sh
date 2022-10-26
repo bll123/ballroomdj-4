@@ -82,13 +82,16 @@ for f in templates/*.txt; do
   esac
   cp -f $f data
 done
+
 cp -f templates/bdjconfig.txt.g data/bdjconfig.txt
 cp -f templates/bdjconfig.txt.p data/profile00/bdjconfig.txt
 cp -f templates/bdjconfig.txt.m data/${hostname}/bdjconfig.txt
 cp -f templates/bdjconfig.txt.mp data/${hostname}/profile00/bdjconfig.txt
 cp -f templates/automatic.* data
 cp -f templates/standardrounds.* data
-cp -f test-templates/musicdb.dat data
+# the test dances data file has announcements set for tango & waltz
+cp -f test-templates/dances.txt data
+# the test status data file has an additional 'edit' status.
 cp -f test-templates/status.txt data
 cp -f test-templates/ds-songfilter.txt data/profile00
 
@@ -213,6 +216,9 @@ if [[ $1 == --force ]]; then
   rm -f data/mktestdb.txt
 fi
 ./src/utils/mktestdb.sh
+
+# copy this after the db is created
+cp -f test-templates/musicdb.dat data
 
 cwd=$(pwd)
 
