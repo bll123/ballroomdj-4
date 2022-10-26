@@ -640,6 +640,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_CHK_MAIN_SET_PLAYANNOUNCE: {
+          bdjoptSetNum (OPT_P_PLAY_ANNOUNCE, atoi (targs));
+          dbgdisp = true;
+          break;
+        }
         case MSG_DB_ENTRY_TEMP_ADD: {
           mainAddTemporarySong (mainData, targs);
           dbgdisp = true;

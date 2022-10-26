@@ -165,6 +165,7 @@ typedef enum {
   MSG_CHK_PLAYER_FADEOUT,   // args: fade-out
   MSG_CHK_MAIN_SET_MAXPLAYTIME, // args: max-play-time
   MSG_CHK_MAIN_SET_STOPATTIME, // args: max-play-time
+  MSG_CHK_MAIN_SET_PLAYANNOUNCE, // args: true/false
 
   /* when a new message is added, update: */
   /* bdjmsg.c: debugging information for the msg */

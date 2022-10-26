@@ -146,6 +146,11 @@ to=test-seq-c
 cp -f test-templates/test-seq-a.pl data/${to}.pl
 cp -f test-templates/test-seq-c.pldances data/${to}.pldances
 cp -f test-templates/test-seq-a.sequence data/${to}.sequence
+# sequence d
+to=test-seq-d
+cp -f test-templates/test-seq-d.pl data/${to}.pl
+cp -f test-templates/test-seq-a.pldances data/${to}.pldances
+cp -f test-templates/test-seq-a.sequence data/${to}.sequence
 
 # auto a
 to=test-auto-a
