@@ -159,7 +159,6 @@ main (int argc, char *argv [])
     const char  *dest;
     const char  *fn;
     slist_t     *tagdata;
-    size_t      sz;
 
     tagdata = updateData (tmlist, key);
 
@@ -167,7 +166,7 @@ main (int argc, char *argv [])
     dest = ilistGetStr (tmlist, key, TAG_TITLE);
     fn = createFile (src, dest);
     audiotagWriteTags (fn, empty, tagdata, 0, AT_UPDATE_MOD_TIME);
-    sz = dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
+    dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
   }
 
   dbClose (db);

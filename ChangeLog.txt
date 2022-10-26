@@ -1,11 +1,12 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha 2022-10-??
+4.0.0 alpha 2022-10-26
 
 - configuration: player: Added "Play Announcement".
 - configuration: player: Added "Stop At" time.
 - macos: Fix some missing dependencies in the pre-setup script.
 - player: Fix stop time issues.
+- player: Fix announcements.
 - playlist management: Fix save of play-announcement.
 - songlist editor: Fix load of playlist with stop after or stop time set.
 - user interface: Fix missing validation handlers.

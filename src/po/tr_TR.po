@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-10-25\n"
+"PO-Revision-Date: 2022-10-26\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -1310,7 +1310,7 @@ msgid "Queue Dance"
 msgstr "Dans Kuyruğu"
 
 #. CONTEXT: configuration: the length of the queue displayed on the marquee
-#. CONTEXT: configuration: the number of items displayed in the music queue
+#. CONTEXT: configuration: the number of items loaded into the music queue
 msgid "Queue Length"
 msgstr "Kuyruk Uzunluğu"
 

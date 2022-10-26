@@ -144,13 +144,13 @@ START_TEST(filemanip_backup_a)
 
   fh = fopen (ofn, "r");
   ck_assert_ptr_nonnull (fh);
-  fgets (buff, 2, fh);
+  (void) ! fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "1");
 
   fh = fopen (ofn1, "r");
   ck_assert_ptr_nonnull (fh);
-  fgets (buff, 2, fh);
+  (void) ! fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "1");
 
@@ -176,19 +176,19 @@ START_TEST(filemanip_backup_a)
 
   fh = fopen (ofn, "r");
   ck_assert_ptr_nonnull (fh);
-  fgets (buff, 2, fh);
+  (void) ! fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "2");
 
   fh = fopen (ofn1, "r");
   ck_assert_ptr_nonnull (fh);
-  fgets (buff, 2, fh);
+  (void) ! fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "2");
 
   fh = fopen (ofn2, "r");
   ck_assert_ptr_nonnull (fh);
-  fgets (buff, 2, fh);
+  (void) ! fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "1");
 
@@ -214,19 +214,19 @@ START_TEST(filemanip_backup_a)
 
   fh = fopen (ofn, "r");
   ck_assert_ptr_nonnull (fh);
-  fgets (buff, 2, fh);
+  (void) ! fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "3");
 
   fh = fopen (ofn1, "r");
   ck_assert_ptr_nonnull (fh);
-  fgets (buff, 2, fh);
+  (void) ! fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "3");
 
   fh = fopen (ofn2, "r");
   ck_assert_ptr_nonnull (fh);
-  fgets (buff, 2, fh);
+  (void) ! fgets (buff, 2, fh);
   fclose (fh);
   ck_assert_str_eq (buff, "2");
 
@@ -408,13 +408,13 @@ START_TEST(filemanip_backup_u)
 
     fh = fileopOpen (ofn, "r");
     ck_assert_ptr_nonnull (fh);
-    fgets (buff, 2, fh);
+    (void) ! fgets (buff, 2, fh);
     fclose (fh);
     ck_assert_str_eq (buff, "1");
 
     fh = fileopOpen (ofn1, "r");
     ck_assert_ptr_nonnull (fh);
-    fgets (buff, 2, fh);
+    (void) ! fgets (buff, 2, fh);
     fclose (fh);
     ck_assert_str_eq (buff, "1");
 
@@ -440,19 +440,19 @@ START_TEST(filemanip_backup_u)
 
     fh = fileopOpen (ofn, "r");
     ck_assert_ptr_nonnull (fh);
-    fgets (buff, 2, fh);
+    (void) ! fgets (buff, 2, fh);
     fclose (fh);
     ck_assert_str_eq (buff, "2");
 
     fh = fileopOpen (ofn1, "r");
     ck_assert_ptr_nonnull (fh);
-    fgets (buff, 2, fh);
+    (void) ! fgets (buff, 2, fh);
     fclose (fh);
     ck_assert_str_eq (buff, "2");
 
     fh = fileopOpen (ofn2, "r");
     ck_assert_ptr_nonnull (fh);
-    fgets (buff, 2, fh);
+    (void) ! fgets (buff, 2, fh);
     fclose (fh);
     ck_assert_str_eq (buff, "1");
 
@@ -478,19 +478,19 @@ START_TEST(filemanip_backup_u)
 
     fh = fileopOpen (ofn, "r");
     ck_assert_ptr_nonnull (fh);
-    fgets (buff, 2, fh);
+    (void) ! fgets (buff, 2, fh);
     fclose (fh);
     ck_assert_str_eq (buff, "3");
 
     fh = fileopOpen (ofn1, "r");
     ck_assert_ptr_nonnull (fh);
-    fgets (buff, 2, fh);
+    (void) ! fgets (buff, 2, fh);
     fclose (fh);
     ck_assert_str_eq (buff, "3");
 
     fh = fileopOpen (ofn2, "r");
     ck_assert_ptr_nonnull (fh);
-    fgets (buff, 2, fh);
+    (void) ! fgets (buff, 2, fh);
     fclose (fh);
     ck_assert_str_eq (buff, "2");
 

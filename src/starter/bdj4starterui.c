@@ -1966,7 +1966,7 @@ starterLinkHandler (void *udata, int cbidx)
   uri = starter->macoslinkcb [cbidx].uri;
   if (uri != NULL) {
     snprintf (tmp, sizeof (tmp), "open %s", uri);
-    system (tmp);
+    (void) ! system (tmp);
   }
 }
 

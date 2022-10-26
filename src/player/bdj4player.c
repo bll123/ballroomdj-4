@@ -986,7 +986,7 @@ playerProcessPrepRequest (playerdata_t *playerData)
   sz = fileopSize (npq->songfullpath);
   buff = malloc (sz);
   fh = fileopOpen (npq->songfullpath, "rb");
-  fread (buff, sz, 1, fh);
+  (void) ! fread (buff, sz, 1, fh);
   fclose (fh);
   free (buff);
 

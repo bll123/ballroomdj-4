@@ -147,7 +147,7 @@ START_TEST(path_realpath)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_realpath");
 
-  getcwd (cwd, sizeof (cwd));
+  (void) ! getcwd (cwd, sizeof (cwd));
   pathNormPath (cwd, sizeof (cwd));
 
   strlcpy (from, "tmp/abc.txt", sizeof (from));
@@ -170,7 +170,7 @@ START_TEST(path_realpath)
   ck_assert_str_eq (to, actual);
 
 #if _lib_symlink
-  symlink (from, "tmp/def.txt");
+  (void) ! symlink (from, "tmp/def.txt");
   pathRealPath (to, "tmp/def.txt", sizeof (to));
   pathNormPath (to, sizeof (to));
   ck_assert_str_eq (to, actual);

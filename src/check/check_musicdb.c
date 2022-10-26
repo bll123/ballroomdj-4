@@ -689,10 +689,10 @@ START_TEST(musicdb_db)
   db = dbOpen (dbfn);
 
   fh = fileopOpen ("data/musicdb.dat", "r");
-  fgets (tbuff, sizeof (tbuff), fh); // version
-  fgets (tbuff, sizeof (tbuff), fh); // comment
-  fgets (tbuff, sizeof (tbuff), fh); // rasize
-  fgets (tbuff, sizeof (tbuff), fh); // racount
+  (void) ! fgets (tbuff, sizeof (tbuff), fh); // version
+  (void) ! fgets (tbuff, sizeof (tbuff), fh); // comment
+  (void) ! fgets (tbuff, sizeof (tbuff), fh); // rasize
+  (void) ! fgets (tbuff, sizeof (tbuff), fh); // racount
   racount = atoi (tbuff);
   fclose (fh);
 

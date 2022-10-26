@@ -140,18 +140,18 @@ main (int argc, const char *argv [])
   rc = stat ("bdj4-install", &statbuf);
   if (rc == 0) {
     if (isWindows) {
-      system ("rmdir /s/q bdj4-install > NUL");
+      (void) ! system ("rmdir /s/q bdj4-install > NUL");
     } else {
-      system ("rm -rf bdj4-install");
+      (void) ! system ("rm -rf bdj4-install");
     }
   }
 
   printf ("-- Unpacking archive.\n");
   fflush (stdout);
   if (isWindows) {
-    system ("expand bdj4-install.cab -F:* . > bdj4-expand.log ");
+    (void) ! system ("expand bdj4-install.cab -F:* . > bdj4-expand.log ");
   } else {
-    system ("tar -x -f bdj4-install.tar.gz");
+    (void) ! system ("tar -x -f bdj4-install.tar.gz");
   }
 
   rc = chdir ("bdj4-install");

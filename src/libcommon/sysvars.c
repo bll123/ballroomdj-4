@@ -339,9 +339,10 @@ sysvarsInit (const char *argv0)
     FILE    *fh;
 
     fh = fopen (buff, "r");
-    fgets (tbuff, sizeof (tbuff), fh);
-    stringTrim (tbuff);
+    *tbuff = '\0';
+    (void) ! fgets (tbuff, sizeof (tbuff), fh);
     fclose (fh);
+    stringTrim (tbuff);
     if (*tbuff) {
       strlcpy (sysvars [SV_LOCALE], tbuff, SV_MAX_SZ);
       lsysvars [SVL_LOCALE_SET] = 1;
@@ -442,11 +443,14 @@ sysvarsInit (const char *argv0)
   if (fileopFileExists (buff)) {
     FILE    *fh;
 
+    *tbuff = '\0';
     fh = fopen (buff, "r");
-    fgets (tbuff, sizeof (tbuff), fh);
-    stringTrim (tbuff);
+    (void) ! fgets (tbuff, sizeof (tbuff), fh);
     fclose (fh);
-    lsysvars [SVL_BASEPORT] = atoi (tbuff);
+    stringTrim (tbuff);
+    if (*tbuff) {
+      lsysvars [SVL_BASEPORT] = atoi (tbuff);
+    }
   }
 
   lsysvars [SVL_NUM_PROC] = 2;

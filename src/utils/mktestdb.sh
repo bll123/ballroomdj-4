@@ -32,7 +32,6 @@ if [[ ! -f $FLAG ||
   rm -f test-music/0[0-9][0-9]-*
   ./bin/bdj4 --tmusicsetup
   touch $FLAG
-  ls -ld $FLAG
 fi
 
 exit 0

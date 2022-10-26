@@ -742,7 +742,7 @@ altsetupCopyTemplates (altsetup_t *altsetup)
     snprintf (tbuff, sizeof (tbuff), "cp -r '%s' '%s'", from, "http");
   }
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
-  system (tbuff);
+  (void) ! system (tbuff);
 
   datafileFree (srdf);
   datafileFree (autodf);
@@ -776,7 +776,7 @@ altsetupSetup (altsetup_t *altsetup)
 
   /* read the current altcount */
   fh = fopen (buff, "r");
-  fgets (str, sizeof (str), fh);
+  (void) ! fgets (str, sizeof (str), fh);
   stringTrim (str);
   fclose (fh);
   altcount = atoi (str);
@@ -811,7 +811,7 @@ altsetupSetup (altsetup_t *altsetup)
 
     pathbldMakePath (buff, sizeof (buff),
         "bdj4", "", PATHBLD_MP_EXECDIR);
-    symlink (buff, "bin/bdj4");
+    (void) ! symlink (buff, "bin/bdj4");
 #endif
   }
 
@@ -865,7 +865,7 @@ altsetupCreateShortcut (altsetup_t *altsetup)
       targv [targc++] = tbuff;
       targv [targc++] = NULL;
       osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
-      chdir (altsetup->maindir);
+      (void) ! chdir (altsetup->maindir);
     }
   }
 
@@ -873,7 +873,7 @@ altsetupCreateShortcut (altsetup_t *altsetup)
     snprintf (buff, sizeof (buff),
         "./install/linuxshortcut.sh %s '%s' '%s'",
         "BDJ4-alt", altsetup->maindir, altsetup->target);
-    system (buff);
+    (void) ! system (buff);
   }
 
   altsetup->instState = ALT_UPDATE_PROCESS_INIT;

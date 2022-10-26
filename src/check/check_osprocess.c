@@ -174,7 +174,7 @@ START_TEST(osprocess_start_redirect)
   ck_assert_int_eq (fileopFileExists (outfn), 1);
   fh = fopen (outfn, "r");
   if (fh != NULL) {
-    fgets (tbuff, sizeof (tbuff), fh);
+    (void) ! fgets (tbuff, sizeof (tbuff), fh);
     fclose (fh);
   }
   stringTrim (tbuff);

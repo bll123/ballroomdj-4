@@ -251,9 +251,9 @@ volregGetFilename (char *tfn, size_t sz, char *fn)
     FILE    *fh;
 
     fh = fopen (tbuff, "r");
-    fgets (tfn, sz, fh);
-    stringTrim (tfn);
+    (void) ! fgets (tfn, sz, fh);
     fclose (fh);
+    stringTrim (tfn);
     fn = tfn;
     flags |= PATHBLD_LOCK_FFN;
   }

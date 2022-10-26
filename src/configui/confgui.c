@@ -512,7 +512,7 @@ confuiLinkCallback (void *udata)
   uri = gui->uiitem [widx].uri;
   if (uri != NULL) {
     snprintf (tmp, sizeof (tmp), "open %s", uri);
-    system (tmp);
+    (void) ! system (tmp);
     return UICB_STOP;
   }
   return UICB_CONT;

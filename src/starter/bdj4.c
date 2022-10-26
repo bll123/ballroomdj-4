@@ -420,9 +420,9 @@ main (int argc, char * argv[])
         "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
     if (fileopFileExists (buff)) {
       fh = fopen (buff, "r");
-      fgets (buff, sizeof (buff), fh);
-      stringTrim (buff);
+      (void) ! fgets (buff, sizeof (buff), fh);
       fclose (fh);
+      stringTrim (buff);
 #if BDJ4_USE_GTK
       osSetEnv ("GTK_THEME", buff);
 #endif

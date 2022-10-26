@@ -281,7 +281,7 @@ main (int argc, char *argv[])
   uiutilsUIWidgetInit (&installer.pythonMsg);
   uiutilsUIWidgetInit (&installer.mutagenMsg);
   uiutilsUIWidgetInit (&installer.convWidget);
-  getcwd (installer.currdir, sizeof (installer.currdir));
+  (void) ! getcwd (installer.currdir, sizeof (installer.currdir));
   installer.webclient = NULL;
   strcpy (installer.vlcversion, "");
   strcpy (installer.pyversion, "");
@@ -342,7 +342,7 @@ main (int argc, char *argv[])
   installerGetTargetSaveFname (&installer, tbuff, sizeof (tbuff));
   fh = fileopOpen (tbuff, "r");
   if (fh != NULL) {
-    fgets (buff, sizeof (buff), fh);
+    (void) ! fgets (buff, sizeof (buff), fh);
     stringTrim (buff);
     fclose (fh);
   }
@@ -356,7 +356,7 @@ main (int argc, char *argv[])
   installerGetBDJ3Fname (&installer, tbuff, sizeof (tbuff));
   fh = fileopOpen (tbuff, "r");
   if (fh != NULL) {
-    fgets (buff, sizeof (buff), fh);
+    (void) ! fgets (buff, sizeof (buff), fh);
     stringTrim (buff);
     installerSetBDJ3LocDir (&installer, buff);
     fclose (fh);
@@ -1234,7 +1234,7 @@ installerInstInit (installer_t *installer)
     printf ("\n");
     printf ("[%s] : ", installer->target);
     fflush (stdout);
-    fgets (tbuff, sizeof (tbuff), stdin);
+    (void) ! fgets (tbuff, sizeof (tbuff), stdin);
     stringTrim (tbuff);
     if (*tbuff != '\0') {
       if (installer->target != NULL && *installer->target) {
@@ -1265,7 +1265,7 @@ installerInstInit (installer_t *installer)
       printf ("\n");
       printf ("[Y] : ");
       fflush (stdout);
-      fgets (tbuff, sizeof (tbuff), stdin);
+      (void) ! fgets (tbuff, sizeof (tbuff), stdin);
       stringTrim (tbuff);
       if (*tbuff != '\0') {
         if (strncmp (tbuff, "Y", 1) != 0 &&
@@ -1416,13 +1416,12 @@ installerCopyFiles (installer_t *installer)
     snprintf (tbuff, sizeof (tbuff),
         "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
         tmp);
-    system (tbuff);
   } else {
     snprintf (tbuff, sizeof (tbuff), "tar -c -f - . | (cd '%s'; tar -x -f -)",
         installer->target);
   }
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
-  system (tbuff);
+  (void) ! system (tbuff);
   uiLabelSetText (&installer->statusMsg, "");
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_STATUS, _("Copy finished."), false);
@@ -1651,7 +1650,7 @@ installerCopyTemplates (installer_t *installer)
     snprintf (tbuff, sizeof (tbuff), "cp -r '%s' '%s'", from, "http");
   }
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
-  system (tbuff);
+  (void) ! system (tbuff);
 
   if (isMacOS ()) {
     snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/macOS-Mojave-dark");
@@ -1716,7 +1715,7 @@ installerConvertStart (installer_t *installer)
     snprintf (tbuff, sizeof (tbuff), _("%s Folder"), BDJ3_NAME);
     printf ("%s [%s] : ", tbuff, installer->bdj3loc);
     fflush (stdout);
-    fgets (tbuff, sizeof (tbuff), stdin);
+    (void) ! fgets (tbuff, sizeof (tbuff), stdin);
     stringTrim (tbuff);
     if (*tbuff != '\0') {
       installerSetBDJ3LocDir (installer, tbuff);
@@ -1744,7 +1743,7 @@ installerConvertStart (installer_t *installer)
 
     fh = fopen (tbuff, "r");
     if (fh != NULL) {
-      fgets (tmp, sizeof (tmp), fh);
+      (void) ! fgets (tmp, sizeof (tmp), fh);
       fclose (fh);
       sscanf (tmp, "#VERSION=%d", &ver);
       if (ver < 8) {
@@ -1914,7 +1913,7 @@ installerCreateShortcut (installer_t *installer)
       targv [targc++] = tbuff;
       targv [targc++] = NULL;
       osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
-      chdir (installer->rundir);
+      (void) ! chdir (installer->rundir);
     }
   }
   if (isMacOS ()) {
@@ -1922,17 +1921,17 @@ installerCreateShortcut (installer_t *installer)
     /* on macos, the startup program must be a gui program, otherwise */
     /* the dock icon is not correct */
     /* this must exist and match the name of the app */
-    symlink ("bin/bdj4g", "BDJ4");
+    (void) ! symlink ("bin/bdj4g", "BDJ4");
     /* desktop shortcut */
     snprintf (buff, sizeof (buff), "%s/Desktop/BDJ4.app", installer->home);
-    symlink (installer->target, buff);
+    (void) ! symlink (installer->target, buff);
 #endif
   }
   if (isLinux ()) {
     snprintf (buff, sizeof (buff),
         "./install/linuxshortcut.sh %s '%s' '%s'",
         BDJ4_NAME, installer->rundir, installer->rundir);
-    system (buff);
+    (void) ! system (buff);
   }
 
   installer->instState = INST_VLC_CHECK;
@@ -2222,7 +2221,7 @@ installerMutagenInstall (installer_t *installer)
   }
   snprintf (tbuff, sizeof (tbuff),
       "%s --quiet install --user --upgrade mutagen", pipnm);
-  system (tbuff);
+  (void) ! system (tbuff);
   uiLabelSetText (&installer->statusMsg, "");
   /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
@@ -2411,7 +2410,7 @@ installerCleanup (installer_t *installer)
     osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
   } else {
     snprintf (buff, sizeof(buff), "rm -rf %s", installer->unpackdir);
-    system (buff);
+    (void) ! system (buff);
   }
 }
 
