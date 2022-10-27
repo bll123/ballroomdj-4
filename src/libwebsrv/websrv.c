@@ -15,7 +15,7 @@
 #include "log.h"
 #include "websrv.h"
 
-static void websrvLog (const void *msg, size_t len, void *userdata);
+static void websrvLog (char c, void *userdata);
 
 websrv_t *
 websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
@@ -27,9 +27,9 @@ websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
   websrv = malloc (sizeof (websrv_t));
   assert (websrv != NULL);
 
-  mg_log_set_callback (websrvLog, NULL);
+  mg_log_set_fn (websrvLog, NULL);
   if (logCheck (LOG_DBG, LOG_WEBSRV)) {
-    mg_log_set ("3");
+    mg_log_set (3);
   }
 
   mg_mgr_init (&websrv->mgr);
@@ -56,12 +56,18 @@ websrvProcess (websrv_t *websrv)
 }
 
 static void
-websrvLog (const void *tmsg, size_t len, void *userdata)
+websrvLog (char c, void *userdata)
 {
-  const char  *msg = tmsg;
+  static char   wlogbuff [2048];
+  static size_t len = 0;
 
-  if (len == 1 && *msg == '\n') {
+  if (c == '\n' || len > sizeof (wlogbuff)) {
+    wlogbuff [len] = '\0';
+    logMsg (LOG_DBG, LOG_WEBSRV, "%s", wlogbuff);
+    len = 0;
     return;
   }
-  logMsg (LOG_DBG, LOG_WEBSRV, "%.*s", len, msg);
+
+  wlogbuff [len++] = c;
+  wlogbuff [len] = '\0';
 }

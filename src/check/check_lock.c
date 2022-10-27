@@ -59,7 +59,7 @@ START_TEST(lock_acquire_release)
   ck_assert_int_eq (fpid, pid);
   rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (rc, 0);
-  rc = stat (LOCK_FN, &statbuf);
+  rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_lt (rc, 0);
   unlink (FULL_LOCK_FN);
 }
@@ -68,16 +68,21 @@ END_TEST
 START_TEST(lock_already)
 {
   int           rc;
+  struct stat   statbuf;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_already");
 
   unlink (FULL_LOCK_FN);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_gt (rc, 0);
+  rc = stat (FULL_LOCK_FN, &statbuf);
+  ck_assert_int_eq (rc, 0);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_SKIP_SELF);
   ck_assert_int_lt (rc, 0);
   rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (rc, 0);
+  rc = stat (FULL_LOCK_FN, &statbuf);
+  ck_assert_int_lt (rc, 0);
   unlink (FULL_LOCK_FN);
 }
 END_TEST
@@ -85,16 +90,23 @@ END_TEST
 START_TEST(lock_other_dead)
 {
   int           rc;
+  struct stat   statbuf;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_other_dead");
 
   unlink (FULL_LOCK_FN);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_OTHER_PID);
   ck_assert_int_gt (rc, 0);
+  rc = stat (FULL_LOCK_FN, &statbuf);
+  ck_assert_int_eq (rc, 0);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_gt (rc, 0);
+  rc = stat (FULL_LOCK_FN, &statbuf);
+  ck_assert_int_eq (rc, 0);
   rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (rc, 0);
+  rc = stat (FULL_LOCK_FN, &statbuf);
+  ck_assert_int_lt (rc, 0);
   unlink (FULL_LOCK_FN);
 }
 END_TEST
@@ -102,16 +114,21 @@ END_TEST
 START_TEST(lock_unlock_fail)
 {
   int           rc;
+  struct stat   statbuf;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_unlock_fail");
 
   unlink (FULL_LOCK_FN);
   rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_gt (rc, 0);
+  rc = stat (FULL_LOCK_FN, &statbuf);
+  ck_assert_int_eq (rc, 0);
   rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_OTHER_PID);
   ck_assert_int_lt (rc, 0);
   rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
   ck_assert_int_eq (rc, 0);
+  rc = stat (FULL_LOCK_FN, &statbuf);
+  ck_assert_int_lt (rc, 0);
   unlink (FULL_LOCK_FN);
 }
 END_TEST

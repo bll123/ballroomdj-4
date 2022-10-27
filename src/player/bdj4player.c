@@ -740,7 +740,7 @@ playerProcessing (void *udata)
 
         /* the play request for a song on repeat is left in the queue */
         /* so that the song will be re-played when finished. */
-        if (! playerData->repeat) {
+        if (! playerData->repeat || pq->announce == PREP_ANNOUNCE) {
           playrequest_t *preq;
 
           preq = queuePop (playerData->playRequest);

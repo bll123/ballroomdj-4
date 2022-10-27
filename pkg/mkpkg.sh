@@ -11,8 +11,7 @@ function copysrcfiles {
   tag=$1
   stage=$2
 
-  filelist="ChangeLog.txt LICENSE.txt README.txt VERSION.txt
-      packages/mongoose/mongoose.[ch]"
+  filelist="ChangeLog.txt LICENSE.txt README.txt VERSION.txt"
   dirlist="src conv img install licenses scripts locale pkg
       templates test-templates web wiki"
 
@@ -88,8 +87,10 @@ function copyreleasefiles {
       ${stage}/img/mkicon.sh \
       ${stage}/img/README.txt \
       ${stage}/plocal/bin/checkmk \
+      ${stage}/plocal/bin/curl.exe \
       ${stage}/plocal/bin/libcheck-*.dll \
-      ${stage}/plocal/bin/ocspcheck.exe
+      ${stage}/plocal/bin/ocspcheck.exe \
+      ${stage}/plocal/bin/openssl.exe
   rm -rf ${stage}/img/profile0[1-9]
 }
 

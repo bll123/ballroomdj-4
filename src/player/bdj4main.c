@@ -1495,7 +1495,7 @@ mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx)
     flags = musicqGetFlags (mainData->musicQueue, mqidx, i);
     playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, i);
     announceflag = bdjoptGetNum (OPT_P_PLAY_ANNOUNCE);
-    if (! announceflag && playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
+    if (announceflag != 1 && playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
       playlist = nlistGetData (mainData->playlistCache, playlistIdx);
       announceflag = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
     }
@@ -1525,7 +1525,7 @@ mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx)
       annfname = mainPrepSong (mainData, PREP_SONG, song, sfname,
           playlistIdx, uniqueidx);
 
-      if (announceflag) {
+      if (announceflag == 1) {
         if (annfname != NULL && strcmp (annfname, "") != 0 ) {
           musicqSetFlag (mainData->musicQueue, mqidx,
               i, MUSICQ_FLAG_ANNOUNCE);
@@ -1612,11 +1612,11 @@ mainPrepSong (maindata_t *mainData, int flag, song_t *song,
     dur = mainCalculateSongDuration (mainData, song, playlistIdx);
 
     announceflag = bdjoptGetNum (OPT_P_PLAY_ANNOUNCE);
-    if (! announceflag) {
+    if (announceflag != 1) {
       playlist = nlistGetData (mainData->playlistCache, playlistIdx);
       announceflag = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
     }
-    if (announceflag) {
+    if (announceflag == 1) {
       dance_t       *dances;
       song_t        *tsong;
 

@@ -7,10 +7,12 @@ BallroomDJ 4 Change Log
 - macos: Fix some missing dependencies in the pre-setup script.
 - player: Fix stop time issues.
 - player: Fix announcements.
-- playlist management: Fix save of play-announcement.
+- playlist management: Fix save of play announcement.
 - songlist editor: Fix load of playlist with stop after or stop time set.
 - user interface: Fix missing validation handlers.
 - user interface: Minor bug in validation of hh:mm fixed.
+- internal: windows: update packages.
+- internal: update mongoose web server.
 
 4.0.0 alpha 2022-10-20
 

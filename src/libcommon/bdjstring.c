@@ -118,3 +118,17 @@ versionNext (const char *tv1)
   }
   return tv1;
 }
+
+/* for sanitizeaddress */
+#if defined (BDJ4_NO_INLINE)
+
+void
+dataFree (void *data)
+{
+  if (data != NULL) {
+    free (data);
+  }
+}
+
+#endif /* BDJ4_NO_INLINE defined */
+

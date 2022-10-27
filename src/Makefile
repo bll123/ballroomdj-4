@@ -114,6 +114,7 @@ checksuite:
 	(cd ..;CK_RUN_SUITE=$(suite) ./bin/bdj4 --check_all)
 
 testsuite:
+	./utils/mktestsetup.sh
 	(cd ..;./bin/bdj4 --testsuite)
 
 # recommended to change PLAYER and VOLUME in data/bdjconfig.txt to

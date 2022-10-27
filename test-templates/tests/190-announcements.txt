@@ -65,7 +65,7 @@ end
 # announcements should be played for all subsequent songs
 test 190-20 With-Playlist-Announce
 msg main QUEUE_PLAYLIST 0~test-seq-d
-mssleep 100
+mssleep 300
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 7
 msg main CMD_PLAY

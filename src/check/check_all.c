@@ -37,15 +37,16 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  logStart ("check_all", "ck", LOG_ALL);
+  /* macos's logging is really slow and affects the check suite */
+//  logStart ("check_all", "ck", LOG_ALL);
 
   sr = srunner_create (NULL);
   check_libcommon (sr);
   check_libbasic (sr);
   check_libbdj4 (sr);
   /* if the durations are needed */
-//  srunner_set_xml (sr, "tmp/check.xml");
-  srunner_set_log (sr, "tmp/check.log");
+  srunner_set_xml (sr, "tmp/check.xml");
+//  srunner_set_log (sr, "tmp/check.log");
   srunner_run_all (sr, CK_ENV);
   number_failed += srunner_ntests_failed (sr);
   srunner_free (sr);

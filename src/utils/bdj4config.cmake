@@ -113,6 +113,7 @@ set (BDJ4_FORTIFY T)
 # address sanitizer
 if (BDJ4_BUILD STREQUAL "SanitizeAddress")
   message ("Sanitize Address Build")
+  add_compile_options (-DBDJ4_NO_INLINE=1)
   add_compile_options (-DBDJ4_USE_GTK=1)
   set (BDJ4_FORTIFY F)
   add_compile_options (-O0)
@@ -194,6 +195,7 @@ if (NOT WIN32)
 else()
   add_compile_options (-DMG_ARCH=MG_ARCH_WIN32)
   add_link_options (-static-libgcc)
+  add_link_options (-static-libstdc++)
 endif()
 
 set (CMAKE_REQUIRED_INCLUDES

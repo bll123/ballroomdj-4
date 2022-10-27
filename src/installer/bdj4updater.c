@@ -256,6 +256,8 @@ main (int argc, char *argv [])
       }
       if (isMacOS ()) {
         bdjoptSetStr (OPT_M_VOLUME_INTFC, "libvolmac");
+        /* logging on mac os is really slow */
+        bdjoptSetNum (OPT_G_DEBUGLVL, 0);
       }
       if (isLinux ()) {
         bdjoptSetStr (OPT_M_VOLUME_INTFC, "libvolpa");

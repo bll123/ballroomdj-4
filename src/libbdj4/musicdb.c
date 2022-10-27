@@ -276,11 +276,13 @@ dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
 
+  tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn, newrrn);
+
   newrrn = rrn;
   if (rrn == MUSICDB_ENTRY_NEW) {
+    /* this locks the database */
     newrrn = raGetNextRRN (musicdb->radb);
   }
-  tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn, newrrn);
   /* rrn may be set to MUSICB_ENTRY_NEW */
   raWrite (musicdb->radb, rrn, tbuff);
   return tblen;

@@ -47,7 +47,7 @@ esac
 echo "-- $(date +%T) copying licenses"
 licdir=licenses
 rm -f ${licdir}/*
-cp -pf packages/mongoose/LICENSE ${licdir}/mongoose.LICENSE
+cp -pf packages/mongoose*/LICENSE ${licdir}/mongoose.LICENSE
 if [[ $tag == windows ]]; then
   cp -pf packages/libressl*/COPYING ${licdir}/libressl.LICENSE
   cp -pf packages/c-ares*/LICENSE.md ${licdir}/c-ares.LICENSE.md
@@ -108,7 +108,7 @@ if [[ $platform == windows ]]; then
   dlllistfn=tmp/dll-list.txt
   > $dlllistfn
 
-  for fn in bin/*.exe $exelist ; do
+  for fn in plocal/bin/*.dll bin/*.exe $exelist ; do
     ldd $fn |
       grep mingw |
       sed -e 's,.*=> ,,' -e 's,\.dll .*,.dll,' >> $dlllistfn

@@ -293,12 +293,12 @@ remctrlEventHandler (struct mg_connection *c, int ev,
         mg_http_reply (c, 200,
             "Content-type: text/plain; charset=utf-8\r\n"
             "Cache-Control: max-age=0\r\n",
-            NULL);
+            "");
       } else {
         mg_http_reply (c, 400,
             "Content-type: text/plain; charset=utf-8\r\n"
             "Cache-Control: max-age=0\r\n",
-            NULL);
+            "");
       }
     } else if (mg_http_match_uri (hm, "/getdancelist")) {
       mg_http_reply (c, 200,

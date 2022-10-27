@@ -346,12 +346,22 @@ logInit (void)
   }
 }
 
-const char *
+inline const char *
 logTail (const char *fn)
 {
   const char    *p;
+  size_t        len;
+  bool          fp = false;
 
-  p = fn + strlen (fn) - 1;
+  len = strlen (fn);
+  if (*fn == '/' || *fn == '\\' || (len > 2 && fn [1] == ':')) {
+    fp = true;
+  }
+  if (! fp) {
+    return fn;
+  }
+
+  p = fn + len - 1;
   while (p != fn && *p != '/' && *p != '\\') {
     --p;
   }
@@ -360,4 +370,3 @@ logTail (const char *fn)
   }
   return p;
 }
-

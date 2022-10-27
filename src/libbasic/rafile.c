@@ -274,6 +274,10 @@ raLock (rafile_t *rafile)
     logProcEnd (LOG_PROC, "raLock", "is-in-batch");
     return;
   }
+  if (rafile->locked) {
+    logProcEnd (LOG_PROC, "raLock", "already");
+    return;
+  }
 
   /* the music database may be shared across multiple processes */
   rc = lockAcquire (RAFILE_LOCK_FN, PATHBLD_MP_TMPDIR);
@@ -297,6 +301,10 @@ raUnlock (rafile_t *rafile)
   logProcBegin (LOG_PROC, "raUnlock");
   if (rafile->inbatch) {
     logProcEnd (LOG_PROC, "raUnlock", "is-in-batch");
+    return;
+  }
+  if (! rafile->locked) {
+    logProcEnd (LOG_PROC, "raUnlock", "not-locked");
     return;
   }
 
