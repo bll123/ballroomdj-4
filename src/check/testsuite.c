@@ -61,7 +61,7 @@ enum {
 };
 
 enum {
-  TS_CHK_TIMEOUT = 200,
+  TS_CHK_TIMEOUT = 400,
 };
 
 typedef struct {

@@ -497,6 +497,11 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerData->fadeoutTime = atol (args);
           break;
         }
+        case MSG_CHK_CLEAR_PREP_Q: {
+          queueClear (playerData->prepQueue, 0);
+          queueRemoveByIdx (playerData->prepQueue, 0);
+          break;
+        }
         default: {
           break;
         }

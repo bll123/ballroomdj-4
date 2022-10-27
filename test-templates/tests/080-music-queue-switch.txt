@@ -35,7 +35,7 @@ get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 # fade q 0 song
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
@@ -46,7 +46,7 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mqplay 1 mq0len 0 mq1len 2 mq0idx1 -1 mq1idx0 3 mq1idx1 5 dbidx 3 songplaysentcount 2
 # fade q 1 song
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
@@ -55,7 +55,7 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mqplay 1 mq0len 0 mq1len 1 mq0idx1 -1 mq1idx0 5 dbidx 5 songplaysentcount 3
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate stopped
 end
@@ -94,7 +94,7 @@ get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 # fade q 0 song
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
@@ -111,7 +111,7 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 0 mqplay 1 mq0len 2 mq1len 1 mq0idx1 4 mq1idx0 3 dbidx 3 songplaysentcount 2
 # fade q 1 song
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
@@ -120,7 +120,7 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mqmanage 0 mqplay 0 mq0len 1 mq1len 0 mq0idx0 4 mq1idx1 -1 dbidx 4 songplaysentcount 3
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate stopped
 chk currvolume defaultvol actualvolume 0

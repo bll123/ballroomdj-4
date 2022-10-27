@@ -3,6 +3,7 @@ section 190 Announcements
 # no announcement
 # test-seq-a has: waltz, tango, foxtrot, quickstep
 test 190-10 No-Announce
+msg main CHK_CLEAR_PREP_Q
 msg main QUEUE_PLAYLIST 0~test-seq-a
 mssleep 100
 get player CHK_PLAYER_STATUS
@@ -17,7 +18,7 @@ chk currvolume defaultvol prepqueuecount 4
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
@@ -55,6 +56,7 @@ wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 4
+msg main CHK_CLEAR_PREP_Q
 end
 
 # with announcement
@@ -64,16 +66,17 @@ end
 # the player's prep queue will always have the two announcements in it
 # announcements should be played for all subsequent songs
 test 190-20 With-Playlist-Announce
+msg main CHK_CLEAR_PREP_Q
 msg main QUEUE_PLAYLIST 0~test-seq-d
 mssleep 300
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 7
 msg main CMD_PLAY
 resptimeout 2000
+get player CHK_PLAYER_SONG
+wait p-songfn ann-waltz.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-get player CHK_PLAYER_SONG
-chk p-songfn ann-waltz.mp3
 mssleep 2000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
@@ -82,11 +85,11 @@ chk-not p-songfn ann-waltz.mp3
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
+get player CHK_PLAYER_SONG
+wait p-songfn ann-tango.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-get player CHK_PLAYER_SONG
-chk p-songfn ann-tango.mp3
 mssleep 2000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
@@ -111,10 +114,10 @@ chk currvolume defaultvol prepqueuecount 6
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Quickstep
 msg player PLAY_FADE
+get player CHK_PLAYER_SONG
+wait p-songfn ann-waltz.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-get player CHK_PLAYER_SONG
-chk p-songfn ann-waltz.mp3
 mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
@@ -123,10 +126,10 @@ chk-not p-songfn ann-waltz.mp3
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz
 msg player PLAY_FADE
+get player CHK_PLAYER_SONG
+wait p-songfn ann-tango.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-get player CHK_PLAYER_SONG
-chk p-songfn ann-tango.mp3
 mssleep 2000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
@@ -134,6 +137,7 @@ get player CHK_PLAYER_SONG
 chk-not p-songfn ann-tango.mp3
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Tango
+msg main CHK_CLEAR_PREP_Q
 end
 
 # with announcement
@@ -143,6 +147,7 @@ end
 # the player's prep queue will always have the two announcements in it
 # announcements should be played for all subsequent songs
 test 190-30 With-Global-Announce
+msg main CHK_CLEAR_PREP_Q
 msg main CHK_MAIN_SET_PLAYANNOUNCE 1
 msg main QUEUE_PLAYLIST 0~test-seq-a
 mssleep 100
@@ -150,10 +155,10 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 7
 msg main CMD_PLAY
 resptimeout 2000
+get player CHK_PLAYER_SONG
+wait p-songfn ann-waltz.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-get player CHK_PLAYER_SONG
-chk p-songfn ann-waltz.mp3
 mssleep 2000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
@@ -162,11 +167,11 @@ chk-not p-songfn ann-waltz.mp3
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
+get player CHK_PLAYER_SONG
+wait p-songfn ann-tango.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-get player CHK_PLAYER_SONG
-chk p-songfn ann-tango.mp3
 mssleep 2000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
@@ -191,10 +196,10 @@ chk currvolume defaultvol prepqueuecount 6
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Quickstep
 msg player PLAY_FADE
+get player CHK_PLAYER_SONG
+wait p-songfn ann-waltz.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-get player CHK_PLAYER_SONG
-chk p-songfn ann-waltz.mp3
 mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
@@ -203,10 +208,10 @@ chk-not p-songfn ann-waltz.mp3
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz
 msg player PLAY_FADE
+get player CHK_PLAYER_SONG
+wait p-songfn ann-tango.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-get player CHK_PLAYER_SONG
-chk p-songfn ann-tango.mp3
 mssleep 2000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
@@ -215,5 +220,6 @@ chk-not p-songfn ann-tango.mp3
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Tango
 msg main CHK_MAIN_SET_PLAYANNOUNCE 0
+msg main CHK_CLEAR_PREP_Q
 end
 

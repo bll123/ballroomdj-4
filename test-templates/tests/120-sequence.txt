@@ -15,7 +15,7 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Waltz
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000

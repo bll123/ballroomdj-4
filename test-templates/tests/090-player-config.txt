@@ -90,7 +90,7 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 chk actualvolume 30
 mssleep 1000
-resptimeout 7000
+resptimeout 7500
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
@@ -189,7 +189,7 @@ msg player PLAY_FADE
 resptimeout 5000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
-resptimeout 7000
+resptimeout 7500
 wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
@@ -221,7 +221,7 @@ mssleep 1000
 resptimeout 35000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 # song 2 playing
@@ -229,7 +229,7 @@ mssleep 1000
 resptimeout 35000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 # song 3 playing
@@ -237,7 +237,7 @@ mssleep 1000
 resptimeout 35000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 # song 4 playing
@@ -245,7 +245,7 @@ mssleep 1000
 resptimeout 35000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 # should stop
 wait playstate stopped

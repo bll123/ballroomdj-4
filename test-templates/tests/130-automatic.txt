@@ -15,7 +15,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
@@ -97,7 +97,7 @@ chk-or dance Waltz Tango Foxtrot
 get player CHK_PLAYER_SONG
 chk p-duration 10000
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
@@ -192,7 +192,7 @@ chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
 chk-or bpm 84 -65534
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000

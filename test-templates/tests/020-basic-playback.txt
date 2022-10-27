@@ -26,7 +26,7 @@ chk playstate playing
 resptimeout 29000
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
-resptimeout 7000
+resptimeout 7500
 wait playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mq0len 0 songplaysentcount 1
@@ -75,7 +75,7 @@ chk mq0len 1 dbidx 2
 get player CHK_PLAYER_STATUS
 resptimeout 29000
 wait playstate in-fadeout
-resptimeout 7000
+resptimeout 7500
 wait playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mq0len 0 songplaysentcount 2

@@ -610,6 +610,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_DB_ENTRY_TEMP_ADD: {
+          mainAddTemporarySong (mainData, targs);
+          dbgdisp = true;
+          break;
+        }
         case MSG_CHK_MAIN_MUSICQ: {
           mainChkMusicq (mainData, routefrom);
           dbgdisp = true;
@@ -645,9 +650,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
-        case MSG_DB_ENTRY_TEMP_ADD: {
-          mainAddTemporarySong (mainData, targs);
-          dbgdisp = true;
+        case MSG_CHK_CLEAR_PREP_Q: {
+          /* clear any prepped announcements */
+          slistFree (mainData->announceList);
+          mainData->announceList = slistAlloc ("announcements", LIST_ORDERED, NULL);
+          connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_CHK_CLEAR_PREP_Q, NULL);
           break;
         }
         default: {

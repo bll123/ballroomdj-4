@@ -48,7 +48,7 @@ msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate in-fadeout
-resptimeout 7000
+resptimeout 7500
 wait playstate stopped
 get main CHK_MAIN_MUSICQ
 chk mq0len 2 mq0idx0 15 mq0idx1 17
@@ -64,7 +64,7 @@ msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 1000
 wait playstate in-fadeout
-resptimeout 7000
+resptimeout 7500
 wait playstate playing
 chk pauseatend 0 playstate playing repeat 1
 end

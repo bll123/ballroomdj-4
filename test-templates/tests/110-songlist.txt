@@ -14,7 +14,7 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 72 m-songfn 001-argentinetango.mp3
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
@@ -61,7 +61,7 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 72 m-songfn 001-argentinetango.mp3
 msg player PLAY_FADE
-resptimeout 7000
+resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
