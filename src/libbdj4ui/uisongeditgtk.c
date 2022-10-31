@@ -306,7 +306,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiImageNew (&uiw->audioidImg);
   uiImageClear (&uiw->audioidImg);
   uiWidgetSetSizeRequest (&uiw->audioidImg, 24, -1);
-  uiWidgetSetMarginStart (&uiw->audioidImg, uiBaseMarginSz);
+  uiWidgetSetMarginStart (&uiw->audioidImg, 1);
   uiBoxPackStart (&hbox, &uiw->audioidImg);
 
   uiCreateLabel (&uiwidget, " ");
@@ -320,7 +320,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       &uiw->callbacks [UISONGEDIT_CB_COPY_TEXT],
       "", NULL);
   uiButtonSetImageIcon (&uiwidget, "edit-copy");
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz);
+  uiWidgetSetMarginStart (&uiwidget, 1);
   uiBoxPackStart (&hbox, &uiwidget);
 
   /* CONTEXT: song editor: label for displaying the audio file path */
@@ -362,7 +362,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   for (int i = DISP_SEL_SONGEDIT_A; i <= DISP_SEL_SONGEDIT_C; ++i) {
     uiCreateVertBox (&col);
-    uiWidgetSetAllMargins (&col, uiBaseMarginSz * 4);
+    uiWidgetSetAllMargins (&col, 4);
     uiWidgetExpandHoriz (&col);
     uiWidgetExpandVert (&col);
     uiBoxPackStartExpand (&hbox, &col);

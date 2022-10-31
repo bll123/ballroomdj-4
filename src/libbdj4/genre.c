@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "bdj4.h"
+#include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "datafile.h"
 #include "fileop.h"

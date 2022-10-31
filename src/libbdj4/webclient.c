@@ -11,6 +11,7 @@
 #include <curl/curl.h>
 
 #include "bdj4.h"
+#include "bdjstring.h"
 #include "inline.h"
 #include "log.h"
 #include "filedata.h"

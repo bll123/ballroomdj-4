@@ -152,7 +152,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiCreateColonLabel (&uiwidget, _("Action"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetSetMarginStart (&uiwidget, 2);
 
   uiSpinboxTextCreate (managedb->dbspinbox, managedb);
   /* currently hard-coded at 30 chars */
@@ -172,7 +172,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   /* CONTEXT: update database: music folder to process */
   uiCreateColonLabel (&uiwidget, _("Music Folder"));
   uiBoxPackStart (&hbox, &uiwidget);
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetSetMarginStart (&uiwidget, 2);
   uiSizeGroupAdd (&sg, &uiwidget);
 
   uiEntryCreate (managedb->dbtopdir);
@@ -207,8 +207,8 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiWidgetDisable (&managedb->dbstop);
 
   uiCreateProgressBar (&managedb->dbpbar, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiWidgetSetMarginStart (&managedb->dbpbar, uiBaseMarginSz * 2);
-  uiWidgetSetMarginEnd (&managedb->dbpbar, uiBaseMarginSz * 2);
+  uiWidgetSetMarginStart (&managedb->dbpbar, 2);
+  uiWidgetSetMarginEnd (&managedb->dbpbar, 2);
   uiBoxPackStart (vboxp, &managedb->dbpbar);
 
   tb = uiTextBoxCreate (200, bdjoptGetStr (OPT_P_UI_ACCENT_COL));

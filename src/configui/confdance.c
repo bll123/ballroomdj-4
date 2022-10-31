@@ -109,7 +109,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
       G_CALLBACK (confuiDanceSelect), gui);
 
   uiCreateVertBox (&dvbox);
-  uiWidgetSetMarginStart (&dvbox, uiBaseMarginSz * 8);
+  uiWidgetSetMarginStart (&dvbox, 8);
   uiBoxPackStart (&hbox, &dvbox);
 
   confuiMakeItemEntry (gui, &dvbox, &sg, tagdefs [TAG_DANCE].displayname,

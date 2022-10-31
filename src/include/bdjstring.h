@@ -17,4 +17,9 @@ size_t strlcat(char *dst, const char *src, size_t siz);
 size_t strlcpy(char *dst, const char *src, size_t siz);
 #endif
 
+/* for sanitizeaddress */
+#if defined (BDJ4_NO_INLINE)
+void dataFree (void *data);
+#endif
+
 #endif /* INC_BDJSTRING */

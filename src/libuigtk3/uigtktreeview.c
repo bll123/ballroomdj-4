@@ -23,7 +23,7 @@ uiCreateTreeView (void)
   GtkTreeSelection  *sel;
 
   tree = gtk_tree_view_new ();
-  uiWidgetSetAllMarginsW (tree, uiBaseMarginSz * 2);
+  uiWidgetSetAllMarginsW (tree, 2);
   gtk_tree_view_set_enable_search (GTK_TREE_VIEW (tree), FALSE);
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (tree), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);

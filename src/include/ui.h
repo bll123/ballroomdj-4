@@ -59,6 +59,7 @@ enum {
   UIUTILS_MENU_MAX = 5,
 };
 
+/* uigtkutils.c */
 extern int uiBaseMarginSz;
 
 /* uigeneral.c */
@@ -293,21 +294,8 @@ void uiBoxPackEnd (UIWidget *uibox, UIWidget *uiwidget);
 void uiBoxPackEndExpand (UIWidget *uibox, UIWidget *uiwidget);
 /* these routines will be removed at a later date */
 void uiBoxPackInWindowUW (UIWidget *uiwindow, GtkWidget *widget);
-void uiBoxPackInWindowWU (GtkWidget *window, UIWidget *uibox);
 void uiBoxPackStartUW (UIWidget *uibox, GtkWidget *widget);
-void uiBoxPackStartExpandUW (UIWidget *uibox, GtkWidget *widget);
 void uiBoxPackEndUW (UIWidget *uibox, GtkWidget *widget);
-/* these routines will be removed at a later date */
-void uiBoxPackStartWU (GtkWidget *box, UIWidget *uiwidget);
-void uiBoxPackStartExpandWU (GtkWidget *box, UIWidget *uiwidget);
-void uiBoxPackEndWU (GtkWidget *box, UIWidget *uiwidget);
-/* these routines will be removed at a later date */
-GtkWidget *uiCreateVertBoxWW (void);
-GtkWidget *uiCreateHorizBoxWW (void);
-void uiBoxPackInWindowWW (GtkWidget *window, GtkWidget *box);
-void uiBoxPackStartWW (GtkWidget *box, GtkWidget *widget);
-void uiBoxPackStartExpandWW (GtkWidget *box, GtkWidget *widget);
-void uiBoxPackEndWW (GtkWidget *box, GtkWidget *widget);
 
 /* uigtkpbar.c */
 void uiCreateProgressBar (UIWidget *uiwidget, char *color);
@@ -401,11 +389,11 @@ void  uiWidgetDisable (UIWidget *uiwidget);
 void  uiWidgetEnable (UIWidget *uiwidget);
 void  uiWidgetExpandHoriz (UIWidget *uiwidget);
 void  uiWidgetExpandVert (UIWidget *uiwidget);
-void  uiWidgetSetAllMargins (UIWidget *uiwidget, int margin);
-void  uiWidgetSetMarginTop (UIWidget *uiwidget, int margin);
-void  uiWidgetSetMarginBottom (UIWidget *uiwidget, int margin);
-void  uiWidgetSetMarginStart (UIWidget *uiwidget, int margin);
-void  uiWidgetSetMarginEnd (UIWidget *uiwidget, int margin);
+void  uiWidgetSetAllMargins (UIWidget *uiwidget, int mult);
+void  uiWidgetSetMarginTop (UIWidget *uiwidget, int mult);
+void  uiWidgetSetMarginBottom (UIWidget *uiwidget, int mult);
+void  uiWidgetSetMarginStart (UIWidget *uiwidget, int mult);
+void  uiWidgetSetMarginEnd (UIWidget *uiwidget, int mult);
 void  uiWidgetAlignHorizFill (UIWidget *uiwidget);
 void  uiWidgetAlignHorizStart (UIWidget *uiwidget);
 void  uiWidgetAlignHorizEnd (UIWidget *uiwidget);
@@ -425,8 +413,8 @@ void  uiWidgetGetPosition (UIWidget *widget, int *x, int *y);
 /* these routines will be removed at a later date */
 void  uiWidgetExpandHorizW (GtkWidget *widget);
 void  uiWidgetExpandVertW (GtkWidget *widget);
-void  uiWidgetSetAllMarginsW (GtkWidget *widget, int margin);
-void  uiWidgetSetMarginStartW (GtkWidget *widget, int margin);
+void  uiWidgetSetAllMarginsW (GtkWidget *widget, int mult);
+void  uiWidgetSetMarginStartW (GtkWidget *widget, int mult);
 void  uiWidgetAlignHorizFillW (GtkWidget *widget);
 void  uiWidgetAlignVertFillW (GtkWidget *widget);
 

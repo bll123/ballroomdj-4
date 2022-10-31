@@ -390,8 +390,8 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetAlignHorizStart (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 2);
-  uiWidgetSetMarginEnd (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetSetMarginStart (&uiwidget, 2);
+  uiWidgetSetMarginEnd (&uiwidget, 2);
   uiutilsUIWidgetCopy (&marquee->infoSepLab, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
@@ -404,8 +404,8 @@ marqueeBuildUI (marquee_t *marquee)
   uiCreateHorizSeparator (&marquee->sep);
   uiSeparatorSetColor (&marquee->sep, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
   uiWidgetExpandHoriz (&marquee->sep);
-  uiWidgetSetMarginTop (&marquee->sep, uiBaseMarginSz * 2);
-  uiWidgetSetMarginBottom (&marquee->sep, uiBaseMarginSz * 4);
+  uiWidgetSetMarginTop (&marquee->sep, 2);
+  uiWidgetSetMarginBottom (&marquee->sep, 4);
   uiBoxPackEnd (&vbox, &marquee->sep);
 
   marquee->marqueeLabs = malloc (sizeof (UIWidget) * marquee->mqLen);
@@ -416,7 +416,7 @@ marqueeBuildUI (marquee_t *marquee)
     uiWidgetAlignHorizStart (&marquee->marqueeLabs [i]);
     uiWidgetExpandHoriz (&marquee->marqueeLabs [i]);
     uiWidgetDisableFocus (&marquee->marqueeLabs [i]);
-    uiWidgetSetMarginTop (&marquee->marqueeLabs [i], uiBaseMarginSz * 4);
+    uiWidgetSetMarginTop (&marquee->marqueeLabs [i], 4);
     uiBoxPackStart (&mainvbox, &marquee->marqueeLabs [i]);
   }
 

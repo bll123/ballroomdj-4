@@ -41,7 +41,7 @@ uiTextBoxCreate (int height, const char *hlcolor)
   }
   tb->textbox.widget = gtk_text_view_new_with_buffer (tb->buffer.buffer);
   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tb->textbox.widget), GTK_WRAP_WORD);
-  uiWidgetSetAllMargins (&tb->textbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&tb->textbox, 2);
   uiWidgetSetSizeRequest (&tb->textbox, -1, -1);
   uiWidgetAlignVertStart (&tb->textbox);
   uiBoxPackInWindow (&tb->scw, &tb->textbox);

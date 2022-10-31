@@ -334,7 +334,12 @@ foreach path [list {} profiles $mpath $mppath] {
 
       if { $path eq {} } {
         puts $ofh DEBUGLVL
-        puts $ofh "..11"
+        if { $::tcl_platform(os) eq "Darwin" } {
+          # logging on macos is really slow
+          puts $ofh "..0"
+        } else {
+          puts $ofh "..11"
+        }
       }
       if { $path eq "profiles" } {
         puts $ofh HIDEMARQUEEONSTART

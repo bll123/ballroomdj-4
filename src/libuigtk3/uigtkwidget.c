@@ -44,53 +44,57 @@ uiWidgetExpandVert (UIWidget *uiwidget)
 }
 
 void
-uiWidgetSetAllMargins (UIWidget *uiwidget, int margin)
-{
-  gtk_widget_set_margin_top (uiwidget->widget, margin);
-  gtk_widget_set_margin_bottom (uiwidget->widget, margin);
-  gtk_widget_set_margin_start (uiwidget->widget, margin);
-  gtk_widget_set_margin_end (uiwidget->widget, margin);
-}
-
-void
-uiWidgetSetMarginTop (UIWidget *uiwidget, int margin)
+uiWidgetSetAllMargins (UIWidget *uiwidget, int mult)
 {
   if (uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_margin_top (uiwidget->widget, margin);
+  gtk_widget_set_margin_top (uiwidget->widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_bottom (uiwidget->widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_start (uiwidget->widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_end (uiwidget->widget, uiBaseMarginSz * mult);
 }
 
 void
-uiWidgetSetMarginBottom (UIWidget *uiwidget, int margin)
+uiWidgetSetMarginTop (UIWidget *uiwidget, int mult)
 {
   if (uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_margin_bottom (uiwidget->widget, margin);
+  gtk_widget_set_margin_top (uiwidget->widget, uiBaseMarginSz * mult);
 }
 
 void
-uiWidgetSetMarginStart (UIWidget *uiwidget, int margin)
+uiWidgetSetMarginBottom (UIWidget *uiwidget, int mult)
 {
   if (uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_margin_start (uiwidget->widget, margin);
+  gtk_widget_set_margin_bottom (uiwidget->widget, uiBaseMarginSz * mult);
 }
 
-
 void
-uiWidgetSetMarginEnd (UIWidget *uiwidget, int margin)
+uiWidgetSetMarginStart (UIWidget *uiwidget, int mult)
 {
   if (uiwidget->widget == NULL) {
     return;
   }
 
-  gtk_widget_set_margin_end (uiwidget->widget, margin);
+  gtk_widget_set_margin_start (uiwidget->widget, uiBaseMarginSz * mult);
+}
+
+
+void
+uiWidgetSetMarginEnd (UIWidget *uiwidget, int mult)
+{
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
+  gtk_widget_set_margin_end (uiwidget->widget, uiBaseMarginSz * mult);
 }
 
 void
@@ -282,22 +286,27 @@ uiWidgetExpandVertW (GtkWidget *widget)
 }
 
 void
-uiWidgetSetAllMarginsW (GtkWidget *widget, int margin)
-{
-  gtk_widget_set_margin_top (widget, margin);
-  gtk_widget_set_margin_bottom (widget, margin);
-  gtk_widget_set_margin_start (widget, margin);
-  gtk_widget_set_margin_end (widget, margin);
-}
-
-void
-uiWidgetSetMarginStartW (GtkWidget *widget, int margin)
+uiWidgetSetAllMarginsW (GtkWidget *widget, int mult)
 {
   if (widget == NULL) {
     return;
   }
 
-  gtk_widget_set_margin_start (widget, margin);
+  gtk_widget_set_margin_start (widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_end (widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_top (widget, uiBaseMarginSz * mult);
+  gtk_widget_set_margin_bottom (widget, uiBaseMarginSz * mult);
+}
+
+
+void
+uiWidgetSetMarginStartW (GtkWidget *widget, int mult)
+{
+  if (widget == NULL) {
+    return;
+  }
+
+  gtk_widget_set_margin_start (widget, uiBaseMarginSz * mult);
 }
 
 

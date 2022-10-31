@@ -171,7 +171,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiCreateSizeGroupHoriz (&sgB);  // numeric widgets
   uiCreateSizeGroupHoriz (&sgC);  // text widgets
 
-  uiWidgetSetAllMargins (vboxp, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (vboxp, 2);
 
   uiCreateHorizBox (&tophbox);
   uiWidgetAlignVertStart (&tophbox);
@@ -191,7 +191,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, uiEntryGetUIWidget (managepl->plname));
 
   uiCreateHorizBox (&hbox);
-  uiWidgetSetMarginStart (&hbox, uiBaseMarginSz * 20);
+  uiWidgetSetMarginStart (&hbox, 20);
   uiBoxPackStart (&tophbox, &hbox);
 
   /* CONTEXT: playlist management: label for playlist name */
@@ -337,7 +337,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
 
   /* right side to hold the tree */
   uiCreateVertBox (&rcol);
-  uiWidgetSetMarginStart (&rcol, uiBaseMarginSz * 8);
+  uiWidgetSetMarginStart (&rcol, 8);
   uiBoxPackStartExpand (&mainhbox, &rcol);
 
   managepl->managepltree = managePlaylistTreeAlloc (managepl->statusMsg);

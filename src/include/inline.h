@@ -11,10 +11,6 @@ dataFree (void *data)
   }
 }
 
-#else
-
-void dataFree (void *data);
-
 #endif /* BDJ4_NO_INLINE */
 
 #endif /* INC_INLINE_H */

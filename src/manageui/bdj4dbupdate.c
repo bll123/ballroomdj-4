@@ -90,8 +90,6 @@ enum {
   C_MAX,
 };
 
-#define IncCount(tag) (++dbupdate->counts [tag])
-
 typedef struct {
   progstate_t       *progstate;
   procutil_t        *processes [ROUTE_MAX];
@@ -146,6 +144,7 @@ static void     dbupdateSigHandler (int sig);
 static void     dbupdateOutputProgress (dbupdate_t *dbupdate);
 static const char *dbupdateGetRelativePath (dbupdate_t *dbupdate, const char *fn);
 static bool     checkOldDirList (dbupdate_t *dbupdate, const char *fn);
+static void     dbupdateIncCount (dbupdate_t *dbupdate, int tag);
 
 static int  gKillReceived = 0;
 
@@ -382,7 +381,7 @@ dbupdateProcessing (void *udata)
     mstimeend (&dbupdate->starttm);
     logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %ld ms",
         dbupdate->dbtopdir, mstimeend (&dbupdate->starttm));
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  %d files found", dbupdate->counts [C_FILE_COUNT]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  %u files found", dbupdate->counts [C_FILE_COUNT]);
 
     /* message to manageui */
     /* CONTEXT: database update: status message */
@@ -408,15 +407,15 @@ dbupdateProcessing (void *udata)
           pathInfoExtCheck (pi, ".bak") ||
           pathInfoExtCheck (pi, ".txt") ||
           pathInfoExtCheck (pi, ".svg")) {
-        IncCount (C_FILE_SKIPPED);
-        IncCount (C_NON_AUDIO);
+        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+        dbupdateIncCount (dbupdate, C_NON_AUDIO);
         logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-not-audio");
         pathInfoFree (pi);
         continue;
       }
       if (pathInfoExtCheck (pi, BDJ4_ORIGINAL_EXT)) {
-        IncCount (C_FILE_SKIPPED);
-        IncCount (C_BDJ_SKIP);
+        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+        dbupdateIncCount (dbupdate, C_BDJ_SKIP);
         logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-orig/del");
         pathInfoFree (pi);
         continue;
@@ -425,8 +424,8 @@ dbupdateProcessing (void *udata)
 
       if (dbupdate->haveolddirlist &&
           checkOldDirList (dbupdate, fn)) {
-        IncCount (C_FILE_SKIPPED);
-        IncCount (C_BDJ_OLD_DIR);
+        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+        dbupdateIncCount (dbupdate, C_BDJ_OLD_DIR);
         logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-old-dir");
         continue;
       }
@@ -440,13 +439,13 @@ dbupdateProcessing (void *udata)
 
         p = dbupdateGetRelativePath (dbupdate, fn);
         if (dbGetByName (dbupdate->musicdb, p) != NULL) {
-          IncCount (C_IN_DB);
-          logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database (%d) ", dbupdate->counts [C_IN_DB]);
+          dbupdateIncCount (dbupdate, C_IN_DB);
+          logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database (%u) ", dbupdate->counts [C_IN_DB]);
 
           /* if doing a checknew, no need for further processing */
           /* the file exists, don't change the file or the database */
           if (dbupdate->checknew) {
-            IncCount (C_FILE_SKIPPED);
+            dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
             dbupdateOutputProgress (dbupdate);
             ++count;
             if (count > FNAMES_SENT_PER_ITER) {
@@ -458,15 +457,15 @@ dbupdateProcessing (void *udata)
       }
 
       if (regexMatch (dbupdate->badfnregex, fn)) {
-        IncCount (C_FILE_SKIPPED);
-        IncCount (C_BAD);
-        logMsg (LOG_DBG, LOG_DBUPDATE, "  bad (%d) ", dbupdate->counts [C_BAD]);
+        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+        dbupdateIncCount (dbupdate, C_BAD);
+        logMsg (LOG_DBG, LOG_DBUPDATE, "  bad (%u) ", dbupdate->counts [C_BAD]);
         continue;
       }
 
       connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_FILE_CHK, fn);
       logMsg (LOG_DBG, LOG_DBUPDATE, "  send %s", fn);
-      IncCount (C_FILE_SENT);
+      dbupdateIncCount (dbupdate, C_FILE_SENT);
       ++count;
       if (count > FNAMES_SENT_PER_ITER) {
         break;
@@ -474,8 +473,8 @@ dbupdateProcessing (void *udata)
     }
 
     if (fn == NULL) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "-- skipped (%d)", dbupdate->counts [C_FILE_SKIPPED]);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%d): %ld ms",
+      logMsg (LOG_DBG, LOG_IMPORTANT, "-- skipped (%u)", dbupdate->counts [C_FILE_SKIPPED]);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%u): %zd ms",
           dbupdate->counts [C_FILE_SENT], mstimeend (&dbupdate->starttm));
       connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_ALL_FILES_SENT, NULL);
       dbupdate->state = DB_UPD_PROCESS;
@@ -485,8 +484,9 @@ dbupdateProcessing (void *udata)
   if (dbupdate->state == DB_UPD_SEND ||
       dbupdate->state == DB_UPD_PROCESS) {
     dbupdateOutputProgress (dbupdate);
-    logMsg (LOG_DBG, LOG_DBUPDATE, "progress: %ld+%ld(%ld) >= %ld",
-        dbupdate->counts [C_FILE_PROC], dbupdate->counts [C_FILE_SKIPPED],
+    logMsg (LOG_DBG, LOG_DBUPDATE, "progress: %u+%u(%u) >= %u",
+        dbupdate->counts [C_FILE_PROC],
+        dbupdate->counts [C_FILE_SKIPPED],
         dbupdate->counts [C_FILE_PROC] + dbupdate->counts [C_FILE_SKIPPED],
         dbupdate->counts [C_FILE_COUNT]);
     if (dbupdate->counts [C_FILE_PROC] + dbupdate->counts [C_FILE_SKIPPED] >=
@@ -555,7 +555,7 @@ dbupdateProcessing (void *udata)
     snprintf (tbuff, sizeof (tbuff), "-- %s", msg);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
-    logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %ld ms stop-req: %d",
+    logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %zd ms stop-req: %d",
         mstimeend (&dbupdate->starttm), dbupdate->stoprequest);
     logMsg (LOG_DBG, LOG_IMPORTANT, "    found: %u", dbupdate->counts [C_FILE_COUNT]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %u", dbupdate->counts [C_FILE_SKIPPED]);
@@ -752,8 +752,8 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   if (data == NULL) {
     /* complete failure */
     logMsg (LOG_DBG, LOG_DBUPDATE, "  null data");
-    IncCount (C_NULL_DATA);
-    IncCount (C_FILE_PROC);
+    dbupdateIncCount (dbupdate, C_NULL_DATA);
+    dbupdateIncCount (dbupdate, C_FILE_PROC);
     return;
   }
 
@@ -762,8 +762,8 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     /* if there is not even a duration, then file is no good */
     /* probably not an audio file */
     logMsg (LOG_DBG, LOG_DBUPDATE, "  no tags");
-    IncCount (C_NO_TAGS);
-    IncCount (C_FILE_PROC);
+    dbupdateIncCount (dbupdate, C_NO_TAGS);
+    dbupdateIncCount (dbupdate, C_FILE_PROC);
     return;
   }
 
@@ -847,16 +847,16 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   }
   len = dbWrite (currdb, dbfname, tagdata, rrn);
   if (rrn == MUSICDB_ENTRY_NEW) {
-    IncCount (C_NEW);
+    dbupdateIncCount (dbupdate, C_NEW);
   } else {
-    IncCount (C_UPDATED);
+    dbupdateIncCount (dbupdate, C_UPDATED);
   }
   if (len > dbupdate->maxWriteLen) {
     dbupdate->maxWriteLen = len;
   }
 
   slistFree (tagdata);
-  IncCount (C_FILE_PROC);
+  dbupdateIncCount (dbupdate, C_FILE_PROC);
 }
 
 static void
@@ -876,7 +876,7 @@ dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
   }
   song = dbGetByName (dbupdate->musicdb, dbfname);
   if (song == NULL) {
-    IncCount (C_FILE_PROC);
+    dbupdateIncCount (dbupdate, C_FILE_PROC);
     return;
   }
 
@@ -884,8 +884,8 @@ dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
   audiotagWriteTags (ffn, tagdata, newtaglist, 0, AT_UPDATE_MOD_TIME);
   slistFree (tagdata);
   slistFree (newtaglist);
-  IncCount (C_FILE_PROC);
-  IncCount (C_WRITE_TAGS);
+  dbupdateIncCount (dbupdate, C_FILE_PROC);
+  dbupdateIncCount (dbupdate, C_WRITE_TAGS);
 }
 
 static void
@@ -961,3 +961,10 @@ checkOldDirList (dbupdate_t *dbupdate, const char *fn)
   free (olddirs);
   return false;
 }
+
+static void
+dbupdateIncCount (dbupdate_t *dbupdate, int tag)
+{
+  ++dbupdate->counts [tag];
+}
+

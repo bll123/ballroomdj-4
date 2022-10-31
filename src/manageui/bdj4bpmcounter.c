@@ -319,7 +319,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       _("BPM Counter"), imgbuff);
 
   uiCreateVertBox (&vboxmain);
-  uiWidgetSetAllMargins (&vboxmain, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&vboxmain, 2);
   uiBoxPackInWindow (&bpmcounter->window, &vboxmain);
 
   /* instructions */
@@ -409,7 +409,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       &bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
       /* CONTEXT: bpm counter: save button */
       _("Save"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetSetMarginTop (&uiwidget, 2);
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_RESET],
@@ -418,14 +418,14 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       &bpmcounter->callbacks [BPMCOUNT_CB_RESET],
       /* CONTEXT: bpm counter: reset button */
       _("Reset"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetSetMarginTop (&uiwidget, 2);
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateButton (&uiwidget,
       &bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: close button */
       _("Close"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetSetMarginTop (&uiwidget, 2);
   uiBoxPackEnd (&hbox, &uiwidget);
 
   x = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_X);

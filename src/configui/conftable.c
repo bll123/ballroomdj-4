@@ -43,7 +43,7 @@ confuiMakeItemTable (confuigui_t *gui, UIWidget *boxp, confuiident_t id,
 
   logProcBegin (LOG_PROC, "confuiMakeItemTable");
   uiCreateHorizBox (&mhbox);
-  uiWidgetSetMarginTop (&mhbox, uiBaseMarginSz * 2);
+  uiWidgetSetMarginTop (&mhbox, 2);
   uiBoxPackStart (boxp, &mhbox);
 
   uiCreateScrolledWindow (&uiwidget, 300);
@@ -55,13 +55,13 @@ confuiMakeItemTable (confuigui_t *gui, UIWidget *boxp, confuiident_t id,
   gui->tables [id].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
   gui->tables [id].flags = flags;
-  uiWidgetSetMarginStartW (tree, uiBaseMarginSz * 8);
+  uiWidgetSetMarginStartW (tree, 8);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), TRUE);
   uiBoxPackInWindowUW (&uiwidget, tree);
 
   uiCreateVertBox (&bvbox);
-  uiWidgetSetAllMargins (&bvbox, uiBaseMarginSz * 4);
-  uiWidgetSetMarginTop (&bvbox, uiBaseMarginSz * 32);
+  uiWidgetSetAllMargins (&bvbox, 4);
+  uiWidgetSetMarginTop (&bvbox, 32);
   uiWidgetAlignVertStart (&bvbox);
   uiBoxPackStart (&mhbox, &bvbox);
 

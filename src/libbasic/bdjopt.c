@@ -10,6 +10,7 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
+#include "bdjstring.h"
 #include "datafile.h"
 #include "dirop.h"
 #include "inline.h"

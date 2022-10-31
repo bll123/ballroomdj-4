@@ -251,7 +251,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiBoxPackStart (&mvbox, &mhbox);
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&vbox, 2);
   uiBoxPackStart (&mhbox, &vbox);
 
   /* CONTEXT: configuration: itunes: label for itunes rating conversion */
@@ -285,7 +285,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   }
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&vbox, 2);
   uiBoxPackStart (&mhbox, &vbox);
 
   /* CONTEXT: configuration: itunes: which fields should be imported from itunes */
@@ -296,11 +296,11 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiBoxPackStart (&vbox, &hbox);
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&vbox, 2);
   uiBoxPackStart (&hbox, &vbox);
 
   uiCreateVertBox (&vboxb);
-  uiWidgetSetAllMargins (&vboxb, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&vboxb, 2);
   uiBoxPackStart (&hbox, &vboxb);
 
   count = 0;

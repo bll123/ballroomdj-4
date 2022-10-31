@@ -168,7 +168,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   uiWidgetExpandVert (&uimusicq->ui [ci].mainbox);
 
   uiCreateHorizBox (&hbox);
-  uiWidgetSetMarginTop (&hbox, uiBaseMarginSz);
+  uiWidgetSetMarginTop (&hbox, 1);
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&uimusicq->ui [ci].mainbox, &hbox);
 
@@ -236,8 +236,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
         &uiw->callback [UIMUSICQ_CB_AUDIO_REMOVE],
         /* CONTEXT: music queue: button: remove the song from the queue */
         _("Remove"), "button_audioremove");
-    uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
-    uiWidgetSetMarginEnd (&uiwidget, uiBaseMarginSz * 2);
+    uiWidgetSetMarginStart (&uiwidget, 3);
+    uiWidgetSetMarginEnd (&uiwidget, 2);
     uiBoxPackStart (&hbox, &uiwidget);
   }
 
@@ -316,7 +316,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
 
     /* CONTEXT: music queue: label for song list name */
     uiCreateColonLabel (&uiwidget, _("Song List"));
-    uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 6);
+    uiWidgetSetMarginStart (&uiwidget, 6);
     uiBoxPackEnd (&hbox, &uiwidget);
   }
 

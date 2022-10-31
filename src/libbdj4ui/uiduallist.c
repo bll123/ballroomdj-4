@@ -88,8 +88,8 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   uiBoxPackStartExpand (mainvbox, &hbox);
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetMarginStart (&vbox, uiBaseMarginSz * 8);
-  uiWidgetSetMarginTop (&vbox, uiBaseMarginSz * 8);
+  uiWidgetSetMarginStart (&vbox, 8);
+  uiWidgetSetMarginTop (&vbox, 8);
   uiBoxPackStartExpand (&hbox, &vbox);
 
   if (sourcetitle != NULL) {
@@ -133,8 +133,8 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
   uiCreateVertBox (&dvbox);
-  uiWidgetSetAllMargins (&dvbox, uiBaseMarginSz * 4);
-  uiWidgetSetMarginTop (&dvbox, uiBaseMarginSz * 64);
+  uiWidgetSetAllMargins (&dvbox, 4);
+  uiWidgetSetMarginTop (&dvbox, 64);
   uiWidgetAlignVertStart (&dvbox);
   uiBoxPackStart (&hbox, &dvbox);
 
@@ -149,8 +149,8 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   uiBoxPackStart (&dvbox, &uiwidget);
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetMarginStart (&vbox, uiBaseMarginSz * 8);
-  uiWidgetSetMarginTop (&vbox, uiBaseMarginSz * 8);
+  uiWidgetSetMarginStart (&vbox, 8);
+  uiWidgetSetMarginTop (&vbox, 8);
   uiBoxPackStartExpand (&hbox, &vbox);
 
   if (targettitle != NULL) {
@@ -194,8 +194,8 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
 
   uiCreateVertBox (&dvbox);
-  uiWidgetSetAllMargins (&dvbox, uiBaseMarginSz * 4);
-  uiWidgetSetMarginTop (&dvbox, uiBaseMarginSz * 64);
+  uiWidgetSetAllMargins (&dvbox, 4);
+  uiWidgetSetMarginTop (&dvbox, 64);
   uiWidgetAlignVertStart (&dvbox);
   uiBoxPackStart (&hbox, &dvbox);
 

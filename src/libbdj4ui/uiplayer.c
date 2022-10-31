@@ -158,7 +158,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->stopPixbuf);
   uiWidgetSetSizeRequest (&uiplayer->statusImg, 18, -1);
-  uiWidgetSetMarginStart (&uiplayer->statusImg, uiBaseMarginSz);
+  uiWidgetSetMarginStart (&uiplayer->statusImg, 1);
   uiBoxPackStart (&tbox, &uiplayer->statusImg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
@@ -182,7 +182,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageNew (&uiplayer->repeatImg);
   uiImageClear (&uiplayer->repeatImg);
   uiWidgetSetSizeRequest (&uiplayer->repeatImg, 18, -1);
-  uiWidgetSetMarginStart (&uiplayer->repeatImg, uiBaseMarginSz);
+  uiWidgetSetMarginStart (&uiplayer->repeatImg, 1);
   uiBoxPackStart (&tbox, &uiplayer->repeatImg);
 
   uiCreateLabel (&uiplayer->danceLab, "");
@@ -234,7 +234,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* CONTEXT: playerui: the current speed for song playback */
   uiCreateColonLabel (&uiwidget, _("Speed"));
   uiLabelAlignEnd (&uiwidget);
-  uiWidgetSetMarginEnd (&uiwidget, uiBaseMarginSz);
+  uiWidgetSetMarginEnd (&uiwidget, 1);
   uiBoxPackEnd (&hbox, &uiwidget);
   uiSizeGroupAdd (&sgD, &uiwidget);
 
@@ -288,7 +288,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* CONTEXT: playerui: the current position of the song during song playback */
   uiCreateColonLabel (&uiwidget, _("Position"));
   uiLabelAlignEnd (&uiwidget);
-  uiWidgetSetMarginEnd (&uiwidget, uiBaseMarginSz);
+  uiWidgetSetMarginEnd (&uiwidget, 1);
   uiBoxPackEnd (&hbox, &uiwidget);
   uiSizeGroupAdd (&sgD, &uiwidget);
 
@@ -390,7 +390,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* CONTEXT: playerui: The current volume of the song */
   uiCreateColonLabel (&uiwidget, _("Volume"));
   uiLabelAlignEnd (&uiwidget);
-  uiWidgetSetMarginEnd (&uiwidget, uiBaseMarginSz);
+  uiWidgetSetMarginEnd (&uiwidget, 1);
   uiBoxPackEnd (&hbox, &uiwidget);
   uiSizeGroupAdd (&sgD, &uiwidget);
 

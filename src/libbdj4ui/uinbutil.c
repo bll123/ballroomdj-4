@@ -9,6 +9,7 @@
 #include <ctype.h>
 #include <math.h>
 
+#include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "datafile.h"

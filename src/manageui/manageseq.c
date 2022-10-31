@@ -109,7 +109,7 @@ manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp)
   uiutilsUIWidgetInit (&uiwidget);
 
   /* edit sequences */
-  uiWidgetSetAllMargins (vboxp, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (vboxp, 2);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (vboxp, &hbox);

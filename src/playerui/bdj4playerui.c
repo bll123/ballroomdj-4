@@ -383,7 +383,7 @@ pluiBuildUI (playerui_t *plui)
 
   uiCreateVertBox (&plui->vbox);
   uiBoxPackInWindow (&plui->window, &plui->vbox);
-  uiWidgetSetAllMargins (&plui->vbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&plui->vbox, 2);
 
   /* menu */
   uiCreateHorizBox (&hbox);
@@ -395,13 +395,13 @@ pluiBuildUI (playerui_t *plui)
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetSizeRequest (&uiwidget, 25, 25);
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
+  uiWidgetSetMarginStart (&uiwidget, 3);
   uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateLabel (&plui->clock, "");
   uiBoxPackEnd (&hbox, &plui->clock);
-  uiWidgetSetMarginStart (&plui->clock, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStart (&plui->clock, 4);
   uiWidgetDisable (&plui->clock);
 
   uiCreateLabel (&uiwidget, "");
@@ -495,7 +495,7 @@ pluiBuildUI (playerui_t *plui)
     if (i < MUSICQ_HISTORY) {
       uiImageNew (&plui->musicqImage [i]);
       uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
-      uiWidgetSetMarginStart (&plui->musicqImage [i], uiBaseMarginSz);
+      uiWidgetSetMarginStart (&plui->musicqImage [i], 1);
       uiBoxPackStart (&hbox, &plui->musicqImage [i]);
     }
 

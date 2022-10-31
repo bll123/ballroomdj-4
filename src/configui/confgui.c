@@ -38,7 +38,7 @@ confuiMakeNotebookTab (UIWidget *boxp, confuigui_t *gui, const char *txt, int id
   uiWidgetSetAllMargins (&uiwidget, 0);
   uiWidgetExpandHoriz (boxp);
   uiWidgetExpandVert (boxp);
-  uiWidgetSetAllMargins (boxp, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (boxp, 2);
   uiNotebookAppendPage (&gui->notebook, boxp, &uiwidget);
   uiutilsNotebookIDAdd (gui->nbtabid, id);
 
@@ -92,7 +92,7 @@ confuiMakeItemEntryBasic (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   uiEntryCreate (gui->uiitem [widx].entry);
   uiwidgetp = uiEntryGetUIWidget (gui->uiitem [widx].entry);
   uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
-  uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (boxp, uiwidgetp);
   if (disp != NULL) {
     uiEntrySetValue (gui->uiitem [widx].entry, disp);
@@ -126,7 +126,7 @@ confuiMakeItemCombobox (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   uiDropDownSetList (gui->uiitem [widx].dropdown,
       gui->uiitem [widx].displist, NULL);
   uiDropDownSelectionSetStr (gui->uiitem [widx].dropdown, value);
-  uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiBoxPackStart (boxp, &hbox);
 
@@ -176,7 +176,7 @@ confuiMakeItemFontButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   } else {
     widget = gtk_font_button_new ();
   }
-  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, 4);
   uiBoxPackStartUW (&hbox, widget);
   uiBoxPackStart (boxp, &hbox);
   gui->uiitem [widx].widget = widget;
@@ -204,7 +204,7 @@ confuiMakeItemColorButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   } else {
     widget = gtk_color_button_new ();
   }
-  uiWidgetSetMarginStartW (widget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStartW (widget, 4);
   uiBoxPackStartUW (&hbox, widget);
   uiBoxPackStart (boxp, &hbox);
   gui->uiitem [widx].widget = widget;
@@ -255,7 +255,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
       nlistGetCount (list), maxWidth, list, keylist, NULL);
   uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, value);
   uiwidgetp = uiSpinboxGetUIWidget (gui->uiitem [widx].spinbox);
-  uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (sgB != NULL) {
     uiSizeGroupAdd (sgB, uiwidgetp);
   }
@@ -305,7 +305,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, UIWidget *boxp,
   uiSpinboxTimeSetValue (gui->uiitem [widx].spinbox, value);
   uiwidgetp = uiSpinboxGetUIWidget (gui->uiitem [widx].spinbox);
   uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
-  uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (sgB != NULL) {
     uiSizeGroupAdd (sgB, uiwidgetp);
   }
@@ -332,7 +332,7 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   uiSpinboxIntCreate (&uiwidget);
   uiSpinboxSet (&uiwidget, (double) min, (double) max);
   uiSpinboxSetValue (&uiwidget, (double) value);
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStart (&uiwidget, 4);
   if (sgB != NULL) {
     uiSizeGroupAdd (sgB, &uiwidget);
   }
@@ -364,7 +364,7 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   uiSpinboxDoubleCreate (&uiwidget);
   uiSpinboxSet (&uiwidget, min, max);
   uiSpinboxSetValue (&uiwidget, value);
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStart (&uiwidget, 4);
   if (sgB != NULL) {
     uiSizeGroupAdd (sgB, &uiwidget);
   }
@@ -391,7 +391,7 @@ confuiMakeItemSwitch (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 
   gui->uiitem [widx].uiswitch = uiCreateSwitch (value);
   uiwidgetp = uiSwitchGetUIWidget (gui->uiitem [widx].uiswitch);
-  uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiBoxPackStart (boxp, &hbox);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
@@ -419,7 +419,7 @@ confuiMakeItemLabelDisp (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt);
   uiCreateLabel (&uiwidget, "");
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStart (&uiwidget, 4);
   uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
   uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
@@ -438,7 +438,7 @@ confuiMakeItemCheckButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   gui->uiitem [widx].basetype = CONFUI_CHECK_BUTTON;
   gui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
   uiCreateCheckButton (&uiwidget, txt, value);
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStart (&uiwidget, 4);
   uiBoxPackStart (boxp, &uiwidget);
   uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;

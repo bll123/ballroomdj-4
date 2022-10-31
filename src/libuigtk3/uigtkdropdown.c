@@ -373,8 +373,8 @@ uiDropDownButtonCreate (uidropdown_t *dropdown)
       "button_down_small");
   uiButtonAlignLeft (&dropdown->button);
   uiButtonSetImagePosRight (&dropdown->button);
-  uiWidgetSetMarginTop (&dropdown->button, uiBaseMarginSz);
-  uiWidgetSetMarginStart (&dropdown->button, uiBaseMarginSz);
+  uiWidgetSetMarginTop (&dropdown->button, 1);
+  uiWidgetSetMarginStart (&dropdown->button, 1);
 }
 
 

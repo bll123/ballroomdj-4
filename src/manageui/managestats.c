@@ -87,7 +87,7 @@ manageBuildUIStats (managestats_t *managestats)
 
   /* Number of songs */
   uiCreateHorizBox (&hbox);
-  uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 2);
+  uiWidgetSetMarginTop (&hbox, 2);
   uiBoxPackStart (&managestats->vboxmain, &hbox);
 
   /* CONTEXT: statistics: Label for number of songs in song list */
@@ -101,7 +101,7 @@ manageBuildUIStats (managestats_t *managestats)
   /* total time (same horiz row) */
   /* CONTEXT: statistics: Label for total song list duration */
   uiCreateColonLabel (&uiwidget, _("Total Time"));
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 10);
+  uiWidgetSetMarginStart (&uiwidget, 10);
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiCreateLabel (&managestats->tottimedisp, "");
@@ -121,7 +121,7 @@ manageBuildUIStats (managestats_t *managestats)
 
   /* horizontal box to hold the columns */
   uiCreateHorizBox (&chbox);
-  uiWidgetSetMarginTop (&chbox, uiBaseMarginSz * 2);
+  uiWidgetSetMarginTop (&chbox, 2);
   uiBoxPackStart (&managestats->vboxmain, &chbox);
 
   for (int i = 0; i < STATS_COLS; ++i) {
@@ -129,9 +129,9 @@ manageBuildUIStats (managestats_t *managestats)
 
     /* vertical box for each column */
     uiCreateVertBox (&vbox);
-    uiWidgetSetMarginTop (&vbox, uiBaseMarginSz * 2);
-    uiWidgetSetMarginStart (&vbox, uiBaseMarginSz * 2);
-    uiWidgetSetMarginEnd (&vbox, uiBaseMarginSz * 8);
+    uiWidgetSetMarginTop (&vbox, 2);
+    uiWidgetSetMarginStart (&vbox, 2);
+    uiWidgetSetMarginEnd (&vbox, 8);
     uiBoxPackStart (&chbox, &vbox);
 
     for (int j = 0; j < STATS_PER_COL; ++j) {

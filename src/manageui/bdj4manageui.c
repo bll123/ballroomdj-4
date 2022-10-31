@@ -565,12 +565,12 @@ manageBuildUI (manageui_t *manage)
   uiBoxPackInWindow (&manage->window, &vbox);
 
   uiCreateHorizBox (&hbox);
-  uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
+  uiWidgetSetMarginTop (&hbox, 4);
   uiBoxPackStart (&vbox, &hbox);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetSizeRequest (&uiwidget, 25, 25);
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
+  uiWidgetSetMarginStart (&uiwidget, 3);
   uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
 
@@ -777,7 +777,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiutilsUIWidgetInit (&hbox);
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&vbox, 2);
 
   /* CONTEXT: managementui: notebook tab title: edit song lists */
   uiCreateLabel (&uiwidget, _("Edit Song Lists"));
@@ -809,8 +809,8 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 4);
-  uiWidgetSetMarginTop (&vbox, uiBaseMarginSz * 64);
+  uiWidgetSetAllMargins (&vbox, 4);
+  uiWidgetSetMarginTop (&vbox, 64);
   uiBoxPackStart (&hbox, &vbox);
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_EZ_SELECT],
@@ -1468,7 +1468,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   /* music manager */
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&vbox, 2);
   /* CONTEXT: managementui: name of music manager notebook tab */
   uiCreateLabel (&uiwidget, _("Music Manager"));
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
@@ -1772,7 +1772,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
       );
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 4);
+  uiWidgetSetAllMargins (&vbox, 4);
   uiDialogPackInDialog (&manage->cfplDialog, &vbox);
 
   uiCreateHorizBox (&hbox);

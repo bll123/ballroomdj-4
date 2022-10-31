@@ -394,7 +394,7 @@ confuiBuildUI (configui_t *confui)
   uiCreateVertBox (&confui->gui.vbox);
   uiWidgetExpandHoriz (&confui->gui.vbox);
   uiWidgetExpandVert (&confui->gui.vbox);
-  uiWidgetSetAllMargins (&confui->gui.vbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&confui->gui.vbox, 2);
   uiBoxPackInWindow (&confui->gui.window, &confui->gui.vbox);
 
   uiCreateHorizBox (&hbox);
@@ -403,7 +403,7 @@ confuiBuildUI (configui_t *confui)
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetSizeRequest (&uiwidget, 25, 25);
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
+  uiWidgetSetMarginStart (&uiwidget, 3);
   uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
 

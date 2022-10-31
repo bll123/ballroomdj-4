@@ -452,16 +452,16 @@ starterBuildUI (startui_t  *starter)
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff);
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&vbox, 2);
   uiBoxPackInWindow (&starter->window, &vbox);
 
   uiCreateHorizBox (&hbox);
-  uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
+  uiWidgetSetMarginTop (&hbox, 4);
   uiBoxPackStart (&vbox, &hbox);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetSizeRequest (&uiwidget, 25, 25);
-  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 3);
+  uiWidgetSetMarginStart (&uiwidget, 3);
   uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&starter->profileAccent, &uiwidget);
@@ -505,7 +505,7 @@ starterBuildUI (startui_t  *starter)
 
   /* main display */
   uiCreateHorizBox (&hbox);
-  uiWidgetSetMarginTop (&hbox, uiBaseMarginSz * 4);
+  uiWidgetSetMarginTop (&hbox, 4);
   uiBoxPackStart (&vbox, &hbox);
 
   /* CONTEXT: starterui: profile to be used when starting BDJ4 */
@@ -520,7 +520,7 @@ starterBuildUI (startui_t  *starter)
       starter->proflist, NULL, starterSetProfile);
   uiSpinboxTextSetValue (starter->profilesel, dispidx);
   uiwidgetp = uiSpinboxGetUIWidget (starter->profilesel);
-  uiWidgetSetMarginStart (uiwidgetp, uiBaseMarginSz * 4);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
 
@@ -535,7 +535,7 @@ starterBuildUI (startui_t  *starter)
      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
   uiImageScaledFromFile (&uiwidget, tbuff, 128);
   uiWidgetExpandHoriz (&uiwidget);
-  uiWidgetSetAllMargins (&uiwidget, uiBaseMarginSz * 10);
+  uiWidgetSetAllMargins (&uiwidget, 10);
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CB_PLAYER],
@@ -544,7 +544,7 @@ starterBuildUI (startui_t  *starter)
       &starter->callbacks [START_CB_PLAYER],
       /* CONTEXT: starterui: button: starts the player user interface */
       _("Player"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetSetMarginTop (&uiwidget, 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
   uiBoxPackStart (&bvbox, &uiwidget);
@@ -556,7 +556,7 @@ starterBuildUI (startui_t  *starter)
       &starter->callbacks [START_CB_MANAGE],
       /* CONTEXT: starterui: button: starts the management user interface */
       _("Manage"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetSetMarginTop (&uiwidget, 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
   uiBoxPackStart (&bvbox, &uiwidget);
@@ -568,7 +568,7 @@ starterBuildUI (startui_t  *starter)
       &starter->callbacks [START_CB_CONFIG],
       /* CONTEXT: starterui: button: starts the configuration user interface */
       _("Configure"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetSetMarginTop (&uiwidget, 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
   uiBoxPackStart (&bvbox, &uiwidget);
@@ -580,7 +580,7 @@ starterBuildUI (startui_t  *starter)
       &starter->callbacks [START_CB_SUPPORT],
       /* CONTEXT: starterui: button: support : support information */
       _("Support"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetSetMarginTop (&uiwidget, 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
   uiBoxPackStart (&bvbox, &uiwidget);
@@ -590,7 +590,7 @@ starterBuildUI (startui_t  *starter)
       &starter->callbacks [START_CB_EXIT],
       /* CONTEXT: starterui: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, uiBaseMarginSz * 2);
+  uiWidgetSetMarginTop (&uiwidget, 2);
   uiWidgetAlignHorizStart (&uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
   uiBoxPackStart (&bvbox, &uiwidget);
@@ -1135,7 +1135,7 @@ starterProcessSupport (void *udata)
   uiCreateSizeGroupHoriz (&sg);
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&vbox, 2);
   uiDialogPackInDialog (&uidialog, &vbox);
 
   /* begin line */
@@ -1471,7 +1471,7 @@ starterCreateSupportDialog (void *udata)
   uiCreateSizeGroupHoriz (&sg);
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
+  uiWidgetSetAllMargins (&vbox, 2);
   uiDialogPackInDialog (&uidialog, &vbox);
 
   /* line 1 */
