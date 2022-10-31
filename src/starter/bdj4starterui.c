@@ -1506,7 +1506,7 @@ starterCreateSupportDialog (void *udata)
   uiBoxPackStart (&vbox, &uiwidget);
 
   /* line 4 */
-  tb = uiTextBoxCreate (200);
+  tb = uiTextBoxCreate (200, NULL);
   uiTextBoxHorizExpand (tb);
   uiTextBoxVertExpand (tb);
   uiBoxPackStartExpand (&vbox, uiTextBoxGetScrolledWindow (tb));

@@ -20,7 +20,7 @@ typedef struct uitextbox {
 } uitextbox_t;
 
 uitextbox_t *
-uiTextBoxCreate (int height)
+uiTextBoxCreate (int height, const char *hlcolor)
 {
   uitextbox_t   *tb;
 
@@ -34,6 +34,11 @@ uiTextBoxCreate (int height)
 
   tb->buffer.buffer = gtk_text_buffer_new (NULL);
   gtk_text_buffer_create_tag (tb->buffer.buffer, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
+  if (hlcolor == NULL) {
+    gtk_text_buffer_create_tag (tb->buffer.buffer, "highlight", "weight", PANGO_WEIGHT_BOLD, NULL);
+  } else {
+    gtk_text_buffer_create_tag (tb->buffer.buffer, "highlight", "foreground", hlcolor, NULL);
+  }
   tb->textbox.widget = gtk_text_view_new_with_buffer (tb->buffer.buffer);
   gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tb->textbox.widget), GTK_WRAP_WORD);
   uiWidgetSetAllMargins (&tb->textbox, uiBaseMarginSz * 2);
@@ -109,6 +114,22 @@ uiTextBoxAppendBoldStr (uitextbox_t *tb, const char *str)
   gtk_text_buffer_get_iter_at_mark (tb->buffer.buffer, &siter, mark);
   gtk_text_buffer_get_end_iter (tb->buffer.buffer, &eiter);
   gtk_text_buffer_apply_tag_by_name (tb->buffer.buffer, "bold", &siter, &eiter);
+  gtk_text_buffer_delete_mark (tb->buffer.buffer, mark);
+}
+
+void
+uiTextBoxAppendHighlightStr (uitextbox_t *tb, const char *str)
+{
+  GtkTextIter siter;
+  GtkTextIter eiter;
+  GtkTextMark *mark;
+
+  gtk_text_buffer_get_end_iter (tb->buffer.buffer, &eiter);
+  mark = gtk_text_buffer_create_mark (tb->buffer.buffer, NULL, &eiter, TRUE);
+  gtk_text_buffer_insert (tb->buffer.buffer, &eiter, str, -1);
+  gtk_text_buffer_get_iter_at_mark (tb->buffer.buffer, &siter, mark);
+  gtk_text_buffer_get_end_iter (tb->buffer.buffer, &eiter);
+  gtk_text_buffer_apply_tag_by_name (tb->buffer.buffer, "highlight", &siter, &eiter);
   gtk_text_buffer_delete_mark (tb->buffer.buffer, mark);
 }
 

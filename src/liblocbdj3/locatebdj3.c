@@ -95,16 +95,12 @@ locatebdj3 (void)
 bool
 locationcheck (const char *dir)
 {
-  char          tbuff [MAXPATHLEN];
-
   if (dir == NULL) {
     return false;
   }
 
-  strlcpy (tbuff, dir, MAXPATHLEN);
-
-  if (fileopIsDirectory (tbuff)) {
-    if (locatedb (tbuff)) {
+  if (fileopIsDirectory (dir)) {
+    if (locatedb (dir)) {
       return true;
     }
   }
@@ -116,23 +112,27 @@ locationcheck (const char *dir)
 bool
 locatedb (const char *dir)
 {
-  char          tbuff [MAXPATHLEN];
+  char  tdir [MAXPATHLEN];
+  char  tbuff [MAXPATHLEN];
+  bool  rc = false;
 
 
-  strlcpy (tbuff, dir, MAXPATHLEN);
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "data", MAXPATHLEN);
-
-  if (! fileopIsDirectory (tbuff)) {
-    return false;
+  snprintf (tdir, sizeof (tdir), "%s/data", dir);
+  if (! fileopIsDirectory (tdir)) {
+    return rc;
   }
 
-  strlcat (tbuff, "/", MAXPATHLEN);
-  strlcat (tbuff, "musicdb.txt", MAXPATHLEN);
-
-  if (! fileopFileExists (tbuff)) {
-    return false;
+  snprintf (tbuff, sizeof (tbuff), "%s/musicdb.txt", tdir);
+  if (fileopFileExists (tbuff)) {
+    rc = true;
   }
 
-  return true;
+  if (! rc) {
+    snprintf (tbuff, sizeof (tbuff), "%s/masterlist.txt", tdir);
+    if (fileopFileExists (tbuff)) {
+      rc = true;
+    }
+  }
+
+  return rc;
 }

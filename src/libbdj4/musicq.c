@@ -148,7 +148,7 @@ musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t musicqidx)
 
 void
 musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
-    ssize_t fromidx, ssize_t toidx)
+    qidx_t fromidx, qidx_t toidx)
 {
   int   olddispidx;
 
@@ -161,7 +161,7 @@ musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
 }
 
 int
-musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx,
+musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx,
     dbidx_t dbidx, long dur)
 {
   int           olddispidx;
@@ -234,7 +234,7 @@ musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx)
 
 /* gets by the real idx, not the display index */
 dbidx_t
-musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
+musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
 {
   musicqitem_t      *musicqitem;
 
@@ -254,7 +254,7 @@ musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
 }
 
 musicqflag_t
-musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
+musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
 {
   musicqitem_t      *musicqitem;
 
@@ -274,7 +274,7 @@ musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
 }
 
 int
-musicqGetDispIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
+musicqGetDispIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
 {
   musicqitem_t      *musicqitem;
 
@@ -294,7 +294,7 @@ musicqGetDispIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
 }
 
 int
-musicqGetUniqueIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
+musicqGetUniqueIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
 {
   musicqitem_t      *musicqitem;
 
@@ -315,7 +315,7 @@ musicqGetUniqueIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
 
 void
 musicqSetFlag (musicq_t *musicq, musicqidx_t musicqidx,
-    ssize_t qkey, musicqflag_t flags)
+    qidx_t qkey, musicqflag_t flags)
 {
   musicqitem_t      *musicqitem;
 
@@ -336,7 +336,7 @@ musicqSetFlag (musicq_t *musicq, musicqidx_t musicqidx,
 
 void
 musicqClearFlag (musicq_t *musicq, musicqidx_t musicqidx,
-    ssize_t qkey, musicqflag_t flags)
+    qidx_t qkey, musicqflag_t flags)
 {
   musicqitem_t      *musicqitem;
 
@@ -356,7 +356,7 @@ musicqClearFlag (musicq_t *musicq, musicqidx_t musicqidx,
 }
 
 char *
-musicqGetAnnounce (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
+musicqGetAnnounce (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
 {
   musicqitem_t      *musicqitem;
 
@@ -373,7 +373,7 @@ musicqGetAnnounce (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
 
 void
 musicqSetAnnounce (musicq_t *musicq, musicqidx_t musicqidx,
-    ssize_t qkey, char *annfname)
+    qidx_t qkey, char *annfname)
 {
   musicqitem_t      *musicqitem;
 
@@ -389,7 +389,7 @@ musicqSetAnnounce (musicq_t *musicq, musicqidx_t musicqidx,
 }
 
 int
-musicqGetPlaylistIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey)
+musicqGetPlaylistIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
 {
   musicqitem_t      *musicqitem;
 
@@ -428,10 +428,10 @@ musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
 
 /* does not clear the initial entry -- that's the song that is playing */
 void
-musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
+musicqClear (musicq_t *musicq, musicqidx_t musicqidx, qidx_t startIdx)
 {
   int           olddispidx;
-  ssize_t       iteridx;
+  qidx_t        qiteridx;
   musicqitem_t  *musicqitem;
 
   logProcBegin (LOG_PROC, "musicqClear");
@@ -452,10 +452,10 @@ musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
   olddispidx = musicqRenumberStart (musicq, musicqidx);
   queueClear (musicq->q [musicqidx], startIdx);
 
-  queueStartIterator (musicq->q [musicqidx], &iteridx);
+  queueStartIterator (musicq->q [musicqidx], &qiteridx);
   /* just re-calculate the duration for the queue */
   musicq->duration [musicqidx] = 0;
-  while ((musicqitem = queueIterateData (musicq->q [musicqidx], &iteridx)) != NULL) {
+  while ((musicqitem = queueIterateData (musicq->q [musicqidx], &qiteridx)) != NULL) {
     musicq->duration [musicqidx] += musicqitem->dur;
   }
 
@@ -464,7 +464,7 @@ musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx)
 }
 
 void
-musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
+musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx)
 {
   int           olddispidx;
   musicqitem_t  *musicqitem;
@@ -514,7 +514,7 @@ musicqGetDuration (musicq_t *musicq, musicqidx_t musicqidx)
 
 
 char *
-musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t tagidx)
+musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx, tagdefkey_t tagidx)
 {
   musicqitem_t  *musicqitem;
   song_t        *song;
@@ -537,7 +537,7 @@ musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t
 }
 
 char *
-musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx)
+musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx)
 {
   musicqitem_t  *musicqitem = NULL;
   song_t        *song = NULL;
@@ -608,12 +608,12 @@ static void
 musicqRenumber (musicq_t *musicq, musicqidx_t musicqidx, int olddispidx)
 {
   int           dispidx = olddispidx;
-  ssize_t       iteridx;
+  qidx_t        qiteridx;
   musicqitem_t  *musicqitem;
 
   logProcBegin (LOG_PROC, "musicqRenumber");
-  queueStartIterator (musicq->q [musicqidx], &iteridx);
-  while ((musicqitem = queueIterateData (musicq->q [musicqidx], &iteridx)) != NULL) {
+  queueStartIterator (musicq->q [musicqidx], &qiteridx);
+  while ((musicqitem = queueIterateData (musicq->q [musicqidx], &qiteridx)) != NULL) {
     musicqitem->dispidx = dispidx;
     ++dispidx;
   }

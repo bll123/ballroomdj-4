@@ -12,16 +12,35 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 1]
 
+# get the default volume from the configuration file so that
+# volume adjustments can be done for older database files.
+set conffn "[file join $bdj3dir profiles bdj_config.txt]"
+set defvol 50
+if { [file exists $conffn] } {
+  set fh [open $conffn r]
+  while { [gets $fh line] >= 0 } {
+    if { [regexp {^DEFAULTVOLUME:([0-9]*)} $line all dvol] } {
+      set defvol $dvol
+      break
+    }
+  }
+  close $fh
+}
+
 set hsize 128
 set rsize 2048
 
 set infn [file join $bdj3dir musicdb.txt]
 if { ! [file exists $infn] } {
-  puts "   no database"
-  exit 1
+  # old version 7/8 name
+  set infn [file join $bdj3dir masterlist.txt]
+  if { ! [file exists $infn] } {
+    puts "   no database"
+    exit 1
+  }
 }
 
-set fh [open $infn r]
+set fh [open "$infn" r]
 gets $fh line
 gets $fh line
 gets $fh line
@@ -29,11 +48,11 @@ gets $fh line
 regexp {^#RAMAX=(\d+)$} $line all racount
 close $fh
 
-set dbfn [file join $bdj3dir musicdb.txt]
+set dbfn "$infn"
 set fh [open $dbfn r]
 gets $fh line
 if { [regexp {^# ?VERSION=(\d+)\s*$} $line all vers] } {
-  if { $vers < 9 } {
+  if { $vers < 7 } {
     puts "Database version is too old to convert."
     exit 1
   }
@@ -86,6 +105,11 @@ dict for {fn data} $musicdbList {
   seek $fh [expr {([dict get $data rrn] - 1) * $rsize + $hsize}]
   puts $fh "FILE\n..$fn"
 
+  set haveoldvoladj false
+  set oldvoladj 0
+  set havevoladjperc false
+  set voladjdone false
+
   # sort it now, make it easier
   foreach {tag} [lsort [dict keys $data]] {
     if { $tag eq "AFMODTIME" } { continue }
@@ -97,7 +121,6 @@ dict for {fn data} $musicdbList {
     if { $tag eq "NOMAXPLAYTIME" } { continue }
     if { $tag eq "UPDATEFLAG" } { continue }
     if { $tag eq "VARIOUSARTISTS" } { continue }
-    if { $tag eq "VOLUMEADJUSTMENT" } { continue }
     if { $tag eq "WRITETIME" } { continue }
     # not going to do the sort-of-odd sometimes re-org stuff
     if { $tag eq "AUTOORGFLAG" } { continue }
@@ -138,11 +161,32 @@ dict for {fn data} $musicdbList {
       }
     }
 
+    # volume handling
+
+    if { $tag eq "VOLUMEADJUSTMENT" } {
+      set haveoldvoladj true
+      set oldvoladj $value
+      continue;
+    }
     if { $tag eq "VOLUMEADJUSTPERC" } {
+      set havevoladjperc true
       # 10.0 converts the bdj3 value, 1000.0 is the bdj4 double multiplier
       set value [expr {$value / 10.0 * 1000.0}]
       # make sure the volume-adjust-perc has no decimal point in it.
       set value [format {%.0f} $value]
+    }
+
+    if { [string compare $tag "VOLUMEADJUST"] > 0 } {
+      if { $haveoldvoladj && ! $havevoladjperc } {
+        # bdj3 conversion
+        set nvap [expr {double ($oldvoladj) / double ($defvol) * 100.0}]
+        set nvap [expr {round ($nvap / 10.0)}]
+        # bdj4 conversion
+        set nvap [expr {$nvap / 10.0 * 1000.0}]
+        set nvap [format {%.0f} $nvap]
+        puts $fh "VOLUMEADJUSTPERC\n..$nvap"
+      }
+      set voladjdone true
     }
 
     if { $tag eq "SONGSTART" || $tag eq "SONGEND" } {
@@ -164,6 +208,17 @@ dict for {fn data} $musicdbList {
     }
     puts $fh "$tag\n..$value"
   }
+
+  if { ! $voladjdone && $haveoldvoladj && ! $havevoladjperc } {
+    # bdj3 conversion
+    set nvap [expr {double ($oldvoladj) / double ($defvol) * 100.0}]
+    set nvap [expr {round ($nvap / 10.0)}]
+    # bdj4 conversion
+    set nvap [expr {$nvap / 10.0 * 1000.0}]
+    set nvap [format {%.0f} $nvap]
+    puts $fh "VOLUMEADJUSTPERC\n..$nvap"
+  }
+
   incr newrrn
 }
 

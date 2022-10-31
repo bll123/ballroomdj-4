@@ -176,7 +176,7 @@ helperBuildUI (helperui_t  *helper)
   uiWidgetSetAllMargins (&vbox, uiBaseMarginSz * 2);
   uiBoxPackInWindow (&helper->window, &vbox);
 
-  helper->tb = uiTextBoxCreate (400);
+  helper->tb = uiTextBoxCreate (400, NULL);
   uiTextBoxHorizExpand (helper->tb);
   uiTextBoxVertExpand (helper->tb);
   uiTextBoxSetReadonly (helper->tb);

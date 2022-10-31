@@ -283,9 +283,33 @@ main (int argc, char *argv [])
     }
 
     if (! converted) {
+      const char  *uifont = NULL;
+
       bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, false);
       value = UPD_SKIP;
       nlistSetNum (updlist, UPD_FIX_AF_TAGS, value);
+
+      /* need some decent default fonts for windows and macos */
+      if (isWindows () || isMacOS ()) {
+        uifont = "Arial Regular 14";
+        if (isMacOS ()) {
+          uifont = "Arial Regular 17";
+        }
+        bdjoptSetStr (OPT_MP_UIFONT, uifont);
+
+        /* windows does not have a narrow font pre-installed */
+        uifont = "Arial Regular 13";
+        if (isMacOS ()) {
+          uifont = "Arial Narrow Regular 16";
+        }
+        bdjoptSetStr (OPT_MP_MQFONT, uifont);
+
+        uifont = "Arial Regular 13";
+        if (isMacOS ()) {
+          uifont = "Arial Regular 16";
+        }
+        bdjoptSetStr (OPT_MP_LISTING_FONT, uifont);
+      }
     }
   }
 

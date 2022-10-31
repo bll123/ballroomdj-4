@@ -23,9 +23,9 @@ typedef struct queuenode {
 
 typedef struct queue {
   char          *name;
-  ssize_t       count;
+  qidx_t        count;
   queuenode_t   *cacheNode;
-  ssize_t       cacheIdx;
+  qidx_t        cacheIdx;
   long          cacheHits;
   queuenode_t   *iteratorNode;
   queuenode_t   *currentNode;
@@ -175,9 +175,9 @@ queueGetCurrent (queue_t *q)
 }
 
 void *
-queueGetByIdx (queue_t *q, ssize_t idx)
+queueGetByIdx (queue_t *q, qidx_t idx)
 {
-  ssize_t           count = 0;
+  qidx_t            count = 0;
   queuenode_t       *node = NULL;
   void              *data = NULL;
 
@@ -236,7 +236,7 @@ queuePop (queue_t *q)
 }
 
 void
-queueClear (queue_t *q, ssize_t startIdx)
+queueClear (queue_t *q, qidx_t startIdx)
 {
   queuenode_t   *node;
   queuenode_t   *tnode;
@@ -266,13 +266,13 @@ queueClear (queue_t *q, ssize_t startIdx)
 }
 
 void
-queueMove (queue_t *q, ssize_t fromidx, ssize_t toidx)
+queueMove (queue_t *q, qidx_t fromidx, qidx_t toidx)
 {
   queuenode_t   *node = NULL;
   queuenode_t   *fromnode = NULL;
   queuenode_t   *tonode = NULL;
   void          *tdata = NULL;
-  ssize_t       count;
+  qidx_t        count;
 
   logProcBegin (LOG_PROC, "queueMove");
   if (q == NULL) {
@@ -313,11 +313,11 @@ queueMove (queue_t *q, ssize_t fromidx, ssize_t toidx)
 }
 
 void
-queueInsert (queue_t *q, ssize_t idx, void *data)
+queueInsert (queue_t *q, qidx_t idx, void *data)
 {
   queuenode_t   *node = NULL;
   queuenode_t   *tnode = NULL;
-  ssize_t       count;
+  qidx_t        count;
 
   logProcBegin (LOG_PROC, "queueInsert");
   if (q == NULL) {
@@ -367,9 +367,9 @@ queueInsert (queue_t *q, ssize_t idx, void *data)
 }
 
 void *
-queueRemoveByIdx (queue_t *q, ssize_t idx)
+queueRemoveByIdx (queue_t *q, qidx_t idx)
 {
-  ssize_t           count = 0;
+  qidx_t            count = 0;
   queuenode_t       *node = NULL;
   void              *data = NULL;
 
@@ -399,7 +399,7 @@ queueRemoveByIdx (queue_t *q, ssize_t idx)
   return data;
 }
 
-ssize_t
+qidx_t
 queueGetCount (queue_t *q)
 {
   if (q != NULL) {
@@ -409,7 +409,7 @@ queueGetCount (queue_t *q)
 }
 
 void
-queueStartIterator (queue_t *q, ssize_t *iteridx)
+queueStartIterator (queue_t *q, qidx_t *iteridx)
 {
   if (q != NULL) {
     *iteridx = -1;
@@ -419,7 +419,7 @@ queueStartIterator (queue_t *q, ssize_t *iteridx)
 }
 
 void *
-queueIterateData (queue_t *q, ssize_t *iteridx)
+queueIterateData (queue_t *q, qidx_t *iteridx)
 {
   void      *data = NULL;
 
@@ -433,7 +433,7 @@ queueIterateData (queue_t *q, ssize_t *iteridx)
 }
 
 void *
-queueIterateRemoveNode (queue_t *q, ssize_t *iteridx)
+queueIterateRemoveNode (queue_t *q, qidx_t *iteridx)
 {
   void        *data = NULL;
 

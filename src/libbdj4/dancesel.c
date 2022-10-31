@@ -159,7 +159,7 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
   double        tprob;
   double        abase;
   nlistidx_t    iteridx;
-  ssize_t       qiteridx;
+  qidx_t        qiteridx;
   playedDance_t *pd;
   /* expected counts */
   double        expcount;

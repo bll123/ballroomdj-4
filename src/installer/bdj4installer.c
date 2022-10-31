@@ -629,7 +629,7 @@ installerBuildUI (installer_t *installer)
       _("Install"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
-  installer->disptb = uiTextBoxCreate (300);
+  installer->disptb = uiTextBoxCreate (300, INST_HL_COLOR);
   uiTextBoxSetReadonly (installer->disptb);
   uiTextBoxHorizExpand (installer->disptb);
   uiTextBoxVertExpand (installer->disptb);
@@ -980,9 +980,18 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
 
   strlcpy (tbuff, uiEntryGetValue (installer->bdj3locEntry), sizeof (tbuff));
   pathNormPath (tbuff, strlen (tbuff));
-  if (*tbuff == '\0' || strcmp (tbuff, "-") == 0 ||
-      locationcheck (tbuff)) {
+  if (*tbuff == '\0' || strcmp (tbuff, "-") == 0) {
     locok = true;
+  } else {
+    if (! isMacOS ()) {
+      if (locationcheck (tbuff)) {
+        locok = true;
+      }
+    } else {
+      if (locatebdj3 ()) {
+        locok = true;
+      }
+    }
   }
 
   if (! locok) {
@@ -1733,9 +1742,21 @@ installerConvertStart (installer_t *installer)
     return;
   }
 
-// ### needs to work on mac os
   ok = false;
   snprintf (tbuff, sizeof (tbuff), "%s/data/musicdb.txt", installer->bdj3loc);
+  if (! fileopFileExists (tbuff)) {
+    /* try the old database name */
+    snprintf (tbuff, sizeof (tbuff), "%s/data/masterlist.txt", installer->bdj3loc);
+  }
+  if (! fileopFileExists (tbuff)) {
+    /* macos path */
+    snprintf (tbuff, sizeof (tbuff), "%s/Library/Application Support/BallroomDJ/data/musicdb.txt", installer->home);
+  }
+  if (! fileopFileExists (tbuff)) {
+    /* macos path, old database name */
+    snprintf (tbuff, sizeof (tbuff), "%s/Library/Application Support/BallroomDJ/data/masterlist.txt", installer->home);
+  }
+
   if (fileopFileExists (tbuff)) {
     FILE  *fh;
     char  tmp [200];
@@ -1746,7 +1767,7 @@ installerConvertStart (installer_t *installer)
       (void) ! fgets (tmp, sizeof (tmp), fh);
       fclose (fh);
       sscanf (tmp, "#VERSION=%d", &ver);
-      if (ver < 8) {
+      if (ver < 7) {
         /* CONTEXT: installer: status message */
         installerDisplayText (installer, INST_DISP_STATUS, _("BDJ3 database version is too old."), false);
       } else {

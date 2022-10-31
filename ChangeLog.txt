@@ -1,5 +1,11 @@
 BallroomDJ 4 Change Log
 
+4.0.0 alpha 2022-10---
+
+- update database: minor user interface cleanup.
+- conversion: fixes for font conversion (windows, macos).
+- installation: set fonts to a known good value (windows, macos).
+
 4.0.0 alpha 2022-10-27
 
 - configuration: player: Added "Play Announcement".

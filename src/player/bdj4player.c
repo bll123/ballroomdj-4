@@ -82,7 +82,7 @@ typedef struct {
   volume_t        *volume;
   queue_t         *prepRequestQueue;
   queue_t         *prepQueue;
-  ssize_t         prepiteridx;
+  qidx_t          prepiteridx;
   prepqueue_t     *currentSong;
   queue_t         *playRequest;
   int             originalSystemVolume;
@@ -1818,7 +1818,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "repeat%c%d%c"
       "defaultsink%c%s%c"
       "currentsink%c%s%c"
-      "prepqueuecount%c%zd",
+      "prepqueuecount%c%d",
       MSG_ARGS_RS, plstateDebugText (playerData->playerState), MSG_ARGS_RS,
       MSG_ARGS_RS, plistateTxt [pliState (playerData->pli)], MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentVolume, MSG_ARGS_RS,

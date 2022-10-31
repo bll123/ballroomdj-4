@@ -437,9 +437,9 @@ songselRemoveSong (songsel_t *songsel,
 {
   songselidx_t    *songidx = NULL;
   list_t          *nlist = NULL;
-  ssize_t         count = 0;
+  qidx_t          count = 0;
   nlistidx_t      iteridx;
-  ssize_t         qiteridx;
+  qidx_t          qiteridx;
 
 
   logProcBegin (LOG_PROC, "songselRemoveSong");

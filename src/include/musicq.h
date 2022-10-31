@@ -49,26 +49,26 @@ void        musicqPush (musicq_t *musicq, musicqidx_t idx, dbidx_t dbidx,
                 int playlistIdx, long dur);
 void        musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t idx);
 void        musicqMove (musicq_t *musicq, musicqidx_t musicqidx,
-                ssize_t fromidx, ssize_t toidx);
+                qidx_t fromidx, qidx_t toidx);
 int         musicqInsert (musicq_t *musicq, musicqidx_t musicqidx,
-                ssize_t idx, dbidx_t dbidx, long dur);
+                qidx_t idx, dbidx_t dbidx, long dur);
 dbidx_t     musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx);
-musicqflag_t musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
-int         musicqGetDispIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
-int         musicqGetUniqueIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
-void        musicqSetFlag (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey, musicqflag_t flags);
-void        musicqClearFlag (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey, musicqflag_t flags);
-char        *musicqGetAnnounce (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
-void        musicqSetAnnounce (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey, char *annfname);
-int         musicqGetPlaylistIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
-dbidx_t     musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, ssize_t qkey);
+musicqflag_t musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);
+int         musicqGetDispIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);
+int         musicqGetUniqueIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);
+void        musicqSetFlag (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey, musicqflag_t flags);
+void        musicqClearFlag (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey, musicqflag_t flags);
+char        *musicqGetAnnounce (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);
+void        musicqSetAnnounce (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey, char *annfname);
+int         musicqGetPlaylistIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);
+dbidx_t     musicqGetByIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);
 void        musicqPop (musicq_t *musicq, musicqidx_t musicqidx);
-void        musicqClear (musicq_t *musicq, musicqidx_t musicqidx, ssize_t startIdx);
-void        musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx);
+void        musicqClear (musicq_t *musicq, musicqidx_t musicqidx, qidx_t startIdx);
+void        musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx);
 int         musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx);
 time_t      musicqGetDuration (musicq_t *musicq, musicqidx_t musicqidx);
-char *      musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx);
-char *      musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, ssize_t idx, tagdefkey_t tagidx);
+char *      musicqGetDance (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx);
+char *      musicqGetData (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx, tagdefkey_t tagidx);
 musicqidx_t musicqNextQueue (musicqidx_t musicqidx);
 
 #endif /* INC_MUSICQ_H */

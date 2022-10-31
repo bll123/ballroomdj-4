@@ -219,7 +219,10 @@ foreach path [list {} profiles $mpath $mppath] {
             regsub -all {'} $value {} value
           }
           if { $::tcl_platform(platform) eq "windows" } {
-            set value "Arial 11"
+            set value "Arial Regular 13"
+          }
+          if { $::tcl_platform(os) eq "Darwin" } {
+            set value "Arial Regular 16"
           }
         }
 
@@ -250,9 +253,6 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "PLAYERQLEN" } {
           set value 90
         }
-        if { $key eq "MQFONT" && $value ne {} } {
-          set value [join $value { }]
-        }
         if { $key eq "PROFILENAME" && $value eq {BallroomDJ} } {
           set value {BallroomDJ 4}
         }
@@ -268,12 +268,22 @@ foreach path [list {} profiles $mpath $mppath] {
             regsub -all {'} $value {} value
           }
           if { $::tcl_platform(platform) eq "windows" } {
-            set value "Arial 11"
+            set value "Arial Regular 14"
           }
+          if { $::tcl_platform(os) eq "Darwin" } {
+            set value "Arial Regular 17"
+          }
+        }
+        if { $key eq "MQFONT" && $value ne {} } {
+          set value [join $value { }]
         }
         if { $key eq "MQFONT" && $value eq {} } {
           if { $::tcl_platform(platform) eq "windows" } {
-            set value "Arial 11"
+            # windows has no narrow fonts installed by default
+            set value "Arial Regular 14"
+          }
+          if { $::tcl_platform(os) eq "Darwin" } {
+            set value "Arial Narrow Regular 17"
           }
         }
         if { $key eq "GAP" && $value eq {} } {
@@ -335,6 +345,10 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..#444444"
         puts $ofh MQ_TEXT_COL
         puts $ofh "..#000000"
+        puts $ofh PLAYANNOUNCE
+        puts $ofh "..no"
+        puts $ofh STOPATTIME
+        puts $ofh "..0"
         puts $ofh UI_ACCENT_COL
         puts $ofh "..#ffa600"
         puts $ofh UI_ERROR_COL

@@ -63,7 +63,7 @@ typedef struct {
   int               numActiveThreads;
   dbidx_t           received;
   dbidx_t           sent;
-  dbidx_t           maxqueuelen;
+  qidx_t            maxqueuelen;
   queue_t           *fileQueue;
   int               maxThreads;
   dbthread_t        *threads;
@@ -205,7 +205,7 @@ dbtagProcessing (void *udata)
 {
   dbtag_t       * dbtag = udata;
   char          sbuff [BDJMSG_MAX_ARGS];
-  dbidx_t       count;
+  qidx_t        count;
   int           stop = false;
 
 

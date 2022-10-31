@@ -138,7 +138,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiCreateSizeGroupHoriz (&sg);   // labels
 
   /* help display */
-  tb = uiTextBoxCreate (80);
+  tb = uiTextBoxCreate (80, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiTextBoxSetReadonly (tb);
   uiTextBoxSetHeight (tb, 70);
   uiBoxPackStart (vboxp, uiTextBoxGetScrolledWindow (tb));
@@ -152,6 +152,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiCreateColonLabel (&uiwidget, _("Action"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 2);
 
   uiSpinboxTextCreate (managedb->dbspinbox, managedb);
   /* currently hard-coded at 30 chars */
@@ -171,6 +172,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   /* CONTEXT: update database: music folder to process */
   uiCreateColonLabel (&uiwidget, _("Music Folder"));
   uiBoxPackStart (&hbox, &uiwidget);
+  uiWidgetSetMarginStart (&uiwidget, uiBaseMarginSz * 2);
   uiSizeGroupAdd (&sg, &uiwidget);
 
   uiEntryCreate (managedb->dbtopdir);
@@ -205,9 +207,11 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiWidgetDisable (&managedb->dbstop);
 
   uiCreateProgressBar (&managedb->dbpbar, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiWidgetSetMarginStart (&managedb->dbpbar, uiBaseMarginSz * 2);
+  uiWidgetSetMarginEnd (&managedb->dbpbar, uiBaseMarginSz * 2);
   uiBoxPackStart (vboxp, &managedb->dbpbar);
 
-  tb = uiTextBoxCreate (200);
+  tb = uiTextBoxCreate (200, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiTextBoxSetReadonly (tb);
   uiTextBoxDarken (tb);
   uiTextBoxSetHeight (tb, 300);
@@ -230,7 +234,14 @@ manageDbChg (void *udata)
 
   sval = nlistGetStr (managedb->dbhelp, nval);
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector : %s", sval);
-  uiTextBoxSetValue (managedb->dbhelpdisp, sval);
+
+  /* clear the text so that append will work */
+  uiTextBoxSetValue (managedb->dbhelpdisp, "");
+  if (nval == MANAGE_DB_REBUILD) {
+    uiTextBoxAppendHighlightStr (managedb->dbhelpdisp, sval);
+  } else {
+    uiTextBoxSetValue (managedb->dbhelpdisp, sval);
+  }
   return UICB_CONT;
 }
 

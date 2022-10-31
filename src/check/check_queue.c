@@ -21,7 +21,7 @@
 
 START_TEST(queue_alloc_free)
 {
-  ssize_t       count;
+  qidx_t        count;
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_alloc_free");
@@ -35,7 +35,7 @@ END_TEST
 
 START_TEST(queue_push_one)
 {
-  ssize_t       count;
+  qidx_t        count;
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_one");
@@ -49,7 +49,7 @@ END_TEST
 
 START_TEST(queue_push_two)
 {
-  ssize_t       count;
+  qidx_t        count;
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_two");
@@ -66,7 +66,7 @@ END_TEST
 
 START_TEST(queue_push_many)
 {
-  ssize_t       count;
+  qidx_t        count;
   queue_t       *q;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_push_many");
@@ -92,7 +92,7 @@ END_TEST
 
 START_TEST(queue_push_pop_one)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
 
@@ -115,7 +115,7 @@ END_TEST
 
 START_TEST(queue_push_pop_two)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
 
@@ -144,7 +144,7 @@ END_TEST
 
 START_TEST(queue_push_head)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
 
@@ -172,7 +172,7 @@ END_TEST
 
 START_TEST(queue_get_current)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
 
@@ -208,7 +208,7 @@ END_TEST
 
 START_TEST(queue_multi_one)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
 
@@ -247,7 +247,7 @@ END_TEST
 
 START_TEST(queue_multi_two)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
 
@@ -324,7 +324,7 @@ END_TEST
 
 START_TEST(queue_multi_many)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
 
@@ -412,10 +412,10 @@ END_TEST
 
 START_TEST(queue_iterate)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
-  ssize_t   qiteridx;
+  qidx_t    qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_iterate");
   q = queueAlloc ("iterate", NULL);
@@ -457,10 +457,10 @@ END_TEST
 
 START_TEST(queue_remove_by_idx)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
-  ssize_t   qiteridx;
+  qidx_t    qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_remove_by_idx");
   q = queueAlloc ("remove-by-idx", NULL);
@@ -589,10 +589,10 @@ END_TEST
 
 START_TEST(queue_remove_node)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
-  ssize_t   qiteridx;
+  qidx_t    qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_remove_node");
   q = queueAlloc ("remove-node", NULL);
@@ -739,7 +739,7 @@ END_TEST
 
 START_TEST(queue_getbyidx)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
   ssize_t   i;
@@ -792,7 +792,7 @@ END_TEST
 
 START_TEST(queue_clear)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
   ssize_t   i;
@@ -846,11 +846,11 @@ END_TEST
 
 START_TEST(queue_move)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
   ssize_t   i;
-  ssize_t   qiteridx;
+  qidx_t    qiteridx;
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_move");
@@ -940,10 +940,10 @@ END_TEST
 
 START_TEST(queue_insert_node)
 {
-  ssize_t   count;
+  qidx_t    count;
   char      *data;
   queue_t       *q;
-  ssize_t   qiteridx;
+  qidx_t    qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_insert_node");
   q = queueAlloc ("insert", NULL);

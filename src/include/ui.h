@@ -259,7 +259,7 @@ void uiLinkSetActivateCallback (UIWidget *uilink, UICallback *uicb);
 /* uigtktextbox.c */
 typedef struct uitextbox uitextbox_t;
 
-uitextbox_t  *uiTextBoxCreate (int height);
+uitextbox_t  *uiTextBoxCreate (int height, const char *hlcolor);
 void  uiTextBoxFree (uitextbox_t *tb);
 UIWidget * uiTextBoxGetScrolledWindow (uitextbox_t *tb);
 char  *uiTextBoxGetValue (uitextbox_t *tb);
@@ -267,6 +267,7 @@ void  uiTextBoxSetReadonly (uitextbox_t *tb);
 void  uiTextBoxScrollToEnd (uitextbox_t *tb);
 void  uiTextBoxAppendStr (uitextbox_t *tb, const char *str);
 void  uiTextBoxAppendBoldStr (uitextbox_t *tb, const char *str);
+void  uiTextBoxAppendHighlightStr (uitextbox_t *tb, const char *str);
 void  uiTextBoxSetValue (uitextbox_t *tb, const char *str);
 void  uiTextBoxDarken (uitextbox_t *tb);
 void  uiTextBoxHorizExpand (uitextbox_t *tb);

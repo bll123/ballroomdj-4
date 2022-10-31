@@ -186,8 +186,9 @@ endif()
 if (NOT WIN32)
   SET (CMAKE_INSTALL_RPATH "\${ORIGIN}")
   if (APPLE)
+    # 10.14 = Mojave
     add_compile_options (-mmacosx-version-min=10.14)
-    # does not work.
+    # The following does not work.
     # SET (CMAKE_INSTALL_RPATH "@executable_path")
   endif()
 

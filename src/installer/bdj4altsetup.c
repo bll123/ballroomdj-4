@@ -157,7 +157,10 @@ main (int argc, char *argv[])
 
   uifont = sysvarsGetStr (SV_FONT_DEFAULT);
   if (uifont == NULL || ! *uifont) {
-    uifont = "Arial 12";
+    uifont = "Arial Regular 14";
+    if (isMacOS ()) {
+      uifont = "Arial Regular 17";
+    }
   }
   uiSetUIFont (uifont);
 
@@ -280,7 +283,7 @@ altsetupBuildUI (altsetup_t *altsetup)
       _("Start"), NULL);
   uiBoxPackEnd (&hbox, &uiwidget);
 
-  altsetup->disptb = uiTextBoxCreate (200);
+  altsetup->disptb = uiTextBoxCreate (200, NULL);
   uiTextBoxSetReadonly (altsetup->disptb);
   uiTextBoxHorizExpand (altsetup->disptb);
   uiTextBoxVertExpand (altsetup->disptb);
