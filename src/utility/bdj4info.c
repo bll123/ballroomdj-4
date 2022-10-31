@@ -3,7 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <assert.h>
 #include <getopt.h>
@@ -59,7 +61,7 @@ main (int argc, char *argv [])
   }
 
   for (int i = 0; i < SVL_MAX; ++i) {
-    fprintf (stdout, " s: %-20s %zd (%d)\n", sysvarslDesc (i), sysvarsGetNum (i), i);
+    fprintf (stdout, " s: %-20s %"PRId64" (%d)\n", sysvarslDesc (i), sysvarsGetNum (i), i);
   }
 
   bdjoptInit ();

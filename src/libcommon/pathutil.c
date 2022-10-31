@@ -22,8 +22,8 @@ pathinfo_t *
 pathInfo (const char *path)
 {
   pathinfo_t    *pi = NULL;
-  ssize_t       pos;
-  ssize_t       last;
+  int           pos;
+  int           last;
   bool          chkforext = true;
   bool          trailingslash = false;
 
@@ -40,12 +40,12 @@ pathInfo (const char *path)
   pi->blen = 0;
   pi->elen = 0;
 
-  last = (ssize_t) strlen (path) - 1;
+  last = (int) strlen (path) - 1;
   chkforext = true;
   trailingslash = false;
   pos = 0;
 
-  for (ssize_t i = last; i >= 0; --i) {
+  for (int i = last; i >= 0; --i) {
     if (path [i] == '/' || path [i] == '\\') {
       pos = i + 1;
       if (pos >= last) {
@@ -67,13 +67,13 @@ pathInfo (const char *path)
   }
   pi->basename = &path [pos];
   pi->filename = &path [pos];
-  pi->blen = (size_t) (last - pos - (ssize_t) pi->elen + 1);
+  pi->blen = (size_t) (last - pos - pi->elen + 1);
   pi->flen = (size_t) (last - pos + 1);
   if (trailingslash && pos > 1) {
     --pi->blen;
     --pi->flen;
   }
-  pi->dlen = (size_t) (last - (ssize_t) pi->flen);
+  pi->dlen = (size_t) (last - pi->flen);
   if (trailingslash && last > 0) {
     --pi->dlen;
   }

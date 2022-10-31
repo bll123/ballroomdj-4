@@ -2,8 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <assert.h>
 
 #include "list.h"
@@ -51,7 +53,7 @@ nlistGetCount (nlist_t *list)
 }
 
 void
-nlistSetSize (nlist_t *list, ssize_t siz)
+nlistSetSize (nlist_t *list, nlistidx_t siz)
 {
   listSetSize (list, siz);
 }
@@ -92,7 +94,7 @@ nlistSetStr (nlist_t *list, nlistidx_t lkey, const char *data)
 }
 
 void
-nlistSetNum (nlist_t *list, nlistidx_t lkey, ssize_t data)
+nlistSetNum (nlist_t *list, nlistidx_t lkey, listnum_t data)
 {
   listitem_t    item;
 
@@ -130,7 +132,7 @@ nlistIncrement (nlist_t *list, nlistidx_t lkey)
   listkeylookup_t key;
   listitem_t      item;
   nlistidx_t      idx;
-  ssize_t         value = 0;
+  listnum_t       value = 0;
 
   key.idx = lkey;
   idx = listGetIdx (list, &key);
@@ -150,7 +152,7 @@ nlistDecrement (nlist_t *list, nlistidx_t lkey)
   listkeylookup_t key;
   listitem_t      item;
   nlistidx_t      idx;
-  ssize_t         value = 0;
+  listnum_t       value = 0;
 
   key.idx = lkey;
   idx = listGetIdx (list, &key);
@@ -211,7 +213,7 @@ nlistGetDataByIdx (nlist_t *list, nlistidx_t idx)
   return listGetDataByIdx (list, idx);
 }
 
-ssize_t
+listnum_t
 nlistGetNumByIdx (nlist_t *list, nlistidx_t idx)
 {
   return listGetNumByIdx (list, idx);
@@ -230,10 +232,10 @@ nlistGetKeyByIdx (nlist_t *list, nlistidx_t idx)
   return list->data [idx].key.idx;
 }
 
-ssize_t
+listnum_t
 nlistGetNum (nlist_t *list, nlistidx_t lidx)
 {
-  ssize_t         value = LIST_VALUE_INVALID;
+  listnum_t       value = LIST_VALUE_INVALID;
   listkeylookup_t key;
   nlistidx_t      idx;
 
@@ -246,7 +248,7 @@ nlistGetNum (nlist_t *list, nlistidx_t lidx)
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%zd", list->name, lidx, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%"PRId64, list->name, lidx, idx, value);
   return value;
 }
 
@@ -320,7 +322,7 @@ nlistIterateValueData (nlist_t *list, nlistidx_t *iteridx)
   return listIterateValue (list, iteridx);
 }
 
-ssize_t
+listnum_t
 nlistIterateValueNum (nlist_t *list, nlistidx_t *iteridx)
 {
   return listIterateValueNum (list, iteridx);

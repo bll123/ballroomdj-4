@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <assert.h>
 #include <string.h>
 #include <sys/types.h>
@@ -111,7 +112,7 @@ enum {
 };
 
 static char       sysvars [SV_MAX][SV_MAX_SZ];
-static ssize_t    lsysvars [SVL_MAX];
+static int64_t    lsysvars [SVL_MAX];
 
 static char *cacertFiles [] = {
   "/etc/ssl/certs/ca-certificates.crt",
@@ -641,7 +642,7 @@ sysvarsGetStr (sysvarkey_t idx)
   return sysvars [idx];
 }
 
-ssize_t
+int64_t
 sysvarsGetNum (sysvarlkey_t idx)
 {
   if (idx >= SVL_MAX) {
@@ -663,7 +664,7 @@ sysvarsSetStr (sysvarkey_t idx, const char *value)
 }
 
 void
-sysvarsSetNum (sysvarlkey_t idx, ssize_t value)
+sysvarsSetNum (sysvarlkey_t idx, int64_t value)
 {
   if (idx >= SVL_MAX) {
     return;

@@ -224,13 +224,13 @@ manageDbChg (void *udata)
 {
   managedb_t      *managedb = udata;
   double          value;
-  ssize_t         nval;
+  int             nval;
   char            *sval;
 
   nval = MANAGE_DB_CHECK_NEW;
 
   value = uiSpinboxTextGetValue (managedb->dbspinbox);
-  nval = (ssize_t) value;
+  nval = (int) value;
 
   sval = nlistGetStr (managedb->dbhelp, nval);
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector : %s", sval);

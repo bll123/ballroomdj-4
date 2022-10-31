@@ -26,7 +26,7 @@ static void bdjoptCreateNewConfigs (void);
 static void bdjoptConvMobileMq (datafileconv_t *conv);
 
 typedef struct {
-  ssize_t       currprofile;
+  int           currprofile;
   datafile_t    *df;
   nlist_t       *bdjoptList;
   char          *fname [OPTTYPE_MAX];
@@ -212,10 +212,10 @@ bdjoptGetStr (nlistidx_t idx)
   return value;
 }
 
-ssize_t
+int64_t
 bdjoptGetNum (nlistidx_t idx)
 {
-  ssize_t       value;
+  int64_t     value;
 
   if (bdjopt == NULL) {
     return -1;
@@ -240,7 +240,7 @@ bdjoptSetStr (nlistidx_t idx, const char *value)
 }
 
 void
-bdjoptSetNum (nlistidx_t idx, ssize_t value)
+bdjoptSetNum (nlistidx_t idx, int64_t value)
 {
   if (bdjopt == NULL) {
     return;

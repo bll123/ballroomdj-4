@@ -2,8 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <getopt.h>
 #include <sys/stat.h>
@@ -264,7 +266,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     logStartAppend (lockName (route), tag, loglevel);
   }
   logProcBegin (LOG_PROC, "bdj4startup");
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %ld", sysvarsGetNum (SVL_BDJIDX));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %"PRId64, sysvarsGetNum (SVL_BDJIDX));
   if (startlog || route == ROUTE_STARTERUI) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale: %s", sysvarsGetStr (SV_LOCALE));
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale-short: %s", sysvarsGetStr (SV_LOCALE_SHORT));
@@ -289,9 +291,9 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     pathbldMakePath (tbuff, sizeof (tbuff),
         MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
     *musicdb = dbOpen (tbuff);
-    logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %d items in %zd ms", dbCount(*musicdb), mstimeend (&dbmt));
+    logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %d items in %"PRIu64" ms", dbCount(*musicdb), (uint64_t) mstimeend (&dbmt));
   }
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %ld ms", mstimeend (&mt));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %"PRIu64" ms", (uint64_t) mstimeend (&mt));
 
   logProcEnd (LOG_PROC, "bdj4startup", "");
   return flags;
@@ -311,7 +313,7 @@ bdj4ReloadDatabase (musicdb_t *musicdb)
   pathbldMakePath (tbuff, sizeof (tbuff),
       MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
   musicdb = dbOpen (tbuff);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "Database read: %d items in %zd ms", dbCount(musicdb), mstimeend (&dbmt));
+  logMsg (LOG_DBG, LOG_IMPORTANT, "Database read: %d items in %"PRIu64" ms", dbCount(musicdb), (uint64_t) mstimeend (&dbmt));
   return musicdb;
 }
 
@@ -342,7 +344,7 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   tagdefCleanup ();
   audiotagCleanup ();
   localeCleanup ();
-  logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %ld ms", mstimeend (&mt));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %"PRIu64" ms", (uint64_t) mstimeend (&mt));
   if (route != ROUTE_NONE) {
     lockRelease (lockName (route), PATHBLD_MP_USEIDX);
   }

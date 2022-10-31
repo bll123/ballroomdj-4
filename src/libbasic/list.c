@@ -2,8 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <assert.h>
 
 #include "bdjstring.h"
@@ -162,10 +164,10 @@ listGetDataByIdx (list_t *list, listidx_t idx)
   return value;
 }
 
-ssize_t
+listnum_t
 listGetNumByIdx (list_t *list, listidx_t idx)
 {
-  ssize_t     value = LIST_VALUE_INVALID;
+  listnum_t   value = LIST_VALUE_INVALID;
 
   if (list == NULL) {
     return value;
@@ -178,10 +180,10 @@ listGetNumByIdx (list_t *list, listidx_t idx)
   return value;
 }
 
-ssize_t
+listnum_t
 listGetNum (list_t *list, const char *keydata)
 {
-  ssize_t         value = LIST_VALUE_INVALID;
+  listnum_t       value = LIST_VALUE_INVALID;
   listkeylookup_t key;
   listidx_t       idx;
 
@@ -197,7 +199,7 @@ listGetNum (list_t *list, const char *keydata)
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%zd", list->name, keydata, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%"PRId64, list->name, keydata, idx, value);
   return value;
 }
 
@@ -240,7 +242,7 @@ listSort (list_t *list)
   swaps = mergeSort (list, 0, list->count - 1);
   elapsed = mstimeend (&tm);
   if (elapsed > 0) {
-    logMsg (LOG_DBG, LOG_LIST, "sort of %s took %ld ms with %ld swaps", list->name, elapsed, swaps);
+    logMsg (LOG_DBG, LOG_LIST, "sort of %s took %"PRId64" ms with %ld swaps", list->name, (int64_t) elapsed, swaps);
   }
 }
 
@@ -343,10 +345,10 @@ listIterateValue (list_t *list, listidx_t *iteridx)
   return value;
 }
 
-ssize_t
+listnum_t
 listIterateValueNum (list_t *list, listidx_t *iteridx)
 {
-  ssize_t     value = LIST_VALUE_INVALID;
+  listnum_t   value = LIST_VALUE_INVALID;
 
   logProcBegin (LOG_PROC, "listIterateNum");
   if (list == NULL) {

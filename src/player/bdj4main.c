@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <signal.h>
 
@@ -125,7 +126,7 @@ static bool mainStopWaitCallback (void *tmaindata, programstate_t programState);
 static bool mainClosingCallback (void *tmaindata, programstate_t programState);
 static void mainSendMusicQueueData (maindata_t *mainData, int musicqidx);
 static void mainSendMarqueeData (maindata_t *mainData);
-static char * mainSongGetDanceDisplay (maindata_t *mainData, ssize_t idx);
+static char * mainSongGetDanceDisplay (maindata_t *mainData, int idx);
 static void mainSendMobileMarqueeData (maindata_t *mainData);
 static void mainMobilePostCallback (void *userdata, char *resp, size_t len);
 static void mainQueueClear (maindata_t *mainData, char *args);
@@ -950,7 +951,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
 {
   char        tbuff [200];
   char        sbuff [4100];
-  ssize_t     musicqLen;
+  int         musicqLen;
   slistidx_t  dbidx;
   song_t      *song;
   int         flags;
@@ -965,10 +966,10 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   qDuration = musicqGetDuration (mainData->musicQueue, musicqidx);
 
   sbuff [0] = '\0';
-  snprintf (sbuff, sizeof (sbuff), "%d%c%zd%c",
-      musicqidx, MSG_ARGS_RS, qDuration, MSG_ARGS_RS);
+  snprintf (sbuff, sizeof (sbuff), "%d%c%"PRId64"%c",
+      musicqidx, MSG_ARGS_RS, (int64_t) qDuration, MSG_ARGS_RS);
 
-  for (ssize_t i = 1; i <= musicqLen; ++i) {
+  for (int i = 1; i <= musicqLen; ++i) {
     dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, i);
     song = dbGetByIdx (mainData->musicdb, dbidx);
     if (song != NULL) {
@@ -1006,8 +1007,8 @@ mainSendMarqueeData (maindata_t *mainData)
   char        sbuff [3096];
   char        *dstr;
   char        *tstr;
-  ssize_t     mqLen;
-  ssize_t     musicqLen;
+  int         mqLen;
+  int         musicqLen;
   time_t      currTime;
   time_t      qdur = 0;
 
@@ -1041,7 +1042,7 @@ mainSendMarqueeData (maindata_t *mainData)
 
   currTime = mstime ();
   if (musicqLen > 0) {
-    for (ssize_t i = 0; i <= mqLen; ++i) {
+    for (int i = 0; i <= mqLen; ++i) {
       dbidx_t   dbidx;
       song_t    *song;
 
@@ -1074,7 +1075,7 @@ mainSendMarqueeData (maindata_t *mainData)
 }
 
 static char *
-mainSongGetDanceDisplay (maindata_t *mainData, ssize_t idx)
+mainSongGetDanceDisplay (maindata_t *mainData, int idx)
 {
   char      *tstr;
   char      *dstr;
@@ -1115,8 +1116,8 @@ mainSendMobileMarqueeData (maindata_t *mainData)
   char        *title = NULL;
   char        *dstr = NULL;
   char        *tag = NULL;
-  ssize_t     mqLen = 0;
-  ssize_t     musicqLen = 0;
+  int         mqLen = 0;
+  int         musicqLen = 0;
   time_t      currTime;
   time_t      qdur = 0;
 
@@ -1140,14 +1141,14 @@ mainSendMobileMarqueeData (maindata_t *mainData)
 
   strlcpy (jbuff, "{ ", sizeof (jbuff));
 
-  snprintf (tbuff, sizeof (tbuff), "\"mqlen\" : \"%zd\", ", mqLen);
+  snprintf (tbuff, sizeof (tbuff), "\"mqlen\" : \"%d\", ", mqLen);
   strlcat (jbuff, tbuff, sizeof (jbuff));
   snprintf (tbuff, sizeof (tbuff), "\"title\" : \"%s\"", title);
   strlcat (jbuff, tbuff, sizeof (jbuff));
 
   currTime = mstime ();
   if (musicqLen > 0) {
-    for (ssize_t i = 0; i <= mqLen; ++i) {
+    for (int i = 0; i <= mqLen; ++i) {
       dbidx_t   dbidx;
       song_t    *song;
 
@@ -1176,7 +1177,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
       if (i == 0) {
         snprintf (tbuff, sizeof (tbuff), "\"current\" : \"%s\"", dstr);
       } else {
-        snprintf (tbuff, sizeof (tbuff), "\"mq%zd\" : \"%s\"", i, dstr);
+        snprintf (tbuff, sizeof (tbuff), "\"mq%d\" : \"%s\"", i, dstr);
       }
       strlcat (jbuff, ", ", sizeof (jbuff));
       strlcat (jbuff, tbuff, sizeof (jbuff));
@@ -1381,8 +1382,8 @@ mainSigHandler (int sig)
 static void
 mainMusicQueueFill (maindata_t *mainData)
 {
-  ssize_t         playerqLen;
-  ssize_t         currlen;
+  int             playerqLen;
+  int             currlen;
   playlistitem_t  *plitem = NULL;
   playlist_t      *playlist = NULL;
   pltype_t        pltype = PLTYPE_SONGLIST;
@@ -1418,7 +1419,7 @@ mainMusicQueueFill (maindata_t *mainData)
     ++currlen;
   }
 
-  logMsg (LOG_DBG, LOG_BASIC, "fill: %ld < %ld", currlen, playerqLen);
+  logMsg (LOG_DBG, LOG_BASIC, "fill: %d < %d", currlen, playerqLen);
 
   stopTime = playlistGetConfigNum (playlist, PLAYLIST_STOP_TIME);
   if (editmode == EDIT_FALSE && stopTime > 0) {
@@ -1631,7 +1632,7 @@ mainPrepSong (maindata_t *mainData, int flag, song_t *song,
       dances = bdjvarsdfGet (BDJVDF_DANCES);
       annfname = danceGetStr (dances, danceidx, DANCE_ANNOUNCE);
       if (annfname != NULL && *annfname) {
-        ssize_t   tval;
+        listnum_t   tval;
 
         tsong = dbGetByName (mainData->musicdb, annfname);
         if (tsong != NULL) {
@@ -1649,10 +1650,10 @@ mainPrepSong (maindata_t *mainData, int flag, song_t *song,
     } /* announcements are on in the playlist */
   } /* if this is a normal song */
 
-  snprintf (tbuff, sizeof (tbuff), "%s%c%zd%c%zd%c%d%c%.1f%c%d%c%ld",
+  snprintf (tbuff, sizeof (tbuff), "%s%c%"PRId64"%c%"PRId64"%c%d%c%.1f%c%d%c%ld",
       sfname, MSG_ARGS_RS,
-      dur, MSG_ARGS_RS,
-      songstart, MSG_ARGS_RS,
+      (int64_t) dur, MSG_ARGS_RS,
+      (int64_t) songstart, MSG_ARGS_RS,
       speed, MSG_ARGS_RS,
       voladjperc, MSG_ARGS_RS,
       flag, MSG_ARGS_RS,
@@ -2592,7 +2593,7 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx)
   }
 
   /* apply songend if set to a reasonable value */
-  logMsg (LOG_DBG, LOG_MAIN, "dur: %zd songstart: %zd songend: %zd",
+  logMsg (LOG_DBG, LOG_MAIN, "dur: %ld songstart: %ld songend: %ld",
       dur, songstart, songend);
   if (songend >= 10000 && dur > songend) {
     dur = songend;
@@ -2707,7 +2708,7 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
   logMsg (LOG_DBG, LOG_BASIC, "mix: mq len: %d", musicqLen);
   totcount = 0;
   /* skip the empty head; there is no idx = musicqLen */
-  for (ssize_t i = 1; i < musicqLen; ++i) {
+  for (int i = 1; i < musicqLen; ++i) {
     int   plidx;
 
     dbidx = musicqGetByIdx (mainData->musicQueue, mqidx, i);

@@ -2,8 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <getopt.h>
 #include <unistd.h>
 #include <locale.h>
@@ -736,7 +738,7 @@ printResults (testsuite_t *testsuite, results_t *results)
   }
   fprintf (stdout, " %s", state);
   if (testsuite->verbose) {
-    fprintf (stdout, "  (%zd)", mstimeend (&results->start));
+    fprintf (stdout, "  (%"PRIu64")", (uint64_t) mstimeend (&results->start));
   }
   fprintf (stdout, "\n");
   fflush (stdout);
@@ -911,7 +913,7 @@ tsScriptWait (testsuite_t *testsuite, const char *tcmd)
   testsuite->wait = true;
   ++testsuite->results.chkcount;
   mstimeset (&testsuite->waitCheck, 100);
-  logMsg (LOG_DBG, LOG_BASIC, "start response timer %zd", testsuite->responseTimeout);
+  logMsg (LOG_DBG, LOG_BASIC, "start response timer %ld", testsuite->responseTimeout);
   mstimeset (&testsuite->responseTimeoutCheck, testsuite->responseTimeout);
   return TS_OK;
 }
@@ -1291,7 +1293,7 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
       /* add two minutes */
       stoptime += 2 * 60 * 1000;
 
-      snprintf (tmp, sizeof (tmp), "%zd", stoptime);
+      snprintf (tmp, sizeof (tmp), "%"PRIu64, (uint64_t) stoptime);
       p = tmp;
     }
 

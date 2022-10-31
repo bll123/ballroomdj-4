@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <assert.h>
 #include <getopt.h>
@@ -116,7 +117,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
     char *ip;
 
     ip = confuiGetLocalIP (gui);
-    snprintf (uridisp, sizeof (uridisp), "http://%s:%zd",
+    snprintf (uridisp, sizeof (uridisp), "http://%s:%"PRId64,
         ip, bdjoptGetNum (OPT_P_MOBILEMQPORT));
   }
 
@@ -157,7 +158,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
     char *ip;
 
     ip = confuiGetLocalIP (gui);
-    snprintf (uridisp, sizeof (uridisp), "http://%s:%zd",
+    snprintf (uridisp, sizeof (uridisp), "http://%s:%"PRId64,
         ip, bdjoptGetNum (OPT_P_REMCONTROLPORT));
   }
 

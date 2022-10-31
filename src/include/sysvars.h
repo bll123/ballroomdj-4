@@ -1,6 +1,8 @@
 #ifndef INC_SYSVARS_H
 #define INC_SYSVARS_H
 
+#include <stdint.h>
+
 typedef enum {
   SV_BDJ4_BUILD,
   SV_BDJ4_BUILDDATE,
@@ -77,9 +79,9 @@ void    sysvarsCheckPaths (const char *otherpaths);
 void    sysvarsGetPythonVersion (void);
 void    sysvarsCheckMutagen (void);
 char    * sysvarsGetStr (sysvarkey_t idx);
-ssize_t sysvarsGetNum (sysvarlkey_t idx);
+int64_t sysvarsGetNum (sysvarlkey_t idx);
 void    sysvarsSetStr (sysvarkey_t, const char *value);
-void    sysvarsSetNum (sysvarlkey_t, ssize_t);
+void    sysvarsSetNum (sysvarlkey_t, int64_t);
 const char * sysvarsDesc (sysvarkey_t idx);
 const char * sysvarslDesc (sysvarlkey_t idx);
 bool    isMacOS (void);

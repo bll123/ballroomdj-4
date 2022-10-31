@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <assert.h>
 #include <getopt.h>
@@ -522,7 +523,7 @@ marqueeHandshakeCallback (void *udata, programstate_t programState)
       connHaveHandshake (marquee->conn, ROUTE_PLAYERUI)) {
     char    tbuff [100];
 
-    snprintf (tbuff, sizeof (tbuff), "%zd%c%zd",
+    snprintf (tbuff, sizeof (tbuff), "%"PRId64"%c%"PRId64,
         nlistGetNum (marquee->options, MQ_FONT_SZ),
         MSG_ARGS_RS,
         nlistGetNum (marquee->options, MQ_FONT_SZ_FS));
@@ -922,7 +923,7 @@ marqueeSetFont (marquee_t *marquee, int sz)
   char    *f;
   char    fontname [200];
   char    tbuff [200];
-  ssize_t i;
+  int     i;
 
   logProcBegin (LOG_PROC, "marqueeSetFont");
 

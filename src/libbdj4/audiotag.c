@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <assert.h>
 
 #include "audiotag.h"
@@ -902,7 +903,7 @@ audiotagMakeTempFilename (char *fn, size_t sz)
 {
   char        tbuff [MAXPATHLEN];
 
-  snprintf (tbuff, sizeof (tbuff), "audiotag-%zd.py", globalCounter++);
+  snprintf (tbuff, sizeof (tbuff), "audiotag-%"PRId64".py", (int64_t) globalCounter++);
   pathbldMakePath (fn, sz, tbuff, "", PATHBLD_MP_TMPDIR);
 }
 

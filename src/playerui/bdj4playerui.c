@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <assert.h>
 #include <getopt.h>
@@ -979,7 +980,7 @@ static bool
 pluiTogglePlayWhenQueued (void *udata)
 {
   playerui_t      *plui = udata;
-  ssize_t         val;
+  listnum_t       val;
 
   logProcBegin (LOG_PROC, "pluiTogglePlayWhenQueued");
   val = nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED);
@@ -996,7 +997,7 @@ pluiSetPlayWhenQueued (playerui_t *plui)
   char  tbuff [40];
 
   logProcBegin (LOG_PROC, "pluiSetPlayWhenQueued");
-  snprintf (tbuff, sizeof (tbuff), "%zd",
+  snprintf (tbuff, sizeof (tbuff), "%"PRId64,
       nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED));
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_WHEN_QUEUED, tbuff);
   logProcEnd (LOG_PROC, "pluiSetPlayWhenQueued", "");
@@ -1007,7 +1008,7 @@ static bool
 pluiToggleExtraQueues (void *udata)
 {
   playerui_t      *plui = udata;
-  ssize_t         val;
+  listnum_t       val;
 
   logProcBegin (LOG_PROC, "pluiToggleExtraQueues");
   val = nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES);
@@ -1059,7 +1060,7 @@ static bool
 pluiToggleSwitchQueue (void *udata)
 {
   playerui_t      *plui = udata;
-  ssize_t         val;
+  listnum_t       val;
 
   logProcBegin (LOG_PROC, "pluiToggleSwitchQueue");
   val = nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY);
@@ -1076,7 +1077,7 @@ pluiSetSwitchQueue (playerui_t *plui)
   char  tbuff [40];
 
   logProcBegin (LOG_PROC, "pluiSetSwitchQueue");
-  snprintf (tbuff, sizeof (tbuff), "%zd",
+  snprintf (tbuff, sizeof (tbuff), "%"PRId64,
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY));
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, tbuff);
   logProcEnd (LOG_PROC, "pluiSetSwitchQueue", "");

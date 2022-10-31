@@ -1,9 +1,11 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
@@ -98,12 +100,12 @@ progstateProcess (progstate_t *progstate)
 
   state = progstateProcessLoop (progstate);
   if (state == STATE_RUNNING) {
-    logMsg (LOG_SESS, LOG_IMPORTANT, "%s running: time-to-start: %ld ms",
-        progstate->progtag, mstimeend (&progstate->tm));
+    logMsg (LOG_SESS, LOG_IMPORTANT, "%s running: time-to-start: %"PRIu64" ms",
+        progstate->progtag, (uint64_t) mstimeend (&progstate->tm));
   }
   if (state == STATE_CLOSED) {
-    logMsg (LOG_SESS, LOG_IMPORTANT, "%s closed: time-to-end: %ld ms",
-        progstate->progtag, mstimeend (&progstate->tm));
+    logMsg (LOG_SESS, LOG_IMPORTANT, "%s closed: time-to-end: %"PRIu64" ms",
+        progstate->progtag, (uint64_t) mstimeend (&progstate->tm));
   }
   return state;
 }
@@ -140,8 +142,8 @@ progstateCurrState (progstate_t *progstate)
 void
 progstateLogTime (progstate_t *progstate, char *label)
 {
-  logMsg (LOG_SESS, LOG_IMPORTANT, "%s %s %ld ms",
-      progstate->progtag, label, mstimeend (&progstate->tm));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "%s %s %"PRIu64" ms",
+      progstate->progtag, label, (uint64_t) mstimeend (&progstate->tm));
 }
 
 /* internal routines */

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <assert.h>
 
 #include "bdj4.h"
@@ -121,7 +122,7 @@ songFree (void *tsong)
 }
 
 void
-songParse (song_t *song, char *data, ssize_t didx)
+songParse (song_t *song, char *data, ilistidx_t didx)
 {
   char        tbuff [40];
   ilistidx_t  lkey;
@@ -131,7 +132,7 @@ songParse (song_t *song, char *data, ssize_t didx)
     return;
   }
 
-  snprintf (tbuff, sizeof (tbuff), "song-%zd", didx);
+  snprintf (tbuff, sizeof (tbuff), "song-%d", didx);
   nlistFree (song->songInfo);
   song->songInfo = datafileParse (data, tbuff, DFTYPE_KEY_VAL,
       songdfkeys, SONG_DFKEY_COUNT);
@@ -185,7 +186,7 @@ songGetStr (song_t *song, nlistidx_t idx)
   return value;
 }
 
-ssize_t
+listnum_t
 songGetNum (song_t *song, nlistidx_t idx)
 {
   ssize_t     value;
@@ -225,7 +226,7 @@ songGetList (song_t *song, nlistidx_t idx)
 }
 
 void
-songSetNum (song_t *song, nlistidx_t tagidx, ssize_t value)
+songSetNum (song_t *song, nlistidx_t tagidx, listnum_t value)
 {
   if (song == NULL || song->songInfo == NULL) {
     return;

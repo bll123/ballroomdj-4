@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <assert.h>
 #include <getopt.h>
@@ -60,8 +61,8 @@ typedef struct {
   char          *songfullpath;
   char          *songname;
   char          *tempname;
-  ssize_t       dur;
-  ssize_t       songstart;
+  listnum_t     dur;
+  listnum_t     songstart;
   double        voladjperc;
   long          uniqueidx;
   int           speed;
@@ -106,8 +107,8 @@ typedef struct {
   long            gap;
   mstime_t        gapFinishTime;
   int             fadeType;
-  ssize_t         fadeinTime;
-  ssize_t         fadeoutTime;
+  listnum_t       fadeinTime;
+  listnum_t       fadeoutTime;
   int             fadeCount;
   int             fadeSamples;
   time_t          fadeTimeStart;
@@ -625,7 +626,7 @@ playerProcessing (void *udata)
     } else if (plistate == PLI_STATE_PLAYING) {
       if (pq->dur <= 1) {
         pq->dur = pliGetDuration (playerData->pli);
-        logMsg (LOG_DBG, LOG_MAIN, "WARN: Replace duration with player data: %zd", pq->dur);
+        logMsg (LOG_DBG, LOG_MAIN, "WARN: Replace duration with player data: %"PRId64, pq->dur);
       }
 
       /* save for later use */
@@ -705,7 +706,8 @@ playerProcessing (void *udata)
         playerData->stopPlaying = false;
         playerData->currentSpeed = 100;
 
-        logMsg (LOG_DBG, LOG_BASIC, "actual play time: %zd", mstimeend (&playerData->playTimeStart) + playerData->playTimePlayed);
+        logMsg (LOG_DBG, LOG_BASIC, "actual play time: %"PRIu64,
+            (uint64_t) mstimeend (&playerData->playTimeStart) + playerData->playTimePlayed);
         playerStop (playerData);
 
         if (pq->announce == PREP_SONG) {
@@ -891,11 +893,11 @@ playerSongPrep (playerdata_t *playerData, char *args)
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->dur = atol (p);
-  logMsg (LOG_DBG, LOG_MAIN, "     duration: %zd", npq->dur);
+  logMsg (LOG_DBG, LOG_MAIN, "     duration: %"PRId64, (int64_t) npq->dur);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->songstart = atol (p);
-  logMsg (LOG_DBG, LOG_MAIN, "     songstart: %zd", npq->songstart);
+  logMsg (LOG_DBG, LOG_MAIN, "     songstart: %"PRId64, (int64_t) npq->songstart);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->speed = atoi (p);
@@ -998,7 +1000,7 @@ playerProcessPrepRequest (playerdata_t *playerData)
   queuePush (playerData->prepQueue, npq);
   logMsg (LOG_DBG, LOG_MAIN, "prep-do: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   tm = mstimeend (&mstm);
-  logMsg (LOG_DBG, LOG_BASIC, "prep-time (%zd) %ld %s", tm, npq->uniqueidx, npq->songname);
+  logMsg (LOG_DBG, LOG_BASIC, "prep-time (%"PRIu64") %ld %s", (uint64_t) tm, npq->uniqueidx, npq->songname);
   logProcEnd (LOG_PROC, "playerProcessPrepRequest", "");
 }
 
@@ -1133,8 +1135,8 @@ songMakeTempName (playerdata_t *playerData, char *in, char *out, size_t maxlen)
 
     /* the profile index so we don't stomp on other bdj instances   */
     /* the global count so we don't stomp on ourselves              */
-  snprintf (out, maxlen, "tmp/%02zd-%03ld-%s", sysvarsGetNum (SVL_BDJIDX),
-      playerData->globalCount, tnm);
+  snprintf (out, maxlen, "tmp/%02"PRId64"-%03ld-%s",
+      sysvarsGetNum (SVL_BDJIDX), playerData->globalCount, tnm);
   ++playerData->globalCount;
   logProcEnd (LOG_PROC, "songMakeTempName", "");
 }
@@ -1535,8 +1537,8 @@ playerFadeVolSet (playerdata_t *playerData)
   logMsg (LOG_DBG, LOG_MAIN, "fade set volume: %d count:%d",
       newvol, playerData->fadeCount);
   if (playerData->inFadeOut) {
-    logMsg (LOG_DBG, LOG_MAIN, "   time %zd",
-        mstimeend (&playerData->playEndCheck));
+    logMsg (LOG_DBG, LOG_MAIN, "   time %"PRIu64,
+        (uint64_t) mstimeend (&playerData->playEndCheck));
   }
   if (playerData->inFadeIn) {
     ++playerData->fadeCount;
@@ -1549,7 +1551,8 @@ playerFadeVolSet (playerdata_t *playerData)
       playerData->inFadeOut = false;
       volumeSet (playerData->volume, playerData->currentSink, 0);
       playerData->actualVolume = 0;
-      logMsg (LOG_DBG, LOG_MAIN, "fade-out done volume: %d time: %zd", 0, mstimeend (&playerData->playEndCheck));
+      logMsg (LOG_DBG, LOG_MAIN, "fade-out done volume: %d time: %"PRIu64,
+          0, (uint64_t) mstimeend (&playerData->playEndCheck));
     }
   }
 
@@ -1642,12 +1645,12 @@ playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq)
   if (pq->announce == PREP_SONG && playerData->fadeoutTime > 0) {
     mstimeset (&playerData->fadeTimeCheck, newdur - playerData->fadeoutTime);
   }
-  logMsg (LOG_DBG, LOG_MAIN, "pq->dur: %zd", pq->dur);
-  logMsg (LOG_DBG, LOG_MAIN, "newdur: %zd", newdur);
-  logMsg (LOG_DBG, LOG_MAIN, "playTimeStart: %zd", mstimeend (&playerData->playTimeStart));
-  logMsg (LOG_DBG, LOG_MAIN, "playEndCheck: %zd", mstimeend (&playerData->playEndCheck));
-  logMsg (LOG_DBG, LOG_MAIN, "playTimeCheck: %zd", mstimeend (&playerData->playTimeCheck));
-  logMsg (LOG_DBG, LOG_MAIN, "fadeTimeCheck: %zd", mstimeend (&playerData->fadeTimeCheck));
+  logMsg (LOG_DBG, LOG_MAIN, "pq->dur: %"PRId64, (int64_t) pq->dur);
+  logMsg (LOG_DBG, LOG_MAIN, "newdur: %"PRId64, (int64_t) newdur);
+  logMsg (LOG_DBG, LOG_MAIN, "playTimeStart: %"PRIu64, (uint64_t) mstimeend (&playerData->playTimeStart));
+  logMsg (LOG_DBG, LOG_MAIN, "playEndCheck: %"PRIu64, (uint64_t) mstimeend (&playerData->playEndCheck));
+  logMsg (LOG_DBG, LOG_MAIN, "playTimeCheck: %"PRIu64, (uint64_t) mstimeend (&playerData->playTimeCheck));
+  logMsg (LOG_DBG, LOG_MAIN, "fadeTimeCheck: %"PRIu64, (uint64_t) mstimeend (&playerData->fadeTimeCheck));
   logProcEnd (LOG_PROC, "playerSetCheckTimes", "");
 }
 
@@ -1719,13 +1722,13 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 
   tm = playerCalcPlayedTime (playerData);
 
-  snprintf (rbuff, sizeof (rbuff), "%d%c%d%c%d%c%d%c%zd%c%zd",
+  snprintf (rbuff, sizeof (rbuff), "%d%c%d%c%d%c%d%c%"PRIu64"%c%"PRId64,
       playerData->repeat, MSG_ARGS_RS,
       playerData->pauseAtEnd, MSG_ARGS_RS,
       playerData->currentVolume, MSG_ARGS_RS,
       playerData->currentSpeed, MSG_ARGS_RS,
-      tm, MSG_ARGS_RS,
-      dur);
+      (uint64_t) tm, MSG_ARGS_RS,
+      (int64_t) dur);
 
   connSendMessage (playerData->conn, ROUTE_MAIN,
       MSG_PLAYER_STATUS_DATA, rbuff);
@@ -1813,7 +1816,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "realvolume%c%d%c"
       "actualvolume%c%d%c"
       "speed%c%d%c"
-      "playtimeplayed%c%zd%c"
+      "playtimeplayed%c%"PRIu64"%c"
       "pauseatend%c%d%c"
       "repeat%c%d%c"
       "defaultsink%c%s%c"
@@ -1825,7 +1828,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       MSG_ARGS_RS, playerData->realVolume, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->actualVolume, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentSpeed, MSG_ARGS_RS,
-      MSG_ARGS_RS, playerCalcPlayedTime (playerData), MSG_ARGS_RS,
+      MSG_ARGS_RS, (uint64_t) playerCalcPlayedTime (playerData), MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->pauseAtEnd, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->repeat, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->defaultSink, MSG_ARGS_RS,
@@ -1853,9 +1856,9 @@ playerChkPlayerSong (playerdata_t *playerData, int routefrom)
   }
 
   snprintf (tmp, sizeof (tmp),
-      "p-duration%c%zd%c"
+      "p-duration%c%"PRId64"%c"
       "p-songfn%c%s",
-      MSG_ARGS_RS, dur, MSG_ARGS_RS,
+      MSG_ARGS_RS, (int64_t) dur, MSG_ARGS_RS,
       MSG_ARGS_RS, sn);
   connSendMessage (playerData->conn, routefrom, MSG_CHK_PLAYER_SONG, tmp);
 }

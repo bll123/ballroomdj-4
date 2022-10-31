@@ -1,6 +1,8 @@
 #ifndef INC_BDJOPT_H
 #define INC_BDJOPT_H
 
+#include <stdint.h>
+
 #include "datafile.h"
 #include "nlist.h"
 
@@ -109,9 +111,9 @@ enum {
 void    bdjoptInit (void);
 void    bdjoptCleanup (void);
 char    *bdjoptGetStr (nlistidx_t idx);
-ssize_t bdjoptGetNum (nlistidx_t idx);
+int64_t bdjoptGetNum (nlistidx_t idx);
 void    bdjoptSetStr (nlistidx_t idx, const char *value);
-void    bdjoptSetNum (nlistidx_t idx, ssize_t value);
+void    bdjoptSetNum (nlistidx_t idx, int64_t value);
 void    bdjoptCreateDirectories (void);
 void    bdjoptSave (void);
 void    bdjoptConvBPM (datafileconv_t *conv);

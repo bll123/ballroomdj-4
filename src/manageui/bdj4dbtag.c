@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <getopt.h>
 #include <pthread.h>
@@ -277,7 +278,8 @@ dbtagProcessing (void *udata)
         dbtag->numActiveThreads == 0 &&
         dbtag->havealldata) {
       connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_TAG_FINISHED, NULL);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "-- queue empty: %ld ms", mstimeend (&dbtag->starttm));
+      logMsg (LOG_DBG, LOG_IMPORTANT, "-- queue empty: %"PRIu64" ms",
+          (uint64_t) mstimeend (&dbtag->starttm));
       logMsg (LOG_DBG, LOG_IMPORTANT, "     received: %d", dbtag->received);
       logMsg (LOG_DBG, LOG_IMPORTANT, "         sent: %d", dbtag->sent);
       logMsg (LOG_DBG, LOG_IMPORTANT, "max queue len: %d", dbtag->maxqueuelen);

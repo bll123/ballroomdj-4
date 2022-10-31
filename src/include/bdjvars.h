@@ -1,6 +1,8 @@
 #ifndef INC_BDJVARS_H
 #define INC_BDJVARS_H
 
+#include <stdint.h>
+
 typedef enum {
   BDJV_DB_TOP_DIR,    // temporary
   BDJV_TS_SECTION,    // temporary
@@ -33,9 +35,9 @@ void    bdjvarsInit (void);
 bool    bdjvarsIsInitialized (void);
 void    bdjvarsCleanup (void);
 char *  bdjvarsGetStr (bdjvarkey_t idx);
-void    bdjvarsSetNum (bdjvarkeyl_t idx, ssize_t value);
+void    bdjvarsSetNum (bdjvarkeyl_t idx, int64_t value);
 void    bdjvarsSetStr (bdjvarkey_t idx, const char *str);
-ssize_t bdjvarsGetNum (bdjvarkeyl_t idx);
+int64_t bdjvarsGetNum (bdjvarkeyl_t idx);
 void    bdjvarsAdjustPorts (void);
 
 #endif /* INC_BDJVARS_H */

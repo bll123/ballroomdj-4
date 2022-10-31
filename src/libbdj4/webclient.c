@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <assert.h>
 
@@ -125,8 +126,9 @@ webclientDownload (webclient_t *webclient, char *uri, char *outfile)
   fclose (fh);
   webclient->dlFH = NULL;
   tm = mstimeend (&webclient->dlStart);
-  logMsg (LOG_DBG, LOG_MAIN, "%s : %zd bytes; %zd msec; %zd chunks; %.1f b/s",
-      outfile, webclient->dlSize, tm, webclient->dlChunks,
+  logMsg (LOG_DBG, LOG_MAIN, "%s : %"PRIu64" bytes; %"PRIu64" msec; %"PRIu64" chunks; %.1f b/s",
+      outfile, (uint64_t) webclient->dlSize, (uint64_t) tm,
+      (uint64_t) webclient->dlChunks,
       (double) webclient->dlSize / (double) tm);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientCallback);
 }
@@ -184,12 +186,12 @@ webclientUploadFile (webclient_t *webclient, char *uri,
   curl_easy_getinfo (webclient->curl, CURLINFO_TOTAL_TIME_T, &total_time);
 
   logMsg (LOG_DBG, LOG_MAIN,
-      "%s : %lu : %lu b/sec : %lu.%02lu sec",
+      "%s : %"PRIu64" : %"PRIu64" b/sec : %"PRIu64".%02"PRIu64" sec",
       fn,
-      fsize,
-      (unsigned long) speed_upload,
-      (unsigned long) (total_time / 1000000),
-      (unsigned long) (total_time % 1000000));
+      (uint64_t) fsize,
+      (uint64_t) speed_upload,
+      (uint64_t) (total_time / 1000000),
+      (uint64_t) (total_time % 1000000));
 }
 
 void

@@ -2,8 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <assert.h>
 
 #include "bdjstring.h"
@@ -55,7 +57,7 @@ slistGetCount (slist_t *list)
 }
 
 void
-slistSetSize (slist_t *list, ssize_t siz)
+slistSetSize (slist_t *list, listidx_t siz)
 {
   listSetSize (list, siz);
 }
@@ -92,7 +94,7 @@ slistSetStr (slist_t *list, const char *sidx, const char *data)
 }
 
 void
-slistSetNum (slist_t *list, const char *sidx, ssize_t data)
+slistSetNum (slist_t *list, const char *sidx, listnum_t data)
 {
   listitem_t    item;
 
@@ -160,7 +162,7 @@ slistGetDataByIdx (slist_t *list, slistidx_t idx)
   return listGetDataByIdx (list, idx);
 }
 
-ssize_t
+listnum_t
 slistGetNumByIdx (slist_t *list, slistidx_t idx)
 {
   return listGetNumByIdx (list, idx);
@@ -179,10 +181,10 @@ slistGetKeyByIdx (slist_t *list, slistidx_t idx)
   return list->data [idx].key.strkey;
 }
 
-ssize_t
+listnum_t
 slistGetNum (slist_t *list, const char *sidx)
 {
-  ssize_t         value = LIST_VALUE_INVALID;
+  listnum_t       value = LIST_VALUE_INVALID;
   listkeylookup_t key;
   slistidx_t      idx;
 
@@ -191,7 +193,7 @@ slistGetNum (slist_t *list, const char *sidx)
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%zd", list->name, sidx, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%"PRId64, list->name, sidx, idx, value);
   return value;
 }
 
@@ -261,7 +263,7 @@ slistIterateValueData (slist_t *list, slistidx_t *iteridx)
   return listIterateValue (list, iteridx);
 }
 
-ssize_t
+listnum_t
 slistIterateValueNum (slist_t *list, slistidx_t *iteridx)
 {
   return listIterateValueNum (list, iteridx);

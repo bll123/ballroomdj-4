@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 typedef int32_t listidx_t;
+typedef int64_t listnum_t;
 
 typedef enum {
   LIST_KEY_STR,
@@ -45,7 +46,7 @@ typedef union {
 
 typedef union {
   void        *data;
-  ssize_t     num;
+  listnum_t   num;
   double      dval;
 } listvalue_t;
 
@@ -95,8 +96,8 @@ void        listSetVersion (list_t *list, listidx_t version);
 void        listSet (list_t *list, listitem_t *item);
 void        *listGetData (list_t *list, const char *keystr);
 void        *listGetDataByIdx (list_t *list, listidx_t idx);
-ssize_t     listGetNumByIdx (list_t *list, listidx_t idx);
-ssize_t     listGetNum (list_t *list, const char *keystr);
+listnum_t   listGetNumByIdx (list_t *list, listidx_t idx);
+listnum_t   listGetNum (list_t *list, const char *keystr);
 void        listDeleteByIdx (list_t *, listidx_t idx);
 void        listSort (list_t *list);
 void        listStartIterator (list_t *list, listidx_t *iteridx);
@@ -104,7 +105,7 @@ listidx_t   listIterateKeyNum (list_t *list, listidx_t *iteridx);
 listidx_t   listIterateKeyPreviousNum (list_t *list, listidx_t *iteridx);
 char        *listIterateKeyStr (list_t *list, listidx_t *iteridx);
 void        *listIterateValue (list_t *list, listidx_t *iteridx);
-ssize_t     listIterateValueNum (list_t *list, listidx_t *iteridx);
+listnum_t   listIterateValueNum (list_t *list, listidx_t *iteridx);
 listidx_t   listIterateGetIdx (list_t *list, listidx_t *iteridx);
 void        listDumpInfo (list_t *list);
 bool        listDebugIsCached (list_t *list, listidx_t key);

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <assert.h>
 #include <math.h>
 
@@ -26,7 +27,7 @@ typedef struct {
 
 static bool     danceselProcessHistory (dancesel_t *dancesel,
                     ilistidx_t didx, ilistidx_t hdidx,
-                    slist_t *tags, ssize_t histCount);
+                    slist_t *tags, dbidx_t histCount);
 static bool     matchTag (slist_t *tags, slist_t *otags);
 
 /* the countlist should contain a danceIdx/count pair */
@@ -357,7 +358,7 @@ danceselSelect (dancesel_t *dancesel, nlist_t *danceCounts,
 
 static bool
 danceselProcessHistory (dancesel_t *dancesel, ilistidx_t didx,
-    ilistidx_t hdidx, slist_t *tags, ssize_t histCount)
+    ilistidx_t hdidx, slist_t *tags, dbidx_t histCount)
 {
   /* working with the history (played dances) */
   slist_t       *htags = NULL;
@@ -369,7 +370,7 @@ danceselProcessHistory (dancesel_t *dancesel, ilistidx_t didx,
   abase = nlistGetDouble (dancesel->adjustBase, didx);
 
   logProcBegin (LOG_PROC, "danceselProcessHistory");
-  logMsg (LOG_DBG, LOG_DANCESEL, "  history (%ld) didx:%d hdidx:%d/%s",
+  logMsg (LOG_DBG, LOG_DANCESEL, "  history (%d) didx:%d hdidx:%d/%s",
       histCount, didx,
       hdidx, danceGetStr (dancesel->dances, hdidx, DANCE_DANCE));
 
@@ -381,8 +382,8 @@ danceselProcessHistory (dancesel_t *dancesel, ilistidx_t didx,
       tval = pow (dancesel->tagAdjust, (double) histCount);
       abase = abase / dancesel->tagMatch * tval;
       nlistSetDouble (dancesel->adjustBase, didx, abase);
-      logMsg (LOG_DBG, LOG_DANCESEL, "    matched history tags (%zd) / %.6f", histCount, abase);
-// fprintf (stderr, "    matched history tags (%zd) / %.6f\n", histCount, abase);
+      logMsg (LOG_DBG, LOG_DANCESEL, "    matched history tags (%d / %.6f)", histCount, abase);
+// fprintf (stderr, "    matched history tags (%d / %.6f)\n", histCount, abase);
     }
   }
 
@@ -392,8 +393,8 @@ danceselProcessHistory (dancesel_t *dancesel, ilistidx_t didx,
   }
 
   /* found the matching dance */
-  logMsg (LOG_DBG, LOG_DANCESEL, "    matched dance (%zd) hdidx:%d", histCount, hdidx);
-// fprintf (stderr, "    matched dance (%zd) hdidx:%d\n", histCount, hdidx);
+  logMsg (LOG_DBG, LOG_DANCESEL, "    matched dance (%d hdidx:%d", histCount, hdidx);
+// fprintf (stderr, "    matched dance (%d hdidx:%d\n", histCount, hdidx);
 
   dist = nlistGetDouble (dancesel->distance, hdidx);
   tval = (double) (histCount - 1);

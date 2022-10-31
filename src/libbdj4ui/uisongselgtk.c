@@ -631,7 +631,7 @@ uisongselApplySongFilter (void *udata)
 /* call danceselectcallback to set all the peer drop-downs */
 /* will apply the filter */
 void
-uisongselDanceSelectHandler (uisongsel_t *uisongsel, ssize_t danceIdx)
+uisongselDanceSelectHandler (uisongsel_t *uisongsel, ilistidx_t danceIdx)
 {
   uisfSetDanceIdx (uisongsel->uisongfilter, danceIdx);
   uisongselDanceSelectCallback (uisongsel, danceIdx);

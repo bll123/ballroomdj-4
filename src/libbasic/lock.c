@@ -2,10 +2,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <inttypes.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
@@ -140,7 +142,7 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   }
 
   if (fd >= 0) {
-    snprintf (pidstr, sizeof (pidstr), "%zd", (size_t) pid);
+    snprintf (pidstr, sizeof (pidstr), "%"PRId64, (int64_t) pid);
     len = strnlen (pidstr, sizeof (pidstr));
     rwlen = write (fd, pidstr, len);
     assert (rwlen == (ssize_t) len);
@@ -180,12 +182,12 @@ static pid_t
 getPidFromFile (char *fn)
 {
   FILE      *fh;
-  size_t    temp;
+  int64_t   temp;
 
   pid_t pid = -1;
   fh = fopen (fn, "r");
   if (fh != NULL) {
-    int rc = fscanf (fh, "%zd", &temp);
+    int rc = fscanf (fh, "%"PRId64, &temp);
     pid = (pid_t) temp;
     if (rc != 1) {
       pid = -1;

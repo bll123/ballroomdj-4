@@ -2,10 +2,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <sys/types.h>
 #include <signal.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <unistd.h>
 #include <assert.h>
@@ -353,19 +355,19 @@ orgMakeSongPath (org_t *org, song_t *song)
           orginfo->orgkey == ORG_TRACKNUM0 ||
           orginfo->orgkey == ORG_DISC ||
           orginfo->convFunc != NULL) {
-        ssize_t   val;
+        int64_t     val;
 
         val = songGetNum (song, orginfo->tagkey);
         if (orginfo->orgkey == ORG_TRACKNUM) {
-          snprintf (tmp, sizeof (tmp), "%zd", val);
+          snprintf (tmp, sizeof (tmp), "%"PRId64, val);
           p = tmp;
         }
         if (orginfo->orgkey == ORG_DISC) {
-          snprintf (tmp, sizeof (tmp), "%02zd", val);
+          snprintf (tmp, sizeof (tmp), "%02"PRId64, val);
           p = tmp;
         }
         if (orginfo->orgkey == ORG_TRACKNUM0) {
-          snprintf (tmp, sizeof (tmp), "%03zd", val);
+          snprintf (tmp, sizeof (tmp), "%03"PRId64, val);
           p = tmp;
         }
         if (orginfo->convFunc != NULL) {

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <inttypes.h>
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -143,7 +144,7 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data)
   logProcBegin (LOG_PROC, "raWrite");
   /* leave one byte for the terminating null */
   if (len > (RAFILE_REC_SIZE - 1)) {
-    logMsg (LOG_DBG, LOG_RAFILE, "bad data len %zd", len);
+    logMsg (LOG_DBG, LOG_RAFILE, "bad data len %"PRId64, (int64_t) len);
     return 1;
   }
 

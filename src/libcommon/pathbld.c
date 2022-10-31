@@ -1,10 +1,11 @@
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "bdjstring.h"
 #include "pathbld.h"
@@ -65,9 +66,9 @@ pathbldMakePath (char *buff, size_t buffsz,
     if ((flags & PATHBLD_MP_TMPDIR) == PATHBLD_MP_TMPDIR) {
       /* if the tmp dir is being used, there is no prefix directory */
       /* use a filename prefix */
-      snprintf (profpath, sizeof (profpath), "l%02zd-", sysvarsGetNum (SVL_BDJIDX));
+      snprintf (profpath, sizeof (profpath), "l%02"PRId64"-", sysvarsGetNum (SVL_BDJIDX));
     } else {
-      snprintf (profpath, sizeof (profpath), "profile%02zd/", sysvarsGetNum (SVL_BDJIDX));
+      snprintf (profpath, sizeof (profpath), "profile%02"PRId64"/", sysvarsGetNum (SVL_BDJIDX));
     }
   }
   if ((flags & PATHBLD_MP_HOSTNAME) == PATHBLD_MP_HOSTNAME) {

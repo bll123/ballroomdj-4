@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -690,7 +691,7 @@ START_TEST(datafile_keyval_savelist)
           free (conv.str);
         }
       } else {
-        snprintf (tmp, sizeof (tmp), "%zd",
+        snprintf (tmp, sizeof (tmp), "%"PRId64,
             nlistGetNum (list, dfkeyskl [i].itemkey));
         ck_assert_str_eq (tmp, tstr);
       }

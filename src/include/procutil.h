@@ -8,6 +8,7 @@
 
 #include "bdjmsg.h"
 #include "conn.h"
+#include "log.h"
 
 enum {
   PROCUTIL_NO_DETACH,
@@ -23,7 +24,7 @@ typedef struct {
 
 void        procutilInitProcesses (procutil_t *processes [ROUTE_MAX]);
 int         procutilExists (procutil_t *process);
-procutil_t  * procutilStart (const char *fn, ssize_t profile, ssize_t loglvl,
+procutil_t  * procutilStart (const char *fn, int profile, loglevel_t loglvl,
     int detachflag, const char *aargs []);
 int         procutilKill (procutil_t *process, bool force);
 void        procutilTerminate (pid_t pid, bool force);

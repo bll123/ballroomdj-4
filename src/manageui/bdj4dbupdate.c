@@ -28,6 +28,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <assert.h>
 
@@ -379,8 +380,8 @@ dbupdateProcessing (void *udata)
 
     dbupdate->counts [C_FILE_COUNT] = slistGetCount (dbupdate->fileList);
     mstimeend (&dbupdate->starttm);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %ld ms",
-        dbupdate->dbtopdir, mstimeend (&dbupdate->starttm));
+    logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %"PRIu64" ms",
+        dbupdate->dbtopdir, (uint64_t) mstimeend (&dbupdate->starttm));
     logMsg (LOG_DBG, LOG_IMPORTANT, "  %u files found", dbupdate->counts [C_FILE_COUNT]);
 
     /* message to manageui */
@@ -474,8 +475,8 @@ dbupdateProcessing (void *udata)
 
     if (fn == NULL) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "-- skipped (%u)", dbupdate->counts [C_FILE_SKIPPED]);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%u): %zd ms",
-          dbupdate->counts [C_FILE_SENT], mstimeend (&dbupdate->starttm));
+      logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%u): %"PRIu64" ms",
+          dbupdate->counts [C_FILE_SENT], (uint64_t) mstimeend (&dbupdate->starttm));
       connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_ALL_FILES_SENT, NULL);
       dbupdate->state = DB_UPD_PROCESS;
     }
@@ -555,8 +556,8 @@ dbupdateProcessing (void *udata)
     snprintf (tbuff, sizeof (tbuff), "-- %s", msg);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
-    logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %zd ms stop-req: %d",
-        mstimeend (&dbupdate->starttm), dbupdate->stoprequest);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %"PRIu64" ms stop-req: %d",
+        (uint64_t) mstimeend (&dbupdate->starttm), dbupdate->stoprequest);
     logMsg (LOG_DBG, LOG_IMPORTANT, "    found: %u", dbupdate->counts [C_FILE_COUNT]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %u", dbupdate->counts [C_FILE_SKIPPED]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "     sent: %u", dbupdate->counts [C_FILE_SENT]);
@@ -571,7 +572,7 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "not-audio: %u", dbupdate->counts [C_NON_AUDIO]);
     logMsg (LOG_DBG, LOG_IMPORTANT, " bdj-skip: %u", dbupdate->counts [C_BDJ_SKIP]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  old-dir: %u", dbupdate->counts [C_BDJ_OLD_DIR]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "max-write: %zu", dbupdate->maxWriteLen);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "max-write: %"PRIu64, (uint64_t) dbupdate->maxWriteLen);
 
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, "END");
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_FINISH, NULL);

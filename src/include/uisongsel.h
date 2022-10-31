@@ -11,6 +11,7 @@
 #include "msgparse.h"
 #include "musicdb.h"
 #include "musicq.h"
+#include "ilist.h"
 #include "nlist.h"
 #include "samesong.h"
 #include "songfilter.h"
@@ -94,7 +95,7 @@ bool  uisongselPreviousSelection (void *udata);
 bool  uisongselFirstSelection (void *udata);
 long  uisongselGetSelectLocation (uisongsel_t *uisongsel);
 bool  uisongselApplySongFilter (void *udata);
-void  uisongselDanceSelectHandler (uisongsel_t *uisongsel, ssize_t idx);
+void  uisongselDanceSelectHandler (uisongsel_t *uisongsel, ilistidx_t idx);
 bool  uisongselDanceSelectCallback (void *udata, long danceIdx);
 void  uisongselSaveSelections (uisongsel_t *uisongsel);
 void  uisongselRestoreSelections (uisongsel_t *uisongsel);

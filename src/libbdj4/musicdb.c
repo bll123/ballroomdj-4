@@ -2,8 +2,10 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <assert.h>
 #include <string.h>
+#include <inttypes.h>
 #include <time.h>
 
 #include "bdj4intl.h"
@@ -361,7 +363,7 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
   tblen = stringAppend (tbuff, sz, tblen, "\n");
   tblen = stringAppend (tbuff, sz, tblen, "..");
   currtime = time (NULL);
-  snprintf (tmp, sizeof (tmp), "%zd", currtime);
+  snprintf (tmp, sizeof (tmp), "%"PRIu64, (uint64_t) currtime);
   tblen = stringAppend (tbuff, sz, tblen, tmp);
   tblen = stringAppend (tbuff, sz, tblen, "\n");
 

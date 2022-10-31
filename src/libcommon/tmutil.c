@@ -1,9 +1,11 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <sys/time.h>
 #include <time.h>
@@ -281,7 +283,8 @@ tmutilToMSD (time_t ms, char *buff, size_t max, int decimals)
   m = ms / 1000 / 60;
   s = (ms - (m * 1000 * 60)) / 1000;
   d = (ms - (m * 1000 * 60) - (s * 1000));
-  snprintf (buff, max, "%zd:%02zd%s%0*zd", m, s, radixchar, decimals, d);
+  snprintf (buff, max, "%"PRIu64":%02"PRIu64"%s%0*"PRIu64,
+      (uint64_t) m, (uint64_t) s, radixchar, decimals, (uint64_t) d);
   return buff;
 }
 

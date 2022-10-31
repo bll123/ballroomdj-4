@@ -2,8 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
@@ -58,32 +60,40 @@ START_TEST(pathinfo_chk)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- pathinfo_chk");
 
-  for (size_t i = 0; i < TCOUNT; ++i) {
+  for (int64_t i = 0; i < TCOUNT; ++i) {
     pi = pathInfo (tests[i].path);
     if (pi->dlen > 0) {
       ck_assert_msg (pi->dirname != NULL,
-          "dirname: %s: i:%zd have: %zd want: %zd", "dlen", i, pi->dlen, tests[i].dlen);
+          "dirname: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+          "dlen", i, (int64_t) pi->dlen, (int64_t) tests[i].dlen);
     }
     if (pi->flen > 0) {
       ck_assert_msg (pi->filename != NULL,
-          "filename: %s: i:%zd have: %zd want: %zd", "flen", i, pi->flen, tests[i].flen);
+          "filename: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+          "flen", i, (int64_t) pi->flen, (int64_t) tests[i].flen);
     }
     if (pi->blen > 0) {
       ck_assert_msg (pi->basename != NULL,
-          "basename: %s: i:%zd have: %zd want: %zd", "blen", i, pi->blen, tests[i].blen);
+          "basename: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+          "blen", i, (int64_t) pi->blen, (int64_t) tests[i].blen);
     }
     if (pi->elen > 0) {
       ck_assert_msg (pi->extension != NULL,
-          "extension: %s: i:%zd have: %zd want: %zd", "elen", i, pi->elen, tests[i].elen);
+          "extension: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+          "elen", i, (int64_t) pi->elen, (int64_t) tests[i].elen);
     }
     ck_assert_msg (pi->dlen == tests[i].dlen,
-        "dlen: %s: i:%zd have: %zd want: %zd", "dlen", i, pi->dlen, tests[i].dlen);
+        "dlen: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+        "dlen", i, (int64_t) pi->dlen, (int64_t) tests[i].dlen);
     ck_assert_msg (pi->flen == tests[i].flen,
-        "flen: %s: i:%zd have: %zd want: %zd", "flen", i, pi->flen, tests[i].flen);
+        "flen: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+        "flen", i, (int64_t) pi->flen, (int64_t) tests[i].flen);
     ck_assert_msg (pi->blen == tests[i].blen,
-        "blen: %s: i:%zd have: %zd want: %zd", "blen", i, pi->blen, tests[i].blen);
+        "blen: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+        "blen", i, (int64_t) pi->blen, (int64_t) tests[i].blen);
     ck_assert_msg (pi->elen == tests[i].elen,
-        "elen: %s: i:%zd have: %zd want: %zd", "elen", i, pi->elen, tests[i].elen);
+        "elen: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+        "elen", i, (int64_t) pi->elen, (int64_t) tests[i].elen);
 
     /* the dirname pointer always points to the beginning */
     ck_assert_ptr_eq (pi->dirname, tests [i].path);

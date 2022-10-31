@@ -22,7 +22,7 @@ typedef struct {
   valuetype_t   valuetype;
   bool          allocated;
   union {
-    ssize_t     num;
+    listnum_t   num;
     list_t      *list;
     char        *str;
     double      dval;

@@ -75,7 +75,8 @@ rlogProcBegin (loglevel_t level, const char *tag, const char *fn, int line)
 }
 
 void
-rlogProcEnd (loglevel_t level, const char *tag, const char *suffix, const char *fn, int line)
+rlogProcEnd (loglevel_t level, const char *tag, const char *suffix,
+    const char *fn, int line)
 {
   if (! logCheck (LOG_DBG, level)) {
     return;
@@ -93,8 +94,10 @@ rlogError (const char *msg, int err, const char *fn, int line)
   if (syslogs [LOG_ERR] == NULL) {
     return;
   }
-  rlogVarMsg (LOG_ERR, LOG_IMPORTANT, fn, line, "err: %s %d %s", msg, err, strerror (err));
-  rlogVarMsg (LOG_DBG, LOG_IMPORTANT, fn, line, "err: %s %d %s", msg, err, strerror (err));
+  rlogVarMsg (LOG_ERR, LOG_IMPORTANT, fn, line,
+      "err: %s %d %s", msg, err, strerror (err));
+  rlogVarMsg (LOG_DBG, LOG_IMPORTANT, fn, line,
+      "err: %s %d %s", msg, err, strerror (err));
 }
 
 void

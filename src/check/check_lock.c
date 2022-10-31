@@ -2,7 +2,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
+#include <inttypes.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -41,7 +43,7 @@ START_TEST(lock_acquire_release)
   FILE          *fh;
   pid_t         pid;
   pid_t         fpid;
-  size_t        temp;
+  int64_t       temp;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_acquire_release");
 
@@ -53,7 +55,7 @@ START_TEST(lock_acquire_release)
   ck_assert_int_eq (rc, 0);
   ck_assert_int_gt (statbuf.st_size, 0);
   fh = fopen (FULL_LOCK_FN, "r");
-  rc = fscanf (fh, "%zd", &temp);
+  rc = fscanf (fh, "%"PRId64, &temp);
   fpid = (pid_t) temp;
   fclose (fh);
   ck_assert_int_eq (fpid, pid);
@@ -139,7 +141,7 @@ START_TEST(lock_exists)
   pid_t         pid;
   pid_t         tpid;
   pid_t         fpid;
-  size_t        temp;
+  int64_t       temp;
   FILE          *fh;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_exists");
@@ -150,7 +152,7 @@ START_TEST(lock_exists)
   ck_assert_int_gt (rc, 0);
 
   fh = fopen (FULL_LOCK_FN, "r");
-  rc = fscanf (fh, "%zd", &temp);
+  rc = fscanf (fh, "%"PRId64, &temp);
   fpid = (pid_t) temp;
   fclose (fh);
   ck_assert_int_eq (fpid, pid);
@@ -171,7 +173,7 @@ START_TEST(lock_exists)
 
   fh = fopen (FULL_LOCK_FN, "w");
   temp = 94534;
-  fprintf (fh, "%zd", temp);
+  fprintf (fh, "%"PRId64, temp);
   fclose (fh);
   /* lock file exists, no associated process */
   tpid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);

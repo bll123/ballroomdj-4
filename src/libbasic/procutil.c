@@ -2,9 +2,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <sys/types.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <unistd.h>
 #include <assert.h>
@@ -60,7 +62,7 @@ procutilExists (procutil_t *process)
   }
 
   if (GetExitCodeProcess (hProcess, &exitCode)) {
-    logMsg (LOG_DBG, LOG_PROCESS, "found: %lld", exitCode);
+    logMsg (LOG_DBG, LOG_PROCESS, "found: %ld", exitCode);
     /* return 0 if the process is still active */
     logProcEnd (LOG_PROC, "procutilExists", "ok");
     if (! process->hasHandle) {
@@ -68,7 +70,7 @@ procutilExists (procutil_t *process)
     }
     return (exitCode != STILL_ACTIVE);
   }
-  logMsg (LOG_DBG, LOG_IMPORTANT, "getexitcodeprocess: %d", GetLastError());
+  logMsg (LOG_DBG, LOG_IMPORTANT, "getexitcodeprocess: %ld", GetLastError());
 
   if (! process->hasHandle) {
     CloseHandle (hProcess);
@@ -79,7 +81,7 @@ procutilExists (procutil_t *process)
 }
 
 procutil_t *
-procutilStart (const char *fn, ssize_t profile, ssize_t loglvl,
+procutilStart (const char *fn, int profile, loglevel_t loglvl,
     int procutilflag, const char *aargs [])
 {
   procutil_t  * process;
@@ -97,8 +99,8 @@ procutilStart (const char *fn, ssize_t profile, ssize_t loglvl,
   process->started = false;
 
   logProcBegin (LOG_PROC, "procutilStart");
-  snprintf (sprof, sizeof (sprof), "%zd", profile);
-  snprintf (sloglvl, sizeof (sloglvl), "%zd", loglvl);
+  snprintf (sprof, sizeof (sprof), "%d", profile);
+  snprintf (sloglvl, sizeof (sloglvl), "%d", loglvl);
 
   idx = 0;
   targv [idx++] = (char *) fn;
@@ -236,8 +238,8 @@ procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag,
   if (process == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "%s %s failed to start", fname, tbuff);
   } else {
-    logMsg (LOG_DBG, LOG_BASIC, "%s started pid: %zd", fname,
-        (ssize_t) process->pid);
+    logMsg (LOG_DBG, LOG_BASIC, "%s started pid: %"PRId64, fname,
+        (int64_t) process->pid);
     process->started = true;
   }
   logProcEnd (LOG_PROC, "procutilStartProcess", "");

@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <errno.h>
+#include <inttypes.h>
 #include <signal.h>
 #include <string.h>
 #include <sys/time.h>
@@ -390,7 +391,7 @@ sockConnect (uint16_t connPort, int *connerr, Sock_t clsock)
     return clsock;
   }
 
-  logMsg (LOG_DBG, LOG_SOCKET, "Connected to port:%d sock:%zd", connPort, (size_t) clsock);
+  logMsg (LOG_DBG, LOG_SOCKET, "Connected to port:%d sock:%ld", connPort, (long) clsock);
   ++sockCount;
   return clsock;
 }
@@ -585,7 +586,7 @@ sockWriteData (Sock_t sock, char *data, size_t len)
   }
 
   logProcBegin (LOG_PROC, "sockWriteData");
-  logMsg (LOG_DBG, LOG_SOCKET, "want to send: %zd bytes", len);
+  logMsg (LOG_DBG, LOG_SOCKET, "want to send: %"PRIu64" bytes", (uint64_t) len);
   /* ugh.  the write() call blocks on a non-blocking socket.  sigh. */
   /* call select() and check the condition the socket is in to see  */
   /* if it is writable.                                             */
@@ -600,15 +601,15 @@ sockWriteData (Sock_t sock, char *data, size_t len)
       errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
     logError ("send");
 #if _lib_WSAGetLastError
-    logMsg (LOG_DBG, LOG_SOCKET, "send: wsa last-error:%d", WSAGetLastError());
+    logMsg (LOG_DBG, LOG_SOCKET, "send: wsa last-error: %d", WSAGetLastError());
 #endif
     logProcEnd (LOG_PROC, "sockWriteData", "send-a-fail");
     return -1;
   }
-  logMsg (LOG_DBG, LOG_SOCKET, "sent: %zd bytes", rc);
+  logMsg (LOG_DBG, LOG_SOCKET, "sent: %"PRIu64" bytes", (uint64_t) rc);
   if (rc > 0) {
     tot += (size_t) rc;
-    logMsg (LOG_DBG, LOG_SOCKET, "tot: %zd bytes", tot);
+    logMsg (LOG_DBG, LOG_SOCKET, "tot: %"PRIu64" bytes", (uint64_t) tot);
   }
   while (tot < len) {
     rc = send (sock, data + tot, len - tot, 0);
@@ -616,15 +617,15 @@ sockWriteData (Sock_t sock, char *data, size_t len)
         errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
       logError ("send-b");
 #if _lib_WSAGetLastError
-      logMsg (LOG_DBG, LOG_SOCKET, "send: wsa last-error:%d", WSAGetLastError());
+      logMsg (LOG_DBG, LOG_SOCKET, "send: wsa last-error: %d", WSAGetLastError());
 #endif
       logProcEnd (LOG_PROC, "sockWriteData", "send-b-fail");
       return -1;
     }
-    logMsg (LOG_DBG, LOG_SOCKET, "sent: %zd bytes", rc);
+    logMsg (LOG_DBG, LOG_SOCKET, "sent: %"PRIu64" bytes", (uint64_t) rc);
     if (rc > 0) {
       tot += (size_t) rc;
-      logMsg (LOG_DBG, LOG_SOCKET, "tot: %zd bytes", tot);
+      logMsg (LOG_DBG, LOG_SOCKET, "tot: %"PRIu64" bytes", (uint64_t) tot);
     }
   }
   logProcEnd (LOG_PROC, "sockWriteData", "");

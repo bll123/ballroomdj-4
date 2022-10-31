@@ -14,7 +14,7 @@
 #include "sysvars.h"
 
 static char *   bdjvars [BDJV_MAX];
-static ssize_t  bdjvarsl [BDJVL_MAX];
+static int64_t  bdjvarsl [BDJVL_MAX];
 static bool     initialized = false;
 
 void
@@ -53,7 +53,7 @@ bdjvarsGetStr (bdjvarkey_t idx)
   return bdjvars [idx];
 }
 
-ssize_t
+int64_t
 bdjvarsGetNum (bdjvarkeyl_t idx)
 {
   if (idx >= BDJVL_MAX) {
@@ -64,7 +64,7 @@ bdjvarsGetNum (bdjvarkeyl_t idx)
 }
 
 void
-bdjvarsSetNum (bdjvarkeyl_t idx, ssize_t value)
+bdjvarsSetNum (bdjvarkeyl_t idx, int64_t value)
 {
   if (idx >= BDJVL_MAX) {
     return;

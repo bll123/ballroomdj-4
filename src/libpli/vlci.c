@@ -11,6 +11,7 @@ enum {
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <memory.h>
 #include <stdarg.h>
 #include <sys/stat.h>
@@ -195,7 +196,7 @@ vlcSeek (vlcData_t *vlcData, ssize_t dpos)
   }
   pos = libvlc_media_player_get_position (vlcData->mp);
   newpos = (ssize_t) round ((double) pos * (double) dur);
-  // fprintf (stderr, "vlci: seek: dpos: %zd new-pos: %.6f new-pos: %zd\n", dpos, pos, newpos);
+  // fprintf (stderr, "vlci: seek: dpos: %"PRId64" new-pos: %.6f new-pos: %"PRId64"\n", dpos, pos, newpos);
   return newpos;
 }
 

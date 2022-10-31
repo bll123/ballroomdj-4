@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <assert.h>
 
@@ -62,8 +63,8 @@ sockhStartServer (uint16_t listenPort)
   logProcBegin (LOG_PROC, "sockhMainLoop");
   sockserver->listenSock = sockServer (listenPort, &err);
   sockserver->si = sockAddCheck (sockserver->si, sockserver->listenSock);
-  logMsg (LOG_DBG, LOG_SOCKET, "add listen sock %zd",
-      (size_t) sockserver->listenSock);
+  logMsg (LOG_DBG, LOG_SOCKET, "add listen sock %"PRId64,
+      (int64_t) sockserver->listenSock);
   return sockserver;
 }
 
@@ -97,8 +98,8 @@ sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
   }
   len = msgEncode (routefrom, route, msg, args, msgbuff, sizeof (msgbuff));
   rc = sockWriteBinary (sock, msgbuff, len);
-  logMsg (LOG_DBG, LOG_SOCKET, "sent: msg:%d/%s to %d/%s len:%zd rc:%d",
-      msg, msgDebugText (msg), route, msgRouteDebugText (route), len, rc);
+  logMsg (LOG_DBG, LOG_SOCKET, "sent: msg:%d/%s to %d/%s len:%"PRIu64" rc:%d",
+      msg, msgDebugText (msg), route, msgRouteDebugText (route), (uint64_t) len, rc);
   return rc;
 }
 
@@ -152,7 +153,7 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
       if (! socketInvalid (clsock)) {
         logMsg (LOG_DBG, LOG_SOCKET, "connected");
         sockserver->si = sockAddCheck (sockserver->si, clsock);
-        logMsg (LOG_DBG, LOG_SOCKET, "add client sock %zd", (size_t) clsock);
+        logMsg (LOG_DBG, LOG_SOCKET, "add client sock %"PRId64, (int64_t) clsock);
       }
     } else {
       char *rval = sockReadBuff (msgsock, &len, msgbuff, sizeof (msgbuff));
@@ -162,7 +163,7 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
          * the message buffer is too short,
          * or that the socket has been closed.
          */
-        logMsg (LOG_DBG, LOG_SOCKET, "remove sock %zd", (size_t) msgsock);
+        logMsg (LOG_DBG, LOG_SOCKET, "remove sock %"PRId64, (int64_t) msgsock);
         sockRemoveCheck (sockserver->si, msgsock);
         sockClose (msgsock);
         return done;
