@@ -911,7 +911,7 @@ tsScriptWait (testsuite_t *testsuite, const char *tcmd)
   testsuite->wait = true;
   ++testsuite->results.chkcount;
   mstimeset (&testsuite->waitCheck, 100);
-  logMsg (LOG_DBG, LOG_BASIC, "start response timer %d", testsuite->responseTimeout);
+  logMsg (LOG_DBG, LOG_BASIC, "start response timer %zd", testsuite->responseTimeout);
   mstimeset (&testsuite->responseTimeoutCheck, testsuite->responseTimeout);
   return TS_OK;
 }

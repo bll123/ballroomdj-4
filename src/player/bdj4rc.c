@@ -315,7 +315,7 @@ remctrlEventHandler (struct mg_connection *c, int ev,
         mg_http_match_uri (hm, "#.pem") ||
         mg_http_match_uri (hm, "#.csr") ||
         mg_http_match_uri (hm, "../")) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "%.*s", hm->uri.len, hm->uri.ptr);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "%.*s", (int) hm->uri.len, hm->uri.ptr);
       mg_http_reply (c, 403, NULL, "%s", "Forbidden");
     } else {
       char          tbuff [200];

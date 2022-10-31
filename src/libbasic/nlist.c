@@ -41,7 +41,7 @@ nlistGetVersion (nlist_t *list)
   return listGetVersion (list);
 }
 
-ssize_t
+nlistidx_t
 nlistGetCount (nlist_t *list)
 {
   if (list == NULL) {
@@ -180,7 +180,7 @@ nlistGetData (nlist_t *list, nlistidx_t lkey)
   if (idx >= 0) {
     value = list->data [idx].value.data;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", list->name, lkey, idx);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d", list->name, lkey, idx);
   return value;
 }
 
@@ -246,7 +246,7 @@ nlistGetNum (nlist_t *list, nlistidx_t lidx)
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%ld", list->name, lidx, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%zd", list->name, lidx, idx, value);
   return value;
 }
 
@@ -266,7 +266,7 @@ nlistGetDouble (nlist_t *list, nlistidx_t lidx)
   if (idx >= 0) {
     value = list->data [idx].value.dval;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%.6f", list->name, lidx, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%.6f", list->name, lidx, idx, value);
   return value;
 }
 
@@ -286,7 +286,7 @@ nlistGetList (nlist_t *list, nlistidx_t lidx)
   if (idx >= 0) {
     value = list->data [idx].value.data;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld", list->name, lidx, idx);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d", list->name, lidx, idx);
   return value;
 }
 

@@ -110,12 +110,14 @@ void logStartAppend (const char *processnm, const char *processtag, loglevel_t l
 void logEnd (void);
 void logBacktraceHandler (int sig);
 char * plstateDebugText (playerstate_t plstate);
-void logBasic (const char *fmt, ...);
+void logBasic (const char *fmt, ...)
+    __attribute__ ((format (printf, 1, 2)));
 
 /* needed by the #defines */
 void rlogProcBegin (loglevel_t level, const char *tag, const char *fn, int line);
 void rlogProcEnd (loglevel_t level, const char *tag, const char *suffix, const char *fn, int line);
 void rlogError (const char *msg, int err, const char *fn, int line);
-void rlogVarMsg (logidx_t, loglevel_t level, const char *fn, int line, const char *fmt, ...);
+void rlogVarMsg (logidx_t, loglevel_t level, const char *fn, int line, const char *fmt, ...)
+    __attribute__ ((format (printf, 5, 6)));
 
 #endif /* INC_BDJLOG_H */

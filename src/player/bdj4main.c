@@ -129,7 +129,7 @@ static char * mainSongGetDanceDisplay (maindata_t *mainData, ssize_t idx);
 static void mainSendMobileMarqueeData (maindata_t *mainData);
 static void mainMobilePostCallback (void *userdata, char *resp, size_t len);
 static void mainQueueClear (maindata_t *mainData, char *args);
-static void mainQueueDance (maindata_t *mainData, char *args, ssize_t count);
+static void mainQueueDance (maindata_t *mainData, char *args, int count);
 static void mainQueuePlaylist (maindata_t *mainData, char *plname);
 static void mainSigHandler (int sig);
 static void mainMusicQueueFill (maindata_t *mainData);
@@ -1275,7 +1275,7 @@ mainQueueClear (maindata_t *mainData, char *args)
 }
 
 static void
-mainQueueDance (maindata_t *mainData, char *args, ssize_t count)
+mainQueueDance (maindata_t *mainData, char *args, int count)
 {
   playlistitem_t  *plitem;
   playlist_t      *playlist;

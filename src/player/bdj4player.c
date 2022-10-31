@@ -415,12 +415,12 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAY_REPEAT: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: repeat", args);
+          logMsg (LOG_DBG, LOG_MSGS, "got: repeat");
           playerData->repeat = playerData->repeat ? false : true;
           break;
         }
         case MSG_PLAY_PAUSEATEND: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: pauseatend", args);
+          logMsg (LOG_DBG, LOG_MSGS, "got: pauseatend");
           playerPauseAtEnd (playerData);
           break;
         }
@@ -433,7 +433,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAYER_VOL_MUTE: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: volmute", args);
+          logMsg (LOG_DBG, LOG_MSGS, "got: volmute");
           playerVolumeMute (playerData);
           break;
         }
@@ -443,7 +443,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAY_STOP: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: stop", args);
+          logMsg (LOG_DBG, LOG_MSGS, "got: stop");
           playerStop (playerData);
           playerData->pauseAtEnd = false;
           playerSendPauseAtEndState (playerData);
@@ -451,12 +451,12 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_PLAY_SONG_BEGIN: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: song begin", args);
+          logMsg (LOG_DBG, LOG_MSGS, "got: song begin");
           playerSongBegin (playerData);
           break;
         }
         case MSG_PLAY_SEEK: {
-          logMsg (LOG_DBG, LOG_MSGS, "got: seek", args);
+          logMsg (LOG_DBG, LOG_MSGS, "got: seek");
           playerSeek (playerData, atol (args));
           break;
         }
@@ -899,7 +899,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->speed = atoi (p);
-  logMsg (LOG_DBG, LOG_MAIN, "     speed: %zd", npq->speed);
+  logMsg (LOG_DBG, LOG_MAIN, "     speed: %d", npq->speed);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->voladjperc = atof (p);
@@ -917,7 +917,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   npq->tempname = strdup (stname);
   assert (npq->tempname != NULL);
   queuePush (playerData->prepRequestQueue, npq);
-  logMsg (LOG_DBG, LOG_MAIN, "prep-add: %ld %s r:%ld p:%ld", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+  logMsg (LOG_DBG, LOG_MAIN, "prep-add: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   logProcEnd (LOG_PROC, "playerSongPrep", "");
 }
 
@@ -945,7 +945,7 @@ playerSongClearPrep (playerdata_t *playerData, char *args)
     tpq = queueIterateRemoveNode (playerData->prepQueue, &playerData->prepiteridx);
     /* prevent any issues by checking the uniqueidx again */
     if (tpq != NULL && tpq->uniqueidx == uniqueidx) {
-      logMsg (LOG_DBG, LOG_MAIN, "prep-clear: %ld %s r:%ld p:%ld", tpq->uniqueidx, tpq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+      logMsg (LOG_DBG, LOG_MAIN, "prep-clear: %ld %s r:%d p:%d", tpq->uniqueidx, tpq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
       playerPrepQueueFree (tpq);
     }
   }
@@ -996,7 +996,7 @@ playerProcessPrepRequest (playerdata_t *playerData)
   free (buff);
 
   queuePush (playerData->prepQueue, npq);
-  logMsg (LOG_DBG, LOG_MAIN, "prep-do: %ld %s r:%ld p:%ld", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+  logMsg (LOG_DBG, LOG_MAIN, "prep-do: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   tm = mstimeend (&mstm);
   logMsg (LOG_DBG, LOG_BASIC, "prep-time (%zd) %ld %s", tm, npq->uniqueidx, npq->songname);
   logProcEnd (LOG_PROC, "playerProcessPrepRequest", "");
@@ -1535,7 +1535,7 @@ playerFadeVolSet (playerdata_t *playerData)
   logMsg (LOG_DBG, LOG_MAIN, "fade set volume: %d count:%d",
       newvol, playerData->fadeCount);
   if (playerData->inFadeOut) {
-    logMsg (LOG_DBG, LOG_MAIN, "   time %d",
+    logMsg (LOG_DBG, LOG_MAIN, "   time %zd",
         mstimeend (&playerData->playEndCheck));
   }
   if (playerData->inFadeIn) {

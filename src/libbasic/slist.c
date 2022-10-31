@@ -45,7 +45,7 @@ slistGetVersion (slist_t *list)
   return listGetVersion (list);
 }
 
-ssize_t
+slistidx_t
 slistGetCount (slist_t *list)
 {
   if (list == NULL) {
@@ -191,7 +191,7 @@ slistGetNum (slist_t *list, const char *sidx)
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%ld value:%ld", list->name, sidx, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%zd", list->name, sidx, idx, value);
   return value;
 }
 
@@ -207,7 +207,7 @@ slistGetDouble (slist_t *list, const char *sidx)
   if (idx >= 0) {
     value = list->data [idx].value.dval;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%ld value:%8.2g", list->name, sidx, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%8.2g", list->name, sidx, idx, value);
   return value;
 }
 

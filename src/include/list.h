@@ -89,7 +89,6 @@ list_t      *listAlloc (const char *name, listorder_t ordered,
 void        listFree (void *list);
 void        listSetVersion (list_t *list, int version);
 int         listGetVersion (list_t *list);
-listidx_t     listGetCount (list_t *list);
 listidx_t   listGetIdx (list_t *list, listkeylookup_t *key);
 void        listSetSize (list_t *list, listidx_t size);
 void        listSetVersion (list_t *list, listidx_t version);

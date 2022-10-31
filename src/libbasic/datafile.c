@@ -337,7 +337,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
   }
   strdata = parseGetData (pi);
 
-  logMsg (LOG_DBG, LOG_DATAFILE, "dftype: %ld", dftype);
+  logMsg (LOG_DBG, LOG_DATAFILE, "dftype: %d", dftype);
   switch (dftype) {
     case DFTYPE_LIST: {
       inc = 1;
@@ -431,10 +431,10 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
         (dftype == DFTYPE_KEY_VAL && dfkeys != NULL)) {
       listidx_t idx = dfkeyBinarySearch (dfkeys, dfkeycount, tkeystr);
       if (idx >= 0) {
-        logMsg (LOG_DBG, LOG_DATAFILE, "found %s idx: %ld", tkeystr, idx);
+        logMsg (LOG_DBG, LOG_DATAFILE, "found %s idx: %d", tkeystr, idx);
         ikey = dfkeys [idx].itemkey;
         vt = dfkeys [idx].valuetype;
-        logMsg (LOG_DBG, LOG_DATAFILE, "ikey:%ld vt:%d tvalstr:%s", ikey, vt, tvalstr);
+        logMsg (LOG_DBG, LOG_DATAFILE, "ikey:%d vt:%d tvalstr:%s", ikey, vt, tvalstr);
 
         conv.valuetype = VALUE_NONE;
         if (dfkeys [idx].convFunc != NULL) {
@@ -482,7 +482,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
         continue;
       }
 
-      logMsg (LOG_DBG, LOG_DATAFILE, "set: dftype:%ld vt:%d", dftype, vt);
+      logMsg (LOG_DBG, LOG_DATAFILE, "set: dftype:%d vt:%d", dftype, vt);
 
       if (dftype == DFTYPE_INDIRECT) {
         setlist = itemList;

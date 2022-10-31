@@ -154,7 +154,7 @@ ilistGetData (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
     if (idx >= 0) {
       value = datalist->data [idx].value.data;
     }
-    logMsg (LOG_DBG, LOG_LIST, "ilist:%s key:%ld idx:%ld", datalist->name, lidx, idx);
+    logMsg (LOG_DBG, LOG_LIST, "ilist:%s key:%d idx:%d", datalist->name, lidx, idx);
   }
   return value;
 }
@@ -184,7 +184,7 @@ ilistGetNum (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
     if (idx >= 0) {
       value = datalist->data [idx].value.num;
     }
-    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%ld", list->name, lidx, idx, value);
+    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%d", list->name, lidx, idx, value);
   }
   return value;
 }
@@ -208,7 +208,7 @@ ilistGetDouble (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx)
     if (idx >= 0) {
       value = datalist->data [idx].value.dval;
     }
-    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%ld idx:%ld value:%8.2g", list->name, lidx, idx, value);
+    logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%8.2g", list->name, lidx, idx, value);
   }
   return value;
 }

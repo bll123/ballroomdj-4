@@ -74,7 +74,7 @@ danceselAlloc (nlist_t *countList)
     }
     nlistSetNum (dancesel->base, didx, count);
     dancesel->basetotal += (double) count;
-    logMsg (LOG_DBG, LOG_DANCESEL, "base: %d/%s: %d", didx,
+    logMsg (LOG_DBG, LOG_DANCESEL, "base: %d/%s: %ld", didx,
         danceGetStr (dancesel->dances, didx, DANCE_DANCE), count);
     nlistSetNum (dancesel->selectedCounts, didx, 0);
   }

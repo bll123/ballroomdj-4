@@ -14,7 +14,7 @@ slist_t   *slistAlloc (const char *name, slistorder_t ordered,
 void      slistFree (void * list);
 void      slistSetVersion (slist_t *list, int version);
 int       slistGetVersion (slist_t *list);
-ssize_t   slistGetCount (slist_t *list);
+slistidx_t slistGetCount (slist_t *list);
 void      slistSetSize (slist_t *, ssize_t);
   /* set routines */
 void      slistSetData (slist_t *, const char *sidx, void *data);

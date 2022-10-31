@@ -278,9 +278,9 @@ dbtagProcessing (void *udata)
         dbtag->havealldata) {
       connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_TAG_FINISHED, NULL);
       logMsg (LOG_DBG, LOG_IMPORTANT, "-- queue empty: %ld ms", mstimeend (&dbtag->starttm));
-      logMsg (LOG_DBG, LOG_IMPORTANT, "     received: %ld", dbtag->received);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "         sent: %ld", dbtag->sent);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "max queue len: %ld", dbtag->maxqueuelen);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "     received: %d", dbtag->received);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "         sent: %d", dbtag->sent);
+      logMsg (LOG_DBG, LOG_IMPORTANT, "max queue len: %d", dbtag->maxqueuelen);
       logMsg (LOG_DBG, LOG_IMPORTANT, "average num threads active: %.2f",
           (double) dbtag->threadActiveSum /
           (double) (dbtag->iterations - dbtag->maxThreads));

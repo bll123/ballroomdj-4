@@ -141,7 +141,7 @@ listGetData (list_t *list, const char *keydata)
   if (idx >= 0) {
     value = list->data [idx].value.data;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%ld", list->name, keydata, idx);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d", list->name, keydata, idx);
   return value;
 }
 
@@ -158,7 +158,7 @@ listGetDataByIdx (list_t *list, listidx_t idx)
     return value;
   }
   value = list->data [idx].value.data;
-  logMsg (LOG_DBG, LOG_LIST, "list:%s idx:%ld", list->name, idx);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s idx:%d", list->name, idx);
   return value;
 }
 
@@ -174,7 +174,7 @@ listGetNumByIdx (list_t *list, listidx_t idx)
     return value;
   }
   value = list->data [idx].value.num;
-  logMsg (LOG_DBG, LOG_LIST, "list:%s idx:%ld", list->name, idx);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s idx:%d", list->name, idx);
   return value;
 }
 
@@ -197,7 +197,7 @@ listGetNum (list_t *list, const char *keydata)
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%ld value:%ld", list->name, keydata, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%zd", list->name, keydata, idx, value);
   return value;
 }
 
@@ -225,7 +225,7 @@ listDeleteByIdx (list_t *list, listidx_t idx)
        memcpy (list->data + i, list->data + i + 1, sizeof (listitem_t));
     }
   }
-  logMsg (LOG_DBG, LOG_LIST, "list-del:%s idx:%ld", list->name, idx);
+  logMsg (LOG_DBG, LOG_LIST, "list-del:%s idx:%d", list->name, idx);
 }
 
 void
@@ -253,7 +253,7 @@ listStartIterator (list_t *list, listidx_t *iteridx)
 void
 listDumpInfo (list_t *list)
 {
-  logMsg (LOG_DBG, LOG_LIST, "list: %s count: %ld key:%d ordered:%d",
+  logMsg (LOG_DBG, LOG_LIST, "list: %s count: %d key:%d ordered:%d",
       list->name, list->count, list->keytype, list->ordered);
 }
 

@@ -143,7 +143,7 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data)
   logProcBegin (LOG_PROC, "raWrite");
   /* leave one byte for the terminating null */
   if (len > (RAFILE_REC_SIZE - 1)) {
-    logMsg (LOG_DBG, LOG_RAFILE, "bad data len", "%ld", len);
+    logMsg (LOG_DBG, LOG_RAFILE, "bad data len %zd", len);
     return 1;
   }
 
@@ -182,7 +182,7 @@ raClear (rafile_t *rafile, rafileidx_t rrn)
 {
   logProcBegin (LOG_PROC, "raClear");
   if (rrn < 1L || rrn > rafile->count) {
-    logMsg (LOG_DBG, LOG_RAFILE, "bad rrn", "%ld", rrn);
+    logMsg (LOG_DBG, LOG_RAFILE, "bad rrn %d", rrn);
     return 1;
   }
   raLock (rafile);
@@ -200,7 +200,7 @@ raRead (rafile_t *rafile, rafileidx_t rrn, char *data)
 
   logProcBegin (LOG_PROC, "raRead");
   if (rrn < 1L || rrn > rafile->count) {
-    logMsg (LOG_DBG, LOG_RAFILE, "bad rrn", "%ld", rrn);
+    logMsg (LOG_DBG, LOG_RAFILE, "bad rrn %d", rrn);
     return 0;
   }
 
