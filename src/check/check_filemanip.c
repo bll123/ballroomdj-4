@@ -23,227 +23,6 @@
 #include "slist.h"
 #include "sysvars.h"
 
-START_TEST(filemanip_move_a)
-{
-  FILE      *fh;
-  int       rc;
-  char *ofn = "tmp/abc.txt.c";
-  char *nfn = "tmp/abc.txt.d";
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_move_a");
-
-  unlink (ofn);
-  unlink (nfn);
-  fh = fopen (ofn, "w");
-  ck_assert_ptr_nonnull (fh);
-  fclose (fh);
-  rc = filemanipMove (ofn, nfn);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (nfn);
-  ck_assert_int_eq (rc, 1);
-  unlink (ofn);
-  unlink (nfn);
-}
-END_TEST
-
-START_TEST(filemanip_copy_a)
-{
-  FILE      *fh;
-  int       rc;
-  char *nullfn = "tmp/abc-z.txt";
-  char *ofn = "tmp/abc-a.txt";
-  char *nfn = "tmp/abc-b.txt";
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_copy_a");
-
-  unlink (ofn);
-  unlink (nfn);
-
-  fh = fopen (ofn, "w");
-  ck_assert_ptr_nonnull (fh);
-  fprintf (fh, "x\n");
-  fclose (fh);
-
-  rc = fileopFileExists (nfn);
-  ck_assert_int_eq (rc, 0);
-
-  rc = filemanipCopy (ofn, nfn);
-  ck_assert_int_eq (rc, 0);
-
-  rc = fileopFileExists (ofn);
-  ck_assert_int_eq (rc, 1);
-  rc = fileopFileExists (nfn);
-  ck_assert_int_eq (rc, 1);
-
-  unlink (nfn);
-  rc = filemanipCopy (nullfn, nfn);
-  ck_assert_int_ne (rc, 0);
-  rc = fileopFileExists (nfn);
-  ck_assert_int_eq (rc, 0);
-
-  unlink (ofn);
-  unlink (nfn);
-}
-END_TEST
-
-START_TEST(filemanip_backup_a)
-{
-  FILE      *fh;
-  int       rc;
-  char      buff [10];
-  char *ofn = "tmp/abc.txt";
-  char *ofn0a = "tmp/abc.txt.0";
-  char *ofn0 = "tmp/abc.txt.bak.0";
-  char *ofn1 = "tmp/abc.txt.bak.1";
-  char *ofn2 = "tmp/abc.txt.bak.2";
-  char *ofn3 = "tmp/abc.txt.bak.3";
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_backup_a");
-
-  unlink (ofn);
-  unlink (ofn0a);
-  unlink (ofn0);
-  unlink (ofn1);
-  unlink (ofn2);
-  unlink (ofn3);
-
-  fh = fopen (ofn, "w");
-  ck_assert_ptr_nonnull (fh);
-  fprintf (fh, "1\n");
-  fclose (fh);
-
-  rc = fileopFileExists (ofn);
-  ck_assert_int_ne (rc, 0);
-  rc = fileopFileExists (ofn0a);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn0);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn1);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn2);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn3);
-  ck_assert_int_eq (rc, 0);
-
-  filemanipBackup (ofn, 2);
-
-  rc = fileopFileExists (ofn);
-  ck_assert_int_ne (rc, 0);
-  rc = fileopFileExists (ofn0a);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn0);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn1);
-  ck_assert_int_ne (rc, 0);
-  rc = fileopFileExists (ofn2);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn3);
-  ck_assert_int_eq (rc, 0);
-
-  fh = fopen (ofn, "r");
-  ck_assert_ptr_nonnull (fh);
-  (void) ! fgets (buff, 2, fh);
-  fclose (fh);
-  ck_assert_str_eq (buff, "1");
-
-  fh = fopen (ofn1, "r");
-  ck_assert_ptr_nonnull (fh);
-  (void) ! fgets (buff, 2, fh);
-  fclose (fh);
-  ck_assert_str_eq (buff, "1");
-
-  fh = fopen (ofn, "w");
-  ck_assert_ptr_nonnull (fh);
-  fprintf (fh, "2\n");
-  fclose (fh);
-
-  filemanipBackup (ofn, 2);
-
-  rc = fileopFileExists (ofn);
-  ck_assert_int_ne (rc, 0);
-  rc = fileopFileExists (ofn0a);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn0);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn1);
-  ck_assert_int_ne (rc, 0);
-  rc = fileopFileExists (ofn2);
-  ck_assert_int_ne (rc, 0);
-  rc = fileopFileExists (ofn3);
-  ck_assert_int_eq (rc, 0);
-
-  fh = fopen (ofn, "r");
-  ck_assert_ptr_nonnull (fh);
-  (void) ! fgets (buff, 2, fh);
-  fclose (fh);
-  ck_assert_str_eq (buff, "2");
-
-  fh = fopen (ofn1, "r");
-  ck_assert_ptr_nonnull (fh);
-  (void) ! fgets (buff, 2, fh);
-  fclose (fh);
-  ck_assert_str_eq (buff, "2");
-
-  fh = fopen (ofn2, "r");
-  ck_assert_ptr_nonnull (fh);
-  (void) ! fgets (buff, 2, fh);
-  fclose (fh);
-  ck_assert_str_eq (buff, "1");
-
-  fh = fopen (ofn, "w");
-  ck_assert_ptr_nonnull (fh);
-  fprintf (fh, "3\n");
-  fclose (fh);
-
-  filemanipBackup (ofn, 2);
-
-  rc = fileopFileExists (ofn);
-  ck_assert_int_ne (rc, 0);
-  rc = fileopFileExists (ofn0a);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn0);
-  ck_assert_int_eq (rc, 0);
-  rc = fileopFileExists (ofn1);
-  ck_assert_int_ne (rc, 0);
-  rc = fileopFileExists (ofn2);
-  ck_assert_int_ne (rc, 0);
-  rc = fileopFileExists (ofn3);
-  ck_assert_int_eq (rc, 0);
-
-  fh = fopen (ofn, "r");
-  ck_assert_ptr_nonnull (fh);
-  (void) ! fgets (buff, 2, fh);
-  fclose (fh);
-  ck_assert_str_eq (buff, "3");
-
-  fh = fopen (ofn1, "r");
-  ck_assert_ptr_nonnull (fh);
-  (void) ! fgets (buff, 2, fh);
-  fclose (fh);
-  ck_assert_str_eq (buff, "3");
-
-  fh = fopen (ofn2, "r");
-  ck_assert_ptr_nonnull (fh);
-  (void) ! fgets (buff, 2, fh);
-  fclose (fh);
-  ck_assert_str_eq (buff, "2");
-
-  unlink (ofn);
-  unlink (ofn0a);
-  unlink (ofn0);
-  unlink (ofn1);
-  unlink (ofn2);
-}
-END_TEST
-
-START_TEST(filemanip_renameall_a)
-{
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_renameall_a");
-}
-END_TEST
-
 /* update the fnlist in fileop/filemanip/dirop/dirlist also */
 static char *fnlist [] = {
   "tmp/abc-def.txt",
@@ -253,18 +32,27 @@ static char *fnlist [] = {
   "tmp/夕陽伴我歸.txt",
   "tmp/Ne_Русский_Шторм.txt",
 };
+static char *nfnlist [] = {
+  "tmp/abc-def-new.txt",
+  "tmp/ÜÄÑÖ-new.txt",
+  "tmp/I Am the Best_내가 제일 잘 나가-new.txt",
+  "tmp/ははは-new.txt",
+  "tmp/夕陽伴我歸-new.txt",
+  "tmp/Ne_Русский_Шторм-new.txt",
+};
 enum {
   fnlistsz = sizeof (fnlist) / sizeof (char *),
 };
 
-START_TEST(filemanip_move_u)
+
+START_TEST(filemanip_move)
 {
   FILE      *fh;
   int       rc;
   ssize_t   osz;
   ssize_t   nsz;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_move_u");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_move");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  *ofn;
@@ -297,7 +85,7 @@ START_TEST(filemanip_move_u)
 }
 END_TEST
 
-START_TEST(filemanip_copy_u)
+START_TEST(filemanip_copy)
 {
   FILE      *fh;
   int       rc;
@@ -305,7 +93,7 @@ START_TEST(filemanip_copy_u)
   ssize_t   nsz;
   char      *nullfn = "tmp/not-exist.txt";
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_copy_u");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_copy");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  *ofn;
@@ -345,13 +133,13 @@ START_TEST(filemanip_copy_u)
 }
 END_TEST
 
-START_TEST(filemanip_backup_u)
+START_TEST(filemanip_backup)
 {
   FILE      *fh;
   int       rc;
   char      buff [10];
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_backup_u");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_backup");
 
   for (int i = 0; i < fnlistsz; ++i) {
     char  ofn0a [MAXPATHLEN];
@@ -379,7 +167,7 @@ START_TEST(filemanip_backup_u)
     fclose (fh);
 
     rc = fileopFileExists (ofn);
-    ck_assert_int_ne (rc, 0);
+    ck_assert_int_eq (rc, 1);
     rc = fileopFileExists (ofn0a);
     ck_assert_int_eq (rc, 0);
     rc = fileopFileExists (ofn0);
@@ -394,13 +182,13 @@ START_TEST(filemanip_backup_u)
     filemanipBackup (ofn, 2);
 
     rc = fileopFileExists (ofn);
-    ck_assert_int_ne (rc, 0);
+    ck_assert_int_eq (rc, 1);
     rc = fileopFileExists (ofn0a);
     ck_assert_int_eq (rc, 0);
     rc = fileopFileExists (ofn0);
     ck_assert_int_eq (rc, 0);
     rc = fileopFileExists (ofn1);
-    ck_assert_int_ne (rc, 0);
+    ck_assert_int_eq (rc, 1);
     rc = fileopFileExists (ofn2);
     ck_assert_int_eq (rc, 0);
     rc = fileopFileExists (ofn3);
@@ -426,15 +214,15 @@ START_TEST(filemanip_backup_u)
     filemanipBackup (ofn, 2);
 
     rc = fileopFileExists (ofn);
-    ck_assert_int_ne (rc, 0);
+    ck_assert_int_eq (rc, 1);
     rc = fileopFileExists (ofn0a);
     ck_assert_int_eq (rc, 0);
     rc = fileopFileExists (ofn0);
     ck_assert_int_eq (rc, 0);
     rc = fileopFileExists (ofn1);
-    ck_assert_int_ne (rc, 0);
+    ck_assert_int_eq (rc, 1);
     rc = fileopFileExists (ofn2);
-    ck_assert_int_ne (rc, 0);
+    ck_assert_int_eq (rc, 1);
     rc = fileopFileExists (ofn3);
     ck_assert_int_eq (rc, 0);
 
@@ -464,15 +252,15 @@ START_TEST(filemanip_backup_u)
     filemanipBackup (ofn, 2);
 
     rc = fileopFileExists (ofn);
-    ck_assert_int_ne (rc, 0);
+    ck_assert_int_eq (rc, 1);
     rc = fileopFileExists (ofn0a);
     ck_assert_int_eq (rc, 0);
     rc = fileopFileExists (ofn0);
     ck_assert_int_eq (rc, 0);
     rc = fileopFileExists (ofn1);
-    ck_assert_int_ne (rc, 0);
+    ck_assert_int_eq (rc, 1);
     rc = fileopFileExists (ofn2);
-    ck_assert_int_ne (rc, 0);
+    ck_assert_int_eq (rc, 1);
     rc = fileopFileExists (ofn3);
     ck_assert_int_eq (rc, 0);
 
@@ -504,6 +292,106 @@ START_TEST(filemanip_backup_u)
 }
 END_TEST
 
+START_TEST(filemanip_renameall)
+{
+  FILE      *fh;
+  int       rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_renameall");
+
+  for (int i = 0; i < fnlistsz; ++i) {
+    char  ofn0 [MAXPATHLEN];
+    char  ofn1 [MAXPATHLEN];
+    char  ofn2 [MAXPATHLEN];
+    char  ofn3 [MAXPATHLEN];
+    char  nfn0 [MAXPATHLEN];
+    char  nfn1 [MAXPATHLEN];
+    char  nfn2 [MAXPATHLEN];
+    char  nfn3 [MAXPATHLEN];
+
+    char *ofn = fnlist [i];
+    char *nfn = nfnlist [i];
+
+    snprintf (ofn0, sizeof (ofn0), "%s.bak.0", ofn);
+    snprintf (ofn1, sizeof (ofn1), "%s.bak.1", ofn);
+    snprintf (ofn2, sizeof (ofn2), "%s.bak.2", ofn);
+    snprintf (ofn3, sizeof (ofn3), "%s.bak.3", ofn);
+    snprintf (nfn0, sizeof (nfn0), "%s.bak.0", nfn);
+    snprintf (nfn1, sizeof (nfn1), "%s.bak.1", nfn);
+    snprintf (nfn2, sizeof (nfn2), "%s.bak.2", nfn);
+    snprintf (nfn3, sizeof (nfn3), "%s.bak.3", nfn);
+    fileopDelete (ofn);
+    fileopDelete (ofn0);
+    fileopDelete (ofn1);
+    fileopDelete (ofn2);
+    fileopDelete (ofn3);
+    fileopDelete (nfn);
+    fileopDelete (nfn0);
+    fileopDelete (nfn1);
+    fileopDelete (nfn2);
+    fileopDelete (nfn3);
+
+    fh = fileopOpen (ofn, "w");
+    ck_assert_ptr_nonnull (fh);
+    fprintf (fh, "1\n");
+    fclose (fh);
+
+    filemanipBackup (ofn, 2);
+
+    fh = fileopOpen (ofn, "w");
+    ck_assert_ptr_nonnull (fh);
+    fprintf (fh, "2\n");
+    fclose (fh);
+
+    filemanipBackup (ofn, 2);
+
+    fh = fileopOpen (ofn, "w");
+    ck_assert_ptr_nonnull (fh);
+    fprintf (fh, "3\n");
+    fclose (fh);
+
+    filemanipBackup (ofn, 2);
+
+    /* at this point, ofn, ofn1, and ofn2 exist */
+
+    filemanipRenameAll (ofn, nfn);
+
+    rc = fileopFileExists (ofn);
+    ck_assert_int_eq (rc, 0);
+    rc = fileopFileExists (ofn0);
+    ck_assert_int_eq (rc, 0);
+    rc = fileopFileExists (ofn1);
+    ck_assert_int_eq (rc, 0);
+    rc = fileopFileExists (ofn2);
+    ck_assert_int_eq (rc, 0);
+    rc = fileopFileExists (ofn3);
+    ck_assert_int_eq (rc, 0);
+
+    rc = fileopFileExists (nfn);
+    ck_assert_int_eq (rc, 1);
+    rc = fileopFileExists (nfn0);
+    ck_assert_int_eq (rc, 0);
+    rc = fileopFileExists (nfn1);
+    ck_assert_int_eq (rc, 1);
+    rc = fileopFileExists (nfn2);
+    ck_assert_int_eq (rc, 1);
+    rc = fileopFileExists (nfn3);
+    ck_assert_int_eq (rc, 0);
+
+    fileopDelete (ofn);
+    fileopDelete (ofn0);
+    fileopDelete (ofn1);
+    fileopDelete (ofn2);
+    fileopDelete (ofn3);
+    fileopDelete (nfn);
+    fileopDelete (nfn0);
+    fileopDelete (nfn1);
+    fileopDelete (nfn2);
+    fileopDelete (nfn3);
+  }
+}
+END_TEST
+
 Suite *
 filemanip_suite (void)
 {
@@ -513,13 +401,10 @@ filemanip_suite (void)
   s = suite_create ("filemanip");
   tc = tcase_create ("filemanip");
   tcase_set_tags (tc, "libcommon");
-  tcase_add_test (tc, filemanip_move_a);
-  tcase_add_test (tc, filemanip_copy_a);
-  tcase_add_test (tc, filemanip_backup_a);
-  tcase_add_test (tc, filemanip_renameall_a);
-  tcase_add_test (tc, filemanip_move_u);
-  tcase_add_test (tc, filemanip_copy_u);
-  tcase_add_test (tc, filemanip_backup_u);
+  tcase_add_test (tc, filemanip_move);
+  tcase_add_test (tc, filemanip_copy);
+  tcase_add_test (tc, filemanip_backup);
+  tcase_add_test (tc, filemanip_renameall);
   suite_add_tcase (s, tc);
   return s;
 }

@@ -1,5 +1,5 @@
-#ifndef INC_FILEUTIL_H
-#define INC_FILEUTIL_H
+#ifndef INC_FILESHARED_H
+#define INC_FILESHARED_H
 
 #include "config.h"
 
@@ -30,4 +30,4 @@ int           fileOpenShared (const char *fname, int truncflag,
 ssize_t       fileWriteShared (filehandle_t *fileHandle, char *data, size_t len);
 void          fileCloseShared (filehandle_t *fileHandle);
 
-#endif /* INC_FILEUTIL_H */
+#endif /* INC_FILESHARED_H */

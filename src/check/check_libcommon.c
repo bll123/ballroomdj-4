@@ -36,8 +36,8 @@ check_libcommon (SRunner *sr)
    *  tmutil      complete
    *  osdir
    *  dirop       complete
-   *  filemanip   need renameall test
-   *  fileutil                // open/write/close shared
+   *  filemanip   complete 2022-11-1
+   *  fileshared                // open/write/close shared
    *  pathbld     complete
    *  log
    *  bdjmsg      complete
@@ -46,7 +46,7 @@ check_libcommon (SRunner *sr)
    *  sockh
    *  conn
    *  osrandom    complete
-   *  queue       complete
+   *  queue       complete 2022-11-1
    *  dirlist     complete
    *  colorutils  complete
    *  ossignal    complete

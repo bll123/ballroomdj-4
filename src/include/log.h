@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 #include "bdj4.h"
-#include "fileutil.h"
+#include "fileshared.h"
 #include "player.h"
 
 /*

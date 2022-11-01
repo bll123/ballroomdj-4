@@ -22,7 +22,7 @@
 #include "tmutil.h"
 #include "fileop.h"
 #include "filemanip.h"
-#include "fileutil.h"
+#include "fileshared.h"
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"

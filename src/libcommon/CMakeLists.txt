@@ -12,7 +12,7 @@ add_library (libbdj4common SHARED
   filedata.c
   filemanip.c
   fileop.c
-  fileutil.c
+  fileshared.c
   log.c
   osdir.c
   oslocale.c

@@ -22,7 +22,7 @@
 # include <windows.h>
 #endif
 
-#include "fileutil.h"
+#include "fileshared.h"
 #include "bdjstring.h"
 
 int
