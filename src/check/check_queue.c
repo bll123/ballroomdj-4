@@ -170,20 +170,20 @@ START_TEST(queue_push_head)
 }
 END_TEST
 
-START_TEST(queue_get_current)
+START_TEST(queue_get_first)
 {
   qidx_t    count;
   char      *data;
   queue_t       *q;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_get_current");
-  q = queueAlloc ("get-curr", NULL);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_get_first");
+  q = queueAlloc ("get-first", NULL);
   queuePush (q, "aaaa");
   queuePush (q, "bbbb");
   count = queueGetCount (q);
   ck_assert_int_eq (count, 2);
 
-  data = queueGetCurrent (q);
+  data = queueGetFirst (q);
   count = queueGetCount (q);
   ck_assert_ptr_nonnull (data);
   ck_assert_int_eq (count, 2);
@@ -192,7 +192,17 @@ START_TEST(queue_get_current)
   data = queuePop (q);
   ck_assert_str_eq (data, "aaaa");
 
-  data = queueGetCurrent (q);
+  queuePushHead (q, "cccc");
+  data = queueGetFirst (q);
+  count = queueGetCount (q);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_int_eq (count, 2);
+  ck_assert_str_eq (data, "cccc");
+
+  data = queuePop (q);
+  ck_assert_str_eq (data, "cccc");
+
+  data = queueGetFirst (q);
   count = queueGetCount (q);
   ck_assert_ptr_nonnull (data);
   ck_assert_int_eq (count, 1);
@@ -410,12 +420,358 @@ START_TEST(queue_multi_many)
 }
 END_TEST
 
+/* also has all the cache tests */
+/* uses some queue operations that have not yet been tested */
+START_TEST(queue_getbyidx)
+{
+  qidx_t    count;
+  char      *data;
+  queue_t   *q;
+  qidx_t    i;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_getbyidx");
+  q = queueAlloc ("get-by-idx", NULL);
+
+  queuePush (q, "aaaa");
+  queuePush (q, "bbbb");
+  queuePush (q, "cccc");
+  queuePush (q, "dddd");
+  queuePush (q, "eeee");
+  queuePush (q, "ffff");
+  queuePush (q, "gggg");
+  queuePush (q, "hhhh");
+  queuePush (q, "iiii");
+  count = queueGetCount (q);
+  ck_assert_int_eq (count, 9);
+
+  i = 0;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  /* search dist 0 */
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  data = queueGetByIdx (q, i++);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  /* should be cached, dist 0 */
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  data = queueGetByIdx (q, i++);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "bbbb");
+  /* search dist 1 */
+  ck_assert_int_eq (queueDebugSearchDist (q), 1);
+
+  data = queueGetByIdx (q, i++);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  /* search dist 1 */
+  ck_assert_int_eq (queueDebugSearchDist (q), 1);
+
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  /* search dist 1 */
+  ck_assert_int_eq (queueDebugSearchDist (q), 1);
+
+  /* should be cached */
+  data = queueGetByIdx (q, i++);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  /* should be cached, dist 0 */
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  data = queueGetByIdx (q, i++);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  /* search dist 1 */
+  ck_assert_int_eq (queueDebugSearchDist (q), 1);
+
+  data = queueGetByIdx (q, i++);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  /* search dist 1 */
+  ck_assert_int_eq (queueDebugSearchDist (q), 1);
+
+  data = queueGetByIdx (q, i++);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "gggg");
+  /* search dist 1 */
+  ck_assert_int_eq (queueDebugSearchDist (q), 1);
+
+  data = queueGetByIdx (q, i++);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "hhhh");
+  /* search dist 1 */
+  ck_assert_int_eq (queueDebugSearchDist (q), 1);
+
+  data = queueGetByIdx (q, i++);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "iiii");
+  /* last item, search dist 0 */
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  data = queueGetByIdx (q, i++);
+  ck_assert_ptr_null (data);
+
+  /* cache checks */
+
+  /* should start at head, should have a search distance of 0 */
+  i = 0;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  /* should start at tail, should have a search distance of 0 */
+  i = queueGetCount (q) - 1;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "iiii");
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  /* should start at head, should have a search distance of 2 (next) */
+  i = 2;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  ck_assert_int_eq (queueDebugSearchDist (q), 2);
+
+  /* should start at tail, should have a search distance of 2 (prev) */
+  i = queueGetCount(q) - 1 - 2;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "gggg");
+  ck_assert_int_eq (queueDebugSearchDist (q), 2);
+
+  /* get idx 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+
+  /* should start at cache, should have a search distance of 1 (next) */
+  i = 5;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "ffff");
+  ck_assert_int_eq (queueDebugSearchDist (q), 1);
+
+  /* get idx 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+
+  /* should start at cache, should have a search distance of 1 (prev) */
+  i = 3;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  ck_assert_int_eq (queueDebugSearchDist (q), 1);
+
+  /* get idx 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+
+  /* should start at tail, should have a search distance of 1 */
+  i = queueGetCount(q) - 1 - 1;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "hhhh");
+  ck_assert_int_eq (queueDebugSearchDist (q), 1);
+
+  /* get idx 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+
+  /* should start at cache, should have a search distance of 0 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  /* get idx 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+
+  /* get idx 0, should not change the cache */
+  i = 0;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "aaaa");
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  /* should start at cache, should have a search distance of 0 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  /* get last idx, should not change the cache */
+  i = queueGetCount (q) - 1;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "iiii");
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  /* should start at cache, should have a search distance of 0 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  /* cache invalidations */
+
+  /* invalidate by push head */
+
+  /* get idx 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+
+  /* a push head invalidates the cache */
+  queuePushHead (q, "jjjj");
+  /* j a b c d e f g h i */
+
+  /* should start at head, should have a search distance of 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  ck_assert_int_eq (queueDebugSearchDist (q), 4);
+
+  /* invalidate by pop */
+
+  /* get idx 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+
+  /* a pop invalidates the cache */
+  (void) ! queuePop (q);
+  /* a b c d e f g h i */
+
+  /* should start at head, should have a search distance of 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  ck_assert_int_eq (queueDebugSearchDist (q), 4);
+
+  /* move */
+
+  /* get idx 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+
+  /* a move does not invalidate the cache */
+  /* the cache contains the node, not the data */
+  /* the cache will be updated to point at the to-node (if not head/tail) */
+  queueMove (q, 3, 4);
+  /* a b c e d f g h i */
+
+  /* should start at cache, should have a search distance of 0 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  /* a move does not invalidate the cache */
+  /* the cache contains the node, not the data */
+  /* the cache will be updated to point at the to-node (if not head/tail) */
+  queueMove (q, 5, 6);
+  /* a b c e d g f h i */
+
+  /* should start at cache, should have a search distance of 2 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  ck_assert_int_eq (queueDebugSearchDist (q), 2);
+
+  /* insert */
+
+  /* get idx 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+
+  /* an insert changes the cache to point at the inserted node */
+  queueInsert (q, 3, "kkkk");
+  /* a b c k e d g f h i */
+
+  /* should start at cache, should have a search distance of 1 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  ck_assert_int_eq (queueDebugSearchDist (q), 1);
+
+  /* invalidate by removal */
+
+  /* get idx 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+
+  /* a removal invalidates the cache */
+  queueRemoveByIdx (q, 3);
+  /* a b c e d g f h i */
+
+  /* should start at head, should have a search distance of 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  ck_assert_int_eq (queueDebugSearchDist (q), 4);
+
+  /* get idx 4 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+
+  /* an push does not modify the cache */
+  /* the cache contains the node, not the data */
+  queuePush (q, "llll");
+  /* a b c e d g f h i l */
+
+  /* should start at cache, should have a search distance of 0 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "dddd");
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
+  queueFree (q);
+}
+END_TEST
+
 START_TEST(queue_iterate)
 {
   qidx_t    count;
   char      *data;
-  queue_t       *q;
+  queue_t   *q;
   qidx_t    qiteridx;
+  qidx_t    i;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_iterate");
   q = queueAlloc ("iterate", NULL);
@@ -430,24 +786,45 @@ START_TEST(queue_iterate)
   ck_assert_int_eq (count, 6);
 
   queueStartIterator (q, &qiteridx);
+
   data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "aaaa");
+
   data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "bbbb");
+
   data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "cccc");
+
+  /* should start at cache, should have a search distance of 0 */
+  i = 2;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "cccc");
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
   data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "dddd");
+
   data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "eeee");
+
+  /* should start at cache, should have a search distance of 0 */
+  i = 4;
+  data = queueGetByIdx (q, i);
+  ck_assert_ptr_nonnull (data);
+  ck_assert_str_eq (data, "eeee");
+  ck_assert_int_eq (queueDebugSearchDist (q), 0);
+
   data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_nonnull (data);
   ck_assert_str_eq (data, "ffff");
+
   data = queueIterateData (q, &qiteridx);
   ck_assert_ptr_null (data);
 
@@ -587,14 +964,14 @@ START_TEST(queue_remove_by_idx)
 }
 END_TEST
 
-START_TEST(queue_remove_node)
+START_TEST(queue_remove_iter_node)
 {
   qidx_t    count;
   char      *data;
   queue_t       *q;
   qidx_t    qiteridx;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_remove_node");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_remove_iter_node");
   q = queueAlloc ("remove-node", NULL);
 
   queuePush (q, "aaaa");
@@ -737,65 +1114,12 @@ START_TEST(queue_remove_node)
 }
 END_TEST
 
-START_TEST(queue_getbyidx)
-{
-  qidx_t    count;
-  char      *data;
-  queue_t       *q;
-  ssize_t   i;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_getbyidx");
-  q = queueAlloc ("get-by-idx", NULL);
-
-  queuePush (q, "aaaa");
-  queuePush (q, "bbbb");
-  queuePush (q, "cccc");
-  queuePush (q, "dddd");
-  queuePush (q, "eeee");
-  queuePush (q, "ffff");
-  count = queueGetCount (q);
-  ck_assert_int_eq (count, 6);
-
-  i = 0;
-  data = queueGetByIdx (q, i);
-  ck_assert_ptr_nonnull (data);
-  ck_assert_str_eq (data, "aaaa");
-  /* should be cached */
-  data = queueGetByIdx (q, i++);
-  ck_assert_ptr_nonnull (data);
-  ck_assert_str_eq (data, "aaaa");
-  data = queueGetByIdx (q, i++);
-  ck_assert_ptr_nonnull (data);
-  ck_assert_str_eq (data, "bbbb");
-  data = queueGetByIdx (q, i++);
-  ck_assert_ptr_nonnull (data);
-  ck_assert_str_eq (data, "cccc");
-  data = queueGetByIdx (q, i);
-  ck_assert_ptr_nonnull (data);
-  ck_assert_str_eq (data, "dddd");
-  /* should be cached */
-  data = queueGetByIdx (q, i++);
-  ck_assert_ptr_nonnull (data);
-  ck_assert_str_eq (data, "dddd");
-  data = queueGetByIdx (q, i++);
-  ck_assert_ptr_nonnull (data);
-  ck_assert_str_eq (data, "eeee");
-  data = queueGetByIdx (q, i++);
-  ck_assert_ptr_nonnull (data);
-  ck_assert_str_eq (data, "ffff");
-  data = queueGetByIdx (q, i++);
-  ck_assert_ptr_null (data);
-
-  queueFree (q);
-}
-END_TEST
-
 START_TEST(queue_clear)
 {
   qidx_t    count;
   char      *data;
-  queue_t       *q;
-  ssize_t   i;
+  queue_t   *q;
+  qidx_t    i;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_clear");
   q = queueAlloc ("clear", NULL);
@@ -848,8 +1172,8 @@ START_TEST(queue_move)
 {
   qidx_t    count;
   char      *data;
-  queue_t       *q;
-  ssize_t   i;
+  queue_t   *q;
+  qidx_t    i;
   qidx_t    qiteridx;
 
 
@@ -942,7 +1266,7 @@ START_TEST(queue_insert_node)
 {
   qidx_t    count;
   char      *data;
-  queue_t       *q;
+  queue_t   *q;
   qidx_t    qiteridx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- queue_insert_node");
@@ -1076,14 +1400,14 @@ queue_suite (void)
   tcase_add_test (tc, queue_push_pop_one);
   tcase_add_test (tc, queue_push_pop_two);
   tcase_add_test (tc, queue_push_head);
-  tcase_add_test (tc, queue_get_current);
+  tcase_add_test (tc, queue_get_first);
   tcase_add_test (tc, queue_multi_one);
   tcase_add_test (tc, queue_multi_two);
   tcase_add_test (tc, queue_multi_many);
+  tcase_add_test (tc, queue_getbyidx);
   tcase_add_test (tc, queue_iterate);
   tcase_add_test (tc, queue_remove_by_idx);
-  tcase_add_test (tc, queue_remove_node);
-  tcase_add_test (tc, queue_getbyidx);
+  tcase_add_test (tc, queue_remove_iter_node);
   tcase_add_test (tc, queue_clear);
   tcase_add_test (tc, queue_move);
   tcase_add_test (tc, queue_insert_node);

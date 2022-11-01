@@ -1395,7 +1395,7 @@ mainMusicQueueFill (maindata_t *mainData)
 
   logProcBegin (LOG_PROC, "mainMusicQueueFill");
 
-  plitem = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
+  plitem = queueGetFirst (mainData->playlistQueue [mainData->musicqManageIdx]);
   playlist = NULL;
   if (plitem != NULL) {
     playlist = plitem->playlist;
@@ -1444,7 +1444,7 @@ mainMusicQueueFill (maindata_t *mainData)
       currlen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);
 
       if (pltype == PLTYPE_AUTO) {
-        plitem = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
+        plitem = queueGetFirst (mainData->playlistQueue [mainData->musicqManageIdx]);
         playlist = NULL;
         if (plitem != NULL) {
           playlist = plitem->playlist;
@@ -2898,7 +2898,7 @@ mainNextPlaylist (maindata_t *mainData)
 
   plitem = queuePop (mainData->playlistQueue [mainData->musicqManageIdx]);
   mainPlaylistItemFree (plitem);
-  plitem = queueGetCurrent (mainData->playlistQueue [mainData->musicqManageIdx]);
+  plitem = queueGetFirst (mainData->playlistQueue [mainData->musicqManageIdx]);
   playlist = NULL;
   if (plitem != NULL) {
     playlist = plitem->playlist;

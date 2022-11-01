@@ -14,7 +14,7 @@ queue_t *queueAlloc (const char *name, queueFree_t freeHook);
 void    queueFree (queue_t *q);
 void    queuePush (queue_t *q, void *data);
 void    queuePushHead (queue_t *q, void *data);
-void    *queueGetCurrent (queue_t *q);
+void    *queueGetFirst (queue_t *q);
 void    *queueGetByIdx (queue_t *q, qidx_t idx);
 void    *queuePop  (queue_t *q);
 void    queueClear (queue_t *q, qidx_t startIdx);
@@ -25,5 +25,6 @@ qidx_t  queueGetCount (queue_t *q);
 void    queueStartIterator (queue_t *q, qidx_t *idx);
 void    *queueIterateData (queue_t *q, qidx_t *idx);
 void    *queueIterateRemoveNode (queue_t *q, qidx_t *idx);
+int     queueDebugSearchDist (queue_t *q);
 
 #endif /* INC_QUEUE_H */

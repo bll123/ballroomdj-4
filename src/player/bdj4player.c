@@ -565,7 +565,7 @@ playerProcessing (void *udata)
     playrequest_t *preq = NULL;
 
     if (! playerData->repeat) {
-      preq = queueGetCurrent (playerData->playRequest);
+      preq = queueGetFirst (playerData->playRequest);
       pq = playerLocatePreppedSong (playerData, preq->uniqueidx, preq->songname);
       if (pq == NULL) {
         preq = queuePop (playerData->playRequest);

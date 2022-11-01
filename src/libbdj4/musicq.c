@@ -219,7 +219,7 @@ musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx)
     return -1;
   }
 
-  musicqitem = queueGetCurrent (musicq->q [musicqidx]);
+  musicqitem = queueGetFirst (musicq->q [musicqidx]);
   if (musicqitem == NULL) {
     logProcEnd (LOG_PROC, "musicqGetCurrent", "no-item");
     return -1;
