@@ -23,7 +23,8 @@ check_libbasic (SRunner *sr)
 {
   Suite   *s;
 
-  /* libbasic:
+  /*
+   * libbasic:
    *  istring     complete
    *  list
    *  nlist       partial
