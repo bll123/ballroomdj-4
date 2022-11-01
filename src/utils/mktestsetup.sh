@@ -182,12 +182,14 @@ mv -f ${tfn}.n ${tfn}
 
 tfn=data/bdjconfig.txt
 sed -e '/^DEBUGLVL/ { n ; s/.*/..31/ ; }' \
+    -e '/^CLOCKDISP/ { n ; s/.*/..iso/ ; }' \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 
 if [[ $os == macos ]]; then
   tfn=data/${hostname}/profile00/bdjconfig.txt
   sed -e '/UI_THEME/ { n ; s/.*/..macOS-Mojave-dark/ ; }' \
+      -e '/MQFONT/ { n ; s/.*/..Arial Narrow Regular 17/ ; }' \
       -e '/UIFONT/ { n ; s/.*/..Arial Regular 17/ ; }' \
       -e '/LISTINGFONT/ { n ; s/.*/..Arial Regular 16/ ; }' \
       ${tfn} > ${tfn}.n
