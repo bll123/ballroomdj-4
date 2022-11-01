@@ -631,8 +631,13 @@ pluiClock (playerui_t *plui)
     return;
   }
 
-  uiLabelSetText (&plui->clock, tmutilDisp (tbuff, sizeof (tbuff)));
-  mstimeset (&plui->clockCheck, 1000);
+  uiLabelSetText (&plui->clock,
+      tmutilDisp (tbuff, sizeof (tbuff), bdjoptGetNum (OPT_G_CLOCK_DISP)));
+  if (bdjoptGetNum (OPT_G_CLOCK_DISP) == TM_CLOCK_OFF) {
+    mstimeset (&plui->clockCheck, 3600000);
+  } else {
+    mstimeset (&plui->clockCheck, 200);
+  }
 }
 
 

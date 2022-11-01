@@ -19,6 +19,7 @@
 #include "nlist.h"
 #include "pathbld.h"
 #include "sysvars.h"
+#include "tmutil.h"
 
 static void bdjoptConvFadeType (datafileconv_t *conv);
 static void bdjoptConvWriteTags (datafileconv_t *conv);
@@ -42,6 +43,7 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, -1 },
   { "BDJ3COMPATTAGS",     OPT_G_BDJ3_COMPAT_TAGS,   VALUE_NUM, convBoolean, -1 },
   { "BPM",                OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, -1 },
+  { "CLOCKDISP",          OPT_G_CLOCK_DISP,         VALUE_NUM, bdjoptConvClock, -1 },
   { "DEBUGLVL",           OPT_G_DEBUGLVL,           VALUE_NUM, NULL, -1 },
   { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_NUM, convBoolean, -1 },
   { "PATHFMT",            OPT_G_AO_PATHFMT,         VALUE_STR, NULL, -1 },
@@ -299,6 +301,45 @@ bdjoptConvBPM (datafileconv_t *conv)
     switch (conv->num) {
       case BPM_BPM: { sval = "BPM"; break; }
       case BPM_MPM: { sval = "MPM"; break; }
+    }
+    conv->str = sval;
+  }
+}
+
+void
+bdjoptConvClock (datafileconv_t *conv)
+{
+  int   nclock = TM_CLOCK_LOCAL;
+  char  *sval = NULL;
+
+  conv->allocated = false;
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+
+    if (strcmp (conv->str, "iso") == 0) {
+      nclock = TM_CLOCK_ISO;
+    }
+    if (strcmp (conv->str, "local") == 0) {
+      nclock = TM_CLOCK_LOCAL;
+    }
+    if (strcmp (conv->str, "time12") == 0) {
+      nclock = TM_CLOCK_TIME_12;
+    }
+    if (strcmp (conv->str, "time24") == 0) {
+      nclock = TM_CLOCK_TIME_24;
+    }
+    if (strcmp (conv->str, "off") == 0) {
+      nclock = TM_CLOCK_OFF;
+    }
+    conv->num = nclock;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    switch (conv->num) {
+      case TM_CLOCK_ISO: { sval = "iso"; break; }
+      case TM_CLOCK_LOCAL: { sval = "local"; break; }
+      case TM_CLOCK_TIME_12: { sval = "time12"; break; }
+      case TM_CLOCK_TIME_24: { sval = "time24"; break; }
+      case TM_CLOCK_OFF: { sval = "off"; break; }
     }
     conv->str = sval;
   }

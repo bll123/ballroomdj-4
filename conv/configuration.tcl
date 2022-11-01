@@ -333,6 +333,8 @@ foreach path [list {} profiles $mpath $mppath] {
       }
 
       if { $path eq {} } {
+        puts $ofh CLOCKDISP
+        puts $ofh "..local"
         puts $ofh DEBUGLVL
         if { $::tcl_platform(os) eq "Darwin" } {
           # logging on macos is really slow

@@ -220,8 +220,16 @@ START_TEST(tmutildisp_chk)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutildisp_chk");
 
-  tmutilDisp (buff, sizeof (buff));
+  tmutilDisp (buff, sizeof (buff), TM_CLOCK_ISO);
   ck_assert_int_ge (strlen (buff), 16);
+  tmutilDisp (buff, sizeof (buff), TM_CLOCK_LOCAL);
+  ck_assert_int_ge (strlen (buff), 16);
+  tmutilDisp (buff, sizeof (buff), TM_CLOCK_TIME_12);
+  ck_assert_int_ge (strlen (buff), 6);
+  tmutilDisp (buff, sizeof (buff), TM_CLOCK_TIME_24);
+  ck_assert_int_eq (strlen (buff), 5);
+  tmutilDisp (buff, sizeof (buff), TM_CLOCK_OFF);
+  ck_assert_int_eq (strlen (buff), 0);
 }
 END_TEST
 

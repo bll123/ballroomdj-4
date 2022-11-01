@@ -9,23 +9,25 @@
 # playing the entire song.
 #
 # commands:
-#   section <num> <name>
-#   test <num> <name>
-#   msg <route> <msg>
-#     special values: current (music queue)
-#   get <route> <msg>
 #   chk {key value} ...
 #     special values: defaultvol
-#   wait {key value}
-#   mssleep <time>
-#   resptimeout <time>
-#     set the response timeout for 'wait'
-#   reset, end
-#     ends the test
 #   disp, dispall
 #     display responses before using 'chk' or 'wait'
+#   end, reset
+#     ends the test
+#   file {rm|exists|not-exists|copy} <fn> [<fn2>]
+#   get <route> <msg>
+#   msg <route> <msg>
+#     special values: current (music queue)
+#   mssleep <time>
+#   print <text>
+#   resptimeout <time>
+#     set the response timeout for 'wait'
+#   section <num> <name>
 #   stop
 #     for debugging; stops processing
+#   test <num> <name>
+#   wait {key value}
 #
 # main:
 #   musicq:

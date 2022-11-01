@@ -179,7 +179,7 @@ tmutilDstamp (char *buff, size_t max)
 }
 
 char *
-tmutilDisp (char *buff, size_t max)
+tmutilDisp (char *buff, size_t max, int type)
 {
   struct timeval    curr;
   struct tm         *tp;
@@ -196,7 +196,21 @@ tmutilDisp (char *buff, size_t max)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, max, "%A %Y-%m-%d %H:%M", tp);
+  if (type == TM_CLOCK_ISO) {
+    strftime (buff, max, "%A %Y-%m-%d %k:%M", tp);
+  }
+  if (type == TM_CLOCK_LOCAL) {
+    strftime (buff, max, "%c", tp);
+  }
+  if (type == TM_CLOCK_TIME_12) {
+    strftime (buff, max, "%l:%M %P", tp);
+  }
+  if (type == TM_CLOCK_TIME_24) {
+    strftime (buff, max, "%k:%M", tp);
+  }
+  if (type == TM_CLOCK_OFF) {
+    *buff = '\0';
+  }
   return buff;
 }
 

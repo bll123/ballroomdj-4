@@ -34,13 +34,14 @@ typedef enum {
 typedef enum {
   OPT_G_AO_PATHFMT,
   OPT_G_AUTOORGANIZE,
+  OPT_G_BDJ3_COMPAT_TAGS,
   OPT_G_BPM,
+  OPT_G_CLOCK_DISP,
   OPT_G_DEBUGLVL,
   OPT_G_LOADDANCEFROMGENRE,
   OPT_G_PLAYERQLEN,
   OPT_G_REMCONTROLHTML,
   OPT_G_WRITETAGS,
-  OPT_G_BDJ3_COMPAT_TAGS,
   OPT_M_DIR_ITUNES_MEDIA,
   OPT_M_DIR_MUSIC,
   /* DIR_OLD_SKIP will be used for a time until the conversion from bdj3 to */
@@ -60,8 +61,8 @@ typedef enum {
   OPT_MP_PLAYERSTARTSCRIPT,
   OPT_MP_UIFONT,
   OPT_MP_UI_THEME,
-  OPT_P_DEFAULTVOLUME,
   OPT_P_COMPLETE_MSG,
+  OPT_P_DEFAULTVOLUME,
   OPT_P_FADEINTIME,
   OPT_P_FADEOUTTIME,
   OPT_P_FADETYPE,
@@ -74,9 +75,9 @@ typedef enum {
   OPT_P_MOBILEMQTITLE,
   OPT_P_MQ_ACCENT_COL,
   OPT_P_MQ_INFO_COL,
-  OPT_P_MQ_TEXT_COL,
   OPT_P_MQQLEN,
   OPT_P_MQ_SHOW_INFO,
+  OPT_P_MQ_TEXT_COL,
   OPT_P_PLAY_ANNOUNCE,
   OPT_P_PROFILENAME,
   /* the queue name identifiers must be in sequence */
@@ -117,6 +118,7 @@ void    bdjoptSetNum (nlistidx_t idx, int64_t value);
 void    bdjoptCreateDirectories (void);
 void    bdjoptSave (void);
 void    bdjoptConvBPM (datafileconv_t *conv);
+void    bdjoptConvClock (datafileconv_t *conv);
 void    bdjoptDump (void);
 bool    bdjoptProfileExists (void);
 char    * bdjoptGetProfileName (void);
