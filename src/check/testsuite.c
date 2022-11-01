@@ -20,6 +20,7 @@
 #include "conn.h"
 #include "dirlist.h"
 #include "filedata.h"
+#include "filemanip.h"
 #include "fileop.h"
 #include "inline.h"
 #include "istring.h"
@@ -136,6 +137,7 @@ static int  tsScriptWait (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptSleep (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptDisp (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptPrint (testsuite_t *testsuite, const char *tcmd);
+static int  tsScriptFile (testsuite_t *testsuite, const char *tcmd);
 static int  tsParseExpect (testsuite_t *testsuite, const char *tcmd);
 static int  tsScriptChkResponse (testsuite_t *testsuite);
 static int  tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type);
@@ -663,8 +665,12 @@ tsProcessScript (testsuite_t *testsuite)
       ok = tsScriptDisp (testsuite, tcmd);
       disp = true;
     }
-    if (strncmp (tcmd, "print", 4) == 0) {
+    if (strncmp (tcmd, "print", 5) == 0) {
       ok = tsScriptPrint (testsuite, tcmd);
+    }
+    if (strncmp (tcmd, "file", 4) == 0) {
+      ok = tsScriptFile (testsuite, tcmd);
+      disp = true;
     }
   } else {
     ok = TS_OK;
@@ -980,7 +986,11 @@ tsScriptPrint (testsuite_t *testsuite, const char *tcmd)
 
   tstr = strdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
-  p += strlen (p) + 1;
+  if (p == NULL) {
+    free (tstr);
+    return TS_BAD_COMMAND;
+  }
+  p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
     free (tstr);
     return TS_BAD_COMMAND;
@@ -989,6 +999,68 @@ tsScriptPrint (testsuite_t *testsuite, const char *tcmd)
   fflush (stdout);
   free (tstr);
   return TS_OK;
+}
+
+static int
+tsScriptFile (testsuite_t *testsuite, const char *tcmd)
+{
+  char  *p;
+  char  *tokstr;
+  char  *tstr;
+  int   rc = TS_OK;
+
+  tstr = strdup (tcmd);
+  p = strtok_r (tstr, " ", &tokstr);
+  p = strtok_r (NULL, " ", &tokstr);
+  if (p == NULL) {
+    free (tstr);
+    return TS_BAD_COMMAND;
+  }
+
+  if (strcmp (p, "rm") == 0) {
+    p = strtok_r (NULL, " ", &tokstr);
+    if (p == NULL) {
+      rc = TS_BAD_COMMAND;
+    }
+    fileopDelete (p);
+  } else if (strcmp (p, "exists") == 0) {
+    p = strtok_r (NULL, " ", &tokstr);
+    if (p == NULL) {
+      rc = TS_BAD_COMMAND;
+    }
+    ++testsuite->results.chkcount;
+    if (! fileopFileExists (p)) {
+      ++testsuite->results.chkfail;
+      rc = TS_CHECK_FAILED;
+    }
+  } else if (strcmp (p, "not-exists") == 0) {
+    p = strtok_r (NULL, " ", &tokstr);
+    if (p == NULL) {
+      rc = TS_BAD_COMMAND;
+    }
+    ++testsuite->results.chkcount;
+    if (fileopFileExists (p)) {
+      ++testsuite->results.chkfail;
+      rc = TS_CHECK_FAILED;
+    }
+  } else if (strcmp (p, "copy") == 0) {
+    char    *to;
+
+    p = strtok_r (NULL, " ", &tokstr);
+    if (p == NULL) {
+      rc = TS_BAD_COMMAND;
+    }
+    to = strtok_r (NULL, " ", &tokstr);
+    if (to == NULL) {
+      rc = TS_BAD_COMMAND;
+    }
+    filemanipCopy (p, to);
+  } else {
+    rc = TS_BAD_COMMAND;
+  }
+
+  free (tstr);
+  return rc;
 }
 
 static int

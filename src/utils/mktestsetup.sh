@@ -88,6 +88,7 @@ cp -f templates/bdjconfig.txt.p data/profile00/bdjconfig.txt
 cp -f templates/bdjconfig.txt.m data/${hostname}/bdjconfig.txt
 cp -f templates/bdjconfig.txt.mp data/${hostname}/profile00/bdjconfig.txt
 cp -f templates/automatic.* data
+cp -f templates/QueueDance.* data
 cp -f templates/standardrounds.* data
 # the test dances data file has announcements set for tango & waltz
 cp -f test-templates/dances.txt data

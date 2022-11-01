@@ -1,1 +1,67 @@
 section 180 Queue-Dance
+
+# with queuedance playlist
+tests 180-10 One
+file exists data/QueueDance.pl
+msg main QUEUE_DANCE 0~9
+msg main QUEUE_DANCE 0~11
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 2 dance Tango
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 1 dance Waltz
+end
+
+# with queuedance playlist
+tests 180-20 Five
+file exists data/QueueDance.pl
+msg main QUEUE_DANCE_5 0~11
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 5 dance Waltz
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 4 dance Waltz
+end
+
+# without queuedance playlist
+tests 180-30 No-QueueDance
+file rm data/QueueDance.pl
+file not-exists data/QueueDance.pl
+msg main QUEUE_DANCE 0~9
+msg main QUEUE_DANCE 0~11
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 2 dance Tango
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1000
+get main CHK_MAIN_MUSICQ
+chk mq0len 1 dance Waltz
+file copy templates/QueueDance.pl data/QueueDance.pl
+file exists data/QueueDance.pl
+end
+
