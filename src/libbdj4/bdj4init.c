@@ -84,17 +84,18 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     /* dbupdate options */
     { "rebuild",      no_argument,      NULL,   'R' },
     { "checknew",     no_argument,      NULL,   'C' },
-    { "progress",     no_argument,      NULL,   'P' },
     { "reorganize",   no_argument,      NULL,   'O' },
     { "updfromtags",  no_argument,      NULL,   'u' },
     { "writetags",    no_argument,      NULL,   'W' },
     { "dbtopdir",     required_argument,NULL,   'D' },
+    /* generic options, used by dbupdate, test suite */
+    { "progress",     no_argument,      NULL,   'P' },
     { "cli",          no_argument,      NULL,   'c' },
+    { "verbose",      no_argument,      NULL,   'V' },
     /* test suite options */
     { "runsection",   required_argument,NULL,   'S' },
     { "runtest",      required_argument,NULL,   'T' },
     { "starttest",    required_argument,NULL,   'U' },
-    { "verbose",      no_argument,      NULL,   'V' },
     { NULL,           0,                NULL,   0 }
   };
 
@@ -117,7 +118,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         break;
       }
       case 'P': {
-        flags |= BDJ4_DB_PROGRESS;
+        flags |= BDJ4_PROGRESS;
         break;
       }
       case 'O': {
@@ -207,11 +208,11 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         break;
       }
       case 'V': {
-        flags |= BDJ4_TS_VERBOSE;
+        flags |= BDJ4_VERBOSE;
         break;
       }
       case 'c': {
-        flags |= BDJ4_DB_CLI;
+        flags |= BDJ4_CLI;
         break;
       }
       default: {

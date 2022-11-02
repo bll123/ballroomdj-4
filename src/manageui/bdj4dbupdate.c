@@ -116,6 +116,8 @@ typedef struct {
   bool              rebuild : 1;
   bool              checknew : 1;
   bool              progress : 1;
+  bool              cli : 1;
+  bool              verbose : 1;
   bool              updfromtags : 1;
   bool              writetags : 1;
   bool              reorganize : 1;
@@ -168,6 +170,8 @@ main (int argc, char *argv[])
   dbupdate.rebuild = false;
   dbupdate.checknew = false;
   dbupdate.progress = false;
+  dbupdate.cli = false;
+  dbupdate.verbose = false;
   dbupdate.updfromtags = false;
   dbupdate.writetags = false;
   dbupdate.reorganize = false;
@@ -235,8 +239,14 @@ main (int argc, char *argv[])
   if ((dbupdate.startflags & BDJ4_DB_REORG) == BDJ4_DB_REORG) {
     dbupdate.reorganize = true;
   }
-  if ((dbupdate.startflags & BDJ4_DB_PROGRESS) == BDJ4_DB_PROGRESS) {
+  if ((dbupdate.startflags & BDJ4_PROGRESS) == BDJ4_PROGRESS) {
     dbupdate.progress = true;
+  }
+  if ((dbupdate.startflags & BDJ4_CLI) == BDJ4_CLI) {
+    dbupdate.cli = true;
+  }
+  if ((dbupdate.startflags & BDJ4_VERBOSE) == BDJ4_VERBOSE) {
+    dbupdate.verbose = true;
   }
 
   dbupdate.conn = connInit (ROUTE_DBUPDATE);
@@ -494,6 +504,22 @@ dbupdateProcessing (void *udata)
         dbupdate->counts [C_FILE_COUNT]) {
       logMsg (LOG_DBG, LOG_DBUPDATE, "  done");
       dbupdate->state = DB_UPD_FINISH;
+      if (dbupdate->cli) {
+        if (dbupdate->progress) {
+          fprintf (stdout, "\r100.00\n");
+        }
+        if (dbupdate->verbose) {
+          fprintf (stdout,
+              "found %u skip %u indb %u new %u updated %u notaudio %u\n",
+              dbupdate->counts [C_FILE_COUNT],
+              dbupdate->counts [C_FILE_SKIPPED],
+              dbupdate->counts [C_IN_DB],
+              dbupdate->counts [C_NEW],
+              dbupdate->counts [C_UPDATED],
+              dbupdate->counts [C_NON_AUDIO]);
+        }
+        fflush (stdout);
+      }
     }
   }
 
@@ -627,7 +653,7 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
     if (! connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
       connConnect (dbupdate->conn, ROUTE_DBTAG);
     }
-    if ((dbupdate->startflags & BDJ4_DB_CLI) != BDJ4_DB_CLI) {
+    if (dbupdate->cli) {
       if (! connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
         connConnect (dbupdate->conn, ROUTE_MANAGEUI);
       }
@@ -640,7 +666,7 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
   if (connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
     ++c;
   }
-  if ((dbupdate->startflags & BDJ4_DB_CLI) == BDJ4_DB_CLI) {
+  if (dbupdate->cli) {
     if (c == 1) { rc = STATE_FINISHED; }
   } else {
     if (c == 2) { rc = STATE_FINISHED; }
@@ -667,7 +693,7 @@ dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState)
   if (connHaveHandshake (dbupdate->conn, ROUTE_MANAGEUI)) {
     ++c;
   }
-  if ((dbupdate->startflags & BDJ4_DB_CLI) == BDJ4_DB_CLI) {
+  if (dbupdate->cli) {
     if (c == 1) { rc = STATE_FINISHED; }
   } else {
     if (c == 2) { rc = STATE_FINISHED; }
@@ -906,8 +932,13 @@ dbupdateOutputProgress (dbupdate_t *dbupdate)
   }
 
   if (dbupdate->counts [C_FILE_COUNT] == 0) {
-    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS,
-        "PROG 0.00");
+    if (dbupdate->cli) {
+      fprintf (stdout, "\r  0.00");
+      fflush (stdout);
+    } else {
+      connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS,
+          "PROG 0.00");
+    }
     return;
   }
 
@@ -922,7 +953,12 @@ dbupdateOutputProgress (dbupdate_t *dbupdate)
       (double) dbupdate->counts [C_FILE_SKIPPED]) /
       (double) dbupdate->counts [C_FILE_COUNT];
   snprintf (tbuff, sizeof (tbuff), "PROG %.2f", dval);
-  connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, tbuff);
+  if (dbupdate->cli) {
+    fprintf (stdout, "\r%6.2f", dval * 100.0);
+    fflush (stdout);
+  } else {
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, tbuff);
+  }
 }
 
 static const char *

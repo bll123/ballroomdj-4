@@ -222,7 +222,7 @@ main (int argc, char *argv [])
     testsuite.runtest = true;
   }
 
-  if ((flags & BDJ4_TS_VERBOSE) == BDJ4_TS_VERBOSE) {
+  if ((flags & BDJ4_VERBOSE) == BDJ4_VERBOSE) {
     testsuite.verbose = true;
   }
 

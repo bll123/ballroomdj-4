@@ -40,7 +40,7 @@ typedef struct musicdb {
 static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn);
 
 musicdb_t *
-dbOpen (char *fn)
+dbOpen (const char *fn)
 {
   dance_t       *dances;
   dbidx_t       dcount;

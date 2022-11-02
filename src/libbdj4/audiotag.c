@@ -332,6 +332,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
   char      *tagname;
   char      duration [40];
   char      pbuff [40];
+  char      tbuff [1024];
   int       count;
   int       tagkey;
   int       writetags;
@@ -342,10 +343,11 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
 /*
  * mutagen output:
  *
- * mp4 output from mutagen is very bizarre for freeform tags
+ * m4a output from mutagen is very bizarre for freeform tags
  * - MPEG-4 audio (ALAC), 210.81 seconds, 1536000 bps (audio/mp4)
  * ----:BDJ4:DANCE=MP4FreeForm(b'Waltz', <AtomDataType.UTF8: 1>)
  * ----:com.apple.iTunes:MusicBrainz Track Id=MP4FreeForm(b'blah', <AtomDataType.UTF8: 1>)
+ * ----:BDJ4:NOTES=MP4FreeForm(b'NOTES3 NOTES4 \xc3\x84\xc3\x84\xc3\x84\xc3\x84\xc3\x84\xc3\x84\xc3\x84\xc3\x84', <AtomDataType.UTF8: 1>)
  * trkn=(1, 0)
  * ©ART=2NE1
  * ©alb=2nd Mini Album
@@ -435,6 +437,8 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
       }
 
       if (tagname != NULL && *tagname != '\0') {
+        int   outidx;
+
         p = strtok_r (NULL, "=", &tokstrB);
         /* p is pointing to the tag data */
         if (p == NULL) {
@@ -459,6 +463,32 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
               *pC = '\0';
             }
           }
+
+          /* now convert all of the \xNN values */
+          *tbuff = '\0';
+          pC = p;
+          outidx = 0;
+          while (*pC && outidx < (int) sizeof (tbuff)) {
+            if (strncmp (pC, "\\x", 2) == 0) {
+              int     rc;
+
+              rc = sscanf (pC, "\\x%hhx", &tbuff [outidx]);
+              if (rc == 1) {
+                ++outidx;
+                pC += 4;
+              } else {
+                tbuff [outidx] = *pC;
+                ++outidx;
+                ++pC;
+              }
+            } else {
+              tbuff [outidx] = *pC;
+              ++outidx;
+              ++pC;
+            }
+            tbuff [outidx] = '\0';
+          }
+          p = tbuff;
         }
 
         /* put in some extra checks for odd mutagen python output */

@@ -75,23 +75,12 @@ addWinSockLibrary (check_all)
 
 add_executable (chkprocess chkprocess.c)
 
-add_executable (testsuite
-  testsuite.c
-)
-target_link_libraries (testsuite
-  libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
-  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  ${CHECK_LDFLAGS}
-)
-
 if (APPLE)
   macUpdateRPath (check_all)
-  macUpdateRPath (testsuite)
 endif()
 
 install (TARGETS
-  check_all chkprocess testsuite
+  check_all chkprocess
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 

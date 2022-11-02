@@ -67,6 +67,7 @@ main (int argc, char * argv[])
     { "bdj4manageui",   no_argument,        NULL,   6 },
     { "bdj4marquee",    no_argument,        NULL,   7 },
     { "bdj4mobilemq",   no_argument,        NULL,   8 },
+    { "tdbcompare",     no_argument,        NULL,   23 },
     { "tmusicsetup",    no_argument,        NULL,   21 },
     { "bdj4player",     no_argument,        NULL,   9 },
     { "bdj4playerui",   no_argument,        NULL,   10 },
@@ -249,6 +250,13 @@ main (int argc, char * argv[])
       }
       case 22: {
         prog = "testsuite";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 23: {
+        prog = "tdbcompare";
         nodetach = true;
         wait = true;
         ++validargs;

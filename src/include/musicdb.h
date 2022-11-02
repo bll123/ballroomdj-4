@@ -20,7 +20,7 @@ enum {
 #define MUSICDB_EXT       ".dat"
 #define MUSICDB_ENTRY_NEW RAFILE_NEW
 
-musicdb_t *dbOpen (char *);
+musicdb_t *dbOpen (const char *);
 void      dbClose (musicdb_t *db);
 dbidx_t   dbCount (musicdb_t *db);
 int       dbLoad (musicdb_t *);
