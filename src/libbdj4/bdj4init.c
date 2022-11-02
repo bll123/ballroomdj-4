@@ -88,10 +88,12 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "updfromtags",  no_argument,      NULL,   'u' },
     { "writetags",    no_argument,      NULL,   'W' },
     { "dbtopdir",     required_argument,NULL,   'D' },
-    /* generic options, used by dbupdate, test suite */
+    /* generic options, some used by dbupdate, test suite */
     { "progress",     no_argument,      NULL,   'P' },
     { "cli",          no_argument,      NULL,   'c' },
     { "verbose",      no_argument,      NULL,   'V' },
+    { "outfile",      required_argument,NULL,   0 },
+    { "infile",       required_argument,NULL,   0 },
     /* test suite options */
     { "runsection",   required_argument,NULL,   'S' },
     { "runtest",      required_argument,NULL,   'T' },

@@ -109,12 +109,14 @@ main (int argc, char * argv[])
     /* bdjtags */
     { "rawdata",        no_argument,        NULL,   0 },
     { "bdj3tags",       no_argument,        NULL,   0 },
-    { "noecho",         no_argument,        NULL,   0 },
     /* test suite options */
     { "runsection",     required_argument,  NULL,   0 },
     { "runtest",        required_argument,  NULL,   0 },
     { "starttest",      required_argument,  NULL,   0 },
+    /* general options */
     { "verbose",        no_argument,        NULL,   0 },
+    { "outfile",        required_argument,  NULL,   0 },
+    { "infile",         required_argument,  NULL,   0 },
     { NULL,             0,                  NULL,   0 }
   };
 

@@ -37,7 +37,7 @@ main (int argc, char *argv [])
   slist_t     *tagdata;
   bool        writetags;
   int         rewrite;
-  bool        echo = true;
+  bool        verbose = false;
 
 
   static struct option bdj_options [] = {
@@ -46,7 +46,7 @@ main (int argc, char *argv [])
     { "rawdata",      no_argument,      NULL,   'r' },
     { "bdj3tags",     no_argument,      NULL,   '3' },
     { "debugself",    no_argument,      NULL,   0 },
-    { "noecho",       no_argument,      NULL,   'e', },
+    { "verbose",      no_argument,      NULL,   'V', },
     { "nodetach",     no_argument,      NULL,   0, },
     { "theme",        no_argument,      NULL,   0 },
     { "msys",         no_argument,      NULL,   0 },
@@ -66,8 +66,8 @@ main (int argc, char *argv [])
         rawdata = true;
         break;
       }
-      case 'e': {
-        echo = false;
+      case 'V': {
+        verbose = true;
         break;
       }
       default: {
@@ -107,7 +107,7 @@ main (int argc, char *argv [])
   }
 
   data = audiotagReadTags (argv [fidx]);
-  if (echo && rawdata) {
+  if (verbose && rawdata) {
     fprintf (stdout, "%s\n", data);
   }
   tagdata = audiotagParseData (argv [fidx], data, &rewrite);
@@ -149,12 +149,12 @@ main (int argc, char *argv [])
   slistFree (tagdata);
 
   /* output the tags after writing the new ones */
-  if (echo && rawdata) {
+  if (verbose && rawdata) {
     data = audiotagReadTags (argv [fidx]);
     fprintf (stdout, "%s\n", data);
   }
 
-  if (echo) {
+  if (verbose) {
 //    fprintf (stdout, "-- %s\n", argv [fidx]);
     slistStartIterator (wlist, &iteridx);
     while ((key = slistIterateKey (wlist, &iteridx)) != NULL) {

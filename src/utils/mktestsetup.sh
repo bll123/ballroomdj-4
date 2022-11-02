@@ -220,13 +220,43 @@ cat >> data/profile00/ds-songedit-b.txt << _HERE_
 FAVORITE
 _HERE_
 
-if [[ $1 == --force ]]; then
-  rm -f data/mktestdb.txt
-fi
-./src/utils/mktestdb.sh
+args=""
+outfile=""
+while test $# -gt 0; do
+  case $1 in
+    --force)
+      rm -f $FLAG
+      ;;
+    --infile)
+      args+=$1
+      args+=" "
+      shift
+      args+=$1
+      args+=" "
+      ;;
+    --outfile)
+      args+=$1
+      args+=" "
+      shift
+      outfile=$1
+      args+=$1
+      args+=" "
+      ;;
+    *)
+      echo "unknown argument $1"
+      exit 1
+      ;;
+  esac
+  shift
+done
 
-# copy this after the db is created
-cp -f test-templates/musicdb.dat data
+./src/utils/mktestdb.sh $args
+# copy the db to the data dir after it is created
+if [[ $outfile != "" ]]; then
+  cp -f $outfile data/musicdb.dat
+else
+  cp -f test-templates/musicdb.dat data
+fi
 
 cwd=$(pwd)
 

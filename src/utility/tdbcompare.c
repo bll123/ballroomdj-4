@@ -31,7 +31,8 @@ int
 main (int argc, char *argv [])
 {
   musicdb_t   *db [DB_MAX];
-  bool        isbdj4;
+  bool        isbdj4 = false;
+  bool        verbose = false;
   const char  *dbfn [DB_MAX];
   int         c;
   int         option_index;
@@ -47,12 +48,17 @@ main (int argc, char *argv [])
     { "tdbcompare",   no_argument,      NULL,   0 },
     { "debugself",    no_argument,      NULL,   0 },
     { "nodetach",     no_argument,      NULL,   0, },
+    { "verbose",      no_argument,      NULL,   'V', },
   };
 
   while ((c = getopt_long_only (argc, argv, "B3", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'B': {
         isbdj4 = true;
+        break;
+      }
+      case 'V': {
+        verbose = true;
         break;
       }
       default: {
@@ -120,7 +126,9 @@ main (int argc, char *argv [])
     const char  *fn;
 
     fn = songGetStr (song [DB_A], TAG_FILE);
-    fprintf (stderr, "-- %s\n", fn);
+    if (verbose) {
+      fprintf (stderr, "-- %s\n", fn);
+    }
 
     song [DB_B] = dbGetByName (db [DB_B], fn);
     if (song [DB_B] == NULL) {

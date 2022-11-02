@@ -26,7 +26,7 @@ fi
 
 if [[ $grc -eq 0 ]]; then
   echo "== dbtest" >> $LOG
-  ./src/utils/mktestsetup.sh --force >> $LOG 2>&1
+  # dbtest will rebuild the databases.
   ./src/utils/dbtest.sh >> $LOG 2>&1
   rc=$?
   if [[ $rc -ne 0 ]]; then

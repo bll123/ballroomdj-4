@@ -82,12 +82,12 @@ main (int argc, char *argv [])
   int         option_index = 0;
   bool        clbdj3tags = false;
   bool        isbdj4 = false;
-  char        tbuff [MAXPATHLEN];
   datafile_t  *df = NULL;
   ilist_t     *tmlist;
   ilistidx_t  tmiteridx;
   ilistidx_t  key;
   char        dbfn [MAXPATHLEN];
+  char        infn [MAXPATHLEN];
   musicdb_t   *db;
   slist_t     *empty;
 
@@ -99,9 +99,14 @@ main (int argc, char *argv [])
     { "msys",         no_argument,      NULL,   0 },
     { "nodetach",     no_argument,      NULL,   0, },
     { "theme",        no_argument,      NULL,   0 },
+    { "outfile",      required_argument,NULL,   'O' },
+    { "infile",       required_argument,NULL,   'I' },
   };
 
-  while ((c = getopt_long_only (argc, argv, "B3", bdj_options, &option_index)) != -1) {
+  strlcpy (dbfn, "test-templates/musicdb.dat", sizeof (dbfn));
+  strlcpy (infn, "test-templates/test-music.txt", sizeof (infn));
+
+  while ((c = getopt_long_only (argc, argv, "B3O:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case '3': {
         clbdj3tags = true;
@@ -109,6 +114,14 @@ main (int argc, char *argv [])
       }
       case 'B': {
         isbdj4 = true;
+        break;
+      }
+      case 'O': {
+        strlcpy (dbfn, optarg, sizeof (dbfn));
+        break;
+      }
+      case 'I': {
+        strlcpy (infn, optarg, sizeof (infn));
         break;
       }
       default: {
@@ -143,13 +156,11 @@ main (int argc, char *argv [])
 
   logStart ("tmusicsetup", "tm", LOG_ALL);
 
-  snprintf (dbfn, sizeof (dbfn), "test-templates/musicdb.dat");
   /* create an entirely new database */
   fileopDelete (dbfn);
   db = dbOpen (dbfn);
 
-  snprintf (tbuff, sizeof (tbuff), "test-templates/test-music.txt");
-  df = datafileAllocParse ("test-music", DFTYPE_INDIRECT, tbuff,
+  df = datafileAllocParse ("test-music", DFTYPE_INDIRECT, infn,
       tmdfkeys, tmdfcount);
   tmlist = datafileGetList (df);
 

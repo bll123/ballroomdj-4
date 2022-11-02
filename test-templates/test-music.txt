@@ -3912,7 +3912,7 @@ KEY
 SOURCE
 ..ann-waltz.mp3
 DURATION
-..680
+..1700
 NOTES
 ..
 BPM
@@ -3945,7 +3945,7 @@ KEY
 SOURCE
 ..ann-tango.mp3
 DURATION
-..780
+..1510
 NOTES
 ..
 BPM
