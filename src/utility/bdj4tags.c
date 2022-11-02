@@ -38,6 +38,7 @@ main (int argc, char *argv [])
   bool        writetags;
   int         rewrite;
   bool        verbose = false;
+  bool        cleantags = false;
 
 
   static struct option bdj_options [] = {
@@ -47,6 +48,7 @@ main (int argc, char *argv [])
     { "bdj3tags",     no_argument,      NULL,   '3' },
     { "debugself",    no_argument,      NULL,   0 },
     { "verbose",      no_argument,      NULL,   'V', },
+    { "cleantags",    no_argument,      NULL,   'L', },
     { "nodetach",     no_argument,      NULL,   0, },
     { "theme",        no_argument,      NULL,   0 },
     { "msys",         no_argument,      NULL,   0 },
@@ -68,6 +70,10 @@ main (int argc, char *argv [])
       }
       case 'V': {
         verbose = true;
+        break;
+      }
+      case 'L': {
+        cleantags = true;
         break;
       }
       default: {
@@ -114,26 +120,35 @@ main (int argc, char *argv [])
   logMsg (LOG_DBG, LOG_BASIC, "rewrite: %08x", rewrite);
 
   wlist = slistAlloc ("bdj4tags-write", LIST_ORDERED, free);
+
   /* need a copy of the tag list for the write */
   slistStartIterator (tagdata, &iteridx);
   while ((key = slistIterateKey (tagdata, &iteridx)) != NULL) {
     val = slistGetStr (tagdata, key);
-    slistSetStr (wlist, key, val);
+    if (cleantags) {
+      slistSetStr (wlist, key, NULL);
+    } else {
+      slistSetStr (wlist, key, val);
+    }
   }
 
   writetags = false;
-  for (int i = fidx + 1; i < argc; ++i) {
-    char    *p;
-    char    *tokstr;
+  if (cleantags) {
+    writetags = true;
+  } else {
+    for (int i = fidx + 1; i < argc; ++i) {
+      char    *p;
+      char    *tokstr;
 
-    val = strdup (argv [i]);
-    p = strtok_r (val, "=", &tokstr);
-    if (p != NULL) {
-      p = strtok_r (NULL, "=", &tokstr);
-      tagkey = tagdefLookup (val);
-      if (tagkey >= 0) {
-        slistSetStr (wlist, val, p);
-        writetags = true;
+      val = strdup (argv [i]);
+      p = strtok_r (val, "=", &tokstr);
+      if (p != NULL) {
+        p = strtok_r (NULL, "=", &tokstr);
+        tagkey = tagdefLookup (val);
+        if (tagkey >= 0) {
+          slistSetStr (wlist, val, p);
+          writetags = true;
+        }
       }
     }
   }

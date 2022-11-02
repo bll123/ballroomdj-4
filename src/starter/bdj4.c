@@ -109,6 +109,7 @@ main (int argc, char * argv[])
     /* bdjtags */
     { "rawdata",        no_argument,        NULL,   0 },
     { "bdj3tags",       no_argument,        NULL,   0 },
+    { "cleantags",      no_argument,        NULL,   0 },
     /* test suite options */
     { "runsection",     required_argument,  NULL,   0 },
     { "runtest",        required_argument,  NULL,   0 },

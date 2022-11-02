@@ -510,13 +510,14 @@ dbupdateProcessing (void *udata)
         }
         if (dbupdate->verbose) {
           fprintf (stdout,
-              "found %u skip %u indb %u new %u updated %u notaudio %u\n",
+              "found %u skip %u indb %u new %u updated %u notaudio %u writetag %u\n",
               dbupdate->counts [C_FILE_COUNT],
               dbupdate->counts [C_FILE_SKIPPED],
               dbupdate->counts [C_IN_DB],
               dbupdate->counts [C_NEW],
               dbupdate->counts [C_UPDATED],
-              dbupdate->counts [C_NON_AUDIO]);
+              dbupdate->counts [C_NON_AUDIO],
+              dbupdate->counts [C_WRITE_TAGS]);
         }
         fflush (stdout);
       }
@@ -909,7 +910,6 @@ dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
 
   newtaglist = songTagList (song);
   audiotagWriteTags (ffn, tagdata, newtaglist, 0, AT_UPDATE_MOD_TIME);
-  slistFree (tagdata);
   slistFree (newtaglist);
   dbupdateIncCount (dbupdate, C_FILE_PROC);
   dbupdateIncCount (dbupdate, C_WRITE_TAGS);

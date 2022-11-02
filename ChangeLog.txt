@@ -7,7 +7,8 @@ BallroomDJ 4 Change Log
 - installation: set fonts to a known good value (windows, macos).
 - code cleanup: queue, ui set-margin, ui old routines, log messages.
 - add non-exposed configuration for clock display.
-- database update: convert .m4a utf8 audio tags correctly (mutagen bug).
+- update databaes: convert .m4a utf8 audio tags correctly (mutagen bug).
+- update database: fixed a crash in write tags.
 
 4.0.0 alpha 2022-10-27
 
