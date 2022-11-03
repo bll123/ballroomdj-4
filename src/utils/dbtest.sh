@@ -47,6 +47,20 @@ function compcheck {
   return $trc
 }
 
+function checkaudiotags {
+  grc=0
+  for f in test-music/*; do
+    ./bin/bdj4 --bdj4tags "$f" > $TMPA
+    ./bin/bdj4 --tdbdump data/musicdb.dat "$(basename $f)" > $TMPB
+    diff $TMPA $TMPB > /dev/null 2>&1
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      grc=1
+    fi
+  done
+  return $grc
+}
+
 function disp {
   tname=$1
   rca=$2
@@ -66,6 +80,29 @@ function setwritetagson {
   mv -f ${gconf}.n ${gconf}
 }
 
+function setbdj3compaton {
+  gconf=data/bdjconfig.txt
+  sed -e '/^BDJ3COMPATTAGS/ { n ; s/.*/..yes/ ; }' \
+      ${gconf} > ${gconf}.n
+  mv -f ${gconf}.n ${gconf}
+}
+
+function setbdj3compatoff {
+  gconf=data/bdjconfig.txt
+  sed -e '/^BDJ3COMPATTAGS/ { n ; s/.*/..no/ ; }' \
+      ${gconf} > ${gconf}.n
+  mv -f ${gconf}.n ${gconf}
+}
+
+function cleanallaudiofiletags {
+  for f in test-music/*; do
+    ./bin/bdj4 --bdj4tags --cleantags --quiet "$f"
+  done
+}
+
+TDBB=tmp/test-m-b.dat
+TDBC=tmp/test-m-c.dat
+TDBD=tmp/test-m-d.dat
 TMPA=tmp/dbtesta.txt
 TMPB=tmp/dbtestb.txt
 
@@ -121,32 +158,44 @@ crc=$?
 compcheck $tname $rc
 disp $tname $rc $crc
 
-TDBB=tmp/test-m-b.dat
-TDBC=tmp/test-m-c.dat
+# create test db w/no data
+./src/utils/mktestsetup.sh \
+    --emptydb \
+    --infile test-templates/test-m-c.txt \
+    --outfile $TDBD
+# create test db w/all songs
 ./src/utils/mktestsetup.sh \
     --infile test-templates/test-m-c.txt \
     --outfile $TDBC
 # save the cha cha
 mv -f test-music/001-chacha.mp3 tmp
+# create test db w/o chacha
 # will copy tmp/test-m-b.dat to data/
 ./src/utils/mktestsetup.sh \
     --infile test-templates/test-m-b.txt \
     --outfile $TDBB
 
 # test db : rebuild of test-m-b
-tname=rebuild-b
-got=$(./bin/bdj4 --bdj4dbupdate \
-  --debug 262175 \
-  --rebuild \
-  --dbtopdir "${musicdir}" \
-  --cli --wait --verbose)
-exp="found 14 skip 0 indb 0 new 14 updated 0 notaudio 0 writetag 0"
-check $tname "$got" "$exp"
-rc=$?
-./bin/bdj4 --tdbcompare data/musicdb.dat $TDBB
-crc=$?
-compcheck $tname $rc
-disp $tname $rc $crc
+if [[ -f test-music/001-chacha.mp3 ]]; then
+  echo "cha cha present when it should not be"
+  rc=1
+  crc=0
+  disp $tname $rc $crc
+else
+  tname=rebuild-test-db
+  got=$(./bin/bdj4 --bdj4dbupdate \
+    --debug 262175 \
+    --rebuild \
+    --dbtopdir "${musicdir}" \
+    --cli --wait --verbose)
+  exp="found 14 skip 0 indb 0 new 14 updated 0 notaudio 0 writetag 0"
+  check $tname "$got" "$exp"
+  rc=$?
+  ./bin/bdj4 --tdbcompare data/musicdb.dat $TDBB
+  crc=$?
+  compcheck $tname $rc
+  disp $tname $rc $crc
+fi
 
 # restore the cha cha
 mv -f tmp/001-chacha.mp3 test-music
@@ -167,9 +216,7 @@ compcheck $tname $crc
 disp $tname $rc $crc
 
 # clean all of the tags from the music files
-for f in test-music/*; do
-  ./bin/bdj4 --bdj4tags --cleantags --quiet "$f"
-done
+cleanallaudiofiletags
 
 # test db : rebuild with no tags
 tname=rebuild-no-tags
@@ -188,8 +235,9 @@ disp $tname $rc $rc
 cp -f $TDBC data/musicdb.dat
 
 # test db : write tags
-tname=writetags-b
+tname=writetags-bdj3-compat-on
 setwritetagson
+setbdj3compaton
 got=$(./bin/bdj4 --bdj4dbupdate \
   --debug 262175 \
   --writetags \
@@ -203,20 +251,71 @@ crc=$?
 compcheck $tname $crc
 
 if [[ $rc -eq 0 && $crc -eq 0 ]]; then
-  for f in test-music/*; do
-    ./bin/bdj4 --bdj4tags "$f" > $TMPA
-    ./bin/bdj4 --tdbdump data/musicdb.dat "$(basename $f)" > $TMPB
-    diff $TMPA $TMPB > /dev/null 2>&1
-    trc=$?
-    if [[ $trc -ne 0 ]]; then
-      rc=$trc
-    fi
-  done
+  checkaudiotags
+  trc=$?
+  if [[ $trc -ne 0 ]]; then
+    rc=$trc
+  fi
 fi
 disp $tname $rc $crc
 
-# remove test db
-rm -f $TDBB $TDBC
+# restore the -c database again, needed for write tags check
+cp -f $TDBC data/musicdb.dat
+
+# test db : write tags
+tname=writetags-bdj3-compat-off
+setwritetagson
+setbdj3compatoff
+got=$(./bin/bdj4 --bdj4dbupdate \
+  --debug 262175 \
+  --writetags \
+  --dbtopdir "${musicdir}" \
+  --cli --wait --verbose)
+exp="found 15 skip 0 indb 15 new 0 updated 0 notaudio 0 writetag 15"
+check $tname "$got" "$exp"
+rc=$?
+./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC
+crc=$?
+compcheck $tname $crc
+
+if [[ $rc -eq 0 && $crc -eq 0 ]]; then
+  checkaudiotags
+  trc=$?
+  if [[ $trc -ne 0 ]]; then
+    rc=$trc
+  fi
+fi
+disp $tname $rc $crc
+
+# restore the -d database (empty of tags), needed for update from tags check
+cp -f $TDBD data/musicdb.dat
+
+# test db : update from tags
+tname=update-from-tags-empty-db
+setwritetagson
+got=$(./bin/bdj4 --bdj4dbupdate \
+  --debug 262175 \
+  --updfromtags \
+  --dbtopdir "${musicdir}" \
+  --cli --wait --verbose)
+exp="found 15 skip 0 indb 15 new 0 updated 15 notaudio 0 writetag 0"
+check $tname "$got" "$exp"
+rc=$?
+./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC
+crc=$?
+compcheck $tname $crc
+
+if [[ $rc -eq 0 && $crc -eq 0 ]]; then
+  checkaudiotags
+  trc=$?
+  if [[ $trc -ne 0 ]]; then
+    rc=$trc
+  fi
+fi
+disp $tname $rc $crc
+
+# remove test db, temporary files
+# rm -f $TDBB $TDBC $TDBD $TMPA $TMPB
 
 echo "tests: $tcount pass: $pass fail: $fail"
 rc=1
@@ -227,6 +326,5 @@ else
   echo FAIL
 fi
 
-rm -f $TMPA $TMPB
 
 exit $rc

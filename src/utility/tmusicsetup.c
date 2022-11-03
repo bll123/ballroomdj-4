@@ -82,6 +82,7 @@ main (int argc, char *argv [])
   int         option_index = 0;
   bool        clbdj3tags = false;
   bool        isbdj4 = false;
+  bool        emptydb = false;
   datafile_t  *df = NULL;
   ilist_t     *tmlist;
   ilistidx_t  tmiteridx;
@@ -92,21 +93,22 @@ main (int argc, char *argv [])
   slist_t     *empty;
 
   static struct option bdj_options [] = {
-    { "bdj3tags",     no_argument,      NULL,   '3' },
-    { "bdj4",         no_argument,      NULL,   'B' },
-    { "tmusicsetup",  no_argument,      NULL,   0 },
-    { "debugself",    no_argument,      NULL,   0 },
-    { "msys",         no_argument,      NULL,   0 },
-    { "nodetach",     no_argument,      NULL,   0, },
-    { "theme",        no_argument,      NULL,   0 },
-    { "outfile",      required_argument,NULL,   'O' },
-    { "infile",       required_argument,NULL,   'I' },
+    { "bdj3tags",     no_argument,        NULL,   '3' },
+    { "bdj4",         no_argument,        NULL,   'B' },
+    { "debugself",    no_argument,        NULL,   0 },
+    { "emptydb",      no_argument,        NULL,   'E' },
+    { "infile",       required_argument,  NULL,   'I' },
+    { "msys",         no_argument,        NULL,   0 },
+    { "nodetach",     no_argument,        NULL,   0, },
+    { "outfile",      required_argument,  NULL,   'O' },
+    { "theme",        no_argument,        NULL,   0 },
+    { "tmusicsetup",  no_argument,        NULL,   0 },
   };
 
   strlcpy (dbfn, "test-templates/musicdb.dat", sizeof (dbfn));
   strlcpy (infn, "test-templates/test-music.txt", sizeof (infn));
 
-  while ((c = getopt_long_only (argc, argv, "B3O:", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "B3O:I:E", bdj_options, &option_index)) != -1) {
     switch (c) {
       case '3': {
         clbdj3tags = true;
@@ -114,6 +116,10 @@ main (int argc, char *argv [])
       }
       case 'B': {
         isbdj4 = true;
+        break;
+      }
+      case 'E': {
+        emptydb = true;
         break;
       }
       case 'O': {
@@ -169,7 +175,7 @@ main (int argc, char *argv [])
     const char  *src;
     const char  *dest;
     const char  *fn;
-    slist_t     *tagdata;
+    slist_t     *tagdata = NULL;
 
     tagdata = updateData (tmlist, key);
 
@@ -177,7 +183,12 @@ main (int argc, char *argv [])
     dest = ilistGetStr (tmlist, key, TAG_TITLE);
     fn = createFile (src, dest);
     audiotagWriteTags (fn, empty, tagdata, 0, AT_UPDATE_MOD_TIME);
+    if (emptydb) {
+      slistFree (tagdata);
+      tagdata = slistAlloc ("tm-slist", LIST_ORDERED, free);
+    }
     dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
+    slistFree (tagdata);
   }
 
   dbClose (db);

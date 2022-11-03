@@ -113,12 +113,14 @@ main (int argc, char * argv[])
     { "runsection",     required_argument,  NULL,   0 },
     { "runtest",        required_argument,  NULL,   0 },
     { "starttest",      required_argument,  NULL,   0 },
+    /* tmusicsetup */
+    { "outfile",        required_argument,  NULL,   0 },
+    { "infile",         required_argument,  NULL,   0 },
+    { "emptydb",        no_argument,        NULL,   0 },
     /* general options */
     { "cli",            no_argument,        NULL,   'c' },
     { "verbose",        no_argument,        NULL,   0 },
     { "quiet",          no_argument,        NULL,   0 },
-    { "outfile",        required_argument,  NULL,   0 },
-    { "infile",         required_argument,  NULL,   0 },
     { NULL,             0,                  NULL,   0 }
   };
 

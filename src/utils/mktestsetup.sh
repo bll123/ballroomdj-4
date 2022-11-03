@@ -227,6 +227,10 @@ while test $# -gt 0; do
     --force)
       rm -f $FLAG
       ;;
+    --emptydb)
+      args+=$1
+      args+=" "
+      ;;
     --infile)
       args+=$1
       args+=" "
