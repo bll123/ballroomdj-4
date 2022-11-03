@@ -283,7 +283,6 @@ queueClear (queue_t *q, qidx_t startIdx)
 void
 queueMove (queue_t *q, qidx_t fromidx, qidx_t toidx)
 {
-  queuenode_t   *node = NULL;
   queuenode_t   *fromnode = NULL;
   queuenode_t   *tonode = NULL;
   void          *tdata = NULL;
@@ -297,7 +296,6 @@ queueMove (queue_t *q, qidx_t fromidx, qidx_t toidx)
     logProcEnd (LOG_PROC, "queueMove", "bad-idx");
     return;
   }
-  node = q->head;
 
   fromnode = queueGetNodeByIdx (q, fromidx);
   tonode = queueGetNodeByIdx (q, toidx);

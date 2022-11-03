@@ -719,7 +719,6 @@ END_TEST
 START_TEST(nlist_free_list)
 {
   nlist_t       *list;
-  nlist_t       *tlist;
   nlist_t       *item [20];
   int           itemc = 0;
 
@@ -773,7 +772,6 @@ START_TEST(nlist_free_list)
   ck_assert_int_eq (list->count, 7);
 
   for (int i = 0; i < itemc; ++i) {
-    tlist = nlistGetList (list, i);
     ck_assert_int_eq (nlistGetNum (item [i], i + 1), i);
   }
 

@@ -39,7 +39,7 @@ main (int argc, char *argv [])
   int         rewrite;
   bool        verbose = true;
   bool        cleantags = false;
-  int         rc = AUDIOTAG_NOT_SUPPORTED;
+  int         rc = AUDIOTAG_WRITE_OK;
 
 
   static struct option bdj_options [] = {
@@ -157,7 +157,6 @@ main (int argc, char *argv [])
 
   if (writetags || rewrite) {
     int   value;
-    int   rc;
 
     value = bdjoptGetNum (OPT_G_WRITETAGS);
     bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);

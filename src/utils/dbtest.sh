@@ -109,7 +109,7 @@ TMPB=tmp/dbtestb.txt
 # get music dir
 hostname=$(hostname)
 mconf=data/${hostname}/bdjconfig.txt
-musicdir=$(sed -n -e '/^DIRMUSIC/ { n; s/^\.\.//; p }' $mconf)
+musicdir=$(sed -n -e '/^DIRMUSIC/ { n; s/^\.\.//; p ; }' $mconf)
 
 ./src/utils/mktestsetup.sh --force
 
