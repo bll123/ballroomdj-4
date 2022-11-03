@@ -196,6 +196,7 @@ END_TEST
 START_TEST(osprocess_pipe)
 {
   char        tbuff [MAXPATHLEN];
+  char        pbuff [MAXPATHLEN];
   const char  *targv [10];
   int         targc = 0;
   int         pid = 0;
@@ -210,9 +211,9 @@ START_TEST(osprocess_pipe)
   if (isWindows ()) {
     extension = ".exe";
   }
-  snprintf (tbuff, sizeof (tbuff), "bin/chkprocess%s", extension);
+  snprintf (pbuff, sizeof (pbuff), "bin/chkprocess%s", extension);
 
-  targv [targc++] = tbuff;
+  targv [targc++] = pbuff;
   targv [targc++] = "--profile";
   targv [targc++] = "0";          // time to sleep
   targv [targc++] = "--theme";
