@@ -56,19 +56,17 @@ main (int argc, char * argv[])
   int       rc;
 
   static struct option bdj_options [] = {
+    { "bdj4altsetup",   no_argument,        NULL,   20 },
     { "bdj4bpmcounter", no_argument,        NULL,   19 },
     { "bdj4configui",   no_argument,        NULL,   3 },
     { "bdj4dbupdate",   no_argument,        NULL,   15 },
     { "bdj4helperui",   no_argument,        NULL,   18 },
     { "bdj4info",       no_argument,        NULL,   13 },
     { "bdj4installer",  no_argument,        NULL,   12 },
-    { "bdj4altsetup",   no_argument,        NULL,   20 },
     { "bdj4main",       no_argument,        NULL,   5 },
     { "bdj4manageui",   no_argument,        NULL,   6 },
     { "bdj4marquee",    no_argument,        NULL,   7 },
     { "bdj4mobilemq",   no_argument,        NULL,   8 },
-    { "tdbcompare",     no_argument,        NULL,   23 },
-    { "tmusicsetup",    no_argument,        NULL,   21 },
     { "bdj4player",     no_argument,        NULL,   9 },
     { "bdj4playerui",   no_argument,        NULL,   10 },
     { "bdj4remctrl",    no_argument,        NULL,   11 },
@@ -76,7 +74,10 @@ main (int argc, char * argv[])
     { "bdj4tags",       no_argument,        NULL,   17 },
     { "bdj4updater",    no_argument,        NULL,   16 },
     { "check_all",      no_argument,        NULL,   1 },
+    { "tdbcompare",     no_argument,        NULL,   23 },
+    { "tdbdump",        no_argument,        NULL,   24 },
     { "testsuite",      no_argument,        NULL,   22 },
+    { "tmusicsetup",    no_argument,        NULL,   21 },
     /* bdj4updater */
     { "newinstall",     no_argument,        NULL,   0 },
     { "converted",      no_argument,        NULL,   0 },
@@ -260,6 +261,13 @@ main (int argc, char * argv[])
       }
       case 23: {
         prog = "tdbcompare";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 24: {
+        prog = "tdbdump";
         nodetach = true;
         wait = true;
         ++validargs;

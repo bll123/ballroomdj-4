@@ -66,6 +66,9 @@ function setwritetagson {
   mv -f ${gconf}.n ${gconf}
 }
 
+TMPA=tmp/dbtesta.txt
+TMPB=tmp/dbtestb.txt
+
 # get music dir
 hostname=$(hostname)
 mconf=data/${hostname}/bdjconfig.txt
@@ -198,6 +201,18 @@ rc=$?
 ./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC
 crc=$?
 compcheck $tname $crc
+
+if [[ $rc -eq 0 && $crc -eq 0 ]]; then
+  for f in test-music/*; do
+    ./bin/bdj4 --bdj4tags "$f" > $TMPA
+    ./bin/bdj4 --tdbdump data/musicdb.dat "$(basename $f)" > $TMPB
+    diff $TMPA $TMPB > /dev/null 2>&1
+    trc=$?
+    if [[ $trc -ne 0 ]]; then
+      rc=$trc
+    fi
+  done
+fi
 disp $tname $rc $crc
 
 # remove test db
@@ -211,5 +226,7 @@ if [[ $tcount -eq $pass ]]; then
 else
   echo FAIL
 fi
+
+rm -f $TMPA $TMPB
 
 exit $rc

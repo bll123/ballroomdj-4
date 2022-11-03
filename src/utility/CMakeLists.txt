@@ -30,7 +30,15 @@ target_link_libraries (tdbcompare
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
 )
-# addIntlLibrary (tdbcompare)
+
+add_executable (tdbdump tdbdump.c)
+if (WIN32)
+  target_compile_options (tdbdump PRIVATE -municode)
+endif()
+target_link_libraries (tdbdump
+  libbdj4 libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
+)
 
 add_executable (testsuite
   testsuite.c
@@ -38,7 +46,6 @@ add_executable (testsuite
 target_link_libraries (testsuite
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
-#  ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
 )
 
 add_executable (tmusicsetup tmusicsetup.c)
@@ -52,7 +59,7 @@ target_link_libraries (tmusicsetup
 addIntlLibrary (tmusicsetup)
 
 install (TARGETS
-  bdj4info bdj4tags tdbcompare testsuite tmusicsetup
+  bdj4info bdj4tags tdbcompare tdbdump testsuite tmusicsetup
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
@@ -60,6 +67,7 @@ if (APPLE)
   macUpdateRPath (bdj4info)
   macUpdateRPath (bdj4tags)
   macUpdateRPath (tdbcompare)
+  macUpdateRPath (tdbdump)
   macUpdateRPath (testsuite)
   macUpdateRPath (tmusicsetup)
 endif()
