@@ -92,6 +92,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "progress",     no_argument,      NULL,   'P' },
     { "cli",          no_argument,      NULL,   'c' },
     { "verbose",      no_argument,      NULL,   'V' },
+    { "quiet",        no_argument,      NULL,   'Q' },
     { "outfile",      required_argument,NULL,   0 },
     { "infile",       required_argument,NULL,   0 },
     /* test suite options */
@@ -211,6 +212,10 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 'V': {
         flags |= BDJ4_VERBOSE;
+        break;
+      }
+      case 'Q': {
+        flags &= ~BDJ4_VERBOSE;
         break;
       }
       case 'c': {

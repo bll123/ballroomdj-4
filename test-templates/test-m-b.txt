@@ -1,12 +1,12 @@
 # test-m-b.txt
-# 2022-11-2
+# 2022-11-3
 #
 # without the cha cha
 #
 version
 ..1
 count
-..10
+..14
 
 # Foxtrot
 
@@ -288,10 +288,146 @@ FAVORITE
 TITLE
 ..%03d-waltz
 
+KEY
+..9
+SOURCE
+..waltz.flac
+DURATION
+..30630
+NOTES
+..notes5 notes6  ÄääääÄÄÄ
+BPM
+..84
+TAGS
+..tag1 tag2 tag3 flac bpm
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Jazz
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+FAVORITE
+..bluestar
+TITLE
+..%03d-waltz-flac
+
+KEY
+..10
+SOURCE
+..waltz.m4a
+DURATION
+..30660
+NOTES
+..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
+BPM
+..84
+TAGS
+..tag1 tag2 tag3 m4a bpm
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Rock
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+TITLE
+..%03d-waltz
+
+KEY
+..11
+SOURCE
+..waltz.opus
+DURATION
+..30630
+NOTES
+..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
+BPM
+..84
+TAGS
+..tag1 tag2 tag3 opus bpm
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Rock
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+FAVORITE
+..purplestar
+TITLE
+..%03d-waltz-opus
+
+KEY
+..12
+SOURCE
+..waltz.ogg
+DURATION
+..30630
+NOTES
+..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
+BPM
+..84
+TAGS
+..tag1 tag2 tag3 ogg bpm
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Rock
+ALBUMARTIST
+..%03d-albartist
+ARTIST
+..%03d-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+TITLE
+..%03d-waltz-ogg
+
 # announcements
 
 KEY
-..9
+..13
 SOURCE
 ..ann-waltz.mp3
 DURATION
@@ -324,7 +460,7 @@ TITLE
 ..ann-waltz
 
 KEY
-..10
+..14
 SOURCE
 ..ann-tango.mp3
 DURATION

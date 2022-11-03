@@ -12,6 +12,7 @@ main (int argc, char *argv[])
 {
   unsigned int val = 1;
   int   c = 0;
+  int   exitcode = 0;
   int   option_index = 0;
   char  *sval = NULL;
 
@@ -28,6 +29,7 @@ main (int argc, char *argv[])
   while ((c = getopt_long_only (argc, argv, "p:d:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'd': {
+        exitcode = atoi (optarg);
         break;
       }
       case 'p': {
@@ -54,5 +56,5 @@ main (int argc, char *argv[])
   if (sval != NULL) {
     fprintf (stdout, "%s\n", sval);
   }
-  return 0;
+  return exitcode;
 }

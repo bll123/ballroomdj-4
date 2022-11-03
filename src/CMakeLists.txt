@@ -50,10 +50,10 @@ add_library (libbdj4string STATIC
   libcommon/strlcpy.c
 )
 add_library (libbdj4osutils STATIC
-  libcommon/osprocess.c
-  libcommon/osutils.c
   libcommon/oslinuxutils.c
   libcommon/osmacutils.m
+  libcommon/osprocess.c
+  libcommon/osutils.c
   libcommon/oswinprocess.c
   libcommon/oswinutils.c
   libcommon/tmutil.c

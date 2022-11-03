@@ -9,6 +9,7 @@ BallroomDJ 4 Change Log
 - add non-exposed configuration for clock display.
 - update databaes: convert .m4a utf8 audio tags correctly (mutagen bug).
 - update database: fixed a crash in write tags.
+- audio tags: fixed a problem writing the tracknumber tag (.m4a).
 
 4.0.0 alpha 2022-10-27
 

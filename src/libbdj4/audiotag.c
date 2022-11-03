@@ -45,10 +45,10 @@ static void audiotagDetermineTagType (const char *ffn, int *tagtype, int *filety
 static void audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite);
 static void audiotagCreateLookupTable (int tagtype);
 static void audiotagParseNumberPair (char *data, int *a, int *b);
-static void audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int writetags);
-static void audiotagWriteOtherTags (const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype, int writetags);
+static int  audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int writetags);
+static int  audiotagWriteOtherTags (const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype, int writetags);
 static bool audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value);
-static void audiotagRunUpdate (const char *fn);
+static int  audiotagRunUpdate (const char *fn);
 static void audiotagMakeTempFilename (char *fn, size_t sz);
 static int  audiotagTagCheck (int writetags, int tagtype, const char *tag);
 static void audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
@@ -90,6 +90,7 @@ audiotagReadTags (const char *ffn)
   char        * data;
   const char  * targv [5];
   size_t      retsz;
+  int         rc;
 
   targv [0] = sysvarsGetStr (SV_PATH_PYTHON);
   targv [1] = sysvarsGetStr (SV_PYTHON_MUTAGEN);
@@ -97,7 +98,10 @@ audiotagReadTags (const char *ffn)
   targv [3] = NULL;
 
   data = malloc (AUDIOTAG_TAG_BUFF_SIZE);
-  osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, AUDIOTAG_TAG_BUFF_SIZE, &retsz);
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, AUDIOTAG_TAG_BUFF_SIZE, &retsz);
+  if (rc != 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE, "read tags: rc: %d", rc);
+  }
   for (size_t i = 0; i < retsz; ++i) {
     if (data [i] == '\0') {
       data [i] = 'X';
@@ -120,7 +124,7 @@ audiotagParseData (const char *ffn, char *data, int *rewrite)
   return tagdata;
 }
 
-void
+int
 audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     int rewrite, int modTimeFlag)
 {
@@ -136,6 +140,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   slist_t     *dellist;
   nlist_t     *datalist;
   int         tagkey;
+  int         rc = AUDIOTAG_WRITE_OK; // if no update
 
 
   logProcBegin (LOG_PROC, "audiotagsWriteTags");
@@ -144,16 +149,17 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   if (writetags == WRITE_TAGS_NONE) {
     logMsg (LOG_DBG, LOG_DBUPDATE, "write-tags-none");
     logProcEnd (LOG_PROC, "audiotagsWriteTags", "write-none");
-    return;
+    return AUDIOTAG_WRITE_OFF;
   }
 
   audiotagDetermineTagType (ffn, &tagtype, &filetype);
+  logMsg (LOG_DBG, LOG_DBUPDATE, "tagtype: %d afile-type: %d\n", tagtype, filetype);
 
   if (tagtype != TAG_TYPE_VORBIS &&
       tagtype != TAG_TYPE_MP3 &&
       tagtype != TAG_TYPE_MP4) {
     logProcEnd (LOG_PROC, "audiotagsWriteTags", "not-supported-tag");
-    return;
+    return AUDIOTAG_NOT_SUPPORTED;
   }
 
   if (filetype != AFILE_TYPE_OGGOPUS &&
@@ -162,7 +168,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
       filetype != AFILE_TYPE_MP3 &&
       filetype != AFILE_TYPE_MP4) {
     logProcEnd (LOG_PROC, "audiotagsWriteTags", "not-supported-file");
-    return;
+    return AUDIOTAG_NOT_SUPPORTED;
   }
 
   datalist = nlistAlloc ("audiotag-data", LIST_ORDERED, free);
@@ -263,9 +269,9 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     logMsg (LOG_DBG, LOG_DBUPDATE, "  %s", ffn);
     origtm = fileopModTime (ffn);
     if (tagtype == TAG_TYPE_MP3 && filetype == AFILE_TYPE_MP3) {
-      audiotagWriteMP3Tags (ffn, updatelist, dellist, datalist, writetags);
+      rc = audiotagWriteMP3Tags (ffn, updatelist, dellist, datalist, writetags);
     } else {
-      audiotagWriteOtherTags (ffn, updatelist, dellist, datalist, tagtype, filetype, writetags);
+      rc = audiotagWriteOtherTags (ffn, updatelist, dellist, datalist, tagtype, filetype, writetags);
     }
     if (modTimeFlag == AT_KEEP_MOD_TIME) {
       fileopSetModTime (ffn, origtm);
@@ -275,6 +281,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   slistFree (dellist);
   nlistFree (datalist);
   logProcEnd (LOG_PROC, "audiotagsWriteTags", "");
+  return rc;
 }
 
 static void
@@ -656,7 +663,7 @@ audiotagParseNumberPair (char *data, int *a, int *b)
   }
 }
 
-static void
+static int
 audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
     nlist_t *datalist, int writetags)
 {
@@ -666,6 +673,7 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
   char        *tag;
   char        *value;
   FILE        *ofh;
+  int         rc;
 
   logProcBegin (LOG_PROC, "audiotagsWriteMP3Tags");
 
@@ -761,12 +769,16 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
   fprintf (ofh, "  exit (1)\n");
   fclose (ofh);
 
-  audiotagRunUpdate (fn);
+  rc = audiotagRunUpdate (fn);
+  if (rc != 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE, "  write failed: %s", ffn);
+  }
 
   logProcEnd (LOG_PROC, "audiotagsWriteMP3Tags", "");
+  return rc;
 }
 
-static void
+static int
 audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
     slist_t *dellist, nlist_t *datalist,
     int tagtype, int filetype, int writetags)
@@ -777,6 +789,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
   char        *tag;
   char        *value;
   FILE        *ofh;
+  int         rc;
 
   logProcBegin (LOG_PROC, "audiotagsWriteOtherTags");
 
@@ -850,7 +863,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
         if (tagkey == TAG_DISCNUMBER) {
           tot = nlistGetStr (datalist, TAG_DISCTOTAL);
         }
-        if (tot == NULL) {
+        if (tot == NULL || *tot == '\0') {
           tot = "0";
         }
         fprintf (ofh, "audio['%s'] = [(%s,%s)]\n",
@@ -868,9 +881,14 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
 
   fprintf (ofh, "audio.save()\n");
   fclose (ofh);
-  audiotagRunUpdate (fn);
+
+  rc = audiotagRunUpdate (fn);
+  if (rc != 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE, "  write failed: %s", ffn);
+  }
 
   logProcEnd (LOG_PROC, "audiotagsWriteOtherTags", "");
+  return rc;
 }
 
 static bool
@@ -915,17 +933,27 @@ audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value)
   return rc;
 }
 
-static void
+static int
 audiotagRunUpdate (const char *fn)
 {
   const char  *targv [5];
   int         targc = 0;
+  int         rc;
+  char        dbuff [4096];
+  size_t      retsz;
 
   targv [targc++] = sysvarsGetStr (SV_PATH_PYTHON);
   targv [targc++] = fn;
   targv [targc++] = NULL;
-  osProcessStart (targv, OS_PROC_WAIT | OS_PROC_DETACH, NULL, NULL);
-  fileopDelete (fn);
+  /* the wait flag is on, the return code is the process return code */
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, dbuff, sizeof (dbuff), &retsz);
+  if (rc == 0) {
+    fileopDelete (fn);
+  } else {
+    logMsg (LOG_DBG, LOG_DBUPDATE, "  write tags failed %d (%s)", rc, fn);
+    logMsg (LOG_DBG, LOG_DBUPDATE, "  output: %s", dbuff);
+  }
+  return rc;
 }
 
 static void
@@ -945,20 +973,20 @@ audiotagTagCheck (int writetags, int tagtype, const char *tag)
   tagkey = tagdefLookup (tag);
   if (tagkey < 0) {
     /* unknown tag  */
-    //logMsg (LOG_DBG, LOG_DBUPDATE, "unknown-tag: %s", tag);
+    // logMsg (LOG_DBG, LOG_DBUPDATE, "unknown-tag: %s", tag);
     return tagkey;
   }
   if (! tagdefs [tagkey].isNormTag && ! tagdefs [tagkey].isBDJTag) {
-    //logMsg (LOG_DBG, LOG_DBUPDATE, "not-written: %s", tag);
+    // logMsg (LOG_DBG, LOG_DBUPDATE, "not-written: %s", tag);
     return -1;
   }
   if (writetags == WRITE_TAGS_BDJ_ONLY && tagdefs [tagkey].isNormTag) {
-    //logMsg (LOG_DBG, LOG_DBUPDATE, "bdj-only: %s\n", tag);
+    // logMsg (LOG_DBG, LOG_DBUPDATE, "bdj-only: %s\n", tag);
     return -1;
   }
   if (tagdefs [tagkey].audiotags [tagtype].tag == NULL) {
     /* not a supported tag for this audio tag type */
-    //logMsg (LOG_DBG, LOG_DBUPDATE, "unsupported: %s", tag);
+    // logMsg (LOG_DBG, LOG_DBUPDATE, "unsupported: %s", tag);
     return -1;
   }
 

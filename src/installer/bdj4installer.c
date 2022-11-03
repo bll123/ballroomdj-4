@@ -35,6 +35,7 @@
 #include "locatebdj3.h"
 #include "log.h"
 #include "osprocess.h"
+#include "ossignal.h"
 #include "osutils.h"
 #include "osuiutils.h"
 #include "pathutil.h"
@@ -237,7 +238,7 @@ main (int argc, char *argv[])
     { "bdj4installer",no_argument,      NULL,   0 },
     { "installer",  no_argument,        NULL,   0 },
     { "reinstall",  no_argument,        NULL,   'r' },
-    { "guidisabled",no_argument,        NULL,   'g' },
+    { "cli",        no_argument,        NULL,   'C' },
     { "logstderr",  no_argument,        NULL,   'l' },
     { "unpackdir",  required_argument,  NULL,   'u' },
     { "debug",      required_argument,  NULL,   0 },
@@ -291,10 +292,13 @@ main (int argc, char *argv[])
   installer.targetEntry = uiEntryInit (80, MAXPATHLEN);
   installer.bdj3locEntry = uiEntryInit (80, MAXPATHLEN);
 
-  while ((c = getopt_long_only (argc, argv, "g:r:u:l", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "Cru:l:", bdj_options, &option_index)) != -1) {
     switch (c) {
-      case 'g': {
+      case 'C': {
         installer.guienabled = false;
+#if _define_SIGCHLD
+        osDefaultSignal (SIGCHLD);
+#endif
         break;
       }
       case 'r': {

@@ -83,8 +83,12 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
     int   rc, wstatus;
 
-    waitpid (pid, &wstatus, 0);
-    rc = osProcessWaitStatus (wstatus);
+    if (waitpid (pid, &wstatus, 0) < 0) {
+      rc = 0;
+      // fprintf (stderr, "waitpid: errno %d %s\n", errno, strerror (errno));
+    } else {
+      rc = osProcessWaitStatus (wstatus);
+    }
     return rc;
   }
 
@@ -101,10 +105,17 @@ pid_t
 osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *retsz)
 {
   pid_t   pid;
-  int         rc;
-  pid_t       tpid;
-  int         pipefd [2];
-  ssize_t     bytesread;
+  int     rc;
+  pid_t   tpid;
+  int     pipefd [2];
+  ssize_t bytesread;
+
+  if (rbuff != NULL) {
+    *rbuff = '\0';
+  }
+  if (retsz != NULL) {
+    *retsz = 0;
+  }
 
   if (pipe (pipefd) < 0) {
     return -1;
@@ -142,11 +153,16 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   close (pipefd [1]);
 
   pid = tpid;
+
   if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
     int   rc, wstatus;
 
-    waitpid (pid, &wstatus, 0);
-    rc = osProcessWaitStatus (wstatus);
+    if (waitpid (pid, &wstatus, 0) < 0) {
+      rc = 0;
+      // fprintf (stderr, "waitpid: errno %d %s\n", errno, strerror (errno));
+    } else {
+      rc = osProcessWaitStatus (wstatus);
+    }
     /* more processing to do, so overload the pid return */
     pid = rc;
   }
@@ -205,8 +221,8 @@ osProcessWaitStatus (int wstatus)
 
   if (WIFEXITED (wstatus)) {
     rc = WEXITSTATUS (wstatus);
-  }
-  if (WIFSIGNALED (wstatus)) {
+  } else if (WIFSIGNALED (wstatus)) {
+    rc = WEXITSTATUS (wstatus);
     rc = WTERMSIG (wstatus);
   }
   return rc;

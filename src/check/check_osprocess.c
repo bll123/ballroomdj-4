@@ -26,9 +26,10 @@
 #include "sysvars.h"
 
 static void
-runchk (int flags, int *rpid, int *rexists)
+runchk (int flags, int *rpid, int *rexists, int exitcode)
 {
   char        tbuff [MAXPATHLEN];
+  char        tmp [40];
   const char  *targv [10];
   int         targc = 0;
   int         pid = 0;
@@ -41,11 +42,14 @@ runchk (int flags, int *rpid, int *rexists)
     extension = ".exe";
   }
   snprintf (tbuff, sizeof (tbuff), "bin/chkprocess%s", extension);
+  snprintf (tmp,sizeof (tmp), "%d", exitcode);
 
   targv [targc++] = tbuff;
   targv [targc++] = "--profile";
   targv [targc++] = "1";          // time to sleep
   targv [targc++] = "--bdj4";
+  targv [targc++] = "--debug";
+  targv [targc++] = tmp;
   targv [targc++] = NULL;
   pid = osProcessStart (targv, flags, NULL, NULL);
   process.pid = pid;
@@ -62,7 +66,7 @@ START_TEST(osprocess_start)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start");
 
-  runchk (0, &pid, &exists);
+  runchk (0, &pid, &exists, 0);
   ck_assert_int_gt (pid, 0);
   ck_assert_int_eq (exists, 0);
 }
@@ -75,7 +79,7 @@ START_TEST(osprocess_start_detach)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start_detach");
 
-  runchk (OS_PROC_DETACH, &pid, &exists);
+  runchk (OS_PROC_DETACH, &pid, &exists, 0);
   ck_assert_int_gt (pid, 0);
   ck_assert_int_eq (exists, 0);
 }
@@ -83,14 +87,21 @@ END_TEST
 
 START_TEST(osprocess_start_wait)
 {
-  int   pid;
+  int   rc;
   int   exists;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_start_wait");
 
-  runchk (OS_PROC_WAIT, &pid, &exists);
   /* in this case, the pid is the return code from the program */
-  ck_assert_int_eq (pid, 0);
+
+  runchk (OS_PROC_WAIT, &rc, &exists, 0);
+  ck_assert_int_eq (rc, 0);
+
+  runchk (OS_PROC_WAIT, &rc, &exists, 1);
+  ck_assert_int_eq (rc, 1);
+
+  runchk (OS_PROC_WAIT, &rc, &exists, 250);
+  ck_assert_int_eq (rc, 250);
 }
 END_TEST
 
@@ -214,11 +225,63 @@ START_TEST(osprocess_pipe)
   ck_assert_int_gt (pid, 0);
   stringTrim (tbuff);
   ck_assert_str_eq (tbuff, "xyzzy");
+  /* retsz still includes the trailing newline */
   if (isWindows ()) {
     ck_assert_int_eq (retsz, 7);
   } else {
     ck_assert_int_eq (retsz, 6);
   }
+}
+END_TEST
+
+START_TEST(osprocess_pipe_rc)
+{
+  char        pbuff [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
+  const char  *targv [10];
+  int         targc = 0;
+  char        *extension;
+  int         flags = 0;
+  int         rcidx;
+  size_t      retsz;
+  int         rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_pipe_rc");
+
+  extension = "";
+  if (isWindows ()) {
+    extension = ".exe";
+  }
+  snprintf (pbuff, sizeof (pbuff), "bin/chkprocess%s", extension);
+
+  targv [targc++] = pbuff;
+  targv [targc++] = "--profile";
+  targv [targc++] = "0";          // time to sleep
+  targv [targc++] = "--theme";
+  targv [targc++] = "xyzzy";      // data to write
+  targv [targc++] = "--bdj4";
+  targv [targc++] = "--debug";
+  rcidx = targc;
+  targv [targc++] = "0";
+  targv [targc++] = NULL;
+
+  flags = OS_PROC_WAIT | OS_PROC_DETACH;
+  rc = osProcessPipe (targv, flags, tbuff, sizeof (tbuff), &retsz);
+  stringTrim (tbuff);
+  ck_assert_str_eq (tbuff, "xyzzy");
+  ck_assert_int_eq (rc, 0);
+
+  targv [rcidx] = "1";
+  rc = osProcessPipe (targv, flags, tbuff, sizeof (tbuff), &retsz);
+  stringTrim (tbuff);
+  ck_assert_str_eq (tbuff, "xyzzy");
+  ck_assert_int_eq (rc, 1);
+
+  targv [rcidx] = "-5";
+  rc = osProcessPipe (targv, flags, tbuff, sizeof (tbuff), &retsz);
+  stringTrim (tbuff);
+  ck_assert_str_eq (tbuff, "xyzzy");
+  ck_assert_int_eq (rc, 256-5);
 }
 END_TEST
 
@@ -259,6 +322,7 @@ osprocess_suite (void)
   tcase_add_test (tc, osprocess_start_handle);
   tcase_add_test (tc, osprocess_start_redirect);
   tcase_add_test (tc, osprocess_pipe);
+  tcase_add_test (tc, osprocess_pipe_rc);
   tcase_add_test (tc, osprocess_run);
   suite_add_tcase (s, tc);
   return s;

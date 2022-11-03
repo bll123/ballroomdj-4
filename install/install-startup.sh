@@ -28,18 +28,18 @@ if [[ $rc -ne 0 ]]; then
 fi
 
 reinstall=""
-guidisabled=""
+cli=""
 while test $# -gt 0; do
   if [[ $1 == "--reinstall" ]]; then
     reinstall=--reinstall
   fi
-  if [[ $1 == "--guidisabled" ]]; then
-    guidisabled=--guidisabled
+  if [[ $1 == "--cli" ]]; then
+    cli=--cli
   fi
   shift
 done
 
 echo "-- Starting installer."
-./bin/bdj4 --bdj4installer ${guidisabled} --unpackdir "$unpackdir" $reinstall
+./bin/bdj4 --bdj4installer ${cli} --unpackdir "$unpackdir" $reinstall
 
 exit 0

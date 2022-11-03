@@ -37,8 +37,9 @@ main (int argc, char *argv [])
   slist_t     *tagdata;
   bool        writetags;
   int         rewrite;
-  bool        verbose = false;
+  bool        verbose = true;
   bool        cleantags = false;
+  int         rc = AUDIOTAG_NOT_SUPPORTED;
 
 
   static struct option bdj_options [] = {
@@ -47,7 +48,8 @@ main (int argc, char *argv [])
     { "rawdata",      no_argument,      NULL,   'r' },
     { "bdj3tags",     no_argument,      NULL,   '3' },
     { "debugself",    no_argument,      NULL,   0 },
-    { "verbose",      no_argument,      NULL,   'V', },
+    { "verbose",      no_argument,      NULL,   0, },
+    { "quiet",        no_argument,      NULL,   'Q', },
     { "cleantags",    no_argument,      NULL,   'L', },
     { "nodetach",     no_argument,      NULL,   0, },
     { "theme",        no_argument,      NULL,   0 },
@@ -68,8 +70,8 @@ main (int argc, char *argv [])
         rawdata = true;
         break;
       }
-      case 'V': {
-        verbose = true;
+      case 'Q': {
+        verbose = false;
         break;
       }
       case 'L': {
@@ -155,10 +157,11 @@ main (int argc, char *argv [])
 
   if (writetags || rewrite) {
     int   value;
+    int   rc;
 
     value = bdjoptGetNum (OPT_G_WRITETAGS);
     bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
-    audiotagWriteTags (argv [fidx], tagdata, wlist, rewrite, AT_UPDATE_MOD_TIME);
+    rc = audiotagWriteTags (argv [fidx], tagdata, wlist, rewrite, AT_UPDATE_MOD_TIME);
     bdjoptSetNum (OPT_G_WRITETAGS, value);
   }
   slistFree (tagdata);
@@ -185,5 +188,5 @@ main (int argc, char *argv [])
   bdjoptCleanup ();
   audiotagCleanup ();
   localeCleanup ();
-  return 0;
+  return rc;
 }

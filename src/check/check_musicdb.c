@@ -728,6 +728,7 @@ musicdb_suite (void)
   TCase     *tc;
 
   s = suite_create ("musicdb");
+
   tc = tcase_create ("musicdb-basic");
   tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
@@ -763,6 +764,7 @@ musicdb_suite (void)
   tcase_add_test (tc, musicdb_load_get_byname);
   tcase_add_test (tc, musicdb_iterate);
   tcase_add_test (tc, musicdb_cleanup);
+  suite_add_tcase (s, tc);
 
   tc = tcase_create ("musicdb-write-song");
   tcase_set_timeout (tc, 4.0);
@@ -781,5 +783,6 @@ musicdb_suite (void)
   tcase_add_test (tc, musicdb_cleanup);
   tcase_add_test (tc, musicdb_db);
   suite_add_tcase (s, tc);
+
   return s;
 }

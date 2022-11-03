@@ -84,7 +84,6 @@ main (int argc, char * argv[])
     /* used by installer */
     { "unpackdir",      required_argument,  NULL,   'u' },
     { "reinstall",      no_argument,        NULL,   'r' },
-    { "guidisabled",no_argument,            NULL,   'g' },
     /* standard stuff */
     { "profile",        required_argument,  NULL,   'p' },
     { "debug",          required_argument,  NULL,   'd' },
@@ -105,7 +104,6 @@ main (int argc, char * argv[])
     { "updfromtags",    no_argument,        NULL,   0 },
     { "writetags",      no_argument,        NULL,   0 },
     { "dbtopdir",       required_argument,  NULL,   0 },
-    { "cli",            no_argument,        NULL,   'c' },
     /* bdjtags */
     { "rawdata",        no_argument,        NULL,   0 },
     { "bdj3tags",       no_argument,        NULL,   0 },
@@ -115,7 +113,9 @@ main (int argc, char * argv[])
     { "runtest",        required_argument,  NULL,   0 },
     { "starttest",      required_argument,  NULL,   0 },
     /* general options */
+    { "cli",            no_argument,        NULL,   'c' },
     { "verbose",        no_argument,        NULL,   0 },
+    { "quiet",          no_argument,        NULL,   0 },
     { "outfile",        required_argument,  NULL,   0 },
     { "infile",         required_argument,  NULL,   0 },
     { NULL,             0,                  NULL,   0 }

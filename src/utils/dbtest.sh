@@ -59,14 +59,17 @@ function disp {
   fi
 }
 
+function setwritetagson {
+  gconf=data/bdjconfig.txt
+  sed -e '/^WRITETAGS/ { n ; s/.*/..ALL/ ; }' \
+      ${gconf} > ${gconf}.n
+  mv -f ${gconf}.n ${gconf}
+}
+
 # get music dir
 hostname=$(hostname)
 mconf=data/${hostname}/bdjconfig.txt
 musicdir=$(sed -n -e '/^DIRMUSIC/ { n; s/^\.\.//; p }' $mconf)
-gconf=data/bdjconfig.txt
-sed -e '/^WRITETAGS/ { n ; s/.*/..ALL/ ; }' \
-    ${gconf} > ${gconf}.n
-mv -f ${gconf}.n ${gconf}
 
 ./src/utils/mktestsetup.sh --force
 
@@ -134,7 +137,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
   --rebuild \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
-exp="found 10 skip 0 indb 0 new 10 updated 0 notaudio 0 writetag 0"
+exp="found 14 skip 0 indb 0 new 14 updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
 ./bin/bdj4 --tdbcompare data/musicdb.dat $TDBB
@@ -152,7 +155,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
   --checknew \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
-exp="found 11 skip 10 indb 10 new 1 updated 0 notaudio 0 writetag 0"
+exp="found 15 skip 14 indb 14 new 1 updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
 ./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC
@@ -162,7 +165,7 @@ disp $tname $rc $crc
 
 # clean all of the tags from the music files
 for f in test-music/*; do
-  ./bin/bdj4 --bdj4tags --cleantags "$f"
+  ./bin/bdj4 --bdj4tags --cleantags --quiet "$f"
 done
 
 # test db : rebuild with no tags
@@ -172,7 +175,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
   --rebuild \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
-exp="found 11 skip 0 indb 0 new 11 updated 0 notaudio 0 writetag 0"
+exp="found 15 skip 0 indb 0 new 15 updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
 # no db comparison
@@ -183,12 +186,13 @@ cp -f $TDBC data/musicdb.dat
 
 # test db : write tags
 tname=writetags-b
+setwritetagson
 got=$(./bin/bdj4 --bdj4dbupdate \
   --debug 262175 \
   --writetags \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
-exp="found 11 skip 0 indb 11 new 0 updated 0 notaudio 0 writetag 11"
+exp="found 15 skip 0 indb 15 new 0 updated 0 notaudio 0 writetag 15"
 check $tname "$got" "$exp"
 rc=$?
 ./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC

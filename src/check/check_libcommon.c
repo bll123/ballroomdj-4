@@ -25,7 +25,6 @@ check_libcommon (SRunner *sr)
   Suite   *s;
 
   /* libcommon:
-   *  osutils
    *  fileop      complete
    *  bdjstring   complete
    *  osprocess   complete    // uses procutil
@@ -35,6 +34,7 @@ check_libcommon (SRunner *sr)
    *  sysvars
    *  tmutil      complete
    *  osdir
+   *  osutils
    *  dirop       complete
    *  filemanip   complete 2022-11-1
    *  fileshared                // open/write/close shared

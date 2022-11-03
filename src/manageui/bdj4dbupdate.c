@@ -31,6 +31,7 @@
 #include <inttypes.h>
 #include <errno.h>
 #include <assert.h>
+#include <signal.h>
 
 #include "audiotag.h"
 #include "bdj4.h"
@@ -244,6 +245,9 @@ main (int argc, char *argv[])
   }
   if ((dbupdate.startflags & BDJ4_CLI) == BDJ4_CLI) {
     dbupdate.cli = true;
+#if _define_SIGCHLD
+    osDefaultSignal (SIGCHLD);
+#endif
   }
   if ((dbupdate.startflags & BDJ4_VERBOSE) == BDJ4_VERBOSE) {
     dbupdate.verbose = true;
