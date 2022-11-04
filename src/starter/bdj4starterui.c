@@ -187,8 +187,10 @@ static bool     starterStartManageui (void *udata);
 static bool     starterStartConfig (void *udata);
 
 static int      starterGetProfiles (startui_t *starter);
+static void     starterResetProfile (startui_t *starter, int profidx);
 static const char * starterSetProfile (void *udata, int idx);
 static int      starterCheckProfile (startui_t *starter);
+static bool     starterDeleteProfile (void *udata);
 
 static bool     starterProcessSupport (void *udata);
 static void     starterWebResponseCallback (void *userdata, char *resp, size_t len);
@@ -217,7 +219,6 @@ static void     starterLoadOptions (startui_t *starter);
 static bool     starterSetUpAlternate (void *udata);
 static void     starterQuickConnect (startui_t *starter, bdjmsgroute_t route);
 static void     starterSendPlayerActive (startui_t *starter);
-static bool     starterDeleteProfile (void *udata);
 
 static bool gKillReceived = false;
 static bool gNewProfile = false;
@@ -479,18 +480,18 @@ starterBuildUI (startui_t  *starter)
 
   uiCreateSubMenu (&menuitem, &menu);
 
+  uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_DEL_PROFILE],
+      starterDeleteProfile, starter, NULL);
+  /* CONTEXT: starterui: menu item: delete profile */
+  uiMenuCreateItem (&menu, &menuitem, _("Delete Profile"),
+      &starter->callbacks [START_CB_MENU_DEL_PROFILE]);
+
   /* CONTEXT: starterui: menu item: stop all BDJ4 processes */
   snprintf (tbuff, sizeof (tbuff), _("Stop All %s Processes"), BDJ4_NAME);
   uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_STOP_ALL],
       starterStopAllProcesses, starter, NULL);
   uiMenuCreateItem (&menu, &menuitem, tbuff,
       &starter->callbacks [START_CB_MENU_STOP_ALL]);
-
-  uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_DEL_PROFILE],
-      starterDeleteProfile, starter, NULL);
-  /* CONTEXT: starterui: menu item: delete profile */
-  uiMenuCreateItem (&menu, &menuitem, _("Delete Profile"),
-      &starter->callbacks [START_CB_MENU_DEL_PROFILE]);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
@@ -1348,16 +1349,24 @@ starterGetProfiles (startui_t *starter)
   sysvarsSetNum (SVL_BDJIDX, starter->currprofile);
 
   if (starter->currprofile != starter->newprofile) {
-    bdjoptInit ();
-    uiWindowSetTitle (&starter->window, bdjoptGetStr (OPT_P_PROFILENAME));
-    uiLabelSetBackgroundColor (&starter->profileAccent,
-        bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-    starterLoadOptions (starter);
-    starterSetWindowPosition (starter);
+    starterResetProfile (starter, starter->currprofile);
   }
 
   bdjvarsAdjustPorts ();
   return dispidx;
+}
+
+static void
+starterResetProfile (startui_t *starter, int profidx)
+{
+  starter->currprofile = profidx;
+  sysvarsSetNum (SVL_BDJIDX, profidx);
+  bdjoptInit ();
+  uiWindowSetTitle (&starter->window, bdjoptGetStr (OPT_P_PROFILENAME));
+  uiLabelSetBackgroundColor (&starter->profileAccent,
+      bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+  starterLoadOptions (starter);
+  bdjvarsAdjustPorts ();
 }
 
 static const char *
@@ -1374,18 +1383,10 @@ starterSetProfile (void *udata, int idx)
   profidx = nlistGetNum (starter->profidxlist, dispidx);
 
   chg = profidx != starter->currprofile && profidx != starter->newprofile;
-  starter->currprofile = profidx;
-  sysvarsSetNum (SVL_BDJIDX, profidx);
 
   if (chg) {
-    bdjoptInit ();
-
     uiLabelSetText (&starter->statusMsg, "");
-    uiWindowSetTitle (&starter->window, bdjoptGetStr (OPT_P_PROFILENAME));
-    uiLabelSetBackgroundColor (&starter->profileAccent,
-        bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-
-    bdjvarsAdjustPorts ();
+    starterResetProfile (starter, profidx);
     gNewProfile = true;
   }
 
@@ -1431,11 +1432,57 @@ starterCheckProfile (startui_t *starter)
     uiLabelSetText (&starter->statusMsg, _("Profile in use"));
   } else {
     uiWidgetDisable (uiSpinboxGetUIWidget (starter->profilesel));
+    starterSetWindowPosition (starter);
   }
 
   return rc;
 }
 
+static bool
+starterDeleteProfile (void *udata)
+{
+  startui_t *starter = udata;
+  int       dispidx;
+  char      tbuff [MAXPATHLEN];
+
+  if (starter->currprofile == 0 ||
+      starter->currprofile == starter->newprofile) {
+    /* CONTEXT: starter: status message */
+    uiLabelSetText (&starter->statusMsg, _("Profile may not be deleted."));
+    return UICB_STOP;
+  }
+
+  logEnd ();
+
+  /* data/profileNN */
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
+      PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+  if (fileopIsDirectory (tbuff)) {
+    diropDeleteDir (tbuff);
+  }
+  /* data/<hostname>/profileNN */
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
+      PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+  if (fileopIsDirectory (tbuff)) {
+    diropDeleteDir (tbuff);
+  }
+  /* img/profileNN */
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
+      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+  if (fileopIsDirectory (tbuff)) {
+    diropDeleteDir (tbuff);
+  }
+
+  starterResetProfile (starter, 0);
+
+  dispidx = starterGetProfiles (starter);
+  uiSpinboxTextSetValue (starter->profilesel, dispidx);
+  uiSpinboxTextSet (starter->profilesel, 0,
+      nlistGetCount (starter->proflist), starter->maxProfileWidth,
+      starter->proflist, NULL, starterSetProfile);
+
+  return UICB_CONT;
+}
 
 static bool
 starterCreateSupportDialog (void *udata)
@@ -2054,48 +2101,4 @@ starterSendPlayerActive (startui_t *starter)
   connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_PLAYERUI_ACTIVE, tmp);
 }
 
-
-static bool
-starterDeleteProfile (void *udata)
-{
-  startui_t *starter = udata;
-  int       dispidx;
-  char      tbuff [MAXPATHLEN];
-
-  if (starter->currprofile == 0 ||
-      starter->currprofile == starter->newprofile) {
-    /* CONTEXT: starter: status message */
-    uiLabelSetText (&starter->statusMsg, _("Profile may not be deleted."));
-    return UICB_STOP;
-  }
-
-  logEnd ();
-
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
-      PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
-  if (fileopIsDirectory (tbuff)) {
-    diropDeleteDir (tbuff);
-  }
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
-      PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-  if (fileopIsDirectory (tbuff)) {
-    diropDeleteDir (tbuff);
-  }
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "",
-      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
-  if (fileopIsDirectory (tbuff)) {
-    diropDeleteDir (tbuff);
-  }
-
-  dispidx = starterGetProfiles (starter);
-  uiSpinboxTextSetValue (starter->profilesel, dispidx);
-  uiSpinboxTextSet (starter->profilesel, 0,
-      nlistGetCount (starter->proflist), starter->maxProfileWidth,
-      starter->proflist, NULL, starterSetProfile);
-
-  /* CONTEXT: starter: status message (restart BDJ4) */
-  snprintf (tbuff, sizeof (tbuff), _("Restart %s."), BDJ4_NAME);
-  uiLabelSetText (&starter->statusMsg, tbuff);
-  return UICB_CONT;
-}
 

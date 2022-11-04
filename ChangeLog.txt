@@ -10,6 +10,7 @@ BallroomDJ 4 Change Log
 - update databaes: convert .m4a utf8 audio tags correctly (mutagen bug).
 - update database: fixed a crash in write tags.
 - audio tags: fixed a problem writing the tracknumber tag (.m4a).
+- starter: fixed 'delete profile'.
 
 4.0.0 alpha 2022-10-27
 
