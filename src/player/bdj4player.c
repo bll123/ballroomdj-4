@@ -1680,7 +1680,7 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
 static void
 playerSendStatus (playerdata_t *playerData, bool forceFlag)
 {
-  char        rbuff [3096];
+  char        *rbuff;
   prepqueue_t *pq = playerData->currentSong;
   ssize_t     tm;
   ssize_t     dur;
@@ -1697,6 +1697,7 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 
   playerData->lastPlayerState = playerData->playerState;
 
+  rbuff = malloc (BDJMSG_MAX);
   rbuff [0] = '\0';
 
   dur = 0;
@@ -1722,7 +1723,7 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 
   tm = playerCalcPlayedTime (playerData);
 
-  snprintf (rbuff, sizeof (rbuff), "%d%c%d%c%d%c%d%c%"PRIu64"%c%"PRId64,
+  snprintf (rbuff, BDJMSG_MAX, "%d%c%d%c%d%c%d%c%"PRIu64"%c%"PRId64,
       playerData->repeat, MSG_ARGS_RS,
       playerData->pauseAtEnd, MSG_ARGS_RS,
       playerData->currentVolume, MSG_ARGS_RS,
@@ -1732,6 +1733,9 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 
   connSendMessage (playerData->conn, ROUTE_MAIN,
       MSG_PLAYER_STATUS_DATA, rbuff);
+
+  dataFree (rbuff);
+
   /* four times a second... */
   mstimeset (&playerData->statusCheck, 250);
   logProcEnd (LOG_PROC, "playerSendStatus", "");

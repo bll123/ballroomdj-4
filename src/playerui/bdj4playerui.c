@@ -1301,7 +1301,6 @@ pluiReqextCallback (void *udata)
   song = uireqextGetSong (plui->uireqext);
   if (song != NULL) {
     dbidx_t     dbidx;
-    char        tbuff [3096];
     char        *songentrytext;
 
     /* add to the player's copy of the database */
@@ -1309,11 +1308,15 @@ pluiReqextCallback (void *udata)
 
     songentrytext = uireqextGetSongEntryText (plui->uireqext);
     if (songentrytext != NULL) {
-      snprintf (tbuff, sizeof (tbuff), "%s%c%d%c%s",
+      char        *tbuff;
+
+      tbuff = malloc (BDJMSG_MAX);
+      snprintf (tbuff, BDJMSG_MAX, "%s%c%d%c%s",
           songGetStr (song, TAG_FILE), MSG_ARGS_RS,
           dbidx, MSG_ARGS_RS,
           songentrytext);
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_DB_ENTRY_TEMP_ADD, tbuff);
+      dataFree (tbuff);
       pluiQueueProcess (plui, dbidx, MUSICQ_CURRENT);
     }
   }

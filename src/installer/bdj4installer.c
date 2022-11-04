@@ -2580,7 +2580,7 @@ installerCheckPackages (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
   char  *tmp;
-  char  pypath [2048];
+  char  pypath [MAXPATHLEN];
 
 
   tmp = sysvarsGetStr (SV_PATH_PYTHON);

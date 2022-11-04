@@ -950,7 +950,7 @@ static void
 mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
 {
   char        tbuff [200];
-  char        sbuff [4100];
+  char        *sbuff = NULL;
   int         musicqLen;
   slistidx_t  dbidx;
   song_t      *song;
@@ -965,8 +965,9 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   musicqLen = musicqGetLen (mainData->musicQueue, musicqidx);
   qDuration = musicqGetDuration (mainData->musicQueue, musicqidx);
 
+  sbuff = malloc (BDJMSG_MAX);
   sbuff [0] = '\0';
-  snprintf (sbuff, sizeof (sbuff), "%d%c%"PRId64"%c",
+  snprintf (sbuff, BDJMSG_MAX, "%d%c%"PRId64"%c",
       musicqidx, MSG_ARGS_RS, (int64_t) qDuration, MSG_ARGS_RS);
 
   for (int i = 1; i <= musicqLen; ++i) {
@@ -978,16 +979,16 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
       strlcat (sbuff, tbuff, sizeof (sbuff));
       uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, musicqidx, i);
       snprintf (tbuff, sizeof (tbuff), "%d%c", uniqueidx, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, sizeof (sbuff));
+      strlcat (sbuff, tbuff, BDJMSG_MAX);
       snprintf (tbuff, sizeof (tbuff), "%d%c", dbidx, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, sizeof (sbuff));
+      strlcat (sbuff, tbuff, BDJMSG_MAX);
       flags = musicqGetFlags (mainData->musicQueue, musicqidx, i);
       pflag = false;
       if ((flags & MUSICQ_FLAG_PAUSE) == MUSICQ_FLAG_PAUSE) {
         pflag = true;
       }
       snprintf (tbuff, sizeof (tbuff), "%d%c", pflag, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, sizeof (sbuff));
+      strlcat (sbuff, tbuff, BDJMSG_MAX);
     }
   }
 
@@ -997,6 +998,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   if (connHaveHandshake (mainData->conn, ROUTE_MANAGEUI)) {
     connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_MUSIC_QUEUE_DATA, sbuff);
   }
+  dataFree (sbuff);
   logProcEnd (LOG_PROC, "mainSendMusicQueueData", "");
 }
 
@@ -1004,9 +1006,9 @@ static void
 mainSendMarqueeData (maindata_t *mainData)
 {
   char        tbuff [200];
-  char        sbuff [3096];
-  char        *dstr;
-  char        *tstr;
+  char        *sbuff = NULL;
+  char        *dstr = NULL;
+  char        *tstr = NULL;
   int         mqLen;
   int         musicqLen;
   time_t      currTime;
@@ -1031,6 +1033,7 @@ mainSendMarqueeData (maindata_t *mainData)
 
   /* artist/title, dance(s) */
 
+  sbuff = malloc (BDJMSG_MAX);
   sbuff [0] = '\0';
 
   dstr = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_ARTIST);
@@ -1038,7 +1041,7 @@ mainSendMarqueeData (maindata_t *mainData)
   tstr = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_TITLE);
   if (tstr == NULL || *tstr == '\0') { tstr = MSG_ARGS_EMPTY_STR; }
   snprintf (tbuff, sizeof (tbuff), "%s%c%s%c", dstr, MSG_ARGS_RS, tstr, MSG_ARGS_RS);
-  strlcat (sbuff, tbuff, sizeof (sbuff));
+  strlcat (sbuff, tbuff, BDJMSG_MAX);
 
   currTime = mstime ();
   if (musicqLen > 0) {
@@ -1066,11 +1069,12 @@ mainSendMarqueeData (maindata_t *mainData)
       }
 
       snprintf (tbuff, sizeof (tbuff), "%s%c", dstr, MSG_ARGS_RS);
-      strlcat (sbuff, tbuff, sizeof (sbuff));
+      strlcat (sbuff, tbuff, BDJMSG_MAX);
     }
   }
 
   connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_MARQUEE_DATA, sbuff);
+  dataFree (sbuff);
   logProcEnd (LOG_PROC, "mainSendMarqueeData", "");
 }
 
@@ -1111,8 +1115,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
 {
   char        tbuff [200];
   char        tbuffb [200];
-  char        qbuff [4096];
-  char        jbuff [4096];
+  char        *jbuff = NULL;
   char        *title = NULL;
   char        *dstr = NULL;
   char        *tag = NULL;
@@ -1131,6 +1134,8 @@ mainSendMobileMarqueeData (maindata_t *mainData)
     logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "finished");
     return;
   }
+
+  jbuff = malloc (BDJMSG_MAX);
 
   mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
@@ -1192,6 +1197,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
 
   if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_LOCAL) {
     logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "is-local");
+    dataFree (jbuff);
     return;
   }
 
@@ -1199,22 +1205,28 @@ mainSendMobileMarqueeData (maindata_t *mainData)
 
   tag = bdjoptGetStr (OPT_P_MOBILEMQTAG);
   if (tag != NULL && *tag != '\0') {
+    char  *qbuff;
+
     if (mainData->mobmqUserkey == NULL) {
       pathbldMakePath (tbuff, sizeof (tbuff),
           "mmq", ".key", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
       mainData->mobmqUserkey = filedataReadAll (tbuff, NULL);
     }
 
+    qbuff = malloc (BDJMSG_MAX);
     snprintf (tbuff, sizeof (tbuff), "%s/%s",
         sysvarsGetStr (SV_HOST_MOBMQ), sysvarsGetStr (SV_URI_MOBMQ_POST));
-    snprintf (qbuff, sizeof (qbuff), "v=2&mqdata=%s&key=%s&tag=%s",
+    snprintf (qbuff, BDJMSG_MAX, "v=2&mqdata=%s&key=%s&tag=%s",
         jbuff, "93457645", tag);
     if (mainData->mobmqUserkey != NULL) {
       snprintf (tbuffb, sizeof (tbuffb), "&userkey=%s", mainData->mobmqUserkey);
       strlcat (qbuff, tbuffb, sizeof (qbuff));
     }
     webclientPost (mainData->webclient, tbuff, qbuff);
+    dataFree (qbuff);
   }
+
+  dataFree (jbuff);
   logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "");
 }
 
@@ -2224,7 +2236,7 @@ mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
   slistidx_t    idx;
   char          *dancenm;
   char          tbuff [200];
-  char          rbuff [3096];
+  char          *rbuff = NULL;
   slistidx_t    iteridx;
 
   logProcBegin (LOG_PROC, "mainSendDanceList");
@@ -2232,6 +2244,7 @@ mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   danceList = danceGetDanceList (dances);
 
+  rbuff = malloc (BDJMSG_MAX);
   rbuff [0] = '\0';
   slistStartIterator (danceList, &iteridx);
   while ((dancenm = slistIterateKey (danceList, &iteridx)) != NULL) {
@@ -2242,23 +2255,25 @@ mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
   }
 
   connSendMessage (mainData->conn, route, MSG_DANCE_LIST_DATA, rbuff);
+  dataFree (rbuff);
   logProcEnd (LOG_PROC, "mainSendDanceList", "");
 }
 
 static void
 mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
 {
-  slist_t       *plList;
-  char          *plfnm;
-  char          *plnm;
+  slist_t       *plList = NULL;
+  char          *plfnm = NULL;
+  char          *plnm = NULL;
   char          tbuff [200];
-  char          rbuff [3096];
+  char          *rbuff = NULL;
   slistidx_t    iteridx;
 
   logProcBegin (LOG_PROC, "mainSendPlaylistList");
 
   plList = playlistGetPlaylistList (PL_LIST_NORMAL);
 
+  rbuff = malloc (BDJMSG_MAX);
   rbuff [0] = '\0';
   slistStartIterator (plList, &iteridx);
   while ((plnm = slistIterateKey (plList, &iteridx)) != NULL) {
@@ -2271,6 +2286,7 @@ mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
   slistFree (plList);
 
   connSendMessage (mainData->conn, route, MSG_PLAYLIST_LIST_DATA, rbuff);
+  dataFree (rbuff);
   logProcEnd (LOG_PROC, "mainSendPlaylistList", "");
 }
 
@@ -2279,8 +2295,8 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
 {
   char    tbuff [200];
   char    tbuff2 [40];
-  char    jsbuff [3096];
-  char    timerbuff [1024];
+  char    *jsbuff = NULL;
+  char    *timerbuff = NULL;
   char    *tokstr = NULL;
   char    *p;
   int     jsonflag;
@@ -2297,7 +2313,12 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   jsonflag = bdjoptGetNum (OPT_P_REMOTECONTROL);
 
   if (jsonflag) {
-    strlcpy (jsbuff, "{ ", sizeof (jsbuff));
+    jsbuff = malloc (BDJMSG_MAX);
+  }
+  timerbuff = malloc (BDJMSG_MAX);
+
+  if (jsonflag) {
+    strlcpy (jsbuff, "{ ", BDJMSG_MAX);
 
     p = "stop";
     switch (mainData->playerState) {
@@ -2325,67 +2346,67 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
     }
     snprintf (tbuff, sizeof (tbuff),
         "\"playstate\" : \"%s\"", p);
-    strlcat (jsbuff, tbuff, sizeof (jsbuff));
+    strlcat (jsbuff, tbuff, BDJMSG_MAX);
   }
 
   p = strtok_r (playerResp, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL && jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"repeat\" : \"%s\"", p);
-    strlcat (jsbuff, ", ", sizeof (jsbuff));
-    strlcat (jsbuff, tbuff, sizeof (jsbuff));
+    strlcat (jsbuff, ", ", BDJMSG_MAX);
+    strlcat (jsbuff, tbuff, BDJMSG_MAX);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL && jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"pauseatend\" : \"%s\"", p);
-    strlcat (jsbuff, ", ", sizeof (jsbuff));
-    strlcat (jsbuff, tbuff, sizeof (jsbuff));
+    strlcat (jsbuff, ", ", BDJMSG_MAX);
+    strlcat (jsbuff, tbuff, BDJMSG_MAX);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL && jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"vol\" : \"%s%%\"", p);
-    strlcat (jsbuff, ", ", sizeof (jsbuff));
-    strlcat (jsbuff, tbuff, sizeof (jsbuff));
+    strlcat (jsbuff, ", ", BDJMSG_MAX);
+    strlcat (jsbuff, tbuff, BDJMSG_MAX);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL && jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"speed\" : \"%s%%\"", p);
-    strlcat (jsbuff, ", ", sizeof (jsbuff));
-    strlcat (jsbuff, tbuff, sizeof (jsbuff));
+    strlcat (jsbuff, ", ", BDJMSG_MAX);
+    strlcat (jsbuff, tbuff, BDJMSG_MAX);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL && jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"playedtime\" : \"%s\"", tmutilToMS (atol (p), tbuff2, sizeof (tbuff2)));
-    strlcat (jsbuff, ", ", sizeof (jsbuff));
-    strlcat (jsbuff, tbuff, sizeof (jsbuff));
+    strlcat (jsbuff, ", ", BDJMSG_MAX);
+    strlcat (jsbuff, tbuff, BDJMSG_MAX);
   }
 
   if (p != NULL) {
     /* for marquee */
     snprintf (tbuff, sizeof (tbuff), "%s%c", p, MSG_ARGS_RS);
-    strlcpy (timerbuff, tbuff, sizeof (timerbuff));
+    strlcpy (timerbuff, tbuff, BDJMSG_MAX);
   }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL && jsonflag) {
     snprintf (tbuff, sizeof (tbuff),
         "\"duration\" : \"%s\"", tmutilToMS (atol (p), tbuff2, sizeof (tbuff2)));
-    strlcat (jsbuff, ", ", sizeof (jsbuff));
-    strlcat (jsbuff, tbuff, sizeof (jsbuff));
+    strlcat (jsbuff, ", ", BDJMSG_MAX);
+    strlcat (jsbuff, tbuff, BDJMSG_MAX);
   }
 
   if (p != NULL) {
     /* for marquee */
     snprintf (tbuff, sizeof (tbuff), "%s", p);
-    strlcat (timerbuff, tbuff, sizeof (timerbuff));
+    strlcat (timerbuff, tbuff, BDJMSG_MAX);
   }
 
   if (mainData->marqueestarted) {
@@ -2394,22 +2415,23 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
 
   if (! jsonflag) {
     logProcEnd (LOG_PROC, "mainSendPlayerStatus", "no-json");
+    dataFree (timerbuff);
     return;
   }
 
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
   snprintf (tbuff, sizeof (tbuff),
       "\"qlength\" : \"%d\"", musicqLen);
-  strlcat (jsbuff, ", ", sizeof (jsbuff));
-  strlcat (jsbuff, tbuff, sizeof (jsbuff));
+  strlcat (jsbuff, ", ", BDJMSG_MAX);
+  strlcat (jsbuff, tbuff, BDJMSG_MAX);
 
   /* dance */
   data = musicqGetDance (mainData->musicQueue, mainData->musicqPlayIdx, 0);
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
       "\"dance\" : \"%s\"", data);
-  strlcat (jsbuff, ", ", sizeof (jsbuff));
-  strlcat (jsbuff, tbuff, sizeof (jsbuff));
+  strlcat (jsbuff, ", ", BDJMSG_MAX);
+  strlcat (jsbuff, tbuff, BDJMSG_MAX);
 
   dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, 0);
   song = dbGetByIdx (mainData->musicdb, dbidx);
@@ -2419,20 +2441,21 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
       "\"artist\" : \"%s\"", data);
-  strlcat (jsbuff, ", ", sizeof (jsbuff));
-  strlcat (jsbuff, tbuff, sizeof (jsbuff));
+  strlcat (jsbuff, ", ", BDJMSG_MAX);
+  strlcat (jsbuff, tbuff, BDJMSG_MAX);
 
   /* title */
   data = songGetStr (song, TAG_TITLE);
   if (data == NULL) { data = ""; }
   snprintf (tbuff, sizeof (tbuff),
       "\"title\" : \"%s\"", data);
-  strlcat (jsbuff, ", ", sizeof (jsbuff));
-  strlcat (jsbuff, tbuff, sizeof (jsbuff));
+  strlcat (jsbuff, ", ", BDJMSG_MAX);
+  strlcat (jsbuff, tbuff, BDJMSG_MAX);
 
-  strlcat (jsbuff, " }", sizeof (jsbuff));
+  strlcat (jsbuff, " }", BDJMSG_MAX);
 
   connSendMessage (mainData->conn, ROUTE_REMCTRL, MSG_PLAYER_STATUS_DATA, jsbuff);
+  dataFree (jsbuff);
   logProcEnd (LOG_PROC, "mainSendPlayerStatus", "");
 }
 

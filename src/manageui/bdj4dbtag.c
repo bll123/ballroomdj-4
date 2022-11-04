@@ -205,7 +205,7 @@ static int
 dbtagProcessing (void *udata)
 {
   dbtag_t       * dbtag = udata;
-  char          sbuff [BDJMSG_MAX_ARGS];
+  char          sbuff [BDJMSG_MAX];
   qidx_t        count;
   int           stop = false;
 

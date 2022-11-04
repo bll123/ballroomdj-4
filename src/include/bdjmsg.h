@@ -179,9 +179,9 @@ enum {
 };
 
 /* make the message size large enough to handle a */
-/* 10 hour create-from-playlist message */
+/* 1000 (the max player queue length) long playlist message */
 enum {
-  BDJMSG_MAX_ARGS = 16384,
+  BDJMSG_MAX_ARGS = 20000,
   BDJMSG_MAX = (8 * 2 + 3 + BDJMSG_MAX_ARGS),
 };
 

@@ -83,7 +83,7 @@ int
 sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
     bdjmsgroute_t route, bdjmsgmsg_t msg, char *args)
 {
-  char        msgbuff [BDJMSG_MAX];
+  char        msgbuff [BDJMSG_MAX];   // keep static to reduce latency
   size_t      len;
   int         rc;
 
