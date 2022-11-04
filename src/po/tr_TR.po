@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-10-27\n"
+"PO-Revision-Date: 2022-11-04\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -1402,11 +1402,6 @@ msgstr "Harici talep"
 #. CONTEXT: bpm counter: reset button
 msgid "Reset"
 msgstr "Sıfırla"
-
-#. CONTEXT: starter: status message (restart BDJ4)
-#, c-format
-msgid "Restart %s."
-msgstr "%s yeniden başlat."
 
 #. CONTEXT: playerui: button: tooltip: return to the beginning of the song
 msgid "Return to beginning of song"

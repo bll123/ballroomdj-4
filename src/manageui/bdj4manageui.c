@@ -194,6 +194,7 @@ typedef struct {
   uisongedit_t    *mmsongedit;
   int             lastdisp;
   int             dbchangecount;
+  int             editmode;
   /* sequence */
   manageseq_t     *manageseq;
   /* playlist management */
@@ -353,6 +354,7 @@ main (int argc, char *argv[])
   manage.songlistdbidx = -1;
   manage.uisongfilter = NULL;
   manage.dbchangecount = 0;
+  manage.editmode = EDIT_TRUE;
   manage.manageseq = NULL;   /* allocated within buildui */
   manage.managepl = NULL;   /* allocated within buildui */
   manage.managedb = NULL;   /* allocated within buildui */
@@ -1857,7 +1859,7 @@ manageCFPLResponseHandler (void *udata, long responseid)
       stoptime = uiSpinboxTimeGetValue (manage->cfpltmlimit);
       /* convert from mm:ss to hh:mm */
       stoptime *= 60;
-      /* add in the current hh:mm time to the time limit */
+      /* adjust : add in the current hh:mm */
       stoptime += mstime () - mstimestartofday ();
 
       snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
@@ -1867,7 +1869,10 @@ manageCFPLResponseHandler (void *udata, long responseid)
       snprintf (tbuff, sizeof (tbuff), "%ld", stoptime);
       connSendMessage (manage->conn, ROUTE_MAIN,
           MSG_PL_OVERRIDE_STOP_TIME, tbuff);
+      /* the edit mode must be false to allow the stop time to be applied */
+      manage->editmode = EDIT_FALSE;
       manageSonglistLoadFile (manage, fn);
+      manage->editmode = EDIT_TRUE;
       /* CONTEXT: managementui: song list: default name for a new song list */
       manageSetSonglistName (manage, _("New Song List"));
       /* now tell main to clear the playlist queue so that the */
@@ -1921,7 +1926,7 @@ manageSonglistLoadFile (void *udata, const char *fn)
   uimusicqTruncateQueueCallback (manage->slmusicq);
 
   snprintf (tbuff, sizeof (tbuff), "%d%c%s%c%d",
-      manage->musicqManageIdx, MSG_ARGS_RS, fn, MSG_ARGS_RS, EDIT_TRUE);
+      manage->musicqManageIdx, MSG_ARGS_RS, fn, MSG_ARGS_RS, manage->editmode);
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_PLAYLIST, tbuff);
 
   snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);

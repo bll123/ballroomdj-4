@@ -173,7 +173,7 @@ static void mainPlaybackSendSongFinish (maindata_t *mainData, const char *args);
 static void mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom);
 static void mainAddTemporarySong (maindata_t *mainData, char *args);
 static time_t mainCalcStopTime (time_t stopTime);
-static bool mainCheckMQStopTime (maindata_t *mainData, time_t nStopTime);
+static bool mainCheckMusicQStopTime (maindata_t *mainData, time_t nStopTime);
 static playlist_t * mainNextPlaylist (maindata_t *mainData);
 static void mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom);
 
@@ -1424,7 +1424,7 @@ mainMusicQueueFill (maindata_t *mainData)
   stopTime = playlistGetConfigNum (playlist, PLAYLIST_STOP_TIME);
   if (editmode == EDIT_FALSE && stopTime > 0) {
     nStopTime = mainCalcStopTime (stopTime);
-    stopatflag = mainCheckMQStopTime (mainData, nStopTime);
+    stopatflag = mainCheckMusicQStopTime (mainData, nStopTime);
   }
 
   /* want current + playerqLen songs */
@@ -1456,11 +1456,11 @@ mainMusicQueueFill (maindata_t *mainData)
     }
 
     if (editmode == EDIT_FALSE && stopTime > 0) {
-      stopatflag = mainCheckMQStopTime (mainData, nStopTime);
+      stopatflag = mainCheckMusicQStopTime (mainData, nStopTime);
     }
 
     if (song == NULL || stopatflag) {
-      logMsg (LOG_DBG, LOG_MAIN, "song is null");
+      logMsg (LOG_DBG, LOG_MAIN, "song is null or stop-at");
       playlist = mainNextPlaylist (mainData);
       stopatflag = false;
       stopTime = playlistGetConfigNum (playlist, PLAYLIST_STOP_TIME);
@@ -1468,7 +1468,7 @@ mainMusicQueueFill (maindata_t *mainData)
         nStopTime = mainCalcStopTime (stopTime);
       }
       if (editmode == EDIT_FALSE && stopTime > 0) {
-        stopatflag = mainCheckMQStopTime (mainData, nStopTime);
+        stopatflag = mainCheckMusicQStopTime (mainData, nStopTime);
       }
       continue;
     }
@@ -2875,7 +2875,7 @@ mainCalcStopTime (time_t stopTime)
 }
 
 static bool
-mainCheckMQStopTime (maindata_t *mainData, time_t nStopTime)
+mainCheckMusicQStopTime (maindata_t *mainData, time_t nStopTime)
 {
   time_t  currTime;
   time_t  qDuration;
