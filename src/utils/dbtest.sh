@@ -100,18 +100,42 @@ function cleanallaudiofiletags {
   done
 }
 
+function setorgregex {
+  org=$1
+
+  gconf=data/bdjconfig.txt
+  sed -e "/^PATHFMT/ { n ; s~.*~..${org}~ ; }" \
+      ${gconf} > ${gconf}.n
+  mv -f ${gconf}.n ${gconf}
+}
+
+NUMM=119
+NUMB=15
+NUMBL1=$(($NUMB-1))
+NUMR=13
+
+INB=test-templates/test-m-b.txt
+INC=test-templates/test-m-c.txt
+IND=test-templates/test-m-c.txt
+INR=test-templates/test-m-regex.txt
+INRDAT=test-templates/test-m-regex-dat.txt
+INRDT=test-templates/test-m-regex-dt.txt
+INRDTAT=test-templates/test-m-regex-dtat.txt
 TDBB=tmp/test-m-b.dat
 TDBC=tmp/test-m-c.dat
 TDBD=tmp/test-m-d.dat
+TDBRDAT=tmp/test-m-r-dat.dat
+TDBRDT=tmp/test-m-r-dt.dat
+TDBRDTAT=tmp/test-m-r-dtat.dat
 TMPA=tmp/dbtesta.txt
 TMPB=tmp/dbtestb.txt
+
+./src/utils/mktestsetup.sh --force
 
 # get music dir
 hostname=$(hostname)
 mconf=data/${hostname}/bdjconfig.txt
 musicdir=$(sed -n -e '/^DIRMUSIC/ { n; s/^\.\.//; p ; }' $mconf)
-
-./src/utils/mktestsetup.sh --force
 
 # main test db : rebuild of standard test database
 tname=rebuild-basic
@@ -120,7 +144,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
   --rebuild \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
-exp="found 119 skip 0 indb 0 new 119 updated 0 notaudio 0 writetag 0"
+exp="found ${NUMM} skip 0 indb 0 new ${NUMM} updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
 ./bin/bdj4 --tdbcompare data/musicdb.dat test-templates/musicdb.dat
@@ -135,7 +159,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
   --checknew \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
-exp="found 119 skip 119 indb 119 new 0 updated 0 notaudio 0 writetag 0"
+exp="found ${NUMM} skip ${NUMM} indb ${NUMM} new 0 updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
 ./bin/bdj4 --tdbcompare data/musicdb.dat test-templates/musicdb.dat
@@ -150,7 +174,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
   --updfromtags \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
-exp="found 119 skip 0 indb 119 new 0 updated 119 notaudio 0 writetag 0"
+exp="found ${NUMM} skip 0 indb ${NUMM} new 0 updated ${NUMM} notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
 ./bin/bdj4 --tdbcompare data/musicdb.dat test-templates/musicdb.dat
@@ -161,18 +185,18 @@ disp $tname $rc $crc
 # create test db w/no data
 ./src/utils/mktestsetup.sh \
     --emptydb \
-    --infile test-templates/test-m-c.txt \
+    --infile $INC \
     --outfile $TDBD
 # create test db w/all songs
 ./src/utils/mktestsetup.sh \
-    --infile test-templates/test-m-c.txt \
+    --infile $INC \
     --outfile $TDBC
 # save the cha cha
 mv -f test-music/001-chacha.mp3 tmp
 # create test db w/o chacha
 # will copy tmp/test-m-b.dat to data/
 ./src/utils/mktestsetup.sh \
-    --infile test-templates/test-m-b.txt \
+    --infile $INB \
     --outfile $TDBB
 
 # test db : rebuild of test-m-b
@@ -188,7 +212,7 @@ else
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
-  exp="found 14 skip 0 indb 0 new 14 updated 0 notaudio 0 writetag 0"
+  exp="found ${NUMBL1} skip 0 indb 0 new ${NUMBL1} updated 0 notaudio 0 writetag 0"
   check $tname "$got" "$exp"
   rc=$?
   ./bin/bdj4 --tdbcompare data/musicdb.dat $TDBB
@@ -207,7 +231,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
   --checknew \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
-exp="found 15 skip 14 indb 14 new 1 updated 0 notaudio 0 writetag 0"
+exp="found ${NUMB} skip ${NUMBL1} indb ${NUMBL1} new 1 updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
 ./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC
@@ -225,7 +249,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
   --rebuild \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
-exp="found 15 skip 0 indb 0 new 15 updated 0 notaudio 0 writetag 0"
+exp="found ${NUMB} skip 0 indb 0 new ${NUMB} updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
 # no db comparison
@@ -243,7 +267,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
   --writetags \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
-exp="found 15 skip 0 indb 15 new 0 updated 0 notaudio 0 writetag 15"
+exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated 0 notaudio 0 writetag ${NUMB}"
 check $tname "$got" "$exp"
 rc=$?
 ./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC
@@ -271,7 +295,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
   --writetags \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
-exp="found 15 skip 0 indb 15 new 0 updated 0 notaudio 0 writetag 15"
+exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated 0 notaudio 0 writetag ${NUMB}"
 check $tname "$got" "$exp"
 rc=$?
 ./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC
@@ -298,7 +322,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
   --updfromtags \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
-exp="found 15 skip 0 indb 15 new 0 updated 15 notaudio 0 writetag 0"
+exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated ${NUMB} notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
 ./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC
@@ -314,8 +338,74 @@ if [[ $rc -eq 0 && $crc -eq 0 ]]; then
 fi
 disp $tname $rc $crc
 
+# create test regex db w/tags (dance/artist - title)
+./src/utils/mktestsetup.sh \
+    --infile $INRDAT \
+    --outfile $TDBRDAT
+# create test regex db w/tags (dance/title)
+./src/utils/mktestsetup.sh \
+    --infile $INRDT \
+    --outfile $TDBRDT
+# create test regex db w/tags (dance/tn-artist - title)
+./src/utils/mktestsetup.sh \
+    --infile $INRDTAT \
+    --outfile $TDBRDTAT
+# create test regex db w/o tags
+# only want test music, not db
+./src/utils/mktestsetup.sh \
+    --infile $INR \
+    --outfile $TMPA
+
+# test regex db : get artist/title from file path
+tname=rebuild-file-path-dat
+setorgregex '{%DANCE%/}{%ARTIST% - }{%TITLE%}'
+got=$(./bin/bdj4 --bdj4dbupdate \
+  --debug 262175 \
+  --rebuild \
+  --dbtopdir "${musicdir}" \
+  --cli --wait --verbose)
+exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
+check $tname "$got" "$exp"
+rc=$?
+./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDAT
+crc=$?
+compcheck $tname $crc
+disp $tname $rc $crc
+
+# test regex db : get artist/title from file path
+tname=rebuild-file-path-dt
+setorgregex '{%DANCE%/}{%TITLE%}'
+got=$(./bin/bdj4 --bdj4dbupdate \
+  --debug 262175 \
+  --rebuild \
+  --dbtopdir "${musicdir}" \
+  --cli --wait --verbose)
+exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
+check $tname "$got" "$exp"
+rc=$?
+./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDT
+crc=$?
+compcheck $tname $crc
+disp $tname $rc $crc
+
+# test regex db : get tracknum-artist/title from file path
+tname=rebuild-file-path-dtat
+setorgregex '{%DANCE%/}{%TRACKNUMBER0%-}{%ARTIST% - }{%TITLE%}'
+got=$(./bin/bdj4 --bdj4dbupdate \
+  --debug 262175 \
+  --rebuild \
+  --dbtopdir "${musicdir}" \
+  --cli --wait --verbose)
+exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
+check $tname "$got" "$exp"
+rc=$?
+./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDTAT
+crc=$?
+compcheck $tname $crc
+disp $tname $rc $crc
+
 # remove test db, temporary files
-# rm -f $TDBB $TDBC $TDBD $TMPA $TMPB
+# rm -f $TDBB $TDBC $TDBD TDBRDAT TDBRDT TDBRDTAT $TMPA $TMPB
 
 echo "tests: $tcount pass: $pass fail: $fail"
 rc=1

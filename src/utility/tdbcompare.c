@@ -15,6 +15,7 @@
 #include "bdjvarsdfload.h"
 #include "fileop.h"
 #include "localeutil.h"
+#include "log.h"
 #include "musicdb.h"
 #include "slist.h"
 #include "song.h"
@@ -42,16 +43,19 @@ main (int argc, char *argv [])
   int         grc = 0;
   int         argcount = 0;
   dbidx_t     dbidx [DB_MAX];
+  loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
+  bool        loglevelset = false;
 
   static struct option bdj_options [] = {
-    { "bdj4",         no_argument,      NULL,   'B' },
-    { "tdbcompare",   no_argument,      NULL,   0 },
-    { "debugself",    no_argument,      NULL,   0 },
-    { "nodetach",     no_argument,      NULL,   0, },
-    { "verbose",      no_argument,      NULL,   'V', },
+    { "bdj4",         no_argument,        NULL,   'B' },
+    { "tdbcompare",   no_argument,        NULL,   0 },
+    { "debug",        required_argument,  NULL,   'd' },
+    { "debugself",    no_argument,        NULL,   0 },
+    { "nodetach",     no_argument,        NULL,   0, },
+    { "verbose",      no_argument,        NULL,   'V', },
   };
 
-  while ((c = getopt_long_only (argc, argv, "B3", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "B3Vd", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'B': {
         isbdj4 = true;
@@ -59,6 +63,13 @@ main (int argc, char *argv [])
       }
       case 'V': {
         verbose = true;
+        break;
+      }
+      case 'd': {
+        if (optarg) {
+          loglevel = atol (optarg);
+          loglevelset = true;
+        }
         break;
       }
       default: {
@@ -78,6 +89,11 @@ main (int argc, char *argv [])
   audiotagInit ();
 
   bdjvarsdfloadInit ();
+
+  if (! loglevelset) {
+    loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
+  }
+  logStartAppend ("tdbcompare", "td", loglevel);
 
   for (int i = 0; i < DB_MAX; ++i) {
     dbfn [i] = NULL;

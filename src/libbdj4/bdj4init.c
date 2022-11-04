@@ -150,7 +150,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 'd': {
         if (optarg) {
-          loglevel = (loglevel_t) atoi (optarg);
+          loglevel = (loglevel_t) atol (optarg);
           loglevelset = true;
         }
         break;

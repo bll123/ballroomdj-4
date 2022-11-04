@@ -1,0 +1,250 @@
+# test-m-regex-tag.txt
+# 2022-11-4
+#
+# 'dance/artist - title' as filename
+# dance, artist, title tags are set so that a comparison can be made.
+#
+version
+..1
+count
+..13
+
+# Cha Cha
+
+KEY
+..0
+SOURCE
+..chacha.mp3
+DURATION
+..30620
+TITLE
+..chacha
+DANCE
+..Cha Cha
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Cha Cha/%03d-artist - chacha
+
+# Foxtrot
+
+KEY
+..1
+SOURCE
+..foxtrot.mp3
+DURATION
+..30460
+TITLE
+..foxtrot
+DANCE
+..Foxtrot
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Foxtrot/%03d-artist - foxtrot
+
+# Jive
+
+KEY
+..2
+SOURCE
+..jive.mp3
+DURATION
+..30010
+TITLE
+..jive
+DANCE
+..Jive
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Jive/%03d-artist - jive
+
+# Quickstep
+
+KEY
+..3
+SOURCE
+..quickstep.mp3
+DURATION
+..29860
+TITLE
+..quickstep
+DANCE
+..Quickstep
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Quickstep/%03d-artist - quickstep
+
+# Rumba
+
+KEY
+..4
+SOURCE
+..rumba.mp3
+DURATION
+..30950
+TITLE
+..rumba
+DANCE
+..Rumba
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Rumba/%03d-artist - rumba
+
+# Salsa
+
+KEY
+..5
+SOURCE
+..salsa.mp3
+DURATION
+..31310
+TITLE
+..salsa
+DANCE
+..Salsa
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Salsa/%03d-artist - salsa
+
+# Samba
+
+KEY
+..6
+SOURCE
+..samba.mp3
+DURATION
+..30460
+TITLE
+..samba
+DANCE
+..Samba
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Samba/%03d-artist - samba
+
+# Tango
+
+KEY
+..7
+SOURCE
+..tango.mp3
+DURATION
+..30420
+TITLE
+..tango
+DANCE
+..Tango
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Tango/%03d-artist - tango
+
+# Waltz
+
+KEY
+..8
+SOURCE
+..waltz.mp3
+DURATION
+..30630
+TITLE
+..waltz
+DANCE
+..Waltz
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Waltz/%03d-artist - waltz
+
+KEY
+..9
+SOURCE
+..waltz.flac
+DURATION
+..30630
+TITLE
+..waltz-flac
+DANCE
+..Waltz
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Waltz/%03d-artist - waltz-flac
+
+KEY
+..10
+SOURCE
+..waltz.m4a
+DURATION
+..30660
+TITLE
+..waltz
+DANCE
+..Waltz
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Waltz/%03d-artist - waltz
+
+KEY
+..11
+SOURCE
+..waltz.opus
+DURATION
+..30630
+TITLE
+..waltz-opus
+DANCE
+..Waltz
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Waltz/%03d-artist - waltz-opus
+
+KEY
+..12
+SOURCE
+..waltz.ogg
+DURATION
+..30630
+TITLE
+..waltz-ogg
+DANCE
+..Waltz
+TRACKNUMBER
+..%d
+ARTIST
+..artist
+DEST
+..Waltz/%03d-artist - waltz-ogg
+

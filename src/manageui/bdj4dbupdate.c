@@ -658,7 +658,7 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
     if (! connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
       connConnect (dbupdate->conn, ROUTE_DBTAG);
     }
-    if (dbupdate->cli) {
+    if (! dbupdate->cli) {
       if (! connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
         connConnect (dbupdate->conn, ROUTE_MANAGEUI);
       }

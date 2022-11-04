@@ -27,6 +27,7 @@
  *  pu - player ui
  *  rc - mobile remote control
  *  st - starter
+ *  td - tdbcompare
  *  tg - bdj4tags
  *  tm - tmusicsetup
  *  ts - testsuite

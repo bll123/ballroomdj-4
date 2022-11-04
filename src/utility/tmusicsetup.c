@@ -15,6 +15,7 @@
 #include "bdj4.h"
 #include "bdjopt.h"
 #include "bdjvarsdfload.h"
+#include "dirop.h"
 #include "filemanip.h"
 #include "fileop.h"
 #include "genre.h"
@@ -35,6 +36,7 @@
 
 enum {
   TM_SOURCE = TAG_KEY_MAX + 1,
+  TM_DEST = TAG_KEY_MAX + 2,
   TM_MAX_DANCE = 20,        // normally 14 or so in the standard template.
 };
 
@@ -48,6 +50,7 @@ static datafilekey_t tmdfkeys [] = {
   { "DANCE",                TAG_DANCE,                VALUE_STR, NULL, -1 },
   { "DANCELEVEL",           TAG_DANCELEVEL,           VALUE_STR, NULL, -1 },
   { "DANCERATING",          TAG_DANCERATING,          VALUE_STR, NULL, -1 },
+  { "DEST",                 TM_DEST,                  VALUE_STR, NULL, -1 },
   { "DISC",                 TAG_DISCNUMBER,           VALUE_STR, NULL, -1 },
   { "DISCTOTAL",            TAG_DISCTOTAL,            VALUE_STR, NULL, -1 },
   { "DURATION",             TAG_DURATION,             VALUE_STR, NULL, -1 },
@@ -91,11 +94,14 @@ main (int argc, char *argv [])
   char        infn [MAXPATHLEN];
   musicdb_t   *db;
   slist_t     *empty;
+  loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
+  bool        loglevelset = false;
 
   static struct option bdj_options [] = {
     { "bdj3tags",     no_argument,        NULL,   '3' },
     { "bdj4",         no_argument,        NULL,   'B' },
     { "debugself",    no_argument,        NULL,   0 },
+    { "debug",        no_argument,        NULL,   'd' },
     { "emptydb",      no_argument,        NULL,   'E' },
     { "infile",       required_argument,  NULL,   'I' },
     { "msys",         no_argument,        NULL,   0 },
@@ -108,7 +114,7 @@ main (int argc, char *argv [])
   strlcpy (dbfn, "test-templates/musicdb.dat", sizeof (dbfn));
   strlcpy (infn, "test-templates/test-music.txt", sizeof (infn));
 
-  while ((c = getopt_long_only (argc, argv, "B3O:I:E", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "B3O:I:Ed:", bdj_options, &option_index)) != -1) {
     switch (c) {
       case '3': {
         clbdj3tags = true;
@@ -116,6 +122,13 @@ main (int argc, char *argv [])
       }
       case 'B': {
         isbdj4 = true;
+        break;
+      }
+      case 'd': {
+        if (optarg) {
+          loglevel = atol (optarg);
+          loglevelset = true;
+        }
         break;
       }
       case 'E': {
@@ -160,7 +173,10 @@ main (int argc, char *argv [])
   bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
   bdjvarsdfloadInit ();
 
-  logStart ("tmusicsetup", "tm", LOG_ALL);
+  if (! loglevelset) {
+    loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
+  }
+  logStartAppend ("tmusicsetup", "tm", loglevel);
 
   /* create an entirely new database */
   fileopDelete (dbfn);
@@ -180,7 +196,7 @@ main (int argc, char *argv [])
     tagdata = updateData (tmlist, key);
 
     src = ilistGetStr (tmlist, key, TM_SOURCE);
-    dest = ilistGetStr (tmlist, key, TAG_TITLE);
+    dest = ilistGetStr (tmlist, key, TM_DEST);
     fn = createFile (src, dest);
     audiotagWriteTags (fn, empty, tagdata, 0, AT_UPDATE_MOD_TIME);
     if (emptydb) {
@@ -241,7 +257,7 @@ updateData (ilist_t *tmlist, ilistidx_t key)
     }
 
     ilistSetStr (tmlist, key, dfkey->itemkey, nval);
-    if (dfkey->itemkey != TM_SOURCE) {
+    if (dfkey->itemkey != TM_SOURCE && dfkey->itemkey != TM_DEST) {
       slistSetStr (tagdata, tagdefs [dfkey->itemkey].tag, nval);
     }
   }
@@ -256,6 +272,7 @@ updateData (ilist_t *tmlist, ilistidx_t key)
 static const char *
 createFile (const char *src, const char *dest)
 {
+  char        dir [MAXPATHLEN];
   char        from [MAXPATHLEN];
   char        to [MAXPATHLEN];
   pathinfo_t  *pi;
@@ -265,8 +282,12 @@ createFile (const char *src, const char *dest)
     fprintf (stderr, "no source file: %s\n", src);
   }
   pi = pathInfo (src);
-  snprintf (to, sizeof (to), "%s/%s%*s", tmusicdir, dest,
+  snprintf (to, sizeof (to), "%s/%s%.*s", tmusicdir, dest,
       (int) pi->elen, pi->extension);
+  pathInfoFree (pi);
+  pi = pathInfo (to);
+  snprintf (dir, sizeof (dir), "%.*s", (int) pi->dlen, pi->dirname);
+  diropMakeDir (dir);
 
   filemanipCopy (from, to);
   pathInfoFree (pi);

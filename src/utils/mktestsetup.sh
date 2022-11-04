@@ -1,14 +1,17 @@
 #!/bin/bash
 
 cwd=$(pwd)
-case ${cwd} in
-  */utils)
-    cd ../..
-    ;;
-  */src)
-    cd ..
-    ;;
-esac
+while : ; do
+  case ${cwd} in
+    */bdj4)
+      break
+      ;;
+    *)
+      cd ..
+      cwd=$(pwd)
+      ;;
+  esac
+done
 
 systype=$(uname -s)
 arch=$(uname -m)

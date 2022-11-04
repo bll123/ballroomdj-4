@@ -1,5 +1,5 @@
 # test-m-c.txt
-# 2022-11-3
+# 2022-11-4
 #
 # with the cha cha
 #
@@ -42,6 +42,8 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-chacha
+DEST
+..%03d-chacha
 
 # Foxtrot
 
@@ -75,6 +77,8 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-foxtrot
+DEST
+..%03d-foxtrot
 
 # Jive
 
@@ -107,6 +111,8 @@ DANCE
 DANCERATING
 ..Great
 TITLE
+..%03d-jive
+DEST
 ..%03d-jive
 
 # Quickstep
@@ -143,6 +149,8 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-quickstep
+DEST
+..%03d-quickstep
 
 # Rumba
 
@@ -177,6 +185,8 @@ DANCERATING
 FAVORITE
 ..bluestar
 TITLE
+..%03d-rumba
+DEST
 ..%03d-rumba
 
 # Salsa
@@ -213,6 +223,8 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-salsa
+DEST
+..%03d-salsa
 
 # Samba
 
@@ -246,6 +258,8 @@ DANCERATING
 ..Great
 TITLE
 ..%03d-samba
+DEST
+..%03d-samba
 
 # Tango
 
@@ -278,6 +292,8 @@ DANCE
 DANCERATING
 ..Great
 TITLE
+..%03d-tango
+DEST
 ..%03d-tango
 
 # Waltz
@@ -322,6 +338,8 @@ FAVORITE
 ..redstar
 TITLE
 ..%03d-waltz
+DEST
+..%03d-waltz
 
 KEY
 ..9
@@ -357,6 +375,8 @@ FAVORITE
 ..bluestar
 TITLE
 ..%03d-waltz-flac
+DEST
+..%03d-waltz-flac
 
 KEY
 ..10
@@ -389,6 +409,8 @@ DANCE
 DANCERATING
 ..Great
 TITLE
+..%03d-waltz
+DEST
 ..%03d-waltz
 
 KEY
@@ -425,6 +447,8 @@ FAVORITE
 ..purplestar
 TITLE
 ..%03d-waltz-opus
+DEST
+..%03d-waltz-opus
 
 KEY
 ..12
@@ -457,6 +481,8 @@ DANCE
 DANCERATING
 ..Great
 TITLE
+..%03d-waltz-ogg
+DEST
 ..%03d-waltz-ogg
 
 # announcements
@@ -493,6 +519,8 @@ DANCERATING
 ..Great
 TITLE
 ..ann-waltz
+DEST
+..ann-waltz
 
 KEY
 ..14
@@ -525,4 +553,6 @@ DANCE
 DANCERATING
 ..Great
 TITLE
+..ann-tango
+DEST
 ..ann-tango

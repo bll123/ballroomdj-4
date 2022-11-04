@@ -1,0 +1,146 @@
+# test-m-regex.txt
+# 2022-11-4
+#
+# 'dance/artist - title' as filename
+# few if any audio file tags
+#
+version
+..1
+count
+..13
+
+# Cha Cha
+
+KEY
+..0
+SOURCE
+..chacha.mp3
+DURATION
+..30620
+DEST
+..Cha Cha/001-artist - chacha
+
+# Foxtrot
+
+KEY
+..1
+SOURCE
+..foxtrot.mp3
+DURATION
+..30460
+DEST
+..Foxtrot/001-artist - foxtrot
+
+# Jive
+
+KEY
+..2
+SOURCE
+..jive.mp3
+DURATION
+..30010
+DEST
+..Jive/001-artist - jive
+
+# Quickstep
+
+KEY
+..3
+SOURCE
+..quickstep.mp3
+DURATION
+..29860
+DEST
+..Quickstep/001-artist - quickstep
+
+# Rumba
+
+KEY
+..4
+SOURCE
+..rumba.mp3
+DURATION
+..30950
+DEST
+..Rumba/001-artist - rumba
+
+# Salsa
+
+KEY
+..5
+SOURCE
+..salsa.mp3
+DURATION
+..31310
+DEST
+..Salsa/001-artist - salsa
+
+# Samba
+
+KEY
+..6
+SOURCE
+..samba.mp3
+DURATION
+..30460
+DEST
+..Samba/001-artist - samba
+
+# Tango
+
+KEY
+..7
+SOURCE
+..tango.mp3
+DURATION
+..30420
+DEST
+..Tango/001-artist - tango
+
+# Waltz
+
+KEY
+..8
+SOURCE
+..waltz.mp3
+DURATION
+..30630
+DEST
+..Waltz/001-artist - waltz
+
+KEY
+..9
+SOURCE
+..waltz.flac
+DURATION
+..30630
+DEST
+..Waltz/002-artist - waltz-flac
+
+KEY
+..10
+SOURCE
+..waltz.m4a
+DURATION
+..30660
+DEST
+..Waltz/003-artist - waltz
+
+KEY
+..11
+SOURCE
+..waltz.opus
+DURATION
+..30630
+DEST
+..Waltz/004-artist - waltz-opus
+
+KEY
+..12
+SOURCE
+..waltz.ogg
+DURATION
+..30630
+DEST
+..Waltz/005-artist - waltz-ogg
+

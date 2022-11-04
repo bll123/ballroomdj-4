@@ -1,14 +1,17 @@
 #!/bin/bash
 
 cwd=$(pwd)
-case ${cwd} in
-  */utils)
-    cd ../..
-    ;;
-  */src)
-    cd ..
-    ;;
-esac
+while : ; do
+  case ${cwd} in
+    */bdj4)
+      break
+      ;;
+    *)
+      cd ..
+      cwd=$(pwd)
+      ;;
+  esac
+done
 
 TESTMUSIC=test-templates/test-music.txt
 TESTDB=test-templates/musicdb.dat
@@ -59,8 +62,17 @@ if [[ ! -f $FLAG ||
     $outfile != $TESTDB ||
     $infile -nt $TESTDB ||
     $infile -nt $FLAG ]]; then
-  rm -f test-music/[0-9][0-9][0-9]-*
-  rm -f test-music/[a-z]*
+  case $(pwd) in
+    */bdj4)
+      ;;
+    *)
+      echo "invalid current dir $(pwd)"
+      exit 1
+      ;;
+  esac
+  if [[ -d test-music ]]; then
+    rm -rf test-music/*
+  fi
   ./bin/bdj4 --tmusicsetup $args
   touch $FLAG
 fi

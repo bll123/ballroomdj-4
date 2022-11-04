@@ -1610,7 +1610,7 @@ installerCopyTemplates (installer_t *installer)
 
         tval = slistGetStr (renamelist, sysvarsGetStr (SV_LOCALE_SHORT));
         if (tval != NULL) {
-          snprintf (tbuff, sizeof (tbuff), "%s%*s", tval, (int) pi->elen,
+          snprintf (tbuff, sizeof (tbuff), "%s%.*s", tval, (int) pi->elen,
               pi->extension);
         }
       }

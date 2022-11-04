@@ -3,7 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <assert.h>
 
@@ -22,8 +24,8 @@ pathinfo_t *
 pathInfo (const char *path)
 {
   pathinfo_t    *pi = NULL;
-  int           pos;
-  int           last;
+  ssize_t       pos;
+  ssize_t       last;
   bool          chkforext = true;
   bool          trailingslash = false;
 
@@ -40,12 +42,12 @@ pathInfo (const char *path)
   pi->blen = 0;
   pi->elen = 0;
 
-  last = (int) strlen (path) - 1;
+  last = strlen (path) - 1;
   chkforext = true;
   trailingslash = false;
   pos = 0;
 
-  for (int i = last; i >= 0; --i) {
+  for (ssize_t i = last; i >= 0; --i) {
     if (path [i] == '/' || path [i] == '\\') {
       pos = i + 1;
       if (pos >= last) {
@@ -67,13 +69,13 @@ pathInfo (const char *path)
   }
   pi->basename = &path [pos];
   pi->filename = &path [pos];
-  pi->blen = (size_t) (last - pos - pi->elen + 1);
-  pi->flen = (size_t) (last - pos + 1);
+  pi->blen = last - pos - pi->elen + 1;
+  pi->flen = last - pos + 1;
   if (trailingslash && pos > 1) {
     --pi->blen;
     --pi->flen;
   }
-  pi->dlen = (size_t) (last - pi->flen);
+  pi->dlen = last - pi->flen;
   if (trailingslash && last > 0) {
     --pi->dlen;
   }
@@ -84,10 +86,10 @@ pathInfo (const char *path)
     ++pi->dlen;
   }
 #if 0  // debugging
- fprintf (stderr, "%s : last:%ld pos:%ld\n", path, last, pos);
- fprintf (stderr, "  dlen:%ld\n", pi->dlen);
- fprintf (stderr, "  flen:%ld blen:%ld elen:%ld ts:%d\n", pi->flen, pi->blen, pi->elen, trailingslash);
+ fprintf (stderr, "%s : last:%"PRId64" pos:%"PRId64"\n", path, (int64_t) last, (int64_t) pos);
+ fprintf (stderr, "  dlen:%"PRId64"\n", (int64_t) pi->dlen);
  fprintf (stderr, "  dir:%.*s\n", (int) pi->dlen, pi->dirname);
+ fprintf (stderr, "  flen:%"PRId64" blen:%"PRId64" elen:%"PRId64" ts:%d\n", (int64_t) pi->flen, (int64_t) pi->blen, (int64_t) pi->elen, trailingslash);
  fprintf (stderr, "  file:%.*s\n", (int) pi->flen, pi->filename);
  fprintf (stderr, "  base:%.*s\n", (int) pi->blen, pi->basename);
  fprintf (stderr, "  ext:%.*s\n", (int) pi->elen, pi->extension);
