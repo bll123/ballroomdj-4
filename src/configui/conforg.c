@@ -37,13 +37,13 @@ confuiInitOrganization (confuigui_t *gui)
   gui->org->orgopt = orgoptAlloc ();
   tlist = orgoptGetList (gui->org->orgopt);
 
-  gui->uiitem [CONFUI_COMBOBOX_AO_PATHFMT].displist = tlist;
+  gui->uiitem [CONFUI_COMBOBOX_ORGPATH].displist = tlist;
   slistStartIterator (tlist, &iteridx);
-  gui->uiitem [CONFUI_COMBOBOX_AO_PATHFMT].listidx = 0;
+  gui->uiitem [CONFUI_COMBOBOX_ORGPATH].listidx = 0;
   count = 0;
   while ((p = slistIterateValueData (tlist, &iteridx)) != NULL) {
-    if (strcmp (p, bdjoptGetStr (OPT_G_AO_PATHFMT)) == 0) {
-      gui->uiitem [CONFUI_COMBOBOX_AO_PATHFMT].listidx = count;
+    if (strcmp (p, bdjoptGetStr (OPT_G_ORGPATH)) == 0) {
+      gui->uiitem [CONFUI_COMBOBOX_ORGPATH].listidx = count;
       break;
     }
     ++count;
@@ -76,8 +76,8 @@ confuiBuildUIOrganization (confuigui_t *gui)
 
   /* CONTEXT: configuration: the audio file organization path */
   confuiMakeItemCombobox (gui, &vbox, &sg, _("Organisation Path"),
-      CONFUI_COMBOBOX_AO_PATHFMT, OPT_G_AO_PATHFMT,
-      confuiOrgPathSelect, bdjoptGetStr (OPT_G_AO_PATHFMT));
+      CONFUI_COMBOBOX_ORGPATH, OPT_G_ORGPATH,
+      confuiOrgPathSelect, bdjoptGetStr (OPT_G_ORGPATH));
   /* CONTEXT: configuration: examples displayed for the audio file organization path */
   confuiMakeItemLabelDisp (gui, &vbox, &sg, _("Examples"),
       CONFUI_WIDGET_AO_EXAMPLE_1, -1);

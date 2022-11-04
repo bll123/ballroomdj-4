@@ -46,7 +46,7 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "CLOCKDISP",          OPT_G_CLOCK_DISP,         VALUE_NUM, bdjoptConvClock, -1 },
   { "DEBUGLVL",           OPT_G_DEBUGLVL,           VALUE_NUM, NULL, -1 },
   { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_NUM, convBoolean, -1 },
-  { "PATHFMT",            OPT_G_AO_PATHFMT,         VALUE_STR, NULL, -1 },
+  { "ORGPATH",            OPT_G_ORGPATH,            VALUE_STR, NULL, -1 },
   { "PLAYERQLEN",         OPT_G_PLAYERQLEN,         VALUE_NUM, NULL, -1 },
   { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_STR, NULL, -1 },
   { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_NUM, bdjoptConvWriteTags, -1 },

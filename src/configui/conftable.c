@@ -251,7 +251,7 @@ confuiSwitchTable (void *udata, long pagenum)
     confuiUpdateRemctrlQrcode (gui);
   }
   if (gui->tablecurr == CONFUI_ID_ORGANIZATION) {
-    confuiUpdateOrgExamples (gui, bdjoptGetStr (OPT_G_AO_PATHFMT));
+    confuiUpdateOrgExamples (gui, bdjoptGetStr (OPT_G_ORGPATH));
   }
   if (gui->tablecurr == CONFUI_ID_DISP_SEL_LIST) {
     /* be sure to create the listing first */

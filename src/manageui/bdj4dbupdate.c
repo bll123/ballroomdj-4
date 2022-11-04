@@ -215,7 +215,7 @@ main (int argc, char *argv[])
     dbupdate.haveolddirlist = true;
   }
 
-  dbupdate.org = orgAlloc (bdjoptGetStr (OPT_G_AO_PATHFMT));
+  dbupdate.org = orgAlloc (bdjoptGetStr (OPT_G_ORGPATH));
 
   /* any file with a double quote or backslash is rejected */
   /* on windows, only the double quote is rejected */

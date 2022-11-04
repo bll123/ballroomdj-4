@@ -178,18 +178,18 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
 }
 
 void
-confuiUpdateOrgExamples (confuigui_t *gui, char *pathfmt)
+confuiUpdateOrgExamples (confuigui_t *gui, char *orgpath)
 {
   char      *data;
   org_t     *org;
   UIWidget  *uiwidgetp;
 
-  if (pathfmt == NULL) {
+  if (orgpath == NULL) {
     return;
   }
 
   logProcBegin (LOG_PROC, "confuiUpdateOrgExamples");
-  org = orgAlloc (pathfmt);
+  org = orgAlloc (orgpath);
   assert (org != NULL);
 
   data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..1\nALBUM\n..Smooth\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Cha Cha\nGENRE\n..Ballroom Dance\nTITLE\n..Smooth\n";
@@ -470,11 +470,11 @@ confuiOrgPathSelect (void *udata, long idx)
   int         widx;
 
   logProcBegin (LOG_PROC, "confuiOrgPathSelect");
-  widx = CONFUI_COMBOBOX_AO_PATHFMT;
+  widx = CONFUI_COMBOBOX_ORGPATH;
   sval = slistGetDataByIdx (gui->uiitem [widx].displist, idx);
   gui->uiitem [widx].listidx = idx;
   if (sval != NULL && *sval) {
-    bdjoptSetStr (OPT_G_AO_PATHFMT, sval);
+    bdjoptSetStr (OPT_G_ORGPATH, sval);
   }
   confuiUpdateOrgExamples (gui, sval);
   logProcEnd (LOG_PROC, "confuiOrgPathSelect", "");

@@ -37,7 +37,7 @@ typedef enum {
 
 enum {
   CONFUI_BEGIN,
-  CONFUI_COMBOBOX_AO_PATHFMT,
+  CONFUI_COMBOBOX_ORGPATH,
   CONFUI_COMBOBOX_MAX,
   CONFUI_ENTRY_DANCE_TAGS,
   CONFUI_ENTRY_DANCE_ANNOUNCEMENT,
@@ -360,7 +360,7 @@ void confuiSetStatusMsg (confuigui_t *gui, const char *msg);
 void confuiSelectFileDialog (confuigui_t *gui, int widx, char *startpath, char *mimefiltername, char *mimetype);
 void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
-void confuiUpdateOrgExamples (confuigui_t *gui, char *pathfmt);
+void confuiUpdateOrgExamples (confuigui_t *gui, char *orgpath);
 bool confuiOrgPathSelect (void *udata, long idx);
 
 /* confdance.c */

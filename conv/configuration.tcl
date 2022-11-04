@@ -189,6 +189,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "DONEMSG" } { set key "COMPLETEMSG" }
         if { $key eq "SHOWBPM" } { set key "BPM" }
         if { $key eq "PLAYERQLEN0" } { set key "PLAYERQLEN" }
+        if { $key eq "PATHFMT" } { set key "ORGPATH" }
         if { $key eq "MUSICDIR" } {
           set key DIRMUSIC
           set musicdir $value
@@ -311,7 +312,7 @@ foreach path [list {} profiles $mpath $mppath] {
             set value 360000
           }
         }
-        if { [regexp {PATHFMT$} $key] } {
+        if { [regexp {ORGPATH$} $key] } {
           # various is no longer supported, remove the group entirely.
           regsub -all "{\[^A-Z\]*PVARIOUS\[^A-Z\]*}" $value {} value
           # keyword is no longer supported, remove the group entirely.

@@ -26,27 +26,27 @@ foreach fn [list orgopt.txt autoselection.txt favorites.txt] {
 
 # orgopt.txt
 
-# get the user's PATHFMT
+# get the user's ORGPATH
 set ifh [open [file join $datatopdir data bdjconfig.txt] r]
 set next 0
 while { [gets $ifh line] >= 0 } {
   if { $next == 1 } {
-    set pathfmt $line
+    set orgpath $line
     break;
   }
-  if { $line eq "PATHFMT" } {
+  if { $line eq "ORGPATH" } {
     set next 1
   }
 }
 close $ifh
-regsub {^\.\.} $pathfmt {} pathfmt
+regsub {^\.\.} $orgpath {} orgpath
 
-# now check and make sure that the user's PATHFMT is in orgopt.txt
+# now check and make sure that the user's ORGPATH is in orgopt.txt
 set orgfn [file join $datatopdir data orgopt.txt]
 set ifh [open $orgfn r]
 set ok 0
 while { [gets $ifh line] >= 0 } {
-  if { $line eq $pathfmt } {
+  if { $line eq $orgpath } {
     set ok 1
   }
 }
@@ -55,7 +55,8 @@ close $ifh
 # if not found, add it to orgopt.txt
 if { $ok == 0 } {
   set fh [open $orgfn a]
-  puts $fh $pathfmt
+  puts $fh "# converted organization path"
+  puts $fh $orgpath
   close $fh
 }
 

@@ -353,7 +353,7 @@ main (int argc, char *argv [])
     bdjoptSetStr (OPT_M_DIR_MUSIC, bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA));
     /* set the organization path to the itunes standard */
     /* album-artist / album / disc-tracknum0 title */
-    bdjoptSetStr (OPT_G_AO_PATHFMT,
+    bdjoptSetStr (OPT_G_ORGPATH,
         "{%ALBUMARTIST%/}{%ALBUM%/}{%DISC%-}{%TRACKNUMBER0% }{%TITLE%}");
     bdjoptchanged = true;
   }

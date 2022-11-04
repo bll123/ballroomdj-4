@@ -32,7 +32,7 @@ typedef enum {
 } bdjbpm_t;
 
 typedef enum {
-  OPT_G_AO_PATHFMT,
+  OPT_G_ORGPATH,
   OPT_G_AUTOORGANIZE,
   OPT_G_BDJ3_COMPAT_TAGS,
   OPT_G_BPM,
