@@ -322,7 +322,7 @@ playlistResetAll (playlist_t *pl)
   }
 }
 
-char *
+const char *
 playlistGetName (playlist_t *pl)
 {
   if (pl == NULL) {

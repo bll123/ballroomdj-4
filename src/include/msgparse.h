@@ -10,7 +10,7 @@ typedef struct {
   dbidx_t   dbidx;
   int       dispidx;
   int       uniqueidx;
-  int       pflag;
+  int       pauseind;
 } mp_musicqupditem_t;
 
 typedef struct {

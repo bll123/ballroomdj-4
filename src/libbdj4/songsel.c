@@ -257,6 +257,7 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist,
     }
 
     ilistFree (ssmarks);
+    nlistFree (tmpdbidxlist);
   }
 
   /* for each dance */

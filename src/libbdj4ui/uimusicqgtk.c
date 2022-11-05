@@ -362,8 +362,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
 
   renderer = gtk_cell_renderer_pixbuf_new ();
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "pixbuf", MUSICQ_COL_PAUSEIND,
-      NULL);
+      "pixbuf", MUSICQ_COL_PAUSEIND, NULL);
   gtk_tree_view_column_set_title (column, "");
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uiw->musicqTree), column);
@@ -705,7 +704,7 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
     GdkPixbuf     *pixbuf;
 
     pixbuf = NULL;
-    if (musicqupditem->pflag) {
+    if (musicqupditem->pauseind) {
       pixbuf = uimusicq->pausePixbuf.pixbuf;
     }
 

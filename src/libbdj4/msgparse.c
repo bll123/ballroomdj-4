@@ -57,7 +57,7 @@ msgparseMusicQueueData (char *args)
     }
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     if (p != NULL) {
-      musicqupditem->pflag = atoi (p);
+      musicqupditem->pauseind = atoi (p);
     }
 
     nlistSetData (musicqupdate->dispList, idx, musicqupditem);
