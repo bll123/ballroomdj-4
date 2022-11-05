@@ -183,6 +183,8 @@ typedef struct {
   UIWidget        *slmusicqtabwidget;
   UIWidget        *slsongseltabwidget;
   char            *sloldname;
+  /* prior name is used by create-from-playlist */
+  char            *slpriorname;
   uisongfilter_t  *uisongfilter;
   UIWidget        cfplDialog;
   uidropdown_t    *cfplsel;
@@ -345,6 +347,7 @@ main (int argc, char *argv[])
   manage.slnbtabid = uiutilsNotebookIDInit ();
   manage.mmnbtabid = uiutilsNotebookIDInit ();
   manage.sloldname = NULL;
+  manage.slpriorname = NULL;
   manage.slbackupcreated = false;
   manage.selusesonglist = false;
   manage.inload = false;
@@ -502,6 +505,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   uisfFree (manage->uisongfilter);
   dataFree (manage->sloldname);
+  dataFree (manage->slpriorname);
   uiutilsNotebookIDFree (manage->mainnbtabid);
   uiutilsNotebookIDFree (manage->slnbtabid);
   uiutilsNotebookIDFree (manage->mmnbtabid);
@@ -1708,6 +1712,7 @@ manageSonglistDelete (void *udata)
   oname = uimusicqGetSonglistName (manage->slmusicq);
   manageDeletePlaylist (&manage->statusMsg, oname);
   /* no save */
+  dataFree (manage->sloldname);
   manage->sloldname = NULL;
   manageSonglistNew (manage);
   return UICB_CONT;
@@ -1731,6 +1736,12 @@ manageSonglistCreateFromPlaylist (void *udata)
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: create from playlist");
   manageSonglistSave (manage);
+  /* if there are no songs, preserve the song list name, as */
+  /* the user may have typed in a new name before running create-from-pl */
+  dataFree (manage->slpriorname);
+  if (uimusicqGetCount (manage->slmusicq) <= 0) {
+    manage->slpriorname = strdup (uimusicqGetSonglistName (manage->slmusicq));
+  }
   manageSongListCFPLCreateDialog (manage);
   uiDropDownSelectionSetNum (manage->cfplsel, -1);
 
@@ -1872,9 +1883,16 @@ manageCFPLResponseHandler (void *udata, long responseid)
       /* the edit mode must be false to allow the stop time to be applied */
       manage->editmode = EDIT_FALSE;
       manageSonglistLoadFile (manage, fn);
+      /* make sure no save happens with the playlist being used */
+      dataFree (manage->sloldname);
+      manage->sloldname = NULL;
       manage->editmode = EDIT_TRUE;
-      /* CONTEXT: managementui: song list: default name for a new song list */
-      manageSetSonglistName (manage, _("New Song List"));
+      if (manage->slpriorname != NULL) {
+        manageSetSonglistName (manage, manage->slpriorname);
+      } else {
+        /* CONTEXT: managementui: song list: default name for a new song list */
+        manageSetSonglistName (manage, _("New Song List"));
+      }
       /* now tell main to clear the playlist queue so that the */
       /* automatic/sequenced playlist is no longer present */
       snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
@@ -2369,6 +2387,7 @@ manageSonglistLoadCheck (manageui_t *manage)
 
   if (! managePlaylistExists (name)) {
     /* make sure no save happens */
+    dataFree (manage->sloldname);
     manage->sloldname = NULL;
     manageSonglistNew (manage);
   }
