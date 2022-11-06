@@ -50,6 +50,7 @@ for f in $pattern; do
         latest=$f
       fi
       chmod a+rx $f
+      # BDJ4 has no malware in it.
       xattr -d com.apple.quarantine $f > /dev/null 2>&1
       ;;
   esac

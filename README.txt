@@ -62,8 +62,6 @@ Installation:
     b) Run the BallroomDJ 4 installer.
 
   MacOS:
-    The BallroomDJ 4 installer will not work on MacOS without step (a).
-
     a) Download the following two files and the bdj4 installer from:
 
          https://sourceforge.net/projects/ballroomdj4/files/

@@ -50,8 +50,8 @@ function compcheck {
 function checkaudiotags {
   grc=0
   for f in test-music/*; do
-    ./bin/bdj4 --bdj4tags "$f" > $TMPA
-    ./bin/bdj4 --tdbdump data/musicdb.dat "$(basename $f)" > $TMPB
+    ./bin/bdj4 --msys --bdj4tags "$f" > $TMPA
+    ./bin/bdj4 --msys --tdbdump data/musicdb.dat "$(basename $f)" > $TMPB
     diff $TMPA $TMPB > /dev/null 2>&1
     trc=$?
     if [[ $trc -ne 0 ]]; then
@@ -96,7 +96,7 @@ function setbdj3compatoff {
 
 function cleanallaudiofiletags {
   for f in test-music/*; do
-    ./bin/bdj4 --bdj4tags --cleantags --quiet "$f"
+    ./bin/bdj4 --msys --bdj4tags --cleantags --quiet "$f"
   done
 }
 
@@ -139,7 +139,7 @@ musicdir=$(sed -n -e '/^DIRMUSIC/ { n; s/^\.\.//; p ; }' $mconf)
 
 # main test db : rebuild of standard test database
 tname=rebuild-basic
-got=$(./bin/bdj4 --bdj4dbupdate \
+got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --debug 262175 \
   --rebuild \
   --dbtopdir "${musicdir}" \
@@ -147,14 +147,14 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMM} skip 0 indb 0 new ${NUMM} updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
-./bin/bdj4 --tdbcompare data/musicdb.dat test-templates/musicdb.dat
+./bin/bdj4 --msys --tdbcompare data/musicdb.dat test-templates/musicdb.dat
 crc=$?
 compcheck $tname $rc
 disp $tname $rc $crc
 
 # main test db : check-new with no changes
 tname=checknew-basic
-got=$(./bin/bdj4 --bdj4dbupdate \
+got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --debug 262175 \
   --checknew \
   --dbtopdir "${musicdir}" \
@@ -162,14 +162,14 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMM} skip ${NUMM} indb ${NUMM} new 0 updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
-./bin/bdj4 --tdbcompare data/musicdb.dat test-templates/musicdb.dat
+./bin/bdj4 --msys --tdbcompare data/musicdb.dat test-templates/musicdb.dat
 crc=$?
 compcheck $tname $rc
 disp $tname $rc $crc
 
 # main test db : update-from-tags with no changes
 tname=updfromtags-basic
-got=$(./bin/bdj4 --bdj4dbupdate \
+got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --debug 262175 \
   --updfromtags \
   --dbtopdir "${musicdir}" \
@@ -177,7 +177,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMM} skip 0 indb ${NUMM} new 0 updated ${NUMM} notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
-./bin/bdj4 --tdbcompare data/musicdb.dat test-templates/musicdb.dat
+./bin/bdj4 --msys --tdbcompare data/musicdb.dat test-templates/musicdb.dat
 crc=$?
 compcheck $tname $rc
 disp $tname $rc $crc
@@ -207,7 +207,7 @@ if [[ -f test-music/001-chacha.mp3 ]]; then
   disp $tname $rc $crc
 else
   tname=rebuild-test-db
-  got=$(./bin/bdj4 --bdj4dbupdate \
+  got=$(./bin/bdj4 --msys --bdj4dbupdate \
     --debug 262175 \
     --rebuild \
     --dbtopdir "${musicdir}" \
@@ -215,7 +215,7 @@ else
   exp="found ${NUMBL1} skip 0 indb 0 new ${NUMBL1} updated 0 notaudio 0 writetag 0"
   check $tname "$got" "$exp"
   rc=$?
-  ./bin/bdj4 --tdbcompare data/musicdb.dat $TDBB
+  ./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBB
   crc=$?
   compcheck $tname $rc
   disp $tname $rc $crc
@@ -226,7 +226,7 @@ mv -f tmp/001-chacha.mp3 test-music
 
 # test db : check-new w/cha cha
 tname=checknew-chacha
-got=$(./bin/bdj4 --bdj4dbupdate \
+got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --debug 262175 \
   --checknew \
   --dbtopdir "${musicdir}" \
@@ -234,7 +234,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMB} skip ${NUMBL1} indb ${NUMBL1} new 1 updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
-./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC
+./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBC
 crc=$?
 compcheck $tname $crc
 disp $tname $rc $crc
@@ -244,7 +244,7 @@ cleanallaudiofiletags
 
 # test db : rebuild with no tags
 tname=rebuild-no-tags
-got=$(./bin/bdj4 --bdj4dbupdate \
+got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --debug 262175 \
   --rebuild \
   --dbtopdir "${musicdir}" \
@@ -262,7 +262,7 @@ cp -f $TDBC data/musicdb.dat
 tname=writetags-bdj3-compat-on
 setwritetagson
 setbdj3compaton
-got=$(./bin/bdj4 --bdj4dbupdate \
+got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --debug 262175 \
   --writetags \
   --dbtopdir "${musicdir}" \
@@ -270,7 +270,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated 0 notaudio 0 writetag ${NUMB}"
 check $tname "$got" "$exp"
 rc=$?
-./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC
+./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBC
 crc=$?
 compcheck $tname $crc
 
@@ -290,7 +290,7 @@ cp -f $TDBC data/musicdb.dat
 tname=writetags-bdj3-compat-off
 setwritetagson
 setbdj3compatoff
-got=$(./bin/bdj4 --bdj4dbupdate \
+got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --debug 262175 \
   --writetags \
   --dbtopdir "${musicdir}" \
@@ -298,7 +298,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated 0 notaudio 0 writetag ${NUMB}"
 check $tname "$got" "$exp"
 rc=$?
-./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC
+./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBC
 crc=$?
 compcheck $tname $crc
 
@@ -317,7 +317,7 @@ cp -f $TDBD data/musicdb.dat
 # test db : update from tags
 tname=update-from-tags-empty-db
 setwritetagson
-got=$(./bin/bdj4 --bdj4dbupdate \
+got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --debug 262175 \
   --updfromtags \
   --dbtopdir "${musicdir}" \
@@ -325,7 +325,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated ${NUMB} notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
-./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC
+./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBC
 crc=$?
 compcheck $tname $crc
 
@@ -359,7 +359,7 @@ disp $tname $rc $crc
 # test regex db : get artist/title from file path
 tname=rebuild-file-path-dat
 setorgregex '{%DANCE%/}{%ARTIST% - }{%TITLE%}'
-got=$(./bin/bdj4 --bdj4dbupdate \
+got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --debug 262175 \
   --rebuild \
   --dbtopdir "${musicdir}" \
@@ -367,7 +367,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
-./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDAT
+./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBRDAT
 crc=$?
 compcheck $tname $crc
 disp $tname $rc $crc
@@ -375,7 +375,7 @@ disp $tname $rc $crc
 # test regex db : get artist/title from file path
 tname=rebuild-file-path-dt
 setorgregex '{%DANCE%/}{%TITLE%}'
-got=$(./bin/bdj4 --bdj4dbupdate \
+got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --debug 262175 \
   --rebuild \
   --dbtopdir "${musicdir}" \
@@ -383,7 +383,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
-./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDT
+./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBRDT
 crc=$?
 compcheck $tname $crc
 disp $tname $rc $crc
@@ -391,7 +391,7 @@ disp $tname $rc $crc
 # test regex db : get tracknum-artist/title from file path
 tname=rebuild-file-path-dtat
 setorgregex '{%DANCE%/}{%TRACKNUMBER0%-}{%ARTIST% - }{%TITLE%}'
-got=$(./bin/bdj4 --bdj4dbupdate \
+got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --debug 262175 \
   --rebuild \
   --dbtopdir "${musicdir}" \
@@ -399,7 +399,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
 check $tname "$got" "$exp"
 rc=$?
-./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDTAT
+./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBRDTAT
 crc=$?
 compcheck $tname $crc
 disp $tname $rc $crc

@@ -86,13 +86,8 @@ install (TARGETS
 
 if (APPLE)
  macUpdateRPath (bdj4main)
- macFixlibicu (bdj4main)
  macUpdateRPath (bdj4player)
- macFixlibicu (bdj4player)
  macUpdateRPath (bdj4marquee)
- macFixlibicu (bdj4marquee)
  macUpdateRPath (bdj4rc)
- macFixlibicu (bdj4rc)
  macUpdateRPath (bdj4mobmq)
- macFixlibicu (bdj4mobmq)
 endif()

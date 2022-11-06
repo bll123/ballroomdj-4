@@ -39,6 +39,7 @@ main (int argc, char *argv [])
     { "bdj4",         no_argument,      NULL,   'B' },
     { "tdbdump",      no_argument,      NULL,   0 },
     { "debugself",    no_argument,      NULL,   0 },
+    { "msys",         no_argument,        NULL,   0 },
     { "wait",         no_argument,      NULL,   0, },
     { "nodetach",     no_argument,      NULL,   0, },
     { "verbose",      no_argument,      NULL,   'V', },

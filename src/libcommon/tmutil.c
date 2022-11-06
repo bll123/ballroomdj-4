@@ -197,16 +197,29 @@ tmutilDisp (char *buff, size_t max, int type)
   tp = localtime (&s);
 #endif
   if (type == TM_CLOCK_ISO) {
-    strftime (buff, max, "%A %Y-%m-%d %k:%M", tp);
+    ssize_t    pos;
+
+    strftime (buff, max, "%A %Y-%m-%d %H:%M", tp);
+    pos = strlen (buff);
+    pos -= 5;
+    if (pos > 0 && buff [pos] == '0') {
+      buff [pos] = ' ';
+    }
   }
   if (type == TM_CLOCK_LOCAL) {
     strftime (buff, max, "%c", tp);
   }
   if (type == TM_CLOCK_TIME_12) {
-    strftime (buff, max, "%l:%M %P", tp);
+    strftime (buff, max, "%I:%M %p", tp);
+    if (*buff == '0') {
+      *buff = ' ';
+    }
   }
   if (type == TM_CLOCK_TIME_24) {
-    strftime (buff, max, "%k:%M", tp);
+    strftime (buff, max, "%H:%M", tp);
+    if (*buff == '0') {
+      *buff = ' ';
+    }
   }
   if (type == TM_CLOCK_OFF) {
     *buff = '\0';

@@ -53,6 +53,5 @@ install (TARGETS
 
 if (APPLE)
   macUpdateRPath (voltest)
-  macFixlibicu (voltest)
 endif()
 

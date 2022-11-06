@@ -603,19 +603,29 @@ sysvarsCheckMutagen (void)
 {
   char  buff [SV_MAX_SZ];
 
-  // $HOME/.local/bin/mutagen-inspect
+  // $HOME/.local/bin/mutagen-inspect  (linux, macos, msys2)
   // %USERPROFILE%/AppData/Local/Programs/Python/Python<pyver>/Scripts/mutagen-inspect-script.py
-  // $HOME/Library/Python/<pydotver>/bin/mutagen-inspect
-  // msys2: $HOME/.local/bin/mutagen-inspect (use $HOME, not %USERPROFILE%)
+  // $HOME/Library/Python/<pydotver>/bin/mutagen-inspect (macos)
 
+  *buff = '\0';
   if (isLinux ()) {
     snprintf (buff, sizeof (buff),
         "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
   }
   if (isWindows ()) {
-    snprintf (buff, sizeof (buff),
-        "%s/AppData/Local/Programs/Python/Python%s/Scripts/%s",
-        sysvars [SV_HOME], sysvars [SV_PYTHON_VERSION], "mutagen-inspect-script.py");
+    char    *tptr;
+
+    /* check the msys location first -- use the HOME env var */
+    tptr = getenv ("HOME");
+    if (tptr != NULL) {
+      snprintf (buff, sizeof (buff),
+          "%s/.local/bin/%s", tptr, "mutagen-inspect");
+    }
+    if (! fileopFileExists (buff)) {
+      snprintf (buff, sizeof (buff),
+          "%s/AppData/Local/Programs/Python/Python%s/Scripts/%s",
+          sysvars [SV_HOME], sysvars [SV_PYTHON_VERSION], "mutagen-inspect-script.py");
+    }
   }
   if (isMacOS ()) {
     snprintf (buff, sizeof (buff),
@@ -634,6 +644,7 @@ sysvarsCheckMutagen (void)
       }
     }
   }
+  pathNormPath (sysvars [SV_PYTHON_MUTAGEN], SV_MAX_SZ);
 }
 
 char *

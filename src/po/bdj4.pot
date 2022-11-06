@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-05 14:58-0700\n"
+"POT-Creation-Date: 2022-11-06 09:39-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1786,11 +1786,6 @@ msgstr ""
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Updating %s."
-msgstr ""
-
-#. CONTEXT: installer: status message
-#, c-format
-msgid "Updating certificates."
 msgstr ""
 
 #. CONTEXT: installer: message indicating the action that will be taken

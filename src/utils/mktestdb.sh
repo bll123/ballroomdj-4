@@ -73,7 +73,7 @@ if [[ ! -f $FLAG ||
   if [[ -d test-music ]]; then
     rm -rf test-music/*
   fi
-  ./bin/bdj4 --tmusicsetup $args
+  ./bin/bdj4 --msys --tmusicsetup $args
   touch $FLAG
 fi
 

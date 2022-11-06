@@ -46,6 +46,3 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-if (APPLE)
-  macFixlibicu (libuigtk3)
-endif()

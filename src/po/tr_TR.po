@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-11-05\n"
+"PO-Revision-Date: 2022-11-06\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -1788,11 +1788,6 @@ msgstr ""
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Updating %s."
-msgstr ""
-
-#. CONTEXT: installer: status message
-#, c-format
-msgid "Updating certificates."
 msgstr ""
 
 #. CONTEXT: installer: message indicating the action that will be taken

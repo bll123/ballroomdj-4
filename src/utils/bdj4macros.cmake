@@ -61,12 +61,3 @@ macro (macUpdateRPath name)
       VERBATIM
   )
 endmacro()
-
-macro (macFixlibicu name)
-  add_custom_command(TARGET ${name}
-      POST_BUILD
-      COMMAND
-        ${PROJECT_SOURCE_DIR}/utils/macfixlibicu.sh $<TARGET_FILE:${name}>
-      VERBATIM
-  )
-endmacro()

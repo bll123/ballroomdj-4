@@ -79,11 +79,7 @@ install (TARGETS
 
 if (APPLE)
   macUpdateRPath (bdj4manageui)
-  macFixlibicu (bdj4manageui)
   macUpdateRPath (bdj4bpmcounter)
-  macFixlibicu (bdj4bpmcounter)
   macUpdateRPath (bdj4dbupdate)
-  macFixlibicu (bdj4dbupdate)
   macUpdateRPath (bdj4dbtag)
-  macFixlibicu (bdj4dbtag)
 endif()

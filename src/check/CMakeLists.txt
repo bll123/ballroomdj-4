@@ -82,6 +82,5 @@ install (TARGETS
 
 if (APPLE)
   macUpdateRPath (check_all)
-  macFixlibicu (check_all)
 endif()
 

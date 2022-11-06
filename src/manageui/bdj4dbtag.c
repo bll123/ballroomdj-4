@@ -44,6 +44,10 @@ enum {
   DBTAG_T_STATE_INIT,
   DBTAG_T_STATE_ACTIVE,
   DBTAG_T_STATE_HAVE_DATA,
+  DBTAG_STATE_NOT_RUNNING,
+  DBTAG_STATE_RUNNING,
+  DBTAG_STATE_WAIT,
+  DBTAG_STATE_FINISH,
 };
 
 typedef struct {
@@ -69,9 +73,10 @@ typedef struct {
   int               maxThreads;
   dbthread_t        *threads;
   mstime_t          starttm;
+  mstime_t          waitCheck;
   int               iterations;
   int               threadActiveSum;
-  bool              running : 1;
+  int               running;
   bool              havealldata : 1;
 } dbtag_t;
 
@@ -105,7 +110,7 @@ main (int argc, char *argv[])
 
   dbtag.maxThreads = sysvarsGetNum (SVL_NUM_PROC);
   dbtag.threads = malloc (sizeof (dbthread_t) * dbtag.maxThreads);
-  dbtag.running = false;
+  dbtag.running = DBTAG_STATE_NOT_RUNNING;
   dbtag.havealldata = false;
   dbtag.numActiveThreads = 0;
   dbtag.iterations = 0;
@@ -241,7 +246,7 @@ dbtagProcessing (void *udata)
     }
   }
 
-  if (dbtag->running) {
+  if (dbtag->running == DBTAG_STATE_RUNNING) {
     count = queueGetCount (dbtag->fileQueue);
     if (count > dbtag->maxqueuelen) {
       dbtag->maxqueuelen = count;
@@ -286,8 +291,17 @@ dbtagProcessing (void *udata)
       logMsg (LOG_DBG, LOG_IMPORTANT, "average num threads active: %.2f",
           (double) dbtag->threadActiveSum /
           (double) (dbtag->iterations - dbtag->maxThreads));
+      /* windows had some issues with the socket buffering, so wait a bit */
+      /* before exiting. */
+      mstimeset (&dbtag->waitCheck, 2000);
+      dbtag->running = DBTAG_STATE_WAIT;
+    }
+  }
+
+  if (dbtag->running == DBTAG_STATE_WAIT) {
+    if (mstimeCheck (&dbtag->waitCheck)) {
+      dbtag->running = DBTAG_STATE_FINISH;
       progstateShutdownProcess (dbtag->progstate);
-      dbtag->running = false;
     }
   }
 
@@ -377,8 +391,8 @@ dbtagClosingCallback (void *tdbtag, programstate_t programState)
 static void
 dbtagProcessFileMsg (dbtag_t *dbtag, char *args)
 {
-  if (! dbtag->running) {
-    dbtag->running = true;
+  if (dbtag->running == DBTAG_STATE_NOT_RUNNING) {
+    dbtag->running = DBTAG_STATE_RUNNING;
     mstimestart (&dbtag->starttm);
   }
   ++dbtag->received;

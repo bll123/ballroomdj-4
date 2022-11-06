@@ -98,11 +98,7 @@ install (TARGETS
 
 if (APPLE)
   macUpdateRPath (bdj4)
-  macFixlibicu (bdj4)
   macUpdateRPath (bdj4g)
-  macFixlibicu (bdj4g)
   macUpdateRPath (bdj4starterui)
-  macFixlibicu (bdj4starterui)
   macUpdateRPath (bdj4helperui)
-  macFixlibicu (bdj4helperui)
 endif()

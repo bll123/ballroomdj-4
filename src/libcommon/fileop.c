@@ -190,13 +190,15 @@ int
 fileopDelete (const char *fname)
 {
   int     rc;
+#if _lib__wunlink
+  wchar_t *tname;
+#endif
 
   if (fname == NULL) {
     return 0;
   }
 
 #if _lib__wunlink
-  wchar_t *tname;
   tname = osToWideChar (fname);
   rc = _wunlink (tname);
   free (tname);

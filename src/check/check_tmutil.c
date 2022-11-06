@@ -29,7 +29,7 @@ START_TEST(mstime_chk)
   tm_s *= 1000;
   tm_chk = mstime ();
   /* the granularity of the time() call is high */
-  ck_assert_int_lt (tm_chk - tm_s, 1000);
+  ck_assert_int_lt (tm_chk - tm_s, 1005);
   tm_s = mstime ();
   tm_chk = mstime ();
   ck_assert_int_lt (tm_chk - tm_s, 10);
