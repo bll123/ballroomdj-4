@@ -96,8 +96,15 @@ else
 fi
 
 if [[ $tag == macos ]]; then
-  sshpass -e rsync -v -e ssh install/macos-pre-install-macports.sh \
-      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+  fn=macos-pre-install-macports
+  ver=$(install/${fn}.sh --version)
+  sshpass -e rsync -v -e ssh install/${fn}.sh \
+      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+
+  fn=macos-run-installer
+  ver=$(install/${fn}.sh --version)
+  sshpass -e rsync -v -e ssh install/${fn}.sh \
+      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
 fi
 
 if [[ $tag == linux ]]; then

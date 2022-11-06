@@ -72,8 +72,6 @@ typedef enum {
   INST_PYTHON_INSTALL,
   INST_MUTAGEN_CHECK,
   INST_MUTAGEN_INSTALL,
-  INST_UPDATE_CA_FILE_INIT,
-  INST_UPDATE_CA_FILE,
   INST_UPDATE_PROCESS_INIT,
   INST_UPDATE_PROCESS,
   INST_REGISTER_INIT,
@@ -203,8 +201,6 @@ static void installerPythonDownload (installer_t *installer);
 static void installerPythonInstall (installer_t *installer);
 static void installerMutagenCheck (installer_t *installer);
 static void installerMutagenInstall (installer_t *installer);
-static void installerUpdateCAFileInit (installer_t *installer);
-static void installerUpdateCAFile (installer_t *installer);
 static void installerRegisterInit (installer_t *installer);
 static void installerRegister (installer_t *installer);
 
@@ -786,14 +782,6 @@ installerMainLoop (void *udata)
     }
     case INST_MUTAGEN_INSTALL: {
       installerMutagenInstall (installer);
-      break;
-    }
-    case INST_UPDATE_CA_FILE_INIT: {
-      installerUpdateCAFileInit (installer);
-      break;
-    }
-    case INST_UPDATE_CA_FILE: {
-      installerUpdateCAFile (installer);
       break;
     }
     case INST_UPDATE_PROCESS_INIT: {
@@ -2208,11 +2196,7 @@ installerMutagenCheck (installer_t *installer)
   char  tbuff [MAXPATHLEN];
 
   if (! installer->pythoninstalled) {
-    if (isWindows ()) {
-      installer->instState = INST_UPDATE_CA_FILE_INIT;
-    } else {
-      installer->instState = INST_UPDATE_PROCESS_INIT;
-    }
+    installer->instState = INST_UPDATE_PROCESS_INIT;
     return;
   }
 
@@ -2252,38 +2236,6 @@ installerMutagenInstall (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), _("%s installed."), "Mutagen");
   installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
   installerCheckPackages (installer);
-  if (isWindows ()) {
-    installer->instState = INST_UPDATE_CA_FILE_INIT;
-  } else {
-    installer->instState = INST_UPDATE_PROCESS_INIT;
-  }
-}
-
-static void
-installerUpdateCAFileInit (installer_t *installer)
-{
-  char    tbuff [200];
-
-  if (chdir (installer->datatopdir)) {
-    installerFailWorkingDir (installer, installer->datatopdir);
-    return;
-  }
-
-  /* CONTEXT: installer: status message */
-  snprintf (tbuff, sizeof (tbuff), _("Updating certificates."));
-  installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-  installer->instState = INST_UPDATE_CA_FILE;
-}
-
-static void
-installerUpdateCAFile (installer_t *installer)
-{
-  if (installer->webclient == NULL) {
-    installer->webclient = webclientAlloc (installer, installerWebResponseCallback);
-  }
-  webclientDownload (installer->webclient,
-      "https://curl.se/ca/cacert.pem", "http/curl-ca-bundle.crt");
-
   installer->instState = INST_UPDATE_PROCESS_INIT;
 }
 

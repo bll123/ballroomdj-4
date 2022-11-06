@@ -47,3 +47,7 @@ install (TARGETS
   libbdj4ui
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+
+if (APPLE)
+  macFixlibicu (libbdj4ui)
+endif()

@@ -64,6 +64,10 @@ fi
 if [[ $tag == linux ]]; then
   (cd src/po; ./extract.sh)
   (cd src/po; ./install.sh)
+
+  curl -JL --time-cond templates/curl-ca-bundle.crt \
+      https://curl.se/ca/cacert.pem -o templates/curl-ca-bundle.crt
+  cp -f templates/curl-ca-bundle.crt http
 fi
 
 ./src/utils/makehtmllist.sh

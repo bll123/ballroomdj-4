@@ -116,10 +116,14 @@ static int64_t    lsysvars [SVL_MAX];
 
 static char *cacertFiles [] = {
   "/etc/ssl/certs/ca-certificates.crt",
-  "/opt/local/etc/openssl/cert.pem",
-  "http/curl-ca-bundle.crt",
+  "/usr/share/ssl/certs/ca-bundle.crt",
+  "/etc/pki/tls/certs/ca-bundle.crt",
+  /* updated each time a package is created, used on windows, macos */
   "templates/curl-ca-bundle.crt",
-  "plocal/etc/ssl/cert.pem",
+  "http/curl-ca-bundle.crt",
+  /* macos */
+  "/opt/local/etc/openssl/cert.pem",
+  "/opt/local/share/curl/curl-ca-bundle.crt",
 };
 enum {
   CACERT_FILE_COUNT = (sizeof (cacertFiles) / sizeof (char *))

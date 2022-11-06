@@ -102,7 +102,7 @@ build:
 # testing
 .PHONY: check checkfast checksuite testsuite
 check:
-	(cd ..;./bin/bdj4 --check_all)
+	(./utils/mktestsetup.sh;cd ..;./bin/bdj4 --check_all)
 
 checkfast:
 	(cd ..;CK_EXCLUDE_TAGS=slow ./bin/bdj4 --check_all)

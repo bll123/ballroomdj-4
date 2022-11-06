@@ -282,7 +282,11 @@ START_TEST(osprocess_pipe_rc)
   rc = osProcessPipe (targv, flags, tbuff, sizeof (tbuff), &retsz);
   stringTrim (tbuff);
   ck_assert_str_eq (tbuff, "xyzzy");
-  ck_assert_int_eq (rc, 256-5);
+  if (isWindows ()) {
+    ck_assert_int_eq (rc, -5);
+  } else {
+    ck_assert_int_eq (rc, 256-5);
+  }
 }
 END_TEST
 

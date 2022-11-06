@@ -1,4 +1,10 @@
 #!/bin/bash
+ver=3
+
+if [[ $1 == --version ]]; then
+  echo ${ver}
+  exit 0
+fi
 
 getresponse () {
   echo -n "[Y/n]: " > /dev/tty
@@ -128,15 +134,21 @@ PATH=$PATH:/opt/local/bin
 
 echo "-- Running MacPorts 'port selfupdate' with sudo"
 sudo port selfupdate
+
 echo "-- Running MacPorts 'port upgrade outdated' with sudo"
 sudo port upgrade outdated
 
 echo "-- Installing packages needed by BDJ4"
-sudo port -N install gtk3 +quartz -x11
-sudo port -N install adwaita-icon-theme curl curl-ca-bundle
-sudo port -N install ffmpeg +nonfree -x11
-sudo port -N install python${pyver} py${pyver}-pip py${pyver}-wheel
-sudo port -N install icu
+sudo port -N install \
+    python${pyver} \
+    py${pyver}-pip \
+    py${pyver}-wheel \
+    curl \
+    curl-ca-bundle \
+    icu \
+    gtk3 +quartz \
+    adwaita-icon-theme \
+    ffmpeg +nonfree -x11
 sudo port select --set python python${pyver}
 sudo port select --set python3 python${pyver}
 sudo port select --set pip py${pyver}-pip
@@ -147,6 +159,31 @@ if [[ -z "$(port -q list inactive)" ]]; then
   sudo port -N reclaim > /dev/null 2>&1 << _HERE_
 n
 _HERE_
+fi
+
+# look for the macos-run-installer script
+
+pattern="macos-run-installer-v[0-9]*.sh"
+
+latest=""
+for f in $pattern; do
+  case $f in
+    *\*)
+      ;;
+    *)
+      if [[ $latest == "" ]];then
+        latest=$f
+      fi
+      if [[ $f -nt $latest ]]; then
+        latest=$f
+      fi
+      chmod a+rx $f
+      ;;
+  esac
+done
+
+if [[ -f $latest ]]; then
+  bash ${latest}
 fi
 
 exit 0

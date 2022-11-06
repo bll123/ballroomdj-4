@@ -45,12 +45,14 @@ target_link_libraries (voltest
   m
 )
 
-if (APPLE)
-  macUpdateRPath (voltest)
-endif()
-
 install (TARGETS
   libbdj4vol libvolnull libvolpa libvolmac libvolwin
   voltest
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+
+if (APPLE)
+  macUpdateRPath (voltest)
+  macFixlibicu (voltest)
+endif()
+

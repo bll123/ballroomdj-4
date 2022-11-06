@@ -25,4 +25,5 @@ install (TARGETS
 
 if (APPLE)
   macUpdateRPath (bdj4playerui)
+  macFixlibicu (bdj4playerui)
 endif()

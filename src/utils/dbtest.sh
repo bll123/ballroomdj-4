@@ -104,7 +104,7 @@ function setorgregex {
   org=$1
 
   gconf=data/bdjconfig.txt
-  sed -e "/^PATHFMT/ { n ; s~.*~..${org}~ ; }" \
+  sed -e "/^ORGPATH/ { n ; s~.*~..${org}~ ; }" \
       ${gconf} > ${gconf}.n
   mv -f ${gconf}.n ${gconf}
 }

@@ -75,12 +75,13 @@ addWinSockLibrary (check_all)
 
 add_executable (chkprocess chkprocess.c)
 
-if (APPLE)
-  macUpdateRPath (check_all)
-endif()
-
 install (TARGETS
   check_all chkprocess
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+
+if (APPLE)
+  macUpdateRPath (check_all)
+  macFixlibicu (check_all)
+endif()
 

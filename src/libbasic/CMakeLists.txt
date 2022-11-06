@@ -30,3 +30,7 @@ install (TARGETS
   libbdj4basic
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+
+if (APPLE)
+  macFixlibicu (libbdj4basic)
+endif()

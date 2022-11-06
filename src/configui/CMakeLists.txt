@@ -48,4 +48,5 @@ install (TARGETS
 
 if (APPLE)
   macUpdateRPath (bdj4configui)
+  macFixlibicu (bdj4configui)
 endif()

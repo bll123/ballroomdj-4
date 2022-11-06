@@ -50,21 +50,51 @@ Installation:
 
   Linux:
     a) Download the linux-pre-install.sh script from:
-        https://sourceforge.net/projects/ballroomdj4/files/linux-pre-install.sh/download
+
+        https://sourceforge.net/projects/ballroomdj4/files/
+
       and run it.
+
       This script uses sudo to install the required packages.
+
+      This only needs to be done once.
+
     b) Run the BallroomDJ 4 installer.
 
   MacOS:
     The BallroomDJ 4 installer will not work on MacOS without step (a).
 
-    a) Download the macos-pre-install-macports.sh script from:
-        https://sourceforge.net/projects/ballroomdj4/files/macos-pre-install-macports.sh/download
-      and run it.
-      This script uses sudo to install the required packages (from MacPorts).
-    b) Run the BallroomDJ 4 installer.
+    a) Download the following two files and the bdj4 installer from:
+
+         https://sourceforge.net/projects/ballroomdj4/files/
+
+            macos-pre-install-macports-vX.sh
+            macos-run-installer-vX.sh
+
+       Be aware that there are two MacOS installation packages.  One for
+       MacOS on intel, and one for MacOS on Apple Silicon (labelled 'm1').
+
+    b) Open a terminal (Finder : Go -> Utilities / Terminal)
+      Type in the following commands:
+
+        cd $HOME/Downloads
+        # replace X with the version number
+        bash macos-pre-install-macports-vX.sh
+
+      The pre-installation script requires your password in order to
+      install the required MacPorts packages.  It may ask for your
+      password multiple times.
+
+      The pre-installation script only needs to be run each time its
+      version number changes.
+
+    c) In the terminal type the following command:
+
+        # replace X with the version number
+        bash macos-run-installer-vX.sh
 
 Converting BallroomDJ 3:
+
   If you have a recent version of BallroomDJ 3, and the installer is
   able to locate your installation, the BallroomDJ 3 data files will
   automatically be converted during the installation process.
