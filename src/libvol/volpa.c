@@ -359,9 +359,8 @@ volumeProcess (volaction_t action, const char *sinkname,
     return 0;
   }
 
-  if (action == VOL_SET_OUTPUT_SINK) {
-    /* nothing to do here, the volume set/get use the default sink name, */
-    /* or use the supplied sink name */
+  if (sinkname != NULL && *sinkname && action == VOL_SET_SYSTEM_DFLT) {
+
     return 0;
   }
 

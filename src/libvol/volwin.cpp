@@ -27,8 +27,6 @@
 
 #define ERROR_EXIT(hr)  \
     if (FAILED(hr)) { printf ("error %ld occurred\n", -hr); goto Exit; }
-#define GETSINKLIST_ERROR(hr)  \
-    if (FAILED(hr)) { printf ("error %ld occurred\n", -hr); goto SinkListExit; }
 #define SAFE_RELEASE(data)  \
     if ((data) != NULL) { (data)->Release(); (data) = NULL; }
 
@@ -55,6 +53,8 @@ volumeProcess (volaction_t action, const char *sinkname,
   float                 currentVal;
   wchar_t               *wdevnm;
   IMMDeviceEnumerator   *pEnumerator = NULL;
+  IMMDevice             *defDevice = NULL;
+  LPWSTR                defsinknm = NULL;
 
   if (action == VOL_HAVE_SINK_LIST) {
     return true;
@@ -69,42 +69,38 @@ volumeProcess (volaction_t action, const char *sinkname,
 
   CoInitialize (NULL);
 
-  // Get enumerator for audio endpoint devices.
+  /* Get enumerator for audio endpoint devices. */
   hr = CoCreateInstance (__uuidof (MMDeviceEnumerator),
       NULL, CLSCTX_INPROC_SERVER,
       __uuidof (IMMDeviceEnumerator),
       (void**)&pEnumerator);
   ERROR_EXIT (hr)
 
+  /* Get default audio-rendering device. */
+  hr = pEnumerator->GetDefaultAudioEndpoint (eRender, eConsole, &defDevice);
+  ERROR_EXIT (hr)
+  hr = defDevice->GetId (&defsinknm);
+  ERROR_EXIT (hr)
+
   if (action == VOL_GETSINKLIST) {
     IMMDeviceCollection   *pCollection = NULL;
-    IMMDevice             *defDevice = NULL;
     UINT                  count;
-    LPWSTR                defid = NULL;
 
 
-    sinklist->defname = NULL;
+    sinklist->defname = osFromWideChar (defsinknm);
     sinklist->count = 0;
     sinklist->sinklist = NULL;
 
     hr = pEnumerator->EnumAudioEndpoints(
         eRender, DEVICE_STATE_ACTIVE, &pCollection);
-    GETSINKLIST_ERROR (hr)
+    ERROR_EXIT (hr)
 
     hr = pCollection->GetCount (&count);
-    GETSINKLIST_ERROR (hr)
+    ERROR_EXIT (hr)
 
     sinklist->count = count;
     sinklist->sinklist = (volsinkitem_t *) realloc (sinklist->sinklist,
         sinklist->count * sizeof (volsinkitem_t));
-
-    // Get default audio-rendering device.
-    hr = pEnumerator->GetDefaultAudioEndpoint (eRender, eConsole, &defDevice);
-    GETSINKLIST_ERROR (hr)
-    hr = defDevice->GetId (&defid);
-    GETSINKLIST_ERROR (hr)
-
-    sinklist->defname = osFromWideChar (defid);
 
     for (UINT i = 0; i < count; ++i) {
       LPWSTR      devid = NULL;
@@ -118,18 +114,18 @@ volumeProcess (volaction_t action, const char *sinkname,
       sinklist->sinklist [i].description = NULL;
 
       hr = pCollection->Item (i, &pDevice);
-      GETSINKLIST_ERROR (hr)
+      ERROR_EXIT (hr)
 
       hr = pDevice->GetId (&devid);
-      GETSINKLIST_ERROR (hr)
+      ERROR_EXIT (hr)
 
       hr = pDevice->OpenPropertyStore (STGM_READ, &pProps);
-      GETSINKLIST_ERROR (hr)
+      ERROR_EXIT (hr)
 
       PropVariantInit (&dispName);
       // display name
       hr = pProps->GetValue (PKEY_Device_FriendlyName, &dispName);
-      GETSINKLIST_ERROR (hr)
+      ERROR_EXIT (hr)
 
       sinklist->sinklist [i].name = osFromWideChar (devid);
 
@@ -149,34 +145,24 @@ volumeProcess (volaction_t action, const char *sinkname,
       SAFE_RELEASE (pProps)
       SAFE_RELEASE (pDevice)
     }
-
-SinkListExit:
-    CoTaskMemFree (defid);
-    SAFE_RELEASE (defDevice)
-    SAFE_RELEASE (g_pEndptVol)
-    SAFE_RELEASE (volDevice)
-    SAFE_RELEASE (pEnumerator)
-    CoUninitialize ();
-    return 0;
   }
 
-  if (action == VOL_SET_OUTPUT_SINK) {
-    wdevnm = (wchar_t *) osToWideChar (sinkname);
-    hr = pEnumerator->GetDevice (wdevnm, &volDevice);
-    ERROR_EXIT (hr)
-    free (wdevnm);
-
-    hr = volDevice->Activate (__uuidof (IAudioEndpointVolume),
-        CLSCTX_ALL, NULL, (void**) &g_pEndptVol);
-    ERROR_EXIT (hr)
+  if (sinkname != NULL && *sinkname && action == VOL_SET_SYSTEM_DFLT) {
+    /* future: like macos, change the system default to match the output sink */
+    ;
   }
 
   if (vol != NULL && (action == VOL_SET || action == VOL_GET)) {
-/* need to get the current device rather than the sinkname */
-    wdevnm = (wchar_t *) osToWideChar (sinkname);
+    if (sinkname == NULL || ! *sinkname) {
+      wdevnm = (wchar_t *) defsinknm;
+    } else {
+      wdevnm = (wchar_t *) osToWideChar (sinkname);
+    }
     hr = pEnumerator->GetDevice (wdevnm, &volDevice);
     ERROR_EXIT (hr)
-    free (wdevnm);
+    if (sinkname != NULL && *sinkname) {
+      free (wdevnm);
+    }
 
     hr = volDevice->Activate (__uuidof (IAudioEndpointVolume),
         CLSCTX_ALL, NULL, (void**) &g_pEndptVol);
@@ -194,6 +180,8 @@ SinkListExit:
   }
 
 Exit:
+  CoTaskMemFree (defsinknm);
+  SAFE_RELEASE (defDevice)
   SAFE_RELEASE (pEnumerator)
   SAFE_RELEASE (g_pEndptVol)
   SAFE_RELEASE (volDevice)

@@ -46,7 +46,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     return 0;
   }
 
-  if (action == VOL_SET_OUTPUT_SINK) {
+  if (action == VOL_SET_SYSTEM_DFLT) {
     if (strcmp (sinkname, "no-volume") == 0) {
       gsink = 0;
     }

@@ -161,7 +161,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     return 0;
   }
 
-  if (sinkname != NULL && *sinkname && action == VOL_SET_OUTPUT_SINK) {
+  if (sinkname != NULL && *sinkname && action == VOL_SET_SYSTEM_DFLT) {
     outputDeviceID = atoi (sinkname);
 
     /* set the default output device */

@@ -14,7 +14,7 @@ typedef enum {
   VOL_SET,
   VOL_HAVE_SINK_LIST,
   VOL_GETSINKLIST,
-  VOL_SET_OUTPUT_SINK,
+  VOL_SET_SYSTEM_DFLT,
 } volaction_t;
 
 typedef struct volume volume_t;

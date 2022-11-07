@@ -9,6 +9,7 @@ BallroomDJ 4 Change Log
 - internal: add non-exposed configuration for clock display.
 - edit song list: create from playlist: clean up an ui usage issue.
 - edit song list: create from playlist: fixed (broken in alpha 2022-10-27).
+- linux: volume: fixed volume interface issues.
 - macos installation: updated README.txt with new instructions.
 - macos installation: added a script to start up the installer.
 - macos: volume: fixed all volume interface issues.
@@ -16,6 +17,7 @@ BallroomDJ 4 Change Log
 - update databaes: convert .m4a utf8 audio tags correctly (mutagen bug).
 - update database: fixed a crash in write tags.
 - update database: minor user interface cleanup.
+- window: volume: fixed all volume interface issues.
 
 4.0.0 alpha 2022-10-27
 
