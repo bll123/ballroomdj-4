@@ -91,6 +91,7 @@ typedef struct {
   int             currentVolume;  // current volume settings, no adjustments.
   int             actualVolume;   // testsuite: the actualvolume that is set
   int             currentSpeed;
+  const char      *actualSink;
   const char      *currentSink;
   mstime_t        statusCheck;
   volsinklist_t   sinklist;
@@ -249,25 +250,6 @@ main (int argc, char *argv[])
     }
   }
 
-  /* sets the current sink */
-  audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
-  playerSetAudioSink (&playerData, audiosink);
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", bdjoptGetStr (OPT_M_PLAYER_INTFC));
-  logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s (empty is default)", playerData.currentSink);
-  playerData.pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
-      playerData.currentSink);
-
-  if (strcmp (audiosink, "default") != 0) {
-    pliSetAudioDevice (playerData.pli, playerData.currentSink);
-  } else {
-    /* default */
-    if (strcmp (bdjoptGetStr (OPT_M_VOLUME_INTFC), "libvolpa") == 0) {
-      /* for pulse audio, need to set the VLC audio device to a real name */
-      pliSetAudioDevice (playerData.pli, playerData.sinklist.defname);
-    }
-  }
-
   /* some audio device interfaces may not have the audio device enumeration. */
   /* in this case, retrieve the list of devices from the player if possible. */
   if (! volumeHaveSinkList (playerData.volume)) {
@@ -283,11 +265,17 @@ main (int argc, char *argv[])
             playerData.sinklist.sinklist [i].description);
       }
     }
-    playerSetAudioSink (&playerData, bdjoptGetStr (OPT_MP_AUDIOSINK));
-    if (strcmp (audiosink, "default") != 0) {
-      pliSetAudioDevice (playerData.pli, playerData.currentSink);
-    }
   }
+
+  /* sets the current sink */
+  audiosink = bdjoptGetStr (OPT_MP_AUDIOSINK);
+  playerSetAudioSink (&playerData, audiosink);
+  pliSetAudioDevice (playerData.pli, playerData.actualSink);
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", bdjoptGetStr (OPT_M_PLAYER_INTFC));
+  logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s", playerData.actualSink);
+  playerData.pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
+      playerData.currentSink);
 
   playerSetDefaultVolume (&playerData);
 
@@ -334,7 +322,7 @@ playerClosingCallback (void *tpdata, programstate_t programState)
     playerData->currentSong = NULL;
   }
 
-  origvol = volregClear (playerData->currentSink);
+  origvol = volregClear (playerData->actualSink);
   bdj3flag = volregCheckBDJ3Flag ();
   if (origvol > 0) {
     /* note that if there are BDJ4 instances with different sinks */
@@ -1481,12 +1469,14 @@ playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
 
   if (found && idx >= 0) {
     playerData->currentSink = playerData->sinklist.sinklist [idx].name;
+    playerData->actualSink = playerData->currentSink;
     logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to %s", playerData->sinklist.sinklist [idx].description);
   } else {
     playerData->currentSink = "";
+    playerData->actualSink = playerData->sinklist.defname;
     logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to default");
   }
-  volumeSetOutputSink (playerData->volume, playerData->currentSink);
+  volumeSetSystemDefault (playerData->volume, playerData->currentSink);
   logProcEnd (LOG_PROC, "playerSetAudioSink", "");
 }
 
@@ -1511,6 +1501,11 @@ playerInitSinklist (playerdata_t *playerData)
       mssleep (100);
       ++count;
     }
+  }
+  if (*playerData->sinklist.defname) {
+    playerData->actualSink = playerData->sinklist.defname;
+  } else {
+    playerData->actualSink = "default";
   }
   logProcEnd (LOG_PROC, "playerInitSinklist", "");
 }
@@ -1783,7 +1778,7 @@ playerSetDefaultVolume (playerdata_t *playerData)
   playerData->originalSystemVolume = playerLimitVolume (playerData->originalSystemVolume);
   logMsg (LOG_DBG, LOG_MAIN, "Original system volume: %d", playerData->originalSystemVolume);
 
-  count = volregSave (playerData->currentSink, playerData->originalSystemVolume);
+  count = volregSave (playerData->actualSink, playerData->originalSystemVolume);
   if (count > 1 || bdj3flag) {
     playerData->currentVolume = playerData->originalSystemVolume;
   } else {

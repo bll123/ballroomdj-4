@@ -1597,7 +1597,7 @@ mainMusicqClearPrep (maindata_t *mainData, musicqidx_t mqidx, int idx)
 }
 
 static char *
-mainPrepSong (maindata_t *mainData, int flag, song_t *song,
+mainPrepSong (maindata_t *mainData, int prepflag, song_t *song,
     char *sfname, int playlistIdx, long uniqueidx)
 {
   char          tbuff [1024];
@@ -1628,7 +1628,7 @@ mainPrepSong (maindata_t *mainData, int flag, song_t *song,
   }
 
   /* announcements don't need any of the following... */
-  if (flag != PREP_ANNOUNCE) {
+  if (prepflag != PREP_ANNOUNCE) {
     dur = mainCalculateSongDuration (mainData, song, playlistIdx);
 
     announceflag = bdjoptGetNum (OPT_P_PLAY_ANNOUNCE);
@@ -1668,7 +1668,7 @@ mainPrepSong (maindata_t *mainData, int flag, song_t *song,
       (int64_t) songstart, MSG_ARGS_RS,
       speed, MSG_ARGS_RS,
       voladjperc, MSG_ARGS_RS,
-      flag, MSG_ARGS_RS,
+      prepflag, MSG_ARGS_RS,
       uniqueidx);
 
   logMsg (LOG_DBG, LOG_MAIN, "prep song %s", sfname);

@@ -108,7 +108,7 @@ volumeSet (volume_t *volume, const char *sinkname, int vol)
 }
 
 void
-volumeSetOutputSink (volume_t *volume, const char *sinkname)
+volumeSetSystemDefault (volume_t *volume, const char *sinkname)
 {
   volume->volumeProcess (VOL_SET_SYSTEM_DFLT, sinkname, NULL, NULL,
       &volume->udata);
