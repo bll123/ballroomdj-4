@@ -33,6 +33,11 @@ enum {
 };
 
 typedef struct {
+  char      *defaultsink;
+  bool      changed;
+} pa_track_data_t;
+
+typedef struct {
   pa_threaded_mainloop  *pamainloop;
   pa_context            *pacontext;
   pa_context_state_t    pastate;
@@ -236,14 +241,28 @@ volumeDisconnect (void)
   pulse_close ();
 }
 
+void
+volumeCleanup (void **udata) {
+  if (*udata != NULL) {
+    pa_track_data_t *trackdata = *udata;
+    free (trackdata->defaultsink);
+    free (trackdata);
+    *udata = NULL;
+  }
+  return;
+}
+
 int
 volumeProcess (volaction_t action, const char *sinkname,
-    int *vol, volsinklist_t *sinklist)
+    int *vol, volsinklist_t *sinklist, void **udata)
 {
-  pa_operation          *op;
-  callback_t            cbdata;
-  unsigned int          tvol;
-  int                   count;
+  pa_operation    *op = NULL;
+  callback_t      cbdata;
+  unsigned int    tvol;
+  int             count;
+  char            *defsinkname = NULL;
+  pa_track_data_t *trackdata = NULL;
+
 
   if (action == VOL_HAVE_SINK_LIST) {
     return true;
@@ -291,22 +310,33 @@ volumeProcess (volaction_t action, const char *sinkname,
     return -1;
   }
 
-  if (action == VOL_GETSINKLIST) {
-    char            *defsinkname;
-
-    defsinkname = NULL;
-    pa_threaded_mainloop_lock (gstate.pamainloop);
-    op = pa_context_get_server_info (
-        gstate.pacontext, &serverInfoCallback, &cbdata);
-    if (! op) {
-      pa_threaded_mainloop_unlock (gstate.pamainloop);
-      volumeProcessFailure ("serverinfo");
-      return -1;
-    }
-    waitop (op);
+  /* need the default sink name for all actions */
+  defsinkname = NULL;
+  pa_threaded_mainloop_lock (gstate.pamainloop);
+  op = pa_context_get_server_info (
+      gstate.pacontext, &serverInfoCallback, &cbdata);
+  if (! op) {
     pa_threaded_mainloop_unlock (gstate.pamainloop);
-    defsinkname = cbdata.defname;
+    volumeProcessFailure ("serverinfo");
+    return -1;
+  }
+  waitop (op);
+  pa_threaded_mainloop_unlock (gstate.pamainloop);
+  defsinkname = cbdata.defname;
 
+  if (*udata == NULL) {
+    trackdata = malloc (sizeof (pa_track_data_t));
+    trackdata->defaultsink = strdup (defsinkname);
+    trackdata->changed = false;
+    *udata = trackdata;
+  } else {
+    trackdata = *udata;
+    if (strcmp (trackdata->defaultsink, defsinkname) != 0) {
+      trackdata->changed = true;
+    }
+  }
+
+  if (action == VOL_GETSINKLIST) {
     sinklist->defname = defsinkname;  // temporary, will be replaced.
     sinklist->sinklist = NULL;
     sinklist->count = 0;
@@ -322,7 +352,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     waitop (op);
     pa_threaded_mainloop_unlock (gstate.pamainloop);
     if (sinklist->defname == defsinkname) {
-        /* the pointer is still the same, no default was found */
+      /* the pointer is still the same, no default was found */
       sinklist->defname = "";
     }
     dataFree (defsinkname);
@@ -330,6 +360,8 @@ volumeProcess (volaction_t action, const char *sinkname,
   }
 
   if (action == VOL_SET_OUTPUT_SINK) {
+    /* nothing to do here, the volume set/get use the default sink name, */
+    /* or use the supplied sink name */
     return 0;
   }
 
@@ -337,6 +369,12 @@ volumeProcess (volaction_t action, const char *sinkname,
     /* getvolume or setvolume */
     pa_volume_t     avgvol;
     pa_cvolume      pavol;
+
+    /* the volume should be associated with the supplied sink, */
+    /* unless it was changed by the user, in which case, use the default */
+    if (trackdata->changed || sinkname == NULL || ! *sinkname) {
+      sinkname = defsinkname;
+    }
 
     cbdata.vol = &pavol;
     pa_threaded_mainloop_lock (gstate.pamainloop);

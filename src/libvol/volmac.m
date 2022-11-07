@@ -18,9 +18,14 @@ volumeDisconnect (void) {
   return;
 }
 
+void
+volumeCleanup (void **udata) {
+  return;
+}
+
 int
 volumeProcess (volaction_t action, const char *sinkname,
-    int *vol, volsinklist_t *sinklist)
+    int *vol, volsinklist_t *sinklist, void **udata)
 {
   AudioDeviceID   outputDeviceID = 0;
   AudioDeviceID   defaultDeviceID = 0;

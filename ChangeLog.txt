@@ -11,6 +11,7 @@ BallroomDJ 4 Change Log
 - edit song list: create from playlist: fixed (broken in alpha 2022-10-27).
 - macos installation: updated README.txt with new instructions.
 - macos installation: added a script to start up the installer.
+- macos: volume: fixed all volume interface issues.
 - starter: fixed 'delete profile'.
 - update databaes: convert .m4a utf8 audio tags correctly (mutagen bug).
 - update database: fixed a crash in write tags.

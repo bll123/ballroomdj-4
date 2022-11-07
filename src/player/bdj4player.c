@@ -91,7 +91,6 @@ typedef struct {
   int             currentVolume;  // current volume settings, no adjustments.
   int             actualVolume;   // testsuite: the actualvolume that is set
   int             currentSpeed;
-  const char      *defaultSink;
   const char      *currentSink;
   mstime_t        statusCheck;
   volsinklist_t   sinklist;
@@ -229,8 +228,7 @@ main (int argc, char *argv[])
   playerData.fadeinTime = bdjoptGetNum (OPT_P_FADEINTIME);
   playerData.fadeoutTime = bdjoptGetNum (OPT_P_FADEOUTTIME);
 
-  playerData.defaultSink = "";
-  playerData.currentSink = "";
+  playerData.currentSink = "";  // default
   volumeSinklistInit (&playerData.sinklist);
   playerData.currentSpeed = 100;
 
@@ -1479,7 +1477,7 @@ playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
     playerData->currentSink = playerData->sinklist.sinklist [idx].name;
     logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to %s", playerData->sinklist.sinklist [idx].description);
   } else {
-    playerData->currentSink = playerData->defaultSink;
+    playerData->currentSink = "";
     logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to default");
   }
   volumeSetOutputSink (playerData->volume, playerData->currentSink);
@@ -1498,7 +1496,6 @@ playerInitSinklist (playerdata_t *playerData)
   playerData->sinklist.defname = "";
   playerData->sinklist.count = 0;
   playerData->sinklist.sinklist = NULL;
-  playerData->defaultSink = "";
   playerData->currentSink = "";
 
   if (volumeHaveSinkList (playerData->volume)) {
@@ -1508,11 +1505,6 @@ playerInitSinklist (playerdata_t *playerData)
       mssleep (100);
       ++count;
     }
-  }
-  if (*playerData->sinklist.defname) {
-//    playerData->defaultSink = playerData->sinklist.defname;
-  } else {
-    playerData->defaultSink = "default";
   }
   logProcEnd (LOG_PROC, "playerInitSinklist", "");
 }
@@ -1824,7 +1816,6 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "playtimeplayed%c%"PRIu64"%c"
       "pauseatend%c%d%c"
       "repeat%c%d%c"
-      "defaultsink%c%s%c"
       "currentsink%c%s%c"
       "prepqueuecount%c%d",
       MSG_ARGS_RS, plstateDebugText (playerData->playerState), MSG_ARGS_RS,
@@ -1836,7 +1827,6 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       MSG_ARGS_RS, (uint64_t) playerCalcPlayedTime (playerData), MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->pauseAtEnd, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->repeat, MSG_ARGS_RS,
-      MSG_ARGS_RS, playerData->defaultSink, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentSink, MSG_ARGS_RS,
       MSG_ARGS_RS, queueGetCount (playerData->prepQueue));
   connSendMessage (playerData->conn, routefrom, MSG_CHK_PLAYER_STATUS, tmp);

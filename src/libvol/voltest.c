@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "bdjopt.h"
+#include "fileop.h"
 #include "volsink.h"
 #include "volume.h"
 #include "sysvars.h"
@@ -23,6 +24,11 @@ main (int argc, char *argv [])
 
   if (argc < 2) {
     fprintf (stdout, "usage: voltest {getsinklist|setsink <sink>|get <sink>|set <sink> <vol>}\n");
+    exit (1);
+  }
+
+  if (! fileopIsDirectory ("data")) {
+    fprintf (stderr, "run from top level\n");
     exit (1);
   }
 

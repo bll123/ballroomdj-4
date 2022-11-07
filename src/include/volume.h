@@ -17,11 +17,7 @@ typedef enum {
   VOL_SET_OUTPUT_SINK,
 } volaction_t;
 
-typedef struct {
-  dlhandle_t  *dlHandle;
-  int         (*volumeProcess) (volaction_t, const char *, int *, volsinklist_t *);
-  void        (*volumeDisconnect) (void);
-} volume_t;
+typedef struct volume volume_t;
 
 volume_t  *volumeInit (const char *volpkg);
 void      volumeFree (volume_t *volume);
@@ -34,8 +30,9 @@ void      volumeSetOutputSink (volume_t *volume, const char *sinkname);
 void      volumeFreeSinkList (volsinklist_t *sinklist);
 
 int       volumeProcess (volaction_t action, const char *sinkname,
-              int *vol, volsinklist_t *sinklist);
+              int *vol, volsinklist_t *sinklist, void **udata);
 void      volumeDisconnect (void);
+void      volumeCleanup (void **udata);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 }
