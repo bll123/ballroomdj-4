@@ -74,7 +74,8 @@ function copyreleasefiles {
 
   echo "   removing exclusions"
   # bdj4se is only used for packaging
-  # testing: tdbcompare, tdbdump, tmusicsetup, check_all, chkprocess, voltest
+  # testing: tdbcompare, tdbdump, tmusicsetup, check_all, chkprocess,
+  #   vlcsinklist, voltest
   # img/profile[1-9] may be left over from testing
   rm -f \
       ${stage}/bin/bdj4se \
@@ -84,6 +85,7 @@ function copyreleasefiles {
       ${stage}/bin/tdbdump \
       ${stage}/bin/testsuite \
       ${stage}/bin/tmusicsetup \
+      ${stage}/bin/vlcsinklist \
       ${stage}/bin/voltest \
       ${state}/img/*-base.svg \
       ${stage}/img/mkicon.sh \

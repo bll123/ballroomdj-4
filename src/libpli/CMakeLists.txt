@@ -31,3 +31,4 @@ install (TARGETS
   libbdj4pli libplinull libplivlc
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+

@@ -9,7 +9,8 @@
 #include "volsink.h"
 #include "volume.h"
 
-static int gvol = 30;
+static int gvol [3] = { 30, 20, 10 };
+static int gsink = 0;
 
 void
 volumeDisconnect (void) {
@@ -31,24 +32,44 @@ volumeProcess (volaction_t action, const char *sinkname,
     sinklist->sinklist = realloc (sinklist->sinklist,
         sinklist->count * sizeof (volsinkitem_t));
     sinklist->sinklist [0].defaultFlag = 1;
-    sinklist->sinklist [0].idxNumber = 1;
+    sinklist->sinklist [0].idxNumber = 0;
     sinklist->sinklist [0].name = strdup ("no-volume");
     sinklist->sinklist [0].description = strdup ("No Volume");
     sinklist->sinklist [1].defaultFlag = 0;
-    sinklist->sinklist [1].idxNumber = 2;
+    sinklist->sinklist [1].idxNumber = 1;
     sinklist->sinklist [1].name = strdup ("silence");
     sinklist->sinklist [1].description = strdup ("Silence");
     sinklist->sinklist [2].defaultFlag = 0;
-    sinklist->sinklist [2].idxNumber = 3;
+    sinklist->sinklist [2].idxNumber = 2;
     sinklist->sinklist [2].name = strdup ("quiet");
     sinklist->sinklist [2].description = strdup ("Quiet");
-  }
-  if (action == VOL_SET) {
-    gvol = *vol;
-    if (gvol < 0) { gvol = 0; }
-    if (gvol < 100) { gvol = 100; }
+    return 0;
   }
 
-  *vol = gvol;
+  if (action == VOL_SET_OUTPUT_SINK) {
+    if (strcmp (sinkname, "no-volume") == 0) {
+      gsink = 0;
+    }
+    if (strcmp (sinkname, "silence") == 0) {
+      gsink = 1;
+    }
+    if (strcmp (sinkname, "quiet") == 0) {
+      gsink = 2;
+    }
+    return 0;
+  }
+
+  if (action == VOL_SET) {
+    gvol [gsink] = *vol;
+    if (gvol [gsink] < 0) { gvol [gsink] = 0; }
+    if (gvol [gsink] > 100) { gvol [gsink] = 100; }
+  }
+
+  if (vol != NULL && (action == VOL_SET || action == VOL_GET)) {
+    *vol = gvol [gsink];
+
+    return *vol;
+  }
+
   return 0;
 }

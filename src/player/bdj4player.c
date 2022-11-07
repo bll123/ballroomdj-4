@@ -1482,6 +1482,7 @@ playerSetAudioSink (playerdata_t *playerData, const char *sinkname)
     playerData->currentSink = playerData->defaultSink;
     logMsg (LOG_DBG, LOG_IMPORTANT, "audio sink set to default");
   }
+  volumeSetOutputSink (playerData->volume, playerData->currentSink);
   logProcEnd (LOG_PROC, "playerSetAudioSink", "");
 }
 
@@ -1509,7 +1510,7 @@ playerInitSinklist (playerdata_t *playerData)
     }
   }
   if (*playerData->sinklist.defname) {
-    playerData->defaultSink = playerData->sinklist.defname;
+//    playerData->defaultSink = playerData->sinklist.defname;
   } else {
     playerData->defaultSink = "default";
   }

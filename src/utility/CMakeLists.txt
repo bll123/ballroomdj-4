@@ -58,8 +58,15 @@ target_link_libraries (tmusicsetup
 )
 addIntlLibrary (tmusicsetup)
 
+add_executable (vlcsinklist vlcsinklist.c)
+target_link_libraries (vlcsinklist
+  libbdj4pli libbdj4vol libbdj4basic libbdj4common
+  m
+)
+
 install (TARGETS
   bdj4info bdj4tags tdbcompare tdbdump testsuite tmusicsetup
+  vlcsinklist
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
@@ -70,4 +77,5 @@ if (APPLE)
   macUpdateRPath (tdbdump)
   macUpdateRPath (testsuite)
   macUpdateRPath (tmusicsetup)
+  macUpdateRPath (vlcsinklist)
 endif()

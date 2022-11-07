@@ -1,9 +1,5 @@
 /*
  * pulse audio
- *   getsinklist
- *   getvolume <sink-name>
- *   setvolume <sink-name> <volume-perc>
- *   close
  *
  * References:
  *   https://github.com/cdemoulins/pamixer/blob/master/pulseaudio.cc
@@ -330,7 +326,14 @@ volumeProcess (volaction_t action, const char *sinkname,
       sinklist->defname = "";
     }
     dataFree (defsinkname);
-  } else {
+    return 0;
+  }
+
+  if (action == VOL_SET_OUTPUT_SINK) {
+    return 0;
+  }
+
+  if (vol != NULL && (action == VOL_SET || action == VOL_GET)) {
     /* getvolume or setvolume */
     pa_volume_t     avgvol;
     pa_cvolume      pavol;
@@ -357,8 +360,8 @@ volumeProcess (volaction_t action, const char *sinkname,
 
       if (pavol.channels <= 0) {
         pavol.channels = 2;
-          /* make sure this is set properly       */
-          /* otherwise pa_cvolume_set will fail   */
+        /* make sure this is set properly       */
+        /* otherwise pa_cvolume_set will fail   */
       }
       nvol = pa_cvolume_set (&pavol, pavol.channels, tvol);
 
@@ -387,6 +390,8 @@ volumeProcess (volaction_t action, const char *sinkname,
 
     avgvol = pa_cvolume_avg (&pavol);
     *vol = (int) round ((double) avgvol / (double) PA_VOLUME_NORM * 100.0);
+
+    return *vol;
   }
 
   return 0;

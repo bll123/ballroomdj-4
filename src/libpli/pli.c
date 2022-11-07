@@ -26,7 +26,7 @@ char *plistateTxt [PLI_STATE_MAX] = {
 };
 
 pli_t *
-pliInit (const char *volpkg, const char *sinkname)
+pliInit (const char *plipkg, const char *sinkname)
 {
   pli_t     *pli;
   char      dlpath [MAXPATHLEN];
@@ -50,7 +50,7 @@ pliInit (const char *volpkg, const char *sinkname)
   pli->pliiAudioDeviceList = NULL;
 
   pathbldMakePath (dlpath, sizeof (dlpath),
-      volpkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_EXECDIR);
+      plipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_EXECDIR);
   pli->dlHandle = dylibLoad (dlpath);
   if (pli->dlHandle == NULL) {
     fprintf (stderr, "Unable to open library %s\n", dlpath);
@@ -78,7 +78,7 @@ pliInit (const char *volpkg, const char *sinkname)
 #pragma clang diagnostic pop
 
   if (pli->pliiInit != NULL) {
-    pli->pliData = pli->pliiInit (volpkg, sinkname);
+    pli->pliData = pli->pliiInit (plipkg, sinkname);
   }
   return pli;
 }

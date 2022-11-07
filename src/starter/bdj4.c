@@ -78,6 +78,7 @@ main (int argc, char * argv[])
     { "tdbdump",        no_argument,        NULL,   24 },
     { "testsuite",      no_argument,        NULL,   22 },
     { "tmusicsetup",    no_argument,        NULL,   21 },
+    { "vlcsinklist",    no_argument,        NULL,   25 },
     /* bdj4updater */
     { "newinstall",     no_argument,        NULL,   0 },
     { "converted",      no_argument,        NULL,   0 },
@@ -270,6 +271,13 @@ main (int argc, char * argv[])
       }
       case 24: {
         prog = "tdbdump";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 25: {
+        prog = "vlcsinklist";
         nodetach = true;
         wait = true;
         ++validargs;

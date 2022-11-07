@@ -25,9 +25,9 @@
 #include "volsink.h"
 #include "volume.h"
 
-#define EXIT_ON_ERROR(hr)  \
+#define ERROR_EXIT(hr)  \
     if (FAILED(hr)) { printf ("error %ld occurred\n", -hr); goto Exit; }
-#define RETURN_ON_ERROR(hr)  \
+#define GETSINKLIST_ERROR(hr)  \
     if (FAILED(hr)) { printf ("error %ld occurred\n", -hr); goto SinkListExit; }
 #define SAFE_RELEASE(data)  \
     if ((data) != NULL) { (data)->Release(); (data) = NULL; }
@@ -69,7 +69,7 @@ volumeProcess (volaction_t action, const char *sinkname,
       NULL, CLSCTX_INPROC_SERVER,
       __uuidof (IMMDeviceEnumerator),
       (void**)&pEnumerator);
-  EXIT_ON_ERROR (hr)
+  ERROR_EXIT (hr)
 
   if (action == VOL_GETSINKLIST) {
     IMMDeviceCollection   *pCollection = NULL;
@@ -84,10 +84,10 @@ volumeProcess (volaction_t action, const char *sinkname,
 
     hr = pEnumerator->EnumAudioEndpoints(
         eRender, DEVICE_STATE_ACTIVE, &pCollection);
-    RETURN_ON_ERROR (hr)
+    GETSINKLIST_ERROR (hr)
 
     hr = pCollection->GetCount (&count);
-    RETURN_ON_ERROR (hr)
+    GETSINKLIST_ERROR (hr)
 
     sinklist->count = count;
     sinklist->sinklist = (volsinkitem_t *) realloc (sinklist->sinklist,
@@ -95,9 +95,9 @@ volumeProcess (volaction_t action, const char *sinkname,
 
     // Get default audio-rendering device.
     hr = pEnumerator->GetDefaultAudioEndpoint (eRender, eConsole, &defDevice);
-    RETURN_ON_ERROR (hr)
+    GETSINKLIST_ERROR (hr)
     hr = defDevice->GetId (&defid);
-    RETURN_ON_ERROR (hr)
+    GETSINKLIST_ERROR (hr)
 
     sinklist->defname = osFromWideChar (defid);
 
@@ -113,18 +113,18 @@ volumeProcess (volaction_t action, const char *sinkname,
       sinklist->sinklist [i].description = NULL;
 
       hr = pCollection->Item (i, &pDevice);
-      RETURN_ON_ERROR (hr)
+      GETSINKLIST_ERROR (hr)
 
       hr = pDevice->GetId (&devid);
-      RETURN_ON_ERROR (hr)
+      GETSINKLIST_ERROR (hr)
 
       hr = pDevice->OpenPropertyStore (STGM_READ, &pProps);
-      RETURN_ON_ERROR (hr)
+      GETSINKLIST_ERROR (hr)
 
       PropVariantInit (&dispName);
       // display name
       hr = pProps->GetValue (PKEY_Device_FriendlyName, &dispName);
-      RETURN_ON_ERROR (hr)
+      GETSINKLIST_ERROR (hr)
 
       sinklist->sinklist [i].name = osFromWideChar (devid);
 
@@ -155,31 +155,49 @@ SinkListExit:
     return 0;
   }
 
-  wdevnm = (wchar_t *) osToWideChar (sinkname);
-  hr = pEnumerator->GetDevice (wdevnm, &volDevice);
-  EXIT_ON_ERROR (hr)
-  free (wdevnm);
+  if (action == VOL_SET_OUTPUT_SINK) {
+    wdevnm = (wchar_t *) osToWideChar (sinkname);
+    hr = pEnumerator->GetDevice (wdevnm, &volDevice);
+    ERROR_EXIT (hr)
+    free (wdevnm);
 
-  hr = volDevice->Activate (__uuidof (IAudioEndpointVolume),
-      CLSCTX_ALL, NULL, (void**) &g_pEndptVol);
-  EXIT_ON_ERROR (hr)
-
-  if (action == VOL_SET) {
-    float got = (float) *vol / 100.0; // needs to be within 1.0 to 0.0
-    hr = g_pEndptVol->SetMasterVolumeLevelScalar (got, NULL);
-    EXIT_ON_ERROR (hr)
+    hr = volDevice->Activate (__uuidof (IAudioEndpointVolume),
+        CLSCTX_ALL, NULL, (void**) &g_pEndptVol);
+    ERROR_EXIT (hr)
   }
-  hr = g_pEndptVol->GetMasterVolumeLevelScalar (&currentVal);
-  EXIT_ON_ERROR (hr)
 
-  *vol = (int) round (100 * currentVal);
+  if (vol != NULL && (action == VOL_SET || action == VOL_GET)) {
+/* need to get the current device rather than the sinkname */
+    wdevnm = (wchar_t *) osToWideChar (sinkname);
+    hr = pEnumerator->GetDevice (wdevnm, &volDevice);
+    ERROR_EXIT (hr)
+    free (wdevnm);
+
+    hr = volDevice->Activate (__uuidof (IAudioEndpointVolume),
+        CLSCTX_ALL, NULL, (void**) &g_pEndptVol);
+
+    if (action == VOL_SET) {
+      float got = (float) *vol / 100.0; // needs to be within 1.0 to 0.0
+      hr = g_pEndptVol->SetMasterVolumeLevelScalar (got, NULL);
+      ERROR_EXIT (hr)
+    }
+
+    hr = g_pEndptVol->GetMasterVolumeLevelScalar (&currentVal);
+    ERROR_EXIT (hr)
+
+    *vol = (int) round (100 * currentVal);
+  }
 
 Exit:
+  SAFE_RELEASE (pEnumerator)
   SAFE_RELEASE (g_pEndptVol)
   SAFE_RELEASE (volDevice)
-  SAFE_RELEASE (pEnumerator)
   CoUninitialize ();
-  return *vol;
+  if (vol != NULL) {
+    return *vol;
+  } else {
+    return 0;
+  }
 }
 
 } /* extern C */

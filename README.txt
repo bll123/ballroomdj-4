@@ -66,8 +66,8 @@ Installation:
 
          https://sourceforge.net/projects/ballroomdj4/files/
 
-            macos-pre-install-macports-vX.sh
-            macos-run-installer-vX.sh
+            macos-pre-install-macports-v3.sh
+            macos-run-installer-v1.sh
 
        Be aware that there are two MacOS installation packages.  One for
        MacOS on intel, and one for MacOS on Apple Silicon (labelled 'm1').
@@ -76,8 +76,7 @@ Installation:
       Type in the following commands:
 
         cd $HOME/Downloads
-        # replace X with the version number
-        bash macos-pre-install-macports-vX.sh
+        bash macos-pre-install-macports-v3.sh
 
       The pre-installation script requires your password in order to
       install the required MacPorts packages.  It may ask for your
@@ -89,7 +88,7 @@ Installation:
     c) In the terminal type the following command:
 
         # replace X with the version number
-        bash macos-run-installer-vX.sh
+        bash macos-run-installer-v1.sh
 
 Converting BallroomDJ 3:
 

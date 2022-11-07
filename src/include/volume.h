@@ -14,6 +14,7 @@ typedef enum {
   VOL_SET,
   VOL_HAVE_SINK_LIST,
   VOL_GETSINKLIST,
+  VOL_SET_OUTPUT_SINK,
 } volaction_t;
 
 typedef struct {
@@ -29,6 +30,7 @@ void      volumeSinklistInit (volsinklist_t *sinklist);
 int       volumeGet (volume_t *volume, const char *sinkname);
 int       volumeSet (volume_t *volume, const char *sinkname, int vol);
 int       volumeGetSinkList (volume_t *volume, const char *sinkname, volsinklist_t *sinklist);
+void      volumeSetOutputSink (volume_t *volume, const char *sinkname);
 void      volumeFreeSinkList (volsinklist_t *sinklist);
 
 int       volumeProcess (volaction_t action, const char *sinkname,

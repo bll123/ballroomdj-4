@@ -94,16 +94,21 @@ volumeSet (volume_t *volume, const char *sinkname, int vol)
   return vol;
 }
 
+void
+volumeSetOutputSink (volume_t *volume, const char *sinkname)
+{
+  volume->volumeProcess (VOL_SET_OUTPUT_SINK, sinkname, NULL, NULL);
+  volume->volumeDisconnect ();
+}
 
 int
 volumeGetSinkList (volume_t *volume, const char *sinkname, volsinklist_t *sinklist)
 {
-  int               vol;
+  int     rc;
 
-  vol = 0;
-  volume->volumeProcess (VOL_GETSINKLIST, sinkname, &vol, sinklist);
+  rc = volume->volumeProcess (VOL_GETSINKLIST, sinkname, NULL, sinklist);
   volume->volumeDisconnect ();
-  return vol;
+  return rc;
 }
 
 void

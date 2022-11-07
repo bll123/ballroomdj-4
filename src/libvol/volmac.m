@@ -23,13 +23,36 @@ volumeProcess (volaction_t action, const char *sinkname,
     int *vol, volsinklist_t *sinklist)
 {
   AudioDeviceID   outputDeviceID = 0;
+  AudioDeviceID   defaultDeviceID = 0;
+  AudioDeviceID   systemDeviceID = 0;
   UInt32          propSize = 0;
   AudioObjectPropertyAddress propertyAOPA;
   Float32         volume;
   int             ivol;
+  int             status;
+  UInt32          channels [2];
+  UInt32          transporttype;
 
   if (action == VOL_HAVE_SINK_LIST) {
     return true;
+  }
+
+  /* get the system output device */
+  propertyAOPA.mSelector = kAudioHardwarePropertyDefaultSystemOutputDevice;
+  propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
+  propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
+
+  propSize = sizeof (systemDeviceID);
+  AudioObjectGetPropertyData (
+      kAudioObjectSystemObject,
+      &propertyAOPA,
+      0,
+      NULL,
+      &propSize,
+      &systemDeviceID);
+
+  if (systemDeviceID == kAudioObjectUnknown) {
+    return -1;
   }
 
   /* get the default output device */
@@ -37,16 +60,16 @@ volumeProcess (volaction_t action, const char *sinkname,
   propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
   propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
 
-  propSize = sizeof (outputDeviceID);
+  propSize = sizeof (defaultDeviceID);
   AudioObjectGetPropertyData (
       kAudioObjectSystemObject,
       &propertyAOPA,
       0,
       NULL,
       &propSize,
-      &outputDeviceID);
+      &defaultDeviceID);
 
-  if (outputDeviceID == kAudioObjectUnknown) {
+  if (defaultDeviceID == kAudioObjectUnknown) {
     return -1;
   }
 
@@ -87,6 +110,7 @@ volumeProcess (volaction_t action, const char *sinkname,
       char            tmp [40];
 
       propSize = sizeof (streamConfiguration);
+
       propertyAOPA.mSelector = kAudioDevicePropertyStreamConfiguration;
       propertyAOPA.mScope = kAudioObjectPropertyScopeOutput;
       propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
@@ -121,7 +145,7 @@ volumeProcess (volaction_t action, const char *sinkname,
       snprintf (tmp, sizeof (tmp), "%d", audioDeviceList [i]);
       sinklist->sinklist [sinkidx].name = strdup (tmp);
 
-      if (audioDeviceList [i] == outputDeviceID) {
+      if (audioDeviceList [i] == defaultDeviceID) {
         sinklist->sinklist [sinkidx].defaultFlag = true;
         sinklist->defname = strdup (sinklist->sinklist [sinkidx].name);
       }
@@ -132,14 +156,68 @@ volumeProcess (volaction_t action, const char *sinkname,
     return 0;
   }
 
+  if (sinkname != NULL && *sinkname && action == VOL_SET_OUTPUT_SINK) {
+    outputDeviceID = atoi (sinkname);
+
+    /* set the default output device */
+    propertyAOPA.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
+    propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
+    propertyAOPA.mElement = channels [0]; // kAudioObjectPropertyElementMaster;
+
+    propSize = sizeof (outputDeviceID);
+
+    status = AudioObjectSetPropertyData (
+        kAudioObjectSystemObject,
+        &propertyAOPA,
+        0,
+        NULL,
+        propSize,
+        &outputDeviceID);
+    return 0;
+  }
+
+  if (*sinkname) {
+    outputDeviceID = atoi (sinkname);
+  } else {
+    outputDeviceID = defaultDeviceID;
+  }
+
+  propertyAOPA.mSelector = kAudioDevicePropertyPreferredChannelsForStereo;
+  propertyAOPA.mScope = kAudioDevicePropertyScopeOutput;
+  propertyAOPA.mElement = kAudioObjectPropertyElementWildcard;
+  propSize = sizeof (channels);
+  status = AudioObjectGetPropertyData (
+      outputDeviceID,
+      &propertyAOPA,
+      0,
+      NULL,
+      &propSize,
+      &channels );
+
+  propertyAOPA.mSelector = kAudioDevicePropertyTransportType;
+  propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
+  propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
+  propSize = sizeof (transporttype);
+  status = AudioObjectGetPropertyData (
+      outputDeviceID,
+      &propertyAOPA,
+      0,
+      NULL,
+      &propSize,
+      &transporttype );
+
   propertyAOPA.mSelector = kAudioDevicePropertyVolumeScalar;
   propertyAOPA.mScope = kAudioDevicePropertyScopeOutput;
-  propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
+  if (transporttype == kAudioDeviceTransportTypeBuiltIn) {
+    propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
+  } else {
+    propertyAOPA.mElement = channels [0]; // channel number
+  }
 
   if (action == VOL_SET) {
     propSize = sizeof (volume);
     volume = (Float32) ((double) (*vol) / 100.0);
-    AudioObjectSetPropertyData (
+    status = AudioObjectSetPropertyData (
         outputDeviceID,
         &propertyAOPA,
         0,
@@ -148,18 +226,24 @@ volumeProcess (volaction_t action, const char *sinkname,
         &volume);
   }
 
-  propSize = sizeof (volume);
-  AudioObjectGetPropertyData (
-      outputDeviceID,
-      &propertyAOPA,
-      0,
-      NULL,
-      &propSize,
-      &volume);
-  ivol = (int) (round((double) volume * 100.0));
-  *vol = ivol;
+  if (vol != NULL && (action == VOL_SET || action == VOL_GET)) {
+    propSize = sizeof (volume);
+    status = AudioObjectGetPropertyData (
+        outputDeviceID,
+        &propertyAOPA,
+        0,
+        NULL,
+        &propSize,
+        &volume);
+    if (status != 0) {
+      volume = 0.0;
+    }
+    ivol = (int) (round((double) volume * 100.0));
+    *vol = ivol;
+    return *vol;
+  }
 
-  return 0;
+  return -1;
 }
 
 #endif /* hdr_mactypes */

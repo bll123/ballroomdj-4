@@ -35,7 +35,7 @@ typedef struct {
 
 typedef struct {
   dlhandle_t        *dlHandle;
-  plidata_t         *(*pliiInit) (const char *volpkg, const char *sinkname);
+  plidata_t         *(*pliiInit) (const char *plipkg, const char *sinkname);
   void              (*pliiFree) (plidata_t *pliData);
   void              (*pliiMediaSetup) (plidata_t *pliData, const char *mediapath);
   void              (*pliiStartPlayback) (plidata_t *pliData, ssize_t pos, ssize_t speed);
