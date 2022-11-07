@@ -50,7 +50,7 @@
 #       actualvolume is used to test fade-in and fade-out
 #     speed playtimeplayed
 #     pauseatend repeat
-#     defaultsink currentsink
+#     currentsink
 #     prepqueuecount
 #   song:
 #     p-duration p-songfn

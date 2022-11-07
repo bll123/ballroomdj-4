@@ -254,12 +254,18 @@ main (int argc, char *argv[])
   playerSetAudioSink (&playerData, audiosink);
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", bdjoptGetStr (OPT_M_PLAYER_INTFC));
-  logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s", playerData.currentSink);
+  logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s (empty is default)", playerData.currentSink);
   playerData.pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
       playerData.currentSink);
 
   if (strcmp (audiosink, "default") != 0) {
     pliSetAudioDevice (playerData.pli, playerData.currentSink);
+  } else {
+    /* default */
+    if (strcmp (bdjoptGetStr (OPT_M_VOLUME_INTFC), "libvolpa") == 0) {
+      /* for pulse audio, need to set the VLC audio device to a real name */
+      pliSetAudioDevice (playerData.pli, playerData.sinklist.defname);
+    }
   }
 
   /* some audio device interfaces may not have the audio device enumeration. */
@@ -1816,8 +1822,8 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "playtimeplayed%c%"PRIu64"%c"
       "pauseatend%c%d%c"
       "repeat%c%d%c"
-      "currentsink%c%s%c"
-      "prepqueuecount%c%d",
+      "prepqueuecount%c%d%c"
+      "currentsink%c%s",
       MSG_ARGS_RS, plstateDebugText (playerData->playerState), MSG_ARGS_RS,
       MSG_ARGS_RS, plistateTxt [pliState (playerData->pli)], MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentVolume, MSG_ARGS_RS,
@@ -1827,8 +1833,9 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       MSG_ARGS_RS, (uint64_t) playerCalcPlayedTime (playerData), MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->pauseAtEnd, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->repeat, MSG_ARGS_RS,
-      MSG_ARGS_RS, playerData->currentSink, MSG_ARGS_RS,
-      MSG_ARGS_RS, queueGetCount (playerData->prepQueue));
+      MSG_ARGS_RS, queueGetCount (playerData->prepQueue), MSG_ARGS_RS,
+      /* current sink can be empty, just put it last for now */
+      MSG_ARGS_RS, playerData->currentSink);
   connSendMessage (playerData->conn, routefrom, MSG_CHK_PLAYER_STATUS, tmp);
 }
 
