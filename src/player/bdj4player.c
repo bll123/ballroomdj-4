@@ -329,7 +329,7 @@ playerClosingCallback (void *tpdata, programstate_t programState)
     /* the bdj4 flag will be improperly cleared */
     volregClearBDJ4Flag ();
     if (! bdj3flag) {
-      volumeSet (playerData->volume, playerData->currentSink, origvol);
+      volumeSet (playerData->volume, playerData->actualSink, origvol);
       playerData->actualVolume = origvol;
       logMsg (LOG_DBG, LOG_MAIN, "set to orig volume: (was:%d) %d", playerData->originalSystemVolume, origvol);
     }
@@ -911,7 +911,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   npq->tempname = strdup (stname);
   assert (npq->tempname != NULL);
   queuePush (playerData->prepRequestQueue, npq);
-  logMsg (LOG_DBG, LOG_MAIN, "prep-add: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
+  logMsg (LOG_DBG, LOG_MAIN, "prep-req-add: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   logProcEnd (LOG_PROC, "playerSongPrep", "");
 }
 

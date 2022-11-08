@@ -75,9 +75,11 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_SONG
 wait p-songfn ann-waltz.mp3
+get player CHK_PLAYER_SONG
+wait-not p-songfn ann-waltz.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 2000
+mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
 get player CHK_PLAYER_SONG
@@ -88,9 +90,11 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_SONG
 wait p-songfn ann-tango.mp3
+get player CHK_PLAYER_SONG
+wait-not p-songfn ann-tango.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 2000
+mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
 get player CHK_PLAYER_SONG
@@ -103,6 +107,9 @@ wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
+get player CHK_PLAYER_SONG
+chk-not p-songfn ann-tango.mp3
+chk-not p-songfn ann-waltz.mp3
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Foxtrot
 msg player PLAY_FADE
@@ -111,11 +118,16 @@ wait playstate playing
 mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
+get player CHK_PLAYER_SONG
+chk-not p-songfn ann-tango.mp3
+chk-not p-songfn ann-waltz.mp3
 get main CHK_MAIN_MUSICQ
 chk mq0len 91 dance Quickstep
 msg player PLAY_FADE
 get player CHK_PLAYER_SONG
 wait p-songfn ann-waltz.mp3
+get player CHK_PLAYER_SONG
+wait-not p-songfn ann-waltz.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
@@ -128,9 +140,11 @@ chk mq0len 91 dance Waltz
 msg player PLAY_FADE
 get player CHK_PLAYER_SONG
 wait p-songfn ann-tango.mp3
+get player CHK_PLAYER_SONG
+wait-not p-songfn ann-tango.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 2000
+mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
 get player CHK_PLAYER_SONG
@@ -157,9 +171,11 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_SONG
 wait p-songfn ann-waltz.mp3
+get player CHK_PLAYER_SONG
+wait-not p-songfn ann-waltz.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 2000
+mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
 get player CHK_PLAYER_SONG
@@ -170,9 +186,11 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_SONG
 wait p-songfn ann-tango.mp3
+get player CHK_PLAYER_SONG
+wait-not p-songfn ann-tango.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 2000
+mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
 get player CHK_PLAYER_SONG
@@ -198,6 +216,8 @@ chk mq0len 91 dance Quickstep
 msg player PLAY_FADE
 get player CHK_PLAYER_SONG
 wait p-songfn ann-waltz.mp3
+get player CHK_PLAYER_SONG
+wait-not p-songfn ann-waltz.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1000
@@ -210,9 +230,11 @@ chk mq0len 91 dance Waltz
 msg player PLAY_FADE
 get player CHK_PLAYER_SONG
 wait p-songfn ann-tango.mp3
+get player CHK_PLAYER_SONG
+wait-not p-songfn ann-tango.mp3
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 2000
+mssleep 1000
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol prepqueuecount 6
 get player CHK_PLAYER_SONG

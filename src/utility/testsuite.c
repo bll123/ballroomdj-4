@@ -422,7 +422,7 @@ tsProcessing (void *udata)
 
   if ((testsuite->wait) &&
       mstimeCheck (&testsuite->waitCheck)) {
-    resetChkResponse (testsuite);
+    testsuite->haveresponse = false;
     connSendMessage (testsuite->conn, testsuite->waitRoute,
         testsuite->waitMessage, NULL);
     mstimeset (&testsuite->waitCheck, 100);
@@ -1089,6 +1089,9 @@ tsParseExpect (testsuite_t *testsuite, const char *tcmd)
   if (strcmp (p, "chk-not") == 0) {
     testsuite->checknot = true;
   }
+  if (strcmp (p, "wait-not") == 0) {
+    testsuite->checknot = true;
+  }
 
   p = strtok_r (NULL, " ", &tokstr);
   while (p != NULL) {
@@ -1123,8 +1126,8 @@ tsScriptChkResponse (testsuite_t *testsuite)
   bool        dispflag = false;
   slistidx_t  iteridx;
   const char  *key;
-  const char  *val;
-  const char  *valchk;
+  const char  *valexp;
+  const char  *valresp;
   char        tmp [40];
   bool        retchk = false;
 
@@ -1132,142 +1135,133 @@ tsScriptChkResponse (testsuite_t *testsuite)
 
   if (testsuite->checkor) {
     key = slistIterateKey (testsuite->chkexpect, &iteridx);
-    valchk = slistGetStr (testsuite->chkresponse, key);
+    valresp = slistGetStr (testsuite->chkresponse, key);
     count = 1;
-    while ((val = slistIterateKey (testsuite->chkexpect, &iteridx)) != NULL) {
-      if (valchk != NULL && strcmp (val, valchk) == 0) {
+    while ((valexp = slistIterateKey (testsuite->chkexpect, &iteridx)) != NULL) {
+      if (valresp != NULL && strcmp (valexp, valresp) == 0) {
         ++countok;
         break;
       }
     }
 
     if (count != countok) {
-      if (! dispflag) {
+      if (! dispflag && ! testsuite->verbose) {
         fprintf (stdout, "\n");
         dispflag = true;
       }
       fprintf (stdout, "          %3d chk-or-fail: %s: resp: %s\n",
-          testsuite->lineno, key, valchk);
+          testsuite->lineno, key, valresp);
       fflush (stdout);
     }
   } else {
-    char  *compdisp;
+    const char  *compdisp = "?";
+    const char  *typedisp = "chk";
+    const char  *resultdisp = "?";
+    bool        dodisp = false;
 
     while ((key = slistIterateKey (testsuite->chkexpect, &iteridx)) != NULL) {
-      val = slistGetStr (testsuite->chkexpect, key);
-      valchk = slistGetStr (testsuite->chkresponse, key);
+      valexp = slistGetStr (testsuite->chkexpect, key);
+      valresp = slistGetStr (testsuite->chkresponse, key);
 
-      if (strcmp (val, "defaultvol") == 0) {
+      if (strcmp (valexp, "defaultvol") == 0) {
         snprintf (tmp, sizeof (tmp), "%ld", testsuite->defaultVol);
-        val = tmp;
+        valexp = tmp;
       }
 
-      logMsg (LOG_DBG, LOG_BASIC, "exp-resp: %s %s %s", key, val, valchk);
+      logMsg (LOG_DBG, LOG_BASIC, "exp-resp: %s %s %s", key, valexp, valresp);
+
       if (testsuite->lessthan) {
         long  a, b;
 
-        a = atol (val);
+        a = atol (valexp);
         b = -2;
-        if (valchk != NULL) {
-          b = atol (valchk);
+        if (valresp != NULL) {
+          b = atol (valresp);
         }
-        if (valchk != NULL && b < a) {
-          if (testsuite->verbose) {
-            fprintf (stdout, "          %3d chk-ok: %s: resp: %ld < exp: %ld\n",
-                  testsuite->lineno, key, b, a);
-            fflush (stdout);
-          }
+        if (valresp != NULL && b < a) {
+          compdisp = "<";
+          resultdisp = "ok";
           ++countok;
         } else {
-          if (! dispflag) {
-            fprintf (stdout, "\n");
-            dispflag = true;
-          }
-          fprintf (stdout, "          %3d chk-lt-fail: %s: resp: %ld > exp: %ld\n",
-              testsuite->lineno, key, b, a);
-          fflush (stdout);
+          dodisp = true;
+          resultdisp = "fail";
+          compdisp = ">";
         }
       }
       if (testsuite->greaterthan) {
         long  a, b;
 
-        a = atol (val);
+        a = atol (valexp);
         b = -2;
-        if (valchk != NULL) {
-          b = atol (valchk);
+        if (valresp != NULL) {
+          b = atol (valresp);
         }
-        if (valchk != NULL && b > a) {
-          if (testsuite->verbose) {
-            fprintf (stdout, "          %3d chk-ok: %s: resp: %ld > exp: %ld\n",
-                  testsuite->lineno, key, b, a);
-            fflush (stdout);
-          }
+        if (valresp != NULL && b > a) {
+          resultdisp = "ok";
+          compdisp = ">";
           ++countok;
         } else {
-          if (! dispflag) {
-            fprintf (stdout, "\n");
-            dispflag = true;
-          }
-          fprintf (stdout, "          %3d chk-gt-fail: %s: resp: %ld < exp: %ld\n",
-              testsuite->lineno, key, b, a);
-          fflush (stdout);
+          dodisp = true;
+          resultdisp = "fail";
+          compdisp = "<";
         }
       }
+
       retchk = false;
-      if (val != NULL && valchk != NULL) {
+      if (valexp != NULL && valresp != NULL) {
+        retchk = strcmp (valexp, valresp) == 0;
         if (testsuite->checknot) {
-          retchk = strcmp (val, valchk) != 0;
+          retchk = ! retchk;
+        }
+        if (retchk) {
+          compdisp = testsuite->checknot ? "!=" : "==";
         } else {
-          retchk = strcmp (val, valchk) == 0;
+          compdisp = testsuite->checknot ? "==" : "!=";
         }
       }
+
       if (! testsuite->lessthan && ! testsuite->greaterthan &&
-          val != NULL && valchk != NULL && retchk) {
-        if (testsuite->verbose) {
-          compdisp = "==";
-          if (testsuite->checknot) {
-            compdisp = "!=";
-          }
-          if (! dispflag) {
-            fprintf (stdout, "\n");
-            dispflag = true;
-          }
-          fprintf (stdout, "          %3d chk-ok: %s: exp: %s %s resp: %s\n",
-                testsuite->lineno, key, val, compdisp, valchk);
-          fflush (stdout);
-        }
+          valexp != NULL && valresp != NULL && retchk) {
+        resultdisp = "ok";
         ++countok;
-      } else if (testsuite->chkwait &&
-          ! testsuite->lessthan && ! testsuite->greaterthan) {
-        compdisp = "!=";
-        if (testsuite->checknot) {
-          compdisp = "==";
+      } else if (! testsuite->lessthan && ! testsuite->greaterthan) {
+        resultdisp = "fail";
+        dodisp = true;
+
+        if (testsuite->wait) {
+          resultdisp = "test";
+          dodisp = false;
+          if (testsuite->lastResponse == NULL ||
+              (valresp != NULL &&
+              strcmp (valresp, testsuite->lastResponse) != 0)) {
+            dodisp = true;
+            if (valresp != NULL) {
+              dataFree (testsuite->lastResponse);
+              testsuite->lastResponse = strdup (valresp);
+            }
+          }
         }
-        if (! dispflag) {
+      }
+
+      if (testsuite->wait) {
+        typedisp = "wait";
+        if (retchk && testsuite->verbose) {
+          dodisp = true;
+        }
+      }
+
+      ++count;
+
+      if ((testsuite->verbose && dodisp && testsuite->wait) ||
+          ((testsuite->verbose || dodisp) && ! testsuite->wait)) {
+        if (! dispflag && ! testsuite->verbose) {
           fprintf (stdout, "\n");
           dispflag = true;
         }
-        fprintf (stdout, "          %3d chk-fail: %s: exp: %s %s resp: %s\n",
-              testsuite->lineno, key, val, compdisp, valchk);
+        fprintf (stdout, "          %3d %s-%s: %s: resp: %s %s exp: %s\n",
+            testsuite->lineno, typedisp, resultdisp, key, valresp, compdisp, valexp);
         fflush (stdout);
-      } else if (testsuite->wait && testsuite->verbose &&
-          ! testsuite->lessthan && ! testsuite->greaterthan) {
-        compdisp = "!=";
-        if (testsuite->checknot) {
-          compdisp = "==";
-        }
-        if (testsuite->lastResponse == NULL ||
-            (valchk != NULL && strcmp (valchk, testsuite->lastResponse) != 0)) {
-          fprintf (stdout, "          %3d wait-test: %s: exp: %s %s resp: %s\n",
-                testsuite->lineno, key, val, compdisp, valchk);
-          fflush (stdout);
-          if (valchk != NULL) {
-            dataFree (testsuite->lastResponse);
-            testsuite->lastResponse = strdup (valchk);
-          }
-        }
       }
-      ++count;
     }
   }
 
