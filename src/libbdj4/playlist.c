@@ -415,9 +415,8 @@ playlistSetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key, ssiz
 }
 
 song_t *
-playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
-    ssize_t priorCount,
-    danceselHistory_t historyProc, void *userdata)
+playlistGetNextSong (playlist_t *pl,
+    ssize_t priorCount, danceselHistory_t historyProc, void *userdata)
 {
   pltype_t    type;
   song_t      *song = NULL;
@@ -448,7 +447,7 @@ playlistGetNextSong (playlist_t *pl, nlist_t *danceCounts,
       if (pl->dancesel == NULL) {
         pl->dancesel = danceselAlloc (pl->countList);
       }
-      danceIdx = danceselSelect (pl->dancesel, danceCounts,
+      danceIdx = danceselSelect (pl->dancesel,
           priorCount, historyProc, userdata);
       logMsg (LOG_DBG, LOG_BASIC, "automatic: dance: %d/%s", danceIdx,
           danceGetStr (pl->dances, danceIdx, DANCE_DANCE));

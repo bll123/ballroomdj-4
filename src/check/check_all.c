@@ -38,7 +38,9 @@ main (int argc, char *argv [])
   }
 
   /* macos's logging is really slow and affects the check suite */
-//  logStart ("check_all", "ck", LOG_ALL);
+  if (! isMacOS ()) {
+    logStart ("check_all", "ck", LOG_ALL & ~LOG_PROC);
+  }
 
   sr = srunner_create (NULL);
   check_libcommon (sr);

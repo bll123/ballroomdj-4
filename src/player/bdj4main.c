@@ -86,7 +86,6 @@ typedef struct {
   nlist_t           *playlistCache;
   queue_t           *playlistQueue [MUSICQ_MAX];
   musicq_t          *musicQueue;
-  nlist_t           *danceCounts;
   musicqidx_t       musicqPlayIdx;
   musicqidx_t       musicqManageIdx;
   int               musicqDeferredPlayIdx;
@@ -158,7 +157,6 @@ static void mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route);
 static void mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route);
 static void mainSendPlayerStatus (maindata_t *mainData, char *playerResp);
 static void mainSendMusicqStatus (maindata_t *mainData);
-static void mainDanceCountsInit (maindata_t *mainData);
 static int  mainParseMqidxNum (maindata_t *mainData, char *args, ilistidx_t *b);
 static int  mainParseQueuePlaylist (maindata_t *mainData, char *args, char **b, int *editmode);
 static int  mainMusicqIndexParse (maindata_t *mainData, const char *p);
@@ -203,7 +201,6 @@ main (int argc, char *argv[])
 
   mainData.playlistCache = NULL;
   mainData.musicQueue = NULL;
-  mainData.danceCounts = NULL;
   mainData.musicqPlayIdx = MUSICQ_PB_A;
   mainData.musicqManageIdx = MUSICQ_PB_A;
   mainData.musicqDeferredPlayIdx = MAIN_NOT_SET;
@@ -255,7 +252,6 @@ main (int argc, char *argv[])
     mainData.playlistQueue [i] = queueAlloc (tmp, mainPlaylistItemFree);
   }
   mainData.musicQueue = musicqAlloc (mainData.musicdb);
-  mainDanceCountsInit (&mainData);
   mainData.announceList = slistAlloc ("announcements", LIST_ORDERED, NULL);
 
   listenPort = bdjvarsGetNum (BDJVL_MAIN_PORT);
@@ -312,7 +308,6 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   slistFree (mainData->announceList);
   webclientClose (mainData->webclient);
   dataFree (mainData->mobmqUserkey);
-  nlistFree (mainData->danceCounts);
   dataFree (mainData->pbfinishArgs);
 
   procutilStopAllProcess (mainData->processes, mainData->conn, true);
@@ -1443,7 +1438,7 @@ mainMusicQueueFill (maindata_t *mainData)
   while (playlist != NULL && currlen <= playerqLen && stopatflag == false) {
     song_t  *song = NULL;
 
-    song = playlistGetNextSong (playlist, mainData->danceCounts,
+    song = playlistGetNextSong (playlist,
         currlen, mainMusicQueueHistory, mainData);
 
     if (song != NULL) {
@@ -2145,7 +2140,6 @@ mainMusicQueueFinish (maindata_t *mainData, const char *args)
   playlist_t    *playlist;
   dbidx_t       dbidx;
   song_t        *song;
-  ilistidx_t    danceIdx;
   int           playlistIdx;
 
   logProcBegin (LOG_PROC, "mainMusicQueueFinish");
@@ -2160,13 +2154,6 @@ mainMusicQueueFinish (maindata_t *mainData, const char *args)
     playlist = nlistGetData (mainData->playlistCache, playlistIdx);
     if (playlist != NULL && song != NULL) {
       playlistAddPlayed (playlist, song);
-    }
-  }
-  /* update the dance counts */
-  if (song != NULL) {
-    danceIdx = songGetNum (song, TAG_DANCE);
-    if (danceIdx >= 0) {
-      nlistDecrement (mainData->danceCounts, danceIdx);
     }
   }
 
@@ -2477,29 +2464,6 @@ mainSendMusicqStatus (maindata_t *mainData)
   logProcEnd (LOG_PROC, "mainSendMusicqStatus", "");
 }
 
-static void
-mainDanceCountsInit (maindata_t *mainData)
-{
-  nlist_t     *dc;
-  ilistidx_t  didx;
-  nlistidx_t  iteridx;
-
-  logProcBegin (LOG_PROC, "mainDanceCountsInit");
-
-  dc = dbGetDanceCounts (mainData->musicdb);
-
-  nlistFree (mainData->danceCounts);
-
-  mainData->danceCounts = nlistAlloc ("main-dancecounts", LIST_ORDERED, NULL);
-  nlistSetSize (mainData->danceCounts, nlistGetCount (dc));
-
-  nlistStartIterator (dc, &iteridx);
-  while ((didx = nlistIterateKey (dc, &iteridx)) >= 0) {
-    nlistSetNum (mainData->danceCounts, didx, nlistGetNum (dc, didx));
-  }
-  logProcEnd (LOG_PROC, "mainDanceCountsInit", "");
-}
-
 /* calls mainMusicqIndexParse, */
 /* which will set musicqManageIdx */
 static int
@@ -2721,9 +2685,11 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
   nlist_t       *danceCounts = NULL;
   dancesel_t    *dancesel = NULL;
   songsel_t     *songsel = NULL;
+  dance_t       *dances;
   int           totcount;
   int           currlen;
 
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
   mqidx = mainMusicqIndexParse (mainData, args);
 
   danceCounts = nlistAlloc ("mq-mix-counts", LIST_ORDERED, NULL);
@@ -2767,7 +2733,7 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
   while (currlen < totcount) {
     /* as there is always an empty head on the music queue, */
     /* the prior-index must point at currlen + 1 */
-    danceIdx = danceselSelect (dancesel, danceCounts, currlen + 1,
+    danceIdx = danceselSelect (dancesel, currlen + 1,
         mainMusicQueueHistory, mainData);
     song = songselSelect (songsel, danceIdx);
     if (song != NULL) {
@@ -2777,11 +2743,11 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
       songselSelectFinalize (songsel, danceIdx);
       logMsg (LOG_DBG, LOG_BASIC, "mix: (%d) d:%d/%s select: %s",
           currlen, danceIdx,
-          danceGetStr (dancesel->dances, danceIdx, DANCE_DANCE),
+          danceGetStr (dances, danceIdx, DANCE_DANCE),
           songGetStr (song, TAG_FILE));
       dbidx = songGetNum (song, TAG_DBIDX);
       danceselAddCount (dancesel, danceIdx);
-      nlistDecrement (danceCounts, danceIdx);
+      danceselDecrementBase (dancesel, danceIdx);
       plidx = nlistGetNum (songList, dbidx);
       dur = mainCalculateSongDuration (mainData, song, plidx);
       musicqPush (mainData->musicQueue, mqidx, dbidx, plidx, dur);

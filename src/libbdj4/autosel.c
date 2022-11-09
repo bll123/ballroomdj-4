@@ -24,7 +24,7 @@ static datafilekey_t autoseldfkeys [AUTOSEL_KEY_MAX] = {
   { "BEGINFAST",      AUTOSEL_BEG_FAST,         VALUE_DOUBLE, NULL, -1 },
   { "BOTHFAST",       AUTOSEL_BOTHFAST,         VALUE_DOUBLE, NULL, -1 },
   { "COUNTLOW",       AUTOSEL_LOW,              VALUE_DOUBLE, NULL, -1 },
-  { "HISTDISTANCE",   AUTOSEL_HIST_DISTANCE,    VALUE_NUM,   NULL, -1 },
+  { "HISTDISTANCE",   AUTOSEL_HIST_DISTANCE,    VALUE_NUM,    NULL, -1 },
   { "LEVELWEIGHT",    AUTOSEL_LEVEL_WEIGHT,     VALUE_DOUBLE, NULL, -1 },
   { "LIMIT",          AUTOSEL_LIMIT,            VALUE_DOUBLE, NULL, -1 },
   { "LOGVALUE",       AUTOSEL_LOG_VALUE,        VALUE_DOUBLE, NULL, -1 },

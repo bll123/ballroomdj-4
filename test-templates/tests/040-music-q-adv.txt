@@ -81,12 +81,12 @@ get player CHK_PLAYER_STATUS
 msg main QUEUE_PLAY_WHEN_QUEUED 1
 msg main MUSICQ_INSERT 0~999~1
 # should auto-start playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
 # now pause; an additional insert should not start playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg main CMD_PLAYPAUSE
@@ -102,7 +102,7 @@ msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 resptimeout 7500
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk playstate playing actualvolume defaultvol
 msg player PLAY_FADE
@@ -112,9 +112,9 @@ wait playstate stopped
 # the queue is now empty; an insert should start playing
 msg main MUSICQ_INSERT 0~999~5
 get player CHK_PLAYER_STATUS
-resptimeout 1000
+resptimeout 1500
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 end
@@ -136,7 +136,7 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 0
 # empty queue
 msg main QUEUE_CLEAR_PLAY 0~999~16
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
@@ -146,7 +146,7 @@ get player CHK_PLAYER_STATUS
 chk prepqueuecount 0 playstate playing
 # playing song
 msg main QUEUE_CLEAR_PLAY 0~999~18
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get main CHK_MAIN_MUSICQ
@@ -156,7 +156,7 @@ chk prepqueuecount 0 playstate playing
 # paused song
 msg main CMD_PLAYPAUSE
 msg main QUEUE_CLEAR_PLAY 0~999~20
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get main CHK_MAIN_MUSICQ
@@ -225,7 +225,7 @@ msg main MUSICQ_INSERT 0~999~11
 msg main MUSICQ_INSERT 0~999~13
 msg main MUSICQ_INSERT 0~999~15
 msg main CMD_PLAY
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 resptimeout 2000
 wait playstate playing
@@ -234,52 +234,52 @@ chk actualvolume defaultvol
 msg main MUSICQ_TOGGLE_PAUSE 0~1
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
-resptimeout 1000
+resptimeout 1500
 wait pauseatend 0 playstate in-fadeout
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk-lt actualvolume defaultvol
 resptimeout 6000
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
-resptimeout 1000
+resptimeout 1500
 wait pauseatend 1 playstate in-fadeout
 resptimeout 7500
 wait playstate stopped
 msg main MUSICQ_TOGGLE_PAUSE 0~2
 msg main CMD_PLAY
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
-resptimeout 1000
+resptimeout 1500
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
-resptimeout 1000
+resptimeout 1500
 wait pauseatend 0 playstate in-fadeout
 resptimeout 7500
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
-resptimeout 1000
+resptimeout 1500
 wait pauseatend 0 playstate in-fadeout
 resptimeout 7500
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
-resptimeout 1000
+resptimeout 1500
 wait pauseatend 1 playstate in-fadeout
 resptimeout 7500
 wait playstate stopped

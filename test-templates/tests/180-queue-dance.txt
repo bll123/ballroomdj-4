@@ -9,14 +9,14 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get main CHK_MAIN_MUSICQ
 chk mq0len 2 dance Tango
 msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dance Waltz
 end
@@ -29,14 +29,14 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get main CHK_MAIN_MUSICQ
 chk mq0len 5 dance Waltz
 msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get main CHK_MAIN_MUSICQ
 chk mq0len 4 dance Waltz
 end
@@ -51,14 +51,14 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get main CHK_MAIN_MUSICQ
 chk mq0len 2 dance Tango
 msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get main CHK_MAIN_MUSICQ
 chk mq0len 1 dance Waltz
 file copy templates/QueueDance.pl data/QueueDance.pl

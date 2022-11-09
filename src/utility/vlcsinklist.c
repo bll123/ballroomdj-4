@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "bdjopt.h"
+#include "fileop.h"
 #include "pli.h"
 #include "sysvars.h"
 #include "volsink.h"
@@ -20,6 +21,11 @@ main (int argc, char *argv [])
 {
   volsinklist_t sinklist;
   pli_t         *pli;
+
+  if (! fileopIsDirectory ("data")) {
+    fprintf (stderr, "run from top level\n");
+    exit (1);
+  }
 
   sysvarsInit (argv [0]);
   bdjoptInit ();

@@ -54,15 +54,20 @@ Installation:
         https://sourceforge.net/projects/ballroomdj4/files/
 
       and run it.
-
       This script uses sudo to install the required packages.
-
       This only needs to be done once.
 
     b) Run the BallroomDJ 4 installer.
 
   MacOS:
-    a) Download the following two files and the bdj4 installer from:
+    a) Download VLC from
+
+         https://www.videolan.org/vlc/
+
+       and install it.
+       This step will be merged into the pre install script at a later date.
+
+    b) Download the following two files and the bdj4 installer from:
 
          https://sourceforge.net/projects/ballroomdj4/files/
 
@@ -72,7 +77,7 @@ Installation:
        Be aware that there are two MacOS installation packages.  One for
        MacOS on intel, and one for MacOS on Apple Silicon (labelled 'm1').
 
-    b) Open a terminal (Finder : Go -> Utilities / Terminal)
+    c) Open a terminal (Finder : Go -> Utilities / Terminal)
       Type in the following commands:
 
         cd $HOME/Downloads
@@ -85,7 +90,7 @@ Installation:
       The pre-installation script only needs to be run each time its
       version number changes.
 
-    c) In the terminal type the following command:
+    d) In the terminal type the following command:
 
         # replace X with the version number
         bash macos-run-installer-v1.sh

@@ -13,6 +13,10 @@
 #include "volsink.h"
 #include "volume.h"
 
+enum {
+  CHAN_STEREO = 2,
+};
+
 void
 volumeDisconnect (void) {
   return;
@@ -35,8 +39,7 @@ volumeProcess (volaction_t action, const char *sinkname,
   Float32         volume;
   int             ivol;
   int             status;
-  UInt32          channels [2];
-  UInt32          transporttype;
+  UInt32          channels [CHAN_STEREO];
 
   if (action == VOL_HAVE_SINK_LIST) {
     return true;
@@ -161,6 +164,24 @@ volumeProcess (volaction_t action, const char *sinkname,
     return 0;
   }
 
+  if (*sinkname) {
+    outputDeviceID = atoi (sinkname);
+  } else {
+    outputDeviceID = defaultDeviceID;
+  }
+
+  propertyAOPA.mSelector = kAudioDevicePropertyPreferredChannelsForStereo;
+  propertyAOPA.mScope = kAudioDevicePropertyScopeOutput;
+  propertyAOPA.mElement = kAudioObjectPropertyElementWildcard;
+  propSize = sizeof (channels);
+  status = AudioObjectGetPropertyData (
+      outputDeviceID,
+      &propertyAOPA,
+      0,
+      NULL,
+      &propSize,
+      &channels );
+
   if (sinkname != NULL && *sinkname && action == VOL_SET_SYSTEM_DFLT) {
     outputDeviceID = atoi (sinkname);
 
@@ -181,43 +202,14 @@ volumeProcess (volaction_t action, const char *sinkname,
     return 0;
   }
 
-  if (*sinkname) {
-    outputDeviceID = atoi (sinkname);
-  } else {
-    outputDeviceID = defaultDeviceID;
-  }
-
-  propertyAOPA.mSelector = kAudioDevicePropertyPreferredChannelsForStereo;
-  propertyAOPA.mScope = kAudioDevicePropertyScopeOutput;
-  propertyAOPA.mElement = kAudioObjectPropertyElementWildcard;
-  propSize = sizeof (channels);
-  status = AudioObjectGetPropertyData (
-      outputDeviceID,
-      &propertyAOPA,
-      0,
-      NULL,
-      &propSize,
-      &channels );
-
-  propertyAOPA.mSelector = kAudioDevicePropertyTransportType;
-  propertyAOPA.mScope = kAudioObjectPropertyScopeGlobal;
-  propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
-  propSize = sizeof (transporttype);
-  status = AudioObjectGetPropertyData (
-      outputDeviceID,
-      &propertyAOPA,
-      0,
-      NULL,
-      &propSize,
-      &transporttype );
+  /* Neither HasProperty nor IsPropertySettable work to determine */
+  /* if the volume can be set. */
+  /* Instead of guessing how to do this, just try one way, then try */
+  /* the other. */
 
   propertyAOPA.mSelector = kAudioDevicePropertyVolumeScalar;
   propertyAOPA.mScope = kAudioDevicePropertyScopeOutput;
-  if (transporttype == kAudioDeviceTransportTypeBuiltIn) {
-    propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
-  } else {
-    propertyAOPA.mElement = channels [0]; // channel number
-  }
+  propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
 
   if (action == VOL_SET) {
     propSize = sizeof (volume);
@@ -229,9 +221,24 @@ volumeProcess (volaction_t action, const char *sinkname,
         NULL,
         propSize,
         &volume);
+    if (status != 0) {
+      /* set all channels */
+      for (int i = 0; i < CHAN_STEREO; ++i) {
+        propertyAOPA.mElement = channels [i];
+        propSize = sizeof (volume);
+        status = AudioObjectSetPropertyData (
+            outputDeviceID,
+            &propertyAOPA,
+            0,
+            NULL,
+            propSize,
+            &volume);
+       }
+    }
   }
 
   if (vol != NULL && (action == VOL_SET || action == VOL_GET)) {
+    propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
     propSize = sizeof (volume);
     status = AudioObjectGetPropertyData (
         outputDeviceID,
@@ -240,6 +247,17 @@ volumeProcess (volaction_t action, const char *sinkname,
         NULL,
         &propSize,
         &volume);
+    if (status != 0) {
+      propertyAOPA.mElement = channels [0];
+      propSize = sizeof (volume);
+      status = AudioObjectGetPropertyData (
+          outputDeviceID,
+          &propertyAOPA,
+          0,
+          NULL,
+          &propSize,
+          &volume);
+    }
     if (status != 0) {
       volume = 0.0;
     }

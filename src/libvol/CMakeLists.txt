@@ -41,7 +41,6 @@ target_link_libraries (libvolwin
 add_executable (voltest voltest.c)
 target_link_libraries (voltest
   libbdj4vol libbdj4basic libbdj4common
-#  ${ICU_LDFLAGS}
   m
 )
 

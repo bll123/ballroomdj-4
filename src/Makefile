@@ -117,6 +117,18 @@ testsuite:
 	./utils/mktestsetup.sh
 	(cd ..;./bin/bdj4 --testsuite)
 
+testsection:
+	./utils/mktestsetup.sh
+	(cd ..;./bin/bdj4 --testsuite --runsection $(section))
+
+testtest:
+	./utils/mktestsetup.sh
+	(cd ..;./bin/bdj4 --testsuite --runtest $(test))
+
+teststart:
+	./utils/mktestsetup.sh
+	(cd ..;./bin/bdj4 --testsuite --starttest $(start))
+
 # recommended to change PLAYER and VOLUME in data/bdjconfig.txt to
 # be the null libraries.
 .PHONY: mcheck mchecksupp mcheckcheck

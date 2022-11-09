@@ -30,6 +30,7 @@
 
 enum {
   TM_MAX_DANCE = 20,        // normally 14 or so in the standard template.
+  DANCESEL_DEBUG = 0,
 };
 
 static char *dbfn = "data/musicdb.dat";
@@ -100,7 +101,9 @@ START_TEST(dancesel_choose_single_no_hist)
   ilistidx_t  wkey;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_single_no_hist");
-// fprintf (stderr, "-- dancesel_choose_single_no_hist\n");
+  if (DANCESEL_DEBUG) {
+    fprintf (stderr, "-- dancesel_choose_single_no_hist\n");
+  }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -113,8 +116,8 @@ START_TEST(dancesel_choose_single_no_hist)
   for (int i = 0; i < 16; ++i) {
     ilistidx_t  didx;
 
-    didx = danceselSelect (ds, clist, 0, NULL, NULL);
-// fprintf (stderr, "  didx: %d\n", didx);
+    didx = danceselSelect (ds, 0, NULL, NULL);
+    danceselAddCount (ds, didx);
     ck_assert_int_eq (didx, wkey);
   }
 
@@ -123,36 +126,40 @@ START_TEST(dancesel_choose_single_no_hist)
 }
 END_TEST
 
-START_TEST(dancesel_choose_two_no_hist)
+START_TEST(dancesel_choose_three_no_hist)
 {
   dancesel_t  *ds;
   nlist_t     *clist = NULL;
   dance_t     *dances;
   slist_t     *dlist;
-  ilistidx_t  wkey, tkey;
+  ilistidx_t  wkey, tkey, fkey;
 
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_two_no_hist");
-// fprintf (stderr, "-- dancesel_choose_two_no_hist\n");
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_three_no_hist");
+  if (DANCESEL_DEBUG) {
+    fprintf (stderr, "-- dancesel_choose_three_no_hist\n");
+  }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
   wkey = slistGetNum (dlist, "Waltz");
   tkey = slistGetNum (dlist, "Tango");
+  fkey = slistGetNum (dlist, "Foxtrot");
 
   clist = nlistAlloc ("count-list", LIST_ORDERED, NULL);
-  nlistSetNum (clist, wkey, 5);
-  nlistSetNum (clist, tkey, 5);
+  nlistSetNum (clist, wkey, 2);
+  nlistSetNum (clist, tkey, 2);
+  nlistSetNum (clist, fkey, 2);
   ds = danceselAlloc (clist);
 
   for (int i = 0; i < 16; ++i) {
     ilistidx_t  didx;
     int         rc;
 
-    didx = danceselSelect (ds, clist, 0, NULL, NULL);
-// fprintf (stderr, "  didx: %d\n", didx);
-    rc = didx == wkey || didx == tkey;
+    didx = danceselSelect (ds, 0, NULL, NULL);
+    danceselAddCount (ds, didx);
+
+    rc = didx == wkey || didx == tkey || didx == fkey;;
     ck_assert_int_eq (rc, 1);
-    /* without history, could be either waltz or tango */
   }
 
   danceselFree (ds);
@@ -174,7 +181,9 @@ START_TEST(dancesel_choose_two_hist_s)
   ilistidx_t  lastdidx;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_two_hist_s");
-// fprintf (stderr, "-- dancesel_choose_two_hist_s\n");
+  if (DANCESEL_DEBUG) {
+    fprintf (stderr, "-- dancesel_choose_two_hist_s\n");
+  }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -183,8 +192,8 @@ START_TEST(dancesel_choose_two_hist_s)
 
   clist = nlistAlloc ("count-list", LIST_ORDERED, NULL);
   /* a symmetric outcome */
-  nlistSetNum (clist, wkey, 5);
-  nlistSetNum (clist, tkey, 5);
+  nlistSetNum (clist, wkey, 4);
+  nlistSetNum (clist, tkey, 4);
   ds = danceselAlloc (clist);
 
   lastdidx = -1;
@@ -193,13 +202,13 @@ START_TEST(dancesel_choose_two_hist_s)
     ilistidx_t  didx;
     int         rc;
 
-    didx = danceselSelect (ds, clist, gprior, chkQueue, NULL);
-// fprintf (stderr, "  didx: %d\n", didx);
+    didx = danceselSelect (ds, gprior, chkQueue, NULL);
     rc = didx == wkey || didx == tkey;
     ck_assert_int_eq (rc, 1);
     /* with only two dances and the same counts, they should alternate */
     ck_assert_int_ne (didx, lastdidx);
     danceselAddCount (ds, didx);
+    danceselAddPlayed (ds, didx);
     saveToQueue (didx);
     lastdidx = didx;
   }
@@ -221,7 +230,9 @@ START_TEST(dancesel_choose_two_hist_a)
   int         counts [TM_MAX_DANCE];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_two_hist_a");
-// fprintf (stderr, "-- dancesel_choose_two_hist_a\n");
+  if (DANCESEL_DEBUG) {
+    fprintf (stderr, "-- dancesel_choose_two_hist_a\n");
+  }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -243,12 +254,12 @@ START_TEST(dancesel_choose_two_hist_a)
     ilistidx_t  didx;
     int         rc;
 
-    didx = danceselSelect (ds, clist, gprior, chkQueue, NULL);
-// fprintf (stderr, "  didx: %d\n", didx);
+    didx = danceselSelect (ds, gprior, chkQueue, NULL);
     rc = didx == wkey || didx == tkey;
     ck_assert_int_eq (rc, 1);
     counts [didx]++;
     danceselAddCount (ds, didx);
+    danceselAddPlayed (ds, didx);
     saveToQueue (didx);
   }
   /* with only two dances, the chances of a non-symmetric outcome */
@@ -275,7 +286,9 @@ START_TEST(dancesel_choose_multi_count)
   int         counts [TM_MAX_DANCE];
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_multi_count");
-// fprintf (stderr, "-- dancesel_choose_multi_count\n");
+  if (DANCESEL_DEBUG) {
+    fprintf (stderr, "-- dancesel_choose_multi_count\n");
+  }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -299,12 +312,12 @@ START_TEST(dancesel_choose_multi_count)
     ilistidx_t  didx;
     int         rc;
 
-    didx = danceselSelect (ds, clist, gprior, chkQueue, NULL);
-// fprintf (stderr, "  didx: %d\n", didx);
+    didx = danceselSelect (ds, gprior, chkQueue, NULL);
     rc = didx == wkey || didx == tkey || didx == rkey;
     ck_assert_int_eq (rc, 1);
     counts [didx]++;
     danceselAddCount (ds, didx);
+    danceselAddPlayed (ds, didx);
     saveToQueue (didx);
   }
   /* check for a range */
@@ -331,8 +344,11 @@ START_TEST(dancesel_choose_multi_tag)
   ilistidx_t  lastdidx;
   int         count;
 
+  /* it is difficult to ascertain whether the tag match count is low enough */
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_multi_tag");
-// fprintf (stderr, "-- dancesel_choose_multi_tag\n");
+  if (DANCESEL_DEBUG) {
+    fprintf (stderr, "-- dancesel_choose_multi_tag\n");
+  }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -353,12 +369,11 @@ START_TEST(dancesel_choose_multi_tag)
   count = 0;
   lastdidx = -1;
   gprior = 0;
-  for (int i = 0; i < 16; ++i) {
+  for (int i = 0; i < 50; ++i) {
     ilistidx_t  didx;
     int         rc;
 
-    didx = danceselSelect (ds, clist, gprior, chkQueue, NULL);
-// fprintf (stderr, "  didx: %d\n", didx);
+    didx = danceselSelect (ds, gprior, chkQueue, NULL);
     rc = didx == wkey || didx == jkey || didx == wcskey ||
         didx == rkey || didx == fkey;
     ck_assert_int_eq (rc, 1);
@@ -377,11 +392,12 @@ START_TEST(dancesel_choose_multi_tag)
     }
     lastdidx = didx;
     danceselAddCount (ds, didx);
+    danceselAddPlayed (ds, didx);
     saveToQueue (didx);
   }
   /* there are too many variables to determine an exact value */
   /* but there should not be too many jive/wcs next to each other */
-  ck_assert_int_lt (count, 4);
+  ck_assert_int_lt (count, 10);
 
   danceselFree (ds);
   nlistFree (clist);
@@ -401,9 +417,12 @@ START_TEST(dancesel_choose_fast)
   slist_t     *dlist;
   ilistidx_t  wkey, tkey, rkey, qskey, jkey, fkey;
   ilistidx_t  lastfast;
+  int         fastmatch;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_fast");
-// fprintf (stderr, "-- dancesel_choose_fast\n");
+  if (DANCESEL_DEBUG) {
+    fprintf (stderr, "-- dancesel_choose_fast\n");
+  }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -428,28 +447,35 @@ START_TEST(dancesel_choose_fast)
 
   lastfast = 0;
   gprior = 0;
-  for (int i = 0; i < 36; ++i) {
+  fastmatch = 0;
+  for (int i = 0; i < 50; ++i) {
     ilistidx_t  didx;
     int         fast;
     int         notfast;
 
-    didx = danceselSelect (ds, clist, gprior, chkQueue, NULL);
-// fprintf (stderr, "  didx: %d\n", didx);
+    didx = danceselSelect (ds, gprior, chkQueue, NULL);
     fast = didx == jkey || didx == qskey;
     notfast = didx == wkey || didx == rkey || didx == fkey || didx == tkey;
     ck_assert_int_eq (fast | notfast, 1);
     if (i < 3) {
-      ck_assert_int_eq (fast, 0);
+      if (fast != 0) {
+        ++fastmatch;
+      }
       ck_assert_int_eq (notfast, 1);
     }
     if (i >= 3 && (lastfast || fast)) {
       /* fast dances never appear next to each other */
-      ck_assert_int_ne (lastfast, fast);
+      if (lastfast == fast) {
+        ++fastmatch;
+      }
     }
     lastfast = fast;
     danceselAddCount (ds, didx);
+    danceselAddPlayed (ds, didx);
     saveToQueue (didx);
   }
+  /* fast songs should be extremely infrequent */
+  ck_assert_int_lt (fastmatch, 2);
 
   danceselFree (ds);
   nlistFree (clist);
@@ -470,7 +496,7 @@ dancesel_suite (void)
   tcase_add_unchecked_fixture (tc, setup, teardown);
   tcase_add_test (tc, dancesel_alloc);
   tcase_add_test (tc, dancesel_choose_single_no_hist);
-  tcase_add_test (tc, dancesel_choose_two_no_hist);
+  tcase_add_test (tc, dancesel_choose_three_no_hist);
   tcase_add_test (tc, dancesel_choose_two_hist_s);
   tcase_add_test (tc, dancesel_choose_two_hist_a);
   tcase_add_test (tc, dancesel_choose_multi_count);

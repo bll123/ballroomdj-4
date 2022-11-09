@@ -184,7 +184,7 @@ sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
 mv -f ${tfn}.n ${tfn}
 
 tfn=data/bdjconfig.txt
-sed -e '/^DEBUGLVL/ { n ; s/.*/..31/ ; }' \
+sed -e '/^DEBUGLVL/ { n ; s/.*/..159/ ; }' \
     -e '/^CLOCKDISP/ { n ; s/.*/..iso/ ; }' \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
@@ -270,5 +270,13 @@ cwd=$(pwd)
 # make sure various variables are set appropriately.
 ./bin/bdj4 --msys --bdj4updater --newinstall \
     --musicdir "${cwd}/test-music"
+
+if [[ $os == macos ]]; then
+  # reset the debug level on macos back to 31
+  tfn=data/bdjconfig.txt
+  sed -e '/^DEBUGLVL/ { n ; s/.*/..159/ ; }' \
+      ${tfn} > ${tfn}.n
+  mv -f ${tfn}.n ${tfn}
+fi
 
 exit 0

@@ -151,8 +151,8 @@ sudo port -N install \
     ffmpeg +nonfree -x11
 sudo port select --set python python${pyver}
 sudo port select --set python3 python${pyver}
-sudo port select --set pip py${pyver}-pip
-sudo port select --set pip3 py${pyver}-pip
+sudo port select --set pip pip${pyver}
+sudo port select --set pip3 pip${pyver}
 
 echo "-- Cleaning up old MacPorts files"
 if [[ -z "$(port -q list inactive)" ]]; then
