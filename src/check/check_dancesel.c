@@ -86,7 +86,7 @@ START_TEST(dancesel_alloc)
   clist = nlistAlloc ("count-list", LIST_ORDERED, NULL);
   nlistSetNum (clist, wkey, 5);
   /* it doesn't crash with no data, but avoid silliness */
-  ds = danceselAlloc (clist);
+  ds = danceselAlloc (clist, NULL, NULL);
   danceselFree (ds);
   nlistFree (clist);
 }
@@ -111,12 +111,12 @@ START_TEST(dancesel_choose_single_no_hist)
 
   clist = nlistAlloc ("count-list", LIST_ORDERED, NULL);
   nlistSetNum (clist, wkey, 5);
-  ds = danceselAlloc (clist);
+  ds = danceselAlloc (clist, NULL, NULL);
 
   for (int i = 0; i < 16; ++i) {
     ilistidx_t  didx;
 
-    didx = danceselSelect (ds, 0, NULL, NULL);
+    didx = danceselSelect (ds, 0);
     danceselAddCount (ds, didx);
     ck_assert_int_eq (didx, wkey);
   }
@@ -149,13 +149,13 @@ START_TEST(dancesel_choose_three_no_hist)
   nlistSetNum (clist, wkey, 2);
   nlistSetNum (clist, tkey, 2);
   nlistSetNum (clist, fkey, 2);
-  ds = danceselAlloc (clist);
+  ds = danceselAlloc (clist, NULL, NULL);
 
   for (int i = 0; i < 16; ++i) {
     ilistidx_t  didx;
     int         rc;
 
-    didx = danceselSelect (ds, 0, NULL, NULL);
+    didx = danceselSelect (ds, 0);
     danceselAddCount (ds, didx);
 
     rc = didx == wkey || didx == tkey || didx == fkey;;
@@ -194,7 +194,7 @@ START_TEST(dancesel_choose_two_hist_s)
   /* a symmetric outcome */
   nlistSetNum (clist, wkey, 4);
   nlistSetNum (clist, tkey, 4);
-  ds = danceselAlloc (clist);
+  ds = danceselAlloc (clist, chkQueue, NULL);
 
   lastdidx = -1;
   gprior = 0;
@@ -202,7 +202,7 @@ START_TEST(dancesel_choose_two_hist_s)
     ilistidx_t  didx;
     int         rc;
 
-    didx = danceselSelect (ds, gprior, chkQueue, NULL);
+    didx = danceselSelect (ds, gprior);
     rc = didx == wkey || didx == tkey;
     ck_assert_int_eq (rc, 1);
     /* with only two dances and the same counts, they should alternate */
@@ -247,14 +247,14 @@ START_TEST(dancesel_choose_two_hist_a)
   /* create an asymmetric count list */
   nlistSetNum (clist, wkey, 2);
   nlistSetNum (clist, tkey, 4);
-  ds = danceselAlloc (clist);
+  ds = danceselAlloc (clist, chkQueue, NULL);
 
   gprior = 0;
   for (int i = 0; i < 12; ++i) {
     ilistidx_t  didx;
     int         rc;
 
-    didx = danceselSelect (ds, gprior, chkQueue, NULL);
+    didx = danceselSelect (ds, gprior);
     rc = didx == wkey || didx == tkey;
     ck_assert_int_eq (rc, 1);
     counts [didx]++;
@@ -305,14 +305,14 @@ START_TEST(dancesel_choose_multi_count)
   nlistSetNum (clist, wkey, 4);
   nlistSetNum (clist, tkey, 4);
   nlistSetNum (clist, rkey, 8);
-  ds = danceselAlloc (clist);
+  ds = danceselAlloc (clist, chkQueue, NULL);
 
   gprior = 0;
   for (int i = 0; i < 16; ++i) {
     ilistidx_t  didx;
     int         rc;
 
-    didx = danceselSelect (ds, gprior, chkQueue, NULL);
+    didx = danceselSelect (ds, gprior);
     rc = didx == wkey || didx == tkey || didx == rkey;
     ck_assert_int_eq (rc, 1);
     counts [didx]++;
@@ -364,7 +364,7 @@ START_TEST(dancesel_choose_multi_tag)
   nlistSetNum (clist, wcskey, 8);
   nlistSetNum (clist, rkey, 8);
   nlistSetNum (clist, fkey, 8);
-  ds = danceselAlloc (clist);
+  ds = danceselAlloc (clist, chkQueue, NULL);
 
   count = 0;
   lastdidx = -1;
@@ -373,7 +373,7 @@ START_TEST(dancesel_choose_multi_tag)
     ilistidx_t  didx;
     int         rc;
 
-    didx = danceselSelect (ds, gprior, chkQueue, NULL);
+    didx = danceselSelect (ds, gprior);
     rc = didx == wkey || didx == jkey || didx == wcskey ||
         didx == rkey || didx == fkey;
     ck_assert_int_eq (rc, 1);
@@ -443,7 +443,7 @@ START_TEST(dancesel_choose_fast)
   nlistSetNum (clist, wkey, 6);
   nlistSetNum (clist, tkey, 6);
   nlistSetNum (clist, rkey, 6);
-  ds = danceselAlloc (clist);
+  ds = danceselAlloc (clist, chkQueue, NULL);
 
   lastfast = 0;
   gprior = 0;
@@ -453,7 +453,7 @@ START_TEST(dancesel_choose_fast)
     int         fast;
     int         notfast;
 
-    didx = danceselSelect (ds, gprior, chkQueue, NULL);
+    didx = danceselSelect (ds, gprior);
     fast = didx == jkey || didx == qskey;
     notfast = didx == wkey || didx == rkey || didx == fkey || didx == tkey;
     ck_assert_int_eq (fast | notfast, 1);

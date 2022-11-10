@@ -1,6 +1,6 @@
 BallroomDJ 4 Change Log
 
-4.0.0 alpha 2022-10---
+4.0.0 alpha 2022-11-09
 
 - audio tags: fixed a problem writing the tracknumber tag (.m4a).
 - automatic playlists: adjust dance selection parameters.

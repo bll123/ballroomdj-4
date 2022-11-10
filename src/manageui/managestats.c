@@ -14,6 +14,7 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
+#include "dance.h"
 #include "manageui.h"
 #include "msgparse.h"
 #include "musicdb.h"

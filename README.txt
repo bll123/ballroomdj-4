@@ -11,7 +11,7 @@ Contents
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 2022-10---
+Alpha Release: 2022-11-09
 
   Alpha releases are mostly untested works in progress.
 
@@ -92,7 +92,6 @@ Installation:
 
     d) In the terminal type the following command:
 
-        # replace X with the version number
         bash macos-run-installer-v1.sh
 
 Converting BallroomDJ 3:

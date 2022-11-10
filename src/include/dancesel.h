@@ -10,16 +10,16 @@
 
 typedef double  danceProb_t;
 
+typedef ilistidx_t (*danceselQueueLookup_t)(void *userdata, ilistidx_t idx);
+
 typedef struct dancesel dancesel_t;
 
-typedef ilistidx_t (*danceselHistory_t)(void *userdata, ilistidx_t idx);
-
-dancesel_t      *danceselAlloc (nlist_t *countList);
+dancesel_t      *danceselAlloc (nlist_t *countList,
+                    danceselQueueLookup_t queueLookupProc, void *userdata);
 void            danceselFree (dancesel_t *dancesel);
 void            danceselDecrementBase (dancesel_t *dancesel, ilistidx_t danceIdx);
 void            danceselAddCount (dancesel_t *dancesel, ilistidx_t danceIdx);
 void            danceselAddPlayed (dancesel_t *dancesel, ilistidx_t danceIdx);
-ilistidx_t      danceselSelect (dancesel_t *dancesel, ssize_t priorHistCount,
-                    danceselHistory_t historyProc, void *userdata);
+ilistidx_t      danceselSelect (dancesel_t *dancesel, ilistidx_t priorHistCount);
 
 #endif /* INC_DANCESEL_H */

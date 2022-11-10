@@ -206,6 +206,7 @@ volumeProcess (volaction_t action, const char *sinkname,
   /* if the volume can be set. */
   /* Instead of guessing how to do this, just try one way, then try */
   /* the other. */
+  /* When using channels, set the volume on both channels. */
 
   propertyAOPA.mSelector = kAudioDevicePropertyVolumeScalar;
   propertyAOPA.mScope = kAudioDevicePropertyScopeOutput;

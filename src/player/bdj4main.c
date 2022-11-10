@@ -152,7 +152,7 @@ static void mainPlaybackBegin (maindata_t *mainData);
 static void mainMusicQueuePlay (maindata_t *mainData);
 static void mainMusicQueueFinish (maindata_t *mainData, const char *args);
 static void mainMusicQueueNext (maindata_t *mainData, const char *args);
-static ilistidx_t mainMusicQueueHistory (void *mainData, ilistidx_t idx);
+static ilistidx_t mainMusicQueueLookup (void *mainData, ilistidx_t idx);
 static void mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route);
 static void mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route);
 static void mainSendPlayerStatus (maindata_t *mainData, char *playerResp);
@@ -1438,8 +1438,8 @@ mainMusicQueueFill (maindata_t *mainData)
   while (playlist != NULL && currlen <= playerqLen && stopatflag == false) {
     song_t  *song = NULL;
 
-    song = playlistGetNextSong (playlist,
-        currlen, mainMusicQueueHistory, mainData);
+    song = playlistGetNextSong (playlist, currlen,
+        mainMusicQueueLookup, mainData);
 
     if (song != NULL) {
       logMsg (LOG_DBG, LOG_MAIN, "push song to musicq");
@@ -2186,23 +2186,19 @@ mainMusicQueueNext (maindata_t *mainData, const char *args)
   logProcEnd (LOG_PROC, "mainMusicQueueNext", "");
 }
 
-/* this is terribly inefficient */
-/* for the time being, it will be left as is until such time */
-/* that the structure of 'dancesel' can be reviewed and possibly */
-/* reworked */
 static ilistidx_t
-mainMusicQueueHistory (void *tmaindata, ilistidx_t idx)
+mainMusicQueueLookup (void *tmaindata, ilistidx_t idx)
 {
   maindata_t    *mainData = tmaindata;
   ilistidx_t    didx = -1;
   dbidx_t       dbidx;
   song_t        *song;
 
-  logProcBegin (LOG_PROC, "mainMusicQueueHistory");
+  logProcBegin (LOG_PROC, "mainMusicQueueLookup");
 
   if (idx < 0 ||
       idx >= musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx)) {
-    logProcEnd (LOG_PROC, "mainMusicQueueHistory", "bad-idx");
+    logProcEnd (LOG_PROC, "mainMusicQueueLookup", "bad-idx");
     return -1;
   }
 
@@ -2211,7 +2207,7 @@ mainMusicQueueHistory (void *tmaindata, ilistidx_t idx)
   if (song != NULL) {
     didx = songGetNum (song, TAG_DANCE);
   }
-  logProcEnd (LOG_PROC, "mainMusicQueueHistory", "");
+  logProcEnd (LOG_PROC, "mainMusicQueueLookup", "");
   return didx;
 }
 
@@ -2726,15 +2722,14 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
   musicqClear (mainData->musicQueue, mqidx, 1);
   /* should already be an empty head on the queue */
 
-  dancesel = danceselAlloc (danceCounts);
+  dancesel = danceselAlloc (danceCounts, mainMusicQueueLookup, mainData);
   songsel = songselAlloc (mainData->musicdb, danceCounts, songList, NULL);
 
   currlen = 0;
   while (currlen < totcount) {
     /* as there is always an empty head on the music queue, */
     /* the prior-index must point at currlen + 1 */
-    danceIdx = danceselSelect (dancesel, currlen + 1,
-        mainMusicQueueHistory, mainData);
+    danceIdx = danceselSelect (dancesel, currlen + 1);
     song = songselSelect (songsel, danceIdx);
     if (song != NULL) {
       int   plidx;

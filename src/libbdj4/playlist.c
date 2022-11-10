@@ -10,6 +10,7 @@
 #include "bdj4intl.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
+#include "dancesel.h"
 #include "datafile.h"
 #include "dirlist.h"
 #include "pathbld.h"
@@ -416,7 +417,7 @@ playlistSetDanceNum (playlist_t *pl, ilistidx_t danceIdx, pldancekey_t key, ssiz
 
 song_t *
 playlistGetNextSong (playlist_t *pl,
-    ssize_t priorCount, danceselHistory_t historyProc, void *userdata)
+    ssize_t priorCount, danceselQueueLookup_t queueLookupProc, void *userdata)
 {
   pltype_t    type;
   song_t      *song = NULL;
@@ -445,10 +446,9 @@ playlistGetNextSong (playlist_t *pl,
         playlistCountList (pl);
       }
       if (pl->dancesel == NULL) {
-        pl->dancesel = danceselAlloc (pl->countList);
+        pl->dancesel = danceselAlloc (pl->countList, queueLookupProc, userdata);
       }
-      danceIdx = danceselSelect (pl->dancesel,
-          priorCount, historyProc, userdata);
+      danceIdx = danceselSelect (pl->dancesel, priorCount);
       logMsg (LOG_DBG, LOG_BASIC, "automatic: dance: %d/%s", danceIdx,
           danceGetStr (pl->dances, danceIdx, DANCE_DANCE));
       if (pl->songsel == NULL) {

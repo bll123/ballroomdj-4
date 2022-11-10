@@ -1,6 +1,6 @@
 # autoselection
 version
-..1
+..2
 #
 # dance selection
 #
@@ -17,15 +17,7 @@ version
 #   1000.0 = 1000000
 #   10000.0 = 10000000
 #
-# if the dance has exceeded the expected count (1000.0)
-LIMIT
-..1000000
-#
-# if the dance is lower than the expected count (0.5)
-COUNTLOW
-..300
-#
-# if the previous dance and the dance are both fast (2000.0)
+# if the previous dance and the dance are both fast (10000.0)
 BOTHFAST
 ..10000000
 #
@@ -43,18 +35,24 @@ TAGADJUST
 TYPEMATCH
 ..600000
 #
-# same dance log function value
-# a higher number will reduce the chance of the same dance
-# higher numbers make the mix more regular/repetitive
-# a lower number will allow the same dance sooner
-# adjust by very small increments (0.05).  (1.95).
-LOGVALUE
-..1950
+# f(x) = 1.05 ^ (-2.4 * dist)
+# adjust by very small increments (1.2) (2.4)
+PRIORVAR
+..1050
+PRIORMULT
+..2400
+#
+# f(x) = 1.15 ^ (1.8 * dist - expected-distance)
+# adjust by very small increments (1.2) (2.4) (1.0)
+EXPECTEDVAR
+..1150
+EXPECTEDMULT
+..1800
 #
 # number of beginning dances (3)
 BEGINCOUNT
 ..3
-# if < begincount, then set the chance of a fast dance (10000.0)
+# if < begincount, then set the chance of a fast dance (30000.0)
 BEGINFAST
 ..30000000
 #
