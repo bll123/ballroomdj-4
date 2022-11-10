@@ -24,9 +24,9 @@ BOTHFAST
 # if the dance has a tag that matches the previous dance (600.0)
 TAGMATCH
 ..600000
-# how many songs to search back in history (3)
+# how many songs to search back in history (5)
 HISTDISTANCE
-..3
+..5
 # tagmatch reduction multiplier (tagmatch*(tagadjust^distance)) (0.4)
 TAGADJUST
 ..400
@@ -58,7 +58,7 @@ BEGINFAST
 #
 # song selection
 #
-# the weight of a rating and level.  These should add to 1.
+# the weight of a rating and level.  These should add together to 1.0
 # the percentages here adjust which song (for the dance) is selected
 # (rating: 0.90, level: 0.10)
 RATINGWEIGHT
