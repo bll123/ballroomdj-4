@@ -222,7 +222,7 @@ main (int argc, char *argv[])
   confui.conn = connInit (ROUTE_CONFIGUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "configui", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      CONFIGUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   confui.optiondf = datafileAllocParse ("configui-opt", DFTYPE_KEY_VAL, tbuff,
       configuidfkeys, CONFUI_KEY_MAX);
   confui.options = datafileGetList (confui.optiondf);
@@ -289,7 +289,7 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
 
   pathbldMakePath (fn, sizeof (fn),
-      "configui", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      CONFIGUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("configui", fn, configuidfkeys,
       CONFUI_KEY_MAX, confui->options);
 

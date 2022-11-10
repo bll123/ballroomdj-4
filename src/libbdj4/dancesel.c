@@ -49,7 +49,9 @@ typedef struct dancesel {
   queue_t       *playedDances;
   /* autosel variables that will be used */
   ssize_t       histDistance;
+  double        prevTagMatch;
   double        tagMatch;
+  double        tagMatchExp;
   double        priorVar;
   double        expectedVar;
   double        expectedMult;
@@ -58,7 +60,7 @@ typedef struct dancesel {
 
 static bool     danceselProcessClose (dancesel_t *dancesel,
                     ilistidx_t didx, ilistidx_t priordidx, ilistidx_t dist,
-                    slist_t *tags);
+                    slist_t *tags, bool tagmatch);
 static bool     danceselProcessFar (dancesel_t *dancesel,
                     ilistidx_t didx, ilistidx_t dist);
 static bool     matchTag (slist_t *tags, slist_t *otags);
@@ -101,7 +103,9 @@ danceselAlloc (nlist_t *countList,
 
   /* autosel variables that will be used */
   dancesel->histDistance = autoselGetNum (dancesel->autosel, AUTOSEL_HIST_DISTANCE);
+  dancesel->prevTagMatch = autoselGetDouble (dancesel->autosel, AUTOSEL_PREV_TAGMATCH);
   dancesel->tagMatch = autoselGetDouble (dancesel->autosel, AUTOSEL_TAGMATCH);
+  dancesel->tagMatchExp = autoselGetDouble (dancesel->autosel, AUTOSEL_TAGMATCH_EXP);
   dancesel->priorVar = autoselGetDouble (dancesel->autosel, AUTOSEL_PRIOR_VAR);
   dancesel->expectedVar = autoselGetDouble (dancesel->autosel, AUTOSEL_EXPECTED_VAR);
   dancesel->expectedMult = autoselGetDouble (dancesel->autosel, AUTOSEL_EXPECTED_MULT);
@@ -296,7 +300,7 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
     priordidx = -1;
     while (dcount < expcount &&
          ! priorLookupDone &&
-         queueDist < dancesel->maxDistance &&
+         queueDist < (dancesel->maxDistance * 3) &&
          queueDist < queueCount) {
       priorLookupDone = danceSelGetPriorInfo (dancesel, queueCount, queueIdx, &priordidx);
       if (! priorLookupDone && didx == priordidx) {
@@ -321,9 +325,11 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
       danceselProcessFar (dancesel, didx, queueDist);
     }
 
+    /* get the modified value */
+    abase = nlistGetDouble (dancesel->adjustBase, didx);
+
     /* if this selection is at the beginning of the playlist */
     if (dancesel->selCount < autoselGetNum (dancesel->autosel, AUTOSEL_BEG_COUNT)) {
-
       /* if this dance is a fast dance ( / 1000) */
       if (speed == DANCE_SPEED_FAST) {
         abase = abase / autoselGetDouble (dancesel->autosel, AUTOSEL_BEG_FAST);
@@ -349,7 +355,7 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
     /* ( / 600 ) */
     tags = danceGetList (dancesel->dances, didx, DANCE_TAGS);
     if (pddanceIdx >= 0 && matchTag (tags, pdtags)) {
-      abase = abase / dancesel->tagMatch;
+      abase = abase / dancesel->prevTagMatch;
       logMsg (LOG_DBG, LOG_DANCESEL, "  matched tags with previous: abase: %.6f", abase);
       if (DANCESEL_DEBUG) {
         fprintf (stderr, "  matched tags with previous: abase: %.6f\n", abase);
@@ -366,15 +372,16 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
       }
     }
 
+    /* process close checks, save abase */
     nlistSetDouble (dancesel->adjustBase, didx, abase);
-
-    /* process close checks */
 
     queueIdx = queueCount - 1;
     priorLookupDone = false;
     queueDist = 0;
     priordidx = -1;
     while (! priorLookupDone && queueDist < dancesel->maxDistance) {
+      bool  tagmatch = false;
+
       priorLookupDone = danceSelGetPriorInfo (dancesel, queueCount, queueIdx, &priordidx);
       if (! priorLookupDone && priordidx != -1) {
         logMsg (LOG_DBG, LOG_DANCESEL, "  prior dist:%d", queueDist);
@@ -382,7 +389,7 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
           fprintf (stderr, "  prior dist:%d\n", queueDist);
         }
         /* process close is only done for matching dance indexes */
-        danceselProcessClose (dancesel, didx, priordidx, queueDist, tags);
+        tagmatch = danceselProcessClose (dancesel, didx, priordidx, queueDist, tags, tagmatch);
       }
       --queueIdx;
       ++queueDist;
@@ -441,20 +448,20 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
 
 static bool
 danceselProcessClose (dancesel_t *dancesel, ilistidx_t didx,
-    ilistidx_t priordidx, ilistidx_t priordist, slist_t *tags)
+    ilistidx_t priordidx, ilistidx_t priordist, slist_t *tags, bool tagmatch)
 {
   slist_t       *priortags = NULL;
   double        expdist;
   double        dpriordist = (double) priordist;
   double        findex;
   double        abase;
-  int           rc = false;
+  int           tagrc = false;
 
   logProcBegin (LOG_PROC, "danceselProcessClose");
   /* only the first hist-distance songs are checked */
   if (priordist >= dancesel->histDistance) {
     logProcEnd (LOG_PROC, "danceselProcessClose", "past-distance");
-    return true;
+    return false;
   }
 
   abase = nlistGetDouble (dancesel->adjustBase, didx);
@@ -472,25 +479,27 @@ danceselProcessClose (dancesel_t *dancesel, ilistidx_t didx,
 
   /* the tags of the first few dances in the history are checked */
 
-  if (priordist > 0) {
+  /* the previous dance has already been checked for tags */
+  /* do not do another tagmatch if one has already been found */
+  if (! tagmatch && priordist > 0 && priordist < dancesel->histDistance) {
     priortags = danceGetList (dancesel->dances, priordidx, DANCE_TAGS);
     if (matchTag (tags, priortags)) {
       double    tmp;
 
       /* further distance, smaller value, minimum no change */
-fprintf (stderr, "tagmatch: %.6f dist: %d\n", dancesel->tagMatch / (priordist + priordist + 3), priordist);
-fprintf (stderr, "  p-abase: %.6f\n", abase);
-      abase = abase / fmax (1.0, (dancesel->tagMatch / (priordist + priordist + 3)));
-fprintf (stderr, "  n-abase: %.6f\n", abase);
+      tmp = fmax (1.0, (dancesel->tagMatch / pow (priordist, dancesel->tagMatchExp)));
+      logMsg (LOG_DBG, LOG_DANCESEL, "    tagmatch (adj): %.6f abase: %.6f", tmp, abase);
+      abase = abase / tmp;
       nlistSetDouble (dancesel->adjustBase, didx, abase);
       logMsg (LOG_DBG, LOG_DANCESEL, "    matched prior tags: abase: %.6f", abase);
       if (DANCESEL_DEBUG) {
         fprintf (stderr, "    matched prior tags abase: %.6f\n", abase);
       }
+      tagrc = true;
     }
   }
 
-  if (priordist > 0 && didx == priordidx) {
+  if (didx == priordidx) {
     /* expected distance */
     expdist = nlistGetDouble (dancesel->distance, didx);
 
@@ -516,7 +525,7 @@ fprintf (stderr, "  n-abase: %.6f\n", abase);
   nlistSetDouble (dancesel->adjustBase, didx, abase);
 
   logProcEnd (LOG_PROC, "danceselProcessClose", "");
-  return rc;
+  return tagrc;
 }
 
 

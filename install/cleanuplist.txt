@@ -14,3 +14,7 @@ templates/.*\.en_US$
 bin/libbdj4uigtk\..*
 plocal/bin/curl.exe
 plocal/bin/openssl.exe
+
+:data
+
+profile../configui\.txt

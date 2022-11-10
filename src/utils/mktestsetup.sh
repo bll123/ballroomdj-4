@@ -98,6 +98,7 @@ cp -f test-templates/dances.txt data
 # the test status data file has an additional 'edit' status.
 cp -f test-templates/status.txt data
 cp -f test-templates/ds-songfilter.txt data/profile00
+cp -f test-templates/ui-*.txt data/profile00
 
 # songlist a
 to=test-sl-a

@@ -26,30 +26,32 @@ BOTHFAST
 HISTDISTANCE
 ..5
 #
-# if the dance has a tag that matches the previous dance (200.0)
-TAGMATCH
-..200000
+# if the dance has a tag that matches the previous dance (10.0)
+PREVTAGMATCH
+..10000
 #
-# tagmatch reduction multiplier (tagmatch*(tagadjust^distance)) (0.4)
-# NOT IN USE - delete
-TAGADJUST
-..400
-#
-# if the dance's type matches the previous dance (100.0)
+# if the dance's type matches the previous dance (30.0)
 TYPEMATCH
-..1000
+..30000
+#
+# 5.0 / dist ^ 1.3
+# if the dance has a tag that matches a prior dance (5.0) (1.3)
+TAGMATCH
+..5000
+TAGMATCHEXP
+..1300
 #
 # f(x) = - (3.0 ^ (dist - hist-distance) + 1.0)
 # adjust by very small increments (3.0)
 PRIORVAR
 ..3000
 #
-# f(x) = 3.0 ^ (1.0 * dist - expected-distance)
-# adjust by very small increments (3.0) (1.0)
+# f(x) = 3.0 ^ (1.1 * dist - expected-distance)
+# adjust by very small increments (3.0) (1.1)
 EXPECTEDVAR
 ..3000
 EXPECTEDMULT
-..1000
+..1100
 #
 # when a dance appears more often than expected (3.0)
 EXPECTEDHIGH
@@ -58,6 +60,7 @@ EXPECTEDHIGH
 # number of beginning dances (3)
 BEGINCOUNT
 ..3
+#
 # if < begincount, then set the chance of a fast dance (30000.0)
 BEGINFAST
 ..30000000

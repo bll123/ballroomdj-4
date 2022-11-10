@@ -44,6 +44,7 @@ enum {
 #define ITUNES_STARS_FN     "itunes-stars"
 #define ITUNES_FIELDS_FN    "itunes-fields"
 /* option data files */
+#define CONFIGUI_OPT_FN     "ui-config"
 #define MANAGEUI_OPT_FN     "ui-manage"
 #define PLAYERUI_OPT_FN     "ui-player"
 #define STARTERUI_OPT_FN    "ui-starter"
