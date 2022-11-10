@@ -14,40 +14,46 @@ version
 # All double value are stored with a multiplier of 1000
 # to avoid localization issues.
 #   0.5 = 500
+#   1.0 = 1000
 #   1000.0 = 1000000
 #   10000.0 = 10000000
 #
-# if the previous dance and the dance are both fast (10000.0)
+# if the previous dance and the dance are both fast (1000.0)
 BOTHFAST
-..10000000
+..1000000
 #
-# if the dance has a tag that matches the previous dance (600.0)
-TAGMATCH
-..600000
 # how many songs to search back in history (5)
 HISTDISTANCE
 ..5
+#
+# if the dance has a tag that matches the previous dance (200.0)
+TAGMATCH
+..200000
+#
 # tagmatch reduction multiplier (tagmatch*(tagadjust^distance)) (0.4)
+# NOT IN USE - delete
 TAGADJUST
 ..400
 #
-# if the dance's type matches the previous dance (600.0)
+# if the dance's type matches the previous dance (100.0)
 TYPEMATCH
-..600000
-#
-# f(x) = - (3.0 ^ (dist - 4.0) + 1.0)
-# adjust by very small increments (3.0) (1.0)
-PRIORVAR
-..3000
-PRIORMULT
 ..1000
 #
-# f(x) = 1.1 ^ (1.5 * dist - expected-distance)
-# adjust by very small increments (1.1) (1.0)
+# f(x) = - (3.0 ^ (dist - hist-distance) + 1.0)
+# adjust by very small increments (3.0)
+PRIORVAR
+..3000
+#
+# f(x) = 3.0 ^ (1.0 * dist - expected-distance)
+# adjust by very small increments (3.0) (1.0)
 EXPECTEDVAR
-..1100
+..3000
 EXPECTEDMULT
-..1500
+..1000
+#
+# when a dance appears more often than expected (3.0)
+EXPECTEDHIGH
+..3000
 #
 # number of beginning dances (3)
 BEGINCOUNT
