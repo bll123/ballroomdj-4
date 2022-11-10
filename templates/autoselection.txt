@@ -35,19 +35,19 @@ TAGADJUST
 TYPEMATCH
 ..600000
 #
-# f(x) = 1.05 ^ (-2.4 * dist)
-# adjust by very small increments (1.2) (2.4)
+# f(x) = - (3.0 ^ (dist - 4.0) + 1.0)
+# adjust by very small increments (3.0) (1.0)
 PRIORVAR
-..1050
+..3000
 PRIORMULT
-..2400
+..1000
 #
-# f(x) = 1.15 ^ (1.8 * dist - expected-distance)
-# adjust by very small increments (1.2) (2.4) (1.0)
+# f(x) = 1.1 ^ (1.5 * dist - expected-distance)
+# adjust by very small increments (1.1) (1.0)
 EXPECTEDVAR
-..1150
+..1100
 EXPECTEDMULT
-..1800
+..1500
 #
 # number of beginning dances (3)
 BEGINCOUNT

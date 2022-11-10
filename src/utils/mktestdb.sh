@@ -59,7 +59,7 @@ done
 
 if [[ ! -f $FLAG ||
     $infile != $TESTMUSIC ||
-    $outfile != $TESTDB ||
+    ($outfile != "" && $outfile != $TESTDB) ||
     $infile -nt $TESTDB ||
     $infile -nt $FLAG ]]; then
   case $(pwd) in

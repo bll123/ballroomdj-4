@@ -2730,6 +2730,14 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
     /* as there is always an empty head on the music queue, */
     /* the prior-index must point at currlen + 1 */
     danceIdx = danceselSelect (dancesel, currlen + 1);
+
+    /* check and see if this dance is used up */
+    if (nlistGetNum (danceCounts, danceIdx) == 0) {
+      logMsg (LOG_DBG, LOG_MAIN, "mix: dance %d/%s at 0", danceIdx,
+          danceGetStr (dances, danceIdx, DANCE_DANCE));
+      continue;
+    }
+
     song = songselSelect (songsel, danceIdx);
     if (song != NULL) {
       int   plidx;
@@ -2741,8 +2749,11 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
           danceGetStr (dances, danceIdx, DANCE_DANCE),
           songGetStr (song, TAG_FILE));
       dbidx = songGetNum (song, TAG_DBIDX);
+
       danceselAddCount (dancesel, danceIdx);
       danceselDecrementBase (dancesel, danceIdx);
+      nlistDecrement (danceCounts, danceIdx);
+
       plidx = nlistGetNum (songList, dbidx);
       dur = mainCalculateSongDuration (mainData, song, plidx);
       musicqPush (mainData->musicQueue, mqidx, dbidx, plidx, dur);
