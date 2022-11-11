@@ -54,24 +54,35 @@ START_TEST(autosel_get)
 
   /* check for the default values from the template */
   autosel = autoselAlloc ();
+
+  dval = autoselGetDouble (autosel, AUTOSEL_BOTHFAST);
+  ck_assert_float_eq (dval, 1000.0);
+  val = autoselGetNum (autosel, AUTOSEL_HIST_DISTANCE);
+  ck_assert_int_eq (val, 5);
+
+  dval = autoselGetDouble (autosel, AUTOSEL_PREV_TAGMATCH);
+  ck_assert_float_eq (dval, 10.0);
+  dval = autoselGetDouble (autosel, AUTOSEL_TYPE_MATCH);
+  ck_assert_float_eq (dval, 30.0);
+  dval = autoselGetDouble (autosel, AUTOSEL_TAGMATCH);
+  ck_assert_float_eq (dval, 5.0);
+  dval = autoselGetDouble (autosel, AUTOSEL_TAGMATCH_EXP);
+  ck_assert_float_eq (dval, 1.3);
+
+  dval = autoselGetDouble (autosel, AUTOSEL_PRIOR_VAR);
+  ck_assert_float_eq (dval, 3.0);
+
+  dval = autoselGetDouble (autosel, AUTOSEL_EXPECTED_VAR);
+  ck_assert_float_eq (dval, 3.0);
+  dval = autoselGetDouble (autosel, AUTOSEL_EXPECTED_MULT);
+  ck_assert_float_eq (dval, 1.1);
+  dval = autoselGetDouble (autosel, AUTOSEL_EXPECTED_HIGH);
+  ck_assert_float_eq (dval, 3.0);
+
   val = autoselGetNum (autosel, AUTOSEL_BEG_COUNT);
   ck_assert_int_eq (val, 3);
   dval = autoselGetDouble (autosel, AUTOSEL_BEG_FAST);
   ck_assert_float_eq (dval, 30000.0);
-  dval = autoselGetDouble (autosel, AUTOSEL_BOTHFAST);
-  ck_assert_float_eq (dval, 10000.0);
-  val = autoselGetNum (autosel, AUTOSEL_HIST_DISTANCE);
-  ck_assert_int_eq (val, 5);
-  dval = autoselGetDouble (autosel, AUTOSEL_PRIOR_VAR);
-  ck_assert_float_eq (dval, 1.05);
-  dval = autoselGetDouble (autosel, AUTOSEL_TAGMATCH);
-  ck_assert_float_eq (dval, 600.0);
-  dval = autoselGetDouble (autosel, AUTOSEL_TYPE_MATCH);
-  ck_assert_float_eq (dval, 600.0);
-  dval = autoselGetDouble (autosel, AUTOSEL_EXPECTED_VAR);
-  ck_assert_float_eq (dval, 1.15);
-  dval = autoselGetDouble (autosel, AUTOSEL_EXPECTED_MULT);
-  ck_assert_float_eq (dval, 1.8);
 
   dval = autoselGetDouble (autosel, AUTOSEL_RATING_WEIGHT);
   ck_assert_float_eq (dval, 0.9);

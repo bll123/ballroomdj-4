@@ -1,0 +1,12 @@
+# configui
+# 2022-11-10 09:27:06.576
+version
+..1
+CONFUI_POS_X
+..429
+CONFUI_POS_Y
+..58
+CONFUI_SIZE_X
+..1367
+CONFUI_SIZE_Y
+..682

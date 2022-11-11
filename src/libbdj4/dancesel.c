@@ -610,7 +610,9 @@ danceSelGetPriorInfo (dancesel_t *dancesel, ilistidx_t queueCount,
 
   /* first try the lookup in the queue */
 
-  didx = dancesel->queueLookupProc (dancesel->userdata, queueIdx);
+  if (dancesel->queueLookupProc != NULL) {
+    didx = dancesel->queueLookupProc (dancesel->userdata, queueIdx);
+  }
 
   /* during a 'mix', there is an empty-head in position 0 */
 

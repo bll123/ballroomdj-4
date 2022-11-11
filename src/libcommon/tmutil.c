@@ -49,10 +49,12 @@ mssleep (time_t mt)
     ts.tv_sec = 0;
     ts.tv_nsec = 0;
     /* remainder is only valid when EINTR is returned */
-    if (rc < 0 && errno == EINTR) {
-      ts.tv_sec = rem.tv_sec;
-      ts.tv_nsec = rem.tv_nsec;
-    }
+    /* most of the time, an interrupt is caused by a control-c while testing */
+    /* just let an interrupt stop the sleep */
+//    if (rc < 0 && errno == EINTR) {
+//      ts.tv_sec = rem.tv_sec;
+//      ts.tv_nsec = rem.tv_nsec;
+//    }
   }
 #endif
 }
