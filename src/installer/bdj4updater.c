@@ -73,7 +73,8 @@ enum {
 };
 
 static void updaterCleanFiles (void);
-static void updaterCleanRegex (const char *basedir, const char *pattern);
+static void updaterCleanlistFree (void *trx);
+static void updaterCleanRegex (const char *basedir, nlist_t *cleanlist);
 static int  updateGetStatus (nlist_t *updlist, int key);
 
 int
@@ -478,105 +479,98 @@ static void
 updaterCleanFiles (void)
 {
   FILE    *fh;
-  char    dfn [MAXPATHLEN];
+  char    pattern [MAXPATHLEN];
   char    fname [MAXPATHLEN];
-  char    tfn [MAXPATHLEN];
   char    *basedir;
+  int     count;
+  nlist_t *cleanlist;
 
   pathbldMakePath (fname, sizeof (fname),
       "cleanuplist", BDJ4_CONFIG_EXT, PATHBLD_MP_INSTDIR);
   basedir = sysvarsGetStr (SV_BDJ4MAINDIR);
+  cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
 
+  count = 0;
   fh = fileopOpen (fname, "r");
   if (fh != NULL) {
-    while (fgets (dfn, sizeof (dfn), fh) != NULL) {
-      if (*dfn == '#') {
+    while (fgets (pattern, sizeof (pattern), fh) != NULL) {
+      bdjregex_t  *rx;
+
+      if (*pattern == '#') {
         continue;
       }
 
-      stringTrim (dfn);
-      stringTrimChar (dfn, '/');
+      stringTrim (pattern);
+      stringTrimChar (pattern, '/');
 
-      if (*dfn == '\0') {
+      if (*pattern == '\0') {
         continue;
       }
 
-      if (strcmp (dfn, ":main") == 0) {
+      if (strcmp (pattern, ":main") == 0) {
+        if (nlistGetCount (cleanlist) > 0) {
+          updaterCleanRegex (basedir, cleanlist);
+          nlistFree (cleanlist);
+          cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
+        }
         basedir = sysvarsGetStr (SV_BDJ4MAINDIR);
         continue;
       }
-      if (strcmp (dfn, ":data") == 0) {
+      if (strcmp (pattern, ":data") == 0) {
+        if (nlistGetCount (cleanlist) > 0) {
+          updaterCleanRegex (basedir, cleanlist);
+          nlistFree (cleanlist);
+          cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
+        }
         basedir = sysvarsGetStr (SV_BDJ4DATATOPDIR);
         continue;
       }
 
-      if (strstr (dfn, "*") != NULL ||
-          strstr (dfn, "$") != NULL ||
-          strstr (dfn, "[") != NULL) {
-        updaterCleanRegex (basedir, dfn);
-        continue;
-      }
-
-      strlcpy (tfn, basedir, sizeof (tfn));
-      strlcat (tfn, dfn, sizeof (tfn));
-
-      if (fileopIsDirectory (tfn)) {
-        diropDeleteDir (tfn);
-      } else {
-        if (fileopFileExists (tfn)) {
-          fileopDelete (tfn);
-        }
-      }
+      rx = regexInit (pattern);
+      nlistSetData (cleanlist, count, rx);
+      ++count;
     }
     fclose (fh);
+
+    updaterCleanRegex (basedir, cleanlist);
+    nlistFree (cleanlist);
   }
 }
 
 static void
-updaterCleanRegex (const char *basedir, const char *pattern)
+updaterCleanlistFree (void *trx)
 {
-  char        tdir [MAXPATHLEN];
-  char        tmp [MAXPATHLEN];
+  bdjregex_t  *rx = trx;
+
+  regexFree (rx);
+}
+
+static void
+updaterCleanRegex (const char *basedir, nlist_t *cleanlist)
+{
   slist_t     *filelist;
-  slistidx_t  iteridx;
+  slistidx_t  fiteridx;
+  nlistidx_t  cliteridx;
+  nlistidx_t  key;
   char        *fn;
-  size_t      len;
-  int         dlen;
   bdjregex_t  *rx;
 
-  strlcpy (tdir, basedir, sizeof (tdir));
-
-  dlen = 0;
-  len = strlen (pattern);
-  for (ssize_t i = len - 1; i >= 0; --i) {
-    if (pattern [i] == '/') {
-      dlen = i;
-    }
-  }
-
-  if (dlen > 0) {
-    memcpy (tmp, pattern, dlen);
-    tmp [dlen] = '\0';
-    strlcat (tdir, "/", sizeof (tdir));
-    strlcat (tdir, tmp, sizeof (tdir));
-  }
-
-  if (dlen > 0) { ++dlen; }
-  rx = regexInit (pattern + dlen);
-
-  filelist = dirlistBasicDirList (tdir, NULL);
-  slistStartIterator (filelist, &iteridx);
-  while ((fn = slistIterateKey (filelist, &iteridx)) != NULL) {
-    if (regexMatch (rx, fn)) {
-      strlcpy (tmp, tdir, sizeof (tmp));
-      strlcat (tmp, "/", sizeof (tmp));
-      strlcat (tmp, fn, sizeof (tmp));
-      fileopDelete (tmp);
+  filelist = dirlistRecursiveDirList (basedir, DIRLIST_FILES | DIRLIST_DIRS);
+  slistStartIterator (filelist, &fiteridx);
+  while ((fn = slistIterateKey (filelist, &fiteridx)) != NULL) {
+    nlistStartIterator (cleanlist, &cliteridx);
+    while ((key = nlistIterateKey (cleanlist, &cliteridx)) >= 0) {
+      rx = nlistGetData (cleanlist, key);
+      if (regexMatch (rx, fn)) {
+        if (fileopIsDirectory (fn)) {
+          diropDeleteDir (fn);
+        } else if (fileopFileExists (fn)) {
+          fileopDelete (fn);
+        }
+      }
     }
   }
   nlistFree (filelist);
-
-  regexFree (rx);
 }
 
 static int

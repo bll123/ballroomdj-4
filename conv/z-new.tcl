@@ -15,7 +15,7 @@ set datatopdir [lindex $argv 1]
 # install the orgopt.txt file.
 # this is always new
 
-foreach fn [list orgopt.txt autoselection.txt favorites.txt] {
+foreach fn [list orgopt.txt autoselection.txt favorites.txt sortopt.txt] {
   set nfn [file join $datatopdir data $fn]
 
   if { ! [file exists templates/$fn] } {
@@ -85,6 +85,9 @@ foreach prof $proflist {
 set fnlist [glob -directory templates itunes-*.txt]
 foreach fn $fnlist {
   set nfn [file join $datatopdir data [file tail $fn]]
+  if { ! [file exists $fn] } {
+    continue
+  }
   file copy -force $fn $nfn
 }
 

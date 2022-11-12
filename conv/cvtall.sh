@@ -82,7 +82,6 @@ fi
 "$tclsh" conv/ratings.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" conv/sequences.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" conv/songlists.tcl "$bdj3dir" "$datatopdir"
-"$tclsh" conv/sort-options.tcl "$bdj3dir" "$datatopdir"
 "$tclsh" conv/status.tcl "$bdj3dir" "$datatopdir"
 # do this last
 "$tclsh" conv/z-new.tcl "$bdj3dir" "$datatopdir"

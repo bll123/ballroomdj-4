@@ -3,6 +3,8 @@ BallroomDJ 4 Change Log
 4.0.0 alpha 2022-11---
 
 - automatic playlists: re-work the dance selection algorithm.
+- conversion: do not convert sort options.
+- updater: fix processing of cleanup list.
 
 4.0.0 alpha 2022-11-09
 
