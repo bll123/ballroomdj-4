@@ -149,6 +149,7 @@ typedef struct {
   bool            inSetConvert : 1;
   bool            uiBuilt : 1;
   bool            scrolltoend : 1;
+  bool            quiet : 1;
   bool            verbose : 1;
   bool            unattended : 1;
 } installer_t;
@@ -239,8 +240,9 @@ main (int argc, char *argv[])
     { "unpackdir",  required_argument,  NULL,   'u' },
     { "targetdir",  required_argument,  NULL,   't' },
     { "bdj3dir",    required_argument,  NULL,   '3' },
-    { "unattended", no_argument,        NULL,   'N' },
+    { "unattended", no_argument,        NULL,   'U' },
     /* generic args */
+    { "quiet"  ,    no_argument,        NULL,   'Q' },
     { "verbose",    no_argument,        NULL,   'V' },
     /* bdj4 launcher args */
     { "debug",      required_argument,  NULL,   0 },
@@ -277,6 +279,7 @@ main (int argc, char *argv[])
   installer.inSetConvert = false;
   installer.uiBuilt = false;
   installer.scrolltoend = false;
+  installer.quiet = false;
   installer.verbose = false;
   installer.unattended = false;
   uiutilsUIWidgetInit (&installer.statusMsg);
@@ -332,7 +335,7 @@ main (int argc, char *argv[])
 #endif
         break;
       }
-      case 'N': {
+      case 'U': {
         installer.unattended = true;
         break;
       }
@@ -346,6 +349,10 @@ main (int argc, char *argv[])
       }
       case 'V': {
         installer.verbose = true;
+        break;
+      }
+      case 'Q': {
+        installer.quiet = true;
         break;
       }
       case 't': {
@@ -385,7 +392,7 @@ main (int argc, char *argv[])
     }
 
     if (! ok) {
-      fprintf (stderr, "NG\n");
+      fprintf (stdout, "finish NG\n");
       dataFree (installer.target);
       dataFree (installer.bdj3loc);
       exit (1);
@@ -394,6 +401,8 @@ main (int argc, char *argv[])
 
   if (*installer.unpackdir == '\0') {
     fprintf (stderr, "Error: unpackdir argument is required\n");
+    dataFree (installer.target);
+    dataFree (installer.bdj3loc);
     exit (1);
   }
 
@@ -2368,12 +2377,21 @@ installerRegister (installer_t *installer)
 
   if (installer->verbose) {
     installer->instState = INST_FINISH;
-    fprintf (stdout, "bdj3-version: %s\n", installer->bdj3version);
-    fprintf (stdout, "old-version: %s\n", installer->oldversion);
-    fprintf (stdout, "new-install: %d\n", installer->newinstall);
-    fprintf (stdout, "re-install: %d\n", installer->reinstall);
-    fprintf (stdout, "update: %d\n", ! installer->newinstall && ! installer->reinstall);
-    fprintf (stdout, "converted: %d\n", installer->convprocess);
+    fprintf (stdout, "finish OK\n");
+    if (*installer->bdj3version) {
+      fprintf (stdout, "bdj3-version %s\n", installer->bdj3version);
+    } else {
+      fprintf (stdout, "bdj3-version x\n");
+    }
+    if (*installer->oldversion) {
+      fprintf (stdout, "old-version %s\n", installer->oldversion);
+    } else {
+      fprintf (stdout, "old-version x\n");
+    }
+    fprintf (stdout, "new-install %d\n", installer->newinstall);
+    fprintf (stdout, "re-install %d\n", installer->reinstall);
+    fprintf (stdout, "update %d\n", ! installer->newinstall && ! installer->reinstall);
+    fprintf (stdout, "converted %d\n", installer->convprocess);
     return;
   }
 
@@ -2466,8 +2484,10 @@ installerDisplayText (installer_t *installer, char *pfx, char *txt, bool bold)
     }
     installer->scrolltoend = true;
   } else {
-    printf ("%s%s\n", pfx, txt);
-    fflush (stdout);
+    if (! installer->quiet) {
+      fprintf (stdout, "%s%s\n", pfx, txt);
+      fflush (stdout);
+    }
   }
 }
 
