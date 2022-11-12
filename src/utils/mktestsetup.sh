@@ -226,6 +226,7 @@ _HERE_
 
 args=""
 outfile=""
+rmflag=F
 while test $# -gt 0; do
   case $1 in
     --force)
@@ -234,6 +235,7 @@ while test $# -gt 0; do
     --emptydb)
       args+=$1
       args+=" "
+      rmflag=T
       ;;
     --infile)
       args+=$1
@@ -241,6 +243,7 @@ while test $# -gt 0; do
       shift
       args+=$1
       args+=" "
+      rmflag=T
       ;;
     --outfile)
       args+=$1
@@ -249,6 +252,7 @@ while test $# -gt 0; do
       outfile=$1
       args+=$1
       args+=" "
+      rmflag=T
       ;;
     *)
       echo "unknown argument $1"
@@ -264,6 +268,10 @@ if [[ $outfile != "" ]]; then
   cp -f $outfile data/musicdb.dat
 else
   cp -f test-templates/musicdb.dat data
+fi
+
+if [[ $rmflag == T ]]; then
+  rm -f $FLAG
 fi
 
 cwd=$(pwd)

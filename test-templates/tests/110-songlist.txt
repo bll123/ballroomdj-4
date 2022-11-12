@@ -8,7 +8,7 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -17,7 +17,7 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -25,7 +25,7 @@ chk mq0len 71 m-songfn 001-chacha.mp3
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -33,7 +33,7 @@ chk mq0len 70 m-songfn 001-foxtrot.mp3
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -41,7 +41,7 @@ chk mq0len 69 m-songfn 001-jive.mp3
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -55,7 +55,7 @@ msg main CMD_PLAY
 resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -64,7 +64,7 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -72,7 +72,7 @@ chk mq0len 71 m-songfn 001-chacha.mp3
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -82,6 +82,6 @@ chk p-duration 10000 p-songfn 001-foxtrot.mp3
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 end
 

@@ -8,7 +8,7 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -18,7 +18,7 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -27,7 +27,7 @@ chk-or dance Waltz Tango Foxtrot
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -36,7 +36,7 @@ chk-or dance Waltz Tango Foxtrot
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -45,7 +45,7 @@ chk-or dance Waltz Tango Foxtrot
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -54,7 +54,7 @@ chk-or dance Waltz Tango Foxtrot
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -63,7 +63,7 @@ chk-or dance Waltz Tango Foxtrot
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -72,7 +72,7 @@ chk-or dance Waltz Tango Foxtrot
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -88,7 +88,7 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -100,7 +100,7 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -111,7 +111,7 @@ chk p-duration 10000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -122,7 +122,7 @@ chk p-duration 10000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -133,7 +133,7 @@ chk p-duration 10000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -144,7 +144,7 @@ chk p-duration 10000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -155,7 +155,7 @@ chk p-duration 10000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -166,7 +166,7 @@ chk p-duration 10000
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -184,7 +184,7 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -195,7 +195,7 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -205,7 +205,7 @@ chk-or bpm 84 -65534
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -215,7 +215,7 @@ chk-or bpm 84 -65534
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -225,7 +225,7 @@ chk-or bpm 84 -65534
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -235,7 +235,7 @@ chk-or bpm 84 -65534
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -245,7 +245,7 @@ chk-or bpm 84 -65534
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -255,7 +255,7 @@ chk-or bpm 84 -65534
 msg player PLAY_FADE
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ

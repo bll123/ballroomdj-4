@@ -11,7 +11,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 1 songplaysentcount 1
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -30,7 +30,7 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mqplay 0 mq0len 1 mq1len 3 mq0idx0 2 mq1idx1 3 mq1idx2 5 dbidx 2 songplaysentcount 1
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 # fade q 0 song
@@ -38,7 +38,7 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -49,7 +49,7 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -70,7 +70,7 @@ msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -78,7 +78,7 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 0 mqplay 0 mq0len 1 mq1len 1 mq0idx0 2 mq1idx1 -1 dbidx 2 songplaysentcount 1
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 msg main MUSICQ_SET_MANAGE 1
@@ -89,7 +89,7 @@ get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mqplay 0 mq0len 1 mq1len 2 mq0idx0 2 mq1idx1 3 songplaysentcount 1
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 # fade q 0 song
@@ -97,7 +97,7 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
@@ -114,7 +114,7 @@ msg player PLAY_FADE
 resptimeout 7500
 get player CHK_PLAYER_STATUS
 wait playstate playing
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ

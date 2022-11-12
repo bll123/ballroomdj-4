@@ -5,7 +5,7 @@ msg main MUSICQ_INSERT 0~999~15
 msg main MUSICQ_INSERT 0~999~17
 msg main MUSICQ_INSERT 0~999~19
 msg main CMD_PLAY
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 resptimeout 1000
 wait playstate playing
@@ -17,7 +17,7 @@ get player CHK_PLAYER_STATUS
 chk pauseatend 0 playstate playing repeat 1 prepqueuecount 2
 msg main CMD_NEXTSONG
 get player CHK_PLAYER_STATUS
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 resptimeout 1000
 wait playstate playing
@@ -33,7 +33,7 @@ msg main MUSICQ_INSERT 0~999~15
 msg main MUSICQ_INSERT 0~999~17
 # make sure the pause-at-end works w/repeat.
 msg main CMD_PLAY
-mssleep 1000
+mssleep 1500
 get player CHK_PLAYER_STATUS
 resptimeout 1000
 wait playstate playing

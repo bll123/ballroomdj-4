@@ -17,4 +17,4 @@ conv/sort-options.tcl$
 
 :data
 
-profile../configui\.txt
+profile\d\d/configui\.txt

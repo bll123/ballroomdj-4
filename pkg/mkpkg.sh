@@ -175,7 +175,7 @@ esac
 
 if [[ $preskip == F ]]; then
   if [[ $chkskip == F ]]; then
-    ./src/utils/mktestsetup.sh
+    ./src/utils/mktestsetup.sh --force
     ./bin/bdj4 --check_all
     rc=$?
     if [[ $rc -ne 0 ]]; then
