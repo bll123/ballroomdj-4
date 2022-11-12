@@ -61,6 +61,10 @@ if [[ $platform != windows ]]; then
   echo -n "sourceforge Password: "
   read -s SSHPASS
   echo ""
+  if [[ $SSHPASS == "" ]]; then
+    echo "No password."
+    exit 1
+  fi
   export SSHPASS
 fi
 
