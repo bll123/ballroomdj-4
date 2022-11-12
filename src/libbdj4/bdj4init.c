@@ -45,7 +45,6 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   char        tbuff [MAXPATHLEN];
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
   bool        loglevelset = false;
-  bool        startlog = false;
   bool        isbdj4 = false;
 
   static struct option bdj_options [] = {
@@ -69,8 +68,6 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     /* normal options */
     { "profile",        required_argument,  NULL,   'p' },
     { "debug",          required_argument,  NULL,   'd' },
-    { "startlog",       no_argument,        NULL,   's' },
-    { "logstderr",      no_argument,        NULL,   'l' },
     { "hidemarquee",    no_argument,        NULL,   'h' },
     /* debug options */
     { "nostart",        no_argument,        NULL,   'n' },
@@ -93,13 +90,13 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "cli",            no_argument,        NULL,   'c' },
     { "verbose",        no_argument,        NULL,   'V' },
     { "quiet",          no_argument,        NULL,   'Q' },
+    /* test suite options */
+    { "runsection",     required_argument,  NULL,   'S' },
+    { "runtest",        required_argument,  NULL,   'T' },
+    { "starttest",      required_argument,  NULL,   'U' },
     { "outfile",        required_argument,  NULL,   0 },
     { "infile",         required_argument,  NULL,   0 },
-    /* test suite options */
-    { "runsection",   required_argument,    NULL,   'S' },
-    { "runtest",      required_argument,    NULL,   'T' },
-    { "starttest",    required_argument,    NULL,   'U' },
-    { NULL,           0,                    NULL,   0 }
+    { NULL,             0,                  NULL,   0 }
   };
 
   mstimestart (&mt);
@@ -143,11 +140,6 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         }
         break;
       }
-      case 'l': {
-        logSetLevel (LOG_DBG, LOG_STDERR, tag);
-        logSetLevel (LOG_ERR, LOG_STDERR, tag);
-        break;
-      }
       case 'd': {
         if (optarg) {
           loglevel = (loglevel_t) atol (optarg);
@@ -179,10 +171,6 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 'R': {
         flags |= BDJ4_DB_REBUILD;
-        break;
-      }
-      case 's': {
-        startlog = true;
         break;
       }
       case 'h': {
@@ -268,14 +256,14 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   }
 
   /* re-use the lock name as the program name */
-  if (startlog || route == ROUTE_STARTERUI) {
+  if (route == ROUTE_STARTERUI) {
     logStart (lockName (route), tag, loglevel);
   } else {
     logStartAppend (lockName (route), tag, loglevel);
   }
   logProcBegin (LOG_PROC, "bdj4startup");
   logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %"PRId64, sysvarsGetNum (SVL_BDJIDX));
-  if (startlog || route == ROUTE_STARTERUI) {
+  if (route == ROUTE_STARTERUI) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale: %s", sysvarsGetStr (SV_LOCALE));
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale-short: %s", sysvarsGetStr (SV_LOCALE_SHORT));
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale-system: %s", sysvarsGetStr (SV_LOCALE_SYSTEM));

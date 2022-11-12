@@ -139,15 +139,11 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
   wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
       "%s: %-2s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
   wlen = wlen > LOG_MAX_BUFF ? LOG_MAX_BUFF - 1 : wlen;
-  if ((l->level & LOG_STDERR) == LOG_STDERR) {
-    fprintf (stderr, "%s\n", wbuff);
-  } else {
-    fileWriteShared (&l->fhandle, wbuff, wlen);
-    if (idx == LOG_ERR) {
-      l = syslogs [LOG_DBG];
-      if (l->opened) {
-        fileWriteShared (&l->fhandle, wbuff, wlen);
-      }
+  fileWriteShared (&l->fhandle, wbuff, wlen);
+  if (idx == LOG_ERR) {
+    l = syslogs [LOG_DBG];
+    if (l->opened) {
+      fileWriteShared (&l->fhandle, wbuff, wlen);
     }
   }
 }
@@ -196,9 +192,6 @@ logCheck (logidx_t idx, loglevel_t level)
 
   if (l == NULL) {
     return false;
-  }
-  if ((l->level & LOG_STDERR) == LOG_STDERR && ! l->opened) {
-    return true;
   }
   if (! l->opened) {
     return false;

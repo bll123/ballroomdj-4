@@ -185,7 +185,7 @@ sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
 mv -f ${tfn}.n ${tfn}
 
 tfn=data/bdjconfig.txt
-sed -e '/^DEBUGLVL/ { n ; s/.*/..159/ ; }' \
+sed -e '/^DEBUGLVL/ { n ; s/.*/..31/ ; }' \
     -e '/^CLOCKDISP/ { n ; s/.*/..iso/ ; }' \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
@@ -283,7 +283,7 @@ cwd=$(pwd)
 if [[ $os == macos ]]; then
   # reset the debug level on macos back to 31
   tfn=data/bdjconfig.txt
-  sed -e '/^DEBUGLVL/ { n ; s/.*/..159/ ; }' \
+  sed -e '/^DEBUGLVL/ { n ; s/.*/..31/ ; }' \
       ${tfn} > ${tfn}.n
   mv -f ${tfn}.n ${tfn}
 fi

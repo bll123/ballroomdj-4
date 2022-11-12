@@ -129,13 +129,22 @@ case $cwd in
 esac
 
 preskip=F
-if [[ $1 == "--preskip" ]]; then
-  preskip=T
-fi
 chkskip=F
-if [[ $1 == "--chkskip" ]]; then
-  chkskip=T
-fi
+insttest=F
+while test $# -gt 0; do
+  case $1 in
+    --preskip)
+      preskip=T
+      ;;
+    --chkskip)
+      chkskip=T
+      ;;
+    --insttest)
+      insttest=T
+      ;;
+  esac
+  shift
+done
 
 systype=$(uname -s)
 arch=$(uname -m)
@@ -173,7 +182,7 @@ case $systype in
     ;;
 esac
 
-if [[ $preskip == F ]]; then
+if [[ $preskip == F && $insttest == F ]]; then
   if [[ $chkskip == F ]]; then
     ./src/utils/mktestsetup.sh --force
     ./bin/bdj4 --check_all
@@ -188,21 +197,23 @@ fi
 
 (cd src; make tclean > /dev/null 2>&1)
 
-# update build number
+if [[ $insttest == F ]]; then
+  # update build number
 
-. ./VERSION.txt
+  . ./VERSION.txt
 
-# only rebuild the version.txt file on linux.
-if [[ $tag == linux ]]; then
-  echo "-- $(date +%T) updating build number"
-  BUILD=$(($BUILD+1))
-  BUILDDATE=$(date '+%Y%m%d')
-  cat > VERSION.txt << _HERE_
-VERSION=$VERSION
-BUILD=$BUILD
-BUILDDATE=$BUILDDATE
-RELEASELEVEL=$RELEASELEVEL
+  # only rebuild the version.txt file on linux.
+  if [[ $tag == linux ]]; then
+    echo "-- $(date +%T) updating build number"
+    BUILD=$(($BUILD+1))
+    BUILDDATE=$(date '+%Y%m%d')
+    cat > VERSION.txt << _HERE_
+  VERSION=$VERSION
+  BUILD=$BUILD
+  BUILDDATE=$BUILDDATE
+  RELEASELEVEL=$RELEASELEVEL
 _HERE_
+  fi
 fi
 
 case $RELEASELEVEL in
@@ -225,24 +236,26 @@ chksumfnpath=${stagedir}/install/${chksumfn}
 
 case $tag in
   linux)
-    echo "-- $(date +%T) create source package"
-    test -d ${stagedir} && rm -rf ${stagedir}
-    mkdir -p ${stagedir}
-    nm=${spkgnm}-${VERSION}-src${rlstag}.tar.gz
+    if [[ $insttest == F ]]; then
+      echo "-- $(date +%T) create source package"
+      test -d ${stagedir} && rm -rf ${stagedir}
+      mkdir -p ${stagedir}
+      nm=${spkgnm}-${VERSION}-src${rlstag}.tar.gz
 
-    copysrcfiles ${tag} ${stagedir}
+      copysrcfiles ${tag} ${stagedir}
 
-    echo "-- $(date +%T) creating source manifest"
-    touch ${manfnpath}
-    ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
+      echo "-- $(date +%T) creating source manifest"
+      touch ${manfnpath}
+      ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
 
-    echo "-- $(date +%T) creating checksums"
-    ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
-    mv -f ${chksumfntmp} ${chksumfnpath}
+      echo "-- $(date +%T) creating checksums"
+      ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
+      mv -f ${chksumfntmp} ${chksumfnpath}
 
-    (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
-    echo "## source package ${nm} created"
-    rm -rf ${stagedir}
+      (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
+      echo "## source package ${nm} created"
+      rm -rf ${stagedir}
+    fi
     ;;
 esac
 
@@ -294,6 +307,11 @@ case $tag in
     ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
     mv -f ${chksumfntmp} ${chksumfnpath}
 
+    if [[ $insttest == T ]]; then
+      rm -f plocal/bin/fpcalc*
+      exit 0
+    fi
+
     setLibVol $stagedir libvolpa
     echo "-- $(date +%T) creating install package"
     (cd tmp;tar -c -J -f - $(basename $stagedir)) > ${tmpnm}
@@ -333,6 +351,11 @@ case $tag in
 
     setLibVol $stagedir/${macosbase} libvolmac
 
+    if [[ $insttest == T ]]; then
+      rm -f plocal/bin/fpcalc*
+      exit 0
+    fi
+
     echo "-- $(date +%T) creating install package"
     (cd tmp;tar -c -J -f - $(basename $stagedir)) > ${tmpnm}
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
@@ -362,6 +385,11 @@ case $tag in
       echo "-- $(date +%T) creating checksums"
       ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
       mv -f ${chksumfntmp} ${chksumfnpath}
+    fi
+
+    if [[ $insttest == T ]]; then
+      rm -f plocal/bin/fpcalc*
+      exit 0
     fi
 
     echo "-- $(date +%T) creating install package"

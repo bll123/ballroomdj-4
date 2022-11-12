@@ -86,23 +86,24 @@ main (int argc, char * argv[])
     /* used by installer */
     { "unpackdir",      required_argument,  NULL,   'u' },
     { "reinstall",      no_argument,        NULL,   'r' },
+    { "unattended",     no_argument,        NULL,   0 },
+    { "targetdir",      required_argument,  NULL,   0 },
+    { "bdj3dir",        required_argument,  NULL,   0 },
     /* standard stuff */
     { "profile",        required_argument,  NULL,   'p' },
     { "debug",          required_argument,  NULL,   'd' },
     { "theme",          required_argument,  NULL,   't' },
     { "ignorelock",     no_argument,        NULL,   0 },
-    { "startlog",       no_argument,        NULL,   0 },
-    { "logstderr",      no_argument,        NULL,   0 },
-    { "nostart",        no_argument,        NULL,   0 },
     /* this process */
     { "debugself",      no_argument,        NULL,   'D' },
     { "nodetach",       no_argument,        NULL,   'N' },
     { "wait",           no_argument,        NULL,   'w' },
     { "msys",           no_argument,        NULL,   'M' },
+    { "nostart",        no_argument,        NULL,   0 },
     /* dbupdate options */
     { "rebuild",        no_argument,        NULL,   0 },
     { "checknew",       no_argument,        NULL,   0 },
-    { "progress",       no_argument,        NULL,   0 },
+    { "reorganize",     no_argument,        NULL,   0 },
     { "updfromtags",    no_argument,        NULL,   0 },
     { "writetags",      no_argument,        NULL,   0 },
     { "dbtopdir",       required_argument,  NULL,   0 },
@@ -120,8 +121,9 @@ main (int argc, char * argv[])
     { "emptydb",        no_argument,        NULL,   0 },
     /* general options */
     { "cli",            no_argument,        NULL,   'c' },
-    { "verbose",        no_argument,        NULL,   0 },
+    { "progress",       no_argument,        NULL,   0 },
     { "quiet",          no_argument,        NULL,   0 },
+    { "verbose",        no_argument,        NULL,   0 },
     { NULL,             0,                  NULL,   0 }
   };
 

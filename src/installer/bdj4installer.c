@@ -149,6 +149,8 @@ typedef struct {
   bool            inSetConvert : 1;
   bool            uiBuilt : 1;
   bool            scrolltoend : 1;
+  bool            verbose : 1;
+  bool            unattended : 1;
 } installer_t;
 
 #define INST_HL_COLOR "#b16400"
@@ -232,16 +234,21 @@ main (int argc, char *argv[])
 
   static struct option bdj_options [] = {
     { "bdj4installer",no_argument,      NULL,   0 },
-    { "installer",  no_argument,        NULL,   0 },
     { "reinstall",  no_argument,        NULL,   'r' },
     { "cli",        no_argument,        NULL,   'C' },
-    { "logstderr",  no_argument,        NULL,   'l' },
     { "unpackdir",  required_argument,  NULL,   'u' },
+    { "targetdir",  required_argument,  NULL,   't' },
+    { "bdj3dir",    required_argument,  NULL,   '3' },
+    { "unattended", no_argument,        NULL,   'N' },
+    /* generic args */
+    { "verbose",    no_argument,        NULL,   'V' },
+    /* bdj4 launcher args */
     { "debug",      required_argument,  NULL,   0 },
     { "theme",      required_argument,  NULL,   0 },
     { "debugself",  no_argument,        NULL,   0 },
     { "nodetach",   no_argument,        NULL,   0 },
     { "bdj4",       no_argument,        NULL,   0 },
+    { "wait",       no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -270,6 +277,8 @@ main (int argc, char *argv[])
   installer.inSetConvert = false;
   installer.uiBuilt = false;
   installer.scrolltoend = false;
+  installer.verbose = false;
+  installer.unattended = false;
   uiutilsUIWidgetInit (&installer.statusMsg);
   uiutilsUIWidgetInit (&installer.reinstWidget);
   uiutilsUIWidgetInit (&installer.feedbackMsg);
@@ -287,43 +296,6 @@ main (int argc, char *argv[])
 
   installer.targetEntry = uiEntryInit (80, MAXPATHLEN);
   installer.bdj3locEntry = uiEntryInit (80, MAXPATHLEN);
-
-  while ((c = getopt_long_only (argc, argv, "Cru:l:", bdj_options, &option_index)) != -1) {
-    switch (c) {
-      case 'C': {
-        installer.guienabled = false;
-#if _define_SIGCHLD
-        osDefaultSignal (SIGCHLD);
-#endif
-        break;
-      }
-      case 'r': {
-        installer.reinstall = true;
-        break;
-      }
-      case 'l': {
-        logSetLevel (LOG_DBG,
-            LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_STDERR, "in");
-        logSetLevel (LOG_ERR,
-            LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_STDERR, "in");
-        logSetLevel (LOG_INSTALL,
-            LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_STDERR, "in");
-        break;
-      }
-      case 'u': {
-        strlcpy (installer.unpackdir, optarg, sizeof (installer.unpackdir));
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  }
-
-  if (*installer.unpackdir == '\0') {
-    fprintf (stderr, "Error: unpackdir argument is required\n");
-    exit (1);
-  }
 
   /* the data in sysvars will not be correct.  don't use it.  */
   /* the installer only needs the home, hostname, os info and locale */
@@ -351,21 +323,97 @@ main (int argc, char *argv[])
   /* or the saved target name */
   installerSetTargetDir (&installer, buff);
 
+  while ((c = getopt_long_only (argc, argv, "Cru:l:", bdj_options, &option_index)) != -1) {
+    switch (c) {
+      case 'C': {
+        installer.guienabled = false;
+#if _define_SIGCHLD
+        osDefaultSignal (SIGCHLD);
+#endif
+        break;
+      }
+      case 'N': {
+        installer.unattended = true;
+        break;
+      }
+      case 'r': {
+        installer.reinstall = true;
+        break;
+      }
+      case 'u': {
+        strlcpy (installer.unpackdir, optarg, sizeof (installer.unpackdir));
+        break;
+      }
+      case 'V': {
+        installer.verbose = true;
+        break;
+      }
+      case 't': {
+        installerSetTargetDir (&installer, optarg);
+        break;
+      }
+      case '3': {
+        installerSetBDJ3LocDir (&installer, optarg);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  if (installer.unattended) {
+    bool    ok = true;
+    bool    exists;
+
+    exists = installerCheckTarget (&installer, installer.target);
+    if (fileopIsDirectory (installer.target)) {
+      if (! exists) {
+        fprintf (stderr, "target directory is invalid: exists but not bdj4\n");
+        ok = false;
+      }
+      if (exists && installer.newinstall && installer.reinstall) {
+        fprintf (stderr, "target directory is invalid: new & reinstall\n");
+        ok = false;
+      }
+    }
+    if (*installer.bdj3loc) {
+      if (! fileopIsDirectory (installer.bdj3loc)) {
+        fprintf (stderr, "invalid bdj3 loc\n");
+        ok = false;
+      }
+    }
+
+    if (! ok) {
+      fprintf (stderr, "NG\n");
+      dataFree (installer.target);
+      dataFree (installer.bdj3loc);
+      exit (1);
+    }
+  }
+
+  if (*installer.unpackdir == '\0') {
+    fprintf (stderr, "Error: unpackdir argument is required\n");
+    exit (1);
+  }
+
   /* this only works if the installer.target is pointing at an existing */
   /* install of BDJ4 */
   installerGetBDJ3Fname (&installer, tbuff, sizeof (tbuff));
-  fh = fileopOpen (tbuff, "r");
-  if (fh != NULL) {
-    (void) ! fgets (buff, sizeof (buff), fh);
-    stringTrim (buff);
-    installerSetBDJ3LocDir (&installer, buff);
-    fclose (fh);
-  } else {
-    char *fn;
+  if (*tbuff) {
+    fh = fileopOpen (tbuff, "r");
+    if (fh != NULL) {
+      (void) ! fgets (buff, sizeof (buff), fh);
+      stringTrim (buff);
+      installerSetBDJ3LocDir (&installer, buff);
+      fclose (fh);
+    } else {
+      char *fn;
 
-    fn = locatebdj3 ();
-    installerSetBDJ3LocDir (&installer, fn);
-    free (fn);
+      fn = locatebdj3 ();
+      installerSetBDJ3LocDir (&installer, fn);
+      free (fn);
+    }
   }
 
   if (isWindows ()) {
@@ -1225,7 +1273,7 @@ installerInstInit (installer_t *installer)
     }
   }
 
-  if (! installer->guienabled) {
+  if (! installer->guienabled && ! installer->unattended) {
     tbuff [0] = '\0';
     /* CONTEXT: installer: command line interface: asking for the BDJ4 destination */
     printf (_("Enter the destination folder."));
@@ -1249,7 +1297,7 @@ installerInstInit (installer_t *installer)
   if (exists) {
     found = installerCheckTarget (installer, installer->target);
 
-    if (found && ! installer->guienabled) {
+    if (found && ! installer->guienabled && ! installer->unattended) {
       printf ("\n");
       if (installer->reinstall) {
         /* CONTEXT: installer: command line interface: indicating action */
@@ -1698,7 +1746,7 @@ installerConvertStart (installer_t *installer)
     return;
   }
 
-  if (! installer->guienabled) {
+  if (! installer->guienabled && ! installer->unattended) {
     tbuff [0] = '\0';
     /* CONTEXT: installer: command line interface: prompt for BDJ3 location */
     printf (_("Enter the folder where %s is installed."), BDJ3_NAME);
@@ -2297,7 +2345,8 @@ installerRegisterInit (installer_t *installer)
     fclose (fh);
   }
 
-  if (strcmp (sysvarsGetStr (SV_USER), "bll") == 0 &&
+  if (! installer->verbose &&
+      strcmp (sysvarsGetStr (SV_USER), "bll") == 0 &&
       strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "") != 0) {
     /* no need to translate */
     snprintf (tbuff, sizeof (tbuff), "Registration Skipped.");
@@ -2316,6 +2365,17 @@ installerRegister (installer_t *installer)
 {
   char          uri [200];
   char          tbuff [2048];
+
+  if (installer->verbose) {
+    installer->instState = INST_FINISH;
+    fprintf (stdout, "bdj3-version: %s\n", installer->bdj3version);
+    fprintf (stdout, "old-version: %s\n", installer->oldversion);
+    fprintf (stdout, "new-install: %d\n", installer->newinstall);
+    fprintf (stdout, "re-install: %d\n", installer->reinstall);
+    fprintf (stdout, "update: %d\n", ! installer->newinstall && ! installer->reinstall);
+    fprintf (stdout, "converted: %d\n", installer->convprocess);
+    return;
+  }
 
   installer->webresponse = NULL;
   installer->webresplen = 0;
@@ -2681,6 +2741,8 @@ installerCheckAndFixTarget (char *buff, size_t sz)
   pathInfoFree (pi);
 }
 
+/* not in use */
+/* windows verification is too slow */
 static bool
 installerWinVerifyProcess (installer_t *installer)
 {
@@ -2705,6 +2767,8 @@ installerWinVerifyProcess (installer_t *installer)
     return false;
   }
 
+  /* the build process would need to leave openssl.exe intact */
+  /* see also cleanuplist.txt */
   targv [targc++] = ".\\plocal\\bin\\openssl.exe";
   targv [targc++] = "sha512";
   targv [targc++] = "-r";
