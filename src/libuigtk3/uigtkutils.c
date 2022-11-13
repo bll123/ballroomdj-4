@@ -12,7 +12,6 @@
 #include <gtk/gtk.h>
 
 #include "bdjstring.h"
-#include "inline.h"
 #include "localeutil.h"
 #include "log.h"  // needed for glogwriteroutput
 #include "sysvars.h"

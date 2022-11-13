@@ -13,7 +13,6 @@
 #include "datafile.h"
 #include "pathbld.h"
 #include "fileop.h"
-#include "inline.h"
 #include "log.h"
 #include "nlist.h"
 #include "sequence.h"

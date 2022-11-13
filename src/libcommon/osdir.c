@@ -20,7 +20,6 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
-#include "inline.h"
 #include "osdir.h"
 #include "osutils.h"
 

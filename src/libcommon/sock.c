@@ -45,7 +45,6 @@
 #endif
 
 #include "bdjstring.h"
-#include "inline.h"
 #include "log.h"
 #include "sock.h"
 #include "tmutil.h"

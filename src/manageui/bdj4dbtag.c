@@ -25,7 +25,6 @@
 #include "bdjvarsdf.h"
 #include "bdjvars.h"
 #include "conn.h"
-#include "inline.h"
 #include "lock.h"
 #include "log.h"
 #include "ossignal.h"

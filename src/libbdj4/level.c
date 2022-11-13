@@ -12,7 +12,6 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "ilist.h"
-#include "inline.h"
 #include "istring.h"
 #include "level.h"
 #include "log.h"

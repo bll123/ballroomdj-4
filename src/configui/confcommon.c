@@ -24,7 +24,6 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
-#include "inline.h"
 #include "log.h"
 #include "nlist.h"
 #include "orgutil.h"

@@ -19,7 +19,6 @@
 #include <pulse/pulseaudio.h>
 
 #include "bdjstring.h"
-#include "inline.h"
 #include "tmutil.h"
 #include "volsink.h"
 #include "volume.h"

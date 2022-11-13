@@ -13,7 +13,6 @@
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "datafile.h"
-#include "inline.h"
 #include "log.h"
 #include "uinbutil.h"
 

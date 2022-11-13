@@ -12,7 +12,6 @@
 #include "bdj4ui.h"
 #include "bdjopt.h"
 #include "dispsel.h"
-#include "inline.h"
 #include "log.h"
 #include "msgparse.h"
 #include "musicdb.h"

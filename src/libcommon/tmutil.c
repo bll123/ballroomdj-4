@@ -38,14 +38,14 @@ mssleep (time_t mt)
   Sleep ((DWORD) mt);
 #endif
 #if ! _lib_Sleep && _lib_nanosleep
-  int               rc;
+//  int               rc;
   struct timespec   ts;
   struct timespec   rem;
 
   ts.tv_sec = mt / 1000;
   ts.tv_nsec = (mt - (ts.tv_sec * 1000)) * 1000 * 1000;
   while (ts.tv_sec > 0 || ts.tv_nsec > 0) {
-    rc = nanosleep (&ts, &rem);
+    /* rc = */ nanosleep (&ts, &rem);
     ts.tv_sec = 0;
     ts.tv_nsec = 0;
     /* remainder is only valid when EINTR is returned */

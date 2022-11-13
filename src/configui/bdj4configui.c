@@ -23,7 +23,6 @@
 #include "dance.h"
 #include "datafile.h"
 #include "fileop.h"
-#include "inline.h"
 #include "log.h"
 #include "nlist.h"
 #include "ossignal.h"

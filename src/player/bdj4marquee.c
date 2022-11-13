@@ -21,7 +21,6 @@
 #include "bdjvars.h"
 #include "datafile.h"
 #include "conn.h"
-#include "inline.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"

@@ -506,8 +506,8 @@ sysvarsCheckPaths (const char *otherpaths)
   p = strtok_r (tpath, tsep, &tokstr);
   while (p != NULL) {
     if (strstr (p, "WindowsApps") != NULL) {
-      /* the windows python does not have a regular path for the pip3 user */
-      /* installed scripts */
+      /* the windows python does not have a regular path for the pip3 */
+      /* user installed scripts */
       p = strtok_r (NULL, tsep, &tokstr);
       continue;
     }

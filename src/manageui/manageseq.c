@@ -17,7 +17,6 @@
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "filemanip.h"
-#include "inline.h"
 #include "log.h"
 #include "manageui.h"
 #include "pathbld.h"

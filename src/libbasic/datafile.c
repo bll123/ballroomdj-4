@@ -15,7 +15,6 @@
 #include "filemanip.h"
 #include "fileop.h"
 #include "ilist.h"
-#include "inline.h"
 #include "log.h"
 #include "nlist.h"
 #include "slist.h"

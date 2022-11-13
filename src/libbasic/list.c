@@ -9,7 +9,6 @@
 #include <assert.h>
 
 #include "bdjstring.h"
-#include "inline.h"
 #include "istring.h"
 #include "list.h"
 #include "log.h"

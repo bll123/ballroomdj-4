@@ -15,7 +15,6 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "configui.h"
-#include "inline.h"
 #include "log.h"
 #include "orgopt.h"
 #include "slist.h"

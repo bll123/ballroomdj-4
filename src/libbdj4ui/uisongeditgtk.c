@@ -14,7 +14,6 @@
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
 #include "conn.h"
-#include "inline.h"
 #include "level.h"
 #include "log.h"
 #include "nlist.h"

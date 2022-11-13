@@ -29,7 +29,6 @@
 #include "dancesel.h"
 #include "filedata.h"
 #include "fileop.h"
-#include "inline.h"
 #include "lock.h"
 #include "log.h"
 #include "musicdb.h"

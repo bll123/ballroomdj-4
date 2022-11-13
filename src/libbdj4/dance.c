@@ -14,7 +14,6 @@
 #include "dnctypes.h"
 #include "fileop.h"
 #include "ilist.h"
-#include "inline.h"
 #include "log.h"
 #include "pathbld.h"
 #include "slist.h"

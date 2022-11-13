@@ -29,7 +29,6 @@
 #include "conn.h"
 #include "filemanip.h"
 #include "fileop.h"
-#include "inline.h"
 #include "lock.h"
 #include "log.h"
 #include "ossignal.h"

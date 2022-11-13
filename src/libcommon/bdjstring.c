@@ -119,9 +119,7 @@ versionNext (const char *tv1)
   return tv1;
 }
 
-/* for sanitizeaddress */
-#if defined (BDJ4_NO_INLINE)
-
+/* tried to inline this, but clang got weird on me 2022-11-13 */
 void
 dataFree (void *data)
 {
@@ -129,6 +127,4 @@ dataFree (void *data)
     free (data);
   }
 }
-
-#endif /* BDJ4_NO_INLINE defined */
 

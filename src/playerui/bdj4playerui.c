@@ -23,7 +23,6 @@
 #include "conn.h"
 #include "datafile.h"
 #include "dispsel.h"
-#include "inline.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"

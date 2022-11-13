@@ -16,7 +16,6 @@
 #include "conn.h"
 #include "dance.h"
 #include "ilist.h"
-#include "inline.h"
 #include "log.h"
 #include "musicdb.h"
 #include "pathbld.h"

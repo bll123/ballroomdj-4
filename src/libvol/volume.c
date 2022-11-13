@@ -12,7 +12,6 @@
 #include "bdjstring.h"
 #include "pathbld.h"
 #include "dylib.h"
-#include "inline.h"
 #include "sysvars.h"
 #include "volsink.h"
 #include "volume.h"

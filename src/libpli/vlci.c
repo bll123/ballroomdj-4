@@ -31,7 +31,6 @@ enum {
 #include <vlc/libvlc_version.h>
 
 #include "bdjstring.h"
-#include "inline.h"
 #include "vlci.h"
 #include "volsink.h"
 

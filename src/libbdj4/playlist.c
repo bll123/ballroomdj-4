@@ -16,7 +16,6 @@
 #include "pathbld.h"
 #include "filemanip.h"
 #include "fileop.h"
-#include "inline.h"
 #include "ilist.h"
 #include "level.h"
 #include "log.h"

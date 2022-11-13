@@ -22,7 +22,6 @@
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
-#include "inline.h"
 #include "istring.h"
 #include "localeutil.h"
 #include "log.h"

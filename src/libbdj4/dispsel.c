@@ -10,7 +10,6 @@
 #include "datafile.h"
 #include "dispsel.h"
 #include "fileop.h"
-#include "inline.h"
 #include "pathbld.h"
 #include "slist.h"
 #include "tagdef.h"

@@ -28,7 +28,6 @@
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
-#include "inline.h"
 #include "log.h"
 #include "localeutil.h"
 #include "musicdb.h"

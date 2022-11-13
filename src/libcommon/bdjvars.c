@@ -10,7 +10,6 @@
 
 #include "bdjstring.h"
 #include "bdjvars.h"
-#include "inline.h"
 #include "sysvars.h"
 
 static char *   bdjvars [BDJV_MAX];

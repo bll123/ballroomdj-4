@@ -13,7 +13,6 @@
 #include "bdjstring.h"
 #include "datafile.h"
 #include "dirop.h"
-#include "inline.h"
 #include "filemanip.h"
 #include "fileop.h"
 #include "nlist.h"

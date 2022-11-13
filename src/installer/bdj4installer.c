@@ -30,7 +30,6 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
-#include "inline.h"
 #include "localeutil.h"
 #include "locatebdj3.h"
 #include "log.h"
@@ -251,6 +250,7 @@ main (int argc, char *argv[])
     { "nodetach",   no_argument,        NULL,   0 },
     { "bdj4",       no_argument,        NULL,   0 },
     { "wait",       no_argument,        NULL,   0 },
+    { "msys",       no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
 

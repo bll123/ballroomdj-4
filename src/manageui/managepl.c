@@ -14,7 +14,6 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "filemanip.h"
-#include "inline.h"
 #include "log.h"
 #include "manageui.h"
 #include "pathbld.h"

@@ -10,7 +10,6 @@
 
 #include "bdjvarsdf.h"
 #include "dance.h"
-#include "inline.h"
 #include "log.h"
 #include "musicdb.h"
 #include "musicq.h"

@@ -13,7 +13,6 @@
 #include <errno.h>
 
 #include "bdjstring.h"
-#include "inline.h"
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"

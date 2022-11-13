@@ -17,7 +17,6 @@
 #include "bdjvarsdf.h"
 #include "genre.h"
 #include "ilist.h"
-#include "inline.h"
 #include "level.h"
 #include "log.h"
 #include "musicq.h"

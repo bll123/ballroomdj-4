@@ -30,7 +30,6 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
-#include "inline.h"
 #include "localeutil.h"
 #include "log.h"
 #include "osprocess.h"

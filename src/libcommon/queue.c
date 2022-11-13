@@ -23,7 +23,6 @@
 #include <assert.h>
 
 #include "bdjstring.h"
-#include "inline.h"
 #include "log.h"
 #include "queue.h"
 

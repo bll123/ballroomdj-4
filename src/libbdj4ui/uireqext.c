@@ -18,7 +18,6 @@
 #include "dance.h"
 #include "datafile.h"
 #include "fileop.h"
-#include "inline.h"
 #include "log.h"
 #include "musicdb.h"
 #include "nlist.h"

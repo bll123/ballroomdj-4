@@ -9,7 +9,6 @@
 #include <ctype.h>
 #include <math.h>
 
-#include "inline.h"
 #include "slist.h"
 #include "tagdef.h"
 #include "ui.h"
