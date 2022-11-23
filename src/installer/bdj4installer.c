@@ -12,7 +12,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <getopt.h>
-
+#if _sys_xattr
+# include <sys/xattr.h>
+#endif
 #if _hdr_winsock2
 # include <winsock2.h>
 #endif
@@ -2012,7 +2014,8 @@ installerVLCCheck (installer_t *installer)
 {
   char    tbuff [MAXPATHLEN];
 
-  if (installer->vlcinstalled) {
+  /* on linux, vlc is installed via other methods */
+  if (installer->vlcinstalled || isLinux ()) {
     installer->instState = INST_PYTHON_CHECK;
     return;
   }
@@ -2054,9 +2057,16 @@ installerVLCDownload (installer_t *installer)
         sysvarsGetNum (SVL_OSBITS), installer->dlfname);
   }
   if (isMacOS ()) {
+    char    *arch;
+
+    /* the os architecture on m1 is 'arm64' and includes the bits */
+    /* the os architecture on intel is 'x86_64' */
+    arch = sysvarsGetStr (SV_OSARCH);
+    if (strcmp (arch, "x86_64") == 0) {
+      arch = "intel64";
+    }
     snprintf (installer->dlfname, sizeof (installer->dlfname),
-        "vlc-%s-intel64.dmg",
-        installer->vlcversion);
+        "vlc-%s-%s.dmg", installer->vlcversion, arch);
     snprintf (url, sizeof (url),
         "https://get.videolan.org/vlc/last/macosx/%s",
         installer->dlfname);
@@ -2066,6 +2076,10 @@ installerVLCDownload (installer_t *installer)
   }
 
   if (fileopFileExists (installer->dlfname)) {
+    chmod (installer->dlfname, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+#if _lib_removexattr
+    removexattr (installer->dlfname, "com.apple.quarantine", XATTR_NOFOLLOW);
+#endif
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "VLC");
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
@@ -2085,19 +2099,17 @@ static void
 installerVLCInstall (installer_t *installer)
 {
   char    tbuff [MAXPATHLEN];
-  int         targc = 0;
-  const char  *targv [5];
 
   if (fileopFileExists (installer->dlfname)) {
     if (isWindows ()) {
       snprintf (tbuff, sizeof (tbuff), ".\\%s", installer->dlfname);
     }
     if (isMacOS ()) {
-      snprintf (tbuff, sizeof (tbuff), "./%s", installer->dlfname);
+      snprintf (tbuff, sizeof (tbuff), "open ./%s", installer->dlfname);
     }
-    targv [targc++] = tbuff;
-    targv [targc++] = NULL;
-    osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
+    /* both windows and macos need to run this via the system call */
+    /* due to privilege escalation */
+    (void) ! system (tbuff);
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("%s installed."), "VLC");
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
@@ -2119,34 +2131,32 @@ installerPythonCheck (installer_t *installer)
     return;
   }
 
+  /* python is installed via other methods on linux and macos */
+  if (isLinux () || isMacOS ()) {
+    installer->instState = INST_MUTAGEN_CHECK;
+    return;
+  }
+
   installerPythonGetVersion (installer);
 
   if (installer->pythoninstalled) {
     char    *p;
-    int     majvers;
+    int     majvers = 0;
+    int     minvers = 0;
 
     strlcpy (tbuff, installer->pyversion, sizeof (tbuff));
     majvers = atoi (installer->pyversion);
-
-    /* if a very old version of python is installed, do an update */
-    /* this is only applicable to windows */
-    if (majvers < 3 && isWindows ()) {
-      installer->updatepython = true;
-    }
-
     p = strstr (tbuff, ".");
     if (p != NULL) {
-      p = strstr (p + 1, ".");
-      if (p != NULL) {
-        *p = '\0';
-      }
-#if 0
-      /* there's no way to easily uninstall older versions, so comparing */
-      /* versions is not very helpful. */
-      if (versionCompare (sysvarsGetStr (SV_PYTHON_DOT_VERSION), tbuff) < 0) {
-        installer->updatepython = true;
-      }
-#endif
+      minvers = atoi (p + 1);
+      minvers -= 3;
+    }
+    snprintf (tbuff, sizeof (tbuff), "%d.%d", majvers, minvers);
+
+    /* check for old versions of python and update */
+    /* does this conflict w/bdj3? */
+    if (versionCompare (sysvarsGetStr (SV_PYTHON_DOT_VERSION), tbuff) < 0) {
+      installer->updatepython = true;
     }
   }
 
@@ -2563,17 +2573,35 @@ installerVLCGetVersion (installer_t *installer)
 {
   char      *p;
   char      *e;
+  char      *platform;
+  char      tbuff [MAXPATHLEN];
 
   *installer->vlcversion = '\0';
   installer->webresponse = NULL;
   if (installer->webclient == NULL) {
     installer->webclient = webclientAlloc (installer, installerWebResponseCallback);
   }
-  webclientGet (installer->webclient, "http://get.videolan.org/vlc/last/macosx/");
+
+  /* linux is not installed via this method, nor does it have a  */
+  /* directory in the videolan 'last' directory */
+
+  platform = "macosx";
+  if (isWindows ()) {
+    platform = "win64";
+  }
+
+  snprintf (tbuff, sizeof (tbuff), "https://get.videolan.org/vlc/last/%s/", platform);
+
+  webclientGet (installer->webclient, tbuff);
 
   if (installer->webresponse != NULL) {
     char *srchvlc = "vlc-";
+    /* note that all files excepting ".." start with vlc-<version> */
+    /* vlc-<version>.<arch>.dmg{|.asc|.md5|.sha1|.sha256} */
+    /* vlc-<version>.<arch>.{7z|exe|msi|zip|debugsys}{|.asc|.md5|.sha1|.sha256} */
     /* vlc-3.0.16-intel64.dmg */
+    /* vlc-3.0.17.4-universal.dmg */
+    /* vlc-3.0.17.4-win64.exe */
     p = strstr (installer->webresponse, srchvlc);
     if (p != NULL) {
       p += strlen (srchvlc);

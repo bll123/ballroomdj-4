@@ -364,8 +364,8 @@ main (int argc, char * argv[])
 
     path = getenv ("PATH");
     *npath = '\0';
+    strlcat (npath, "/opt/local/bin:", sz);
     strlcat (npath, path, sz);
-    strlcat (npath, ":/opt/local/bin", sz);
     osSetEnv ("PATH", npath);
 
     osSetEnv ("DYLD_FALLBACK_LIBRARY_PATH",

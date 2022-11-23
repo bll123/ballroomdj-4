@@ -8,7 +8,7 @@
 version
 ..1
 count
-..119
+..120
 
 # standard dances
 
@@ -3271,8 +3271,44 @@ TITLE
 DEST
 ..%03d-내가제일잘나가-ko
 
+# 'iconv' on macos does not recognize this character
 KEY
 ..93
+SOURCE
+..waltz.mp3
+DURATION
+..30630
+NOTES
+..notes1 notes2 ÄÄÄÄääää
+BPM
+..84
+TAGS
+..tag6 tag7 utf8 bpm
+STATUS
+..Edit
+DANCELEVEL
+..Advanced
+GENRE
+..Jazz
+ALBUMARTIST
+..%03d-utf8-Roman_Pokorný
+ARTIST
+..%03d-utf8-Roman_Pokorný
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+TITLE
+..%03d-Roman_Pokorný-cs
+DEST
+..%03d-Roman_Pokorný-cs
+
+KEY
+..94
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3307,7 +3343,7 @@ DEST
 ..%03d-Ne_Русский_Шторм-ru
 
 KEY
-..94
+..95
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3344,7 +3380,7 @@ DEST
 # utf8 sort check
 
 KEY
-..95
+..96
 SOURCE
 ..rumba.mp3
 DURATION
@@ -3379,7 +3415,7 @@ DEST
 ..900-ZZZZ
 
 KEY
-..96
+..97
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3416,7 +3452,7 @@ DEST
 ..900-ÄÄÄÄ
 
 KEY
-..97
+..98
 SOURCE
 ..tango.mp3
 DURATION
@@ -3451,7 +3487,7 @@ DEST
 # keywords
 
 KEY
-..98
+..99
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3488,7 +3524,7 @@ DEST
 ..%03d-waltz
 
 KEY
-..99
+..100
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3525,7 +3561,7 @@ DEST
 ..%03d-waltz
 
 KEY
-..100
+..101
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3564,7 +3600,7 @@ DEST
 ..%03d-waltz
 
 KEY
-..101
+..102
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3603,7 +3639,7 @@ DEST
 ..%03d-waltz
 
 KEY
-..102
+..103
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3640,7 +3676,7 @@ DEST
 ..%03d-waltz
 
 KEY
-..103
+..104
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3675,7 +3711,7 @@ DEST
 ..%03d-waltz
 
 KEY
-..104
+..105
 SOURCE
 ..tango.mp3
 DURATION
@@ -3712,7 +3748,7 @@ DEST
 ..%03d-tango
 
 KEY
-..105
+..106
 SOURCE
 ..tango.mp3
 DURATION
@@ -3749,7 +3785,7 @@ DEST
 ..%03d-tango
 
 KEY
-..106
+..107
 SOURCE
 ..tango.mp3
 DURATION
@@ -3786,7 +3822,7 @@ DEST
 ..%03d-tango
 
 KEY
-..107
+..108
 SOURCE
 ..tango.mp3
 DURATION
@@ -3819,7 +3855,7 @@ DEST
 ..%03d-tango
 
 KEY
-..108
+..109
 SOURCE
 ..tango.mp3
 DURATION
@@ -3854,7 +3890,7 @@ DEST
 ..%03d-tango
 
 KEY
-..109
+..110
 SOURCE
 ..tango.mp3
 DURATION
@@ -3893,7 +3929,7 @@ DEST
 # .ogg
 
 KEY
-..110
+..111
 SOURCE
 ..tango.ogg
 DURATION
@@ -3928,7 +3964,7 @@ DEST
 ..%03d-tango-ogg
 
 KEY
-..111
+..112
 SOURCE
 ..tango.ogg
 DURATION
@@ -3963,7 +3999,7 @@ DEST
 ..%03d-tango-ogg
 
 KEY
-..112
+..113
 SOURCE
 ..tango.ogg
 DURATION
@@ -3996,7 +4032,7 @@ DEST
 ..%03d-tango-ogg
 
 KEY
-..113
+..114
 SOURCE
 ..waltz.ogg
 DURATION
@@ -4031,7 +4067,7 @@ DEST
 ..%03d-waltz-ogg
 
 KEY
-..114
+..115
 SOURCE
 ..waltz.ogg
 DURATION
@@ -4068,7 +4104,7 @@ DEST
 ..%03d-waltz-ogg
 
 KEY
-..115
+..116
 SOURCE
 ..waltz.ogg
 DURATION
@@ -4105,7 +4141,7 @@ DEST
 # other filenames
 
 KEY
-..116
+..117
 SOURCE
 ..waltz.mp3
 DURATION
@@ -4142,7 +4178,7 @@ DEST
 # announcements
 
 KEY
-..117
+..118
 SOURCE
 ..ann-waltz.mp3
 DURATION
@@ -4177,7 +4213,7 @@ DEST
 ..ann-waltz
 
 KEY
-..118
+..119
 SOURCE
 ..ann-tango.mp3
 DURATION

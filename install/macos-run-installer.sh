@@ -1,5 +1,5 @@
 #!/bin/bash
-ver=1
+ver=2
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -28,21 +28,20 @@ fi
 arch=$(uname -m)
 case $arch in
   x86_64)
-    archtag=intel
+    archtaglist=intel
     ;;
   arm64)
-    archtag=m1
+    # m1 is an old name and can be removed soon
+    archtaglist="applesilicon m1"
     ;;
 esac
 
-pattern="bdj4-4.[0-9]*.[0-9]*-installer-macos-${archtag}*"
-
 latest=""
-for f in $pattern; do
-  case $f in
-    *\*)
-      ;;
-    *)
+for archtag in $archtaglist; do
+  pattern="bdj4-4.[0-9]*.[0-9]*-installer-macos-${archtag}*"
+
+  for f in $pattern; do
+    if [[ -f $f ]]; then
       if [[ $latest == "" ]];then
         latest=$f
       fi
@@ -52,8 +51,8 @@ for f in $pattern; do
       chmod a+rx $f
       # BDJ4 has no malware in it.
       xattr -d com.apple.quarantine $f > /dev/null 2>&1
-      ;;
-  esac
+    fi
+  done
 done
 
 if [[ $latest != "" ]]; then

@@ -1,5 +1,5 @@
 #!/bin/bash
-ver=3
+ver=4
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -167,19 +167,15 @@ pattern="macos-run-installer-v[0-9]*.sh"
 
 latest=""
 for f in $pattern; do
-  case $f in
-    *\*)
-      ;;
-    *)
-      if [[ $latest == "" ]];then
-        latest=$f
-      fi
-      if [[ $f -nt $latest ]]; then
-        latest=$f
-      fi
-      chmod a+rx $f
-      ;;
-  esac
+  if [[ -f $f ]]; then
+    chmod a+rx $f
+    if [[ $latest == "" ]];then
+      latest=$f
+    fi
+    if [[ $f -nt $latest ]]; then
+      latest=$f
+    fi
+  fi
 done
 
 if [[ -f $latest ]]; then

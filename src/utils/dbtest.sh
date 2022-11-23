@@ -109,7 +109,7 @@ function setorgregex {
   mv -f ${gconf}.n ${gconf}
 }
 
-NUMM=119
+NUMM=120
 NUMB=15
 NUMBL1=$(($NUMB-1))
 NUMR=13
@@ -130,7 +130,7 @@ TDBRDTAT=tmp/test-m-r-dtat.dat
 TMPA=tmp/dbtesta.txt
 TMPB=tmp/dbtestb.txt
 
-./src/utils/mktestsetup.sh --force
+./src/utils/mktestsetup.sh
 
 # get music dir
 hostname=$(hostname)

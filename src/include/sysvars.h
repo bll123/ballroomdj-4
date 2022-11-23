@@ -33,6 +33,7 @@ typedef enum {
   SV_LOCALE_RADIX,
   SV_LOCALE_SHORT,
   SV_LOCALE_SYSTEM,
+  SV_OSARCH,
   SV_OSBUILD,
   SV_OSDISP,
   SV_OS_EXEC_EXT,
@@ -66,11 +67,14 @@ typedef enum {
 } sysvarkey_t;
 
 typedef enum {
-  SVL_BDJIDX,
   SVL_BASEPORT,
-  SVL_OSBITS,
-  SVL_NUM_PROC,
+  SVL_BDJIDX,
+  SVL_IS_LINUX,
+  SVL_IS_MACOS,
+  SVL_IS_WINDOWS,
   SVL_LOCALE_SET,
+  SVL_NUM_PROC,
+  SVL_OSBITS,
   SVL_MAX
 } sysvarlkey_t;
 

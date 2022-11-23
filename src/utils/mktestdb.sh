@@ -24,6 +24,8 @@ fi
 
 args=""
 infile=$TESTMUSIC
+rmflag=F
+outfile=""
 while test $# -gt 0; do
   case $1 in
     --force)
@@ -32,6 +34,7 @@ while test $# -gt 0; do
     --emptydb)
       args+=$1
       args+=" "
+      rmflag=T
       ;;
     --infile)
       args+=$1
@@ -40,6 +43,7 @@ while test $# -gt 0; do
       infile=$1
       args+=$1
       args+=" "
+      rmflag=T
       ;;
     --outfile)
       args+=$1
@@ -48,6 +52,7 @@ while test $# -gt 0; do
       outfile=$1
       args+=$1
       args+=" "
+      rmflag=T
       ;;
     *)
       echo "unknown argument $1"
@@ -77,4 +82,9 @@ if [[ ! -f $FLAG ||
   touch $FLAG
 fi
 
+if [[ $rmflag == T ]]; then
+  rm -f $FLAG
+fi
+
+echo $outfile
 exit 0

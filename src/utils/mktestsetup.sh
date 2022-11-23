@@ -14,34 +14,22 @@ while : ; do
 done
 
 systype=$(uname -s)
-arch=$(uname -m)
 case $systype in
   Linux)
     os=linux
     platform=unix
-    archtag=
     ;;
   Darwin)
     os=macos
     platform=unix
-    case $arch in
-      x86_64)
-        archtag=-intel
-        ;;
-      arm64)
-        archtag=-m1
-        ;;
-    esac
     ;;
   MINGW64*)
     os=win64
     platform=windows
-    archtag=
     ;;
   MINGW32*)
     os=win32
     platform=windows
-    archtag=
     ;;
 esac
 
@@ -225,53 +213,13 @@ FAVORITE
 _HERE_
 
 args=""
-outfile=""
-rmflag=F
-while test $# -gt 0; do
-  case $1 in
-    --force)
-      rm -f $FLAG
-      ;;
-    --emptydb)
-      args+=$1
-      args+=" "
-      rmflag=T
-      ;;
-    --infile)
-      args+=$1
-      args+=" "
-      shift
-      args+=$1
-      args+=" "
-      rmflag=T
-      ;;
-    --outfile)
-      args+=$1
-      args+=" "
-      shift
-      outfile=$1
-      args+=$1
-      args+=" "
-      rmflag=T
-      ;;
-    *)
-      echo "unknown argument $1"
-      exit 1
-      ;;
-  esac
-  shift
-done
 
-./src/utils/mktestdb.sh $args
+outfile=$(./src/utils/mktestdb.sh "$@")
 # copy the db to the data dir after it is created
 if [[ $outfile != "" ]]; then
   cp -f $outfile data/musicdb.dat
 else
   cp -f test-templates/musicdb.dat data
-fi
-
-if [[ $rmflag == T ]]; then
-  rm -f $FLAG
 fi
 
 cwd=$(pwd)

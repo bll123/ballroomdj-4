@@ -11,7 +11,7 @@ Contents
 
 BallroomDJ 4 is currently under development.
 
-Alpha Release: 2022-11-12
+Alpha Release: 2022-11-22
 
   Alpha releases are mostly untested works in progress.
 
@@ -60,28 +60,21 @@ Installation:
     b) Run the BallroomDJ 4 installer.
 
   MacOS:
-    a) Download VLC from
-
-         https://www.videolan.org/vlc/
-
-       and install it.
-       This step will be merged into the pre install script at a later date.
-
-    b) Download the following two files and the bdj4 installer from:
+    a) Download the following two files and the bdj4 installer from:
 
          https://sourceforge.net/projects/ballroomdj4/files/
 
-            macos-pre-install-macports-v3.sh
-            macos-run-installer-v1.sh
+            macos-pre-install-macports-v4.sh
+            macos-run-installer-v2.sh
 
        Be aware that there are two MacOS installation packages.  One for
-       MacOS on intel, and one for MacOS on Apple Silicon (labelled 'm1').
+       MacOS on Intel, and one for MacOS on Apple Silicon.
 
-    c) Open a terminal (Finder : Go -> Utilities / Terminal)
+    b) Open a terminal (Finder : Go -> Utilities / Terminal)
       Type in the following commands:
 
         cd $HOME/Downloads
-        bash macos-pre-install-macports-v3.sh
+        bash macos-pre-install-macports-v4.sh
 
       The pre-installation script requires your password in order to
       install the required MacPorts packages.  It may ask for your
@@ -90,9 +83,9 @@ Installation:
       The pre-installation script only needs to be run each time its
       version number changes.
 
-    d) In the terminal type the following command:
+    c) In the terminal type the following command:
 
-        bash macos-run-installer-v1.sh
+        bash macos-run-installer-v2.sh
 
 Converting BallroomDJ 3:
 

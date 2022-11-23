@@ -164,7 +164,7 @@ case $systype in
         archtag=-intel
         ;;
       arm64)
-        archtag=-m1
+        archtag=-applesilicon
         ;;
     esac
     ;;
@@ -208,10 +208,10 @@ if [[ $insttest == F ]]; then
     BUILD=$(($BUILD+1))
     BUILDDATE=$(date '+%Y%m%d')
     cat > VERSION.txt << _HERE_
-  VERSION=$VERSION
-  BUILD=$BUILD
-  BUILDDATE=$BUILDDATE
-  RELEASELEVEL=$RELEASELEVEL
+VERSION=$VERSION
+BUILD=$BUILD
+BUILDDATE=$BUILDDATE
+RELEASELEVEL=$RELEASELEVEL
 _HERE_
   fi
 fi

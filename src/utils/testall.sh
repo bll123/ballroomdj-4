@@ -15,6 +15,7 @@ LOG=test.log
 > $LOG
 
 echo "== check" >> $LOG
+./src/utils/mktestsetup.sh --force >> $LOG 2>&1
 ./bin/bdj4 --check_all >> $LOG 2>&1
 rc=$?
 if [[ $rc -ne 0 ]]; then
@@ -26,6 +27,7 @@ fi
 
 if [[ $grc -eq 0 ]]; then
   echo "== dbtest" >> $LOG
+  ./src/utils/mktestsetup.sh >> $LOG 2>&1
   # dbtest will rebuild the databases.
   ./src/utils/dbtest.sh >> $LOG 2>&1
   rc=$?
@@ -41,7 +43,7 @@ fi
 
 if [[ $grc -eq 0 ]]; then
   echo "== testsuite" >> $LOG
-  ./src/utils/mktestsetup.sh --force >> $LOG 2>&1
+  ./src/utils/mktestsetup.sh >> $LOG 2>&1
   ./bin/bdj4 --testsuite
   rc=$?
   if [[ $rc -ne 0 ]]; then

@@ -1,5 +1,12 @@
 BallroomDJ 4 Change Log
 
+4.0.0 alpha 2022-11-22
+
+- installation: fix macos VLC installation.
+- installation: fix windows VLC installation.
+- installation: windows: installer newer python if current is too old.
+- macos: make sure macports is first in path.
+
 4.0.0 alpha 2022-11-12
 
 - automatic playlists: re-work the dance selection algorithm.

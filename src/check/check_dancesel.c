@@ -491,6 +491,74 @@ START_TEST(dancesel_choose_fast)
 }
 END_TEST
 
+/* use the same logic as a mix, using the dance selection decrement */
+/* routine. */
+START_TEST(dancesel_mix)
+{
+  dancesel_t  *ds;
+  nlist_t     *clist = NULL;
+  dance_t     *dances;
+  slist_t     *dlist;
+  int         didxarr [8];
+  int         counts [TM_MAX_DANCE];
+  int         totcount;
+  int         i;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_choose_fast");
+  if (DANCESEL_DEBUG) {
+    fprintf (stderr, "-- dancesel_choose_fast\n");
+  }
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  dlist = danceGetDanceList (dances);
+
+  i = 0;
+  didxarr [i++] = slistGetNum (dlist, "Jive");
+  didxarr [i++] = slistGetNum (dlist, "Quickstep");
+  didxarr [i++] = slistGetNum (dlist, "Waltz");
+  didxarr [i++] = slistGetNum (dlist, "Tango");
+  didxarr [i++] = slistGetNum (dlist, "Foxtrot");
+  didxarr [i++] = slistGetNum (dlist, "Rumba");
+  didxarr [i++] = slistGetNum (dlist, "Salsa");
+  didxarr [i++] = slistGetNum (dlist, "Cha Cha");
+
+  clist = nlistAlloc ("count-list", LIST_ORDERED, NULL);
+  for (int i = 0; i < 8; ++i) {
+    nlistSetNum (clist, didxarr [i], 6);
+  }
+  for (int i = 0; i < TM_MAX_DANCE; ++i) {
+    counts [i] = 0;
+  }
+
+  ds = danceselAlloc (clist, chkQueue, NULL);
+
+  gprior = 0;
+  totcount = 0;
+  for (int i = 0; i < 48; ++i) {
+    ilistidx_t  didx;
+
+    didx = danceselSelect (ds, gprior);
+    if (didx >= 0) {
+      ++counts [didx];
+      danceselAddCount (ds, didx);
+      danceselDecrementBase (ds, didx);
+      saveToQueue (didx);
+      ++totcount;
+    }
+  }
+  ck_assert_int_eq (totcount, 48);
+  for (int i = 0; i < 8; ++i) {
+    ilistidx_t didx = didxarr [i];
+    ck_assert_int_eq (counts [didx], 6);
+  }
+
+  danceselFree (ds);
+  nlistFree (clist);
+  nlistFree (ghist);
+  ghist = NULL;
+}
+END_TEST
+
 Suite *
 dancesel_suite (void)
 {
@@ -509,6 +577,7 @@ dancesel_suite (void)
   tcase_add_test (tc, dancesel_choose_multi_count);
   tcase_add_test (tc, dancesel_choose_multi_tag);
   tcase_add_test (tc, dancesel_choose_fast);
+  tcase_add_test (tc, dancesel_mix);
   suite_add_tcase (s, tc);
   return s;
 }

@@ -37,7 +37,7 @@ case $systype in
         archtag=-intel
         ;;
       arm64)
-        archtag=-m1
+        archtag=-applesilicon
         ;;
     esac
     ;;

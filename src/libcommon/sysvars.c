@@ -70,6 +70,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_LOCALE_RADIX] = { "LOCALE_RADIX" },
   [SV_LOCALE_SHORT] = { "LOCALE_SHORT" },
   [SV_LOCALE_SYSTEM] = { "LOCALE_SYSTEM" },
+  [SV_OSARCH] = { "OSARCH" },
   [SV_OSBUILD] = { "OSBUILD" },
   [SV_OSDISP] = { "OSDISP" },
   [SV_OS_EXEC_EXT] = { "OS_EXEC_EXT" },
@@ -100,11 +101,14 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
 };
 
 static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
-  [SVL_BDJIDX] = { "Profile" },
   [SVL_BASEPORT] = { "Base-Port" },
-  [SVL_OSBITS] = { "OS-Bits" },
-  [SVL_NUM_PROC] = { "Number-of-Processors" },
+  [SVL_IS_WINDOWS] = { "Is-Windows" },
+  [SVL_IS_MACOS] = { "Is-MacOS" },
+  [SVL_IS_LINUX] = { "Is-Linux" },
   [SVL_LOCALE_SET] = { "Locale-Set" },
+  [SVL_NUM_PROC] = { "Number-of-Processors" },
+  [SVL_OSBITS] = { "OS-Bits" },
+  [SVL_BDJIDX] = { "Profile" },
 };
 
 enum {
@@ -150,8 +154,22 @@ sysvarsInit (const char *argv0)
 #endif
 #if _lib_RtlGetVersion
   RTL_OSVERSIONINFOEXW osvi;
+  NTSTATUS RtlGetVersion (PRTL_OSVERSIONINFOEXW lpVersionInformation);
+#endif
+#if _lib_GetNativeSystemInfo
+  SYSTEM_INFO winsysinfo;
 #endif
 
+
+  strlcpy (sysvars [SV_OSNAME], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OSDISP], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OSVERS], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OSARCH], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OS_EXEC_EXT], "", SV_MAX_SZ);
+  lsysvars [SVL_IS_MACOS] = false;
+  lsysvars [SVL_IS_LINUX] = false;
+  lsysvars [SVL_IS_WINDOWS] = false;
 
 #if _lib_uname
   rc = uname (&ubuf);
@@ -159,22 +177,45 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_OSNAME], ubuf.sysname, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSDISP], ubuf.sysname, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSVERS], ubuf.version, SV_MAX_SZ);
-  strlcpy (sysvars [SV_OSBUILD], "", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OS_EXEC_EXT], "", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OSARCH], ubuf.machine, SV_MAX_SZ);
+
 #endif
 #if _lib_RtlGetVersion
-  NTSTATUS RtlGetVersion (PRTL_OSVERSIONINFOEXW lpVersionInformation);
   memset (&osvi, 0, sizeof (RTL_OSVERSIONINFOEXW));
   osvi.dwOSVersionInfoSize = sizeof (RTL_OSVERSIONINFOEXW);
   RtlGetVersion (&osvi);
 
-  strlcpy (sysvars [SV_OS_EXEC_EXT], ".exe", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OSNAME], "windows", SV_MAX_SZ);
-  strlcpy (sysvars [SV_OSDISP], "Windows ", SV_MAX_SZ);
   snprintf (sysvars [SV_OSVERS], SV_MAX_SZ, "%ld.%ld",
       osvi.dwMajorVersion, osvi.dwMinorVersion);
   snprintf (sysvars [SV_OSBUILD], SV_MAX_SZ, "%ld",
       osvi.dwBuildNumber);
+#endif
+#if _lib_GetNativeSystemInfo
+  GetNativeSystemInfo (&winsysinfo);
+  /* dwNumberOfProcessors may not reflect the number of system processors */
+  if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL) {
+    strlcpy (sysvars [SV_OSARCH], "intel", SV_MAX_SZ);
+    lsysvars [SVL_OSBITS] = 32;
+  }
+  if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM) {
+    strlcpy (sysvars [SV_OSARCH], "arm", SV_MAX_SZ);
+    lsysvars [SVL_OSBITS] = 32;
+  }
+  if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM64) {
+    strlcpy (sysvars [SV_OSARCH], "arm", SV_MAX_SZ);
+    lsysvars [SVL_OSBITS] = 64;
+  }
+  if (winsysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
+    strlcpy (sysvars [SV_OSARCH], "", SV_MAX_SZ);
+    lsysvars [SVL_OSBITS] = 64;
+  }
+#endif
+
+/* is a windows machine */
+#if _lib_GetNativeSystemInfo || _lib_RtlGetVersion
+  strlcpy (sysvars [SV_OS_EXEC_EXT], ".exe", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OSNAME], "windows", SV_MAX_SZ);
+  strlcpy (sysvars [SV_OSDISP], "Windows ", SV_MAX_SZ);
   if (strcmp (sysvars [SV_OSVERS], "5.0") == 0) {
     strlcat (sysvars [SV_OSDISP], "2000", SV_MAX_SZ);
   }
@@ -202,11 +243,22 @@ sysvarsInit (const char *argv0)
   strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
   strlcat (sysvars [SV_OSDISP], sysvars [SV_OSBUILD], SV_MAX_SZ);
 #endif
+
   stringAsciiToLower (sysvars [SV_OSNAME]);
   if (sizeof (void *) == 8) {
     lsysvars [SVL_OSBITS] = 64;
   } else {
     lsysvars [SVL_OSBITS] = 32;
+  }
+
+  if (strcmp (sysvars [SV_OSNAME], "darwin") == 0) {
+    lsysvars [SVL_IS_MACOS] = true;
+  }
+  if (strcmp (sysvars [SV_OSNAME], "linux") == 0) {
+    lsysvars [SVL_IS_LINUX] = true;
+  }
+  if (strcmp (sysvars [SV_OSNAME], "windows") == 0) {
+    lsysvars [SVL_IS_WINDOWS] = true;
   }
 
   getHostname (sysvars [SV_HOSTNAME], SV_MAX_SZ);
@@ -603,9 +655,13 @@ sysvarsCheckMutagen (void)
 {
   char  buff [SV_MAX_SZ];
 
+  /* On windows the mutagen-inspect script seems to be no longer installed */
+  /* along with the package, and the converted executable pops up command */
+  /* windows. */
   // $HOME/.local/bin/mutagen-inspect  (linux, macos, msys2)
-  // %USERPROFILE%/AppData/Local/Programs/Python/Python<pyver>/Scripts/mutagen-inspect-script.py
   // $HOME/Library/Python/<pydotver>/bin/mutagen-inspect (macos)
+  // %USERPROFILE%/AppData/Local/Programs/Python/Python<pyver>/Scripts/mutagen-inspect-script.py
+  // %USERPROFILE%/AppData/Roaming/Python/Python<pyver>/Scripts/mutagen-inspect.exe
 
   *buff = '\0';
   if (isLinux ()) {
@@ -621,6 +677,7 @@ sysvarsCheckMutagen (void)
       snprintf (buff, sizeof (buff),
           "%s/.local/bin/%s", tptr, "mutagen-inspect");
     }
+    /* use the windows script if it is available */
     if (! fileopFileExists (buff)) {
       snprintf (buff, sizeof (buff),
           "%s/AppData/Local/Programs/Python/Python%s/Scripts/%s",
@@ -632,6 +689,14 @@ sysvarsCheckMutagen (void)
         "%s/Library/Python/%s/bin/%s",
         sysvars [SV_HOME], sysvars [SV_PYTHON_DOT_VERSION], "mutagen-inspect");
   }
+
+  /* otherwise use our copy */
+  if (! fileopFileExists (buff)) {
+    snprintf (buff, sizeof (buff),
+        "%s/scripts/%s",
+        sysvars [SV_BDJ4MAINDIR], "mutagen-inspect");
+  }
+
   if (fileopFileExists (buff)) {
     strlcpy (sysvars [SV_PYTHON_MUTAGEN], buff, SV_MAX_SZ);
   } else {
@@ -691,19 +756,19 @@ sysvarsSetNum (sysvarlkey_t idx, int64_t value)
 bool
 isMacOS (void)
 {
-  return (strcmp (sysvars[SV_OSNAME], "darwin") == 0);
+  return (bool) lsysvars [SVL_IS_MACOS];
 }
 
 bool
 isWindows (void)
 {
-  return (strcmp (sysvars[SV_OSNAME], "windows") == 0);
+  return (bool) lsysvars [SVL_IS_WINDOWS];
 }
 
 bool
 isLinux (void)
 {
-  return (strcmp (sysvars[SV_OSNAME], "linux") == 0);
+  return (bool) lsysvars [SVL_IS_LINUX];
 }
 
 /* for debugging */
