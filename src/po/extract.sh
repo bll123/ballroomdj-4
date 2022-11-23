@@ -1,11 +1,10 @@
 #!/bin/bash
 
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
+cd src
 cwd=$(pwd)
-case ${cwd} in
-  */po)
-    cd ..
-    ;;
-esac
 
 rm -f po/*~ po/old/*~ > /dev/null 2>&1
 declare -A helptext

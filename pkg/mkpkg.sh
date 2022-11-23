@@ -107,26 +107,12 @@ function setLibVol {
   mv -f "${tfn}.n" ${tfn}
 }
 
-
 # setup
 
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
 cwd=$(pwd)
-case $cwd in
-  */bdj4)
-    ;;
-  */bdj4/*)
-    cwd=$(dirname $cwd)
-    while : ; do
-      case $cwd in
-        */bdj4)
-          break
-          ;;
-      esac
-      cwd=$(dirname $cwd)
-    done
-    cd $cwd
-    ;;
-esac
 
 preskip=F
 chkskip=F

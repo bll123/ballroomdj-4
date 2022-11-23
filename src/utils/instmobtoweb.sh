@@ -12,15 +12,10 @@ function getinfo () {
   fi
 }
 
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
 cwd=$(pwd)
-case $cwd in
-  *bdj4/src/utils)
-    cd ../..
-    ;;
-  *bdj4/src)
-    cd ..
-    ;;
-esac
 
 if [[ ! -d templates || ! -d web ]]; then
   echo "Unknown directory."

@@ -1,12 +1,9 @@
 #!/bin/bash
 
-case $cwd in
-  */src)
-    ;;
-  */bdj4)
-    cd src
-    ;;
-esac
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
+cwd=$(pwd)
 
 cd check
 for f in *.c; do

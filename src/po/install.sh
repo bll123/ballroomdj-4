@@ -4,15 +4,11 @@ LOCALEDIR=../../locale
 TMPLDIR=../../templates
 INSTDIR=../../install
 
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
+cd src/po
 cwd=$(pwd)
-case ${cwd} in
-  */src)
-    cd po
-    ;;
-  */bdj4)
-    cd src/po
-    ;;
-esac
 
 function mksub {
   tmpl=$1

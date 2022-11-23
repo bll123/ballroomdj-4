@@ -21,3 +21,4 @@ time this does not matter much.
 ## MP3 Tags
 
 [https://help.mp3tag.de/main_tags.html]
+_(Updated 2022-11-23 12:40:50; BDJ4 version 4.0.0-20221122-alpha)_

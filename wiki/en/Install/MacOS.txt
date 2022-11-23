@@ -1,0 +1,54 @@
+[Wiki Home](Home)
+
+## Installing BallroomDJ 4 on Mac OS
+
+### Install the Requisite Software
+
+Download the macos-pre-install-v4.sh script from sourceforge.
+
+( https://sourceforge.net/projects/ballroomdj4/files/ )
+
+Open a terminal and run this script using the following command. This
+may take a very long time to finish.  You may be required to enter
+your administrative password more than once during the installation
+process.  This step only needs to be performed once, not for every
+installation or upgrade.
+
+~~~
+bash macos-pre-install-v4.sh
+~~~
+
+This script performs the following actions:
+
+* Installs the required software used by BallroomDJ 4.
+
+### Install BallroomDJ 4
+
+Download the Mac OS installer from sourceforge.
+Be sure to select the correct architecture (Intel or Apple Silicon).
+
+( https://sourceforge.net/projects/ballroomdj4/files/ )
+
+Also download the macos-run-install-v2.sh script from sourceforge.
+This script will set up and open the downloaded install package.
+
+Open a terminal and run this script using the following command:
+
+~~~
+bash macos-run-install-v2.sh
+~~~
+
+Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
+folder will be pre-selected for you.
+
+If you want to convert a BallroomDJ 3 installation, select the
+BallroomDJ 3 folder and select the 'Convert BallroomDJ 3' checkbox.
+
+After you have selected the installation folder, select the 'Install'
+button and wait for the 'Installation Completed' message.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer.png](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer.png)
+<br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Mac OS**</span> </div>
+
+_(Updated 2022-11-23 12:40:50; BDJ4 version 4.0.0-20221122-alpha)_

@@ -39,3 +39,4 @@ pacman -S mingw-w64-i686-gdb mingw-w64-x86_64-gdb
 pacman -S pkg-config
 # bdj4
 pacman -S mingw64/mingw-w64-x86_64-gcc-objc mingw32/mingw-w64-i686-gcc-objc
+_(Updated 2022-11-23 12:40:50; BDJ4 version 4.0.0-20221122-alpha)_

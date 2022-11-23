@@ -1,0 +1,49 @@
+[Wiki Home](Home)
+
+## Installing BallroomDJ 4 on Linux
+
+### Install the Requisite Software
+
+Download the linux-pre-install.sh script from sourceforge.
+
+( https://sourceforge.net/projects/ballroomdj4/files/ )
+
+Open a terminal and run this script using the following command:
+
+~~~
+bash linux-pre-install.sh
+~~~
+
+This script performs the following actions:
+
+* Installs the required software used by BallroomDJ 4 (vlc, ffmpeg, libcurl).
+* Adds the user to the 'audio' group.
+* Sets 'flat-volumes = no' in the $HOME/.config/pulse/daemon.conf file.
+
+### Install BallroomDJ 4
+
+Download the Linux installer from sourceforge.
+
+( https://sourceforge.net/projects/ballroomdj4/files/ )
+
+Run the installer:
+
+(This is an example and may not be up to date.)
+~~~
+$HOME/Downloads/bdj4-4.0.0-installer-linux-20221122-alpha
+~~~
+
+Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
+folder will be pre-selected for you.
+
+If you want to convert a BallroomDJ 3 installation, select the
+BallroomDJ 3 folder and select the 'Convert BallroomDJ 3' checkbox.
+
+After you have selected the installation folder, select the 'Install'
+button and wait for the 'Installation Completed' message.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer.png](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer.png)
+<br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Linux**</span> </div>
+
+_(Updated 2022-11-23 12:40:50; BDJ4 version 4.0.0-20221122-alpha)_

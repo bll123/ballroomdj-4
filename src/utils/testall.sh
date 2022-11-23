@@ -1,14 +1,9 @@
 #!/bin/bash
 
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
 cwd=$(pwd)
-case ${cwd} in
-  */utils)
-    cd ../..
-    ;;
-  */src)
-    cd ..
-    ;;
-esac
 
 grc=0
 LOG=test.log

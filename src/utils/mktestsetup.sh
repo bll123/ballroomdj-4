@@ -1,17 +1,9 @@
 #!/bin/bash
 
-cwd=$(pwd)
-while : ; do
-  case ${cwd} in
-    */bdj4)
-      break
-      ;;
-    *)
-      cd ..
-      cwd=$(pwd)
-      ;;
-  esac
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
 done
+cwd=$(pwd)
 
 systype=$(uname -s)
 case $systype in

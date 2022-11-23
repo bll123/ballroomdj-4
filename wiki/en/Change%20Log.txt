@@ -1,0 +1,10 @@
+## BallroomDJ 4 Change Log
+
+**4.0.0 alpha 2022-11-22**
+
+   * installation: fix macos VLC installation.
+   * installation: fix windows VLC installation.
+   * installation: windows: installer newer python if current is too old.
+   * macos: make sure macports is first in path.
+
+_(Updated 2022-11-23 12:40:50; BDJ4 version 4.0.0-20221122-alpha)_

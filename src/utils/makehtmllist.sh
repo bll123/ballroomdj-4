@@ -2,17 +2,10 @@
 #
 #
 
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
 cwd=$(pwd)
-case ${cwd} in
-  */bdj4)
-    ;;
-  */src)
-    cd ..
-    ;;
-  */utils)
-    cd ../..
-    ;;
-esac
 
 OUT=templates/html-list.txt
 OUTN=${OUT}.n

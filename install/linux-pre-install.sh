@@ -130,14 +130,14 @@ if [[ -f /usr/bin/pacman ]]; then
   # inetutils has the hostname command
   pkglist="ffmpeg
       python-setuptools python-pip espeak
-      libmad lame twolame libid3tag make inetutils
+      libmad lame twolame libid3tag inetutils
       pulseaudio curl"
 fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
   pkglist="ffmpeg
       python3-setuptools python3-pip python3-wheel
-      espeak make libcurl4"
+      espeak libcurl4"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
@@ -148,13 +148,13 @@ if [[ -f /usr/bin/dnf ]]; then
   speechpkg=$(instcheck espeak festival)
   pkglist="ffmpeg
       ${stoolspkg} ${pippkg} ${pwpkg} ${speechpkg}
-      make libcurl"
+      libcurl"
 fi
 if [[ -f /usr/bin/zypper ]]; then
   # opensuse
   pkglist="ffmpeg
       python3-setuptools python3-pip espeak
-      make libcurl4"
+      libcurl4"
 fi
 
 pkglist="$pkglist vlc"

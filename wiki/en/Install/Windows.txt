@@ -1,0 +1,31 @@
+[Wiki Home](Home)
+
+## Installing BallroomDJ 4 on Windows
+
+### Install BallroomDJ 4
+
+Download the Windows installer from sourceforge.
+
+( https://sourceforge.net/projects/ballroomdj4/files/ )
+
+Start the installer:
+
+(This is an example and may not be up to date.)
+~~~
+$HOME/Downloads/bdj4-4.0.0-installer-win64-20221122-alpha
+~~~
+
+Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
+folder will be pre-selected for you.
+
+If you want to convert a BallroomDJ 3 installation, select the
+BallroomDJ 3 folder and select the 'Convert BallroomDJ 3' checkbox.
+
+After you have selected the installation folder, select the 'Install'
+button and wait for the 'Installation Completed' message.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer.png](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer.png)
+<br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Windows**</span> </div>
+
+_(Updated 2022-11-23 12:40:50; BDJ4 version 4.0.0-20221122-alpha)_
