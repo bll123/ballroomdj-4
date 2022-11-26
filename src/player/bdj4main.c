@@ -90,7 +90,6 @@ typedef struct {
   int               musicqDeferredPlayIdx;
   slist_t           *announceList;
   playerstate_t     playerState;
-  long              gap;
   long              lastGapSent;
   webclient_t       *webclient;
   char              *mobmqUserkey;
@@ -230,7 +229,6 @@ main (int argc, char *argv[])
       "m", ROUTE_MAIN, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "main");
 
-  mainData.gap = bdjoptGetNum (OPT_P_GAP);
   mainData.lastGapSent = -2;
   /* calculate the stop time once only */
   mainData.stopTime = bdjoptGetNum (OPT_P_STOPATTIME);
@@ -623,14 +621,13 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_CHK_MAIN_SET_GAP: {
           char  tmp [40];
 
-          mainData->gap = atoi (targs);
-          snprintf (tmp, sizeof (tmp), "%ld", mainData->gap);
+          bdjoptSetNumPerQueue (OPT_Q_GAP, atoi (targs), 0);
           connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, tmp);
           dbgdisp = true;
           break;
         }
         case MSG_CHK_MAIN_SET_MAXPLAYTIME: {
-          bdjoptSetNum (OPT_P_MAXPLAYTIME, atol (targs));
+          bdjoptSetNumPerQueue (OPT_Q_MAXPLAYTIME, atol (targs), 0);
           dbgdisp = true;
           break;
         }
@@ -641,7 +638,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CHK_MAIN_SET_PLAYANNOUNCE: {
-          bdjoptSetNum (OPT_P_PLAY_ANNOUNCE, atoi (targs));
+          bdjoptSetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, atoi (targs), 0);
           dbgdisp = true;
           break;
         }
@@ -891,12 +888,15 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
   /* one of manageui and playerui */
   /* alternatively, a connection to the player and the testsuite */
   if (conn == 3) {
-    char  tmp [40];
+    char    tmp [40];
+    long    gap;
 
-    if (mainData->gap != mainData->lastGapSent) {
-      snprintf (tmp, sizeof (tmp), "%ld", mainData->gap);
+    gap = bdjoptGetNumPerQueue (OPT_Q_GAP, 0);
+
+    if (gap != mainData->lastGapSent) {
+      snprintf (tmp, sizeof (tmp), "%ld", gap);
       connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, tmp);
-      mainData->lastGapSent = mainData->gap;
+      mainData->lastGapSent = gap;
     }
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_MAIN_READY, NULL);
     rc = STATE_FINISHED;
@@ -1508,7 +1508,7 @@ mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx)
     song = dbGetByIdx (mainData->musicdb, dbidx);
     flags = musicqGetFlags (mainData->musicQueue, mqidx, i);
     playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, i);
-    announceflag = bdjoptGetNum (OPT_P_PLAY_ANNOUNCE);
+    announceflag = bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, mqidx);
     if (announceflag != 1 && playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
       playlist = nlistGetData (mainData->playlistCache, playlistIdx);
       announceflag = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
@@ -1519,7 +1519,7 @@ mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx)
       double plgap = -1;
       char  tmp [40];
 
-      gap = mainData->gap;
+      gap = bdjoptGetNumPerQueue (OPT_Q_GAP, mqidx);
       plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
       if (plgap >= 0.0) {
         gap = plgap;
@@ -1625,7 +1625,8 @@ mainPrepSong (maindata_t *mainData, int prepflag, song_t *song,
   if (prepflag != PREP_ANNOUNCE) {
     dur = mainCalculateSongDuration (mainData, song, playlistIdx);
 
-    announceflag = bdjoptGetNum (OPT_P_PLAY_ANNOUNCE);
+    announceflag =
+        bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, mainData->musicqManageIdx);
     if (announceflag != 1) {
       playlist = nlistGetData (mainData->playlistCache, playlistIdx);
       announceflag = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
@@ -2609,7 +2610,7 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx)
     plmaxdur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
   }
 
-  maxdur = bdjoptGetNum (OPT_P_MAXPLAYTIME);
+  maxdur = bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, mainData->musicqManageIdx);
 
   /* if the playlist has a maximum play time specified for a dance */
   /* it overrides any of the other max play times */

@@ -49,10 +49,10 @@ typedef void (*dfConvFunc_t)(datafileconv_t *);
  */
 typedef struct {
   char            *name;
-  ssize_t         itemkey;
+  int             itemkey;
   valuetype_t     valuetype;
   dfConvFunc_t    convFunc;
-  ssize_t         backupKey;
+  int             backupKey;
 } datafilekey_t;
 
 enum {
@@ -75,24 +75,24 @@ void          convMS (datafileconv_t *conv);
 
 datafile_t *  datafileAlloc (const char *name);
 datafile_t *  datafileAllocParse (const char *name, datafiletype_t dftype,
-                  const char *fname, datafilekey_t *dfkeys, ssize_t dfkeycount);
+                  const char *fname, datafilekey_t *dfkeys, int     dfkeycount);
 void          datafileFree (void *);
 char *        datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname);
 list_t        *datafileParse (char *data, const char *name, datafiletype_t dftype,
-                  datafilekey_t *dfkeys, ssize_t dfkeycount);
+                  datafilekey_t *dfkeys, int dfkeycount);
 list_t        *datafileParseMerge (list_t *nlist, char *data, const char *name,
                   datafiletype_t dftype,
-                  datafilekey_t *dfkeys, ssize_t dfkeycount);
+                  datafilekey_t *dfkeys, int dfkeycount, int offset);
 listidx_t     dfkeyBinarySearch (const datafilekey_t *dfkeys,
-                  ssize_t count, const char *key);
+                  int count, const char *key);
 list_t *      datafileGetList (datafile_t *);
 void          datafileSetData (datafile_t *df, void *data);
-slist_t *     datafileSaveKeyValList (const char *tag, datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list);
-void          datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag, datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list);
-void          datafileSaveKeyVal (const char *tag, char *fn, datafilekey_t *dfkeys, ssize_t count, nlist_t *list);
-void          datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys, ssize_t count, nlist_t *list);
+slist_t *     datafileSaveKeyValList (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list);
+void          datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset);
+void          datafileSaveKeyVal (const char *tag, char *fn, datafilekey_t *dfkeys, int count, nlist_t *list, int offset);
+void          datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys, int count, nlist_t *list);
 void          datafileSaveList (const char *tag, char *fn, slist_t *list);
-void          datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys, ssize_t dfkeycount, nlist_t *list);
+void          datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset);
 
 /* for debugging only */
 datafiletype_t datafileGetType (datafile_t *df);

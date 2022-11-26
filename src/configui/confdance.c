@@ -113,7 +113,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   uiBoxPackStart (&hbox, &dvbox);
 
   confuiMakeItemEntry (gui, &dvbox, &sg, tagdefs [TAG_DANCE].displayname,
-      CONFUI_ENTRY_DANCE_DANCE, -1, "");
+      CONFUI_ENTRY_DANCE_DANCE, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].entry,
       confuiDanceEntryDanceChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].danceidx = DANCE_DANCE;
@@ -132,7 +132,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
 
   /* CONTEXT: configuration: dances: tags associated with the dance */
   confuiMakeItemEntry (gui, &dvbox, &sg, _("Tags"),
-      CONFUI_ENTRY_DANCE_TAGS, -1, "");
+      CONFUI_ENTRY_DANCE_TAGS, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].entry,
       confuiDanceEntryTagsChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].danceidx = DANCE_TAGS;

@@ -10,6 +10,7 @@
 
 templates/.*\.nl$
 templates/.*\.en_US$
+templates/nl/bdjconfig.txt.p
 bin/libbdj4uigtk\.
 plocal/bin/curl.exe$
 plocal/bin/openssl.exe$

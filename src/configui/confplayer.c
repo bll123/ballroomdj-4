@@ -27,6 +27,7 @@
 
 static void confuiLoadVolIntfcList (confuigui_t *gui);
 static void confuiLoadPlayerIntfcList (confuigui_t *gui);
+static bool confuiPlayerQueueChg (void *udata);
 
 void
 confuiInitPlayer (confuigui_t *gui)
@@ -68,6 +69,13 @@ confuiInitPlayer (confuigui_t *gui)
 
   volumeFreeSinkList (&sinklist);
   volumeFree (volume);
+
+  tlist = nlistAlloc ("queue-name", LIST_ORDERED, free);
+  gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx = 0;
+  for (size_t i = 0; i < BDJ4_QUEUE_MAX; ++i) {
+    nlistSetStr (tlist, i, bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, i));
+  }
+  gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].displist = tlist;
 }
 
 void
@@ -76,12 +84,6 @@ confuiBuildUIPlayer (confuigui_t *gui)
   UIWidget      vbox;
   UIWidget      sg;
   UIWidget      sgB;
-  char          *mqnames [MUSICQ_PB_MAX];
-
-  /* CONTEXT: configuration: The name of the music queue */
-  mqnames [MUSICQ_PB_A] = _("Queue A Name");
-  /* CONTEXT: configuration: The name of the music queue */
-  mqnames [MUSICQ_PB_B] = _("Queue B Name");
 
   logProcBegin (LOG_PROC, "confuiBuildUIPlayer");
   uiCreateVertBox (&vbox);
@@ -113,51 +115,69 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_WIDGET_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
       10, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME), NULL);
 
-  /* CONTEXT: configuration: the amount of time to do a volume fade-in when playing a song */
-  confuiMakeItemSpinboxDouble (gui, &vbox, &sg, &sgB, _("Fade In Time"),
-      CONFUI_WIDGET_FADE_IN_TIME, OPT_P_FADEINTIME,
-      0.0, 2.0, (double) bdjoptGetNum (OPT_P_FADEINTIME) / 1000.0);
-
-  /* CONTEXT: configuration: the amount of time to do a volume fade-out when playing a song */
-  confuiMakeItemSpinboxDouble (gui, &vbox, &sg, &sgB, _("Fade Out Time"),
-      CONFUI_WIDGET_FADE_OUT_TIME, OPT_P_FADEOUTTIME,
-      0.0, 10.0, (double) bdjoptGetNum (OPT_P_FADEOUTTIME) / 1000.0);
-
-  /* CONTEXT: configuration: the amount of time to wait inbetween songs */
-  confuiMakeItemSpinboxDouble (gui, &vbox, &sg, &sgB, _("Gap Between Songs"),
-      CONFUI_WIDGET_GAP, OPT_P_GAP,
-      0.0, 60.0, (double) bdjoptGetNum (OPT_P_GAP) / 1000.0);
-
-  /* CONTEXT: configuration: the maximum amount of time to play a song */
-  confuiMakeItemSpinboxTime (gui, &vbox, &sg, &sgB, _("Maximum Play Time"),
-      CONFUI_SPINBOX_MAX_PLAY_TIME, OPT_P_MAXPLAYTIME,
-      bdjoptGetNum (OPT_P_MAXPLAYTIME));
-
   /* CONTEXT: configuration: the time when playback will stop */
   confuiMakeItemSpinboxTime (gui, &vbox, &sg, &sgB, _("Stop At"),
       CONFUI_SPINBOX_STOP_AT_TIME, OPT_P_STOPATTIME,
-      bdjoptGetNum (OPT_P_STOPATTIME));
+      bdjoptGetNum (OPT_P_STOPATTIME), CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: the number of items loaded into the music queue */
   confuiMakeItemSpinboxNum (gui, &vbox, &sg, &sgB, _("Queue Length"),
       CONFUI_WIDGET_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
       20, 400, bdjoptGetNum (OPT_G_PLAYERQLEN), NULL);
 
-  /* CONTEXT: configuration: whether to play announcements */
-  confuiMakeItemSwitch (gui, &vbox, &sg, _("Play Announcements"),
-      CONFUI_SWITCH_PLAY_ANNOUNCE, OPT_P_PLAY_ANNOUNCE,
-      bdjoptGetNum (OPT_P_PLAY_ANNOUNCE), NULL);
-
   /* CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished */
   confuiMakeItemEntry (gui, &vbox, &sg, _("Completion Message"),
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
-      bdjoptGetStr (OPT_P_COMPLETE_MSG));
+      bdjoptGetStr (OPT_P_COMPLETE_MSG), CONFUI_NO_INDENT);
 
-  for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
-    confuiMakeItemEntry (gui, &vbox, &sg, mqnames [i],
-        CONFUI_ENTRY_QUEUE_NM_A + i, OPT_P_QUEUE_NAME_A + i,
-        bdjoptGetStr (OPT_P_QUEUE_NAME_A + i));
-  }
+  /* CONTEXT: configuration: which queue to configure */
+  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Queue"),
+      CONFUI_SPINBOX_PLAYER_QUEUE, -1, CONFUI_OUT_NUM,
+      gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx, confuiPlayerQueueChg);
+
+  /* CONTEXT: configuration: The name of the music queue */
+  confuiMakeItemEntry (gui, &vbox, &sg, _("Queue Name"),
+      CONFUI_ENTRY_QUEUE_NM, OPT_Q_QUEUE_NAME,
+      bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, 0), CONFUI_INDENT);
+
+  /* CONTEXT: configuration: whether the queue is active */
+  confuiMakeItemSwitch (gui, &vbox, &sg, _("Active"),
+      CONFUI_SWITCH_Q_ACTIVE, OPT_Q_ACTIVE,
+      bdjoptGetNumPerQueue (OPT_Q_ACTIVE, 0), NULL, CONFUI_INDENT);
+
+  /* CONTEXT: configuration: whether to display the queue */
+  confuiMakeItemSwitch (gui, &vbox, &sg, _("Display"),
+      CONFUI_SWITCH_Q_DISPLAY, OPT_Q_DISPLAY,
+      bdjoptGetNumPerQueue (OPT_Q_DISPLAY, 0), NULL, CONFUI_INDENT);
+
+  /* CONTEXT: configuration: the amount of time to do a volume fade-in when playing a song */
+  confuiMakeItemSpinboxDouble (gui, &vbox, &sg, &sgB, _("Fade In Time"),
+      CONFUI_WIDGET_FADE_IN_TIME, OPT_Q_FADEINTIME,
+      0.0, 2.0, (double) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, 0) / 1000.0,
+      CONFUI_INDENT);
+
+  /* CONTEXT: configuration: the amount of time to do a volume fade-out when playing a song */
+  confuiMakeItemSpinboxDouble (gui, &vbox, &sg, &sgB, _("Fade Out Time"),
+      CONFUI_WIDGET_FADE_OUT_TIME, OPT_Q_FADEOUTTIME,
+      0.0, 10.0, (double) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, 0) / 1000.0,
+      CONFUI_INDENT);
+
+  /* CONTEXT: configuration: the amount of time to wait inbetween songs */
+  confuiMakeItemSpinboxDouble (gui, &vbox, &sg, &sgB, _("Gap Between Songs"),
+      CONFUI_WIDGET_GAP, OPT_Q_GAP,
+      0.0, 60.0, (double) bdjoptGetNumPerQueue (OPT_Q_GAP, 0) / 1000.0,
+      CONFUI_INDENT);
+
+  /* CONTEXT: configuration: the maximum amount of time to play a song */
+  confuiMakeItemSpinboxTime (gui, &vbox, &sg, &sgB, _("Maximum Play Time"),
+      CONFUI_SPINBOX_MAX_PLAY_TIME, OPT_Q_MAXPLAYTIME,
+      bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, 0), CONFUI_INDENT);
+
+  /* CONTEXT: configuration: whether to play announcements */
+  confuiMakeItemSwitch (gui, &vbox, &sg, _("Play Announcements"),
+      CONFUI_SWITCH_PLAY_ANNOUNCE, OPT_Q_PLAY_ANNOUNCE,
+      bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, 0), NULL, CONFUI_INDENT);
+
   logProcEnd (LOG_PROC, "confuiBuildUIPlayer", "");
 }
 
@@ -269,5 +289,45 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
   gui->uiitem [CONFUI_SPINBOX_PLAYER].displist = tlist;
   gui->uiitem [CONFUI_SPINBOX_PLAYER].sbkeylist = llist;
   logProcEnd (LOG_PROC, "confuiLoadPlayerIntfcList", "");
+}
+
+static bool
+confuiPlayerQueueChg (void *udata)
+{
+  confuigui_t *gui = udata;
+  int         oselidx;
+  int         nselidx;
+
+  logProcBegin (LOG_PROC, "confuiPlayerQueueChg");
+
+
+  oselidx = gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx;
+  /* make sure the current selection gets saved to the options data */
+  confuiPopulateOptions (gui);
+
+  nselidx = uiSpinboxTextGetValue (
+      gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].spinbox);
+  gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx = nselidx;
+
+  /* set all of the display values for the queue specific items */
+  uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_QUEUE_NM].entry,
+      bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, nselidx));
+  uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch,
+      bdjoptGetNumPerQueue (OPT_Q_ACTIVE, nselidx));
+  uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch,
+      bdjoptGetNumPerQueue (OPT_Q_DISPLAY, nselidx));
+  uiSpinboxSetValue (&gui->uiitem [CONFUI_WIDGET_FADE_IN_TIME].uiwidget,
+      (double) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, nselidx) / 1000.0);
+  uiSpinboxSetValue (&gui->uiitem [CONFUI_WIDGET_FADE_OUT_TIME].uiwidget,
+      (double) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, nselidx) / 1000.0);
+  uiSpinboxSetValue (&gui->uiitem [CONFUI_WIDGET_GAP].uiwidget,
+      (double) bdjoptGetNumPerQueue (OPT_Q_GAP, nselidx) / 1000.0);
+  uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_MAX_PLAY_TIME].spinbox,
+      bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, nselidx));
+  uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_PLAY_ANNOUNCE].uiswitch,
+      bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, nselidx));
+
+  logProcEnd (LOG_PROC, "confuiPlayerQueueChg", "");
+  return UICB_CONT;
 }
 

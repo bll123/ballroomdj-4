@@ -91,6 +91,8 @@ typedef enum {
                             //    song-end, volume-adjustment-perc, ann-flag
   MSG_SONG_CLEAR_PREP,      // args: song fname
   MSG_SET_PLAYBACK_GAP,     // args: gap
+  MSG_SET_PLAYBACK_FADEIN,  // args: fade-in
+  MSG_SET_PLAYBACK_FADEOUT, // args: fade-out
   MSG_MAIN_READY,           // the main process is ready to receive msgs
   MSG_MUSICQ_DATA_SUSPEND,  // args: queue number
   MSG_MUSICQ_DATA_RESUME,   // args: queue number
@@ -161,8 +163,6 @@ typedef enum {
   MSG_CHK_PLAYER_SONG,
   MSG_CHK_MAIN_RESET_SENT,
   MSG_CHK_MAIN_SET_GAP,     // args: gap
-  MSG_CHK_PLAYER_FADEIN,    // args: fade-in
-  MSG_CHK_PLAYER_FADEOUT,   // args: fade-out
   MSG_CHK_MAIN_SET_MAXPLAYTIME,   // args: max-play-time
   MSG_CHK_MAIN_SET_STOPATTIME,    // args: max-play-time
   MSG_CHK_MAIN_SET_PLAYANNOUNCE,  // args: true/false

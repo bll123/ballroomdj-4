@@ -94,6 +94,35 @@ foreach path [list {} profiles $mpath $mppath] {
         }
       }
       set ofh [open $nfn w]
+      if { $path eq "profiles" } {
+        foreach q {0 1 2} {
+          set tfn "[file join $datatopdir data $tdir $pfx $nnm.q$q].txt"
+          set tfh [open $tfn w]
+          set qofh$q $tfh
+          puts $tfh "# config-queue"
+          puts $tfh "# [clock format [clock seconds] -gmt 1 -format {%Y-%m-%d %H:%M:%S}]"
+          puts $tfh "version"
+          puts $tfh "..1"
+          puts $tfh "ACTIVE"
+          if { $q == 0 } {
+            puts $tfh "..yes"
+          } else {
+            puts $tfh "..no"
+          }
+          puts $tfh "DISPLAY"
+          if { $q == 0 || $q == 1 } {
+            puts $tfh "..yes"
+          } else {
+            puts $tfh "..no"
+          }
+          puts $tfh "PLAYANNOUNCE"
+          puts $tfh "..no"
+          if { $q == 2 } {
+            puts $tfh "QUEUE_NAME"
+            puts $tfh "..Queue C"
+          }
+        }
+      }
 
       if { $path eq {} } {
         puts $ofh "# config-global"
@@ -329,8 +358,23 @@ foreach path [list {} profiles $mpath $mppath] {
           regsub -all {P([A-Z][A-Z]*0?)} $value {%\1%} value
         }
 
-        puts $ofh $key
-        puts $ofh "..$value"
+        if { $key eq "FADEINTIME" || $key eq "FADEOUTTIME" ||
+            $key eq "GAP" || $key eq "MAXPLAYTIME" } {
+          foreach q {0 1 2} {
+            set tfh [set qofh$q]
+            puts $tfh $key
+            puts $tfh "..$value"
+          }
+        } elseif { $key eq "QUEUE_NAME_A" } {
+          puts $qofh0 QUEUE_NAME
+          puts $qofh0 "..$value"
+        } elseif { $key eq "QUEUE_NAME_B" } {
+          puts $qofh1 QUEUE_NAME
+          puts $qofh1 "..$value"
+        } else {
+          puts $ofh $key
+          puts $ofh "..$value"
+        }
       }
 
       if { $path eq {} } {
@@ -452,6 +496,12 @@ foreach path [list {} profiles $mpath $mppath] {
 
       close $ifh
       close $ofh
+      if { $path eq "profiles" } {
+        foreach q {0 1 2} {
+          set tfh [set qofh$q]
+          close $tfh
+        }
+      }
     }
   }
 }

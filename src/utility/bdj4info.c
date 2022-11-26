@@ -65,9 +65,7 @@ main (int argc, char *argv [])
   }
 
   bdjoptInit ();
-
   bdjoptDump ();
-
   bdjoptCleanup ();
   localeCleanup ();
 

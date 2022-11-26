@@ -642,6 +642,10 @@ altsetupCopyTemplates (altsetup_t *altsetup)
         pathbldMakePath (to, sizeof (to),
             tbuff, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   //        snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
+      } else if (pathInfoExtCheck (pi, ".txt")) {
+        pathbldMakePath (to, sizeof (to),
+            fname, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+  //        snprintf (to, sizeof (to), "data/profile00/%s", fname);
       } else if (pathInfoExtCheck (pi, ".m")) {
         pathbldMakePath (to, sizeof (to),
             tbuff, "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME);

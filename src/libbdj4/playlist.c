@@ -636,7 +636,7 @@ playlistSave (playlist_t *pl, const char *name)
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   datafileSaveKeyVal ("playlist", tfn, playlistdfkeys,
-      PLAYLIST_KEY_MAX, pl->plinfo);
+      PLAYLIST_KEY_MAX, pl->plinfo, 0);
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);

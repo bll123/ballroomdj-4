@@ -1625,6 +1625,8 @@ installerCopyTemplates (installer_t *installer)
         snprintf (to, sizeof (to), "data/%s", tbuff);
       } else if (pathInfoExtCheck (pi, ".p")) {
         snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
+      } else if (pathInfoExtCheck (pi, ".txt")) {
+        snprintf (to, sizeof (to), "data/profile00/%s", fname);
       } else if (pathInfoExtCheck (pi, ".m")) {
         snprintf (to, sizeof (to), "data/%s/%s", installer->hostname, tbuff);
       } else if (pathInfoExtCheck (pi, ".mp")) {

@@ -87,10 +87,20 @@ fn=../templates/status.txt
 sed -n -e "/^STATUS/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
 
 fn=../templates/bdjconfig.txt.p
-ctxt="// CONTEXT: configuration file: name of a music queue"
-sed -n -e "/^QUEUE_NAME_[AB]/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
 echo "// CONTEXT: configuration file: The completion message displayed on the marquee when the playlist is finished." >> $TMP
 sed -n -e '/^COMPLETEMSG/ {n;p}' $fn >> $TMP
+
+fn=../templates/bdjconfig.txt.q0
+ctxt="// CONTEXT: configuration file: name of a music queue"
+sed -n -e "/^QUEUE_NAME/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
+
+fn=../templates/bdjconfig.txt.q1
+ctxt="// CONTEXT: configuration file: name of a music queue"
+sed -n -e "/^QUEUE_NAME/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
+
+fn=../templates/bdjconfig.txt.q2
+ctxt="// CONTEXT: configuration file: name of a music queue"
+sed -n -e "/^QUEUE_NAME/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
 
 ctxt="// CONTEXT: text from the HTML templates (buttons and labels)"
 grep -E 'value=' ../templates/*.html |

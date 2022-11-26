@@ -20,6 +20,7 @@
 #include "sysvars.h"
 #include "tmutil.h"
 
+static int  bdjoptQueueIndex (nlistidx_t idx, int musiqc);
 static void bdjoptConvFadeType (datafileconv_t *conv);
 static void bdjoptConvWriteTags (datafileconv_t *conv);
 static void bdjoptCreateNewConfigs (void);
@@ -50,15 +51,12 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "REMCONTROLHTML",     OPT_G_REMCONTROLHTML,     VALUE_STR, NULL, -1 },
   { "WRITETAGS",          OPT_G_WRITETAGS,          VALUE_NUM, bdjoptConvWriteTags, -1 },
 };
+
 static datafilekey_t bdjoptprofiledfkeys [] = {
   { "COMPLETEMSG",          OPT_P_COMPLETE_MSG,         VALUE_STR, NULL, -1 },
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_NUM, NULL, -1 },
-  { "FADEINTIME",           OPT_P_FADEINTIME,           VALUE_NUM, NULL, -1 },
-  { "FADEOUTTIME",          OPT_P_FADEOUTTIME,          VALUE_NUM, NULL, -1 },
   { "FADETYPE",             OPT_P_FADETYPE,             VALUE_NUM, bdjoptConvFadeType, -1 },
-  { "GAP",                  OPT_P_GAP,                  VALUE_NUM, NULL, -1 },
   { "HIDEMARQUEEONSTART",   OPT_P_HIDE_MARQUEE_ON_START,VALUE_NUM, convBoolean, -1 },
-  { "MAXPLAYTIME",          OPT_P_MAXPLAYTIME,          VALUE_NUM, NULL, -1 },
   { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_NUM, bdjoptConvMobileMq, -1 },
   { "MOBILEMQPORT",         OPT_P_MOBILEMQPORT,         VALUE_NUM, NULL, -1 },
   { "MOBILEMQTAG",          OPT_P_MOBILEMQTAG,          VALUE_STR, NULL, -1 },
@@ -68,10 +66,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "MQ_ACCENT_COL",        OPT_P_MQ_ACCENT_COL,        VALUE_STR, NULL, -1 },
   { "MQ_INFO_COL",          OPT_P_MQ_INFO_COL,          VALUE_STR, NULL, -1 },
   { "MQ_TEXT_COL",          OPT_P_MQ_TEXT_COL,          VALUE_STR, NULL, -1 },
-  { "PLAYANNOUNCE",         OPT_P_PLAY_ANNOUNCE,        VALUE_NUM, convBoolean, -1 },
   { "PROFILENAME",          OPT_P_PROFILENAME,          VALUE_STR, NULL, -1 },
-  { "QUEUE_NAME_A",         OPT_P_QUEUE_NAME_A,         VALUE_STR, NULL, -1 },
-  { "QUEUE_NAME_B",         OPT_P_QUEUE_NAME_B,         VALUE_STR, NULL, -1 },
   { "REMCONTROLPASS",       OPT_P_REMCONTROLPASS,       VALUE_STR, NULL, -1 },
   { "REMCONTROLPORT",       OPT_P_REMCONTROLPORT,       VALUE_NUM, NULL, -1 },
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_STR, NULL, -1 },
@@ -82,6 +77,18 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "UI_MARK_COL",          OPT_P_UI_MARK_COL,          VALUE_STR, NULL, -1 },
   { "UI_PROFILE_COL",       OPT_P_UI_PROFILE_COL,       VALUE_STR, NULL, -1 },
 };
+
+static datafilekey_t bdjoptqueuedfkeys [] = {
+  { "ACTIVE",               OPT_Q_ACTIVE,               VALUE_NUM, convBoolean, -1 },
+  { "DISPLAY",              OPT_Q_DISPLAY,              VALUE_NUM, convBoolean, -1 },
+  { "FADEINTIME",           OPT_Q_FADEINTIME,           VALUE_NUM, NULL, -1 },
+  { "FADEOUTTIME",          OPT_Q_FADEOUTTIME,          VALUE_NUM, NULL, -1 },
+  { "GAP",                  OPT_Q_GAP,                  VALUE_NUM, NULL, -1 },
+  { "MAXPLAYTIME",          OPT_Q_MAXPLAYTIME,          VALUE_NUM, NULL, -1 },
+  { "PLAYANNOUNCE",         OPT_Q_PLAY_ANNOUNCE,        VALUE_NUM, convBoolean, -1 },
+  { "QUEUE_NAME",           OPT_Q_QUEUE_NAME,           VALUE_STR, NULL, -1 },
+};
+
 static datafilekey_t bdjoptmachinedfkeys [] = {
   { "DIRITUNESMEDIA", OPT_M_DIR_ITUNES_MEDIA,VALUE_STR, NULL, -1 },
   { "DIRMUSIC",       OPT_M_DIR_MUSIC,      VALUE_STR, NULL, -1 },
@@ -92,6 +99,7 @@ static datafilekey_t bdjoptmachinedfkeys [] = {
   { "STARTUPSCRIPT",  OPT_M_STARTUPSCRIPT,  VALUE_STR, NULL, -1 },
   { "VOLUME",         OPT_M_VOLUME_INTFC,   VALUE_STR, NULL, -1 },
 };
+
 static datafilekey_t bdjoptmachprofdfkeys [] = {
   { "AUDIOSINK",            OPT_MP_AUDIOSINK,             VALUE_STR, NULL, -1 },
   { "LISTINGFONT",          OPT_MP_LISTING_FONT,          VALUE_STR, NULL, -1 },
@@ -123,10 +131,12 @@ bdjoptInit (void)
 
   bdjopt->dfkeys [OPTTYPE_GLOBAL] = bdjoptglobaldfkeys;
   bdjopt->dfkeys [OPTTYPE_PROFILE] = bdjoptprofiledfkeys;
+  bdjopt->dfkeys [OPTTYPE_QUEUE] = bdjoptqueuedfkeys;
   bdjopt->dfkeys [OPTTYPE_MACHINE] = bdjoptmachinedfkeys;
   bdjopt->dfkeys [OPTTYPE_MACH_PROF] = bdjoptmachprofdfkeys;
   bdjopt->dfcount [OPTTYPE_GLOBAL] = sizeof (bdjoptglobaldfkeys) / sizeof (datafilekey_t);
   bdjopt->dfcount [OPTTYPE_PROFILE] = sizeof (bdjoptprofiledfkeys) / sizeof (datafilekey_t);
+  bdjopt->dfcount [OPTTYPE_QUEUE] = sizeof (bdjoptqueuedfkeys) / sizeof (datafilekey_t);
   bdjopt->dfcount [OPTTYPE_MACHINE] = sizeof (bdjoptmachinedfkeys) / sizeof (datafilekey_t);
   bdjopt->dfcount [OPTTYPE_MACH_PROF] = sizeof (bdjoptmachprofdfkeys) / sizeof (datafilekey_t);
   for (int i = 0; i < OPTTYPE_MAX; ++i) {
@@ -134,10 +144,12 @@ bdjoptInit (void)
   }
   bdjopt->tag [OPTTYPE_GLOBAL] = "bdjopt-g";
   bdjopt->tag [OPTTYPE_PROFILE] = "bdjopt-p";
+  bdjopt->tag [OPTTYPE_QUEUE] = "bdjopt-q";
   bdjopt->tag [OPTTYPE_MACHINE] = "bdjopt-m";
   bdjopt->tag [OPTTYPE_MACH_PROF] = "bdjopt-mp";
   bdjopt->shorttag [OPTTYPE_GLOBAL] = "g";
   bdjopt->shorttag [OPTTYPE_PROFILE] = "p";
+  bdjopt->shorttag [OPTTYPE_QUEUE] = "q";
   bdjopt->shorttag [OPTTYPE_MACHINE] = "m";
   bdjopt->shorttag [OPTTYPE_MACH_PROF] = "mp";
 
@@ -152,6 +164,11 @@ bdjoptInit (void)
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
       BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   bdjopt->fname [OPTTYPE_PROFILE] = strdup (path);
+
+  /* queue */
+  pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
+      "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+  bdjopt->fname [OPTTYPE_QUEUE] = strdup (path);
 
   /* per machine */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
@@ -172,10 +189,27 @@ bdjoptInit (void)
       bdjopt->dfcount [OPTTYPE_GLOBAL]);
 
   for (int i = 1; i < OPTTYPE_MAX; ++i) {
+    if (i == OPTTYPE_QUEUE) {
+      continue;
+    }
     ddata = datafileLoad (df, DFTYPE_KEY_VAL, bdjopt->fname [i]);
     tlist = datafileGetList (df);
     datafileParseMerge (tlist, ddata, bdjopt->tag [i], DFTYPE_KEY_VAL,
-        bdjopt->dfkeys [i], bdjopt->dfcount [i]);
+        bdjopt->dfkeys [i], bdjopt->dfcount [i], 0);
+    datafileSetData (df, tlist);
+    free (ddata);
+  }
+
+  for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
+    int   offset;
+
+    snprintf (path, sizeof (path), "%s.q%d%s",
+        bdjopt->fname [OPTTYPE_QUEUE], i, BDJ4_CONFIG_EXT);
+    ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
+    tlist = datafileGetList (df);
+    offset = bdjopt->dfcount [OPTTYPE_QUEUE] * i;
+    datafileParseMerge (tlist, ddata, bdjopt->tag [OPTTYPE_QUEUE], DFTYPE_KEY_VAL,
+        bdjopt->dfkeys [OPTTYPE_QUEUE], bdjopt->dfcount [OPTTYPE_QUEUE], offset);
     datafileSetData (df, tlist);
     free (ddata);
   }
@@ -249,6 +283,77 @@ bdjoptSetNum (nlistidx_t idx, int64_t value)
   nlistSetNum (bdjopt->bdjoptList, idx, value);
 }
 
+char *
+bdjoptGetStrPerQueue (nlistidx_t idx, int musicq)
+{
+  nlistidx_t  nidx;
+  void        *value = NULL;
+
+  if (bdjopt == NULL) {
+    return NULL;
+  }
+  if (bdjopt->bdjoptList == NULL) {
+    return NULL;
+  }
+
+  nidx = bdjoptQueueIndex (idx, musicq);
+  value = nlistGetStr (bdjopt->bdjoptList, nidx);
+  return value;
+}
+
+int64_t
+bdjoptGetNumPerQueue (nlistidx_t idx, int musicq)
+{
+  nlistidx_t  nidx;
+  int64_t     value;
+
+  if (bdjopt == NULL) {
+    return -1;
+  }
+  if (bdjopt->bdjoptList == NULL) {
+    return -1;
+  }
+
+  nidx = bdjoptQueueIndex (idx, musicq);
+  value = nlistGetNum (bdjopt->bdjoptList, nidx);
+  return value;
+}
+
+void
+bdjoptSetStrPerQueue (nlistidx_t idx, const char *value, int musicq)
+{
+  nlistidx_t    nidx;
+
+  if (bdjopt == NULL) {
+    return;
+  }
+  if (bdjopt->bdjoptList == NULL) {
+    return;
+  }
+
+  if (musicq >= BDJ4_QUEUE_MAX) {
+    musicq = 0;
+  }
+  nidx = idx + musicq * bdjopt->dfcount [OPTTYPE_QUEUE];
+  nlistSetStr (bdjopt->bdjoptList, nidx, value);
+}
+
+void
+bdjoptSetNumPerQueue (nlistidx_t idx, int64_t value, int musicq)
+{
+  nlistidx_t    nidx;
+
+  if (bdjopt == NULL) {
+    return;
+  }
+
+  if (musicq >= BDJ4_QUEUE_MAX) {
+    musicq = 0;
+  }
+  nidx = idx + musicq * bdjopt->dfcount [OPTTYPE_QUEUE];
+  nlistSetNum (bdjopt->bdjoptList, nidx, value);
+}
+
 void
 bdjoptCreateDirectories (void)
 {
@@ -268,13 +373,29 @@ bdjoptCreateDirectories (void)
 void
 bdjoptSave (void)
 {
+  char    path [MAXPATHLEN];
+
   if (bdjopt == NULL) {
     return;
   }
 
   for (int i = 0; i < OPTTYPE_MAX; ++i) {
+    if (i == OPTTYPE_QUEUE) {
+      continue;
+    }
     datafileSaveKeyVal (bdjopt->tag [i], bdjopt->fname [i],
-        bdjopt->dfkeys [i], bdjopt->dfcount [i], bdjopt->bdjoptList);
+        bdjopt->dfkeys [i], bdjopt->dfcount [i], bdjopt->bdjoptList, 0);
+  }
+
+  for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
+    int   offset;
+
+    snprintf (path, sizeof (path), "%s.q%d%s",
+        bdjopt->fname [OPTTYPE_QUEUE], i, BDJ4_CONFIG_EXT);
+    offset = bdjopt->dfcount [OPTTYPE_QUEUE] * i;
+    datafileSaveKeyVal (bdjopt->tag [OPTTYPE_QUEUE], path,
+        bdjopt->dfkeys [OPTTYPE_QUEUE], bdjopt->dfcount [OPTTYPE_QUEUE],
+        bdjopt->bdjoptList, offset);
   }
 }
 
@@ -348,8 +469,20 @@ void
 bdjoptDump (void)
 {
   for (int i = 0; i < OPTTYPE_MAX; ++i) {
+    if (i == OPTTYPE_QUEUE) {
+      continue;
+    }
     datafileDumpKeyVal (bdjopt->shorttag [i], bdjopt->dfkeys [i],
-        bdjopt->dfcount [i], bdjopt->bdjoptList);
+        bdjopt->dfcount [i], bdjopt->bdjoptList, 0);
+  }
+  for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
+    char  tmp [20];
+    int   offset;
+
+    snprintf (tmp, sizeof (tmp), "%s%d", bdjopt->shorttag [OPTTYPE_QUEUE], i);
+    offset = bdjopt->dfcount [OPTTYPE_QUEUE] * i;
+    datafileDumpKeyVal (tmp, bdjopt->dfkeys [OPTTYPE_QUEUE],
+        bdjopt->dfcount [OPTTYPE_QUEUE], bdjopt->bdjoptList, offset);
   }
 }
 
@@ -383,6 +516,27 @@ bdjoptGetProfileName (void)
 }
 
 /* internal routines */
+
+static int
+bdjoptQueueIndex (nlistidx_t idx, int musicq)
+{
+  nlistidx_t    nidx;
+
+  if (musicq >= BDJ4_QUEUE_MAX) {
+    musicq = 0;
+  }
+  nidx = OPT_Q_ACTIVE + (musicq * bdjopt->dfcount [OPTTYPE_QUEUE]);
+  /* if the queue is not active, use the values from queue 0 */
+  /* excepting the queue name, active flag and display flag */
+  if (idx != OPT_Q_QUEUE_NAME &&
+      idx != OPT_Q_ACTIVE &&
+      idx != OPT_Q_DISPLAY &&
+      ! nlistGetNum (bdjopt->bdjoptList, nidx)) {
+    musicq = 0;
+  }
+  nidx = idx + (musicq * bdjopt->dfcount [OPTTYPE_QUEUE]);
+  return nidx;
+}
 
 static void
 bdjoptConvFadeType (datafileconv_t *conv)

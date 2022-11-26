@@ -83,7 +83,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
   /* CONTEXT: configuration: the name of this profile */
   confuiMakeItemEntry (gui, &vbox, &sg, _("Profile Name"),
       CONFUI_ENTRY_PROFILE_NAME, OPT_P_PROFILENAME,
-      bdjoptGetStr (OPT_P_PROFILENAME));
+      bdjoptGetStr (OPT_P_PROFILENAME), CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: the profile accent color (identifies profile) */
   confuiMakeItemColorButton (gui, &vbox, &sg, _("Profile Colour"),
@@ -106,13 +106,13 @@ confuiBuildUIGeneral (confuigui_t *gui)
   snprintf (tbuff, sizeof (tbuff), _("%s Compatible Audio File Tags"), BDJ3_NAME);
   confuiMakeItemSwitch (gui, &vbox, &sg, tbuff,
       CONFUI_SWITCH_BDJ3_COMPAT_TAGS, OPT_G_BDJ3_COMPAT_TAGS,
-      bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS), NULL);
+      bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS), NULL, CONFUI_NO_INDENT);
 
   confuiMakeItemSwitch (gui, &vbox, &sg,
       /* CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag */
       _("Database Loads Dance From Genre"),
       CONFUI_SWITCH_DB_LOAD_FROM_GENRE, OPT_G_LOADDANCEFROMGENRE,
-      bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE), NULL);
+      bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE), NULL, CONFUI_NO_INDENT);
 
   /* bdj4 */
   /* CONTEXT: configuration: the locale to use (e.g. English or Nederlands) */

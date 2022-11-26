@@ -67,14 +67,14 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
   /* CONTEXT: configuration: the name to use for the mobile marquee internet mode */
   confuiMakeItemEntry (gui, &vbox, &sg, _("Name"),
       CONFUI_ENTRY_MM_NAME, OPT_P_MOBILEMQTAG,
-      bdjoptGetStr (OPT_P_MOBILEMQTAG));
+      bdjoptGetStr (OPT_P_MOBILEMQTAG), CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MM_NAME].entry,
       confuiMobmqNameChg, gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: the title to display on the mobile marquee */
   confuiMakeItemEntry (gui, &vbox, &sg, _("Title"),
       CONFUI_ENTRY_MM_TITLE, OPT_P_MOBILEMQTITLE,
-      bdjoptGetStr (OPT_P_MOBILEMQTITLE));
+      bdjoptGetStr (OPT_P_MOBILEMQTITLE), CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MM_TITLE].entry,
       confuiMobmqTitleChg, gui, UIENTRY_IMMEDIATE);
 

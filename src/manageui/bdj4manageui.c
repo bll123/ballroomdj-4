@@ -495,7 +495,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   pathbldMakePath (fn, sizeof (fn),
       MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal ("manageui", fn, manageuidfkeys, MANAGEUI_DFKEY_COUNT, manage->options);
+  datafileSaveKeyVal ("manageui", fn, manageuidfkeys, MANAGEUI_DFKEY_COUNT, manage->options, 0);
 
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
   manageSequenceFree (manage->manageseq);

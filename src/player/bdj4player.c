@@ -225,8 +225,8 @@ main (int argc, char *argv[])
   playerData.conn = connInit (ROUTE_PLAYER);
 
   playerData.fadeType = bdjoptGetNum (OPT_P_FADETYPE);
-  playerData.fadeinTime = bdjoptGetNum (OPT_P_FADEINTIME);
-  playerData.fadeoutTime = bdjoptGetNum (OPT_P_FADEOUTTIME);
+  playerData.fadeinTime = bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, 0);
+  playerData.fadeoutTime = bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, 0);
 
   playerData.currentSink = "";  // default
   volumeSinklistInit (&playerData.sinklist);
@@ -473,20 +473,20 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           playerData->priorGap = playerData->gap;
           break;
         }
+        case MSG_SET_PLAYBACK_FADEIN: {
+          playerData->fadeinTime = atol (args);
+          break;
+        }
+        case MSG_SET_PLAYBACK_FADEOUT: {
+          playerData->fadeoutTime = atol (args);
+          break;
+        }
         case MSG_CHK_PLAYER_STATUS: {
           playerChkPlayerStatus (playerData, routefrom);
           break;
         }
         case MSG_CHK_PLAYER_SONG: {
           playerChkPlayerSong (playerData, routefrom);
-          break;
-        }
-        case MSG_CHK_PLAYER_FADEIN: {
-          playerData->fadeinTime = atol (args);
-          break;
-        }
-        case MSG_CHK_PLAYER_FADEOUT: {
-          playerData->fadeoutTime = atol (args);
           break;
         }
         case MSG_CHK_CLEAR_PREP_Q: {

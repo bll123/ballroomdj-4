@@ -143,7 +143,7 @@ confuiSaveiTunes (confuigui_t *gui)
     pathbldMakePath (tbuff, sizeof (tbuff),
         ITUNES_STARS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
     datafileSaveKeyVal ("itunes-stars", tbuff, starsdfkeys,
-        CONFUI_STARS_MAX, gui->itunes->stars);
+        CONFUI_STARS_MAX, gui->itunes->stars, 0);
   }
 
   changed = false;

@@ -465,7 +465,7 @@ main (int argc, char *argv [])
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "updater", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
-  datafileSaveKeyVal ("updater", tbuff, upddfkeys, UPD_DF_COUNT, updlist);
+  datafileSaveKeyVal ("updater", tbuff, upddfkeys, UPD_DF_COUNT, updlist, 0);
 
   bdj4shutdown (ROUTE_NONE, NULL);
   bdjoptCleanup ();

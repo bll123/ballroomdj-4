@@ -318,7 +318,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   pathbldMakePath (fn, sizeof (fn),
       PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options);
+  datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options, 0);
 
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);
@@ -476,6 +476,11 @@ pluiBuildUI (playerui_t *plui)
     int   tabtype;
     /* music queue tab */
 
+    if (! bdjoptGetNumPerQueue (OPT_Q_DISPLAY, i)) {
+      /* do not display */
+      continue;
+    }
+
     tabtype = UI_TAB_MUSICQ;
     if (i == MUSICQ_HISTORY) {
       tabtype = UI_TAB_HISTORY;
@@ -488,7 +493,7 @@ pluiBuildUI (playerui_t *plui)
       /* CONTEXT: playerui: name of the history tab : displayed played songs */
       str = _("History");
     } else {
-      str = bdjoptGetStr (OPT_P_QUEUE_NAME_A + i);
+      str = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, i);
     }
     uiCreateLabel (&uiwidget, str);
     uiBoxPackStart (&hbox, &uiwidget);
@@ -790,10 +795,13 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
           musicqupdate = msgparseMusicQueueData (args);
           if ((int) musicqupdate->mqidx < MUSICQ_DISP_MAX) {
-            uimusicqProcessMusicQueueData (plui->uimusicq, musicqupdate);
-            /* the music queue data is used to display the mark */
-            /* indicating that the song is already in the song list */
-            uisongselProcessMusicQueueData (plui->uisongsel, musicqupdate);
+            if (bdjoptGetNumPerQueue (OPT_Q_DISPLAY, musicqupdate->mqidx)) {
+              /* if displayed */
+              uimusicqProcessMusicQueueData (plui->uimusicq, musicqupdate);
+              /* the music queue data is used to display the mark */
+              /* indicating that the song is already in the song list */
+              uisongselProcessMusicQueueData (plui->uisongsel, musicqupdate);
+            }
           }
           msgparseMusicQueueDataFree (musicqupdate);
           break;
@@ -950,6 +958,11 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue, int updateFlag)
 
   plui->musicqPlayIdx = newQueue;
   for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
+    if (! bdjoptGetNumPerQueue (OPT_Q_DISPLAY, i)) {
+      /* not displayed */
+      continue;
+    }
+
     if ((int) plui->musicqPlayIdx == i) {
       uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
     } else {

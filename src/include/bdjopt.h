@@ -63,12 +63,8 @@ typedef enum {
   OPT_MP_UI_THEME,
   OPT_P_COMPLETE_MSG,
   OPT_P_DEFAULTVOLUME,
-  OPT_P_FADEINTIME,
-  OPT_P_FADEOUTTIME,
   OPT_P_FADETYPE,
-  OPT_P_GAP,
   OPT_P_HIDE_MARQUEE_ON_START,
-  OPT_P_MAXPLAYTIME,
   OPT_P_MOBILEMARQUEE,
   OPT_P_MOBILEMQPORT,
   OPT_P_MOBILEMQTAG,
@@ -78,12 +74,7 @@ typedef enum {
   OPT_P_MQQLEN,
   OPT_P_MQ_SHOW_INFO,
   OPT_P_MQ_TEXT_COL,
-  OPT_P_PLAY_ANNOUNCE,
   OPT_P_PROFILENAME,
-  /* the queue name identifiers must be in sequence */
-  /* the number of queue names must match MUSICQ_PB_MAX */
-  OPT_P_QUEUE_NAME_A,
-  OPT_P_QUEUE_NAME_B,
   OPT_P_REMCONTROLPASS,
   OPT_P_REMCONTROLPORT,
   OPT_P_REMCONTROLUSER,
@@ -93,11 +84,22 @@ typedef enum {
   OPT_P_UI_ERROR_COL,
   OPT_P_UI_MARK_COL,
   OPT_P_UI_PROFILE_COL,
+  /* the queue values must be at the end of enum list, as they are */
+  /* repeated for each queue; opt_q_active must be the first opt_q item */
+  OPT_Q_ACTIVE,
+  OPT_Q_DISPLAY,
+  OPT_Q_FADEINTIME,
+  OPT_Q_FADEOUTTIME,
+  OPT_Q_GAP,
+  OPT_Q_MAXPLAYTIME,
+  OPT_Q_PLAY_ANNOUNCE,
+  OPT_Q_QUEUE_NAME,
 } bdjoptkey_t;
 
 typedef enum {
   OPTTYPE_GLOBAL,
   OPTTYPE_PROFILE,
+  OPTTYPE_QUEUE,
   OPTTYPE_MACHINE,
   OPTTYPE_MACH_PROF,
   OPTTYPE_MAX,
@@ -115,6 +117,10 @@ char    *bdjoptGetStr (nlistidx_t idx);
 int64_t bdjoptGetNum (nlistidx_t idx);
 void    bdjoptSetStr (nlistidx_t idx, const char *value);
 void    bdjoptSetNum (nlistidx_t idx, int64_t value);
+char    *bdjoptGetStrPerQueue (nlistidx_t idx, int musicq);
+int64_t bdjoptGetNumPerQueue (nlistidx_t idx, int musicq);
+void    bdjoptSetStrPerQueue (nlistidx_t idx, const char *value, int musicq);
+void    bdjoptSetNumPerQueue (nlistidx_t idx, int64_t value, int musicq);
 void    bdjoptCreateDirectories (void);
 void    bdjoptSave (void);
 void    bdjoptConvBPM (datafileconv_t *conv);

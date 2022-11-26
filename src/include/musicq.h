@@ -3,15 +3,16 @@
 
 #include <time.h>
 
+#include "bdj4.h"
 #include "musicdb.h"
 #include "queue.h"
 #include "tagdef.h"
 
 typedef enum {
-  /* if the number of music queues is changed (i.e. MUSICQ_PB_MAX), */
-  /* bdjopt.h and configui/confplayer.c must be updated */
+  /* must match the number of music queues defined in bdj4.h (BDJ4_QUEUE_MAX) */
   MUSICQ_PB_A,
   MUSICQ_PB_B,
+  MUSICQ_PB_C,
   /* keep the history music queue after the last player music queue */
   /* this makes processing easier */
   MUSICQ_HISTORY,
@@ -23,7 +24,7 @@ typedef enum {
 } musicqidx_t;
 
 enum {
-  MUSICQ_PB_MAX = MUSICQ_HISTORY,   // music queues not including history
+  MUSICQ_PB_MAX = BDJ4_QUEUE_MAX,   // music queues not including history
   MUSICQ_DISP_MAX = MUSICQ_SL,      // music queues including history
 };
 

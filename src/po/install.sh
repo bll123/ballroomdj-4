@@ -159,8 +159,19 @@ while read -r line; do
   mksub $fn $TMP $locale $pofile
 
   fn=${TMPLDIR}/bdjconfig.txt.p
-  # may also need pause msg and done msg in the future
-  sed -n -e '/^QUEUE_NAME_[AB]/ {n;p;}' $fn > $TMP
+  sed -n -e '/^COMPLETEMSG/ {n;p;}' $fn > $TMP
+  mksub $fn $TMP $locale $pofile
+
+  fn=${TMPLDIR}/bdjconfig.txt.q0
+  sed -n -e '/^QUEUE_NAME/ {n;p;}' $fn > $TMP
+  mksub $fn $TMP $locale $pofile
+
+  fn=${TMPLDIR}/bdjconfig.txt.q1
+  sed -n -e '/^QUEUE_NAME/ {n;p;}' $fn > $TMP
+  mksub $fn $TMP $locale $pofile
+
+  fn=${TMPLDIR}/bdjconfig.txt.q2
+  sed -n -e '/^QUEUE_NAME/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
   fn=${TMPLDIR}/dances.txt

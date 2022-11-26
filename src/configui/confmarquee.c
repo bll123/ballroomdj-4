@@ -51,7 +51,7 @@ confuiBuildUIMarquee (confuigui_t *gui)
   /* CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Show Song Information"),
       CONFUI_SWITCH_MQ_SHOW_SONG_INFO, OPT_P_MQ_SHOW_INFO,
-      bdjoptGetNum (OPT_P_MQ_SHOW_INFO), NULL);
+      bdjoptGetNum (OPT_P_MQ_SHOW_INFO), NULL, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: marquee: the accent color used for the marquee */
   confuiMakeItemColorButton (gui, &vbox, &sg, _("Accent Colour"),
@@ -61,7 +61,7 @@ confuiBuildUIMarquee (confuigui_t *gui)
   /* CONTEXT: configuration: marquee: minimize the marquee when the player is started */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Hide Marquee on Start"),
       CONFUI_SWITCH_MQ_HIDE_ON_START, OPT_P_HIDE_MARQUEE_ON_START,
-      bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START), NULL);
+      bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START), NULL, CONFUI_NO_INDENT);
   logProcEnd (LOG_PROC, "confuiBuildUIMarquee", "");
 }
 

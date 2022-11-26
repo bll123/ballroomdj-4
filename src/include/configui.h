@@ -51,8 +51,7 @@ enum {
   /* the number of queue names must match MUSICQ_PB_MAX */
   CONFUI_ENTRY_ITUNES_DIR,
   CONFUI_ENTRY_ITUNES_XML,
-  CONFUI_ENTRY_QUEUE_NM_A,
-  CONFUI_ENTRY_QUEUE_NM_B,
+  CONFUI_ENTRY_QUEUE_NM,
   CONFUI_ENTRY_RC_PASS,
   CONFUI_ENTRY_RC_USER_ID,
   CONFUI_ENTRY_SHUTDOWN,
@@ -82,6 +81,7 @@ enum {
   CONFUI_SPINBOX_MOBILE_MQ,
   CONFUI_SPINBOX_MQ_THEME,
   CONFUI_SPINBOX_PLAYER,
+  CONFUI_SPINBOX_PLAYER_QUEUE,
   CONFUI_SPINBOX_RC_HTML_TEMPLATE,
   CONFUI_SPINBOX_STOP_AT_TIME,
   CONFUI_SPINBOX_UI_THEME,
@@ -96,6 +96,8 @@ enum {
   CONFUI_SWITCH_MQ_HIDE_ON_START,
   CONFUI_SWITCH_MQ_SHOW_SONG_INFO,
   CONFUI_SWITCH_PLAY_ANNOUNCE,
+  CONFUI_SWITCH_Q_ACTIVE,
+  CONFUI_SWITCH_Q_DISPLAY,
   CONFUI_SWITCH_RC_ENABLE,
   CONFUI_SWITCH_MAX,
   CONFUI_WIDGET_AO_EXAMPLE_1,
@@ -210,6 +212,8 @@ enum {
   CONFUI_MOVE_NEXT,
   CONFUI_TABLE_TEXT,
   CONFUI_TABLE_NUM,
+  CONFUI_NO_INDENT,
+  CONFUI_INDENT,
 };
 
 enum {
@@ -362,6 +366,7 @@ void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
 void confuiUpdateOrgExamples (confuigui_t *gui, char *orgpath);
 bool confuiOrgPathSelect (void *udata, long idx);
+void confuiPopulateOptions (confuigui_t *gui);
 
 /* confdance.c */
 void confuiInitEditDances (confuigui_t *gui);
@@ -387,21 +392,21 @@ void confuiCreateGenreTable (confuigui_t *gui);
 
 /* confgui.c */
 void confuiMakeNotebookTab (UIWidget *boxp, confuigui_t *gui, const char *txt, int);
-void confuiMakeItemEntry (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *disp);
+void confuiMakeItemEntry (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, void *dialogFunc);
-void confuiMakeItemEntryBasic (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *disp);
+void confuiMakeItemEntryBasic (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemCombobox (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, UILongCallbackFunc ddcb, char *value);
 void confuiMakeItemLink (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, const char *disp);
 void confuiMakeItemFontButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *fontname);
 void confuiMakeItemColorButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *color);
 void confuiMakeItemSpinboxText (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, UIWidget *sgB, const char *txt, int widx, int bdjoptIdx, confuiouttype_t outtype, ssize_t value, void *cb);
-void confuiMakeItemSpinboxTime (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, UIWidget *sgB, const char *txt, int widx, int bdjoptIdx, ssize_t value);
+void confuiMakeItemSpinboxTime (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, UIWidget *sgB, const char *txt, int widx, int bdjoptIdx, ssize_t value, int indent);
 void confuiMakeItemSpinboxNum (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, UIWidget *sgB, const char *txt, int widx, int bdjoptIdx, int min, int max, int value, void *cb);
-void confuiMakeItemSpinboxDouble (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, UIWidget *sgB, const char *txt, int widx, int bdjoptIdx, double min, double max, double value);
-void confuiMakeItemSwitch (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, int value, void *cb);
+void confuiMakeItemSpinboxDouble (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, UIWidget *sgB, const char *txt, int widx, int bdjoptIdx, double min, double max, double value, int indent);
+void confuiMakeItemSwitch (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, int value, void *cb, int indent);
 void confuiMakeItemLabelDisp (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx);
 void confuiMakeItemCheckButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, int value);
-void confuiMakeItemLabel (UIWidget *boxp, UIWidget *sg, const char *txt);
+void confuiMakeItemLabel (UIWidget *boxp, UIWidget *sg, const char *txt, int indent);
 void confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
 
 /* confitunes.c */

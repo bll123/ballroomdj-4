@@ -41,7 +41,7 @@ confuiInitOrganization (confuigui_t *gui)
   gui->uiitem [CONFUI_COMBOBOX_ORGPATH].listidx = 0;
   count = 0;
   while ((p = slistIterateValueData (tlist, &iteridx)) != NULL) {
-    if (strcmp (p, bdjoptGetStr (OPT_G_ORGPATH)) == 0) {
+    if (p != NULL && strcmp (p, bdjoptGetStr (OPT_G_ORGPATH)) == 0) {
       gui->uiitem [CONFUI_COMBOBOX_ORGPATH].listidx = count;
       break;
     }
@@ -90,7 +90,7 @@ confuiBuildUIOrganization (confuigui_t *gui)
   /* CONTEXT: configuration: checkbox: is automatic organization enabled */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Auto Organise"),
       CONFUI_SWITCH_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
-      bdjoptGetNum (OPT_G_AUTOORGANIZE), NULL);
+      bdjoptGetNum (OPT_G_AUTOORGANIZE), NULL, CONFUI_NO_INDENT);
   logProcEnd (LOG_PROC, "confuiBuildUIOrganization", "");
 }
 

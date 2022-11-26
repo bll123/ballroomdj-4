@@ -49,7 +49,7 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Enable Remote Control"),
       CONFUI_SWITCH_RC_ENABLE, OPT_P_REMOTECONTROL,
       bdjoptGetNum (OPT_P_REMOTECONTROL),
-      confuiRemctrlChg);
+      confuiRemctrlChg, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: remote control: the HTML template to use */
   confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("HTML Template"),
@@ -59,12 +59,12 @@ confuiBuildUIMobileRemoteControl (confuigui_t *gui)
   /* CONTEXT: configuration: remote control: the user ID for sign-on to remote control */
   confuiMakeItemEntry (gui, &vbox, &sg, _("User ID"),
       CONFUI_ENTRY_RC_USER_ID,  OPT_P_REMCONTROLUSER,
-      bdjoptGetStr (OPT_P_REMCONTROLUSER));
+      bdjoptGetStr (OPT_P_REMCONTROLUSER), CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: remote control: the password for sign-on to remote control */
   confuiMakeItemEntry (gui, &vbox, &sg, _("Password"),
       CONFUI_ENTRY_RC_PASS, OPT_P_REMCONTROLPASS,
-      bdjoptGetStr (OPT_P_REMCONTROLPASS));
+      bdjoptGetStr (OPT_P_REMCONTROLPASS), CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: remote control: the port to use for remote control */
   confuiMakeItemSpinboxNum (gui, &vbox, &sg, NULL, _("Port"),

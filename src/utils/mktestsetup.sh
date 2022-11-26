@@ -68,6 +68,9 @@ done
 
 cp -f templates/bdjconfig.txt.g data/bdjconfig.txt
 cp -f templates/bdjconfig.txt.p data/profile00/bdjconfig.txt
+for q in 0 1 2; do
+  cp -f templates/bdjconfig.q${q}.txt data/profile00/bdjconfig.q${q}.txt
+done
 cp -f templates/bdjconfig.txt.m data/${hostname}/bdjconfig.txt
 cp -f templates/bdjconfig.txt.mp data/${hostname}/profile00/bdjconfig.txt
 cp -f templates/automatic.* data
@@ -150,9 +153,13 @@ to=test-auto-c
 cp -f test-templates/test-auto-a.pl data/${to}.pl
 cp -f test-templates/test-auto-c.pldances data/${to}.pldances
 
+tfn=data/profile00/bdjconfig.q0.txt
+sed -e '/^FADEOUTTIME/ { n ; s/.*/..4000/ ; }' \
+    ${tfn} > ${tfn}.n
+mv -f ${tfn}.n ${tfn}
+
 tfn=data/profile00/bdjconfig.txt
 sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
-    -e '/^FADEOUTTIME/ { n ; s/.*/..4000/ ; }' \
     -e '/^HIDEMARQUEEONSTART/ { n ; s/.*/..on/ ; }' \
     -e '/^PROFILENAME/ { n ; s/.*/..Test-Setup/ ; }' \
     ${tfn} > ${tfn}.n
@@ -160,7 +167,7 @@ mv -f ${tfn}.n ${tfn}
 
 tfn=data/${hostname}/bdjconfig.txt
 sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
-    -e '/^DIRMUSIC/ { n ; s,.*,..${cwd}/test-music, ; }' \
+    -e "/^DIRMUSIC/ { n ; s,.*,..${cwd}/test-music, ; }" \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 

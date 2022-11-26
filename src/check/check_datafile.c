@@ -746,7 +746,7 @@ START_TEST(datafile_keyval_savebuffer)
   vers = nlistGetVersion (list);
   ck_assert_int_eq (vers, 12);
 
-  datafileSaveKeyValBuffer (tbuff, sizeof (tbuff), "chk-df-h", dfkeyskl, DFKEY_COUNT, list);
+  datafileSaveKeyValBuffer (tbuff, sizeof (tbuff), "chk-df-h", dfkeyskl, DFKEY_COUNT, list, 0);
   fn = "tmp/dftestc.txt";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tbuff);
@@ -826,7 +826,7 @@ START_TEST(datafile_keyval_save)
   ck_assert_int_eq (vers, 13);
 
   fn = "tmp/dftestc.txt";
-  datafileSaveKeyVal ("chk-df-i", fn, dfkeyskl, DFKEY_COUNT, list);
+  datafileSaveKeyVal ("chk-df-i", fn, dfkeyskl, DFKEY_COUNT, list, 0);
   tdf = datafileAllocParse ("chk-df-i", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT);
   tlist = datafileGetList (tdf);
   vers = nlistGetVersion (tlist);

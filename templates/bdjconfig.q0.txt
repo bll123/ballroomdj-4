@@ -1,0 +1,20 @@
+# config-queue
+# 2022-11-26
+version
+..1
+ACTIVE
+..yes
+DISPLAY
+..yes
+FADEINTIME
+..400
+FADEOUTTIME
+..8000
+GAP
+..2000
+MAXPLAYTIME
+..360000
+PLAYANNOUNCE
+..no
+QUEUE_NAME
+..Music Queue

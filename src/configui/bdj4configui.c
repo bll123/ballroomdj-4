@@ -33,7 +33,6 @@
 #include "sockh.h"
 #include "songfilter.h"
 #include "sysvars.h"
-#include "templateutil.h"
 #include "ui.h"
 #include "uinbutil.h"
 
@@ -67,7 +66,7 @@ static int  confuiMainLoop  (void *tconfui);
 static int  confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, char *args, void *udata);
 static bool confuiCloseWin (void *udata);
 static void confuiSigHandler (int sig);
-static void confuiPopulateOptions (configui_t *confui);
+
 
 /* misc */
 static void confuiLoadTagList (configui_t *confui);
@@ -172,8 +171,7 @@ main (int argc, char *argv[])
   confui.gui.uiitem [CONFUI_ENTRY_MUSIC_DIR].entry = uiEntryInit (50, 300);
   confui.gui.uiitem [CONFUI_ENTRY_PROFILE_NAME].entry = uiEntryInit (20, 30);
   confui.gui.uiitem [CONFUI_ENTRY_COMPLETE_MSG].entry = uiEntryInit (20, 30);
-  confui.gui.uiitem [CONFUI_ENTRY_QUEUE_NM_A].entry = uiEntryInit (20, 30);
-  confui.gui.uiitem [CONFUI_ENTRY_QUEUE_NM_B].entry = uiEntryInit (20, 30);
+  confui.gui.uiitem [CONFUI_ENTRY_QUEUE_NM].entry = uiEntryInit (20, 30);
   confui.gui.uiitem [CONFUI_ENTRY_RC_PASS].entry = uiEntryInit (10, 20);
   confui.gui.uiitem [CONFUI_ENTRY_RC_USER_ID].entry = uiEntryInit (10, 30);
   confui.gui.uiitem [CONFUI_ENTRY_STARTUP].entry = uiEntryInit (50, 300);
@@ -273,7 +271,7 @@ confuiStoppingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "confuiStoppingCallback");
 
-  confuiPopulateOptions (confui);
+  confuiPopulateOptions (&confui->gui);
   bdjoptSave ();
   for (confuiident_t i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confuiTableSave (&confui->gui, i);
@@ -290,12 +288,12 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   pathbldMakePath (fn, sizeof (fn),
       CONFIGUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("configui", fn, configuidfkeys,
-      CONFUI_KEY_MAX, confui->options);
+      CONFUI_KEY_MAX, confui->options, 0);
 
   pathbldMakePath (fn, sizeof (fn),
       "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("ds-songfilter", fn, filterdisplaydfkeys,
-      FILTER_DISP_MAX, confui->gui.filterDisplaySel);
+      FILTER_DISP_MAX, confui->gui.filterDisplaySel, 0);
 
   connDisconnect (confui->conn, ROUTE_STARTERUI);
 
@@ -578,237 +576,6 @@ static void
 confuiSigHandler (int sig)
 {
   gKillReceived = true;
-}
-
-static void
-confuiPopulateOptions (configui_t *confui)
-{
-  const char  *sval;
-  ssize_t     nval;
-  nlistidx_t  selidx;
-  double      dval;
-  confuibasetype_t basetype;
-  confuiouttype_t outtype;
-  char        tbuff [MAXPATHLEN];
-  GdkRGBA     gcolor;
-  long        debug = 0;
-  bool        accentcolorchanged = false;
-  bool        profilecolorchanged = false;
-  bool        localechanged = false;
-  bool        themechanged = false;
-
-  logProcBegin (LOG_PROC, "confuiPopulateOptions");
-  for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
-    sval = "fail";
-    nval = -1;
-    dval = -1.0;
-
-    basetype = confui->gui.uiitem [i].basetype;
-    outtype = confui->gui.uiitem [i].outtype;
-
-    switch (basetype) {
-      case CONFUI_NONE: {
-        break;
-      }
-      case CONFUI_ENTRY: {
-        sval = uiEntryGetValue (confui->gui.uiitem [i].entry);
-        break;
-      }
-      case CONFUI_SPINBOX_TEXT: {
-        nval = uiSpinboxTextGetValue (confui->gui.uiitem [i].spinbox);
-        if (outtype == CONFUI_OUT_STR) {
-          if (confui->gui.uiitem [i].sbkeylist != NULL) {
-            sval = nlistGetStr (confui->gui.uiitem [i].sbkeylist, nval);
-          } else {
-            sval = nlistGetStr (confui->gui.uiitem [i].displist, nval);
-          }
-        }
-        break;
-      }
-      case CONFUI_SPINBOX_NUM: {
-        nval = (ssize_t) uiSpinboxGetValue (&confui->gui.uiitem [i].uiwidget);
-        break;
-      }
-      case CONFUI_SPINBOX_DOUBLE: {
-        dval = uiSpinboxGetValue (&confui->gui.uiitem [i].uiwidget);
-        nval = (ssize_t) (dval * 1000.0);
-        outtype = CONFUI_OUT_NUM;
-        break;
-      }
-      case CONFUI_SPINBOX_TIME: {
-        nval = (ssize_t) uiSpinboxTimeGetValue (confui->gui.uiitem [i].spinbox);
-        if (i == CONFUI_SPINBOX_STOP_AT_TIME) {
-          /* convert to hh:mm */
-          nval *= 60;
-        }
-        break;
-      }
-      case CONFUI_COLOR: {
-        gtk_color_chooser_get_rgba (
-            GTK_COLOR_CHOOSER (confui->gui.uiitem [i].widget), &gcolor);
-        snprintf (tbuff, sizeof (tbuff), "#%02x%02x%02x",
-            (int) round (gcolor.red * 255.0),
-            (int) round (gcolor.green * 255.0),
-            (int) round (gcolor.blue * 255.0));
-        sval = tbuff;
-        break;
-      }
-      case CONFUI_FONT: {
-        sval = gtk_font_chooser_get_font (
-            GTK_FONT_CHOOSER (confui->gui.uiitem [i].widget));
-        break;
-      }
-      case CONFUI_SWITCH: {
-        nval = uiSwitchGetValue (confui->gui.uiitem [i].uiswitch);
-        break;
-      }
-      case CONFUI_CHECK_BUTTON: {
-        nval = uiToggleButtonIsActive (&confui->gui.uiitem [i].uiwidget);
-        break;
-      }
-      case CONFUI_COMBOBOX: {
-        sval = slistGetDataByIdx (confui->gui.uiitem [i].displist,
-            confui->gui.uiitem [i].listidx);
-        outtype = CONFUI_OUT_STR;
-        break;
-      }
-    }
-
-    if (i == CONFUI_SPINBOX_AUDIO_OUTPUT) {
-      uispinbox_t  *spinbox;
-
-      spinbox = confui->gui.uiitem [i].spinbox;
-      if (! uiSpinboxIsChanged (spinbox)) {
-        continue;
-      }
-    }
-
-    switch (outtype) {
-      case CONFUI_OUT_NONE: {
-        break;
-      }
-      case CONFUI_OUT_STR: {
-        if (i == CONFUI_SPINBOX_LOCALE) {
-          if (strcmp (sysvarsGetStr (SV_LOCALE), sval) != 0) {
-            localechanged = true;
-          }
-        }
-        if (i == CONFUI_WIDGET_UI_ACCENT_COLOR) {
-          if (strcmp (bdjoptGetStr (confui->gui.uiitem [i].bdjoptIdx), sval) != 0) {
-            accentcolorchanged = true;
-          }
-        }
-        if (i == CONFUI_WIDGET_UI_PROFILE_COLOR) {
-          if (strcmp (bdjoptGetStr (confui->gui.uiitem [i].bdjoptIdx), sval) != 0) {
-            profilecolorchanged = true;
-          }
-        }
-        if (i == CONFUI_SPINBOX_UI_THEME) {
-          if (strcmp (bdjoptGetStr (confui->gui.uiitem [i].bdjoptIdx), sval) != 0) {
-            themechanged = true;
-          }
-        }
-        bdjoptSetStr (confui->gui.uiitem [i].bdjoptIdx, sval);
-        break;
-      }
-      case CONFUI_OUT_NUM: {
-        bdjoptSetNum (confui->gui.uiitem [i].bdjoptIdx, nval);
-        break;
-      }
-      case CONFUI_OUT_DOUBLE: {
-        bdjoptSetNum (confui->gui.uiitem [i].bdjoptIdx, dval);
-        break;
-      }
-      case CONFUI_OUT_BOOL: {
-        bdjoptSetNum (confui->gui.uiitem [i].bdjoptIdx, nval);
-        break;
-      }
-      case CONFUI_OUT_CB: {
-        nlistSetNum (confui->gui.filterDisplaySel,
-            nlistGetNum (confui->filterLookup, i), nval);
-        break;
-      }
-      case CONFUI_OUT_DEBUG: {
-        if (nval) {
-          long  idx;
-          long  bitval;
-
-          idx = i - CONFUI_WIDGET_DEBUG_1;
-          bitval = 1 << idx;
-          debug |= bitval;
-        }
-        break;
-      }
-    } /* out type */
-
-    if (i == CONFUI_SPINBOX_LOCALE &&
-        localechanged) {
-      sysvarsSetStr (SV_LOCALE, sval);
-      snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
-      sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
-      pathbldMakePath (tbuff, sizeof (tbuff),
-          "locale", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
-      fileopDelete (tbuff);
-
-      /* if the set locale does not match the system or default locale */
-      /* save it in the locale file */
-      if (strcmp (sval, sysvarsGetStr (SV_LOCALE_SYSTEM)) != 0 &&
-          strcmp (sval, "en_GB") != 0) {
-        FILE    *fh;
-
-        fh = fopen (tbuff, "w");
-        fprintf (fh, "%s\n", sval);
-        fclose (fh);
-      }
-    }
-
-    if (i == CONFUI_ENTRY_MUSIC_DIR) {
-      strlcpy (tbuff, bdjoptGetStr (confui->gui.uiitem [i].bdjoptIdx), sizeof (tbuff));
-      pathNormPath (tbuff, sizeof (tbuff));
-      bdjoptSetStr (confui->gui.uiitem [i].bdjoptIdx, tbuff);
-    }
-
-    if (i == CONFUI_SPINBOX_UI_THEME && themechanged) {
-      FILE    *fh;
-
-      sval = bdjoptGetStr (confui->gui.uiitem [i].bdjoptIdx);
-      pathbldMakePath (tbuff, sizeof (tbuff),
-          "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
-      /* if the theme name is the same as the current default theme */
-      /* don't write out the theme file.  want to use the default */
-      if (strcmp (sval, sysvarsGetStr (SV_THEME_DEFAULT)) != 0) {
-        fh = fopen (tbuff, "w");
-        if (sval != NULL) {
-          fprintf (fh, "%s\n", sval);
-        }
-        fclose (fh);
-      } else {
-        fileopDelete (tbuff);
-      }
-    }
-
-    if (i == CONFUI_WIDGET_UI_ACCENT_COLOR &&
-        accentcolorchanged) {
-      templateImageCopy (sval);
-    }
-
-    if (i == CONFUI_WIDGET_UI_PROFILE_COLOR &&
-        profilecolorchanged) {
-      templateImageCopy (sval);
-    }
-
-    if (i == CONFUI_SPINBOX_RC_HTML_TEMPLATE) {
-      sval = bdjoptGetStr (confui->gui.uiitem [i].bdjoptIdx);
-      templateHttpCopy (sval, "bdj4remote.html");
-    }
-  } /* for each item */
-
-  selidx = uiSpinboxTextGetValue (
-      confui->gui.uiitem [CONFUI_SPINBOX_DISP_SEL].spinbox);
-  confuiDispSaveTable (&confui->gui, selidx);
-
-  bdjoptSetNum (OPT_G_DEBUGLVL, debug);
-  logProcEnd (LOG_PROC, "confuiPopulateOptions", "");
 }
 
 /* misc */
