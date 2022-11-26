@@ -43,7 +43,6 @@ typedef struct configui {
   int               dbgflags;
   int               stopwaitcount;
   datafile_t        *filterDisplayDf;
-  nlist_t           *filterLookup;
   confuigui_t       gui;
   /* options */
   datafile_t        *optiondf;
@@ -94,7 +93,6 @@ main (int argc, char *argv[])
   confui.dbgflags = 0;
   confui.stopwaitcount = 0;
   confui.filterDisplayDf = NULL;
-  confui.filterLookup = NULL;
 
   confui.gui.localip = NULL;
   uiutilsUIWidgetInit (&confui.gui.window);
@@ -113,6 +111,7 @@ main (int argc, char *argv[])
   confui.gui.indancechange = false;
   confui.gui.org = NULL;
   confui.gui.itunes = NULL;
+  confui.gui.filterLookup = NULL;
 
   confui.optiondf = NULL;
   confui.options = NULL;
@@ -213,7 +212,7 @@ main (int argc, char *argv[])
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_STATUS, FILTER_DISP_STATUS);
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_FAVORITE, FILTER_DISP_FAVORITE);
   nlistSetNum (llist, CONFUI_SWITCH_FILTER_STATUS_PLAYABLE, FILTER_DISP_STATUSPLAYABLE);
-  confui.filterLookup = llist;
+  confui.gui.filterLookup = llist;
 
   listenPort = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
   confui.conn = connInit (ROUTE_CONFIGUI);
@@ -348,7 +347,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   uiduallistFree (confui->gui.dispselduallist);
   datafileFree (confui->filterDisplayDf);
-  nlistFree (confui->filterLookup);
+  nlistFree (confui->gui.filterLookup);
   dispselFree (confui->gui.dispsel);
   dataFree (confui->gui.localip);
   if (confui->optiondf != NULL) {

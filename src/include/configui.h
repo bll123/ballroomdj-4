@@ -345,6 +345,7 @@ typedef struct confuigui {
   slist_t           *listingtaglist;
   /* filter */
   nlist_t           *filterDisplaySel;
+  nlist_t           *filterLookup;
   /* tables */
   confuiident_t     tablecurr;
   confuitable_t     tables [CONFUI_ID_TABLE_MAX];

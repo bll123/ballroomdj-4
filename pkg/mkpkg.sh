@@ -39,7 +39,9 @@ function copyreleasefiles {
   filelist="ChangeLog.txt LICENSE.txt README.txt VERSION.txt"
   dirlist="bin conv img install licenses scripts locale templates"
 
-  test -d plocal/bin || mkdir plocal/bin
+  if [[ ! -d plocal/bin ]];then
+    mkdir -p plocal/bin
+  fi
   case ${tag} in
     linux)
       cp -f packages/fpcalc-${tag} plocal/bin/fpcalc

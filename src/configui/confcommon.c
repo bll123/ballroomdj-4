@@ -448,9 +448,8 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_OUT_CB: {
-//### fix
-//        nlistSetNum (gui->filterDisplaySel,
-//            nlistGetNum (confui->filterLookup, i), nval);
+        nlistSetNum (gui->filterDisplaySel,
+            nlistGetNum (gui->filterLookup, i), nval);
         break;
       }
       case CONFUI_OUT_DEBUG: {

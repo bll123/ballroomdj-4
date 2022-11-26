@@ -1970,6 +1970,7 @@ mainMusicqSwitch (maindata_t *mainData, musicqidx_t newMusicqIdx)
   dbidx_t       dbidx;
   song_t        *song;
   musicqidx_t   oldplayidx;
+  char          tmp [40];
 
   logProcBegin (LOG_PROC, "mainMusicqSwitch");
 
@@ -1986,6 +1987,14 @@ mainMusicqSwitch (maindata_t *mainData, musicqidx_t newMusicqIdx)
   mainData->musicqPlayIdx = newMusicqIdx;
   mainData->musicqManageIdx = mainData->musicqPlayIdx;
   mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
+
+  /* send the player the fade-in and fade-out times for this queue */
+  snprintf (tmp, sizeof (tmp), "%"PRId64,
+      (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, mainData->musicqPlayIdx));
+  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEIN, tmp);
+  snprintf (tmp, sizeof (tmp), "%"PRId64,
+      (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, mainData->musicqPlayIdx));
+  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEOUT, tmp);
 
   /* having switched the playback music queue, the songs must be prepped */
   mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);

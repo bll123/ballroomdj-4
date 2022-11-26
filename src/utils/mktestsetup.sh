@@ -27,11 +27,6 @@ esac
 
 FLAG=data/mktestdb.txt
 
-if [[ ! -d data ]]; then
-  echo "No data dir"
-  exit 1
-fi
-
 # copy this stuff before creating the database...
 # otherwise the dances.txt file may be incorrect.
 
@@ -39,16 +34,16 @@ if [[ -f $FLAG ]]; then
   # preserve the flag file
   mv $FLAG .
 fi
-rm -rf data
+test -d data && rm -rf data
 rm -rf img/profile0[1-9]
 
 hostname=$(hostname)
 mkdir -p data/profile00
 mkdir -p data/${hostname}/profile00
 
-if [[ -f $(basename mktestdb.txt) ]]; then
+if [[ -f $(basename $FLAG) ]]; then
   # preserve the flag file
-  mv $(basename mktestdb.txt) $FLAG
+  mv $(basename $FLAG) $FLAG
 fi
 
 for f in templates/ds-*.txt; do

@@ -59,14 +59,10 @@ if [[ ! -f $FLAG ||
     ($outfile != "" && $outfile != $TESTDB) ||
     $infile -nt $TESTDB ||
     $infile -nt $FLAG ]]; then
-  case $(pwd) in
-    */bdj4)
-      ;;
-    *)
-      echo "invalid current dir $(pwd)"
-      exit 1
-      ;;
-  esac
+  if [[ ! -d data || ! -d src || ! -d tmp ]]; then
+    echo "invalid current dir $(pwd)"
+    exit 1
+  fi
   if [[ -d test-music ]]; then
     rm -rf test-music/*
   fi

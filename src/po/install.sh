@@ -19,6 +19,7 @@ function mksub {
   set -o noglob
   echo "-- Processing $tmpl"
   sedcmd=""
+  ok=F
   while read -r line; do
     nl=$(echo $line |
       sed -e 's,^\.\.,,' -e 's,^,msgid ",' -e 's,$,",')
@@ -35,9 +36,12 @@ function mksub {
         ;;
     esac
     sedcmd+="-e '\~^${line}\$~ s~.*~${xl}~' "
+    ok=T
   done < $tempf
 
-  eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
+  if [[ $ok == T ]]; then
+    eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
+  fi
   set +o noglob
 }
 
@@ -50,6 +54,7 @@ function mkhtmlsub {
   set -o noglob
   echo "-- Processing $tmpl"
   sedcmd=""
+  ok=F
   while read -r line; do
     nl=$line
     case $nl in
@@ -66,9 +71,12 @@ function mkhtmlsub {
     xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,' -e 's,\&,\\&amp;,g')
     sedcmd+="-e '\~value=\"${nl}\"~ s~value=\"${nl}\"~value=\"${xl}\"~' "
     sedcmd+="-e '\~>${nl}</p>~ s~${nl}~${xl}~' "
+    ok=T
   done < $tempf
 
-  eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
+  if [[ $ok == T ]]; then
+    eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
+  fi
   set +o noglob
 }
 
@@ -81,6 +89,7 @@ function mkimgsub {
   set -o noglob
   echo "-- Processing $tmpl"
   sedcmd=""
+  ok=F
   while read -r line; do
     nl=$line
     case $nl in
@@ -96,9 +105,12 @@ function mkimgsub {
     esac
     xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,')
     sedcmd+="-e '\~aria-label=\"${nl}\"~ s~aria-label=\"${nl}\"~aria-label=\"${xl}\"~' "
+    ok=T
   done < $tempf
 
-  eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
+  if [[ $ok == T ]]; then
+    eval sed ${sedcmd} "$tmpl" > "${TMPLDIR}/${locale}/$(basename ${tmpl})"
+  fi
   set +o noglob
 }
 
@@ -162,15 +174,15 @@ while read -r line; do
   sed -n -e '/^COMPLETEMSG/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
-  fn=${TMPLDIR}/bdjconfig.txt.q0
+  fn=${TMPLDIR}/bdjconfig.q0.txt
   sed -n -e '/^QUEUE_NAME/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
-  fn=${TMPLDIR}/bdjconfig.txt.q1
+  fn=${TMPLDIR}/bdjconfig.q1.txt
   sed -n -e '/^QUEUE_NAME/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
-  fn=${TMPLDIR}/bdjconfig.txt.q2
+  fn=${TMPLDIR}/bdjconfig.q2.txt
   sed -n -e '/^QUEUE_NAME/ {n;p;}' $fn > $TMP
   mksub $fn $TMP $locale $pofile
 
