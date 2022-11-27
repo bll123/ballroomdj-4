@@ -1,22 +1,22 @@
 #
-# :main
-#   set the base directory to the main directory
-# :data
-#   set the base directory to the main directory
 # filename or directory name
 #
-# be sure to use end of line markers if possible
+# be sure to be very specific and use end of line markers if possible
 #
 
-:main
-
+# old (alpha) template naming convention
 templates/.*\.nl$
 templates/.*\.en_US$
+
+# old (alpha) library
 bin/libbdj4uigtk.(so|dylib|dll)$
+
+# unneeded executables
 plocal/bin/curl.exe$
 plocal/bin/openssl.exe$
+
+# old conversion program (alpha)
 conv/sort-options.tcl$
 
-:data
-
-profile\d\d/configui\.txt$
+# old data file name
+data/profile\d\d/configui\.txt$

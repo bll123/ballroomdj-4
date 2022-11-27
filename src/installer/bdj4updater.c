@@ -507,25 +507,6 @@ updaterCleanFiles (void)
         continue;
       }
 
-      if (strcmp (pattern, ":main") == 0) {
-        if (nlistGetCount (cleanlist) > 0) {
-          updaterCleanRegex (basedir, cleanlist);
-          nlistFree (cleanlist);
-          cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
-        }
-        basedir = sysvarsGetStr (SV_BDJ4MAINDIR);
-        continue;
-      }
-      if (strcmp (pattern, ":data") == 0) {
-        if (nlistGetCount (cleanlist) > 0) {
-          updaterCleanRegex (basedir, cleanlist);
-          nlistFree (cleanlist);
-          cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
-        }
-        basedir = sysvarsGetStr (SV_BDJ4DATATOPDIR);
-        continue;
-      }
-
       rx = regexInit (pattern);
       nlistSetData (cleanlist, count, rx);
       ++count;
