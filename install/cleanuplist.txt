@@ -5,17 +5,18 @@
 #   set the base directory to the main directory
 # filename or directory name
 #
+# be sure to use end of line markers if possible
+#
 
 :main
 
 templates/.*\.nl$
 templates/.*\.en_US$
-templates/nl/bdjconfig.txt.p
-bin/libbdj4uigtk\.
+bin/libbdj4uigtk.(so|dylib|dll)$
 plocal/bin/curl.exe$
 plocal/bin/openssl.exe$
 conv/sort-options.tcl$
 
 :data
 
-profile\d\d/configui\.txt
+profile\d\d/configui\.txt$

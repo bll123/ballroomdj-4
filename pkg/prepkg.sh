@@ -33,7 +33,8 @@ esac
 
 echo "-- $(date +%T) copying licenses"
 licdir=licenses
-rm -f ${licdir}/*
+test -d ${licdir} && rm -rf ${licdir}
+mkdir -p ${licdir}
 cp -pf packages/mongoose*/LICENSE ${licdir}/mongoose.LICENSE
 if [[ $tag == windows ]]; then
   cp -pf packages/libressl*/COPYING ${licdir}/libressl.LICENSE

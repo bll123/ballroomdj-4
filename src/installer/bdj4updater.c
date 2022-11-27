@@ -466,6 +466,7 @@ main (int argc, char *argv [])
   pathbldMakePath (tbuff, sizeof (tbuff),
       "updater", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
   datafileSaveKeyVal ("updater", tbuff, upddfkeys, UPD_DF_COUNT, updlist, 0);
+  datafileFree (df);
 
   bdj4shutdown (ROUTE_NONE, NULL);
   bdjoptCleanup ();
@@ -533,6 +534,7 @@ updaterCleanFiles (void)
 
     updaterCleanRegex (basedir, cleanlist);
     nlistFree (cleanlist);
+    cleanlist = NULL;
   }
 }
 
@@ -561,6 +563,7 @@ updaterCleanRegex (const char *basedir, nlist_t *cleanlist)
     while ((key = nlistIterateKey (cleanlist, &cliteridx)) >= 0) {
       rx = nlistGetData (cleanlist, key);
       if (regexMatch (rx, fn)) {
+        // fprintf (stderr, "  match %s\n", fn);
         if (fileopIsDirectory (fn)) {
           diropDeleteDir (fn);
         } else if (fileopFileExists (fn)) {
