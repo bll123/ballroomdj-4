@@ -173,6 +173,11 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_SPINBOX_MAX_PLAY_TIME, OPT_Q_MAXPLAYTIME,
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, 0), CONFUI_INDENT);
 
+  /* CONTEXT: configuration: queue: pause each song */
+  confuiMakeItemSwitch (gui, &vbox, &sg, _("Pause Each Song"),
+      CONFUI_SWITCH_Q_PAUSE_EACH_SONG, OPT_Q_PAUSE_EACH_SONG,
+      bdjoptGetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, 0), NULL, CONFUI_INDENT);
+
   /* CONTEXT: configuration: whether to play announcements */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Play Announcements"),
       CONFUI_SWITCH_PLAY_ANNOUNCE, OPT_Q_PLAY_ANNOUNCE,
@@ -324,6 +329,8 @@ confuiPlayerQueueChg (void *udata)
       (double) bdjoptGetNumPerQueue (OPT_Q_GAP, nselidx) / 1000.0);
   uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_MAX_PLAY_TIME].spinbox,
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, nselidx));
+  uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiswitch,
+      bdjoptGetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_PLAY_ANNOUNCE].uiswitch,
       bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, nselidx));
 

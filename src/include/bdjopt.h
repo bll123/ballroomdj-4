@@ -85,13 +85,14 @@ typedef enum {
   OPT_P_UI_MARK_COL,
   OPT_P_UI_PROFILE_COL,
   /* the queue values must be at the end of enum list, as they are */
-  /* repeated for each queue; opt_q_active must be the first opt_q item */
+  /* repeated for each queue; opt_q_active must be the first opt_q_ item */
   OPT_Q_ACTIVE,
   OPT_Q_DISPLAY,
   OPT_Q_FADEINTIME,
   OPT_Q_FADEOUTTIME,
   OPT_Q_GAP,
   OPT_Q_MAXPLAYTIME,
+  OPT_Q_PAUSE_EACH_SONG,
   OPT_Q_PLAY_ANNOUNCE,
   OPT_Q_QUEUE_NAME,
 } bdjoptkey_t;

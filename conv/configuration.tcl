@@ -115,11 +115,17 @@ foreach path [list {} profiles $mpath $mppath] {
           } else {
             puts $tfh "..no"
           }
+          puts $tfh "PAUSEEACHSONG"
+          puts $tfh "..no"
           puts $tfh "PLAYANNOUNCE"
           puts $tfh "..no"
           if { $q == 2 } {
             puts $tfh "QUEUE_NAME"
             puts $tfh "..Queue C"
+          }
+          if { $q == 3 } {
+            puts $tfh "QUEUE_NAME"
+            puts $tfh "..Queue D"
           }
         }
       }

@@ -85,6 +85,7 @@ static datafilekey_t bdjoptqueuedfkeys [] = {
   { "FADEOUTTIME",          OPT_Q_FADEOUTTIME,          VALUE_NUM, NULL, -1 },
   { "GAP",                  OPT_Q_GAP,                  VALUE_NUM, NULL, -1 },
   { "MAXPLAYTIME",          OPT_Q_MAXPLAYTIME,          VALUE_NUM, NULL, -1 },
+  { "PAUSEEACHSONG",        OPT_Q_PAUSE_EACH_SONG,      VALUE_NUM, convBoolean, -1 },
   { "PLAYANNOUNCE",         OPT_Q_PLAY_ANNOUNCE,        VALUE_NUM, convBoolean, -1 },
   { "QUEUE_NAME",           OPT_Q_QUEUE_NAME,           VALUE_STR, NULL, -1 },
 };
