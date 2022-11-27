@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-11-22\n"
+"PO-Revision-Date: 2022-11-26\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -195,6 +195,10 @@ msgstr "Actie"
 #. CONTEXT: starterui: action menu for the starter user interface
 msgid "Actions"
 msgstr "Acties"
+
+#. CONTEXT: configuration: whether the queue is active
+msgid "Active"
+msgstr ""
 
 #. CONTEXT: configuration: table edit: button: add new selection
 msgid "Add New"
@@ -531,6 +535,7 @@ msgid "Disc Count"
 msgstr ""
 
 #. CONTEXT: configuration: display settings: which set of display settings to update
+#. CONTEXT: configuration: whether to display the queue
 msgid "Display"
 msgstr ""
 
@@ -1284,6 +1289,7 @@ msgid "QR Code"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: configuration: which queue to configure
 #. CONTEXT: history: re-queue the selected song
 #. CONTEXT: request external dialog: queue the selected file
 #. CONTEXT: song-selection: queue a song to be played
@@ -1294,16 +1300,12 @@ msgstr "Wachtrij"
 msgid "Queue 5"
 msgstr ""
 
-#. CONTEXT: configuration: The name of the music queue
-msgid "Queue A Name"
-msgstr ""
-
 #. CONTEXT: configuration file: name of a music queue
 msgid "Queue B"
 msgstr "Wachtrij B"
 
-#. CONTEXT: configuration: The name of the music queue
-msgid "Queue B Name"
+#. CONTEXT: configuration file: name of a music queue
+msgid "Queue C"
 msgstr ""
 
 #. CONTEXT: music queue: button: queue a dance for playback
@@ -1314,6 +1316,10 @@ msgstr ""
 #. CONTEXT: configuration: the number of items loaded into the music queue
 msgid "Queue Length"
 msgstr "Wachtrij lengte"
+
+#. CONTEXT: configuration: The name of the music queue
+msgid "Queue Name"
+msgstr ""
 
 #. CONTEXT: music queue: button: queue a playlist for playback
 msgid "Queue Playlist"

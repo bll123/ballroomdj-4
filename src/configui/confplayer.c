@@ -300,13 +300,13 @@ confuiPlayerQueueChg (void *udata)
 
   logProcBegin (LOG_PROC, "confuiPlayerQueueChg");
 
-
   oselidx = gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx;
-  /* make sure the current selection gets saved to the options data */
-  confuiPopulateOptions (gui);
-
   nselidx = uiSpinboxTextGetValue (
       gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].spinbox);
+  if (oselidx != nselidx) {
+    /* make sure the current selection gets saved to the options data */
+    confuiPopulateOptions (gui);
+  }
   gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx = nselidx;
 
   /* set all of the display values for the queue specific items */
