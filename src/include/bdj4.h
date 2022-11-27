@@ -17,6 +17,7 @@ enum {
   STOP_WAIT_COUNT_MAX = 60,
   EXIT_WAIT_COUNT = 60,
   INSERT_AT_SELECTION = -2,
+  /* when changing the queue max, be sure to update include/musicq.h */
   BDJ4_QUEUE_MAX = 3,
 };
 

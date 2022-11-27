@@ -46,6 +46,9 @@ musicqAlloc (musicdb_t *db)
   musicq_t  *musicq;
 
   logProcBegin (LOG_PROC, "musicqAlloc");
+  assert ((int) MUSICQ_HISTORY == (int) BDJ4_QUEUE_MAX);
+  assert ((int) MUSICQ_DISP_MAX == (int) (BDJ4_QUEUE_MAX + 1));
+
   musicq = malloc (sizeof (musicq_t));
   assert (musicq != NULL);
   musicq->musicdb = db;
