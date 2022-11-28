@@ -105,7 +105,6 @@ uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
     int maxWidth, slist_t *list, nlist_t *keylist,
     uispinboxdisp_t textGetProc)
 {
-  uiSpinboxSet (&spinbox->uispinbox, (double) min, (double) (count - 1));
   /* will width in characters be enough for some glyphs? */
   /* certainly not if languages are mixed */
   spinbox->maxWidth = maxWidth;
@@ -126,6 +125,7 @@ uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
     }
   }
   spinbox->textGetProc = textGetProc;
+  uiSpinboxSet (&spinbox->uispinbox, (double) min, (double) (count - 1));
 }
 
 int

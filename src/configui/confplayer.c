@@ -28,6 +28,8 @@
 static void confuiLoadVolIntfcList (confuigui_t *gui);
 static void confuiLoadPlayerIntfcList (confuigui_t *gui);
 static bool confuiPlayerQueueChg (void *udata);
+static void confuiSetPlayerQueueList (confuigui_t *gui);
+static void confuiUpdatePlayerQueueList (confuigui_t *gui);
 
 void
 confuiInitPlayer (confuigui_t *gui)
@@ -51,6 +53,8 @@ confuiInitPlayer (confuigui_t *gui)
     pliAudioDeviceList (pli, &sinklist);
   }
 
+  gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].displist = NULL;
+
   tlist = nlistAlloc ("cu-audio-out", LIST_ORDERED, free);
   llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, free);
   /* CONTEXT: configuration: audio: The default audio sink (audio output) */
@@ -70,12 +74,7 @@ confuiInitPlayer (confuigui_t *gui)
   volumeFreeSinkList (&sinklist);
   volumeFree (volume);
 
-  tlist = nlistAlloc ("queue-name", LIST_ORDERED, free);
-  gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx = 0;
-  for (size_t i = 0; i < BDJ4_QUEUE_MAX; ++i) {
-    nlistSetStr (tlist, i, bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, i));
-  }
-  gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].displist = tlist;
+  confuiSetPlayerQueueList (gui);
 }
 
 void
@@ -302,17 +301,21 @@ confuiPlayerQueueChg (void *udata)
   confuigui_t *gui = udata;
   int         oselidx;
   int         nselidx;
+  int         widx;
 
   logProcBegin (LOG_PROC, "confuiPlayerQueueChg");
 
-  oselidx = gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx;
-  nselidx = uiSpinboxTextGetValue (
-      gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].spinbox);
+  widx = CONFUI_SPINBOX_PLAYER_QUEUE;
+  oselidx = gui->uiitem [widx].listidx;
+  nselidx = uiSpinboxTextGetValue (gui->uiitem [widx].spinbox);
   if (oselidx != nselidx) {
     /* make sure the current selection gets saved to the options data */
     confuiPopulateOptions (gui);
+    confuiSetPlayerQueueList (gui);
+    confuiUpdatePlayerQueueList (gui);
+    uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, nselidx);
   }
-  gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx = nselidx;
+  gui->uiitem [widx].listidx = nselidx;
 
   /* set all of the display values for the queue specific items */
   uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_QUEUE_NM].entry,
@@ -338,3 +341,49 @@ confuiPlayerQueueChg (void *udata)
   return UICB_CONT;
 }
 
+static void
+confuiSetPlayerQueueList (confuigui_t *gui)
+{
+  nlist_t     *tlist;
+  int         widx;
+
+  widx = CONFUI_SPINBOX_PLAYER_QUEUE;
+
+  tlist = nlistAlloc ("queue-name", LIST_ORDERED, free);
+  gui->uiitem [widx].listidx = 0;
+  for (size_t i = 0; i < BDJ4_QUEUE_MAX; ++i) {
+    nlistSetStr (tlist, i, bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, i));
+  }
+  nlistFree (gui->uiitem [widx].displist);
+  gui->uiitem [widx].displist = tlist;
+}
+
+static void
+confuiUpdatePlayerQueueList (confuigui_t *gui)
+{
+  nlist_t     *tlist;
+  int         widx;
+  nlistidx_t  iteridx;
+  nlistidx_t  key;
+  char        *val;
+  size_t      maxWidth = 10;
+
+  widx = CONFUI_SPINBOX_PLAYER_QUEUE;
+  if (gui->uiitem [widx].spinbox == NULL) {
+    return;
+  }
+
+  tlist = gui->uiitem [widx].displist;
+
+  nlistStartIterator (tlist, &iteridx);
+  while ((key = nlistIterateKey (tlist, &iteridx)) >= 0) {
+    size_t      len;
+
+    val = nlistGetStr (tlist, key);
+    len = strlen (val);
+    maxWidth = len > maxWidth ? len : maxWidth;
+  }
+
+  uiSpinboxTextSet (gui->uiitem [widx].spinbox, 0,
+      nlistGetCount (tlist), maxWidth, tlist, NULL, NULL);
+}

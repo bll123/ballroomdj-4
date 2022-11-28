@@ -1,17 +1,26 @@
 BDJ4 4.0.0
+Alpha Release: 2022-11---
 
 Contents
+  Installation
   Release Information
   Release Notes
-  Installation
   Converting BallroomDJ 3
   Known Issues
   Feedback
   Licenses
 
-BallroomDJ 4 is currently under development.
+Installation:
+  Windows:
+    https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Windows/
+  MacOS:
+    https://sourceforge.net/p/ballroomdj4/wiki/en-Install-MacOS/
+  Linux:
+    https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Linux/
 
-Alpha Release: 2022-11-22
+Release Information
+
+  BallroomDJ 4 is currently under development.
 
   Alpha releases are mostly untested works in progress.
 
@@ -43,49 +52,6 @@ Release Notes:
   (The features that rename audio files is not implemented yet).
   (Writing audio file tags is turned off upon conversion, and the
    'Write BDJ3 Compatible Audio Tags' is on).
-
-Installation:
-  Windows:
-    a) Run the BallroomDJ 4 installer.
-
-  Linux:
-    a) Download the linux-pre-install.sh script from:
-
-        https://sourceforge.net/projects/ballroomdj4/files/
-
-      and run it.
-      This script uses sudo to install the required packages.
-      This only needs to be done once.
-
-    b) Run the BallroomDJ 4 installer.
-
-  MacOS:
-    a) Download the following two files and the bdj4 installer from:
-
-         https://sourceforge.net/projects/ballroomdj4/files/
-
-            macos-pre-install-macports-v4.sh
-            macos-run-installer-v2.sh
-
-       Be aware that there are two MacOS installation packages.  One for
-       MacOS on Intel, and one for MacOS on Apple Silicon.
-
-    b) Open a terminal (Finder : Go -> Utilities / Terminal)
-      Type in the following commands:
-
-        cd $HOME/Downloads
-        bash macos-pre-install-macports-v4.sh
-
-      The pre-installation script requires your password in order to
-      install the required MacPorts packages.  It may ask for your
-      password multiple times.
-
-      The pre-installation script only needs to be run each time its
-      version number changes.
-
-    c) In the terminal type the following command:
-
-        bash macos-run-installer-v2.sh
 
 Converting BallroomDJ 3:
 
@@ -133,8 +99,6 @@ LICENSES
     img/musicbrainz-logo.svg : GPLv2
     Windows:
       msys2      : BSD 3-Clause ( https://github.com/msys2/MSYS2-packages/blob/master/LICENSE )
-      libmad     : GPL License
-      libmp3lame : LGPL https://lame.sourceforge.net/
       ffmpeg     : GPLv3 License
       curl       : MIT License
       c-ares     : MIT License

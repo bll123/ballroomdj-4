@@ -590,6 +590,8 @@ confuiGetThemeList (void)
     nlistSetStr (themelist, count++, nm);
   }
 
+  nlistFree (sthemelist);
+
   logProcEnd (LOG_PROC, "confuiGetThemeList", "");
   return themelist;
 }
