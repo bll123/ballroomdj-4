@@ -125,6 +125,8 @@ uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
     }
   }
   spinbox->textGetProc = textGetProc;
+  /* set the range after setting up the list as the range set will */
+  /* generate a call to gtk display processing */
   uiSpinboxSet (&spinbox->uispinbox, (double) min, (double) (count - 1));
 }
 
