@@ -100,7 +100,7 @@ build:
 	@-rm -f ../bin/liblib*.a
 
 # testing
-.PHONY: check checkfast checksuite testsuite
+.PHONY: check checkfast checksuite testsuite testsection testtest teststart
 check:
 	(./utils/mktestsetup.sh;cd ..;./bin/bdj4 --check_all)
 
@@ -114,7 +114,8 @@ checksuite:
 	(cd ..;CK_RUN_SUITE=$(suite) ./bin/bdj4 --check_all)
 
 testsuite:
-	./utils/mktestsetup.sh
+	# --force is needed for windows
+	./utils/mktestsetup.sh --force
 	(cd ..;./bin/bdj4 --testsuite)
 
 testsection:

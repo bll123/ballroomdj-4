@@ -619,15 +619,13 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CHK_MAIN_SET_GAP: {
-          char  tmp [40];
-
-          bdjoptSetNumPerQueue (OPT_Q_GAP, atoi (targs), 0);
-          connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, tmp);
+          bdjoptSetNumPerQueue (OPT_Q_GAP, atoi (targs), mainData->musicqPlayIdx);
+          connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, targs);
           dbgdisp = true;
           break;
         }
         case MSG_CHK_MAIN_SET_MAXPLAYTIME: {
-          bdjoptSetNumPerQueue (OPT_Q_MAXPLAYTIME, atol (targs), 0);
+          bdjoptSetNumPerQueue (OPT_Q_MAXPLAYTIME, atol (targs), mainData->musicqPlayIdx);
           dbgdisp = true;
           break;
         }
@@ -638,7 +636,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CHK_MAIN_SET_PLAYANNOUNCE: {
-          bdjoptSetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, atoi (targs), 0);
+          bdjoptSetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, atoi (targs), mainData->musicqPlayIdx);
           dbgdisp = true;
           break;
         }

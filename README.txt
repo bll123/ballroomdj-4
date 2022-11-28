@@ -1,5 +1,5 @@
 BDJ4 4.0.0
-Alpha Release: 2022-11---
+Alpha Release: 2022-11-28
 
 Contents
   Installation
@@ -13,7 +13,7 @@ Contents
 Installation:
   Windows:
     https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Windows/
-  MacOS:
+  Mac OS:
     https://sourceforge.net/p/ballroomdj4/wiki/en-Install-MacOS/
   Linux:
     https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Linux/
