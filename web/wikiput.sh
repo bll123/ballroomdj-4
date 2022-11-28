@@ -62,9 +62,7 @@ function updateimages {
     sz=$(echo $3 | sed 's,x.*,,')
     if [[ $sz -gt 800 ]]; then
       pct=$(dc -e "4k 800 $sz / 100 * p")
-identify $ifile
       convert -resize ${pct}% $ifile $ifn
-identify $ifn
     fi
     touch -r $ifile $ifn
   done
@@ -305,6 +303,9 @@ case $1 in
     ;;
   putimages)
     updateimages
+    ;;
+  *)
+    echo "Usage: $0 {putall|getal|dispfilelist|get <file>|put <file>|putimages}"
     ;;
 esac
 

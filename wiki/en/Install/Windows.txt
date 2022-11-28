@@ -6,26 +6,51 @@
 
 Download the Windows installer from sourceforge.
 
-( https://sourceforge.net/projects/ballroomdj4/files/ )
+[BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
-Start the installer:
+Start the installer by double clicking the downloaded file in your
+Downloads folder. (This image shows an out of date installer).
 
-(This is an example and may not be up to date.)
-~~~
-$HOME/Downloads/bdj4-4.0.0-installer-win64-20221122-alpha
-~~~
+<div markdown style="margin-right: 20px; text-align: center;">
+![BallroomDJ 4 File Selection on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Install-File-Select.png)
+<br><span style="color:#4559bf;">**BallroomDJ 4 Installer Selection **</span> </div>
 
-Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
+If windows displays the **Windows Protected your PC** message,
+select **More Info**, then **Run Anyway**.  BallroomDJ 4 has no malware
+present in it.
+
+Choose the folder in which to install BallroomDJ 4.  The %USERPROFILE%/BDJ4
 folder will be pre-selected for you.
 
 If you want to convert a BallroomDJ 3 installation, select the
-BallroomDJ 3 folder and select the 'Convert BallroomDJ 3' checkbox.
+BallroomDJ 3 folder and select the **Convert BallroomDJ 3** checkbox.
 
-After you have selected the installation folder, select the 'Install'
-button and wait for the 'Installation Completed' message.
+After you have selected the installation folder, select the **Install**
+button and wait for the **Installation Completed** message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer.png](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer.png)
+![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer.png)
 <br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Windows**</span> </div>
 
-_(Updated 2022-11-23 12:40:50; BDJ4 version 4.0.0-20221122-alpha)_
+If the VLC application is not installed, the VLC installer will be
+downloaded and started for you.  In the Windows **User Account
+Control** window, select **Yes**.  Select the VLC installation language
+and select **OK**. Select the **Next** button twice and you should be
+in the VLC **Choose Components** selection.
+
+Scroll down until you see **File Type Associations**.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![VLC Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Install-VLC-Comp.png)
+<br><span style="color:#4559bf;">**VLC Installer on Windows**</span> </div>
+
+If you do not use VLC as your current media player, select the **File
+Type Associations** checkbox twice.  The first click will turn on all
+file type associations, the second click will turn all file type
+associations off.
+
+Now select **Next**, then select **Install**.
+After the VLC installation is complete, turn off the **Run VLC media
+player** checkbox, and select **Finish**.
+
+_(Updated 2022-11-28 07:55:49; BDJ4 version 4.0.0-20221126-alpha)_

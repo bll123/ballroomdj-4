@@ -4,9 +4,12 @@
 
 ### Install the Requisite Software
 
+This step only needs to be run once, not for every installation or
+update.
+
 Download the linux-pre-install.sh script from sourceforge.
 
-( https://sourceforge.net/projects/ballroomdj4/files/ )
+[BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
 Open a terminal and run this script using the following command:
 
@@ -24,9 +27,9 @@ This script performs the following actions:
 
 Download the Linux installer from sourceforge.
 
-( https://sourceforge.net/projects/ballroomdj4/files/ )
+[BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
-Run the installer:
+Open a terminal and run the installer:
 
 (This is an example and may not be up to date.)
 ~~~
@@ -36,14 +39,18 @@ $HOME/Downloads/bdj4-4.0.0-installer-linux-20221122-alpha
 Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
 folder will be pre-selected for you.
 
-If you want to convert a BallroomDJ 3 installation, select the
-BallroomDJ 3 folder and select the 'Convert BallroomDJ 3' checkbox.
+The **Re-Install** checkbox is only used if you want to completely reset
+all of the BDJ4 data files.  Any changes you have made within BDJ4
+will be lost if a re-install is done.
 
-After you have selected the installation folder, select the 'Install'
-button and wait for the 'Installation Completed' message.
+If you want to convert a BallroomDJ 3 installation, select the
+BallroomDJ 3 folder and select the **Convert BallroomDJ 3** checkbox.
+
+After you have selected the installation folder, select the **Install**
+button and wait for the **Installation Completed** message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer.png](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer.png)
+![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer.png)
 <br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Linux**</span> </div>
 
-_(Updated 2022-11-23 12:40:50; BDJ4 version 4.0.0-20221122-alpha)_
+_(Updated 2022-11-28 07:53:26; BDJ4 version 4.0.0-20221126-alpha)_

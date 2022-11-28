@@ -4,15 +4,18 @@
 
 ### Install the Requisite Software
 
+This step only needs to be run once, not for every installation or
+update.
+
 Download the macos-pre-install-v4.sh script from sourceforge.
 
-( https://sourceforge.net/projects/ballroomdj4/files/ )
+[BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
-Open a terminal and run this script using the following command. This
-may take a very long time to finish.  You may be required to enter
-your administrative password more than once during the installation
-process.  This step only needs to be performed once, not for every
-installation or upgrade.
+Open a terminal (Finder / Applications / Utilities / Terminal) and run
+this script using the following command. This may take a very long
+time to finish (especially slow on Ventura as of 2022-11).  You may be
+required to enter your administrative password more than once during
+the installation process.
 
 ~~~
 bash macos-pre-install-v4.sh
@@ -27,28 +30,42 @@ This script performs the following actions:
 Download the Mac OS installer from sourceforge.
 Be sure to select the correct architecture (Intel or Apple Silicon).
 
-( https://sourceforge.net/projects/ballroomdj4/files/ )
+[BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
 Also download the macos-run-install-v2.sh script from sourceforge.
 This script will set up and open the downloaded install package.
 
-Open a terminal and run this script using the following command:
+Open a terminal (Finder / Applications / Utilities / Terminal) and run
+this script using the following command:
 
 ~~~
 bash macos-run-install-v2.sh
 ~~~
 
-Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
-folder will be pre-selected for you.
+Choose the folder in which to install BallroomDJ 4.  The
+$HOME/Applications/BDJ4.app folder will be pre-selected for you.
+
+The **Re-Install** checkbox is only used if you want to completely reset
+all of the BDJ4 data files.  Any changes you have made within BDJ4
+will be lost if a re-install is done.
 
 If you want to convert a BallroomDJ 3 installation, select the
-BallroomDJ 3 folder and select the 'Convert BallroomDJ 3' checkbox.
+BallroomDJ 3 folder ($HOME/Library/Application Support/BallroomDJ) and
+select the **Convert BallroomDJ 3** checkbox.
 
-After you have selected the installation folder, select the 'Install'
-button and wait for the 'Installation Completed' message.
+After you have selected the installation folder, select the **Install**
+button and wait for the **Installation Completed** message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer.png](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer.png)
+![BallroomDJ 4 Installer on Mac OS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer.png)
 <br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Mac OS**</span> </div>
 
-_(Updated 2022-11-23 12:40:50; BDJ4 version 4.0.0-20221122-alpha)_
+If VLC is not already installed on your computer, the installation
+process will download and start the VLC installation.  Drag the VLC.app
+icon to the Applications Folder icon.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![VLC Installation on Mac OS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Install-VLC.png)
+<br><span style="color:#4559bf;">**VLC Installation on Mac OS**</span> </div>
+
+_(Updated 2022-11-28 07:53:26; BDJ4 version 4.0.0-20221126-alpha)_
