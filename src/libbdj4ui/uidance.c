@@ -150,8 +150,10 @@ uidanceSelectHandler (void *udata, long idx)
   uidance_t   *uidance = udata;
 
   uidance->selectedidx = idx;
-  /* the drop down set must be called to set the combobox display */
-  uiDropDownSelectionSetNum (uidance->dropdown, idx);
+  if (uidance->flags != UIDANCE_NONE) {
+    /* the drop down set must be called to set the combobox display */
+    uiDropDownSelectionSetNum (uidance->dropdown, idx);
+  }
 
   if (uidance->selectcb != NULL) {
     uiutilsCallbackLongHandler (uidance->selectcb, idx);
