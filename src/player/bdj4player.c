@@ -271,6 +271,14 @@ main (int argc, char *argv[])
   playerSetAudioSink (&playerData, audiosink);
   pliSetAudioDevice (playerData.pli, playerData.actualSink);
 
+  /* this is needed for pulse audio, */
+  /* otherwise vlc always chooses the default, */
+  /* despite having the audio device set */
+  if (isLinux () &&
+      strcmp (bdjoptGetStr (OPT_M_VOLUME_INTFC), "libvolpa") == 0) {
+    osSetEnv ("PULSE_SINK", playerData.actualSink);
+  }
+
   logMsg (LOG_DBG, LOG_IMPORTANT, "player interface: %s", bdjoptGetStr (OPT_M_PLAYER_INTFC));
   logMsg (LOG_DBG, LOG_IMPORTANT, "volume sink: %s", playerData.actualSink);
   playerData.pli = pliInit (bdjoptGetStr (OPT_M_PLAYER_INTFC),
