@@ -50,10 +50,9 @@ pliiInit (const char *volpkg, const char *sinkname)
 
   pliData = malloc (sizeof (plidata_t));
   assert (pliData != NULL);
-  if (pliData != NULL) {
-    vlcOptions [0] = NULL;
-    pliData->plData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions, vlcOptions);
-  }
+
+  vlcOptions [0] = NULL;
+  pliData->plData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions, vlcOptions);
   pliData->name = "VLC Integrated";
   return pliData;
 }
