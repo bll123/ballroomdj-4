@@ -2016,15 +2016,24 @@ static void
 mainPlaybackBegin (maindata_t *mainData)
 {
   musicqflag_t  flags;
+  bool          pauseind;
 
   logProcBegin (LOG_PROC, "mainPlaybackBegin");
+
+  /* if the pause flag is on for this queue, */
+  /* tell the player to turn on the pause-at-end */
+  pauseind = bdjoptGetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, mainData->musicqPlayIdx);
+  if (pauseind) {
+    connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
+    logProcEnd (LOG_PROC, "mainPlaybackBegin", "pause-each-song");
+    return;
+  }
 
   /* if the pause flag is on for this entry in the music queue, */
   /* tell the player to turn on the pause-at-end */
   flags = musicqGetFlags (mainData->musicQueue, mainData->musicqPlayIdx, 0);
   if ((flags & MUSICQ_FLAG_PAUSE) == MUSICQ_FLAG_PAUSE) {
-    connSendMessage (mainData->conn, ROUTE_PLAYER,
-        MSG_PLAY_PAUSEATEND, NULL);
+    connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_PAUSEATEND, NULL);
   }
   logProcEnd (LOG_PROC, "mainPlaybackBegin", "");
 }
