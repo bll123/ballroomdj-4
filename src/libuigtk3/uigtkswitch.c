@@ -69,6 +69,9 @@ uiCreateSwitch (int value)
       "button:hover { "
       "  background-color: shade(@theme_base_color,0.8); "
       "} "
+      "button:disabled { "
+      "  border-color: shade(@theme_base_color,0.8); "
+      "} "
       );
   g_signal_connect (widget, "toggled",
       G_CALLBACK (uiSwitchImageHandler), uiswitch);

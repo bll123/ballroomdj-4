@@ -182,6 +182,8 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_SWITCH_PLAY_ANNOUNCE, OPT_Q_PLAY_ANNOUNCE,
       bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, 0), NULL, CONFUI_INDENT);
 
+  confuiPlayerQueueChg (gui);
+
   logProcEnd (LOG_PROC, "confuiBuildUIPlayer", "");
 }
 
@@ -316,6 +318,14 @@ confuiPlayerQueueChg (void *udata)
     uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, nselidx);
   }
   gui->uiitem [widx].listidx = nselidx;
+
+  if (nselidx == 0) {
+    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
+    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch);
+  } else {
+    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
+    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch);
+  }
 
   /* set all of the display values for the queue specific items */
   uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_QUEUE_NM].entry,
