@@ -1,0 +1,26 @@
+[Wiki Home](Home)
+
+### Configuration : Marquee Options
+
+The marquee can be displayed on a monitor or projected on to a screen
+or wall so that the dancers can see the upcoming dances.
+
+__Marquee Theme__: The interface theme used to display the marquee.
+
+__Marquee Font__: The font used for the marquee.  A narrow font works
+best for the marquee.
+
+__Queue Length__: The number of upcoming songs to display on the
+marquee.
+
+__Show Song Information__: If enabled, the song artist and title will
+be displayed on the marquee.
+
+__Accent Color__: The color to use for the current dance and countdown
+timer.
+
+__Hide Marquee on Start__: If enabled, the marquee will be minimized
+on startup.
+
+TBD
+_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_

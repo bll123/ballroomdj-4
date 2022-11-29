@@ -1,0 +1,30 @@
+[Wiki Home](Home)
+
+### Configuration : Mobile Remote Control
+
+Mobile Remote Control is a web page that can be used to control BDJ4
+over the Wi-Fi network.  Access the web page via your mobile phone or
+tablet.  The computer running BDJ4 must be connected to a Wi-Fi
+network (but does not need to be connected to the internet).
+
+__Enable Remote Control__: Turns on the remote control function
+(activated when the player is started).
+
+__HTML Template__: Select the style (and language) of web page to
+display.
+
+__User ID__: The user ID to use when signing on to the remote control
+web page.
+
+__Password__: The password to use when signing on the the remote
+control web page.
+
+__Port__: The port to connect to.  This usually does not need to be
+changed unless there is another device using this port.
+
+__QR Code__: Select the link to display a QR code that can be scanned
+with your mobile phone or tablet.
+
+TBD
+
+_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_

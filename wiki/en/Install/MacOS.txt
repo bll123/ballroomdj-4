@@ -68,4 +68,4 @@ icon to the Applications Folder icon.
 ![VLC Installation on Mac OS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Install-VLC.png)
 <br><span style="color:#4559bf;">**VLC Installation on Mac OS**</span> </div>
 
-_(Updated 2022-11-28 07:53:26; BDJ4 version 4.0.0-20221126-alpha)_
+_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_

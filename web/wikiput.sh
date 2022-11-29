@@ -219,7 +219,7 @@ function put {
     odt=$(getupddate $tfn)
     touch --date "$odt" ${compfile}
     if [[ ! ${tfn} -nt ${compfile} ]]; then
-      echo "$tfn: no change"
+      # echo "$tfn: no change"
       return
     fi
   fi

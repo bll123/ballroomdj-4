@@ -57,4 +57,4 @@ sudo port install gtk3-devel +quartz -x11
   To restart to restore from the internet:
     Alt-D
 
-_(Updated 2022-11-28 07:12:58; BDJ4 version 4.0.0-20221126-alpha)_
+_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_

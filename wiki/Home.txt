@@ -18,32 +18,35 @@
 <div markdown style="float: left; margin-right: 20px;">
 
 ### Configuration
-[General Options](en-Config-General)
-[Player Options](en-Config-Player)
-[Marquee Options](en-Config-Marquee)
-[User Interface](en-Config-User%20Interface)
-[Display Settings](en-Config-Display%20Settings)
-[Filter Display](en-Config-Filter%20Display)
-[Organisation](en-Config-Organisation)
-[Edit Dances](en-Config-Edit%20Dances)
-[Edit Ratings](en-Config-Edit%20Ratings)
-[Edit Status](en-Config-Edit%20Status)
-[Edit Levels](en-Config-Edit%20Levels)
-[Edit Genres](en-Config-Edit%20Genres)
-[iTunes](en-Config-iTunes)
-[Mobile Remote Control](en-Config-Mobile%20Remote%20Control)
-[Mobile Marquee](en-Config-Mobile%20Marquee)
+[General Options](en-Configuration-General)
+[Player Options](en-Configuration-Player)
+[Marquee Options](en-Configuration-Marquee)
+[User Interface](en-Configuration-User%20Interface)
+[Display Settings](en-Configuration-Display%20Settings)
+[Filter Display](en-Configuration-Filter%20Display)
+[Organisation](en-Configuration-Organisation)
+[Edit Dances](en-Configuration-Edit%20Dances)
+[Edit Ratings](en-Configuration-Edit%20Ratings)
+[Edit Status](en-Configuration-Edit%20Status)
+[Edit Levels](en-Configuration-Edit%20Levels)
+[Edit Genres](en-Configuration-Edit%20Genres)
+[iTunes](en-Configuration-iTunes)
+[Mobile Remote Control](en-Configuration-Mobile%20Remote%20Control)
+[Mobile Marquee](en-Configuration-Mobile%20Marquee)
 
 </div>
 
 <div markdown style="float: left; margin-right: 20px;">
 
 ### Management
-[Edit Song Lists](en-Manage-Edit%20Song%20Lists)
-[Playlist Management](en-Manage-Playlist%20Management)
-[Edit Sequences](en-Manage-Edit%20Sequences)
-[Music Manager](en-Manage-Music%20Manager)
-[Update Database](en-Manage-Update%20Database)
+[Edit Song Lists](en-Management-Edit%20Song%20Lists)
+[Playlist Management](en-Management-Playlist%20Management)
+[Edit Sequences](en-Management-Edit%20Sequences)
+[Music Manager](en-Management-Music%20Manager)
+[Update Database](en-Management-Update%20Database)
+
+### Player
+[Player](en-Player-Player)
 
 </div>
 
@@ -61,4 +64,4 @@ future subjects and may change (2022-11).
 
 <div markdown style="clear: both;"></div>
 
-_(Updated 2022-11-29 07:45:26; BDJ4 version 4.0.0-20221128-alpha)_
+_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_

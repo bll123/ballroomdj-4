@@ -1,7 +1,0 @@
-[Wiki Home](Home)
-
-### Management : Update Database
-
-TBD
-
-_(Updated 2022-11-29 07:05:16; BDJ4 version 4.0.0-20221128-alpha)_

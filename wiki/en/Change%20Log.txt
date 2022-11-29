@@ -17,4 +17,4 @@
    * installation: windows: installer newer python if current is too old.
    * macos: make sure macports is first in path.
 
-_(Updated 2022-11-29 06:26:38; BDJ4 version 4.0.0-20221128-alpha)_
+_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_

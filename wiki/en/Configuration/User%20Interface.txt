@@ -1,0 +1,21 @@
+[Wiki Home](Home)
+
+### Configuration : User Interface
+
+The user interface tab provide settings for how the user interface
+is displayed.
+
+__Theme__: The theme to use for the user interface.  Mac OS and
+Windows only have a few themes shipped with the installation package.
+Other themes may be installed if wanted.
+
+__Font__: The display font used for the main user interface.
+
+__Listing Font__: The font used to display lists of songs in the music
+queues, requests, song selection, &etc.
+
+__Accent Color__: The color used for important status messages.
+
+TBD
+
+_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_

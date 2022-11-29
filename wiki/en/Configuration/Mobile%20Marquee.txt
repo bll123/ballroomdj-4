@@ -1,0 +1,29 @@
+[Wiki Home](Home)
+
+### Configuration : Mobile Marquee
+
+The mobile marquee is a web page that displays the upcoming songs on a
+mobile phone or tablet.  The computer running BDJ4 must be connected
+to a Wi-Fi network (but does not need to be connected to the internet).
+
+This is useful for venues where the marquee cannot be displayed.
+
+__Mobile Marquee__: Select __Local__ to turn the mobile marquee on.
+(Internet mode will be removed at a future date).
+
+__Name__: Only used for __Internet__ mode.  Will be removed in the
+future.
+
+__Title__: An optional title to display on the mobile marquee.
+
+__Port__: The port to connect to.  This usually does not need to be
+changed unless there is another device using this port.
+
+__QR Code__: Select the link to display a QR code that can be scanned
+with a mobile phone or tablet.  This can be copied from the browser
+and embedded in a document to be printed out so that the dancers can
+scan the QR Code.
+
+TBD
+
+_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_

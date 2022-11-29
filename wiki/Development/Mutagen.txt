@@ -24,4 +24,4 @@ C++ code.
 ## MP3 Tags
 
 [https://help.mp3tag.de/main_tags.html]
-_(Updated 2022-11-28 20:09:43; BDJ4 version 4.0.0-20221128-alpha)_
+_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_

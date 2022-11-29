@@ -1,0 +1,23 @@
+[Wiki Home](Home)
+
+### Configuration : Edit Status
+
+The status field can be used to track the status of songs in the
+database.  If you want to use the status field, you will probably
+also want to change
+the [Display Settings](en-Configuration-Display%20Settings).
+
+The _New_ and _Complete_ statuses may not be removed or have their
+names changed.
+
+To add a new status, select the __+__ button.  Then double-click on
+the status name to edit the name.  Use the up and down arrows to
+adjust the order in which they appear.  Use the delete button to
+remove a status.
+
+The __Play?__ selection indicates whether the song will be used in
+automatic or sequenced playlists and whether it will show up in the
+request selection.
+
+TBD
+_(Updated 2022-11-29 10:51:08; BDJ4 version 4.0.0-20221128-alpha)_
