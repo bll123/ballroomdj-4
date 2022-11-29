@@ -1,4 +1,3 @@
-<!-- labels: developer -->
 [Wiki Home](Home)
 
 ## MSys2
@@ -7,23 +6,23 @@ https://www.msys2.org/
 
 Update all:
 
-pacman -Syu
+* pacman -Syu
 
 Install:
 
-pacman -S name
+* pacman -S name
 
 Update:
 
-pacman -Su name
+* pacman -Su name
 
 Search:
 
-pacman -Ss name
+* pacman -Ss name
 
 Remove and remove dependencies:
 
-pacman -Rcns name
+* pacman -Rcns name
 
 # tools
 pacman -S ed make rsync vim rlwrap tar unzip zip diffutils
@@ -39,4 +38,5 @@ pacman -S mingw-w64-i686-gdb mingw-w64-x86_64-gdb
 pacman -S pkg-config
 # bdj4
 pacman -S mingw64/mingw-w64-x86_64-gcc-objc mingw32/mingw-w64-i686-gcc-objc
-_(Updated 2022-11-28 07:12:58; BDJ4 version 4.0.0-20221126-alpha)_
+
+_(Updated 2022-11-28 20:09:43; BDJ4 version 4.0.0-20221128-alpha)_
