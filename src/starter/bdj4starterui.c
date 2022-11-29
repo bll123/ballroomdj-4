@@ -190,6 +190,7 @@ static void     starterResetProfile (startui_t *starter, int profidx);
 static const char * starterSetProfile (void *udata, int idx);
 static int      starterCheckProfile (startui_t *starter);
 static bool     starterDeleteProfile (void *udata);
+static void     starterRebuildProfileList (startui_t *starter);
 
 static bool     starterProcessSupport (void *udata);
 static void     starterWebResponseCallback (void *userdata, char *resp, size_t len);
@@ -1360,13 +1361,20 @@ starterResetProfile (startui_t *starter, int profidx)
 {
   starter->currprofile = profidx;
   sysvarsSetNum (SVL_BDJIDX, profidx);
-  bdjoptInit ();
-  uiWindowSetTitle (&starter->window, bdjoptGetStr (OPT_P_PROFILENAME));
-  uiLabelSetBackgroundColor (&starter->profileAccent,
-      bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-  starterLoadOptions (starter);
-  bdjvarsAdjustPorts ();
+
+  /* if the profile is the new profile, there's no option data to load */
+  /* the check-profile function will do the actual creation of a new profile */
+  /* if a button is pressed */
+  if (profidx != starter->newprofile) {
+    bdjoptInit ();
+    uiWindowSetTitle (&starter->window, bdjoptGetStr (OPT_P_PROFILENAME));
+    uiLabelSetBackgroundColor (&starter->profileAccent,
+        bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+    starterLoadOptions (starter);
+    bdjvarsAdjustPorts ();
+  }
 }
+
 
 static const char *
 starterSetProfile (void *udata, int idx)
@@ -1381,7 +1389,7 @@ starterSetProfile (void *udata, int idx)
   disp = nlistGetStr (starter->proflist, dispidx);
   profidx = nlistGetNum (starter->profidxlist, dispidx);
 
-  chg = profidx != starter->currprofile && profidx != starter->newprofile;
+  chg = profidx != starter->currprofile;
 
   if (chg) {
     uiLabelSetText (&starter->statusMsg, "");
@@ -1423,6 +1431,8 @@ starterCheckProfile (startui_t *starter)
     templateDisplaySettingsCopy ();
     /* do not re-run the new profile init */
     starter->newprofile = -1;
+
+    starterRebuildProfileList (starter);
   }
 
   rc = lockAcquire (lockName (ROUTE_STARTERUI), PATHBLD_MP_USEIDX);
@@ -1441,7 +1451,6 @@ static bool
 starterDeleteProfile (void *udata)
 {
   startui_t *starter = udata;
-  int       dispidx;
   char      tbuff [MAXPATHLEN];
 
   if (starter->currprofile == 0 ||
@@ -1473,14 +1482,21 @@ starterDeleteProfile (void *udata)
   }
 
   starterResetProfile (starter, 0);
+  starterRebuildProfileList (starter);
+
+  return UICB_CONT;
+}
+
+static void
+starterRebuildProfileList (startui_t *starter)
+{
+  int       dispidx;
 
   dispidx = starterGetProfiles (starter);
-  uiSpinboxTextSetValue (starter->profilesel, dispidx);
   uiSpinboxTextSet (starter->profilesel, 0,
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
       starter->proflist, NULL, starterSetProfile);
-
-  return UICB_CONT;
+  uiSpinboxTextSetValue (starter->profilesel, dispidx);
 }
 
 static bool

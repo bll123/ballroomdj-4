@@ -641,6 +641,24 @@ bdjoptCreateNewConfigs (void)
   sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_PROFILE]);
 
+  /* queue */
+  for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
+    char  fpath [MAXPATHLEN];
+    char  tpath [MAXPATHLEN];
+
+    sysvarsSetNum (SVL_BDJIDX, 0);
+    pathbldMakePath (path, sizeof (path),
+        BDJ_CONFIG_BASEFN, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+    snprintf (fpath, sizeof (fpath), "%s.q%d%s",
+        path, i, BDJ4_CONFIG_EXT);
+
+    sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
+    snprintf (tpath, sizeof (tpath), "%s.q%d%s",
+        bdjopt->fname [OPTTYPE_QUEUE], i, BDJ4_CONFIG_EXT);
+
+    filemanipCopy (fpath, tpath);
+  }
+
   /* per machine */
   sysvarsSetNum (SVL_BDJIDX, 0);
   pathbldMakePath (path, sizeof (path),
