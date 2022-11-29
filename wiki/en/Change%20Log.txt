@@ -1,4 +1,6 @@
-## BallroomDJ 4 Change Log
+[Wiki Home](Home)
+
+### BallroomDJ 4 Change Log
 
 **4.0.0 alpha 2022-11-28**
 
@@ -15,4 +17,4 @@
    * installation: windows: installer newer python if current is too old.
    * macos: make sure macports is first in path.
 
-_(Updated 2022-11-28 20:09:43; BDJ4 version 4.0.0-20221128-alpha)_
+_(Updated 2022-11-29 06:26:38; BDJ4 version 4.0.0-20221128-alpha)_

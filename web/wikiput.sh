@@ -305,7 +305,7 @@ case $1 in
     updateimages
     ;;
   *)
-    echo "Usage: $0 {putall|getal|dispfilelist|get <file>|put <file>|putimages}"
+    echo "Usage: $0 {putall|getall|dispfilelist|get <file>|put <file>|putimages}"
     ;;
 esac
 

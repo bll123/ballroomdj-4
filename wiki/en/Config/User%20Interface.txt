@@ -1,0 +1,13 @@
+[Wiki Home](Home)
+
+### Configuration : User Interface
+
+The user interface options provide settings for how the user interface
+is displayed.  The overall theme may be selected, the font size for
+the main interface, the font size for the music queue and song
+selection displays and the text accent color used for important
+messages.
+
+TBD
+
+_(Updated 2022-11-29 06:57:53; BDJ4 version 4.0.0-20221128-alpha)_
