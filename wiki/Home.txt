@@ -1,6 +1,7 @@
 
 ### BallroomDJ 4
 [About](en-About)
+[Getting Help](en-Getting%20Help)
 
 <div markdown style="float: left; margin-right: 20px;">
 
@@ -49,9 +50,15 @@
 <div markdown style="float: left; margin-right: 20px;">
 
 ### How To
+These are placeholders for possible
+
+future subjects and may change (2022-11).
+
+[Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
+[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 </div>
 
 <div markdown style="clear: both;"></div>
 
-_(Updated 2022-11-29 07:05:16; BDJ4 version 4.0.0-20221128-alpha)_
+_(Updated 2022-11-29 07:45:26; BDJ4 version 4.0.0-20221128-alpha)_

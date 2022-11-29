@@ -104,10 +104,11 @@ function gettext {
   #   next line begins with a space (code)
   #   next line begins with a ~ (code)
   #   previous line begins with a ~ (code)
+  #   previous line begins with a # (header)
   #   next line begins with a * (list)
   #   next line begins with a ^ (table marker) (will be removed)
   # remove leading ^ (table marker)
-  # put a <br> before image captions, as the prior line will break them.
+  # ? put a <br> before image captions, as the prior line will break them.
   # remove all trailing whitespace
   echo -n 'text=' > ${tmpfile}
   awk -e '
@@ -125,13 +126,13 @@ BEGIN {
 #  if ($0 ~ /<span/) {
 #    sub (/<span/, "<br><span");
 #  }
-  if ($0 ~ /^[^[` *\^~-]/ && appendok) {
+  if ($0 ~ /^[^[` *\^~#-]/ && appendok) {
     sub (/\n$/, "", text);
     text = text " ";
   } else {
     appendok = 0;
   }
-  if ($0 ~ /[^`~]$/) {
+  if ($0 ~ /[^`~]$/ && $0 !~ /^#/) {
     appendok = 1;
   }
   text = text $0;

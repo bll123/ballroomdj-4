@@ -1,0 +1,27 @@
+[Wiki Home](Home)
+
+### Getting Help
+
+If you need any help with installation, how to get started, or how to
+use BallroomDJ 4, you can use any of the following options:
+
+__SourceForge Tickets__: A ticket can be opened at SourceForge.  This
+requires a SourceForge account.
+[Register at SourceForge](https://sourceforge.net/user/registration)
+[View Current Tickets](https://sourceforge.net/p/ballroomdj4/tickets/)
+[Create New Ticket](https://sourceforge.net/p/ballroomdj4/tickets/new/)
+
+__BallroomDJ 4 Forums__: The BallroomDJ 4 forums also require
+registration.
+[BDJ4 Problem Reports](https://ballroomdj.org/forum/viewforum.php?f=29)
+
+__BDJ4 Built-In Support__: If you have BDJ4 installed, you can use the
+built-in support function.  Start BDJ4, select the __Support__ button,
+select __Send Support Message__.  Enter your e-mail address, the
+subject and the message you want to send.  You can optionally attach
+your data files and/or your database.  Select the __Send Support
+Message__ button when finished.
+
+__E-Mail__: E-Mail me (Brad Lanam) : brad.lanam.comp AT gmail.com
+
+_(Updated 2022-11-29 07:45:26; BDJ4 version 4.0.0-20221128-alpha)_
