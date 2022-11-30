@@ -5,6 +5,8 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
+. src/utils/pkgnm.sh
+
 tcount=0
 pass=0
 fail=0
@@ -60,20 +62,7 @@ UNPACKDIR="${cwd}/tmp/bdj4-install"
 UNPACKDIRTMP="$UNPACKDIR.tmp"
 LOG="tmp/insttest-log.txt"
 
-. ./VERSION.txt
-case $RELEASELEVEL in
-  alpha|beta)
-    rlstag=-$RELEASELEVEL
-    ;;
-  production)
-    rlstag=""
-    ;;
-esac
-datetag=""
-if [[ $rlstag != "" ]]; then
-  datetag=-$BUILDDATE
-fi
-currvers=${VERSION}${rlstag}${datetag}-${BUILD}
+currvers=$(pkglongvers)
 
 hostname=$(hostname)
 mconf=data/${hostname}/bdjconfig.txt

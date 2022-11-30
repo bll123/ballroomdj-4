@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-28 13:42-0800\n"
+"POT-Creation-Date: 2022-11-30 08:38-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -626,6 +626,10 @@ msgstr ""
 msgid "Edit Status"
 msgstr ""
 
+#. CONTEXT: configuration: enable mobile marquee
+msgid "Enable Mobile Marquee"
+msgstr ""
+
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
 msgstr ""
@@ -845,10 +849,6 @@ msgstr ""
 msgid "Installing %s."
 msgstr ""
 
-#. CONTEXT: configuration: mobile marquee: route via the internet
-msgid "Internet"
-msgstr ""
-
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
 msgstr ""
@@ -885,10 +885,6 @@ msgstr ""
 
 #. CONTEXT: database update: status message: files found in the database
 msgid "Loaded from Database"
-msgstr ""
-
-#. CONTEXT: configuration: mobile marquee: use local router
-msgid "Local"
 msgstr ""
 
 #. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
@@ -984,7 +980,6 @@ msgstr ""
 
 #. CONTEXT: configuration: qr code: title display for mobile marquee
 #. CONTEXT: configuration: options associated with the mobile marquee
-#. CONTEXT: configuration: set mobile marquee mode (off/local/internet)
 msgid "Mobile Marquee"
 msgstr ""
 
@@ -1023,11 +1018,6 @@ msgstr ""
 #. CONTEXT: configuration file: name of a music queue
 #. CONTEXT: configuration: display settings for: music queue
 msgid "Music Queue"
-msgstr ""
-
-#. CONTEXT: configuration: mobile marquee: the name to use for internet routing
-#. CONTEXT: configuration: the name to use for the mobile marquee internet mode
-msgid "Name"
 msgstr ""
 
 #. CONTEXT: configuration file: status
@@ -1128,10 +1118,6 @@ msgstr ""
 
 #. CONTEXT: label: notes
 msgid "Notes"
-msgstr ""
-
-#. CONTEXT: configuration: mobile marquee: off
-msgid "Off"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: song list: options menu

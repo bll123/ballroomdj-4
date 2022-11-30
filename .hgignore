@@ -1,6 +1,7 @@
 syntax: regexp
 ~$
 ^bdj4-4
+^bdj4-installer
 ^bin/
 ^data/
 ^dev/

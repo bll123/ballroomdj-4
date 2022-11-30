@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-11-28\n"
+"PO-Revision-Date: 2022-11-30\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -628,6 +628,10 @@ msgstr "Bewerk songlijsten"
 msgid "Edit Status"
 msgstr "Bewerk status"
 
+#. CONTEXT: configuration: enable mobile marquee
+msgid "Enable Mobile Marquee"
+msgstr ""
+
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
 msgstr ""
@@ -847,10 +851,6 @@ msgstr ""
 msgid "Installing %s."
 msgstr ""
 
-#. CONTEXT: configuration: mobile marquee: route via the internet
-msgid "Internet"
-msgstr "Internet"
-
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
 msgstr "Jazz"
@@ -888,10 +888,6 @@ msgstr "Laad"
 #. CONTEXT: database update: status message: files found in the database
 msgid "Loaded from Database"
 msgstr "Geladen vanuit database"
-
-#. CONTEXT: configuration: mobile marquee: use local router
-msgid "Local"
-msgstr ""
 
 #. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
 msgid "Locale"
@@ -987,7 +983,6 @@ msgstr "Mix"
 
 #. CONTEXT: configuration: qr code: title display for mobile marquee
 #. CONTEXT: configuration: options associated with the mobile marquee
-#. CONTEXT: configuration: set mobile marquee mode (off/local/internet)
 msgid "Mobile Marquee"
 msgstr ""
 
@@ -1027,11 +1022,6 @@ msgstr "Muziek Manager"
 #. CONTEXT: configuration: display settings for: music queue
 msgid "Music Queue"
 msgstr "Muziek wachtrij"
-
-#. CONTEXT: configuration: mobile marquee: the name to use for internet routing
-#. CONTEXT: configuration: the name to use for the mobile marquee internet mode
-msgid "Name"
-msgstr ""
 
 #. CONTEXT: configuration file: status
 #. CONTEXT: music database: default status
@@ -1132,10 +1122,6 @@ msgstr ""
 #. CONTEXT: label: notes
 msgid "Notes"
 msgstr "Notities"
-
-#. CONTEXT: configuration: mobile marquee: off
-msgid "Off"
-msgstr "Uit"
 
 #. CONTEXT: managementui: menu selection: song list: options menu
 #. CONTEXT: playerui: menu selection: options for the player

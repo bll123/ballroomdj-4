@@ -6,40 +6,27 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
+. src/utils/pkgnm.sh
+
 systype=$(uname -s)
 arch=$(uname -m)
 case $systype in
   Linux)
     tag=linux
     platform=unix
-    sfx=
-    archtag=
     ;;
   Darwin)
     tag=macos
     platform=unix
-    sfx=
-    case $arch in
-      x86_64)
-        archtag=-intel
-        ;;
-      arm64)
-        archtag=-applesilicon
-        ;;
-    esac
     ;;
   MINGW64*)
     tag=win64
     platform=windows
-    sfx=.exe
-    archtag=
     echo "sshpass is currently broken in msys2 "
     ;;
   MINGW32*)
     tag=win32
     platform=windows
-    sfx=.exe
-    archtag=
     echo "sshpass is currently broken in msys2 "
     ;;
 esac
@@ -55,23 +42,10 @@ if [[ $platform != windows ]]; then
   export SSHPASS
 fi
 
-. ./VERSION.txt
+set -x
+pnm=$(pkginstnm)
 
-case $RELEASELEVEL in
-  alpha|beta)
-    rlstag=-$RELEASELEVEL
-    ;;
-  production)
-    rlstag=""
-    ;;
-esac
-
-datetag=""
-if [[ $rlstag != "" ]]; then
-  datetag=-$BUILDDATE
-fi
-
-pnm=bdj4-${VERSION}-installer-${tag}${archtag}${datetag}${rlstag}${sfx}
+exit 0
 
 if [[ ! -f ${pnm} ]]; then
   echo "Failed: no release package found."

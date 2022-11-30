@@ -5,6 +5,8 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
+. src/utils/pkgnm.sh
+
 sfuser=bll123
 project=ballroomdj4
 baseurl=https://sourceforge.net/rest/p/${project}/wiki
@@ -18,21 +20,7 @@ filelist=tmp/wiki-files.txt
 dt=$(date '+%Y-%m-%d %H:%M:%S')
 forceflag=F
 
-. ./VERSION.txt
-rlstag=""
-case $RELEASELEVEL in
-  alpha|beta)
-    rlstag=-$RELEASELEVEL
-    ;;
-  production)
-    rlstag=""
-    ;;
-esac
-datetag=""
-if [[ $rlstag != "" ]]; then
-  datetag=-$BUILDDATE
-fi
-versstr=${VERSION}${datetag}${rlstag}
+versstr=$(pkgcurrvers)
 
 function updateimages {
   test -d wikiimg && rm -rf wikiimg

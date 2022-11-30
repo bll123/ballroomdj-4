@@ -6,6 +6,7 @@ instdir=bdj4-install
 # macos install needs these
 pkgnameuc=$(echo ${pkgname} | tr 'a-z' 'A-Z')
 pkgnamelc=$(echo ${pkgname} | tr 'A-Z' 'a-z')
+mksrcpkg=F
 
 function copysrcfiles {
   tag=$1
@@ -116,6 +117,8 @@ while test ! \( -d src -a -d web -a -d wiki \); do
 done
 cwd=$(pwd)
 
+. src/utils/pkgnm.sh
+
 preskip=F
 chkskip=F
 insttest=F
@@ -135,38 +138,18 @@ while test $# -gt 0; do
 done
 
 systype=$(uname -s)
-arch=$(uname -m)
 case $systype in
   Linux)
     tag=linux
-    platform=unix
-    sfx=
-    archtag=
     ;;
   Darwin)
     tag=macos
-    platform=unix
-    sfx=
-    case $arch in
-      x86_64)
-        archtag=-intel
-        ;;
-      arm64)
-        archtag=-applesilicon
-        ;;
-    esac
     ;;
   MINGW64*)
     tag=win64
-    platform=windows
-    sfx=.exe
-    archtag=
     ;;
   MINGW32*)
     tag=win32
-    platform=windows
-    sfx=.exe
-    archtag=
     ;;
 esac
 
@@ -204,55 +187,45 @@ _HERE_
   fi
 fi
 
-case $RELEASELEVEL in
-  alpha|beta)
-    rlstag=-$RELEASELEVEL
-    ;;
-  production)
-    rlstag=""
-    ;;
-esac
-
 # staging / create packags
 
-stagedir=tmp/${spkgnm}-src
-manfn=manifest.txt
-manfnpath=${stagedir}/install/${manfn}
-chksumfn=checksum.txt
-chksumfntmp=tmp/${chksumfn}
-chksumfnpath=${stagedir}/install/${chksumfn}
+if [[ mksrcpkg == T ]]; then
+  stagedir=tmp/${spkgnm}-src
+  manfn=manifest.txt
+  manfnpath=${stagedir}/install/${manfn}
+  chksumfn=checksum.txt
+  chksumfntmp=tmp/${chksumfn}
+  chksumfnpath=${stagedir}/install/${chksumfn}
 
-case $tag in
-  linux)
-    if [[ $insttest == F ]]; then
-      echo "-- $(date +%T) create source package"
-      test -d ${stagedir} && rm -rf ${stagedir}
-      mkdir -p ${stagedir}
-      nm=${spkgnm}-${VERSION}-src${rlstag}.tar.gz
+  case $tag in
+    linux)
+      if [[ $insttest == F ]]; then
+        echo "-- $(date +%T) create source package"
+        test -d ${stagedir} && rm -rf ${stagedir}
+        mkdir -p ${stagedir}
+        nm=$(pkgsrcnm)
 
-      copysrcfiles ${tag} ${stagedir}
+        copysrcfiles ${tag} ${stagedir}
 
-      echo "-- $(date +%T) creating source manifest"
-      touch ${manfnpath}
-      ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
+        echo "-- $(date +%T) creating source manifest"
+        touch ${manfnpath}
+        ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
 
-      echo "-- $(date +%T) creating checksums"
-      ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
-      mv -f ${chksumfntmp} ${chksumfnpath}
+        echo "-- $(date +%T) creating checksums"
+        ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
+        mv -f ${chksumfntmp} ${chksumfnpath}
 
-      (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
-      echo "## source package ${nm} created"
-      rm -rf ${stagedir}
-    fi
-    ;;
-esac
+        (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
+        echo "## source package ${nm} created"
+        rm -rf ${stagedir}
+      fi
+      ;;
+  esac
+fi
 
 echo "-- $(date +%T) create release package"
 
 stagedir=tmp/${instdir}
-
-test -d ${stagedir} && rm -rf ${stagedir}
-mkdir -p ${stagedir}
 
 macosbase=""
 case $tag in
@@ -271,15 +244,10 @@ tmpcab=tmp/bdj4-install.cab
 tmpsep=tmp/sep.txt
 tmpmac=tmp/macos
 
-datetag=""
-if [[ $rlstag != "" ]]; then
-  datetag=-$BUILDDATE
-fi
-
-nm=${spkgnm}-${VERSION}-installer-${tag}${archtag}${datetag}${rlstag}${sfx}
+nm=$(pkginstnm)
 
 test -d ${stagedir} && rm -rf ${stagedir}
-mkdir ${stagedir}
+mkdir -p ${stagedir}
 
 echo -n '!~~BDJ4~~!' > ${tmpsep}
 
@@ -328,7 +296,6 @@ case $tag in
           ${tfn} > ${tfn}.n
       mv -f ${tfn}.n ${tfn}
     done
-
     echo "-- $(date +%T) creating release manifest"
     touch ${manfnpath}
     ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}

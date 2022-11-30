@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-11-28\n"
+"PO-Revision-Date: 2022-11-30\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -628,6 +628,10 @@ msgstr "Şarkı Listelerini Düzenle"
 msgid "Edit Status"
 msgstr "Durumu Düzenle"
 
+#. CONTEXT: configuration: enable mobile marquee
+msgid "Enable Mobile Marquee"
+msgstr ""
+
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
 msgstr "Uzaktan Kontrolü Aktifleştir"
@@ -847,10 +851,6 @@ msgstr ""
 msgid "Installing %s."
 msgstr ""
 
-#. CONTEXT: configuration: mobile marquee: route via the internet
-msgid "Internet"
-msgstr ""
-
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
 msgstr ""
@@ -887,10 +887,6 @@ msgstr ""
 
 #. CONTEXT: database update: status message: files found in the database
 msgid "Loaded from Database"
-msgstr ""
-
-#. CONTEXT: configuration: mobile marquee: use local router
-msgid "Local"
 msgstr ""
 
 #. CONTEXT: configuration: the locale to use (e.g. English or Nederlands)
@@ -986,7 +982,6 @@ msgstr "Karıştır"
 
 #. CONTEXT: configuration: qr code: title display for mobile marquee
 #. CONTEXT: configuration: options associated with the mobile marquee
-#. CONTEXT: configuration: set mobile marquee mode (off/local/internet)
 msgid "Mobile Marquee"
 msgstr "Mobil seçim"
 
@@ -1026,11 +1021,6 @@ msgstr "Müzik Yöneticisi"
 #. CONTEXT: configuration: display settings for: music queue
 msgid "Music Queue"
 msgstr "Müzik Kuyruğu"
-
-#. CONTEXT: configuration: mobile marquee: the name to use for internet routing
-#. CONTEXT: configuration: the name to use for the mobile marquee internet mode
-msgid "Name"
-msgstr "Ad"
 
 #. CONTEXT: configuration file: status
 #. CONTEXT: music database: default status
@@ -1131,10 +1121,6 @@ msgstr "Geçerli bir %s dizini değil."
 #. CONTEXT: label: notes
 msgid "Notes"
 msgstr "Notlar"
-
-#. CONTEXT: configuration: mobile marquee: off
-msgid "Off"
-msgstr "Kapalı"
 
 #. CONTEXT: managementui: menu selection: song list: options menu
 #. CONTEXT: playerui: menu selection: options for the player
