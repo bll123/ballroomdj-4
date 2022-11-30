@@ -1,5 +1,5 @@
 #!/bin/bash
-ver=2
+ver=3
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -38,9 +38,10 @@ esac
 
 latest=""
 for archtag in $archtaglist; do
-  pattern="bdj4-4.[0-9]*.[0-9]*-installer-macos-${archtag}*"
+  patternold="bdj4-4.[0-9]*.[0-9]*-installer-macos-${archtag}*"
+  pattern="bdj4-installer-macos-${archtag}-4.[0-9]*.[0-9]*"
 
-  for f in $pattern; do
+  for f in $patternold $pattern; do
     if [[ -f $f ]]; then
       if [[ $latest == "" ]];then
         latest=$f
@@ -48,15 +49,16 @@ for archtag in $archtaglist; do
       if [[ $f -nt $latest ]]; then
         latest=$f
       fi
-      chmod a+rx $f
-      # BDJ4 has no malware in it.
-      xattr -d com.apple.quarantine $f > /dev/null 2>&1
     fi
   done
 done
 
 if [[ $latest != "" ]]; then
+  chmod a+rx $latest
+  # BDJ4 has no malware in it.
+  xattr -d com.apple.quarantine $latest > /dev/null 2>&1
   echo ""
+  echo " ( $latest )"
   echo "Do you want to start the installation package? "
   gr=$(getresponse)
   if [[ $gr == Y ]]; then
