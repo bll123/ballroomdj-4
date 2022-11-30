@@ -165,7 +165,6 @@ main (int argc, char *argv[])
   confui.gui.uiitem [CONFUI_ENTRY_DANCE_TAGS].entry = uiEntryInit (30, 100);
   confui.gui.uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].entry = uiEntryInit (30, 300);
   confui.gui.uiitem [CONFUI_ENTRY_DANCE_DANCE].entry = uiEntryInit (30, 50);
-  confui.gui.uiitem [CONFUI_ENTRY_MM_NAME].entry = uiEntryInit (10, 40);
   confui.gui.uiitem [CONFUI_ENTRY_MM_TITLE].entry = uiEntryInit (20, 100);
   confui.gui.uiitem [CONFUI_ENTRY_MUSIC_DIR].entry = uiEntryInit (50, 300);
   confui.gui.uiitem [CONFUI_ENTRY_PROFILE_NAME].entry = uiEntryInit (20, 30);

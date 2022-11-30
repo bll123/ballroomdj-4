@@ -47,8 +47,7 @@ export SSHPASS
 
 echo "## copying files"
 if [[ $server == ballroomdj.org ]]; then
-  for f in bdj4register.php bdj4report.php bdj4support.php \
-      marquee4.html marquee4.php; do
+  for f in bdj4register.php bdj4report.php bdj4support.php; do
     sshpass -e rsync -e "$ssh" -aS \
         $f ${remuser}@${server}:${wwwpath}
   done

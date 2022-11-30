@@ -24,7 +24,6 @@ static int  bdjoptQueueIndex (nlistidx_t idx, int musiqc);
 static void bdjoptConvFadeType (datafileconv_t *conv);
 static void bdjoptConvWriteTags (datafileconv_t *conv);
 static void bdjoptCreateNewConfigs (void);
-static void bdjoptConvMobileMq (datafileconv_t *conv);
 
 typedef struct {
   int           currprofile;
@@ -57,9 +56,8 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_NUM, NULL, -1 },
   { "FADETYPE",             OPT_P_FADETYPE,             VALUE_NUM, bdjoptConvFadeType, -1 },
   { "HIDEMARQUEEONSTART",   OPT_P_HIDE_MARQUEE_ON_START,VALUE_NUM, convBoolean, -1 },
-  { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_NUM, bdjoptConvMobileMq, -1 },
+  { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_NUM, convBoolean, -1 },
   { "MOBILEMQPORT",         OPT_P_MOBILEMQPORT,         VALUE_NUM, NULL, -1 },
-  { "MOBILEMQTAG",          OPT_P_MOBILEMQTAG,          VALUE_STR, NULL, -1 },
   { "MOBILEMQTITLE",        OPT_P_MOBILEMQTITLE,        VALUE_STR, NULL, -1 },
   { "MQQLEN",               OPT_P_MQQLEN,               VALUE_NUM, NULL, -1 },
   { "MQSHOWINFO",           OPT_P_MQ_SHOW_INFO,         VALUE_NUM, convBoolean, -1 },
@@ -674,36 +672,4 @@ bdjoptCreateNewConfigs (void)
   filemanipCopy (path, bdjopt->fname [OPTTYPE_MACH_PROF]);
 }
 
-static void
-bdjoptConvMobileMq (datafileconv_t *conv)
-{
-  bdjmobilemq_t val = MOBILEMQ_OFF;
-  char          *sval;
-
-  conv->allocated = false;
-  if (conv->valuetype == VALUE_STR) {
-    conv->valuetype = VALUE_NUM;
-
-    val = MOBILEMQ_OFF;
-    if (strcmp (conv->str, "off") == 0) {
-      val = MOBILEMQ_OFF;
-    }
-    if (strcmp (conv->str, "local") == 0) {
-      val = MOBILEMQ_LOCAL;
-    }
-    if (strcmp (conv->str, "internet") == 0) {
-      val = MOBILEMQ_INTERNET;
-    }
-    conv->num = val;
-  } else if (conv->valuetype == VALUE_NUM) {
-    conv->valuetype = VALUE_STR;
-    sval = "off";
-    switch (conv->num) {
-      case MOBILEMQ_OFF: { sval = "off"; break; }
-      case MOBILEMQ_LOCAL: { sval = "local"; break; }
-      case MOBILEMQ_INTERNET: { sval = "internet"; break; }
-    }
-    conv->str = sval;
-  }
-}
 

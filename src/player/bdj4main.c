@@ -49,7 +49,6 @@
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
-#include "webclient.h"
 
 typedef enum {
   MOVE_UP = -1,
@@ -91,7 +90,6 @@ typedef struct {
   slist_t           *announceList;
   playerstate_t     playerState;
   long              lastGapSent;
-  webclient_t       *webclient;
   char              *mobmqUserkey;
   int               stopwaitcount;
   char              *pbfinishArgs;
@@ -125,7 +123,6 @@ static void mainSendMusicQueueData (maindata_t *mainData, int musicqidx);
 static void mainSendMarqueeData (maindata_t *mainData);
 static char * mainSongGetDanceDisplay (maindata_t *mainData, int idx);
 static void mainSendMobileMarqueeData (maindata_t *mainData);
-static void mainMobilePostCallback (void *userdata, char *resp, size_t len);
 static void mainQueueClear (maindata_t *mainData, char *args);
 static void mainQueueDance (maindata_t *mainData, char *args, int count);
 static void mainQueuePlaylist (maindata_t *mainData, char *plname);
@@ -203,7 +200,6 @@ main (int argc, char *argv[])
   mainData.musicqManageIdx = MUSICQ_PB_A;
   mainData.musicqDeferredPlayIdx = MAIN_NOT_SET;
   mainData.playerState = PL_STATE_STOPPED;
-  mainData.webclient = NULL;
   mainData.mobmqUserkey = NULL;
   mainData.pbfinishArgs = NULL;
   mainData.playWhenQueued = true;
@@ -233,10 +229,6 @@ main (int argc, char *argv[])
   /* calculate the stop time once only */
   mainData.stopTime = bdjoptGetNum (OPT_P_STOPATTIME);
   mainData.nStopTime = mainCalcStopTime (mainData.stopTime);
-
-  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_INTERNET) {
-    mainData.webclient = webclientAlloc (&mainData, mainMobilePostCallback);
-  }
 
   mainData.conn = connInit (ROUTE_MAIN);
 
@@ -303,7 +295,6 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
     musicqFree (mainData->musicQueue);
   }
   slistFree (mainData->announceList);
-  webclientClose (mainData->webclient);
   dataFree (mainData->mobmqUserkey);
   dataFree (mainData->pbfinishArgs);
 
@@ -774,7 +765,7 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
 
     mainData->processes [ROUTE_PLAYER] = procutilStartProcess (
         ROUTE_PLAYER, "bdj4player", flags, NULL);
-    if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
+    if (bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
       mainData->processes [ROUTE_MOBILEMQ] = procutilStartProcess (
           ROUTE_MOBILEMQ, "bdj4mobmq", flags, NULL);
     }
@@ -809,7 +800,7 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
     if (! connIsConnected (mainData->conn, ROUTE_PLAYER)) {
       connConnect (mainData->conn, ROUTE_PLAYER);
     }
-    if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
+    if (bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
       if (! connIsConnected (mainData->conn, ROUTE_MOBILEMQ)) {
         connConnect (mainData->conn, ROUTE_MOBILEMQ);
       }
@@ -830,7 +821,7 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
   if (connIsConnected (mainData->conn, ROUTE_PLAYER)) {
     ++connCount;
   }
-  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
+  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
     ++connMax;
     if (connIsConnected (mainData->conn, ROUTE_MOBILEMQ)) {
       ++connCount;
@@ -1106,11 +1097,9 @@ static void
 mainSendMobileMarqueeData (maindata_t *mainData)
 {
   char        tbuff [200];
-  char        tbuffb [200];
   char        *jbuff = NULL;
   char        *title = NULL;
   char        *dstr = NULL;
-  char        *tag = NULL;
   int         mqLen = 0;
   int         musicqLen = 0;
   time_t      currTime;
@@ -1118,7 +1107,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
 
   logProcBegin (LOG_PROC, "mainSendMobileMarqueeData");
 
-  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_OFF) {
+  if (! bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
     logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "is-off");
     return;
   }
@@ -1187,74 +1176,8 @@ mainSendMobileMarqueeData (maindata_t *mainData)
 
   connSendMessage (mainData->conn, ROUTE_MOBILEMQ, MSG_MARQUEE_DATA, jbuff);
 
-  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) == MOBILEMQ_LOCAL) {
-    logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "is-local");
-    dataFree (jbuff);
-    return;
-  }
-
-  /* internet mode from here on */
-
-  tag = bdjoptGetStr (OPT_P_MOBILEMQTAG);
-  if (tag != NULL && *tag != '\0') {
-    char  *qbuff;
-
-    if (mainData->mobmqUserkey == NULL) {
-      pathbldMakePath (tbuff, sizeof (tbuff),
-          "mmq", ".key", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
-      mainData->mobmqUserkey = filedataReadAll (tbuff, NULL);
-    }
-
-    qbuff = malloc (BDJMSG_MAX);
-    snprintf (tbuff, sizeof (tbuff), "%s/%s",
-        sysvarsGetStr (SV_HOST_MOBMQ), sysvarsGetStr (SV_URI_MOBMQ_POST));
-    snprintf (qbuff, BDJMSG_MAX, "v=2&mqdata=%s&key=%s&tag=%s",
-        jbuff, "93457645", tag);
-    if (mainData->mobmqUserkey != NULL) {
-      snprintf (tbuffb, sizeof (tbuffb), "&userkey=%s", mainData->mobmqUserkey);
-      strlcat (qbuff, tbuffb, BDJMSG_MAX);
-    }
-    webclientPost (mainData->webclient, tbuff, qbuff);
-    dataFree (qbuff);
-  }
-
   dataFree (jbuff);
   logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "");
-}
-
-static void
-mainMobilePostCallback (void *userdata, char *resp, size_t len)
-{
-  maindata_t    *mainData = userdata;
-  char          tbuff [MAXPATHLEN];
-
-  logProcBegin (LOG_PROC, "mainMobilePostCallback");
-
-  if (resp == NULL) {
-    return;
-  }
-
-  if (strncmp (resp, "OK", 2) == 0) {
-    ;
-  } else if (strncmp (resp, "NG", 2) == 0) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to post mobmq data: %.*s", (int) len, resp);
-    /* just turn it off since there is a failure response */
-    bdjoptSetNum (OPT_P_MOBILEMARQUEE, MOBILEMQ_OFF);
-  } else {
-    FILE    *fh;
-
-    /* this should be the user key */
-    strlcpy (tbuff, resp, 3);
-    tbuff [2] = '\0';
-    mainData->mobmqUserkey = strdup (tbuff);
-    /* need to save this for future use */
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        "mmq", ".key", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
-    fh = fopen (tbuff, "w");
-    fprintf (fh, "%.*s", (int) len, resp);
-    fclose (fh);
-  }
-  logProcEnd (LOG_PROC, "mainMobilePostCallback", "");
 }
 
 /* clears both the playlist and music queues */
@@ -2550,7 +2473,7 @@ mainSendFinished (maindata_t *mainData)
   if (mainData->marqueestarted) {
     connSendMessage (mainData->conn, ROUTE_MARQUEE, MSG_FINISHED, NULL);
   }
-  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE) != MOBILEMQ_OFF) {
+  if (bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
     connSendMessage (mainData->conn, ROUTE_MOBILEMQ, MSG_FINISHED, NULL);
   }
 }

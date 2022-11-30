@@ -220,6 +220,7 @@ foreach path [list {} profiles $mpath $mppath] {
         if { $key eq "PAUSEMSG" } { continue }
         if { $key eq "CHANGESPACE" } { continue }
         if { $key eq "MUSICDIRDFLT" } { continue }
+        if { $key eq "MOBILEMQTAG" } { continue }
 
         if { $key eq "DONEMSG" } { set key "COMPLETEMSG" }
         if { $key eq "SHOWBPM" } { set key "BPM" }
@@ -346,6 +347,11 @@ foreach path [list {} profiles $mpath $mppath] {
           if { $value eq {} } {
             set value 360000
           }
+        }
+        if { $key eq "MOBILEMARQUEE" } {
+          if { $value eq "local" } { set value yes }
+          if { $value eq "internet" } { set value no }
+          if { $value eq "off" } { set value no }
         }
         if { [regexp {ORGPATH$} $key] } {
           # various is no longer supported, remove the group entirely.

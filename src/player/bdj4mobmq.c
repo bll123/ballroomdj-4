@@ -45,9 +45,8 @@ typedef struct {
   progstate_t     *progstate;
   int             stopwaitcount;
   char            *locknm;
+  bool            enabled;
   uint16_t        port;
-  bdjmobilemq_t   type;
-  char            *name;
   char            *title;
   websrv_t        *websrv;
   char            *marqueeData;
@@ -82,8 +81,8 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, NULL, "mm", ROUTE_MOBILEMQ, flags);
   mobmqData.conn = connInit (ROUTE_MARQUEE);
 
-  mobmqData.type = (bdjmobilemq_t) bdjoptGetNum (OPT_P_MOBILEMARQUEE);
-  if (mobmqData.type == MOBILEMQ_OFF) {
+  mobmqData.enabled = bdjoptGetNum (OPT_P_MOBILEMARQUEE);
+  if (! mobmqData.enabled) {
     lockRelease (mobmqData.locknm, PATHBLD_MP_USEIDX);
     exit (0);
   }
@@ -101,12 +100,6 @@ main (int argc, char *argv[])
   progstateSetCallback (mobmqData.progstate, STATE_CLOSING,
       mobmqClosingCallback, &mobmqData);
   mobmqData.port = bdjoptGetNum (OPT_P_MOBILEMQPORT);
-
-  mobmqData.name = NULL;
-  tval = bdjoptGetStr (OPT_P_MOBILEMQTAG);
-  if (tval != NULL) {
-    mobmqData.name = strdup (tval);
-  }
 
   tval = bdjoptGetStr (OPT_P_MOBILEMQTITLE);
   mobmqData.title = NULL;
@@ -158,7 +151,6 @@ mobmqClosingCallback (void *tmmdata, programstate_t programState)
   bdj4shutdown (ROUTE_MOBILEMQ, NULL);
 
   websrvFree (mobmqData->websrv);
-  dataFree (mobmqData->name);
   dataFree (mobmqData->title);
   dataFree (mobmqData->marqueeData);
 

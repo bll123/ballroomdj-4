@@ -86,34 +86,20 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   char          uridisp [MAXPATHLEN];
   char          *qruri = "";
   char          tbuff [MAXPATHLEN];
-  char          *tag;
-  const char    *valstr;
-  bdjmobilemq_t type;
+  bool          enabled;
   UIWidget      *uiwidgetp = NULL;
 
   logProcBegin (LOG_PROC, "confuiUpdateMobmqQrcode");
 
-  type = (bdjmobilemq_t) bdjoptGetNum (OPT_P_MOBILEMARQUEE);
+  enabled = bdjoptGetNum (OPT_P_MOBILEMARQUEE);
 
   confuiSetStatusMsg (gui, "");
-  if (type == MOBILEMQ_OFF) {
+  if (! enabled) {
     *tbuff = '\0';
     *uridisp = '\0';
     qruri = "";
   }
-  if (type == MOBILEMQ_INTERNET) {
-    tag = bdjoptGetStr (OPT_P_MOBILEMQTAG);
-    valstr = validate (tag, VAL_NOT_EMPTY | VAL_NO_SPACES);
-    if (valstr != NULL) {
-      /* CONTEXT: configuration: mobile marquee: the name to use for internet routing */
-      snprintf (tbuff, sizeof (tbuff), valstr, _("Name"));
-      confuiSetStatusMsg (gui, tbuff);
-    }
-    snprintf (uridisp, sizeof (uridisp), "%s%s?v=1&tag=%s",
-        sysvarsGetStr (SV_HOST_MOBMQ), sysvarsGetStr (SV_URI_MOBMQ),
-        tag);
-  }
-  if (type == MOBILEMQ_LOCAL) {
+  if (enabled) {
     char *ip;
 
     ip = confuiGetLocalIP (gui);
@@ -121,7 +107,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
         ip, bdjoptGetNum (OPT_P_MOBILEMQPORT));
   }
 
-  if (type != MOBILEMQ_OFF) {
+  if (enabled) {
     /* CONTEXT: configuration: qr code: title display for mobile marquee */
     qruri = confuiMakeQRCodeFile (_("Mobile Marquee"), uridisp);
   }
@@ -142,19 +128,19 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
   char          uridisp [MAXPATHLEN];
   char          *qruri = "";
   char          tbuff [MAXPATHLEN];
-  long          onoff;
+  bool          enabled;
   UIWidget      *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiUpdateRemctrlQrcode");
 
-  onoff = (bdjmobilemq_t) bdjoptGetNum (OPT_P_REMOTECONTROL);
+  enabled = bdjoptGetNum (OPT_P_REMOTECONTROL);
 
-  if (onoff == 0) {
+  if (! enabled) {
     *tbuff = '\0';
     *uridisp = '\0';
     qruri = "";
   }
-  if (onoff == 1) {
+  if (enabled) {
     char *ip;
 
     ip = confuiGetLocalIP (gui);
@@ -162,7 +148,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
         ip, bdjoptGetNum (OPT_P_REMCONTROLPORT));
   }
 
-  if (onoff == 1) {
+  if (enabled) {
     /* CONTEXT: configuration: qr code: title display for mobile remote control */
     qruri = confuiMakeQRCodeFile (_("Mobile Remote Control"), uridisp);
   }

@@ -21,12 +21,6 @@ typedef enum {
 } bdjfadetype_t;
 
 typedef enum {
-  MOBILEMQ_OFF,
-  MOBILEMQ_LOCAL,
-  MOBILEMQ_INTERNET,
-} bdjmobilemq_t;
-
-typedef enum {
   BPM_BPM,
   BPM_MPM,
 } bdjbpm_t;
@@ -67,7 +61,6 @@ typedef enum {
   OPT_P_HIDE_MARQUEE_ON_START,
   OPT_P_MOBILEMARQUEE,
   OPT_P_MOBILEMQPORT,
-  OPT_P_MOBILEMQTAG,
   OPT_P_MOBILEMQTITLE,
   OPT_P_MQ_ACCENT_COL,
   OPT_P_MQ_INFO_COL,

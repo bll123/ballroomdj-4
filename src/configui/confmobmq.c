@@ -20,21 +20,11 @@
 
 static bool confuiMobmqTypeChg (void *udata);
 static bool confuiMobmqPortChg (void *udata);
-static int  confuiMobmqNameChg (uientry_t *entry, void *udata);
 static int  confuiMobmqTitleChg (uientry_t *entry, void *udata);
 
 void
 confuiInitMobileMarquee (confuigui_t *gui)
 {
-  confuiSpinboxTextInitDataNum (gui, "cu-mob-mq",
-      CONFUI_SPINBOX_MOBILE_MQ,
-      /* CONTEXT: configuration: mobile marquee: off */
-      MOBILEMQ_OFF, _("Off"),
-      /* CONTEXT: configuration: mobile marquee: use local router */
-      MOBILEMQ_LOCAL, _("Local"),
-      /* CONTEXT: configuration: mobile marquee: route via the internet */
-      MOBILEMQ_INTERNET, _("Internet"),
-      -1);
 }
 
 void
@@ -52,24 +42,16 @@ confuiBuildUIMobileMarquee (confuigui_t *gui)
       _("Mobile Marquee"), CONFUI_ID_MOBILE_MQ);
   uiCreateSizeGroupHoriz (&sg);
 
-  /* CONTEXT: configuration: set mobile marquee mode (off/local/internet) */
-  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Mobile Marquee"),
-      CONFUI_SPINBOX_MOBILE_MQ, OPT_P_MOBILEMARQUEE,
-      CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_MOBILEMARQUEE),
-      confuiMobmqTypeChg);
+  /* CONTEXT: configuration: enable mobile marquee */
+  confuiMakeItemSwitch (gui, &vbox, &sg, _("Enable Mobile Marquee"),
+      CONFUI_SWITCH_MOBILE_MQ, OPT_P_MOBILEMARQUEE,
+      bdjoptGetNum (OPT_P_MOBILEMARQUEE), confuiMobmqTypeChg, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: the port to use for the mobile marquee */
   confuiMakeItemSpinboxNum (gui, &vbox, &sg, NULL, _("Port"),
       CONFUI_WIDGET_MMQ_PORT, OPT_P_MOBILEMQPORT,
       8000, 30000, bdjoptGetNum (OPT_P_MOBILEMQPORT),
       confuiMobmqPortChg);
-
-  /* CONTEXT: configuration: the name to use for the mobile marquee internet mode */
-  confuiMakeItemEntry (gui, &vbox, &sg, _("Name"),
-      CONFUI_ENTRY_MM_NAME, OPT_P_MOBILEMQTAG,
-      bdjoptGetStr (OPT_P_MOBILEMQTAG), CONFUI_NO_INDENT);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MM_NAME].entry,
-      confuiMobmqNameChg, gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: the title to display on the mobile marquee */
   confuiMakeItemEntry (gui, &vbox, &sg, _("Title"),
@@ -94,7 +76,7 @@ confuiMobmqTypeChg (void *udata)
   long          nval;
 
   logProcBegin (LOG_PROC, "confuiMobmqTypeChg");
-  value = uiSpinboxGetValue (&gui->uiitem [CONFUI_SPINBOX_MOBILE_MQ].uiwidget);
+  value = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_MOBILE_MQ].uiswitch);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBILEMARQUEE, nval);
   confuiUpdateMobmqQrcode (gui);
@@ -116,20 +98,6 @@ confuiMobmqPortChg (void *udata)
   confuiUpdateMobmqQrcode (gui);
   logProcEnd (LOG_PROC, "confuiMobmqPortChg", "");
   return UICB_CONT;
-}
-
-static int
-confuiMobmqNameChg (uientry_t *entry, void *udata)
-{
-  confuigui_t     *gui = udata;
-  const char      *sval;
-
-  logProcBegin (LOG_PROC, "confuiMobmqNameChg");
-  sval = uiEntryGetValue (entry);
-  bdjoptSetStr (OPT_P_MOBILEMQTAG, sval);
-  confuiUpdateMobmqQrcode (gui);
-  logProcEnd (LOG_PROC, "confuiMobmqNameChg", "");
-  return UIENTRY_OK;
 }
 
 static int

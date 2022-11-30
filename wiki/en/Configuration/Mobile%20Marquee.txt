@@ -8,11 +8,8 @@ to a Wi-Fi network (but does not need to be connected to the internet).
 
 This is useful for venues where the marquee cannot be displayed.
 
-__Mobile Marquee__: Select __Local__ to turn the mobile marquee on.
-(Internet mode will be removed at a future date).
-
-__Name__: Only used for __Internet__ mode.  Will be removed in the
-future.
+__Enable Mobile Marquee__: Turns on the mobile marquee. (activated
+when then player is started).
 
 __Title__: An optional title to display on the mobile marquee.
 
