@@ -270,6 +270,7 @@ fi
 
 test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
 test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
+test -d "$TARGETTOPDIR" && rm -rf "$TARGETTOPDIR"
 
 echo "tests: $tcount pass: $pass fail: $fail"
 
