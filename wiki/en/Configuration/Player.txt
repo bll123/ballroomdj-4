@@ -16,7 +16,7 @@ __Stop At__: The time when playback stops.  As this is a global
 setting and affects all playlists, a second profile would need to be
 set up for other use cases (showcases, parties).  See also the
 __Stop At__ capabilities
-in [Playlist Management](en-Management-Playlist%20Management).
+in [Playlist&nbsp;Management](en-Management-Playlist%20Management).
 
 __Queue Length__: The number of songs the music queue is filled with.
 
@@ -46,14 +46,14 @@ no fade out is applied.  Set to 0.0 for no fade out.
 __Maximum Play Time__: The maximum duration a song will play.  This is
 often set anywhere from 2:00 minutes to 3:00 minutes.  Set to 0:00 to
 turn off entirely.
-See also [Playlist Management](en-Management-Playlist%20Management)
+See also [Playlist&nbsp;Management](en-Management-Playlist%20Management)
 
 __Pause Each Song__: Playback will pause after each song is played.  This
 setting is used for showcases and events.
 
 __Play Announcements__: The dance announcement will be played before each
-song.  See [Edit Dances](en-Configuration-Edit%20Dances).
+song.  See [Edit&nbsp;Dances](en-Configuration-Edit%20Dances).
 
 TBD
 
-_(Updated 2022-11-29 10:51:08; BDJ4 version 4.0.0-20221128-alpha)_
+<br>_(Updated 2022-12-01 08:13:52; BDJ4 version 4.0.0-alpha-20221130)_
