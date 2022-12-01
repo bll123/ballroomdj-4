@@ -8,7 +8,7 @@
 templates/.*\.nl$
 templates/.*\.en_US$
 
-# old (alpha) library
+# old library (alpha)
 bin/libbdj4uigtk.(so|dylib|dll)$
 
 # unneeded executables
@@ -18,5 +18,9 @@ plocal/bin/openssl.exe$
 # old conversion program (alpha)
 conv/sort-options.tcl$
 
-# old data file name
+# windows make shortcut rename (alpha)
+install/makeshortcut.bat$
+install/makeshortcut.vbs$
+
+# old data file name (early alpha)
 data/profile\d\d/configui\.txt$

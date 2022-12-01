@@ -8,7 +8,8 @@ BallroomDJ 4 Change Log
 - mobile marquee: remove internet mode.
 - player: added a 'queue 5' button.
 - player: moved 'request external' into a menu.
-- player: the queue dance buttons are now shown via the configuration.
+- player: the queue dance buttons are only shown per the configuration.
+- starter: added a 'create profile shortcut' menu selection.
 - starter: fix create profile.
 
 4.0.0 alpha 2022-11-28

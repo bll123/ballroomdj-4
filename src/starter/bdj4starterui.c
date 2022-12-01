@@ -25,6 +25,7 @@
 #include "dirlist.h"
 #include "dirop.h"
 #include "fileop.h"
+#include "instutil.h"
 #include "lock.h"
 #include "log.h"
 #include "nlist.h"
@@ -81,6 +82,7 @@ enum {
   START_CB_SEND_SUPPORT,
   START_CB_MENU_STOP_ALL,
   START_CB_MENU_DEL_PROFILE,
+  START_CB_MENU_PROFILE_SHORTCUT,
   START_CB_MENU_ALT_SETUP,
   START_CB_SUPPORT_RESP,
   START_CB_SUPPORT_MSG_RESP,
@@ -191,6 +193,7 @@ static const char * starterSetProfile (void *udata, int idx);
 static int      starterCheckProfile (startui_t *starter);
 static bool     starterDeleteProfile (void *udata);
 static void     starterRebuildProfileList (startui_t *starter);
+static bool     starterCreateProfileShortcut (void *udata);
 
 static bool     starterProcessSupport (void *udata);
 static void     starterWebResponseCallback (void *userdata, char *resp, size_t len);
@@ -480,18 +483,26 @@ starterBuildUI (startui_t  *starter)
 
   uiCreateSubMenu (&menuitem, &menu);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_DEL_PROFILE],
-      starterDeleteProfile, starter, NULL);
-  /* CONTEXT: starterui: menu item: delete profile */
-  uiMenuCreateItem (&menu, &menuitem, _("Delete Profile"),
-      &starter->callbacks [START_CB_MENU_DEL_PROFILE]);
-
   /* CONTEXT: starterui: menu item: stop all BDJ4 processes */
   snprintf (tbuff, sizeof (tbuff), _("Stop All %s Processes"), BDJ4_NAME);
   uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_STOP_ALL],
       starterStopAllProcesses, starter, NULL);
   uiMenuCreateItem (&menu, &menuitem, tbuff,
       &starter->callbacks [START_CB_MENU_STOP_ALL]);
+
+  uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_DEL_PROFILE],
+      starterDeleteProfile, starter, NULL);
+  /* CONTEXT: starterui: menu item: delete profile */
+  uiMenuCreateItem (&menu, &menuitem, _("Delete Profile"),
+      &starter->callbacks [START_CB_MENU_DEL_PROFILE]);
+
+  if (! isMacOS ()) {
+    uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_PROFILE_SHORTCUT],
+        starterCreateProfileShortcut, starter, NULL);
+    /* CONTEXT: starterui: menu item: create shortcut for profile */
+    uiMenuCreateItem (&menu, &menuitem, _("Create Shortcut for Profile"),
+        &starter->callbacks [START_CB_MENU_PROFILE_SHORTCUT]);
+  }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
@@ -1497,6 +1508,18 @@ starterRebuildProfileList (startui_t *starter)
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
       starter->proflist, NULL, starterSetProfile);
   uiSpinboxTextSetValue (starter->profilesel, dispidx);
+}
+
+static bool
+starterCreateProfileShortcut (void *udata)
+{
+  startui_t   *starter = udata;
+  const char  *pname;
+
+  pname = bdjoptGetProfileName ();
+  instutilCreateShortcut (pname, sysvarsGetStr (SV_BDJ4MAINDIR),
+      sysvarsGetStr (SV_BDJ4MAINDIR), starter->currprofile);
+  return UICB_CONT;
 }
 
 static bool

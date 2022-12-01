@@ -13,6 +13,7 @@ add_library (libbdj4 SHARED
   dispsel.c
   dnctypes.c
   genre.c
+  instutil.c
   level.c
   m3u.c
   msgparse.c

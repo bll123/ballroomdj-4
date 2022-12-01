@@ -32,6 +32,7 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "instutil.h"
 #include "localeutil.h"
 #include "locatebdj3.h"
 #include "log.h"
@@ -1964,11 +1965,6 @@ installerConvertFinish (installer_t *installer)
 static void
 installerCreateShortcut (installer_t *installer)
 {
-  char        buff [MAXPATHLEN];
-  char        tbuff [MAXPATHLEN];
-  const char  *targv [7];
-  int         targc = 0;
-
   if (chdir (installer->rundir)) {
     installerFailWorkingDir (installer, installer->rundir);
     return;
@@ -1976,22 +1972,14 @@ installerCreateShortcut (installer_t *installer)
 
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Creating shortcut."), false);
-  if (isWindows ()) {
-    if (! chdir ("install")) {
-      targv [targc++] = ".\\makeshortcut.bat";
-      targv [targc++] = "%USERPROFILE%\\Desktop\\BDJ4.lnk";
-      strlcpy (tbuff, installer->rundir, sizeof (tbuff));
-      pathWinPath (tbuff, sizeof (tbuff));
-      snprintf (buff, sizeof (buff), "%s\\bin\\bdj4.exe", tbuff);
-      targv [targc++] = buff;
-      targv [targc++] = tbuff;
-      targv [targc++] = NULL;
-      osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
-      (void) ! chdir (installer->rundir);
-    }
-  }
+
+  /* handles linux and windows */
+  instutilCreateShortcut ("BD4", installer->rundir, installer->rundir, 0);
+
   if (isMacOS ()) {
 #if _lib_symlink
+    char        buff [MAXPATHLEN];
+
     /* on macos, the startup program must be a gui program, otherwise */
     /* the dock icon is not correct */
     /* this must exist and match the name of the app */
@@ -2000,12 +1988,6 @@ installerCreateShortcut (installer_t *installer)
     snprintf (buff, sizeof (buff), "%s/Desktop/BDJ4.app", installer->home);
     (void) ! symlink (installer->target, buff);
 #endif
-  }
-  if (isLinux ()) {
-    snprintf (buff, sizeof (buff),
-        "./install/linuxshortcut.sh %s '%s' '%s'",
-        BDJ4_NAME, installer->rundir, installer->rundir);
-    (void) ! system (buff);
   }
 
   installer->instState = INST_VLC_CHECK;

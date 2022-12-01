@@ -30,6 +30,7 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "instutil.h"
 #include "localeutil.h"
 #include "log.h"
 #include "osprocess.h"
@@ -845,11 +846,6 @@ altsetupSetup (altsetup_t *altsetup)
 static void
 altsetupCreateShortcut (altsetup_t *altsetup)
 {
-  char buff [MAXPATHLEN];
-  char tbuff [MAXPATHLEN];
-  const char *targv [10];
-  int     targc = 0;
-
   if (chdir (altsetup->maindir)) {
     altsetupFailWorkingDir (altsetup, altsetup->maindir);
     return;
@@ -857,29 +853,7 @@ altsetupCreateShortcut (altsetup_t *altsetup)
 
   /* CONTEXT: set up alternate: status message */
   altsetupDisplayText (altsetup, "-- ", _("Creating shortcut."), false);
-  if (isWindows ()) {
-    if (! chdir ("install")) {
-      targv [targc++] = ".\\makeshortcut.bat";
-      targv [targc++] = "%USERPROFILE%\\Desktop\\BDJ4-alt.lnk";
-      pathbldMakePath (buff, sizeof (buff),
-          "bdj4", ".exe", PATHBLD_MP_EXECDIR);
-      pathWinPath (buff, sizeof (buff));
-      targv [targc++] = buff;
-      strlcpy (tbuff, altsetup->target, sizeof (tbuff));
-      pathWinPath (tbuff, sizeof (tbuff));
-      targv [targc++] = tbuff;
-      targv [targc++] = NULL;
-      osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
-      (void) ! chdir (altsetup->maindir);
-    }
-  }
-
-  if (isLinux ()) {
-    snprintf (buff, sizeof (buff),
-        "./install/linuxshortcut.sh %s '%s' '%s'",
-        "BDJ4-alt", altsetup->maindir, altsetup->target);
-    (void) ! system (buff);
-  }
+  instutilCreateShortcut ("BD4-alt", altsetup->maindir, altsetup->target, 0);
 
   altsetup->instState = ALT_UPDATE_PROCESS_INIT;
 }
