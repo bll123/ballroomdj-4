@@ -33,7 +33,7 @@ Open a terminal and run the installer:
 
 (This is an example and may not be up to date.)
 ~~~
-$HOME/Downloads/bdj4-4.0.0-installer-linux-20221122-alpha
+$HOME/Downloads/bdj4-installer-linux-4.0.0-20221122-alpha
 ~~~
 
 Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
@@ -53,4 +53,4 @@ button and wait for the **Installation Completed** message.
 ![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer.png)
 <br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Linux**</span> </div>
 
-_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_
+<br>_(Updated 2022-12-01 08:02:47; BDJ4 version 4.0.0-alpha-20221130)_

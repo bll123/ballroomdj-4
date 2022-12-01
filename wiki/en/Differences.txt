@@ -1,0 +1,128 @@
+[Wiki Home](Home)
+
+### Differences between BallroomDJ 3 and BallroomDJ 4
+
+As of 2022-12-01:
+
+At this time the supported platforms for BallroomDJ 4 will probably be:
+
+* 64-bit Windows 10, 11
+* MacOS intel: Catalina, Big Sur, Monterey, Ventura
+* MacOS M1: Big Sur, Monterey, Ventura
+* 64-bit Linux
+
+__Features that will NOT be implemented in BallroomDJ&nbsp4:__
+
+* Synchronization between computers.
+* Client/Server mode.
+* Image display.
+* Playlist: Required Keywords.
+* Playlist: Marquee message.
+* Player: Marquee message.
+* Player: Changing the gap dynamically.
+* Mobile Marquee: internet mode.
+* Built-in Help
+<br>Keeping two help sources up to date (built-in and wiki) is difficult.
+I prefer to only have one.  Only the wiki will be be supported.
+* Windows 7 will not be supported.  The tools I use are dropping
+support for old versions of Windows.
+* File Manager.
+<br>This functionality has been moved into the song list/playlist/sequence
+editors and the starter user interface.
+Renaming playlists is much simpler.
+* Raffle Games.
+* New Years Countdown.
+* Analog Clock.
+
+__Features that have changed in BallroomDJ&nbsp;4:__
+
+* Playlist: Stop In/At <time> pause/continue.
+<br>__BDJ4 only supports: Stop At <time>__
+* Playlist: Stop After <song-count> pause/continue.
+<br>__BDJ4 only supports: Stop After <song-count>__
+* Playlist: Pause after each song.
+<br>__BDJ4 has a pause each song switch in the player per-queue configuration.__
+* Auto Organization
+<br>BDJ4 has no auto organization path editor.   To add a new path, the
+configuration file (data/orgopt.txt) must be manually edited. (If the
+organization path you currently use is not already in the
+configuration file, it is automatically added during the BDJ3 to BDJ4
+conversion process).
+<br>BDJ4 drops the "various artists" flag and settings.
+<br>BDJ4 drops the "change spaces to underscores" option.
+<br>BDJ4 has a single auto organization path (rather than four).  Some
+rules are applied to make it work nicely.
+    * Composer and conductor groups will only be added if the genre is
+marked as classical.
+    * The composer group will be omitted if the composer is the same as
+the album artist or the artist.
+    * If the album artist is empty, it uses the artist data.
+    * If both the album artist and the artist are in the auto
+organization path and they are the same, the artist group is omitted.
+
+Due to the changes in auto organization, the BDJ3 to BDJ4 conversion
+process will always turn off auto organization in the BDJ4
+configuration.
+
+I don't want anyone to accidentally run a reorganization in BDJ4 and
+then discover that their BallroomDJ 3 no longer works since the audio
+files have been renamed.
+
+__New Features:__
+
+* "Stop At" time has been added to the player configuration.
+<br>This stop at time will apply to all music played using the associated
+profile.
+* "Play Announcements" has been added to the player per-queue
+configuration.
+* Switch playback to another music queue when the current music
+queue is empty.
+* An optional easy song list editing mode.
+<br>The disadvantage being that it cannot show as much information on
+screen.
+It's easy to switch back and forth between the two modes.
+* A favorite selection.  This can be used to mark requests, songs
+that are good for teaching, etc.
+* New installation getting-started helper.  A short walk through of
+the basic settings needed to get started.
+This starts up automatically when BDJ4 is started for new installations.
+* Folders other than the music folder may be specified in the
+database update process.  This allows multiple music folder locations.
+* Writing audio file tags is no longer limited to FLAC, MP3 and
+Ogg-Vorbis.
+Currently supported for MP4 (.m4a), MP3, OGG/Vorbis, FLAC, OGG/Opus.
+Others may be added later.
+* Per queue configuration (fade in time, fade out time, maximum play
+time, play announcements, pause each song).
+
+Other than these major changes, I am trying to greatly simply the
+configuration (while keeping the flexibility), combine things where
+possible, etc.
+
+As always if you have questions, post a message here in the forums.
+BDJ4 is still in development and anything can change.
+
+__Questions & Answers__
+
+__Q:__ Is there any advantage to starting with a fresh install
+rather than using the BDJ3 to BDJ4 conversion process? (1)
+
+__A:__ No.  The BDJ3 to BDJ4 conversion process is quite robust,
+and there are no issues with using it.
+The conversion process will convert all of your BallroomDJ 3 data
+files (warts and all).
+The only reason to do a fresh install would be if you want to change
+locales (e.g. English to Nederlands).
+
+__Q:__ Will installing BDJ4 affect my BallroomDJ 3 installation? (1)
+
+__A:__ No.  BallroomDJ 4 is installed in a separate folder and the
+conversion process creates new files specifically for BDJ4.
+The only configuration options that could affect the audio files are
+"Auto Organization" (not implemented yet) and "Write BallroomDJ Tags"
+(the conversion process turns this off, and also the 'write BDJ3
+compatible audio file tags' is turned on).
+
+(1) No one actually asked this, but I thought you might like to know.
+
+<br>_(Updated 2022-12-01 07:58:42; BDJ4 version 4.0.0-alpha-20221130)_

@@ -1,7 +1,18 @@
+<div markdown style="float: left; margin-right: 20px;">
 
 ### BallroomDJ 4
+
+</div>
+
+<div markdown style="float: left; margin-right: 20px;">
+
 [About](en-About)
 [Getting Help](en-Getting%20Help)
+[Differences between BallroomDJ 3 and BallroomDJ 4](en-Differences)
+
+</div>
+
+<div markdown style="clear: both;"></div>
 
 <div markdown style="float: left; margin-right: 20px;">
 
@@ -64,4 +75,4 @@ future subjects and may change (2022-11).
 
 <div markdown style="clear: both;"></div>
 
-_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_
+_(Updated 2022-12-01 07:53:37; BDJ4 version 4.0.0-alpha-20221130)_

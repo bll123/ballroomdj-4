@@ -105,6 +105,7 @@ BEGIN {
   text = "";
 }
 {
+  gsub (/&/, "%26");
   sub (/\r$/, "");
   if ($0 ~ /Updated [0-9 :-]*; BDJ4 version /) {
     # do nothing
@@ -132,11 +133,11 @@ END {
     ' \
     ${tfn} >> ${tmpfile}
   echo "" >> ${tmpfile}
-  echo "_(Updated ${dt}; BDJ4 version ${versstr})_" >> ${tmpfile}
+  echo "<br>_(Updated ${dt}; BDJ4 version ${versstr})_" >> ${tmpfile}
   sed \
     -e '/Updated [0-9 :-]*; BDJ4 version /d' \
     ${tfn} > ${tfn}.n
-  echo "_(Updated ${dt}; BDJ4 version ${versstr})_" >> ${tfn}.n
+  echo "<br>_(Updated ${dt}; BDJ4 version ${versstr})_" >> ${tfn}.n
   mv -f ${tfn}.n ${tfn}
   touch --date "${dt}" ${tfn}
 }
