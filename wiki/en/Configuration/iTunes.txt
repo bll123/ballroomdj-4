@@ -2,7 +2,6 @@
 
 ### Configuration : iTunes
 
-The iTunes interface is not yet fully implemented in BDJ4.
+The iTunes interface is not yet fully implemented in BDJ4. (2022-12-1)
 
-TBD
-_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_
+<br>_(Updated 2022-12-01 08:18:46; BDJ4 version 4.0.0-alpha-20221130)_

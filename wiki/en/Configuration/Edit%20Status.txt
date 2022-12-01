@@ -10,7 +10,7 @@ the [Display&nbsp;Settings](en-Configuration-Display%20Settings).
 The _New_ and _Complete_ statuses may not be removed or have their
 names changed.
 
-To add a new status, select the __+__ button.  Then double-click on
+To add a new status, select the __&#43;__ button.  Then double-click on
 the status name to edit the name.  Use the up and down arrows to
 adjust the order in which they appear.  Use the delete button to
 remove a status.
@@ -20,4 +20,4 @@ automatic or sequenced playlists and whether it will show up in the
 request selection.
 
 TBD
-<br>_(Updated 2022-12-01 08:13:52; BDJ4 version 4.0.0-alpha-20221130)_
+<br>_(Updated 2022-12-01 08:19:57; BDJ4 version 4.0.0-alpha-20221130)_

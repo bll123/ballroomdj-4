@@ -115,7 +115,7 @@ BEGIN {
 #  if ($0 ~ /<span/) {
 #    sub (/<span/, "<br><span");
 #  }
-  if ($0 ~ /^[^[` *\^~#-]/ && appendok) {
+  if ($0 ~ /^[^` *\^~#-]/ && appendok) {
     sub (/\n$/, "", text);
     text = text " ";
   } else {

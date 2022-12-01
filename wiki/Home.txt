@@ -7,8 +7,8 @@
 <div markdown style="float: left; margin-right: 20px;">
 
 [About](en-About)
-[Getting Help](en-Getting%20Help)
-[Differences between BallroomDJ 3 and BallroomDJ 4](en-Differences)
+<br>[Getting Help](en-Getting%20Help)
+<br>[Differences between BallroomDJ 3 and BallroomDJ 4](en-Differences)
 
 </div>
 
@@ -18,8 +18,8 @@
 
 ### Installation
 [Installing on Linux](en-Install-Linux)
-[Installing on MacOS](en-Install-MacOS)
-[Installing on Windows](en-Install-Windows)
+<br>[Installing on MacOS](en-Install-MacOS)
+<br>[Installing on Windows](en-Install-Windows)
 
 ### Change Log
 [Change Log](en-Change%20Log)
@@ -30,20 +30,20 @@
 
 ### Configuration
 [General Options](en-Configuration-General)
-[Player Options](en-Configuration-Player)
-[Marquee Options](en-Configuration-Marquee)
-[User Interface](en-Configuration-User%20Interface)
-[Display Settings](en-Configuration-Display%20Settings)
-[Filter Display](en-Configuration-Filter%20Display)
-[Organisation](en-Configuration-Organisation)
-[Edit Dances](en-Configuration-Edit%20Dances)
-[Edit Ratings](en-Configuration-Edit%20Ratings)
-[Edit Status](en-Configuration-Edit%20Status)
-[Edit Levels](en-Configuration-Edit%20Levels)
-[Edit Genres](en-Configuration-Edit%20Genres)
-[iTunes](en-Configuration-iTunes)
-[Mobile Remote Control](en-Configuration-Mobile%20Remote%20Control)
-[Mobile Marquee](en-Configuration-Mobile%20Marquee)
+<br>[Player Options](en-Configuration-Player)
+<br>[Marquee Options](en-Configuration-Marquee)
+<br>[User Interface](en-Configuration-User%20Interface)
+<br>[Display Settings](en-Configuration-Display%20Settings)
+<br>[Filter Display](en-Configuration-Filter%20Display)
+<br>[Organisation](en-Configuration-Organisation)
+<br>[Edit Dances](en-Configuration-Edit%20Dances)
+<br>[Edit Ratings](en-Configuration-Edit%20Ratings)
+<br>[Edit Status](en-Configuration-Edit%20Status)
+<br>[Edit Levels](en-Configuration-Edit%20Levels)
+<br>[Edit Genres](en-Configuration-Edit%20Genres)
+<br>[iTunes](en-Configuration-iTunes)
+<br>[Mobile Remote Control](en-Configuration-Mobile%20Remote%20Control)
+<br>[Mobile Marquee](en-Configuration-Mobile%20Marquee)
 
 </div>
 
@@ -51,10 +51,10 @@
 
 ### Management
 [Edit Song Lists](en-Management-Edit%20Song%20Lists)
-[Playlist Management](en-Management-Playlist%20Management)
-[Edit Sequences](en-Management-Edit%20Sequences)
-[Music Manager](en-Management-Music%20Manager)
-[Update Database](en-Management-Update%20Database)
+<br>[Playlist Management](en-Management-Playlist%20Management)
+<br>[Edit Sequences](en-Management-Edit%20Sequences)
+<br>[Music Manager](en-Management-Music%20Manager)
+<br>[Update Database](en-Management-Update%20Database)
 
 ### Player
 [Player](en-Player-Player)
@@ -69,10 +69,10 @@ These are placeholders for possible
 future subjects and may change (2022-11).
 
 [Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
-[Running a Showcase](en-HowTo-Running%20a%20Showcase)
+<br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 </div>
 
 <div markdown style="clear: both;"></div>
 
-_(Updated 2022-12-01 07:53:37; BDJ4 version 4.0.0-alpha-20221130)_
+<br>_(Updated 2022-12-01 08:31:55; BDJ4 version 4.0.0-alpha-20221130)_

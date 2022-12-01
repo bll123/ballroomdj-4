@@ -4,7 +4,7 @@
 
 The player options provides settings that control how the player works.
 
-The __Player_ and __Audio__ settings generally do not change.
+The __Player__ and __Audio__ settings generally do not change.
 
 __Audio Output__: Selects which audio output device will be used to
 play the audio.  If the selected device is not currently connected,
@@ -14,9 +14,9 @@ __Default Volume__: Sets the volume level when BDJ4 first starts.
 
 __Stop At__: The time when playback stops.  As this is a global
 setting and affects all playlists, a second profile would need to be
-set up for other use cases (showcases, parties).  See also the
-__Stop At__ capabilities
-in [Playlist&nbsp;Management](en-Management-Playlist%20Management).
+set up for other use cases (showcases, parties).  See also the __Stop
+At__ capabilities in
+[Playlist&nbsp;Management](en-Management-Playlist%20Management).
 
 __Queue Length__: The number of songs the music queue is filled with.
 
@@ -27,33 +27,35 @@ met).
 __Queue__: Selects which music queue to configure.  The following settings
 apply to the selected music queue.
 
-__Queue Name__: The name displayed for this music queue.
+__Queue Name__: (per-queue) The name displayed for this music queue.
 
-__Active__: Whether the settings for the music queue are active.  When
-off, the settings for the main music queue are used (other than
-__Display__).
+__Active__: (per-queue) Whether the settings for the music queue are
+active.  When off, the settings for the main music queue are used
+(other than __Display__).
 
-__Display__: Whether this music queue will be displayed when the
-__Show Extra Queues__ option is turned on in the player.
+__Display__: (per-queue) Whether this music queue will be displayed
+when the __Show&nbsp;Extra&nbsp;Queues__ option is turned on in the
+player.
 
-__Fade In Time__: The amount of time used to fade in the volume when the
-song starts playing.  Set to 0.0 for no fade in.
+__Fade In Time__: (per-queue) The amount of time used to fade in the
+volume when the song starts playing.  Set to 0.0 for no fade in.
 
-__Fade Out Time__:  The amount of time used to fade out the volume when
-song ends.  If the song ends before the fade out would normally start,
-no fade out is applied.  Set to 0.0 for no fade out.
+__Fade Out Time__: (per-queue) The amount of time used to fade out the
+volume when song ends.  If the song ends before the fade out would
+normally start, no fade out is applied.  Set to 0.0 for no fade out.
 
-__Maximum Play Time__: The maximum duration a song will play.  This is
-often set anywhere from 2:00 minutes to 3:00 minutes.  Set to 0:00 to
-turn off entirely.
-See also [Playlist&nbsp;Management](en-Management-Playlist%20Management)
+__Maximum Play Time__: (per-queue) The maximum duration a song will
+play.  This is often set anywhere from 2:00 minutes to 3:00 minutes.
+Set to 0:00 to turn off entirely. See also
+[Playlist&nbsp;Management](en-Management-Playlist%20Management)
 
-__Pause Each Song__: Playback will pause after each song is played.  This
-setting is used for showcases and events.
+__Pause Each Song__: (per-queue) Playback will pause after each song
+is played.  This setting is used for showcases and events.
 
-__Play Announcements__: The dance announcement will be played before each
-song.  See [Edit&nbsp;Dances](en-Configuration-Edit%20Dances).
+__Play Announcements__: (per-queue) The dance announcement will be
+played before each song. See
+[Edit&nbsp;Dances](en-Configuration-Edit%20Dances).
 
 TBD
 
-<br>_(Updated 2022-12-01 08:13:52; BDJ4 version 4.0.0-alpha-20221130)_
+<br>_(Updated 2022-12-01 08:31:05; BDJ4 version 4.0.0-alpha-20221130)_

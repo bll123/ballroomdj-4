@@ -3,8 +3,8 @@
 ### Configuration : Mobile Remote Control
 
 Mobile Remote Control is a web page that can be used to control BDJ4
-over the Wi-Fi network.  Access the web page via your mobile phone or
-tablet.  The computer running BDJ4 must be connected to a Wi-Fi
+over the Wi&#8209;Fi network.  Access the web page via your mobile phone or
+tablet.  The computer running BDJ4 must be connected to a Wi&#8209;Fi
 network (but does not need to be connected to the internet).
 
 __Enable Remote Control__: Turns on the remote control function
@@ -27,4 +27,4 @@ with your mobile phone or tablet.
 
 TBD
 
-_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_
+<br>_(Updated 2022-12-01 08:18:07; BDJ4 version 4.0.0-alpha-20221130)_
