@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 08:38-0800\n"
+"POT-Creation-Date: 2022-12-01 10:13-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -190,6 +190,7 @@ msgstr ""
 #. CONTEXT: managementui: menu selection: actions for song editor
 #. CONTEXT: managementui: menu selection: actions for music manager
 #. CONTEXT: managementui: menu selection: actions for song list
+#. CONTEXT: playerui: menu selection: actions for the player
 #. CONTEXT: starterui: action menu for the starter user interface
 msgid "Actions"
 msgstr ""
@@ -1284,6 +1285,7 @@ msgid "Queue"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: music queue: button: queue 5 dances for playback
 msgid "Queue 5"
 msgstr ""
 
@@ -1388,7 +1390,7 @@ msgstr ""
 msgid "Request"
 msgstr ""
 
-#. CONTEXT: music queue: button: request playback of a song external to BDJ4 (not in the database)
+#. CONTEXT: playerui: menu selection: action: request external
 msgid "Request External"
 msgstr ""
 
@@ -1528,6 +1530,10 @@ msgstr ""
 
 #. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
 msgid "Show Extra Queues"
+msgstr ""
+
+#. CONTEXT: configuration: whether to show the 'queue dance' buttons
+msgid "Show Queue Dance Buttons"
 msgstr ""
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee

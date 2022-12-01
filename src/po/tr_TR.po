@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-11-30\n"
+"PO-Revision-Date: 2022-12-01\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -192,6 +192,7 @@ msgstr "Eylem"
 #. CONTEXT: managementui: menu selection: actions for song editor
 #. CONTEXT: managementui: menu selection: actions for music manager
 #. CONTEXT: managementui: menu selection: actions for song list
+#. CONTEXT: playerui: menu selection: actions for the player
 #. CONTEXT: starterui: action menu for the starter user interface
 msgid "Actions"
 msgstr "Eylemler"
@@ -1286,6 +1287,7 @@ msgid "Queue"
 msgstr "Kuyruk"
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: music queue: button: queue 5 dances for playback
 msgid "Queue 5"
 msgstr "Kuyruk 5"
 
@@ -1390,7 +1392,7 @@ msgstr ""
 msgid "Request"
 msgstr "Talep"
 
-#. CONTEXT: music queue: button: request playback of a song external to BDJ4 (not in the database)
+#. CONTEXT: playerui: menu selection: action: request external
 msgid "Request External"
 msgstr "Harici talep"
 
@@ -1531,6 +1533,10 @@ msgstr "Kurulum tamamlandı."
 #. CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue)
 msgid "Show Extra Queues"
 msgstr "Ek kuyruklar göster"
+
+#. CONTEXT: configuration: whether to show the 'queue dance' buttons
+msgid "Show Queue Dance Buttons"
+msgstr ""
 
 #. CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee
 msgid "Show Song Information"
