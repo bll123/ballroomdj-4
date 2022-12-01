@@ -26,6 +26,7 @@ typedef struct uidance {
   UICallback    *selectcb;
   const char    *label;
   long          selectedidx;
+  int           count;
   int           flags;
 } uidance_t;
 
@@ -34,13 +35,14 @@ static void uidanceCreateDanceList (uidance_t *uidance);
 
 uidance_t *
 uidanceDropDownCreate (UIWidget *boxp, UIWidget *parentwin, int flags,
-    const char *label, int where)
+    const char *label, int where, int count)
 {
   uidance_t  *uidance;
 
 
   uidance = malloc (sizeof (uidance_t));
   uidance->dances = bdjvarsdfGet (BDJVDF_DANCES);
+  uidance->count = count;
   uidance->flags = flags;
   uidance->dropdown = uiDropDownInit ();
   uidance->selectedidx = 0;
@@ -156,7 +158,7 @@ uidanceSelectHandler (void *udata, long idx)
   }
 
   if (uidance->selectcb != NULL) {
-    uiutilsCallbackLongHandler (uidance->selectcb, idx);
+    uiutilsCallbackLongIntHandler (uidance->selectcb, idx, uidance->count);
   }
   return UICB_CONT;
 }

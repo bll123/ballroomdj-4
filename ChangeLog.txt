@@ -2,9 +2,14 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-11---
 
+- configuration: added a per-queue 'show queue dance buttons' selection.
 - configuration: disable active/display switches for main music queue.
-- starter: fix create profile.
+- configuration: increased number of available queues to 4.
 - mobile marquee: remove internet mode.
+- player: added a 'queue 5' button.
+- player: moved 'request external' into a menu.
+- player: the queue dance buttons are now shown via the configuration.
+- starter: fix create profile.
 
 4.0.0 alpha 2022-11-28
 

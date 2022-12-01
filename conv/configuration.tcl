@@ -95,7 +95,7 @@ foreach path [list {} profiles $mpath $mppath] {
       }
       set ofh [open $nfn w]
       if { $path eq "profiles" } {
-        foreach q {0 1 2} {
+        foreach q {0 1 2 3} {
           set tfn "[file join $datatopdir data $tdir $pfx $nnm.q$q].txt"
           set tfh [open $tfn w]
           set qofh$q $tfh
@@ -118,6 +118,8 @@ foreach path [list {} profiles $mpath $mppath] {
           puts $tfh "PAUSEEACHSONG"
           puts $tfh "..no"
           puts $tfh "PLAYANNOUNCE"
+          puts $tfh "..no"
+          puts $tfh "SHOWQUEUEDANCE"
           puts $tfh "..no"
           if { $q == 2 } {
             puts $tfh "QUEUE_NAME"
@@ -372,7 +374,7 @@ foreach path [list {} profiles $mpath $mppath] {
 
         if { $key eq "FADEINTIME" || $key eq "FADEOUTTIME" ||
             $key eq "GAP" || $key eq "MAXPLAYTIME" } {
-          foreach q {0 1 2} {
+          foreach q {0 1 2 3} {
             set tfh [set qofh$q]
             puts $tfh $key
             puts $tfh "..$value"
@@ -409,8 +411,6 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..#444444"
         puts $ofh MQ_TEXT_COL
         puts $ofh "..#000000"
-        puts $ofh PLAYANNOUNCE
-        puts $ofh "..no"
         puts $ofh STOPATTIME
         puts $ofh "..0"
         puts $ofh UI_ACCENT_COL

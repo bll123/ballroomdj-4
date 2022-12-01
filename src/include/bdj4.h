@@ -18,7 +18,7 @@ enum {
   EXIT_WAIT_COUNT = 60,
   INSERT_AT_SELECTION = -2,
   /* when changing the queue max, be sure to update include/musicq.h */
-  BDJ4_QUEUE_MAX = 3,
+  BDJ4_QUEUE_MAX = 4,
 };
 
 #define ITUNES_NAME       "iTunes"

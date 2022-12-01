@@ -13,6 +13,7 @@ typedef enum {
   MUSICQ_PB_A,
   MUSICQ_PB_B,
   MUSICQ_PB_C,
+  MUSICQ_PB_D,
   /* keep the history music queue after the last player music queue */
   /* this makes processing easier */
   MUSICQ_HISTORY,

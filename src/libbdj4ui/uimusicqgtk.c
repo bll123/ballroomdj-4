@@ -40,7 +40,7 @@ enum {
   MUSICQ_UPD_DISP,
 };
 
-static bool   uimusicqQueueDanceCallback (void *udata, long idx);
+static bool   uimusicqQueueDanceCallback (void *udata, long idx, int count);
 static bool   uimusicqQueuePlaylistCallback (void *udata, long idx);
 static void   uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate, int newdispflag);
 static void   uimusicqProcessMusicQueueDataNewCallback (int type, void *udata);
@@ -63,8 +63,6 @@ static bool   uimusicqMoveDownCallback (void *udata);
 static bool   uimusicqTogglePauseCallback (void *udata);
 static bool   uimusicqRemoveCallback (void *udata);
 static void   uimusicqCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
-/* external requests */
-static bool   uimusicqReqextDialog (void *udata);
 
 
 enum {
@@ -236,7 +234,18 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
         /* CONTEXT: music queue: button: remove the song from the queue */
         _("Remove"), "button_audioremove");
     uiWidgetSetMarginStart (&uiwidget, 3);
-    uiWidgetSetMarginEnd (&uiwidget, 2);
+    uiBoxPackStart (&hbox, &uiwidget);
+  }
+
+  if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
+    uiutilsUICallbackInit (
+        &uiw->callback [UIMUSICQ_CB_CLEAR_QUEUE],
+        uimusicqTruncateQueueCallback, uimusicq, "musicq: clear-queue");
+    uiCreateButton (&uiwidget,
+        &uiw->callback [UIMUSICQ_CB_CLEAR_QUEUE],
+        /* CONTEXT: music queue: button: clear the queue */
+        _("Clear Queue"), NULL);
+    uiWidgetSetMarginStart (&uiwidget, 3);
     uiBoxPackStart (&hbox, &uiwidget);
   }
 
@@ -268,15 +277,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
-    uiutilsUICallbackInit (
-        &uiw->callback [UIMUSICQ_CB_REQ_EXTERNAL],
-        uimusicqReqextDialog, uimusicq, "musicq: request external");
-    uiCreateButton (&uiwidget,
-        &uiw->callback [UIMUSICQ_CB_REQ_EXTERNAL],
-        /* CONTEXT: music queue: button: request playback of a song external to BDJ4 (not in the database) */
-        _("Request External"), NULL);
-    uiBoxPackEnd (&hbox, &uiwidget);
-
     uiutilsUICallbackLongInit (&uimusicq->queueplcb,
         uimusicqQueuePlaylistCallback, uimusicq);
     uiwidgetp = uiDropDownCreate (parentwin,
@@ -286,12 +286,21 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     uiBoxPackEnd (&hbox, uiwidgetp);
     uimusicqCreatePlaylistList (uimusicq);
 
-    uiutilsUICallbackLongInit (&uimusicq->queuedancecb,
-        uimusicqQueueDanceCallback, uimusicq);
-    uiw->uidance = uidanceDropDownCreate (&hbox, parentwin,
-        /* CONTEXT: music queue: button: queue a dance for playback */
-        UIDANCE_NONE, _("Queue Dance"), UIDANCE_PACK_END);
-    uidanceSetCallback (uiw->uidance, &uimusicq->queuedancecb);
+    if (bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, ci)) {
+      uiutilsUICallbackLongIntInit (&uimusicq->queuedancecb,
+          uimusicqQueueDanceCallback, uimusicq);
+      uiw->uidance = uidanceDropDownCreate (&hbox, parentwin,
+          /* CONTEXT: music queue: button: queue 5 dances for playback */
+          UIDANCE_NONE, _("Queue 5"), UIDANCE_PACK_END, 5);
+      uidanceSetCallback (uiw->uidance, &uimusicq->queuedancecb);
+
+      uiutilsUICallbackLongIntInit (&uimusicq->queuedancecb,
+          uimusicqQueueDanceCallback, uimusicq);
+      uiw->uidance = uidanceDropDownCreate (&hbox, parentwin,
+          /* CONTEXT: music queue: button: queue a dance for playback */
+          UIDANCE_NONE, _("Queue Dance"), UIDANCE_PACK_END, 1);
+      uidanceSetCallback (uiw->uidance, &uimusicq->queuedancecb);
+    }
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
@@ -316,17 +325,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     /* CONTEXT: music queue: label for song list name */
     uiCreateColonLabel (&uiwidget, _("Song List"));
     uiWidgetSetMarginStart (&uiwidget, 6);
-    uiBoxPackEnd (&hbox, &uiwidget);
-  }
-
-  if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
-    uiutilsUICallbackInit (
-        &uiw->callback [UIMUSICQ_CB_CLEAR_QUEUE],
-        uimusicqTruncateQueueCallback, uimusicq, "musicq: clear-queue");
-    uiCreateButton (&uiwidget,
-        &uiw->callback [UIMUSICQ_CB_CLEAR_QUEUE],
-        /* CONTEXT: music queue: button: clear the queue */
-        _("Clear Queue"), NULL);
     uiBoxPackEnd (&hbox, &uiwidget);
   }
 
@@ -599,11 +597,11 @@ uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active)
 /* internal routines */
 
 static bool
-uimusicqQueueDanceCallback (void *udata, long idx)
+uimusicqQueueDanceCallback (void *udata, long idx, int count)
 {
   uimusicq_t    *uimusicq = udata;
 
-  uimusicqQueueDanceProcess (uimusicq, idx);
+  uimusicqQueueDanceProcess (uimusicq, idx, count);
   return UICB_CONT;
 }
 
@@ -1132,14 +1130,3 @@ uimusicqCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
     }
   }
 }
-
-static bool
-uimusicqReqextDialog (void *udata)
-{
-  uimusicq_t    *uimusicq = udata;
-  bool          rc;
-
-  rc = uireqextDialog (uimusicq->uireqext);
-  return rc;
-}
-

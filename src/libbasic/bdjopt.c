@@ -86,6 +86,7 @@ static datafilekey_t bdjoptqueuedfkeys [] = {
   { "PAUSEEACHSONG",        OPT_Q_PAUSE_EACH_SONG,      VALUE_NUM, convBoolean, -1 },
   { "PLAYANNOUNCE",         OPT_Q_PLAY_ANNOUNCE,        VALUE_NUM, convBoolean, -1 },
   { "QUEUE_NAME",           OPT_Q_QUEUE_NAME,           VALUE_STR, NULL, -1 },
+  { "SHOWQUEUEDANCE",       OPT_Q_SHOW_QUEUE_DANCE,     VALUE_NUM, convBoolean, -1 },
 };
 
 static datafilekey_t bdjoptmachinedfkeys [] = {

@@ -745,7 +745,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
       if (tagkey == TAG_DANCE) {
         uiw->items [uiw->itemcount].uidance =
             uidanceDropDownCreate (hbox, uiw->parentwin,
-            UIDANCE_EMPTY_DANCE, "", UIDANCE_PACK_START);
+            UIDANCE_EMPTY_DANCE, "", UIDANCE_PACK_START, 1);
       }
       if (tagkey == TAG_GENRE) {
         uiw->items [uiw->itemcount].uigenre =

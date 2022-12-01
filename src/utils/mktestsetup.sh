@@ -63,7 +63,7 @@ done
 
 cp -f templates/bdjconfig.txt.g data/bdjconfig.txt
 cp -f templates/bdjconfig.txt.p data/profile00/bdjconfig.txt
-for q in 0 1 2; do
+for q in 0 1 2 3; do
   cp -f templates/bdjconfig.q${q}.txt data/profile00/bdjconfig.q${q}.txt
 done
 cp -f templates/bdjconfig.txt.m data/${hostname}/bdjconfig.txt

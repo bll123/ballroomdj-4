@@ -3,9 +3,9 @@
 version
 ..1
 ACTIVE
-..yes
+..no
 DISPLAY
-..yes
+..no
 FADEINTIME
 ..400
 FADEOUTTIME
@@ -19,6 +19,6 @@ PAUSEEACHSONG
 PLAYANNOUNCE
 ..no
 QUEUE_NAME
-..Muziek wachtrij
+..Queue D
 SHOWQUEUEDANCE
 ..no

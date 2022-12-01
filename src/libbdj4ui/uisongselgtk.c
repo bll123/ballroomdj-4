@@ -125,7 +125,7 @@ static void uisongselMoveSelection (void *udata, int where);
 static void uisongselGetIter (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 
-static bool uisongselUIDanceSelectCallback (void *udata, long idx);
+static bool uisongselUIDanceSelectCallback (void *udata, long idx, int count);
 static bool uisongselSongEditCallback (void *udata);
 
 void
@@ -245,11 +245,11 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     uiutilsUIWidgetCopy (&uiw->playbutton, &uiwidget);
   }
 
-  uiutilsUICallbackLongInit (&uiw->callbacks [SONGSEL_CB_DANCE_SEL],
+  uiutilsUICallbackLongIntInit (&uiw->callbacks [SONGSEL_CB_DANCE_SEL],
       uisongselUIDanceSelectCallback, uisongsel);
   uisongsel->uidance = uidanceDropDownCreate (&hbox, parentwin,
       /* CONTEXT: song-selection: filter: all dances are selected */
-      UIDANCE_ALL_DANCES, _("All Dances"), UIDANCE_PACK_END);
+      UIDANCE_ALL_DANCES, _("All Dances"), UIDANCE_PACK_END, 1);
   uidanceSetCallback (uisongsel->uidance,
       &uiw->callbacks [SONGSEL_CB_DANCE_SEL]);
 
@@ -849,8 +849,9 @@ uisongselQueueHandler (uisongsel_t *uisongsel, musicqidx_t mqidx, int action)
   return;
 }
 
+/* count is not used */
 static bool
-uisongselUIDanceSelectCallback (void *udata, long idx)
+uisongselUIDanceSelectCallback (void *udata, long idx, int count)
 {
   uisongsel_t *uisongsel = udata;
 

@@ -1298,6 +1298,10 @@ msgstr "Wachtrij B"
 msgid "Queue C"
 msgstr "Wachtrij C"
 
+#. CONTEXT: configuration file: name of a music queue
+msgid "Queue D"
+msgstr "Wachtrij D"
+
 #. CONTEXT: music queue: button: queue a dance for playback
 msgid "Queue Dance"
 msgstr ""

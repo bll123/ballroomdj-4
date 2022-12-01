@@ -16,10 +16,11 @@
 #include "ui.h"
 
 void
-uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx)
+uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx, int count)
 {
   int           ci;
   char          tbuff [20];
+  bdjmsgmsg_t   msg = MSG_QUEUE_DANCE;
 
 
   logProcBegin (LOG_PROC, "uimusicqQueueDance");
@@ -27,8 +28,11 @@ uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx)
   ci = uimusicq->musicqManageIdx;
 
   if (idx >= 0) {
+    if (count > 1) {
+      msg = MSG_QUEUE_DANCE_5;
+    }
     snprintf (tbuff, sizeof (tbuff), "%d%c%ld", ci, MSG_ARGS_RS, idx);
-    connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_QUEUE_DANCE, tbuff);
+    connSendMessage (uimusicq->conn, ROUTE_MAIN, msg, tbuff);
   }
   logProcEnd (LOG_PROC, "uimusicqQueueDance", "");
 }

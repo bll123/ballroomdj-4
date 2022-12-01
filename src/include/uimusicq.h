@@ -12,7 +12,6 @@
 #include "nlist.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "uireqext.h"
 
 enum {
   UIMUSICQ_SEL_NONE,
@@ -55,7 +54,6 @@ typedef struct uimusicq uimusicq_t;
 typedef void (*uimusicqiteratecb_t)(uimusicq_t *uimusicq, dbidx_t dbidx);
 
 typedef struct uimusicq {
-  uireqext_t        *uireqext;
   const char        *tag;
   int               musicqPlayIdx;    // needed for clear queue
   int               musicqManageIdx;
@@ -88,7 +86,7 @@ typedef struct uimusicq {
 
 /* uimusicq.c */
 uimusicq_t  * uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
-    dispsel_t *dispsel, uireqext_t *uireqext, dispselsel_t dispselType);
+    dispsel_t *dispsel, dispselsel_t dispselType);
 void  uimusicqProcessSongSelect (uimusicq_t *uimusicq, mp_songselect_t *songselect);
 void  uimusicqSetPeer (uimusicq_t *uimusicq, uimusicq_t *peer);
 void  uimusicqSetDatabase (uimusicq_t *uimusicq, musicdb_t *musicdb);
@@ -125,7 +123,7 @@ bool      uimusicqTruncateQueueCallback (void *udata);
 void      uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active);
 
 /* uimusicqcommon.c */
-void  uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx);
+void  uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx, int count);
 void  uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, long idx);
 bool  uimusicqStopRepeat (void *udata);
 void  uimusicqMoveTop (uimusicq_t *uimusicq, int mqidx, long idx);

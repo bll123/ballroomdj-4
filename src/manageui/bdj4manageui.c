@@ -689,7 +689,7 @@ manageInitializeUI (manageui_t *manage)
   manage->slplayer = uiplayerInit (manage->progstate, manage->conn,
       manage->musicdb);
   manage->slmusicq = uimusicqInit ("m-songlist", manage->conn,
-      manage->musicdb, manage->dispsel, NULL, DISP_SEL_SONGLIST);
+      manage->musicdb, manage->dispsel, DISP_SEL_SONGLIST);
   uimusicqSetPlayIdx (manage->slmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->slmusicq, manage->musicqManageIdx);
   manage->slstats = manageStatsInit (manage->conn, manage->musicdb);
@@ -706,7 +706,7 @@ manageInitializeUI (manageui_t *manage)
       &manage->callbacks [MANAGE_CB_QUEUE_SL]);
 
   manage->slezmusicq = uimusicqInit ("m-ez-songlist", manage->conn,
-      manage->musicdb, manage->dispsel, NULL, DISP_SEL_EZSONGLIST);
+      manage->musicdb, manage->dispsel, DISP_SEL_EZSONGLIST);
   manage->slezsongsel = uisongselInit ("m-ez-songsel", manage->conn,
       manage->musicdb, manage->dispsel, manage->samesong, manage->options,
       manage->uisongfilter, DISP_SEL_EZSONGSEL);
@@ -724,7 +724,7 @@ manageInitializeUI (manageui_t *manage)
   manage->mmplayer = uiplayerInit (manage->progstate, manage->conn,
       manage->musicdb);
   manage->mmmusicq = uimusicqInit ("m-mm-songlist", manage->conn,
-      manage->musicdb, manage->dispsel, NULL, DISP_SEL_SONGLIST);
+      manage->musicdb, manage->dispsel, DISP_SEL_SONGLIST);
   manage->mmsongsel = uisongselInit ("m-mm-songsel", manage->conn,
       manage->musicdb, manage->dispsel, manage->samesong, manage->options,
       manage->uisongfilter, DISP_SEL_MM);

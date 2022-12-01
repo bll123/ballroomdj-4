@@ -88,6 +88,7 @@ typedef enum {
   OPT_Q_PAUSE_EACH_SONG,
   OPT_Q_PLAY_ANNOUNCE,
   OPT_Q_QUEUE_NAME,
+  OPT_Q_SHOW_QUEUE_DANCE,
 } bdjoptkey_t;
 
 typedef enum {

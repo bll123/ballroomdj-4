@@ -179,8 +179,13 @@ confuiBuildUIPlayer (confuigui_t *gui)
 
   /* CONTEXT: configuration: whether to play announcements */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Play Announcements"),
-      CONFUI_SWITCH_PLAY_ANNOUNCE, OPT_Q_PLAY_ANNOUNCE,
+      CONFUI_SWITCH_Q_PLAY_ANNOUNCE, OPT_Q_PLAY_ANNOUNCE,
       bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, 0), NULL, CONFUI_INDENT);
+
+  /* CONTEXT: configuration: whether to show the 'queue dance' buttons */
+  confuiMakeItemSwitch (gui, &vbox, &sg, _("Show Queue Dance Buttons"),
+      CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE, OPT_Q_SHOW_QUEUE_DANCE,
+      bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, 0), NULL, CONFUI_INDENT);
 
   confuiPlayerQueueChg (gui);
 
@@ -344,8 +349,10 @@ confuiPlayerQueueChg (void *udata)
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiswitch,
       bdjoptGetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, nselidx));
-  uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_PLAY_ANNOUNCE].uiswitch,
+  uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiswitch,
       bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, nselidx));
+  uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch,
+      bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, nselidx));
 
   logProcEnd (LOG_PROC, "confuiPlayerQueueChg", "");
   return UICB_CONT;

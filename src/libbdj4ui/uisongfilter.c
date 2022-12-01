@@ -100,7 +100,7 @@ static void uisfUpdate (uisongfilter_t *uisf);
 static bool uisfPlaylistSelectHandler (void *udata, long idx);
 static bool uisfSortBySelectHandler (void *udata, long idx);
 static bool uisfGenreSelectHandler (void *udata, long idx);
-static bool uisfDanceSelectHandler (void *udata, long idx);
+static bool uisfDanceSelectHandler (void *udata, long idx, int count);
 static void uisfInitDisplay (uisongfilter_t *uisf);
 static void uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx);
 static void uisfCreatePlaylistList (uisongfilter_t *uisf);
@@ -523,11 +523,11 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiSizeGroupAdd (&sg, &uiwidget);
   uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_DANCE], &uiwidget);
 
-  uiutilsUICallbackLongInit (&uisf->callbacks [UISF_CB_DANCE_SEL],
+  uiutilsUICallbackLongIntInit (&uisf->callbacks [UISF_CB_DANCE_SEL],
       uisfDanceSelectHandler, uisf);
   uisf->uidance = uidanceDropDownCreate (&hbox, &uisf->filterDialog,
       /* CONTEXT: song selection filter: a filter: all dances are selected */
-      UIDANCE_ALL_DANCES,  _("All Dances"), UIDANCE_PACK_START);
+      UIDANCE_ALL_DANCES,  _("All Dances"), UIDANCE_PACK_START, 1);
   uidanceSetCallback (uisf->uidance, &uisf->callbacks [UISF_CB_DANCE_SEL]);
   /* adding to the size group makes it look weird */
 
@@ -821,8 +821,9 @@ uisfGenreSelectHandler (void *udata, long idx)
   return UICB_CONT;
 }
 
+/* count is not used */
 static bool
-uisfDanceSelectHandler (void *udata, long idx)
+uisfDanceSelectHandler (void *udata, long idx, int count)
 {
   uisongfilter_t  *uisf = udata;
 

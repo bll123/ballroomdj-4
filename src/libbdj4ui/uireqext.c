@@ -55,7 +55,7 @@ typedef struct uireqext {
 /* request external */
 static void   uireqextCreateDialog (uireqext_t *uireqext);
 static bool   uireqextAudioFileDialog (void *udata);
-static bool   uireqextDanceSelectHandler (void *udata, long idx);
+static bool   uireqextDanceSelectHandler (void *udata, long idx, int count);
 static void   uireqextInitDisplay (uireqext_t *uireqext);
 static void   uireqextClearSong (uireqext_t *uireqext);
 static bool   uireqextResponseHandler (void *udata, long responseid);
@@ -288,11 +288,11 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiutilsUICallbackLongInit (&uireqext->callbacks [UIREQEXT_CB_DANCE],
+  uiutilsUICallbackLongIntInit (&uireqext->callbacks [UIREQEXT_CB_DANCE],
       uireqextDanceSelectHandler, uireqext);
   uireqext->uidance = uidanceDropDownCreate (&hbox, &uireqext->reqextDialog,
       /* CONTEXT: request external: dance drop-down */
-      UIDANCE_EMPTY_DANCE, _("Select Dance"), UIDANCE_PACK_START);
+      UIDANCE_EMPTY_DANCE, _("Select Dance"), UIDANCE_PACK_START, 1);
   uidanceSetCallback (uireqext->uidance, &uireqext->callbacks [UIREQEXT_CB_DANCE]);
 
   logProcEnd (LOG_PROC, "uireqextCreateDialog", "");
@@ -328,8 +328,9 @@ uireqextAudioFileDialog (void *udata)
   return UICB_CONT;
 }
 
+/* count is not used */
 static bool
-uireqextDanceSelectHandler (void *udata, long idx)
+uireqextDanceSelectHandler (void *udata, long idx, int count)
 {
   uireqext_t  *uireqext = udata;
 

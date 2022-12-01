@@ -43,6 +43,7 @@
 #include "uimusicq.h"
 #include "uinbutil.h"
 #include "uiplayer.h"
+#include "uireqext.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
 
@@ -50,6 +51,7 @@ enum {
   PLUI_MENU_CB_PLAY_QUEUE,
   PLUI_MENU_CB_EXTRA_QUEUE,
   PLUI_MENU_CB_SWITCH_QUEUE,
+  PLUI_MENU_CB_REQ_EXTERNAL,
   PLUI_MENU_CB_MQ_FONT_SZ,
   PLUI_MENU_CB_MQ_FIND,
   PLUI_CB_NOTEBOOK,
@@ -169,6 +171,7 @@ static bool     pluiQueueProcess (void *udata, long dbidx, int mqidx);
 static bool     pluiSongSaveCallback (void *udata, long dbidx);
 static bool     pluiClearQueueCallback (void *udata);
 static void     pluiPushHistory (playerui_t *plui, const char *args);
+static bool     pluiRequestExternalDialog (void *udata);
 static bool     pluiReqextCallback (void *udata);
 
 static int gKillReceived = 0;
@@ -435,6 +438,17 @@ pluiBuildUI (playerui_t *plui)
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
       &plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE]);
 
+  /* CONTEXT: playerui: menu selection: actions for the player */
+  uiMenuCreateItem (&menubar, &menuitem, _("Actions"), NULL);
+
+  uiCreateSubMenu (&menuitem, &menu);
+
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL],
+      pluiRequestExternalDialog, plui, NULL);
+  /* CONTEXT: playerui: menu selection: action: request external */
+  uiMenuCreateItem (&menu, &menuitem, _("Request External"),
+      &plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL]);
+
   /* CONTEXT: playerui: menu selection: marquee related options */
   uiMenuCreateItem (&menubar, &menuitem, _("Marquee"), NULL);
 
@@ -556,7 +570,7 @@ pluiInitializeUI (playerui_t *plui)
   uireqextSetResponseCallback (plui->uireqext, &plui->callbacks [PLUI_CB_REQ_EXT]);
 
   plui->uimusicq = uimusicqInit ("plui", plui->conn, plui->musicdb,
-      plui->dispsel, plui->uireqext, DISP_SEL_MUSICQ);
+      plui->dispsel, DISP_SEL_MUSICQ);
 
   plui->uisongfilter = uisfInit (&plui->window, plui->options,
       SONG_FILTER_FOR_PLAYBACK);
@@ -1302,6 +1316,16 @@ pluiPushHistory (playerui_t *plui, const char *args)
   snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", MUSICQ_HISTORY,
       MSG_ARGS_RS, 999, MSG_ARGS_RS, dbidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
+}
+
+static bool
+pluiRequestExternalDialog (void *udata)
+{
+  playerui_t    *plui = udata;
+  bool          rc;
+
+  rc = uireqextDialog (plui->uireqext);
+  return rc;
 }
 
 static bool
