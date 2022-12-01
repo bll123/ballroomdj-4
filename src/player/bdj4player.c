@@ -705,8 +705,8 @@ playerProcessing (void *udata)
         playerData->stopPlaying = false;
         playerData->currentSpeed = 100;
 
-        logMsg (LOG_DBG, LOG_BASIC, "actual play time: %"PRIu64,
-            (uint64_t) mstimeend (&playerData->playTimeStart) + playerData->playTimePlayed);
+        logMsg (LOG_DBG, LOG_BASIC, "actual play time: %"PRId64,
+            (int64_t) mstimeend (&playerData->playTimeStart) + playerData->playTimePlayed);
         playerStop (playerData);
 
         if (pq->announce == PREP_SONG) {
@@ -1535,11 +1535,13 @@ playerFadeVolSet (playerdata_t *playerData)
     volumeSet (playerData->volume, playerData->currentSink, newvol);
     playerData->actualVolume = newvol;
   }
-  logMsg (LOG_DBG, LOG_MAIN, "fade set volume: %d count:%d",
-      newvol, playerData->fadeCount);
+  if (playerData->inFade) {
+    logMsg (LOG_DBG, LOG_VOLUME, "fade set volume: %d count:%d",
+        newvol, playerData->fadeCount);
+  }
   if (playerData->inFadeOut) {
-    logMsg (LOG_DBG, LOG_MAIN, "   time %"PRIu64,
-        (uint64_t) mstimeend (&playerData->playEndCheck));
+    logMsg (LOG_DBG, LOG_VOLUME, "   time %"PRId64,
+        (int64_t) mstimeend (&playerData->playEndCheck));
   }
   if (playerData->inFadeIn) {
     ++playerData->fadeCount;
@@ -1552,8 +1554,8 @@ playerFadeVolSet (playerdata_t *playerData)
       playerData->inFadeOut = false;
       volumeSet (playerData->volume, playerData->currentSink, 0);
       playerData->actualVolume = 0;
-      logMsg (LOG_DBG, LOG_MAIN, "fade-out done volume: %d time: %"PRIu64,
-          0, (uint64_t) mstimeend (&playerData->playEndCheck));
+      logMsg (LOG_DBG, LOG_MAIN, "fade-out done volume: %d time: %"PRId64,
+          0, (int64_t) mstimeend (&playerData->playEndCheck));
     }
   }
 
@@ -1620,7 +1622,8 @@ playerStartFadeOut (playerdata_t *playerData)
   tm = tm < playerData->fadeoutTime ? tm : playerData->fadeoutTime;
   playerData->fadeSamples = tm / FADEOUT_TIMESLICE;
   playerData->fadeCount = playerData->fadeSamples;
-  logMsg (LOG_DBG, LOG_MAIN, "fade: samples: %d", playerData->fadeCount);
+  logMsg (LOG_DBG, LOG_VOLUME, "fade: samples: %d", playerData->fadeCount);
+  logMsg (LOG_DBG, LOG_VOLUME, "fade: timeslice: %d", FADEOUT_TIMESLICE);
   playerData->fadeTimeStart = mstime ();
   playerFadeVolSet (playerData);
   playerSetPlayerState (playerData, PL_STATE_IN_FADEOUT);
@@ -1648,10 +1651,10 @@ playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq)
   }
   logMsg (LOG_DBG, LOG_MAIN, "pq->dur: %"PRId64, (int64_t) pq->dur);
   logMsg (LOG_DBG, LOG_MAIN, "newdur: %"PRId64, (int64_t) newdur);
-  logMsg (LOG_DBG, LOG_MAIN, "playTimeStart: %"PRIu64, (uint64_t) mstimeend (&playerData->playTimeStart));
-  logMsg (LOG_DBG, LOG_MAIN, "playEndCheck: %"PRIu64, (uint64_t) mstimeend (&playerData->playEndCheck));
-  logMsg (LOG_DBG, LOG_MAIN, "playTimeCheck: %"PRIu64, (uint64_t) mstimeend (&playerData->playTimeCheck));
-  logMsg (LOG_DBG, LOG_MAIN, "fadeTimeCheck: %"PRIu64, (uint64_t) mstimeend (&playerData->fadeTimeCheck));
+  logMsg (LOG_DBG, LOG_MAIN, "playTimeStart: %"PRId64, (int64_t) mstimeend (&playerData->playTimeStart));
+  logMsg (LOG_DBG, LOG_MAIN, "playEndCheck: %"PRId64, (int64_t) mstimeend (&playerData->playEndCheck));
+  logMsg (LOG_DBG, LOG_MAIN, "playTimeCheck: %"PRId64, (int64_t) mstimeend (&playerData->playTimeCheck));
+  logMsg (LOG_DBG, LOG_MAIN, "fadeTimeCheck: %"PRId64, (int64_t) mstimeend (&playerData->fadeTimeCheck));
   logProcEnd (LOG_PROC, "playerSetCheckTimes", "");
 }
 

@@ -743,7 +743,7 @@ printResults (testsuite_t *testsuite, results_t *results)
   }
   fprintf (stdout, " %s", state);
   if (testsuite->verbose) {
-    fprintf (stdout, "  (%"PRIu64")", (uint64_t) mstimeend (&results->start));
+    fprintf (stdout, "  (%"PRId64")", (int64_t) mstimeend (&results->start));
   }
   fprintf (stdout, "\n");
   fflush (stdout);
