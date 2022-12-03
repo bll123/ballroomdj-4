@@ -76,7 +76,7 @@ COLOR
 USERSEL
 ..yes
 # pinkheart is used in itunes conversion
-# the name should be kept if itunes is in use
+# the name should not be changed.
 # the symbol and color may be changed
 KEY
 ..6
@@ -89,7 +89,7 @@ COLOR
 USERSEL
 ..yes
 # brokenheart is used in itunes conversion
-# the name should be kept if itunes is in use
+# the name should not be changed.
 # the symbol and color may be changed
 KEY
 ..7

@@ -5,17 +5,17 @@ BallroomDJ 4 Change Log
 - configuration: added a per-queue 'show queue dance buttons' selection.
 - configuration: disable active/display switches for main music queue.
 - configuration: increased number of available queues to 4.
-- select folder dialog: fixed to only show folders.
 - mobile marquee: remove internet mode.
 - player: added a 'queue 5' button.
 - player: fixed request listing to filter playback status on startup.
 - player: moved 'request external' into a menu.
 - player: the queue dance buttons are only shown per the queue configuration.
+- select folder dialog: fixed to only show folders.
 - song editor: previous and next buttons will now repeat.
 - song filter: clear playlist selection on reset.
 - song filter: fixed issues enabling/disabling filters when playlist
     filter is in use.
-- song list editor: fixed default gap for new playlists.
+- song list editor: fixed gap default for new playlists.
 - song list editor/music manager: fixed song selection on switch.
 - starter: added a 'create profile shortcut' menu selection.
 - starter: fix create profile.
