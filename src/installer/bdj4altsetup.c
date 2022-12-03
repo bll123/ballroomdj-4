@@ -91,6 +91,7 @@ typedef struct {
   /* conversion */
   UIWidget        window;
   uientry_t       *targetEntry;
+  uientry_t       *nameEntry;
   UIWidget        reinstWidget;
   UICallback      reinstcb;
   UIWidget        feedbackMsg;
@@ -153,6 +154,7 @@ main (int argc, char *argv[])
   }
 
   altsetup.targetEntry = uiEntryInit (80, MAXPATHLEN);
+  altsetup.nameEntry = uiEntryInit (30, 30);
 
   sysvarsInit (argv[0]);
   localeInit ();
@@ -256,6 +258,22 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
+  uiBoxPackStart (&hbox, uiwidgetp);
+
+  uiCreateHorizBox (&hbox);
+  uiWidgetExpandHoriz (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+
+  uiCreateColonLabel (&uiwidget,
+      /* CONTEXT: set up alternate: name (for shortcut) */
+      _("Name"));
+  uiBoxPackStart (&hbox, &uiwidget);
+
+  uiEntryCreate (altsetup->nameEntry);
+  uiEntrySetValue (altsetup->nameEntry, "BDJ4 B");
+  uiwidgetp = uiEntryGetUIWidget (altsetup->nameEntry);
+//  uiWidgetAlignHorizFill (uiwidgetp);
+//  uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
@@ -864,6 +882,8 @@ altsetupSetup (altsetup_t *altsetup)
 static void
 altsetupCreateShortcut (altsetup_t *altsetup)
 {
+  const char  *name;
+
   if (chdir (altsetup->maindir)) {
     altsetupFailWorkingDir (altsetup, altsetup->maindir);
     return;
@@ -871,7 +891,11 @@ altsetupCreateShortcut (altsetup_t *altsetup)
 
   /* CONTEXT: set up alternate: status message */
   altsetupDisplayText (altsetup, "-- ", _("Creating shortcut."), false);
-  instutilCreateShortcut ("BD4-alt", altsetup->maindir, altsetup->target, 0);
+  name = uiEntryGetValue (altsetup->nameEntry);
+  if (name == NULL || ! *name) {
+    name = "BDJ4-alt";
+  }
+  instutilCreateShortcut (name, altsetup->maindir, altsetup->target, 0);
 
   altsetup->instState = ALT_UPDATE_PROCESS_INIT;
 }
@@ -924,9 +948,8 @@ altsetupCleanup (altsetup_t *altsetup)
     for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
       uiButtonFree (altsetup->buttons [i]);
     }
-    if (altsetup->targetEntry != NULL) {
-      uiEntryFree (altsetup->targetEntry);
-    }
+    uiEntryFree (altsetup->nameEntry);
+    uiEntryFree (altsetup->targetEntry);
     free (altsetup->target);
   }
 }

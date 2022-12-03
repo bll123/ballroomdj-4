@@ -99,9 +99,7 @@ uireqextFree (uireqext_t *uireqext)
       songFree (uireqext->song);
     }
     dataFree (uireqext->songEntryText);
-    if (uireqext->audioFileEntry != NULL) {
-      uiEntryFree (uireqext->audioFileEntry);
-    }
+    uiEntryFree (uireqext->audioFileEntry);
     uiDialogDestroy (&uireqext->reqextDialog);
     uiButtonFree (uireqext->audioFileDialogButton);
     uidanceFree (uireqext->uidance);

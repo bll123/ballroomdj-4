@@ -185,9 +185,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
 
       switch (tagdefs [tagkey].editType) {
         case ET_ENTRY: {
-          if (uiw->items [count].entry != NULL) {
-            uiEntryFree (uiw->items [count].entry);
-          }
+          uiEntryFree (uiw->items [count].entry);
           break;
         }
         case ET_COMBOBOX: {
