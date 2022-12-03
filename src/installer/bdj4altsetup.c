@@ -69,12 +69,20 @@ enum {
 };
 
 enum {
+  ALT_BUTTON_TARGET_DIR,
+  ALT_BUTTON_EXIT,
+  ALT_BUTTON_START,
+  ALT_BUTTON_MAX,
+};
+
+enum {
   ALT_TARGET,
 };
 
 typedef struct {
   altsetupstate_t instState;
   UICallback      callbacks [ALT_CB_MAX];
+  uibutton_t      *buttons [ALT_BUTTON_MAX];
   char            *target;
   char            *maindir;
   char            *hostname;
@@ -140,6 +148,9 @@ main (int argc, char *argv[])
   altsetup.reinstall = false;
   uiutilsUIWidgetInit (&altsetup.reinstWidget);
   uiutilsUIWidgetInit (&altsetup.feedbackMsg);
+  for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
+    altsetup.buttons [i] = NULL;
+  }
 
   altsetup.targetEntry = uiEntryInit (80, MAXPATHLEN);
 
@@ -188,6 +199,7 @@ altsetupBuildUI (altsetup_t *altsetup)
   UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      uiwidget;
+  uibutton_t    *uibutton;
   UIWidget      *uiwidgetp;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
@@ -237,12 +249,14 @@ altsetupBuildUI (altsetup_t *altsetup)
 
   uiutilsUICallbackInit (&altsetup->callbacks [ALT_CB_TARGET_DIR],
       altsetupTargetDirDialog, altsetup, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &altsetup->callbacks [ALT_CB_TARGET_DIR],
       "", NULL);
-  uiButtonSetImageIcon (&uiwidget, "folder");
-  uiWidgetSetMarginStart (&uiwidget, 0);
-  uiBoxPackStart (&hbox, &uiwidget);
+  altsetup->buttons [ALT_BUTTON_TARGET_DIR] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiButtonSetImageIcon (uibutton, "folder");
+  uiWidgetSetMarginStart (uiwidgetp, 0);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
@@ -268,19 +282,23 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &altsetup->callbacks [ALT_CB_EXIT],
       /* CONTEXT: set up alternate: exits the altsetup */
       _("Exit"), NULL);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  altsetup->buttons [ALT_BUTTON_EXIT] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackEnd (&hbox, uiwidgetp);
 
   uiutilsUICallbackInit (&altsetup->callbacks [ALT_CB_START],
       altsetupSetupCallback, altsetup, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &altsetup->callbacks [ALT_CB_START],
       /* CONTEXT: set up alternate: start the set-up process */
       _("Start"), NULL);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  altsetup->buttons [ALT_BUTTON_START] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackEnd (&hbox, uiwidgetp);
 
   altsetup->disptb = uiTextBoxCreate (200, NULL);
   uiTextBoxSetReadonly (altsetup->disptb);
@@ -903,6 +921,9 @@ static void
 altsetupCleanup (altsetup_t *altsetup)
 {
   if (altsetup->target != NULL) {
+    for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
+      uiButtonFree (altsetup->buttons [i]);
+    }
     if (altsetup->targetEntry != NULL) {
       uiEntryFree (altsetup->targetEntry);
     }

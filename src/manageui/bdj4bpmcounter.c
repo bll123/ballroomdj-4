@@ -47,6 +47,14 @@ enum {
   BPMCOUNT_DISP_MAX,
 };
 
+enum {
+  BPMCOUNT_BUTTON_CLOSE,
+  BPMCOUNT_BUTTON_RESET,
+  BPMCOUNT_BUTTON_SAVE,
+  BPMCOUNT_BUTTON_BLUEBOX,
+  BPMCOUNT_BUTTON_MAX,
+};
+
 static char *disptxt [BPMCOUNT_DISP_MAX];
 
 typedef struct {
@@ -57,6 +65,7 @@ typedef struct {
   UIWidget        window;
   UIWidget        timesigsel [BPMCOUNT_DISP_MAX];
   UIWidget        dispvalue [BPMCOUNT_DISP_MAX];
+  uibutton_t      *buttons [BPMCOUNT_BUTTON_MAX];
   int             values [BPMCOUNT_DISP_MAX];
   UICallback      callbacks [BPMCOUNT_CB_MAX];
   int             stopwaitcount;
@@ -136,6 +145,9 @@ main (int argc, char *argv[])
   }
   for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
     uiutilsUICallbackInit (&bpmcounter.callbacks [i], NULL, NULL, NULL);
+  }
+  for (int i = 0; i < BPMCOUNT_BUTTON_MAX; ++i) {
+    bpmcounter.buttons [i] = NULL;
   }
 
   bpmcounter.stopwaitcount = 0;
@@ -271,6 +283,9 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "bpmcounterClosingCallback");
   uiCloseWindow (&bpmcounter->window);
+  for (int i = 0; i < BPMCOUNT_BUTTON_MAX; ++i) {
+    uiButtonFree (bpmcounter->buttons [i]);
+  }
 
   procutilFreeAll (bpmcounter->processes);
 
@@ -295,6 +310,8 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 {
   UIWidget    grpuiwidget;
   UIWidget    uiwidget;
+  uibutton_t  *uibutton;
+  UIWidget    *uiwidgetp;
   UIWidget    vboxmain;
   UIWidget    vbox;
   UIWidget    hboxbpm;
@@ -390,14 +407,16 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_CLICK],
       bpmcounterProcessClick, bpmcounter, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &bpmcounter->callbacks [BPMCOUNT_CB_CLICK],
       NULL, "bluebox");
-  uiButtonSetReliefNone (&uiwidget);
-  uiButtonSetFlat (&uiwidget);
-  uiWidgetDisableFocus (&uiwidget);
-  uiWidgetSetAllMargins (&uiwidget, 0);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  bpmcounter->buttons [BPMCOUNT_BUTTON_BLUEBOX] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiButtonSetReliefNone (uibutton);
+  uiButtonSetFlat (uibutton);
+  uiWidgetDisableFocus (uiwidgetp);
+  uiWidgetSetAllMargins (uiwidgetp, 0);
+  uiBoxPackEnd (&hbox, uiwidgetp);
 
   /* buttons */
   uiCreateHorizBox (&hbox);
@@ -405,28 +424,34 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
       bpmcounterProcessSave, bpmcounter, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
       /* CONTEXT: bpm counter: save button */
       _("Save"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, 2);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  bpmcounter->buttons [BPMCOUNT_BUTTON_SAVE] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
+  uiBoxPackEnd (&hbox, uiwidgetp);
 
   uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_RESET],
       bpmcounterProcessReset, bpmcounter, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &bpmcounter->callbacks [BPMCOUNT_CB_RESET],
       /* CONTEXT: bpm counter: reset button */
       _("Reset"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, 2);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  bpmcounter->buttons [BPMCOUNT_BUTTON_RESET] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
+  uiBoxPackEnd (&hbox, uiwidgetp);
 
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: close button */
       _("Close"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, 2);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  bpmcounter->buttons [BPMCOUNT_BUTTON_CLOSE] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
+  uiBoxPackEnd (&hbox, uiwidgetp);
 
   x = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_X);
   y = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_Y);

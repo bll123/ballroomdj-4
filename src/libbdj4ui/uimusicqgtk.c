@@ -40,6 +40,47 @@ enum {
   MUSICQ_UPD_DISP,
 };
 
+enum {
+  UIMUSICQ_CB_MOVE_TOP,
+  UIMUSICQ_CB_MOVE_UP,
+  UIMUSICQ_CB_MOVE_DOWN,
+  UIMUSICQ_CB_TOGGLE_PAUSE,
+  UIMUSICQ_CB_AUDIO_REMOVE,
+  UIMUSICQ_CB_REQ_EXTERNAL,
+  UIMUSICQ_CB_CLEAR_QUEUE,
+  UIMUSICQ_CB_EDIT_LOCAL,
+  UIMUSICQ_CB_PLAY,
+  UIMUSICQ_CB_QUEUE,
+  UIMUSICQ_CB_MAX,
+};
+
+enum {
+  UIMUSICQ_BUTTON_CLEAR_QUEUE,
+  UIMUSICQ_BUTTON_EDIT,
+  UIMUSICQ_BUTTON_MOVE_DOWN,
+  UIMUSICQ_BUTTON_MOVE_TOP,
+  UIMUSICQ_BUTTON_MOVE_UP,
+  UIMUSICQ_BUTTON_PLAY,
+  UIMUSICQ_BUTTON_QUEUE,
+  UIMUSICQ_BUTTON_REMOVE,
+  UIMUSICQ_BUTTON_TOGGLE_PAUSE,
+  UIMUSICQ_BUTTON_MAX,
+};
+
+typedef struct uimusicqgtk {
+  uidance_t         *uidance;
+  GtkWidget         *musicqTree;
+  GtkTreeSelection  *sel;
+  GtkTreeViewColumn *favColumn;
+  char              *selPathStr;
+  UICallback        callback [UIMUSICQ_CB_MAX];
+  uibutton_t        *buttons [UIMUSICQ_BUTTON_MAX];
+  GtkTreeModel      *model;
+  GtkTreeIter       *iter;
+  GType             *typelist;
+  int               col;        // for the display type callback
+} uimusicqgtk_t;
+
 static bool   uimusicqQueueDanceCallback (void *udata, long idx, int count);
 static bool   uimusicqQueuePlaylistCallback (void *udata, long idx);
 static void   uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate, int newdispflag);
@@ -64,37 +105,6 @@ static bool   uimusicqTogglePauseCallback (void *udata);
 static bool   uimusicqRemoveCallback (void *udata);
 static void   uimusicqCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
 
-
-enum {
-  UIMUSICQ_CB_MOVE_TOP,
-  UIMUSICQ_CB_MOVE_UP_PRESS,
-  UIMUSICQ_CB_MOVE_UP_RELEASE,
-  UIMUSICQ_CB_MOVE_DOWN_PRESS,
-  UIMUSICQ_CB_MOVE_DOWN_RELEASE,
-  UIMUSICQ_CB_TOGGLE_PAUSE,
-  UIMUSICQ_CB_AUDIO_REMOVE,
-  UIMUSICQ_CB_REQ_EXTERNAL,
-  UIMUSICQ_CB_CLEAR_QUEUE,
-  UIMUSICQ_CB_EDIT_LOCAL,
-  UIMUSICQ_CB_PLAY,
-  UIMUSICQ_CB_QUEUE,
-  UIMUSICQ_CB_MAX,
-};
-
-typedef struct uimusicqgtk {
-  uidance_t     *uidance;
-  GtkWidget     *musicqTree;
-  GtkTreeSelection  *sel;
-  GtkTreeViewColumn   *favColumn;
-  char          *selPathStr;
-  UICallback    callback [UIMUSICQ_CB_MAX];
-  UIWidget      playbutton;
-  GtkTreeModel  *model;
-  GtkTreeIter   *iter;
-  GType         *typelist;
-  int           col;        // for the display type callback
-} uimusicqgtk_t;
-
 void
 uimusicqUIInit (uimusicq_t *uimusicq)
 {
@@ -107,7 +117,9 @@ uimusicqUIInit (uimusicq_t *uimusicq)
     uiw->selPathStr = NULL;
     uiw->musicqTree = NULL;
     uiw->favColumn = NULL;
-    uiutilsUIWidgetInit (&uiw->playbutton);
+    for (int j = 0; j < UIMUSICQ_BUTTON_MAX; ++j) {
+      uiw->buttons [j] = NULL;
+    }
   }
 }
 
@@ -119,6 +131,9 @@ uimusicqUIFree (uimusicq_t *uimusicq)
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     uiw = uimusicq->ui [i].uiWidgets;
     if (uiw != NULL) {
+      for (i = 0; i < UIMUSICQ_BUTTON_MAX; ++i) {
+        uiButtonFree (uiw->buttons [i]);
+      }
       dataFree (uiw->selPathStr);
       uidanceFree (uiw->uidance);
       free (uiw);
@@ -130,10 +145,11 @@ UIWidget *
 uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     UIWidget *statusMsg, uientryval_t validateFunc)
 {
-  int               tci;
+  int               saveci;
   char              tbuff [MAXPATHLEN];
   UIWidget          hbox;
   UIWidget          uiwidget;
+  uibutton_t        *uibutton;
   UIWidget          *uiwidgetp;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
@@ -143,8 +159,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
 
   logProcBegin (LOG_PROC, "uimusicqBuildUI");
 
+  saveci = uimusicq->musicqManageIdx;
   /* temporary */
-  tci = uimusicq->musicqManageIdx;
   uimusicq->musicqManageIdx = ci;
   uiw = uimusicq->ui [ci].uiWidgets;
   uimusicq->statusMsg = statusMsg;
@@ -177,50 +193,48 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_MOVE_TOP],
         uimusicqMoveTopCallback, uimusicq, "musicq: move-to-top");
-    uiCreateButton (&uiwidget,
+    uibutton = uiCreateButton (
         &uiw->callback [UIMUSICQ_CB_MOVE_TOP],
         /* CONTEXT: music queue: button: move the selected song to the top of the queue */
         _("Move to Top"), "button_movetop");
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiw->buttons [UIMUSICQ_BUTTON_MOVE_TOP] = uibutton;
+    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiBoxPackStart (&hbox, uiwidgetp);
 
-    /* CONTEXT: music queue: button: move the selected song up in the queue */
-    uiCreateButton (&uiwidget, NULL, _("Move Up"), "button_up");
     uiutilsUICallbackInit (
-        &uiw->callback [UIMUSICQ_CB_MOVE_UP_PRESS],
-        uimusicqMoveUpCallback, uimusicq, "musicq: move-up-press");
-    uiButtonSetPressCallback (&uiwidget,
-        &uiw->callback [UIMUSICQ_CB_MOVE_UP_PRESS]);
-    uiutilsUICallbackInit (
-        &uiw->callback [UIMUSICQ_CB_MOVE_UP_RELEASE],
-        uimusicqStopRepeat, uimusicq, "musicq: move-up-release");
-    uiButtonSetReleaseCallback (&uiwidget,
-        &uiw->callback [UIMUSICQ_CB_MOVE_UP_RELEASE]);
-    uiBoxPackStart (&hbox, &uiwidget);
+        &uiw->callback [UIMUSICQ_CB_MOVE_UP],
+        uimusicqMoveUpCallback, uimusicq, "musicq: move-up");
+    uibutton = uiCreateButton (&uiw->callback [UIMUSICQ_CB_MOVE_UP],
+        /* CONTEXT: music queue: button: move the selected song up in the queue */
+        _("Move Up"), "button_up");
+    uiw->buttons [UIMUSICQ_BUTTON_MOVE_UP] = uibutton;
+    uiButtonSetRepeat (uibutton, UIMUSICQ_REPEAT_TIME);
+    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiBoxPackStart (&hbox, uiwidgetp);
 
-    /* CONTEXT: music queue: button: move the selected song down in the queue */
-    uiCreateButton (&uiwidget, NULL, _("Move Down"), "button_down");
     uiutilsUICallbackInit (
-        &uiw->callback [UIMUSICQ_CB_MOVE_DOWN_PRESS],
-        uimusicqMoveDownCallback, uimusicq, "musicq: move-down-press");
-    uiButtonSetPressCallback (&uiwidget,
-        &uiw->callback [UIMUSICQ_CB_MOVE_DOWN_PRESS]);
-    uiutilsUICallbackInit (
-        &uiw->callback [UIMUSICQ_CB_MOVE_DOWN_RELEASE],
-        uimusicqStopRepeat, uimusicq, "musicq: move-down-release");
-    uiButtonSetReleaseCallback (&uiwidget,
-        &uiw->callback [UIMUSICQ_CB_MOVE_DOWN_RELEASE]);
-    uiBoxPackStart (&hbox, &uiwidget);
+        &uiw->callback [UIMUSICQ_CB_MOVE_DOWN],
+        uimusicqMoveDownCallback, uimusicq, "musicq: move-down");
+    uibutton = uiCreateButton (&uiw->callback [UIMUSICQ_CB_MOVE_DOWN],
+        /* CONTEXT: music queue: button: move the selected song down in the queue */
+        _("Move Down"), "button_down");
+    uiw->buttons [UIMUSICQ_BUTTON_MOVE_DOWN] = uibutton;
+    uiButtonSetRepeat (uibutton, UIMUSICQ_REPEAT_TIME);
+    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiBoxPackStart (&hbox, uiwidgetp);
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_TOGGLE_PAUSE],
         uimusicqTogglePauseCallback, uimusicq, "musicq: toggle-pause");
-    uiCreateButton (&uiwidget,
+    uibutton = uiCreateButton (
         &uiw->callback [UIMUSICQ_CB_TOGGLE_PAUSE],
         /* CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle) */
         _("Toggle Pause"), "button_pause");
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiw->buttons [UIMUSICQ_BUTTON_TOGGLE_PAUSE] = uibutton;
+    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiBoxPackStart (&hbox, uiwidgetp);
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ ||
@@ -229,52 +243,61 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_AUDIO_REMOVE],
         uimusicqRemoveCallback, uimusicq, "musicq: remove-from-queue");
-    uiCreateButton (&uiwidget,
+    uibutton = uiCreateButton (
         &uiw->callback [UIMUSICQ_CB_AUDIO_REMOVE],
         /* CONTEXT: music queue: button: remove the song from the queue */
         _("Remove"), "button_audioremove");
-    uiWidgetSetMarginStart (&uiwidget, 3);
-    uiWidgetSetMarginEnd (&uiwidget, 2);
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiw->buttons [UIMUSICQ_BUTTON_REMOVE] = uibutton;
+    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiWidgetSetMarginStart (uiwidgetp, 3);
+    uiWidgetSetMarginEnd (uiwidgetp, 2);
+    uiBoxPackStart (&hbox, uiwidgetp);
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
     uiutilsUICallbackInit (
         &uiw->callback [UIMUSICQ_CB_CLEAR_QUEUE],
         uimusicqTruncateQueueCallback, uimusicq, "musicq: clear-queue");
-    uiCreateButton (&uiwidget,
+    uibutton = uiCreateButton (
         &uiw->callback [UIMUSICQ_CB_CLEAR_QUEUE],
         /* CONTEXT: music queue: button: clear the queue */
         _("Clear Queue"), NULL);
-    uiWidgetSetMarginStart (&uiwidget, 3);
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiw->buttons [UIMUSICQ_BUTTON_CLEAR_QUEUE] = uibutton;
+    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiWidgetSetMarginStart (uiwidgetp, 2);
+    uiBoxPackStart (&hbox, uiwidgetp);
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_EZSONGLIST) {
     uiutilsUICallbackInit (&uiw->callback [UIMUSICQ_CB_EDIT_LOCAL],
         uimusicqSongEditCallback, uimusicq, "musicq: edit");
-    uiCreateButton (&uiwidget, &uiw->callback [UIMUSICQ_CB_EDIT_LOCAL],
+    uibutton = uiCreateButton (&uiw->callback [UIMUSICQ_CB_EDIT_LOCAL],
         /* CONTEXT: music queue: edit the selected song */
         _("Edit"), "button_edit");
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiw->buttons [UIMUSICQ_BUTTON_EDIT] = uibutton;
+    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiBoxPackStart (&hbox, uiwidgetp);
 
     uiutilsUICallbackInit (&uiw->callback [UIMUSICQ_CB_PLAY],
         uimusicqPlayCallback, uimusicq, "musicq: play");
-    uiCreateButton (&uiwidget, &uiw->callback [UIMUSICQ_CB_PLAY],
+    uibutton = uiCreateButton (&uiw->callback [UIMUSICQ_CB_PLAY],
         /* CONTEXT: music queue: play the selected song */
         _("Play"), NULL);
-    uiBoxPackStart (&hbox, &uiwidget);
-    uiutilsUIWidgetCopy (&uiw->playbutton, &uiwidget);
+    uiw->buttons [UIMUSICQ_BUTTON_PLAY] = uibutton;
+    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiBoxPackStart (&hbox, uiwidgetp);
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_HISTORY) {
     uiutilsUICallbackInit (&uiw->callback [UIMUSICQ_CB_QUEUE],
         uimusicqQueueCallback, uimusicq, "musicq: queue");
-    uiCreateButton (&uiwidget, &uiw->callback [UIMUSICQ_CB_QUEUE],
+    uibutton = uiCreateButton (&uiw->callback [UIMUSICQ_CB_QUEUE],
         /* CONTEXT: history: re-queue the selected song */
         _("Queue"), NULL);
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiw->buttons [UIMUSICQ_BUTTON_QUEUE] = uibutton;
+    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiBoxPackStart (&hbox, uiwidgetp);
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
@@ -371,10 +394,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (uiw->musicqTree), NULL);
 
-  uimusicq->musicqManageIdx = tci;
-
   g_signal_connect ((GtkWidget *) uiw->sel, "changed",
       G_CALLBACK (uimusicqSelectionChgCallback), uimusicq);
+
+  uimusicq->musicqManageIdx = saveci;
 
   logProcEnd (LOG_PROC, "uimusicqBuildUI", "");
   return &uimusicq->ui [ci].mainbox;
@@ -383,17 +406,14 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
 void
 uimusicqUIMainLoop (uimusicq_t *uimusicq)
 {
-  if (uimusicq->repeatButton != UIMUSICQ_REPEAT_NONE) {
-    if (mstimeCheck (&uimusicq->repeatTimer)) {
-      if (uimusicq->repeatButton == UIMUSICQ_REPEAT_UP) {
-        uimusicqMoveUpCallback (uimusicq);
-      }
-      if (uimusicq->repeatButton == UIMUSICQ_REPEAT_DOWN) {
-        uimusicqMoveDownCallback (uimusicq);
-      }
-    }
-  }
+  uimusicqgtk_t *uiw;
+  int           ci;
 
+  ci = uimusicq->musicqManageIdx;
+  uiw = uimusicq->ui [ci].uiWidgets;
+
+  uiButtonCheckRepeat (uiw->buttons [UIMUSICQ_BUTTON_MOVE_DOWN]);
+  uiButtonCheckRepeat (uiw->buttons [UIMUSICQ_BUTTON_MOVE_UP]);
   return;
 }
 
@@ -582,16 +602,18 @@ void
 uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active)
 {
   uimusicqgtk_t *uiw;
+  UIWidget      *uiwidgetp;
   int           ci;
 
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
+  uiwidgetp = uiButtonGetUIWidget (uiw->buttons [UIMUSICQ_BUTTON_PLAY]);
 
   /* if the player is active, disable the button */
   if (active) {
-    uiWidgetDisable (&uiw->playbutton);
+    uiWidgetDisable (uiwidgetp);
   } else {
-    uiWidgetEnable (&uiw->playbutton);
+    uiWidgetEnable (uiwidgetp);
   }
 }
 

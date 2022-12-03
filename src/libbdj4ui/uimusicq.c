@@ -38,7 +38,6 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
 
   uimusicq->tag = tag;
   uimusicq->conn = conn;
-  uimusicq->repeatButton = UIMUSICQ_REPEAT_NONE;
   uimusicq->dispsel = dispsel;
   uimusicq->musicdb = musicdb;
   uimusicq->statusMsg = NULL;

@@ -37,25 +37,30 @@ typedef enum {
 
 enum {
   CONFUI_BEGIN,
+  CONFUI_COMBOBOX_BEGIN,
   CONFUI_COMBOBOX_ORGPATH,
   CONFUI_COMBOBOX_MAX,
+  CONFUI_ENTRY_BEGIN,
   CONFUI_ENTRY_DANCE_TAGS,
-  CONFUI_ENTRY_DANCE_ANNOUNCEMENT,
   CONFUI_ENTRY_DANCE_DANCE,
   CONFUI_ENTRY_MM_TITLE,
-  CONFUI_ENTRY_MUSIC_DIR,
   CONFUI_ENTRY_PROFILE_NAME,
   CONFUI_ENTRY_COMPLETE_MSG,
   /* the queue name identifiers must be in sequence */
   /* the number of queue names must match MUSICQ_PB_MAX */
-  CONFUI_ENTRY_ITUNES_DIR,
-  CONFUI_ENTRY_ITUNES_XML,
   CONFUI_ENTRY_QUEUE_NM,
   CONFUI_ENTRY_RC_PASS,
   CONFUI_ENTRY_RC_USER_ID,
-  CONFUI_ENTRY_SHUTDOWN,
-  CONFUI_ENTRY_STARTUP,
   CONFUI_ENTRY_MAX,
+  CONFUI_ENTRY_CHOOSE_BEGIN,
+  CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT,
+  CONFUI_ENTRY_CHOOSE_ITUNES_DIR,
+  CONFUI_ENTRY_CHOOSE_ITUNES_XML,
+  CONFUI_ENTRY_CHOOSE_MUSIC_DIR,
+  CONFUI_ENTRY_CHOOSE_SHUTDOWN,
+  CONFUI_ENTRY_CHOOSE_STARTUP,
+  CONFUI_ENTRY_CHOOSE_MAX,
+  CONFUI_SPINBOX_BEGIN,
   CONFUI_SPINBOX_AUDIO_OUTPUT,
   CONFUI_SPINBOX_BPM,
   CONFUI_SPINBOX_DANCE_HIGH_BPM,
@@ -86,6 +91,7 @@ enum {
   CONFUI_SPINBOX_VOL_INTFC,
   CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS,
   CONFUI_SPINBOX_MAX,
+  CONFUI_SWITCH_BEGIN,
   CONFUI_SWITCH_AUTO_ORGANIZE,
   CONFUI_SWITCH_BDJ3_COMPAT_TAGS,
   CONFUI_SWITCH_DB_LOAD_FROM_GENRE,
@@ -101,6 +107,7 @@ enum {
   CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE,
   CONFUI_SWITCH_RC_ENABLE,
   CONFUI_SWITCH_MAX,
+  CONFUI_WIDGET_BEGIN,
   CONFUI_WIDGET_AO_EXAMPLE_1,
   CONFUI_WIDGET_AO_EXAMPLE_2,
   CONFUI_WIDGET_AO_EXAMPLE_3,
@@ -167,6 +174,7 @@ enum {
   CONFUI_WIDGET_UI_FONT,
   CONFUI_WIDGET_UI_LISTING_FONT,
   CONFUI_WIDGET_UI_PROFILE_COLOR,
+  CONFUI_WIDGET_MAX,
   CONFUI_ITEM_MAX,
 };
 
@@ -180,6 +188,7 @@ typedef struct {
     uispinbox_t   *spinbox;
     uiswitch_t    *uiswitch;
   };
+  uibutton_t  *uibutton;      // for entry chooser
   int         listidx;        // for combobox, spinbox
   nlist_t     *displist;      // indexed by spinbox/combobox index
                               //    value: display
@@ -251,10 +260,19 @@ typedef struct confuigui confuigui_t;
 typedef struct confuitable confuitable_t;
 typedef void (*savefunc_t) (confuigui_t *);
 
+enum {
+  CONFUI_BUTTON_TABLE_UP,
+  CONFUI_BUTTON_TABLE_DOWN,
+  CONFUI_BUTTON_TABLE_DELETE,
+  CONFUI_BUTTON_TABLE_ADD,
+  CONFUI_BUTTON_TABLE_MAX,
+};
+
 typedef struct confuitable {
-  GtkWidget *tree;
+  GtkWidget         *tree;
   GtkTreeSelection  *sel;
-  UICallback  callback [CONFUI_TABLE_CB_MAX];
+  UICallback        callback [CONFUI_TABLE_CB_MAX];
+  uibutton_t        *buttons [CONFUI_BUTTON_TABLE_MAX];
   int       radiorow;
   int       togglecol;
   int       flags;
@@ -452,6 +470,7 @@ void confuiCreateStatusTable (confuigui_t *gui);
 
 /* conftable.c */
 void confuiMakeItemTable (confuigui_t *gui, UIWidget *box, confuiident_t id, int flags);
+void confuiTableFree (confuigui_t *gui, confuiident_t id);
 void confuiTableSave (confuigui_t *gui, confuiident_t id);
 void confuiTableEditText (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 void confuiTableToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer udata);

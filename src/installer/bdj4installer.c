@@ -91,6 +91,14 @@ enum {
 };
 
 enum {
+  INST_BUTTON_TARGET_DIR,
+  INST_BUTTON_BDJ3LOC_DIR,
+  INST_BUTTON_EXIT,
+  INST_BUTTON_INSTALL,
+  INST_BUTTON_MAX,
+};
+
+enum {
   INST_TARGET,
   INST_BDJ3LOC,
 };
@@ -140,6 +148,7 @@ typedef struct {
   UIWidget        pythonMsg;
   UIWidget        mutagenMsg;
   uitextbox_t     *disptb;
+  uibutton_t      *buttons [INST_BUTTON_MAX];
   /* flags */
   bool            newinstall : 1;
   bool            reinstall : 1;
@@ -299,6 +308,9 @@ main (int argc, char *argv[])
   strcpy (installer.pyversion, "");
   strcpy (installer.oldversion, "");
   strcpy (installer.bdj3version, "");
+  for (int i = 0; i < INST_BUTTON_MAX; ++i) {
+    installer.buttons [i] = NULL;
+  }
 
   installer.targetEntry = uiEntryInit (80, MAXPATHLEN);
   installer.bdj3locEntry = uiEntryInit (80, MAXPATHLEN);
@@ -480,6 +492,7 @@ installerBuildUI (installer_t *installer)
   UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      uiwidget;
+  uibutton_t    *uibutton;
   UIWidget      *uiwidgetp;
   UIWidget      sg;
   char          tbuff [100];
@@ -539,12 +552,14 @@ installerBuildUI (installer_t *installer)
 
   uiutilsUICallbackInit (&installer->callbacks [INST_CB_TARGET_DIR],
       installerTargetDirDialog, installer, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &installer->callbacks [INST_CB_TARGET_DIR],
       "", NULL);
-  uiButtonSetImageIcon (&uiwidget, "folder");
-  uiWidgetSetMarginStart (&uiwidget, 0);
-  uiBoxPackStart (&hbox, &uiwidget);
+  installer->buttons [INST_BUTTON_TARGET_DIR] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiButtonSetImageIcon (uibutton, "folder");
+  uiWidgetSetMarginStart (uiwidgetp, 0);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
@@ -602,12 +617,14 @@ installerBuildUI (installer_t *installer)
 
   uiutilsUICallbackInit (&installer->callbacks [INST_CB_BDJ3LOC_DIR],
       installerBDJ3LocDirDialog, installer, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &installer->callbacks [INST_CB_BDJ3LOC_DIR],
       "", NULL);
-  uiButtonSetImageIcon (&uiwidget, "folder");
-  uiWidgetSetMarginStart (&uiwidget, 0);
-  uiBoxPackStart (&hbox, &uiwidget);
+  installer->buttons [INST_BUTTON_BDJ3LOC_DIR] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiButtonSetImageIcon (uibutton, "folder");
+  uiWidgetSetMarginStart (uiwidgetp, 0);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
@@ -675,19 +692,23 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &installer->callbacks [INST_CB_EXIT],
       /* CONTEXT: installer: exits the installer */
       _("Exit"), NULL);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  installer->buttons [INST_BUTTON_EXIT] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackEnd (&hbox, uiwidgetp);
 
   uiutilsUICallbackInit (&installer->callbacks [INST_CB_INSTALL],
       installerInstallCallback, installer, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &installer->callbacks [INST_CB_INSTALL],
       /* CONTEXT: installer: start the installation process */
       _("Install"), NULL);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  installer->buttons [INST_BUTTON_INSTALL] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackEnd (&hbox, uiwidgetp);
 
   installer->disptb = uiTextBoxCreate (300, INST_HL_COLOR);
   uiTextBoxSetReadonly (installer->disptb);
@@ -2444,6 +2465,9 @@ installerCleanup (installer_t *installer)
   dataFree (installer->bdj3loc);
   slistFree (installer->convlist);
   dataFree (installer->tclshloc);
+  for (int i = 0; i < INST_BUTTON_MAX; ++i) {
+    uiButtonFree (installer->buttons [i]);
+  }
 
   webclientClose (installer->webclient);
 

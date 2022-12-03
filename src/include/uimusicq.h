@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <gtk/gtk.h>
 
+#include "bdj4.h"
 #include "conn.h"
 #include "dispsel.h"
 #include "msgparse.h"
@@ -22,14 +23,8 @@ enum {
 };
 
 enum {
-  UIMUSICQ_REPEAT_NONE,
-  UIMUSICQ_REPEAT_UP,
-  UIMUSICQ_REPEAT_DOWN,
-};
-
-enum {
   UIMUSICQ_PEER_MAX = 2,
-  UIMUSICQ_REPEAT_TIME = 250,
+  UIMUSICQ_REPEAT_TIME = 200,
 };
 
 typedef struct uimusicqgtk uimusicqgtk_t;
@@ -71,8 +66,6 @@ typedef struct uimusicq {
   UICallback        queueplcb;
   UICallback        queuedancecb;
   uimusicqui_t      ui [MUSICQ_MAX];
-  mstime_t          repeatTimer;
-  int               repeatButton;
   /* peers */
   int               peercount;
   uimusicq_t        *peers [UIMUSICQ_PEER_MAX];
@@ -125,7 +118,6 @@ void      uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active);
 /* uimusicqcommon.c */
 void  uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx, int count);
 void  uimusicqQueuePlaylistProcess (uimusicq_t *uimusicq, long idx);
-bool  uimusicqStopRepeat (void *udata);
 void  uimusicqMoveTop (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqMoveUp (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqMoveDown (uimusicq_t *uimusicq, int mqidx, long idx);

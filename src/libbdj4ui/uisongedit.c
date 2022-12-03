@@ -34,7 +34,6 @@ uisongeditInit (conn_t *conn, musicdb_t *musicdb,
   uisongedit->options = options;
   uisongedit->savecb = NULL;
   uisongedit->statusMsg = NULL;
-  uisongedit->repeatButton = UISONGEDIT_REPEAT_NONE;
 
   uisongeditUIInit (uisongedit);
 
@@ -115,18 +114,5 @@ uisongeditSetSaveCallback (uisongedit_t *uisongedit, UICallback *uicb)
   }
 
   uisongedit->savecb = uicb;
-}
-
-bool
-uisongeditStopRepeat (void *udata)
-{
-  uisongedit_t  *uisongedit = udata;
-
-  logProcBegin (LOG_PROC, "uisongeditStopRepeat");
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: stop repeat");
-
-  uisongedit->repeatButton = UISONGEDIT_REPEAT_NONE;
-  logProcEnd (LOG_PROC, "uisongeditStopRepeat", "");
-  return UICB_CONT;
 }
 

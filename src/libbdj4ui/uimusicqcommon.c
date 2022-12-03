@@ -74,10 +74,7 @@ uimusicqMoveUp (uimusicq_t *uimusicq, int mqidx, long idx)
   char        tbuff [40];
 
   snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN,
-      MSG_MUSICQ_MOVE_UP, tbuff);
-  uimusicq->repeatButton = UIMUSICQ_REPEAT_UP;
-  mstimeset (&uimusicq->repeatTimer, UIMUSICQ_REPEAT_TIME);
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_UP, tbuff);
   logProcEnd (LOG_PROC, "uimusicqMoveUp", "");
 }
 
@@ -87,10 +84,7 @@ uimusicqMoveDown (uimusicq_t *uimusicq, int mqidx, long idx)
   char        tbuff [40];
 
   snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
-  connSendMessage (uimusicq->conn, ROUTE_MAIN,
-      MSG_MUSICQ_MOVE_DOWN, tbuff);
-  uimusicq->repeatButton = UIMUSICQ_REPEAT_DOWN;
-  mstimeset (&uimusicq->repeatTimer, UIMUSICQ_REPEAT_TIME);
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_DOWN, tbuff);
 }
 
 void
@@ -111,19 +105,6 @@ uimusicqRemove (uimusicq_t *uimusicq, int mqidx, long idx)
   snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_REMOVE, tbuff);
-}
-
-bool
-uimusicqStopRepeat (void *udata)
-{
-  uimusicq_t  *uimusicq = udata;
-
-  logProcBegin (LOG_PROC, "uimusicqStopRepeat");
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: stop repeat");
-
-  uimusicq->repeatButton = UIMUSICQ_REPEAT_NONE;
-  logProcEnd (LOG_PROC, "uimusicqStopRepeat", "");
-  return UICB_CONT;
 }
 
 void

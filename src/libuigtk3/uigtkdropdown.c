@@ -27,7 +27,7 @@ typedef struct uidropdown {
   char          *title;
   UICallback    *selectcb;
   UIWidget      *parentwin;
-  UIWidget      button;
+  uibutton_t    *button;
   UICallback    buttoncb;
   UIWidget      window;
   UICallback    closecb;
@@ -60,7 +60,7 @@ uiDropDownInit (void)
 
   dropdown->title = NULL;
   dropdown->parentwin = NULL;
-  uiutilsUIWidgetInit (&dropdown->button);
+  dropdown->button = NULL;
   uiutilsUIWidgetInit (&dropdown->window);
   dropdown->tree = NULL;
   dropdown->sel = NULL;
@@ -97,7 +97,7 @@ uiDropDownCreate (UIWidget *parentwin,
   dropdown->title = strdup (title);
   uiDropDownButtonCreate (dropdown);
   uiDropDownWindowCreate (dropdown, uicb, udata);
-  return &dropdown->button;
+  return uiButtonGetUIWidget (dropdown->button);
 }
 
 UIWidget *
@@ -136,7 +136,7 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   if (! dropdown->iscombobox) {
     snprintf (tbuff, sizeof (tbuff), "%-*s",
         dropdown->maxwidth, dropdown->title);
-    uiButtonSetText (&dropdown->button, tbuff);
+    uiButtonSetText (dropdown->button, tbuff);
   }
 
   if (dropdown->iscombobox && selectLabel != NULL) {
@@ -209,7 +209,7 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   if (! dropdown->iscombobox) {
     snprintf (tbuff, sizeof (tbuff), "%-*s",
         dropdown->maxwidth, dropdown->title);
-    uiButtonSetText (&dropdown->button, tbuff);
+    uiButtonSetText (dropdown->button, tbuff);
   }
 
   if (dropdown->iscombobox && selectLabel != NULL) {
@@ -300,19 +300,25 @@ uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx)
 void
 uiDropDownDisable (uidropdown_t *dropdown)
 {
+  UIWidget  *uiwidgetp;
+
   if (dropdown == NULL) {
     return;
   }
-  uiWidgetDisable (&dropdown->button);
+  uiwidgetp = uiButtonGetUIWidget (dropdown->button);
+  uiWidgetDisable (uiwidgetp);
 }
 
 void
 uiDropDownEnable (uidropdown_t *dropdown)
 {
+  UIWidget  *uiwidgetp;
+
   if (dropdown == NULL) {
     return;
   }
-  uiWidgetEnable (&dropdown->button);
+  uiwidgetp = uiButtonGetUIWidget (dropdown->button);
+  uiWidgetEnable (uiwidgetp);
 }
 
 char *
@@ -330,6 +336,7 @@ static bool
 uiDropDownWindowShow (void *udata)
 {
   uidropdown_t  *dropdown = udata;
+  UIWidget      *uiwidgetp;
   int           x, y, ws;
   int           bx, by;
 
@@ -341,8 +348,9 @@ uiDropDownWindowShow (void *udata)
   bx = 0;
   by = 0;
   uiWindowGetPosition (dropdown->parentwin, &x, &y, &ws);
-  if (uiutilsUIWidgetSet (&dropdown->button)) {
-    uiWidgetGetPosition (&dropdown->button, &bx, &by);
+  uiwidgetp = uiButtonGetUIWidget (dropdown->button);
+  if (uiutilsUIWidgetSet (uiwidgetp)) {
+    uiWidgetGetPosition (uiwidgetp, &bx, &by);
   }
   uiWidgetShowAll (&dropdown->window);
   uiWindowMove (&dropdown->window, bx + x + 4, by + y + 4 + 30, -1);
@@ -367,13 +375,16 @@ uiDropDownClose (void *udata)
 static void
 uiDropDownButtonCreate (uidropdown_t *dropdown)
 {
+  UIWidget    *uiwidgetp;
+
   uiutilsUICallbackInit (&dropdown->buttoncb, uiDropDownWindowShow, dropdown, NULL);
-  uiCreateButton (&dropdown->button, &dropdown->buttoncb, NULL,
+  dropdown->button = uiCreateButton (&dropdown->buttoncb, NULL,
       "button_down_small");
-  uiButtonAlignLeft (&dropdown->button);
-  uiButtonSetImagePosRight (&dropdown->button);
-  uiWidgetSetMarginTop (&dropdown->button, 1);
-  uiWidgetSetMarginStart (&dropdown->button, 1);
+  uiButtonAlignLeft (dropdown->button);
+  uiButtonSetImagePosRight (dropdown->button);
+  uiwidgetp = uiButtonGetUIWidget (dropdown->button);
+  uiWidgetSetMarginTop (uiwidgetp, 1);
+  uiWidgetSetMarginStart (uiwidgetp, 1);
 }
 
 
@@ -388,7 +399,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
 
   uiutilsUICallbackInit (&dropdown->closecb, uiDropDownClose, dropdown, NULL);
   uiCreateDialogWindow (&dropdown->window, dropdown->parentwin,
-      &dropdown->button, &dropdown->closecb, "");
+      uiButtonGetUIWidget (dropdown->button), &dropdown->closecb, "");
 
   uiCreateVertBox (&uiwidget);
   uiWidgetExpandHoriz (&uiwidget);
@@ -452,7 +463,7 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
       if (p != NULL) {
         snprintf (tbuff, sizeof (tbuff), "%-*s",
             dropdown->maxwidth, p);
-        uiButtonSetText (&dropdown->button, tbuff);
+        uiButtonSetText (dropdown->button, tbuff);
       }
     }
   }
@@ -491,7 +502,7 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
       gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
       snprintf (tbuff, sizeof (tbuff), "%-*s",
           dropdown->maxwidth, p);
-      uiButtonSetText (&dropdown->button, tbuff);
+      uiButtonSetText (dropdown->button, tbuff);
       free (p);
     }
     uiWidgetHide (&dropdown->window);

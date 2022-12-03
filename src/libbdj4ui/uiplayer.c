@@ -34,6 +34,78 @@ enum {
   UIPLAYER_LOCK_TIME_SEND = 30,
 };
 
+enum {
+  UIPLAYER_CB_FADE,
+  UIPLAYER_CB_PLAYPAUSE,
+  UIPLAYER_CB_BEGSONG,
+  UIPLAYER_CB_NEXTSONG,
+  UIPLAYER_CB_PAUSEATEND,
+  UIPLAYER_CB_REPEAT,
+  UIPLAYER_CB_MAX,
+};
+
+enum {
+  UIPLAYER_BUTTON_FADE,
+  UIPLAYER_BUTTON_PLAYPAUSE,
+  UIPLAYER_BUTTON_BEGSONG,
+  UIPLAYER_BUTTON_NEXTSONG,
+  UIPLAYER_BUTTON_MAX,
+};
+
+
+typedef struct uiplayer {
+  progstate_t     *progstate;
+  conn_t          *conn;
+  playerstate_t   playerState;
+  musicdb_t       *musicdb;
+  UICallback      callbacks [UIPLAYER_CB_MAX];
+  /* song display */
+  UIWidget        vbox;
+  UIWidget        statusImg;
+  UIWidget        repeatImg;
+  UIWidget        danceLab;
+  UIWidget        artistLab;
+  UIWidget        titleLab;
+  uibutton_t      *buttons [UIPLAYER_BUTTON_MAX];
+  /* speed controls / display */
+  UIWidget        speedScale;
+  UICallback      speedcb;
+  UIWidget        speedDisplayLab;
+  bool            speedLock;
+  mstime_t        speedLockTimeout;
+  mstime_t        speedLockSend;
+  /* position controls / display */
+  UIWidget        countdownTimerLab;
+  UIWidget        durationLab;
+  UIWidget        seekScale;
+  UICallback      seekcb;
+  UIWidget        seekDisplayLab;
+  ssize_t         lastdur;
+  bool            seekLock;
+  mstime_t        seekLockTimeout;
+  mstime_t        seekLockSend;
+  /* main controls */
+  bool            repeatLock;
+  bool            pauseatendLock;
+  UIWidget        repeatButton;
+  UIWidget        songbeginButton;
+  UIWidget        pauseatendButton;
+  UIWidget        playPixbuf;
+  UIWidget        stopPixbuf;
+  UIWidget        pausePixbuf;
+  UIWidget        repeatPixbuf;
+  UIWidget        ledoffImg;
+  UIWidget        ledonImg;
+  /* volume controls / display */
+  UIWidget        volumeScale;
+  UICallback      volumecb;
+  bool            volumeLock;
+  mstime_t        volumeLockTimeout;
+  mstime_t        volumeLockSend;
+  UIWidget        volumeDisplayLab;
+  bool            uibuilt;
+} uiplayer_t;
+
 static bool  uiplayerInitCallback (void *udata, programstate_t programState);
 static bool  uiplayerClosingCallback (void *udata, programstate_t programState);
 
@@ -88,6 +160,9 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiutilsUIWidgetInit (&uiplayer->ledonImg);
   uiutilsUIWidgetInit (&uiplayer->volumeDisplayLab);
   uiutilsUIWidgetInit (&uiplayer->volumeScale);
+  for (int i = 0; i < UIPLAYER_BUTTON_MAX; ++i) {
+    uiplayer->buttons [i] = NULL;
+  }
 
   progstateSetCallback (uiplayer->progstate, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
   progstateSetCallback (uiplayer->progstate, STATE_CLOSING, uiplayerClosingCallback, uiplayer);
@@ -107,6 +182,9 @@ uiplayerFree (uiplayer_t *uiplayer)
 {
   logProcBegin (LOG_PROC, "uiplayerFree");
   if (uiplayer != NULL) {
+    for (int i = 0; i < UIPLAYER_BUTTON_MAX; ++i) {
+      uiButtonFree (uiplayer->buttons [i]);
+    }
     free (uiplayer);
   }
   logProcEnd (LOG_PROC, "uiplayerFree", "");
@@ -117,6 +195,8 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];
   UIWidget        uiwidget;
+  uibutton_t      *uibutton;
+  UIWidget        *uiwidgetp;
   UIWidget        hbox;
   UIWidget        tbox;
   UIWidget        sgA;
@@ -304,19 +384,23 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_FADE],
       uiplayerFadeProcess, uiplayer, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &uiplayer->callbacks [UIPLAYER_CB_FADE],
       /* CONTEXT: playerui: button: fade out the song and stop playing it */
       _("Fade"), NULL);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiplayer->buttons [UIPLAYER_BUTTON_FADE] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_PLAYPAUSE],
       uiplayerPlayPauseProcess, uiplayer, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &uiplayer->callbacks [UIPLAYER_CB_PLAYPAUSE],
       /* CONTEXT: playerui: button: tooltip: play or pause the song */
       _("Play / Pause"), "button_playpause");
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiplayer->buttons [UIPLAYER_BUTTON_PLAYPAUSE] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
@@ -331,19 +415,23 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_BEGSONG],
       uiplayerSongBeginProcess, uiplayer, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &uiplayer->callbacks [UIPLAYER_CB_BEGSONG],
       /* CONTEXT: playerui: button: tooltip: return to the beginning of the song */
       _("Return to beginning of song"), "button_begin");
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiplayer->buttons [UIPLAYER_BUTTON_BEGSONG] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_NEXTSONG],
       uiplayerNextSongProcess, uiplayer, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &uiplayer->callbacks [UIPLAYER_CB_NEXTSONG],
       /* CONTEXT: playerui: button: tooltip: start playing the next song (immediate) */
       _("Next Song"), "button_nextsong");
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiplayer->buttons [UIPLAYER_BUTTON_NEXTSONG] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_on", ".svg",
       PATHBLD_MP_IMGDIR);

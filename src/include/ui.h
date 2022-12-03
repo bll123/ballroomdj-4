@@ -10,6 +10,7 @@
 #include "nlist.h"
 #include "slist.h"
 #include "song.h"
+#include "tmutil.h"
 
 typedef bool  (*UICallbackFunc)(void *udata);
 typedef bool  (*UIDoubleCallbackFunc)(void *udata, double value);
@@ -141,16 +142,20 @@ void  uichgindMarkError (uichgind_t *uichgind);
 void  uichgindMarkChanged (uichgind_t *uichgind);
 
 /* uigtkbutton.c */
-void uiCreateButton (UIWidget *uiwidget, UICallback *uicb, char *title, char *imagenm);
-void uiButtonSetImagePosRight (UIWidget *uiwidget);
-void uiButtonSetPressCallback (UIWidget *uiwidget, UICallback *uicb);
-void uiButtonSetReleaseCallback (UIWidget *uiwidget, UICallback *uicb);
-void uiButtonSetImage (UIWidget *uiwidget, const char *imagenm, const char *tooltip);
-void uiButtonSetImageIcon (UIWidget *uiwidget, const char *nm);
-void uiButtonAlignLeft (UIWidget *widget);
-void uiButtonSetText (UIWidget *uiwidget, const char *txt);
-void uiButtonSetReliefNone (UIWidget *uiwidget);
-void uiButtonSetFlat (UIWidget *uiwidget);
+typedef struct uibutton uibutton_t;
+
+uibutton_t *uiCreateButton (UICallback *uicb, char *title, char *imagenm);
+void uiButtonFree (uibutton_t *uibutton);
+UIWidget *uiButtonGetUIWidget (uibutton_t *uibutton);
+void uiButtonSetImagePosRight (uibutton_t *uibutton);
+void uiButtonSetImage (uibutton_t *uibutton, const char *imagenm, const char *tooltip);
+void uiButtonSetImageIcon (uibutton_t *uibutton, const char *nm);
+void uiButtonAlignLeft (uibutton_t *uibutton);
+void uiButtonSetText (uibutton_t *uibutton, const char *txt);
+void uiButtonSetReliefNone (uibutton_t *uibutton);
+void uiButtonSetFlat (uibutton_t *uibutton);
+void uiButtonSetRepeat (uibutton_t *uibutton, int repeatms);
+void uiButtonCheckRepeat (uibutton_t *uibutton);
 
 /* uigtkentry.c */
 typedef struct uientry uientry_t;

@@ -45,6 +45,7 @@ typedef struct uireqext {
   uientry_t       *artistEntry;
   uientry_t       *titleEntry;
   uidance_t       *uidance;
+  uibutton_t      *audioFileDialogButton;
   UICallback      callbacks [UIREQEXT_CB_MAX];
   UICallback      *responsecb;
   song_t          *song;
@@ -83,6 +84,7 @@ uireqextInit (UIWidget *windowp, nlist_t *opts)
   for (int i = 0; i < UIREQEXT_CB_MAX; ++i) {
     uiutilsUICallbackInit (&uireqext->callbacks [i], NULL, NULL, NULL);
   }
+  uireqext->audioFileDialogButton = NULL;
   uireqext->responsecb = NULL;
   uireqext->isactive = false;
 
@@ -101,6 +103,7 @@ uireqextFree (uireqext_t *uireqext)
       uiEntryFree (uireqext->audioFileEntry);
     }
     uiDialogDestroy (&uireqext->reqextDialog);
+    uiButtonFree (uireqext->audioFileDialogButton);
     uidanceFree (uireqext->uidance);
     free (uireqext);
   }
@@ -181,6 +184,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
   UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      uiwidget;
+  uibutton_t    *uibutton;
   UIWidget      *uiwidgetp;
   UIWidget      sg;  // labels
   UIWidget      sgA; // title, artist
@@ -241,12 +245,14 @@ uireqextCreateDialog (uireqext_t *uireqext)
 
   uiutilsUICallbackInit (&uireqext->callbacks [UIREQEXT_CB_AUDIO_FILE],
       uireqextAudioFileDialog, uireqext, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &uireqext->callbacks [UIREQEXT_CB_AUDIO_FILE],
       "", NULL);
-  uiButtonSetImageIcon (&uiwidget, "folder");
-  uiWidgetSetMarginStart (&uiwidget, 0);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uireqext->audioFileDialogButton = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiButtonSetImageIcon (uibutton, "folder");
+  uiWidgetSetMarginStart (uiwidgetp, 0);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   /* artist display */
   uiCreateHorizBox (&hbox);

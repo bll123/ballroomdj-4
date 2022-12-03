@@ -168,6 +168,7 @@ typedef struct {
   UIWidget        mainnotebook;
   UIWidget        slnotebook;
   UIWidget        mmnotebook;
+  uibutton_t      *selectButton;
   dbidx_t         songlistdbidx;
   dbidx_t         seldbidx;
   int             selbypass;
@@ -367,6 +368,7 @@ main (int argc, char *argv[])
   manage.cfplsel = uiDropDownInit ();
   manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.pluiActive = false;
+  manage.selectButton = NULL;
 
   procutilInitProcesses (manage.processes);
 
@@ -489,6 +491,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   samesongFree (manage->samesong);
   manageDbClose (manage->managedb);
   uiCloseWindow (&manage->window);
+  uiButtonFree (manage->selectButton);
 
   procutilStopAllProcess (manage->processes, manage->conn, true);
   procutilFreeAll (manage->processes);
@@ -772,10 +775,11 @@ static void
 manageBuildUISongListEditor (manageui_t *manage)
 {
   UIWidget            uiwidget;
+  uibutton_t          *uibutton;
+  UIWidget            *uiwidgetp;
   UIWidget            vbox;
   UIWidget            hbox;
   UIWidget            mainhbox;
-  UIWidget            *uiwidgetp;
   UIWidget            notebook;
 
   /* song list editor */
@@ -820,11 +824,13 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_EZ_SELECT],
       uisongselSelectCallback, manage->slezsongsel, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &manage->callbacks [MANAGE_CB_EZ_SELECT],
       /* CONTEXT: managementui: config: button: add the selected songs to the song list */
       _("Select"), "button_left");
-  uiBoxPackStart (&vbox, &uiwidget);
+  manage->selectButton = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackStart (&vbox, uiwidgetp);
 
   uiwidgetp = uisongselBuildUI (manage->slezsongsel, &manage->window);
   uiBoxPackStartExpand (&hbox, uiwidgetp);

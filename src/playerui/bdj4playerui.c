@@ -92,7 +92,7 @@ typedef struct {
   UICallback      callbacks [PLUI_CB_MAX];
   UIWidget        clock;
   UIWidget        musicqImage [MUSICQ_PB_MAX];
-  UIWidget        setPlaybackButton;
+  uibutton_t      *setPlaybackButton;
   UIWidget        ledoffPixbuf;
   UIWidget        ledonPixbuf;
   UIWidget        marqueeFontSizeDialog;
@@ -214,6 +214,7 @@ main (int argc, char *argv[])
   plui.fontszdialogcreated = false;
   plui.currpage = 0;
   plui.mainalready = false;
+  plui.setPlaybackButton = NULL;
 
   osSetStandardSignals (pluiSigHandler);
 
@@ -318,6 +319,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (&plui->window);
   uiWidgetClearPersistent (&plui->ledonPixbuf);
   uiWidgetClearPersistent (&plui->ledoffPixbuf);
+  uiButtonFree (plui->setPlaybackButton);
 
   pathbldMakePath (fn, sizeof (fn),
       PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
@@ -353,6 +355,7 @@ pluiBuildUI (playerui_t *plui)
   UIWidget    hbox;
   UIWidget    uiwidget;
   UIWidget    *uiwidgetp;
+  uibutton_t  *uibutton;
   char        *str;
   char        imgbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
@@ -479,12 +482,13 @@ pluiBuildUI (playerui_t *plui)
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
       pluiProcessSetPlaybackQueue, plui, NULL);
-  uiCreateButton (&uiwidget, &plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
+  uibutton = uiCreateButton (&plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
       /* CONTEXT: playerui: select the current queue for playback */
       _("Set Queue for Playback"), NULL);
-  uiNotebookSetActionWidget (&plui->notebook, &uiwidget);
-  uiWidgetShowAll (&uiwidget);
-  uiutilsUIWidgetCopy (&plui->setPlaybackButton, &uiwidget);
+  plui->setPlaybackButton = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiNotebookSetActionWidget (&plui->notebook, uiwidgetp);
+  uiWidgetShowAll (uiwidgetp);
 
   for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
     int   tabtype;
@@ -941,13 +945,15 @@ static void
 pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum)
 {
   int         tabid;
+  UIWidget    *uiwidgetp;
 
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
 
-  uiWidgetHide (&plui->setPlaybackButton);
+  uiwidgetp = uiButtonGetUIWidget (plui->setPlaybackButton);
+  uiWidgetHide (uiwidgetp);
   if (tabid == UI_TAB_MUSICQ) {
     if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
-      uiWidgetShow (&plui->setPlaybackButton);
+      uiWidgetShow (uiwidgetp);
     }
   }
 }

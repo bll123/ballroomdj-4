@@ -139,11 +139,11 @@ confuiBuildUIEditDances (confuigui_t *gui)
 
   /* CONTEXT: configuration: dances: play the selected announcement before the dance is played */
   confuiMakeItemEntryChooser (gui, &dvbox, &sg, _("Announcement"),
-      CONFUI_ENTRY_DANCE_ANNOUNCEMENT, -1, "",
+      CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT, -1, "",
       confuiSelectAnnouncement);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].entry,
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].entry,
       confuiDanceEntryAnnouncementChg, gui, UIENTRY_DELAYED);
-  gui->uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].danceidx = DANCE_ANNOUNCE;
+  gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].danceidx = DANCE_ANNOUNCE;
 
   bpmstr = tagdefs [TAG_BPM].displayname;
   /* CONTEXT: configuration: dances: low BPM (or MPM) setting */
@@ -245,7 +245,7 @@ confuiDanceEntryTagsChg (uientry_t *entry, void *udata)
 static int
 confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata)
 {
-  return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_DANCE_ANNOUNCEMENT);
+  return confuiDanceEntryChg (entry, udata, CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT);
 }
 
 static int
@@ -295,7 +295,7 @@ confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
     danceSetStr (dances, key, didx, str);
     entryrc = UIENTRY_OK;
   }
-  if (widx == CONFUI_ENTRY_DANCE_ANNOUNCEMENT) {
+  if (widx == CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT) {
     entryrc = confuiDanceValidateAnnouncement (entry, gui);
     if (entryrc == UIENTRY_OK) {
       danceSetStr (dances, key, didx, str);
@@ -479,7 +479,7 @@ confuiSelectAnnouncement (void *udata)
   confuigui_t *gui = udata;
 
   logProcBegin (LOG_PROC, "confuiSelectAnnouncement");
-  confuiSelectFileDialog (gui, CONFUI_ENTRY_DANCE_ANNOUNCEMENT,
+  confuiSelectFileDialog (gui, CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT,
       /* CONTEXT: configuration: announcement selection dialog: audio file filter */
       bdjoptGetStr (OPT_M_DIR_MUSIC), _("Audio Files"), "audio/*");
   logProcEnd (LOG_PROC, "confuiSelectAnnouncement", "");

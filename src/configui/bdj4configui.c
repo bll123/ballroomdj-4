@@ -135,6 +135,7 @@ main (int argc, char *argv[])
 
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
     confui.gui.uiitem [i].widget = NULL;
+    confui.gui.uiitem [i].uibutton = NULL;
     confui.gui.uiitem [i].basetype = CONFUI_NONE;
     confui.gui.uiitem [i].outtype = CONFUI_OUT_NONE;
     confui.gui.uiitem [i].bdjoptIdx = -1;
@@ -146,10 +147,10 @@ main (int argc, char *argv[])
     uiutilsUICallbackInit (&confui.gui.uiitem [i].callback, NULL, NULL, NULL);
     confui.gui.uiitem [i].uri = NULL;
 
-    if (i > CONFUI_BEGIN && i < CONFUI_COMBOBOX_MAX) {
+    if (i > CONFUI_COMBOBOX_BEGIN && i < CONFUI_COMBOBOX_MAX) {
       confui.gui.uiitem [i].dropdown = uiDropDownInit ();
     }
-    if (i > CONFUI_ENTRY_MAX && i < CONFUI_SPINBOX_MAX) {
+    if (i > CONFUI_SPINBOX_BEGIN && i < CONFUI_SPINBOX_MAX) {
       if (i == CONFUI_SPINBOX_MAX_PLAY_TIME ||
           i == CONFUI_SPINBOX_STOP_AT_TIME) {
         confui.gui.uiitem [i].spinbox = uiSpinboxTimeInit (SB_TIME_BASIC);
@@ -157,25 +158,26 @@ main (int argc, char *argv[])
         confui.gui.uiitem [i].spinbox = uiSpinboxInit ();
       }
     }
-    if (i > CONFUI_SPINBOX_MAX && i < CONFUI_SWITCH_MAX) {
+    if (i > CONFUI_SWITCH_BEGIN && i < CONFUI_SWITCH_MAX) {
       confui.gui.uiitem [i].uiswitch = NULL;
     }
   }
 
   confui.gui.uiitem [CONFUI_ENTRY_DANCE_TAGS].entry = uiEntryInit (30, 100);
-  confui.gui.uiitem [CONFUI_ENTRY_DANCE_ANNOUNCEMENT].entry = uiEntryInit (30, 300);
   confui.gui.uiitem [CONFUI_ENTRY_DANCE_DANCE].entry = uiEntryInit (30, 50);
   confui.gui.uiitem [CONFUI_ENTRY_MM_TITLE].entry = uiEntryInit (20, 100);
-  confui.gui.uiitem [CONFUI_ENTRY_MUSIC_DIR].entry = uiEntryInit (50, 300);
   confui.gui.uiitem [CONFUI_ENTRY_PROFILE_NAME].entry = uiEntryInit (20, 30);
   confui.gui.uiitem [CONFUI_ENTRY_COMPLETE_MSG].entry = uiEntryInit (20, 30);
   confui.gui.uiitem [CONFUI_ENTRY_QUEUE_NM].entry = uiEntryInit (20, 30);
   confui.gui.uiitem [CONFUI_ENTRY_RC_PASS].entry = uiEntryInit (10, 20);
   confui.gui.uiitem [CONFUI_ENTRY_RC_USER_ID].entry = uiEntryInit (10, 30);
-  confui.gui.uiitem [CONFUI_ENTRY_STARTUP].entry = uiEntryInit (50, 300);
-  confui.gui.uiitem [CONFUI_ENTRY_SHUTDOWN].entry = uiEntryInit (50, 300);
-  confui.gui.uiitem [CONFUI_ENTRY_ITUNES_DIR].entry = uiEntryInit (50, 300);
-  confui.gui.uiitem [CONFUI_ENTRY_ITUNES_XML].entry = uiEntryInit (50, 300);
+
+  confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].entry = uiEntryInit (30, 300);
+  confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].entry = uiEntryInit (50, 300);
+  confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry = uiEntryInit (50, 300);
+  confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_MUSIC_DIR].entry = uiEntryInit (50, 300);
+  confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_SHUTDOWN].entry = uiEntryInit (50, 300);
+  confui.gui.uiitem [CONFUI_ENTRY_CHOOSE_STARTUP].entry = uiEntryInit (50, 300);
 
   osSetStandardSignals (confuiSigHandler);
 
@@ -318,15 +320,18 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   uiCloseWindow (&confui->gui.window);
 
-  for (int i = CONFUI_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
+  for (int i = CONFUI_COMBOBOX_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
     uiDropDownFree (confui->gui.uiitem [i].dropdown);
   }
 
-  for (int i = CONFUI_COMBOBOX_MAX + 1; i < CONFUI_ENTRY_MAX; ++i) {
+  for (int i = CONFUI_ENTRY_BEGIN + 1; i < CONFUI_ENTRY_MAX; ++i) {
     uiEntryFree (confui->gui.uiitem [i].entry);
   }
-
-  for (int i = CONFUI_ENTRY_MAX + 1; i < CONFUI_SPINBOX_MAX; ++i) {
+  for (int i = CONFUI_ENTRY_CHOOSE_BEGIN + 1; i < CONFUI_ENTRY_CHOOSE_MAX; ++i) {
+    uiEntryFree (confui->gui.uiitem [i].entry);
+    uiButtonFree (confui->gui.uiitem [i].uibutton);
+  }
+  for (int i = CONFUI_SPINBOX_BEGIN + 1; i < CONFUI_SPINBOX_MAX; ++i) {
     uiSpinboxFree (confui->gui.uiitem [i].spinbox);
     /* the mq and ui-theme share the list */
     if (i == CONFUI_SPINBOX_UI_THEME) {
@@ -335,12 +340,10 @@ confuiClosingCallback (void *udata, programstate_t programState)
     nlistFree (confui->gui.uiitem [i].displist);
     nlistFree (confui->gui.uiitem [i].sbkeylist);
   }
-
-  for (int i = CONFUI_SPINBOX_MAX + 1; i < CONFUI_SWITCH_MAX; ++i) {
+  for (int i = CONFUI_SWITCH_BEGIN + 1; i < CONFUI_SWITCH_MAX; ++i) {
     uiSwitchFree (confui->gui.uiitem [i].uiswitch);
   }
-
-  for (int i = CONFUI_SWITCH_MAX + 1; i < CONFUI_ITEM_MAX; ++i) {
+  for (int i = CONFUI_WIDGET_BEGIN + 1; i < CONFUI_WIDGET_MAX; ++i) {
     dataFree (confui->gui.uiitem [i].uri);
   }
 
@@ -477,7 +480,10 @@ confuiMainLoop (void *tconfui)
 
   connProcessUnconnected (confui->conn);
 
-  for (int i = CONFUI_COMBOBOX_MAX + 1; i < CONFUI_ENTRY_MAX; ++i) {
+  for (int i = CONFUI_ENTRY_BEGIN + 1; i < CONFUI_ENTRY_MAX; ++i) {
+    uiEntryValidate (confui->gui.uiitem [i].entry, false);
+  }
+  for (int i = CONFUI_ENTRY_CHOOSE_BEGIN + 1; i < CONFUI_ENTRY_CHOOSE_MAX; ++i) {
     uiEntryValidate (confui->gui.uiitem [i].entry, false);
   }
 

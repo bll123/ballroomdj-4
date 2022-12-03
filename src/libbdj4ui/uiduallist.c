@@ -36,6 +36,35 @@ enum {
   DUALLIST_SEARCH_REMOVE,
 };
 
+enum {
+  DUALLIST_BUTTON_SELECT,
+  DUALLIST_BUTTON_REMOVE,
+  DUALLIST_BUTTON_MOVE_UP,
+  DUALLIST_BUTTON_MOVE_DOWN,
+  DUALLIST_BUTTON_MAX,
+};
+
+typedef struct {
+  GtkWidget         *tree;
+  GtkTreeSelection  *sel;
+} uiduallisttree_t;
+
+typedef struct uiduallist {
+  uiduallisttree_t  trees [DUALLIST_TREE_MAX];
+  UICallback        moveprevcb;
+  UICallback        movenextcb;
+  UICallback        selectcb;
+  UICallback        removecb;
+  uibutton_t        *buttons [DUALLIST_BUTTON_MAX];
+  slist_t           *sourcelist;
+  int               flags;
+  char              *searchstr;
+  int               pos;
+  int               searchtype;
+  slist_t           *savelist;
+  bool              changed : 1;
+} uiduallist_t;
+
 static bool uiduallistMovePrev (void *tduallist);
 static bool uiduallistMoveNext (void *tduallist);
 static void uiduallistMove (uiduallist_t *duallist, int which, int dir);
@@ -56,6 +85,8 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   UIWidget      hbox;
   UIWidget      dvbox;
   UIWidget      uiwidget;
+  uibutton_t    *uibutton;
+  UIWidget      *uiwidgetp;
   GtkWidget     *tree;
   GtkListStore  *store;
   GtkCellRenderer *renderer = NULL;
@@ -72,6 +103,9 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   duallist->searchstr = NULL;
   duallist->savelist = NULL;
   duallist->changed = false;
+  for (int i = 0; i < DUALLIST_BUTTON_MAX; ++i) {
+    duallist->buttons [i] = NULL;
+  }
 
   uiutilsUICallbackInit (&duallist->moveprevcb, uiduallistMovePrev, duallist, NULL);
   uiutilsUICallbackInit (&duallist->movenextcb, uiduallistMoveNext, duallist, NULL);
@@ -138,15 +172,19 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   uiWidgetAlignVertStart (&dvbox);
   uiBoxPackStart (&hbox, &dvbox);
 
-  uiCreateButton (&uiwidget, &duallist->selectcb,
+  uibutton = uiCreateButton (&duallist->selectcb,
       /* CONTEXT: configuration: display settings: button: add the selected field */
       _("Select"), "button_right");
-  uiBoxPackStart (&dvbox, &uiwidget);
+  duallist->buttons [DUALLIST_BUTTON_SELECT] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackStart (&dvbox, uiwidgetp);
 
-  uiCreateButton (&uiwidget, &duallist->removecb,
+  uibutton = uiCreateButton (&duallist->removecb,
       /* CONTEXT: configuration: display settings: button: remove the selected field */
       _("Remove"), "button_left");
-  uiBoxPackStart (&dvbox, &uiwidget);
+  duallist->buttons [DUALLIST_BUTTON_REMOVE] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackStart (&dvbox, uiwidgetp);
 
   uiCreateVertBox (&vbox);
   uiWidgetSetMarginStart (&vbox, 8);
@@ -199,15 +237,19 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   uiWidgetAlignVertStart (&dvbox);
   uiBoxPackStart (&hbox, &dvbox);
 
-  uiCreateButton (&uiwidget, &duallist->moveprevcb,
+  uibutton = uiCreateButton (&duallist->moveprevcb,
       /* CONTEXT: configuration: display settings: button: move the selected field up */
       _("Move Up"), "button_up");
-  uiBoxPackStart (&dvbox, &uiwidget);
+  duallist->buttons [DUALLIST_BUTTON_MOVE_UP] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackStart (&dvbox, uiwidgetp);
 
-  uiCreateButton (&uiwidget, &duallist->movenextcb,
+  uibutton = uiCreateButton (&duallist->movenextcb,
       /* CONTEXT: configuration: display settings: button: move the selected field down */
       _("Move Down"), "button_down");
-  uiBoxPackStart (&dvbox, &uiwidget);
+  duallist->buttons [DUALLIST_BUTTON_MOVE_DOWN] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackStart (&dvbox, uiwidgetp);
 
   return duallist;
 }
@@ -216,6 +258,9 @@ void
 uiduallistFree (uiduallist_t *duallist)
 {
   if (duallist != NULL) {
+    for (int i = 0; i < DUALLIST_BUTTON_MAX; ++i) {
+      uiButtonFree (duallist->buttons [i]);
+    }
     free (duallist);
   }
 }

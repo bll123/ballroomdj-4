@@ -17,25 +17,7 @@ enum {
   DUALLIST_FLAGS_PERSISTENT = 0x0002,
 };
 
-typedef struct {
-  GtkWidget         *tree;
-  GtkTreeSelection  *sel;
-} uiduallisttree_t;
-
-typedef struct {
-  uiduallisttree_t  trees [DUALLIST_TREE_MAX];
-  UICallback        moveprevcb;
-  UICallback        movenextcb;
-  UICallback        selectcb;
-  UICallback        removecb;
-  slist_t           *sourcelist;
-  int               flags;
-  char              *searchstr;
-  int               pos;
-  int               searchtype;
-  slist_t           *savelist;
-  bool              changed : 1;
-} uiduallist_t;
+typedef struct uiduallist uiduallist_t;
 
 uiduallist_t * uiCreateDualList (UIWidget *vbox, int flags,
     const char *sourcetitle, const char *targettitle);

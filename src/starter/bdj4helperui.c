@@ -27,11 +27,18 @@
 #include "sockh.h"
 #include "ui.h"
 
+enum {
+  HELPER_BUTTON_CLOSE,
+  HELPER_BUTTON_NEXT,
+  HELPER_BUTTON_MAX,
+};
+
 typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
   UIWidget        window;
   uitextbox_t     *tb;
+  uibutton_t      *buttons [HELPER_BUTTON_MAX];
   UICallback      closeCallback;
   UICallback      nextCallback;
   datafile_t      *helpdf;
@@ -83,6 +90,9 @@ main (int argc, char *argv[])
   helper.helpiter = 0;
   helper.scrollendflag = false;
   uiutilsUIWidgetInit (&helper.window);
+  for (int i = 0; i < HELPER_BUTTON_MAX; ++i) {
+    helper.buttons [i] = NULL;
+  }
 
   helper.progstate = progstateInit ("helperui");
   progstateSetCallback (helper.progstate, STATE_STOPPING,
@@ -146,6 +156,9 @@ helperClosingCallback (void *udata, programstate_t programState)
 
   uiTextBoxFree (helper->tb);
   datafileFree (helper->helpdf);
+  for (int i = 0; i < HELPER_BUTTON_MAX; ++i) {
+    uiButtonFree (helper->buttons [i]);
+  }
 
   logProcEnd (LOG_PROC, "helperClosingCallback", "");
   return STATE_FINISHED;
@@ -155,6 +168,8 @@ static void
 helperBuildUI (helperui_t  *helper)
 {
   UIWidget            uiwidget;
+  uibutton_t          *uibutton;
+  UIWidget            *uiwidgetp;
   UIWidget            vbox;
   UIWidget            hbox;
   char                tbuff [MAXPATHLEN];
@@ -186,15 +201,19 @@ helperBuildUI (helperui_t  *helper)
   uiBoxPackStart (&vbox, &hbox);
 
   uiutilsUICallbackInit (&helper->nextCallback, helperNextCallback, helper, NULL);
-  uiCreateButton (&uiwidget, &helper->nextCallback,
+  uibutton = uiCreateButton (&helper->nextCallback,
       /* CONTEXT: helperui: proceed to the next step */
       _("Next"), NULL);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  helper->buttons [HELPER_BUTTON_NEXT] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackEnd (&hbox, uiwidgetp);
 
-  uiCreateButton (&uiwidget, &helper->closeCallback,
+  uibutton = uiCreateButton (&helper->closeCallback,
       /* CONTEXT: helperui: close the helper window */
       _("Close"), NULL);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  helper->buttons [HELPER_BUTTON_CLOSE] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackEnd (&hbox, uiwidgetp);
 
   uiWindowSetDefaultSize (&helper->window, 1100, 400);
 

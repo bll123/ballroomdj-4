@@ -20,18 +20,10 @@ typedef struct {
   UIWidget          *statusMsg;
   UICallback        *savecb;
   uisongsel_t       *uisongsel;
-  mstime_t          repeatTimer;
-  int               repeatButton;
 } uisongedit_t;
 
 enum {
-  UISONGEDIT_REPEAT_NONE,
-  UISONGEDIT_REPEAT_PREV,
-  UISONGEDIT_REPEAT_NEXT,
-};
-
-enum {
-  UISONGEDIT_REPEAT_TIME = 250,
+  UISONGEDIT_REPEAT_TIME = 200,
 };
 
 /* uisongedit.c */
@@ -43,7 +35,6 @@ int   uisongeditProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata);
 void  uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx);
 void  uisongeditSetSaveCallback (uisongedit_t *uisongedit, UICallback *uicb);
-bool  uisongeditStopRepeat (void *udata);
 
 /* uisongeditgtk.c */
 void  uisongeditUIInit (uisongedit_t *uisongedit);

@@ -64,18 +64,21 @@ confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp,
     const char *disp, void *dialogFunc)
 {
   UIWidget    hbox;
-  UIWidget    uiwidget;
+  UIWidget    *uiwidgetp;
+  uibutton_t  *uibutton;
 
   logProcBegin (LOG_PROC, "confuiMakeItemEntryChooser");
   uiCreateHorizBox (&hbox);
   confuiMakeItemEntryBasic (gui, &hbox, sg, txt, widx, bdjoptIdx, disp, CONFUI_NO_INDENT);
   uiutilsUICallbackInit (&gui->uiitem [widx].callback,
       dialogFunc, gui, NULL);
-  uiCreateButton (&uiwidget, &gui->uiitem [widx].callback,
+  uibutton = uiCreateButton (&gui->uiitem [widx].callback,
       "", NULL);
-  uiButtonSetImageIcon (&uiwidget, "folder");
-  uiWidgetSetMarginStart (&uiwidget, 0);
-  uiBoxPackStart (&hbox, &uiwidget);
+  gui->uiitem [widx].uibutton = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiButtonSetImageIcon (uibutton, "folder");
+  uiWidgetSetMarginStart (uiwidgetp, 0);
+  uiBoxPackStart (&hbox, uiwidgetp);
   uiBoxPackStart (boxp, &hbox);
   logProcEnd (LOG_PROC, "confuiMakeItemEntryChooser", "");
 }

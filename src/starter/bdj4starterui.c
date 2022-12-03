@@ -96,6 +96,16 @@ enum {
   START_LINK_CB_MAX,
 };
 
+enum {
+  START_BUTTON_PLAYER,
+  START_BUTTON_MANAGE,
+  START_BUTTON_CONFIG,
+  START_BUTTON_SUPPORT,
+  START_BUTTON_EXIT,
+  START_BUTTON_SEND_SUPPORT,
+  START_BUTTON_MAX,
+};
+
 typedef struct {
   UICallback    cb;
   char          *uri;
@@ -133,6 +143,7 @@ typedef struct {
   UICallback      callbacks [START_CB_MAX];
   startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
   uispinbox_t     *profilesel;
+  uibutton_t      *buttons [START_BUTTON_MAX];
   UIWidget        supportDialog;
   UIWidget        supportMsgDialog;
   UIWidget        supportSendFiles;
@@ -272,6 +283,9 @@ main (int argc, char *argv[])
   starter.profidxlist = NULL;
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
     starter.macoslinkcb [i].uri = NULL;
+  }
+  for (int i = 0; i < START_BUTTON_MAX; ++i) {
+    starter.buttons [i] = NULL;
   }
   uiutilsUIWidgetInit (&starter.window);
   uiutilsUIWidgetInit (&starter.supportStatus);
@@ -421,6 +435,10 @@ starterClosingCallback (void *udata, programstate_t programState)
   nlistFree (starter->proflist);
   nlistFree (starter->profidxlist);
 
+  for (int i = 0; i < START_BUTTON_MAX; ++i) {
+    uiButtonFree (starter->buttons [i]);
+  }
+
   logProcEnd (LOG_PROC, "starterClosingCallback", "");
   return STATE_FINISHED;
 }
@@ -428,18 +446,19 @@ starterClosingCallback (void *udata, programstate_t programState)
 static void
 starterBuildUI (startui_t  *starter)
 {
-  UIWidget  uiwidget;
-  UIWidget  *uiwidgetp;
-  UIWidget  menubar;
-  UIWidget  menu;
-  UIWidget  menuitem;
-  UIWidget  vbox;
-  UIWidget  bvbox;
-  UIWidget  hbox;
-  UIWidget  sg;
-  char      imgbuff [MAXPATHLEN];
-  char      tbuff [MAXPATHLEN];
-  int       dispidx;
+  UIWidget    uiwidget;
+  UIWidget    *uiwidgetp;
+  uibutton_t  *uibutton;
+  UIWidget    menubar;
+  UIWidget    menu;
+  UIWidget    menuitem;
+  UIWidget    vbox;
+  UIWidget    bvbox;
+  UIWidget    hbox;
+  UIWidget    sg;
+  char        imgbuff [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
+  int         dispidx;
 
   logProcBegin (LOG_PROC, "starterBuildUI");
   uiutilsUIWidgetInit (&vbox);
@@ -552,61 +571,71 @@ starterBuildUI (startui_t  *starter)
 
   uiutilsUICallbackInit (&starter->callbacks [START_CB_PLAYER],
       starterStartPlayerui, starter, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &starter->callbacks [START_CB_PLAYER],
       /* CONTEXT: starterui: button: starts the player user interface */
       _("Player"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, 2);
-  uiWidgetAlignHorizStart (&uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
-  uiBoxPackStart (&bvbox, &uiwidget);
-  uiButtonAlignLeft (&uiwidget);
+  starter->buttons [START_BUTTON_PLAYER] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
+  uiWidgetAlignHorizStart (uiwidgetp);
+  uiSizeGroupAdd (&sg, uiwidgetp);
+  uiBoxPackStart (&bvbox, uiwidgetp);
+  uiButtonAlignLeft (uibutton);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CB_MANAGE],
       starterStartManageui, starter, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &starter->callbacks [START_CB_MANAGE],
       /* CONTEXT: starterui: button: starts the management user interface */
       _("Manage"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, 2);
-  uiWidgetAlignHorizStart (&uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
-  uiBoxPackStart (&bvbox, &uiwidget);
-  uiButtonAlignLeft (&uiwidget);
+  starter->buttons [START_BUTTON_MANAGE] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
+  uiWidgetAlignHorizStart (uiwidgetp);
+  uiSizeGroupAdd (&sg, uiwidgetp);
+  uiBoxPackStart (&bvbox, uiwidgetp);
+  uiButtonAlignLeft (uibutton);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CB_CONFIG],
       starterStartConfig, starter, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &starter->callbacks [START_CB_CONFIG],
       /* CONTEXT: starterui: button: starts the configuration user interface */
       _("Configure"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, 2);
-  uiWidgetAlignHorizStart (&uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
-  uiBoxPackStart (&bvbox, &uiwidget);
-  uiButtonAlignLeft (&uiwidget);
+  starter->buttons [START_BUTTON_CONFIG] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
+  uiWidgetAlignHorizStart (uiwidgetp);
+  uiSizeGroupAdd (&sg, uiwidgetp);
+  uiBoxPackStart (&bvbox, uiwidgetp);
+  uiButtonAlignLeft (uibutton);
 
   uiutilsUICallbackInit (&starter->callbacks [START_CB_SUPPORT],
       starterProcessSupport, starter, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &starter->callbacks [START_CB_SUPPORT],
       /* CONTEXT: starterui: button: support : support information */
       _("Support"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, 2);
-  uiWidgetAlignHorizStart (&uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
-  uiBoxPackStart (&bvbox, &uiwidget);
-  uiButtonAlignLeft (&uiwidget);
+  starter->buttons [START_BUTTON_SUPPORT] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
+  uiWidgetAlignHorizStart (uiwidgetp);
+  uiSizeGroupAdd (&sg, uiwidgetp);
+  uiBoxPackStart (&bvbox, uiwidgetp);
+  uiButtonAlignLeft (uibutton);
 
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &starter->callbacks [START_CB_EXIT],
       /* CONTEXT: starterui: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL);
-  uiWidgetSetMarginTop (&uiwidget, 2);
-  uiWidgetAlignHorizStart (&uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
-  uiBoxPackStart (&bvbox, &uiwidget);
-  uiButtonAlignLeft (&uiwidget);
+  starter->buttons [START_BUTTON_EXIT] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiWidgetSetMarginTop (uiwidgetp, 2);
+  uiWidgetAlignHorizStart (uiwidgetp);
+  uiSizeGroupAdd (&sg, uiwidgetp);
+  uiBoxPackStart (&bvbox, uiwidgetp);
+  uiButtonAlignLeft (uibutton);
 
   starterSetWindowPosition (starter);
 
@@ -1110,8 +1139,10 @@ starterProcessSupport (void *udata)
   UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      uiwidget;
+  UIWidget      *uiwidgetp;
   UIWidget      uidialog;
   UIWidget      sg;
+  uibutton_t    *uibutton;
   char          tbuff [MAXPATHLEN];
   char          uri [MAXPATHLEN];
   char          *builddate;
@@ -1239,11 +1270,13 @@ starterProcessSupport (void *udata)
 
   uiutilsUICallbackInit (&starter->callbacks [START_CB_SEND_SUPPORT],
       starterCreateSupportDialog, starter, NULL);
-  uiCreateButton (&uiwidget,
+  uibutton = uiCreateButton (
       &starter->callbacks [START_CB_SEND_SUPPORT],
       /* CONTEXT: starterui: basic support dialog: button: support option */
       _("Send Support Message"), NULL);
-  uiBoxPackStart (&hbox, &uiwidget);
+  starter->buttons [START_BUTTON_SEND_SUPPORT] = uibutton;
+  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   /* the dialog doesn't have any space above the buttons */
   uiCreateHorizBox (&hbox);

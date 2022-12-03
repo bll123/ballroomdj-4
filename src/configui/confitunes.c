@@ -227,9 +227,9 @@ confuiBuildUIiTunes (confuigui_t *gui)
   /* CONTEXT: configuration: itunes: the itunes media folder */
   snprintf (tmp, sizeof (tmp), _("%s Media Folder"), ITUNES_NAME);
   confuiMakeItemEntryChooser (gui, &mvbox, &sg, tmp,
-      CONFUI_ENTRY_ITUNES_DIR, OPT_M_DIR_ITUNES_MEDIA,
+      CONFUI_ENTRY_CHOOSE_ITUNES_DIR, OPT_M_DIR_ITUNES_MEDIA,
       tbuff, confuiSelectiTunesDir);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_ITUNES_DIR].entry,
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].entry,
       confuiValidateMediaDir, gui, UIENTRY_DELAYED);
 
   *tbuff = '\0';
@@ -241,9 +241,9 @@ confuiBuildUIiTunes (confuigui_t *gui)
   /* CONTEXT: configuration: itunes: the itunes xml file */
   snprintf (tmp, sizeof (tmp), _("%s XML File"), ITUNES_NAME);
   confuiMakeItemEntryChooser (gui, &mvbox, &sg, tmp,
-      CONFUI_ENTRY_ITUNES_XML, OPT_M_ITUNES_XML_FILE,
+      CONFUI_ENTRY_CHOOSE_ITUNES_XML, OPT_M_ITUNES_XML_FILE,
       tbuff, confuiSelectiTunesFile);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_ITUNES_XML].entry,
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry,
       uiEntryValidateFile, gui, UIENTRY_DELAYED);
 
   uiCreateHorizBox (&mhbox);
@@ -349,7 +349,7 @@ confuiSelectiTunesDir (void *udata)
       bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
-    uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_ITUNES_DIR].entry, fn);
+    uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
     free (fn);
   }
@@ -374,7 +374,7 @@ confuiSelectiTunesFile (void *udata)
       bdjoptGetStr (OPT_M_ITUNES_XML_FILE), NULL, _("XML Files"), "application/xml");
   fn = uiSelectFileDialog (selectdata);
   if (fn != NULL) {
-    uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_ITUNES_XML].entry, fn);
+    uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
     free (fn);
   }
@@ -401,9 +401,9 @@ confuiValidateMediaDir (uientry_t *entry, void *udata)
   snprintf (tbuff, sizeof (tbuff), "%.*s/%s",
       (int) pi->dlen, pi->dirname, ITUNES_XML_NAME);
   if (fileopFileExists (tbuff)) {
-    sval = uiEntryGetValue (gui->uiitem [CONFUI_ENTRY_ITUNES_XML].entry);
+    sval = uiEntryGetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry);
     if (sval == NULL || ! *sval) {
-      uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_ITUNES_XML].entry, tbuff);
+      uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry, tbuff);
     }
   }
   pathInfoFree (pi);

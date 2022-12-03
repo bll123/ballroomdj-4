@@ -75,9 +75,9 @@ confuiBuildUIGeneral (confuigui_t *gui)
 
   /* CONTEXT: configuration: the music folder where the user store their music */
   confuiMakeItemEntryChooser (gui, &vbox, &sg, _("Music Folder"),
-      CONFUI_ENTRY_MUSIC_DIR, OPT_M_DIR_MUSIC,
+      CONFUI_ENTRY_CHOOSE_MUSIC_DIR, OPT_M_DIR_MUSIC,
       tbuff, confuiSelectMusicDir);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MUSIC_DIR].entry,
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_MUSIC_DIR].entry,
       uiEntryValidateDir, gui, UIENTRY_DELAYED);
 
   /* CONTEXT: configuration: the name of this profile */
@@ -122,16 +122,16 @@ confuiBuildUIGeneral (confuigui_t *gui)
 
   /* CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux. */
   confuiMakeItemEntryChooser (gui, &vbox, &sg, _("Startup Script"),
-      CONFUI_ENTRY_STARTUP, OPT_M_STARTUPSCRIPT,
+      CONFUI_ENTRY_CHOOSE_STARTUP, OPT_M_STARTUPSCRIPT,
       bdjoptGetStr (OPT_M_STARTUPSCRIPT), confuiSelectStartup);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_STARTUP].entry,
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_STARTUP].entry,
       uiEntryValidateFile, gui, UIENTRY_DELAYED);
 
   /* CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux. */
   confuiMakeItemEntryChooser (gui, &vbox, &sg, _("Shutdown Script"),
-      CONFUI_ENTRY_SHUTDOWN, OPT_M_SHUTDOWNSCRIPT,
+      CONFUI_ENTRY_CHOOSE_SHUTDOWN, OPT_M_SHUTDOWNSCRIPT,
       bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT), confuiSelectShutdown);
-  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_SHUTDOWN].entry,
+  uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_SHUTDOWN].entry,
       uiEntryValidateFile, gui, UIENTRY_DELAYED);
   logProcEnd (LOG_PROC, "confuiBuildUIGeneral", "");
 }
@@ -153,7 +153,7 @@ confuiSelectMusicDir (void *udata)
       bdjoptGetStr (OPT_M_DIR_MUSIC), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
-    uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_MUSIC_DIR].entry, fn);
+    uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_MUSIC_DIR].entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
     free (fn);
   }
@@ -168,7 +168,7 @@ confuiSelectStartup (void *udata)
   confuigui_t *gui = udata;
 
   logProcBegin (LOG_PROC, "confuiSelectStartup");
-  confuiSelectFileDialog (gui, CONFUI_ENTRY_STARTUP,
+  confuiSelectFileDialog (gui, CONFUI_ENTRY_CHOOSE_STARTUP,
       sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL, NULL);
   logProcEnd (LOG_PROC, "confuiSelectStartup", "");
   return UICB_CONT;
@@ -180,7 +180,7 @@ confuiSelectShutdown (void *udata)
   confuigui_t *gui = udata;
 
   logProcBegin (LOG_PROC, "confuiSelectShutdown");
-  confuiSelectFileDialog (gui, CONFUI_ENTRY_SHUTDOWN,
+  confuiSelectFileDialog (gui, CONFUI_ENTRY_CHOOSE_SHUTDOWN,
       sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL, NULL);
   logProcEnd (LOG_PROC, "confuiSelectShutdown", "");
   return UICB_CONT;

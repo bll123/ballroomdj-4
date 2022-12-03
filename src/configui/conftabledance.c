@@ -80,7 +80,7 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   }
 
   sval = danceGetStr (dances, key, DANCE_ANNOUNCE);
-  widx = CONFUI_ENTRY_DANCE_ANNOUNCEMENT;
+  widx = CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT;
   uiEntrySetValue (gui->uiitem [widx].entry, sval);
 
   num = danceGetNum (dances, key, DANCE_HIGH_BPM);

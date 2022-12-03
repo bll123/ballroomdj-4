@@ -36,18 +36,19 @@ typedef struct managedb {
   procutil_t        **processes;
   conn_t            *conn;
   uientry_t         *dbtopdir;
+  uibutton_t        *topdirsel;
   UICallback        topdirselcb;
   uispinbox_t       *dbspinbox;
   UICallback        dbchgcb;
+  uibutton_t        *dbstart;
   UICallback        dbstartcb;
+  uibutton_t        *dbstop;
   UICallback        dbstopcb;
   uitextbox_t       *dbhelpdisp;
   uitextbox_t       *dbstatus;
   nlist_t           *dblist;
   nlist_t           *dbhelp;
   UIWidget          dbpbar;
-  UIWidget          dbstart;
-  UIWidget          dbstop;
 } managedb_t;
 
 static bool manageDbStart (void *udata);
@@ -70,8 +71,9 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
   managedb->dblist = NULL;
   managedb->dbhelp = NULL;
   uiutilsUIWidgetInit (&managedb->dbpbar);
-  uiutilsUIWidgetInit (&managedb->dbstart);
-  uiutilsUIWidgetInit (&managedb->dbstop);
+  managedb->topdirsel = NULL;
+  managedb->dbstart = NULL;
+  managedb->dbstop = NULL;
   managedb->dbtopdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxInit ();
 
@@ -120,6 +122,9 @@ manageDbFree (managedb_t *managedb)
     uiTextBoxFree (managedb->dbstatus);
     uiEntryFree (managedb->dbtopdir);
     uiSpinboxFree (managedb->dbspinbox);
+    uiButtonFree (managedb->topdirsel);
+    uiButtonFree (managedb->dbstart);
+    uiButtonFree (managedb->dbstop);
     free (managedb);
   }
 }
@@ -181,9 +186,10 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
 
   uiutilsUICallbackInit (&managedb->topdirselcb,
       manageDbSelectDirCallback, managedb, NULL);
-  uiCreateButton (&uiwidget, &managedb->topdirselcb, "", NULL);
-  uiButtonSetImageIcon (&uiwidget, "folder");
-  uiBoxPackStart (&hbox, &uiwidget);
+  managedb->topdirsel = uiCreateButton (&managedb->topdirselcb, "", NULL);
+  uiButtonSetImageIcon (managedb->topdirsel, "folder");
+  uiwidgetp = uiButtonGetUIWidget (managedb->topdirsel);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   /* buttons */
   uiCreateHorizBox (&hbox);
@@ -194,17 +200,19 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   uiutilsUICallbackInit (&managedb->dbstartcb, manageDbStart, managedb, NULL);
-  uiCreateButton (&managedb->dbstart, &managedb->dbstartcb,
+  managedb->dbstart = uiCreateButton (&managedb->dbstartcb,
       /* CONTEXT: update database: button to start the database update process */
       _("Start"), NULL);
-  uiBoxPackStart (&hbox, &managedb->dbstart);
+  uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
+  uiBoxPackStart (&hbox, uiwidgetp);
 
   uiutilsUICallbackInit (&managedb->dbstopcb, manageDbStop, managedb, NULL);
-  uiCreateButton (&managedb->dbstop, &managedb->dbstopcb,
+  managedb->dbstop = uiCreateButton (&managedb->dbstopcb,
       /* CONTEXT: update database: button to stop the database update process */
       _("Stop"), NULL);
-  uiBoxPackStart (&hbox, &managedb->dbstop);
-  uiWidgetDisable (&managedb->dbstop);
+  uiwidgetp = uiButtonGetUIWidget (managedb->dbstop);
+  uiBoxPackStart (&hbox, uiwidgetp);
+  uiWidgetDisable (uiwidgetp);
 
   uiCreateProgressBar (&managedb->dbpbar, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiWidgetSetMarginStart (&managedb->dbpbar, 2);
@@ -286,8 +294,12 @@ manageDbClose (managedb_t *managedb)
 void
 manageDbResetButtons (managedb_t *managedb)
 {
-  uiWidgetEnable (&managedb->dbstart);
-  uiWidgetDisable (&managedb->dbstop);
+  UIWidget  *uiwidgetp;
+
+  uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
+  uiWidgetEnable (uiwidgetp);
+  uiwidgetp = uiButtonGetUIWidget (managedb->dbstop);
+  uiWidgetDisable (uiwidgetp);
 }
 
 /* internal routines */
@@ -296,6 +308,7 @@ static bool
 manageDbStart (void *udata)
 {
   managedb_t  *managedb = udata;
+  UIWidget    *uiwidgetp;
   int         nval;
   char        *sval = NULL;
   const char  *targv [10];
@@ -303,8 +316,10 @@ manageDbStart (void *udata)
   char        tbuff [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db start");
-  uiWidgetDisable (&managedb->dbstart);
-  uiWidgetEnable (&managedb->dbstop);
+  uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
+  uiWidgetDisable (uiwidgetp);
+  uiwidgetp = uiButtonGetUIWidget (managedb->dbstop);
+  uiWidgetEnable (uiwidgetp);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
