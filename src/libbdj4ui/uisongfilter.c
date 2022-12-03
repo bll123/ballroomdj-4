@@ -89,6 +89,7 @@ typedef struct uisongfilter {
   songfilterpb_t    dfltpbflag;
   int               danceIdx;
   bool              showplaylist : 1;
+  bool              playlistsel : 1;
 } uisongfilter_t;
 
 /* song filter handling */
@@ -143,6 +144,7 @@ uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->playstatusswitch = NULL;
   uisf->danceIdx = -1;
   uisf->showplaylist = false;
+  uisf->playlistsel = false;
   for (int i = 0; i < UISF_LABEL_MAX; ++i) {
     uiutilsUIWidgetInit (&uisf->labels [i]);
   }
@@ -257,6 +259,7 @@ uisfSetPlaylist (uisongfilter_t *uisf, char *slname)
   dataFree (uisf->playlistname);
   uisf->playlistname = strdup (slname);
   songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, slname);
+  uisfUpdateFilterDialogDisplay (uisf);
 }
 
 void
@@ -270,6 +273,7 @@ uisfClearPlaylist (uisongfilter_t *uisf)
   dataFree (uisf->playlistname);
   uisf->playlistname = NULL;
   songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
+  uisfUpdateFilterDialogDisplay (uisf);
 }
 
 void
@@ -338,11 +342,10 @@ uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx)
   if (idx >= 0) {
     str = uiDropDownGetString (uisf->playlistfilter);
     songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, str);
-    uisfDisableWidgets (uisf);
   } else {
     songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
-    uisfEnableWidgets (uisf);
   }
+  uisf->playlistsel = true;
   logProcEnd (LOG_PROC, "uisfPlaylistSelect", "");
 }
 
@@ -639,6 +642,8 @@ uisfResponseHandler (void *udata, long responseid)
     case RESPONSE_RESET: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: sf: reset");
       songfilterReset (uisf->songfilter);
+      dataFree (uisf->playlistname);
+      uisf->playlistname = NULL;
       uisf->danceIdx = -1;
       uidanceSetValue (uisf->uidance, uisf->danceIdx);
       if (uisf->danceselcb != NULL) {
@@ -654,7 +659,15 @@ uisfResponseHandler (void *udata, long responseid)
 
   if (responseid != RESPONSE_DELETE_WIN && responseid != RESPONSE_CLOSE) {
     uisfUpdate (uisf);
+    uisf->playlistsel = false;
   }
+  if (responseid == RESPONSE_DELETE_WIN && responseid == RESPONSE_CLOSE) {
+    if (uisf->playlistsel) {
+      dataFree (uisf->playlistname);
+      uisf->playlistname = NULL;
+    }
+  }
+
   return UICB_CONT;
 }
 
@@ -679,9 +692,13 @@ uisfUpdate (uisongfilter_t *uisf)
         uiutilsCallbackHandler (uisf->applycb);
       }
       return;
-    } else {
-      uisfEnableWidgets (uisf);
     }
+  }
+
+  if (songfilterInUse (uisf->songfilter, SONG_FILTER_PLAYLIST)) {
+    uisfDisableWidgets (uisf);
+  } else {
+    uisfEnableWidgets (uisf);
   }
 
   /* search : always active */
@@ -844,11 +861,6 @@ uisfUpdateFilterDialogDisplay (uisongfilter_t *uisf)
 
   if (uisf->showplaylist) {
     songfilterOn (uisf->songfilter, SONG_FILTER_PLAYLIST);
-    if (songfilterInUse (uisf->songfilter, SONG_FILTER_PLAYLIST)) {
-      uisfDisableWidgets (uisf);
-    } else {
-      uisfEnableWidgets (uisf);
-    }
 
     if (! uiutilsUIWidgetSet (&uisf->filterDialog)) {
       return;
@@ -859,13 +871,18 @@ uisfUpdateFilterDialogDisplay (uisongfilter_t *uisf)
 
   if (! uisf->showplaylist) {
     songfilterOff (uisf->songfilter, SONG_FILTER_PLAYLIST);
-    uisfEnableWidgets (uisf);
 
     if (! uiutilsUIWidgetSet (&uisf->filterDialog)) {
       return;
     }
 
     uiWidgetHide (&uisf->playlistdisp);
+  }
+
+  if (songfilterInUse (uisf->songfilter, SONG_FILTER_PLAYLIST)) {
+    uisfDisableWidgets (uisf);
+  } else {
+    uisfEnableWidgets (uisf);
   }
 }
 

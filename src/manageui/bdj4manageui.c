@@ -1928,9 +1928,10 @@ manageSonglistLoadFile (void *udata, const char *fn)
   }
   manage->inload = true;
 
-  /* any selection made by the load process should not trigger */
-  /* a change in the song editor */
-  manage->selusesonglist = false;
+//  /* any selection made by the load process should not trigger */
+//  /* a change in the song editor */
+//  manage->selusesonglist = false;
+  manage->selusesonglist = true;
   /* ask the main player process to not send music queue updates */
   /* the selbypass flag cannot be used due to timing issues */
   snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
@@ -2310,7 +2311,6 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
       if (manage->selusesonglist) {
         uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, loc);
       }
-      manage->selusesonglist = false;
       manage->lastdisp = MANAGE_DISP_SONG_SEL;
     }
 
@@ -2347,7 +2347,8 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
         /* these match because they are displaying the same list */
         idx = uimusicqGetSelectLocation (manage->slmusicq, manage->musicqManageIdx);
         uisongselClearAllSelections (manage->mmsongsel);
-        uisongselSetSelection (manage->mmsongsel, idx);
+        /* must set the selection offset by the idx-start */
+        uisongselSetSelectionOffset (manage->mmsongsel, idx);
       }
       manage->selbypass = 0;
     }

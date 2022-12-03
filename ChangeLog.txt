@@ -8,7 +8,12 @@ BallroomDJ 4 Change Log
 - mobile marquee: remove internet mode.
 - player: added a 'queue 5' button.
 - player: moved 'request external' into a menu.
-- player: the queue dance buttons are only shown per the configuration.
+- player: the queue dance buttons are only shown per the queue configuration.
+- song editor: previous and next buttons will now repeat.
+- song filter: clear playlist selection on reset.
+- song filter: fixed issues enabling/disabling filters when playlist
+    filter is in use.
+- song list editor/music manager: fixed song selection on switch.
 - starter: added a 'create profile shortcut' menu selection.
 - starter: fix create profile.
 

@@ -90,6 +90,7 @@ void  uisongselSetFavoriteForeground (uisongsel_t *uisongsel, char *color);
 bool  uisongselSelectCallback (void *udata);
 void  uisongselSetDefaultSelection (uisongsel_t *uisongsel);
 void  uisongselSetSelection (uisongsel_t *uisongsel, long idx);
+void  uisongselSetSelectionOffset (uisongsel_t *uisongsel, long idx);
 bool  uisongselNextSelection (void *udata);
 bool  uisongselPreviousSelection (void *udata);
 bool  uisongselFirstSelection (void *udata);

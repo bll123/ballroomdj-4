@@ -66,11 +66,13 @@ typedef struct {
 
 enum {
   UISONGEDIT_CB_FIRST,
-  UISONGEDIT_CB_NEXT,
-  UISONGEDIT_CB_PREVIOUS,
   UISONGEDIT_CB_PLAY,
   UISONGEDIT_CB_SAVE,
   UISONGEDIT_CB_COPY_TEXT,
+  UISONGEDIT_CB_PREV_PRESS,
+  UISONGEDIT_CB_PREV_RELEASE,
+  UISONGEDIT_CB_NEXT_PRESS,
+  UISONGEDIT_CB_NEXT_RELEASE,
   UISONGEDIT_CB_MAX,
 };
 
@@ -260,18 +262,32 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       _("First"), NULL);
   uiBoxPackStart (&hbox, &uiwidget);
 
-  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PREVIOUS],
-      uisongeditPreviousSelection, uisongedit, "songedit: previous");
-  uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_PREVIOUS],
-      /* CONTEXT: song editor : previous song */
-      _("Previous"), NULL);
+  /* CONTEXT: song editor : previous song */
+  uiCreateButton (&uiwidget, NULL, _("Previous"), NULL);
+  uiutilsUICallbackInit (
+      &uiw->callbacks [UISONGEDIT_CB_PREV_PRESS],
+      uisongeditPreviousSelection, uisongedit, "songedit: prev-press");
+  uiButtonSetPressCallback (&uiwidget,
+      &uiw->callbacks [UISONGEDIT_CB_PREV_PRESS]);
+  uiutilsUICallbackInit (
+      &uiw->callbacks [UISONGEDIT_CB_PREV_RELEASE],
+      uisongeditStopRepeat, uisongedit, "songedit: prev-release");
+  uiButtonSetReleaseCallback (&uiwidget,
+      &uiw->callbacks [UISONGEDIT_CB_PREV_RELEASE]);
   uiBoxPackStart (&hbox, &uiwidget);
 
-  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_NEXT],
-      uisongeditNextSelection, uisongedit, "songedit: next");
-  uiCreateButton (&uiwidget, &uiw->callbacks [UISONGEDIT_CB_NEXT],
-      /* CONTEXT: song editor : next song */
-      _("Next"), NULL);
+  /* CONTEXT: song editor : next song */
+  uiCreateButton (&uiwidget, NULL, _("Next"), NULL);
+  uiutilsUICallbackInit (
+      &uiw->callbacks [UISONGEDIT_CB_NEXT_PRESS],
+      uisongeditNextSelection, uisongedit, "songedit: next-press");
+  uiButtonSetPressCallback (&uiwidget,
+      &uiw->callbacks [UISONGEDIT_CB_NEXT_PRESS]);
+  uiutilsUICallbackInit (
+      &uiw->callbacks [UISONGEDIT_CB_NEXT_RELEASE],
+      uisongeditStopRepeat, uisongedit, "songedit: next-release");
+  uiButtonSetReleaseCallback (&uiwidget,
+      &uiw->callbacks [UISONGEDIT_CB_NEXT_RELEASE]);
   uiBoxPackStart (&hbox, &uiwidget);
 
   uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PLAY],
@@ -505,6 +521,17 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
   int             chkvalue;
 
   uiw = uisongedit->uiWidgetData;
+
+  if (uisongedit->repeatButton != UISONGEDIT_REPEAT_NONE) {
+    if (mstimeCheck (&uisongedit->repeatTimer)) {
+      if (uisongedit->repeatButton == UISONGEDIT_REPEAT_PREV) {
+        uisongeditPreviousSelection (uisongedit);
+      }
+      if (uisongedit->repeatButton == UISONGEDIT_REPEAT_NEXT) {
+        uisongeditNextSelection (uisongedit);
+      }
+    }
+  }
 
   if (! mstimeCheck (&uiw->mainlooptimer)) {
     /* preserve some efficiency.  the changes don't need to be checked */
@@ -1111,6 +1138,8 @@ uisongeditPreviousSelection (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: previous");
   uisongselPreviousSelection (uisongedit->uisongsel);
   uisongeditClearChanged (uisongedit);
+  uisongedit->repeatButton = UISONGEDIT_REPEAT_PREV;
+  mstimeset (&uisongedit->repeatTimer, UISONGEDIT_REPEAT_TIME);
   logProcEnd (LOG_PROC, "uisongeditPreviousSelection", "");
   return UICB_CONT;
 }
@@ -1124,6 +1153,8 @@ uisongeditNextSelection (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: next");
   uisongselNextSelection (uisongedit->uisongsel);
   uisongeditClearChanged (uisongedit);
+  uisongedit->repeatButton = UISONGEDIT_REPEAT_NEXT;
+  mstimeset (&uisongedit->repeatTimer, UISONGEDIT_REPEAT_TIME);
   logProcEnd (LOG_PROC, "uisongeditNextSelection", "");
   return UICB_CONT;
 }
@@ -1150,3 +1181,4 @@ uisongeditCopyPath (void *udata)
 
   return UICB_CONT;
 }
+

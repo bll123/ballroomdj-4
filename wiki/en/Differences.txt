@@ -11,7 +11,7 @@ At this time the supported platforms for BallroomDJ 4 will probably be:
 * MacOS M1: Big Sur, Monterey, Ventura
 * 64-bit Linux
 
-__Features that will NOT be implemented in BallroomDJ&nbsp4:__
+__Features that will NOT be implemented in BallroomDJ&nbsp;4:__
 
 * Synchronization between computers.
 * Client/Server mode.
@@ -125,4 +125,4 @@ compatible audio file tags' is turned on).
 
 (1) No one actually asked this, but I thought you might like to know.
 
-<br>_(Updated 2022-12-01 07:58:42; BDJ4 version 4.0.0-alpha-20221130)_
+<br>_(Updated 2022-12-02 12:12:36; BDJ4 version 4.0.0-alpha-20221202)_

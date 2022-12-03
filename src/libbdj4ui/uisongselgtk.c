@@ -540,6 +540,33 @@ uisongselSetSelection (uisongsel_t *uisongsel, long idx)
   }
 }
 
+void
+uisongselSetSelectionOffset (uisongsel_t *uisongsel, long idx)
+{
+  uisongselgtk_t  *uiw;
+  GtkTreePath     *path = NULL;
+  char            tbuff [40];
+
+  uiw = uisongsel->uiWidgetData;
+
+  if (uiw->sel == NULL) {
+    return;
+  }
+  if (idx < 0) {
+    return;
+  }
+
+  uisongselScrollSelection (uisongsel, idx, UISONGSEL_SCROLL_NORM);
+  idx -= uisongsel->idxStart;
+
+  snprintf (tbuff, sizeof (tbuff), "%ld", idx);
+  path = gtk_tree_path_new_from_string (tbuff);
+  if (path != NULL) {
+    gtk_tree_selection_select_path (uiw->sel, path);
+    gtk_tree_path_free (path);
+  }
+}
+
 bool
 uisongselNextSelection (void *udata)
 {
@@ -669,6 +696,10 @@ uisongselSaveSelections (uisongsel_t *uisongsel)
   uisongselgtk_t  *uiw;
 
   uiw = uisongsel->uiWidgetData;
+  if (uiw->selectedBackup != NULL) {
+    return;
+  }
+
   uiw->selectedBackup = uiw->selectedList;
   uiw->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
 

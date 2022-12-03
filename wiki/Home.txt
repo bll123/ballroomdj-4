@@ -1,10 +1,14 @@
 <div markdown style="float: left; margin-right: 20px;">
 
-### BallroomDJ 4
-
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BDJ4 Icon](https://ballroomdj4.sourceforge.io/wikiimg/bdj4_icon.png)
 </div>
+
+</div>
+
+<div markdown style="float: left; margin-right: 20px;">
+
+### BallroomDJ 4
 
 </div>
 
@@ -83,4 +87,4 @@ future subjects and may change (2022-11).
 
 <div markdown style="clear: both;"></div>
 
-<br>_(Updated 2022-12-01 13:12:23; BDJ4 version 4.0.0-alpha-20221201)_
+<br>_(Updated 2022-12-02 17:07:19; BDJ4 version 4.0.0-alpha-20221202)_
