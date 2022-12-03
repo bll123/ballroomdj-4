@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-12-02\n"
-"PO-Revision-Date: 2022-12-02\n"
+"POT-Creation-Date: 2022-12-03\n"
+"PO-Revision-Date: 2022-12-03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -732,6 +732,10 @@ msgstr ""
 
 #. CONTEXT: song editor : first song
 msgid "First"
+msgstr ""
+
+#. CONTEXT: select folder dialog: filter on folders.
+msgid "Folder"
 msgstr ""
 
 #. CONTEXT: installer: command line interface: status message

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-02 17:04-0800\n"
+"POT-Creation-Date: 2022-12-03 13:05-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -736,6 +736,10 @@ msgstr ""
 
 #. CONTEXT: song editor : first song
 msgid "First"
+msgstr ""
+
+#. CONTEXT: select folder dialog: filter on folders.
+msgid "Folder"
 msgstr ""
 
 #. CONTEXT: installer: command line interface: status message

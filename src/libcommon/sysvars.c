@@ -51,6 +51,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_BDJ4INSTDIR] = { "BDJ4INSTDIR" },
   [SV_BDJ4LOCALEDIR] = { "BDJ4LOCALEDIR" },
   [SV_BDJ4MAINDIR] = { "BDJ4MAINDIR" },
+  [SV_BDJ4SCRIPTDIR] = { "BDJ4SCRIPTDIR" },
   [SV_BDJ4_RELEASELEVEL] = { "BDJ4_RELEASELEVEL" },
   [SV_BDJ4TEMPLATEDIR] = { "BDJ4TEMPLATEDIR" },
   [SV_BDJ4TMPDIR] = { "BDJ4TMPDIR" },
@@ -345,6 +346,9 @@ sysvarsInit (const char *argv0)
 
   strlcpy (sysvars [SV_BDJ4TEMPLATEDIR], sysvars [SV_BDJ4MAINDIR], SV_MAX_SZ);
   strlcat (sysvars [SV_BDJ4TEMPLATEDIR], "/templates", SV_MAX_SZ);
+
+  strlcpy (sysvars [SV_BDJ4SCRIPTDIR], sysvars [SV_BDJ4MAINDIR], SV_MAX_SZ);
+  strlcat (sysvars [SV_BDJ4SCRIPTDIR], "/scripts", SV_MAX_SZ);
 
   strlcpy (sysvars [SV_BDJ4HTTPDIR], "http", SV_MAX_SZ);
   strlcpy (sysvars [SV_BDJ4TMPDIR], "tmp", SV_MAX_SZ);

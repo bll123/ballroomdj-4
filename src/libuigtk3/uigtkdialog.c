@@ -13,6 +13,7 @@
 #include <gtk/gtk.h>
 
 #include "bdj4intl.h"
+#include "fileop.h"
 #include "ui.h"
 
 typedef struct uiselect {
@@ -25,6 +26,7 @@ typedef struct uiselect {
 } uiselect_t;
 
 static void uiDialogResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
+static gboolean uiDialogIsDirectory (const GtkFileFilterInfo* filterInfo, gpointer udata);
 
 char *
 uiSelectDirDialog (uiselect_t *selectdata)
@@ -32,6 +34,8 @@ uiSelectDirDialog (uiselect_t *selectdata)
   GtkFileChooserNative *widget = NULL;
   gint      res;
   char      *fn = NULL;
+  GtkFileFilter   *ff;
+
 
   widget = gtk_file_chooser_native_new (
       selectdata->label,
@@ -44,6 +48,14 @@ uiSelectDirDialog (uiselect_t *selectdata)
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
         selectdata->startpath);
   }
+
+  /* gtk does not appear to filter on folders when select-folder is in use */
+  ff = gtk_file_filter_new ();
+  gtk_file_filter_add_custom (ff, GTK_FILE_FILTER_FILENAME,
+      uiDialogIsDirectory, NULL, NULL);
+  /* CONTEXT: select folder dialog: filter on folders. */
+  gtk_file_filter_set_name (ff, _("Folder"));
+  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (widget), ff);
 
   res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
   if (res == GTK_RESPONSE_ACCEPT) {
@@ -212,4 +224,16 @@ uiDialogResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
     responseid = RESPONSE_DELETE_WIN;
   }
   uiutilsCallbackLongHandler (uicb, responseid);
+}
+
+static gboolean
+uiDialogIsDirectory (const GtkFileFilterInfo* filterInfo, gpointer udata)
+{
+  bool  rc = false;
+
+  if (fileopIsDirectory (filterInfo->filename)) {
+    rc = true;
+  }
+
+  return rc;
 }

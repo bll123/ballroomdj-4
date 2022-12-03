@@ -14,6 +14,7 @@ typedef enum {
   SV_BDJ4INSTDIR,     // main + /install
   SV_BDJ4LOCALEDIR,   // main + /locale
   SV_BDJ4MAINDIR,     // path to the main directory above bin/, etc.
+  SV_BDJ4SCRIPTDIR,   // main + /scripts
   SV_BDJ4_RELEASELEVEL,
   SV_BDJ4TEMPLATEDIR, // main + /templates
   SV_BDJ4TMPDIR,      // tmp

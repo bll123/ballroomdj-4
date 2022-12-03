@@ -169,7 +169,7 @@ confuiSelectStartup (void *udata)
 
   logProcBegin (LOG_PROC, "confuiSelectStartup");
   confuiSelectFileDialog (gui, CONFUI_ENTRY_CHOOSE_STARTUP,
-      sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL, NULL);
+      sysvarsGetStr (SV_BDJ4SCRIPTDIR), NULL, NULL);
   logProcEnd (LOG_PROC, "confuiSelectStartup", "");
   return UICB_CONT;
 }
@@ -181,7 +181,7 @@ confuiSelectShutdown (void *udata)
 
   logProcBegin (LOG_PROC, "confuiSelectShutdown");
   confuiSelectFileDialog (gui, CONFUI_ENTRY_CHOOSE_SHUTDOWN,
-      sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL, NULL);
+      sysvarsGetStr (SV_BDJ4SCRIPTDIR), NULL, NULL);
   logProcEnd (LOG_PROC, "confuiSelectShutdown", "");
   return UICB_CONT;
 }
