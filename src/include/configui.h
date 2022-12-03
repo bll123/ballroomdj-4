@@ -386,7 +386,6 @@ void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
 void confuiUpdateOrgExamples (confuigui_t *gui, char *orgpath);
 bool confuiOrgPathSelect (void *udata, long idx);
-void confuiPopulateOptions (confuigui_t *gui);
 
 /* confdance.c */
 void confuiInitEditDances (confuigui_t *gui);
@@ -455,6 +454,9 @@ void confuiDispSaveTable (confuigui_t *gui, int selidx);
 /* confplayer.c */
 void confuiInitPlayer (confuigui_t *gui);
 void confuiBuildUIPlayer (confuigui_t *gui);
+
+/* confpopulate.c */
+void confuiPopulateOptions (confuigui_t *gui);
 
 /* confrc.c */
 void confuiInitMobileRemoteControl (confuigui_t *gui);
