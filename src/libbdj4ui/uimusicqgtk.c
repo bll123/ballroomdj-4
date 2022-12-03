@@ -234,6 +234,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
         /* CONTEXT: music queue: button: remove the song from the queue */
         _("Remove"), "button_audioremove");
     uiWidgetSetMarginStart (&uiwidget, 3);
+    uiWidgetSetMarginEnd (&uiwidget, 2);
     uiBoxPackStart (&hbox, &uiwidget);
   }
 

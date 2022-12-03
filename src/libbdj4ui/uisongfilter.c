@@ -131,6 +131,7 @@ uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag)
       nlistGetStr (options, SONGSEL_SORT_BY));
   uiutilsUIWidgetInit (&uisf->filterDialog);
   uisf->dfltpbflag = pbflag;
+  songfilterSetNum (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE, pbflag);
   uisf->playlistfilter = uiDropDownInit ();
   uisf->sortbyfilter = uiDropDownInit ();
   uisf->uidance = NULL;
@@ -758,6 +759,7 @@ uisfUpdate (uisongfilter_t *uisf)
     songfilterSetNum (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE,
         SONG_FILTER_FOR_PLAYBACK);
   } else {
+    /* can just clear the filter, or set it to for-selection */
     songfilterClear (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE);
   }
 

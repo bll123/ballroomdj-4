@@ -7,6 +7,7 @@ BallroomDJ 4 Change Log
 - configuration: increased number of available queues to 4.
 - mobile marquee: remove internet mode.
 - player: added a 'queue 5' button.
+- player: fixed request listing to filter playback status on startup.
 - player: moved 'request external' into a menu.
 - player: the queue dance buttons are only shown per the queue configuration.
 - song editor: previous and next buttons will now repeat.
