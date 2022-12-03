@@ -18,6 +18,7 @@ add_executable (bdj4configui
   confmobmq.c
   conforg.c
   confplayer.c
+  confpopulate.c
   confrating.c
   confrc.c
   confstatus.c
