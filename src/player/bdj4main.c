@@ -880,7 +880,7 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
     char    tmp [40];
     long    gap;
 
-    gap = bdjoptGetNumPerQueue (OPT_Q_GAP, 0);
+    gap = bdjoptGetNumPerQueue (OPT_Q_GAP, mainData->musicqPlayIdx);
 
     if (gap != mainData->lastGapSent) {
       snprintf (tmp, sizeof (tmp), "%ld", gap);
@@ -1437,12 +1437,12 @@ mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx)
 
     if (i == 1) {
       long  gap;
-      double plgap = -1;
+      long  plgap = -1;
       char  tmp [40];
 
       gap = bdjoptGetNumPerQueue (OPT_Q_GAP, mqidx);
       plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
-      if (plgap >= 0.0) {
+      if (plgap >= 0) {
         gap = plgap;
       }
 

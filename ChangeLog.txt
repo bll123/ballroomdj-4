@@ -13,6 +13,7 @@ BallroomDJ 4 Change Log
 - song filter: clear playlist selection on reset.
 - song filter: fixed issues enabling/disabling filters when playlist
     filter is in use.
+- song list editor: fixed default gap for new playlists.
 - song list editor/music manager: fixed song selection on switch.
 - starter: added a 'create profile shortcut' menu selection.
 - starter: fix create profile.
