@@ -1031,6 +1031,10 @@ msgstr "Müzik Yöneticisi"
 msgid "Music Queue"
 msgstr "Müzik Kuyruğu"
 
+#. CONTEXT: set up alternate: name (for shortcut)
+msgid "Name"
+msgstr ""
+
 #. CONTEXT: configuration file: status
 #. CONTEXT: music database: default status
 msgid "New"

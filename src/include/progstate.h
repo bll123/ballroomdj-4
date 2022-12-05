@@ -1,3 +1,6 @@
+/*
+ * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+ */
 #ifndef INC_PROGSTATE_H
 #define INC_PROGSTATE_H
 

@@ -1,4 +1,7 @@
 /*
+ * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+ */
+/*
  * queue.c
  *
  * A queue is a doubly-linked list.

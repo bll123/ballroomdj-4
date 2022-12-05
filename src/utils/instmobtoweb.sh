@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+#
 
 function getinfo () {
   desc=$1

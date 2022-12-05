@@ -2,6 +2,7 @@ BallroomDJ 4 Change Log
 
 4.0.0 alpha 2022-11---
 
+- alternate setup: add a name entry to the setup process for the shortcut.
 - configuration: added a per-queue 'show queue dance buttons' selection.
 - configuration: disable active/display switches for main music queue.
 - configuration: increased number of available queues to 4.

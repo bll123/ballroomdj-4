@@ -1,4 +1,7 @@
 /*
+ * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+ */
+/*
  *  bdj4dbtag
  *  reads the tags from an audio file.
  *  uses pthreads.

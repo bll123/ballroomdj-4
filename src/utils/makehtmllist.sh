@@ -1,5 +1,8 @@
 #!/bin/bash
 #
+# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+#
+#
 #
 
 while test ! \( -d src -a -d web -a -d wiki \); do

@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+#
 
 pn_spkgnm=bdj4
 pn_tag=""

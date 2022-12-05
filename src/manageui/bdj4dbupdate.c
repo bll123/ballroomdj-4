@@ -1,4 +1,7 @@
 /*
+ * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+ */
+/*
  *  bdj4dbupdate
  *  updates the database.
  *  there are various modes.

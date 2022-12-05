@@ -1,4 +1,7 @@
 /*
+ * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+ */
+/*
  * https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
  */
 

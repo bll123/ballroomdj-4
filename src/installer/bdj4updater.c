@@ -1,4 +1,7 @@
 /*
+ * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+ */
+/*
  * the update process to
  * update all bdj4 data files to the latest version
  * also handles some settings for new installations.

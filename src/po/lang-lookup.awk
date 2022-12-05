@@ -1,4 +1,7 @@
 #!/usr/bin/gawk
+#
+# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+#
 
 function processitem() {
 # print "## -- p: line: " $0;

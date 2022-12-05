@@ -1,4 +1,7 @@
 #!/usr/bin/awk
+#
+# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+#
 
 function convert (l) {
   gsub (/== English .GB/, "== English (US", l);

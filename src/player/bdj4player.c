@@ -1,4 +1,7 @@
 /*
+ * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+ */
+/*
  * bdj4player
  *  Does the actual playback of the music.
  *  Handles volume changes, fades.

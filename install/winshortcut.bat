@@ -1,4 +1,5 @@
 @echo off
+: Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 
 set sc=%1
 set target=%2

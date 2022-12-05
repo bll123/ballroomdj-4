@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+#
 
 # 'ERROR' and 'OK' are used by the gui to determine when the script
 # is finished.

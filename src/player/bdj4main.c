@@ -1,4 +1,7 @@
 /*
+ * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+ */
+/*
  * bdj4main
  *  Main entry point for the player process.
  *  Handles startup of the player, mobile marquee and remote control.

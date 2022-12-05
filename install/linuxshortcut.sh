@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+#
 
 if [[ $# -lt 3 || $# -gt 4 ]]; then
   echo "Usage: $0 <shortcut-name> <install-path> <working-dir> <profile-num>"

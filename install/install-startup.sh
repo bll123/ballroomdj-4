@@ -1,5 +1,8 @@
 #!/bin/bash
 #
+# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+#
+#
 
 archivenm=bdj4-install.tar.gz
 unpacktgt=bdj4-install
