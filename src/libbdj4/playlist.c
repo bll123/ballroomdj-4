@@ -615,7 +615,6 @@ playlistSave (playlist_t *pl, const char *name)
     pl->name = strdup (name);
   }
 
-fprintf (stderr, "pl save %s\n", pl->name);
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   datafileSaveKeyVal ("playlist", tfn, playlistdfkeys,

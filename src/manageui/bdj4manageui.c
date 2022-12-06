@@ -1731,7 +1731,6 @@ manageSonglistNew (void *udata)
   manage->slbackupcreated = false;
   uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
   uimusicqTruncateQueueCallback (manage->slmusicq);
-fprintf (stderr, "sl-new\n");
   manageNewPlaylistCB (manage);
   return UICB_CONT;
 }
@@ -1972,13 +1971,11 @@ manageSonglistLoadFile (void *udata, const char *fn, int saveflag)
   }
   manage->inload = true;
 
-fprintf (stderr, "sl: load %s\n", fn);
   if (saveflag == MANAGE_SAVE) {
     manageSonglistSave (manage);
   }
 
   if (! songlistExists (fn)) {
-fprintf (stderr, "   not exists\n");
     manage->inload = false;
     return;
   }
@@ -2022,7 +2019,6 @@ manageNewPlaylistCB (void *udata)
 {
   manageui_t    *manage = udata;
 
-fprintf (stderr, "new pl cb\n");
   managePlaylistNew (manage->managepl, MANAGE_NO_SAVE);
   return UICB_CONT;
 }
@@ -2033,7 +2029,6 @@ manageLoadSonglistSeqCB (void *udata, const char *fn)
 {
   manageui_t    *manage = udata;
 
-fprintf (stderr, "load sl/seq cb %s\n", fn);
   /* the load will save any current song list */
   manageSonglistLoadFile (manage, fn, MANAGE_NO_SAVE);
   manageSequenceLoadFile (manage->manageseq, fn, MANAGE_NO_SAVE);
@@ -2448,7 +2443,6 @@ manageSonglistLoadCheck (manageui_t *manage)
 
   name = uimusicqGetSonglistName (manage->slmusicq);
 
-fprintf (stderr, "sl load check: %s\n", name);
   if (! songlistExists (name)) {
     /* make sure no save happens */
     dataFree (manage->sloldname);

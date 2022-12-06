@@ -263,7 +263,6 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
 
   name = manageTrimName (uiEntryGetValue (manageseq->seqname));
 
-fprintf (stderr, "seq load check: %s\n", name);
   if (! sequenceExists (name)) {
     /* make sure no save happens */
     manageseq->seqoldname = NULL;
@@ -293,9 +292,7 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int saveflag)
     manageSequenceSave (manageseq);
   }
 
-fprintf (stderr, "seq: load %s\n", fn);
   if (! sequenceExists (fn)) {
-fprintf (stderr, "   not exists\n");
     return;
   }
 

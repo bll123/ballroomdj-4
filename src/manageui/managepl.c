@@ -406,12 +406,10 @@ managePlaylistSave (managepl_t *managepl)
   }
 
   name = manageTrimName (uiEntryGetValue (managepl->plname));
-fprintf (stderr, "pl save %s\n", name);
 
   /* the playlist has been renamed */
   if (strcmp (managepl->ploldname, name) != 0) {
     playlistRename (managepl->ploldname, name);
-fprintf (stderr, "  renamed\n");
     managepl->changed = true;
   }
   managepl->changed = managePlaylistCheckChanged (managepl);
@@ -457,15 +455,12 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int saveflag)
   logMsg (LOG_DBG, LOG_ACTIONS, "load playlist file");
   managepl->inload = true;
 
-fprintf (stderr, "pl load %s\n", fn);
   if (saveflag == MANAGE_SAVE) {
-fprintf (stderr, "  call save\n");
     managePlaylistSave (managepl);
   }
 
   pl = playlistLoad (fn, NULL);
   if (pl == NULL) {
-fprintf (stderr, "  null, make new\n");
     managePlaylistNew (managepl, saveflag);
     return;
   }
@@ -478,7 +473,6 @@ fprintf (stderr, "  null, make new\n");
 
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
   if (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_SEQUENCE) {
-fprintf (stderr, "  call pl load cb\n");
     uiutilsCallbackStrHandler (&managepl->callbacks [MPL_CB_PL_LOAD], fn);
   }
 
@@ -749,22 +743,18 @@ managePlaylistCheckChanged (managepl_t *managepl)
   double        dval;
 
   if (managePlaylistTreeIsChanged (managepl->managepltree)) {
-fprintf (stderr, "  tree chg\n");
     managepl->changed = true;
   }
 
   if (uiSpinboxIsChanged (managepl->uimaxplaytime)) {
-fprintf (stderr, "  mpt chg\n");
     managepl->changed = true;
   }
 
   if (uiSpinboxIsChanged (managepl->uistopat)) {
-fprintf (stderr, "  stopat chg\n");
     managepl->changed = true;
   }
 
   if (uiSpinboxIsChanged (managepl->uigap)) {
-fprintf (stderr, "  gap chg\n");
     managepl->changed = true;
   }
 
@@ -772,36 +762,29 @@ fprintf (stderr, "  gap chg\n");
 
   tval = uiSpinboxGetValue (&managepl->uistopafter);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER)) {
-fprintf (stderr, "  stopafter chg b\n");
     managepl->changed = true;
   }
 
   dval = uiSpinboxGetValue (uiSpinboxGetUIWidget (managepl->uigap));
   if (dval != (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0 ) {
-fprintf (stderr, "  gap chg b dval:%.2f conf:%.2f\n", dval,
-(double) playlistGetConfigNum (pl, PLAYLIST_GAP) * 1000.0 );
     managepl->changed = true;
   }
 
   tval = uiratingGetValue (managepl->uirating);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_RATING)) {
-fprintf (stderr, "  rating chg b\n");
     managepl->changed = true;
   }
 
   tval = uilevelGetValue (managepl->uilowlevel);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_LEVEL_LOW)) {
-fprintf (stderr, "  level-l chg b\n");
     managepl->changed = true;
   }
 
   tval = uilevelGetValue (managepl->uihighlevel);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_LEVEL_HIGH)) {
-fprintf (stderr, "  level-h chg b\n");
     managepl->changed = true;
   }
 
-fprintf (stderr, "  chk-change: %d\n", managepl->changed);
   return managepl->changed;
 }
 
