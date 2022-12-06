@@ -1,0 +1,80 @@
+[Wiki Home](Home)
+
+## BallroomDJ 4 Features
+
+* Supported Platforms
+    * Windows 10, Windows 11
+    * MacOS Catalina, Big Sur, Monterey, Ventura
+    * Linux
+* Free and open source software.
+* Full unicode support, supports all languages.
+* No limitation on the number of audio files.
+* Fully configurable.
+    * Player, Marquee, User Interface, etc.
+    * Dances, Dance Ratings, Dance Level, Status, etc.
+* Multiple profiles can be set up for different playback needs.
+* Player.
+    * Requests.
+        * Column display is fully configurable.
+        * Filter your song collection to select the requested song.
+    * Request an external song not in the database.
+    * Player Controls.
+        * Play / Pause.
+        * Repeat.
+        * Pause at end.
+        * Skip to next song.
+        * Seek in song.
+        * Speed with pitch control.
+        * Volume.
+    * Multiple queues.
+        * Column display is fully configurable.
+        * Songs can be added to / moved within / removed from the queue while playing.
+        * Queue configuration.
+            * Fade-in time.
+            * Fade-out time.
+            * Gap between songs.
+            * Maximum play time.
+            * Pause each song.
+            * Play announcement for each dance.
+    * History of played songs.
+* Playlists
+    * Song lists : pick and choose the songs to play.
+        * Create song lists using sequenced or automatic playlists.
+    * Sequenced : specify which dances and the order in which they are played.
+    * Automatic : choose how many of each dance play and let the computer do the rest.
+    * Playlist Controls
+        * Maximum play time for the playlist or for a particular dance.
+        * Gap between songs.
+        * Stop at a particular time.
+        * Stop after some number of songs have played.
+* Music Manager
+    * Easily filter your song collection to select the songs to work with
+    * Mark songs as the _same song_ to prevent similar songs from being selected in automatic and sequenced playlists.
+    * Column display is fully configurable.
+* Song Editor
+    * Field display is fully configurable.
+    * Song adjustments for playback.
+        * Adjust the song start and song end.
+        * Adjust the song speed.
+        * Adjust the song volume.
+    * Optionally update the audio file tags.
+* Mobile Remote Control
+    * Control BDJ4 from your mobile device.
+* Mobile Marquee
+    * Dancers can view upcoming songs on their mobile device.
+* Secondary installations with separate databases.
+
+##### Future Features
+
+* Automatic Organization.
+* Song Editor.
+    * Batch Edit songs.
+    * Apply adjustments (speed, song start, song end) to a song.
+    * Normalize volume.
+    * Trim silence.
+    * Audio Identification via MusicBrainz and AcoustID.
+* iTunes Support.
+    * Update the information in the database from iTunes.
+    * Import an iTunes playlist.
+
+<br>_(Updated 2022-12-05 14:50:25; BDJ4 version 4.0.0-alpha-20221203)_

@@ -14,9 +14,16 @@
 
 <div markdown style="float: left; margin-right: 20px;">
 
-[About](en-About)
+[Features](en-Features)
 <br>[Getting Help](en-Getting%20Help)
+<br>[Submitting Bug Reports](en-Submitting%20Bugs)
 <br>[Differences between BallroomDJ 3 and BallroomDJ 4](en-Differences)
+
+</div>
+
+<div markdown style="float: left; margin-right: 20px;">
+
+[About](en-About)
 
 </div>
 
@@ -87,4 +94,4 @@ future subjects and may change (2022-11).
 
 <div markdown style="clear: both;"></div>
 
-<br>_(Updated 2022-12-02 17:07:19; BDJ4 version 4.0.0-alpha-20221202)_
+<br>_(Updated 2022-12-05 14:39:46; BDJ4 version 4.0.0-alpha-20221203)_
