@@ -18,5 +18,6 @@ slist_t * filemanipBasicDirList (const char *dir, const char *extension);
 slist_t * filemanipRecursiveDirList (const char *dir, int flags);
 void    filemanipBackup (const char *fname, int count);
 void    filemanipRenameAll (const char *ofname, const char *nfname);
+void    filemanipDeleteAll (const char *name);
 
 #endif /* INC_FILEMANIP_H */

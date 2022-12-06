@@ -64,10 +64,9 @@ enum {
 
 typedef struct playlist playlist_t;
 
-playlist_t *playlistAlloc (musicdb_t *musicdb);
-int       playlistLoad (playlist_t *pl, const char *);
-void      playlistCreate (playlist_t *pl, const char *plname, pltype_t type);
-void      playlistFree (void *);
+playlist_t *playlistLoad (const char *name, musicdb_t *musicdb);
+playlist_t *playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb);
+void      playlistFree (void *tpl);
 void      playlistResetAll (playlist_t *pl);
 const char *playlistGetName (playlist_t *pl);
 ssize_t   playlistGetConfigNum (playlist_t *pl, playlistkey_t key);
@@ -84,5 +83,11 @@ void      playlistAddPlayed (playlist_t *, song_t *song);
 void      playlistSave (playlist_t *, const char *name);
 void      playlistSetEditMode (playlist_t *pl, int editmode);
 int       playlistGetEditMode (playlist_t *pl);
+
+bool      playlistExists (const char *name);
+void      playlistRename (const char *oldname, const char *newname);
+void      playlistCheckAndCreate (const char *name, pltype_t pltype);
+void      playlistDelete (const char *name);
+void      playlistCopy (const char *oldname, const char *newname);
 
 #endif /* INC_PLAYLIST_H */

@@ -71,9 +71,10 @@ typedef struct managepl {
 } managepl_t;
 
 static bool managePlaylistLoad (void *udata);
+static void managePlaylistLoadCB (void *udata, const char *fn);
+static bool managePlaylistNewCB (void *udata);
 static bool managePlaylistCopy (void *udata);
 static void managePlaylistUpdateData (managepl_t *managepl);
-static bool managePlaylistNew (void *udata);
 static bool managePlaylistDelete (void *udata);
 static void manageSetPlaylistName (managepl_t *managepl, const char *nm);
 static long managePlaylistValMSCallback (void *udata, const char *txt);
@@ -347,7 +348,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiSpinboxResetChanged (managepl->uimaxplaytime);
   uiSpinboxResetChanged (managepl->uistopat);
   uiSpinboxResetChanged (managepl->uigap);
-  managePlaylistNew (managepl);
+  managePlaylistNew (managepl, MANAGE_SAVE);
   managepl->changed = false;
 }
 
@@ -371,7 +372,7 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
         &managepl->callbacks [MPL_CB_MENU_PL_LOAD]);
 
     uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_NEW],
-        managePlaylistNew, managepl, NULL);
+        managePlaylistNewCB, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist */
     uiMenuCreateItem (&menu, &menuitem, _("New Automatic Playlist"),
         &managepl->callbacks [MPL_CB_MENU_PL_NEW]);
@@ -398,17 +399,19 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
 void
 managePlaylistSave (managepl_t *managepl)
 {
-  char  *name;
+  char      *name;
 
   if (managepl->ploldname == NULL) {
     return;
   }
 
-  name = strdup (uiEntryGetValue (managepl->plname));
+  name = manageTrimName (uiEntryGetValue (managepl->plname));
+fprintf (stderr, "pl save %s\n", name);
 
   /* the playlist has been renamed */
   if (strcmp (managepl->ploldname, name) != 0) {
-    manageRenamePlaylistFiles (managepl->ploldname, name);
+    playlistRename (managepl->ploldname, name);
+fprintf (stderr, "  renamed\n");
     managepl->changed = true;
   }
   managepl->changed = managePlaylistCheckChanged (managepl);
@@ -427,23 +430,23 @@ managePlaylistSave (managepl_t *managepl)
 void
 managePlaylistLoadCheck (managepl_t *managepl)
 {
-  const char  *name;
+  char        *name;
 
   if (managepl->ploldname == NULL) {
     return;
   }
 
-  name = uiEntryGetValue (managepl->plname);
+  name = manageTrimName (uiEntryGetValue (managepl->plname));
 
-  if (! managePlaylistExists (name)) {
-    managePlaylistNew (managepl);
+  if (! playlistExists (name)) {
+    managePlaylistNew (managepl, MANAGE_SAVE);
   }
+  free (name);
 }
 
 void
-managePlaylistLoadFile (void *udata, const char *fn)
+managePlaylistLoadFile (managepl_t *managepl, const char *fn, int saveflag)
 {
-  managepl_t  *managepl = udata;
   playlist_t  *pl;
   pltype_t    pltype;
 
@@ -454,10 +457,18 @@ managePlaylistLoadFile (void *udata, const char *fn)
   logMsg (LOG_DBG, LOG_ACTIONS, "load playlist file");
   managepl->inload = true;
 
-  managePlaylistSave (managepl);
+fprintf (stderr, "pl load %s\n", fn);
+  if (saveflag == MANAGE_SAVE) {
+fprintf (stderr, "  call save\n");
+    managePlaylistSave (managepl);
+  }
 
-  pl = playlistAlloc (NULL);
-  playlistLoad (pl, fn);
+  pl = playlistLoad (fn, NULL);
+  if (pl == NULL) {
+fprintf (stderr, "  null, make new\n");
+    managePlaylistNew (managepl, saveflag);
+    return;
+  }
   if (managepl->playlist != NULL) {
     playlistFree (managepl->playlist);
   }
@@ -465,17 +476,47 @@ managePlaylistLoadFile (void *udata, const char *fn)
   manageSetPlaylistName (managepl, fn);
   managePlaylistUpdateData (managepl);
 
-  uiSpinboxResetChanged (managepl->uimaxplaytime);
-  uiSpinboxResetChanged (managepl->uistopat);
-  uiSpinboxResetChanged (managepl->uigap);
-
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
-  if (pltype == PLTYPE_SONGLIST) {
+  if (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_SEQUENCE) {
+fprintf (stderr, "  call pl load cb\n");
     uiutilsCallbackStrHandler (&managepl->callbacks [MPL_CB_PL_LOAD], fn);
   }
 
+  uiSpinboxResetChanged (managepl->uimaxplaytime);
+  uiSpinboxResetChanged (managepl->uistopat);
+  uiSpinboxResetChanged (managepl->uigap);
   managepl->changed = false;
   managepl->inload = false;
+}
+
+bool
+managePlaylistNew (managepl_t *managepl, int saveflag)
+{
+  char        tbuff [200];
+  playlist_t  *pl = NULL;
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: new playlist");
+  if (saveflag == MANAGE_SAVE) {
+    managePlaylistSave (managepl);
+  }
+
+  /* CONTEXT: playlist management: default name for a new playlist */
+  snprintf (tbuff, sizeof (tbuff), _("New Playlist"));
+  manageSetPlaylistName (managepl, tbuff);
+  managepl->plbackupcreated = false;
+
+  pl = playlistCreate (tbuff, PLTYPE_AUTO, NULL);
+  if (managepl->playlist != NULL) {
+    playlistFree (managepl->playlist);
+  }
+  managepl->playlist = pl;
+  uiSpinboxResetChanged (managepl->uimaxplaytime);
+  uiSpinboxResetChanged (managepl->uistopat);
+  uiSpinboxResetChanged (managepl->uigap);
+  managepl->changed = false;
+  managePlaylistUpdateData (managepl);
+
+  return UICB_CONT;
 }
 
 /* internal routines */
@@ -486,8 +527,26 @@ managePlaylistLoad (void *udata)
   managepl_t  *managepl = udata;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load playlist");
+  managePlaylistSave (managepl);
   selectFileDialog (SELFILE_PLAYLIST, managepl->windowp, managepl->options,
-      managepl, managePlaylistLoadFile);
+      managepl, managePlaylistLoadCB);
+  return UICB_CONT;
+}
+
+static void
+managePlaylistLoadCB (void *udata, const char *fn)
+{
+  managepl_t  *managepl = udata;
+
+  managePlaylistLoadFile (managepl, fn, MANAGE_SAVE);
+}
+
+static bool
+managePlaylistNewCB (void *udata)
+{
+  managepl_t  *managepl = udata;
+
+  managePlaylistNew (managepl, MANAGE_SAVE);
   return UICB_CONT;
 }
 
@@ -548,14 +607,14 @@ managePlaylistUpdateData (managepl_t *managepl)
 static bool
 managePlaylistCopy (void *udata)
 {
-  managepl_t *managepl = udata;
-  const char  *oname;
+  managepl_t  *managepl = udata;
+  char        *oname;
   char        newname [200];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy playlist");
   managePlaylistSave (managepl);
 
-  oname = uiEntryGetValue (managepl->plname);
+  oname = manageTrimName (uiEntryGetValue (managepl->plname));
   /* CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
   if (manageCreatePlaylistCopy (managepl->statusMsg, oname, newname)) {
@@ -566,36 +625,7 @@ managePlaylistCopy (void *udata)
     uiSpinboxResetChanged (managepl->uigap);
     managepl->changed = false;
   }
-
-  return UICB_CONT;
-}
-
-static bool
-managePlaylistNew (void *udata)
-{
-  managepl_t  *managepl = udata;
-  char        tbuff [200];
-  playlist_t  *pl = NULL;
-
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: new playlist");
-  managePlaylistSave (managepl);
-
-  /* CONTEXT: playlist management: default name for a new playlist */
-  snprintf (tbuff, sizeof (tbuff), _("New Playlist"));
-  manageSetPlaylistName (managepl, tbuff);
-  managepl->plbackupcreated = false;
-
-  pl = playlistAlloc (NULL);
-  playlistCreate (pl, tbuff, PLTYPE_AUTO);
-  if (managepl->playlist != NULL) {
-    playlistFree (managepl->playlist);
-  }
-  managepl->playlist = pl;
-  uiSpinboxResetChanged (managepl->uimaxplaytime);
-  uiSpinboxResetChanged (managepl->uistopat);
-  uiSpinboxResetChanged (managepl->uigap);
-  managepl->changed = false;
-  managePlaylistUpdateData (managepl);
+  free (oname);
 
   return UICB_CONT;
 }
@@ -604,19 +634,20 @@ static bool
 managePlaylistDelete (void *udata)
 {
   managepl_t  *managepl = udata;
-  const char  *oname;
+  char        *oname;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete playlist");
-  oname = uiEntryGetValue (managepl->plname);
+  oname = manageTrimName (uiEntryGetValue (managepl->plname));
   manageDeletePlaylist (managepl->statusMsg, oname);
   uiSpinboxResetChanged (managepl->uimaxplaytime);
   uiSpinboxResetChanged (managepl->uistopat);
   uiSpinboxResetChanged (managepl->uigap);
   managepl->changed = false;
 
-  managePlaylistNew (managepl);
+  managePlaylistNew (managepl, MANAGE_SAVE);
   managePlaylistUpdateData (managepl);
 
+  free (oname);
   return UICB_CONT;
 }
 
@@ -718,18 +749,22 @@ managePlaylistCheckChanged (managepl_t *managepl)
   double        dval;
 
   if (managePlaylistTreeIsChanged (managepl->managepltree)) {
+fprintf (stderr, "  tree chg\n");
     managepl->changed = true;
   }
 
   if (uiSpinboxIsChanged (managepl->uimaxplaytime)) {
+fprintf (stderr, "  mpt chg\n");
     managepl->changed = true;
   }
 
   if (uiSpinboxIsChanged (managepl->uistopat)) {
+fprintf (stderr, "  stopat chg\n");
     managepl->changed = true;
   }
 
   if (uiSpinboxIsChanged (managepl->uigap)) {
+fprintf (stderr, "  gap chg\n");
     managepl->changed = true;
   }
 
@@ -737,29 +772,36 @@ managePlaylistCheckChanged (managepl_t *managepl)
 
   tval = uiSpinboxGetValue (&managepl->uistopafter);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER)) {
+fprintf (stderr, "  stopafter chg b\n");
     managepl->changed = true;
   }
 
   dval = uiSpinboxGetValue (uiSpinboxGetUIWidget (managepl->uigap));
-  if (dval != (double) playlistGetConfigNum (pl, PLAYLIST_GAP) * 1000.0 ) {
+  if (dval != (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0 ) {
+fprintf (stderr, "  gap chg b dval:%.2f conf:%.2f\n", dval,
+(double) playlistGetConfigNum (pl, PLAYLIST_GAP) * 1000.0 );
     managepl->changed = true;
   }
 
   tval = uiratingGetValue (managepl->uirating);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_RATING)) {
+fprintf (stderr, "  rating chg b\n");
     managepl->changed = true;
   }
 
   tval = uilevelGetValue (managepl->uilowlevel);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_LEVEL_LOW)) {
+fprintf (stderr, "  level-l chg b\n");
     managepl->changed = true;
   }
 
   tval = uilevelGetValue (managepl->uihighlevel);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_LEVEL_HIGH)) {
+fprintf (stderr, "  level-h chg b\n");
     managepl->changed = true;
   }
 
+fprintf (stderr, "  chk-change: %d\n", managepl->changed);
   return managepl->changed;
 }
 

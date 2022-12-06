@@ -51,6 +51,7 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
   slist_t     *filelist;
   int         x, y;
   int         playlistSel;
+  const char  *title;
 
   selectfile = malloc (sizeof (uiselectfile_t));
   selectfile->parentwinp = window;
@@ -61,6 +62,9 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
   selectfile->options = options;
   selectfile->cbudata = udata;
 
+  /* CONTEXT: select file: file type for the file selection dialog (song list) */
+  title = _("Song List");
+
   playlistSel = PL_LIST_NORMAL; /* excludes queuedance */
   switch (type) {
     case SELFILE_SONGLIST: {
@@ -69,10 +73,14 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
     }
     case SELFILE_SEQUENCE: {
       playlistSel = PL_LIST_SEQUENCE;
+      /* CONTEXT: select file: file type for the file selection dialog (sequence) */
+      title = _("Sequence");
       break;
     }
     case SELFILE_PLAYLIST: {
       playlistSel = PL_LIST_ALL;
+      /* CONTEXT: select file: file type for the file selection dialog (playlist) */
+      title = _("Playlist");
       break;
     }
   }
@@ -80,8 +88,7 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
   if (cb != NULL) {
     filelist = playlistGetPlaylistList (playlistSel);
 
-    /* CONTEXT: select file: file type for the file selection dialog (song list) */
-    selectFileCreateDialog (selectfile, filelist, _("Song List"), cb);
+    selectFileCreateDialog (selectfile, filelist, title, cb);
     uiWidgetShowAll (&selectfile->uidialog);
 
     x = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_X);

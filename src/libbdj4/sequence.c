@@ -101,6 +101,15 @@ sequenceFree (sequence_t *sequence)
   }
 }
 
+bool
+sequenceExists (const char *name)
+{
+  char  fn [MAXPATHLEN];
+
+  pathbldMakePath (fn, sizeof (fn), name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  return fileopFileExists (fn);
+}
+
 nlist_t *
 sequenceGetDanceList (sequence_t *sequence)
 {

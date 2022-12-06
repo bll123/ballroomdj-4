@@ -1222,10 +1222,9 @@ mainQueueDance (maindata_t *mainData, char *args, int count)
   mi = mainParseMqidxNum (mainData, args, &danceIdx);
 
   logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %d %d", mi, danceIdx, count);
-  playlist = playlistAlloc (mainData->musicdb);
   /* CONTEXT: player: the name of the special playlist for queueing a dance */
-  if (playlistLoad (playlist, _("QueueDance")) < 0) {
-    playlistCreate (playlist, "main_queue_dance", PLTYPE_AUTO);
+  if ((playlist = playlistLoad (_("QueueDance"), mainData->musicdb)) == NULL) {
+    playlist = playlistCreate ("main_queue_dance", PLTYPE_AUTO, mainData->musicdb);
   }
   playlistSetConfigNum (playlist, PLAYLIST_STOP_AFTER, count);
   /* clear all dance selected/counts */
@@ -1256,7 +1255,6 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
   playlistitem_t  *plitem = NULL;
   playlist_t      *playlist = NULL;
   char            *plname;
-  int             rc;
   ilistidx_t      musicqLen;
   int             editmode;
 
@@ -1267,8 +1265,11 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
 
   mi = mainParseQueuePlaylist (mainData, args, &plname, &editmode);
 
-  playlist = playlistAlloc (mainData->musicdb);
-  rc = playlistLoad (playlist, plname);
+  playlist = playlistLoad (plname, mainData->musicdb);
+  if (playlist == NULL) {
+    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Queue Playlist failed: %s", plname);
+    return;
+  }
 
   /* check and see if a stop time override is in effect */
   /* if so, set the playlist's stop time */
@@ -1278,26 +1279,22 @@ mainQueuePlaylist (maindata_t *mainData, char *args)
   }
   mainData->ploverridestoptime = 0;
 
-  if (rc == 0) {
-    logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %d %s edit-mode:%d", mi, plname, editmode);
-    playlistSetEditMode (playlist, editmode);
+  logMsg (LOG_DBG, LOG_BASIC, "Queue Playlist: %d %s edit-mode:%d", mi, plname, editmode);
+  playlistSetEditMode (playlist, editmode);
 
-    plitem = mainPlaylistItemCache (mainData, playlist, globalCounter++);
-    queuePush (mainData->playlistQueue [mainData->musicqManageIdx], plitem);
-    logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
-    mainMusicQueueFill (mainData);
-    mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
-    mainData->musicqChanged [mi] = MAIN_CHG_START;
+  plitem = mainPlaylistItemCache (mainData, playlist, globalCounter++);
+  queuePush (mainData->playlistQueue [mainData->musicqManageIdx], plitem);
+  logMsg (LOG_DBG, LOG_MAIN, "push pl %s", plname);
+  mainMusicQueueFill (mainData);
+  mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
+  mainData->musicqChanged [mi] = MAIN_CHG_START;
 
-    mainSendMusicqStatus (mainData);
-    if (mainData->playWhenQueued &&
-        mainData->musicqPlayIdx == (musicqidx_t) mi &&
-        mainData->playerState == PL_STATE_STOPPED &&
-        musicqLen == 0) {
-      mainMusicQueuePlay (mainData);
-    }
-  } else {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Queue Playlist failed: %s", plname);
+  mainSendMusicqStatus (mainData);
+  if (mainData->playWhenQueued &&
+      mainData->musicqPlayIdx == (musicqidx_t) mi &&
+      mainData->playerState == PL_STATE_STOPPED &&
+      musicqLen == 0) {
+    mainMusicQueuePlay (mainData);
   }
 
   logProcEnd (LOG_PROC, "mainQueuePlaylist", "");

@@ -119,6 +119,7 @@ enum {
   MANAGE_CB_MM_NB,
   MANAGE_CB_EDIT,
   MANAGE_CB_SEQ_LOAD,
+  MANAGE_CB_SEQ_NEW,
   MANAGE_CB_PL_LOAD,
   MANAGE_CB_SAVE,
   MANAGE_CB_CFPL_DIALOG,
@@ -269,6 +270,7 @@ static void     manageMusicManagerMenu (manageui_t *manage);
 static void     manageBuildUISongListEditor (manageui_t *manage);
 static void     manageSonglistMenu (manageui_t *manage);
 static bool     manageSonglistLoad (void *udata);
+static void     manageSonglistLoadCB (void *udata, const char *fn);
 static bool     manageSonglistCopy (void *udata);
 static bool     manageSonglistNew (void *udata);
 static bool     manageSonglistDelete (void *udata);
@@ -279,9 +281,10 @@ static void     manageCFPLCreatePlaylistList (manageui_t *manage);
 static bool     manageCFPLPlaylistSelectHandler (void *udata, long idx);
 static bool     manageCFPLResponseHandler (void *udata, long responseid);
 static bool     manageSonglistMix (void *udata);
-static void     manageSonglistLoadFile (void *udata, const char *fn);
-static long     manageLoadPlaylist (void *udata, const char *fn);
-static long     manageLoadSonglist (void *udata, const char *fn);
+static void     manageSonglistLoadFile (void *udata, const char *fn, int saveflag);
+static long     manageLoadPlaylistCB (void *udata, const char *fn);
+static bool     manageNewPlaylistCB (void *udata);
+static long     manageLoadSonglistSeqCB (void *udata, const char *fn);
 static bool     manageToggleEasySonglist (void *udata);
 static void     manageSetEasySonglist (manageui_t *manage);
 static void     manageSonglistSave (manageui_t *manage);
@@ -670,12 +673,17 @@ manageBuildUI (manageui_t *manage)
       &manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST]);
 
   uiutilsUICallbackStrInit (&manage->callbacks [MANAGE_CB_SEQ_LOAD],
-      manageLoadPlaylist, manage);
+      manageLoadPlaylistCB, manage);
   manageSequenceSetLoadCallback (manage->manageseq,
       &manage->callbacks [MANAGE_CB_SEQ_LOAD]);
 
+  uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_SEQ_NEW],
+      manageNewPlaylistCB, manage, NULL);
+  manageSequenceSetNewCallback (manage->manageseq,
+      &manage->callbacks [MANAGE_CB_SEQ_NEW]);
+
   uiutilsUICallbackStrInit (&manage->callbacks [MANAGE_CB_PL_LOAD],
-      manageLoadSonglist, manage);
+      manageLoadSonglistSeqCB, manage);
   managePlaylistSetLoadCallback (manage->managepl,
       &manage->callbacks [MANAGE_CB_PL_LOAD]);
 
@@ -1387,10 +1395,11 @@ manageSonglistExportM3U (void *udata)
   char        tname [200];
   uiselect_t  *selectdata;
   char        *fn;
-  const char  *name;
+  char        *name;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export m3u");
   name = uimusicqGetSonglistName (manage->slmusicq);
+
   /* CONTEXT: managementui: song list export: title of save dialog */
   snprintf (tbuff, sizeof (tbuff), _("Export as M3U Playlist"));
   snprintf (tname, sizeof (tname), "%s.m3u", name);
@@ -1404,6 +1413,7 @@ manageSonglistExportM3U (void *udata)
     free (fn);
   }
   free (selectdata);
+  free (name);
   return UICB_CONT;
 }
 
@@ -1467,6 +1477,8 @@ manageSonglistImportM3U (void *udata)
     free (fn);
   }
   free (selectdata);
+
+  manageLoadPlaylistCB (manage, nplname);
   return UICB_CONT;
 }
 
@@ -1667,28 +1679,40 @@ manageSonglistLoad (void *udata)
   manageui_t  *manage = udata;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load songlist");
+  manageSonglistSave (manage);
   selectFileDialog (SELFILE_SONGLIST, &manage->window, manage->options,
-      manage, manageSonglistLoadFile);
+      manage, manageSonglistLoadCB);
   return UICB_CONT;
+}
+
+static void
+manageSonglistLoadCB (void *udata, const char *fn)
+{
+  manageui_t  *manage = udata;
+
+  manageSonglistLoadFile (manage, fn, MANAGE_SAVE);
 }
 
 static bool
 manageSonglistCopy (void *udata)
 {
   manageui_t  *manage = udata;
-  const char  *oname;
+  char        *oname;
   char        newname [200];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy songlist");
   manageSonglistSave (manage);
 
   oname = uimusicqGetSonglistName (manage->slmusicq);
+
   /* CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
   if (manageCreatePlaylistCopy (&manage->statusMsg, oname, newname)) {
     manageSetSonglistName (manage, newname);
+    manageLoadPlaylistCB (manage, newname);
     manage->slbackupcreated = false;
   }
+  free (oname);
   return UICB_CONT;
 }
 
@@ -1707,6 +1731,8 @@ manageSonglistNew (void *udata)
   manage->slbackupcreated = false;
   uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
   uimusicqTruncateQueueCallback (manage->slmusicq);
+fprintf (stderr, "sl-new\n");
+  manageNewPlaylistCB (manage);
   return UICB_CONT;
 }
 
@@ -1714,15 +1740,17 @@ static bool
 manageSonglistDelete (void *udata)
 {
   manageui_t  *manage = udata;
-  const char  *oname;
+  char        *oname;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
   oname = uimusicqGetSonglistName (manage->slmusicq);
+
   manageDeletePlaylist (&manage->statusMsg, oname);
   /* no save */
   dataFree (manage->sloldname);
   manage->sloldname = NULL;
   manageSonglistNew (manage);
+  free (oname);
   return UICB_CONT;
 }
 
@@ -1748,7 +1776,7 @@ manageSonglistCreateFromPlaylist (void *udata)
   /* the user may have typed in a new name before running create-from-pl */
   dataFree (manage->slpriorname);
   if (uimusicqGetCount (manage->slmusicq) <= 0) {
-    manage->slpriorname = strdup (uimusicqGetSonglistName (manage->slmusicq));
+    manage->slpriorname = uimusicqGetSonglistName (manage->slmusicq);
   }
   manageSongListCFPLCreateDialog (manage);
   uiDropDownSelectionSetNum (manage->cfplsel, -1);
@@ -1869,9 +1897,10 @@ manageCFPLResponseHandler (void *udata, long responseid)
       break;
     }
     case RESPONSE_APPLY: {
-      char          *fn;
-      long          stoptime;
-      char          tbuff [40];
+      char    *fn;
+      char    *tnm;
+      long    stoptime;
+      char    tbuff [40];
 
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: create");
       fn = uiDropDownGetString (manage->cfplsel);
@@ -1883,14 +1912,17 @@ manageCFPLResponseHandler (void *udata, long responseid)
 
       snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
       connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tbuff);
+
       /* overriding the stop time will set the stop time for the next */
       /* playlist that is loaded */
       snprintf (tbuff, sizeof (tbuff), "%ld", stoptime);
       connSendMessage (manage->conn, ROUTE_MAIN,
           MSG_PL_OVERRIDE_STOP_TIME, tbuff);
+
       /* the edit mode must be false to allow the stop time to be applied */
       manage->editmode = EDIT_FALSE;
-      manageSonglistLoadFile (manage, fn);
+      manageSonglistLoadFile (manage, fn, MANAGE_SAVE);
+
       /* make sure no save happens with the playlist being used */
       dataFree (manage->sloldname);
       manage->sloldname = NULL;
@@ -1907,6 +1939,9 @@ manageCFPLResponseHandler (void *udata, long responseid)
       connSendMessage (manage->conn, ROUTE_MAIN, MSG_PL_CLEAR_QUEUE, tbuff);
       manage->slbackupcreated = false;
       uiWidgetHide (&manage->cfplDialog);
+      tnm = uimusicqGetSonglistName (manage->slmusicq);
+      manageLoadPlaylistCB (manage, tnm);
+      free (tnm);
       break;
     }
   }
@@ -1927,7 +1962,7 @@ manageSonglistMix (void *udata)
 }
 
 static void
-manageSonglistLoadFile (void *udata, const char *fn)
+manageSonglistLoadFile (void *udata, const char *fn, int saveflag)
 {
   manageui_t  *manage = udata;
   char  tbuff [200];
@@ -1937,16 +1972,22 @@ manageSonglistLoadFile (void *udata, const char *fn)
   }
   manage->inload = true;
 
-//  /* any selection made by the load process should not trigger */
-//  /* a change in the song editor */
-//  manage->selusesonglist = false;
+fprintf (stderr, "sl: load %s\n", fn);
+  if (saveflag == MANAGE_SAVE) {
+    manageSonglistSave (manage);
+  }
+
+  if (! songlistExists (fn)) {
+fprintf (stderr, "   not exists\n");
+    manage->inload = false;
+    return;
+  }
+
   manage->selusesonglist = true;
   /* ask the main player process to not send music queue updates */
   /* the selbypass flag cannot be used due to timing issues */
   snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_DATA_SUSPEND, tbuff);
-
-  manageSonglistSave (manage);
 
   /* truncate from the first selection */
   uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
@@ -1960,31 +2001,42 @@ manageSonglistLoadFile (void *udata, const char *fn)
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_DATA_RESUME, tbuff);
 
   manageSetSonglistName (manage, fn);
-  manageLoadPlaylist (manage, fn);
+  manageLoadPlaylistCB (manage, fn);
   manage->slbackupcreated = false;
   manage->inload = false;
 }
 
 /* callback to load playlist upon songlist/sequence load */
 static long
-manageLoadPlaylist (void *udata, const char *fn)
+manageLoadPlaylistCB (void *udata, const char *fn)
 {
   manageui_t    *manage = udata;
 
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: songlist/seq: load playlist");
-  managePlaylistLoadFile (manage->managepl, fn);
+  managePlaylistLoadFile (manage->managepl, fn, MANAGE_NO_SAVE);
+  return UICB_CONT;
+}
+
+/* callback to reset playlist upon songlist/sequence new */
+static bool
+manageNewPlaylistCB (void *udata)
+{
+  manageui_t    *manage = udata;
+
+fprintf (stderr, "new pl cb\n");
+  managePlaylistNew (manage->managepl, MANAGE_NO_SAVE);
   return UICB_CONT;
 }
 
 /* callback to load upon playlist load */
 static long
-manageLoadSonglist (void *udata, const char *fn)
+manageLoadSonglistSeqCB (void *udata, const char *fn)
 {
   manageui_t    *manage = udata;
 
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: pl: load songlist");
+fprintf (stderr, "load sl/seq cb %s\n", fn);
   /* the load will save any current song list */
-  manageSonglistLoadFile (manage, fn);
+  manageSonglistLoadFile (manage, fn, MANAGE_NO_SAVE);
+  manageSequenceLoadFile (manage->manageseq, fn, MANAGE_NO_SAVE);
   return UICB_CONT;
 }
 
@@ -2049,11 +2101,13 @@ manageSonglistSave (manageui_t *manage)
     return;
   }
 
-  name = strdup (uimusicqGetSonglistName (manage->slmusicq));
+  name = uimusicqGetSonglistName (manage->slmusicq);
 
   /* the song list has been renamed */
   if (strcmp (manage->sloldname, name) != 0) {
-    manageRenamePlaylistFiles (manage->sloldname, name);
+    playlistRename (manage->sloldname, name);
+    /* so that renames are handled properly */
+    manageLoadPlaylistCB (manage, name);
   }
 
   /* need the full name for backups */
@@ -2066,7 +2120,7 @@ manageSonglistSave (manageui_t *manage)
 
   manageSetSonglistName (manage, name);
   uimusicqSave (manage->slmusicq, name);
-  manageCheckAndCreatePlaylist (name, PLTYPE_SONGLIST);
+  playlistCheckAndCreate (name, PLTYPE_SONGLIST);
   free (name);
 }
 
@@ -2339,7 +2393,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
       /* the song list must be saved, otherwise the song filter */
       /* can't load it */
       manageSonglistSave (manage);
-      slname = strdup (uimusicqGetSonglistName (manage->slmusicq));
+      slname = uimusicqGetSonglistName (manage->slmusicq);
       uisfSetPlaylist (manage->uisongfilter, slname);
       free (slname);
       manage->lastdisp = MANAGE_DISP_SONG_LIST;
@@ -2386,7 +2440,7 @@ manageSetMenuCallback (manageui_t *manage, int midx, UICallbackFunc cb)
 static void
 manageSonglistLoadCheck (manageui_t *manage)
 {
-  const char  *name;
+  char  *name;
 
   if (manage->sloldname == NULL) {
     return;
@@ -2394,12 +2448,16 @@ manageSonglistLoadCheck (manageui_t *manage)
 
   name = uimusicqGetSonglistName (manage->slmusicq);
 
-  if (! managePlaylistExists (name)) {
+fprintf (stderr, "sl load check: %s\n", name);
+  if (! songlistExists (name)) {
     /* make sure no save happens */
     dataFree (manage->sloldname);
     manage->sloldname = NULL;
     manageSonglistNew (manage);
+  } else {
+    manageLoadPlaylistCB (manage, name);
   }
+  free (name);
 }
 
 /* same song */

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-12-03\n"
+"PO-Revision-Date: 2022-12-06\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -1216,6 +1216,7 @@ msgstr "Speler"
 msgid "Player Options"
 msgstr "Speler Opties"
 
+#. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
 #. CONTEXT: create from playlist: select the playlist to use
 #. CONTEXT: playlist management: label for playlist name
@@ -1524,6 +1525,7 @@ msgstr ""
 msgid "Sending Support Message"
 msgstr ""
 
+#. CONTEXT: select file: file type for the file selection dialog (sequence)
 #. CONTEXT: playlist management: type of playlist
 #. CONTEXT: sequence editor: label for sequence name
 #. CONTEXT: sequence editor: title for the sequence list

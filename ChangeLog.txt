@@ -15,6 +15,7 @@ BallroomDJ 4 Change Log
 - song editor: previous and next buttons will now repeat.
 - song list editor: fixed gap default for new playlists.
 - song list editor/music manager: fixed song selection on switch.
+- song list editor, sequence editor, playlist management: fixed interactions.
 - song selection: filters: clear playlist selection on reset.
 - song selection: fixed issues enabling/disabling filters when playlist
     filter is in use.

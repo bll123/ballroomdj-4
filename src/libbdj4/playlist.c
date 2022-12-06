@@ -24,6 +24,7 @@
 #include "log.h"
 #include "nlist.h"
 #include "musicdb.h"
+#include "pathbld.h"
 #include "pathutil.h"
 #include "playlist.h"
 #include "rating.h"
@@ -56,6 +57,7 @@ typedef struct playlist {
   nlistidx_t    seqiteridx;
 } playlist_t;
 
+static playlist_t *playlistAlloc (musicdb_t *musicdb);
 static void plConvType (datafileconv_t *conv);
 
 /* must be sorted in ascii order */
@@ -85,36 +87,10 @@ static datafilekey_t playlistdancedfkeys [PLDANCE_KEY_MAX] = {
 static void playlistSetSongFilter (playlist_t *pl);
 static void playlistCountList (playlist_t *pl);
 
-playlist_t *
-playlistAlloc (musicdb_t *musicdb)
-{
-  playlist_t    *pl = NULL;
-
-  pl = malloc (sizeof (playlist_t));
-  pl->name = NULL;
-  pl->songlistiter = 0;
-  pl->plinfodf = NULL;
-  pl->pldancesdf = NULL;
-  pl->songlist = NULL;
-  pl->songfilter = NULL;
-  pl->sequence = NULL;
-  pl->songsel = NULL;
-  pl->dancesel = NULL;
-  pl->plinfo = NULL;
-  pl->pldances = NULL;
-  pl->countList = NULL;
-  pl->count = 0;
-  pl->editmode = EDIT_FALSE;
-  pl->musicdb = musicdb;
-  pl->dances = bdjvarsdfGet (BDJVDF_DANCES);
-
-  return pl;
-}
-
 void
 playlistFree (void *tpl)
 {
-  playlist_t      *pl = tpl;
+  playlist_t    *pl = tpl;
 
   if (pl != NULL) {
     if (pl->plinfodf != NULL) {
@@ -142,13 +118,15 @@ playlistFree (void *tpl)
     }
     nlistFree (pl->countList);
     dataFree (pl->name);
+    pl->name = NULL;
     free (pl);
   }
 }
 
-int
-playlistLoad (playlist_t *pl, const char *fname)
+playlist_t *
+playlistLoad (const char *fname, musicdb_t *musicdb)
 {
+  playlist_t    *pl;
   char          tfn [MAXPATHLEN];
   pltype_t      type;
   ilist_t       *tpldances;
@@ -158,20 +136,17 @@ playlistLoad (playlist_t *pl, const char *fname)
   nlist_t       *tlist;
 
   if (fname == NULL) {
-    return -1;
+    return NULL;
   }
 
   pathbldMakePath (tfn, sizeof (tfn), fname,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  if (pl == NULL) {
-    logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Null playlist %s", tfn);
-    return -1;
-  }
   if (! fileopFileExists (tfn)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
-    return -1;
+    return NULL;
   }
 
+  pl = playlistAlloc (musicdb);
   pl->name = strdup (fname);
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_KEY_MAX);
@@ -183,7 +158,7 @@ playlistLoad (playlist_t *pl, const char *fname)
   if (! fileopFileExists (tfn)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
     playlistFree (pl);
-    return -1;
+    return NULL;
   }
 
   pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_INDIRECT, tfn,
@@ -191,7 +166,7 @@ playlistLoad (playlist_t *pl, const char *fname)
   if (pl->pldancesdf == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Bad playlist-dance %s", tfn);
     playlistFree (pl);
-    return -1;
+    return NULL;
   }
   tpldances = datafileGetList (pl->pldancesdf);
 
@@ -228,7 +203,7 @@ playlistLoad (playlist_t *pl, const char *fname)
     if (pl->songlist == NULL) {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing songlist %s", tfn);
       playlistFree (pl);
-      return -1;
+      return NULL;
     }
 
     songlistStartIterator (pl->songlist, &pl->songlistiter);
@@ -240,7 +215,7 @@ playlistLoad (playlist_t *pl, const char *fname)
     if (pl->sequence == NULL) {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: missing sequence %s", fname);
       playlistFree (pl);
-      return -1;
+      return NULL;
     }
 
     /* reset and set all of the 'selected' flags. */
@@ -257,12 +232,13 @@ playlistLoad (playlist_t *pl, const char *fname)
     sequenceStartIterator (pl->sequence, &pl->seqiteridx);
   }
 
-  return 0;
+  return pl;
 }
 
-void
-playlistCreate (playlist_t *pl, const char *plname, pltype_t type)
+playlist_t *
+playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
 {
+  playlist_t    *pl;
   char          tbuff [40];
   ilistidx_t    didx;
   dance_t       *dances;
@@ -272,6 +248,7 @@ playlistCreate (playlist_t *pl, const char *plname, pltype_t type)
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
+  pl = playlistAlloc (musicdb);
   pl->name = strdup (plname);
   snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plname);
   pl->plinfo = nlistAlloc (tbuff, LIST_UNORDERED, free);
@@ -308,6 +285,8 @@ playlistCreate (playlist_t *pl, const char *plname, pltype_t type)
     ilistSetNum (pl->pldances, didx, PLDANCE_MAXPLAYTIME, 0);
     ilistSetNum (pl->pldances, didx, PLDANCE_SELECTED, 0);
   }
+
+  return pl;
 }
 
 void
@@ -636,6 +615,7 @@ playlistSave (playlist_t *pl, const char *name)
     pl->name = strdup (name);
   }
 
+fprintf (stderr, "pl save %s\n", pl->name);
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
   datafileSaveKeyVal ("playlist", tfn, playlistdfkeys,
@@ -667,8 +647,142 @@ playlistGetEditMode (playlist_t *pl)
   return pl->editmode;
 }
 
+bool
+playlistExists (const char *name)
+{
+  char  tbuff [MAXPATHLEN];
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  return fileopFileExists (tbuff);
+}
+
+void
+playlistRename (const char *oldname, const char *newname)
+{
+  char  onm [MAXPATHLEN];
+  char  nnm [MAXPATHLEN];
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  filemanipRenameAll (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  filemanipRenameAll (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  filemanipRenameAll (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+  filemanipRenameAll (onm, nnm);
+}
+
+void
+playlistCheckAndCreate (const char *name, pltype_t pltype)
+{
+  char  onm [MAXPATHLEN];
+
+  pathbldMakePath (onm, sizeof (onm),
+      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  if (! fileopFileExists (onm)) {
+    playlist_t    *pl;
+
+    pl = playlistCreate (name, pltype, NULL);
+    if (pl != NULL) {
+      playlistSave (pl, NULL);
+      playlistFree (pl);
+    }
+  }
+}
+
+void
+playlistDelete (const char *name)
+{
+  char  tnm [MAXPATHLEN];
+
+  pathbldMakePath (tnm, sizeof (tnm),
+      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  filemanipDeleteAll (tnm);
+  pathbldMakePath (tnm, sizeof (tnm),
+      name, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+  filemanipDeleteAll (tnm);
+  pathbldMakePath (tnm, sizeof (tnm),
+      name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  filemanipDeleteAll (tnm);
+  pathbldMakePath (tnm, sizeof (tnm),
+      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  filemanipDeleteAll (tnm);
+}
+
+void
+playlistCopy (const char *oldname, const char *newname)
+{
+  char  onm [MAXPATHLEN];
+  char  nnm [MAXPATHLEN];
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+  filemanipCopy (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+  filemanipCopy (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  filemanipCopy (onm, nnm);
+
+  pathbldMakePath (onm, sizeof (onm),
+      oldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (nnm, sizeof (nnm),
+      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  filemanipCopy (onm, nnm);
+}
+
 /* internal routines */
 
+static playlist_t *
+playlistAlloc (musicdb_t *musicdb)
+{
+  playlist_t    *pl = NULL;
+
+  pl = malloc (sizeof (playlist_t));
+  pl->name = NULL;
+  pl->songlistiter = 0;
+  pl->plinfodf = NULL;
+  pl->pldancesdf = NULL;
+  pl->songlist = NULL;
+  pl->songfilter = NULL;
+  pl->sequence = NULL;
+  pl->songsel = NULL;
+  pl->dancesel = NULL;
+  pl->plinfo = NULL;
+  pl->pldances = NULL;
+  pl->countList = NULL;
+  pl->count = 0;
+  pl->editmode = EDIT_FALSE;
+  pl->musicdb = musicdb;
+  pl->dances = bdjvarsdfGet (BDJVDF_DANCES);
+
+  return pl;
+}
 
 static void
 plConvType (datafileconv_t *conv)

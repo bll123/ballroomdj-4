@@ -26,56 +26,6 @@
 #include "ui.h"
 #include "validate.h"
 
-static void manageCopyPlaylistFiles (const char *oldname, const char *newname);
-
-void
-manageRenamePlaylistFiles (const char *oldname, const char *newname)
-{
-  char  onm [MAXPATHLEN];
-  char  nnm [MAXPATHLEN];
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-  filemanipRenameAll (onm, nnm);
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-  filemanipRenameAll (onm, nnm);
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  filemanipRenameAll (onm, nnm);
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
-  filemanipRenameAll (onm, nnm);
-}
-
-void
-manageCheckAndCreatePlaylist (const char *name, pltype_t pltype)
-{
-  char  onm [MAXPATHLEN];
-
-  pathbldMakePath (onm, sizeof (onm),
-      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  if (! fileopFileExists (onm)) {
-    playlist_t    *pl;
-
-    pl = playlistAlloc (NULL);
-    playlistCreate (pl, name, pltype);
-    playlistSave (pl, NULL);
-    playlistFree (pl);
-  }
-}
-
 bool
 manageCreatePlaylistCopy (UIWidget *statusMsg,
     const char *oname, const char *newname)
@@ -83,28 +33,16 @@ manageCreatePlaylistCopy (UIWidget *statusMsg,
   char  tbuff [MAXPATHLEN];
   bool  rc = true;
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  if (fileopFileExists (tbuff)) {
+  if (playlistExists (tbuff)) {
     /* CONTEXT: manageui: failure status message */
     snprintf (tbuff, sizeof (tbuff), _("Copy already exists."));
     uiLabelSetText (statusMsg, tbuff);
     rc = false;
   }
   if (rc) {
-    manageCopyPlaylistFiles (oname, newname);
+    playlistCopy (oname, newname);
   }
   return rc;
-}
-
-bool
-managePlaylistExists (const char *name)
-{
-  char  tbuff [MAXPATHLEN];
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  return fileopFileExists (tbuff);
 }
 
 int
@@ -136,22 +74,9 @@ manageValidateName (uientry_t *entry, void *udata)
 void
 manageDeletePlaylist (UIWidget *statusMsg, const char *name)
 {
-  char  tnm [MAXPATHLEN];
   char  tbuff [MAXPATHLEN];
 
-
-  pathbldMakePath (tnm, sizeof (tnm),
-      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  fileopDelete (tnm);
-  pathbldMakePath (tnm, sizeof (tnm),
-      name, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
-  fileopDelete (tnm);
-  pathbldMakePath (tnm, sizeof (tnm),
-      name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-  fileopDelete (tnm);
-  pathbldMakePath (tnm, sizeof (tnm),
-      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-  fileopDelete (tnm);
+  playlistDelete (name);
 
   snprintf (tbuff, sizeof (tbuff), "%s deleted.", name);
   if (statusMsg != NULL) {
@@ -159,35 +84,15 @@ manageDeletePlaylist (UIWidget *statusMsg, const char *name)
   }
 }
 
-/* internal routines */
-
-static void
-manageCopyPlaylistFiles (const char *oldname, const char *newname)
+char *
+manageTrimName (const char *name)
 {
-  char  onm [MAXPATHLEN];
-  char  nnm [MAXPATHLEN];
+  char  *tname;
 
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
-  filemanipCopy (onm, nnm);
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
-  filemanipCopy (onm, nnm);
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
-  filemanipCopy (onm, nnm);
-
-  pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-  pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
-  filemanipCopy (onm, nnm);
+  while (*name == ' ') {
+    ++name;
+  }
+  tname = strdup (name);
+  stringTrimChar (tname, ' ');
+  return tname;
 }

@@ -96,6 +96,15 @@ songlistFree (songlist_t *sl)
   }
 }
 
+bool
+songlistExists (const char *name)
+{
+  char    tfn [MAXPATHLEN];
+  pathbldMakePath (tfn, sizeof (tfn), name,
+      BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+  return fileopFileExists (tfn);
+}
+
 void
 songlistStartIterator (songlist_t *sl, ilistidx_t *iteridx)
 {

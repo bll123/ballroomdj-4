@@ -165,5 +165,23 @@ filemanipRenameAll (const char *ofname, const char *nfname)
   return;
 }
 
+void
+filemanipDeleteAll (const char *name)
+{
+  char      ofn [MAXPATHLEN];
+  int       count = 10;
+
+  for (int i = count; i >= 1; --i) {
+    snprintf (ofn, sizeof (ofn), "%s.bak.%d", name, i);
+    if (fileopFileExists (ofn)) {
+      fileopDelete (ofn);
+    }
+  }
+  if (fileopFileExists (name)) {
+    fileopDelete (name);
+  }
+  return;
+}
+
 
 

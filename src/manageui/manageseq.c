@@ -35,6 +35,7 @@ enum {
   MSEQ_MENU_CB_SEQ_NEW,
   MSEQ_MENU_CB_SEQ_DELETE,
   MSEQ_CB_SEQ_LOAD,
+  MSEQ_CB_SEQ_NEW,
   MSEQ_CB_MAX,
 };
 
@@ -53,8 +54,8 @@ typedef struct manageseq {
 } manageseq_t;
 
 static bool   manageSequenceLoad (void *udata);
+static void   manageSequenceLoadCB (void *udata, const char *fn);
 static bool   manageSequenceCopy (void *udata);
-static void   manageSequenceLoadFile (void *udata, const char *fn);
 static bool   manageSequenceNew (void *udata);
 static bool   manageSequenceDelete (void *udata);
 static void   manageSetSequenceName (manageseq_t *manageseq, const char *nm);
@@ -97,6 +98,15 @@ manageSequenceSetLoadCallback (manageseq_t *manageseq, UICallback *uicb)
     return;
   }
   memcpy (&manageseq->callback [MSEQ_CB_SEQ_LOAD], uicb, sizeof (UICallback));
+}
+
+void
+manageSequenceSetNewCallback (manageseq_t *manageseq, UICallback *uicb)
+{
+  if (manageseq == NULL) {
+    return;
+  }
+  memcpy (&manageseq->callback [MSEQ_CB_SEQ_NEW], uicb, sizeof (UICallback));
 }
 
 void
@@ -206,15 +216,16 @@ manageSequenceSave (manageseq_t *manageseq)
     changed = true;
   }
 
-  name = strdup (uiEntryGetValue (manageseq->seqname));
+  name = manageTrimName (uiEntryGetValue (manageseq->seqname));
 
   /* the sequence has been renamed */
   if (strcmp (manageseq->seqoldname, name) != 0) {
-    manageRenamePlaylistFiles (manageseq->seqoldname, name);
+    playlistRename (manageseq->seqoldname, name);
     changed = true;
   }
 
   if (! changed) {
+    free (name);
     slistFree (slist);
     return;
   }
@@ -232,8 +243,9 @@ manageSequenceSave (manageseq_t *manageseq)
   sequenceSave (seq, slist);
   sequenceFree (seq);
 
-  manageCheckAndCreatePlaylist (name, PLTYPE_SEQUENCE);
+  playlistCheckAndCreate (name, PLTYPE_SEQUENCE);
   slistFree (slist);
+  uiutilsCallbackStrHandler (&manageseq->callback [MSEQ_CB_SEQ_LOAD], name);
   free (name);
 }
 
@@ -243,38 +255,28 @@ manageSequenceSave (manageseq_t *manageseq)
 void
 manageSequenceLoadCheck (manageseq_t *manageseq)
 {
-  const char  *name;
+  char    *name;
 
   if (manageseq->seqoldname == NULL) {
     return;
   }
 
-  name = uiEntryGetValue (manageseq->seqname);
+  name = manageTrimName (uiEntryGetValue (manageseq->seqname));
 
-  if (! managePlaylistExists (name)) {
+fprintf (stderr, "seq load check: %s\n", name);
+  if (! sequenceExists (name)) {
     /* make sure no save happens */
     manageseq->seqoldname = NULL;
     manageSequenceNew (manageseq);
+  } else {
+    uiutilsCallbackStrHandler (&manageseq->callback [MSEQ_CB_SEQ_LOAD], name);
   }
+  free (name);
 }
 
-/* internal routines */
-
-static bool
-manageSequenceLoad (void *udata)
+void
+manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int saveflag)
 {
-  manageseq_t  *manageseq = udata;
-
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: load sequence");
-  selectFileDialog (SELFILE_SEQUENCE, manageseq->windowp, manageseq->options,
-      manageseq, manageSequenceLoadFile);
-  return UICB_CONT;
-}
-
-static void
-manageSequenceLoadFile (void *udata, const char *fn)
-{
-  manageseq_t *manageseq = udata;
   sequence_t  *seq = NULL;
   char        *dstr = NULL;
   nlist_t     *dancelist = NULL;
@@ -287,7 +289,15 @@ manageSequenceLoadFile (void *udata, const char *fn)
   }
 
   logMsg (LOG_DBG, LOG_ACTIONS, "load sequence file");
-  manageSequenceSave (manageseq);
+  if (saveflag == MANAGE_SAVE) {
+    manageSequenceSave (manageseq);
+  }
+
+fprintf (stderr, "seq: load %s\n", fn);
+  if (! sequenceExists (fn)) {
+fprintf (stderr, "   not exists\n");
+    return;
+  }
 
   seq = sequenceAlloc (fn);
   if (seq == NULL) {
@@ -307,31 +317,55 @@ manageSequenceLoadFile (void *udata, const char *fn)
   slistFree (tlist);
 
   manageSetSequenceName (manageseq, fn);
-
   uiutilsCallbackStrHandler (&manageseq->callback [MSEQ_CB_SEQ_LOAD], fn);
 
   manageseq->seqbackupcreated = false;
   manageseq->inload = false;
 }
 
+/* internal routines */
+
+static bool
+manageSequenceLoad (void *udata)
+{
+  manageseq_t  *manageseq = udata;
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: load sequence");
+  manageSequenceSave (manageseq);
+  selectFileDialog (SELFILE_SEQUENCE, manageseq->windowp, manageseq->options,
+      manageseq, manageSequenceLoadCB);
+  return UICB_CONT;
+}
+
+static void
+manageSequenceLoadCB (void *udata, const char *fn)
+{
+  manageseq_t *manageseq = udata;
+
+  manageSequenceLoadFile (manageseq, fn, MANAGE_SAVE);
+}
+
 static bool
 manageSequenceCopy (void *udata)
 {
   manageseq_t *manageseq = udata;
-  const char  *oname;
+  char        *oname;
   char        newname [200];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy sequence");
   manageSequenceSave (manageseq);
 
-  oname = uiEntryGetValue (manageseq->seqname);
+  oname = manageTrimName (uiEntryGetValue (manageseq->seqname));
+
   /* CONTEXT: sequence editor: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
   if (manageCreatePlaylistCopy (manageseq->statusMsg, oname, newname)) {
     manageSetSequenceName (manageseq, newname);
     manageseq->seqbackupcreated = false;
     uiduallistClearChanged (manageseq->seqduallist);
+    uiutilsCallbackStrHandler (&manageseq->callback [MSEQ_CB_SEQ_LOAD], newname);
   }
+  free (oname);
   return UICB_CONT;
 }
 
@@ -353,6 +387,7 @@ manageSequenceNew (void *udata)
   uiduallistSet (manageseq->seqduallist, tlist, DUALLIST_TREE_TARGET);
   uiduallistClearChanged (manageseq->seqduallist);
   slistFree (tlist);
+  uiutilsCallbackHandler (&manageseq->callback [MSEQ_CB_SEQ_NEW]);
   return UICB_CONT;
 }
 
@@ -360,13 +395,14 @@ static bool
 manageSequenceDelete (void *udata)
 {
   manageseq_t *manageseq = udata;
-  const char  *oname;
+  char        *oname;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete sequence");
-  oname = uiEntryGetValue (manageseq->seqname);
+  oname = manageTrimName (uiEntryGetValue (manageseq->seqname));
   manageDeletePlaylist (manageseq->statusMsg, oname);
   uiduallistClearChanged (manageseq->seqduallist);
   manageSequenceNew (manageseq);
+  free (oname);
   return UICB_CONT;
 }
 
