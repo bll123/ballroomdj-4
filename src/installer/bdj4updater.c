@@ -510,6 +510,13 @@ updaterCleanFiles (void)
         continue;
       }
 
+      if (strcmp (pattern, "::data") == 0) {
+        updaterCleanRegex (basedir, cleanlist);
+        nlistFree (cleanlist);
+        cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
+        basedir = sysvarsGetStr (SV_BDJ4DATATOPDIR);
+      }
+
       rx = regexInit (pattern);
       nlistSetData (cleanlist, count, rx);
       ++count;

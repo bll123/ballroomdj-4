@@ -13,11 +13,11 @@ BallroomDJ 4 Change Log
 - player: the queue dance buttons are only shown per the queue configuration.
 - select folder dialog: fixed to only show folders.
 - song editor: previous and next buttons will now repeat.
-- song filter: clear playlist selection on reset.
-- song filter: fixed issues enabling/disabling filters when playlist
-    filter is in use.
 - song list editor: fixed gap default for new playlists.
 - song list editor/music manager: fixed song selection on switch.
+- song selection: filters: clear playlist selection on reset.
+- song selection: fixed issues enabling/disabling filters when playlist
+    filter is in use.
 - starter: added a 'create profile shortcut' menu selection.
 - starter: fix create profile.
 - internal: re-work button repeat.

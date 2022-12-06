@@ -3,6 +3,10 @@
 #
 # be sure to be very specific and use end of line markers if possible
 #
+# ::data
+#   switch to data top dir as base (needed for macos)
+#   use for data/ tmp/ http/ img/profile??/
+#
 
 # old (alpha) template naming convention
 templates/.*\.nl$
@@ -21,6 +25,8 @@ conv/sort-options.tcl$
 # windows make shortcut rename (alpha)
 install/makeshortcut.bat$
 install/makeshortcut.vbs$
+
+::data
 
 # old data file name (early alpha)
 data/profile\d\d/configui\.txt$
