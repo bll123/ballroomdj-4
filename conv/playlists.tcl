@@ -20,6 +20,14 @@ try {
 
 foreach {fn} $flist {
   set basename [file rootname [file tail $fn]]
+
+  if { $basename eq "Raffle Songs" } {
+    continue
+  }
+  if { $basename eq "Loterij liedjes" } {
+    continue
+  }
+
   set nfn [file join $datatopdir data ${basename}.pl]
   #  puts "   - [file tail $fn] : ${basename}.pl"
   set ifh [open $fn r]

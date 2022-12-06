@@ -223,6 +223,7 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
   song_t      *song;
   ilistidx_t  key;
 
+  logProcBegin (LOG_PROC, "uimusicqSave");
   snprintf (tbuff, sizeof (tbuff), "save-%s", fname);
   uimusicq->savelist = nlistAlloc (tbuff, LIST_UNORDERED, NULL);
   uimusicqIterate (uimusicq, uimusicqSaveListCallback, MUSICQ_SL);
@@ -244,6 +245,7 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
   songlistFree (songlist);
   nlistFree (uimusicq->savelist);
   uimusicq->savelist = NULL;
+  logProcEnd (LOG_PROC, "uimusicqSave", "");
 }
 
 void

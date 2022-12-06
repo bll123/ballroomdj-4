@@ -101,7 +101,7 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, dbidx_t dbidx,
 
   logProcBegin (LOG_PROC, "musicqPush");
   if (musicq == NULL || musicq->q [musicqidx] == NULL || dbidx < 0) {
-    logProcEnd (LOG_PROC, "musicqPush", "bad-ptr");
+    logProcEnd (LOG_PROC, "musicqPush", "bad-ptr-or-bad-dbidx");
     return;
   }
 
@@ -298,7 +298,7 @@ musicqGetDispIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
   return -1;
 }
 
-int
+long
 musicqGetUniqueIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey)
 {
   musicqitem_t      *musicqitem;

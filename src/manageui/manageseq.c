@@ -274,7 +274,7 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
 }
 
 void
-manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int saveflag)
+manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag)
 {
   sequence_t  *seq = NULL;
   char        *dstr = NULL;
@@ -288,7 +288,7 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int saveflag)
   }
 
   logMsg (LOG_DBG, LOG_ACTIONS, "load sequence file");
-  if (saveflag == MANAGE_SAVE) {
+  if (preloadflag == MANAGE_STD) {
     manageSequenceSave (manageseq);
   }
 
@@ -314,7 +314,9 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int saveflag)
   slistFree (tlist);
 
   manageSetSequenceName (manageseq, fn);
-  uiutilsCallbackStrHandler (&manageseq->callback [MSEQ_CB_SEQ_LOAD], fn);
+  if (preloadflag == MANAGE_STD) {
+    uiutilsCallbackStrHandler (&manageseq->callback [MSEQ_CB_SEQ_LOAD], fn);
+  }
 
   manageseq->seqbackupcreated = false;
   manageseq->inload = false;
@@ -339,7 +341,7 @@ manageSequenceLoadCB (void *udata, const char *fn)
 {
   manageseq_t *manageseq = udata;
 
-  manageSequenceLoadFile (manageseq, fn, MANAGE_SAVE);
+  manageSequenceLoadFile (manageseq, fn, MANAGE_STD);
 }
 
 static bool

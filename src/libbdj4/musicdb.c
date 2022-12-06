@@ -103,7 +103,6 @@ dbLoad (musicdb_t *musicdb)
   char        *fstr;
   char        *ffn;
   song_t      *song;
-  rafileidx_t srrn;
   rafileidx_t rc;
   nlistidx_t  dkey;
   nlistidx_t  iteridx;
@@ -144,15 +143,11 @@ dbLoad (musicdb_t *musicdb)
     free (ffn);
 
     if (ok) {
-      srrn = songGetNum (song, TAG_RRN);
       dkey = songGetNum (song, TAG_DANCE);
       if (dkey >= 0) {
         nlistIncrement (musicdb->danceCounts, dkey);
       }
-      if (i != srrn) {
-        /* a double check to make sure the song has the correct rrn */
-        songSetNum (song, TAG_RRN, i);
-      }
+      songSetNum (song, TAG_RRN, i);
       slistSetData (musicdb->songs, fstr, song);
       ++musicdb->count;
     }
@@ -195,6 +190,7 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   rrn = songGetNum (song, TAG_RRN);
   song = dbReadEntry (musicdb, rrn);
   fstr = songGetStr (song, TAG_FILE);
+  songSetNum (song, TAG_DBIDX, dbidx);
   if (song != NULL) {
     slistSetData (musicdb->songs, fstr, song);
   }
@@ -269,7 +265,6 @@ size_t
 dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
 {
   char          tbuff [RAFILE_REC_SIZE];
-  dbidx_t       newrrn = 0;
   size_t        tblen;
 
   if (musicdb == NULL) {
@@ -280,14 +275,7 @@ dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
 
-  tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn, newrrn);
-
-  newrrn = rrn;
-  if (rrn == MUSICDB_ENTRY_NEW) {
-    /* this locks the database */
-    newrrn = raGetNextRRN (musicdb->radb);
-  }
-  /* rrn may be set to MUSICB_ENTRY_NEW */
+  tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn, rrn);
   raWrite (musicdb->radb, rrn, tbuff);
   return tblen;
 }
@@ -319,8 +307,7 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
       /* already handled, must be first */
       continue;
     }
-    if (strcmp (tag, tagdefs [TAG_LAST_UPDATED].tag) == 0 ||
-        strcmp (tag, tagdefs [TAG_RRN].tag) == 0) {
+    if (strcmp (tag, tagdefs [TAG_LAST_UPDATED].tag) == 0) {
       /* will be re-written */
       continue;
     }
@@ -366,14 +353,6 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
   tblen = stringAppend (tbuff, sz, tblen, "..");
   currtime = time (NULL);
   snprintf (tmp, sizeof (tmp), "%"PRIu64, (uint64_t) currtime);
-  tblen = stringAppend (tbuff, sz, tblen, tmp);
-  tblen = stringAppend (tbuff, sz, tblen, "\n");
-
-  /* rrn must exist, and might be new */
-  tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_RRN].tag);
-  tblen = stringAppend (tbuff, sz, tblen, "\n");
-  tblen = stringAppend (tbuff, sz, tblen, "..");
-  snprintf (tmp, sizeof (tmp), "%d", rrn);
   tblen = stringAppend (tbuff, sz, tblen, tmp);
   tblen = stringAppend (tbuff, sz, tblen, "\n");
 

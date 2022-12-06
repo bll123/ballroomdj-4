@@ -126,14 +126,10 @@ dict for {fn data} $musicdbList {
     if { $tag eq "AUTOORGFLAG" } { continue }
     # FILE is already handled
     if { $tag eq "FILE" } { continue }
+    # rrn is not written
+    if { $tag eq "rrn" } { continue }
 
     set value [dict get $data $tag]
-
-    if { $tag eq "rrn" } {
-      # make sure rrn is correct
-      set tag RRN
-      set value $newrrn
-    }
 
     if { $tag eq "TRACKTOTAL" || $tag eq "DISCTOTAL" } {
       if { $value == 0 } {

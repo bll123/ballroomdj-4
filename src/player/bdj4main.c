@@ -943,7 +943,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   int         flags;
   int         pauseind;
   int         dispidx;
-  int         uniqueidx;
+  long        uniqueidx;
   ssize_t     qDuration;
 
   logProcBegin (LOG_PROC, "mainSendMusicQueueData");
@@ -964,7 +964,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
       snprintf (tbuff, sizeof (tbuff), "%d%c", dispidx, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, BDJMSG_MAX);
       uniqueidx = musicqGetUniqueIdx (mainData->musicQueue, musicqidx, i);
-      snprintf (tbuff, sizeof (tbuff), "%d%c", uniqueidx, MSG_ARGS_RS);
+      snprintf (tbuff, sizeof (tbuff), "%ld%c", uniqueidx, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, BDJMSG_MAX);
       snprintf (tbuff, sizeof (tbuff), "%d%c", dbidx, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, BDJMSG_MAX);

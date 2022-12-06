@@ -34,7 +34,6 @@ listAlloc (const char *name, listorder_t ordered, listFree_t valueFreeHook)
 {
   list_t    *list;
 
-  logProcBegin (LOG_PROC, "listAlloc");
   list = malloc (sizeof (list_t));
   assert (list != NULL);
     /* always allocate the name so that dynamic names can be created */
@@ -55,7 +54,6 @@ listAlloc (const char *name, listorder_t ordered, listFree_t valueFreeHook)
   list->writeCacheHits = 0;
   list->valueFreeHook = valueFreeHook;
   logMsg (LOG_DBG, LOG_LIST, "alloc %s", name);
-  logProcEnd (LOG_PROC, "listAlloc", "");
   return list;
 }
 
@@ -264,24 +262,19 @@ listDumpInfo (list_t *list)
 listidx_t
 listIterateKeyNum (list_t *list, listidx_t *iteridx)
 {
-  logProcBegin (LOG_PROC, "listIterateKeyNum");
   if (list == NULL || list->keytype == LIST_KEY_STR) {
-    logProcEnd (LOG_PROC, "listIterateKeyNum", "null-list/key-str");
     return LIST_LOC_INVALID;
   }
 
   ++(*iteridx);
 
-  logProcEnd (LOG_PROC, "listIterateKeyNum", "");
   return listIterateKeyGetNum (list, iteridx);
 }
 
 listidx_t
 listIterateKeyPreviousNum (list_t *list, listidx_t *iteridx)
 {
-  logProcBegin (LOG_PROC, "listIterateKeyPreviousNum");
   if (list == NULL || list->keytype == LIST_KEY_STR) {
-    logProcEnd (LOG_PROC, "listIterateKeyNum", "null-list/key-str");
     return LIST_LOC_INVALID;
   }
 
@@ -291,7 +284,6 @@ listIterateKeyPreviousNum (list_t *list, listidx_t *iteridx)
     *iteridx = -1;
   }
 
-  logProcEnd (LOG_PROC, "listIterateKeyPreviousNum", "");
   return listIterateKeyGetNum (list, iteridx);
 }
 
@@ -300,16 +292,13 @@ listIterateKeyStr (list_t *list, listidx_t *iteridx)
 {
   char    *value = NULL;
 
-  logProcBegin (LOG_PROC, "listIterateKeyStr");
   if (list == NULL || list->keytype == LIST_KEY_NUM) {
-    logProcEnd (LOG_PROC, "listIterateKeyStr", "null-list/key-num");
     return NULL;
   }
 
   ++(*iteridx);
   if (*iteridx >= list->count) {
     *iteridx = LIST_END_LIST;
-    logProcEnd (LOG_PROC, "listIterateKeyStr", "end-list");
     return NULL;
   }
 
@@ -320,7 +309,6 @@ listIterateKeyStr (list_t *list, listidx_t *iteridx)
   list->keyCache.strkey = strdup (value);
   list->locCache = *iteridx;
 
-  logProcEnd (LOG_PROC, "listIterateKeyStr", "");
   return value;
 }
 
@@ -329,21 +317,17 @@ listIterateValue (list_t *list, listidx_t *iteridx)
 {
   void  *value = NULL;
 
-  logProcBegin (LOG_PROC, "listIterateValue");
   if (list == NULL) {
-    logProcEnd (LOG_PROC, "listIterateValue", "null-list");
     return NULL;
   }
 
   ++(*iteridx);
   if (*iteridx >= list->count) {
     *iteridx = LIST_END_LIST;
-    logProcEnd (LOG_PROC, "listIterateValue", "end-list");
     return NULL;  /* indicate the end of the list */
   }
 
   value = list->data [*iteridx].value.data;
-  logProcEnd (LOG_PROC, "listIterateValue", "");
   return value;
 }
 
@@ -352,21 +336,17 @@ listIterateValueNum (list_t *list, listidx_t *iteridx)
 {
   listnum_t   value = LIST_VALUE_INVALID;
 
-  logProcBegin (LOG_PROC, "listIterateNum");
   if (list == NULL) {
-    logProcEnd (LOG_PROC, "listIterateNum", "null-list");
     return LIST_VALUE_INVALID;
   }
 
   ++(*iteridx);
   if (*iteridx >= list->count) {
     *iteridx = LIST_END_LIST;
-    logProcEnd (LOG_PROC, "listIterateNum", "end-list");
     return LIST_VALUE_INVALID;  /* indicate the end of the list */
   }
 
   value = list->data [*iteridx].value.num;
-  logProcEnd (LOG_PROC, "listIterateNum", "");
   return value;
 }
 
@@ -538,10 +518,8 @@ listIterateKeyGetNum (list_t *list, listidx_t *iteridx)
 {
   listidx_t   value = LIST_LOC_INVALID;
 
-  logProcBegin (LOG_PROC, "listIterateKeyGetNum");
   if (*iteridx < 0 || *iteridx >= list->count) {
     *iteridx = LIST_END_LIST;
-    logProcEnd (LOG_PROC, "listIterateKeyGetNum", "end-list");
     return LIST_LOC_INVALID;      /* indicate the beg/end of the list */
   }
 
@@ -549,7 +527,6 @@ listIterateKeyGetNum (list_t *list, listidx_t *iteridx)
 
   list->keyCache.idx = value;
   list->locCache = *iteridx;
-  logProcEnd (LOG_PROC, "listIterateKeyGetNum", "");
   return value;
 }
 

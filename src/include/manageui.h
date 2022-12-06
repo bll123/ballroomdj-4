@@ -12,8 +12,8 @@
 #include "ui.h"
 
 enum {
-  MANAGE_NO_SAVE,
-  MANAGE_SAVE,
+  MANAGE_PRELOAD,
+  MANAGE_STD,
 };
 
 enum {
@@ -31,8 +31,8 @@ void manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp);
 uimenu_t *managePlaylistMenu (managepl_t *managepl, UIWidget *menubar);
 void managePlaylistSave (managepl_t *managepl);
 void managePlaylistLoadCheck (managepl_t *managepl);
-void managePlaylistLoadFile (managepl_t *managepl, const char *fn, int saveflag);
-bool managePlaylistNew (managepl_t *managepl, int saveflag);
+void managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag);
+bool managePlaylistNew (managepl_t *managepl, int preloadflag);
 
 /* managepltree.c */
 typedef struct managepltree managepltree_t;
@@ -56,7 +56,7 @@ void manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp);
 uimenu_t *manageSequenceMenu (manageseq_t *manageseq, UIWidget *menubar);
 void manageSequenceSave (manageseq_t *manageseq);
 void manageSequenceLoadCheck (manageseq_t *manageseq);
-void manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int saveflag);
+void manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag);
 
 /* managedb.c */
 typedef struct managedb managedb_t;

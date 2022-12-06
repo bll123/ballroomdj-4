@@ -60,7 +60,7 @@ int         musicqInsert (musicq_t *musicq, musicqidx_t musicqidx,
 dbidx_t     musicqGetCurrent (musicq_t *musicq, musicqidx_t musicqidx);
 musicqflag_t musicqGetFlags (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);
 int         musicqGetDispIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);
-int         musicqGetUniqueIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);
+long        musicqGetUniqueIdx (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);
 void        musicqSetFlag (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey, musicqflag_t flags);
 void        musicqClearFlag (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey, musicqflag_t flags);
 char        *musicqGetAnnounce (musicq_t *musicq, musicqidx_t musicqidx, qidx_t qkey);

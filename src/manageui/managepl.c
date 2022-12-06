@@ -348,7 +348,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiSpinboxResetChanged (managepl->uimaxplaytime);
   uiSpinboxResetChanged (managepl->uistopat);
   uiSpinboxResetChanged (managepl->uigap);
-  managePlaylistNew (managepl, MANAGE_SAVE);
+  managePlaylistNew (managepl, MANAGE_STD);
   managepl->changed = false;
 }
 
@@ -437,13 +437,13 @@ managePlaylistLoadCheck (managepl_t *managepl)
   name = manageTrimName (uiEntryGetValue (managepl->plname));
 
   if (! playlistExists (name)) {
-    managePlaylistNew (managepl, MANAGE_SAVE);
+    managePlaylistNew (managepl, MANAGE_STD);
   }
   free (name);
 }
 
 void
-managePlaylistLoadFile (managepl_t *managepl, const char *fn, int saveflag)
+managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
 {
   playlist_t  *pl;
   pltype_t    pltype;
@@ -455,13 +455,13 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int saveflag)
   logMsg (LOG_DBG, LOG_ACTIONS, "load playlist file");
   managepl->inload = true;
 
-  if (saveflag == MANAGE_SAVE) {
+  if (preloadflag == MANAGE_STD) {
     managePlaylistSave (managepl);
   }
 
   pl = playlistLoad (fn, NULL);
   if (pl == NULL) {
-    managePlaylistNew (managepl, saveflag);
+    managePlaylistNew (managepl, preloadflag);
     return;
   }
   if (managepl->playlist != NULL) {
@@ -472,8 +472,10 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int saveflag)
   managePlaylistUpdateData (managepl);
 
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
-  if (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_SEQUENCE) {
-    uiutilsCallbackStrHandler (&managepl->callbacks [MPL_CB_PL_LOAD], fn);
+  if (preloadflag == MANAGE_STD) {
+    if (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_SEQUENCE) {
+      uiutilsCallbackStrHandler (&managepl->callbacks [MPL_CB_PL_LOAD], fn);
+    }
   }
 
   uiSpinboxResetChanged (managepl->uimaxplaytime);
@@ -484,13 +486,13 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int saveflag)
 }
 
 bool
-managePlaylistNew (managepl_t *managepl, int saveflag)
+managePlaylistNew (managepl_t *managepl, int preloadflag)
 {
   char        tbuff [200];
   playlist_t  *pl = NULL;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new playlist");
-  if (saveflag == MANAGE_SAVE) {
+  if (preloadflag == MANAGE_STD) {
     managePlaylistSave (managepl);
   }
 
@@ -532,7 +534,7 @@ managePlaylistLoadCB (void *udata, const char *fn)
 {
   managepl_t  *managepl = udata;
 
-  managePlaylistLoadFile (managepl, fn, MANAGE_SAVE);
+  managePlaylistLoadFile (managepl, fn, MANAGE_STD);
 }
 
 static bool
@@ -540,7 +542,7 @@ managePlaylistNewCB (void *udata)
 {
   managepl_t  *managepl = udata;
 
-  managePlaylistNew (managepl, MANAGE_SAVE);
+  managePlaylistNew (managepl, MANAGE_STD);
   return UICB_CONT;
 }
 
@@ -638,7 +640,7 @@ managePlaylistDelete (void *udata)
   uiSpinboxResetChanged (managepl->uigap);
   managepl->changed = false;
 
-  managePlaylistNew (managepl, MANAGE_SAVE);
+  managePlaylistNew (managepl, MANAGE_STD);
   managePlaylistUpdateData (managepl);
 
   free (oname);

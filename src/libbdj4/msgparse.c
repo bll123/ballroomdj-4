@@ -52,7 +52,7 @@ msgparseMusicQueueData (char *args)
     musicqupditem->dispidx = atoi (p);
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     if (p != NULL) {
-      musicqupditem->uniqueidx = atoi (p);
+      musicqupditem->uniqueidx = atol (p);
     }
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     if (p != NULL) {
