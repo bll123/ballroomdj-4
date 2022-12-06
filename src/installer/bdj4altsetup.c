@@ -275,8 +275,6 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiEntryCreate (altsetup->nameEntry);
   uiEntrySetValue (altsetup->nameEntry, "BDJ4 B");
   uiwidgetp = uiEntryGetUIWidget (altsetup->nameEntry);
-//  uiWidgetAlignHorizFill (uiwidgetp);
-//  uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
@@ -670,31 +668,23 @@ altsetupCopyTemplates (altsetup_t *altsetup)
     } else if (pathInfoExtCheck (pi, ".svg")) {
       pathbldMakePath (to, sizeof (to),
           fname, "", PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
-  //      snprintf (to, sizeof (to), "%s/img/profile00/%s",
-  //          altsetup->target, fname);
     } else if (strncmp (fname, "bdjconfig", 9) == 0) {
       snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
       if (pathInfoExtCheck (pi, ".g")) {
         pathbldMakePath (to, sizeof (to),
             tbuff, "", PATHBLD_MP_DATA);
-  //        snprintf (to, sizeof (to), "data/%s", tbuff);
       } else if (pathInfoExtCheck (pi, ".p")) {
         pathbldMakePath (to, sizeof (to),
             tbuff, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
-  //        snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
       } else if (pathInfoExtCheck (pi, ".txt")) {
         pathbldMakePath (to, sizeof (to),
             fname, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
-  //        snprintf (to, sizeof (to), "data/profile00/%s", fname);
       } else if (pathInfoExtCheck (pi, ".m")) {
         pathbldMakePath (to, sizeof (to),
             tbuff, "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME);
-  //        snprintf (to, sizeof (to), "data/%s/%s", altsetup->hostname, tbuff);
       } else if (pathInfoExtCheck (pi, ".mp")) {
         pathbldMakePath (to, sizeof (to),
             tbuff, "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-  //        snprintf (to, sizeof (to), "data/%s/profile00/%s",
-  //            altsetup->hostname, tbuff);
       } else {
         /* unknown extension */
         free (pi);
@@ -731,7 +721,6 @@ altsetupCopyTemplates (altsetup_t *altsetup)
       if (strncmp (pi->basename, "ds-", 3) == 0) {
         pathbldMakePath (to, sizeof (to),
             fname, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
-  //        snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
       } else {
         pathbldMakePath (to, sizeof (to),
             fname, "", PATHBLD_MP_DATA);
@@ -754,25 +743,21 @@ altsetupCopyTemplates (altsetup_t *altsetup)
   strlcpy (from, "favicon.ico", sizeof (from));
   pathbldMakePath (to, sizeof (to),
       "favicon.ico", "", PATHBLD_MP_HTTPDIR);
-//  snprintf (to, sizeof (to), "http/favicon.ico");
   altsetupTemplateCopy (dir, from, to);
 
   strlcpy (from, "led_on.svg", sizeof (from));
   pathbldMakePath (to, sizeof (to),
       "led_on", BDJ4_IMG_SVG_EXT, PATHBLD_MP_HTTPDIR);
-//  snprintf (to, sizeof (to), "http/led_on.svg");
   altsetupTemplateCopy (dir, from, to);
 
   strlcpy (from, "led_off.svg", sizeof (from));
   pathbldMakePath (to, sizeof (to),
       "led_off", BDJ4_IMG_SVG_EXT, PATHBLD_MP_HTTPDIR);
-//  snprintf (to, sizeof (to), "http/led_off.svg");
   altsetupTemplateCopy (dir, from, to);
 
   strlcpy (from, "ballroomdj4.svg", sizeof (from));
   pathbldMakePath (to, sizeof (to),
       "ballroomdj", BDJ4_IMG_SVG_EXT, PATHBLD_MP_HTTPDIR);
-//  snprintf (to, sizeof (to), "http/ballroomdj4.svg");
   altsetupTemplateCopy (dir, from, to);
 
   snprintf (from, sizeof (from), "%s/img/mrc", altsetup->maindir);
