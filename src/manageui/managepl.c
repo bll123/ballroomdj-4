@@ -462,8 +462,10 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
   pl = playlistLoad (fn, NULL);
   if (pl == NULL) {
     managePlaylistNew (managepl, preloadflag);
+    managepl->inload = false;
     return;
   }
+
   if (managepl->playlist != NULL) {
     playlistFree (managepl->playlist);
   }

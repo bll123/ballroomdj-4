@@ -252,6 +252,19 @@ logBasic (const char *fmt, ...)
   fclose (fh);
 }
 
+void
+logStderr (const char *fmt, ...)
+{
+  char      ttm [40];
+  va_list   args;
+
+  tmutilTstamp (ttm, sizeof (ttm));
+  va_start (args, fmt);
+  fprintf (stderr, "%s ", ttm);
+  vfprintf (stderr, fmt, args);
+  va_end (args);
+}
+
 /* internal routines */
 
 static void

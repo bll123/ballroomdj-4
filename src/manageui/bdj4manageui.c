@@ -2022,17 +2022,17 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
     logProcEnd (LOG_PROC, "manageSonglistLoadFile", "in-load");
     return;
   }
-  manage->inload = true;
 
   if (preloadflag == MANAGE_STD) {
     manageSonglistSave (manage);
   }
 
   if (! songlistExists (fn)) {
-    manage->inload = false;
     logProcEnd (LOG_PROC, "manageSonglistLoadFile", "no-songlist");
     return;
   }
+
+  manage->inload = true;
 
   manage->selusesonglist = true;
   /* ask the main player process to not send music queue updates */
@@ -2172,7 +2172,6 @@ manageSonglistSave (manageui_t *manage)
   if (strcmp (manage->sloldname, name) != 0) {
     playlistRename (manage->sloldname, name);
     /* so that renames are handled properly */
-    manageLoadPlaylistCB (manage, name);
   }
 
   /* need the full name for backups */
@@ -2186,6 +2185,7 @@ manageSonglistSave (manageui_t *manage)
   manageSetSonglistName (manage, name);
   uimusicqSave (manage->slmusicq, name);
   playlistCheckAndCreate (name, PLTYPE_SONGLIST);
+  manageLoadPlaylistCB (manage, name);
   free (name);
   logProcEnd (LOG_PROC, "manageSonglistSave", "");
 }

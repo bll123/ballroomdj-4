@@ -116,6 +116,8 @@ void logBacktraceHandler (int sig);
 char * plstateDebugText (playerstate_t plstate);
 void logBasic (const char *fmt, ...)
     __attribute__ ((format (printf, 1, 2)));
+void logStderr (const char *fmt, ...)
+    __attribute__ ((format (printf, 1, 2)));
 
 /* needed by the #defines */
 void rlogProcBegin (loglevel_t level, const char *tag, const char *fn, int line);
