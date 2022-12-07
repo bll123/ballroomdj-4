@@ -1539,12 +1539,15 @@ installerCreateDirs (installer_t *installer)
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Creating folder structure."), false);
 
-  /* create the directories that are not included in the distribution */
-  diropMakeDir ("data");
   /* this will create the directories necessary for the configs */
   bdjoptCreateDirectories ();
+  /* create the directories that are not included in the distribution */
+  diropMakeDir ("data");
   diropMakeDir ("tmp");
-  diropMakeDir ("http");
+  diropMakeDir ("img/profile00");
+
+  /* CONTEXT: installer: status message */
+  installerDisplayText (installer, INST_DISP_ACTION, _("Copying template files."), false);
 
   installer->instState = INST_COPY_TEMPLATES;
 }
@@ -1571,9 +1574,6 @@ installerCopyTemplates (installer_t *installer)
     return;
   }
 
-  /* CONTEXT: installer: status message */
-  installerDisplayText (installer, INST_DISP_ACTION, _("Copying template files."), false);
-
   if (chdir (installer->datatopdir)) {
     installerFailWorkingDir (installer, installer->datatopdir);
     return;
@@ -1593,8 +1593,7 @@ installerCopyTemplates (installer_t *installer)
 
   snprintf (dir, sizeof (dir), "%s/templates", installer->rundir);
 
-  snprintf (tbuff, sizeof (tbuff), "%s/templates", installer->rundir);
-  dirlist = dirlistBasicDirList (tbuff, NULL);
+  dirlist = dirlistBasicDirList (dir, NULL);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
     if (strcmp (fname, "qrcode") == 0) {
@@ -1638,10 +1637,6 @@ installerCopyTemplates (installer_t *installer)
     if (pathInfoExtCheck (pi, ".crt")) {
       snprintf (from, sizeof (from), "%s", fname);
       snprintf (to, sizeof (to), "http/%s", fname);
-    } else if (pathInfoExtCheck (pi, ".svg")) {
-      snprintf (from, sizeof (from), "%s", fname);
-      snprintf (to, sizeof (to), "%s/img/%s",
-          installer->rundir, fname);
     } else if (strncmp (fname, "bdjconfig", 9) == 0) {
       snprintf (from, sizeof (from), "%s", fname);
 
@@ -1702,16 +1697,20 @@ installerCopyTemplates (installer_t *installer)
     }
 
     installerTemplateCopy (dir, from, to);
-
     free (pi);
   }
   slistFree (dirlist);
 
-  snprintf (dir, sizeof (dir), "%s/img", installer->rundir);
+  snprintf (dir, sizeof (dir), "%s/templates/img", installer->rundir);
+  dirlist = dirlistBasicDirList (dir, NULL);
+  slistStartIterator (dirlist, &iteridx);
+  while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
+    snprintf (from, sizeof (from), "%s", fname);
+    snprintf (to, sizeof (to), "img/profile00/%s", fname);
+    installerTemplateCopy (dir, from, to);
+  }
 
-  strlcpy (from, "favicon.ico", sizeof (from));
-  snprintf (to, sizeof (to), "http/favicon.ico");
-  installerTemplateCopy (dir, from, to);
+  snprintf (dir, sizeof (dir), "%s/img", installer->rundir);
 
   strlcpy (from, "led_on.svg", sizeof (from));
   snprintf (to, sizeof (to), "http/led_on.svg");
@@ -1720,24 +1719,6 @@ installerCopyTemplates (installer_t *installer)
   strlcpy (from, "led_off.svg", sizeof (from));
   snprintf (to, sizeof (to), "http/led_off.svg");
   installerTemplateCopy (dir, from, to);
-
-  strlcpy (from, "ballroomdj4.svg", sizeof (from));
-  snprintf (to, sizeof (to), "http/ballroomdj4.svg");
-  installerTemplateCopy (dir, from, to);
-
-  snprintf (from, sizeof (from), "%s/img/mrc", installer->rundir);
-  snprintf (to, sizeof (to), "http/mrc");
-  *tbuff = '\0';
-  if (isWindows ()) {
-    pathWinPath (from, sizeof (from));
-    pathWinPath (to, sizeof (to));
-    snprintf (tbuff, sizeof (tbuff), "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl \"%s\" \"%s\"",
-        from, to);
-  } else {
-    snprintf (tbuff, sizeof (tbuff), "cp -r '%s' '%s'", from, "http");
-  }
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
-  (void) ! system (tbuff);
 
   if (isMacOS ()) {
     snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/macOS-Mojave-dark");
@@ -2543,21 +2524,25 @@ installerTemplateCopy (const char *dir, const char *from, const char *to)
   localetmpldir = sysvarsGetStr (SV_LOCALE);
   snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
       dir, localetmpldir, from);
-  logMsg (LOG_INSTALL, LOG_MAIN, "check file: %s", tbuff);
   if (fileopFileExists (tbuff)) {
-    logMsg (LOG_INSTALL, LOG_MAIN, "   found");
+    logMsg (LOG_INSTALL, LOG_MAIN, "found: %s", tbuff);
     from = tbuff;
   } else {
     localetmpldir = sysvarsGetStr (SV_LOCALE_SHORT);
     snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
         dir, localetmpldir, from);
-    logMsg (LOG_INSTALL, LOG_MAIN, "check file: %s", tbuff);
     if (fileopFileExists (tbuff)) {
-      logMsg (LOG_INSTALL, LOG_MAIN, "   found");
+      logMsg (LOG_INSTALL, LOG_MAIN, "found: %s", tbuff);
       from = tbuff;
     } else {
       snprintf (tbuff, sizeof (tbuff), "%s/%s", dir, from);
-      from = tbuff;
+      if (fileopFileExists (tbuff)) {
+        logMsg (LOG_INSTALL, LOG_MAIN, "found: %s", tbuff);
+        from = tbuff;
+      } else {
+        logMsg (LOG_INSTALL, LOG_MAIN, "   ERR: not found");
+        return;
+      }
     }
   }
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", from);

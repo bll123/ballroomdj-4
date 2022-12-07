@@ -16,7 +16,7 @@ function copysrcfiles {
   stage=$2
 
   filelist="ChangeLog.txt LICENSE.txt README.txt VERSION.txt"
-  dirlist="src conv img install licenses scripts locale pkg
+  dirlist="src conv img http install licenses scripts locale pkg
       templates test-templates web wiki"
 
   echo "-- $(date +%T) copying files to $stage"
@@ -33,7 +33,13 @@ function copysrcfiles {
 
   echo "   removing exclusions"
   test -d ${stage}/src/build && rm -rf ${stage}/src/build
-  rm -rf ${stage}/img/profile0[1-9]
+  rm -f \
+      ${stage}/http/*.bak.1 \
+      ${stage}/http/curl-ca-bundle.crt \
+      ${stage}/http/*.html \
+      ${stage}/http/led_o*.svg
+  rm -rf \
+      ${stage}/img/profile0[0-9]
 }
 
 function copyreleasefiles {
@@ -41,7 +47,7 @@ function copyreleasefiles {
   stage=$2
 
   filelist="ChangeLog.txt LICENSE.txt README.txt VERSION.txt"
-  dirlist="bin conv img install licenses scripts locale templates"
+  dirlist="bin conv http img install licenses scripts locale templates"
 
   if [[ ! -d plocal/bin ]];then
     mkdir -p plocal/bin
@@ -93,15 +99,21 @@ function copyreleasefiles {
       ${stage}/bin/tmusicsetup \
       ${stage}/bin/vlcsinklist \
       ${stage}/bin/voltest \
-      ${state}/img/*-base.svg \
+      ${stage}/http/*.bak.1 \
+      ${stage}/http/curl-ca-bundle.crt \
+      ${stage}/http/*.html \
+      ${stage}/http/led_o*.svg \
+      ${stage}/img/*-base.svg \
       ${stage}/img/mkicon.sh \
+      ${stage}/img/mkmacicon.sh \
       ${stage}/img/README.txt \
       ${stage}/plocal/bin/checkmk \
       ${stage}/plocal/bin/curl.exe \
       ${stage}/plocal/bin/libcheck-*.dll \
       ${stage}/plocal/bin/ocspcheck.exe \
       ${stage}/plocal/bin/openssl.exe
-  rm -rf ${stage}/img/profile0[1-9]
+  rm -rf \
+      ${stage}/img/profile0[0-9]
 }
 
 function setLibVol {

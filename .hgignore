@@ -7,8 +7,10 @@ syntax: regexp
 ^dev/
 # for the time being, ignore this (doxygen output)
 ^doxygen/
-^http/
-^img/profile0[1-9]
+^http/.*\.html$
+^http/.*\.crt$
+^http/led_o.*\.svg$
+^img/profile0[0-9]
 ^licenses/
 ^locale/locales.txt$
 ^locale/en

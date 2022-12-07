@@ -483,10 +483,16 @@ updaterCleanFiles (void)
 {
   FILE    *fh;
   char    pattern [MAXPATHLEN];
+  char    fullpattern [MAXPATHLEN];
   char    fname [MAXPATHLEN];
   char    *basedir;
   int     count;
   nlist_t *cleanlist;
+  bool    macosonly = false;
+  bool    linuxonly = false;
+  bool    windowsonly = false;
+  bool    osflag = false;
+  bool    processflag = false;
 
   /* look for development directories and do not run if any are found */
   if (fileopIsDirectory ("dev") ||
@@ -517,20 +523,82 @@ updaterCleanFiles (void)
         continue;
       }
 
-      if (strcmp (pattern, "::data") == 0) {
-        updaterCleanRegex (basedir, cleanlist);
-        nlistFree (cleanlist);
-        cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
-        basedir = sysvarsGetStr (SV_BDJ4_DIR_DATATOP);
+      /* on any change of directory or flag, process what has been queued */
+      if (strcmp (pattern, "::macosonly") == 0 ||
+          strcmp (pattern, "::linuxonly") == 0 ||
+          strcmp (pattern, "::windowsonly") == 0 ||
+          strcmp (pattern, "::allos") == 0 ||
+          strcmp (pattern, "::datatopdir") == 0) {
+        processflag = true;
       }
 
-      rx = regexInit (pattern);
+      if (processflag) {
+        osflag =
+            (macosonly == false && linuxonly == false && windowsonly == false) ||
+            (macosonly == true && isMacOS ()) ||
+            (linuxonly == true && isLinux ()) ||
+            (windowsonly == true && isWindows ());
+        if (osflag) {
+          updaterCleanRegex (basedir, cleanlist);
+        }
+        nlistFree (cleanlist);
+        cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
+        processflag = false;
+      }
+
+      if (strcmp (pattern, "::macosonly") == 0) {
+        macosonly = true;
+        linuxonly = false;
+        windowsonly = false;
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- macos only");
+      }
+      if (strcmp (pattern, "::linuxonly") == 0) {
+        macosonly = false;
+        linuxonly = true;
+        windowsonly = false;
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- linux only");
+      }
+      if (strcmp (pattern, "::windowsonly") == 0) {
+        macosonly = false;
+        linuxonly = false;
+        windowsonly = true;
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- windows only");
+      }
+      if (strcmp (pattern, "::allos") == 0) {
+        macosonly = false;
+        linuxonly = false;
+        windowsonly = false;
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- all os");
+      }
+      if (strcmp (pattern, "::datatopdir") == 0) {
+        basedir = sysvarsGetStr (SV_BDJ4_DIR_DATATOP);
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- data-top-dir");
+      }
+
+      if (strcmp (pattern, "::macosonly") == 0 ||
+          strcmp (pattern, "::linuxonly") == 0 ||
+          strcmp (pattern, "::windowsonly") == 0 ||
+          strcmp (pattern, "::allos") == 0 ||
+          strcmp (pattern, "::datatopdir") == 0) {
+        continue;
+      }
+
+      snprintf (fullpattern, sizeof (fullpattern), "%s/%s", basedir, pattern);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern);
+      rx = regexInit (fullpattern);
       nlistSetData (cleanlist, count, rx);
       ++count;
     }
     fclose (fh);
 
-    updaterCleanRegex (basedir, cleanlist);
+    osflag =
+        (macosonly == false && linuxonly == false && windowsonly == false) ||
+        (macosonly == true && isMacOS ()) ||
+        (linuxonly == true && isLinux ()) ||
+        (windowsonly == true && isWindows ());
+    if (osflag) {
+      updaterCleanRegex (basedir, cleanlist);
+    }
     nlistFree (cleanlist);
     cleanlist = NULL;
   }
@@ -563,8 +631,10 @@ updaterCleanRegex (const char *basedir, nlist_t *cleanlist)
       if (regexMatch (rx, fn)) {
         // fprintf (stderr, "  match %s\n", fn);
         if (fileopIsDirectory (fn)) {
+          logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete dir %s", fn);
           diropDeleteDir (fn);
         } else if (fileopFileExists (fn)) {
+          logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete %s", fn);
           fileopDelete (fn);
         }
       }
