@@ -2,5 +2,32 @@
 
 ### Configuration : Edit Ratings
 
-To be written...
-<br>_(Updated 2022-12-07 10:16:06; BDJ4 version 4.0.0-alpha-20221207)_
+__Edit Ratings__ configures the ratings used for automatic and
+sequenced song selection.
+
+The _Unrated_ rating may not be removed or moved and is assigned to
+any song without a rating.
+
+The ratings should be ordered from the lowest rating to the highest
+rating.
+
+The _Weight_ is used by the automatic and sequenced song selection to
+adjust which songs are used.  A weight of zero will prevent a song
+with that rating from being selected.  A higher rating weight will
+make a song more likely to play.
+
+Added a new rating: Select the __&#43;__ button to add a new rating.
+Click on the name of the new rating to change the name.  Then click on
+the weight to set the weight.  Use the up and down arrows to move the
+rating to its correct position.
+
+Removing a rating: Select the rating and select the _Delete_ button.
+
+Modifying a rating: Select the rating, then click on the name or
+weight to change it.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Edit Ratings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditRatings-A.png)
+<br><span style="color:#4559bf;">**Edit Ratings**</span> </div>
+
+<br>_(Updated 2022-12-07 13:46:32; BDJ4 version 4.0.0-alpha-20221207)_
