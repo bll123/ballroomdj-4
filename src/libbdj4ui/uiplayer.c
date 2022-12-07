@@ -88,8 +88,6 @@ typedef struct uiplayer {
   mstime_t        seekLockTimeout;
   mstime_t        seekLockSend;
   /* main controls */
-  bool            repeatLock;
-  bool            pauseatendLock;
   UIWidget        repeatButton;
   UIWidget        songbeginButton;
   UIWidget        pauseatendButton;
@@ -99,6 +97,9 @@ typedef struct uiplayer {
   UIWidget        repeatPixbuf;
   UIWidget        ledoffImg;
   UIWidget        ledonImg;
+  bool            repeatLock;
+  bool            pauseatendLock;
+  bool            pauseatendstate;
   /* volume controls / display */
   UIWidget        volumeScale;
   UICallback      volumecb;
@@ -626,6 +627,7 @@ uiplayerInitCallback (void *udata, programstate_t programState)
 
   uiplayer->repeatLock = false;
   uiplayer->pauseatendLock = false;
+  uiplayer->pauseatendstate = false;
   uiplayer->lastdur = 180000;
   uiplayer->speedLock = false;
   mstimeset (&uiplayer->speedLockTimeout, 3600000);
@@ -668,14 +670,16 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on)
   }
   uiplayer->pauseatendLock = true;
 
-  if (on) {
+  if (on && ! uiplayer->pauseatendstate) {
     uiToggleButtonSetImage (&uiplayer->pauseatendButton, &uiplayer->ledonImg);
     uiToggleButtonSetState (&uiplayer->pauseatendButton, TRUE);
-  } else {
+  }
+  if (! on && uiplayer->pauseatendstate) {
     uiToggleButtonSetImage (&uiplayer->pauseatendButton, &uiplayer->ledoffImg);
     uiToggleButtonSetState (&uiplayer->pauseatendButton, FALSE);
   }
   uiplayer->pauseatendLock = false;
+  uiplayer->pauseatendstate = on;
   logProcEnd (LOG_PROC, "uiplayerProcessPauseatend", "");
 }
 
