@@ -215,7 +215,7 @@ confuiPopulateOptions (confuigui_t *gui)
       snprintf (tbuff, sizeof (tbuff), "%.2s", sval);
       sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "locale", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+          "locale", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
       fileopDelete (tbuff);
 
       /* if the set locale does not match the system or default locale */
@@ -241,7 +241,7 @@ confuiPopulateOptions (confuigui_t *gui)
 
       sval = bdjoptGetStr (gui->uiitem [i].bdjoptIdx);
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+          "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
       /* if the theme name is the same as the current default theme */
       /* don't write out the theme file.  want to use the default */
       if (strcmp (sval, sysvarsGetStr (SV_THEME_DEFAULT)) != 0) {

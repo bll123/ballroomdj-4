@@ -64,7 +64,7 @@ lockExists (char *fn, int flags)
   pid_t     fpid = 0;
 
   pathbldMakePath (tfn, sizeof (tfn), fn, BDJ4_LOCK_EXT,
-      flags | PATHBLD_MP_TMPDIR);
+      flags | PATHBLD_MP_DREL_TMP);
   fpid = getPidFromFile (tfn);
   process.pid = fpid;
   process.hasHandle = false;
@@ -115,7 +115,7 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
     strlcpy (tfn, fn, sizeof (tfn));
   } else {
     pathbldMakePath (tfn, sizeof (tfn), fn, BDJ4_LOCK_EXT,
-        flags | PATHBLD_MP_TMPDIR);
+        flags | PATHBLD_MP_DREL_TMP);
   }
 
   fd = open (tfn, O_CREAT | O_EXCL | O_RDWR, 0600);
@@ -169,7 +169,7 @@ lockReleasePid (char *fn, pid_t pid, int flags)
     strlcpy (tfn, fn, sizeof (tfn));
   } else {
     pathbldMakePath (tfn, sizeof (tfn), fn, BDJ4_LOCK_EXT,
-        flags | PATHBLD_MP_TMPDIR);
+        flags | PATHBLD_MP_DREL_TMP);
   }
 
   rc = -1;

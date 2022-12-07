@@ -325,7 +325,7 @@ manageDbStart (void *udata)
   uiWidgetEnable (uiwidgetp);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
+      "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
 
   nval = uiSpinboxTextGetValue (managedb->dbspinbox);
 

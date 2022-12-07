@@ -232,7 +232,7 @@ procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag,
   logProcBegin (LOG_PROC, "procutilStartProcess");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      fname, sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
+      fname, sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
   process = procutilStart (tbuff, sysvarsGetNum (SVL_BDJIDX),
       bdjoptGetNum (OPT_G_DEBUGLVL), detachflag, aargs);
   if (isWindows ()) {
@@ -282,7 +282,7 @@ procutilStopProcess (procutil_t *process, conn_t *conn,
     process->started = false;
   }
   if (force) {
-    procutilForceStop (process, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX, route);
+    procutilForceStop (process, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX, route);
   }
   logProcEnd (LOG_PROC, "procutilStopProcess", "");
 }

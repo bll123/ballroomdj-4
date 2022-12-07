@@ -160,27 +160,27 @@ bdjoptInit (void)
 
   /* global */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   bdjopt->fname [OPTTYPE_GLOBAL] = strdup (path);
 
   /* profile */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   bdjopt->fname [OPTTYPE_PROFILE] = strdup (path);
 
   /* queue */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   bdjopt->fname [OPTTYPE_QUEUE] = strdup (path);
 
   /* per machine */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
   bdjopt->fname [OPTTYPE_MACHINE] = strdup (path);
 
   /* per machine per profile */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   bdjopt->fname [OPTTYPE_MACH_PROF] = strdup (path);
 
   if (! fileopFileExists (bdjopt->fname [OPTTYPE_PROFILE])) {
@@ -362,14 +362,14 @@ bdjoptCreateDirectories (void)
 {
   char      path [MAXPATHLEN];
 
-  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DATA);
+  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DREL_DATA);
   diropMakeDir (path);
-  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   diropMakeDir (path);
-  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME);
+  pathbldMakePath (path, sizeof (path), "", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
   diropMakeDir (path);
   pathbldMakePath (path, sizeof (path), "", "",
-      PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   diropMakeDir (path);
 }
 
@@ -495,7 +495,7 @@ bdjoptProfileExists (void)
   char      tbuff [MAXPATHLEN];
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   return fileopFileExists (tbuff);
 }
 
@@ -508,7 +508,7 @@ bdjoptGetProfileName (void)
   char        *pname = NULL;
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   df = datafileAllocParse (bdjopt->tag [OPTTYPE_PROFILE], DFTYPE_KEY_VAL,
       tbuff, bdjopt->dfkeys [OPTTYPE_PROFILE],
       bdjopt->dfcount [OPTTYPE_PROFILE]);
@@ -632,14 +632,14 @@ bdjoptCreateNewConfigs (void)
   /* global */
   sysvarsSetNum (SVL_BDJIDX, 0);
   pathbldMakePath (path, sizeof (path),
-      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_GLOBAL]);
 
   /* profile */
   sysvarsSetNum (SVL_BDJIDX, 0);
   pathbldMakePath (path, sizeof (path),
-      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_PROFILE]);
 
@@ -650,7 +650,7 @@ bdjoptCreateNewConfigs (void)
 
     sysvarsSetNum (SVL_BDJIDX, 0);
     pathbldMakePath (path, sizeof (path),
-        BDJ_CONFIG_BASEFN, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+        BDJ_CONFIG_BASEFN, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
     snprintf (fpath, sizeof (fpath), "%s.q%d%s",
         path, i, BDJ4_CONFIG_EXT);
 
@@ -664,14 +664,14 @@ bdjoptCreateNewConfigs (void)
   /* per machine */
   sysvarsSetNum (SVL_BDJIDX, 0);
   pathbldMakePath (path, sizeof (path),
-      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME);
+      BDJ_CONFIG_BASEFN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
   sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_MACHINE]);
 
   /* per machine per profile */
   sysvarsSetNum (SVL_BDJIDX, 0);
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_MACH_PROF]);
 }

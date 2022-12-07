@@ -181,7 +181,7 @@ main (int argc, char *argv[])
   bpmcounter.conn = connInit (ROUTE_BPM_COUNTER);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   bpmcounter.optiondf = datafileAllocParse ("bpmcounter-opt", DFTYPE_KEY_VAL, tbuff,
       bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX);
   bpmcounter.options = datafileGetList (bpmcounter.optiondf);
@@ -295,7 +295,7 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_BPM_COUNTER, NULL);
 
   pathbldMakePath (fn, sizeof (fn),
-      BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("bpmcounter", fn, bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX, bpmcounter->options, 0);
 
   if (bpmcounter->optiondf != NULL) {
@@ -330,7 +330,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiCreateSizeGroupHoriz (&sgb);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
+      "bdj4_icon", ".svg", PATHBLD_MP_DIR_IMG);
   uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       bpmcounterCloseCallback, bpmcounter, NULL);
   uiCreateMainWindow (&bpmcounter->window,
@@ -461,7 +461,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiWindowMove (&bpmcounter->window, x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
+      "bdj4_icon", ".png", PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
   uiWidgetShowAll (&bpmcounter->window);

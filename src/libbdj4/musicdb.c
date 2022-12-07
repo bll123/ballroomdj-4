@@ -398,7 +398,7 @@ dbBackup (void)
   char  dbfname [MAXPATHLEN];
 
   pathbldMakePath (dbfname, sizeof (dbfname),
-      MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
+      MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
   filemanipBackup (dbfname, 4);
 }
 

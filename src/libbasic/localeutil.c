@@ -81,7 +81,7 @@ localeInit (void)
     osSetEnv ("LC_COLLATE", tbuff);
   }
 
-  pathbldMakePath (lbuff, sizeof (lbuff), "", "", PATHBLD_MP_LOCALEDIR);
+  pathbldMakePath (lbuff, sizeof (lbuff), "", "", PATHBLD_MP_DIR_LOCALE);
   bindtextdomain (GETTEXT_DOMAIN, lbuff);
   textdomain (GETTEXT_DOMAIN);
 #if _lib_bind_textdomain_codeset

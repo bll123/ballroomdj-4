@@ -69,9 +69,9 @@ volregCheckBDJ3Flag (void)
   char  fn [MAXPATHLEN];
   int   rc = false;
 
-  diropMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
+  diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
   pathbldMakePath (fn, sizeof (fn),
-      VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_CONFIGDIR);
+      VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
   if (fileopFileExists (fn)) {
     rc = true;
   }
@@ -85,9 +85,9 @@ volregCreateBDJ4Flag (void)
   char  fn [MAXPATHLEN];
   FILE  *fh;
 
-  diropMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
+  diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
   pathbldMakePath (fn, sizeof (fn),
-      VOLREG_BDJ4_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_CONFIGDIR);
+      VOLREG_BDJ4_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
   fh = fopen (fn, "w");
   if (fh != NULL) {
     fclose (fh);
@@ -99,9 +99,9 @@ volregClearBDJ4Flag (void)
 {
   char  fn [MAXPATHLEN];
 
-  diropMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
+  diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
   pathbldMakePath (fn, sizeof (fn),
-      VOLREG_BDJ4_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_CONFIGDIR);
+      VOLREG_BDJ4_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
   fileopDelete (fn);
 }
 
@@ -238,7 +238,7 @@ volregDataFilename (char *tfn, size_t sz)
 {
   volregGetFilename (tfn, sz, VOLREG_FN);
   if (strcmp (tfn, VOLREG_FN) == 0) {
-    pathbldMakePath (tfn, sz, VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+    pathbldMakePath (tfn, sz, VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   }
 }
 
@@ -249,7 +249,7 @@ volregGetFilename (char *tfn, size_t sz, char *fn)
   char  tbuff [MAXPATHLEN];
 
   strlcpy (tfn, fn, sz);
-  pathbldMakePath (tbuff, sizeof (tbuff), fn, BDJ4_LINK_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (tbuff, sizeof (tbuff), fn, BDJ4_LINK_EXT, PATHBLD_MP_DREL_DATA);
   if (fileopFileExists (tbuff)) {
     FILE    *fh;
 

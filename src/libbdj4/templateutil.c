@@ -39,16 +39,16 @@ templateImageCopy (const char *color)
   slistidx_t  iteridx;
   char        *fname;
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_TEMPLATEDIR);
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DIR_TEMPLATE);
 
   dirlist = dirlistBasicDirList (tbuff, BDJ4_IMG_SVG_EXT);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
-    pathbldMakePath (to, sizeof (to), "", "", PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+    pathbldMakePath (to, sizeof (to), "", "", PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
     diropMakeDir (to);
 
-    pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_TEMPLATEDIR);
-    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+    pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_DIR_TEMPLATE);
+    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
 
     templateCopy (from, to, color);
   }
@@ -62,8 +62,8 @@ templateFileCopy (const char *fromfn, const char *tofn)
   char    from [MAXPATHLEN];
   char    to [MAXPATHLEN];
 
-  pathbldMakePath (from, sizeof (from), fromfn, "", PATHBLD_MP_TEMPLATEDIR);
-  pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_DATA);
+  pathbldMakePath (from, sizeof (from), fromfn, "", PATHBLD_MP_DIR_TEMPLATE);
+  pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_DREL_DATA);
   templateCopy (from, to, NULL);
 }
 
@@ -73,8 +73,8 @@ templateHttpCopy (const char *fromfn, const char *tofn)
   char    from [MAXPATHLEN];
   char    to [MAXPATHLEN];
 
-  pathbldMakePath (from, sizeof (from), fromfn, "", PATHBLD_MP_TEMPLATEDIR);
-  pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_HTTPDIR);
+  pathbldMakePath (from, sizeof (from), fromfn, "", PATHBLD_MP_DIR_TEMPLATE);
+  pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_DREL_HTTP);
   templateCopy (from, to, NULL);
 }
 
@@ -88,7 +88,7 @@ templateDisplaySettingsCopy (void)
   slistidx_t  iteridx;
   char        *fname;
 
-  pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_TEMPLATEDIR);
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DIR_TEMPLATE);
 
   dirlist = dirlistBasicDirList (tbuff, BDJ4_CONFIG_EXT);
   slistStartIterator (dirlist, &iteridx);
@@ -97,8 +97,8 @@ templateDisplaySettingsCopy (void)
       continue;
     }
 
-    pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_TEMPLATEDIR);
-    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+    pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_DIR_TEMPLATE);
+    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
     templateCopy (from, to, NULL);
   }
   slistFree (dirlist);

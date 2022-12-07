@@ -46,7 +46,7 @@ songFavoriteAlloc (void)
   ilistidx_t  key;
 
   pathbldMakePath (fname, sizeof (fname), "favorites",
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: favorites: missing %s", fname);
     return NULL;

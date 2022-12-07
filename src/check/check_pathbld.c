@@ -37,22 +37,24 @@ typedef struct {
 
 static ftest_t tests [] = {
   { "test", "", PATHBLD_MP_NONE, false, ".", "test" },
-  { "", "", PATHBLD_MP_DATA, false, "data", "" },
-  { "", "", PATHBLD_MP_HTTPDIR, false, "http", "" },
-  { "", "", PATHBLD_MP_TMPDIR, false, "tmp", "" },
-  { "", "", PATHBLD_MP_MAINDIR, true, "", "" },
-  { "", "", PATHBLD_MP_EXECDIR, true, "bin", "" },
-  { "", "", PATHBLD_MP_IMGDIR, true, "img", "" },
-  { "", "", PATHBLD_MP_LOCALEDIR, true, "locale", "" },
-  { "", "", PATHBLD_MP_TEMPLATEDIR, true, "templates", "" },
-  { "", "", PATHBLD_MP_INSTDIR, true, "install", "" },
-  { "", "", PATHBLD_MP_DATATOPDIR, true, "", "" },
-  { "test", "", PATHBLD_MP_DATA, false, "data", "test" },
-  { "test", ".txt", PATHBLD_MP_DATA, false, "data", "test.txt" },
-  { "test", "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX, false, "data", "test" },
-  { "test", "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME, false, "data", "test" },
-  { "test", "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX, false, "data", "test" },
-  { "test", ".txt", PATHBLD_MP_TMPDIR | PATHBLD_MP_USEIDX, false, "tmp", "l00-test.txt" },
+  { "", "", PATHBLD_MP_DREL_DATA, false, "data", "" },
+  { "", "", PATHBLD_MP_DREL_HTTP, false, "http", "" },
+  { "", "", PATHBLD_MP_DREL_TMP, false, "tmp", "" },
+  { "", "", PATHBLD_MP_DREL_IMG, false, "img", "" },
+  { "", "", PATHBLD_MP_DIR_MAIN, true, "", "" },
+  { "", "", PATHBLD_MP_DIR_EXEC, true, "bin", "" },
+  { "", "", PATHBLD_MP_DIR_IMG, true, "img", "" },
+  { "", "", PATHBLD_MP_DIR_LOCALE, true, "locale", "" },
+  { "", "", PATHBLD_MP_DIR_TEMPLATE, true, "templates", "" },
+  { "", "", PATHBLD_MP_DIR_INST, true, "install", "" },
+  { "", "", PATHBLD_MP_DIR_DATATOP, true, "", "" },
+  { "test", "", PATHBLD_MP_DREL_DATA, false, "data", "test" },
+  { "test", ".txt", PATHBLD_MP_DREL_DATA, false, "data", "test.txt" },
+  { "test", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX, false, "data", "test" },
+  { "test", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME, false, "data", "test" },
+  { "test", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX, false, "data", "test" },
+  { "test", ".txt", PATHBLD_MP_DREL_TMP | PATHBLD_MP_USEIDX, false, "tmp", "l00-test.txt" },
+  { "test", ".txt", PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX, false, "img", "test.txt" },
 };
 enum {
   TCOUNT = (sizeof(tests)/sizeof (ftest_t))
@@ -87,7 +89,7 @@ START_TEST(pathbld_chk)
       strlcat (f, sysvarsGetStr (SV_HOSTNAME), sizeof (f));
     }
     if ((tests [i].flags & PATHBLD_MP_USEIDX) == PATHBLD_MP_USEIDX &&
-        (tests [i].flags & PATHBLD_MP_TMPDIR) != PATHBLD_MP_TMPDIR) {
+        (tests [i].flags & PATHBLD_MP_DREL_TMP) != PATHBLD_MP_DREL_TMP) {
       strlcat (f, "/", sizeof (f));
       strlcat (f, "profile00", sizeof (f));
     }

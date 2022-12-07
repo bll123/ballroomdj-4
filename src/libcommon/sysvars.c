@@ -46,21 +46,22 @@ typedef struct {
 static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_BDJ4_BUILD] = { "BDJ4_BUILD" },
   [SV_BDJ4_BUILDDATE] = { "BDJ4_BUILDDATE" },
-  [SV_BDJ4DATADIR] = { "BDJ4DATADIR" },
-  [SV_BDJ4DATATOPDIR] = { "BDJ4DATATOPDIR" },
-  [SV_BDJ4EXECDIR] = { "BDJ4EXECDIR" },
-  [SV_BDJ4HTTPDIR] = { "BDJ4HTTPDIR" },
-  [SV_BDJ4IMGDIR] = { "BDJ4IMGDIR" },
-  [SV_BDJ4INSTDIR] = { "BDJ4INSTDIR" },
-  [SV_BDJ4LOCALEDIR] = { "BDJ4LOCALEDIR" },
-  [SV_BDJ4MAINDIR] = { "BDJ4MAINDIR" },
-  [SV_BDJ4SCRIPTDIR] = { "BDJ4SCRIPTDIR" },
+  [SV_BDJ4_DIR_DATATOP] = { "BDJ4_DIR_DATATOP" },
+  [SV_BDJ4_DIR_EXEC] = { "BDJ4_DIR_EXEC" },
+  [SV_BDJ4_DIR_IMG] = { "BDJ4_DIR_IMG" },
+  [SV_BDJ4_DIR_INST] = { "BDJ4_DIR_INST" },
+  [SV_BDJ4_DIR_LOCALE] = { "BDJ4_DIR_LOCALE" },
+  [SV_BDJ4_DIR_MAIN] = { "BDJ4_DIR_MAIN" },
+  [SV_BDJ4_DIR_SCRIPT] = { "BDJ4_DIR_SCRIPT" },
+  [SV_BDJ4_DIR_TEMPLATE] = { "BDJ4_DIR_TEMPLATE" },
+  [SV_BDJ4_DREL_DATA] = { "BDJ4_DREL_DATA" },
+  [SV_BDJ4_DREL_HTTP] = { "BDJ4_DREL_HTTP" },
+  [SV_BDJ4_DREL_IMG] = { "BDJ4_DREL_IMG" },
+  [SV_BDJ4_DREL_TMP] = { "BDJ4_DREL_TMP" },
   [SV_BDJ4_RELEASELEVEL] = { "BDJ4_RELEASELEVEL" },
-  [SV_BDJ4TEMPLATEDIR] = { "BDJ4TEMPLATEDIR" },
-  [SV_BDJ4TMPDIR] = { "BDJ4TMPDIR" },
   [SV_BDJ4_VERSION] = { "BDJ4_VERSION" },
   [SV_CA_FILE] = { "CA_FILE" },
-  [SV_CONFIG_DIR] = { "CONFIG_DIR" },
+  [SV_DIR_CONFIG] = { "CONFIG_DIR" },
   [SV_FONT_DEFAULT] = { "FONT_DEFAULT" },
   [SV_HOME] = { "HOME" },
   [SV_HOST_FORUM] = { "HOST_FORUM" },
@@ -285,7 +286,7 @@ sysvarsInit (const char *argv0)
   } else {
     snprintf (tbuff, sizeof (tbuff), "%s/.config/%s", sysvars [SV_HOME], BDJ4_NAME);
   }
-  strlcpy (sysvars [SV_CONFIG_DIR], tbuff, SV_MAX_SZ);
+  strlcpy (sysvars [SV_DIR_CONFIG], tbuff, SV_MAX_SZ);
 
   (void) ! getcwd (tcwd, sizeof (tcwd));
 
@@ -303,18 +304,18 @@ sysvarsInit (const char *argv0)
 
   /* strip off the filename */
   p = strrchr (buff, '/');
-  *sysvars [SV_BDJ4EXECDIR] = '\0';
+  *sysvars [SV_BDJ4_DIR_EXEC] = '\0';
   if (p != NULL) {
     *p = '\0';
-    strlcpy (sysvars [SV_BDJ4EXECDIR], buff, SV_MAX_SZ);
+    strlcpy (sysvars [SV_BDJ4_DIR_EXEC], buff, SV_MAX_SZ);
   }
 
   /* strip off '/bin' */
   p = strrchr (buff, '/');
-  *sysvars [SV_BDJ4MAINDIR] = '\0';
+  *sysvars [SV_BDJ4_DIR_MAIN] = '\0';
   if (p != NULL) {
     *p = '\0';
-    strlcpy (sysvars [SV_BDJ4MAINDIR], buff, SV_MAX_SZ);
+    strlcpy (sysvars [SV_BDJ4_DIR_MAIN], buff, SV_MAX_SZ);
   }
 
   if (fileopIsDirectory ("data")) {
@@ -322,39 +323,40 @@ sysvarsInit (const char *argv0)
     /* a change of directories is contra-indicated.                   */
 
     pathNormPath (tcwd, SV_MAX_SZ);
-    strlcpy (sysvars [SV_BDJ4DATATOPDIR], tcwd, SV_MAX_SZ);
+    strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], tcwd, SV_MAX_SZ);
   } else {
     if (isMacOS ()) {
       strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
       strlcat (buff, "/Library/Application Support/BDJ4", SV_MAX_SZ);
-      strlcpy (sysvars [SV_BDJ4DATATOPDIR], buff, SV_MAX_SZ);
+      strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
     } else {
-      strlcpy (sysvars [SV_BDJ4DATATOPDIR], sysvars [SV_BDJ4MAINDIR], SV_MAX_SZ);
+      strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
     }
   }
 
   /* on mac os, the data directory is separated */
   /* full path is also needed so that symlinked bdj4 directories will work */
 
-  strlcpy (sysvars [SV_BDJ4DATADIR], "data", SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_DREL_DATA], "data", SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_BDJ4IMGDIR], sysvars [SV_BDJ4MAINDIR], SV_MAX_SZ);
-  strlcat (sysvars [SV_BDJ4IMGDIR], "/img", SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_DIR_IMG], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
+  strlcat (sysvars [SV_BDJ4_DIR_IMG], "/img", SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_BDJ4INSTDIR], sysvars [SV_BDJ4MAINDIR], SV_MAX_SZ);
-  strlcat (sysvars [SV_BDJ4INSTDIR], "/install", SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_DIR_INST], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
+  strlcat (sysvars [SV_BDJ4_DIR_INST], "/install", SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_BDJ4LOCALEDIR], sysvars [SV_BDJ4MAINDIR], SV_MAX_SZ);
-  strlcat (sysvars [SV_BDJ4LOCALEDIR], "/locale", SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_DIR_LOCALE], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
+  strlcat (sysvars [SV_BDJ4_DIR_LOCALE], "/locale", SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_BDJ4TEMPLATEDIR], sysvars [SV_BDJ4MAINDIR], SV_MAX_SZ);
-  strlcat (sysvars [SV_BDJ4TEMPLATEDIR], "/templates", SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_DIR_TEMPLATE], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
+  strlcat (sysvars [SV_BDJ4_DIR_TEMPLATE], "/templates", SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_BDJ4SCRIPTDIR], sysvars [SV_BDJ4MAINDIR], SV_MAX_SZ);
-  strlcat (sysvars [SV_BDJ4SCRIPTDIR], "/scripts", SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_DIR_SCRIPT], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
+  strlcat (sysvars [SV_BDJ4_DIR_SCRIPT], "/scripts", SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_BDJ4HTTPDIR], "http", SV_MAX_SZ);
-  strlcpy (sysvars [SV_BDJ4TMPDIR], "tmp", SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_DREL_HTTP], "http", SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_DREL_TMP], "tmp", SV_MAX_SZ);
+  strlcpy (sysvars [SV_BDJ4_DREL_IMG], "img", SV_MAX_SZ);
 
   strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, SV_MAX_SZ);
 
@@ -381,7 +383,7 @@ sysvarsInit (const char *argv0)
     }
     if (*cacertFiles [i] != '/') {
       snprintf (tbuff, sizeof (tbuff), "%s/%s",
-        sysvars [SV_BDJ4MAINDIR], cacertFiles [i]);
+        sysvars [SV_BDJ4_DIR_MAIN], cacertFiles [i]);
       if (fileopFileExists (tbuff)) {
         strlcpy (sysvars [SV_CA_FILE], tbuff, SV_MAX_SZ);
         break;
@@ -397,7 +399,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_LOCALE], "en_GB", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_RADIX], ".", SV_MAX_SZ);
 
-  snprintf (buff, sizeof (buff), "%s/locale.txt", sysvars [SV_BDJ4DATADIR]);
+  snprintf (buff, sizeof (buff), "%s/locale.txt", sysvars [SV_BDJ4_DREL_DATA]);
   lsysvars [SVL_LOCALE_SET] = 0;
   if (fileopFileExists (buff)) {
     FILE    *fh;
@@ -417,7 +419,7 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_LOCALE_SHORT], buff, SV_MAX_SZ);
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", SV_MAX_SZ);
-  snprintf (buff, sizeof (buff), "%s/VERSION.txt", sysvars [SV_BDJ4MAINDIR]);
+  snprintf (buff, sizeof (buff), "%s/VERSION.txt", sysvars [SV_BDJ4_DIR_MAIN]);
   if (fileopFileExists (buff)) {
     char    *data;
     char    *tokptr;
@@ -701,7 +703,7 @@ sysvarsCheckMutagen (void)
   if (! fileopFileExists (buff)) {
     snprintf (buff, sizeof (buff),
         "%s/scripts/%s",
-        sysvars [SV_BDJ4MAINDIR], "mutagen-inspect");
+        sysvars [SV_BDJ4_DIR_MAIN], "mutagen-inspect");
   }
 
   if (fileopFileExists (buff)) {

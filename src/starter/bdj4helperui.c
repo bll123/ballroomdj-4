@@ -113,7 +113,7 @@ main (int argc, char *argv[])
   helper.conn = connInit (ROUTE_HELPERUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "helpdata", BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
+      "helpdata", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
   helper.helpdf = datafileAllocParse ("helpdata",
         DFTYPE_INDIRECT, tbuff, helptextdfkeys, HELP_TEXT_MAX);
   helper.helplist = datafileGetList (helper.helpdf);
@@ -183,7 +183,7 @@ helperBuildUI (helperui_t  *helper)
   uiutilsUIWidgetInit (&hbox);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
+      "bdj4_icon", ".svg", PATHBLD_MP_DIR_IMG);
   uiutilsUICallbackInit (&helper->closeCallback, helperCloseCallback, helper, NULL);
   /* CONTEXT: helperui: the window title for the BDJ4 helper */
   snprintf (tbuff, sizeof (tbuff), _("%s Helper"), BDJ4_LONG_NAME);
@@ -221,7 +221,7 @@ helperBuildUI (helperui_t  *helper)
   uiWindowSetDefaultSize (&helper->window, 1100, 400);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
+      "bdj4_icon", ".png", PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
   uiWidgetShowAll (&helper->window);

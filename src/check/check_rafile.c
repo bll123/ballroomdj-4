@@ -130,7 +130,7 @@ START_TEST(rafile_write_batch)
   lastsize = statbuf.st_size;
 
   raStartBatch (rafile);
-  rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_TMPDIR);
+  rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_eq (rc, 0);
 
   raWrite (rafile, RAFILE_NEW, "dddd");
@@ -156,10 +156,10 @@ START_TEST(rafile_write_batch)
   ck_assert_int_eq (raGetCount (rafile), 6);
 
   ck_assert_int_eq (raGetNextRRN (rafile), 7);
-  rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_SKIP_SELF);
+  rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_DREL_TMP | LOCK_TEST_SKIP_SELF);
   ck_assert_int_eq (rc, getpid());
   raEndBatch (rafile);
-  rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_TMPDIR);
+  rc = lockExists (RAFILE_LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_eq (rc, 0);
 
   raClose (rafile);

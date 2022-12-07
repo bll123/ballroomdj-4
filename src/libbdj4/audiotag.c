@@ -965,7 +965,7 @@ audiotagMakeTempFilename (char *fn, size_t sz)
   char        tbuff [MAXPATHLEN];
 
   snprintf (tbuff, sizeof (tbuff), "audiotag-%"PRId64".py", (int64_t) globalCounter++);
-  pathbldMakePath (fn, sz, tbuff, "", PATHBLD_MP_TMPDIR);
+  pathbldMakePath (fn, sz, tbuff, "", PATHBLD_MP_DREL_TMP);
 }
 
 static int

@@ -66,7 +66,7 @@ danceAlloc (void)
   ilistidx_t  iteridx;
 
   pathbldMakePath (fname, sizeof (fname), "dances",
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "dance: missing: %s", fname);
     return NULL;

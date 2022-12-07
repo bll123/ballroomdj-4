@@ -285,7 +285,7 @@ confuiGetThemeList (void)
 
   if (isWindows ()) {
     snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",
-        sysvarsGetStr (SV_BDJ4MAINDIR));
+        sysvarsGetStr (SV_BDJ4_DIR_MAIN));
     filelist = dirlistRecursiveDirList (tbuff, FILEMANIP_DIRS);
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
@@ -393,9 +393,9 @@ confuiMakeQRCodeFile (char *title, char *uri)
   qruri = malloc (MAXPATHLEN);
 
   pathbldMakePath (baseuri, sizeof (baseuri),
-      "", "", PATHBLD_MP_TEMPLATEDIR);
+      "", "", PATHBLD_MP_DIR_TEMPLATE);
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "qrcode", ".html", PATHBLD_MP_TEMPLATEDIR);
+      "qrcode", ".html", PATHBLD_MP_DIR_TEMPLATE);
 
   /* this is gross */
   data = filedataReadAll (tbuff, &dlen);
@@ -409,13 +409,13 @@ confuiMakeQRCodeFile (char *title, char *uri)
   free (data);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "qrcode", ".html", PATHBLD_MP_TMPDIR);
+      "qrcode", ".html", PATHBLD_MP_DREL_TMP);
   fh = fopen (tbuff, "w");
   fwrite (ndata, dlen, 1, fh);
   fclose (fh);
   /* windows requires an extra slash in front, and it doesn't hurt on linux */
   snprintf (qruri, MAXPATHLEN, "file:///%s/%s",
-      sysvarsGetStr (SV_BDJ4DATATOPDIR), tbuff);
+      sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tbuff);
 
   free (ndata);
   logProcEnd (LOG_PROC, "confuiMakeQRCodeFile", "");

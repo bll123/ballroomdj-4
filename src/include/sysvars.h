@@ -9,21 +9,22 @@
 typedef enum {
   SV_BDJ4_BUILD,
   SV_BDJ4_BUILDDATE,
-  SV_BDJ4DATADIR,     // data
-  SV_BDJ4DATATOPDIR,  // path to the directory above data/ and tmp/ and http/
-  SV_BDJ4EXECDIR,     // main + /bin
-  SV_BDJ4HTTPDIR,     // http
-  SV_BDJ4IMGDIR,      // main + /img
-  SV_BDJ4INSTDIR,     // main + /install
-  SV_BDJ4LOCALEDIR,   // main + /locale
-  SV_BDJ4MAINDIR,     // path to the main directory above bin/, etc.
-  SV_BDJ4SCRIPTDIR,   // main + /scripts
+  SV_BDJ4_DIR_DATATOP,  // path to the directory above data/, tmp/, img/, http/
+  SV_BDJ4_DIR_EXEC,     // main + /bin
+  SV_BDJ4_DIR_IMG,      // main + /img
+  SV_BDJ4_DIR_INST,     // main + /install
+  SV_BDJ4_DIR_LOCALE,   // main + /locale
+  SV_BDJ4_DIR_MAIN,     // path to the main directory above bin/, etc.
+  SV_BDJ4_DIR_SCRIPT,   // main + /scripts
+  SV_BDJ4_DIR_TEMPLATE, // main + /templates
+  SV_BDJ4_DREL_DATA,    // data
+  SV_BDJ4_DREL_HTTP,    // http
+  SV_BDJ4_DREL_IMG,     // img - some images are in main/img and some here.
+  SV_BDJ4_DREL_TMP,     // tmp
   SV_BDJ4_RELEASELEVEL,
-  SV_BDJ4TEMPLATEDIR, // main + /templates
-  SV_BDJ4TMPDIR,      // tmp
   SV_BDJ4_VERSION,
   SV_CA_FILE,
-  SV_CONFIG_DIR,      // .config/BDJ4 or AppData/Roaming/BDJ4
+  SV_DIR_CONFIG,        // .config/BDJ4 or AppData/Roaming/BDJ4
   SV_FONT_DEFAULT,
   SV_HOME,
   SV_HOST_FORUM,

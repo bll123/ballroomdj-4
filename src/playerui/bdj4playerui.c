@@ -231,7 +231,7 @@ main (int argc, char *argv[])
   plui.conn = connInit (ROUTE_PLAYERUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   plui.optiondf = datafileAllocParse ("playerui-opt", DFTYPE_KEY_VAL, tbuff,
       playeruidfkeys, PLAYERUI_DFKEY_COUNT);
   plui.options = datafileGetList (plui.optiondf);
@@ -325,7 +325,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiButtonFree (plui->setPlaybackButton);
 
   pathbldMakePath (fn, sizeof (fn),
-      PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options, 0);
 
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
@@ -367,19 +367,19 @@ pluiBuildUI (playerui_t *plui)
   logProcBegin (LOG_PROC, "pluiBuildUI");
 
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", ".svg",
-      PATHBLD_MP_IMGDIR);
+      PATHBLD_MP_DIR_IMG);
   uiImageFromFile (&plui->ledoffPixbuf, tbuff);
   uiImageGetPixbuf (&plui->ledoffPixbuf);
   uiWidgetMakePersistent (&plui->ledoffPixbuf);
 
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_on", ".svg",
-      PATHBLD_MP_IMGDIR);
+      PATHBLD_MP_DIR_IMG);
   uiImageFromFile (&plui->ledonPixbuf, tbuff);
   uiImageGetPixbuf (&plui->ledonPixbuf);
   uiWidgetMakePersistent (&plui->ledonPixbuf);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
+      "bdj4_icon", ".svg", PATHBLD_MP_DIR_IMG);
   uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_CLOSE],
       pluiCloseWin, plui, NULL);
   /* CONTEXT: playerui: main window title */
@@ -548,7 +548,7 @@ pluiBuildUI (playerui_t *plui)
   uiWindowMove (&plui->window, x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
+      "bdj4_icon", ".png", PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
   pluiPlaybackButtonHideShow (plui, 0);
 

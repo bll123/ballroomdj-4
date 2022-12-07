@@ -164,7 +164,7 @@ main (int argc, char *argv [])
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== updater started");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "updater", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      "updater", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   df = datafileAllocParse ("updater", DFTYPE_KEY_VAL, tbuff,
       upddfkeys, UPD_DF_COUNT);
   updlist = datafileGetList (df);
@@ -184,11 +184,11 @@ main (int argc, char *argv [])
   /* Always remove the volreg.txt and flag files on an update.  */
   /* This helps prevents any issues with the volume. */
   pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   fileopDelete (tbuff);
   volregClearBDJ4Flag ();
   pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_CONFIGDIR);
+      VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
   fileopDelete (tbuff);
 
   /* always figure out where the home music dir is */
@@ -271,10 +271,10 @@ main (int argc, char *argv [])
     tval = bdjoptGetStr (OPT_M_STARTUPSCRIPT);
     if (isLinux () && (tval == NULL || ! *tval)) {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "scripts/linux/bdjstartup", ".sh", PATHBLD_MP_MAINDIR);
+          "scripts/linux/bdjstartup", ".sh", PATHBLD_MP_DIR_MAIN);
       bdjoptSetStr (OPT_M_STARTUPSCRIPT, tbuff);
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "scripts/linux/bdjshutdown", ".sh", PATHBLD_MP_MAINDIR);
+          "scripts/linux/bdjshutdown", ".sh", PATHBLD_MP_DIR_MAIN);
       bdjoptSetStr (OPT_M_SHUTDOWNSCRIPT, tbuff);
       bdjoptchanged = true;
     }
@@ -386,7 +386,7 @@ main (int argc, char *argv [])
 
   if (processaf || processdb) {
     pathbldMakePath (tbuff, sizeof (tbuff),
-        MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
+        MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
     musicdb = dbOpen (tbuff);
   }
 
@@ -467,7 +467,7 @@ main (int argc, char *argv [])
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "updater", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      "updater", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   datafileSaveKeyVal ("updater", tbuff, upddfkeys, UPD_DF_COUNT, updlist, 0);
   datafileFree (df);
 
@@ -488,9 +488,16 @@ updaterCleanFiles (void)
   int     count;
   nlist_t *cleanlist;
 
+  /* look for development directories and do not run if any are found */
+  if (fileopIsDirectory ("dev") ||
+      fileopIsDirectory ("test-music-orig") ||
+      fileopIsDirectory ("packages")) {
+    return;
+  }
+
   pathbldMakePath (fname, sizeof (fname),
-      "cleanuplist", BDJ4_CONFIG_EXT, PATHBLD_MP_INSTDIR);
-  basedir = sysvarsGetStr (SV_BDJ4MAINDIR);
+      "cleanuplist", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
+  basedir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
   cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
 
   count = 0;
@@ -514,7 +521,7 @@ updaterCleanFiles (void)
         updaterCleanRegex (basedir, cleanlist);
         nlistFree (cleanlist);
         cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
-        basedir = sysvarsGetStr (SV_BDJ4DATATOPDIR);
+        basedir = sysvarsGetStr (SV_BDJ4_DIR_DATATOP);
       }
 
       rx = regexInit (pattern);

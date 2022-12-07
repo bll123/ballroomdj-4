@@ -232,7 +232,7 @@ manageSequenceSave (manageseq_t *manageseq)
 
   /* need the full name for backups */
   pathbldMakePath (nnm, sizeof (nnm),
-      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
   if (! manageseq->seqbackupcreated) {
     filemanipBackup (nnm, 1);
     manageseq->seqbackupcreated = true;

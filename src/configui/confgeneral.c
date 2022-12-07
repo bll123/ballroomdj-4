@@ -172,7 +172,7 @@ confuiSelectStartup (void *udata)
 
   logProcBegin (LOG_PROC, "confuiSelectStartup");
   confuiSelectFileDialog (gui, CONFUI_ENTRY_CHOOSE_STARTUP,
-      sysvarsGetStr (SV_BDJ4SCRIPTDIR), NULL, NULL);
+      sysvarsGetStr (SV_BDJ4_DIR_SCRIPT), NULL, NULL);
   logProcEnd (LOG_PROC, "confuiSelectStartup", "");
   return UICB_CONT;
 }
@@ -184,7 +184,7 @@ confuiSelectShutdown (void *udata)
 
   logProcBegin (LOG_PROC, "confuiSelectShutdown");
   confuiSelectFileDialog (gui, CONFUI_ENTRY_CHOOSE_SHUTDOWN,
-      sysvarsGetStr (SV_BDJ4SCRIPTDIR), NULL, NULL);
+      sysvarsGetStr (SV_BDJ4_DIR_SCRIPT), NULL, NULL);
   logProcEnd (LOG_PROC, "confuiSelectShutdown", "");
   return UICB_CONT;
 }
@@ -211,7 +211,7 @@ confuiLoadLocaleList (confuigui_t *gui)
   llist = nlistAlloc ("cu-locale-list-l", LIST_ORDERED, free);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "locales", BDJ4_CONFIG_EXT, PATHBLD_MP_LOCALEDIR);
+      "locales", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_LOCALE);
   df = datafileAllocParse ("conf-locale-list", DFTYPE_KEY_VAL, tbuff, NULL, 0);
   list = datafileGetList (df);
 

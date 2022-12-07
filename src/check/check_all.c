@@ -35,8 +35,8 @@ main (int argc, char *argv [])
   sysvarsInit (argv [0]);
   localeInit ();
 
-  if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
+  if (chdir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
     exit (1);
   }
 

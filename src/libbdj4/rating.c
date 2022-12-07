@@ -44,7 +44,7 @@ ratingAlloc (void)
   char            fname [MAXPATHLEN];
 
   pathbldMakePath (fname, sizeof (fname), "ratings",
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: rating: missing %s", fname);
     return NULL;

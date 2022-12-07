@@ -345,8 +345,8 @@ main (int argc, char * argv[])
   }
 
   if (isinstaller == false) {
-    if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
-      fprintf (stderr, "Unable to set working dir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
+    if (chdir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
+      fprintf (stderr, "Unable to set working dir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
       exit (1);
     }
   }
@@ -417,7 +417,7 @@ main (int argc, char * argv[])
       p = strtok_r (NULL, ";", &tokstr);
     }
 
-    strlcpy (pbuff, sysvarsGetStr (SV_BDJ4EXECDIR), sz);
+    strlcpy (pbuff, sysvarsGetStr (SV_BDJ4_DIR_EXEC), sz);
     pathWinPath (pbuff, sz);
     strlcat (path, pbuff, sz);
 
@@ -427,7 +427,7 @@ main (int argc, char * argv[])
     }
 
     strlcat (path, ";", sz);
-    snprintf (pbuff, sz, "%s/../plocal/bin", sysvarsGetStr (SV_BDJ4EXECDIR));
+    snprintf (pbuff, sz, "%s/../plocal/bin", sysvarsGetStr (SV_BDJ4_DIR_EXEC));
     pathRealPath (tbuff, pbuff, sz);
     strlcat (path, tbuff, sz);
 
@@ -451,7 +451,7 @@ main (int argc, char * argv[])
 
   if (! havetheme) {
     pathbldMakePath (buff, sizeof (buff),
-        "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+        "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
     if (fileopFileExists (buff)) {
       fh = fopen (buff, "r");
       (void) ! fgets (buff, sizeof (buff), fh);
@@ -502,7 +502,7 @@ main (int argc, char * argv[])
   targv [targc++] = NULL;
 
   pathbldMakePath (buff, sizeof (buff),
-      prog, sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
+      prog, sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
   /* this is necessary on mac os, as otherwise it will use the path     */
   /* from the start of this launcher, and the executable path can not   */
   /* be determined, as we've done a chdir().                            */

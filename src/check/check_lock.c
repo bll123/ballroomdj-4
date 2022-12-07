@@ -52,7 +52,7 @@ START_TEST(lock_acquire_release)
 
   pid = getpid ();
   unlink (FULL_LOCK_FN);
-  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_gt (rc, 0);
   rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_eq (rc, 0);
@@ -62,7 +62,7 @@ START_TEST(lock_acquire_release)
   fpid = (pid_t) temp;
   fclose (fh);
   ck_assert_int_eq (fpid, pid);
-  rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
+  rc = lockRelease (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_eq (rc, 0);
   rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_lt (rc, 0);
@@ -78,13 +78,13 @@ START_TEST(lock_already)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_already");
 
   unlink (FULL_LOCK_FN);
-  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_gt (rc, 0);
   rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_eq (rc, 0);
-  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_SKIP_SELF);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_DREL_TMP | LOCK_TEST_SKIP_SELF);
   ck_assert_int_lt (rc, 0);
-  rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
+  rc = lockRelease (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_eq (rc, 0);
   rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_lt (rc, 0);
@@ -100,15 +100,15 @@ START_TEST(lock_other_dead)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_other_dead");
 
   unlink (FULL_LOCK_FN);
-  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_OTHER_PID);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_DREL_TMP | LOCK_TEST_OTHER_PID);
   ck_assert_int_gt (rc, 0);
   rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_eq (rc, 0);
-  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_gt (rc, 0);
   rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_eq (rc, 0);
-  rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
+  rc = lockRelease (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_eq (rc, 0);
   rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_lt (rc, 0);
@@ -124,13 +124,13 @@ START_TEST(lock_unlock_fail)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- lock_unlock_fail");
 
   unlink (FULL_LOCK_FN);
-  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_gt (rc, 0);
   rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_eq (rc, 0);
-  rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_OTHER_PID);
+  rc = lockRelease (LOCK_FN, PATHBLD_MP_DREL_TMP | LOCK_TEST_OTHER_PID);
   ck_assert_int_lt (rc, 0);
-  rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
+  rc = lockRelease (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_eq (rc, 0);
   rc = stat (FULL_LOCK_FN, &statbuf);
   ck_assert_int_lt (rc, 0);
@@ -151,7 +151,7 @@ START_TEST(lock_exists)
 
   pid = getpid ();
   unlink (FULL_LOCK_FN);
-  rc = lockAcquire (LOCK_FN, PATHBLD_MP_TMPDIR);
+  rc = lockAcquire (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_gt (rc, 0);
 
   fh = fopen (FULL_LOCK_FN, "r");
@@ -161,17 +161,17 @@ START_TEST(lock_exists)
   ck_assert_int_eq (fpid, pid);
 
   /* lock file exists, same process */
-  tpid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);
+  tpid = lockExists (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_eq (tpid, 0);
 
   /* lock file exists, same process */
-  tpid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR | LOCK_TEST_SKIP_SELF);
+  tpid = lockExists (LOCK_FN, PATHBLD_MP_DREL_TMP | LOCK_TEST_SKIP_SELF);
   ck_assert_int_ne (tpid, 0);
 
-  rc = lockRelease (LOCK_FN, PATHBLD_MP_TMPDIR);
+  rc = lockRelease (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_eq (rc, 0);
   /* lock file does not exist */
-  tpid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);
+  tpid = lockExists (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_eq (tpid, 0);
 
   fh = fopen (FULL_LOCK_FN, "w");
@@ -179,7 +179,7 @@ START_TEST(lock_exists)
   fprintf (fh, "%"PRId64, temp);
   fclose (fh);
   /* lock file exists, no associated process */
-  tpid = lockExists (LOCK_FN, PATHBLD_MP_TMPDIR);
+  tpid = lockExists (LOCK_FN, PATHBLD_MP_DREL_TMP);
   ck_assert_int_eq (tpid, 0);
   unlink (FULL_LOCK_FN);
 }

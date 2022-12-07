@@ -38,9 +38,9 @@ START_TEST(templateutil_file_copy)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- templateutil_file_copy");
 
   pathbldMakePath (from, sizeof (from), "dances",
-      BDJ4_CONFIG_EXT, PATHBLD_MP_TEMPLATEDIR);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
   pathbldMakePath (to, sizeof (to), "dances",
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
 
   fileopDelete (to);
   ck_assert_int_eq (fileopFileExists (to), 0);
@@ -62,7 +62,7 @@ START_TEST(templateutil_image_copy)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- templateutil_image_copy");
 
   pathbldMakePath (to, sizeof (to), "button_play",
-      BDJ4_IMG_SVG_EXT, PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+      BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
 
   fileopDelete (to);
   ck_assert_int_eq (fileopFileExists (to), 0);
@@ -97,7 +97,7 @@ START_TEST(templateutil_http_copy)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- templateutil_http_copy");
 
   pathbldMakePath (to, sizeof (to), "mobilemq",
-      ".html", PATHBLD_MP_HTTPDIR);
+      ".html", PATHBLD_MP_DREL_HTTP);
 
   fileopDelete (to);
   ck_assert_int_eq (fileopFileExists (to), 0);
@@ -113,7 +113,7 @@ START_TEST(templateutil_dispset_copy)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- templateutil_dispset_copy");
 
   pathbldMakePath (to, sizeof (to), "ds-musicq",
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
 
   fileopDelete (to);
   ck_assert_int_eq (fileopFileExists (to), 0);

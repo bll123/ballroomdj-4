@@ -42,7 +42,7 @@ orgoptAlloc (void)
   char          path [MAXPATHLEN];
 
   pathbldMakePath (path, sizeof (path),
-      "orgopt", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      "orgopt", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
 
   tagdefInit ();
 

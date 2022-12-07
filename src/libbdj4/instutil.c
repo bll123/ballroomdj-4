@@ -40,7 +40,7 @@ instutilCreateShortcut (const char *name, const char *maindir,
           "%USERPROFILE%\\Desktop\\", name);
       targv [targc++] = path;
       pathbldMakePath (buff, sizeof (buff),
-          "bdj4", ".exe", PATHBLD_MP_EXECDIR);
+          "bdj4", ".exe", PATHBLD_MP_DIR_EXEC);
       pathWinPath (buff, sizeof (buff));
       targv [targc++] = buff;
       strlcpy (tbuff, target, sizeof (tbuff));

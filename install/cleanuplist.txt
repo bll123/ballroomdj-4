@@ -26,6 +26,9 @@ conv/sort-options.tcl$
 install/makeshortcut.bat$
 install/makeshortcut.vbs$
 
+# installed files that should not have been (alpha)
+img/.*-base.svg$
+
 ::data
 
 # old data file name (early alpha)

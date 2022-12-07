@@ -329,7 +329,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiBoxPackStart (&uiw->vbox, &hbox);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", ".svg",
-      PATHBLD_MP_IMGDIR);
+      PATHBLD_MP_DIR_IMG);
   uiImageFromFile (&uiw->musicbrainzPixbuf, tbuff);
   uiImageGetPixbuf (&uiw->musicbrainzPixbuf);
   uiWidgetMakePersistent (&uiw->musicbrainzPixbuf);

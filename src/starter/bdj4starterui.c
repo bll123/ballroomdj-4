@@ -350,7 +350,7 @@ starterInitDataCallback (void *udata, programstate_t programState)
   char        tbuff [MAXPATHLEN];
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "newinstall", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      "newinstall", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (fileopFileExists (tbuff)) {
     const char  *targv [2];
     int         targc = 0;
@@ -422,7 +422,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   uiSpinboxFree (starter->profilesel);
 
   pathbldMakePath (fn, sizeof (fn),
-      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options, 0);
 
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
@@ -470,7 +470,7 @@ starterBuildUI (startui_t  *starter)
   uiCreateSizeGroupHoriz (&sg);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_IMGDIR);
+      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uiutilsUICallbackInit (&starter->callbacks [START_CB_EXIT],
       starterCloseCallback, starter, NULL);
   uiCreateMainWindow (&starter->window,
@@ -527,7 +527,7 @@ starterBuildUI (startui_t  *starter)
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (fileopFileExists (tbuff)) {
     /* CONTEXT: starterui: menu item: install in alternate folder */
     snprintf (tbuff, sizeof (tbuff), _("Set Up Alternate Folder"));
@@ -566,7 +566,7 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&hbox, &bvbox);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-     "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
+     "bdj4_icon", ".svg", PATHBLD_MP_DIR_IMG);
   uiImageScaledFromFile (&uiwidget, tbuff, 128);
   uiWidgetExpandHoriz (&uiwidget);
   uiWidgetSetAllMargins (&uiwidget, 10);
@@ -643,7 +643,7 @@ starterBuildUI (startui_t  *starter)
   starterSetWindowPosition (starter);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
+      "bdj4_icon", ".png", PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
   uiWidgetShowAll (&starter->window);
@@ -758,7 +758,7 @@ starterMainLoop (void *tstarter)
       free (msg);
 
       pathbldMakePath (ofn, sizeof (ofn),
-          tbuff, ".gz.b64", PATHBLD_MP_TMPDIR);
+          tbuff, ".gz.b64", PATHBLD_MP_DREL_TMP);
       starterSendFile (starter, tbuff, ofn);
       fileopDelete (tbuff);
 
@@ -777,7 +777,7 @@ starterMainLoop (void *tstarter)
       int         targc = 0;
 
       pathbldMakePath (prog, sizeof (prog),
-          "bdj4info", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
+          "bdj4info", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
       strlcpy (arg, "--bdj4", sizeof (arg));
       strlcpy (tbuff, "bdj4info.txt", sizeof (tbuff));
       targv [targc++] = prog;
@@ -785,13 +785,13 @@ starterMainLoop (void *tstarter)
       targv [targc++] = NULL;
       osProcessStart (targv, OS_PROC_WAIT, NULL, tbuff);
       pathbldMakePath (ofn, sizeof (ofn),
-          tbuff, ".gz.b64", PATHBLD_MP_TMPDIR);
+          tbuff, ".gz.b64", PATHBLD_MP_DREL_TMP);
       starterSendFile (starter, tbuff, ofn);
       fileopDelete (tbuff);
 
       strlcpy (tbuff, "VERSION.txt", sizeof (tbuff));
       pathbldMakePath (ofn, sizeof (ofn),
-          tbuff, ".gz.b64", PATHBLD_MP_TMPDIR);
+          tbuff, ".gz.b64", PATHBLD_MP_DREL_TMP);
       starterSendFile (starter, tbuff, ofn);
 
       starter->startState = START_STATE_SUPPORT_SEND_FILES_DATA;
@@ -807,7 +807,7 @@ starterMainLoop (void *tstarter)
       }
 
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "", "", PATHBLD_MP_DATA);
+          "", "", PATHBLD_MP_DREL_DATA);
       starterSendFilesInit (starter, tbuff, SF_CONF_ONLY);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_FILES_PROFILE;
@@ -815,7 +815,7 @@ starterMainLoop (void *tstarter)
     }
     case START_STATE_SUPPORT_SEND_FILES_PROFILE: {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "", "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+          "", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
       starterSendFilesInit (starter, tbuff, SF_CONF_ONLY);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_FILES_MACHINE;
@@ -823,7 +823,7 @@ starterMainLoop (void *tstarter)
     }
     case START_STATE_SUPPORT_SEND_FILES_MACHINE: {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "", "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME);
+          "", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
       starterSendFilesInit (starter, tbuff, SF_CONF_ONLY);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_FILES_MACH_PROF;
@@ -831,7 +831,7 @@ starterMainLoop (void *tstarter)
     }
     case START_STATE_SUPPORT_SEND_FILES_MACH_PROF: {
       pathbldMakePath (tbuff, sizeof (tbuff),
-          "", "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+          "", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
       /* will end up with the backup bdjconfig.txt file also, but that's ok */
       /* need all of the log files */
       starterSendFilesInit (starter, tbuff, SF_ALL);
@@ -841,7 +841,7 @@ starterMainLoop (void *tstarter)
     }
     case START_STATE_SUPPORT_SEND_DIAG: {
       pathbldMakePath (ofn, sizeof (ofn),
-          "core", "", PATHBLD_MP_DATATOPDIR);
+          "core", "", PATHBLD_MP_DIR_DATATOP);
       if (fileopFileExists (ofn)) {
         strlcpy (tbuff, "core", sizeof (tbuff));
         starterSendFile (starter, tbuff, ofn);
@@ -879,7 +879,7 @@ starterMainLoop (void *tstarter)
       if (senddb) {
         strlcpy (tbuff, "data/musicdb.dat", sizeof (tbuff));
         pathbldMakePath (ofn, sizeof (ofn),
-            "musicdb.dat", ".gz.b64", PATHBLD_MP_TMPDIR);
+            "musicdb.dat", ".gz.b64", PATHBLD_MP_DREL_TMP);
         starterSendFile (starter, tbuff, ofn);
       }
       starter->startState = START_STATE_SUPPORT_FINISH;
@@ -1511,19 +1511,19 @@ starterDeleteProfile (void *udata)
 
   /* data/profileNN */
   pathbldMakePath (tbuff, sizeof (tbuff), "", "",
-      PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   if (fileopIsDirectory (tbuff)) {
     diropDeleteDir (tbuff);
   }
   /* data/<hostname>/profileNN */
   pathbldMakePath (tbuff, sizeof (tbuff), "", "",
-      PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
   if (fileopIsDirectory (tbuff)) {
     diropDeleteDir (tbuff);
   }
   /* img/profileNN */
   pathbldMakePath (tbuff, sizeof (tbuff), "", "",
-      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
   if (fileopIsDirectory (tbuff)) {
     diropDeleteDir (tbuff);
   }
@@ -1553,8 +1553,8 @@ starterCreateProfileShortcut (void *udata)
   const char  *pname;
 
   pname = bdjoptGetProfileName ();
-  instutilCreateShortcut (pname, sysvarsGetStr (SV_BDJ4MAINDIR),
-      sysvarsGetStr (SV_BDJ4MAINDIR), starter->currprofile);
+  instutilCreateShortcut (pname, sysvarsGetStr (SV_BDJ4_DIR_MAIN),
+      sysvarsGetStr (SV_BDJ4_DIR_MAIN), starter->currprofile);
   return UICB_CONT;
 }
 
@@ -1738,7 +1738,7 @@ starterSendFiles (startui_t *starter)
   strlcat (ifn, "/", sizeof (ifn));
   strlcat (ifn, fn, sizeof (ifn));
   pathbldMakePath (ofn, sizeof (ofn),
-      fn, ".gz.b64", PATHBLD_MP_TMPDIR);
+      fn, ".gz.b64", PATHBLD_MP_DREL_TMP);
   starter->supportInFname = strdup (ifn);
   starter->supportOutFname = strdup (ofn);
   /* CONTEXT: starterui: support: status message */
@@ -2020,7 +2020,7 @@ starterStopAllProcesses (void *udata)
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   fileopDelete (tbuff);
   volregClearBDJ4Flag ();
 
@@ -2115,7 +2115,7 @@ starterLoadOptions (startui_t *starter)
   starter->options = NULL;
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   starter->optiondf = datafileAllocParse ("starterui-opt", DFTYPE_KEY_VAL, tbuff,
       starteruidfkeys, STARTERUI_KEY_MAX);
   starter->options = datafileGetList (starter->optiondf);
@@ -2140,7 +2140,7 @@ starterSetUpAlternate (void *udata)
   logProcBegin (LOG_PROC, "starterSetUpAlternate");
 
   pathbldMakePath (prog, sizeof (prog),
-      "bdj4", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_EXECDIR);
+      "bdj4", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);
   targv [targc++] = prog;
   targv [targc++] = "--bdj4altsetup";
   targv [targc++] = NULL;

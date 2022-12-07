@@ -42,11 +42,11 @@ uiCreateSwitch (int value)
   uiutilsUIWidgetInit (&uiswitch->switchonimg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "switch-off", ".svg",
-      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiswitch->switchoffimg, tbuff);
   uiWidgetMakePersistent (&uiswitch->switchoffimg);
   pathbldMakePath (tbuff, sizeof (tbuff), "switch-on", ".svg",
-      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiswitch->switchonimg, tbuff);
   uiWidgetMakePersistent (&uiswitch->switchonimg);
 

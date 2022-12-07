@@ -390,7 +390,7 @@ main (int argc, char *argv[])
   manage.conn = connInit (ROUTE_MANAGEUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   manage.optiondf = datafileAllocParse ("manageui-opt", DFTYPE_KEY_VAL, tbuff,
       manageuidfkeys, MANAGEUI_DFKEY_COUNT);
   manage.options = datafileGetList (manage.optiondf);
@@ -503,7 +503,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   procutilFreeAll (manage->processes);
 
   pathbldMakePath (fn, sizeof (fn),
-      MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("manageui", fn, manageuidfkeys, MANAGEUI_DFKEY_COUNT, manage->options, 0);
 
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
@@ -562,7 +562,7 @@ manageBuildUI (manageui_t *manage)
   uiutilsUIWidgetInit (&uiwidget);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".svg", PATHBLD_MP_IMGDIR);
+      "bdj4_icon", ".svg", PATHBLD_MP_DIR_IMG);
   /* CONTEXT: managementui: management user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Management"),
       bdjoptGetStr (OPT_P_PROFILENAME));
@@ -653,7 +653,7 @@ manageBuildUI (manageui_t *manage)
   uiWindowMove (&manage->window, x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".png", PATHBLD_MP_IMGDIR);
+      "bdj4_icon", ".png", PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
   uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL],
@@ -1422,7 +1422,7 @@ manageSonglistExportM3U (void *udata)
   snprintf (tbuff, sizeof (tbuff), _("Export as M3U Playlist"));
   snprintf (tname, sizeof (tname), "%s.m3u", name);
   selectdata = uiDialogCreateSelect (&manage->window,
-      tbuff, sysvarsGetStr (SV_BDJ4DATATOPDIR), tname,
+      tbuff, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tname,
       /* CONTEXT: managementui: song list export: name of file save type */
       _("M3U Files"), "audio/x-mpegurl");
   fn = uiSaveFileDialog (selectdata);
@@ -1456,7 +1456,7 @@ manageSonglistImportM3U (void *udata)
 
   selectdata = uiDialogCreateSelect (&manage->window,
       /* CONTEXT: managementui: song list import: title of dialog */
-      _("Import M3U"), sysvarsGetStr (SV_BDJ4DATATOPDIR), NULL,
+      _("Import M3U"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
       /* CONTEXT: managementui: song list import: name of file type */
       _("M3U Files"), "audio/x-mpegurl");
 
@@ -1475,7 +1475,7 @@ manageSonglistImportM3U (void *udata)
 
     list = m3uImport (manage->musicdb, fn, nplname, sizeof (nplname));
     pathbldMakePath (tbuff, sizeof (tbuff),
-        nplname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+        nplname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
     if (! fileopFileExists (tbuff)) {
       manageSetSonglistName (manage, nplname);
     }
@@ -2176,7 +2176,7 @@ manageSonglistSave (manageui_t *manage)
 
   /* need the full name for backups */
   pathbldMakePath (nnm, sizeof (nnm),
-      name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+      name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
   if (! manage->slbackupcreated) {
     filemanipBackup (nnm, 1);
     manage->slbackupcreated = true;

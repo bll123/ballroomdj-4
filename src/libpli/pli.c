@@ -53,7 +53,7 @@ pliInit (const char *plipkg, const char *sinkname)
   pli->pliiAudioDeviceList = NULL;
 
   pathbldMakePath (dlpath, sizeof (dlpath),
-      plipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_EXECDIR);
+      plipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
   pli->dlHandle = dylibLoad (dlpath);
   if (pli->dlHandle == NULL) {
     fprintf (stderr, "Unable to open library %s\n", dlpath);

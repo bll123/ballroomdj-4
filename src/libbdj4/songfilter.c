@@ -921,7 +921,7 @@ songfilterLoadFilterDisplay (songfilter_t *sf)
   logProcBegin (LOG_PROC, "songfilterLoadFilterDisplay");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   sf->filterDisplayDf = datafileAllocParse ("sf-songfilter",
       DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX);
   sf->filterDisplaySel = datafileGetList (sf->filterDisplayDf);

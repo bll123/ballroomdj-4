@@ -326,10 +326,10 @@ remctrlEventHandler (struct mg_connection *c, int ev,
       struct mg_str tmpuri;
       bool          reloc = false;
 
-      struct mg_http_serve_opts opts = { .root_dir = sysvarsGetStr (SV_BDJ4HTTPDIR) };
+      struct mg_http_serve_opts opts = { .root_dir = sysvarsGetStr (SV_BDJ4_DREL_HTTP) };
       snprintf (tbuff, sizeof (tbuff), "%.*s", (int) hm->uri.len, hm->uri.ptr);
       pathbldMakePath (tbuffb, sizeof (tbuffb),
-          tbuff, "", PATHBLD_MP_HTTPDIR);
+          tbuff, "", PATHBLD_MP_DREL_HTTP);
       if (! fileopFileExists (tbuffb)) {
         turi = mg_str ("/bdj4remote.html");
         reloc = true;

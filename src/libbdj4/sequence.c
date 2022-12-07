@@ -38,7 +38,7 @@ sequenceAlloc (const char *fname)
   datafileconv_t  conv;
 
 
-  pathbldMakePath (fn, sizeof (fn), fname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (fn, sizeof (fn), fname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (fn)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: sequence: missing %s", fname);
     return false;
@@ -77,7 +77,7 @@ sequenceCreate (const char *fname)
   char          fn [MAXPATHLEN];
 
 
-  pathbldMakePath (fn, sizeof (fn), fname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (fn, sizeof (fn), fname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
 
   sequence = malloc (sizeof (sequence_t));
   assert (sequence != NULL);
@@ -106,7 +106,7 @@ sequenceExists (const char *name)
 {
   char  fn [MAXPATHLEN];
 
-  pathbldMakePath (fn, sizeof (fn), name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+  pathbldMakePath (fn, sizeof (fn), name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
   return fileopFileExists (fn);
 }
 

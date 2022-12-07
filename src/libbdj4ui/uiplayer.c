@@ -233,7 +233,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageNew (&uiplayer->statusImg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_stop", ".svg",
-      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiplayer->stopPixbuf, tbuff);
   uiImageGetPixbuf (&uiplayer->stopPixbuf);
   uiWidgetMakePersistent (&uiplayer->stopPixbuf);
@@ -244,19 +244,19 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (&tbox, &uiplayer->statusImg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
-      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiplayer->playPixbuf, tbuff);
   uiImageGetPixbuf (&uiplayer->playPixbuf);
   uiWidgetMakePersistent (&uiplayer->playPixbuf);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
-      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiplayer->pausePixbuf, tbuff);
   uiImageGetPixbuf (&uiplayer->pausePixbuf);
   uiWidgetMakePersistent (&uiplayer->pausePixbuf);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
-      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiplayer->repeatPixbuf, tbuff);
   uiImageGetPixbuf (&uiplayer->repeatPixbuf);
   uiWidgetMakePersistent (&uiplayer->repeatPixbuf);
@@ -406,7 +406,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (&hbox, uiwidgetp);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
-      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
   uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_REPEAT],
       uiplayerRepeatCallback, uiplayer, NULL);
   uiCreateToggleButton (&uiplayer->repeatButton, "",
@@ -437,12 +437,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (&hbox, uiwidgetp);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_on", ".svg",
-      PATHBLD_MP_IMGDIR);
+      PATHBLD_MP_DIR_IMG);
   uiImageFromFile (&uiplayer->ledonImg, tbuff);
   uiWidgetMakePersistent (&uiplayer->ledonImg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_off", ".svg",
-      PATHBLD_MP_IMGDIR);
+      PATHBLD_MP_DIR_IMG);
   uiImageFromFile (&uiplayer->ledoffImg, tbuff);
   uiWidgetMakePersistent (&uiplayer->ledoffImg);
 

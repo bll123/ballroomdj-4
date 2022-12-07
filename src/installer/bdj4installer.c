@@ -2515,8 +2515,8 @@ installerDisplayText (installer_t *installer, char *pfx, char *txt, bool bold)
 static void
 installerGetTargetSaveFname (installer_t *installer, char *buff, size_t sz)
 {
-  diropMakeDir (sysvarsGetStr (SV_CONFIG_DIR));
-  snprintf (buff, sz, "%s/%s", sysvarsGetStr (SV_CONFIG_DIR), INST_SAVE_FNAME);
+  diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
+  snprintf (buff, sz, "%s/%s", sysvarsGetStr (SV_DIR_CONFIG), INST_SAVE_FNAME);
 }
 
 static void

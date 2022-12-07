@@ -240,13 +240,13 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     }
   }
 
-  if (chdir (sysvarsGetStr (SV_BDJ4DATATOPDIR)) < 0) {
-    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4DATATOPDIR));
+  if (chdir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
+    fprintf (stderr, "Unable to chdir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
     exit (1);
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "", "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      "", "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   if (! fileopIsDirectory (tbuff)) {
     sysvarsSetNum (SVL_BDJIDX, 0);
   }
@@ -288,7 +288,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     mstimestart (&dbmt);
     logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: started");
     pathbldMakePath (tbuff, sizeof (tbuff),
-        MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
+        MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
     *musicdb = dbOpen (tbuff);
     logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %d items in %"PRId64" ms", dbCount(*musicdb), (int64_t) mstimeend (&dbmt));
   }
@@ -310,7 +310,7 @@ bdj4ReloadDatabase (musicdb_t *musicdb)
   }
   logMsg (LOG_DBG, LOG_IMPORTANT, "Database read: started");
   pathbldMakePath (tbuff, sizeof (tbuff),
-      MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DATA);
+      MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
   musicdb = dbOpen (tbuff);
   logMsg (LOG_DBG, LOG_IMPORTANT, "Database read: %d items in %"PRId64" ms", dbCount(musicdb), (int64_t) mstimeend (&dbmt));
   return musicdb;
@@ -327,7 +327,7 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
     char    tbuff [MAXPATHLEN];
 
     pathbldMakePath (tbuff, sizeof (tbuff),
-        "core", "", PATHBLD_MP_MAINDIR);
+        "core", "", PATHBLD_MP_DIR_MAIN);
     if (fileopFileExists (tbuff)) {
       fprintf (stderr, "== core file exists\n");
     }

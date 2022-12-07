@@ -175,7 +175,7 @@ main (int argc, char *argv [])
       LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_MSGS | LOG_ACTIONS);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   fileopDelete (tbuff);
 
   procutilInitProcesses (testsuite.processes);

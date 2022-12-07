@@ -50,7 +50,7 @@ songlistAlloc (const char *fname)
   sl->songlist = NULL;
   sl->fname = strdup (fname);
   pathbldMakePath (tfn, sizeof (tfn), fname,
-      BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+      BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
   sl->path = strdup (tfn);
   sl->songlist = ilistAlloc (fname, LIST_ORDERED);
   ilistSetVersion (sl->songlist, SONGLIST_VERSION);
@@ -101,7 +101,7 @@ songlistExists (const char *name)
 {
   char    tfn [MAXPATHLEN];
   pathbldMakePath (tfn, sizeof (tfn), name,
-      BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+      BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
   return fileopFileExists (tfn);
 }
 

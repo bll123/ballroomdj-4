@@ -279,7 +279,7 @@ rlogStart (const char *processnm, const char *processtag,
 
   for (logidx_t idx = 0; idx < LOG_MAX; ++idx) {
     pathbldMakePath (tnm, sizeof (tnm), logbasenm [idx], LOG_EXTENSION,
-        PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+        PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     rlogOpen (idx, tnm, processtag, truncflag);
     syslogs [idx]->level |= level;
     if (idx != LOG_INSTALL && idx != LOG_GTK) {

@@ -42,7 +42,7 @@ volumeInit (const char *volpkg)
   volume->udata = NULL;
 
   pathbldMakePath (dlpath, sizeof (dlpath),
-      volpkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_EXECDIR);
+      volpkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
   volume->dlHandle = dylibLoad (dlpath);
   if (volume->dlHandle == NULL) {
     fprintf (stderr, "Unable to open library %s\n", dlpath);

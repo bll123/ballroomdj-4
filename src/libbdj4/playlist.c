@@ -140,7 +140,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
   }
 
   pathbldMakePath (tfn, sizeof (tfn), fname,
-      BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+      BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (tfn)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-pl %s", tfn);
     return NULL;
@@ -154,7 +154,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
   nlistDumpInfo (pl->plinfo);
 
   pathbldMakePath (tfn, sizeof (tfn), fname,
-      BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+      BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (tfn)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Missing playlist-dance %s", tfn);
     playlistFree (pl);
@@ -522,7 +522,7 @@ playlistGetPlaylistList (int flag)
 
   pnlist = slistAlloc ("playlistlist", LIST_ORDERED, free);
 
-  pathbldMakePath (tfn, sizeof (tfn), "", "", PATHBLD_MP_DATA);
+  pathbldMakePath (tfn, sizeof (tfn), "", "", PATHBLD_MP_DREL_DATA);
   ext = BDJ4_PLAYLIST_EXT;
   if (flag == PL_LIST_SONGLIST) {
     ext = BDJ4_SONGLIST_EXT;
@@ -548,7 +548,7 @@ playlistGetPlaylistList (int flag)
       continue;
     }
     if (flag == PL_LIST_AUTO_SEQ) {
-      pathbldMakePath (tbuff, sizeof (tbuff), tfn, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+      pathbldMakePath (tbuff, sizeof (tbuff), tfn, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
       if (fileopFileExists (tbuff)) {
         continue;
       }
@@ -616,12 +616,12 @@ playlistSave (playlist_t *pl, const char *name)
   }
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
-      BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+      BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   datafileSaveKeyVal ("playlist", tfn, playlistdfkeys,
       PLAYLIST_KEY_MAX, pl->plinfo, 0);
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
-      BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+      BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
   datafileSaveIndirect ("playlist-dances", tfn, playlistdancedfkeys,
       PLDANCE_KEY_MAX, pl->pldances);
 }
@@ -652,7 +652,7 @@ playlistExists (const char *name)
   char  tbuff [MAXPATHLEN];
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   return fileopFileExists (tbuff);
 }
 
@@ -663,27 +663,27 @@ playlistRename (const char *oldname, const char *newname)
   char  nnm [MAXPATHLEN];
 
   pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+      oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+      newname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
   filemanipRenameAll (onm, nnm);
 
   pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+      oldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
   filemanipRenameAll (onm, nnm);
 
   pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+      oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   filemanipRenameAll (onm, nnm);
 
   pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+      oldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+      newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
   filemanipRenameAll (onm, nnm);
 }
 
@@ -693,7 +693,7 @@ playlistCheckAndCreate (const char *name, pltype_t pltype)
   char  onm [MAXPATHLEN];
 
   pathbldMakePath (onm, sizeof (onm),
-      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (onm)) {
     playlist_t    *pl;
 
@@ -711,16 +711,16 @@ playlistDelete (const char *name)
   char  tnm [MAXPATHLEN];
 
   pathbldMakePath (tnm, sizeof (tnm),
-      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+      name, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   filemanipDeleteAll (tnm);
   pathbldMakePath (tnm, sizeof (tnm),
-      name, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+      name, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
   filemanipDeleteAll (tnm);
   pathbldMakePath (tnm, sizeof (tnm),
-      name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+      name, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
   filemanipDeleteAll (tnm);
   pathbldMakePath (tnm, sizeof (tnm),
-      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+      name, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
   filemanipDeleteAll (tnm);
 }
 
@@ -731,27 +731,27 @@ playlistCopy (const char *oldname, const char *newname)
   char  nnm [MAXPATHLEN];
 
   pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+      oldname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DATA);
+      newname, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   filemanipCopy (onm, nnm);
 
   pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+      oldname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DATA);
+      newname, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
   filemanipCopy (onm, nnm);
 
   pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+      oldname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DATA);
+      newname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
   filemanipCopy (onm, nnm);
 
   pathbldMakePath (onm, sizeof (onm),
-      oldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+      oldname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (nnm, sizeof (nnm),
-      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DATA);
+      newname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
   filemanipCopy (onm, nnm);
 }
 

@@ -45,7 +45,7 @@ statusAlloc (void)
 
 
   pathbldMakePath (fname, sizeof (fname), "status",
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: status: missing %s", fname);
     return NULL;

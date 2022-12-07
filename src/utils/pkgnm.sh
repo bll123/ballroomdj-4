@@ -41,7 +41,7 @@ function pkgnmgetdata {
     Darwin)
       pn_tag=macos
       pn_sfx=
-      case $tarch in
+      case $pn_arch in
         x86_64)
           pn_archtag=-intel
           ;;

@@ -665,7 +665,7 @@ uisfResponseHandler (void *udata, long responseid)
     uisfUpdate (uisf);
     uisf->playlistsel = false;
   }
-  if (responseid == RESPONSE_DELETE_WIN && responseid == RESPONSE_CLOSE) {
+  if (responseid == RESPONSE_DELETE_WIN || responseid == RESPONSE_CLOSE) {
     if (uisf->playlistsel) {
       dataFree (uisf->playlistname);
       uisf->playlistname = NULL;

@@ -164,7 +164,7 @@ main (int argc, char *argv[])
   bdjoptInit ();
   bdjvarsInit ();
 
-  altsetup.maindir = sysvarsGetStr (SV_BDJ4MAINDIR);
+  altsetup.maindir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
   altsetup.home = sysvarsGetStr (SV_HOME);
   altsetup.hostname = sysvarsGetStr (SV_HOSTNAME);
 
@@ -608,17 +608,17 @@ altsetupCopyTemplates (altsetup_t *altsetup)
   renamelist = NULL;
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "localized-sr", BDJ4_CONFIG_EXT, PATHBLD_MP_INSTDIR);
+      "localized-sr", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
   srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "localized-auto", BDJ4_CONFIG_EXT, PATHBLD_MP_INSTDIR);
+      "localized-auto", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
   autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "localized-qd", BDJ4_CONFIG_EXT, PATHBLD_MP_INSTDIR);
+      "localized-qd", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
   qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL, tbuff, NULL, 0);
 
   pathbldMakePath (dir, sizeof (dir),
-      "", "", PATHBLD_MP_TEMPLATEDIR);
+      "", "", PATHBLD_MP_DIR_TEMPLATE);
   dirlist = dirlistBasicDirList (dir, NULL);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
@@ -645,13 +645,13 @@ altsetupCopyTemplates (altsetup_t *altsetup)
 
     if (strcmp (fname, "bdj-flex-dark.html") == 0) {
       pathbldMakePath (to, sizeof (to),
-          "bdj4remote.html", "", PATHBLD_MP_HTTPDIR);
+          "bdj4remote.html", "", PATHBLD_MP_DREL_HTTP);
       altsetupTemplateCopy (dir, from, to);
       continue;
     }
     if (strcmp (fname, "mobilemq.html") == 0) {
       pathbldMakePath (to, sizeof (to),
-          "mobilemq.html", "", PATHBLD_MP_HTTPDIR);
+          "mobilemq.html", "", PATHBLD_MP_DREL_HTTP);
       altsetupTemplateCopy (dir, from, to);
       continue;
     }
@@ -664,27 +664,27 @@ altsetupCopyTemplates (altsetup_t *altsetup)
 
     if (pathInfoExtCheck (pi, ".crt")) {
       pathbldMakePath (to, sizeof (to),
-          fname, "", PATHBLD_MP_HTTPDIR);
+          fname, "", PATHBLD_MP_DREL_HTTP);
     } else if (pathInfoExtCheck (pi, ".svg")) {
       pathbldMakePath (to, sizeof (to),
-          fname, "", PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+          fname, "", PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
     } else if (strncmp (fname, "bdjconfig", 9) == 0) {
       snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
       if (pathInfoExtCheck (pi, ".g")) {
         pathbldMakePath (to, sizeof (to),
-            tbuff, "", PATHBLD_MP_DATA);
+            tbuff, "", PATHBLD_MP_DREL_DATA);
       } else if (pathInfoExtCheck (pi, ".p")) {
         pathbldMakePath (to, sizeof (to),
-            tbuff, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+            tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
       } else if (pathInfoExtCheck (pi, ".txt")) {
         pathbldMakePath (to, sizeof (to),
-            fname, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+            fname, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
       } else if (pathInfoExtCheck (pi, ".m")) {
         pathbldMakePath (to, sizeof (to),
-            tbuff, "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME);
+            tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
       } else if (pathInfoExtCheck (pi, ".mp")) {
         pathbldMakePath (to, sizeof (to),
-            tbuff, "", PATHBLD_MP_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+            tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
       } else {
         /* unknown extension */
         free (pi);
@@ -720,10 +720,10 @@ altsetupCopyTemplates (altsetup_t *altsetup)
       strlcpy (from, tbuff, sizeof (from));
       if (strncmp (pi->basename, "ds-", 3) == 0) {
         pathbldMakePath (to, sizeof (to),
-            fname, "", PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+            fname, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
       } else {
         pathbldMakePath (to, sizeof (to),
-            fname, "", PATHBLD_MP_DATA);
+            fname, "", PATHBLD_MP_DREL_DATA);
         snprintf (to, sizeof (to), "data/%s", tbuff);
       }
     } else {
@@ -742,22 +742,22 @@ altsetupCopyTemplates (altsetup_t *altsetup)
 
   strlcpy (from, "favicon.ico", sizeof (from));
   pathbldMakePath (to, sizeof (to),
-      "favicon.ico", "", PATHBLD_MP_HTTPDIR);
+      "favicon.ico", "", PATHBLD_MP_DREL_HTTP);
   altsetupTemplateCopy (dir, from, to);
 
   strlcpy (from, "led_on.svg", sizeof (from));
   pathbldMakePath (to, sizeof (to),
-      "led_on", BDJ4_IMG_SVG_EXT, PATHBLD_MP_HTTPDIR);
+      "led_on", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
   altsetupTemplateCopy (dir, from, to);
 
   strlcpy (from, "led_off.svg", sizeof (from));
   pathbldMakePath (to, sizeof (to),
-      "led_off", BDJ4_IMG_SVG_EXT, PATHBLD_MP_HTTPDIR);
+      "led_off", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
   altsetupTemplateCopy (dir, from, to);
 
   strlcpy (from, "ballroomdj4.svg", sizeof (from));
   pathbldMakePath (to, sizeof (to),
-      "ballroomdj", BDJ4_IMG_SVG_EXT, PATHBLD_MP_HTTPDIR);
+      "ballroomdj", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
   altsetupTemplateCopy (dir, from, to);
 
   snprintf (from, sizeof (from), "%s/img/mrc", altsetup->maindir);
@@ -796,13 +796,13 @@ altsetupSetup (altsetup_t *altsetup)
 
   /* the altcount.txt file should only exist for the initial installation */
   pathbldMakePath (buff, sizeof (buff),
-      ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      ALT_COUNT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (fileopFileExists (buff)) {
     fileopDelete (buff);
   }
 
   pathbldMakePath (buff, sizeof (buff),
-      "data/altcount", BDJ4_CONFIG_EXT, PATHBLD_MP_MAINDIR);
+      "data/altcount", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_MAIN);
 
   /* read the current altcount */
   fh = fopen (buff, "r");
@@ -827,7 +827,7 @@ altsetupSetup (altsetup_t *altsetup)
 
   /* write the new base port out */
   pathbldMakePath (buff, sizeof (buff),
-      BASE_PORT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA);
+      BASE_PORT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   fh = fopen (buff, "w");
   fputs (str, fh);
   fclose (fh);
@@ -840,25 +840,25 @@ altsetupSetup (altsetup_t *altsetup)
     diropMakeDir ("bin");
 
     pathbldMakePath (buff, sizeof (buff),
-        "bdj4", "", PATHBLD_MP_EXECDIR);
+        "bdj4", "", PATHBLD_MP_DIR_EXEC);
     (void) ! symlink (buff, "bin/bdj4");
 #endif
   }
 
   /* create the link files that point to the volreg.txt and lock file */
   pathbldMakePath (buff, sizeof (buff),
-      VOLREG_FN, BDJ4_LINK_EXT, PATHBLD_MP_DATA);
+      VOLREG_FN, BDJ4_LINK_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "data/volreg", BDJ4_CONFIG_EXT, PATHBLD_MP_MAINDIR);
+      "data/volreg", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_MAIN);
   fh = fopen (buff, "w");
   fputs (tbuff, fh);
   fputs ("\n", fh);
   fclose (fh);
 
   pathbldMakePath (buff, sizeof (buff),
-      "volreglock", BDJ4_LINK_EXT, PATHBLD_MP_DATA);
+      "volreglock", BDJ4_LINK_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "tmp/volreg", BDJ4_LOCK_EXT, PATHBLD_MP_MAINDIR);
+      "tmp/volreg", BDJ4_LOCK_EXT, PATHBLD_MP_DIR_MAIN);
   fh = fopen (buff, "w");
   fputs (tbuff, fh);
   fputs ("\n", fh);

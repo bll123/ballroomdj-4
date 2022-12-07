@@ -205,7 +205,7 @@ main (int argc, char *argv[])
   confuiInitMobileMarquee (&confui.gui);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   confui.filterDisplayDf = datafileAllocParse ("cu-filter",
       DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX);
   confui.gui.filterDisplaySel = datafileGetList (confui.filterDisplayDf);
@@ -222,7 +222,7 @@ main (int argc, char *argv[])
   confui.conn = connInit (ROUTE_CONFIGUI);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      CONFIGUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      CONFIGUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   confui.optiondf = datafileAllocParse ("configui-opt", DFTYPE_KEY_VAL, tbuff,
       configuidfkeys, CONFUI_KEY_MAX);
   confui.options = datafileGetList (confui.optiondf);
@@ -289,12 +289,12 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
 
   pathbldMakePath (fn, sizeof (fn),
-      CONFIGUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      CONFIGUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("configui", fn, configuidfkeys,
       CONFUI_KEY_MAX, confui->options, 0);
 
   pathbldMakePath (fn, sizeof (fn),
-      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DATA | PATHBLD_MP_USEIDX);
+      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("ds-songfilter", fn, filterdisplaydfkeys,
       FILTER_DISP_MAX, confui->gui.filterDisplaySel, 0);
 
@@ -385,7 +385,7 @@ confuiBuildUI (configui_t *confui)
   logProcBegin (LOG_PROC, "confuiBuildUI");
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon_config", ".svg", PATHBLD_MP_IMGDIR);
+      "bdj4_icon_config", ".svg", PATHBLD_MP_DIR_IMG);
   /* CONTEXT: configuration: configuration user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"),
       bdjoptGetStr (OPT_P_PROFILENAME));
@@ -451,7 +451,7 @@ confuiBuildUI (configui_t *confui)
   uiWindowMove (&confui->gui.window, x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon_config", ".png", PATHBLD_MP_IMGDIR);
+      "bdj4_icon_config", ".png", PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
   logProcEnd (LOG_PROC, "confuiBuildUI", "");

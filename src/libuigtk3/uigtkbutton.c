@@ -53,8 +53,9 @@ uiCreateButton (UICallback *uicb,
     char        tbuff [MAXPATHLEN];
 
     gtk_button_set_label (GTK_BUTTON (widget), "");
+    /* relative path */
     pathbldMakePath (tbuff, sizeof (tbuff), imagenm, ".svg",
-        PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+        PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
     image = gtk_image_new_from_file (tbuff);
     gtk_button_set_image (GTK_BUTTON (widget), image);
     gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE); // macos
@@ -112,8 +113,9 @@ uiButtonSetImage (uibutton_t *uibutton, const char *imagenm,
   char        tbuff [MAXPATHLEN];
 
   gtk_button_set_label (GTK_BUTTON (uibutton->uibutton.widget), "");
+  /* relative path */
   pathbldMakePath (tbuff, sizeof (tbuff), imagenm, ".svg",
-      PATHBLD_MP_IMGDIR | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (uibutton->uibutton.widget), image);
   /* macos needs this */
