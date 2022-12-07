@@ -183,7 +183,7 @@ distclean:
 clean:
 	@-$(MAKE) tclean
 	@-$(MAKE) eclean
-	@test -d build && cmake --build build --target clean
+	@-test -d build && cmake --build build --target clean
 
 .PHONY: eclean
 eclean:

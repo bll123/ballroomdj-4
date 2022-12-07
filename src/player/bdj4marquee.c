@@ -313,7 +313,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiutilsUIWidgetInit (&hbox);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon_marquee", ".svg", PATHBLD_MP_DIR_IMG);
+      "bdj4_icon_marquee", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
 
   uiutilsUICallbackInit (&marquee->exitcb, marqueeCloseCallback, marquee, NULL);
   uiCreateMainWindow (&uiwidget, &marquee->exitcb,

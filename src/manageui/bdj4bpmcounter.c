@@ -330,7 +330,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiCreateSizeGroupHoriz (&sgb);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".svg", PATHBLD_MP_DIR_IMG);
+      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       bpmcounterCloseCallback, bpmcounter, NULL);
   uiCreateMainWindow (&bpmcounter->window,

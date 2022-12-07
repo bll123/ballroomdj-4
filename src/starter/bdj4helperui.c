@@ -183,7 +183,7 @@ helperBuildUI (helperui_t  *helper)
   uiutilsUIWidgetInit (&hbox);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".svg", PATHBLD_MP_DIR_IMG);
+      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uiutilsUICallbackInit (&helper->closeCallback, helperCloseCallback, helper, NULL);
   /* CONTEXT: helperui: the window title for the BDJ4 helper */
   snprintf (tbuff, sizeof (tbuff), _("%s Helper"), BDJ4_LONG_NAME);

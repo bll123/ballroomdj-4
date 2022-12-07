@@ -62,7 +62,7 @@ START_TEST(templateutil_image_copy)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- templateutil_image_copy");
 
   pathbldMakePath (to, sizeof (to), "button_play",
-      BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
+      BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
 
   fileopDelete (to);
   ck_assert_int_eq (fileopFileExists (to), 0);

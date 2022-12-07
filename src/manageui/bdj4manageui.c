@@ -562,7 +562,7 @@ manageBuildUI (manageui_t *manage)
   uiutilsUIWidgetInit (&uiwidget);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".svg", PATHBLD_MP_DIR_IMG);
+      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   /* CONTEXT: managementui: management user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Management"),
       bdjoptGetStr (OPT_P_PROFILENAME));

@@ -366,20 +366,20 @@ pluiBuildUI (playerui_t *plui)
 
   logProcBegin (LOG_PROC, "pluiBuildUI");
 
-  pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   uiImageFromFile (&plui->ledoffPixbuf, tbuff);
   uiImageGetPixbuf (&plui->ledoffPixbuf);
   uiWidgetMakePersistent (&plui->ledoffPixbuf);
 
-  pathbldMakePath (tbuff, sizeof (tbuff),  "led_on", ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff),  "led_on", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   uiImageFromFile (&plui->ledonPixbuf, tbuff);
   uiImageGetPixbuf (&plui->ledonPixbuf);
   uiWidgetMakePersistent (&plui->ledonPixbuf);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".svg", PATHBLD_MP_DIR_IMG);
+      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_CLOSE],
       pluiCloseWin, plui, NULL);
   /* CONTEXT: playerui: main window title */

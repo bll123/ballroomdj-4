@@ -566,7 +566,7 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&hbox, &bvbox);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-     "bdj4_icon", ".svg", PATHBLD_MP_DIR_IMG);
+     "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uiImageScaledFromFile (&uiwidget, tbuff, 128);
   uiWidgetExpandHoriz (&uiwidget);
   uiWidgetSetAllMargins (&uiwidget, 10);

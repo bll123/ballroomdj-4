@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=4
+ver=5
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -149,6 +149,7 @@ sudo port -N install \
     curl \
     curl-ca-bundle \
     icu \
+    librsvg \
     gtk3 +quartz \
     adwaita-icon-theme \
     ffmpeg +nonfree -x11

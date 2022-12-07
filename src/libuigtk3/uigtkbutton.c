@@ -54,7 +54,7 @@ uiCreateButton (UICallback *uicb,
 
     gtk_button_set_label (GTK_BUTTON (widget), "");
     /* relative path */
-    pathbldMakePath (tbuff, sizeof (tbuff), imagenm, ".svg",
+    pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
         PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
     image = gtk_image_new_from_file (tbuff);
     gtk_button_set_image (GTK_BUTTON (widget), image);
@@ -114,7 +114,7 @@ uiButtonSetImage (uibutton_t *uibutton, const char *imagenm,
 
   gtk_button_set_label (GTK_BUTTON (uibutton->uibutton.widget), "");
   /* relative path */
-  pathbldMakePath (tbuff, sizeof (tbuff), imagenm, ".svg",
+  pathbldMakePath (tbuff, sizeof (tbuff), imagenm, BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   image = gtk_image_new_from_file (tbuff);
   gtk_button_set_image (GTK_BUTTON (uibutton->uibutton.widget), image);

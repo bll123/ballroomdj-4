@@ -174,7 +174,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
 
   /* want a copy of the pixbuf for this image */
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
-      PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
+      PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uimusicq->pausePixbuf, tbuff);
   uiImageGetPixbuf (&uimusicq->pausePixbuf);
   uiWidgetMakePersistent (&uimusicq->pausePixbuf);
