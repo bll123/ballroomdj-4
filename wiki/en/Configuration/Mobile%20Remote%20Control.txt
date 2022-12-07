@@ -25,6 +25,6 @@ changed unless there is another device using this port.
 __QR Code__: Select the link to display a QR code that can be scanned
 with your mobile phone or tablet.
 
-TBD
+To be written...
 
 <br>_(Updated 2022-12-01 08:18:07; BDJ4 version 4.0.0-alpha-20221130)_

@@ -16,6 +16,6 @@ configure.  Select a column and use the left and right arrows to add
 and remove columns to display.  Use the up and down arrows to change
 the order in which the columns are displayed.
 
-TBD
+To be written...
 
 <br>_(Updated 2022-12-01 08:25:33; BDJ4 version 4.0.0-alpha-20221130)_

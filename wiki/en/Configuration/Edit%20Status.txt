@@ -19,5 +19,5 @@ The __Play?__ selection indicates whether the song will be used in
 automatic or sequenced playlists and whether it will show up in the
 request selection.
 
-TBD
+To be written...
 <br>_(Updated 2022-12-01 08:19:57; BDJ4 version 4.0.0-alpha-20221130)_

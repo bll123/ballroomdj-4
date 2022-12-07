@@ -56,6 +56,6 @@ __Play Announcements__: (per-queue) The dance announcement will be
 played before each song. See
 [Edit&nbsp;Dances](en-Configuration-Edit%20Dances).
 
-TBD
+To be written...
 
 <br>_(Updated 2022-12-01 08:31:05; BDJ4 version 4.0.0-alpha-20221130)_

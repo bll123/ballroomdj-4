@@ -22,6 +22,6 @@ with a mobile phone or tablet.  This can be copied from the browser
 and embedded in a document to be printed out so that the dancers can
 scan the QR Code.
 
-TBD
+To be written...
 
 <br>_(Updated 2022-12-01 08:18:07; BDJ4 version 4.0.0-alpha-20221130)_

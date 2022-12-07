@@ -2,6 +2,6 @@
 
 ### Management : Playlist Management
 
-TBD
+To be written...
 
 _(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_

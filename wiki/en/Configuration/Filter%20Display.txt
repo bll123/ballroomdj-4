@@ -11,5 +11,5 @@ _Search_, _Dance_, _Dance&nbsp;Rating_.
 The additional filters that can be selected are _Genre_,
 _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 
-TBD
+To be written...
 <br>_(Updated 2022-12-01 08:23:03; BDJ4 version 4.0.0-alpha-20221130)_
