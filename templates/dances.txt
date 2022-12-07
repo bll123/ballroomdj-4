@@ -17,7 +17,7 @@ HIGHBPM
 SPEED
 ..normal
 TAGS
-..tango club
+..tango
 TIMESIG
 ..2/4
 TYPE
@@ -143,7 +143,7 @@ HIGHBPM
 SPEED
 ..fast
 TAGS
-..salsa club
+..salsa
 TIMESIG
 ..4/4
 TYPE
@@ -233,7 +233,7 @@ HIGHBPM
 SPEED
 ..normal
 TAGS
-..swing club
+..swing
 TIMESIG
 ..4/4
 TYPE

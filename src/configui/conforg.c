@@ -90,6 +90,12 @@ confuiBuildUIOrganization (confuigui_t *gui)
   confuiMakeItemLabelDisp (gui, &vbox, &sg, "",
       CONFUI_WIDGET_AO_EXAMPLE_4, -1);
 
+  confuiMakeItemSwitch (gui, &vbox, &sg,
+      /* CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag */
+      _("Database Loads Dance From Genre"),
+      CONFUI_SWITCH_DB_LOAD_FROM_GENRE, OPT_G_LOADDANCEFROMGENRE,
+      bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE), NULL, CONFUI_NO_INDENT);
+
   /* CONTEXT: configuration: checkbox: is automatic organization enabled */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Auto Organise"),
       CONFUI_SWITCH_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,

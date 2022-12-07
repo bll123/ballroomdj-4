@@ -111,12 +111,6 @@ confuiBuildUIGeneral (confuigui_t *gui)
       CONFUI_SWITCH_BDJ3_COMPAT_TAGS, OPT_G_BDJ3_COMPAT_TAGS,
       bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS), NULL, CONFUI_NO_INDENT);
 
-  confuiMakeItemSwitch (gui, &vbox, &sg,
-      /* CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag */
-      _("Database Loads Dance From Genre"),
-      CONFUI_SWITCH_DB_LOAD_FROM_GENRE, OPT_G_LOADDANCEFROMGENRE,
-      bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE), NULL, CONFUI_NO_INDENT);
-
   /* bdj4 */
   /* CONTEXT: configuration: the locale to use (e.g. English or Nederlands) */
   confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Locale"),
