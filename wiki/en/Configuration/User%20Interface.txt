@@ -14,8 +14,11 @@ __Font__: The display font used for the main user interface.
 __Listing Font__: The font used to display lists of songs in the music
 queues, requests, song selection, &etc.
 
-__Accent Color__: The color used for important status messages.
+__Accent Color__: The color used for important status messages and for
+the color of the buttons.
 
-To be written...
+<div markdown style="margin-right: 20px; text-align: center;">
+![User Interface](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/UI-A.png)
+<br><span style="color:#4559bf;">**User Interface**</span> </div>
 
-_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_
+<br>_(Updated 2022-12-07 12:31:24; BDJ4 version 4.0.0-alpha-20221207)_

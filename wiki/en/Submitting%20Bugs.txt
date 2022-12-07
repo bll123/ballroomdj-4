@@ -1,0 +1,25 @@
+[Wiki Home](Home)
+
+## Submitting Bug Reports
+
+If you run into an issue with BDJ4 and you know how to re-create it,
+you can take the following steps to send in a problem report.
+
+Start BDJ4, select __Configure__, select __Debug&nbsp;Options__, and
+turn on _Important_, _Basic_, _Main_, _Messages_, and _Actions_.
+
+Exit BDJ4.
+
+Start BDJ4, and re-create the issue you found.  Now, in the starter
+window, select __Support__, then select
+__Send&nbsp;Support&nbsp;Message__.
+
+Enter your e-mail address, the subject and a message describing the
+issue.  Turn on __Attach&nbsp;Data&nbsp;Files__.  You can also turn on
+__Attach&nbsp;Database__ if the database or audio tags are relevant to the
+issue.
+
+Now select __Send&nbsp;Support&nbsp;Message__ and wait for the window
+to close.
+
+<br>_(Updated 2022-12-07 11:41:08; BDJ4 version 4.0.0-alpha-20221207)_

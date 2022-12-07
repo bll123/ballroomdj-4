@@ -2,6 +2,9 @@
 
 ### Configuration : General Options
 
+The general tab provide settings that affect the entire BDJ4
+application.
+
 __Music Folder__: The main music folder where the music is found.
 See also [Update&nbsp;Database](en-Management-Update%20Database)
 
@@ -13,21 +16,19 @@ This appears as a block of color in the upper right corner of each
 window.  Different profiles can be assigned different colors so that
 the window's profile can be quickly identified.
 
-__BPM__: The label to use for "beats per minute" or "measures per
-minute" or "bars per minute".
+__BPM__: The label to use for _beats&nbsp;per&nbsp;minute_ or
+_measures&nbsp;per&nbsp;minute_ or _bars&nbsp;per&nbsp;minute_. When
+set to MPM, the BPM counter will use the time signature of the dance
+to select the proper default.
 
-__Write Audio File Tags__: When set to __BDJ Tags Only__,
-only BDJ specific tags will be updated in the audio file.  When set to
-__All Tags__, all audio file tags including BDJ specific tags
-will be updated in the audio file.
+__Write Audio File Tags__: When set to __BDJ Tags Only__, only BDJ
+specific tags will be updated in the audio file when a song is edited.
+When set to __All Tags__, all audio file tags including BDJ specific
+tags will be updated in the audio file when a song is edited.
 
 __BallroomDJ 3 Compatible Audio File Tags__: If enabled, (and write
 audio file tags is on), the audio file tags will be kept compatible
 with BallroomDJ 3.
-
-__Database Loads Dance from Genre__: Used when the song's genre is set
-to the dance. Enabling this option will try to set the dance from the
-song's genre field.
 
 __Locale__: Which locale is used for the text in BDJ4.
 
@@ -37,4 +38,8 @@ This is automatically set for Linux installations.
 __Shutdown Script__: A script that is run after the player is stopped.
 This is automatically set for Linux installations.
 
-<br>_(Updated 2022-12-01 08:13:52; BDJ4 version 4.0.0-alpha-20221130)_
+<div markdown style="margin-right: 20px; text-align: center;">
+![General Options](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-B.png)
+<br><span style="color:#4559bf;">**General Options**</span> </div>
+
+<br>_(Updated 2022-12-07 13:13:24; BDJ4 version 4.0.0-alpha-20221207)_

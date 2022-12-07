@@ -77,4 +77,4 @@
     * Update the information in the database from iTunes.
     * Import an iTunes playlist.
 
-<br>_(Updated 2022-12-05 14:50:25; BDJ4 version 4.0.0-alpha-20221203)_
+<br>_(Updated 2022-12-07 10:16:06; BDJ4 version 4.0.0-alpha-20221207)_

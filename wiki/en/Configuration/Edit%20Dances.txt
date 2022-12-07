@@ -2,5 +2,48 @@
 
 ### Configuration : Edit Dances
 
-To be written...
-_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_
+__Edit Dances__ configures the dances that are known to BDJ4.  Dances
+can be added or removed and the configuration for each dance changed.
+
+Adding a new dance:  Select the __+__ button to add a new dance.
+The dance is added with a default name of _New&nbsp;Dance_.  Change the
+name of the dance to what you want.
+
+Removing a dance: Select the dance to remove in the list.  Select the
+_Delete_ button to remove the dance.
+
+Modifying a dance: Select the dance to change and change the dance
+configuration.
+
+__Dance__: The name of the dance. ___Note that changing the name of
+dance that is already in your database will cause many problems.___
+
+__Type__: The type is used for automatic playlists.  Dances with
+the same type are not as likely to be next to another dance of the
+same type.
+
+__Speed__: The speed is used for automatic playlists.  Fast dances are
+not placed at the very beginning of the playlist, and fast dances are
+not as likely to be next to another fast dance.
+
+__Tags__: Tags are used for automatic playlists.  Dances with matching
+tags are not as likely to be next to each other.
+
+__Announcement__: The announcement played before the dance is played.
+Note that the announcement audio files must be in the database.
+
+__Low BPM__: This is a display option for use in the song editor.
+__This is not currently implemented.__
+
+__High BPM__: This is a display option for use in the song editor.
+__This is not currently implemented.__
+
+__Time Signature__: This is used by the BPM counter to select the
+proper default when MPM is selected in the
+[General&nbsp;Options](en-Configuration-General).
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Edit Dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-B.png)
+<br><span style="color:#4559bf;">**Edit Dances**</span> </div>
+
+<br>_(Updated 2022-12-07 13:26:43; BDJ4 version 4.0.0-alpha-20221207)_

@@ -36,10 +36,6 @@
 <br>[Installing on MacOS](en-Install-MacOS)
 <br>[Installing on Windows](en-Install-Windows)
 
-### Starter
-[Starter](en-Starter-Starter)
-<br>[Starter - Support](en-Starter-Support)
-
 ### Change Log
 [Change Log](en-Change%20Log)
 
@@ -73,20 +69,22 @@
 <br>[Playlist Management](en-Management-Playlist%20Management)
 <br>[Edit Sequences](en-Management-Edit%20Sequences)
 <br>[Music Manager](en-Management-Music%20Manager)
+<br>[Song Editor](en-Management-Song%20Editor)
 <br>[Update Database](en-Management-Update%20Database)
 
 ### Player
-[Player - Basic Usage](en-Player-Basic)
+[Basic Usage](en-Player-Basic)
+<br>[Requests](en-Player-Requests)
+
+### Starter
+[Profiles](en-Starter-Profiles)
+<br>[Alternate Folders](en-Starter-Alternate%20Folders)
 
 </div>
 
 <div markdown style="float: left; margin-right: 20px;">
 
 ### How To
-These are placeholders for possible
-
-future subjects and may change (2022-11).
-
 [Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
@@ -94,4 +92,4 @@ future subjects and may change (2022-11).
 
 <div markdown style="clear: both;"></div>
 
-<br>_(Updated 2022-12-05 14:39:46; BDJ4 version 4.0.0-alpha-20221203)_
+<br>_(Updated 2022-12-07 11:54:12; BDJ4 version 4.0.0-alpha-20221207)_
