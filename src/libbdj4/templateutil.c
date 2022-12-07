@@ -40,7 +40,6 @@ templateImageCopy (const char *color)
   char        *fname;
 
   pathbldMakePath (tbuff, sizeof (tbuff), "img", "", PATHBLD_MP_DIR_TEMPLATE);
-fprintf (stderr, "template img-dir: %s\n", tbuff);
 
   dirlist = dirlistBasicDirList (tbuff, BDJ4_IMG_SVG_EXT);
   slistStartIterator (dirlist, &iteridx);
@@ -49,9 +48,7 @@ fprintf (stderr, "template img-dir: %s\n", tbuff);
     diropMakeDir (to);
 
     snprintf (from, sizeof (from), "%s/%s", tbuff, fname);
-fprintf (stderr, "from: %s\n", from);
     pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-fprintf (stderr, "to: %s\n", to);
 
     templateCopy (from, to, color);
   }
