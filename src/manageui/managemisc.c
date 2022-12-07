@@ -33,7 +33,7 @@ manageCreatePlaylistCopy (UIWidget *statusMsg,
   char  tbuff [MAXPATHLEN];
   bool  rc = true;
 
-  if (playlistExists (tbuff)) {
+  if (playlistExists (newname)) {
     /* CONTEXT: manageui: failure status message */
     snprintf (tbuff, sizeof (tbuff), _("Copy already exists."));
     uiLabelSetText (statusMsg, tbuff);
