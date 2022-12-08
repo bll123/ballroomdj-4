@@ -2,22 +2,32 @@
 
 ### Configuration : Edit Status
 
+<span style="color:#4559bf;">_Status is optional and can be used to
+track the status of songs._</span>
+
 The status field can be used to track the status of songs in the
-database.  If you want to use the status field, you will probably
-also want to change
-the [Display&nbsp;Settings](en-Configuration-Display%20Settings).
+database.  If you want to use the status field, you will also want to
+change the
+[Display&nbsp;Settings](en-Configuration-Display%20Settings).
 
 The _New_ and _Complete_ statuses may not be removed or have their
-names changed.
+names changed.  Songs newly added to the database are assigned the
+_New_ status.
 
 To add a new status, select the __&#43;__ button.  Then double-click on
 the status name to edit the name.  Use the up and down arrows to
-adjust the order in which they appear.  Use the delete button to
+adjust the order in which the statuses appear.  Use the delete button to
 remove a status.
 
 The __Play?__ selection indicates whether the song will be used in
 automatic or sequenced playlists and whether it will show up in the
-request selection.
+request selection.  This selection corresponds to the
+_Playable&nbsp;Status_ filter (see:
+[Filter&nbsp;Display](en-Configuration-Filter%20Display).
 
-To be written...
-<br>_(Updated 2022-12-07 10:16:06; BDJ4 version 4.0.0-alpha-20221207)_
+<div markdown style="margin-right: 20px; text-align: center;">
+![Edit Status](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditStatus-A.png)
+<br><span style="color:#4559bf;">**Configuration / Edit Status**</span> </div>
+
+[Wiki Home](Home)
+<br>_(Updated 2022-12-08 09:02:46; BDJ4 version 4.0.0-alpha-20221207)_

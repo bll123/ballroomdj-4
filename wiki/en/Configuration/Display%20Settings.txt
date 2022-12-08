@@ -2,6 +2,9 @@
 
 ### Configuration : Display Settings
 
+<span style="color:#4559bf;">_Display settings changes the columns
+displayed in music queues, song listings and in the Song&nbsp;Editor._</span>
+
 The display settings are used to configure which columns are displayed
 for the music queues, song selection and song editor.
 
@@ -19,6 +22,7 @@ the order in which the columns are displayed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Display Settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-A.png)
-<br><span style="color:#4559bf;">**Display Settings**</span> </div>
+<br><span style="color:#4559bf;">**Configuration / Display Settings**</span> </div>
 
-<br>_(Updated 2022-12-07 12:31:24; BDJ4 version 4.0.0-alpha-20221207)_
+[Wiki Home](Home)
+<br>_(Updated 2022-12-08 09:02:46; BDJ4 version 4.0.0-alpha-20221207)_

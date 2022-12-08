@@ -2,8 +2,8 @@
 
 ### Configuration : Edit Ratings
 
-__Edit Ratings__ configures the ratings used for automatic and
-sequenced song selection.
+<span style="color:#4559bf;">_Dance ratings are used in automatic and
+sequenced song selection._</span>
 
 The _Unrated_ rating may not be removed or moved and is assigned to
 any song without a rating.
@@ -28,6 +28,7 @@ weight to change it.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Edit Ratings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditRatings-A.png)
-<br><span style="color:#4559bf;">**Edit Ratings**</span> </div>
+<br><span style="color:#4559bf;">**Configuration / Edit Ratings**</span> </div>
 
-<br>_(Updated 2022-12-07 13:46:32; BDJ4 version 4.0.0-alpha-20221207)_
+[Wiki Home](Home)
+<br>_(Updated 2022-12-08 09:02:46; BDJ4 version 4.0.0-alpha-20221207)_

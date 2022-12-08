@@ -2,10 +2,13 @@
 
 ### Configuration : Mobile Remote Control
 
+<span style="color:#4559bf;">_Mobile Remote Control can be used to
+control BDJ4 from your mobile device._</span>
+
 Mobile Remote Control is a web page that can be used to control BDJ4
 over the Wi&#8209;Fi network.  Access the web page via your mobile phone or
 tablet.  The computer running BDJ4 must be connected to a Wi&#8209;Fi
-network (but does not need to be connected to the internet).
+network, but does not need to be connected to the internet.
 
 __Enable Remote Control__: Turns on the remote control function
 (activated when the player is started).
@@ -22,9 +25,17 @@ control web page.
 __Port__: The port to connect to.  This usually does not need to be
 changed unless there is another device using this port.
 
-__QR Code__: Select the link to display a QR code that can be scanned
-with your mobile phone or tablet.
+__QR Code__: Select the link to display a QR code in your browser.
+The QR code can be scanned with your mobile phone or tablet.
 
-To be written...
+<div markdown style="margin-right: 20px; text-align: center;">
+![Mobile Remote Control](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-A.png)
+<br><span style="color:#4559bf;">**Configuration / Mobile Remote Control**</span> </div>
 
-<br>_(Updated 2022-12-07 10:16:06; BDJ4 version 4.0.0-alpha-20221207)_
+<div markdown style="margin-right: 20px; text-align: center;">
+![Screen 1](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-Screen1-B.jpg)
+![Screen 2](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-Screen2-B.jpg)
+<br><span style="color:#4559bf;">**Mobile Device / Mobile Remote Control**</span></div>
+
+[Wiki Home](Home)
+<br>_(Updated 2022-12-08 09:46:22; BDJ4 version 4.0.0-alpha-20221207)_

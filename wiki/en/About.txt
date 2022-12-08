@@ -24,4 +24,5 @@ and configuration files.  A conversion process can be used during
 installation to convert the BallroomDJ&nbsp;3 data files and database
 to files that can be used by BDJ4.
 
+[Wiki Home](Home)
 <br>_(Updated 2022-12-05 14:39:46; BDJ4 version 4.0.0-alpha-20221203)_

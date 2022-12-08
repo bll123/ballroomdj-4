@@ -53,4 +53,5 @@ Now select **Next**, then select **Install**.
 After the VLC installation is complete, turn off the **Run VLC media
 player** checkbox, and select **Finish**.
 
+[Wiki Home](Home)
 _(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_

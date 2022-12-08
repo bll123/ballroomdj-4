@@ -53,4 +53,5 @@ button and wait for the **Installation Completed** message.
 ![BallroomDJ 4 Installer on Linux](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Linux-Installer.png)
 <br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Linux**</span> </div>
 
+[Wiki Home](Home)
 <br>_(Updated 2022-12-01 08:02:47; BDJ4 version 4.0.0-alpha-20221130)_

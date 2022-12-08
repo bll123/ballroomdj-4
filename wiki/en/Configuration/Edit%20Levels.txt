@@ -2,5 +2,30 @@
 
 ### Configuration : Edit Levels
 
-To be written...
-<br>_(Updated 2022-12-07 10:16:06; BDJ4 version 4.0.0-alpha-20221207)_
+<span style="color:#4559bf;">_Dance levels are optional and are used
+in automatic and sequenced playlists._</span>
+
+The dance level can be used to help filter songs according to their
+difficulty.   If you want to use levels, you will also want to change
+the
+[Display&nbsp;Settings](en-Configuration-Display%20Settings).
+
+Levels should be ordered from the easiest to the most advanced.
+
+To add a new level, select the __&#43;__ button.  Then click on
+the name to change the name.
+
+The _Weight_ is used by the automatic and sequenced song selection to
+adjust which songs are used.  A higher level weight will make a song
+more likely to play.  Select the level, then click on the weight to
+change the weight.
+
+The _Default_ selection determines which dance level is assigned to
+songs that do not have a dance level set.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Edit Levels](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditLevels-A.png)
+<br><span style="color:#4559bf;">**Configuration / Edit Levels**</span> </div>
+
+[Wiki Home](Home)
+<br>_(Updated 2022-12-08 09:21:22; BDJ4 version 4.0.0-alpha-20221207)_

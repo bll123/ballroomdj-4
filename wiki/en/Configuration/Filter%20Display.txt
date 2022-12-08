@@ -2,6 +2,9 @@
 
 ### Configuration : Filter Display
 
+<span style="color:#4559bf;">_Filter display controls which filters
+are displayed in the song selection filter._</span>
+
 The song selection filter has several filters that are not normally
 displayed.  These filters can be turned on here.
 
@@ -13,14 +16,15 @@ _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Filter Display](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-A.png)
-<br><span style="color:#4559bf;">**Filter Display**</span> </div>
+<br><span style="color:#4559bf;">**Configuration / Filter Display**</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Filter Dialog (default)](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-Dialog-A.png)
-<br><span style="color:#4559bf;">**Filter Dialog (default)**</span> </div>
+<br><span style="color:#4559bf;">**Filter Dialog - Default filters**</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Filter Dialog (all)](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-Dialog-All-A.png)
-<br><span style="color:#4559bf;">**Filter Dialog (all)**</span> </div>
+<br><span style="color:#4559bf;">**Filter Dialog - All filters enabled**</span> </div>
 
-<br>_(Updated 2022-12-07 12:36:37; BDJ4 version 4.0.0-alpha-20221207)_
+[Wiki Home](Home)
+<br>_(Updated 2022-12-08 09:02:46; BDJ4 version 4.0.0-alpha-20221207)_

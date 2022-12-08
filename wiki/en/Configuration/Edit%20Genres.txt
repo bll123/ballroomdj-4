@@ -2,5 +2,23 @@
 
 ### Configuration : Edit Genres
 
-To be written...
-<br>_(Updated 2022-12-07 10:16:06; BDJ4 version 4.0.0-alpha-20221207)_
+<span style="color:#4559bf;">_Genres are optional._</span>
+
+If you want to use genres, you will also want to change the
+[Display&nbsp;Settings](en-Configuration-Display%20Settings).
+
+To add a new genre, select the __&#43;__ button.  Then click on
+the name to change the name.
+
+Use the up and down arrows to change the order of the genres to match
+your preference.
+
+The _Classical?_ selection is used for classical music.  __Classical
+music support is not yet implemented in BDJ4.__
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Edit Genres](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditGenres-A.png)
+<br><span style="color:#4559bf;">**Configuration / Edit Genres**</span> </div>
+
+[Wiki Home](Home)
+<br>_(Updated 2022-12-08 09:21:22; BDJ4 version 4.0.0-alpha-20221207)_

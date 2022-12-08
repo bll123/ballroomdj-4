@@ -2,8 +2,9 @@
 
 ### Configuration : Marquee Options
 
-The marquee can be displayed on a monitor or projected on to a screen
-or wall so that the dancers can see the upcoming dances.
+<span style="color:#4559bf;">_The marquee can be displayed on a
+monitor or projected on to a screen or wall so that the dancers can
+see the upcoming dances._</span>
 
 __Marquee Theme__: The interface theme used to display the marquee.
 
@@ -24,6 +25,7 @@ on startup.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Marquee Options](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Marquee-A.png)
-<br><span style="color:#4559bf;">**Marquee Options**</span> </div>
+<br><span style="color:#4559bf;">**Configuration / Marquee Options**</span> </div>
 
-<br>_(Updated 2022-12-07 12:31:24; BDJ4 version 4.0.0-alpha-20221207)_
+[Wiki Home](Home)
+<br>_(Updated 2022-12-08 09:02:46; BDJ4 version 4.0.0-alpha-20221207)_

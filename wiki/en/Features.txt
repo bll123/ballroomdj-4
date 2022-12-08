@@ -53,11 +53,12 @@
     * Column display is fully configurable.
 * Song Editor
     * Field display is fully configurable.
+    * BPM Counter.
+    * Optionally update the audio file tags.
     * Song adjustments for playback.
         * Adjust the song start and song end.
         * Adjust the song speed.
         * Adjust the song volume.
-    * Optionally update the audio file tags.
 * Mobile Remote Control
     * Control BDJ4 from your mobile device.
 * Mobile Marquee
@@ -77,4 +78,5 @@
     * Update the information in the database from iTunes.
     * Import an iTunes playlist.
 
-<br>_(Updated 2022-12-07 10:16:06; BDJ4 version 4.0.0-alpha-20221207)_
+[Wiki Home](Home)
+<br>_(Updated 2022-12-08 08:38:29; BDJ4 version 4.0.0-alpha-20221207)_

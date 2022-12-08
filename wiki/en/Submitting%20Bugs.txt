@@ -26,4 +26,5 @@ to close.
 
 Turn the debug options off in __Configure__, and exit BDJ4.
 
-<br>_(Updated 2022-12-07 11:41:08; BDJ4 version 4.0.0-alpha-20221207)_
+[Wiki Home](Home)
+<br>_(Updated 2022-12-08 08:38:29; BDJ4 version 4.0.0-alpha-20221207)_

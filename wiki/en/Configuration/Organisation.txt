@@ -2,7 +2,8 @@
 
 ### Configuration : Organisation
 
-Organisation configures how the audio files are stored on your computer.
+<span style="color:#4559bf;">_Organisation configures how the audio
+files are stored on your computer._</span>
 
 The organisation path is used when the audio file is added to the
 database and for automatic organisation of the audio files.
@@ -27,6 +28,7 @@ the organisation path. __This feature is not yet implemented.__
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Organisation](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Organisation-A.png)
-<br><span style="color:#4559bf;">**Organisation**</span> </div>
+<br><span style="color:#4559bf;">**Configuration / Organisation**</span> </div>
 
-<br>_(Updated 2022-12-07 12:55:23; BDJ4 version 4.0.0-alpha-20221207)_
+[Wiki Home](Home)
+<br>_(Updated 2022-12-08 09:02:46; BDJ4 version 4.0.0-alpha-20221207)_
