@@ -122,7 +122,7 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_SPINBOX_STOP_AT_TIME, OPT_P_STOPATTIME,
       bdjoptGetNum (OPT_P_STOPATTIME), CONFUI_NO_INDENT);
 
-  /* CONTEXT: configuration: the number of items loaded into the music queue */
+  /* CONTEXT: (noun) configuration: the number of items loaded into the music queue */
   confuiMakeItemSpinboxNum (gui, &vbox, &sg, &sgB, _("Queue Length"),
       CONFUI_WIDGET_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
       20, 400, bdjoptGetNum (OPT_G_PLAYERQLEN), NULL);
@@ -132,12 +132,12 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
       bdjoptGetStr (OPT_P_COMPLETE_MSG), CONFUI_NO_INDENT);
 
-  /* CONTEXT: configuration: which queue to configure */
+  /* CONTEXT: (noun) configuration: which queue to configure */
   confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Queue"),
       CONFUI_SPINBOX_PLAYER_QUEUE, -1, CONFUI_OUT_NUM,
       gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx, confuiPlayerQueueChg);
 
-  /* CONTEXT: configuration: The name of the music queue */
+  /* CONTEXT: (noun) configuration: The name of the music queue */
   confuiMakeItemEntry (gui, &vbox, &sg, _("Queue Name"),
       CONFUI_ENTRY_QUEUE_NM, OPT_Q_QUEUE_NAME,
       bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, 0), CONFUI_INDENT);

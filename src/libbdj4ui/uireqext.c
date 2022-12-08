@@ -212,7 +212,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
       /* CONTEXT: request external dialog: closes the dialog */
       _("Close"),
       RESPONSE_CLOSE,
-      /* CONTEXT: request external dialog: queue the selected file */
+      /* CONTEXT: (verb) request external dialog: queue the selected file */
       _("Queue"),
       RESPONSE_APPLY,
       NULL

@@ -270,7 +270,6 @@ tmutilShortTstamp (char *buff, size_t max)
   struct tm         t;
 #endif
 
-
   gettimeofday (&curr, NULL);
   s = curr.tv_sec;
 #if _lib_localtime_r
@@ -279,7 +278,7 @@ tmutilShortTstamp (char *buff, size_t max)
 #else
   tp = localtime (&s);
 #endif
-  strftime (buff, max, "%H%M", tp);
+  strftime (buff, max, "%H%M%S", tp);
   return buff;
 }
 

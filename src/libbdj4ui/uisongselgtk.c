@@ -246,7 +246,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   }
 
   if (uisongsel->dispselType == DISP_SEL_REQUEST) {
-    /* CONTEXT: song-selection: queue a song to be played */
+    /* CONTEXT: (verb) song-selection: queue a song to be played */
     strlcpy (tbuff, _("Queue"), sizeof (tbuff));
     uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_QUEUE],
         uisongselQueueCallback, uisongsel, "songsel: queue");

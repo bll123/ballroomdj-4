@@ -6,7 +6,7 @@ If you run into an issue with BDJ4 and you know how to re-create it,
 you can take the following steps to send in a problem report.
 
 Start BDJ4, select __Configure__, select __Debug&nbsp;Options__, and
-turn on _Important_, _Basic_, _Main_, _Messages_, and _Actions_.
+turn on at least _Important_, _Basic_, _Main_, and _Actions_.
 
 Exit BDJ4.
 
@@ -21,5 +21,7 @@ issue.
 
 Now select __Send&nbsp;Support&nbsp;Message__ and wait for the window
 to close.
+
+Turn the debug options off in __Configure__, and exit BDJ4.
 
 <br>_(Updated 2022-12-07 11:41:08; BDJ4 version 4.0.0-alpha-20221207)_

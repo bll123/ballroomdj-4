@@ -296,7 +296,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     uiutilsUICallbackInit (&uiw->callback [UIMUSICQ_CB_QUEUE],
         uimusicqQueueCallback, uimusicq, "musicq: queue");
     uibutton = uiCreateButton (&uiw->callback [UIMUSICQ_CB_QUEUE],
-        /* CONTEXT: history: re-queue the selected song */
+        /* CONTEXT: (verb) history: re-queue the selected song */
         _("Queue"), NULL);
     uiw->buttons [UIMUSICQ_BUTTON_QUEUE] = uibutton;
     uiwidgetp = uiButtonGetUIWidget (uibutton);
@@ -307,7 +307,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     uiutilsUICallbackLongInit (&uimusicq->queueplcb,
         uimusicqQueuePlaylistCallback, uimusicq);
     uiwidgetp = uiDropDownCreate (parentwin,
-        /* CONTEXT: music queue: button: queue a playlist for playback */
+        /* CONTEXT: (verb) music queue: button: queue a playlist for playback */
         _("Queue Playlist"), &uimusicq->queueplcb,
         uimusicq->ui [ci].playlistsel, uimusicq);
     uiBoxPackEnd (&hbox, uiwidgetp);
@@ -317,14 +317,14 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
       uiutilsUICallbackLongIntInit (&uimusicq->queuedancecb,
           uimusicqQueueDanceCallback, uimusicq);
       uiw->uidance = uidanceDropDownCreate (&hbox, parentwin,
-          /* CONTEXT: music queue: button: queue 5 dances for playback */
+          /* CONTEXT: (verb) music queue: button: queue 5 dances for playback */
           UIDANCE_NONE, _("Queue 5"), UIDANCE_PACK_END, 5);
       uidanceSetCallback (uiw->uidance, &uimusicq->queuedancecb);
 
       uiutilsUICallbackLongIntInit (&uimusicq->queuedancecb,
           uimusicqQueueDanceCallback, uimusicq);
       uiw->uidance = uidanceDropDownCreate (&hbox, parentwin,
-          /* CONTEXT: music queue: button: queue a dance for playback */
+          /* CONTEXT: (verb) music queue: button: queue a dance for playback */
           UIDANCE_NONE, _("Queue Dance"), UIDANCE_PACK_END, 1);
       uidanceSetCallback (uiw->uidance, &uimusicq->queuedancecb);
     }
