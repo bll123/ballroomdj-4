@@ -58,4 +58,4 @@ sudo port install gtk3-devel +quartz -x11
     Alt-D
 
 [Wiki Home](Home)
-<br>_(Updated 2022-11-29 10:47:17; BDJ4 version 4.0.0-20221128-alpha)_
+<br>_(Updated 2022-12-08 09:54:58; BDJ4 version 4.0.0-alpha-20221207)_

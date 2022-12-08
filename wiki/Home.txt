@@ -84,6 +84,12 @@
 
 <div markdown style="float: left; margin-right: 20px;">
 
+### Subjects
+[Adding Songs to the Database](en-Subjects-Adding%20Songs)
+<br>[Automatic Playlists](en-Subjects-Automatic%20Playlists)
+<br>[Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
+<br>[Song Lists](en-Subjects-Song%20Lists)
+
 ### How To
 [Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
@@ -92,4 +98,4 @@
 
 <div markdown style="clear: both;"></div>
 
-<br>_(Updated 2022-12-07 11:54:12; BDJ4 version 4.0.0-alpha-20221207)_
+<br>_(Updated 2022-12-08 10:00:08; BDJ4 version 4.0.0-alpha-20221207)_

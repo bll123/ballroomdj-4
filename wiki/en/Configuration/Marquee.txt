@@ -28,4 +28,4 @@ on startup.
 <br><span style="color:#4559bf;">**Configuration / Marquee Options**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-08 09:02:46; BDJ4 version 4.0.0-alpha-20221207)_
+<br>_(Updated 2022-12-08 09:54:58; BDJ4 version 4.0.0-alpha-20221207)_
