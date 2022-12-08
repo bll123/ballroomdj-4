@@ -87,6 +87,7 @@
 ### Subjects
 [Adding Songs to the Database](en-Subjects-Adding%20Songs)
 <br>[Automatic Playlists](en-Subjects-Automatic%20Playlists)
+<br>[Music Queues](en-Subjects-Music%20Queues)
 <br>[Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
 <br>[Song Lists](en-Subjects-Song%20Lists)
 
@@ -98,4 +99,4 @@
 
 <div markdown style="clear: both;"></div>
 
-<br>_(Updated 2022-12-08 10:00:08; BDJ4 version 4.0.0-alpha-20221207)_
+<br>_(Updated 2022-12-08 10:03:11; BDJ4 version 4.0.0-alpha-20221207)_
