@@ -82,6 +82,7 @@
 #cmakedefine01 _lib_dlopen
 #cmakedefine01 _lib_drand48
 #cmakedefine01 _lib_fcntl
+#cmakedefine01 _lib_fsync
 #cmakedefine01 _lib_fork
 #cmakedefine01 _lib_kill
 #cmakedefine01 _lib_localtime_r

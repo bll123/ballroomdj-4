@@ -76,10 +76,8 @@ dbClose (musicdb_t *musicdb)
     slistFree (musicdb->songs);
     nlistFree (musicdb->danceCounts);
     dataFree (musicdb->fn);
-    if (musicdb->radb != NULL) {
-      raClose (musicdb->radb);
-      musicdb->radb = NULL;
-    }
+    raClose (musicdb->radb);
+    musicdb->radb = NULL;
     nlistFree (musicdb->tempSongs);
     free (musicdb);
   }
@@ -152,6 +150,8 @@ dbLoad (musicdb_t *musicdb)
       ++musicdb->count;
     }
   }
+
+  /* sort so that lookups can be done by file name */
   slistSort (musicdb->songs);
 
   /* set the database index according to the sorted values */
@@ -162,6 +162,7 @@ dbLoad (musicdb_t *musicdb)
     ++dbidx;
   }
 
+  /* debug information */
   nlistStartIterator (musicdb->danceCounts, &iteridx);
   while ((dkey = nlistIterateKey (musicdb->danceCounts, &iteridx)) >= 0) {
     dbidx_t count = nlistGetNum (musicdb->danceCounts, dkey);
@@ -190,10 +191,15 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   rrn = songGetNum (song, TAG_RRN);
   song = dbReadEntry (musicdb, rrn);
   fstr = songGetStr (song, TAG_FILE);
+  songSetNum (song, TAG_RRN, rrn);
   songSetNum (song, TAG_DBIDX, dbidx);
   if (song != NULL) {
     slistSetData (musicdb->songs, fstr, song);
   }
+  /* this is inefficient, but otherwise the disk buffering / file handling */
+  /* causes issues w/reading an updated entry */
+  raClose (musicdb->radb);
+  musicdb->radb = NULL;
 }
 
 void
@@ -208,10 +214,8 @@ dbStartBatch (musicdb_t *musicdb)
 void
 dbEndBatch (musicdb_t *musicdb)
 {
-  if (musicdb->radb != NULL) {
-    raEndBatch (musicdb->radb);
-    raClose (musicdb->radb);
-  }
+  raEndBatch (musicdb->radb);
+  raClose (musicdb->radb);
   musicdb->radb = NULL;
 }
 

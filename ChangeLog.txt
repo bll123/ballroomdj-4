@@ -7,6 +7,7 @@ BallroomDJ 4 Change Log
     * localization: fixed dance configuration for nl.
     * macos: various installation fixes.
     * player: fixed request listing to filter playback status on startup.
+    * player/manager: fix communication about database updates.
     * select folder dialog: fixed to only show folders.
     * song editor: fixed internal bug causing loss of data.
     * song list editor: fixed gap default for new playlists.

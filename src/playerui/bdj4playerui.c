@@ -555,6 +555,7 @@ pluiBuildUI (playerui_t *plui)
   uiutilsUICallbackLongInit (&plui->callbacks [PLUI_CB_SONG_SAVE],
       pluiSongSaveCallback, plui);
   uimusicqSetSongSaveCallback (plui->uimusicq, &plui->callbacks [PLUI_CB_SONG_SAVE]);
+  uisongselSetSongSaveCallback (plui->uisongsel, &plui->callbacks [PLUI_CB_SONG_SAVE]);
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_CLEAR_QUEUE],
       pluiClearQueueCallback, plui, NULL);
@@ -797,6 +798,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_DB_ENTRY_UPDATE: {
           dbLoadEntry (plui->musicdb, atol (targs));
+          uisongselPopulateData (plui->uisongsel);
           dbgdisp = true;
           break;
         }
@@ -1299,7 +1301,9 @@ pluiSongSaveCallback (void *udata, long dbidx)
   /* this particular entry */
   snprintf (tmp, sizeof (tmp), "%ld", dbidx);
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
+
   uisongselPopulateData (plui->uisongsel);
+
   return UICB_CONT;
 }
 

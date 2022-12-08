@@ -69,7 +69,9 @@ raOpen (char *fname, int version)
     frc = 1;
   }
   if (frc == 0) {
+    raLock (rafile);
     rc = raReadHeader (rafile);
+    raUnlock (rafile);
 
     if (rc != 0) {
       /* probably an incorrect filename   */
@@ -175,6 +177,9 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data)
     fwrite (ranulls, 1, 1, rafile->fh);
   }
   fflush (rafile->fh);
+#if _lib_fsync
+  fsync (fileno (rafile->fh));
+#endif
   raUnlock (rafile);
   logProcEnd (LOG_PROC, "raWrite", "");
   return 0;
@@ -191,6 +196,10 @@ raClear (rafile_t *rafile, rafileidx_t rrn)
   raLock (rafile);
   fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
   fwrite (ranulls, RAFILE_REC_SIZE, 1, rafile->fh);
+  fflush (rafile->fh);
+#if _lib_fsync
+  fsync (fileno (rafile->fh));
+#endif
   raUnlock (rafile);
   logProcEnd (LOG_PROC, "raClear", "");
   return 0;
@@ -264,6 +273,9 @@ raWriteHeader (rafile_t *rafile, int version)
   fprintf (rafile->fh, "#RASIZE=%d\n", rafile->size);
   fprintf (rafile->fh, "#RACOUNT=%d\n", rafile->count);
   fflush (rafile->fh);
+#if _lib_fsync
+  fsync (fileno (rafile->fh));
+#endif
   logProcEnd (LOG_PROC, "raWriteHeader", "");
 }
 

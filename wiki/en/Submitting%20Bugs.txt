@@ -19,6 +19,8 @@ issue.  Turn on __Attach&nbsp;Data&nbsp;Files__.  You can also turn on
 __Attach&nbsp;Database__ if the database or audio tags are relevant to the
 issue.
 
+When you describe the problem, be detailed and specific.
+
 Now select __Send&nbsp;Support&nbsp;Message__ and wait for the window
 to close.
 

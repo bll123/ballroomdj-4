@@ -1121,10 +1121,13 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
-          /* re-filter the display */
-          /* this only needs to be called once, as applysongfilter will */
-          /* have all the peers re-process also */
-          uisongselApplySongFilter (manage->slsongsel);
+          dbLoadEntry (manage->musicdb, atol (targs));
+          /* re-populate the display */
+          manage->selbypass = 1;
+          uisongselPopulateData (manage->slsongsel);
+          uisongselPopulateData (manage->slezsongsel);
+          uisongselPopulateData (manage->mmsongsel);
+          manage->selbypass = 0;
           break;
         }
         default: {
@@ -1320,7 +1323,7 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   uisongselPopulateData (manage->mmsongsel);
   manage->selbypass = 0;
 
-  /* re-load the song */
+  /* re-load the song into the song editor */
   /* it is unknown if called from saving a favorite or from the song editor */
   /* the overhead is minor */
   song = dbGetByIdx (manage->musicdb, dbidx);

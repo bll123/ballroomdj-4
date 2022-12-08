@@ -960,10 +960,16 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_DB_ENTRY_UPDATE: {
           connSendMessage (starter->conn, ROUTE_MAIN, msg, args);
-          connSendMessage (starter->conn, ROUTE_PLAYERUI, msg, args);
+          if (routefrom != ROUTE_PLAYERUI) {
+            connSendMessage (starter->conn, ROUTE_PLAYERUI, msg, args);
+          }
+          if (routefrom != ROUTE_MANAGEUI) {
+            connSendMessage (starter->conn, ROUTE_MANAGEUI, msg, args);
+          }
           break;
         }
         case MSG_DATABASE_UPDATE: {
+          /* only comes from manage ui */
           connSendMessage (starter->conn, ROUTE_MAIN, msg, args);
           connSendMessage (starter->conn, ROUTE_PLAYERUI, msg, args);
           break;
