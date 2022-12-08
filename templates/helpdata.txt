@@ -43,6 +43,8 @@ TEXT
 # 'Organisation Path' drop-down.
 # If the organisation path you need is not present, select the 'support'
 # button in the startup window and send a support message.
+# If your audio files have the dance stored in the genre audio tag,
+# turn on 'Database Load Dance from Genre'.
 # => Close the 'BDJ4 Organisation' window.
 KEY
 ..3

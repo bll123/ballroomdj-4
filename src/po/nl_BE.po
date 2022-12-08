@@ -1301,7 +1301,7 @@ msgid "Queue"
 msgstr "Wachtrij"
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
-#. CONTEXT: music queue: button: queue 5 dances for playback
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback
 msgid "Queue 5"
 msgstr ""
 
@@ -1313,20 +1313,20 @@ msgstr "Wachtrij B"
 msgid "Queue C"
 msgstr "Wachtrij C"
 
-#. CONTEXT: music queue: button: queue a dance for playback
+#. CONTEXT: (verb) music queue: button: queue a dance for playback
 msgid "Queue Dance"
 msgstr ""
 
-#. CONTEXT: configuration: the length of the queue displayed on the marquee
-#. CONTEXT: configuration: the number of items loaded into the music queue
+#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
+#. CONTEXT: (noun) configuration: the number of items loaded into the music queue
 msgid "Queue Length"
 msgstr "Wachtrij lengte"
 
-#. CONTEXT: configuration: The name of the music queue
+#. CONTEXT: (noun) configuration: The name of the music queue
 msgid "Queue Name"
 msgstr "Wachtrij naam"
 
-#. CONTEXT: music queue: button: queue a playlist for playback
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback
 msgid "Queue Playlist"
 msgstr ""
 

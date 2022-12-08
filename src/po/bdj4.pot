@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-08 06:42-0800\n"
+"POT-Creation-Date: 2022-12-08 08:25-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1298,7 +1298,7 @@ msgid "Queue"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
-#. CONTEXT: music queue: button: queue 5 dances for playback
+#. CONTEXT: (verb) music queue: button: queue 5 dances for playback
 msgid "Queue 5"
 msgstr ""
 
@@ -1310,20 +1310,20 @@ msgstr ""
 msgid "Queue C"
 msgstr ""
 
-#. CONTEXT: music queue: button: queue a dance for playback
+#. CONTEXT: (verb) music queue: button: queue a dance for playback
 msgid "Queue Dance"
 msgstr ""
 
-#. CONTEXT: configuration: the length of the queue displayed on the marquee
-#. CONTEXT: configuration: the number of items loaded into the music queue
+#. CONTEXT: (noun) configuration: the length of the queue displayed on the marquee
+#. CONTEXT: (noun) configuration: the number of items loaded into the music queue
 msgid "Queue Length"
 msgstr ""
 
-#. CONTEXT: configuration: The name of the music queue
+#. CONTEXT: (noun) configuration: The name of the music queue
 msgid "Queue Name"
 msgstr ""
 
-#. CONTEXT: music queue: button: queue a playlist for playback
+#. CONTEXT: (verb) music queue: button: queue a playlist for playback
 msgid "Queue Playlist"
 msgstr ""
 
@@ -2046,6 +2046,8 @@ msgstr ""
 " 'Organisation Path' drop-down."
 " If the organisation path you need is not present, select the 'support'"
 " button in the startup window and send a support message."
+" If your audio files have the dance stored in the genre audio tag,"
+" turn on 'Database Load Dance from Genre'."
 " => Close the 'BDJ4 Organisation' window."
 
 
