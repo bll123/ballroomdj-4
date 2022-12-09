@@ -281,6 +281,10 @@ dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
 
   tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn, rrn);
   raWrite (musicdb->radb, rrn, tbuff);
+  /* this is inefficient, but otherwise the disk buffering / file handling */
+  /* causes issues w/reading an updated entry */
+  raClose (musicdb->radb);
+  musicdb->radb = NULL;
   return tblen;
 }
 
