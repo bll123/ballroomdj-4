@@ -101,11 +101,11 @@ typedef struct {
   int               pbfinishrcv;
   long              ploverridestoptime;
   int               songplaysentcount;        // for testsuite
-  time_t            stopTime;
-  time_t            nStopTime;
   int               musicqChanged [MUSICQ_MAX];
   bool              marqueeChanged [MUSICQ_MAX];
   bool              changeSuspend [MUSICQ_MAX];
+  time_t            stopTime [MUSICQ_MAX];
+  time_t            nStopTime [MUSICQ_MAX];
   bool              playWhenQueued : 1;
   bool              switchQueueWhenEmpty : 1;
   bool              finished : 1;
@@ -219,6 +219,8 @@ main (int argc, char *argv[])
     mainData.musicqChanged [i] = MAIN_CHG_CLEAR;
     mainData.marqueeChanged [i] = false;
     mainData.changeSuspend [i] = false;
+    mainData.stopTime [i] = 0;
+    mainData.nStopTime [i] = 0;
   }
 
   procutilInitProcesses (mainData.processes);
@@ -229,10 +231,11 @@ main (int argc, char *argv[])
   logProcBegin (LOG_PROC, "main");
 
   mainData.lastGapSent = -2;
-  /* calculate the stop time once only */
-// ### FIX
-  mainData.stopTime = bdjoptGetNumPerQueue (OPT_Q_STOP_AT_TIME, 0);
-  mainData.nStopTime = mainCalcStopTime (mainData.stopTime);
+  /* calculate the stop time once only per queue */
+  for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
+    mainData.stopTime [i] = bdjoptGetNumPerQueue (OPT_Q_STOP_AT_TIME, i);
+    mainData.nStopTime [i] = mainCalcStopTime (mainData.stopTime [i]);
+  }
 
   mainData.conn = connInit (ROUTE_MAIN);
 
@@ -625,8 +628,9 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_CHK_MAIN_SET_STOPATTIME: {
-          mainData->stopTime = atol (targs);
-          mainData->nStopTime = mainCalcStopTime (mainData->stopTime);
+          mainData->stopTime [mainData->musicqPlayIdx] = atol (targs);
+          mainData->nStopTime [mainData->musicqPlayIdx] =
+              mainCalcStopTime (mainData->stopTime [mainData->musicqPlayIdx]);
           dbgdisp = true;
           break;
         }
@@ -1040,7 +1044,8 @@ mainSendMarqueeData (maindata_t *mainData)
       dbidx_t   dbidx;
       song_t    *song;
 
-      if (mainData->stopTime > 0 && (currTime + qdur) > mainData->nStopTime) {
+      if (mainData->stopTime [mainData->musicqPlayIdx] > 0 &&
+          (currTime + qdur) > mainData->nStopTime [mainData->musicqPlayIdx]) {
         /* process stoptime for the marquee display */
         dstr = MSG_ARGS_EMPTY_STR;
       } else if ((i > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
@@ -1147,7 +1152,8 @@ mainSendMobileMarqueeData (maindata_t *mainData)
       song_t    *song;
 
       /* process stoptime for the marquee display */
-      if (mainData->stopTime > 0 && (currTime + qdur) > mainData->nStopTime) {
+      if (mainData->stopTime [mainData->musicqPlayIdx] > 0 &&
+          (currTime + qdur) > mainData->nStopTime [mainData->musicqPlayIdx]) {
         dstr = "";
       } else if ((i > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
           (i > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
@@ -1979,13 +1985,14 @@ mainMusicQueuePlay (maindata_t *mainData)
   logProcBegin (LOG_PROC, "mainMusicQueuePlay");
 
   currTime = mstime ();
-  if (mainData->stopTime > 0 && currTime > mainData->nStopTime) {
+  if (mainData->stopTime [mainData->musicqPlayIdx] > 0 &&
+      currTime > mainData->nStopTime [mainData->musicqPlayIdx]) {
     logMsg (LOG_DBG, LOG_MAIN, "past stop-at time: finished <= true");
     mainData->finished = true;
     mainData->marqueeChanged [mainData->musicqPlayIdx] = true;
     /* reset the stop time so that the player can be re-started */
-    mainData->stopTime = 0;
-    mainData->nStopTime = 0;
+    mainData->stopTime [mainData->musicqPlayIdx] = 0;
+    mainData->nStopTime [mainData->musicqPlayIdx] = 0;
   }
 
   if (mainData->musicqDeferredPlayIdx != MAIN_NOT_SET) {

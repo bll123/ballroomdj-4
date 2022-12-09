@@ -3,7 +3,7 @@ BallroomDJ 4 Change Log (beta)
 4.0.0 beta 2022-11---
 
 * Bug Fixes:
-    * configuration: disable active/display switches for main music queue.
+    * configuration: player: disable active/display switches for main music queue.
     * conversion: do not change the ui accent color for secondary profiles.
     * localization: fixed dance configuration for nl.
     * macos: various installation fixes.
@@ -20,13 +20,14 @@ BallroomDJ 4 Change Log (beta)
 * Changes:
     * alternate setup: add a name entry to the setup process for the shortcut.
     * configuration: increased number of available queues to 4.
+    * configuration: player: moved stop-at time to be per-queue.
     * marquee: changed hide-marquee-on-start to show-marquee and added an 'off' setting.
     * mobile marquee: remove internet mode.
     * player: moved 'request external' into a menu.
     * player: the queue dance buttons are only shown per the queue configuration.
     * song editor: previous and next buttons will now repeat.
 * New Features:
-    * configuration: added a per-queue 'show queue dance buttons' selection.
+    * configuration: player: added a per-queue 'show queue dance buttons' selection.
     * player: added a 'queue 5' button.
     * starter: added a 'create profile shortcut' menu selection.
 * Internal:
