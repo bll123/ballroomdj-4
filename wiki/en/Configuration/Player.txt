@@ -3,7 +3,7 @@
 ### Configuration : Player Options
 
 <span style="color:#4559bf;">_Player options provides settings
-that control how the player works.</span>
+that control how the player works._</span>
 
 The __Player__ and __Audio__ settings generally do not change.
 
@@ -67,4 +67,4 @@ and _Queue&nbsp;5_ buttons.  These are used for teaching.
 <br><span style="color:#4559bf;">**Configuration / Player Options**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-08 09:54:58; BDJ4 version 4.0.0-alpha-20221207)_
+<br>_(Updated 2022-12-09 12:42:18; BDJ4 version 4.0.0-beta)_

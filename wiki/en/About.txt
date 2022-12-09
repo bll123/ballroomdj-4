@@ -11,11 +11,19 @@ into song lists, sequences and automatic playlists. Though it is
 designed for the needs of ballroom music, it can be used for any type
 of music.
 
-The original BallroomDJ was started in 2011.  Around 2021 I determined
-that the programming language used, Tcl/Tk, was no longer a viable
-option in which to continue.  And to ensure the long term existence of
-a ballroom music player, the programming language and tools used
-needed to change.
+The original BallroomDJ was started in 2011.  At that time, there were
+two commercial options available.  One was quite expensive, and the
+other (which was being used locally in several ballrooms, and which I
+had a small familiarity with) had a terrible user interface.
+
+I decided that if I was ever going to do ballroom DJ work, that I
+wanted something better, and I set out to write a new program, and
+BallroomDJ was started and grew for the next 10 years.
+
+Around 2021 I determined that the programming language used for
+BallroomDJ, Tcl/Tk, was no longer a viable option in which to
+continue.  And to ensure the long term existence of a ballroom music
+player, the programming language and tools used needed to change.
 
 BDJ4 is a complete rewrite designed to replace BallroomDJ 3.  Work
 started on BDJ4 in December of 2021.  BDJ4 is not an upgrade to
@@ -25,4 +33,4 @@ installation to convert the BallroomDJ&nbsp;3 data files and database
 to files that can be used by BDJ4.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-08 09:54:58; BDJ4 version 4.0.0-alpha-20221207)_
+<br>_(Updated 2022-12-09 12:48:56; BDJ4 version 4.0.0-beta)_
