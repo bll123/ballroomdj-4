@@ -67,4 +67,4 @@ and _Queue&nbsp;5_ buttons.  These are used for teaching.
 <br><span style="color:#4559bf;">**Configuration / Player Options**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:42:18; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_

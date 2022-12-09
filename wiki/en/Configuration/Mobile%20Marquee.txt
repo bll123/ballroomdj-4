@@ -33,4 +33,4 @@ be printed out so that the dancers can scan the QR Code.
 <br><span style="color:#4559bf;">**Mobile Device / Mobile Marquee**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-08 09:54:58; BDJ4 version 4.0.0-alpha-20221207)_
+<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_

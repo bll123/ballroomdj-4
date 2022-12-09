@@ -126,4 +126,4 @@ compatible audio file tags' is turned on).
 (1) No one actually asked this, but I thought you might like to know.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-08 09:54:58; BDJ4 version 4.0.0-alpha-20221207)_
+<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_

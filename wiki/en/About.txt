@@ -33,4 +33,4 @@ installation to convert the BallroomDJ&nbsp;3 data files and database
 to files that can be used by BDJ4.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:48:56; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_

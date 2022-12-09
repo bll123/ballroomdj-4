@@ -32,4 +32,4 @@ timer.
 <br><span style="color:#4559bf;">**Configuration / Marquee Options**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:29:20; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
