@@ -25,6 +25,7 @@ add_executable (check_all
   check_rafile.c
   check_sock.c
   check_tmutil.c
+  check_vsencdec.c
   # libbasic
   check_libbasic.c
   check_datafile.c

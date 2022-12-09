@@ -49,6 +49,7 @@ check_libcommon (SRunner *sr)
    *  sockh
    *  conn
    *  osrandom    complete
+   *  vsencdec    complete
    *  queue       complete 2022-11-1
    *  dirlist     complete
    *  colorutils  complete
@@ -91,6 +92,9 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = osrandom_suite();
+  srunner_add_suite (sr, s);
+
+  s = vsencdec_suite();
   srunner_add_suite (sr, s);
 
   s = queue_suite();

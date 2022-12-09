@@ -42,6 +42,7 @@ typedef struct {
 static bdjopt_t   *bdjopt = NULL;
 
 static datafilekey_t bdjoptglobaldfkeys [] = {
+  { "ACOUSTID_KEY",       OPT_G_ACOUSTID_KEY,       VALUE_STR, NULL, -1 },
   { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, -1 },
   { "BDJ3COMPATTAGS",     OPT_G_BDJ3_COMPAT_TAGS,   VALUE_NUM, convBoolean, -1 },
   { "BPM",                OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, -1 },

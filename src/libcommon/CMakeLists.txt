@@ -34,6 +34,7 @@ add_library (libbdj4common SHARED
   strlcpy.c
   sysvars.c
   tmutil.c
+  vsencdec.c
 )
 target_include_directories (libbdj4common
   PUBLIC "${GLIB_INCLUDE_DIRS}"

@@ -381,6 +381,8 @@ foreach path [list {} profiles $mpath $mppath] {
       }
 
       if { $path eq {} } {
+        puts $ofh ACOUSTID_KEY
+        puts $ofh "..ENCTFdHUmEcJxkaKAAABRY="
         puts $ofh CLOCKDISP
         puts $ofh "..local"
         puts $ofh DEBUGLVL

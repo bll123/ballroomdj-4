@@ -87,7 +87,7 @@ function copyreleasefiles {
   echo "   removing exclusions"
   # bdj4se is only used for packaging
   # testing: tdbcompare, tdbdump, tmusicsetup, check_all, chkprocess,
-  #   vlcsinklist, voltest
+  #   vlcsinklist, voltest, vsencdec
   # img/profile[1-9] may be left over from testing
   rm -f \
       ${stage}/bin/bdj4se \
@@ -99,6 +99,7 @@ function copyreleasefiles {
       ${stage}/bin/tmusicsetup \
       ${stage}/bin/vlcsinklist \
       ${stage}/bin/voltest \
+      ${stage}/bin/vsencdec \
       ${stage}/http/*.bak.1 \
       ${stage}/http/curl-ca-bundle.crt \
       ${stage}/http/*.html \

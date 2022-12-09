@@ -37,6 +37,7 @@ Suite *     queue_suite (void);
 Suite *     rafile_suite (void);
 Suite *     sock_suite (void);
 Suite *     tmutil_suite (void);
+Suite *     vsencdec_suite (void);
 
 /* libbasic */
 Suite *     datafile_suite (void);

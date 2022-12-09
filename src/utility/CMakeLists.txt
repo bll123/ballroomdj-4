@@ -64,9 +64,15 @@ target_link_libraries (vlcsinklist
   m
 )
 
+add_executable (vsencdec vsencdec.c)
+target_link_libraries (vsencdec
+  libbdj4common
+  m
+)
+
 install (TARGETS
   bdj4info bdj4tags tdbcompare tdbdump testsuite tmusicsetup
-  vlcsinklist
+  vlcsinklist vsencdec
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
@@ -78,4 +84,5 @@ if (APPLE)
   macUpdateRPath (testsuite)
   macUpdateRPath (tmusicsetup)
   macUpdateRPath (vlcsinklist)
+  macUpdateRPath (vsencdec)
 endif()
