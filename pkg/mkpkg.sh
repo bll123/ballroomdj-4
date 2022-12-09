@@ -193,7 +193,7 @@ if [[ $insttest == F ]]; then
   if [[ $tag == linux ]]; then
     echo "-- $(date +%T) updating build number"
     BUILD=$(($BUILD+1))
-    BUILDDATE=$(date '+%Y%m%d')
+    BUILDDATE=$(date '+%Y-%m-%d')
     cat > VERSION.txt << _HERE_
 VERSION=$VERSION
 BUILD=$BUILD
@@ -203,7 +203,7 @@ _HERE_
   fi
 fi
 
-# staging / create packags
+# staging / create packages
 
 if [[ mksrcpkg == T ]]; then
   stagedir=tmp/${spkgnm}-src

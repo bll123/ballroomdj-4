@@ -96,7 +96,7 @@ if [[ $tag == linux ]]; then
   if [[ $RELEASELEVEL != "" ]]; then
     bd=$BUILDDATE
   fi
-  echo "$VERSION $bd $RELEASELEVEL" > $VERFILE
+  echo "$VERSION $RELEASELEVEL ($bd)" > $VERFILE
   for f in $VERFILE; do
     sshpass -e rsync -e "$ssh" -aS \
         $f ${remuser}@${server}:${wwwpath}

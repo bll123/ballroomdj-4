@@ -1205,8 +1205,8 @@ starterProcessSupport (void *udata)
   if (strcmp (rlslvl, "") == 0) {
     builddate = "";
   }
-  snprintf (tbuff, sizeof (tbuff), "%s %s %s",
-      sysvarsGetStr (SV_BDJ4_VERSION), builddate, rlslvl);
+  snprintf (tbuff, sizeof (tbuff), "%s %s (%s)",
+      sysvarsGetStr (SV_BDJ4_VERSION), rlslvl, builddate);
   uiCreateLabel (&uiwidget, tbuff);
   uiBoxPackStart (&hbox, &uiwidget);
 
