@@ -913,6 +913,10 @@ mainStartMarquee (maindata_t *mainData)
     return;
   }
 
+  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == MARQUEE_SHOW_OFF) {
+    return;
+  }
+
   /* set the theme for the marquee */
   theme = bdjoptGetStr (OPT_MP_MQ_THEME);
 #if BDJ4_USE_GTK
