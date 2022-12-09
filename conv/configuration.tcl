@@ -12,13 +12,7 @@ proc copyimages { todir col } {
   set fnlist [glob -directory templates/img *.svg]
   foreach fn $fnlist {
     set nfn [file join $todir [file tail $fn]]
-    set fh [open $fn r]
-    set data [read $fh [file size $fn]]
-    close $fh
-    regsub -all {#ffa600} $data $col data
-    set fh [open $nfn w]
-    puts $fh $data
-    close $fh
+    file copy -force $fn $nfn
   }
 }
 

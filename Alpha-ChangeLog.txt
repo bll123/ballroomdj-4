@@ -1,0 +1,318 @@
+BallroomDJ 4 Change Log (alpha versions)
+
+4.0.0 alpha 2022-11-28
+
+- new feature: configuration: per queue configuration:
+  fade-in time, fade-out time, maximum play time, play announcements
+- new feature: configuration: per queue configuration: pause each song
+- linux: fix audio sink selection (vlc would otherwise choose the default).
+- player: fix display of 'queue dance' drop-down after selection.
+- installation: fix incorrect name in template.
+
+4.0.0 alpha 2022-11-22
+
+- installation: fix macos VLC installation.
+- installation: fix windows VLC installation.
+- installation: windows: installer newer python if current is too old.
+- macos: make sure macports is first in path.
+
+4.0.0 alpha 2022-11-12
+
+- automatic playlists: re-work the dance selection algorithm.
+- conversion: do not convert sort options.
+- updater: fix processing of cleanup list.
+
+4.0.0 alpha 2022-11-09
+
+- audio tags: fixed a problem writing the tracknumber tag (.m4a).
+- automatic playlists: adjust dance selection parameters.
+- automatic playlists: fixed a bug in dance selection.
+- code cleanup: queue, ui set-margin, ui old routines, log messages.
+- conversion: fixes for font conversion (windows, macos).
+- installation: set fonts to a known good value (windows, macos).
+- internal: add non-exposed configuration for clock display.
+- edit song list: create from playlist: clean up an ui usage issue.
+- edit song list: create from playlist: fixed (broken in alpha 2022-10-27).
+- linux: volume: fixed volume interface issues.
+- macos installation: updated README.txt with new instructions.
+- macos installation: added a script to start up the installer.
+- macos: volume: fixed all volume interface issues.
+- starter: fixed 'delete profile'.
+- update databaes: convert .m4a utf8 audio tags correctly (mutagen bug).
+- update database: fixed a crash in write tags.
+- update database: minor user interface cleanup.
+- window: volume: fixed all volume interface issues.
+
+4.0.0 alpha 2022-10-27
+
+- configuration: player: Added "Play Announcement".
+- configuration: player: Added "Stop At" time.
+- macos: Fix some missing dependencies in the pre-setup script.
+- player: Fix stop time issues.
+- player: Fix announcements.
+- playlist management: Fix save of play announcement.
+- songlist editor: Fix load of playlist with stop after or stop time set.
+- user interface: Fix missing validation handlers.
+- user interface: Minor bug in validation of hh:mm fixed.
+- internal: windows: update packages, fix build of libcurl.
+- internal: update mongoose web server.
+
+4.0.0 alpha 2022-10-20
+
+- player
+  - Fix play-when-queued so it only plays when the queue is empty.
+  - Return to beginning of song: allowed when paused, not during fade-out.
+  - Position slider changed to be active while paused.
+  - Fix bug in 'next song' clearing a prepped song when it should not.
+- playlist management
+  - Fix display of default gap.
+  - Fix some minor display issues.
+- song selection, music queue
+  - Fix display of empty numeric columns.
+- conversion
+  - Convert ancient version of bdj3 dance levels data file correctly.
+
+4.0.0 alpha 2022-10-17
+
+- installer
+  - Fixed python major version check.
+  - Clean up macos/windows font/theme issues.
+- macos
+  - The audio output device can now be selected.
+  - Fixed various crashes.
+- conversion
+  - Fix missing datafile on conversion.
+- song editor
+  - Added a copy button to copy the file path.
+
+4.0.0 alpha 2022-10-13
+
+- user interface
+  - Fix inverted slider controls.
+- database update
+  - Add a fix for bad audio file data (null bytes).
+  - Fix start/stop button states after completion.
+- player
+  - Fix broken duration calculation (dance max).
+  - Fix broken BPM dance check.
+  - Request External is now implemented.
+  - Fix an issue where an internal state flag was not reset properly.
+- song editor
+  - Fix song start/song end spinbox display.
+- Fix tag name mismatch (lastupdated) (conversion/database).
+- Internal
+  - Fix a caching bug in the list code.
+
+4.0.0 alpha 2022-10-05
+
+- Fix .wma author and title tags.
+- BDJ3 conversion: Fix incorrect conversion of volume adjust percentage.
+- database update
+  - Fix incorrect conversion of BDJ3 volume adjust percentage.
+  - Added stop button to user interface.
+  - Fix dbtag process not shutting down.
+- install: bdj3 compatible tags are turned off for new installs.
+- playlist management: fix gap spinbox to allow fractions of a second.
+- conversion: fix playlist gap conversion.
+- player
+  - Fix incorrect duration calculations (playlist max, dance max).
+  - Fix volume when no fade-out and no gap.
+  - Fix issues with incorrect gap setting.
+  - Fix internal issues with song preparation.
+  - Fix repeat + pause at end interactions.
+- Fix slow shutdown issues.
+
+4.0.0 alpha 2022-09-26
+
+- windows installer:
+  - Fix problem with run-time library requirements.
+  - If a very old version of python is found, install a new version.
+- localization:
+  - Fixed an issue with text replacement.
+  - Update Nederlands to latest.
+
+4.0.0 alpha 2022-09-24
+
+- player: fixed broken processing preventing the player from working.
+- song list editor: fix issues when creating a song list from a playlist.
+- song editor: fix broken next/previous.
+- management: prevent interference with playerui.
+- player: fix automatic/sequenced playlists and 'clear queue' button.
+
+4.0.0 alpha 2022-09-19
+
+- test suite in progress
+- player: bug-fix: song playback was duplicated after the pause button
+  was pressed.
+- player user interface: disable position slider when a song is paused.
+- player user interface: fix display of position slider when paused.
+- macos: fixed issue in pre-install script.
+- music manager: fix playlist display in song selection filter.
+
+4.0.0 alpha 2022-09-10
+
+- various tests added
+- music manager: mark as same song, clear same song marks implemented.
+- music manager/song selection:
+  - fixed a minor scrolling issue.
+  - fix mark color display when selected.
+  - fixed keyword filter.
+  - the 'search' string filter will no longer search dances.
+- song editor:
+  - will now traverse the selected songs if there is more than
+    one song selected.
+  - clear all change markers on first/next/previous.
+  - fixed save of song tags.
+  - added indicator for modified files.
+  - added indicator for audio identification.
+  - fixed display of negative volume adjustment.
+  - fixed change indicator for speed adjustments and volume adjustment.
+- audio tags:
+  - fixed some issues writing .m4a tags.
+  - fixed some issues writing .mp3 tags.
+- automatic / sequenced playlists song selection.
+  - check same-song marks.
+- player:
+  - fixed handling of negative volume adjustment.
+  - fixed request handling (broken for a while).
+- player user interface:
+  - fixed request crash (introduced in 2022-8-7 with history changes).
+  - recover from crash properly.
+  - restart automatically upon crash.
+- conversion: profiles: fixed setup of the images for alternate profiles.
+- starterui: fixed 'delete profile'.
+
+4.0.0 alpha 2022-08-27
+
+- various tests added
+- fixed an infrastructure bug (list cache 2022-8-15).
+- conversion: database: cleaned up and fixed samesong and adjustflags
+  processing.
+- removed any mention of raffle games/songs.
+- player: added history (basic).
+- localization: song selection: fix filter search to handle international
+  characters properly.
+- installer: windows: turned off validation (too slow).
+- management ui: fixed player display (broken jul 21).
+- prevent some possible crashes in the music queue and in song selection.
+- support: macos: send crash diagnostic files in support message.
+- updater: don't set music dir to itunes dir if a conversion was run.
+
+4.0.0 alpha 2022-08-12
+
+- user interface: fix direct entry of floating point values.
+- localization fixes: windows string sorting.
+
+4.0.0 alpha 2022-08-11
+
+- song list editor: added mix function.
+- bdj4 updater: fix old mb tag issues if present.
+- configuration: added itunes configuration.
+- windows: fixed file handling issues (international characters).
+- various locale fixes.
+- windows: locale: get user's display language instead of system locale.
+- internationalization: fixed locale override (broken around Apr 20).
+
+4.0.0 alpha 2022-07-30
+
+- installer
+  - fixed macos installation.
+  - fixed target installation folder handling.
+- macos: fixed dock minimize/restore issue.
+
+4.0.0 alpha 2022-07-28
+
+- installer
+  - change database version check to be at least version 9
+    (due to volume-adjust-percentage).
+- bdj3 conversion: fix missing mark color item.
+- song editor: write audio file tags.
+- management ui
+  - favorite
+    - write audio file tags.
+    - fix save from song selection.
+    - fix save from music manager.
+  - database update
+    - fixed incorrect processing of music folder.
+    - write audio file tags.
+- player ui
+  - favorite: write audio file tags.
+- bdj4tags
+  - add ability to write tags.
+
+4.0.0 alpha 2022-7-24
+
+- player ui
+  - request: displays a mark when the song is in the song list.
+  - marquee menu: there is now a 'recover marquee' selection to bring
+    the marquee display back to the current screen.
+  - favorite: working in both the music queue and song selection.
+- management ui
+  - song list, playlist and sequence editor: add delete to menu.
+  - song selection: displays a mark when the song is in the song list.
+  - music manager: display same song marks.
+  - favorite: working in the song list editor and song selection.
+  - song editor: fix check of song-start/song-end.
+- starter ui
+  - added 'delete profile' to the menu.
+- marquee
+  - fixed iconify and maximize event processing.
+  - windows : fixed de-iconify of marquee.
+
+4.0.0 alpha 2022-07-21
+
+- management ui
+  - playlist : Fix save of a playlist stop time.
+  - song list editor : Added create song list from playlist.
+- player
+  - Fix issues re-using the same playlist.
+- configuration ui
+  - Fix direct text input in numeric spinboxes.
+
+4.0.0 alpha 2022-07-18
+
+- player
+  - fixed song start not being sent to the player.
+  - fixed volume not being applied.
+- Fixed duration calculations for the music queue.
+- song list editor
+  - statistics tab.
+  - export as M3U.
+  - import M3U.
+  - ez song list: song list name will expand.
+- song editor
+  - bpm counter working.
+  - fixed song start/song end input.
+- marquee: Cleaned up the artist/title display.
+  - add non-exposed configuration items for marquee artist/title colors.
+- Internal: rework fade-out timer.
+- profiles
+  - Added configuration option for profile accent color.
+  - starterui: profile handling.
+  - various fixes.
+  - add profile color display to main windows.
+  - change window titles to reflect current profile.
+  - handle default volume/original system volume.
+  - lowered max profiles to 10.
+- management ui
+  - allow management ui to be active when the player ui is
+    active (and vice-versa).
+  - disable play buttons when the player ui is active.
+- installer
+  - add folder selection button for installation folder.
+  - fix various issues with installation folder.
+  - checksum verification is working.
+- configuration : themes
+  - add built-in themes to theme list.
+  - fixed theme selection issue
+- alternate folder installer is working (linux, windows)
+- volume
+  - bdj4 volume interactions handled on a per-sink basis.
+  - bdj3/bdj4 volume interactions handled (in most cases).
+  - macos: volume sinks (via vlc) are working.
+  - windows: fixed volume sink handling.
+  - move audio sink from machine to machine-profile
+- installer
+  - windows
+    - change python install to be automatic.
+    - change python install to be minimal.
