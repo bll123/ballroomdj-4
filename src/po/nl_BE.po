@@ -789,10 +789,6 @@ msgstr "Uitstekend"
 msgid "HTML Template"
 msgstr "HTML-sjabloon"
 
-#. CONTEXT: configuration: marquee: minimize the marquee when the player is started
-msgid "Hide Marquee on Start"
-msgstr "Marquee bij Start verbergen"
-
 #. CONTEXT: playlist management: hide unselected dances
 msgid "Hide Unselected"
 msgstr "Niet-geselecteerde verbergen"
@@ -986,6 +982,10 @@ msgstr "Maximale afspeeltijd"
 msgid "Message"
 msgstr "Bericht"
 
+#. CONTEXT: configuration: show-marquee: minimize
+msgid "Minimized"
+msgstr ""
+
 #. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
 msgstr "Mix"
@@ -1135,6 +1135,10 @@ msgstr ""
 #. CONTEXT: label: notes
 msgid "Notes"
 msgstr "Notities"
+
+#. CONTEXT: configuration: show-marquee: off
+msgid "Off"
+msgstr "Uit"
 
 #. CONTEXT: managementui: menu selection: song list: options menu
 #. CONTEXT: playerui: menu selection: options for the player
@@ -1549,6 +1553,10 @@ msgstr ""
 msgid "Show Extra Queues"
 msgstr ""
 
+#. CONTEXT: configuration: show-marquee: selection
+msgid "Show Marquee"
+msgstr ""
+
 #. CONTEXT: configuration: whether to show the 'queue dance' buttons
 msgid "Show Queue Dance Buttons"
 msgstr ""
@@ -1841,6 +1849,10 @@ msgstr ""
 #. CONTEXT: configuration file: dance
 msgid "Viennese Waltz"
 msgstr "Weense wals"
+
+#. CONTEXT: configuration: show-marquee: visible
+msgid "Visible"
+msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: playerui: The current volume of the song

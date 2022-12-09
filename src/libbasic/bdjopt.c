@@ -26,6 +26,7 @@
 static int  bdjoptQueueIndex (nlistidx_t idx, int musiqc);
 static void bdjoptConvFadeType (datafileconv_t *conv);
 static void bdjoptConvWriteTags (datafileconv_t *conv);
+static void bdjoptConvMarqueeShow (datafileconv_t *conv);
 static void bdjoptCreateNewConfigs (void);
 
 typedef struct {
@@ -59,7 +60,7 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "COMPLETEMSG",          OPT_P_COMPLETE_MSG,         VALUE_STR, NULL, -1 },
   { "DEFAULTVOLUME",        OPT_P_DEFAULTVOLUME,        VALUE_NUM, NULL, -1 },
   { "FADETYPE",             OPT_P_FADETYPE,             VALUE_NUM, bdjoptConvFadeType, -1 },
-  { "HIDEMARQUEEONSTART",   OPT_P_HIDE_MARQUEE_ON_START,VALUE_NUM, convBoolean, -1 },
+  { "MARQUEE_SHOW",         OPT_P_MARQUEE_SHOW,         VALUE_NUM, bdjoptConvMarqueeShow, -1 },
   { "MOBILEMARQUEE",        OPT_P_MOBILEMARQUEE,        VALUE_NUM, convBoolean, -1 },
   { "MOBILEMQPORT",         OPT_P_MOBILEMQPORT,         VALUE_NUM, NULL, -1 },
   { "MOBILEMQTITLE",        OPT_P_MOBILEMQTITLE,        VALUE_STR, NULL, -1 },
@@ -608,6 +609,39 @@ bdjoptConvWriteTags (datafileconv_t *conv)
       case WRITE_TAGS_ALL: { sval = "ALL"; break; }
       case WRITE_TAGS_BDJ_ONLY: { sval = "BDJ"; break; }
       case WRITE_TAGS_NONE: { sval = "NONE"; break; }
+    }
+    conv->str = sval;
+  }
+}
+
+static void
+bdjoptConvMarqueeShow (datafileconv_t *conv)
+{
+  bdjmarqueeshow_t  mqshow = MARQUEE_SHOW_VISIBLE;
+  char              *sval;
+
+  conv->allocated = false;
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+
+    mqshow = MARQUEE_SHOW_VISIBLE;
+    if (strcmp (conv->str, "off") == 0) {
+      mqshow = MARQUEE_SHOW_OFF;
+    }
+    if (strcmp (conv->str, "minimize") == 0) {
+      mqshow = MARQUEE_SHOW_MINIMIZE;
+    }
+    if (strcmp (conv->str, "visible") == 0) {
+      mqshow = MARQUEE_SHOW_VISIBLE;
+    }
+    conv->num = mqshow;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    sval = "visible";
+    switch (conv->num) {
+      case MARQUEE_SHOW_OFF: { sval = "off"; break; }
+      case MARQUEE_SHOW_MINIMIZE: { sval = "minimize"; break; }
+      case MARQUEE_SHOW_VISIBLE: { sval = "visible"; break; }
     }
     conv->str = sval;
   }

@@ -778,7 +778,8 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
     }
   }
 
-  if ((mainData->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START &&
+  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) != MARQUEE_SHOW_OFF &&
+      (mainData->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START &&
       (mainData->startflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
     mainStartMarquee (mainData);
   }
@@ -813,7 +814,8 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
         connConnect (mainData->conn, ROUTE_REMCTRL);
       }
     }
-    if ((mainData->startflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
+    if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) != MARQUEE_SHOW_OFF &&
+        (mainData->startflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
       if (! connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
         connConnect (mainData->conn, ROUTE_MARQUEE);
       }
@@ -836,7 +838,8 @@ mainConnectingCallback (void *tmaindata, programstate_t programState)
       ++connCount;
     }
   }
-  if ((mainData->startflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
+  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) != MARQUEE_SHOW_OFF &&
+      (mainData->startflags & BDJ4_INIT_NO_MARQUEE) != BDJ4_INIT_NO_MARQUEE) {
     ++connMax;
     if (connIsConnected (mainData->conn, ROUTE_MARQUEE)) {
       ++connCount;
@@ -916,9 +919,6 @@ mainStartMarquee (maindata_t *mainData)
   osSetEnv ("GTK_THEME", theme);
 #endif
 
-  if ((mainData->startflags & BDJ4_INIT_HIDE_MARQUEE) == BDJ4_INIT_HIDE_MARQUEE) {
-    targv [idx++] = "--hidemarquee";
-  }
   targv [idx++] = NULL;
 
   flags = PROCUTIL_DETACH;

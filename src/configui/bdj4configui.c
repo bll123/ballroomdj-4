@@ -193,6 +193,7 @@ main (int argc, char *argv[])
 
   confuiInitGeneral (&confui.gui);
   confuiInitPlayer (&confui.gui);
+  confuiInitMarquee (&confui.gui);
   confuiInitOrganization (&confui.gui);
   confuiInitDispSettings (&confui.gui);
   confuiInitEditDances (&confui.gui);

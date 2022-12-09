@@ -84,6 +84,7 @@ enum {
   CONFUI_SPINBOX_ITUNES_STARS_80,
   CONFUI_SPINBOX_ITUNES_STARS_90,
   CONFUI_SPINBOX_LOCALE,
+  CONFUI_SPINBOX_MARQUEE_SHOW,
   CONFUI_SPINBOX_MAX_PLAY_TIME,       // per queue
   CONFUI_SPINBOX_MQ_THEME,
   CONFUI_SPINBOX_PLAYER,
@@ -101,7 +102,6 @@ enum {
   CONFUI_SWITCH_ENABLE_ITUNES,
   CONFUI_SWITCH_FILTER_STATUS_PLAYABLE,
   CONFUI_SWITCH_MOBILE_MQ,
-  CONFUI_SWITCH_MQ_HIDE_ON_START,
   CONFUI_SWITCH_MQ_SHOW_SONG_INFO,
   CONFUI_SWITCH_Q_ACTIVE,
   CONFUI_SWITCH_Q_DISPLAY,
@@ -442,6 +442,7 @@ void confuiBuildUIEditLevels (confuigui_t *gui);
 void confuiCreateLevelTable (confuigui_t *gui);
 
 /* confmarquee.c */
+void confuiInitMarquee (confuigui_t *gui);
 void confuiBuildUIMarquee (confuigui_t *gui);
 
 /* confmobmq.c */

@@ -20,6 +20,7 @@ BallroomDJ 4 Change Log (beta)
 * Changes:
     * alternate setup: add a name entry to the setup process for the shortcut.
     * configuration: increased number of available queues to 4.
+    * marquee: changed hide-marquee-on-start to show-marquee and added an 'off' setting.
     * mobile marquee: remove internet mode.
     * player: moved 'request external' into a menu.
     * player: the queue dance buttons are only shown per the queue configuration.

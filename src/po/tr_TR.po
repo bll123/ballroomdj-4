@@ -789,10 +789,6 @@ msgstr "Harika"
 msgid "HTML Template"
 msgstr "HTML Şablonu"
 
-#. CONTEXT: configuration: marquee: minimize the marquee when the player is started
-msgid "Hide Marquee on Start"
-msgstr "Başlangıçta seçenekleri gizle"
-
 #. CONTEXT: playlist management: hide unselected dances
 msgid "Hide Unselected"
 msgstr "Seçilmeyenleri gizle"
@@ -985,6 +981,10 @@ msgstr "Maksimum oynatma süresi"
 msgid "Message"
 msgstr "Mesaj"
 
+#. CONTEXT: configuration: show-marquee: minimize
+msgid "Minimized"
+msgstr ""
+
 #. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
 msgstr "Karıştır"
@@ -1134,6 +1134,10 @@ msgstr "Geçerli bir %s dizini değil."
 #. CONTEXT: label: notes
 msgid "Notes"
 msgstr "Notlar"
+
+#. CONTEXT: configuration: show-marquee: off
+msgid "Off"
+msgstr ""
 
 #. CONTEXT: managementui: menu selection: song list: options menu
 #. CONTEXT: playerui: menu selection: options for the player
@@ -1548,6 +1552,10 @@ msgstr "Kurulum tamamlandı."
 msgid "Show Extra Queues"
 msgstr "Ek kuyruklar göster"
 
+#. CONTEXT: configuration: show-marquee: selection
+msgid "Show Marquee"
+msgstr ""
+
 #. CONTEXT: configuration: whether to show the 'queue dance' buttons
 msgid "Show Queue Dance Buttons"
 msgstr ""
@@ -1839,6 +1847,10 @@ msgstr ""
 
 #. CONTEXT: configuration file: dance
 msgid "Viennese Waltz"
+msgstr ""
+
+#. CONTEXT: configuration: show-marquee: visible
+msgid "Visible"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)

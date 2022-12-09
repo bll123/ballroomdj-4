@@ -22,6 +22,20 @@
 #include "ui.h"
 
 void
+confuiInitMarquee (confuigui_t *gui)
+{
+  confuiSpinboxTextInitDataNum (gui, "cu-marquee-show",
+      CONFUI_SPINBOX_MARQUEE_SHOW,
+      /* CONTEXT: configuration: show-marquee: off */
+      MARQUEE_SHOW_OFF, _("Off"),
+      /* CONTEXT: configuration: show-marquee: minimize */
+      MARQUEE_SHOW_MINIMIZE, _("Minimized"),
+      /* CONTEXT: configuration: show-marquee: visible */
+      MARQUEE_SHOW_VISIBLE, _("Visible"),
+      -1);
+}
+
+void
 confuiBuildUIMarquee (confuigui_t *gui)
 {
   UIWidget      vbox;
@@ -35,6 +49,11 @@ confuiBuildUIMarquee (confuigui_t *gui)
       /* CONTEXT: configuration: options associated with the marquee */
       _("Marquee Options"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
+
+  /* CONTEXT: configuration: show-marquee: selection */
+  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Show Marquee"),
+      CONFUI_SPINBOX_MARQUEE_SHOW, OPT_P_MARQUEE_SHOW,
+      CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_MARQUEE_SHOW), NULL);
 
   /* CONTEXT: configuration: The theme to use for the marquee display */
   confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Marquee Theme"),
@@ -61,10 +80,6 @@ confuiBuildUIMarquee (confuigui_t *gui)
       CONFUI_WIDGET_MQ_ACCENT_COLOR, OPT_P_MQ_ACCENT_COL,
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
 
-  /* CONTEXT: configuration: marquee: minimize the marquee when the player is started */
-  confuiMakeItemSwitch (gui, &vbox, &sg, _("Hide Marquee on Start"),
-      CONFUI_SWITCH_MQ_HIDE_ON_START, OPT_P_HIDE_MARQUEE_ON_START,
-      bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START), NULL, CONFUI_NO_INDENT);
   logProcEnd (LOG_PROC, "confuiBuildUIMarquee", "");
 }
 

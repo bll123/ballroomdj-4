@@ -181,8 +181,8 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   startflags = bdj4startup (argc, argv, NULL, "mq", ROUTE_MARQUEE, flags);
-  if (bdjoptGetNum (OPT_P_HIDE_MARQUEE_ON_START) ||
-     (startflags & BDJ4_INIT_HIDE_MARQUEE) == BDJ4_INIT_HIDE_MARQUEE) {
+  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == MARQUEE_SHOW_MINIMIZE ||
+      ((startflags & BDJ4_INIT_HIDE_MARQUEE) == BDJ4_INIT_HIDE_MARQUEE)) {
     marquee.hideonstart = true;
   }
 

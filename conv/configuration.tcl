@@ -388,8 +388,8 @@ foreach path [list {} profiles $mpath $mppath] {
         }
       }
       if { $path eq "profiles" } {
-        puts $ofh HIDEMARQUEEONSTART
-        puts $ofh "..yes"
+        puts $ofh MARQUEE_SHOW
+        puts $ofh "..visible"
         puts $ofh MQ_ACCENT_COL
         puts $ofh "..#030e80"
         puts $ofh MQ_INFO_COL
