@@ -5,12 +5,15 @@
 __Edit Dances__ configures the dances that are known to BDJ4.  Dances
 can be added or removed and the configuration for each dance changed.
 
-Adding a new dance:  Select the __&#43;__ button to add a new dance.
-The dance is added with a default name of _New&nbsp;Dance_.  Change the
-name of the dance to what you want.
+Adding a new dance: Select the _Add New_ (![Add
+New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-C.png))
+button to add a new dance. The dance is added with a default name of
+_New&nbsp;Dance_.  Change the name of the dance to what you want.
 
 Removing a dance: Select the dance to remove in the list.  Select the
-_Delete_ button to remove the dance.
+_Delete_
+(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-C.png))
+button to remove the dance.
 
 Modifying a dance: Select the dance to change and change the dance
 configuration.
@@ -47,4 +50,4 @@ proper default when MPM is selected in the
 <br><span style="color:#4559bf;">**Configuration / Edit Dances**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-09 13:09:34; BDJ4 version 4.0.0-beta)_

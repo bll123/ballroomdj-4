@@ -7,8 +7,12 @@
 If you want to use genres, you will also want to change the
 [Display&nbsp;Settings](en-Configuration-Display%20Settings).
 
-To add a new genre, select the __&#43;__ button.  Then click on
-the name to change the name.
+To add a new genre, select the _Add New_ (![Add
+New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-C.png))
+button.  Then click on the name to change the name.  Select the
+_Delete_
+(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-C.png))
+button to delete a genre.
 
 Use the up and down arrows to change the order of the genres to match
 your preference.
@@ -21,4 +25,4 @@ music support is not yet implemented in BDJ4.__
 <br><span style="color:#4559bf;">**Configuration / Edit Genres**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-09 13:09:34; BDJ4 version 4.0.0-beta)_

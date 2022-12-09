@@ -14,10 +14,13 @@ The _New_ and _Complete_ statuses may not be removed or have their
 names changed.  Songs newly added to the database are assigned the
 _New_ status.
 
-To add a new status, select the __&#43;__ button.  Then double-click on
-the status name to edit the name.  Use the up and down arrows to
-adjust the order in which the statuses appear.  Use the delete button to
-remove a status.
+To add a new status, select the _Add New_ (![Add
+New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-C.png))
+button.  Then double-click on the status name to edit the name.  Use
+the up and down arrows to adjust the order in which the statuses
+appear.  Use the _Delete_
+(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-C.png))
+button to remove a status.
 
 The __Play?__ selection indicates whether the song will be used in
 automatic or sequenced playlists and whether it will show up in the
@@ -30,4 +33,4 @@ _Playable&nbsp;Status_ filter (see:
 <br><span style="color:#4559bf;">**Configuration / Edit Status**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-09 13:09:34; BDJ4 version 4.0.0-beta)_
