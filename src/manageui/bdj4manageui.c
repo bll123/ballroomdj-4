@@ -1817,9 +1817,11 @@ manageSonglistCreateFromPlaylist (void *udata)
   logProcBegin (LOG_PROC, "manageSonglistCreateFromPlaylist");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: create from playlist");
   manageSonglistSave (manage);
+
   /* if there are no songs, preserve the song list name, as */
   /* the user may have typed in a new name before running create-from-pl */
   dataFree (manage->slpriorname);
+  manage->slpriorname = NULL;
   if (uimusicqGetCount (manage->slmusicq) <= 0) {
     manage->slpriorname = uimusicqGetSonglistName (manage->slmusicq);
   }
@@ -1971,7 +1973,8 @@ manageCFPLResponseHandler (void *udata, long responseid)
 
       /* the edit mode must be false to allow the stop time to be applied */
       manage->editmode = EDIT_FALSE;
-      manageSonglistLoadFile (manage, fn, MANAGE_STD);
+      /* re-use songlist-load-file to load the auto/seq playlist */
+      manageSonglistLoadFile (manage, fn, MANAGE_CREATE);
 
       /* make sure no save happens with the playlist being used */
       dataFree (manage->sloldname);
@@ -2026,13 +2029,22 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
     return;
   }
 
+  /* create-from-playlist already did a save */
   if (preloadflag == MANAGE_STD) {
     manageSonglistSave (manage);
   }
 
-  if (! songlistExists (fn)) {
-    logProcEnd (LOG_PROC, "manageSonglistLoadFile", "no-songlist");
-    return;
+  if (preloadflag == MANAGE_CREATE) {
+    if (! playlistExists (fn)) {
+      logProcEnd (LOG_PROC, "manageSonglistLoadFile", "no-playlist");
+      return;
+    }
+  }
+  if (preloadflag == MANAGE_STD || preloadflag == MANAGE_PRELOAD) {
+    if (! songlistExists (fn)) {
+      logProcEnd (LOG_PROC, "manageSonglistLoadFile", "no-songlist");
+      return;
+    }
   }
 
   manage->inload = true;
@@ -2055,7 +2067,7 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_DATA_RESUME, tbuff);
 
   manageSetSonglistName (manage, fn);
-  if (preloadflag == MANAGE_STD) {
+  if (preloadflag != MANAGE_PRELOAD) {
     manageLoadPlaylistCB (manage, fn);
   }
   manage->slbackupcreated = false;
