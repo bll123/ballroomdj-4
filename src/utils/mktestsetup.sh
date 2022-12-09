@@ -158,7 +158,7 @@ mv -f ${tfn}.n ${tfn}
 
 tfn=data/profile00/bdjconfig.txt
 sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
-    -e '/^MARQUEE_SHOW/ { n ; s/.*/..minimized/ ; }' \
+    -e '/^MARQUEE_SHOW/ { n ; s/.*/..minimize/ ; }' \
     -e '/^PROFILENAME/ { n ; s/.*/..Test-Setup/ ; }' \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}

@@ -104,6 +104,8 @@ foreach path [list {} profiles $mpath $mppath] {
           puts $tfh "..no"
           puts $tfh "SHOWQUEUEDANCE"
           puts $tfh "..no"
+          puts $tfh STOP_AT_TIME
+          puts $tfh "..0"
           if { $q == 2 } {
             puts $tfh "QUEUE_NAME"
             puts $tfh "..Queue C"
@@ -396,8 +398,6 @@ foreach path [list {} profiles $mpath $mppath] {
         puts $ofh "..#444444"
         puts $ofh MQ_TEXT_COL
         puts $ofh "..#000000"
-        puts $ofh STOPATTIME
-        puts $ofh "..0"
         puts $ofh UI_ACCENT_COL
         puts $ofh "..#ffa600"
         puts $ofh UI_ERROR_COL

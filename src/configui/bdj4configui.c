@@ -154,8 +154,8 @@ main (int argc, char *argv[])
       confui.gui.uiitem [i].dropdown = uiDropDownInit ();
     }
     if (i > CONFUI_SPINBOX_BEGIN && i < CONFUI_SPINBOX_MAX) {
-      if (i == CONFUI_SPINBOX_MAX_PLAY_TIME ||
-          i == CONFUI_SPINBOX_STOP_AT_TIME) {
+      if (i == CONFUI_SPINBOX_Q_MAX_PLAY_TIME ||
+          i == CONFUI_SPINBOX_Q_STOP_AT_TIME) {
         confui.gui.uiitem [i].spinbox = uiSpinboxTimeInit (SB_TIME_BASIC);
       } else {
         confui.gui.uiitem [i].spinbox = uiSpinboxInit ();

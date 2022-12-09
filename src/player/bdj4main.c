@@ -230,7 +230,8 @@ main (int argc, char *argv[])
 
   mainData.lastGapSent = -2;
   /* calculate the stop time once only */
-  mainData.stopTime = bdjoptGetNum (OPT_P_STOPATTIME);
+// ### FIX
+  mainData.stopTime = bdjoptGetNumPerQueue (OPT_Q_STOP_AT_TIME, 0);
   mainData.nStopTime = mainCalcStopTime (mainData.stopTime);
 
   mainData.conn = connInit (ROUTE_MAIN);

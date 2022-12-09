@@ -294,7 +294,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, UIWidget *boxp,
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt, indent);
 
-  if (bdjoptIdx == OPT_P_STOPATTIME) {
+  if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
     uiutilsUICallbackStrInit (&gui->uiitem [widx].callback,
         confuiValHMCallback, gui);
     /* convert value to mm:ss */
@@ -305,7 +305,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, UIWidget *boxp,
   }
   uiSpinboxTimeCreate (gui->uiitem [widx].spinbox, gui,
       &gui->uiitem [widx].callback);
-  if (bdjoptIdx == OPT_P_STOPATTIME) {
+  if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
     uiSpinboxSetRange (gui->uiitem [widx].spinbox, 0.0, 1440000.0);
   }
   uiSpinboxTimeSetValue (gui->uiitem [widx].spinbox, value);

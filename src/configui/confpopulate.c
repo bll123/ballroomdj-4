@@ -84,7 +84,7 @@ confuiPopulateOptions (confuigui_t *gui)
       }
       case CONFUI_SPINBOX_TIME: {
         nval = (ssize_t) uiSpinboxTimeGetValue (gui->uiitem [i].spinbox);
-        if (i == CONFUI_SPINBOX_STOP_AT_TIME) {
+        if (i == CONFUI_SPINBOX_Q_STOP_AT_TIME) {
           /* convert to hh:mm */
           nval *= 60;
         }

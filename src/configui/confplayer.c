@@ -117,11 +117,6 @@ confuiBuildUIPlayer (confuigui_t *gui)
       CONFUI_WIDGET_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
       10, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME), NULL);
 
-  /* CONTEXT: configuration: the time when playback will stop */
-  confuiMakeItemSpinboxTime (gui, &vbox, &sg, &sgB, _("Stop At"),
-      CONFUI_SPINBOX_STOP_AT_TIME, OPT_P_STOPATTIME,
-      bdjoptGetNum (OPT_P_STOPATTIME), CONFUI_NO_INDENT);
-
   /* CONTEXT: (noun) configuration: the number of items loaded into the music queue */
   confuiMakeItemSpinboxNum (gui, &vbox, &sg, &sgB, _("Queue Length"),
       CONFUI_WIDGET_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
@@ -154,26 +149,31 @@ confuiBuildUIPlayer (confuigui_t *gui)
 
   /* CONTEXT: configuration: the amount of time to do a volume fade-in when playing a song */
   confuiMakeItemSpinboxDouble (gui, &vbox, &sg, &sgB, _("Fade In Time"),
-      CONFUI_WIDGET_FADE_IN_TIME, OPT_Q_FADEINTIME,
+      CONFUI_WIDGET_Q_FADE_IN_TIME, OPT_Q_FADEINTIME,
       0.0, 2.0, (double) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, 0) / 1000.0,
       CONFUI_INDENT);
 
   /* CONTEXT: configuration: the amount of time to do a volume fade-out when playing a song */
   confuiMakeItemSpinboxDouble (gui, &vbox, &sg, &sgB, _("Fade Out Time"),
-      CONFUI_WIDGET_FADE_OUT_TIME, OPT_Q_FADEOUTTIME,
+      CONFUI_WIDGET_Q_FADE_OUT_TIME, OPT_Q_FADEOUTTIME,
       0.0, 10.0, (double) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, 0) / 1000.0,
       CONFUI_INDENT);
 
   /* CONTEXT: configuration: the amount of time to wait inbetween songs */
   confuiMakeItemSpinboxDouble (gui, &vbox, &sg, &sgB, _("Gap Between Songs"),
-      CONFUI_WIDGET_GAP, OPT_Q_GAP,
+      CONFUI_WIDGET_Q_GAP, OPT_Q_GAP,
       0.0, 60.0, (double) bdjoptGetNumPerQueue (OPT_Q_GAP, 0) / 1000.0,
       CONFUI_INDENT);
 
   /* CONTEXT: configuration: the maximum amount of time to play a song */
   confuiMakeItemSpinboxTime (gui, &vbox, &sg, &sgB, _("Maximum Play Time"),
-      CONFUI_SPINBOX_MAX_PLAY_TIME, OPT_Q_MAXPLAYTIME,
+      CONFUI_SPINBOX_Q_MAX_PLAY_TIME, OPT_Q_MAXPLAYTIME,
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, 0), CONFUI_INDENT);
+
+  /* CONTEXT: configuration: the time when playback will stop */
+  confuiMakeItemSpinboxTime (gui, &vbox, &sg, &sgB, _("Stop At"),
+      CONFUI_SPINBOX_Q_STOP_AT_TIME, OPT_Q_STOP_AT_TIME,
+      bdjoptGetNum (OPT_Q_STOP_AT_TIME), CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: pause each song */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Pause Each Song"),
@@ -342,14 +342,16 @@ confuiPlayerQueueChg (void *udata)
       bdjoptGetNumPerQueue (OPT_Q_ACTIVE, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch,
       bdjoptGetNumPerQueue (OPT_Q_DISPLAY, nselidx));
-  uiSpinboxSetValue (&gui->uiitem [CONFUI_WIDGET_FADE_IN_TIME].uiwidget,
+  uiSpinboxSetValue (&gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidget,
       (double) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, nselidx) / 1000.0);
-  uiSpinboxSetValue (&gui->uiitem [CONFUI_WIDGET_FADE_OUT_TIME].uiwidget,
+  uiSpinboxSetValue (&gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidget,
       (double) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, nselidx) / 1000.0);
-  uiSpinboxSetValue (&gui->uiitem [CONFUI_WIDGET_GAP].uiwidget,
+  uiSpinboxSetValue (&gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidget,
       (double) bdjoptGetNumPerQueue (OPT_Q_GAP, nselidx) / 1000.0);
-  uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_MAX_PLAY_TIME].spinbox,
+  uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].spinbox,
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, nselidx));
+  uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].spinbox,
+      bdjoptGetNumPerQueue (OPT_Q_STOP_AT_TIME, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiswitch,
       bdjoptGetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiswitch,

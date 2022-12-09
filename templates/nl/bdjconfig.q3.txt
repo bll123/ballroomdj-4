@@ -22,3 +22,5 @@ QUEUE_NAME
 ..Wachtrij D
 SHOWQUEUEDANCE
 ..no
+STOP_AT_TIME
+..0

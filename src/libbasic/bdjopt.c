@@ -74,7 +74,6 @@ static datafilekey_t bdjoptprofiledfkeys [] = {
   { "REMCONTROLPORT",       OPT_P_REMCONTROLPORT,       VALUE_NUM, NULL, -1 },
   { "REMCONTROLUSER",       OPT_P_REMCONTROLUSER,       VALUE_STR, NULL, -1 },
   { "REMOTECONTROL",        OPT_P_REMOTECONTROL,        VALUE_NUM, convBoolean, -1 },
-  { "STOPATTIME",           OPT_P_STOPATTIME,           VALUE_NUM, NULL, -1 },
   { "UI_ACCENT_COL",        OPT_P_UI_ACCENT_COL,        VALUE_STR, NULL, -1 },
   { "UI_ERROR_COL",         OPT_P_UI_ERROR_COL,         VALUE_STR, NULL, -1 },
   { "UI_MARK_COL",          OPT_P_UI_MARK_COL,          VALUE_STR, NULL, -1 },
@@ -92,6 +91,7 @@ static datafilekey_t bdjoptqueuedfkeys [] = {
   { "PLAYANNOUNCE",         OPT_Q_PLAY_ANNOUNCE,        VALUE_NUM, convBoolean, -1 },
   { "QUEUE_NAME",           OPT_Q_QUEUE_NAME,           VALUE_STR, NULL, -1 },
   { "SHOWQUEUEDANCE",       OPT_Q_SHOW_QUEUE_DANCE,     VALUE_NUM, convBoolean, -1 },
+  { "STOP_AT_TIME",         OPT_Q_STOP_AT_TIME,         VALUE_NUM, NULL, -1 },
 };
 
 static datafilekey_t bdjoptmachinedfkeys [] = {
