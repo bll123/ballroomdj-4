@@ -8,6 +8,7 @@ BallroomDJ 4 Change Log (beta)
     * localization: fixed dance configuration for nl.
     * macos: various installation fixes.
     * player: fixed request listing to filter playback status on startup.
+    * player: fix stop-at time handling.
     * player/manager: fix communication about database updates.
     * select folder dialog: fixed to only show folders.
     * song editor: fixed internal bug causing loss of data.

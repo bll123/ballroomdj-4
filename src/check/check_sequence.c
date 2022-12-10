@@ -67,6 +67,26 @@ START_TEST(sequence_create)
 }
 END_TEST
 
+START_TEST(sequence_exists)
+{
+  int     rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- sequence_exists");
+
+  bdjoptInit ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
+  bdjvarsdfloadInit ();
+
+  rc = sequenceExists (SEQFN);
+  ck_assert_int_ne (rc, 0);
+  rc = sequenceExists (SEQFN "xyzzy");
+  ck_assert_int_eq (rc, 0);
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+}
+END_TEST
+
 START_TEST(sequence_alloc)
 {
   sequence_t    *seq;
@@ -200,6 +220,7 @@ sequence_suite (void)
   tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, sequence_create);
+  tcase_add_test (tc, sequence_exists);
   tcase_add_test (tc, sequence_alloc);
   tcase_add_test (tc, sequence_iterate);
   tcase_add_test (tc, sequence_save);

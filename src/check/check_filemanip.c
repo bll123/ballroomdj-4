@@ -395,6 +395,76 @@ START_TEST(filemanip_renameall)
 }
 END_TEST
 
+START_TEST(filemanip_deleteall)
+{
+  FILE      *fh;
+  int       rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filemanip_deleteall");
+
+  for (int i = 0; i < fnlistsz; ++i) {
+    char  ofn0 [MAXPATHLEN];
+    char  ofn1 [MAXPATHLEN];
+    char  ofn2 [MAXPATHLEN];
+    char  ofn3 [MAXPATHLEN];
+
+    char *ofn = fnlist [i];
+
+    snprintf (ofn0, sizeof (ofn0), "%s.bak.0", ofn);
+    snprintf (ofn1, sizeof (ofn1), "%s.bak.1", ofn);
+    snprintf (ofn2, sizeof (ofn2), "%s.bak.2", ofn);
+    snprintf (ofn3, sizeof (ofn3), "%s.bak.3", ofn);
+    fileopDelete (ofn);
+    fileopDelete (ofn0);
+    fileopDelete (ofn1);
+    fileopDelete (ofn2);
+    fileopDelete (ofn3);
+
+    fh = fileopOpen (ofn, "w");
+    ck_assert_ptr_nonnull (fh);
+    fprintf (fh, "1\n");
+    fclose (fh);
+
+    filemanipBackup (ofn, 2);
+
+    fh = fileopOpen (ofn, "w");
+    ck_assert_ptr_nonnull (fh);
+    fprintf (fh, "2\n");
+    fclose (fh);
+
+    filemanipBackup (ofn, 2);
+
+    fh = fileopOpen (ofn, "w");
+    ck_assert_ptr_nonnull (fh);
+    fprintf (fh, "3\n");
+    fclose (fh);
+
+    filemanipBackup (ofn, 2);
+
+    /* at this point, ofn, ofn1, and ofn2 exist */
+
+    filemanipDeleteAll (ofn);
+
+    rc = fileopFileExists (ofn);
+    ck_assert_int_eq (rc, 0);
+    rc = fileopFileExists (ofn0);
+    ck_assert_int_eq (rc, 0);
+    rc = fileopFileExists (ofn1);
+    ck_assert_int_eq (rc, 0);
+    rc = fileopFileExists (ofn2);
+    ck_assert_int_eq (rc, 0);
+    rc = fileopFileExists (ofn3);
+    ck_assert_int_eq (rc, 0);
+
+    fileopDelete (ofn);
+    fileopDelete (ofn0);
+    fileopDelete (ofn1);
+    fileopDelete (ofn2);
+    fileopDelete (ofn3);
+  }
+}
+END_TEST
+
 Suite *
 filemanip_suite (void)
 {
@@ -408,6 +478,7 @@ filemanip_suite (void)
   tcase_add_test (tc, filemanip_copy);
   tcase_add_test (tc, filemanip_backup);
   tcase_add_test (tc, filemanip_renameall);
+  tcase_add_test (tc, filemanip_deleteall);
   suite_add_tcase (s, tc);
   return s;
 }

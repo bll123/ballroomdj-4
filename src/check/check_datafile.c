@@ -362,7 +362,7 @@ START_TEST(datafile_keyval_df_extra)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_df_extra");
-  fn = "tmp/dftestb.txt";
+  fn = "tmp/dftestc.txt";
   tstr = "version\n..7\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
@@ -470,7 +470,7 @@ START_TEST(datafile_indirect)
   int             vers;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect");
-  fn = "tmp/dftestb.txt";
+  fn = "tmp/dftestd.txt";
   tstr = "version\n..8\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\nB\n..1\n"
       "KEY\n..2\nA\n..a\nB\n..2\n"
@@ -558,7 +558,7 @@ START_TEST(datafile_indirect_missing)
   int             vers;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect_missing");
-  fn = "tmp/dftestb.txt";
+  fn = "tmp/dfteste.txt";
   tstr = "version\n..10\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\n"
       "KEY\n..2\nA\n..a\nB\n..2\n"
@@ -655,7 +655,7 @@ START_TEST(datafile_keyval_savelist)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_savelist");
-  fn = "tmp/dftestb.txt";
+  fn = "tmp/dftestf.txt";
   tstr = "version\n..11\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
@@ -736,7 +736,7 @@ START_TEST(datafile_keyval_savebuffer)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_savebuffer");
-  fn = "tmp/dftestb.txt";
+  fn = "tmp/dftestg.txt";
   tstr = "version\n..12\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
@@ -750,7 +750,7 @@ START_TEST(datafile_keyval_savebuffer)
   ck_assert_int_eq (vers, 12);
 
   datafileSaveKeyValBuffer (tbuff, sizeof (tbuff), "chk-df-h", dfkeyskl, DFKEY_COUNT, list, 0);
-  fn = "tmp/dftestc.txt";
+  fn = "tmp/dftesth.txt";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tbuff);
   fclose (fh);
@@ -815,7 +815,7 @@ START_TEST(datafile_keyval_save)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_save");
-  fn = "tmp/dftestb.txt";
+  fn = "tmp/dftestk.txt";
   tstr = "version\n..13\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
@@ -828,7 +828,7 @@ START_TEST(datafile_keyval_save)
   vers = nlistGetVersion (list);
   ck_assert_int_eq (vers, 13);
 
-  fn = "tmp/dftestc.txt";
+  fn = "tmp/dftestl.txt";
   datafileSaveKeyVal ("chk-df-i", fn, dfkeyskl, DFKEY_COUNT, list, 0);
   tdf = datafileAllocParse ("chk-df-i", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT);
   tlist = datafileGetList (tdf);
@@ -899,7 +899,7 @@ START_TEST(datafile_indirect_save)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect_save");
-  fn = "tmp/dftestb.txt";
+  fn = "tmp/dftestm.txt";
   tstr = "version\n..14\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..b\nB\n..2\n"
       "KEY\n..2\nA\n..c\nB\n..3\n"
@@ -914,7 +914,7 @@ START_TEST(datafile_indirect_save)
   ck_assert_int_eq (vers, 14);
   unlink (fn);
 
-  fn = "tmp/dftestc.txt";
+  fn = "tmp/dftestn.txt";
   datafileSaveIndirect ("chk-df-j", fn, dfkeyskl, DFKEY_COUNT, list);
   tdf = datafileAllocParse ("chk-df-j", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT);
   tlist = datafileGetList (tdf);
@@ -954,7 +954,7 @@ START_TEST(datafile_simple_save)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_simple_save");
-  fn = "tmp/dftesta.txt";
+  fn = "tmp/dftesto.txt";
   tstr = "# comment\n# version 15\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
@@ -967,7 +967,7 @@ START_TEST(datafile_simple_save)
   vers = slistGetVersion (list);
   ck_assert_int_eq (vers, 15);
 
-  fn = "tmp/dftestc.txt";
+  fn = "tmp/dftestp.txt";
   datafileSaveList ("chk-df-k", fn, list);
   tdf = datafileAllocParse ("chk-df-k", DFTYPE_LIST, fn, NULL, 0);
   tlist = datafileGetList (tdf);

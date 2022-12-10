@@ -37,6 +37,7 @@ typedef struct musicdb {
   rafile_t      *radb;
   char          *fn;
   nlist_t       *tempSongs;
+  bool          inbatch;
 } musicdb_t;
 
 static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn);
@@ -60,6 +61,7 @@ dbOpen (const char *fn)
   musicdb->danceCount = dcount;
   musicdb->count = 0L;
   musicdb->radb = NULL;
+  musicdb->inbatch = false;
   musicdb->fn = strdup (fn);
   /* tempsongs is ordered by dbidx */
   musicdb->tempSongs = nlistAlloc ("db-temp-songs", LIST_ORDERED, songFree);
@@ -196,10 +198,12 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   if (song != NULL) {
     slistSetData (musicdb->songs, fstr, song);
   }
-  /* this is inefficient, but otherwise the disk buffering / file handling */
-  /* causes issues w/reading an updated entry */
-  raClose (musicdb->radb);
-  musicdb->radb = NULL;
+  if (! musicdb->inbatch) {
+    /* this is inefficient, but otherwise the disk buffering / file handling */
+    /* causes issues w/reading an updated entry */
+    raClose (musicdb->radb);
+    musicdb->radb = NULL;
+  }
 }
 
 void
@@ -209,6 +213,7 @@ dbStartBatch (musicdb_t *musicdb)
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
   raStartBatch (musicdb->radb);
+  musicdb->inbatch = true;
 }
 
 void
@@ -217,6 +222,7 @@ dbEndBatch (musicdb_t *musicdb)
   raEndBatch (musicdb->radb);
   raClose (musicdb->radb);
   musicdb->radb = NULL;
+  musicdb->inbatch = false;
 }
 
 song_t *
@@ -281,10 +287,13 @@ dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
 
   tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn, rrn);
   raWrite (musicdb->radb, rrn, tbuff);
-  /* this is inefficient, but otherwise the disk buffering / file handling */
-  /* causes issues w/reading an updated entry */
-  raClose (musicdb->radb);
-  musicdb->radb = NULL;
+
+  if (! musicdb->inbatch) {
+    /* this is inefficient, but otherwise the disk buffering / file handling */
+    /* causes issues w/reading an updated entry */
+    raClose (musicdb->radb);
+    musicdb->radb = NULL;
+  }
   return tblen;
 }
 

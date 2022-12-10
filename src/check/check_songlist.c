@@ -46,6 +46,26 @@ setup (void)
   filemanipCopy ("test-templates/test-songlist.pldances", "data/test-songlist.pldances");
 }
 
+START_TEST(songlist_exists)
+{
+  int       rc;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songlist_exists");
+
+  bdjoptInit ();
+  bdjoptSetStr (OPT_M_DIR_MUSIC, "test-music");
+  bdjvarsdfloadInit ();
+
+  rc = songlistExists (SLFN);
+  ck_assert_int_ne (rc, 0);
+  rc = songlistExists (SLFN "xyzzy");
+  ck_assert_int_eq (rc, 0);
+
+  bdjvarsdfloadCleanup ();
+  bdjoptCleanup ();
+}
+END_TEST
+
 START_TEST(songlist_alloc)
 {
   songlist_t    *sl;
@@ -185,6 +205,7 @@ songlist_suite (void)
   tc = tcase_create ("songlist");
   tcase_set_tags (tc, "libbdj4");
   tcase_add_unchecked_fixture (tc, setup, NULL);
+  tcase_add_test (tc, songlist_exists);
   tcase_add_test (tc, songlist_alloc);
   tcase_add_test (tc, songlist_load);
   tcase_add_test (tc, songlist_iterate);

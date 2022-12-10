@@ -254,7 +254,7 @@ START_TEST(tmutilshorttstamp_chk)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- tmutilshorttstamp_chk");
 
   tmutilShortTstamp (buff, sizeof (buff));
-  ck_assert_int_eq (strlen (buff), 4);
+  ck_assert_int_eq (strlen (buff), 6);
 }
 END_TEST
 

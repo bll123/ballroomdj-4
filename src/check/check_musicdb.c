@@ -67,8 +67,7 @@ static char *songparsedata [] = {
       "TRACKTOTAL\n..10\n"
       "VOLUMEADJUSTPERC\n..4400\n"
       "WORK_ID\n..workid%d\n"
-      "LASTUPDATED\n..1660237307\n"
-      "RRN\n..%d\n",
+      "LASTUPDATED\n..1660237307\n",
     /* unicode filename */
     "FILE\n..IAmtheBest_내가제일잘나가%d.mp3\n"
       "ADJUSTFLAGS\n..\n"
@@ -104,8 +103,7 @@ static char *songparsedata [] = {
       "TRACKTOTAL\n..10\n"
       "VOLUMEADJUSTPERC\n..4400\n"
       "WORK_ID\n..workid%d\n"
-      "LASTUPDATED\n..1660237307\n"
-      "RRN\n..%d\n"
+      "LASTUPDATED\n..1660237307\n",
 };
 enum {
   songparsedatasz = sizeof (songparsedata) / sizeof (char *),
@@ -489,7 +487,9 @@ START_TEST(musicdb_load_get_byidx)
       free (ndata);
 
       dbsong = dbGetByIdx (db, count);
+      ck_assert_ptr_nonnull (dbsong);
       ck_assert_int_eq (songGetNum (dbsong, TAG_RRN), count + 1);
+      ck_assert_int_eq (songGetNum (dbsong, TAG_DBIDX), count);
       ck_assert_str_eq (songGetStr (song, TAG_ARTIST),
           songGetStr (dbsong, TAG_ARTIST));
       songFree (song);
@@ -538,7 +538,9 @@ START_TEST(musicdb_load_get_byname)
       free (ndata);
 
       dbsong = dbGetByName (db, songGetStr (song, TAG_FILE));
+      ck_assert_ptr_nonnull (dbsong);
       ck_assert_int_eq (songGetNum (dbsong, TAG_RRN), count + 1);
+      ck_assert_int_eq (songGetNum (dbsong, TAG_DBIDX), count);
       ck_assert_str_eq (songGetStr (song, TAG_ARTIST),
           songGetStr (dbsong, TAG_ARTIST));
       songFree (song);
@@ -590,6 +592,7 @@ START_TEST(musicdb_iterate)
 
       dbsong = dbIterate (db, &curridx, &iteridx);
       ck_assert_int_eq (songGetNum (dbsong, TAG_RRN), count + 1);
+      ck_assert_int_eq (songGetNum (dbsong, TAG_DBIDX), count);
       ck_assert_str_eq (songGetStr (song, TAG_ARTIST),
           songGetStr (dbsong, TAG_ARTIST));
       songFree (song);
@@ -608,6 +611,7 @@ START_TEST(musicdb_load_entry)
 {
   musicdb_t *db;
   song_t    *song;
+  song_t    *dbsong;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- musicdb_load_entry");
 
@@ -624,9 +628,11 @@ START_TEST(musicdb_load_entry)
   ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "newartist");
   dbWriteSong (db, song);
   dbLoadEntry (db, songGetNum (song, TAG_DBIDX));
+  /* and now song is no longer valid */
 
-  song = dbGetByName (db, "argentinetango05.mp3");
-  ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "newartist");
+  dbsong = dbGetByName (db, "argentinetango05.mp3");
+  ck_assert_ptr_nonnull (dbsong);
+  ck_assert_str_eq (songGetStr (dbsong, TAG_ARTIST), "newartist");
   dbClose (db);
 
   bdjvarsdfloadCleanup ();
@@ -660,6 +666,7 @@ START_TEST(musicdb_temp)
   ck_assert_int_ne (dbidx, -1);
 
   dbsong = dbGetByIdx (db, dbidx);
+  ck_assert_ptr_nonnull (dbsong);
   ck_assert_int_eq (dbidx, songGetNum (dbsong, TAG_DBIDX));
   ck_assert_ptr_eq (dbsong, song);
 
