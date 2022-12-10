@@ -459,6 +459,10 @@ void confuiDispSaveTable (confuigui_t *gui, int selidx);
 void confuiInitPlayer (confuigui_t *gui);
 void confuiBuildUIPlayer (confuigui_t *gui);
 
+/* confplayerqueue.c */
+void confuiInitPlayerQueue (confuigui_t *gui);
+void confuiBuildUIPlayerQueue (confuigui_t *gui);
+
 /* confpopulate.c */
 void confuiPopulateOptions (confuigui_t *gui);
 
