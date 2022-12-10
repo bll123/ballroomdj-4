@@ -4,7 +4,8 @@
 /*
  * bdj4main
  *  Main entry point for the player process.
- *  Handles startup of the player, mobile marquee and remote control.
+ *  Handles startup of the player, marquee, mobile marquee and
+ *      mobile remote control.
  *  Handles playlists and the music queue.
  */
 
@@ -1360,6 +1361,10 @@ mainMusicQueueFill (maindata_t *mainData)
   logMsg (LOG_DBG, LOG_BASIC, "fill: %d < %d", currlen, playerqLen);
 
   stopTime = playlistGetConfigNum (playlist, PLAYLIST_STOP_TIME);
+  if (stopTime <= 0) {
+    /* playlist stop time is not configured, use the queue stop time */
+    stopTime = mainData->stopTime [mainData->musicqManageIdx];
+  }
   if (editmode == EDIT_FALSE && stopTime > 0) {
     nStopTime = mainCalcStopTime (stopTime);
     stopatflag = mainCheckMusicQStopTime (mainData, nStopTime);

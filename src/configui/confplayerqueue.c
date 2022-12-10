@@ -159,8 +159,9 @@ confuiPlayerQueueChg (void *udata)
       (double) bdjoptGetNumPerQueue (OPT_Q_GAP, nselidx) / 1000.0);
   uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].spinbox,
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, nselidx));
+  /* divide by to convert from hh:mm to mm:ss for the spinbox */
   uiSpinboxTimeSetValue (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].spinbox,
-      bdjoptGetNumPerQueue (OPT_Q_STOP_AT_TIME, nselidx));
+      bdjoptGetNumPerQueue (OPT_Q_STOP_AT_TIME, nselidx) / 60);
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiswitch,
       bdjoptGetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiswitch,
