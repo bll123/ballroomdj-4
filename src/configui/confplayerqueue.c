@@ -144,14 +144,6 @@ confuiPlayerQueueChg (void *udata)
   }
   gui->uiitem [widx].listidx = nselidx;
 
-  if (nselidx == 0) {
-    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
-    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch);
-  } else {
-    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
-    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch);
-  }
-
   /* set all of the display values for the queue specific items */
   uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_QUEUE_NM].entry,
       bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, nselidx));
@@ -175,6 +167,16 @@ confuiPlayerQueueChg (void *udata)
       bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch,
       bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, nselidx));
+
+  /* do this after the values have changed, otherwise the switches */
+  /* may not display the insensitive/sensitive state correctly */
+  if (nselidx == 0) {
+    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
+    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch);
+  } else {
+    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
+    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch);
+  }
 
   logProcEnd (LOG_PROC, "confuiPlayerQueueChg", "");
   return UICB_CONT;

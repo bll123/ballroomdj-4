@@ -65,15 +65,13 @@ uiCreateSwitch (int value)
       "  border-top-left-radius: 15px; "
       "  border-top-right-radius: 15px; "
       "  background-color: shade(@theme_base_color,0.8); "
+      "  border-color: shade(@theme_base_color,0.8); "
       "} "
       "button:checked { "
       "  background-color: shade(@theme_base_color,0.8); "
       "} "
       "button:hover { "
       "  background-color: shade(@theme_base_color,0.8); "
-      "} "
-      "button:disabled { "
-      "  border-color: shade(@theme_base_color,0.8); "
       "} "
       );
   g_signal_connect (widget, "toggled",
@@ -146,7 +144,7 @@ static void
 uiSwitchToggleHandler (GtkButton *b, gpointer udata)
 {
   UICallback  *uicb = udata;
-  long        value;
+  int         value;
 
   value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (b));
   uiutilsCallbackLongHandler (uicb, value);
