@@ -419,6 +419,7 @@ confuiBuildUI (configui_t *confui)
   uiBoxPackStart (&hbox, &menubar);
 
   uiCreateNotebook (&confui->gui.notebook);
+  uiWidgetSetClass (&confui->gui.notebook, "confnotebook");
   uiNotebookTabPositionLeft (&confui->gui.notebook);
   uiBoxPackStartExpand (&confui->gui.vbox, &confui->gui.notebook);
 

@@ -21,6 +21,8 @@ BallroomDJ 4 Change Log (beta)
     * alternate setup: add a name entry to the setup process for the shortcut.
     * configuration: increased number of available queues to 4.
     * configuration: player: moved stop-at time to be per-queue.
+    * configuration: split player queue settings into a new notebook tab.
+    * configuration: reduced font size of notebook tabs.
     * marquee: changed hide-marquee-on-start to show-marquee and added an 'off' setting.
     * mobile marquee: remove internet mode.
     * player: moved 'request external' into a menu.

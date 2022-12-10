@@ -384,7 +384,7 @@ void uiSizeGroupAdd (UIWidget *uiw, UIWidget *uiwidget);
 void  uiUIInitialize (void);
 void  uiUIProcessEvents (void);
 void  uiCleanup (void);
-void  uiSetCss (GtkWidget *w, char *style);
+void  uiSetCss (GtkWidget *w, const char *style);
 void  uiSetUIFont (char *uifont);
 void  uiInitUILog (void);
 void  uiGetForegroundColor (UIWidget *uiwidget, char *buff, size_t sz);
@@ -418,6 +418,7 @@ void  uiWidgetClearPersistent (UIWidget *uiuiwidget);
 void  uiWidgetSetSizeRequest (UIWidget *uiuiwidget, int width, int height);
 bool  uiWidgetIsValid (UIWidget *uiwidget);
 void  uiWidgetGetPosition (UIWidget *widget, int *x, int *y);
+void  uiWidgetSetClass (UIWidget *uiwidget, const char *class);
 /* these routines will be removed at a later date */
 void  uiWidgetExpandHorizW (GtkWidget *widget);
 void  uiWidgetExpandVertW (GtkWidget *widget);

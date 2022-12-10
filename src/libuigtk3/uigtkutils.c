@@ -62,7 +62,7 @@ uiCleanup (void)
 }
 
 void
-uiSetCss (GtkWidget *w, char *style)
+uiSetCss (GtkWidget *w, const char *style)
 {
   GtkCssProvider  *tcss;
   char            *tstyle;
@@ -88,7 +88,7 @@ uiSetUIFont (char *uifont)
   char            tbuff [300];
   char            wbuff [300];
   char            *p;
-  int             sz = 0;
+  int             sz = 12;
 
   if (uifont == NULL || ! *uifont) {
     return;
@@ -113,7 +113,9 @@ uiSetUIFont (char *uifont)
       snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; } ", sz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
       sz -= 2;
-      snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; }", sz);
+      snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; } ", sz);
+      strlcat (tbuff, wbuff, sizeof (tbuff));
+      snprintf (wbuff, sizeof (wbuff), " .confnotebook tab label { font-size: %dpt; } ", sz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
     }
 
@@ -125,7 +127,8 @@ uiSetUIFont (char *uifont)
     gtk_css_provider_load_from_data (tcss, p, -1, NULL);
     screen = gdk_screen_get_default ();
     if (screen != NULL) {
-      gtk_style_context_add_provider_for_screen (screen, GTK_STYLE_PROVIDER (tcss),
+      gtk_style_context_add_provider_for_screen (screen,
+          GTK_STYLE_PROVIDER (tcss),
           GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     }
   }
