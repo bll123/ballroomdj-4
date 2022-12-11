@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-12-09\n"
+"PO-Revision-Date: 2022-12-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -1218,6 +1218,10 @@ msgstr "Oynatıcı"
 #. CONTEXT: configuration: options associated with the player
 msgid "Player Options"
 msgstr "Oynatıcı Seçenekleri"
+
+#. CONTEXT: configuration: player queue configuration
+msgid "Player Queues"
+msgstr ""
 
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)

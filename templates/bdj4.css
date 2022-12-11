@@ -1,0 +1,103 @@
+/*
+ * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+ */
+
+/* applies to all widgets of this type */
+
+/* working */
+scrollbar, scrollbar slider { min-width: 9px; }
+/* working */
+scale, trough { min-height: 5px; }
+/* working */
+notebook tab:checked { background-color: shade(@theme_base_color,0.6); }
+
+/* dark treeview background */
+/* working 2022-12-10 */
+.bdj4darktreebg {
+  background-color: shade(@theme_base_color,0.8);
+}
+.bdj4darktreebg:selected {
+  background-color: @theme_selected_bg_color;
+}
+
+/* a bdj4 switch is implemented as a toggle button */
+/* 2022-12-10 : working */
+.bdj4switch {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  background-color: shade(@theme_base_color,0.8);
+  border-color: shade(@theme_base_color,0.8);
+}
+.bdj4switch:checked {
+  background-color: shade(@theme_base_color,0.8);
+}
+.bdj4switch:hover {
+  background-color: shade(@theme_base_color,0.8);
+}
+
+/* labels */
+/* not working */
+/*
+.bdj4chgindnorm {
+  border-left-style: solid; border-left-width: 3px;
+  border-left-color: transparent;
+}
+.bdj4chginderr {
+  border-left-style: solid; border-left-width: 3px;
+  border-left-color: #ff1111;
+}
+.bdj4chgindchg {
+  border-left-style: solid; border-left-width: 3px;
+  border-left-color: #11ff11;
+}
+*/
+
+/* scrolled window */
+/* not working */
+/*
+.bdj4scrolledwindow.undershoot.top,
+.bdj4scrolledwindow.undershoot.right,
+.bdj4scrolledwindow.undershoot.left,
+.bdj4scrolledwindow.undershoot.bottom {
+  background-image: none; outline-width: 0;
+}
+*/
+
+/* textview */
+/* not working */
+/*
+.bdj4darktextbox text {
+  background-color: shade(@theme_base_color,0.8);
+}
+*/
+
+/* text spinbox's are read-only (spinbutton) */
+/* seems ok, where did the selection issue show up? */
+/* i don't think the selection can be set this way */
+/*
+.bdj4textspinbox {
+  caret-color: @theme_base_color;
+}
+.bdj4textspinbox selection {
+  background-color: @theme_base_color; color: @theme_text_color;
+}
+*/
+
+/* flat button */
+/* not working */
+/*
+.bdj4flatbutton {
+  outline-width: 0;
+  padding: 0;
+  border-color: @theme_bg_color;
+  background-color: @theme_bg_color;
+}
+// not known if this is correct. want the child of the button
+// could be an image
+.bdj4flatbutton widget {
+  outline-width: 0;
+}
+*/
+

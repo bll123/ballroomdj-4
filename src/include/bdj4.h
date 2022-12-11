@@ -32,6 +32,7 @@ enum {
 #define BDJ4_NAME         "BDJ4"
 #define BDJ3_NAME         "BallroomDJ 3"
 
+#define BDJ4_CSS_EXT      ".css"
 #define BDJ4_DB_EXT       ".dat"
 #define BDJ4_LOCK_EXT     ".lck"
 #define BDJ4_LINK_EXT     ".link"
@@ -65,5 +66,7 @@ enum {
 /* alternates/base port */
 #define ALT_COUNT_FN        "altcount"
 #define BASE_PORT_FN        "baseport"
+/* other */
+#define BDJ4_CSS_FN         "bdj4"
 
 #endif /* INC_BDJ4_H */

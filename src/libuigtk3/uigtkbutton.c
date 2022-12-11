@@ -169,6 +169,7 @@ uiButtonSetFlat (uibutton_t *uibutton)
 {
   GtkWidget *aw;
 
+  uiWidgetSetClass (&uibutton->uibutton, "bdj4flatbutton");
   uiSetCss (uibutton->uibutton.widget,
       "button { "
       "outline-width: 0; "

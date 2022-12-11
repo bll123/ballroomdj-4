@@ -33,6 +33,7 @@ uiCreateChangeIndicator (UIWidget *boxp)
   gtk_widget_set_margin_end (widget, uiBaseMarginSz);
 
   uichgind->label.widget = widget;
+  uiWidgetSetClass (&uichgind->label, "bdj4chgindnorm");
   uiBoxPackStart (boxp, &uichgind->label);
   return uichgind;
 }
@@ -48,23 +49,32 @@ uichgindFree (uichgind_t *uichgind)
 void
 uichgindMarkNormal (uichgind_t *uichgind)
 {
+  uiWidgetSetClass (&uichgind->label, "bdj4chgindnorm");
+  uiWidgetRemoveClass (&uichgind->label, "bdj4chginderr");
+  uiWidgetRemoveClass (&uichgind->label, "bdj4chgindchg");
   uiSetCss (uichgind->label.widget,
-      "label { border-left-style: solid; border-left-width: 2px; "
+      "label { border-left-style: solid; border-left-width: 3px; "
       " border-left-color: transparent; }");
 }
 
 void
 uichgindMarkError (uichgind_t *uichgind)
 {
+  uiWidgetSetClass (&uichgind->label, "bdj4chginderr");
+  uiWidgetRemoveClass (&uichgind->label, "bdj4chgindnorm");
+  uiWidgetRemoveClass (&uichgind->label, "bdj4chgindchg");
   uiSetCss (uichgind->label.widget,
-      "label { border-left-style: solid; border-left-width: 2px; "
+      "label { border-left-style: solid; border-left-width: 3px; "
       " border-left-color: #ff1111; }");
 }
 
 void
 uichgindMarkChanged (uichgind_t *uichgind)
 {
+  uiWidgetSetClass (&uichgind->label, "bdj4chgindchg");
+  uiWidgetRemoveClass (&uichgind->label, "bdj4chgindnorm");
+  uiWidgetRemoveClass (&uichgind->label, "bdj4chginderr");
   uiSetCss (uichgind->label.widget,
-      "label { border-left-style: solid; border-left-width: 2px; "
+      "label { border-left-style: solid; border-left-width: 3px; "
       " border-left-color: #11ff11; }");
 }

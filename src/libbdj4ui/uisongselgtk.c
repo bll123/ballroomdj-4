@@ -299,8 +299,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   uiw->songselScrollbar = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
   assert (uiw->songselScrollbar != NULL);
   uiWidgetExpandVertW (uiw->songselScrollbar);
-  uiSetCss (uiw->songselScrollbar,
-      "scrollbar, scrollbar slider { min-width: 9px; } ");
   uiBoxPackEndUW (&hbox, uiw->songselScrollbar);
   g_signal_connect (uiw->songselScrollbar, "change-value",
       G_CALLBACK (uisongselScroll), uisongsel);

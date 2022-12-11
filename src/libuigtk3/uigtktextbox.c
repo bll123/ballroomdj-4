@@ -154,6 +154,7 @@ uiTextBoxSetValue (uitextbox_t *tb, const char *str)
 void
 uiTextBoxDarken (uitextbox_t *tb)
 {
+  uiWidgetSetClass (&tb->textbox, "bdj4darktextbox");
   uiSetCss (tb->textbox.widget,
       "textview text { background-color: shade(@theme_base_color,0.8); } ");
 }

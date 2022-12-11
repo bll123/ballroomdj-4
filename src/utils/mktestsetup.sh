@@ -52,12 +52,12 @@ fi
 for f in templates/ds-*.txt; do
   cp -f $f data/profile00
 done
-for f in templates/*.txt; do
+for f in templates/*.txt templates/*.css; do
   case $f in
-    *bdjconfig.txt*)
+    templates/bdjconfig*)
       continue
       ;;
-    *ds-*.txt)
+    templates/ds-*.txt)
       continue
       ;;
   esac

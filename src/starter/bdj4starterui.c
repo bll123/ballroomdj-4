@@ -44,6 +44,7 @@
 #include "sysvars.h"
 #include "templateutil.h"
 #include "ui.h"
+#include "uiapp.h"
 #include "volreg.h"
 #include "webclient.h"
 
@@ -247,7 +248,6 @@ main (int argc, char *argv[])
   int             status = 0;
   startui_t       starter;
   uint16_t        listenPort;
-  char            *uifont;
   int             flags;
 
 
@@ -310,9 +310,7 @@ main (int argc, char *argv[])
 
   starterLoadOptions (&starter);
 
-  uiUIInitialize ();
-  uifont = bdjoptGetStr (OPT_MP_UIFONT);
-  uiSetUIFont (uifont);
+  bdj4AppInitializeUI ();
 
   starterBuildUI (&starter);
   osuiFinalize ();

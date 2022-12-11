@@ -37,6 +37,7 @@
 #include "songfilter.h"
 #include "sysvars.h"
 #include "ui.h"
+#include "uiapp.h"
 #include "uinbutil.h"
 
 typedef struct configui {
@@ -80,7 +81,6 @@ main (int argc, char *argv[])
 {
   int             status = 0;
   uint16_t        listenPort;
-  char            *uifont = NULL;
   nlist_t         *llist = NULL;
   nlistidx_t      iteridx;
   configui_t      confui;
@@ -246,9 +246,7 @@ main (int argc, char *argv[])
   progstateSetCallback (confui.progstate, STATE_CLOSING,
       confuiClosingCallback, &confui);
 
-  uiUIInitialize ();
-  uifont = bdjoptGetStr (OPT_MP_UIFONT);
-  uiSetUIFont (uifont);
+  bdj4AppInitializeUI ();
 
   confuiBuildUI (&confui);
   osuiFinalize ();

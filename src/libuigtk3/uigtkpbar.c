@@ -30,7 +30,7 @@ uiCreateProgressBar (UIWidget *uiwidget, char *color)
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   snprintf (tbuff, sizeof (tbuff),
       "progress, trough { min-height: 25px; } "
-      "progressbar > trough > progress { background-color: %s; }",
+      "progressbar > trough > progress { background-color: %s; } ",
       color);
   uiSetCss (widget, tbuff);
 }

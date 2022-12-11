@@ -95,6 +95,7 @@ uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata)
   /* text color temporarily becomes white on light colored themes */
   /* the text color must be set also */
   /* these changes are to make the spinbox read-only */
+  uiWidgetSetClass (&spinbox->uispinbox, "bdj4textspinbox");
   uiSetCss (spinbox->uispinbox.widget,
       "spinbutton { caret-color: @theme_base_color; } "
       "selection { background-color: @theme_base_color; color: @theme_text_color; }"

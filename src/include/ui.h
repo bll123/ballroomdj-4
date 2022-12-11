@@ -351,8 +351,6 @@ void uiWindowSetWinStateCallback (UIWidget *uiwindow, UICallback *uicb);
 void uiWindowNoDim (UIWidget *uiwidget);
 void uiWindowSetMappedCallback (UIWidget *uiwidget, UICallback *uicb);
 void uiWindowPresent (UIWidget *uiwidget);
-/* these routines will be removed at a later date */
-GtkWidget * uiCreateScrolledWindowW (int minheight);
 
 /* uigtkscale.c */
 void    uiCreateScale (UIWidget *uiwidget, double lower, double upper,
@@ -385,7 +383,8 @@ void  uiUIInitialize (void);
 void  uiUIProcessEvents (void);
 void  uiCleanup (void);
 void  uiSetCss (GtkWidget *w, const char *style);
-void  uiSetUIFont (char *uifont);
+void  uiSetUIFont (const char *uifont);
+void  uiLoadApplicationCSS (const char *fn);
 void  uiInitUILog (void);
 void  uiGetForegroundColor (UIWidget *uiwidget, char *buff, size_t sz);
 /* will be removed at a later date */
@@ -419,6 +418,7 @@ void  uiWidgetSetSizeRequest (UIWidget *uiuiwidget, int width, int height);
 bool  uiWidgetIsValid (UIWidget *uiwidget);
 void  uiWidgetGetPosition (UIWidget *widget, int *x, int *y);
 void  uiWidgetSetClass (UIWidget *uiwidget, const char *class);
+void  uiWidgetRemoveClass (UIWidget *uiwidget, const char *class);
 /* these routines will be removed at a later date */
 void  uiWidgetExpandHorizW (GtkWidget *widget);
 void  uiWidgetExpandVertW (GtkWidget *widget);
