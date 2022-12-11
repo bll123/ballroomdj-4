@@ -88,7 +88,6 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   UIWidget      hbox;
   UIWidget      dvbox;
   UIWidget      uiwidget;
-  UIWidget      scwindow;
   uibutton_t    *uibutton;
   UIWidget      *uiwidgetp;
   GtkWidget     *tree;
@@ -135,15 +134,16 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
     uiBoxPackStart (&vbox, &uiwidget);
   }
 
-  uiCreateScrolledWindow (&scwindow, 300);
-  uiWidgetExpandVert (&scwindow);
-  uiBoxPackStartExpand (&vbox, &scwindow);
+  uiCreateScrolledWindow (&uiwidget, 300);
+  uiWidgetExpandVert (&uiwidget);
+  uiBoxPackStartExpand (&vbox, &uiwidget);
 
   tree = uiCreateTreeView ();
-  uiwidget.widget = tree;
-  uiWidgetSetClass (&uiwidget, "bdj4darktreebg");
-  uiWidgetExpandVert (&uiwidget);
-  uiBoxPackInWindow (&scwindow, &uiwidget);
+  uiSetCss (tree,
+      "treeview { background-color: shade(@theme_base_color,0.8); } "
+      "treeview:selected { background-color: @theme_selected_bg_color; } ");
+  uiWidgetExpandVertW (tree);
+  uiBoxPackInWindowUW (&uiwidget, tree);
   duallist->trees [DUALLIST_TREE_SOURCE].tree = tree;
   duallist->trees [DUALLIST_TREE_SOURCE].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
@@ -199,15 +199,16 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
     uiBoxPackStart (&vbox, &uiwidget);
   }
 
-  uiCreateScrolledWindow (&scwindow, 300);
-  uiWidgetExpandVert (&scwindow);
-  uiBoxPackStartExpand (&vbox, &scwindow);
+  uiCreateScrolledWindow (&uiwidget, 300);
+  uiWidgetExpandVert (&uiwidget);
+  uiBoxPackStartExpand (&vbox, &uiwidget);
 
   tree = uiCreateTreeView ();
-  uiwidget.widget = tree;
-  uiWidgetSetClass (&uiwidget, "bdj4darktreebg");
-  uiWidgetExpandVert (&uiwidget);
-  uiBoxPackInWindow (&scwindow, &uiwidget);
+  uiSetCss (tree,
+      "treeview { background-color: shade(@theme_base_color,0.8); } "
+      "treeview:selected { background-color: @theme_selected_bg_color; } ");
+  uiWidgetExpandVertW (tree);
+  uiBoxPackInWindowUW (&uiwidget, tree);
   duallist->trees [DUALLIST_TREE_TARGET].tree = tree;
   duallist->trees [DUALLIST_TREE_TARGET].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));

@@ -20,15 +20,13 @@
 #include "sysvars.h"
 #include "ui.h"
 
-static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel,
-    const GLogField* fields, gsize n_fields, gpointer udata);
-static void uiCSSParseError (GtkCssProvider *self, GtkCssSection *section,
-    GError *error, gpointer udata);
-
-int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
-
 static char **cssdata = NULL;
 static int  csscount = 0;
+
+static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel,
+    const GLogField* fields, gsize n_fields, gpointer udata);
+
+int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 
 void
 uiUIInitialize (void)
@@ -58,9 +56,9 @@ uiCleanup (void)
       dataFree (cssdata [i]);
     }
     free (cssdata);
+    csscount = 0;
+    cssdata = NULL;
   }
-  csscount = 0;
-  cssdata = NULL;
 }
 
 void
@@ -83,7 +81,7 @@ uiSetCss (GtkWidget *w, const char *style)
 }
 
 void
-uiSetUIFont (const char *uifont)
+uiSetUIFont (char *uifont)
 {
   GtkCssProvider  *tcss;
   GdkScreen       *screen;
@@ -135,27 +133,6 @@ uiSetUIFont (const char *uifont)
     }
   }
 }
-
-void
-uiLoadApplicationCSS (const char *fn)
-{
-  GtkCssProvider  *tcss;
-  GdkScreen       *screen;
-  GFile           *gfile;
-
-  gfile = g_file_new_for_path (fn);
-  tcss = gtk_css_provider_new ();
-  g_signal_connect (tcss, "parsing-error", G_CALLBACK (uiCSSParseError), NULL);
-  gtk_css_provider_load_from_file (tcss, gfile, NULL);
-  screen = gdk_screen_get_default ();
-  if (screen != NULL) {
-    gtk_style_context_add_provider_for_screen (screen,
-        GTK_STYLE_PROVIDER (tcss),
-        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  }
-  g_object_unref (gfile);
-}
-
 
 void
 uiInitUILog (void)
@@ -214,18 +191,4 @@ uiGetForegroundColorW (GtkWidget *widget, char *buff, size_t sz)
       (int) round (gcolor.green * 255.0),
       (int) round (gcolor.blue * 255.0));
 }
-
-static void
-uiCSSParseError (GtkCssProvider *self, GtkCssSection *section,
-    GError *error, gpointer udata)
-{
-  fprintf (stderr, "%s\n    %d %d/%d %d/%d\n",
-    error->message,
-    gtk_css_section_get_section_type (section),
-    gtk_css_section_get_start_line (section),
-    gtk_css_section_get_start_position (section),
-    gtk_css_section_get_end_line (section),
-    gtk_css_section_get_end_position (section));
-}
-
 

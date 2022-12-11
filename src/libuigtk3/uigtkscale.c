@@ -38,6 +38,7 @@ uiCreateScale (UIWidget *uiwidget, double lower, double upper,
   gtk_range_set_round_digits (GTK_RANGE (scale), digits);
   gtk_scale_set_has_origin (GTK_SCALE (scale), TRUE);
   gtk_range_set_value (GTK_RANGE (scale), initvalue);
+  uiSetCss (scale, "scale, trough { min-height: 5px; }");
   uiwidget->widget = scale;
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 2);
