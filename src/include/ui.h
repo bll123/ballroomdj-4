@@ -265,6 +265,12 @@ void uiCreateLink (UIWidget *uiwidget, const char *label, const char *uri);
 void uiLinkSet (UIWidget *uilink, const char *label, const char *uri);
 void uiLinkSetActivateCallback (UIWidget *uilink, UICallback *uicb);
 
+/* uigtkmiscbutton.c */
+void uiCreateFontButton (UIWidget *uiwidget, const char *fontname);
+const char * uiFontButtonGetFont (UIWidget *uiwidget);
+void uiCreateColorButton (UIWidget *uiwidget, const char *color);
+void uiColorButtonGetColor (UIWidget *uiwidget, char *tbuff, size_t sz);
+
 /* uigtktextbox.c */
 typedef struct uitextbox uitextbox_t;
 
@@ -300,10 +306,6 @@ void uiBoxPackStart (UIWidget *uibox, UIWidget *uiwidget);
 void uiBoxPackStartExpand (UIWidget *uibox, UIWidget *uiwidget);
 void uiBoxPackEnd (UIWidget *uibox, UIWidget *uiwidget);
 void uiBoxPackEndExpand (UIWidget *uibox, UIWidget *uiwidget);
-/* these routines will be removed at a later date */
-void uiBoxPackInWindowUW (UIWidget *uiwindow, GtkWidget *widget);
-void uiBoxPackStartUW (UIWidget *uibox, GtkWidget *widget);
-void uiBoxPackEndUW (UIWidget *uibox, GtkWidget *widget);
 
 /* uigtkpbar.c */
 void uiCreateProgressBar (UIWidget *uiwidget, char *color);
@@ -316,14 +318,19 @@ enum {
   UITREE_TYPE_STRING,
 };
 
-GtkWidget * uiCreateTreeView (void);
-GtkTreeViewColumn * uiAddDisplayColumns (GtkWidget *tree,
+void  uiCreateTreeView (UIWidget *uitree);
+void  uiTreeViewAddEditableColumn (UIWidget *uitree, int col, int editcol, const char *title, UICallback *uicb);
+GtkTreeViewColumn * uiTreeViewAddDisplayColumns (UIWidget *uitree,
     slist_t *sellist, int col, int fontcol, int ellipsizeCol);
 GType * uiTreeViewAddDisplayType (GType *types, int valtype, int col);
 void  uiTreeViewSetDisplayColumn (GtkTreeModel *model, GtkTreeIter *iter,
     int col, long num, const char *str);
-int   uiTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter);
-void  uiTreeViewAllowMultiple (GtkWidget *tree);
+int   uiTreeViewGetSelection (UIWidget *uitree, GtkTreeModel **model, GtkTreeIter *iter);
+void  uiTreeViewAllowMultiple (UIWidget *uitree);
+void  uiTreeViewEnableHeaders (UIWidget *uitree);
+void  uiTreeViewDisableHeaders (UIWidget *uitree);
+void  uiTreeViewDarkBackground (UIWidget *uitree);
+void  uiTreeViewDisableSingleClick (UIWidget *uitree);
 
 /* uigtkwindow.c */
 void uiCreateMainWindow (UIWidget *uiwidget, UICallback *uicb,
@@ -351,8 +358,6 @@ void uiWindowSetWinStateCallback (UIWidget *uiwindow, UICallback *uicb);
 void uiWindowNoDim (UIWidget *uiwidget);
 void uiWindowSetMappedCallback (UIWidget *uiwidget, UICallback *uicb);
 void uiWindowPresent (UIWidget *uiwidget);
-/* these routines will be removed at a later date */
-GtkWidget * uiCreateScrolledWindowW (int minheight);
 
 /* uigtkscale.c */
 void    uiCreateScale (UIWidget *uiwidget, double lower, double upper,
@@ -388,8 +393,6 @@ void  uiSetCss (GtkWidget *w, const char *style);
 void  uiSetUIFont (char *uifont);
 void  uiInitUILog (void);
 void  uiGetForegroundColor (UIWidget *uiwidget, char *buff, size_t sz);
-/* will be removed at a later date */
-void  uiGetForegroundColorW (GtkWidget *widget, char *buff, size_t sz);
 
 /* uigtkwidget.c */
 /* widget interface */
@@ -419,13 +422,6 @@ void  uiWidgetSetSizeRequest (UIWidget *uiuiwidget, int width, int height);
 bool  uiWidgetIsValid (UIWidget *uiwidget);
 void  uiWidgetGetPosition (UIWidget *widget, int *x, int *y);
 void  uiWidgetSetClass (UIWidget *uiwidget, const char *class);
-/* these routines will be removed at a later date */
-void  uiWidgetExpandHorizW (GtkWidget *widget);
-void  uiWidgetExpandVertW (GtkWidget *widget);
-void  uiWidgetSetAllMarginsW (GtkWidget *widget, int mult);
-void  uiWidgetSetMarginStartW (GtkWidget *widget, int mult);
-void  uiWidgetAlignHorizFillW (GtkWidget *widget);
-void  uiWidgetAlignVertFillW (GtkWidget *widget);
 
 /* uigtkimage.c */
 void  uiImageFromFile (UIWidget *uiwidget, const char *fn);
@@ -449,6 +445,14 @@ void uiImageScaledFromFile (UIWidget *uiwidget, const char *fn, int scale);
 void uiImageClear (UIWidget *uiwidget);
 void uiImageGetPixbuf (UIWidget *uiwidget);
 void uiImageSetFromPixbuf (UIWidget *uiwidget, UIWidget *uipixbuf);
+
+/* uigtkscrollbar.c */
+void uiCreateVerticalScrollbar (UIWidget *uiwidget, double upper);
+void uiScrollbarSetUpper (UIWidget *uisb, double upper);
+void uiScrollbarSetPosition (UIWidget *uisb, double pos);
+void uiScrollbarSetStepIncrement (UIWidget *uisb, double step);
+void uiScrollbarSetPageIncrement (UIWidget *uisb, double page);
+void uiScrollbarSetPageSize (UIWidget *uisb, double sz);
 
 /* uigtksep.c */
 void uiCreateHorizSeparator (UIWidget *uiwidget);

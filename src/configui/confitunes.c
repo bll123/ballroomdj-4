@@ -262,16 +262,15 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   /* itunes uses 10..100 mapping to 0.5,1,1.5,...,4.5,5 stars */
   for (int i = 0; i < CONFUI_STARS_MAX; ++i) {
-    double  starval;
-
-    starval = (double) i / 2.0 + 0.5;
-    if (i % 2 == 1) {
-      snprintf (tmp, sizeof (tmp), "%0.0f", starval);
-    } else {
-      snprintf (tmp, sizeof (tmp), "%0.1f", starval);
+    *tbuff = '\0';
+    for (int j = 0; j < i; j += 2) {
+      // black star
+      strlcat (tbuff, "\xe2\x98\x85", sizeof (tbuff));
     }
-    /* CONTEXT: configuration: itunes rating in stars (0.5, 1, 1.5, etc.) */
-    snprintf (tbuff, sizeof (tbuff), _("%s Stars"), tmp);
+    if (i % 2 == 0) {
+      // star with left half black
+      strlcat (tbuff, "\xe2\xaf\xaa", sizeof (tbuff));
+    }
 
     uiCreateHorizBox (&hbox);
     uiBoxPackStart (&vbox, &hbox);

@@ -34,7 +34,6 @@ confuiPopulateOptions (confuigui_t *gui)
   confuibasetype_t basetype;
   confuiouttype_t outtype;
   char        tbuff [MAXPATHLEN];
-  GdkRGBA     gcolor;
   long        debug = 0;
   bool        accentcolorchanged = false;
   bool        profilecolorchanged = false;
@@ -91,18 +90,13 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_COLOR: {
-        gtk_color_chooser_get_rgba (
-            GTK_COLOR_CHOOSER (gui->uiitem [i].widget), &gcolor);
-        snprintf (tbuff, sizeof (tbuff), "#%02x%02x%02x",
-            (int) round (gcolor.red * 255.0),
-            (int) round (gcolor.green * 255.0),
-            (int) round (gcolor.blue * 255.0));
+        uiColorButtonGetColor (&gui->uiitem [i].uiwidget,
+            tbuff, sizeof (tbuff));
         sval = tbuff;
         break;
       }
       case CONFUI_FONT: {
-        sval = gtk_font_chooser_get_font (
-            GTK_FONT_CHOOSER (gui->uiitem [i].widget));
+        sval = uiFontButtonGetFont (&gui->uiitem [i].uiwidget);
         break;
       }
       case CONFUI_SWITCH: {

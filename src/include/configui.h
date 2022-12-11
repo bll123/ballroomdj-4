@@ -198,7 +198,6 @@ typedef struct {
   nlist_t     *sbkeylist;     // indexed by spinbox index
                               //    value: key
   int         danceidx;       // for dance edit
-  GtkWidget   *widget;
   UIWidget    uiwidget;
   UICallback  callback;
   char        *uri;
@@ -255,6 +254,7 @@ enum {
   CONFUI_TABLE_CB_DOWN,
   CONFUI_TABLE_CB_REMOVE,
   CONFUI_TABLE_CB_ADD,
+  CONFUI_TABLE_CB_EDIT_TEXT,
   CONFUI_TABLE_CB_MAX,
 };
 
@@ -272,7 +272,7 @@ enum {
 };
 
 typedef struct confuitable {
-  GtkWidget         *tree;
+  UIWidget          uitree;
   GtkTreeSelection  *sel;
   UICallback        callback [CONFUI_TABLE_CB_MAX];
   uibutton_t        *buttons [CONFUI_BUTTON_TABLE_MAX];

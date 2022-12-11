@@ -72,7 +72,7 @@ confuiCreateStatusTable (confuigui_t *gui)
   ilistidx_t        iteridx;
   ilistidx_t        key;
   status_t          *status;
-  GtkWidget         *tree;
+  UIWidget          *uitree;
   int               editable;
 
   logProcBegin (LOG_PROC, "confuiCreateStatusTable");
@@ -104,7 +104,7 @@ confuiCreateStatusTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_STATUS].currcount += 1;
   }
 
-  tree = gui->tables [CONFUI_ID_STATUS].tree;
+  uitree = &gui->tables [CONFUI_ID_STATUS].uitree;
 
   renderer = gtk_cell_renderer_text_new ();
   g_object_set_data (G_OBJECT (renderer), "confuicolumn",
@@ -116,7 +116,7 @@ confuiCreateStatusTable (confuigui_t *gui)
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, tagdefs [TAG_STATUS].displayname);
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), gui);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
 
   renderer = gtk_cell_renderer_toggle_new ();
   g_signal_connect (G_OBJECT(renderer), "toggled",
@@ -127,9 +127,9 @@ confuiCreateStatusTable (confuigui_t *gui)
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   /* CONTEXT: configuration: status: title of the "playable" column */
   gtk_tree_view_column_set_title (column, _("Play?"));
-  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
+  gtk_tree_view_set_model (GTK_TREE_VIEW (uitree->widget), GTK_TREE_MODEL (store));
   g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateStatusTable", "");
 }

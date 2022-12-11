@@ -29,7 +29,7 @@ bool
 confuiTableAdd (void *udata)
 {
   confuigui_t       *gui = udata;
-  GtkWidget         *tree = NULL;
+  UIWidget          *uitree = NULL;
   GtkTreeModel      *model = NULL;
   GtkTreeIter       iter;
   GtkTreeIter       niter;
@@ -45,14 +45,14 @@ confuiTableAdd (void *udata)
     return UICB_STOP;
   }
 
-  tree = gui->tables [gui->tablecurr].tree;
-  if (tree == NULL) {
+  uitree = &gui->tables [gui->tablecurr].uitree;
+  if (uitree->widget == NULL) {
     logProcEnd (LOG_PROC, "confuiTableAdd", "no-tree");
     return UICB_STOP;
   }
 
   flags = gui->tables [gui->tablecurr].flags;
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->widget));
   count = gtk_tree_selection_count_selected_rows (
       gui->tables [gui->tablecurr].sel);
   titer = NULL;
@@ -134,7 +134,7 @@ confuiTableAdd (void *udata)
   gtk_tree_selection_select_path (
       gui->tables [gui->tablecurr].sel, path);
   if (gui->tablecurr == CONFUI_ID_DANCE) {
-    confuiDanceSelect (GTK_TREE_VIEW (tree), path, NULL, gui);
+    confuiDanceSelect (GTK_TREE_VIEW (uitree->widget), path, NULL, gui);
   }
   gtk_tree_path_free (path);
 

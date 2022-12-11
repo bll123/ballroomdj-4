@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-10 18:22-0800\n"
+"POT-Creation-Date: 2022-12-11 07:23-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,11 +80,6 @@ msgstr ""
 #. CONTEXT: set up alternate: window title
 #, c-format
 msgid "%s Set Up Alternate"
-msgstr ""
-
-#. CONTEXT: configuration: itunes rating in stars (0.5, 1, 1.5, etc.)
-#, c-format
-msgid "%s Stars"
 msgstr ""
 
 #. CONTEXT: starterui: basic support dialog: support option
@@ -1211,13 +1206,8 @@ msgstr ""
 msgid "Player"
 msgstr ""
 
-<<<<<<< local
 #. CONTEXT: configuration: player queue configuration
 msgid "Player Queues"
-=======
-#. CONTEXT: configuration: options associated with the player
-msgid "Player Options"
->>>>>>> other
 msgstr ""
 
 #. CONTEXT: select file: file type for the file selection dialog (playlist)

@@ -18,15 +18,15 @@
 #include "ui.h"
 
 static GType * uiAppendType (GType *types, int ncol, int type);
+static void uiTreeViewEditedSignalHandler (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 
-GtkWidget *
-uiCreateTreeView (void)
+void
+uiCreateTreeView (UIWidget *uiwidget)
 {
   GtkWidget         *tree;
   GtkTreeSelection  *sel;
 
   tree = gtk_tree_view_new ();
-  uiWidgetSetAllMarginsW (tree, 2);
   gtk_tree_view_set_enable_search (GTK_TREE_VIEW (tree), FALSE);
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (tree), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
@@ -35,11 +35,33 @@ uiCreateTreeView (void)
   gtk_widget_set_halign (tree, GTK_ALIGN_START);
   gtk_widget_set_hexpand (tree, FALSE);
   gtk_widget_set_vexpand (tree, FALSE);
-  return tree;
+  uiwidget->widget = tree;
+  uiWidgetSetAllMargins (uiwidget, 2);
+}
+
+void
+uiTreeViewAddEditableColumn (UIWidget *uitree, int col, int editcol,
+    const char *title, UICallback *uicb)
+{
+  GtkCellRenderer   *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
+
+  renderer = gtk_cell_renderer_text_new ();
+  g_object_set_data (G_OBJECT (renderer), "uicolumn",
+      GUINT_TO_POINTER (col));
+  column = gtk_tree_view_column_new_with_attributes ("", renderer,
+      "text", col,
+      "editable", editcol,
+      NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_column_set_title (column, title);
+  g_signal_connect (renderer, "edited",
+      G_CALLBACK (uiTreeViewEditedSignalHandler), uicb);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
 }
 
 GtkTreeViewColumn *
-uiAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
+uiTreeViewAddDisplayColumns (UIWidget *uitree, slist_t *sellist, int col,
     int fontcol, int ellipsizeCol)
 {
   slistidx_t  seliteridx;
@@ -82,7 +104,7 @@ uiAddDisplayColumns (GtkWidget *tree, slist_t *sellist, int col,
     } else {
       gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
     }
-    gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+    gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
     if (tagidx == TAG_FAVORITE) {
       gtk_tree_view_column_set_title (column, "\xE2\x98\x86");
     } else {
@@ -131,16 +153,16 @@ uiTreeViewAddDisplayType (GType *types, int valtype, int col)
 }
 
 int
-uiTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter)
+uiTreeViewGetSelection (UIWidget *uitree, GtkTreeModel **model, GtkTreeIter *iter)
 {
   GtkTreeSelection  *sel;
   int               count;
 
-  if (tree == NULL) {
+  if (uitree == NULL || uitree->widget == NULL) {
     return 0;
   }
 
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uitree->widget));
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count == 1) {
     /* this only works if the treeview is in single-selection mode */
@@ -150,13 +172,38 @@ uiTreeViewGetSelection (GtkWidget *tree, GtkTreeModel **model, GtkTreeIter *iter
 }
 
 void
-uiTreeViewAllowMultiple (GtkWidget *tree)
+uiTreeViewAllowMultiple (UIWidget *uitree)
 {
   GtkTreeSelection  *sel;
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uitree->widget));
   gtk_tree_selection_set_mode (sel, GTK_SELECTION_MULTIPLE);
 }
 
+void
+uiTreeViewEnableHeaders (UIWidget *uitree)
+{
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->widget), TRUE);
+}
+
+void
+uiTreeViewDisableHeaders (UIWidget *uitree)
+{
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->widget), FALSE);
+}
+
+void
+uiTreeViewDarkBackground (UIWidget *uitree)
+{
+  uiSetCss (uitree->widget,
+      "treeview { background-color: shade(@theme_base_color,0.8); } "
+      "treeview:selected { background-color: @theme_selected_bg_color; } ");
+}
+
+void
+uiTreeViewDisableSingleClick (UIWidget *uitree)
+{
+  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uitree->widget), FALSE);
+}
 
 /* internal routines */
 
@@ -169,3 +216,16 @@ uiAppendType (GType *types, int ncol, int type)
   return types;
 }
 
+static void
+uiTreeViewEditedSignalHandler (GtkCellRendererText* r, const gchar* path,
+    const gchar* ntext, gpointer udata)
+{
+  UICallback  *cb = udata;
+
+  if (cb != NULL) {
+    int   col;
+
+    col = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (r), "uicolumn"));
+    // lots of arguments to handle...
+  }
+}

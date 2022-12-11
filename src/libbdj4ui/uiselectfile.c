@@ -30,7 +30,7 @@ enum {
 typedef struct uiselectfile {
   UIWidget          *parentwinp;
   UIWidget          uidialog;
-  GtkWidget         *selfiletree;
+  UIWidget          selfiletree;
   UICallback        cb;
   selfilecb_t       selfilecb;
   nlist_t           *options;
@@ -56,7 +56,7 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
   selectfile = malloc (sizeof (uiselectfile_t));
   selectfile->parentwinp = window;
   uiutilsUIWidgetInit (&selectfile->uidialog);
-  selectfile->selfiletree = NULL;
+  uiutilsUIWidgetInit (&selectfile->selfiletree);
   uiutilsUICallbackInit (&selectfile->cb, NULL, NULL, NULL);
   selectfile->selfilecb = NULL;
   selectfile->options = options;
@@ -114,7 +114,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      uiwidget;
-  GtkWidget     *widget;
+  UIWidget      scwindow;
   char          tbuff [200];
   GtkListStore  *store;
   GtkTreeIter   iter;
@@ -144,16 +144,16 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiWidgetExpandVert (&vbox);
   uiDialogPackInDialog (&selectfile->uidialog, &vbox);
 
-  uiCreateScrolledWindow (&uiwidget, 200);
-  uiWidgetExpandHoriz (&uiwidget);
-  uiWidgetExpandVert (&uiwidget);
-  uiBoxPackStartExpand (&vbox, &uiwidget);
+  uiCreateScrolledWindow (&scwindow, 200);
+  uiWidgetExpandHoriz (&scwindow);
+  uiWidgetExpandVert (&scwindow);
+  uiBoxPackStartExpand (&vbox, &scwindow);
 
-  widget = uiCreateTreeView ();
-  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (widget), FALSE);
-  uiWidgetAlignHorizFillW (widget);
-  uiWidgetAlignVertFillW (widget);
-  selectfile->selfiletree = widget;
+  uiCreateTreeView (&uiwidget);
+  uiTreeViewDisableSingleClick (&uiwidget);
+  uiWidgetAlignHorizFill (&uiwidget);
+  uiWidgetAlignVertFill (&uiwidget);
+  uiutilsUIWidgetCopy (&selectfile->selfiletree, &uiwidget);
 
   store = gtk_list_store_new (SELFILE_COL_MAX,
       G_TYPE_STRING, G_TYPE_STRING);
@@ -174,22 +174,22 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
       NULL);
   gtk_tree_view_column_set_title (column, "");
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (widget), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uiwidget.widget), column);
 
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", SELFILE_COL_SB_PAD,
       NULL);
   gtk_tree_view_column_set_title (column, "");
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (widget), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uiwidget.widget), column);
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (widget), GTK_TREE_MODEL (store));
+  gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidget.widget), GTK_TREE_MODEL (store));
   g_object_unref (store);
 
-  g_signal_connect (widget, "row-activated",
+  g_signal_connect (uiwidget.widget, "row-activated",
       G_CALLBACK (selectFileSelect), selectfile);
 
-  uiBoxPackInWindowUW (&uiwidget, widget);
+  uiBoxPackInWindow (&scwindow, &uiwidget);
 
   /* the dialog doesn't have any space above the buttons */
   uiCreateHorizBox (&hbox);
@@ -233,7 +233,7 @@ selectFileResponseHandler (void *udata, long responseid)
       break;
     }
     case RESPONSE_APPLY: {
-      count = uiTreeViewGetSelection (selectfile->selfiletree, &model, &iter);
+      count = uiTreeViewGetSelection (&selectfile->selfiletree, &model, &iter);
       if (count != 1) {
         break;
       }

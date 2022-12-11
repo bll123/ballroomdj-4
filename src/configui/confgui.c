@@ -170,22 +170,19 @@ confuiMakeItemFontButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
     const char *txt, int widx, int bdjoptIdx, const char *fontname)
 {
   UIWidget    hbox;
-  GtkWidget   *widget;
+  UIWidget    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemFontButton");
   gui->uiitem [widx].basetype = CONFUI_FONT;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt, CONFUI_NO_INDENT);
-  if (fontname != NULL && *fontname) {
-    widget = gtk_font_button_new_with_font (fontname);
-  } else {
-    widget = gtk_font_button_new ();
-  }
-  uiWidgetSetMarginStartW (widget, 4);
-  uiBoxPackStartUW (&hbox, widget);
+
+  uiCreateFontButton (&uiwidget, fontname);
+  uiWidgetSetMarginStart (&uiwidget, 4);
+  uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
-  gui->uiitem [widx].widget = widget;
+  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemFontButton", "");
 }
@@ -195,8 +192,7 @@ confuiMakeItemColorButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
     const char *txt, int widx, int bdjoptIdx, const char *color)
 {
   UIWidget    hbox;
-  GtkWidget   *widget;
-  GdkRGBA     rgba;
+  UIWidget    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemColorButton");
 
@@ -204,16 +200,11 @@ confuiMakeItemColorButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt, CONFUI_NO_INDENT);
-  if (color != NULL && *color) {
-    gdk_rgba_parse (&rgba, color);
-    widget = gtk_color_button_new_with_rgba (&rgba);
-  } else {
-    widget = gtk_color_button_new ();
-  }
-  uiWidgetSetMarginStartW (widget, 4);
-  uiBoxPackStartUW (&hbox, widget);
+  uiCreateFontButton (&uiwidget, color);
+  uiWidgetSetMarginStart (&uiwidget, 4);
+  uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
-  gui->uiitem [widx].widget = widget;
+  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemColorButton", "");
 }

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-12-09\n"
+"PO-Revision-Date: 2022-12-11\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -83,11 +83,6 @@ msgstr "%s Speler"
 #, c-format
 msgid "%s Set Up Alternate"
 msgstr "%s Alternatief instellen"
-
-#. CONTEXT: configuration: itunes rating in stars (0.5, 1, 1.5, etc.)
-#, c-format
-msgid "%s Stars"
-msgstr "%s Sterren"
 
 #. CONTEXT: starterui: basic support dialog: support option
 #, c-format
@@ -755,7 +750,7 @@ msgstr "Lettertype"
 #. CONTEXT: playerui: menu selection: marquee: change the marquee font size
 #. CONTEXT: playerui: marquee font size dialog: the font size selector
 msgid "Font Size"
-msgstr ""
+msgstr "Tekengrootte"
 
 #. CONTEXT: configuration file: dance
 msgid "Foxtrot"
@@ -957,7 +952,7 @@ msgstr "Marquee lettertype"
 
 #. CONTEXT: playerui: marquee font size dialog: window title
 msgid "Marquee Font Size"
-msgstr ""
+msgstr "Marquee lettergrootte"
 
 #. CONTEXT: configuration: The theme to use for the marquee display
 msgid "Marquee Theme"

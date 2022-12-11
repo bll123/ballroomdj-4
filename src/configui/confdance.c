@@ -108,7 +108,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   confuiMakeItemTable (gui, &hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
   gui->tables [CONFUI_ID_DANCE].savefunc = confuiDanceSave;
   confuiCreateDanceTable (gui);
-  g_signal_connect (gui->tables [CONFUI_ID_DANCE].tree, "row-activated",
+  g_signal_connect (gui->tables [CONFUI_ID_DANCE].uitree.widget, "row-activated",
       G_CALLBACK (confuiDanceSelect), gui);
 
   uiCreateVertBox (&dvbox);
@@ -185,7 +185,7 @@ confuiCreateDanceTable (confuigui_t *gui)
   slistidx_t        iteridx;
   ilistidx_t        key;
   dance_t           *dances;
-  GtkWidget         *tree;
+  UIWidget          *uitree;
   slist_t           *dancelist;
 
 
@@ -209,8 +209,8 @@ confuiCreateDanceTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_DANCE].currcount += 1;
   }
 
-  tree = gui->tables [CONFUI_ID_DANCE].tree;
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
+  uitree = &gui->tables [CONFUI_ID_DANCE].uitree;
+  uiTreeViewDisableHeaders (uitree);
 
   renderer = gtk_cell_renderer_text_new ();
   g_object_set_data (G_OBJECT (renderer), "confuicolumn",
@@ -219,16 +219,16 @@ confuiCreateDanceTable (confuigui_t *gui)
       "text", CONFUI_DANCE_COL_DANCE,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_DANCE_COL_SB_PAD,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (tree), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (tree), GTK_TREE_MODEL (store));
+  gtk_tree_view_set_model (GTK_TREE_VIEW (uitree->widget), GTK_TREE_MODEL (store));
   g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateDanceTable", "");
 }
@@ -256,7 +256,7 @@ confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
 {
   confuigui_t     *gui = udata;
   const char      *str;
-  GtkWidget       *tree;
+  UIWidget        *uitree;
   GtkTreeModel    *model;
   GtkTreeIter     iter;
   int             count;
@@ -280,9 +280,9 @@ confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
 
   didx = gui->uiitem [widx].danceidx;
 
-  tree = gui->tables [CONFUI_ID_DANCE].tree;
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
-  count = uiTreeViewGetSelection (tree, &model, &iter);
+  uitree = &gui->tables [CONFUI_ID_DANCE].uitree;
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->widget));
+  count = uiTreeViewGetSelection (uitree, &model, &iter);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiDanceEntryChg", "no-selection");
     return UIENTRY_OK;
@@ -361,7 +361,7 @@ static void
 confuiDanceSpinboxChg (void *udata, int widx)
 {
   confuigui_t     *gui = udata;
-  GtkWidget       *tree;
+  UIWidget        *uitree;
   GtkTreeModel    *model;
   GtkTreeIter     iter;
   int             count;
@@ -389,8 +389,8 @@ confuiDanceSpinboxChg (void *udata, int widx)
     nval = (long) value;
   }
 
-  tree = gui->tables [CONFUI_ID_DANCE].tree;
-  count = uiTreeViewGetSelection (tree, &model, &iter);
+  uitree = &gui->tables [CONFUI_ID_DANCE].uitree;
+  count = uiTreeViewGetSelection (uitree, &model, &iter);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "no-selection");
     return;
