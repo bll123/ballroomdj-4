@@ -15,7 +15,7 @@ The additional filters that can be selected are _Genre_,
 _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Filter Display](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-A.png)
+![Filter Display](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-C.png)
 <br><span style="color:#4559bf;">**Configuration / Filter Display**</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -27,4 +27,4 @@ _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 <br><span style="color:#4559bf;">**Filter Dialog - All filters enabled**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_

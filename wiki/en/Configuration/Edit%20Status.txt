@@ -29,8 +29,8 @@ _Playable&nbsp;Status_ filter (see:
 [Filter&nbsp;Display](en-Configuration-Filter%20Display).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Edit Status](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditStatus-A.png)
+![Edit Status](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditStatus-C.png)
 <br><span style="color:#4559bf;">**Configuration / Edit Status**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 13:09:34; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_

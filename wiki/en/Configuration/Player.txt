@@ -1,9 +1,8 @@
 [Wiki Home](Home)
 
-### Configuration : Player Options
+### Configuration : Player
 
-<span style="color:#4559bf;">_Player options provides settings
-that control how the player works._</span>
+<span style="color:#4559bf;">_Basic configuration for the player._</span>
 
 The __Player__ and __Audio__ settings generally do not change.
 
@@ -13,58 +12,14 @@ the default device will be used.
 
 __Default Volume__: Sets the volume level when BDJ4 first starts.
 
-__Stop At__: The time when playback stops.  As this is a global
-setting and affects all playlists, a second profile would need to be
-set up for other use cases (showcases, parties).  See also the __Stop
-At__ capabilities in
-[Playlist&nbsp;Management](en-Management-Playlist%20Management).
-
 __Queue Length__: The number of songs the music queue is filled with.
 
 __Completion Message__: A message displayed on the marquee when the dance
 is finished (no more songs left to play).
 
-__Queue__: Selects which music queue to configure.  The following settings
-apply to the selected music queue.
-
-__Queue Name__: (per-queue) The name displayed for this music queue.
-
-__Active__: (per-queue) Whether the settings for the music queue are
-active.  When off, the settings for the main music queue are used
-(other than __Display__).
-
-__Display__: (per-queue) Whether this music queue will be displayed
-when the __Show&nbsp;Extra&nbsp;Queues__ option is turned on in the
-player.
-
-__Fade In Time__: (per-queue) The amount of time used to fade in the
-volume when the song starts playing.  Set to 0.0 for no fade in.
-
-__Fade Out Time__: (per-queue) The amount of time used to fade out the
-volume when song ends.  If the song ends before the fade out would
-normally start, no fade out is applied.  Set to 0.0 for no fade out.
-
-__Gap__: (per-queue) The amount of time to wait before playing the
-next song.
-
-__Maximum Play Time__: (per-queue) The maximum duration a song will
-play.  This is often set anywhere from 2:00 minutes to 3:00 minutes.
-Set to 0:00 to turn off entirely. See also
-[Playlist&nbsp;Management](en-Management-Playlist%20Management)
-
-__Pause Each Song__: (per-queue) Playback will pause after each song
-is played.  This setting is used for showcases and events.
-
-__Play Announcements__: (per-queue) The dance announcement will be
-played before each song. See
-[Edit&nbsp;Dances](en-Configuration-Edit%20Dances).
-
-__Show Queue Dance Buttons__: (per-queue) Show the _Queue&nbsp;Dance_
-and _Queue&nbsp;5_ buttons.  These are used for teaching.
-
 <div markdown style="margin-right: 20px; text-align: center;">
-![Player Options](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-A.png)
-<br><span style="color:#4559bf;">**Configuration / Player Options**</span> </div>
+![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-C.png)
+<br><span style="color:#4559bf;">**Configuration / Player**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_

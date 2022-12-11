@@ -395,7 +395,7 @@ void confuiInitEditDances (confuigui_t *gui);
 void confuiBuildUIEditDances (confuigui_t *gui);
 
 /* confdebug.c */
-void confuiBuildUIDebugOptions (confuigui_t *gui);
+void confuiBuildUIDebug (confuigui_t *gui);
 
 /* confdispset.c */
 void confuiInitDispSettings (confuigui_t *gui);

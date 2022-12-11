@@ -501,7 +501,7 @@ msgid "Date Added"
 msgstr ""
 
 #. CONTEXT: configuration: debug options that can be turned on and off
-msgid "Debug Options"
+msgid "Debug"
 msgstr ""
 
 #. CONTEXT: configuration: level: title of the default selection column
@@ -764,7 +764,7 @@ msgid "Gap Between Songs"
 msgstr ""
 
 #. CONTEXT: configuration: general options that apply to everything
-msgid "General Options"
+msgid "General"
 msgstr ""
 
 #. CONTEXT: label: genre
@@ -935,6 +935,7 @@ msgstr ""
 msgid "Mark as Same Song"
 msgstr ""
 
+#. CONTEXT: configuration: options associated with the marquee
 #. CONTEXT: marquee: marquee window title
 #. CONTEXT: playerui: menu selection: marquee related options
 msgid "Marquee"
@@ -950,10 +951,6 @@ msgstr ""
 
 #. CONTEXT: playerui: marquee font size dialog: window title
 msgid "Marquee Font Size"
-msgstr ""
-
-#. CONTEXT: configuration: options associated with the marquee
-msgid "Marquee Options"
 msgstr ""
 
 #. CONTEXT: configuration: The theme to use for the marquee display
@@ -1204,13 +1201,10 @@ msgstr ""
 msgid "Playable Status"
 msgstr ""
 
+#. CONTEXT: configuration: options associated with the player
 #. CONTEXT: configuration: which player interface to use
 #. CONTEXT: starterui: button: starts the player user interface
 msgid "Player"
-msgstr ""
-
-#. CONTEXT: configuration: options associated with the player
-msgid "Player Options"
 msgstr ""
 
 #. CONTEXT: configuration: player queue configuration

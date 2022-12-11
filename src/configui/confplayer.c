@@ -83,10 +83,10 @@ confuiBuildUIPlayer (confuigui_t *gui)
   logProcBegin (LOG_PROC, "confuiBuildUIPlayer");
   uiCreateVertBox (&vbox);
 
-  /* player options */
+  /* player */
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: options associated with the player */
-      _("Player Options"), CONFUI_ID_NONE);
+      _("Player"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
   uiCreateSizeGroupHoriz (&sgB);
 

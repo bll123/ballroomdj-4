@@ -46,8 +46,8 @@ proper default when MPM is selected in the
 [General&nbsp;Options](en-Configuration-General).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Edit Dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-B.png)
+![Edit Dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-D.png)
 <br><span style="color:#4559bf;">**Configuration / Edit Dances**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 13:09:34; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-10 18:44:22; BDJ4 version 4.0.0-beta)_

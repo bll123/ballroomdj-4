@@ -437,7 +437,7 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIiTunes (&confui->gui);
   confuiBuildUIMobileRemoteControl (&confui->gui);
   confuiBuildUIMobileMarquee (&confui->gui);
-  confuiBuildUIDebugOptions (&confui->gui);
+  confuiBuildUIDebug (&confui->gui);
 
   uiutilsUICallbackLongInit (&confui->gui.nbcb, confuiSwitchTable, &confui->gui);
   uiNotebookSetCallback (&confui->gui.notebook, &confui->gui.nbcb);

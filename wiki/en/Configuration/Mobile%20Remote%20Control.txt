@@ -29,7 +29,7 @@ __QR Code__: Select the link to display a QR code in your browser.
 The QR code can be scanned with your mobile phone or tablet.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Mobile Remote Control](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-A.png)
+![Mobile Remote Control](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileRemoteControl-C.png)
 <br><span style="color:#4559bf;">**Configuration / Mobile Remote Control**</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -38,4 +38,4 @@ The QR code can be scanned with your mobile phone or tablet.
 <br><span style="color:#4559bf;">**Mobile Device / Mobile Remote Control**</span></div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_

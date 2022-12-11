@@ -22,20 +22,20 @@
 #include "ui.h"
 
 void
-confuiBuildUIDebugOptions (confuigui_t *gui)
+confuiBuildUIDebug (confuigui_t *gui)
 {
   UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      sg;
   nlistidx_t    val;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIDebugOptions");
+  logProcBegin (LOG_PROC, "confuiBuildUIDebug");
   uiCreateVertBox (&vbox);
 
-  /* debug options */
+  /* debug */
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: debug options that can be turned on and off */
-      _("Debug Options"), CONFUI_ID_NONE);
+      _("Debug"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
 
   uiCreateHorizBox (&hbox);
@@ -131,6 +131,6 @@ confuiBuildUIDebugOptions (confuigui_t *gui)
       CONFUI_WIDGET_DEBUG_524288, -1,
       (val & 524288));
   gui->uiitem [CONFUI_WIDGET_DEBUG_524288].outtype = CONFUI_OUT_DEBUG;
-  logProcEnd (LOG_PROC, "confuiBuildUIDebugOptions", "");
+  logProcEnd (LOG_PROC, "confuiBuildUIDebug", "");
 }
 

@@ -18,8 +18,8 @@ __Accent Color__: The color used for important status messages and for
 the color of the buttons.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![User Interface](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/UI-A.png)
+![User Interface](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/UI-C.png)
 <br><span style="color:#4559bf;">**Configuration / User Interface**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_

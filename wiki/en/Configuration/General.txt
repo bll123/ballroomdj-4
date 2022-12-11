@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-### Configuration : General Options
+### Configuration : General
 
 <span style="color:#4559bf;">_The general tab provide settings that
 affect the entire BDJ4 application._</span>
@@ -39,8 +39,8 @@ __Shutdown Script__: A script that is run after the player is stopped.
 This is automatically set for Linux installations.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![General Options](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-B.png)
-<br><span style="color:#4559bf;">**Configuration / General Options**</span> </div>
+![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-D.png)
+<br><span style="color:#4559bf;">**Configuration / General**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_

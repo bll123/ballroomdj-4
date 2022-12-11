@@ -30,8 +30,8 @@ Modifying a rating: Select the rating, then click on the name or
 weight to change it.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Edit Ratings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditRatings-A.png)
+![Edit Ratings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditRatings-C.png)
 <br><span style="color:#4559bf;">**Configuration / Edit Ratings**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 13:09:34; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_

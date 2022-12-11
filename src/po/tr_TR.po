@@ -507,8 +507,8 @@ msgid "Date Added"
 msgstr "Eklenme Tarihi"
 
 #. CONTEXT: configuration: debug options that can be turned on and off
-msgid "Debug Options"
-msgstr "Ayıklama Seçenekleri"
+msgid "Debug"
+msgstr ""
 
 #. CONTEXT: configuration: level: title of the default selection column
 #. CONTEXT: configuration: audio: The default audio sink (audio output)
@@ -770,8 +770,8 @@ msgid "Gap Between Songs"
 msgstr "Şarkılar arasındaki boşluk"
 
 #. CONTEXT: configuration: general options that apply to everything
-msgid "General Options"
-msgstr "Genel Ayarlar"
+msgid "General"
+msgstr ""
 
 #. CONTEXT: label: genre
 msgid "Genre"
@@ -941,6 +941,7 @@ msgstr ""
 msgid "Mark as Same Song"
 msgstr ""
 
+#. CONTEXT: configuration: options associated with the marquee
 #. CONTEXT: marquee: marquee window title
 #. CONTEXT: playerui: menu selection: marquee related options
 msgid "Marquee"
@@ -957,10 +958,6 @@ msgstr ""
 #. CONTEXT: playerui: marquee font size dialog: window title
 msgid "Marquee Font Size"
 msgstr "Yazı tipi büyüklüğünü seçin"
-
-#. CONTEXT: configuration: options associated with the marquee
-msgid "Marquee Options"
-msgstr "Ayarları seçin"
 
 #. CONTEXT: configuration: The theme to use for the marquee display
 msgid "Marquee Theme"
@@ -1210,14 +1207,11 @@ msgstr "Oynat?"
 msgid "Playable Status"
 msgstr "Oynatılabilme Durumu"
 
+#. CONTEXT: configuration: options associated with the player
 #. CONTEXT: configuration: which player interface to use
 #. CONTEXT: starterui: button: starts the player user interface
 msgid "Player"
 msgstr "Oynatıcı"
-
-#. CONTEXT: configuration: options associated with the player
-msgid "Player Options"
-msgstr "Oynatıcı Seçenekleri"
 
 #. CONTEXT: configuration: player queue configuration
 msgid "Player Queues"

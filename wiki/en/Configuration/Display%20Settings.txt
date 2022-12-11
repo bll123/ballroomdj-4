@@ -21,8 +21,8 @@ and remove columns to display.  Use the up and down arrows to change
 the order in which the columns are displayed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Display Settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-A.png)
+![Display Settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-C.png)
 <br><span style="color:#4559bf;">**Configuration / Display Settings**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_

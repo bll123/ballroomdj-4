@@ -1,6 +1,6 @@
 [Wiki Home](Home)
 
-### Configuration : Marquee Options
+### Configuration : Marquee
 
 <span style="color:#4559bf;">_The marquee can be displayed on a
 monitor or projected on to a screen or wall so that the dancers can
@@ -28,8 +28,8 @@ __Accent Color__: The color to use for the current dance and countdown
 timer.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Marquee Options](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Marquee-B.png)
-<br><span style="color:#4559bf;">**Configuration / Marquee Options**</span> </div>
+![Marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Marquee-D.png)
+<br><span style="color:#4559bf;">**Configuration / Marquee**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_

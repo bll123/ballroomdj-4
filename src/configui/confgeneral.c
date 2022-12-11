@@ -65,10 +65,10 @@ confuiBuildUIGeneral (confuigui_t *gui)
   logProcBegin (LOG_PROC, "confuiBuildUIGeneral");
   uiCreateVertBox (&vbox);
 
-  /* general options */
+  /* general */
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: general options that apply to everything */
-      _("General Options"), CONFUI_ID_NONE);
+      _("General"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
 
   strlcpy (tbuff, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (tbuff));

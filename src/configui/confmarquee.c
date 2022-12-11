@@ -44,10 +44,10 @@ confuiBuildUIMarquee (confuigui_t *gui)
   logProcBegin (LOG_PROC, "confuiBuildUIMarquee");
   uiCreateVertBox (&vbox);
 
-  /* marquee options */
+  /* marquee */
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: options associated with the marquee */
-      _("Marquee Options"), CONFUI_ID_NONE);
+      _("Marquee"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: show-marquee: selection */
