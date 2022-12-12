@@ -95,6 +95,7 @@ static datafilekey_t bdjoptqueuedfkeys [] = {
 };
 
 static datafilekey_t bdjoptmachinedfkeys [] = {
+  { "AUDIOTAG",       OPT_M_AUDIOTAG_INTFC, VALUE_STR, NULL, -1 },
   { "DIRITUNESMEDIA", OPT_M_DIR_ITUNES_MEDIA,VALUE_STR, NULL, -1 },
   { "DIRMUSIC",       OPT_M_DIR_MUSIC,      VALUE_STR, NULL, -1 },
   { "DIROLDSKIP",     OPT_M_DIR_OLD_SKIP,   VALUE_STR, NULL, -1 },

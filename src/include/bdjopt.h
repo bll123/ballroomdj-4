@@ -46,6 +46,7 @@ typedef enum {
   OPT_G_PLAYERQLEN,
   OPT_G_REMCONTROLHTML,
   OPT_G_WRITETAGS,
+  OPT_M_AUDIOTAG_INTFC,
   OPT_M_DIR_ITUNES_MEDIA,
   OPT_M_DIR_MUSIC,
   /* DIR_OLD_SKIP will be used for a time until the conversion from bdj3 to */

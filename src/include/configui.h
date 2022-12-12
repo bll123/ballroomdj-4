@@ -416,7 +416,6 @@ void confuiCreateGenreTable (confuigui_t *gui);
 void confuiMakeNotebookTab (UIWidget *boxp, confuigui_t *gui, const char *txt, int);
 void confuiMakeItemEntry (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, void *dialogFunc);
-void confuiMakeItemEntryBasic (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemCombobox (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, UILongCallbackFunc ddcb, char *value);
 void confuiMakeItemLink (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, const char *disp);
 void confuiMakeItemFontButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *fontname);

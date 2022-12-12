@@ -27,6 +27,12 @@
 #include "uinbutil.h"
 #include "validate.h"
 
+enum {
+  CONFUI_EXPAND,
+  CONFUI_NO_EXPAND,
+};
+
+static void confuiMakeItemEntryBasic (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent, int expand);
 static bool confuiLinkCallback (void *udata);
 static long confuiValMSCallback (void *udata, const char *txt);
 static long confuiValHMCallback (void *udata, const char *txt);
@@ -56,7 +62,7 @@ confuiMakeItemEntry (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 
   logProcBegin (LOG_PROC, "confuiMakeItemEntry");
   uiCreateHorizBox (&hbox);
-  confuiMakeItemEntryBasic (gui, &hbox, sg, txt, widx, bdjoptIdx, disp, indent);
+  confuiMakeItemEntryBasic (gui, &hbox, sg, txt, widx, bdjoptIdx, disp, indent, CONFUI_NO_EXPAND);
   uiBoxPackStart (boxp, &hbox);
   logProcEnd (LOG_PROC, "confuiMakeItemEntry", "");
 }
@@ -72,7 +78,8 @@ confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp,
 
   logProcBegin (LOG_PROC, "confuiMakeItemEntryChooser");
   uiCreateHorizBox (&hbox);
-  confuiMakeItemEntryBasic (gui, &hbox, sg, txt, widx, bdjoptIdx, disp, CONFUI_NO_INDENT);
+  uiWidgetExpandHoriz (&hbox);
+  confuiMakeItemEntryBasic (gui, &hbox, sg, txt, widx, bdjoptIdx, disp, CONFUI_NO_INDENT, CONFUI_EXPAND);
   uiutilsUICallbackInit (&gui->uiitem [widx].callback,
       dialogFunc, gui, NULL);
   uibutton = uiCreateButton (&gui->uiitem [widx].callback,
@@ -84,28 +91,6 @@ confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp,
   uiBoxPackStart (&hbox, uiwidgetp);
   uiBoxPackStart (boxp, &hbox);
   logProcEnd (LOG_PROC, "confuiMakeItemEntryChooser", "");
-}
-
-void
-confuiMakeItemEntryBasic (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    const char *txt, int widx, int bdjoptIdx, const char *disp, int indent)
-{
-  UIWidget  *uiwidgetp;
-
-  gui->uiitem [widx].basetype = CONFUI_ENTRY;
-  gui->uiitem [widx].outtype = CONFUI_OUT_STR;
-  confuiMakeItemLabel (boxp, sg, txt, indent);
-  uiEntryCreate (gui->uiitem [widx].entry);
-  uiwidgetp = uiEntryGetUIWidget (gui->uiitem [widx].entry);
-  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
-  uiWidgetSetMarginStart (uiwidgetp, 4);
-  uiBoxPackStart (boxp, uiwidgetp);
-  if (disp != NULL) {
-    uiEntrySetValue (gui->uiitem [widx].entry, disp);
-  } else {
-    uiEntrySetValue (gui->uiitem [widx].entry, "");
-  }
-  gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 }
 
 void
@@ -200,7 +185,7 @@ confuiMakeItemColorButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt, CONFUI_NO_INDENT);
-  uiCreateFontButton (&uiwidget, color);
+  uiCreateColorButton (&uiwidget, color);
   uiWidgetSetMarginStart (&uiwidget, 4);
   uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
@@ -501,6 +486,36 @@ confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...)
 }
 
 /* internal routines */
+
+static void
+confuiMakeItemEntryBasic (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
+    const char *txt, int widx, int bdjoptIdx, const char *disp,
+    int indent, int expand)
+{
+  UIWidget  *uiwidgetp;
+
+  gui->uiitem [widx].basetype = CONFUI_ENTRY;
+  gui->uiitem [widx].outtype = CONFUI_OUT_STR;
+  confuiMakeItemLabel (boxp, sg, txt, indent);
+  uiEntryCreate (gui->uiitem [widx].entry);
+  uiwidgetp = uiEntryGetUIWidget (gui->uiitem [widx].entry);
+  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+  if (expand == CONFUI_EXPAND) {
+    uiWidgetAlignHorizFill (uiwidgetp);
+    uiWidgetExpandHoriz (uiwidgetp);
+    uiBoxPackStartExpand (boxp, uiwidgetp);
+  }
+  if (expand == CONFUI_NO_EXPAND) {
+    uiBoxPackStart (boxp, uiwidgetp);
+  }
+  if (disp != NULL) {
+    uiEntrySetValue (gui->uiitem [widx].entry, disp);
+  } else {
+    uiEntrySetValue (gui->uiitem [widx].entry, "");
+  }
+  gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
+}
 
 static bool
 confuiLinkCallback (void *udata)

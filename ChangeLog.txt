@@ -4,10 +4,12 @@ BallroomDJ 4 Change Log (beta)
 
 * Bug Fixes:
     * configuration: player: disable active/display switches for main music queue.
+    * configuration: profile color was incorrectly changing the ui color.
+    * configuration: fixed filename entries to expand properly.
     * conversion: do not change the ui accent color for secondary profiles.
     * localization: fixed dance configuration for nl.
     * macos: various installation fixes.
-    * player: fixed request listing to filter playback status on startup.
+    * playerui: fixed request listing to filter playback status on startup.
     * player: fix stop-at time handling.
     * player/manager: fix communication about database updates.
     * select folder dialog: fixed to only show folders.
@@ -24,6 +26,7 @@ BallroomDJ 4 Change Log (beta)
     * configuration: player: moved stop-at time to be per-queue.
     * configuration: split player queue settings into a new notebook tab.
     * configuration: reduced font size of notebook tabs.
+    * configuration: itunes: changed display to show stars instead of text.
     * marquee: changed hide-marquee-on-start to show-marquee and added an 'off' setting.
     * mobile marquee: remove internet mode.
     * player: moved 'request external' into a menu.
@@ -35,3 +38,4 @@ BallroomDJ 4 Change Log (beta)
     * starter: added a 'create profile shortcut' menu selection.
 * Internal:
     * re-work button repeat.
+    * code cleanup.

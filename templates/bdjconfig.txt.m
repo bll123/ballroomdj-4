@@ -1,7 +1,9 @@
 # config-machine
-# 2022-8-4
+# 2022-12-12
 version
 ..1
+AUDIOTAG
+..libmutagen
 DIRMUSIC
 ..
 DIRITUNESMEDIA
