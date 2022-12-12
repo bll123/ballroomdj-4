@@ -250,7 +250,7 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
     marqueeSaveWindowPosition (marquee);
   }
 
-  connDisconnect (marquee->conn, ROUTE_MAIN);
+  connDisconnectAll (marquee->conn);
   logProcEnd (LOG_PROC, "marqueeStoppingCallback", "");
   return STATE_FINISHED;
 }
@@ -282,8 +282,6 @@ marqueeClosingCallback (void *udata, programstate_t programState)
   datafileSaveKeyVal ("marquee", fn, mqdfkeys, MQ_KEY_MAX, marquee->options, 0);
 
   bdj4shutdown (ROUTE_MARQUEE, NULL);
-
-  connDisconnectAll (marquee->conn);
 
   dataFree (marquee->marqueeLabs);
   if (marquee->options != NULL) {

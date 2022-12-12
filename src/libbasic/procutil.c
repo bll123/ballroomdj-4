@@ -313,7 +313,7 @@ procutilForceStop (procutil_t *process, int flags, bdjmsgroute_t route)
 
   while (count < 10) {
     if (procutilExists (process) != 0) {
-      logMsg (LOG_DBG, LOG_MAIN, "%d exited", route);
+      logMsg (LOG_DBG, LOG_MAIN, "%d/%s is gone", route, msgRouteDebugText (route));
       exists = 0;
       break;
     }
@@ -322,7 +322,7 @@ procutilForceStop (procutil_t *process, int flags, bdjmsgroute_t route)
   }
 
   if (exists) {
-    logMsg (LOG_SESS, LOG_IMPORTANT, "force-terminating %d", route);
+    logMsg (LOG_SESS, LOG_IMPORTANT, "force-terminating %d/%s", route, msgRouteDebugText (route));
     procutilKill (process, false);
   }
 }
