@@ -46,7 +46,7 @@ _Dance/Title_.  This is a common organization method that many people
 use where each dance is in a separate folder.
 
 If you have iTunes installed, the organization path will be set to
-_Album&nbsp;Artist/Album/Disc&nbsp-&nbspTrack0&nbsp;Title_.
+_Album&nbsp;Artist/Album/Disc&nbsp;-&nbsp;Track0&nbsp;Title_.
 
 Select the organization method you use for your songs in the
 _Organization&nbsp;Path_ drop-down.
@@ -77,7 +77,7 @@ for the database rebuild to finish.  A __Complete__ message will be
 displayed when it is done.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Management / Update Database](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-update-db-A.png)
+![Management / Update Database](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-update-db-B.png)
 <br><span style="color:#4559bf;">**Management / Update Database**</span> </div>
 
 Leave the management window open.
@@ -95,8 +95,8 @@ set for each song.
 If the dance is not set, select the song in the listing, then select
 the _Song&nbsp;Editor_ tab.  Use the dance drop-down selection and
 select the dance for the song.  Select the _Save_ button in the upper
-right of the _Song&nbspEditor_ tab.  Switch back to the
-_Music&nbsp&Manager_ tab and check for other songs that need to have
+right of the _Song&nbsp;Editor_ tab.  Switch back to the
+_Music&nbsp;Manager_ tab and check for other songs that need to have
 the dance set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -150,4 +150,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-12 11:48:00; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-12 13:13:12; BDJ4 version 4.0.0-beta)_

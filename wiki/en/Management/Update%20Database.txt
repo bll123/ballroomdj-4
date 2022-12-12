@@ -5,7 +5,7 @@
 <span style="color:#4559bf;">_Update database is used to manage the
 database of songs._</span>
 
-__Update Database__ has several selections.  Select the _Action_ you
+Update Database has several possible actions. Select the _Action_ you
 want to use, then select the _Start_ button to start processing.  The
 _Stop_ button will activate, and can be used to stop processing at any
 time.  When processing is finished, a _Complete_ message will be
@@ -30,6 +30,10 @@ _Rebuild Database__: Rebuilds the database completely.  Any
 information stored in the database that is not stored in the audio
 file tags will be lost.
 
+<div markdown style="margin-right: 20px; text-align: center;">
+![Management / Update Database](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/UpdateDB-A.png)
+<br><span style="color:#4559bf;">**Management / Update Database**</span> </div>
+
 The __Music Folder__ will normally be set to the configured music
 folder.  If you want to add an additional music folder to the database
 that is not within the configured music folder, use the chooser button
@@ -38,4 +42,4 @@ _Action_ to _Check&nbsp;for&nbsp;New_.  Do not use
 _Rebuild&nbsp;Database_ to add an additional music folder.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-12 14:27:27; BDJ4 version 4.0.0-beta)_

@@ -2,7 +2,12 @@
 
 ### Management : Edit Song Lists
 
-To be written...
+<span style="color:#4559bf;">_Edit song lists is used to create a
+playlist with an exact sequence of songs to play._</span>
+
+
+
+
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-12 14:27:27; BDJ4 version 4.0.0-beta)_

@@ -28,6 +28,7 @@ BallroomDJ 4 Change Log (beta)
     * configuration: split player queue settings into a new notebook tab.
     * configuration: reduced font size of notebook tabs.
     * configuration: itunes: changed display to show stars instead of text.
+    * configuration: update database: rearranged user interface.
     * marquee: changed hide-marquee-on-start to show-marquee and added an 'off' setting.
     * mobile marquee: remove internet mode.
     * player: moved 'request external' into a menu.

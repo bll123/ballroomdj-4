@@ -2,7 +2,10 @@
 
 ### Management : Song Editor
 
+<span style="color:#4559bf;">The song editor is used to update
+song information and to adjust playback settings for the song._</span>
+
 To be written...
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-12 14:27:27; BDJ4 version 4.0.0-beta)_
