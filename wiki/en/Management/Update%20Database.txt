@@ -2,7 +2,40 @@
 
 ### Management : Update Database
 
-To be written...
+<span style="color:#4559bf;">_Update database is used to manage the
+database of songs._</span>
+
+__Update Database__ has several selections.  Select the _Action_ you
+want to use, then select the _Start_ button to start processing.  The
+_Stop_ button will activate, and can be used to stop processing at any
+time.  When processing is finished, a _Complete_ message will be
+displayed in the processing status box.
+
+__Check for New__: Used to check for new audio files and add them to
+the database.  Any existing entries in the database are not changed.
+
+__Reorganize__: Re-organizes the audio files according to the
+organization configuration.  __This feature is not yet implemented.__
+
+__Update from Audio File Tags__: The BDJ4 database is updated from the
+information read from the audio file tags.  This action is used when
+a tagging program has been used to update the audio file tags.
+
+__Write Tags to Audio Files__: Uses the information in the BDJ4
+database to update the audio file tags in the audio files. The
+_Write&nbsp;Audio&nbsp;File&nbsp;Tags_ configuration setting must be
+set.
+
+_Rebuild Database__: Rebuilds the database completely.  Any
+information stored in the database that is not stored in the audio
+file tags will be lost.
+
+The __Music Folder__ will normally be set to the configured music
+folder.  If you want to add an additional music folder to the database
+that is not within the configured music folder, use the chooser button
+with the folder icon to select the additional music folder.  Set the
+_Action_ to _Check&nbsp;for&nbsp;New_.  Do not use
+_Rebuild&nbsp;Database_ to add an additional music folder.
 
 [Wiki Home](Home)
 <br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_

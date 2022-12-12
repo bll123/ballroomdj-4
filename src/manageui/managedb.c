@@ -47,11 +47,12 @@ typedef struct managedb {
   UICallback        dbstartcb;
   uibutton_t        *dbstop;
   UICallback        dbstopcb;
-  uitextbox_t       *dbhelpdisp;
+  UIWidget          dbhelpdisp;
   uitextbox_t       *dbstatus;
   nlist_t           *dblist;
   nlist_t           *dbhelp;
   UIWidget          dbpbar;
+  char              fgcolor [20];
 } managedb_t;
 
 static bool manageDbStart (void *udata);
@@ -77,8 +78,10 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
   managedb->topdirsel = NULL;
   managedb->dbstart = NULL;
   managedb->dbstop = NULL;
+  uiutilsUIWidgetInit (&managedb->dbhelpdisp);
   managedb->dbtopdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxInit ();
+  *managedb->fgcolor = '\0';
 
   tlist = nlistAlloc ("db-action", LIST_ORDERED, free);
   hlist = nlistAlloc ("db-action-help", LIST_ORDERED, free);
@@ -121,7 +124,6 @@ manageDbFree (managedb_t *managedb)
     nlistFree (managedb->dblist);
     nlistFree (managedb->dbhelp);
 
-    uiTextBoxFree (managedb->dbhelpdisp);
     uiTextBoxFree (managedb->dbstatus);
     uiEntryFree (managedb->dbtopdir);
     uiSpinboxFree (managedb->dbspinbox);
@@ -145,13 +147,6 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
 
   uiCreateSizeGroupHoriz (&sg);   // labels
 
-  /* help display */
-  tb = uiTextBoxCreate (80, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
-  uiTextBoxSetReadonly (tb);
-  uiTextBoxSetHeight (tb, 70);
-  uiBoxPackStart (vboxp, uiTextBoxGetScrolledWindow (tb));
-  managedb->dbhelpdisp = tb;
-
   /* action selection */
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (vboxp, &hbox);
@@ -161,6 +156,8 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
   uiWidgetSetMarginStart (&uiwidget, 2);
+
+  uiGetForegroundColor (&uiwidget, managedb->fgcolor, sizeof (managedb->fgcolor));
 
   uiSpinboxTextCreate (managedb->dbspinbox, managedb);
   /* currently hard-coded at 30 chars */
@@ -173,8 +170,23 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiSpinboxTextSetValueChangedCallback (managedb->dbspinbox, &managedb->dbchgcb);
   uiBoxPackStart (&hbox, uiwidgetp);
 
+  /* help display */
+  uiCreateHorizBox (&hbox);
+  uiWidgetExpandHoriz (&hbox);
+  uiBoxPackStart (vboxp, &hbox);
+
+  uiCreateLabel (&uiwidget, "");
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiWidgetSetMarginStart (&uiwidget, 2);
+  uiSizeGroupAdd (&sg, &uiwidget);
+
+  uiCreateLabel (&uiwidget, "");
+  uiBoxPackStartExpand (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&managedb->dbhelpdisp, &uiwidget);
+
   /* db top dir  */
   uiCreateHorizBox (&hbox);
+  uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (vboxp, &hbox);
 
   /* CONTEXT: update database: music folder to process */
@@ -185,7 +197,10 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
 
   uiEntryCreate (managedb->dbtopdir);
   uiEntrySetValue (managedb->dbtopdir, bdjoptGetStr (OPT_M_DIR_MUSIC));
-  uiBoxPackStart (&hbox, uiEntryGetUIWidget (managedb->dbtopdir));
+  uiwidgetp = uiEntryGetUIWidget (managedb->dbtopdir);
+  uiWidgetAlignHorizFill (uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiBoxPackStartExpand (&hbox, uiwidgetp);
 
   uiutilsUICallbackInit (&managedb->topdirselcb,
       manageDbSelectDirCallback, managedb, NULL);
@@ -246,12 +261,12 @@ manageDbChg (void *udata)
   sval = nlistGetStr (managedb->dbhelp, nval);
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector : %s", sval);
 
-  /* clear the text so that append will work */
-  uiTextBoxSetValue (managedb->dbhelpdisp, "");
-  if (nval == MANAGE_DB_REBUILD) {
-    uiTextBoxAppendHighlightStr (managedb->dbhelpdisp, sval);
-  } else {
-    uiTextBoxSetValue (managedb->dbhelpdisp, sval);
+  if (uiutilsUIWidgetSet (&managedb->dbhelpdisp)) {
+    uiLabelSetText (&managedb->dbhelpdisp, sval);
+    uiLabelSetColor (&managedb->dbhelpdisp, managedb->fgcolor);
+    if (nval == MANAGE_DB_REBUILD) {
+      uiLabelSetColor (&managedb->dbhelpdisp, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+    }
   }
   return UICB_CONT;
 }
