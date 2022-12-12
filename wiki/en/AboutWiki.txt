@@ -1,0 +1,24 @@
+[Wiki Home](Home)
+
+## About this Wiki
+
+The images shown in the wiki were taken from BDJ4 running on Linux
+using the _Matcha-dark-sea_ theme.  These images may appear different
+than what you see on other operating systems with other user interface
+themes.
+
+If there is a particular subject you want to see covered or a wiki
+page that needs to be improved, please use one of the methods in
+[Getting&nbsp;Help](en-Getting%20Help) to send a message to the
+development team.
+
+###### Status as of 2022-12
+
+This wiki was started in 2022-12.
+
+Some wiki pages have not been written yet.  Some wiki pages are not
+very good yet -- it may take several rewrites before the wiki pages
+are fully mature.
+
+[Wiki Home](Home)
+<br>_(Updated 2022-12-12 10:33:15; BDJ4 version 4.0.0-beta)_

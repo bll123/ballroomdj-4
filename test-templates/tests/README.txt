@@ -11,6 +11,7 @@
 # commands:
 #   chk {key value} ...
 #     special values: defaultvol
+#     (chk-not, chk-or, chk-lt, chk-gt)
 #   disp, dispall
 #     display responses before using 'chk' or 'wait'
 #   end, reset

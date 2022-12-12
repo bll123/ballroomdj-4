@@ -1172,6 +1172,8 @@ tsScriptChkResponse (testsuite_t *testsuite)
 
       logMsg (LOG_DBG, LOG_BASIC, "exp-resp: %s %s %s", key, valexp, valresp);
 
+      retchk = false;
+
       if (testsuite->lessthan) {
         long  a, b;
 
@@ -1183,6 +1185,7 @@ tsScriptChkResponse (testsuite_t *testsuite)
         if (valresp != NULL && b < a) {
           compdisp = "<";
           resultdisp = "ok";
+          retchk = true;
           ++countok;
         } else {
           dodisp = true;
@@ -1201,6 +1204,7 @@ tsScriptChkResponse (testsuite_t *testsuite)
         if (valresp != NULL && b > a) {
           resultdisp = "ok";
           compdisp = ">";
+          retchk = true;
           ++countok;
         } else {
           dodisp = true;
@@ -1209,8 +1213,9 @@ tsScriptChkResponse (testsuite_t *testsuite)
         }
       }
 
-      retchk = false;
-      if (valexp != NULL && valresp != NULL) {
+      if (! testsuite->lessthan &&
+          ! testsuite->greaterthan &&
+          valexp != NULL && valresp != NULL) {
         retchk = strcmp (valexp, valresp) == 0;
         if (testsuite->checknot) {
           retchk = ! retchk;

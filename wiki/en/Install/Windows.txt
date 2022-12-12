@@ -2,7 +2,7 @@
 
 ## Installing BallroomDJ 4 on Windows
 
-### Install BallroomDJ 4
+#### Install BallroomDJ 4
 
 Download the Windows installer from sourceforge.
 
@@ -54,4 +54,4 @@ After the VLC installation is complete, turn off the **Run VLC media
 player** checkbox, and select **Finish**.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-12 11:17:31; BDJ4 version 4.0.0-beta)_

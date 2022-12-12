@@ -2,7 +2,7 @@
 
 ## Installing BallroomDJ 4 on Linux
 
-### Install the Requisite Software
+#### Install the Requisite Software
 
 This step only needs to be run once, not for every installation or
 update.
@@ -23,7 +23,7 @@ This script performs the following actions:
 * Adds the user to the 'audio' group.
 * Sets 'flat-volumes = no' in the $HOME/.config/pulse/daemon.conf file.
 
-### Install BallroomDJ 4
+#### Install BallroomDJ 4
 
 Download the Linux installer from sourceforge.
 
@@ -54,4 +54,4 @@ button and wait for the **Installation Completed** message.
 <br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Linux**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-12 11:17:31; BDJ4 version 4.0.0-beta)_

@@ -63,6 +63,9 @@ for f in templates/*.txt; do
   esac
   cp -f $f data
 done
+for f in templates/img/*.svg; do
+  cp -f $f img/profile00
+done
 
 cp -f templates/bdjconfig.txt.g data/bdjconfig.txt
 cp -f templates/bdjconfig.txt.p data/profile00/bdjconfig.txt

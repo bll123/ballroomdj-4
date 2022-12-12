@@ -24,6 +24,7 @@
 <div markdown style="float: left; margin-right: 20px;">
 
 [About](en-About)
+<br>[About this Wiki](en-AboutWiki)
 
 </div>
 
@@ -90,10 +91,12 @@
 ### Subjects
 [Adding Songs to the Database](en-Subjects-Adding%20Songs)
 <br>[Announcements](en-Subjects-Announcements)
-<br>[Automatic Playlists](en-Subjects-Automatic%20Playlists)
+<br>[Keyword](en-Subjects-Keyword)
 <br>[Music Queues](en-Subjects-Music%20Queues)
-<br>[Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
-<br>[Song Lists](en-Subjects-Song%20Lists)
+<br>__Playlists__
+<br>&nbsp;&nbsp;&nbsp;[Automatic Playlists](en-Subjects-Automatic%20Playlists)
+<br>&nbsp;&nbsp;&nbsp;[Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
+<br>&nbsp;&nbsp;&nbsp;[Song Lists](en-Subjects-Song%20Lists)
 
 ### How To
 [Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
@@ -103,4 +106,4 @@
 
 <div markdown style="clear: both;"></div>
 
-<br>_(Updated 2022-12-10 18:42:47; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-12 10:34:41; BDJ4 version 4.0.0-beta)_

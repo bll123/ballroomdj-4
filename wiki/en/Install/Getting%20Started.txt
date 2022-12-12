@@ -2,7 +2,152 @@
 
 ### Getting Started
 
-To be written...
+#### Configuring BDJ4
+
+###### Set the location of the music folder
+
+The first step is to configure the location of your music folder.
+Start BDJ4.  The window that displays is the _Starter_ window. Select
+the _Configure_ button.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-starter-B.png)
+<br><span style="color:#4559bf;">**Starter**</span> </div>
+
+The configuration window will open and the _General_ section will be
+displayed. In the _General_ section, the first item is the _Music
+Folder_.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Configuration / General / Music Folder](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-folder-C.png)
+<br><span style="color:#4559bf;">**Configuration / General / Music Folder**</span> </div>
+
+Use the chooser button on the far right with the folder icon to choose
+the location of your music folder.
+
+Leave the configuration window open.
+
+###### Choose how your music is organized
+
+The organization is important so that BDJ4 can determine information
+about your songs when the database is built.  Most importantly, the
+dance associated with each song, which is not usually stored in the
+audio file tags.
+
+In the configuration window, select the _Organization_ section from
+the list on the left side of the window.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Configuration / Organization](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-org-A.png)
+<br><span style="color:#4559bf;">**Configuration / Organization**</span> </div>
+
+In the _Organization_ section, the default organization is
+_Dance/Title_.  This is a common organization method that many people
+use where each dance is in a separate folder.
+
+If you have iTunes installed, the organization path will be set to
+_Album&nbsp;Artist/Album/Disc&nbsp-&nbspTrack0&nbsp;Title_.
+
+Select the organization method you use for your songs in the
+_Organization&nbsp;Path_ drop-down.
+
+If your audio files have the dance stored in the genre audio tag, turn
+on the _Database&nbsp;Loads&nbsp;Dance&nbsp;from&nbsp;Genre_ switch.
+
+If the organization path you need is not present, contact support
+using one of the methods in [Getting&nbsp;Help](en-Getting%20Help).
+Many different organization paths are supported, but not all are
+listed in the drop-down.
+
+Close the configuration window.
+
+#### Creating the database for the first time
+
+The BDJ4 database contains the information about your songs.  The
+information in the database must be populated the first time.
+
+In the _Starter_ window, select the _Manage_ button.  This will open
+the management user interface.  Select the _Update Database_ section
+in the left side of the management window.
+
+Use the plus and minus buttons to change the selection to
+_Rebuild&nbsp;Database_.  Select the _Start_ button.  Depending on how
+many songs you have, the database rebuild may take a long time.  Wait
+for the database rebuild to finish.  A __Complete__ message will be
+displayed when it is done.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Management / Update Database](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-update-db-A.png)
+<br><span style="color:#4559bf;">**Management / Update Database**</span> </div>
+
+Leave the management window open.
+
+#### Check the dance for each song
+
+Select _Music&nbsp;Manager_ in the left side of the management window.
+Scroll through the list of songs and check to make sure the dance is
+set for each song.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Management / Music Manager](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-mm-A.png)
+<br><span style="color:#4559bf;">**Management / Music Manager**</span> </div>
+
+If the dance is not set, select the song in the listing, then select
+the _Song&nbsp;Editor_ tab.  Use the dance drop-down selection and
+select the dance for the song.  Select the _Save_ button in the upper
+right of the _Song&nbspEditor_ tab.  Switch back to the
+_Music&nbsp&Manager_ tab and check for other songs that need to have
+the dance set.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Management / Song Editor](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-se-A.png)
+<br><span style="color:#4559bf;">**Management / Song Editor**</span> </div>
+
+Leave the management window open.
+
+#### Create an example playlist
+
+Select _Edit&nbsp;Song&nbsp;Lists_ in the left side of the management
+window.  On the right side of the window below the player is a list of
+your songs.   Select a song in the right side of the window.  Select
+the left arrow button in the middle of the lower section.  This will
+add the song you selected to the song list that is being created.
+
+Select some more songs and add each of them to the song list.
+
+Above the song list is an entry box with the name
+_New&nbsp;Song&nbsp;List_ in it.  Click in the box and change the name
+of the song list.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Management / Song List Editor](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-sl-A.png)
+<br><span style="color:#4559bf;">**Management / Song List Editor**</span> </div>
+
+Close the management window.  The song list is automatically saved.
+
+#### Play the example playlist
+
+Now select _Player_ in the starter window.  In the player window,
+select the _Queue&nbsp;Playlist_ drop-down, and select the example
+song list that you just created.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-player-A.png)
+<br><span style="color:#4559bf;">**Player**</span> </div>
+
+The song list will load into the player and start playing.
+
+#### More information
+
+There is more information available here on the [wiki](Home) on many
+different subjects.
+
+#### Getting help
+
+If you need help getting started, understanding how something in BDJ4
+functions, or want to learn how to accomplish a particular goal in
+BDJ4, use one of the methods in
+[Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-12 11:48:00; BDJ4 version 4.0.0-beta)_
