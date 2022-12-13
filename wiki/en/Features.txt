@@ -9,6 +9,7 @@
 * Free and open source software.
 * Full unicode support, supports all languages.
 * No limitation on the number of audio files.
+* Any audio file that can be played by VLC is supported (MP3, FLAC, Opus, OGG, etc.)
 * Fully configurable.
     * Player, Marquee, User Interface, Dances, Dance Ratings, etc.
 * Multiple profiles can be set up for different playback needs.
@@ -79,4 +80,4 @@
     * Import an iTunes playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-12 10:33:15; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-13 08:44:55; BDJ4 version 4.0.0-beta)_

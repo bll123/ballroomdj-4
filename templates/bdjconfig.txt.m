@@ -3,7 +3,7 @@
 version
 ..1
 AUDIOTAG
-..libmutagen
+..libaudiotagmutagen
 DIRMUSIC
 ..
 DIRITUNESMEDIA

@@ -14,8 +14,10 @@ _Delete_
 (![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-D.png))
 button to delete a genre.
 
-Use the up and down arrows to change the order of the genres to match
-your preference.
+Use the up and down arrows
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-A.png),
+![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-A.png))
+to change the order of the genres to match your preference.
 
 The _Classical?_ selection is used for classical music.  __Classical
 music support is not yet implemented in BDJ4.__
@@ -25,4 +27,4 @@ music support is not yet implemented in BDJ4.__
 <br><span style="color:#4559bf;">**Configuration / Edit Genres**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-13 08:08:09; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-13 08:43:23; BDJ4 version 4.0.0-beta)_

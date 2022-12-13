@@ -2,8 +2,8 @@
 
 ### Management : Edit Song Lists
 
-<span style="color:#4559bf;">_A song list is a
-playlist with an exact sequence of songs._</span>
+<span style="color:#4559bf;">_A song list is a playlist with an exact
+sequence of songs._</span>
 
 In all cases, the song list is automatically saved.
 
@@ -18,7 +18,7 @@ _Easy&nbsp;Song&nbsp;List_ and _Easy%20Song%20Selection_ selections.
 
 The left arrow button (![Left
 Arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-A.png))
-in-between the two listings will add the current song selection to the
+in between the two listings will add the current song selection to the
 song list.  Multiple songs may be selected in the song selection list
 by holding down the _Control_ key when clicking on each song.
 
@@ -91,6 +91,12 @@ to edit a song.  This will open the
 selected song.  Be sure to use the _Save_ button while in the song
 editor.
 
+###### Statistics
+
+The _Statistics_ tab displays information about the song list.  The
+number of songs, the total time, and a breakdown of how many songs for
+each dance is displayed.
+
 ###### The Edit Menu
 
 An existing song list can be loaded by selecting
@@ -105,12 +111,44 @@ _Edit_&nbsp;/&nbsp;_Create&nbsp;Copy_ will create a copy of the
 currently loaded song list and create a new name with _Copy&nbsp;of_
 prefixed to the old name.
 
-_Edit_&nbsp;/&nbsp;_Delete_ will remove the currently loaded song list
+_Edit_&nbsp;/&nbsp;_Delete_ will delete the currently loaded song list
 from your storage device and start a new song list.
 
 ###### The Actions Menu
 
+_Actions_&nbsp;/&nbsp;_Mix_ will use BDJ4's automatic dance and song
+selection process to mix the songs in the song list into a new order.
+Select the songs to be played and add them the song list without
+regards to order. Then select _Actions_&nbsp;/&nbsp;_Mix_ from the
+menu.  Review the song list to make sure the ordering is to your
+satisfaction.
 
+_Actions_&nbsp;/&nbsp;_Truncate_ will truncate the song list starting
+from the currently selected song.
+
+_Actions_&nbsp;/&nbsp;_Create&nbps;from&nbsp;Playlist_ creates a song
+list using an automatic or sequenced playlist.  In the dialog, select
+the playlist from which to build a new song list.  Adjust the time
+limit (HH:MM) to set how many hours and minutes of songs will be played.
+
+###### The Export Menu
+
+_Export_&nbsp;/&nbsp;_Export&nbsp;as&nbsp;M3U&nbsp;Playlist_ creates
+an M3U8 playlist file that can be used in other players.
+
+_Export_&nbsp;/&nbsp;_Export&nbsp;for&nbsp;BDJ4_ creates a folder with
+songs and database that can be imported into another instance of BDJ4.
+__This feature is not yet implemented.__
+
+###### The Import Menu
+
+_Import_&nbsp;/&nbsp;_Import&nbsp;M3U_ imports an M3U playlist file
+and creats a song list.
+
+_Import_&nbsp;/&nbsp;_Import&nbsp;from&nbsp;BDJ4_ imports a song list
+and songs from a folder created with
+_Export_&nbsp;/&nbsp;_Export&nbsp;for&nbsp;BDJ4_. __This feature is
+not yet implemented.__
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-13 08:13:25; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-13 08:53:11; BDJ4 version 4.0.0-beta)_

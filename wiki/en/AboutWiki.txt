@@ -20,5 +20,9 @@ Some wiki pages have not been written yet.  Some wiki pages are not
 very good yet -- it may take several rewrites before the wiki pages
 are fully mature.
 
+The images are currently being created using a test setup and are not
+very realistic as the songs are quite short (30 seconds), and the
+names of the songs are names used for testing.
+
 [Wiki Home](Home)
-<br>_(Updated 2022-12-12 10:33:15; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-13 08:53:11; BDJ4 version 4.0.0-beta)_

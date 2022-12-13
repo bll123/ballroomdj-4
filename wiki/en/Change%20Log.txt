@@ -30,6 +30,7 @@
     * configuration: split player queue settings into a new notebook tab.
     * configuration: reduced font size of notebook tabs.
     * configuration: itunes: changed display to show stars instead of text.
+    * configuration: update database: rearranged user interface.
     * marquee: changed hide-marquee-on-start to show-marquee and added an 'off' setting.
     * mobile marquee: remove internet mode.
     * player: moved 'request external' into a menu.
@@ -42,23 +43,6 @@
 * Internal:
     * re-work button repeat.
     * code cleanup.
-
-**4.0.0 alpha 2022-11-28**
-
-* new feature: configuration: per queue configuration: fade-in time, fade-out time, maximum play time, play announcements.
-* new feature: configuration: per queue configuration: pause each song.
-* linux: fix audio sink selection (vlc would otherwise choose the default).
-* player: fix display of 'queue dance' drop-down after selection.
-* installation: fix incorrect name in template.
-
-**4.0.0 alpha 2022-11-22**
-
-* installation: fix macos VLC installation.
-* installation: fix windows VLC installation.
-* installation: windows: installer newer python if current is too old.
-* macos: make sure macports is first in path.
-
-
 
 [Wiki Home](Home)
 <br>_(Updated 2022-12-12 11:25:03; BDJ4 version 4.0.0-beta)_

@@ -15,7 +15,7 @@ function copysrcfiles {
   tag=$1
   stage=$2
 
-  filelist="ChangeLog.txt LICENSE.txt README.txt VERSION.txt"
+  filelist="LICENSE.txt README.txt VERSION.txt"
   dirlist="src conv img http install licenses scripts locale pkg
       templates test-templates web wiki"
 
@@ -46,7 +46,7 @@ function copyreleasefiles {
   tag=$1
   stage=$2
 
-  filelist="ChangeLog.txt LICENSE.txt README.txt VERSION.txt"
+  filelist="LICENSE.txt README.txt VERSION.txt"
   dirlist="bin conv http img install licenses scripts locale templates"
 
   if [[ ! -d plocal/bin ]];then
