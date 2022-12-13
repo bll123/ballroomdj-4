@@ -2,12 +2,115 @@
 
 ### Management : Edit Song Lists
 
-<span style="color:#4559bf;">_Edit song lists is used to create a
-playlist with an exact sequence of songs to play._</span>
+<span style="color:#4559bf;">_A song list is a
+playlist with an exact sequence of songs._</span>
 
+In all cases, the song list is automatically saved.
 
+###### Easy Song List Editor
+
+This is the default layout.  The left side of the window has the song
+list, and the right side has the song selection.  Due to the side by
+side layout, less information can be displayed about each song.  The
+columns displayed can be changed in
+[Display&nbsp;Settings](en-Configuration-Display%20Settings) using the
+_Easy&nbsp;Song&nbsp;List_ and _Easy%20Song%20Selection_ selections.
+
+The left arrow button (![Left
+Arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-A.png))
+in-between the two listings will add the current song selection to the
+song list.  Multiple songs may be selected in the song selection list
+by holding down the _Control_ key when clicking on each song.
+
+###### Song List Editor
+
+An alternate layout is available by turning off the easy song list
+editor in the _Options_ menu.  The song list and the song selection
+are displayed in separate tabs.  This layout allows more information
+about each song to be displayed. The columns displayed can be changed
+in [Display&nbsp;Settings](en-Configuration-Display%20Settings) using the
+_Song&nbsp;List_ and _Song%20Selection_ selections.
+
+In the song selection tab, select the songs to add to the song list.
+Multiple songs may be selected in the song selection list by holding
+down the _Control_ key when clicking on each song.  Use the _Select_
+button at the top of the listing to add the songs to the song list.
+
+###### Filtering the Song Selection
+
+The song selection list can be filtered so that you can find the dance
+and type of song easily.
+
+Use the _Filters_ button to display the filter dialog.  In this
+dialog, select the filters you want activated and select _Apply_.  The
+song selection listing will be updated.  The filter dialog will stay
+open so it can be used again.  The filters displayed can be adjusted
+in [Filter&nbsp;Display](en-Configuration-Filter%20Display).
+
+Above the song selection listing, the dance drop-down may be used to
+quickly change which dance is displayed in the song selection listing.
+Any other filters that have been selected in the filter dialog remain
+active.  Use the _Reset_ button in the filter dialog to clear all song
+selection filters.
+
+The song selection listing will display a mark before each song that
+is already in the song list.
+
+###### Naming the Song List
+
+At the top of the song list, there is an entry box with the song list
+name.  This defaults to _New&nbsp;Song&nbsp;List_.  Click in the entry
+box and change the name of the song list.
+
+If you forget to change the name, the song list will be saved as
+_New&nbsp;Song&nbsp;List_.
+
+###### Modifying the Song List
+
+At the top of the song list, the move-to-top button
+(![move-to-top](https://ballroomdj4.sourceforge.io/wikiimg/MoveToTopButton-A.png))
+will move the currently selected song to the top.  The move up and
+move down buttons
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-A.png),
+![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-A.png))
+will move the song up and down.  The remove button
+(![remove](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButton-A.png))
+will remove the selection from the song list.
+
+###### Reviewing a Song
+
+While in the song list or the song selection, select the _Play_ button
+above the listing to play the currently selected song.
+
+###### Editing a Song
+
+While in the song list or the song selection, select the edit button
+(![edit](https://ballroomdj4.sourceforge.io/wikiimg/EditButton-A.png))
+to edit a song.  This will open the
+[Song&nbsp;Editor](en-Management-Song%20Editor) with the currently
+selected song.  Be sure to use the _Save_ button while in the song
+editor.
+
+###### The Edit Menu
+
+An existing song list can be loaded by selecting
+_Edit_&nbsp;/&nbsp;_Load_ from the menu.  A dialog will open allowing
+selection of an existing song list.
+
+_Edit_&nbsp;/&nbsp;_Start&nbsp;New&nbsp;Song&nbsp;List_ will clean
+out any loaded song list and reset the name to
+_New&nbsp;Song&nbsp;List_.
+
+_Edit_&nbsp;/&nbsp;_Create&nbsp;Copy_ will create a copy of the
+currently loaded song list and create a new name with _Copy&nbsp;of_
+prefixed to the old name.
+
+_Edit_&nbsp;/&nbsp;_Delete_ will remove the currently loaded song list
+from your storage device and start a new song list.
+
+###### The Actions Menu
 
 
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-12 14:27:27; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-13 08:13:25; BDJ4 version 4.0.0-beta)_

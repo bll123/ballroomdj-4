@@ -110,7 +110,9 @@ Leave the management window open.
 Select _Edit&nbsp;Song&nbsp;Lists_ in the left side of the management
 window.  On the right side of the window below the player is a list of
 your songs.   Select a song in the right side of the window.  Select
-the left arrow button in the middle of the lower section.  This will
+the left arrow button
+(![left-arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-A.png))
+in the middle of the lower section.  This will
 add the song you selected to the song list that is being created.
 
 Select some more songs and add each of them to the song list.
@@ -150,4 +152,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-12 13:13:12; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-13 08:15:04; BDJ4 version 4.0.0-beta)_

@@ -15,11 +15,11 @@ names changed.  Songs newly added to the database are assigned the
 _New_ status.
 
 To add a new status, select the _Add New_ (![Add
-New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-C.png))
+New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-D.png))
 button.  Then double-click on the status name to edit the name.  Use
 the up and down arrows to adjust the order in which the statuses
 appear.  Use the _Delete_
-(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-C.png))
+(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-D.png))
 button to remove a status.
 
 The __Play?__ selection indicates whether the song will be used in
@@ -33,4 +33,4 @@ _Playable&nbsp;Status_ filter (see:
 <br><span style="color:#4559bf;">**Configuration / Edit Status**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-13 08:08:09; BDJ4 version 4.0.0-beta)_
