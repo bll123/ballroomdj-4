@@ -175,14 +175,14 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   uiBoxPackStart (&hbox, &dvbox);
 
   uibutton = uiCreateButton (&duallist->selectcb,
-      /* CONTEXT: configuration: display settings: button: add the selected field */
+      /* CONTEXT: side-by-side list: button: add the selected field */
       _("Select"), "button_right");
   duallist->buttons [DUALLIST_BUTTON_SELECT] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&dvbox, uiwidgetp);
 
   uibutton = uiCreateButton (&duallist->removecb,
-      /* CONTEXT: configuration: display settings: button: remove the selected field */
+      /* CONTEXT: side-by-side list: button: remove the selected field */
       _("Remove"), "button_left");
   duallist->buttons [DUALLIST_BUTTON_REMOVE] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
@@ -238,14 +238,14 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   uiBoxPackStart (&hbox, &dvbox);
 
   uibutton = uiCreateButton (&duallist->moveprevcb,
-      /* CONTEXT: configuration: display settings: button: move the selected field up */
+      /* CONTEXT: side-by-side list: button: move the selected field up */
       _("Move Up"), "button_up");
   duallist->buttons [DUALLIST_BUTTON_MOVE_UP] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&dvbox, uiwidgetp);
 
   uibutton = uiCreateButton (&duallist->movenextcb,
-      /* CONTEXT: configuration: display settings: button: move the selected field down */
+      /* CONTEXT: side-by-side list: button: move the selected field down */
       _("Move Down"), "button_down");
   duallist->buttons [DUALLIST_BUTTON_MOVE_DOWN] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
@@ -462,20 +462,25 @@ uiduallistDispSelect (void *udata)
   count = uiTreeViewGetSelection (uistree, &smodel, &siter);
 
   if (count == 1) {
+    UIWidget      *uittree;
     char          *str;
     glong         tval;
     GtkTreeModel  *tmodel;
     GtkTreeIter   titer;
+    GtkTreeIter   lociter;
     GtkTreePath   *path;
 
-    ttree = duallist->trees [DUALLIST_TREE_TARGET].uitree.widget;
+    uittree = &duallist->trees [DUALLIST_TREE_TARGET].uitree;
+    ttree = uittree->widget;
     tsel = duallist->trees [DUALLIST_TREE_TARGET].sel;
     tmodel = gtk_tree_view_get_model (GTK_TREE_VIEW (ttree));
+
+    uiTreeViewGetSelection (uittree, &tmodel, &lociter);
 
     gtk_tree_model_get (smodel, &siter, DUALLIST_COL_DISP, &str, -1);
     gtk_tree_model_get (smodel, &siter, DUALLIST_COL_DISP_IDX, &tval, -1);
 
-    gtk_list_store_append (GTK_LIST_STORE (tmodel), &titer);
+    gtk_list_store_insert_after (GTK_LIST_STORE (tmodel), &titer, &lociter);
     gtk_list_store_set (GTK_LIST_STORE (tmodel), &titer,
         DUALLIST_COL_DISP, str,
         DUALLIST_COL_SB_PAD, "    ",

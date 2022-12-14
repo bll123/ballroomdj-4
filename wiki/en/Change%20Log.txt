@@ -31,6 +31,8 @@
     * configuration: reduced font size of notebook tabs.
     * configuration: itunes: changed display to show stars instead of text.
     * configuration: update database: rearranged user interface.
+    * configuration: display settings: insert after selection.
+    * edit sequences: insert after selection.
     * marquee: changed hide-marquee-on-start to show-marquee and added an 'off' setting.
     * mobile marquee: remove internet mode.
     * player: moved 'request external' into a menu.

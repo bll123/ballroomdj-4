@@ -42,7 +42,7 @@
     * Song lists : pick and choose the songs to play.
         * Create song lists using sequenced or automatic playlists.
     * Sequenced : specify which dances and the order in which they are played.
-    * Automatic : choose how many of each dance play and let the computer do the rest.
+    * Automatic : choose how many of each dance play and let BDJ4 do the rest.
     * Playlist Controls
         * Maximum play time for the playlist or for a particular dance.
         * Gap between songs.

@@ -2,7 +2,21 @@
 
 ### Management : Edit Sequences
 
-To be written...
+<span style="color:#4559bf;">_A sequence is a playlist with an exact
+sequence of dances and the songs are selected by BDJ4._</span>
+
+In all cases, the sequence is automatically saved.
+
+###### The Sequence Editor
+
+The left side of the window has the list of dances to choose from, and
+the right side of the window contains the sequence.
+
+Use the
+
+(![left](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-A.png),
+![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-A.png))
+
 
 [Wiki Home](Home)
 <br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
