@@ -249,9 +249,13 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
   managepltree->playlist = pl;
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
-  if (pltype == PLTYPE_SONGLIST) {
+  if (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_SEQUENCE) {
     uiWidgetDisable (&managepltree->uihideunsel);
-  } else {
+  }
+  if (pltype == PLTYPE_SEQUENCE) {
+    uiToggleButtonSetState (&managepltree->uihideunsel, true);
+  }
+  if (pltype == PLTYPE_AUTO) {
     uiWidgetEnable (&managepltree->uihideunsel);
   }
 
@@ -466,6 +470,15 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
   GtkAdjustment *adjustment;
 
   uitree = &managepltree->uitree;
+
+  if (managepltree->playlist != NULL) {
+    int           pltype;
+
+    pltype = playlistGetConfigNum (managepltree->playlist, PLAYLIST_TYPE);
+    if (pltype == PLTYPE_SEQUENCE) {
+      uiToggleButtonSetState (&managepltree->uihideunsel, true);
+    }
+  }
 
   store = gtk_list_store_new (MPLTREE_COL_MAX,
       G_TYPE_BOOLEAN, // dance select

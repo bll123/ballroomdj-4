@@ -37,6 +37,7 @@
     * mobile marquee: remove internet mode.
     * player: moved 'request external' into a menu.
     * player: the queue dance buttons are only shown per the queue configuration.
+    * playlist management: hide unselected is always turned on for sequences.
     * song editor: previous and next buttons will now repeat.
 * New Features:
     * configuration: player: added a per-queue 'show queue dance buttons' selection.
