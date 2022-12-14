@@ -2189,7 +2189,7 @@ manageSonglistSave (manageui_t *manage)
   /* the song list has been renamed */
   if (strcmp (manage->sloldname, name) != 0) {
     playlistRename (manage->sloldname, name);
-    /* so that renames are handled properly */
+    /* continue on so that renames are handled properly */
   }
 
   /* need the full name for backups */
