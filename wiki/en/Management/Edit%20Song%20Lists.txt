@@ -129,74 +129,74 @@ each dance is displayed.
 ![sl-statistics-B](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-statistics-B.png)
 <br><span style="color:#4559bf;">**Management / Edit Song Lists / Statistics**</span> </div>
 
-###### The Edit Menu
+###### Edit Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-edit-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-edit-menu-A.png)
 <br><span style="color:#4559bf;">**Management / Edit Song Lists / Edit Menu**</span> </div>
 
 An existing song list can be loaded by selecting
-__Edit__&nbsp;/&nbsp;__Load__ from the menu.  A dialog will open allowing
+_Edit_&nbsp;/&nbsp;_Load_ from the menu.  A dialog will open allowing
 selection of an existing song list.
 
-__Edit__&nbsp;/&nbsp;__Start&nbsp;New&nbsp;Song&nbsp;List__ will clean
+_Edit_&nbsp;/&nbsp;_Start&nbsp;New&nbsp;Song&nbsp;List_ will clean
 out any loaded song list and reset the name to
 _New&nbsp;Song&nbsp;List_.
 
-__Edit__&nbsp;/&nbsp;__Create&nbsp;Copy__ will create a copy of the
+_Edit_&nbsp;/&nbsp;_Create&nbsp;Copy_ will create a copy of the
 currently loaded song list and create a new name with _Copy&nbsp;of_
 prefixed to the old name.
 
-__Edit__&nbsp;/&nbsp;__Delete__ will delete the currently loaded song list
+_Edit_&nbsp;/&nbsp;_Delete_ will delete the currently loaded song list
 from your storage device and start a new song list.
 
-###### The Actions Menu
+###### Actions Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-actions-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-actions-menu-A.png)
 <br><span style="color:#4559bf;">**Management / Edit Song Lists / Actions Menu**</span> </div>
 
-__Actions__&nbsp;/&nbsp;__Mix__ will use BDJ4's automatic dance and song
+_Actions_&nbsp;/&nbsp;_Mix_ will use BDJ4's automatic dance and song
 selection process to mix the songs in the song list into a new order.
 Select the songs to be played and add them the song list without
 regards to order. Then select _Actions_&nbsp;/&nbsp;_Mix_ from the
 menu.  Review the song list to make sure the ordering is to your
 satisfaction.
 
-__Actions__&nbsp;/&nbsp;__Truncate__ will truncate the song list starting
+_Actions_&nbsp;/&nbsp;_Truncate_ will truncate the song list starting
 from the currently selected song.
 
-__Actions__&nbsp;/&nbsp;__Create&nbsp;from&nbsp;Playlist__ creates a song
+_Actions_&nbsp;/&nbsp;_Create&nbsp;from&nbsp;Playlist_ creates a song
 list using an automatic or sequenced playlist.  In the dialog, select
 the playlist from which to build a new song list.  Adjust the time
 limit (HH:MM) to set how many hours and minutes of songs will be played.
 
-###### The Export Menu
+###### Export Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-export-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-export-menu-A.png)
 <br><span style="color:#4559bf;">**Management / Edit Song Lists / Export Menu**</span> </div>
 
-__Export__&nbsp;/&nbsp;__Export&nbsp;as&nbsp;M3U&nbsp;Playlist__ creates
+_Export_&nbsp;/&nbsp;_Export&nbsp;as&nbsp;M3U&nbsp;Playlist_ creates
 an M3U8 playlist file that can be used in other players.
 
-__Export__&nbsp;/&nbsp;__Export&nbsp;for&nbsp;BDJ4__ creates a folder with
+_Export_&nbsp;/&nbsp;_Export&nbsp;for&nbsp;BDJ4_ creates a folder with
 songs and database that can be imported into another instance of BDJ4.
 __This feature is not yet implemented.__
 
-###### The Import Menu
+###### Import Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![sl-import-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-import-menu-A.png)
 <br><span style="color:#4559bf;">**Management / Edit Song Lists / Import Menu**</span> </div>
 
-__Import__&nbsp;/&nbsp;__Import&nbsp;M3U__ imports an M3U playlist file
+_Import_&nbsp;/&nbsp;_Import&nbsp;M3U_ imports an M3U playlist file
 and creats a song list.
 
-__Import__&nbsp;/&nbsp;__Import&nbsp;from&nbsp;BDJ4__ imports a song list
+_Import_&nbsp;/&nbsp;_Import&nbsp;from&nbsp;BDJ4_ imports a song list
 and songs from a folder created with
-__Export__&nbsp;/&nbsp;__Export&nbsp;for&nbsp;BDJ4__. __This feature is
+_Export_&nbsp;/&nbsp;_Export&nbsp;for&nbsp;BDJ4_. __This feature is
 not yet implemented.__
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-14 07:57:57; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-14 11:23:46; BDJ4 version 4.0.0-beta)_

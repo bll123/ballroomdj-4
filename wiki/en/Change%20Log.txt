@@ -37,6 +37,7 @@
     * mobile marquee: remove internet mode.
     * player: moved 'request external' into a menu.
     * player: the queue dance buttons are only shown per the queue configuration.
+    * playlist management: disallow deletion of special QueueDance playlist.
     * playlist management: hide unselected is always turned on for sequences.
     * song editor: previous and next buttons will now repeat.
 * New Features:
@@ -48,4 +49,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-14 08:30:20; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-14 11:23:46; BDJ4 version 4.0.0-beta)_
