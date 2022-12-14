@@ -54,6 +54,7 @@ typedef struct managepltree {
   playlist_t        *playlist;
   bool              changed : 1;
   bool              hideunselected : 1;
+  bool              inprepop : 1;
 } managepltree_t;
 
 static void managePlaylistTreeSetColumnVisibility (managepltree_t *managepltree, int pltype);
@@ -77,10 +78,11 @@ managePlaylistTreeAlloc (UIWidget *statusMsg)
   managepltree->countcol = NULL;
   managepltree->lowbpmcol = NULL;
   managepltree->highbpmcol = NULL;
-  managepltree->changed = false;
-  managepltree->hideunselected = false;
   managepltree->statusMsg = statusMsg;
   managepltree->playlist = NULL;
+  managepltree->changed = false;
+  managepltree->hideunselected = false;
+  managepltree->inprepop = false;
   return managepltree;
 }
 
@@ -233,6 +235,31 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
 }
 
 void
+managePlaylistTreePrePopulate (managepltree_t *managepltree, playlist_t *pl)
+{
+  int     pltype;
+  bool    hideunselstate = false;
+
+  managepltree->playlist = pl;
+  managepltree->inprepop = true;
+  pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
+
+  if (pltype == PLTYPE_SONGLIST) {
+    uiWidgetDisable (&managepltree->uihideunsel);
+  }
+  if (pltype == PLTYPE_SEQUENCE) {
+    /* a sequence has no need to display the non-selected dances */
+    hideunselstate = true;
+    uiWidgetDisable (&managepltree->uihideunsel);
+  }
+  if (pltype == PLTYPE_AUTO) {
+    uiWidgetEnable (&managepltree->uihideunsel);
+  }
+  uiToggleButtonSetState (&managepltree->uihideunsel, hideunselstate);
+  managepltree->inprepop = false;
+}
+
+void
 managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
 {
   dance_t       *dances;
@@ -248,16 +275,6 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
 
   managepltree->playlist = pl;
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
-
-  if (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_SEQUENCE) {
-    uiWidgetDisable (&managepltree->uihideunsel);
-  }
-  if (pltype == PLTYPE_SEQUENCE) {
-    uiToggleButtonSetState (&managepltree->uihideunsel, true);
-  }
-  if (pltype == PLTYPE_AUTO) {
-    uiWidgetEnable (&managepltree->uihideunsel);
-  }
 
   managePlaylistTreeSetColumnVisibility (managepltree, pltype);
 
@@ -471,15 +488,6 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
 
   uitree = &managepltree->uitree;
 
-  if (managepltree->playlist != NULL) {
-    int           pltype;
-
-    pltype = playlistGetConfigNum (managepltree->playlist, PLAYLIST_TYPE);
-    if (pltype == PLTYPE_SEQUENCE) {
-      uiToggleButtonSetState (&managepltree->uihideunsel, true);
-    }
-  }
-
   store = gtk_list_store_new (MPLTREE_COL_MAX,
       G_TYPE_BOOLEAN, // dance select
       G_TYPE_STRING,  // dance
@@ -540,7 +548,13 @@ managePlaylistTreeHideUnselectedCallback (void *udata)
   bool            tchg;
 
   tchg = managepltree->changed;
-  managepltree->hideunselected = ! managepltree->hideunselected;
+  if (managepltree->inprepop) {
+    managepltree->hideunselected =
+        uiToggleButtonIsActive (&managepltree->uihideunsel);
+  }
+  if (! managepltree->inprepop) {
+    managepltree->hideunselected = ! managepltree->hideunselected;
+  }
   managePlaylistTreeCreate (managepltree);
   managePlaylistTreePopulate (managepltree, managepltree->playlist);
   managepltree->changed = tchg;

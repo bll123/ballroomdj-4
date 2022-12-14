@@ -291,6 +291,14 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
+
+  /* add a blank line between the playlist controls and song selection */
+  uiCreateLabel (&uiwidget, "");
+  uiBoxPackStart (&hbox, &uiwidget);
+  uiSizeGroupAdd (&sg, &uiwidget);
+
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&lcol, &hbox);
   uiutilsUIWidgetCopy (&managepl->uiratingitem, &hbox);
 
   uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCERATING].displayname);
@@ -557,6 +565,7 @@ managePlaylistUpdateData (managepl_t *managepl)
   pl = managepl->playlist;
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
+  managePlaylistTreePrePopulate (managepl->managepltree, pl);
   managePlaylistTreePopulate (managepl->managepltree, pl);
 
   if (pltype == PLTYPE_SONGLIST) {

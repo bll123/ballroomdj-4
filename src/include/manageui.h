@@ -41,6 +41,7 @@ typedef struct managepltree managepltree_t;
 managepltree_t *managePlaylistTreeAlloc (UIWidget *statusMsg);
 void managePlaylistTreeFree (managepltree_t *managepltree);
 void manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,  UIWidget *tophbox);
+void managePlaylistTreePrePopulate (managepltree_t *managepltree, playlist_t *pl);
 void managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl);
 bool managePlaylistTreeIsChanged (managepltree_t *managepltree);
 void managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree);
