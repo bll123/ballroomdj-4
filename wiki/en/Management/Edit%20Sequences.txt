@@ -1,5 +1,7 @@
 [Wiki Home](Home)
 
+[TOC]
+
 ### Management : Edit Sequences
 
 <span style="color:#4559bf;">_A sequence is a playlist with an exact
@@ -12,11 +14,58 @@ In all cases, the sequence is automatically saved.
 The left side of the window has the list of dances to choose from, and
 the right side of the window contains the sequence.
 
-Use the
-
+Use the left and right arrows
 (![left](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-A.png),
 ![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-A.png))
+to remove and add dances to the sequence.
 
+Use the up and down arrows
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-A.png),
+![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-A.png))
+to change the order of the sequence.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![seq](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-A.png)
+<br><span style="color:#4559bf;">**Management / Edit Sequences**</span> </div>
+
+###### Naming the Sequence
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![seq-name-entry-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-name-entry-A.png)
+<br><span style="color:#4559bf;">**Management / Edit Sequences / Sequence Name**</span> </div>
+
+At the top of the song list, there is an entry box with the song list
+name.  This defaults to _New&nbsp;Sequence_.  Click in the entry
+box and change the name of the song list.
+
+If you forget to change the name, the song list will be saved as
+_New&nbsp;Sequence_.
+
+###### The Edit Menu
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![seq-edit-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/seq-edit-menu-B.png)
+<br><span style="color:#4559bf;">**Management / Edit Sequences / Edit Menu**</span> </div>
+
+An existing sequence can be loaded by selecting
+__Edit__&nbsp;/&nbsp;__Load__ from the menu.  A dialog will open
+allowing selection of an existing sequence.
+
+__Edit__&nbsp;/&nbsp;__Start&nbsp;New&nbsp;Sequence__ will clean out
+any loaded sequence and reset the name to _New&nbsp;Sequence_.
+
+__Edit__&nbsp;/&nbsp;__Create&nbsp;Copy__ will create a copy of the
+currently loaded sequence and create a new name with _Copy&nbsp;of_
+prefixed to the old name.
+
+__Edit__&nbsp;/&nbsp;__Delete__ will delete the currently loaded
+sequence from your storage device and start a new sequence.
+
+###### Song Selection
+
+To filter which songs are selected by BDJ4 when the sequence is
+played, change the settings in
+[Playlist%20Management](en-Management-Playlist%20Management).
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-14 08:38:51; BDJ4 version 4.0.0-beta)_
