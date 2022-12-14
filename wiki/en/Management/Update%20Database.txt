@@ -26,12 +26,12 @@ database to update the audio file tags in the audio files. The
 _Write&nbsp;Audio&nbsp;File&nbsp;Tags_ configuration setting must be
 set.
 
-_Rebuild Database__: Rebuilds the database completely.  Any
+__Rebuild Database__: Rebuilds the database completely.  Any
 information stored in the database that is not stored in the audio
 file tags will be lost.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Management / Update Database](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/UpdateDB-A.png)
+![UpdateDB](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/UpdateDB-B.png)
 <br><span style="color:#4559bf;">**Management / Update Database**</span> </div>
 
 The __Music Folder__ will normally be set to the configured music
@@ -42,4 +42,4 @@ _Action_ to _Check&nbsp;for&nbsp;New_.  Do not use
 _Rebuild&nbsp;Database_ to add an additional music folder.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-12 14:27:27; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-14 07:57:57; BDJ4 version 4.0.0-beta)_

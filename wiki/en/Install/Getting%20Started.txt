@@ -22,7 +22,7 @@ Folder_.
 ![Configuration / General / Music Folder](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-folder-C.png)
 <br><span style="color:#4559bf;">**Configuration / General / Music Folder**</span> </div>
 
-Use the chooser button on the far right with the folder icon to choose
+Use the chooser button with the folder icon on the far right to choose
 the location of your music folder.
 
 Leave the configuration window open.
@@ -77,7 +77,7 @@ for the database rebuild to finish.  A __Complete__ message will be
 displayed when it is done.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Management / Update Database](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-update-db-B.png)
+![gs-update-db](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-update-db-C.png)
 <br><span style="color:#4559bf;">**Management / Update Database**</span> </div>
 
 Leave the management window open.
@@ -89,7 +89,7 @@ Scroll through the list of songs and check to make sure the dance is
 set for each song.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Management / Music Manager](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-mm-A.png)
+![gs-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-mm-B.png)
 <br><span style="color:#4559bf;">**Management / Music Manager**</span> </div>
 
 If the dance is not set, select the song in the listing, then select
@@ -100,7 +100,7 @@ _Music&nbsp;Manager_ tab and check for other songs that need to have
 the dance set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Management / Song Editor](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-se-A.png)
+![gs-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-se-B.png)
 <br><span style="color:#4559bf;">**Management / Song Editor**</span> </div>
 
 Leave the management window open.
@@ -122,7 +122,7 @@ _New&nbsp;Song&nbsp;List_ in it.  Click in the box and change the name
 of the song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Management / Song List Editor](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-sl-A.png)
+![gs-sl](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-sl-B.png)
 <br><span style="color:#4559bf;">**Management / Song List Editor**</span> </div>
 
 Close the management window.  The song list is automatically saved.
@@ -152,4 +152,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-13 08:15:04; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-14 08:00:47; BDJ4 version 4.0.0-beta)_

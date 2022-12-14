@@ -600,18 +600,8 @@ manageBuildUI (manageui_t *manage)
   uiNotebookTabPositionLeft (&manage->mainnotebook);
   uiBoxPackStartExpand (&vbox, &manage->mainnotebook);
 
+  /* edit song lists */
   manageBuildUISongListEditor (manage);
-
-  /* playlist management */
-  manage->managepl = managePlaylistAlloc (&manage->window,
-      manage->options, &manage->statusMsg);
-
-  uiCreateVertBox (&vbox);
-  manageBuildUIPlaylist (manage->managepl, &vbox);
-  /* CONTEXT: managementui: notebook tab title: playlist management */
-  uiCreateLabel (&uiwidget, _("Playlist Management"));
-  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
-  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_PL);
 
   /* sequence editor */
   manage->manageseq = manageSequenceAlloc (&manage->window,
@@ -624,6 +614,19 @@ manageBuildUI (manageui_t *manage)
   uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SEQ);
 
+  /* playlist management */
+  manage->managepl = managePlaylistAlloc (&manage->window,
+      manage->options, &manage->statusMsg);
+
+  uiCreateVertBox (&vbox);
+  manageBuildUIPlaylist (manage->managepl, &vbox);
+
+  /* CONTEXT: managementui: notebook tab title: playlist management */
+  uiCreateLabel (&uiwidget, _("Playlist Management"));
+  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
+  uiutilsNotebookIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_PL);
+
+  /* music manager */
   manageBuildUIMusicManager (manage);
 
   /* update database */

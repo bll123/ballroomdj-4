@@ -7,8 +7,8 @@ As of 2022-12-01:
 At this time the supported platforms for BallroomDJ 4 will probably be:
 
 * 64-bit Windows 10, 11
-* MacOS intel: Catalina, Big Sur, Monterey, Ventura
-* MacOS M1: Big Sur, Monterey, Ventura
+* MacOS Intel: Catalina, Big Sur, Monterey, Ventura
+* MacOS Apple Silicon: Big Sur, Monterey, Ventura
 * 64-bit Linux
 
 __Features that will NOT be implemented in BallroomDJ&nbsp;4:__
@@ -39,7 +39,7 @@ __Features that have changed in BallroomDJ&nbsp;4:__
 * Playlist: Stop In/At &lt;time&lt; pause/continue.
 <br>__BDJ4 only supports: Stop At &lt;time&gt; (per playlist and per queue).__
 * Playlist: Stop After &lt;song-count&gt; pause/continue.
-<br>__BDJ4 only supports: Stop After &lt;song-count&gt;.__
+<br>__BDJ4 only supports: Stop After &lt;song-count&gt; (per playlist).__
 * Playlist: Pause after each song.
 <br>__BDJ4 has a pause each song switch in the player per-queue configuration.__
 * Auto Organization
@@ -70,12 +70,9 @@ files have been renamed.
 
 __New Features:__
 
-* "Stop At" time has been added to the player configuration.
-<br>This stop at time will apply to all music played using the associated
-profile.
-* "Play Announcements" has been added to the player per-queue
-configuration.
-* Switch playback to another music queue when the current music
+* Player per queue configuration (fade in time, fade out time, maximum play
+time, stop at time, play announcements, pause each song).
+* Switch playback to the next music queue when the current music
 queue is empty.
 * An optional easy song list editing mode.
 <br>The disadvantage being that it cannot show as much information on
@@ -92,15 +89,6 @@ database update process.  This allows multiple music folder locations.
 Ogg-Vorbis.
 Currently supported for MP4 (.m4a), MP3, OGG/Vorbis, FLAC, OGG/Opus.
 Others may be added later.
-* Per queue configuration (fade in time, fade out time, maximum play
-time, play announcements, pause each song).
-
-Other than these major changes, I am trying to greatly simply the
-configuration (while keeping the flexibility), combine things where
-possible, etc.
-
-As always if you have questions, post a message here in the forums.
-BDJ4 is still in development and anything can change.
 
 __Questions & Answers__
 
@@ -126,4 +114,4 @@ compatible audio file tags' is turned on).
 (1) No one actually asked this, but I thought you might like to know.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-12 14:27:27; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-14 07:25:52; BDJ4 version 4.0.0-beta)_

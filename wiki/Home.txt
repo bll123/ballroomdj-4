@@ -70,8 +70,8 @@
 
 ### Management
 [Edit Song Lists](en-Management-Edit%20Song%20Lists)
-<br>[Playlist Management](en-Management-Playlist%20Management)
 <br>[Edit Sequences](en-Management-Edit%20Sequences)
+<br>[Playlist Management](en-Management-Playlist%20Management)
 <br>[Music Manager](en-Management-Music%20Manager)
 <br>[Song Editor](en-Management-Song%20Editor)
 <br>[Update Database](en-Management-Update%20Database)
@@ -106,4 +106,4 @@
 
 <div markdown style="clear: both;"></div>
 
-<br>_(Updated 2022-12-12 10:34:41; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-14 07:57:57; BDJ4 version 4.0.0-beta)_

@@ -25,7 +25,7 @@ song list.  Multiple songs may be selected in the song selection list
 by holding down the _Control_ key when clicking on each song.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-easy-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-easy-A.png)
+![sl-easy](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-easy-B.png)
 <br><span style="color:#4559bf;">**Management / Edit Song Lists (Easy)**</span> </div>
 
 ###### Song List Editor
@@ -47,7 +47,7 @@ down the _Control_ key when clicking on each song.  Use the _Select_
 button at the top of the listing to add the songs to the song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-standard-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-standard-A.png)
+![sl-standard](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-standard-B.png)
 <br><span style="color:#4559bf;">**Management / Edit Song Lists (Standard)**</span> </div>
 
 ###### Naming the Song List
@@ -199,4 +199,4 @@ __Export__&nbsp;/&nbsp;__Export&nbsp;for&nbsp;BDJ4__. __This feature is
 not yet implemented.__
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-14 07:15:28; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-14 07:57:57; BDJ4 version 4.0.0-beta)_
