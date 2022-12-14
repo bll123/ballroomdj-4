@@ -16,13 +16,17 @@ Easy&nbsp;Song&nbsp;List, Easy&nbsp;Song&nbsp;Selection,
 Music&nbsp;Manager, Song&nbsp;Editor (three columns).
 
 Use the spinbox at the top of the screen to select which display to
-configure.  Select a column and use the left and right arrows to add
-and remove columns to display.  Use the up and down arrows to change
-the order in which the columns are displayed.
+configure.  Select a column and use the left and right arrows
+(![left](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-A.png),
+![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-A.png))
+to remove and add columns to display.  Use the up and down arrows
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-A.png),
+![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-A.png))
+to change the order in which the columns are displayed.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Display Settings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/DisplaySettings-C.png)
 <br><span style="color:#4559bf;">**Configuration / Display Settings**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-14 06:57:07; BDJ4 version 4.0.0-beta)_

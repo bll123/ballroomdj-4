@@ -1,5 +1,7 @@
 [Wiki Home](Home)
 
+[TOC]
+
 ### Management : Edit Song Lists
 
 <span style="color:#4559bf;">_A song list is a playlist with an exact
@@ -22,7 +24,15 @@ in between the two listings will add the current song selection to the
 song list.  Multiple songs may be selected in the song selection list
 by holding down the _Control_ key when clicking on each song.
 
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-easy-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-easy-A.png)
+<br><span style="color:#4559bf;">**Management / Edit Song Lists (Easy)**</span> </div>
+
 ###### Song List Editor
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-options-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-options-menu-A.png)
+<br><span style="color:#4559bf;">**Management / Edit Song Lists / Options Menu**</span> </div>
 
 An alternate layout is available by turning off the easy song list
 editor in the _Options_ menu.  The song list and the song selection
@@ -36,27 +46,15 @@ Multiple songs may be selected in the song selection list by holding
 down the _Control_ key when clicking on each song.  Use the _Select_
 button at the top of the listing to add the songs to the song list.
 
-###### Filtering the Song Selection
-
-The song selection list can be filtered so that you can find the dance
-and type of song easily.
-
-Use the _Filters_ button to display the filter dialog.  In this
-dialog, select the filters you want activated and select _Apply_.  The
-song selection listing will be updated.  The filter dialog will stay
-open so it can be used again.  The filters displayed can be adjusted
-in [Filter&nbsp;Display](en-Configuration-Filter%20Display).
-
-Above the song selection listing, the dance drop-down may be used to
-quickly change which dance is displayed in the song selection listing.
-Any other filters that have been selected in the filter dialog remain
-active.  Use the _Reset_ button in the filter dialog to clear all song
-selection filters.
-
-The song selection listing will display a mark before each song that
-is already in the song list.
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-standard-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-standard-A.png)
+<br><span style="color:#4559bf;">**Management / Edit Song Lists (Standard)**</span> </div>
 
 ###### Naming the Song List
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-name-entry-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-name-entry-A.png)
+<br><span style="color:#4559bf;">**Management / Edit Song Lists / Song List Name**</span> </div>
 
 At the top of the song list, there is an entry box with the song list
 name.  This defaults to _New&nbsp;Song&nbsp;List_.  Click in the entry
@@ -64,6 +62,36 @@ box and change the name of the song list.
 
 If you forget to change the name, the song list will be saved as
 _New&nbsp;Song&nbsp;List_.
+
+###### Song Selection Indicators
+
+The song selection listing will display a mark before each song that
+is already in the song list.
+
+###### Filtering the Song Selection
+
+The song selection list can be filtered so that you can find the dance
+and type of song easily.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-filter-button-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-filter-button-A.png)
+<br><span style="color:#4559bf;">**Management / Edit Song Lists / Filter Button**</span> </div>
+
+Use the _Filters_ button to display the filter dialog.  In this
+dialog, select the filters you want activated and select _Apply_.  The
+song selection listing will be updated.  The filter dialog will stay
+open so it can be used again.  The filters displayed can be adjusted
+in [Filter&nbsp;Display](en-Configuration-Filter%20Display).
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-filter-dialog-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-filter-dialog-A.png)
+<br><span style="color:#4559bf;">**Management / Edit Song Lists / Filter Dialog**</span> </div>
+
+Above the song selection listing, the dance drop-down may be used to
+quickly change which dance is displayed in the song selection listing.
+Any other filters that have been selected in the filter dialog remain
+active.  Use the _Reset_ button in the filter dialog to clear all song
+selection filters.
 
 ###### Modifying the Song List
 
@@ -97,58 +125,78 @@ The _Statistics_ tab displays information about the song list.  The
 number of songs, the total time, and a breakdown of how many songs for
 each dance is displayed.
 
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-statistics-B](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-statistics-B.png)
+<br><span style="color:#4559bf;">**Management / Edit Song Lists / Statistics**</span> </div>
+
 ###### The Edit Menu
 
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-edit-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-edit-menu-A.png)
+<br><span style="color:#4559bf;">**Management / Edit Song Lists / Edit Menu**</span> </div>
+
 An existing song list can be loaded by selecting
-_Edit_&nbsp;/&nbsp;_Load_ from the menu.  A dialog will open allowing
+__Edit__&nbsp;/&nbsp;__Load__ from the menu.  A dialog will open allowing
 selection of an existing song list.
 
-_Edit_&nbsp;/&nbsp;_Start&nbsp;New&nbsp;Song&nbsp;List_ will clean
+__Edit__&nbsp;/&nbsp;__Start&nbsp;New&nbsp;Song&nbsp;List__ will clean
 out any loaded song list and reset the name to
 _New&nbsp;Song&nbsp;List_.
 
-_Edit_&nbsp;/&nbsp;_Create&nbsp;Copy_ will create a copy of the
+__Edit__&nbsp;/&nbsp;__Create&nbsp;Copy__ will create a copy of the
 currently loaded song list and create a new name with _Copy&nbsp;of_
 prefixed to the old name.
 
-_Edit_&nbsp;/&nbsp;_Delete_ will delete the currently loaded song list
+__Edit__&nbsp;/&nbsp;__Delete__ will delete the currently loaded song list
 from your storage device and start a new song list.
 
 ###### The Actions Menu
 
-_Actions_&nbsp;/&nbsp;_Mix_ will use BDJ4's automatic dance and song
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-actions-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-actions-menu-A.png)
+<br><span style="color:#4559bf;">**Management / Edit Song Lists / Actions Menu**</span> </div>
+
+__Actions__&nbsp;/&nbsp;__Mix__ will use BDJ4's automatic dance and song
 selection process to mix the songs in the song list into a new order.
 Select the songs to be played and add them the song list without
 regards to order. Then select _Actions_&nbsp;/&nbsp;_Mix_ from the
 menu.  Review the song list to make sure the ordering is to your
 satisfaction.
 
-_Actions_&nbsp;/&nbsp;_Truncate_ will truncate the song list starting
+__Actions__&nbsp;/&nbsp;__Truncate__ will truncate the song list starting
 from the currently selected song.
 
-_Actions_&nbsp;/&nbsp;_Create&nbps;from&nbsp;Playlist_ creates a song
+__Actions__&nbsp;/&nbsp;__Create&nbsp;from&nbsp;Playlist__ creates a song
 list using an automatic or sequenced playlist.  In the dialog, select
 the playlist from which to build a new song list.  Adjust the time
 limit (HH:MM) to set how many hours and minutes of songs will be played.
 
 ###### The Export Menu
 
-_Export_&nbsp;/&nbsp;_Export&nbsp;as&nbsp;M3U&nbsp;Playlist_ creates
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-export-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-export-menu-A.png)
+<br><span style="color:#4559bf;">**Management / Edit Song Lists / Export Menu**</span> </div>
+
+__Export__&nbsp;/&nbsp;__Export&nbsp;as&nbsp;M3U&nbsp;Playlist__ creates
 an M3U8 playlist file that can be used in other players.
 
-_Export_&nbsp;/&nbsp;_Export&nbsp;for&nbsp;BDJ4_ creates a folder with
+__Export__&nbsp;/&nbsp;__Export&nbsp;for&nbsp;BDJ4__ creates a folder with
 songs and database that can be imported into another instance of BDJ4.
 __This feature is not yet implemented.__
 
 ###### The Import Menu
 
-_Import_&nbsp;/&nbsp;_Import&nbsp;M3U_ imports an M3U playlist file
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-import-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-import-menu-A.png)
+<br><span style="color:#4559bf;">**Management / Edit Song Lists / Import Menu**</span> </div>
+
+__Import__&nbsp;/&nbsp;__Import&nbsp;M3U__ imports an M3U playlist file
 and creats a song list.
 
-_Import_&nbsp;/&nbsp;_Import&nbsp;from&nbsp;BDJ4_ imports a song list
+__Import__&nbsp;/&nbsp;__Import&nbsp;from&nbsp;BDJ4__ imports a song list
 and songs from a folder created with
-_Export_&nbsp;/&nbsp;_Export&nbsp;for&nbsp;BDJ4_. __This feature is
+__Export__&nbsp;/&nbsp;__Export&nbsp;for&nbsp;BDJ4__. __This feature is
 not yet implemented.__
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-13 08:53:11; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-14 07:15:28; BDJ4 version 4.0.0-beta)_
