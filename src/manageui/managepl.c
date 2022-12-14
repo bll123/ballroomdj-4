@@ -45,6 +45,7 @@ typedef struct managepl {
   nlist_t         *options;
   UIWidget        *statusMsg;
   uimenu_t        plmenu;
+  UIWidget        menuDelete;
   UICallback      callbacks [MPL_CB_MAX];
   char            *ploldname;
   bool            plbackupcreated;
@@ -396,6 +397,7 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist */
     uiMenuCreateItem (&menu, &menuitem, _("Delete"),
         &managepl->callbacks [MPL_CB_MENU_PL_DELETE]);
+    uiutilsUIWidgetCopy (&managepl->menuDelete, &menuitem);
 
     managepl->plmenu.initialized = true;
   }
@@ -472,6 +474,12 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
     managePlaylistNew (managepl, preloadflag);
     managepl->inload = false;
     return;
+  }
+
+  uiWidgetEnable (&managepl->menuDelete);
+  /* CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button */
+  if (strcmp (playlistGetName (pl), _("QueueDance")) == 0) {
+    uiWidgetDisable (&managepl->menuDelete);
   }
 
   if (managepl->playlist != NULL) {
