@@ -50,7 +50,7 @@ playlists.  The filters limit which songs can be played.
 <br><span style="color:#4559bf;">**Management / Playlist Management / Song Selection**</span> </div>
 
 _Dance&nbsp;Rating_ sets the minimum rating for a song to be chosen.
-Any song with a rating equal to or higher than the dance rating set
+Any song with a rating equal to or better than the dance rating set
 here may be played.
 <br>(See also [Edit&nbsp;Ratings](en-Configuration-Edit%20Ratings))
 
@@ -132,4 +132,4 @@ _Edit_&nbsp;/&nbsp;_Delete_ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-15 08:22:07; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-15 11:53:45; BDJ4 version 4.0.0-beta)_

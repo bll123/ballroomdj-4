@@ -30,6 +30,9 @@ playlist.
 ![mm-filters](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-filters-A.png)
 <br><span style="color:#4559bf;">**Management / Music Manager / Filters**</span> </div>
 
+Note that the _Dance&nbsp;Rating_ filter will select any songs that
+have the selected rating or better.
+
 ##### Song Selection and the Song Editor
 
 When a song is selected in
@@ -81,4 +84,4 @@ marked as the same song.
 <br><span style="color:#4559bf;">**Management / Music Manager / Same Song Marks**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-15 08:51:32; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-15 11:53:45; BDJ4 version 4.0.0-beta)_

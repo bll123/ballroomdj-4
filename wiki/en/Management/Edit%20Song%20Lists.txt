@@ -87,6 +87,9 @@ in [Filter&nbsp;Display](en-Configuration-Filter%20Display).
 ![sl-filter-dialog-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-filter-dialog-A.png)
 <br><span style="color:#4559bf;">**Management / Edit Song Lists / Filter Dialog**</span> </div>
 
+Note that the _Dance&nbsp;Rating_ filter will select any songs that
+have the selected rating or better.
+
 Above the song selection listing, the dance drop-down may be used to
 quickly change which dance is displayed in the song selection listing.
 Any other filters that have been selected in the filter dialog remain
@@ -199,4 +202,4 @@ _Export_&nbsp;/&nbsp;_Export&nbsp;for&nbsp;BDJ4_. __This feature is
 not yet implemented.__
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-15 08:22:07; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-15 11:53:45; BDJ4 version 4.0.0-beta)_

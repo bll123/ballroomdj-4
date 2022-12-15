@@ -77,12 +77,8 @@
 <br>[Update Database](en-Management-Update%20Database)
 
 ### Player
-[Basic Usage](en-Player-Basic)
+[Basic Operations](en-Player-Basic)
 <br>[Requests](en-Player-Requests)
-
-### Starter
-[Profiles](en-Starter-Profiles)
-<br>[Alternate Folders](en-Starter-Alternate%20Folders)
 
 </div>
 
@@ -97,6 +93,9 @@
 <br>&nbsp;&nbsp;&nbsp;[Automatic Playlists](en-Subjects-Automatic%20Playlists)
 <br>&nbsp;&nbsp;&nbsp;[Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
 <br>&nbsp;&nbsp;&nbsp;[Song Lists](en-Subjects-Song%20Lists)
+<br>__Advanced Setup__
+<br>&nbsp;&nbsp;&nbsp;[Alternate Folders](en-Subjects-Alternate%20Folders)
+<br>&nbsp;&nbsp;&nbsp;[Profiles](en-Subjects-Profiles)
 
 ### How To
 [Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
@@ -106,4 +105,4 @@
 
 <div markdown style="clear: both;"></div>
 
-<br>_(Updated 2022-12-14 07:57:57; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-15 11:57:55; BDJ4 version 4.0.0-beta)_

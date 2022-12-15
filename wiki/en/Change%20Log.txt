@@ -11,8 +11,8 @@
     * conversion: do not change the ui accent color for secondary profiles.
     * localization: fixed dance configuration for nl.
     * macos: various installation fixes.
-    * playerui: fixed request listing to filter playback status on startup.
-    * playerui: fixed slow exit.
+    * player user interface: fixed request listing to filter playback status on startup.
+    * player user interface: fixed slow exit.
     * player: fix stop-at time handling.
     * player/manager: fix communication about database updates.
     * select folder dialog: fixed to only show folders.
@@ -34,20 +34,21 @@
     * configuration: update database: rearranged user interface.
     * configuration: display settings: insert after selection.
     * edit sequences: insert after selection.
+    * management: rearrange user interface.
     * marquee: changed hide-marquee-on-start to show-marquee and added an 'off' setting.
     * mobile marquee: remove internet mode.
-    * player: moved 'request external' into a menu.
-    * player: the queue dance buttons are only shown per the queue configuration.
+    * player user interface: moved 'request external' into a menu.
+    * player user interface: the queue dance buttons are only shown per the queue configuration.
     * playlist management: disallow deletion of special QueueDance playlist.
     * playlist management: hide unselected is always turned on for sequences.
     * song editor: previous and next buttons will now repeat.
 * New Features:
     * configuration: player: added a per-queue 'show queue dance buttons' selection.
-    * player: added a 'queue 5' button.
+    * player user interface: added a 'queue 5' button.
     * starter: added a 'create profile shortcut' menu selection.
 * Internal:
     * re-work button repeat.
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-14 11:23:46; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-15 12:00:30; BDJ4 version 4.0.0-beta)_
