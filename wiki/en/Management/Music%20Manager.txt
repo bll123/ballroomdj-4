@@ -1,8 +1,84 @@
 [Wiki Home](Home)
 
+[TOC]
+
 ### Management : Music Manager
 
-To be written...
+<span style="color:#4559bf;">_The music manager works in conjunction
+with the song editor to manage songs._</span>
+
+The music manager displays a listing of songs.  Like the other song
+selection listings, the songs can be filtered to display the song
+selections you want to work with.
+
+Once the music manager listing has been filtered, the song editor can
+traverse through the songs listed in the music manager.
+
+There are some important differences from song selection.
+
+##### Filter Dialog
+
+The filter dialog has an additional drop-down where a playlist may be
+selected (_At this time, only song lists are supported.  This may
+change in the future._).  When a playlist is selected, the other
+filters are disabled, and the songs from the playlist are listed.
+
+The song editor can then be used to edit the songs from the selected
+playlist.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![mm-filters](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-filters-A.png)
+<br><span style="color:#4559bf;">**Management / Music Manager / Filters**</span> </div>
+
+##### Song Selection and the Song Editor
+
+When a song is selected in
+[Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists), or the
+edit button is used, the music manager will automatically set the
+filter to use the loaded playlist.  The filter dialog will show the
+currently selected playlist.
+
+This makes it easy to edit the songs in the song list.  Simply select
+the edit button in
+[Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists) to
+switch to the song editor.  Then the _Next_ and _Previous_ buttons
+will traverse the songs in the song list, as the music manager's
+filter has been set to use the loaded playlist.
+
+When a song is selected in the song selection tab, or the edit button
+is used in the song selection tab, the music manager will
+automatically use the filters set in song selection. The song editor
+can then be used to traverse the songs that have been selected.
+
+If you have a listing loaded in the music manager, multiple songs may
+be selected (using control-click).  When multiple songs are selected
+in the music manager, the song editor will traverse the selected
+songs, and not the entire listing.
+
+##### Actions Menu
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-C.png)
+<br><span style="color:#4559bf;">**Management / Music Manager / Actions Menu**</span> </div>
+
+_Mark as Same Song_ will mark the selected songs as the same song.
+
+_Clear Same Song Mark_ will clear the same song markers from the
+selected songs.
+
+##### Same Song Marks
+
+Same song marks can be used to prevent the automatic or sequence song
+selection from choosing songs that are the same but played by
+different artists.
+
+For example, if you have a copy of ___Sway___ by ___Michael Bublé___
+and also a copy of ___Sway___ by ___Pussy Cat Dolls___, these can be
+marked as the same song.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![mm-same-song](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-same-song-B.png)
+<br><span style="color:#4559bf;">**Management / Music Manager / Same Song Marks**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-15 08:51:32; BDJ4 version 4.0.0-beta)_

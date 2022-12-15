@@ -12,7 +12,7 @@ In all cases, the playlist is automatically saved.
 
 Automatic playlists are created using playlist management.
 
-###### Playlist Controls
+##### Playlist Controls
 
 The playlist controls for _Maximum&nbsp;Play&nbsp;Time_, _Stop&nbsp;At_ time,
 _Stop&nbsp;After_ count, _Gap_ and _Play&nbsp;Announcements_ are
@@ -40,7 +40,7 @@ for each song for this playlist.
 <br>(See also [Player&nbsp;Queues](en-Configuration-Player%20Queues),
 [Edit&nbsp;Dances](en-Configuration-Edit%20Dances)).
 
-###### Song Selection Filters
+##### Song Selection Filters
 
 The song selection filters are used for automatic and sequenced
 playlists.  The filters limit which songs can be played.
@@ -74,7 +74,7 @@ the song's status does not have the _Play?_ flag set, the song will
 not be played.
 <br>(See also [Edit&nbsp;Status](en-Configuration-Edit%20Status))
 
-###### Per Dance Playlist Controls
+##### Per Dance Playlist Controls
 
 The per dance playlist controls are different for song lists,
 sequenced playlists and automatic playlists.
@@ -95,7 +95,7 @@ here, and the relative count for each dance is also set here.
 ![plmgmt-dance-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-dance-controls-A.png)
 <br><span style="color:#4559bf;">**Management / Playlist Management / Dance Controls (automatic)**</span> </div>
 
-###### Naming the Playlist
+##### Naming the Playlist
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![plmgmt-name-entry](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-name-entry-A.png)
@@ -109,7 +109,7 @@ sequence associated with the playlist, it will also be renamed.
 If you forget to change the name, the song list will be saved as
 _New&nbsp;Playlist_.
 
-###### Edit Menu
+##### Edit Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![plmgmt-edit-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-edit-menu-B.png)
@@ -132,4 +132,4 @@ _Edit_&nbsp;/&nbsp;_Delete_ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-14 11:47:51; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-15 08:22:07; BDJ4 version 4.0.0-beta)_

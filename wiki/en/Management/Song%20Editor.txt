@@ -1,11 +1,149 @@
 [Wiki Home](Home)
 
+[TOC]
+
 ### Management : Song Editor
 
 <span style="color:#4559bf;">The song editor is used to update
 song information and to adjust playback settings for the song._</span>
 
-To be written...
+##### Display Columns
+
+The fields displayed in the song editor can be set in
+[Display&nbsp;Settings](en-Configuration-Display%20Settings). Up to
+three display columns may be configured. A full list of fields is at
+the bottom of this wiki page.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![se](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-A.png)
+<br><span style="color:#4559bf;">**Management / Song Editor**</span> </div>
+
+##### Traversing the Song Listing
+
+The song editor works in conjunction with the
+[Music&nbsp;Manager](en-Management-Music%20Manager).  The _First_,
+_Next_ and _Previous_ buttons traverse the songs selected in the
+[Music&nbsp;Manager](en-Management-Music%20Manager). See the
+[Music&nbsp;Manager](en-Management-Music%20Manager) wiki page for
+details.
+
+##### File Display
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![se-file-disp](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-file-disp-A.png)
+<br><span style="color:#4559bf;">**Management / Song Editor / File Display**</span> </div>
+
+If the audio file has a MusicBrainz recording ID tag set, the
+MusicBrainz logo will be displayed.
+
+If the audio file has been modified from the original (via normalized
+audio, speed adjustments, song start/end adjustments or trimmed
+silence), a __*__ will be displayed.
+
+The copy button
+(![copy](https://ballroomdj4.sourceforge.io/wikiimg/CopyButton-A.png))
+may be used to copy the filename to the clipboard.
+
+The filename is displayed.  The music folder set in
+[Configuration:&nbsp;General](en-Configuration-General) is not
+displayed as part of the filename.
+
+##### Change Bars
+
+When a field in the song editor is modified. A green bar is displayed
+before the field's label.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![se-change-bar](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-change-bar-A.png)
+<br><span style="color:#4559bf;">**Management / Song Editor / Change Bars**</span> </div>
+
+##### Saving the Changes
+
+The changes made in the song editor are not automatically saved.  Use
+the _Save_ button in the upper right to save the changes.
+
+If you want to reset the changes you have made, simply use _Next_ or
+_Previous_ to switch to a different song, then switch back.
+
+##### Actions Menu
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-A.png)
+<br><span style="color:#4559bf;">**Management / Song Editor / Actions Menu**</span> </div>
+
+_BPM_ starts the BPM Counter.
+
+_Edit&nbsp;All_ starts the batch edit process.  __This function is not
+yet implemented__.
+
+_Apply&nbsp;Edit&nbsp;All_ finalizes the batch edit process. The
+changes made to the current song will be made to the rest of the
+selected songs.  __This function is not yet implemented__.
+
+_Cancel&nbsp;Edit&nbsp;All_ cancels the batch edit process. The
+changes made to the current song will be reverted. __This function is
+not yet implemented__.
+
+##### Using the BPM Counter
+
+Before using the BPM Counter, the BPM setting should be added to the
+song editor using
+[Display&nbsp;Settings](en-Configuration-Display%20Settings).
+
+After selecting the song to edit in the song editor, use the _Play_
+button to play the song.  Then select the _BPM_ menu selection in the
+_Actions_ menu.  The BPM Counter will start.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-A.png)
+<br><span style="color:#4559bf;">**Management / Song Editor / BPM Counter**</span> </div>
+
+Click in the blue box in time with the beat.  Once the BPM has
+stabilized, select the _Save_ button.  To restart the count, select
+the _Reset_ button.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![se-bpm-saved](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-saved-A.png)
+<br><span style="color:#4559bf;">**Management / Song Editor / BPM**</span> </div>
+
+If the BPM setting in
+[Configuration:&nbsp;General](en-Configuration-General) is set to MPM
+(measures per minute), BDJ4 will select the MPM setting in the BPM
+Counter that matches the dance's time signature.
+
+##### Song Editor Fields
+
+The complete list of fields that can be edited or displayed in the
+song editor is:
+
+ Field|Tag Type|Display
+ -----|--------|-------
+ Album|Audio|
+ Album Artist|Audio|
+ Artist|Audio|
+ BPM|Audio|
+ Composer|Audio|
+ Conductor|Audio|
+ Dance|BDJ4|
+ Dance Level|BDJ4|
+ Dance Rating|BDJ4|
+ Date|Audio|
+ Date Added|BDJ4|Display Only
+ Disc|Audio|
+ Duration||Display Only
+ Favorite|BDJ4|
+ Genre|Audio|
+ Keyword|BDJ4|
+ Marquee Display|BDJ4|
+ Notes|BDJ4|
+ Song End|BDJ4|
+ Song Start|BDJ4|
+ Speed Adjustment|BDJ4|
+ Status|BDJ4|
+ Tags|BDJ4|
+ Title|Audio|
+ Track|Audio|
+ Volume Adjustment|BDJ4|
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-12 14:27:27; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-15 10:23:52; BDJ4 version 4.0.0-beta)_
