@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.0\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-12-11\n"
-"PO-Revision-Date: 2022-12-11\n"
+"POT-Creation-Date: 2022-12-15\n"
+"PO-Revision-Date: 2022-12-15\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -986,13 +986,13 @@ msgid "Mobile Remote Control"
 msgstr ""
 
 #. CONTEXT: configuration: table edit: button: move selection down
-#. CONTEXT: configuration: display settings: button: move the selected field down
+#. CONTEXT: side-by-side list: button: move the selected field down
 #. CONTEXT: music queue: button: move the selected song down in the queue
 msgid "Move Down"
 msgstr ""
 
 #. CONTEXT: configuration: table edit: button: move selection up
-#. CONTEXT: configuration: display settings: button: move the selected field up
+#. CONTEXT: side-by-side list: button: move the selected field up
 #. CONTEXT: music queue: button: move the selected song up in the queue
 msgid "Move Up"
 msgstr ""
@@ -1322,6 +1322,7 @@ msgstr ""
 
 #. CONTEXT: The name of the 'queuedance' playlist file
 #. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
 msgstr ""
@@ -1368,7 +1369,7 @@ msgstr ""
 msgid "Registering %s."
 msgstr ""
 
-#. CONTEXT: configuration: display settings: button: remove the selected field
+#. CONTEXT: side-by-side list: button: remove the selected field
 #. CONTEXT: music queue: button: remove the song from the queue
 msgid "Remove"
 msgstr ""
@@ -1448,7 +1449,7 @@ msgstr ""
 msgid "Seconds"
 msgstr ""
 
-#. CONTEXT: configuration: display settings: button: add the selected field
+#. CONTEXT: side-by-side list: button: add the selected field
 #. CONTEXT: select file: selects the file
 #. CONTEXT: song-selection: select a song to be added to the song list
 #. CONTEXT: actions associated with the select folder dialog
@@ -1935,7 +1936,7 @@ msgstr ""
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
 msgstr ""
-"=> Select 'Music Manager' on the left side of the 'BDJ4 Management' window."
+"=> Select 'Music Manager' in the left side of the 'BDJ4 Management' window."
 " Scroll through the list of songs and check to make sure the dance is set"
 " for each song."
 " To set the dance for a song."
@@ -1960,7 +1961,7 @@ msgstr ""
 " Songs. This database must be built for the first time."
 " => Select the 'Manage' button."
 " => In the 'BDJ4 Management' window, select"
-" the 'Update Database' section on the left side of the window."
+" the 'Update Database' section in the left side of the window."
 " The default selection 'Check for New' is used when you add or remove"
 " songs from your music collection."
 " => Change the selection to 'Rebuild Database'."
@@ -1976,14 +1977,14 @@ msgstr ""
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_create_playlist"
 msgstr ""
-"=> Select 'Edit Song Lists' on the left side of the 'BDJ4 Management' window."
+"=> Select 'Edit Song Lists' in the left side of the 'BDJ4 Management' window."
 " On the right side of the lower section of the window is a list of your songs."
 " => Select a song by clicking on it."
 " => Now select the left arrow"
 " button in the middle of the lower section. This will add the song you"
 " selected to the song list that is being created."
 " => Select a few songs and add each of them to the song list."
-" Above the song list is an editable box with the name 'New Song List' in it."
+" Above the song list is an entry box with the name 'New Song List' in it."
 " => Click in the box and change the name of the song list."
 " => Close the 'BDJ4 Management' window. The song list is automatically saved."
 
@@ -1997,9 +1998,9 @@ msgid "helptext_music_location"
 msgstr ""
 "The first step is to configure the location of your music folder."
 " => Select the 'Configure' button."
-" In the 'BDJ4 Configuration' window, the 'General Options'"
+" In the 'BDJ4 Configuration' window, the 'General'"
 " section is displayed."
-" The first item in 'General Options' is the 'Music Folder'."
+" The first item in 'General' is the 'Music Folder'."
 " => Change the 'Music Folder' to the location of your music."
 " => Leave the 'BDJ4 Configuration' window open."
 
@@ -2037,7 +2038,7 @@ msgid "helptext_music_org"
 msgstr ""
 "Setting the organization method is important so that BallroomDJ 4"
 " can determine the information about your songs when the database is built."
-" => Select 'Organization' on the left side of the 'BDJ4 Configuration' window."
+" => Select 'Organization' in the left side of the 'BDJ4 Configuration' window."
 " Many people have their music organized by putting each dance into a"
 " separate folder."
 " This is the default organization: 'Dance/Title'."
@@ -2048,7 +2049,7 @@ msgstr ""
 " If the organization path you need is not present, select the 'support'"
 " button in the startup window and send a support message."
 " If your audio files have the dance stored in the genre audio tag,"
-" turn on 'Database Load Dance from Genre'."
+" turn on 'Database Loads Dance from Genre'."
 " => Close the 'BDJ4 Organization' window."
 
 

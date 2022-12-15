@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-12-11\n"
+"PO-Revision-Date: 2022-12-15\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Turkish\n"
 "Language: tr\n"
@@ -992,13 +992,13 @@ msgid "Mobile Remote Control"
 msgstr "Mobil uzaktan kontrol"
 
 #. CONTEXT: configuration: table edit: button: move selection down
-#. CONTEXT: configuration: display settings: button: move the selected field down
+#. CONTEXT: side-by-side list: button: move the selected field down
 #. CONTEXT: music queue: button: move the selected song down in the queue
 msgid "Move Down"
 msgstr "Aşağı Taşı"
 
 #. CONTEXT: configuration: table edit: button: move selection up
-#. CONTEXT: configuration: display settings: button: move the selected field up
+#. CONTEXT: side-by-side list: button: move the selected field up
 #. CONTEXT: music queue: button: move the selected song up in the queue
 msgid "Move Up"
 msgstr "Yukarı Taşı"
@@ -1328,6 +1328,7 @@ msgstr "Oynatma Listesi Kuyruğu"
 
 #. CONTEXT: The name of the 'queuedance' playlist file
 #. CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button
+#. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
 msgstr "Dans Kuyruğu"
@@ -1374,7 +1375,7 @@ msgstr ""
 msgid "Registering %s."
 msgstr "%s kaydediliyor."
 
-#. CONTEXT: configuration: display settings: button: remove the selected field
+#. CONTEXT: side-by-side list: button: remove the selected field
 #. CONTEXT: music queue: button: remove the song from the queue
 msgid "Remove"
 msgstr "Kaldır"
@@ -1454,7 +1455,7 @@ msgstr "Ara"
 msgid "Seconds"
 msgstr "Saniye"
 
-#. CONTEXT: configuration: display settings: button: add the selected field
+#. CONTEXT: side-by-side list: button: add the selected field
 #. CONTEXT: select file: selects the file
 #. CONTEXT: song-selection: select a song to be added to the song list
 #. CONTEXT: actions associated with the select folder dialog
