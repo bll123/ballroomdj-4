@@ -14,9 +14,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <locale.h>
-#if _sys_select
-# include <sys/select.h>
-#endif
+#include <math.h>
 
 #if _hdr_windows
 # include <windows.h>
@@ -301,7 +299,7 @@ tmutilToMS (time_t ms, char *buff, size_t max)
 char *
 tmutilToMSD (time_t ms, char *buff, size_t max, int decimals)
 {
-  time_t     m, s, d;
+  time_t    m, s, d;
 
   if (! initialized) {
     struct lconv *lconv;
@@ -314,6 +312,11 @@ tmutilToMSD (time_t ms, char *buff, size_t max, int decimals)
   m = ms / 1000 / 60;
   s = (ms - (m * 1000 * 60)) / 1000;
   d = (ms - (m * 1000 * 60) - (s * 1000));
+  if (decimals > 3) {
+    decimals = 3;
+  }
+  /* reduce the number of digits for display */
+  d = d / (int) pow (10, (3 - decimals));
   snprintf (buff, max, "%"PRIu64":%02"PRIu64"%s%0*"PRIu64,
       (uint64_t) m, (uint64_t) s, radixchar, decimals, (uint64_t) d);
   return buff;
@@ -340,7 +343,8 @@ tmutilToDateHM (time_t ms, char *buff, size_t max)
   return buff;
 }
 
-/* handles H:M:S.d, M:S.d, H:M:S,d, M:S,d */
+/* handles H:M:S.00d, M:S.00d, H:M:S,00d, M:S,00d (3 decimals) */
+/* also handles 2 or 1 decimal */
 long
 tmutilStrToMS (const char *str)
 {
@@ -351,7 +355,9 @@ tmutilStrToMS (const char *str)
   double  tval = 0.0;
   long    value;
   int     count;
+  int     len;
   double  mult = 1.0;
+  double  multb = 1000.0;
 
   tstr = strdup (str);
   p = strtok_r (tstr, ":.,", &tokstr);
@@ -359,16 +365,20 @@ tmutilStrToMS (const char *str)
   while (p != NULL) {
     tval = atof (p);
     if (count == 2) {
-      tval /= 1000.0;
+      len = strlen (p);
+      if (len < 3) {
+        /* have to handle conversions of .1, .01, .001 */
+        tval *= pow (10, 3 - len);
+      }
+      multb = 1.0;
     } else {
       dval *= mult;
     }
-    dval += tval;
+    dval += tval * multb;
     mult = 60.0;
     p = strtok_r (NULL, ":.,", &tokstr);
     ++count;
   }
-  dval *= 1000.0;
   value = (long) dval;
 
   free (tstr);

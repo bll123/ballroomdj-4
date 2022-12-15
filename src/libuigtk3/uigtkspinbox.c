@@ -201,8 +201,8 @@ uiSpinboxTimeInit (int sbtype)
 void
 uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, UICallback *convcb)
 {
-  double  inca, incb;
-
+  double  inca = 5000.0;
+  double  incb = 60000.0;
 
   spinbox->convcb = convcb;
   spinbox->uispinbox.widget = gtk_spin_button_new (NULL, 0.0, 0);
@@ -210,7 +210,8 @@ uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, UICallback *convcb)
   if (spinbox->sbtype == SB_TIME_BASIC) {
     inca = 5000.0;
     incb = 60000.0;
-  } else {
+  }
+  if (spinbox->sbtype == SB_TIME_PRECISE) {
     inca = 100.0;
     incb = 30000.0;
   }

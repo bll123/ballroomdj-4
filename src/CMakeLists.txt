@@ -60,6 +60,7 @@ add_library (libbdj4osutils STATIC
 )
 target_link_libraries (libbdj4osutils
   libbdj4string
+  m
 )
 add_library (libbdj4fileop STATIC
   libcommon/fileop.c
@@ -67,6 +68,7 @@ add_library (libbdj4fileop STATIC
 target_link_libraries (libbdj4fileop
   libbdj4osutils
   libbdj4string
+  m
 )
 add_library (libbdj4launcher STATIC
   libcommon/filedata.c

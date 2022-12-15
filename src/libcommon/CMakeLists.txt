@@ -41,6 +41,7 @@ target_include_directories (libbdj4common
 )
 target_link_libraries (libbdj4common
   ${GLIB_LDFLAGS}
+  m
 )
 addWinSockLibrary (libbdj4common)
 # for RtlGetVersion

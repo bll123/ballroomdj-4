@@ -69,6 +69,7 @@ target_link_libraries (check_all
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${CHECK_LDFLAGS}
   pthread
+  m
 )
 target_compile_options (check_all PRIVATE -pthread)
 addIntlLibrary (check_all)

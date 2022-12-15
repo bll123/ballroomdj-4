@@ -27,6 +27,7 @@ target_link_libraries (bdj4
   libbdj4fileop
   libbdj4osutils
   libbdj4string
+  m
 )
 # for gethostname
 addWinSockLibrary (bdj4)
@@ -48,6 +49,7 @@ target_link_libraries (bdj4g
   libbdj4osutils
   libbdj4string
   ${GTK_LDFLAGS}
+  m
 )
 addWinSockLibrary (bdj4g)
 addWinNtdllLibrary (bdj4g)

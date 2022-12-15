@@ -17,6 +17,7 @@
     * player/manager: fix communication about database updates.
     * select folder dialog: fixed to only show folders.
     * song editor: fixed internal bug causing loss of data.
+    * song editor: fixed song start and song end display.
     * song list editor: fixed gap default for new playlists.
     * song list editor / music manager: fixed song selection on switch.
     * song list editor, sequence editor, playlist management: fixed interactions.

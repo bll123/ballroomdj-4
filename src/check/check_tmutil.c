@@ -294,6 +294,19 @@ START_TEST(tmutiltomsd_chk)
   tmutilToMSD (119003, buff, sizeof (buff), 3);
   snprintf (tmp, sizeof (tmp), "1:59%s003", sysvarsGetStr (SV_LOCALE_RADIX));
   ck_assert_str_eq (buff, tmp);
+
+  tmutilToMSD (0, buff, sizeof (buff), 1);
+  snprintf (tmp, sizeof (tmp), "0:00%s0", sysvarsGetStr (SV_LOCALE_RADIX));
+  ck_assert_str_eq (buff, tmp);
+  tmutilToMSD (59100, buff, sizeof (buff), 1);
+  snprintf (tmp, sizeof (tmp), "0:59%s1", sysvarsGetStr (SV_LOCALE_RADIX));
+  ck_assert_str_eq (buff, tmp);
+  tmutilToMSD (60200, buff, sizeof (buff), 1);
+  snprintf (tmp, sizeof (tmp), "1:00%s2", sysvarsGetStr (SV_LOCALE_RADIX));
+  ck_assert_str_eq (buff, tmp);
+  tmutilToMSD (119300, buff, sizeof (buff), 1);
+  snprintf (tmp, sizeof (tmp), "1:59%s3", sysvarsGetStr (SV_LOCALE_RADIX));
+  ck_assert_str_eq (buff, tmp);
 }
 END_TEST
 
@@ -326,6 +339,11 @@ START_TEST(tmutil_strtoms)
   ck_assert_int_eq (value, 61005);
   value = tmutilStrToMS ("1:02,005");
   ck_assert_int_eq (value, 62005);
+
+  value = tmutilStrToMS ("1:03.1");
+  ck_assert_int_eq (value, 63100);
+  value = tmutilStrToMS ("1:04,02");
+  ck_assert_int_eq (value, 64020);
 }
 END_TEST
 

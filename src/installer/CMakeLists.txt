@@ -24,6 +24,7 @@ target_link_libraries (bdj4se
   libbdj4fileop
   libbdj4osutils
   libbdj4string
+  m
 )
 if (WIN32)
   target_sources (bdj4se PRIVATE selauncher.o)
@@ -65,6 +66,7 @@ endif()
 target_link_libraries (bdj4updater
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  m
 )
 addIntlLibrary (bdj4updater)
 

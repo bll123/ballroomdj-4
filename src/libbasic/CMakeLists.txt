@@ -24,6 +24,7 @@ target_link_libraries (libbdj4basic
   libbdj4common
   ${ICU_LDFLAGS}
   ${GLIB_LDFLAGS}
+  m
 )
 
 install (TARGETS

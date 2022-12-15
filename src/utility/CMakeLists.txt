@@ -9,6 +9,7 @@ endif()
 target_link_libraries (bdj4info
   libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  m
 )
 addIntlLibrary (bdj4info)
 
@@ -19,6 +20,7 @@ endif()
 target_link_libraries (bdj4tags
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  m
 )
 addIntlLibrary (bdj4tags)
 
@@ -29,6 +31,7 @@ endif()
 target_link_libraries (tdbcompare
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  m
 )
 
 add_executable (tdbdump tdbdump.c)
@@ -38,6 +41,7 @@ endif()
 target_link_libraries (tdbdump
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  m
 )
 
 add_executable (testsuite
@@ -46,6 +50,7 @@ add_executable (testsuite
 target_link_libraries (testsuite
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  m
 )
 
 add_executable (tmusicsetup tmusicsetup.c)
@@ -55,6 +60,7 @@ endif()
 target_link_libraries (tmusicsetup
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  m
 )
 addIntlLibrary (tmusicsetup)
 
