@@ -89,6 +89,7 @@ static datafilekey_t bdjoptqueuedfkeys [] = {
   { "MAXPLAYTIME",          OPT_Q_MAXPLAYTIME,          VALUE_NUM, NULL, -1 },
   { "PAUSEEACHSONG",        OPT_Q_PAUSE_EACH_SONG,      VALUE_NUM, convBoolean, -1 },
   { "PLAYANNOUNCE",         OPT_Q_PLAY_ANNOUNCE,        VALUE_NUM, convBoolean, -1 },
+  { "PLAY_WHEN_QUEUED",     OPT_Q_PLAY_WHEN_QUEUED,     VALUE_NUM, convBoolean, -1 },
   { "QUEUE_NAME",           OPT_Q_QUEUE_NAME,           VALUE_STR, NULL, -1 },
   { "SHOWQUEUEDANCE",       OPT_Q_SHOW_QUEUE_DANCE,     VALUE_NUM, convBoolean, -1 },
   { "STOP_AT_TIME",         OPT_Q_STOP_AT_TIME,         VALUE_NUM, NULL, -1 },

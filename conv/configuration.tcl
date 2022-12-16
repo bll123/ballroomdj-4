@@ -102,6 +102,8 @@ foreach path [list {} profiles $mpath $mppath] {
           puts $tfh "..no"
           puts $tfh "PLAYANNOUNCE"
           puts $tfh "..no"
+          puts $tfh "PLAY_WHEN_QUEUED"
+          puts $tfh "..no"
           puts $tfh "SHOWQUEUEDANCE"
           puts $tfh "..no"
           puts $tfh STOP_AT_TIME

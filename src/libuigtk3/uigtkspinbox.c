@@ -171,7 +171,7 @@ uiSpinboxTextSetValue (uispinbox_t *spinbox, int value)
 }
 
 void
-uiSpinboxTextDisable (uispinbox_t *uispinbox)
+uiSpinboxDisable (uispinbox_t *uispinbox)
 {
   if (uispinbox == NULL) {
     return;
@@ -180,7 +180,7 @@ uiSpinboxTextDisable (uispinbox_t *uispinbox)
 }
 
 void
-uiSpinboxTextEnable (uispinbox_t *uispinbox)
+uiSpinboxEnable (uispinbox_t *uispinbox)
 {
   if (uispinbox == NULL) {
     return;

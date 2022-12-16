@@ -1,8 +1,13 @@
 [Wiki Home](Home)
 
-### Player : Basic Usage
+[TOC]
 
-To be written...
+### Player : Basic Operations
+
+##### Playing a Song
+
+When a song or playlist is queued, the next song to be played will be
+displayed in the top portion of the screen.
 
 [Wiki Home](Home)
 <br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_

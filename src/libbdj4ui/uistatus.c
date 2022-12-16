@@ -103,7 +103,7 @@ uistatusDisable (uistatus_t *uistatus)
   if (uistatus == NULL || uistatus->spinbox == NULL) {
     return;
   }
-  uiSpinboxTextDisable (uistatus->spinbox);
+  uiSpinboxDisable (uistatus->spinbox);
 }
 
 void
@@ -112,7 +112,7 @@ uistatusEnable (uistatus_t *uistatus)
   if (uistatus == NULL || uistatus->spinbox == NULL) {
     return;
   }
-  uiSpinboxTextEnable (uistatus->spinbox);
+  uiSpinboxEnable (uistatus->spinbox);
 }
 
 void

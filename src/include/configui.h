@@ -107,6 +107,7 @@ enum {
   CONFUI_SWITCH_Q_DISPLAY,
   CONFUI_SWITCH_Q_PAUSE_EACH_SONG,
   CONFUI_SWITCH_Q_PLAY_ANNOUNCE,
+  CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED,
   CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE,
   CONFUI_SWITCH_RC_ENABLE,
   CONFUI_SWITCH_MAX,
@@ -350,6 +351,7 @@ typedef struct confitunes confitunes_t;
 typedef struct confuigui {
   confuiitem_t      uiitem [CONFUI_ITEM_MAX];
   char              *localip;
+  bool              inbuild : 1;
   /* main window */
   UIWidget          window;
   UICallback        closecb;

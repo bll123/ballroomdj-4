@@ -94,7 +94,7 @@ uifavoriteDisable (uifavorite_t *uifavorite)
   if (uifavorite == NULL || uifavorite->spinbox == NULL) {
     return;
   }
-  uiSpinboxTextDisable (uifavorite->spinbox);
+  uiSpinboxDisable (uifavorite->spinbox);
 }
 
 void
@@ -103,7 +103,7 @@ uifavoriteEnable (uifavorite_t *uifavorite)
   if (uifavorite == NULL || uifavorite->spinbox == NULL) {
     return;
   }
-  uiSpinboxTextEnable (uifavorite->spinbox);
+  uiSpinboxEnable (uifavorite->spinbox);
 }
 
 /* internal routines */

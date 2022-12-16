@@ -26,6 +26,7 @@
 #include "sysvars.h"
 #include "ui.h"
 
+static bool confuiPlayerQueueActiveChg (void *udata);
 static bool confuiPlayerQueueChg (void *udata);
 static void confuiSetPlayerQueueList (confuigui_t *gui);
 static void confuiUpdatePlayerQueueList (confuigui_t *gui);
@@ -46,6 +47,7 @@ confuiBuildUIPlayerQueue (confuigui_t *gui)
   UIWidget      sgB;
 
   logProcBegin (LOG_PROC, "confuiBuildUIPlayerQueue");
+  gui->inbuild = true;
   uiCreateVertBox (&vbox);
 
   confuiMakeNotebookTab (&vbox, gui,
@@ -54,50 +56,51 @@ confuiBuildUIPlayerQueue (confuigui_t *gui)
   uiCreateSizeGroupHoriz (&sg);
   uiCreateSizeGroupHoriz (&sgB);
 
-  /* CONTEXT: (noun) configuration: which queue to configure */
+  /* CONTEXT: (noun) configuration: queue: select which queue to configure */
   confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Queue"),
       CONFUI_SPINBOX_PLAYER_QUEUE, -1, CONFUI_OUT_NUM,
       gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx, confuiPlayerQueueChg);
 
-  /* CONTEXT: (noun) configuration: The name of the music queue */
+  /* CONTEXT: (noun) configuration: queue: the name of the music queue */
   confuiMakeItemEntry (gui, &vbox, &sg, _("Queue Name"),
       CONFUI_ENTRY_QUEUE_NM, OPT_Q_QUEUE_NAME,
       bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, 0), CONFUI_INDENT);
 
-  /* CONTEXT: configuration: whether the queue is active */
+  /* CONTEXT: configuration: queue: whether the queue is active */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Active"),
       CONFUI_SWITCH_Q_ACTIVE, OPT_Q_ACTIVE,
-      bdjoptGetNumPerQueue (OPT_Q_ACTIVE, 0), NULL, CONFUI_INDENT);
+      bdjoptGetNumPerQueue (OPT_Q_ACTIVE, 0),
+      confuiPlayerQueueActiveChg, CONFUI_INDENT);
 
-  /* CONTEXT: configuration: whether to display the queue */
+  /* CONTEXT: configuration: queue: whether to display the queue */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Display"),
       CONFUI_SWITCH_Q_DISPLAY, OPT_Q_DISPLAY,
       bdjoptGetNumPerQueue (OPT_Q_DISPLAY, 0), NULL, CONFUI_INDENT);
 
-  /* CONTEXT: configuration: the amount of time to do a volume fade-in when playing a song */
+  /* CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song */
   confuiMakeItemSpinboxDouble (gui, &vbox, &sg, &sgB, _("Fade In Time"),
       CONFUI_WIDGET_Q_FADE_IN_TIME, OPT_Q_FADEINTIME,
       0.0, 2.0, (double) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, 0) / 1000.0,
       CONFUI_INDENT);
 
-  /* CONTEXT: configuration: the amount of time to do a volume fade-out when playing a song */
+  /* CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song */
   confuiMakeItemSpinboxDouble (gui, &vbox, &sg, &sgB, _("Fade Out Time"),
       CONFUI_WIDGET_Q_FADE_OUT_TIME, OPT_Q_FADEOUTTIME,
       0.0, 10.0, (double) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, 0) / 1000.0,
       CONFUI_INDENT);
 
-  /* CONTEXT: configuration: the amount of time to wait inbetween songs */
+  /* CONTEXT: configuration: queue: the amount of time to wait inbetween songs */
   confuiMakeItemSpinboxDouble (gui, &vbox, &sg, &sgB, _("Gap Between Songs"),
       CONFUI_WIDGET_Q_GAP, OPT_Q_GAP,
       0.0, 60.0, (double) bdjoptGetNumPerQueue (OPT_Q_GAP, 0) / 1000.0,
       CONFUI_INDENT);
 
-  /* CONTEXT: configuration: the maximum amount of time to play a song */
+  /* CONTEXT: configuration: queue: the maximum amount of time to play a song */
   confuiMakeItemSpinboxTime (gui, &vbox, &sg, &sgB, _("Maximum Play Time"),
       CONFUI_SPINBOX_Q_MAX_PLAY_TIME, OPT_Q_MAXPLAYTIME,
       bdjoptGetNumPerQueue (OPT_Q_MAXPLAYTIME, 0), CONFUI_INDENT);
 
-  /* CONTEXT: configuration: the time when playback will stop */
+  /* CONTEXT: configuration: queue: the time when playback will stop */
   confuiMakeItemSpinboxTime (gui, &vbox, &sg, &sgB, _("Stop At"),
       CONFUI_SPINBOX_Q_STOP_AT_TIME, OPT_Q_STOP_AT_TIME,
       bdjoptGetNum (OPT_Q_STOP_AT_TIME), CONFUI_INDENT);
@@ -107,19 +110,62 @@ confuiBuildUIPlayerQueue (confuigui_t *gui)
       CONFUI_SWITCH_Q_PAUSE_EACH_SONG, OPT_Q_PAUSE_EACH_SONG,
       bdjoptGetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, 0), NULL, CONFUI_INDENT);
 
-  /* CONTEXT: configuration: whether to play announcements */
+  /* CONTEXT: configuration: queue: whether to play announcements */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Play Announcements"),
       CONFUI_SWITCH_Q_PLAY_ANNOUNCE, OPT_Q_PLAY_ANNOUNCE,
       bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, 0), NULL, CONFUI_INDENT);
 
-  /* CONTEXT: configuration: whether to show the 'queue dance' buttons */
+  /* CONTEXT: configuration: queue: play when queued */
+  confuiMakeItemSwitch (gui, &vbox, &sg, _("Play When Queued"),
+      CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED, OPT_Q_PLAY_WHEN_QUEUED,
+      bdjoptGetNumPerQueue (OPT_Q_PLAY_WHEN_QUEUED, 0), NULL, CONFUI_INDENT);
+
+  /* CONTEXT: configuration: queue: whether to show the 'queue dance' buttons */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Show Queue Dance Buttons"),
       CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE, OPT_Q_SHOW_QUEUE_DANCE,
       bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, 0), NULL, CONFUI_INDENT);
 
+  gui->inbuild = false;
   confuiPlayerQueueChg (gui);
+  confuiPlayerQueueActiveChg (gui);
 
   logProcEnd (LOG_PROC, "confuiBuildUIPlayerQueue", "");
+}
+
+static bool
+confuiPlayerQueueActiveChg (void *udata)
+{
+  confuigui_t *gui = udata;
+  int         tval = 0;
+
+  if (gui->inbuild) {
+    return UICB_CONT;
+  }
+
+  tval = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
+  if (tval) {
+    uiWidgetEnable (&gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidget);
+    uiWidgetEnable (&gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidget);
+    uiWidgetEnable (&gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidget);
+    uiSpinboxEnable (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].spinbox);
+    uiSpinboxEnable (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].spinbox);
+    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiswitch);
+    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiswitch);
+    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiswitch);
+    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch);
+  } else {
+    uiWidgetDisable (&gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidget);
+    uiWidgetDisable (&gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidget);
+    uiWidgetDisable (&gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidget);
+    uiSpinboxDisable (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].spinbox);
+    uiSpinboxDisable (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].spinbox);
+    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiswitch);
+    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiswitch);
+    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiswitch);
+    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch);
+  }
+
+  return UICB_CONT;
 }
 
 static bool
@@ -131,6 +177,10 @@ confuiPlayerQueueChg (void *udata)
   int         widx;
 
   logProcBegin (LOG_PROC, "confuiPlayerQueueChg");
+
+  if (gui->inbuild) {
+    return UICB_CONT;
+  }
 
   widx = CONFUI_SPINBOX_PLAYER_QUEUE;
   oselidx = gui->uiitem [widx].listidx;
@@ -166,6 +216,8 @@ confuiPlayerQueueChg (void *udata)
       bdjoptGetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiswitch,
       bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, nselidx));
+  uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiswitch,
+      bdjoptGetNumPerQueue (OPT_Q_PLAY_WHEN_QUEUED, nselidx));
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch,
       bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, nselidx));
 
@@ -229,3 +281,4 @@ confuiUpdatePlayerQueueList (confuigui_t *gui)
   uiSpinboxTextSet (gui->uiitem [widx].spinbox, 0,
       nlistGetCount (tlist), maxWidth, tlist, NULL, NULL);
 }
+

@@ -7,7 +7,6 @@
 /* various dynamic options */
 enum {
   PLUI_HIDE_MARQUEE_ON_START,
-  PLUI_PLAY_WHEN_QUEUED,
   PLUI_POSITION_X,
   PLUI_POSITION_Y,
   PLUI_SHOW_EXTRA_QUEUES,

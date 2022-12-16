@@ -5,7 +5,8 @@
 **4.0.0 beta 2022-11---**
 
 * Bug Fixes:
-    * configuration: player: disable active/display switches for main music queue.
+    * configuration: player queues: disable active/display switches for main music queue.
+    * configuration: player queues: disable fields when queue is not active.
     * configuration: profile color was incorrectly changing the ui color.
     * configuration: fixed filename entries to expand properly.
     * conversion: do not change the ui accent color for secondary profiles.
@@ -33,12 +34,14 @@
     * configuration: itunes: changed display to show stars instead of text.
     * configuration: update database: rearranged user interface.
     * configuration: display settings: insert after selection.
+    * configuration: player queue: add play when queued.
     * edit sequences: insert after selection.
     * management: rearrange user interface.
     * marquee: changed hide-marquee-on-start to show-marquee and added an 'off' setting.
     * mobile marquee: remove internet mode.
     * player user interface: moved 'request external' into a menu.
     * player user interface: the queue dance buttons are only shown per the queue configuration.
+    * player user interface: remove play when queued from options menu.
     * playlist management: disallow deletion of special QueueDance playlist.
     * playlist management: hide unselected is always turned on for sequences.
     * song editor: previous and next buttons will now repeat.

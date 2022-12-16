@@ -119,7 +119,6 @@ static datafilekey_t playeruidfkeys [] = {
   { "FILTER_POS_Y",             SONGSEL_FILTER_POSITION_Y,    VALUE_NUM, NULL, -1 },
   { "MQ_REQ_EXT_X",             MQ_REQ_EXT_POSITION_X,        VALUE_NUM, NULL, -1 },
   { "MQ_REQ_EXT_Y",             MQ_REQ_EXT_POSITION_Y,        VALUE_NUM, NULL, -1 },
-  { "PLAY_WHEN_QUEUED",         PLUI_PLAY_WHEN_QUEUED,        VALUE_NUM, NULL, -1 },
   { "PLUI_POS_X",               PLUI_POSITION_X,              VALUE_NUM, NULL, -1 },
   { "PLUI_POS_Y",               PLUI_POSITION_Y,              VALUE_NUM, NULL, -1 },
   { "PLUI_SIZE_X",              PLUI_SIZE_X,                  VALUE_NUM, NULL, -1 },
@@ -157,8 +156,7 @@ static bool     pluiProcessSetPlaybackQueue (void *udata);
 static void     pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newqueue, int updateFlag);
 static void     pluiSetManageQueue (playerui_t *plui, musicqidx_t newqueue);
 /* option handlers */
-static bool     pluiTogglePlayWhenQueued (void *udata);
-static void     pluiSetPlayWhenQueued (playerui_t *plui);
+static void     pluiSendPlayWhenQueued (playerui_t *plui);
 static bool     pluiToggleExtraQueues (void *udata);
 static void     pluiSetExtraQueues (playerui_t *plui);
 static bool     pluiToggleSwitchQueue (void *udata);
@@ -240,7 +238,6 @@ main (int argc, char *argv[])
     plui.optiondf = NULL;
     plui.options = nlistAlloc ("playerui-opt", LIST_ORDERED, free);
 
-    nlistSetNum (plui.options, PLUI_PLAY_WHEN_QUEUED, true);
     nlistSetNum (plui.options, PLUI_SHOW_EXTRA_QUEUES, false);
     nlistSetNum (plui.options, PLUI_SWITCH_QUEUE_WHEN_EMPTY, false);
     nlistSetNum (plui.options, SONGSEL_FILTER_POSITION_X, -1);
@@ -422,13 +419,6 @@ pluiBuildUI (playerui_t *plui)
   uiMenuCreateItem (&menubar, &menuitem, _("Options"), NULL);
 
   uiCreateSubMenu (&menuitem, &menu);
-
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_PLAY_QUEUE],
-      pluiTogglePlayWhenQueued, plui, NULL);
-  /* CONTEXT: playerui: menu checkbox: start playback when a dance or playlist is queued */
-  uiMenuCreateCheckbox (&menu, &menuitem, _("Play When Queued"),
-      nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED),
-      &plui->callbacks [PLUI_MENU_CB_PLAY_QUEUE]);
 
   uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE],
       pluiToggleExtraQueues, plui, NULL);
@@ -728,14 +718,14 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
       connHaveHandshake (plui->conn, ROUTE_MAIN) &&
       connHaveHandshake (plui->conn, ROUTE_PLAYER) &&
       connHaveHandshake (plui->conn, ROUTE_MARQUEE)) {
-    pluiSetPlayWhenQueued (plui);
-    pluiSetSwitchQueue (plui);
     if (plui->mainalready) {
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_MAIN_REQ_STATUS, NULL);
     }
     if (! plui->mainalready) {
       pluiSetPlaybackQueue (plui, plui->musicqPlayIdx, PLUI_UPDATE_MAIN);
       pluiSetManageQueue (plui, plui->musicqManageIdx);
+      pluiSetSwitchQueue (plui);
+      pluiSendPlayWhenQueued (plui);
     }
     pluiSetExtraQueues (plui);
     progstateLogTime (plui->progstate, "time-to-start-gui");
@@ -982,6 +972,7 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue, int updateFlag)
   logProcBegin (LOG_PROC, "pluiSetPlaybackQueue");
 
   plui->musicqPlayIdx = newQueue;
+
   for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
     if (! bdjoptGetNumPerQueue (OPT_Q_DISPLAY, i)) {
       /* not displayed */
@@ -1001,6 +992,7 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue, int updateFlag)
   if (updateFlag == PLUI_UPDATE_MAIN) {
     snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
+    pluiSendPlayWhenQueued (plui);
   }
   logProcEnd (LOG_PROC, "pluiSetPlaybackQueue", "");
 }
@@ -1018,31 +1010,16 @@ pluiSetManageQueue (playerui_t *plui, musicqidx_t mqidx)
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_MANAGE, tbuff);
 }
 
-static bool
-pluiTogglePlayWhenQueued (void *udata)
-{
-  playerui_t      *plui = udata;
-  listnum_t       val;
-
-  logProcBegin (LOG_PROC, "pluiTogglePlayWhenQueued");
-  val = nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED);
-  val = ! val;
-  nlistSetNum (plui->options, PLUI_PLAY_WHEN_QUEUED, val);
-  pluiSetPlayWhenQueued (plui);
-  logProcEnd (LOG_PROC, "pluiTogglePlayWhenQueued", "");
-  return UICB_CONT;
-}
-
 static void
-pluiSetPlayWhenQueued (playerui_t *plui)
+pluiSendPlayWhenQueued (playerui_t *plui)
 {
   char  tbuff [40];
 
-  logProcBegin (LOG_PROC, "pluiSetPlayWhenQueued");
+  logProcBegin (LOG_PROC, "pluiSendPlayWhenQueued");
   snprintf (tbuff, sizeof (tbuff), "%"PRId64,
-      nlistGetNum (plui->options, PLUI_PLAY_WHEN_QUEUED));
+      bdjoptGetNumPerQueue (OPT_Q_PLAY_WHEN_QUEUED, plui->musicqPlayIdx));
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_WHEN_QUEUED, tbuff);
-  logProcEnd (LOG_PROC, "pluiSetPlayWhenQueued", "");
+  logProcEnd (LOG_PROC, "pluiSendPlayWhenQueued", "");
 }
 
 

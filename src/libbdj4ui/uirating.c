@@ -103,7 +103,7 @@ uiratingDisable (uirating_t *uirating)
   if (uirating == NULL || uirating->spinbox == NULL) {
     return;
   }
-  uiSpinboxTextDisable (uirating->spinbox);
+  uiSpinboxDisable (uirating->spinbox);
 }
 
 void
@@ -112,7 +112,7 @@ uiratingEnable (uirating_t *uirating)
   if (uirating == NULL || uirating->spinbox == NULL) {
     return;
   }
-  uiSpinboxTextEnable (uirating->spinbox);
+  uiSpinboxEnable (uirating->spinbox);
 }
 
 void

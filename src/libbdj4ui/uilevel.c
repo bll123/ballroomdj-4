@@ -103,7 +103,7 @@ uilevelDisable (uilevel_t *uilevel)
   if (uilevel == NULL || uilevel->spinbox == NULL) {
     return;
   }
-  uiSpinboxTextDisable (uilevel->spinbox);
+  uiSpinboxDisable (uilevel->spinbox);
 }
 
 void
@@ -112,7 +112,7 @@ uilevelEnable (uilevel_t *uilevel)
   if (uilevel == NULL || uilevel->spinbox == NULL) {
     return;
   }
-  uiSpinboxTextEnable (uilevel->spinbox);
+  uiSpinboxEnable (uilevel->spinbox);
 }
 
 void
