@@ -5,51 +5,51 @@
 <span style="color:#4559bf;">_The player queue controls configures
 playback for each music queue._</span>
 
-__Queue__: Selects which music queue to configure.  The following settings
+___Queue___: Selects which music queue to configure.  The following settings
 apply to the selected music queue.
 
-__Queue Name__: The name displayed for this music queue.
+___Queue Name___: The name displayed for this music queue.
 
-__Active__: Whether the settings for the music queue are
+___Active___: Whether the settings for the music queue are
 active.  When off, the settings for the main music queue are used
 (other than __Display__).
 
-__Display__: Whether this music queue will be displayed
+___Display___: Whether this music queue will be displayed
 when the __Show&nbsp;Extra&nbsp;Queues__ option is turned on in the
 player.
 
-__Fade In Time__: The amount of time used to fade in the
+___Fade In Time___: The amount of time used to fade in the
 volume when the song starts playing.  Set to 0.0 for no fade in.
 
-__Fade Out Time__: The amount of time used to fade out the
+___Fade Out Time___: The amount of time used to fade out the
 volume when song ends.  If the song ends before the fade out would
 normally start, no fade out is applied.  Set to 0.0 for no fade out.
 
-__Gap__: The amount of time to wait before playing the next song.  The
+___Gap___: The amount of time to wait before playing the next song.  The
 gap can also be configured for a particlar playlist. See
 [Playlist&nbsp;Management](en-Management-Playlist%20Management)
 
-__Maximum Play Time__: (per-queue) The maximum duration a song will
+___Maximum Play Time___: (per-queue) The maximum duration a song will
 play.  This is often set anywhere from 2:00 minutes to 3:00 minutes.
 Set to 0:00 to turn off entirely.  A playlist can also be configured
 with a maximum play time. See
 [Playlist&nbsp;Management](en-Management-Playlist%20Management)
 
-__Stop At__: The time when playback stops when using this queue. See
+___Stop At___: The time when playback stops when using this queue. See
 also the __Stop&nbsp;At__ capabilities in
 [Playlist&nbsp;Management](en-Management-Playlist%20Management).
 
-__Pause Each Song__: Playback will pause after each song
+___Pause Each Song___: Playback will pause after each song
 is played.  This setting is used for showcases and events.
 
-__Play Announcements__: The dance announcement will be
+___Play Announcements___: The dance announcement will be
 played before each song. See
 [Edit&nbsp;Dances](en-Configuration-Edit%20Dances).
 
-__Play When Queued__: Songs and playlists will start playing
+___Play When Queued___: Songs and playlists will start playing
 immediately when queued.
 
-__Show Queue Dance Buttons__: Show the _Queue&nbsp;Dance_
+___Show Queue Dance Buttons___: Show the _Queue&nbsp;Dance_
 and _Queue&nbsp;5_ buttons.  These are used for teaching.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -57,4 +57,4 @@ and _Queue&nbsp;5_ buttons.  These are used for teaching.
 <br><span style="color:#4559bf;">**Configuration / Player Queues**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-16 05:56:21; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 07:34:46; BDJ4 version 4.0.0-beta)_

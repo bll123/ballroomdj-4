@@ -64,10 +64,11 @@ songs, and not the entire listing.
 ![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-C.png)
 <br><span style="color:#4559bf;">**Management / Music Manager / Actions Menu**</span> </div>
 
-_Mark as Same Song_ will mark the selected songs as the same song.
+___Actions___&nbsp;/&nbsp;___Mark as Same Song___ will mark the
+selected songs as the same song.
 
-_Clear Same Song Mark_ will clear the same song markers from the
-selected songs.
+___Actions___&nbsp;/&nbsp;___Clear Same Song Mark___ will clear the
+same song markers from the selected songs.
 
 ##### Same Song Marks
 
@@ -84,4 +85,4 @@ marked as the same song.
 <br><span style="color:#4559bf;">**Management / Music Manager / Same Song Marks**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-15 11:53:45; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 07:32:11; BDJ4 version 4.0.0-beta)_

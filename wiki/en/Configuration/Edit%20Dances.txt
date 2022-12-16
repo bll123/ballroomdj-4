@@ -18,30 +18,30 @@ button to remove the dance.
 Modifying a dance: Select the dance to change and change the dance
 configuration.
 
-__Dance__: The name of the dance. ___Note that changing the name of
+___Dance___: The name of the dance. ___Note that changing the name of
 dance that is already in your database will cause many problems.___
 
-__Type__: The type is used for automatic playlists.  Dances with
+___Type___: The type is used for automatic playlists.  Dances with
 the same type are not as likely to be next to another dance of the
 same type.
 
-__Speed__: The speed is used for automatic playlists.  Fast dances are
+___Speed___: The speed is used for automatic playlists.  Fast dances are
 not placed at the very beginning of the playlist, and fast dances are
 not as likely to be next to another fast dance.
 
-__Tags__: Tags are used for automatic playlists.  Dances with matching
+___Tags___: Tags are used for automatic playlists.  Dances with matching
 tags are not as likely to be next to each other.
 
-__Announcement__: The announcement played before the dance is played.
+___Announcement___: The announcement played before the dance is played.
 Note that the announcement audio files must be in the database.
 
-__Low BPM__: This is a display option for use in the song editor.
+___Low BPM___: This is a display option for use in the song editor.
 __This is not currently implemented.__
 
-__High BPM__: This is a display option for use in the song editor.
+___High BPM___: This is a display option for use in the song editor.
 __This is not currently implemented.__
 
-__Time Signature__: This is used by the BPM counter to select the
+___Time Signature___: This is used by the BPM counter to select the
 proper default when MPM is selected in the
 [General&nbsp;Options](en-Configuration-General).
 
@@ -50,4 +50,4 @@ proper default when MPM is selected in the
 <br><span style="color:#4559bf;">**Configuration / Edit Dances**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-13 08:08:09; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 07:34:46; BDJ4 version 4.0.0-beta)_

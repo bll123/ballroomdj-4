@@ -71,18 +71,19 @@ _Previous_ to switch to a different song, then switch back.
 ![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-A.png)
 <br><span style="color:#4559bf;">**Management / Song Editor / Actions Menu**</span> </div>
 
-_BPM_ starts the BPM Counter.
+___BPM___ starts the BPM Counter.
 
-_Edit&nbsp;All_ starts the batch edit process.  __This function is not
-yet implemented__.
+___Actions___&nbsp;/&nbsp;___Edit&nbsp;All___ starts the batch edit
+process.  __This function is not yet implemented__.
 
-_Apply&nbsp;Edit&nbsp;All_ finalizes the batch edit process. The
-changes made to the current song will be made to the rest of the
-selected songs.  __This function is not yet implemented__.
+___Actions___&nbsp;/&nbsp;___Apply&nbsp;Edit&nbsp;All___ finalizes the
+batch edit process. The changes made to the current song will be made
+to the rest of the selected songs.  __This function is not yet
+implemented__.
 
-_Cancel&nbsp;Edit&nbsp;All_ cancels the batch edit process. The
-changes made to the current song will be reverted. __This function is
-not yet implemented__.
+___Actions___&nbsp;/&nbsp;___Cancel&nbsp;Edit&nbsp;All___ cancels the
+batch edit process. The changes made to the current song will be
+reverted. __This function is not yet implemented__.
 
 ##### Using the BPM Counter
 
@@ -146,4 +147,4 @@ song editor is:
  Volume Adjustment|BDJ4|
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-15 10:23:52; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 07:32:11; BDJ4 version 4.0.0-beta)_

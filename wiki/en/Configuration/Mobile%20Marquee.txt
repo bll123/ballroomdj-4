@@ -12,15 +12,15 @@ internet.
 
 This is useful for venues where the marquee cannot be displayed.
 
-__Enable Mobile Marquee__: Turns on the mobile marquee. (activated
+___Enable Mobile Marquee___: Turns on the mobile marquee. (activated
 when then player is started).
 
-__Title__: An optional title to display on the mobile marquee.
+___Title___: An optional title to display on the mobile marquee.
 
-__Port__: The port to connect to.  This usually does not need to be
+___Port___: The port to connect to.  This usually does not need to be
 changed unless there is another device using this port.
 
-__QR Code__: Select the link to display a QR code in your browser. The
+___QR Code___: Select the link to display a QR code in your browser. The
 QR code can be copied from the browser and embedded in a document to
 be printed out so that the dancers can scan the QR Code.
 
@@ -33,4 +33,4 @@ be printed out so that the dancers can scan the QR Code.
 <br><span style="color:#4559bf;">**Mobile Device / Mobile Marquee**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 07:34:46; BDJ4 version 4.0.0-beta)_

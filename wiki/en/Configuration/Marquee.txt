@@ -10,21 +10,21 @@ If you do not have a monitor or projector where the marquee can be
 displayed, consider using [Announcements](en-Subjects-Announcements)
 or using the [Mobile%20Marquee](en-Configuration-Mobile%20Marquee).
 
-__Show Marquee__: Set to _Off_, _Minimized_ or _Visible_.  The marquee
+___Show Marquee___: Set to _Off_, _Minimized_ or _Visible_.  The marquee
 starts when the player is started.
 
-__Marquee Theme__: The interface theme used to display the marquee.
+___Marquee Theme___: The interface theme used to display the marquee.
 
-__Marquee Font__: The font used for the marquee.  A narrow font works
+___Marquee Font___: The font used for the marquee.  A narrow font works
 best for the marquee.
 
-__Queue Length__: The number of upcoming songs to display on the
+___Queue Length___: The number of upcoming songs to display on the
 marquee.
 
-__Show Song Information__: If enabled, the song artist and title will
+___Show Song Information___: If enabled, the song artist and title will
 be displayed on the marquee.
 
-__Accent Color__: The color to use for the current dance and countdown
+___Accent Color___: The color to use for the current dance and countdown
 timer.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -32,4 +32,4 @@ timer.
 <br><span style="color:#4559bf;">**Configuration / Marquee**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 07:34:46; BDJ4 version 4.0.0-beta)_

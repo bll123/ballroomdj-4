@@ -7,9 +7,82 @@ for playback of songs._</span>
 
 ### Player
 
+##### Player Display
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-display](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-display-A.png)
+<br><span style="color:#4559bf;">**Player / Player Display**</span> </div>
+
+The left side of the player display includes the player status, repeat
+status, dance, artist and title display, time remaining to play, total
+duration of the song, and the buttons to control the player.
+
+The right side of the player display includes the speed, song position
+and volume sliders.
+
+The player status to the left of the dance / artist / title display
+indicates the current status of the loaded song: playing, paused or
+stopped.  If the repeat toggle is turned on, the repeat symbol will be
+displayed.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-status-play](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-play-B.png)
+![player-status-stop](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-stop-A.png)
+![player-status-stop](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-status-pause-A.png)
+<br><span style="color:#4559bf;">**Player / Player Status**</span> </div>
+
+The time remaining display shows how many seconds are left to play in
+the song.  The time played is displayed to the right of the position
+slider.
+
 ##### Player Controls
 
+___Fade___: The fade button will fade out the song using the queue's
+configured fade out time and stop playing the song.  Any gap
+configured for the queue will be applied, and then the next song in
+the music queue will start playing.
+
+___Play / Pause___:
+(![b-pp](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-b-playpause-A.png))
+Starts playing a song or pauses the song if it is playing.  If a song
+is paused when it has already started the fade out, the pause at end
+toggle is turned on, and the song will finish playing.
+
+___Toggle Repeat___:
+(![b-rep](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-b-repeat-A.png))
+Toggles the repeat status.  The repeat symbol will display to the left
+of the dance / artist / title display.  When repeat is on, the song
+will not be removed from the player when it reaches the end and will
+be re-played.
+
+___Return to Beginning of Song___:
+(![b-begin](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-b-beginsong-A.png))
+Re-starts the song from the beginning.
+
+___Next Song___:
+(![b-nextsong](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-b-nextsong-A.png))
+Immediately starts playing the next song in the queue.  There is no
+fade out and no gap applied.  The next song button may be used when
+the player is paused or stopped.
+
+___Pause at End___: Turns on and off the pause at end toggle.  The
+player will stop playing after the song finishes.
+
+___Speed___: Adjusts the speed of the currently playing song. The
+speed will reset when the next song starts playing.
+
+___Position___: Displays the current position of the song.  The slider
+can be adjusted to change the current position of the song.
+
+___Volume___: Sets the playback volume.  <br>(See also
+_Default&nbsp;Volume_ in [Configuration /
+General](en-Configuration-General))
+
 ##### Music Queue Controls
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-music-q](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-music-q-A.png)
+<br><span style="color:#4559bf;">**Player / Music Queue Controls**</span> </div>
 
 ##### Requests
 
@@ -22,4 +95,4 @@ for playback of songs._</span>
 ##### External Requests
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-16 05:56:21; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 07:46:21; BDJ4 version 4.0.0-beta)_

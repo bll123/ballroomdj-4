@@ -1,10 +1,12 @@
 [Wiki Home](Home)
 
+[TOC]
+
 ### Getting Started
 
 #### Configuring BDJ4
 
-###### Set the location of the music folder
+##### Set the location of the music folder
 
 The first step is to configure the location of your music folder.
 Start BDJ4.  The window that displays is the _Starter_ window. Select
@@ -27,7 +29,7 @@ the location of your music folder.
 
 Leave the configuration window open.
 
-###### Choose how your music is organized
+##### Choose how your music is organized
 
 The organization is important so that BDJ4 can determine information
 about your songs when the database is built.  Most importantly, the
@@ -70,7 +72,7 @@ In the _Starter_ window, select the _Manage_ button.  This will open
 the management user interface.  Select the _Update Database_ section
 in the left side of the management window.
 
-Use the plus and minus buttons to change the selection to
+Use the plus and minus buttons to change the _Action_ to
 _Rebuild&nbsp;Database_.  Select the _Start_ button.  Depending on how
 many songs you have, the database rebuild may take a long time.  Wait
 for the database rebuild to finish.  A __Complete__ message will be
@@ -86,7 +88,8 @@ Leave the management window open.
 
 Select _Music&nbsp;Manager_ in the left side of the management window.
 Scroll through the list of songs and check to make sure the dance is
-set for each song.
+set for each song.  It is OK if some songs are left without an
+assigned dance, but most should have a dance set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![gs-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-mm-B.png)
@@ -107,19 +110,19 @@ Leave the management window open.
 
 #### Create an example playlist
 
-Select _Edit&nbsp;Song&nbsp;Lists_ in the left side of the management
-window.  On the right side of the window below the player is a list of
-your songs.   Select a song in the right side of the window.  Select
-the left arrow button
-(![left-arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-A.png))
-in the middle of the lower section.  This will
-add the song you selected to the song list that is being created.
-
-Select some more songs and add each of them to the song list.
-
 Above the song list is an entry box with the name
 _New&nbsp;Song&nbsp;List_ in it.  Click in the box and change the name
 of the song list.
+
+Select _Edit&nbsp;Song&nbsp;Lists_ in the left side of the management
+window.  On the right side of the window below the player is a list of
+your songs.  Select a song in the right side of the window.  Select
+the left arrow button
+(![left-arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-A.png))
+in the middle of the lower section.  This will add the song you
+selected to the song list that is being created.
+
+Select some more songs and add each of them to the song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![gs-sl](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-sl-B.png)
@@ -133,11 +136,14 @@ Now select _Player_ in the starter window.  In the player window,
 select the _Queue&nbsp;Playlist_ drop-down, and select the example
 song list that you just created.
 
+The song list will load into the player.  Select the
+_Play&nbsp;/&nbsp;Pause_ button
+(![b-pp](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-b-playpause-A.png))
+to start the music playing.
+
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-player-A.png)
 <br><span style="color:#4559bf;">**Player**</span> </div>
-
-The song list will load into the player and start playing.
 
 #### More information
 
@@ -152,4 +158,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-14 08:00:47; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 08:02:38; BDJ4 version 4.0.0-beta)_

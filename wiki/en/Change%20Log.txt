@@ -2,7 +2,15 @@
 
 ### BallroomDJ 4 Change Log
 
-**4.0.0 beta 2022-11---**
+<!--
+
+**4.0.1 beta 2022-1---**
+
+* Bug Fixes:
+
+-->
+
+**4.0.0 beta 2022-12---**
 
 * Bug Fixes:
     * configuration: player queues: disable active/display switches for main music queue.
@@ -56,4 +64,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-16 05:56:21; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 07:54:47; BDJ4 version 4.0.0-beta)_

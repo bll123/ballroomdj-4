@@ -11,22 +11,22 @@ _Stop_ button will activate, and can be used to stop processing at any
 time.  When processing is finished, a _Complete_ message will be
 displayed in the processing status box.
 
-__Check for New__: Used to check for new audio files and add them to
+___Check for New___: Used to check for new audio files and add them to
 the database.  Any existing entries in the database are not changed.
 
-__Reorganize__: Re-organizes the audio files according to the
+___Reorganize___: Re-organizes the audio files according to the
 organization configuration.  __This feature is not yet implemented.__
 
-__Update from Audio File Tags__: The BDJ4 database is updated from the
+___Update from Audio File Tags___: The BDJ4 database is updated from the
 information read from the audio file tags.  This action is used when
 a tagging program has been used to update the audio file tags.
 
-__Write Tags to Audio Files__: Uses the information in the BDJ4
+___Write Tags to Audio Files___: Uses the information in the BDJ4
 database to update the audio file tags in the audio files. The
 _Write&nbsp;Audio&nbsp;File&nbsp;Tags_ configuration setting must be
 set.
 
-__Rebuild Database__: Rebuilds the database completely.  Any
+___Rebuild Database___: Rebuilds the database completely.  Any
 information stored in the database that is not stored in the audio
 file tags will be lost.
 
@@ -42,4 +42,4 @@ _Action_ to _Check&nbsp;for&nbsp;New_.  Do not use
 _Rebuild&nbsp;Database_ to add an additional music folder.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-14 07:57:57; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 07:32:11; BDJ4 version 4.0.0-beta)_

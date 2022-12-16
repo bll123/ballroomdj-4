@@ -139,19 +139,19 @@ each dance is displayed.
 <br><span style="color:#4559bf;">**Management / Edit Song Lists / Edit Menu**</span> </div>
 
 An existing song list can be loaded by selecting
-_Edit_&nbsp;/&nbsp;_Load_ from the menu.  A dialog will open allowing
-selection of an existing song list.
+___Edit___&nbsp;/&nbsp;___Load___ from the menu.  A dialog will open
+allowing selection of an existing song list.
 
-_Edit_&nbsp;/&nbsp;_Start&nbsp;New&nbsp;Song&nbsp;List_ will clean
-out any loaded song list and reset the name to
+___Edit___&nbsp;/&nbsp;___Start&nbsp;New&nbsp;Song&nbsp;List___ will
+clean out any loaded song list and reset the name to
 _New&nbsp;Song&nbsp;List_.
 
-_Edit_&nbsp;/&nbsp;_Create&nbsp;Copy_ will create a copy of the
-currently loaded song list and create a new name with _Copy&nbsp;of_
-prefixed to the old name.
+___Edit___&nbsp;/&nbsp;___Create&nbsp;Copy___ will create a copy of
+the currently loaded song list and create a new name with
+_Copy&nbsp;of_ prefixed to the old name.
 
-_Edit_&nbsp;/&nbsp;_Delete_ will delete the currently loaded song list
-from your storage device and start a new song list.
+___Edit___&nbsp;/&nbsp;___Delete___ will delete the currently loaded
+song list from your storage device and start a new song list.
 
 ##### Actions Menu
 
@@ -159,20 +159,21 @@ from your storage device and start a new song list.
 ![sl-actions-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-actions-menu-A.png)
 <br><span style="color:#4559bf;">**Management / Edit Song Lists / Actions Menu**</span> </div>
 
-_Actions_&nbsp;/&nbsp;_Mix_ will use BDJ4's automatic dance and song
-selection process to mix the songs in the song list into a new order.
-Select the songs to be played and add them the song list without
-regards to order. Then select _Actions_&nbsp;/&nbsp;_Mix_ from the
-menu.  Review the song list to make sure the ordering is to your
+___Actions___&nbsp;/&nbsp;___Mix___ will use BDJ4's automatic dance
+and song selection process to mix the songs in the song list into a
+new order. Select the songs to be played and add them the song list
+without regards to order. Then select _Actions_&nbsp;/&nbsp;_Mix_ from
+the menu.  Review the song list to make sure the ordering is to your
 satisfaction.
 
-_Actions_&nbsp;/&nbsp;_Truncate_ will truncate the song list starting
-from the currently selected song.
+___Actions___&nbsp;/&nbsp;___Truncate___ will truncate the song list
+starting from the currently selected song.
 
-_Actions_&nbsp;/&nbsp;_Create&nbsp;from&nbsp;Playlist_ creates a song
-list using an automatic or sequenced playlist.  In the dialog, select
-the playlist from which to build a new song list.  Adjust the time
-limit (HH:MM) to set how many hours and minutes of songs will be played.
+___Actions___&nbsp;/&nbsp;___Create&nbsp;from&nbsp;Playlist___ creates
+a song list using an automatic or sequenced playlist.  In the dialog,
+select the playlist from which to build a new song list.  Adjust the
+time limit (HH:MM) to set how many hours and minutes of songs will be
+played.
 
 ##### Export Menu
 
@@ -180,12 +181,12 @@ limit (HH:MM) to set how many hours and minutes of songs will be played.
 ![sl-export-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-export-menu-A.png)
 <br><span style="color:#4559bf;">**Management / Edit Song Lists / Export Menu**</span> </div>
 
-_Export_&nbsp;/&nbsp;_Export&nbsp;as&nbsp;M3U&nbsp;Playlist_ creates
-an M3U8 playlist file that can be used in other players.
+___Export___&nbsp;/&nbsp;___Export&nbsp;as&nbsp;M3U&nbsp;Playlist___
+creates an M3U8 playlist file that can be used in other players.
 
-_Export_&nbsp;/&nbsp;_Export&nbsp;for&nbsp;BDJ4_ creates a folder with
-songs and database that can be imported into another instance of BDJ4.
-__This feature is not yet implemented.__
+___Export___&nbsp;/&nbsp;___Export&nbsp;for&nbsp;BDJ4___ creates a
+folder with songs and database that can be imported into another
+instance of BDJ4. __This feature is not yet implemented.__
 
 ##### Import Menu
 
@@ -193,13 +194,13 @@ __This feature is not yet implemented.__
 ![sl-import-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-import-menu-A.png)
 <br><span style="color:#4559bf;">**Management / Edit Song Lists / Import Menu**</span> </div>
 
-_Import_&nbsp;/&nbsp;_Import&nbsp;M3U_ imports an M3U playlist file
-and creats a song list.
+___Import___&nbsp;/&nbsp;___Import&nbsp;M3U___ imports an M3U playlist
+file and creats a song list.
 
-_Import_&nbsp;/&nbsp;_Import&nbsp;from&nbsp;BDJ4_ imports a song list
-and songs from a folder created with
+___Import___&nbsp;/&nbsp;___Import&nbsp;from&nbsp;BDJ4___ imports a
+song list and songs from a folder created with
 _Export_&nbsp;/&nbsp;_Export&nbsp;for&nbsp;BDJ4_. __This feature is
 not yet implemented.__
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-15 11:53:45; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 07:32:11; BDJ4 version 4.0.0-beta)_

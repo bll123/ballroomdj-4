@@ -5,16 +5,16 @@
 <span style="color:#4559bf;">_The user interface tab provide settings
 for how the user interface is displayed._</span>
 
-__Theme__: The theme to use for the user interface.  Mac OS and
+___Theme___: The theme to use for the user interface.  Mac OS and
 Windows only have a few themes shipped with the installation package.
 Other themes may be installed if wanted.
 
-__Font__: The display font used for the main user interface.
+___Font___: The display font used for the main user interface.
 
-__Listing Font__: The font used to display lists of songs in the music
+___Listing Font___: The font used to display lists of songs in the music
 queues, requests, song selection, &etc.
 
-__Accent Color__: The color used for important status messages and for
+___Accent Color___: The color used for important status messages and for
 the color of the buttons.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -22,4 +22,4 @@ the color of the buttons.
 <br><span style="color:#4559bf;">**Configuration / User Interface**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 07:34:46; BDJ4 version 4.0.0-beta)_
