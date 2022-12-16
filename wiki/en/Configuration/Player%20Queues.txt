@@ -46,12 +46,15 @@ __Play Announcements__: The dance announcement will be
 played before each song. See
 [Edit&nbsp;Dances](en-Configuration-Edit%20Dances).
 
+__Play When Queued__: Songs and playlists will start playing
+immediately when queued.
+
 __Show Queue Dance Buttons__: Show the _Queue&nbsp;Dance_
 and _Queue&nbsp;5_ buttons.  These are used for teaching.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Player Queues](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/PlayerQueues-B.png)
+![Player Queues](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/PlayerQueues-C.png)
 <br><span style="color:#4559bf;">**Configuration / Player Queues**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-10 18:39:59; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 05:56:21; BDJ4 version 4.0.0-beta)_

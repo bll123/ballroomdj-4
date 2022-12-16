@@ -77,8 +77,8 @@
 <br>[Update Database](en-Management-Update%20Database)
 
 ### Player
-[Basic Operations](en-Player-Basic)
-<br>[Requests](en-Player-Requests)
+[Player](en-Player-Player)
+<br>[Marquee](en-Player-Marquee)
 
 </div>
 

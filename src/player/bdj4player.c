@@ -420,6 +420,7 @@ playerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAY_REPEAT: {
           logMsg (LOG_DBG, LOG_MSGS, "got: repeat");
           playerData->repeat = playerData->repeat ? false : true;
+          playerSendStatus (playerData, STATUS_FORCE);
           break;
         }
         case MSG_PLAY_PAUSEATEND: {
@@ -1159,10 +1160,10 @@ playerPause (playerdata_t *playerData)
   if (playerData->inFadeOut) {
     playerData->pauseAtEnd = true;
   } else if (plistate == PLI_STATE_PLAYING) {
-    playerSetPlayerState (playerData, PL_STATE_PAUSED);
-    pliPause (playerData->pli);
-    /* set the play time after restarting the player */
+    /* record the playtime played */
     playerData->playTimePlayed += mstimeend (&playerData->playTimeStart);
+    pliPause (playerData->pli);
+    playerSetPlayerState (playerData, PL_STATE_PAUSED);
     if (playerData->inFadeIn) {
       playerData->inFade = false;
       playerData->inFadeIn = false;
@@ -1766,8 +1767,9 @@ playerCalcPlayedTime (playerdata_t *playerData)
   ssize_t   tm;
 
   tm = 0;
-  if (playerData->playerState == PL_STATE_PAUSED ||
-      playerData->playerState == PL_STATE_PLAYING ||
+  if (playerData->playerState == PL_STATE_PAUSED) {
+    tm = playerData->playTimePlayed;
+  } else if (playerData->playerState == PL_STATE_PLAYING ||
       playerData->playerState == PL_STATE_IN_FADEOUT) {
     tm = playerData->playTimePlayed + mstimeend (&playerData->playTimeStart);
   } else {

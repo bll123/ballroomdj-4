@@ -14,7 +14,9 @@
     * macos: various installation fixes.
     * player user interface: fixed request listing to filter playback status on startup.
     * player user interface: fixed slow exit.
+    * player user interface: update status when repeat is toggled and not playing.
     * player: fix stop-at time handling.
+    * player: fix played time issues when paused.
     * player/manager: fix communication about database updates.
     * select folder dialog: fixed to only show folders.
     * song editor: fixed internal bug causing loss of data.
@@ -54,4 +56,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-15 12:00:30; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 05:56:21; BDJ4 version 4.0.0-beta)_

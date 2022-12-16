@@ -1,0 +1,25 @@
+[Wiki Home](Home)
+
+[TOC]
+
+<span style="color:#4559bf;">_The player is the main interface used
+for playback of songs._</span>
+
+### Player
+
+##### Player Controls
+
+##### Music Queue Controls
+
+##### Requests
+
+##### Options Menu
+
+##### Actions Menu
+
+##### Marquee Menu
+
+##### External Requests
+
+[Wiki Home](Home)
+<br>_(Updated 2022-12-16 05:56:21; BDJ4 version 4.0.0-beta)_
