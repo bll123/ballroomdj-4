@@ -36,7 +36,6 @@ confuiPopulateOptions (confuigui_t *gui)
   char        tbuff [MAXPATHLEN];
   long        debug = 0;
   bool        accentcolorchanged = false;
-  bool        profilecolorchanged = false;
   bool        localechanged = false;
   bool        themechanged = false;
 
@@ -142,11 +141,6 @@ confuiPopulateOptions (confuigui_t *gui)
         if (i == CONFUI_WIDGET_UI_ACCENT_COLOR) {
           if (strcmp (bdjoptGetStr (gui->uiitem [i].bdjoptIdx), sval) != 0) {
             accentcolorchanged = true;
-          }
-        }
-        if (i == CONFUI_WIDGET_UI_PROFILE_COLOR) {
-          if (strcmp (bdjoptGetStr (gui->uiitem [i].bdjoptIdx), sval) != 0) {
-            profilecolorchanged = true;
           }
         }
         if (i == CONFUI_SPINBOX_UI_THEME) {

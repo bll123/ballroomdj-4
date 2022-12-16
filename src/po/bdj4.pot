@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-15 11:58-0800\n"
+"POT-Creation-Date: 2022-12-16 12:24-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -190,7 +190,7 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#. CONTEXT: configuration: whether the queue is active
+#. CONTEXT: configuration: queue: whether the queue is active
 msgid "Active"
 msgstr ""
 
@@ -533,7 +533,7 @@ msgid "Disc Count"
 msgstr ""
 
 #. CONTEXT: configuration: display settings: which set of display settings to update
-#. CONTEXT: configuration: whether to display the queue
+#. CONTEXT: configuration: queue: whether to display the queue
 msgid "Display"
 msgstr ""
 
@@ -697,11 +697,11 @@ msgstr ""
 msgid "Fade"
 msgstr ""
 
-#. CONTEXT: configuration: the amount of time to do a volume fade-in when playing a song
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song
 msgid "Fade In Time"
 msgstr ""
 
-#. CONTEXT: configuration: the amount of time to do a volume fade-out when playing a song
+#. CONTEXT: configuration: queue: the amount of time to do a volume fade-out when playing a song
 msgid "Fade Out Time"
 msgstr ""
 
@@ -758,7 +758,7 @@ msgstr ""
 msgid "Gap"
 msgstr ""
 
-#. CONTEXT: configuration: the amount of time to wait inbetween songs
+#. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
 msgid "Gap Between Songs"
 msgstr ""
 
@@ -962,7 +962,7 @@ msgid ""
 "Play Time"
 msgstr ""
 
-#. CONTEXT: configuration: the maximum amount of time to play a song
+#. CONTEXT: configuration: queue: the maximum amount of time to play a song
 #. CONTEXT: playlist management: maximum play time
 msgid "Maximum Play Time"
 msgstr ""
@@ -1182,12 +1182,12 @@ msgstr ""
 msgid "Play / Pause"
 msgstr ""
 
-#. CONTEXT: configuration: whether to play announcements
+#. CONTEXT: configuration: queue: whether to play announcements
 #. CONTEXT: playlist management: Play Announcements
 msgid "Play Announcements"
 msgstr ""
 
-#. CONTEXT: playerui: menu checkbox: start playback when a dance or playlist is queued
+#. CONTEXT: configuration: queue: play when queued
 msgid "Play When Queued"
 msgstr ""
 
@@ -1287,7 +1287,7 @@ msgid "QR Code"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
-#. CONTEXT: (noun) configuration: which queue to configure
+#. CONTEXT: (noun) configuration: queue: select which queue to configure
 #. CONTEXT: (verb) history: re-queue the selected song
 #. CONTEXT: (verb) request external dialog: queue the selected file
 #. CONTEXT: (verb) song-selection: queue a song to be played
@@ -1316,7 +1316,7 @@ msgstr ""
 msgid "Queue Length"
 msgstr ""
 
-#. CONTEXT: (noun) configuration: The name of the music queue
+#. CONTEXT: (noun) configuration: queue: the name of the music queue
 msgid "Queue Name"
 msgstr ""
 
@@ -1548,7 +1548,7 @@ msgstr ""
 msgid "Show Marquee"
 msgstr ""
 
-#. CONTEXT: configuration: whether to show the 'queue dance' buttons
+#. CONTEXT: configuration: queue: whether to show the 'queue dance' buttons
 msgid "Show Queue Dance Buttons"
 msgstr ""
 
@@ -1655,7 +1655,7 @@ msgstr ""
 msgid "Stop All %s Processes"
 msgstr ""
 
-#. CONTEXT: configuration: the time when playback will stop
+#. CONTEXT: configuration: queue: the time when playback will stop
 #. CONTEXT: playlist management: stop at
 msgid "Stop At"
 msgstr ""

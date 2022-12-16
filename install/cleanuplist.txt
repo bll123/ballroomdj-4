@@ -18,10 +18,12 @@
 #
 
 # old (alpha) template naming convention
+# this can be removed later
 templates/[^/]*\.nl$
 templates/[^/]*\.en_US$
 
 # old library (early alpha)
+# this can be removed later
 bin/libbdj4uigtk\.(so|dylib|dll)$
 
 # unneeded executables
@@ -36,17 +38,21 @@ install/makeshortcut\.bat$
 install/makeshortcut\.vbs$
 
 # templates that changed location (alpha 2022-12)
+# moved to http/
 img/ballroomdj4\.svg$
-img/bluebox\.svg$
 img/favicon\.ico$
 img/mrc
+# moved to img/profileNN
+img/bluebox\.svg$
+# moved to templates/img/
 templates/[^/]*\.svg$
 
 # installed files that should not have been (alpha 2022-12)
 img/[^/]*-base\.svg$
+img/mkmacicon\.sh$
+# these belong in img/profileNN
 img/button_[a-z_]*\.svg$
 img/button_[a-z_]*\.svg\.bak\.1$
-img/mkmacicon\.sh$
 img/switch-off\.svg$
 img/switch-off\.svg\.bak\.1$
 img/switch-on\.svg$
@@ -54,6 +60,7 @@ img/switch-on\.svg\.bak\.1$
 
 ::macosonly
 
+# this should have been in the data/ directory (alpha 2022-12)
 img/profile\d\d$
 
 ::datatopdir
@@ -65,10 +72,18 @@ data/\.pldances$
 data/\.songlist$
 data/\.sequence$
 
+# in case an alpha version converted the special raffle songs songlist
+# this can be removed later.
+data/Raffle\ Songs\.songlist$
+data/Raffle\ Songs\.songlist\.bak\.\d$
+data/Loterij\ liedjes\.songlist$
+data/Loterij\ liedjes\.songlist\.bak\.\d$
+
 # old data file name (very early alpha)
+# this can be removed later.
 data/profile\d\d/configui\.txt$
 
-# leftover backup files from installation copy
+# leftover backup files from installation copy that are not needed
 http/ballroomdj4\.svg\.bak\.1$
 http/curl-ca-bundle\.crt\.bak\.1$
 http/mrc/dark/[^/]*\.bak\.1$

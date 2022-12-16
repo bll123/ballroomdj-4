@@ -18,7 +18,6 @@
 #include "ui.h"
 
 static GType * uiAppendType (GType *types, int ncol, int type);
-static void uiTreeViewEditedSignalHandler (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 
 void
 uiCreateTreeView (UIWidget *uiwidget)
@@ -55,8 +54,6 @@ uiTreeViewAddEditableColumn (UIWidget *uitree, int col, int editcol,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, title);
-  g_signal_connect (renderer, "edited",
-      G_CALLBACK (uiTreeViewEditedSignalHandler), uicb);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
 }
 
@@ -216,16 +213,3 @@ uiAppendType (GType *types, int ncol, int type)
   return types;
 }
 
-static void
-uiTreeViewEditedSignalHandler (GtkCellRendererText* r, const gchar* path,
-    const gchar* ntext, gpointer udata)
-{
-  UICallback  *cb = udata;
-
-  if (cb != NULL) {
-    int   col;
-
-    col = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (r), "uicolumn"));
-    // lots of arguments to handle...
-  }
-}
