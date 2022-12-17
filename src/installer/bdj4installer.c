@@ -1801,6 +1801,10 @@ installerConvertStart (installer_t *installer)
     return;
   }
 
+  installerDisplayText (installer, INST_DISP_ACTION,
+      /* CONTEXT: installer: status message */
+      _("Starting conversion process."), false);
+
   ok = false;
   snprintf (tbuff, sizeof (tbuff), "%s/data/musicdb.txt", installer->bdj3loc);
   if (! fileopFileExists (tbuff)) {
@@ -1828,14 +1832,14 @@ installerConvertStart (installer_t *installer)
       sscanf (tmp, "#VERSION=%d", &ver);
       if (ver < 7) {
         /* CONTEXT: installer: status message */
-        installerDisplayText (installer, INST_DISP_STATUS, _("BDJ3 database version is too old."), false);
+        installerDisplayText (installer, INST_DISP_ERROR, _("BDJ3 database version is too old."), true);
       } else {
         ok = true;
       }
     } else {
-      installerDisplayText (installer, INST_DISP_STATUS,
+      installerDisplayText (installer, INST_DISP_ERROR,
           /* CONTEXT: installer: status message */
-          _("Unable to locate BDJ3 database."), false);
+          _("Unable to locate BDJ3 database."), true);
     }
   }
 
@@ -1862,10 +1866,6 @@ installerConvertStart (installer_t *installer)
     }
     free (data);
   }
-
-  installerDisplayText (installer, INST_DISP_ACTION,
-      /* CONTEXT: installer: status message */
-      _("Starting conversion process."), false);
 
   installer->convlist = dirlistBasicDirList ("conv", ".tcl");
   /* the sort order doesn't matter, but there's a need to run */
@@ -2478,7 +2478,7 @@ installerDisplayText (installer_t *installer, char *pfx, char *txt, bool bold)
     if (bold) {
       uiTextBoxAppendBoldStr (installer->disptb, pfx);
       uiTextBoxAppendBoldStr (installer->disptb, txt);
-      uiTextBoxAppendBoldStr (installer->disptb, "\n");
+      uiTextBoxAppendStr (installer->disptb, "\n");
     } else {
       uiTextBoxAppendStr (installer->disptb, pfx);
       uiTextBoxAppendStr (installer->disptb, txt);
