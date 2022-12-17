@@ -44,19 +44,19 @@
     * configuration: itunes: changed display to show stars instead of text.
     * configuration: update database: rearranged user interface.
     * configuration: display settings: insert after selection.
-    * configuration: player queue: add play when queued.
     * edit sequences: insert after selection.
     * management: rearrange user interface.
     * marquee: changed hide-marquee-on-start to show-marquee and added an 'off' setting.
     * mobile marquee: remove internet mode.
     * player user interface: moved 'request external' into a menu.
     * player user interface: the queue dance buttons are only shown per the queue configuration.
-    * player user interface: remove play when queued from options menu.
+    * player user interface: remove 'play when queued' from options menu.
     * playlist management: disallow deletion of special QueueDance playlist.
     * playlist management: hide unselected is always turned on for sequences.
     * song editor: previous and next buttons will now repeat.
 * New Features:
-    * configuration: player: added a per-queue 'show queue dance buttons' selection.
+    * configuration: player queue: add 'show queue dance buttons'.
+    * configuration: player queue: add 'play when queued'.
     * player user interface: added a 'queue 5' button.
     * starter: added a 'create profile shortcut' menu selection.
 * Internal:
@@ -64,4 +64,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-16 07:54:47; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 15:22:56; BDJ4 version 4.0.0-beta)_

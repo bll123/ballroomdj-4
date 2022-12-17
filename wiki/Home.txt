@@ -39,6 +39,8 @@
 
 [Getting Started with BDJ4](en-Install-Getting%20Started)
 
+[Converting BallroomDJ 3](en-Install-Converting%20BDJ3)
+
 ### Change Log
 [Change Log](en-Change%20Log)
 
@@ -105,4 +107,4 @@
 
 <div markdown style="clear: both;"></div>
 
-<br>_(Updated 2022-12-16 06:51:30; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-17 08:35:48; BDJ4 version 4.0.0-beta)_

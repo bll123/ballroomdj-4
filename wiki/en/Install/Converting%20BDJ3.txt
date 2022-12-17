@@ -1,0 +1,38 @@
+[Wiki Home](Home)
+
+### Converting BallroomDJ 3
+
+If you have a recent version (the BallroomDJ&nbsp;3 database version
+must be version&nbsp;7 or later (approximately
+BDJ3&nbsp;version&nbsp;2.21 or later)) of BallroomDJ&nbsp;3, and the
+BDJ4 installer is able to locate your Ballroom&nbsp;3 installation,
+the BallroomDJ&nbsp;3 data files will automatically be converted
+during the installation process. The BallroomDJ&nbsp;3 installation is
+not changed and may still be used.
+
+If you have an older version of BallroomDJ&nbsp;3, and the BDJ4
+installer displays the message ___BDJ3 database version is too old___
+in the status box, use the following process.  The following process
+is set up to preserve your original BallroomDJ installation and make
+sure it is not changed.
+
+* Copy your entire BallroomDJ&nbsp;3 folder to another location and/or name.
+(e.g. BallroomDJ to BDJ3Temp)
+* Rename the BallroomDJ shortcut on the desktop to a new name
+(e.g. "BallroomDJ original").
+* Download the latest version of BallroomDJ&nbsp;3.
+* Run the BallroomDJ 3 installer, but choose the new location
+(BDJ3Temp) as the installation location.  The BallroomDJ&nbsp;3
+installation process will upgrade your database and data files
+to the latest version.
+* Delete the BallroomDJ shortcut on the desktop (it is pointing to
+the new location).
+* Rename the original BallroomDJ shortcut back the way it was
+(e.g. "BallroomDJ original" to BallroomDJ).
+* Now run the BDJ4 installation process again.  For the BallroomDJ&nbsp;3
+location, choose the new location (BDJ3Temp) for BallroomDJ&nbsp;3.
+* Remove the new location of BallroomDJ&nbsp;3 (e.g. BDJ3Temp).  Your
+original BallroomDJ installation is untouched and can still be used.
+
+[Wiki Home](Home)
+<br>_(Updated 2022-12-17 08:56:21; BDJ4 version 4.0.0-beta)_

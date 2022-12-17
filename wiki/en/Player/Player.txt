@@ -95,4 +95,4 @@ General](en-Configuration-General))
 ##### External Requests
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-16 07:46:21; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-16 15:22:56; BDJ4 version 4.0.0-beta)_
