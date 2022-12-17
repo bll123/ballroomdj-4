@@ -19,7 +19,7 @@ columns displayed can be changed in
 _Easy&nbsp;Song&nbsp;List_ and _Easy%20Song%20Selection_ selections.
 
 The left arrow button (![Left
-Arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-A.png))
+Arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png))
 in between the two listings will add the current song selection to the
 song list.  Multiple songs may be selected in the song selection list
 by holding down the _Control_ key when clicking on each song.
@@ -99,13 +99,13 @@ selection filters.
 ##### Modifying the Song List
 
 At the top of the song list, the move-to-top button
-(![move-to-top](https://ballroomdj4.sourceforge.io/wikiimg/MoveToTopButton-A.png))
+(![move-to-top](https://ballroomdj4.sourceforge.io/wikiimg/MoveToTopButton-B.png))
 will move the currently selected song to the top.  The move up and
 move down buttons
-(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-A.png),
-![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-A.png))
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),
+![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
 will move the song up and down.  The remove button
-(![remove](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButton-A.png))
+(![remove](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButton-B.png))
 will remove the selection from the song list.
 
 ##### Reviewing a Song
@@ -116,7 +116,7 @@ above the listing to play the currently selected song.
 ##### Editing a Song
 
 While in the song list or the song selection, select the edit button
-(![edit](https://ballroomdj4.sourceforge.io/wikiimg/EditButton-A.png))
+(![edit](https://ballroomdj4.sourceforge.io/wikiimg/EditButton-B.png))
 to edit a song.  This will open the
 [Song&nbsp;Editor](en-Management-Song%20Editor) with the currently
 selected song.  Be sure to use the _Save_ button while in the song
@@ -203,4 +203,4 @@ _Export_&nbsp;/&nbsp;_Export&nbsp;for&nbsp;BDJ4_. __This feature is
 not yet implemented.__
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-16 07:32:11; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-17 09:59:00; BDJ4 version 4.0.0-beta)_

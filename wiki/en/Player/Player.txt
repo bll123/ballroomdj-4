@@ -43,27 +43,28 @@ configured for the queue will be applied, and then the next song in
 the music queue will start playing.
 
 ___Play / Pause___:
-(![b-pp](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-b-playpause-A.png))
+(![b-pp](https://ballroomdj4.sourceforge.io/wikiimg/player-b-playpause-A.png))
 Starts playing a song or pauses the song if it is playing.  If a song
 is paused when it has already started the fade out, the pause at end
 toggle is turned on, and the song will finish playing.
 
 ___Toggle Repeat___:
-(![b-rep](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-b-repeat-A.png))
+(![b-rep](https://ballroomdj4.sourceforge.io/wikiimg/player-b-repeat-A.png))
 Toggles the repeat status.  The repeat symbol will display to the left
 of the dance / artist / title display.  When repeat is on, the song
 will not be removed from the player when it reaches the end and will
 be re-played.
 
 ___Return to Beginning of Song___:
-(![b-begin](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-b-beginsong-A.png))
-Re-starts the song from the beginning.
+(![b-begin](https://ballroomdj4.sourceforge.io/wikiimg/player-b-beginsong-A.png))
+Re-starts the song from the beginning and sets the song position to 0:00.
 
 ___Next Song___:
-(![b-nextsong](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-b-nextsong-A.png))
-Immediately starts playing the next song in the queue.  There is no
-fade out and no gap applied.  The next song button may be used when
-the player is paused or stopped.
+(![b-nextsong](https://ballroomdj4.sourceforge.io/wikiimg/player-b-nextsong-A.png))
+Immediately skips the next song in the queue.  There is no fade out
+and no gap applied.  If the player is playing, the next song will
+start playing.  The next song button may be used when the player is
+paused or stopped.
 
 ___Pause at End___: Turns on and off the pause at end toggle.  The
 player will stop playing after the song finishes.
@@ -81,8 +82,44 @@ General](en-Configuration-General))
 ##### Music Queue Controls
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![player-music-q](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-music-q-A.png)
+![player-music-q-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-music-q-controls-A.png)
+![player-music-q-q-playlist](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-music-q-q-playlist-A.png)
 <br><span style="color:#4559bf;">**Player / Music Queue Controls**</span> </div>
+
+___Move to Top___:
+(![move-to-top](https://ballroomdj4.sourceforge.io/wikiimg/MoveToTopButton-B.png))
+Moves the selected song to the top of the queue.
+
+___Move Up___:
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png))
+Moves the selected song up in the queue.  If the first song in the
+queue is selected and the player is stopped, the move up button will
+move the selected song into the ready to play position and move the
+ready to play song to the first position in the queue.
+
+___Move Down___:
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
+Moves the selected song down in the queue.
+
+___Toggle Pause___:
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/TogglePauseButton-A.png))
+Toggles the pause indicator for the selected song.  When the selected
+song is played, the pause at end toggle switch will be turned on, and
+the player will stop when it finishes.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-toggle-pause](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-toggle-pause-A.png)
+<br><span style="color:#4559bf;">**Player / Toggle Pause**</span> </div>
+
+___Remove___:
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/RemoveSongButton-B.png))
+Removes the selected song from the queue.
+
+___Clear Queue___:
+Clears the queue from the selected position to the end of the queue.
+
+___Queue Playlist___:
+Select a playlist from the drop-down to add the playlist to the queue.
 
 ##### Requests
 
@@ -95,4 +132,4 @@ General](en-Configuration-General))
 ##### External Requests
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-16 15:22:56; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-17 10:04:27; BDJ4 version 4.0.0-beta)_

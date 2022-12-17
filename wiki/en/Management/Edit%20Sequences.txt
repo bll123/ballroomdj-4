@@ -15,13 +15,13 @@ The left side of the window has the list of dances to choose from, and
 the right side of the window contains the sequence.
 
 Use the left and right arrows
-(![left](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-A.png),
-![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-A.png))
+(![left](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png),
+![right](https://ballroomdj4.sourceforge.io/wikiimg/RightButton-B.png))
 to remove and add dances to the sequence.
 
 Use the up and down arrows
-(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-A.png),
-![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-A.png))
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),
+![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
 to change the order of the sequence.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -68,4 +68,4 @@ played, change the settings in
 [Playlist%20Management](en-Management-Playlist%20Management).
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-16 07:32:11; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-17 09:55:19; BDJ4 version 4.0.0-beta)_

@@ -13,13 +13,13 @@ the
 Levels should be ordered from the easiest to the most advanced.
 
 To add a new level, select the _Add New_ (![Add
-New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-D.png))
+New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
 button.  Then click on the name to change the name. Use the up and
 down arrows
-(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-A.png),
-![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-A.png))
+(![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png),
+![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
 to move the level to the position you want. Select the _Delete_
-(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-D.png))
+(![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
 button to delete a level.
 
 The _Weight_ is used by the automatic and sequenced song selection to
@@ -35,4 +35,4 @@ songs that do not have a dance level set.
 <br><span style="color:#4559bf;">**Configuration / Edit Levels**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-13 08:43:23; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-17 09:55:19; BDJ4 version 4.0.0-beta)_
