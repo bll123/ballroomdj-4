@@ -139,10 +139,10 @@ song in the music queue.
 ![player-options-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-options-menu-B.png)
 <br><span style="color:#4559bf;">**Player / Options Menu**</span> </div>
 
-___Show Extra Queues___: Displays all music queues that are configured
-([Player%20Queues](en-Configuration-Player%20Queues)) to be displayed.
+___Options / Show Extra Queues___: Displays all music queues that are configured
+([Configuration&nbsp;/&nbsp;Player%20Queues](en-Configuration-Player%20Queues)) to be displayed.
 
-___Switch Queue When Empty___: When selected and all the songs in a
+___Options / Switch Queue When Empty___: When selected and all the songs in a
 queue have been played, the player will check for another queue that
 has songs queued and start playing songs from it.
 
@@ -152,7 +152,7 @@ has songs queued and start playing songs from it.
 ![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-B.png)
 <br><span style="color:#4559bf;">**Player / Actions Menu**</span> </div>
 
-___Request External___: Starts a dialog to select an audio file. After
+___Actions / Request External___: Starts a dialog to select an audio file. After
 selecting the audio file, the artist, title and dance are filled in
 from the audio file tags if possible.  The artist, title and dance may
 be changed. After setting the song information, select the _Queue_
@@ -168,17 +168,17 @@ button to add the song to the music queue.
 ![player-marquee-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-menu-B.png)
 <br><span style="color:#4559bf;">**Player / Marquee Menu**</span> </div>
 
-___Font Size___: Starts a dialog where the marquee's font size may be
+___Marquee / Font Size___: Starts a dialog where the marquee's font size may be
 changed.  The font size will be changed immediately.
 
-___Recover Marquee___: If the marquee is displayed somewhere where it
+___Marquee / Recover Marquee___: If the marquee is displayed somewhere where it
 cannot be located, this selection will bring the marquee window back
 to the current screen.
 
 See also
-<br>[Configuration / Player](en-Configuration-Player))
-<br>[Configuration / Player Queues](en-Configuration-Player%20Queues))
-<br>[Configuration / Marquee](en-Configuration-Marquee))
+<br>[Configuration / Player](en-Configuration-Player)
+<br>[Configuration / Player Queues](en-Configuration-Player%20Queues)
+<br>[Configuration / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-18 07:06:22; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-18 08:07:02; BDJ4 version 4.0.0-beta)_

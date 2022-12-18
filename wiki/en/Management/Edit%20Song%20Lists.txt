@@ -191,7 +191,7 @@ instance of BDJ4. __This feature is not yet implemented.__
 ##### Import Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-import-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-import-menu-A.png)
+![sl-import-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-import-menu-B.png)
 <br><span style="color:#4559bf;">**Management / Edit Song Lists / Import Menu**</span> </div>
 
 ___Import___&nbsp;/&nbsp;___Import&nbsp;M3U___ imports an M3U playlist
@@ -202,5 +202,8 @@ song list and songs from a folder created with
 _Export_&nbsp;/&nbsp;_Export&nbsp;for&nbsp;BDJ4_. __This feature is
 not yet implemented.__
 
+___Import___&nbsp;/&nbsp;___Import&nbsp;from&nbsp;iTunes___ imports a
+playlist from iTunes. __This feature is not yet implemented.__
+
 [Wiki Home](Home)
-<br>_(Updated 2022-12-17 09:59:00; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-18 08:04:41; BDJ4 version 4.0.0-beta)_

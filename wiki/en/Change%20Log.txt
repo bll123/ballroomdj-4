@@ -35,6 +35,7 @@
     * song selection: filters: clear playlist selection on reset.
     * song selection: fixed issues enabling/disabling filters when playlist filter is in use.
     * starter: fix create profile.
+    * update database: disable spinbox while the database is being processed.
 * Changes:
     * alternate setup: add a name entry to the setup process for the shortcut.
     * configuration: increased number of available queues to 4.
@@ -45,6 +46,7 @@
     * configuration: update database: rearranged user interface.
     * configuration: display settings: insert after selection.
     * edit sequences: insert after selection.
+    * edit song list: add import from itunes for future use.
     * management: rearrange user interface.
     * marquee: changed hide-marquee-on-start to show-marquee and added an 'off' setting.
     * mobile marquee: remove internet mode.
@@ -54,6 +56,7 @@
     * playlist management: disallow deletion of special QueueDance playlist.
     * playlist management: hide unselected is always turned on for sequences.
     * song editor: previous and next buttons will now repeat.
+    * update database: add update from itunes for future use.
 * New Features:
     * configuration: player queue: add 'show queue dance buttons'.
     * configuration: player queue: add 'play when queued'.
@@ -64,4 +67,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-16 15:22:56; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-18 07:53:33; BDJ4 version 4.0.0-beta)_

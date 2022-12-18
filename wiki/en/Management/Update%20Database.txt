@@ -26,6 +26,11 @@ database to update the audio file tags in the audio files. The
 _Write&nbsp;Audio&nbsp;File&nbsp;Tags_ configuration setting must be
 set.
 
+___Update from iTunes___: The BDJ4 database is updated from the
+information read from the iTunes database. If iTunes is not
+configured, the start button will be disabled. __This features is not
+yet implemented. The start button is disabled.__
+
 ___Rebuild Database___: Rebuilds the database completely.  Any
 information stored in the database that is not stored in the audio
 file tags will be lost.
@@ -42,4 +47,4 @@ _Action_ to _Check&nbsp;for&nbsp;New_.  Do not use
 _Rebuild&nbsp;Database_ to add an additional music folder.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-16 07:32:11; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-18 07:53:33; BDJ4 version 4.0.0-beta)_
