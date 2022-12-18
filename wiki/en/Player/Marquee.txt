@@ -7,7 +7,7 @@ of upcoming songs._</span>
 
 If the marquee cannot be displayed with a projector or on a monitor,
 consider using announcements or the mobile marquee
-([Configuration&nbsp;/&nbsp;Mobile%20Marquee](en-Configuration-Mobile%20Marquee))
+([Configuration&nbsp;/&nbsp;Mobile&nbsp;Marquee](en-Configuration-Mobile%20Marquee))
 so that the dancers know which songs will be played next.
 
 Move the marquee window to the monitor where it will be displayed. The
@@ -30,4 +30,4 @@ See also:
 <br><span style="color:#4559bf;">**Player / Marquee**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-18 07:06:22; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-18 07:07:35; BDJ4 version 4.0.0-beta)_
