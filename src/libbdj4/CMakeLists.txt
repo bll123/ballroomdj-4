@@ -6,6 +6,7 @@ add_library (libbdj4 SHARED
   audiotag.c
   autosel.c
   bdj4init.c
+  bdj4itunes.c
   bdjvarsdf.c
   bdjvarsdfload.c
   dance.c

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-12-17\n"
+"PO-Revision-Date: 2022-12-18\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -821,6 +821,7 @@ msgid "Import M3U"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
+#. CONTEXT: managementui: menu selection: song list: import: import from itunes
 #, c-format
 msgid "Import from %s"
 msgstr "Importeren van %s"
@@ -1789,6 +1790,11 @@ msgstr "Onbeoordeeld"
 msgid "Update Database"
 msgstr "Database bijwerken"
 
+#. CONTEXT: database update: update from itunes
+#, c-format
+msgid "Update from %s"
+msgstr ""
+
 #. CONTEXT: database update: updates the database using the tags from the audio files
 msgid "Update from Audio File Tags"
 msgstr "Bijwerken vanuit audio tags"
@@ -1796,6 +1802,12 @@ msgstr "Bijwerken vanuit audio tags"
 #. CONTEXT: database update: status message: number of files updated in the database
 #. CONTEXT: database update: status message: number of files updated
 msgid "Updated"
+msgstr ""
+
+#. CONTEXT: database update: update from itunes: help text
+#, c-format
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr ""
 
 #. CONTEXT: database update: update from audio file tags: help text

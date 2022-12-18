@@ -1704,6 +1704,11 @@ manageSonglistMenu (manageui_t *manage)
   uiMenuCreateItem (&menu, &menuitem, tbuff, NULL);
   uiWidgetDisable (&menuitem);
 
+  /* CONTEXT: managementui: menu selection: song list: import: import from itunes */
+  snprintf (tbuff, sizeof (tbuff), _("Import from %s"), ITUNES_NAME);
+  uiMenuCreateItem (&menu, &menuitem, tbuff, NULL);
+  uiWidgetDisable (&menuitem);
+
   manage->slmenu.initialized = true;
 
   uiMenuDisplay (&manage->slmenu);

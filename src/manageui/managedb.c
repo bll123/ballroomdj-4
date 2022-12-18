@@ -14,6 +14,7 @@
 #include <math.h>
 
 #include "bdj4intl.h"
+#include "bdj4itunes.h"
 #include "bdjopt.h"
 #include "log.h"
 #include "manageui.h"
@@ -29,6 +30,7 @@ enum {
   MANAGE_DB_REORGANIZE,
   MANAGE_DB_UPD_FROM_TAGS,
   MANAGE_DB_WRITE_TAGS,
+  MANAGE_DB_UPD_FROM_ITUNES,
   MANAGE_DB_REBUILD,
 };
 
@@ -66,6 +68,7 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
   managedb_t      *managedb;
   nlist_t         *tlist;
   nlist_t         *hlist;
+  char            tbuff [300];
 
   managedb = malloc (sizeof (managedb_t));
 
@@ -85,26 +88,40 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
 
   tlist = nlistAlloc ("db-action", LIST_ORDERED, free);
   hlist = nlistAlloc ("db-action-help", LIST_ORDERED, free);
+
   /* CONTEXT: database update: check for new audio files */
   nlistSetStr (tlist, MANAGE_DB_CHECK_NEW, _("Check For New"));
   nlistSetStr (hlist, MANAGE_DB_CHECK_NEW,
       /* CONTEXT: database update: check for new: help text */
       _("Checks for new audio files."));
+
   /* CONTEXT: database update: reorganize : renames audio files based on organization settings */
   nlistSetStr (tlist, MANAGE_DB_REORGANIZE, _("Reorganize"));
   nlistSetStr (hlist, MANAGE_DB_REORGANIZE,
       /* CONTEXT: database update: reorganize : help text */
       _("Renames the audio files based on the organization settings."));
+
   /* CONTEXT: database update: updates the database using the tags from the audio files */
   nlistSetStr (tlist, MANAGE_DB_UPD_FROM_TAGS, _("Update from Audio File Tags"));
   nlistSetStr (hlist, MANAGE_DB_UPD_FROM_TAGS,
       /* CONTEXT: database update: update from audio file tags: help text */
       _("Updates the information in the BallroomDJ database from the audio file tags."));
+
   /* CONTEXT: database update: writes the tags in the database to the audio files */
   nlistSetStr (tlist, MANAGE_DB_WRITE_TAGS, _("Write Tags to Audio Files"));
   nlistSetStr (hlist, MANAGE_DB_WRITE_TAGS,
       /* CONTEXT: database update: write tags to audio files: help text */
       _("Writes the audio file tags using the information from the BallroomDJ database."));
+
+  /* CONTEXT: database update: update from itunes */
+  snprintf (tbuff, sizeof (tbuff), _("Update from %s"), ITUNES_NAME);
+  nlistSetStr (tlist, MANAGE_DB_UPD_FROM_ITUNES, tbuff);
+  snprintf (tbuff, sizeof (tbuff),
+      /* CONTEXT: database update: update from itunes: help text */
+      _("Updates the information in the BallroomDJ database from the %s database."),
+      ITUNES_NAME);
+  nlistSetStr (hlist, MANAGE_DB_UPD_FROM_ITUNES, tbuff);
+
   /* CONTEXT: database update: rebuilds the database */
   nlistSetStr (tlist, MANAGE_DB_REBUILD, _("Rebuild Database"));
   nlistSetStr (hlist, MANAGE_DB_REBUILD,
@@ -262,10 +279,21 @@ manageDbChg (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector : %s", sval);
 
   if (uiutilsUIWidgetSet (&managedb->dbhelpdisp)) {
+    UIWidget  *uiwidgetp;
+
     uiLabelSetText (&managedb->dbhelpdisp, sval);
     uiLabelSetColor (&managedb->dbhelpdisp, managedb->fgcolor);
     if (nval == MANAGE_DB_REBUILD) {
       uiLabelSetColor (&managedb->dbhelpdisp, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+    }
+    uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
+    uiWidgetEnable (uiwidgetp);
+    if (nval == MANAGE_DB_UPD_FROM_ITUNES) {
+      /* not yet implemented, always true */
+      if (1 || ! itunesConfigured ()) {
+        uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
+        uiWidgetDisable (uiwidgetp);
+      }
     }
   }
   return UICB_CONT;
@@ -318,6 +346,7 @@ manageDbResetButtons (managedb_t *managedb)
   uiWidgetEnable (uiwidgetp);
   uiwidgetp = uiButtonGetUIWidget (managedb->dbstop);
   uiWidgetDisable (uiwidgetp);
+  uiSpinboxEnable (managedb->dbspinbox);
 }
 
 /* internal routines */
@@ -338,6 +367,7 @@ manageDbStart (void *udata)
   uiWidgetDisable (uiwidgetp);
   uiwidgetp = uiButtonGetUIWidget (managedb->dbstop);
   uiWidgetEnable (uiwidgetp);
+  uiSpinboxDisable (managedb->dbspinbox);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);

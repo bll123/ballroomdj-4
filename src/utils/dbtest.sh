@@ -403,7 +403,7 @@ compcheck $tname $crc
 disp $tname $rc $crc
 
 # remove test db, temporary files
-rm -f $TDBB $TDBC $TDBD TDBRDAT TDBRDT TDBRDTAT $TMPA $TMPB
+rm -f $TDBB $TDBC $TDBD $TDBRDAT $TDBRDT $TDBRDTAT $TMPA $TMPB
 
 echo "tests: $tcount pass: $pass fail: $fail"
 rc=1
