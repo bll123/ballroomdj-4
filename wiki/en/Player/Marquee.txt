@@ -1,8 +1,33 @@
 [Wiki Home](Home)
 
+<span style="color:#4559bf;">_The marquee is used to display a list
+of upcoming songs._</span>
+
 ### Marquee
 
-To be written...
+If the marquee cannot be displayed with a projector or on a monitor,
+consider using announcements or the mobile marquee
+([Configuration&nbsp;/&nbsp;Mobile%20Marquee](en-Configuration-Mobile%20Marquee))
+so that the dancers know which songs will be played next.
+
+Move the marquee window to the monitor where it will be displayed. The
+font size can be adjusted using the player's
+[Marquee&nbsp;/&nbsp;Font&nbsp;Size](https://sourceforge.net/p/ballroomdj4/wiki/en-Player-Player/#marquee-menu)
+menu selection.
+
+Double-clicking inside the marquee window will maximize the marquee
+window to fill the screen.  Double-clicking again will return the
+marquee to its previous size.
+
+Each time the marquee is started, BDJ4 will attempt to position and
+size the marquee window where it was before.
+
+See also:
+<br>[Configuration / Marquee](en-Configuration-Marquee)
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-A.png)
+<br><span style="color:#4559bf;">**Player / Marquee**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-16 06:51:30; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-18 07:06:22; BDJ4 version 4.0.0-beta)_

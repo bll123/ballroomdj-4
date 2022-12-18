@@ -76,8 +76,8 @@ ___Position___: Displays the current position of the song.  The slider
 can be adjusted to change the current position of the song.
 
 ___Volume___: Sets the playback volume.  <br>(See also
-_Default&nbsp;Volume_ in [Configuration /
-General](en-Configuration-General))
+_Default&nbsp;Volume_ in
+[Configuration&nbsp;/&nbsp;Player](en-Configuration-Player))
 
 ##### Music Queue Controls
 
@@ -123,13 +123,62 @@ Select a playlist from the drop-down to add the playlist to the queue.
 
 ##### Requests
 
+Select the _Request_ tab to view the song selection listing.  The
+dance drop-down may be used to quickly change which dance is
+displayed.  The _Filters_ button will start a dialog where the filters
+(see [Filter&nbsp;Display](en-Configuration-Filter%20Display)) can be
+chosen to limit which songs are displayed in the listing.
+
+Select a song and select the _Queue_ button to add a song to the music
+queue.  The selected song will be added after the currently selected
+song in the music queue.
+
 ##### Options Menu
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-options-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-options-menu-B.png)
+<br><span style="color:#4559bf;">**Player / Options Menu**</span> </div>
+
+___Show Extra Queues___: Displays all music queues that are configured
+([Player%20Queues](en-Configuration-Player%20Queues)) to be displayed.
+
+___Switch Queue When Empty___: When selected and all the songs in a
+queue have been played, the player will check for another queue that
+has songs queued and start playing songs from it.
 
 ##### Actions Menu
 
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-B.png)
+<br><span style="color:#4559bf;">**Player / Actions Menu**</span> </div>
+
+___Request External___: Starts a dialog to select an audio file. After
+selecting the audio file, the artist, title and dance are filled in
+from the audio file tags if possible.  The artist, title and dance may
+be changed. After setting the song information, select the _Queue_
+button to add the song to the music queue.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-req-ext](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-req-ext-B.png)
+<br><span style="color:#4559bf;">**Player / Request External**</span> </div>
+
 ##### Marquee Menu
 
-##### External Requests
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-marquee-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-menu-B.png)
+<br><span style="color:#4559bf;">**Player / Marquee Menu**</span> </div>
+
+___Font Size___: Starts a dialog where the marquee's font size may be
+changed.  The font size will be changed immediately.
+
+___Recover Marquee___: If the marquee is displayed somewhere where it
+cannot be located, this selection will bring the marquee window back
+to the current screen.
+
+See also
+<br>[Configuration / Player](en-Configuration-Player))
+<br>[Configuration / Player Queues](en-Configuration-Player%20Queues))
+<br>[Configuration / Marquee](en-Configuration-Marquee))
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-17 10:04:27; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-18 07:06:22; BDJ4 version 4.0.0-beta)_
