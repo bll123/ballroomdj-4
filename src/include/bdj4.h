@@ -40,6 +40,7 @@ enum {
 #define BDJ4_SEQUENCE_EXT ".sequence"
 #define BDJ4_SONGLIST_EXT ".songlist"
 #define BDJ4_IMG_SVG_EXT  ".svg"
+#define BDJ4_IMG_PNG_EXT  ".png"
 #define BDJ4_CONFIG_EXT   ".txt"
 /* when an audio file is modified, the original is saved with the */
 /* .original extension in the same directory */

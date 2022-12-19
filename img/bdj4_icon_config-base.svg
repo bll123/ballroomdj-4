@@ -29,7 +29,7 @@
      inkscape:zoom="2.0742188"
      inkscape:cx="128"
      inkscape:cy="127.75894"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g1392"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
@@ -128,7 +128,8 @@
   <g
      inkscape:groupmode="layer"
      id="layer7"
-     inkscape:label="4">
+     inkscape:label="4"
+     style="display:inline">
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:240px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e9b117;fill-opacity:1;stroke:#090102;stroke-width:3;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -143,44 +144,6 @@
   </g>
   <g
      inkscape:groupmode="layer"
-     id="layer6"
-     inkscape:label="Install"
-     style="display:none"
-     transform="translate(-8.5333405,-8.5333405)">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:53.3333px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e9b117;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       x="24.436132"
-       y="56.727303"
-       id="text4153"
-       transform="scale(1.0452636,0.95669648)"><tspan
-         sodipodi:role="line"
-         id="tspan4155"
-         x="24.436132"
-         y="56.727303"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.3333px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">INSTALL</tspan></text>
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="g75574"
-     inkscape:label="Marquee"
-     style="display:none"
-     transform="translate(-8.5333405,-8.5333405)">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:48px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e9b117;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       x="17.546747"
-       y="56.727303"
-       id="text75572"
-       transform="scale(1.0452636,0.95669648)"><tspan
-         sodipodi:role="line"
-         id="tspan75570"
-         x="17.546747"
-         y="56.727303"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:48px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">MARQUEE</tspan></text>
-  </g>
-  <g
-     inkscape:groupmode="layer"
      id="g75580"
      inkscape:label="Configure"
      style="display:inline"
@@ -189,28 +152,9 @@
        id="g1392"
        transform="matrix(1,0,0,1.0780787,-8.3849901,-4.6337216)">
       <path
-         style="opacity:0.996;fill:#845800;fill-opacity:1;stroke:#000000;stroke-width:1.01013;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         style="opacity:0.996;fill:#e9b117;fill-opacity:1;stroke:#000000;stroke-width:1.44466;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="m 46.050519,69.303548 -0.146861,-4.081534 -2.528231,-0.912065 c -1.390526,-0.501635 -3.267648,-1.217746 -4.17138,-1.591357 -1.633615,-0.675349 -1.660118,-0.662501 -4.566799,2.213851 l -2.923648,2.893142 -2.638624,-2.671813 -2.638624,-2.671814 2.944469,-2.913744 2.944468,-2.913745 -1.343796,-2.664093 c -0.739088,-1.465251 -1.473961,-3.161842 -1.63305,-3.770202 -0.269213,-1.029469 -0.590342,-1.106112 -4.634585,-1.106112 h -4.345332 v -3.77266 -3.772659 l 4.338096,-0.146098 4.338096,-0.146099 0.924397,-2.628771 c 0.508418,-1.445825 1.286819,-3.146204 1.72978,-3.77862 0.780256,-1.11397 0.710449,-1.245632 -2.237357,-4.219875 l -3.042741,-3.07003 2.83375,-2.446481 2.833749,-2.446483 2.963175,2.932254 c 2.534945,2.508494 3.07719,2.837631 3.752116,2.277492 0.433918,-0.36012 2.209397,-1.168436 3.945507,-1.796257 l 3.156564,-1.141491 0.146861,-4.102789 0.146861,-4.102788 h 3.771897 3.771897 v 4.217955 4.217955 l 2.148996,0.64202 c 1.181949,0.353111 2.960764,1.055198 3.952925,1.560192 l 1.803927,0.918174 3.168433,-2.822352 3.168434,-2.822351 2.60138,2.601381 2.601383,2.601382 -2.92714,2.958003 -2.927136,2.958004 0.998733,1.724153 c 0.549303,0.948285 1.281722,2.691203 1.627599,3.873151 l 0.628868,2.148996 h 4.217953 4.217954 v 3.792346 3.792346 h -4.258779 -4.25878 l -0.606475,1.896174 c -0.333561,1.042894 -1.081172,2.759136 -1.661358,3.813867 l -1.054882,1.917695 3.012673,2.715993 3.012669,2.715991 -2.509223,2.571772 c -1.380072,1.414474 -2.702051,2.571771 -2.937733,2.571771 -0.235682,0 -1.653442,-1.15849 -3.150581,-2.574421 l -2.722069,-2.574419 -3.275246,1.310304 c -1.801384,0.720668 -3.634632,1.310305 -4.073885,1.310305 -0.665118,0 -0.79864,0.71857 -0.79864,4.297992 v 4.297992 H 49.969277 46.19738 Z m 9.460416,-12.800634 c 2.975497,-1.40906 5.453654,-3.864491 6.547775,-6.48773 0.96534,-2.314481 1.019815,-7.450143 0.102249,-9.639759 -2.746355,-6.553723 -11.107637,-9.800684 -17.592582,-6.831779 -7.962752,3.645468 -10.432267,12.519069 -5.341524,19.193478 3.630723,4.760198 10.721488,6.399979 16.284082,3.76579 z"
          id="path1141" />
     </g>
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="g40506"
-     inkscape:label="Manage"
-     style="display:none"
-     transform="translate(-8.5333405,-8.5333405)">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:53.3333px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e9b117;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       x="18.042906"
-       y="56.727303"
-       id="text40504"
-       transform="scale(1.0452636,0.95669648)"><tspan
-         sodipodi:role="line"
-         id="tspan40502"
-         x="18.042906"
-         y="56.727303"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.3333px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">MANAGE</tspan></text>
   </g>
 </svg>

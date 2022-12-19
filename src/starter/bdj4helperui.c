@@ -221,7 +221,7 @@ helperBuildUI (helperui_t  *helper)
   uiWindowSetDefaultSize (&helper->window, 1100, 400);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".png", PATHBLD_MP_DIR_IMG);
+      "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
   uiWidgetShowAll (&helper->window);

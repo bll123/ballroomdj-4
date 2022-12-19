@@ -376,7 +376,7 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetMakePersistent (&plui->ledonPixbuf);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
+      "bdj4_icon_player", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_CLOSE],
       pluiCloseWin, plui, NULL);
   /* CONTEXT: playerui: main window title */
@@ -538,7 +538,7 @@ pluiBuildUI (playerui_t *plui)
   uiWindowMove (&plui->window, x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".png", PATHBLD_MP_DIR_IMG);
+      "bdj4_icon_player", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
   pluiPlaybackButtonHideShow (plui, 0);
 

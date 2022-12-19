@@ -51,8 +51,8 @@
      inkscape:pageshadow="2"
      inkscape:zoom="2.0742188"
      inkscape:cx="128"
-     inkscape:cy="127.75895"
-     inkscape:current-layer="g75574"
+     inkscape:cy="127.75894"
+     inkscape:current-layer="layer7"
      showgrid="true"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
@@ -166,32 +166,13 @@
   </g>
   <g
      inkscape:groupmode="layer"
-     id="layer6"
-     inkscape:label="Install"
-     style="display:none"
-     transform="translate(-8.5333405,-8.5333405)">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:53.3333px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e9b117;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       x="24.436132"
-       y="56.727303"
-       id="text4153"
-       transform="scale(1.0452636,0.95669648)"><tspan
-         sodipodi:role="line"
-         id="tspan4155"
-         x="24.436132"
-         y="56.727303"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.3333px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">INSTALL</tspan></text>
-  </g>
-  <g
-     inkscape:groupmode="layer"
      id="g75574"
      inkscape:label="Marquee"
      style="display:inline"
      transform="translate(-8.5333405,-8.5333405)">
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:48px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#303030;fill-opacity:0.185652;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="font-style:normal;font-weight:normal;font-size:48px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#e9b117;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        x="17.546747"
        y="56.727303"
        id="text75572"
@@ -200,44 +181,6 @@
          id="tspan75570"
          x="17.546747"
          y="56.727303"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:48px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';fill:#845800;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">MARQUEE</tspan></text>
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="g75580"
-     inkscape:label="Configure"
-     style="display:none"
-     transform="translate(-8.5333405,-8.5333405)">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:42.6667px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e9b117;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       x="14.308382"
-       y="56.727303"
-       id="text75578"
-       transform="scale(1.0452636,0.95669648)"><tspan
-         sodipodi:role="line"
-         id="tspan75576"
-         x="14.308382"
-         y="56.727303"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:42.6667px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">CONFIGURE</tspan></text>
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="g40506"
-     inkscape:label="Manage"
-     style="display:none"
-     transform="translate(-8.5333405,-8.5333405)">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:53.3333px;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#e9b117;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       x="18.042906"
-       y="56.727303"
-       id="text40504"
-       transform="scale(1.0452636,0.95669648)"><tspan
-         sodipodi:role="line"
-         id="tspan40502"
-         x="18.042906"
-         y="56.727303"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.3333px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">MANAGE</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:48px;line-height:1.25;font-family:Roboto;-inkscape-font-specification:'Roboto Bold';fill:#e9b117;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">MARQUEE</tspan></text>
   </g>
 </svg>

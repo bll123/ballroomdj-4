@@ -7,8 +7,9 @@ BASE=bdj4_icon
 BASEI=bdj4_icon_inst
 BASEC=bdj4_icon_config
 BASEMQ=bdj4_icon_marquee
+BASEPL=bdj4_icon_player
 
-for b in $BASE $BASEI $BASEC $BASEMQ; do
+for b in $BASE $BASEI $BASEC $BASEMQ $BASEPL; do
   inkscape $b.svg -w 256 -h 256 -o $b.png > /dev/null 2>&1
 done
 

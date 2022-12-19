@@ -643,7 +643,7 @@ starterBuildUI (startui_t  *starter)
   starterSetWindowPosition (starter);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon", ".png", PATHBLD_MP_DIR_IMG);
+      "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
   uiWidgetShowAll (&starter->window);

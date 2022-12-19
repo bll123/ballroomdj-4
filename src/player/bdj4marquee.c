@@ -438,7 +438,7 @@ marqueeBuildUI (marquee_t *marquee)
   progstateLogTime (marquee->progstate, "time-to-start-gui");
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
-      "bdj4_icon_marquee", ".png", PATHBLD_MP_DIR_IMG);
+      "bdj4_icon_marquee", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
   logProcEnd (LOG_PROC, "marqueeBuildUI", "");
