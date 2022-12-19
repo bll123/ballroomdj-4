@@ -9,6 +9,7 @@ Contents
   Release Notes
   Known Issues
   Feedback
+  Copyright
   Licenses
 
 Installation:
@@ -66,7 +67,10 @@ Feedback:
 
   You can also use the BallroomDJ 4 support function to send a message.
 
-LICENSES
+Copyright:
+  Copyright 2021-2023 Brad Lanam Pleasant Hill, CA
+
+Licenses:
     BDJ4    : zlib/libpng License
     mutagen : GPLv2 License
     qrcode  : MIT License (templates/qrcode/LICENSE)
