@@ -1,5 +1,7 @@
 /*
  * Copyright 2016 Brad Lanam Walnut Creek, CA US
+ * Copyright 2021-2023 Brad Lanam Pleasant Hill, CA US
+ *
  * This code is in the public domain.
  *
  * much of the original volume code from: https://gist.github.com/rdp/8363580
