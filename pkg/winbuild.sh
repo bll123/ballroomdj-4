@@ -4,25 +4,11 @@
 #
 # windows
 
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
+cd packages
 cwd=$(pwd)
-case $cwd in
-  */bdj4)
-    cd packages
-    ;;
-  */bdj4/*)
-    cwd=$(dirname $cwd)
-    while : ; do
-      case $cwd in
-        */bdj4)
-          break
-          ;;
-      esac
-      cwd=$(dirname $cwd)
-    done
-    cd $cwd
-    cd packages
-    ;;
-esac
 
 comp=cc
 noclean=F
@@ -100,7 +86,8 @@ if [[ $pkgname == "" || $pkgname = "check" ]]; then
     fi
     ./configure --prefix=$INSTLOC --disable-static --disable-subunit
     make -j $procs
-    make install
+    # makeinfo is not present, so use -k
+    make -k install
   fi
 fi
 

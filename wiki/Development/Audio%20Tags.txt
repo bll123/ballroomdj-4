@@ -1,0 +1,13 @@
+[Wiki Home](Home)
+<br>[Developer Notes](Development-Developer%20Notes)
+
+<br>[Mutagen](Development-Mutagen)
+
+Another possibility to look at is taglib.  This will require writing a
+C wrapper around the C++ code.
+
+[taglib](https://taglib.org/)
+
+[Developer Notes](Development-Developer%20Notes)
+<br>[Wiki Home](Home)
+<br>_(Updated 2022-12-19 10:04:00; BDJ4 version 4.0.0-beta)_

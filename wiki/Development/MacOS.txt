@@ -1,61 +1,66 @@
+[Wiki Home](Home)
+<br>[Developer Notes](Development-Developer%20Notes)
 
-  https://apple.stackexchange.com/questions/339114/allowing-vnc-to-control-computer-under-10-14-mojave
-    Open : system preferences / security & privacy / privacy / accessibility
-    Using the finder :
-    Drag this file : /System/Library/CoreServices/RemoteManagement/
-        AppleVNCServer.bundle/Contents/MacOS/AppleVNCServer
-    The bundle has to be opened with a right-click, show package contents.
-    Drag this file also: sshd-keygen-wrapper
+VNC:
 
-  Older Mac OS X: login screen picture:
-    /Library/Caches/com.apple.desktop.admin.png
-  Mojave: replace:
-    /Library/Desktop Pictures/Mojave.heic (really a .png)
+https://apple.stackexchange.com/questions/339114/allowing-vnc-to-control-computer-under-10-14-mojave
 
-  Sharing:
-    Turn on screen sharing and remote login.
-    Change computer name.
-    screen sharing: set VNC password (guerre)
-    For both screen sharing and remote login, make sure the allowed users
-      and groups are correct.
-  For each user:
-    Right click on user, advanced options, change directory to point
-    to /Volumes/Users (Mojave and prior currently have symlinks).
-    Need an extra admin account to change other accounts.
-  Users:
-    login options : change to name and password.
+<br>Open : system preferences / security & privacy / privacy / accessibility
+<br>Using the finder :
+<br>Drag this file : /System/Library/CoreServices/RemoteManagement/
+<br>      AppleVNCServer.bundle/Contents/MacOS/AppleVNCServer
+<br>The bundle has to be opened with a right-click, show package contents.
+<br>Drag this file also: sshd-keygen-wrapper
 
-  Add terminal with full disk access:
-    Security & Privacy / Privacy / Full Disk Access : turn on terminal.
-    (cron)
-  Add user to _developer group:
-    sudo dscl . append /Groups/_developer GroupMembership <username>
+<br>Older Mac OS X: login screen picture:
+<br>/Library/Caches/com.apple.desktop.admin.png
+<br>Mojave: replace:
+<br>/Library/Desktop Pictures/Mojave.heic (really a .png)
 
-  /etc/paths:
-    /opt/local/bin
+<br>Sharing:
+<br> Turn on screen sharing and remote login.
+<br> Change computer name.
+<br> screen sharing: set VNC password
+<br> For both screen sharing and remote login, make sure the allowed users
+<br>and groups are correct.
+<br> For each user:
+<br> Right click on user, advanced options, change directory to point
+to /Volumes/Users (Mojave and prior currently have symlinks).
+Need an extra admin account to change other accounts.
+<br> Users:
+<br> login options : change to name and password.
 
-  /etc/postfix/main.cf:
-    default_transport = smtp:localhost:8025
+Add terminal with full disk access:
+<br>Security & Privacy / Privacy / Full Disk Access : turn on terminal.
 
-    scutil --set HostName bll-mac.ballroomdj.org
+Add user to _developer group:
+<br>sudo dscl . append /Groups/_developer GroupMembership <username>
+
+/etc/paths:
+<br>/opt/local/bin
+
+/etc/postfix/main.cf:
+<br>default_transport = smtp:localhost:8025
+
+scutil --set HostName bll-mac.ballroomdj.org
 
 sudo port install autossh di rlwrap                     # for bll
-sudo port install flac sox vorbis-tools                 # ballroomdj
-sudo port install ffmpeg +nonfree -x11                  # ballroomdj
-sudo port install neomutt +idn +mutt                    # for fvogel
-sudo port install python39 py39-pip py39-wheel          # ballroomdj
-sudo port install gtk3-devel +quartz -x11
+<br>sudo port install flac sox vorbis-tools                 # ballroomdj
+<br>sudo port install ffmpeg +nonfree -x11                  # ballroomdj
+<br>sudo port install python39 py39-pip py39-wheel          # ballroomdj
+<br>sudo port install gtk3-devel +quartz -x11
 
   To boot into safe mode:
-    Hold down the Shift key.
-  To select a partition to boot:
-    Hold down the Alt key.
-  To restart to access disk utilitiy, etc:
-    Hold down Meta-R.
-  To clear PRAM/NVRAM:
-    Hold down Meta-Alt-P-R.
-  To restart to restore from the internet:
-    Alt-D
+<br>    Hold down the Shift key.
+<br>  To select a partition to boot:
+<br>    Hold down the Alt key.
+<br>  To restart to access disk utilitiy, etc:
+<br>    Hold down Meta-R.
+<br>  To clear PRAM/NVRAM:
+<br>    Hold down Meta-Alt-P-R.
+<br>  To restart to restore from the internet:
+<br>    Alt-D
 
-[Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+[Developer Notes](Development-Developer%20Notes)
+<br>[Wiki Home](Home)
+<br>_(Updated 2022-12-19 10:04:00; BDJ4 version 4.0.0-beta)_

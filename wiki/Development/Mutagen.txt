@@ -1,6 +1,5 @@
 [Wiki Home](Home)
-
-## Mutagen
+<br>[Developer Notes](Development-Developer%20Notes)
 
 Mutagen is a python script, and this is why a python installation is
 necessary.
@@ -15,15 +14,12 @@ needs to be tested carefully when there is a new release.
 As mutagen is not compiled, mp3 tag handling is slower. Most of the
 time this does not matter much.
 
-Mutagen's support level seems to have dropped.  Another possibility to
-look at is taglib.  This will require writing a C wrapper around the
-C++ code.
+Mutagen's support level seems to have dropped.  And the
+mutagen-inspect program / pprint() doesn't seem to be supported at all.
+The MP4 output is dumping out python code.
 
 [​Quodlibet Mutagen](https://github.com/quodlibet/mutagen)
 
-## MP3 Tags
-
-[https://help.mp3tag.de/main_tags.html]
-
-[Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+[Developer Notes](Development-Developer%20Notes)
+<br>[Wiki Home](Home)
+<br>_(Updated 2022-12-19 10:04:00; BDJ4 version 4.0.0-beta)_

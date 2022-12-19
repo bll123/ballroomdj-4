@@ -1,43 +1,38 @@
 [Wiki Home](Home)
+<br>[Developer Notes](Development-Developer%20Notes)
 
-## MSys2
-
-https://www.msys2.org/
+[MSYS2](https://www.msys2.org/)
 
 Update all:
-
-* pacman -Syu
+<br> pacman -Syu
 
 Install:
-
-* pacman -S name
+<br> pacman -S name
 
 Update:
-
-* pacman -Su name
+<br> pacman -Su name
 
 Search:
-
-* pacman -Ss name
+<br> pacman -Ss name
 
 Remove and remove dependencies:
-
-* pacman -Rcns name
+<br> pacman -Rcns name
 
 # tools
-pacman -S ed make rsync vim rlwrap tar unzip zip diffutils
-# libraries
-pacman -S gettext gettext-devel
-# current clang (32/64)
-pacman -S mingw-w64-i686-clang mingw-w64-x86_64-clang
-# current gcc (32/64)
-pacman -S mingw-w64-i686-gcc mingw-w64-x86_64-gcc
-# gdb
-pacman -S mingw-w64-i686-gdb mingw-w64-x86_64-gdb
-# building nghttp2 et. al.
-pacman -S pkg-config
-# bdj4
-pacman -S mingw64/mingw-w64-x86_64-gcc-objc mingw32/mingw-w64-i686-gcc-objc
+<br>pacman -S ed make rsync vim rlwrap tar unzip zip diffutils
+<br># libraries
+<br>pacman -S gettext gettext-devel
+<br># current clang (32/64)
+<br>pacman -S mingw-w64-x86_64-clang
+<br># current gcc (32/64)
+<br>pacman -S mingw-w64-x86_64-gcc
+<br># gdb
+<br>pacman -S mingw-w64-x86_64-gdb
+<br># building nghttp2 et. al.
+<br>pacman -S pkg-config
+<br># bdj4
+<br>pacman -S mingw64/mingw-w64-x86_64-gcc-objc
 
-[Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+[Developer Notes](Development-Developer%20Notes)
+<br>[Wiki Home](Home)
+<br>_(Updated 2022-12-19 10:04:00; BDJ4 version 4.0.0-beta)_

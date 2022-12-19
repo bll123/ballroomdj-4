@@ -10,6 +10,12 @@ the BallroomDJ&nbsp;3 data files will automatically be converted
 during the installation process. The BallroomDJ&nbsp;3 installation is
 not changed and may still be used.
 
+The conversion process has been tested with recent versions of
+BallroomDJ (version 3.29.x and later) and has not been tested with
+older versions of BallroomDJ.  If you have an older version and the
+conversion process fails in some fashion, please contact
+([Getting%20Help](en-Getting%20Help)) the development team.
+
 If you have an older version of BallroomDJ&nbsp;3, and the BDJ4
 installer displays the message ___BDJ3 database version is too old___
 in the status box, use the following process.  The following process
@@ -35,4 +41,4 @@ location, choose the new location (BDJ3Temp) for BallroomDJ&nbsp;3.
 original BallroomDJ installation is untouched and can still be used.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-17 08:56:21; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-19 05:46:53; BDJ4 version 4.0.0-beta)_

@@ -136,15 +136,11 @@ cwd=$(pwd)
 . src/utils/pkgnm.sh
 
 preskip=F
-chkskip=F
 insttest=F
 while test $# -gt 0; do
   case $1 in
     --preskip)
       preskip=T
-      ;;
-    --chkskip)
-      chkskip=T
       ;;
     --insttest)
       insttest=T
@@ -170,15 +166,6 @@ case $systype in
 esac
 
 if [[ $preskip == F && $insttest == F ]]; then
-  if [[ $chkskip == F ]]; then
-    ./src/utils/mktestsetup.sh --force
-    ./bin/bdj4 --check_all
-    rc=$?
-    if [[ $rc -ne 0 ]]; then
-      echo "pkg: tests failed"
-      exit 1
-    fi
-  fi
   ./pkg/prepkg.sh
 fi
 

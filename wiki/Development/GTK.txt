@@ -1,0 +1,20 @@
+[Wiki Home](Home)
+<br>[Developer Notes](Development-Developer%20Notes)
+
+GTK is ok.  There are some issues.
+
+* There is some documentation that is incorrect.
+* It's hard to find good examples.
+* The developers are in the mode where they know best.
+The customers are being ignored.
+* Some of the design choices are very poor and questionable.
+* Comboboxes are not usable.
+* The application level interface should be completely separated.
+I was not able to use the application level interface as it made macos
+complete non-performant.
+* gtk_init mucks up the locale, it has to be reset after calling
+gtk_init.
+
+[Developer Notes](Development-Developer%20Notes)
+<br>[Wiki Home](Home)
+<br>_(Updated 2022-12-19 10:04:00; BDJ4 version 4.0.0-beta)_
