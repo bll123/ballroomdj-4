@@ -57,6 +57,7 @@
     * playlist management: hide unselected is always turned on for sequences.
     * song editor: previous and next buttons will now repeat.
     * update database: add update from itunes for future use.
+    * new player icon, new manage icon, clean up icons.
 * New Features:
     * configuration: player queue: add 'show queue dance buttons'.
     * configuration: player queue: add 'play when queued'.
