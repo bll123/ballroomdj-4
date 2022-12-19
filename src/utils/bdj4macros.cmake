@@ -1,3 +1,6 @@
+#
+# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+#
 
 macro (addIntlLibrary name)
   if (Intl_LIBRARY)

@@ -1,3 +1,6 @@
+#
+# Copyright 2021-2023 Brad Lanam Pleasant Hill CA
+#
 cmake_minimum_required (VERSION 3.18)
 
 # avoid msys2/windows issue

@@ -3,6 +3,7 @@ Beta Release: 2022-11---
 
 Contents
   Installation
+  Change Log
   Converting BallroomDJ 3
   Release Information
   Release Notes
@@ -18,8 +19,10 @@ Installation:
   Linux:
     https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Linux/
 
-Converting BallroomDJ 3:
+Change Log:
+  https://sourceforge.net/p/ballroomdj4/wiki/en-Change%20Log/
 
+Converting BallroomDJ 3:
   https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Converting%20BDJ3
 
 Release Information
@@ -33,7 +36,6 @@ Release Information
   releases, upgrading from a beta release will not require a re-install.
 
 Release Notes:
-  See the file ChangeLog.txt for a full list of changes.
 
   Not yet implemented:
     - Auto-Organization.

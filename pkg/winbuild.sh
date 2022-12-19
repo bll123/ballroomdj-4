@@ -89,39 +89,12 @@ echo "= procs: $procs"
 
 export PKG_CONFIG_PATH=$INSTLOC/lib/pkgconfig
 
-#cd $cwd
-#cd zlib*
-#if [ $? -eq 0 ]; then
-#  echo "## build zlib"
-#  if [ $noclean = F ]; then
-#    make -f win32/Makefile.gcc clean
-#  fi
-#  make -f win32/Makefile.gcc -j $procs \
-#    prefix=$INSTLOC \
-#    LDFLAGS="-static-libgcc"
-#  make -f win32/Makefile.gcc prefix=$INSTLOC \
-#    INCLUDE_PATH=$INSTLOC/include \
-#    LIBRARY_PATH=$INSTLOC/lib \
-#    BINARY_PATH=$INSTLOC/bin \
-#    install SHARED_MODE=1
-#fi
-#
-#cd $cwd
-#cd zstd*
-#if [ $? -eq 0 ]; then
-#  echo "## build zstd"
-#  if [ $noclean = F ]; then
-#    make clean
-#  fi
-#  make -j $procs prefix=$INSTLOC CFLAGS="-static-libgcc" lib
-#  cp -f lib/dll/libzstd.dll $INSTLOC/bin
-#fi
-
 if [[ $pkgname == "" || $pkgname = "check" ]]; then
   cd $cwd
   cd check*
   if [ $? -eq 0 ]; then
     echo "## build check"
+    touch configure
     if [ $noclean = F ]; then
       make distclean
     fi
