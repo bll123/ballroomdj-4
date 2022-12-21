@@ -29,6 +29,17 @@ if [[ $port == "" ]]; then
   port=$tport
 fi
 
+ttestweb=Y
+testpath=/test
+echo -n "Test [$ttestweb]: "
+read testweb
+if [[ $testweb == "" ]]; then
+  testweb=$ttestweb
+fi
+if [[ $testweb == N ]]; then
+  testpath=""
+fi
+
 case $server in
   web.sourceforge.net)
     port=22
@@ -55,5 +66,9 @@ if [[ $server == ballroomdj.org ]]; then
         $f ${remuser}@${server}:${wwwpath}
   done
 fi
+
+sshpass -e rsync -e "$ssh" -aS \
+    bdj4.css index.html \
+    ${remuser}@${server}:${wwwpath}${testpath}
 
 exit 0

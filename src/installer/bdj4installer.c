@@ -79,6 +79,7 @@ typedef enum {
   INST_MUTAGEN_INSTALL,
   INST_UPDATE_PROCESS_INIT,
   INST_UPDATE_PROCESS,
+  INST_FINALIZE,
   INST_REGISTER_INIT,
   INST_REGISTER,
   INST_FINISH,
@@ -129,6 +130,7 @@ typedef struct {
   char            dlfname [MAXPATHLEN];
   char            oldversion [MAXPATHLEN];
   char            bdj3version [MAXPATHLEN];
+  loglevel_t      loglevel;
   webclient_t     *webclient;
   char            *webresponse;
   size_t          webresplen;
@@ -165,6 +167,7 @@ typedef struct {
   bool            scrolltoend : 1;
   bool            quiet : 1;
   bool            verbose : 1;
+  bool            testregistration : 1;
   bool            unattended : 1;
 } installer_t;
 
@@ -218,6 +221,7 @@ static void installerPythonDownload (installer_t *installer);
 static void installerPythonInstall (installer_t *installer);
 static void installerMutagenCheck (installer_t *installer);
 static void installerMutagenInstall (installer_t *installer);
+static void installerFinalize (installer_t *installer);
 static void installerRegisterInit (installer_t *installer);
 static void installerRegister (installer_t *installer);
 
@@ -254,12 +258,13 @@ main (int argc, char *argv[])
     { "unpackdir",  required_argument,  NULL,   'u' },
     { "targetdir",  required_argument,  NULL,   't' },
     { "bdj3dir",    required_argument,  NULL,   '3' },
+    { "testregistration", no_argument,  NULL,   'T' },
     { "unattended", no_argument,        NULL,   'U' },
     /* generic args */
     { "quiet"  ,    no_argument,        NULL,   'Q' },
     { "verbose",    no_argument,        NULL,   'V' },
     /* bdj4 launcher args */
-    { "debug",      required_argument,  NULL,   0 },
+    { "debug",      required_argument,  NULL,   'd' },
     { "theme",      required_argument,  NULL,   0 },
     { "debugself",  no_argument,        NULL,   0 },
     { "nodetach",   no_argument,        NULL,   0 },
@@ -296,7 +301,9 @@ main (int argc, char *argv[])
   installer.scrolltoend = false;
   installer.quiet = false;
   installer.verbose = false;
+  installer.testregistration = false;
   installer.unattended = false;
+  installer.loglevel = LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST;
   uiutilsUIWidgetInit (&installer.statusMsg);
   uiutilsUIWidgetInit (&installer.reinstWidget);
   uiutilsUIWidgetInit (&installer.feedbackMsg);
@@ -346,11 +353,22 @@ main (int argc, char *argv[])
 
   while ((c = getopt_long_only (argc, argv, "Cru:l:", bdj_options, &option_index)) != -1) {
     switch (c) {
+      case 'd': {
+        if (optarg) {
+          installer.loglevel = (loglevel_t) atol (optarg);
+          installer.loglevel |= LOG_REDIR_INST;
+        }
+        break;
+      }
       case 'C': {
         installer.guienabled = false;
 #if _define_SIGCHLD
         osDefaultSignal (SIGCHLD);
 #endif
+        break;
+      }
+      case 'T': {
+        installer.testregistration = true;
         break;
       }
       case 'U': {
@@ -803,8 +821,7 @@ installerMainLoop (void *udata)
     case INST_CREATE_DIRS: {
       installerCreateDirs (installer);
 
-      logStart ("bdj4installer", "in",
-          LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST);
+      logStart ("bdj4installer", "in", installer->loglevel);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== installer started");
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", installer->target);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial bdj3loc: %s", installer->bdj3loc);
@@ -874,6 +891,10 @@ installerMainLoop (void *udata)
     }
     case INST_UPDATE_PROCESS: {
       installerUpdateProcess (installer);
+      break;
+    }
+    case INST_FINALIZE: {
+      installerFinalize (installer);
       break;
     }
     case INST_REGISTER_INIT: {
@@ -1851,6 +1872,11 @@ installerConvertStart (installer_t *installer)
   *installer->bdj3version = '\0';
   snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt",
       installer->bdj3loc);
+  if (isMacOS () && ! fileopFileExists (tbuff)) {
+    snprintf (tbuff, sizeof (tbuff),
+        "%s/Applications/BallroomDJ.app%s/VERSION.txt",
+        installer->home, MACOS_PREFIX);
+  }
   if (fileopFileExists (tbuff)) {
     data = filedataReadAll (tbuff, NULL);
     tp = strtok_r (data, "\r\n", &tokptr);
@@ -2332,17 +2358,33 @@ installerUpdateProcess (installer_t *installer)
   osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
   uiLabelSetText (&installer->statusMsg, "");
 
-  installer->instState = INST_REGISTER_INIT;
+  installer->instState = INST_FINALIZE;
 }
 
 static void
-installerRegisterInit (installer_t *installer)
+installerFinalize (installer_t *installer)
 {
-  char    tbuff [200];
-
   if (chdir (installer->datatopdir)) {
     installerFailWorkingDir (installer, installer->datatopdir);
     return;
+  }
+
+  if (installer->verbose) {
+    fprintf (stdout, "finish OK\n");
+    if (*installer->bdj3version) {
+      fprintf (stdout, "bdj3-version %s\n", installer->bdj3version);
+    } else {
+      fprintf (stdout, "bdj3-version x\n");
+    }
+    if (*installer->oldversion) {
+      fprintf (stdout, "old-version %s\n", installer->oldversion);
+    } else {
+      fprintf (stdout, "old-version x\n");
+    }
+    fprintf (stdout, "new-install %d\n", installer->newinstall);
+    fprintf (stdout, "re-install %d\n", installer->reinstall);
+    fprintf (stdout, "update %d\n", ! installer->newinstall && ! installer->reinstall);
+    fprintf (stdout, "converted %d\n", installer->convprocess);
   }
 
   /* create the new install flag file on a new install */
@@ -2353,10 +2395,17 @@ installerRegisterInit (installer_t *installer)
     fclose (fh);
   }
 
-  if (! installer->verbose &&
-      strcmp (sysvarsGetStr (SV_USER), "bll") == 0 &&
-      strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "") != 0) {
-    /* no need to translate */
+  installer->instState = INST_REGISTER_INIT;
+}
+
+static void
+installerRegisterInit (installer_t *installer)
+{
+  char    tbuff [200];
+
+  if (strcmp (sysvarsGetStr (SV_USER), "bll") == 0 &&
+      ! installer->testregistration) {
+    /* no need to register */
     snprintf (tbuff, sizeof (tbuff), "Registration Skipped.");
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
     installer->instState = INST_FINISH;
@@ -2373,26 +2422,6 @@ installerRegister (installer_t *installer)
 {
   char          uri [200];
   char          tbuff [2048];
-
-  if (installer->verbose) {
-    installer->instState = INST_FINISH;
-    fprintf (stdout, "finish OK\n");
-    if (*installer->bdj3version) {
-      fprintf (stdout, "bdj3-version %s\n", installer->bdj3version);
-    } else {
-      fprintf (stdout, "bdj3-version x\n");
-    }
-    if (*installer->oldversion) {
-      fprintf (stdout, "old-version %s\n", installer->oldversion);
-    } else {
-      fprintf (stdout, "old-version x\n");
-    }
-    fprintf (stdout, "new-install %d\n", installer->newinstall);
-    fprintf (stdout, "re-install %d\n", installer->reinstall);
-    fprintf (stdout, "update %d\n", ! installer->newinstall && ! installer->reinstall);
-    fprintf (stdout, "converted %d\n", installer->convprocess);
-    return;
-  }
 
   installer->webresponse = NULL;
   installer->webresplen = 0;

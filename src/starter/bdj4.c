@@ -89,6 +89,7 @@ main (int argc, char * argv[])
     /* used by installer */
     { "unpackdir",      required_argument,  NULL,   'u' },
     { "reinstall",      no_argument,        NULL,   'r' },
+    { "testregistration", no_argument,      NULL,   0 },
     { "unattended",     no_argument,        NULL,   0 },
     { "targetdir",      required_argument,  NULL,   0 },
     { "bdj3dir",        required_argument,  NULL,   0 },

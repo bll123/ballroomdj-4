@@ -45,10 +45,7 @@ if [[ $platform != windows ]]; then
   export SSHPASS
 fi
 
-set -x
 pnm=$(pkginstnm)
-
-exit 0
 
 if [[ ! -f ${pnm} ]]; then
   echo "Failed: no release package found."

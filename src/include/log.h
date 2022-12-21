@@ -14,7 +14,7 @@
 
 /*
  * log tags:
- *  ai - alt-installer
+ *  as - alt-setup
  *  bc - bpm counter
  *  ck - check_all
  *  cu - configuration ui

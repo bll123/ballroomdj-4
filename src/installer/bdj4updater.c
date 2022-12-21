@@ -156,11 +156,8 @@ main (int argc, char *argv [])
 
   bdj4startup (argc, argv, NULL, "up", ROUTE_NONE,
       BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_DB_LOAD);
-
-  audiotagInit ();
-
-  logStartAppend ("bdj4updater", "up",
-      LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST);
+  logSetLevel (LOG_INSTALL, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN, "up");
+  logSetLevel (LOG_DBG, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST, "up");
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== updater started");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -584,7 +581,7 @@ updaterCleanFiles (void)
       }
 
       snprintf (fullpattern, sizeof (fullpattern), "%s/%s", basedir, pattern);
-      logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern);
+      // logMsg (LOG_INSTALL, LOG_IMPORTANT, "clean %s", fullpattern);
       rx = regexInit (fullpattern);
       nlistSetData (cleanlist, count, rx);
       ++count;

@@ -118,15 +118,16 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
 
   logInit ();
 
-  if ((level & LOG_REDIR_INST) == LOG_REDIR_INST) {
-    idx = LOG_INSTALL;
-  }
-
   if (! logCheck (idx, level)) {
     return;
   }
 
   l = syslogs [idx];
+
+  if ((l->level & LOG_REDIR_INST) == LOG_REDIR_INST) {
+    idx = LOG_INSTALL;
+    l = syslogs [idx];
+  }
 
   tmutilTstamp (ttm, sizeof (ttm));
   *tbuff = '\0';

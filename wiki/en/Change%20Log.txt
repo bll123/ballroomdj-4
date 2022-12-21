@@ -10,7 +10,7 @@
 
 -->
 
-**4.0.0 beta 2022-12---**
+**4.0.0 beta 2022-12-20**
 
 * Bug Fixes:
     * configuration: player queues: disable active/display switches for main music queue.
@@ -18,6 +18,9 @@
     * configuration: profile color was incorrectly changing the ui color.
     * configuration: fixed filename entries to expand properly.
     * conversion: do not change the ui accent color for secondary profiles.
+    * installer: macos: fix reporting of bdj3 version.
+    * installer: fix handling of command line arguments.
+    * installer: fix logging.
     * localization: fixed dance configuration for nl.
     * macos: various installation fixes.
     * player user interface: fixed request listing to filter playback status on startup.
@@ -68,4 +71,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-19 04:33:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-20 11:39:48; BDJ4 version 4.0.0-beta)_

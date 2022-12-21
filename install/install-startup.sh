@@ -30,19 +30,7 @@ if [[ $rc -ne 0 ]]; then
   exit 1
 fi
 
-reinstall=""
-cli=""
-while test $# -gt 0; do
-  if [[ $1 == "--reinstall" ]]; then
-    reinstall=--reinstall
-  fi
-  if [[ $1 == "--cli" ]]; then
-    cli=--cli
-  fi
-  shift
-done
-
 echo "-- Starting installer."
-./bin/bdj4 --bdj4installer ${cli} --unpackdir "$unpackdir" $reinstall
+./bin/bdj4 --bdj4installer ${cli} --unpackdir "$unpackdir" "$@"
 
 exit 0
