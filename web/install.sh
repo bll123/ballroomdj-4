@@ -2,11 +2,16 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-#
 # requirements: sshpass
 #
 
 echo "* Remember to install on both sourceforge and ballroomdj.org"
+
+TMP=tmpweb
+TMPIMG=tmpweb/img
+
+test -d $TMP && rm -rf $TMP
+mkdir -p $TMPIMG
 
 tserver=web.sourceforge.net
 echo -n "Server [$tserver]: "
@@ -61,14 +66,21 @@ export SSHPASS
 
 echo "## copying files"
 if [[ $server == ballroomdj.org ]]; then
-  for f in bdj4register.php bdj4report.php bdj4support.php; do
-    sshpass -e rsync -e "$ssh" -aS \
-        $f ${remuser}@${server}:${wwwpath}
-  done
+  cp -pf bdj4register.php bdj4report.php bdj4support.php $TMP
 fi
 
-sshpass -e rsync -e "$ssh" -aS \
-    bdj4.css index.html \
-    ${remuser}@${server}:${wwwpath}${testpath}
+mkdir -p $TMP${testpath}
+cp -pf bdj4.css $TMP${testpath}
+cp -pf bdj4.html $TMP${testpath}/index.html
+cp -pf ../img/ballroomdj4-base.svg $TMPIMG/ballroomdj4.svg
+cp -pf ../img/menu-base.svg $TMPIMG/menu.svg
+
+cd $TMP
+sshpass -e rsync -v -e "$ssh" -aS \
+    . \
+    ${remuser}@${server}:${wwwpath}
+cd ..
+
+test -d $TMP && rm -rf $TMP
 
 exit 0

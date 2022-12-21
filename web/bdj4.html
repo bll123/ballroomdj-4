@@ -1,0 +1,113 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+     "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en-US">
+<head>
+  <meta name="yandex-verification" content="52297d544556772d" />
+  <meta name="google-site-verification" content="ah8fN8rvRWoqb1FzT4B-uAfR1MwRdWvYzhyAFKXFWS8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+  <title>BallroomDJ 4 - Ballroom Music Player</title>
+  <meta name="Description" content="BallroomDJ 4 - Ballroom Music Player">
+  <meta name="Keywords" content="ballroomdj, ballroom dj, ballroom music,
+      ballroom music dj, ballroom music player, ballroom dance dj,
+      ballroom music playback, dancesport music player,
+      ballroom dance software,
+      ballroom dance music software,
+      dance sport music player,
+      ballroom dj software, ballroom dance software,
+      ballroom dance dj software, dance studio music software,
+      dance school music software, mobile ballroom dj software,
+      dj ballroom software, tango music player, tango dance player,
+      country music player, country dance player,
+      ballroom dance player">
+  <link rel="stylesheet" type="text/css" href="bdj4.css">
+</head>
+<body>
+  <div>
+    <div class="menuwidget">
+      <img src="/img/menu.svg"
+          alt="Menu"
+          onclick="javascript:setDisplay('menu');">
+    </div>
+    <div>
+      <img src="/img/ballroomdj4.svg"
+        alt="BallroomDJ 4 - The Ballroom Music Player"
+        width="50%">
+    </div>
+    <div class="donatewidget">
+      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="hosted_button_id" value="BLTFRDM5KHNDJ" />
+        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+        <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+      </form>
+    </div>
+  </div>
+  <div>
+    <div id="dmenu" class="mdiv dispnone divmenu">
+      <div class="tleft dinlineblock">
+        <ul id="" class="menu">
+          <li id="" class="menuitem"
+              onclick="javascript:setDisplay('bdj4');">BallroomDJ 4</li>
+          <li id="" class="menuitem"
+              onclick="javascript:setDisplay('bdj3');">BallroomDJ 3</li>
+        </ul>
+      </div>
+    </div>
+    <div id="dbdj4" class="mdiv dispblock">
+      <div class="tleft dinlineblock">
+        <p>BallroomDJ 4 (BDJ4) is a music player designed for desktop and
+laptop computers.  It is designed to be able to play music for the
+entire evening without any intervention.</p>
+        <p>BDJ4 is highly customizable and provides facilities
+to organize ballroom dance music and create song lists, automatic
+playlists and sequenced playlists.</p>
+        <p><b><a target="_blank"
+            href="https://sourceforge.net/projects/ballroomdj4/files/"
+            >Download BallroomDJ 4</a></b></p>
+        <p><a target="_blank"
+            href="https://ballroomdj.org/forum/">BDJ4 Forum</a></p>
+        <p><a target="_blank"
+            href="https://sourceforge.net/p/ballroomdj4/wiki/Home/"
+            >BDJ4 Wiki</a></p>
+        <p><a target="_blank"
+            href="https://sourceforge.net/p/ballroomdj4/wiki/en-Features/"
+            >BDJ4 Features</a></p>
+        <p><a target="_blank"
+            href="https://crowdin.com/project/ballroomdj-4/invite"
+            >Help Translate BallroomDJ 4</a></p>
+      </div>
+    </div>
+
+    <div id="dbdj3" class="mdiv dispnone">
+      <div class="tleft dinlineblock">
+        <p>BallroomDJ was the previous ballroom music player.  <b><i>It is no
+longer supported.</i></b></p>
+        <p>All users of BallroomDJ are urged to convert to
+<b>BallroomDJ 4</b></p>
+        <p><a target="_blank"
+            href="https://sourceforge.net/projects/ballroomdj/files/"
+            >Download BallroomDJ 3</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+//<![CDATA[
+function setDisplay (id) {
+  if (id != 'menu') {
+    var dids = {menu:0, bdj4:0, bdj3:0};
+    for (var i in dids) {
+      var o = document.getElementById ('d'+i);
+      o.style.display = 'none';
+    }
+  }
+
+  var o = document.getElementById ('d'+id);
+  o.style.display = 'block';
+}
+//]]>
+  </script>
+</body>
+</html>
