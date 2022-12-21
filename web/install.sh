@@ -34,15 +34,15 @@ if [[ $port == "" ]]; then
   port=$tport
 fi
 
-ttestweb=Y
-testpath=/test
+ttestweb=N
+testpath=""
 echo -n "Test [$ttestweb]: "
 read testweb
 if [[ $testweb == "" ]]; then
   testweb=$ttestweb
 fi
-if [[ $testweb == N ]]; then
-  testpath=""
+if [[ $testweb == Y ]]; then
+  testpath="/test"
 fi
 
 case $server in
@@ -74,6 +74,7 @@ cp -pf bdj4.css $TMP${testpath}
 cp -pf bdj4.html $TMP${testpath}/index.html
 cp -pf ../img/ballroomdj4-base.svg $TMPIMG/ballroomdj4.svg
 cp -pf ../img/menu-base.svg $TMPIMG/menu.svg
+cp -pf ../img/bdj4_icon.png $TMPIMG/bdj4_icon.png
 
 cd $TMP
 sshpass -e rsync -v -e "$ssh" -aS \
