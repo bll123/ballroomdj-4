@@ -112,7 +112,7 @@ main (int argc, char *argv[])
   confui.gui.edittaglist = NULL;
   confui.gui.listingtaglist = NULL;
   confui.gui.inbuild = false;
-  confui.gui.indancechange = false;
+  confui.gui.inchange = false;
   confui.gui.org = NULL;
   confui.gui.itunes = NULL;
   confui.gui.filterLookup = NULL;

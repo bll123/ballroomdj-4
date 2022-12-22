@@ -28,6 +28,7 @@
 
 static bool confuiPlayerQueueActiveChg (void *udata);
 static bool confuiPlayerQueueChg (void *udata);
+static void confuiPlayerQueueUpdateState (confuigui_t *gui, int idx);
 static void confuiSetPlayerQueueList (confuigui_t *gui);
 static void confuiUpdatePlayerQueueList (confuigui_t *gui);
 
@@ -126,8 +127,7 @@ confuiBuildUIPlayerQueue (confuigui_t *gui)
       bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, 0), NULL, CONFUI_INDENT);
 
   gui->inbuild = false;
-  confuiPlayerQueueChg (gui);
-  confuiPlayerQueueActiveChg (gui);
+  confuiPlayerQueueChg (gui);   // calls active-chg
 
   logProcEnd (LOG_PROC, "confuiBuildUIPlayerQueue", "");
 }
@@ -139,6 +139,9 @@ confuiPlayerQueueActiveChg (void *udata)
   int         tval = 0;
 
   if (gui->inbuild) {
+    return UICB_CONT;
+  }
+  if (gui->inchange) {
     return UICB_CONT;
   }
 
@@ -165,6 +168,9 @@ confuiPlayerQueueActiveChg (void *udata)
     uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch);
   }
 
+  /* if called from init or from queue-chg, this is incorrect */
+  confuiPlayerQueueUpdateState (gui, 1);
+
   return UICB_CONT;
 }
 
@@ -181,6 +187,13 @@ confuiPlayerQueueChg (void *udata)
   if (gui->inbuild) {
     return UICB_CONT;
   }
+  if (gui->inchange) {
+    return UICB_CONT;
+  }
+
+  /* must prevent the active-chg handler from executing, as the */
+  /* toggle switches do not display correctly otherwise */
+  gui->inchange = true;
 
   widx = CONFUI_SPINBOX_PLAYER_QUEUE;
   oselidx = gui->uiitem [widx].listidx;
@@ -221,18 +234,28 @@ confuiPlayerQueueChg (void *udata)
   uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch,
       bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, nselidx));
 
+  gui->inchange = false;
+
+  confuiPlayerQueueActiveChg (gui);
+
   /* do this after the values have changed, otherwise the switches */
   /* may not display the insensitive/sensitive state correctly */
-  if (nselidx == 0) {
+  confuiPlayerQueueUpdateState (gui, nselidx);
+
+  logProcEnd (LOG_PROC, "confuiPlayerQueueChg", "");
+  return UICB_CONT;
+}
+
+static void
+confuiPlayerQueueUpdateState (confuigui_t *gui, int idx)
+{
+  if (idx == 0) {
     uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
     uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch);
   } else {
     uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
     uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch);
   }
-
-  logProcEnd (LOG_PROC, "confuiPlayerQueueChg", "");
-  return UICB_CONT;
 }
 
 static void

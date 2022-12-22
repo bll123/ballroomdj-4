@@ -91,7 +91,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   char          tbuff [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditDances");
-  gui->indancechange = true;
+  gui->inchange = true;
   uiCreateVertBox (&vbox);
 
   /* edit dances */
@@ -169,7 +169,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
       confuiDanceSpinboxTimeSigChg);
   gui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceidx = DANCE_TIMESIG;
 
-  gui->indancechange = false;
+  gui->inchange = false;
   logProcEnd (LOG_PROC, "confuiBuildUIEditDances", "");
 }
 
@@ -267,7 +267,7 @@ confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
   int             entryrc = UIENTRY_ERROR;
 
   logProcBegin (LOG_PROC, "confuiDanceEntryChg");
-  if (gui->indancechange) {
+  if (gui->inchange) {
     logProcEnd (LOG_PROC, "confuiDanceEntryChg", "in-dance-select");
     return UIENTRY_OK;
   }
@@ -373,7 +373,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
   int             didx;
 
   logProcBegin (LOG_PROC, "confuiDanceSpinboxChg");
-  if (gui->indancechange) {
+  if (gui->inchange) {
     logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "in-dance-select");
     return;
   }

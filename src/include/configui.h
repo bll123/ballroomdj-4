@@ -378,7 +378,7 @@ typedef struct confuigui {
   /* itunes */
   confitunes_t      *itunes;
   /* dances */
-  bool              indancechange : 1;
+  bool              inchange : 1;
 } confuigui_t;
 
 /* confcommon.c */

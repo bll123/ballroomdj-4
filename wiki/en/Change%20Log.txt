@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * player: fixed incorrect queue handling.
+    * configuration: player queues: fixed incorrect display of switches.
 
 -->
 

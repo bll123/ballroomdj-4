@@ -46,10 +46,10 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   dance_t       *dances;
 
   logProcBegin (LOG_PROC, "confuiDanceSelect");
-  gui->indancechange = true;
+  gui->inchange = true;
 
   if (path == NULL) {
-    gui->indancechange = false;
+    gui->inchange = false;
     return;
   }
 
@@ -57,7 +57,7 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
 
   if (! gtk_tree_model_get_iter (model, &iter, path)) {
     logProcEnd (LOG_PROC, "confuiDanceSelect", "no model/iter");
-    gui->indancechange = false;
+    gui->inchange = false;
     return;
   }
   gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
@@ -106,7 +106,7 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   widx = CONFUI_SPINBOX_DANCE_TYPE;
   uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, num);
 
-  gui->indancechange = false;
+  gui->inchange = false;
   logProcEnd (LOG_PROC, "confuiDanceSelect", "");
 }
 
