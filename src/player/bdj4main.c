@@ -145,6 +145,7 @@ static void mainNextSong (maindata_t *mainData);
 static void mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t route, char *args);
 static void mainMusicqSetManage (maindata_t *mainData, char *args);
 static void mainMusicqSetPlayback (maindata_t *mainData, char *args);
+static void mainMusicqSendConfig (maindata_t *mainData);
 static void mainMusicqSwitch (maindata_t *mainData, musicqidx_t newidx);
 static void mainPlaybackBegin (maindata_t *mainData);
 static void mainMusicQueuePlay (maindata_t *mainData);
@@ -643,6 +644,18 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_CHK_MAIN_SET_FADEIN: {
+          bdjoptSetNumPerQueue (OPT_Q_FADEINTIME, atoi (targs), mainData->musicqPlayIdx);
+          mainMusicqSendConfig (mainData);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_CHK_MAIN_SET_FADEOUT: {
+          bdjoptSetNumPerQueue (OPT_Q_FADEOUTTIME, atoi (targs), mainData->musicqPlayIdx);
+          mainMusicqSendConfig (mainData);
+          dbgdisp = true;
+          break;
+        }
         case MSG_CHK_CLEAR_PREP_Q: {
           /* clear any prepped announcements */
           slistFree (mainData->announceList);
@@ -902,6 +915,10 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
       connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, tmp);
       mainData->lastGapSent = gap;
     }
+
+    /* send the player the fade-in and fade-out times for the playback queue */
+    mainMusicqSendConfig (mainData);
+
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_MAIN_READY, NULL);
     rc = STATE_FINISHED;
   }
@@ -1922,12 +1939,24 @@ mainMusicqSetPlayback (maindata_t *mainData, char *args)
 }
 
 static void
+mainMusicqSendConfig (maindata_t *mainData)
+{
+  char          tmp [40];
+
+  snprintf (tmp, sizeof (tmp), "%"PRId64,
+      (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, mainData->musicqPlayIdx));
+  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEIN, tmp);
+  snprintf (tmp, sizeof (tmp), "%"PRId64,
+      (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, mainData->musicqPlayIdx));
+  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEOUT, tmp);
+}
+
+static void
 mainMusicqSwitch (maindata_t *mainData, musicqidx_t newMusicqIdx)
 {
   dbidx_t       dbidx;
   song_t        *song;
   musicqidx_t   oldplayidx;
-  char          tmp [40];
 
   logProcBegin (LOG_PROC, "mainMusicqSwitch");
 
@@ -1946,12 +1975,7 @@ mainMusicqSwitch (maindata_t *mainData, musicqidx_t newMusicqIdx)
   mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
 
   /* send the player the fade-in and fade-out times for this queue */
-  snprintf (tmp, sizeof (tmp), "%"PRId64,
-      (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, mainData->musicqPlayIdx));
-  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEIN, tmp);
-  snprintf (tmp, sizeof (tmp), "%"PRId64,
-      (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, mainData->musicqPlayIdx));
-  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEOUT, tmp);
+  mainMusicqSendConfig (mainData);
 
   /* having switched the playback music queue, the songs must be prepped */
   mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);

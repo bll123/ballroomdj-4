@@ -79,7 +79,7 @@ end
 # check playback with no fade-in set
 test 90-20 No-Fade-In-Basic
 msg player PLAYER_VOLUME 30
-msg player SET_PLAYBACK_FADEIN 0
+msg main CHK_MAIN_SET_FADEIN 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
@@ -96,13 +96,13 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 chk actualvolume 30
 mssleep 1500
-msg player SET_PLAYBACK_FADEIN 400
+msg main CHK_MAIN_SET_FADEIN 400
 msg player PLAYER_VOLUME defaultvol
 end
 
 # check playback with no fade-out set
 test 90-30 No-Fade-Out-Basic
-msg player SET_PLAYBACK_FADEOUT 0
+msg main CHK_MAIN_SET_FADEOUT 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
@@ -135,13 +135,13 @@ chk actualvolume 0
 chk-or playstate in-gap stopped loading playing
 wait playstate playing
 mssleep 1500
-msg player SET_PLAYBACK_FADEOUT 4000
+msg main CHK_MAIN_SET_FADEOUT 4000
 end
 
 # check playback with no gap and no fade-out set
 test 90-31 No-Gap-No-Fade-Out-Basic
 msg main CHK_MAIN_SET_GAP 0
-msg player SET_PLAYBACK_FADEOUT 0
+msg main CHK_MAIN_SET_FADEOUT 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
 msg main MUSICQ_INSERT 0~999~2
@@ -168,7 +168,7 @@ wait playstate playing
 chk-or playstate stopped loading playing
 mssleep 1500
 msg main CHK_MAIN_SET_GAP 2000
-msg player SET_PLAYBACK_FADEOUT 4000
+msg main CHK_MAIN_SET_FADEOUT 4000
 end
 
 # check playback with max play time set
