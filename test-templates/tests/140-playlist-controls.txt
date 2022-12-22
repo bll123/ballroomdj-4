@@ -45,9 +45,10 @@ chk-or playstate in-fadeout stopped loading playing
 wait playstate in-fadeout
 resptimeout 5000
 get player CHK_PLAYER_STATUS
-chk-or playstate in-fadeout stopped loading playing
+wait-not playstate in-fadeout
+chk-or playstate stopped loading playing
 wait playstate playing
-chk-or playstate in-fadeout stopped loading playing
+chk-or playstate stopped loading playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
@@ -55,8 +56,10 @@ msg player PLAY_FADE
 resptimeout 5000
 get player CHK_PLAYER_STATUS
 chk-or playstate in-fadeout stopped loading playing
+wait-not playstate in-fadeout
+chk-or playstate stopped loading playing
 wait playstate playing
-chk-or playstate in-fadeout stopped loading playing
+chk-or playstate stopped loading playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
@@ -206,9 +209,10 @@ chk-or playstate in-fadeout stopped loading playing
 wait playstate in-fadeout
 resptimeout 5000
 get player CHK_PLAYER_STATUS
-chk-or playstate in-fadeout stopped loading playing
+wait-not playstate in-fadeout
+chk-or playstate stopped loading playing
 wait playstate playing
-chk-or playstate in-fadeout stopped loading playing
+chk-or playstate stopped loading playing
 mssleep 1500
 # third song no gap
 get player CHK_PLAYER_STATUS
@@ -218,9 +222,10 @@ chk-or playstate in-fadeout stopped loading playing
 wait playstate in-fadeout
 resptimeout 5000
 get player CHK_PLAYER_STATUS
-chk-or playstate in-fadeout stopped loading playing
+wait-not playstate in-fadeout
+chk-or playstate stopped loading playing
 wait playstate playing
-chk-or playstate in-fadeout stopped loading playing
+chk-or playstate stopped loading playing
 mssleep 1500
 # fourth song has a gap
 get player CHK_PLAYER_STATUS

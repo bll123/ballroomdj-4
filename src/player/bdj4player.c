@@ -1669,18 +1669,20 @@ playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate)
 
   logProcBegin (LOG_PROC, "playerSetPlayerState");
 
-  playerData->playerState = pstate;
-  logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
-      playerData->playerState, plstateDebugText (playerData->playerState));
-  snprintf (tbuff, sizeof (tbuff), "%d", playerData->playerState);
-  connSendMessage (playerData->conn, ROUTE_MAIN,
-      MSG_PLAYER_STATE, tbuff);
-  connSendMessage (playerData->conn, ROUTE_PLAYERUI,
-      MSG_PLAYER_STATE, tbuff);
-  connSendMessage (playerData->conn, ROUTE_MANAGEUI,
-      MSG_PLAYER_STATE, tbuff);
-  /* any time there is a change of player state, send the status */
-  playerSendStatus (playerData, STATUS_NO_FORCE);
+  if (playerData->playerState != pstate) {
+    playerData->playerState = pstate;
+    logMsg (LOG_DBG, LOG_BASIC, "pl-state: %d/%s",
+        playerData->playerState, plstateDebugText (playerData->playerState));
+    snprintf (tbuff, sizeof (tbuff), "%d", playerData->playerState);
+    connSendMessage (playerData->conn, ROUTE_MAIN,
+        MSG_PLAYER_STATE, tbuff);
+    connSendMessage (playerData->conn, ROUTE_PLAYERUI,
+        MSG_PLAYER_STATE, tbuff);
+    connSendMessage (playerData->conn, ROUTE_MANAGEUI,
+        MSG_PLAYER_STATE, tbuff);
+    /* any time there is a change of player state, send the status */
+    playerSendStatus (playerData, STATUS_NO_FORCE);
+  }
   logProcEnd (LOG_PROC, "playerSetPlayerState", "");
 }
 

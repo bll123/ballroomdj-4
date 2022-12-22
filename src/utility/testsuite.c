@@ -77,6 +77,7 @@ typedef struct {
   slist_t     *routetxtlist;
   slist_t     *msgtxtlist;
   long        responseTimeout;
+  mstime_t    responseStart;
   mstime_t    responseTimeoutCheck;
   slist_t     *chkresponse;
   slist_t     *chkexpect;
@@ -191,6 +192,7 @@ main (int argc, char *argv [])
   testsuite.skiptoend = false;
   testsuite.chkexpect = NULL;
   mstimeset (&testsuite.waitCheck, 100);
+  mstimeset (&testsuite.responseStart, 0);
   mstimeset (&testsuite.responseTimeoutCheck, TS_CHK_TIMEOUT);
   strlcpy (testsuite.sectionnum, "1", sizeof (testsuite.sectionnum));
   strlcpy (testsuite.sectionname, "Init", sizeof (testsuite.sectionname));
@@ -913,6 +915,7 @@ tsScriptChk (testsuite_t *testsuite, const char *tcmd)
   ++testsuite->results.chkcount;
   logMsg (LOG_DBG, LOG_BASIC, "start response timer 200");
   mstimeset (&testsuite->responseTimeoutCheck, TS_CHK_TIMEOUT);
+  mstimeset (&testsuite->responseStart, 0);
   return TS_OK;
 }
 
@@ -938,6 +941,7 @@ tsScriptWait (testsuite_t *testsuite, const char *tcmd)
   mstimeset (&testsuite->waitCheck, 100);
   logMsg (LOG_DBG, LOG_BASIC, "start response timer %ld", testsuite->responseTimeout);
   mstimeset (&testsuite->responseTimeoutCheck, testsuite->responseTimeout);
+  mstimeset (&testsuite->responseStart, 0);
   return TS_OK;
 }
 
@@ -1280,8 +1284,9 @@ tsScriptChkResponse (testsuite_t *testsuite)
           fprintf (stdout, "\n");
           dispflag = true;
         }
-        fprintf (stdout, "          %3d %s-%s: %s: resp: %s %s exp: %s\n",
-            testsuite->lineno, typedisp, resultdisp, key, valresp, compdisp, valexp);
+        fprintf (stdout, "          %3d %s-%s: %s: resp: %s %s exp: %s (%ld/%ld)\n",
+            testsuite->lineno, typedisp, resultdisp, key, valresp,
+            compdisp, valexp, mstimeend (&testsuite->responseStart), testsuite->responseTimeout);
         fflush (stdout);
       }
     }
@@ -1489,9 +1494,9 @@ resetPlayer (testsuite_t *testsuite)
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "0");
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_MANAGE, "0");
-  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED, "0");
   /* macos seems to need this sleep. */
   /* there may be a race condition between the 'end' and  */
   /* the start of the next test. or main needs to wait to receive a */

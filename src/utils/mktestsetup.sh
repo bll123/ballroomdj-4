@@ -154,10 +154,12 @@ to=test-auto-c
 cp -f test-templates/test-auto-a.pl data/${to}.pl
 cp -f test-templates/test-auto-c.pldances data/${to}.pldances
 
-tfn=data/profile00/bdjconfig.q0.txt
-sed -e '/^FADEOUTTIME/ { n ; s/.*/..4000/ ; }' \
-    ${tfn} > ${tfn}.n
-mv -f ${tfn}.n ${tfn}
+for tfn in data/profile00/bdjconfig.q?.txt; do
+  sed -e '/^FADEOUTTIME/ { n ; s/.*/..4000/ ; }' \
+      -e '/^GAP/ { n ; s/.*/..2000/ ; }' \
+      ${tfn} > ${tfn}.n
+  mv -f ${tfn}.n ${tfn}
+done
 
 tfn=data/profile00/bdjconfig.txt
 sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \

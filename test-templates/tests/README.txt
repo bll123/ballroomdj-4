@@ -31,6 +31,7 @@
 #     for debugging; stops processing
 #   test <num> <name>
 #   wait {key value}
+#     (wait-not)
 #
 # main:
 #   musicq:
