@@ -41,7 +41,7 @@ read testweb
 if [[ $testweb == "" ]]; then
   testweb=$ttestweb
 fi
-if [[ $testweb == Y ]]; then
+if [[ $testweb == Y || $testweb == y ]]; then
   testpath="/test"
 fi
 
