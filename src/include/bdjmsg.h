@@ -66,7 +66,6 @@ typedef enum {
   MSG_QUEUE_DANCE_5,        // args: music-q-idx, dance idx
   MSG_QUEUE_DANCE,          // args: music-q-idx, dance idx
   MSG_QUEUE_PLAYLIST,       // args: music-q-idx, playlist name, edit-flag
-  MSG_QUEUE_PLAY_WHEN_QUEUED, // args: true/false
   MSG_QUEUE_SWITCH_EMPTY,   // args: true/false
   MSG_QUEUE_MIX,            // args: music-q-idx
   MSG_START_MARQUEE,
@@ -165,10 +164,14 @@ typedef enum {
   MSG_CHK_PLAYER_STATUS,
   MSG_CHK_PLAYER_SONG,
   MSG_CHK_MAIN_RESET_SENT,
-  MSG_CHK_MAIN_SET_GAP,     // args: gap
+  /* these commands act upon the queue currently set for playback */
+  MSG_CHK_MAIN_SET_GAP,           // args: gap
   MSG_CHK_MAIN_SET_MAXPLAYTIME,   // args: max-play-time
   MSG_CHK_MAIN_SET_STOPATTIME,    // args: max-play-time
   MSG_CHK_MAIN_SET_PLAYANNOUNCE,  // args: true/false
+  MSG_CHK_MAIN_SET_QUEUE_ACTIVE,  // args: true/false
+  MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED,  // args: true/false
+
   MSG_CHK_CLEAR_PREP_Q,
 
   /* when a new message is added, update: */

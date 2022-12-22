@@ -18,6 +18,7 @@
 #include "dirop.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "musicq.h"
 #include "nlist.h"
 #include "pathbld.h"
 #include "sysvars.h"
@@ -321,6 +322,12 @@ bdjoptGetNumPerQueue (nlistidx_t idx, int musicq)
     return -1;
   }
 
+  /* special case for the manageui playback queue */
+  /* play-when-queued is always on */
+  if (musicq == MUSICQ_MNG_PB && idx == OPT_Q_PLAY_WHEN_QUEUED) {
+    value = true;
+    return value;
+  }
   nidx = bdjoptQueueIndex (idx, musicq);
   value = nlistGetNum (bdjopt->bdjoptList, nidx);
   return value;
@@ -535,6 +542,8 @@ bdjoptQueueIndex (nlistidx_t idx, int musicq)
   nidx = OPT_Q_ACTIVE + (musicq * bdjopt->dfcount [OPTTYPE_QUEUE]);
   /* if the queue is not active, use the values from queue 0 */
   /* excepting the queue name, active flag and display flag */
+  /* note that special playback queues such as the manageui playback queue */
+  /* will get their settings from the main music queue */
   if (idx != OPT_Q_QUEUE_NAME &&
       idx != OPT_Q_ACTIVE &&
       idx != OPT_Q_DISPLAY &&

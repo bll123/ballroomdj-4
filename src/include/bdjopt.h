@@ -88,7 +88,8 @@ typedef enum {
   OPT_P_UI_MARK_COL,
   OPT_P_UI_PROFILE_COL,
   /* the queue values must be at the end of enum list, as they are */
-  /* repeated for each queue; opt_q_active must be the first opt_q_ item */
+  /* duplicated for each playback queue */
+  /* opt_q_active must be the first opt_q_ item */
   OPT_Q_ACTIVE,
   OPT_Q_DISPLAY,
   OPT_Q_FADEINTIME,

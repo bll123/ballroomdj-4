@@ -156,7 +156,6 @@ static bool     pluiProcessSetPlaybackQueue (void *udata);
 static void     pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newqueue, int updateFlag);
 static void     pluiSetManageQueue (playerui_t *plui, musicqidx_t newqueue);
 /* option handlers */
-static void     pluiSendPlayWhenQueued (playerui_t *plui);
 static bool     pluiToggleExtraQueues (void *udata);
 static void     pluiSetExtraQueues (playerui_t *plui);
 static bool     pluiToggleSwitchQueue (void *udata);
@@ -725,7 +724,6 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
       pluiSetPlaybackQueue (plui, plui->musicqPlayIdx, PLUI_UPDATE_MAIN);
       pluiSetManageQueue (plui, plui->musicqManageIdx);
       pluiSetSwitchQueue (plui);
-      pluiSendPlayWhenQueued (plui);
     }
     pluiSetExtraQueues (plui);
     progstateLogTime (plui->progstate, "time-to-start-gui");
@@ -992,7 +990,6 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue, int updateFlag)
   if (updateFlag == PLUI_UPDATE_MAIN) {
     snprintf (tbuff, sizeof (tbuff), "%d", plui->musicqPlayIdx);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tbuff);
-    pluiSendPlayWhenQueued (plui);
   }
   logProcEnd (LOG_PROC, "pluiSetPlaybackQueue", "");
 }
@@ -1009,19 +1006,6 @@ pluiSetManageQueue (playerui_t *plui, musicqidx_t mqidx)
   snprintf (tbuff, sizeof (tbuff), "%d", mqidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_SET_MANAGE, tbuff);
 }
-
-static void
-pluiSendPlayWhenQueued (playerui_t *plui)
-{
-  char  tbuff [40];
-
-  logProcBegin (LOG_PROC, "pluiSendPlayWhenQueued");
-  snprintf (tbuff, sizeof (tbuff), "%"PRId64,
-      bdjoptGetNumPerQueue (OPT_Q_PLAY_WHEN_QUEUED, plui->musicqPlayIdx));
-  connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_WHEN_QUEUED, tbuff);
-  logProcEnd (LOG_PROC, "pluiSendPlayWhenQueued", "");
-}
-
 
 static bool
 pluiToggleExtraQueues (void *udata)

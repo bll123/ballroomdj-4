@@ -112,6 +112,7 @@ typedef struct {
   bool        chkwait : 1;
   bool        skiptoend : 1;          // used for test timeout
   bool        verbose : 1;
+  bool        skipfile : 1;
 } testsuite_t;
 
 static int  gKillReceived = 0;
@@ -205,6 +206,7 @@ main (int argc, char *argv [])
   testsuite.chkresponse = NULL;
   testsuite.expectresponse = false;
   testsuite.wait = false;
+  testsuite.skipfile = false;
   testsuite.lastResponse = NULL;
   /* chkresponse, haveresponse, lessthan, greaterthan, */
   /* checkor, chkwait, checknot */
@@ -563,7 +565,9 @@ tsProcessScript (testsuite_t *testsuite)
   char        tcmd [200];
   bool        processtest;
 
-  if (fgets (tcmd, sizeof (tcmd), testsuite->fh) == NULL) {
+  if (testsuite->skipfile ||
+      fgets (tcmd, sizeof (tcmd), testsuite->fh) == NULL) {
+    testsuite->skipfile = false;
     if (tsNextFile (testsuite)) {
       return true;
     }
@@ -629,6 +633,17 @@ tsProcessScript (testsuite_t *testsuite)
       testsuite->chkwait = false;
       ok = TS_OK;
       testsuite->skiptoend = false;
+    }
+    if (strncmp (tcmd, "skip", 4) == 0) {
+      fprintf (stdout, "\n");
+      clearResults (&testsuite->results);
+      resetPlayer (testsuite);
+      resetChkResponse (testsuite);
+      testsuite->expectresponse = false;
+      testsuite->wait = false;
+      testsuite->chkwait = false;
+      ok = TS_OK;
+      testsuite->skipfile = true;
     }
   }
 
@@ -1471,11 +1486,12 @@ resetPlayer (testsuite_t *testsuite)
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "1");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "1");
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, "0");
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CMD_NEXTSONG, NULL);
   connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_MUSICQ_SET_MANAGE, "0");
-  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_QUEUE_PLAY_WHEN_QUEUED, "0");
+  connSendMessage (testsuite->conn, ROUTE_MAIN, MSG_CHK_MAIN_SET_PLAY_WHEN_QUEUED, "0");
   /* macos seems to need this sleep. */
   /* there may be a race condition between the 'end' and  */
   /* the start of the next test. or main needs to wait to receive a */
