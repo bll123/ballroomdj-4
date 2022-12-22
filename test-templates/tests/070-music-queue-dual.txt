@@ -1,5 +1,8 @@
 section 70 Music-Queue-Dual
 
+# The default setup has a second active music queue
+# that inherits the main music queue's configuration.
+
 # dual musicq queues
 # check to make sure insertion to the current queue works
 test 70-10 Insert-Current

@@ -1,7 +1,7 @@
-section 90 Player-Config
+section 90 Per-Queue-Basic
 
 # check gap configuration
-test 90-10 Gap
+test 90-10 Gap-Basic
 get player CHK_PLAYER_STATUS
 msg main CHK_MAIN_SET_GAP 1000
 msg main MUSICQ_INSERT 0~999~0
@@ -44,7 +44,7 @@ msg main CHK_MAIN_SET_GAP 2000
 end
 
 # check playback with no gap set
-test 90-11 No-Gap
+test 90-11 No-Gap-Basic
 msg main CHK_MAIN_SET_GAP 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
@@ -77,7 +77,7 @@ msg main CHK_MAIN_SET_GAP 2000
 end
 
 # check playback with no fade-in set
-test 90-20 No-Fade-In
+test 90-20 No-Fade-In-Basic
 msg player PLAYER_VOLUME 30
 msg player SET_PLAYBACK_FADEIN 0
 msg main MUSICQ_INSERT 0~999~0
@@ -101,7 +101,7 @@ msg player PLAYER_VOLUME defaultvol
 end
 
 # check playback with no fade-out set
-test 90-30 No-Fade-Out
+test 90-30 No-Fade-Out-Basic
 msg player SET_PLAYBACK_FADEOUT 0
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
@@ -139,7 +139,7 @@ msg player SET_PLAYBACK_FADEOUT 4000
 end
 
 # check playback with no gap and no fade-out set
-test 90-31 No-Gap-No-Fade-Out
+test 90-31 No-Gap-No-Fade-Out-Basic
 msg main CHK_MAIN_SET_GAP 0
 msg player SET_PLAYBACK_FADEOUT 0
 msg main MUSICQ_INSERT 0~999~0
@@ -172,7 +172,7 @@ msg player SET_PLAYBACK_FADEOUT 4000
 end
 
 # check playback with max play time set
-test 90-40 Maximum-Play-Time
+test 90-40 Maximum-Play-Time-Basic
 msg main CHK_MAIN_SET_MAXPLAYTIME 10000
 msg main MUSICQ_INSERT 0~999~0
 msg main MUSICQ_INSERT 0~999~1
@@ -205,7 +205,7 @@ msg main CHK_MAIN_SET_MAXPLAYTIME 360000
 end
 
 # check playback with stop-at time set
-test 90-50 Stop-At
+test 90-50 Stop-At-Basic
 msg main CHK_MAIN_SET_STOPATTIME stoptime
 msg main MUSICQ_INSERT 0~999~5
 msg main MUSICQ_INSERT 0~999~6
@@ -257,5 +257,14 @@ get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
 msg main CHK_MAIN_SET_STOPATTIME 0
+end
+
+# play when queued
+test 90-60 Play-When-Queued-Basic
+msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 1
+msg main MUSICQ_INSERT 0~999~5
+mssleep 2000
+get player CHK_PLAYER_STATUS
+chk playstate playing
 end
 

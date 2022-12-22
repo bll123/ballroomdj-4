@@ -1,0 +1,288 @@
+section 150 Per-Queue-Controls
+
+test 150-10 Maximum-Play-Time
+# use 20 seconds max for queue 0
+msg main MUSICQ_SET_PLAYBACK 0
+msg main CHK_MAIN_SET_MAXPLAYTIME 20000
+# queue 1 has the maximum play time set to 10 seconds
+# make sure gap is set to default
+msg main MUSICQ_SET_PLAYBACK 1
+msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
+msg main CHK_MAIN_SET_GAP 2000
+msg main CHK_MAIN_SET_MAXPLAYTIME 10000
+msg main MUSICQ_SET_PLAYBACK 0
+#
+msg main QUEUE_PLAYLIST 0~test-sl-a
+msg main QUEUE_PLAYLIST 1~test-sl-a
+#
+msg main MUSICQ_SET_MANAGE 0
+get main CHK_MAIN_MUSICQ
+chk-gt mq0len 5
+chk-gt mq1len 5
+chk mq2len -1
+#
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+get player CHK_PLAYER_SONG
+chk p-duration 20000
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+get player CHK_PLAYER_SONG
+chk p-duration 20000
+#
+msg main MUSICQ_SET_PLAYBACK 1
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+get player CHK_PLAYER_SONG
+chk p-duration 10000
+#
+msg main MUSICQ_SET_PLAYBACK 0
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+get player CHK_PLAYER_SONG
+chk p-duration 20000
+#
+msg main MUSICQ_SET_PLAYBACK 1
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+get player CHK_PLAYER_SONG
+chk p-duration 10000
+#
+msg main MUSICQ_SET_PLAYBACK 0
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+get player CHK_PLAYER_SONG
+chk p-duration 20000
+end
+
+# 2022-12-22 tests below this point are not yet written.
+skip
+
+test 150-20 Gap
+msg main QUEUE_PLAYLIST 0~test-sl-a
+msg main CMD_PLAY
+resptimeout 2000
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+chk-or playstate in-fadeout stopped loading playing
+wait playstate in-fadeout
+resptimeout 5000
+get player CHK_PLAYER_STATUS
+chk-or playstate in-fadeout stopped loading playing
+wait playstate playing
+chk-or playstate in-fadeout stopped loading playing
+mssleep 1500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+msg player PLAY_FADE
+resptimeout 5000
+get player CHK_PLAYER_STATUS
+chk-or playstate in-fadeout stopped loading playing
+wait playstate playing
+chk-or playstate in-fadeout stopped loading playing
+mssleep 1500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+end
+
+# stop-at pre-fills the music queue until there are enough
+# songs to get to the stop time.
+# therefore this test can simply check how many songs are
+# in the music queue w/o regards to the actual stop time.
+test 150-40 Stop-At-Basic
+msg main PL_OVERRIDE_STOP_TIME stoptime
+msg main QUEUE_PLAYLIST 0~test-sl-a
+get main CHK_MAIN_MUSICQ
+chk mq0len 4
+msg main CMD_PLAY
+resptimeout 2000
+# song 1
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 2
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 3
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 4
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+msg player PLAY_FADE
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+resptimeout 7500
+get player CHK_PLAYER_STATUS
+wait playstate stopped
+end
+
+test 150-60 Gap-Multiple-Queues
+msg main QUEUE_PLAYLIST 0~test-sl-a
+msg main QUEUE_PLAYLIST 1~test-sl-a
+end
+
+# like 150-40, the music queue is pre-filled with the songs
+# needed to reach the stop time.  this test can just check
+# the number of songs queued w/o regards to the actual stop time.
+# in this test, queue the playlist with the stop-at time,
+# then queue a playlist with stop-after set to 2.
+test 150-70 Stop-At-Multiple-Queues
+msg main PL_OVERRIDE_STOP_TIME stoptime
+msg main QUEUE_PLAYLIST 0~test-sl-a
+msg main QUEUE_PLAYLIST 0~test-sl-e
+get main CHK_MAIN_MUSICQ
+chk mq0len 6
+msg main CMD_PLAY
+resptimeout 2000
+# song 1
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 2
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 3
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 4
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 5
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 6
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+get player CHK_PLAYER_STATUS
+wait playstate stopped
+end
+
+# the music queue is pre-filled with the songs
+# needed to reach the stop time.  this test can just check
+# the number of songs queued w/o regards to the actual stop time.
+# in this test, queue the stop-after 2 playlist, then queue the playlist
+# with the stop-at time.
+test 150-80 Stop-At-Multiple-Queues
+msg main QUEUE_PLAYLIST 0~test-sl-e
+msg main PL_OVERRIDE_STOP_TIME stoptime
+msg main QUEUE_PLAYLIST 0~test-sl-a
+get main CHK_MAIN_MUSICQ
+chk mq0len 4
+msg main CMD_PLAY
+resptimeout 2000
+# song 1
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 2
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 3
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# song 4
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+get player CHK_PLAYER_STATUS
+wait playstate stopped
+end
+

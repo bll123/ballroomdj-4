@@ -25,6 +25,8 @@
 #   resptimeout <time>
 #     set the response timeout for 'wait'
 #   section <num> <name>
+#   skip
+#     skips the rest of the test file.
 #   stop
 #     for debugging; stops processing
 #   test <num> <name>
