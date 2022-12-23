@@ -1139,12 +1139,9 @@ starterStartProcess (startui_t *starter, const char *procname,
     }
   }
 
-  starter->lastPluiStart = mstime ();
-
   starter->processes [route] = procutilStartProcess (
       route, procname, PROCUTIL_DETACH, NULL);
   starter->started [route] = true;
-  mstimeset (&starter->pluiCheckTime, 500);
   starterSendPlayerActive (starter);
   return UICB_CONT;
 }
