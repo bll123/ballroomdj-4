@@ -109,6 +109,8 @@ uiSetUIFont (char *uifont)
 
     tcss = gtk_css_provider_new ();
     snprintf (tbuff, sizeof (tbuff), "* { font-family: '%s'; } ", wbuff);
+    snprintf (wbuff, sizeof (wbuff), "entry { color: @theme_fg_color; } ");
+    strlcat (tbuff, wbuff, sizeof (tbuff));
     if (sz > 0) {
       snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; } ", sz);
       strlcat (tbuff, wbuff, sizeof (tbuff));
