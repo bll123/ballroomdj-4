@@ -11,6 +11,8 @@
     * player: marks in song selection properly include all queues and history.
     * configuration: player queues: fixed incorrect display of switches.
     * song selection: fix playback of multiple selections.
+    * player ui: recover marquee will raise window to the top.
+    * starter: player/manage/configure will be raised if already open.
 
 -->
 

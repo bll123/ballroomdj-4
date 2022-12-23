@@ -36,6 +36,8 @@ typedef enum {
   MSG_DATABASE_UPDATE,      // send by manageui to starterui,
                             // then sent by starterui to playerui, main.
   MSG_DB_ENTRY_UPDATE,      // args: dbidx
+  MSG_WINDOW_FIND,          // recover the window.
+
   /* to main */
   MSG_GET_STATUS,           // get main/player status
   MSG_MUSICQ_INSERT,        // args: music-q-idx, idx, song name
@@ -143,7 +145,6 @@ typedef enum {
   MSG_MARQUEE_SET_FONT_SZ,  // args: font-size
   MSG_MARQUEE_IS_MAX,       // args: boolean flag
   MSG_MARQUEE_FONT_SIZES,   // args: font-size, font-size-fs
-  MSG_MARQUEE_FIND,
 
   /* to/from dbudpate */
   MSG_DB_STOP_REQ,

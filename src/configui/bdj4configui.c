@@ -547,6 +547,10 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           }
           break;
         }
+        case MSG_WINDOW_FIND: {
+          uiWindowFind (&confui->gui.window);
+          break;
+        }
         default: {
           break;
         }

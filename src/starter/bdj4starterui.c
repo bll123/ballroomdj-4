@@ -1103,6 +1103,11 @@ starterStartPlayerui (void *udata)
     return UICB_STOP;
   }
 
+  if (starter->started [ROUTE_PLAYERUI]) {
+    connSendMessage (starter->conn, ROUTE_PLAYERUI, MSG_WINDOW_FIND, NULL);
+    return UICB_CONT;
+  }
+
   starter->lastPluiStart = mstime ();
 
   starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
@@ -1121,6 +1126,12 @@ starterStartManageui (void *udata)
   if (starterCheckProfile (starter) < 0) {
     return UICB_STOP;
   }
+
+  if (starter->started [ROUTE_MANAGEUI]) {
+    connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_WINDOW_FIND, NULL);
+    return UICB_CONT;
+  }
+
   starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
       ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH, NULL);
   starter->started [ROUTE_MANAGEUI] = true;
@@ -1135,6 +1146,12 @@ starterStartConfig (void *udata)
   if (starterCheckProfile (starter) < 0) {
     return UICB_STOP;
   }
+
+  if (starter->started [ROUTE_CONFIGUI]) {
+    connSendMessage (starter->conn, ROUTE_CONFIGUI, MSG_WINDOW_FIND, NULL);
+    return UICB_CONT;
+  }
+
   starter->processes [ROUTE_CONFIGUI] = procutilStartProcess (
       ROUTE_CONFIGUI, "bdj4configui", PROCUTIL_DETACH, NULL);
   starter->started [ROUTE_CONFIGUI] = true;

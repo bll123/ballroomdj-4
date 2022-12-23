@@ -769,6 +769,10 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_WINDOW_FIND: {
+          uiWindowFind (&plui->window);
+          break;
+        }
         case MSG_QUEUE_SWITCH: {
           pluiSetPlaybackQueue (plui, atoi (targs), PLUI_UPDATE_MAIN);
           dbgdisp = true;
@@ -1208,7 +1212,7 @@ pluiMarqueeFind (void *udata)
 {
   playerui_t  *plui = udata;
 
-  connSendMessage (plui->conn, ROUTE_MARQUEE, MSG_MARQUEE_FIND, NULL);
+  connSendMessage (plui->conn, ROUTE_MARQUEE, MSG_WINDOW_FIND, NULL);
   return UICB_CONT;
 }
 

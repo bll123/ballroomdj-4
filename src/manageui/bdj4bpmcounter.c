@@ -536,6 +536,10 @@ bpmcounterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           gKillReceived = 0;
           break;
         }
+        case MSG_WINDOW_FIND: {
+          uiWindowFind (&bpmcounter->window);
+          break;
+        }
         case MSG_BPM_TIMESIG: {
           bpmcounterProcessTimesig (bpmcounter, args);
           break;

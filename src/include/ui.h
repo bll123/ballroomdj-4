@@ -358,6 +358,8 @@ void uiWindowSetWinStateCallback (UIWidget *uiwindow, UICallback *uicb);
 void uiWindowNoDim (UIWidget *uiwidget);
 void uiWindowSetMappedCallback (UIWidget *uiwidget, UICallback *uicb);
 void uiWindowPresent (UIWidget *uiwidget);
+void uiWindowRaise (UIWidget *uiwidget);
+void uiWindowFind (UIWidget *window);
 
 /* uigtkscale.c */
 void    uiCreateScale (UIWidget *uiwidget, double lower, double upper,

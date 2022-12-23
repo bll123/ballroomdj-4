@@ -1034,6 +1034,10 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           progstateShutdownProcess (manage->progstate);
           break;
         }
+        case MSG_WINDOW_FIND: {
+          uiWindowFind (&manage->window);
+          break;
+        }
         case MSG_DB_PROGRESS: {
           manageDbProgressMsg (manage->managedb, targs);
           break;
@@ -1347,6 +1351,12 @@ manageStartBPMCounter (void *udata)
   int         targc = 0;
 
   logProcBegin (LOG_PROC, "manageStartBPMCounter");
+
+  if (manage->bpmcounterstarted) {
+    connSendMessage (manage->conn, ROUTE_BPM_COUNTER, MSG_WINDOW_FIND, NULL);
+    return UICB_CONT;
+  }
+
   if (! manage->bpmcounterstarted) {
     int     flags;
 

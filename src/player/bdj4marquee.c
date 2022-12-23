@@ -578,7 +578,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
-        case MSG_MARQUEE_FIND: {
+        case MSG_WINDOW_FIND: {
           marqueeFind (marquee);
           dbgdisp = true;
           break;
@@ -985,7 +985,7 @@ marqueeFind (marquee_t *marquee)
   }
   marqueeSetNotMaximized (marquee);
   marqueeMoveWindow (marquee);
-  uiWindowMoveToCurrentWorkspace (&marquee->window);
+  uiWindowFind (&marquee->window);
   uiWindowPresent (&marquee->window);
   marqueeSaveWindowPosition (marquee);
 }

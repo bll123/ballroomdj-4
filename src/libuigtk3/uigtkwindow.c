@@ -280,9 +280,27 @@ uiWindowSetMappedCallback (UIWidget *uiwidget, UICallback *uicb)
 }
 
 void
-uiWindowPresent (UIWidget *uiwidget)
+uiWindowPresent (UIWidget *uiwindow)
 {
-  gtk_window_present (GTK_WINDOW (uiwidget->widget));
+  gtk_window_present (GTK_WINDOW (uiwindow->widget));
+}
+
+void
+uiWindowRaise (UIWidget *uiwindow)
+{
+  int   x, y, ws;
+
+  uiWindowGetPosition (uiwindow, &x, &y, &ws);
+  uiWidgetHide (uiwindow);
+  uiWidgetShow (uiwindow);
+  uiWindowMove (uiwindow, x, y, ws);
+}
+
+void
+uiWindowFind (UIWidget *window)
+{
+  uiWindowMoveToCurrentWorkspace (window);
+  uiWindowRaise (window);
 }
 
 /* internal routines */
