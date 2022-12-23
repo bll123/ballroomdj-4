@@ -980,11 +980,12 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
 
   musicqLen = musicqGetLen (mainData->musicQueue, musicqidx);
   qDuration = musicqGetDuration (mainData->musicQueue, musicqidx);
+  dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, 0);
 
   sbuff = malloc (BDJMSG_MAX);
-  sbuff [0] = '\0';
-  snprintf (sbuff, BDJMSG_MAX, "%d%c%"PRId64"%c",
-      musicqidx, MSG_ARGS_RS, (int64_t) qDuration, MSG_ARGS_RS);
+  snprintf (sbuff, BDJMSG_MAX, "%d%c%"PRId64"%c%d%c",
+      musicqidx, MSG_ARGS_RS, (int64_t) qDuration, MSG_ARGS_RS,
+      dbidx, MSG_ARGS_RS);
 
   for (int i = 1; i <= musicqLen; ++i) {
     dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, i);

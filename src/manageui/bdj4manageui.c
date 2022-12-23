@@ -1083,8 +1083,10 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           /* the music queue data is used to display the mark */
           /* indicating that the song is already in the song list */
           if (musicqupdate->mqidx == manage->musicqManageIdx) {
-            uisongselProcessMusicQueueData (manage->slsongsel, musicqupdate);
-            uisongselProcessMusicQueueData (manage->slezsongsel, musicqupdate);
+            uisongselProcessMusicQueueData (manage->slsongsel, musicqupdate,
+                UISONGSEL_MARK_REPLACE);
+            uisongselProcessMusicQueueData (manage->slezsongsel, musicqupdate,
+                UISONGSEL_MARK_REPLACE);
           }
           msgparseMusicQueueDataFree (musicqupdate);
           break;

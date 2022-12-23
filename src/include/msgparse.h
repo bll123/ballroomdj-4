@@ -19,6 +19,7 @@ typedef struct {
 typedef struct {
   musicqidx_t     mqidx;
   long            tottime;
+  dbidx_t         currdbidx;
   nlist_t         *dispList;
 } mp_musicqupdate_t;
 

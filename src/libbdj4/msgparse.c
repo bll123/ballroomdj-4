@@ -44,6 +44,10 @@ msgparseMusicQueueData (char *args)
   musicqupdate->tottime = atol (p);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+  /* currently playing dbidx (music queue index 0) */
+  musicqupdate->currdbidx = atol (p);
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   idx = 1;
   while (p != NULL) {
     musicqupditem = malloc (sizeof (mp_musicqupditem_t));

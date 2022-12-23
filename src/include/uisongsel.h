@@ -26,6 +26,11 @@ typedef struct uisongsel uisongsel_t;
 typedef struct uisongselgtk uisongselgtk_t;
 
 enum {
+  UISONGSEL_MARK_REPLACE,
+  UISONGSEL_MARK_UPDATE,
+};
+
+enum {
   UISONGSEL_PEER_MAX = 2,
 };
 
@@ -80,7 +85,7 @@ void  uisongselSetPlayCallback (uisongsel_t *uisongsel, UICallback *uicb);
 void  uisongselSetSongSaveCallback (uisongsel_t *uisongsel, UICallback *uicb);
 /* song filter */
 void  uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb);
-void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t *musicqupdate);
+void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t *musicqupdate, int updflag);
 
 /* uisongselgtk.c */
 void  uisongselUIInit (uisongsel_t *uisongsel);

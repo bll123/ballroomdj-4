@@ -168,23 +168,29 @@ uisongselSetSongSaveCallback (uisongsel_t *uisongsel, UICallback *uicb)
 
 void
 uisongselProcessMusicQueueData (uisongsel_t *uisongsel,
-    mp_musicqupdate_t *musicqupdate)
+    mp_musicqupdate_t *musicqupdate, int updflag)
 {
   nlistidx_t  iteridx;
   mp_musicqupditem_t   *musicqupditem;
 
-  nlistFree (uisongsel->songlistdbidxlist);
-  uisongsel->songlistdbidxlist = NULL;
+  if (updflag == UISONGSEL_MARK_REPLACE) {
+    nlistFree (uisongsel->songlistdbidxlist);
+    uisongsel->songlistdbidxlist = NULL;
+    uisongsel->songlistdbidxlist = nlistAlloc ("songlist-dbidx",
+        LIST_UNORDERED, NULL);
+    nlistSetSize (uisongsel->songlistdbidxlist, nlistGetCount (musicqupdate->dispList));
+  }
 
-  uisongsel->songlistdbidxlist = nlistAlloc ("songlist-dbidx",
-      LIST_UNORDERED, NULL);
-  nlistSetSize (uisongsel->songlistdbidxlist, nlistGetCount (musicqupdate->dispList));
+  nlistSetNum (uisongsel->songlistdbidxlist, musicqupdate->currdbidx, 0);
 
   nlistStartIterator (musicqupdate->dispList, &iteridx);
   while ((musicqupditem = nlistIterateValueData (musicqupdate->dispList, &iteridx)) != NULL) {
     nlistSetNum (uisongsel->songlistdbidxlist, musicqupditem->dbidx, 0);
   }
-  nlistSort (uisongsel->songlistdbidxlist);
+
+  if (updflag == UISONGSEL_MARK_REPLACE) {
+    nlistSort (uisongsel->songlistdbidxlist);
+  }
 
   uisongselPopulateData (uisongsel);
 }

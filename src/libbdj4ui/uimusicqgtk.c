@@ -884,6 +884,10 @@ uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
 
+  if (uiw == NULL || uiw->sel == NULL) {
+    return -1;
+  }
+
   count = gtk_tree_selection_count_selected_rows (uiw->sel);
   if (count != 1) {
     return -1;

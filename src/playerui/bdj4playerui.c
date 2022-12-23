@@ -802,19 +802,26 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MUSIC_QUEUE_DATA: {
-          mp_musicqupdate_t  *musicqupdate;
+          mp_musicqupdate_t   *musicqupdate;
+          int                 updflag;
 
           musicqupdate = msgparseMusicQueueData (args);
+
+          updflag = UISONGSEL_MARK_UPDATE;
+          if (musicqupdate->mqidx == MUSICQ_PB_A) {
+            updflag = UISONGSEL_MARK_REPLACE;
+          }
+
           if ((int) musicqupdate->mqidx < MUSICQ_DISP_MAX) {
+            /* if displayed */
             if (bdjoptGetNumPerQueue (OPT_Q_DISPLAY, musicqupdate->mqidx)) {
-              /* if displayed */
               uimusicqProcessMusicQueueData (plui->uimusicq, musicqupdate);
               /* the music queue data is used to display the mark */
               /* indicating that the song is already in the song list */
-              uisongselProcessMusicQueueData (plui->uisongsel, musicqupdate);
+              uisongselProcessMusicQueueData (plui->uisongsel, musicqupdate,
+                  updflag);
             }
           }
-          msgparseMusicQueueDataFree (musicqupdate);
           break;
         }
         case MSG_DATABASE_UPDATE: {
