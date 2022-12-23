@@ -200,6 +200,7 @@ static void     starterSigHandler (int sig);
 static bool     starterStartPlayerui (void *udata);
 static bool     starterStartManageui (void *udata);
 static bool     starterStartConfig (void *udata);
+static bool     starterStartProcess (startui_t *starter, const char *procname, bdjmsgroute_t route);
 
 static int      starterGetProfiles (startui_t *starter);
 static void     starterResetProfile (startui_t *starter, int profidx);
@@ -1097,25 +1098,14 @@ starterSigHandler (int sig)
 static bool
 starterStartPlayerui (void *udata)
 {
-  startui_t      *starter = udata;
+  startui_t *starter = udata;
+  bool      rc;
 
-  if (starterCheckProfile (starter) < 0) {
-    return UICB_STOP;
-  }
-
-  if (starter->started [ROUTE_PLAYERUI]) {
-    connSendMessage (starter->conn, ROUTE_PLAYERUI, MSG_WINDOW_FIND, NULL);
-    return UICB_CONT;
-  }
-
+  rc = starterStartProcess (starter, "bdj4playerui", ROUTE_PLAYERUI);
   starter->lastPluiStart = mstime ();
-
-  starter->processes [ROUTE_PLAYERUI] = procutilStartProcess (
-      ROUTE_PLAYERUI, "bdj4playerui", PROCUTIL_DETACH, NULL);
-  starter->started [ROUTE_PLAYERUI] = true;
   mstimeset (&starter->pluiCheckTime, 500);
   starterSendPlayerActive (starter);
-  return UICB_CONT;
+  return rc;
 }
 
 static bool
@@ -1123,19 +1113,7 @@ starterStartManageui (void *udata)
 {
   startui_t      *starter = udata;
 
-  if (starterCheckProfile (starter) < 0) {
-    return UICB_STOP;
-  }
-
-  if (starter->started [ROUTE_MANAGEUI]) {
-    connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_WINDOW_FIND, NULL);
-    return UICB_CONT;
-  }
-
-  starter->processes [ROUTE_MANAGEUI] = procutilStartProcess (
-      ROUTE_MANAGEUI, "bdj4manageui", PROCUTIL_DETACH, NULL);
-  starter->started [ROUTE_MANAGEUI] = true;
-  return UICB_CONT;
+  return starterStartProcess (starter, "bdj4manageui", ROUTE_MANAGEUI);
 }
 
 static bool
@@ -1143,18 +1121,31 @@ starterStartConfig (void *udata)
 {
   startui_t      *starter = udata;
 
+  return starterStartProcess (starter, "bdj4configui", ROUTE_CONFIGUI);
+}
+
+static bool
+starterStartProcess (startui_t *starter, const char *procname,
+    bdjmsgroute_t route)
+{
   if (starterCheckProfile (starter) < 0) {
     return UICB_STOP;
   }
 
-  if (starter->started [ROUTE_CONFIGUI]) {
-    connSendMessage (starter->conn, ROUTE_CONFIGUI, MSG_WINDOW_FIND, NULL);
-    return UICB_CONT;
+  if (starter->started [route]) {
+    if (procutilExists (starter->processes [route]) == 0) {
+      connSendMessage (starter->conn, route, MSG_WINDOW_FIND, NULL);
+      return UICB_CONT;
+    }
   }
 
-  starter->processes [ROUTE_CONFIGUI] = procutilStartProcess (
-      ROUTE_CONFIGUI, "bdj4configui", PROCUTIL_DETACH, NULL);
-  starter->started [ROUTE_CONFIGUI] = true;
+  starter->lastPluiStart = mstime ();
+
+  starter->processes [route] = procutilStartProcess (
+      route, procname, PROCUTIL_DETACH, NULL);
+  starter->started [route] = true;
+  mstimeset (&starter->pluiCheckTime, 500);
+  starterSendPlayerActive (starter);
   return UICB_CONT;
 }
 

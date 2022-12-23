@@ -222,7 +222,7 @@ procutilTerminate (pid_t pid, bool force)
 /* these next three routines are for management of processes */
 
 procutil_t *
-procutilStartProcess (bdjmsgroute_t route, char *fname, int detachflag,
+procutilStartProcess (bdjmsgroute_t route, const char *fname, int detachflag,
     const char *aargs [])
 {
   char      tbuff [MAXPATHLEN];
