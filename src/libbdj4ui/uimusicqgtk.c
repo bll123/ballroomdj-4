@@ -536,7 +536,7 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
 
   uiw = uimusicq->ui [mqidx].uiWidgets;
 
-  loc = 99;
+  loc = 999;
 
   count = gtk_tree_selection_count_selected_rows (uiw->sel);
   if (count == 1) {

@@ -10,6 +10,7 @@
     * player: fixed incorrect per-queue configuration handling.
     * player: marks in song selection properly include all queues and history.
     * configuration: player queues: fixed incorrect display of switches.
+    * song selection: fix playback of multiple selections.
 
 -->
 

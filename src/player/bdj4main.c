@@ -61,7 +61,7 @@ typedef enum {
 
 enum {
   MAIN_PB_TYPE_PL,
-  MAIN_PB_TYPE_SONG,
+  MAIN_PB_TYPE_SONG,    // not currently used...
   MAIN_CHG_CLEAR,
   MAIN_CHG_START,
   MAIN_CHG_FINAL,
@@ -396,13 +396,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mainQueueClear (mainData, ttargs);
           free (ttargs);
           mainNextSong (mainData);
-          if (mainData->waitforpbfinish) {
-            mainData->pbfinishArgs = strdup (targs);
-            mainData->pbfinishType = MAIN_PB_TYPE_SONG;
-            mainData->pbfinishRoute = routefrom;
-          } else {
-            mainMusicqInsert (mainData, routefrom, targs);
-          }
+          mainMusicqInsert (mainData, routefrom, targs);
           dbgdisp = true;
           break;
         }

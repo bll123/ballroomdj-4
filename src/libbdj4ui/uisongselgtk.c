@@ -893,6 +893,7 @@ uisongselQueueHandler (uisongsel_t *uisongsel, musicqidx_t mqidx, int action)
     if (action == UISONGSEL_PLAY) {
       uisongselPlayProcess (uisongsel, dbidx, mqidx);
     }
+    action = UISONGSEL_QUEUE;
   }
   logProcEnd (LOG_PROC, "uisongselQueueHandler", "");
   return;
