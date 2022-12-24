@@ -393,7 +393,7 @@ dbupdateProcessing (void *udata)
     dbupdate->dbtopdirlen = strlen (dbupdate->dbtopdir);
 
     logMsg (LOG_DBG, LOG_BASIC, "dbtopdir %s", dbupdate->dbtopdir);
-    dbupdate->fileList = dirlistRecursiveDirList (dbupdate->dbtopdir, FILEMANIP_FILES);
+    dbupdate->fileList = dirlistRecursiveDirList (dbupdate->dbtopdir, DIRLIST_FILES);
 
     dbupdate->counts [C_FILE_COUNT] = slistGetCount (dbupdate->fileList);
     mstimeend (&dbupdate->starttm);

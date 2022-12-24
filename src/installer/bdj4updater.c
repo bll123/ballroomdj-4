@@ -546,7 +546,8 @@ updaterCleanFiles (void)
             (linuxonly == true && isLinux ()) ||
             (windowsonly == true && isWindows ());
         if (osflag) {
-          filelist = dirlistRecursiveDirList (basedir, DIRLIST_FILES | DIRLIST_DIRS);
+          filelist = dirlistRecursiveDirList (basedir,
+              DIRLIST_FILES | DIRLIST_DIRS | DIRLIST_LINKS);
           updaterCleanRegex (basedir, filelist, cleanlist);
           slistFree (filelist);
         }
@@ -606,7 +607,8 @@ updaterCleanFiles (void)
         (linuxonly == true && isLinux ()) ||
         (windowsonly == true && isWindows ());
     if (osflag) {
-      filelist = dirlistRecursiveDirList (basedir, DIRLIST_FILES | DIRLIST_DIRS);
+      filelist = dirlistRecursiveDirList (basedir,
+              DIRLIST_FILES | DIRLIST_DIRS | DIRLIST_LINKS);
       updaterCleanRegex (basedir, filelist, cleanlist);
       slistFree (filelist);
     }

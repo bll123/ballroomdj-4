@@ -286,21 +286,21 @@ confuiGetThemeList (void)
   if (isWindows ()) {
     snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",
         sysvarsGetStr (SV_BDJ4_DIR_MAIN));
-    filelist = dirlistRecursiveDirList (tbuff, FILEMANIP_DIRS);
+    filelist = dirlistRecursiveDirList (tbuff, DIRLIST_DIRS);
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
   } else {
     /* for macos */
-    filelist = dirlistRecursiveDirList ("/opt/local/share/themes", FILEMANIP_DIRS);
+    filelist = dirlistRecursiveDirList ("/opt/local/share/themes", DIRLIST_DIRS);
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
 
-    filelist = dirlistRecursiveDirList ("/usr/share/themes", FILEMANIP_DIRS);
+    filelist = dirlistRecursiveDirList ("/usr/share/themes", DIRLIST_DIRS);
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
 
     snprintf (tbuff, sizeof (tbuff), "%s/.themes", sysvarsGetStr (SV_HOME));
-    filelist = dirlistRecursiveDirList (tbuff, FILEMANIP_DIRS);
+    filelist = dirlistRecursiveDirList (tbuff, DIRLIST_DIRS);
     confuiGetThemeNames (sthemelist, filelist);
     slistFree (filelist);
   }

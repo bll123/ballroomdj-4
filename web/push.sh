@@ -52,26 +52,6 @@ if [[ ! -f ${pnm} ]]; then
   exit 1
 fi
 
-if [[ $platform != windows ]]; then
-  sshpass -e rsync -v -e ssh ${pnm} \
-    bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
-else
-  rsync -v -e ssh ${pnm} \
-    bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
-fi
-
-if [[ $tag == macos ]]; then
-  fn=macos-pre-install-macports
-  ver=$(install/${fn}.sh --version)
-  sshpass -e rsync -v -e ssh install/${fn}.sh \
-      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
-
-  fn=macos-run-installer
-  ver=$(install/${fn}.sh --version)
-  sshpass -e rsync -v -e ssh install/${fn}.sh \
-      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
-fi
-
 if [[ $tag == linux ]]; then
   sshpass -e rsync -v -e ssh README.txt \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
@@ -99,6 +79,26 @@ if [[ $tag == linux ]]; then
         $f ${remuser}@${server}:${wwwpath}
   done
   rm -f $VERFILE
+fi
+
+if [[ $tag == macos ]]; then
+  fn=macos-pre-install-macports
+  ver=$(install/${fn}.sh --version)
+  sshpass -e rsync -v -e ssh install/${fn}.sh \
+      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+
+  fn=macos-run-installer
+  ver=$(install/${fn}.sh --version)
+  sshpass -e rsync -v -e ssh install/${fn}.sh \
+      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+fi
+
+if [[ $platform != windows ]]; then
+  sshpass -e rsync -v -e ssh ${pnm} \
+    bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+else
+  rsync -v -e ssh ${pnm} \
+    bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 fi
 
 exit 0

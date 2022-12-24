@@ -8,7 +8,10 @@
 
 enum {
   DIRLIST_FILES = 0x01,
-  DIRLIST_DIRS = 0x02,
+  DIRLIST_DIRS  = 0x02,
+  /* If DIRLIST_LINKS is specified, links will be treated separately */
+  /* and added to the file list.  Only for recursive. */
+  DIRLIST_LINKS = 0x04,
 };
 
 /* dirlist.c */

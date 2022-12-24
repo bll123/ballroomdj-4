@@ -134,7 +134,8 @@ dirlistRecursiveDirList (const char *dirname, int flags)
           &bread, &bwrite, &gerr);
       if (cvtname != NULL) {
         snprintf (temp, sizeof (temp), "%s/%s", dir, cvtname);
-        if (osIsLink (temp)) {
+        if ((flags & DIRLIST_LINKS) == DIRLIST_LINKS &&
+            osIsLink (temp)) {
           if ((flags & DIRLIST_FILES) == DIRLIST_FILES) {
             p = temp + dirnamelen + 1;
             slistSetStr (fileList, temp, p);

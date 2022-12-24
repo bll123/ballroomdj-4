@@ -70,10 +70,10 @@ teardown (void)
 {
   for (int i = 0; i < tvaluesz; ++i) {
     if (tvalues [i].type == CHK_LINK) {
-//      fileopDelete (tvalues [i].name);
+      fileopDelete (tvalues [i].name);
     }
     if (tvalues [i].type == CHK_DIR) {
-//      diropDeleteDir (tvalues [i].name);
+      diropDeleteDir (tvalues [i].name);
     }
   }
 }
@@ -160,7 +160,12 @@ START_TEST(dirlist_recursive)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dirlist_recursive");
 
-  slist = dirlistRecursiveDirList ("tmp/abc", FILEMANIP_DIRS);
+  slist = dirlistRecursiveDirList ("tmp/abc", DIRLIST_DIRS);
+  slistSort (slist);  // for testing
+  ck_assert_int_eq (slistGetCount (slist), dcount);
+  slistFree (slist);
+
+  slist = dirlistRecursiveDirList ("tmp/abc", DIRLIST_DIRS | DIRLIST_LINKS);
   slistSort (slist);  // for testing
   if (! isWindows ()) {
     /* handle the directory link */
@@ -169,7 +174,12 @@ START_TEST(dirlist_recursive)
   ck_assert_int_eq (slistGetCount (slist), dcount);
   slistFree (slist);
 
-  slist = dirlistRecursiveDirList ("tmp/abc", FILEMANIP_FILES);
+  slist = dirlistRecursiveDirList ("tmp/abc", DIRLIST_FILES);
+  slistSort (slist);  // for testing
+  ck_assert_int_eq (slistGetCount (slist), fcount);
+  slistFree (slist);
+
+  slist = dirlistRecursiveDirList ("tmp/abc", DIRLIST_FILES | DIRLIST_LINKS);
   slistSort (slist);  // for testing
   if (! isWindows ()) {
     /* handle the directory link */
