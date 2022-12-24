@@ -2,20 +2,17 @@
 
 ### BallroomDJ 4 Change Log
 
-<!--
-
-**4.0.1 beta 2022-12---**
+**4.0.1 beta 2022-12-24**
 
 * Bug Fixes:
     * configuration: player queues: fixed incorrect display of switches.
     * player: fixed incorrect per-queue configuration handling.
     * player ui: marks in song selection properly include all queues and history.
     * player ui: recover marquee will raise window to the top.
-    * song selection: fix playback of multiple selections.
+    * player ui: display 0:00 initially rather than 3:00.
+    * song selection: fix playback of multiple selections in most cases.
     * starter: player/manage/configure will be raised if already open.
     * user interface: fix text entry text color.
-
--->
 
 **4.0.0 beta 2022-12-20**
 

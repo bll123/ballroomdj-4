@@ -41,7 +41,7 @@ install/makeshortcut\.vbs$
 # moved to http/
 img/ballroomdj4\.svg$
 img/favicon\.ico$
-img/mrc
+img/mrc$
 # moved to img/profileNN
 img/bluebox\.svg$
 # moved to templates/img/
@@ -57,6 +57,10 @@ img/switch-off\.svg$
 img/switch-off\.svg\.bak\.1$
 img/switch-on\.svg$
 img/switch-on\.svg\.bak\.1$
+
+# installed locales that should not have been
+locale/tr$
+locale/tr_TR$
 
 ::macosonly
 

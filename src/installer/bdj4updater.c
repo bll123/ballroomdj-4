@@ -76,7 +76,7 @@ enum {
 
 static void updaterCleanFiles (void);
 static void updaterCleanlistFree (void *trx);
-static void updaterCleanRegex (const char *basedir, nlist_t *cleanlist);
+static void updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist);
 static int  updateGetStatus (nlist_t *updlist, int key);
 
 int
@@ -188,6 +188,8 @@ main (int argc, char *argv [])
       VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
   fileopDelete (tbuff);
 
+  logMsg (LOG_INSTALL, LOG_MAIN, "cleaned volreg/flag");
+
   /* always figure out where the home music dir is */
   /* this is used on new intalls to set the music dir */
   /* also needed to check for the itunes dir every time */
@@ -244,6 +246,8 @@ main (int argc, char *argv [])
     snprintf (homemusicdir, sizeof (homemusicdir), "%s/Music", home);
   }
   pathNormPath (homemusicdir, sizeof (homemusicdir));
+
+  logMsg (LOG_INSTALL, LOG_MAIN, "homemusicdir: %s", homemusicdir);
 
   value = updateGetStatus (updlist, UPD_FIX_AF_TAGS);
 
@@ -311,6 +315,7 @@ main (int argc, char *argv [])
         bdjoptSetStr (OPT_MP_LISTING_FONT, uifont);
       }
     }
+    logMsg (LOG_INSTALL, LOG_MAIN, "finish new install");
   }
 
   /* always check and see if itunes exists, unless a conversion was run */
@@ -362,7 +367,11 @@ main (int argc, char *argv [])
     bdjoptSetStr (OPT_M_DIR_MUSIC, musicdir);
   }
 
+  logMsg (LOG_INSTALL, LOG_MAIN, "start clean");
+
   updaterCleanFiles ();
+
+  logMsg (LOG_INSTALL, LOG_MAIN, "end clean");
 
   /* audio file conversions */
 
@@ -490,6 +499,7 @@ updaterCleanFiles (void)
   bool    windowsonly = false;
   bool    osflag = false;
   bool    processflag = false;
+  slist_t *filelist;
 
   /* look for development directories and do not run if any are found */
   if (fileopIsDirectory ("dev") ||
@@ -536,7 +546,9 @@ updaterCleanFiles (void)
             (linuxonly == true && isLinux ()) ||
             (windowsonly == true && isWindows ());
         if (osflag) {
-          updaterCleanRegex (basedir, cleanlist);
+          filelist = dirlistRecursiveDirList (basedir, DIRLIST_FILES | DIRLIST_DIRS);
+          updaterCleanRegex (basedir, filelist, cleanlist);
+          slistFree (filelist);
         }
         nlistFree (cleanlist);
         cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
@@ -594,7 +606,9 @@ updaterCleanFiles (void)
         (linuxonly == true && isLinux ()) ||
         (windowsonly == true && isWindows ());
     if (osflag) {
-      updaterCleanRegex (basedir, cleanlist);
+      filelist = dirlistRecursiveDirList (basedir, DIRLIST_FILES | DIRLIST_DIRS);
+      updaterCleanRegex (basedir, filelist, cleanlist);
+      slistFree (filelist);
     }
     nlistFree (cleanlist);
     cleanlist = NULL;
@@ -610,16 +624,15 @@ updaterCleanlistFree (void *trx)
 }
 
 static void
-updaterCleanRegex (const char *basedir, nlist_t *cleanlist)
+updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist)
 {
-  slist_t     *filelist;
   slistidx_t  fiteridx;
   nlistidx_t  cliteridx;
   nlistidx_t  key;
   char        *fn;
   bdjregex_t  *rx;
+  int         rc;
 
-  filelist = dirlistRecursiveDirList (basedir, DIRLIST_FILES | DIRLIST_DIRS);
   slistStartIterator (filelist, &fiteridx);
   while ((fn = slistIterateKey (filelist, &fiteridx)) != NULL) {
     nlistStartIterator (cleanlist, &cliteridx);
@@ -627,17 +640,19 @@ updaterCleanRegex (const char *basedir, nlist_t *cleanlist)
       rx = nlistGetData (cleanlist, key);
       if (regexMatch (rx, fn)) {
         // fprintf (stderr, "  match %s\n", fn);
-        if (fileopIsDirectory (fn)) {
+        if (osIsLink (fn)) {
+          logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete link %s", fn);
+          rc = fileopDelete (fn);
+        } else if (fileopIsDirectory (fn)) {
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete dir %s", fn);
           diropDeleteDir (fn);
         } else if (fileopFileExists (fn)) {
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete %s", fn);
-          fileopDelete (fn);
+          rc = fileopDelete (fn);
         }
       }
     }
   }
-  nlistFree (filelist);
 }
 
 static int

@@ -73,6 +73,12 @@ osCreateLink (const char *target, const char *linkpath)
   return -1;
 }
 
+bool
+osIsLink (const char *path)
+{
+  return false;
+}
+
 void *
 osToWideChar (const char *fname)
 {

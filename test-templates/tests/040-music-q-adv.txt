@@ -78,7 +78,7 @@ end
 # on an insert the player should only start playing if the queue is empty.
 test 40-14 Play-When-Queued-Insert
 get player CHK_PLAYER_STATUS
-msg main QUEUE_PLAY_WHEN_QUEUED 1
+msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 1
 msg main MUSICQ_INSERT 0~999~1
 # should auto-start playing
 mssleep 1500
@@ -117,6 +117,7 @@ wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume defaultvol
+msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 0
 end
 
 # The queue-clear-play message
@@ -129,7 +130,7 @@ end
 # It may not work on a queue where a song is loaded and is stopped.
 # (this could be fixed someday).
 test 40-16 Clear-Play
-msg main QUEUE_PLAY_WHEN_QUEUED 1
+msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 1
 get main CHK_MAIN_MUSICQ
 chk mq0len 0
 get player CHK_PLAYER_STATUS
@@ -163,6 +164,7 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 1
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 0 playstate playing
+msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 0
 end
 
 # check the music queue remove function

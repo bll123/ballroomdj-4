@@ -22,6 +22,7 @@
 #include "check_bdj.h"
 #include "fileop.h"
 #include "log.h"
+#include "osutils.h"
 #include "sysvars.h"
 
 START_TEST(fileop_exists_a)
@@ -42,6 +43,49 @@ START_TEST(fileop_exists_a)
   rc = fileopFileExists ("tmp/def.txt");
   ck_assert_int_eq (rc, 0);
   unlink (fn);
+}
+END_TEST
+
+START_TEST(fileop_exists_symlink)
+{
+  FILE  *fh;
+  int   rc;
+  char  *fn  = "tmp/slabc.txt";
+  char  *fnb = "tmp/sldef.txt";
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_exists_symlink");
+
+  unlink (fn);
+  unlink (fnb);
+
+  fh = fopen (fn, "w");
+  ck_assert_ptr_nonnull (fh);
+  fclose (fh);
+  rc = osCreateLink ("slabc.txt", fnb);
+  rc = fileopFileExists (fn);
+  ck_assert_int_eq (rc, 1);
+#if _lib_symlink
+  rc = fileopFileExists (fnb);
+  ck_assert_int_eq (rc, 1);
+  /* for the time being, check this here */
+  rc = osIsLink (fnb);
+  ck_assert_int_eq (rc, 1);
+#endif
+  rc = fileopFileExists ("tmp/slghi.txt");
+  ck_assert_int_eq (rc, 0);
+
+  unlink (fn);
+
+#if _lib_symlink
+  /* the symlink exists though the file does not */
+  /* fileopFileExists will return false, as it uses stat() */
+  rc = fileopFileExists (fnb);
+  ck_assert_int_eq (rc, 0);
+  /* for the time being, check this here */
+  rc = osIsLink (fnb);
+  ck_assert_int_eq (rc, 1);
+#endif
+  unlink (fnb);
 }
 END_TEST
 
@@ -140,6 +184,67 @@ START_TEST(fileop_delete_a)
 }
 END_TEST
 
+START_TEST(fileop_delete_symlink)
+{
+  FILE  *fh;
+  int   rc;
+  char  *fn = "tmp/slghi.txt";
+  char  *fnb = "tmp/sljkl.txt";
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileop_delete_symlink");
+
+  unlink (fn);
+  fh = fopen (fn, "w");
+  ck_assert_ptr_nonnull (fh);
+  fclose (fh);
+  rc = osCreateLink ("slghi.txt", fnb);
+
+  rc = fileopFileExists (fn);
+  ck_assert_int_eq (rc, 1);
+#if _lib_symlink
+  rc = fileopFileExists (fnb);
+  ck_assert_int_eq (rc, 1);
+  rc = fileopDelete (fnb);
+  ck_assert_int_eq (rc, 0);
+#endif
+  rc = fileopFileExists (fn);
+  ck_assert_int_eq (rc, 1);
+#if _lib_symlink
+  rc = fileopFileExists (fnb);
+  ck_assert_int_eq (rc, 0);
+#endif
+
+  rc = osCreateLink ("slghi.txt", fnb);
+#if _lib_symlink
+  rc = fileopFileExists (fnb);
+  ck_assert_int_eq (rc, 1);
+#endif
+
+  rc = fileopDelete (fn);
+  ck_assert_int_eq (rc, 0);
+
+  rc = fileopFileExists (fn);
+  ck_assert_int_eq (rc, 0);
+#if _lib_symlink
+  rc = fileopFileExists (fnb);
+  ck_assert_int_eq (rc, 0);
+  rc = osIsLink (fnb);
+  ck_assert_int_eq (rc, 1);
+  rc = fileopDelete (fnb);
+  ck_assert_int_eq (rc, 0);
+  rc = fileopFileExists (fnb);
+  ck_assert_int_eq (rc, 0);
+  rc = osIsLink (fnb);
+  ck_assert_int_eq (rc, 0);
+#endif
+
+  rc = fileopDelete ("tmp/slmno.txt");
+  ck_assert_int_lt (rc, 0);
+  unlink (fn);
+  unlink (fnb);
+}
+END_TEST
+
 /* update the fnlist in fileop/filemanip/dirop/dirlist also */
 static char *fnlist [] = {
   "tmp/abc-def.txt",
@@ -164,7 +269,6 @@ START_TEST(fileop_open_u)
     fh = fileopOpen (fn, "w");
     ck_assert_ptr_nonnull (fh);
     fclose (fh);
-
   }
 }
 END_TEST
@@ -295,10 +399,12 @@ fileop_suite (void)
   tc = tcase_create ("fileop");
   tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, fileop_exists_a);
+  tcase_add_test (tc, fileop_exists_symlink);
   tcase_add_test (tc, fileop_size_a);
   tcase_add_test (tc, fileop_modtime_a);
   tcase_add_test (tc, fileop_setmodtime_a);
   tcase_add_test (tc, fileop_delete_a);
+  tcase_add_test (tc, fileop_delete_symlink);
   tcase_add_test (tc, fileop_open_u);
   tcase_add_test (tc, fileop_exists_u);
   tcase_add_test (tc, fileop_del_u);

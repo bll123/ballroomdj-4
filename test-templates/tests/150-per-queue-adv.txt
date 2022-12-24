@@ -1,5 +1,6 @@
 section 150 Per-Queue-Controls
 
+# fixed in 4.0.1
 test 150-10 Maximum-Play-Time
 # use 20 seconds max for queue 0
 msg main MUSICQ_SET_PLAYBACK 0
@@ -50,6 +51,7 @@ chk currvolume defaultvol actualvolume defaultvol
 get player CHK_PLAYER_SONG
 chk p-duration 10000
 #
+msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_SET_PLAYBACK 0
 msg player PLAY_FADE
 resptimeout 7500
@@ -98,6 +100,7 @@ msg main MUSICQ_SET_PLAYBACK 0
 msg main QUEUE_PLAYLIST 0~test-sl-a
 msg main QUEUE_PLAYLIST 1~test-sl-a
 msg main CMD_PLAY
+#
 resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
@@ -160,6 +163,7 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
 #
+msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_SET_PLAYBACK 0
 msg player PLAY_FADE
 resptimeout 4500
@@ -230,7 +234,6 @@ msg main CHK_MAIN_SET_FADEIN 0
 msg main MUSICQ_SET_PLAYBACK 0
 msg main QUEUE_PLAYLIST 0~test-sl-a
 msg main QUEUE_PLAYLIST 1~test-sl-a
-#
 msg main CMD_PLAY
 #
 resptimeout 3000
@@ -261,6 +264,7 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk actualvolume 30
 #
+msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_SET_PLAYBACK 1
 resptimeout 7500
 msg player PLAY_FADE
@@ -287,7 +291,6 @@ msg main CHK_MAIN_SET_FADEOUT 0
 msg main MUSICQ_SET_PLAYBACK 0
 msg main QUEUE_PLAYLIST 0~test-sl-a
 msg main QUEUE_PLAYLIST 1~test-sl-a
-#
 msg main CMD_PLAY
 #
 resptimeout 3000
@@ -313,6 +316,7 @@ wait-not playstate in-fadeout
 wait playstate playing
 mssleep 1500
 #
+msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_SET_PLAYBACK 1
 resptimeout 7500
 msg player PLAY_FADE

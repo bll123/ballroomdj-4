@@ -24,6 +24,7 @@
 #include "fileop.h"
 #include "slist.h"
 #include "osdir.h"
+#include "osutils.h"
 #include "pathutil.h"
 #include "queue.h"
 
@@ -131,22 +132,27 @@ dirlistRecursiveDirList (const char *dirname, int flags)
       gerr = NULL;
       cvtname = g_filename_to_utf8 (fname, strlen (fname),
           &bread, &bwrite, &gerr);
-      snprintf (temp, sizeof (temp), "%s/%s", dir, cvtname);
       if (cvtname != NULL) {
-        if (fileopIsDirectory (temp)) {
+        snprintf (temp, sizeof (temp), "%s/%s", dir, cvtname);
+        if (osIsLink (temp)) {
+          if ((flags & DIRLIST_FILES) == DIRLIST_FILES) {
+            p = temp + dirnamelen + 1;
+            slistSetStr (fileList, temp, p);
+          }
+        } else if (fileopIsDirectory (temp)) {
           queuePush (dirQueue, strdup (temp));
           if ((flags & DIRLIST_DIRS) == DIRLIST_DIRS) {
             p = temp + dirnamelen + 1;
             slistSetStr (fileList, temp, p);
           }
-        } else {
+        } else if (fileopFileExists (temp)) {
           if ((flags & DIRLIST_FILES) == DIRLIST_FILES) {
             p = temp + dirnamelen + 1;
             slistSetStr (fileList, temp, p);
           }
         }
+        free (cvtname);
       }
-      free (cvtname);
       free (fname);
     }
 

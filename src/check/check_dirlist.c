@@ -70,10 +70,10 @@ teardown (void)
 {
   for (int i = 0; i < tvaluesz; ++i) {
     if (tvalues [i].type == CHK_LINK) {
-      fileopDelete (tvalues [i].name);
+//      fileopDelete (tvalues [i].name);
     }
     if (tvalues [i].type == CHK_DIR) {
-      diropDeleteDir (tvalues [i].name);
+//      diropDeleteDir (tvalues [i].name);
     }
   }
 }
@@ -94,11 +94,9 @@ setup (void)
     if (tvalues [i].type == CHK_DLINK) {
       if (isWindows ()) {
         diropMakeDir (tvalues [i].name);
+        tvalues [i].count = 0;
       } else {
         filemanipLinkCopy (tvalues [i].fname, tvalues [i].name);
-      }
-      if (isWindows ()) {
-        tvalues [i].count = 0;
       }
       ++dcount;
       fcount += tvalues [i].count;
@@ -164,11 +162,19 @@ START_TEST(dirlist_recursive)
 
   slist = dirlistRecursiveDirList ("tmp/abc", FILEMANIP_DIRS);
   slistSort (slist);  // for testing
+  if (! isWindows ()) {
+    /* handle the directory link */
+    dcount -= 1;
+  }
   ck_assert_int_eq (slistGetCount (slist), dcount);
   slistFree (slist);
 
   slist = dirlistRecursiveDirList ("tmp/abc", FILEMANIP_FILES);
   slistSort (slist);  // for testing
+  if (! isWindows ()) {
+    /* handle the directory link */
+    fcount -= 1;
+  }
   ck_assert_int_eq (slistGetCount (slist), fcount);
   slistFree (slist);
 }

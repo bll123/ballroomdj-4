@@ -1,0 +1,39 @@
+[Wiki Home](Home)
+<br>[Developer Notes](Development-Developer%20Notes)
+
+* on Linux:
+    * update README.txt
+    * update VERSION.txt
+    * update ../wiki/en/Change%20Log.txt
+    * make distclean
+    * make 2>&1 | tee w
+    * make check
+    * ./utils/dbtest.sh
+    * ./utils/insttest.sh
+    * make testsuite
+    * ../pkg/mkpkg.sh
+    * ../dev/rs.sh
+* for each macos, windows
+    * make distclean
+    * make 2>&1 | tee w
+    * egrep warnings w
+* for each macos, windows
+    * make check
+    * ./utils/dbtest.sh
+    * ./utils/insttest.sh
+    * make testsuite
+* for each macos, windows
+    * ../pkg/mkpkg.sh
+* for each linux, macos, windows
+    * ../web/push.sh
+* on linux
+    * hg: check in
+    * hg: create a tag for the release
+    * push to sourceforge
+    * ../web/wikiput.sh putall
+
+Recall that any time the mkpkg.sh script is run on Linux, the source
+must be re-synced to the other platforms and mkpkg.sh run again.
+
+<br>[Developer Notes](Development-Developer%20Notes)
+[Wiki Home](Home)

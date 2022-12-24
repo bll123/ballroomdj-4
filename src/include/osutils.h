@@ -29,14 +29,15 @@ extern "C" {
 #endif
 #define OS_FS_CHAR_SIZE sizeof (OS_FS_CHAR_TYPE)
 
-void          * osToWideChar (const char *fname);
-char          * osFromWideChar (const void *fname);
-int           osSetEnv (const char *name, const char *value);
-int           osCreateLink (const char *target, const char *linkpath);
+void    * osToWideChar (const char *fname);
+char    * osFromWideChar (const void *fname);
+int     osSetEnv (const char *name, const char *value);
+int     osCreateLink (const char *target, const char *linkpath);
+bool    osIsLink (const char *path);
 
 /* system specific functions in separate files */
-char          *osRegistryGet (char *key, char *name);
-char          *osGetSystemFont (const char *gsettingspath);
+char    *osRegistryGet (char *key, char *name);
+char    *osGetSystemFont (const char *gsettingspath);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 }

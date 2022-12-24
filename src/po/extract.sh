@@ -151,7 +151,8 @@ mkpo en en_GB.po 'Automatically generated' 'English (GB)' english/gb
 rm -f en_GB.po.old
 
 mkpo nl nl_BE.po 'marimo' Nederlands dutch
-mkpo tr tr_TR.po 'Turkish' Türkçe turkish
+# the turkish translation is not done well.
+# mkpo tr tr_TR.po 'Turkish' Türkçe turkish
 
 #mkpo fr fr_FR.po 'unassigned' Français french
 #mkpo fi fi_FI.po 'unassigned' Suomi finnish

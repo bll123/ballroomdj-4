@@ -44,7 +44,7 @@ fileopFileExists (const char *fname)
 
     tfname = osToWideChar (fname);
     rc = _wstat (tfname, &statbuf);
-    if (rc == 0 && (statbuf.st_mode & S_IFDIR) == S_IFDIR) {
+    if (rc == 0 && (statbuf.st_mode & S_IFMT) == S_IFDIR) {
       rc = -1;
     }
     free (tfname);
@@ -53,7 +53,7 @@ fileopFileExists (const char *fname)
   {
     struct stat   statbuf;
     rc = stat (fname, &statbuf);
-    if (rc == 0 && (statbuf.st_mode & S_IFDIR) == S_IFDIR) {
+    if (rc == 0 && (statbuf.st_mode & S_IFMT) == S_IFDIR) {
       rc = -1;
     }
   }
@@ -172,7 +172,7 @@ fileopIsDirectory (const char *fname)
 
     tfname = osToWideChar (fname);
     rc = _wstat (tfname, &statbuf);
-    if (rc == 0 && (statbuf.st_mode & S_IFDIR) != S_IFDIR) {
+    if (rc == 0 && (statbuf.st_mode & S_IFMT) != S_IFDIR) {
       rc = -1;
     }
     free (tfname);
@@ -181,7 +181,7 @@ fileopIsDirectory (const char *fname)
   {
     struct stat   statbuf;
     rc = stat (fname, &statbuf);
-    if (rc == 0 && (statbuf.st_mode & S_IFDIR) != S_IFDIR) {
+    if (rc == 0 && (statbuf.st_mode & S_IFMT) != S_IFDIR) {
       rc = -1;
     }
   }

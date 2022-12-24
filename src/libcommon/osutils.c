@@ -57,4 +57,17 @@ osCreateLink (const char *target, const char *linkpath)
   return rc;
 }
 
+bool
+osIsLink (const char *path)
+{
+  struct stat statbuf;
+  int         rc;
+
+  rc = lstat (path, &statbuf);
+  if (rc == 0 && (statbuf.st_mode & S_IFMT) != S_IFLNK) {
+    rc = -1;
+  }
+  return (rc == 0);
+}
+
 #endif
