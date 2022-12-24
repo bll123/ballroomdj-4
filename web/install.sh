@@ -5,6 +5,12 @@
 # requirements: sshpass
 #
 
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
+cd web
+cwd=$(pwd)
+
 echo "* Remember to install on both sourceforge and ballroomdj.org"
 
 TMP=tmpweb
