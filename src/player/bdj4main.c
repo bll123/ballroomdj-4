@@ -61,7 +61,7 @@ typedef enum {
 
 enum {
   MAIN_PB_TYPE_PL,
-  MAIN_PB_TYPE_SONG,    // not currently used...
+  MAIN_PB_TYPE_SONG,
   MAIN_CHG_CLEAR,
   MAIN_CHG_START,
   MAIN_CHG_FINAL,
@@ -396,7 +396,15 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mainQueueClear (mainData, ttargs);
           free (ttargs);
           mainNextSong (mainData);
-          mainMusicqInsert (mainData, routefrom, targs);
+          /* if the player is paused, multiple selections will not start */
+          /* playing, but in most cases, this works */
+          if (mainData->waitforpbfinish) {
+            mainData->pbfinishArgs = strdup (targs);
+            mainData->pbfinishType = MAIN_PB_TYPE_SONG;
+            mainData->pbfinishRoute = routefrom;
+          } else {
+            mainMusicqInsert (mainData, routefrom, targs);
+          }
           dbgdisp = true;
           break;
         }
@@ -1805,11 +1813,14 @@ mainNextSong (maindata_t *mainData)
       mainMusicqClearPrep (mainData, mainData->musicqPlayIdx, 0);
     }
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
-    mainData->waitforpbfinish = true;
-    mainData->pbfinishrcv = 0;
-    if (mainData->playerState == PL_STATE_STOPPED) {
-      /* already stopped, will not receive a stop message */
-      ++mainData->pbfinishrcv;
+    if (mainData->playerState == PL_STATE_PAUSED ||
+        mainData->playerState == PL_STATE_STOPPED) {
+      mainData->waitforpbfinish = true;
+      mainData->pbfinishrcv = 0;
+      if (mainData->playerState == PL_STATE_STOPPED) {
+        /* already stopped, will not receive a stop message */
+        ++mainData->pbfinishrcv;
+      }
     }
   }
 }
@@ -2542,6 +2553,7 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
   long        dur;
   playlist_t  *playlist = NULL;
   long        pldncmaxdur;
+  long        plmaxdur;
   long        songstart;
   long        songend;
   int         speed;
@@ -2602,6 +2614,13 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
   logMsg (LOG_DBG, LOG_MAIN, "dur: %ld", dur);
   logMsg (LOG_DBG, LOG_MAIN, "dur-q-maxdur: %ld", maxdur);
 
+  /* the playlist pointer is needed to get the playlist dance-max-dur */
+  plmaxdur = LIST_VALUE_INVALID;
+  if (playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
+    playlist = nlistGetData (mainData->playlistCache, playlistIdx);
+    plmaxdur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
+  }
+
   /* if the playlist has a maximum play time specified for a dance */
   /* it overrides any of the other max play times */
   danceidx = songGetNum (song, TAG_DANCE);
@@ -2610,14 +2629,6 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
     dur = pldncmaxdur;
     logMsg (LOG_DBG, LOG_MAIN, "dur-pl-dnc-dur: %ld", dur);
   } else {
-    long        plmaxdur;
-
-    plmaxdur = LIST_VALUE_INVALID;
-    if (playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
-      playlist = nlistGetData (mainData->playlistCache, playlistIdx);
-      plmaxdur = playlistGetConfigNum (playlist, PLAYLIST_MAX_PLAY_TIME);
-    }
-
     /* the playlist max-play-time overrides the global max-play-time */
     if (plmaxdur >= 5000 && dur > plmaxdur) {
       dur = plmaxdur;
