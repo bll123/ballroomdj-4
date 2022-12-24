@@ -340,7 +340,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiWidgetSetMarginStart (&uiwidget, 0);
   uiBoxPackStart (&hbox, &uiwidget);
 
-  uiCreateLabel (&uiplayer->durationLab, " 3:00");
+  uiCreateLabel (&uiplayer->durationLab, " 0:00");
   uiLabelAlignEnd (&uiplayer->durationLab);
   uiBoxPackStart (&hbox, &uiplayer->durationLab);
 
@@ -354,7 +354,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (&sgA, &uiwidget);
 
   /* size group B */
-  uiCreateLabel (&uiplayer->seekDisplayLab, "3:00");
+  uiCreateLabel (&uiplayer->seekDisplayLab, "0:00");
   uiLabelAlignEnd (&uiplayer->seekDisplayLab);
   uiSizeGroupAdd (&sgB, &uiplayer->seekDisplayLab);
   uiBoxPackEnd (&hbox, &uiplayer->seekDisplayLab);
