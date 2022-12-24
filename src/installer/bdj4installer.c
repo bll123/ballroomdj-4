@@ -1343,9 +1343,7 @@ installerInstInit (installer_t *installer)
     (void) ! fgets (tbuff, sizeof (tbuff), stdin);
     stringTrim (tbuff);
     if (*tbuff != '\0') {
-      if (installer->target != NULL && *installer->target) {
-        free (installer->target);
-      }
+      dataFree (installer->target);
       installer->target = strdup (tbuff);
     }
   }
@@ -2778,8 +2776,13 @@ installerFailWorkingDir (installer_t *installer, const char *dir)
 static void
 installerSetTargetDir (installer_t *installer, const char *fn)
 {
+  char  *tmp;
+
+  /* fn may be pointing to an allocated value, which is installer->target */
+  /* bad code */
+  tmp = strdup (fn);
   dataFree (installer->target);
-  installer->target = strdup (fn);
+  installer->target = tmp;
   pathNormPath (installer->target, strlen (installer->target));
 }
 
