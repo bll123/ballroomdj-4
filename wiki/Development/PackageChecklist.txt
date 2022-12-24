@@ -12,6 +12,9 @@
     * ./utils/insttest.sh
     * make testsuite
     * ../pkg/mkpkg.sh
+<br>Recall that any time the mkpkg.sh script is run on Linux, the source
+must be re-synced to the other platforms and mkpkg.sh must be run again
+on the other platforms.
     * ../dev/rs.sh
 * for each macos, windows
     * make distclean
@@ -31,9 +34,11 @@
     * hg: create a tag for the release
     * push to sourceforge
     * ../web/wikiput.sh putall
+* final
+    * announce the release on the forum
+    * announce the release on freshcode.club
+    * update sourceforge, mark the packages
 
-Recall that any time the mkpkg.sh script is run on Linux, the source
-must be re-synced to the other platforms and mkpkg.sh run again.
-
-<br>[Developer Notes](Development-Developer%20Notes)
-[Wiki Home](Home)
+[Developer Notes](Development-Developer%20Notes)
+<br>[Wiki Home](Home)
+<br>_(Updated 2022-12-24 14:00:59; BDJ4 version 4.0.1-beta)_

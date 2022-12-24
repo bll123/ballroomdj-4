@@ -631,7 +631,6 @@ updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist)
   nlistidx_t  key;
   char        *fn;
   bdjregex_t  *rx;
-  int         rc;
 
   slistStartIterator (filelist, &fiteridx);
   while ((fn = slistIterateKey (filelist, &fiteridx)) != NULL) {
@@ -642,13 +641,13 @@ updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist)
         // fprintf (stderr, "  match %s\n", fn);
         if (osIsLink (fn)) {
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete link %s", fn);
-          rc = fileopDelete (fn);
+          fileopDelete (fn);
         } else if (fileopIsDirectory (fn)) {
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete dir %s", fn);
           diropDeleteDir (fn);
         } else if (fileopFileExists (fn)) {
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete %s", fn);
-          rc = fileopDelete (fn);
+          fileopDelete (fn);
         }
       }
     }

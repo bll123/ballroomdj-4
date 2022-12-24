@@ -150,6 +150,9 @@ mv -f ${POTFILE}.n ${POTFILE}
 mkpo en en_GB.po 'Automatically generated' 'English (GB)' english/gb
 rm -f en_GB.po.old
 
+# If a translation is removed, remember to also remove
+# the locale/xx files and directories.
+
 mkpo nl nl_BE.po 'marimo' Nederlands dutch
 # the turkish translation is not done well.
 # mkpo tr tr_TR.po 'Turkish' Türkçe turkish
