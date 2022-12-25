@@ -19,7 +19,7 @@ If windows displays the **Windows Protected your PC** message,
 select **More Info**, then **Run Anyway**.  BallroomDJ 4 has no malware
 present in it.
 
-Choose the folder in which to install BallroomDJ 4.  The %USERPROFILE%/BDJ4
+Choose the folder in which to install BallroomDJ 4.  The %USERPROFILE%\BDJ4
 folder will be pre-selected for you.
 
 The **Re-Install** checkbox is only used if you want to completely reset
@@ -58,4 +58,4 @@ After the VLC installation is complete, turn off the **Run VLC media
 player** checkbox, and select **Finish**.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-25 06:11:46; BDJ4 version 4.0.1-beta)_
+<br>_(Updated 2022-12-25 08:12:32; BDJ4 version 4.0.1-beta)_

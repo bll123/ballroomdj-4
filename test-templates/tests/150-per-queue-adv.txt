@@ -86,6 +86,7 @@ get player CHK_PLAYER_SONG
 chk p-duration 20000
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_MAXPLAYTIME 360000
+msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
 msg main MUSICQ_SET_PLAYBACK 0
 msg main CHK_MAIN_SET_MAXPLAYTIME 360000
 end
@@ -221,6 +222,10 @@ wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
+msg main MUSICQ_SET_PLAYBACK 1
+msg main CHK_MAIN_SET_GAP 0
+msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
+msg main MUSICQ_SET_PLAYBACK 0
 end
 
 
@@ -277,6 +282,7 @@ chk actualvolume 30
 #
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_FADEIN 400
+msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
 msg main MUSICQ_SET_PLAYBACK 0
 end
 
@@ -335,11 +341,51 @@ wait-not playstate in-fadeout
 wait playstate playing
 mssleep 1500
 #
+msg main MUSICQ_SET_PLAYBACK 1
+msg main CHK_MAIN_SET_FADEOUT 0
+msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
+msg main MUSICQ_SET_PLAYBACK 0
 end
 
 
+# play when queued
+test 150-50 Play-When-Queued-Basic
+msg main MUSICQ_SET_PLAYBACK 0
+msg main MUSICQ_SET_PLAYBACK 1
+msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
+msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 1
+msg main MUSICQ_SET_PLAYBACK 0
+msg main MUSICQ_INSERT 0~999~5
+#
+resptimeout 2500
+get player CHK_PLAYER_STATUS
+chk playstate stopped
+resptimeout 2500
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+#
+resptimeout 7500
+msg player PLAY_FADE
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+wait playstate stopped
+#
+msg main MUSICQ_SET_PLAYBACK 1
+msg main MUSICQ_INSERT 1~999~8
+mssleep 2500
+resptimeout 2500
+get player CHK_PLAYER_STATUS
+chk playstate playing
+#
+msg main MUSICQ_SET_PLAYBACK 1
+msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 0
+msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
+msg main MUSICQ_SET_PLAYBACK 0
+end
+
 # pause each song
-test 150-50 Pause-Each-Song
+test 150-60 Pause-Each-Song
 msg main MUSICQ_SET_PLAYBACK 0
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
@@ -412,6 +458,7 @@ wait playstate stopped
 #
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_PAUSE_EACH_SONG 0
+msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
 msg main MUSICQ_SET_PLAYBACK 0
 end
 
