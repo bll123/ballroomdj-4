@@ -62,8 +62,9 @@ typedef enum {
   INST_MAKE_TARGET,
   INST_COPY_START,
   INST_COPY_FILES,
-  INST_CHDIR,
+  INST_MAKE_DATA_TOP,
   INST_CREATE_DIRS,
+  INST_COPY_TEMPLATES_INIT,
   INST_COPY_TEMPLATES,
   INST_CONVERT_START,
   INST_CONVERT,
@@ -155,20 +156,21 @@ typedef struct {
   uitextbox_t     *disptb;
   uibutton_t      *buttons [INST_BUTTON_MAX];
   /* flags */
-  bool            newinstall : 1;
-  bool            reinstall : 1;
   bool            convprocess : 1;
   bool            guienabled : 1;
-  bool            vlcinstalled : 1;
-  bool            pythoninstalled : 1;
-  bool            updatepython : 1;
   bool            inSetConvert : 1;
-  bool            uiBuilt : 1;
-  bool            scrolltoend : 1;
+  bool            newinstall : 1;
+  bool            nodatafiles : 1;
+  bool            pythoninstalled : 1;
   bool            quiet : 1;
-  bool            verbose : 1;
+  bool            reinstall : 1;
+  bool            scrolltoend : 1;
   bool            testregistration : 1;
+  bool            uiBuilt : 1;
   bool            unattended : 1;
+  bool            updatepython : 1;
+  bool            verbose : 1;
+  bool            vlcinstalled : 1;
 } installer_t;
 
 #define INST_HL_COLOR "#b16400"
@@ -204,8 +206,9 @@ static void installerSaveTargetDir (installer_t *installer);
 static void installerMakeTarget (installer_t *installer);
 static void installerCopyStart (installer_t *installer);
 static void installerCopyFiles (installer_t *installer);
-static void installerChangeDir (installer_t *installer);
+static void installerMakeDataTop (installer_t *installer);
 static void installerCreateDirs (installer_t *installer);
+static void installerCopyTemplatesInit (installer_t *installer);
 static void installerCopyTemplates (installer_t *installer);
 static void installerConvertStart (installer_t *installer);
 static void installerConvert (installer_t *installer);
@@ -235,7 +238,7 @@ static void installerVLCGetVersion (installer_t *installer);
 static void installerPythonGetVersion (installer_t *installer);
 static void installerCheckPackages (installer_t *installer);
 static void installerWebResponseCallback (void *userdata, char *resp, size_t len);
-static void installerFailWorkingDir (installer_t *installer, const char *dir);
+static void installerFailWorkingDir (installer_t *installer, const char *dir, const char *msg);
 static void installerSetTargetDir (installer_t *installer, const char *fn);
 static void installerSetBDJ3LocDir (installer_t *installer, const char *fn);
 static void installerCheckAndFixTarget (char *buff, size_t sz);
@@ -252,25 +255,26 @@ main (int argc, char *argv[])
   int           option_index = 0;
 
   static struct option bdj_options [] = {
-    { "bdj4installer",no_argument,      NULL,   0 },
-    { "reinstall",  no_argument,        NULL,   'r' },
-    { "cli",        no_argument,        NULL,   'C' },
-    { "unpackdir",  required_argument,  NULL,   'u' },
-    { "targetdir",  required_argument,  NULL,   't' },
     { "bdj3dir",    required_argument,  NULL,   '3' },
+    { "bdj4installer",no_argument,      NULL,   0 },
+    { "nodatafiles", no_argument,       NULL,   'N' },
+    { "reinstall",  no_argument,        NULL,   'r' },
+    { "targetdir",  required_argument,  NULL,   't' },
     { "testregistration", no_argument,  NULL,   'T' },
     { "unattended", no_argument,        NULL,   'U' },
+    { "unpackdir",  required_argument,  NULL,   'u' },
     /* generic args */
+    { "cli",        no_argument,        NULL,   'C' },
     { "quiet"  ,    no_argument,        NULL,   'Q' },
     { "verbose",    no_argument,        NULL,   'V' },
     /* bdj4 launcher args */
-    { "debug",      required_argument,  NULL,   'd' },
-    { "theme",      required_argument,  NULL,   0 },
-    { "debugself",  no_argument,        NULL,   0 },
-    { "nodetach",   no_argument,        NULL,   0 },
     { "bdj4",       no_argument,        NULL,   0 },
-    { "wait",       no_argument,        NULL,   0 },
+    { "debug",      required_argument,  NULL,   'd' },
+    { "debugself",  no_argument,        NULL,   0 },
     { "msys",       no_argument,        NULL,   0 },
+    { "nodetach",   no_argument,        NULL,   0 },
+    { "theme",      required_argument,  NULL,   0 },
+    { "wait",       no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
 
@@ -289,20 +293,23 @@ main (int argc, char *argv[])
   installer.convlist = NULL;
   installer.tclshloc = NULL;
   installer.currdir [0] = '\0';
-  installer.newinstall = true;
-  installer.reinstall = false;
+
   installer.convprocess = false;
   installer.guienabled = true;
-  installer.vlcinstalled = false;
-  installer.pythoninstalled = false;
-  installer.updatepython = false;
   installer.inSetConvert = false;
-  installer.uiBuilt = false;
-  installer.scrolltoend = false;
+  installer.newinstall = true;
+  installer.nodatafiles = false;
+  installer.pythoninstalled = false;
   installer.quiet = false;
-  installer.verbose = false;
+  installer.reinstall = false;
+  installer.scrolltoend = false;
   installer.testregistration = false;
+  installer.uiBuilt = false;
   installer.unattended = false;
+  installer.updatepython = false;
+  installer.verbose = false;
+  installer.vlcinstalled = false;
+
   installer.loglevel = LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST;
   uiutilsUIWidgetInit (&installer.statusMsg);
   uiutilsUIWidgetInit (&installer.reinstWidget);
@@ -397,6 +404,10 @@ main (int argc, char *argv[])
       }
       case '3': {
         installerSetBDJ3LocDir (&installer, optarg);
+        break;
+      }
+      case 'N': {
+        installer.nodatafiles = true;
         break;
       }
       default: {
@@ -814,8 +825,8 @@ installerMainLoop (void *udata)
       installerCopyFiles (installer);
       break;
     }
-    case INST_CHDIR: {
-      installerChangeDir (installer);
+    case INST_MAKE_DATA_TOP: {
+      installerMakeDataTop (installer);
       break;
     }
     case INST_CREATE_DIRS: {
@@ -831,6 +842,11 @@ installerMainLoop (void *udata)
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "vlc-inst: %d", installer->vlcinstalled);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "python-inst: %d", installer->pythoninstalled);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "python-upd: %d", installer->updatepython);
+
+      break;
+    }
+    case INST_COPY_TEMPLATES_INIT: {
+      installerCopyTemplatesInit (installer);
       break;
     }
     case INST_COPY_TEMPLATES: {
@@ -1182,7 +1198,8 @@ installerDisplayConvert (installer_t *installer)
   nval = uiToggleButtonIsActive (&installer->convWidget);
 
   if (strcmp (installer->bdj3loc, "-") == 0 ||
-      *installer->bdj3loc == '\0') {
+      *installer->bdj3loc == '\0' ||
+      installer->nodatafiles) {
     nval = 0;
     nodir = true;
     installerSetConvert (installer, nval);
@@ -1272,7 +1289,7 @@ installerVerifyInstInit (installer_t *installer)
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
   if (chdir (installer->unpackdir) < 0) {
-    installerFailWorkingDir (installer, installer->unpackdir);
+    installerFailWorkingDir (installer, installer->unpackdir, "verifyinstinit");
     return;
   }
 
@@ -1501,7 +1518,7 @@ installerCopyStart (installer_t *installer)
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
   if (chdir (installer->unpackdir) < 0) {
-    installerFailWorkingDir (installer, installer->unpackdir);
+    installerFailWorkingDir (installer, installer->unpackdir, "copystart");
     return;
   }
 
@@ -1529,11 +1546,16 @@ installerCopyFiles (installer_t *installer)
   uiLabelSetText (&installer->statusMsg, "");
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_STATUS, _("Copy finished."), false);
-  installer->instState = INST_CHDIR;
+
+  if (installer->nodatafiles) {
+    installer->instState = INST_VLC_CHECK;
+  } else {
+    installer->instState = INST_MAKE_DATA_TOP;
+  }
 }
 
 static void
-installerChangeDir (installer_t *installer)
+installerMakeDataTop (installer_t *installer)
 {
   strlcpy (installer->datatopdir, installer->rundir, MAXPATHLEN);
   if (isMacOS ()) {
@@ -1545,7 +1567,7 @@ installerChangeDir (installer_t *installer)
   diropMakeDir (installer->datatopdir);
 
   if (chdir (installer->datatopdir)) {
-    installerFailWorkingDir (installer, installer->datatopdir);
+    installerFailWorkingDir (installer, installer->datatopdir, "makedatatop");
     return;
   }
 
@@ -1561,13 +1583,22 @@ installerCreateDirs (installer_t *installer)
   /* this will create the directories necessary for the configs */
   bdjoptCreateDirectories ();
   /* create the directories that are not included in the distribution */
-  diropMakeDir ("data");
   diropMakeDir ("tmp");
   diropMakeDir ("img/profile00");
 
+  installer->instState = INST_COPY_TEMPLATES_INIT;
+}
+
+static void
+installerCopyTemplatesInit (installer_t *installer)
+{
+  if (! installer->newinstall && ! installer->reinstall) {
+    installer->instState = INST_CONVERT_START;
+    return;
+  }
+
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Copying template files."), false);
-
   installer->instState = INST_COPY_TEMPLATES;
 }
 
@@ -1588,13 +1619,8 @@ installerCopyTemplates (installer_t *installer)
   slist_t         *renamelist;
 
 
-  if (! installer->newinstall && ! installer->reinstall) {
-    installer->instState = INST_CONVERT_START;
-    return;
-  }
-
   if (chdir (installer->datatopdir)) {
-    installerFailWorkingDir (installer, installer->datatopdir);
+    installerFailWorkingDir (installer, installer->datatopdir, "copytemplates");
     return;
   }
 
@@ -1816,7 +1842,7 @@ installerConvertStart (installer_t *installer)
   }
 
   if (chdir (installer->rundir)) {
-    installerFailWorkingDir (installer, installer->rundir);
+    installerFailWorkingDir (installer, installer->rundir, "convertstart");
     return;
   }
 
@@ -1995,7 +2021,7 @@ static void
 installerCreateShortcut (installer_t *installer)
 {
   if (chdir (installer->rundir)) {
-    installerFailWorkingDir (installer, installer->rundir);
+    installerFailWorkingDir (installer, installer->rundir, "createshortcut");
     return;
   }
 
@@ -2030,11 +2056,6 @@ installerVLCCheck (installer_t *installer)
   /* on linux, vlc is installed via other methods */
   if (installer->vlcinstalled || isLinux ()) {
     installer->instState = INST_PYTHON_CHECK;
-    return;
-  }
-
-  if (chdir (installer->datatopdir)) {
-    installerFailWorkingDir (installer, installer->datatopdir);
     return;
   }
 
@@ -2138,11 +2159,6 @@ static void
 installerPythonCheck (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
-
-  if (chdir (installer->datatopdir)) {
-    installerFailWorkingDir (installer, installer->datatopdir);
-    return;
-  }
 
   /* python is installed via other methods on linux and macos */
   if (isLinux () || isMacOS ()) {
@@ -2275,13 +2291,13 @@ installerMutagenCheck (installer_t *installer)
 {
   char  tbuff [MAXPATHLEN];
 
-  if (! installer->pythoninstalled) {
-    installer->instState = INST_UPDATE_PROCESS_INIT;
+  if (installer->nodatafiles) {
+    installer->instState = INST_FINALIZE;
     return;
   }
 
-  if (chdir (installer->datatopdir)) {
-    installerFailWorkingDir (installer, installer->datatopdir);
+  if (! installer->pythoninstalled) {
+    installer->instState = INST_UPDATE_PROCESS_INIT;
     return;
   }
 
@@ -2362,11 +2378,6 @@ installerUpdateProcess (installer_t *installer)
 static void
 installerFinalize (installer_t *installer)
 {
-  if (chdir (installer->datatopdir)) {
-    installerFailWorkingDir (installer, installer->datatopdir);
-    return;
-  }
-
   if (installer->verbose) {
     fprintf (stdout, "finish OK\n");
     if (*installer->bdj3version) {
@@ -2385,15 +2396,21 @@ installerFinalize (installer_t *installer)
     fprintf (stdout, "converted %d\n", installer->convprocess);
   }
 
-  /* create the new install flag file on a new install */
-  if (installer->newinstall) {
-    FILE  *fh;
+  if (! installer->nodatafiles) {
+    /* create the new install flag file on a new install */
+    if (installer->newinstall) {
+      FILE  *fh;
 
-    fh = fopen (INST_NEW_FILE, "w");
-    fclose (fh);
+      fh = fopen (INST_NEW_FILE, "w");
+      fclose (fh);
+    }
   }
 
-  installer->instState = INST_REGISTER_INIT;
+  if (installer->nodatafiles) {
+    installer->instState = INST_FINISH;
+  } else {
+    installer->instState = INST_REGISTER_INIT;
+  }
 }
 
 static void
@@ -2763,9 +2780,9 @@ installerWebResponseCallback (void *userdata, char *resp, size_t len)
 }
 
 static void
-installerFailWorkingDir (installer_t *installer, const char *dir)
+installerFailWorkingDir (installer_t *installer, const char *dir, const char *msg)
 {
-  fprintf (stderr, "Unable to set working dir: %s\n", dir);
+  fprintf (stderr, "Unable to set working dir: %s (%s)\n", dir, msg);
   /* CONTEXT: installer: failure message */
   installerDisplayText (installer, INST_DISP_ERROR, _("Error: Unable to set working folder."), false);
   /* CONTEXT: installer: status message */

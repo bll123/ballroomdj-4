@@ -6,8 +6,9 @@
 
 **4.0.2 beta 2022-12---**
 
-* Internal
-    * Code cleanup.
+* Bug Fixes:
+    * macos: Fix theme selection.
+    * alternate setup: fix.
 
 -->
 

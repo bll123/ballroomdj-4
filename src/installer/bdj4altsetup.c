@@ -760,7 +760,7 @@ altsetupCopyTemplates (altsetup_t *altsetup)
       "ballroomdj", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
   altsetupTemplateCopy (dir, from, to);
 
-  snprintf (from, sizeof (from), "%s/img/mrc", altsetup->maindir);
+  snprintf (from, sizeof (from), "%s/http/mrc", altsetup->maindir);
   snprintf (to, sizeof (to), "http/mrc");
   *tbuff = '\0';
   if (isWindows ()) {
@@ -801,24 +801,31 @@ altsetupSetup (altsetup_t *altsetup)
     fileopDelete (buff);
   }
 
+// ### FIX
+// ### if the source dir is read-only, the home datatopdir should be
+// ### used.
   pathbldMakePath (buff, sizeof (buff),
       "data/altcount", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_MAIN);
 
   /* read the current altcount */
+  altcount = 0;
   fh = fopen (buff, "r");
-  (void) ! fgets (str, sizeof (str), fh);
-  stringTrim (str);
-  fclose (fh);
-  altcount = atoi (str);
-
-  /* update */
-  ++altcount;
-  snprintf (str, sizeof (str), "%d\n", altcount);
+  if (fh != NULL) {
+    (void) ! fgets (str, sizeof (str), fh);
+    stringTrim (str);
+    fclose (fh);
+    altcount = atoi (str);
+    /* update alternate count */
+    ++altcount;
+  }
 
   /* write the new altcount */
   fh = fopen (buff, "w");
-  fputs (str, fh);
-  fclose (fh);
+  if (fh != NULL) {
+    snprintf (str, sizeof (str), "%d\n", altcount);
+    fputs (str, fh);
+    fclose (fh);
+  }
 
   /* calculate the new base port */
   baseport = sysvarsGetNum (SVL_BASEPORT);

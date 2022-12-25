@@ -83,46 +83,47 @@ main (int argc, char * argv[])
     { "tmusicsetup",    no_argument,        NULL,   21 },
     { "vlcsinklist",    no_argument,        NULL,   25 },
     /* bdj4updater */
-    { "newinstall",     no_argument,        NULL,   0 },
     { "converted",      no_argument,        NULL,   0 },
     { "musicdir",       required_argument,  NULL,   0 },
+    { "newinstall",     no_argument,        NULL,   0 },
     /* used by installer */
-    { "unpackdir",      required_argument,  NULL,   'u' },
-    { "reinstall",      no_argument,        NULL,   'r' },
+    { "bdj3dir",        required_argument,  NULL,   0 },
+    { "nodatafiles",    no_argument,        NULL,   0 },
+    { "reinstall",      no_argument,        NULL,   0 },
+    { "targetdir",      required_argument,  NULL,   0 },
     { "testregistration", no_argument,      NULL,   0 },
     { "unattended",     no_argument,        NULL,   0 },
-    { "targetdir",      required_argument,  NULL,   0 },
-    { "bdj3dir",        required_argument,  NULL,   0 },
+    { "unpackdir",      required_argument,  NULL,   0 },
     /* standard stuff */
-    { "profile",        required_argument,  NULL,   'p' },
-    { "debug",          required_argument,  NULL,   'd' },
-    { "theme",          required_argument,  NULL,   't' },
+    { "debug",          required_argument,  NULL,   0 },
     { "ignorelock",     no_argument,        NULL,   0 },
+    { "profile",        required_argument,  NULL,   'p' },
+    { "theme",          required_argument,  NULL,   't' },
     /* this process */
     { "debugself",      no_argument,        NULL,   'D' },
-    { "nodetach",       no_argument,        NULL,   'N' },
-    { "wait",           no_argument,        NULL,   'w' },
     { "msys",           no_argument,        NULL,   'M' },
+    { "nodetach",       no_argument,        NULL,   'N' },
     { "nostart",        no_argument,        NULL,   0 },
+    { "wait",           no_argument,        NULL,   'w' },
     /* dbupdate options */
-    { "rebuild",        no_argument,        NULL,   0 },
     { "checknew",       no_argument,        NULL,   0 },
+    { "dbtopdir",       required_argument,  NULL,   0 },
+    { "rebuild",        no_argument,        NULL,   0 },
     { "reorganize",     no_argument,        NULL,   0 },
     { "updfromtags",    no_argument,        NULL,   0 },
     { "writetags",      no_argument,        NULL,   0 },
-    { "dbtopdir",       required_argument,  NULL,   0 },
     /* bdjtags */
-    { "rawdata",        no_argument,        NULL,   0 },
     { "bdj3tags",       no_argument,        NULL,   0 },
     { "cleantags",      no_argument,        NULL,   0 },
+    { "rawdata",        no_argument,        NULL,   0 },
     /* test suite options */
     { "runsection",     required_argument,  NULL,   0 },
     { "runtest",        required_argument,  NULL,   0 },
     { "starttest",      required_argument,  NULL,   0 },
     /* tmusicsetup */
-    { "outfile",        required_argument,  NULL,   0 },
-    { "infile",         required_argument,  NULL,   0 },
     { "emptydb",        no_argument,        NULL,   0 },
+    { "infile",         required_argument,  NULL,   0 },
+    { "outfile",        required_argument,  NULL,   0 },
     /* general options */
     { "cli",            no_argument,        NULL,   'c' },
     { "progress",       no_argument,        NULL,   0 },
@@ -293,9 +294,6 @@ main (int argc, char * argv[])
         forcenodetach = true;
         break;
       }
-      case 'd': {
-        break;
-      }
       case 'D': {
         debugself = true;
         break;
@@ -323,15 +321,6 @@ main (int argc, char * argv[])
         osSetEnv ("GTK_THEME", optarg);
 #endif
         havetheme = true;
-        break;
-      }
-      case 'r': {
-        break;
-      }
-      case 'u': {
-        break;
-      }
-      case 'g': {
         break;
       }
       default: {

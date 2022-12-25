@@ -70,12 +70,13 @@ currvers=$(pkglongvers)
 hostname=$(hostname)
 mconf=data/${hostname}/bdjconfig.txt
 
-function check {
+function checkInstallation {
   section=$1
   tname=$2
   tout=$(echo $3 | sed "s/\r//g")       # for windows
   trc=$4
   type=$5
+  datafiles=$6
 
   chk=0
   res=0
@@ -157,24 +158,31 @@ function check {
   else
     echo "  installer: bad return code"
   fi
-  res=$(($res+1))  # data dir
-  if [[ $fin == T && -d "${DATADIR}/data" ]]; then
-    chk=$(($chk+1))
-  else
-    echo "  no data directory"
+
+  # even if --nodatafiles is used, the data/*, tmp directories are
+  # still created for logging purposes
+
+  if [[ $datafiles == y ]]; then
+    res=$(($res+1))  # data dir
+    if [[ $fin == T && -d "${DATADIR}/data" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no data directory"
+    fi
+    res=$(($res+1))  # data/profile00 dir
+    if [[ $fin == T && -d "${DATADIR}/data/profile00" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no data/profile00 directory"
+    fi
+    res=$(($res+1))  # tmp dir
+    if [[ $fin == T && -d "${DATADIR}/tmp" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no tmp directory"
+    fi
   fi
-  res=$(($res+1))  # data/profile00 dir
-  if [[ $fin == T && -d "${DATADIR}/data/profile00" ]]; then
-    chk=$(($chk+1))
-  else
-    echo "  no data/profile00 directory"
-  fi
-  res=$(($res+1))  # tmp dir
-  if [[ $fin == T && -d "${DATADIR}/tmp" ]]; then
-    chk=$(($chk+1))
-  else
-    echo "  no tmp directory"
-  fi
+
   res=$(($res+1))  # bin dir
   if [[ $fin == T && -d "${TARGETDIR}/bin" ]]; then
     chk=$(($chk+1))
@@ -188,20 +196,22 @@ function check {
     echo "  no bdj4 executable"
   fi
 
-  lvol=$(sed -n -e '/^VOLUME/ { n; s/^\.\.//; p ; }' $mconf)
-  lpli=$(sed -n -e '/^PLAYER/ { n; s/^\.\.//; p ; }' $mconf)
+  if [[ $datafiles == y ]]; then
+    lvol=$(sed -n -e '/^VOLUME/ { n; s/^\.\.//; p ; }' $mconf)
+    lpli=$(sed -n -e '/^PLAYER/ { n; s/^\.\.//; p ; }' $mconf)
 
-  res=$(($res+1))  # volume lib
-  if [[ $fin == T && $libvol == $lvol ]]; then
-    chk=$(($chk+1))
-  else
-    echo "  volume library not set correctly"
-  fi
-  res=$(($res+1))  # pli lib
-  if [[ $fin == T && $libpli == $lpli ]]; then
-    chk=$(($chk+1))
-  else
-    echo "  pli library not set correctly"
+    res=$(($res+1))  # volume lib
+    if [[ $fin == T && $libvol == $lvol ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  volume library not set correctly"
+    fi
+    res=$(($res+1))  # pli lib
+    if [[ $fin == T && $libpli == $lpli ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  pli library not set correctly"
+    fi
   fi
 
   if [[ $chk -eq $res ]]; then
@@ -221,6 +231,11 @@ function check {
   return $tcrc
 }
 
+function cleanInstTest {
+  test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
+  test -d "$TARGETTOPDIR" && rm -rf "$TARGETTOPDIR"
+}
+
 function resetUnpack {
   test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
   cp -fpr "$UNPACKDIR.tmp" "$UNPACKDIR"
@@ -233,9 +248,11 @@ cp -fpr "$UNPACKDIR" "$UNPACKDIRTMP"
 
 section=basic
 
+cleanInstTest
+resetUnpack
+
 # main test db : rebuild of standard test database
 tname=new-install-no-bdj3
-test -d $TARGETTOPDIR && rm -rf $TARGETTOPDIR
 out=$(./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --msys \
@@ -243,10 +260,11 @@ out=$(./bin/bdj4 --bdj4installer --cli --wait \
     --unpackdir "$UNPACKDIR" \
     )
 rc=$?
-check $section $tname "$out" $rc n
+checkInstallation $section $tname "$out" $rc n y
 crc=$?
 
 if [[ $crc -eq 0 ]]; then
+  # standard re-install
   resetUnpack
   tname=re-install-no-bdj3
   out=$(./bin/bdj4 --bdj4installer --cli --wait \
@@ -257,8 +275,9 @@ if [[ $crc -eq 0 ]]; then
       --reinstall \
       )
   rc=$?
-  check $section $tname "$out" $rc r
+  checkInstallation $section $tname "$out" $rc r y
 
+  # standard update
   resetUnpack
   tname=update-no-bdj3
   out=$(./bin/bdj4 --bdj4installer --cli --wait \
@@ -268,12 +287,25 @@ if [[ $crc -eq 0 ]]; then
       --unpackdir "$UNPACKDIR" \
       )
   rc=$?
-  check $section $tname "$out" $rc u
+  checkInstallation $section $tname "$out" $rc u y
 fi
 
-test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
+# install w/o data files
+cleanInstTest
+resetUnpack
+tname=install-no-data
+out=$(./bin/bdj4 --bdj4installer --cli --wait \
+    --verbose --unattended --quiet \
+    --msys \
+    --targetdir "$TARGETTOPDIR" \
+    --unpackdir "$UNPACKDIR" \
+    --nodatafiles \
+    )
+rc=$?
+checkInstallation $section $tname "$out" $rc n n
+
+cleanInstTest
 test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
-test -d "$TARGETTOPDIR" && rm -rf "$TARGETTOPDIR"
 
 echo "tests: $tcount pass: $pass fail: $fail"
 
