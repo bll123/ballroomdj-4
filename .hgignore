@@ -20,8 +20,6 @@ syntax: regexp
 ^locale/nl_BE/
 ^locale/de
 ^locale/de_DE/
-^locale/tr
-^locale/tr_TR/
 ^packages/
 ^plocal/
 ^scripts/linux/.ballroomdj-ss-restore
@@ -30,6 +28,6 @@ syntax: regexp
 ^src/po/.*\.backup$
 ^src/w$
 ^test-music
+^test-music-orig
 ^tmp/
 ^web/marquee4.html$
-^x/

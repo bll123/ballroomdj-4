@@ -22,6 +22,10 @@ present in it.
 Choose the folder in which to install BallroomDJ 4.  The %USERPROFILE%/BDJ4
 folder will be pre-selected for you.
 
+The **Re-Install** checkbox is only used if you want to completely reset
+all of the BDJ4 data files.  Any changes you have made within BDJ4
+will be lost if a re-install is done.
+
 If you want to convert a BallroomDJ 3 installation, select the
 BallroomDJ 3 folder and select the **Convert BallroomDJ 3** checkbox.
 
@@ -54,4 +58,4 @@ After the VLC installation is complete, turn off the **Run VLC media
 player** checkbox, and select **Finish**.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-12 11:17:31; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-25 06:11:46; BDJ4 version 4.0.1-beta)_

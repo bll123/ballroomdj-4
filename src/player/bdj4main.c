@@ -1238,6 +1238,9 @@ mainQueueClear (maindata_t *mainData, char *args)
   mi = mainMusicqIndexParse (mainData, p);
 
   logMsg (LOG_DBG, LOG_BASIC, "clear music queue");
+  /* clear the playlist queue */
+  /* otherwise an automatic or sequenced playlist will simply */
+  /* fill up the music queue again */
   queueClear (mainData->playlistQueue [mi], 0);
   mainMusicqClearPreppedSongs (mainData, mi, 1);
   musicqClear (mainData->musicQueue, mi, 1);
