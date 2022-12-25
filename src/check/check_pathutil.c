@@ -150,6 +150,38 @@ START_TEST(path_normpath)
 }
 END_TEST
 
+START_TEST(path_strippath)
+{
+  char    to [MAXPATHLEN];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_normpath");
+
+  strlcpy (to, "/tmp/abc.txt", sizeof (to));
+  pathStripPath (to, sizeof (to));
+  ck_assert_str_eq (to, "/tmp/abc.txt");
+
+  strlcpy (to, "./tmp/abc.txt", sizeof (to));
+  pathStripPath (to, sizeof (to));
+  ck_assert_str_eq (to, "tmp/abc.txt");
+
+  strlcpy (to, "/tmp/../dir/abc.txt", sizeof (to));
+  pathStripPath (to, sizeof (to));
+  ck_assert_str_eq (to, "/dir/abc.txt");
+
+  strlcpy (to, "/tmp/one/../dir/abc.txt", sizeof (to));
+  pathStripPath (to, sizeof (to));
+  ck_assert_str_eq (to, "/tmp/dir/abc.txt");
+
+  strlcpy (to, "/tmp/../abc.txt", sizeof (to));
+  pathStripPath (to, sizeof (to));
+  ck_assert_str_eq (to, "/abc.txt");
+
+  strlcpy (to, "/tmp/./abc.txt", sizeof (to));
+  pathStripPath (to, sizeof (to));
+  ck_assert_str_eq (to, "/tmp/abc.txt");
+}
+END_TEST
+
 START_TEST(path_realpath)
 {
   FILE    *fh;
@@ -205,6 +237,7 @@ pathutil_suite (void)
   tcase_add_test (tc, pathinfo_chk);
   tcase_add_test (tc, path_winpath);
   tcase_add_test (tc, path_normpath);
+  tcase_add_test (tc, path_strippath);
   tcase_add_test (tc, path_realpath);
   suite_add_tcase (s, tc);
   return s;

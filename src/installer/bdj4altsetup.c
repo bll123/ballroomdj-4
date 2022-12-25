@@ -106,6 +106,8 @@ typedef struct {
   bool            reinstall : 1;
 } altsetup_t;
 
+#define INST_HL_COLOR "#b16400"
+
 static void altsetupBuildUI (altsetup_t *altsetup);
 static int  altsetupMainLoop (void *udata);
 static bool altsetupExitCallback (void *udata);
@@ -160,9 +162,8 @@ main (int argc, char *argv[])
   altsetup.nameEntry = uiEntryInit (30, 30);
 
   sysvarsInit (argv[0]);
-  localeInit ();
-  bdjoptInit ();
   bdjvarsInit ();
+  localeInit ();
 
   altsetup.maindir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
   altsetup.home = sysvarsGetStr (SV_HOME);
@@ -192,7 +193,6 @@ main (int argc, char *argv[])
 
   altsetupCleanup (&altsetup);
   bdjvarsCleanup ();
-  bdjoptCleanup ();
   localeCleanup ();
   logEnd ();
   return 0;
@@ -289,11 +289,11 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiToggleButtonSetCallback (&altsetup->reinstWidget, &altsetup->reinstcb);
 
   uiCreateLabel (&altsetup->feedbackMsg, "");
-  uiLabelSetColor (&altsetup->feedbackMsg, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiLabelSetColor (&altsetup->feedbackMsg, INST_HL_COLOR);
   uiBoxPackStart (&hbox, &altsetup->feedbackMsg);
 
   uiCreateHorizSeparator (&uiwidget);
-  uiSeparatorSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiSeparatorSetColor (&uiwidget, INST_HL_COLOR);
   uiBoxPackStart (&vbox, &uiwidget);
 
   /* button box */
@@ -379,7 +379,7 @@ altsetupMainLoop (void *udata)
 
       logStart ("bdj4altsetup", "as",
           LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST);
-      logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== set up alternate started");
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== alternate setup started");
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", altsetup->target);
       break;
     }
@@ -836,8 +836,10 @@ altsetupSetup (altsetup_t *altsetup)
   pathbldMakePath (buff, sizeof (buff),
       BASE_PORT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   fh = fopen (buff, "w");
-  fputs (str, fh);
-  fclose (fh);
+  if (fh != NULL) {
+    fputs (str, fh);
+    fclose (fh);
+  }
 
   /* create the symlink for the bdj4 executable */
   if (isWindows ()) {
@@ -853,23 +855,29 @@ altsetupSetup (altsetup_t *altsetup)
   }
 
   /* create the link files that point to the volreg.txt and lock file */
+// ### FIX these need to be in a known location if the main installation
+// ### is read-only.
   pathbldMakePath (buff, sizeof (buff),
       VOLREG_FN, BDJ4_LINK_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (tbuff, sizeof (tbuff),
       "data/volreg", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_MAIN);
   fh = fopen (buff, "w");
-  fputs (tbuff, fh);
-  fputs ("\n", fh);
-  fclose (fh);
+  if (fh != NULL) {
+    fputs (tbuff, fh);
+    fputs ("\n", fh);
+    fclose (fh);
+  }
 
   pathbldMakePath (buff, sizeof (buff),
       "volreglock", BDJ4_LINK_EXT, PATHBLD_MP_DREL_DATA);
   pathbldMakePath (tbuff, sizeof (tbuff),
       "tmp/volreg", BDJ4_LOCK_EXT, PATHBLD_MP_DIR_MAIN);
   fh = fopen (buff, "w");
-  fputs (tbuff, fh);
-  fputs ("\n", fh);
-  fclose (fh);
+  if (fh != NULL) {
+    fputs (tbuff, fh);
+    fputs ("\n", fh);
+    fclose (fh);
+  }
 
   altsetup->instState = ALT_CREATE_SHORTCUT;
 }

@@ -304,7 +304,7 @@ out=$(./bin/bdj4 --bdj4installer --cli --wait \
 rc=$?
 checkInstallation $section $tname "$out" $rc n n
 
-cleanInstTest
+# cleanInstTest
 test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
 
 echo "tests: $tcount pass: $pass fail: $fail"

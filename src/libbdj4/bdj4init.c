@@ -77,6 +77,8 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "nomarquee",      no_argument,        NULL,   'm' },
     { "nodetach",       no_argument,        NULL,   'N' },
     { "wait",           no_argument,        NULL,   'w' },
+    /* starter */
+    { "datatopdir",     required_argument,  NULL,   't' },
     /* bdj4updater */
     { "newinstall",     no_argument,        NULL,   0 },
     { "converted",      no_argument,        NULL,   0 },
@@ -110,8 +112,15 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   audiotagInit ();
 
   optind = 0;
-  while ((c = getopt_long_only (argc, argv, "BCPOUWcld:p:mnNRsh", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "BChPOUWcld:p:mnNRst:T", bdj_options, &option_index)) != -1) {
     switch (c) {
+      case 't': {
+        if (fileopIsDirectory (optarg)) {
+          sysvarsSetStr (SV_BDJ4_DIR_DATATOP, optarg);
+          sysvarsSetNum (SVL_DATAPATH, SYSVARS_DATAPATH_ALT);
+        }
+        break;
+      }
       case 'B': {
         isbdj4 = true;
         break;

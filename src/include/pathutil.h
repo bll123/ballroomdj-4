@@ -19,6 +19,7 @@ pathinfo_t *  pathInfo (const char *path);
 void          pathInfoFree (pathinfo_t *);
 bool          pathInfoExtCheck (pathinfo_t *, const char *extension);
 void          pathWinPath (char *buff, size_t len);
+void          pathStripPath (char *buff, size_t len);
 void          pathNormPath (char *buff, size_t len);
 void          pathRealPath (char *to, const char *from, size_t sz);
 

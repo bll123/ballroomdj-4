@@ -161,6 +161,43 @@ pathNormPath (char *buff, size_t len)
   }
 }
 
+/* remove all /./ ../dir components */
+void
+pathStripPath (char *buff, size_t len)
+{
+  size_t  j = 0;
+  size_t  priorslash = 0;
+  size_t  lastslash = 0;
+  char    *p;
+
+  pathNormPath (buff, len);
+  j = 0;
+  p = buff;
+  for (size_t i = 0; i < len; ++i) {
+    if (*p == '\0') {
+      buff [j] = '\0';
+      break;
+    }
+    if (*p == '/') {
+      priorslash = lastslash;
+      lastslash = j;
+    }
+    if ((j == 0 || j - 1 == lastslash) &&
+        (len - i) > 1 && strncmp (p, "./", 2) == 0) {
+      p += 2;
+    }
+    if ((j == 0 || j - 1 == lastslash) &&
+        (len - i) > 2 && strncmp (p, "../", 3) == 0) {
+      p += 3;
+      j = priorslash + 1;
+    }
+
+    buff [j] = *p;
+    ++j;
+    ++p;
+  }
+}
+
 void
 pathRealPath (char *to, const char *from, size_t sz)
 {

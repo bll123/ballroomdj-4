@@ -72,6 +72,7 @@ typedef enum {
 } sysvarkey_t;
 
 typedef enum {
+  SVL_DATAPATH,
   SVL_BASEPORT,
   SVL_BDJIDX,
   SVL_IS_LINUX,
@@ -82,6 +83,12 @@ typedef enum {
   SVL_OSBITS,
   SVL_MAX
 } sysvarlkey_t;
+
+enum {
+  SYSVARS_DATAPATH_ALT,
+  SYSVARS_DATAPATH_LOCAL,
+  SYSVARS_DATAPATH_NORM,
+};
 
 void    sysvarsInit (const char *argv0);
 void    sysvarsCheckPaths (const char *otherpaths);

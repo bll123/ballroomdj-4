@@ -106,14 +106,15 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
 };
 
 static sysvarsdesc_t sysvarsldesc [SVL_MAX] = {
-  [SVL_BASEPORT] = { "Base-Port" },
-  [SVL_IS_WINDOWS] = { "Is-Windows" },
-  [SVL_IS_MACOS] = { "Is-MacOS" },
-  [SVL_IS_LINUX] = { "Is-Linux" },
-  [SVL_LOCALE_SET] = { "Locale-Set" },
-  [SVL_NUM_PROC] = { "Number-of-Processors" },
-  [SVL_OSBITS] = { "OS-Bits" },
-  [SVL_BDJIDX] = { "Profile" },
+  [SVL_DATAPATH] = { "DATAPATH" },
+  [SVL_BASEPORT] = { "BASEPORT" },
+  [SVL_IS_WINDOWS] = { "IS_WINDOWS" },
+  [SVL_IS_MACOS] = { "IS_MACOS" },
+  [SVL_IS_LINUX] = { "IS_LINUX" },
+  [SVL_LOCALE_SET] = { "LOCALE_SET" },
+  [SVL_NUM_PROC] = { "NUM_PROC" },
+  [SVL_OSBITS] = { "OSBITS" },
+  [SVL_BDJIDX] = { "BDJIDX" },
 };
 
 enum {
@@ -147,12 +148,14 @@ static void svGetSystemFont (void);
 void
 sysvarsInit (const char *argv0)
 {
-  char          tbuff [SV_MAX_SZ+1];
   char          tcwd [SV_MAX_SZ+1];
+  char          tbuff [SV_MAX_SZ+1];
+  char          altpath [SV_MAX_SZ+1];
   char          buff [SV_MAX_SZ+1];
   char          *tptr;
   char          *p;
   size_t        dlen;
+  bool          alternatepath = false;
 #if _lib_uname
   int             rc;
   struct utsname  ubuf;
@@ -165,6 +168,9 @@ sysvarsInit (const char *argv0)
   SYSTEM_INFO winsysinfo;
 #endif
 
+
+  (void) ! getcwd (tcwd, sizeof (tcwd));
+  pathNormPath (tcwd, SV_MAX_SZ);
 
   strlcpy (sysvars [SV_OSNAME], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSDISP], "", SV_MAX_SZ);
@@ -288,19 +294,29 @@ sysvarsInit (const char *argv0)
   }
   strlcpy (sysvars [SV_DIR_CONFIG], tbuff, SV_MAX_SZ);
 
-  (void) ! getcwd (tcwd, sizeof (tcwd));
-
   strlcpy (tbuff, argv0, sizeof (tbuff));
   strlcpy (buff, argv0, sizeof (buff));
   pathNormPath (buff, SV_MAX_SZ);
-  if (*buff != '/' &&
-      (strlen (buff) > 2 && *(buff + 1) == ':' && *(buff + 2) != '/')) {
+  /* handle relative pathnames */
+  if ((strlen (buff) > 2 && *(buff + 1) == ':' && *(buff + 2) != '/') ||
+     (*buff != '/' && strlen (buff) > 1 && *(buff + 1) != ':')) {
     strlcpy (tbuff, tcwd, sizeof (tbuff));
+    strlcat (tbuff, "/", sizeof (tbuff));
     strlcat (tbuff, buff, sizeof (tbuff));
   }
+
+  /* save this path so that it can be used to check for a data dir */
+  strlcpy (altpath, tbuff, sizeof (altpath));
+  pathStripPath (altpath, sizeof (altpath));
+  pathNormPath (altpath, sizeof (altpath));
+
   /* this gives us the real path to the executable */
   pathRealPath (buff, tbuff, sizeof (buff));
   pathNormPath (buff, sizeof (buff));
+
+  if (strcmp (altpath, buff) != 0) {
+    alternatepath = true;
+  }
 
   /* strip off the filename */
   p = strrchr (buff, '/');
@@ -322,15 +338,43 @@ sysvarsInit (const char *argv0)
     /* if there is a data directory in the current working directory  */
     /* a change of directories is contra-indicated.                   */
 
-    pathNormPath (tcwd, SV_MAX_SZ);
     strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], tcwd, SV_MAX_SZ);
+    lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_LOCAL;
   } else {
-    if (isMacOS ()) {
-      strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
-      strlcat (buff, "/Library/Application Support/BDJ4", SV_MAX_SZ);
-      strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
-    } else {
-      strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
+    bool found = false;
+
+    if (alternatepath) {
+      /* check for a data directory in the original run-path */
+
+      /* strip filename */
+      p = strrchr (altpath, '/');
+      if (p != NULL) {
+        *p = '\0';
+      }
+      /* strip /bin */
+      p = strrchr (altpath, '/');
+      if (p != NULL) {
+        *p = '\0';
+      }
+
+      strlcat (altpath, "/data", sizeof (altpath));
+      if (fileopIsDirectory (altpath)) {
+        strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], altpath, SV_MAX_SZ);
+        found = true;
+        lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_ALT;
+      }
+    }
+
+    if (! found) {
+      lsysvars [SVL_DATAPATH] = SYSVARS_DATAPATH_NORM;
+
+      if (isMacOS ()) {
+        strlcpy (buff, sysvars [SV_HOME], SV_MAX_SZ);
+        strlcat (buff, "/Library/Application Support/BDJ4", SV_MAX_SZ);
+        strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], buff, SV_MAX_SZ);
+      } else {
+        strlcpy (sysvars [SV_BDJ4_DIR_DATATOP], sysvars [SV_BDJ4_DIR_MAIN], SV_MAX_SZ);
+      }
     }
   }
 

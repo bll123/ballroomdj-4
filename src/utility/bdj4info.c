@@ -28,6 +28,7 @@ main (int argc, char *argv [])
   static struct option bdj_options [] = {
     { "bdj4info",   no_argument,        NULL,   0 },
     { "bdj4",       no_argument,        NULL,   'B' },
+    { "datatopdir", required_argument,  NULL,   't' },
     /* ignored */
     { "nodetach",     no_argument,      NULL,   0 },
     { "debugself",    no_argument,      NULL,   0 },
@@ -36,8 +37,15 @@ main (int argc, char *argv [])
     { NULL,         0,                  NULL,   0 }
   };
 
-  while ((c = getopt_long_only (argc, argv, "g:r:u:", bdj_options, &option_index)) != -1) {
+  while ((c = getopt_long_only (argc, argv, "Bt:", bdj_options, &option_index)) != -1) {
     switch (c) {
+      case 't': {
+        if (fileopIsDirectory (optarg)) {
+          sysvarsSetStr (SV_BDJ4_DIR_DATATOP, optarg);
+          sysvarsSetNum (SVL_DATAPATH, SYSVARS_DATAPATH_ALT);
+        }
+        break;
+      }
       case 'B': {
         isbdj4 = true;
         break;

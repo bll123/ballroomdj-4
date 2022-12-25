@@ -98,7 +98,7 @@ main (int argc, char * argv[])
     { "debug",          required_argument,  NULL,   0 },
     { "ignorelock",     no_argument,        NULL,   0 },
     { "profile",        required_argument,  NULL,   'p' },
-    { "theme",          required_argument,  NULL,   't' },
+    { "theme",          required_argument,  NULL,   'T' },
     /* this process */
     { "debugself",      no_argument,        NULL,   'D' },
     { "msys",           no_argument,        NULL,   'M' },
@@ -316,7 +316,7 @@ main (int argc, char * argv[])
         }
         break;
       }
-      case 't': {
+      case 'T': {
 #if BDJ4_USE_GTK
         osSetEnv ("GTK_THEME", optarg);
 #endif
@@ -483,6 +483,10 @@ main (int argc, char * argv[])
       exit (1);
     }
     targv [targc++] = argv [i];
+  }
+  if (sysvarsGetNum (SVL_DATAPATH) == SYSVARS_DATAPATH_ALT) {
+    targv [targc++] = "--datatopdir";
+    targv [targc++] = sysvarsGetStr (SV_BDJ4_DIR_DATATOP);
   }
   if (targc >= (BDJ4_LAUNCHER_MAX_ARGS - 2)) {
     fprintf (stderr, "too many arguments\n");
