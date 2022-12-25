@@ -52,6 +52,8 @@
               onclick="javascript:setDisplay('bdj4');">BallroomDJ 4</li>
           <li id="" class="menuitem"
               onclick="javascript:setDisplay('bdj3');">BallroomDJ 3</li>
+          <li id="" class="menuitem"
+              onclick="javascript:setDisplay('donate');">Donate</li>
         </ul>
       </div>
     </div>
@@ -93,13 +95,28 @@ longer supported.</i></b></p>
             >Download BallroomDJ 3</a></p>
       </div>
     </div>
+
+    <div id="ddonate" class="mdiv dispnone tleft">
+      <p>Donate to BDJ4:</p>
+      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="hosted_button_id" value="BLTFRDM5KHNDJ" />
+        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+        <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+      </form>
+      <p>Donate to software projects that BDJ4 uses:</p>
+      <p><a href="https://videolan.org">VLC</a> (donate button at very top)</p>
+      <p><a href="https://curl.se/donation.html">Curl</a></p>
+      <p><a href="https://www.msys2.org/#donations">MSYS2</a> (Windows)</p>
+      <p><a href="https://ffmpeg.org/donations.html">ffmpeg</a></p>
+    </div>
   </div>
 
   <script type="text/javascript">
 //<![CDATA[
 function setDisplay (id) {
   if (id != 'menu') {
-    var dids = {menu:0, bdj4:0, bdj3:0};
+    var dids = {menu:0, bdj4:0, bdj3:0, donate:0};
     for (var i in dids) {
       var o = document.getElementById ('d'+i);
       o.style.display = 'none';
