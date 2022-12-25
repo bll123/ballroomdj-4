@@ -646,6 +646,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbgdisp = true;
           break;
         }
+        case MSG_CHK_MAIN_SET_PAUSE_EACH_SONG: {
+          bdjoptSetNumPerQueue (OPT_Q_PAUSE_EACH_SONG, atoi (targs), mainData->musicqPlayIdx);
+          dbgdisp = true;
+          break;
+        }
         case MSG_CHK_MAIN_SET_FADEIN: {
           bdjoptSetNumPerQueue (OPT_Q_FADEINTIME, atoi (targs), mainData->musicqPlayIdx);
           mainMusicqSendConfig (mainData);

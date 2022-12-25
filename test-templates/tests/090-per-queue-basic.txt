@@ -266,5 +266,33 @@ msg main MUSICQ_INSERT 0~999~5
 mssleep 2000
 get player CHK_PLAYER_STATUS
 chk playstate playing
+msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 0
+end
+
+# pause each song
+test 90-70 Pause-Each-Song-Basic
+msg main CHK_MAIN_SET_PAUSE_EACH_SONG 1
+msg main MUSICQ_INSERT 0~999~10
+msg main MUSICQ_INSERT 0~999~11
+msg main MUSICQ_INSERT 0~999~12
+#
+resptimeout 2500
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+wait playstate stopped
+#
+resptimeout 2500
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+wait playstate stopped
+msg main CHK_MAIN_SET_PAUSE_EACH_SONG 0
 end
 
