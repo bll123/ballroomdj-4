@@ -338,3 +338,80 @@ mssleep 1500
 end
 
 
+# pause each song
+test 150-50 Pause-Each-Song
+msg main MUSICQ_SET_PLAYBACK 0
+msg main MUSICQ_SET_PLAYBACK 1
+msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
+msg main CHK_MAIN_SET_PAUSE_EACH_SONG 1
+msg main MUSICQ_SET_PLAYBACK 0
+msg main MUSICQ_INSERT 0~999~13
+msg main MUSICQ_INSERT 0~999~14
+msg main MUSICQ_INSERT 0~999~15
+msg main MUSICQ_INSERT 0~999~16
+msg main MUSICQ_INSERT 0~999~17
+msg main MUSICQ_INSERT 0~999~18
+msg main MUSICQ_INSERT 1~999~19
+msg main MUSICQ_INSERT 1~999~20
+msg main MUSICQ_INSERT 1~999~21
+#
+resptimeout 2500
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+wait playstate in-fadeout
+wait playstate playing
+mssleep 1500
+#
+msg main MUSICQ_SET_PLAYBACK 1
+resptimeout 7500
+msg player PLAY_FADE
+wait playstate in-fadeout
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+wait playstate in-fadeout
+wait playstate stopped
+#
+resptimeout 2500
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+wait playstate in-fadeout
+wait playstate stopped
+#
+msg main MUSICQ_SET_PLAYBACK 0
+resptimeout 2500
+msg main CMD_PLAY
+get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+wait playstate in-fadeout
+wait playstate playing
+mssleep 1500
+#
+msg main MUSICQ_SET_PLAYBACK 1
+resptimeout 7500
+msg player PLAY_FADE
+wait playstate in-fadeout
+wait playstate playing
+mssleep 1500
+resptimeout 7500
+msg player PLAY_FADE
+wait playstate in-fadeout
+wait playstate stopped
+#
+msg main MUSICQ_SET_PLAYBACK 1
+msg main CHK_MAIN_SET_PAUSE_EACH_SONG 0
+msg main MUSICQ_SET_PLAYBACK 0
+end
+
