@@ -809,6 +809,9 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mp_musicqupdate_t   *musicqupdate;
           int                 updflag;
 
+logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+routefrom, msgRouteDebugText (routefrom),
+route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
           musicqupdate = msgparseMusicQueueData (args);
 
           updflag = UISONGSEL_MARK_UPDATE;

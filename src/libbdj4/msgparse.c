@@ -28,36 +28,44 @@ msgparseMusicQueueData (char *args)
   mp_musicqupdate_t    *musicqupdate;
 
 
-  logProcBegin (LOG_PROC, "msgparseMusicQueueDataParse");
-
   musicqupdate = malloc (sizeof (mp_musicqupdate_t));
+  musicqupdate->mqidx = 0;
+  musicqupdate->tottime = 0;
+  musicqupdate->currdbidx = -1;
 
   /* first, build ourselves a list to work with */
   musicqupdate->dispList = nlistAlloc ("temp-musicq-disp", LIST_ORDERED, free);
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  mqidx = atoi (p);
-  musicqupdate->mqidx = mqidx;
+  if (p != NULL) {
+    mqidx = atoi (p);
+    musicqupdate->mqidx = mqidx;
+  }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  /* queue duration */
-  musicqupdate->tottime = atol (p);
+  if (p != NULL) {
+    /* queue duration */
+    musicqupdate->tottime = atol (p);
+  }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  /* currently playing dbidx (music queue index 0) */
-  musicqupdate->currdbidx = atol (p);
+  if (p != NULL) {
+    /* currently playing dbidx (music queue index 0) */
+    musicqupdate->currdbidx = atol (p);
+  }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   idx = 1;
   while (p != NULL) {
     musicqupditem = malloc (sizeof (mp_musicqupditem_t));
     assert (musicqupditem != NULL);
-
     musicqupditem->dispidx = atoi (p);
+
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     if (p != NULL) {
       musicqupditem->uniqueidx = atol (p);
     }
+
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
     if (p != NULL) {
       musicqupditem->dbidx = atol (p);
@@ -73,7 +81,6 @@ msgparseMusicQueueData (char *args)
     ++idx;
   }
 
-  logProcEnd (LOG_PROC, "msgparseMusicQueueDataParse", "");
   return musicqupdate;
 }
 
@@ -96,17 +103,20 @@ msgparseSongSelect (char *args)
   mp_songselect_t   *songselect;
 
 
-  logProcBegin (LOG_PROC, "msgparseMusicQueueDataParse");
-
   songselect = malloc (sizeof (mp_songselect_t));
+  songselect->mqidx = 0;
+  songselect->loc = 0;
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  mqidx = atoi (p);
-  songselect->mqidx = mqidx;
+  if (p != NULL) {
+    mqidx = atoi (p);
+    songselect->mqidx = mqidx;
+  }
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-  /* queue duration */
-  songselect->loc = atol (p);
+  if (p != NULL) {
+    songselect->loc = atol (p);
+  }
 
   return songselect;
 }

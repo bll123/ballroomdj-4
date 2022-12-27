@@ -58,6 +58,7 @@ Suite *     dnctypes_suite (void);
 Suite *     dance_suite (void);
 Suite *     genre_suite (void);
 Suite *     level_suite (void);
+Suite *     msgparse_suite (void);
 Suite *     musicdb_suite (void);
 Suite *     orgopt_suite (void);
 Suite *     orgutil_suite (void);

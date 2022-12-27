@@ -49,6 +49,7 @@ add_executable (check_all
   check_dnctypes.c
   check_genre.c
   check_level.c
+  check_msgparse.c
   check_musicdb.c
   check_orgopt.c
   check_orgutil.c

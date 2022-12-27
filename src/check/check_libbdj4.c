@@ -144,6 +144,9 @@ check_libbdj4 (SRunner *sr)
   s = orgopt_suite();
   srunner_add_suite (sr, s);
 
+  s = msgparse_suite();
+  srunner_add_suite (sr, s);
+
   s = volreg_suite();
   srunner_add_suite (sr, s);
 }
