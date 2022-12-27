@@ -18,6 +18,7 @@ add_executable (check_all
   check_filemanip.c
   check_fileop.c
   check_lock.c
+  check_osnetutils.c
   check_osprocess.c
   check_osrandom.c
   check_ossignal.c
