@@ -53,7 +53,7 @@ check_libbdj4 (SRunner *sr)
    *  samesong              complete
    *  orgutil               partial
    *  validate              complete
-   *  webclient
+   *  webclient             complete
    *  audiotag
    *  m3u
    *  orgopt                complete
@@ -136,6 +136,9 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = validate_suite();
+  srunner_add_suite (sr, s);
+
+  s = webclient_suite();
   srunner_add_suite (sr, s);
 
   s = orgopt_suite();

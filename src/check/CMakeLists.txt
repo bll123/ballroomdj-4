@@ -65,6 +65,7 @@ add_executable (check_all
   check_tagdef.c
   check_templateutil.c
   check_validate.c
+  check_webclient.c
 )
 target_link_libraries (check_all
   libbdj4 libbdj4basic libbdj4common

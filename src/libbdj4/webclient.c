@@ -13,6 +13,8 @@
 #include <assert.h>
 
 #include <curl/curl.h>
+#include <glib.h>
+#include <zlib.h>
 
 #include "bdj4.h"
 #include "bdjstring.h"
@@ -26,6 +28,10 @@
 enum {
   INIT_NONE,
   INIT_CLIENT,
+};
+
+enum {
+  SUPPORT_BUFF_SZ = (10*1024*1024),
 };
 
 typedef struct webclient {
@@ -43,15 +49,14 @@ typedef struct webclient {
 
 static void   webclientInit (webclient_t *webclient);
 static void   webclientInitResp (webclient_t *webclient);
-static size_t webclientCallback (char *ptr, size_t size,
-    size_t nmemb, void *userdata);
-static size_t webclientNullCallback (char *ptr, size_t size,
-    size_t nmemb, void *userdata);
-static size_t webclientDownloadCallback (char *ptr, size_t size,
-    size_t nmemb, void *userdata);
-static int webclientDebugCallback (CURL *curl, curl_infotype type, char *data,
-    size_t size, void *userptr);
+static size_t webclientCallback (char *ptr, size_t size, size_t nmemb, void *userdata);
+static size_t webclientNullCallback (char *ptr, size_t size, size_t nmemb, void *userdata);
+static size_t webclientDownloadCallback (char *ptr, size_t size, size_t nmemb, void *userdata);
+static int webclientDebugCallback (CURL *curl, curl_infotype type, char *data, size_t size, void *userptr);
 static void webclientSetUserAgent (CURL *curl);
+static z_stream * webclientGzipInit (char *out, int outsz);
+static void     webclientGzip (z_stream *zs, const char* in, int insz);
+static size_t   webclientGzipEnd (z_stream *zs);
 
 static int initialized = INIT_NONE;
 
@@ -81,7 +86,7 @@ webclientAlloc (void *userdata, webclientcb_t callback)
 }
 
 void
-webclientGet (webclient_t *webclient, char *uri)
+webclientGet (webclient_t *webclient, const char *uri)
 {
   webclientInitResp (webclient);
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
@@ -93,7 +98,7 @@ webclientGet (webclient_t *webclient, char *uri)
 }
 
 void
-webclientPost (webclient_t *webclient, char *uri, char *query)
+webclientPost (webclient_t *webclient, const char *uri, const char *query)
 {
   webclientInitResp (webclient);
   curl_easy_setopt (webclient->curl, CURLOPT_URL, uri);
@@ -106,7 +111,7 @@ webclientPost (webclient_t *webclient, char *uri, char *query)
 }
 
 void
-webclientDownload (webclient_t *webclient, char *uri, char *outfile)
+webclientDownload (webclient_t *webclient, const char *uri, const char *outfile)
 {
   FILE    *fh;
   time_t  tm;
@@ -136,8 +141,8 @@ webclientDownload (webclient_t *webclient, char *uri, char *outfile)
 }
 
 void
-webclientUploadFile (webclient_t *webclient, char *uri,
-    const char *query [], char *fn)
+webclientUploadFile (webclient_t *webclient, const char *uri,
+    const char *query [], const char *fn)
 {
   curl_off_t  speed_upload;
   curl_off_t  total_time;
@@ -238,6 +243,49 @@ webclientGetLocalIP (void)
   free (webclient);
 
   return ip;
+}
+
+void
+webclientCompressFile (char *infn, char *outfn)
+{
+  FILE      *infh = NULL;
+  FILE      *outfh = NULL;
+  char      *buff;
+  char      *obuff;
+  char      *data;
+  size_t    r;
+  size_t    olen;
+  z_stream  *zs;
+
+  infh = fileopOpen (infn, "rb");
+  if (infh == NULL) {
+    return;
+  }
+  outfh = fileopOpen (outfn, "wb");
+  if (outfh == NULL) {
+    return;
+  }
+
+  buff = malloc (SUPPORT_BUFF_SZ);
+  assert (buff != NULL);
+  /* if the database becomes so large that 10 megs compressed can't hold it */
+  /* then there will be a problem */
+  obuff = malloc (SUPPORT_BUFF_SZ);
+  assert (obuff != NULL);
+
+  zs = webclientGzipInit (obuff, SUPPORT_BUFF_SZ);
+  while ((r = fread (buff, 1, SUPPORT_BUFF_SZ, infh)) > 0) {
+    webclientGzip (zs, buff, r);
+  }
+  olen = webclientGzipEnd (zs);
+  data = g_base64_encode ((const guchar *) obuff, olen);
+  fwrite (data, strlen (data), 1, outfh);
+  free (data);
+
+  fclose (infh);
+  fclose (outfh);
+  free (buff);
+  free (obuff);
 }
 
 /* internal routines */
@@ -380,3 +428,48 @@ webclientSetUserAgent (CURL *curl)
       sysvarsGetStr (SV_HOST_WEB));
   curl_easy_setopt (curl, CURLOPT_USERAGENT, tbuff);
 }
+
+static z_stream *
+webclientGzipInit (char *out, int outsz)
+{
+  z_stream *zs;
+
+  zs = malloc (sizeof (z_stream));
+  zs->zalloc = Z_NULL;
+  zs->zfree = Z_NULL;
+  zs->opaque = Z_NULL;
+  zs->avail_in = (uInt) 0;
+  zs->next_in = (Bytef *) NULL;
+  zs->avail_out = (uInt) outsz;
+  zs->next_out = (Bytef *) out;
+
+  // hard to believe they don't have a macro for gzip encoding, "Add 16" is the best thing zlib can do:
+  // "Add 16 to windowBits to write a simple gzip header and trailer around the compressed data instead of a zlib wrapper"
+  deflateInit2 (zs, 6, Z_DEFLATED, 15 | 16, 8, Z_DEFAULT_STRATEGY);
+  return zs;
+}
+
+static void
+webclientGzip (z_stream *zs, const char* in, int insz)
+{
+  zs->avail_in = (uInt) insz;
+  zs->next_in = (Bytef *) in;
+
+  deflate (zs, Z_NO_FLUSH);
+}
+
+static size_t
+webclientGzipEnd (z_stream *zs)
+{
+  size_t    olen;
+
+  zs->avail_in = (uInt) 0;
+  zs->next_in = (Bytef *) NULL;
+
+  deflate (zs, Z_FINISH);
+  olen = zs->total_out;
+  deflateEnd (zs);
+  free (zs);
+  return olen;
+}
+

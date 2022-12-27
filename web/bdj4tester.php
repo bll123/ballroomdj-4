@@ -1,18 +1,17 @@
 <?php
 
-if (! isset($_POST['key']) || $_POST['key'] != '9034545') {
-  echo "NG: bad key";
-  exit (0);
-}
-if (! isset($_POST['ident'])) {
-  echo "NG: no ident";
+$resp = "";
+$resp .= "get: " . join ($_GET, ' ');
+$resp .= "post: " . join ($_POST, ' ');
+$resp .= "files: " . join ($_FILES, ' ');
+if (! isset($_POST['key']) || $_POST['key'] != '8634556') {
+  echo "NG: bad key: " . $resp;
   exit (0);
 }
 
 $ip = $_SERVER['REMOTE_ADDR'];
-$ident = $_POST['ident'];
 
-$dir = "support/$ident";
+$dir = "tmptest";
 if (! file_exists($dir)) {
   mkdir ($dir, 0755, true);
 }
@@ -48,8 +47,10 @@ if (isset($_FILES['upfile']['name']) &&
     if (file_exists ($gzfn)) { unlink ($gzfn); }
   }
   echo "OK";
+} else if (isset ($_POST['testdata'])) {
+  echo "OK " . $_POST['testdata'];
 } else {
-  echo "NG: no upload file";
+  echo "NG: no directive: " . $resp;
 }
 
 ?>
