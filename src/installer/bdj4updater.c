@@ -377,7 +377,7 @@ main (int argc, char *argv [])
 
   /* fix audio file tags check; this is only run if: */
   /* - it has never been run */
-  /* - not an alpha release */
+  /* - not dev release */
   /* - write-tag is on */
   /* - bdj3-compat-tags is off */
 
@@ -385,7 +385,7 @@ main (int argc, char *argv [])
   processflags [UPD_FIX_AF_TAGS] =
       converted &&
       value == UPD_NOT_DONE &&
-      strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "alpha") != 0 &&
+      strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") != 0 &&
       bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE &&
       bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) == false;
   if (processflags [UPD_FIX_AF_TAGS]) { processaf = true; }

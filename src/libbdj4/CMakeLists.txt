@@ -53,6 +53,7 @@ target_link_libraries (libbdj4
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GLIB_LDFLAGS} ${XML2_LDFLAGS}
+  z
   m
 )
 if (APPLE)

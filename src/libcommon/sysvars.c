@@ -58,6 +58,7 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_BDJ4_DREL_HTTP] = { "BDJ4_DREL_HTTP" },
   [SV_BDJ4_DREL_IMG] = { "BDJ4_DREL_IMG" },
   [SV_BDJ4_DREL_TMP] = { "BDJ4_DREL_TMP" },
+  [SV_BDJ4_DEVELOPMENT] = { "BDJ4_DEVELOPMENT" },
   [SV_BDJ4_RELEASELEVEL] = { "BDJ4_RELEASELEVEL" },
   [SV_BDJ4_VERSION] = { "BDJ4_VERSION" },
   [SV_CA_FILE] = { "CA_FILE" },
@@ -488,6 +489,9 @@ sysvarsInit (const char *argv0)
       }
       if (strcmp (vnm, "RELEASELEVEL") == 0) {
         strlcpy (sysvars [SV_BDJ4_RELEASELEVEL], p, SV_MAX_SZ);
+      }
+      if (strcmp (vnm, "DEVELOPMENT") == 0) {
+        strlcpy (sysvars [SV_BDJ4_DEVELOPMENT], p, SV_MAX_SZ);
       }
       tp = strtok_r (NULL, "\r\n", &tokptr);
     }

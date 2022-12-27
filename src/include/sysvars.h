@@ -21,6 +21,7 @@ typedef enum {
   SV_BDJ4_DREL_HTTP,    // http
   SV_BDJ4_DREL_IMG,     // img - some images are in main/img and some here.
   SV_BDJ4_DREL_TMP,     // tmp
+  SV_BDJ4_DEVELOPMENT,
   SV_BDJ4_RELEASELEVEL,
   SV_BDJ4_VERSION,
   SV_CA_FILE,

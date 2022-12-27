@@ -154,7 +154,6 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uiutilsUIWidgetInit (&uiw->audioidImg);
   uiutilsUIWidgetInit (&uiw->modified);
 
-
   uiCreateSizeGroupHoriz (&uiw->sgentry);
   uiCreateSizeGroupHoriz (&uiw->sgsbint);
   uiCreateSizeGroupHoriz (&uiw->sgsbtext);

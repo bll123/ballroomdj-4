@@ -72,6 +72,7 @@ enum {
 
 typedef struct uimusicqgtk {
   uidance_t         *uidance;
+  uidance_t         *uidance5;
   UIWidget          musicqTree;
   GtkTreeSelection  *sel;
   GtkTreeViewColumn *favColumn;
@@ -117,6 +118,7 @@ uimusicqUIInit (uimusicq_t *uimusicq)
     uiw = malloc (sizeof (uimusicqgtk_t));
     uimusicq->ui [i].uiWidgets = uiw;
     uiw->uidance = NULL;
+    uiw->uidance5 = NULL;
     uiw->selPathStr = NULL;
     uiutilsUIWidgetInit (&uiw->musicqTree);
     uiw->favColumn = NULL;
@@ -134,11 +136,12 @@ uimusicqUIFree (uimusicq_t *uimusicq)
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     uiw = uimusicq->ui [i].uiWidgets;
     if (uiw != NULL) {
-      for (i = 0; i < UIMUSICQ_BUTTON_MAX; ++i) {
-        uiButtonFree (uiw->buttons [i]);
+      for (int j = 0; j < UIMUSICQ_BUTTON_MAX; ++j) {
+        uiButtonFree (uiw->buttons [j]);
       }
       dataFree (uiw->selPathStr);
       uidanceFree (uiw->uidance);
+      uidanceFree (uiw->uidance5);
       free (uiw);
     }
   }
@@ -316,10 +319,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     if (bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, ci)) {
       uiutilsUICallbackLongIntInit (&uimusicq->queuedancecb,
           uimusicqQueueDanceCallback, uimusicq);
-      uiw->uidance = uidanceDropDownCreate (&hbox, parentwin,
+      uiw->uidance5 = uidanceDropDownCreate (&hbox, parentwin,
           /* CONTEXT: (verb) music queue: button: queue 5 dances for playback */
           UIDANCE_NONE, _("Queue 5"), UIDANCE_PACK_END, 5);
-      uidanceSetCallback (uiw->uidance, &uimusicq->queuedancecb);
+      uidanceSetCallback (uiw->uidance5, &uimusicq->queuedancecb);
 
       uiutilsUICallbackLongIntInit (&uimusicq->queuedancecb,
           uimusicqQueueDanceCallback, uimusicq);

@@ -83,6 +83,7 @@ void
 uiDropDownFree (uidropdown_t *dropdown)
 {
   if (dropdown != NULL) {
+    uiButtonFree (dropdown->button);
     dataFree (dropdown->title);
     dataFree (dropdown->strSelection);
     slistFree (dropdown->strIndexMap);

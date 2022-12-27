@@ -1286,7 +1286,8 @@ tsScriptChkResponse (testsuite_t *testsuite)
         }
         fprintf (stdout, "          %3d %s-%s: %s: resp: %s %s exp: %s (%ld/%ld)\n",
             testsuite->lineno, typedisp, resultdisp, key, valresp,
-            compdisp, valexp, mstimeend (&testsuite->responseStart), testsuite->responseTimeout);
+            compdisp, valexp, (long) mstimeend (&testsuite->responseStart),
+            testsuite->responseTimeout);
         fflush (stdout);
       }
     }

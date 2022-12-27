@@ -6,11 +6,13 @@
 pn_spkgnm=bdj4
 pn_tag=""
 pn_rlstag=""
+pn_devtag=""
 pn_datetag=""
 pn_archtag=""
 BUILD=""
 BUILDDATE=""
 RELEASELEVEL=""
+DEVELOPMENT=""
 VERSION=""
 
 function pkgnmgetdata {
@@ -22,6 +24,14 @@ function pkgnmgetdata {
       ;;
     production)
       pn_rlstag=""
+      ;;
+  esac
+
+  case $DEVELOPMENT in
+    "")
+      ;;
+    *)
+      pn_devtag=-$DEVELOPMENT
       ;;
   esac
 
@@ -65,25 +75,25 @@ function pkgnmgetdata {
 
 function pkgsrcnm {
   pkgnmgetdata
-  nm=${pn_spkgnm}-src-${VERSION}${pn_rlstag}.tar.gz
+  nm=${pn_spkgnm}-src-${VERSION}${pn_rlstag}${pn_devtag}.tar.gz
   echo $nm
 }
 
 function pkginstnm {
   pkgnmgetdata
-  nm=${pn_spkgnm}-installer-${pn_tag}${pn_archtag}-${VERSION}${pn_rlstag}${pn_datetag}${pn_sfx}
+  nm=${pn_spkgnm}-installer-${pn_tag}${pn_archtag}-${VERSION}${pn_rlstag}${pn_devtag}${pn_datetag}${pn_sfx}
   echo $nm
 }
 
 function pkgcurrvers {
   pkgnmgetdata
-  currvers=${VERSION}${pn_rlstag}${pn_datetag}
+  currvers=${VERSION}${pn_rlstag}${pn_devtag}${pn_datetag}
   echo $currvers
 }
 
 function pkglongvers {
   pkgnmgetdata
-  currvers=${VERSION}${pn_rlstag}-${BUILDDATE}-${BUILD}
+  currvers=${VERSION}${pn_rlstag}${pn_devtag}-${BUILDDATE}-${BUILD}
   echo $currvers
 }
 

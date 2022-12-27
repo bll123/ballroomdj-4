@@ -332,7 +332,7 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
 
   logProcBegin (LOG_PROC, "bdj4shutdown");
 
-  if (strcmp (sysvarsGetStr (SV_BDJ4_RELEASELEVEL), "alpha") == 0) {
+  if (strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") == 0) {
     char    tbuff [MAXPATHLEN];
 
     pathbldMakePath (tbuff, sizeof (tbuff),

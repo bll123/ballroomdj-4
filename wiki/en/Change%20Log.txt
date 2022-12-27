@@ -7,8 +7,10 @@
 **4.0.2 beta 2022-12---**
 
 * Bug Fixes:
-    * macos: Fix theme selection.
+    * macos: Fix theme selection (introduced in 4.0.1).
     * alternate setup: fix.
+    * PENDING: windows: installer: fix creation of shortcut when space in account name.
+    * PENDING: windows: music manager: fix listing not showing all songs.
 
 -->
 

@@ -36,7 +36,7 @@ instutilCreateShortcut (const char *name, const char *maindir,
   if (isWindows ()) {
     if (! chdir ("install")) {
       targv [targc++] = ".\\winshortcut.bat";
-      snprintf (path, sizeof (path), "\"%s%s.lnk\"",
+      snprintf (path, sizeof (path), "%s%s.lnk",
           "%USERPROFILE%\\Desktop\\", name);
       targv [targc++] = path;
       pathbldMakePath (buff, sizeof (buff),

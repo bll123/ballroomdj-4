@@ -15,6 +15,7 @@
 #include <unistd.h>
 
 #include "bdjopt.h"
+#include "fileop.h"
 #include "localeutil.h"
 #include "sysvars.h"
 

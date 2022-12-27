@@ -858,7 +858,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
   manage->slmusicqtabwidget = uiwidgetp;
 
-  /* song list editor: song selection tab*/
+  /* song list editor: song selection tab */
   uiwidgetp = uisongselBuildUI (manage->slsongsel, &manage->window);
   /* CONTEXT: managementui: name of song selection notebook tab */
   uiCreateLabel (&uiwidget, _("Song Selection"));
