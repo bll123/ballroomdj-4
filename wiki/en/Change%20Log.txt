@@ -9,7 +9,7 @@
 * Bug Fixes:
     * macos: Fix theme selection (introduced in 4.0.1).
     * alternate setup: fix.
-    * PENDING: windows: installer: fix creation of shortcut when space in account name.
+    * installer: fix shortcut creation.
     * PENDING: windows: music manager: fix listing not showing all songs.
 
 -->

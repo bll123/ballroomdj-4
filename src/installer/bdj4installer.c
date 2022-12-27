@@ -2020,6 +2020,8 @@ installerConvertFinish (installer_t *installer)
 static void
 installerCreateShortcut (installer_t *installer)
 {
+  char  tbuff [MAXPATHLEN];
+
   if (chdir (installer->rundir)) {
     installerFailWorkingDir (installer, installer->rundir, "createshortcut");
     return;
@@ -2028,8 +2030,11 @@ installerCreateShortcut (installer_t *installer)
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Creating shortcut."), false);
 
+  /* pathbld_mp_dir_exec is used by instutilCreateShortcut() */
+  snprintf (tbuff, sizeof (tbuff), "%s/bin", installer->target);
+  sysvarsSetStr (SV_BDJ4_DIR_EXEC, tbuff);
   /* handles linux and windows */
-  instutilCreateShortcut ("BD4", installer->rundir, installer->rundir, 0);
+  instutilCreateShortcut (BDJ4_NAME, installer->rundir, installer->rundir, 0);
 
   if (isMacOS ()) {
 #if _lib_symlink
