@@ -74,6 +74,7 @@ Suite *     status_suite (void);
 Suite *     tagdef_suite (void);
 Suite *     templateutil_suite (void);
 Suite *     validate_suite (void);
+Suite *     volreg_suite (void);
 Suite *     webclient_suite (void);
 
 #endif /* INC_CHECK_BDJ */

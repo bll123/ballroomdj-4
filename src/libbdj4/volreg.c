@@ -219,6 +219,9 @@ volregUpdate (const char *sink, int originalVolume, int inc)
       if (count > 0) {
         rval = -1;
       } else {
+        if (count < 0) {
+          count = 0;
+        }
         rval = ilistGetNum (vlist, vkey, VOLREG_ORIG_VOL);
       }
     }

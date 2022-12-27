@@ -60,7 +60,7 @@ check_libbdj4 (SRunner *sr)
    *  bdj4init
    *  msgparse
    *  songdb
-   *  volreg
+   *  volreg                complete (missing lock tests)
    *  musicq
    */
 
@@ -142,5 +142,8 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = orgopt_suite();
+  srunner_add_suite (sr, s);
+
+  s = volreg_suite();
   srunner_add_suite (sr, s);
 }
