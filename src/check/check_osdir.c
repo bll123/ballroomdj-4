@@ -87,9 +87,10 @@ START_TEST(osdir_chk)
   ck_assert_int_eq (count, tdatasz);
 
   for (i = 0; i < tdatasz; ++i) {
-    fileopDelete (osdirtestdata [i]);
+    snprintf (tbuff, sizeof (tbuff), "%s/%s", OSDIRTESTDIR, osdirtestdata [i]);
+    fileopDelete (tbuff);
   }
-  diropDeleteDir ("tmp/abc");
+  diropDeleteDir (OSDIRTESTDIR);
 }
 END_TEST
 

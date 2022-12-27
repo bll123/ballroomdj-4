@@ -30,13 +30,13 @@ check_libcommon (SRunner *sr)
   /* libcommon:
    *  fileop      complete
    *  bdjstring   complete
-   *  osprocess   complete    // uses procutil
+   *  osprocess   complete      // uses procutil
    *  filedata    complete
    *  osnetutils  complete 2022-12-27
    *  pathutil    complete
    *  sysvars
    *  tmutil      complete
-   *  osutils
+   *  osutils     complete 2022-12-27
    *  dirop       complete
    *  osdir       complete 2022-12-27     // uses dirop
    *  filemanip   complete 2022-11-1
@@ -76,6 +76,9 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = tmutil_suite();
+  srunner_add_suite (sr, s);
+
+  s = osutils_suite();
   srunner_add_suite (sr, s);
 
   s = dirop_suite();

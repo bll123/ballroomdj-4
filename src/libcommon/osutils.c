@@ -35,7 +35,11 @@ osSetEnv (const char *name, const char *value)
 
   /* setenv is better */
 #if _lib_setenv
-  rc = setenv (name, value, 1);
+  if (*value) {
+    rc = setenv (name, value, 1);
+  } else {
+    rc = unsetenv (name);
+  }
 #else
   {
     char    tbuff [4096];

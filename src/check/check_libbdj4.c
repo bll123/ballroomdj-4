@@ -58,7 +58,7 @@ check_libbdj4 (SRunner *sr)
    *  m3u
    *  orgopt                complete
    *  bdj4init
-   *  msgparse
+   *  msgparse              complete 2022-12-27
    *  songdb
    *  volreg                complete 2022-12-27 (missing lock tests)
    *  musicq

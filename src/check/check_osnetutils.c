@@ -18,11 +18,8 @@
 
 #include <check.h>
 
-#include "bdjstring.h"
 #include "check_bdj.h"
 #include "log.h"
-#include "pathbld.h"
-#include "sysvars.h"
 #include "osnetutils.h"
 
 START_TEST(osnetutils_chk)
