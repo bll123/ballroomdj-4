@@ -14,6 +14,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <dirent.h>
+
 #if _hdr_winsock2
 # include <winsock2.h>
 #endif
@@ -25,6 +27,14 @@
 #include "bdjstring.h"
 #include "osdir.h"
 #include "osutils.h"
+
+typedef struct dirhandle {
+  DIR       *dh;
+  char      *dirname;
+#if _typ_HANDLE
+  HANDLE    dhandle;
+#endif
+} dirhandle_t;
 
 dirhandle_t *
 osDirOpen (const char *dirname)

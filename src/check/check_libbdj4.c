@@ -53,14 +53,14 @@ check_libbdj4 (SRunner *sr)
    *  samesong              complete
    *  orgutil               partial
    *  validate              complete
-   *  webclient             complete
+   *  webclient             complete 2022-12-27
    *  audiotag
    *  m3u
    *  orgopt                complete
    *  bdj4init
    *  msgparse
    *  songdb
-   *  volreg                complete (missing lock tests)
+   *  volreg                complete 2022-12-27 (missing lock tests)
    *  musicq
    */
 

@@ -33,7 +33,7 @@ typedef struct {
   int   pind;
 } titem_t;
 
-titem_t testdata [] = {
+titem_t mptestdata [] = {
   { 2, 1, 20, 0 },
   { 3, 2, 26, 0 },
   { 4, 3, 16, 0 },
@@ -44,7 +44,7 @@ titem_t testdata [] = {
   { 9, 8, 75, 0 },
 };
 enum {
-  titemsz = sizeof (testdata) / sizeof (titem_t),
+  titemsz = sizeof (mptestdata) / sizeof (titem_t),
 };
 
 
@@ -62,8 +62,8 @@ START_TEST(msgparse_mq_data)
       MSG_ARGS_RS, MSG_ARGS_RS, MSG_ARGS_RS);
   for (int i = 0; i < titemsz; ++i) {
     snprintf (tmp, sizeof (tmp), "%d%c%d%c%d%c%d%c",
-      testdata [i].didx, MSG_ARGS_RS, testdata [i].uidx, MSG_ARGS_RS,
-      testdata [i].dbidx, MSG_ARGS_RS, testdata [i].pind, MSG_ARGS_RS);
+      mptestdata [i].didx, MSG_ARGS_RS, mptestdata [i].uidx, MSG_ARGS_RS,
+      mptestdata [i].dbidx, MSG_ARGS_RS, mptestdata [i].pind, MSG_ARGS_RS);
     strlcat (tbuff, tmp, sizeof (tbuff));
   }
   mpmqu = msgparseMusicQueueData (tbuff);
@@ -75,10 +75,10 @@ START_TEST(msgparse_mq_data)
   for (int i = 0; i < titemsz; ++i) {
     mpmqitem = nlistGetData (list, i + 1);
     ck_assert_ptr_nonnull (mpmqitem);
-    ck_assert_int_eq (mpmqitem->dispidx, testdata [i].didx);
-    ck_assert_int_eq (mpmqitem->uniqueidx, testdata [i].uidx);
-    ck_assert_int_eq (mpmqitem->dbidx, testdata [i].dbidx);
-    ck_assert_int_eq (mpmqitem->pauseind, testdata [i].pind);
+    ck_assert_int_eq (mpmqitem->dispidx, mptestdata [i].didx);
+    ck_assert_int_eq (mpmqitem->uniqueidx, mptestdata [i].uidx);
+    ck_assert_int_eq (mpmqitem->dbidx, mptestdata [i].dbidx);
+    ck_assert_int_eq (mpmqitem->pauseind, mptestdata [i].pind);
   }
   msgparseMusicQueueDataFree (mpmqu);
 }

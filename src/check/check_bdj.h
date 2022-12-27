@@ -27,6 +27,7 @@ Suite *     filedata_suite (void);
 Suite *     filemanip_suite (void);
 Suite *     fileop_suite (void);
 Suite *     lock_suite (void);
+Suite *     osdir_suite (void);
 Suite *     osnetutils_suite (void);
 Suite *     osprocess_suite (void);
 Suite *     osrandom_suite (void);

@@ -6,25 +6,7 @@
 
 #include "config.h"
 
-#include <dirent.h>
-
-#if _hdr_winsock2
-# pragma clang diagnostic push
-# pragma clang diagnostic ignored "-Wmissing-declarations"
-# include <winsock2.h>
-# pragma clang diagnostic pop
-#endif
-#if _hdr_windows
-# include <windows.h>
-#endif
-
-typedef struct {
-  DIR       *dh;
-  char      *dirname;
-#if _typ_HANDLE
-  HANDLE    dhandle;
-#endif
-} dirhandle_t;
+typedef struct dirhandle dirhandle_t;
 
 dirhandle_t   * osDirOpen (const char *dir);
 char          * osDirIterate (dirhandle_t *dirh);

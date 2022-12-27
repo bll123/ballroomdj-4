@@ -32,13 +32,13 @@ check_libcommon (SRunner *sr)
    *  bdjstring   complete
    *  osprocess   complete    // uses procutil
    *  filedata    complete
-   *  osnetutils  complete
+   *  osnetutils  complete 2022-12-27
    *  pathutil    complete
    *  sysvars
    *  tmutil      complete
-   *  osdir
    *  osutils
    *  dirop       complete
+   *  osdir       complete 2022-12-27     // uses dirop
    *  filemanip   complete 2022-11-1
    *  fileshared                // open/write/close shared
    *  pathbld     complete
@@ -51,20 +51,19 @@ check_libcommon (SRunner *sr)
    *  osrandom    complete
    *  vsencdec    complete
    *  queue       complete 2022-11-1
-   *  dirlist     complete
    *  colorutils  complete
    *  ossignal    complete
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libcommon");
 
+  s = fileop_suite();
+  srunner_add_suite (sr, s);
+
   s = bdjstring_suite();
   srunner_add_suite (sr, s);
 
   s = osprocess_suite();
-  srunner_add_suite (sr, s);
-
-  s = fileop_suite();
   srunner_add_suite (sr, s);
 
   s = filedata_suite();
@@ -79,10 +78,16 @@ check_libcommon (SRunner *sr)
   s = tmutil_suite();
   srunner_add_suite (sr, s);
 
-  s = pathbld_suite();
+  s = dirop_suite();
+  srunner_add_suite (sr, s);
+
+  s = osdir_suite();
   srunner_add_suite (sr, s);
 
   s = filemanip_suite();
+  srunner_add_suite (sr, s);
+
+  s = pathbld_suite();
   srunner_add_suite (sr, s);
 
   s = bdjmsg_suite();
@@ -101,9 +106,6 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = queue_suite();
-  srunner_add_suite (sr, s);
-
-  s = dirop_suite();
   srunner_add_suite (sr, s);
 
   s = colorutils_suite();
