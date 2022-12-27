@@ -4,6 +4,7 @@
 * on Linux:
     * update README.txt
     * update VERSION.txt
+        * clear DEVELOPMENT tag
     * update ../wiki/en/Change%20Log.txt
     * make distclean
     * make 2>&1 | tee w
@@ -38,7 +39,10 @@ on the other platforms.
     * announce the release on the forum
     * announce the release on freshcode.club
     * update sourceforge, mark the packages
+    * update VERSION.txt
+        * set next version
+        * set DEVELOPMENT tag
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2022-12-24 14:04:44; BDJ4 version 4.0.1-beta)_
+<br>_(Updated 2022-12-27 10:48:36; BDJ4 version 4.0.2-beta)_

@@ -473,24 +473,27 @@ sysvarsInit (const char *argv0)
     char    *vnm;
     char    *p;
 
+    strlcpy (sysvars [SV_BDJ4_DEVELOPMENT], "", SV_MAX_SZ);
+    strlcpy (sysvars [SV_BDJ4_RELEASELEVEL], "", SV_MAX_SZ);
+
     data = filedataReadAll (buff, NULL);
     tp = strtok_r (data, "\r\n", &tokptr);
     while (tp != NULL) {
       vnm = strtok_r (tp, "=", &tokptrb);
       p = strtok_r (NULL, "=", &tokptrb);
-      if (strcmp (vnm, "VERSION") == 0) {
+      if (vnm != NULL && p != NULL && strcmp (vnm, "VERSION") == 0) {
         strlcpy (sysvars [SV_BDJ4_VERSION], p, SV_MAX_SZ);
       }
-      if (strcmp (vnm, "BUILD") == 0) {
+      if (vnm != NULL && p != NULL && strcmp (vnm, "BUILD") == 0) {
         strlcpy (sysvars [SV_BDJ4_BUILD], p, SV_MAX_SZ);
       }
-      if (strcmp (vnm, "BUILDDATE") == 0) {
+      if (vnm != NULL && p != NULL && strcmp (vnm, "BUILDDATE") == 0) {
         strlcpy (sysvars [SV_BDJ4_BUILDDATE], p, SV_MAX_SZ);
       }
-      if (strcmp (vnm, "RELEASELEVEL") == 0) {
+      if (vnm != NULL && p != NULL && strcmp (vnm, "RELEASELEVEL") == 0) {
         strlcpy (sysvars [SV_BDJ4_RELEASELEVEL], p, SV_MAX_SZ);
       }
-      if (strcmp (vnm, "DEVELOPMENT") == 0) {
+      if (vnm != NULL && p != NULL && strcmp (vnm, "DEVELOPMENT") == 0) {
         strlcpy (sysvars [SV_BDJ4_DEVELOPMENT], p, SV_MAX_SZ);
       }
       tp = strtok_r (NULL, "\r\n", &tokptr);

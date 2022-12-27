@@ -86,7 +86,10 @@ function checkInstallation {
   tcount=$(($tcount+1))
 
   res=$(($res+1))   # finish
-  set $tout
+  set BAD
+  if [[ $tout != "" ]]; then
+    set $tout
+  fi
   while test $# -gt 0; do
     case $1 in
       finish)

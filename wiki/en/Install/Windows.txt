@@ -2,6 +2,14 @@
 
 ## Installing BallroomDJ 4 on Windows
 
+#### Windows Account Names with Diacritical Marks
+
+The BallroomDJ 4 installer will not run if the windows account name
+has any diacritical marks (e.g. Gergő; accents, umlauts, circumflex,
+etc.).  You will need to change your account name (quite difficult),
+or create a new account for BDJ4 that does not have any diacritical
+marks.
+
 #### Install BallroomDJ 4
 
 Download the Windows installer from sourceforge.
@@ -58,4 +66,4 @@ After the VLC installation is complete, turn off the **Run VLC media
 player** checkbox, and select **Finish**.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-25 08:12:32; BDJ4 version 4.0.1-beta)_
+<br>_(Updated 2022-12-27 10:48:36; BDJ4 version 4.0.2-beta)_

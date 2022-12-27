@@ -4,16 +4,17 @@
 
 <!--
 
-**4.0.2 beta 2022-12---**
+**4.0.3 beta 2022-12---**
+
+-->
+
+**4.0.2 beta 2022-12-27**
 
 * Bug Fixes:
     * macos: Fix theme selection (introduced in 4.0.1).
     * alternate setup: fix.
     * installer: fix shortcut creation.
-    * PENDING: windows: music manager: fix listing not showing all songs.
-
--->
-
+    * windows: music manager: create work-around for listing not showing all songs.
 
 **4.0.1 beta 2022-12-24**
 
@@ -89,4 +90,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-25 08:12:32; BDJ4 version 4.0.1-beta)_
+<br>_(Updated 2022-12-27 10:48:36; BDJ4 version 4.0.2-beta)_

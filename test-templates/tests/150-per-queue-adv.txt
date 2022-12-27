@@ -342,14 +342,14 @@ wait playstate playing
 mssleep 1500
 #
 msg main MUSICQ_SET_PLAYBACK 1
-msg main CHK_MAIN_SET_FADEOUT 0
+msg main CHK_MAIN_SET_FADEOUT 4000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
 msg main MUSICQ_SET_PLAYBACK 0
 end
 
 
 # play when queued
-test 150-50 Play-When-Queued-Basic
+test 150-50 Play-When-Queued
 msg main MUSICQ_SET_PLAYBACK 0
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
@@ -420,7 +420,6 @@ wait playstate playing
 mssleep 1500
 resptimeout 7500
 msg player PLAY_FADE
-wait playstate in-fadeout
 wait playstate stopped
 #
 resptimeout 2500
@@ -430,7 +429,6 @@ wait playstate playing
 mssleep 1500
 resptimeout 7500
 msg player PLAY_FADE
-wait playstate in-fadeout
 wait playstate stopped
 #
 msg main MUSICQ_SET_PLAYBACK 0
@@ -453,7 +451,6 @@ wait playstate playing
 mssleep 1500
 resptimeout 7500
 msg player PLAY_FADE
-wait playstate in-fadeout
 wait playstate stopped
 #
 msg main MUSICQ_SET_PLAYBACK 1

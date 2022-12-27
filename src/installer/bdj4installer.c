@@ -448,6 +448,7 @@ main (int argc, char *argv[])
 
   if (*installer.unpackdir == '\0') {
     fprintf (stderr, "Error: unpackdir argument is required\n");
+    fprintf (stdout, "finish NG\n");
     dataFree (installer.target);
     dataFree (installer.bdj3loc);
     exit (1);
@@ -1464,39 +1465,49 @@ installerMakeTarget (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), "%s/VERSION.txt",
       installer->target);
   if (fileopFileExists (tbuff)) {
-    char *nm, *ver, *build, *bdate, *rlvl;
+    char *nm, *ver, *build, *bdate, *rlvl, *rdev;
 
     nm = "";
     ver = "";
     build = "";
     bdate = "";
     rlvl = "";
+    rdev = "";
     data = filedataReadAll (tbuff, NULL);
     tp = strtok_r (data, "\r\n", &tokptr);
     while (tp != NULL) {
       nm = strtok_r (tp, "=", &tokptrb);
       p = strtok_r (NULL, "=", &tokptrb);
-      if (strcmp (nm, "VERSION") == 0) {
+      if (nm != NULL && p != NULL && strcmp (nm, "VERSION") == 0) {
         ver = p;
       }
-      if (strcmp (nm, "BUILD") == 0) {
+      if (nm != NULL && p != NULL && strcmp (nm, "BUILD") == 0) {
         build = p;
       }
-      if (strcmp (nm, "BUILDDATE") == 0) {
+      if (nm != NULL && p != NULL && strcmp (nm, "BUILDDATE") == 0) {
         bdate = p;
       }
-      if (strcmp (nm, "RELEASELEVEL") == 0) {
+      if (nm != NULL && p != NULL && strcmp (nm, "RELEASELEVEL") == 0) {
         rlvl = p;
       }
-      stringTrim (p);
+      if (nm != NULL && p != NULL && strcmp (nm, "DEVELOPMENT") == 0) {
+        rdev = p;
+      }
+      if (p != NULL) {
+        stringTrim (p);
+      }
       tp = strtok_r (NULL, "\r\n", &tokptr);
     }
     strlcat (installer->oldversion, ver, sizeof (installer->oldversion));
-    strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
     if (*rlvl) {
-      strlcat (installer->oldversion, rlvl, sizeof (installer->oldversion));
       strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
+      strlcat (installer->oldversion, rlvl, sizeof (installer->oldversion));
     }
+    if (*rdev) {
+      strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
+      strlcat (installer->oldversion, rdev, sizeof (installer->oldversion));
+    }
+    strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
     strlcat (installer->oldversion, bdate, sizeof (installer->oldversion));
     strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
     strlcat (installer->oldversion, build, sizeof (installer->oldversion));

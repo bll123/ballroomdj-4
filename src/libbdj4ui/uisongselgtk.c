@@ -95,6 +95,7 @@ typedef struct uisongselgtk {
   /* other data */
   int               lastTreeSize;
   double            lastRowHeight;
+  double            upperLimit;         // for windows work-around
   int               maxRows;
   nlist_t           *selectedBackup;
   nlist_t           *selectedList;
@@ -154,6 +155,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   uiw->favColumn = NULL;
   uiw->lastTreeSize = 0;
   uiw->lastRowHeight = 0.0;
+  uiw->upperLimit = 0.0;
   uiw->maxRows = 0;
   uiw->controlPressed = false;
   uiw->shiftPressed = false;
@@ -818,6 +820,19 @@ uisongselClearAllSelections (uisongsel_t *uisongsel)
       uisongselClearSelection, uisongsel);
 }
 
+double
+uisongselGetUpperWorkaround (uisongsel_t *uisongsel)
+{
+  uisongselgtk_t  *uiw;
+
+  if (uisongsel == NULL) {
+    return 0.0;
+  }
+
+  uiw = uisongsel->uiWidgetData;
+  return uiw->upperLimit;
+}
+
 /* internal routines */
 
 static void
@@ -1034,14 +1049,31 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     ps = gtk_adjustment_get_page_size (adjustment);
 
     if (uiw->lastRowHeight == 0.0) {
-      double      u, hpr;
+      double      u, ub, hpr;
 
       u = gtk_adjustment_get_upper (adjustment);
+
+      /* this is a really gross work-around for a windows gtk problem */
+      /* the music manager internal v-scroll adjustment is not set correctly */
+      /* use the value from one of the peers instead */
+      ub = 0.0;
+      for (int i = 0; i < uisongsel->peercount; ++i) {
+        if (uisongsel->peers [i] == NULL) {
+          continue;
+        }
+        ub = uisongselGetUpperWorkaround (uisongsel->peers [i]);
+        break;
+      }
+      if (ub > u) {
+        u = ub;
+      }
+
       hpr = u / STORE_ROWS;
       /* save the original step increment for use in calculations later */
       /* the current step increment has been adjusted for the current */
       /* number of rows that are displayed */
       uiw->lastRowHeight = hpr;
+      uiw->upperLimit = u;
     }
 
     tmax = ps / uiw->lastRowHeight;
