@@ -41,6 +41,7 @@ target_link_libraries (libuigtk3
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${GTK_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (libuigtk3)
@@ -50,4 +51,3 @@ install (TARGETS
   libuigtk3
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
-

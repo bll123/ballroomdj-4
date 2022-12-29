@@ -23,44 +23,24 @@ macro (addWinNtdllLibrary name)
   endif()
 endmacro()
 
-macro (macUpdateRPath name)
-  add_custom_command(TARGET ${name}
-      POST_BUILD
-      COMMAND
-        ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4.dylib"
-            "@executable_path/libbdj4.dylib"
-            $<TARGET_FILE:${name}>
-      COMMAND
-        ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4common.dylib"
-            "@executable_path/libbdj4common.dylib"
-            $<TARGET_FILE:${name}>
-      COMMAND
-        ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4basic.dylib"
-            "@executable_path/libbdj4basic.dylib"
-            $<TARGET_FILE:${name}>
-      COMMAND
-        ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4pli.dylib"
-            "@executable_path/libbdj4pli.dylib"
-            $<TARGET_FILE:${name}>
-      COMMAND
-        ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4ui.dylib"
-            "@executable_path/libbdj4ui.dylib"
-            $<TARGET_FILE:${name}>
-      COMMAND
-        ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libbdj4vol.dylib"
-            "@executable_path/libbdj4vol.dylib"
-            $<TARGET_FILE:${name}>
-      COMMAND
-        ${CMAKE_INSTALL_NAME_TOOL} -change
-            "@rpath/libuigtk3.dylib"
-            "@executable_path/libuigtk3.dylib"
-            $<TARGET_FILE:${name}>
-      VERBATIM
-  )
+macro (updateRPath name)
+  if (APPLE)
+    add_custom_command(TARGET ${name}
+        POST_BUILD
+        COMMAND
+          ${PROJECT_SOURCE_DIR}/utils/macfixrpath.sh
+              $<TARGET_FILE:${name}>
+        VERBATIM
+    )
+  endif()
+  if (NOT APPLE AND NOT WIN32)
+    add_custom_command(TARGET ${name}
+        POST_BUILD
+        COMMAND
+          patchelf
+              --set-rpath \$ORIGIN:\$ORIGIN/../plocal/lib
+              $<TARGET_FILE:${name}>
+        VERBATIM
+    )
+  endif()
 endmacro()

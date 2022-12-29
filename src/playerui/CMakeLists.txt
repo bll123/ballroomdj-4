@@ -15,6 +15,7 @@ target_link_libraries (bdj4playerui
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (bdj4playerui)
@@ -26,6 +27,4 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-if (APPLE)
-  macUpdateRPath (bdj4playerui)
-endif()
+updateRPath (bdj4playerui)

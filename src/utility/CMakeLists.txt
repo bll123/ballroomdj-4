@@ -23,6 +23,7 @@ endif()
 target_link_libraries (bdj4tags
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (bdj4tags)
@@ -34,6 +35,7 @@ endif()
 target_link_libraries (tdbcompare
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  z
   m
 )
 
@@ -44,6 +46,7 @@ endif()
 target_link_libraries (tdbdump
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  z
   m
 )
 
@@ -53,6 +56,7 @@ add_executable (testsuite
 target_link_libraries (testsuite
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  z
   m
 )
 
@@ -63,6 +67,7 @@ endif()
 target_link_libraries (tmusicsetup
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (tmusicsetup)
@@ -70,6 +75,7 @@ addIntlLibrary (tmusicsetup)
 add_executable (vlcsinklist vlcsinklist.c)
 target_link_libraries (vlcsinklist
   libbdj4pli libbdj4vol libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
   m
 )
 
@@ -85,13 +91,11 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-if (APPLE)
-  macUpdateRPath (bdj4info)
-  macUpdateRPath (bdj4tags)
-  macUpdateRPath (tdbcompare)
-  macUpdateRPath (tdbdump)
-  macUpdateRPath (testsuite)
-  macUpdateRPath (tmusicsetup)
-  macUpdateRPath (vlcsinklist)
-  macUpdateRPath (vsencdec)
-endif()
+updateRPath (bdj4info)
+updateRPath (bdj4tags)
+updateRPath (tdbcompare)
+updateRPath (tdbdump)
+updateRPath (testsuite)
+updateRPath (tmusicsetup)
+updateRPath (vlcsinklist)
+updateRPath (vsencdec)

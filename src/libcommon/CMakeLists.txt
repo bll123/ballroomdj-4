@@ -54,3 +54,4 @@ install (TARGETS
   libbdj4common
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+

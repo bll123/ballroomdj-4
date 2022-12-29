@@ -25,6 +25,7 @@ target_link_libraries (bdj4manageui
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (bdj4manageui)
@@ -39,8 +40,10 @@ if (WIN32)
 endif()
 target_link_libraries (bdj4bpmcounter
   libbdj4ui libuigtk3 libbdj4 libbdj4common
+  ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (bdj4bpmcounter)
@@ -52,7 +55,9 @@ if (WIN32)
   target_compile_options (bdj4dbupdate PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4dbupdate
-  libbdjregex libbdj4 libbdj4common
+  libbdjregex libbdj4 libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
+  z
   m
 )
 if (WIN32)
@@ -67,7 +72,9 @@ if (WIN32)
   target_compile_options (bdj4dbtag PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4dbtag
-  libbdj4 libbdj4common
+  libbdj4 libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
+  z
   m
 )
 target_compile_options (bdj4dbtag PRIVATE -pthread)
@@ -80,9 +87,7 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-if (APPLE)
-  macUpdateRPath (bdj4manageui)
-  macUpdateRPath (bdj4bpmcounter)
-  macUpdateRPath (bdj4dbupdate)
-  macUpdateRPath (bdj4dbtag)
-endif()
+updateRPath (bdj4manageui)
+updateRPath (bdj4bpmcounter)
+updateRPath (bdj4dbupdate)
+updateRPath (bdj4dbtag)

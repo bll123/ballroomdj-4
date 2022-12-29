@@ -37,6 +37,10 @@ pkg_check_modules (GTK gtk+-3.0)
 pkg_check_modules (OPENSSL openssl)
 pkg_check_modules (PA libpulse)
 pkg_check_modules (XML2 libxml-2.0)
+
+if (NOT WIN32)
+  set (ENV{PKG_CONFIG_PATH} "../packages/icu/lib/pkgconfig")
+endif()
 pkg_check_modules (ICU icu-i18n)
 
 add_compile_options (-DGDK_DISABLE_DEPRECATED)
@@ -109,6 +113,8 @@ endif()
 if (WIN32)
   # msys2 puts the include files for ICU in /usr/include
   add_compile_options (-I/usr/include)
+else()
+  add_compile_options (-I${ICU_INCLUDE_DIRS})
 endif()
 
 set (BDJ4_FORTIFY T)

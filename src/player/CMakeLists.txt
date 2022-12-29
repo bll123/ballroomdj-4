@@ -14,6 +14,7 @@ target_link_libraries (bdj4main
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (bdj4main)
@@ -28,6 +29,7 @@ target_link_libraries (bdj4player
   libbdj4pli libbdj4vol libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (bdj4player)
@@ -43,6 +45,7 @@ target_link_libraries (bdj4marquee
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (bdj4marquee)
@@ -61,6 +64,7 @@ target_link_libraries (bdj4rc
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  z
   m
 )
 addWinSockLibrary (bdj4rc)
@@ -78,6 +82,7 @@ target_link_libraries (bdj4mobmq
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
+  z
   m
 )
 addWinSockLibrary (bdj4mobmq)
@@ -87,10 +92,8 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-if (APPLE)
- macUpdateRPath (bdj4main)
- macUpdateRPath (bdj4player)
- macUpdateRPath (bdj4marquee)
- macUpdateRPath (bdj4rc)
- macUpdateRPath (bdj4mobmq)
-endif()
+ updateRPath (bdj4main)
+ updateRPath (bdj4player)
+ updateRPath (bdj4marquee)
+ updateRPath (bdj4rc)
+ updateRPath (bdj4mobmq)

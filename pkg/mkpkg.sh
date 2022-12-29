@@ -52,17 +52,27 @@ function copyreleasefiles {
   if [[ ! -d plocal/bin ]];then
     mkdir -p plocal/bin
   fi
+  if [[ ! -d plocal/lib ]];then
+    mkdir -p plocal/lib
+  fi
   case ${tag} in
     linux)
+      rsync -aS --delete packages/icu/lib plocal
+      rm -rf plocal/lib/pkgconfig plocal/lib/icu
       cp -f packages/fpcalc-${tag} plocal/bin/fpcalc
       filelist+=" plocal/bin/fpcalc"
+      dirlist+=" plocal/lib"
       ;;
     macos)
+      rsync -aS --delete packages/icu/lib plocal
+      rm -rf plocal/lib/pkgconfig plocal/lib/icu
       cp -f packages/fpcalc-${tag} plocal/bin/fpcalc
       filelist+=" plocal/bin/fpcalc"
+      dirlist+=" plocal/lib"
       dirlist+=" plocal/share/themes/macOS*"
       ;;
     win64|win32)
+      rm -rf plocal/lib/libicu*.so*
       cp -f packages/fpcalc-windows.exe plocal/bin/fpcalc.exe
       filelist+=" plocal/bin/fpcalc.exe"
       dirlist+=" plocal/bin plocal/share/themes/Wind*"
@@ -171,10 +181,10 @@ fi
 
 (cd src; make tclean > /dev/null 2>&1)
 
-if [[ $insttest == F ]]; then
-  # update build number
+. ./VERSION.txt
 
-  . ./VERSION.txt
+if [[ $insttest == F && $DEVELOPMENT == "" ]]; then
+  # update build number
 
   # only rebuild the version.txt file on linux.
   if [[ $tag == linux ]]; then

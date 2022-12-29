@@ -44,6 +44,7 @@ target_link_libraries (libvolwin
 add_executable (voltest voltest.c)
 target_link_libraries (voltest
   libbdj4vol libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
   m
 )
 
@@ -53,7 +54,5 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-if (APPLE)
-  macUpdateRPath (voltest)
-endif()
+updateRPath (voltest)
 

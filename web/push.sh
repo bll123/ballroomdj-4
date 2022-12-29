@@ -12,7 +12,6 @@ cwd=$(pwd)
 . src/utils/pkgnm.sh
 
 systype=$(uname -s)
-arch=$(uname -m)
 case $systype in
   Linux)
     tag=linux

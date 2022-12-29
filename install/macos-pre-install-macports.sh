@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=5
+ver=6
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -148,7 +148,6 @@ sudo port -N install \
     py${pyver}-wheel \
     curl \
     curl-ca-bundle \
-    icu \
     librsvg \
     gtk3 +quartz \
     adwaita-icon-theme \

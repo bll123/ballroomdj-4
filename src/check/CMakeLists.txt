@@ -78,6 +78,7 @@ target_link_libraries (check_all
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${CHECK_LDFLAGS}
   pthread
+  z
   m
 )
 target_compile_options (check_all PRIVATE -pthread)
@@ -91,7 +92,5 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-if (APPLE)
-  macUpdateRPath (check_all)
-endif()
+updateRPath (check_all)
 

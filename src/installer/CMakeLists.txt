@@ -43,6 +43,7 @@ target_link_libraries (bdj4installer
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (bdj4installer)
@@ -57,6 +58,7 @@ target_link_libraries (bdj4altsetup
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (bdj4altsetup)
@@ -69,6 +71,7 @@ endif()
 target_link_libraries (bdj4updater
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (bdj4updater)
@@ -78,9 +81,7 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-if (APPLE)
-  macUpdateRPath (bdj4se)
-  macUpdateRPath (bdj4installer)
-  macUpdateRPath (bdj4altsetup)
-  macUpdateRPath (bdj4updater)
-endif()
+updateRPath (bdj4se)
+updateRPath (bdj4installer)
+updateRPath (bdj4altsetup)
+updateRPath (bdj4updater)

@@ -63,11 +63,7 @@ if (WIN32)
   target_compile_options (bdj4starterui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4starterui
-  libbdj4ui
-  libuigtk3
-  libbdj4
-  libbdj4basic
-  libbdj4common
+  libbdj4ui libuigtk3 libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
@@ -83,13 +79,10 @@ if (WIN32)
   target_compile_options (bdj4helperui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4helperui
-  libbdj4ui
-  libuigtk3
-  libbdj4
-  libbdj4basic
-  libbdj4common
+  libbdj4ui libuigtk3 libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${GTK_LDFLAGS}
+  z
   m
 )
 addIntlLibrary (bdj4helperui)
@@ -101,9 +94,7 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-if (APPLE)
-  macUpdateRPath (bdj4)
-  macUpdateRPath (bdj4g)
-  macUpdateRPath (bdj4starterui)
-  macUpdateRPath (bdj4helperui)
-endif()
+updateRPath (bdj4)
+updateRPath (bdj4g)
+updateRPath (bdj4starterui)
+updateRPath (bdj4helperui)

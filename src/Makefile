@@ -63,6 +63,18 @@ cmakesinglecpu:
 	  $(MAKE) build; \
 	fi
 
+cmakesinglecpuverbose:
+	if test $$(uname -s) = Linux; then \
+	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-unix; \
+	  VERBOSE=1 $(MAKE) build; \
+	elif test $$(uname -s) = Darwin; then \
+	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
+	  VERBOSE=1 $(MAKE) build; \
+	else \
+	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-windows; \
+	  VERBOSE=1 $(MAKE) build; \
+	fi
+
 cmakeclang:
 	if test $$(uname -s) = Linux; then \
 	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \

@@ -51,6 +51,4 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-if (APPLE)
-  macUpdateRPath (bdj4configui)
-endif()
+updateRPath (bdj4configui)

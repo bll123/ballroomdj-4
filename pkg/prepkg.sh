@@ -39,7 +39,10 @@ licdir=licenses
 test -d ${licdir} && rm -rf ${licdir}
 mkdir -p ${licdir}
 cp -pf packages/mongoose*/LICENSE ${licdir}/mongoose.LICENSE
-if [[ $tag == windows ]]; then
+if [[ $tag == linux || $tag == macos ]]; then
+  cp -pf packages/icu/share/icu/72.1/LICENSE ${licdir}/icu.LICENCE
+fi
+if [[ $platform == windows ]]; then
   cp -pf packages/libressl*/COPYING ${licdir}/libressl.LICENSE
   cp -pf packages/c-ares*/LICENSE.md ${licdir}/c-ares.LICENSE.md
   cp -pf packages/curl*/COPYING ${licdir}/curl.LICENSE
