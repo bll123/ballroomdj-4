@@ -1024,12 +1024,15 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
     }
   }
 
-  strlcat (sbuff, "END", BDJMSG_MAX);
-
-  if (connHaveHandshake (mainData->conn, ROUTE_PLAYERUI)) {
+  /* only the displayable queues need to be updated in the playerui */
+  if (musicqidx < MUSICQ_DISP_MAX &&
+      connHaveHandshake (mainData->conn, ROUTE_PLAYERUI)) {
     connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSIC_QUEUE_DATA, sbuff);
   }
-  if (connHaveHandshake (mainData->conn, ROUTE_MANAGEUI)) {
+  /* only the song list and the internal playback queue need updating in */
+  /* the manageui */
+  if (musicqidx >= MUSICQ_DISP_MAX &&
+      connHaveHandshake (mainData->conn, ROUTE_MANAGEUI)) {
     connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_MUSIC_QUEUE_DATA, sbuff);
   }
   dataFree (sbuff);
