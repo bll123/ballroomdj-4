@@ -10,8 +10,12 @@
     * linux: Resolve ICU library versioning issues.
     * macos: Resolve ICU library versioning issues.
     * nederlands: Fix missing queue D configuration.
+    * player ui: Fixed crash after the history queue was selected.
 * Changes:
     * song selection: Added short heading names for dance rating and dance level.
+* Internal:
+    * fixed memory corruption and memory leak.
+    * fixed extraneous messages on db entry update.
 
 -->
 

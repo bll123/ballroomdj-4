@@ -59,9 +59,9 @@ main (int argc, const char *argv [])
   assert (buff != NULL);
 
   /* a mess to make sure the tag string doesn't appear in the bdj4se binary */
-  strcpy (tagstr, TAGSTRPFX);
-  strcat (tagstr, TAGSTR);
-  strcat (tagstr, TAGSTRSFX);
+  strlcpy (tagstr, TAGSTRPFX, sizeof (tagstr));
+  strlcat (tagstr, TAGSTR, sizeof (tagstr));
+  strlcat (tagstr, TAGSTRSFX, sizeof (tagstr));
 
   ifh = fopen (fn, "rb");
   if (ifh == NULL) {

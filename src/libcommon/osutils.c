@@ -44,7 +44,13 @@ osGetEnv (const char *name, char *buff, size_t sz)
   strlcpy (buff, tenv, sz);
   free (tenv);
 #else
-  strlcpy (buff, getenv (name), sz);
+  char    *tptr;
+
+  *buff = '\0';
+  tptr = getenv (name);
+  if (tptr != NULL) {
+    strlcpy (buff, tptr, sz);
+  }
 #endif
 }
 

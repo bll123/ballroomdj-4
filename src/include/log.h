@@ -93,7 +93,7 @@ typedef struct {
 #define LOG_EXTENSION     ".txt"
 
 enum {
-  LOG_MAX_BUFF    = 1024,
+  LOG_MAX_BUFF    = 4096,
 };
 
 /* exists in log.c so that bdj4main and bdj4player and testsuite can access it */

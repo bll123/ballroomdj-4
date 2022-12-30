@@ -741,11 +741,6 @@ playerProcessing (void *udata)
                   MSG_PLAYBACK_FINISH, nsflag);
             }
           }
-
-          if (! playerData->repeat) {
-            playerPrepQueueFree (playerData->currentSong);
-            playerData->currentSong = NULL;
-          }
         }
 
         /* the play request for a song on repeat is left in the queue */
@@ -776,6 +771,14 @@ playerProcessing (void *udata)
           logMsg (LOG_DBG, LOG_BASIC, "no-gap");
           playerSetPlayerState (playerData, PL_STATE_STOPPED);
         }
+
+        if (pq->announce == PREP_SONG) {
+          if (! playerData->repeat) {
+            playerPrepQueueFree (playerData->currentSong);
+            playerData->currentSong = NULL;
+          }
+        }
+
         playerData->gap = playerData->priorGap;
       } /* has stopped */
     } /* time to check...*/

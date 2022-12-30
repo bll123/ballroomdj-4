@@ -20,7 +20,7 @@
 mp_musicqupdate_t *
 msgparseMusicQueueData (char *args)
 {
-  int               mqidx;
+  int               mqidx = 0;
   char              *p;
   char              *tokstr;
   int               idx;

@@ -502,6 +502,11 @@ uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqup
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueData");
 
   ci = musicqupdate->mqidx;
+  if (ci < 0 || ci >= MUSICQ_DISP_MAX) {
+    logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "bad-mq-idx");
+    return;
+  }
+
   if (! uimusicq->ui [ci].hasui) {
     logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "no-ui");
     return;

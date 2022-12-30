@@ -70,6 +70,7 @@ enum {
 enum {
   MAIN_PREP_SIZE = 5,
   MAIN_NOT_SET = -1,
+  MAIN_TS_DEBUG_MAX = 6,
 };
 
 typedef struct {
@@ -577,6 +578,12 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_DB_ENTRY_UPDATE: {
           dbLoadEntry (mainData->musicdb, atol (targs));
           for (int i = 0; i < MUSICQ_MAX; ++i) {
+            int   musicqLen;
+
+            musicqLen = musicqGetLen (mainData->musicQueue, i);
+            if (musicqLen <= 0) {
+              continue;
+            }
             mainData->musicqChanged [i] = MAIN_CHG_START;
             mainData->marqueeChanged [i] = true;
           }
@@ -986,6 +993,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   logProcBegin (LOG_PROC, "mainSendMusicQueueData");
 
   musicqLen = musicqGetLen (mainData->musicQueue, musicqidx);
+
   qDuration = musicqGetDuration (mainData->musicQueue, musicqidx);
   dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, 0);
 
@@ -1015,6 +1023,8 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
       strlcat (sbuff, tbuff, BDJMSG_MAX);
     }
   }
+
+  strlcat (sbuff, "END", BDJMSG_MAX);
 
   if (connHaveHandshake (mainData->conn, ROUTE_PLAYERUI)) {
     connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MUSIC_QUEUE_DATA, sbuff);
@@ -2927,7 +2937,7 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
   char    tmp [2000];
   dbidx_t dbidx;
   dbidx_t qdbidx;
-  dbidx_t mqdbidx [MUSICQ_PB_MAX][6];
+  dbidx_t mqdbidx [MUSICQ_PB_MAX][MAIN_TS_DEBUG_MAX];
   char    *title;
   char    *dance;
   song_t  *song;
@@ -2953,7 +2963,7 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
   }
 
   for (int mqidx = 0; mqidx < MUSICQ_PB_MAX; ++mqidx) {
-    for (int idx = 0; idx < 6; ++idx) {
+    for (int idx = 0; idx < MAIN_TS_DEBUG_MAX; ++idx) {
       mqdbidx [mqidx][idx] = musicqGetByIdx (mainData->musicQueue, mqidx, idx);
     }
   }

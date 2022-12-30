@@ -809,10 +809,16 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mp_musicqupdate_t   *musicqupdate;
           int                 updflag;
 
-logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-routefrom, msgRouteDebugText (routefrom),
-route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
           musicqupdate = msgparseMusicQueueData (args);
+          if (musicqupdate == NULL) {
+            break;
+          }
+
+          if ((int) musicqupdate->mqidx >= MUSICQ_DISP_MAX ||
+              ! bdjoptGetNumPerQueue (OPT_Q_DISPLAY, musicqupdate->mqidx)) {
+            logMsg (LOG_DBG, LOG_MAIN, "music queue data: mq idx %d not valid", musicqupdate->mqidx);
+            break;
+          }
 
           updflag = UISONGSEL_MARK_UPDATE;
           if (musicqupdate->mqidx == MUSICQ_PB_A) {
@@ -829,6 +835,8 @@ route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
                   updflag);
             }
           }
+
+          msgparseMusicQueueDataFree (musicqupdate);
           break;
         }
         case MSG_DATABASE_UPDATE: {
@@ -938,9 +946,12 @@ pluiSwitchPage (void *udata, long pagenum)
 
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
   plui->currpage = pagenum;
-  if (tabid == UI_TAB_MUSICQ || tabid == UI_TAB_HISTORY) {
-    /* do not call this on the request tab */
+  /* do not call set-manage-queue on the request tab */
+  if (tabid == UI_TAB_MUSICQ) {
     pluiSetManageQueue (plui, pagenum);
+  }
+  if (tabid == UI_TAB_HISTORY) {
+    pluiSetManageQueue (plui, MUSICQ_HISTORY);
   }
 
   pluiPlaybackButtonHideShow (plui, pagenum);
