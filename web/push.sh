@@ -33,6 +33,19 @@ case $systype in
     ;;
 esac
 
+pnm=$(pkginstnm)
+case ${pnm} in
+  *-dev)
+    echo "Failed: will not push development package."
+    exit 1
+    ;;
+esac
+
+if [[ ! -f ${pnm} ]]; then
+  echo "Failed: no release package found."
+  exit 1
+fi
+
 if [[ $platform != windows ]]; then
   echo -n "sourceforge Password: "
   read -s SSHPASS
@@ -42,13 +55,6 @@ if [[ $platform != windows ]]; then
     exit 1
   fi
   export SSHPASS
-fi
-
-pnm=$(pkginstnm)
-
-if [[ ! -f ${pnm} ]]; then
-  echo "Failed: no release package found."
-  exit 1
 fi
 
 if [[ $tag == linux ]]; then
