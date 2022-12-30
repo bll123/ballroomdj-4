@@ -24,7 +24,6 @@ install_name_tool \
     "@executable_path/libuigtk3.dylib" \
   $target
 
-set -x
 # /Volumes/Users/bll/bdj4/packages/icu/lib/libicudata.72.dylib
 count=0
 cmd="install_name_tool "

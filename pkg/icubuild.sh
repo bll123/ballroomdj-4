@@ -13,10 +13,14 @@ case $systype in
     tag=linux
     platform=unix
     archtag=
+    export CC=gcc
+    export CXX=g++
     ;;
   Darwin)
     tag=macos
     platform=unix
+    export CC=clang
+    export CXX=clang++
     case $arch in
       x86_64)
         archtag=-intel
@@ -37,10 +41,26 @@ if [ $? -eq 0 ]; then
   echo "## build icu"
 
   cd icu4c/source
+  chmod +x configure install-sh
 
   make distclean
 
-#      --disable-renaming
+  tfn=common/unicode/uconfig.h
+  if [[ ! -f $tfn.orig ]]; then
+    cp -f $tfn $tfn.orig
+  fi
+  cp -f $tfn.orig $tfn
+
+  # #   define UCONFIG_ONLY_COLLATION 0
+  # #   define UCONFIG_NO_LEGACY_CONVERSION 0
+  sed -e '/# *define *UCONFIG_ONLY_COLLATION 0/ s,0,1,' \
+      -e '/# *define *UCONFIG_NO_LEGACY_CONVERSION 0/ s,0,1,' \
+      $tfn > $tfn.n
+  mv -f $tfn.n $tfn
+
+  # tools must be enabled to build the data library.
+  CFLAGS="-g -O2"
+  CXXFLAGS="-g -O2"
   ./configure \
       --prefix=${cwd}/icu \
       --with-data-packaging=library \
@@ -48,11 +68,12 @@ if [ $? -eq 0 ]; then
       --disable-extras \
       --disable-icuio \
       --disable-layoutex \
-      --disable-tools \
       --disable-tests \
       --disable-samples
 
   make -j ${procs}
+  test -d icu && rm -rf icu
+  mkdir icu
   make install
   make distclean
 fi

@@ -87,6 +87,7 @@ START_TEST(istring_comp)
   ck_assert_int_lt (rc, 0);
 
   rc = istringCompare ("ZZZZ", "ÖÖÖÖ");
+  /* note that this is greater than */
   ck_assert_int_gt (rc, 0);
 
   istringCleanup ();
@@ -96,6 +97,7 @@ START_TEST(istring_comp)
   ck_assert_int_lt (rc, 0);
 
   rc = istringCompare ("ZZZZ", "ÖÖÖÖ");
+  /* note that this is less than */
   ck_assert_int_lt (rc, 0);
 
   istringCleanup ();
