@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2022-12-29\n"
+"PO-Revision-Date: 2022-12-30\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -873,6 +873,7 @@ msgid "Latest Version"
 msgstr ""
 
 #. CONTEXT: configuration: level: title of the level name column
+#. CONTEXT: label: dance level (short name for listing)
 msgid "Level"
 msgstr "Niveau"
 
@@ -1341,6 +1342,7 @@ msgstr "Quickstep"
 
 #. CONTEXT: configuration: itunes: label for itunes rating conversion
 #. CONTEXT: configuration: rating: title of the rating name column
+#. CONTEXT: label: dance rating (short name for listing)
 msgid "Rating"
 msgstr "Beoordeling"
 

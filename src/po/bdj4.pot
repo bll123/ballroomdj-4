@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-29 21:13-0800\n"
+"POT-Creation-Date: 2022-12-30 04:15-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -871,6 +871,7 @@ msgid "Latest Version"
 msgstr ""
 
 #. CONTEXT: configuration: level: title of the level name column
+#. CONTEXT: label: dance level (short name for listing)
 msgid "Level"
 msgstr ""
 
@@ -1338,6 +1339,7 @@ msgstr ""
 
 #. CONTEXT: configuration: itunes: label for itunes rating conversion
 #. CONTEXT: configuration: rating: title of the rating name column
+#. CONTEXT: label: dance rating (short name for listing)
 msgid "Rating"
 msgstr ""
 

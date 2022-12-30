@@ -105,7 +105,11 @@ uiTreeViewAddDisplayColumns (UIWidget *uitree, slist_t *sellist, int col,
     if (tagidx == TAG_FAVORITE) {
       gtk_tree_view_column_set_title (column, "\xE2\x98\x86");
     } else {
-      gtk_tree_view_column_set_title (column, tagdefs [tagidx].displayname);
+      if (tagdefs [tagidx].shortdisplayname != NULL) {
+        gtk_tree_view_column_set_title (column, tagdefs [tagidx].shortdisplayname);
+      } else {
+        gtk_tree_view_column_set_title (column, tagdefs [tagidx].displayname);
+      }
     }
     col++;
   }

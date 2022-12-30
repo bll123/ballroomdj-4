@@ -9,6 +9,8 @@
 * Bug Fixes:
     * linux: Resolve ICU library versioning issues.
     * macos: Resolve ICU library versioning issues.
+* Changes:
+    * song selection: Added short heading names for dance rating and dance level.
 
 -->
 

@@ -185,7 +185,7 @@ fi
 
 . ./VERSION.txt
 
-if [[ $insttest == F && $DEVELOPMENT == "" ]]; then
+if [[ $insttest == F ]]; then
   # update build number
 
   # only rebuild the version.txt file on linux.

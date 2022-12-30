@@ -44,6 +44,7 @@ typedef struct {
 typedef struct {
   const char          *tag;
   const char          *displayname;
+  const char          *shortdisplayname;
   tagaudiotag_t       audiotags [TAG_TYPE_MAX];
   const char          *itunesName;
   tagedittype_t       editType;
