@@ -72,6 +72,12 @@ fi
 # test -d img/profile00 || mkdir -p img/profile00
 # cp -pf templates/img/*.svg img/profile00
 
+if [[ $tag == linux || $tag == macos ]]; then
+  rsync -aS --delete packages/icu/lib plocal
+  rm -f plocal/lib/libicutest* plocal/lib/libicutu*
+  rm -rf plocal/lib/pkgconfig plocal/lib/icu
+fi
+
 # on windows, copy all of the required .dll files to plocal/bin
 # this must be done after the build and before the manifest is created.
 

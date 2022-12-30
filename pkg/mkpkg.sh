@@ -57,17 +57,11 @@ function copyreleasefiles {
   fi
   case ${tag} in
     linux)
-      rsync -aS --delete packages/icu/lib plocal
-      rm -f plocal/lib/libicutest* plocal/lib/libicutu*
-      rm -rf plocal/lib/pkgconfig plocal/lib/icu
       cp -f packages/fpcalc-${tag} plocal/bin/fpcalc
       filelist+=" plocal/bin/fpcalc"
       dirlist+=" plocal/lib"
       ;;
     macos)
-      rsync -aS --delete packages/icu/lib plocal
-      rm -f plocal/lib/libicutest* plocal/lib/libicutu*
-      rm -rf plocal/lib/pkgconfig plocal/lib/icu
       cp -f packages/fpcalc-${tag} plocal/bin/fpcalc
       filelist+=" plocal/bin/fpcalc"
       dirlist+=" plocal/lib"

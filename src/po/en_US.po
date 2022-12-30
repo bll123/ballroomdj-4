@@ -1014,7 +1014,7 @@ msgstr ""
 msgid "Music Manager"
 msgstr ""
 
-#. CONTEXT: configuration file: name of a music queue
+#. CONTEXT: (noun) configuration file: name of a music queue
 #. CONTEXT: configuration: display settings for: music queue
 msgid "Music Queue"
 msgstr ""
@@ -1297,12 +1297,16 @@ msgstr ""
 msgid "Queue 5"
 msgstr ""
 
-#. CONTEXT: configuration file: name of a music queue
+#. CONTEXT: (noun) configuration file: name of a music queue
 msgid "Queue B"
 msgstr ""
 
-#. CONTEXT: configuration file: name of a music queue
+#. CONTEXT: (noun) configuration file: name of a music queue
 msgid "Queue C"
+msgstr ""
+
+#. CONTEXT: (noun) configuration file: name of a music queue
+msgid "Queue D"
 msgstr ""
 
 #. CONTEXT: (verb) music queue: button: queue a dance for playback
