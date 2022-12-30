@@ -66,7 +66,6 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_FONT_DEFAULT] = { "FONT_DEFAULT" },
   [SV_HOME] = { "HOME" },
   [SV_HOST_FORUM] = { "HOST_FORUM" },
-  [SV_HOST_MOBMQ] = { "HOST_MOBMQ" },
   [SV_HOSTNAME] = { "HOSTNAME" },
   [SV_HOST_SUPPORTMSG] = { "HOST_SUPPORTMSG" },
   [SV_HOST_TICKET] = { "HOST_TICKET" },
@@ -405,7 +404,6 @@ sysvarsInit (const char *argv0)
 
   strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, SV_MAX_SZ);
 
-  strlcpy (sysvars [SV_HOST_MOBMQ], "https://ballroomdj.org", SV_MAX_SZ);
   strlcpy (sysvars [SV_URI_MOBMQ], "/marquee4.html", SV_MAX_SZ);
   strlcpy (sysvars [SV_URI_MOBMQ_POST], "/marquee4.php", SV_MAX_SZ);
 
