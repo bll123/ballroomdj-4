@@ -22,7 +22,9 @@
 
 #include "bdjstring.h"
 #include "osnetutils.h"
+#include "osutils.h"
 
+/* this function will fail if the computer name has non-ascii characters */
 char *
 getHostname (char *buff, size_t sz)
 {
@@ -31,13 +33,9 @@ getHostname (char *buff, size_t sz)
 
   if (*buff == '\0') {
     /* gethostname() does not appear to work on windows */
-    char *hn = getenv ("COMPUTERNAME");
-    if (hn != NULL) {
-      strlcpy (buff, hn, sz);
-      stringAsciiToLower (buff);
-    }
+    osGetEnv ("COMPUTERNAME", buff, sz);
+    stringAsciiToLower (buff);
   }
 
   return buff;
 }
-

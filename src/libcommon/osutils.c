@@ -28,6 +28,26 @@
 #include "osutils.h"
 #include "tmutil.h"
 
+void
+osGetEnv (const char *name, char *buff, size_t sz)
+{
+#if _lib__wgetenv
+  wchar_t     *wname;
+  wchar_t     *wenv;
+  char        *tenv;
+
+  *buff = '\0';
+  wname = osToWideChar (name);
+  wenv = _wgetenv (wname);
+  free (wname);
+  tenv = osFromWideChar (wenv);
+  strlcpy (buff, tenv, sz);
+  free (tenv);
+#else
+  strlcpy (buff, getenv (name), sz);
+#endif
+}
+
 int
 osSetEnv (const char *name, const char *value)
 {

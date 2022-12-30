@@ -443,7 +443,7 @@ main (int argc, char * argv[])
     pathbldMakePath (buff, sizeof (buff),
         "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
     if (fileopFileExists (buff)) {
-      fh = fopen (buff, "r");
+      fh = fileopOpen (buff, "r");
       (void) ! fgets (buff, sizeof (buff), fh);
       fclose (fh);
       stringTrim (buff);

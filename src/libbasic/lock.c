@@ -188,7 +188,7 @@ getPidFromFile (char *fn)
   int64_t   temp;
 
   pid_t pid = -1;
-  fh = fopen (fn, "r");
+  fh = fileopOpen (fn, "r");
   if (fh != NULL) {
     int rc = fscanf (fh, "%"PRId64, &temp);
     pid = (pid_t) temp;

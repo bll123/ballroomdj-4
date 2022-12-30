@@ -29,6 +29,7 @@
 #include "conn.h"
 #include "log.h"
 #include "osprocess.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "sysvars.h"
@@ -236,7 +237,9 @@ procutilStartProcess (bdjmsgroute_t route, const char *fname, int detachflag,
   process = procutilStart (tbuff, sysvarsGetNum (SVL_BDJIDX),
       bdjoptGetNum (OPT_G_DEBUGLVL), detachflag, aargs);
   if (isWindows ()) {
-    logMsg (LOG_DBG, LOG_BASIC, "PATH=%s\n", getenv ("PATH"));
+    char  tmp [MAXPATHLEN];
+    osGetEnv ("PATH", tmp, sizeof (tmp));
+    logMsg (LOG_DBG, LOG_BASIC, "PATH=%s\n", tmp);
   }
   if (process == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "%s %s failed to start", fname, tbuff);

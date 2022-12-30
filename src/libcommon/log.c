@@ -246,7 +246,7 @@ logBasic (const char *fmt, ...)
   FILE      *fh;
   va_list   args;
 
-  fh = fopen ("out.txt", "a");
+  fh = fileopOpen ("out.txt", "a");
   va_start (args, fmt);
   vfprintf (fh, fmt, args);
   va_end (args);

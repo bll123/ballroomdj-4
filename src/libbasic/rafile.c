@@ -16,6 +16,7 @@
 #include <errno.h>
 
 #include "bdjstring.h"
+#include "fileop.h"
 #include "lock.h"
 #include "log.h"
 #include "pathbld.h"
@@ -59,7 +60,7 @@ raOpen (char *fname, int version)
     mode = "wb+";
   }
 
-  rafile->fh = fopen (fname, mode);
+  rafile->fh = fileopOpen (fname, mode);
   rafile->inbatch = 0;
   rafile->locked = 0;
   rafile->version = version;

@@ -410,7 +410,7 @@ confuiMakeQRCodeFile (char *title, char *uri)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "qrcode", ".html", PATHBLD_MP_DREL_TMP);
-  fh = fopen (tbuff, "w");
+  fh = fileopOpen (tbuff, "w");
   fwrite (ndata, dlen, 1, fh);
   fclose (fh);
   /* windows requires an extra slash in front, and it doesn't hurt on linux */

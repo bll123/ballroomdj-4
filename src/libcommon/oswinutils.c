@@ -80,32 +80,32 @@ osIsLink (const char *path)
 }
 
 void *
-osToWideChar (const char *fname)
+osToWideChar (const char *buff)
 {
-  OS_FS_CHAR_TYPE *tfname = NULL;
+  OS_FS_CHAR_TYPE *tbuff = NULL;
   size_t      len;
 
   /* the documentation lies; len does not include room for the null byte */
-  len = MultiByteToWideChar (CP_UTF8, 0, fname, strlen (fname), NULL, 0);
-  tfname = malloc ((len + 1) * OS_FS_CHAR_SIZE);
-  MultiByteToWideChar (CP_UTF8, 0, fname, strlen (fname), tfname, len);
-  tfname [len] = L'\0';
-  return tfname;
+  len = MultiByteToWideChar (CP_UTF8, 0, buff, strlen (buff), NULL, 0);
+  tbuff = malloc ((len + 1) * OS_FS_CHAR_SIZE);
+  MultiByteToWideChar (CP_UTF8, 0, buff, strlen (buff), tbuff, len);
+  tbuff [len] = L'\0';
+  return tbuff;
 }
 
 char *
-osFromWideChar (const void *fname)
+osFromWideChar (const void *buff)
 {
-  char        *tfname = NULL;
+  char        *tbuff = NULL;
   size_t      len;
 
   /* the documentation lies; len does not include room for the null byte */
-  len = WideCharToMultiByte (CP_UTF8, 0, fname, -1, NULL, 0, NULL, NULL);
-  tfname = malloc (len + 1);
-  WideCharToMultiByte (CP_UTF8, 0, fname, -1, tfname, len, NULL, NULL);
-  tfname [len] = '\0';
-  assert (tfname != NULL);
-  return tfname;
+  len = WideCharToMultiByte (CP_UTF8, 0, buff, -1, NULL, 0, NULL, NULL);
+  tbuff = malloc (len + 1);
+  WideCharToMultiByte (CP_UTF8, 0, buff, -1, tbuff, len, NULL, NULL);
+  tbuff [len] = '\0';
+  assert (tbuff != NULL);
+  return tbuff;
 }
 
 #endif /* __WINNT__ */

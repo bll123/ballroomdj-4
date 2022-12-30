@@ -1881,7 +1881,7 @@ installerConvertStart (installer_t *installer)
     char  tmp [200];
     int   ver;
 
-    fh = fopen (tbuff, "r");
+    fh = fileopOpen (tbuff, "r");
     if (fh != NULL) {
       (void) ! fgets (tmp, sizeof (tmp), fh);
       fclose (fh);
@@ -2417,7 +2417,7 @@ installerFinalize (installer_t *installer)
     if (installer->newinstall) {
       FILE  *fh;
 
-      fh = fopen (INST_NEW_FILE, "w");
+      fh = fileopOpen (INST_NEW_FILE, "w");
       fclose (fh);
     }
   }
@@ -2871,7 +2871,7 @@ installerWinVerifyProcess (installer_t *installer)
     return false;
   }
 
-  fh = fopen ("install/checksum.txt", "r");
+  fh = fileopOpen ("install/checksum.txt", "r");
   if (fh == NULL) {
     return false;
   }

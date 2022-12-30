@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "bdjstring.h"
 #include "osprocess.h"
 #include "osutils.h"
 
@@ -36,7 +37,7 @@ main (int argc, const char *argv [])
   char        *buff = NULL;
   char        tagstr [40];
   char        tbuff [1024];
-  char        *tmpdir;
+  char        tmpdir [1024];
   char        *archivep = NULL;
   char        *p = NULL;
   ssize_t     sz;
@@ -68,33 +69,33 @@ main (int argc, const char *argv [])
     exit (1);
   }
 
-  tmpdir = getenv ("TMPDIR");
-  if (tmpdir == NULL) {
-    tmpdir = getenv ("TEMP");
+  osGetEnv ("TMPDIR", tmpdir, sizeof (tmpdir));
+  if (! *tmpdir) {
+    osGetEnv ("TEMP", tmpdir, sizeof (tmpdir));
   }
-  if (tmpdir == NULL) {
-    tmpdir = getenv ("TMP");
+  if (! *tmpdir) {
+    osGetEnv ("TMP", tmpdir, sizeof (tmpdir));
   }
-  if (tmpdir == NULL) {
+  if (! *tmpdir) {
     rc = stat ("/var/tmp", &statbuf);
     if (rc == 0) {
-      tmpdir = "/var/tmp";
+      strlcpy (tmpdir, "/var/tmp", sizeof (tmpdir));
     }
   }
-  if (tmpdir == NULL) {
+  if (! *tmpdir) {
     rc = stat ("/tmp", &statbuf);
     if (rc == 0) {
-      tmpdir = "/tmp";
+      strlcpy (tmpdir, "/tmp", sizeof (tmpdir));
     }
   }
-  if (tmpdir == NULL) {
+  if (! *tmpdir) {
 #if _args_mkdir == 2 && _define_S_IRWXU
     mkdir ("tmp", S_IRWXU);
 #endif
 #if _args_mkdir == 1
     mkdir ("tmp");
 #endif
-    tmpdir = "tmp";
+    strlcpy (tmpdir, "tmp", sizeof (tmpdir));
   }
 
   snprintf (tbuff, sizeof (tbuff), "%s/%s", tmpdir, archivenm);

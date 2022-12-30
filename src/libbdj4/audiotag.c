@@ -681,7 +681,7 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
   logProcBegin (LOG_PROC, "audiotagsWriteMP3Tags");
 
   audiotagMakeTempFilename (fn, sizeof (fn));
-  ofh = fopen (fn, "w");
+  ofh = fileopOpen (fn, "w");
   fprintf (ofh, "from mutagen.id3 import ID3,TXXX,UFID");
   for (int i = 0; i < TAG_KEY_MAX; ++i) {
     if (tagdefs [i].audiotags [TAG_TYPE_MP3].tag != NULL &&
@@ -797,7 +797,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
   logProcBegin (LOG_PROC, "audiotagsWriteOtherTags");
 
   audiotagMakeTempFilename (fn, sizeof (fn));
-  ofh = fopen (fn, "w");
+  ofh = fileopOpen (fn, "w");
   if (filetype == AFILE_TYPE_FLAC) {
     logMsg (LOG_DBG, LOG_DBUPDATE, "file-type: flac");
     fprintf (ofh, "from mutagen.flac import FLAC\n");

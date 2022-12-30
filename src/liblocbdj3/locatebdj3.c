@@ -16,12 +16,13 @@
 #include "bdjstring.h"
 #include "fileop.h"
 #include "locatebdj3.h"
+#include "osutils.h"
 
 char *
 locatebdj3 (void)
 {
   char          *loc;
-  char          *home;
+  char          home [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
   bool          iswin = false;
 
@@ -34,14 +35,14 @@ locatebdj3 (void)
     }
   }
 
-  home = getenv ("HOME");
-  if (home == NULL) {
+  osGetEnv ("HOME", home, sizeof (home));
+  if (! *home) {
     /* probably a windows machine */
     iswin = true;
-    home = getenv ("USERPROFILE");
+    osGetEnv ("USERPROFILE", home, sizeof (home));
   }
 
-  if (home == NULL) {
+  if (! *home) {
     return strdup ("");
   }
 

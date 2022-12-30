@@ -276,12 +276,12 @@ sysvarsInit (const char *argv0)
   getHostname (sysvars [SV_HOSTNAME], SV_MAX_SZ);
 
   if (isWindows ()) {
-    strlcpy (sysvars [SV_HOME], getenv ("USERPROFILE"), SV_MAX_SZ);
+    osGetEnv ("USERPROFILE", sysvars [SV_HOME], SV_MAX_SZ);
     pathNormPath (sysvars [SV_HOME], SV_MAX_SZ);
-    strlcpy (sysvars [SV_USER], getenv ("USERNAME"), SV_MAX_SZ);
+    osGetEnv ("USERNAME", sysvars [SV_USER], SV_MAX_SZ);
   } else {
-    strlcpy (sysvars [SV_HOME], getenv ("HOME"), SV_MAX_SZ);
-    strlcpy (sysvars [SV_USER], getenv ("USER"), SV_MAX_SZ);
+    osGetEnv ("HOME", sysvars [SV_HOME], SV_MAX_SZ);
+    osGetEnv ("USER", sysvars [SV_USER], SV_MAX_SZ);
   }
   dlen = strlen (sysvars [SV_USER]) + 1;
   tptr = filedataReplace (sysvars [SV_USER], &dlen, " ", "-");
@@ -449,7 +449,7 @@ sysvarsInit (const char *argv0)
   if (fileopFileExists (buff)) {
     FILE    *fh;
 
-    fh = fopen (buff, "r");
+    fh = fileopOpen (buff, "r");
     *tbuff = '\0';
     (void) ! fgets (tbuff, sizeof (tbuff), fh);
     fclose (fh);
@@ -561,7 +561,7 @@ sysvarsInit (const char *argv0)
     FILE    *fh;
 
     *tbuff = '\0';
-    fh = fopen (buff, "r");
+    fh = fileopOpen (buff, "r");
     (void) ! fgets (tbuff, sizeof (tbuff), fh);
     fclose (fh);
     stringTrim (tbuff);
@@ -607,7 +607,7 @@ sysvarsCheckPaths (const char *otherpaths)
   if (isWindows ()) {
     tsep = ";";
   }
-  strlcpy (tpath, getenv ("PATH"), sizeof (tpath));
+  osGetEnv ("PATH", tpath, sizeof (tpath));
   stringTrimChar (tpath, *tsep);
   strlcat (tpath, tsep, sizeof (tpath));
   if (otherpaths != NULL && *otherpaths) {
@@ -727,13 +727,13 @@ sysvarsCheckMutagen (void)
         "%s/.local/bin/%s", sysvars [SV_HOME], "mutagen-inspect");
   }
   if (isWindows ()) {
-    char    *tptr;
+    char    thome [MAXPATHLEN];
 
     /* check the msys location first -- use the HOME env var */
-    tptr = getenv ("HOME");
-    if (tptr != NULL) {
+    osGetEnv ("HOME", thome, sizeof (thome));
+    if (*thome) {
       snprintf (buff, sizeof (buff),
-          "%s/.local/bin/%s", tptr, "mutagen-inspect");
+          "%s/.local/bin/%s", thome, "mutagen-inspect");
     }
     /* use the windows script if it is available */
     if (! fileopFileExists (buff)) {
@@ -899,7 +899,7 @@ svGetLinuxOSInfo (char *fn)
   bool        haveprettyname = false;
   bool        havevers = false;
 
-  fh = fopen (fn, "r");
+  fh = fileopOpen (fn, "r");
   if (fh != NULL) {
     while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
       if (! haveprettyname &&

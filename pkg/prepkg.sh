@@ -44,10 +44,7 @@ if [[ $tag == linux || $tag == macos ]]; then
 fi
 if [[ $platform == windows ]]; then
   cp -pf packages/libressl*/COPYING ${licdir}/libressl.LICENSE
-  cp -pf packages/c-ares*/LICENSE.md ${licdir}/c-ares.LICENSE.md
   cp -pf packages/curl*/COPYING ${licdir}/curl.LICENSE
-  cp -pf packages/nghttp*/LICENSE ${licdir}/nghttp2.LICENSE
-  cp -pf packages/zstd*/LICENSE ${licdir}/zstd.LICENSE
 fi
 
 (cd src; make tclean > /dev/null 2>&1)

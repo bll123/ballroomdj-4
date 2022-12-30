@@ -212,7 +212,7 @@ confuiPopulateOptions (confuigui_t *gui)
           strcmp (sval, "en_GB") != 0) {
         FILE    *fh;
 
-        fh = fopen (tbuff, "w");
+        fh = fileopOpen (tbuff, "w");
         fprintf (fh, "%s\n", sval);
         fclose (fh);
       }
@@ -233,7 +233,7 @@ confuiPopulateOptions (confuigui_t *gui)
       /* if the theme name is the same as the current default theme */
       /* don't write out the theme file.  want to use the default */
       if (strcmp (sval, sysvarsGetStr (SV_THEME_DEFAULT)) != 0) {
-        fh = fopen (tbuff, "w");
+        fh = fileopOpen (tbuff, "w");
         if (sval != NULL) {
           fprintf (fh, "%s\n", sval);
         }

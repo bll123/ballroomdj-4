@@ -88,7 +88,7 @@ volregCreateBDJ4Flag (void)
   diropMakeDir (sysvarsGetStr (SV_DIR_CONFIG));
   pathbldMakePath (fn, sizeof (fn),
       VOLREG_BDJ4_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
-  fh = fopen (fn, "w");
+  fh = fileopOpen (fn, "w");
   if (fh != NULL) {
     fclose (fh);
   }
@@ -256,7 +256,7 @@ volregGetFilename (char *tfn, size_t sz, char *fn)
   if (fileopFileExists (tbuff)) {
     FILE    *fh;
 
-    fh = fopen (tbuff, "r");
+    fh = fileopOpen (tbuff, "r");
     (void) ! fgets (tfn, sz, fh);
     fclose (fh);
     stringTrim (tfn);

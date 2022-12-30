@@ -63,6 +63,7 @@
 #cmakedefine01 _lib_WideCharToMultiByte
 #cmakedefine01 _lib_WriteFile
 #cmakedefine01 _lib__wfopen
+#cmakedefine01 _lib__wgetenv
 #cmakedefine01 _lib__wrename
 #cmakedefine01 _lib__wstat
 #cmakedefine01 _lib__wunlink

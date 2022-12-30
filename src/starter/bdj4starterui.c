@@ -739,7 +739,7 @@ starterMainLoop (void *tstarter)
       msg = uiTextBoxGetValue (starter->supporttb);
 
       strlcpy (tbuff, "support.txt", sizeof (tbuff));
-      fh = fopen (tbuff, "w");
+      fh = fileopOpen (tbuff, "w");
       if (fh != NULL) {
         fprintf (fh, " Ident  : %s\n", starter->ident);
         fprintf (fh, " E-Mail : %s\n", email);

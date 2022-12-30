@@ -29,8 +29,9 @@ extern "C" {
 #endif
 #define OS_FS_CHAR_SIZE sizeof (OS_FS_CHAR_TYPE)
 
-void    * osToWideChar (const char *fname);
-char    * osFromWideChar (const void *fname);
+void    * osToWideChar (const char *buff);
+char    * osFromWideChar (const void *buff);
+void    osGetEnv (const char *name, char *buff, size_t sz);
 int     osSetEnv (const char *name, const char *value);
 int     osCreateLink (const char *target, const char *linkpath);
 bool    osIsLink (const char *path);
