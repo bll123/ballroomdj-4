@@ -826,7 +826,7 @@ starterMainLoop (void *tstarter)
       if (fileopFileExists ("core") ||
           slistGetCount (starter->supportFileList) > 0) {
         /* CONTEXT: starterui: support: status message */
-        snprintf (tbuff, sizeof (tbuff), _("Sending diagnostics"));
+        snprintf (tbuff, sizeof (tbuff), _("Sending Diagnostics"));
         uiLabelSetText (&starter->supportStatus, tbuff);
         starter->startState = START_STATE_SUPPORT_SEND_DIAG;
       } else {

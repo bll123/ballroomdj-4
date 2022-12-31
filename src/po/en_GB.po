@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.3\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-12-30\n"
-"PO-Revision-Date: 2022-12-30\n"
+"POT-Creation-Date: 2022-12-31\n"
+"PO-Revision-Date: 2022-12-31\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -1101,6 +1101,10 @@ msgstr ""
 msgid "No folder specified."
 msgstr ""
 
+#. CONTEXT: starterui: no internet connection
+msgid "No internet connection"
+msgstr ""
+
 #. CONTEXT: configuration file: genre
 msgid "None"
 msgstr ""
@@ -1516,6 +1520,11 @@ msgstr ""
 #. CONTEXT: starterui: support: status message
 #, c-format
 msgid "Sending %s Information"
+msgstr ""
+
+#. CONTEXT: starterui: support: status message
+#, c-format
+msgid "Sending Diagnostics"
 msgstr ""
 
 #. CONTEXT: starterui: support: status message

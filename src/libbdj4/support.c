@@ -97,6 +97,7 @@ supportSendFile (support_t *support, const char *ident,
 
   if (*origfn == '/') {
     /* to handle mac os diagnostics files */
+    pathInfoFree (pi);
     pi = pathInfo (origfn);
     origfn = pi->filename;
   }

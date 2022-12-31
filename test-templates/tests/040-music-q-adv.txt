@@ -155,9 +155,14 @@ chk mq0len 1
 get player CHK_PLAYER_STATUS
 chk prepqueuecount 0 playstate playing
 # paused song
+mssleep 1500
 msg main CMD_PLAYPAUSE
+get player CHK_PLAYER_STATUS
+wait playstate paused
+mssleep 1000
 msg main QUEUE_CLEAR_PLAY 0~999~20
 mssleep 1500
+resptimeout 2000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 get main CHK_MAIN_MUSICQ
