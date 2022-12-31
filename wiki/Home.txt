@@ -41,6 +41,8 @@
 
 [Converting BallroomDJ 3](en-Install-Converting%20BDJ3)
 
+[Uninstalling BDJ4](en-Install-Uninstall)
+
 ### Change Log
 [Change Log](en-Change%20Log)
 
@@ -109,4 +111,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2022-12-19 09:55:12; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-31 13:25:29; BDJ4 version 4.0.4-beta-dev)_

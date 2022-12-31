@@ -7,7 +7,7 @@
 This step only needs to be run once, not for every installation or
 update.
 
-Download the macos-pre-install-v5.sh script from sourceforge.
+Download the macos-pre-install-v6.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -17,9 +17,7 @@ time to finish (especially slow on Ventura as of 2022-11).  You may be
 required to enter your administrative password more than once during
 the installation process.
 
-~~~
-bash macos-pre-install-v4.sh
-~~~
+    bash macos-pre-install-v6.sh
 
 This script performs the following actions:
 
@@ -38,9 +36,7 @@ This script will set up and open the downloaded install package.
 Open a terminal (Finder / Go / Utilities / Terminal) and run
 this script using the following command:
 
-~~~
-bash macos-run-install-v3.sh
-~~~
+    bash macos-run-install-v3.sh
 
 Choose the folder in which to install BallroomDJ 4.  The
 $HOME/Applications/BDJ4.app folder will be pre-selected for you.
@@ -69,4 +65,4 @@ icon to the Applications Folder icon.
 <br><span style="color:#4559bf;">**VLC Installation on Mac OS**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-12 11:17:31; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-31 13:31:35; BDJ4 version 4.0.4-beta-dev)_

@@ -1,0 +1,37 @@
+[Wiki Home](Home)
+
+## Uninstalling BallroomDJ 4
+
+#### Mac OS
+
+Download the macos-uninstall-bdj4-v1.sh script from sourceforge.
+
+[BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
+
+Open a terminal (Finder / Go / Utilities / Terminal) and run
+this script using the following command.
+
+    :::bash
+    bash macos-uninstall-bdj4-v1.sh
+
+This script performs the following actions.  The script will ask for
+confirmation before performing each action.
+
+* Removes the $HOME/Applications/BDJ4.app folder (BallroomDJ 4 application).
+* Removes the $HOME/Library/Application Support/BDJ4 folder (BallroomDJ 4 data).
+* Removes the MacPorts installation.
+
+#### Windows
+
+Delete the BDJ4 folder from your %USERPROFILE% (home) folder.
+
+#### Linux
+
+Delete the BDJ4 folder from your $HOME folder.
+
+    :::bash
+    rm -rf $HOME/BDJ4
+    rm -rf $HOME/.config/BDJ4
+
+[Wiki Home](Home)
+<br>_(Updated 2022-12-31 13:34:30; BDJ4 version 4.0.4-beta-dev)_

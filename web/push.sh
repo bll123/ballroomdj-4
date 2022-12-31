@@ -96,6 +96,11 @@ if [[ $tag == macos ]]; then
   ver=$(install/${fn}.sh --version)
   sshpass -e rsync -v -e ssh install/${fn}.sh \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+
+  fn=macos-uninstall-bdj4
+  ver=$(install/${fn}.sh --version)
+  sshpass -e rsync -v -e ssh install/${fn}.sh \
+      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
 fi
 
 if [[ $platform != windows ]]; then

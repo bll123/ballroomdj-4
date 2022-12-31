@@ -8,13 +8,17 @@ GTK is ok.  There are some issues.
 * The developers are in the mode where they know best.
 The customers are being ignored.
 * Some of the design choices are very poor and questionable.
-* Comboboxes are not usable.
+* Comboboxes/Dropdowns are horrid.  No scrollbars, no height limit.
+I would not subject my users to these.
 * The application level interface should be completely separated.
 I was not able to use the application level interface as it made macos
 complete non-performant.
 * gtk_init mucks up the locale, it has to be reset after calling
 gtk_init.
+* Bug: I have three identical treeviews (same code) within the window.
+One of them does not get initialized with the same height as the others.
+
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2022-12-19 10:04:00; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2022-12-31 14:18:04; BDJ4 version 4.0.4-beta-dev)_

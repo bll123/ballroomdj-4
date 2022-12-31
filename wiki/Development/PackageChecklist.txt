@@ -45,4 +45,4 @@ on the other platforms.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2022-12-27 10:48:36; BDJ4 version 4.0.2-beta)_
+<br>_(Updated 2022-12-31 12:15:38; BDJ4 version 4.0.4-beta-dev)_
