@@ -38,6 +38,7 @@ add_library (libbdj4 SHARED
   songutil.c
   sortopt.c
   status.c
+  support.c
   tagdef.c
   templateutil.c
   validate.c

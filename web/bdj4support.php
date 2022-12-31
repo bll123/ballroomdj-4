@@ -44,8 +44,20 @@ if (isset($_FILES['upfile']['name']) &&
   if (file_exists ($tfn)) { unlink ($tfn); }
   if ($gzipped) {
     if (file_exists ($fn)) { unlink ($fn); }
-    system ("gzip -d $fn.gz");
-    if (file_exists ($gzfn)) { unlink ($gzfn); }
+    if (file_exists ($gzfn)) {
+      system ("gzip -d $fn.gz");
+    }
+    if (file_exists ($gzfn)) {
+      unlink ($gzfn);
+    }
+  }
+  if ($base == "support.txt") {
+    $msg = '';
+    $msg .= $ident . "\n";
+    $msg .= "\n";
+    $msg .= file_get_contents ($fn);
+    $headers = '';
+    mail ('brad.lanam.di@gmail.com', "BDJ4: Support: $ident", $msg, $headers);
   }
   echo "OK";
 } else {

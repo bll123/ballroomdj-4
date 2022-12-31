@@ -4,20 +4,25 @@
 
 <!--
 
-**4.0.3 beta 2022-12---**
+**4.0.4 beta 2022-12---**
+
+-->
+
+**4.0.3 beta 2022-12-31**
 
 * Bug Fixes:
     * linux: Resolve ICU library versioning issues.
     * macos: Resolve ICU library versioning issues.
     * nederlands: Fix missing queue D configuration.
     * player ui: Fixed crash after the history queue was selected.
+    * starter/support: Fix crash when there is no internet connection.
+    * starter/support: linux: fix send of core dump.
 * Changes:
     * song selection: Added short heading names for dance rating and dance level.
 * Internal:
     * fixed memory corruption and memory leak.
     * fixed extraneous messages on db entry update.
-
--->
+    * code cleanup.
 
 **4.0.2 beta 2022-12-27**
 

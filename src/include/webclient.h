@@ -20,6 +20,6 @@ void        webclientDownload (webclient_t *webclient, const char *uri, const ch
 void        webclientUploadFile (webclient_t *webclient, const char *uri, const char *query [], const char *fn);
 void        webclientClose (webclient_t *webclient);
 char        * webclientGetLocalIP (void);
-void        webclientCompressFile (char *infn, char *outfn);
+void        webclientCompressFile (const char *infn, const char *outfn);
 
 #endif /* INC_WEBCLIENT_H */

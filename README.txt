@@ -1,4 +1,4 @@
-BDJ4 4.0.3 Beta Release: 2022-11---
+BDJ4 4.0.3 Beta Release: 2022-12-31
 
 Contents
   Installation

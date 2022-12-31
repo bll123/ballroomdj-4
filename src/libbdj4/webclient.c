@@ -246,7 +246,7 @@ webclientGetLocalIP (void)
 }
 
 void
-webclientCompressFile (char *infn, char *outfn)
+webclientCompressFile (const char *infn, const char *outfn)
 {
   FILE      *infh = NULL;
   FILE      *outfh = NULL;

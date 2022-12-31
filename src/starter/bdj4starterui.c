@@ -33,11 +33,11 @@
 #include "ossignal.h"
 #include "osuiutils.h"
 #include "pathbld.h"
-#include "pathutil.h"
 #include "procutil.h"
 #include "progstate.h"
 #include "sock.h"
 #include "sockh.h"
+#include "support.h"
 #include "sysvars.h"
 #include "templateutil.h"
 #include "ui.h"
@@ -54,6 +54,7 @@ typedef enum {
   START_STATE_SUPPORT_SEND_FILES_PROFILE,
   START_STATE_SUPPORT_SEND_FILES_MACHINE,
   START_STATE_SUPPORT_SEND_FILES_MACH_PROF,
+  START_STATE_SUPPORT_SEND_DIAG_INIT,
   START_STATE_SUPPORT_SEND_DIAG,
   START_STATE_SUPPORT_SEND_DB_PRE,
   START_STATE_SUPPORT_SEND_DB,
@@ -62,15 +63,11 @@ typedef enum {
 } startstate_t;
 
 enum {
-  SF_CONF_ONLY,
   SF_ALL,
+  SF_CONF_ONLY,
   SF_MAC_DIAG,
   CLOSE_REQUEST,
   CLOSE_CRASH,
-};
-
-enum {
-  MAX_WEB_RESP_SZ = 2048,
 };
 
 enum {
@@ -129,11 +126,10 @@ typedef struct {
   int             sendType;
   slistidx_t      supportFileIterIdx;
   char            *supportInFname;
-  char            *supportOutFname;
   webclient_t     *webclient;
   char            ident [80];
   char            latestversion [60];
-  char            *webresponse;
+  support_t       *support;
   int             mainstart [ROUTE_MAX];
   int             started [ROUTE_MAX];
   int             stopwaitcount;
@@ -151,6 +147,7 @@ typedef struct {
   UIWidget        window;
   UIWidget        supportStatus;
   UIWidget        statusMsg;
+  UIWidget        supportStatusMsg;
   UIWidget        profileAccent;
   uitextbox_t     *supporttb;
   uientry_t       *supportsubject;
@@ -206,14 +203,13 @@ static bool     starterDeleteProfile (void *udata);
 static void     starterRebuildProfileList (startui_t *starter);
 static bool     starterCreateProfileShortcut (void *udata);
 
+static void     starterSupportInit (startui_t *starter);
 static bool     starterProcessSupport (void *udata);
-static void     starterWebResponseCallback (void *userdata, char *resp, size_t len);
 static bool     starterSupportResponseHandler (void *udata, long responseid);
 static bool     starterCreateSupportDialog (void *udata);
 static bool     starterSupportMsgHandler (void *udata, long responseid);
 static void     starterSendFilesInit (startui_t *starter, char *dir, int type);
 static void     starterSendFiles (startui_t *starter);
-static void     starterSendFile (startui_t *starter, char *origfn, char *fn);
 
 static bool     starterStopAllProcesses (void *udata);
 static int      starterCountProcesses (startui_t *starter);
@@ -262,7 +258,6 @@ main (int argc, char *argv[])
   starter.supportFileList = NULL;
   starter.sendType = SF_CONF_ONLY;
   starter.supportInFname = NULL;
-  starter.supportOutFname = NULL;
   starter.webclient = NULL;
   starter.supporttb = NULL;
   starter.lastPluiStart = mstime ();
@@ -283,6 +278,7 @@ main (int argc, char *argv[])
     starter.buttons [i] = NULL;
   }
   uiutilsUIWidgetInit (&starter.window);
+  starter.support = NULL;
   uiutilsUIWidgetInit (&starter.supportStatus);
   uiutilsUIWidgetInit (&starter.supportSendFiles);
   uiutilsUIWidgetInit (&starter.supportSendDB);
@@ -409,6 +405,7 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_STARTERUI, NULL);
 
+  supportFree (starter->support);
   webclientClose (starter->webclient);
   uiTextBoxFree (starter->supporttb);
   uiSpinboxFree (starter->profilesel);
@@ -650,8 +647,6 @@ starterMainLoop (void *tstarter)
   int         stop = FALSE;
   /* support message handling */
   char        tbuff [MAXPATHLEN];
-  char        ofn [MAXPATHLEN];
-
 
   uiUIProcessEvents ();
 
@@ -717,9 +712,7 @@ starterMainLoop (void *tstarter)
       snprintf (starter->ident, sizeof (starter->ident), "%s-%s-%s",
           sysvarsGetStr (SV_USER_MUNGE), datestr, tmstr);
 
-      if (starter->webclient == NULL) {
-        starter->webclient = webclientAlloc (starter, starterWebResponseCallback);
-      }
+      starterSupportInit (starter);
       /* CONTEXT: starterui: support: status message */
       snprintf (tbuff, sizeof (tbuff), _("Sending Support Message"));
       uiLabelSetText (&starter->supportStatus, tbuff);
@@ -741,17 +734,15 @@ starterMainLoop (void *tstarter)
       strlcpy (tbuff, "support.txt", sizeof (tbuff));
       fh = fileopOpen (tbuff, "w");
       if (fh != NULL) {
-        fprintf (fh, " Ident  : %s\n", starter->ident);
-        fprintf (fh, " E-Mail : %s\n", email);
-        fprintf (fh, " Subject: %s\n", subj);
-        fprintf (fh, " Message:\n%s\n", msg);
+        fprintf (fh, "Ident  : %s\n", starter->ident);
+        fprintf (fh, "E-Mail : %s\n", email);
+        fprintf (fh, "Subject: %s\n", subj);
+        fprintf (fh, "Message:\n\n%s\n", msg);
         fclose (fh);
       }
       free (msg);
 
-      pathbldMakePath (ofn, sizeof (ofn),
-          tbuff, ".gz.b64", PATHBLD_MP_DREL_TMP);
-      starterSendFile (starter, tbuff, ofn);
+      supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_NO_COMPRESSION);
       fileopDelete (tbuff);
 
       /* CONTEXT: starterui: support: status message */
@@ -776,15 +767,11 @@ starterMainLoop (void *tstarter)
       targv [targc++] = arg;
       targv [targc++] = NULL;
       osProcessStart (targv, OS_PROC_WAIT, NULL, tbuff);
-      pathbldMakePath (ofn, sizeof (ofn),
-          tbuff, ".gz.b64", PATHBLD_MP_DREL_TMP);
-      starterSendFile (starter, tbuff, ofn);
+      supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_COMPRESSED);
       fileopDelete (tbuff);
 
       strlcpy (tbuff, "VERSION.txt", sizeof (tbuff));
-      pathbldMakePath (ofn, sizeof (ofn),
-          tbuff, ".gz.b64", PATHBLD_MP_DREL_TMP);
-      starterSendFile (starter, tbuff, ofn);
+      supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_NO_COMPRESSION);
 
       starter->startState = START_STATE_SUPPORT_SEND_FILES_DATA;
       break;
@@ -794,7 +781,7 @@ starterMainLoop (void *tstarter)
 
       sendfiles = uiToggleButtonIsActive (&starter->supportSendFiles);
       if (! sendfiles) {
-        starter->startState = START_STATE_SUPPORT_SEND_DIAG;
+        starter->startState = START_STATE_SUPPORT_SEND_DIAG_INIT;
         break;
       }
 
@@ -828,20 +815,31 @@ starterMainLoop (void *tstarter)
       /* need all of the log files */
       starterSendFilesInit (starter, tbuff, SF_ALL);
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
-      starter->nextState = START_STATE_SUPPORT_SEND_DIAG;
+      starter->nextState = START_STATE_SUPPORT_SEND_DIAG_INIT;
       break;
     }
-    case START_STATE_SUPPORT_SEND_DIAG: {
-      pathbldMakePath (ofn, sizeof (ofn),
-          "core", ".gz.b64", PATHBLD_MP_DIR_DATATOP);
-      if (fileopFileExists (ofn)) {
-        strlcpy (tbuff, "core", sizeof (tbuff));
-        starterSendFile (starter, tbuff, ofn);
-      }
-
+    case START_STATE_SUPPORT_SEND_DIAG_INIT: {
       snprintf (tbuff, sizeof (tbuff), "%s/Library/Logs/DiagnosticReports",
           sysvarsGetStr (SV_HOME));
       starterSendFilesInit (starter, tbuff, SF_MAC_DIAG);
+
+      if (fileopFileExists ("core") ||
+          slistGetCount (starter->supportFileList) > 0) {
+        /* CONTEXT: starterui: support: status message */
+        snprintf (tbuff, sizeof (tbuff), _("Sending diagnostics"));
+        uiLabelSetText (&starter->supportStatus, tbuff);
+        starter->startState = START_STATE_SUPPORT_SEND_DIAG;
+      } else {
+        starter->startState = START_STATE_SUPPORT_SEND_DB_PRE;
+      }
+      break;
+    }
+    case START_STATE_SUPPORT_SEND_DIAG: {
+      strlcpy (tbuff, "core", sizeof (tbuff));
+      if (fileopFileExists (tbuff)) {
+        supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_COMPRESSED);
+        fileopDelete (tbuff);
+      }
 
       starter->startState = START_STATE_SUPPORT_SEND_FILE;
       starter->nextState = START_STATE_SUPPORT_SEND_DB_PRE;
@@ -870,9 +868,7 @@ starterMainLoop (void *tstarter)
       senddb = uiToggleButtonIsActive (&starter->supportSendDB);
       if (senddb) {
         strlcpy (tbuff, "data/musicdb.dat", sizeof (tbuff));
-        pathbldMakePath (ofn, sizeof (ofn),
-            "musicdb.dat", ".gz.b64", PATHBLD_MP_DREL_TMP);
-        starterSendFile (starter, tbuff, ofn);
+        supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_COMPRESSED);
       }
       starter->startState = START_STATE_SUPPORT_FINISH;
       break;
@@ -1137,6 +1133,14 @@ starterStartProcess (startui_t *starter, const char *procname,
   return UICB_CONT;
 }
 
+static void
+starterSupportInit (startui_t *starter)
+{
+  if (starter->support == NULL) {
+    starter->support = supportAlloc ();
+  }
+}
+
 static bool
 starterProcessSupport (void *udata)
 {
@@ -1157,17 +1161,6 @@ starterProcessSupport (void *udata)
     return UICB_STOP;
   }
 
-  if (*starter->latestversion == '\0') {
-    if (starter->webclient == NULL) {
-      starter->webclient = webclientAlloc (starter, starterWebResponseCallback);
-    }
-    snprintf (uri, sizeof (uri), "%s/%s",
-        sysvarsGetStr (SV_HOST_WEB), sysvarsGetStr (SV_WEB_VERSION_FILE));
-    webclientGet (starter->webclient, uri);
-    strlcpy (starter->latestversion, starter->webresponse, sizeof (starter->latestversion));
-    stringTrim (starter->latestversion);
-  }
-
   uiutilsUICallbackLongInit (&starter->callbacks [START_CB_SUPPORT_RESP],
       starterSupportResponseHandler, starter);
   uiCreateDialog (&uidialog, &starter->window,
@@ -1185,6 +1178,22 @@ starterProcessSupport (void *udata)
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 2);
   uiDialogPackInDialog (&uidialog, &vbox);
+
+  /* status message line */
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+
+  uiCreateLabel (&uiwidget, "");
+  uiWidgetSetSizeRequest (&uiwidget, 25, 25);
+  uiWidgetSetMarginStart (&uiwidget, 3);
+  uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+  uiBoxPackEnd (&hbox, &uiwidget);
+
+  uiCreateLabel (&uiwidget, "");
+  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
+  uiutilsUIWidgetCopy (&starter->supportStatusMsg, &uiwidget);
+  uiBoxPackEnd (&hbox, &uiwidget);
+  uiLabelSetText (&starter->supportStatusMsg, "");
 
   /* begin line */
   uiCreateHorizBox (&hbox);
@@ -1215,8 +1224,18 @@ starterProcessSupport (void *udata)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiCreateLabel (&uiwidget, starter->latestversion);
+  uiCreateLabel (&uiwidget, "");
   uiBoxPackStart (&hbox, &uiwidget);
+
+  if (*starter->latestversion == '\0') {
+    starterSupportInit (starter);
+    supportGetLatestVersion (starter->support, starter->latestversion, sizeof (starter->latestversion));
+    if (*starter->latestversion == '\0') {
+      /* CONTEXT: starterui: no internet connection */
+      uiLabelSetText (&starter->supportStatusMsg, _("No internet connection"));
+    }
+  }
+  uiLabelSetText (&uiwidget, starter->latestversion);
 
   /* begin line */
   /* CONTEXT: starterui: basic support dialog, list of support options */
@@ -1283,13 +1302,6 @@ starterProcessSupport (void *udata)
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  /* the dialog doesn't have any space above the buttons */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
-
-  uiCreateLabel (&uiwidget, " ");
-  uiBoxPackStart (&hbox, &uiwidget);
-
   uiWidgetShowAll (&uidialog);
   uiutilsUIWidgetCopy (&starter->supportDialog, &uidialog);
   return UICB_CONT;
@@ -1303,9 +1315,11 @@ starterSupportResponseHandler (void *udata, long responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
+      uiLabelSetText (&starter->supportStatusMsg, "");
       break;
     }
     case RESPONSE_CLOSE: {
+      uiLabelSetText (&starter->supportStatusMsg, "");
       uiDialogDestroy (&starter->supportDialog);
       break;
     }
@@ -1597,6 +1611,17 @@ starterCreateSupportDialog (void *udata)
   uiWidgetSetAllMargins (&vbox, 2);
   uiDialogPackInDialog (&uidialog, &vbox);
 
+  /* profile color line */
+  uiCreateHorizBox (&hbox);
+  uiWidgetSetMarginTop (&hbox, 4);
+  uiBoxPackStart (&vbox, &hbox);
+
+  uiCreateLabel (&uiwidget, "");
+  uiWidgetSetSizeRequest (&uiwidget, 25, 25);
+  uiWidgetSetMarginStart (&uiwidget, 3);
+  uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+  uiBoxPackEnd (&hbox, &uiwidget);
+
   /* line 1 */
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
@@ -1680,18 +1705,18 @@ starterSupportMsgHandler (void *udata, long responseid)
 }
 
 static void
-starterSendFilesInit (startui_t *starter, char *dir, int type)
+starterSendFilesInit (startui_t *starter, char *dir, int sendType)
 {
   slist_t     *list;
   char        *ext = BDJ4_CONFIG_EXT;
 
-  if (type == SF_ALL) {
+  if (sendType == SF_ALL) {
     ext = NULL;
   }
-  if (type == SF_MAC_DIAG) {
+  if (sendType == SF_MAC_DIAG) {
     ext = ".crash";
   }
-  starter->sendType = type;
+  starter->sendType = sendType;
   list = dirlistBasicDirList (dir, ext);
   starter->supportFileList = list;
   slistStartIterator (list, &starter->supportFileIterIdx);
@@ -1703,19 +1728,18 @@ static void
 starterSendFiles (startui_t *starter)
 {
   char        *fn;
+  const char  *origfn;
   char        ifn [MAXPATHLEN];
-  char        ofn [MAXPATHLEN];
   char        tbuff [100];
 
   if (starter->supportInFname != NULL) {
-    starterSendFile (starter, starter->supportInFname, starter->supportOutFname);
+    origfn = starter->supportInFname;
+    supportSendFile (starter->support, starter->ident, origfn, SUPPORT_COMPRESSED);
     if (starter->sendType == SF_MAC_DIAG) {
       fileopDelete (starter->supportInFname);
     }
-    free (starter->supportInFname);
-    free (starter->supportOutFname);
+    dataFree (starter->supportInFname);
     starter->supportInFname = NULL;
-    starter->supportOutFname = NULL;
     return;
   }
 
@@ -1739,51 +1763,10 @@ starterSendFiles (startui_t *starter)
   strlcpy (ifn, starter->supportDir, sizeof (ifn));
   strlcat (ifn, "/", sizeof (ifn));
   strlcat (ifn, fn, sizeof (ifn));
-  pathbldMakePath (ofn, sizeof (ofn),
-      fn, ".gz.b64", PATHBLD_MP_DREL_TMP);
   starter->supportInFname = strdup (ifn);
-  starter->supportOutFname = strdup (ofn);
   /* CONTEXT: starterui: support: status message */
   snprintf (tbuff, sizeof (tbuff), _("Sending %s"), ifn);
   uiLabelSetText (&starter->supportStatus, tbuff);
-}
-
-static void
-starterSendFile (startui_t *starter, char *origfn, char *fn)
-{
-  char        uri [1024];
-  const char  *query [10];
-  int         qc = 0;
-
-  webclientCompressFile (origfn, fn);
-  snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_HOST_SUPPORTMSG), sysvarsGetStr (SV_URI_SUPPORTMSG));
-  query [qc++] = "key";
-  query [qc++] = "9034545";
-  query [qc++] = "ident";
-  query [qc++] = starter->ident;
-  query [qc++] = "origfn";
-  if (starter->sendType == SF_MAC_DIAG) {
-    pathinfo_t    *pi;
-
-    pi = pathInfo (origfn);
-    query [qc++] = pi->filename;
-    pathInfoFree (pi);
-  } else {
-    query [qc++] = origfn;
-  }
-  query [qc++] = NULL;
-  webclientUploadFile (starter->webclient, uri, query, fn);
-  fileopDelete (fn);
-}
-
-static void
-starterWebResponseCallback (void *userdata, char *resp, size_t len)
-{
-  startui_t *starter = userdata;
-
-  starter->webresponse = resp;
-  return;
 }
 
 static bool
