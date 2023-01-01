@@ -4,6 +4,8 @@
 #ifndef INC_SONGUTIL_H
 #define INC_SONGUTIL_H
 
+#include "datafile.h"
+
 enum {
   SONG_ADJUST_NONE    = 0x0000,
   SONG_ADJUST_NORM    = 0x0001,

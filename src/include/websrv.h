@@ -4,6 +4,8 @@
 #ifndef INC_WEBSRV_H
 #define INC_WEBSRV_H
 
+#include "mongoose.h"
+
 typedef struct {
   struct mg_mgr   mgr;
 } websrv_t;

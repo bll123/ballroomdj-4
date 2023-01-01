@@ -320,12 +320,14 @@ enum {
 
 void  uiCreateTreeView (UIWidget *uitree);
 void  uiTreeViewAddEditableColumn (UIWidget *uitree, int col, int editcol, const char *title, UICallback *uicb);
+#if BDJ4_USE_GTK
 GtkTreeViewColumn * uiTreeViewAddDisplayColumns (UIWidget *uitree,
     slist_t *sellist, int col, int fontcol, int ellipsizeCol);
 GType * uiTreeViewAddDisplayType (GType *types, int valtype, int col);
 void  uiTreeViewSetDisplayColumn (GtkTreeModel *model, GtkTreeIter *iter,
     int col, long num, const char *str);
 int   uiTreeViewGetSelection (UIWidget *uitree, GtkTreeModel **model, GtkTreeIter *iter);
+#endif
 void  uiTreeViewAllowMultiple (UIWidget *uitree);
 void  uiTreeViewEnableHeaders (UIWidget *uitree);
 void  uiTreeViewDisableHeaders (UIWidget *uitree);
@@ -391,7 +393,9 @@ void uiSizeGroupAdd (UIWidget *uiw, UIWidget *uiwidget);
 void  uiUIInitialize (void);
 void  uiUIProcessEvents (void);
 void  uiCleanup (void);
+#if BDJ4_USE_GTK
 void  uiSetCss (GtkWidget *w, const char *style);
+#endif
 void  uiSetUIFont (char *uifont);
 void  uiInitUILog (void);
 void  uiGetForegroundColor (UIWidget *uiwidget, char *buff, size_t sz);

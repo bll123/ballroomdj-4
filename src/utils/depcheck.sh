@@ -3,16 +3,69 @@
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
 
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
+cd src
+cwd=$(pwd)
+
 keep=F
 if [[ $1 == --keep ]]; then
   keep=T
 fi
 
+INCTC=inctest.c
+INCTO=inctest.o
+INCTOUT=inctest.txt
 TIN=dep-in.txt
 TSORT=dep-sort.txt
 grc=0
 
-# a) check the include file hierarchy for problems.
+# a) check to make sure the include files can be compiled w/o dependencies
+echo "## checking include file compilation"
+test -f $INCTOUT && rm -f $INCTOUT
+for fn in include/*.h; do
+  bfn=$(basename $fn)
+  cat > $INCTC << _HERE_
+#include "config.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+
+#include "${bfn}"
+
+int
+main (int argc, char *argv [])
+{
+  return 0;
+}
+_HERE_
+  cc -c \
+      -DBDJ4_USE_GTK=1 \
+      -I build -I include \
+      $(pkg-config --cflags gtk+-3.0) \
+      $(pkg-config --cflags glib-2.0) \
+      -I mongoose \
+      $INCTC >> $INCTOUT 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]]; then
+    echo "compile of $bfn failed"
+    if [[ $rc -ne 0 ]]; then
+      grc=$rc
+    fi
+  fi
+  rm -f $INCTC $INCTO
+done
+rm -f $INCTC $INCTO
+if [[ $grc -ne 0 ]]; then
+  exit $grc
+fi
+rm -f $INCTOUT
+
+# b) check the include file hierarchy for problems.
+echo "## checking include file hierarchy"
 > $TIN
 for fn in */*.c */*.h build/config.h; do
   echo $fn $fn >> $TIN
@@ -32,7 +85,8 @@ if [[ $rc -ne 0 ]]; then
   exit $grc
 fi
 
-# b) check the .o file hierarchy for problems.
+# c) check the object file hierarchy for problems.
+echo "## checking object file hierarchy"
 $HOME/bin/lorder $(find ./build -name '*.o') > $TIN
 tsort < $TIN > $TSORT
 rc=$?
@@ -43,5 +97,6 @@ fi
 if [[ $keep == F ]]; then
   rm -f $TIN $TSORT > /dev/null 2>&1
 fi
+rm -f $INCCT $INCTO $INCTOUT
 
 exit $grc

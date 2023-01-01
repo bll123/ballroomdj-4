@@ -50,8 +50,14 @@ if [[ $gr == Y ]]; then
   test -d "$dir" && rm -rf "$dir"
   dir="$HOME/.config/BDJ4"
   test -d "$dir" && rm -rf "$dir"
-  # dir="$HOME/.config/gtk-3.0"
-  # test -d "$dir" && rm -rf "$dir"
+  fn="$HOME/.themes/macOS-Mojave-dark"
+  test -f "$fn" && rm -f "$fn"
+  fn="$HOME/.themes/macOS-Mojave-light"
+  test -f "$fn" && rm -f "$fn"
+  # It is possible the user has other GTK stuff installed and could
+  # have other themes.  Try to remove the dir, but don't worry if it fails.
+  dir="$HOME/.themes"
+  test -d "$dir" && rmdir "$dir" > /dev/null 2>&1
   echo "## BDJ4 application removed."
 fi
 
