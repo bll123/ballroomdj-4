@@ -4,7 +4,11 @@
 
 <!--
 
-**4.0.4 beta 2022-12---**
+**4.0.4 beta 2023-1---**
+
+* Bug Fixes:
+    * filter dialog: add profile accent color display.
+    * bpm counter: add profile accent color display.
 
 -->
 

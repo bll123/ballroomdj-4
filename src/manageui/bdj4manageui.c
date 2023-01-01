@@ -59,6 +59,7 @@
 #include "uisongedit.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
+#include "uiutils.h"
 
 enum {
   MANAGE_TAB_MAIN_OTHER,
@@ -578,15 +579,7 @@ manageBuildUI (manageui_t *manage)
   uiWidgetSetAllMargins (&vbox, 4);
   uiBoxPackInWindow (&manage->window, &vbox);
 
-  uiCreateHorizBox (&hbox);
-  uiWidgetSetMarginTop (&hbox, 4);
-  uiBoxPackStart (&vbox, &hbox);
-
-  uiCreateLabel (&uiwidget, "");
-  uiWidgetSetSizeRequest (&uiwidget, 25, 25);
-  uiWidgetSetMarginStart (&uiwidget, 3);
-  uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-  uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));

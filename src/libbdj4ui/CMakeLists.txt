@@ -33,6 +33,7 @@ add_library (libbdj4ui SHARED
   uisongselcommon.c
   uisongselgtk.c
   uistatus.c
+  uiutils.c
 )
 target_include_directories (libbdj4ui
   PUBLIC ${GTK_INCLUDE_DIRS}

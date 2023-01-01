@@ -30,6 +30,7 @@
 #include "sockh.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uiutils.h"
 
 enum {
   BPMCOUNT_CB_EXIT,
@@ -341,6 +342,8 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiCreateVertBox (&vboxmain);
   uiWidgetSetAllMargins (&vboxmain, 2);
   uiBoxPackInWindow (&bpmcounter->window, &vboxmain);
+
+  uiutilsAddAccentColorDisplay (&vboxmain, &hbox, &uiwidget);
 
   /* instructions */
   uiCreateHorizBox (&hbox);

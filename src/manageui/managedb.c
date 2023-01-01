@@ -85,6 +85,7 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
   managedb->dbtopdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxInit ();
   *managedb->fgcolor = '\0';
+  managedb->statusMsg = statusMsg;
 
   tlist = nlistAlloc ("db-action", LIST_ORDERED, free);
   hlist = nlistAlloc ("db-action-help", LIST_ORDERED, free);
@@ -275,6 +276,7 @@ manageDbChg (void *udata)
   value = uiSpinboxTextGetValue (managedb->dbspinbox);
   nval = (int) value;
 
+  uiLabelSetText (managedb->statusMsg, "");
   sval = nlistGetStr (managedb->dbhelp, nval);
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector : %s", sval);
 
@@ -289,8 +291,14 @@ manageDbChg (void *udata)
     uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
     uiWidgetEnable (uiwidgetp);
     if (nval == MANAGE_DB_UPD_FROM_ITUNES) {
+// ### FIX
       /* not yet implemented, always true */
       if (1 || ! itunesConfigured ()) {
+        char  tbuff [200];
+
+        /* CONTEXT: manage ui: status message: itunes is not configured */
+        snprintf (tbuff, sizeof (tbuff), _("%s is not configured."), ITUNES_NAME);
+        uiLabelSetText (managedb->statusMsg, tbuff);
         uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
         uiWidgetDisable (uiwidgetp);
       }

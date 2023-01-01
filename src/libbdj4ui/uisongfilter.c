@@ -15,6 +15,7 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdjopt.h"
 #include "bdj4ui.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
@@ -40,6 +41,7 @@
 #include "uirating.h"
 #include "uisongfilter.h"
 #include "uistatus.h"
+#include "uiutils.h"
 
 enum {
   UISF_LABEL_SORTBY,
@@ -450,6 +452,9 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   uiCreateVertBox (&vbox);
   uiDialogPackInDialog (&uisf->filterDialog, &vbox);
+
+  /* accent color */
+  uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
 
   /* playlist : only available for the music manager */
   /* in this case, the entire hbox will be shown/hidden */

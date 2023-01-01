@@ -49,6 +49,7 @@
 #include "uireqext.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
+#include "uiutils.h"
 
 enum {
   PLUI_MENU_CB_PLAY_QUEUE,
@@ -391,18 +392,11 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetSetAllMargins (&plui->vbox, 2);
 
   /* menu */
-  uiCreateHorizBox (&hbox);
+  uiutilsAddAccentColorDisplay (&plui->vbox, &hbox, &uiwidget);
   uiWidgetExpandHoriz (&hbox);
-  uiBoxPackStart (&plui->vbox, &hbox);
 
   uiCreateMenubar (&menubar);
   uiBoxPackStart (&hbox, &menubar);
-
-  uiCreateLabel (&uiwidget, "");
-  uiWidgetSetSizeRequest (&uiwidget, 25, 25);
-  uiWidgetSetMarginStart (&uiwidget, 3);
-  uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-  uiBoxPackEnd (&hbox, &uiwidget);
 
   uiCreateLabel (&plui->clock, "");
   uiBoxPackEnd (&hbox, &plui->clock);

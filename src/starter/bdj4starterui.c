@@ -41,6 +41,7 @@
 #include "sysvars.h"
 #include "templateutil.h"
 #include "ui.h"
+#include "uiutils.h"
 #include "volreg.h"
 #include "webclient.h"
 
@@ -470,15 +471,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetAllMargins (&vbox, 2);
   uiBoxPackInWindow (&starter->window, &vbox);
 
-  uiCreateHorizBox (&hbox);
-  uiWidgetSetMarginTop (&hbox, 4);
-  uiBoxPackStart (&vbox, &hbox);
-
-  uiCreateLabel (&uiwidget, "");
-  uiWidgetSetSizeRequest (&uiwidget, 25, 25);
-  uiWidgetSetMarginStart (&uiwidget, 3);
-  uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-  uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
   uiutilsUIWidgetCopy (&starter->profileAccent, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
@@ -1180,14 +1173,7 @@ starterProcessSupport (void *udata)
   uiDialogPackInDialog (&uidialog, &vbox);
 
   /* status message line */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
-
-  uiCreateLabel (&uiwidget, "");
-  uiWidgetSetSizeRequest (&uiwidget, 25, 25);
-  uiWidgetSetMarginStart (&uiwidget, 3);
-  uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-  uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
@@ -1612,15 +1598,7 @@ starterCreateSupportDialog (void *udata)
   uiDialogPackInDialog (&uidialog, &vbox);
 
   /* profile color line */
-  uiCreateHorizBox (&hbox);
-  uiWidgetSetMarginTop (&hbox, 4);
-  uiBoxPackStart (&vbox, &hbox);
-
-  uiCreateLabel (&uiwidget, "");
-  uiWidgetSetSizeRequest (&uiwidget, 25, 25);
-  uiWidgetSetMarginStart (&uiwidget, 3);
-  uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-  uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
 
   /* line 1 */
   uiCreateHorizBox (&hbox);

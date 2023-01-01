@@ -38,6 +38,7 @@
 #include "sysvars.h"
 #include "ui.h"
 #include "uinbutil.h"
+#include "uiutils.h"
 
 typedef struct configui {
   progstate_t       *progstate;
@@ -400,15 +401,7 @@ confuiBuildUI (configui_t *confui)
   uiWidgetSetAllMargins (&confui->gui.vbox, 2);
   uiBoxPackInWindow (&confui->gui.window, &confui->gui.vbox);
 
-  uiCreateHorizBox (&hbox);
-  uiWidgetExpandHoriz (&hbox);
-  uiBoxPackStart (&confui->gui.vbox, &hbox);
-
-  uiCreateLabel (&uiwidget, "");
-  uiWidgetSetSizeRequest (&uiwidget, 25, 25);
-  uiWidgetSetMarginStart (&uiwidget, 3);
-  uiLabelSetBackgroundColor (&uiwidget, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
-  uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsAddAccentColorDisplay (&confui->gui.vbox, &hbox, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
