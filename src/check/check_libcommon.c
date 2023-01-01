@@ -31,7 +31,8 @@ check_libcommon (SRunner *sr)
    *  fileop      complete
    *  bdjstring   complete
    *  osutils     complete 2022-12-27
-   *  osprocess   complete      // uses procutil
+   *  fileshared  complete 2023-1-1       // uses procutil, pathbld, ossignal
+   *  osprocess   complete                // uses procutil, pathbld, ossignal
    *  filedata    complete
    *  osnetutils  complete 2022-12-27
    *  pathutil    complete
@@ -40,7 +41,6 @@ check_libcommon (SRunner *sr)
    *  dirop       complete
    *  osdir       complete 2022-12-27     // uses dirop
    *  filemanip   complete 2022-11-1
-   *  fileshared                // open/write/close shared
    *  pathbld     complete
    *  log
    *  bdjmsg      complete
@@ -62,6 +62,9 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = bdjstring_suite();
+  srunner_add_suite (sr, s);
+
+  s = fileshared_suite();
   srunner_add_suite (sr, s);
 
   s = osutils_suite();

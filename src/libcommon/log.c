@@ -43,6 +43,14 @@ char *playerstateTxt [PL_STATE_MAX] = {
   [PL_STATE_IN_GAP] = "in-gap",
 };
 
+typedef struct bdjlog {
+  fileshared_t  *fhandle;
+  int           opened;
+  int           indent;
+  ssize_t       level;
+  const char    *processTag;
+} bdjlog_t;
+
 static void rlogStart (const char *processnm, const char *processtag, int truncflag, loglevel_t level);
 static void rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag);
 static void logInit (void);
@@ -63,7 +71,7 @@ logClose (logidx_t idx)
     return;
   }
 
-  fileCloseShared (&l->fhandle);
+  fileSharedClose (l->fhandle);
   l->opened = 0;
 }
 
@@ -143,11 +151,11 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
   wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
       "%s: %-2s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
   wlen = wlen > LOG_MAX_BUFF ? LOG_MAX_BUFF - 1 : wlen;
-  fileWriteShared (&l->fhandle, wbuff, wlen);
+  fileSharedWrite (l->fhandle, wbuff, wlen);
   if (idx == LOG_ERR) {
     l = syslogs [LOG_DBG];
     if (l->opened) {
-      fileWriteShared (&l->fhandle, wbuff, wlen);
+      fileSharedWrite (l->fhandle, wbuff, wlen);
     }
   }
 }
@@ -293,7 +301,6 @@ static void
 rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
 {
   bdjlog_t      *l = NULL;
-  int           rc;
   pathinfo_t    *pi;
   char          tbuff [MAXPATHLEN];
 
@@ -317,8 +324,8 @@ rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
     /* never truncate the installation log */
     truncflag = FILE_OPEN_APPEND;
   }
-  rc = fileOpenShared (fn, truncflag, &l->fhandle);
-  if (rc < 0) {
+  l->fhandle = fileSharedOpen (fn, truncflag);
+  if (l->fhandle == NULL) {
     fprintf (stderr, "%s: Unable to open %s %d %s\n",
         processtag, fn, errno, strerror (errno));
   }

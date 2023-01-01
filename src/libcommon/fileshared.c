@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
-#include <string.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -25,24 +24,36 @@
 # include <windows.h>
 #endif
 
-#include "fileshared.h"
 #include "bdjstring.h"
+#include "fileshared.h"
 
-int
-fileOpenShared (const char *fname, int truncflag, filehandle_t *fhandle)
+typedef union filehandle {
+#if _typ_HANDLE
+  HANDLE  handle;
+#endif
+  int     fd;
+} fileshared_t;
+
+fileshared_t *
+fileSharedOpen (const char *fname, int truncflag)
 {
-  int         rc;
-
+  fileshared_t  *fhandle;
 #if _lib_CreateFile
   HANDLE    handle;
   DWORD     cd;
+#else
+  int         fd;
+  int         flags;
+#endif
 
+  fhandle = malloc (sizeof (fileshared_t));
+
+#if _lib_CreateFile
   cd = OPEN_ALWAYS;
   if (truncflag == FILE_OPEN_TRUNCATE) {
     cd = CREATE_ALWAYS;
   }
 
-  rc = 0;
   handle = CreateFile (fname,
       FILE_APPEND_DATA,
       FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -50,14 +61,12 @@ fileOpenShared (const char *fname, int truncflag, filehandle_t *fhandle)
       cd,
       FILE_ATTRIBUTE_NORMAL,
       NULL);
-  if (handle == NULL) {
-    rc = -1;
-  }
   fhandle->handle = handle;
+  if (handle == NULL) {
+    dataFree (fhandle)
+    fhandle = NULL;
+  }
 #else
-  int         fd;
-  int         flags;
-
   flags = O_WRONLY | O_APPEND | O_CREAT;
 # if _define_O_CLOEXEC
   flags |= O_CLOEXEC;
@@ -67,15 +76,22 @@ fileOpenShared (const char *fname, int truncflag, filehandle_t *fhandle)
   }
   fd = open (fname, flags, 0600);
   fhandle->fd = fd;
-  rc = fd;
+  if (fd < 0) {
+    dataFree (fhandle);
+    fhandle = NULL;
+  }
 #endif
-  return rc;
+  return fhandle;
 }
 
 ssize_t
-fileWriteShared (filehandle_t *fhandle, char *data, size_t len)
+fileSharedWrite (fileshared_t *fhandle, char *data, size_t len)
 {
   ssize_t rc;
+
+  if (fhandle == NULL) {
+    return -1;
+  }
 
 #if _lib_WriteFile
   DWORD   wlen;
@@ -87,13 +103,17 @@ fileWriteShared (filehandle_t *fhandle, char *data, size_t len)
 }
 
 void
-fileCloseShared (filehandle_t *fhandle)
+fileSharedClose (fileshared_t *fhandle)
 {
+  if (fhandle == NULL) {
+    return;
+  }
 #if _lib_CloseHandle
   CloseHandle (fhandle->handle);
 #else
   close (fhandle->fd);
 #endif
+  dataFree (fhandle);
   return;
 }
 

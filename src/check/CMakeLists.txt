@@ -16,6 +16,7 @@ add_executable (check_all
   check_dirop.c
   check_filedata.c
   check_filemanip.c
+  check_fileshared.c
   check_fileop.c
   check_lock.c
   check_osdir.c
@@ -85,12 +86,20 @@ target_compile_options (check_all PRIVATE -pthread)
 addIntlLibrary (check_all)
 addWinSockLibrary (check_all)
 
+add_executable (chkfileshared chkfileshared.c)
+target_link_libraries (chkfileshared
+  libbdj4common
+  z
+  m
+)
+
 add_executable (chkprocess chkprocess.c)
 
 install (TARGETS
-  check_all chkprocess
+  check_all chkfileshared chkprocess
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
 updateRPath (check_all)
+updateRPath (chkfileshared)
 

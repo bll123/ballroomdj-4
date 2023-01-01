@@ -9,7 +9,6 @@
 #include <stdbool.h>
 
 #include "bdj4.h"
-#include "fileshared.h"
 #include "player.h"
 
 /*
@@ -37,7 +36,6 @@
  *  up - updater
  *
  */
-
 
 typedef uint32_t   loglevel_t;
 
@@ -77,13 +75,7 @@ typedef enum {
   LOG_MAX
 } logidx_t;
 
-typedef struct {
-  filehandle_t  fhandle;
-  int           opened;
-  int           indent;
-  ssize_t       level;
-  const char    *processTag;
-} bdjlog_t;
+typedef struct bdjlog bdjlog_t;
 
 #define LOG_ERROR_NAME    "logerror"
 #define LOG_SESSION_NAME  "logsession"

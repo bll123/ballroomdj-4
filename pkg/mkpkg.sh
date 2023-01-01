@@ -92,12 +92,14 @@ function copyreleasefiles {
 
   echo "   removing exclusions"
   # bdj4se is only used for packaging
-  # testing: tdbcompare, tdbdump, tmusicsetup, check_all, chkprocess,
+  # testing: tdbcompare, tdbdump, tmusicsetup,
+  #   check_all, chkprocess, chkfileshared,
   #   vlcsinklist, voltest, vsencdec
   # img/profile[1-9] may be left over from testing
   rm -f \
       ${stage}/bin/bdj4se \
       ${stage}/bin/check_all \
+      ${stage}/bin/chkfileshared \
       ${stage}/bin/chkprocess \
       ${stage}/bin/tdbcompare \
       ${stage}/bin/tdbdump \
