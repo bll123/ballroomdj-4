@@ -125,7 +125,7 @@ main (int argc, char *argv[])
     for (int j = 0; j < CONFUI_TABLE_CB_MAX; ++j) {
       uiutilsUICallbackInit (&confui.gui.tables [i].callback [j], NULL, NULL, NULL);
     }
-    uiutilsUIWidgetInit (&confui.gui.tables [i].uitree);
+    confui.gui.tables [i].uitree = NULL;
     confui.gui.tables [i].sel = NULL;
     confui.gui.tables [i].radiorow = 0;
     confui.gui.tables [i].togglecol = -1;

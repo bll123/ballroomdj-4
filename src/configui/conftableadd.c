@@ -29,7 +29,8 @@ bool
 confuiTableAdd (void *udata)
 {
   confuigui_t       *gui = udata;
-  UIWidget          *uitree = NULL;
+  uitree_t          *uitree = NULL;
+  UIWidget          *uiwidgetp;
   GtkTreeModel      *model = NULL;
   GtkTreeIter       iter;
   GtkTreeIter       niter;
@@ -45,14 +46,15 @@ confuiTableAdd (void *udata)
     return UICB_STOP;
   }
 
-  uitree = &gui->tables [gui->tablecurr].uitree;
-  if (uitree->widget == NULL) {
+  uitree = gui->tables [gui->tablecurr].uitree;
+  uiwidgetp = uiTreeViewGetUIWidget (uitree);
+  if (uiwidgetp->widget == NULL) {
     logProcEnd (LOG_PROC, "confuiTableAdd", "no-tree");
     return UICB_STOP;
   }
 
   flags = gui->tables [gui->tablecurr].flags;
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->widget));
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
   count = gtk_tree_selection_count_selected_rows (
       gui->tables [gui->tablecurr].sel);
   titer = NULL;
@@ -71,11 +73,14 @@ confuiTableAdd (void *udata)
     char              *pathstr;
     int               idx;
 
+    idx = 0;
     path = gtk_tree_model_get_path (model, titer);
-    pathstr = gtk_tree_path_to_string (path);
-    sscanf (pathstr, "%d", &idx);
-    free (pathstr);
-    gtk_tree_path_free (path);
+    if (path != NULL) {
+      pathstr = gtk_tree_path_to_string (path);
+      sscanf (pathstr, "%d", &idx);
+      free (pathstr);
+      gtk_tree_path_free (path);
+    }
     if (idx == 0 &&
         (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
       gtk_tree_model_iter_next (model, &iter);
@@ -131,12 +136,13 @@ confuiTableAdd (void *udata)
   }
 
   path = gtk_tree_model_get_path (model, &niter);
-  gtk_tree_selection_select_path (
-      gui->tables [gui->tablecurr].sel, path);
-  if (gui->tablecurr == CONFUI_ID_DANCE) {
-    confuiDanceSelect (GTK_TREE_VIEW (uitree->widget), path, NULL, gui);
+  if (path != NULL) {
+    gtk_tree_selection_select_path (gui->tables [gui->tablecurr].sel, path);
+    if (gui->tablecurr == CONFUI_ID_DANCE) {
+      confuiDanceSelect (GTK_TREE_VIEW (uiwidgetp->widget), path, NULL, gui);
+    }
+    gtk_tree_path_free (path);
   }
-  gtk_tree_path_free (path);
 
   gui->tables [gui->tablecurr].changed = true;
   gui->tables [gui->tablecurr].currcount += 1;

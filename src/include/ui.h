@@ -313,26 +313,33 @@ void uiProgressBarSet (UIWidget *uipb, double val);
 
 /* uigtktreeview.c */
 
+typedef struct uitree uitree_t;
+
 enum {
   UITREE_TYPE_NUM,
   UITREE_TYPE_STRING,
 };
 
-void  uiCreateTreeView (UIWidget *uitree);
-void  uiTreeViewAddEditableColumn (UIWidget *uitree, int col, int editcol, const char *title, UICallback *uicb);
+uitree_t *uiCreateTreeView (void);
+void  uiTreeViewFree (uitree_t *uitree);
+UIWidget * uiTreeViewGetUIWidget (uitree_t *uitree);
 #if BDJ4_USE_GTK
-GtkTreeViewColumn * uiTreeViewAddDisplayColumns (UIWidget *uitree,
+int   uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *iter);
+#endif
+void  uiTreeViewAllowMultiple (uitree_t *uitree);
+void  uiTreeViewEnableHeaders (uitree_t *uitree);
+void  uiTreeViewDisableHeaders (uitree_t *uitree);
+void  uiTreeViewDarkBackground (uitree_t *uitree);
+void  uiTreeViewDisableSingleClick (uitree_t *uitree);
+#if BDJ4_USE_GTK
+GtkTreeViewColumn * uiTreeViewAddDisplayColumns (uitree_t *uitree,
     slist_t *sellist, int col, int fontcol, int ellipsizeCol);
 GType * uiTreeViewAddDisplayType (GType *types, int valtype, int col);
 void  uiTreeViewSetDisplayColumn (GtkTreeModel *model, GtkTreeIter *iter,
     int col, long num, const char *str);
-int   uiTreeViewGetSelection (UIWidget *uitree, GtkTreeModel **model, GtkTreeIter *iter);
 #endif
-void  uiTreeViewAllowMultiple (UIWidget *uitree);
-void  uiTreeViewEnableHeaders (UIWidget *uitree);
-void  uiTreeViewDisableHeaders (UIWidget *uitree);
-void  uiTreeViewDarkBackground (UIWidget *uitree);
-void  uiTreeViewDisableSingleClick (UIWidget *uitree);
+void  uiTreeViewSetEditedCallback (uitree_t *uitree, UICallback *uicb);
+void  uiTreeViewAddEditableColumn (uitree_t *uitree, int col, int editcol, const char *title);
 
 /* uigtkwindow.c */
 void uiCreateMainWindow (UIWidget *uiwidget, UICallback *uicb,

@@ -73,7 +73,8 @@ confuiCreateRatingTable (confuigui_t *gui)
   ilistidx_t        iteridx;
   ilistidx_t        key;
   rating_t          *ratings;
-  UIWidget          *uitree;
+  uitree_t          *uitree;
+  UIWidget          *uitreewidgetp;
   int               editable;
 
   logProcBegin (LOG_PROC, "confuiCreateRatingTable");
@@ -102,10 +103,11 @@ confuiCreateRatingTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_RATINGS].currcount += 1;
   }
 
-  uitree = &gui->tables [CONFUI_ID_RATINGS].uitree;
+  uitree = gui->tables [CONFUI_ID_RATINGS].uitree;
+  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
 
   renderer = gtk_cell_renderer_text_new ();
-  g_object_set_data (G_OBJECT (renderer), "confuicolumn",
+  g_object_set_data (G_OBJECT (renderer), "uicolumn",
       GUINT_TO_POINTER (CONFUI_RATING_COL_RATING));
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_RATING_COL_RATING,
@@ -115,11 +117,11 @@ confuiCreateRatingTable (confuigui_t *gui)
   /* CONTEXT: configuration: rating: title of the rating name column */
   gtk_tree_view_column_set_title (column, _("Rating"));
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), gui);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
 
   renderer = gtk_cell_renderer_spin_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
-  g_object_set_data (G_OBJECT (renderer), "confuicolumn",
+  g_object_set_data (G_OBJECT (renderer), "uicolumn",
       GUINT_TO_POINTER (CONFUI_RATING_COL_WEIGHT));
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_RATING_COL_WEIGHT,
@@ -131,9 +133,9 @@ confuiCreateRatingTable (confuigui_t *gui)
   /* CONTEXT: configuration: rating: title of the weight column */
   gtk_tree_view_column_set_title (column, _("Weight"));
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditSpinbox), gui);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uitree->widget), GTK_TREE_MODEL (store));
+  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), GTK_TREE_MODEL (store));
   g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateRatingTable", "");
 }

@@ -18,12 +18,22 @@
 #include "ui.h"
 
 static GType * uiAppendType (GType *types, int ncol, int type);
+static void uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 
-void
-uiCreateTreeView (UIWidget *uiwidget)
+typedef struct uitree {
+  UIWidget    uitree;
+  UIWidget    sel;
+  UICallback  *editedcb;
+} uitree_t;
+
+uitree_t *
+uiCreateTreeView (void)
 {
+  uitree_t          *uitree;
   GtkWidget         *tree;
   GtkTreeSelection  *sel;
+
+  uitree = malloc (sizeof (uitree_t));
 
   tree = gtk_tree_view_new ();
   gtk_tree_view_set_enable_search (GTK_TREE_VIEW (tree), FALSE);
@@ -34,31 +44,125 @@ uiCreateTreeView (UIWidget *uiwidget)
   gtk_widget_set_halign (tree, GTK_ALIGN_START);
   gtk_widget_set_hexpand (tree, FALSE);
   gtk_widget_set_vexpand (tree, FALSE);
-  uiwidget->widget = tree;
-  uiWidgetSetAllMargins (uiwidget, 2);
+  uitree->uitree.widget = tree;
+  uitree->editedcb = NULL;
+  uitree->sel.sel = sel;
+  uiWidgetSetAllMargins (&uitree->uitree, 2);
+  return uitree;
 }
 
 void
-uiTreeViewAddEditableColumn (UIWidget *uitree, int col, int editcol,
-    const char *title, UICallback *uicb)
+uiTreeViewFree (uitree_t *uitree)
+{
+  if (uitree == NULL) {
+    return;
+  }
+
+  free (uitree);
+}
+
+UIWidget *
+uiTreeViewGetUIWidget (uitree_t *uitree)
+{
+  if (uitree == NULL) {
+    return NULL;
+  }
+
+  return &uitree->uitree;
+}
+
+int
+uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *iter)
+{
+  GtkTreeSelection  *sel;
+  int               count;
+
+  if (uitree == NULL || uitree->uitree.widget == NULL) {
+    return 0;
+  }
+
+  sel = uitree->sel.sel;
+  count = gtk_tree_selection_count_selected_rows (sel);
+  if (count == 1) {
+    /* this only works if the treeview is in single-selection mode */
+    gtk_tree_selection_get_selected (sel, model, iter);
+  }
+  return count;
+}
+
+void
+uiTreeViewAllowMultiple (uitree_t *uitree)
+{
+  GtkTreeSelection  *sel;
+
+  sel = uitree->sel.sel;
+  gtk_tree_selection_set_mode (sel, GTK_SELECTION_MULTIPLE);
+}
+
+void
+uiTreeViewEnableHeaders (uitree_t *uitree)
+{
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->uitree.widget), TRUE);
+}
+
+void
+uiTreeViewDisableHeaders (uitree_t *uitree)
+{
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->uitree.widget), FALSE);
+}
+
+void
+uiTreeViewDarkBackground (uitree_t *uitree)
+{
+  uiSetCss (uitree->uitree.widget,
+      "treeview { background-color: shade(@theme_base_color,0.8); } "
+      "treeview:selected { background-color: @theme_selected_bg_color; } ");
+}
+
+void
+uiTreeViewDisableSingleClick (uitree_t *uitree)
+{
+  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uitree->uitree.widget), FALSE);
+}
+
+/* used by various configuration */
+
+void
+uiTreeViewSetEditedCallback (uitree_t *uitree, UICallback *uicb)
+{
+  if (uitree == NULL) {
+    return;
+  }
+  uitree->editedcb = uicb;
+}
+
+void
+uiTreeViewAddEditableColumn (uitree_t *uitree, int col, int editcol,
+    const char *title)
 {
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
 
+  if (uitree == NULL) {
+    return;
+  }
   renderer = gtk_cell_renderer_text_new ();
-  g_object_set_data (G_OBJECT (renderer), "uicolumn",
-      GUINT_TO_POINTER (col));
+  g_object_set_data (G_OBJECT (renderer), "uicolumn", GUINT_TO_POINTER (col));
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", col,
       "editable", editcol,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, title);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
+  g_signal_connect (renderer, "edited", G_CALLBACK (uiTreeViewEditedCallback), uitree);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->uitree.widget), column);
 }
 
+/* the display routines are used by song selection and the music queue */
+/* to create the display listings */
+
 GtkTreeViewColumn *
-uiTreeViewAddDisplayColumns (UIWidget *uitree, slist_t *sellist, int col,
+uiTreeViewAddDisplayColumns (uitree_t *uitree, slist_t *sellist, int col,
     int fontcol, int ellipsizeCol)
 {
   slistidx_t  seliteridx;
@@ -67,6 +171,10 @@ uiTreeViewAddDisplayColumns (UIWidget *uitree, slist_t *sellist, int col,
   GtkTreeViewColumn     *column = NULL;
   GtkTreeViewColumn     *favColumn = NULL;
 
+
+  if (uitree == NULL) {
+    return NULL;
+  }
 
   slistStartIterator (sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
@@ -101,7 +209,7 @@ uiTreeViewAddDisplayColumns (UIWidget *uitree, slist_t *sellist, int col,
     } else {
       gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
     }
-    gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
+    gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->uitree.widget), column);
     if (tagidx == TAG_FAVORITE) {
       gtk_tree_view_column_set_title (column, "\xE2\x98\x86");
     } else {
@@ -153,61 +261,9 @@ uiTreeViewAddDisplayType (GType *types, int valtype, int col)
   return types;
 }
 
-int
-uiTreeViewGetSelection (UIWidget *uitree, GtkTreeModel **model, GtkTreeIter *iter)
-{
-  GtkTreeSelection  *sel;
-  int               count;
-
-  if (uitree == NULL || uitree->widget == NULL) {
-    return 0;
-  }
-
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uitree->widget));
-  count = gtk_tree_selection_count_selected_rows (sel);
-  if (count == 1) {
-    /* this only works if the treeview is in single-selection mode */
-    gtk_tree_selection_get_selected (sel, model, iter);
-  }
-  return count;
-}
-
-void
-uiTreeViewAllowMultiple (UIWidget *uitree)
-{
-  GtkTreeSelection  *sel;
-  sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uitree->widget));
-  gtk_tree_selection_set_mode (sel, GTK_SELECTION_MULTIPLE);
-}
-
-void
-uiTreeViewEnableHeaders (UIWidget *uitree)
-{
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->widget), TRUE);
-}
-
-void
-uiTreeViewDisableHeaders (UIWidget *uitree)
-{
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->widget), FALSE);
-}
-
-void
-uiTreeViewDarkBackground (UIWidget *uitree)
-{
-  uiSetCss (uitree->widget,
-      "treeview { background-color: shade(@theme_base_color,0.8); } "
-      "treeview:selected { background-color: @theme_selected_bg_color; } ");
-}
-
-void
-uiTreeViewDisableSingleClick (UIWidget *uitree)
-{
-  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uitree->widget), FALSE);
-}
-
 /* internal routines */
 
+/* used by the listing display routines */
 static GType *
 uiAppendType (GType *types, int ncol, int type)
 {
@@ -217,3 +273,32 @@ uiAppendType (GType *types, int ncol, int type)
   return types;
 }
 
+/* used by the editable column routines */
+static void
+uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path,
+    const gchar* ntext, gpointer udata)
+{
+  uitree_t      *uitree = udata;
+  GtkWidget     *tree;
+  GtkTreeModel  *model;
+  GtkTreeIter   iter;
+  GType         coltype;
+  int           col;
+
+  if (uitree == NULL) {
+    return;
+  }
+
+  tree = uitree->uitree.widget;
+  col = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (r), "uicolumn"));
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
+  gtk_tree_model_get_iter_from_string (model, &iter, path);
+  coltype = gtk_tree_model_get_column_type (model, col);
+  if (coltype == G_TYPE_STRING) {
+    gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, ntext, -1);
+  }
+  if (coltype == G_TYPE_LONG) {
+    long val = atol (ntext);
+    gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, val, -1);
+  }
+}

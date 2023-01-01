@@ -71,7 +71,8 @@ confuiCreateGenreTable (confuigui_t *gui)
   ilistidx_t        iteridx;
   ilistidx_t        key;
   genre_t           *genres;
-  UIWidget          *uitree;
+  uitree_t          *uitree;
+  UIWidget          *uitreewidgetp;
 
   logProcBegin (LOG_PROC, "confuiCreateGenreTable");
 
@@ -95,10 +96,14 @@ confuiCreateGenreTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_GENRES].currcount += 1;
   }
 
-  uitree = &gui->tables [CONFUI_ID_GENRES].uitree;
+  uitree = gui->tables [CONFUI_ID_GENRES].uitree;
+  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
 
+//  uiTreeViewAddEditableColumn (uitree, CONFUI_GENRE_COL_GENRE,
+//      CONFUI_GENRE_COL_EDITABLE, tagdefs [TAG_GENRE].displayname,
+//      confuiTableEditTextCallback);
   renderer = gtk_cell_renderer_text_new ();
-  g_object_set_data (G_OBJECT (renderer), "confuicolumn",
+  g_object_set_data (G_OBJECT (renderer), "uicolumn",
       GUINT_TO_POINTER (CONFUI_GENRE_COL_GENRE));
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_GENRE_COL_GENRE,
@@ -107,7 +112,7 @@ confuiCreateGenreTable (confuigui_t *gui)
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_column_set_title (column, tagdefs [TAG_GENRE].displayname);
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), gui);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
 
   renderer = gtk_cell_renderer_toggle_new ();
   g_signal_connect (G_OBJECT(renderer), "toggled",
@@ -118,16 +123,16 @@ confuiCreateGenreTable (confuigui_t *gui)
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   /* CONTEXT: configuration: genre: title of the classical setting column */
   gtk_tree_view_column_set_title (column, _("Classical?"));
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
 
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", CONFUI_GENRE_COL_SB_PAD,
       NULL);
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->widget), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uitree->widget), GTK_TREE_MODEL (store));
+  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), GTK_TREE_MODEL (store));
   g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateGenreTable", "");
 }
