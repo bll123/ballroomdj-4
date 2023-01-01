@@ -37,8 +37,8 @@ check_libbasic (SRunner *sr)
    *  bdjopt
    *  procutil    partial
    *  lock        complete
-   *  rafile      complete
    *  localeutil
+   *  rafile      complete
    *  dirlist     complete
    *  progstate   complete (no log checks)
    */

@@ -30,13 +30,13 @@ check_libcommon (SRunner *sr)
   /* libcommon:
    *  fileop      complete
    *  bdjstring   complete
+   *  osutils     complete 2022-12-27
    *  osprocess   complete      // uses procutil
    *  filedata    complete
    *  osnetutils  complete 2022-12-27
    *  pathutil    complete
    *  sysvars
    *  tmutil      complete
-   *  osutils     complete 2022-12-27
    *  dirop       complete
    *  osdir       complete 2022-12-27     // uses dirop
    *  filemanip   complete 2022-11-1
@@ -48,11 +48,12 @@ check_libcommon (SRunner *sr)
    *  bdjvars     complete
    *  sockh
    *  conn
-   *  osrandom    complete
-   *  vsencdec    complete
+   *  oslocale
    *  queue       complete 2022-11-1
+   *  osrandom    complete
    *  colorutils  complete
    *  ossignal    complete
+   *  vsencdec    complete
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libcommon");
@@ -61,6 +62,9 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = bdjstring_suite();
+  srunner_add_suite (sr, s);
+
+  s = osutils_suite();
   srunner_add_suite (sr, s);
 
   s = osprocess_suite();
@@ -76,9 +80,6 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = tmutil_suite();
-  srunner_add_suite (sr, s);
-
-  s = osutils_suite();
   srunner_add_suite (sr, s);
 
   s = dirop_suite();
@@ -102,18 +103,18 @@ check_libcommon (SRunner *sr)
   s = bdjvars_suite();
   srunner_add_suite (sr, s);
 
-  s = osrandom_suite();
-  srunner_add_suite (sr, s);
-
-  s = vsencdec_suite();
-  srunner_add_suite (sr, s);
-
   s = queue_suite();
+  srunner_add_suite (sr, s);
+
+  s = osrandom_suite();
   srunner_add_suite (sr, s);
 
   s = colorutils_suite();
   srunner_add_suite (sr, s);
 
   s = ossignal_suite();
+  srunner_add_suite (sr, s);
+
+  s = vsencdec_suite();
   srunner_add_suite (sr, s);
 }

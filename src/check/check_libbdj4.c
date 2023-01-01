@@ -30,14 +30,14 @@ check_libbdj4 (SRunner *sr)
    *  bdjvarsdf             complete // needed by tests
    *  templateutil          complete // needed by tests; needs localized tests
    *  bdjvarsdfload         complete // needed by tests; uses templateutil
-   *  dnctypes              complete
    *  dance                 complete
+   *  dnctypes              complete
    *  genre                 complete
    *  level                 complete
    *  rating                complete
    *  songfav               complete
-   *  status                complete
    *  songutil              complete
+   *  status                complete
    *  tagdef                complete
    *  song                  complete
    *  musicdb               complete
@@ -50,18 +50,21 @@ check_libbdj4 (SRunner *sr)
    *  playlist
    *  sortopt               complete
    *  dispsel               complete
-   *  samesong              complete
    *  orgutil               partial
-   *  validate              complete
    *  webclient             complete 2022-12-27
+   *  validate              complete
+   *  samesong              complete
+   *  msgparse              complete 2022-12-27
+   *  orgopt                complete
+   *  volreg                complete 2022-12-27 (missing lock tests)
    *  audiotag
    *  m3u
-   *  orgopt                complete
    *  bdj4init
-   *  msgparse              complete 2022-12-27
+   *  instutil
+   *  support
    *  songdb
-   *  volreg                complete 2022-12-27 (missing lock tests)
    *  musicq
+   *  bdj4itunes
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libbdj4");
@@ -75,28 +78,28 @@ check_libbdj4 (SRunner *sr)
   s = bdjvarsdfload_suite();
   srunner_add_suite (sr, s);
 
-  s = dnctypes_suite();
+  s = dance_suite();
   srunner_add_suite (sr, s);
 
-  s = dance_suite();
+  s = dnctypes_suite();
   srunner_add_suite (sr, s);
 
   s = genre_suite();
   srunner_add_suite (sr, s);
 
-  s = rating_suite();
+  s = level_suite();
   srunner_add_suite (sr, s);
 
-  s = level_suite();
+  s = rating_suite();
   srunner_add_suite (sr, s);
 
   s = songfav_suite();
   srunner_add_suite (sr, s);
 
-  s = status_suite();
+  s = songutil_suite();
   srunner_add_suite (sr, s);
 
-  s = songutil_suite();
+  s = status_suite();
   srunner_add_suite (sr, s);
 
   s = tagdef_suite();
@@ -129,22 +132,22 @@ check_libbdj4 (SRunner *sr)
   s = dispsel_suite();
   srunner_add_suite (sr, s);
 
-  s = samesong_suite();
-  srunner_add_suite (sr, s);
-
   s = orgutil_suite();
-  srunner_add_suite (sr, s);
-
-  s = validate_suite();
   srunner_add_suite (sr, s);
 
   s = webclient_suite();
   srunner_add_suite (sr, s);
 
-  s = orgopt_suite();
+  s = validate_suite();
+  srunner_add_suite (sr, s);
+
+  s = samesong_suite();
   srunner_add_suite (sr, s);
 
   s = msgparse_suite();
+  srunner_add_suite (sr, s);
+
+  s = orgopt_suite();
   srunner_add_suite (sr, s);
 
   s = volreg_suite();
