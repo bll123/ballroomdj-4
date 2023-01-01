@@ -508,7 +508,7 @@ uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqup
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueData");
 
   ci = musicqupdate->mqidx;
-  if (ci < MUSICQ_DISP_MAX || ci >= MUSICQ_MAX) {
+  if (ci < 0 || ci >= MUSICQ_MAX) {
     logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "bad-mq-idx");
     return;
   }
