@@ -449,7 +449,7 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
   }
   uiw = uimusicq->ui [mqidx].uiWidgets;
 
-  count = gtk_tree_selection_count_selected_rows (uiw->sel);
+  count = uiTreeViewSelectionGetCount (uiw->musicqTree);
   if (count != 1) {
     logProcEnd (LOG_PROC, "uimusicqMusicQueueSetSelected", "count != 1");
     return;
@@ -557,7 +557,7 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
 
   loc = 999;
 
-  count = gtk_tree_selection_count_selected_rows (uiw->sel);
+  count = uiTreeViewSelectionGetCount (uiw->musicqTree);
   if (count == 1) {
     GtkTreeModel  *model;
     GtkTreeIter   iter;
@@ -858,7 +858,7 @@ uimusicqPlayCallback (void *udata)
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
 
-  count = gtk_tree_selection_count_selected_rows (uiw->sel);
+  count = uiTreeViewSelectionGetCount (uiw->musicqTree);
   if (count != 1) {
     return UICB_CONT;
   }
@@ -883,7 +883,7 @@ uimusicqQueueCallback (void *udata)
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
 
-  count = gtk_tree_selection_count_selected_rows (uiw->sel);
+  count = uiTreeViewSelectionGetCount (uiw->musicqTree);
   if (count != 1) {
     return UICB_CONT;
   }
@@ -914,7 +914,7 @@ uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
     return -1;
   }
 
-  count = gtk_tree_selection_count_selected_rows (uiw->sel);
+  count = uiTreeViewSelectionGetCount (uiw->musicqTree);
   if (count != 1) {
     return -1;
   }
@@ -971,7 +971,7 @@ uimusicqSetDefaultSelection (uimusicq_t *uimusicq)
     return;
   }
 
-  count = gtk_tree_selection_count_selected_rows (uiw->sel);
+  count = uiTreeViewSelectionGetCount (uiw->musicqTree);
   if (uimusicq->ui [ci].count > 0 && count < 1) {
     GtkTreeModel  *model;
     GtkTreeIter   iter;
@@ -1005,11 +1005,11 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
   }
   uiw = uimusicq->ui [mqidx].uiWidgets;
 
+  uiTreeViewSelectionSet (uiw->musicqTree, uimusicq->ui [mqidx].selectLocation);
   snprintf (tbuff, sizeof (tbuff), "%ld", uimusicq->ui [mqidx].selectLocation);
   path = gtk_tree_path_new_from_string (tbuff);
   uiwidgetp = uiTreeViewGetUIWidget (uiw->musicqTree);
   if (path != NULL && GTK_IS_TREE_VIEW (uiwidgetp->widget)) {
-    gtk_tree_selection_select_path (uiw->sel, path);
     uimusicqMusicQueueSetSelected (uimusicq, mqidx, UIMUSICQ_SEL_CURR);
     if (uimusicq->ui [mqidx].count > 0 &&
         GTK_IS_TREE_VIEW (uiwidgetp->widget)) {

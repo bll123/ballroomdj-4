@@ -125,7 +125,36 @@ uiTreeViewDisableSingleClick (uitree_t *uitree)
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uitree->uitree.widget), FALSE);
 }
 
-/* used by various configuration */
+void
+uiTreeViewSelectionSetMode (uitree_t *uitree, int mode)
+{
+  gtk_tree_selection_set_mode (uitree->sel.sel, mode);
+}
+
+void
+uiTreeViewSelectionSet (uitree_t *uitree, int row)
+{
+  char        tbuff [40];
+  GtkTreePath *path = NULL;
+
+  snprintf (tbuff, sizeof (tbuff), "%d", row);
+  path = gtk_tree_path_new_from_string (tbuff);
+  if (path != NULL) {
+    gtk_tree_selection_select_path (uitree->sel.sel, path);
+    gtk_tree_path_free (path);
+  }
+}
+
+int
+uiTreeViewSelectionGetCount (uitree_t *uitree)
+{
+  int   count = 0;
+
+  count = gtk_tree_selection_count_selected_rows (uitree->sel.sel);
+  return count;
+}
+
+/* used by configuration */
 
 void
 uiTreeViewSetEditedCallback (uitree_t *uitree, UICallback *uicb)

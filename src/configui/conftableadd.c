@@ -55,8 +55,7 @@ confuiTableAdd (void *udata)
 
   flags = gui->tables [gui->tablecurr].flags;
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-  count = gtk_tree_selection_count_selected_rows (
-      gui->tables [gui->tablecurr].sel);
+  count = uiTreeViewSelectionGetCount (uitree);
   titer = NULL;
   if (count == 1) {
     int   valid;

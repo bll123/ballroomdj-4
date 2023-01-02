@@ -35,7 +35,6 @@ typedef struct uidropdown {
   UIWidget      window;
   UICallback    closecb;
   uitree_t      *uitree;
-  GtkTreeSelection  *sel;
   slist_t       *strIndexMap;
   nlist_t       *keylist;
   gulong        closeHandlerId;
@@ -66,7 +65,6 @@ uiDropDownInit (void)
   dropdown->button = NULL;
   uiutilsUIWidgetInit (&dropdown->window);
   dropdown->uitree = NULL;
-  dropdown->sel = NULL;
   dropdown->closeHandlerId = 0;
   dropdown->strSelection = NULL;
   dropdown->strIndexMap = NULL;
@@ -428,9 +426,8 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   if (G_IS_OBJECT (uiwidgetp->widget)) {
     g_object_ref_sink (G_OBJECT (uiwidgetp->widget));
   }
-  dropdown->sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uiwidgetp->widget));
   uiTreeViewDisableHeaders (dropdown->uitree);
-  gtk_tree_selection_set_mode (dropdown->sel, GTK_SELECTION_SINGLE);
+  uiTreeViewSelectionSetMode (dropdown->uitree, SELECT_SINGLE);
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetExpandVert (uiwidgetp);
   uiBoxPackInWindow (&uiscwin, uiwidgetp);
@@ -463,10 +460,13 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
   if (internalidx < 0) {
     internalidx = 0;
   }
+
+  uiTreeViewSelectionSet (dropdown->uitree, internalidx);
+
+  // the next two lines can be removed once path is no longer needed.
   snprintf (tbuff, sizeof (tbuff), "%d", internalidx);
   path = gtk_tree_path_new_from_string (tbuff);
   if (path != NULL) {
-    gtk_tree_selection_select_path (dropdown->sel, path);
     model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitreewidgetp->widget));
     if (model != NULL) {
       gtk_tree_model_get_iter (model, &iter, path);

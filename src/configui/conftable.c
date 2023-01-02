@@ -363,8 +363,7 @@ confuiTableMove (confuigui_t *gui, int dir)
     return;
   }
 
-  count = gtk_tree_selection_count_selected_rows (
-      gui->tables [gui->tablecurr].sel);
+  count = uiTreeViewSelectionGetCount (gui->tables [gui->tablecurr].uitree);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiTableMove", "no-selection");
     return;
@@ -521,11 +520,11 @@ confuiTableSetDefaultSelection (confuigui_t *gui, uitree_t *uitree,
   if (count != 1) {
     GtkTreePath   *path = NULL;
 
+    uiTreeViewSelectionSet (uitree, 0);
     path = gtk_tree_path_new_from_string ("0");
     if (path != NULL) {
       UIWidget      *uiwidgetp;
 
-      gtk_tree_selection_select_path (sel, path);
       if (gui->tablecurr == CONFUI_ID_DANCE) {
         uiwidgetp = uiTreeViewGetUIWidget (uitree);
         confuiDanceSelect (GTK_TREE_VIEW (uiwidgetp->widget), path, NULL, gui);

@@ -526,7 +526,7 @@ uisongselSetDefaultSelection (uisongsel_t *uisongsel)
     return;
   }
 
-  count = gtk_tree_selection_count_selected_rows (uiw->sel);
+  count = uiTreeViewSelectionGetCount (uiw->songselTree);
   if (count < 1) {
     GtkTreeModel  *model;
     GtkTreeIter   iter;
@@ -547,8 +547,6 @@ void
 uisongselSetSelection (uisongsel_t *uisongsel, long idx)
 {
   uisongselgtk_t  *uiw;
-  GtkTreePath     *path = NULL;
-  char            tbuff [40];
 
   uiw = uisongsel->uiWidgetData;
 
@@ -559,20 +557,13 @@ uisongselSetSelection (uisongsel_t *uisongsel, long idx)
     return;
   }
 
-  snprintf (tbuff, sizeof (tbuff), "%ld", idx);
-  path = gtk_tree_path_new_from_string (tbuff);
-  if (path != NULL) {
-    gtk_tree_selection_select_path (uiw->sel, path);
-    gtk_tree_path_free (path);
-  }
+  uiTreeViewSelectionSet (uiw->songselTree, idx);
 }
 
 void
 uisongselSetSelectionOffset (uisongsel_t *uisongsel, long idx)
 {
   uisongselgtk_t  *uiw;
-  GtkTreePath     *path = NULL;
-  char            tbuff [40];
 
   uiw = uisongsel->uiWidgetData;
 
@@ -586,12 +577,7 @@ uisongselSetSelectionOffset (uisongsel_t *uisongsel, long idx)
   uisongselScrollSelection (uisongsel, idx, UISONGSEL_SCROLL_NORM);
   idx -= uisongsel->idxStart;
 
-  snprintf (tbuff, sizeof (tbuff), "%ld", idx);
-  path = gtk_tree_path_new_from_string (tbuff);
-  if (path != NULL) {
-    gtk_tree_selection_select_path (uiw->sel, path);
-    gtk_tree_path_free (path);
-  }
+  uiTreeViewSelectionSet (uiw->songselTree, idx);
 }
 
 bool
@@ -627,7 +613,7 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   UIWidget        *uiwidgetp;
 
   uiw = uisongsel->uiWidgetData;
-  count = gtk_tree_selection_count_selected_rows (uiw->sel);
+  count = uiTreeViewSelectionGetCount (uiw->songselTree);
   if (count != 1) {
     return 0;
   }
@@ -1158,17 +1144,10 @@ uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
   /* set the selections based on the saved selection list */
   nlistStartIterator (uiw->selectedList, &iteridx);
   while ((idx = nlistIterateKey (uiw->selectedList, &iteridx)) >= 0) {
-    GtkTreePath *path;
-    char        tmp [40];
 
     if (idx >= uisongsel->idxStart &&
         idx < uisongsel->idxStart + uiw->maxRows) {
-      snprintf (tmp, sizeof (tmp), "%d", idx - uisongsel->idxStart);
-      path = gtk_tree_path_new_from_string (tmp);
-      if (path != NULL) {
-        gtk_tree_selection_select_path (uiw->sel, path);
-        gtk_tree_path_free (path);
-      }
+      uiTreeViewSelectionSet (uiw->songselTree, idx - uisongsel->idxStart);
     }
   }
 

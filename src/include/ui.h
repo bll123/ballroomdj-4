@@ -4,6 +4,7 @@
 #ifndef INC_UI_H
 #define INC_UI_H
 
+
 #include <stdbool.h>
 
 #if BDJ4_USE_GTK
@@ -35,6 +36,7 @@ typedef struct {
   const char      *actiontext;
 } UICallback;
 
+#if BDJ4_USE_GTK
 /* these are defined based on the gtk values */
 /* would change for a different gui package */
 enum {
@@ -44,7 +46,10 @@ enum {
   UICB_NO_DISP = false,
   UICB_NO_CONV = false,
   UICB_CONVERTED = true,
+  SELECT_SINGLE = GTK_SELECTION_SINGLE,
+  SELECT_MULTIPLE = GTK_SELECTION_MULTIPLE,
 };
+#endif
 
 typedef struct {
   union {
@@ -331,6 +336,9 @@ void  uiTreeViewEnableHeaders (uitree_t *uitree);
 void  uiTreeViewDisableHeaders (uitree_t *uitree);
 void  uiTreeViewDarkBackground (uitree_t *uitree);
 void  uiTreeViewDisableSingleClick (uitree_t *uitree);
+void  uiTreeViewSelectionSetMode (uitree_t *uitree, int mode);
+void  uiTreeViewSelectionSet (uitree_t *uitree, int row);
+int   uiTreeViewSelectionGetCount (uitree_t *uitree);
 #if BDJ4_USE_GTK
 GtkTreeViewColumn * uiTreeViewAddDisplayColumns (uitree_t *uitree,
     slist_t *sellist, int col, int fontcol, int ellipsizeCol);

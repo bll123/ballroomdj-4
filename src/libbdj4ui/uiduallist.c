@@ -429,7 +429,7 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
   }
 
   sel = duallist->trees [which].sel;
-  count = gtk_tree_selection_count_selected_rows (sel);
+  count = uiTreeViewSelectionGetCount (duallist->trees [which].uitree);
   if (count != 1) {
     return;
   }
@@ -658,12 +658,6 @@ uiduallistSetDefaultSelection (uiduallist_t *duallist, int which)
 
   count = uiTreeViewGetSelection (uitree, &model, &iter);
   if (count != 1) {
-    GtkTreePath   *path;
-
-    path = gtk_tree_path_new_from_string ("0");
-    if (path != NULL) {
-      gtk_tree_selection_select_path (sel, path);
-      gtk_tree_path_free (path);
-    }
+    uiTreeViewSelectionSet (uitree, 0);
   }
 }
