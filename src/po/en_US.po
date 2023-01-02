@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.0.3\n"
+"Project-Id-Version: ballroomdj-4 4.0.4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-12-31\n"
-"PO-Revision-Date: 2022-12-31\n"
+"POT-Creation-Date: 2023-01-01\n"
+"PO-Revision-Date: 2023-01-01\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -111,6 +111,11 @@ msgstr ""
 #. CONTEXT: installer: display of package status
 #, c-format
 msgid "%s is installed"
+msgstr ""
+
+#. CONTEXT: manage ui: status message: itunes is not configured
+#, c-format
+msgid "%s is not configured."
 msgstr ""
 
 #. CONTEXT: installer: display of package status

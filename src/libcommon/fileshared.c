@@ -63,7 +63,7 @@ fileSharedOpen (const char *fname, int truncflag)
       NULL);
   fhandle->handle = handle;
   if (handle == NULL) {
-    dataFree (fhandle)
+    dataFree (fhandle);
     fhandle = NULL;
   }
 #else
