@@ -370,7 +370,8 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       continue;
     }
 
-    if (strcmp (key, "Movie") == 0) {
+    if (strcmp (key, "Movie") == 0 ||
+        strcmp (key, "Has Video") == 0) {
       skip = true;
       continue;
     }
@@ -484,6 +485,10 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       continue;
     }
     if (strcmp (key, "Playlist ID") == 0) {
+      if (nlistGetCount (ids) == 0) {
+        slistFree (ids);
+        ids = NULL;
+      }
       if (skip == false && keepname != NULL && ids != NULL) {
         slistSetList (itunes->playlists, keepname, ids);
       }
@@ -495,6 +500,7 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       continue;
     }
     if (strcmp (key, "Playlist Items") == 0) {
+      ids = NULL;
       if (! skip) {
         ids = nlistAlloc ("itunes-pl-ids", LIST_UNORDERED, NULL);
         skip = false;
@@ -512,7 +518,14 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       dataFree (keepname);
       keepname = strdup (val);
     } else if (strcmp (key, "Track ID") == 0) {
-      nlistSetNum (ids, atol (val), 1);
+      slist_t   *entry;
+      long      tval;
+
+      tval = atol (val);
+      entry = nlistGetList (itunes->songs, tval);
+      if (entry != NULL) {
+        nlistSetNum (ids, tval, 1);
+      }
     }
   }
 
