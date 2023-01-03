@@ -84,12 +84,6 @@ confuiBuildUIDebug (confuigui_t *gui)
   confuiMakeItemCheckButton (gui, &vbox, &sg, "Socket",
       CONFUI_WIDGET_DEBUG_512, -1,
       (val & 512));
-
-  uiCreateVertBox (&vbox);
-  uiBoxPackStart (&hbox, &vbox);
-
-  uiCreateSizeGroupHoriz (&sg);
-
   gui->uiitem [CONFUI_WIDGET_DEBUG_512].outtype = CONFUI_OUT_DEBUG;
   confuiMakeItemCheckButton (gui, &vbox, &sg, "Database",
       CONFUI_WIDGET_DEBUG_1024, -1,
@@ -98,6 +92,12 @@ confuiBuildUIDebug (confuigui_t *gui)
   confuiMakeItemCheckButton (gui, &vbox, &sg, "Random Access File",
       CONFUI_WIDGET_DEBUG_2048, -1,
       (val & 2048));
+
+  uiCreateVertBox (&vbox);
+  uiBoxPackStart (&hbox, &vbox);
+
+  uiCreateSizeGroupHoriz (&sg);
+
   gui->uiitem [CONFUI_WIDGET_DEBUG_2048].outtype = CONFUI_OUT_DEBUG;
   confuiMakeItemCheckButton (gui, &vbox, &sg, "Procedures",
       CONFUI_WIDGET_DEBUG_4096, -1,
@@ -131,6 +131,10 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_WIDGET_DEBUG_524288, -1,
       (val & 524288));
   gui->uiitem [CONFUI_WIDGET_DEBUG_524288].outtype = CONFUI_OUT_DEBUG;
+  confuiMakeItemCheckButton (gui, &vbox, &sg, "iTunes Parse",
+      CONFUI_WIDGET_DEBUG_1048576, -1,
+      (val & 1048576));
+  gui->uiitem [CONFUI_WIDGET_DEBUG_1048576].outtype = CONFUI_OUT_DEBUG;
   logProcEnd (LOG_PROC, "confuiBuildUIDebug", "");
 }
 

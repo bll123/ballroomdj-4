@@ -53,7 +53,8 @@ target_link_libraries (libbdj4
   libbdjregex libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
-  ${GLIB_LDFLAGS} ${XML2_LDFLAGS}
+  ${GLIB_LDFLAGS}
+  ${XML2_LDFLAGS}
   z
   m
 )

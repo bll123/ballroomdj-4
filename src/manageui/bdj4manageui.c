@@ -1679,6 +1679,37 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
       break;
     }
     case RESPONSE_APPLY: {
+      const char  *plname;
+      nlist_t     *ids;
+      nlistidx_t  iteridx;
+      nlistidx_t  ituneskey;
+      nlist_t     *idata;
+      const char  *songfn;
+      song_t      *song;
+      dbidx_t     dbidx;
+      char        tbuff [200];
+
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: itunes: import");
+      plname = uiDropDownGetString (manage->itunessel);
+      ids = itunesGetPlaylistData (manage->itunes, plname);
+      snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
+      connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tbuff);
+
+      nlistStartIterator (ids, &iteridx);
+      while ((ituneskey = nlistIterateKey (ids, &iteridx)) >= 0) {
+        idata = itunesGetSongData (manage->itunes, ituneskey);
+        songfn = nlistGetStr (idata, TAG_FILE);
+        song = dbGetByName (manage->musicdb, songfn);
+        if (song != NULL) {
+          dbidx = songGetNum (song, TAG_DBIDX);
+          snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d",
+              manage->musicqManageIdx, MSG_ARGS_RS, 999, MSG_ARGS_RS, dbidx);
+          connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
+        } else {
+          logMsg (LOG_DBG, LOG_MAIN, "itunes import: song not found %s\n", songfn);
+        }
+      }
+
       uiWidgetHide (&manage->itunesSelectDialog);
       break;
     }

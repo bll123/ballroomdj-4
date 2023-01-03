@@ -11,6 +11,8 @@
 #include <inttypes.h>
 #include <assert.h>
 
+#include <glib.h>
+
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -46,7 +48,7 @@ static const xmlChar * plxpath = (const xmlChar *)
       "/plist/dict/array/dict/string|"
       "/plist/dict/array/dict/array/dict/key|"
       "/plist/dict/array/dict/array/dict/integer";
-static const char *ITUNES_LOCALHOST = "file://localhost/";
+static const char *ITUNES_LOCALHOST = "file://localhost";
 static const char *ITUNES_LOCAL = "file://";
 
 typedef struct itunes {
@@ -144,16 +146,16 @@ itunesAlloc (void)
   itunes->songs = NULL;
   itunes->playlists = NULL;
 
-  /* for debugging */
 #if 0
+  /* for debugging */
   {
     nlistidx_t    iteridx;
     nlistidx_t    nkey;
     char          *skey;
 
     bdjoptSetStr (OPT_M_DIR_ITUNES_MEDIA, "/home/music/m");
-//    bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/vbox_shared/iTunes Music Library.xml");
-    bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/s/bdj-test-files/iTunes Library.xml");
+    bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/s/bdj4/test-files/iTunes Library.xml");
+//    bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/s/bdj4/test-files/iTunes-test-music.xml");
     itunesParse (itunes);
     nlistStartIterator (itunes->songs, &iteridx);
     while ((nkey = nlistIterateKey (itunes->songs, &iteridx)) >= 0) {
@@ -162,7 +164,7 @@ itunesAlloc (void)
       nlistidx_t    eiteridx;
 
       entry = nlistGetList (itunes->songs, nkey);
-      fprintf (stderr, "-- %ld %s \n", nkey, nlistGetStr (entry, TAG_FILE));
+      fprintf (stderr, "-- %d %s \n", nkey, nlistGetStr (entry, TAG_FILE));
 
       nlistStartIterator (entry, &eiteridx);
       while ((ekey = nlistIterateKey (entry, &eiteridx)) >= 0) {
@@ -484,6 +486,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
     if (strcmp (key, "Movie") == 0 ||
         strcmp (key, "Has Video") == 0) {
       skip = true;
+      logMsg (LOG_DBG, LOG_ITUNES, "song: skip-video");
       continue;
     }
 
@@ -491,6 +494,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       if (atoi (val) == 1) {
         /* set the dance rating to unrated */
         nlistSetNum (entry, TAG_DANCERATING, 0);
+        logMsg (LOG_DBG, LOG_ITUNES, "song: unrated");
         ratingset = true;
       }
     } else if (strcmp (key, "Loved") == 0 ||
@@ -508,6 +512,8 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         }
         songFavoriteConv (&conv);
         nlistSetNum (entry, TAG_FAVORITE, conv.num);
+        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %ld",
+            tagdefs [TAG_FAVORITE].tag, conv.num);
       }
     } else {
       int   tagidx;
@@ -518,12 +524,33 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         continue;
       }
       if (tagidx == TAG_FILE) {
+        bool    ok = false;
+        int     offset = 0;
         if (strncmp (val, ITUNES_LOCALHOST, strlen (ITUNES_LOCALHOST)) == 0) {
-          nlistSetStr (entry, tagidx, val + strlen (ITUNES_LOCALHOST));
+          offset = strlen (ITUNES_LOCALHOST);
+          ok = true;
         } else if (strncmp (val, ITUNES_LOCAL, strlen (ITUNES_LOCAL)) == 0) {
-          nlistSetStr (entry, tagidx, val + strlen (ITUNES_LOCAL));
+          offset = strlen (ITUNES_LOCAL);
+          ok = true;
         } else {
           skip = true;
+        }
+
+        if (ok) {
+          const char  *musicdir;
+          int         mdirlen;
+          char        *nstr;
+
+          musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
+          mdirlen = strlen (musicdir);
+          if (strncmp (val + offset, musicdir, mdirlen) == 0) {
+            offset += mdirlen + 1;
+          }
+          /* not sure that the string is decomposed */
+          nstr = g_uri_unescape_string (val + offset, NULL);
+          nlistSetStr (entry, tagidx, nstr);
+          logMsg (LOG_DBG, LOG_ITUNES, "song: %s %s", tagdefs [tagidx].tag, nstr);
+          free (nstr);
         }
       } else if (tagidx == TAG_DBADDDATE) {
         char    t [200];
@@ -535,6 +562,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
           *p = '\0';
         }
         nlistSetStr (entry, tagidx, t);
+        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %s", tagdefs [tagidx].tag, t);
       } else if (tagidx == TAG_DANCERATING) {
         int   ratingidx;
         int   tval;
@@ -547,8 +575,10 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         tval = tval / 10 - 1;
         ratingidx = nlistGetNum (itunes->stars, tval);
         nlistSetNum (entry, tagidx, ratingidx);
+        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %d", tagdefs [tagidx].tag, ratingidx);
       } else {
         nlistSetStr (entry, tagidx, val);
+        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %s", tagdefs [tagidx].tag, val);
       }
     }
   }
@@ -622,9 +652,11 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
 
     if (strcmp (key, "Distinguished Kind") == 0 ||
         strcmp (key, "Smart Info") == 0) {
+      logMsg (LOG_DBG, LOG_ITUNES, "pl: skip");
       skip = true;
     } else if (strcmp (key, "Name") == 0) {
       strlcpy (keepname, val, sizeof (keepname));
+      logMsg (LOG_DBG, LOG_ITUNES, "pl-name: %s", keepname);
     } else if (strcmp (key, "Track ID") == 0) {
       slist_t   *entry;
       long      tval;
@@ -633,6 +665,7 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       entry = nlistGetList (itunes->songs, tval);
       if (entry != NULL) {
         nlistSetNum (ids, tval, 1);
+        logMsg (LOG_DBG, LOG_ITUNES, "pl: %s %ld", keepname, tval);
       }
     }
   }
@@ -673,7 +706,7 @@ itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
     if (nodes->nodeTab [i]->type == XML_ELEMENT_NODE)  {
       cur = nodes->nodeTab [i];
       val = xmlNodeGetContent (cur);
-      logMsg (LOG_DBG, LOG_MAIN, "xml: %s %s", cur->name, val);
+      logMsg (LOG_DBG, LOG_ITUNES, "xml: raw: %s %s", cur->name, val);
       // fprintf (stderr, "i: %s %s\n", cur->name, val);
       if (strcmp ((const char *) cur->name, "key") == 0) {
         if (! valset) {

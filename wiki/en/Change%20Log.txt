@@ -6,6 +6,9 @@
 
 **4.0.5 beta 2023-1---**
 
+* Changes:
+    * song list editor: Import from iTunes is now working.
+
 -->
 
 **4.0.4 beta 2023-1-1**

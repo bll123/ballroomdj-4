@@ -40,6 +40,12 @@ case ${pnm} in
     exit 1
     ;;
 esac
+grep -- '202[0-9]-[0-9]*---' ../README.txt > /dev/null 2>&1
+rc=$?
+if [[ $rc -eq 0 ]]; then
+  echo "Failed: date not set in README.txt"
+  exit 1
+fi
 
 if [[ ! -f ${pnm} ]]; then
   echo "Failed: no release package found."
