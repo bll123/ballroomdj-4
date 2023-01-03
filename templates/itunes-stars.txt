@@ -1,5 +1,5 @@
 # itunes-stars
-# 2022-8-4
+# 2023-1-2
 version
 ..1
 10
@@ -11,7 +11,7 @@ version
 40
 ..Poor
 50
-..Good
+..Poor
 60
 ..Good
 70
