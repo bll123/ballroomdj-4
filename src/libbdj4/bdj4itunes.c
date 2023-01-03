@@ -47,6 +47,9 @@ static const xmlChar * plxpath = (const xmlChar *)
       "/plist/dict/array/dict/array/dict/key|"
       "/plist/dict/array/dict/array/dict/integer";
 static const char *ITUNES_LOCALHOST = "file://localhost/";
+static const char *ITUNES_LOCAL = "file://";
+static const char *ITUNES_HTTP = "http://";
+static const char *ITUNES_HTTP_CORRUPT = "ttp://";
 
 typedef struct itunes {
   datafile_t    *starsdf;
@@ -146,7 +149,8 @@ itunesAlloc (void)
     char          *skey;
 
     bdjoptSetStr (OPT_M_DIR_ITUNES_MEDIA, "/home/music/m");
-    bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/vbox_shared/iTunes Music Library.xml");
+//    bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/vbox_shared/iTunes Music Library.xml");
+    bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/s/bdj-test-files/iTunes Library.xml");
     itunesParse (itunes);
     nlistStartIterator (itunes->songs, &iteridx);
     while ((nkey = nlistIterateKey (itunes->songs, &iteridx)) >= 0) {
@@ -321,8 +325,10 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
   slistidx_t  iteridx;
   char        *key;
   char        *val;
+  long        lastval = -1;
   nlist_t     *entry = NULL;
   bool        ratingset = false;
+  bool        skip = false;
 
   rawdata = slistAlloc ("itunes-data-raw", LIST_UNORDERED, NULL);
   if (! itunesParseXPath (xpathCtx, xpathExpr, rawdata, datamainxpath)) {
@@ -339,11 +345,37 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
     if (val == NULL) {
       continue;
     }
+
     if (strcmp (key, "Track ID") == 0) {
+      if (skip) {
+        nlistFree (entry);
+      }
+      if (! skip && lastval >= 0) {
+        char    *tval;
+
+        tval = nlistGetStr (entry, TAG_FILE);
+        if (tval != NULL) {
+          nlistSetList (itunes->songs, lastval, entry);
+        } else {
+          nlistFree (entry);
+        }
+      }
       entry = nlistAlloc ("itunes-entry", LIST_ORDERED, NULL);
-      nlistSetList (itunes->songs, atol (val), entry);
+      lastval = atol (val);
       ratingset = false;
-    } else if (strcmp (key, "Rating Computed") == 0) {
+      skip = false;
+      continue;
+    }
+    if (skip) {
+      continue;
+    }
+
+    if (strcmp (key, "Movie") == 0) {
+      skip = true;
+      continue;
+    }
+
+    if (strcmp (key, "Rating Computed") == 0) {
       if (atoi (val) == 1) {
         /* set the dance rating to unrated */
         nlistSetNum (entry, TAG_DANCERATING, 0);
@@ -374,8 +406,16 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         continue;
       }
       if (tagidx == TAG_FILE) {
+        if (strncmp (val, ITUNES_HTTP, strlen (ITUNES_HTTP)) == 0 ||
+            strncmp (val, ITUNES_HTTP_CORRUPT, strlen (ITUNES_HTTP_CORRUPT)) == 0) {
+          skip = true;
+          nlistSetStr (entry, tagidx, val);
+        }
         if (strncmp (val, ITUNES_LOCALHOST, strlen (ITUNES_LOCALHOST)) == 0) {
           nlistSetStr (entry, tagidx, val + strlen (ITUNES_LOCALHOST));
+        }
+        if (strncmp (val, ITUNES_LOCAL, strlen (ITUNES_LOCAL)) == 0) {
+          nlistSetStr (entry, tagidx, val + strlen (ITUNES_LOCAL));
         }
       } else if (tagidx == TAG_DBADDDATE) {
         char    *t;
@@ -404,6 +444,9 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         nlistSetStr (entry, tagidx, val);
       }
     }
+  }
+  if (skip) {
+    nlistFree (entry);
   }
 
   slistFree (rawdata);
@@ -464,8 +507,6 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
 
     if (strcmp (key, "Distinguished Kind") == 0 ||
         strcmp (key, "Smart Info") == 0) {
-      nlistFree (ids);
-      ids = NULL;
       skip = true;
     } else if (strcmp (key, "Name") == 0) {
       dataFree (keepname);
