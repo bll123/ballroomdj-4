@@ -23,6 +23,7 @@
 #include "bdjopt.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "genre.h"
 #include "log.h"
 #include "nlist.h"
 #include "pathbld.h"
@@ -57,7 +58,8 @@ typedef struct itunes {
   datafile_t    *fieldsdf;
   nlist_t       *fields;
   time_t        lastparse;
-  nlist_t       *songs;
+  nlist_t       *songbyidx;
+  slist_t       *songbyname;
   slist_t       *playlists;
   slist_t       *itunesAvailFields;
   slistidx_t    availiteridx;
@@ -143,7 +145,8 @@ itunesAlloc (void)
   }
 
   itunes->lastparse = 0;
-  itunes->songs = NULL;
+  itunes->songbyidx = NULL;
+  itunes->songbyname = NULL;
   itunes->playlists = NULL;
 
 #if 0
@@ -154,27 +157,27 @@ itunesAlloc (void)
     char          *skey;
 
     bdjoptSetStr (OPT_M_DIR_ITUNES_MEDIA, "/home/music/m");
-    bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/s/bdj4/test-files/iTunes Library.xml");
-//    bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/s/bdj4/test-files/iTunes-test-music.xml");
+    //bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/s/bdj4/test-files/iTunes Library.xml");
+    bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/s/bdj4/test-files/iTunes-test-music.xml");
     itunesParse (itunes);
-    nlistStartIterator (itunes->songs, &iteridx);
-    while ((nkey = nlistIterateKey (itunes->songs, &iteridx)) >= 0) {
-      int           ekey;
+    nlistStartIterator (itunes->songbyidx, &iteridx);
+    while ((nkey = nlistIterateKey (itunes->songbyidx, &iteridx)) >= 0) {
+      int           tagidx;
       nlist_t       *entry;
       nlistidx_t    eiteridx;
 
-      entry = nlistGetList (itunes->songs, nkey);
+      entry = nlistGetList (itunes->songbyidx, nkey);
       fprintf (stderr, "-- %d %s \n", nkey, nlistGetStr (entry, TAG_FILE));
 
       nlistStartIterator (entry, &eiteridx);
-      while ((ekey = nlistIterateKey (entry, &eiteridx)) >= 0) {
-        if (ekey == TAG_FILE) {
+      while ((tagidx = nlistIterateKey (entry, &eiteridx)) >= 0) {
+        if (tagidx == TAG_FILE) {
           continue;
         }
-        if (ekey == TAG_FAVORITE || ekey == TAG_DANCERATING) {
-          fprintf (stderr, "  %s %ld\n", tagdefs [ekey].tag, nlistGetNum (entry, ekey));
+        if (tagdefs [tagidx].valueType == VALUE_NUM) {
+          fprintf (stderr, "  %s %ld\n", tagdefs [tagidx].tag, nlistGetNum (entry, tagidx));
         } else {
-          fprintf (stderr, "  %s %s\n", tagdefs [ekey].tag, nlistGetStr (entry, ekey));
+          fprintf (stderr, "  %s %s\n", tagdefs [tagidx].tag, nlistGetStr (entry, tagidx));
         }
       }
     }
@@ -210,7 +213,8 @@ itunesFree (itunes_t *itunes)
   datafileFree (itunes->starsdf);
   datafileFree (itunes->fieldsdf);
   nlistFree (itunes->fields);
-  nlistFree (itunes->songs);
+  nlistFree (itunes->songbyidx);
+  slistFree (itunes->songbyname);
   slistFree (itunes->playlists);
   dataFree (itunes);
 }
@@ -358,22 +362,35 @@ itunesGetSongData (itunes_t *itunes, nlistidx_t idx)
 {
   nlist_t   *entry;
 
-  if (itunes == NULL || itunes->songs == NULL) {
+  if (itunes == NULL || itunes->songbyidx == NULL) {
     return NULL;
   }
 
-  entry = nlistGetList (itunes->songs, idx);
+  entry = nlistGetList (itunes->songbyidx, idx);
   return entry;
+}
+
+nlist_t *
+itunesGetSongDataByName (itunes_t *itunes, const char *skey)
+{
+  nlistidx_t  idx;
+
+  if (itunes == NULL || itunes->songbyname == NULL) {
+    return NULL;
+  }
+
+  idx = slistGetNum (itunes->songbyname, skey);
+  return itunesGetSongData (itunes, idx);
 }
 
 void
 itunesStartIterateSongs (itunes_t *itunes)
 {
-  if (itunes == NULL || itunes->songs == NULL) {
+  if (itunes == NULL || itunes->songbyidx == NULL) {
     return;
   }
 
-  nlistStartIterator (itunes->songs, &itunes->songiteridx);
+  nlistStartIterator (itunes->songbyidx, &itunes->songiteridx);
 }
 
 nlist_t *
@@ -382,12 +399,12 @@ itunesIterateSongs (itunes_t *itunes)
   nlist_t       *entry;
   nlistidx_t    nkey;
 
-  if (itunes == NULL || itunes->songs == NULL) {
+  if (itunes == NULL || itunes->songbyidx == NULL) {
     return NULL;
   }
 
-  nkey = nlistIterateKey (itunes->songs, &itunes->songiteridx);
-  entry = nlistGetList (itunes->songs, nkey);
+  nkey = nlistIterateKey (itunes->songbyidx, &itunes->songiteridx);
+  entry = nlistGetList (itunes->songbyidx, nkey);
   return entry;
 }
 
@@ -449,8 +466,10 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
     return false;
   }
 
-  slistFree (itunes->songs);
-  itunes->songs = nlistAlloc ("itunes-songs", LIST_ORDERED, NULL);
+  slistFree (itunes->songbyidx);
+  slistFree (itunes->songbyname);
+  itunes->songbyidx = nlistAlloc ("itunes-songs-by-idx", LIST_ORDERED, NULL);
+  itunes->songbyname = slistAlloc ("itunes-song-by-name", LIST_ORDERED, NULL);
 
   slistStartIterator (rawdata, &iteridx);
   while ((key = slistIterateKey (rawdata, &iteridx)) != NULL) {
@@ -468,7 +487,8 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
 
         tval = nlistGetStr (entry, TAG_FILE);
         if (tval != NULL) {
-          nlistSetList (itunes->songs, lastval, entry);
+          nlistSetList (itunes->songbyidx, lastval, entry);
+          slistSetNum (itunes->songbyname, tval, lastval);
         } else {
           nlistFree (entry);
         }
@@ -576,8 +596,23 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         ratingidx = nlistGetNum (itunes->stars, tval);
         nlistSetNum (entry, tagidx, ratingidx);
         logMsg (LOG_DBG, LOG_ITUNES, "song: %s %d", tagdefs [tagidx].tag, ratingidx);
+      } else if (tagidx == TAG_GENRE) {
+        datafileconv_t  conv;
+
+        conv.allocated = false;
+        conv.valuetype = VALUE_STR;
+        conv.str = val;
+        genreConv (&conv);
+        nlistSetNum (entry, tagidx, conv.num);
+        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %ld", tagdefs [tagidx].tag, conv.num);
       } else {
-        nlistSetStr (entry, tagidx, val);
+        /* start time and stop time are already in the correct format (ms) */
+        if (tagdefs [tagidx].valueType == VALUE_NUM) {
+          nlistSetNum (entry, tagidx, atol (val));
+        }
+        if (tagdefs [tagidx].valueType == VALUE_STR) {
+          nlistSetStr (entry, tagidx, val);
+        }
         logMsg (LOG_DBG, LOG_ITUNES, "song: %s %s", tagdefs [tagidx].tag, val);
       }
     }
@@ -662,7 +697,7 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       long      tval;
 
       tval = atol (val);
-      entry = nlistGetList (itunes->songs, tval);
+      entry = nlistGetList (itunes->songbyidx, tval);
       if (entry != NULL) {
         nlistSetNum (ids, tval, 1);
         logMsg (LOG_DBG, LOG_ITUNES, "pl: %s %ld", keepname, tval);

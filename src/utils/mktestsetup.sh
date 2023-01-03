@@ -171,6 +171,7 @@ mv -f ${tfn}.n ${tfn}
 tfn=data/${hostname}/bdjconfig.txt
 sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
     -e "/^DIRMUSIC/ { n ; s,.*,..${cwd}/test-music, ; }" \
+    -e "/^ITUNESXMLFILE/ { n ; s,.*,..${cwd}/test-files/iTunes-test-music.xml, ; }" \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 
@@ -237,5 +238,10 @@ if [[ $os == macos ]]; then
       ${tfn} > ${tfn}.n
   mv -f ${tfn}.n ${tfn}
 fi
+
+tfn=data/${hostname}/bdjconfig.txt
+sed -e "/^DIRITUNESMEDIA/ { n ; s,.*,..${cwd}/test-music, ; }" \
+    ${tfn} > ${tfn}.n
+mv -f ${tfn}.n ${tfn}
 
 exit 0

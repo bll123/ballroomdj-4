@@ -35,6 +35,7 @@ void  itunesStartIterateAvailFields (itunes_t *itunes);
 const char * itunesIterateAvailFields (itunes_t *itunes, int *val);
 bool  itunesParse (itunes_t *itunes);
 nlist_t * itunesGetSongData (itunes_t *itunes, nlistidx_t idx);
+nlist_t * itunesGetSongDataByName (itunes_t *itunes, const char *skey);
 void  itunesStartIterateSongs (itunes_t *itunes);
 nlist_t * itunesIterateSongs (itunes_t *itunes);
 nlist_t * itunesGetPlaylistData (itunes_t *itunes, const char *skey);

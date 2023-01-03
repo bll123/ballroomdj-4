@@ -1624,7 +1624,7 @@ manageiTunesCreateDialog (manageui_t *manage)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  /* CONTEXT: create from playlist: select the playlist to use */
+  /* CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist) */
   snprintf (tbuff, sizeof (tbuff), _("%s Playlist"), ITUNES_NAME);
   uiCreateColonLabel (&uiwidget, tbuff);
   uiBoxPackStart (&hbox, &uiwidget);

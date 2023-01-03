@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-01 15:55-0800\n"
+"POT-Creation-Date: 2023-01-03 13:30-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -75,6 +75,11 @@ msgstr ""
 #. CONTEXT: playerui: main window title
 #, c-format
 msgid "%s Player"
+msgstr ""
+
+#. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
+#, c-format
+msgid "%s Playlist"
 msgstr ""
 
 #. CONTEXT: set up alternate: window title
@@ -380,6 +385,7 @@ msgstr ""
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: bpm counter: close button
+#. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
 #. CONTEXT: playerui: marquee font size dialog: action button
 #. CONTEXT: helperui: close the helper window
@@ -815,14 +821,17 @@ msgstr ""
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr ""
 
+#. CONTEXT: import from itunes: import the selected itunes playlist
 #. CONTEXT: managementui: menu selection: import actions for song list
 msgid "Import"
 msgstr ""
 
 #. CONTEXT: managementui: song list import: title of dialog
+#. CONTEXT: managementui: menu selection: song list: import: import m3u
 msgid "Import M3U"
 msgstr ""
 
+#. CONTEXT: import from itunes: title for the dialog
 #. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
 #. CONTEXT: managementui: menu selection: song list: import: import from itunes
 #, c-format
@@ -1237,6 +1246,7 @@ msgid "Playlist Type"
 msgstr ""
 
 #. CONTEXT: installer: status message
+#. CONTEXT: manage ui: status message: please wait...
 msgid "Please wait…"
 msgstr ""
 

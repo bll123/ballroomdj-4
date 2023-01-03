@@ -785,7 +785,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   slistidx_t orgiteridx;
   int       tagkey;
   dbidx_t   rrn;
-  musicdb_t *currdb;
+  musicdb_t *currdb = NULL;
   song_t    *song = NULL;
   size_t    len;
   char      *val;
@@ -945,9 +945,14 @@ dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
 static void
 dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
 {
-  const char  *dbfname;
-  song_t      *song;
-  slist_t     *newtaglist;
+  const char  *dbfname = NULL;
+  song_t      *song = NULL;
+  slist_t     *newtaglist = NULL;
+  int         tagidx;
+  nlistidx_t  iteridx;
+  nlist_t     *entry = NULL;
+  bool        changed = false;
+  musicdb_t   *currdb = NULL;
 
   if (ffn == NULL) {
     return;
@@ -963,11 +968,52 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
     return;
   }
 
-//  newtaglist = songTagList (song);
-//  audiotagWriteTags (ffn, tagdata, newtaglist, 0, AT_UPDATE_MOD_TIME);
-//  slistFree (newtaglist);
+  currdb = dbupdate->musicdb;
+  if (dbupdate->newdatabase) {
+    currdb = dbupdate->newmusicdb;
+  }
+
+  /* for itunes, just update the song data directly, */
+  /* write the song to the db, and write the song tags */
+  entry = itunesGetSongDataByName (dbupdate->itunes, dbfname);
+  changed = false;
+  if (entry != NULL) {
+    logMsg (LOG_DBG, LOG_DBUPDATE, "upd-from-itunes: found %s", dbfname);
+    nlistStartIterator (entry, &iteridx);
+    while ((tagidx = nlistIterateKey (entry, &iteridx)) >= 0) {
+      if (tagdefs [tagidx].valueType == VALUE_NUM) {
+        long      val;
+
+        val = nlistGetNum (entry, tagidx);
+        if (songGetNum (song, tagidx) != val) {
+          songSetNum (song, tagidx, val);
+          logMsg (LOG_DBG, LOG_DBUPDATE, "upd-from-itunes: %s %ld", tagdefs [tagidx].tag, val);
+          changed = true;
+        }
+      } else {
+        const char  *oval;
+        const char  *val;
+
+        oval = songGetStr (song, tagidx);
+        val = nlistGetStr (entry, tagidx);
+        if (val != NULL &&
+            (oval == NULL || strcmp (oval, val) != 0)) {
+          songSetStr (song, tagidx, val);
+          logMsg (LOG_DBG, LOG_DBUPDATE, "upd-from-itunes: %s %s", tagdefs [tagidx].tag, val);
+          changed = true;
+        }
+      }
+    }
+
+    if (changed) {
+      newtaglist = songTagList (song);
+      dbWriteSong (currdb, song);
+      audiotagWriteTags (ffn, tagdata, newtaglist, 0, AT_UPDATE_MOD_TIME);
+      slistFree (newtaglist);
+      dbupdateIncCount (dbupdate, C_UPDATED);
+    }
+  }
   dbupdateIncCount (dbupdate, C_FILE_PROC);
-  dbupdateIncCount (dbupdate, C_UPDATED);
 }
 
 static void
