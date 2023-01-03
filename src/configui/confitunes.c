@@ -68,8 +68,10 @@ confuiCleaniTunes (confuigui_t *gui)
 void
 confuiSaveiTunes (confuigui_t *gui)
 {
-  bool    changed;
-  int     count;
+  bool        changed;
+  int         count;
+  const char  *itunesName;
+  int         tagidx;
 
   changed = false;
   for (int i = 0; i < ITUNES_STARS_MAX; ++i) {
@@ -89,26 +91,24 @@ confuiSaveiTunes (confuigui_t *gui)
 
   changed = false;
   count = 0;
-  for (int i = 0; i < TAG_KEY_MAX; ++i) {
+  itunesStartIterateAvailFields (gui->itunes->itunes);
+  while ((itunesName = itunesIterateAvailFields (gui->itunes->itunes, &tagidx)) != NULL) {
     bool   tval;
     bool   oval;
 
-    if (tagdefs [i].itunesName == NULL) {
-      continue;
-    }
-    if (i == TAG_FILE || i == TAG_DURATION) {
+    if (tagidx == TAG_FILE) {
       continue;
     }
 
     oval = false;
-    if (itunesGetField (gui->itunes->itunes, i) >= 0) {
+    if (itunesGetField (gui->itunes->itunes, tagidx) >= 0) {
       oval = true;
     }
     tval = uiToggleButtonIsActive (
         &gui->uiitem [CONFUI_WIDGET_ITUNES_FIELD_1 + count].uiwidget);
     if (oval != tval) {
       changed = true;
-      itunesSetField (gui->itunes->itunes, i, tval);
+      itunesSetField (gui->itunes->itunes, tagidx, tval);
     }
     ++count;
   }
@@ -134,6 +134,8 @@ confuiBuildUIiTunes (confuigui_t *gui)
   UIWidget      sg;
   UIWidget      sgr;
   int           count;
+  const char    *itunesName;
+  int           tagidx;
 
   logProcBegin (LOG_PROC, "confuiBuildUIiTunes");
   uiCreateVertBox (&mvbox);
@@ -228,21 +230,19 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   count = 0;
   vboxp = &vbox;
-  for (int i = 0; i < TAG_KEY_MAX; ++i) {
+  itunesStartIterateAvailFields (gui->itunes->itunes);
+  while ((itunesName = itunesIterateAvailFields (gui->itunes->itunes, &tagidx)) != NULL) {
     bool   tval;
 
-    if (tagdefs [i].itunesName == NULL) {
-      continue;
-    }
-    if (i == TAG_FILE || i == TAG_DURATION) {
+    if (tagidx == TAG_FILE) {
       continue;
     }
 
     tval = false;
-    if (itunesGetField (gui->itunes->itunes, i) >= 0) {
+    if (itunesGetField (gui->itunes->itunes, tagidx) >= 0) {
       tval = true;
     }
-    confuiMakeItemCheckButton (gui, vboxp, &sg, tagdefs [i].displayname,
+    confuiMakeItemCheckButton (gui, vboxp, &sg, tagdefs [tagidx].displayname,
         CONFUI_WIDGET_ITUNES_FIELD_1 + count, -1, tval);
     ++count;
     if (count > TAG_ITUNES_MAX / 2) {

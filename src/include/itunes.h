@@ -4,6 +4,8 @@
 #ifndef INC_ITUNES_H
 #define INC_ITUNES_H
 
+#include "nlist.h"
+
 enum {
   ITUNES_STARS_10,
   ITUNES_STARS_20,
@@ -29,6 +31,15 @@ void  itunesSaveStars (itunes_t *itunes);
 int   itunesGetField (itunes_t *itunes, int idx);
 void  itunesSetField (itunes_t *itunes, int idx, int value);
 void  itunesSaveFields (itunes_t *itunes);
+void  itunesStartIterateAvailFields (itunes_t *itunes);
+const char * itunesIterateAvailFields (itunes_t *itunes, int *val);
 bool  itunesParse (itunes_t *itunes);
+nlist_t * itunesGetSongData (itunes_t *itunes, nlistidx_t idx);
+void  itunesStartIterateSongs (itunes_t *itunes);
+nlist_t * itunesIterateSongs (itunes_t *itunes);
+nlist_t * itunesGetPlaylistData (itunes_t *itunes, const char *skey);
+void  itunesStartIteratePlaylists (itunes_t *itunes);
+const char *itunesIteratePlaylists (itunes_t *itunes);
+
 
 #endif /* INC_ITUNES_H */

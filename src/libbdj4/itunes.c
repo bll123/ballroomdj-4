@@ -48,17 +48,19 @@ static const xmlChar * plxpath = (const xmlChar *)
       "/plist/dict/array/dict/array/dict/integer";
 static const char *ITUNES_LOCALHOST = "file://localhost/";
 static const char *ITUNES_LOCAL = "file://";
-static const char *ITUNES_HTTP = "http://";
-static const char *ITUNES_HTTP_CORRUPT = "ttp://";
 
 typedef struct itunes {
   datafile_t    *starsdf;
   nlist_t       *stars;
   datafile_t    *fieldsdf;
   nlist_t       *fields;
+  time_t        lastparse;
   nlist_t       *songs;
   slist_t       *playlists;
-  slist_t       *itunesFields;
+  slist_t       *itunesAvailFields;
+  slistidx_t    availiteridx;
+  slistidx_t    songiteridx;
+  slistidx_t    pliteridx;
 } itunes_t;
 
 /* must be sorted in ascii order */
@@ -130,22 +132,23 @@ itunesAlloc (void)
     nlistSetNum (itunes->fields, val, 1);
   }
 
-  itunes->itunesFields = slistAlloc ("itunes-fields", LIST_ORDERED, NULL);
+  itunes->itunesAvailFields = slistAlloc ("itunes-fields", LIST_ORDERED, NULL);
   for (int i = 0; i < TAG_KEY_MAX; ++i) {
     if (tagdefs [i].itunesName == NULL) {
       continue;
     }
-    slistSetNum (itunes->itunesFields, tagdefs [i].itunesName, i);
+    slistSetNum (itunes->itunesAvailFields, tagdefs [i].itunesName, i);
   }
 
+  itunes->lastparse = 0;
   itunes->songs = NULL;
   itunes->playlists = NULL;
 
   /* for debugging */
-#if 1
+#if 0
   {
     nlistidx_t    iteridx;
-    long          nkey;
+    nlistidx_t    nkey;
     char          *skey;
 
     bdjoptSetStr (OPT_M_DIR_ITUNES_MEDIA, "/home/music/m");
@@ -268,21 +271,50 @@ itunesSaveFields (itunes_t *itunes)
   datafileSaveList ("itunes-fields", tbuff, newlist);
 }
 
+void
+itunesStartIterateAvailFields (itunes_t *itunes)
+{
+  if (itunes == NULL) {
+    return;
+  }
+  slistStartIterator (itunes->itunesAvailFields, &itunes->availiteridx);
+}
+
+const char *
+itunesIterateAvailFields (itunes_t *itunes, int *val)
+{
+  const char  *skey;
+
+  *val = -1;
+  if (itunes == NULL) {
+    return NULL;
+  }
+  skey = slistIterateKey (itunes->itunesAvailFields, &itunes->availiteridx);
+  *val = slistGetNum (itunes->itunesAvailFields, skey);
+  return skey;
+}
+
 bool
 itunesParse (itunes_t *itunes)
 {
   xmlDocPtr           doc;
   xmlXPathContextPtr  xpathCtx;
   const char          *fn;
+  time_t              xmlts;
 
   if (! itunesConfigured ()) {
     logMsg (LOG_DBG, LOG_MAIN, "itunesParse: itunes not configured");
     return false;
   }
 
+  fn = bdjoptGetStr (OPT_M_ITUNES_XML_FILE);
+  xmlts = fileopModTime (fn);
+  if (xmlts <= itunes->lastparse) {
+    return true;
+  }
+
   xmlInitParser ();
 
-  fn = bdjoptGetStr (OPT_M_ITUNES_XML_FILE);
   doc = xmlParseFile (fn);
   if (doc == NULL)  {
     logMsg (LOG_DBG, LOG_MAIN, "itunesParse: unable to parse %s", fn);
@@ -314,8 +346,84 @@ itunesParse (itunes_t *itunes)
   xmlXPathFreeContext (xpathCtx);
   xmlFreeDoc (doc);
   xmlCleanupParser ();
+  itunes->lastparse = xmlts;
   // xmlMemoryDump ();
   return true;
+}
+
+nlist_t *
+itunesGetSongData (itunes_t *itunes, nlistidx_t idx)
+{
+  nlist_t   *entry;
+
+  if (itunes == NULL || itunes->songs == NULL) {
+    return NULL;
+  }
+
+  entry = nlistGetList (itunes->songs, idx);
+  return entry;
+}
+
+void
+itunesStartIterateSongs (itunes_t *itunes)
+{
+  if (itunes == NULL || itunes->songs == NULL) {
+    return;
+  }
+
+  nlistStartIterator (itunes->songs, &itunes->songiteridx);
+}
+
+nlist_t *
+itunesIterateSongs (itunes_t *itunes)
+{
+  nlist_t       *entry;
+  nlistidx_t    nkey;
+
+  if (itunes == NULL || itunes->songs == NULL) {
+    return NULL;
+  }
+
+  nkey = nlistIterateKey (itunes->songs, &itunes->songiteridx);
+  entry = nlistGetList (itunes->songs, nkey);
+  return entry;
+}
+
+
+slist_t *
+itunesGetPlaylistData (itunes_t *itunes, const char *skey)
+{
+  slist_t   *ids;
+
+  if (itunes == NULL || itunes->playlists == NULL) {
+    return NULL;
+  }
+
+  ids = slistGetList (itunes->playlists, skey);
+  return ids;
+}
+
+void
+itunesStartIteratePlaylists (itunes_t *itunes)
+{
+  if (itunes == NULL || itunes->playlists == NULL) {
+    return;
+  }
+
+  nlistStartIterator (itunes->playlists, &itunes->pliteridx);
+}
+
+const char *
+itunesIteratePlaylists (itunes_t *itunes)
+{
+  const char    *skey;
+
+  if (itunes == NULL || itunes->playlists == NULL) {
+    return NULL;
+  }
+
+  skey = slistIterateKey (itunes->playlists, &itunes->pliteridx);
+  return skey;
 }
 
 /* internal routines */
@@ -405,21 +513,17 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       int   tagidx;
 
       /* if the key is in the list and has an associated tag */
-      tagidx = slistGetNum (itunes->itunesFields, key);
+      tagidx = slistGetNum (itunes->itunesAvailFields, key);
       if (tagidx < 0) {
         continue;
       }
       if (tagidx == TAG_FILE) {
-        if (strncmp (val, ITUNES_HTTP, strlen (ITUNES_HTTP)) == 0 ||
-            strncmp (val, ITUNES_HTTP_CORRUPT, strlen (ITUNES_HTTP_CORRUPT)) == 0) {
-          skip = true;
-          nlistSetStr (entry, tagidx, val);
-        }
         if (strncmp (val, ITUNES_LOCALHOST, strlen (ITUNES_LOCALHOST)) == 0) {
           nlistSetStr (entry, tagidx, val + strlen (ITUNES_LOCALHOST));
-        }
-        if (strncmp (val, ITUNES_LOCAL, strlen (ITUNES_LOCAL)) == 0) {
+        } else if (strncmp (val, ITUNES_LOCAL, strlen (ITUNES_LOCAL)) == 0) {
           nlistSetStr (entry, tagidx, val + strlen (ITUNES_LOCAL));
+        } else {
+          skip = true;
         }
       } else if (tagidx == TAG_DBADDDATE) {
         char    t [200];
@@ -490,11 +594,9 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
     if (strcmp (key, "Playlist ID") == 0) {
       if (! skip && ids != NULL && nlistGetCount (ids) == 0) {
         slistFree (ids);
-fprintf (stderr, "%s free\n", keepname);
         ids = NULL;
       }
       if (skip == false && *keepname && ids != NULL) {
-fprintf (stderr, "%s keep\n", keepname);
         slistSetList (itunes->playlists, keepname, ids);
         /* it is possible for a playlist to not have an item list */
         ids = NULL;
@@ -509,7 +611,6 @@ fprintf (stderr, "%s keep\n", keepname);
     if (strcmp (key, "Playlist Items") == 0) {
       ids = NULL;
       if (! skip) {
-fprintf (stderr, "%s alloc\n", keepname);
         ids = nlistAlloc ("itunes-pl-ids", LIST_UNORDERED, NULL);
         skip = false;
       }

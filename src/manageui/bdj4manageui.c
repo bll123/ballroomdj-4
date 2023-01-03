@@ -28,6 +28,7 @@
 #include "dispsel.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "itunes.h"
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
@@ -106,6 +107,7 @@ enum {
   /* sl import menu */
   MANAGE_MENU_CB_SL_M3U_EXP,
   MANAGE_MENU_CB_SL_M3U_IMP,
+  MANAGE_MENU_CB_SL_ITUNES_IMP,
   MANAGE_CB_EZ_SELECT,
   MANAGE_CB_NEW_SEL_SONGSEL,
   MANAGE_CB_NEW_SEL_SONGLIST,
@@ -125,6 +127,8 @@ enum {
   MANAGE_CB_SAVE,
   MANAGE_CB_CFPL_DIALOG,
   MANAGE_CB_CFPL_PLAYLIST_SEL,
+  MANAGE_CB_ITUNES_DIALOG,
+  MANAGE_CB_ITUNES_SEL,
   MANAGE_CB_MAX,
 };
 
@@ -157,6 +161,7 @@ typedef struct {
   dispsel_t       *dispsel;
   int             stopwaitcount;
   UIWidget        statusMsg;
+  UIWidget        errorMsg;
   /* notebook tab handling */
   int               mainlasttab;
   int               sllasttab;
@@ -188,6 +193,9 @@ typedef struct {
   UIWidget        *slmusicqtabwidget;
   UIWidget        *slsongseltabwidget;
   char            *sloldname;
+  itunes_t        *itunes;
+  UIWidget        itunesSelectDialog;
+  uidropdown_t    *itunessel;
   /* prior name is used by create-from-playlist */
   char            *slpriorname;
   uisongfilter_t  *uisongfilter;
@@ -264,6 +272,11 @@ static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
 static void     manageSendBPMCounter (manageui_t *manage);
 static bool     manageSonglistExportM3U (void *udata);
 static bool     manageSonglistImportM3U (void *udata);
+static bool     manageSonglistImportiTunes (void *udata);
+static void     manageiTunesCreateDialog (manageui_t *manage);
+static void     manageiTunesDialogCreateList (manageui_t *manage);
+static bool     manageiTunesDialogSelectHandler (void *udata, long idx);
+static bool     manageiTunesDialogResponseHandler (void *udata, long responseid);
 /* music manager */
 static void     manageBuildUIMusicManager (manageui_t *manage);
 static void     manageMusicManagerMenu (manageui_t *manage);
@@ -355,6 +368,9 @@ main (int argc, char *argv[])
   manage.mmnbtabid = uiutilsNotebookIDInit ();
   manage.sloldname = NULL;
   manage.slpriorname = NULL;
+  manage.itunes = NULL;
+  uiutilsUIWidgetInit (&manage.itunesSelectDialog);
+  manage.itunessel = uiDropDownInit ();
   manage.slbackupcreated = false;
   manage.selusesonglist = false;
   manage.inload = false;
@@ -495,6 +511,7 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageClosingCallback");
 
+  itunesFree (manage->itunes);
   samesongFree (manage->samesong);
   manageDbClose (manage->managedb);
   uiCloseWindow (&manage->window);
@@ -526,6 +543,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uimusicqFree (manage->slmusicq);
   manageStatsFree (manage->slstats);
   uisongselFree (manage->slsongsel);
+  uiDropDownFree (manage->itunessel);
 
   uimusicqFree (manage->slezmusicq);
   uisongselFree (manage->slezsongsel);
@@ -584,6 +602,11 @@ manageBuildUI (manageui_t *manage)
   uiCreateLabel (&uiwidget, "");
   uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&manage->errorMsg, &uiwidget);
+
+  uiCreateLabel (&uiwidget, "");
+  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&manage->statusMsg, &uiwidget);
 
   uiCreateMenubar (&manage->menubar);
@@ -598,7 +621,7 @@ manageBuildUI (manageui_t *manage)
 
   /* sequence editor */
   manage->manageseq = manageSequenceAlloc (&manage->window,
-      manage->options, &manage->statusMsg);
+      manage->options, &manage->errorMsg);
 
   uiCreateVertBox (&vbox);
   manageBuildUISequence (manage->manageseq, &vbox);
@@ -609,7 +632,7 @@ manageBuildUI (manageui_t *manage)
 
   /* playlist management */
   manage->managepl = managePlaylistAlloc (&manage->window,
-      manage->options, &manage->statusMsg);
+      manage->options, &manage->errorMsg);
 
   uiCreateVertBox (&vbox);
   manageBuildUIPlaylist (manage->managepl, &vbox);
@@ -624,7 +647,7 @@ manageBuildUI (manageui_t *manage)
 
   /* update database */
   manage->managedb = manageDbAlloc (&manage->window,
-      manage->options, &manage->statusMsg, manage->conn, manage->processes);
+      manage->options, &manage->errorMsg, manage->conn, manage->processes);
 
   uiCreateVertBox (&vbox);
   manageBuildUIUpdateDatabase (manage->managedb, &vbox);
@@ -821,7 +844,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStartExpand (&mainhbox, &hbox);
 
   uiwidgetp = uimusicqBuildUI (manage->slezmusicq, &manage->window, MUSICQ_SL,
-      &manage->statusMsg, manageValidateName);
+      &manage->errorMsg, manageValidateName);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
   uiCreateVertBox (&vbox);
@@ -844,7 +867,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* song list editor: music queue tab */
   uiwidgetp = uimusicqBuildUI (manage->slmusicq, &manage->window, MUSICQ_SL,
-      &manage->statusMsg, manageValidateName);
+      &manage->errorMsg, manageValidateName);
   /* CONTEXT: managementui: name of song list notebook tab */
   uiCreateLabel (&uiwidget, _("Song List"));
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
@@ -1513,6 +1536,158 @@ manageSonglistImportM3U (void *udata)
   return UICB_CONT;
 }
 
+static bool
+manageSonglistImportiTunes (void *udata)
+{
+  manageui_t  *manage = udata;
+  char        tbuff [MAXPATHLEN];
+
+  uiLabelSetText (&manage->errorMsg, "");
+  uiLabelSetText (&manage->statusMsg, "");
+  if (! itunesConfigured ()) {
+    /* CONTEXT: manage ui: status message: itunes is not configured */
+    snprintf (tbuff, sizeof (tbuff), _("%s is not configured."), ITUNES_NAME);
+    uiLabelSetText (&manage->errorMsg, tbuff);
+    return UICB_CONT;
+  }
+
+  logProcBegin (LOG_PROC, "manageSonglistImportiTunes");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: import itunes");
+  manageSonglistSave (manage);
+
+  if (manage->itunes == NULL) {
+    manage->itunes = itunesAlloc ();
+  }
+
+  /* CONTEXT: manage ui: status message: please wait... */
+  uiLabelSetText (&manage->statusMsg, _("Please wait\xe2\x80\xa6"));
+  uiUIProcessEvents ();
+  itunesParse (manage->itunes);
+  uiLabelSetText (&manage->statusMsg, "");
+  uiUIProcessEvents ();
+
+  /* CONTEXT: managementui: song list: default name for a new song list */
+//  manageSetSonglistName (manage, _("New Song List"));
+//  strlcpy (nplname, manage->sloldname, sizeof (nplname));
+
+  manageiTunesCreateDialog (manage);
+  uiWidgetShowAll (&manage->itunesSelectDialog);
+
+//  manageLoadPlaylistCB (manage, nplname);
+  logProcEnd (LOG_PROC, "manageSonglistImportiTunes", "");
+  return UICB_CONT;
+}
+
+static void
+manageiTunesCreateDialog (manageui_t *manage)
+{
+  UIWidget    vbox;
+  UIWidget    hbox;
+  UIWidget    uiwidget;
+  UIWidget    *uiwidgetp;
+  char        tbuff [50];
+
+  logProcBegin (LOG_PROC, "manageiTunesCreateDialog");
+  if (uiutilsUIWidgetSet (&manage->itunesSelectDialog)) {
+    logProcEnd (LOG_PROC, "manageiTunesCreateDialog", "already");
+    return;
+  }
+
+  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_ITUNES_DIALOG],
+      manageiTunesDialogResponseHandler, manage);
+
+  /* CONTEXT: import from itunes: title for the dialog */
+  snprintf (tbuff, sizeof (tbuff), _("Import from %s"), ITUNES_NAME);
+  uiCreateDialog (&manage->itunesSelectDialog, &manage->window,
+      &manage->callbacks [MANAGE_CB_ITUNES_DIALOG],
+      tbuff,
+      /* CONTEXT: import from itunes: closes the dialog */
+      _("Close"),
+      RESPONSE_CLOSE,
+      /* CONTEXT: import from itunes: import the selected itunes playlist */
+      _("Import"),
+      RESPONSE_APPLY,
+      NULL
+      );
+
+  uiCreateVertBox (&vbox);
+  uiWidgetSetAllMargins (&vbox, 4);
+  uiDialogPackInDialog (&manage->itunesSelectDialog, &vbox);
+
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+
+  /* CONTEXT: create from playlist: select the playlist to use */
+  snprintf (tbuff, sizeof (tbuff), _("%s Playlist"), ITUNES_NAME);
+  uiCreateColonLabel (&uiwidget, tbuff);
+  uiBoxPackStart (&hbox, &uiwidget);
+
+  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_ITUNES_SEL],
+      manageiTunesDialogSelectHandler, manage);
+  uiwidgetp = uiComboboxCreate (&manage->itunesSelectDialog, "",
+      &manage->callbacks [MANAGE_CB_ITUNES_SEL],
+      manage->itunessel, manage);
+  manageiTunesDialogCreateList (manage);
+  uiBoxPackStart (&hbox, uiwidgetp);
+
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+
+  logProcEnd (LOG_PROC, "manageiTunesCreateDialog", "");
+}
+
+static void
+manageiTunesDialogCreateList (manageui_t *manage)
+{
+  slist_t     *pllist;
+  const char  *skey;
+
+  logProcBegin (LOG_PROC, "manageiTunesCreateList");
+
+  pllist = slistAlloc ("itunes-pl-sel", LIST_ORDERED, NULL);
+  itunesStartIteratePlaylists (manage->itunes);
+  while ((skey = itunesIteratePlaylists (manage->itunes)) != NULL) {
+    slistSetStr (pllist, skey, skey);
+  }
+  /* what text is best to use for 'no selection'? */
+  uiDropDownSetList (manage->itunessel, pllist, "");
+  logProcEnd (LOG_PROC, "manageiTunesCreateList", "");
+}
+
+static bool
+manageiTunesDialogSelectHandler (void *udata, long idx)
+{
+  return UICB_CONT;
+}
+
+static bool
+manageiTunesDialogResponseHandler (void *udata, long responseid)
+{
+  manageui_t  *manage = udata;
+
+  logProcBegin (LOG_PROC, "manageiTunesResponseHandler");
+
+  switch (responseid) {
+    case RESPONSE_DELETE_WIN: {
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: itunes: del window");
+      uiutilsUIWidgetInit (&manage->itunesSelectDialog);
+      break;
+    }
+    case RESPONSE_CLOSE: {
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: itunes: close window");
+      uiWidgetHide (&manage->itunesSelectDialog);
+      break;
+    }
+    case RESPONSE_APPLY: {
+      uiWidgetHide (&manage->itunesSelectDialog);
+      break;
+    }
+  }
+
+  logProcEnd (LOG_PROC, "manageiTunesResponseHandler", "");
+  return UICB_CONT;
+}
+
 /* music manager */
 
 void
@@ -1549,7 +1724,7 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_MM);
 
   /* music manager: song editor tab */
-  uiwidgetp = uisongeditBuildUI (manage->mmsongsel, manage->mmsongedit, &manage->window, &manage->statusMsg);
+  uiwidgetp = uisongeditBuildUI (manage->mmsongsel, manage->mmsongedit, &manage->window, &manage->errorMsg);
   /* CONTEXT: managementui: name of song editor notebook tab */
   uiCreateLabel (&uiwidget, _("Song Editor"));
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
@@ -1697,9 +1872,9 @@ manageSonglistMenu (manageui_t *manage)
 
   uiCreateSubMenu (&menuitem, &menu);
 
-  /* CONTEXT: managementui: menu selection: song list: import: import m3u */
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_M3U_IMP,
       manageSonglistImportM3U);
+  /* CONTEXT: managementui: menu selection: song list: import: import m3u */
   uiMenuCreateItem (&menu, &menuitem, _("Import M3U"),
       &manage->callbacks [MANAGE_MENU_CB_SL_M3U_IMP]);
 
@@ -1708,10 +1883,12 @@ manageSonglistMenu (manageui_t *manage)
   uiMenuCreateItem (&menu, &menuitem, tbuff, NULL);
   uiWidgetDisable (&menuitem);
 
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_ITUNES_IMP,
+      manageSonglistImportiTunes);
   /* CONTEXT: managementui: menu selection: song list: import: import from itunes */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), ITUNES_NAME);
-  uiMenuCreateItem (&menu, &menuitem, tbuff, NULL);
-  uiWidgetDisable (&menuitem);
+  uiMenuCreateItem (&menu, &menuitem, tbuff,
+      &manage->callbacks [MANAGE_MENU_CB_SL_ITUNES_IMP]);
 
   manage->slmenu.initialized = true;
 
@@ -1757,7 +1934,7 @@ manageSonglistCopy (void *udata)
 
   /* CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
-  if (manageCreatePlaylistCopy (&manage->statusMsg, oname, newname)) {
+  if (manageCreatePlaylistCopy (&manage->errorMsg, oname, newname)) {
     manageSetSonglistName (manage, newname);
     manageLoadPlaylistCB (manage, newname);
     manage->slbackupcreated = false;
@@ -1798,7 +1975,7 @@ manageSonglistDelete (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
   oname = uimusicqGetSonglistName (manage->slmusicq);
 
-  manageDeletePlaylist (&manage->statusMsg, oname);
+  manageDeletePlaylist (&manage->errorMsg, oname);
   /* no save */
   dataFree (manage->sloldname);
   manage->sloldname = NULL;
@@ -1861,7 +2038,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageSongListCFPLCreateDialog");
   if (uiutilsUIWidgetSet (&manage->cfplDialog)) {
-    logProcEnd (LOG_PROC, "manageSongListCFPLCreateDialog", "no-dialog");
+    logProcEnd (LOG_PROC, "manageSongListCFPLCreateDialog", "already");
     return;
   }
 
@@ -2344,6 +2521,9 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
   uiutilsnbtabid_t  *nbtabid = NULL;
 
   logProcBegin (LOG_PROC, "manageSwitchPage");
+  uiLabelSetText (&manage->errorMsg, "");
+  uiLabelSetText (&manage->statusMsg, "");
+
   /* need to know which notebook is selected so that the correct id value */
   /* can be retrieved */
   if (which == MANAGE_NB_MAIN) {

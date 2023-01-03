@@ -127,6 +127,9 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   UIWidget          *uitreewidgetp;
   char              tbuff [200];
 
+  if (dropdown == NULL || list == NULL) {
+    return;
+  }
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_LONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
@@ -138,18 +141,18 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   dropdown->maxwidth = slistGetMaxKeyWidth (list);
   uitreewidgetp = uiTreeViewGetUIWidget (dropdown->uitree);
 
-  if (! dropdown->iscombobox) {
-    snprintf (tbuff, sizeof (tbuff), "%-*s",
-        dropdown->maxwidth, dropdown->title);
-    uiButtonSetText (dropdown->button, tbuff);
-  }
+  snprintf (tbuff, sizeof (tbuff), "%-*s",
+      dropdown->maxwidth, dropdown->title);
+  uiButtonSetText (dropdown->button, tbuff);
 
   if (dropdown->iscombobox && selectLabel != NULL) {
+    snprintf (tbuff, sizeof (tbuff), "%-*s",
+        dropdown->maxwidth, selectLabel);
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, (glong) -1,
         UIUTILS_DROPDOWN_COL_STR, "",
-        UIUTILS_DROPDOWN_COL_DISP, selectLabel,
+        UIUTILS_DROPDOWN_COL_DISP, tbuff,
         UIUTILS_DROPDOWN_COL_SB_PAD, "  ",
         -1);
     slistSetNum (dropdown->strIndexMap, "", internalidx++);
@@ -213,18 +216,18 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   dropdown->maxwidth = slistGetMaxKeyWidth (list);
   uitreewidgetp = uiTreeViewGetUIWidget (dropdown->uitree);
 
-  if (! dropdown->iscombobox) {
-    snprintf (tbuff, sizeof (tbuff), "%-*s",
-        dropdown->maxwidth, dropdown->title);
-    uiButtonSetText (dropdown->button, tbuff);
-  }
+  snprintf (tbuff, sizeof (tbuff), "%-*s",
+      dropdown->maxwidth, dropdown->title);
+  uiButtonSetText (dropdown->button, tbuff);
 
   if (dropdown->iscombobox && selectLabel != NULL) {
+    snprintf (tbuff, sizeof (tbuff), "%-*s",
+        dropdown->maxwidth, selectLabel);
     gtk_list_store_append (store, &iter);
     gtk_list_store_set (store, &iter,
         UIUTILS_DROPDOWN_COL_IDX, (glong) -1,
         UIUTILS_DROPDOWN_COL_STR, "",
-        UIUTILS_DROPDOWN_COL_DISP, selectLabel,
+        UIUTILS_DROPDOWN_COL_DISP, tbuff,
         UIUTILS_DROPDOWN_COL_SB_PAD, "  ",
         -1);
     nlistSetNum (dropdown->keylist, -1, internalidx);
