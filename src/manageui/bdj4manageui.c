@@ -1054,6 +1054,15 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uiWindowFind (&manage->window);
           break;
         }
+        case MSG_DB_WAIT: {
+          /* CONTEXT: manage ui: status message: please wait... */
+          uiLabelSetText (&manage->statusMsg, _("Please wait\xe2\x80\xa6"));
+          break;
+        }
+        case MSG_DB_WAIT_FINISH: {
+          uiLabelSetText (&manage->statusMsg, "");
+          break;
+        }
         case MSG_DB_PROGRESS: {
           manageDbProgressMsg (manage->managedb, targs);
           break;

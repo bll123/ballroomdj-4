@@ -291,9 +291,7 @@ manageDbChg (void *udata)
     uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
     uiWidgetEnable (uiwidgetp);
     if (nval == MANAGE_DB_UPD_FROM_ITUNES) {
-// ### FIX
-      /* not yet implemented, always true */
-      if (1 || ! itunesConfigured ()) {
+      if (! itunesConfigured ()) {
         char  tbuff [200];
 
         /* CONTEXT: manage ui: status message: itunes is not configured */
@@ -398,6 +396,10 @@ manageDbStart (void *udata)
     }
     case MANAGE_DB_UPD_FROM_TAGS: {
       targv [targc++] = "--updfromtags";
+      break;
+    }
+    case MANAGE_DB_UPD_FROM_ITUNES: {
+      targv [targc++] = "--updfromitunes";
       break;
     }
     case MANAGE_DB_WRITE_TAGS: {

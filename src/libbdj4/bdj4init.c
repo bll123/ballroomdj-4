@@ -88,6 +88,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "checknew",       no_argument,        NULL,   'C' },
     { "reorganize",     no_argument,        NULL,   'O' },
     { "updfromtags",    no_argument,        NULL,   'u' },
+    { "updfromitunes",  no_argument,        NULL,   'I' },
     { "writetags",      no_argument,        NULL,   'W' },
     { "dbtopdir",       required_argument,  NULL,   'D' },
     /* generic options, some used by dbupdate, test suite */
@@ -139,6 +140,10 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 'u': {
         flags |= BDJ4_DB_UPD_FROM_TAGS;
+        break;
+      }
+      case 'I': {
+        flags |= BDJ4_DB_UPD_FROM_ITUNES;
         break;
       }
       case 'W': {

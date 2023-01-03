@@ -153,6 +153,8 @@ typedef enum {
   MSG_DB_STATUS_MSG,        // args: status message
   MSG_DB_FINISH,            //
   MSG_DB_TAG_FINISHED,      // no more from dbtag
+  MSG_DB_WAIT,              // display 'please wait'
+  MSG_DB_WAIT_FINISH,       // clear status
   /* to dbtag */
   MSG_DB_FILE_CHK,          // args: filename to check
   MSG_DB_ALL_FILES_SENT,    // all filenames sent to dbtag

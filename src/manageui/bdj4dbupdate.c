@@ -51,6 +51,7 @@
 #include "dirop.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "itunes.h"
 #include "level.h"
 #include "log.h"
 #include "musicdb.h"
@@ -117,12 +118,14 @@ typedef struct {
   mstime_t          starttm;
   int               stopwaitcount;
   char              *olddirlist;
+  itunes_t          *itunes;
   bool              rebuild : 1;
   bool              checknew : 1;
   bool              progress : 1;
   bool              cli : 1;
   bool              verbose : 1;
   bool              updfromtags : 1;
+  bool              updfromitunes : 1;
   bool              writetags : 1;
   bool              reorganize : 1;
   bool              newdatabase : 1;
@@ -147,6 +150,7 @@ static bool     dbupdateStopWaitCallback (void *tdbupdate, programstate_t progra
 static bool     dbupdateClosingCallback (void *tdbupdate, programstate_t programState);
 static void     dbupdateProcessTagData (dbupdate_t *dbupdate, char *args);
 static void     dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
+static void     dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
 static void     dbupdateSigHandler (int sig);
 static void     dbupdateOutputProgress (dbupdate_t *dbupdate);
 static const char *dbupdateGetRelativePath (dbupdate_t *dbupdate, const char *fn);
@@ -171,12 +175,15 @@ main (int argc, char *argv[])
   }
   dbupdate.maxWriteLen = 0;
   dbupdate.stopwaitcount = 0;
+  dbupdate.itunes = NULL;
+  dbupdate.org = NULL;
   dbupdate.rebuild = false;
   dbupdate.checknew = false;
   dbupdate.progress = false;
   dbupdate.cli = false;
   dbupdate.verbose = false;
   dbupdate.updfromtags = false;
+  dbupdate.updfromitunes = false;
   dbupdate.writetags = false;
   dbupdate.reorganize = false;
   dbupdate.newdatabase = false;
@@ -186,7 +193,6 @@ main (int argc, char *argv[])
   dbupdate.haveolddirlist = false;
   dbupdate.stoprequest = false;
   mstimeset (&dbupdate.outputTimer, 0);
-  dbupdate.org = NULL;
 
   dbupdate.dancefromgenre = bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE);
 
@@ -236,6 +242,10 @@ main (int argc, char *argv[])
   }
   if ((dbupdate.startflags & BDJ4_DB_UPD_FROM_TAGS) == BDJ4_DB_UPD_FROM_TAGS) {
     dbupdate.updfromtags = true;
+  }
+  if ((dbupdate.startflags & BDJ4_DB_UPD_FROM_ITUNES) == BDJ4_DB_UPD_FROM_ITUNES) {
+    dbupdate.updfromitunes = true;
+    dbupdate.itunes = itunesAlloc ();
   }
   if ((dbupdate.startflags & BDJ4_DB_WRITE_TAGS) == BDJ4_DB_WRITE_TAGS) {
     dbupdate.writetags = true;
@@ -352,7 +362,7 @@ dbupdateProcessing (void *udata)
   connProcessUnconnected (dbupdate->conn);
 
   if (dbupdate->state == DB_UPD_INIT) {
-    if (dbupdate->rebuild) {
+    if (dbupdate->rebuild || dbupdate->checknew) {
       dbupdate->newdatabase = true;
     }
 
@@ -707,6 +717,12 @@ dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState)
     if (c == 2) { rc = STATE_FINISHED; }
   }
 
+  if (rc == STATE_FINISHED && dbupdate->updfromitunes) {
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_WAIT, NULL);
+    itunesParse (dbupdate->itunes);
+    connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_WAIT_FINISH, NULL);
+  }
+
   logProcEnd (LOG_PROC, "dbupdateHandshakeCallback", "");
   return rc;
 }
@@ -749,12 +765,9 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
   procutilStopAllProcess (dbupdate->processes, dbupdate->conn, true);
   procutilFreeAll (dbupdate->processes);
 
-  if (dbupdate->org != NULL) {
-    orgFree (dbupdate->org);
-  }
-  if (dbupdate->badfnregex != NULL) {
-    regexFree (dbupdate->badfnregex);
-  }
+  itunesFree (dbupdate->itunes);
+  orgFree (dbupdate->org);
+  regexFree (dbupdate->badfnregex);
   slistFree (dbupdate->fileList);
 
   logProcEnd (LOG_PROC, "dbupdateClosingCallback", "");
@@ -805,6 +818,13 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   /* write-tags has its own processing */
   if (dbupdate->writetags) {
     dbupdateWriteTags (dbupdate, ffn, tagdata);
+    slistFree (tagdata);
+    return;
+  }
+
+  /* update-from-itunes has its own processing */
+  if (dbupdate->updfromitunes) {
+    dbupdateFromiTunes (dbupdate, ffn, tagdata);
     slistFree (tagdata);
     return;
   }
@@ -920,6 +940,34 @@ dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
   slistFree (newtaglist);
   dbupdateIncCount (dbupdate, C_FILE_PROC);
   dbupdateIncCount (dbupdate, C_WRITE_TAGS);
+}
+
+static void
+dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
+{
+  const char  *dbfname;
+  song_t      *song;
+  slist_t     *newtaglist;
+
+  if (ffn == NULL) {
+    return;
+  }
+
+  dbfname = ffn;
+  if (dbupdate->usingmusicdir) {
+    dbfname = dbupdateGetRelativePath (dbupdate, ffn);
+  }
+  song = dbGetByName (dbupdate->musicdb, dbfname);
+  if (song == NULL) {
+    dbupdateIncCount (dbupdate, C_FILE_PROC);
+    return;
+  }
+
+//  newtaglist = songTagList (song);
+//  audiotagWriteTags (ffn, tagdata, newtaglist, 0, AT_UPDATE_MOD_TIME);
+//  slistFree (newtaglist);
+  dbupdateIncCount (dbupdate, C_FILE_PROC);
+  dbupdateIncCount (dbupdate, C_UPDATED);
 }
 
 static void
