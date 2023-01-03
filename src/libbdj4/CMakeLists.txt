@@ -9,7 +9,6 @@ add_library (libbdj4 SHARED
   audiotag.c
   autosel.c
   bdj4init.c
-  bdj4itunes.c
   bdjvarsdf.c
   bdjvarsdfload.c
   dance.c
@@ -18,6 +17,7 @@ add_library (libbdj4 SHARED
   dnctypes.c
   genre.c
   instutil.c
+  itunes.c
   level.c
   m3u.c
   msgparse.c

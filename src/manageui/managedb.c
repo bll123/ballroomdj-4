@@ -14,8 +14,8 @@
 #include <math.h>
 
 #include "bdj4intl.h"
-#include "bdj4itunes.h"
 #include "bdjopt.h"
+#include "itunes.h"
 #include "log.h"
 #include "manageui.h"
 #include "nlist.h"

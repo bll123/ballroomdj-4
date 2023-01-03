@@ -17,7 +17,7 @@
 #include <libxml/xpathInternals.h>
 
 #include "bdj4.h"
-#include "bdj4itunes.h"
+#include "itunes.h"
 #include "bdjopt.h"
 #include "datafile.h"
 #include "fileop.h"
@@ -286,6 +286,7 @@ itunesParse (itunes_t *itunes)
   doc = xmlParseFile (fn);
   if (doc == NULL)  {
     logMsg (LOG_DBG, LOG_MAIN, "itunesParse: unable to parse %s", fn);
+    xmlCleanupParser ();
     return false;
   }
 
@@ -293,23 +294,25 @@ itunesParse (itunes_t *itunes)
   if (xpathCtx == NULL)  {
     logMsg (LOG_DBG, LOG_MAIN, "itunesParse: unable to create xpath context");
     xmlFreeDoc (doc);
+    xmlCleanupParser ();
     return false;
   }
 
   if (! itunesParseData (itunes, xpathCtx, dataxpath)) {
     xmlXPathFreeContext (xpathCtx);
     xmlFreeDoc (doc);
+    xmlCleanupParser ();
     return false;
   }
   if (! itunesParsePlaylists (itunes, xpathCtx, plxpath)) {
     xmlXPathFreeContext (xpathCtx);
     xmlFreeDoc (doc);
+    xmlCleanupParser ();
     return false;
   }
 
   xmlXPathFreeContext (xpathCtx);
   xmlFreeDoc (doc);
-
   xmlCleanupParser ();
   // xmlMemoryDump ();
   return true;
@@ -419,16 +422,15 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
           nlistSetStr (entry, tagidx, val + strlen (ITUNES_LOCAL));
         }
       } else if (tagidx == TAG_DBADDDATE) {
-        char    *t;
+        char    t [200];
         char    *p;
 
-        t = strdup (val);
+        strlcpy (t, val, sizeof (t));
         p = strchr (t, 'T');
         if (p != NULL) {
           *p = '\0';
         }
         nlistSetStr (entry, tagidx, t);
-        free (t);
       } else if (tagidx == TAG_DANCERATING) {
         int   ratingidx;
         int   tval;
@@ -458,11 +460,11 @@ static bool
 itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
     const xmlChar *xpathExpr)
 {
-  slist_t     *rawdata;
+  slist_t     *rawdata = NULL;
   slistidx_t  iteridx;
   char        *key;
   char        *val;
-  char        *keepname = NULL;
+  char        keepname [1000];
   nlist_t     *ids = NULL;
   bool        skip = false;
   bool        ismaster = false;
@@ -473,6 +475,7 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
     return false;
   }
 
+  *keepname = '\0';
   slistFree (itunes->playlists);
   itunes->playlists = slistAlloc ("itunes-playlists", LIST_ORDERED, NULL);
 
@@ -485,12 +488,16 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       continue;
     }
     if (strcmp (key, "Playlist ID") == 0) {
-      if (nlistGetCount (ids) == 0) {
+      if (! skip && ids != NULL && nlistGetCount (ids) == 0) {
         slistFree (ids);
+fprintf (stderr, "%s free\n", keepname);
         ids = NULL;
       }
-      if (skip == false && keepname != NULL && ids != NULL) {
+      if (skip == false && *keepname && ids != NULL) {
+fprintf (stderr, "%s keep\n", keepname);
         slistSetList (itunes->playlists, keepname, ids);
+        /* it is possible for a playlist to not have an item list */
+        ids = NULL;
       }
       skip = false;
       if (ismaster) {
@@ -502,6 +509,7 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
     if (strcmp (key, "Playlist Items") == 0) {
       ids = NULL;
       if (! skip) {
+fprintf (stderr, "%s alloc\n", keepname);
         ids = nlistAlloc ("itunes-pl-ids", LIST_UNORDERED, NULL);
         skip = false;
       }
@@ -515,8 +523,7 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         strcmp (key, "Smart Info") == 0) {
       skip = true;
     } else if (strcmp (key, "Name") == 0) {
-      dataFree (keepname);
-      keepname = strdup (val);
+      strlcpy (keepname, val, sizeof (keepname));
     } else if (strcmp (key, "Track ID") == 0) {
       slist_t   *entry;
       long      tval;
@@ -529,11 +536,10 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
     }
   }
 
-  if (skip == false && keepname != NULL && ids != NULL) {
+  if (skip == false && *keepname && ids != NULL) {
     slistSetList (itunes->playlists, keepname, ids);
   }
 
-  dataFree (keepname);
   slistFree (rawdata);
   return true;
 }
@@ -547,8 +553,8 @@ itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
   xmlNodePtr          cur;
   int                 size;
   int                 i;
-  xmlChar             *val;
-  char                *lastkey = NULL;
+  xmlChar             *val = NULL;
+  char                lastkey [50];
   bool                valset = true;
 
   xpathObj = xmlXPathEvalExpression (xpathExpr, xpathCtx);
@@ -573,8 +579,7 @@ itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
           slistSetStr (rawdata, lastkey, "0");
           // fprintf (stderr, "  0: %s 0\n", lastkey);
         }
-        dataFree (lastkey);
-        lastkey = strdup ((const char *) val);
+        strlcpy (lastkey, (const char *) val, sizeof (lastkey));
         valset = false;
       }
       if (strcmp ((const char *) cur->name, "integer") == 0 ||
@@ -589,11 +594,10 @@ itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
         // fprintf (stderr, "  b: %s\n", "1");
         valset = true;
       }
-      free (val);
+      dataFree (val);
     }
   }
 
-  dataFree (lastkey);
   xmlXPathFreeObject (xpathObj);
   return true;
 }

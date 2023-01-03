@@ -1,8 +1,8 @@
 /*
  * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_BDJ4ITUNES_H
-#define INC_BDJ4ITUNES_H
+#ifndef INC_ITUNES_H
+#define INC_ITUNES_H
 
 enum {
   ITUNES_STARS_10,
@@ -31,4 +31,4 @@ void  itunesSetField (itunes_t *itunes, int idx, int value);
 void  itunesSaveFields (itunes_t *itunes);
 bool  itunesParse (itunes_t *itunes);
 
-#endif /* INC_BDJ4ITUNES_H */
+#endif /* INC_ITUNES_H */

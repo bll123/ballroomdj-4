@@ -16,7 +16,7 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
-#include "bdj4itunes.h"
+#include "itunes.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "configui.h"
