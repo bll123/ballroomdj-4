@@ -216,6 +216,25 @@ slistGetDouble (slist_t *list, const char *sidx)
   return value;
 }
 
+slist_t *
+slistGetList (slist_t *list, const char *sidx)
+{
+  void            *value = NULL;
+  listkeylookup_t key;
+  slistidx_t      idx;
+
+  if (list == NULL) {
+    return NULL;
+  }
+
+  key.strkey = sidx;
+  idx = listGetIdx (list, &key);
+  if (idx >= 0) {
+    value = list->data [idx].value.data;
+  }
+  return value;
+}
+
 int
 slistGetMaxKeyWidth (slist_t *list)
 {

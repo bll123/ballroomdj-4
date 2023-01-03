@@ -372,7 +372,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       { NULL, NULL, NULL },
       { NULL, NULL, NULL }
     },       /* audio tags */
-    "Total Time",                 /* itunes name          */
+    NULL,                         /* itunes name          */ // Total Time
     ET_LABEL,                     /* edit type            */
     VALUE_NUM,                    /* value type           */
     convMS,                       /* conv func            */
@@ -828,7 +828,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       { NULL, NULL, NULL },
       { NULL, NULL, NULL }
     },         /* audio tags */
-    "Date Modified",              /* itunes name          */
+    NULL,                         /* itunes name          */ // Date Modified
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */

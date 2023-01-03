@@ -142,21 +142,20 @@ itunesAlloc (void)
 #if 1
   {
     nlistidx_t    iteridx;
-    slistidx_t    eiteridx;
-    nlist_t       *entry;
-    nlist_t       *ids;
-    int           nkey;
-    int           ekey;
+    long          nkey;
     char          *skey;
-    char          *val;
 
     bdjoptSetStr (OPT_M_DIR_ITUNES_MEDIA, "/home/music/m");
     bdjoptSetStr (OPT_M_ITUNES_XML_FILE, "/home/bll/vbox_shared/iTunes Music Library.xml");
     itunesParse (itunes);
     nlistStartIterator (itunes->songs, &iteridx);
     while ((nkey = nlistIterateKey (itunes->songs, &iteridx)) >= 0) {
+      int           ekey;
+      nlist_t       *entry;
+      nlistidx_t    eiteridx;
+
       entry = nlistGetList (itunes->songs, nkey);
-      fprintf (stderr, "-- %d %s \n", TAG_FILE, nlistGetStr (entry, TAG_FILE));
+      fprintf (stderr, "-- %ld %s \n", nkey, nlistGetStr (entry, TAG_FILE));
 
       nlistStartIterator (entry, &eiteridx);
       while ((ekey = nlistIterateKey (entry, &eiteridx)) >= 0) {
@@ -170,8 +169,21 @@ itunesAlloc (void)
         }
       }
     }
+
     slistStartIterator (itunes->playlists, &iteridx);
-    while ((skey = slistIterateKey (itunes->songs, &iteridx)) != NULL) {
+    while ((skey = slistIterateKey (itunes->playlists, &iteridx)) != NULL) {
+      int           ikey;
+      nlist_t       *ids;
+      nlistidx_t    iiteridx;
+
+      fprintf (stderr, "-- %s\n", skey);
+
+      ids = slistGetList (itunes->playlists, skey);
+      nlistStartIterator (ids, &iiteridx);
+      while ((ikey = nlistIterateKey (ids, &iiteridx)) >= 0) {
+        fprintf (stderr, " %d", ikey);
+      }
+      fprintf (stderr, "\n");
     }
   }
 #endif
@@ -310,6 +322,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
   char        *key;
   char        *val;
   nlist_t     *entry = NULL;
+  bool        ratingset = false;
 
   rawdata = slistAlloc ("itunes-data-raw", LIST_UNORDERED, NULL);
   if (! itunesParseXPath (xpathCtx, xpathExpr, rawdata, datamainxpath)) {
@@ -328,11 +341,13 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
     }
     if (strcmp (key, "Track ID") == 0) {
       entry = nlistAlloc ("itunes-entry", LIST_ORDERED, NULL);
-      nlistSetList (itunes->songs, atoi (val), entry);
+      nlistSetList (itunes->songs, atol (val), entry);
+      ratingset = false;
     } else if (strcmp (key, "Rating Computed") == 0) {
       if (atoi (val) == 1) {
         /* set the dance rating to unrated */
         nlistSetNum (entry, TAG_DANCERATING, 0);
+        ratingset = true;
       }
     } else if (strcmp (key, "Loved") == 0 ||
         strcmp (key, "Disliked") == 0) {
@@ -362,10 +377,28 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         if (strncmp (val, ITUNES_LOCALHOST, strlen (ITUNES_LOCALHOST)) == 0) {
           nlistSetStr (entry, tagidx, val + strlen (ITUNES_LOCALHOST));
         }
+      } else if (tagidx == TAG_DBADDDATE) {
+        char    *t;
+        char    *p;
+
+        t = strdup (val);
+        p = strchr (t, 'T');
+        if (p != NULL) {
+          *p = '\0';
+        }
+        nlistSetStr (entry, tagidx, t);
+        free (t);
       } else if (tagidx == TAG_DANCERATING) {
         int   ratingidx;
+        int   tval;
 
-        ratingidx = nlistGetNum (itunes->stars, atoi (val));
+        if (ratingset) {
+          continue;
+        }
+
+        tval = atoi (val);
+        tval = tval / 10 - 1;
+        ratingidx = nlistGetNum (itunes->stars, tval);
         nlistSetNum (entry, tagidx, ratingidx);
       } else {
         nlistSetStr (entry, tagidx, val);
@@ -386,11 +419,11 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
   char        *key;
   char        *val;
   char        *keepname = NULL;
-  slist_t     *entry = NULL;
   nlist_t     *ids = NULL;
   bool        skip = false;
+  bool        ismaster = false;
 
-  rawdata = slistAlloc ("itunes-pl-raw", LIST_ORDERED, NULL);
+  rawdata = slistAlloc ("itunes-pl-raw", LIST_UNORDERED, NULL);
   if (! itunesParseXPath (xpathCtx, xpathExpr, rawdata, plmainxpath)) {
     slistFree (rawdata);
     return false;
@@ -401,35 +434,52 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
 
   slistStartIterator (rawdata, &iteridx);
   while ((key = slistIterateKey (rawdata, &iteridx)) != NULL) {
-    if (skip == false && keepname != NULL) {
-      slistSetList (itunes->playlists, keepname, entry);
-      slistSetList (itunes->playlists, keepname, ids);
-    }
     val = slistGetStr (rawdata, key);
 
-    if (strcmp (key, "Playlist ID") == 0) {
-      entry = slistAlloc ("itunes-entry", LIST_ORDERED, NULL);
-      ids = nlistAlloc ("itunes-entry", LIST_UNORDERED, NULL);
-      skip = false;
+    if (strcmp (key, "Master") == 0) {
+      ismaster = true;
       continue;
     }
-    if (skip == true) {
+    if (strcmp (key, "Playlist ID") == 0) {
+      if (skip == false && keepname != NULL && ids != NULL) {
+        slistSetList (itunes->playlists, keepname, ids);
+      }
+      skip = false;
+      if (ismaster) {
+        skip = true;
+        ismaster = false;
+      }
+      continue;
+    }
+    if (strcmp (key, "Playlist Items") == 0) {
+      if (! skip) {
+        ids = nlistAlloc ("itunes-pl-ids", LIST_UNORDERED, NULL);
+        skip = false;
+      }
+      continue;
+    }
+    if (skip) {
       continue;
     }
 
     if (strcmp (key, "Distinguished Kind") == 0 ||
         strcmp (key, "Smart Info") == 0) {
-      slistFree (entry);
       nlistFree (ids);
+      ids = NULL;
       skip = true;
     } else if (strcmp (key, "Name") == 0) {
-      keepname = val;
-      slistSetStr (entry, key, val);
+      dataFree (keepname);
+      keepname = strdup (val);
     } else if (strcmp (key, "Track ID") == 0) {
       nlistSetNum (ids, atol (val), 1);
     }
   }
 
+  if (skip == false && keepname != NULL && ids != NULL) {
+    slistSetList (itunes->playlists, keepname, ids);
+  }
+
+  dataFree (keepname);
   slistFree (rawdata);
   return true;
 }
