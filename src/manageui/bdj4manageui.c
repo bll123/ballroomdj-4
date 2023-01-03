@@ -1567,13 +1567,11 @@ manageSonglistImportiTunes (void *udata)
   uiUIProcessEvents ();
 
   /* CONTEXT: managementui: song list: default name for a new song list */
-//  manageSetSonglistName (manage, _("New Song List"));
-//  strlcpy (nplname, manage->sloldname, sizeof (nplname));
+  manageSetSonglistName (manage, _("New Song List"));
 
   manageiTunesCreateDialog (manage);
   uiWidgetShowAll (&manage->itunesSelectDialog);
 
-//  manageLoadPlaylistCB (manage, nplname);
   logProcEnd (LOG_PROC, "manageSonglistImportiTunes", "");
   return UICB_CONT;
 }
@@ -1710,6 +1708,7 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
         }
       }
 
+      manageSetSonglistName (manage, plname);
       uiWidgetHide (&manage->itunesSelectDialog);
       break;
     }
