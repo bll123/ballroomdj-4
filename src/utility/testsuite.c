@@ -210,6 +210,7 @@ main (int argc, char *argv [])
   testsuite.wait = false;
   testsuite.skipfile = false;
   testsuite.lastResponse = NULL;
+  testsuite.testlist = NULL;
   /* chkresponse, haveresponse, lessthan, greaterthan, */
   /* checkor, chkwait, checknot */
   resetChkResponse (&testsuite);
@@ -549,6 +550,7 @@ tsClosingCallback (void *tts, programstate_t programState)
   procutilStopAllProcess (testsuite->processes, testsuite->conn, true);
   procutilFreeAll (testsuite->processes);
   connFree (testsuite->conn);
+  slistFree (testsuite->testlist);
   slistFree (testsuite->routetxtlist);
   slistFree (testsuite->msgtxtlist);
   slistFree (testsuite->chkresponse);

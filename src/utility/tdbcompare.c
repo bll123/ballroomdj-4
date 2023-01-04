@@ -213,7 +213,7 @@ main (int argc, char *argv [])
 
     for (int i = 0; i < DB_MAX; ++i) {
       slistFree (taglist [i]);
-      dataFree (tag [i]);
+      free (tag [i]);
     }
   }
 

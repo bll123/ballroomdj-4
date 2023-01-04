@@ -2,6 +2,12 @@
 
 ## Installing BallroomDJ 4 on Linux
 
+#### Updating BallroomDJ 4 : Make a Backup
+
+If you are updating BallroomDJ 4 to a new version, be sure to create a
+backup of your BDJ4 installation.  On Linux, make a copy of the
+$HOME/BDJ4 folder
+
 #### Install the Requisite Software
 
 This step only needs to be run once, not for every installation or

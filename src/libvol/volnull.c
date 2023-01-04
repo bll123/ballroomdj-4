@@ -34,7 +34,7 @@ volumeProcess (volaction_t action, const char *sinkname,
   }
 
   if (action == VOL_GETSINKLIST) {
-    sinklist->defname = "no-volume";
+    sinklist->defname = strdup ("no-volume");
     sinklist->sinklist = NULL;
     sinklist->count = 3;
     sinklist->sinklist = realloc (sinklist->sinklist,

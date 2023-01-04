@@ -17,6 +17,7 @@ add_library (libbdj4common SHARED
   fileop.c
   fileshared.c
   log.c
+  mdebug.c
   osdir.c
   oslocale.c
   osnetutils.c

@@ -15,8 +15,8 @@
 #include <math.h>
 
 #include "pli.h"
-#include "vlci.h"
 #include "tmutil.h"
+#include "vlci.h"
 #include "volsink.h"
 
 #if 0  // VLC logging options

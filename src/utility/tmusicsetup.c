@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include "audiotag.h"
+#include "bdjstring.h"
 #include "dance.h"
 #include "datafile.h"
 #include "bdj4.h"
@@ -208,7 +209,7 @@ main (int argc, char *argv [])
     }
     dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
     slistFree (tagdata);
-    dataFree (fn);
+    free (fn);
   }
 
   datafileFree (df);

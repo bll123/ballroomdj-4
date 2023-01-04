@@ -39,8 +39,6 @@ fileSharedOpen (const char *fname, int truncflag)
 {
   fileshared_t  *fhandle;
 
-  fhandle = malloc (sizeof (fileshared_t));
-
 #if _lib_CreateFile
   HANDLE    handle;
   DWORD     cd;
@@ -48,6 +46,8 @@ fileSharedOpen (const char *fname, int truncflag)
   int         fd;
   int         flags;
 #endif
+
+  fhandle = malloc (sizeof (fileshared_t));
 
 #if _lib_CreateFile
   cd = OPEN_ALWAYS;

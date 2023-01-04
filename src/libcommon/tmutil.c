@@ -20,8 +20,8 @@
 # include <windows.h>
 #endif
 
-#include "tmutil.h"
 #include "bdjstring.h"
+#include "tmutil.h"
 
 static char radixchar [2] = { "." };
 static bool initialized = false;

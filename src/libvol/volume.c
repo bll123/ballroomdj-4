@@ -136,8 +136,9 @@ volumeFreeSinkList (volsinklist_t *sinklist)
       dataFree (sinklist->sinklist [i].name);
       dataFree (sinklist->sinklist [i].description);
     }
+    dataFree (sinklist->defname);
     free (sinklist->sinklist);
-    sinklist->defname = "";
+    sinklist->defname = NULL;
     sinklist->count = 0;
     sinklist->sinklist = NULL;
   }

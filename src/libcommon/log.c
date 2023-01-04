@@ -66,8 +66,12 @@ logClose (logidx_t idx)
 {
   bdjlog_t      *l;
 
+  logInit ();
   l = syslogs [idx];
   if (l == NULL) {
+    return;
+  }
+  if (! l->opened) {
     return;
   }
 
@@ -173,18 +177,22 @@ logSetLevel (logidx_t idx, loglevel_t level, const char *processtag)
 void
 logStart (const char *processnm, const char *processtag, loglevel_t level)
 {
+  logInit ();
   rlogStart (processnm, processtag, FILE_OPEN_TRUNCATE, level);
 }
 
 void
 logStartAppend (const char *processnm, const char *processtag, loglevel_t level)
 {
+  logInit ();
   rlogStart (processnm, processtag, FILE_OPEN_APPEND, level);
 }
 
 void
 logEnd (void)
 {
+  logInit ();
+
   for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
     if (syslogs [idx] != NULL) {
       logClose (idx);
@@ -200,6 +208,7 @@ logCheck (logidx_t idx, loglevel_t level)
 {
   bdjlog_t      *l;
 
+  logInit ();
   l = syslogs [idx];
 
   if (l == NULL) {
@@ -285,6 +294,9 @@ rlogStart (const char *processnm, const char *processtag,
 
   logInit ();
   tmutilDstamp (tdt, sizeof (tdt));
+
+  for (logidx_t idx = 0; idx < LOG_MAX; ++idx) {
+  }
 
   for (logidx_t idx = 0; idx < LOG_MAX; ++idx) {
     pathbldMakePath (tnm, sizeof (tnm), logbasenm [idx], LOG_EXTENSION,

@@ -2,6 +2,13 @@
 
 ## Installing BallroomDJ 4 on Mac OS
 
+#### Updating BallroomDJ 4 : Make a Backup
+
+If you are updating BallroomDJ 4 to a new version, be sure to create a
+backup of your BDJ4 installation.  On Mac OS make a copy of the
+$HOME/Applications/BDJ4.app folder and the
+$HOME/Library/Application&nbsp;Support/BDJ4 folder.
+
 #### Install the Requisite Software
 
 This step only needs to be run once, not for every installation or

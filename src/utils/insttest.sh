@@ -71,7 +71,6 @@ hostname=$(hostname)
 mconf=data/${hostname}/bdjconfig.txt
 
 function checkInstallation {
-set -x
   section=$1
   tname=$2
   tout=$(echo $3 | sed "s/\r//g")       # for windows
@@ -218,6 +217,14 @@ set -x
     fi
   fi
 
+  if [[ -d "${DATADIR}/data" ]]; then
+    c=$(ls -1 "${DATADIR}/data/asan*" 2>/dev/null | wc -l)
+    if [[ $c -ne 0 ]]; then
+      echo "ASAN files found"
+      exit 1
+    fi
+  fi
+
   if [[ $chk -eq $res ]]; then
     tcrc=0
     pass=$(($pass+1))
@@ -232,7 +239,6 @@ set -x
       echo $tout | sed 's/^/  /'
     fi
   fi
-set +x
 
   return $tcrc
 }
@@ -269,9 +275,6 @@ rc=$?
 checkInstallation $section $tname "$out" $rc n y
 crc=$?
 
-###
-exit 0
-
 if [[ $crc -eq 0 ]]; then
   # standard re-install
   resetUnpack
@@ -285,9 +288,6 @@ if [[ $crc -eq 0 ]]; then
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc r y
-
-###
-exit 0
 
   # standard update
   resetUnpack
@@ -315,9 +315,6 @@ out=$(./bin/bdj4 --bdj4installer --cli --wait \
     )
 rc=$?
 checkInstallation $section $tname "$out" $rc n n
-
-###
-exit 0
 
 cleanInstTest
 test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"

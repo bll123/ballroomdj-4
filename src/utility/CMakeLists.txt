@@ -79,15 +79,15 @@ target_link_libraries (vlcsinklist
   m
 )
 
-add_executable (vsencdec vsencdec.c)
-target_link_libraries (vsencdec
+add_executable (vsed vsed.c)
+target_link_libraries (vsed
   libbdj4common
   m
 )
 
 install (TARGETS
   bdj4info bdj4tags tdbcompare tdbdump testsuite tmusicsetup
-  vlcsinklist vsencdec
+  vlcsinklist vsed
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
@@ -98,4 +98,4 @@ updateRPath (tdbdump)
 updateRPath (testsuite)
 updateRPath (tmusicsetup)
 updateRPath (vlcsinklist)
-updateRPath (vsencdec)
+updateRPath (vsed)

@@ -107,7 +107,7 @@ function copyreleasefiles {
       ${stage}/bin/tmusicsetup \
       ${stage}/bin/vlcsinklist \
       ${stage}/bin/voltest \
-      ${stage}/bin/vsencdec \
+      ${stage}/bin/vsed \
       ${stage}/http/*.bak.1 \
       ${stage}/http/curl-ca-bundle.crt \
       ${stage}/http/*.html \

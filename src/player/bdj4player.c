@@ -347,15 +347,11 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   volumeFreeSinkList (&playerData->sinklist);
   volumeFree (playerData->volume);
 
-  if (playerData->prepQueue != NULL) {
-    queueFree (playerData->prepQueue);
-  }
-  if (playerData->prepRequestQueue != NULL) {
-    queueFree (playerData->prepRequestQueue);
-  }
-  if (playerData->playRequest != NULL) {
-    queueFree (playerData->playRequest);
-  }
+fprintf (stderr, "queue-free prep\n");
+  queueFree (playerData->prepQueue);
+fprintf (stderr, "queue-free prep-request\n");
+  queueFree (playerData->prepRequestQueue);
+  queueFree (playerData->playRequest);
 
   logProcEnd (LOG_PROC, "playerClosingCallback", "");
   return STATE_FINISHED;
@@ -894,6 +890,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   assert (npq != NULL);
   npq->songname = strdup (p);
   assert (npq->songname != NULL);
+fprintf (stderr, "prep request: %s\n", npq->songname);
   logMsg (LOG_DBG, LOG_BASIC, "prep request: %s", npq->songname);
   npq->songfullpath = songFullFileName (npq->songname);
 
@@ -1003,6 +1000,7 @@ playerProcessPrepRequest (playerdata_t *playerData)
   fclose (fh);
   free (buff);
 
+fprintf (stderr, "prep: %s\n", npq->songname);
   queuePush (playerData->prepQueue, npq);
   logMsg (LOG_DBG, LOG_MAIN, "prep-do: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   tm = mstimeend (&mstm);
@@ -1443,6 +1441,7 @@ playerPrepQueueFree (void *data)
   logProcBegin (LOG_PROC, "playerPrepQueueFree");
 
   if (pq != NULL) {
+fprintf (stderr, "prep-free %s\n", pq->songname);
     logMsg (LOG_DBG, LOG_MAIN, "prep-free: %ld %s", pq->uniqueidx, pq->songname);
     dataFree (pq->songfullpath);
     dataFree (pq->songname);

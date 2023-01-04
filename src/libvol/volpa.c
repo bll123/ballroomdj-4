@@ -59,7 +59,7 @@ static state_t      gstate;
 static int          ginit = 0;
 
 typedef union {
-  char            *defname;
+  char            defname [500];
   pa_cvolume      *vol;
   volsinklist_t   *sinklist;
 } callback_t;
@@ -80,8 +80,8 @@ void
 volumeCleanup (void **udata) {
   if (*udata != NULL) {
     pa_track_data_t *trackdata = *udata;
-    free (trackdata->defaultsink);
-    free (trackdata);
+    dataFree (trackdata->defaultsink);
+    dataFree (trackdata);
     *udata = NULL;
   }
   return;
@@ -234,7 +234,7 @@ volumeProcess (volaction_t action, const char *sinkname,
 
       pa_threaded_mainloop_lock (gstate.pamainloop);
       op = pa_context_set_sink_volume_by_name (
-          gstate.pacontext, sinkname, nvol, nullCallback, &cbdata);
+          gstate.pacontext, sinkname, nvol, nullCallback, NULL);
       if (! op) {
         pa_threaded_mainloop_unlock (gstate.pamainloop);
         volumeProcessFailure ("setvol");
@@ -272,8 +272,7 @@ serverInfoCallback (
 {
   callback_t    *cbdata = (callback_t *) userdata;
 
-  cbdata->defname = strdup (i->default_sink_name);
-  assert (cbdata->defname != NULL);
+  strlcpy (cbdata->defname, i->default_sink_name, sizeof (cbdata->defname));
   pa_threaded_mainloop_signal (gstate.pamainloop, 0);
 }
 
@@ -297,7 +296,7 @@ sinkVolCallback (
 static void
 connCallback (pa_context *pacontext, void* userdata)
 {
-  state_t   *stdata = (state_t *) userdata;
+  state_t     *stdata = (state_t *) userdata;
 
   if (pacontext == NULL) {
     stdata->pastate = PA_CONTEXT_FAILED;
@@ -435,10 +434,8 @@ getSinkCallback (
   cbdata->sinklist->sinklist [idx].name = strdup (i->name);
   cbdata->sinklist->sinklist [idx].description = strdup (i->description);
   if (defflag) {
-    if (cbdata->sinklist->defname != NULL) {
-      free (cbdata->sinklist->defname);
-    }
-    cbdata->sinklist->defname = cbdata->sinklist->sinklist [idx].name;
+    dataFree (cbdata->sinklist->defname);
+    cbdata->sinklist->defname = strdup (cbdata->sinklist->sinklist [idx].name);
   }
 
   pa_threaded_mainloop_signal (gstate.pamainloop, 0);

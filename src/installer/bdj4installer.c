@@ -117,6 +117,7 @@ enum {
 
 typedef struct {
   installstate_t  instState;
+  installstate_t  lastInstState;            // debugging
   UICallback      callbacks [INST_CB_MAX];
   char            *home;
   char            *target;
@@ -285,6 +286,7 @@ main (int argc, char *argv[])
   installer.home = NULL;
   uiutilsUIWidgetInit (&installer.window);
   installer.instState = INST_INITIALIZE;
+  installer.lastInstState = INST_INITIALIZE;
   installer.target = strdup ("");
   installer.rundir [0] = '\0';
   installer.locale [0] = '\0';
@@ -329,9 +331,8 @@ main (int argc, char *argv[])
   for (int i = 0; i < INST_BUTTON_MAX; ++i) {
     installer.buttons [i] = NULL;
   }
-
-  installer.targetEntry = uiEntryInit (80, MAXPATHLEN);
-  installer.bdj3locEntry = uiEntryInit (80, MAXPATHLEN);
+  installer.targetEntry = NULL;
+  installer.bdj3locEntry = NULL;
 
   /* the data in sysvars will not be correct.  don't use it.  */
   /* the installer only needs the home, hostname, os info and locale */
@@ -415,6 +416,11 @@ main (int argc, char *argv[])
         break;
       }
     }
+  }
+
+  if (installer.guienabled) {
+    installer.targetEntry = uiEntryInit (80, MAXPATHLEN);
+    installer.bdj3locEntry = uiEntryInit (80, MAXPATHLEN);
   }
 
   if (installer.unattended) {
@@ -505,6 +511,16 @@ main (int argc, char *argv[])
   }
 
   while (installer.instState != INST_EXIT) {
+    if (installer.instState != installer.lastInstState) {
+      if (installer.nodatafiles) {
+        if (installer.verbose && ! installer.quiet) {
+          fprintf (stderr, "state: %d\n", installer.instState);
+        }
+      } else {
+        logMsg (LOG_INSTALL, LOG_IMPORTANT, "state: %d", installer.instState);
+      }
+      installer.lastInstState = installer.instState;
+    }
     installerMainLoop (&installer);
     mssleep (10);
   }
@@ -835,7 +851,6 @@ installerMainLoop (void *udata)
       installerCreateDirs (installer);
 
       logStart ("bdj4installer", "in", installer->loglevel);
-      logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== installer started");
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", installer->target);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "initial bdj3loc: %s", installer->bdj3loc);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "new-install: %d", installer->newinstall);
@@ -2507,14 +2522,18 @@ installerCleanup (installer_t *installer)
   char  buff [MAXPATHLEN];
   const char  *targv [10];
 
-  uiTextBoxFree (installer->disptb);
+  if (installer->guienabled) {
+    uiEntryFree (installer->targetEntry);
+    uiEntryFree (installer->bdj3locEntry);
+    uiTextBoxFree (installer->disptb);
+    for (int i = 0; i < INST_BUTTON_MAX; ++i) {
+      uiButtonFree (installer->buttons [i]);
+    }
+  }
   dataFree (installer->target);
   dataFree (installer->bdj3loc);
   slistFree (installer->convlist);
   dataFree (installer->tclshloc);
-  for (int i = 0; i < INST_BUTTON_MAX; ++i) {
-    uiButtonFree (installer->buttons [i]);
-  }
 
   webclientClose (installer->webclient);
 

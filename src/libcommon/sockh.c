@@ -12,11 +12,11 @@
 #include <errno.h>
 #include <assert.h>
 
-#include "sockh.h"
-#include "sock.h"
-#include "tmutil.h"
-#include "log.h"
 #include "bdjmsg.h"
+#include "log.h"
+#include "sock.h"
+#include "sockh.h"
+#include "tmutil.h"
 
 static int   sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgProc, void *userData);
 

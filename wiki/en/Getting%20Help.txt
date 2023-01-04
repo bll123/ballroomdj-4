@@ -5,6 +5,11 @@
 If you need any help with installation, how to get started, or how to
 use BallroomDJ 4, you can use any of the following options:
 
+When describing your problem, indicate what Operating System (Windows,
+Mac OS, Linux) and version of the operating system your are using;
+indicate what version of BallroomDJ&nbsp;4 you are using.  Be detailed
+and specific in your description of the problem.
+
 __SourceForge Tickets__: A ticket can be opened at SourceForge.  This
 requires a SourceForge account.
 <br>[Register at SourceForge](https://sourceforge.net/user/registration)

@@ -14,9 +14,9 @@
 #include <unistd.h>
 #include <assert.h>
 
+#include "ilist.h"
 #include "log.h"
 #include "progstate.h"
-#include "ilist.h"
 #include "tmutil.h"
 
 enum {
