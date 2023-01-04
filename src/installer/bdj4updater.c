@@ -44,6 +44,7 @@
 #include "songutil.h"
 #include "sysvars.h"
 #include "tagdef.h"
+#include "templateutil.h"
 #include "tmutil.h"
 #include "volreg.h"
 
@@ -461,15 +462,33 @@ main (int argc, char *argv [])
     if (processflags [UPD_FIX_AF_TAGS]) {
       nlistSetNum (updlist, UPD_FIX_AF_TAGS, UPD_COMPLETE);
     }
-
-    if (processdb) {
-      // ### save the database
-    }
     dbClose (musicdb);
   }
 
   if (bdjoptchanged) {
     bdjoptSave ();
+  }
+
+  {
+    datafile_t  *tmpdf;
+    int         version;
+    slist_t     *slist;
+
+    /* 4.0.5 2022-1-4 itunes-fields */
+    /*   had the incorrect 'lastupdate' name removed completely (not needed) */
+    /*   as itunes has not been implemented yet, it is safe to completely */
+    /*   overwrite. */
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+    tmpdf = datafileAllocParse (ITUNES_FIELDS_FN,
+        DFTYPE_LIST, tbuff, NULL, 0);
+    slist = datafileGetList (tmpdf);
+    version = slistGetVersion (slist);
+    if (version == 1) {
+      templateFileCopy (ITUNES_FIELDS_FN BDJ4_CONFIG_EXT, ITUNES_FIELDS_FN BDJ4_CONFIG_EXT);
+    }
+fprintf (stderr, "vers: %d\n", version);
+    datafileFree (tmpdf);
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
