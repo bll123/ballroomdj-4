@@ -981,6 +981,11 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
     logMsg (LOG_DBG, LOG_DBUPDATE, "upd-from-itunes: found %s", dbfname);
     nlistStartIterator (entry, &iteridx);
     while ((tagidx = nlistIterateKey (entry, &iteridx)) >= 0) {
+      if (itunesGetField (dbupdate->itunes, tagidx) <= 0) {
+        /* the field is not marked to be imported */
+        continue;
+      }
+
       if (tagdefs [tagidx].valueType == VALUE_NUM) {
         long      val;
 

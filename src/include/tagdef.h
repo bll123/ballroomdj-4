@@ -105,6 +105,8 @@ typedef enum {
 } tagdefkey_t;
 
 enum {
+  /* this can be approximate.  it controls how many itunes fields are */
+  /* placed in the first column in the configuration ui */
   TAG_ITUNES_MAX = 18,
 };
 
