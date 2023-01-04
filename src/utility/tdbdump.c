@@ -134,6 +134,8 @@ main (int argc, char *argv [])
         fprintf (stdout, "%-20s %s\n", tag, val);
       }
     }
+
+    slistFree (taglist);
   }
 
   dbClose (db);

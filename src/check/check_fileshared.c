@@ -133,7 +133,6 @@ START_TEST(fileshared_write_shared)
   size_t        sz;
   char          *extension;
   char          tbuff [MAXPATHLEN];
-  procutil_t    *process;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- fileshared_write_shared");
 
@@ -152,9 +151,12 @@ START_TEST(fileshared_write_shared)
   osIgnoreSignal (SIGCHLD);
 #endif
   for (int i = 0; i < 40; ++i) {
+    procutil_t    *process;
+
     process = procutilStart (tbuff, 0, 0, PROCUTIL_NO_DETACH, NULL);
     ck_assert_ptr_nonnull (process);
     fileSharedWrite (sfh, DATAA, strlen (DATAA));
+    procutilFree (process);
   }
   sleep (2);
 

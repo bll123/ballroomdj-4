@@ -25,11 +25,11 @@
 int
 main (int argc, char *argv [])
 {
-  char        *data;
-  slist_t     *wlist;
+  char        *data = NULL;
+  slist_t     *wlist = NULL;
   slistidx_t  iteridx;
-  char        *key;
-  char        *val;
+  char        *key = NULL;
+  char        *val = NULL;
   bool        rawdata = false;
   bool        isbdj4 = false;
   int         c = 0;
@@ -167,11 +167,13 @@ main (int argc, char *argv [])
     bdjoptSetNum (OPT_G_WRITETAGS, value);
   }
   slistFree (tagdata);
+  dataFree (data);
 
   /* output the tags after writing the new ones */
   if (verbose && rawdata) {
     data = audiotagReadTags (argv [fidx]);
     fprintf (stdout, "%s\n", data);
+    dataFree (data);
   }
 
   if (verbose) {

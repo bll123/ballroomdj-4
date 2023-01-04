@@ -74,7 +74,7 @@ enum {
 };
 
 static slist_t *updateData (ilist_t *tmlist, ilistidx_t key);
-static const char *createFile (const char *src, const char *dest);
+static char *createFile (const char *src, const char *dest);
 
 static int  gtracknum [TM_MAX_DANCE];
 static int  gseqnum [TM_MAX_DANCE];
@@ -193,7 +193,7 @@ main (int argc, char *argv [])
   while ((key = ilistIterateKey (tmlist, &tmiteridx)) >= 0) {
     const char  *src;
     const char  *dest;
-    const char  *fn;
+    char        *fn;
     slist_t     *tagdata = NULL;
 
     tagdata = updateData (tmlist, key);
@@ -208,7 +208,11 @@ main (int argc, char *argv [])
     }
     dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
     slistFree (tagdata);
+    dataFree (fn);
   }
+
+  datafileFree (df);
+  slistFree (empty);
 
   dbClose (db);
   audiotagCleanup ();
@@ -272,7 +276,7 @@ updateData (ilist_t *tmlist, ilistidx_t key)
   return tagdata;
 }
 
-static const char *
+static char *
 createFile (const char *src, const char *dest)
 {
   char        dir [MAXPATHLEN];

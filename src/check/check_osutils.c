@@ -95,6 +95,7 @@ START_TEST(osutils_getsysfont)
   if (isLinux ()) {
     ck_assert_ptr_nonnull (tptr);
     ck_assert_str_ne (tptr, "");
+    free (tptr);
   } else {
     ck_assert_ptr_null (tptr);
   }

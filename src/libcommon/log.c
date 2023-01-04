@@ -126,15 +126,15 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
 
   logInit ();
 
-  if (! logCheck (idx, level)) {
-    return;
-  }
-
   l = syslogs [idx];
 
   if ((l->level & LOG_REDIR_INST) == LOG_REDIR_INST) {
     idx = LOG_INSTALL;
     l = syslogs [idx];
+  }
+
+  if (! logCheck (idx, level)) {
+    return;
   }
 
   tmutilTstamp (ttm, sizeof (ttm));
@@ -291,9 +291,7 @@ rlogStart (const char *processnm, const char *processtag,
         PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     rlogOpen (idx, tnm, processtag, truncflag);
     syslogs [idx]->level |= level;
-    if (idx != LOG_INSTALL && idx != LOG_GTK) {
-      rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s", processnm, tdt);
-    }
+    rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s", processnm, tdt);
   }
 }
 

@@ -11,19 +11,20 @@ cwd=$(pwd)
 tcount=0
 pass=0
 fail=0
+emsg=""
 
-function check {
+function checkres {
   tname=$1
   r=$2
   e=$3
+
   tcount=$(($tcount+1))
   if [[ $r == $e ]]; then
     pass=$(($pass+1))
     trc=0
   else
-    echo "    FAIL: $tname"
-    echo "     Got: $r"
-    echo "Expected: $e"
+    echo "         Got: $r"
+    echo "    Expected: $e"
     fail=$(($fail+1))
     trc=1
   fi
@@ -33,12 +34,13 @@ function check {
 function compcheck {
   tname=$1
   retc=$2
+
   tcount=$(($tcount+1))
   if [[ $retc -eq 0 ]]; then
     pass=$(($pass+1))
     trc=0
   else
-    echo "    FAIL: $tname (db compare)"
+    echo "    comparison failed"
     fail=$(($fail+1))
     trc=1
   fi
@@ -46,6 +48,8 @@ function compcheck {
 }
 
 function checkaudiotags {
+  tname=$1
+
   grc=0
   for f in test-music/*; do
     ./bin/bdj4 --msys --bdj4tags "$f" > $TMPA
@@ -53,13 +57,14 @@ function checkaudiotags {
     diff $TMPA $TMPB > /dev/null 2>&1
     trc=$?
     if [[ $trc -ne 0 ]]; then
+      echo "    audio tag check failed"
       grc=1
     fi
   done
   return $grc
 }
 
-function disp {
+function dispres {
   tname=$1
   rca=$2
   rcb=$3
@@ -68,7 +73,9 @@ function disp {
     echo "$tname OK"
   else
     echo "$tname FAIL"
+    echo $msg
   fi
+  msg=""
 }
 
 function setwritetagson {
@@ -143,12 +150,12 @@ got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
 exp="found ${NUMM} skip 0 indb 0 new ${NUMM} updated 0 notaudio 0 writetag 0"
-check $tname "$got" "$exp"
+msg+=$(checkres $tname "$got" "$exp")
 rc=$?
-./bin/bdj4 --msys --tdbcompare data/musicdb.dat test-templates/musicdb.dat
+msg+=$(./bin/bdj4 --msys --tdbcompare data/musicdb.dat test-templates/musicdb.dat)
 crc=$?
-compcheck $tname $rc
-disp $tname $rc $crc
+msg+=$(compcheck $tname $rc)
+dispres $tname $rc $crc
 
 # main test db : check-new with no changes
 tname=checknew-basic
@@ -158,12 +165,12 @@ got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
 exp="found ${NUMM} skip ${NUMM} indb ${NUMM} new 0 updated 0 notaudio 0 writetag 0"
-check $tname "$got" "$exp"
+msg+=$(checkres $tname "$got" "$exp")
 rc=$?
-./bin/bdj4 --msys --tdbcompare data/musicdb.dat test-templates/musicdb.dat
+msg+=$(./bin/bdj4 --msys --tdbcompare data/musicdb.dat test-templates/musicdb.dat)
 crc=$?
-compcheck $tname $rc
-disp $tname $rc $crc
+msg+=$(compcheck $tname $rc)
+dispres $tname $rc $crc
 
 # main test db : update-from-tags with no changes
 tname=updfromtags-basic
@@ -173,12 +180,12 @@ got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
 exp="found ${NUMM} skip 0 indb ${NUMM} new 0 updated ${NUMM} notaudio 0 writetag 0"
-check $tname "$got" "$exp"
+msg+=$(checkres $tname "$got" "$exp")
 rc=$?
-./bin/bdj4 --msys --tdbcompare data/musicdb.dat test-templates/musicdb.dat
+msg+=$(./bin/bdj4 --msys --tdbcompare data/musicdb.dat test-templates/musicdb.dat)
 crc=$?
-compcheck $tname $rc
-disp $tname $rc $crc
+msg+=$(compcheck $tname $rc)
+dispres $tname $rc $crc
 
 # create test db w/no data
 ./src/utils/mktestsetup.sh \
@@ -202,7 +209,7 @@ if [[ -f test-music/001-chacha.mp3 ]]; then
   echo "cha cha present when it should not be"
   rc=1
   crc=0
-  disp $tname $rc $crc
+  dispres $tname $rc $crc
 else
   tname=rebuild-test-db
   got=$(./bin/bdj4 --msys --bdj4dbupdate \
@@ -211,12 +218,12 @@ else
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
   exp="found ${NUMBL1} skip 0 indb 0 new ${NUMBL1} updated 0 notaudio 0 writetag 0"
-  check $tname "$got" "$exp"
+  msg+=$(checkres $tname "$got" "$exp")
   rc=$?
-  ./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBB
+  msg+=$(./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBB)
   crc=$?
-  compcheck $tname $rc
-  disp $tname $rc $crc
+  msg+=$(compcheck $tname $rc)
+  dispres $tname $rc $crc
 fi
 
 # restore the cha cha
@@ -230,12 +237,12 @@ got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
 exp="found ${NUMB} skip ${NUMBL1} indb ${NUMBL1} new 1 updated 0 notaudio 0 writetag 0"
-check $tname "$got" "$exp"
+msg+=$(checkres $tname "$got" "$exp")
 rc=$?
-./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBC
+msg+=$(./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBC)
 crc=$?
-compcheck $tname $crc
-disp $tname $rc $crc
+msg+=$(compcheck $tname $crc)
+dispres $tname $rc $crc
 
 # clean all of the tags from the music files
 cleanallaudiofiletags
@@ -248,10 +255,10 @@ got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
 exp="found ${NUMB} skip 0 indb 0 new ${NUMB} updated 0 notaudio 0 writetag 0"
-check $tname "$got" "$exp"
+msg+=$(checkres $tname "$got" "$exp")
 rc=$?
 # no db comparison
-disp $tname $rc $rc
+dispres $tname $rc $rc
 
 # restore the -c database, needed for write tags check
 cp -f $TDBC data/musicdb.dat
@@ -266,20 +273,20 @@ got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
 exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated 0 notaudio 0 writetag ${NUMB}"
-check $tname "$got" "$exp"
+msg+=$(checkres $tname "$got" "$exp")
 rc=$?
-./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBC
+msg+=$(./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBC)
 crc=$?
-compcheck $tname $crc
+msg+=$(compcheck $tname $crc)
 
 if [[ $rc -eq 0 && $crc -eq 0 ]]; then
-  checkaudiotags
+  msg+=$(checkaudiotags $tname)
   trc=$?
   if [[ $trc -ne 0 ]]; then
     rc=$trc
   fi
 fi
-disp $tname $rc $crc
+dispres $tname $rc $crc
 
 # restore the -c database again, needed for write tags check
 cp -f $TDBC data/musicdb.dat
@@ -294,20 +301,20 @@ got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
 exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated 0 notaudio 0 writetag ${NUMB}"
-check $tname "$got" "$exp"
+msg+=$(checkres $tname "$got" "$exp")
 rc=$?
-./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBC
+msg+=$(./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBC)
 crc=$?
-compcheck $tname $crc
+msg+=$(compcheck $tname $crc)
 
 if [[ $rc -eq 0 && $crc -eq 0 ]]; then
-  checkaudiotags
+  msg+=$(checkaudiotags $tname)
   trc=$?
   if [[ $trc -ne 0 ]]; then
     rc=$trc
   fi
 fi
-disp $tname $rc $crc
+dispres $tname $rc $crc
 
 # restore the -d database (empty of tags), needed for update from tags check
 cp -f $TDBD data/musicdb.dat
@@ -321,20 +328,20 @@ got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
 exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated ${NUMB} notaudio 0 writetag 0"
-check $tname "$got" "$exp"
+msg+=$(checkres $tname "$got" "$exp")
 rc=$?
-./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBC
+msg+=$(./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBC)
 crc=$?
-compcheck $tname $crc
+msg+=$(compcheck $tname $crc)
 
 if [[ $rc -eq 0 && $crc -eq 0 ]]; then
-  checkaudiotags
+  msg+=$(checkaudiotags $tname)
   trc=$?
   if [[ $trc -ne 0 ]]; then
     rc=$trc
   fi
 fi
-disp $tname $rc $crc
+dispres $tname $rc $crc
 
 # create test regex db w/tags (dance/artist - title)
 ./src/utils/mktestsetup.sh \
@@ -363,12 +370,12 @@ got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
 exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
-check $tname "$got" "$exp"
+msg+=$(checkres $tname "$got" "$exp")
 rc=$?
-./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBRDAT
+msg+=$(./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBRDAT)
 crc=$?
-compcheck $tname $crc
-disp $tname $rc $crc
+msg+=$(compcheck $tname $crc)
+dispres $tname $rc $crc
 
 # test regex db : get artist/title from file path
 tname=rebuild-file-path-dt
@@ -379,12 +386,12 @@ got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
 exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
-check $tname "$got" "$exp"
+msg+=$(checkres $tname "$got" "$exp")
 rc=$?
-./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBRDT
+msg+=$(./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBRDT)
 crc=$?
-compcheck $tname $crc
-disp $tname $rc $crc
+msg+=$(compcheck $tname $crc)
+dispres $tname $rc $crc
 
 # test regex db : get tracknum-artist/title from file path
 tname=rebuild-file-path-dtat
@@ -395,12 +402,12 @@ got=$(./bin/bdj4 --msys --bdj4dbupdate \
   --dbtopdir "${musicdir}" \
   --cli --wait --verbose)
 exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
-check $tname "$got" "$exp"
+msg+=$(checkres $tname "$got" "$exp")
 rc=$?
-./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBRDTAT
+msg+=$(./bin/bdj4 --msys --tdbcompare data/musicdb.dat $TDBRDTAT)
 crc=$?
-compcheck $tname $crc
-disp $tname $rc $crc
+msg+=$(compcheck $tname $crc)
+dispres $tname $rc $crc
 
 # remove test db, temporary files
 rm -f $TDBB $TDBC $TDBD $TDBRDAT $TDBRDT $TDBRDTAT $TMPA $TMPB
@@ -408,11 +415,10 @@ rm -f $TDBB $TDBC $TDBD $TDBRDAT $TDBRDT $TDBRDTAT $TMPA $TMPB
 echo "tests: $tcount pass: $pass fail: $fail"
 rc=1
 if [[ $tcount -eq $pass ]]; then
-  echo OK
+  echo "==final OK"
   rc=0
 else
-  echo FAIL
+  echo "==final FAIL"
 fi
-
 
 exit $rc

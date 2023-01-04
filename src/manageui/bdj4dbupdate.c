@@ -362,7 +362,7 @@ dbupdateProcessing (void *udata)
   connProcessUnconnected (dbupdate->conn);
 
   if (dbupdate->state == DB_UPD_INIT) {
-    if (dbupdate->rebuild || dbupdate->checknew) {
+    if (dbupdate->rebuild) {
       dbupdate->newdatabase = true;
     }
 

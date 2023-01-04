@@ -216,6 +216,7 @@ itunesFree (itunes_t *itunes)
   nlistFree (itunes->songbyidx);
   slistFree (itunes->songbyname);
   slistFree (itunes->playlists);
+  slistFree (itunes->itunesAvailFields);
   dataFree (itunes);
 }
 
@@ -620,6 +621,17 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
   if (skip) {
     nlistFree (entry);
   }
+  if (! skip) {
+    char  *tval;
+
+    tval = nlistGetStr (entry, TAG_FILE);
+    if (tval != NULL) {
+      nlistSetList (itunes->songbyidx, lastval, entry);
+      slistSetNum (itunes->songbyname, tval, lastval);
+    } else {
+      nlistFree (entry);
+    }
+  }
 
   slistFree (rawdata);
   return true;
@@ -705,6 +717,10 @@ itunesParsePlaylists (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
     }
   }
 
+  if (! skip && ids != NULL && nlistGetCount (ids) == 0) {
+    slistFree (ids);
+    ids = NULL;
+  }
   if (skip == false && *keepname && ids != NULL) {
     slistSetList (itunes->playlists, keepname, ids);
   }

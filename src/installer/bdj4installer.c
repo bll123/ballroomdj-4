@@ -293,6 +293,7 @@ main (int argc, char *argv[])
   installer.convlist = NULL;
   installer.tclshloc = NULL;
   installer.currdir [0] = '\0';
+  installer.disptb = NULL;
 
   installer.convprocess = false;
   installer.guienabled = true;
@@ -1765,6 +1766,7 @@ installerCopyTemplates (installer_t *installer)
     snprintf (to, sizeof (to), "img/profile00/%s", fname);
     installerTemplateCopy (dir, from, to);
   }
+  slistFree (dirlist);
 
   snprintf (dir, sizeof (dir), "%s/img", installer->rundir);
 
@@ -2505,6 +2507,7 @@ installerCleanup (installer_t *installer)
   char  buff [MAXPATHLEN];
   const char  *targv [10];
 
+  uiTextBoxFree (installer->disptb);
   dataFree (installer->target);
   dataFree (installer->bdj3loc);
   slistFree (installer->convlist);

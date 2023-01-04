@@ -964,6 +964,6 @@ svGetSystemFont (void)
   tptr = osGetSystemFont (sysvars [SV_PATH_GSETTINGS]);
   if (tptr != NULL) {
     strlcpy (sysvars [SV_FONT_DEFAULT], tptr, SV_MAX_SZ);
+    free (tptr);
   }
-  free (tptr);
 }

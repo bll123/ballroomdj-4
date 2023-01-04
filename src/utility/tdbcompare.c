@@ -103,6 +103,7 @@ main (int argc, char *argv [])
     dbfn [i] = NULL;
     db [i] = NULL;
     count [i] = 0;
+    song [i] = NULL;
   }
 
   for (int i = 1; i < argc; ++i) {
@@ -134,7 +135,7 @@ main (int argc, char *argv [])
   }
 
   if (count [DB_A] != count [DB_B]) {
-    fprintf (stderr, "dbcompare: count mismatch %d/%d\n", count [DB_A], count [DB_B]);
+    fprintf (stderr, "  dbcompare: count mismatch %d/%d\n", count [DB_A], count [DB_B]);
     grc = 1;
   }
 
@@ -145,14 +146,20 @@ main (int argc, char *argv [])
     char        *tag [DB_MAX];
     const char  *fn;
 
+
+    for (int i = 0; i < DB_MAX; ++i) {
+      taglist [i] = NULL;
+      tag [i] = NULL;
+    }
+
     fn = songGetStr (song [DB_A], TAG_FILE);
     if (verbose) {
-      fprintf (stderr, "-- %s\n", fn);
+      fprintf (stderr, "  -- %s\n", fn);
     }
 
     song [DB_B] = dbGetByName (db [DB_B], fn);
     if (song [DB_B] == NULL) {
-      fprintf (stderr, "song %s not found\n", fn);
+      fprintf (stderr, "    song %s not found\n", fn);
       grc = 1;
       continue;
     }
@@ -162,7 +169,7 @@ main (int argc, char *argv [])
     }
 
     if (slistGetCount (taglist [DB_A]) != slistGetCount (taglist [DB_B])) {
-      fprintf (stderr, "  song tag count mismatch %d/%d\n",
+      fprintf (stderr, "    song tag count mismatch %d/%d\n",
           slistGetCount (taglist [DB_A]), slistGetCount (taglist [DB_B]));
       grc = 1;
       continue;
@@ -190,18 +197,23 @@ main (int argc, char *argv [])
       }
 
       if (val [DB_A] == NULL && val [DB_B] != NULL) {
-        fprintf (stderr, "  null tag %s mismatch (null)/%s\n", tag [DB_A], val [DB_B]);
+        fprintf (stderr, "    null tag %s mismatch (null)/%s\n", tag [DB_A], val [DB_B]);
         grc = 1;
       }
       if (val [DB_A] != NULL && val [DB_B] == NULL) {
-        fprintf (stderr, "  null tag %s mismatch %s/(null)\n", tag [DB_A], val [DB_A]);
+        fprintf (stderr, "    null tag %s mismatch %s/(null)\n", tag [DB_A], val [DB_A]);
         grc = 1;
       }
       if (val [DB_A] != NULL && val [DB_B] != NULL &&
           strcmp (val [DB_A], val [DB_B]) != 0) {
-        fprintf (stderr, "  tag %s mismatch %s/%s\n", tag [DB_A], val [DB_A], val [DB_B]);
+        fprintf (stderr, "    tag %s mismatch %s/%s\n", tag [DB_A], val [DB_A], val [DB_B]);
         grc = 1;
       }
+    }
+
+    for (int i = 0; i < DB_MAX; ++i) {
+      slistFree (taglist [i]);
+      dataFree (tag [i]);
     }
   }
 

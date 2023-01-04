@@ -487,7 +487,6 @@ main (int argc, char *argv [])
     if (version == 1) {
       templateFileCopy (ITUNES_FIELDS_FN BDJ4_CONFIG_EXT, ITUNES_FIELDS_FN BDJ4_CONFIG_EXT);
     }
-fprintf (stderr, "vers: %d\n", version);
     datafileFree (tmpdf);
   }
 

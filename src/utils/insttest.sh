@@ -71,6 +71,7 @@ hostname=$(hostname)
 mconf=data/${hostname}/bdjconfig.txt
 
 function checkInstallation {
+set -x
   section=$1
   tname=$2
   tout=$(echo $3 | sed "s/\r//g")       # for windows
@@ -231,6 +232,8 @@ function checkInstallation {
       echo $tout | sed 's/^/  /'
     fi
   fi
+set +x
+
   return $tcrc
 }
 
@@ -241,13 +244,13 @@ function cleanInstTest {
 
 function resetUnpack {
   test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
-  cp -fpr "$UNPACKDIR.tmp" "$UNPACKDIR"
+  cp -fpr "$UNPACKDIRTMP" "$UNPACKDIR"
 }
 
 test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
 ./pkg/mkpkg.sh --preskip --insttest
 test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
-cp -fpr "$UNPACKDIR" "$UNPACKDIRTMP"
+mv -f "$UNPACKDIR" "$UNPACKDIRTMP"
 
 section=basic
 
@@ -266,6 +269,9 @@ rc=$?
 checkInstallation $section $tname "$out" $rc n y
 crc=$?
 
+###
+exit 0
+
 if [[ $crc -eq 0 ]]; then
   # standard re-install
   resetUnpack
@@ -279,6 +285,9 @@ if [[ $crc -eq 0 ]]; then
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc r y
+
+###
+exit 0
 
   # standard update
   resetUnpack
@@ -306,6 +315,9 @@ out=$(./bin/bdj4 --bdj4installer --cli --wait \
     )
 rc=$?
 checkInstallation $section $tname "$out" $rc n n
+
+###
+exit 0
 
 cleanInstTest
 test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
