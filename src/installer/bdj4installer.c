@@ -541,6 +541,7 @@ main (int argc, char *argv[])
   /* process any final events */
   if (installer.guienabled) {
     uiUIProcessEvents ();
+    uiCleanup ();
   }
 
   installerCleanup (&installer);
