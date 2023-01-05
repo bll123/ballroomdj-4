@@ -2,7 +2,42 @@
 
 ### Configuration : iTunes
 
-__The iTunes interface is not yet fully implemented in BDJ4. (2022-12-1)__
+<span style="color:#4559bf;">_iTunes configures where the iTunes data
+is found and what fields to import._</span>
+
+##### Configuring iTunes
+
+To allow BallroomDJ&nbsp;4 to access the iTunes information, iTunes
+must be configured to share the iTunes library information.  In iTunes,
+select the ___Edit&nbsp;/&nbsp;Preferences___ menu item.  In the
+preferences dialog, select the ___Advanced___ tab.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![iTunes Advanced Preferences](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/itunes-pref-A.png)
+<br><span style="color:#4559bf;">**iTunes Advanced Preferences**</span> </div>
+
+In the iTunes advanced preferences, select the ___Share iTunes Library
+XML with other applications___ checkbox.
+
+##### Configuring BallroomDJ 4 for iTunes
+
+___iTunes Media Folder___: When the iTunes media folder is selected,
+BallroomDJ&nbsp;4 will try to locate the associated iTunes XML file.
+
+___iTunes XML File___: The iTunes XML File location is required.
+
+___Rating___: The rating selections set what rating to assign for the
+associated star rating in iTunes when the
+[Update&nbsp;from&nbsp;iTunes](en-Management-Update%20Database)
+function is used.
+
+___Fields to Import___: Select which fields to import when the
+[Update&nbsp;from&nbsp;iTunes](en-Management-Update%20Database)
+function is used.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![iTunes](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/iTunes-A.png)
+<br><span style="color:#4559bf;">**Configuration / iTunes**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2023-01-05 13:51:54; BDJ4 version 4.0.5-beta)_
