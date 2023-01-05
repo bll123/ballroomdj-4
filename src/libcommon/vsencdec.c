@@ -14,7 +14,6 @@
 #include <glib.h>
 
 #include "bdjstring.h"
-#include "mdebug.h"
 #include "vsencdec.h"
 #include "osrandom.h"
 
@@ -89,11 +88,11 @@ vsencdec (const char *str, char *buff, size_t sz)
     data = g_base64_encode ((const guchar *) buff, len + VSEC_SALT_SIZE);
     strlcpy (buff, VSEC_E_PFX, sz);
     strlcat (buff, data, sz);
-    mdfree (data);
+    free (data);  // allocated by glib
   }
   if (encdecflag == VSEC_DECRYPT) {
     buff [count++] = '\0';
-    mdfree (data);
+    free (data);    // allocated by glib
   }
 }
 

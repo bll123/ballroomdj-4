@@ -85,7 +85,7 @@ dirlistBasicDirList (const char *dirname, const char *extension)
     if (cvtname != NULL) {
       slistSetStr (fileList, cvtname, NULL);
     }
-    mdfree (cvtname);
+    free (cvtname);   // allocated by glib
     mdfree (fname);
   }
   osDirClose (dh);
@@ -153,7 +153,7 @@ dirlistRecursiveDirList (const char *dirname, int flags)
             slistSetStr (fileList, temp, p);
           }
         }
-        mdfree (cvtname);
+        free (cvtname);     // allocated by glib
       }
       mdfree (fname);
     }

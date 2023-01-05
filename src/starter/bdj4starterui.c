@@ -408,6 +408,10 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "starterClosingCallback");
   uiCloseWindow (&starter->window);
+  for (int i = 0; i < START_BUTTON_MAX; ++i) {
+    uiButtonFree (starter->buttons [i]);
+  }
+  uiCleanup ();
 
   procutilStopAllProcess (starter->processes, starter->conn, true);
   procutilFreeAll (starter->processes);
@@ -435,10 +439,6 @@ starterClosingCallback (void *udata, programstate_t programState)
   slistFree (starter->supportFileList);
   nlistFree (starter->proflist);
   nlistFree (starter->profidxlist);
-
-  for (int i = 0; i < START_BUTTON_MAX; ++i) {
-    uiButtonFree (starter->buttons [i]);
-  }
 
   logProcEnd (LOG_PROC, "starterClosingCallback", "");
   return STATE_FINISHED;
@@ -741,7 +741,7 @@ starterMainLoop (void *tstarter)
         fprintf (fh, "Message:\n\n%s\n", msg);
         fclose (fh);
       }
-      mdfree (msg);
+      free (msg);  // allocated by gtk
 
       supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_NO_COMPRESSION);
       fileopDelete (tbuff);

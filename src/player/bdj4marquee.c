@@ -142,6 +142,9 @@ main (int argc, char *argv[])
   int             flags;
   int             startflags;
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("mq");
+#endif
 
   marquee.progstate = progstateInit ("marquee");
   progstateSetCallback (marquee.progstate, STATE_CONNECTING,
@@ -220,6 +223,10 @@ main (int argc, char *argv[])
   connFree (marquee.conn);
   progstateFree (marquee.progstate);
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return status;
 }
 

@@ -45,6 +45,7 @@ supportFree (support_t *support)
   if (support != NULL) {
     webclientClose (support->webclient);
     support->webresponse = NULL;
+    mdfree (support);
   }
 }
 

@@ -162,14 +162,15 @@ helperClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "helperClosingCallback");
   uiCloseWindow (&helper->window);
-
-  bdj4shutdown (ROUTE_HELPERUI, NULL);
-
   uiTextBoxFree (helper->tb);
-  datafileFree (helper->helpdf);
   for (int i = 0; i < HELPER_BUTTON_MAX; ++i) {
     uiButtonFree (helper->buttons [i]);
   }
+  uiCleanup ();
+
+  bdj4shutdown (ROUTE_HELPERUI, NULL);
+
+  datafileFree (helper->helpdf);
 
   logProcEnd (LOG_PROC, "helperClosingCallback", "");
   return STATE_FINISHED;

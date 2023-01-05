@@ -173,7 +173,7 @@ uiGtkLogger (GLogLevelFlags logLevel,
     if (strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") == 0) {
       fprintf (stderr, "%s\n", msg);
     }
-    mdfree (msg);
+    free (msg); // allocated by glib
   }
 
   return G_LOG_WRITER_HANDLED;
