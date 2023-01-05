@@ -55,9 +55,6 @@ confuiMakeItemTable (confuigui_t *gui, UIWidget *boxp, confuiident_t id,
   uiCreateScrolledWindow (&scwindow, 300);
   uiWidgetExpandVert (&scwindow);
   uiBoxPackStartExpand (&mhbox, &scwindow);
-  for (int i = 0; i < CONFUI_BUTTON_TABLE_MAX; ++i) {
-    gui->tables [id].buttons [i] = NULL;
-  }
 
   gui->tables [id].uitree = uiCreateTreeView ();
   uiwidgetp = uiTreeViewGetUIWidget (gui->tables [id].uitree);
@@ -130,9 +127,9 @@ confuiTableFree (confuigui_t *gui, confuiident_t id)
   for (int i = 0; i < CONFUI_BUTTON_TABLE_MAX; ++i) {
     uiButtonFree (gui->tables [id].buttons [i]);
     gui->tables [id].buttons [i] = NULL;
-    uiTreeViewFree (gui->tables [id].uitree);
-    gui->tables [id].uitree = NULL;
   }
+  uiTreeViewFree (gui->tables [id].uitree);
+  gui->tables [id].uitree = NULL;
 }
 
 void
