@@ -18,6 +18,8 @@
 #include "msgparse.h"
 #include "nlist.h"
 
+static void msgparseMusicQueueDispFree (void *data);
+
 mp_musicqupdate_t *
 msgparseMusicQueueData (char *args)
 {
@@ -35,7 +37,8 @@ msgparseMusicQueueData (char *args)
   musicqupdate->currdbidx = -1;
 
   /* first, build ourselves a list to work with */
-  musicqupdate->dispList = nlistAlloc ("temp-musicq-disp", LIST_ORDERED, NULL);
+  musicqupdate->dispList = nlistAlloc ("temp-musicq-disp", LIST_ORDERED,
+      msgparseMusicQueueDispFree);
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {
@@ -128,4 +131,14 @@ msgparseSongSelectFree (mp_songselect_t *songselect)
   if (songselect != NULL) {
     mdfree (songselect);
   }
+}
+
+/* internal routines */
+
+static void
+msgparseMusicQueueDispFree (void *data)
+{
+  mp_musicqupditem_t   *musicqupditem = data;
+
+  dataFree (musicqupditem);
 }

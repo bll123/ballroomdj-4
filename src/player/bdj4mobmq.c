@@ -79,6 +79,10 @@ main (int argc, char *argv[])
   char            *tval;
   int             flags;
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("mm");
+#endif
+
   osSetStandardSignals (mobmqSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
@@ -123,6 +127,10 @@ main (int argc, char *argv[])
   connFree (mobmqData.conn);
   progstateFree (mobmqData.progstate);
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return 0;
 }
 

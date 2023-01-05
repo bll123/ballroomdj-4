@@ -284,6 +284,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
   /* these are moved here so that the window can be un-maximized and */
   /* the size/position saved */
   uiCloseWindow (&marquee->window);
+  uiCleanup ();
 
   pathbldMakePath (fn, sizeof (fn),
       "marquee", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);

@@ -85,6 +85,10 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   int             flags;
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("rc");
+#endif
+
   osSetStandardSignals (remctrlSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
@@ -131,6 +135,10 @@ main (int argc, char *argv[])
   progstateFree (remctrlData.progstate);
   logEnd ();
 
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return 0;
 }
 

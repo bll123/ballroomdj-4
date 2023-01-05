@@ -84,7 +84,9 @@ uiDropDownFree (uidropdown_t *dropdown)
   if (dropdown != NULL) {
     uiButtonFree (dropdown->button);
     dataFree (dropdown->title);
-    dataFree (dropdown->strSelection);
+    if (dropdown->strSelection != NULL) {
+      free (dropdown->strSelection);        // allocated by gtk
+    }
     slistFree (dropdown->strIndexMap);
     nlistFree (dropdown->keylist);
     uiTreeViewFree (dropdown->uitree);
@@ -512,7 +514,9 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
   if (gtk_tree_model_get_iter (model, &iter, path)) {
     gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_IDX, &idx, -1);
     retval = idx;
-    dataFree (dropdown->strSelection);
+    if (dropdown->strSelection != NULL) {
+      free (dropdown->strSelection);        // allocated by gtk
+    }
     gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_STR,
         &dropdown->strSelection, -1);
     if (dropdown->iscombobox) {

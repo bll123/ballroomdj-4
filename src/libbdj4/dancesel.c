@@ -62,16 +62,17 @@ typedef struct dancesel {
   double        expectedHigh;
 } dancesel_t;
 
-static bool     danceselProcessClose (dancesel_t *dancesel,
+static void   danceselPlayedFree (void *data);
+static bool   danceselProcessClose (dancesel_t *dancesel,
                     ilistidx_t didx, ilistidx_t priordidx, ilistidx_t dist,
                     slist_t *tags, bool tagmatch);
-static bool     danceselProcessFar (dancesel_t *dancesel,
+static bool   danceselProcessFar (dancesel_t *dancesel,
                     ilistidx_t didx, ilistidx_t dist);
-static bool     matchTag (slist_t *tags, slist_t *otags);
-static bool     danceSelGetPriorInfo (dancesel_t *dancesel,
+static bool   danceselMatchTag (slist_t *tags, slist_t *otags);
+static bool   danceSelGetPriorInfo (dancesel_t *dancesel,
                     ilistidx_t queueCount, ilistidx_t prioridx,
                     ilistidx_t *pddanceIdx);
-static void     danceselCreateDistanceTable (dancesel_t *dancesel);
+static void   danceselCreateDistanceTable (dancesel_t *dancesel);
 
 /* the countlist should contain a danceIdx/count pair */
 dancesel_t *
@@ -97,7 +98,7 @@ danceselAlloc (nlist_t *countList,
   dancesel->distance = nlistAlloc ("dancesel-dist", LIST_ORDERED, NULL);
   dancesel->maxDistance = 0.0;
   dancesel->selectedCounts = nlistAlloc ("dancesel-sel-count", LIST_ORDERED, NULL);
-  dancesel->playedDances = queueAlloc ("played-dances", NULL);
+  dancesel->playedDances = queueAlloc ("played-dances", danceselPlayedFree);
   dancesel->totalSelCount = 0.0;
   dancesel->adjustBase = NULL;
   dancesel->danceProbTable = NULL;
@@ -358,7 +359,7 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
     /* if there is a tag match between the previous dance and this one */
     /* ( / 600 ) */
     tags = danceGetList (dancesel->dances, didx, DANCE_TAGS);
-    if (pddanceIdx >= 0 && matchTag (tags, pdtags)) {
+    if (pddanceIdx >= 0 && danceselMatchTag (tags, pdtags)) {
       abase = abase / dancesel->prevTagMatch;
       logMsg (LOG_DBG, LOG_DANCESEL, "  matched tags with previous: abase: %.6f", abase);
       if (DANCESEL_DEBUG) {
@@ -450,6 +451,14 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
 
 /* internal routines */
 
+static void
+danceselPlayedFree (void *data)
+{
+  playedDance_t *pd = data;
+
+  dataFree (pd);
+}
+
 static bool
 danceselProcessClose (dancesel_t *dancesel, ilistidx_t didx,
     ilistidx_t priordidx, ilistidx_t priordist, slist_t *tags, bool tagmatch)
@@ -487,7 +496,7 @@ danceselProcessClose (dancesel_t *dancesel, ilistidx_t didx,
   /* do not do another tagmatch if one has already been found */
   if (! tagmatch && priordist > 0 && priordist < dancesel->histDistance) {
     priortags = danceGetList (dancesel->dances, priordidx, DANCE_TAGS);
-    if (matchTag (tags, priortags)) {
+    if (danceselMatchTag (tags, priortags)) {
       double    tmp;
 
       /* further distance, smaller value, minimum no change */
@@ -583,7 +592,7 @@ danceselProcessFar (dancesel_t *dancesel, ilistidx_t didx,
 
 
 static bool
-matchTag (slist_t *tags, slist_t *otags)
+danceselMatchTag (slist_t *tags, slist_t *otags)
 {
   char        *ttag;
   char        *otag;
