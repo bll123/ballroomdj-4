@@ -502,7 +502,8 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
         nlistSetStr (setlist, ikey + offset, tvalstr);
       }
       if (vt == VALUE_DATA) {
-        nlistSetData (setlist, ikey + offset, tvalstr);
+        fprintf (stderr, "invalid data type in datafile\n");
+        exit (1);
       }
       if (vt == VALUE_NUM) {
         nlistSetNum (setlist, ikey + offset, lval);

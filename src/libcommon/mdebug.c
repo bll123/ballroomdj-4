@@ -182,6 +182,7 @@ mdebugCleanup (void)
   if (initialized) {
     if (mdebug != NULL) {
       free (mdebug);
+      mdebug = NULL;
     }
     mdebugcount = 0;
     mdebugalloc = 0;

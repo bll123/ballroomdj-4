@@ -39,7 +39,7 @@ START_TEST(filedata_readall)
   data = filedataReadAll (fn, &len);
   ck_assert_int_eq (len, 0);
   ck_assert_ptr_null (data);
-  mdfree (data);
+  dataFree (data);
 
   fh = fopen (fn, "w");
   fprintf (fh, "%s", "a");
