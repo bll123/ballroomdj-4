@@ -16,6 +16,7 @@
 
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "progstate.h"
 #include "tmutil.h"
 
@@ -55,7 +56,7 @@ progstateInit (char *progtag)
   progstate_t     *progstate;
   char            tbuff [40];
 
-  progstate = malloc (sizeof (progstate_t));
+  progstate = mdmalloc (sizeof (progstate_t));
   assert (progstate != NULL);
   progstate->programState = STATE_NOT_RUNNING;
   for (programstate_t i = STATE_NOT_RUNNING; i < STATE_MAX; ++i) {
@@ -75,7 +76,7 @@ progstateFree (progstate_t *progstate)
     for (programstate_t i = STATE_NOT_RUNNING; i < STATE_MAX; ++i) {
       ilistFree (progstate->callbacks [i]);
     }
-    free (progstate);
+    mdfree (progstate);
   }
 }
 

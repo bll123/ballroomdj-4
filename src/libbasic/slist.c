@@ -15,6 +15,7 @@
 #include "istring.h"
 #include "list.h"
 #include "log.h"
+#include "mdebug.h"
 #include "slist.h"
 
 static void   slistSetKey (list_t *list, listkey_t *key, const char *keydata);
@@ -88,7 +89,7 @@ slistSetStr (slist_t *list, const char *sidx, const char *data)
   item.valuetype = VALUE_STR;
   item.value.data = NULL;
   if (data != NULL) {
-    item.value.data = strdup (data);
+    item.value.data = mdstrdup (data);
   }
 
   slistUpdateMaxKeyWidth (list, sidx);
@@ -302,7 +303,7 @@ slistDumpInfo (slist_t *list)
 static void
 slistSetKey (list_t *list, listkey_t *key, const char *keydata)
 {
-  key->strkey = strdup (keydata);
+  key->strkey = mdstrdup (keydata);
 }
 
 static void

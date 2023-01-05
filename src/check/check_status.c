@@ -22,6 +22,7 @@
 #include "filemanip.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "status.h"
 #include "slist.h"
 
@@ -111,7 +112,7 @@ START_TEST(status_conv)
     statusConv (&conv);
     ck_assert_str_eq (conv.str, val);
     if (conv.allocated) {
-      free (conv.str);
+      mdfree (conv.str);
     }
 
     ++count;

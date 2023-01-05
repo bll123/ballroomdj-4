@@ -14,6 +14,7 @@
 
 #include <gtk/gtk.h>
 
+#include "mdebug.h"
 #include "ui.h"
 
 typedef struct uitextbox {
@@ -27,7 +28,7 @@ uiTextBoxCreate (int height, const char *hlcolor)
 {
   uitextbox_t   *tb;
 
-  tb = malloc (sizeof (uitextbox_t));
+  tb = mdmalloc (sizeof (uitextbox_t));
   assert (tb != NULL);
   uiutilsUIWidgetInit (&tb->scw);
   uiutilsUIWidgetInit (&tb->textbox);
@@ -56,7 +57,7 @@ void
 uiTextBoxFree (uitextbox_t *tb)
 {
   if (tb != NULL) {
-    free (tb);
+    mdfree (tb);
   }
 }
 

@@ -13,6 +13,7 @@
 #include <assert.h>
 
 #include "bdjstring.h"
+#include "mdebug.h"
 #include "osprocess.h"
 #include "osutils.h"
 
@@ -34,9 +35,9 @@ osGetSystemFont (const char *gsettingspath)
     /* gsettings puts quotes around the data */
     stringTrim (tptr);
     stringTrimChar (tptr, '\'');
-    rptr = strdup (tptr + 1);
+    rptr = mdstrdup (tptr + 1);
   }
-  free (tptr);
+  mdfree (tptr);
 
   return rptr;
 }

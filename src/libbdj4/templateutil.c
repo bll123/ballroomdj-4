@@ -22,6 +22,7 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "slist.h"
 #include "sysvars.h"
@@ -144,7 +145,7 @@ templateCopy (const char *from, const char *to, const char *color)
     ndata = filedataReplace (data, &len, "#ffa600", color);
     fwrite (ndata, len, 1, fh);
     fclose (fh);
-    free (ndata);
-    free (data);
+    mdfree (ndata);
+    mdfree (data);
   }
 }

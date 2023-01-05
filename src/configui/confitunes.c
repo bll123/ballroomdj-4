@@ -23,6 +23,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
 #include "pathutil.h"
@@ -44,7 +45,7 @@ static int  confuiValidateMediaDir (uientry_t *entry, void *udata);
 void
 confuiInitiTunes (confuigui_t *gui)
 {
-  gui->itunes = malloc (sizeof (confitunes_t));
+  gui->itunes = mdmalloc (sizeof (confitunes_t));
 
   for (int i = 0; i < ITUNES_STARS_MAX; ++i) {
     gui->itunes->uirating [i] = NULL;
@@ -275,9 +276,9 @@ confuiSelectiTunesDir (void *udata)
   if (fn != NULL) {
     uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
-    free (fn);
+    mdfree (fn);
   }
-  free (selectdata);
+  mdfree (selectdata);
   logProcEnd (LOG_PROC, "confuiSelectiTunesDir", "");
   return UICB_CONT;
 }
@@ -300,9 +301,9 @@ confuiSelectiTunesFile (void *udata)
   if (fn != NULL) {
     uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
-    free (fn);
+    mdfree (fn);
   }
-  free (selectdata);
+  mdfree (selectdata);
   logProcEnd (LOG_PROC, "confuiSelectiTunesFile", "");
   return UICB_CONT;
 }

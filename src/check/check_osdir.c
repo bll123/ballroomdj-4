@@ -23,6 +23,7 @@
 #include "dirop.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "osdir.h"
 
 char *osdirtestdata [] = {
@@ -74,7 +75,7 @@ START_TEST(osdir_chk)
         break;
       }
     }
-    free (fn);
+    mdfree (fn);
   }
   osDirClose (dh);
 

@@ -17,6 +17,7 @@
 #include "bdjstring.h"
 #include "localeutil.h"
 #include "log.h"  // needed for glogwriteroutput
+#include "mdebug.h"
 #include "sysvars.h"
 #include "ui.h"
 
@@ -55,7 +56,7 @@ uiCleanup (void)
     for (int i = 0; i < csscount; ++i) {
       dataFree (cssdata [i]);
     }
-    free (cssdata);
+    mdfree (cssdata);
     csscount = 0;
     cssdata = NULL;
   }
@@ -68,9 +69,9 @@ uiSetCss (GtkWidget *w, const char *style)
   char            *tstyle;
 
   tcss = gtk_css_provider_new ();
-  tstyle = strdup (style);
+  tstyle = mdstrdup (style);
   ++csscount;
-  cssdata = realloc (cssdata, sizeof (char *) * csscount);
+  cssdata = mdrealloc (cssdata, sizeof (char *) * csscount);
   cssdata [csscount-1] = tstyle;
 
   gtk_css_provider_load_from_data (tcss, tstyle, -1, NULL);
@@ -121,9 +122,9 @@ uiSetUIFont (char *uifont)
       strlcat (tbuff, wbuff, sizeof (tbuff));
     }
 
-    p = strdup (tbuff);
+    p = mdstrdup (tbuff);
     ++csscount;
-    cssdata = realloc (cssdata, sizeof (char *) * csscount);
+    cssdata = mdrealloc (cssdata, sizeof (char *) * csscount);
     cssdata [csscount-1] = p;
 
     gtk_css_provider_load_from_data (tcss, p, -1, NULL);
@@ -172,7 +173,7 @@ uiGtkLogger (GLogLevelFlags logLevel,
     if (strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") == 0) {
       fprintf (stderr, "%s\n", msg);
     }
-    free (msg);
+    mdfree (msg);
   }
 
   return G_LOG_WRITER_HANDLED;

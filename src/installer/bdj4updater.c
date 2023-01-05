@@ -33,6 +33,7 @@
 #include "fileop.h"
 #include "log.h"
 #include "localeutil.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "osprocess.h"
@@ -136,7 +137,7 @@ main (int argc, char *argv [])
       }
       case 'm': {
         if (optarg) {
-          musicdir = strdup (optarg);
+          musicdir = mdstrdup (optarg);
         }
         break;
       }
@@ -426,7 +427,7 @@ main (int argc, char *argv [])
       }
 
       if (! process) {
-        free (ffn);
+        mdfree (ffn);
         continue;
       }
 
@@ -438,9 +439,9 @@ main (int argc, char *argv [])
         audiotagWriteTags (ffn, taglist, taglist, rewrite, AT_KEEP_MOD_TIME);
       }
 
-      free (data);
+      mdfree (data);
       slistFree (taglist);
-      free (ffn);
+      mdfree (ffn);
     }
   }
 

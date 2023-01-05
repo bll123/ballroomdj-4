@@ -16,6 +16,7 @@
 #include "bdj4intl.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "song.h"
 #include "songfav.h"
@@ -37,7 +38,7 @@ uifavoriteSpinboxCreate (UIWidget *boxp)
   uifavorite_t  *uifavorite;
   UIWidget      *uispinboxp;
 
-  uifavorite = malloc (sizeof (uifavorite_t));
+  uifavorite = mdmalloc (sizeof (uifavorite_t));
   uifavorite->songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
   uifavorite->spinbox = uiSpinboxInit ();
   uispinboxp = uiSpinboxGetUIWidget (uifavorite->spinbox);
@@ -61,7 +62,7 @@ uifavoriteFree (uifavorite_t *uifavorite)
 {
   if (uifavorite != NULL) {
     uiSpinboxFree (uifavorite->spinbox);
-    free (uifavorite);
+    mdfree (uifavorite);
   }
 }
 

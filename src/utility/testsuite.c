@@ -28,6 +28,7 @@
 #include "istring.h"
 #include "localeutil.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicq.h"
 #include "nlist.h"
 #include "osrandom.h"
@@ -788,18 +789,18 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
     }
   }
 
-  tstr = strdup (tcmd);
+  tstr = mdstrdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
-    free (tstr);
+    mdfree (tstr);
     return TS_BAD_COMMAND;
   }
   strlcpy (testsuite->sectionnum, p, sizeof (testsuite->sectionnum));
 
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
-    free (tstr);
+    mdfree (tstr);
     return TS_BAD_COMMAND;
   }
   strlcpy (testsuite->sectionname, p, sizeof (testsuite->sectionname));
@@ -824,7 +825,7 @@ tsScriptSection (testsuite_t *testsuite, const char *tcmd)
     fflush (stdout);
   }
 
-  free (tstr);
+  mdfree (tstr);
   return TS_OK;
 }
 
@@ -835,17 +836,17 @@ tsScriptTest (testsuite_t *testsuite, const char *tcmd)
   char    *tokstr;
   char    *tstr;
 
-  tstr = strdup (tcmd);
+  tstr = mdstrdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
-    free (tstr);
+    mdfree (tstr);
     return TS_BAD_COMMAND;
   }
   strlcpy (testsuite->testnum, p, sizeof (testsuite->testnum));
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
-    free (tstr);
+    mdfree (tstr);
     return TS_BAD_COMMAND;
   }
   strlcpy (testsuite->testname, p, sizeof (testsuite->testname));
@@ -879,7 +880,7 @@ tsScriptTest (testsuite_t *testsuite, const char *tcmd)
     fflush (stdout);
   }
 
-  free (tstr);
+  mdfree (tstr);
   return TS_OK;
 }
 
@@ -955,16 +956,16 @@ tsScriptSleep (testsuite_t *testsuite, const char *tcmd)
   char    *tokstr;
   time_t  t;
 
-  tstr = strdup (tcmd);
+  tstr = mdstrdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
-    free (tstr);
+    mdfree (tstr);
     return TS_BAD_COMMAND;
   }
   t = atol (p);
   mssleep (t);
-  free (tstr);
+  mdfree (tstr);
   return TS_OK;
 }
 
@@ -978,7 +979,7 @@ tsScriptDisp (testsuite_t *testsuite, const char *tcmd)
   char        *valchk;
   slistidx_t  iteridx;
 
-  tstr = strdup (tcmd);
+  tstr = mdstrdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
   if (strcmp (p, "dispall") == 0) {
     slistStartIterator (testsuite->chkresponse, &iteridx);
@@ -996,7 +997,7 @@ tsScriptDisp (testsuite_t *testsuite, const char *tcmd)
   }
 
   fflush (stdout);
-  free (tstr);
+  mdfree (tstr);
   return TS_OK;
 }
 
@@ -1007,20 +1008,20 @@ tsScriptPrint (testsuite_t *testsuite, const char *tcmd)
   char  *tokstr;
   char  *tstr;
 
-  tstr = strdup (tcmd);
+  tstr = mdstrdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
   if (p == NULL) {
-    free (tstr);
+    mdfree (tstr);
     return TS_BAD_COMMAND;
   }
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
-    free (tstr);
+    mdfree (tstr);
     return TS_BAD_COMMAND;
   }
   fprintf (stdout, " %s", p);
   fflush (stdout);
-  free (tstr);
+  mdfree (tstr);
   return TS_OK;
 }
 
@@ -1032,11 +1033,11 @@ tsScriptFile (testsuite_t *testsuite, const char *tcmd)
   char  *tstr;
   int   rc = TS_OK;
 
-  tstr = strdup (tcmd);
+  tstr = mdstrdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
-    free (tstr);
+    mdfree (tstr);
     return TS_BAD_COMMAND;
   }
 
@@ -1082,7 +1083,7 @@ tsScriptFile (testsuite_t *testsuite, const char *tcmd)
     rc = TS_BAD_COMMAND;
   }
 
-  free (tstr);
+  mdfree (tstr);
   return rc;
 }
 
@@ -1098,7 +1099,7 @@ tsParseExpect (testsuite_t *testsuite, const char *tcmd)
   }
   testsuite->chkexpect = slistAlloc ("ts-chk-expect", LIST_UNORDERED, free);
 
-  tstr = strdup (tcmd);
+  tstr = mdstrdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
   if (strcmp (p, "chk-gt") == 0) {
     testsuite->greaterthan = true;
@@ -1125,7 +1126,7 @@ tsParseExpect (testsuite_t *testsuite, const char *tcmd)
     } else {
       a = strtok_r (NULL, " ", &tokstr);
       if (a == NULL) {
-        free (tstr);
+        mdfree (tstr);
         return TS_BAD_COMMAND;
       }
       slistSetStr (testsuite->chkexpect, p, a);
@@ -1136,7 +1137,7 @@ tsParseExpect (testsuite_t *testsuite, const char *tcmd)
     slistSort (testsuite->chkexpect);
   }
 
-  free (tstr);
+  mdfree (tstr);
   return TS_OK;
 }
 
@@ -1265,7 +1266,7 @@ tsScriptChkResponse (testsuite_t *testsuite)
             dodisp = true;
             if (valresp != NULL) {
               dataFree (testsuite->lastResponse);
-              testsuite->lastResponse = strdup (valresp);
+              testsuite->lastResponse = mdstrdup (valresp);
             }
           }
         }
@@ -1342,7 +1343,7 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
   int     msg;
   char    tmp [200];
 
-  tstr = strdup (tcmd);
+  tstr = mdstrdup (tcmd);
 
   /* test-script command */
   p = strtok_r (tstr, " ", &tokstr);
@@ -1353,26 +1354,26 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
   /* route */
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
-    free (tstr);
+    mdfree (tstr);
     return TS_BAD_ROUTE;
   }
   stringAsciiToUpper (p);
   route = slistGetNum (testsuite->routetxtlist, p);
   if (route < 0) {
-    free (tstr);
+    mdfree (tstr);
     return TS_BAD_ROUTE;
   }
 
   /* message */
   p = strtok_r (NULL, " ", &tokstr);
   if (p == NULL) {
-    free (tstr);
+    mdfree (tstr);
     return TS_BAD_MSG;
   }
   stringAsciiToUpper (p);
   msg = slistGetNum (testsuite->msgtxtlist, p);
   if (msg < 0) {
-    free (tstr);
+    mdfree (tstr);
     return TS_BAD_MSG;
   }
 
@@ -1412,8 +1413,8 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
   }
 
   connSendMessage (testsuite->conn, route, msg, d);
-  free (d);
-  free (tstr);
+  mdfree (d);
+  mdfree (tstr);
   return TS_OK;
 }
 

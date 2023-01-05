@@ -14,6 +14,7 @@
 
 #include "bdjmsg.h"
 #include "log.h"
+#include "mdebug.h"
 #include "msgparse.h"
 #include "nlist.h"
 
@@ -28,7 +29,7 @@ msgparseMusicQueueData (char *args)
   mp_musicqupdate_t    *musicqupdate;
 
 
-  musicqupdate = malloc (sizeof (mp_musicqupdate_t));
+  musicqupdate = mdmalloc (sizeof (mp_musicqupdate_t));
   musicqupdate->mqidx = 0;
   musicqupdate->tottime = 0;
   musicqupdate->currdbidx = -1;
@@ -57,7 +58,7 @@ msgparseMusicQueueData (char *args)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   idx = 1;
   while (p != NULL) {
-    musicqupditem = malloc (sizeof (mp_musicqupditem_t));
+    musicqupditem = mdmalloc (sizeof (mp_musicqupditem_t));
     assert (musicqupditem != NULL);
     musicqupditem->dispidx = atoi (p);
 
@@ -90,7 +91,7 @@ msgparseMusicQueueDataFree (mp_musicqupdate_t *musicqupdate)
   if (musicqupdate != NULL) {
     nlistFree (musicqupdate->dispList);
     musicqupdate->dispList = NULL;
-    free (musicqupdate);
+    mdfree (musicqupdate);
   }
 }
 
@@ -103,7 +104,7 @@ msgparseSongSelect (char *args)
   mp_songselect_t   *songselect;
 
 
-  songselect = malloc (sizeof (mp_songselect_t));
+  songselect = mdmalloc (sizeof (mp_songselect_t));
   songselect->mqidx = 0;
   songselect->loc = 0;
 
@@ -125,6 +126,6 @@ void
 msgparseSongSelectFree (mp_songselect_t *songselect)
 {
   if (songselect != NULL) {
-    free (songselect);
+    mdfree (songselect);
   }
 }

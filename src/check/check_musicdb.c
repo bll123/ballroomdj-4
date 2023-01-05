@@ -24,6 +24,7 @@
 #include "filemanip.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "slist.h"
 #include "song.h"
@@ -164,7 +165,7 @@ START_TEST(musicdb_write)
       ndata = filedataReplace (songparsedata [i], &len, "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
-      free (ndata);
+      mdfree (ndata);
 
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
           songGetStr (song, TAG_FILE));
@@ -217,7 +218,7 @@ START_TEST(musicdb_overwrite)
       ndata = filedataReplace (songparsedata [i], &len, "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
-      free (ndata);
+      mdfree (ndata);
 
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
           songGetStr (song, TAG_FILE));
@@ -273,7 +274,7 @@ START_TEST(musicdb_batch_write)
       ndata = filedataReplace (songparsedata [i], &len, "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
-      free (ndata);
+      mdfree (ndata);
 
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
           songGetStr (song, TAG_FILE));
@@ -327,7 +328,7 @@ START_TEST(musicdb_batch_overwrite)
       ndata = filedataReplace (songparsedata [i], &len, "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
-      free (ndata);
+      mdfree (ndata);
 
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
           songGetStr (song, TAG_FILE));
@@ -385,7 +386,7 @@ START_TEST(musicdb_write_song)
       ndata = filedataReplace (songparsedata [i], &len, "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
-      free (ndata);
+      mdfree (ndata);
 
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
           songGetStr (song, TAG_FILE));
@@ -434,7 +435,7 @@ START_TEST(musicdb_overwrite_song)
       ndata = filedataReplace (songparsedata [i], &len, "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
-      free (ndata);
+      mdfree (ndata);
 
       snprintf (tmp, sizeof (tmp), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
           songGetStr (song, TAG_FILE));
@@ -484,7 +485,7 @@ START_TEST(musicdb_load_get_byidx)
       ndata = filedataReplace (songparsedata [i], &len, "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
-      free (ndata);
+      mdfree (ndata);
 
       dbsong = dbGetByIdx (db, count);
       ck_assert_ptr_nonnull (dbsong);
@@ -535,7 +536,7 @@ START_TEST(musicdb_load_get_byname)
       ndata = filedataReplace (songparsedata [i], &len, "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
-      free (ndata);
+      mdfree (ndata);
 
       dbsong = dbGetByName (db, songGetStr (song, TAG_FILE));
       ck_assert_ptr_nonnull (dbsong);
@@ -588,7 +589,7 @@ START_TEST(musicdb_iterate)
       ndata = filedataReplace (songparsedata [i], &len, "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
-      free (ndata);
+      mdfree (ndata);
 
       dbsong = dbIterate (db, &curridx, &iteridx);
       ck_assert_int_eq (songGetNum (dbsong, TAG_RRN), count + 1);

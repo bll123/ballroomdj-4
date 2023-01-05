@@ -20,6 +20,7 @@
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "manageui.h"
+#include "mdebug.h"
 #include "playlist.h"
 #include "tagdef.h"
 #include "tmutil.h"
@@ -71,7 +72,7 @@ managePlaylistTreeAlloc (UIWidget *statusMsg)
 {
   managepltree_t *managepltree;
 
-  managepltree = malloc (sizeof (managepltree_t));
+  managepltree = mdmalloc (sizeof (managepltree_t));
   managepltree->uitree = NULL;
   managepltree->danceselcol = NULL;
   managepltree->dancecol = NULL;
@@ -91,7 +92,7 @@ managePlaylistTreeFree (managepltree_t *managepltree)
 {
   if (managepltree != NULL) {
     uiTreeViewFree (managepltree->uitree);
-    free (managepltree);
+    mdfree (managepltree);
   }
 }
 

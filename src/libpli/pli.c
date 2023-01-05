@@ -13,6 +13,7 @@
 #include "bdj4.h"
 #include "pathbld.h"
 #include "dylib.h"
+#include "mdebug.h"
 #include "pli.h"
 #include "sysvars.h"
 #include "volsink.h"
@@ -34,7 +35,7 @@ pliInit (const char *plipkg, const char *sinkname)
   pli_t     *pli;
   char      dlpath [MAXPATHLEN];
 
-  pli = malloc (sizeof (pli_t));
+  pli = mdmalloc (sizeof (pli_t));
   pli->pliData = NULL;
   pli->pliiInit = NULL;
   pli->pliiFree = NULL;
@@ -57,7 +58,7 @@ pliInit (const char *plipkg, const char *sinkname)
   pli->dlHandle = dylibLoad (dlpath);
   if (pli->dlHandle == NULL) {
     fprintf (stderr, "Unable to open library %s\n", dlpath);
-    free (pli);
+    mdfree (pli);
     return NULL;
   }
 
@@ -97,7 +98,7 @@ pliFree (pli_t *pli)
     if (pli->dlHandle != NULL) {
       dylibClose (pli->dlHandle);
     }
-    free (pli);
+    mdfree (pli);
   }
 }
 

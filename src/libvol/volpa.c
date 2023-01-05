@@ -23,6 +23,7 @@
 
 #include "bdjstring.h"
 #include "tmutil.h"
+#include "mdebug.h"
 #include "volsink.h"
 #include "volume.h"
 
@@ -80,6 +81,7 @@ void
 volumeCleanup (void **udata) {
   if (*udata != NULL) {
     pa_track_data_t *trackdata = *udata;
+
     dataFree (trackdata->defaultsink);
     dataFree (trackdata);
     *udata = NULL;
@@ -160,8 +162,8 @@ volumeProcess (volaction_t action, const char *sinkname,
   strlcpy (defsinkname, cbdata.defname, sizeof (defsinkname));
 
   if (*udata == NULL) {
-    trackdata = malloc (sizeof (pa_track_data_t));
-    trackdata->defaultsink = strdup (defsinkname);
+    trackdata = mdmalloc (sizeof (pa_track_data_t));
+    trackdata->defaultsink = mdstrdup (defsinkname);
     trackdata->changed = false;
     *udata = trackdata;
   } else {
@@ -172,7 +174,7 @@ volumeProcess (volaction_t action, const char *sinkname,
   }
 
   if (action == VOL_GETSINKLIST) {
-    sinklist->defname = strdup (defsinkname);
+    sinklist->defname = mdstrdup (defsinkname);
     sinklist->sinklist = NULL;
     sinklist->count = 0;
     cbdata.sinklist = sinklist;
@@ -427,15 +429,15 @@ getSinkCallback (
 
   idx = cbdata->sinklist->count;
   ++cbdata->sinklist->count;
-  cbdata->sinklist->sinklist = realloc (cbdata->sinklist->sinklist,
+  cbdata->sinklist->sinklist = mdrealloc (cbdata->sinklist->sinklist,
       cbdata->sinklist->count * sizeof (volsinkitem_t));
   cbdata->sinklist->sinklist [idx].defaultFlag = defflag;
   cbdata->sinklist->sinklist [idx].idxNumber = i->index;
-  cbdata->sinklist->sinklist [idx].name = strdup (i->name);
-  cbdata->sinklist->sinklist [idx].description = strdup (i->description);
+  cbdata->sinklist->sinklist [idx].name = mdstrdup (i->name);
+  cbdata->sinklist->sinklist [idx].description = mdstrdup (i->description);
   if (defflag) {
     dataFree (cbdata->sinklist->defname);
-    cbdata->sinklist->defname = strdup (cbdata->sinklist->sinklist [idx].name);
+    cbdata->sinklist->defname = mdstrdup (cbdata->sinklist->sinklist [idx].name);
   }
 
   pa_threaded_mainloop_signal (gstate.pamainloop, 0);

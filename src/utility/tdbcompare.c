@@ -19,6 +19,7 @@
 #include "fileop.h"
 #include "localeutil.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "slist.h"
 #include "song.h"
@@ -213,7 +214,7 @@ main (int argc, char *argv [])
 
     for (int i = 0; i < DB_MAX; ++i) {
       slistFree (taglist [i]);
-      free (tag [i]);
+      mdfree (tag [i]);
     }
   }
 

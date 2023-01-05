@@ -22,6 +22,7 @@
 #include "bdjstring.h"
 #include "fileop.h"
 #include "dirop.h"
+#include "mdebug.h"
 #include "osdir.h"
 #include "osutils.h"
 
@@ -56,7 +57,7 @@ diropDeleteDir (const char *dirname)
   while ((fname = osDirIterate (dh)) != NULL) {
     if (strcmp (fname, ".") == 0 ||
         strcmp (fname, "..") == 0) {
-      free (fname);
+      mdfree (fname);
       continue;
     }
 
@@ -68,7 +69,7 @@ diropDeleteDir (const char *dirname)
         fileopDelete (temp);
       }
     }
-    free (fname);
+    mdfree (fname);
   }
 
   osDirClose (dh);
@@ -79,7 +80,7 @@ diropDeleteDir (const char *dirname)
 
     tdirname = osToWideChar (dirname);
     RemoveDirectoryW (tdirname);
-    free (tdirname);
+    mdfree (tdirname);
   }
 #else
   rmdir (dirname);
@@ -118,7 +119,7 @@ diropMkdir (const char *dirname)
 
   tdirname = osToWideChar (dirname);
   rc = _wmkdir (tdirname);
-  free (tdirname);
+  mdfree (tdirname);
 #endif
 #if _args_mkdir == 2 && _define_S_IRWXU
   rc = mkdir (dirname, S_IRWXU);

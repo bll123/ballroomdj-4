@@ -15,6 +15,7 @@
 #include "istring.h"
 #include "list.h"
 #include "log.h"
+#include "mdebug.h"
 #include "tmutil.h"
 
 static void     listFreeItem (list_t *, listidx_t);
@@ -34,10 +35,10 @@ listAlloc (const char *name, listorder_t ordered, listFree_t valueFreeHook)
 {
   list_t    *list;
 
-  list = malloc (sizeof (list_t));
+  list = mdmalloc (sizeof (list_t));
   assert (list != NULL);
     /* always allocate the name so that dynamic names can be created */
-  list->name = strdup (name);
+  list->name = mdstrdup (name);
   assert (list->name != NULL);
   list->data = NULL;
   list->version = 1;
@@ -74,7 +75,7 @@ listFree (void *tlist)
       for (listidx_t i = 0; i < list->count; ++i) {
         listFreeItem (list, i);
       }
-      free (list->data);
+      mdfree (list->data);
       list->data = NULL;
     } /* data is not null */
 
@@ -82,7 +83,7 @@ listFree (void *tlist)
     list->allocCount = 0;
     dataFree (list->name);
     list->name = NULL;
-    free (list);
+    mdfree (list);
   }
 }
 
@@ -108,7 +109,7 @@ listSetSize (list_t *list, listidx_t siz)
 
     tsiz = list->allocCount;
     list->allocCount = siz;
-    list->data = realloc (list->data,
+    list->data = mdrealloc (list->data,
         (size_t) list->allocCount * sizeof (listitem_t));
     assert (list->data != NULL);
     memset (list->data + tsiz, '\0', sizeof (listitem_t) * (siz - tsiz));
@@ -306,7 +307,7 @@ listIterateKeyStr (list_t *list, listidx_t *iteridx)
 
   listClearCache (list);
 
-  list->keyCache.strkey = strdup (value);
+  list->keyCache.strkey = mdstrdup (value);
   list->locCache = *iteridx;
 
   return value;
@@ -404,7 +405,7 @@ listGetIdx (list_t *list, listkeylookup_t *key)
   if (ridx >= 0) {
     list->keyCache.strkey = NULL;
     if (list->keytype == LIST_KEY_STR && key->strkey != NULL) {
-      list->keyCache.strkey = strdup (key->strkey);
+      list->keyCache.strkey = mdstrdup (key->strkey);
     }
     if (list->keytype == LIST_KEY_NUM) {
       list->keyCache.idx = key->idx;
@@ -493,12 +494,12 @@ listFreeItem (list_t *list, listidx_t idx)
   if (dp != NULL) {
     if (list->keytype == LIST_KEY_STR &&
         dp->key.strkey != NULL) {
-      free (dp->key.strkey);
+      mdfree (dp->key.strkey);
       dp->key.strkey = NULL;
     }
     if (dp->valuetype == VALUE_STR &&
         dp->value.data != NULL) {
-      free (dp->value.data);
+      mdfree (dp->value.data);
       dp->value.data = NULL;
     }
     if (dp->valuetype == VALUE_DATA &&
@@ -541,7 +542,7 @@ listInsert (list_t *list, listidx_t loc, listitem_t *item)
   ++list->count;
   if (list->count > list->allocCount) {
     list->allocCount += 5;
-    list->data = realloc (list->data,
+    list->data = mdrealloc (list->data,
         (size_t) list->allocCount * sizeof (listitem_t));
     assert (list->data != NULL);
   }
@@ -698,7 +699,7 @@ listClearCache (list_t *list)
 {
   if (list->keytype == LIST_KEY_STR &&
       list->keyCache.strkey != NULL) {
-    free (list->keyCache.strkey);
+    mdfree (list->keyCache.strkey);
     list->keyCache.strkey = NULL;
   }
   list->locCache = LIST_LOC_INVALID;

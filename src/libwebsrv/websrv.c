@@ -16,6 +16,7 @@
 #include "mongoose.h"
 
 #include "log.h"
+#include "mdebug.h"
 #include "websrv.h"
 
 static void websrvLog (char c, void *userdata);
@@ -27,7 +28,7 @@ websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
   websrv_t        *websrv;
   char            tbuff [100];
 
-  websrv = malloc (sizeof (websrv_t));
+  websrv = mdmalloc (sizeof (websrv_t));
   assert (websrv != NULL);
 
   mg_log_set_fn (websrvLog, NULL);
@@ -48,7 +49,7 @@ websrvFree (websrv_t *websrv)
 {
   if (websrv != NULL) {
     mg_mgr_free (&websrv->mgr);
-    free (websrv);
+    mdfree (websrv);
   }
 }
 

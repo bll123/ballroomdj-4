@@ -14,6 +14,7 @@
 #include "ilist.h"
 #include "list.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "slist.h"
 
@@ -73,7 +74,7 @@ ilistSetStr (ilist_t *list, ilistidx_t ikey, ilistidx_t lidx, const char *data)
   char *tdata = NULL;
 
   if (data != NULL) {
-    tdata = strdup (data);
+    tdata = mdstrdup (data);
   }
   ilistSetDataValType (list, ikey, lidx, tdata, VALUE_STR);
 }

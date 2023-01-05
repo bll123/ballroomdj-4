@@ -27,6 +27,7 @@
 
 #include "bdjstring.h"
 #include "log.h"
+#include "mdebug.h"
 #include "queue.h"
 
 enum {
@@ -64,9 +65,9 @@ queueAlloc (const char *name, queueFree_t freeHook)
   queue_t     *q;
 
   logProcBegin (LOG_PROC, "queueAlloc");
-  q = malloc (sizeof (queue_t));
+  q = mdmalloc (sizeof (queue_t));
   assert (q != NULL);
-  q->name = strdup (name);
+  q->name = mdstrdup (name);
   q->count = 0;
   q->cacheNode = NULL;
   q->cacheIdx = QUEUE_NO_IDX;
@@ -100,7 +101,7 @@ queueFree (queue_t *q)
         if (tnode->data != NULL && q->freeHook != NULL) {
           q->freeHook (tnode->data);
         }
-        free (tnode);
+        mdfree (tnode);
       }
       tnode = node;
     }
@@ -108,9 +109,9 @@ queueFree (queue_t *q)
       if (tnode->data != NULL && q->freeHook != NULL) {
         q->freeHook (tnode->data);
       }
-      free (tnode);
+      mdfree (tnode);
     }
-    free (q);
+    mdfree (q);
   }
   logProcEnd (LOG_PROC, "queueFree", "");
 }
@@ -126,7 +127,7 @@ queuePush (queue_t *q, void *data)
     return;
   }
 
-  node = malloc (sizeof (queuenode_t));
+  node = mdmalloc (sizeof (queuenode_t));
   assert (node != NULL);
   node->prev = q->tail;
   node->next = NULL;
@@ -158,7 +159,7 @@ queuePushHead (queue_t *q, void *data)
     return;
   }
 
-  node = malloc (sizeof (queuenode_t));
+  node = mdmalloc (sizeof (queuenode_t));
   assert (node != NULL);
   node->prev = NULL;
   node->next = q->head;
@@ -333,7 +334,7 @@ queueInsert (queue_t *q, qidx_t idx, void *data)
     return;
   }
 
-  node = malloc (sizeof (queuenode_t));
+  node = mdmalloc (sizeof (queuenode_t));
 
   assert (node != NULL);
   node->prev = NULL;
@@ -543,7 +544,7 @@ queueRemove (queue_t *q, queuenode_t *node)
     node->next->prev = node->prev;
   }
   q->count--;
-  free (node);
+  mdfree (node);
 
   /* a removal invalidates the cache */
   q->cacheNode = NULL;

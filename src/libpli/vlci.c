@@ -34,6 +34,7 @@ enum {
 #include <vlc/libvlc_version.h>
 
 #include "bdjstring.h"
+#include "mdebug.h"
 #include "vlci.h"
 #include "volsink.h"
 
@@ -244,7 +245,7 @@ vlcAudioDevSet (vlcData_t *vlcData, const char *dev)
   dataFree (vlcData->device);
   vlcData->device = NULL;
   if (dev != NULL && strlen (dev) > 0) {
-    vlcData->device = strdup (dev);
+    vlcData->device = mdstrdup (dev);
     assert (vlcData->device != NULL);
   }
 
@@ -273,14 +274,14 @@ vlcAudioDevList (vlcData_t *vlcData, volsinklist_t *sinklist)
   adevlistptr = adevlist;
   while (adevlistptr != (libvlc_audio_output_device_t *) NULL) {
     ++sinklist->count;
-    sinklist->sinklist = realloc (sinklist->sinklist,
+    sinklist->sinklist = mdrealloc (sinklist->sinklist,
         sinklist->count * sizeof (volsinkitem_t));
     sinklist->sinklist [count].defaultFlag = 0;
     sinklist->sinklist [count].idxNumber = count;
-    sinklist->sinklist [count].name = strdup (adevlistptr->psz_device);
-    sinklist->sinklist [count].description = strdup (adevlistptr->psz_description);
+    sinklist->sinklist [count].name = mdstrdup (adevlistptr->psz_device);
+    sinklist->sinklist [count].description = mdstrdup (adevlistptr->psz_description);
     if (count == 0) {
-      sinklist->defname = strdup (adevlistptr->psz_device);
+      sinklist->defname = mdstrdup (adevlistptr->psz_device);
     }
     ++count;
     adevlistptr = adevlistptr->p_next;
@@ -383,7 +384,7 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
   int           i;
   int           j;
 
-  vlcData = (vlcData_t *) malloc (sizeof (vlcData_t));
+  vlcData = (vlcData_t *) mdmalloc (sizeof (vlcData_t));
   assert (vlcData != NULL);
   vlcData->inst = NULL;
   vlcData->m = NULL;
@@ -393,11 +394,11 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
   vlcData->device = NULL;
   vlcData->initialvolume = 1;
 
-  vlcData->argv = (char **) malloc (sizeof (char *) * (size_t) (vlcargc + 1));
+  vlcData->argv = (char **) mdmalloc (sizeof (char *) * (size_t) (vlcargc + 1));
   assert (vlcData->argv != NULL);
 
   for (i = 0; i < vlcargc; ++i) {
-    nptr = strdup (vlcargv [i]);
+    nptr = mdstrdup (vlcargv [i]);
     assert (nptr != NULL);
     vlcData->argv [i] = nptr;
   }
@@ -405,9 +406,9 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
   j = 0;
   while ((tptr = vlcopt [j]) != NULL) {
     ++vlcargc;
-    vlcData->argv = (char **) realloc (vlcData->argv,
+    vlcData->argv = (char **) mdrealloc (vlcData->argv,
         sizeof (char *) * (size_t) (vlcargc + 1));
-    nptr = strdup (tptr);
+    nptr = mdstrdup (tptr);
     assert (nptr != NULL);
     vlcData->argv [i] = nptr;
     ++i;
@@ -474,13 +475,13 @@ vlcClose (vlcData_t *vlcData)
       for (i = 0; i < vlcData->argc; ++i) {
         dataFree (vlcData->argv [i]);
       }
-      free (vlcData->argv);
+      mdfree (vlcData->argv);
       vlcData->argv = NULL;
     }
     dataFree (vlcData->device);
     vlcData->device = NULL;
     vlcData->state = libvlc_NothingSpecial;
-    free (vlcData);
+    mdfree (vlcData);
   }
 }
 

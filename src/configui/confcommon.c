@@ -26,6 +26,7 @@
 #include "fileop.h"
 #include "filemanip.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "orgutil.h"
 #include "pathbld.h"
@@ -114,9 +115,9 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   uiwidgetp = &gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uiwidget;
   uiLinkSet (uiwidgetp, uridisp, qruri);
   dataFree (gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri);
-  gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri = strdup (qruri);
+  gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri = mdstrdup (qruri);
   if (*qruri) {
-    free (qruri);
+    mdfree (qruri);
   }
   logProcEnd (LOG_PROC, "confuiUpdateMobmqQrcode", "");
 }
@@ -155,9 +156,9 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
   uiwidgetp = &gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uiwidget;
   uiLinkSet (uiwidgetp, uridisp, qruri);
   dataFree (gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri);
-  gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri = strdup (qruri);
+  gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri = mdstrdup (qruri);
   if (*qruri) {
-    free (qruri);
+    mdfree (qruri);
   }
   logProcEnd (LOG_PROC, "confuiUpdateRemctrlQrcode", "");
 }
@@ -218,9 +219,9 @@ confuiSelectFileDialog (confuigui_t *gui, int widx, char *startpath,
   if (fn != NULL) {
     uiEntrySetValue (gui->uiitem [widx].entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
-    free (fn);
+    mdfree (fn);
   }
-  free (selectdata);
+  mdfree (selectdata);
   logProcEnd (LOG_PROC, "confuiSelectFileDialog", "");
 }
 
@@ -371,8 +372,8 @@ confuiGetLocalIP (confuigui_t *gui)
 
   if (gui->localip == NULL) {
     ip = webclientGetLocalIP ();
-    gui->localip = strdup (ip);
-    free (ip);
+    gui->localip = mdstrdup (ip);
+    mdfree (ip);
   }
 
   return gui->localip;
@@ -390,7 +391,7 @@ confuiMakeQRCodeFile (char *title, char *uri)
   size_t        dlen;
 
   logProcBegin (LOG_PROC, "confuiMakeQRCodeFile");
-  qruri = malloc (MAXPATHLEN);
+  qruri = mdmalloc (MAXPATHLEN);
 
   pathbldMakePath (baseuri, sizeof (baseuri),
       "", "", PATHBLD_MP_DIR_TEMPLATE);
@@ -400,13 +401,13 @@ confuiMakeQRCodeFile (char *title, char *uri)
   /* this is gross */
   data = filedataReadAll (tbuff, &dlen);
   ndata = filedataReplace (data, &dlen, "#TITLE#", title);
-  free (data);
+  mdfree (data);
   data = ndata;
   ndata = filedataReplace (data, &dlen, "#BASEURL#", baseuri);
-  free (data);
+  mdfree (data);
   data = ndata;
   ndata = filedataReplace (data, &dlen, "#QRCODEURL#", uri);
-  free (data);
+  mdfree (data);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "qrcode", ".html", PATHBLD_MP_DREL_TMP);
@@ -417,7 +418,7 @@ confuiMakeQRCodeFile (char *title, char *uri)
   snprintf (qruri, MAXPATHLEN, "file:///%s/%s",
       sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tbuff);
 
-  free (ndata);
+  mdfree (ndata);
   logProcEnd (LOG_PROC, "confuiMakeQRCodeFile", "");
   return qruri;
 }
@@ -434,7 +435,7 @@ confuiUpdateOrgExample (org_t *org, char *data, UIWidget *uiwidgetp)
   }
 
   logProcBegin (LOG_PROC, "confuiUpdateOrgExample");
-  tdata = strdup (data);
+  tdata = mdstrdup (data);
   song = songAlloc ();
   assert (song != NULL);
   songParse (song, tdata, 0);
@@ -444,8 +445,8 @@ confuiUpdateOrgExample (org_t *org, char *data, UIWidget *uiwidgetp)
   }
   uiLabelSetText (uiwidgetp, disp);
   songFree (song);
-  free (disp);
-  free (tdata);
+  mdfree (disp);
+  mdfree (tdata);
   logProcEnd (LOG_PROC, "confuiUpdateOrgExample", "");
 }
 

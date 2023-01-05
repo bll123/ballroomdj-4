@@ -28,6 +28,7 @@
 #include "bdjstring.h"
 #include "conn.h"
 #include "log.h"
+#include "mdebug.h"
 #include "osprocess.h"
 #include "osutils.h"
 #include "pathbld.h"
@@ -96,7 +97,7 @@ procutilStart (const char *fn, int profile, loglevel_t loglvl,
   int         flags;
 
 
-  process = malloc (sizeof (procutil_t));
+  process = mdmalloc (sizeof (procutil_t));
   assert (process != NULL);
   process->pid = 0;
   process->hasHandle = false;
@@ -172,7 +173,7 @@ procutilFree (procutil_t *process)
       CloseHandle (process->processHandle);
 #endif
     }
-    free (process);
+    mdfree (process);
   }
 }
 

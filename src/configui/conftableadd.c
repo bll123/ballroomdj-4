@@ -23,6 +23,7 @@
 #include "dance.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "ui.h"
 
 bool
@@ -77,7 +78,7 @@ confuiTableAdd (void *udata)
     if (path != NULL) {
       pathstr = gtk_tree_path_to_string (path);
       sscanf (pathstr, "%d", &idx);
-      free (pathstr);
+      mdfree (pathstr);
       gtk_tree_path_free (path);
     }
     if (idx == 0 &&

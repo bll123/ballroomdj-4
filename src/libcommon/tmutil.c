@@ -21,6 +21,7 @@
 #endif
 
 #include "bdjstring.h"
+#include "mdebug.h"
 #include "tmutil.h"
 
 static char radixchar [2] = { "." };
@@ -359,7 +360,7 @@ tmutilStrToMS (const char *str)
   double  mult = 1.0;
   double  multb = 1000.0;
 
-  tstr = strdup (str);
+  tstr = mdstrdup (str);
   p = strtok_r (tstr, ":.,", &tokstr);
   count = 0;
   while (p != NULL) {
@@ -381,7 +382,7 @@ tmutilStrToMS (const char *str)
   }
   value = (long) dval;
 
-  free (tstr);
+  mdfree (tstr);
   return value;
 }
 
@@ -396,7 +397,7 @@ tmutilStrToHM (const char *str)
   bool    isam = false;
   bool    ispm = false;
 
-  tstr = strdup (str);
+  tstr = mdstrdup (str);
   p = strtok_r (tstr, ":.", &tokstr);
   value = atoi (p);
   hour = value;
@@ -431,7 +432,7 @@ tmutilStrToHM (const char *str)
     value += 720;
   }
 
-  free (tstr);
+  mdfree (tstr);
   value *= 1000;
   return value;
 }

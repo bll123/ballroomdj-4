@@ -20,6 +20,7 @@
 #include "bdjopt.h"
 #include "configui.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
 #include "pathutil.h"
@@ -152,9 +153,9 @@ confuiSelectMusicDir (void *udata)
   if (fn != NULL) {
     uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_MUSIC_DIR].entry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
-    free (fn);
+    mdfree (fn);
   }
-  free (selectdata);
+  mdfree (selectdata);
   logProcEnd (LOG_PROC, "confuiSelectMusicDir", "");
   return UICB_CONT;
 }

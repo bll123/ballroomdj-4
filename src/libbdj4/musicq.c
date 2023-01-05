@@ -14,6 +14,7 @@
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "musicq.h"
 #include "queue.h"
@@ -52,7 +53,7 @@ musicqAlloc (musicdb_t *db)
   assert ((int) MUSICQ_HISTORY == (int) BDJ4_QUEUE_MAX);
   assert ((int) MUSICQ_DISP_MAX == (int) (BDJ4_QUEUE_MAX + 1));
 
-  musicq = malloc (sizeof (musicq_t));
+  musicq = mdmalloc (sizeof (musicq_t));
   assert (musicq != NULL);
   musicq->musicdb = db;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
@@ -77,7 +78,7 @@ musicqFree (musicq_t *musicq)
         queueFree (musicq->q [i]);
       }
     }
-    free (musicq);
+    mdfree (musicq);
   }
   logProcEnd (LOG_PROC, "musicqFree", "");
 }
@@ -111,7 +112,7 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, dbidx_t dbidx,
     return;
   }
 
-  musicqitem = malloc (sizeof (musicqitem_t));
+  musicqitem = mdmalloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
 
   musicqitem->dispidx = musicq->dispidx [musicqidx];
@@ -138,7 +139,7 @@ musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t musicqidx)
     return;
   }
 
-  musicqitem = malloc (sizeof (musicqitem_t));
+  musicqitem = mdmalloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
   musicqitem->dispidx = 0;
   musicqitem->uniqueidx = guniqueidx++;
@@ -197,7 +198,7 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx,
 
   olddispidx = musicqRenumberStart (musicq, musicqidx);
 
-  musicqitem = malloc (sizeof (musicqitem_t));
+  musicqitem = mdmalloc (sizeof (musicqitem_t));
   assert (musicqitem != NULL);
   musicqitem->dbidx = dbidx;
   musicqitem->playlistIdx = MUSICQ_PLAYLIST_EMPTY;
@@ -388,7 +389,7 @@ musicqSetAnnounce (musicq_t *musicq, musicqidx_t musicqidx,
 
   musicqitem = queueGetByIdx (musicq->q [musicqidx], qkey);
   if (musicqitem != NULL) {
-    musicqitem->announce = strdup (annfname);
+    musicqitem->announce = mdstrdup (annfname);
   }
   return;
 }
@@ -589,7 +590,7 @@ musicqQueueItemFree (void *titem)
   logProcBegin (LOG_PROC, "musicqQueueItemFree");
   if (musicqitem != NULL) {
     dataFree (musicqitem->announce);
-    free (musicqitem);
+    mdfree (musicqitem);
   }
   logProcEnd (LOG_PROC, "musicqQueueItemFree", "");
 }

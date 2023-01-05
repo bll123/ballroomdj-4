@@ -17,6 +17,7 @@
 #include "filemanip.h"
 #include "log.h"
 #include "m3u.h"
+#include "mdebug.h"
 #include "musicq.h"
 #include "nlist.h"
 #include "song.h"
@@ -36,7 +37,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
 
   logProcBegin (LOG_PROC, "uimusicqInit");
 
-  uimusicq = malloc (sizeof (uimusicq_t));
+  uimusicq = mdmalloc (sizeof (uimusicq_t));
   assert (uimusicq != NULL);
 
   uimusicq->tag = tag;
@@ -115,7 +116,7 @@ uimusicqFree (uimusicq_t *uimusicq)
       uiEntryFree (uimusicq->ui [i].slname);
     }
     uimusicqUIFree (uimusicq);
-    free (uimusicq);
+    mdfree (uimusicq);
   }
   logProcEnd (LOG_PROC, "uimusicqFree", "");
 }
@@ -188,7 +189,7 @@ uimusicqGetSonglistName (uimusicq_t *uimusicq)
   while (*val == ' ') {
     ++val;
   }
-  tval = strdup (val);
+  tval = mdstrdup (val);
   stringTrimChar (tval, ' ');
   return tval;
 }

@@ -25,6 +25,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "mdebug.h"
 #include "osutils.h"
 #include "tmutil.h"
 
@@ -39,10 +40,10 @@ osGetEnv (const char *name, char *buff, size_t sz)
   *buff = '\0';
   wname = osToWideChar (name);
   wenv = _wgetenv (wname);
-  free (wname);
+  mdfree (wname);
   tenv = osFromWideChar (wenv);
   strlcpy (buff, tenv, sz);
-  free (tenv);
+  mdfree (tenv);
 #else
   char    *tptr;
 

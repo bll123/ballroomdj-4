@@ -34,6 +34,7 @@
 #include "fileop.h"
 #include "lock.h"
 #include "log.h"
+#include "mdebug.h"
 #include "ossignal.h"
 #include "pathbld.h"
 #include "progstate.h"
@@ -107,7 +108,7 @@ main (int argc, char *argv[])
   tval = bdjoptGetStr (OPT_P_MOBILEMQTITLE);
   mobmqData.title = NULL;
   if (tval != NULL) {
-    mobmqData.title = strdup (tval);
+    mobmqData.title = mdstrdup (tval);
   }
 
   mobmqData.websrv = NULL;
@@ -257,7 +258,7 @@ mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_MARQUEE_DATA: {
           mobmqData->finished = false;
           dataFree (mobmqData->marqueeData);
-          mobmqData->marqueeData = strdup (args);
+          mobmqData->marqueeData = mdstrdup (args);
           assert (mobmqData->marqueeData != NULL);
           break;
         }

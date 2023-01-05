@@ -30,6 +30,7 @@
 #include "conn.h"
 #include "lock.h"
 #include "log.h"
+#include "mdebug.h"
 #include "ossignal.h"
 #include "pathbld.h"
 #include "progstate.h"
@@ -111,7 +112,7 @@ main (int argc, char *argv[])
   logProcBegin (LOG_PROC, "dbtag");
 
   dbtag.maxThreads = sysvarsGetNum (SVL_NUM_PROC);
-  dbtag.threads = malloc (sizeof (dbthread_t) * dbtag.maxThreads);
+  dbtag.threads = mdmalloc (sizeof (dbthread_t) * dbtag.maxThreads);
   dbtag.running = DBTAG_STATE_NOT_RUNNING;
   dbtag.havealldata = false;
   dbtag.numActiveThreads = 0;
@@ -383,7 +384,7 @@ dbtagClosingCallback (void *tdbtag, programstate_t programState)
   logProcBegin (LOG_PROC, "dbtagClosingCallback");
   bdj4shutdown (ROUTE_DBTAG, NULL);
 
-  free (dbtag->threads);
+  mdfree (dbtag->threads);
   queueFree (dbtag->fileQueue);
 
   logProcEnd (LOG_PROC, "dbtagClosingCallback", "");

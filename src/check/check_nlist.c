@@ -17,6 +17,7 @@
 #include "bdjstring.h"
 #include "check_bdj.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 
 typedef struct {
@@ -977,7 +978,7 @@ START_TEST(nlist_free_item)
 
   for (int i = 0; i < itemc; ++i) {
     ck_assert_int_eq (item [i]->alloc, 0);
-    free (item [i]);
+    mdfree (item [i]);
   }
 }
 END_TEST
@@ -1307,7 +1308,7 @@ freeItem (void *titem)
 
   if (item->value != NULL) {
     item->alloc = false;
-    free (item->value);
+    mdfree (item->value);
   }
 }
 
@@ -1316,9 +1317,9 @@ allocItem (const char *str)
 {
   chk_item_t  *item;
 
-  item = malloc (sizeof (chk_item_t));
+  item = mdmalloc (sizeof (chk_item_t));
   item->alloc = true;
-  item->value = strdup (str);
+  item->value = mdstrdup (str);
   return item;
 }
 

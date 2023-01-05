@@ -15,6 +15,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "datafile.h"
+#include "mdebug.h"
 #include "songutil.h"
 
 char *
@@ -27,7 +28,7 @@ songFullFileName (const char *sfname)
     return NULL;
   }
 
-  tname = malloc (MAXPATHLEN);
+  tname = mdmalloc (MAXPATHLEN);
   assert (tname != NULL);
 
   len = strlen (sfname);
@@ -66,7 +67,7 @@ songConvAdjustFlags (datafileconv_t *conv)
 
     conv->valuetype = VALUE_NUM;
     if (conv->allocated) {
-      free (conv->str);
+      mdfree (conv->str);
     }
     conv->num = num;
     conv->allocated = false;
@@ -93,7 +94,7 @@ songConvAdjustFlags (datafileconv_t *conv)
     }
     *str = '\0';
 
-    conv->str = strdup (tbuff);
+    conv->str = mdstrdup (tbuff);
     conv->allocated = true;
   }
 }

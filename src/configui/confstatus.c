@@ -22,6 +22,7 @@
 #include "configui.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "status.h"
 #include "tagdef.h"
 #include "ui.h"
@@ -153,7 +154,7 @@ confuiStatusListCreate (GtkTreeModel *model, GtkTreePath *path,
       gui->tables [CONFUI_ID_STATUS].saveidx, STATUS_STATUS, statusdisp);
   ilistSetNum (gui->tables [CONFUI_ID_STATUS].savelist,
       gui->tables [CONFUI_ID_STATUS].saveidx, STATUS_PLAY_FLAG, playflag);
-  free (statusdisp);
+  mdfree (statusdisp);
   gui->tables [CONFUI_ID_STATUS].saveidx += 1;
   logProcEnd (LOG_PROC, "confuiStatusListCreate", "");
   return FALSE;

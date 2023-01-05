@@ -15,6 +15,7 @@
 #include "level.h"
 #include "nlist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "osrandom.h"
 #include "queue.h"
@@ -124,7 +125,7 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist,
 
 
   logProcBegin (LOG_PROC, "songselAlloc");
-  songsel = malloc (sizeof (songsel_t));
+  songsel = mdmalloc (sizeof (songsel_t));
   assert (songsel != NULL);
   songsel->danceSelList = nlistAlloc ("songsel-sel", LIST_ORDERED, songselDanceFree);
   nlistSetSize (songsel->danceSelList, nlistGetCount (dancelist));
@@ -138,7 +139,7 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist,
   /* for each dance : first set up all the lists */
   while ((danceIdx = nlistIterateKey (dancelist, &iteridx)) >= 0) {
     logMsg (LOG_DBG, LOG_SONGSEL, "adding dance: %d", danceIdx);
-    songseldance = malloc (sizeof (songseldance_t));
+    songseldance = mdmalloc (sizeof (songseldance_t));
     assert (songseldance != NULL);
     songseldance->danceIdx = danceIdx;
     songseldance->songIdxList = nlistAlloc ("songsel-songidx",
@@ -283,7 +284,7 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist,
     while ((songdata =
         nlistIterateValueData (songseldance->songIdxList, &siteridx)) != NULL) {
       /* save the list index */
-      songidx = malloc (sizeof (songselidx_t));
+      songidx = mdmalloc (sizeof (songselidx_t));
       assert (songidx != NULL);
       songidx->idx = idx;
       songdata->idx = idx;
@@ -316,7 +317,7 @@ songselFree (songsel_t *songsel)
   logProcBegin (LOG_PROC, "songselFree");
   if (songsel != NULL) {
     nlistFree (songsel->danceSelList);
-    free (songsel);
+    mdfree (songsel);
   }
   logProcEnd (LOG_PROC, "songselFree", "");
   return;
@@ -426,7 +427,7 @@ songselAllocAddSong (songsel_t *songsel, dbidx_t dbidx,
   ++perc->origCount;
   ++perc->count;
 
-  songdata = malloc (sizeof (songselsongdata_t));
+  songdata = mdmalloc (sizeof (songselsongdata_t));
   assert (songdata != NULL);
   songdata->dbidx = dbidx;
   songdata->percentage = 0.0;
@@ -457,7 +458,7 @@ songselRemoveSong (songsel_t *songsel,
     nlistSetSize (nlist, count);
     nlistStartIterator (songseldance->songIdxList, &iteridx);
     while ((songdata = nlistIterateValueData (songseldance->songIdxList, &iteridx)) != NULL) {
-      songidx = malloc (sizeof (songselidx_t));
+      songidx = mdmalloc (sizeof (songselidx_t));
       assert (songidx != NULL);
       songidx->idx = songdata->idx;
       queuePush (songseldance->currentIndexes, songidx);
@@ -603,7 +604,7 @@ songselInitPerc (list_t *attrlist, nlistidx_t idx, int weight)
   songselperc_t       *perc;
 
   logProcBegin (LOG_PROC, "songselInitPerc");
-  perc = malloc (sizeof (songselperc_t));
+  perc = mdmalloc (sizeof (songselperc_t));
   assert (perc != NULL);
   perc->origCount = 0;
   perc->weight = weight;
@@ -630,7 +631,7 @@ songselDanceFree (void *titem)
     for (int i = 0; i < SONGSEL_ATTR_MAX; ++i) {
       nlistFree (songseldance->attrList [i]);
     }
-    free (songseldance);
+    mdfree (songseldance);
   }
   logProcEnd (LOG_PROC, "songselDanceFree", "");
 }
@@ -641,7 +642,7 @@ songselIdxFree (void *titem)
   songselidx_t       *songselidx = titem;
 
   if (songselidx != NULL) {
-    free (songselidx);
+    mdfree (songselidx);
   }
 }
 
@@ -651,7 +652,7 @@ songselSongDataFree (void *titem)
   songselidx_t       *songselidx = titem;
 
   if (songselidx != NULL) {
-    free (songselidx);
+    mdfree (songselidx);
   }
 }
 
@@ -661,6 +662,6 @@ songselPercFree (void *titem)
   songselperc_t       *songselperc = titem;
 
   if (songselperc != NULL) {
-    free (songselperc);
+    mdfree (songselperc);
   }
 }

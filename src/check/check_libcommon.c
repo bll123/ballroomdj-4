@@ -28,6 +28,7 @@ check_libcommon (SRunner *sr)
   Suite   *s;
 
   /* libcommon:
+   *  mdebug
    *  fileop      complete
    *  bdjstring   complete
    *  osutils     complete 2022-12-27
@@ -57,6 +58,9 @@ check_libcommon (SRunner *sr)
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libcommon");
+
+  s = mdebug_suite();
+  srunner_add_suite (sr, s);
 
   s = fileop_suite();
   srunner_add_suite (sr, s);

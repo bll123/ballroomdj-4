@@ -17,6 +17,7 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "genre.h"
+#include "mdebug.h"
 #include "ui.h"
 #include "uigenre.h"
 
@@ -40,7 +41,7 @@ uigenreDropDownCreate (UIWidget *boxp, UIWidget *parentwin, bool allflag)
   uigenre_t  *uigenre;
 
 
-  uigenre = malloc (sizeof (uigenre_t));
+  uigenre = mdmalloc (sizeof (uigenre_t));
   uigenre->genres = bdjvarsdfGet (BDJVDF_GENRES);
   uigenre->allflag = allflag;
   uigenre->dropdown = uiDropDownInit ();
@@ -72,7 +73,7 @@ uigenreFree (uigenre_t *uigenre)
 {
   if (uigenre != NULL) {
     uiDropDownFree (uigenre->dropdown);
-    free (uigenre);
+    mdfree (uigenre);
   }
 }
 

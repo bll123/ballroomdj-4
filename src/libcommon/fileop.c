@@ -28,6 +28,7 @@
 #endif
 
 #include "fileop.h"
+#include "mdebug.h"
 #include "osutils.h"
 
 /* note that the windows code will fail on a directory */
@@ -47,7 +48,7 @@ fileopFileExists (const char *fname)
     if (rc == 0 && (statbuf.st_mode & S_IFMT) == S_IFDIR) {
       rc = -1;
     }
-    free (tfname);
+    mdfree (tfname);
   }
 #else
   {
@@ -77,7 +78,7 @@ fileopSize (const char *fname)
     if (rc == 0) {
       sz = statbuf.st_size;
     }
-    free (tfname);
+    mdfree (tfname);
   }
 #else
   {
@@ -109,7 +110,7 @@ fileopModTime (const char *fname)
     if (rc == 0) {
       mtime = statbuf.st_mtime;
     }
-    free (tfname);
+    mdfree (tfname);
   }
 #else
   {
@@ -142,7 +143,7 @@ fileopSetModTime (const char *fname, time_t mtime)
       utimebuf.modtime = mtime;
       _wutime (tfname, &utimebuf);
     }
-    free (tfname);
+    mdfree (tfname);
   }
 #else
   {
@@ -175,7 +176,7 @@ fileopIsDirectory (const char *fname)
     if (rc == 0 && (statbuf.st_mode & S_IFMT) != S_IFDIR) {
       rc = -1;
     }
-    free (tfname);
+    mdfree (tfname);
   }
 #else
   {
@@ -204,7 +205,7 @@ fileopDelete (const char *fname)
 #if _lib__wunlink
   tname = osToWideChar (fname);
   rc = _wunlink (tname);
-  free (tname);
+  mdfree (tname);
 #else
   rc = unlink (fname);
 #endif
@@ -224,8 +225,8 @@ fileopOpen (const char *fname, const char *mode)
     tfname = osToWideChar (fname);
     tmode = osToWideChar (mode);
     fh = _wfopen (tfname, tmode);
-    free (tfname);
-    free (tmode);
+    mdfree (tfname);
+    mdfree (tmode);
   }
 #else
   {

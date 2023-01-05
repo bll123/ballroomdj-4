@@ -122,12 +122,3 @@ versionNext (const char *tv1)
   return tv1;
 }
 
-/* tried to inline this, but clang got weird on me 2022-11-13 */
-void
-dataFree (void *data)
-{
-  if (data != NULL) {
-    free (data);
-  }
-}
-

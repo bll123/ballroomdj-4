@@ -31,6 +31,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "mdebug.h"
 #include "osprocess.h"
 
 #if _define_WIFEXITED
@@ -212,7 +213,7 @@ osRunProgram (const char *prog, ...)
   va_end (valist);
 
   osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data), NULL);
-  return strdup (data);
+  return mdstrdup (data);
 }
 
 #if _define_WIFEXITED

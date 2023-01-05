@@ -48,6 +48,7 @@
 
 #include "check_bdj.h"
 #include "log.h"
+#include "mdebug.h"
 #include "sock.h"
 #include "tmutil.h"
 
@@ -392,7 +393,7 @@ START_TEST(sock_write_read)
     ck_assert_int_eq (strlen (ndata) + 1, len);
     ck_assert_int_eq (strlen (ndata), strlen (data));
     ck_assert_str_eq (ndata, data);
-    free (ndata);
+    mdfree (ndata);
   }
 
   mssleep (200); /* give time for client to write */
@@ -403,7 +404,7 @@ START_TEST(sock_write_read)
   ck_assert_int_eq (len, 4096);
   if (ndata != NULL) {
     ck_assert_mem_eq (ndata, datab, 4096);
-    free (ndata);
+    mdfree (ndata);
   }
   mssleep (200);
   sockClose (r);
@@ -585,7 +586,7 @@ START_TEST(sock_write_check_read)
     ck_assert_int_eq (strlen (ndata) + 1, len);
     ck_assert_int_eq (strlen (ndata), strlen (data));
     ck_assert_str_eq (ndata, data);
-    free (ndata);
+    mdfree (ndata);
   }
 
   rc = sockCheck (si);
@@ -602,7 +603,7 @@ START_TEST(sock_write_check_read)
   if (ndata != NULL) {
     ck_assert_int_eq (len, 4096);
     ck_assert_mem_eq (ndata, datab, 4096);
-    free (ndata);
+    mdfree (ndata);
   }
   mssleep (200);
   sockClose (r);
@@ -669,7 +670,7 @@ START_TEST(sock_close)
 
     ck_assert_ptr_null (ndata);
     if (ndata != NULL) {
-      free (ndata);
+      mdfree (ndata);
     }
   }
   mssleep (200);
@@ -739,7 +740,7 @@ START_TEST(sock_write_close)
 
   ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
-    free (ndata);
+    mdfree (ndata);
   }
 
   rc = sockCheck (si);
@@ -754,7 +755,7 @@ START_TEST(sock_write_close)
 
   ck_assert_ptr_nonnull (ndata);
   if (ndata != NULL) {
-    free (ndata);
+    mdfree (ndata);
   }
   mssleep (200);
   sockClose (r);

@@ -39,6 +39,7 @@
 #include "localeutil.h"
 #include "locatebdj3.h"
 #include "log.h"
+#include "mdebug.h"
 #include "osprocess.h"
 #include "ossignal.h"
 #include "osutils.h"
@@ -287,10 +288,10 @@ main (int argc, char *argv[])
   uiutilsUIWidgetInit (&installer.window);
   installer.instState = INST_INITIALIZE;
   installer.lastInstState = INST_INITIALIZE;
-  installer.target = strdup ("");
+  installer.target = mdstrdup ("");
   installer.rundir [0] = '\0';
   installer.locale [0] = '\0';
-  installer.bdj3loc = strdup ("");
+  installer.bdj3loc = mdstrdup ("");
   installer.convidx = 0;
   installer.convlist = NULL;
   installer.tclshloc = NULL;
@@ -476,7 +477,7 @@ main (int argc, char *argv[])
 
       fn = locatebdj3 ();
       installerSetBDJ3LocDir (&installer, fn);
-      free (fn);
+      mdfree (fn);
     }
   }
 
@@ -1155,10 +1156,10 @@ installerTargetDirDialog (void *udata)
 
     strlcpy (tbuff, fn, sizeof (tbuff));
     uiEntrySetValue (installer->targetEntry, tbuff);
-    free (fn);
+    mdfree (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", installer->target);
   }
-  free (selectdata);
+  mdfree (selectdata);
   return UICB_CONT;
 }
 
@@ -1189,10 +1190,10 @@ installerBDJ3LocDirDialog (void *udata)
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     installerSetBDJ3LocEntry (installer, fn);
-    free (fn);
+    mdfree (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected bdj3 loc: %s", installer->bdj3loc);
   }
-  free (selectdata);
+  mdfree (selectdata);
   return UICB_CONT;
 }
 
@@ -1378,7 +1379,7 @@ installerInstInit (installer_t *installer)
     stringTrim (tbuff);
     if (*tbuff != '\0') {
       dataFree (installer->target);
-      installer->target = strdup (tbuff);
+      installer->target = mdstrdup (tbuff);
     }
   }
 
@@ -1527,7 +1528,7 @@ installerMakeTarget (installer_t *installer)
     strlcat (installer->oldversion, bdate, sizeof (installer->oldversion));
     strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
     strlcat (installer->oldversion, build, sizeof (installer->oldversion));
-    free (data);
+    mdfree (data);
   }
 
   installer->instState = INST_COPY_START;
@@ -1702,7 +1703,7 @@ installerCopyTemplates (installer_t *installer)
 
     pi = pathInfo (fname);
     if (pathInfoExtCheck (pi, ".html")) {
-      free (pi);
+      mdfree (pi);
       continue;
     }
 
@@ -1726,7 +1727,7 @@ installerCopyTemplates (installer_t *installer)
             installer->hostname, tbuff);
       } else {
         /* one of the localized versions */
-        free (pi);
+        mdfree (pi);
         continue;
       }
     } else if (pathInfoExtCheck (pi, BDJ4_CONFIG_EXT) ||
@@ -1764,12 +1765,12 @@ installerCopyTemplates (installer_t *installer)
       }
     } else {
       /* uknown extension, probably a localized file */
-      free (pi);
+      mdfree (pi);
       continue;
     }
 
     installerTemplateCopy (dir, from, to);
-    free (pi);
+    mdfree (pi);
   }
   slistFree (dirlist);
 
@@ -1942,7 +1943,7 @@ installerConvertStart (installer_t *installer)
       }
       tp = strtok_r (NULL, "\r\n", &tokptr);
     }
-    free (data);
+    mdfree (data);
   }
 
   installer->convlist = dirlistBasicDirList ("conv", ".tcl");
@@ -1956,20 +1957,20 @@ installerConvertStart (installer_t *installer)
   locidx = 0;
   snprintf (tbuff, sizeof (tbuff), "%s/%s/%"PRId64"/tcl/bin/tclsh",
       installer->bdj3loc, sysvarsGetStr (SV_OSNAME), sysvarsGetNum (SVL_OSBITS));
-  locs [locidx++] = strdup (tbuff);
+  locs [locidx++] = mdstrdup (tbuff);
   snprintf (tbuff, sizeof (tbuff), "%s/Applications/BallroomDJ.app/Contents/%s/%"PRId64"/tcl/bin/tclsh",
       installer->home, sysvarsGetStr (SV_OSNAME), sysvarsGetNum (SVL_OSBITS));
-  locs [locidx++] = strdup (tbuff);
+  locs [locidx++] = mdstrdup (tbuff);
   snprintf (tbuff, sizeof (tbuff), "%s/local/bin/tclsh", installer->home);
-  locs [locidx++] = strdup (tbuff);
+  locs [locidx++] = mdstrdup (tbuff);
   snprintf (tbuff, sizeof (tbuff), "%s/bin/tclsh", installer->home);
-  locs [locidx++] = strdup (tbuff);
+  locs [locidx++] = mdstrdup (tbuff);
   /* for testing; low priority */
   snprintf (tbuff, sizeof (tbuff), "%s/../%s/%"PRId64"/tcl/bin/tclsh",
       installer->bdj3loc, sysvarsGetStr (SV_OSNAME), sysvarsGetNum (SVL_OSBITS));
-  locs [locidx++] = strdup (tbuff);
-  locs [locidx++] = strdup ("/opt/local/bin/tclsh");
-  locs [locidx++] = strdup ("/usr/bin/tclsh");
+  locs [locidx++] = mdstrdup (tbuff);
+  locs [locidx++] = mdstrdup ("/opt/local/bin/tclsh");
+  locs [locidx++] = mdstrdup ("/usr/bin/tclsh");
   locs [locidx++] = NULL;
 
   locidx = 0;
@@ -1983,12 +1984,12 @@ installerConvertStart (installer_t *installer)
       if (isWindows ()) {
         pathWinPath (tbuff, sizeof (tbuff));
       }
-      installer->tclshloc = strdup (tbuff);
+      installer->tclshloc = mdstrdup (tbuff);
       /* CONTEXT: installer: status message */
       installerDisplayText (installer, INST_DISP_STATUS, _("Located 'tclsh'."), false);
     }
 
-    free (locs [locidx]);
+    mdfree (locs [locidx]);
     ++locidx;
   }
 
@@ -2835,7 +2836,7 @@ installerSetTargetDir (installer_t *installer, const char *fn)
 
   /* fn may be pointing to an allocated value, which is installer->target */
   /* bad code */
-  tmp = strdup (fn);
+  tmp = mdstrdup (fn);
   dataFree (installer->target);
   installer->target = tmp;
   pathNormPath (installer->target, strlen (installer->target));
@@ -2845,7 +2846,7 @@ static void
 installerSetBDJ3LocDir (installer_t *installer, const char *fn)
 {
   dataFree (installer->bdj3loc);
-  installer->bdj3loc = strdup (fn);
+  installer->bdj3loc = mdstrdup (fn);
   pathNormPath (installer->bdj3loc, strlen (installer->bdj3loc));
 }
 

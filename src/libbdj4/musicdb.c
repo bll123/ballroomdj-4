@@ -19,6 +19,7 @@
 #include "fileop.h"
 #include "lock.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "pathbld.h"
@@ -52,7 +53,7 @@ dbOpen (const char *fn)
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dcount = danceGetCount (dances);
 
-  musicdb = malloc (sizeof (musicdb_t));
+  musicdb = mdmalloc (sizeof (musicdb_t));
   assert (musicdb != NULL);
 
   musicdb->songs = slistAlloc ("db-songs", LIST_UNORDERED, songFree);
@@ -62,7 +63,7 @@ dbOpen (const char *fn)
   musicdb->count = 0L;
   musicdb->radb = NULL;
   musicdb->inbatch = false;
-  musicdb->fn = strdup (fn);
+  musicdb->fn = mdstrdup (fn);
   /* tempsongs is ordered by dbidx */
   musicdb->tempSongs = nlistAlloc ("db-temp-songs", LIST_ORDERED, songFree);
   dbLoad (musicdb);
@@ -81,7 +82,7 @@ dbClose (musicdb_t *musicdb)
     raClose (musicdb->radb);
     musicdb->radb = NULL;
     nlistFree (musicdb->tempSongs);
-    free (musicdb);
+    mdfree (musicdb);
   }
   musicdb = NULL;
 }
@@ -140,7 +141,7 @@ dbLoad (musicdb_t *musicdb)
       songFree (song);
       song = NULL;
     }
-    free (ffn);
+    mdfree (ffn);
 
     if (ok) {
       dkey = songGetNum (song, TAG_DANCE);

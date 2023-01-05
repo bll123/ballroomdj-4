@@ -11,6 +11,7 @@
 #include <assert.h>
 
 #include "colorutils.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "samesong.h"
@@ -41,7 +42,7 @@ samesongAlloc (musicdb_t *musicdb)
   int         val;
 
 
-  ss = malloc (sizeof (samesong_t));
+  ss = mdmalloc (sizeof (samesong_t));
   assert (ss != NULL);
 
   ss->nextssidx = 1;
@@ -84,7 +85,7 @@ samesongFree (samesong_t *ss)
     ss->sscolors = NULL;
     nlistFree (ss->sscounts);
     ss->sscounts = NULL;
-    free (ss);
+    mdfree (ss);
   }
 }
 

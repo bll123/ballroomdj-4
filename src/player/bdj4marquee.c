@@ -27,6 +27,7 @@
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
+#include "mdebug.h"
 #include "osuiutils.h"
 #include "ossignal.h"
 #include "pathbld.h"
@@ -409,7 +410,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetSetMarginBottom (&marquee->sep, 4);
   uiBoxPackEnd (&vbox, &marquee->sep);
 
-  marquee->marqueeLabs = malloc (sizeof (UIWidget) * marquee->mqLen);
+  marquee->marqueeLabs = mdmalloc (sizeof (UIWidget) * marquee->mqLen);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
     uiutilsUIWidgetInit (&marquee->marqueeLabs [i]);
@@ -546,7 +547,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin (LOG_PROC, "marqueeProcessMsg");
   if (args != NULL) {
-    targs = strdup (args);
+    targs = mdstrdup (args);
   }
 
   switch (route) {

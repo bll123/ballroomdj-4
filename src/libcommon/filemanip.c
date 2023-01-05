@@ -23,6 +23,7 @@
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "mdebug.h"
 #include "osutils.h"
 #include "pathutil.h"
 #include "sysvars.h"
@@ -51,8 +52,8 @@ filemanipMove (const char *fname, const char *nfn)
     wfname = osToWideChar (fname);
     wnfn = osToWideChar (nfn);
     rc = _wrename (wfname, wnfn);
-    free (wfname);
-    free (wnfn);
+    mdfree (wfname);
+    mdfree (wnfn);
   }
 #else
   rc = rename (fname, nfn);
@@ -81,8 +82,8 @@ filemanipCopy (const char *fname, const char *nfn)
 
       rc = CopyFileW (wtfname, wtnfn, 0);
       rc = rc != 0 ? 0 : -1;
-      free (wtfname);
-      free (wtnfn);
+      mdfree (wtfname);
+      mdfree (wtnfn);
     }
 #endif
   } else {
@@ -98,7 +99,7 @@ filemanipCopy (const char *fname, const char *nfn)
         trc = fwrite (data, len, 1, fh);
         fclose (fh);
       }
-      free (data);
+      mdfree (data);
     }
     rc = trc == 1 ? 0 : -1;
   }

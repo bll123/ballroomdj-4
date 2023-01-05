@@ -19,6 +19,7 @@
 #include "bdjvarsdf.h"
 #include "dance.h"
 #include "manageui.h"
+#include "mdebug.h"
 #include "msgparse.h"
 #include "musicdb.h"
 #include "musicq.h"
@@ -54,7 +55,7 @@ manageStatsInit (conn_t *conn, musicdb_t *musicdb)
 {
   managestats_t *managestats;
 
-  managestats = malloc (sizeof (managestats_t));
+  managestats = mdmalloc (sizeof (managestats_t));
   managestats->conn = conn;
   managestats->musicdb = musicdb;
   uiutilsUIWidgetInit (&managestats->vboxmain);
@@ -75,7 +76,7 @@ manageStatsFree (managestats_t *managestats)
 {
   if (managestats != NULL) {
     nlistFree (managestats->dancecounts);
-    free (managestats);
+    mdfree (managestats);
   }
 }
 

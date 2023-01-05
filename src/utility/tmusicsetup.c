@@ -27,6 +27,7 @@
 #include "level.h"
 #include "localeutil.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "pathutil.h"
 #include "rating.h"
@@ -209,7 +210,7 @@ main (int argc, char *argv [])
     }
     dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
     slistFree (tagdata);
-    free (fn);
+    mdfree (fn);
   }
 
   datafileFree (df);
@@ -299,5 +300,5 @@ createFile (const char *src, const char *dest)
 
   filemanipCopy (from, to);
   pathInfoFree (pi);
-  return strdup (to);
+  return mdstrdup (to);
 }

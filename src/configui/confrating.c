@@ -21,6 +21,7 @@
 #include "bdjvarsdf.h"
 #include "configui.h"
 #include "log.h"
+#include "mdebug.h"
 #include "rating.h"
 #include "ui.h"
 
@@ -157,7 +158,7 @@ confuiRatingListCreate (GtkTreeModel *model, GtkTreePath *path,
       gui->tables [CONFUI_ID_RATINGS].saveidx, RATING_RATING, ratingdisp);
   ilistSetNum (gui->tables [CONFUI_ID_RATINGS].savelist,
       gui->tables [CONFUI_ID_RATINGS].saveidx, RATING_WEIGHT, weight);
-  free (ratingdisp);
+  mdfree (ratingdisp);
   gui->tables [CONFUI_ID_RATINGS].saveidx += 1;
   logProcEnd (LOG_PROC, "confuiRatingListCreate", "");
   return FALSE;

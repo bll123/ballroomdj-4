@@ -23,6 +23,7 @@
 #include <initguid.h>  // needed to link correctly
 #include <Functiondiscoverykeys_devpkey.h>
 
+#include "mdebug.h"
 #include "osutils.h"
 #include "volsink.h"
 #include "volume.h"
@@ -101,7 +102,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     ERROR_EXIT (hr)
 
     sinklist->count = count;
-    sinklist->sinklist = (volsinkitem_t *) realloc (sinklist->sinklist,
+    sinklist->sinklist = (volsinkitem_t *) mdrealloc (sinklist->sinklist,
         sinklist->count * sizeof (volsinkitem_t));
 
     for (UINT i = 0; i < count; ++i) {
@@ -136,7 +137,7 @@ volumeProcess (volaction_t action, const char *sinkname,
       }
 
       if (sinklist->sinklist [i].defaultFlag) {
-        sinklist->defname = strdup (sinklist->sinklist [i].name);
+        sinklist->defname = mdstrdup (sinklist->sinklist [i].name);
       }
 
       sinklist->sinklist [i].description = osFromWideChar (dispName.pwszVal);
@@ -163,7 +164,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     hr = pEnumerator->GetDevice (wdevnm, &volDevice);
     ERROR_EXIT (hr)
     if (sinkname != NULL && *sinkname) {
-      free (wdevnm);
+      mdfree (wdevnm);
     }
 
     hr = volDevice->Activate (__uuidof (IAudioEndpointVolume),

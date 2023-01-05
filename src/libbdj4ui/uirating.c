@@ -17,6 +17,7 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "istring.h"
+#include "mdebug.h"
 #include "rating.h"
 #include "ui.h"
 #include "uirating.h"
@@ -38,7 +39,7 @@ uiratingSpinboxCreate (UIWidget *boxp, bool allflag)
   int         len;
 
 
-  uirating = malloc (sizeof (uirating_t));
+  uirating = mdmalloc (sizeof (uirating_t));
   uirating->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uirating->allflag = allflag;
   uirating->spinbox = uiSpinboxInit ();
@@ -70,7 +71,7 @@ uiratingFree (uirating_t *uirating)
 {
   if (uirating != NULL) {
     uiSpinboxFree (uirating->spinbox);
-    free (uirating);
+    mdfree (uirating);
   }
 }
 

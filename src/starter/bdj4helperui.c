@@ -23,6 +23,7 @@
 #include "datafile.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "ossignal.h"
 #include "osuiutils.h"
 #include "pathbld.h"
@@ -369,7 +370,7 @@ helpDisplay (helperui_t *helper)
     uiTextBoxAppendStr (helper->tb, "\n\n");
     uiTextBoxAppendStr (helper->tb, ntext);
     helper->scrollendflag = true;
-    free (ntext);
+    mdfree (ntext);
   }
 }
 

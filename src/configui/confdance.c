@@ -28,6 +28,7 @@
 #include "fileop.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "pathutil.h"
 #include "slist.h"
@@ -315,7 +316,7 @@ confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
     slist_t *slist;
 
     conv.allocated = true;
-    conv.str = strdup (str);
+    conv.str = mdstrdup (str);
     conv.valuetype = VALUE_STR;
     convTextList (&conv);
     slist = conv.list;

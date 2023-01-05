@@ -26,6 +26,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
+#include "mdebug.h"
 #include "osprocess.h"
 #include "osutils.h"
 #include "pathbld.h"
@@ -352,7 +353,7 @@ main (int argc, char * argv[])
     size_t    sz = 4096;
 
 
-    npath = malloc (sz);
+    npath = mdmalloc (sz);
     assert (npath != NULL);
 
     path = getenv ("PATH");
@@ -365,7 +366,7 @@ main (int argc, char * argv[])
         "/Applications/VLC.app/Contents/MacOS/lib/");
     osSetEnv ("VLC_PLUGIN_PATH",
         "/Applications/VLC.app/Contents/MacOS/plugins");
-    free (npath);
+    mdfree (npath);
 
     osSetEnv ("G_FILENAME_ENCODING", "UTF8-MAC");
   }
@@ -379,13 +380,13 @@ main (int argc, char * argv[])
     char      * tokstr;
     size_t    sz = 4096;
 
-    pbuff = malloc (sz);
+    pbuff = mdmalloc (sz);
     assert (pbuff != NULL);
-    tbuff = malloc (sz);
+    tbuff = mdmalloc (sz);
     assert (tbuff != NULL);
-    tmp = malloc (sz);
+    tmp = mdmalloc (sz);
     assert (tmp != NULL);
-    path = malloc (sz);
+    path = mdmalloc (sz);
     assert (path != NULL);
 
     strlcpy (tbuff, getenv ("PATH"), sz);
@@ -434,9 +435,9 @@ main (int argc, char * argv[])
     osSetEnv ("PANGOCAIRO_BACKEND", "fc");
 #endif
 
-    free (pbuff);
-    free (tbuff);
-    free (path);
+    mdfree (pbuff);
+    mdfree (tbuff);
+    mdfree (path);
   }
 
   if (! havetheme) {

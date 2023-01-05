@@ -22,6 +22,7 @@
 #include "filemanip.h"
 #include "log.h"
 #include "manageui.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "playlist.h"
 #include "tagdef.h"
@@ -65,7 +66,7 @@ manageSequenceAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
 {
   manageseq_t *manageseq;
 
-  manageseq = malloc (sizeof (manageseq_t));
+  manageseq = mdmalloc (sizeof (manageseq_t));
   manageseq->seqduallist = NULL;
   manageseq->seqoldname = NULL;
   manageseq->seqbackupcreated = false;
@@ -89,7 +90,7 @@ manageSequenceFree (manageseq_t *manageseq)
     uiduallistFree (manageseq->seqduallist);
     dataFree (manageseq->seqoldname);
     uiEntryFree (manageseq->seqname);
-    free (manageseq);
+    mdfree (manageseq);
   }
 }
 
@@ -234,7 +235,7 @@ manageSequenceSave (manageseq_t *manageseq)
   }
 
   if (! changed) {
-    free (name);
+    mdfree (name);
     slistFree (slist);
     logProcEnd (LOG_PROC, "manageSequenceSave", "not-changed");
     return;
@@ -258,7 +259,7 @@ manageSequenceSave (manageseq_t *manageseq)
   if (manageseq->seqloadcb != NULL) {
     uiutilsCallbackStrHandler (manageseq->seqloadcb, name);
   }
-  free (name);
+  mdfree (name);
   logProcEnd (LOG_PROC, "manageSequenceSave", "");
 }
 
@@ -287,7 +288,7 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
       uiutilsCallbackStrHandler (manageseq->seqloadcb, name);
     }
   }
-  free (name);
+  mdfree (name);
   logProcEnd (LOG_PROC, "manageSequenceLoadCheck", "");
 }
 
@@ -393,7 +394,7 @@ manageSequenceCopy (void *udata)
       uiutilsCallbackStrHandler (manageseq->seqloadcb, newname);
     }
   }
-  free (oname);
+  mdfree (oname);
   logProcEnd (LOG_PROC, "manageSequenceCopy", "");
   return UICB_CONT;
 }
@@ -436,7 +437,7 @@ manageSequenceDelete (void *udata)
   manageDeletePlaylist (manageseq->statusMsg, oname);
   uiduallistClearChanged (manageseq->seqduallist);
   manageSequenceNew (manageseq);
-  free (oname);
+  mdfree (oname);
   logProcEnd (LOG_PROC, "manageSequenceDelete", "");
   return UICB_CONT;
 }
@@ -447,7 +448,7 @@ manageSetSequenceName (manageseq_t *manageseq, const char *name)
 
   logProcBegin (LOG_PROC, "manageSetSequenceName");
   dataFree (manageseq->seqoldname);
-  manageseq->seqoldname = strdup (name);
+  manageseq->seqoldname = mdstrdup (name);
   uiEntrySetValue (manageseq->seqname, name);
   logProcEnd (LOG_PROC, "manageSetSequenceName", "");
 }

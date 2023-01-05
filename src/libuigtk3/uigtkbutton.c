@@ -16,6 +16,7 @@
 
 #include "bdj4.h"
 #include "log.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "ui.h"
 
@@ -42,7 +43,7 @@ uiCreateButton (UICallback *uicb,
   uibutton_t  *uibutton;
   GtkWidget   *widget;
 
-  uibutton = malloc (sizeof (uibutton_t));
+  uibutton = mdmalloc (sizeof (uibutton_t));
 
   widget = gtk_button_new ();
   assert (widget != NULL);
@@ -85,7 +86,7 @@ void
 uiButtonFree (uibutton_t *uibutton)
 {
   if (uibutton != NULL) {
-    free (uibutton);
+    mdfree (uibutton);
   }
 }
 

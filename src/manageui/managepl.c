@@ -19,6 +19,7 @@
 #include "filemanip.h"
 #include "log.h"
 #include "manageui.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "playlist.h"
 #include "tmutil.h"
@@ -89,7 +90,7 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
 {
   managepl_t *managepl;
 
-  managepl = malloc (sizeof (managepl_t));
+  managepl = mdmalloc (sizeof (managepl_t));
   uiutilsUIWidgetInit (&managepl->uipltype);
   uiutilsUIWidgetInit (&managepl->menuDelete);
   managepl->ploldname = NULL;
@@ -142,7 +143,7 @@ managePlaylistFree (managepl_t *managepl)
     if (managepl->playlist != NULL) {
       playlistFree (managepl->playlist);
     }
-    free (managepl);
+    mdfree (managepl);
   }
 }
 
@@ -445,7 +446,7 @@ managePlaylistSave (managepl_t *managepl)
       uiutilsCallbackStrHandler (managepl->plloadcb, name);
     }
   }
-  free (name);
+  mdfree (name);
   logProcEnd (LOG_PROC, "managePlaylistSave", "");
 }
 
@@ -468,7 +469,7 @@ managePlaylistLoadCheck (managepl_t *managepl)
   if (! playlistExists (name)) {
     managePlaylistNew (managepl, MANAGE_STD);
   }
-  free (name);
+  mdfree (name);
   logProcEnd (LOG_PROC, "managePlaylistLoadCheck", "");
 }
 
@@ -678,7 +679,7 @@ managePlaylistCopy (void *udata)
       uiutilsCallbackStrHandler (managepl->plloadcb, newname);
     }
   }
-  free (oname);
+  mdfree (oname);
 
   logProcEnd (LOG_PROC, "managePlaylistCopy", "");
   return UICB_CONT;
@@ -702,7 +703,7 @@ managePlaylistDelete (void *udata)
   managePlaylistNew (managepl, MANAGE_STD);
   managePlaylistUpdateData (managepl);
 
-  free (oname);
+  mdfree (oname);
   logProcEnd (LOG_PROC, "managePlaylistDelete", "");
   return UICB_CONT;
 }
@@ -712,7 +713,7 @@ manageSetPlaylistName (managepl_t *managepl, const char *name)
 {
   logProcBegin (LOG_PROC, "manageSetPlaylistName");
   dataFree (managepl->ploldname);
-  managepl->ploldname = strdup (name);
+  managepl->ploldname = mdstrdup (name);
   uiEntrySetValue (managepl->plname, name);
   logProcEnd (LOG_PROC, "manageSetPlaylistName", "");
 }

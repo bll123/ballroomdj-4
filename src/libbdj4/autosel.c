@@ -14,6 +14,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
 
@@ -54,7 +55,7 @@ autoselAlloc (void)
     return NULL;
   }
 
-  autosel = malloc (sizeof (autosel_t));
+  autosel = mdmalloc (sizeof (autosel_t));
   assert (autosel != NULL);
 
   autosel->df = datafileAllocParse ("autosel", DFTYPE_KEY_VAL, fname,
@@ -68,7 +69,7 @@ autoselFree (autosel_t *autosel)
 {
   if (autosel != NULL) {
     datafileFree (autosel->df);
-    free (autosel);
+    mdfree (autosel);
   }
 }
 

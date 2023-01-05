@@ -15,6 +15,7 @@
 #include "fileop.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
 #include "slist.h"
@@ -52,7 +53,7 @@ songFavoriteAlloc (void)
     return NULL;
   }
 
-  songfav = malloc (sizeof (songfav_t));
+  songfav = mdmalloc (sizeof (songfav_t));
 
   songfav->df = datafileAllocParse ("favorites", DFTYPE_INDIRECT, fname,
         songfavdfkeys, SONGFAV_KEY_MAX);
@@ -107,7 +108,7 @@ songFavoriteFree (songfav_t *songfav)
     datafileFree (songfav->df);
     nlistFree (songfav->spanstrList);
     slistFree (songfav->songfavLookup);
-    free (songfav);
+    mdfree (songfav);
   }
 }
 

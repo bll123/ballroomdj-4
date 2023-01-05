@@ -18,6 +18,7 @@
 #include "istring.h"
 #include "level.h"
 #include "log.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "slist.h"
 
@@ -53,10 +54,10 @@ levelAlloc ()
     return NULL;
   }
 
-  level = malloc (sizeof (level_t));
+  level = mdmalloc (sizeof (level_t));
   assert (level != NULL);
 
-  level->path = strdup (fname);
+  level->path = mdstrdup (fname);
   level->df = datafileAllocParse ("level", DFTYPE_INDIRECT, fname,
       leveldfkeys, LEVEL_KEY_MAX);
   level->level = datafileGetList (level->df);
@@ -80,7 +81,7 @@ levelAlloc ()
     }
     nval = ilistGetNum (level->level, key, LEVEL_DEFAULT_FLAG);
     if (nval && val != NULL) {
-      level->defaultName = strdup (val);
+      level->defaultName = mdstrdup (val);
       level->defaultKey = nval;
     }
   }
@@ -98,7 +99,7 @@ levelFree (level_t *level)
     datafileFree (level->df);
     dataFree (level->defaultName);
     slistFree (level->levelList);
-    free (level);
+    mdfree (level);
   }
 }
 

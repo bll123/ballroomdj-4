@@ -17,8 +17,8 @@
 #include <zlib.h>
 
 #include "bdj4.h"
-#include "bdjstring.h"
 #include "log.h"
+#include "mdebug.h"
 #include "filedata.h"
 #include "fileop.h"
 #include "sysvars.h"
@@ -65,7 +65,7 @@ webclientAlloc (void *userdata, webclientcb_t callback)
 {
   webclient_t   *webclient;
 
-  webclient = malloc (sizeof (webclient_t));
+  webclient = mdmalloc (sizeof (webclient_t));
   assert (webclient != NULL);
   webclient->userdata = userdata;
   webclient->callback = callback;
@@ -214,7 +214,7 @@ webclientClose (webclient_t *webclient)
     if (initialized == INIT_CLIENT) {
       curl_global_cleanup ();
     }
-    free (webclient);
+    mdfree (webclient);
     initialized = INIT_NONE;
   }
 }
@@ -235,12 +235,12 @@ webclientGetLocalIP (void)
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientNullCallback);
   curl_easy_perform (webclient->curl);
   curl_easy_getinfo (webclient->curl, CURLINFO_LOCAL_IP, &tip);
-  ip = strdup (tip);
+  ip = mdstrdup (tip);
   curl_easy_cleanup (webclient->curl);
   if (initialized == INIT_NONE) {
     curl_global_cleanup ();
   }
-  free (webclient);
+  mdfree (webclient);
 
   return ip;
 }
@@ -266,11 +266,11 @@ webclientCompressFile (const char *infn, const char *outfn)
     return;
   }
 
-  buff = malloc (SUPPORT_BUFF_SZ);
+  buff = mdmalloc (SUPPORT_BUFF_SZ);
   assert (buff != NULL);
   /* if the database becomes so large that 10 megs compressed can't hold it */
   /* then there will be a problem */
-  obuff = malloc (SUPPORT_BUFF_SZ);
+  obuff = mdmalloc (SUPPORT_BUFF_SZ);
   assert (obuff != NULL);
 
   zs = webclientGzipInit (obuff, SUPPORT_BUFF_SZ);
@@ -280,12 +280,12 @@ webclientCompressFile (const char *infn, const char *outfn)
   olen = webclientGzipEnd (zs);
   data = g_base64_encode ((const guchar *) obuff, olen);
   fwrite (data, strlen (data), 1, outfh);
-  free (data);
+  mdfree (data);
 
   fclose (infh);
   fclose (outfh);
-  free (buff);
-  free (obuff);
+  mdfree (buff);
+  mdfree (obuff);
 }
 
 /* internal routines */
@@ -332,7 +332,7 @@ webclientCallback (char *ptr, size_t size, size_t nmemb, void *userdata)
 
   while (webclient->respSize + nsz >= webclient->respAllocated) {
     webclient->respAllocated += WEB_RESP_SZ;
-    webclient->resp = realloc (webclient->resp, webclient->respAllocated);
+    webclient->resp = mdrealloc (webclient->resp, webclient->respAllocated);
   }
   memcpy (webclient->resp + webclient->respSize, ptr, nsz);
   webclient->respSize += nsz;
@@ -406,7 +406,7 @@ webclientDebugCallback (CURL *curl, curl_infotype type, char *data,
     }
   }
 
-  tdata = malloc (size + 1);
+  tdata = mdmalloc (size + 1);
   memcpy (tdata, data, size);
   tdata [size] = '\0';
   p = strtok_r (tdata, "\r\n", &tokstr);
@@ -414,7 +414,7 @@ webclientDebugCallback (CURL *curl, curl_infotype type, char *data,
     logMsg (LOG_DBG, LOG_WEBCLIENT, "curl: %s: %s", tag, p);
     p = strtok_r (NULL, "\r\n", &tokstr);
   }
-  free (tdata);
+  mdfree (tdata);
   return 0;
 }
 
@@ -434,7 +434,7 @@ webclientGzipInit (char *out, int outsz)
 {
   z_stream *zs;
 
-  zs = malloc (sizeof (z_stream));
+  zs = mdmalloc (sizeof (z_stream));
   zs->zalloc = Z_NULL;
   zs->zfree = Z_NULL;
   zs->opaque = Z_NULL;
@@ -469,7 +469,7 @@ webclientGzipEnd (z_stream *zs)
   deflate (zs, Z_FINISH);
   olen = zs->total_out;
   deflateEnd (zs);
-  free (zs);
+  mdfree (zs);
   return olen;
 }
 

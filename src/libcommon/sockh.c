@@ -14,6 +14,7 @@
 
 #include "bdjmsg.h"
 #include "log.h"
+#include "mdebug.h"
 #include "sock.h"
 #include "sockh.h"
 #include "tmutil.h"
@@ -58,7 +59,7 @@ sockhStartServer (uint16_t listenPort)
   int           err = 0;
   sockserver_t  *sockserver;
 
-  sockserver = malloc (sizeof (sockserver_t));
+  sockserver = mdmalloc (sizeof (sockserver_t));
   assert (sockserver != NULL);
   sockserver->listenSock = INVALID_SOCKET;
   sockserver->si = NULL;
@@ -78,7 +79,7 @@ sockhCloseServer (sockserver_t *sockserver)
     sockhCloseClients (sockserver->si);
     sockClose (sockserver->listenSock);
     sockFreeCheck (sockserver->si);
-    free (sockserver);
+    mdfree (sockserver);
   }
 }
 

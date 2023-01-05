@@ -21,6 +21,7 @@
 #include "datafile.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "slist.h"
 #include "songfav.h"
 #include "templateutil.h"
@@ -122,7 +123,7 @@ START_TEST(songfav_conv)
   songFavoriteConv (&conv);
   ck_assert_str_eq (conv.str, "bluestar");
   if (conv.allocated) {
-    free (conv.str);
+    mdfree (conv.str);
   }
 
   count = songFavoriteGetCount (songfav);

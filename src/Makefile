@@ -10,35 +10,50 @@ GXX = g++
 CLANG = clang
 CLANGXX = clang++
 
-.PHONY: build install debug release
-.PHONY: sanitizeaddress sanitizeleak sanitizeundef
-
+.PHONY: release-gtk
 release-gtk:
 	BDJ4_BUILD=Release-gtk $(MAKE) cmake
 
+.PHONY: memdebug-gtk
+memdebug-gtk:
+	BDJ4_BUILD=Memdebug-gtk $(MAKE) cmakesinglecpu
+
+.PHONY: singlecpu-gtk
+singlecpu-gtk:
+	BDJ4_BUILD=Release-gtk $(MAKE) cmakesinglecpu
+
+.PHONY: debug-gtk
 debug-gtk:
 	BDJ4_BUILD=Debug-gtk $(MAKE) cmake
 
+.PHONY: profile-gtk
 profile-gtk:
 	BDJ4_BUILD=Profile-gtk $(MAKE) cmake
 
+.PHONY: debug-clang-gtk
 debug-clang-gtk:
 	BDJ4_BUILD=Debug-gtk $(MAKE) cmakeclang
 
+.PHONY: sanitizeaddress
 sanitizeaddress:
 	BDJ4_BUILD=SanitizeAddress $(MAKE) cmake
 
+.PHONY: sanitizeaddressclang
 sanitizeaddressclang:
 	BDJ4_BUILD=SanitizeAddress $(MAKE) cmakeclang
 
+.PHONY: sanitizeleak
 sanitizeleak:
 	BDJ4_BUILD=SanitizeLeak $(MAKE) cmake
 
+.PHONY: sanitizeundef
 sanitizeundef:
 	BDJ4_BUILD=SanitizeUndef $(MAKE) cmake
 
-.PHONY: cmake cmakeclang cmake-unix cmake-windows
+.PHONY: cmake cmakesinglecpu cmakesinglecpuverbose
+.PHONY: cmakeclang cmake-unix cmake-windows
 
+.PHONY: cmake
 cmake:
 	if test $$(uname -s) = Linux; then \
 	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-unix; \
@@ -51,6 +66,7 @@ cmake:
 	  $(MAKE) build; \
 	fi
 
+.PHONY: cmakesinglecpu
 cmakesinglecpu:
 	if test $$(uname -s) = Linux; then \
 	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-unix; \
@@ -63,6 +79,7 @@ cmakesinglecpu:
 	  $(MAKE) build; \
 	fi
 
+.PHONY: cmakesinglecpuverbose
 cmakesinglecpuverbose:
 	if test $$(uname -s) = Linux; then \
 	  COMP=$(GCC) COMPXX=$(GXX) $(MAKE) cmake-unix; \
@@ -75,6 +92,7 @@ cmakesinglecpuverbose:
 	  VERBOSE=1 $(MAKE) build; \
 	fi
 
+.PHONY: cmakeclang
 cmakeclang:
 	if test $$(uname -s) = Linux; then \
 	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
@@ -89,6 +107,7 @@ cmakeclang:
 	  $(MAKE) build; \
 	fi
 
+.PHONY: cmake-unix
 cmake-unix:
 	cmake \
 		-DCMAKE_C_COMPILER=$(COMP) \
@@ -96,6 +115,7 @@ cmake-unix:
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
 		-S . -B $(BUILDDIR) -Werror=deprecated
 
+.PHONY: cmake-windows
 cmake-windows:
 	cmake \
 		-DCMAKE_C_COMPILER="$(COMP)" \
@@ -106,45 +126,53 @@ cmake-windows:
 
 # windows installs extra unneeded crap
 # --parallel does not work correctly on msys2
+.PHONY: build
 build:
 	cmake --build $(BUILDDIR) $(pmode)
 	cmake --install $(BUILDDIR)
 	@-rm -f ../bin/liblib*.a
 
 # testing
-.PHONY: check checkfast checksuite testsuite testsection testtest teststart
+.PHONY: check
 check:
 	(./utils/mktestsetup.sh;cd ..;./bin/bdj4 --check_all)
 
+.PHONY: checkfast
 checkfast:
 	(cd ..;CK_EXCLUDE_TAGS=slow ./bin/bdj4 --check_all)
 
+.PHONY: checktag
 checktag:
 	(cd ..;CK_INCLUDE_TAGS=$(tag) ./bin/bdj4 --check_all)
 
+.PHONY: checksuite
 checksuite:
 	(cd ..;CK_RUN_SUITE=$(suite) ./bin/bdj4 --check_all)
 
+.PHONY: testsuite
 testsuite:
 	# --force is needed for windows
 	./utils/mktestsetup.sh --force
 	(cd ..;./bin/bdj4 --testsuite)
 
+.PHONY: testsection
 testsection:
 	./utils/mktestsetup.sh
 	(cd ..;./bin/bdj4 --testsuite --runsection $(section))
 
+.PHONY: testtest
 testtest:
 	./utils/mktestsetup.sh
 	(cd ..;./bin/bdj4 --testsuite --runtest $(test))
 
+.PHONY: teststart
 teststart:
 	./utils/mktestsetup.sh
 	(cd ..;./bin/bdj4 --testsuite --starttest $(start))
 
 # recommended to change PLAYER and VOLUME in data/bdjconfig.txt to
 # be the null libraries.
-.PHONY: mcheck mchecksupp mcheckcheck
+.PHONY: mcheck
 mcheck:
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \
@@ -156,6 +184,7 @@ mcheck:
 		$(VALGRIND_OPTS) \
 		./bin/bdj4 --debug 15)
 
+.PHONY: mchecksupp
 mchecksupp:
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \
@@ -167,6 +196,7 @@ mchecksupp:
 		$(VALGRIND_OPTS) \
 		./bin/bdj4 --debug 15)
 
+.PHONY: mcheckcheck
 mcheckcheck:
 	(cd ..;valgrind --tool=memcheck \
 		--leak-check=full \

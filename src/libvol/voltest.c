@@ -14,6 +14,7 @@
 
 #include "bdjopt.h"
 #include "fileop.h"
+#include "mdebug.h"
 #include "volsink.h"
 #include "volume.h"
 #include "sysvars.h"
@@ -35,6 +36,9 @@ main (int argc, char *argv [])
     exit (1);
   }
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("vt");
+#endif
   sysvarsInit (argv [0]);
   bdjoptInit ();
 
@@ -67,5 +71,9 @@ main (int argc, char *argv [])
 
   volumeFree (volume);
   bdjoptCleanup ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return 0;
 }

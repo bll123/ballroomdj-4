@@ -15,6 +15,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "slist.h"
 #include "sortopt.h"
@@ -48,7 +49,7 @@ sortoptAlloc (void)
     return NULL;
   }
 
-  sortopt = malloc (sizeof (sortopt_t));
+  sortopt = mdmalloc (sizeof (sortopt_t));
   assert (sortopt != NULL);
 
   sortopt->df = datafileAllocParse ("sortopt", DFTYPE_LIST, fname, NULL, 0);
@@ -57,7 +58,7 @@ sortoptAlloc (void)
   list = slistAlloc ("sortopt-disp", LIST_UNORDERED, free);
   slistStartIterator (dflist, &dfiteridx);
   while ((value = slistIterateKey (dflist, &dfiteridx)) != NULL) {
-    tvalue = strdup (value);
+    tvalue = mdstrdup (value);
 
     dispstr [0] = '\0';
     p = strtok_r (tvalue, " ", &tokstr);
@@ -77,7 +78,7 @@ sortoptAlloc (void)
     }
 
     slistSetStr (list, dispstr, value);
-    free (tvalue);
+    mdfree (tvalue);
   }
   slistSort (list);
   sortopt->sortoptList = list;
@@ -91,7 +92,7 @@ sortoptFree (sortopt_t *sortopt)
   if (sortopt != NULL) {
     datafileFree (sortopt->df);
     slistFree (sortopt->sortoptList);
-    free (sortopt);
+    mdfree (sortopt);
   }
 }
 

@@ -25,6 +25,7 @@
 #include "fileop.h"
 #include "genre.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
 #include "rating.h"
@@ -111,7 +112,7 @@ itunesAlloc (void)
   slistidx_t  iteridx;
   char        *key;
 
-  itunes = malloc (sizeof (itunes_t));
+  itunes = mdmalloc (sizeof (itunes_t));
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       ITUNES_STARS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
@@ -571,7 +572,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
           nstr = g_uri_unescape_string (val + offset, NULL);
           nlistSetStr (entry, tagidx, nstr);
           logMsg (LOG_DBG, LOG_ITUNES, "song: %s %s", tagdefs [tagidx].tag, nstr);
-          free (nstr);
+          mdfree (nstr);
         }
       } else if (tagidx == TAG_DBADDDATE) {
         char    t [200];

@@ -17,6 +17,7 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "istring.h"
+#include "mdebug.h"
 #include "status.h"
 #include "ui.h"
 #include "uistatus.h"
@@ -38,7 +39,7 @@ uistatusSpinboxCreate (UIWidget *boxp, bool allflag)
   int         len;
 
 
-  uistatus = malloc (sizeof (uistatus_t));
+  uistatus = mdmalloc (sizeof (uistatus_t));
   uistatus->status = bdjvarsdfGet (BDJVDF_STATUS);
   uistatus->allflag = allflag;
   uistatus->spinbox = uiSpinboxInit ();
@@ -70,7 +71,7 @@ uistatusFree (uistatus_t *uistatus)
 {
   if (uistatus != NULL) {
     uiSpinboxFree (uistatus->spinbox);
-    free (uistatus);
+    mdfree (uistatus);
   }
 }
 

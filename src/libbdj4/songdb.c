@@ -13,6 +13,7 @@
 
 #include "audiotag.h"
 #include "ilist.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "playlist.h"
 #include "slist.h"
@@ -61,13 +62,13 @@ songWriteAudioTags (song_t *song)
     int     rewrite;
 
     tagdata = audiotagParseData (ffn, data, &rewrite);
-    free (data);
+    mdfree (data);
     newtaglist = songTagList (song);
     audiotagWriteTags (ffn, tagdata, newtaglist, 0, AT_UPDATE_MOD_TIME);
     slistFree (tagdata);
     slistFree (newtaglist);
   }
-  free (ffn);
+  mdfree (ffn);
 }
 
 static void

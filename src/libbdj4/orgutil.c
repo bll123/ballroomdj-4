@@ -27,6 +27,7 @@
 #include "datafile.h"
 #include "genre.h"
 #include "log.h"
+#include "mdebug.h"
 #include "orgutil.h"
 #include "rating.h"
 #include "song.h"
@@ -108,7 +109,7 @@ orgAlloc (char *orgpath)
     return NULL;
   }
 
-  org = malloc (sizeof (org_t));
+  org = mdmalloc (sizeof (org_t));
   assert (org != NULL);
   org->havealbumartist = false;
   org->haveartist = false;
@@ -120,7 +121,7 @@ orgAlloc (char *orgpath)
   *org->cachepath = '\0';
   org->rxdata = NULL;
 
-  tvalue = strdup (orgpath);
+  tvalue = mdstrdup (orgpath);
   grpcount = ORG_FIRST_GRP;
   p = strtok_r (tvalue, "{}", &tokstr);
 
@@ -133,7 +134,7 @@ orgAlloc (char *orgpath)
 
     p = strtok_r (p, "%", &tokstrB);
     while (p != NULL) {
-      orginfo = malloc (sizeof (orginfo_t));
+      orginfo = mdmalloc (sizeof (orginfo_t));
       orginfo->groupnum = grpcount;
       orginfo->orgkey = ORG_TEXT;
       orginfo->tagkey = 0;
@@ -199,7 +200,7 @@ orgAlloc (char *orgpath)
       char *tmp;
       tmp = regexEscape (tfirst);
       strlcat (org->regexstr, tmp, sizeof (org->regexstr));
-      free (tmp);
+      mdfree (tmp);
     }
     if (isnumeric) {
       strlcat (org->regexstr, "([0-9]+)", sizeof (org->regexstr));
@@ -217,7 +218,7 @@ orgAlloc (char *orgpath)
       char  *tmp;
       tmp = regexEscape (tlast);
       strlcat (org->regexstr, tmp, sizeof (org->regexstr));
-      free (tmp);
+      mdfree (tmp);
     }
     if (isoptional) {
       /* optional group */
@@ -231,7 +232,7 @@ orgAlloc (char *orgpath)
 //fprintf (stderr, "path: %s\n", orgpath);
 //fprintf (stderr, "regexstr: %s\n", org->regexstr);
   org->rx = regexInit (org->regexstr);
-  free (tvalue);
+  mdfree (tvalue);
 
   return org;
 }
@@ -247,7 +248,7 @@ orgFree (org_t *org)
       regexGetFree (org->rxdata);
     }
     slistFree (org->orgparsed);
-    free (org);
+    mdfree (org);
   }
 }
 
@@ -458,7 +459,7 @@ orgMakeSongPath (org_t *org, song_t *song)
     strlcat (tbuff, gbuff, sizeof (tbuff));
   }
 
-  p = strdup (tbuff);
+  p = mdstrdup (tbuff);
   return p;
 }
 

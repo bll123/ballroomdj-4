@@ -22,6 +22,7 @@
 #include "ilist.h"
 #include "level.h"
 #include "log.h"
+#include "mdebug.h"
 #include "slist.h"
 #include "templateutil.h"
 
@@ -114,7 +115,7 @@ START_TEST(level_conv)
     levelConv (&conv);
     ck_assert_str_eq (conv.str, val);
     if (conv.allocated) {
-      free (conv.str);
+      mdfree (conv.str);
     }
 
     ++count;

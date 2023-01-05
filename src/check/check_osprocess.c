@@ -22,6 +22,7 @@
 #include "bdjstring.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "osprocess.h"
 #include "check_bdj.h"
 /* procutil hasn't had its tests run, but need the procutilExists routine */
@@ -310,7 +311,7 @@ START_TEST(osprocess_run)
   data = osRunProgram (tbuff, "--profile", "0", "--theme", "xyzzy", "--bdj4", NULL);
   stringTrim (data);
   ck_assert_str_eq (data, "xyzzy");
-  free (data);
+  mdfree (data);
 }
 END_TEST
 

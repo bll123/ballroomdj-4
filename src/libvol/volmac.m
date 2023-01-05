@@ -13,6 +13,7 @@
 #include <MacTypes.h>
 #include <Cocoa/Cocoa.h>
 
+#include "mdebug.h"
 #include "volsink.h"
 #include "volume.h"
 
@@ -110,7 +111,7 @@ volumeProcess (volaction_t action, const char *sinkname,
       return -1;
     }
 
-    audioDeviceList = (AudioDeviceID *) malloc (propSize);
+    audioDeviceList = (AudioDeviceID *) mdmalloc (propSize);
     error = AudioObjectGetPropertyData (kAudioObjectSystemObject,
         &propertyAOPA, 0, NULL, &propSize, audioDeviceList);
 
@@ -138,7 +139,7 @@ volumeProcess (volaction_t action, const char *sinkname,
 
       ++sinklist->count;
       sinkidx = sinklist->count - 1;
-      sinklist->sinklist = (volsinkitem_t *) realloc (sinklist->sinklist,
+      sinklist->sinklist = (volsinkitem_t *) mdrealloc (sinklist->sinklist,
           sinklist->count * sizeof (volsinkitem_t));
 
       propSize = sizeof (CFStringRef);
@@ -151,18 +152,18 @@ volumeProcess (volaction_t action, const char *sinkname,
       propertyAOPA.mElement = kAudioObjectPropertyElementMaster;
       error = AudioObjectGetPropertyData (audioDeviceList [i],
           &propertyAOPA, 0, NULL, &propSize, &result);
-      sinklist->sinklist [sinkidx].description = strdup ([result UTF8String]);
+      sinklist->sinklist [sinkidx].description = mdstrdup ([result UTF8String]);
 
       snprintf (tmp, sizeof (tmp), "%d", audioDeviceList [i]);
-      sinklist->sinklist [sinkidx].name = strdup (tmp);
+      sinklist->sinklist [sinkidx].name = mdstrdup (tmp);
 
       if (audioDeviceList [i] == defaultDeviceID) {
         sinklist->sinklist [sinkidx].defaultFlag = true;
-        sinklist->defname = strdup (sinklist->sinklist [sinkidx].name);
+        sinklist->defname = mdstrdup (sinklist->sinklist [sinkidx].name);
       }
     }
 
-    free (audioDeviceList);
+    mdfree (audioDeviceList);
 
     return 0;
   }

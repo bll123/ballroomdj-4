@@ -22,6 +22,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "mdebug.h"
 #include "osprocess.h"
 #include "osutils.h"
 #include "tmutil.h"
@@ -133,7 +134,7 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
       ++count;
     }
   }
-  free (wbuff);
+  mdfree (wbuff);
   return pid;
 }
 
@@ -247,7 +248,7 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
     CloseHandle (pi.hProcess);
   }
 
-  free (wbuff);
+  mdfree (wbuff);
   return pid;
 }
 

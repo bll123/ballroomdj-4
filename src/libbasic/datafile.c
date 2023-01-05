@@ -19,6 +19,7 @@
 #include "fileop.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "slist.h"
 #include "tmutil.h"
@@ -62,7 +63,7 @@ parseInit (void)
   parseinfo_t   *pi;
 
   logProcBegin (LOG_PROC, "parseInit");
-  pi = malloc (sizeof (parseinfo_t));
+  pi = mdmalloc (sizeof (parseinfo_t));
   assert (pi != NULL);
   pi->strdata = NULL;
   pi->allocCount = 0;
@@ -77,7 +78,7 @@ parseFree (parseinfo_t *pi)
   logProcBegin (LOG_PROC, "parseFree");
   if (pi != NULL) {
     dataFree (pi->strdata);
-    free (pi);
+    mdfree (pi);
   }
   logProcEnd (LOG_PROC, "parseFree", "");
 }
@@ -152,7 +153,7 @@ convTextList (datafileconv_t *conv)
       }
     }
     if (conv->allocated) {
-      free (conv->str);
+      mdfree (conv->str);
     }
     conv->list = tlist;
     conv->allocated = true;
@@ -171,7 +172,7 @@ convTextList (datafileconv_t *conv)
       strlcat (tbuff, " ", sizeof (tbuff));
     }
     stringTrimChar (tbuff, ' ');
-    conv->str = strdup (tbuff);
+    conv->str = mdstrdup (tbuff);
     conv->allocated = true;
   }
 
@@ -193,7 +194,7 @@ convMS (datafileconv_t *conv)
     conv->valuetype = VALUE_NUM;
     num = 0;
     if (conv->str != NULL) {
-      tstr = strdup (conv->str);
+      tstr = mdstrdup (conv->str);
       p = strtok_r (tstr, ":", &tokstr);
       if (p != NULL) {
         num += atoi (p) * 60;
@@ -202,14 +203,14 @@ convMS (datafileconv_t *conv)
           num += atoi (p);
         }
       }
-      free (tstr);
+      mdfree (tstr);
     }
     conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
     tmutilToMS (conv->num, tbuff, sizeof (tbuff));
     conv->allocated = true;
-    conv->str = strdup (tbuff);
+    conv->str = mdstrdup (tbuff);
   }
 }
 
@@ -221,9 +222,9 @@ datafileAlloc (const char *name)
   datafile_t      *df;
 
   logProcBegin (LOG_PROC, "datafileAlloc");
-  df = malloc (sizeof (datafile_t));
+  df = mdmalloc (sizeof (datafile_t));
   assert (df != NULL);
-  df->name = strdup (name);
+  df->name = mdstrdup (name);
   df->fname = NULL;
   df->data = NULL;
   df->dftype = DFTYPE_NONE;
@@ -252,7 +253,7 @@ datafileAllocParse (const char *name, datafiletype_t dftype, const char *fname,
       } else if (dftype == DFTYPE_INDIRECT) {
         ilistSort (df->data);
       }
-      free (ddata);
+      mdfree (ddata);
     }
   }
   logProcEnd (LOG_PROC, "datafileAllocParse", "");
@@ -268,7 +269,7 @@ datafileFree (void *tdf)
   if (df != NULL) {
     datafileFreeInternal (df);
     dataFree (df->name);
-    free (df);
+    mdfree (df);
   }
   logProcEnd (LOG_PROC, "datafileFree", "");
 }
@@ -282,7 +283,7 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
   logMsg (LOG_DBG, LOG_MAIN | LOG_DATAFILE, "datafile load %s", fname);
   df->dftype = dftype;
   if (df->fname == NULL) {
-    df->fname = strdup (fname);
+    df->fname = mdstrdup (fname);
     assert (df->fname != NULL);
   }
 
@@ -777,7 +778,7 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers)
 
   if (pi->allocCount < 60) {
     pi->allocCount = 60;
-    pi->strdata = realloc (pi->strdata,
+    pi->strdata = mdrealloc (pi->strdata,
         sizeof (char *) * (size_t) pi->allocCount);
     assert (pi->strdata != NULL);
   }
@@ -797,7 +798,7 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers)
 
     if (dataCounter >= pi->allocCount) {
       pi->allocCount += 10;
-      pi->strdata = realloc (pi->strdata,
+      pi->strdata = mdrealloc (pi->strdata,
           sizeof (char *) * (size_t) pi->allocCount);
       assert (pi->strdata != NULL);
     }
@@ -960,7 +961,7 @@ datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc,
       snprintf (buff, sz, "%s", conv->str);
     }
     if (conv->allocated) {
-      free (conv->str);
+      mdfree (conv->str);
     }
   }
 }

@@ -16,6 +16,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "mdebug.h"
 #include "ui.h"
 
 enum {
@@ -58,7 +59,7 @@ uiDropDownInit (void)
 {
   uidropdown_t  *dropdown;
 
-  dropdown = malloc (sizeof (uidropdown_t));
+  dropdown = mdmalloc (sizeof (uidropdown_t));
 
   dropdown->title = NULL;
   dropdown->parentwin = NULL;
@@ -87,7 +88,7 @@ uiDropDownFree (uidropdown_t *dropdown)
     slistFree (dropdown->strIndexMap);
     nlistFree (dropdown->keylist);
     uiTreeViewFree (dropdown->uitree);
-    free (dropdown);
+    mdfree (dropdown);
   }
 }
 
@@ -97,7 +98,7 @@ uiDropDownCreate (UIWidget *parentwin,
     uidropdown_t *dropdown, void *udata)
 {
   dropdown->parentwin = parentwin;
-  dropdown->title = strdup (title);
+  dropdown->title = mdstrdup (title);
   uiDropDownButtonCreate (dropdown);
   uiDropDownWindowCreate (dropdown, uicb, udata);
   return uiButtonGetUIWidget (dropdown->button);
@@ -521,7 +522,7 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
       snprintf (tbuff, sizeof (tbuff), "%-*s",
           dropdown->maxwidth, p);
       uiButtonSetText (dropdown->button, tbuff);
-      free (p);
+      mdfree (p);
     }
     uiWidgetHide (&dropdown->window);
     dropdown->open = false;

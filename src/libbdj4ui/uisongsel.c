@@ -19,6 +19,7 @@
 #include "bdjopt.h"
 #include "datafile.h"
 #include "log.h"
+#include "mdebug.h"
 #include "samesong.h"
 #include "uimusicq.h"
 #include "uisongsel.h"
@@ -33,7 +34,7 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
 
   logProcBegin (LOG_PROC, "uisongselInit");
 
-  uisongsel = malloc (sizeof (uisongsel_t));
+  uisongsel = mdmalloc (sizeof (uisongsel_t));
   assert (uisongsel != NULL);
 
   uisongsel->tag = tag;
@@ -108,7 +109,7 @@ uisongselFree (uisongsel_t *uisongsel)
     nlistFree (uisongsel->songlistdbidxlist);
     uidanceFree (uisongsel->uidance);
     uisongselUIFree (uisongsel);
-    free (uisongsel);
+    mdfree (uisongsel);
   }
 
   logProcEnd (LOG_PROC, "uisongselFree", "");

@@ -15,6 +15,7 @@
 #include "bdjvars.h"
 #include "conn.h"
 #include "log.h"
+#include "mdebug.h"
 #include "progstate.h"
 #include "sock.h"
 #include "sockh.h"
@@ -45,7 +46,7 @@ connInit (bdjmsgroute_t routefrom)
 {
   conn_t     *conn;
 
-  conn = malloc (sizeof (conn_t) * ROUTE_MAX);
+  conn = mdmalloc (sizeof (conn_t) * ROUTE_MAX);
   assert (conn != NULL);
 
   assert (bdjvarsIsInitialized () == true);
@@ -94,7 +95,7 @@ connFree (conn_t *conn)
       conn [i].handshakerecv = false;
       conn [i].handshake = false;
     }
-    free (conn);
+    mdfree (conn);
     initialized = false;
   }
 }

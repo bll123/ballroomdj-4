@@ -22,6 +22,7 @@
 #include "bdj4.h"
 #include "dirop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "tmutil.h"
 #include "fileop.h"
 #include "filemanip.h"
@@ -196,7 +197,7 @@ logEnd (void)
   for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
     if (syslogs [idx] != NULL) {
       logClose (idx);
-      free (syslogs [idx]);
+      mdfree (syslogs [idx]);
       syslogs [idx] = NULL;
     }
   }
@@ -252,7 +253,7 @@ logBacktraceHandler (int sig)
       fprintf (stderr, "bt: %2ld: %s\n", i, out [i]);
     }
   }
-  free (out);
+  mdfree (out);
   exit (1);
 #endif
 }
@@ -365,7 +366,7 @@ logInit (void)
         continue;
       }
 
-      l = malloc (sizeof (bdjlog_t));
+      l = mdmalloc (sizeof (bdjlog_t));
       l->opened = 0;
       l->indent = 0;
       l->level = 0;

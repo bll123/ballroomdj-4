@@ -22,6 +22,7 @@
 #include "check_bdj.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "osutils.h"
 #include "sysvars.h"
 
@@ -95,7 +96,7 @@ START_TEST(osutils_getsysfont)
   if (isLinux ()) {
     ck_assert_ptr_nonnull (tptr);
     ck_assert_str_ne (tptr, "");
-    free (tptr);
+    mdfree (tptr);
   } else {
     ck_assert_ptr_null (tptr);
   }
@@ -131,8 +132,8 @@ START_TEST(osutils_widechar)
     ck_assert_ptr_nonnull (nstr);
     ck_assert_str_eq (WTEST, nstr);
 
-    free (wcs);
-    free (nstr);
+    mdfree (wcs);
+    mdfree (nstr);
 #endif
   }
 }

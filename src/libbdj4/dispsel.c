@@ -13,6 +13,7 @@
 #include "datafile.h"
 #include "dispsel.h"
 #include "fileop.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "slist.h"
 #include "tagdef.h"
@@ -47,7 +48,7 @@ dispselAlloc (void)
   char          fn [MAXPATHLEN];
 
 
-  dispsel = malloc (sizeof (dispsel_t));
+  dispsel = mdmalloc (sizeof (dispsel_t));
   assert (dispsel != NULL);
 
   for (dispselsel_t i = 0; i < DISP_SEL_MAX; ++i) {
@@ -61,7 +62,7 @@ dispselAlloc (void)
       fprintf (stderr, "%s does not exist\n", fn);
       continue;
     }
-    dispsel->name [i] = strdup (fn);
+    dispsel->name [i] = mdstrdup (fn);
 
     dispsel->df [i] = datafileAllocParse (dispselmap [i],
         DFTYPE_LIST, fn, NULL, 0);
@@ -82,7 +83,7 @@ dispselFree (dispsel_t *dispsel)
       datafileFree (dispsel->df [i]);
       slistFree (dispsel->dispsel [i]);
     }
-    free (dispsel);
+    mdfree (dispsel);
   }
 }
 

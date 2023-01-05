@@ -21,6 +21,7 @@
 #include "datafile.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "rating.h"
 #include "slist.h"
 #include "templateutil.h"
@@ -99,7 +100,7 @@ START_TEST(rating_conv)
     ratingConv (&conv);
     ck_assert_str_eq (conv.str, val);
     if (conv.allocated) {
-      free (conv.str);
+      mdfree (conv.str);
     }
 
     ++count;

@@ -16,6 +16,7 @@
 #include "bdjstring.h"
 #include "fileop.h"
 #include "m3u.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "pathutil.h"
@@ -67,7 +68,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
       pathWinPath (ffn, strlen (ffn));
     }
     fprintf (fh, "%s\n", ffn);
-    free (ffn);
+    mdfree (ffn);
   }
 }
 

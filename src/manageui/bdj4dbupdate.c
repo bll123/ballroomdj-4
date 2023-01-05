@@ -54,6 +54,7 @@
 #include "itunes.h"
 #include "level.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "orgutil.h"
 #include "ossignal.h"
@@ -1090,7 +1091,7 @@ checkOldDirList (dbupdate_t *dbupdate, const char *fn)
   size_t      len;
 
   fp = fn + dbupdate->dbtopdirlen + 1;
-  olddirs = strdup (dbupdate->olddirlist);
+  olddirs = mdstrdup (dbupdate->olddirlist);
   p = strtok_r (olddirs, ";", &tokstr);
   while (p != NULL) {
     len = strlen (p);
@@ -1101,7 +1102,7 @@ checkOldDirList (dbupdate_t *dbupdate, const char *fn)
     }
     p = strtok_r (NULL, ";", &tokstr);
   }
-  free (olddirs);
+  mdfree (olddirs);
   return false;
 }
 

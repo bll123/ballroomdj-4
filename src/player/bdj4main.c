@@ -35,6 +35,7 @@
 #include "fileop.h"
 #include "lock.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "musicq.h"
 #include "osprocess.h"
@@ -184,6 +185,9 @@ main (int argc, char *argv[])
   maindata_t    mainData;
   uint16_t      listenPort;
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("m");
+#endif
 
   mainData.progstate = progstateInit ("main");
   progstateSetCallback (mainData.progstate, STATE_LISTENING,
@@ -257,6 +261,10 @@ main (int argc, char *argv[])
   progstateFree (mainData.progstate);
   logProcEnd (LOG_PROC, "main", "");
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return 0;
 }
 
@@ -337,7 +345,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   mainData = (maindata_t *) udata;
 
   if (args != NULL) {
-    targs = strdup (args);
+    targs = mdstrdup (args);
   }
 
   switch (route) {
@@ -367,12 +375,12 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_PLAYLIST_CLEARPLAY: {
           char  *ttargs;
 
-          ttargs = strdup (targs);
+          ttargs = mdstrdup (targs);
           mainQueueClear (mainData, ttargs);
-          free (ttargs);
+          mdfree (ttargs);
           mainNextSong (mainData);
           if (mainData->waitforpbfinish) {
-            mainData->pbfinishArgs = strdup (targs);
+            mainData->pbfinishArgs = mdstrdup (targs);
             mainData->pbfinishType = MAIN_PB_TYPE_PL;
           } else {
             mainQueuePlaylist (mainData, targs);
@@ -393,14 +401,14 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           /* clears both the playlist queue and the music queue */
           /* does a next song and starts playing */
           logMsg (LOG_DBG, LOG_MSGS, "got: queue-clear-play");
-          ttargs = strdup (targs);
+          ttargs = mdstrdup (targs);
           mainQueueClear (mainData, ttargs);
-          free (ttargs);
+          mdfree (ttargs);
           mainNextSong (mainData);
           /* if the player is paused, multiple selections will not start */
           /* playing, but in most cases, this works */
           if (mainData->waitforpbfinish) {
-            mainData->pbfinishArgs = strdup (targs);
+            mainData->pbfinishArgs = mdstrdup (targs);
             mainData->pbfinishType = MAIN_PB_TYPE_SONG;
             mainData->pbfinishRoute = routefrom;
           } else {
@@ -760,7 +768,7 @@ mainProcessing (void *udata)
         if (mainData->pbfinishType == MAIN_PB_TYPE_SONG) {
           mainMusicqInsert (mainData, mainData->pbfinishRoute, mainData->pbfinishArgs);
         }
-        free (mainData->pbfinishArgs);
+        mdfree (mainData->pbfinishArgs);
         mainData->pbfinishArgs = NULL;
       }
       mainData->pbfinishrcv = 0;
@@ -997,7 +1005,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   qDuration = musicqGetDuration (mainData->musicQueue, musicqidx);
   dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, 0);
 
-  sbuff = malloc (BDJMSG_MAX);
+  sbuff = mdmalloc (BDJMSG_MAX);
   snprintf (sbuff, BDJMSG_MAX, "%d%c%"PRId64"%c%d%c",
       musicqidx, MSG_ARGS_RS, (int64_t) qDuration, MSG_ARGS_RS,
       dbidx, MSG_ARGS_RS);
@@ -1070,7 +1078,7 @@ mainSendMarqueeData (maindata_t *mainData)
 
   /* artist/title, dance(s) */
 
-  sbuff = malloc (BDJMSG_MAX);
+  sbuff = mdmalloc (BDJMSG_MAX);
   sbuff [0] = '\0';
 
   dstr = musicqGetData (mainData->musicQueue, mainData->musicqPlayIdx, 0, TAG_ARTIST);
@@ -1174,7 +1182,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
     return;
   }
 
-  jbuff = malloc (BDJMSG_MAX);
+  jbuff = mdmalloc (BDJMSG_MAX);
 
   mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
@@ -2254,7 +2262,7 @@ mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route)
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   danceList = danceGetDanceList (dances);
 
-  rbuff = malloc (BDJMSG_MAX);
+  rbuff = mdmalloc (BDJMSG_MAX);
   rbuff [0] = '\0';
   slistStartIterator (danceList, &iteridx);
   while ((dancenm = slistIterateKey (danceList, &iteridx)) != NULL) {
@@ -2283,7 +2291,7 @@ mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
 
   plList = playlistGetPlaylistList (PL_LIST_NORMAL);
 
-  rbuff = malloc (BDJMSG_MAX);
+  rbuff = mdmalloc (BDJMSG_MAX);
   rbuff [0] = '\0';
   slistStartIterator (plList, &iteridx);
   while ((plnm = slistIterateKey (plList, &iteridx)) != NULL) {
@@ -2323,9 +2331,9 @@ mainSendPlayerStatus (maindata_t *mainData, char *playerResp)
   jsonflag = bdjoptGetNum (OPT_P_REMOTECONTROL);
 
   if (jsonflag) {
-    jsbuff = malloc (BDJMSG_MAX);
+    jsbuff = mdmalloc (BDJMSG_MAX);
   }
-  timerbuff = malloc (BDJMSG_MAX);
+  timerbuff = mdmalloc (BDJMSG_MAX);
 
   if (jsonflag) {
     strlcpy (jsbuff, "{ ", BDJMSG_MAX);
@@ -2669,7 +2677,7 @@ mainPlaylistItemCache (maindata_t *mainData, playlist_t *pl, int playlistIdx)
 {
   playlistitem_t  *plitem;
 
-  plitem = malloc (sizeof (playlistitem_t));
+  plitem = mdmalloc (sizeof (playlistitem_t));
   plitem->playlist = pl;
   plitem->playlistIdx = playlistIdx;
   nlistSetData (mainData->playlistCache, playlistIdx, pl);
@@ -2683,7 +2691,7 @@ mainPlaylistItemFree (void *tplitem)
 
   if (plitem != NULL) {
     /* the playlist data is owned by the playlistCache and is freed by it */
-    free (plitem);
+    mdfree (plitem);
   }
 }
 

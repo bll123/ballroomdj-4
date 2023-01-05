@@ -23,6 +23,7 @@
 #include "ilist.h"
 #include "level.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicq.h"
 #include "nlist.h"
 #include "playlist.h"
@@ -120,7 +121,7 @@ uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag)
 {
   uisongfilter_t *uisf;
 
-  uisf = malloc (sizeof (uisongfilter_t));
+  uisf = mdmalloc (sizeof (uisongfilter_t));
 
   uisf->playlistname = NULL;
   uisf->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
@@ -176,7 +177,7 @@ uisfFree (uisongfilter_t *uisf)
     uiSwitchFree (uisf->playstatusswitch);
     sortoptFree (uisf->sortopt);
     songfilterFree (uisf->songfilter);
-    free (uisf);
+    mdfree (uisf);
   }
 }
 
@@ -263,7 +264,7 @@ uisfSetPlaylist (uisongfilter_t *uisf, char *slname)
 
   uiDropDownSelectionSetStr (uisf->playlistfilter, slname);
   dataFree (uisf->playlistname);
-  uisf->playlistname = strdup (slname);
+  uisf->playlistname = mdstrdup (slname);
   songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, slname);
   uisfUpdateFilterDialogDisplay (uisf);
 }

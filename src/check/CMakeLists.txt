@@ -19,6 +19,7 @@ add_executable (check_all
   check_fileshared.c
   check_fileop.c
   check_lock.c
+  check_mdebug.c
   check_osdir.c
   check_osnetutils.c
   check_osprocess.c

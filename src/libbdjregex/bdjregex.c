@@ -10,6 +10,7 @@
 #include <glib.h>
 
 #include "bdjregex.h"
+#include "mdebug.h"
 
 typedef struct bdjregex {
   GRegex  *regex;
@@ -31,7 +32,7 @@ regexInit (const char *pattern)
     fprintf (stderr, "ERR: failed to compile %s\n", pattern);
     return NULL;
   }
-  rx = malloc (sizeof (bdjregex_t));
+  rx = mdmalloc (sizeof (bdjregex_t));
   rx->regex = regex;
   return rx;
 }
@@ -43,7 +44,7 @@ regexFree (bdjregex_t *rx)
     if (rx->regex != NULL) {
       g_regex_unref (rx->regex);
     }
-    free (rx);
+    mdfree (rx);
   }
 }
 

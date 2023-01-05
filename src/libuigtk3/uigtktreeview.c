@@ -14,6 +14,7 @@
 
 #include <gtk/gtk.h>
 
+#include "mdebug.h"
 #include "tagdef.h"
 #include "ui.h"
 
@@ -33,7 +34,7 @@ uiCreateTreeView (void)
   GtkWidget         *tree;
   GtkTreeSelection  *sel;
 
-  uitree = malloc (sizeof (uitree_t));
+  uitree = mdmalloc (sizeof (uitree_t));
 
   tree = gtk_tree_view_new ();
   gtk_tree_view_set_enable_search (GTK_TREE_VIEW (tree), FALSE);
@@ -58,7 +59,7 @@ uiTreeViewFree (uitree_t *uitree)
     return;
   }
 
-  free (uitree);
+  mdfree (uitree);
 }
 
 UIWidget *
@@ -296,7 +297,7 @@ uiTreeViewAddDisplayType (GType *types, int valtype, int col)
 static GType *
 uiAppendType (GType *types, int ncol, int type)
 {
-  types = realloc (types, (ncol + 1) * sizeof (GType));
+  types = mdrealloc (types, (ncol + 1) * sizeof (GType));
   types [ncol] = type;
 
   return types;

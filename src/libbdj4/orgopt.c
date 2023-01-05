@@ -20,6 +20,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "orgopt.h"
 #include "orgutil.h"
 #include "pathbld.h"
@@ -51,7 +52,7 @@ orgoptAlloc (void)
     return NULL;
   }
 
-  orgopt = malloc (sizeof (orgopt_t));
+  orgopt = mdmalloc (sizeof (orgopt_t));
   assert (orgopt != NULL);
 
   orgopt->df = datafileAllocParse ("org", DFTYPE_LIST, path, NULL, 0);
@@ -103,7 +104,7 @@ orgoptFree (orgopt_t *orgopt)
   if (orgopt != NULL) {
     datafileFree (orgopt->df);
     slistFree (orgopt->orgList);
-    free (orgopt);
+    mdfree (orgopt);
   }
 }
 

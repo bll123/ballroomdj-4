@@ -17,6 +17,7 @@
 #include "ilist.h"
 #include "istring.h"
 #include "log.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "slist.h"
 #include "status.h"
@@ -51,10 +52,10 @@ statusAlloc (void)
     return NULL;
   }
 
-  status = malloc (sizeof (status_t));
+  status = mdmalloc (sizeof (status_t));
   assert (status != NULL);
 
-  status->path = strdup (fname);
+  status->path = mdstrdup (fname);
   status->df = datafileAllocParse ("status", DFTYPE_INDIRECT, fname,
       statusdfkeys, STATUS_KEY_MAX);
   status->status = datafileGetList (status->df);
@@ -88,7 +89,7 @@ statusFree (status_t *status)
     dataFree (status->path);
     datafileFree (status->df);
     slistFree (status->statusList);
-    free (status);
+    mdfree (status);
   }
 }
 
@@ -142,14 +143,14 @@ statusConv (datafileconv_t *conv)
     if (status == NULL) {
       conv->num = 0;
       if (conv->allocated) {
-        free (conv->str);
+        mdfree (conv->str);
       }
       return;
     }
 
     num = slistGetNum (status->statusList, conv->str);
     if (conv->allocated) {
-      free (conv->str);
+      mdfree (conv->str);
     }
     conv->num = num;
   } else if (conv->valuetype == VALUE_NUM) {

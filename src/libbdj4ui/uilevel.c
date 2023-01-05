@@ -18,6 +18,7 @@
 #include "bdjvarsdf.h"
 #include "istring.h"
 #include "level.h"
+#include "mdebug.h"
 #include "ui.h"
 #include "uilevel.h"
 
@@ -38,7 +39,7 @@ uilevelSpinboxCreate (UIWidget *boxp, bool allflag)
   int         len;
 
 
-  uilevel = malloc (sizeof (uilevel_t));
+  uilevel = mdmalloc (sizeof (uilevel_t));
   uilevel->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uilevel->allflag = allflag;
   uilevel->spinbox = uiSpinboxInit ();
@@ -70,7 +71,7 @@ uilevelFree (uilevel_t *uilevel)
 {
   if (uilevel != NULL) {
     uiSpinboxFree (uilevel->spinbox);
-    free (uilevel);
+    mdfree (uilevel);
   }
 }
 

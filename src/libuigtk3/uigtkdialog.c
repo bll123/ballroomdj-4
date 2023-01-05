@@ -17,6 +17,7 @@
 
 #include "bdj4intl.h"
 #include "fileop.h"
+#include "mdebug.h"
 #include "ui.h"
 
 typedef struct uiselect {
@@ -206,7 +207,7 @@ uiDialogCreateSelect (UIWidget *window, const char *label,
 {
   uiselect_t  *selectdata;
 
-  selectdata = malloc (sizeof (uiselect_t));
+  selectdata = mdmalloc (sizeof (uiselect_t));
   selectdata->window = window;
   selectdata->label = label;
   selectdata->startpath = startpath;

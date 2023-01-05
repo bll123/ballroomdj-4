@@ -34,6 +34,7 @@
 #include "fileop.h"
 #include "lock.h"
 #include "log.h"
+#include "mdebug.h"
 #include "ossignal.h"
 #include "osutils.h"
 #include "pathbld.h"
@@ -185,6 +186,9 @@ main (int argc, char *argv[])
   int             flags;
   const char      *audiosink;
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("p");
+#endif
   osSetStandardSignals (playerSigHandler);
 
   playerData.currentSong = NULL;
@@ -294,6 +298,10 @@ main (int argc, char *argv[])
   connFree (playerData.conn);
   progstateFree (playerData.progstate);
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return 0;
 }
 
@@ -886,9 +894,9 @@ playerSongPrep (playerdata_t *playerData, char *args)
     return;
   }
 
-  npq = malloc (sizeof (prepqueue_t));
+  npq = mdmalloc (sizeof (prepqueue_t));
   assert (npq != NULL);
-  npq->songname = strdup (p);
+  npq->songname = mdstrdup (p);
   assert (npq->songname != NULL);
 fprintf (stderr, "prep request: %s\n", npq->songname);
   logMsg (LOG_DBG, LOG_BASIC, "prep request: %s", npq->songname);
@@ -919,7 +927,7 @@ fprintf (stderr, "prep request: %s\n", npq->songname);
   logMsg (LOG_DBG, LOG_MAIN, "     uniqueidx: %ld", npq->uniqueidx);
 
   songMakeTempName (playerData, npq->songname, stname, sizeof (stname));
-  npq->tempname = strdup (stname);
+  npq->tempname = mdstrdup (stname);
   assert (npq->tempname != NULL);
   queuePush (playerData->prepRequestQueue, npq);
   logMsg (LOG_DBG, LOG_MAIN, "prep-req-add: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
@@ -994,11 +1002,11 @@ playerProcessPrepRequest (playerdata_t *playerData)
   /* read the entire file in order to get it into the operating system's */
   /* filesystem cache */
   sz = fileopSize (npq->songfullpath);
-  buff = malloc (sz);
+  buff = mdmalloc (sz);
   fh = fileopOpen (npq->songfullpath, "rb");
   (void) ! fread (buff, sz, 1, fh);
   fclose (fh);
-  free (buff);
+  mdfree (buff);
 
 fprintf (stderr, "prep: %s\n", npq->songname);
   queuePush (playerData->prepQueue, npq);
@@ -1048,9 +1056,9 @@ playerSongPlay (playerdata_t *playerData, char *args)
     return;
   }
 
-  preq = malloc (sizeof (playrequest_t));
+  preq = mdmalloc (sizeof (playrequest_t));
   preq->uniqueidx = uniqueidx;
-  preq->songname = strdup (p);
+  preq->songname = mdstrdup (p);
   queuePush (playerData->playRequest, preq);
   logProcEnd (LOG_PROC, "playerSongPlay", "");
 }
@@ -1447,9 +1455,9 @@ fprintf (stderr, "prep-free %s\n", pq->songname);
     dataFree (pq->songname);
     if (pq->tempname != NULL) {
       fileopDelete (pq->tempname);
-      free (pq->tempname);
+      mdfree (pq->tempname);
     }
-    free (pq);
+    mdfree (pq);
   }
   logProcEnd (LOG_PROC, "playerPrepQueueFree", "");
 }
@@ -1709,7 +1717,7 @@ playerSendStatus (playerdata_t *playerData, bool forceFlag)
 
   playerData->lastPlayerState = playerData->playerState;
 
-  rbuff = malloc (BDJMSG_MAX);
+  rbuff = mdmalloc (BDJMSG_MAX);
   rbuff [0] = '\0';
 
   dur = 0;
@@ -1817,7 +1825,7 @@ playerFreePlayRequest (void *tpreq)
 
   if (preq != NULL) {
     dataFree (preq->songname);
-    free (preq);
+    mdfree (preq);
   }
 }
 

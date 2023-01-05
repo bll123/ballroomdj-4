@@ -17,6 +17,7 @@
 #include "dance.h"
 #include "datafile.h"
 #include "log.h"
+#include "mdebug.h"
 #include "uinbutil.h"
 
 uiutilsnbtabid_t *
@@ -24,7 +25,7 @@ uiutilsNotebookIDInit (void)
 {
   uiutilsnbtabid_t *nbtabid;
 
-  nbtabid = malloc (sizeof (uiutilsnbtabid_t));
+  nbtabid = mdmalloc (sizeof (uiutilsnbtabid_t));
   nbtabid->tabcount = 0;
   nbtabid->tabids = NULL;
   return nbtabid;
@@ -35,14 +36,14 @@ uiutilsNotebookIDFree (uiutilsnbtabid_t *nbtabid)
 {
   if (nbtabid != NULL) {
     dataFree (nbtabid->tabids);
-    free (nbtabid);
+    mdfree (nbtabid);
   }
 }
 
 void
 uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id)
 {
-  nbtabid->tabids = realloc (nbtabid->tabids,
+  nbtabid->tabids = mdrealloc (nbtabid->tabids,
       sizeof (int) * (nbtabid->tabcount + 1));
   nbtabid->tabids [nbtabid->tabcount] = id;
   ++nbtabid->tabcount;

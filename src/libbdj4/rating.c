@@ -17,6 +17,7 @@
 #include "ilist.h"
 #include "istring.h"
 #include "log.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "rating.h"
 #include "slist.h"
@@ -50,10 +51,10 @@ ratingAlloc (void)
     return NULL;
   }
 
-  rating = malloc (sizeof (rating_t));
+  rating = mdmalloc (sizeof (rating_t));
   assert (rating != NULL);
 
-  rating->path = strdup (fname);
+  rating->path = mdstrdup (fname);
   rating->df = datafileAllocParse ("rating", DFTYPE_INDIRECT, fname,
       ratingdfkeys, RATING_KEY_MAX);
   rating->rating = datafileGetList (rating->df);
@@ -87,7 +88,7 @@ ratingFree (rating_t *rating)
     dataFree (rating->path);
     datafileFree (rating->df);
     slistFree (rating->ratingList);
-    free (rating);
+    mdfree (rating);
   }
 }
 

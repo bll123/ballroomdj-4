@@ -22,6 +22,7 @@
 #include "datafile.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "slist.h"
@@ -73,7 +74,7 @@ uireqextInit (UIWidget *windowp, nlist_t *opts)
 {
   uireqext_t  *uireqext;
 
-  uireqext = malloc (sizeof (uireqext_t));
+  uireqext = mdmalloc (sizeof (uireqext_t));
   uiutilsUIWidgetInit (&uireqext->reqextDialog);
   uireqext->audioFileEntry = uiEntryInit (50, MAXPATHLEN);
   uireqext->artistEntry = uiEntryInit (40, MAXPATHLEN);
@@ -108,7 +109,7 @@ uireqextFree (uireqext_t *uireqext)
     uiDialogDestroy (&uireqext->reqextDialog);
     uiButtonFree (uireqext->audioFileDialogButton);
     uidanceFree (uireqext->uidance);
-    free (uireqext);
+    mdfree (uireqext);
   }
 }
 
@@ -330,9 +331,9 @@ uireqextAudioFileDialog (void *udata)
     uiEntrySetValue (uireqext->audioFileEntry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
     uireqextProcessAudioFile (uireqext);
-    free (fn);
+    mdfree (fn);
   }
-  free (selectdata);
+  mdfree (selectdata);
 
   return UICB_CONT;
 }
@@ -437,7 +438,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       }
 
       tagdata = audiotagParseData (ffn, data, &rewrite);
-      free (data);
+      mdfree (data);
       if (slistGetCount (tagdata) == 0) {
         slistFree (tagdata);
         return;
@@ -451,7 +452,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
       dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
           ffn, MUSICDB_ENTRY_NEW);
       dataFree (uireqext->songEntryText);
-      uireqext->songEntryText = strdup (tbuff);
+      uireqext->songEntryText = mdstrdup (tbuff);
 
       uireqext->song = songAlloc ();
       /* populate the song from the tag data */

@@ -19,6 +19,7 @@
 #include "bdjopt.h"
 #include "configui.h"
 #include "log.h"
+#include "mdebug.h"
 #include "orgopt.h"
 #include "slist.h"
 #include "ui.h"
@@ -35,7 +36,7 @@ confuiInitOrganization (confuigui_t *gui)
   char        *p = NULL;
   int         count;
 
-  gui->org = malloc (sizeof (conforg_t));
+  gui->org = mdmalloc (sizeof (conforg_t));
   gui->org->orgopt = orgoptAlloc ();
   tlist = orgoptGetList (gui->org->orgopt);
 

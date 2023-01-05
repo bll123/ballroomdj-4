@@ -13,6 +13,7 @@
 
 #include "bdjstring.h"
 #include "bdjvars.h"
+#include "mdebug.h"
 #include "sysvars.h"
 
 static char *   bdjvars [BDJV_MAX];
@@ -82,7 +83,7 @@ bdjvarsSetStr (bdjvarkey_t idx, const char *str)
     return;
   }
 
-  bdjvars [idx] = strdup (str);
+  bdjvars [idx] = mdstrdup (str);
 }
 
 void

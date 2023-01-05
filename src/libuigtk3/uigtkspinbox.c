@@ -15,6 +15,7 @@
 #include <gtk/gtk.h>
 
 #include "bdj4intl.h"
+#include "mdebug.h"
 #include "tmutil.h"
 #include "ui.h"
 
@@ -50,7 +51,7 @@ uiSpinboxInit (void)
 {
   uispinbox_t   *spinbox;
 
-  spinbox = malloc (sizeof (uispinbox_t));
+  spinbox = mdmalloc (sizeof (uispinbox_t));
   uiutilsUIWidgetInit (&spinbox->uispinbox);
   spinbox->convcb = NULL;
   spinbox->curridx = 0;
@@ -73,7 +74,7 @@ uiSpinboxFree (uispinbox_t *spinbox)
 {
   if (spinbox != NULL) {
     nlistFree (spinbox->idxlist);
-    free (spinbox);
+    mdfree (spinbox);
   }
 }
 

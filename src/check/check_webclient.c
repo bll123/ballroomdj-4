@@ -18,9 +18,9 @@
 
 #include <check.h>
 
-#include "bdjstring.h"
 #include "check_bdj.h"
 #include "fileop.h"
+#include "mdebug.h"
 #include "webclient.h"
 #include "log.h"
 #include "sysvars.h"

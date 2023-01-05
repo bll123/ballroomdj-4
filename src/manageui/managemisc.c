@@ -18,6 +18,7 @@
 #include "filemanip.h"
 #include "fileop.h"
 #include "manageui.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "playlist.h"
 #include "slist.h"
@@ -92,7 +93,7 @@ manageTrimName (const char *name)
   while (*name == ' ') {
     ++name;
   }
-  tname = strdup (name);
+  tname = mdstrdup (name);
   stringTrimChar (tname, ' ');
   return tname;
 }

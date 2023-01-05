@@ -22,6 +22,7 @@
 #include "fileop.h"
 #include "datafile.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "check_bdj.h"
 
@@ -48,7 +49,7 @@ START_TEST(parse_simple)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_simple");
-  tstr = strdup ("# comment\n# version 2\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n");
+  tstr = mdstrdup ("# comment\n# version 2\nA\na\n# comment\nB\nb\nC\nc\nD\n# comment\nd\nE\ne\nF\nf\nG\n1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   count = parseSimple (pi, tstr, &vers);
@@ -72,7 +73,7 @@ START_TEST(parse_simple)
   ck_assert_str_eq (strdata[12], "G");
   ck_assert_str_eq (strdata[13], "1200");
   parseFree (pi);
-  free (tstr);
+  mdfree (tstr);
 }
 END_TEST
 
@@ -85,7 +86,7 @@ START_TEST(parse_keyvalue)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_keyvalue");
-  tstr = strdup ("version\n..3\nA\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
+  tstr = mdstrdup ("version\n..3\nA\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   count = parseKeyValue (pi, tstr);
@@ -110,7 +111,7 @@ START_TEST(parse_keyvalue)
   ck_assert_str_eq (strdata[14], "G");
   ck_assert_str_eq (strdata[15], "1200");
   parseFree (pi);
-  free (tstr);
+  mdfree (tstr);
 }
 END_TEST
 
@@ -122,7 +123,7 @@ START_TEST(parse_with_comments)
   char            **strdata = NULL;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_with_comments");
-  tstr = strdup ("# comment\nversion\n..4\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
+  tstr = mdstrdup ("# comment\nversion\n..4\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   count = parseKeyValue (pi, tstr);
@@ -147,7 +148,7 @@ START_TEST(parse_with_comments)
   ck_assert_str_eq (strdata[14], "G");
   ck_assert_str_eq (strdata[15], "1200");
   parseFree (pi);
-  free (tstr);
+  mdfree (tstr);
 }
 END_TEST
 
@@ -691,7 +692,7 @@ START_TEST(datafile_keyval_savelist)
         value = conv.str;
         ck_assert_str_eq (value, tstr);
         if (conv.allocated) {
-          free (conv.str);
+          mdfree (conv.str);
         }
       } else {
         snprintf (tmp, sizeof (tmp), "%"PRId64,
@@ -710,7 +711,7 @@ START_TEST(datafile_keyval_savelist)
         value = conv.str;
         ck_assert_str_eq (value, tstr);
         if (conv.allocated) {
-          free (conv.str);
+          mdfree (conv.str);
         }
       }
     }
@@ -787,10 +788,10 @@ START_TEST(datafile_keyval_savebuffer)
         ck_assert_str_eq (conv.str, tconv.str);
 
         if (conv.allocated) {
-          free (conv.str);
+          mdfree (conv.str);
         }
         if (tconv.allocated) {
-          free (tconv.str);
+          mdfree (tconv.str);
         }
       }
     }
@@ -865,10 +866,10 @@ START_TEST(datafile_keyval_save)
         ck_assert_str_eq (conv.str, tconv.str);
 
         if (conv.allocated) {
-          free (conv.str);
+          mdfree (conv.str);
         }
         if (tconv.allocated) {
-          free (tconv.str);
+          mdfree (tconv.str);
         }
       }
     }

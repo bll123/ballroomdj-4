@@ -26,6 +26,7 @@
 #include "nlist.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "slist.h"
 #include "ui.h"
 
@@ -78,7 +79,7 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   widx = CONFUI_ENTRY_DANCE_TAGS;
   uiEntrySetValue (gui->uiitem [widx].entry, sval);
   if (conv.allocated) {
-    free (conv.str);
+    mdfree (conv.str);
     sval = NULL;
   }
 

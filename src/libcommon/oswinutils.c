@@ -21,6 +21,7 @@
 #include <windows.h>
 
 #include "bdj4.h"
+#include "mdebug.h"
 #include "osutils.h"
 #include "tmutil.h"
 
@@ -53,7 +54,7 @@ osRegistryGet (char *key, char *name)
         &len
         );
     if (rc == ERROR_SUCCESS) {
-      rval = strdup ((char *) buff);
+      rval = mdstrdup ((char *) buff);
     }
     RegCloseKey (hkey);
   }
@@ -87,7 +88,7 @@ osToWideChar (const char *buff)
 
   /* the documentation lies; len does not include room for the null byte */
   len = MultiByteToWideChar (CP_UTF8, 0, buff, strlen (buff), NULL, 0);
-  tbuff = malloc ((len + 1) * OS_FS_CHAR_SIZE);
+  tbuff = mdmalloc ((len + 1) * OS_FS_CHAR_SIZE);
   MultiByteToWideChar (CP_UTF8, 0, buff, strlen (buff), tbuff, len);
   tbuff [len] = L'\0';
   return tbuff;
@@ -101,7 +102,7 @@ osFromWideChar (const void *buff)
 
   /* the documentation lies; len does not include room for the null byte */
   len = WideCharToMultiByte (CP_UTF8, 0, buff, -1, NULL, 0, NULL, NULL);
-  tbuff = malloc (len + 1);
+  tbuff = mdmalloc (len + 1);
   WideCharToMultiByte (CP_UTF8, 0, buff, -1, tbuff, len, NULL, NULL);
   tbuff [len] = '\0';
   assert (tbuff != NULL);

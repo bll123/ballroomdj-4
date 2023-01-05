@@ -25,6 +25,7 @@
 #include "fileop.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "slist.h"
 #include "song.h"
@@ -197,9 +198,9 @@ START_TEST(song_parse)
 
   for (int i = 0; i < songparsedatasz; ++i) {
     song = songAlloc ();
-    data = strdup (songparsedata [i]);
+    data = mdstrdup (songparsedata [i]);
     songParse (song, data, i);
-    free (data);
+    mdfree (data);
     ck_assert_int_eq (songIsChanged (song), 0);
     ck_assert_int_eq (songHasSonglistChange (song), 0);
     songFree (song);
@@ -228,9 +229,9 @@ START_TEST(song_parse_get)
 
 
     song = songAlloc ();
-    data = strdup (songparsedata [i]);
+    data = mdstrdup (songparsedata [i]);
     songParse (song, data, i);
-    free (data);
+    mdfree (data);
     ck_assert_int_eq (songIsChanged (song), 0);
     ck_assert_int_eq (songHasSonglistChange (song), 0);
     ck_assert_str_eq (songGetStr (song, TAG_ARTIST), "artist");
@@ -289,9 +290,9 @@ START_TEST(song_parse_set)
 
   for (int i = 0; i < songparsedatasz; ++i) {
     song = songAlloc ();
-    data = strdup (songparsedata [i]);
+    data = mdstrdup (songparsedata [i]);
     songParse (song, data, i);
-    free (data);
+    mdfree (data);
 
     ck_assert_int_eq (songIsChanged (song), 0);
     ck_assert_int_eq (songHasSonglistChange (song), 0);
@@ -301,9 +302,9 @@ START_TEST(song_parse_set)
     songSetNum (song, TAG_TRACKNUMBER, 6);
     songSetNum (song, TAG_TRACKTOTAL, 11);
     songSetDouble (song, TAG_VOLUMEADJUSTPERC, -5.5);
-    data = strdup ("tag5 tag4");
+    data = mdstrdup ("tag5 tag4");
     songSetList (song, TAG_TAGS, data);
-    free (data);
+    mdfree (data);
     songChangeFavorite (song);
     ck_assert_int_eq (songIsChanged (song), 1);
     ck_assert_int_eq (songHasSonglistChange (song), 0);
@@ -363,9 +364,9 @@ START_TEST(song_audio_file)
 
   for (int i = 0; i < songparsedatasz; ++i) {
     song = songAlloc ();
-    data = strdup (songparsedata [i]);
+    data = mdstrdup (songparsedata [i]);
     songParse (song, data, i);
-    free (data);
+    mdfree (data);
 
     snprintf (tbuff, sizeof (tbuff), "%s/%s", bdjoptGetStr (OPT_M_DIR_MUSIC),
         songGetStr (song, TAG_FILE));
@@ -399,44 +400,44 @@ START_TEST(song_display)
 
   for (int i = 0; i < songparsedatasz; ++i) {
     song = songAlloc ();
-    data = strdup (songparsedata [i]);
+    data = mdstrdup (songparsedata [i]);
     songParse (song, data, i);
-    free (data);
+    mdfree (data);
 
     /* standard string */
     data = songDisplayString (song, TAG_ARTIST);
     ck_assert_str_eq (data, "artist");
-    free (data);
+    mdfree (data);
 
     /* converted - these assume the standard data files */
     data = songDisplayString (song, TAG_GENRE);
     ck_assert_str_eq (data, "Classical");
-    free (data);
+    mdfree (data);
 
     data = songDisplayString (song, TAG_DANCE);
     ck_assert_str_eq (data, "Waltz");
-    free (data);
+    mdfree (data);
 
     data = songDisplayString (song, TAG_DANCERATING);
     ck_assert_str_eq (data, "Good");
-    free (data);
+    mdfree (data);
 
     data = songDisplayString (song, TAG_DANCELEVEL);
     ck_assert_str_eq (data, "Normal");
-    free (data);
+    mdfree (data);
 
     data = songDisplayString (song, TAG_STATUS);
     ck_assert_str_eq (data, "New");
-    free (data);
+    mdfree (data);
 
     data = songDisplayString (song, TAG_FAVORITE);
     rc = strncmp (data, "<span", 5);
     ck_assert_int_eq (rc, 0);
-    free (data);
+    mdfree (data);
 
     data = songDisplayString (song, TAG_TAGS);
     ck_assert_str_eq (data, "tag1 tag2");
-    free (data);
+    mdfree (data);
     songFree (song);
   }
 
@@ -463,9 +464,9 @@ START_TEST(song_tag_list)
     int     rc;
 
     song = songAlloc ();
-    data = strdup (songparsedata [i]);
+    data = mdstrdup (songparsedata [i]);
     songParse (song, data, i);
-    free (data);
+    mdfree (data);
 
     tlist = songTagList (song);
 

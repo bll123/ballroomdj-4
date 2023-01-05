@@ -25,6 +25,7 @@
 
 #include "bdjstring.h"
 #include "istring.h"
+#include "mdebug.h"
 
 static UCollator  *ucoll = NULL;
 static UCaseMap   *ucsm = NULL;
@@ -118,12 +119,12 @@ istringToLower (char *str)
 
   sz = strlen (str);
   ++sz;
-  dest = malloc (sz + 1);
+  dest = mdmalloc (sz + 1);
   *dest = '\0';
   rsz = ucasemap_utf8ToLower (ucsm, dest, sz + 1, str, sz, &status);
   if (rsz <= sz && status == U_ZERO_ERROR) {
     strlcpy (str, dest, sz);
-    free (dest);
+    mdfree (dest);
   }
 }
 
@@ -141,11 +142,11 @@ istringToUpper (char *str)
 
   sz = strlen (str);
   ++sz;
-  dest = malloc (sz + 1);
+  dest = mdmalloc (sz + 1);
   *dest = '\0';
   rsz = ucasemap_utf8ToUpper (ucsm, dest, sz + 1, str, sz, &status);
   if (rsz <= sz && status == U_ZERO_ERROR) {
     strlcpy (str, dest, sz);
-    free (dest);
+    mdfree (dest);
   }
 }

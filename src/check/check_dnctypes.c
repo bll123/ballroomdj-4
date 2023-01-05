@@ -21,6 +21,7 @@
 #include "datafile.h"
 #include "dnctypes.h"
 #include "log.h"
+#include "mdebug.h"
 #include "slist.h"
 #include "templateutil.h"
 
@@ -91,7 +92,7 @@ START_TEST(dnctypes_conv)
     dnctypesConv (&conv);
     ck_assert_str_eq (conv.str, val);
     if (conv.allocated) {
-      free (conv.str);
+      mdfree (conv.str);
     }
 
     ++count;

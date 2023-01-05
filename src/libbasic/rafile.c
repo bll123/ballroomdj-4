@@ -19,6 +19,7 @@
 #include "fileop.h"
 #include "lock.h"
 #include "log.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "rafile.h"
 #include "tmutil.h"
@@ -50,7 +51,7 @@ raOpen (char *fname, int version)
   char            *mode;
 
   logProcBegin (LOG_PROC, "raOpen");
-  rafile = malloc (sizeof (rafile_t));
+  rafile = mdmalloc (sizeof (rafile_t));
   assert (rafile != NULL);
   rafile->fh = NULL;
 
@@ -77,7 +78,7 @@ raOpen (char *fname, int version)
     if (rc != 0) {
       /* probably an incorrect filename   */
       /* don't try to do anything with it */
-      free (rafile);
+      mdfree (rafile);
       logProcEnd (LOG_PROC, "raOpen", "bad-header");
       return NULL;
     }
@@ -88,7 +89,7 @@ raOpen (char *fname, int version)
     raWriteHeader (rafile, version);
     raUnlock (rafile);
   }
-  rafile->fname = strdup (fname);
+  rafile->fname = mdstrdup (fname);
   assert (rafile->fname != NULL);
   memset (ranulls, 0, RAFILE_REC_SIZE);
   logProcEnd (LOG_PROC, "raOpen", "");
@@ -104,7 +105,7 @@ raClose (rafile_t *rafile)
     raUnlock (rafile);
     rafile->fh = NULL;
     dataFree (rafile->fname);
-    free (rafile);
+    mdfree (rafile);
   }
   logProcEnd (LOG_PROC, "raClose", "");
 }

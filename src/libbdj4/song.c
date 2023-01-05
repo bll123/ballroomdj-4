@@ -21,6 +21,7 @@
 #include "ilist.h"
 #include "level.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "rating.h"
 #include "slist.h"
@@ -99,7 +100,7 @@ songAlloc (void)
 
   songInit ();
 
-  song = malloc (sizeof (song_t));
+  song = mdmalloc (sizeof (song_t));
   assert (song != NULL);
   song->changed = false;
   song->songlistchange = false;
@@ -115,7 +116,7 @@ songFree (void *tsong)
 
   if (song != NULL) {
     nlistFree (song->songInfo);
-    free (song);
+    mdfree (song);
     --gsonginit.songcount;
     if (gsonginit.songcount <= 0) {
       songCleanup ();
@@ -320,7 +321,7 @@ songAudioFileExists (song_t *song)
   exists = false;
   if (ffn != NULL) {
     exists = fileopFileExists (ffn);
-    free (ffn);
+    mdfree (ffn);
   }
   return exists;
 }
@@ -347,7 +348,7 @@ songDisplayString (song_t *song, int tagidx)
 
     favidx = songGetNum (song, tagidx);
     tstr = songFavoriteGetSpanStr (gsonginit.songfav, favidx);
-    str = strdup (tstr);
+    str = mdstrdup (tstr);
     return str;
   }
 
@@ -364,14 +365,14 @@ songDisplayString (song_t *song, int tagidx)
     conv.valuetype = vt;
     convfunc (&conv);
     if (conv.str == NULL) { conv.str = ""; }
-    str = strdup (conv.str);
+    str = mdstrdup (conv.str);
     if (conv.allocated) {
-      free (conv.str);
+      mdfree (conv.str);
     }
   } else {
     str = songGetStr (song, tagidx);
     if (str == NULL) { str = ""; }
-    str = strdup (str);
+    str = mdstrdup (str);
   }
 
   return str;

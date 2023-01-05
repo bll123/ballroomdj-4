@@ -16,6 +16,7 @@
 #include "fileop.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "songlist.h"
 
@@ -45,13 +46,13 @@ songlistAlloc (const char *fname)
   songlist_t    *sl;
   char          tfn [MAXPATHLEN];
 
-  sl = malloc (sizeof (songlist_t));
+  sl = mdmalloc (sizeof (songlist_t));
   sl->df = NULL;
   sl->songlist = NULL;
-  sl->fname = strdup (fname);
+  sl->fname = mdstrdup (fname);
   pathbldMakePath (tfn, sizeof (tfn), fname,
       BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
-  sl->path = strdup (tfn);
+  sl->path = mdstrdup (tfn);
   sl->songlist = ilistAlloc (fname, LIST_ORDERED);
   ilistSetVersion (sl->songlist, SONGLIST_VERSION);
   return sl;
@@ -92,7 +93,7 @@ songlistFree (songlist_t *sl)
     datafileFree (sl->df);
     dataFree (sl->fname);
     dataFree (sl->path);
-    free (sl);
+    mdfree (sl);
   }
 }
 

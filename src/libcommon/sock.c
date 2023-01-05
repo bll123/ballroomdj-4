@@ -49,6 +49,7 @@
 
 #include "bdjstring.h"
 #include "log.h"
+#include "mdebug.h"
 #include "sock.h"
 #include "tmutil.h"
 
@@ -153,7 +154,7 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
   int             idx;
 
   if (sockinfo == NULL) {
-    sockinfo = malloc (sizeof (sockinfo_t));
+    sockinfo = mdmalloc (sizeof (sockinfo_t));
     assert (sockinfo != NULL);
     sockinfo->count = 0;
     sockinfo->max = 0;
@@ -167,7 +168,7 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
 
   idx = sockinfo->count;
   ++sockinfo->count;
-  sockinfo->socklist = realloc (sockinfo->socklist,
+  sockinfo->socklist = mdrealloc (sockinfo->socklist,
       (size_t) sockinfo->count * sizeof (Sock_t));
   assert (sockinfo->socklist != NULL);
   sockinfo->socklist[idx] = sock;
@@ -208,7 +209,7 @@ sockFreeCheck (sockinfo_t *sockinfo)
   if (sockinfo != NULL) {
     sockinfo->count = 0;
     dataFree (sockinfo->socklist);
-    free (sockinfo);
+    mdfree (sockinfo);
   }
 }
 
@@ -438,7 +439,7 @@ sockRead (Sock_t sock, size_t *rlen)
     return NULL;
   }
   len = ntohl (len);
-  data = malloc (len);
+  data = mdmalloc (len);
   assert (data != NULL);
   rc = sockReadData (sock, data, len);
   if (rc < 0) {

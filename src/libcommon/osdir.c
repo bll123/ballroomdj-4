@@ -25,6 +25,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "mdebug.h"
 #include "osdir.h"
 #include "osutils.h"
 
@@ -41,7 +42,7 @@ osDirOpen (const char *dirname)
 {
   dirhandle_t   *dirh;
 
-  dirh = malloc (sizeof (dirhandle_t));
+  dirh = mdmalloc (sizeof (dirhandle_t));
   assert (dirh != NULL);
   dirh->dirname = NULL;
   dirh->dh = NULL;
@@ -52,7 +53,7 @@ osDirOpen (const char *dirname)
 
     dirh->dhandle = INVALID_HANDLE_VALUE;
     len = strlen (dirname) + 3;
-    dirh->dirname = malloc (len);
+    dirh->dirname = mdmalloc (len);
     strlcpy (dirh->dirname, dirname, len);
     stringTrimChar (dirh->dirname, '/');
     strlcat (dirh->dirname, "/*", len);
@@ -82,7 +83,7 @@ osDirIterate (dirhandle_t *dirh)
     if (dirh->dhandle != INVALID_HANDLE_VALUE) {
       rc = 1;
     }
-    free (wdirname);
+    mdfree (wdirname);
   } else {
     rc = FindNextFileW (dirh->dhandle, &filedata);
   }
@@ -97,7 +98,7 @@ osDirIterate (dirhandle_t *dirh)
   dirent = readdir (dirh->dh);
   fname = NULL;
   if (dirent != NULL) {
-    fname = strdup (dirent->d_name);
+    fname = mdstrdup (dirent->d_name);
   }
 #endif
 
@@ -117,6 +118,6 @@ osDirClose (dirhandle_t *dirh)
 #endif
   dataFree (dirh->dirname);
   dirh->dirname = NULL;
-  free (dirh);
+  mdfree (dirh);
 }
 

@@ -17,6 +17,7 @@
 #include "pathbld.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "sequence.h"
 #include "slist.h"
@@ -44,10 +45,10 @@ sequenceAlloc (const char *fname)
     return false;
   }
 
-  sequence = malloc (sizeof (sequence_t));
+  sequence = mdmalloc (sizeof (sequence_t));
   assert (sequence != NULL);
-  sequence->name = strdup (fname);
-  sequence->path = strdup (fn);
+  sequence->name = mdstrdup (fname);
+  sequence->path = mdstrdup (fn);
 
   df = datafileAllocParse ("sequence", DFTYPE_LIST, fn, NULL, 0);
   tlist = datafileGetList (df);
@@ -79,10 +80,10 @@ sequenceCreate (const char *fname)
 
   pathbldMakePath (fn, sizeof (fn), fname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
 
-  sequence = malloc (sizeof (sequence_t));
+  sequence = mdmalloc (sizeof (sequence_t));
   assert (sequence != NULL);
-  sequence->name = strdup (fname);
-  sequence->path = strdup (fn);
+  sequence->name = mdstrdup (fname);
+  sequence->path = mdstrdup (fn);
 
   sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, free);
   nlistSetVersion (sequence->sequence, SEQUENCE_VERSION);
@@ -97,7 +98,7 @@ sequenceFree (sequence_t *sequence)
     dataFree (sequence->path);
     dataFree (sequence->name);
     nlistFree (sequence->sequence);
-    free (sequence);
+    mdfree (sequence);
   }
 }
 

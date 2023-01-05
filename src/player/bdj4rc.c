@@ -33,6 +33,7 @@
 #include "fileop.h"
 #include "lock.h"
 #include "log.h"
+#include "mdebug.h"
 #include "ossignal.h"
 #include "pathbld.h"
 #include "progstate.h"
@@ -97,8 +98,8 @@ main (int argc, char *argv[])
 
   remctrlData.danceList = "";
   mstimeset (&remctrlData.danceListTimer, 0);
-  remctrlData.user = strdup (bdjoptGetStr (OPT_P_REMCONTROLUSER));
-  remctrlData.pass = strdup (bdjoptGetStr (OPT_P_REMCONTROLPASS));
+  remctrlData.user = mdstrdup (bdjoptGetStr (OPT_P_REMCONTROLUSER));
+  remctrlData.pass = mdstrdup (bdjoptGetStr (OPT_P_REMCONTROLPASS));
   remctrlData.playerStatus = NULL;
   remctrlData.playlistList = "";
   mstimeset (&remctrlData.playlistListTimer, 0);
@@ -384,7 +385,7 @@ remctrlProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_PLAYER_STATUS_DATA: {
           dataFree (remctrlData->playerStatus);
-          remctrlData->playerStatus = strdup (args);
+          remctrlData->playerStatus = mdstrdup (args);
           break;
         }
         default: {
@@ -522,9 +523,9 @@ remctrlProcessDanceList (remctrldata_t *remctrlData, char *danceList)
   }
 
   if (*remctrlData->danceList) {
-    free (remctrlData->danceList);
+    mdfree (remctrlData->danceList);
   }
-  remctrlData->danceList = strdup (obuff);
+  remctrlData->danceList = mdstrdup (obuff);
 }
 
 
@@ -549,9 +550,9 @@ remctrlProcessPlaylistList (remctrldata_t *remctrlData, char *playlistList)
   }
 
   if (*remctrlData->playlistList) {
-    free (remctrlData->playlistList);
+    mdfree (remctrlData->playlistList);
   }
-  remctrlData->playlistList = strdup (obuff);
+  remctrlData->playlistList = mdstrdup (obuff);
 }
 
 

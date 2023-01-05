@@ -18,6 +18,7 @@
 #include "dancesel.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "osrandom.h"
 #include "playlist.h"
@@ -87,7 +88,7 @@ danceselAlloc (nlist_t *countList,
   }
 
   logProcBegin (LOG_PROC, "danceselAlloc");
-  dancesel = malloc (sizeof (dancesel_t));
+  dancesel = mdmalloc (sizeof (dancesel_t));
   assert (dancesel != NULL);
   dancesel->dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancesel->autosel = bdjvarsdfGet (BDJVDF_AUTO_SEL);
@@ -152,7 +153,7 @@ danceselFree (dancesel_t *dancesel)
     }
     nlistFree (dancesel->adjustBase);
     nlistFree (dancesel->danceProbTable);
-    free (dancesel);
+    mdfree (dancesel);
   }
   logProcEnd (LOG_PROC, "danceselFree", "");
 }
@@ -197,7 +198,7 @@ danceselAddPlayed (dancesel_t *dancesel, ilistidx_t danceIdx)
   }
 
   logProcBegin (LOG_PROC, "danceselAddPlayed");
-  pd = malloc (sizeof (playedDance_t));
+  pd = mdmalloc (sizeof (playedDance_t));
   pd->danceIdx = danceIdx;
   queuePushHead (dancesel->playedDances, pd);
   logProcEnd (LOG_PROC, "danceselAddPlayed", "");

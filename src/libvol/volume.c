@@ -15,6 +15,7 @@
 #include "bdjstring.h"
 #include "pathbld.h"
 #include "dylib.h"
+#include "mdebug.h"
 #include "sysvars.h"
 #include "volsink.h"
 #include "volume.h"
@@ -34,7 +35,7 @@ volumeInit (const char *volpkg)
 
   char      dlpath [MAXPATHLEN];
 
-  volume = malloc (sizeof (volume_t));
+  volume = mdmalloc (sizeof (volume_t));
   assert (volume != NULL);
   volume->volumeProcess = NULL;
   volume->volumeDisconnect = NULL;
@@ -71,7 +72,7 @@ volumeFree (volume_t *volume)
     if (volume->dlHandle != NULL) {
       dylibClose (volume->dlHandle);
     }
-    free (volume);
+    mdfree (volume);
   }
 }
 
@@ -137,7 +138,7 @@ volumeFreeSinkList (volsinklist_t *sinklist)
       dataFree (sinklist->sinklist [i].description);
     }
     dataFree (sinklist->defname);
-    free (sinklist->sinklist);
+    mdfree (sinklist->sinklist);
     sinklist->defname = NULL;
     sinklist->count = 0;
     sinklist->sinklist = NULL;

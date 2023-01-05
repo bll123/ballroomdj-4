@@ -23,6 +23,7 @@
 #include "dnctypes.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "slist.h"
 #include "templateutil.h"
 
@@ -123,22 +124,22 @@ START_TEST(dance_set)
   danceStartIterator (dance, &iteridx);
   count = 0;
   while ((key = danceIterate (dance, &iteridx)) >= 0) {
-    val = strdup (danceGetStr (dance, key, DANCE_DANCE));
+    val = mdstrdup (danceGetStr (dance, key, DANCE_DANCE));
     danceSetStr (dance, key, DANCE_DANCE, "abc123");
     tval = danceGetStr (dance, key, DANCE_DANCE);
     ck_assert_ptr_nonnull (tval);
     ck_assert_str_ne (val, tval);
     ck_assert_str_eq (tval, "abc123");
     danceSetStr (dance, key, DANCE_DANCE, val);
-    free (val);
+    mdfree (val);
 
-    ann = strdup (danceGetStr (dance, key, DANCE_ANNOUNCE));
+    ann = mdstrdup (danceGetStr (dance, key, DANCE_ANNOUNCE));
     danceSetStr (dance, key, DANCE_ANNOUNCE, "abc123");
     tann = danceGetStr (dance, key, DANCE_ANNOUNCE);
     ck_assert_ptr_nonnull (tann);
     ck_assert_str_ne (ann, tann);
     ck_assert_str_eq (tann, "abc123");
-    free (ann);
+    mdfree (ann);
 
     hbpm = danceGetNum (dance, key, DANCE_HIGH_BPM);
     danceSetNum (dance, key, DANCE_HIGH_BPM, 5);
@@ -218,7 +219,7 @@ START_TEST(dance_conv)
     danceConvDance (&conv);
     ck_assert_str_eq (conv.str, val);
     if (conv.allocated) {
-      free (conv.str);
+      mdfree (conv.str);
     }
 
     type = danceGetNum (dance, key, DANCE_TYPE);
@@ -373,7 +374,7 @@ START_TEST(dance_delete)
   danceStartIterator (dance, &diteridx);
   while ((key = danceIterate (dance, &diteridx)) >= 0) {
     if (count == 2) {
-      dval = strdup (danceGetStr (dance, key, DANCE_DANCE));
+      dval = mdstrdup (danceGetStr (dance, key, DANCE_DANCE));
       danceDelete (dance, key);
       dkey = key;
       break;
@@ -387,7 +388,7 @@ START_TEST(dance_delete)
     ck_assert_int_ne (dkey, key);
     ck_assert_str_ne (val, dval);
   }
-  free (dval);
+  mdfree (dval);
 
   danceFree (dance);
   bdjvarsdfloadCleanup ();

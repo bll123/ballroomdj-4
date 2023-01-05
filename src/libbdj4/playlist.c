@@ -22,6 +22,7 @@
 #include "ilist.h"
 #include "level.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "musicdb.h"
 #include "pathbld.h"
@@ -119,7 +120,7 @@ playlistFree (void *tpl)
     nlistFree (pl->countList);
     dataFree (pl->name);
     pl->name = NULL;
-    free (pl);
+    mdfree (pl);
   }
 }
 
@@ -147,7 +148,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
   }
 
   pl = playlistAlloc (musicdb);
-  pl->name = strdup (fname);
+  pl->name = mdstrdup (fname);
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_KEY_MAX);
   pl->plinfo = datafileGetList (pl->plinfodf);
@@ -249,7 +250,7 @@ playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   pl = playlistAlloc (musicdb);
-  pl->name = strdup (plname);
+  pl->name = mdstrdup (plname);
   snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plname);
   pl->plinfo = nlistAlloc (tbuff, LIST_UNORDERED, free);
   nlistSetSize (pl->plinfo, PLAYLIST_KEY_MAX);
@@ -347,7 +348,7 @@ playlistSetConfigList (playlist_t *pl, playlistkey_t key, const char *value)
     return;
   }
 
-  conv.str = strdup (value);
+  conv.str = mdstrdup (value);
   conv.allocated = true;
   conv.valuetype = VALUE_STR;
   convTextList (&conv);
@@ -612,7 +613,7 @@ playlistSave (playlist_t *pl, const char *name)
 
   if (name != NULL) {
     dataFree (pl->name);
-    pl->name = strdup (name);
+    pl->name = mdstrdup (name);
   }
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
@@ -762,7 +763,7 @@ playlistAlloc (musicdb_t *musicdb)
 {
   playlist_t    *pl = NULL;
 
-  pl = malloc (sizeof (playlist_t));
+  pl = mdmalloc (sizeof (playlist_t));
   pl->name = NULL;
   pl->songlistiter = 0;
   pl->plinfodf = NULL;

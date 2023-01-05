@@ -22,6 +22,7 @@
 #include "genre.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "slist.h"
 #include "templateutil.h"
 
@@ -110,7 +111,7 @@ START_TEST(genre_conv)
     genreConv (&conv);
     ck_assert_str_eq (conv.str, val);
     if (conv.allocated) {
-      free (conv.str);
+      mdfree (conv.str);
     }
 
     ++count;

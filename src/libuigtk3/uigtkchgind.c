@@ -12,6 +12,7 @@
 
 #include <gtk/gtk.h>
 
+#include "mdebug.h"
 #include "ui.h"
 
 typedef struct uichgind {
@@ -24,7 +25,7 @@ uiCreateChangeIndicator (UIWidget *boxp)
   uichgind_t  *uichgind;
   GtkWidget   *widget;
 
-  uichgind = malloc (sizeof (uichgind_t));
+  uichgind = mdmalloc (sizeof (uichgind_t));
 
   widget = gtk_label_new ("");
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
@@ -41,7 +42,7 @@ void
 uichgindFree (uichgind_t *uichgind)
 {
   if (uichgind != NULL) {
-    free (uichgind);
+    mdfree (uichgind);
   }
 }
 

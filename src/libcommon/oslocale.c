@@ -20,6 +20,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "mdebug.h"
 #include "oslocale.h"
 #include "osutils.h"
 
@@ -37,7 +38,7 @@ osGetLocale (char *buff, size_t sz)
       LOCALE_ALLOW_NEUTRAL_NAMES);
   tbuff = osFromWideChar (locbuff);
   strlcpy (buff, tbuff, sz);
-  free (tbuff);
+  mdfree (tbuff);
 #else
   strlcpy (buff, setlocale (LC_MESSAGES, NULL), sz);
 #endif

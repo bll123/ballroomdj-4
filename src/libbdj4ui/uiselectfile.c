@@ -16,6 +16,7 @@
 #include <gtk/gtk.h>
 
 #include "bdj4intl.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "playlist.h"
 #include "ui.h"
@@ -53,7 +54,7 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
   int         playlistSel;
   const char  *title;
 
-  selectfile = malloc (sizeof (uiselectfile_t));
+  selectfile = mdmalloc (sizeof (uiselectfile_t));
   selectfile->parentwinp = window;
   uiutilsUIWidgetInit (&selectfile->uidialog);
   selectfile->selfiletree = NULL;
@@ -104,7 +105,7 @@ selectFileFree (uiselectfile_t *selectfile)
 {
   if (selectfile != NULL) {
     uiTreeViewFree (selectfile->selfiletree);
-    free (selectfile);
+    mdfree (selectfile);
   }
 }
 
@@ -244,7 +245,7 @@ selectFileResponseHandler (void *udata, long responseid)
       if (selectfile->selfilecb != NULL) {
         selectfile->selfilecb (selectfile->cbudata, str);
       }
-      free (str);
+      mdfree (str);
       selectfile->selfilecb = NULL;
       break;
     }

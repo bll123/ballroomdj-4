@@ -25,6 +25,7 @@
 #endif
 
 #include "bdjstring.h"
+#include "mdebug.h"
 #include "fileshared.h"
 
 typedef union filehandle {
@@ -47,7 +48,7 @@ fileSharedOpen (const char *fname, int truncflag)
   int         flags;
 #endif
 
-  fhandle = malloc (sizeof (fileshared_t));
+  fhandle = mdmalloc (sizeof (fileshared_t));
 
 #if _lib_CreateFile
   cd = OPEN_ALWAYS;

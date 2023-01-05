@@ -16,6 +16,7 @@
 #include "bdjopt.h"
 #include "dispsel.h"
 #include "log.h"
+#include "mdebug.h"
 #include "msgparse.h"
 #include "musicdb.h"
 #include "pathbld.h"
@@ -115,7 +116,7 @@ uimusicqUIInit (uimusicq_t *uimusicq)
   uimusicqgtk_t   *uiw;
 
   for (int i = 0; i < MUSICQ_MAX; ++i) {
-    uiw = malloc (sizeof (uimusicqgtk_t));
+    uiw = mdmalloc (sizeof (uimusicqgtk_t));
     uimusicq->ui [i].uiWidgets = uiw;
     uiw->uidance = NULL;
     uiw->uidance5 = NULL;
@@ -143,7 +144,7 @@ uimusicqUIFree (uimusicq_t *uimusicq)
       uidanceFree (uiw->uidance);
       uidanceFree (uiw->uidance5);
       uiTreeViewFree (uiw->musicqTree);
-      free (uiw);
+      mdfree (uiw);
     }
   }
 }
@@ -571,7 +572,7 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
         pathstr = gtk_tree_path_to_string (path);
         loc = atol (pathstr);
         gtk_tree_path_free (path);
-        free (pathstr);
+        mdfree (pathstr);
       }
     }
   }
@@ -675,7 +676,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
   if (newdispflag == MUSICQ_NEW_DISP) {
     UIWidget    *uiwidgetp;
 
-    uiw->typelist = malloc (sizeof (GType) * MUSICQ_COL_MAX);
+    uiw->typelist = mdmalloc (sizeof (GType) * MUSICQ_COL_MAX);
     uiw->col = 0;
     /* attributes: ellipsize / align / font */
     uiw->typelist [uiw->col++] = G_TYPE_INT;
@@ -693,7 +694,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
         uimusicqProcessMusicQueueDataNewCallback, uimusicq);
 
     store = gtk_list_store_newv (uiw->col, uiw->typelist);
-    free (uiw->typelist);
+    mdfree (uiw->typelist);
     uiwidgetp = uiTreeViewGetUIWidget (uiw->musicqTree);
     gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidgetp->widget),
         GTK_TREE_MODEL (store));

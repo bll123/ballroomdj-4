@@ -19,6 +19,7 @@
 #include "istring.h"
 #include "level.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "nlist.h"
 #include "pathbld.h"
@@ -101,10 +102,10 @@ songfilterAlloc (void)
 
   logProcBegin (LOG_PROC, "songfilterAlloc");
 
-  sf = malloc (sizeof (songfilter_t));
+  sf = mdmalloc (sizeof (songfilter_t));
   assert (sf != NULL);
 
-  sf->sortselection = strdup (SONG_FILTER_SORT_DEFAULT);
+  sf->sortselection = mdstrdup (SONG_FILTER_SORT_DEFAULT);
   sf->parsed = songfilterParseSortKey (sf);
   for (int i = 0; i < SONG_FILTER_MAX; ++i) {
     sf->datafilter [i] = NULL;
@@ -136,7 +137,7 @@ songfilterFree (songfilter_t *sf)
     slistFree (sf->sortList);
     nlistFree (sf->indexList);
     nlistFree (sf->parsed);
-    free (sf);
+    mdfree (sf);
   }
   logProcEnd (LOG_PROC, "songfilterFree", "");
 }
@@ -147,7 +148,7 @@ songfilterSetSort (songfilter_t *sf, char *sortselection)
   logProcBegin (LOG_PROC, "songfilterSetSort");
 
   dataFree (sf->sortselection);
-  sf->sortselection = strdup (sortselection);
+  sf->sortselection = mdstrdup (sortselection);
   nlistFree (sf->parsed);
   sf->parsed = songfilterParseSortKey (sf);
   logProcEnd (LOG_PROC, "songfilterSetSort", "");
@@ -273,7 +274,7 @@ songfilterSetData (songfilter_t *sf, int filterType, void *value)
   }
   if (valueType == SONG_FILTER_STR) {
     dataFree (sf->datafilter [filterType]);
-    sf->datafilter [filterType] = strdup (value);
+    sf->datafilter [filterType] = mdstrdup (value);
     if (filterType == SONG_FILTER_SEARCH) {
       istringToLower ((char *) sf->datafilter [filterType]);
     }
@@ -744,7 +745,7 @@ songfilterFreeData (songfilter_t *sf, int i)
 
   if (sf->datafilter [i] != NULL) {
     if (valueTypeLookup [i] == SONG_FILTER_STR) {
-      free (sf->datafilter [i]);
+      mdfree (sf->datafilter [i]);
     }
     if (valueTypeLookup [i] == SONG_FILTER_SLIST) {
       /* songfilter is not the owner of the keyword list */
@@ -896,7 +897,7 @@ songfilterParseSortKey (songfilter_t *sf)
 
   parsed = nlistAlloc ("songfilter-sortkey-parse", LIST_UNORDERED, NULL);
 
-  sortsel = strdup (sf->sortselection);
+  sortsel = mdstrdup (sf->sortselection);
   p = strtok_r (sortsel, " ", &tokstr);
   while (p != NULL) {
     tagkey = tagdefLookup (p);
@@ -907,7 +908,7 @@ songfilterParseSortKey (songfilter_t *sf)
     }
     p = strtok_r (NULL, " ", &tokstr);
   }
-  free (sortsel);
+  mdfree (sortsel);
 
   logProcEnd (LOG_PROC, "songfilterParseSortKey", "");
   return parsed;

@@ -29,6 +29,7 @@
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
+#include "mdebug.h"
 #include "msgparse.h"
 #include "musicq.h"
 #include "ossignal.h"
@@ -739,7 +740,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   logProcBegin (LOG_PROC, "pluiProcessMsg");
 
   if (args != NULL) {
-    targs = strdup (args);
+    targs = mdstrdup (args);
   }
 
   switch (route) {
@@ -1339,7 +1340,7 @@ pluiReqextCallback (void *udata)
     if (songentrytext != NULL) {
       char        *tbuff;
 
-      tbuff = malloc (BDJMSG_MAX);
+      tbuff = mdmalloc (BDJMSG_MAX);
       snprintf (tbuff, BDJMSG_MAX, "%s%c%d%c%s",
           songGetStr (song, TAG_FILE), MSG_ARGS_RS,
           dbidx, MSG_ARGS_RS,

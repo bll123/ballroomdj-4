@@ -18,6 +18,7 @@
 #include "fileop.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "slist.h"
 
@@ -72,10 +73,10 @@ danceAlloc (void)
     return NULL;
   }
 
-  dance = malloc (sizeof (dance_t));
+  dance = mdmalloc (sizeof (dance_t));
   assert (dance != NULL);
 
-  dance->path = strdup (fname);
+  dance->path = mdstrdup (fname);
   dance->danceList = NULL;
 
   dance->df = datafileAllocParse ("dance", DFTYPE_INDIRECT, fname,
@@ -102,7 +103,7 @@ danceFree (dance_t *dance)
     dataFree (dance->path);
     datafileFree (dance->df);
     slistFree (dance->danceList);
-    free (dance);
+    mdfree (dance);
   }
 }
 

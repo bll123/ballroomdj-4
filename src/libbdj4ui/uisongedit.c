@@ -17,6 +17,7 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "log.h"
+#include "mdebug.h"
 #include "uisongedit.h"
 #include "ui.h"
 
@@ -28,7 +29,7 @@ uisongeditInit (conn_t *conn, musicdb_t *musicdb,
 
   logProcBegin (LOG_PROC, "uisongeditInit");
 
-  uisongedit = malloc (sizeof (uisongedit_t));
+  uisongedit = mdmalloc (sizeof (uisongedit_t));
   assert (uisongedit != NULL);
 
   uisongedit->conn = conn;
@@ -51,7 +52,7 @@ uisongeditFree (uisongedit_t *uisongedit)
 
   if (uisongedit != NULL) {
     uisongeditUIFree (uisongedit);
-    free (uisongedit);
+    mdfree (uisongedit);
   }
 
   logProcEnd (LOG_PROC, "uisongeditFree", "");

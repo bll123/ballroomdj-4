@@ -13,6 +13,7 @@
 
 #include "list.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "bdjstring.h"
 
@@ -91,7 +92,7 @@ nlistSetStr (nlist_t *list, nlistidx_t lkey, const char *data)
   item.valuetype = VALUE_STR;
   item.value.data = NULL;
   if (data != NULL) {
-    item.value.data = strdup (data);
+    item.value.data = mdstrdup (data);
   }
   listSet (list, &item);
 }

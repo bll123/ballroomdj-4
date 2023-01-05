@@ -13,6 +13,7 @@
 #include <math.h>
 
 #include "bdj4.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "ui.h"
 
@@ -36,7 +37,7 @@ uiCreateSwitch (int value)
   /* the gtk switch is different in every theme, some of which are not */
   /* great.  use a toggle button instead and set our own image */
 
-  uiswitch = malloc (sizeof (uiswitch_t));
+  uiswitch = mdmalloc (sizeof (uiswitch_t));
   uiutilsUIWidgetInit (&uiswitch->uiswitch);
   uiutilsUIWidgetInit (&uiswitch->switchoffimg);
   uiutilsUIWidgetInit (&uiswitch->switchonimg);
@@ -85,7 +86,7 @@ uiSwitchFree (uiswitch_t *uiswitch)
   if (uiswitch != NULL) {
     uiWidgetClearPersistent (&uiswitch->switchoffimg);
     uiWidgetClearPersistent (&uiswitch->switchonimg);
-    free (uiswitch);
+    mdfree (uiswitch);
   }
 }
 

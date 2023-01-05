@@ -19,6 +19,7 @@
 #include "conn.h"
 #include "level.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
 #include "pathutil.h"
@@ -137,7 +138,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uisongeditgtk_t  *uiw;
 
   logProcBegin (LOG_PROC, "uisongeditUIInit");
-  uiw = malloc (sizeof (uisongeditgtk_t));
+  uiw = mdmalloc (sizeof (uisongeditgtk_t));
   uiw->parentwin = NULL;
   uiw->itemcount = 0;
   uiw->items = NULL;
@@ -235,7 +236,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
       uiButtonFree (uiw->buttons [i]);
     }
     dataFree (uiw->items);
-    free (uiw);
+    mdfree (uiw);
     uisongedit->uiWidgetData = NULL;
   }
   logProcEnd (LOG_PROC, "uisongeditUIFree", "");
@@ -381,7 +382,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   }
   /* the items must all be alloc'd beforehand so that the callback */
   /* pointer is static */
-  uiw->items = malloc (sizeof (uisongedititem_t) * count);
+  uiw->items = mdmalloc (sizeof (uisongedititem_t) * count);
   for (int i = 0; i < count; ++i) {
     uiw->items [i].tagkey = 0;
     uiutilsUIWidgetInit (&uiw->items [i].uiwidget);
@@ -1180,7 +1181,7 @@ uisongeditCopyPath (void *udata)
   txt = uiLabelGetText (&uiw->filedisp);
   ffn = songFullFileName (txt);
   strlcpy (tbuff, ffn, sizeof (tbuff));
-  free (ffn);
+  mdfree (ffn);
   if (isWindows ()) {
     pathWinPath (tbuff, sizeof (tbuff));
   }

@@ -36,6 +36,7 @@
 #include "instutil.h"
 #include "localeutil.h"
 #include "log.h"
+#include "mdebug.h"
 #include "osprocess.h"
 #include "osutils.h"
 #include "osuiutils.h"
@@ -144,7 +145,7 @@ main (int argc, char *argv[])
 
   uiutilsUIWidgetInit (&altsetup.window);
   altsetup.instState = ALT_PRE_INIT;
-  altsetup.target = strdup ("");
+  altsetup.target = mdstrdup ("");
   altsetup.uiBuilt = false;
   altsetup.scrolltoend = false;
   altsetup.maindir = NULL;
@@ -498,10 +499,10 @@ altsetupTargetDirDialog (void *udata)
     strlcpy (tbuff, fn, sizeof (tbuff));
     /* validation gets called again upon set */
     uiEntrySetValue (altsetup->targetEntry, tbuff);
-    free (fn);
+    mdfree (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", altsetup->target);
   }
-  free (selectdata);
+  mdfree (selectdata);
   return UICB_CONT;
 }
 
@@ -658,7 +659,7 @@ altsetupCopyTemplates (altsetup_t *altsetup)
 
     pi = pathInfo (fname);
     if (pathInfoExtCheck (pi, ".html")) {
-      free (pi);
+      mdfree (pi);
       continue;
     }
 
@@ -687,7 +688,7 @@ altsetupCopyTemplates (altsetup_t *altsetup)
             tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
       } else {
         /* unknown extension */
-        free (pi);
+        mdfree (pi);
         continue;
       }
     } else if (pathInfoExtCheck (pi, BDJ4_CONFIG_EXT) ||
@@ -728,13 +729,13 @@ altsetupCopyTemplates (altsetup_t *altsetup)
       }
     } else {
       /* unknown extension */
-      free (pi);
+      mdfree (pi);
       continue;
     }
 
     altsetupTemplateCopy (dir, from, to);
 
-    free (pi);
+    mdfree (pi);
   }
   slistFree (dirlist);
 
@@ -953,7 +954,7 @@ altsetupCleanup (altsetup_t *altsetup)
     }
     uiEntryFree (altsetup->nameEntry);
     uiEntryFree (altsetup->targetEntry);
-    free (altsetup->target);
+    mdfree (altsetup->target);
   }
 }
 
@@ -1019,7 +1020,7 @@ static void
 altsetupSetTargetDir (altsetup_t *altsetup, const char *fn)
 {
   dataFree (altsetup->target);
-  altsetup->target = strdup (fn);
+  altsetup->target = mdstrdup (fn);
   pathNormPath (altsetup->target, strlen (altsetup->target));
 }
 

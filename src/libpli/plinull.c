@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "mdebug.h"
 #include "pli.h"
 #include "tmutil.h"
 #include "volsink.h"
@@ -20,7 +21,7 @@ pliiInit (const char *volpkg, const char *sinkname)
 {
   plidata_t *pliData;
 
-  pliData = malloc (sizeof (plidata_t));
+  pliData = mdmalloc (sizeof (plidata_t));
   assert (pliData != NULL);
   pliData->plData = NULL;
   pliData->duration = 20000;
@@ -35,7 +36,7 @@ pliiFree (plidata_t *pliData)
 {
   if (pliData != NULL) {
     pliiClose (pliData);
-    free (pliData);
+    mdfree (pliData);
   }
 }
 

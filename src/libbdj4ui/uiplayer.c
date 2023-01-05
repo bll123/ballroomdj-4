@@ -20,6 +20,7 @@
 #include "dance.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "pathbld.h"
 #include "player.h"
@@ -134,7 +135,7 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer_t    *uiplayer;
 
   logProcBegin (LOG_PROC, "uiplayerInit");
-  uiplayer = malloc (sizeof (uiplayer_t));
+  uiplayer = mdmalloc (sizeof (uiplayer_t));
   assert (uiplayer != NULL);
   uiplayer->progstate = progstate;
   uiplayer->conn = conn;
@@ -189,7 +190,7 @@ uiplayerFree (uiplayer_t *uiplayer)
     for (int i = 0; i < UIPLAYER_BUTTON_MAX; ++i) {
       uiButtonFree (uiplayer->buttons [i]);
     }
-    free (uiplayer);
+    mdfree (uiplayer);
   }
   logProcEnd (LOG_PROC, "uiplayerFree", "");
 }
@@ -562,7 +563,7 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
   logProcBegin (LOG_PROC, "uiplayerProcessMsg");
   if (args != NULL) {
-    targs = strdup (args);
+    targs = mdstrdup (args);
   }
 
   switch (route) {

@@ -28,6 +28,7 @@
 #include "instutil.h"
 #include "lock.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "osprocess.h"
 #include "ossignal.h"
@@ -733,7 +734,7 @@ starterMainLoop (void *tstarter)
         fprintf (fh, "Message:\n\n%s\n", msg);
         fclose (fh);
       }
-      free (msg);
+      mdfree (msg);
 
       supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_NO_COMPRESSION);
       fileopDelete (tbuff);
@@ -1238,7 +1239,7 @@ starterProcessSupport (void *udata)
   if (isMacOS ()) {
     uiutilsUICallbackInit (&starter->macoslinkcb [START_LINK_CB_WIKI].cb,
         starterWikiLinkHandler, starter, NULL);
-    starter->macoslinkcb [START_LINK_CB_WIKI].uri = strdup (uri);
+    starter->macoslinkcb [START_LINK_CB_WIKI].uri = mdstrdup (uri);
     uiLinkSetActivateCallback (&uiwidget,
         &starter->macoslinkcb [START_LINK_CB_WIKI].cb);
   }
@@ -1253,7 +1254,7 @@ starterProcessSupport (void *udata)
   if (isMacOS ()) {
     uiutilsUICallbackInit (&starter->macoslinkcb [START_LINK_CB_FORUM].cb,
         starterForumLinkHandler, starter, NULL);
-    starter->macoslinkcb [START_LINK_CB_FORUM].uri = strdup (uri);
+    starter->macoslinkcb [START_LINK_CB_FORUM].uri = mdstrdup (uri);
     uiLinkSetActivateCallback (&uiwidget,
         &starter->macoslinkcb [START_LINK_CB_FORUM].cb);
   }
@@ -1268,7 +1269,7 @@ starterProcessSupport (void *udata)
   if (isMacOS ()) {
     uiutilsUICallbackInit (&starter->macoslinkcb [START_LINK_CB_TICKETS].cb,
         starterTicketLinkHandler, starter, NULL);
-    starter->macoslinkcb [START_LINK_CB_TICKETS].uri = strdup (uri);
+    starter->macoslinkcb [START_LINK_CB_TICKETS].uri = mdstrdup (uri);
     uiLinkSetActivateCallback (&uiwidget,
         &starter->macoslinkcb [START_LINK_CB_TICKETS].cb);
   }
@@ -1367,7 +1368,7 @@ starterGetProfiles (startui_t *starter)
         max = len > max ? len : max;
         nlistSetStr (proflist, count, pname);
         nlistSetNum (profidxlist, count, i);
-        free (pname);
+        mdfree (pname);
       }
       ++count;
     } else if (availprof == -1) {
@@ -1699,7 +1700,7 @@ starterSendFilesInit (startui_t *starter, char *dir, int sendType)
   starter->supportFileList = list;
   slistStartIterator (list, &starter->supportFileIterIdx);
   dataFree (starter->supportDir);
-  starter->supportDir = strdup (dir);
+  starter->supportDir = mdstrdup (dir);
 }
 
 static void
@@ -1741,7 +1742,7 @@ starterSendFiles (startui_t *starter)
   strlcpy (ifn, starter->supportDir, sizeof (ifn));
   strlcat (ifn, "/", sizeof (ifn));
   strlcat (ifn, fn, sizeof (ifn));
-  starter->supportInFname = strdup (ifn);
+  starter->supportInFname = mdstrdup (ifn);
   /* CONTEXT: starterui: support: status message */
   snprintf (tbuff, sizeof (tbuff), _("Sending %s"), ifn);
   uiLabelSetText (&starter->supportStatus, tbuff);

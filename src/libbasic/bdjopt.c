@@ -18,6 +18,7 @@
 #include "dirop.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "mdebug.h"
 #include "musicq.h"
 #include "nlist.h"
 #include "pathbld.h"
@@ -132,7 +133,7 @@ bdjoptInit (void)
     bdjoptCleanup ();
   }
 
-  bdjopt = malloc (sizeof (bdjopt_t));
+  bdjopt = mdmalloc (sizeof (bdjopt_t));
   assert (bdjopt != NULL);
   bdjopt->currprofile = 0;
   bdjopt->bdjoptList = NULL;
@@ -166,27 +167,27 @@ bdjoptInit (void)
   /* global */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
       BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  bdjopt->fname [OPTTYPE_GLOBAL] = strdup (path);
+  bdjopt->fname [OPTTYPE_GLOBAL] = mdstrdup (path);
 
   /* profile */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
       BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  bdjopt->fname [OPTTYPE_PROFILE] = strdup (path);
+  bdjopt->fname [OPTTYPE_PROFILE] = mdstrdup (path);
 
   /* queue */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
       "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  bdjopt->fname [OPTTYPE_QUEUE] = strdup (path);
+  bdjopt->fname [OPTTYPE_QUEUE] = mdstrdup (path);
 
   /* per machine */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
       BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
-  bdjopt->fname [OPTTYPE_MACHINE] = strdup (path);
+  bdjopt->fname [OPTTYPE_MACHINE] = mdstrdup (path);
 
   /* per machine per profile */
   pathbldMakePath (path, sizeof (path), BDJ_CONFIG_BASEFN,
       BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-  bdjopt->fname [OPTTYPE_MACH_PROF] = strdup (path);
+  bdjopt->fname [OPTTYPE_MACH_PROF] = mdstrdup (path);
 
   if (! fileopFileExists (bdjopt->fname [OPTTYPE_PROFILE])) {
     bdjoptCreateNewConfigs ();
@@ -205,7 +206,7 @@ bdjoptInit (void)
     datafileParseMerge (tlist, ddata, bdjopt->tag [i], DFTYPE_KEY_VAL,
         bdjopt->dfkeys [i], bdjopt->dfcount [i], 0);
     datafileSetData (df, tlist);
-    free (ddata);
+    mdfree (ddata);
   }
 
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
@@ -219,7 +220,7 @@ bdjoptInit (void)
     datafileParseMerge (tlist, ddata, bdjopt->tag [OPTTYPE_QUEUE], DFTYPE_KEY_VAL,
         bdjopt->dfkeys [OPTTYPE_QUEUE], bdjopt->dfcount [OPTTYPE_QUEUE], offset);
     datafileSetData (df, tlist);
-    free (ddata);
+    mdfree (ddata);
   }
 
   bdjopt->df = df;
@@ -235,7 +236,7 @@ bdjoptCleanup (void)
       dataFree (bdjopt->fname [i]);
       bdjopt->fname [i] = NULL;
     }
-    free (bdjopt);
+    mdfree (bdjopt);
   }
   bdjopt = NULL;
 }
@@ -524,7 +525,7 @@ bdjoptGetProfileName (void)
       tbuff, bdjopt->dfkeys [OPTTYPE_PROFILE],
       bdjopt->dfcount [OPTTYPE_PROFILE]);
   dflist = datafileGetList (df);
-  pname = strdup (nlistGetStr (dflist, OPT_P_PROFILENAME));
+  pname = mdstrdup (nlistGetStr (dflist, OPT_P_PROFILENAME));
   datafileFree (df);
   return pname;
 }

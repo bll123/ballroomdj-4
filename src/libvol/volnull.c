@@ -9,6 +9,7 @@
 #include <strings.h>
 #include <memory.h>
 
+#include "mdebug.h"
 #include "volsink.h"
 #include "volume.h"
 
@@ -34,23 +35,23 @@ volumeProcess (volaction_t action, const char *sinkname,
   }
 
   if (action == VOL_GETSINKLIST) {
-    sinklist->defname = strdup ("no-volume");
+    sinklist->defname = mdstrdup ("no-volume");
     sinklist->sinklist = NULL;
     sinklist->count = 3;
-    sinklist->sinklist = realloc (sinklist->sinklist,
+    sinklist->sinklist = mdrealloc (sinklist->sinklist,
         sinklist->count * sizeof (volsinkitem_t));
     sinklist->sinklist [0].defaultFlag = 1;
     sinklist->sinklist [0].idxNumber = 0;
-    sinklist->sinklist [0].name = strdup ("no-volume");
-    sinklist->sinklist [0].description = strdup ("No Volume");
+    sinklist->sinklist [0].name = mdstrdup ("no-volume");
+    sinklist->sinklist [0].description = mdstrdup ("No Volume");
     sinklist->sinklist [1].defaultFlag = 0;
     sinklist->sinklist [1].idxNumber = 1;
-    sinklist->sinklist [1].name = strdup ("silence");
-    sinklist->sinklist [1].description = strdup ("Silence");
+    sinklist->sinklist [1].name = mdstrdup ("silence");
+    sinklist->sinklist [1].description = mdstrdup ("Silence");
     sinklist->sinklist [2].defaultFlag = 0;
     sinklist->sinklist [2].idxNumber = 2;
-    sinklist->sinklist [2].name = strdup ("quiet");
-    sinklist->sinklist [2].description = strdup ("Quiet");
+    sinklist->sinklist [2].name = mdstrdup ("quiet");
+    sinklist->sinklist [2].description = mdstrdup ("Quiet");
     return 0;
   }
 

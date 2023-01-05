@@ -22,6 +22,7 @@
 #include "bdjstring.h"
 #include "dirlist.h"
 #include "fileop.h"
+#include "mdebug.h"
 #include "slist.h"
 #include "osdir.h"
 #include "osutils.h"
@@ -59,7 +60,7 @@ dirlistBasicDirList (const char *dirname, const char *extension)
   while ((fname = osDirIterate (dh)) != NULL) {
     snprintf (temp, sizeof (temp), "%s/%s", dirname, fname);
     if (fileopIsDirectory (temp)) {
-      free (fname);
+      mdfree (fname);
       continue;
     }
 
@@ -67,7 +68,7 @@ dirlistBasicDirList (const char *dirname, const char *extension)
       pi = pathInfo (fname);
       if (pathInfoExtCheck (pi, extension) == false) {
         pathInfoFree (pi);
-        free (fname);
+        mdfree (fname);
         continue;
       }
       pathInfoFree (pi);
@@ -84,8 +85,8 @@ dirlistBasicDirList (const char *dirname, const char *extension)
     if (cvtname != NULL) {
       slistSetStr (fileList, cvtname, NULL);
     }
-    free (cvtname);
-    free (fname);
+    mdfree (cvtname);
+    mdfree (fname);
   }
   osDirClose (dh);
 
@@ -125,7 +126,7 @@ dirlistRecursiveDirList (const char *dirname, int flags)
     while ((fname = osDirIterate (dh)) != NULL) {
       if (strcmp (fname, ".") == 0 ||
           strcmp (fname, "..") == 0) {
-        free (fname);
+        mdfree (fname);
         continue;
       }
 
@@ -152,13 +153,13 @@ dirlistRecursiveDirList (const char *dirname, int flags)
             slistSetStr (fileList, temp, p);
           }
         }
-        free (cvtname);
+        mdfree (cvtname);
       }
-      free (fname);
+      mdfree (fname);
     }
 
     osDirClose (dh);
-    free (dir);
+    mdfree (dir);
   }
   queueFree (dirQueue);
 

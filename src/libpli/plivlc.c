@@ -15,6 +15,7 @@
 #include <math.h>
 
 #include "pli.h"
+#include "mdebug.h"
 #include "tmutil.h"
 #include "vlci.h"
 #include "volsink.h"
@@ -51,7 +52,7 @@ pliiInit (const char *volpkg, const char *sinkname)
   plidata_t *pliData;
   char      * vlcOptions [5];
 
-  pliData = malloc (sizeof (plidata_t));
+  pliData = mdmalloc (sizeof (plidata_t));
   assert (pliData != NULL);
 
   vlcOptions [0] = NULL;
@@ -65,7 +66,7 @@ pliiFree (plidata_t *pliData)
 {
   if (pliData != NULL) {
     pliiClose (pliData);
-    free (pliData);
+    mdfree (pliData);
   }
 }
 

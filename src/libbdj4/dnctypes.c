@@ -15,6 +15,7 @@
 #include "fileop.h"
 #include "bdjvarsdf.h"
 #include "log.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "slist.h"
 
@@ -36,7 +37,7 @@ dnctypesAlloc (void)
     return NULL;
   }
 
-  dnctypes = malloc (sizeof (dnctype_t));
+  dnctypes = mdmalloc (sizeof (dnctype_t));
   assert (dnctypes != NULL);
 
   dnctypes->df = datafileAllocParse ("dance-types", DFTYPE_LIST, fname,
@@ -52,7 +53,7 @@ dnctypesFree (dnctype_t *dnctypes)
 {
   if (dnctypes != NULL) {
     datafileFree (dnctypes->df);
-    free (dnctypes);
+    mdfree (dnctypes);
   }
 }
 

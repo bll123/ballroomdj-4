@@ -16,6 +16,7 @@
 #include "bdjstring.h"
 #include "fileop.h"
 #include "locatebdj3.h"
+#include "mdebug.h"
 #include "osutils.h"
 
 char *
@@ -31,7 +32,7 @@ locatebdj3 (void)
   loc = getenv ("BDJ3_LOCATION");
   if (loc != NULL) {
     if (locationcheck (loc)) {
-      return strdup (loc);
+      return mdstrdup (loc);
     }
   }
 
@@ -43,7 +44,7 @@ locatebdj3 (void)
   }
 
   if (! *home) {
-    return strdup ("");
+    return mdstrdup ("");
   }
 
   /* Linux, old MacOS, recent windows: $HOME/BallroomDJ */
@@ -56,7 +57,7 @@ locatebdj3 (void)
   strlcat (tbuff, "BallroomDJ", MAXPATHLEN);
 
   if (locationcheck (tbuff)) {
-    return strdup (tbuff);
+    return mdstrdup (tbuff);
   }
 
   /* windows: %USERPROFILE%/Desktop/BallroomDJ */
@@ -67,7 +68,7 @@ locatebdj3 (void)
   strlcat (tbuff, "BallroomDJ", MAXPATHLEN);
 
   if (locationcheck (tbuff)) {
-    return strdup (tbuff);
+    return mdstrdup (tbuff);
   }
 
   /* macos $HOME/Library/Application Support/BallroomDJ */
@@ -81,7 +82,7 @@ locatebdj3 (void)
   strlcat (tbuff, "BallroomDJ", MAXPATHLEN);
 
   if (locationcheck (tbuff)) {
-    return strdup (tbuff);
+    return mdstrdup (tbuff);
   }
 
   /* my personal location */
@@ -90,10 +91,10 @@ locatebdj3 (void)
   strlcat (tbuff, "music-local", MAXPATHLEN);
 
   if (locationcheck (tbuff)) {
-    return strdup (tbuff);
+    return mdstrdup (tbuff);
   }
 
-  return strdup ("");
+  return mdstrdup ("");
 }
 
 bool

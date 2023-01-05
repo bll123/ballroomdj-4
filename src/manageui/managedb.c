@@ -18,6 +18,7 @@
 #include "itunes.h"
 #include "log.h"
 #include "manageui.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "osprocess.h"
 #include "pathbld.h"
@@ -70,7 +71,7 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
   nlist_t         *hlist;
   char            tbuff [300];
 
-  managedb = malloc (sizeof (managedb_t));
+  managedb = mdmalloc (sizeof (managedb_t));
 
   managedb->windowp = window;
   managedb->conn = conn;
@@ -148,7 +149,7 @@ manageDbFree (managedb_t *managedb)
     uiButtonFree (managedb->topdirsel);
     uiButtonFree (managedb->dbstart);
     uiButtonFree (managedb->dbstop);
-    free (managedb);
+    mdfree (managedb);
   }
 }
 
@@ -452,9 +453,9 @@ manageDbSelectDirCallback (void *udata)
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     uiEntrySetValue (managedb->dbtopdir, fn);
-    free (fn);
+    mdfree (fn);
   }
-  free (selectdata);
+  mdfree (selectdata);
   return UICB_CONT;
 }
 

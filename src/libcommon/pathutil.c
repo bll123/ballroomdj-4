@@ -21,6 +21,7 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "mdebug.h"
 #include "pathutil.h"
 
 pathinfo_t *
@@ -33,7 +34,7 @@ pathInfo (const char *path)
   bool          trailingslash = false;
 
 
-  pi = malloc (sizeof (pathinfo_t));
+  pi = mdmalloc (sizeof (pathinfo_t));
   assert (pi != NULL);
 
   pi->dirname = path;
@@ -106,7 +107,7 @@ void
 pathInfoFree (pathinfo_t *pi)
 {
   if (pi != NULL) {
-    free (pi);
+    mdfree (pi);
   }
 }
 

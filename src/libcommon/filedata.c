@@ -14,6 +14,7 @@
 
 #include "filedata.h"
 #include "fileop.h"
+#include "mdebug.h"
 
 char *
 filedataReadAll (const char *fname, size_t *rlen)
@@ -31,7 +32,7 @@ filedataReadAll (const char *fname, size_t *rlen)
   }
   fh = fileopOpen (fname, "r");
   if (fh != NULL) {
-    data = malloc (len + 1);
+    data = mdmalloc (len + 1);
     assert (data != NULL);
     len = fread (data, 1, len, fh);
     data [len] = '\0';
@@ -65,7 +66,7 @@ filedataReplace (char *data, size_t *dlen, const char *target, const char *repl)
   repllen = strlen (repl);
   nlen = *dlen;
   nlenalloc = nlen;
-  ndata = malloc (nlenalloc + 1);
+  ndata = mdmalloc (nlenalloc + 1);
   assert (ndata != NULL);
   lastp = data;
 
@@ -74,7 +75,7 @@ filedataReplace (char *data, size_t *dlen, const char *target, const char *repl)
   while (p != NULL) {
     tlen = nlenalloc + (repllen - targetlen);
     if (tlen > nlenalloc) {
-      ndata = realloc (ndata, tlen + 1);
+      ndata = mdrealloc (ndata, tlen + 1);
       assert (ndata != NULL);
       nlenalloc = tlen;
     }

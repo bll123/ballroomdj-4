@@ -12,6 +12,7 @@
 #include <ctype.h>
 #include <math.h>
 
+#include "mdebug.h"
 #include "slist.h"
 #include "tagdef.h"
 #include "ui.h"

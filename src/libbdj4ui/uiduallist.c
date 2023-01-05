@@ -18,6 +18,7 @@
 #include "bdj4intl.h"
 #include "bdjstring.h"
 #include "istring.h"
+#include "mdebug.h"
 #include "slist.h"
 #include "ui.h"
 #include "uiduallist.h"
@@ -97,7 +98,7 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   GtkCellRenderer *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
 
-  duallist = malloc (sizeof (uiduallist_t));
+  duallist = mdmalloc (sizeof (uiduallist_t));
   for (int i = 0; i < DUALLIST_TREE_MAX; ++i) {
     duallist->trees [i].uitree = NULL;
     duallist->trees [i].sel = NULL;
@@ -268,7 +269,7 @@ uiduallistFree (uiduallist_t *duallist)
     for (int i = 0; i < DUALLIST_BUTTON_MAX; ++i) {
       uiButtonFree (duallist->buttons [i]);
     }
-    free (duallist);
+    mdfree (duallist);
   }
 }
 
@@ -443,7 +444,7 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
   if (path != NULL) {
     pathstr = gtk_tree_path_to_string (path);
     sscanf (pathstr, "%d", &idx);
-    free (pathstr);
+    mdfree (pathstr);
     gtk_tree_path_free (path);
   }
 

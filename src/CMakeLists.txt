@@ -51,6 +51,7 @@ add_library (libbdj4string STATIC
   libcommon/bdjstring.c
   libcommon/strlcat.c
   libcommon/strlcpy.c
+  libcommon/mdebug.c
 )
 add_library (libbdj4osutils STATIC
   libcommon/oslinuxutils.c

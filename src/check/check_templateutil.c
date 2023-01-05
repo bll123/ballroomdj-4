@@ -23,6 +23,7 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "sysvars.h"
 #include "templateutil.h"
@@ -74,7 +75,7 @@ START_TEST(templateutil_image_copy)
   ck_assert_ptr_null (p);
   p = strstr (data, "#ffa600");
   ck_assert_ptr_nonnull (p);
-  free (data);
+  mdfree (data);
 
   templateImageCopy ("#0000ff");
   ck_assert_int_eq (fileopFileExists (to), 1);
@@ -83,7 +84,7 @@ START_TEST(templateutil_image_copy)
   ck_assert_ptr_nonnull (p);
   p = strstr (data, "#ffa600");
   ck_assert_ptr_null (p);
-  free (data);
+  mdfree (data);
 
   /* reset the images */
   templateImageCopy (NULL);

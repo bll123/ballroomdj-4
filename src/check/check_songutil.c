@@ -19,6 +19,7 @@
 #include "bdjopt.h"
 #include "check_bdj.h"
 #include "log.h"
+#include "mdebug.h"
 #include "songutil.h"
 
 typedef struct {
@@ -47,7 +48,7 @@ START_TEST(songutil_chk)
   for (int i = 0; i < tvaluesz; ++i) {
     val = songFullFileName (tvalues [i].test);
     ck_assert_str_eq (val, tvalues [i].result);
-    free (val);
+    mdfree (val);
   }
   bdjoptCleanup ();
 }

@@ -18,6 +18,7 @@
 #include "genre.h"
 #include "ilist.h"
 #include "log.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "slist.h"
 
@@ -50,10 +51,10 @@ genreAlloc (void)
     return NULL;
   }
 
-  genre = malloc (sizeof (genre_t));
+  genre = mdmalloc (sizeof (genre_t));
   assert (genre != NULL);
 
-  genre->path = strdup (fname);
+  genre->path = mdstrdup (fname);
   genre->df = NULL;
   genre->genreList = NULL;
 
@@ -83,7 +84,7 @@ genreFree (genre_t *genre)
     dataFree (genre->path);
     datafileFree (genre->df);
     slistFree (genre->genreList);
-    free (genre);
+    mdfree (genre);
   }
 }
 

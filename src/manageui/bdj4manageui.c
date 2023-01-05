@@ -32,8 +32,9 @@
 #include "localeutil.h"
 #include "lock.h"
 #include "log.h"
-#include "manageui.h"
 #include "m3u.h"
+#include "manageui.h"
+#include "mdebug.h"
 #include "msgparse.h"
 #include "musicq.h"
 #include "ossignal.h"
@@ -1027,7 +1028,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
   }
 
-  targs = strdup (args);
+  targs = mdstrdup (args);
 
   switch (route) {
     case ROUTE_NONE:
@@ -1174,7 +1175,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     }
   }
 
-  free (targs);
+  mdfree (targs);
 
   uiplayerProcessMsg (routefrom, route, msg, args, manage->slplayer);
   uiplayerProcessMsg (routefrom, route, msg, args, manage->mmplayer);
@@ -1470,10 +1471,10 @@ manageSonglistExportM3U (void *udata)
   fn = uiSaveFileDialog (selectdata);
   if (fn != NULL) {
     uimusicqExportM3U (manage->slmusicq, fn, name);
-    free (fn);
+    mdfree (fn);
   }
-  free (selectdata);
-  free (name);
+  mdfree (selectdata);
+  mdfree (name);
   logProcEnd (LOG_PROC, "manageSonglistExportM3U", "");
   return UICB_CONT;
 }
@@ -1536,9 +1537,9 @@ manageSonglistImportM3U (void *udata)
     }
 
     nlistFree (list);
-    free (fn);
+    mdfree (fn);
   }
-  free (selectdata);
+  mdfree (selectdata);
 
   manageLoadPlaylistCB (manage, nplname);
   logProcEnd (LOG_PROC, "manageSonglistImportM3U", "");
@@ -1978,7 +1979,7 @@ manageSonglistCopy (void *udata)
     manageLoadPlaylistCB (manage, newname);
     manage->slbackupcreated = false;
   }
-  free (oname);
+  mdfree (oname);
   logProcEnd (LOG_PROC, "manageSonglistCopy", "");
   return UICB_CONT;
 }
@@ -2019,7 +2020,7 @@ manageSonglistDelete (void *udata)
   dataFree (manage->sloldname);
   manage->sloldname = NULL;
   manageSonglistNew (manage);
-  free (oname);
+  mdfree (oname);
   logProcEnd (LOG_PROC, "manageSonglistDelete", "");
   return UICB_CONT;
 }
@@ -2222,7 +2223,7 @@ manageCFPLResponseHandler (void *udata, long responseid)
       uiWidgetHide (&manage->cfplDialog);
       tnm = uimusicqGetSonglistName (manage->slmusicq);
       manageLoadPlaylistCB (manage, tnm);
-      free (tnm);
+      mdfree (tnm);
       break;
     }
   }
@@ -2380,7 +2381,7 @@ static void
 manageSetSonglistName (manageui_t *manage, const char *nm)
 {
   dataFree (manage->sloldname);
-  manage->sloldname = strdup (nm);
+  manage->sloldname = mdstrdup (nm);
   uimusicqSetSonglistName (manage->slmusicq, nm);
 }
 
@@ -2429,7 +2430,7 @@ manageSonglistSave (manageui_t *manage)
   uimusicqSave (manage->slmusicq, name);
   playlistCheckAndCreate (name, PLTYPE_SONGLIST);
   manageLoadPlaylistCB (manage, name);
-  free (name);
+  mdfree (name);
   logProcEnd (LOG_PROC, "manageSonglistSave", "");
 }
 
@@ -2723,7 +2724,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
       manageSonglistSave (manage);
       slname = uimusicqGetSonglistName (manage->slmusicq);
       uisfSetPlaylist (manage->uisongfilter, slname);
-      free (slname);
+      mdfree (slname);
       manage->lastdisp = MANAGE_DISP_SONG_LIST;
       redisp = true;
     }
@@ -2790,7 +2791,7 @@ manageSonglistLoadCheck (manageui_t *manage)
   } else {
     manageLoadPlaylistCB (manage, name);
   }
-  free (name);
+  mdfree (name);
   logProcEnd (LOG_PROC, "manageSonglistLoadCheck", "");
 }
 

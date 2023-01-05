@@ -23,6 +23,7 @@
 #include "colorutils.h"
 #include "conn.h"
 #include "log.h"
+#include "mdebug.h"
 #include "musicq.h"
 #include "nlist.h"
 #include "songfav.h"
@@ -146,7 +147,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
 {
   uisongselgtk_t  *uiw;
 
-  uiw = malloc (sizeof (uisongselgtk_t));
+  uiw = mdmalloc (sizeof (uisongselgtk_t));
   uiutilsUIWidgetInit (&uiw->vbox);
   uiw->songselTree = NULL;
   uiw->sel = NULL;
@@ -188,7 +189,7 @@ uisongselUIFree (uisongsel_t *uisongsel)
       uiButtonFree (uiw->buttons [i]);
     }
     uiTreeViewFree (uiw->songselTree);
-    free (uiw);
+    mdfree (uiw);
     uisongsel->uiWidgetData = NULL;
   }
 }
@@ -627,7 +628,7 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
     pathstr = gtk_tree_path_to_string (path);
     loc = atol (pathstr);
     gtk_tree_path_free (path);
-    free (pathstr);
+    mdfree (pathstr);
   }
 
   return loc + uisongsel->idxStart;
@@ -933,7 +934,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   logProcBegin (LOG_PROC, "uisongselInitializeStore");
 
   uiw = uisongsel->uiWidgetData;
-  uiw->typelist = malloc (sizeof (GType) * SONGSEL_COL_MAX);
+  uiw->typelist = mdmalloc (sizeof (GType) * SONGSEL_COL_MAX);
   uiw->col = 0;
   /* attributes ellipsize/font*/
   uiw->typelist [uiw->col++] = G_TYPE_INT;
@@ -951,7 +952,7 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   uisongAddDisplayTypes (sellist, uisongselInitializeStoreCallback, uisongsel);
 
   store = gtk_list_store_newv (uiw->col, uiw->typelist);
-  free (uiw->typelist);
+  mdfree (uiw->typelist);
 
   uiwidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
   gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidgetp->widget),
@@ -1354,7 +1355,7 @@ uisongselProcessSelection (GtkTreeModel *model,
     uisongselScrollSelection (uisongsel->peers [i], uisongsel->idxStart, UISONGSEL_SCROLL_FORCE);
     pathstr = gtk_tree_path_to_string (path);
     uisongselSetSelection (uisongsel->peers [i], atol (pathstr));
-    free (pathstr);
+    mdfree (pathstr);
     uisongselSetPeerFlag (uisongsel->peers [i], false);
   }
 }
@@ -1447,7 +1448,7 @@ uisongselMoveSelection (void *udata, int where)
     if (path != NULL) {
       pathstr = gtk_tree_path_to_string (path);
       loc = atol (pathstr);
-      free (pathstr);
+      mdfree (pathstr);
       gtk_tree_path_free (path);
     }
 

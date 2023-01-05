@@ -18,6 +18,7 @@
 #include "fileop.h"
 #include "localeutil.h"
 #include "log.h"
+#include "mdebug.h"
 #include "slist.h"
 #include "sysvars.h"
 #include "tagdef.h"
@@ -145,7 +146,7 @@ main (int argc, char *argv [])
       char    *p;
       char    *tokstr;
 
-      val = strdup (argv [i]);
+      val = mdstrdup (argv [i]);
       p = strtok_r (val, "=", &tokstr);
       if (p != NULL) {
         p = strtok_r (NULL, "=", &tokstr);

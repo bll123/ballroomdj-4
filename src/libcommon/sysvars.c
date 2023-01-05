@@ -33,6 +33,7 @@
 #include "bdjstring.h"
 #include "filedata.h"
 #include "fileop.h"
+#include "mdebug.h"
 #include "osnetutils.h"
 #include "osprocess.h"
 #include "osutils.h"
@@ -285,7 +286,7 @@ sysvarsInit (const char *argv0)
   dlen = strlen (sysvars [SV_USER]) + 1;
   tptr = filedataReplace (sysvars [SV_USER], &dlen, " ", "-");
   strlcpy (sysvars [SV_USER_MUNGE], tptr, SV_MAX_SZ);
-  free (tptr);
+  mdfree (tptr);
 
   if (isWindows ()) {
     snprintf (tbuff, sizeof (tbuff), "%s/AppData/Roaming/%s", sysvars [SV_HOME], BDJ4_NAME);
@@ -496,7 +497,7 @@ sysvarsInit (const char *argv0)
       }
       tp = strtok_r (NULL, "\r\n", &tokptr);
     }
-    free (data);
+    mdfree (data);
   }
 
   snprintf (sysvars [SV_USER_AGENT], SV_MAX_SZ,
@@ -531,7 +532,7 @@ sysvarsInit (const char *argv0)
         strlcat (sysvars [SV_OSDISP], data, SV_MAX_SZ);
       }
     }
-    free (data);
+    mdfree (data);
   }
   if (strcmp (sysvars [SV_OSNAME], "linux") == 0) {
     static char *fna = "/etc/lsb-release";
@@ -702,7 +703,7 @@ sysvarsGetPythonVersion (void)
       /* clear the path */
       strcpy (sysvars [SV_PATH_PYTHON], "");
     }
-    free (data);
+    mdfree (data);
   } /* if python was found */
 }
 
@@ -953,7 +954,7 @@ svGetLinuxDefaultTheme (void)
     stringTrimChar (tptr, '\'');
     strlcpy (sysvars [SV_THEME_DEFAULT], tptr + 1, SV_MAX_SZ);
   }
-  free (tptr);
+  mdfree (tptr);
 }
 
 static void
@@ -964,6 +965,6 @@ svGetSystemFont (void)
   tptr = osGetSystemFont (sysvars [SV_PATH_GSETTINGS]);
   if (tptr != NULL) {
     strlcpy (sysvars [SV_FONT_DEFAULT], tptr, SV_MAX_SZ);
-    free (tptr);
+    mdfree (tptr);
   }
 }

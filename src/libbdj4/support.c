@@ -14,6 +14,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
+#include "mdebug.h"
 #include "pathbld.h"
 #include "pathutil.h"
 #include "support.h"
@@ -32,7 +33,7 @@ supportAlloc (void)
 {
   support_t   *support;
 
-  support = malloc (sizeof (support_t));
+  support = mdmalloc (sizeof (support_t));
   support->webresponse = NULL;
   support->webclient = webclientAlloc (support, supportWebResponseCallback);
   return support;

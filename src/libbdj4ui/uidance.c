@@ -17,6 +17,7 @@
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
+#include "mdebug.h"
 #include "ui.h"
 #include "uidance.h"
 
@@ -43,7 +44,7 @@ uidanceDropDownCreate (UIWidget *boxp, UIWidget *parentwin, int flags,
   uidance_t  *uidance;
 
 
-  uidance = malloc (sizeof (uidance_t));
+  uidance = mdmalloc (sizeof (uidance_t));
   uidance->dances = bdjvarsdfGet (BDJVDF_DANCES);
   uidance->count = count;
   uidance->flags = flags;
@@ -88,7 +89,7 @@ uidanceFree (uidance_t *uidance)
 {
   if (uidance != NULL) {
     uiDropDownFree (uidance->dropdown);
-    free (uidance);
+    mdfree (uidance);
   }
 }
 

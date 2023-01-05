@@ -18,6 +18,7 @@
 #include "filedata.h"
 #include "fileop.h"
 #include "log.h"
+#include "mdebug.h"
 #include "nlist.h"
 #include "osprocess.h"
 #include "pathutil.h"
@@ -100,7 +101,7 @@ audiotagReadTags (const char *ffn)
   targv [2] = ffn;
   targv [3] = NULL;
 
-  data = malloc (AUDIOTAG_TAG_BUFF_SIZE);
+  data = mdmalloc (AUDIOTAG_TAG_BUFF_SIZE);
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, AUDIOTAG_TAG_BUFF_SIZE, &retsz);
   if (rc != 0) {
     logMsg (LOG_DBG, LOG_DBUPDATE, "read tags: rc: %d", rc);
@@ -556,7 +557,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
           double    tm = 0.0;
 
           if (strstr (p, ":") != NULL) {
-            tmp = strdup (p);
+            tmp = mdstrdup (p);
             pC = strtok_r (tmp, ":", &tokstrC);
             if (pC != NULL) {
               tm += atof (pC) * 60.0;
@@ -566,7 +567,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
               snprintf (pbuff, sizeof (pbuff), "%.0f", tm);
               p = pbuff;
             }
-            free (tmp);
+            mdfree (tmp);
           }
         }
 

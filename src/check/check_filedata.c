@@ -21,6 +21,7 @@
 #include "check_bdj.h"
 #include "filedata.h"
 #include "log.h"
+#include "mdebug.h"
 
 START_TEST(filedata_readall)
 {
@@ -38,7 +39,7 @@ START_TEST(filedata_readall)
   data = filedataReadAll (fn, &len);
   ck_assert_int_eq (len, 0);
   ck_assert_ptr_null (data);
-  free (data);
+  mdfree (data);
 
   fh = fopen (fn, "w");
   fprintf (fh, "%s", "a");
@@ -48,7 +49,7 @@ START_TEST(filedata_readall)
   ck_assert_int_eq (len, 1);
   ck_assert_int_eq (strlen (data), 1);
   ck_assert_mem_eq (data, "a", 1);
-  free (data);
+  mdfree (data);
 
   tdata = "lkjsdflkdjsfljsdfljsdfd\n";
   fh = fopen (fn, "w");
@@ -58,7 +59,7 @@ START_TEST(filedata_readall)
   ck_assert_int_eq (len, strlen (tdata));
   ck_assert_int_eq (strlen (data), strlen (tdata));
   ck_assert_mem_eq (data, tdata, strlen (tdata));
-  free (data);
+  mdfree (data);
 
   unlink (fn);
 }
@@ -97,7 +98,7 @@ START_TEST(filedata_repl)
     ndata = filedataReplace (data, &len, tvalues [i].str, tvalues [i].repl);
     ck_assert_int_eq (strlen (tvalues [i].result), len);
     ck_assert_mem_eq (ndata, tvalues [i].result, len);
-    free (ndata);
+    mdfree (ndata);
   }
 }
 END_TEST

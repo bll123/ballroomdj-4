@@ -17,6 +17,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "fileop.h"
+#include "mdebug.h"
 #include "pathutil.h"
 #include "tmutil.h"
 #include "ui.h"
@@ -40,7 +41,7 @@ uiEntryInit (int entrySize, int maxSize)
 {
   uientry_t *entry;
 
-  entry = malloc (sizeof (uientry_t));
+  entry = mdmalloc (sizeof (uientry_t));
   entry->entrySize = entrySize;
   entry->maxSize = maxSize;
   entry->buffer = NULL;
@@ -57,7 +58,7 @@ void
 uiEntryFree (uientry_t *entry)
 {
   if (entry != NULL) {
-    free (entry);
+    mdfree (entry);
   }
 }
 

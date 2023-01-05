@@ -23,6 +23,7 @@
 #include "ilist.h"
 #include "level.h"
 #include "log.h"
+#include "mdebug.h"
 #include "ui.h"
 
 static int  confuiLevelListCreate (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
@@ -176,7 +177,7 @@ confuiLevelListCreate (GtkTreeModel *model, GtkTreePath *path,
       gui->tables [CONFUI_ID_LEVELS].saveidx, LEVEL_WEIGHT, weight);
   ilistSetNum (gui->tables [CONFUI_ID_LEVELS].savelist,
       gui->tables [CONFUI_ID_LEVELS].saveidx, LEVEL_DEFAULT_FLAG, def);
-  free (leveldisp);
+  mdfree (leveldisp);
   gui->tables [CONFUI_ID_LEVELS].saveidx += 1;
   logProcEnd (LOG_PROC, "confuiLevelListCreate", "");
   return FALSE;
