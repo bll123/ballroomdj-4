@@ -90,7 +90,7 @@ if [[ $platform == windows ]]; then
   echo "-- $(date +%T) copying .dll files"
   PBIN=plocal/bin
   # gspawn helpers are required for the link button to work.
-  # librsvg is the SVG library
+  # librsvg is the SVG library; it is not a direct dependent.
   # gdbus
   exelist="
       /mingw64/bin/gspawn-win64-helper.exe

@@ -28,4 +28,4 @@ Turn the debug options off in __Configure&nbsp;/&nbsp;Debug__, and
 exit BDJ4.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-09 12:51:55; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2023-01-05 11:53:39; BDJ4 version 4.0.5-beta)_

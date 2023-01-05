@@ -32,6 +32,9 @@
 
 <div markdown style="float: left; margin-right: 20px;">
 
+### Change Log
+[Change Log](en-Change%20Log)
+
 ### Installation
 [Installing on Linux](en-Install-Linux)
 <br>[Installing on MacOS](en-Install-MacOS)
@@ -42,9 +45,6 @@
 [Converting BallroomDJ 3](en-Install-Converting%20BDJ3)
 
 [Uninstalling BDJ4](en-Install-Uninstall)
-
-### Change Log
-[Change Log](en-Change%20Log)
 
 </div>
 
@@ -111,4 +111,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2022-12-31 13:25:29; BDJ4 version 4.0.4-beta-dev)_
+<br>_(Updated 2023-01-05 11:59:15; BDJ4 version 4.0.5-beta)_

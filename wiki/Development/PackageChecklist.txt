@@ -6,6 +6,7 @@
     * update VERSION.txt
         * clear DEVELOPMENT tag
     * update change log
+    * make sure all debugging is removed
     * make distclean
     * make 2>&1 | tee w
     * make check
@@ -36,13 +37,13 @@ on the other platforms.
     * push to sourceforge
     * web/wikiput.sh putall
 * final
+    * update sourceforge, mark the packages
     * announce the release on the forum
     * announce the release on freshcode.club
-    * update sourceforge, mark the packages
     * update VERSION.txt
         * set next version
         * set DEVELOPMENT tag
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2022-12-31 12:15:38; BDJ4 version 4.0.4-beta-dev)_
+<br>_(Updated 2023-01-05 11:53:39; BDJ4 version 4.0.5-beta)_

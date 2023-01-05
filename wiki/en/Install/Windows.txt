@@ -72,4 +72,4 @@ After the VLC installation is complete, turn off the **Run VLC media
 player** checkbox, and select **Finish**.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-27 10:48:36; BDJ4 version 4.0.2-beta)_
+<br>_(Updated 2023-01-05 11:53:39; BDJ4 version 4.0.5-beta)_

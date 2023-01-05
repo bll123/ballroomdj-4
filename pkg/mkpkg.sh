@@ -201,7 +201,7 @@ fi
 
 # staging / create packages
 
-if [[ mksrcpkg == T ]]; then
+if [[ mksrcpkg == T && $insttest == F ]]; then
   stagedir=tmp/${spkgnm}-src
   manfn=manifest.txt
   manfnpath=${stagedir}/install/${manfn}
@@ -211,26 +211,24 @@ if [[ mksrcpkg == T ]]; then
 
   case $tag in
     linux)
-      if [[ $insttest == F ]]; then
-        echo "-- $(date +%T) create source package"
-        test -d ${stagedir} && rm -rf ${stagedir}
-        mkdir -p ${stagedir}
-        nm=$(pkgsrcnm)
+      echo "-- $(date +%T) create source package"
+      test -d ${stagedir} && rm -rf ${stagedir}
+      mkdir -p ${stagedir}
+      nm=$(pkgsrcnm)
 
-        copysrcfiles ${tag} ${stagedir}
+      copysrcfiles ${tag} ${stagedir}
 
-        echo "-- $(date +%T) creating source manifest"
-        touch ${manfnpath}
-        ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
+      echo "-- $(date +%T) creating source manifest"
+      touch ${manfnpath}
+      ./pkg/mkmanifest.sh ${stagedir} ${manfnpath}
 
-        echo "-- $(date +%T) creating checksums"
-        ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
-        mv -f ${chksumfntmp} ${chksumfnpath}
+      echo "-- $(date +%T) creating checksums"
+      ./pkg/mkchecksum.sh ${manfnpath} ${chksumfntmp}
+      mv -f ${chksumfntmp} ${chksumfnpath}
 
-        (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
-        echo "## source package ${nm} created"
-        rm -rf ${stagedir}
-      fi
+      (cd tmp;tar -c -z -f - $(basename $stagedir)) > ${nm}
+      echo "## source package ${nm} created"
+      rm -rf ${stagedir}
       ;;
   esac
 fi

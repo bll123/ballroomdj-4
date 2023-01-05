@@ -60,6 +60,9 @@
         * Adjust the song start and song end.
         * Adjust the song speed.
         * Adjust the song volume.
+* iTunes Support.
+    * Update the information in the database from iTunes.
+    * Import an iTunes playlist.
 * Mobile Remote Control
     * Control BDJ4 from your mobile device.
 * Mobile Marquee
@@ -68,16 +71,13 @@
 
 ##### Future Features
 
-* Automatic Organization.
 * Song Editor.
     * Batch Edit songs.
     * Apply adjustments (speed, song start, song end) to a song.
     * Normalize volume.
     * Trim silence.
     * Audio Identification via MusicBrainz and AcoustID.
-* iTunes Support.
-    * Update the information in the database from iTunes.
-    * Import an iTunes playlist.
+* Automatic Organization.
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-14 08:30:20; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2023-01-05 11:53:39; BDJ4 version 4.0.5-beta)_

@@ -643,7 +643,6 @@ uiduallistSetDefaultSelection (uiduallist_t *duallist, int which)
 {
   int               count;
   uitree_t          *uitree;
-  GtkTreeSelection  *sel;
   GtkTreeIter       iter;
   GtkTreeModel      *model;
 
@@ -655,7 +654,6 @@ uiduallistSetDefaultSelection (uiduallist_t *duallist, int which)
   }
 
   uitree = duallist->trees [which].uitree;
-  sel = duallist->trees [which].sel;
 
   count = uiTreeViewGetSelection (uitree, &model, &iter);
   if (count != 1) {

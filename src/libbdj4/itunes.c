@@ -535,7 +535,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         songFavoriteConv (&conv);
         nlistSetNum (entry, TAG_FAVORITE, conv.num);
         logMsg (LOG_DBG, LOG_ITUNES, "song: %s %ld",
-            tagdefs [TAG_FAVORITE].tag, conv.num);
+            tagdefs [TAG_FAVORITE].tag, (long) conv.num);
       }
     } else {
       int   tagidx;
@@ -606,7 +606,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         conv.str = val;
         genreConv (&conv);
         nlistSetNum (entry, tagidx, conv.num);
-        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %ld", tagdefs [tagidx].tag, conv.num);
+        logMsg (LOG_DBG, LOG_ITUNES, "song: %s %ld", tagdefs [tagidx].tag, (long) conv.num);
       } else {
         /* start time and stop time are already in the correct format (ms) */
         if (tagdefs [tagidx].valueType == VALUE_NUM) {
