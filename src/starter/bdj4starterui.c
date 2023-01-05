@@ -240,6 +240,9 @@ main (int argc, char *argv[])
   char            *uifont;
   int             flags;
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("strt");
+#endif
 
   starter.progstate = progstateInit ("starterui");
   progstateSetCallback (starter.progstate, STATE_INITIALIZE_DATA,
@@ -293,7 +296,7 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD |
       BDJ4_INIT_NO_LOCK;
-  bdj4startup (argc, argv, NULL, "st", ROUTE_STARTERUI, flags);
+  bdj4startup (argc, argv, NULL, "strt", ROUTE_STARTERUI, flags);
   logProcBegin (LOG_PROC, "starterui");
 
   starter.profilesel = uiSpinboxInit ();
@@ -321,13 +324,17 @@ main (int argc, char *argv[])
       connFree (starter.conn);
       logEnd ();
       loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
-      logStart (lockName (ROUTE_STARTERUI), "st", loglevel);
+      logStart (lockName (ROUTE_STARTERUI), "strt", loglevel);
     }
   }
   connFree (starter.conn);
   progstateFree (starter.progstate);
   logProcEnd (LOG_PROC, "starterui", "");
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return status;
 }
 

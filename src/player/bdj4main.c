@@ -186,7 +186,7 @@ main (int argc, char *argv[])
   uint16_t      listenPort;
 
 #if BDJ4_MEM_DEBUG
-  mdebugInit ("m");
+  mdebugInit ("main");
 #endif
 
   mainData.progstate = progstateInit ("main");
@@ -232,7 +232,7 @@ main (int argc, char *argv[])
   osSetStandardSignals (mainSigHandler);
 
   mainData.startflags = bdj4startup (argc, argv, &mainData.musicdb,
-      "m", ROUTE_MAIN, BDJ4_INIT_NONE);
+      "main", ROUTE_MAIN, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "main");
 
   mainData.lastGapSent = -2;

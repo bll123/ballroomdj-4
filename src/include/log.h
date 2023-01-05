@@ -13,27 +13,30 @@
 
 /*
  * log tags:
- *  as - alt-setup
- *  bc - bpm counter
- *  ck - check_all
- *  cu - configuration ui
- *  db - database update
- *  dt - database tag
- *  hp - helper
- *  in - installer
- *  m  - main
- *  mm - mobile marquee
- *  mq - marquee
- *  mu - management ui
- *  p  - player
- *  pu - player ui
- *  rc - mobile remote control
- *  st - starter
- *  td - tdbcompare
- *  tg - bdj4tags
- *  tm - tmusicsetup
- *  ts - testsuite
- *  up - updater
+ *  alt  - alt-setup
+ *  bpmc - bpm counter
+ *  chk  - check_all
+ *  cfui - configuration ui
+ *  dbup - database update
+ *  dbtg - database tag
+ *  help - helper
+ *  inst - installer
+ *  lnch - launcher
+ *  main - main
+ *  mm   - mobile marquee
+ *  mq   - marquee
+ *  mui  - management ui
+ *  play - player
+ *  plui - player ui
+ *  rc   - mobile remote control
+ *  strt - starter
+ *  tdbc - tdbcompare
+ *  tags - bdj4tags
+ *  tmst - tmusicsetup
+ *  ts   - testsuite
+ *  updt - updater
+ *  vlc  - vlcsinklist
+ *  volt - voltest
  *
  */
 

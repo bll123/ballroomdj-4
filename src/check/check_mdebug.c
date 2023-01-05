@@ -85,8 +85,8 @@ START_TEST(mdebug_no_free)
   ck_assert_int_eq (mdebugCount (), 1);
   mdebugReport ();
   ck_assert_int_eq (mdebugErrors (), 1);
-  mdebugCleanup ();
   mdfree (data);
+  mdebugCleanup ();
 }
 END_TEST
 

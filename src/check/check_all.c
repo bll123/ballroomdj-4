@@ -31,6 +31,9 @@ main (int argc, char *argv [])
   SRunner *sr = NULL;
   int     number_failed = 0;
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("chk");
+#endif
   sRandom ();
   sysvarsInit (argv [0]);
   localeInit ();
@@ -42,7 +45,7 @@ main (int argc, char *argv [])
 
   /* macos's logging is really slow and affects the check suite */
   if (! isMacOS ()) {
-    logStart ("check_all", "ck", LOG_ALL & ~LOG_PROC);
+    logStart ("check_all", "chk", LOG_ALL & ~LOG_PROC);
   }
 
   sr = srunner_create (NULL);
@@ -58,5 +61,9 @@ main (int argc, char *argv [])
 
   localeCleanup ();
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

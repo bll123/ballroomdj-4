@@ -156,7 +156,7 @@ main (int argc, char *argv [])
     processflags [i] = 0;
   }
 
-  bdj4startup (argc, argv, NULL, "up", ROUTE_NONE,
+  bdj4startup (argc, argv, NULL, "updt", ROUTE_NONE,
       BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_DB_LOAD);
   logSetLevel (LOG_INSTALL, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN, "up");
   logSetLevel (LOG_DBG, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST, "up");

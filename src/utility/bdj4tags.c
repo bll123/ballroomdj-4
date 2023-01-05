@@ -97,7 +97,7 @@ main (int argc, char *argv [])
   localeInit ();
   bdjoptInit ();
   audiotagInit ();
-  logStart ("bdj4tags", "tg", LOG_DBUPDATE | LOG_IMPORTANT | LOG_BASIC | LOG_MAIN);
+  logStart ("bdj4tags", "tags", LOG_DBUPDATE | LOG_IMPORTANT | LOG_BASIC | LOG_MAIN);
 
   if (clbdj3tags) {
     bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, clbdj3tags);

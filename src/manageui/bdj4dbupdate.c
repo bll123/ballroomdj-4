@@ -217,7 +217,7 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_NONE;
   dbupdate.startflags = bdj4startup (argc, argv, &dbupdate.musicdb,
-      "db", ROUTE_DBUPDATE, flags);
+      "dbup", ROUTE_DBUPDATE, flags);
   logProcBegin (LOG_PROC, "dbupdate");
 
   dbupdate.olddirlist = bdjoptGetStr (OPT_M_DIR_OLD_SKIP);

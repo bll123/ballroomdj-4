@@ -187,7 +187,7 @@ main (int argc, char *argv[])
   const char      *audiosink;
 
 #if BDJ4_MEM_DEBUG
-  mdebugInit ("p");
+  mdebugInit ("play");
 #endif
   osSetStandardSignals (playerSigHandler);
 
@@ -227,7 +227,7 @@ main (int argc, char *argv[])
       playerClosingCallback, &playerData);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, NULL, "p", ROUTE_PLAYER, flags);
+  bdj4startup (argc, argv, NULL, "play", ROUTE_PLAYER, flags);
 
   playerData.conn = connInit (ROUTE_PLAYER);
 

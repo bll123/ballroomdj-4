@@ -221,7 +221,7 @@ main (int argc, char *argv[])
   osSetStandardSignals (pluiSigHandler);
 
   plui.dbgflags = bdj4startup (argc, argv, &plui.musicdb,
-      "pu", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
+      "plui", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "playerui");
 
   plui.dispsel = dispselAlloc ();

@@ -399,7 +399,7 @@ main (int argc, char *argv[])
   osSetStandardSignals (manageSigHandler);
 
   bdj4startup (argc, argv, &manage.musicdb,
-      "mu", ROUTE_MANAGEUI, BDJ4_INIT_NONE);
+      "mui", ROUTE_MANAGEUI, BDJ4_INIT_NONE);
   logProcBegin (LOG_PROC, "manageui");
 
   manage.dispsel = dispselAlloc ();

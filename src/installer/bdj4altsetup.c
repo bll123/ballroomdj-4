@@ -378,7 +378,7 @@ altsetupMainLoop (void *udata)
     case ALT_CREATE_DIRS: {
       altsetupCreateDirs (altsetup);
 
-      logStart ("bdj4altsetup", "as",
+      logStart ("bdj4altsetup", "alt",
           LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST);
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== alternate setup started");
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "target: %s", altsetup->target);

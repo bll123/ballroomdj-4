@@ -181,7 +181,7 @@ main (int argc, char *argv [])
   if (! loglevelset) {
     loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
   }
-  logStartAppend ("tmusicsetup", "tm", loglevel);
+  logStartAppend ("tmusicsetup", "tmst", loglevel);
 
   /* create an entirely new database */
   fileopDelete (dbfn);

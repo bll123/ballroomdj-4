@@ -187,7 +187,7 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_NO_DB_LOAD;
   confui.dbgflags = bdj4startup (argc, argv, NULL,
-      "cu", ROUTE_CONFIGUI, flags);
+      "cfui", ROUTE_CONFIGUI, flags);
   logProcBegin (LOG_PROC, "configui");
 
   confui.gui.dispsel = dispselAlloc ();

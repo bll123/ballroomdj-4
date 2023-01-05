@@ -133,6 +133,10 @@ main (int argc, char * argv[])
     { NULL,             0,                  NULL,   0 }
   };
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("lnch");
+#endif
+
 #if BDJ4_GUI_LAUNCHER && BDJ4_USE_GTK
   /* for macos; turns the launcher into a gui program, then the icon */
   /* shows up in the dock */
@@ -521,6 +525,10 @@ main (int argc, char * argv[])
   if (forcewait || wait) {
     return rc;
   }
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return 0;
 }
 

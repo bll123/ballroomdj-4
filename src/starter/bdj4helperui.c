@@ -87,6 +87,9 @@ main (int argc, char *argv[])
   char            tbuff [MAXPATHLEN];
 
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("help");
+#endif
   helper.tb = NULL;
   helper.conn = NULL;
   helper.helpdf = NULL;
@@ -107,7 +110,7 @@ main (int argc, char *argv[])
   osSetStandardSignals (helperSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, NULL, "hp", ROUTE_HELPERUI, flags);
+  bdj4startup (argc, argv, NULL, "help", ROUTE_HELPERUI, flags);
   logProcBegin (LOG_PROC, "helperui");
 
   listenPort = bdjvarsGetNum (BDJVL_HELPERUI_PORT);
@@ -134,6 +137,10 @@ main (int argc, char *argv[])
   progstateFree (helper.progstate);
   logProcEnd (LOG_PROC, "helperui", "");
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return status;
 }
 

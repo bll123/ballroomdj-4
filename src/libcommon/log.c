@@ -154,7 +154,7 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
     snprintf (tfn, sizeof (tfn), "(%s: %d)", logTail (fn), line);
   }
   wlen = (size_t) snprintf (wbuff, sizeof (wbuff),
-      "%s: %-2s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
+      "%s: %-4s %*s%s %s\n", ttm, l->processTag, l->indent, "", tbuff, tfn);
   wlen = wlen > LOG_MAX_BUFF ? LOG_MAX_BUFF - 1 : wlen;
   fileSharedWrite (l->fhandle, wbuff, wlen);
   if (idx == LOG_ERR) {
@@ -370,7 +370,7 @@ logInit (void)
       l->opened = 0;
       l->indent = 0;
       l->level = 0;
-      l->processTag = "unknown";
+      l->processTag = "unkn";
       syslogs [idx] = l;
     }
     logsalloced = true;

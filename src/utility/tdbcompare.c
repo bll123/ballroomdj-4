@@ -98,7 +98,7 @@ main (int argc, char *argv [])
   if (! loglevelset) {
     loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
   }
-  logStartAppend ("tdbcompare", "td", loglevel);
+  logStartAppend ("tdbcompare", "tdbc", loglevel);
 
   for (int i = 0; i < DB_MAX; ++i) {
     dbfn [i] = NULL;
