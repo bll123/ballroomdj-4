@@ -92,14 +92,14 @@ main (int argc, char *argv [])
   bool        isbdj4 = false;
   bool        emptydb = false;
   datafile_t  *df = NULL;
-  ilist_t     *tmlist;
+  ilist_t     *tmlist = NULL;
   ilistidx_t  tmiteridx;
   ilistidx_t  key;
   char        dbfn [MAXPATHLEN];
   char        infn [MAXPATHLEN];
   musicdb_t   *db;
-  slist_t     *empty;
-  loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
+  slist_t     *empty = NULL;
+  loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN | LOG_LIST;
   bool        loglevelset = false;
 
   static struct option bdj_options [] = {
@@ -166,6 +166,7 @@ main (int argc, char *argv [])
   sysvarsInit (argv [0]);
   localeInit ();
   bdjoptInit ();
+  tagdefInit ();
   audiotagInit ();
 
   if (clbdj3tags) {
@@ -221,10 +222,13 @@ main (int argc, char *argv [])
   slistFree (empty);
 
   dbClose (db);
-  audiotagCleanup ();
+
   bdjvarsdfloadCleanup ();
+  audiotagCleanup ();
+  tagdefCleanup ();
   bdjoptCleanup ();
   localeCleanup ();
+  logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

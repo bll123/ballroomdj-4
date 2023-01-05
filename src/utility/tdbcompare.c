@@ -218,7 +218,6 @@ main (int argc, char *argv [])
 
     for (int i = 0; i < DB_MAX; ++i) {
       slistFree (taglist [i]);
-      mdfree (tag [i]);
     }
   }
 
@@ -230,7 +229,7 @@ main (int argc, char *argv [])
   bdjvarsdfloadCleanup ();
   bdjoptCleanup ();
   localeCleanup ();
-
+  logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

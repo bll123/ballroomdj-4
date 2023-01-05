@@ -100,8 +100,9 @@ main (int argc, char *argv [])
   sysvarsInit (argv [0]);
   localeInit ();
   bdjoptInit ();
+  tagdefInit ();
   audiotagInit ();
-  logStart ("bdj4tags", "tags", LOG_DBUPDATE | LOG_IMPORTANT | LOG_BASIC | LOG_MAIN);
+  logStartAppend ("bdj4tags", "tags", LOG_DBUPDATE | LOG_IMPORTANT | LOG_BASIC | LOG_MAIN);
 
   if (clbdj3tags) {
     bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, clbdj3tags);
@@ -193,10 +194,11 @@ main (int argc, char *argv [])
   }
   slistFree (wlist);
 
-  logEnd ();
+  tagdefCleanup ();
   bdjoptCleanup ();
   audiotagCleanup ();
   localeCleanup ();
+  logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

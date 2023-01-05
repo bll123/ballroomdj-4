@@ -503,6 +503,7 @@ main (int argc, char *argv [])
   bdj4shutdown (ROUTE_NONE, NULL);
   bdjoptCleanup ();
   dataFree (musicdir);
+  logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

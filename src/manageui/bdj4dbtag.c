@@ -116,6 +116,10 @@ main (int argc, char *argv[])
   logProcBegin (LOG_PROC, "dbtag");
 
   dbtag.maxThreads = sysvarsGetNum (SVL_NUM_PROC);
+#if BDJ4_MEM_DEBUG
+  dbtag.maxThreads = 1;
+#endif
+
   dbtag.threads = mdmalloc (sizeof (dbthread_t) * dbtag.maxThreads);
   dbtag.running = DBTAG_STATE_NOT_RUNNING;
   dbtag.havealldata = false;

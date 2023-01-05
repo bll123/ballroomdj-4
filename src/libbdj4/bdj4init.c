@@ -348,13 +348,13 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   }
 
   mstimestart (&mt);
+  tagdefCleanup ();
   bdjoptCleanup ();
   if (musicdb != NULL) {
     dbClose (musicdb);
   }
   bdjvarsdfloadCleanup ();
   bdjvarsCleanup ();
-  tagdefCleanup ();
   audiotagCleanup ();
   localeCleanup ();
   logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %"PRId64" ms", (int64_t) mstimeend (&mt));

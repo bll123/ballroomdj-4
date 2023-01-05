@@ -1,6 +1,9 @@
 /*
  * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
  */
+
+/* this code is not thread safe */
+
 #include "config.h"
 
 #include <stdio.h>

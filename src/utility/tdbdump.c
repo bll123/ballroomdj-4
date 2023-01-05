@@ -18,6 +18,7 @@
 #include "bdjvarsdfload.h"
 #include "fileop.h"
 #include "localeutil.h"
+#include "log.h"
 #include "mdebug.h"
 #include "musicdb.h"
 #include "slist.h"
@@ -77,6 +78,7 @@ main (int argc, char *argv [])
   sysvarsInit (argv [0]);
   localeInit ();
   bdjoptInit ();
+  tagdefInit ();
   audiotagInit ();
 
   bdjvarsdfloadInit ();
@@ -147,9 +149,10 @@ main (int argc, char *argv [])
 
   audiotagCleanup ();
   bdjvarsdfloadCleanup ();
+  tagdefCleanup ();
   bdjoptCleanup ();
   localeCleanup ();
-
+  logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
   mdebugCleanup ();

@@ -327,6 +327,7 @@ main (int argc, char *argv[])
       logStart (lockName (ROUTE_STARTERUI), "strt", loglevel);
     }
   }
+
   connFree (starter.conn);
   progstateFree (starter.progstate);
   logProcEnd (LOG_PROC, "starterui", "");
