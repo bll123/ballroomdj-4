@@ -215,7 +215,7 @@ main (int argc, char *argv[])
   confui.filterDisplayDf = datafileAllocParse ("cu-filter",
       DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX);
   confui.gui.filterDisplaySel = datafileGetList (confui.filterDisplayDf);
-  llist = nlistAlloc ("cu-filter-out", LIST_ORDERED, free);
+  llist = nlistAlloc ("cu-filter-out", LIST_ORDERED, NULL);
   nlistStartIterator (confui.gui.filterDisplaySel, &iteridx);
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_GENRE, FILTER_DISP_GENRE);
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_DANCELEVEL, FILTER_DISP_DANCELEVEL);
@@ -233,7 +233,7 @@ main (int argc, char *argv[])
       configuidfkeys, CONFUI_KEY_MAX);
   confui.options = datafileGetList (confui.optiondf);
   if (confui.options == NULL) {
-    confui.options = nlistAlloc ("configui-opt", LIST_ORDERED, free);
+    confui.options = nlistAlloc ("configui-opt", LIST_ORDERED, NULL);
 
     nlistSetNum (confui.options, CONFUI_POSITION_X, -1);
     nlistSetNum (confui.options, CONFUI_POSITION_Y, -1);

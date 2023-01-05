@@ -88,8 +88,8 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
   *managedb->fgcolor = '\0';
   managedb->statusMsg = statusMsg;
 
-  tlist = nlistAlloc ("db-action", LIST_ORDERED, free);
-  hlist = nlistAlloc ("db-action-help", LIST_ORDERED, free);
+  tlist = nlistAlloc ("db-action", LIST_ORDERED, NULL);
+  hlist = nlistAlloc ("db-action-help", LIST_ORDERED, NULL);
 
   /* CONTEXT: database update: check for new audio files */
   nlistSetStr (tlist, MANAGE_DB_CHECK_NEW, _("Check For New"));

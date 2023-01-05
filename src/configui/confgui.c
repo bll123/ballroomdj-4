@@ -469,8 +469,8 @@ confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...)
 
   va_start (valist, widx);
 
-  tlist = nlistAlloc (tag, LIST_ORDERED, free);
-  llist = nlistAlloc (tag, LIST_ORDERED, free);
+  tlist = nlistAlloc (tag, LIST_ORDERED, NULL);
+  llist = nlistAlloc (tag, LIST_ORDERED, NULL);
   sbidx = 0;
   while ((key = va_arg (valist, nlistidx_t)) != -1) {
     disp = va_arg (valist, char *);

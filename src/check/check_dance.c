@@ -292,7 +292,7 @@ START_TEST(dance_save)
     ilistSetNum (tlist, key, DANCE_TYPE, type);
 
     /* need a copy of the tags */
-    ttags = slistAlloc ("chk-dance-ttags", LIST_ORDERED, free);
+    ttags = slistAlloc ("chk-dance-ttags", LIST_ORDERED, NULL);
     slistStartIterator (tags, &titeridx);
     while ((val = slistIterateKey (tags, &titeridx)) != NULL) {
       slistSetNum (ttags, val, 0);

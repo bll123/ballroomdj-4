@@ -55,7 +55,7 @@ sortoptAlloc (void)
   sortopt->df = datafileAllocParse ("sortopt", DFTYPE_LIST, fname, NULL, 0);
   dflist = datafileGetList (sortopt->df);
 
-  list = slistAlloc ("sortopt-disp", LIST_UNORDERED, free);
+  list = slistAlloc ("sortopt-disp", LIST_UNORDERED, NULL);
   slistStartIterator (dflist, &dfiteridx);
   while ((value = slistIterateKey (dflist, &dfiteridx)) != NULL) {
     tvalue = mdstrdup (value);

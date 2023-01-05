@@ -1340,7 +1340,7 @@ starterGetProfiles (startui_t *starter)
   /* want the 'new profile' selection to always be last */
   /* and its index may not be last */
   /* use two lists, one with the display ordering, and an index list */
-  proflist = nlistAlloc ("profile-list", LIST_ORDERED, free);
+  proflist = nlistAlloc ("profile-list", LIST_ORDERED, NULL);
   profidxlist = nlistAlloc ("profile-idx-list", LIST_ORDERED, NULL);
   max = 0;
 
@@ -2005,7 +2005,7 @@ starterLoadOptions (startui_t *starter)
       starteruidfkeys, STARTERUI_KEY_MAX);
   starter->options = datafileGetList (starter->optiondf);
   if (starter->options == NULL) {
-    starter->options = nlistAlloc ("starterui-opt", LIST_ORDERED, free);
+    starter->options = nlistAlloc ("starterui-opt", LIST_ORDERED, NULL);
 
     nlistSetNum (starter->options, STARTERUI_POSITION_X, -1);
     nlistSetNum (starter->options, STARTERUI_POSITION_Y, -1);

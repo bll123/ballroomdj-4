@@ -114,9 +114,9 @@ dirlistRecursiveDirList (const char *dirname, int flags)
   dirnamelen = strlen (dirname);
   snprintf (temp, sizeof (temp), "rec-dir-%s", dirname);
   fileList = slistAlloc (temp, LIST_UNORDERED, NULL);
-  dirQueue = queueAlloc ("dir-q", free);
+  dirQueue = queueAlloc ("dir-q", NULL);
 
-  queuePush (dirQueue, strdup (dirname));
+  queuePush (dirQueue, mdstrdup (dirname));
   while (queueGetCount (dirQueue) > 0) {
     char  *dir;
 
@@ -142,7 +142,7 @@ dirlistRecursiveDirList (const char *dirname, int flags)
             slistSetStr (fileList, temp, p);
           }
         } else if (fileopIsDirectory (temp)) {
-          queuePush (dirQueue, strdup (temp));
+          queuePush (dirQueue, mdstrdup (temp));
           if ((flags & DIRLIST_DIRS) == DIRLIST_DIRS) {
             p = temp + dirnamelen + 1;
             slistSetStr (fileList, temp, p);

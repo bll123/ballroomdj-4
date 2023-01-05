@@ -583,7 +583,7 @@ START_TEST(slist_free_str)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- slist_free_str");
 
-  list = slistAlloc ("chk-m", LIST_UNORDERED, free);
+  list = slistAlloc ("chk-m", LIST_UNORDERED, NULL);
   ck_assert_ptr_nonnull (list);
   slistSetStr (list, "ffff", "0L");
   slistSetStr (list, "zzzz", "1L");

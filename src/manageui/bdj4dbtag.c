@@ -131,7 +131,7 @@ main (int argc, char *argv[])
     dbtag.threads [i].fn = NULL;
     dbtag.threads [i].data = NULL;
   }
-  dbtag.fileQueue = queueAlloc ("file-q", free);
+  dbtag.fileQueue = queueAlloc ("file-q", NULL);
   dbtag.received = 0;
   dbtag.sent = 0;
   dbtag.maxqueuelen = 0;
@@ -407,7 +407,7 @@ dbtagProcessFileMsg (dbtag_t *dbtag, char *args)
     mstimestart (&dbtag->starttm);
   }
   ++dbtag->received;
-  queuePush (dbtag->fileQueue, strdup (args));
+  queuePush (dbtag->fileQueue, mdstrdup (args));
 }
 
 static void *

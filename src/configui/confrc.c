@@ -128,8 +128,8 @@ confuiLoadHTMLList (confuigui_t *gui)
 
   logProcBegin (LOG_PROC, "confuiLoadHTMLList");
 
-  tlist = nlistAlloc ("cu-html-list", LIST_ORDERED, free);
-  llist = nlistAlloc ("cu-html-list-l", LIST_ORDERED, free);
+  tlist = nlistAlloc ("cu-html-list", LIST_ORDERED, NULL);
+  llist = nlistAlloc ("cu-html-list-l", LIST_ORDERED, NULL);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "html-list", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);

@@ -241,7 +241,7 @@ main (int argc, char *argv[])
   if (plui.options == NULL) {
     datafileFree (plui.optiondf);
     plui.optiondf = NULL;
-    plui.options = nlistAlloc ("playerui-opt", LIST_ORDERED, free);
+    plui.options = nlistAlloc ("playerui-opt", LIST_ORDERED, NULL);
 
     nlistSetNum (plui.options, PLUI_SHOW_EXTRA_QUEUES, false);
     nlistSetNum (plui.options, PLUI_SWITCH_QUEUE_WHEN_EMPTY, false);

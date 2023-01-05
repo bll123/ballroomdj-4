@@ -58,7 +58,7 @@ orgoptAlloc (void)
   orgopt->df = datafileAllocParse ("org", DFTYPE_LIST, path, NULL, 0);
   dflist = datafileGetList (orgopt->df);
 
-  list = slistAlloc ("org-disp", LIST_UNORDERED, free);
+  list = slistAlloc ("org-disp", LIST_UNORDERED, NULL);
 
   slistStartIterator (dflist, &dfiteridx);
   while ((value = slistIterateKey (dflist, &dfiteridx)) != NULL) {

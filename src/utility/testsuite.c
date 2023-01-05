@@ -1105,7 +1105,7 @@ tsParseExpect (testsuite_t *testsuite, const char *tcmd)
   if (testsuite->chkexpect != NULL) {
     slistFree (testsuite->chkexpect);
   }
-  testsuite->chkexpect = slistAlloc ("ts-chk-expect", LIST_UNORDERED, free);
+  testsuite->chkexpect = slistAlloc ("ts-chk-expect", LIST_UNORDERED, NULL);
 
   tstr = mdstrdup (tcmd);
   p = strtok_r (tstr, " ", &tokstr);
@@ -1483,7 +1483,7 @@ resetChkResponse (testsuite_t *testsuite)
   if (testsuite->chkresponse != NULL) {
     slistFree (testsuite->chkresponse);
   }
-  testsuite->chkresponse = slistAlloc ("ts-chk-response", LIST_ORDERED, free);
+  testsuite->chkresponse = slistAlloc ("ts-chk-response", LIST_ORDERED, NULL);
   testsuite->haveresponse = false;
   testsuite->lessthan = false;
   testsuite->greaterthan = false;

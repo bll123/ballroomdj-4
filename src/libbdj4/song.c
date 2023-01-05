@@ -104,7 +104,7 @@ songAlloc (void)
   assert (song != NULL);
   song->changed = false;
   song->songlistchange = false;
-  song->songInfo = nlistAlloc ("song", LIST_ORDERED, free);
+  song->songInfo = nlistAlloc ("song", LIST_ORDERED, NULL);
   ++gsonginit.songcount;
   return song;
 }

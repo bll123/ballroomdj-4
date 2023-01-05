@@ -61,7 +61,7 @@ songFavoriteAlloc (void)
   /* temporarily, count is the max number of favorites */
   songfav->count = ilistGetCount (songfav->songfavList);
 
-  songfav->spanstrList = nlistAlloc ("songfav-span", LIST_UNORDERED, free);
+  songfav->spanstrList = nlistAlloc ("songfav-span", LIST_UNORDERED, NULL);
   nlistSetSize (songfav->spanstrList, songfav->count);
   songfav->songfavLookup = slistAlloc ("songfav-lookup", LIST_UNORDERED, NULL);
   slistSetSize (songfav->songfavLookup, songfav->count);

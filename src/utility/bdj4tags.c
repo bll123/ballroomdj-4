@@ -129,7 +129,7 @@ main (int argc, char *argv [])
   tagdata = audiotagParseData (argv [fidx], data, &rewrite);
   logMsg (LOG_DBG, LOG_BASIC, "rewrite: %08x", rewrite);
 
-  wlist = slistAlloc ("bdj4tags-write", LIST_ORDERED, free);
+  wlist = slistAlloc ("bdj4tags-write", LIST_ORDERED, NULL);
 
   /* need a copy of the tag list for the write */
   slistStartIterator (tagdata, &iteridx);

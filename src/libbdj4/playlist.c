@@ -252,7 +252,7 @@ playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
   pl = playlistAlloc (musicdb);
   pl->name = mdstrdup (plname);
   snprintf (tbuff, sizeof (tbuff), "plinfo-c-%s", plname);
-  pl->plinfo = nlistAlloc (tbuff, LIST_UNORDERED, free);
+  pl->plinfo = nlistAlloc (tbuff, LIST_UNORDERED, NULL);
   nlistSetSize (pl->plinfo, PLAYLIST_KEY_MAX);
   nlistSetStr (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS, NULL);
   nlistSetNum (pl->plinfo, PLAYLIST_ANNOUNCE, 0);
@@ -521,7 +521,7 @@ playlistGetPlaylistList (int flag)
   char        *ext = NULL;
 
 
-  pnlist = slistAlloc ("playlistlist", LIST_ORDERED, free);
+  pnlist = slistAlloc ("playlistlist", LIST_ORDERED, NULL);
 
   pathbldMakePath (tfn, sizeof (tfn), "", "", PATHBLD_MP_DREL_DATA);
   ext = BDJ4_PLAYLIST_EXT;

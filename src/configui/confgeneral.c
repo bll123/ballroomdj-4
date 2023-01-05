@@ -202,8 +202,8 @@ confuiLoadLocaleList (confuigui_t *gui)
 
   logProcBegin (LOG_PROC, "confuiLoadLocaleList");
 
-  tlist = nlistAlloc ("cu-locale-list", LIST_ORDERED, free);
-  llist = nlistAlloc ("cu-locale-list-l", LIST_ORDERED, free);
+  tlist = nlistAlloc ("cu-locale-list", LIST_ORDERED, NULL);
+  llist = nlistAlloc ("cu-locale-list-l", LIST_ORDERED, NULL);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "locales", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_LOCALE);

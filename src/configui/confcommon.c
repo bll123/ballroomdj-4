@@ -282,7 +282,7 @@ confuiGetThemeList (void)
 
   logProcBegin (LOG_PROC, "confuiGetThemeList");
   sthemelist = slistAlloc ("cu-themes-s", LIST_ORDERED, NULL);
-  themelist = nlistAlloc ("cu-themes", LIST_ORDERED, free);
+  themelist = nlistAlloc ("cu-themes", LIST_ORDERED, NULL);
 
   if (isWindows ()) {
     snprintf (tbuff, sizeof (tbuff), "%s/plocal/share/themes",

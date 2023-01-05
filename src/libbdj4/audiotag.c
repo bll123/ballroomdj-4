@@ -122,7 +122,7 @@ audiotagParseData (const char *ffn, char *data, int *rewrite)
   int         filetype;
 
   *rewrite = 0;
-  tagdata = slistAlloc ("atag", LIST_ORDERED, free);
+  tagdata = slistAlloc ("atag", LIST_ORDERED, NULL);
   audiotagDetermineTagType (ffn, &tagtype, &filetype);
   audiotagParseTags (tagdata, data, tagtype, rewrite);
   return tagdata;
@@ -175,7 +175,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     return AUDIOTAG_NOT_SUPPORTED;
   }
 
-  datalist = nlistAlloc ("audiotag-data", LIST_ORDERED, free);
+  datalist = nlistAlloc ("audiotag-data", LIST_ORDERED, NULL);
   nlistSetStr (datalist, TAG_TRACKTOTAL, "0");
   nlistSetStr (datalist, TAG_DISCTOTAL, "0");
 
@@ -185,7 +185,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   audiotagPrepareTotals (tagdata, newtaglist, datalist,
       TAG_DISCTOTAL, TAG_DISCNUMBER);
 
-  updatelist = slistAlloc ("audiotag-upd", LIST_ORDERED, free);
+  updatelist = slistAlloc ("audiotag-upd", LIST_ORDERED, NULL);
   dellist = slistAlloc ("audiotag-upd", LIST_ORDERED, NULL);
   slistStartIterator (newtaglist, &iteridx);
   while ((tag = slistIterateKey (newtaglist, &iteridx)) != NULL) {
@@ -624,7 +624,7 @@ audiotagCreateLookupTable (int tagtype)
   }
 
   snprintf (buff, sizeof (buff), "tag-%d", tagtype);
-  tagLookup [tagtype] = slistAlloc (buff, LIST_ORDERED, free);
+  tagLookup [tagtype] = slistAlloc (buff, LIST_ORDERED, NULL);
   taglist = tagLookup [tagtype];
 
   for (int i = 0; i < TAG_KEY_MAX; ++i) {

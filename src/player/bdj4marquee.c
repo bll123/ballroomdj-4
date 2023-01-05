@@ -201,7 +201,7 @@ main (int argc, char *argv[])
       mqdfkeys, MQ_KEY_MAX);
   marquee.options = datafileGetList (marquee.optiondf);
   if (marquee.options == NULL) {
-    marquee.options = nlistAlloc ("marquee-opt", LIST_ORDERED, free);
+    marquee.options = nlistAlloc ("marquee-opt", LIST_ORDERED, NULL);
 
     nlistSetNum (marquee.options, MQ_WORKSPACE, -1);
     nlistSetNum (marquee.options, MQ_POSITION_X, -1);

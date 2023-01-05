@@ -140,7 +140,9 @@ uimusicqUIFree (uimusicq_t *uimusicq)
       for (int j = 0; j < UIMUSICQ_BUTTON_MAX; ++j) {
         uiButtonFree (uiw->buttons [j]);
       }
-      dataFree (uiw->selPathStr);
+      if (uiw->selPathStr != NULL) {
+        free (uiw->selPathStr);   // allocated by gtk
+      }
       uidanceFree (uiw->uidance);
       uidanceFree (uiw->uidance5);
       uiTreeViewFree (uiw->musicqTree);
@@ -572,7 +574,7 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
         pathstr = gtk_tree_path_to_string (path);
         loc = atol (pathstr);
         gtk_tree_path_free (path);
-        mdfree (pathstr);
+        free (pathstr);       // allocated by gtk
       }
     }
   }

@@ -266,7 +266,7 @@ confuiSetPlayerQueueList (confuigui_t *gui)
 
   widx = CONFUI_SPINBOX_PLAYER_QUEUE;
 
-  tlist = nlistAlloc ("queue-name", LIST_ORDERED, free);
+  tlist = nlistAlloc ("queue-name", LIST_ORDERED, NULL);
   gui->uiitem [widx].listidx = 0;
   for (size_t i = 0; i < BDJ4_QUEUE_MAX; ++i) {
     nlistSetStr (tlist, i, bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, i));

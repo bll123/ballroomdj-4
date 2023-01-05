@@ -86,6 +86,7 @@ enum {
   ORG_FIRST_GRP = 1,
 };
 
+static void   orgutilInfoFree (void *data);
 static void   orgutilClean (char *target, const char *from, size_t sz);
 
 org_t *
@@ -115,7 +116,7 @@ orgAlloc (char *orgpath)
   org->haveartist = false;
   org->havedance = false;
   org->havetitle = false;
-  org->orgparsed = slistAlloc ("orgpath", LIST_UNORDERED, free);
+  org->orgparsed = slistAlloc ("orgpath", LIST_UNORDERED, orgutilInfoFree);
   /* do not anchor to the beginning -- it may be a full path */
   strlcpy (org->regexstr, "", sizeof (org->regexstr));
   *org->cachepath = '\0';
@@ -218,7 +219,7 @@ orgAlloc (char *orgpath)
       char  *tmp;
       tmp = regexEscape (tlast);
       strlcat (org->regexstr, tmp, sizeof (org->regexstr));
-      mdfree (tmp);
+      free (tmp);   // allocated by glib
     }
     if (isoptional) {
       /* optional group */
@@ -229,8 +230,8 @@ orgAlloc (char *orgpath)
     p = strtok_r (NULL, "{}", &tokstr);
   }
   strlcat (org->regexstr, "\\.[a-zA-Z0-9]+$", sizeof (org->regexstr));
-//fprintf (stderr, "path: %s\n", orgpath);
-//fprintf (stderr, "regexstr: %s\n", org->regexstr);
+  // fprintf (stderr, "path: %s\n", orgpath);
+  // fprintf (stderr, "regexstr: %s\n", org->regexstr);
   org->rx = regexInit (org->regexstr);
   mdfree (tvalue);
 
@@ -530,6 +531,16 @@ orgGetText (org_t *org, slistidx_t idx)
 
 
 /* internal routines */
+
+static void
+orgutilInfoFree (void *data)
+{
+  orginfo_t   *orginfo = data;
+
+  if (orginfo != NULL) {
+    mdfree (orginfo);
+  }
+}
 
 /* this must be locale aware, otherwise the characters that are */
 /* being cleaned might appear within a multi-byte sequence */

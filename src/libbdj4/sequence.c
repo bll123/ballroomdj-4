@@ -53,7 +53,7 @@ sequenceAlloc (const char *fname)
   df = datafileAllocParse ("sequence", DFTYPE_LIST, fn, NULL, 0);
   tlist = datafileGetList (df);
 
-  sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, free);
+  sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, NULL);
   nlistSetSize (sequence->sequence, slistGetCount (tlist));
 
   slistStartIterator (tlist, &iteridx);
@@ -85,7 +85,7 @@ sequenceCreate (const char *fname)
   sequence->name = mdstrdup (fname);
   sequence->path = mdstrdup (fn);
 
-  sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, free);
+  sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, NULL);
   nlistSetVersion (sequence->sequence, SEQUENCE_VERSION);
   return sequence;
 }

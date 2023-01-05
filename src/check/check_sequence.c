@@ -168,7 +168,7 @@ START_TEST(sequence_save)
   ck_assert_ptr_nonnull (seq);
   tlist = sequenceGetDanceList (seq);
   ck_assert_int_eq (slistGetCount (tlist), 4);
-  tslist = slistAlloc ("chk-seq-save", LIST_UNORDERED, free);
+  tslist = slistAlloc ("chk-seq-save", LIST_UNORDERED, NULL);
   slistSetStr (tslist, "Waltz", 0);
   slistSetStr (tslist, "Tango", 0);
   slistSetStr (tslist, "Foxtrot", 0);

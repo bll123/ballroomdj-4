@@ -384,8 +384,8 @@ confuiTableMove (confuigui_t *gui, int dir)
 
   pathstr = gtk_tree_path_to_string (path);
   sscanf (pathstr, "%d", &idx);
-  mdfree (pathstr);
   gtk_tree_path_free (path);
+  free (pathstr);   // allocated by gtk
 
   if (idx == 1 &&
       dir == CONFUI_MOVE_PREV &&
@@ -462,8 +462,8 @@ confuiTableRemove (void *udata)
   if (path != NULL) {
     pathstr = gtk_tree_path_to_string (path);
     sscanf (pathstr, "%d", &idx);
-    mdfree (pathstr);
     gtk_tree_path_free (path);
+    free (pathstr);     // allocated by gtk
   }
   if (idx == 0 &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {

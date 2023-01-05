@@ -176,7 +176,7 @@ main (int argc, char *argv [])
     gseqnum [i] = 1;
     gtracknum [i] = 1;
   }
-  empty = slistAlloc ("tm-empty", LIST_ORDERED, free);
+  empty = slistAlloc ("tm-empty", LIST_ORDERED, NULL);
 
   bdjoptSetStr (OPT_M_DIR_MUSIC, tmusicdir);
   bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
@@ -210,7 +210,7 @@ main (int argc, char *argv [])
     audiotagWriteTags (fn, empty, tagdata, 0, AT_UPDATE_MOD_TIME);
     if (emptydb) {
       slistFree (tagdata);
-      tagdata = slistAlloc ("tm-slist", LIST_ORDERED, free);
+      tagdata = slistAlloc ("tm-slist", LIST_ORDERED, NULL);
     }
     dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
     slistFree (tagdata);
@@ -246,7 +246,7 @@ updateData (ilist_t *tmlist, ilistidx_t key)
   danceConvDance (&conv);
   danceIdx = conv.num;
 
-  tagdata = slistAlloc ("tm-slist", LIST_ORDERED, free);
+  tagdata = slistAlloc ("tm-slist", LIST_ORDERED, NULL);
 
   for (int i = 0; i < tmdfcount; ++i) {
     const char  *val;

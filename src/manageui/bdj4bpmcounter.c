@@ -191,7 +191,7 @@ main (int argc, char *argv[])
       bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX);
   bpmcounter.options = datafileGetList (bpmcounter.optiondf);
   if (bpmcounter.options == NULL) {
-    bpmcounter.options = nlistAlloc ("bpmcounterui-opt", LIST_ORDERED, free);
+    bpmcounter.options = nlistAlloc ("bpmcounterui-opt", LIST_ORDERED, NULL);
 
     nlistSetNum (bpmcounter.options, BPMCOUNTER_POSITION_X, -1);
     nlistSetNum (bpmcounter.options, BPMCOUNTER_POSITION_Y, -1);

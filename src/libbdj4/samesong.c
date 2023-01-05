@@ -47,8 +47,8 @@ samesongAlloc (musicdb_t *musicdb)
 
   ss->nextssidx = 1;
   ss->musicdb = musicdb;
-  ss->sscolors = nlistAlloc ("samesong-colors", LIST_ORDERED, free);
-  ss->sscounts = nlistAlloc ("samesong-count", LIST_ORDERED, free);
+  ss->sscolors = nlistAlloc ("samesong-colors", LIST_ORDERED, NULL);
+  ss->sscounts = nlistAlloc ("samesong-count", LIST_ORDERED, NULL);
 
   dbStartIterator (musicdb, &dbiteridx);
   while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {

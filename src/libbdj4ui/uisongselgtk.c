@@ -628,7 +628,7 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
     pathstr = gtk_tree_path_to_string (path);
     loc = atol (pathstr);
     gtk_tree_path_free (path);
-    mdfree (pathstr);
+    free (pathstr);     // allocated by gtk
   }
 
   return loc + uisongsel->idxStart;
@@ -1355,7 +1355,7 @@ uisongselProcessSelection (GtkTreeModel *model,
     uisongselScrollSelection (uisongsel->peers [i], uisongsel->idxStart, UISONGSEL_SCROLL_FORCE);
     pathstr = gtk_tree_path_to_string (path);
     uisongselSetSelection (uisongsel->peers [i], atol (pathstr));
-    mdfree (pathstr);
+    free (pathstr);     // allocated by gtk
     uisongselSetPeerFlag (uisongsel->peers [i], false);
   }
 }
@@ -1448,8 +1448,8 @@ uisongselMoveSelection (void *udata, int where)
     if (path != NULL) {
       pathstr = gtk_tree_path_to_string (path);
       loc = atol (pathstr);
-      mdfree (pathstr);
       gtk_tree_path_free (path);
+      free (pathstr);     // allocated by gtk
     }
 
     uisongselClearSingleSelection (uisongsel);

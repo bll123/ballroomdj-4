@@ -77,13 +77,13 @@ START_TEST(dispsel_save)
   tlist = dispselGetList (dsel, DISP_SEL_MUSICQ);
   ck_assert_int_gt (slistGetCount (tlist), 0);
 
-  tlistb = slistAlloc ("chk-dispsel-orig", LIST_UNORDERED, free);
+  tlistb = slistAlloc ("chk-dispsel-orig", LIST_UNORDERED, NULL);
   slistStartIterator (tlist, &iteridx);
   while ((vala = slistIterateKey (tlist, &iteridx)) != NULL) {
     slistSetNum (tlistb, vala, 0);
   }
 
-  tlist = slistAlloc ("chk-dispsel-mq", LIST_UNORDERED, free);
+  tlist = slistAlloc ("chk-dispsel-mq", LIST_UNORDERED, NULL);
   slistSetNum (tlist, "DANCE", 0);
   slistSetNum (tlist, "TITLE", 0);
   slistSetNum (tlist, "ARTIST", 0);

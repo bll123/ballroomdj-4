@@ -366,7 +366,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
       inc = 2;
       if (dfkeys == NULL) {
         if (datalist == NULL) {
-          datalist = slistAlloc (name, LIST_UNORDERED, free);
+          datalist = slistAlloc (name, LIST_UNORDERED, NULL);
           slistSetSize (datalist, dataCount / 2);
         } else {
           slistSetSize (datalist, dataCount / 2 + slistGetCount (datalist));
@@ -374,7 +374,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
         logMsg (LOG_DBG, LOG_DATAFILE, "key_val: list");
       } else {
         if (datalist == NULL) {
-          datalist = nlistAlloc (name, LIST_UNORDERED, free);
+          datalist = nlistAlloc (name, LIST_UNORDERED, NULL);
           nlistSetSize (datalist, dataCount / 2);
         } else {
           nlistSetSize (datalist, dataCount / 2 + nlistGetCount (datalist));
@@ -424,7 +424,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
       }
       key = atol (tvalstr);
       snprintf (temp, sizeof (temp), "%s-item-%d", name, nikey);
-      itemList = nlistAlloc (temp, LIST_ORDERED, free);
+      itemList = nlistAlloc (temp, LIST_ORDERED, NULL);
       continue;
     }
 
@@ -539,7 +539,7 @@ datafileSaveKeyValList (const char *tag,
   slist_t         *slist;
   char            tbuff [1024];
 
-  slist = slistAlloc (tag, LIST_ORDERED, free);
+  slist = slistAlloc (tag, LIST_ORDERED, NULL);
 
   for (ssize_t i = 0; i < dfkeycount; ++i) {
     datafileLoadConv (&dfkeys [i], list, &conv, 0);

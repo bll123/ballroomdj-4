@@ -53,8 +53,8 @@ confuiInitPlayer (confuigui_t *gui)
     pliAudioDeviceList (pli, &sinklist);
   }
 
-  tlist = nlistAlloc ("cu-audio-out", LIST_ORDERED, free);
-  llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, free);
+  tlist = nlistAlloc ("cu-audio-out", LIST_ORDERED, NULL);
+  llist = nlistAlloc ("cu-audio-out-l", LIST_ORDERED, NULL);
   /* CONTEXT: configuration: audio: The default audio sink (audio output) */
   nlistSetStr (tlist, 0, _("Default"));
   nlistSetStr (llist, 0, "default");
@@ -146,8 +146,8 @@ confuiLoadVolIntfcList (confuigui_t *gui)
 
   logProcBegin (LOG_PROC, "confuiLoadVolIntfcList");
 
-  tlist = nlistAlloc ("cu-volintfc-list", LIST_ORDERED, free);
-  llist = nlistAlloc ("cu-volintfc-list-l", LIST_ORDERED, free);
+  tlist = nlistAlloc ("cu-volintfc-list", LIST_ORDERED, NULL);
+  llist = nlistAlloc ("cu-volintfc-list-l", LIST_ORDERED, NULL);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "volintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
@@ -201,8 +201,8 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
 
   logProcBegin (LOG_PROC, "confuiLoadPlayerIntfcList");
 
-  tlist = nlistAlloc ("cu-playerintfc-list", LIST_ORDERED, free);
-  llist = nlistAlloc ("cu-playerintfc-list-l", LIST_ORDERED, free);
+  tlist = nlistAlloc ("cu-playerintfc-list", LIST_ORDERED, NULL);
+  llist = nlistAlloc ("cu-playerintfc-list-l", LIST_ORDERED, NULL);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "playerintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);

@@ -509,8 +509,8 @@ confuiLoadDanceTypeList (confuigui_t *gui)
 
   logProcBegin (LOG_PROC, "confuiLoadDanceTypeList");
 
-  tlist = nlistAlloc ("cu-dance-type", LIST_ORDERED, free);
-  llist = nlistAlloc ("cu-dance-type-l", LIST_ORDERED, free);
+  tlist = nlistAlloc ("cu-dance-type", LIST_ORDERED, NULL);
+  llist = nlistAlloc ("cu-dance-type-l", LIST_ORDERED, NULL);
 
   dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
   dnctypesStartIterator (dnctypes, &iteridx);

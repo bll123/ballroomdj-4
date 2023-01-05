@@ -35,7 +35,7 @@ msgparseMusicQueueData (char *args)
   musicqupdate->currdbidx = -1;
 
   /* first, build ourselves a list to work with */
-  musicqupdate->dispList = nlistAlloc ("temp-musicq-disp", LIST_ORDERED, free);
+  musicqupdate->dispList = nlistAlloc ("temp-musicq-disp", LIST_ORDERED, NULL);
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   if (p != NULL) {

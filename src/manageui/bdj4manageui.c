@@ -416,7 +416,7 @@ main (int argc, char *argv[])
       manageuidfkeys, MANAGEUI_DFKEY_COUNT);
   manage.options = datafileGetList (manage.optiondf);
   if (manage.options == NULL) {
-    manage.options = nlistAlloc ("manageui-opt", LIST_ORDERED, free);
+    manage.options = nlistAlloc ("manageui-opt", LIST_ORDERED, NULL);
 
     nlistSetNum (manage.options, SONGSEL_FILTER_POSITION_X, -1);
     nlistSetNum (manage.options, SONGSEL_FILTER_POSITION_Y, -1);

@@ -444,8 +444,8 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
   if (path != NULL) {
     pathstr = gtk_tree_path_to_string (path);
     sscanf (pathstr, "%d", &idx);
-    mdfree (pathstr);
     gtk_tree_path_free (path);
+    free (pathstr);         // allocated by gtk
   }
 
   memcpy (&citer, &iter, sizeof (iter));
