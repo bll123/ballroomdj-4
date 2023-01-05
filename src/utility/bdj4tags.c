@@ -60,6 +60,10 @@ main (int argc, char *argv [])
     { "msys",         no_argument,      NULL,   0 },
   };
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("tags");
+#endif
+
   while ((c = getopt_long_only (argc, argv, "BCp:d:mnNRs", bdj_options, &option_index)) != -1) {
     switch (c) {
       case '3': {
@@ -193,5 +197,9 @@ main (int argc, char *argv [])
   bdjoptCleanup ();
   audiotagCleanup ();
   localeCleanup ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return rc;
 }

@@ -60,6 +60,10 @@ main (int argc, char *argv [])
     { "verbose",      no_argument,        NULL,   'V', },
   };
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("tdbc");
+#endif
+
   while ((c = getopt_long_only (argc, argv, "B3Vd", bdj_options, &option_index)) != -1) {
     switch (c) {
       case 'B': {
@@ -227,6 +231,10 @@ main (int argc, char *argv [])
   bdjoptCleanup ();
   localeCleanup ();
 
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return grc;
 }
 

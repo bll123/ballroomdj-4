@@ -281,6 +281,10 @@ main (int argc, char *argv[])
   };
 
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("inst");
+#endif
+
   buff [0] = '\0';
 
   installer.unpackdir [0] = '\0';
@@ -450,6 +454,10 @@ main (int argc, char *argv[])
       fprintf (stdout, "finish NG\n");
       dataFree (installer.target);
       dataFree (installer.bdj3loc);
+#if BDJ4_MEM_DEBUG
+      mdebugReport ();
+      mdebugCleanup ();
+#endif
       exit (1);
     }
   }
@@ -459,6 +467,10 @@ main (int argc, char *argv[])
     fprintf (stdout, "finish NG\n");
     dataFree (installer.target);
     dataFree (installer.bdj3loc);
+#if BDJ4_MEM_DEBUG
+    mdebugReport ();
+    mdebugCleanup ();
+#endif
     exit (1);
   }
 
@@ -534,6 +546,11 @@ main (int argc, char *argv[])
   installerCleanup (&installer);
   localeCleanup ();
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
+
   return 0;
 }
 

@@ -120,6 +120,10 @@ main (int argc, char *argv [])
     { NULL,         0,                  NULL,   0 }
   };
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("updt");
+#endif
+
   optind = 0;
   while ((c = getopt_long_only (argc, argv, "Bncm", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -499,7 +503,10 @@ main (int argc, char *argv [])
   bdj4shutdown (ROUTE_NONE, NULL);
   bdjoptCleanup ();
   dataFree (musicdir);
-
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return 0;
 }
 

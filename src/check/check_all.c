@@ -21,6 +21,7 @@
 #include "check_bdj.h"
 #include "localeutil.h"
 #include "log.h"
+#include "mdebug.h"
 #include "osrandom.h"
 #include "osutils.h"
 #include "sysvars.h"

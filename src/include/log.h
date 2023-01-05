@@ -20,6 +20,7 @@
  *  dbup - database update
  *  dbtg - database tag
  *  help - helper
+ *  info - bdj4info
  *  inst - installer
  *  lnch - launcher
  *  main - main
@@ -31,12 +32,13 @@
  *  rc   - mobile remote control
  *  strt - starter
  *  tdbc - tdbcompare
+ *  tdbd - tdbdump
  *  tags - bdj4tags
- *  tmst - tmusicsetup
+ *  tset - tmusicsetup
  *  ts   - testsuite
+ *  tvlc - vlcsinklist
+ *  tvol - voltest
  *  updt - updater
- *  vlc  - vlcsinklist
- *  volt - voltest
  *
  */
 

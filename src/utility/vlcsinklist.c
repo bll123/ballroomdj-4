@@ -27,7 +27,7 @@ main (int argc, char *argv [])
   pli_t         *pli;
 
 #if BDJ4_MEM_DEBUG
-  mdebugInit ("vlc");
+  mdebugInit ("tvlc");
 #endif
 
   if (! fileopIsDirectory ("data")) {

@@ -141,6 +141,11 @@ main (int argc, char *argv[])
   char          buff [MAXPATHLEN];
   char          *uifont;
 
+
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("alt");
+#endif
+
   buff [0] = '\0';
 
   uiutilsUIWidgetInit (&altsetup.window);
@@ -196,6 +201,10 @@ main (int argc, char *argv[])
   bdjvarsCleanup ();
   localeCleanup ();
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return 0;
 }
 

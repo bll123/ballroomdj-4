@@ -168,6 +168,10 @@ main (int argc, char *argv[])
   int           flags;
   char          *p;
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("dbup");
+#endif
+
   dbupdate.state = DB_UPD_INIT;
   dbupdate.musicdb = NULL;
   dbupdate.newmusicdb = NULL;
@@ -276,6 +280,10 @@ main (int argc, char *argv[])
 
   logProcEnd (LOG_PROC, "dbupdate", "");
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return 0;
 }
 

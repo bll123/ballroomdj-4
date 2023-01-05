@@ -37,7 +37,7 @@ main (int argc, char *argv [])
   }
 
 #if BDJ4_MEM_DEBUG
-  mdebugInit ("volt");
+  mdebugInit ("tvol");
 #endif
   sysvarsInit (argv [0]);
   bdjoptInit ();

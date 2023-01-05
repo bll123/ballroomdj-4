@@ -116,6 +116,10 @@ main (int argc, char *argv [])
     { "tmusicsetup",  no_argument,        NULL,   0 },
   };
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("tset");
+#endif
+
   strlcpy (dbfn, "test-templates/musicdb.dat", sizeof (dbfn));
   strlcpy (infn, "test-templates/test-music.txt", sizeof (infn));
 
@@ -181,7 +185,7 @@ main (int argc, char *argv [])
   if (! loglevelset) {
     loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
   }
-  logStartAppend ("tmusicsetup", "tmst", loglevel);
+  logStartAppend ("tmusicsetup", "tset", loglevel);
 
   /* create an entirely new database */
   fileopDelete (dbfn);
@@ -221,6 +225,10 @@ main (int argc, char *argv [])
   bdjvarsdfloadCleanup ();
   bdjoptCleanup ();
   localeCleanup ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return 0;
 }
 

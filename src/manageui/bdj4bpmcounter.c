@@ -22,6 +22,7 @@
 #include "bdjvars.h"
 #include "conn.h"
 #include "log.h"
+#include "mdebug.h"
 #include "ossignal.h"
 #include "osuiutils.h"
 #include "pathbld.h"
@@ -125,6 +126,9 @@ main (int argc, char *argv[])
   char            tbuff [MAXPATHLEN];
   int             flags;
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("bpmc");
+#endif
 
   /* CONTEXT: bpm counter: number of beats */
   disptxt [BPMCOUNT_DISP_BEATS] = _("Beats");
@@ -207,6 +211,10 @@ main (int argc, char *argv[])
   progstateFree (bpmcounter.progstate);
   logProcEnd (LOG_PROC, "bpmcounter", "");
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return status;
 }
 

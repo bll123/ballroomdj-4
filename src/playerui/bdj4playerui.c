@@ -187,6 +187,10 @@ main (int argc, char *argv[])
   char            *uifont;
   char            tbuff [MAXPATHLEN];
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("plui");
+#endif
+
 
   uiutilsUIWidgetInit (&plui.window);
   uiutilsUIWidgetInit (&plui.clock);
@@ -273,6 +277,10 @@ main (int argc, char *argv[])
   progstateFree (plui.progstate);
   logProcEnd (LOG_PROC, "playerui", "");
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return status;
 }
 

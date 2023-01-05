@@ -17,6 +17,7 @@
 #include "bdjopt.h"
 #include "fileop.h"
 #include "localeutil.h"
+#include "mdebug.h"
 #include "sysvars.h"
 
 int
@@ -37,6 +38,10 @@ main (int argc, char *argv [])
     { "theme",        required_argument,NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
+
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("info");
+#endif
 
   while ((c = getopt_long_only (argc, argv, "Bt:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -81,5 +86,9 @@ main (int argc, char *argv [])
   bdjoptCleanup ();
   localeCleanup ();
 
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return 0;
 }

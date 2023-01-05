@@ -18,6 +18,7 @@
 #include "bdjvarsdfload.h"
 #include "fileop.h"
 #include "localeutil.h"
+#include "mdebug.h"
 #include "musicdb.h"
 #include "slist.h"
 #include "song.h"
@@ -47,6 +48,10 @@ main (int argc, char *argv [])
     { "nodetach",     no_argument,      NULL,   0, },
     { "verbose",      no_argument,      NULL,   'V', },
   };
+
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("tdbd");
+#endif
 
   while ((c = getopt_long_only (argc, argv, "BV", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -145,6 +150,10 @@ main (int argc, char *argv [])
   bdjoptCleanup ();
   localeCleanup ();
 
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return grc;
 }
 

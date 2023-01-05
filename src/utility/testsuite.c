@@ -163,6 +163,10 @@ main (int argc, char *argv [])
   int         rc;
   char        tbuff [MAXPATHLEN];
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("ts");
+#endif
+
   osSetStandardSignals (tsSigHandler);
 #if _define_SIGCHLD
   osDefaultSignal (SIGCHLD);
@@ -312,6 +316,10 @@ main (int argc, char *argv [])
     rc = 1;
   }
 
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return rc;
 }
 

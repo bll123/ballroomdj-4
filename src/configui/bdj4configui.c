@@ -88,6 +88,9 @@ main (int argc, char *argv[])
   int             flags;
   char            tbuff [MAXPATHLEN];
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("cfui");
+#endif
 
   confui.progstate = progstateInit ("configui");
   progstateSetCallback (confui.progstate, STATE_WAIT_HANDSHAKE,
@@ -263,6 +266,10 @@ main (int argc, char *argv[])
 
   logProcEnd (LOG_PROC, "configui", "");
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return status;
 }
 

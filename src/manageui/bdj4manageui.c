@@ -335,6 +335,9 @@ main (int argc, char *argv[])
   char            *uifont;
   char            tbuff [MAXPATHLEN];
 
+#if BDJ4_MEM_DEBUG
+  mdebugInit ("mui");
+#endif
 
   manage.progstate = progstateInit ("manageui");
   progstateSetCallback (manage.progstate, STATE_CONNECTING,
@@ -455,6 +458,10 @@ main (int argc, char *argv[])
   progstateFree (manage.progstate);
   logProcEnd (LOG_PROC, "manageui", "");
   logEnd ();
+#if BDJ4_MEM_DEBUG
+  mdebugReport ();
+  mdebugCleanup ();
+#endif
   return status;
 }
 
