@@ -43,7 +43,7 @@ uiScrollbarSetPosition (UIWidget *uisb, double pos)
   GtkAdjustment   *adjustment;
 
   adjustment = gtk_range_get_adjustment (GTK_RANGE (uisb->widget));
-  gtk_adjustment_set_value (adjustment, 0.0);
+  gtk_adjustment_set_value (adjustment, pos);
 }
 
 void

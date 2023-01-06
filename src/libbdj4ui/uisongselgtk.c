@@ -865,27 +865,21 @@ uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart,
   if (scrollflag == UISONGSEL_SCROLL_NORMAL &&
       idxStart >= oidx &&
       idxStart < oidx + uiw->maxRows) {
-fprintf (stderr, "%s ss: in range\n", uisongsel->tag);
     if (direction == UISONGSEL_DIR_NONE) {
-fprintf (stderr, "  %s ss: no dir\n", uisongsel->tag);
       return false;
     }
     if (direction == UISONGSEL_NEXT) {
       if (idxStart < oidx + uiw->maxRows / 2) {
-fprintf (stderr, "  %s ss: next/first half\n", uisongsel->tag);
         return false;
       } else {
-fprintf (stderr, "  %s ss: next chg-idx\n", uisongsel->tag);
         idxchanged = true;
         uisongsel->idxStart += 1;
       }
     }
     if (direction == UISONGSEL_PREVIOUS) {
       if (idxStart >= oidx + uiw->maxRows / 2 - 1) {
-fprintf (stderr, "  %s ss: prev/second half\n", uisongsel->tag);
         return false;
       } else {
-fprintf (stderr, "  %s ss: prev chg-idx\n", uisongsel->tag);
         idxchanged = true;
         uisongsel->idxStart -= 1;
       }
@@ -894,7 +888,6 @@ fprintf (stderr, "  %s ss: prev chg-idx\n", uisongsel->tag);
   if (! idxchanged) {
     uisongsel->idxStart = idxStart;
   }
-fprintf (stderr, "  %s ss: new-idx-start: %d\n", uisongsel->tag, uisongsel->idxStart);
 
   uisongselPopulateData (uisongsel);
 
