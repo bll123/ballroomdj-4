@@ -10,8 +10,11 @@
 
 * Bug Fixes:
     * configuration: Fix a crash on exit.
+    * song selection: Fix handling of up/down arrow keys and page up/down keys.
+    * song selection: Fix update of scrollbar.
 * Changes:
     * edit song lists: re-arranged menu items.
+    * player: re-arranged menu items.
     * user interface: made menu background darker.
 
 -->

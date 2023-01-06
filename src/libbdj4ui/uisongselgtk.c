@@ -50,9 +50,10 @@ enum {
   UISONGSEL_FIRST,
   UISONGSEL_NEXT,
   UISONGSEL_PREVIOUS,
+  UISONGSEL_DIR_NONE,
   UISONGSEL_PLAY,
   UISONGSEL_QUEUE,
-  UISONGSEL_SCROLL_NORM,
+  UISONGSEL_SCROLL_NORMAL,
   UISONGSEL_SCROLL_FORCE,
 };
 
@@ -115,7 +116,7 @@ typedef struct uisongselgtk {
 
 
 static void uisongselClearSelections (uisongsel_t *uisongsel);
-static bool uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart, int flag);
+static bool uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart, int scrollflag, int dir);
 static bool uisongselQueueCallback (void *udata);
 static void uisongselQueueHandler (uisongsel_t *uisongsel, musicqidx_t mqidx, int action);
 static void uisongselInitializeStore (uisongsel_t *uisongsel);
@@ -128,6 +129,7 @@ static void uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path, GtkT
 static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation, gpointer user_data);
 static gboolean uisongselScroll (GtkRange *range, GtkScrollType scrolltype, gdouble value, gpointer udata);
 static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata);
+static void uisongselProcessScroll (uisongsel_t *uisongsel, int dir, int lines);
 static void uisongselClearSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static void uisongselClearSingleSelection (uisongsel_t *uisongsel);
 static gboolean uisongselKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata);
@@ -135,7 +137,7 @@ static void uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata
 static void uisongselProcessSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static void uisongselPopulateDataCallback (int col, long num, const char *str, void *udata);
 
-static void uisongselMoveSelection (void *udata, int where);
+static void uisongselMoveSelection (void *udata, int where, int lines);
 static void uisongselGetIter (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 
@@ -575,7 +577,7 @@ uisongselSetSelectionOffset (uisongsel_t *uisongsel, long idx)
     return;
   }
 
-  uisongselScrollSelection (uisongsel, idx, UISONGSEL_SCROLL_NORM);
+  uisongselScrollSelection (uisongsel, idx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_DIR_NONE);
   idx -= uisongsel->idxStart;
 
   uiTreeViewSelectionSet (uiw->songselTree, idx);
@@ -584,21 +586,21 @@ uisongselSetSelectionOffset (uisongsel_t *uisongsel, long idx)
 bool
 uisongselNextSelection (void *udata)
 {
-  uisongselMoveSelection (udata, UISONGSEL_NEXT);
+  uisongselMoveSelection (udata, UISONGSEL_NEXT, 1);
   return UICB_CONT;
 }
 
 bool
 uisongselPreviousSelection (void *udata)
 {
-  uisongselMoveSelection (udata, UISONGSEL_PREVIOUS);
+  uisongselMoveSelection (udata, UISONGSEL_PREVIOUS, 1);
   return UICB_CONT;
 }
 
 bool
 uisongselFirstSelection (void *udata)
 {
-  uisongselMoveSelection (udata, UISONGSEL_FIRST);
+  uisongselMoveSelection (udata, UISONGSEL_FIRST, 0);
   return UICB_CONT;
 }
 
@@ -606,11 +608,11 @@ long
 uisongselGetSelectLocation (uisongsel_t *uisongsel)
 {
   uisongselgtk_t  *uiw;
+  int             count;
+  long            loc = -1;
   GtkTreeModel    *model = NULL;
   GtkTreePath     *path;
   char            *pathstr;
-  int             count;
-  long            loc = -1;
   UIWidget        *uiwidgetp;
 
   uiw = uisongsel->uiWidgetData;
@@ -742,7 +744,7 @@ uisongselRestoreSelections (uisongsel_t *uisongsel)
   nlistFree (uiw->selectedList);
   uiw->selectedList = uiw->selectedBackup;
   uiw->selectedBackup = NULL;
-  uisongselScrollSelection (uisongsel, uisongsel->idxStart, UISONGSEL_SCROLL_FORCE);
+  uisongselScrollSelection (uisongsel, uisongsel->idxStart, UISONGSEL_SCROLL_FORCE, UISONGSEL_DIR_NONE);
 
   if (uisongsel->ispeercall) {
     return;
@@ -848,23 +850,51 @@ uisongselClearSelections (uisongsel_t *uisongsel)
 }
 
 static bool
-uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart, int flag)
+uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart,
+    int scrollflag, int direction)
 {
   uisongselgtk_t  *uiw;
   bool            scrolled = false;
   dbidx_t         oidx;
+  bool            idxchanged = false;
 
   uiw = uisongsel->uiWidgetData;
 
   oidx = uisongsel->idxStart;
 
-  if (flag == UISONGSEL_SCROLL_NORM &&
-      idxStart >= uisongsel->idxStart &&
-      idxStart < uisongsel->idxStart + uiw->maxRows) {
-    /* no scroll is necessary */
-    return false;
+  if (scrollflag == UISONGSEL_SCROLL_NORMAL &&
+      idxStart >= oidx &&
+      idxStart < oidx + uiw->maxRows) {
+fprintf (stderr, "%s ss: in range\n", uisongsel->tag);
+    if (direction == UISONGSEL_DIR_NONE) {
+fprintf (stderr, "  %s ss: no dir\n", uisongsel->tag);
+      return false;
+    }
+    if (direction == UISONGSEL_NEXT) {
+      if (idxStart < oidx + uiw->maxRows / 2) {
+fprintf (stderr, "  %s ss: next/first half\n", uisongsel->tag);
+        return false;
+      } else {
+fprintf (stderr, "  %s ss: next chg-idx\n", uisongsel->tag);
+        idxchanged = true;
+        uisongsel->idxStart += 1;
+      }
+    }
+    if (direction == UISONGSEL_PREVIOUS) {
+      if (idxStart >= oidx + uiw->maxRows / 2 - 1) {
+fprintf (stderr, "  %s ss: prev/second half\n", uisongsel->tag);
+        return false;
+      } else {
+fprintf (stderr, "  %s ss: prev chg-idx\n", uisongsel->tag);
+        idxchanged = true;
+        uisongsel->idxStart -= 1;
+      }
+    }
   }
-  uisongsel->idxStart = idxStart;
+  if (! idxchanged) {
+    uisongsel->idxStart = idxStart;
+  }
+fprintf (stderr, "  %s ss: new-idx-start: %d\n", uisongsel->tag, uisongsel->idxStart);
 
   uisongselPopulateData (uisongsel);
 
@@ -1161,12 +1191,9 @@ static gboolean
 uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
 {
   uisongsel_t     *uisongsel = udata;
-  uisongselgtk_t  *uiw;
-  nlistidx_t      tval;
+  int             dir = UISONGSEL_NEXT;
 
   logProcBegin (LOG_PROC, "uisongselScrollEvent");
-
-  uiw = uisongsel->uiWidgetData;
 
   /* i'd like to have a way to turn off smooth scrolling for the application */
   if (event->direction == GDK_SCROLL_SMOOTH) {
@@ -1174,17 +1201,38 @@ uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
 
     gdk_event_get_scroll_deltas ((GdkEvent *) event, &dx, &dy);
     if (dy < 0.0) {
-      --uisongsel->idxStart;
+      dir = UISONGSEL_PREVIOUS;
     }
     if (dy > 0.0) {
-      ++uisongsel->idxStart;
+      dir = UISONGSEL_NEXT;
     }
   }
   if (event->direction == GDK_SCROLL_DOWN) {
-    ++uisongsel->idxStart;
+    dir = UISONGSEL_NEXT;
   }
   if (event->direction == GDK_SCROLL_UP) {
-    --uisongsel->idxStart;
+    dir = UISONGSEL_PREVIOUS;
+  }
+
+  uisongselProcessScroll (uisongsel, dir, 1);
+
+  logProcEnd (LOG_PROC, "uisongselScrollEvent", "");
+  return UICB_STOP;
+}
+
+static void
+uisongselProcessScroll (uisongsel_t *uisongsel, int dir, int lines)
+{
+  uisongselgtk_t  *uiw;
+  nlistidx_t      tval;
+
+  uiw = uisongsel->uiWidgetData;
+
+  if (dir == UISONGSEL_NEXT) {
+    uisongsel->idxStart += lines;
+  }
+  if (dir == UISONGSEL_PREVIOUS) {
+    uisongsel->idxStart -= lines;
   }
 
   if (uisongsel->idxStart < 0) {
@@ -1200,7 +1248,6 @@ uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
       (double) uisongsel->idxStart, uisongsel);
 
   logProcEnd (LOG_PROC, "uisongselScrollEvent", "");
-  return TRUE;
 }
 
 /* used by clear all selections */
@@ -1255,7 +1302,44 @@ uisongselKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata)
       (event->state & GDK_CONTROL_MASK)) {
     uiw->controlPressed = false;
   }
-  return FALSE; // do not stop event handling
+
+  /* up/down and page up/down keys must be handled */
+  if ((event->type == GDK_KEY_PRESS || event->type == GDK_KEY_RELEASE) &&
+      (keyval == GDK_KEY_Up ||
+      keyval == GDK_KEY_KP_Up ||
+      keyval == GDK_KEY_Down ||
+      keyval == GDK_KEY_KP_Down ||
+      keyval == GDK_KEY_Page_Up ||
+      keyval == GDK_KEY_KP_Page_Up ||
+      keyval == GDK_KEY_Page_Down ||
+      keyval == GDK_KEY_KP_Page_Down)) {
+    int     dir;
+    int     lines;
+
+    dir = UISONGSEL_DIR_NONE;
+    lines = 1;
+    if (event->type == GDK_KEY_PRESS &&
+        (keyval == GDK_KEY_Up || keyval == GDK_KEY_KP_Up ||
+        keyval == GDK_KEY_Page_Up || keyval == GDK_KEY_KP_Page_Up)) {
+      dir = UISONGSEL_PREVIOUS;
+    }
+    if (event->type == GDK_KEY_PRESS &&
+        (keyval == GDK_KEY_Down || keyval == GDK_KEY_KP_Down ||
+        keyval == GDK_KEY_Page_Down || keyval == GDK_KEY_KP_Page_Down)) {
+      dir = UISONGSEL_NEXT;
+    }
+    if (event->type == GDK_KEY_PRESS &&
+        (keyval == GDK_KEY_Page_Up || keyval == GDK_KEY_KP_Page_Up ||
+        keyval == GDK_KEY_Page_Down || keyval == GDK_KEY_KP_Page_Down)) {
+      lines = uiw->maxRows;
+    }
+    if (event->type == GDK_KEY_PRESS) {
+      uisongselMoveSelection (uisongsel, dir, lines);
+    }
+    return UICB_STOP;
+  }
+
+  return UICB_CONT; // do not stop event handling
 }
 
 static void
@@ -1352,7 +1436,7 @@ uisongselProcessSelection (GtkTreeModel *model,
       continue;
     }
     uisongselSetPeerFlag (uisongsel->peers [i], true);
-    uisongselScrollSelection (uisongsel->peers [i], uisongsel->idxStart, UISONGSEL_SCROLL_FORCE);
+    uisongselScrollSelection (uisongsel->peers [i], uisongsel->idxStart, UISONGSEL_SCROLL_FORCE, UISONGSEL_DIR_NONE);
     pathstr = gtk_tree_path_to_string (path);
     uisongselSetSelection (uisongsel->peers [i], atol (pathstr));
     free (pathstr);     // allocated by gtk
@@ -1372,10 +1456,10 @@ uisongselPopulateDataCallback (int col, long num, const char *str, void *udata)
 
 
 static void
-uisongselMoveSelection (void *udata, int where)
+uisongselMoveSelection (void *udata, int where, int lines)
 {
   uisongsel_t     *uisongsel = udata;
-  GtkTreeModel      *model = NULL;
+  GtkTreeModel    *model = NULL;
   GtkTreePath     *path;
   uisongselgtk_t  *uiw;
   int             count;
@@ -1410,9 +1494,10 @@ uisongselMoveSelection (void *udata, int where)
 
       pkey = uiw->selectListKey;
       piter = uiw->selectListIter;
+
       uiw->selectListKey = nlistIterateKey (uiw->selectedList, &uiw->selectListIter);
       if (uiw->selectListKey < 0) {
-        /* remain on the first selection, keep the iterator intact */
+        /* remain on the current selection, keep the iterator intact */
         uiw->selectListKey = pkey;
         uiw->selectListIter = piter;
       }
@@ -1425,7 +1510,7 @@ uisongselMoveSelection (void *udata, int where)
       }
     }
 
-    uisongselScrollSelection (uisongsel, uiw->selectListKey, UISONGSEL_SCROLL_NORM);
+    uisongselScrollSelection (uisongsel, uiw->selectListKey, UISONGSEL_SCROLL_NORMAL, where);
     if (uisongsel->newselcb != NULL) {
       dbidx_t   dbidx;
 
@@ -1445,6 +1530,7 @@ uisongselMoveSelection (void *udata, int where)
     uiwidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
     model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
     path = gtk_tree_model_get_path (model, &uiw->currIter);
+    loc = 0;
     if (path != NULL) {
       pathstr = gtk_tree_path_to_string (path);
       loc = atol (pathstr);
@@ -1455,29 +1541,43 @@ uisongselMoveSelection (void *udata, int where)
     uisongselClearSingleSelection (uisongsel);
 
     if (where == UISONGSEL_FIRST) {
-      scrolled = uisongselScrollSelection (uisongsel, 0, UISONGSEL_SCROLL_FORCE);
+      scrolled = uisongselScrollSelection (uisongsel, 0, UISONGSEL_SCROLL_NORMAL, UISONGSEL_DIR_NONE);
       gtk_tree_model_get_iter_first (model, &uiw->currIter);
     }
     if (where == UISONGSEL_NEXT) {
-      nidx = uisongsel->idxStart + 1;
-      scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_FORCE);
-      if (! scrolled) {
-        glong    idx;
+      nidx = uisongsel->idxStart + loc;
+      while (lines > 0) {
+        ++nidx;
+        scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_NEXT);
+        if (! scrolled) {
+          glong    idx;
 
-        gtk_tree_model_get (model, &uiw->currIter, SONGSEL_COL_IDX, &idx, -1);
-        if (loc < uiw->maxRows - 1 &&
-            idx < uisongsel->dfilterCount - 1) {
-          gtk_tree_model_iter_next (model, &uiw->currIter);
+          gtk_tree_model_get (model, &uiw->currIter, SONGSEL_COL_IDX, &idx, -1);
+          if (loc < uiw->maxRows - 1 &&
+              idx < uisongsel->dfilterCount - 1) {
+            gtk_tree_model_iter_next (model, &uiw->currIter);
+            ++loc;
+          } else {
+            break;
+          }
         }
+        --lines;
       }
     }
     if (where == UISONGSEL_PREVIOUS) {
-      nidx = uisongsel->idxStart - 1;
-      scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_FORCE);
-      if (! scrolled) {
-        if (loc > 0) {
-          gtk_tree_model_iter_previous (model, &uiw->currIter);
+      nidx = uisongsel->idxStart + loc;
+      while (lines > 0) {
+        --nidx;
+        scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_PREVIOUS);
+        if (! scrolled) {
+          if (loc > 0) {
+            gtk_tree_model_iter_previous (model, &uiw->currIter);
+            --loc;
+          } else {
+            break;
+          }
         }
+        --lines;
       }
     }
 

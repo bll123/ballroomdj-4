@@ -594,10 +594,10 @@ uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata
       keyval == GDK_KEY_KP_Tab ||
       keyval == GDK_KEY_ISO_Left_Tab
       ) {
-    return FALSE;
+    return UICB_CONT;
   }
 
-  return TRUE;
+  return UICB_STOP;
 }
 
 static void
