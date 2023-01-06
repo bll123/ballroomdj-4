@@ -24,10 +24,6 @@ enum {
   BDJ4_QUEUE_MAX = 4,
 };
 
-#define ITUNES_NAME       "iTunes"
-#define ITUNES_MEDIA_NAME "iTunes Media"
-#define ITUNES_XML_NAME   "iTunes Music Library.xml"
-
 #define BDJ4_LONG_NAME    "BallroomDJ 4"
 #define BDJ4_NAME         "BDJ4"
 #define BDJ3_NAME         "BallroomDJ 3"
@@ -49,9 +45,16 @@ enum {
 /* the 'delete-' prefix in the same directory */
 #define BDJ4_DELETE_PFX "delete-"
 
+/* some itunes stuff */
+#define ITUNES_NAME       "iTunes"
+#define ITUNES_MEDIA_NAME "iTunes Media"
+#define ITUNES_XML_NAME   "iTunes Music Library.xml"
+
 /* data files */
-#define ITUNES_STARS_FN     "itunes-stars"
+#define AUDIOADJ_FN         "audioadjust"
+#define AUTOSEL_FN          "autoselection"
 #define ITUNES_FIELDS_FN    "itunes-fields"
+#define ITUNES_STARS_FN     "itunes-stars"
 /* option data files */
 #define CONFIGUI_OPT_FN     "ui-config"
 #define MANAGEUI_OPT_FN     "ui-manage"

@@ -6,6 +6,7 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4 SHARED
+  audioadjust.c
   audiotag.c
   autosel.c
   bdj4init.c

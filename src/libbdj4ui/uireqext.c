@@ -137,8 +137,8 @@ uireqextDialog (uireqext_t *uireqext)
   uiWidgetShowAll (&uireqext->reqextDialog);
   uireqext->isactive = true;
 
-  x = nlistGetNum (uireqext->options, MQ_REQ_EXT_POSITION_X);
-  y = nlistGetNum (uireqext->options, MQ_REQ_EXT_POSITION_Y);
+  x = nlistGetNum (uireqext->options, REQ_EXT_POSITION_X);
+  y = nlistGetNum (uireqext->options, REQ_EXT_POSITION_Y);
   uiWindowMove (&uireqext->reqextDialog, x, y, -1);
   logProcEnd (LOG_PROC, "uireqextDialog", "");
   return UICB_CONT;
@@ -384,8 +384,8 @@ uireqextResponseHandler (void *udata, long responseid)
   int         x, y, ws;
 
   uiWindowGetPosition (&uireqext->reqextDialog, &x, &y, &ws);
-  nlistSetNum (uireqext->options, MQ_REQ_EXT_POSITION_X, x);
-  nlistSetNum (uireqext->options, MQ_REQ_EXT_POSITION_Y, y);
+  nlistSetNum (uireqext->options, REQ_EXT_POSITION_X, x);
+  nlistSetNum (uireqext->options, REQ_EXT_POSITION_Y, y);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {

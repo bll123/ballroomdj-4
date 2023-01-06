@@ -495,6 +495,16 @@ main (int argc, char *argv [])
     datafileFree (tmpdf);
   }
 
+  {
+    /* 4.1.0 2023-1-5 audioadjust.txt */
+    /*    This is a new file; simply check and see if it does not exist. */
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        AUDIOADJ_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+    if (! fileopFileExists (tbuff)) {
+      templateFileCopy (AUDIOADJ_FN BDJ4_CONFIG_EXT, AUDIOADJ_FN BDJ4_CONFIG_EXT);
+    }
+  }
+
   pathbldMakePath (tbuff, sizeof (tbuff),
       "updater", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   datafileSaveKeyVal ("updater", tbuff, upddfkeys, UPD_DF_COUNT, updlist, 0);

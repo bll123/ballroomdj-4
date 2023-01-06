@@ -51,6 +51,17 @@ uiMenuCreateItem (UIWidget *uimenu, UIWidget *uimenuitem,
 }
 
 void
+uiMenuAddSeparator (UIWidget *uimenu, UIWidget *uimenuitem)
+{
+  GtkWidget *menuitem;
+
+  /* this is not working for some reason */
+  menuitem = gtk_separator_menu_item_new ();
+  gtk_menu_shell_append (GTK_MENU_SHELL (uimenu->widget), menuitem);
+  uimenuitem->widget = menuitem;
+}
+
+void
 uiMenuCreateCheckbox (UIWidget *uimenu, UIWidget *uimenuitem,
     const char *txt, int active, UICallback *uicb)
 {

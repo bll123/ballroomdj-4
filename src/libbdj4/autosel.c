@@ -48,7 +48,7 @@ autoselAlloc (void)
   autosel_t   *autosel;
   char        fname [MAXPATHLEN];
 
-  pathbldMakePath (fname, sizeof (fname), "autoselection",
+  pathbldMakePath (fname, sizeof (fname), AUTOSEL_FN,
       BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (! fileopFileExists (fname)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: autosel: missing %s", fname);

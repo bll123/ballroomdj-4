@@ -54,6 +54,7 @@
 #include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uiapplyadj.h"
 #include "uimusicq.h"
 #include "uinbutil.h"
 #include "uiplayer.h"
@@ -90,6 +91,7 @@ enum {
   MANAGE_MENU_CB_SE_APPLY_EDITALL,
   MANAGE_MENU_CB_SE_CANCEL_EDITALL,
   MANAGE_MENU_CB_SE_START_EDITALL,
+  MANAGE_MENU_CB_SE_APPLY_ADJ,
   /* sl options menu */
   MANAGE_MENU_CB_SL_EZ_EDIT,
   /* sl edit menu */
@@ -130,6 +132,7 @@ enum {
   MANAGE_CB_CFPL_PLAYLIST_SEL,
   MANAGE_CB_ITUNES_DIALOG,
   MANAGE_CB_ITUNES_SEL,
+  MANAGE_CB_APPLY_ADJ,
   MANAGE_CB_MAX,
 };
 
@@ -220,6 +223,8 @@ typedef struct {
   /* bpm counter */
   int             currbpmsel;
   int             currtimesig;
+  /* song editor */
+  uiaa_t          *uiaa;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -233,6 +238,8 @@ typedef struct {
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
 static datafilekey_t manageuidfkeys [] = {
+  { "APPLY_ADJ_POS_X",  APPLY_ADJ_POSITION_X,       VALUE_NUM, NULL, -1 },
+  { "APPLY_ADJ_POS_Y",  APPLY_ADJ_POSITION_Y,       VALUE_NUM, NULL, -1 },
   { "EASY_SONGLIST",    MANAGE_EASY_SONGLIST,       VALUE_NUM, convBoolean, -1 },
   { "FILTER_POS_X",     SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, -1 },
   { "FILTER_POS_Y",     SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, -1 },
@@ -278,6 +285,8 @@ static void     manageiTunesCreateDialog (manageui_t *manage);
 static void     manageiTunesDialogCreateList (manageui_t *manage);
 static bool     manageiTunesDialogSelectHandler (void *udata, long idx);
 static bool     manageiTunesDialogResponseHandler (void *udata, long responseid);
+static bool     manageApplyAdjDialog (void *udata);
+static bool     manageApplyAdjCallback (void *udata);
 /* music manager */
 static void     manageBuildUIMusicManager (manageui_t *manage);
 static void     manageMusicManagerMenu (manageui_t *manage);
@@ -396,6 +405,7 @@ main (int argc, char *argv[])
   manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.pluiActive = false;
   manage.selectButton = NULL;
+  manage.uiaa = NULL;
 
   procutilInitProcesses (manage.processes);
 
@@ -430,8 +440,8 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, MANAGE_EASY_SONGLIST, true);
     nlistSetNum (manage.options, MANAGE_CFPL_POSITION_X, -1);
     nlistSetNum (manage.options, MANAGE_CFPL_POSITION_Y, -1);
-    nlistSetNum (manage.options, MQ_REQ_EXT_POSITION_X, -1);
-    nlistSetNum (manage.options, MQ_REQ_EXT_POSITION_Y, -1);
+    nlistSetNum (manage.options, APPLY_ADJ_POSITION_X, -1);
+    nlistSetNum (manage.options, APPLY_ADJ_POSITION_Y, -1);
   }
 
   uiUIInitialize ();
@@ -524,6 +534,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   manageDbClose (manage->managedb);
   uiCloseWindow (&manage->window);
   uiButtonFree (manage->selectButton);
+  uiaaFree (manage->uiaa);
 
   procutilStopAllProcess (manage->processes, manage->conn, true);
   procutilFreeAll (manage->processes);
@@ -1229,6 +1240,11 @@ manageSongEditMenu (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
   if (! manage->songeditmenu.initialized) {
+    manage->uiaa = uiaaInit (&manage->window, manage->options);
+    uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_APPLY_ADJ],
+        manageApplyAdjCallback, manage, "song editor: apply adj");
+    uiaaSetResponseCallback (manage->uiaa, &manage->callbacks [MANAGE_CB_APPLY_ADJ]);
+
     uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: managementui: menu selection: actions for song editor */
         &manage->songeditmenu, _("Actions"));
@@ -1243,6 +1259,8 @@ manageSongEditMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, tagdefs [TAG_BPM].displayname,
         &manage->callbacks [MANAGE_MENU_CB_BPM]);
 
+    uiMenuAddSeparator (&manage->menubar, &menuitem);
+
     /* CONTEXT: managementui: menu selection: song editor: edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Edit All"), NULL);
     uiWidgetDisable (&menuitem);
@@ -1253,6 +1271,16 @@ manageSongEditMenu (manageui_t *manage)
 
     /* CONTEXT: managementui: menu selection: song editor: cancel edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Cancel Edit All"), NULL);
+    uiWidgetDisable (&menuitem);
+
+    uiMenuAddSeparator (&manage->menubar, &menuitem);
+
+// ### FIX
+    uiutilsUICallbackInit (&manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ],
+        manageApplyAdjDialog, manage, NULL);
+    /* CONTEXT: managementui: menu selection: song editor: apply adjustments */
+    uiMenuCreateItem (&menu, &menuitem, _("Apply Adjustments"),
+        &manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
     uiWidgetDisable (&menuitem);
 
     manage->songeditmenu.initialized = true;
@@ -1735,6 +1763,24 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
   return UICB_CONT;
 }
 
+static bool
+manageApplyAdjDialog (void *udata)
+{
+  manageui_t    *manage = udata;
+  bool          rc;
+
+  rc = uiaaDialog (manage->uiaa);
+  return rc;
+}
+
+static bool
+manageApplyAdjCallback (void *udata)
+{
+//  manageui_t    *manage = udata;
+
+  return UICB_CONT;
+}
+
 /* music manager */
 
 void
@@ -1834,19 +1880,7 @@ manageSonglistMenu (manageui_t *manage)
     return;
   }
 
-  uiMenuAddMainItem (&manage->menubar, &menuitem,
-      /* CONTEXT: managementui: menu selection: song list: options menu */
-      &manage->slmenu, _("Options"));
-
-  uiCreateSubMenu (&menuitem, &menu);
-
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_EZ_EDIT,
-      manageToggleEasySonglist);
-  /* CONTEXT: managementui: menu checkbox: easy song list editor */
-  uiMenuCreateCheckbox (&menu, &menuitem, _("Easy Song List Editor"),
-      nlistGetNum (manage->options, MANAGE_EASY_SONGLIST),
-      &manage->callbacks [MANAGE_MENU_CB_SL_EZ_EDIT]);
-
+  /* edit */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
       /* CONTEXT: managementui: menu selection: song list: edit menu */
       &manage->slmenu, _("Edit"));
@@ -1873,6 +1907,7 @@ manageSonglistMenu (manageui_t *manage)
   uiMenuCreateItem (&menu, &menuitem, _("Delete"),
       &manage->callbacks [MANAGE_MENU_CB_SL_DELETE]);
 
+  /* actions */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
       /* CONTEXT: managementui: menu selection: actions for song list */
       &manage->slmenu, _("Actions"));
@@ -1896,6 +1931,7 @@ manageSonglistMenu (manageui_t *manage)
   uiMenuCreateItem (&menu, &menuitem, _("Create from Playlist"),
       &manage->callbacks [MANAGE_MENU_CB_SL_MK_FROM_PL]);
 
+  /* export */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
       /* CONTEXT: managementui: menu selection: export actions for song list */
       &manage->slmenu, _("Export"));
@@ -1913,6 +1949,7 @@ manageSonglistMenu (manageui_t *manage)
   uiMenuCreateItem (&menu, &menuitem, tbuff, NULL);
   uiWidgetDisable (&menuitem);
 
+  /* import */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
       /* CONTEXT: managementui: menu selection: import actions for song list */
       &manage->slmenu, _("Import"));
@@ -1936,6 +1973,20 @@ manageSonglistMenu (manageui_t *manage)
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), ITUNES_NAME);
   uiMenuCreateItem (&menu, &menuitem, tbuff,
       &manage->callbacks [MANAGE_MENU_CB_SL_ITUNES_IMP]);
+
+  /* options */
+  uiMenuAddMainItem (&manage->menubar, &menuitem,
+      /* CONTEXT: managementui: menu selection: song list: options menu */
+      &manage->slmenu, _("Options"));
+
+  uiCreateSubMenu (&menuitem, &menu);
+
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_EZ_EDIT,
+      manageToggleEasySonglist);
+  /* CONTEXT: managementui: menu checkbox: easy song list editor */
+  uiMenuCreateCheckbox (&menu, &menuitem, _("Easy Song List Editor"),
+      nlistGetNum (manage->options, MANAGE_EASY_SONGLIST),
+      &manage->callbacks [MANAGE_MENU_CB_SL_EZ_EDIT]);
 
   manage->slmenu.initialized = true;
 

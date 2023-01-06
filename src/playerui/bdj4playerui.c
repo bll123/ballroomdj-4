@@ -117,16 +117,16 @@ typedef struct {
 } playerui_t;
 
 static datafilekey_t playeruidfkeys [] = {
-  { "FILTER_POS_X",             SONGSEL_FILTER_POSITION_X,    VALUE_NUM, NULL, -1 },
-  { "FILTER_POS_Y",             SONGSEL_FILTER_POSITION_Y,    VALUE_NUM, NULL, -1 },
-  { "MQ_REQ_EXT_X",             MQ_REQ_EXT_POSITION_X,        VALUE_NUM, NULL, -1 },
-  { "MQ_REQ_EXT_Y",             MQ_REQ_EXT_POSITION_Y,        VALUE_NUM, NULL, -1 },
-  { "PLUI_POS_X",               PLUI_POSITION_X,              VALUE_NUM, NULL, -1 },
-  { "PLUI_POS_Y",               PLUI_POSITION_Y,              VALUE_NUM, NULL, -1 },
-  { "PLUI_SIZE_X",              PLUI_SIZE_X,                  VALUE_NUM, NULL, -1 },
-  { "PLUI_SIZE_Y",              PLUI_SIZE_Y,                  VALUE_NUM, NULL, -1 },
-  { "SHOW_EXTRA_QUEUES",        PLUI_SHOW_EXTRA_QUEUES,       VALUE_NUM, NULL, -1 },
-  { "SORT_BY",                  SONGSEL_SORT_BY,              VALUE_STR, NULL, -1 },
+  { "FILTER_POS_X",             SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, -1 },
+  { "FILTER_POS_Y",             SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, -1 },
+  { "PLUI_POS_X",               PLUI_POSITION_X,            VALUE_NUM, NULL, -1 },
+  { "PLUI_POS_Y",               PLUI_POSITION_Y,            VALUE_NUM, NULL, -1 },
+  { "PLUI_SIZE_X",              PLUI_SIZE_X,                VALUE_NUM, NULL, -1 },
+  { "PLUI_SIZE_Y",              PLUI_SIZE_Y,                VALUE_NUM, NULL, -1 },
+  { "REQ_EXT_X",                REQ_EXT_POSITION_X,         VALUE_NUM, NULL, -1 },
+  { "REQ_EXT_Y",                REQ_EXT_POSITION_Y,         VALUE_NUM, NULL, -1 },
+  { "SHOW_EXTRA_QUEUES",        PLUI_SHOW_EXTRA_QUEUES,     VALUE_NUM, NULL, -1 },
+  { "SORT_BY",                  SONGSEL_SORT_BY,            VALUE_STR, NULL, -1 },
   { "SWITCH_QUEUE_WHEN_EMPTY",  PLUI_SWITCH_QUEUE_WHEN_EMPTY, VALUE_NUM, NULL, -1 },
 };
 enum {
@@ -251,8 +251,8 @@ main (int argc, char *argv[])
     nlistSetNum (plui.options, PLUI_POSITION_Y, -1);
     nlistSetNum (plui.options, PLUI_SIZE_X, 1000);
     nlistSetNum (plui.options, PLUI_SIZE_Y, 600);
-    nlistSetNum (plui.options, MQ_REQ_EXT_POSITION_X, -1);
-    nlistSetNum (plui.options, MQ_REQ_EXT_POSITION_Y, -1);
+    nlistSetNum (plui.options, REQ_EXT_POSITION_X, -1);
+    nlistSetNum (plui.options, REQ_EXT_POSITION_Y, -1);
     nlistSetStr (plui.options, SONGSEL_SORT_BY, "TITLE");
   }
 
@@ -417,6 +417,37 @@ pluiBuildUI (playerui_t *plui)
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&plui->statusMsg, &uiwidget);
 
+  /* actions */
+  /* CONTEXT: playerui: menu selection: actions for the player */
+  uiMenuCreateItem (&menubar, &menuitem, _("Actions"), NULL);
+
+  uiCreateSubMenu (&menuitem, &menu);
+
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL],
+      pluiRequestExternalDialog, plui, NULL);
+  /* CONTEXT: playerui: menu selection: action: request external */
+  uiMenuCreateItem (&menu, &menuitem, _("Request External"),
+      &plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL]);
+
+  /* marquee */
+  /* CONTEXT: playerui: menu selection: marquee related options */
+  uiMenuCreateItem (&menubar, &menuitem, _("Marquee"), NULL);
+
+  uiCreateSubMenu (&menuitem, &menu);
+
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ],
+      pluiMarqueeFontSizeDialog, plui, NULL);
+  /* CONTEXT: playerui: menu selection: marquee: change the marquee font size */
+  uiMenuCreateItem (&menu, &menuitem, _("Font Size"),
+      &plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ]);
+
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_MQ_FIND],
+      pluiMarqueeFind, plui, NULL);
+  /* CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen */
+  uiMenuCreateItem (&menu, &menuitem, _("Recover Marquee"),
+      &plui->callbacks [PLUI_MENU_CB_MQ_FIND]);
+
+  /* options */
   /* CONTEXT: playerui: menu selection: options for the player */
   uiMenuCreateItem (&menubar, &menuitem, _("Options"), NULL);
 
@@ -435,34 +466,6 @@ pluiBuildUI (playerui_t *plui)
   uiMenuCreateCheckbox (&menu, &menuitem, _("Switch Queue When Empty"),
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
       &plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE]);
-
-  /* CONTEXT: playerui: menu selection: actions for the player */
-  uiMenuCreateItem (&menubar, &menuitem, _("Actions"), NULL);
-
-  uiCreateSubMenu (&menuitem, &menu);
-
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL],
-      pluiRequestExternalDialog, plui, NULL);
-  /* CONTEXT: playerui: menu selection: action: request external */
-  uiMenuCreateItem (&menu, &menuitem, _("Request External"),
-      &plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL]);
-
-  /* CONTEXT: playerui: menu selection: marquee related options */
-  uiMenuCreateItem (&menubar, &menuitem, _("Marquee"), NULL);
-
-  uiCreateSubMenu (&menuitem, &menu);
-
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ],
-      pluiMarqueeFontSizeDialog, plui, NULL);
-  /* CONTEXT: playerui: menu selection: marquee: change the marquee font size */
-  uiMenuCreateItem (&menu, &menuitem, _("Font Size"),
-      &plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ]);
-
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_MQ_FIND],
-      pluiMarqueeFind, plui, NULL);
-  /* CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen */
-  uiMenuCreateItem (&menu, &menuitem, _("Recover Marquee"),
-      &plui->callbacks [PLUI_MENU_CB_MQ_FIND]);
 
   /* player */
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);

@@ -12,6 +12,7 @@ add_library (libbdj4ui SHARED
   osuilinuxutils.c
   osuimacutils.m
   osuiwinutils.c
+  uiapplyadj.c
   uidance.c
   uiduallist.c
   uifavorite.c

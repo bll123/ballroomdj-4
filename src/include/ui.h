@@ -122,6 +122,7 @@ void uiMenuCreateCheckbox (UIWidget *uimenu, UIWidget *uimenuitem,
 void uiMenuInit (uimenu_t *menu);
 void uiMenuAddMainItem (UIWidget *uimenubar, UIWidget *uimenuitem,
     uimenu_t *menu, const char *txt);
+void uiMenuAddSeparator (UIWidget *uimenu, UIWidget *uimenuitem);
 void uiMenuSetMainCallback (UIWidget *uimenuitem, UICallback *uicb);
 void uiMenuDisplay (uimenu_t *menu);
 void uiMenuClear (uimenu_t *menu);

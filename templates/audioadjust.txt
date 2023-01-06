@@ -1,0 +1,25 @@
+# audioadjust
+# 2023-1-5
+# version 1
+#
+# variables for trim silence
+# trimsilence-periods : numeric (1)
+# trimsilence-start : double (0.1)
+# trimsilence-threshold : numeric, decibels (-50)
+TRIMSILENCE_PERIOD
+..1
+TRIMSILENCE_START
+..100
+TRIMSILENCE_THRESHOLD
+..-50
+#
+# variables for loudness normalization
+# target-il : double (-23.0)
+# target-lra : double (7.0)
+# target-tp : double (-2.0)
+LOUDNORM_TARGET_IL
+..-23000
+LOUDNORM_TARGET_LRA
+..7000
+LOUDNORM_TARGET_TP
+..-2000

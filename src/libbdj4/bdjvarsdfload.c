@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <string.h>
 
+#include "audioadjust.h"
 #include "autosel.h"
 #include "bdj4.h"
 #include "bdjvarsdf.h"
@@ -51,6 +52,9 @@ bdjvarsdfloadInit (void)
   /* auto selection numbers are used by dancesel.c and autosel.c */
   bdjvarsdfSet (BDJVDF_AUTO_SEL, autoselAlloc ());
 
+  /* audio adjust is used by audioadjust.c */
+  bdjvarsdfSet (BDJVDF_AUDIO_ADJUST, aaAlloc ());
+
   rc = 0;
   for (int i = BDJVDF_AUTO_SEL; i < BDJVDF_MAX; ++i) {
     if (bdjvarsdfGet (i) == NULL) {
@@ -66,6 +70,7 @@ bdjvarsdfloadInit (void)
 void
 bdjvarsdfloadCleanup (void)
 {
+  aaFree (bdjvarsdfGet (BDJVDF_AUDIO_ADJUST));
   autoselFree (bdjvarsdfGet (BDJVDF_AUTO_SEL));
   songFavoriteFree (bdjvarsdfGet (BDJVDF_FAVORITES));
   genreFree (bdjvarsdfGet (BDJVDF_GENRES));
