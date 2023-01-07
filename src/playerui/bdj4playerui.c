@@ -1030,6 +1030,11 @@ pluiSetManageQueue (playerui_t *plui, musicqidx_t mqidx)
 {
   char  tbuff [40];
 
+  if ((int) mqidx < MUSICQ_PB_MAX) {
+    uisongselSetRequestLabel (plui->uisongsel,
+        bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, mqidx));
+  }
+
   /* need to save the last managed to handle history queue button */
   plui->musicqLastManageIdx = plui->musicqManageIdx;
   plui->musicqManageIdx = mqidx;

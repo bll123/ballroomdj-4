@@ -596,6 +596,12 @@ uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata
       ) {
     return UICB_CONT;
   }
+  /* control/meta/super keys should be processed also */
+  if ((event->state & GDK_CONTROL_MASK) ||
+      (event->state & GDK_META_MASK) ||
+      (event->state & GDK_SUPER_MASK)) {
+    return UICB_CONT;
+  }
 
   return UICB_STOP;
 }

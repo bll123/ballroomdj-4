@@ -94,6 +94,7 @@ typedef struct uisongselgtk {
   GtkTreeViewColumn   *favColumn;
   UIWidget            scrolledwin;
   uibutton_t          *buttons [SONGSEL_BUTTON_MAX];
+  UIWidget            reqQueueLabel;
   /* other data */
   int               lastTreeSize;
   double            lastRowHeight;
@@ -201,6 +202,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
 {
   uisongselgtk_t    *uiw;
   uibutton_t        *uibutton;
+  UIWidget          uiwidget;
   UIWidget          *uiwidgetp;
   UIWidget          *uitreewidgetp;
   UIWidget          hbox;
@@ -262,6 +264,11 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     uiw->buttons [SONGSEL_BUTTON_QUEUE] = uibutton;
     uiwidgetp = uiButtonGetUIWidget (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
+
+    uiCreateLabel (&uiwidget, "");
+    uiLabelDarkenColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+    uiBoxPackStart (&hbox, &uiwidget);
+    uiutilsUIWidgetCopy (&uiw->reqQueueLabel, &uiwidget);
   }
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
@@ -831,6 +838,19 @@ uisongselGetUpperWorkaround (uisongsel_t *uisongsel)
 
   uiw = uisongsel->uiWidgetData;
   return uiw->upperLimit;
+}
+
+void
+uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt)
+{
+  uisongselgtk_t  *uiw;
+
+  if (uisongsel == NULL) {
+    return;
+  }
+
+  uiw = uisongsel->uiWidgetData;
+  uiLabelSetText (&uiw->reqQueueLabel, txt);
 }
 
 /* internal routines */

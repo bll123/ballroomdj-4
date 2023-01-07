@@ -131,6 +131,7 @@ static bool uisongeditFirstSelection (void *udata);
 static bool uisongeditPreviousSelection (void *udata);
 static bool uisongeditNextSelection (void *udata);
 static bool uisongeditCopyPath (void *udata);
+static gboolean uisongeditKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata);
 
 void
 uisongeditUIInit (uisongedit_t *uisongedit)
@@ -266,6 +267,11 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   uiCreateVertBox (&uiw->vbox);
   uiWidgetExpandHoriz (&uiw->vbox);
+
+  g_signal_connect (uiw->vbox.widget, "key-press-event",
+      G_CALLBACK (uisongeditKeyEvent), uisongedit);
+  g_signal_connect (uiw->vbox.widget, "key-release-event",
+      G_CALLBACK (uisongeditKeyEvent), uisongedit);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
@@ -1190,3 +1196,31 @@ uisongeditCopyPath (void *udata)
   return UICB_CONT;
 }
 
+static gboolean
+uisongeditKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata)
+{
+  uisongedit_t    *uisongedit = udata;
+  uisongeditgtk_t *uiw;
+  guint           keyval;
+
+  uiw = uisongedit->uiWidgetData;
+
+  gdk_event_get_keyval ((GdkEvent *) event, &keyval);
+
+  if ((event->state & GDK_CONTROL_MASK) && event->type == GDK_KEY_PRESS) {
+    if (keyval == GDK_KEY_s || keyval == GDK_KEY_S) {
+      uisongeditSaveCallback (uisongedit);
+      return UICB_CONT;
+    }
+    if (keyval == GDK_KEY_n || keyval == GDK_KEY_N) {
+      uisongeditNextSelection (uisongedit);
+      return UICB_CONT;
+    }
+    if (keyval == GDK_KEY_p || keyval == GDK_KEY_P) {
+      uisongeditPreviousSelection (uisongedit);
+      return UICB_CONT;
+    }
+  }
+
+  return UICB_CONT;
+}
