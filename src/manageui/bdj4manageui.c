@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "audioadjust.h"
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
@@ -1281,7 +1282,6 @@ manageSongEditMenu (manageui_t *manage)
     /* CONTEXT: managementui: menu selection: song editor: apply adjustments */
     uiMenuCreateItem (&menu, &menuitem, _("Apply Adjustments"),
         &manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
-    uiWidgetDisable (&menuitem);
 
     manage->songeditmenu.initialized = true;
   }
@@ -1777,6 +1777,10 @@ static bool
 manageApplyAdjCallback (void *udata)
 {
 //  manageui_t    *manage = udata;
+
+fprintf (stderr, "aa callback\n");
+// ### need current song in song editor
+  aaNormalize ("test-music/001-argentinetango.mp3");
 
   return UICB_CONT;
 }

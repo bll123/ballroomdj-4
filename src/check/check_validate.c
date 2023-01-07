@@ -10,9 +10,9 @@
 #include <time.h>
 
 #pragma clang diagnostic push
-#pragma gcc diagnostic push
+#pragma GCC diagnostic push
 #pragma clang diagnostic ignored "-Wformat-extra-args"
-#pragma gcc diagnostic ignored "-Wformat-extra-args"
+#pragma GCC diagnostic ignored "-Wformat-extra-args"
 
 #include <check.h>
 
@@ -243,3 +243,6 @@ validate_suite (void)
   return s;
 }
 
+
+#pragma clang diagnostic pop
+#pragma GCC diagnostic pop

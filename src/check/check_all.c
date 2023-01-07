@@ -12,9 +12,9 @@
 #include <locale.h>
 
 #pragma clang diagnostic push
-#pragma gcc diagnostic push
+#pragma GCC diagnostic push
 #pragma clang diagnostic ignored "-Wformat-extra-args"
-#pragma gcc diagnostic ignored "-Wformat-extra-args"
+#pragma GCC diagnostic ignored "-Wformat-extra-args"
 
 #include <check.h>
 
@@ -68,3 +68,6 @@ main (int argc, char *argv [])
 #endif
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
+#pragma clang diagnostic pop
+#pragma GCC diagnostic pop
