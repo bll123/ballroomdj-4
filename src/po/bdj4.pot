@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-05 11:54-0800\n"
+"POT-Creation-Date: 2023-01-06 17:42-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -208,6 +208,10 @@ msgstr ""
 msgid "Add New"
 msgstr ""
 
+#. CONTEXT: apply adjustments: apply adjustments checkbox
+msgid "Adjust Speed, Song Start and End"
+msgstr ""
+
 #. CONTEXT: configuration file: dance level
 msgid "Advanced"
 msgstr ""
@@ -262,6 +266,12 @@ msgstr ""
 
 #. CONTEXT: song selection filter: filter dialog: applies the selections
 msgid "Apply"
+msgstr ""
+
+#. CONTEXT: apply adjustment dialog: title for the dialog
+#. CONTEXT: apply adjustment dialog: apply adjustments
+#. CONTEXT: managementui: menu selection: song editor: apply adjustments
+msgid "Apply Adjustments"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: song editor: apply edit all
@@ -381,6 +391,7 @@ msgstr ""
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr ""
 
+#. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: request external dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
@@ -1131,6 +1142,10 @@ msgstr ""
 msgid "Normal"
 msgstr ""
 
+#. CONTEXT: apply adjustments: normalize volume checkbox
+msgid "Normalize Volume"
+msgstr ""
+
 #. CONTEXT: marquee: displayed when nothing is set to be played
 #. CONTEXT: mobile marquee: playback is not active
 msgid "Not Playing"
@@ -1785,6 +1800,10 @@ msgstr ""
 
 #. CONTEXT: label: track count
 msgid "Track Count"
+msgstr ""
+
+#. CONTEXT: apply adjustments: trim silence checkbox
+msgid "Trim Silence"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list

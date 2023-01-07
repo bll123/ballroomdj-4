@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2023-01-05\n"
+"PO-Revision-Date: 2023-01-06\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -210,6 +210,10 @@ msgstr ""
 msgid "Add New"
 msgstr "Voeg nieuwe toe"
 
+#. CONTEXT: apply adjustments: apply adjustments checkbox
+msgid "Adjust Speed, Song Start and End"
+msgstr ""
+
 #. CONTEXT: configuration file: dance level
 msgid "Advanced"
 msgstr "Geavanceerd"
@@ -265,6 +269,12 @@ msgstr "Elke Status"
 #. CONTEXT: song selection filter: filter dialog: applies the selections
 msgid "Apply"
 msgstr "Toepassen"
+
+#. CONTEXT: apply adjustment dialog: title for the dialog
+#. CONTEXT: apply adjustment dialog: apply adjustments
+#. CONTEXT: managementui: menu selection: song editor: apply adjustments
+msgid "Apply Adjustments"
+msgstr "Aanpassingen toepassen"
 
 #. CONTEXT: managementui: menu selection: song editor: apply edit all
 msgid "Apply Edit All"
@@ -383,6 +393,7 @@ msgstr "Verwijder merkteken voor identieke nummers"
 msgid "Click the mouse in the blue box in time with the beat."
 msgstr "Klik met de muisaanwijzer in het blauwe vak op de maat van de muziek."
 
+#. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: request external dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
@@ -1134,6 +1145,10 @@ msgstr "Geen"
 msgid "Normal"
 msgstr "Standaard"
 
+#. CONTEXT: apply adjustments: normalize volume checkbox
+msgid "Normalize Volume"
+msgstr "Volume normaliseren"
+
 #. CONTEXT: marquee: displayed when nothing is set to be played
 #. CONTEXT: mobile marquee: playback is not active
 msgid "Not Playing"
@@ -1789,6 +1804,10 @@ msgstr "Track"
 #. CONTEXT: label: track count
 msgid "Track Count"
 msgstr ""
+
+#. CONTEXT: apply adjustments: trim silence checkbox
+msgid "Trim Silence"
+msgstr "Trim stilte"
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list
 msgid "Truncate"

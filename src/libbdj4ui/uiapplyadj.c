@@ -174,8 +174,8 @@ uiaaCreateDialog (uiaa_t *uiaa)
   uiBoxPackStart (&vbox, &hbox);
 
   uiCreateCheckButton (&uiwidget,
-      /* CONTEXT: apply adjustments: normalize audio checkbox */
-      _("Normalize Audio"), 0);
+      /* CONTEXT: apply adjustments: normalize volume checkbox */
+      _("Normalize Volume"), 0);
 
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
