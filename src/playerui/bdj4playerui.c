@@ -1031,8 +1031,15 @@ pluiSetManageQueue (playerui_t *plui, musicqidx_t mqidx)
   char  tbuff [40];
 
   if ((int) mqidx < MUSICQ_PB_MAX) {
-    uisongselSetRequestLabel (plui->uisongsel,
-        bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, mqidx));
+    int   val;
+
+    val = nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES);
+    if (val) {
+      uisongselSetRequestLabel (plui->uisongsel,
+          bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, mqidx));
+    } else {
+      uisongselSetRequestLabel (plui->uisongsel, "");
+    }
   }
 
   /* need to save the last managed to handle history queue button */
@@ -1057,6 +1064,10 @@ pluiToggleExtraQueues (void *udata)
   pluiSetExtraQueues (plui);
   if (! val) {
     pluiSetPlaybackQueue (plui, MUSICQ_PB_A, PLUI_UPDATE_MAIN);
+    uisongselSetRequestLabel (plui->uisongsel, "");
+  } else {
+    uisongselSetRequestLabel (plui->uisongsel,
+        bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, plui->musicqManageIdx));
   }
   logProcEnd (LOG_PROC, "pluiToggleExtraQueues", "");
   return UICB_CONT;

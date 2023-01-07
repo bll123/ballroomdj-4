@@ -60,7 +60,7 @@ uiLabelDarkenColor (UIWidget *uiwidget, const char *color)
   char  tbuff [200];
 
   snprintf (tbuff, sizeof (tbuff),
-      "label { color: shade(%s,0.6); }", color);
+      "label { color: shade(%s,0.7); }", color);
   uiSetCss (uiwidget->widget, tbuff);
 }
 

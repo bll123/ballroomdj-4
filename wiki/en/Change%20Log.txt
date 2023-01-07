@@ -9,6 +9,7 @@
 **4.0.6 beta 2023-1---**
 
 * Bug Fixes:
+    * configuration: Clean up edit dances display.
     * configuration: Fix a crash on exit.
     * conversion: Fix incorrect conversion of the database.
     * song selection: Fix handling of up/down arrow keys and page up/down keys.
@@ -16,8 +17,8 @@
 * Changes:
     * edit song lists: re-arranged menu items.
     * player: re-arranged menu items.
-    * requests: Add a label indicating which queue is being managed.
     * user interface: Menu background is darker.
+    * requests: Add a label indicating which queue is being managed when show extra queues is on.
 * New Features:
     * song editor: Control-N switches to the next entry.
     * song editor: Control-P switches to the previous entry.
