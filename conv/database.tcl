@@ -40,14 +40,6 @@ if { ! [file exists $infn] } {
   }
 }
 
-set fh [open "$infn" r]
-gets $fh line
-gets $fh line
-gets $fh line
-gets $fh line
-regexp {^#RAMAX=(\d+)$} $line all racount
-close $fh
-
 set dbfn "$infn"
 set fh [open $dbfn r]
 gets $fh line
@@ -60,6 +52,14 @@ if { [regexp {^# ?VERSION=(\d+)\s*$} $line all vers] } {
   puts "Unable to locate database version"
   exit 1
 }
+close $fh
+
+set fh [open "$infn" r]
+gets $fh line
+gets $fh line
+gets $fh line
+gets $fh line
+regexp {^#RAMAX=(\d+)$} $line all racount
 close $fh
 
 source $dbfn
@@ -102,7 +102,7 @@ puts $fh "#RACOUNT=$c"
 
 set newrrn 1
 dict for {fn data} $musicdbList {
-  seek $fh [expr {([dict get $data rrn] - 1) * $rsize + $hsize}]
+  seek $fh [expr {($newrrn - 1) * $rsize + $hsize}]
   puts $fh "FILE\n..$fn"
 
   set haveoldvoladj false

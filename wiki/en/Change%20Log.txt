@@ -10,17 +10,18 @@
 
 * Bug Fixes:
     * configuration: Fix a crash on exit.
+    * conversion: Fix incorrect conversion of the database.
     * song selection: Fix handling of up/down arrow keys and page up/down keys.
     * song selection: Fix update of scrollbar using mouse wheel.
 * Changes:
     * edit song lists: re-arranged menu items.
     * player: re-arranged menu items.
-    * user interface: Menu background is darker.
     * requests: Add a label indicating which queue is being managed.
+    * user interface: Menu background is darker.
 * New Features:
-    * song editor: Control-S will now perform a save.
     * song editor: Control-N switches to the next entry.
     * song editor: Control-P switches to the previous entry.
+    * song editor: Control-S will now perform a save.
 
 -->
 

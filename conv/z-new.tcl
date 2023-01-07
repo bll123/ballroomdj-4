@@ -12,10 +12,10 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
 }
 set datatopdir [lindex $argv 1]
 
-# install the orgopt.txt file.
-# this is always new
-
-foreach fn [list orgopt.txt autoselection.txt favorites.txt sortopt.txt] {
+# the orgopt.txt file is always new
+# audioadjust is new as of version 4.0.5
+foreach fn [list audioadjust.txt autoselection.txt \
+    favorites.txt orgopt.txt sortopt.txt] {
   set nfn [file join $datatopdir data $fn]
 
   if { ! [file exists templates/$fn] } {
