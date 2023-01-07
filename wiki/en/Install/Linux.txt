@@ -45,9 +45,11 @@ $HOME/Downloads/bdj4-installer-linux-4.0.0-20221122-alpha
 Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
 folder will be pre-selected for you.
 
-The **Re-Install** checkbox is only used if you want to completely reset
-all of the BDJ4 data files.  Any changes you have made within BDJ4
-will be lost if a re-install is done.
+The **Re-Install** checkbox is only used if you want to completely
+reset all of the BDJ4 data files.  Any changes you have made within
+BDJ4 will be lost if a re-install is done. ___(If you are updating an
+alpha installation, you must do a re-install.)___
+
 
 If you want to convert a BallroomDJ 3 installation, select the
 BallroomDJ 3 folder and select the **Convert BallroomDJ 3** checkbox.
@@ -60,4 +62,4 @@ button and wait for the **Installation Completed** message.
 <br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Linux**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-05 11:53:39; BDJ4 version 4.0.5-beta)_
+<br>_(Updated 2023-01-07 09:08:58; BDJ4 version 4.0.6-beta)_

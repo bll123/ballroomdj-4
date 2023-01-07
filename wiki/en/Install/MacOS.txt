@@ -48,9 +48,11 @@ this script using the following command:
 Choose the folder in which to install BallroomDJ 4.  The
 $HOME/Applications/BDJ4.app folder will be pre-selected for you.
 
-The **Re-Install** checkbox is only used if you want to completely reset
-all of the BDJ4 data files.  Any changes you have made within BDJ4
-will be lost if a re-install is done.
+The **Re-Install** checkbox is only used if you want to completely
+reset all of the BDJ4 data files.  Any changes you have made within
+BDJ4 will be lost if a re-install is done. ___(If you are updating an
+alpha installation, you must do a re-install.)___
+
 
 If you want to convert a BallroomDJ 3 installation, select the
 BallroomDJ 3 folder ($HOME/Library/Application Support/BallroomDJ) and
@@ -72,4 +74,4 @@ icon to the Applications Folder icon.
 <br><span style="color:#4559bf;">**VLC Installation on Mac OS**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-05 11:53:39; BDJ4 version 4.0.5-beta)_
+<br>_(Updated 2023-01-07 09:08:58; BDJ4 version 4.0.6-beta)_

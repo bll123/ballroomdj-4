@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "mdebug.h"
 
@@ -162,8 +163,8 @@ mdebugReport (void)
   if (initialized) {
     fprintf (stderr, "== %s ==\n", mdebugtag);
     for (long i = 0; i < mdebugcount; ++i) {
-      fprintf (stderr, "%4s 0x%08lx not freed %c %s %d\n", mdebugtag,
-          mdebug [i].addr, mdebug [i].type, mdebug [i].fn, mdebug [i].lineno);
+      fprintf (stderr, "%4s 0x%08" PRIx64 " not freed %c %s %d\n", mdebugtag,
+          (int64_t) mdebug [i].addr, mdebug [i].type, mdebug [i].fn, mdebug [i].lineno);
       ++mdebugerrors;
     }
     fprintf (stderr, "  count: %ld\n", mdebugcount);

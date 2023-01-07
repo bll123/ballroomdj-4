@@ -90,13 +90,15 @@ ssize_t
 fileSharedWrite (fileshared_t *fhandle, char *data, size_t len)
 {
   ssize_t rc;
+#if _lib_WriteFile
+  DWORD   wlen;
+#endif
 
   if (fhandle == NULL) {
     return -1;
   }
 
 #if _lib_WriteFile
-  DWORD   wlen;
   rc = WriteFile(fhandle->handle, data, len, &wlen, NULL);
 #else
   rc = write (fhandle->fd, data, len);
@@ -110,6 +112,7 @@ fileSharedClose (fileshared_t *fhandle)
   if (fhandle == NULL) {
     return;
   }
+
 #if _lib_CloseHandle
   CloseHandle (fhandle->handle);
 #else
