@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <assert.h>
 #include <getopt.h>
@@ -288,7 +289,7 @@ confuiStoppingCallback (void *udata, programstate_t programState)
 
   confuiPopulateOptions (&confui->gui);
 
-  snprintf (tmp, sizeof (tmp), "%ld", bdjoptGetNum (OPT_G_DEBUGLVL));
+  snprintf (tmp, sizeof (tmp), "%"PRId64, bdjoptGetNum (OPT_G_DEBUGLVL));
   connSendMessage (confui->conn, ROUTE_STARTERUI, MSG_DEBUG_LEVEL, tmp);
 
   bdjoptSave ();

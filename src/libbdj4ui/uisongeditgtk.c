@@ -1200,10 +1200,7 @@ static gboolean
 uisongeditKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata)
 {
   uisongedit_t    *uisongedit = udata;
-  uisongeditgtk_t *uiw;
   guint           keyval;
-
-  uiw = uisongedit->uiWidgetData;
 
   gdk_event_get_keyval ((GdkEvent *) event, &keyval);
 

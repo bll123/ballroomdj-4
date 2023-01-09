@@ -220,15 +220,12 @@ aaNormalize (const char *ffn)
 void
 aaConvert (const char *ffn, const char *outfn)
 {
-  aa_t        *aa;
   const char  *targv [30];
   int         targc = 0;
   char        resp [2000];
   int         rc;
   size_t      retsz;
 
-
-  aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
 
   targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
   targv [targc++] = "-hide_banner";
