@@ -140,9 +140,7 @@ uimusicqUIFree (uimusicq_t *uimusicq)
       for (int j = 0; j < UIMUSICQ_BUTTON_MAX; ++j) {
         uiButtonFree (uiw->buttons [j]);
       }
-      if (uiw->selPathStr != NULL) {
-        free (uiw->selPathStr);   // allocated by gtk
-      }
+      dataFree (uiw->selPathStr);   // allocated by gtk
       uidanceFree (uiw->uidance);
       uidanceFree (uiw->uidance5);
       uiTreeViewFree (uiw->musicqTree);
@@ -483,8 +481,10 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
 
     gtk_tree_selection_select_iter (uiw->sel, &iter);
     path = gtk_tree_model_get_path (model, &iter);
+    mdextalloc (path);
     if (path != NULL) {
       uiw->selPathStr = gtk_tree_path_to_string (path);
+      mdextalloc (uiw->selPathStr);
 
       uiwidgetp = uiTreeViewGetUIWidget (uiw->musicqTree);
       if (uimusicq->ui [mqidx].count > 0 &&
@@ -492,6 +492,7 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
         gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uiwidgetp->widget),
             path, NULL, FALSE, 0.0, 0.0);
       }
+      mdextfree (path);
       gtk_tree_path_free (path);
     }
   }
@@ -570,11 +571,14 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
     valid = gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
     if (valid) {
       path = gtk_tree_model_get_path (model, &iter);
+      mdextalloc (path);
       if (path != NULL) {
         pathstr = gtk_tree_path_to_string (path);
+        mdextalloc (pathstr);
         loc = atol (pathstr);
+        mdextfree (path);
         gtk_tree_path_free (path);
-        free (pathstr);       // allocated by gtk
+        mdfree (pathstr);       // allocated by gtk
       }
     }
   }
@@ -1011,6 +1015,7 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
   uiTreeViewSelectionSet (uiw->musicqTree, uimusicq->ui [mqidx].selectLocation);
   snprintf (tbuff, sizeof (tbuff), "%ld", uimusicq->ui [mqidx].selectLocation);
   path = gtk_tree_path_new_from_string (tbuff);
+  mdextalloc (path);
   uiwidgetp = uiTreeViewGetUIWidget (uiw->musicqTree);
   if (path != NULL && GTK_IS_TREE_VIEW (uiwidgetp->widget)) {
     uimusicqMusicQueueSetSelected (uimusicq, mqidx, UIMUSICQ_SEL_CURR);
@@ -1019,6 +1024,9 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
       gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uiwidgetp->widget),
           path, NULL, FALSE, 0.0, 0.0);
     }
+  }
+  if (path != NULL) {
+    mdextfree (path);
     gtk_tree_path_free (path);
   }
   logProcEnd (LOG_PROC, "uimusicqSetSelection", "");

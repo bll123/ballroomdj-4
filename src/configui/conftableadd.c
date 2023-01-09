@@ -75,11 +75,14 @@ confuiTableAdd (void *udata)
 
     idx = 0;
     path = gtk_tree_model_get_path (model, titer);
+    mdextalloc (path);
     if (path != NULL) {
       pathstr = gtk_tree_path_to_string (path);
+      mdextalloc (pathstr);
       sscanf (pathstr, "%d", &idx);
+      mdextfree (path);
       gtk_tree_path_free (path);
-      free (pathstr);       // allocated by gtk
+      mdfree (pathstr);       // allocated by gtk
     }
     if (idx == 0 &&
         (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
@@ -136,11 +139,13 @@ confuiTableAdd (void *udata)
   }
 
   path = gtk_tree_model_get_path (model, &niter);
+  mdextalloc (path);
   if (path != NULL) {
     gtk_tree_selection_select_path (gui->tables [gui->tablecurr].sel, path);
     if (gui->tablecurr == CONFUI_ID_DANCE) {
       confuiDanceSelect (GTK_TREE_VIEW (uiwidgetp->widget), path, NULL, gui);
     }
+    mdextfree (path);
     gtk_tree_path_free (path);
   }
 

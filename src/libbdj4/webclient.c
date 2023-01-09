@@ -279,8 +279,9 @@ webclientCompressFile (const char *infn, const char *outfn)
   }
   olen = webclientGzipEnd (zs);
   data = g_base64_encode ((const guchar *) obuff, olen);
+  mdextalloc (data);
   fwrite (data, strlen (data), 1, outfh);
-  free (data);    // allocated by glib
+  mdfree (data);    // allocated by glib
 
   fclose (infh);
   fclose (outfh);

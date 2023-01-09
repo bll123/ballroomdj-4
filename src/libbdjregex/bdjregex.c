@@ -57,6 +57,7 @@ regexEscape (const char *str)
     return NULL;
   }
   p = g_regex_escape_string (str, -1);
+  mdextalloc (p);
   return p;
 }
 

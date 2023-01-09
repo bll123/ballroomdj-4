@@ -191,6 +191,7 @@ confuiTableToggle (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata
   uiwidgetp = uiTreeViewGetUIWidget (gui->tables [gui->tablecurr].uitree);
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
   path = gtk_tree_path_new_from_string (spath);
+  mdextalloc (path);
   if (path != NULL) {
     if (gtk_tree_model_get_iter (model, &iter, path) == FALSE) {
       logProcEnd (LOG_PROC, "confuiTableToggle", "no model/iter");
@@ -199,6 +200,7 @@ confuiTableToggle (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata
     col = gui->tables [gui->tablecurr].togglecol;
     gtk_tree_model_get (model, &iter, col, &val, -1);
     gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, !val, -1);
+    mdextfree (path);
     gtk_tree_path_free (path);
   }
   gui->tables [gui->tablecurr].changed = true;
@@ -375,14 +377,17 @@ confuiTableMove (confuigui_t *gui, int dir)
   }
 
   path = gtk_tree_model_get_path (model, &iter);
+  mdextalloc (path);
   if (path == NULL) {
     return;
   }
 
   pathstr = gtk_tree_path_to_string (path);
+  mdextalloc (pathstr);
   sscanf (pathstr, "%d", &idx);
+  mdextfree (path);
   gtk_tree_path_free (path);
-  free (pathstr);   // allocated by gtk
+  mdfree (pathstr);   // allocated by gtk
 
   if (idx == 1 &&
       dir == CONFUI_MOVE_PREV &&
@@ -456,11 +461,14 @@ confuiTableRemove (void *udata)
 
   idx = 0;
   path = gtk_tree_model_get_path (model, &iter);
+  mdextalloc (path);
   if (path != NULL) {
     pathstr = gtk_tree_path_to_string (path);
+    mdextalloc (pathstr);
     sscanf (pathstr, "%d", &idx);
+    mdextfree (path);
     gtk_tree_path_free (path);
-    free (pathstr);     // allocated by gtk
+    mdfree (pathstr);     // allocated by gtk
   }
   if (idx == 0 &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
@@ -496,8 +504,10 @@ confuiTableRemove (void *udata)
 
     uiTreeViewGetSelection (uitree, &model, &iter);
     path = gtk_tree_model_get_path (model, &iter);
+    mdextalloc (path);
     if (path != NULL) {
       confuiDanceSelect (GTK_TREE_VIEW (uiwidgetp->widget), path, NULL, gui);
+      mdextfree (path);
       gtk_tree_path_free (path);
     }
   }
@@ -520,6 +530,7 @@ confuiTableSetDefaultSelection (confuigui_t *gui, uitree_t *uitree,
 
     uiTreeViewSelectionSet (uitree, 0);
     path = gtk_tree_path_new_from_string ("0");
+    mdextalloc (path);
     if (path != NULL) {
       UIWidget      *uiwidgetp;
 
@@ -527,6 +538,7 @@ confuiTableSetDefaultSelection (confuigui_t *gui, uitree_t *uitree,
         uiwidgetp = uiTreeViewGetUIWidget (uitree);
         confuiDanceSelect (GTK_TREE_VIEW (uiwidgetp->widget), path, NULL, gui);
       }
+      mdextfree (path);
       gtk_tree_path_free (path);
     }
   }

@@ -570,9 +570,10 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
           }
           /* not sure that the string is decomposed */
           nstr = g_uri_unescape_string (val + offset, NULL);
+          mdextalloc (nstr);
           nlistSetStr (entry, tagidx, nstr);
           logMsg (LOG_DBG, LOG_ITUNES, "song: %s %s", tagdefs [tagidx].tag, nstr);
-          free (nstr);    // allocated by glib
+          mdfree (nstr);    // allocated by glib
         }
       } else if (tagidx == TAG_DBADDDATE) {
         char    t [200];

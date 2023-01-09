@@ -219,7 +219,7 @@ orgAlloc (char *orgpath)
       char  *tmp;
       tmp = regexEscape (tlast);
       strlcat (org->regexstr, tmp, sizeof (org->regexstr));
-      free (tmp);   // allocated by glib
+      mdfree (tmp);   // allocated by glib
     }
     if (isoptional) {
       /* optional group */

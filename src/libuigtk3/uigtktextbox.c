@@ -83,6 +83,7 @@ uiTextBoxGetValue (uitextbox_t *tb)
   gtk_text_buffer_get_start_iter (tb->buffer.buffer, &siter);
   gtk_text_buffer_get_end_iter (tb->buffer.buffer, &eiter);
   val = gtk_text_buffer_get_text (tb->buffer.buffer, &siter, &eiter, FALSE);
+  mdextalloc (val);
   return val;
 }
 

@@ -340,10 +340,12 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
 
       snprintf (tmp, sizeof (tmp), "%d", duallist->pos);
       path = gtk_tree_path_new_from_string (tmp);
+      mdextalloc (path);
       if (path != NULL) {
         if (gtk_tree_model_get_iter (smodel, &siter, path)) {
           gtk_list_store_remove (GTK_LIST_STORE (smodel), &siter);
         }
+        mdextfree (path);
         gtk_tree_path_free (path);
       }
     }
@@ -441,11 +443,14 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
 
   idx = 0;
   path = gtk_tree_model_get_path (model, &iter);
+  mdextalloc (path);
   if (path != NULL) {
     pathstr = gtk_tree_path_to_string (path);
+    mdextalloc (pathstr);
     sscanf (pathstr, "%d", &idx);
+    mdextfree (path);
     gtk_tree_path_free (path);
-    free (pathstr);         // allocated by gtk
+    mdfree (pathstr);         // allocated by gtk
   }
 
   memcpy (&citer, &iter, sizeof (iter));
@@ -512,8 +517,10 @@ uiduallistDispSelect (void *udata)
       -1);
 
   path = gtk_tree_model_get_path (tmodel, &titer);
+  mdextalloc (path);
   if (path != NULL) {
     gtk_tree_selection_select_path (tsel, path);
+    mdextfree (path);
     gtk_tree_path_free (path);
   }
 
@@ -572,8 +579,10 @@ uiduallistDispRemove (void *udata)
         -1);
 
     path = gtk_tree_model_get_path (smodel, &siter);
+    mdextalloc (path);
     if (path != NULL) {
       gtk_tree_selection_select_path (ssel, path);
+      mdextfree (path);
       gtk_tree_path_free (path);
     }
   }
@@ -586,6 +595,7 @@ uiduallistDispRemove (void *udata)
     memcpy (&piter, &titer, sizeof (GtkTreeIter));
     if (gtk_tree_model_iter_previous (tmodel, &piter)) {
       path = gtk_tree_model_get_path (tmodel, &piter);
+      mdextalloc (path);
     }
   }
 
@@ -593,6 +603,7 @@ uiduallistDispRemove (void *udata)
 
   if (path != NULL) {
     gtk_tree_selection_select_path (tsel, path);
+    mdextfree (path);
     gtk_tree_path_free (path);
   }
 

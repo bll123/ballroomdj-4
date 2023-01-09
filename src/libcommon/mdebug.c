@@ -15,11 +15,12 @@
 #include "mdebug.h"
 
 typedef enum {
-  MDEBUG_TYPE_A = 'a',
-  MDEBUG_TYPE_R = 'r',
-  MDEBUG_TYPE_S = 's',
-  MDEBUG_TYPE_F = 'f',
-  MDEBUG_TYPE_U = 'u',
+  MDEBUG_TYPE_ALLOC = 'a',
+  MDEBUG_TYPE_REALLOC = 'r',
+  MDEBUG_TYPE_STRDUP = 's',
+  MDEBUG_TYPE_FREE = 'f',
+  MDEBUG_TYPE_EXT_ALLOC = 'E',
+  MDEBUG_TYPE_EXT_FREE = 'F',
 } mdebugtype_t;
 
 enum {
@@ -38,6 +39,7 @@ static char     mdebugtag [20] = { "none" };
 static mdebug_t *mdebug = NULL;
 static long     mdebugcount = 0;
 static long     mdebugmax = 0;
+static long     mdebugextalloccount = 0;
 static long     mdebugmalloccount = 0;
 static long     mdebugrealloccount = 0;
 static long     mdebugstrdupcount = 0;
@@ -71,6 +73,23 @@ mdfree_r (void *data, const char *fn, int lineno)
   free (data);
 }
 
+void
+mdextfree_r (void *data, const char *fn, int lineno)
+{
+  long  loc;
+
+  if (initialized) {
+    loc = mdebugFind (data);
+    if (loc >= 0) {
+      mdebugDel (loc);
+    } else {
+      fprintf (stderr, "%4s %p free %s %d\n", mdebugtag, data, fn, lineno);
+      ++mdebugerrors;
+    }
+    ++mdebugfreecount;
+  }
+}
+
 void *
 mdmalloc_r (size_t sz, const char *fn, int lineno)
 {
@@ -81,7 +100,7 @@ mdmalloc_r (size_t sz, const char *fn, int lineno)
   }
   data = malloc (sz);
   if (initialized) {
-    mdebugAdd (data, MDEBUG_TYPE_A, fn, lineno);
+    mdebugAdd (data, MDEBUG_TYPE_ALLOC, fn, lineno);
     ++mdebugmalloccount;
   }
   return data;
@@ -108,7 +127,7 @@ mdrealloc_r (void *data, size_t sz, const char *fn, int lineno)
   }
   ndata = realloc (data, sz);
   if (initialized) {
-    mdebugAdd (ndata, MDEBUG_TYPE_R, fn, lineno);
+    mdebugAdd (ndata, MDEBUG_TYPE_REALLOC, fn, lineno);
     ++mdebugrealloccount;
   }
   return ndata;
@@ -124,10 +143,21 @@ mdstrdup_r (const char *s, const char *fn, int lineno)
   }
   str = strdup (s);
   if (initialized) {
-    mdebugAdd (str, MDEBUG_TYPE_S, fn, lineno);
+    mdebugAdd (str, MDEBUG_TYPE_STRDUP, fn, lineno);
     ++mdebugstrdupcount;
   }
   return str;
+}
+
+void *
+mdextalloc_r (void *data, const char *fn, int lineno)
+{
+  if (initialized) {
+    mdebugResize ();
+    mdebugAdd (data, MDEBUG_TYPE_ALLOC, fn, lineno);
+    ++mdebugextalloccount;
+  }
+  return data;
 }
 
 void
@@ -172,6 +202,7 @@ mdebugReport (void)
     fprintf (stderr, " malloc: %ld\n", mdebugmalloccount);
     fprintf (stderr, "realloc: %ld\n", mdebugrealloccount);
     fprintf (stderr, " strdup: %ld\n", mdebugstrdupcount);
+    fprintf (stderr, "Emalloc: %ld\n", mdebugextalloccount);
     fprintf (stderr, "   free: %ld\n", mdebugfreecount);
     fprintf (stderr, "    max: %ld\n", mdebugmax);
   }

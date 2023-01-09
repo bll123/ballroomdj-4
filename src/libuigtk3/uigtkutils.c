@@ -170,11 +170,12 @@ uiGtkLogger (GLogLevelFlags logLevel,
 
   if (logLevel != G_LOG_LEVEL_DEBUG) {
     msg = g_log_writer_format_fields (logLevel, fields, n_fields, FALSE);
+    mdextalloc (msg);
     logMsg (LOG_GTK, LOG_IMPORTANT, "%s", msg);
     if (strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") == 0) {
       fprintf (stderr, "%s\n", msg);
     }
-    free (msg); // allocated by glib
+    mdfree (msg); // allocated by glib
   }
 
   return G_LOG_WRITER_HANDLED;

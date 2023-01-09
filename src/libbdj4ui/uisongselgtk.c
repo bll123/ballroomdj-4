@@ -632,12 +632,15 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   uiwidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
   path = gtk_tree_model_get_path (model, &uiw->currIter);
+  mdextalloc (path);
   loc = 0;
   if (path != NULL) {
     pathstr = gtk_tree_path_to_string (path);
+    mdextalloc (pathstr);
     loc = atol (pathstr);
+    mdextfree (path);
     gtk_tree_path_free (path);
-    free (pathstr);     // allocated by gtk
+    mdfree (pathstr);     // allocated by gtk
   }
 
   return loc + uisongsel->idxStart;
@@ -1451,8 +1454,9 @@ uisongselProcessSelection (GtkTreeModel *model,
     uisongselSetPeerFlag (uisongsel->peers [i], true);
     uisongselScrollSelection (uisongsel->peers [i], uisongsel->idxStart, UISONGSEL_SCROLL_FORCE, UISONGSEL_DIR_NONE);
     pathstr = gtk_tree_path_to_string (path);
+    mdextalloc (pathstr);
     uisongselSetSelection (uisongsel->peers [i], atol (pathstr));
-    free (pathstr);     // allocated by gtk
+    mdfree (pathstr);     // allocated by gtk
     uisongselSetPeerFlag (uisongsel->peers [i], false);
   }
 }
@@ -1543,12 +1547,15 @@ uisongselMoveSelection (void *udata, int where, int lines)
     uiwidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
     model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
     path = gtk_tree_model_get_path (model, &uiw->currIter);
+    mdextalloc (path);
     loc = 0;
     if (path != NULL) {
       pathstr = gtk_tree_path_to_string (path);
+      mdextalloc (pathstr);
       loc = atol (pathstr);
+      mdextfree (path);
       gtk_tree_path_free (path);
-      free (pathstr);     // allocated by gtk
+      mdfree (pathstr);     // allocated by gtk
     }
 
     uisongselClearSingleSelection (uisongsel);

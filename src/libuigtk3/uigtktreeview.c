@@ -140,8 +140,10 @@ uiTreeViewSelectionSet (uitree_t *uitree, int row)
 
   snprintf (tbuff, sizeof (tbuff), "%d", row);
   path = gtk_tree_path_new_from_string (tbuff);
+  mdextalloc (path);
   if (path != NULL) {
     gtk_tree_selection_select_path (uitree->sel.sel, path);
+    mdextfree (path);
     gtk_tree_path_free (path);
   }
 }

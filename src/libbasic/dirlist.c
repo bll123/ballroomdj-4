@@ -82,10 +82,11 @@ dirlistBasicDirList (const char *dirname, const char *extension)
     // glib is not a major issue.
     cvtname = g_filename_to_utf8 (fname, strlen (fname),
         &bread, &bwrite, &gerr);
+    mdextalloc (cvtname);
     if (cvtname != NULL) {
       slistSetStr (fileList, cvtname, NULL);
     }
-    free (cvtname);   // allocated by glib
+    mdfree (cvtname);   // allocated by glib
     mdfree (fname);
   }
   osDirClose (dh);
@@ -133,6 +134,7 @@ dirlistRecursiveDirList (const char *dirname, int flags)
       gerr = NULL;
       cvtname = g_filename_to_utf8 (fname, strlen (fname),
           &bread, &bwrite, &gerr);
+      mdextalloc (cvtname);
       if (cvtname != NULL) {
         snprintf (temp, sizeof (temp), "%s/%s", dir, cvtname);
         if ((flags & DIRLIST_LINKS) == DIRLIST_LINKS &&
@@ -153,7 +155,7 @@ dirlistRecursiveDirList (const char *dirname, int flags)
             slistSetStr (fileList, temp, p);
           }
         }
-        free (cvtname);     // allocated by glib
+        mdfree (cvtname);     // allocated by glib
       }
       mdfree (fname);
     }

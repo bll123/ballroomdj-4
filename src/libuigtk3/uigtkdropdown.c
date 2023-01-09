@@ -85,7 +85,7 @@ uiDropDownFree (uidropdown_t *dropdown)
     uiButtonFree (dropdown->button);
     dataFree (dropdown->title);
     if (dropdown->strSelection != NULL) {
-      free (dropdown->strSelection);        // allocated by gtk
+      mdfree (dropdown->strSelection);        // allocated by gtk
     }
     slistFree (dropdown->strIndexMap);
     nlistFree (dropdown->keylist);
@@ -447,8 +447,8 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
 static void
 uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
 {
-  GtkTreePath   *path;
-  GtkTreeModel  *model;
+  GtkTreePath   *path = NULL;
+  GtkTreeModel  *model = NULL;
   GtkTreeIter   iter;
   char          tbuff [200];
   char          *p;
@@ -472,6 +472,7 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
   // the next two lines can be removed once path is no longer needed.
   snprintf (tbuff, sizeof (tbuff), "%d", internalidx);
   path = gtk_tree_path_new_from_string (tbuff);
+  mdextalloc (path);
   if (path != NULL) {
     model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitreewidgetp->widget));
     if (model != NULL) {
@@ -483,6 +484,7 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
         uiButtonSetText (dropdown->button, tbuff);
       }
     }
+    mdextfree (path);
     gtk_tree_path_free (path);
   }
 }
@@ -515,18 +517,17 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
     gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_IDX, &idx, -1);
     retval = idx;
     if (dropdown->strSelection != NULL) {
-      free (dropdown->strSelection);        // allocated by gtk
+      mdfree (dropdown->strSelection);        // allocated by gtk
     }
     gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_STR,
         &dropdown->strSelection, -1);
+    mdextalloc (dropdown->strSelection);
     if (dropdown->iscombobox) {
       char  *p;
 
       gtk_tree_model_get (model, &iter, UIUTILS_DROPDOWN_COL_DISP, &p, -1);
-      snprintf (tbuff, sizeof (tbuff), "%-*s",
-          dropdown->maxwidth, p);
+      snprintf (tbuff, sizeof (tbuff), "%-*s", dropdown->maxwidth, p);
       uiButtonSetText (dropdown->button, tbuff);
-      mdfree (p);
     }
     uiWidgetHide (&dropdown->window);
     dropdown->open = false;

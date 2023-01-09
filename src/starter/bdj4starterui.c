@@ -408,6 +408,8 @@ starterClosingCallback (void *udata, programstate_t programState)
   char        fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "starterClosingCallback");
+  uiEntryFree (starter->supportemail);
+  uiEntryFree (starter->supportsubject);
   uiCloseWindow (&starter->window);
   for (int i = 0; i < START_BUTTON_MAX; ++i) {
     uiButtonFree (starter->buttons [i]);
@@ -742,7 +744,7 @@ starterMainLoop (void *tstarter)
         fprintf (fh, "Message:\n\n%s\n", msg);
         fclose (fh);
       }
-      free (msg);  // allocated by gtk
+      mdfree (msg);  // allocated by gtk
 
       supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_NO_COMPRESSION);
       fileopDelete (tbuff);
@@ -1561,11 +1563,12 @@ static bool
 starterCreateProfileShortcut (void *udata)
 {
   startui_t   *starter = udata;
-  const char  *pname;
+  char        *pname;
 
   pname = bdjoptGetProfileName ();
   instutilCreateShortcut (pname, sysvarsGetStr (SV_BDJ4_DIR_MAIN),
       sysvarsGetStr (SV_BDJ4_DIR_MAIN), starter->currprofile);
+  mdfree (pname);
   return UICB_CONT;
 }
 
