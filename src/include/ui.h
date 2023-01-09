@@ -109,6 +109,29 @@ void  uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp);
 void  uiDialogDestroy (UIWidget *uidialog);
 uiselect_t *uiDialogCreateSelect (UIWidget *window, const char *label, const char *startpath, const char *dfltname, const char *mimefiltername, const char *mimetype);
 
+/* uigtkkeys.c */
+enum {
+  KEY_EVENT_NONE,
+  KEY_EVENT_PRESS,
+  KEY_EVENT_RELEASE,
+};
+
+typedef struct uikey uikey_t;
+
+uikey_t * uiKeyAlloc (void);
+void    uiKeyFree (uikey_t *uikey);
+void    uiKeySetPressCallback (uikey_t *uikey, UIWidget *uiwidgetp, UICallback *uicb);
+void    uiKeySetReleaseCallback (uikey_t *uikey, UIWidget *uiwidgetp, UICallback *uicb);
+int     uiKeyEvent (uikey_t *uikey);
+bool    uiKeyIsMovementKey (uikey_t *uikey);
+bool    uiKeyIsUpKey (uikey_t *uikey);
+bool    uiKeyIsDownKey (uikey_t *uikey);
+bool    uiKeyIsPageUpDownKey (uikey_t *uikey);
+bool    uiKeyIsNavKey (uikey_t *uikey);
+bool    uiKeyIsMaskedKey (uikey_t *uikey);
+bool    uiKeyIsControlPressed (uikey_t *uikey);
+bool    uiKeyIsShiftPressed (uikey_t *uikey);
+
 /* uigtkmenu.c */
 typedef struct {
   int             menucount;

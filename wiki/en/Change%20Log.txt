@@ -6,10 +6,13 @@
 
 **4.0.7 beta 2023-1---**
 
+* Bug Fixes:
+    * song selection: Turn off movement keys when multiple items selected.
 * Internal:
     * a few more memory leaks fixed.
     * make debug level more dynamic.
     * debugging fixes.
+    * code cleanup.
 
 -->
 

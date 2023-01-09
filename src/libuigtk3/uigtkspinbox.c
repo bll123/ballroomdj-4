@@ -30,6 +30,8 @@ typedef struct uispinbox {
   slist_t         *list;
   nlist_t         *keylist;
   nlist_t         *idxlist;
+  UICallback      presscb;
+  uikey_t         *uikey;
   bool            processing : 1;
   bool            changed : 1;
 } uispinbox_t;
@@ -42,7 +44,7 @@ static gboolean uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata);
 static char * uiSpinboxTextGetDisp (slist_t *list, int idx);
 
-static gboolean uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata);
+static bool uiuitilsSpinboxTextKeyCallback (void *udata);
 static void uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata);
 static gboolean uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata);
 
@@ -64,7 +66,9 @@ uiSpinboxInit (void)
   spinbox->keylist = NULL;
   spinbox->idxlist = NULL;
   spinbox->sbtype = SB_TEXT;
-
+  spinbox->uikey = uiKeyAlloc ();
+  uiutilsUICallbackInit (&spinbox->presscb, &uiuitilsSpinboxTextKeyCallback,
+      spinbox, NULL);
   return spinbox;
 }
 
@@ -74,6 +78,7 @@ uiSpinboxFree (uispinbox_t *spinbox)
 {
   if (spinbox != NULL) {
     nlistFree (spinbox->idxlist);
+    uiKeyFree (spinbox->uikey);
     mdfree (spinbox);
   }
 }
@@ -100,8 +105,6 @@ uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata)
       "spinbutton { caret-color: @theme_base_color; } "
       "selection { background-color: @theme_base_color; color: @theme_text_color; }"
       );
-  g_signal_connect (spinbox->uispinbox.widget, "key-press-event",
-      G_CALLBACK (uiuitilsSpinboxTextKeyCallback), NULL);
 }
 
 void
@@ -573,33 +576,22 @@ uiSpinboxTextGetDisp (slist_t *list, int idx)
   return nlistGetDataByIdx (list, idx);
 }
 
-static gboolean
-uiuitilsSpinboxTextKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
+static bool
+uiuitilsSpinboxTextKeyCallback (void *udata)
 {
-  guint    keyval;
+  uispinbox_t   *spinbox = udata;
+  bool          rc;
 
-  gdk_event_get_keyval ((GdkEvent *) event, &keyval);
-  /* the up and down arrows are spinbox increment controls */
-  /* page up and down are spinbox increment controls */
-  /* tab and left tab are navigation controls */
-  if (keyval == GDK_KEY_Up ||
-      keyval == GDK_KEY_KP_Up ||
-      keyval == GDK_KEY_Down ||
-      keyval == GDK_KEY_KP_Down ||
-      keyval == GDK_KEY_Page_Up ||
-      keyval == GDK_KEY_KP_Page_Up ||
-      keyval == GDK_KEY_Page_Down ||
-      keyval == GDK_KEY_KP_Page_Down ||
-      keyval == GDK_KEY_Tab ||
-      keyval == GDK_KEY_KP_Tab ||
-      keyval == GDK_KEY_ISO_Left_Tab
-      ) {
+  rc = uiKeyIsMovementKey (spinbox->uikey);
+  if (rc) {
     return UICB_CONT;
   }
-  /* control/meta/super keys should be processed also */
-  if ((event->state & GDK_CONTROL_MASK) ||
-      (event->state & GDK_META_MASK) ||
-      (event->state & GDK_SUPER_MASK)) {
+  rc = uiKeyIsNavKey (spinbox->uikey);
+  if (rc) {
+    return UICB_CONT;
+  }
+  rc = uiKeyIsMaskedKey (spinbox->uikey);
+  if (rc) {
     return UICB_CONT;
   }
 

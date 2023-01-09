@@ -51,6 +51,8 @@ enum {
   UISONGSEL_NEXT,
   UISONGSEL_PREVIOUS,
   UISONGSEL_DIR_NONE,
+  UISONGSEL_MOVE_KEY,
+  UISONGSEL_MOVE_SE,
   UISONGSEL_PLAY,
   UISONGSEL_QUEUE,
   UISONGSEL_SCROLL_NORMAL,
@@ -69,6 +71,8 @@ enum {
   SONGSEL_CB_FILTER,
   SONGSEL_CB_EDIT_LOCAL,
   SONGSEL_CB_DANCE_SEL,
+  SONGSEL_CB_KEY_PRESS,
+  SONGSEL_CB_KEY_RELEASE,
   SONGSEL_CB_MAX,
 };
 
@@ -95,6 +99,7 @@ typedef struct uisongselgtk {
   UIWidget            scrolledwin;
   uibutton_t          *buttons [SONGSEL_BUTTON_MAX];
   UIWidget            reqQueueLabel;
+  uikey_t             *uikey;
   /* other data */
   int               lastTreeSize;
   double            lastRowHeight;
@@ -133,12 +138,12 @@ static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpoi
 static void uisongselProcessScroll (uisongsel_t *uisongsel, int dir, int lines);
 static void uisongselClearSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static void uisongselClearSingleSelection (uisongsel_t *uisongsel);
-static gboolean uisongselKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata);
+static bool uisongselKeyEvent (void *udata);
 static void uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata);
 static void uisongselProcessSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 static void uisongselPopulateDataCallback (int col, long num, const char *str, void *udata);
 
-static void uisongselMoveSelection (void *udata, int where, int lines);
+static void uisongselMoveSelection (void *udata, int where, int lines, int moveflag);
 static void uisongselGetIter (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 
@@ -176,6 +181,12 @@ uisongselUIInit (uisongsel_t *uisongsel)
     uiw->buttons [i] = NULL;
   }
 
+  uiw->uikey = uiKeyAlloc ();
+  uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_KEY_PRESS],
+      uisongselKeyEvent, uisongsel, NULL);
+  uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_KEY_RELEASE],
+      uisongselKeyEvent, uisongsel, NULL);
+
   uisongsel->uiWidgetData = uiw;
 }
 
@@ -186,6 +197,7 @@ uisongselUIFree (uisongsel_t *uisongsel)
     uisongselgtk_t    *uiw;
 
     uiw = uisongsel->uiWidgetData;
+    uiKeyFree (uiw->uikey);
     nlistFree (uiw->selectedBackup);
     nlistFree (uiw->selectedList);
     for (int i = 0; i < SONGSEL_BUTTON_MAX; ++i) {
@@ -334,10 +346,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       uisongsel->dispselType == DISP_SEL_MM) {
     uiTreeViewAllowMultiple (uiw->songselTree);
   }
-  g_signal_connect (uitreewidgetp->widget, "key-press-event",
-      G_CALLBACK (uisongselKeyEvent), uisongsel);
-  g_signal_connect (uitreewidgetp->widget, "key-release-event",
-      G_CALLBACK (uisongselKeyEvent), uisongsel);
+  uiKeySetPressCallback (uiw->uikey, uitreewidgetp,
+      &uiw->callbacks [SONGSEL_CB_KEY_PRESS]);
+  uiKeySetReleaseCallback (uiw->uikey, uitreewidgetp,
+      &uiw->callbacks [SONGSEL_CB_KEY_RELEASE]);
   uiw->sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
   adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uitreewidgetp->widget));
@@ -593,21 +605,21 @@ uisongselSetSelectionOffset (uisongsel_t *uisongsel, long idx)
 bool
 uisongselNextSelection (void *udata)
 {
-  uisongselMoveSelection (udata, UISONGSEL_NEXT, 1);
+  uisongselMoveSelection (udata, UISONGSEL_NEXT, 1, UISONGSEL_MOVE_SE);
   return UICB_CONT;
 }
 
 bool
 uisongselPreviousSelection (void *udata)
 {
-  uisongselMoveSelection (udata, UISONGSEL_PREVIOUS, 1);
+  uisongselMoveSelection (udata, UISONGSEL_PREVIOUS, 1, UISONGSEL_MOVE_SE);
   return UICB_CONT;
 }
 
 bool
 uisongselFirstSelection (void *udata)
 {
-  uisongselMoveSelection (udata, UISONGSEL_FIRST, 0);
+  uisongselMoveSelection (udata, UISONGSEL_FIRST, 0, UISONGSEL_MOVE_SE);
   return UICB_CONT;
 }
 
@@ -1291,71 +1303,51 @@ uisongselClearSingleSelection (uisongsel_t *uisongsel)
   gtk_tree_selection_unselect_iter (uiw->sel, &uiw->currIter);
 }
 
-static gboolean
-uisongselKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata)
+static bool
+uisongselKeyEvent (void *udata)
 {
   uisongsel_t     *uisongsel = udata;
   uisongselgtk_t  *uiw;
-  guint           keyval;
+
+  if (uisongsel == NULL) {
+    return UICB_CONT;
+  }
 
   uiw = uisongsel->uiWidgetData;
 
-  gdk_event_get_keyval ((GdkEvent *) event, &keyval);
-
-  if (event->type == GDK_KEY_PRESS &&
-      (keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R)) {
+  if (uiKeyIsShiftPressed (uiw->uikey)) {
     uiw->shiftPressed = true;
   }
-  if (event->type == GDK_KEY_PRESS &&
-      (keyval == GDK_KEY_Control_L || keyval == GDK_KEY_Control_R)) {
+  if (uiKeyIsControlPressed (uiw->uikey)) {
     uiw->controlPressed = true;
   }
-  if (event->type == GDK_KEY_RELEASE &&
-      (event->state & GDK_SHIFT_MASK)) {
-    uiw->shiftPressed = false;
-  }
-  if (event->type == GDK_KEY_RELEASE &&
-      (event->state & GDK_CONTROL_MASK)) {
-    uiw->controlPressed = false;
-  }
 
-  /* up/down and page up/down keys must be handled */
-  if ((event->type == GDK_KEY_PRESS || event->type == GDK_KEY_RELEASE) &&
-      (keyval == GDK_KEY_Up ||
-      keyval == GDK_KEY_KP_Up ||
-      keyval == GDK_KEY_Down ||
-      keyval == GDK_KEY_KP_Down ||
-      keyval == GDK_KEY_Page_Up ||
-      keyval == GDK_KEY_KP_Page_Up ||
-      keyval == GDK_KEY_Page_Down ||
-      keyval == GDK_KEY_KP_Page_Down)) {
+  if (uiKeyIsMovementKey (uiw->uikey)) {
     int     dir;
     int     lines;
 
     dir = UISONGSEL_DIR_NONE;
     lines = 1;
-    if (event->type == GDK_KEY_PRESS &&
-        (keyval == GDK_KEY_Up || keyval == GDK_KEY_KP_Up ||
-        keyval == GDK_KEY_Page_Up || keyval == GDK_KEY_KP_Page_Up)) {
-      dir = UISONGSEL_PREVIOUS;
+
+    if (uiKeyEvent (uiw->uikey) == KEY_EVENT_PRESS) {
+      if (uiKeyIsUpKey (uiw->uikey)) {
+        dir = UISONGSEL_PREVIOUS;
+      }
+      if (uiKeyIsDownKey (uiw->uikey)) {
+        dir = UISONGSEL_NEXT;
+      }
+      if (uiKeyIsPageUpDownKey (uiw->uikey)) {
+        lines = uiw->maxRows;
+      }
+
+      uisongselMoveSelection (uisongsel, dir, lines, UISONGSEL_MOVE_KEY);
     }
-    if (event->type == GDK_KEY_PRESS &&
-        (keyval == GDK_KEY_Down || keyval == GDK_KEY_KP_Down ||
-        keyval == GDK_KEY_Page_Down || keyval == GDK_KEY_KP_Page_Down)) {
-      dir = UISONGSEL_NEXT;
-    }
-    if (event->type == GDK_KEY_PRESS &&
-        (keyval == GDK_KEY_Page_Up || keyval == GDK_KEY_KP_Page_Up ||
-        keyval == GDK_KEY_Page_Down || keyval == GDK_KEY_KP_Page_Down)) {
-      lines = uiw->maxRows;
-    }
-    if (event->type == GDK_KEY_PRESS) {
-      uisongselMoveSelection (uisongsel, dir, lines);
-    }
+
+    /* movement keys are handled internally */
     return UICB_STOP;
   }
 
-  return UICB_CONT; // do not stop event handling
+  return UICB_CONT;
 }
 
 static void
@@ -1473,7 +1465,7 @@ uisongselPopulateDataCallback (int col, long num, const char *str, void *udata)
 
 
 static void
-uisongselMoveSelection (void *udata, int where, int lines)
+uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
 {
   uisongsel_t     *uisongsel = udata;
   GtkTreeModel    *model = NULL;
@@ -1494,6 +1486,10 @@ uisongselMoveSelection (void *udata, int where, int lines)
   count = nlistGetCount (uiw->selectedList);
 
   if (count == 0) {
+    return;
+  }
+
+  if (count > 1 && moveflag == UISONGSEL_MOVE_KEY) {
     return;
   }
 

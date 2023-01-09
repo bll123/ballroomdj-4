@@ -1713,6 +1713,10 @@ starterSupportMsgHandler (void *udata, long responseid)
       break;
     }
     case RESPONSE_CLOSE: {
+      uiEntryFree (starter->supportsubject);
+      starter->supportsubject = NULL;
+      uiEntryFree (starter->supportemail);
+      starter->supportemail = NULL;
       uiDialogDestroy (&starter->supportMsgDialog);
       break;
     }
