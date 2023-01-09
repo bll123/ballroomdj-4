@@ -21,6 +21,7 @@
 #include "mdebug.h"
 #include "musicq.h"
 #include "nlist.h"
+#include "pathutil.h"
 #include "song.h"
 #include "songlist.h"
 #include "sysvars.h"
@@ -267,34 +268,53 @@ uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname)
   uimusicq->savelist = nlistAlloc ("m3u-export", LIST_UNORDERED, NULL);
   uimusicqIterate (uimusicq, uimusicqSaveListCallback, MUSICQ_SL);
 
-  m3uExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
+  m3uExport (uimusicq->musicdb, uimusicq->savelist, fname, slname, NULL);
 
   nlistFree (uimusicq->savelist);
   uimusicq->savelist = NULL;
 }
 
 void
-uimusicqExportMP3 (uimusicq_t *uimusicq, const char *fname,
-    int mqidx, dbidx_t dbidx)
+uimusicqExportMP3 (uimusicq_t *uimusicq, const char *dirname,
+    int mqidx, const char *slname, dbidx_t dbidx)
 {
+  char        tname [200];
+  char        tslname [200];
+  nlist_t     *savenames;
+  pathinfo_t  *pi;
+
   uimusicq->savelist = nlistAlloc ("mp3-export", LIST_UNORDERED, NULL);
   if (dbidx >= 0) {
     nlistSetNum (uimusicq->savelist, dbidx, 0);
   }
   uimusicqIterate (uimusicq, uimusicqSaveListCallback, mqidx);
 
-  aaExportMP3 (uimusicq->musicdb, uimusicq->savelist, fname);
+  if (slname == NULL) {
+    pi = pathInfo (dirname);
+    snprintf (tname, sizeof (tname), "%s/%.*s.m3u", dirname,
+        (int) pi->flen, pi->filename);
+    snprintf (tslname, sizeof (tslname), "%.*s",
+        (int) pi->flen, pi->filename);
+    pathInfoFree (pi);
+  } else {
+    snprintf (tname, sizeof (tname), "%s/%s.m3u", dirname, slname);
+    snprintf (tslname, sizeof (tslname), "%s", slname);
+  }
+
+  savenames = aaExportMP3 (uimusicq->musicdb, uimusicq->savelist, dirname);
+  m3uExport (uimusicq->musicdb, uimusicq->savelist, tname, tslname, savenames);
 
   nlistFree (uimusicq->savelist);
+  nlistFree (savenames);
   uimusicq->savelist = NULL;
 }
 
 void
 uimusicqExportMP3Dialog (uimusicq_t *musicq, UIWidget *windowp, UIWidget *statusMsg,
-    int mqidx, dbidx_t dbidx)
+    int mqidx, const char *slname, dbidx_t dbidx)
 {
   uiselect_t  *selectdata;
-  char        *fn;
+  char        *dir;
   char        tbuff [200];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
@@ -306,7 +326,7 @@ uimusicqExportMP3Dialog (uimusicq_t *musicq, UIWidget *windowp, UIWidget *status
   snprintf (tbuff, sizeof (tbuff), _("Export as %s"), BDJ4_MP3_LABEL);
   selectdata = uiDialogCreateSelect (windowp,
       tbuff, sysvarsGetStr (SV_BDJ4_DREL_TMP), NULL, NULL, NULL);
-  fn = uiSelectDirDialog (selectdata);
+  dir = uiSelectDirDialog (selectdata);
 
   /* clear the dialog, display wait message */
   for (int i = 0; i < 4; ++i) {
@@ -314,9 +334,9 @@ uimusicqExportMP3Dialog (uimusicq_t *musicq, UIWidget *windowp, UIWidget *status
     mssleep (5);
   }
 
-  if (fn != NULL) {
-    uimusicqExportMP3 (musicq, fn, mqidx, dbidx);
-    mdfree (fn);
+  if (dir != NULL) {
+    uimusicqExportMP3 (musicq, dir, mqidx, slname, dbidx);
+    mdfree (dir);
   }
   mdfree (selectdata);
   uiLabelSetText (statusMsg, "");

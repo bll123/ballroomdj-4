@@ -1496,29 +1496,29 @@ manageSonglistExportM3U (void *udata)
   char        tname [200];
   uiselect_t  *selectdata;
   char        *fn;
-  char        *name;
+  char        *slname;
 
   logProcBegin (LOG_PROC, "manageSonglistExportM3U");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export m3u");
 
   manageSonglistSave (manage);
 
-  name = uimusicqGetSonglistName (manage->slmusicq);
+  slname = uimusicqGetSonglistName (manage->slmusicq);
 
   /* CONTEXT: managementui: song list export: title of save dialog */
   snprintf (tbuff, sizeof (tbuff), _("Export as M3U Playlist"));
-  snprintf (tname, sizeof (tname), "%s.m3u", name);
+  snprintf (tname, sizeof (tname), "%s.m3u", slname);
   selectdata = uiDialogCreateSelect (&manage->window,
       tbuff, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tname,
       /* CONTEXT: managementui: song list export: name of file save type */
       _("M3U Files"), "audio/x-mpegurl");
   fn = uiSaveFileDialog (selectdata);
   if (fn != NULL) {
-    uimusicqExportM3U (manage->slmusicq, fn, name);
+    uimusicqExportM3U (manage->slmusicq, fn, slname);
     mdfree (fn);
   }
   mdfree (selectdata);
-  mdfree (name);
+  mdfree (slname);
   logProcEnd (LOG_PROC, "manageSonglistExportM3U", "");
   return UICB_CONT;
 }
@@ -1527,13 +1527,16 @@ static bool
 manageSonglistExportMP3 (void *udata)
 {
   manageui_t  *manage = udata;
+  char        *name;
+
+  name = uimusicqGetSonglistName (manage->slmusicq);
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
 
   manageSonglistSave (manage);
 
   uimusicqExportMP3Dialog (manage->slmusicq, &manage->window,
-      &manage->statusMsg, MUSICQ_SL, -1);
+      &manage->statusMsg, MUSICQ_SL, name, -1);
   return UICB_CONT;
 }
 

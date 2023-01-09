@@ -27,10 +27,11 @@
 
 void
 m3uExport (musicdb_t *musicdb, nlist_t *list,
-    const char *fname, const char *slname)
+    const char *fname, const char *slname, nlist_t *savenames)
 {
   FILE        *fh;
   nlistidx_t  iteridx;
+  nlistidx_t  saveiteridx;
   dbidx_t     dbidx;
   song_t      *song;
   char        tbuff [MAXPATHLEN];
@@ -46,9 +47,14 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
   fprintf (fh, "#EXTENC:UTF-8\n");
   fprintf (fh, "#PLAYLIST:%s\n", slname);
 
+  if (savenames != NULL) {
+    nlistStartIterator (list, &saveiteridx);
+  }
+
   nlistStartIterator (list, &iteridx);
   while ((dbidx = nlistIterateKey (list, &iteridx)) >= 0) {
     song = dbGetByIdx (musicdb, dbidx);
+    nlistIterateKey (savenames, &saveiteridx);
 
     *tbuff = '\0';
     str = songGetStr (song, TAG_ARTIST);
@@ -62,13 +68,19 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
     if (str != NULL && *str) {
       fprintf (fh, "#EXTART:%s\n", str);
     }
-    str = songGetStr (song, TAG_FILE);
-    ffn = songFullFileName (str);
+    if (savenames != NULL) {
+      ffn = nlistGetStr (savenames, dbidx);
+    } else {
+      str = songGetStr (song, TAG_FILE);
+      ffn = songFullFileName (str);
+    }
     if (isWindows ()) {
       pathWinPath (ffn, strlen (ffn));
     }
     fprintf (fh, "%s\n", ffn);
-    mdfree (ffn);
+    if (savenames == NULL) {
+      mdfree (ffn);
+    }
   }
 }
 

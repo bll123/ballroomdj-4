@@ -299,7 +299,7 @@ pluiExportMP3 (void *udata)
     dbidx = uiplayerGetCurrSongIdx (plui->uiplayer);
   }
   uimusicqExportMP3Dialog (plui->uimusicq, &plui->window,
-      &plui->statusMsg, plui->musicqManageIdx, dbidx);
+      &plui->statusMsg, plui->musicqManageIdx, NULL, dbidx);
   return UICB_CONT;
 }
 

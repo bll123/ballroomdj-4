@@ -244,7 +244,7 @@ aaConvert (const char *ffn, const char *outfn)
 }
 
 
-void
+nlist_t *
 aaExportMP3 (musicdb_t *musicdb, nlist_t *songlist, const char *outdir)
 {
   pathinfo_t  *pi;
@@ -252,6 +252,9 @@ aaExportMP3 (musicdb_t *musicdb, nlist_t *songlist, const char *outdir)
   nlistidx_t  iteridx;
   dbidx_t     dbidx;
   int         counter;
+  nlist_t     *savenames;
+
+  savenames = nlistAlloc ("aa-exp-mp3-savenames", LIST_UNORDERED, NULL);
 
   counter = 1;
   slistStartIterator (songlist, &iteridx);
@@ -270,6 +273,7 @@ aaExportMP3 (musicdb_t *musicdb, nlist_t *songlist, const char *outdir)
     pi = pathInfo (ffn);
     snprintf (outfn, sizeof (outfn), "%s/%03d-%.*s.mp3",
         outdir, counter, (int) pi->blen, pi->basename);
+    nlistSetStr (savenames, dbidx, outfn);
     if (pathInfoExtCheck (pi, ".mp3") ||
         pathInfoExtCheck (pi, ".MP3")) {
       filemanipCopy (ffn, outfn);
@@ -280,4 +284,6 @@ aaExportMP3 (musicdb_t *musicdb, nlist_t *songlist, const char *outdir)
     mdfree (ffn);
     ++counter;
   }
+
+  return savenames;
 }
