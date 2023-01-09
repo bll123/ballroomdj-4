@@ -38,9 +38,11 @@
             * Pause each song.
             * Play announcement for each dance.
     * History of played songs.
+    * Export the playlist as MP3 files.
 * Playlists
     * Song lists : pick and choose the songs to play.
         * Create song lists using sequenced or automatic playlists.
+        * Export the song list as MP3 files.
     * Sequenced : specify which dances and the order in which they are played.
     * Automatic : choose how many of each dance play and let BDJ4 do the rest.
     * Playlist Controls

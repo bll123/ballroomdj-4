@@ -21,6 +21,7 @@ UIWidget    *uiplayerBuildUI (uiplayer_t *uiplayer);
 void        uiplayerMainLoop (uiplayer_t *uiplayer);
 int         uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                 bdjmsgmsg_t msg, char *args, void *udata);
+dbidx_t uiplayerGetCurrSongIdx (uiplayer_t *uiplayer);
 
 #endif /* INC_UIPLAYER_H */
 

@@ -83,7 +83,6 @@ typedef struct uimusicq {
 /* uimusicq.c */
 uimusicq_t  * uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, dispselsel_t dispselType);
-void  uimusicqProcessSongSelect (uimusicq_t *uimusicq, mp_songselect_t *songselect);
 void  uimusicqSetPeer (uimusicq_t *uimusicq, uimusicq_t *peer);
 void  uimusicqSetDatabase (uimusicq_t *uimusicq, musicdb_t *musicdb);
 void  uimusicqFree (uimusicq_t *uimusicq);
@@ -100,6 +99,9 @@ long  uimusicqGetCount (uimusicq_t *uimusicq);
 void  uimusicqSave (uimusicq_t *uimusicq, const char *name);
 void  uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb);
 void  uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname);
+void  uimusicqExportMP3 (uimusicq_t *uimusicq, const char *fname, int mqidx, dbidx_t dbidx);
+void  uimusicqExportMP3Dialog (uimusicq_t *musicq, UIWidget *windowp, UIWidget *statusMsg, int mqidx, dbidx_t dbidx);
+void  uimusicqProcessSongSelect (uimusicq_t *uimusicq, mp_songselect_t *songselect);
 void  uimusicqSetQueueCallback (uimusicq_t *uimusicq, UICallback *uicb);
 
 /* uimusicqgtk.c */

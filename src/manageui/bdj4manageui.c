@@ -106,10 +106,11 @@ enum {
   MANAGE_MENU_CB_SL_TRUNCATE,
   MANAGE_MENU_CB_SL_MK_FROM_PL,
   /* sl export menu */
+  MANAGE_MENU_CB_SL_M3U_EXP,
+  MANAGE_MENU_CB_SL_MP3_EXP,
   MANAGE_MENU_CB_SL_BDJ_EXP,
   MANAGE_MENU_CB_SL_BDJ_IMP,
   /* sl import menu */
-  MANAGE_MENU_CB_SL_M3U_EXP,
   MANAGE_MENU_CB_SL_M3U_IMP,
   MANAGE_MENU_CB_SL_ITUNES_IMP,
   MANAGE_CB_EZ_SELECT,
@@ -167,6 +168,7 @@ typedef struct {
   int             stopwaitcount;
   UIWidget        statusMsg;
   UIWidget        errorMsg;
+  const char      *pleasewaitmsg;
   /* notebook tab handling */
   int               mainlasttab;
   int               sllasttab;
@@ -280,6 +282,7 @@ static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
 static void     manageSendBPMCounter (manageui_t *manage);
 static bool     manageSonglistExportM3U (void *udata);
+static bool     manageSonglistExportMP3 (void *udata);
 static bool     manageSonglistImportM3U (void *udata);
 static bool     manageSonglistImportiTunes (void *udata);
 static void     manageiTunesCreateDialog (manageui_t *manage);
@@ -408,6 +411,8 @@ main (int argc, char *argv[])
   manage.pluiActive = false;
   manage.selectButton = NULL;
   manage.uiaa = NULL;
+  /* CONTEXT: management ui: please wait... status message */
+  manage.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
 
   procutilInitProcesses (manage.processes);
 
@@ -1076,8 +1081,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_WAIT: {
-          /* CONTEXT: manage ui: status message: please wait... */
-          uiLabelSetText (&manage->statusMsg, _("Please wait\xe2\x80\xa6"));
+          uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
           break;
         }
         case MSG_DB_WAIT_FINISH: {
@@ -1283,6 +1287,7 @@ manageSongEditMenu (manageui_t *manage)
     /* CONTEXT: managementui: menu selection: song editor: apply adjustments */
     uiMenuCreateItem (&menu, &menuitem, _("Apply Adjustments"),
         &manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
+//    uiWidgetDisable (&menuitem);
 
     manage->songeditmenu.initialized = true;
   }
@@ -1495,6 +1500,9 @@ manageSonglistExportM3U (void *udata)
 
   logProcBegin (LOG_PROC, "manageSonglistExportM3U");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export m3u");
+
+  manageSonglistSave (manage);
+
   name = uimusicqGetSonglistName (manage->slmusicq);
 
   /* CONTEXT: managementui: song list export: title of save dialog */
@@ -1516,6 +1524,20 @@ manageSonglistExportM3U (void *udata)
 }
 
 static bool
+manageSonglistExportMP3 (void *udata)
+{
+  manageui_t  *manage = udata;
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
+
+  manageSonglistSave (manage);
+
+  uimusicqExportMP3Dialog (manage->slmusicq, &manage->window,
+      &manage->statusMsg, MUSICQ_SL, -1);
+  return UICB_CONT;
+}
+
+static bool
 manageSonglistImportM3U (void *udata)
 {
   manageui_t  *manage = udata;
@@ -1527,6 +1549,7 @@ manageSonglistImportM3U (void *udata)
 
   logProcBegin (LOG_PROC, "manageSonglistImportM3U");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import m3u");
+
   manageSonglistSave (manage);
 
   /* CONTEXT: managementui: song list: default name for a new song list */
@@ -1599,14 +1622,14 @@ manageSonglistImportiTunes (void *udata)
 
   logProcBegin (LOG_PROC, "manageSonglistImportiTunes");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import itunes");
+
   manageSonglistSave (manage);
 
   if (manage->itunes == NULL) {
     manage->itunes = itunesAlloc ();
   }
 
-  /* CONTEXT: manage ui: status message: please wait... */
-  uiLabelSetText (&manage->statusMsg, _("Please wait\xe2\x80\xa6"));
+  uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
   uiUIProcessEvents ();
   itunesParse (manage->itunes);
   uiLabelSetText (&manage->statusMsg, "");
@@ -1948,6 +1971,13 @@ manageSonglistMenu (manageui_t *manage)
   /* CONTEXT: managementui: menu selection: song list: export: export as m3u */
   uiMenuCreateItem (&menu, &menuitem, _("Export as M3U Playlist"),
       &manage->callbacks [MANAGE_MENU_CB_SL_M3U_EXP]);
+
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_MP3_EXP,
+      manageSonglistExportMP3);
+  /* CONTEXT: managementui: menu selection: song list: export: export as MP3 */
+  snprintf (tbuff, sizeof (tbuff), _("Export as %s"), BDJ4_MP3_LABEL);
+  uiMenuCreateItem (&menu, &menuitem, tbuff,
+      &manage->callbacks [MANAGE_MENU_CB_SL_MP3_EXP]);
 
   /* CONTEXT: managementui: menu selection: song list: export: export for ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);

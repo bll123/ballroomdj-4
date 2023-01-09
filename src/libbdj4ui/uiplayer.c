@@ -63,6 +63,7 @@ typedef struct uiplayer {
   playerstate_t   playerState;
   musicdb_t       *musicdb;
   UICallback      callbacks [UIPLAYER_CB_MAX];
+  dbidx_t         curr_dbidx;
   /* song display */
   UIWidget        vbox;
   UIWidget        statusImg;
@@ -141,6 +142,7 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->conn = conn;
   uiplayer->musicdb = musicdb;
   uiplayer->uibuilt = false;
+  uiplayer->curr_dbidx = -1;
 
   uiutilsUIWidgetInit (&uiplayer->vbox);
   uiutilsUIWidgetInit (&uiplayer->statusImg);
@@ -617,6 +619,15 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
   return 0;
 }
 
+dbidx_t
+uiplayerGetCurrSongIdx (uiplayer_t *uiplayer)
+{
+  if (uiplayer == NULL) {
+    return -1;
+  }
+  return uiplayer->curr_dbidx;
+}
+
 /* internal routines */
 
 static bool
@@ -837,6 +848,8 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 
   p = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
   dbidx = atol (p);
+  uiplayer->curr_dbidx = dbidx;
+
   if (dbidx < 0) {
     uiplayerClearDisplay (uiplayer);
     logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "no-dbidx");

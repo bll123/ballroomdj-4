@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <assert.h>
 
+#include "audioadjust.h"
 #include "bdj4intl.h"
 #include "conn.h"
 #include "dispsel.h"
@@ -22,6 +23,7 @@
 #include "nlist.h"
 #include "song.h"
 #include "songlist.h"
+#include "sysvars.h"
 #include "tagdef.h"
 #include "uimusicq.h"
 #include "ui.h"
@@ -269,6 +271,55 @@ uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname)
 
   nlistFree (uimusicq->savelist);
   uimusicq->savelist = NULL;
+}
+
+void
+uimusicqExportMP3 (uimusicq_t *uimusicq, const char *fname,
+    int mqidx, dbidx_t dbidx)
+{
+  uimusicq->savelist = nlistAlloc ("mp3-export", LIST_UNORDERED, NULL);
+  if (dbidx >= 0) {
+    nlistSetNum (uimusicq->savelist, dbidx, 0);
+  }
+  uimusicqIterate (uimusicq, uimusicqSaveListCallback, mqidx);
+
+  aaExportMP3 (uimusicq->musicdb, uimusicq->savelist, fname);
+
+  nlistFree (uimusicq->savelist);
+  uimusicq->savelist = NULL;
+}
+
+void
+uimusicqExportMP3Dialog (uimusicq_t *musicq, UIWidget *windowp, UIWidget *statusMsg,
+    int mqidx, dbidx_t dbidx)
+{
+  uiselect_t  *selectdata;
+  char        *fn;
+  char        tbuff [200];
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
+
+  /* CONTEXT: export as mp3: please wait... status message */
+  uiLabelSetText (statusMsg, _("Please wait\xe2\x80\xa6"));
+
+  /* CONTEXT: export as mp3: title of save dialog */
+  snprintf (tbuff, sizeof (tbuff), _("Export as %s"), BDJ4_MP3_LABEL);
+  selectdata = uiDialogCreateSelect (windowp,
+      tbuff, sysvarsGetStr (SV_BDJ4_DREL_TMP), NULL, NULL, NULL);
+  fn = uiSelectDirDialog (selectdata);
+
+  /* clear the dialog, display wait message */
+  for (int i = 0; i < 4; ++i) {
+    uiUIProcessEvents ();
+    mssleep (5);
+  }
+
+  if (fn != NULL) {
+    uimusicqExportMP3 (musicq, fn, mqidx, dbidx);
+    mdfree (fn);
+  }
+  mdfree (selectdata);
+  uiLabelSetText (statusMsg, "");
 }
 
 void

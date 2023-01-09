@@ -542,6 +542,7 @@ uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx
   uimusicqgtk_t *uiw;
   UIWidget      *uiwidgetp;
 
+
   uimusicq->iteratecb = cb;
   uiw = uimusicq->ui [mqidx].uiWidgets;
   uiwidgetp = uiTreeViewGetUIWidget (uiw->musicqTree);

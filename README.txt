@@ -1,4 +1,4 @@
-BDJ4 4.0.6 Beta Release: 2023-1-7
+BDJ4 4.0.7 Beta Release: 2023-1---
 
 Contents
   Installation
@@ -45,7 +45,6 @@ Release Notes:
     - Music Manager:
       - Apply Adjustments (speed, song start, song end) to a song.
       - Audio Identification.
-    - Export a playlist as MP3 files.
 
   This installation will not affect any BallroomDJ 3 installation.
   (The features that rename audio files is not implemented yet).

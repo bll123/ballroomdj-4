@@ -59,6 +59,7 @@ enum {
   PLUI_MENU_CB_REQ_EXTERNAL,
   PLUI_MENU_CB_MQ_FONT_SZ,
   PLUI_MENU_CB_MQ_FIND,
+  PLUI_MENU_CB_EXP_MP3,
   PLUI_CB_NOTEBOOK,
   PLUI_CB_CLOSE,
   PLUI_CB_PLAYBACK_QUEUE,
@@ -104,6 +105,7 @@ typedef struct {
   UIWidget        marqueeSpinBox;
   /* ui major elements */
   UIWidget        statusMsg;
+  UIWidget        errorMsg;
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
   uisongsel_t     *uisongsel;
@@ -285,6 +287,22 @@ main (int argc, char *argv[])
   return status;
 }
 
+static bool
+pluiExportMP3 (void *udata)
+{
+  playerui_t  *plui = udata;
+  dbidx_t     dbidx = -1;
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
+
+  if (plui->musicqManageIdx == plui->musicqPlayIdx) {
+    dbidx = uiplayerGetCurrSongIdx (plui->uiplayer);
+  }
+  uimusicqExportMP3Dialog (plui->uimusicq, &plui->window,
+      &plui->statusMsg, plui->musicqManageIdx, dbidx);
+  return UICB_CONT;
+}
+
 /* internal routines */
 
 static bool
@@ -416,6 +434,11 @@ pluiBuildUI (playerui_t *plui)
   uiCreateLabel (&uiwidget, "");
   uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
   uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&plui->errorMsg, &uiwidget);
+
+  uiCreateLabel (&uiwidget, "");
+  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&plui->statusMsg, &uiwidget);
 
   /* actions */
@@ -447,6 +470,19 @@ pluiBuildUI (playerui_t *plui)
   /* CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen */
   uiMenuCreateItem (&menu, &menuitem, _("Recover Marquee"),
       &plui->callbacks [PLUI_MENU_CB_MQ_FIND]);
+
+  /* export */
+  /* CONTEXT: playerui: menu selection: export */
+  uiMenuCreateItem (&menubar, &menuitem, _("Export"), NULL);
+
+  uiCreateSubMenu (&menuitem, &menu);
+
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_EXP_MP3],
+      pluiExportMP3, plui, NULL);
+  /* CONTEXT: player ui: menu selection: export: export as MP3 */
+  snprintf (tbuff, sizeof (tbuff), _("Export as %s"), BDJ4_MP3_LABEL);
+  uiMenuCreateItem (&menu, &menuitem, tbuff,
+      &plui->callbacks [PLUI_MENU_CB_EXP_MP3]);
 
   /* options */
   /* CONTEXT: playerui: menu selection: options for the player */
@@ -504,7 +540,7 @@ pluiBuildUI (playerui_t *plui)
     }
 
     uiwidgetp = uimusicqBuildUI (plui->uimusicq, &plui->window, i,
-        &plui->statusMsg, NULL);
+        &plui->errorMsg, NULL);
     uiCreateHorizBox (&hbox);
     if (tabtype == UI_TAB_HISTORY) {
       /* CONTEXT: playerui: name of the history tab : displayed played songs */
@@ -857,14 +893,15 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_SONG_FINISH: {
           uiLabelSetText (&plui->statusMsg, "");
+          uiLabelSetText (&plui->errorMsg, "");
           pluiPushHistory (plui, targs);
           dbgdisp = true;
           break;
         }
         case MSG_MAIN_ALREADY: {
           plui->mainalready = true;
-          /* CONTEXT: player-ui: status message */
-          uiLabelSetText (&plui->statusMsg, _("Recovered from crash."));
+          /* CONTEXT: player-ui: error message */
+          uiLabelSetText (&plui->errorMsg, _("Recovered from crash."));
           dbgdisp = true;
           break;
         }

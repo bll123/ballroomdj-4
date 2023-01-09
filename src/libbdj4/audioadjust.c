@@ -17,12 +17,17 @@
 #include "bdjvarsdf.h"
 #include "datafile.h"
 #include "fileop.h"
+#include "filemanip.h"
 #include "log.h"
 #include "mdebug.h"
+#include "musicdb.h"
+#include "nlist.h"
 #include "osprocess.h"
 #include "pathbld.h"
 #include "pathutil.h"
+#include "songutil.h"
 #include "sysvars.h"
+#include "tagdef.h"
 
 enum {
   AA_INPUT_I,
@@ -209,5 +214,70 @@ aaNormalize (const char *ffn)
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
   if (rc != 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: rc: %d", rc);
+  }
+}
+
+void
+aaConvert (const char *ffn, const char *outfn)
+{
+  aa_t        *aa;
+  const char  *targv [30];
+  int         targc = 0;
+  char        resp [2000];
+  int         rc;
+  size_t      retsz;
+
+
+  aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
+
+  targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
+  targv [targc++] = "-hide_banner";
+  targv [targc++] = "-y";
+  targv [targc++] = "-i";
+  targv [targc++] = ffn;
+  targv [targc++] = outfn;
+  targv [targc++] = NULL;
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
+  if (rc != 0) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: rc: %d", rc);
+  }
+}
+
+
+void
+aaExportMP3 (musicdb_t *musicdb, nlist_t *songlist, const char *outdir)
+{
+  pathinfo_t  *pi;
+  char        outfn [MAXPATHLEN];
+  nlistidx_t  iteridx;
+  dbidx_t     dbidx;
+  int         counter;
+
+  counter = 1;
+  slistStartIterator (songlist, &iteridx);
+  while ((dbidx = nlistIterateKey (songlist, &iteridx)) >= 0) {
+    song_t    *song;
+    char      *ffn;
+
+    song = dbGetByIdx (musicdb, dbidx);
+    if (song == NULL) {
+      continue;
+    }
+    ffn = songFullFileName (songGetStr (song, TAG_FILE));
+    if (ffn == NULL) {
+      continue;
+    }
+    pi = pathInfo (ffn);
+    snprintf (outfn, sizeof (outfn), "%s/%03d-%.*s.mp3",
+        outdir, counter, (int) pi->blen, pi->basename);
+    if (pathInfoExtCheck (pi, ".mp3") ||
+        pathInfoExtCheck (pi, ".MP3")) {
+      filemanipCopy (ffn, outfn);
+    } else {
+      pathInfoFree (pi);
+      aaConvert (ffn, outfn);
+    }
+    mdfree (ffn);
+    ++counter;
   }
 }

@@ -137,6 +137,7 @@ typedef struct {
   webclient_t     *webclient;
   char            *webresponse;
   size_t          webresplen;
+  const char      *pleasewaitmsg;
   /* conversion */
   char            *bdj3loc;
   char            *tclshloc;
@@ -231,7 +232,7 @@ static void installerRegisterInit (installer_t *installer);
 static void installerRegister (installer_t *installer);
 
 static void installerCleanup (installer_t *installer);
-static void installerDisplayText (installer_t *installer, char *pfx, char *txt, bool bold);
+static void installerDisplayText (installer_t *installer, const char *pfx, const char *txt, bool bold);
 static void installerGetTargetSaveFname (installer_t *installer, char *buff, size_t len);
 static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t len);
 static void installerTemplateCopy (const char *dir, const char *from, const char *to);
@@ -301,6 +302,8 @@ main (int argc, char *argv[])
   installer.tclshloc = NULL;
   installer.currdir [0] = '\0';
   installer.disptb = NULL;
+  /* CONTEXT: installer: status message */
+  installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
 
   installer.convprocess = false;
   installer.guienabled = true;
@@ -1318,9 +1321,8 @@ installerVerifyInstInit (installer_t *installer)
 {
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Verifying installation."), false);
-  /* CONTEXT: installer: status message */
-  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait\xe2\x80\xa6"), false);
-  uiLabelSetText (&installer->statusMsg, _("Please wait\xe2\x80\xa6"));
+  installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
+  uiLabelSetText (&installer->statusMsg, installer->pleasewaitmsg);
 
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
@@ -1557,9 +1559,8 @@ installerCopyStart (installer_t *installer)
 {
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Copying files."), false);
-  /* CONTEXT: installer: status message */
-  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait\xe2\x80\xa6"), false);
-  uiLabelSetText (&installer->statusMsg, _("Please wait\xe2\x80\xa6"));
+  installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
+  uiLabelSetText (&installer->statusMsg, installer->pleasewaitmsg);
 
   /* the unpackdir is not necessarily the same as the current dir */
   /* on mac os, they are different */
@@ -2169,9 +2170,8 @@ installerVLCDownload (installer_t *installer)
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "VLC");
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-    /* CONTEXT: installer: status message */
-    installerDisplayText (installer, INST_DISP_STATUS, _("Please wait\xe2\x80\xa6"), false);
-    uiLabelSetText (&installer->statusMsg, _("Please wait\xe2\x80\xa6"));
+    installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
+    uiLabelSetText (&installer->statusMsg, installer->pleasewaitmsg);
     installer->instState = INST_VLC_INSTALL;
   } else {
     /* CONTEXT: installer: status message */
@@ -2292,9 +2292,8 @@ installerPythonDownload (installer_t *installer)
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Python");
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-    /* CONTEXT: installer: status message */
-    installerDisplayText (installer, INST_DISP_STATUS, _("Please wait\xe2\x80\xa6"), false);
-    uiLabelSetText (&installer->statusMsg, _("Please wait\xe2\x80\xa6"));
+    installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
+    uiLabelSetText (&installer->statusMsg, installer->pleasewaitmsg);
     installer->instState = INST_PYTHON_INSTALL;
   } else {
     /* CONTEXT: installer: status message */
@@ -2356,9 +2355,8 @@ installerMutagenCheck (installer_t *installer)
   /* CONTEXT: installer: status message */
   snprintf (tbuff, sizeof (tbuff), _("Installing %s."), "Mutagen");
   installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-  /* CONTEXT: installer: status message */
-  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait\xe2\x80\xa6"), false);
-  uiLabelSetText (&installer->statusMsg, _("Please wait\xe2\x80\xa6"));
+  installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
+  uiLabelSetText (&installer->statusMsg, installer->pleasewaitmsg);
   installer->instState = INST_MUTAGEN_INSTALL;
 }
 
@@ -2395,8 +2393,8 @@ installerUpdateProcessInit (installer_t *installer)
   /* CONTEXT: installer: status message */
   snprintf (buff, sizeof (buff), _("Updating %s."), BDJ4_LONG_NAME);
   installerDisplayText (installer, INST_DISP_ACTION, buff, false);
-  installerDisplayText (installer, INST_DISP_STATUS, _("Please wait\xe2\x80\xa6"), false);
-  uiLabelSetText (&installer->statusMsg, _("Please wait\xe2\x80\xa6"));
+  installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
+  uiLabelSetText (&installer->statusMsg, installer->pleasewaitmsg);
   installer->instState = INST_UPDATE_PROCESS;
 }
 
@@ -2573,7 +2571,8 @@ installerCleanup (installer_t *installer)
 }
 
 static void
-installerDisplayText (installer_t *installer, char *pfx, char *txt, bool bold)
+installerDisplayText (installer_t *installer, const char *pfx,
+    const char *txt, bool bold)
 {
   if (installer->guienabled) {
     if (bold) {

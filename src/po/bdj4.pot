@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-07 08:14-0800\n"
+"POT-Creation-Date: 2023-01-09 13:01-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -700,7 +700,15 @@ msgid "Exit"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: export actions for song list
+#. CONTEXT: playerui: menu selection: export
 msgid "Export"
+msgstr ""
+
+#. CONTEXT: export as mp3: title of save dialog
+#. CONTEXT: managementui: menu selection: song list: export: export as MP3
+#. CONTEXT: player ui: menu selection: export: export as MP3
+#, c-format
+msgid "Export as %s"
 msgstr ""
 
 #. CONTEXT: managementui: song list export: title of save dialog
@@ -1261,7 +1269,8 @@ msgid "Playlist Type"
 msgstr ""
 
 #. CONTEXT: installer: status message
-#. CONTEXT: manage ui: status message: please wait...
+#. CONTEXT: export as mp3: please wait... status message
+#. CONTEXT: management ui: please wait... status message
 msgid "Please wait…"
 msgstr ""
 
@@ -1405,7 +1414,7 @@ msgstr ""
 msgid "Recover Marquee"
 msgstr ""
 
-#. CONTEXT: player-ui: status message
+#. CONTEXT: player-ui: error message
 msgid "Recovered from crash."
 msgstr ""
 

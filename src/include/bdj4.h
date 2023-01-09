@@ -27,6 +27,7 @@ enum {
 #define BDJ4_LONG_NAME    "BallroomDJ 4"
 #define BDJ4_NAME         "BDJ4"
 #define BDJ3_NAME         "BallroomDJ 3"
+#define BDJ4_MP3_LABEL    "MP3"
 
 #define BDJ4_DB_EXT       ".dat"
 #define BDJ4_LOCK_EXT     ".lck"

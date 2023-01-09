@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2023-01-07\n"
+"PO-Revision-Date: 2023-01-09\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -702,8 +702,16 @@ msgid "Exit"
 msgstr "Afsluiten"
 
 #. CONTEXT: managementui: menu selection: export actions for song list
+#. CONTEXT: playerui: menu selection: export
 msgid "Export"
 msgstr "Exporteren"
+
+#. CONTEXT: export as mp3: title of save dialog
+#. CONTEXT: managementui: menu selection: song list: export: export as MP3
+#. CONTEXT: player ui: menu selection: export: export as MP3
+#, c-format
+msgid "Export as %s"
+msgstr "Exporteren als %s"
 
 #. CONTEXT: managementui: song list export: title of save dialog
 #. CONTEXT: managementui: menu selection: song list: export: export as m3u
@@ -1264,7 +1272,8 @@ msgid "Playlist Type"
 msgstr ""
 
 #. CONTEXT: installer: status message
-#. CONTEXT: manage ui: status message: please wait...
+#. CONTEXT: export as mp3: please wait... status message
+#. CONTEXT: management ui: please wait... status message
 msgid "Please wait…"
 msgstr "Even geduld…"
 
@@ -1408,7 +1417,7 @@ msgstr "Database heropbouwen"
 msgid "Recover Marquee"
 msgstr ""
 
-#. CONTEXT: player-ui: status message
+#. CONTEXT: player-ui: error message
 msgid "Recovered from crash."
 msgstr ""
 

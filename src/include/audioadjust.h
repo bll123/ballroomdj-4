@@ -4,6 +4,9 @@
 #ifndef INC_AUDIOADJUST_H
 #define INC_AUDIOADJUST_H
 
+#include "musicdb.h"
+#include "nlist.h"
+
 enum {
   AA_TRIMSILENCE_PERIOD,
   AA_TRIMSILENCE_START,
@@ -19,5 +22,7 @@ typedef struct aa aa_t;
 aa_t * aaAlloc (void);
 void aaFree (aa_t *aa);
 void aaNormalize (const char *ffn);
+void aaConvert (const char *ffn, const char *outfn);
+void aaExportMP3 (musicdb_t *musicdb, nlist_t *songlist, const char *outdir);
 
 #endif /* INC_AUDIOADJUST_H */

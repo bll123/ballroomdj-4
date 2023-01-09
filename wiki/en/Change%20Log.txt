@@ -8,6 +8,9 @@
 
 * Bug Fixes:
     * song selection: Turn off movement keys when multiple items selected.
+* New Features:
+    * song list editor: export as MP3
+    * player: export as MP3
 * Internal:
     * a few more memory leaks fixed.
     * make debug level more dynamic.
