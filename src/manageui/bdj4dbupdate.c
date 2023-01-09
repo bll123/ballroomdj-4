@@ -101,7 +101,7 @@ typedef struct {
   progstate_t       *progstate;
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
-  int               startflags;
+  long              startflags;
   int               state;
   musicdb_t         *musicdb;
   musicdb_t         *newmusicdb;
@@ -165,7 +165,6 @@ main (int argc, char *argv[])
 {
   dbupdate_t    dbupdate;
   uint16_t      listenPort;
-  int           flags;
   char          *p;
 
 #if BDJ4_MEM_DEBUG
@@ -219,9 +218,9 @@ main (int argc, char *argv[])
 
   osSetStandardSignals (dbupdateSigHandler);
 
-  flags = BDJ4_INIT_NONE;
-  dbupdate.startflags = bdj4startup (argc, argv, &dbupdate.musicdb,
-      "dbup", ROUTE_DBUPDATE, flags);
+  dbupdate.startflags = BDJ4_INIT_ALL;
+  bdj4startup (argc, argv, &dbupdate.musicdb,
+      "dbup", ROUTE_DBUPDATE, &dbupdate.startflags);
   logProcBegin (LOG_PROC, "dbupdate");
 
   dbupdate.olddirlist = bdjoptGetStr (OPT_M_DIR_OLD_SKIP);

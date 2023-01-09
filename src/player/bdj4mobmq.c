@@ -77,7 +77,7 @@ main (int argc, char *argv[])
   mobmqdata_t     mobmqData;
   uint16_t        listenPort;
   char            *tval;
-  int             flags;
+  long            flags;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("mm");
@@ -86,7 +86,7 @@ main (int argc, char *argv[])
   osSetStandardSignals (mobmqSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, NULL, "mm", ROUTE_MOBILEMQ, flags);
+  bdj4startup (argc, argv, NULL, "mm", ROUTE_MOBILEMQ, &flags);
   mobmqData.conn = connInit (ROUTE_MARQUEE);
 
   mobmqData.enabled = bdjoptGetNum (OPT_P_MOBILEMARQUEE);

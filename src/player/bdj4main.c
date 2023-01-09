@@ -83,7 +83,7 @@ typedef struct {
   progstate_t       *progstate;
   procutil_t        *processes [ROUTE_MAX];
   conn_t            *conn;
-  int               startflags;
+  long              startflags;
   musicdb_t         *musicdb;
   /* playlistCache contains all of the playlists that are used */
   /* so that playlist lookups can be processed */
@@ -231,8 +231,9 @@ main (int argc, char *argv[])
   procutilInitProcesses (mainData.processes);
   osSetStandardSignals (mainSigHandler);
 
-  mainData.startflags = bdj4startup (argc, argv, &mainData.musicdb,
-      "main", ROUTE_MAIN, BDJ4_INIT_NONE);
+  mainData.startflags = BDJ4_INIT_ALL;
+  bdj4startup (argc, argv, &mainData.musicdb,
+      "main", ROUTE_MAIN, &mainData.startflags);
   logProcBegin (LOG_PROC, "main");
 
   mainData.lastGapSent = -2;

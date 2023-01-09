@@ -44,7 +44,7 @@ typedef struct configui {
   progstate_t       *progstate;
   char              *locknm;
   conn_t            *conn;
-  int               dbgflags;
+  long              dbgflags;
   int               stopwaitcount;
   datafile_t        *filterDisplayDf;
   confuigui_t       gui;
@@ -85,7 +85,6 @@ main (int argc, char *argv[])
   nlist_t         *llist = NULL;
   nlistidx_t      iteridx;
   configui_t      confui;
-  int             flags;
   char            tbuff [MAXPATHLEN];
 
 #if BDJ4_MEM_DEBUG
@@ -191,9 +190,8 @@ main (int argc, char *argv[])
 
   osSetStandardSignals (confuiSigHandler);
 
-  flags = BDJ4_INIT_NO_DB_LOAD;
-  confui.dbgflags = bdj4startup (argc, argv, NULL,
-      "cfui", ROUTE_CONFIGUI, flags);
+  confui.dbgflags = BDJ4_INIT_NO_DB_LOAD;
+  bdj4startup (argc, argv, NULL, "cfui", ROUTE_CONFIGUI, &confui.dbgflags);
   logProcBegin (LOG_PROC, "configui");
 
   confui.gui.dispsel = dispselAlloc ();
@@ -284,10 +282,15 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   configui_t    * confui = udata;
   int           x, y, ws;
   char          fn [MAXPATHLEN];
+  char          tmp [40];
 
   logProcBegin (LOG_PROC, "confuiStoppingCallback");
 
   confuiPopulateOptions (&confui->gui);
+
+  snprintf (tmp, sizeof (tmp), "%ld", bdjoptGetNum (OPT_G_DEBUGLVL));
+  connSendMessage (confui->conn, ROUTE_STARTERUI, MSG_DEBUG_LEVEL, tmp);
+
   bdjoptSave ();
   for (confuiident_t i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confuiTableSave (&confui->gui, i);

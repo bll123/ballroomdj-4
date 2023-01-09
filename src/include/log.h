@@ -93,9 +93,6 @@ enum {
   LOG_MAX_BUFF    = 4096,
 };
 
-/* exists in log.c so that bdj4main and bdj4player and testsuite can access it */
-extern char *playerstateTxt [PL_STATE_MAX]; // for debugging and test suite
-
 #define logProcBegin(lvl,tag)   rlogProcBegin (lvl, tag, __FILE__, __LINE__)
 #define logProcEnd(lvl,tag,suffix)  rlogProcEnd (lvl, tag, suffix, __FILE__, __LINE__)
 #define logError(msg)           rlogError (msg, errno, __FILE__, __LINE__)
@@ -105,6 +102,7 @@ bdjlog_t *  logOpen (const char *fn, const char *processtag);
 bdjlog_t *  logOpenAppend (const char *fn, const char *processtag);
 void logClose (logidx_t idx);
 bool logCheck (logidx_t idx, loglevel_t level);
+void logSetLevelAll (loglevel_t level);
 void logSetLevel (logidx_t idx, loglevel_t level, const char *processtag);
 void logStart (const char *processnm, const char *processtag, loglevel_t level);
 void logStartAppend (const char *processnm, const char *processtag, loglevel_t level);

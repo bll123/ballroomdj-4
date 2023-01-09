@@ -124,7 +124,7 @@ main (int argc, char *argv[])
   bpmcounter_t    bpmcounter;
   char            *uifont;
   char            tbuff [MAXPATHLEN];
-  int             flags;
+  long            flags;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("bpmc");
@@ -179,7 +179,7 @@ main (int argc, char *argv[])
   osSetStandardSignals (bpmcounterSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, NULL, "bpmc", ROUTE_BPM_COUNTER, flags);
+  bdj4startup (argc, argv, NULL, "bpmc", ROUTE_BPM_COUNTER, &flags);
   logProcBegin (LOG_PROC, "bpmcounter");
 
   listenPort = bdjvarsGetNum (BDJVL_BPM_COUNTER_PORT);

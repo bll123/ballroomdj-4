@@ -331,7 +331,7 @@ uireqextAudioFileDialog (void *udata)
     uiEntrySetValue (uireqext->audioFileEntry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
     uireqextProcessAudioFile (uireqext);
-    mdfree (fn);
+    mdfree (fn);   // allocated by gtk
   }
   mdfree (selectdata);
 
@@ -451,6 +451,7 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
 
       dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
           ffn, MUSICDB_ENTRY_NEW);
+      slistFree (tagdata);
       dataFree (uireqext->songEntryText);
       uireqext->songEntryText = mdstrdup (tbuff);
 

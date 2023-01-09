@@ -104,6 +104,7 @@ main (int argc, char *argv [])
   datafile_t  *df;
   nlist_t     *updlist = NULL;
   musicdb_t   *musicdb = NULL;
+  long        flags;
 
   static struct option bdj_options [] = {
     { "newinstall", no_argument,        NULL,   'n' },
@@ -160,8 +161,8 @@ main (int argc, char *argv [])
     processflags [i] = 0;
   }
 
-  bdj4startup (argc, argv, NULL, "updt", ROUTE_NONE,
-      BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_DB_LOAD);
+  flags = BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_DB_LOAD;
+  bdj4startup (argc, argv, NULL, "updt", ROUTE_NONE, &flags);
   logSetLevel (LOG_INSTALL, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN, "up");
   logSetLevel (LOG_DBG, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST, "up");
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== updater started");

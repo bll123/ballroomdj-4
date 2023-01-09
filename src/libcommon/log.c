@@ -34,7 +34,7 @@
 #include "bdjstring.h"
 
 /* for debugging and for test suite */
-char *playerstateTxt [PL_STATE_MAX] = {
+static char *playerstateTxt [PL_STATE_MAX] = {
   [PL_STATE_UNKNOWN] = "unknown",
   [PL_STATE_STOPPED] = "stopped",
   [PL_STATE_LOADING] = "loading",
@@ -55,6 +55,7 @@ typedef struct bdjlog {
 static void rlogStart (const char *processnm, const char *processtag, int truncflag, loglevel_t level);
 static void rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag);
 static void logInit (void);
+static void logAlloc (void);
 static const char * logTail (const char *fn);
 
 static bdjlog_t *syslogs [LOG_MAX];
@@ -132,6 +133,12 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
   logInit ();
 
   l = syslogs [idx];
+  if (l == NULL) {
+    return;
+  }
+  if (! l->opened) {
+    return;
+  }
 
   if ((l->level & LOG_REDIR_INST) == LOG_REDIR_INST) {
     idx = LOG_INSTALL;
@@ -166,10 +173,19 @@ rlogVarMsg (logidx_t idx, loglevel_t level,
 }
 
 void
+logSetLevelAll (loglevel_t level)
+{
+  logInit ();
+  for (logidx_t idx = 0; idx < LOG_MAX; ++idx) {
+    syslogs [idx]->level = level;
+  }
+}
+
+void
 logSetLevel (logidx_t idx, loglevel_t level, const char *processtag)
 {
   logInit ();
-  syslogs [idx]->level |= level;
+  syslogs [idx]->level = level;
   syslogs [idx]->processTag = processtag;
 }
 
@@ -194,14 +210,16 @@ logEnd (void)
 {
   logInit ();
 
-  for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
-    if (syslogs [idx] != NULL) {
-      logClose (idx);
-      mdfree (syslogs [idx]);
-      syslogs [idx] = NULL;
+  if (logsalloced) {
+    for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {
+      if (syslogs [idx] != NULL) {
+        logClose (idx);
+        mdfree (syslogs [idx]);
+        syslogs [idx] = NULL;
+      }
     }
+    logsalloced = false;
   }
-  logsalloced = false;
 }
 
 bool
@@ -297,13 +315,10 @@ rlogStart (const char *processnm, const char *processtag,
   tmutilDstamp (tdt, sizeof (tdt));
 
   for (logidx_t idx = 0; idx < LOG_MAX; ++idx) {
-  }
-
-  for (logidx_t idx = 0; idx < LOG_MAX; ++idx) {
     pathbldMakePath (tnm, sizeof (tnm), logbasenm [idx], LOG_EXTENSION,
         PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     rlogOpen (idx, tnm, processtag, truncflag);
-    syslogs [idx]->level |= level;
+    syslogs [idx]->level = level;
     rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s", processnm, tdt);
   }
 }
@@ -316,8 +331,12 @@ rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
   char          tbuff [MAXPATHLEN];
 
   logInit ();
+  logAlloc ();
 
   l = syslogs [idx];
+  if (l == NULL) {
+    return;
+  }
 
   pi = pathInfo (fn);
   strlcpy (tbuff, pi->dirname, pi->dlen + 1);
@@ -346,8 +365,6 @@ rlogOpen (logidx_t idx, const char *fn, const char *processtag, int truncflag)
 static void
 logInit (void)
 {
-  bdjlog_t      *l = NULL;
-
   if (! initialized) {
     logbasenm [LOG_ERR] = LOG_ERROR_NAME;
     logbasenm [LOG_SESS] = LOG_SESSION_NAME;
@@ -359,6 +376,12 @@ logInit (void)
     }
     initialized = 1;
   }
+}
+
+void
+logAlloc (void)
+{
+  bdjlog_t      *l = NULL;
 
   if (! logsalloced) {
     for (logidx_t idx = LOG_ERR; idx < LOG_MAX; ++idx) {

@@ -117,6 +117,7 @@ typedef struct {
   conn_t          *conn;
   int             currprofile;
   int             newprofile;
+  loglevel_t      loglevel;
   int             maxProfileWidth;
   startstate_t    startState;
   startstate_t    nextState;
@@ -238,7 +239,7 @@ main (int argc, char *argv[])
   startui_t       starter;
   uint16_t        listenPort;
   char            *uifont;
-  int             flags;
+  long            flags;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("strt");
@@ -289,6 +290,8 @@ main (int argc, char *argv[])
   uiutilsUIWidgetInit (&starter.supportSendDB);
   starter.optiondf = NULL;
   starter.options = NULL;
+  starter.supportsubject = NULL;
+  starter.supportemail = NULL;
 
   procutilInitProcesses (starter.processes);
 
@@ -296,7 +299,8 @@ main (int argc, char *argv[])
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD |
       BDJ4_INIT_NO_LOCK;
-  bdj4startup (argc, argv, NULL, "strt", ROUTE_STARTERUI, flags);
+  starter.loglevel = bdj4startup (argc, argv, NULL, "strt",
+      ROUTE_STARTERUI, &flags);
   logProcBegin (LOG_PROC, "starterui");
 
   starter.profilesel = uiSpinboxInit ();
@@ -311,7 +315,7 @@ main (int argc, char *argv[])
   osuiFinalize ();
 
   while (! gStopProgram) {
-    long loglevel;
+    long loglevel = 0;
 
     gNewProfile = false;
     listenPort = bdjvarsGetNum (BDJVL_STARTERUI_PORT);
@@ -350,9 +354,13 @@ starterInitDataCallback (void *udata, programstate_t programState)
   pathbldMakePath (tbuff, sizeof (tbuff),
       "newinstall", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   if (fileopFileExists (tbuff)) {
-    const char  *targv [2];
+    const char  *targv [5];
     int         targc = 0;
+    char        tmp [40];
 
+    snprintf (tmp, sizeof (tmp), "%d", starter->loglevel);
+    targv [targc++] = "--debug";
+    targv [targc++] = tmp;
     targv [targc++] = NULL;
     starter->processes [ROUTE_HELPERUI] = procutilStartProcess (
         ROUTE_HELPERUI, "bdj4helperui", PROCUTIL_DETACH, targv);
@@ -881,7 +889,9 @@ starterMainLoop (void *tstarter)
       webclientClose (starter->webclient);
       starter->webclient = NULL;
       uiEntryFree (starter->supportsubject);
+      starter->supportsubject = NULL;
       uiEntryFree (starter->supportemail);
+      starter->supportemail = NULL;
       uiDialogDestroy (&starter->supportMsgDialog);
       starter->startState = START_STATE_NONE;
       break;
@@ -966,6 +976,11 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           connSendMessage (starter->conn, ROUTE_PLAYERUI, msg, args);
           break;
         }
+        case MSG_DEBUG_LEVEL: {
+          starter->loglevel = atol (args);
+          logSetLevelAll (starter->loglevel);
+          break;
+        }
         default: {
           break;
         }
@@ -1026,14 +1041,20 @@ static void
 starterStartMain (startui_t *starter, bdjmsgroute_t routefrom, char *args)
 {
   int         flags;
-  const char  *targv [2];
+  const char  *targv [5];
   int         targc = 0;
 
   if (starter->started [ROUTE_MAIN] == 0) {
+    char        tmp [40];
+
     flags = PROCUTIL_DETACH;
     if (atoi (args)) {
       targv [targc++] = "--nomarquee";
     }
+
+    snprintf (tmp, sizeof (tmp), "%d", starter->loglevel);
+    targv [targc++] = "--debug";
+    targv [targc++] = tmp;
     targv [targc++] = NULL;
 
     starter->processes [ROUTE_MAIN] = procutilStartProcess (
@@ -1119,6 +1140,10 @@ static bool
 starterStartProcess (startui_t *starter, const char *procname,
     bdjmsgroute_t route)
 {
+  const char  *targv [5];
+  int         targc = 0;
+  char        tmp [40];
+
   if (starterCheckProfile (starter) < 0) {
     return UICB_STOP;
   }
@@ -1130,8 +1155,13 @@ starterStartProcess (startui_t *starter, const char *procname,
     }
   }
 
+  snprintf (tmp, sizeof (tmp), "%d", starter->loglevel);
+  targv [targc++] = "--debug";
+  targv [targc++] = tmp;
+  targv [targc++] = NULL;
+
   starter->processes [route] = procutilStartProcess (
-      route, procname, PROCUTIL_DETACH, NULL);
+      route, procname, PROCUTIL_DETACH, targv);
   starter->started [route] = true;
   starterSendPlayerActive (starter);
   return UICB_CONT;
@@ -2022,7 +2052,7 @@ static bool
 starterSetUpAlternate (void *udata)
 {
   char        prog [MAXPATHLEN];
-  const char  *targv [5];
+  const char  *targv [7];
   int         targc = 0;
 
 

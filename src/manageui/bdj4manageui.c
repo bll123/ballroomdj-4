@@ -344,6 +344,7 @@ main (int argc, char *argv[])
   manageui_t      manage;
   char            *uifont;
   char            tbuff [MAXPATHLEN];
+  long            flags;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("mui");
@@ -412,8 +413,8 @@ main (int argc, char *argv[])
 
   osSetStandardSignals (manageSigHandler);
 
-  bdj4startup (argc, argv, &manage.musicdb,
-      "mui", ROUTE_MANAGEUI, BDJ4_INIT_NONE);
+  flags = BDJ4_INIT_ALL;
+  bdj4startup (argc, argv, &manage.musicdb, "mui", ROUTE_MANAGEUI, &flags);
   logProcBegin (LOG_PROC, "manageui");
 
   manage.dispsel = dispselAlloc ();

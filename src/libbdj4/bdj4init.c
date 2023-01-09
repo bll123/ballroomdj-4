@@ -37,7 +37,7 @@
 
 int
 bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
-    char *tag, bdjmsgroute_t route, int flags)
+    char *tag, bdjmsgroute_t route, long *flags)
 {
   mstime_t    mt;
   mstime_t    dbmt;
@@ -46,7 +46,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   int         count = 0;
   int         option_index = 0;
   char        tbuff [MAXPATHLEN];
-  loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
+  loglevel_t  loglevel = 0;
   bool        loglevelset = false;
   bool        isbdj4 = false;
 
@@ -127,27 +127,27 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         break;
       }
       case 'C': {
-        flags |= BDJ4_DB_CHECK_NEW;
+        *flags |= BDJ4_DB_CHECK_NEW;
         break;
       }
       case 'P': {
-        flags |= BDJ4_PROGRESS;
+        *flags |= BDJ4_PROGRESS;
         break;
       }
       case 'O': {
-        flags |= BDJ4_DB_REORG;
+        *flags |= BDJ4_DB_REORG;
         break;
       }
       case 'u': {
-        flags |= BDJ4_DB_UPD_FROM_TAGS;
+        *flags |= BDJ4_DB_UPD_FROM_TAGS;
         break;
       }
       case 'I': {
-        flags |= BDJ4_DB_UPD_FROM_ITUNES;
+        *flags |= BDJ4_DB_UPD_FROM_ITUNES;
         break;
       }
       case 'W': {
-        flags |= BDJ4_DB_WRITE_TAGS;
+        *flags |= BDJ4_DB_WRITE_TAGS;
         break;
       }
       case 'D': {
@@ -171,60 +171,60 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
         break;
       }
       case 'm': {
-        flags |= BDJ4_INIT_NO_MARQUEE;
+        *flags |= BDJ4_INIT_NO_MARQUEE;
         break;
       }
       case 'n': {
-        flags |= BDJ4_INIT_NO_START;
+        *flags |= BDJ4_INIT_NO_START;
         break;
       }
       case 'N': {
-        flags |= BDJ4_INIT_NO_DETACH;
+        *flags |= BDJ4_INIT_NO_DETACH;
         break;
       }
       case 'w': {
-        flags |= BDJ4_INIT_WAIT;
+        *flags |= BDJ4_INIT_WAIT;
         break;
       }
       case 'R': {
-        flags |= BDJ4_DB_REBUILD;
+        *flags |= BDJ4_DB_REBUILD;
         break;
       }
       case 'h': {
-        flags |= BDJ4_INIT_HIDE_MARQUEE;
+        *flags |= BDJ4_INIT_HIDE_MARQUEE;
         break;
       }
       case 'S': {
         if (optarg) {
           bdjvarsSetStr (BDJV_TS_SECTION, optarg);
         }
-        flags |= BDJ4_TS_RUNSECTION;
+        *flags |= BDJ4_TS_RUNSECTION;
         break;
       }
       case 'T': {
         if (optarg) {
           bdjvarsSetStr (BDJV_TS_TEST, optarg);
         }
-        flags |= BDJ4_TS_RUNTEST;
+        *flags |= BDJ4_TS_RUNTEST;
         break;
       }
       case 'U': {
         if (optarg) {
           bdjvarsSetStr (BDJV_TS_TEST, optarg);
         }
-        flags |= BDJ4_TS_STARTTEST;
+        *flags |= BDJ4_TS_STARTTEST;
         break;
       }
       case 'V': {
-        flags |= BDJ4_VERBOSE;
+        *flags |= BDJ4_VERBOSE;
         break;
       }
       case 'Q': {
-        flags &= ~BDJ4_VERBOSE;
+        *flags &= ~BDJ4_VERBOSE;
         break;
       }
       case 'c': {
-        flags |= BDJ4_CLI;
+        *flags |= BDJ4_CLI;
         break;
       }
       default: {
@@ -240,7 +240,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
 
   bdjvarsAdjustPorts ();
 
-  if ((flags & BDJ4_INIT_NO_LOCK) != BDJ4_INIT_NO_LOCK) {
+  if ((*flags & BDJ4_INIT_NO_LOCK) != BDJ4_INIT_NO_LOCK) {
     rc = lockAcquire (lockName (route), PATHBLD_MP_USEIDX);
     count = 0;
     while (rc < 0) {
@@ -286,7 +286,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale-system: %s", sysvarsGetStr (SV_LOCALE_SYSTEM));
   }
 
-  if ((flags & BDJ4_INIT_NO_DATAFILE_LOAD) != BDJ4_INIT_NO_DATAFILE_LOAD) {
+  if ((*flags & BDJ4_INIT_NO_DATAFILE_LOAD) != BDJ4_INIT_NO_DATAFILE_LOAD) {
     rc = bdjvarsdfloadInit ();
     if (rc < 0) {
       logMsg (LOG_SESS, LOG_IMPORTANT, "Unable to load all data files");
@@ -297,7 +297,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
 
   bdjoptSetNum (OPT_G_DEBUGLVL, loglevel);
 
-  if ((flags & BDJ4_INIT_NO_DB_LOAD) != BDJ4_INIT_NO_DB_LOAD &&
+  if ((*flags & BDJ4_INIT_NO_DB_LOAD) != BDJ4_INIT_NO_DB_LOAD &&
       musicdb != NULL) {
     mstimestart (&dbmt);
     logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: started");
@@ -309,7 +309,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %"PRId64" ms", (int64_t) mstimeend (&mt));
 
   logProcEnd (LOG_PROC, "bdj4startup", "");
-  return flags;
+  return loglevel;
 }
 
 musicdb_t *

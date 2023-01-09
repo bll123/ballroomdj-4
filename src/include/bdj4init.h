@@ -8,7 +8,7 @@
 #include "musicdb.h"
 
 enum {
-  BDJ4_INIT_NONE                = 0x00000000,
+  BDJ4_INIT_ALL                 = 0x00000000, // uses db, datafiles, locks
   BDJ4_INIT_NO_DB_LOAD          = 0x00000001,
   BDJ4_INIT_NO_DETACH           = 0x00000002,
   BDJ4_INIT_NO_START            = 0x00000004,
@@ -32,7 +32,7 @@ enum {
 };
 
 int bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
-    char *tag, bdjmsgroute_t route, int flags);
+    char *tag, bdjmsgroute_t route, long *flags);
 musicdb_t * bdj4ReloadDatabase (musicdb_t *musicdb);
 void bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb);
 

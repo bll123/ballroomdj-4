@@ -102,6 +102,7 @@ uiSelectFileDialog (uiselect_t *selectdata)
   res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
   if (res == GTK_RESPONSE_ACCEPT) {
     fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
+    mdextalloc (fn);
   }
 
   g_object_unref (widget);
@@ -144,6 +145,7 @@ uiSaveFileDialog (uiselect_t *selectdata)
   res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
   if (res == GTK_RESPONSE_ACCEPT) {
     fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
+    mdextalloc (fn);
   }
 
   g_object_unref (widget);

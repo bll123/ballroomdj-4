@@ -102,7 +102,6 @@ aaNormalize (const char *ffn)
   snprintf (outfn, sizeof (outfn), "%.*s/n-%.*s",
       (int) pi->dlen, pi->dirname, (int) pi->flen, pi->filename);
   pathInfoFree (pi);
-fprintf (stderr, "outfn: %s\n", outfn);
 
   aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
 
@@ -151,7 +150,6 @@ fprintf (stderr, "outfn: %s\n", outfn);
   while (p != NULL) {
     if (found) {
       indata [inidx] = atof (p);
-fprintf (stderr, "got %d %.2f\n", inidx, indata [inidx]);
       found = false;
       inidx = AA_NONE;
       ++incount;
@@ -212,6 +210,4 @@ fprintf (stderr, "got %d %.2f\n", inidx, indata [inidx]);
   if (rc != 0) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: rc: %d", rc);
   }
-fprintf (stderr, "resp: %s\n", resp);
-
 }

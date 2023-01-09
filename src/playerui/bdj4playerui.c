@@ -79,7 +79,7 @@ typedef struct {
   musicqidx_t     musicqLastManageIdx;
   musicqidx_t     musicqManageIdx;
   dispsel_t       *dispsel;
-  int             dbgflags;
+  long            dbgflags;
   int             marqueeIsMaximized;
   int             marqueeFontSize;
   int             marqueeFontSizeFS;
@@ -224,8 +224,9 @@ main (int argc, char *argv[])
 
   osSetStandardSignals (pluiSigHandler);
 
-  plui.dbgflags = bdj4startup (argc, argv, &plui.musicdb,
-      "plui", ROUTE_PLAYERUI, BDJ4_INIT_NONE);
+  plui.dbgflags = BDJ4_INIT_ALL;
+  bdj4startup (argc, argv, &plui.musicdb,
+      "plui", ROUTE_PLAYERUI, &plui.dbgflags);
   logProcBegin (LOG_PROC, "playerui");
 
   plui.dispsel = dispselAlloc ();

@@ -83,7 +83,7 @@ main (int argc, char *argv[])
   uint16_t        listenPort;
   helperui_t      helper;
   char            *uifont;
-  int             flags;
+  long            flags;
   char            tbuff [MAXPATHLEN];
 
 
@@ -110,7 +110,7 @@ main (int argc, char *argv[])
   osSetStandardSignals (helperSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, NULL, "help", ROUTE_HELPERUI, flags);
+  bdj4startup (argc, argv, NULL, "help", ROUTE_HELPERUI, &flags);
   logProcBegin (LOG_PROC, "helperui");
 
   listenPort = bdjvarsGetNum (BDJVL_HELPERUI_PORT);

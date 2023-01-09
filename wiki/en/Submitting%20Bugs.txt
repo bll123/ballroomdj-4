@@ -8,10 +8,9 @@ you can take the following steps to send in a problem report.
 Start BDJ4, select __Configure__, select __Debug__, and
 turn on at least _Important_, _Basic_, _Main_, and _Actions_.
 
-Exit BDJ4.
+Re-create the issue you found.
 
-Start BDJ4, and re-create the issue you found.  Now, in the starter
-window, select __Support__, then select
+In the starter window, select __Support__, then select
 __Send&nbsp;Support&nbsp;Message__.
 
 Enter your e-mail address, the subject and a message describing the

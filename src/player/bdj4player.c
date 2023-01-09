@@ -183,7 +183,7 @@ main (int argc, char *argv[])
 {
   playerdata_t    playerData;
   uint16_t        listenPort;
-  int             flags;
+  long            flags;
   const char      *audiosink;
 
 #if BDJ4_MEM_DEBUG
@@ -227,7 +227,7 @@ main (int argc, char *argv[])
       playerClosingCallback, &playerData);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, NULL, "play", ROUTE_PLAYER, flags);
+  bdj4startup (argc, argv, NULL, "play", ROUTE_PLAYER, &flags);
 
   playerData.conn = connInit (ROUTE_PLAYER);
 

@@ -8,6 +8,8 @@
 
 * Internal:
     * a few more memory leaks fixed.
+    * make debug level more dynamic.
+    * debugging fixes.
 
 -->
 

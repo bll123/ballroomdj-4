@@ -83,7 +83,7 @@ main (int argc, char *argv[])
 {
   remctrldata_t   remctrlData;
   uint16_t        listenPort;
-  int             flags;
+  long            flags;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("rc");
@@ -92,7 +92,7 @@ main (int argc, char *argv[])
   osSetStandardSignals (remctrlSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, NULL, "rc", ROUTE_REMCTRL, flags);
+  bdj4startup (argc, argv, NULL, "rc", ROUTE_REMCTRL, &flags);
 
   remctrlData.enabled = (bdjoptGetNum (OPT_P_REMOTECONTROL) != 0);
   if (! remctrlData.enabled) {

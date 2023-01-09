@@ -157,7 +157,7 @@ int
 main (int argc, char *argv [])
 {
   testsuite_t testsuite;
-  int         flags;
+  long        flags;
   int         listenPort;
   char        *state;
   int         rc;
@@ -175,7 +175,7 @@ main (int argc, char *argv [])
   osCatchSignal (tsSigHandler, SIGTERM);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  flags = bdj4startup (argc, argv, NULL, "ts", ROUTE_TEST_SUITE, flags);
+  bdj4startup (argc, argv, NULL, "ts", ROUTE_TEST_SUITE, &flags);
   logEnd ();
 
   logStart ("testsuite", "ts",

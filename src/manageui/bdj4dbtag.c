@@ -103,7 +103,7 @@ main (int argc, char *argv[])
 {
   dbtag_t     dbtag;
   uint16_t    listenPort;
-  int         flags;
+  long        flags;
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("dbtg");
@@ -112,7 +112,7 @@ main (int argc, char *argv[])
   osSetStandardSignals (dbtagSigHandler);
 
   flags = BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
-  bdj4startup (argc, argv, NULL, "dbtg", ROUTE_DBTAG, flags);
+  bdj4startup (argc, argv, NULL, "dbtg", ROUTE_DBTAG, &flags);
   logProcBegin (LOG_PROC, "dbtag");
 
   dbtag.maxThreads = sysvarsGetNum (SVL_NUM_PROC);

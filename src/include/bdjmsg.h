@@ -131,6 +131,7 @@ typedef enum {
   MSG_STOP_MAIN,
   MSG_PLAYERUI_ACTIVE,      // arg: true/false
   MSG_REQ_PLAYERUI_ACTIVE,
+  MSG_DEBUG_LEVEL,          // arg: debug level
 
   /* to/from web servers */
   MSG_DANCE_LIST_DATA,      // args: html option list
