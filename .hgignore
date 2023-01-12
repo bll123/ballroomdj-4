@@ -22,7 +22,6 @@ syntax: regexp
 ^locale/de_DE/
 ^packages/
 ^plocal/
-^scripts/linux/.ballroomdj-ss-restore
 ^src/build/
 ^src/po/.*\.bak$
 ^src/po/.*\.backup$

@@ -16,6 +16,7 @@
     * make debug level more dynamic.
     * debugging fixes.
     * code cleanup.
+    * linux: change location of screensaver settings.
 
 -->
 

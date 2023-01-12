@@ -1,6 +1,7 @@
 #!/bin/bash
 
-spath=$(dirname $0)
+spath=$HOME/.config/BDJ4
+test -d "$spath" || mkdir -p "$spath"
 RESTFILE="$spath/.ballroomdj-ss-restore"
 
 restoreflag=F
