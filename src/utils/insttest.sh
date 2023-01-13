@@ -57,10 +57,11 @@ esac
 
 TARGETTOPDIR=${cwd}/tmp/BDJ4
 TARGETDIR=${TARGETTOPDIR}${macdir}
-DATADIR=${TARGETDIR}
+DATATOPDIR=${TARGETDIR}
 if [[ $tag == macos ]]; then
-  DATADIR="$HOME/Library/Application Support/BDJ4"
+  DATATOPDIR="$HOME/Library/Application Support/BDJ4"
 fi
+DATADIR="${DATATOPDIR}/data"
 UNPACKDIR="${cwd}/tmp/bdj4-install"
 UNPACKDIRTMP="$UNPACKDIR.tmp"
 LOG="tmp/insttest-log.txt"
@@ -162,27 +163,47 @@ function checkInstallation {
     echo "  installer: bad return code"
   fi
 
-  # even if --nodatafiles is used, the data/*, tmp directories are
-  # still created for logging purposes
-
   if [[ $datafiles == y ]]; then
     res=$(($res+1))  # data dir
-    if [[ $fin == T && -d "${DATADIR}/data" ]]; then
+    if [[ $fin == T && -d "${DATADIR}" ]]; then
       chk=$(($chk+1))
     else
       echo "  no data directory"
     fi
+
     res=$(($res+1))  # data/profile00 dir
-    if [[ $fin == T && -d "${DATADIR}/data/profile00" ]]; then
+    if [[ $fin == T && -d "${DATADIR}/profile00" ]]; then
       chk=$(($chk+1))
     else
       echo "  no data/profile00 directory"
     fi
+
     res=$(($res+1))  # tmp dir
-    if [[ $fin == T && -d "${DATADIR}/tmp" ]]; then
+    if [[ $fin == T && -d "${DATATOPDIR}/tmp" ]]; then
       chk=$(($chk+1))
     else
       echo "  no tmp directory"
+    fi
+
+    res=$(($res+1))  # audioadjust.txt file
+    if [[ $fin == T && -f "${DATADIR}/audioadjust.txt" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no audioadjust.txt file"
+    fi
+
+    res=$(($res+1))  # itunes-fields.txt file
+    fn="${DATADIR}/itunes-fields.txt"
+    if [[ $fin == T && -f $fn ]]; then
+      grep 'version 2' "$fn" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  itunes-fields.txt file has wrong version"
+      fi
+    else
+      echo "  no itunes-fields.txt file"
     fi
   fi
 
@@ -192,6 +213,7 @@ function checkInstallation {
   else
     echo "  no bin directory"
   fi
+
   res=$(($res+1))  # bdj4 exec
   if [[ $fin == T && -f "${TARGETDIR}/bin/bdj4${sfx}" ]]; then
     chk=$(($chk+1))
@@ -217,8 +239,8 @@ function checkInstallation {
     fi
   fi
 
-  if [[ -d "${DATADIR}/data" ]]; then
-    c=$(ls -1 "${DATADIR}/data/asan*" 2>/dev/null | wc -l)
+  if [[ -d "${DATADIR}" ]]; then
+    c=$(ls -1 "${DATADIR}/asan*" 2>/dev/null | wc -l)
     if [[ $c -ne 0 ]]; then
       echo "ASAN files found"
       exit 1
@@ -300,6 +322,25 @@ if [[ $crc -eq 0 ]]; then
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc u y
+
+  # update w/o audioadjust.txt data file
+  # this should get installed as of version 4.1.0
+  resetUnpack
+  tname=update-chk-updater
+  # audio adjust file should be installed if missing
+  rm -f "$DATADIR/audioadjust.txt"
+  # itunes-fields version number should be updated to version 2.
+  fn="$DATADIR/itunes-fields.txt"
+  sed -e 's/version 2/version 1/' "$fn" > $fn.n
+  mv -f "$fn.n" "$fn"
+  out=$(./bin/bdj4 --bdj4installer --cli --wait \
+      --verbose --unattended --quiet \
+      --msys \
+      --targetdir "$TARGETTOPDIR" \
+      --unpackdir "$UNPACKDIR" \
+      )
+  rc=$?
+  checkInstallation $section $tname "$out" $rc u y
 fi
 
 # install w/o data files
@@ -316,8 +357,8 @@ out=$(./bin/bdj4 --bdj4installer --cli --wait \
 rc=$?
 checkInstallation $section $tname "$out" $rc n n
 
-cleanInstTest
-test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
+# cleanInstTest
+# test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
 
 echo "tests: $tcount pass: $pass fail: $fail"
 

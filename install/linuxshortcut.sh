@@ -25,13 +25,16 @@ fi
 
 desktop=$(xdg-user-dir DESKTOP)
 for idir in "$desktop" "$HOME/.local/share/applications"; do
-  if [ -d "$idir" ]; then
-    cp -f install/bdj4.desktop "$idir/${scname}.desktop"
-    sed -i -e "s,#INSTALLPATH#,${tgtpath},g" \
-        -e "s,#APPNAME#,${scname},g" \
-        -e "s,#WORKDIR#,${workdir},g" \
-        -e "s,#PROFILE#,${profargs},g" \
-        "$idir/${scname}.desktop"
+  fpath="$idir/${scname}.desktop"
+  if [[ -d $idir ]]; then
+    if [[ ! -f $fpath ]]; then
+      cp -f install/bdj4.desktop "${fpath}"
+      sed -i -e "s,#INSTALLPATH#,${tgtpath},g" \
+          -e "s,#APPNAME#,${scname},g" \
+          -e "s,#WORKDIR#,${workdir},g" \
+          -e "s,#PROFILE#,${profargs},g" \
+          "${fpath}"
+    fi
   fi
 done
 

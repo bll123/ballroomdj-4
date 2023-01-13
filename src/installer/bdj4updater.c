@@ -25,6 +25,7 @@
 #include "bdjopt.h"
 #include "bdjregex.h"
 #include "bdjstring.h"
+#include "bdjvarsdfload.h"
 #include "datafile.h"
 #include "dirlist.h"
 #include "dirop.h"
@@ -161,7 +162,7 @@ main (int argc, char *argv [])
     processflags [i] = 0;
   }
 
-  flags = BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_DB_LOAD;
+  flags = BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "updt", ROUTE_NONE, &flags);
   logSetLevel (LOG_INSTALL, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN, "up");
   logSetLevel (LOG_DBG, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST, "up");
@@ -374,11 +375,59 @@ main (int argc, char *argv [])
     bdjoptSetStr (OPT_M_DIR_MUSIC, musicdir);
   }
 
+  if (bdjoptchanged) {
+    bdjoptSave ();
+  }
+
+  /* clean up any old files and directories */
+
   logMsg (LOG_INSTALL, LOG_MAIN, "start clean");
 
   updaterCleanFiles ();
 
   logMsg (LOG_INSTALL, LOG_MAIN, "end clean");
+
+  /* datafile updates */
+
+  {
+    datafile_t  *tmpdf;
+    int         version;
+    slist_t     *slist;
+
+    /* 4.0.5 2022-1-4 itunes-fields */
+    /*   had the incorrect 'lastupdate' name removed completely (not needed) */
+    /*   as itunes has not been implemented yet, it is safe to completely */
+    /*   overwrite version 1. */
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+    tmpdf = datafileAllocParse (ITUNES_FIELDS_FN,
+        DFTYPE_LIST, tbuff, NULL, 0);
+    slist = datafileGetList (tmpdf);
+    version = slistGetVersion (slist);
+    if (version == 1) {
+      templateFileCopy (ITUNES_FIELDS_FN BDJ4_CONFIG_EXT, ITUNES_FIELDS_FN BDJ4_CONFIG_EXT);
+    }
+    datafileFree (tmpdf);
+  }
+
+  {
+    /* 4.1.0 2023-1-5 audioadjust.txt */
+    /*    This is a new file; simply check and see if it does not exist. */
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        AUDIOADJ_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+    if (! fileopFileExists (tbuff)) {
+      templateFileCopy (AUDIOADJ_FN BDJ4_CONFIG_EXT, AUDIOADJ_FN BDJ4_CONFIG_EXT);
+    }
+  }
+
+  /* All database processing must be done last after the updates to the */
+  /* datafiles are done.  The datafiles must now be loaded. */
+
+  if (bdjvarsdfloadInit () < 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "Unable to load all data files");
+    fprintf (stderr, "Unable to load all data files\n");
+    exit (1);
+  }
 
   /* audio file conversions */
 
@@ -469,41 +518,6 @@ main (int argc, char *argv [])
       nlistSetNum (updlist, UPD_FIX_AF_TAGS, UPD_COMPLETE);
     }
     dbClose (musicdb);
-  }
-
-  if (bdjoptchanged) {
-    bdjoptSave ();
-  }
-
-  {
-    datafile_t  *tmpdf;
-    int         version;
-    slist_t     *slist;
-
-    /* 4.0.5 2022-1-4 itunes-fields */
-    /*   had the incorrect 'lastupdate' name removed completely (not needed) */
-    /*   as itunes has not been implemented yet, it is safe to completely */
-    /*   overwrite. */
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-    tmpdf = datafileAllocParse (ITUNES_FIELDS_FN,
-        DFTYPE_LIST, tbuff, NULL, 0);
-    slist = datafileGetList (tmpdf);
-    version = slistGetVersion (slist);
-    if (version == 1) {
-      templateFileCopy (ITUNES_FIELDS_FN BDJ4_CONFIG_EXT, ITUNES_FIELDS_FN BDJ4_CONFIG_EXT);
-    }
-    datafileFree (tmpdf);
-  }
-
-  {
-    /* 4.1.0 2023-1-5 audioadjust.txt */
-    /*    This is a new file; simply check and see if it does not exist. */
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        AUDIOADJ_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-    if (! fileopFileExists (tbuff)) {
-      templateFileCopy (AUDIOADJ_FN BDJ4_CONFIG_EXT, AUDIOADJ_FN BDJ4_CONFIG_EXT);
-    }
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),

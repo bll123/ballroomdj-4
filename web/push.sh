@@ -68,6 +68,8 @@ if [[ $tag == linux ]]; then
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
   sshpass -e rsync -v -e ssh install/linux-pre-install.sh \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+  sshpass -e rsync -v -e ssh install/linux-uninstall-bdj4.sh \
+      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 
   server=web.sourceforge.net
   port=22
