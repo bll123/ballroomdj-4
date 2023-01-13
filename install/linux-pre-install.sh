@@ -104,6 +104,9 @@ if [[ $pkgprog == "" ]]; then
   exit 1
 fi
 
+echo "Enter administrator password."
+sudo -v
+
 if [[ -f /usr/bin/dnf ]]; then
   # redhat based linux (fedora/rhel/centos, dnf)
   echo "-- To install: ffmpeg and vlc, the 'rpmfusion' repository"
@@ -126,6 +129,8 @@ if [[ -f /usr/bin/dnf ]]; then
     fi
   fi
 fi
+
+sudo -v
 
 pkglist=""
 if [[ -f /usr/bin/pacman ]]; then
@@ -180,6 +185,8 @@ if [[ -f /usr/bin/pacman ]]; then
   sudo $pkgprog $pkgrm $pkgconfirm vlc-nightly >> $LOG 2>&1
 fi
 
+sudo -v
+
 rc=0
 echo "== Install packages" >> $LOG
 if [[ "$pkgprog" != "" && "$pkglist" != "" && $gr = Y ]]; then
@@ -191,6 +198,8 @@ if [[ "$pkgprog" != "" && "$pkglist" != "" && $gr = Y ]]; then
   fi
 fi
 
+sudo -v
+
 if [[ -f /usr/sbin/usermod ]]; then
   grep '^audio' /etc/group > /dev/null 2>&1
   rc=$?
@@ -201,6 +210,8 @@ if [[ -f /usr/sbin/usermod ]]; then
     sudo /usr/sbin/usermod -a -G audio $USER >> $LOG 2>&1
   fi
 fi
+
+sudo -k
 
 pconf=/etc/pulse/daemon.conf
 upconf=$HOME/.config/pulse/daemon.conf

@@ -135,11 +135,18 @@ fi
 
 PATH=$PATH:/opt/local/bin
 
+echo "Enter administrator password."
+sudo -v
+
 echo "-- Running MacPorts 'port selfupdate' with sudo"
 sudo port selfupdate
 
+sudo -v
+
 echo "-- Running MacPorts 'port upgrade outdated' with sudo"
 sudo port upgrade outdated
+
+sudo -v
 
 echo "-- Installing packages needed by BDJ4"
 sudo port -N install \
@@ -152,6 +159,7 @@ sudo port -N install \
     gtk3 +quartz \
     adwaita-icon-theme \
     ffmpeg +nonfree -x11
+sudo -v
 sudo port select --set python python${pyver}
 sudo port select --set python3 python${pyver}
 sudo port select --set pip pip${pyver}
@@ -163,6 +171,8 @@ if [[ -z "$(port -q list inactive)" ]]; then
 n
 _HERE_
 fi
+
+sudo -k
 
 # look for the macos-run-installer script
 

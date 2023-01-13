@@ -43,6 +43,9 @@ if [[ $gr != Y ]]; then
   exit 1
 fi
 
+echo "Enter administrator password."
+sudo -v
+
 echo "Uninstall the BallroomDJ 4 Application? "
 gr=$(getresponse)
 if [[ $gr == Y ]]; then
@@ -51,15 +54,17 @@ if [[ $gr == Y ]]; then
   dir="$HOME/.config/BDJ4"
   test -d "$dir" && rm -rf "$dir"
   fn="$HOME/.themes/macOS-Mojave-dark"
-  test -f "$fn" && rm -f "$fn"
+  test -h "$fn" && rm -f "$fn"
   fn="$HOME/.themes/macOS-Mojave-light"
-  test -f "$fn" && rm -f "$fn"
+  test -h "$fn" && rm -f "$fn"
   # It is possible the user has other GTK stuff installed and could
   # have other themes.  Try to remove the dir, but don't worry if it fails.
   dir="$HOME/.themes"
   test -d "$dir" && rmdir "$dir" > /dev/null 2>&1
   echo "## BDJ4 application removed."
 fi
+
+sudo -v
 
 echo "Uninstall BallroomDJ 4 Data? "
 gr=$(getresponse)
@@ -69,6 +74,8 @@ if [[ $gr == Y ]]; then
   echo "## BDJ4 data removed."
 fi
 
+sudo -v
+
 echo "Uninstall MacPorts? "
 gr=$(getresponse)
 if [[ $gr == Y ]]; then
@@ -76,10 +83,13 @@ if [[ $gr == Y ]]; then
 
   echo "## getting ports list"
   sudo port list installed > $TMP
+  sudo -v
   echo "## uninstalling all ports"
   sudo port -N uninstall $(cat $TMP)
+  sudo -v
   echo "## cleaning all ports"
   sudo port -N clean --all $(cat $TMP)
+  sudo -v
   rm -f ${TMP} > /dev/null 2>&1
   for d in \
       /opt/local \
@@ -97,3 +107,7 @@ if [[ $gr == Y ]]; then
     sudo rm -rf ${d}
   done
 fi
+
+sudo -k
+
+exit 0
