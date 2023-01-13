@@ -847,6 +847,8 @@ playlistSetSongFilter (playlist_t *pl)
   }
 
   kwList = nlistGetList (pl->plinfo, PLAYLIST_ALLOWED_KEYWORDS);
+  /* the allowed keywords list needs to be sorted for the song filter */
+  slistSort (kwList);
   /* the keyword list is always set as in-use, so that songs with */
   /* keywords will be rejected.  It's ok to send a null kwList. */
   songfilterSetData (pl->songfilter, SONG_FILTER_KEYWORD, kwList);

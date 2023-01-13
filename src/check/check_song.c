@@ -331,9 +331,9 @@ START_TEST(song_parse_set)
     tlist = songGetList (song, TAG_TAGS);
     slistStartIterator (tlist, &iteridx);
     data = slistIterateKey (tlist, &iteridx);
-    ck_assert_str_eq (data, "tag4");
-    data = slistIterateKey (tlist, &iteridx);
     ck_assert_str_eq (data, "tag5");
+    data = slistIterateKey (tlist, &iteridx);
+    ck_assert_str_eq (data, "tag4");
 
     conv.allocated = false;
     conv.valuetype = VALUE_STR;

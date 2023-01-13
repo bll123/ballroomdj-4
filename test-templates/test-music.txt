@@ -3719,7 +3719,7 @@ DURATION
 NOTES
 ..notes1 notes2 ÄÄÄÄääää
 KEYWORD
-..aaa
+..ccc
 TAGS
 ..tag1 tag2 tag3 kw
 STATUS
@@ -3756,7 +3756,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 KEYWORD
-..aaa
+..ccc
 TAGS
 ..tag4 TAG5 kw
 STATUS
@@ -3793,7 +3793,7 @@ DURATION
 NOTES
 ..notes5 notes6  ÄääääÄÄÄ
 KEYWORD
-..aaa
+..ccc
 TAGS
 ..tag6 tag7 kw
 STATUS
@@ -3898,7 +3898,7 @@ DURATION
 NOTES
 ..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
 KEYWORD
-..bbb
+..ccc
 TAGS
 ..tag6 tag7 kw
 STATUS

@@ -429,9 +429,10 @@ END_TEST
 START_TEST(songfilter_keyword)
 {
   songfilter_t  *sf;
-  dbidx_t       arv, rv, rva, rvb;
+  dbidx_t       arv, rv, rva, rvb, rvc;
   slist_t       *lista;
   slist_t       *listb;
+  slist_t       *listc;
   slist_t       *listall;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songfilter_keyword");
@@ -450,9 +451,12 @@ START_TEST(songfilter_keyword)
   slistSetNum (lista, "aaa", 0);
   listb = slistAlloc ("chk-sf-listb", LIST_ORDERED, NULL);
   slistSetNum (listb, "bbb", 0);
+  listc = slistAlloc ("chk-sf-listc", LIST_ORDERED, NULL);
+  slistSetNum (listc, "ccc", 0);
   listall = slistAlloc ("chk-sf-listall", LIST_ORDERED, NULL);
-  slistSetNum (listall, "aaa", 0);
   slistSetNum (listall, "bbb", 0);
+  slistSetNum (listall, "ccc", 0);
+  slistSetNum (listall, "aaa", 0);
 
   songfilterSetData (sf, SONG_FILTER_KEYWORD, lista);
   ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_KEYWORD), 1);
@@ -467,17 +471,24 @@ START_TEST(songfilter_keyword)
   ck_assert_int_gt (rv, 0);
   rvb = rv - arv;
 
+  songfilterSetData (sf, SONG_FILTER_KEYWORD, listc);
+  rv = songfilterProcess (sf, db);
+  ck_assert_int_gt (rv, arv);
+  ck_assert_int_gt (rv, 0);
+  rvc = rv - arv;
+
   songfilterSetData (sf, SONG_FILTER_KEYWORD, listall);
   rv = songfilterProcess (sf, db);
   ck_assert_int_gt (rv, arv);
   ck_assert_int_gt (rv, 0);
-  ck_assert_int_eq (rv, rva + rvb + arv);
+  ck_assert_int_eq (rv, rva + rvb + rvc + arv);
 
   ck_assert_int_eq (songfilterInUse (sf, SONG_FILTER_KEYWORD), 1);
 
   songfilterFree (sf);
   slistFree (lista);
   slistFree (listb);
+  slistFree (listc);
   slistFree (listall);
 }
 END_TEST

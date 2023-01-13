@@ -142,7 +142,7 @@ convTextList (datafileconv_t *conv)
     str = conv->str;
 
     conv->valuetype = VALUE_LIST;
-    tlist = slistAlloc ("textlist", LIST_ORDERED, NULL);
+    tlist = slistAlloc ("textlist", LIST_UNORDERED, NULL);
     assert (conv->list != NULL);
 
     if (conv->str != NULL && *conv->str) {
