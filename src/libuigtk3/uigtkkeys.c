@@ -17,10 +17,16 @@
 #include "mdebug.h"
 #include "ui.h"
 
+enum {
+  KEY_EVENT_NONE,
+  KEY_EVENT_PRESS,
+  KEY_EVENT_RELEASE,
+};
+
 typedef struct uikey {
   UICallback    *presscb;
   UICallback    *releasecb;
-  int           etype;
+  int           eventtype;
   bool          controlpressed;
   bool          shiftpressed;
   bool          ismaskedkey;
@@ -37,7 +43,7 @@ uiKeyAlloc (void)
   uikey = mdmalloc (sizeof (uikey_t));
   uikey->presscb = NULL;
   uikey->releasecb = NULL;
-  uikey->etype = KEY_EVENT_NONE;
+  uikey->eventtype = KEY_EVENT_NONE;
   uikey->controlpressed = false;
   uikey->shiftpressed = false;
   uikey->ismaskedkey = false;
@@ -53,28 +59,31 @@ uiKeyFree (uikey_t *uikey)
 }
 
 void
-uiKeySetPressCallback (uikey_t *uikey, UIWidget *uiwidgetp, UICallback *uicb)
+uiKeySetKeyCallback (uikey_t *uikey, UIWidget *uiwidgetp, UICallback *uicb)
 {
   uikey->presscb = uicb;
   g_signal_connect (uiwidgetp->widget, "key-press-event",
       G_CALLBACK (uiKeyCallback), uikey);
-}
-
-void
-uiKeySetReleaseCallback (uikey_t *uikey, UIWidget *uiwidgetp, UICallback *uicb)
-{
-  uikey->presscb = uicb;
   g_signal_connect (uiwidgetp->widget, "key-release-event",
       G_CALLBACK (uiKeyCallback), uikey);
 }
 
-int
-uiKeyEvent (uikey_t *uikey)
+bool
+uiKeyIsPressEvent (uikey_t *uikey)
 {
   if (uikey == NULL) {
     return KEY_EVENT_NONE;
   }
-  return uikey->etype;
+  return uikey->eventtype == KEY_EVENT_PRESS;
+}
+
+bool
+uiKeyIsReleaseEvent (uikey_t *uikey)
+{
+  if (uikey == NULL) {
+    return KEY_EVENT_NONE;
+  }
+  return uikey->eventtype == KEY_EVENT_RELEASE;
 }
 
 bool
@@ -105,6 +114,135 @@ uiKeyIsMovementKey (uikey_t *uikey)
 }
 
 bool
+uiKeyIsNKey (uikey_t *uikey)
+{
+  bool  rc = false;
+
+  if (uikey == NULL) {
+    return rc;
+  }
+
+  if (uikey->keyval == GDK_KEY_N || uikey->keyval == GDK_KEY_n) {
+    rc = true;
+  }
+
+  return rc;
+}
+
+bool
+uiKeyIsPKey (uikey_t *uikey)
+{
+  bool  rc = false;
+
+  if (uikey == NULL) {
+    return rc;
+  }
+
+  if (uikey->keyval == GDK_KEY_P || uikey->keyval == GDK_KEY_p) {
+    rc = true;
+  }
+
+  return rc;
+}
+
+bool
+uiKeyIsSKey (uikey_t *uikey)
+{
+  bool  rc = false;
+
+  if (uikey == NULL) {
+    return rc;
+  }
+
+  if (uikey->keyval == GDK_KEY_S || uikey->keyval == GDK_KEY_s) {
+    rc = true;
+  }
+
+  return rc;
+}
+
+bool
+uiKeyIsAudioPlayKey (uikey_t *uikey)
+{
+  bool  rc = false;
+
+  if (uikey == NULL) {
+    return rc;
+  }
+
+  if (uikey->keyval == GDK_KEY_AudioPlay) {
+    rc = true;
+  }
+
+  return rc;
+}
+
+bool
+uiKeyIsAudioPauseKey (uikey_t *uikey)
+{
+  bool  rc = false;
+
+  if (uikey == NULL) {
+    return rc;
+  }
+
+  if (uikey->keyval == GDK_KEY_AudioPause) {
+    rc = true;
+  }
+
+  return rc;
+}
+
+bool
+uiKeyIsAudioStopKey (uikey_t *uikey)
+{
+  bool  rc = false;
+
+  if (uikey == NULL) {
+    return rc;
+  }
+
+  if (uikey->keyval == GDK_KEY_AudioStop) {
+    rc = true;
+  }
+
+  return rc;
+}
+
+bool
+uiKeyIsAudioNextKey (uikey_t *uikey)
+{
+  bool  rc = false;
+
+  if (uikey == NULL) {
+    return rc;
+  }
+
+  if (uikey->keyval == GDK_KEY_AudioNext) {
+    rc = true;
+  }
+
+  return rc;
+}
+
+bool
+uiKeyIsAudioPrevKey (uikey_t *uikey)
+{
+  bool  rc = false;
+
+  if (uikey == NULL) {
+    return rc;
+  }
+
+  if (uikey->keyval == GDK_KEY_AudioPrev) {
+    rc = true;
+  }
+
+  return rc;
+}
+
+/* includes page up */
+bool
 uiKeyIsUpKey (uikey_t *uikey)
 {
   bool  rc = false;
@@ -124,6 +262,7 @@ uiKeyIsUpKey (uikey_t *uikey)
   return rc;
 }
 
+/* includes page down */
 bool
 uiKeyIsDownKey (uikey_t *uikey)
 {
@@ -223,12 +362,12 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   gdk_event_get_keyval ((GdkEvent *) event, &keyval);
   uikey->keyval = keyval;
 
-  uikey->etype = KEY_EVENT_NONE;
+  uikey->eventtype = KEY_EVENT_NONE;
   if (event->type == GDK_KEY_PRESS) {
-    uikey->etype = KEY_EVENT_PRESS;
+    uikey->eventtype = KEY_EVENT_PRESS;
   }
   if (event->type == GDK_KEY_RELEASE) {
-    uikey->etype = KEY_EVENT_RELEASE;
+    uikey->eventtype = KEY_EVENT_RELEASE;
   }
 
   if (event->type == GDK_KEY_PRESS &&
@@ -242,11 +381,11 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
   }
 
   if (event->type == GDK_KEY_RELEASE &&
-      (event->state & GDK_SHIFT_MASK)) {
+      (keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R)) {
     uikey->shiftpressed = false;
   }
   if (event->type == GDK_KEY_RELEASE &&
-      (event->state & GDK_CONTROL_MASK)) {
+      (keyval == GDK_KEY_Control_L || keyval == GDK_KEY_Control_R)) {
     uikey->controlpressed = false;
   }
 

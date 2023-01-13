@@ -110,20 +110,23 @@ void  uiDialogDestroy (UIWidget *uidialog);
 uiselect_t *uiDialogCreateSelect (UIWidget *window, const char *label, const char *startpath, const char *dfltname, const char *mimefiltername, const char *mimetype);
 
 /* uigtkkeys.c */
-enum {
-  KEY_EVENT_NONE,
-  KEY_EVENT_PRESS,
-  KEY_EVENT_RELEASE,
-};
-
 typedef struct uikey uikey_t;
 
 uikey_t * uiKeyAlloc (void);
 void    uiKeyFree (uikey_t *uikey);
-void    uiKeySetPressCallback (uikey_t *uikey, UIWidget *uiwidgetp, UICallback *uicb);
-void    uiKeySetReleaseCallback (uikey_t *uikey, UIWidget *uiwidgetp, UICallback *uicb);
+void    uiKeySetKeyCallback (uikey_t *uikey, UIWidget *uiwidgetp, UICallback *uicb);
 int     uiKeyEvent (uikey_t *uikey);
+bool    uiKeyIsPressEvent (uikey_t *uikey);
+bool    uiKeyIsReleaseEvent (uikey_t *uikey);
 bool    uiKeyIsMovementKey (uikey_t *uikey);
+bool    uiKeyIsNKey (uikey_t *uikey);
+bool    uiKeyIsPKey (uikey_t *uikey);
+bool    uiKeyIsSKey (uikey_t *uikey);
+bool    uiKeyIsAudioPlayKey (uikey_t *uikey);
+bool    uiKeyIsAudioPauseKey (uikey_t *uikey);
+bool    uiKeyIsAudioStopKey (uikey_t *uikey);
+bool    uiKeyIsAudioNextKey (uikey_t *uikey);
+bool    uiKeyIsAudioPrevKey (uikey_t *uikey);
 bool    uiKeyIsUpKey (uikey_t *uikey);
 bool    uiKeyIsDownKey (uikey_t *uikey);
 bool    uiKeyIsPageUpDownKey (uikey_t *uikey);

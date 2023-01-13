@@ -4,21 +4,30 @@
 
 <!--
 
-**4.0.7 beta 2023-1---**
-
-* Bug Fixes:
-    * song selection: Turn off movement keys when multiple items selected.
-* New Features:
-    * song list editor: export as MP3
-    * player: export as MP3
-* Internal:
-    * a few more memory leaks fixed.
-    * make debug level more dynamic.
-    * debugging fixes.
-    * code cleanup.
-    * linux: change location of screensaver settings.
+**4.0.8 beta 2023-1---**
 
 -->
+
+**4.0.7 beta 2023-1-14**
+
+* Bug Fixes:
+    * installation: BDJ4 updater fixed.
+    * linux: do not replace desktop shortcuts.
+    * song selection: Turn off movement keys when multiple items selected.
+* New Features:
+    * player: add support for multi-media keys
+    * player: export as MP3
+    * song editor: support for multi-media play key
+    * song list editor: added control-up and control-down to move selections.
+    * song list editor: export as MP3
+    * song list editor: support for multi-media play key
+    * song selection: support for multi-media play key
+* Internal:
+    * a few more memory leaks fixed.
+    * code cleanup.
+    * debugging fixes.
+    * linux: change location of screensaver settings.
+    * make debug level more dynamic.
 
 **4.0.6 beta 2023-1-7**
 

@@ -71,8 +71,7 @@ enum {
   SONGSEL_CB_FILTER,
   SONGSEL_CB_EDIT_LOCAL,
   SONGSEL_CB_DANCE_SEL,
-  SONGSEL_CB_KEY_PRESS,
-  SONGSEL_CB_KEY_RELEASE,
+  SONGSEL_CB_KEYB,
   SONGSEL_CB_MAX,
 };
 
@@ -182,9 +181,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   }
 
   uiw->uikey = uiKeyAlloc ();
-  uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_KEY_PRESS],
-      uisongselKeyEvent, uisongsel, NULL);
-  uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_KEY_RELEASE],
+  uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_KEYB],
       uisongselKeyEvent, uisongsel, NULL);
 
   uisongsel->uiWidgetData = uiw;
@@ -346,10 +343,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       uisongsel->dispselType == DISP_SEL_MM) {
     uiTreeViewAllowMultiple (uiw->songselTree);
   }
-  uiKeySetPressCallback (uiw->uikey, uitreewidgetp,
-      &uiw->callbacks [SONGSEL_CB_KEY_PRESS]);
-  uiKeySetReleaseCallback (uiw->uikey, uitreewidgetp,
-      &uiw->callbacks [SONGSEL_CB_KEY_RELEASE]);
+  uiKeySetKeyCallback (uiw->uikey, uitreewidgetp,
+      &uiw->callbacks [SONGSEL_CB_KEYB]);
   uiw->sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
   adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uitreewidgetp->widget));
@@ -1322,6 +1317,11 @@ uisongselKeyEvent (void *udata)
     uiw->controlPressed = true;
   }
 
+  if (uiKeyIsPressEvent (uiw->uikey) &&
+      uiKeyIsAudioPlayKey (uiw->uikey)) {
+    uisongselPlayCallback (uisongsel);
+  }
+
   if (uiKeyIsMovementKey (uiw->uikey)) {
     int     dir;
     int     lines;
@@ -1329,7 +1329,7 @@ uisongselKeyEvent (void *udata)
     dir = UISONGSEL_DIR_NONE;
     lines = 1;
 
-    if (uiKeyEvent (uiw->uikey) == KEY_EVENT_PRESS) {
+    if (uiKeyIsPressEvent (uiw->uikey)) {
       if (uiKeyIsUpKey (uiw->uikey)) {
         dir = UISONGSEL_PREVIOUS;
       }

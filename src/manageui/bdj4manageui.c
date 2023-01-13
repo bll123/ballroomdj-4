@@ -1281,13 +1281,12 @@ manageSongEditMenu (manageui_t *manage)
 
     uiMenuAddSeparator (&manage->menubar, &menuitem);
 
-// ### FIX
     uiutilsUICallbackInit (&manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ],
         manageApplyAdjDialog, manage, NULL);
     /* CONTEXT: managementui: menu selection: song editor: apply adjustments */
     uiMenuCreateItem (&menu, &menuitem, _("Apply Adjustments"),
         &manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
-//    uiWidgetDisable (&menuitem);
+    uiWidgetDisable (&menuitem);
 
     manage->songeditmenu.initialized = true;
   }

@@ -68,6 +68,7 @@ enum {
   PLUI_CB_SONG_SAVE,
   PLUI_CB_CLEAR_QUEUE,
   PLUI_CB_REQ_EXT,
+  PLUI_CB_KEYB,
   PLUI_CB_MAX,
 };
 
@@ -89,6 +90,7 @@ typedef struct {
   mstime_t        clockCheck;
   uisongfilter_t  *uisongfilter;
   uireqext_t      *uireqext;
+  uikey_t         *uikey;
   /* notebook */
   UIWidget        notebook;
   uiutilsnbtabid_t *nbtabid;
@@ -177,6 +179,7 @@ static bool     pluiClearQueueCallback (void *udata);
 static void     pluiPushHistory (playerui_t *plui, const char *args);
 static bool     pluiRequestExternalDialog (void *udata);
 static bool     pluiReqextCallback (void *udata);
+static bool     pluiKeyEvent (void *udata);
 
 static int gKillReceived = 0;
 
@@ -192,7 +195,6 @@ main (int argc, char *argv[])
 #if BDJ4_MEM_DEBUG
   mdebugInit ("plui");
 #endif
-
 
   uiutilsUIWidgetInit (&plui.window);
   uiutilsUIWidgetInit (&plui.clock);
@@ -218,6 +220,7 @@ main (int argc, char *argv[])
   plui.nbtabid = uiutilsNotebookIDInit ();
   plui.uisongfilter = NULL;
   plui.uireqext = NULL;
+  plui.uikey = NULL;
   plui.uibuilt = false;
   plui.fontszdialogcreated = false;
   plui.currpage = 0;
@@ -358,6 +361,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   uiutilsNotebookIDFree (plui->nbtabid);
   uisfFree (plui->uisongfilter);
+  uiKeyFree (plui->uikey);
   uireqextFree (plui->uireqext);
   if (plui->optiondf != NULL) {
     datafileFree (plui->optiondf);
@@ -418,6 +422,12 @@ pluiBuildUI (playerui_t *plui)
   uiCreateVertBox (&plui->vbox);
   uiBoxPackInWindow (&plui->window, &plui->vbox);
   uiWidgetSetAllMargins (&plui->vbox, 2);
+
+  plui->uikey = uiKeyAlloc ();
+  uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_KEYB],
+      pluiKeyEvent, plui, NULL);
+  uiKeySetKeyCallback (plui->uikey, &plui->vbox,
+      &plui->callbacks [PLUI_CB_KEYB]);
 
   /* menu */
   uiutilsAddAccentColorDisplay (&plui->vbox, &hbox, &uiwidget);
@@ -1415,5 +1425,39 @@ pluiReqextCallback (void *udata)
       pluiQueueProcess (plui, dbidx, MUSICQ_CURRENT);
     }
   }
+  return UICB_CONT;
+}
+
+static bool
+pluiKeyEvent (void *udata)
+{
+  playerui_t  *plui = udata;
+
+  if (uiKeyIsPressEvent (plui->uikey) &&
+      uiKeyIsAudioPlayKey (plui->uikey)) {
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
+    return UICB_STOP;
+  }
+  if (uiKeyIsPressEvent (plui->uikey) &&
+      uiKeyIsAudioPauseKey (plui->uikey)) {
+    connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_PAUSE, NULL);
+    return UICB_STOP;
+  }
+  if (uiKeyIsPressEvent (plui->uikey) &&
+      uiKeyIsAudioStopKey (plui->uikey)) {
+    connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_STOP, NULL);
+    return UICB_STOP;
+  }
+  if (uiKeyIsPressEvent (plui->uikey) &&
+      uiKeyIsAudioNextKey (plui->uikey)) {
+    connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
+    return UICB_STOP;
+  }
+  if (uiKeyIsPressEvent (plui->uikey) &&
+      uiKeyIsAudioPrevKey (plui->uikey)) {
+    connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_SONG_BEGIN, NULL);
+    return UICB_STOP;
+  }
+
   return UICB_CONT;
 }

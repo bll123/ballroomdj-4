@@ -75,6 +75,7 @@ enum {
   UISONGEDIT_CB_COPY_TEXT,
   UISONGEDIT_CB_PREV,
   UISONGEDIT_CB_NEXT,
+  UISONGEDIT_CB_KEYB,
   UISONGEDIT_CB_MAX,
 };
 
@@ -114,6 +115,7 @@ typedef struct {
   uisongedititem_t    *items;
   int                 changed;
   mstime_t            mainlooptimer;
+  uikey_t             *uikey;
   int                 bpmidx;
 } uisongeditgtk_t;
 
@@ -131,7 +133,7 @@ static bool uisongeditFirstSelection (void *udata);
 static bool uisongeditPreviousSelection (void *udata);
 static bool uisongeditNextSelection (void *udata);
 static bool uisongeditCopyPath (void *udata);
-static gboolean uisongeditKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata);
+static bool uisongeditKeyEvent (void *udata);
 
 void
 uisongeditUIInit (uisongedit_t *uisongedit)
@@ -144,6 +146,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uiw->itemcount = 0;
   uiw->items = NULL;
   uiw->changed = 0;
+  uiw->uikey = NULL;
   uiw->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   mstimeset (&uiw->mainlooptimer, UISONGEDIT_MAIN_TIMER);
   uiw->bpmidx = -1;
@@ -237,6 +240,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
       uiButtonFree (uiw->buttons [i]);
     }
     dataFree (uiw->items);
+    uiKeyFree (uiw->uikey);
     mdfree (uiw);
     uisongedit->uiWidgetData = NULL;
   }
@@ -268,10 +272,11 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiCreateVertBox (&uiw->vbox);
   uiWidgetExpandHoriz (&uiw->vbox);
 
-  g_signal_connect (uiw->vbox.widget, "key-press-event",
-      G_CALLBACK (uisongeditKeyEvent), uisongedit);
-  g_signal_connect (uiw->vbox.widget, "key-release-event",
-      G_CALLBACK (uisongeditKeyEvent), uisongedit);
+  uiw->uikey = uiKeyAlloc ();
+  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_KEYB],
+      uisongeditKeyEvent, uisongedit, NULL);
+  uiKeySetKeyCallback (uiw->uikey, &uiw->vbox,
+      &uiw->callbacks [UISONGEDIT_CB_KEYB]);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
@@ -1196,26 +1201,32 @@ uisongeditCopyPath (void *udata)
   return UICB_CONT;
 }
 
-static gboolean
-uisongeditKeyEvent (GtkWidget *w, GdkEventKey *event, gpointer udata)
+static bool
+uisongeditKeyEvent (void *udata)
 {
   uisongedit_t    *uisongedit = udata;
-  guint           keyval;
+  uisongeditgtk_t *uiw;
 
-  gdk_event_get_keyval ((GdkEvent *) event, &keyval);
+  uiw = uisongedit->uiWidgetData;
 
-  if ((event->state & GDK_CONTROL_MASK) && event->type == GDK_KEY_PRESS) {
-    if (keyval == GDK_KEY_s || keyval == GDK_KEY_S) {
+  if (uiKeyIsPressEvent (uiw->uikey) &&
+      uiKeyIsAudioPlayKey (uiw->uikey)) {
+    uisongselPlayCallback (uisongedit->uisongsel);
+  }
+
+  if (uiKeyIsControlPressed (uiw->uikey) &&
+      uiKeyIsPressEvent (uiw->uikey)) {
+    if (uiKeyIsSKey (uiw->uikey)) {
       uisongeditSaveCallback (uisongedit);
-      return UICB_CONT;
+      return UICB_STOP;
     }
-    if (keyval == GDK_KEY_n || keyval == GDK_KEY_N) {
+    if (uiKeyIsNKey (uiw->uikey)) {
       uisongeditNextSelection (uisongedit);
-      return UICB_CONT;
+      return UICB_STOP;
     }
-    if (keyval == GDK_KEY_p || keyval == GDK_KEY_P) {
+    if (uiKeyIsPKey (uiw->uikey)) {
       uisongeditPreviousSelection (uisongedit);
-      return UICB_CONT;
+      return UICB_STOP;
     }
   }
 
