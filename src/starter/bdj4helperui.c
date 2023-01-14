@@ -251,7 +251,7 @@ helperMainLoop (void *thelper)
   if (! stop && helper->scrollendflag) {
     uiTextBoxScrollToEnd (helper->tb);
     helper->scrollendflag = false;
-    uiUIProcessEvents ();
+    uiUIProcessWaitEvents ();
     return stop;
   }
 

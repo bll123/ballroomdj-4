@@ -807,9 +807,7 @@ installerMainLoop (void *udata)
   if (installer->guienabled && installer->scrolltoend) {
     uiTextBoxScrollToEnd (installer->disptb);
     installer->scrolltoend = false;
-    uiUIProcessEvents ();
-    mssleep (10);
-    uiUIProcessEvents ();
+    uiUIProcessWaitEvents ();
     /* go through the main loop once more */
     return TRUE;
   }

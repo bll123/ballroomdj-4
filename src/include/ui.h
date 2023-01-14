@@ -436,6 +436,7 @@ void uiSizeGroupAdd (UIWidget *uiw, UIWidget *uiwidget);
 /* uigtkutils.c */
 void  uiUIInitialize (void);
 void  uiUIProcessEvents (void);
+void  uiUIProcessWaitEvents (void);     // a small delay
 void  uiCleanup (void);
 #if BDJ4_USE_GTK
 void  uiSetCss (GtkWidget *w, const char *style);

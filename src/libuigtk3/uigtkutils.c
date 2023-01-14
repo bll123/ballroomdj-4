@@ -19,6 +19,7 @@
 #include "log.h"  // needed for glogwriteroutput
 #include "mdebug.h"
 #include "sysvars.h"
+#include "tmutil.h"
 #include "ui.h"
 
 static char **cssdata = NULL;
@@ -46,6 +47,15 @@ uiUIProcessEvents (void)
   gtk_main_iteration_do (FALSE);
   while (gtk_events_pending ()) {
     gtk_main_iteration_do (FALSE);
+  }
+}
+
+void
+uiUIProcessWaitEvents (void)
+{
+  for (int i = 0; i < 4; ++i) {
+    uiUIProcessEvents ();
+    mssleep (5);
   }
 }
 

@@ -351,9 +351,7 @@ altsetupMainLoop (void *udata)
   if (altsetup->scrolltoend) {
     uiTextBoxScrollToEnd (altsetup->disptb);
     altsetup->scrolltoend = false;
-    uiUIProcessEvents ();
-    mssleep (10);
-    uiUIProcessEvents ();
+    uiUIProcessWaitEvents ();
     /* go through the main loop once more */
     return TRUE;
   }
