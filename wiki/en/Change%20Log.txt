@@ -12,7 +12,8 @@
 
 * Bug Fixes:
     * installation: BDJ4 updater fixed.
-    * linux: do not replace desktop shortcuts.
+    * linux: Do not replace desktop shortcuts.
+    * song editor: Fix incorrect playback when multi-selections are active.
     * song selection: Turn off movement keys when multiple items selected.
 * New Features:
     * player: add support for multi-media keys

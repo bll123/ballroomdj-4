@@ -153,6 +153,13 @@ uiTreeViewSelectionGetCount (uitree_t *uitree)
 {
   int   count = 0;
 
+  if (uitree == NULL) {
+    return count;
+  }
+  if (uitree->sel.sel == NULL) {
+    return count;
+  }
+
   count = gtk_tree_selection_count_selected_rows (uitree->sel.sel);
   return count;
 }

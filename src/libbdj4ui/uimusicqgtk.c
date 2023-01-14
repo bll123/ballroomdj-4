@@ -575,6 +575,9 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
   uiw = uimusicq->ui [mqidx].uiWidgets;
 
   loc = 999;
+  if (uiw->musicqTree == NULL) {
+    return loc;
+  }
 
   count = uiTreeViewSelectionGetCount (uiw->musicqTree);
   if (count == 1) {

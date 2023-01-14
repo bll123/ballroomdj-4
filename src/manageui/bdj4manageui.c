@@ -2548,8 +2548,19 @@ managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx)
 static bool
 managePlayProcessMusicManager (void *udata, long dbidx, int mqidx)
 {
+  manageui_t  *manage = udata;
+
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: play from mm");
-  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_MM, MANAGE_PLAY);
+
+  /* if using the song editor, the play button should play the song */
+  /* being currently edited.  */
+  /* if there is a multi-selection, uisongselgtk */
+  /* will play the incorrect selection */
+  if (manage->mmlasttab == MANAGE_TAB_SONGEDIT) {
+    dbidx = manage->seldbidx;
+  }
+
+  manageQueueProcess (manage, dbidx, mqidx, DISP_SEL_MM, MANAGE_PLAY);
   return UICB_CONT;
 }
 
