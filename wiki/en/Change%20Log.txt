@@ -14,6 +14,7 @@
     * A missing audioadjust.txt file will not prevent startup.
     * installation: BDJ4 updater fixed.
     * linux: Do not replace desktop shortcuts.
+    * mac os: Fixed theme installation.
     * song editor: Fix incorrect playback when multi-selections are active.
     * song selection: Turn off movement keys when multiple items selected.
 * New Features:

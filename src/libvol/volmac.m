@@ -13,6 +13,11 @@
 #include <MacTypes.h>
 #include <Cocoa/Cocoa.h>
 
+/* macos's dynamic libraries work differently than linux */
+#if defined (BDJ4_MEM_DEBUG)
+# undef BDJ4_MEM_DEBUG
+#endif
+
 #include "mdebug.h"
 #include "volsink.h"
 #include "volume.h"

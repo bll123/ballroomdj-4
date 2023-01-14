@@ -230,17 +230,11 @@ confuiPopulateOptions (confuigui_t *gui)
       sval = bdjoptGetStr (gui->uiitem [i].bdjoptIdx);
       pathbldMakePath (tbuff, sizeof (tbuff),
           "theme", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-      /* if the theme name is the same as the current default theme */
-      /* don't write out the theme file.  want to use the default */
-      if (strcmp (sval, sysvarsGetStr (SV_THEME_DEFAULT)) != 0) {
-        fh = fileopOpen (tbuff, "w");
-        if (sval != NULL) {
-          fprintf (fh, "%s\n", sval);
-        }
-        fclose (fh);
-      } else {
-        fileopDelete (tbuff);
+      fh = fileopOpen (tbuff, "w");
+      if (sval != NULL) {
+        fprintf (fh, "%s\n", sval);
       }
+      fclose (fh);
     }
 
     if (i == CONFUI_WIDGET_UI_ACCENT_COLOR &&

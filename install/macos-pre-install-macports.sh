@@ -135,7 +135,6 @@ fi
 
 PATH=$PATH:/opt/local/bin
 
-echo "Enter administrator password."
 sudo -v
 
 echo "-- Running MacPorts 'port selfupdate' with sudo"

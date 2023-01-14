@@ -57,6 +57,7 @@ vsencdec (const char *str, char *buff, size_t sz)
   if (encdecflag == VSEC_DECRYPT) {
     data = (char *) g_base64_decode (
         (const gchar *) str + strlen (VSEC_E_PFX), &len);
+    mdextalloc (data);
     p = data;
     len -= VSEC_SALT_SIZE;
     for (int i = 0; i < VSEC_SALT_SIZE; ++i) {

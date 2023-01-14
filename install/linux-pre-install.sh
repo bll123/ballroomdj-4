@@ -104,7 +104,6 @@ if [[ $pkgprog == "" ]]; then
   exit 1
 fi
 
-echo "Enter administrator password."
 sudo -v
 
 if [[ -f /usr/bin/dnf ]]; then

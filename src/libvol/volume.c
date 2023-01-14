@@ -11,6 +11,12 @@
 #include <errno.h>
 #include <assert.h>
 
+#if _hdr_MacTypes
+# if defined (BDJ4_MEM_DEBUG)
+#  undef BDJ4_MEM_DEBUG
+# endif
+#endif
+
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "pathbld.h"

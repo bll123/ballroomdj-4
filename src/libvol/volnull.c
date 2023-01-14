@@ -9,6 +9,12 @@
 #include <strings.h>
 #include <memory.h>
 
+#if _hdr_MacTypes
+# if defined (BDJ4_MEM_DEBUG)
+#  undef BDJ4_MEM_DEBUG
+# endif
+#endif
+
 #include "mdebug.h"
 #include "volsink.h"
 #include "volume.h"

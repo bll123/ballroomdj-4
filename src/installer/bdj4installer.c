@@ -1138,8 +1138,12 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
         locok = true;
       }
     } else {
-      if (locatebdj3 ()) {
+      char  *fn;
+
+      fn = locatebdj3 ();
+      if (fn != NULL) {
         locok = true;
+        mdfree (fn);
       }
     }
   }
@@ -1812,6 +1816,9 @@ installerCopyTemplates (installer_t *installer)
   installerTemplateCopy (dir, from, to);
 
   if (isMacOS ()) {
+    snprintf (to, sizeof (to), "%s/.themes", installer->home);
+    diropMakeDir (to);
+
     snprintf (from, sizeof (from), "../Applications/BDJ4.app/Contents/MacOS/plocal/share/themes/macOS-Mojave-dark");
     snprintf (to, sizeof (to), "%s/.themes/macOS-Mojave-dark", installer->home);
     filemanipLinkCopy (from, to);

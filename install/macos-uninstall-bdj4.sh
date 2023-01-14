@@ -43,16 +43,18 @@ if [[ $gr != Y ]]; then
   exit 1
 fi
 
-echo "Enter administrator password."
 sudo -v
 
 echo "Uninstall the BallroomDJ 4 Application? "
 gr=$(getresponse)
 if [[ $gr == Y ]]; then
+  # application
   dir="$HOME/Applications/BDJ4.app"
   test -d "$dir" && rm -rf "$dir"
   dir="$HOME/.config/BDJ4"
   test -d "$dir" && rm -rf "$dir"
+
+  # installed themes
   fn="$HOME/.themes/macOS-Mojave-dark"
   test -h "$fn" && rm -f "$fn"
   fn="$HOME/.themes/macOS-Mojave-light"
@@ -61,6 +63,11 @@ if [[ $gr == Y ]]; then
   # have other themes.  Try to remove the dir, but don't worry if it fails.
   dir="$HOME/.themes"
   test -d "$dir" && rmdir "$dir" > /dev/null 2>&1
+
+  # shortcut
+  fn="$HOME/Desktop/BDJ4.app"
+  test -h "$fn" && rm -f "$fn"
+
   echo "## BDJ4 application removed."
 fi
 
