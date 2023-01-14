@@ -1243,6 +1243,7 @@ manageSongEditMenu (manageui_t *manage)
 {
   UIWidget  menu;
   UIWidget  menuitem;
+  void      *tempp;
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
   if (! manage->songeditmenu.initialized) {
@@ -1287,6 +1288,11 @@ manageSongEditMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, _("Apply Adjustments"),
         &manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
     uiWidgetDisable (&menuitem);
+    /* a missing audio adjust file will not stop startup */
+    tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
+    if (tempp == NULL) {
+      uiWidgetDisable (&menuitem);
+    }
 
     manage->songeditmenu.initialized = true;
   }
@@ -1804,7 +1810,7 @@ manageApplyAdjCallback (void *udata)
 {
 //  manageui_t    *manage = udata;
 
-fprintf (stderr, "aa callback\n");
+// fprintf (stderr, "aa callback\n");
 // ### need current song in song editor
   aaNormalize ("test-music/001-argentinetango.mp3");
 
@@ -1901,6 +1907,7 @@ manageSonglistMenu (manageui_t *manage)
   char      tbuff [200];
   UIWidget  menu;
   UIWidget  menuitem;
+  void      *tempp;
 
   logProcBegin (LOG_PROC, "manageSonglistMenu");
   if (manage->slmenu.initialized) {
@@ -1980,6 +1987,11 @@ manageSonglistMenu (manageui_t *manage)
   snprintf (tbuff, sizeof (tbuff), _("Export as %s"), BDJ4_MP3_LABEL);
   uiMenuCreateItem (&menu, &menuitem, tbuff,
       &manage->callbacks [MANAGE_MENU_CB_SL_MP3_EXP]);
+  /* a missing audio adjust file will not stop startup */
+  tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
+  if (tempp == NULL) {
+    uiWidgetDisable (&menuitem);
+  }
 
   /* CONTEXT: managementui: menu selection: song list: export: export for ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);

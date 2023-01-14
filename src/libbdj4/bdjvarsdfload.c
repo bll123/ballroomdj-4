@@ -58,6 +58,10 @@ bdjvarsdfloadInit (void)
   rc = 0;
   for (int i = BDJVDF_AUTO_SEL; i < BDJVDF_MAX; ++i) {
     if (bdjvarsdfGet (i) == NULL) {
+      /* a missing audio adjust file does not constitute a failure */
+      if (i == BDJVDF_AUDIO_ADJUST) {
+        continue;
+      }
       fprintf (stderr, "Unable to load datafile %d\n", i);
       rc = -1;
       break;

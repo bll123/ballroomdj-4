@@ -22,7 +22,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
-#include "bdjvarsdfload.h"
+#include "bdjvarsdf.h"
 #include "conn.h"
 #include "datafile.h"
 #include "dispsel.h"
@@ -392,6 +392,7 @@ pluiBuildUI (playerui_t *plui)
   char        imgbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   int         x, y;
+  void        *tempp;
 
   logProcBegin (LOG_PROC, "pluiBuildUI");
 
@@ -493,6 +494,11 @@ pluiBuildUI (playerui_t *plui)
   snprintf (tbuff, sizeof (tbuff), _("Export as %s"), BDJ4_MP3_LABEL);
   uiMenuCreateItem (&menu, &menuitem, tbuff,
       &plui->callbacks [PLUI_MENU_CB_EXP_MP3]);
+  /* a missing audio adjust file will not stop startup */
+  tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
+  if (tempp == NULL) {
+    uiWidgetDisable (&menuitem);
+  }
 
   /* options */
   /* CONTEXT: playerui: menu selection: options for the player */

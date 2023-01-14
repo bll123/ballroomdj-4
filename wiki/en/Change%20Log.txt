@@ -11,6 +11,7 @@
 **4.0.7 beta 2023-1-14**
 
 * Bug Fixes:
+    * A missing audioadjust.txt file will not prevent startup.
     * installation: BDJ4 updater fixed.
     * linux: Do not replace desktop shortcuts.
     * song editor: Fix incorrect playback when multi-selections are active.
