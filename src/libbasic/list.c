@@ -238,6 +238,10 @@ listSort (list_t *list)
   time_t        elapsed;
   long          swaps;
 
+  if (list == NULL) {
+    return;
+  }
+
   mstimestart (&tm);
   list->ordered = LIST_ORDERED;
   swaps = mergeSort (list, 0, list->count - 1);

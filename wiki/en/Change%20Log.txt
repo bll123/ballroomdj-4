@@ -6,6 +6,9 @@
 
 **4.0.8 beta 2023-1---**
 
+* Bug Fixes:
+    * player: multi-media stop key now properly pauses the music.
+
 -->
 
 **4.0.7 beta 2023-1-14**
@@ -18,13 +21,13 @@
     * song editor: Fix incorrect playback when multi-selections are active.
     * song selection: Turn off movement keys when multiple items selected.
 * New Features:
-    * player: add support for multi-media keys
-    * player: export as MP3
-    * song editor: support for multi-media play key
+    * player: add support for multi-media keys.
+    * player: export as MP3.
+    * song editor: add support for multi-media play key.
     * song list editor: added control-up and control-down to move selections.
-    * song list editor: export as MP3
-    * song list editor: support for multi-media play key
-    * song selection: support for multi-media play key
+    * song list editor: export as MP3.
+    * song list editor: add support for multi-media play key.
+    * song selection: add support for multi-media play key.
 * Internal:
     * a few more memory leaks fixed.
     * code cleanup.
@@ -165,4 +168,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-07 08:56:09; BDJ4 version 4.0.6-beta)_
+<br>_(Updated 2023-01-14 12:35:44; BDJ4 version 4.0.7-beta)_

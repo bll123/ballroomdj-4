@@ -331,7 +331,7 @@ if [[ $crc -eq 0 ]]; then
   rm -f "$DATADIR/audioadjust.txt"
   # itunes-fields version number should be updated to version 2.
   fn="$DATADIR/itunes-fields.txt"
-  sed -e 's/version 2/version 1/' "$fn" > $fn.n
+  sed -e 's/version 2/version 1/' "$fn" > "$fn.n"
   mv -f "$fn.n" "$fn"
   out=$(./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
