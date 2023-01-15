@@ -22,7 +22,7 @@ typedef struct aa aa_t;
 aa_t * aaAlloc (void);
 void aaFree (aa_t *aa);
 void aaNormalize (const char *ffn);
-void aaConvert (const char *ffn, const char *outfn, long timefrom, long timeto);
+void aaConvert (const char *ffn, const char *outfn);
 nlist_t *aaExportMP3 (musicdb_t *musicdb, nlist_t *songlist, const char *outdir);
 
 #endif /* INC_AUDIOADJUST_H */
