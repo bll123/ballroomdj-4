@@ -294,15 +294,15 @@ static bool
 pluiExportMP3 (void *udata)
 {
   playerui_t  *plui = udata;
-  dbidx_t     dbidx = -1;
+  char        tmp [40];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
 
-  if (plui->musicqManageIdx == plui->musicqPlayIdx) {
-    dbidx = uiplayerGetCurrSongIdx (plui->uiplayer);
-  }
-  uimusicqExportMP3Dialog (plui->uimusicq, &plui->window,
-      &plui->statusMsg, plui->musicqManageIdx, NULL, dbidx);
+  /* CONTEXT: export as mp3: please wait... status message */
+  uiLabelSetText (&plui->statusMsg, _("Please wait\xe2\x80\xa6"));
+
+  snprintf (tmp, sizeof (tmp), "%d", plui->musicqManageIdx);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_MAIN_REQ_QUEUE_INFO, tmp);
   return UICB_CONT;
 }
 
@@ -801,7 +801,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   playerui_t  *plui = udata;
-  bool        dbgdisp = false;
   char        *targs = NULL;
 
   logProcBegin (LOG_PROC, "pluiProcessMsg");
@@ -810,25 +809,30 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     targs = mdstrdup (args);
   }
 
+  if (/* msg != MSG_MAIN_QUEUE_INFO && */
+      msg != MSG_MUSIC_QUEUE_DATA &&
+      msg != MSG_PLAYER_STATUS_DATA) {
+    logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
+        routefrom, msgRouteDebugText (routefrom),
+        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
+  }
+
   switch (route) {
     case ROUTE_NONE:
     case ROUTE_PLAYERUI: {
       switch (msg) {
         case MSG_HANDSHAKE: {
           connProcessHandshake (plui->conn, routefrom);
-          dbgdisp = true;
           break;
         }
         case MSG_SOCKET_CLOSE: {
           connDisconnect (plui->conn, routefrom);
-          dbgdisp = true;
           break;
         }
         case MSG_EXIT_REQUEST: {
           logMsg (LOG_SESS, LOG_IMPORTANT, "got exit request");
           gKillReceived = 0;
           progstateShutdownProcess (plui->progstate);
-          dbgdisp = true;
           break;
         }
         case MSG_WINDOW_FIND: {
@@ -837,41 +841,36 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_QUEUE_SWITCH: {
           pluiSetPlaybackQueue (plui, atoi (targs), PLUI_UPDATE_MAIN);
-          dbgdisp = true;
           break;
         }
         case MSG_MARQUEE_IS_MAX: {
           pluisetMarqueeIsMaximized (plui, targs);
-          dbgdisp = true;
           break;
         }
         case MSG_MARQUEE_FONT_SIZES: {
           pluisetMarqueeFontSizes (plui, targs);
-          dbgdisp = true;
           break;
         }
         case MSG_DB_ENTRY_UPDATE: {
           dbLoadEntry (plui->musicdb, atol (targs));
           uisongselPopulateData (plui->uisongsel);
-          dbgdisp = true;
           break;
         }
         case MSG_SONG_SELECT: {
           mp_songselect_t   *songselect;
 
-          songselect = msgparseSongSelect (args);
+          songselect = msgparseSongSelect (targs);
           /* the display is offset by 1, as the 0 index is the current song */
           --songselect->loc;
           uimusicqProcessSongSelect (plui->uimusicq, songselect);
           msgparseSongSelectFree (songselect);
-          dbgdisp = true;
           break;
         }
         case MSG_MUSIC_QUEUE_DATA: {
           mp_musicqupdate_t   *musicqupdate;
           int                 updflag;
 
-          musicqupdate = msgparseMusicQueueData (args);
+          musicqupdate = msgparseMusicQueueData (targs);
           if (musicqupdate == NULL) {
             break;
           }
@@ -907,39 +906,39 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uisongselSetDatabase (plui->uisongsel, plui->musicdb);
           uimusicqSetDatabase (plui->uimusicq, plui->musicdb);
           uisongselApplySongFilter (plui->uisongsel);
-          dbgdisp = true;
           break;
         }
         case MSG_SONG_FINISH: {
           uiLabelSetText (&plui->statusMsg, "");
           uiLabelSetText (&plui->errorMsg, "");
           pluiPushHistory (plui, targs);
-          dbgdisp = true;
           break;
         }
         case MSG_MAIN_ALREADY: {
           plui->mainalready = true;
           /* CONTEXT: player-ui: error message */
           uiLabelSetText (&plui->errorMsg, _("Recovered from crash."));
-          dbgdisp = true;
           break;
         }
         case MSG_MAIN_CURR_MANAGE: {
           int     mqidx;
 
-          mqidx = atoi (args);
+          mqidx = atoi (targs);
           plui->musicqLastManageIdx = mqidx;
           plui->musicqManageIdx = mqidx;
           uimusicqSetManageIdx (plui->uimusicq, mqidx);
-          dbgdisp = true;
           break;
         }
         case MSG_MAIN_CURR_PLAY: {
           int     mqidx;
 
-          mqidx = atoi (args);
+          mqidx = atoi (targs);
           pluiSetPlaybackQueue (plui, mqidx, PLUI_NO_UPDATE);
-          dbgdisp = true;
+          break;
+        }
+        case MSG_MAIN_QUEUE_INFO: {
+          uimusicqExportMP3Dialog (plui->uimusicq, &plui->window,
+              &plui->statusMsg, targs, plui->musicqManageIdx);
           break;
         }
         default: {
@@ -953,11 +952,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     }
   }
 
-  if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "got: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-        routefrom, msgRouteDebugText (routefrom),
-        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
-  }
   dataFree (targs);
 
   /* due to the db update message, these must be applied afterwards */

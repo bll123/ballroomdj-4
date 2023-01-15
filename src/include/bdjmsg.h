@@ -125,6 +125,9 @@ typedef enum {
   MSG_MAIN_CURR_MANAGE,     // status response: current manage idx
   MSG_MAIN_CURR_PLAY,       // status response: current play idx
   MSG_DB_ENTRY_TEMP_ADD,    // args: fn, dbidx, song-entry-text
+  MSG_MAIN_REQ_QUEUE_INFO,  // args: queue number
+                            // request complete queue information from main
+  MSG_MAIN_QUEUE_INFO,      //
 
   /* to/from starterui */
   MSG_START_MAIN,           // arg: true for --nomarquee

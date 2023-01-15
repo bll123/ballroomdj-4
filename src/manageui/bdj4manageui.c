@@ -282,7 +282,6 @@ static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
 static void     manageSendBPMCounter (manageui_t *manage);
 static bool     manageSonglistExportM3U (void *udata);
-static bool     manageSonglistExportMP3 (void *udata);
 static bool     manageSonglistImportM3U (void *udata);
 static bool     manageSonglistImportiTunes (void *udata);
 static void     manageiTunesCreateDialog (manageui_t *manage);
@@ -1529,23 +1528,6 @@ manageSonglistExportM3U (void *udata)
 }
 
 static bool
-manageSonglistExportMP3 (void *udata)
-{
-  manageui_t  *manage = udata;
-  char        *name;
-
-  name = uimusicqGetSonglistName (manage->slmusicq);
-
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
-
-  manageSonglistSave (manage);
-
-  uimusicqExportMP3Dialog (manage->slmusicq, &manage->window,
-      &manage->statusMsg, MUSICQ_SL, name, -1);
-  return UICB_CONT;
-}
-
-static bool
 manageSonglistImportM3U (void *udata)
 {
   manageui_t  *manage = udata;
@@ -1907,7 +1889,6 @@ manageSonglistMenu (manageui_t *manage)
   char      tbuff [200];
   UIWidget  menu;
   UIWidget  menuitem;
-  void      *tempp;
 
   logProcBegin (LOG_PROC, "manageSonglistMenu");
   if (manage->slmenu.initialized) {
@@ -1980,18 +1961,6 @@ manageSonglistMenu (manageui_t *manage)
   /* CONTEXT: managementui: menu selection: song list: export: export as m3u */
   uiMenuCreateItem (&menu, &menuitem, _("Export as M3U Playlist"),
       &manage->callbacks [MANAGE_MENU_CB_SL_M3U_EXP]);
-
-  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_MP3_EXP,
-      manageSonglistExportMP3);
-  /* CONTEXT: managementui: menu selection: song list: export: export as MP3 */
-  snprintf (tbuff, sizeof (tbuff), _("Export as %s"), BDJ4_MP3_LABEL);
-  uiMenuCreateItem (&menu, &menuitem, tbuff,
-      &manage->callbacks [MANAGE_MENU_CB_SL_MP3_EXP]);
-  /* a missing audio adjust file will not stop startup */
-  tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
-  if (tempp == NULL) {
-    uiWidgetDisable (&menuitem);
-  }
 
   /* CONTEXT: managementui: menu selection: song list: export: export for ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);

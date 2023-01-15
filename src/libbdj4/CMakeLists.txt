@@ -21,6 +21,7 @@ add_library (libbdj4 SHARED
   itunes.c
   level.c
   m3u.c
+  mp3exp.c
   msgparse.c
   musicdb.c
   musicq.c

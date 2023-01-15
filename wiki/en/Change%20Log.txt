@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * player: multi-media stop key now properly pauses the music.
+    * song list editor: remove export as mp3.
 
 -->
 

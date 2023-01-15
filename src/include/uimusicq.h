@@ -99,8 +99,7 @@ long  uimusicqGetCount (uimusicq_t *uimusicq);
 void  uimusicqSave (uimusicq_t *uimusicq, const char *name);
 void  uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb);
 void  uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname);
-void  uimusicqExportMP3 (uimusicq_t *uimusicq, const char *fname, int mqidx, const char *slname, dbidx_t dbidx);
-void  uimusicqExportMP3Dialog (uimusicq_t *musicq, UIWidget *windowp, UIWidget *statusMsg, int mqidx, const char *slname, dbidx_t dbidx);
+void  uimusicqExportMP3Dialog (uimusicq_t *musicq, UIWidget *windowp, UIWidget *statusMsg, char *msg, int mqidx);
 void  uimusicqProcessSongSelect (uimusicq_t *uimusicq, mp_songselect_t *songselect);
 void  uimusicqSetQueueCallback (uimusicq_t *uimusicq, UICallback *uicb);
 

@@ -172,6 +172,7 @@ static void mainPlaybackSendSongFinish (maindata_t *mainData, const char *args);
 static void mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom);
 static void mainAddTemporarySong (maindata_t *mainData, char *args);
 static time_t mainCalcStopTime (time_t stopTime);
+static void mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom, const char *args);
 static bool mainCheckMusicQStopTime (maindata_t *mainData, time_t nStopTime);
 static playlist_t * mainNextPlaylist (maindata_t *mainData);
 static void mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom);
@@ -611,6 +612,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MAIN_REQ_STATUS: {
           mainStatusRequest (mainData, routefrom);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_MAIN_REQ_QUEUE_INFO: {
+          mainQueueInfoRequest (mainData, routefrom, targs);
           dbgdisp = true;
           break;
         }
@@ -2910,6 +2916,54 @@ mainCalcStopTime (time_t stopTime)
   return nStopTime;
 }
 
+static void
+mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
+    const char *args)
+{
+  char        tbuff [200];
+  char        *sbuff = NULL;
+  int         musicqLen;
+  slistidx_t  dbidx;
+  song_t      *song;
+  int         musicqidx;
+
+  logProcBegin (LOG_PROC, "mainQueueInfoRequest");
+
+  if (! *args) {
+    return;
+  }
+  musicqidx = atoi (args);
+  if (musicqidx < 0 || musicqidx >= MUSICQ_PB_MAX) {
+    return;
+  }
+
+  musicqLen = musicqGetLen (mainData->musicQueue, musicqidx);
+
+  sbuff = mdmalloc (BDJMSG_MAX);
+  *sbuff = '\0';
+
+  for (int i = 0; i <= musicqLen; ++i) {
+    dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, i);
+    song = dbGetByIdx (mainData->musicdb, dbidx);
+    if (song != NULL) {
+      long        dur;
+      int         plidx;
+
+      snprintf (tbuff, sizeof (tbuff), "%d%c", dbidx, MSG_ARGS_RS);
+      strlcat (sbuff, tbuff, BDJMSG_MAX);
+
+      plidx = musicqGetPlaylistIdx (mainData->musicQueue, musicqidx, i);
+      dur = mainCalculateSongDuration (mainData, song, plidx, musicqidx);
+      snprintf (tbuff, sizeof (tbuff), "%ld%c", dur, MSG_ARGS_RS);
+      strlcat (sbuff, tbuff, BDJMSG_MAX);
+    }
+  }
+
+  connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_MAIN_QUEUE_INFO, sbuff);
+  dataFree (sbuff);
+  logProcEnd (LOG_PROC, "mainQueueInfoRequest", "");
+}
+
 static bool
 mainCheckMusicQStopTime (maindata_t *mainData, time_t nStopTime)
 {
@@ -3044,4 +3098,3 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
       MSG_ARGS_RS, mainData->songplaysentcount);
   connSendMessage (mainData->conn, routefrom, MSG_CHK_MAIN_MUSICQ, tmp);
 }
-

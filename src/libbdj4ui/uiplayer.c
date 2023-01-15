@@ -560,7 +560,6 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata)
 {
   uiplayer_t    *uiplayer = udata;
-  bool          dbgdisp = false;
   char          *targs = NULL;
 
   logProcBegin (LOG_PROC, "uiplayerProcessMsg");
@@ -575,26 +574,21 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
       switch (msg) {
         case MSG_PLAYER_STATE: {
           uiplayerProcessPlayerState (uiplayer, atol (targs));
-          dbgdisp = true;
           break;
         }
         case MSG_PLAY_PAUSEATEND_STATE: {
           uiplayerProcessPauseatend (uiplayer, atol (targs));
-          dbgdisp = true;
           break;
         }
         case MSG_PLAYER_STATUS_DATA: {
           uiplayerProcessPlayerStatusData (uiplayer, targs);
-          // dbgdisp = true;
           break;
         }
         case MSG_MUSICQ_STATUS_DATA: {
           uiplayerProcessMusicqStatusData (uiplayer, targs);
-          dbgdisp = true;
           break;
         }
         case MSG_FINISHED: {
-          dbgdisp = true;
           break;
         }
         default: {
@@ -608,11 +602,6 @@ uiplayerProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     }
   }
 
-  if (dbgdisp) {
-    logMsg (LOG_DBG, LOG_MSGS, "uiplayer: rcvd: from:%d/%s route:%d/%s msg:%d/%s args:%s",
-        routefrom, msgRouteDebugText (routefrom),
-        route, msgRouteDebugText (route), msg, msgDebugText (msg), args);
-  }
   dataFree (targs);
 
   logProcEnd (LOG_PROC, "uiplayerProcessMsg", "");
