@@ -49,6 +49,7 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "callback.h"
 #include "webclient.h"
 
 /* installation states */
@@ -93,6 +94,8 @@ enum {
   INST_CB_BDJ3LOC_DIR,
   INST_CB_EXIT,
   INST_CB_INSTALL,
+  INST_CB_REINST,
+  INST_CB_CONV,
   INST_CB_MAX,
 };
 
@@ -119,7 +122,7 @@ enum {
 typedef struct {
   installstate_t  instState;
   installstate_t  lastInstState;            // debugging
-  UICallback      callbacks [INST_CB_MAX];
+  callback_t      *callbacks [INST_CB_MAX];
   char            *home;
   char            *target;
   char            *hostname;
@@ -147,11 +150,9 @@ typedef struct {
   UIWidget        statusMsg;
   uientry_t       *targetEntry;
   UIWidget        reinstWidget;
-  UICallback      reinstcb;
   UIWidget        feedbackMsg;
   uientry_t       *bdj3locEntry;
   UIWidget        convWidget;
-  UICallback      convcb;
   UIWidget        convFeedbackMsg;
   UIWidget        vlcMsg;
   UIWidget        pythonMsg;
@@ -320,6 +321,9 @@ main (int argc, char *argv[])
   installer.updatepython = false;
   installer.verbose = false;
   installer.vlcinstalled = false;
+  for (int i = 0; i < INST_CB_MAX; ++i) {
+    installer.callbacks [i] = NULL;
+  }
 
   installer.loglevel = LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST;
   uiutilsUIWidgetInit (&installer.statusMsg);
@@ -581,10 +585,10 @@ installerBuildUI (installer_t *installer)
   strlcpy (imgbuff, "img/bdj4_icon_inst.svg", sizeof (imgbuff));
   /* CONTEXT: installer: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
-  uiutilsUICallbackInit (&installer->callbacks [INST_CB_EXIT],
+  installer->callbacks [INST_CB_EXIT] = callbackInit (
       installerExitCallback, installer, NULL);
   uiCreateMainWindow (&installer->window,
-      &installer->callbacks [INST_CB_EXIT],
+      installer->callbacks [INST_CB_EXIT],
       tbuff, imgbuff);
   uiWindowSetDefaultSize (&installer->window, 1000, 600);
 
@@ -622,10 +626,10 @@ installerBuildUI (installer_t *installer)
   uiEntrySetValidate (installer->targetEntry,
       installerValidateTarget, installer, UIENTRY_DELAYED);
 
-  uiutilsUICallbackInit (&installer->callbacks [INST_CB_TARGET_DIR],
+  installer->callbacks [INST_CB_TARGET_DIR] = callbackInit (
       installerTargetDirDialog, installer, NULL);
   uibutton = uiCreateButton (
-      &installer->callbacks [INST_CB_TARGET_DIR],
+      installer->callbacks [INST_CB_TARGET_DIR],
       "", NULL);
   installer->buttons [INST_BUTTON_TARGET_DIR] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
@@ -641,8 +645,10 @@ installerBuildUI (installer_t *installer)
   uiCreateCheckButton (&installer->reinstWidget, _("Re-Install"),
       installer->reinstall);
   uiBoxPackStart (&hbox, &installer->reinstWidget);
-  uiutilsUICallbackInit (&installer->reinstcb, installerCheckDirTarget, installer, NULL);
-  uiToggleButtonSetCallback (&installer->reinstWidget, &installer->reinstcb);
+  installer->callbacks [INST_CB_REINST] = callbackInit (
+      installerCheckDirTarget, installer, NULL);
+  uiToggleButtonSetCallback (&installer->reinstWidget,
+      installer->callbacks [INST_CB_REINST]);
 
   uiCreateLabel (&installer->feedbackMsg, "");
   uiLabelSetColor (&installer->feedbackMsg, INST_HL_COLOR);
@@ -687,10 +693,10 @@ installerBuildUI (installer_t *installer)
   uiEntrySetValidate (installer->bdj3locEntry,
       installerValidateBDJ3Loc, installer, UIENTRY_DELAYED);
 
-  uiutilsUICallbackInit (&installer->callbacks [INST_CB_BDJ3LOC_DIR],
+  installer->callbacks [INST_CB_BDJ3LOC_DIR] = callbackInit (
       installerBDJ3LocDirDialog, installer, NULL);
   uibutton = uiCreateButton (
-      &installer->callbacks [INST_CB_BDJ3LOC_DIR],
+      installer->callbacks [INST_CB_BDJ3LOC_DIR],
       "", NULL);
   installer->buttons [INST_BUTTON_BDJ3LOC_DIR] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
@@ -706,8 +712,10 @@ installerBuildUI (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), _("Convert %s"), BDJ3_NAME);
   uiCreateCheckButton (&installer->convWidget, tbuff, 0);
   uiBoxPackStart (&hbox, &installer->convWidget);
-  uiutilsUICallbackInit (&installer->convcb, installerCheckDirConv, installer, NULL);
-  uiToggleButtonSetCallback (&installer->convWidget, &installer->convcb);
+  installer->callbacks [INST_CB_CONV] = callbackInit (
+      installerCheckDirConv, installer, NULL);
+  uiToggleButtonSetCallback (&installer->convWidget,
+      installer->callbacks [INST_CB_CONV]);
 
   uiCreateLabel (&installer->convFeedbackMsg, "");
   uiLabelSetColor (&installer->convFeedbackMsg, INST_HL_COLOR);
@@ -765,17 +773,17 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (&vbox, &hbox);
 
   uibutton = uiCreateButton (
-      &installer->callbacks [INST_CB_EXIT],
+      installer->callbacks [INST_CB_EXIT],
       /* CONTEXT: installer: exits the installer */
       _("Exit"), NULL);
   installer->buttons [INST_BUTTON_EXIT] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
-  uiutilsUICallbackInit (&installer->callbacks [INST_CB_INSTALL],
+  installer->callbacks [INST_CB_INSTALL] = callbackInit (
       installerInstallCallback, installer, NULL);
   uibutton = uiCreateButton (
-      &installer->callbacks [INST_CB_INSTALL],
+      installer->callbacks [INST_CB_INSTALL],
       /* CONTEXT: installer: start the installation process */
       _("Install"), NULL);
   installer->buttons [INST_BUTTON_INSTALL] = uibutton;
@@ -2551,6 +2559,9 @@ installerCleanup (installer_t *installer)
     for (int i = 0; i < INST_BUTTON_MAX; ++i) {
       uiButtonFree (installer->buttons [i]);
     }
+  }
+  for (int i = 0; i < INST_CB_MAX; ++i) {
+    callbackFree (installer->callbacks [i]);
   }
   dataFree (installer->target);
   dataFree (installer->bdj3loc);

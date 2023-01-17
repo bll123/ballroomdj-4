@@ -2948,13 +2948,30 @@ mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
     if (song != NULL) {
       long        dur;
       int         plidx;
+      int         gap;
+      int         plgap;
+      playlist_t  *playlist;
 
       snprintf (tbuff, sizeof (tbuff), "%d%c", dbidx, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, BDJMSG_MAX);
 
       plidx = musicqGetPlaylistIdx (mainData->musicQueue, musicqidx, i);
+      playlist = NULL;
+      if (plidx >= 0) {
+        playlist = nlistGetData (mainData->playlistCache, plidx);
+      }
+
       dur = mainCalculateSongDuration (mainData, song, plidx, musicqidx);
       snprintf (tbuff, sizeof (tbuff), "%ld%c", dur, MSG_ARGS_RS);
+      strlcat (sbuff, tbuff, BDJMSG_MAX);
+
+      gap = bdjoptGetNumPerQueue (OPT_Q_GAP, musicqidx);
+      plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
+      if (plgap >= 0) {
+        gap = plgap;
+      }
+
+      snprintf (tbuff, sizeof (tbuff), "%d%c", gap, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, BDJMSG_MAX);
     }
   }

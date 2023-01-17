@@ -15,6 +15,7 @@
 #include <gtk/gtk.h>
 
 #include "ui.h"
+#include "callback.h"
 
 static void
 uiNotebookSwitchPageHandler (GtkNotebook *nb, GtkWidget *page,
@@ -77,7 +78,7 @@ uiNotebookHideShowPage (UIWidget *uinotebook, int pagenum, bool show)
 }
 
 void
-uiNotebookSetCallback (UIWidget *uinotebook, UICallback *uicb)
+uiNotebookSetCallback (UIWidget *uinotebook, callback_t *uicb)
 {
   g_signal_connect (uinotebook->widget, "switch-page",
       G_CALLBACK (uiNotebookSwitchPageHandler), uicb);
@@ -89,7 +90,7 @@ static void
 uiNotebookSwitchPageHandler (GtkNotebook *nb, GtkWidget *page,
     guint pagenum, gpointer udata)
 {
-  UICallback  *uicb = udata;
-  uiutilsCallbackLongHandler (uicb, pagenum);
+  callback_t  *uicb = udata;
+  callbackHandlerLong (uicb, pagenum);
 }
 

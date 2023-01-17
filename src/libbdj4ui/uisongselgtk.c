@@ -31,6 +31,7 @@
 #include "uidance.h"
 #include "uifavorite.h"
 #include "ui.h"
+#include "callback.h"
 #include "uisongfilter.h"
 #include "uisong.h"
 #include "uisongsel.h"
@@ -87,7 +88,7 @@ enum {
 #define MARK_DISPLAY "\xe2\x96\x8B"  // left five-eights block
 
 typedef struct uisongselgtk {
-  UICallback          callbacks [SONGSEL_CB_MAX];
+  callback_t          *callbacks [SONGSEL_CB_MAX];
   UIWidget            *parentwin;
   UIWidget            vbox;
   uitree_t            *songselTree;
@@ -173,7 +174,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   nlistStartIterator (uiw->selectedList, &uiw->selectListIter);
   uiw->selectListKey = -1;
   for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
-    uiutilsUICallbackInit (&uiw->callbacks [i], NULL, NULL, NULL);
+    uiw->callbacks [i] = NULL;
   }
   uiw->markcolor = bdjoptGetStr (OPT_P_UI_MARK_COL);
   for (int i = 0; i < SONGSEL_BUTTON_MAX; ++i) {
@@ -181,7 +182,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   }
 
   uiw->uikey = uiKeyAlloc ();
-  uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_KEYB],
+  uiw->callbacks [SONGSEL_CB_KEYB] = callbackInit (
       uisongselKeyEvent, uisongsel, NULL);
 
   uisongsel->uiWidgetData = uiw;
@@ -201,6 +202,9 @@ uisongselUIFree (uisongsel_t *uisongsel)
       uiButtonFree (uiw->buttons [i]);
     }
     uiTreeViewFree (uiw->songselTree);
+    for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
+      callbackFree (uiw->callbacks [i]);
+    }
     mdfree (uiw);
     uisongsel->uiWidgetData = NULL;
   }
@@ -242,10 +246,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   if (uisongsel->dispselType == DISP_SEL_SONGSEL) {
     /* CONTEXT: song-selection: select a song to be added to the song list */
     strlcpy (tbuff, _("Select"), sizeof (tbuff));
-    uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_SELECT],
+    uiw->callbacks [SONGSEL_CB_SELECT] = callbackInit (
         uisongselSelectCallback, uisongsel, "songsel: select");
     uibutton = uiCreateButton (
-        &uiw->callbacks [SONGSEL_CB_SELECT], tbuff, NULL);
+        uiw->callbacks [SONGSEL_CB_SELECT], tbuff, NULL);
     uiw->buttons [SONGSEL_BUTTON_SELECT] = uibutton;
     uiwidgetp = uiButtonGetUIWidget (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
@@ -253,9 +257,9 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
-    uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_EDIT_LOCAL],
+    uiw->callbacks [SONGSEL_CB_EDIT_LOCAL] = callbackInit (
         uisongselSongEditCallback, uisongsel, "songsel: edit");
-    uibutton = uiCreateButton (&uiw->callbacks [SONGSEL_CB_EDIT_LOCAL],
+    uibutton = uiCreateButton (uiw->callbacks [SONGSEL_CB_EDIT_LOCAL],
         /* CONTEXT: song-selection: edit the selected song */
         _("Edit"), "button_edit");
     uiw->buttons [SONGSEL_BUTTON_EDIT] = uibutton;
@@ -266,10 +270,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   if (uisongsel->dispselType == DISP_SEL_REQUEST) {
     /* CONTEXT: (verb) song-selection: queue a song to be played */
     strlcpy (tbuff, _("Queue"), sizeof (tbuff));
-    uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_QUEUE],
+    uiw->callbacks [SONGSEL_CB_QUEUE] = callbackInit (
         uisongselQueueCallback, uisongsel, "songsel: queue");
     uibutton = uiCreateButton (
-        &uiw->callbacks [SONGSEL_CB_QUEUE], tbuff, NULL);
+        uiw->callbacks [SONGSEL_CB_QUEUE], tbuff, NULL);
     uiw->buttons [SONGSEL_BUTTON_QUEUE] = uibutton;
     uiwidgetp = uiButtonGetUIWidget (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
@@ -284,27 +288,27 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       uisongsel->dispselType == DISP_SEL_MM) {
     /* CONTEXT: song-selection: play the selected songs */
     strlcpy (tbuff, _("Play"), sizeof (tbuff));
-    uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_PLAY],
+    uiw->callbacks [SONGSEL_CB_PLAY] = callbackInit (
         uisongselPlayCallback, uisongsel, "songsel: play");
     uibutton = uiCreateButton (
-        &uiw->callbacks [SONGSEL_CB_PLAY], tbuff, NULL);
+        uiw->callbacks [SONGSEL_CB_PLAY], tbuff, NULL);
     uiw->buttons [SONGSEL_BUTTON_PLAY] = uibutton;
     uiwidgetp = uiButtonGetUIWidget (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
   }
 
-  uiutilsUICallbackLongIntInit (&uiw->callbacks [SONGSEL_CB_DANCE_SEL],
+  uiw->callbacks [SONGSEL_CB_DANCE_SEL] = callbackInitLongInt (
       uisongselUIDanceSelectCallback, uisongsel);
   uisongsel->uidance = uidanceDropDownCreate (&hbox, parentwin,
       /* CONTEXT: song-selection: filter: all dances are selected */
       UIDANCE_ALL_DANCES, _("All Dances"), UIDANCE_PACK_END, 1);
   uidanceSetCallback (uisongsel->uidance,
-      &uiw->callbacks [SONGSEL_CB_DANCE_SEL]);
+      uiw->callbacks [SONGSEL_CB_DANCE_SEL]);
 
-  uiutilsUICallbackInit (&uiw->callbacks [SONGSEL_CB_FILTER],
+  uiw->callbacks [SONGSEL_CB_FILTER] = callbackInit (
       uisfDialog, uisongsel->uisongfilter, "songsel: filters");
   uibutton = uiCreateButton (
-      &uiw->callbacks [SONGSEL_CB_FILTER],
+      uiw->callbacks [SONGSEL_CB_FILTER],
       /* CONTEXT: song-selection: a button that starts the filters (narrowing down song selections) dialog */
       _("Filters"), NULL);
   uiw->buttons [SONGSEL_BUTTON_FILTER] = uibutton;
@@ -344,7 +348,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     uiTreeViewAllowMultiple (uiw->songselTree);
   }
   uiKeySetKeyCallback (uiw->uikey, uitreewidgetp,
-      &uiw->callbacks [SONGSEL_CB_KEYB]);
+      uiw->callbacks [SONGSEL_CB_KEYB]);
   uiw->sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
   adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uitreewidgetp->widget));
@@ -1412,7 +1416,7 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
     /* the song editor points to the first selected */
     dbidx = nlistGetNum (uiw->selectedList, uiw->selectListKey);
     if (dbidx >= 0) {
-      uiutilsCallbackLongHandler (uisongsel->newselcb, dbidx);
+      callbackHandlerLong (uisongsel->newselcb, dbidx);
     }
   }
 }
@@ -1529,7 +1533,7 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
 
       dbidx = nlistGetNum (uiw->selectedList, uiw->selectListKey);
       if (dbidx >= 0) {
-        uiutilsCallbackLongHandler (uisongsel->newselcb, dbidx);
+        callbackHandlerLong (uisongsel->newselcb, dbidx);
       }
     }
   }
@@ -1630,8 +1634,8 @@ uisongselSongEditCallback (void *udata)
     if (dbidx < 0) {
       return UICB_CONT;
     }
-    uiutilsCallbackLongHandler (uisongsel->newselcb, dbidx);
+    callbackHandlerLong (uisongsel->newselcb, dbidx);
   }
-  return uiutilsCallbackHandler (uisongsel->editcb);
+  return callbackHandler (uisongsel->editcb);
 }
 

@@ -8,7 +8,7 @@
 #include "ilist.h"
 #include "nlist.h"
 #include "orgutil.h"
-#include "ui.h"
+#include "callback.h"
 #include "uiduallist.h"
 #include "uinbutil.h"
 
@@ -201,7 +201,7 @@ typedef struct {
                               //    value: key
   int         danceidx;       // for dance edit
   UIWidget    uiwidget;
-  UICallback  callback;
+  callback_t  *callback;
   char        *uri;
 } confuiitem_t;
 
@@ -276,7 +276,7 @@ enum {
 typedef struct confuitable {
   uitree_t          *uitree;
   GtkTreeSelection  *sel;
-  UICallback        callback [CONFUI_TABLE_CB_MAX];
+  callback_t        *callbacks [CONFUI_TABLE_CB_MAX];
   uibutton_t        *buttons [CONFUI_BUTTON_TABLE_MAX];
   int       radiorow;
   int       togglecol;
@@ -355,11 +355,11 @@ typedef struct confuigui {
   bool              inbuild : 1;
   /* main window */
   UIWidget          window;
-  UICallback        closecb;
+  callback_t        *closecb;
   /* main notebook */
   uiutilsnbtabid_t  *nbtabid;
   UIWidget          notebook;
-  UICallback        nbcb;
+  callback_t        *nbcb;
   /* widgets */
   UIWidget          vbox;
   UIWidget          statusMsg;
@@ -419,7 +419,7 @@ void confuiCreateGenreTable (confuigui_t *gui);
 void confuiMakeNotebookTab (UIWidget *boxp, confuigui_t *gui, const char *txt, int);
 void confuiMakeItemEntry (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, void *dialogFunc);
-void confuiMakeItemCombobox (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, UILongCallbackFunc ddcb, char *value);
+void confuiMakeItemCombobox (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb, char *value);
 void confuiMakeItemLink (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, const char *disp);
 void confuiMakeItemFontButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *fontname);
 void confuiMakeItemColorButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *color);

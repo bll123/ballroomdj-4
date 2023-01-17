@@ -21,6 +21,7 @@
 #include "mdebug.h"
 #include "slist.h"
 #include "ui.h"
+#include "callback.h"
 #include "uiduallist.h"
 
 enum {
@@ -53,12 +54,17 @@ typedef struct {
   GtkTreeSelection  *sel;
 } uiduallisttree_t;
 
+enum {
+  DUALLIST_CB_MOVEPREV,
+  DUALLIST_CB_MOVENEXT,
+  DUALLIST_CB_SELECT,
+  DUALLIST_CB_REMOVE,
+  DUALLIST_CB_MAX,
+};
+
 typedef struct uiduallist {
   uiduallisttree_t  trees [DUALLIST_TREE_MAX];
-  UICallback        moveprevcb;
-  UICallback        movenextcb;
-  UICallback        selectcb;
-  UICallback        removecb;
+  callback_t        *callbacks [DUALLIST_CB_MAX];
   uibutton_t        *buttons [DUALLIST_BUTTON_MAX];
   slist_t           *sourcelist;
   int               flags;
@@ -112,11 +118,18 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   for (int i = 0; i < DUALLIST_BUTTON_MAX; ++i) {
     duallist->buttons [i] = NULL;
   }
+  for (int i = 0; i < DUALLIST_CB_MAX; ++i) {
+    duallist->callbacks [i] = NULL;
+  }
 
-  uiutilsUICallbackInit (&duallist->moveprevcb, uiduallistMovePrev, duallist, NULL);
-  uiutilsUICallbackInit (&duallist->movenextcb, uiduallistMoveNext, duallist, NULL);
-  uiutilsUICallbackInit (&duallist->selectcb, uiduallistDispSelect, duallist, NULL);
-  uiutilsUICallbackInit (&duallist->removecb, uiduallistDispRemove, duallist, NULL);
+  duallist->callbacks [DUALLIST_CB_MOVEPREV] = callbackInit (
+      uiduallistMovePrev, duallist, NULL);
+  duallist->callbacks [DUALLIST_CB_MOVENEXT] = callbackInit (
+      uiduallistMoveNext, duallist, NULL);
+  duallist->callbacks [DUALLIST_CB_SELECT] = callbackInit (
+      uiduallistDispSelect, duallist, NULL);
+  duallist->callbacks [DUALLIST_CB_REMOVE] = callbackInit (
+      uiduallistDispRemove, duallist, NULL);
 
   uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);
@@ -178,14 +191,14 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   uiWidgetAlignVertStart (&dvbox);
   uiBoxPackStart (&hbox, &dvbox);
 
-  uibutton = uiCreateButton (&duallist->selectcb,
+  uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_SELECT],
       /* CONTEXT: side-by-side list: button: add the selected field */
       _("Select"), "button_right");
   duallist->buttons [DUALLIST_BUTTON_SELECT] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&dvbox, uiwidgetp);
 
-  uibutton = uiCreateButton (&duallist->removecb,
+  uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_REMOVE],
       /* CONTEXT: side-by-side list: button: remove the selected field */
       _("Remove"), "button_left");
   duallist->buttons [DUALLIST_BUTTON_REMOVE] = uibutton;
@@ -242,14 +255,14 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   uiWidgetAlignVertStart (&dvbox);
   uiBoxPackStart (&hbox, &dvbox);
 
-  uibutton = uiCreateButton (&duallist->moveprevcb,
+  uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_MOVEPREV],
       /* CONTEXT: side-by-side list: button: move the selected field up */
       _("Move Up"), "button_up");
   duallist->buttons [DUALLIST_BUTTON_MOVE_UP] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&dvbox, uiwidgetp);
 
-  uibutton = uiCreateButton (&duallist->movenextcb,
+  uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_MOVENEXT],
       /* CONTEXT: side-by-side list: button: move the selected field down */
       _("Move Down"), "button_down");
   duallist->buttons [DUALLIST_BUTTON_MOVE_DOWN] = uibutton;
@@ -265,6 +278,9 @@ uiduallistFree (uiduallist_t *duallist)
   if (duallist != NULL) {
     for (int i = 0; i < DUALLIST_TREE_MAX; ++i) {
       uiTreeViewFree (duallist->trees [i].uitree);
+    }
+    for (int i = 0; i < DUALLIST_CB_MAX; ++i) {
+      callbackFree (duallist->callbacks [i]);
     }
     for (int i = 0; i < DUALLIST_BUTTON_MAX; ++i) {
       uiButtonFree (duallist->buttons [i]);

@@ -13,8 +13,8 @@ typedef struct uisongfilter uisongfilter_t;
 /* uisongfilter.c */
 uisongfilter_t * uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag);
 void uisfFree (uisongfilter_t *uisf);
-void uisfSetApplyCallback (uisongfilter_t *uisf, UICallback *applycb);
-void uisfSetDanceSelectCallback (uisongfilter_t *uisf, UICallback *danceselcb);
+void uisfSetApplyCallback (uisongfilter_t *uisf, callback_t *applycb);
+void uisfSetDanceSelectCallback (uisongfilter_t *uisf, callback_t *danceselcb);
 void uisfShowPlaylistDisplay (uisongfilter_t *uisf);
 void uisfHidePlaylistDisplay (uisongfilter_t *uisf);
 bool uisfPlaylistInUse (uisongfilter_t *uisf);

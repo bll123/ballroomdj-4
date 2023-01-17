@@ -23,6 +23,7 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "callback.h"
 #include "uiduallist.h"
 #include "uinbutil.h"
 #include "validate.h"
@@ -80,9 +81,9 @@ confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp,
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
   confuiMakeItemEntryBasic (gui, &hbox, sg, txt, widx, bdjoptIdx, disp, CONFUI_NO_INDENT, CONFUI_EXPAND);
-  uiutilsUICallbackInit (&gui->uiitem [widx].callback,
+  gui->uiitem [widx].callback = callbackInit (
       dialogFunc, gui, NULL);
-  uibutton = uiCreateButton (&gui->uiitem [widx].callback,
+  uibutton = uiCreateButton (gui->uiitem [widx].callback,
       "", NULL);
   gui->uiitem [widx].uibutton = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
@@ -95,7 +96,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp,
 
 void
 confuiMakeItemCombobox (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    const char *txt, int widx, int bdjoptIdx, UILongCallbackFunc ddcb,
+    const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb,
     char *value)
 {
   UIWidget    hbox;
@@ -109,9 +110,9 @@ confuiMakeItemCombobox (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt, CONFUI_NO_INDENT);
 
-  uiutilsUICallbackLongInit (&gui->uiitem [widx].callback, ddcb, gui);
+  gui->uiitem [widx].callback = callbackInitLong (ddcb, gui);
   uiwidgetp = uiComboboxCreate (&gui->window, txt,
-      &gui->uiitem [widx].callback,
+      gui->uiitem [widx].callback,
       gui->uiitem [widx].dropdown, gui);
 
   uiDropDownSetList (gui->uiitem [widx].dropdown,
@@ -139,10 +140,10 @@ confuiMakeItemLink (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   uiutilsUIWidgetInit (&uiwidget);
   uiCreateLink (&uiwidget, disp, NULL);
   if (isMacOS ()) {
-    uiutilsUICallbackInit (&gui->uiitem [widx].callback,
+    gui->uiitem [widx].callback = callbackInit (
         confuiLinkCallback, gui, NULL);
     gui->uiitem [widx].uri = NULL;
-    uiLinkSetActivateCallback (&uiwidget, &gui->uiitem [widx].callback);
+    uiLinkSetActivateCallback (&uiwidget, gui->uiitem [widx].callback);
   }
   uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
@@ -248,9 +249,9 @@ confuiMakeItemSpinboxText (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   if (cb != NULL) {
-    uiutilsUICallbackInit (&gui->uiitem [widx].callback, cb, gui, NULL);
+    gui->uiitem [widx].callback = callbackInit ( cb, gui, NULL);
     uiSpinboxTextSetValueChangedCallback (gui->uiitem [widx].spinbox,
-        &gui->uiitem [widx].callback);
+        gui->uiitem [widx].callback);
   }
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxText", "");
 }
@@ -271,16 +272,16 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, UIWidget *boxp,
   confuiMakeItemLabel (&hbox, sg, txt, indent);
 
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
-    uiutilsUICallbackStrInit (&gui->uiitem [widx].callback,
+    gui->uiitem [widx].callback = callbackInitStr (
         confuiValHMCallback, gui);
     /* convert value to mm:ss */
     value /= 60;
   } else {
-    uiutilsUICallbackStrInit (&gui->uiitem [widx].callback,
+    gui->uiitem [widx].callback = callbackInitStr (
         confuiValMSCallback, gui);
   }
   uiSpinboxTimeCreate (gui->uiitem [widx].spinbox, gui,
-      &gui->uiitem [widx].callback);
+      gui->uiitem [widx].callback);
   if (bdjoptIdx == OPT_Q_STOP_AT_TIME) {
     uiSpinboxSetRange (gui->uiitem [widx].spinbox, 0.0, 1440000.0);
   }
@@ -322,8 +323,8 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   uiBoxPackStart (boxp, &hbox);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   if (cb != NULL) {
-    uiutilsUICallbackInit (&gui->uiitem [widx].callback, cb, gui, NULL);
-    uiSpinboxSetValueChangedCallback (&uiwidget, &gui->uiitem [widx].callback);
+    gui->uiitem [widx].callback = callbackInit ( cb, gui, NULL);
+    uiSpinboxSetValueChangedCallback (&uiwidget, gui->uiitem [widx].callback);
   }
   uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxNum", "");
@@ -379,9 +380,9 @@ confuiMakeItemSwitch (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   if (cb != NULL) {
-    uiutilsUICallbackInit (&gui->uiitem [widx].callback, cb, gui, NULL);
+    gui->uiitem [widx].callback = callbackInit ( cb, gui, NULL);
     uiSwitchSetCallback (gui->uiitem [widx].uiswitch,
-        &gui->uiitem [widx].callback);
+        gui->uiitem [widx].callback);
   }
 
   logProcEnd (LOG_PROC, "confuiMakeItemSwitch", "");

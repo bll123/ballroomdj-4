@@ -30,6 +30,7 @@
 #include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "callback.h"
 #include "uidance.h"
 #include "uifavorite.h"
 #include "uigenre.h"
@@ -63,7 +64,7 @@ typedef struct {
   };
   uichgind_t  *chgind;
   UIWidget    display;
-  UICallback  callback;
+  callback_t  *callback;
   bool        lastchanged : 1;
   bool        changed : 1;
 } uisongedititem_t;
@@ -106,7 +107,7 @@ typedef struct {
   UIWidget            sgsbtime;
   UIWidget            sgscale;
   UIWidget            sgscaledisp;
-  UICallback          callbacks [UISONGEDIT_CB_MAX];
+  callback_t          *callbacks [UISONGEDIT_CB_MAX];
   uibutton_t          *buttons [UISONGEDIT_BUTTON_MAX];
   level_t             *levels;
   song_t              *song;
@@ -141,6 +142,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uisongeditgtk_t  *uiw;
 
   logProcBegin (LOG_PROC, "uisongeditUIInit");
+
   uiw = mdmalloc (sizeof (uisongeditgtk_t));
   uiw->parentwin = NULL;
   uiw->itemcount = 0;
@@ -153,6 +155,9 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uiw->dbidx = -1;
   for (int i = 0; i < UISONGEDIT_BUTTON_MAX; ++i) {
     uiw->buttons [i] = NULL;
+  }
+  for (int i = 0; i < UISONGEDIT_CB_MAX; ++i) {
+    uiw->callbacks [i] = NULL;
   }
 
   uiutilsUIWidgetInit (&uiw->vbox);
@@ -234,6 +239,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
           break;
         }
       }
+      callbackFree (uiw->items [count].callback);
     }
 
     for (int i = 0; i < UISONGEDIT_BUTTON_MAX; ++i) {
@@ -241,9 +247,13 @@ uisongeditUIFree (uisongedit_t *uisongedit)
     }
     dataFree (uiw->items);
     uiKeyFree (uiw->uikey);
+    for (int i = 0; i < UISONGEDIT_CB_MAX; ++i) {
+      callbackFree (uiw->callbacks [i]);
+    }
     mdfree (uiw);
     uisongedit->uiWidgetData = NULL;
   }
+
   logProcEnd (LOG_PROC, "uisongeditUIFree", "");
 }
 
@@ -273,29 +283,28 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiWidgetExpandHoriz (&uiw->vbox);
 
   uiw->uikey = uiKeyAlloc ();
-  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_KEYB],
+  uiw->callbacks [UISONGEDIT_CB_KEYB] = callbackInit (
       uisongeditKeyEvent, uisongedit, NULL);
   uiKeySetKeyCallback (uiw->uikey, &uiw->vbox,
-      &uiw->callbacks [UISONGEDIT_CB_KEYB]);
+      uiw->callbacks [UISONGEDIT_CB_KEYB]);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
   uiWidgetAlignHorizFill (&hbox);
   uiBoxPackStart (&uiw->vbox, &hbox);
 
-  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_FIRST],
+  uiw->callbacks [UISONGEDIT_CB_FIRST] = callbackInit (
       uisongeditFirstSelection, uisongedit, "songedit: first");
-  uibutton = uiCreateButton (&uiw->callbacks [UISONGEDIT_CB_FIRST],
+  uibutton = uiCreateButton (uiw->callbacks [UISONGEDIT_CB_FIRST],
       /* CONTEXT: song editor : first song */
       _("First"), NULL);
   uiw->buttons [UISONGEDIT_BUTTON_FIRST] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiutilsUICallbackInit (
-      &uiw->callbacks [UISONGEDIT_CB_PREV],
+  uiw->callbacks [UISONGEDIT_CB_PREV] = callbackInit (
       uisongeditPreviousSelection, uisongedit, "songedit: previous");
-  uibutton = uiCreateButton (&uiw->callbacks [UISONGEDIT_CB_PREV],
+  uibutton = uiCreateButton (uiw->callbacks [UISONGEDIT_CB_PREV],
       /* CONTEXT: song editor : previous song */
       _("Previous"), NULL);
   uiw->buttons [UISONGEDIT_BUTTON_PREV] = uibutton;
@@ -303,10 +312,10 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiutilsUICallbackInit (
-      &uiw->callbacks [UISONGEDIT_CB_NEXT],
+
+  uiw->callbacks [UISONGEDIT_CB_NEXT] = callbackInit (
       uisongeditNextSelection, uisongedit, "songedit: next");
-  uibutton = uiCreateButton (&uiw->callbacks [UISONGEDIT_CB_NEXT],
+  uibutton = uiCreateButton (uiw->callbacks [UISONGEDIT_CB_NEXT],
       /* CONTEXT: song editor : next song */
       _("Next"), NULL);
   uiw->buttons [UISONGEDIT_BUTTON_NEXT] = uibutton;
@@ -314,18 +323,18 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_PLAY],
+  uiw->callbacks [UISONGEDIT_CB_PLAY] = callbackInit (
       uisongselPlayCallback, uisongsel, "songedit: play");
-  uibutton = uiCreateButton (&uiw->callbacks [UISONGEDIT_CB_PLAY],
+  uibutton = uiCreateButton (uiw->callbacks [UISONGEDIT_CB_PLAY],
       /* CONTEXT: song editor : play song */
       _("Play"), NULL);
   uiw->buttons [UISONGEDIT_BUTTON_PLAY] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_SAVE],
+  uiw->callbacks [UISONGEDIT_CB_SAVE] = callbackInit (
       uisongeditSaveCallback, uisongedit, "songedit: save");
-  uibutton = uiCreateButton (&uiw->callbacks [UISONGEDIT_CB_SAVE],
+  uibutton = uiCreateButton (uiw->callbacks [UISONGEDIT_CB_SAVE],
       /* CONTEXT: song editor : save data */
       _("Save"), NULL);
   uiw->buttons [UISONGEDIT_BUTTON_SAVE] = uibutton;
@@ -356,10 +365,10 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiutilsUIWidgetCopy (&uiw->modified, &uiwidget);
   uiLabelDarkenColor (&uiw->modified, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
 
-  uiutilsUICallbackInit (&uiw->callbacks [UISONGEDIT_CB_COPY_TEXT],
+  uiw->callbacks [UISONGEDIT_CB_COPY_TEXT] = callbackInit (
       uisongeditCopyPath, uisongedit, "songedit: copy-text");
   uibutton = uiCreateButton (
-      &uiw->callbacks [UISONGEDIT_CB_COPY_TEXT],
+      uiw->callbacks [UISONGEDIT_CB_COPY_TEXT],
       "", NULL);
   uiw->buttons [UISONGEDIT_BUTTON_COPY_TEXT] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
@@ -399,9 +408,9 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     uiutilsUIWidgetInit (&uiw->items [i].uiwidget);
     uiw->items [i].entry = NULL;
     uiw->items [i].chgind = NULL;
-    uiutilsUICallbackInit (&uiw->items [i].callback, NULL, NULL, NULL);
     uiw->items [i].lastchanged = false;
     uiw->items [i].changed = false;
+    uiw->items [i].callback = NULL;
   }
 
   for (int i = DISP_SEL_SONGEDIT_A; i <= DISP_SEL_SONGEDIT_C; ++i) {
@@ -952,9 +961,9 @@ uisongeditAddScale (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
     incb = 5.0;
   }
   uiCreateScale (uiwidgetp, lower, upper, inca, incb, 0.0, digits);
-  uiutilsUICallbackDoubleInit (&uiw->items [uiw->itemcount].callback,
+  uiw->items [uiw->itemcount].callback = callbackInitDouble (
       uisongeditScaleDisplayCallback, &uiw->items [uiw->itemcount]);
-  uiScaleSetCallback (uiwidgetp, &uiw->items [uiw->itemcount].callback);
+  uiScaleSetCallback (uiwidgetp, uiw->items [uiw->itemcount].callback);
   uiSizeGroupAdd (&uiw->sgscale, uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
 
@@ -1132,7 +1141,7 @@ uisongeditSaveCallback (void *udata)
   }
 
   if (valid && uisongedit->savecb != NULL) {
-    uiutilsCallbackLongHandler (uisongedit->savecb, uiw->dbidx);
+    callbackHandlerLong (uisongedit->savecb, uiw->dbidx);
   }
 
   logProcEnd (LOG_PROC, "uisongeditSaveCallback", "");

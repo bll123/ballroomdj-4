@@ -24,6 +24,7 @@
 #include "uimusicq.h"
 #include "uisongsel.h"
 #include "ui.h"
+#include "callback.h"
 
 uisongsel_t *
 uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
@@ -41,14 +42,16 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->windowp = NULL;
   uisongsel->uisongfilter = uisf;
   uisongsel->songfilter = uisfGetSongFilter (uisf);
+  uisongsel->sfapplycb = NULL;
+  uisongsel->sfdanceselcb = NULL;
 
-  uiutilsUICallbackInit (&uisongsel->sfapplycb,
+  uisongsel->sfapplycb = callbackInit (
       uisongselApplySongFilter, uisongsel, NULL);
-  uisfSetApplyCallback (uisf, &uisongsel->sfapplycb);
+  uisfSetApplyCallback (uisf, uisongsel->sfapplycb);
 
-  uiutilsUICallbackLongInit (&uisongsel->sfdanceselcb,
+  uisongsel->sfdanceselcb = callbackInitLong (
       uisongselDanceSelectCallback, uisongsel);
-  uisfSetDanceSelectCallback (uisf, &uisongsel->sfdanceselcb);
+  uisfSetDanceSelectCallback (uisf, uisongsel->sfdanceselcb);
 
   uisongsel->conn = conn;
   uisongsel->dispsel = dispsel;
@@ -109,6 +112,8 @@ uisongselFree (uisongsel_t *uisongsel)
     nlistFree (uisongsel->songlistdbidxlist);
     uidanceFree (uisongsel->uidance);
     uisongselUIFree (uisongsel);
+    callbackFree (uisongsel->sfapplycb);
+    callbackFree (uisongsel->sfdanceselcb);
     mdfree (uisongsel);
   }
 
@@ -122,7 +127,7 @@ uisongselMainLoop (uisongsel_t *uisongsel)
 }
 
 void
-uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx)
+uisongselSetSelectionCallback (uisongsel_t *uisongsel, callback_t *uicbdbidx)
 {
   if (uisongsel == NULL) {
     return;
@@ -131,7 +136,7 @@ uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicbdbidx)
 }
 
 void
-uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicb)
+uisongselSetQueueCallback (uisongsel_t *uisongsel, callback_t *uicb)
 {
   if (uisongsel == NULL) {
     return;
@@ -140,7 +145,7 @@ uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicb)
 }
 
 void
-uisongselSetPlayCallback (uisongsel_t *uisongsel, UICallback *uicb)
+uisongselSetPlayCallback (uisongsel_t *uisongsel, callback_t *uicb)
 {
   if (uisongsel == NULL) {
     return;
@@ -149,7 +154,7 @@ uisongselSetPlayCallback (uisongsel_t *uisongsel, UICallback *uicb)
 }
 
 void
-uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb)
+uisongselSetEditCallback (uisongsel_t *uisongsel, callback_t *uicb)
 {
   if (uisongsel == NULL) {
     return;
@@ -159,7 +164,7 @@ uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb)
 }
 
 void
-uisongselSetSongSaveCallback (uisongsel_t *uisongsel, UICallback *uicb)
+uisongselSetSongSaveCallback (uisongsel_t *uisongsel, callback_t *uicb)
 {
   if (uisongsel == NULL) {
     return;

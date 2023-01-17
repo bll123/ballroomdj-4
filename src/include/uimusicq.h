@@ -61,13 +61,13 @@ typedef struct uimusicq {
   UIWidget          *parentwin;
   UIWidget          pausePixbuf;
   UIWidget          *statusMsg;
-  UICallback        *newselcb;
-  UICallback        *editcb;
-  UICallback        *songsavecb;
-  UICallback        *queuecb;
-  UICallback        *clearqueuecb;
-  UICallback        queueplcb;
-  UICallback        queuedancecb;
+  callback_t        *newselcb;
+  callback_t        *editcb;
+  callback_t        *songsavecb;
+  callback_t        *queuecb;
+  callback_t        *clearqueuecb;
+  callback_t        *queueplcb;
+  callback_t        *queuedancecb;
   uimusicqui_t      ui [MUSICQ_MAX];
   /* peers */
   int               peercount;
@@ -89,19 +89,19 @@ void  uimusicqFree (uimusicq_t *uimusicq);
 void  uimusicqMainLoop (uimusicq_t *uimuiscq);
 void  uimusicqSetPlayIdx (uimusicq_t *uimusicq, int playIdx);
 void  uimusicqSetManageIdx (uimusicq_t *uimusicq, int manageIdx);
-void  uimusicqSetSelectionCallback (uimusicq_t *uimusicq, UICallback *uicbdbidx);
-void  uimusicqSetSongSaveCallback (uimusicq_t *uimusicq, UICallback *uicb);
-void  uimusicqSetClearQueueCallback (uimusicq_t *uimusicq, UICallback *uicb);
+void  uimusicqSetSelectionCallback (uimusicq_t *uimusicq, callback_t *uicbdbidx);
+void  uimusicqSetSongSaveCallback (uimusicq_t *uimusicq, callback_t *uicb);
+void  uimusicqSetClearQueueCallback (uimusicq_t *uimusicq, callback_t *uicb);
 void  uimusicqSetSonglistName (uimusicq_t *uimusicq, const char *nm);
 char * uimusicqGetSonglistName (uimusicq_t *uimusicq);
 void  uimusicqPeerSonglistName (uimusicq_t *targetqueue, uimusicq_t *sourcequeue);
 long  uimusicqGetCount (uimusicq_t *uimusicq);
 void  uimusicqSave (uimusicq_t *uimusicq, const char *name);
-void  uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb);
+void  uimusicqSetEditCallback (uimusicq_t *uimusicq, callback_t *uicb);
 void  uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname);
-void  uimusicqExportMP3Dialog (uimusicq_t *musicq, UIWidget *windowp, UIWidget *statusMsg, char *msg, int mqidx);
+void  uimusicqExportMP3Dialog (uimusicq_t *musicq, UIWidget *windowp, callbackFuncIntInt dispcb, char *msg, int mqidx);
 void  uimusicqProcessSongSelect (uimusicq_t *uimusicq, mp_songselect_t *songselect);
-void  uimusicqSetQueueCallback (uimusicq_t *uimusicq, UICallback *uicb);
+void  uimusicqSetQueueCallback (uimusicq_t *uimusicq, callback_t *uicb);
 
 /* uimusicqgtk.c */
 void      uimusicqUIInit (uimusicq_t *uimusicq);

@@ -46,10 +46,10 @@ typedef struct uisongsel {
   dispselsel_t      dispselType;
   double            dfilterCount;
   UIWidget          *windowp;
-  UICallback        *queuecb;
-  UICallback        *playcb;
-  UICallback        *editcb;
-  UICallback        *songsavecb;
+  callback_t        *queuecb;
+  callback_t        *playcb;
+  callback_t        *editcb;
+  callback_t        *songsavecb;
   dbidx_t           lastdbidx;
   nlist_t           *songlistdbidxlist;
   /* peers */
@@ -58,15 +58,15 @@ typedef struct uisongsel {
   bool              ispeercall;
   /* filter data */
   uisongfilter_t    *uisongfilter;
-  UICallback        sfapplycb;
-  UICallback        sfdanceselcb;
+  callback_t        *sfapplycb;
+  callback_t        *sfdanceselcb;
   songfilter_t      *songfilter;
   /* song selection tab */
   uidance_t         *uidance;
   /* widget data */
   uisongselgtk_t    *uiWidgetData;
   /* song editor */
-  UICallback        *newselcb;
+  callback_t        *newselcb;
 } uisongsel_t;
 
 /* uisongsel.c */
@@ -79,12 +79,12 @@ void  uisongselSetDatabase (uisongsel_t *uisongsel, musicdb_t *musicdb);
 void  uisongselSetSamesong (uisongsel_t *uisongsel, samesong_t *samesong);
 void  uisongselFree (uisongsel_t *uisongsel);
 void  uisongselMainLoop (uisongsel_t *uisongsel);
-void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, UICallback *uicb);
-void  uisongselSetQueueCallback (uisongsel_t *uisongsel, UICallback *uicb);
-void  uisongselSetPlayCallback (uisongsel_t *uisongsel, UICallback *uicb);
-void  uisongselSetSongSaveCallback (uisongsel_t *uisongsel, UICallback *uicb);
+void  uisongselSetSelectionCallback (uisongsel_t *uisongsel, callback_t *uicb);
+void  uisongselSetQueueCallback (uisongsel_t *uisongsel, callback_t *uicb);
+void  uisongselSetPlayCallback (uisongsel_t *uisongsel, callback_t *uicb);
+void  uisongselSetSongSaveCallback (uisongsel_t *uisongsel, callback_t *uicb);
 /* song filter */
-void  uisongselSetEditCallback (uisongsel_t *uisongsel, UICallback *uicb);
+void  uisongselSetEditCallback (uisongsel_t *uisongsel, callback_t *uicb);
 void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t *musicqupdate, int updflag);
 
 /* uisongselgtk.c */

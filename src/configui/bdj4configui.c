@@ -38,6 +38,7 @@
 #include "songfilter.h"
 #include "sysvars.h"
 #include "ui.h"
+#include "callback.h"
 #include "uinbutil.h"
 #include "uiutils.h"
 
@@ -103,9 +104,9 @@ main (int argc, char *argv[])
 
   confui.gui.localip = NULL;
   uiutilsUIWidgetInit (&confui.gui.window);
-  uiutilsUICallbackInit (&confui.gui.closecb, NULL, NULL, NULL);
+  confui.gui.closecb = NULL;
   uiutilsUIWidgetInit (&confui.gui.notebook);
-  uiutilsUICallbackInit (&confui.gui.nbcb, NULL, NULL, NULL);
+  confui.gui.nbcb = NULL;
   confui.gui.nbtabid = uiutilsNotebookIDInit ();
   uiutilsUIWidgetInit (&confui.gui.vbox);
   uiutilsUIWidgetInit (&confui.gui.statusMsg);
@@ -126,7 +127,7 @@ main (int argc, char *argv[])
 
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     for (int j = 0; j < CONFUI_TABLE_CB_MAX; ++j) {
-      uiutilsUICallbackInit (&confui.gui.tables [i].callback [j], NULL, NULL, NULL);
+      confui.gui.tables [i].callbacks [j] = NULL;
     }
     confui.gui.tables [i].uitree = NULL;
     confui.gui.tables [i].sel = NULL;
@@ -154,7 +155,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].sbkeylist = NULL;
     confui.gui.uiitem [i].danceidx = DANCE_DANCE;
     uiutilsUIWidgetInit (&confui.gui.uiitem [i].uiwidget);
-    uiutilsUICallbackInit (&confui.gui.uiitem [i].callback, NULL, NULL, NULL);
+    confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].uri = NULL;
 
     if (i > CONFUI_COMBOBOX_BEGIN && i < CONFUI_COMBOBOX_MAX) {
@@ -383,6 +384,8 @@ confuiClosingCallback (void *udata, programstate_t programState)
   uiutilsNotebookIDFree (confui->gui.nbtabid);
   slistFree (confui->gui.listingtaglist);
   slistFree (confui->gui.edittaglist);
+  callbackFree (confui->gui.closecb);
+  callbackFree (confui->gui.nbcb);
 
   bdj4shutdown (ROUTE_CONFIGUI, NULL);
 
@@ -409,8 +412,8 @@ confuiBuildUI (configui_t *confui)
   /* CONTEXT: configuration: configuration user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"),
       bdjoptGetStr (OPT_P_PROFILENAME));
-  uiutilsUICallbackInit (&confui->gui.closecb, confuiCloseWin, confui, NULL);
-  uiCreateMainWindow (&confui->gui.window, &confui->gui.closecb, tbuff, imgbuff);
+  confui->gui.closecb = callbackInit ( confuiCloseWin, confui, NULL);
+  uiCreateMainWindow (&confui->gui.window, confui->gui.closecb, tbuff, imgbuff);
 
   uiCreateVertBox (&confui->gui.vbox);
   uiWidgetExpandHoriz (&confui->gui.vbox);
@@ -451,8 +454,8 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIMobileMarquee (&confui->gui);
   confuiBuildUIDebug (&confui->gui);
 
-  uiutilsUICallbackLongInit (&confui->gui.nbcb, confuiSwitchTable, &confui->gui);
-  uiNotebookSetCallback (&confui->gui.notebook, &confui->gui.nbcb);
+  confui->gui.nbcb = callbackInitLong (confuiSwitchTable, &confui->gui);
+  uiNotebookSetCallback (&confui->gui.notebook, confui->gui.nbcb);
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);
   y = nlistGetNum (confui->options, CONFUI_SIZE_Y);

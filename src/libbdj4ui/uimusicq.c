@@ -27,8 +27,9 @@
 #include "songlist.h"
 #include "sysvars.h"
 #include "tagdef.h"
-#include "uimusicq.h"
 #include "ui.h"
+#include "callback.h"
+#include "uimusicq.h"
 
 static void   uimusicqSaveListCallback (uimusicq_t *uimusicq, dbidx_t dbidx);
 
@@ -145,7 +146,7 @@ uimusicqSetManageIdx (uimusicq_t *uimusicq, int manageIdx)
 }
 
 void
-uimusicqSetSelectionCallback (uimusicq_t *uimusicq, UICallback *uicbdbidx)
+uimusicqSetSelectionCallback (uimusicq_t *uimusicq, callback_t *uicbdbidx)
 {
   if (uimusicq == NULL) {
     return;
@@ -154,7 +155,7 @@ uimusicqSetSelectionCallback (uimusicq_t *uimusicq, UICallback *uicbdbidx)
 }
 
 void
-uimusicqSetSongSaveCallback (uimusicq_t *uimusicq, UICallback *uicb)
+uimusicqSetSongSaveCallback (uimusicq_t *uimusicq, callback_t *uicb)
 {
   if (uimusicq == NULL) {
     return;
@@ -163,7 +164,7 @@ uimusicqSetSongSaveCallback (uimusicq_t *uimusicq, UICallback *uicb)
 }
 
 void
-uimusicqSetClearQueueCallback (uimusicq_t *uimusicq, UICallback *uicb)
+uimusicqSetClearQueueCallback (uimusicq_t *uimusicq, callback_t *uicb)
 {
   if (uimusicq == NULL) {
     return;
@@ -254,7 +255,7 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
 }
 
 void
-uimusicqSetEditCallback (uimusicq_t *uimusicq, UICallback *uicb)
+uimusicqSetEditCallback (uimusicq_t *uimusicq, callback_t *uicb)
 {
   if (uimusicq == NULL) {
     return;
@@ -277,7 +278,7 @@ uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname)
 
 void
 uimusicqExportMP3Dialog (uimusicq_t *uimusicq, UIWidget *windowp,
-    UIWidget *statusMsg, char *msg, int mqidx)
+    callbackFuncIntInt dispcb, char *msg, int mqidx)
 {
   uiselect_t  *selectdata;
   char        *dir;
@@ -295,11 +296,13 @@ uimusicqExportMP3Dialog (uimusicq_t *uimusicq, UIWidget *windowp,
   uiUIProcessWaitEvents ();
 
   if (dir != NULL) {
-    mp3Export (msg, uimusicq->musicdb, dir, mqidx);
+    mp3ExportQueue (msg, uimusicq->musicdb, dir, mqidx, dispcb);
     mdfree (dir);
   }
   mdfree (selectdata);
-  uiLabelSetText (statusMsg, "");
+  if (dispcb != NULL) {
+    callbackHandlerIntInt ((callback_t *) dispcb, -1, -1);
+  }
 }
 
 void
@@ -310,7 +313,7 @@ uimusicqProcessSongSelect (uimusicq_t *uimusicq, mp_songselect_t *songselect)
 }
 
 void
-uimusicqSetQueueCallback (uimusicq_t *uimusicq, UICallback *uicb)
+uimusicqSetQueueCallback (uimusicq_t *uimusicq, callback_t *uicb)
 {
   if (uimusicq == NULL) {
     return;

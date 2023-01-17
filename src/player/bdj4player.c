@@ -164,7 +164,7 @@ static void     playerSigHandler (int sig);
 static void     playerSetAudioSink (playerdata_t *playerData, const char *sinkname);
 static void     playerInitSinklist (playerdata_t *playerData);
 static void     playerFadeVolSet (playerdata_t *playerData);
-static double   calcFadeIndex (playerdata_t *playerData);
+static double   calcFadeIndex (playerdata_t *playerData, int fadeType);
 static void     playerStartFadeOut (playerdata_t *playerData);
 static void     playerSetCheckTimes (playerdata_t *playerData, prepqueue_t *pq);
 static void     playerSetPlayerState (playerdata_t *playerData, playerstate_t pstate);
@@ -1529,11 +1529,18 @@ playerInitSinklist (playerdata_t *playerData)
 static void
 playerFadeVolSet (playerdata_t *playerData)
 {
-  double  findex = calcFadeIndex (playerData);
+  double  findex;
   int     newvol;
   int     ts;
+  int     fadeType;
 
   logProcBegin (LOG_PROC, "playerFadeVolSet");
+
+  fadeType = playerData->fadeType;
+  if (playerData->inFadeIn) {
+    fadeType = FADETYPE_TRIANGLE;
+  }
+  findex = calcFadeIndex (playerData, fadeType);
 
   newvol = (int) round ((double) playerData->realVolume * findex);
 
@@ -1583,7 +1590,7 @@ playerFadeVolSet (playerdata_t *playerData)
 }
 
 static double
-calcFadeIndex (playerdata_t *playerData)
+calcFadeIndex (playerdata_t *playerData, int fadeType)
 {
   double findex = 0.0;
   double index = (double) playerData->fadeCount;
@@ -1593,24 +1600,28 @@ calcFadeIndex (playerdata_t *playerData)
 
   findex = fmax(0.0, fmin (1.0, index / range));
 
-  switch (playerData->fadeType) {
-    case FADETYPE_QUARTER_SINE: {
-      findex = sin (findex * M_PI / 2.0);
-      break;
-    }
-    case FADETYPE_TRIANGLE: {
+  switch (fadeType) {
+    case FADETYPE_EXPONENTIAL_SINE: {
+      findex = 1.0 - cos (M_PI / 4.0 * (pow (2.0 * findex - 1, 3) + 1));
       break;
     }
     case FADETYPE_HALF_SINE: {
       findex = 1.0 - cos (findex * M_PI) / 2.0;
       break;
     }
-    case FADETYPE_LOGARITHMIC: {
-      findex = pow (0.1, (1.0 - findex) * 5.0);
-      break;
-    }
     case FADETYPE_INVERTED_PARABOLA: {
       findex = 1.0 - (1.0 - findex) * (1.0 - findex);
+      break;
+    }
+    case FADETYPE_QUADRATIC: {
+      findex = findex * findex;
+      break;
+    }
+    case FADETYPE_QUARTER_SINE: {
+      findex = sin (findex * M_PI / 2.0);
+      break;
+    }
+    case FADETYPE_TRIANGLE: {
       break;
     }
   }

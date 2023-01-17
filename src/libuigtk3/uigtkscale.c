@@ -15,6 +15,7 @@
 #include <gtk/gtk.h>
 
 #include "ui.h"
+#include "callback.h"
 
 static gboolean uiScaleChangeValueHandler (GtkRange *range, GtkScrollType scroll, gdouble value, gpointer udata);
 
@@ -45,7 +46,7 @@ uiCreateScale (UIWidget *uiwidget, double lower, double upper,
 }
 
 void
-uiScaleSetCallback (UIWidget *uiscale, UICallback *uicb)
+uiScaleSetCallback (UIWidget *uiscale, callback_t *uicb)
 {
   g_signal_connect (uiscale->widget, "change-value",
       G_CALLBACK (uiScaleChangeValueHandler), uicb);
@@ -103,16 +104,13 @@ uiScaleSetRange (UIWidget *uiscale, double start, double end)
 static gboolean
 uiScaleChangeValueHandler (GtkRange *range, GtkScrollType scroll, gdouble value, gpointer udata)
 {
-  UICallback  *uicb = udata;
+  callback_t  *uicb = udata;
   bool        rc = UICB_CONT;
 
-  if (uicb == NULL) {
-    return rc;
-  }
-  if (uicb->doublecb == NULL) {
+  if (! callbackIsSet (uicb)) {
     return rc;
   }
 
-  rc = uicb->doublecb (uicb->udata, value);
+  rc = callbackHandlerDouble (uicb, value);
   return rc;
 }

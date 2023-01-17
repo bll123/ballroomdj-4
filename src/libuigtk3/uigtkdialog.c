@@ -19,6 +19,7 @@
 #include "fileop.h"
 #include "mdebug.h"
 #include "ui.h"
+#include "callback.h"
 
 typedef struct uiselect {
   UIWidget    *window;
@@ -154,7 +155,7 @@ uiSaveFileDialog (uiselect_t *selectdata)
 
 void
 uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
-    UICallback *uicb, const char *title, ...)
+    callback_t *uicb, const char *title, ...)
 {
   GtkWidget *dialog;
   va_list   valist;
@@ -225,11 +226,11 @@ uiDialogCreateSelect (UIWidget *window, const char *label,
 static void
 uiDialogResponseHandler (GtkDialog *d, gint responseid, gpointer udata)
 {
-  UICallback  *uicb = udata;
+  callback_t  *uicb = udata;
   if (responseid == GTK_RESPONSE_DELETE_EVENT) {
     responseid = RESPONSE_DELETE_WIN;
   }
-  uiutilsCallbackLongHandler (uicb, responseid);
+  callbackHandlerLong (uicb, responseid);
 }
 
 static gboolean

@@ -18,6 +18,7 @@
 #include "bdjstring.h"
 #include "mdebug.h"
 #include "ui.h"
+#include "callback.h"
 
 enum {
   UIUTILS_DROPDOWN_COL_IDX,
@@ -29,12 +30,12 @@ enum {
 
 typedef struct uidropdown {
   char          *title;
-  UICallback    *selectcb;
+  callback_t  *selectcb;
   UIWidget      *parentwin;
   uibutton_t    *button;
-  UICallback    buttoncb;
+  callback_t    *buttoncb;
   UIWidget      window;
-  UICallback    closecb;
+  callback_t    *closecb;
   uitree_t      *uitree;
   slist_t       *strIndexMap;
   nlist_t       *keylist;
@@ -49,7 +50,7 @@ typedef struct uidropdown {
 static bool uiDropDownWindowShow (void *udata);
 static bool uiDropDownClose (void *udata);
 static void uiDropDownButtonCreate (uidropdown_t *dropdown);
-static void uiDropDownWindowCreate (uidropdown_t *dropdown, UICallback *uicb, void *udata);
+static void uiDropDownWindowCreate (uidropdown_t *dropdown, callback_t *uicb, void *udata);
 static void uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx);
 static void uiDropDownSelectHandler (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
 static nlistidx_t uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path);
@@ -73,6 +74,8 @@ uiDropDownInit (void)
   dropdown->open = false;
   dropdown->iscombobox = false;
   dropdown->maxwidth = 10;
+  dropdown->buttoncb = NULL;
+  dropdown->closecb = NULL;
 
   return dropdown;
 }
@@ -82,6 +85,8 @@ void
 uiDropDownFree (uidropdown_t *dropdown)
 {
   if (dropdown != NULL) {
+    callbackFree (dropdown->buttoncb);
+    callbackFree (dropdown->closecb);
     uiButtonFree (dropdown->button);
     dataFree (dropdown->title);
     if (dropdown->strSelection != NULL) {
@@ -96,7 +101,7 @@ uiDropDownFree (uidropdown_t *dropdown)
 
 UIWidget *
 uiDropDownCreate (UIWidget *parentwin,
-    const char *title, UICallback *uicb,
+    const char *title, callback_t *uicb,
     uidropdown_t *dropdown, void *udata)
 {
   dropdown->parentwin = parentwin;
@@ -108,7 +113,7 @@ uiDropDownCreate (UIWidget *parentwin,
 
 UIWidget *
 uiComboboxCreate (UIWidget *parentwin,
-    const char *title, UICallback *uicb,
+    const char *title, callback_t *uicb,
     uidropdown_t *dropdown, void *udata)
 {
   dropdown->iscombobox = true;
@@ -390,8 +395,8 @@ uiDropDownButtonCreate (uidropdown_t *dropdown)
 {
   UIWidget    *uiwidgetp;
 
-  uiutilsUICallbackInit (&dropdown->buttoncb, uiDropDownWindowShow, dropdown, NULL);
-  dropdown->button = uiCreateButton (&dropdown->buttoncb, NULL,
+  dropdown->buttoncb = callbackInit ( uiDropDownWindowShow, dropdown, NULL);
+  dropdown->button = uiCreateButton (dropdown->buttoncb, NULL,
       "button_down_small");
   uiButtonAlignLeft (dropdown->button);
   uiButtonSetImagePosRight (dropdown->button);
@@ -403,7 +408,7 @@ uiDropDownButtonCreate (uidropdown_t *dropdown)
 
 static void
 uiDropDownWindowCreate (uidropdown_t *dropdown,
-    UICallback *uicb, void *udata)
+    callback_t *uicb, void *udata)
 {
   UIWidget          uiwidget;
   UIWidget          *uiwidgetp;
@@ -411,9 +416,9 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   UIWidget          uiscwin;
 
 
-  uiutilsUICallbackInit (&dropdown->closecb, uiDropDownClose, dropdown, NULL);
+  dropdown->closecb = callbackInit ( uiDropDownClose, dropdown, NULL);
   uiCreateDialogWindow (&dropdown->window, dropdown->parentwin,
-      uiButtonGetUIWidget (dropdown->button), &dropdown->closecb, "");
+      uiButtonGetUIWidget (dropdown->button), dropdown->closecb, "");
 
   uiCreateVertBox (&uiwidget);
   uiWidgetExpandHoriz (&uiwidget);
@@ -497,7 +502,7 @@ uiDropDownSelectHandler (GtkTreeView *tv, GtkTreePath *path,
   long          idx;
 
   idx = uiDropDownSelectionGet (dropdown, path);
-  uiutilsCallbackLongHandler (dropdown->selectcb, idx);
+  callbackHandlerLong (dropdown->selectcb, idx);
 }
 
 static nlistidx_t

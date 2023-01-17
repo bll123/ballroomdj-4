@@ -13,6 +13,7 @@
 
 #include "audioadjust.h"
 #include "bdj4.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "datafile.h"
@@ -25,7 +26,7 @@
 #include "osprocess.h"
 #include "pathbld.h"
 #include "pathutil.h"
-#include "songutil.h"
+#include "song.h"
 #include "sysvars.h"
 #include "tagdef.h"
 
@@ -121,7 +122,7 @@ aaNormalize (const char *ffn)
   targv [targc++] = "-y";
   targv [targc++] = "-i";
   targv [targc++] = ffn;
-  targv [targc++] = "-filter:a";
+  targv [targc++] = "-af";
   targv [targc++] = ffargs;
   targv [targc++] = "-f";
   targv [targc++] = "null";
@@ -207,7 +208,7 @@ aaNormalize (const char *ffn)
   targv [targc++] = "-y";
   targv [targc++] = "-i";
   targv [targc++] = ffn;
-  targv [targc++] = "-filter:a";
+  targv [targc++] = "-af";
   targv [targc++] = ffargs;
   targv [targc++] = outfn;
   targv [targc++] = NULL;
@@ -218,69 +219,114 @@ aaNormalize (const char *ffn)
 }
 
 void
-aaConvert (const char *ffn, const char *outfn)
+aaApplyAdjustments (song_t *song, const char *ffn, const char *outfn,
+    int fadein, int fadeout, long dur, int gap)
 {
   const char  *targv [30];
   int         targc = 0;
+  char        aftext [500];
   char        resp [2000];
+  char        sstmp [40];
+  char        durtmp [40];
+  char        tmp [80];
   int         rc;
+  long        songstart;
+  long        songend;
+  long        songdur;
+  int         speed;
+  int         fadetype;
   size_t      retsz;
+  const char  *afprefix = "";
+  const char  *ftstr = "tri";
 
+  *aftext = '\0';
+
+  songstart = songGetNum (song, TAG_SONGSTART);
+  songend = songGetNum (song, TAG_SONGEND);
+  songdur = songGetNum (song, TAG_DURATION);
+  speed = songGetNum (song, TAG_SPEEDADJUSTMENT);
+  if (speed < 0) {
+    speed = 100;
+  }
+  fadetype = bdjoptGetNum (OPT_P_FADETYPE);
+
+  /* translate to ffmpeg names */
+  switch (fadetype) {
+    case FADETYPE_EXPONENTIAL_SINE: { ftstr = "esin"; break; }
+    case FADETYPE_HALF_SINE: { ftstr = "hsin"; break; }
+    case FADETYPE_INVERTED_PARABOLA: { ftstr = "ipar"; break; }
+    case FADETYPE_QUADRATIC: { ftstr = "qua"; break; }
+    case FADETYPE_QUARTER_SINE: { ftstr = "qsin"; break; }
+    case FADETYPE_TRIANGLE: { ftstr = "tri"; break; }
+  }
 
   targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
   targv [targc++] = "-hide_banner";
   targv [targc++] = "-y";
+
+  if (songstart > 0) {
+    /* seek start before input file is accurate and fast */
+    snprintf (sstmp, sizeof (sstmp), "%ldms", songstart);
+    targv [targc++] = "-ss";
+    targv [targc++] = sstmp;
+  }
+
   targv [targc++] = "-i";
   targv [targc++] = ffn;
+
+  if (dur > 0 && dur < songdur) {
+    /* calculated duration does not include song start */
+    snprintf (durtmp, sizeof (durtmp), "%ldms", dur);
+    targv [targc++] = "-t";
+    targv [targc++] = durtmp;
+  }
+
+  /* done last, but before the fades are applied */
+  if (speed != 100) {
+    snprintf (tmp, sizeof (tmp), "%srubberband=tempo=%.2f",
+        afprefix, (double) speed / 100.0);
+    strlcat (aftext, tmp, sizeof (aftext));
+    targv [targc++] = tmp;
+    afprefix = ", ";
+  }
+
+  if (fadein > 0) {
+    snprintf (tmp, sizeof (tmp),
+        "%safade=t=in:curve=tri:d=%dms",
+        afprefix, fadein);
+    strlcat (aftext, tmp, sizeof (aftext));
+    afprefix = ", ";
+  }
+
+  if (fadeout > 0) {
+    snprintf (tmp, sizeof (tmp),
+        "%safade=t=out:curve=%s:st=%ldms:d=%dms",
+        afprefix, ftstr, dur - fadeout, fadeout);
+    strlcat (aftext, tmp, sizeof (aftext));
+    afprefix = ", ";
+  }
+
+  if (gap > 0) {
+    snprintf (tmp, sizeof (tmp), "%sapad=pad_dur=%dms", afprefix, gap);
+    strlcat (aftext, tmp, sizeof (aftext));
+    afprefix = ", ";
+  }
+
+  if (*aftext) {
+    targv [targc++] = "-af";
+    targv [targc++] = aftext;
+  }
   targv [targc++] = outfn;
   targv [targc++] = NULL;
+fprintf (stderr, "cmd: ");
+for (int i = 0; i < targc - 1; ++i) {
+fprintf (stderr, " %s", targv [i]);
+}
+fprintf (stderr, "\n");
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
   if (rc != 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: rc: %d", rc);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-adj: rc: %d", rc);
   }
-}
-
-
-nlist_t *
-aaExportMP3 (musicdb_t *musicdb, nlist_t *songlist, const char *outdir)
-{
-  pathinfo_t  *pi;
-  char        outfn [MAXPATHLEN];
-  nlistidx_t  iteridx;
-  dbidx_t     dbidx;
-  int         counter;
-  nlist_t     *savenames;
-
-  savenames = nlistAlloc ("aa-exp-mp3-savenames", LIST_UNORDERED, NULL);
-
-  counter = 1;
-  slistStartIterator (songlist, &iteridx);
-  while ((dbidx = nlistIterateKey (songlist, &iteridx)) >= 0) {
-    song_t    *song;
-    char      *ffn;
-
-    song = dbGetByIdx (musicdb, dbidx);
-    if (song == NULL) {
-      continue;
-    }
-    ffn = songFullFileName (songGetStr (song, TAG_FILE));
-    if (ffn == NULL) {
-      continue;
-    }
-    pi = pathInfo (ffn);
-    snprintf (outfn, sizeof (outfn), "%s/%03d-%.*s.mp3",
-        outdir, counter, (int) pi->blen, pi->basename);
-    nlistSetStr (savenames, dbidx, outfn);
-    if (pathInfoExtCheck (pi, ".mp3") ||
-        pathInfoExtCheck (pi, ".MP3")) {
-      filemanipCopy (ffn, outfn);
-    } else {
-      pathInfoFree (pi);
-      aaConvert (ffn, outfn);
-    }
-    mdfree (ffn);
-    ++counter;
-  }
-
-  return savenames;
+fprintf (stderr, "rc: %d\n", rc);
+fprintf (stderr, "resp:\n%s\n", resp);
 }

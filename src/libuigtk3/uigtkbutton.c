@@ -19,6 +19,7 @@
 #include "mdebug.h"
 #include "pathbld.h"
 #include "ui.h"
+#include "callback.h"
 
 static void uiButtonSignalHandler (GtkButton *b, gpointer udata);
 static void uiButtonRepeatSignalHandler (GtkButton *b, gpointer udata);
@@ -29,15 +30,15 @@ typedef struct uibutton {
   UIWidget    uibutton;
   mstime_t    repeatTimer;
   int         repeatMS;
-  UICallback  *cb;
-  UICallback  presscb;
-  UICallback  releasecb;
+  callback_t  *cb;
+  callback_t  *presscb;
+  callback_t  *releasecb;
   bool        repeatOn;
   bool        repeating;
 } uibutton_t;
 
 uibutton_t *
-uiCreateButton (UICallback *uicb,
+uiCreateButton (callback_t *uicb,
     char *title, char *imagenm)
 {
   uibutton_t  *uibutton;
@@ -69,9 +70,9 @@ uiCreateButton (UICallback *uicb,
         G_CALLBACK (uiButtonSignalHandler), uibutton);
   }
   uibutton->cb = uicb;
-  uiutilsUICallbackInit (&uibutton->presscb, uiButtonPressCallback,
+  uibutton->presscb = callbackInit ( uiButtonPressCallback,
       uibutton, "button-repeat-press");
-  uiutilsUICallbackInit (&uibutton->releasecb, uiButtonReleaseCallback,
+  uibutton->releasecb = callbackInit ( uiButtonReleaseCallback,
       uibutton, "button-repeat-release");
   uibutton->repeating = false;
   uibutton->repeatOn = false;
@@ -86,6 +87,8 @@ void
 uiButtonFree (uibutton_t *uibutton)
 {
   if (uibutton != NULL) {
+    callbackFree (uibutton->presscb);
+    callbackFree (uibutton->releasecb);
     mdfree (uibutton);
   }
 }
@@ -193,9 +196,9 @@ uiButtonSetRepeat (uibutton_t *uibutton, int repeatms)
   uibutton->repeatMS = repeatms;
   uibutton->repeatOn = true;
   g_signal_connect (uibutton->uibutton.widget, "pressed",
-      G_CALLBACK (uiButtonRepeatSignalHandler), &uibutton->presscb);
+      G_CALLBACK (uiButtonRepeatSignalHandler), uibutton->presscb);
   g_signal_connect (uibutton->uibutton.widget, "released",
-      G_CALLBACK (uiButtonRepeatSignalHandler), &uibutton->releasecb);
+      G_CALLBACK (uiButtonRepeatSignalHandler), uibutton->releasecb);
 }
 
 void
@@ -208,7 +211,7 @@ uiButtonCheckRepeat (uibutton_t *uibutton)
   if (uibutton->repeating) {
     if (mstimeCheck (&uibutton->repeatTimer)) {
       if (uibutton->cb != NULL) {
-        uiutilsCallbackHandler (uibutton->cb);
+        callbackHandler (uibutton->cb);
         mstimeset (&uibutton->repeatTimer, uibutton->repeatMS);
       }
     }
@@ -232,25 +235,22 @@ uiButtonSignalHandler (GtkButton *b, gpointer udata)
     return;
   }
 
-  if (uibutton->cb->actiontext != NULL) {
-    logMsg (LOG_DBG, LOG_ACTIONS, "= action: button: %s", uibutton->cb->actiontext);
-  }
-  uiutilsCallbackHandler (uibutton->cb);
+  callbackHandler (uibutton->cb);
 }
 
 static inline void
 uiButtonRepeatSignalHandler (GtkButton *b, gpointer udata)
 {
-  UICallback *uicb = udata;
+  callback_t *uicb = udata;
 
-  uiutilsCallbackHandler (uicb);
+  callbackHandler (uicb);
 }
 
 static bool
 uiButtonPressCallback (void *udata)
 {
   uibutton_t  *uibutton = udata;
-  UICallback  *uicb = uibutton->cb;
+  callback_t  *uicb = uibutton->cb;
 
   if (uibutton == NULL) {
     return UICB_CONT;
@@ -260,10 +260,10 @@ uiButtonPressCallback (void *udata)
   if (uicb == NULL) {
     return UICB_CONT;
   }
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-press: %s", uicb->actiontext);
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-press");
   uibutton->repeating = true;
   if (uicb != NULL) {
-    uiutilsCallbackHandler (uicb);
+    callbackHandler (uicb);
   }
   mstimeset (&uibutton->repeatTimer, uibutton->repeatMS);
   return UICB_CONT;
@@ -273,7 +273,7 @@ static bool
 uiButtonReleaseCallback (void *udata)
 {
   uibutton_t  *uibutton = udata;
-  UICallback  *uicb = uibutton->cb;
+  callback_t  *uicb = uibutton->cb;
 
   if (uibutton == NULL) {
     return UICB_CONT;
@@ -283,7 +283,7 @@ uiButtonReleaseCallback (void *udata)
   if (uicb == NULL) {
     return UICB_CONT;
   }
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-release: %s", uicb->actiontext);
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-release");
   uibutton->repeating = false;
   return UICB_CONT;
 }

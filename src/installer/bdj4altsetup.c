@@ -46,6 +46,7 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "callback.h"
 
 /* setup states */
 typedef enum {
@@ -69,6 +70,7 @@ enum {
   ALT_CB_TARGET_DIR,
   ALT_CB_EXIT,
   ALT_CB_START,
+  ALT_CB_REINST,
   ALT_CB_MAX,
 };
 
@@ -85,7 +87,7 @@ enum {
 
 typedef struct {
   altsetupstate_t instState;
-  UICallback      callbacks [ALT_CB_MAX];
+  callback_t      *callbacks [ALT_CB_MAX];
   uibutton_t      *buttons [ALT_BUTTON_MAX];
   char            *target;
   char            *maindir;
@@ -97,7 +99,6 @@ typedef struct {
   uientry_t       *targetEntry;
   uientry_t       *nameEntry;
   UIWidget        reinstWidget;
-  UICallback      reinstcb;
   UIWidget        feedbackMsg;
   uitextbox_t     *disptb;
   /* flags */
@@ -162,6 +163,9 @@ main (int argc, char *argv[])
   uiutilsUIWidgetInit (&altsetup.feedbackMsg);
   for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
     altsetup.buttons [i] = NULL;
+  }
+  for (int i = 0; i < ALT_CB_MAX; ++i) {
+    altsetup.callbacks [i] = NULL;
   }
 
   altsetup.targetEntry = uiEntryInit (80, MAXPATHLEN);
@@ -230,10 +234,10 @@ altsetupBuildUI (altsetup_t *altsetup)
   strlcpy (imgbuff, "img/bdj4_icon_inst.svg", sizeof (imgbuff));
   /* CONTEXT: set up alternate: window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Set Up Alternate"), BDJ4_NAME);
-  uiutilsUICallbackInit (&altsetup->callbacks [ALT_CB_EXIT],
+  altsetup->callbacks [ALT_CB_EXIT] = callbackInit (
       altsetupExitCallback, altsetup, NULL);
   uiCreateMainWindow (&altsetup->window,
-      &altsetup->callbacks [ALT_CB_EXIT],
+      altsetup->callbacks [ALT_CB_EXIT],
       tbuff, imgbuff);
   uiWindowSetDefaultSize (&altsetup->window, 1000, 600);
 
@@ -262,10 +266,10 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiEntrySetValidate (altsetup->targetEntry,
       altsetupValidateTarget, altsetup, UIENTRY_DELAYED);
 
-  uiutilsUICallbackInit (&altsetup->callbacks [ALT_CB_TARGET_DIR],
+  altsetup->callbacks [ALT_CB_TARGET_DIR] = callbackInit (
       altsetupTargetDirDialog, altsetup, NULL);
   uibutton = uiCreateButton (
-      &altsetup->callbacks [ALT_CB_TARGET_DIR],
+      altsetup->callbacks [ALT_CB_TARGET_DIR],
       "", NULL);
   altsetup->buttons [ALT_BUTTON_TARGET_DIR] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
@@ -295,8 +299,9 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiCreateCheckButton (&altsetup->reinstWidget, _("Re-Install"),
       altsetup->reinstall);
   uiBoxPackStart (&hbox, &altsetup->reinstWidget);
-  uiutilsUICallbackInit (&altsetup->reinstcb, altsetupCheckDirTarget, altsetup, NULL);
-  uiToggleButtonSetCallback (&altsetup->reinstWidget, &altsetup->reinstcb);
+  altsetup->callbacks [ALT_CB_REINST] = callbackInit (
+      altsetupCheckDirTarget, altsetup, NULL);
+  uiToggleButtonSetCallback (&altsetup->reinstWidget, altsetup->callbacks [ALT_CB_REINST]);
 
   uiCreateLabel (&altsetup->feedbackMsg, "");
   uiLabelSetColor (&altsetup->feedbackMsg, INST_HL_COLOR);
@@ -312,17 +317,17 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiBoxPackStart (&vbox, &hbox);
 
   uibutton = uiCreateButton (
-      &altsetup->callbacks [ALT_CB_EXIT],
+      altsetup->callbacks [ALT_CB_EXIT],
       /* CONTEXT: set up alternate: exits the altsetup */
       _("Exit"), NULL);
   altsetup->buttons [ALT_BUTTON_EXIT] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
-  uiutilsUICallbackInit (&altsetup->callbacks [ALT_CB_START],
+  altsetup->callbacks [ALT_CB_START] = callbackInit (
       altsetupSetupCallback, altsetup, NULL);
   uibutton = uiCreateButton (
-      &altsetup->callbacks [ALT_CB_START],
+      altsetup->callbacks [ALT_CB_START],
       /* CONTEXT: set up alternate: start the set-up process */
       _("Start"), NULL);
   altsetup->buttons [ALT_BUTTON_START] = uibutton;
@@ -956,6 +961,9 @@ static void
 altsetupCleanup (altsetup_t *altsetup)
 {
   if (altsetup->target != NULL) {
+    for (int i = 0; i < ALT_CB_MAX; ++i) {
+      callbackFree (altsetup->callbacks [i]);
+    }
     for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
       uiButtonFree (altsetup->buttons [i]);
     }

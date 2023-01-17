@@ -16,6 +16,7 @@
 
 #include "mdebug.h"
 #include "ui.h"
+#include "callback.h"
 
 enum {
   KEY_EVENT_NONE,
@@ -24,8 +25,8 @@ enum {
 };
 
 typedef struct uikey {
-  UICallback    *presscb;
-  UICallback    *releasecb;
+  callback_t  *presscb;
+  callback_t  *releasecb;
   int           eventtype;
   bool          controlpressed;
   bool          shiftpressed;
@@ -59,7 +60,7 @@ uiKeyFree (uikey_t *uikey)
 }
 
 void
-uiKeySetKeyCallback (uikey_t *uikey, UIWidget *uiwidgetp, UICallback *uicb)
+uiKeySetKeyCallback (uikey_t *uikey, UIWidget *uiwidgetp, callback_t *uicb)
 {
   uikey->presscb = uicb;
   g_signal_connect (uiwidgetp->widget, "key-press-event",
@@ -398,11 +399,11 @@ uiKeyCallback (GtkWidget *w, GdkEventKey *event, gpointer udata)
 
   if (event->type == GDK_KEY_PRESS &&
       uikey->presscb != NULL) {
-    rc = uiutilsCallbackHandler (uikey->presscb);
+    rc = callbackHandler (uikey->presscb);
   }
   if (event->type == GDK_KEY_RELEASE &&
       uikey->releasecb != NULL) {
-    rc = uiutilsCallbackHandler (uikey->releasecb);
+    rc = callbackHandler (uikey->releasecb);
   }
 
   return rc;

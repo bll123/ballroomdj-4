@@ -24,6 +24,6 @@ void uidanceSetValue (uidance_t *uidance, int value);
 void uidanceDisable (uidance_t *uidance);
 void uidanceEnable (uidance_t *uidance);
 void uidanceSizeGroupAdd (uidance_t *uidance, UIWidget *sg);
-void uidanceSetCallback (uidance_t *uidance, UICallback *cb);
+void uidanceSetCallback (uidance_t *uidance, callback_t *cb);
 
 #endif /* INC_UIDANCE_H */

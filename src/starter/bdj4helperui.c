@@ -30,6 +30,7 @@
 #include "progstate.h"
 #include "sockh.h"
 #include "ui.h"
+#include "callback.h"
 
 enum {
   HELPER_BUTTON_CLOSE,
@@ -43,8 +44,8 @@ typedef struct {
   UIWidget        window;
   uitextbox_t     *tb;
   uibutton_t      *buttons [HELPER_BUTTON_MAX];
-  UICallback      closeCallback;
-  UICallback      nextCallback;
+  callback_t      *closeCallback;
+  callback_t      *nextCallback;
   datafile_t      *helpdf;
   ilist_t         *helplist;
   ilistidx_t      helpiter;
@@ -100,6 +101,8 @@ main (int argc, char *argv[])
   for (int i = 0; i < HELPER_BUTTON_MAX; ++i) {
     helper.buttons [i] = NULL;
   }
+  helper.closeCallback = NULL;
+  helper.nextCallback = NULL;
 
   helper.progstate = progstateInit ("helperui");
   progstateSetCallback (helper.progstate, STATE_STOPPING,
@@ -133,6 +136,8 @@ main (int argc, char *argv[])
 
   helpDisplay (&helper);
   sockhMainLoop (listenPort, helperProcessMsg, helperMainLoop, &helper);
+  callbackFree (helper.closeCallback);
+  callbackFree (helper.nextCallback);
   connFree (helper.conn);
   progstateFree (helper.progstate);
   logProcEnd (LOG_PROC, "helperui", "");
@@ -193,10 +198,10 @@ helperBuildUI (helperui_t  *helper)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
-  uiutilsUICallbackInit (&helper->closeCallback, helperCloseCallback, helper, NULL);
+  helper->closeCallback = callbackInit (helperCloseCallback, helper, NULL);
   /* CONTEXT: helperui: the window title for the BDJ4 helper */
   snprintf (tbuff, sizeof (tbuff), _("%s Helper"), BDJ4_LONG_NAME);
-  uiCreateMainWindow (&helper->window, &helper->closeCallback,
+  uiCreateMainWindow (&helper->window, helper->closeCallback,
       tbuff, imgbuff);
 
   uiCreateVertBox (&vbox);
@@ -212,15 +217,15 @@ helperBuildUI (helperui_t  *helper)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  uiutilsUICallbackInit (&helper->nextCallback, helperNextCallback, helper, NULL);
-  uibutton = uiCreateButton (&helper->nextCallback,
+  helper->nextCallback = callbackInit (helperNextCallback, helper, NULL);
+  uibutton = uiCreateButton (helper->nextCallback,
       /* CONTEXT: helperui: proceed to the next step */
       _("Next"), NULL);
   helper->buttons [HELPER_BUTTON_NEXT] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
-  uibutton = uiCreateButton (&helper->closeCallback,
+  uibutton = uiCreateButton (helper->closeCallback,
       /* CONTEXT: helperui: close the helper window */
       _("Close"), NULL);
   helper->buttons [HELPER_BUTTON_CLOSE] = uibutton;

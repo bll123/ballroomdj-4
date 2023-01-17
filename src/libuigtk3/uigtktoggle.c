@@ -13,6 +13,7 @@
 #include <gtk/gtk.h>
 
 #include "ui.h"
+#include "callback.h"
 
 static void uiToggleButtonToggleHandler (GtkButton *b, gpointer udata);
 
@@ -80,7 +81,7 @@ uiCreateToggleButton (UIWidget *uiwidget, const char *txt,
 }
 
 void
-uiToggleButtonSetCallback (UIWidget *uiwidget, UICallback *uicb)
+uiToggleButtonSetCallback (UIWidget *uiwidget, callback_t *uicb)
 {
   g_signal_connect (uiwidget->widget, "toggled",
       G_CALLBACK (uiToggleButtonToggleHandler), uicb);
@@ -115,8 +116,8 @@ uiToggleButtonSetState (UIWidget *uiwidget, int state)
 static inline void
 uiToggleButtonToggleHandler (GtkButton *b, gpointer udata)
 {
-  UICallback *uicb = udata;
+  callback_t *uicb = udata;
 
-  uiutilsCallbackHandler (uicb);
+  callbackHandler (uicb);
 }
 

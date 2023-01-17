@@ -12,7 +12,7 @@ typedef struct uiaa uiaa_t;
 
 uiaa_t  *uiaaInit (UIWidget *windowp, nlist_t *opts);
 void    uiaaFree (uiaa_t *uiaa);
-void    uiaaSetResponseCallback (uiaa_t *uiaa, UICallback *uicb);
+void    uiaaSetResponseCallback (uiaa_t *uiaa, callback_t *uicb);
 bool    uiaaDialog (uiaa_t *uiaa);
 void    uiaaProcess (uiaa_t *uiaa);
 

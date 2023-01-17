@@ -18,11 +18,12 @@
 #include "mdebug.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "callback.h"
 
 typedef struct uispinbox {
   int             sbtype;
   UIWidget        uispinbox;
-  UICallback      *convcb;
+  callback_t    *convcb;
   int             curridx;
   uispinboxdisp_t textGetProc;
   void            *udata;
@@ -30,7 +31,7 @@ typedef struct uispinbox {
   slist_t         *list;
   nlist_t         *keylist;
   nlist_t         *idxlist;
-  UICallback      presscb;
+  callback_t      *presscb;
   uikey_t         *uikey;
   bool            processing : 1;
   bool            changed : 1;
@@ -67,7 +68,7 @@ uiSpinboxInit (void)
   spinbox->idxlist = NULL;
   spinbox->sbtype = SB_TEXT;
   spinbox->uikey = uiKeyAlloc ();
-  uiutilsUICallbackInit (&spinbox->presscb, &uiuitilsSpinboxTextKeyCallback,
+  spinbox->presscb = callbackInit (&uiuitilsSpinboxTextKeyCallback,
       spinbox, NULL);
   return spinbox;
 }
@@ -77,6 +78,7 @@ void
 uiSpinboxFree (uispinbox_t *spinbox)
 {
   if (spinbox != NULL) {
+    callbackFree (spinbox->presscb);
     nlistFree (spinbox->idxlist);
     uiKeyFree (spinbox->uikey);
     mdfree (spinbox);
@@ -203,7 +205,7 @@ uiSpinboxTimeInit (int sbtype)
 }
 
 void
-uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, UICallback *convcb)
+uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, callback_t *convcb)
 {
   double  inca = 5000.0;
   double  incb = 60000.0;
@@ -249,19 +251,19 @@ uiSpinboxTimeSetValue (uispinbox_t *spinbox, ssize_t value)
 }
 
 void
-uiSpinboxTextSetValueChangedCallback (uispinbox_t *spinbox, UICallback *uicb)
+uiSpinboxTextSetValueChangedCallback (uispinbox_t *spinbox, callback_t *uicb)
 {
   uiSpinboxSetValueChangedCallback (&spinbox->uispinbox, uicb);
 }
 
 void
-uiSpinboxTimeSetValueChangedCallback (uispinbox_t *spinbox, UICallback *uicb)
+uiSpinboxTimeSetValueChangedCallback (uispinbox_t *spinbox, callback_t *uicb)
 {
   uiSpinboxSetValueChangedCallback (&spinbox->uispinbox, uicb);
 }
 
 void
-uiSpinboxSetValueChangedCallback (UIWidget *uiwidget, UICallback *uicb)
+uiSpinboxSetValueChangedCallback (UIWidget *uiwidget, callback_t *uicb)
 {
   g_signal_connect (uiwidget->widget, "value-changed",
       G_CALLBACK (uiSpinboxValueChangedHandler), uicb);
@@ -488,7 +490,7 @@ uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
 
   newtext = gtk_entry_get_text (GTK_ENTRY (spinbox->uispinbox.widget));
   if (spinbox->convcb != NULL) {
-    newvalue = uiutilsCallbackStrHandler (spinbox->convcb, newtext);
+    newvalue = callbackHandlerStr (spinbox->convcb, newtext);
   } else {
     newvalue = tmutilStrToMS (newtext);
   }
@@ -601,9 +603,9 @@ uiuitilsSpinboxTextKeyCallback (void *udata)
 static void
 uiSpinboxValueChangedHandler (GtkSpinButton *sb, gpointer udata)
 {
-  UICallback  *uicb = udata;
+  callback_t  *uicb = udata;
 
-  uiutilsCallbackHandler (uicb);
+  callbackHandler (uicb);
 }
 
 static gboolean

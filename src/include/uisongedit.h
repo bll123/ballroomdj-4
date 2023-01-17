@@ -21,7 +21,7 @@ typedef struct {
   nlist_t           *options;
   void              *uiWidgetData;
   UIWidget          *statusMsg;
-  UICallback        *savecb;
+  callback_t        *savecb;
   uisongsel_t       *uisongsel;
 } uisongedit_t;
 
@@ -37,7 +37,7 @@ void  uisongeditMainLoop (uisongedit_t *uisongedit);
 int   uisongeditProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     bdjmsgmsg_t msg, char *args, void *udata);
 void  uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx);
-void  uisongeditSetSaveCallback (uisongedit_t *uisongedit, UICallback *uicb);
+void  uisongeditSetSaveCallback (uisongedit_t *uisongedit, callback_t *uicb);
 
 /* uisongeditgtk.c */
 void  uisongeditUIInit (uisongedit_t *uisongedit);

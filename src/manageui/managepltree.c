@@ -25,6 +25,7 @@
 #include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "callback.h"
 #include "validate.h"
 
 enum {
@@ -51,7 +52,7 @@ typedef struct managepltree {
   GtkTreeViewColumn *highbpmcol;
   UIWidget          *statusMsg;
   UIWidget          uihideunsel;
-  UICallback        unselcb;
+  callback_t        *unselcb;
   playlist_t        *playlist;
   bool              changed : 1;
   bool              hideunselected : 1;
@@ -84,6 +85,8 @@ managePlaylistTreeAlloc (UIWidget *statusMsg)
   managepltree->changed = false;
   managepltree->hideunselected = false;
   managepltree->inprepop = false;
+  managepltree->unselcb = NULL;
+
   return managepltree;
 }
 
@@ -92,6 +95,7 @@ managePlaylistTreeFree (managepltree_t *managepltree)
 {
   if (managepltree != NULL) {
     uiTreeViewFree (managepltree->uitree);
+    callbackFree (managepltree->unselcb);
     mdfree (managepltree);
   }
 }
@@ -114,9 +118,9 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
 
   /* CONTEXT: playlist management: hide unselected dances */
   uiCreateCheckButton (&uiwidget, _("Hide Unselected"), 0);
-  uiutilsUICallbackInit (&managepltree->unselcb,
+  managepltree->unselcb = callbackInit (
       managePlaylistTreeHideUnselectedCallback, managepltree, NULL);
-  uiToggleButtonSetCallback (&uiwidget, &managepltree->unselcb);
+  uiToggleButtonSetCallback (&uiwidget, managepltree->unselcb);
   uiBoxPackStart (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&managepltree->uihideunsel, &uiwidget);
 

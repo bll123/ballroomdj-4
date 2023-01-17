@@ -27,6 +27,7 @@
 #include "song.h"
 #include "tagdef.h"
 #include "ui.h"
+#include "callback.h"
 #include "uiapplyadj.h"
 
 enum {
@@ -39,8 +40,8 @@ typedef struct uiaa {
   UIWidget        *statusMsg;
   nlist_t         *options;
   UIWidget        aaDialog;
-  UICallback      callbacks [UIAA_CB_MAX];
-  UICallback      *responsecb;
+  callback_t      *callbacks [UIAA_CB_MAX];
+  callback_t      *responsecb;
   song_t          *song;
   bool            isactive : 1;
 } uiaa_t;
@@ -61,7 +62,7 @@ uiaaInit (UIWidget *windowp, nlist_t *opts)
   uiaa->options = opts;
   uiaa->song = NULL;
   for (int i = 0; i < UIAA_CB_MAX; ++i) {
-    uiutilsUICallbackInit (&uiaa->callbacks [i], NULL, NULL, NULL);
+    uiaa->callbacks [i] = NULL;
   }
   uiaa->responsecb = NULL;
   uiaa->isactive = false;
@@ -73,6 +74,9 @@ void
 uiaaFree (uiaa_t *uiaa)
 {
   if (uiaa != NULL) {
+    for (int i = 0; i < UIAA_CB_MAX; ++i) {
+      callbackFree (uiaa->callbacks [i]);
+    }
     if (uiaa->song != NULL) {
       songFree (uiaa->song);
     }
@@ -82,7 +86,7 @@ uiaaFree (uiaa_t *uiaa)
 }
 
 void
-uiaaSetResponseCallback (uiaa_t *uiaa, UICallback *uicb)
+uiaaSetResponseCallback (uiaa_t *uiaa, callback_t *uicb)
 {
   if (uiaa == NULL) {
     return;
@@ -136,10 +140,10 @@ uiaaCreateDialog (uiaa_t *uiaa)
   uiCreateSizeGroupHoriz (&sg);
   uiCreateSizeGroupHoriz (&sgA);
 
-  uiutilsUICallbackLongInit (&uiaa->callbacks [UIAA_CB_DIALOG],
+  uiaa->callbacks [UIAA_CB_DIALOG] = callbackInitLong (
       uiaaResponseHandler, uiaa);
   uiCreateDialog (&uiaa->aaDialog, uiaa->parentwin,
-      &uiaa->callbacks [UIAA_CB_DIALOG],
+      uiaa->callbacks [UIAA_CB_DIALOG],
       /* CONTEXT: apply adjustment dialog: title for the dialog */
       _("Apply Adjustments"),
       /* CONTEXT: apply adjustment dialog: closes the dialog */
@@ -227,7 +231,7 @@ uiaaResponseHandler (void *udata, long responseid)
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: apply");
       uiWidgetHide (&uiaa->aaDialog);
       if (uiaa->responsecb != NULL) {
-        uiutilsCallbackHandler (uiaa->responsecb);
+        callbackHandler (uiaa->responsecb);
       }
       break;
     }

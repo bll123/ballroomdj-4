@@ -16,6 +16,7 @@
 #include "mdebug.h"
 #include "pathbld.h"
 #include "ui.h"
+#include "callback.h"
 
 typedef struct uiswitch {
   UIWidget    uiswitch;
@@ -120,7 +121,7 @@ uiSwitchGetUIWidget (uiswitch_t *uiswitch)
 }
 
 void
-uiSwitchSetCallback (uiswitch_t *uiswitch, UICallback *uicb)
+uiSwitchSetCallback (uiswitch_t *uiswitch, callback_t *uicb)
 {
   g_signal_connect (uiswitch->uiswitch.widget, "toggled",
       G_CALLBACK (uiSwitchToggleHandler), uicb);
@@ -144,11 +145,11 @@ uiSwitchEnable (uiswitch_t *uiswitch)
 static void
 uiSwitchToggleHandler (GtkButton *b, gpointer udata)
 {
-  UICallback  *uicb = udata;
+  callback_t  *uicb = udata;
   int         value;
 
   value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (b));
-  uiutilsCallbackLongHandler (uicb, value);
+  callbackHandlerLong (uicb, value);
   return;
 }
 

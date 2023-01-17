@@ -17,6 +17,7 @@
 #include "mdebug.h"
 #include "tagdef.h"
 #include "ui.h"
+#include "callback.h"
 
 static GType * uiAppendType (GType *types, int ncol, int type);
 static void uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
@@ -24,7 +25,7 @@ static void uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path,
 typedef struct uitree {
   UIWidget    uitree;
   UIWidget    sel;
-  UICallback  *editedcb;
+  callback_t  *editedcb;
 } uitree_t;
 
 uitree_t *
@@ -167,7 +168,7 @@ uiTreeViewSelectionGetCount (uitree_t *uitree)
 /* used by configuration */
 
 void
-uiTreeViewSetEditedCallback (uitree_t *uitree, UICallback *uicb)
+uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *uicb)
 {
   if (uitree == NULL) {
     return;

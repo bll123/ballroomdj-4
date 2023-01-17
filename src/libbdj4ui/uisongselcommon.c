@@ -23,7 +23,7 @@ void
 uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx)
 {
   if (uisongsel->queuecb != NULL) {
-    uiutilsCallbackLongIntHandler (uisongsel->queuecb, dbidx, mqidx);
+    callbackHandlerLongInt (uisongsel->queuecb, dbidx, mqidx);
   }
 }
 
@@ -31,7 +31,7 @@ void
 uisongselPlayProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx)
 {
   if (uisongsel->playcb != NULL) {
-    uiutilsCallbackLongIntHandler (uisongsel->playcb, dbidx, mqidx);
+    callbackHandlerLongInt (uisongsel->playcb, dbidx, mqidx);
   }
 }
 
@@ -51,7 +51,7 @@ uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx)
   if (song != NULL) {
     songChangeFavorite (song);
     if (uisongsel->songsavecb != NULL) {
-      uiutilsCallbackLongHandler (uisongsel->songsavecb, dbidx);
+      callbackHandlerLong (uisongsel->songsavecb, dbidx);
     }
   }
 }

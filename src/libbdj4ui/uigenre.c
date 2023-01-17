@@ -19,6 +19,7 @@
 #include "genre.h"
 #include "mdebug.h"
 #include "ui.h"
+#include "callback.h"
 #include "uigenre.h"
 
 typedef struct uigenre {
@@ -26,8 +27,8 @@ typedef struct uigenre {
   uidropdown_t  *dropdown;
   UIWidget      *parentwin;
   UIWidget      *buttonp;
-  UICallback    cb;
-  UICallback    *selectcb;
+  callback_t    *cb;
+  callback_t    *selectcb;
   long          selectedidx;
   bool          allflag : 1;
 } uigenre_t;
@@ -47,11 +48,12 @@ uigenreDropDownCreate (UIWidget *boxp, UIWidget *parentwin, bool allflag)
   uigenre->dropdown = uiDropDownInit ();
   uigenre->selectedidx = 0;
   uigenre->parentwin = parentwin;
+  uigenre->cb = NULL;
   uigenre->selectcb = NULL;
 
-  uiutilsUICallbackLongInit (&uigenre->cb, uigenreSelectHandler, uigenre);
+  uigenre->cb = callbackInitLong (uigenreSelectHandler, uigenre);
   uigenre->buttonp = uiComboboxCreate (parentwin, "",
-      &uigenre->cb, uigenre->dropdown, uigenre);
+      uigenre->cb, uigenre->dropdown, uigenre);
   uigenreCreateGenreList (uigenre);
   uiBoxPackStart (boxp, uigenre->buttonp);
 
@@ -72,6 +74,7 @@ void
 uigenreFree (uigenre_t *uigenre)
 {
   if (uigenre != NULL) {
+    callbackFree (uigenre->cb);
     uiDropDownFree (uigenre->dropdown);
     mdfree (uigenre);
   }
@@ -123,7 +126,7 @@ uigenreSizeGroupAdd (uigenre_t *uigenre, UIWidget *sg)
 }
 
 void
-uigenreSetCallback (uigenre_t *uigenre, UICallback *cb)
+uigenreSetCallback (uigenre_t *uigenre, callback_t *cb)
 {
   if (uigenre == NULL) {
     return;
@@ -142,7 +145,7 @@ uigenreSelectHandler (void *udata, long idx)
   uigenre->selectedidx = idx;
 
   if (uigenre->selectcb != NULL) {
-    uiutilsCallbackLongHandler (uigenre->selectcb, idx);
+    callbackHandlerLong (uigenre->selectcb, idx);
   }
   return UICB_CONT;
 }

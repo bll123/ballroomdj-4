@@ -18,6 +18,7 @@
 #endif
 
 #include "ui.h"
+#include "callback.h"
 
 static gboolean uiWindowFocusOutCallback (GtkWidget *w, GdkEventFocus *event, gpointer udata);
 static gboolean uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpointer udata);
@@ -27,7 +28,7 @@ static void uiWindowNoDimHandler (GtkWidget *window, GtkStateType flags, gpointe
 static gboolean uiWindowMappedHandler (GtkWidget *window, GdkEventAny *event, gpointer udata);
 
 void
-uiCreateMainWindow (UIWidget *uiwidget, UICallback *uicb,
+uiCreateMainWindow (UIWidget *uiwidget, callback_t *uicb,
     const char *title, const char *imagenm)
 {
   GtkWidget *window;
@@ -217,7 +218,7 @@ uiWindowSetPolicyExternal (UIWidget *uisw)
 
 void
 uiCreateDialogWindow (UIWidget *uiwidget, UIWidget *parentwin,
-    UIWidget *attachment, UICallback *uicb, const char *title)
+    UIWidget *attachment, callback_t *uicb, const char *title)
 {
   GtkWidget *window;
 
@@ -252,14 +253,14 @@ uiCreateDialogWindow (UIWidget *uiwidget, UIWidget *parentwin,
 }
 
 void
-uiWindowSetDoubleClickCallback (UIWidget *uiwidget, UICallback *uicb)
+uiWindowSetDoubleClickCallback (UIWidget *uiwidget, callback_t *uicb)
 {
   g_signal_connect (uiwidget->widget, "button-press-event",
       G_CALLBACK (uiWindowDoubleClickHandler), uicb);
 }
 
 void
-uiWindowSetWinStateCallback (UIWidget *uiwindow, UICallback *uicb)
+uiWindowSetWinStateCallback (UIWidget *uiwindow, callback_t *uicb)
 {
   g_signal_connect (uiwindow->widget, "window-state-event",
       G_CALLBACK (uiWindowWinStateHandler), uicb);
@@ -273,7 +274,7 @@ uiWindowNoDim (UIWidget *uiwidget)
 }
 
 void
-uiWindowSetMappedCallback (UIWidget *uiwidget, UICallback *uicb)
+uiWindowSetMappedCallback (UIWidget *uiwidget, callback_t *uicb)
 {
   g_signal_connect (uiwidget->widget, "map-event",
       G_CALLBACK (uiWindowMappedHandler), uicb);
@@ -308,50 +309,47 @@ uiWindowFind (UIWidget *window)
 static gboolean
 uiWindowFocusOutCallback (GtkWidget *w, GdkEventFocus *event, gpointer udata)
 {
-  UICallback  *uicb = udata;
+  callback_t  *uicb = udata;
   bool        rc = UICB_CONT;
 
-  rc = uiutilsCallbackHandler (uicb);
+  rc = callbackHandler (uicb);
   return rc;
 }
 
 static gboolean
 uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpointer udata)
 {
-  UICallback  *uicb = udata;
+  callback_t  *uicb = udata;
   bool        rc = UICB_CONT;
 
-  rc = uiutilsCallbackHandler (uicb);
+  rc = callbackHandler (uicb);
   return rc;
 }
 
 static gboolean
 uiWindowDoubleClickHandler (GtkWidget *window, GdkEventButton *event, gpointer udata)
 {
-  UICallback  *uicb = udata;
+  callback_t  *uicb = udata;
   bool        rc;
 
   if (gdk_event_get_event_type ((GdkEvent *) event) != GDK_DOUBLE_BUTTON_PRESS) {
     return UICB_CONT;
   }
 
-  rc = uiutilsCallbackHandler (uicb);
+  rc = callbackHandler (uicb);
   return rc;
 }
 
 static gboolean
 uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer udata)
 {
-  UICallback  *uicb = udata;
+  callback_t  *uicb = udata;
   bool        rc;
   int         isicon = -1;
   int         ismax = -1;
   bool        process = false;
 
-  if (uicb == NULL) {
-    return UICB_CONT;
-  }
-  if (uicb->intintcb == NULL) {
+  if (! callbackIsSet (uicb)) {
     return UICB_CONT;
   }
 
@@ -376,17 +374,17 @@ uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState *event, gpointer
     return UICB_CONT;
   }
 
-  rc = uicb->intintcb (uicb->udata, isicon, ismax);
+  rc = callbackHandlerIntInt (uicb, isicon, ismax);
   return rc;
 }
 
 static gboolean
 uiWindowMappedHandler (GtkWidget *window, GdkEventAny *event, gpointer udata)
 {
-  UICallback  *uicb = udata;
+  callback_t  *uicb = udata;
   bool        rc = false;
 
-  rc = uiutilsCallbackHandler (uicb);
+  rc = callbackHandler (uicb);
   return rc;
 }
 

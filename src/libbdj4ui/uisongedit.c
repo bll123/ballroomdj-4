@@ -18,8 +18,9 @@
 #include "bdjopt.h"
 #include "log.h"
 #include "mdebug.h"
-#include "uisongedit.h"
 #include "ui.h"
+#include "callback.h"
+#include "uisongedit.h"
 
 uisongedit_t *
 uisongeditInit (conn_t *conn, musicdb_t *musicdb,
@@ -111,7 +112,7 @@ uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx)
 }
 
 void
-uisongeditSetSaveCallback (uisongedit_t *uisongedit, UICallback *uicb)
+uisongeditSetSaveCallback (uisongedit_t *uisongedit, callback_t *uicb)
 {
   if (uisongedit == NULL) {
     return;

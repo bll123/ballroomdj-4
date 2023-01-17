@@ -15,6 +15,7 @@
 #include <gtk/gtk.h>
 
 #include "ui.h"
+#include "callback.h"
 
 static gboolean uiLinkCallback (GtkLinkButton *lb, gpointer udata);
 
@@ -49,7 +50,7 @@ uiLinkSet (UIWidget *uilink, const char *label, const char *uri)
 }
 
 void
-uiLinkSetActivateCallback (UIWidget *uilink, UICallback *uicb)
+uiLinkSetActivateCallback (UIWidget *uilink, callback_t *uicb)
 {
   g_signal_connect (uilink->widget, "activate-link",
       G_CALLBACK (uiLinkCallback), uicb);
@@ -58,15 +59,11 @@ uiLinkSetActivateCallback (UIWidget *uilink, UICallback *uicb)
 static gboolean
 uiLinkCallback (GtkLinkButton *lb, gpointer udata)
 {
-  UICallback *uicb = udata;
+  callback_t *uicb = udata;
 
-  if (uicb == NULL) {
-    return FALSE;
-  }
-  if (uicb->cb == NULL) {
+  if (! callbackIsSet (uicb)) {
     return FALSE;
   }
 
-  uicb->cb (uicb->udata);
-  return TRUE; // stop other link handlers
+  return callbackHandler (uicb);
 }

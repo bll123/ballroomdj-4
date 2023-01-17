@@ -20,6 +20,7 @@
 #include "nlist.h"
 #include "playlist.h"
 #include "ui.h"
+#include "callback.h"
 #include "uiselectfile.h"
 
 enum {
@@ -32,7 +33,7 @@ typedef struct uiselectfile {
   UIWidget          *parentwinp;
   UIWidget          uidialog;
   uitree_t          *selfiletree;
-  UICallback        cb;
+  callback_t        *cb;
   selfilecb_t       selfilecb;
   nlist_t           *options;
   void              *cbudata;
@@ -58,7 +59,7 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
   selectfile->parentwinp = window;
   uiutilsUIWidgetInit (&selectfile->uidialog);
   selectfile->selfiletree = NULL;
-  uiutilsUICallbackInit (&selectfile->cb, NULL, NULL, NULL);
+  selectfile->cb = NULL;
   selectfile->selfilecb = NULL;
   selectfile->options = options;
   selectfile->cbudata = udata;
@@ -104,6 +105,7 @@ void
 selectFileFree (uiselectfile_t *selectfile)
 {
   if (selectfile != NULL) {
+    callbackFree (selectfile->cb);
     uiTreeViewFree (selectfile->selfiletree);
     mdfree (selectfile);
   }
@@ -129,13 +131,13 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
 
   selectfile->selfilecb = cb;
 
-  uiutilsUICallbackLongInit (&selectfile->cb,
+  selectfile->cb = callbackInitLong (
       selectFileResponseHandler, selectfile);
 
   /* CONTEXT: select file: title of window: select <file-type> */
   snprintf (tbuff, sizeof (tbuff), _("Select %s"), filetype);
   uiCreateDialog (&selectfile->uidialog,
-      selectfile->parentwinp, &selectfile->cb, tbuff,
+      selectfile->parentwinp, selectfile->cb, tbuff,
       /* CONTEXT: select file: closes the dialog */
       _("Close"), RESPONSE_CLOSE,
       /* CONTEXT: select file: selects the file */

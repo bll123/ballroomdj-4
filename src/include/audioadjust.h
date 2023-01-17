@@ -6,6 +6,7 @@
 
 #include "musicdb.h"
 #include "nlist.h"
+#include "song.h"
 
 enum {
   AA_TRIMSILENCE_PERIOD,
@@ -17,12 +18,17 @@ enum {
   AA_KEY_MAX,
 };
 
+enum {
+  AA_NO_FADEIN = -1,
+  AA_NO_FADEOUT = -1,
+  AA_NO_GAP = -1,
+};
+
 typedef struct aa aa_t;
 
 aa_t * aaAlloc (void);
 void aaFree (aa_t *aa);
 void aaNormalize (const char *ffn);
-void aaConvert (const char *ffn, const char *outfn);
-nlist_t *aaExportMP3 (musicdb_t *musicdb, nlist_t *songlist, const char *outdir);
+void aaApplyAdjustments (song_t *song, const char *ffn, const char *outfn, int fadein, int fadeout, long dur, int gap);
 
 #endif /* INC_AUDIOADJUST_H */

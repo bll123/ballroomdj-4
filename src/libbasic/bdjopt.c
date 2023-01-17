@@ -566,14 +566,17 @@ bdjoptConvFadeType (datafileconv_t *conv)
     conv->valuetype = VALUE_NUM;
 
     fadetype = FADETYPE_TRIANGLE;
-    if (strcmp (conv->str, "quartersine") == 0) {
-      fadetype = FADETYPE_QUARTER_SINE;
+    if (strcmp (conv->str, "exponentialsine") == 0) {
+      fadetype = FADETYPE_EXPONENTIAL_SINE;
     }
     if (strcmp (conv->str, "halfsine") == 0) {
-      fadetype = FADETYPE_HALF_SINE;;
+      fadetype = FADETYPE_HALF_SINE;
     }
-    if (strcmp (conv->str, "logarithmic") == 0) {
-      fadetype = FADETYPE_LOGARITHMIC;
+    if (strcmp (conv->str, "quadratic") == 0) {
+      fadetype = FADETYPE_QUADRATIC;
+    }
+    if (strcmp (conv->str, "quartersine") == 0) {
+      fadetype = FADETYPE_QUARTER_SINE;
     }
     if (strcmp (conv->str, "invertedparabola") == 0) {
       fadetype = FADETYPE_INVERTED_PARABOLA;
@@ -583,11 +586,12 @@ bdjoptConvFadeType (datafileconv_t *conv)
     conv->valuetype = VALUE_STR;
     sval = "triangle";
     switch (conv->num) {
-      case FADETYPE_TRIANGLE: { sval = "triangle"; break; }
-      case FADETYPE_QUARTER_SINE: { sval = "quartersine"; break; }
+      case FADETYPE_EXPONENTIAL_SINE: { sval = "exponentialsine"; break; }
       case FADETYPE_HALF_SINE: { sval = "halfsine"; break; }
-      case FADETYPE_LOGARITHMIC: { sval = "logarithmic"; break; }
       case FADETYPE_INVERTED_PARABOLA: { sval = "invertedparabola"; break; }
+      case FADETYPE_QUADRATIC: { sval = "quadratic"; break; }
+      case FADETYPE_QUARTER_SINE: { sval = "quartersine"; break; }
+      case FADETYPE_TRIANGLE: { sval = "triangle"; break; }
     }
     conv->str = sval;
   }

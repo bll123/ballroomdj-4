@@ -25,6 +25,7 @@
 #include "tmutil.h"
 #include "tagdef.h"
 #include "ui.h"
+#include "callback.h"
 #include "uilevel.h"
 #include "uirating.h"
 #include "uiselectfile.h"
@@ -46,8 +47,8 @@ typedef struct managepl {
   UIWidget        *statusMsg;
   uimenu_t        plmenu;
   UIWidget        menuDelete;
-  UICallback      callbacks [MPL_CB_MAX];
-  UICallback      *plloadcb;
+  callback_t      *callbacks [MPL_CB_MAX];
+  callback_t      *plloadcb;
   char            *ploldname;
   bool            plbackupcreated;
   uientry_t       *plname;
@@ -119,6 +120,9 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   managepl->inload = false;
   managepl->plannswitch = NULL;
   managepl->plloadcb = NULL;
+  for (int i = 0; i < MPL_CB_MAX; ++i) {
+    managepl->callbacks [i] = NULL;
+  }
 
   return managepl;
 }
@@ -140,6 +144,9 @@ managePlaylistFree (managepl_t *managepl)
     uiSpinboxFree (managepl->uimaxplaytime);
     uiSpinboxFree (managepl->uistopat);
     uiSpinboxFree (managepl->uigap);
+    for (int i = 0; i < MPL_CB_MAX; ++i) {
+      callbackFree (managepl->callbacks [i]);
+    }
     if (managepl->playlist != NULL) {
       playlistFree (managepl->playlist);
     }
@@ -148,7 +155,7 @@ managePlaylistFree (managepl_t *managepl)
 }
 
 void
-managePlaylistSetLoadCallback (managepl_t *managepl, UICallback *uicb)
+managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb)
 {
   if (managepl == NULL) {
     return;
@@ -227,9 +234,10 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiutilsUICallbackStrInit (&managepl->callbacks [MPL_CB_MAXPLAYTIME],
+  managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInitStr (
       managePlaylistValMSCallback, managepl);
-  uiSpinboxTimeCreate (managepl->uimaxplaytime, managepl, &managepl->callbacks [MPL_CB_MAXPLAYTIME]);
+  uiSpinboxTimeCreate (managepl->uimaxplaytime, managepl,
+      managepl->callbacks [MPL_CB_MAXPLAYTIME]);
   uiwidgetp = uiSpinboxGetUIWidget (managepl->uimaxplaytime);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiSizeGroupAdd (&sgA, uiwidgetp);
@@ -242,10 +250,10 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiutilsUICallbackStrInit (&managepl->callbacks [MPL_CB_STOPAT],
+  managepl->callbacks [MPL_CB_STOPAT] = callbackInitStr (
       managePlaylistValHMCallback, managepl);
   uiSpinboxTimeCreate (managepl->uistopat, managepl,
-      &managepl->callbacks [MPL_CB_STOPAT]);
+      managepl->callbacks [MPL_CB_STOPAT]);
   uiSpinboxSetRange (managepl->uistopat, 0.0, 1440000.0);
   uiSpinboxWrap (managepl->uistopat);
   uiwidgetp = uiSpinboxGetUIWidget (managepl->uistopat);
@@ -380,29 +388,29 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
 
     uiCreateSubMenu (&menuitem, &menu);
 
-    uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_LOAD],
+    managepl->callbacks [MPL_CB_MENU_PL_LOAD] = callbackInit (
         managePlaylistLoad, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: load */
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
-        &managepl->callbacks [MPL_CB_MENU_PL_LOAD]);
+        managepl->callbacks [MPL_CB_MENU_PL_LOAD]);
 
-    uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_NEW],
+    managepl->callbacks [MPL_CB_MENU_PL_NEW] = callbackInit (
         managePlaylistNewCB, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist */
     uiMenuCreateItem (&menu, &menuitem, _("New Automatic Playlist"),
-        &managepl->callbacks [MPL_CB_MENU_PL_NEW]);
+        managepl->callbacks [MPL_CB_MENU_PL_NEW]);
 
-    uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_COPY],
+    managepl->callbacks [MPL_CB_MENU_PL_COPY] = callbackInit (
         managePlaylistCopy, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: create copy */
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
-        &managepl->callbacks [MPL_CB_MENU_PL_COPY]);
+        managepl->callbacks [MPL_CB_MENU_PL_COPY]);
 
-    uiutilsUICallbackInit (&managepl->callbacks [MPL_CB_MENU_PL_DELETE],
+    managepl->callbacks [MPL_CB_MENU_PL_DELETE] = callbackInit (
         managePlaylistDelete, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist */
     uiMenuCreateItem (&menu, &menuitem, _("Delete"),
-        &managepl->callbacks [MPL_CB_MENU_PL_DELETE]);
+        managepl->callbacks [MPL_CB_MENU_PL_DELETE]);
     uiutilsUIWidgetCopy (&managepl->menuDelete, &menuitem);
 
     managepl->plmenu.initialized = true;
@@ -443,7 +451,7 @@ managePlaylistSave (managepl_t *managepl)
     pltype = playlistGetConfigNum (managepl->playlist, PLAYLIST_TYPE);
     if (managepl->plloadcb != NULL &&
         (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_SEQUENCE)) {
-      uiutilsCallbackStrHandler (managepl->plloadcb, name);
+      callbackHandlerStr (managepl->plloadcb, name);
     }
   }
   mdfree (name);
@@ -516,7 +524,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
 
     pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
     if (pltype == PLTYPE_SONGLIST || pltype == PLTYPE_SEQUENCE) {
-      uiutilsCallbackStrHandler (managepl->plloadcb, fn);
+      callbackHandlerStr (managepl->plloadcb, fn);
     }
   }
 
@@ -676,7 +684,7 @@ managePlaylistCopy (void *udata)
     uiSpinboxResetChanged (managepl->uigap);
     managepl->changed = false;
     if (managepl->plloadcb != NULL) {
-      uiutilsCallbackStrHandler (managepl->plloadcb, newname);
+      callbackHandlerStr (managepl->plloadcb, newname);
     }
   }
   mdfree (oname);

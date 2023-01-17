@@ -30,6 +30,7 @@
 #include "songfav.h"
 #include "tagdef.h"
 #include "ui.h"
+#include "callback.h"
 #include "uidance.h"
 #include "uireqext.h"
 
@@ -50,8 +51,8 @@ typedef struct uireqext {
   uientry_t       *titleEntry;
   uidance_t       *uidance;
   uibutton_t      *audioFileDialogButton;
-  UICallback      callbacks [UIREQEXT_CB_MAX];
-  UICallback      *responsecb;
+  callback_t      *callbacks [UIREQEXT_CB_MAX];
+  callback_t      *responsecb;
   song_t          *song;
   char            *songEntryText;
   bool            isactive : 1;
@@ -86,7 +87,7 @@ uireqextInit (UIWidget *windowp, nlist_t *opts)
   uireqext->song = NULL;
   uireqext->songEntryText = NULL;
   for (int i = 0; i < UIREQEXT_CB_MAX; ++i) {
-    uiutilsUICallbackInit (&uireqext->callbacks [i], NULL, NULL, NULL);
+    uireqext->callbacks [i] = NULL;
   }
   uireqext->audioFileDialogButton = NULL;
   uireqext->responsecb = NULL;
@@ -99,6 +100,9 @@ void
 uireqextFree (uireqext_t *uireqext)
 {
   if (uireqext != NULL) {
+    for (int i = 0; i < UIREQEXT_CB_MAX; ++i) {
+      callbackFree (uireqext->callbacks [i]);
+    }
     if (uireqext->song != NULL) {
       songFree (uireqext->song);
     }
@@ -114,7 +118,7 @@ uireqextFree (uireqext_t *uireqext)
 }
 
 void
-uireqextSetResponseCallback (uireqext_t *uireqext, UICallback *uicb)
+uireqextSetResponseCallback (uireqext_t *uireqext, callback_t *uicb)
 {
   if (uireqext == NULL) {
     return;
@@ -206,10 +210,10 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiCreateSizeGroupHoriz (&sg);
   uiCreateSizeGroupHoriz (&sgA);
 
-  uiutilsUICallbackLongInit (&uireqext->callbacks [UIREQEXT_CB_DIALOG],
+  uireqext->callbacks [UIREQEXT_CB_DIALOG] = callbackInitLong (
       uireqextResponseHandler, uireqext);
   uiCreateDialog (&uireqext->reqextDialog, uireqext->parentwin,
-      &uireqext->callbacks [UIREQEXT_CB_DIALOG],
+      uireqext->callbacks [UIREQEXT_CB_DIALOG],
       /* CONTEXT: request external dialog: title for the dialog */
       _("Select Audio File"),
       /* CONTEXT: request external dialog: closes the dialog */
@@ -247,10 +251,10 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiEntrySetValidate (uireqext->audioFileEntry, uireqextValidateAudioFile,
       uireqext, UIENTRY_DELAYED);
 
-  uiutilsUICallbackInit (&uireqext->callbacks [UIREQEXT_CB_AUDIO_FILE],
+  uireqext->callbacks [UIREQEXT_CB_AUDIO_FILE] = callbackInit (
       uireqextAudioFileDialog, uireqext, NULL);
   uibutton = uiCreateButton (
-      &uireqext->callbacks [UIREQEXT_CB_AUDIO_FILE],
+      uireqext->callbacks [UIREQEXT_CB_AUDIO_FILE],
       "", NULL);
   uireqext->audioFileDialogButton = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
@@ -298,12 +302,12 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiutilsUICallbackLongIntInit (&uireqext->callbacks [UIREQEXT_CB_DANCE],
+  uireqext->callbacks [UIREQEXT_CB_DANCE] = callbackInitLongInt (
       uireqextDanceSelectHandler, uireqext);
   uireqext->uidance = uidanceDropDownCreate (&hbox, &uireqext->reqextDialog,
       /* CONTEXT: request external: dance drop-down */
       UIDANCE_EMPTY_DANCE, _("Select Dance"), UIDANCE_PACK_START, 1);
-  uidanceSetCallback (uireqext->uidance, &uireqext->callbacks [UIREQEXT_CB_DANCE]);
+  uidanceSetCallback (uireqext->uidance, uireqext->callbacks [UIREQEXT_CB_DANCE]);
 
   logProcEnd (LOG_PROC, "uireqextCreateDialog", "");
 }
@@ -404,7 +408,7 @@ uireqextResponseHandler (void *udata, long responseid)
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: reqext: apply");
       uiWidgetHide (&uireqext->reqextDialog);
       if (uireqext->responsecb != NULL) {
-        uiutilsCallbackHandler (uireqext->responsecb);
+        callbackHandler (uireqext->responsecb);
       }
       break;
     }

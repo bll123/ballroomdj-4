@@ -25,6 +25,7 @@
 #include "procutil.h"
 #include "sysvars.h"
 #include "ui.h"
+#include "callback.h"
 
 enum {
   MANAGE_DB_CHECK_NEW,
@@ -35,6 +36,14 @@ enum {
   MANAGE_DB_REBUILD,
 };
 
+enum {
+  MDB_CB_TOPDIR_SEL,
+  MDB_CB_DB_CHG,
+  MDB_CB_START,
+  MDB_CB_STOP,
+  MDB_CB_MAX,
+};
+
 typedef struct managedb {
   UIWidget          *windowp;
   nlist_t           *options;
@@ -43,13 +52,10 @@ typedef struct managedb {
   conn_t            *conn;
   uientry_t         *dbtopdir;
   uibutton_t        *topdirsel;
-  UICallback        topdirselcb;
+  callback_t        *callbacks [MDB_CB_MAX];
   uispinbox_t       *dbspinbox;
-  UICallback        dbchgcb;
   uibutton_t        *dbstart;
-  UICallback        dbstartcb;
   uibutton_t        *dbstop;
-  UICallback        dbstopcb;
   UIWidget          dbhelpdisp;
   uitextbox_t       *dbstatus;
   nlist_t           *dblist;
@@ -87,6 +93,9 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
   managedb->dbspinbox = uiSpinboxInit ();
   *managedb->fgcolor = '\0';
   managedb->statusMsg = statusMsg;
+  for (int i = 0; i < MDB_CB_MAX; ++i) {
+    managedb->callbacks [i] = NULL;
+  }
 
   tlist = nlistAlloc ("db-action", LIST_ORDERED, NULL);
   hlist = nlistAlloc ("db-action-help", LIST_ORDERED, NULL);
@@ -149,6 +158,9 @@ manageDbFree (managedb_t *managedb)
     uiButtonFree (managedb->topdirsel);
     uiButtonFree (managedb->dbstart);
     uiButtonFree (managedb->dbstop);
+    for (int i = 0; i < MDB_CB_MAX; ++i) {
+      callbackFree (managedb->callbacks [i]);
+    }
     mdfree (managedb);
   }
 }
@@ -185,8 +197,10 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
       managedb->dblist, NULL, NULL);
   uiSpinboxTextSetValue (managedb->dbspinbox, MANAGE_DB_CHECK_NEW);
   uiwidgetp = uiSpinboxGetUIWidget (managedb->dbspinbox);
-  uiutilsUICallbackInit (&managedb->dbchgcb, manageDbChg, managedb, NULL);
-  uiSpinboxTextSetValueChangedCallback (managedb->dbspinbox, &managedb->dbchgcb);
+  managedb->callbacks [MDB_CB_DB_CHG] = callbackInit (
+      manageDbChg, managedb, NULL);
+  uiSpinboxTextSetValueChangedCallback (managedb->dbspinbox,
+      managedb->callbacks [MDB_CB_DB_CHG]);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   /* help display */
@@ -221,9 +235,10 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
 
-  uiutilsUICallbackInit (&managedb->topdirselcb,
+  managedb->callbacks [MDB_CB_TOPDIR_SEL] = callbackInit (
       manageDbSelectDirCallback, managedb, NULL);
-  managedb->topdirsel = uiCreateButton (&managedb->topdirselcb, "", NULL);
+  managedb->topdirsel = uiCreateButton (
+      managedb->callbacks [MDB_CB_TOPDIR_SEL], "", NULL);
   uiButtonSetImageIcon (managedb->topdirsel, "folder");
   uiwidgetp = uiButtonGetUIWidget (managedb->topdirsel);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -236,15 +251,17 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiutilsUICallbackInit (&managedb->dbstartcb, manageDbStart, managedb, NULL);
-  managedb->dbstart = uiCreateButton (&managedb->dbstartcb,
+  managedb->callbacks [MDB_CB_START] = callbackInit (
+      manageDbStart, managedb, NULL);
+  managedb->dbstart = uiCreateButton (managedb->callbacks [MDB_CB_START],
       /* CONTEXT: update database: button to start the database update process */
       _("Start"), NULL);
   uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiutilsUICallbackInit (&managedb->dbstopcb, manageDbStop, managedb, NULL);
-  managedb->dbstop = uiCreateButton (&managedb->dbstopcb,
+  managedb->callbacks [MDB_CB_STOP] = callbackInit (
+      manageDbStop, managedb, NULL);
+  managedb->dbstop = uiCreateButton (managedb->callbacks [MDB_CB_STOP],
       /* CONTEXT: update database: button to stop the database update process */
       _("Stop"), NULL);
   uiwidgetp = uiButtonGetUIWidget (managedb->dbstop);

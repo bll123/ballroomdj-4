@@ -38,6 +38,7 @@
 #include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "callback.h"
 
 enum {
   MQ_POSITION_X,
@@ -48,6 +49,14 @@ enum {
   MQ_FONT_SZ,
   MQ_FONT_SZ_FS,
   MQ_KEY_MAX,
+};
+
+enum {
+  MQ_CB_EXIT,
+  MQ_CB_DBL_CLICK,
+  MQ_CB_WINSTATE,
+  MQ_CB_WINMAP,
+  MQ_CB_MAX,
 };
 
 /* sort by ascii values */
@@ -69,10 +78,7 @@ typedef struct {
   datafile_t      *optiondf;
   nlist_t         *options;
   UIWidget        window;
-  UICallback      exitcb;
-  UICallback      dclickcb;
-  UICallback      winstatecb;
-  UICallback      winmapcb;
+  callback_t      *callbacks [MQ_CB_MAX];
   UIWidget        pbar;
   UIWidget        infoBox;
   UIWidget        sep;
@@ -179,6 +185,9 @@ main (int argc, char *argv[])
   marquee.fontAdjustment = 0.0;
   marquee.hideonstart = false;
   marquee.stopwaitcount = 0;
+  for (int i = 0; i < MQ_CB_MAX; ++i) {
+    marquee.callbacks [i] = NULL;
+  }
 
   osSetStandardSignals (marqueeSigHandler);
 
@@ -221,6 +230,9 @@ main (int argc, char *argv[])
   sockhMainLoop (listenPort, marqueeProcessMsg, marqueeMainLoop, &marquee);
   connFree (marquee.conn);
   progstateFree (marquee.progstate);
+  for (int i = 0; i < MQ_CB_MAX; ++i) {
+    callbackFree (marquee.callbacks [i]);
+  }
   logEnd ();
 #if BDJ4_MEM_DEBUG
   mdebugReport ();
@@ -321,23 +333,23 @@ marqueeBuildUI (marquee_t *marquee)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_marquee", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
 
-  uiutilsUICallbackInit (&marquee->exitcb, marqueeCloseCallback, marquee, NULL);
-  uiCreateMainWindow (&uiwidget, &marquee->exitcb,
+  marquee->callbacks [MQ_CB_EXIT] = callbackInit (
+      marqueeCloseCallback, marquee, NULL);
+  uiCreateMainWindow (&uiwidget, marquee->callbacks [MQ_CB_EXIT],
       /* CONTEXT: marquee: marquee window title */
       _("Marquee"), imgbuff);
   uiWindowNoFocusOnStartup (&uiwidget);
 
-  uiutilsUICallbackInit (&marquee->dclickcb,
+  marquee->callbacks [MQ_CB_DBL_CLICK] = callbackInit (
       marqueeToggleFullscreen, marquee, NULL);
-  uiWindowSetDoubleClickCallback (&uiwidget, &marquee->dclickcb);
+  uiWindowSetDoubleClickCallback (&uiwidget, marquee->callbacks [MQ_CB_DBL_CLICK]);
 
-  uiutilsUICallbackIntIntInit (&marquee->winstatecb,
+  marquee->callbacks [MQ_CB_WINSTATE] = callbackInitIntInt (
       marqueeWinState, marquee);
-  uiWindowSetWinStateCallback (&uiwidget, &marquee->winstatecb);
+  uiWindowSetWinStateCallback (&uiwidget, marquee->callbacks [MQ_CB_WINSTATE]);
 
-  uiutilsUICallbackInit (&marquee->winmapcb,
-      marqueeWinMapped, marquee, NULL);
-  uiWindowSetMappedCallback (&uiwidget, &marquee->winmapcb);
+  marquee->callbacks [MQ_CB_WINMAP] = callbackInit (marqueeWinMapped, marquee, NULL);
+  uiWindowSetMappedCallback (&uiwidget, marquee->callbacks [MQ_CB_WINMAP]);
 
   uiWindowNoDim (&uiwidget);
 

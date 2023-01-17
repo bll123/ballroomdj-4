@@ -19,6 +19,7 @@
 #include "dance.h"
 #include "mdebug.h"
 #include "ui.h"
+#include "callback.h"
 #include "uidance.h"
 
 typedef struct uidance {
@@ -26,8 +27,8 @@ typedef struct uidance {
   uidropdown_t  *dropdown;
   UIWidget      *parentwin;
   UIWidget      *buttonp;
-  UICallback    cb;
-  UICallback    *selectcb;
+  callback_t    *cb;
+  callback_t    *selectcb;
   const char    *label;
   long          selectedidx;
   int           count;
@@ -51,17 +52,18 @@ uidanceDropDownCreate (UIWidget *boxp, UIWidget *parentwin, int flags,
   uidance->dropdown = uiDropDownInit ();
   uidance->selectedidx = 0;
   uidance->parentwin = parentwin;
+  uidance->cb = NULL;
   uidance->selectcb = NULL;
 
-  uiutilsUICallbackLongInit (&uidance->cb, uidanceSelectHandler, uidance);
+  uidance->cb = callbackInitLong (uidanceSelectHandler, uidance);
   uidance->label = label;  /* this is a temporary value */
   if (flags == UIDANCE_NONE) {
     uidance->buttonp = uiDropDownCreate (parentwin, label,
-        &uidance->cb, uidance->dropdown, uidance);
+        uidance->cb, uidance->dropdown, uidance);
   } else {
     /* UIDANCE_ALL_DANCES or UIDANCE_EMPTY_DANCE */
     uidance->buttonp = uiComboboxCreate (parentwin, label,
-        &uidance->cb, uidance->dropdown, uidance);
+        uidance->cb, uidance->dropdown, uidance);
   }
   uidanceCreateDanceList (uidance);
   if (where == UIDANCE_PACK_END) {
@@ -88,6 +90,7 @@ void
 uidanceFree (uidance_t *uidance)
 {
   if (uidance != NULL) {
+    callbackFree (uidance->cb);
     uiDropDownFree (uidance->dropdown);
     mdfree (uidance);
   }
@@ -139,7 +142,7 @@ uidanceSizeGroupAdd (uidance_t *uidance, UIWidget *sg)
 }
 
 void
-uidanceSetCallback (uidance_t *uidance, UICallback *cb)
+uidanceSetCallback (uidance_t *uidance, callback_t *cb)
 {
   if (uidance == NULL) {
     return;
@@ -162,7 +165,7 @@ uidanceSelectHandler (void *udata, long idx)
   }
 
   if (uidance->selectcb != NULL) {
-    uiutilsCallbackLongIntHandler (uidance->selectcb, idx, uidance->count);
+    callbackHandlerLongInt (uidance->selectcb, idx, uidance->count);
   }
   return UICB_CONT;
 }

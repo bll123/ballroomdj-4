@@ -27,6 +27,7 @@
 #include "playlist.h"
 #include "tagdef.h"
 #include "ui.h"
+#include "callback.h"
 #include "uiduallist.h"
 #include "uiselectfile.h"
 
@@ -42,9 +43,9 @@ typedef struct manageseq {
   UIWidget        *windowp;
   nlist_t         *options;
   uimenu_t        seqmenu;
-  UICallback      callback [MSEQ_CB_MAX];
-  UICallback      *seqloadcb;
-  UICallback      *seqnewcb;
+  callback_t      *callbacks [MSEQ_CB_MAX];
+  callback_t      *seqloadcb;
+  callback_t      *seqnewcb;
   uiduallist_t    *seqduallist;
   uientry_t       *seqname;
   UIWidget        *statusMsg;
@@ -79,6 +80,9 @@ manageSequenceAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   manageseq->inload = false;
   manageseq->seqloadcb = NULL;
   manageseq->seqnewcb = NULL;
+  for (int i = 0; i < MSEQ_CB_MAX; ++i) {
+    manageseq->callbacks [i] = NULL;
+  }
 
   return manageseq;
 }
@@ -90,12 +94,15 @@ manageSequenceFree (manageseq_t *manageseq)
     uiduallistFree (manageseq->seqduallist);
     dataFree (manageseq->seqoldname);
     uiEntryFree (manageseq->seqname);
+    for (int i = 0; i < MSEQ_CB_MAX; ++i) {
+      callbackFree (manageseq->callbacks [i]);
+    }
     mdfree (manageseq);
   }
 }
 
 void
-manageSequenceSetLoadCallback (manageseq_t *manageseq, UICallback *uicb)
+manageSequenceSetLoadCallback (manageseq_t *manageseq, callback_t *uicb)
 {
   if (manageseq == NULL) {
     return;
@@ -104,7 +111,7 @@ manageSequenceSetLoadCallback (manageseq_t *manageseq, UICallback *uicb)
 }
 
 void
-manageSequenceSetNewCallback (manageseq_t *manageseq, UICallback *uicb)
+manageSequenceSetNewCallback (manageseq_t *manageseq, callback_t *uicb)
 {
   if (manageseq == NULL) {
     return;
@@ -168,29 +175,29 @@ manageSequenceMenu (manageseq_t *manageseq, UIWidget *uimenubar)
 
     uiCreateSubMenu (&menuitem, &menu);
 
-    uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_LOAD],
+    manageseq->callbacks [MSEQ_MENU_CB_SEQ_LOAD] = callbackInit (
         manageSequenceLoad, manageseq, NULL);
     /* CONTEXT: sequence editor: menu selection: sequence: edit menu: load */
     uiMenuCreateItem (&menu, &menuitem, _("Load"),
-        &manageseq->callback [MSEQ_MENU_CB_SEQ_LOAD]);
+        manageseq->callbacks [MSEQ_MENU_CB_SEQ_LOAD]);
 
-    uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_NEW],
+    manageseq->callbacks [MSEQ_MENU_CB_SEQ_NEW] = callbackInit (
         manageSequenceNew, manageseq, NULL);
     /* CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence */
     uiMenuCreateItem (&menu, &menuitem, _("Start New Sequence"),
-        &manageseq->callback [MSEQ_MENU_CB_SEQ_NEW]);
+        manageseq->callbacks [MSEQ_MENU_CB_SEQ_NEW]);
 
-    uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_COPY],
+    manageseq->callbacks [MSEQ_MENU_CB_SEQ_COPY] = callbackInit (
         manageSequenceCopy, manageseq, NULL);
     /* CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy */
     uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
-        &manageseq->callback [MSEQ_MENU_CB_SEQ_COPY]);
+        manageseq->callbacks [MSEQ_MENU_CB_SEQ_COPY]);
 
-    uiutilsUICallbackInit (&manageseq->callback [MSEQ_MENU_CB_SEQ_DELETE],
+    manageseq->callbacks [MSEQ_MENU_CB_SEQ_DELETE] = callbackInit (
         manageSequenceDelete, manageseq, NULL);
     /* CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence */
     uiMenuCreateItem (&menu, &menuitem, _("Delete"),
-        &manageseq->callback [MSEQ_MENU_CB_SEQ_DELETE]);
+        manageseq->callbacks [MSEQ_MENU_CB_SEQ_DELETE]);
 
     manageseq->seqmenu.initialized = true;
   }
@@ -257,7 +264,7 @@ manageSequenceSave (manageseq_t *manageseq)
   playlistCheckAndCreate (name, PLTYPE_SEQUENCE);
   slistFree (slist);
   if (manageseq->seqloadcb != NULL) {
-    uiutilsCallbackStrHandler (manageseq->seqloadcb, name);
+    callbackHandlerStr (manageseq->seqloadcb, name);
   }
   mdfree (name);
   logProcEnd (LOG_PROC, "manageSequenceSave", "");
@@ -285,7 +292,7 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
     manageSequenceNew (manageseq);
   } else {
     if (manageseq->seqloadcb != NULL) {
-      uiutilsCallbackStrHandler (manageseq->seqloadcb, name);
+      callbackHandlerStr (manageseq->seqloadcb, name);
     }
   }
   mdfree (name);
@@ -337,7 +344,7 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag)
 
   manageSetSequenceName (manageseq, fn);
   if (manageseq->seqloadcb != NULL && preloadflag == MANAGE_STD) {
-    uiutilsCallbackStrHandler (manageseq->seqloadcb, fn);
+    callbackHandlerStr (manageseq->seqloadcb, fn);
   }
 
   manageseq->seqbackupcreated = false;
@@ -391,7 +398,7 @@ manageSequenceCopy (void *udata)
     manageseq->seqbackupcreated = false;
     uiduallistClearChanged (manageseq->seqduallist);
     if (manageseq->seqloadcb != NULL) {
-      uiutilsCallbackStrHandler (manageseq->seqloadcb, newname);
+      callbackHandlerStr (manageseq->seqloadcb, newname);
     }
   }
   mdfree (oname);
@@ -419,7 +426,7 @@ manageSequenceNew (void *udata)
   uiduallistClearChanged (manageseq->seqduallist);
   slistFree (tlist);
   if (manageseq->seqnewcb != NULL) {
-    uiutilsCallbackHandler (manageseq->seqnewcb);
+    callbackHandler (manageseq->seqnewcb);
   }
   logProcEnd (LOG_PROC, "manageSequenceNew", "");
   return UICB_CONT;

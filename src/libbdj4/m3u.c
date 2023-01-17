@@ -31,7 +31,6 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
 {
   FILE        *fh;
   nlistidx_t  iteridx;
-  nlistidx_t  saveiteridx;
   dbidx_t     dbidx;
   song_t      *song;
   char        tbuff [MAXPATHLEN];

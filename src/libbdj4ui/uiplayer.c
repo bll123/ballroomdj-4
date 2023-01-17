@@ -27,8 +27,9 @@
 #include "progstate.h"
 #include "song.h"
 #include "tagdef.h"
-#include "uiplayer.h"
 #include "ui.h"
+#include "callback.h"
+#include "uiplayer.h"
 
 /* there are all sorts of latency issues making the sliders work nicely */
 /* it will take at least 100ms and at most 200ms for the message to get */
@@ -45,6 +46,9 @@ enum {
   UIPLAYER_CB_NEXTSONG,
   UIPLAYER_CB_PAUSEATEND,
   UIPLAYER_CB_REPEAT,
+  UIPLAYER_CB_SPEED,
+  UIPLAYER_CB_SEEK,
+  UIPLAYER_CB_VOLUME,
   UIPLAYER_CB_MAX,
 };
 
@@ -62,7 +66,7 @@ typedef struct uiplayer {
   conn_t          *conn;
   playerstate_t   playerState;
   musicdb_t       *musicdb;
-  UICallback      callbacks [UIPLAYER_CB_MAX];
+  callback_t      *callbacks [UIPLAYER_CB_MAX];
   dbidx_t         curr_dbidx;
   /* song display */
   UIWidget        vbox;
@@ -74,7 +78,6 @@ typedef struct uiplayer {
   uibutton_t      *buttons [UIPLAYER_BUTTON_MAX];
   /* speed controls / display */
   UIWidget        speedScale;
-  UICallback      speedcb;
   UIWidget        speedDisplayLab;
   bool            speedLock;
   mstime_t        speedLockTimeout;
@@ -83,7 +86,6 @@ typedef struct uiplayer {
   UIWidget        countdownTimerLab;
   UIWidget        durationLab;
   UIWidget        seekScale;
-  UICallback      seekcb;
   UIWidget        seekDisplayLab;
   ssize_t         lastdur;
   bool            seekLock;
@@ -104,7 +106,6 @@ typedef struct uiplayer {
   bool            pauseatendstate;
   /* volume controls / display */
   UIWidget        volumeScale;
-  UICallback      volumecb;
   bool            volumeLock;
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;
@@ -170,6 +171,9 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   for (int i = 0; i < UIPLAYER_BUTTON_MAX; ++i) {
     uiplayer->buttons [i] = NULL;
   }
+  for (int i = 0; i < UIPLAYER_CB_MAX; ++i) {
+    uiplayer->callbacks [i] = NULL;
+  }
 
   progstateSetCallback (uiplayer->progstate, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
   progstateSetCallback (uiplayer->progstate, STATE_CLOSING, uiplayerClosingCallback, uiplayer);
@@ -189,6 +193,9 @@ uiplayerFree (uiplayer_t *uiplayer)
 {
   logProcBegin (LOG_PROC, "uiplayerFree");
   if (uiplayer != NULL) {
+    for (int i = 0; i < UIPLAYER_CB_MAX; ++i) {
+      callbackFree (uiplayer->callbacks [i]);
+    }
     for (int i = 0; i < UIPLAYER_BUTTON_MAX; ++i) {
       uiButtonFree (uiplayer->buttons [i]);
     }
@@ -312,9 +319,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiCreateScale (&uiplayer->speedScale, 70.0, 130.0, 1.0, 10.0, 100.0, 0);
   uiBoxPackEnd (&hbox, &uiplayer->speedScale);
   uiSizeGroupAdd (&sgC, &uiplayer->speedScale);
-  uiutilsUICallbackDoubleInit (&uiplayer->speedcb,
+  uiplayer->callbacks [UIPLAYER_CB_SPEED] = callbackInitDouble (
       uiplayerSpeedCallback, uiplayer);
-  uiScaleSetCallback (&uiplayer->speedScale, &uiplayer->speedcb);
+  uiScaleSetCallback (&uiplayer->speedScale, uiplayer->callbacks [UIPLAYER_CB_SPEED]);
 
   /* size group D */
   /* CONTEXT: playerui: the current speed for song playback */
@@ -366,9 +373,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiCreateScale (&uiplayer->seekScale, 0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
   uiBoxPackEnd (&hbox, &uiplayer->seekScale);
   uiSizeGroupAdd (&sgC, &uiplayer->seekScale);
-  uiutilsUICallbackDoubleInit (&uiplayer->seekcb,
+  uiplayer->callbacks [UIPLAYER_CB_SEEK] = callbackInitDouble (
       uiplayerSeekCallback, uiplayer);
-  uiScaleSetCallback (&uiplayer->seekScale, &uiplayer->seekcb);
+  uiScaleSetCallback (&uiplayer->seekScale, uiplayer->callbacks [UIPLAYER_CB_SEEK]);
 
   /* size group D */
   /* CONTEXT: playerui: the current position of the song during song playback */
@@ -389,20 +396,20 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sgE, &uiwidget);
 
-  uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_FADE],
+  uiplayer->callbacks [UIPLAYER_CB_FADE] = callbackInit (
       uiplayerFadeProcess, uiplayer, NULL);
   uibutton = uiCreateButton (
-      &uiplayer->callbacks [UIPLAYER_CB_FADE],
+      uiplayer->callbacks [UIPLAYER_CB_FADE],
       /* CONTEXT: playerui: button: fade out the song and stop playing it */
       _("Fade"), NULL);
   uiplayer->buttons [UIPLAYER_BUTTON_FADE] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_PLAYPAUSE],
+  uiplayer->callbacks [UIPLAYER_CB_PLAYPAUSE] = callbackInit (
       uiplayerPlayPauseProcess, uiplayer, NULL);
   uibutton = uiCreateButton (
-      &uiplayer->callbacks [UIPLAYER_CB_PLAYPAUSE],
+      uiplayer->callbacks [UIPLAYER_CB_PLAYPAUSE],
       /* CONTEXT: playerui: button: tooltip: play or pause the song */
       _("Play / Pause"), "button_playpause");
   uiplayer->buttons [UIPLAYER_BUTTON_PLAYPAUSE] = uibutton;
@@ -411,29 +418,29 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-  uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_REPEAT],
+  uiplayer->callbacks [UIPLAYER_CB_REPEAT] = callbackInit (
       uiplayerRepeatCallback, uiplayer, NULL);
   uiCreateToggleButton (&uiplayer->repeatButton, "",
       /* CONTEXT: playerui: button: tooltip: toggle the repeat song on and off */
       tbuff, _("Toggle Repeat"), NULL, 0);
   uiBoxPackStart (&hbox, &uiplayer->repeatButton);
   uiToggleButtonSetCallback (&uiplayer->repeatButton,
-      &uiplayer->callbacks [UIPLAYER_CB_REPEAT]);
+      uiplayer->callbacks [UIPLAYER_CB_REPEAT]);
 
-  uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_BEGSONG],
+  uiplayer->callbacks [UIPLAYER_CB_BEGSONG] = callbackInit (
       uiplayerSongBeginProcess, uiplayer, NULL);
   uibutton = uiCreateButton (
-      &uiplayer->callbacks [UIPLAYER_CB_BEGSONG],
+      uiplayer->callbacks [UIPLAYER_CB_BEGSONG],
       /* CONTEXT: playerui: button: tooltip: return to the beginning of the song */
       _("Return to beginning of song"), "button_begin");
   uiplayer->buttons [UIPLAYER_BUTTON_BEGSONG] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_NEXTSONG],
+  uiplayer->callbacks [UIPLAYER_CB_NEXTSONG] = callbackInit (
       uiplayerNextSongProcess, uiplayer, NULL);
   uibutton = uiCreateButton (
-      &uiplayer->callbacks [UIPLAYER_CB_NEXTSONG],
+      uiplayer->callbacks [UIPLAYER_CB_NEXTSONG],
       /* CONTEXT: playerui: button: tooltip: start playing the next song (immediate) */
       _("Next Song"), "button_nextsong");
   uiplayer->buttons [UIPLAYER_BUTTON_NEXTSONG] = uibutton;
@@ -450,14 +457,14 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageFromFile (&uiplayer->ledoffImg, tbuff);
   uiWidgetMakePersistent (&uiplayer->ledoffImg);
 
-  uiutilsUICallbackInit (&uiplayer->callbacks [UIPLAYER_CB_PAUSEATEND],
+  uiplayer->callbacks [UIPLAYER_CB_PAUSEATEND] = callbackInit (
       uiplayerPauseatendCallback, uiplayer, NULL);
   /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
   uiCreateToggleButton (&uiplayer->pauseatendButton, _("Pause at End"),
       NULL, NULL, &uiplayer->ledoffImg, 0);
   uiBoxPackStart (&hbox, &uiplayer->pauseatendButton);
   uiToggleButtonSetCallback (&uiplayer->pauseatendButton,
-      &uiplayer->callbacks [UIPLAYER_CB_PAUSEATEND]);
+      uiplayer->callbacks [UIPLAYER_CB_PAUSEATEND]);
 
   /* volume controls / display */
 
@@ -476,9 +483,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiCreateScale (&uiplayer->volumeScale, 0.0, 100.0, 1.0, 10.0, 0.0, 0);
   uiBoxPackEnd (&hbox, &uiplayer->volumeScale);
   uiSizeGroupAdd (&sgC, &uiplayer->volumeScale);
-  uiutilsUICallbackDoubleInit (&uiplayer->volumecb,
+  uiplayer->callbacks [UIPLAYER_CB_VOLUME] = callbackInitDouble (
       uiplayerVolumeCallback, uiplayer);
-  uiScaleSetCallback (&uiplayer->volumeScale, &uiplayer->volumecb);
+  uiScaleSetCallback (&uiplayer->volumeScale, uiplayer->callbacks [UIPLAYER_CB_VOLUME]);
 
   /* size group D */
   /* CONTEXT: playerui: The current volume of the song */

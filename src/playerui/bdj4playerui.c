@@ -44,6 +44,7 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "callback.h"
 #include "uimusicq.h"
 #include "uinbutil.h"
 #include "uiplayer.h"
@@ -69,6 +70,7 @@ enum {
   PLUI_CB_CLEAR_QUEUE,
   PLUI_CB_REQ_EXT,
   PLUI_CB_KEYB,
+  PLUI_CB_STATUS_DISP,
   PLUI_CB_MAX,
 };
 
@@ -97,7 +99,7 @@ typedef struct {
   int             currpage;
   UIWidget        window;
   UIWidget        vbox;
-  UICallback      callbacks [PLUI_CB_MAX];
+  callback_t      *callbacks [PLUI_CB_MAX];
   UIWidget        clock;
   UIWidget        musicqImage [MUSICQ_PB_MAX];
   uibutton_t      *setPlaybackButton;
@@ -155,6 +157,7 @@ static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static bool     pluiCloseWin (void *udata);
 static void     pluiSigHandler (int sig);
+static bool     pluiStatusMsgDisplay (void *udata, int count, int tot);
 /* queue selection handlers */
 static bool     pluiSwitchPage (void *udata, long pagenum);
 static void     pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum);
@@ -180,6 +183,7 @@ static void     pluiPushHistory (playerui_t *plui, const char *args);
 static bool     pluiRequestExternalDialog (void *udata);
 static bool     pluiReqextCallback (void *udata);
 static bool     pluiKeyEvent (void *udata);
+static bool     pluiExportMP3 (void *udata);
 
 static int gKillReceived = 0;
 
@@ -226,6 +230,9 @@ main (int argc, char *argv[])
   plui.currpage = 0;
   plui.mainalready = false;
   plui.setPlaybackButton = NULL;
+  for (int i = 0; i < PLUI_CB_MAX; ++i) {
+    plui.callbacks [i] = NULL;
+  }
 
   osSetStandardSignals (pluiSigHandler);
 
@@ -290,22 +297,6 @@ main (int argc, char *argv[])
   return status;
 }
 
-static bool
-pluiExportMP3 (void *udata)
-{
-  playerui_t  *plui = udata;
-  char        tmp [40];
-
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
-
-  /* CONTEXT: export as mp3: please wait... status message */
-  uiLabelSetText (&plui->statusMsg, _("Please wait\xe2\x80\xa6"));
-
-  snprintf (tmp, sizeof (tmp), "%d", plui->musicqManageIdx);
-  connSendMessage (plui->conn, ROUTE_MAIN, MSG_MAIN_REQ_QUEUE_INFO, tmp);
-  return UICB_CONT;
-}
-
 /* internal routines */
 
 static bool
@@ -351,6 +342,9 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiWidgetClearPersistent (&plui->ledonPixbuf);
   uiWidgetClearPersistent (&plui->ledoffPixbuf);
   uiButtonFree (plui->setPlaybackButton);
+  for (int i = 0; i < PLUI_CB_MAX; ++i) {
+    callbackFree (plui->callbacks [i]);
+  }
 
   pathbldMakePath (fn, sizeof (fn),
       PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
@@ -410,12 +404,12 @@ pluiBuildUI (playerui_t *plui)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_player", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_CLOSE],
+  plui->callbacks [PLUI_CB_CLOSE] = callbackInit (
       pluiCloseWin, plui, NULL);
   /* CONTEXT: playerui: main window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Player"),
       bdjoptGetStr (OPT_P_PROFILENAME));
-  uiCreateMainWindow (&plui->window, &plui->callbacks [PLUI_CB_CLOSE],
+  uiCreateMainWindow (&plui->window, plui->callbacks [PLUI_CB_CLOSE],
       tbuff, imgbuff);
 
   pluiInitializeUI (plui);
@@ -425,10 +419,10 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetSetAllMargins (&plui->vbox, 2);
 
   plui->uikey = uiKeyAlloc ();
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_KEYB],
+  plui->callbacks [PLUI_CB_KEYB] = callbackInit (
       pluiKeyEvent, plui, NULL);
   uiKeySetKeyCallback (plui->uikey, &plui->vbox,
-      &plui->callbacks [PLUI_CB_KEYB]);
+      plui->callbacks [PLUI_CB_KEYB]);
 
   /* menu */
   uiutilsAddAccentColorDisplay (&plui->vbox, &hbox, &uiwidget);
@@ -458,11 +452,11 @@ pluiBuildUI (playerui_t *plui)
 
   uiCreateSubMenu (&menuitem, &menu);
 
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL],
+  plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL] = callbackInit (
       pluiRequestExternalDialog, plui, NULL);
   /* CONTEXT: playerui: menu selection: action: request external */
   uiMenuCreateItem (&menu, &menuitem, _("Request External"),
-      &plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL]);
+      plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL]);
 
   /* marquee */
   /* CONTEXT: playerui: menu selection: marquee related options */
@@ -470,17 +464,17 @@ pluiBuildUI (playerui_t *plui)
 
   uiCreateSubMenu (&menuitem, &menu);
 
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ],
+  plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ] = callbackInit (
       pluiMarqueeFontSizeDialog, plui, NULL);
   /* CONTEXT: playerui: menu selection: marquee: change the marquee font size */
   uiMenuCreateItem (&menu, &menuitem, _("Font Size"),
-      &plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ]);
+      plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ]);
 
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_MQ_FIND],
+  plui->callbacks [PLUI_MENU_CB_MQ_FIND] = callbackInit (
       pluiMarqueeFind, plui, NULL);
   /* CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen */
   uiMenuCreateItem (&menu, &menuitem, _("Recover Marquee"),
-      &plui->callbacks [PLUI_MENU_CB_MQ_FIND]);
+      plui->callbacks [PLUI_MENU_CB_MQ_FIND]);
 
   /* export */
   /* CONTEXT: playerui: menu selection: export */
@@ -488,12 +482,12 @@ pluiBuildUI (playerui_t *plui)
 
   uiCreateSubMenu (&menuitem, &menu);
 
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_EXP_MP3],
+  plui->callbacks [PLUI_MENU_CB_EXP_MP3] = callbackInit (
       pluiExportMP3, plui, NULL);
   /* CONTEXT: player ui: menu selection: export: export as MP3 */
   snprintf (tbuff, sizeof (tbuff), _("Export as %s"), BDJ4_MP3_LABEL);
   uiMenuCreateItem (&menu, &menuitem, tbuff,
-      &plui->callbacks [PLUI_MENU_CB_EXP_MP3]);
+      plui->callbacks [PLUI_MENU_CB_EXP_MP3]);
   /* a missing audio adjust file will not stop startup */
   tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
   if (tempp == NULL) {
@@ -506,19 +500,19 @@ pluiBuildUI (playerui_t *plui)
 
   uiCreateSubMenu (&menuitem, &menu);
 
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE],
+  plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE] = callbackInit (
       pluiToggleExtraQueues, plui, NULL);
   /* CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue) */
   uiMenuCreateCheckbox (&menu, &menuitem, _("Show Extra Queues"),
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES),
-      &plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE]);
+      plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE]);
 
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE],
+  plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE] = callbackInit (
       pluiToggleSwitchQueue, plui, NULL);
   /* CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue */
   uiMenuCreateCheckbox (&menu, &menuitem, _("Switch Queue When Empty"),
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
-      &plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE]);
+      plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE]);
 
   /* player */
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
@@ -527,13 +521,13 @@ pluiBuildUI (playerui_t *plui)
   uiCreateNotebook (&plui->notebook);
   uiBoxPackStartExpand (&plui->vbox, &plui->notebook);
 
-  uiutilsUICallbackLongInit (&plui->callbacks [PLUI_CB_NOTEBOOK],
+  plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitLong (
       pluiSwitchPage, plui);
-  uiNotebookSetCallback (&plui->notebook, &plui->callbacks [PLUI_CB_NOTEBOOK]);
+  uiNotebookSetCallback (&plui->notebook, plui->callbacks [PLUI_CB_NOTEBOOK]);
 
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
+  plui->callbacks [PLUI_CB_PLAYBACK_QUEUE] = callbackInit (
       pluiProcessSetPlaybackQueue, plui, NULL);
-  uibutton = uiCreateButton (&plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
+  uibutton = uiCreateButton (plui->callbacks [PLUI_CB_PLAYBACK_QUEUE],
       /* CONTEXT: playerui: select the current queue for playback */
       _("Set Queue for Playback"), NULL);
   plui->setPlaybackButton = uibutton;
@@ -600,14 +594,14 @@ pluiBuildUI (playerui_t *plui)
   osuiSetIcon (imgbuff);
   pluiPlaybackButtonHideShow (plui, 0);
 
-  uiutilsUICallbackLongInit (&plui->callbacks [PLUI_CB_SONG_SAVE],
+  plui->callbacks [PLUI_CB_SONG_SAVE] = callbackInitLong (
       pluiSongSaveCallback, plui);
-  uimusicqSetSongSaveCallback (plui->uimusicq, &plui->callbacks [PLUI_CB_SONG_SAVE]);
-  uisongselSetSongSaveCallback (plui->uisongsel, &plui->callbacks [PLUI_CB_SONG_SAVE]);
+  uimusicqSetSongSaveCallback (plui->uimusicq, plui->callbacks [PLUI_CB_SONG_SAVE]);
+  uisongselSetSongSaveCallback (plui->uisongsel, plui->callbacks [PLUI_CB_SONG_SAVE]);
 
-  uiutilsUICallbackInit (&plui->callbacks [PLUI_CB_CLEAR_QUEUE],
+  plui->callbacks [PLUI_CB_CLEAR_QUEUE] = callbackInit (
       pluiClearQueueCallback, plui, NULL);
-  uimusicqSetClearQueueCallback (plui->uimusicq, &plui->callbacks [PLUI_CB_CLEAR_QUEUE]);
+  uimusicqSetClearQueueCallback (plui->uimusicq, plui->callbacks [PLUI_CB_CLEAR_QUEUE]);
 
   plui->uibuilt = true;
 
@@ -620,10 +614,10 @@ pluiInitializeUI (playerui_t *plui)
   plui->uiplayer = uiplayerInit (plui->progstate, plui->conn, plui->musicdb);
 
   plui->uireqext = uireqextInit (&plui->window, plui->options);
-  uiutilsUICallbackInit (
-      &plui->callbacks [PLUI_CB_REQ_EXT], pluiReqextCallback,
+  plui->callbacks [PLUI_CB_REQ_EXT] = callbackInit (
+      pluiReqextCallback,
       plui, "musicq: request external response");
-  uireqextSetResponseCallback (plui->uireqext, &plui->callbacks [PLUI_CB_REQ_EXT]);
+  uireqextSetResponseCallback (plui->uireqext, plui->callbacks [PLUI_CB_REQ_EXT]);
 
   plui->uimusicq = uimusicqInit ("plui", plui->conn, plui->musicdb,
       plui->dispsel, DISP_SEL_MUSICQ);
@@ -633,12 +627,12 @@ pluiInitializeUI (playerui_t *plui)
   plui->uisongsel = uisongselInit ("plui-req", plui->conn, plui->musicdb,
       plui->dispsel, NULL, plui->options,
       plui->uisongfilter, DISP_SEL_REQUEST);
-  uiutilsUICallbackLongIntInit (&plui->callbacks [PLUI_CB_QUEUE_SL],
+  plui->callbacks [PLUI_CB_QUEUE_SL] = callbackInitLongInt (
       pluiQueueProcess, plui);
   uisongselSetQueueCallback (plui->uisongsel,
-      &plui->callbacks [PLUI_CB_QUEUE_SL]);
+      plui->callbacks [PLUI_CB_QUEUE_SL]);
   uimusicqSetQueueCallback (plui->uimusicq,
-      &plui->callbacks [PLUI_CB_QUEUE_SL]);
+      plui->callbacks [PLUI_CB_QUEUE_SL]);
 }
 
 
@@ -938,7 +932,8 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MAIN_QUEUE_INFO: {
           uimusicqExportMP3Dialog (plui->uimusicq, &plui->window,
-              &plui->statusMsg, targs, plui->musicqManageIdx);
+              (callbackFuncIntInt) plui->callbacks [PLUI_CB_STATUS_DISP],
+              targs, plui->musicqManageIdx);
           break;
         }
         default: {
@@ -986,6 +981,23 @@ static void
 pluiSigHandler (int sig)
 {
   gKillReceived = 1;
+}
+
+static bool
+pluiStatusMsgDisplay (void *udata, int count, int tot)
+{
+  UIWidget  *statusMsg = udata;
+  char      tbuff [200];
+
+  if (count < 0 && tot < 0) {
+    uiLabelSetText (statusMsg, "");
+  } else {
+    /* CONTEXT: please wait... (count/total) status message */
+    snprintf (tbuff, sizeof (tbuff), _("Please wait\xe2\x80\xa6 (%d/%d)"), count, tot);
+    uiLabelSetText (statusMsg, tbuff);
+  }
+
+  return UICB_CONT;
 }
 
 static bool
@@ -1218,10 +1230,10 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   logProcBegin (LOG_PROC, "pluiCreateMarqueeFontSizeDialog");
 
-  uiutilsUICallbackLongInit (&plui->callbacks [PLUI_CB_FONT_SIZE],
+  plui->callbacks [PLUI_CB_FONT_SIZE] = callbackInitLong (
       pluiMarqueeFontSizeDialogResponse, plui);
   uiCreateDialog (&plui->marqueeFontSizeDialog, &plui->window,
-      &plui->callbacks [PLUI_CB_FONT_SIZE],
+      plui->callbacks [PLUI_CB_FONT_SIZE],
       /* CONTEXT: playerui: marquee font size dialog: window title */
       _("Marquee Font Size"),
       /* CONTEXT: playerui: marquee font size dialog: action button */
@@ -1464,3 +1476,23 @@ pluiKeyEvent (void *udata)
 
   return UICB_CONT;
 }
+
+static bool
+pluiExportMP3 (void *udata)
+{
+  playerui_t  *plui = udata;
+  char        tmp [40];
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
+
+  plui->callbacks [PLUI_CB_STATUS_DISP] = callbackInitIntInt (
+      pluiStatusMsgDisplay, plui);
+
+  /* CONTEXT: export as mp3: please wait... status message */
+  uiLabelSetText (&plui->statusMsg, _("Please wait\xe2\x80\xa6"));
+
+  snprintf (tmp, sizeof (tmp), "%d", plui->musicqManageIdx);
+  connSendMessage (plui->conn, ROUTE_MAIN, MSG_MAIN_REQ_QUEUE_INFO, tmp);
+  return UICB_CONT;
+}
+

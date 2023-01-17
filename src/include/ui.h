@@ -4,7 +4,6 @@
 #ifndef INC_UI_H
 #define INC_UI_H
 
-
 #include <stdbool.h>
 
 #if BDJ4_USE_GTK
@@ -15,26 +14,7 @@
 #include "slist.h"
 #include "song.h"
 #include "tmutil.h"
-
-typedef bool  (*UICallbackFunc)(void *udata);
-typedef bool  (*UIDoubleCallbackFunc)(void *udata, double value);
-typedef bool  (*UIIntIntCallbackFunc)(void *udata, int a, int b);
-typedef bool  (*UILongCallbackFunc)(void *udata, long value);
-typedef bool  (*UILongIntCallbackFunc)(void *udata, long lval, int ival);
-typedef long  (*UIStrCallbackFunc)(void *udata, const char *txt);
-
-typedef struct {
-  union {
-    UICallbackFunc        cb;
-    UIDoubleCallbackFunc  doublecb;
-    UIIntIntCallbackFunc  intintcb;
-    UILongCallbackFunc    longcb;
-    UILongIntCallbackFunc longintcb;
-    UIStrCallbackFunc     strcb;
-  };
-  void            *udata;
-  const char      *actiontext;
-} UICallback;
+#include "callback.h"
 
 #if BDJ4_USE_GTK
 /* these are defined based on the gtk values */
@@ -78,16 +58,6 @@ extern int uiBaseMarginSz;
 void uiutilsUIWidgetInit (UIWidget *uiwidget);
 bool uiutilsUIWidgetSet (UIWidget *uiwidget);
 void uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source);
-void uiutilsUICallbackInit (UICallback *uicb, UICallbackFunc cb, void *udata, const char *actiontext);
-void uiutilsUICallbackDoubleInit (UICallback *uicb, UIDoubleCallbackFunc cb, void *udata);
-void uiutilsUICallbackIntIntInit (UICallback *uicb, UIIntIntCallbackFunc cb, void *udata);
-void uiutilsUICallbackLongInit (UICallback *uicb, UILongCallbackFunc cb, void *udata);
-void uiutilsUICallbackLongIntInit (UICallback *uicb, UILongIntCallbackFunc cb, void *udata);
-void uiutilsUICallbackStrInit (UICallback *uicb, UIStrCallbackFunc cb, void *udata);
-bool uiutilsCallbackHandler (UICallback *uicb);
-bool uiutilsCallbackLongHandler (UICallback *uicb, long value);
-bool uiutilsCallbackLongIntHandler (UICallback *uicb, long lval, int ival);
-long uiutilsCallbackStrHandler (UICallback *uicb, const char *str);
 
 /* uigtkdialog.c */
 typedef struct uiselect uiselect_t;
@@ -104,7 +74,7 @@ char  *uiSelectDirDialog (uiselect_t *selectdata);
 char  *uiSelectFileDialog (uiselect_t *selectdata);
 char  *uiSaveFileDialog (uiselect_t *selectdata);
 void uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
-    UICallback *uicb, const char *title, ...);
+    callback_t *uicb, const char *title, ...);
 void  uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp);
 void  uiDialogDestroy (UIWidget *uidialog);
 uiselect_t *uiDialogCreateSelect (UIWidget *window, const char *label, const char *startpath, const char *dfltname, const char *mimefiltername, const char *mimetype);
@@ -114,7 +84,7 @@ typedef struct uikey uikey_t;
 
 uikey_t * uiKeyAlloc (void);
 void    uiKeyFree (uikey_t *uikey);
-void    uiKeySetKeyCallback (uikey_t *uikey, UIWidget *uiwidgetp, UICallback *uicb);
+void    uiKeySetKeyCallback (uikey_t *uikey, UIWidget *uiwidgetp, callback_t *uicb);
 int     uiKeyEvent (uikey_t *uikey);
 bool    uiKeyIsPressEvent (uikey_t *uikey);
 bool    uiKeyIsReleaseEvent (uikey_t *uikey);
@@ -144,14 +114,14 @@ typedef struct {
 
 void uiCreateMenubar (UIWidget *uiwidget);
 void uiCreateSubMenu (UIWidget *uimenuitem, UIWidget *uimenu);
-void uiMenuCreateItem (UIWidget *uimenu, UIWidget *uimenuitem, const char *txt, UICallback *uicb);
+void uiMenuCreateItem (UIWidget *uimenu, UIWidget *uimenuitem, const char *txt, callback_t *uicb);
 void uiMenuCreateCheckbox (UIWidget *uimenu, UIWidget *uimenuitem,
-    const char *txt, int active, UICallback *uicb);
+    const char *txt, int active, callback_t *uicb);
 void uiMenuInit (uimenu_t *menu);
 void uiMenuAddMainItem (UIWidget *uimenubar, UIWidget *uimenuitem,
     uimenu_t *menu, const char *txt);
 void uiMenuAddSeparator (UIWidget *uimenu, UIWidget *uimenuitem);
-void uiMenuSetMainCallback (UIWidget *uimenuitem, UICallback *uicb);
+void uiMenuSetMainCallback (UIWidget *uimenuitem, callback_t *uicb);
 void uiMenuDisplay (uimenu_t *menu);
 void uiMenuClear (uimenu_t *menu);
 
@@ -181,7 +151,7 @@ void  uichgindMarkChanged (uichgind_t *uichgind);
 /* uigtkbutton.c */
 typedef struct uibutton uibutton_t;
 
-uibutton_t *uiCreateButton (UICallback *uicb, char *title, char *imagenm);
+uibutton_t *uiCreateButton (callback_t *uicb, char *title, char *imagenm);
 void uiButtonFree (uibutton_t *uibutton);
 UIWidget *uiButtonGetUIWidget (uibutton_t *uibutton);
 void uiButtonSetImagePosRight (uibutton_t *uibutton);
@@ -255,7 +225,7 @@ void  uiSpinboxDoubleCreate (UIWidget *uiwidget);
 void  uiSpinboxDoubleDefaultCreate (uispinbox_t *spinbox);
 
 uispinbox_t *uiSpinboxTimeInit (int sbtype);
-void  uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, UICallback *convcb);
+void  uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, callback_t *convcb);
 ssize_t uiSpinboxTimeGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTimeSetValue (uispinbox_t *spinbox, ssize_t value);
 
@@ -269,9 +239,9 @@ void  uiSpinboxResetChanged (uispinbox_t *spinbox);
 void  uiSpinboxAlignRight (uispinbox_t *spinbox);
 void  uiSpinboxSetColor (uispinbox_t *spinbox, const char *color);
 UIWidget * uiSpinboxGetUIWidget (uispinbox_t *spinbox);
-void uiSpinboxTextSetValueChangedCallback (uispinbox_t *spinbox, UICallback *uicb);
-void uiSpinboxTimeSetValueChangedCallback (uispinbox_t *spinbox, UICallback *uicb);
-void uiSpinboxSetValueChangedCallback (UIWidget *uiwidget, UICallback *uicb);
+void uiSpinboxTextSetValueChangedCallback (uispinbox_t *spinbox, callback_t *uicb);
+void uiSpinboxTimeSetValueChangedCallback (uispinbox_t *spinbox, callback_t *uicb);
+void uiSpinboxSetValueChangedCallback (UIWidget *uiwidget, callback_t *uicb);
 
 /* uigtkdropdown.c */
 typedef struct uidropdown uidropdown_t;
@@ -279,10 +249,10 @@ typedef struct uidropdown uidropdown_t;
 uidropdown_t *uiDropDownInit (void);
 void uiDropDownFree (uidropdown_t *dropdown);
 UIWidget *uiDropDownCreate (UIWidget *parentwin,
-    const char *title, UICallback *uicb,
+    const char *title, callback_t *uicb,
     uidropdown_t *dropdown, void *udata);
 UIWidget *uiComboboxCreate (UIWidget *parentwin,
-    const char *title, UICallback *uicb,
+    const char *title, callback_t *uicb,
     uidropdown_t *dropdown, void *udata);
 void uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel);
@@ -297,7 +267,7 @@ char *uiDropDownGetString (uidropdown_t *dropdown);
 /* uigtklink.c */
 void uiCreateLink (UIWidget *uiwidget, const char *label, const char *uri);
 void uiLinkSet (UIWidget *uilink, const char *label, const char *uri);
-void uiLinkSetActivateCallback (UIWidget *uilink, UICallback *uicb);
+void uiLinkSetActivateCallback (UIWidget *uilink, callback_t *uicb);
 
 /* uigtkmiscbutton.c */
 void uiCreateFontButton (UIWidget *uiwidget, const char *fontname);
@@ -329,7 +299,7 @@ void  uiNotebookTabPositionLeft (UIWidget *uiwidget);
 void  uiNotebookAppendPage (UIWidget *uinotebook, UIWidget *uiwidget, UIWidget *uilabel);
 void  uiNotebookSetActionWidget (UIWidget *uinotebook, UIWidget *uiwidget);
 void  uiNotebookSetPage (UIWidget *uinotebook, int pagenum);
-void  uiNotebookSetCallback (UIWidget *uinotebook, UICallback *uicb);
+void  uiNotebookSetCallback (UIWidget *uinotebook, callback_t *uicb);
 void  uiNotebookHideShowPage (UIWidget *uinotebook, int pagenum, bool show);
 
 /* uigtkbox.c */
@@ -375,11 +345,11 @@ GType * uiTreeViewAddDisplayType (GType *types, int valtype, int col);
 void  uiTreeViewSetDisplayColumn (GtkTreeModel *model, GtkTreeIter *iter,
     int col, long num, const char *str);
 #endif
-void  uiTreeViewSetEditedCallback (uitree_t *uitree, UICallback *uicb);
+void  uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *uicb);
 void  uiTreeViewAddEditableColumn (uitree_t *uitree, int col, int editcol, const char *title);
 
 /* uigtkwindow.c */
-void uiCreateMainWindow (UIWidget *uiwidget, UICallback *uicb,
+void uiCreateMainWindow (UIWidget *uiwidget, callback_t *uicb,
     const char *title, const char *imagenm);
 void uiWindowSetTitle (UIWidget *uiwidget, const char *title);
 void uiCloseWindow (UIWidget *uiwindow);
@@ -398,11 +368,11 @@ void uiWindowMoveToCurrentWorkspace (UIWidget *uiwindow);
 void uiWindowNoFocusOnStartup (UIWidget *uiwindow);
 void uiCreateScrolledWindow (UIWidget *uiwindow, int minheight);
 void uiWindowSetPolicyExternal (UIWidget *uisw);
-void uiCreateDialogWindow (UIWidget *uiwidget, UIWidget *parentwin, UIWidget *attachment, UICallback *uicb, const char *title);
-void uiWindowSetDoubleClickCallback (UIWidget *uiwindow, UICallback *uicb);
-void uiWindowSetWinStateCallback (UIWidget *uiwindow, UICallback *uicb);
+void uiCreateDialogWindow (UIWidget *uiwidget, UIWidget *parentwin, UIWidget *attachment, callback_t *uicb, const char *title);
+void uiWindowSetDoubleClickCallback (UIWidget *uiwindow, callback_t *uicb);
+void uiWindowSetWinStateCallback (UIWidget *uiwindow, callback_t *uicb);
 void uiWindowNoDim (UIWidget *uiwidget);
-void uiWindowSetMappedCallback (UIWidget *uiwidget, UICallback *uicb);
+void uiWindowSetMappedCallback (UIWidget *uiwidget, callback_t *uicb);
 void uiWindowPresent (UIWidget *uiwidget);
 void uiWindowRaise (UIWidget *uiwidget);
 void uiWindowFind (UIWidget *window);
@@ -410,7 +380,7 @@ void uiWindowFind (UIWidget *window);
 /* uigtkscale.c */
 void    uiCreateScale (UIWidget *uiwidget, double lower, double upper,
     double stepinc, double pageinc, double initvalue, int digits);
-void    uiScaleSetCallback (UIWidget *uiscale, UICallback *uicb);
+void    uiScaleSetCallback (UIWidget *uiscale, callback_t *uicb);
 double  uiScaleEnforceMax (UIWidget *uiscale, double value);
 double  uiScaleGetValue (UIWidget *uiscale);
 int     uiScaleGetDigits (UIWidget *uiscale);
@@ -425,7 +395,7 @@ void uiSwitchFree (uiswitch_t *uiswitch);
 void uiSwitchSetValue (uiswitch_t *uiswitch, int value);
 int uiSwitchGetValue (uiswitch_t *uiswitch);
 UIWidget *uiSwitchGetUIWidget (uiswitch_t *uiswitch);
-void uiSwitchSetCallback (uiswitch_t *uiswitch, UICallback *uicb);
+void uiSwitchSetCallback (uiswitch_t *uiswitch, callback_t *uicb);
 void uiSwitchDisable (uiswitch_t *uiswitch);
 void uiSwitchEnable (uiswitch_t *uiswitch);
 
@@ -484,7 +454,7 @@ void uiCreateCheckButton (UIWidget *uiwidget, const char *txt, int value);
 void uiCreateRadioButton (UIWidget *uiwidget, UIWidget *widgetgrp, const char *txt, int value);
 void uiCreateToggleButton (UIWidget *uiwidget, const char *txt, const char *imgname,
     const char *tooltiptxt, UIWidget *image, int value);
-void uiToggleButtonSetCallback (UIWidget *uiwidget, UICallback *uicb);
+void uiToggleButtonSetCallback (UIWidget *uiwidget, callback_t *uicb);
 void uiToggleButtonSetImage (UIWidget *uiwidget, UIWidget *image);
 bool uiToggleButtonIsActive (UIWidget *uiwidget);
 void uiToggleButtonSetState (UIWidget *uiwidget, int state);

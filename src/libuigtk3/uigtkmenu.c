@@ -12,6 +12,7 @@
 #include <gtk/gtk.h>
 
 #include "ui.h"
+#include "callback.h"
 
 static void uiMenuActivateHandler (GtkMenuItem *mi, gpointer udata);
 static void uiMenuToggleHandler (GtkWidget *mi, gpointer udata);
@@ -37,7 +38,7 @@ uiCreateSubMenu (UIWidget *uimenuitem, UIWidget *uimenu)
 
 void
 uiMenuCreateItem (UIWidget *uimenu, UIWidget *uimenuitem,
-    const char *txt, UICallback *uicb)
+    const char *txt, callback_t *uicb)
 {
   GtkWidget *menuitem;
 
@@ -63,7 +64,7 @@ uiMenuAddSeparator (UIWidget *uimenu, UIWidget *uimenuitem)
 
 void
 uiMenuCreateCheckbox (UIWidget *uimenu, UIWidget *uimenuitem,
-    const char *txt, int active, UICallback *uicb)
+    const char *txt, int active, callback_t *uicb)
 {
   GtkWidget *menuitem;
 
@@ -125,14 +126,14 @@ uiMenuClear (uimenu_t *menu)
 static void
 uiMenuActivateHandler (GtkMenuItem *mi, gpointer udata)
 {
-  UICallback    *uicb = udata;
+  callback_t  *uicb = udata;
 
-  uiutilsCallbackHandler (uicb);
+  callbackHandler (uicb);
 }
 
 static void
 uiMenuToggleHandler (GtkWidget *mi, gpointer udata)
 {
-  UICallback    *uicb = udata;
-  uiutilsCallbackHandler (uicb);
+  callback_t  *uicb = udata;
+  callbackHandler (uicb);
 }

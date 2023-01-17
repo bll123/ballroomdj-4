@@ -31,6 +31,7 @@
 #include "sockh.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "callback.h"
 #include "uiutils.h"
 
 enum {
@@ -72,7 +73,7 @@ typedef struct {
   UIWidget        dispvalue [BPMCOUNT_DISP_MAX];
   uibutton_t      *buttons [BPMCOUNT_BUTTON_MAX];
   int             values [BPMCOUNT_DISP_MAX];
-  UICallback      callbacks [BPMCOUNT_CB_MAX];
+  callback_t      *callbacks [BPMCOUNT_CB_MAX];
   int             stopwaitcount;
   int             count;
   time_t          begtime;
@@ -152,7 +153,7 @@ main (int argc, char *argv[])
     uiutilsUIWidgetInit (&bpmcounter.dispvalue [i]);
   }
   for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
-    uiutilsUICallbackInit (&bpmcounter.callbacks [i], NULL, NULL, NULL);
+    bpmcounter.callbacks [i] = NULL;
   }
   for (int i = 0; i < BPMCOUNT_BUTTON_MAX; ++i) {
     bpmcounter.buttons [i] = NULL;
@@ -298,6 +299,9 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < BPMCOUNT_BUTTON_MAX; ++i) {
     uiButtonFree (bpmcounter->buttons [i]);
   }
+  for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
+    callbackFree (bpmcounter->callbacks [i]);
+  }
 
   procutilFreeAll (bpmcounter->processes);
 
@@ -340,10 +344,10 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
-  uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
+  bpmcounter->callbacks [BPMCOUNT_CB_EXIT] = callbackInit (
       bpmcounterCloseCallback, bpmcounter, NULL);
   uiCreateMainWindow (&bpmcounter->window,
-      &bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
+      bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: title of window*/
       _("BPM Counter"), imgbuff);
 
@@ -380,7 +384,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStart (&vbox, &uiwidget);
 
-  uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_RADIO],
+  bpmcounter->callbacks [BPMCOUNT_CB_RADIO] = callbackInit (
       bpmcounterRadioChanged, bpmcounter, NULL);
 
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
@@ -398,7 +402,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
     uiutilsUIWidgetCopy (&bpmcounter->timesigsel [i], &uiwidget);
     if (i >= BPMCOUNT_DISP_BPM) {
       uiToggleButtonSetCallback (&bpmcounter->timesigsel [i],
-          &bpmcounter->callbacks [BPMCOUNT_CB_RADIO]);
+          bpmcounter->callbacks [BPMCOUNT_CB_RADIO]);
     }
     uiSizeGroupAdd (&sg, &uiwidget);
     uiBoxPackStart (&hbox, &uiwidget);
@@ -419,10 +423,10 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_CLICK],
+  bpmcounter->callbacks [BPMCOUNT_CB_CLICK] = callbackInit (
       bpmcounterProcessClick, bpmcounter, NULL);
   uibutton = uiCreateButton (
-      &bpmcounter->callbacks [BPMCOUNT_CB_CLICK],
+      bpmcounter->callbacks [BPMCOUNT_CB_CLICK],
       NULL, "bluebox");
   bpmcounter->buttons [BPMCOUNT_BUTTON_BLUEBOX] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
@@ -436,10 +440,10 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vboxmain, &hbox);
 
-  uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
+  bpmcounter->callbacks [BPMCOUNT_CB_SAVE] = callbackInit (
       bpmcounterProcessSave, bpmcounter, NULL);
   uibutton = uiCreateButton (
-      &bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
+      bpmcounter->callbacks [BPMCOUNT_CB_SAVE],
       /* CONTEXT: bpm counter: save button */
       _("Save"), NULL);
   bpmcounter->buttons [BPMCOUNT_BUTTON_SAVE] = uibutton;
@@ -447,10 +451,10 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
-  uiutilsUICallbackInit (&bpmcounter->callbacks [BPMCOUNT_CB_RESET],
+  bpmcounter->callbacks [BPMCOUNT_CB_RESET] = callbackInit (
       bpmcounterProcessReset, bpmcounter, NULL);
   uibutton = uiCreateButton (
-      &bpmcounter->callbacks [BPMCOUNT_CB_RESET],
+      bpmcounter->callbacks [BPMCOUNT_CB_RESET],
       /* CONTEXT: bpm counter: reset button */
       _("Reset"), NULL);
   bpmcounter->buttons [BPMCOUNT_BUTTON_RESET] = uibutton;
@@ -459,7 +463,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   uibutton = uiCreateButton (
-      &bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
+      bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: close button */
       _("Close"), NULL);
   bpmcounter->buttons [BPMCOUNT_BUTTON_CLOSE] = uibutton;

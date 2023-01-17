@@ -56,6 +56,7 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiapplyadj.h"
+#include "callback.h"
 #include "uimusicq.h"
 #include "uinbutil.h"
 #include "uiplayer.h"
@@ -159,7 +160,7 @@ typedef struct {
   char            *locknm;
   conn_t          *conn;
   procutil_t      *processes [ROUTE_MAX];
-  UICallback      callbacks [MANAGE_CB_MAX];
+  callback_t      *callbacks [MANAGE_CB_MAX];
   musicdb_t       *musicdb;
   samesong_t      *samesong;
   musicqidx_t     musicqPlayIdx;
@@ -328,7 +329,7 @@ static bool     manageSwitchPageSonglist (void *udata, long pagenum);
 static bool     manageSwitchPageMM (void *udata, long pagenum);
 static void     manageSwitchPage (manageui_t *manage, long pagenum, int which);
 static void     manageSetDisplayPerSelection (manageui_t *manage, int id);
-static void     manageSetMenuCallback (manageui_t *manage, int midx, UICallbackFunc cb);
+static void     manageSetMenuCallback (manageui_t *manage, int midx, callbackFunc cb);
 static void     manageSonglistLoadCheck (manageui_t *manage);
 /* same song */
 static bool     manageSameSongSetMark (void *udata);
@@ -410,6 +411,9 @@ main (int argc, char *argv[])
   manage.pluiActive = false;
   manage.selectButton = NULL;
   manage.uiaa = NULL;
+  for (int i = 0; i < MANAGE_CB_MAX; ++i) {
+    manage.callbacks [i] = NULL;
+  }
   /* CONTEXT: management ui: please wait... status message */
   manage.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
 
@@ -583,6 +587,9 @@ manageClosingCallback (void *udata, programstate_t programState)
   dispselFree (manage->dispsel);
   datafileFree (manage->optiondf);
 
+  for (int i = 0; i < MANAGE_CB_MAX; ++i) {
+    callbackFree (manage->callbacks [i]);
+  }
   uiCleanup ();
 
   logProcEnd (LOG_PROC, "manageClosingCallback", "");
@@ -611,10 +618,10 @@ manageBuildUI (manageui_t *manage)
   snprintf (tbuff, sizeof (tbuff), _("%s Management"),
       bdjoptGetStr (OPT_P_PROFILENAME));
 
-  uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_CLOSE],
+  manage->callbacks [MANAGE_CB_CLOSE] = callbackInit (
       manageCloseWin, manage, NULL);
   uiCreateMainWindow (&manage->window,
-      &manage->callbacks [MANAGE_CB_CLOSE], tbuff, imgbuff);
+      manage->callbacks [MANAGE_CB_CLOSE], tbuff, imgbuff);
 
   manageInitializeUI (manage);
 
@@ -685,10 +692,10 @@ manageBuildUI (manageui_t *manage)
   y = nlistGetNum (manage->options, MANAGE_SIZE_Y);
   uiWindowSetDefaultSize (&manage->window, x, y);
 
-  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_MAIN_NB],
+  manage->callbacks [MANAGE_CB_MAIN_NB] = callbackInitLong (
       manageSwitchPageMain, manage);
   uiNotebookSetCallback (&manage->mainnotebook,
-      &manage->callbacks [MANAGE_CB_MAIN_NB]);
+      manage->callbacks [MANAGE_CB_MAIN_NB]);
 
   uiWidgetShowAll (&manage->window);
 
@@ -700,36 +707,36 @@ manageBuildUI (manageui_t *manage)
       "bdj4_icon_manage", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
-  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL],
+  manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL] = callbackInitLong (
       manageNewSelectionSongSel, manage);
   uisongselSetSelectionCallback (manage->slezsongsel,
-      &manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL]);
+      manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL]);
   uisongselSetSelectionCallback (manage->slsongsel,
-      &manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL]);
+      manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL]);
   uisongselSetSelectionCallback (manage->mmsongsel,
-      &manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL]);
+      manage->callbacks [MANAGE_CB_NEW_SEL_SONGSEL]);
 
-  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST],
+  manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST] = callbackInitLong (
       manageNewSelectionSonglist, manage);
   uimusicqSetSelectionCallback (manage->slmusicq,
-      &manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST]);
+      manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST]);
   uimusicqSetSelectionCallback (manage->slezmusicq,
-      &manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST]);
+      manage->callbacks [MANAGE_CB_NEW_SEL_SONGLIST]);
 
-  uiutilsUICallbackStrInit (&manage->callbacks [MANAGE_CB_SEQ_LOAD],
+  manage->callbacks [MANAGE_CB_SEQ_LOAD] = callbackInitStr (
       manageLoadPlaylistCB, manage);
   manageSequenceSetLoadCallback (manage->manageseq,
-      &manage->callbacks [MANAGE_CB_SEQ_LOAD]);
+      manage->callbacks [MANAGE_CB_SEQ_LOAD]);
 
-  uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_SEQ_NEW],
+  manage->callbacks [MANAGE_CB_SEQ_NEW] = callbackInit (
       manageNewPlaylistCB, manage, NULL);
   manageSequenceSetNewCallback (manage->manageseq,
-      &manage->callbacks [MANAGE_CB_SEQ_NEW]);
+      manage->callbacks [MANAGE_CB_SEQ_NEW]);
 
-  uiutilsUICallbackStrInit (&manage->callbacks [MANAGE_CB_PL_LOAD],
+  manage->callbacks [MANAGE_CB_PL_LOAD] = callbackInitStr (
       manageLoadSonglistSeqCB, manage);
   managePlaylistSetLoadCallback (manage->managepl,
-      &manage->callbacks [MANAGE_CB_PL_LOAD]);
+      manage->callbacks [MANAGE_CB_PL_LOAD]);
 
   /* set up the initial menu */
   manageSwitchPage (manage, 0, MANAGE_NB_SONGLIST);
@@ -754,14 +761,14 @@ manageInitializeUI (manageui_t *manage)
   manage->slsongsel = uisongselInit ("m-sl-songsel", manage->conn,
       manage->musicdb, manage->dispsel, manage->samesong, manage->options,
       manage->uisongfilter, DISP_SEL_SONGSEL);
-  uiutilsUICallbackLongIntInit (&manage->callbacks [MANAGE_CB_PLAY_SL],
+  manage->callbacks [MANAGE_CB_PLAY_SL] = callbackInitLongInt (
       managePlayProcessSonglist, manage);
   uisongselSetPlayCallback (manage->slsongsel,
-      &manage->callbacks [MANAGE_CB_PLAY_SL]);
-  uiutilsUICallbackLongIntInit (&manage->callbacks [MANAGE_CB_QUEUE_SL],
+      manage->callbacks [MANAGE_CB_PLAY_SL]);
+  manage->callbacks [MANAGE_CB_QUEUE_SL] = callbackInitLongInt (
       manageQueueProcessSonglist, manage);
   uisongselSetQueueCallback (manage->slsongsel,
-      &manage->callbacks [MANAGE_CB_QUEUE_SL]);
+      manage->callbacks [MANAGE_CB_QUEUE_SL]);
 
   manage->slezmusicq = uimusicqInit ("m-ez-songlist", manage->conn,
       manage->musicdb, manage->dispsel, DISP_SEL_EZSONGLIST);
@@ -770,14 +777,14 @@ manageInitializeUI (manageui_t *manage)
       manage->uisongfilter, DISP_SEL_EZSONGSEL);
   uimusicqSetPlayIdx (manage->slezmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->slezmusicq, manage->musicqManageIdx);
-  uiutilsUICallbackLongIntInit (&manage->callbacks [MANAGE_CB_PLAY_SL_EZ],
+  manage->callbacks [MANAGE_CB_PLAY_SL_EZ] = callbackInitLongInt (
       managePlayProcessEasySonglist, manage);
   uisongselSetPlayCallback (manage->slezsongsel,
-      &manage->callbacks [MANAGE_CB_PLAY_SL_EZ]);
-  uiutilsUICallbackLongIntInit (&manage->callbacks [MANAGE_CB_QUEUE_SL_EZ],
+      manage->callbacks [MANAGE_CB_PLAY_SL_EZ]);
+  manage->callbacks [MANAGE_CB_QUEUE_SL_EZ] = callbackInitLongInt (
       manageQueueProcessEasySonglist, manage);
   uisongselSetQueueCallback (manage->slezsongsel,
-      &manage->callbacks [MANAGE_CB_QUEUE_SL_EZ]);
+      manage->callbacks [MANAGE_CB_QUEUE_SL_EZ]);
 
   manage->mmplayer = uiplayerInit (manage->progstate, manage->conn,
       manage->musicdb);
@@ -788,10 +795,10 @@ manageInitializeUI (manageui_t *manage)
       manage->uisongfilter, DISP_SEL_MM);
   uimusicqSetPlayIdx (manage->mmmusicq, manage->musicqPlayIdx);
   uimusicqSetManageIdx (manage->mmmusicq, manage->musicqManageIdx);
-  uiutilsUICallbackLongIntInit (&manage->callbacks [MANAGE_CB_PLAY_MM],
+  manage->callbacks [MANAGE_CB_PLAY_MM] = callbackInitLongInt (
       managePlayProcessMusicManager, manage);
   uisongselSetPlayCallback (manage->mmsongsel,
-      &manage->callbacks [MANAGE_CB_PLAY_MM]);
+      manage->callbacks [MANAGE_CB_PLAY_MM]);
 
   manage->mmsongedit = uisongeditInit (manage->conn,
       manage->musicdb, manage->dispsel, manage->options);
@@ -808,22 +815,22 @@ manageInitializeUI (manageui_t *manage)
   uimusicqSetPeer (manage->slmusicq, manage->slezmusicq);
   uimusicqSetPeer (manage->slezmusicq, manage->slmusicq);
 
-  uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_EDIT],
+  manage->callbacks [MANAGE_CB_EDIT] = callbackInit (
       manageSwitchToSongEditor, manage, NULL);
-  uisongselSetEditCallback (manage->slsongsel, &manage->callbacks [MANAGE_CB_EDIT]);
-  uisongselSetEditCallback (manage->slezsongsel, &manage->callbacks [MANAGE_CB_EDIT]);
-  uisongselSetEditCallback (manage->mmsongsel, &manage->callbacks [MANAGE_CB_EDIT]);
-  uimusicqSetEditCallback (manage->slmusicq, &manage->callbacks [MANAGE_CB_EDIT]);
-  uimusicqSetEditCallback (manage->slezmusicq, &manage->callbacks [MANAGE_CB_EDIT]);
+  uisongselSetEditCallback (manage->slsongsel, manage->callbacks [MANAGE_CB_EDIT]);
+  uisongselSetEditCallback (manage->slezsongsel, manage->callbacks [MANAGE_CB_EDIT]);
+  uisongselSetEditCallback (manage->mmsongsel, manage->callbacks [MANAGE_CB_EDIT]);
+  uimusicqSetEditCallback (manage->slmusicq, manage->callbacks [MANAGE_CB_EDIT]);
+  uimusicqSetEditCallback (manage->slezmusicq, manage->callbacks [MANAGE_CB_EDIT]);
 
-  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_SAVE],
+  manage->callbacks [MANAGE_CB_SAVE] = callbackInitLong (
       manageSongEditSaveCallback, manage);
-  uisongeditSetSaveCallback (manage->mmsongedit, &manage->callbacks [MANAGE_CB_SAVE]);
-  uisongselSetSongSaveCallback (manage->slsongsel, &manage->callbacks [MANAGE_CB_SAVE]);
-  uisongselSetSongSaveCallback (manage->slezsongsel, &manage->callbacks [MANAGE_CB_SAVE]);
-  uisongselSetSongSaveCallback (manage->mmsongsel, &manage->callbacks [MANAGE_CB_SAVE]);
-  uimusicqSetSongSaveCallback (manage->slmusicq, &manage->callbacks [MANAGE_CB_SAVE]);
-  uimusicqSetSongSaveCallback (manage->slezmusicq, &manage->callbacks [MANAGE_CB_SAVE]);
+  uisongeditSetSaveCallback (manage->mmsongedit, manage->callbacks [MANAGE_CB_SAVE]);
+  uisongselSetSongSaveCallback (manage->slsongsel, manage->callbacks [MANAGE_CB_SAVE]);
+  uisongselSetSongSaveCallback (manage->slezsongsel, manage->callbacks [MANAGE_CB_SAVE]);
+  uisongselSetSongSaveCallback (manage->mmsongsel, manage->callbacks [MANAGE_CB_SAVE]);
+  uimusicqSetSongSaveCallback (manage->slmusicq, manage->callbacks [MANAGE_CB_SAVE]);
+  uimusicqSetSongSaveCallback (manage->slezmusicq, manage->callbacks [MANAGE_CB_SAVE]);
 }
 
 static void
@@ -877,10 +884,10 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiWidgetSetMarginTop (&vbox, 64);
   uiBoxPackStart (&hbox, &vbox);
 
-  uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_EZ_SELECT],
+  manage->callbacks [MANAGE_CB_EZ_SELECT] = callbackInit (
       uisongselSelectCallback, manage->slezsongsel, NULL);
   uibutton = uiCreateButton (
-      &manage->callbacks [MANAGE_CB_EZ_SELECT],
+      manage->callbacks [MANAGE_CB_EZ_SELECT],
       /* CONTEXT: managementui: config: button: add the selected songs to the song list */
       _("Select"), "button_left");
   manage->selectButton = uibutton;
@@ -916,9 +923,9 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_STATISTICS);
 
-  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_SL_NB],
+  manage->callbacks [MANAGE_CB_SL_NB] = callbackInitLong (
       manageSwitchPageSonglist, manage);
-  uiNotebookSetCallback (&notebook, &manage->callbacks [MANAGE_CB_SL_NB]);
+  uiNotebookSetCallback (&notebook, manage->callbacks [MANAGE_CB_SL_NB]);
 }
 
 static int
@@ -1247,9 +1254,9 @@ manageSongEditMenu (manageui_t *manage)
   logProcBegin (LOG_PROC, "manageSongEditMenu");
   if (! manage->songeditmenu.initialized) {
     manage->uiaa = uiaaInit (&manage->window, manage->options);
-    uiutilsUICallbackInit (&manage->callbacks [MANAGE_CB_APPLY_ADJ],
+    manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInit (
         manageApplyAdjCallback, manage, "song editor: apply adj");
-    uiaaSetResponseCallback (manage->uiaa, &manage->callbacks [MANAGE_CB_APPLY_ADJ]);
+    uiaaSetResponseCallback (manage->uiaa, manage->callbacks [MANAGE_CB_APPLY_ADJ]);
 
     uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: managementui: menu selection: actions for song editor */
@@ -1260,10 +1267,10 @@ manageSongEditMenu (manageui_t *manage)
     /* I would prefer to have BPM as a stand-alone menu item, but */
     /* gtk does not appear to have a way to create a top-level */
     /* menu item in the menu bar. */
-    uiutilsUICallbackInit (&manage->callbacks [MANAGE_MENU_CB_BPM],
+    manage->callbacks [MANAGE_MENU_CB_BPM] = callbackInit (
         manageStartBPMCounter, manage, NULL);
     uiMenuCreateItem (&menu, &menuitem, tagdefs [TAG_BPM].displayname,
-        &manage->callbacks [MANAGE_MENU_CB_BPM]);
+        manage->callbacks [MANAGE_MENU_CB_BPM]);
 
     uiMenuAddSeparator (&manage->menubar, &menuitem);
 
@@ -1281,11 +1288,11 @@ manageSongEditMenu (manageui_t *manage)
 
     uiMenuAddSeparator (&manage->menubar, &menuitem);
 
-    uiutilsUICallbackInit (&manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ],
+    manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ] = callbackInit (
         manageApplyAdjDialog, manage, NULL);
     /* CONTEXT: managementui: menu selection: song editor: apply adjustments */
     uiMenuCreateItem (&menu, &menuitem, _("Apply Adjustments"),
-        &manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
+        manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
     uiWidgetDisable (&menuitem);
     /* a missing audio adjust file will not stop startup */
     tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
@@ -1650,13 +1657,13 @@ manageiTunesCreateDialog (manageui_t *manage)
     return;
   }
 
-  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_ITUNES_DIALOG],
+  manage->callbacks [MANAGE_CB_ITUNES_DIALOG] = callbackInitLong (
       manageiTunesDialogResponseHandler, manage);
 
   /* CONTEXT: import from itunes: title for the dialog */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), ITUNES_NAME);
   uiCreateDialog (&manage->itunesSelectDialog, &manage->window,
-      &manage->callbacks [MANAGE_CB_ITUNES_DIALOG],
+      manage->callbacks [MANAGE_CB_ITUNES_DIALOG],
       tbuff,
       /* CONTEXT: import from itunes: closes the dialog */
       _("Close"),
@@ -1679,10 +1686,10 @@ manageiTunesCreateDialog (manageui_t *manage)
   uiCreateColonLabel (&uiwidget, tbuff);
   uiBoxPackStart (&hbox, &uiwidget);
 
-  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_ITUNES_SEL],
+  manage->callbacks [MANAGE_CB_ITUNES_SEL] = callbackInitLong (
       manageiTunesDialogSelectHandler, manage);
   uiwidgetp = uiComboboxCreate (&manage->itunesSelectDialog, "",
-      &manage->callbacks [MANAGE_CB_ITUNES_SEL],
+      manage->callbacks [MANAGE_CB_ITUNES_SEL],
       manage->itunessel, manage);
   manageiTunesDialogCreateList (manage);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -1841,9 +1848,9 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
   uiutilsNotebookIDAdd (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
 
-  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_MM_NB],
+  manage->callbacks [MANAGE_CB_MM_NB] = callbackInitLong (
       manageSwitchPageMM, manage);
-  uiNotebookSetCallback (&notebook, &manage->callbacks [MANAGE_CB_MM_NB]);
+  uiNotebookSetCallback (&notebook, manage->callbacks [MANAGE_CB_MM_NB]);
   logProcEnd (LOG_PROC, "manageBuildUIMusicManager", "");
 }
 
@@ -1865,13 +1872,13 @@ manageMusicManagerMenu (manageui_t *manage)
         manageSameSongSetMark);
     /* CONTEXT: managementui: menu selection: music manager: set same-song mark */
     uiMenuCreateItem (&menu, &menuitem, _("Mark as Same Song"),
-        &manage->callbacks [MANAGE_MENU_CB_MM_SET_MARK]);
+        manage->callbacks [MANAGE_MENU_CB_MM_SET_MARK]);
 
     manageSetMenuCallback (manage, MANAGE_MENU_CB_MM_CLEAR_MARK,
         manageSameSongClearMark);
     /* CONTEXT: managementui: menu selection: music manager: clear same-song mark */
     uiMenuCreateItem (&menu, &menuitem, _("Clear Same Song Mark"),
-        &manage->callbacks [MANAGE_MENU_CB_MM_CLEAR_MARK]);
+        manage->callbacks [MANAGE_MENU_CB_MM_CLEAR_MARK]);
 
     manage->mmmenu.initialized = true;
   }
@@ -1908,22 +1915,22 @@ manageSonglistMenu (manageui_t *manage)
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_LOAD, manageSonglistLoad);
   /* CONTEXT: managementui: menu selection: song list: edit menu: load */
   uiMenuCreateItem (&menu, &menuitem, _("Load"),
-      &manage->callbacks [MANAGE_MENU_CB_SL_LOAD]);
+      manage->callbacks [MANAGE_MENU_CB_SL_LOAD]);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_NEW, manageSonglistNew);
   /* CONTEXT: managementui: menu selection: song list: edit menu: start new song list */
   uiMenuCreateItem (&menu, &menuitem, _("Start New Song List"),
-      &manage->callbacks [MANAGE_MENU_CB_SL_NEW]);
+      manage->callbacks [MANAGE_MENU_CB_SL_NEW]);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_COPY, manageSonglistCopy);
   /* CONTEXT: managementui: menu selection: song list: edit menu: create copy */
   uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
-      &manage->callbacks [MANAGE_MENU_CB_SL_COPY]);
+      manage->callbacks [MANAGE_MENU_CB_SL_COPY]);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_DELETE, manageSonglistDelete);
   /* CONTEXT: managementui: menu selection: song list: edit menu: delete song list */
   uiMenuCreateItem (&menu, &menuitem, _("Delete"),
-      &manage->callbacks [MANAGE_MENU_CB_SL_DELETE]);
+      manage->callbacks [MANAGE_MENU_CB_SL_DELETE]);
 
   /* actions */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
@@ -1935,19 +1942,19 @@ manageSonglistMenu (manageui_t *manage)
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_MIX, manageSonglistMix);
   /* CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix */
   uiMenuCreateItem (&menu, &menuitem, _("Mix"),
-      &manage->callbacks [MANAGE_MENU_CB_SL_MIX]);
+      manage->callbacks [MANAGE_MENU_CB_SL_MIX]);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_TRUNCATE,
       manageSonglistTruncate);
   /* CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list */
   uiMenuCreateItem (&menu, &menuitem, _("Truncate"),
-      &manage->callbacks [MANAGE_MENU_CB_SL_TRUNCATE]);
+      manage->callbacks [MANAGE_MENU_CB_SL_TRUNCATE]);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_MK_FROM_PL,
       manageSonglistCreateFromPlaylist);
   /* CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist */
   uiMenuCreateItem (&menu, &menuitem, _("Create from Playlist"),
-      &manage->callbacks [MANAGE_MENU_CB_SL_MK_FROM_PL]);
+      manage->callbacks [MANAGE_MENU_CB_SL_MK_FROM_PL]);
 
   /* export */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
@@ -1960,7 +1967,7 @@ manageSonglistMenu (manageui_t *manage)
       manageSonglistExportM3U);
   /* CONTEXT: managementui: menu selection: song list: export: export as m3u */
   uiMenuCreateItem (&menu, &menuitem, _("Export as M3U Playlist"),
-      &manage->callbacks [MANAGE_MENU_CB_SL_M3U_EXP]);
+      manage->callbacks [MANAGE_MENU_CB_SL_M3U_EXP]);
 
   /* CONTEXT: managementui: menu selection: song list: export: export for ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
@@ -1978,7 +1985,7 @@ manageSonglistMenu (manageui_t *manage)
       manageSonglistImportM3U);
   /* CONTEXT: managementui: menu selection: song list: import: import m3u */
   uiMenuCreateItem (&menu, &menuitem, _("Import M3U"),
-      &manage->callbacks [MANAGE_MENU_CB_SL_M3U_IMP]);
+      manage->callbacks [MANAGE_MENU_CB_SL_M3U_IMP]);
 
   /* CONTEXT: managementui: menu selection: song list: import: import from ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
@@ -1990,7 +1997,7 @@ manageSonglistMenu (manageui_t *manage)
   /* CONTEXT: managementui: menu selection: song list: import: import from itunes */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), ITUNES_NAME);
   uiMenuCreateItem (&menu, &menuitem, tbuff,
-      &manage->callbacks [MANAGE_MENU_CB_SL_ITUNES_IMP]);
+      manage->callbacks [MANAGE_MENU_CB_SL_ITUNES_IMP]);
 
   /* options */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
@@ -2004,7 +2011,7 @@ manageSonglistMenu (manageui_t *manage)
   /* CONTEXT: managementui: menu checkbox: easy song list editor */
   uiMenuCreateCheckbox (&menu, &menuitem, _("Easy Song List Editor"),
       nlistGetNum (manage->options, MANAGE_EASY_SONGLIST),
-      &manage->callbacks [MANAGE_MENU_CB_SL_EZ_EDIT]);
+      manage->callbacks [MANAGE_MENU_CB_SL_EZ_EDIT]);
 
   manage->slmenu.initialized = true;
 
@@ -2160,10 +2167,10 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
 
   uiCreateSizeGroupHoriz (&sg);
 
-  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_CFPL_DIALOG],
+  manage->callbacks [MANAGE_CB_CFPL_DIALOG] = callbackInitLong (
       manageCFPLResponseHandler, manage);
   uiCreateDialog (&manage->cfplDialog, &manage->window,
-      &manage->callbacks [MANAGE_CB_CFPL_DIALOG],
+      manage->callbacks [MANAGE_CB_CFPL_DIALOG],
       /* CONTEXT: create from playlist: title for the dialog */
       _("Create from Playlist"),
       /* CONTEXT: create from playlist: closes the dialog */
@@ -2187,10 +2194,10 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
-  uiutilsUICallbackLongInit (&manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL],
+  manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL] = callbackInitLong (
       manageCFPLPlaylistSelectHandler, manage);
   uiwidgetp = uiComboboxCreate (&manage->cfplDialog, "",
-      &manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL],
+      manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL],
       manage->cfplsel, manage);
   manageCFPLCreatePlaylistList (manage);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -2846,10 +2853,10 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 }
 
 static void
-manageSetMenuCallback (manageui_t *manage, int midx, UICallbackFunc cb)
+manageSetMenuCallback (manageui_t *manage, int midx, callbackFunc cb)
 {
   logProcBegin (LOG_PROC, "manageSetMenuCallback");
-  uiutilsUICallbackInit (&manage->callbacks [midx], cb, manage, NULL);
+  manage->callbacks [midx] = callbackInit (cb, manage, NULL);
   logProcEnd (LOG_PROC, "manageSetMenuCallback", "");
 }
 

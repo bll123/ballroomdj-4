@@ -9,6 +9,7 @@ add_library (libbdj4common SHARED
   bdjmsg.c
   bdjstring.c
   bdjvars.c
+  callback.c
   colorutils.c
   conn.c
   dirop.c

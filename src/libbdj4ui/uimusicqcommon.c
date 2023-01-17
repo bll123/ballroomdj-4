@@ -152,7 +152,7 @@ void
 uimusicqQueue (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)
 {
   if (uimusicq->queuecb != NULL) {
-    uiutilsCallbackLongIntHandler (uimusicq->queuecb, dbidx, mqidx);
+    callbackHandlerLongInt (uimusicq->queuecb, dbidx, mqidx);
   }
 }
 

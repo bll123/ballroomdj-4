@@ -42,6 +42,7 @@
 #include "sysvars.h"
 #include "templateutil.h"
 #include "ui.h"
+#include "callback.h"
 #include "uiutils.h"
 #include "volreg.h"
 #include "webclient.h"
@@ -106,7 +107,7 @@ enum {
 };
 
 typedef struct {
-  UICallback    cb;
+  callback_t    *cb;
   char          *uri;
 } startlinkcb_t;
 
@@ -139,7 +140,7 @@ typedef struct {
   mstime_t        pluiCheckTime;
   nlist_t         *proflist;
   nlist_t         *profidxlist;
-  UICallback      callbacks [START_CB_MAX];
+  callback_t      *callbacks [START_CB_MAX];
   startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
   uispinbox_t     *profilesel;
   uibutton_t      *buttons [START_BUTTON_MAX];
@@ -277,7 +278,11 @@ main (int argc, char *argv[])
   mstimeset (&starter.pluiCheckTime, 0);
   starter.proflist = NULL;
   starter.profidxlist = NULL;
+  for (int i = 0; i < START_CB_MAX; ++i) {
+    starter.callbacks [i] = NULL;
+  }
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
+    starter.macoslinkcb [i].cb = NULL;
     starter.macoslinkcb [i].uri = NULL;
   }
   for (int i = 0; i < START_BUTTON_MAX; ++i) {
@@ -422,6 +427,9 @@ starterClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < START_BUTTON_MAX; ++i) {
     uiButtonFree (starter->buttons [i]);
   }
+  for (int i = 0; i < START_CB_MAX; ++i) {
+    callbackFree (starter->callbacks [i]);
+  }
   uiCleanup ();
 
   procutilStopAllProcess (starter->processes, starter->conn, true);
@@ -439,6 +447,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options, 0);
 
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
+    callbackFree (starter->macoslinkcb [i].cb);
     dataFree (starter->macoslinkcb [i].uri);
   }
   if (starter->optiondf != NULL) {
@@ -480,10 +489,10 @@ starterBuildUI (startui_t  *starter)
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
-  uiutilsUICallbackInit (&starter->callbacks [START_CB_EXIT],
+  starter->callbacks [START_CB_EXIT] = callbackInit (
       starterCloseCallback, starter, NULL);
   uiCreateMainWindow (&starter->window,
-      &starter->callbacks [START_CB_EXIT],
+      starter->callbacks [START_CB_EXIT],
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff);
 
   uiCreateVertBox (&vbox);
@@ -508,23 +517,23 @@ starterBuildUI (startui_t  *starter)
 
   /* CONTEXT: starterui: menu item: stop all BDJ4 processes */
   snprintf (tbuff, sizeof (tbuff), _("Stop All %s Processes"), BDJ4_NAME);
-  uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_STOP_ALL],
+  starter->callbacks [START_CB_MENU_STOP_ALL] = callbackInit (
       starterStopAllProcesses, starter, NULL);
   uiMenuCreateItem (&menu, &menuitem, tbuff,
-      &starter->callbacks [START_CB_MENU_STOP_ALL]);
+      starter->callbacks [START_CB_MENU_STOP_ALL]);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_DEL_PROFILE],
+  starter->callbacks [START_CB_MENU_DEL_PROFILE] = callbackInit (
       starterDeleteProfile, starter, NULL);
   /* CONTEXT: starterui: menu item: delete profile */
   uiMenuCreateItem (&menu, &menuitem, _("Delete Profile"),
-      &starter->callbacks [START_CB_MENU_DEL_PROFILE]);
+      starter->callbacks [START_CB_MENU_DEL_PROFILE]);
 
   if (! isMacOS ()) {
-    uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_PROFILE_SHORTCUT],
+    starter->callbacks [START_CB_MENU_PROFILE_SHORTCUT] = callbackInit (
         starterCreateProfileShortcut, starter, NULL);
     /* CONTEXT: starterui: menu item: create shortcut for profile */
     uiMenuCreateItem (&menu, &menuitem, _("Create Shortcut for Profile"),
-        &starter->callbacks [START_CB_MENU_PROFILE_SHORTCUT]);
+        starter->callbacks [START_CB_MENU_PROFILE_SHORTCUT]);
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -532,10 +541,10 @@ starterBuildUI (startui_t  *starter)
   if (fileopFileExists (tbuff)) {
     /* CONTEXT: starterui: menu item: install in alternate folder */
     snprintf (tbuff, sizeof (tbuff), _("Set Up Alternate Folder"));
-    uiutilsUICallbackInit (&starter->callbacks [START_CB_MENU_ALT_SETUP],
+    starter->callbacks [START_CB_MENU_ALT_SETUP] = callbackInit (
         starterSetUpAlternate, starter, NULL);
     uiMenuCreateItem (&menu, &menuitem, tbuff,
-        &starter->callbacks [START_CB_MENU_ALT_SETUP]);
+        starter->callbacks [START_CB_MENU_ALT_SETUP]);
   }
 
   /* main display */
@@ -573,10 +582,10 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetAllMargins (&uiwidget, 10);
   uiBoxPackStart (&hbox, &uiwidget);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CB_PLAYER],
+  starter->callbacks [START_CB_PLAYER] = callbackInit (
       starterStartPlayerui, starter, NULL);
   uibutton = uiCreateButton (
-      &starter->callbacks [START_CB_PLAYER],
+      starter->callbacks [START_CB_PLAYER],
       /* CONTEXT: starterui: button: starts the player user interface */
       _("Player"), NULL);
   starter->buttons [START_BUTTON_PLAYER] = uibutton;
@@ -587,10 +596,10 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CB_MANAGE],
+  starter->callbacks [START_CB_MANAGE] = callbackInit (
       starterStartManageui, starter, NULL);
   uibutton = uiCreateButton (
-      &starter->callbacks [START_CB_MANAGE],
+      starter->callbacks [START_CB_MANAGE],
       /* CONTEXT: starterui: button: starts the management user interface */
       _("Manage"), NULL);
   starter->buttons [START_BUTTON_MANAGE] = uibutton;
@@ -601,10 +610,10 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CB_CONFIG],
+  starter->callbacks [START_CB_CONFIG] = callbackInit (
       starterStartConfig, starter, NULL);
   uibutton = uiCreateButton (
-      &starter->callbacks [START_CB_CONFIG],
+      starter->callbacks [START_CB_CONFIG],
       /* CONTEXT: starterui: button: starts the configuration user interface */
       _("Configure"), NULL);
   starter->buttons [START_BUTTON_CONFIG] = uibutton;
@@ -615,10 +624,10 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (&bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CB_SUPPORT],
+  starter->callbacks [START_CB_SUPPORT] = callbackInit (
       starterProcessSupport, starter, NULL);
   uibutton = uiCreateButton (
-      &starter->callbacks [START_CB_SUPPORT],
+      starter->callbacks [START_CB_SUPPORT],
       /* CONTEXT: starterui: button: support : support information */
       _("Support"), NULL);
   starter->buttons [START_BUTTON_SUPPORT] = uibutton;
@@ -630,7 +639,7 @@ starterBuildUI (startui_t  *starter)
   uiButtonAlignLeft (uibutton);
 
   uibutton = uiCreateButton (
-      &starter->callbacks [START_CB_EXIT],
+      starter->callbacks [START_CB_EXIT],
       /* CONTEXT: starterui: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL);
   starter->buttons [START_BUTTON_EXIT] = uibutton;
@@ -1195,10 +1204,10 @@ starterProcessSupport (void *udata)
     return UICB_STOP;
   }
 
-  uiutilsUICallbackLongInit (&starter->callbacks [START_CB_SUPPORT_RESP],
+  starter->callbacks [START_CB_SUPPORT_RESP] = callbackInitLong (
       starterSupportResponseHandler, starter);
   uiCreateDialog (&uidialog, &starter->window,
-      &starter->callbacks [START_CB_SUPPORT_RESP],
+      starter->callbacks [START_CB_SUPPORT_RESP],
       /* CONTEXT: starterui: title for the support dialog */
       _("Support"),
       /* CONTEXT: starterui: support dialog: closes the dialog */
@@ -1277,11 +1286,11 @@ starterProcessSupport (void *udata)
   snprintf (tbuff, sizeof (tbuff), _("%s Wiki"), BDJ4_NAME);
   uiCreateLink (&uiwidget, tbuff, uri);
   if (isMacOS ()) {
-    uiutilsUICallbackInit (&starter->macoslinkcb [START_LINK_CB_WIKI].cb,
+    starter->macoslinkcb [START_LINK_CB_WIKI].cb = callbackInit (
         starterWikiLinkHandler, starter, NULL);
     starter->macoslinkcb [START_LINK_CB_WIKI].uri = mdstrdup (uri);
     uiLinkSetActivateCallback (&uiwidget,
-        &starter->macoslinkcb [START_LINK_CB_WIKI].cb);
+        starter->macoslinkcb [START_LINK_CB_WIKI].cb);
   }
   uiBoxPackStart (&vbox, &uiwidget);
 
@@ -1292,11 +1301,11 @@ starterProcessSupport (void *udata)
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
   uiCreateLink (&uiwidget, tbuff, uri);
   if (isMacOS ()) {
-    uiutilsUICallbackInit (&starter->macoslinkcb [START_LINK_CB_FORUM].cb,
+    starter->macoslinkcb [START_LINK_CB_FORUM].cb = callbackInit (
         starterForumLinkHandler, starter, NULL);
     starter->macoslinkcb [START_LINK_CB_FORUM].uri = mdstrdup (uri);
     uiLinkSetActivateCallback (&uiwidget,
-        &starter->macoslinkcb [START_LINK_CB_FORUM].cb);
+        starter->macoslinkcb [START_LINK_CB_FORUM].cb);
   }
   uiBoxPackStart (&vbox, &uiwidget);
 
@@ -1307,11 +1316,11 @@ starterProcessSupport (void *udata)
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
   uiCreateLink (&uiwidget, tbuff, uri);
   if (isMacOS ()) {
-    uiutilsUICallbackInit (&starter->macoslinkcb [START_LINK_CB_TICKETS].cb,
+    starter->macoslinkcb [START_LINK_CB_TICKETS].cb = callbackInit (
         starterTicketLinkHandler, starter, NULL);
     starter->macoslinkcb [START_LINK_CB_TICKETS].uri = mdstrdup (uri);
     uiLinkSetActivateCallback (&uiwidget,
-        &starter->macoslinkcb [START_LINK_CB_TICKETS].cb);
+        starter->macoslinkcb [START_LINK_CB_TICKETS].cb);
   }
   uiBoxPackStart (&vbox, &uiwidget);
 
@@ -1319,10 +1328,10 @@ starterProcessSupport (void *udata)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  uiutilsUICallbackInit (&starter->callbacks [START_CB_SEND_SUPPORT],
+  starter->callbacks [START_CB_SEND_SUPPORT] = callbackInit (
       starterCreateSupportDialog, starter, NULL);
   uibutton = uiCreateButton (
-      &starter->callbacks [START_CB_SEND_SUPPORT],
+      starter->callbacks [START_CB_SEND_SUPPORT],
       /* CONTEXT: starterui: basic support dialog: button: support option */
       _("Send Support Message"), NULL);
   starter->buttons [START_BUTTON_SEND_SUPPORT] = uibutton;
@@ -1617,10 +1626,10 @@ starterCreateSupportDialog (void *udata)
   uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);
 
-  uiutilsUICallbackLongInit (&starter->callbacks [START_CB_SUPPORT_MSG_RESP],
+  starter->callbacks [START_CB_SUPPORT_MSG_RESP] = callbackInitLong (
       starterSupportMsgHandler, starter);
   uiCreateDialog (&uidialog, &starter->window,
-      &starter->callbacks [START_CB_SUPPORT_MSG_RESP],
+      starter->callbacks [START_CB_SUPPORT_MSG_RESP],
       /* CONTEXT: starterui: title for the support message dialog */
       _("Support Message"),
       /* CONTEXT: starterui: support message dialog: closes the dialog */
