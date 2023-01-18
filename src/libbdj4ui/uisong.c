@@ -14,6 +14,7 @@
 
 #include "mdebug.h"
 #include "slist.h"
+#include "songutil.h"
 #include "tagdef.h"
 #include "ui.h"
 #include "uisong.h"
@@ -73,6 +74,19 @@ uisongGetValue (song_t *song, int tagidx, long *num, double *dval)
     str = songDisplayString (song, tagidx);
   } else if (vt == VALUE_NUM) {
     *num = songGetNum (song, tagidx);
+    if (tagidx == TAG_SONGSTART || tagidx == TAG_SONGEND) {
+      int     speed;
+      ssize_t val;
+
+      speed = songGetNum (song, TAG_SPEEDADJUSTMENT);
+      if (speed > 0 && speed != 100) {
+        val = *num;
+        if (val > 0) {
+          val = songAdjustPosition (val, speed);
+          *num = val;
+        }
+      }
+    }
   } else if (vt == VALUE_DOUBLE) {
     *dval = songGetDouble (song, tagidx);
   }

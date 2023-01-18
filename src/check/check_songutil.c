@@ -55,6 +55,42 @@ START_TEST(songutil_chk)
 END_TEST
 
 
+START_TEST(songutil_pos)
+{
+  ssize_t   pos;
+  ssize_t   npos;
+  ssize_t   rpos;
+  int       speed;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- songutil_pos");
+
+  pos = 40000;
+  speed = 100;
+  rpos = songAdjustPosition (pos, speed);
+  ck_assert_int_eq (rpos, pos);
+  npos = songNormalizePosition (rpos, speed);
+  ck_assert_int_eq (rpos, pos);
+  ck_assert_int_eq (npos, pos);
+
+  pos = 40000;
+  speed = 120;
+  rpos = songAdjustPosition (pos, speed);
+  ck_assert_int_gt (rpos, pos);
+  npos = songNormalizePosition (rpos, speed);
+  ck_assert_int_eq (npos, pos);
+  ck_assert_int_lt (npos, rpos);
+
+  pos = 40000;
+  speed = 70;
+  rpos = songAdjustPosition (pos, speed);
+  ck_assert_int_lt (rpos, pos);
+  npos = songNormalizePosition (rpos, speed);
+  ck_assert_int_eq (npos, pos);
+  ck_assert_int_gt (npos, rpos);
+}
+END_TEST
+
+
 Suite *
 songutil_suite (void)
 {
@@ -65,6 +101,7 @@ songutil_suite (void)
   tc = tcase_create ("songutil");
   tcase_set_tags (tc, "libbdj4");
   tcase_add_test (tc, songutil_chk);
+  tcase_add_test (tc, songutil_pos);
   suite_add_tcase (s, tc);
   return s;
 }

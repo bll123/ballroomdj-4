@@ -99,3 +99,35 @@ songConvAdjustFlags (datafileconv_t *conv)
   }
 }
 
+ssize_t
+songAdjustPosition (ssize_t pos, int speed)
+{
+  double    drate;
+  double    dpos;
+  ssize_t   npos;
+
+  if (speed == 100) {
+    return pos;
+  }
+  drate = (double) speed / 100.0;
+  dpos = (double) pos * drate;
+  npos = (ssize_t) dpos;
+  return npos;
+}
+
+ssize_t
+songNormalizePosition (ssize_t pos, int speed)
+{
+  double    drate;
+  double    dpos;
+  ssize_t   npos;
+
+  if (speed == 100) {
+    return pos;
+  }
+  drate = (double) speed / 100.0;
+  dpos = (double) pos / drate;
+  npos = (ssize_t) dpos;
+  return npos;
+}
+

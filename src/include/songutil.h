@@ -23,5 +23,7 @@ enum {
 
 char  *songFullFileName (const char *sfname);
 void  songConvAdjustFlags (datafileconv_t *conv);
+ssize_t songAdjustPosition (ssize_t pos, int speed);
+ssize_t songNormalizePosition (ssize_t pos, int speed);
 
 #endif /* INC_SONGUTIL_H */

@@ -547,6 +547,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
     dataFree (data);
     data = NULL;
   }
+
   logProcEnd (LOG_PROC, "uisongeditLoadData", "");
 }
 
@@ -559,6 +560,8 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
   char            *songdata;
   const char      *ndata;
   int             chkvalue;
+  int             ssidx = -1;
+  int             seidx = -1;
 
   uiw = uisongedit->uiWidgetData;
 
@@ -578,6 +581,13 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
   /* the original value */
   for (int count = 0; count < uiw->itemcount; ++count) {
     int tagkey = uiw->items [count].tagkey;
+
+    if (tagkey == TAG_SONGSTART) {
+      ssidx = count;
+    }
+    if (tagkey == TAG_SONGEND) {
+      seidx = count;
+    }
 
     songdata = uisongGetDisplay (uiw->song, tagkey, &val, &dval);
     chkvalue = SONGEDIT_CHK_NONE;
@@ -685,6 +695,26 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
       } else {
         if (uiw->items [count].changed) {
           uiw->items [count].changed = false;
+        }
+      }
+
+      if (tagkey == TAG_SPEEDADJUSTMENT) {
+        int     speed;
+
+        speed = (int) ndval;
+        if (ssidx != -1) {
+          nval = songGetNum (uiw->song, TAG_SONGSTART);
+          if (nval > 0) {
+            nval = songAdjustPosition (nval, speed);
+            uiSpinboxTimeSetValue (uiw->items [ssidx].spinbox, nval);
+          }
+        }
+        if (seidx != -1) {
+          nval = songGetNum (uiw->song, TAG_SONGEND);
+          if (nval > 0) {
+            nval = songAdjustPosition (nval, speed);
+            uiSpinboxTimeSetValue (uiw->items [seidx].spinbox, nval);
+          }
         }
       }
     }
@@ -1150,6 +1180,22 @@ uisongeditSaveCallback (void *udata)
   }
 
   if (valid && uisongedit->savecb != NULL) {
+    int     speed;
+    ssize_t val;
+
+    speed = songGetNum (uiw->song, TAG_SPEEDADJUSTMENT);
+    if (speed > 0 && speed != 100) {
+      val = songGetNum (uiw->song, TAG_SONGSTART);
+      if (val > 0) {
+        val = songNormalizePosition (val, speed);
+        songSetNum (uiw->song, TAG_SONGSTART, val);
+      }
+      val = songGetNum (uiw->song, TAG_SONGEND);
+      if (val > 0) {
+        val = songNormalizePosition (val, speed);
+        songSetNum (uiw->song, TAG_SONGEND, val);
+      }
+    }
     callbackHandlerLong (uisongedit->savecb, uiw->dbidx);
   }
 

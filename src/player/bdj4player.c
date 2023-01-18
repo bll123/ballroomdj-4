@@ -615,6 +615,7 @@ playerProcessing (void *udata)
       logMsg (LOG_DBG, LOG_MAIN, "no fade-in set volume: %d", playerData->currentVolume);
     }
     pliMediaSetup (playerData->pli, pq->tempname);
+    /* pq->songstart is normalized */
     pliStartPlayback (playerData->pli, pq->songstart, pq->speed);
     playerData->currentSpeed = pq->speed;
     playerSetPlayerState (playerData, PL_STATE_LOADING);
@@ -1336,9 +1337,6 @@ playerSpeed (playerdata_t *playerData, char *trate)
 static void
 playerSeek (playerdata_t *playerData, ssize_t reqpos)
 {
-  double        drate;
-  double        dpos;
-  ssize_t       nreqpos;
   ssize_t       seekpos;
   prepqueue_t   *pq = playerData->currentSong;
 
@@ -1348,24 +1346,15 @@ playerSeek (playerdata_t *playerData, ssize_t reqpos)
 
   logProcBegin (LOG_PROC, "playerSeek");
 
-  /* if duration is adjusted for speed, so is reqpos                */
+  /* the requested position is adjusted for the speed, as the position */
+  /* slider is based on the speed adjusted duration. */
   /* need to change it back to something the player will understand */
-  /* the 'playTimeStart' position is already relative to songstart  */
-  nreqpos = reqpos;
-  seekpos = reqpos + pq->songstart;
-  if (pq->speed != 100) {
-    drate = (double) pq->speed / 100.0;
-    dpos = (double) seekpos * drate;
-    seekpos = (ssize_t) dpos;
-  }
+  /* songstart is already normalized */
+  seekpos = reqpos;
+  seekpos = songNormalizePosition (seekpos, pq->speed);
+  seekpos += pq->songstart;
   pliSeek (playerData->pli, seekpos);
-  /* newpos is from vlc; don't use it */
-  if (pq->speed != 100) {
-    drate = (double) pq->speed / 100.0;
-    dpos = (double) nreqpos * drate;
-    nreqpos = (ssize_t) dpos;
-  }
-  playerData->playTimePlayed = nreqpos;
+  playerData->playTimePlayed = reqpos;
   playerSetCheckTimes (playerData, pq);
   logProcEnd (LOG_PROC, "playerSeek", "");
 }

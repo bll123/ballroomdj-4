@@ -493,6 +493,7 @@ pluiBuildUI (playerui_t *plui)
   if (tempp == NULL) {
     uiWidgetDisable (&menuitem);
   }
+uiWidgetDisable (&menuitem); // ### FIX temporary
 
   /* options */
   /* CONTEXT: playerui: menu selection: options for the player */

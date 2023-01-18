@@ -51,6 +51,7 @@
 #include "sock.h"
 #include "sockh.h"
 #include "songsel.h"
+#include "songutil.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
@@ -2639,12 +2640,7 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
   /* the duration by the speed of the song */
   /* this is the real duration for the song */
   if (speedCalcFlag == MAIN_CALC_WITH_SPEED && speed != 100) {
-    double      drate;
-    double      ddur;
-
-    drate = (double) speed / 100.0;
-    ddur = (double) dur / drate;
-    dur = (ssize_t) ddur;
+    dur = songAdjustPosition (dur, speed);
     logMsg (LOG_DBG, LOG_MAIN, "dur-speed: %ld", dur);
   }
 
