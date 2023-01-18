@@ -296,6 +296,7 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "bpmcounterClosingCallback");
   uiCloseWindow (&bpmcounter->window);
+  uiCleanup ();
   for (int i = 0; i < BPMCOUNT_BUTTON_MAX; ++i) {
     uiButtonFree (bpmcounter->buttons [i]);
   }
@@ -606,6 +607,7 @@ bpmcounterProcessSave (void *udata)
   snprintf (tbuff, sizeof (tbuff), "%d",
       bpmcounter->values [bpmcounter->timesigidx]);
   connSendMessage (bpmcounter->conn, ROUTE_MANAGEUI, MSG_BPM_SET, tbuff);
+  bpmcounterCloseCallback (bpmcounter);
   return UICB_CONT;
 }
 

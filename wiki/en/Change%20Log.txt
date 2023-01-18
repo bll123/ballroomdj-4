@@ -7,6 +7,7 @@
 **4.0.8 beta 2023-1---**
 
 * Bug Fixes:
+    * bpm counter: exit on save.
     * music manager: fixed an internal issue causing a slow-down.
     * player: multi-media stop key now properly pauses the music.
     * song editor: fix save of speed adjustment.
