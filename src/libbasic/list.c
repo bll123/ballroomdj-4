@@ -37,7 +37,7 @@ listAlloc (const char *name, listorder_t ordered, listFree_t valueFreeHook)
 
   list = mdmalloc (sizeof (list_t));
   assert (list != NULL);
-    /* always allocate the name so that dynamic names can be created */
+  /* always allocate the name so that dynamic names can be created */
   list->name = mdstrdup (name);
   assert (list->name != NULL);
   list->data = NULL;
@@ -54,7 +54,7 @@ listAlloc (const char *name, listorder_t ordered, listFree_t valueFreeHook)
   list->readCacheHits = 0;
   list->writeCacheHits = 0;
   list->valueFreeHook = valueFreeHook;
-  logMsg (LOG_DBG, LOG_LIST, "alloc %s", name);
+  logMsg (LOG_DBG, LOG_MAIN | LOG_LIST, "list alloc %s", name);
   return list;
 }
 
@@ -64,7 +64,7 @@ listFree (void *tlist)
   list_t *list = (list_t *) tlist;
 
   if (list != NULL) {
-    logMsg (LOG_DBG, LOG_LIST, "free list %s", list->name);
+    logMsg (LOG_DBG, LOG_MAIN | LOG_LIST, "list free %s", list->name);
     if (list->readCacheHits > 0 || list->writeCacheHits > 0) {
       logMsg (LOG_DBG, LOG_LIST,
           "list %s: cache read:%ld write:%ld",

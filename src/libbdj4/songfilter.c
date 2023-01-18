@@ -392,6 +392,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
       }
     }
 
+    songlistFree (sl);
     logMsg (LOG_DBG, LOG_SONGSEL, "selected: %d songs from playlist", nlistGetCount (sf->indexList));
   }
 

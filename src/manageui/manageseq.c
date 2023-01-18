@@ -288,6 +288,7 @@ manageSequenceLoadCheck (manageseq_t *manageseq)
 
   if (! sequenceExists (name)) {
     /* make sure no save happens */
+    dataFree (manageseq->seqoldname);
     manageseq->seqoldname = NULL;
     manageSequenceNew (manageseq);
   } else {
@@ -315,21 +316,23 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag)
   logProcBegin (LOG_PROC, "manageSequenceLoadFile");
 
   logMsg (LOG_DBG, LOG_ACTIONS, "load sequence file");
-  if (preloadflag == MANAGE_STD) {
-    manageSequenceSave (manageseq);
-  }
-
   if (! sequenceExists (fn)) {
     logProcEnd (LOG_PROC, "manageSequenceLoadFile", "no-seq-file");
     return;
   }
 
+  manageseq->inload = true;
+
+  if (preloadflag == MANAGE_STD) {
+    manageSequenceSave (manageseq);
+  }
+
   seq = sequenceAlloc (fn);
   if (seq == NULL) {
     logProcEnd (LOG_PROC, "manageSequenceLoadFile", "null");
+    manageseq->inload = false;
     return;
   }
-  manageseq->inload = true;
 
   dancelist = sequenceGetDanceList (seq);
   tlist = slistAlloc ("temp-seq", LIST_UNORDERED, NULL);
@@ -347,6 +350,7 @@ manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag)
     callbackHandlerStr (manageseq->seqloadcb, fn);
   }
 
+  sequenceFree (seq);
   manageseq->seqbackupcreated = false;
   manageseq->inload = false;
   logProcEnd (LOG_PROC, "manageSequenceLoadFile", "");

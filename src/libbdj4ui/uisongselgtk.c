@@ -170,7 +170,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   uiw->shiftPressed = false;
   uiw->inscroll = false;
   uiw->selectedBackup = NULL;
-  uiw->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
+  uiw->selectedList = nlistAlloc ("selected-list-a", LIST_ORDERED, NULL);
   nlistStartIterator (uiw->selectedList, &uiw->selectListIter);
   uiw->selectListKey = -1;
   for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
@@ -740,7 +740,7 @@ uisongselSaveSelections (uisongsel_t *uisongsel)
   }
 
   uiw->selectedBackup = uiw->selectedList;
-  uiw->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
+  uiw->selectedList = nlistAlloc ("selected-list-save", LIST_ORDERED, NULL);
 
   if (uisongsel->ispeercall) {
     return;
@@ -878,7 +878,7 @@ uisongselClearSelections (uisongsel_t *uisongsel)
 
   uisongsel->idxStart = 0;
   nlistFree (uiw->selectedList);
-  uiw->selectedList = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
+  uiw->selectedList = nlistAlloc ("selected-list-clr", LIST_ORDERED, NULL);
   nlistStartIterator (uiw->selectedList, &uiw->selectListIter);
   uiw->selectListKey = -1;
 }
@@ -1371,7 +1371,7 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
 
   /* if neither the control key nor the shift key are pressed */
   /* then this is a new selection and not a modification */
-  tlist = nlistAlloc ("selected-list", LIST_ORDERED, NULL);
+  tlist = nlistAlloc ("selected-list-chg", LIST_ORDERED, NULL);
 
   /* if the control-key or the shift-key are pressed, add any current */
   /* selection that is not in view to the new selection list */
@@ -1398,8 +1398,8 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
 
   nlistFree (uiw->selectedList);
   uiw->selectedList = tlist;
-
   nlistStartIterator (uiw->selectedList, &uiw->selectListIter);
+
   uiw->selectListKey = nlistIterateKey (uiw->selectedList, &uiw->selectListIter);
 
   /* and now process the selections from gtk */

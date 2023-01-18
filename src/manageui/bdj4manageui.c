@@ -2341,11 +2341,6 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
     return;
   }
 
-  /* create-from-playlist already did a save */
-  if (preloadflag == MANAGE_STD) {
-    manageSonglistSave (manage);
-  }
-
   if (preloadflag == MANAGE_CREATE) {
     if (! playlistExists (fn)) {
       logProcEnd (LOG_PROC, "manageSonglistLoadFile", "no-playlist");
@@ -2360,6 +2355,11 @@ manageSonglistLoadFile (void *udata, const char *fn, int preloadflag)
   }
 
   manage->inload = true;
+
+  /* create-from-playlist already did a save */
+  if (preloadflag == MANAGE_STD) {
+    manageSonglistSave (manage);
+  }
 
   manage->selusesonglist = true;
   /* ask the main player process to not send music queue updates */

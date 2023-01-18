@@ -66,6 +66,8 @@ enum {
   MAIN_CHG_CLEAR,
   MAIN_CHG_START,
   MAIN_CHG_FINAL,
+  MAIN_CALC_WITH_SPEED,
+  MAIN_CALC_NO_SPEED,
 };
 
 enum {
@@ -162,7 +164,7 @@ static int  mainParseMqidxNum (maindata_t *mainData, char *args, ilistidx_t *b);
 static int  mainParseQueuePlaylist (maindata_t *mainData, char *args, char **b, int *editmode);
 static int  mainMusicqIndexParse (maindata_t *mainData, const char *p);
 static void mainSendFinished (maindata_t *mainData);
-static long mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx, musicqidx_t mqidx);
+static long mainCalculateSongDuration (maindata_t *mainData, song_t *song, int playlistIdx, musicqidx_t mqidx, int speedCalcFlag);
 static playlistitem_t * mainPlaylistItemCache (maindata_t *mainData, playlist_t *pl, int playlistIdx);
 static void mainPlaylistItemFree (void *tplitem);
 static void mainMusicqSetSuspend (maindata_t *mainData, char *args, bool value);
@@ -1121,7 +1123,7 @@ mainSendMarqueeData (maindata_t *mainData)
 
         song = dbGetByIdx (mainData->musicdb, dbidx);
         plidx = musicqGetPlaylistIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
-        qdur += mainCalculateSongDuration (mainData, song, plidx, mainData->musicqPlayIdx);
+        qdur += mainCalculateSongDuration (mainData, song, plidx, mainData->musicqPlayIdx, MAIN_CALC_WITH_SPEED);
       }
 
       snprintf (tbuff, sizeof (tbuff), "%s%c", dstr, MSG_ARGS_RS);
@@ -1234,7 +1236,7 @@ mainSendMobileMarqueeData (maindata_t *mainData)
 
         song = dbGetByIdx (mainData->musicdb, dbidx);
         plidx = musicqGetPlaylistIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
-        qdur += mainCalculateSongDuration (mainData, song, plidx, mainData->musicqPlayIdx);
+        qdur += mainCalculateSongDuration (mainData, song, plidx, mainData->musicqPlayIdx, MAIN_CALC_WITH_SPEED);
       }
 
       if (i == 0) {
@@ -1451,7 +1453,7 @@ mainMusicQueueFill (maindata_t *mainData)
     if (song != NULL) {
       logMsg (LOG_DBG, LOG_MAIN, "push song to musicq");
       dur = mainCalculateSongDuration (mainData, song,
-          plitem->playlistIdx, mainData->musicqManageIdx);
+          plitem->playlistIdx, mainData->musicqManageIdx, MAIN_CALC_WITH_SPEED);
       musicqPush (mainData->musicQueue, mainData->musicqManageIdx,
           songGetNum (song, TAG_DBIDX), plitem->playlistIdx, dur);
       mainData->musicqChanged [mainData->musicqManageIdx] = MAIN_CHG_START;
@@ -1632,7 +1634,7 @@ mainPrepSong (maindata_t *mainData, int prepflag, musicqidx_t mqidx,
 
   /* announcements don't need any of the following... */
   if (prepflag != PREP_ANNOUNCE) {
-    dur = mainCalculateSongDuration (mainData, song, playlistIdx, mqidx);
+    dur = mainCalculateSongDuration (mainData, song, playlistIdx, mqidx, MAIN_CALC_WITH_SPEED);
 
     announceflag =
         bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, mainData->musicqManageIdx);
@@ -1910,7 +1912,7 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
     bool  playwhenqueued;
 
     dur = mainCalculateSongDuration (mainData, song,
-        MUSICQ_PLAYLIST_EMPTY, mainData->musicqManageIdx);
+        MUSICQ_PLAYLIST_EMPTY, mainData->musicqManageIdx, MAIN_CALC_WITH_SPEED);
     loc = musicqInsert (mainData->musicQueue, mainData->musicqManageIdx,
         idx, dbidx, dur);
     mainData->musicqChanged [mainData->musicqManageIdx] = MAIN_CHG_START;
@@ -2583,7 +2585,7 @@ mainSendFinished (maindata_t *mainData)
 
 static long
 mainCalculateSongDuration (maindata_t *mainData, song_t *song,
-    int playlistIdx, musicqidx_t mqidx)
+    int playlistIdx, musicqidx_t mqidx, int speedCalcFlag)
 {
   long        maxdur;
   long        dur;
@@ -2636,7 +2638,7 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
   /* after adjusting the duration by song start/end, then adjust */
   /* the duration by the speed of the song */
   /* this is the real duration for the song */
-  if (speed != 100) {
+  if (speedCalcFlag == MAIN_CALC_WITH_SPEED && speed != 100) {
     double      drate;
     double      ddur;
 
@@ -2800,7 +2802,7 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
       nlistDecrement (danceCounts, danceIdx);
 
       plidx = nlistGetNum (songList, dbidx);
-      dur = mainCalculateSongDuration (mainData, song, plidx, mqidx);
+      dur = mainCalculateSongDuration (mainData, song, plidx, mqidx, MAIN_CALC_WITH_SPEED);
       musicqPush (mainData->musicQueue, mqidx, dbidx, plidx, dur);
       ++currlen;
     }
@@ -2961,7 +2963,7 @@ mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
         playlist = nlistGetData (mainData->playlistCache, plidx);
       }
 
-      dur = mainCalculateSongDuration (mainData, song, plidx, musicqidx);
+      dur = mainCalculateSongDuration (mainData, song, plidx, musicqidx, MAIN_CALC_NO_SPEED);
       snprintf (tbuff, sizeof (tbuff), "%ld%c", dur, MSG_ARGS_RS);
       strlcat (sbuff, tbuff, BDJMSG_MAX);
 

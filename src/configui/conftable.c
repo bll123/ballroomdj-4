@@ -121,6 +121,10 @@ confuiMakeItemTable (confuigui_t *gui, UIWidget *boxp, confuiident_t id,
 void
 confuiTableFree (confuigui_t *gui, confuiident_t id)
 {
+  for (int i = 0; i < CONFUI_TABLE_CB_MAX; ++i) {
+    callbackFree (gui->tables [id].callbacks [i]);
+    gui->tables [id].callbacks [i] = NULL;
+  }
   for (int i = 0; i < CONFUI_BUTTON_TABLE_MAX; ++i) {
     uiButtonFree (gui->tables [id].buttons [i]);
     gui->tables [id].buttons [i] = NULL;

@@ -367,6 +367,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
   for (int i = CONFUI_WIDGET_BEGIN + 1; i < CONFUI_WIDGET_MAX; ++i) {
     dataFree (confui->gui.uiitem [i].uri);
   }
+  for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
+    callbackFree (confui->gui.uiitem [i].callback);
+  }
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confuiTableFree (&confui->gui, i);
   }

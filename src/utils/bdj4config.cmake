@@ -97,6 +97,12 @@ if (BDJ4_BUILD STREQUAL "Memdebug-gtk")
   add_compile_options (-DBDJ4_MEM_DEBUG=1)
 endif()
 
+if (BDJ4_BUILD STREQUAL "Memdebug-Sanitize-gtk")
+  message ("Memdebug Sanitize Build")
+  add_compile_options (-DBDJ4_USE_GTK=1)
+  add_compile_options (-DBDJ4_MEM_DEBUG=1)
+endif()
+
 if (BDJ4_BUILD STREQUAL "Debug-gtk")
   message ("Debug Build")
   add_compile_options (-O0)
@@ -126,7 +132,7 @@ endif()
 set (BDJ4_FORTIFY T)
 
 # address sanitizer
-if (BDJ4_BUILD STREQUAL "SanitizeAddress" OR BDJ4_BUILD STREQUAL "Memdebug-gtk")
+if (BDJ4_BUILD STREQUAL "SanitizeAddress" OR BDJ4_BUILD STREQUAL "Memdebug-Sanitize-gtk")
   message ("Sanitize Address Build")
   add_compile_options (-DBDJ4_USE_GTK=1)
   set (BDJ4_FORTIFY F)

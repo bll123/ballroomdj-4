@@ -147,9 +147,7 @@ managePlaylistFree (managepl_t *managepl)
     for (int i = 0; i < MPL_CB_MAX; ++i) {
       callbackFree (managepl->callbacks [i]);
     }
-    if (managepl->playlist != NULL) {
-      playlistFree (managepl->playlist);
-    }
+    playlistFree (managepl->playlist);
     mdfree (managepl);
   }
 }
@@ -491,6 +489,12 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
   }
   logProcBegin (LOG_PROC, "managePlaylistLoadFile");
 
+  if (managepl->playlist != NULL &&
+      strcmp (fn, playlistGetName (managepl->playlist)) == 0) {
+    logProcEnd (LOG_PROC, "managePlaylistLoadFile", "already");
+    return;
+  }
+
   logMsg (LOG_DBG, LOG_ACTIONS, "load playlist file");
   managepl->inload = true;
 
@@ -554,9 +558,7 @@ managePlaylistNew (managepl_t *managepl, int preloadflag)
   managepl->plbackupcreated = false;
 
   pl = playlistCreate (tbuff, PLTYPE_AUTO, NULL);
-  if (managepl->playlist != NULL) {
-    playlistFree (managepl->playlist);
-  }
+  playlistFree (managepl->playlist);
   managepl->playlist = pl;
   uiSpinboxResetChanged (managepl->uimaxplaytime);
   uiSpinboxResetChanged (managepl->uistopat);

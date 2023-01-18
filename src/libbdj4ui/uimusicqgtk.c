@@ -148,8 +148,6 @@ uimusicqUIFree (uimusicq_t *uimusicq)
       for (int j = 0; j < UIMUSICQ_CB_MAX; ++j) {
         callbackFree (uiw->callbacks [j]);
       }
-      callbackFree (uimusicq->queueplcb);
-      callbackFree (uimusicq->queuedancecb);
       for (int j = 0; j < UIMUSICQ_BUTTON_MAX; ++j) {
         uiButtonFree (uiw->buttons [j]);
       }
@@ -318,8 +316,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
-    uimusicq->queueplcb = callbackInitLong (
-        uimusicqQueuePlaylistCallback, uimusicq);
+    if (uimusicq->queueplcb == NULL) {
+      uimusicq->queueplcb = callbackInitLong (
+          uimusicqQueuePlaylistCallback, uimusicq);
+    }
     uiwidgetp = uiDropDownCreate (parentwin,
         /* CONTEXT: (verb) music queue: button: queue a playlist for playback */
         _("Queue Playlist"), uimusicq->queueplcb,
@@ -328,8 +328,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     uimusicqCreatePlaylistList (uimusicq);
 
     if (bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, ci)) {
-      uimusicq->queuedancecb = callbackInitLongInt (
-          uimusicqQueueDanceCallback, uimusicq);
+      if (uimusicq->queuedancecb == NULL) {
+        uimusicq->queuedancecb = callbackInitLongInt (
+            uimusicqQueueDanceCallback, uimusicq);
+      }
       uiw->uidance5 = uidanceDropDownCreate (&hbox, parentwin,
           /* CONTEXT: (verb) music queue: button: queue 5 dances for playback */
           UIDANCE_NONE, _("Queue 5"), UIDANCE_PACK_END, 5);
@@ -498,6 +500,7 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
     path = gtk_tree_model_get_path (model, &iter);
     mdextalloc (path);
     if (path != NULL) {
+      dataFree (uiw->selPathStr);
       uiw->selPathStr = gtk_tree_path_to_string (path);
       mdextalloc (uiw->selPathStr);
 
@@ -825,6 +828,7 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   }
 
   uimusicqSetDefaultSelection (uimusicq);
+  uimusicq->changed = true;
   logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDisplay", "");
 }
 

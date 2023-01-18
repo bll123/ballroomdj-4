@@ -951,7 +951,6 @@ playerSongClearPrep (playerdata_t *playerData, char *args)
 
   tpq = playerLocatePreppedSong (playerData, uniqueidx, p);
   if (tpq != NULL) {
-
     tpq = queueIterateRemoveNode (playerData->prepQueue, &playerData->prepiteridx);
     /* prevent any issues by checking the uniqueidx again */
     if (tpq != NULL && tpq->uniqueidx == uniqueidx) {
@@ -1239,6 +1238,11 @@ playerNextSong (playerdata_t *playerData)
       pliStop (playerData->pli);
       logMsg (LOG_DBG, LOG_BASIC, "was paused; next-song");
       playerSetPlayerState (playerData, PL_STATE_STOPPED);
+
+      if (playerData->currentSong != NULL) {
+        playerPrepQueueFree (playerData->currentSong);
+        playerData->currentSong = NULL;
+      }
     } else {
       playerData->gap = playerData->priorGap;
     }

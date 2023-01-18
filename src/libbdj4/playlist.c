@@ -105,18 +105,10 @@ playlistFree (void *tpl)
       ilistFree (pl->pldances);
     }
     songlistFree (pl->songlist);
-    if (pl->songfilter != NULL) {
-      songfilterFree (pl->songfilter);
-    }
-    if (pl->sequence != NULL) {
-      sequenceFree (pl->sequence);
-    }
-    if (pl->songsel != NULL) {
-      songselFree (pl->songsel);
-    }
-    if (pl->dancesel != NULL) {
-      danceselFree (pl->dancesel);
-    }
+    songfilterFree (pl->songfilter);
+    sequenceFree (pl->sequence);
+    songselFree (pl->songsel);
+    danceselFree (pl->dancesel);
     nlistFree (pl->countList);
     dataFree (pl->name);
     pl->name = NULL;
@@ -149,6 +141,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
 
   pl = playlistAlloc (musicdb);
   pl->name = mdstrdup (fname);
+
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
       playlistdfkeys, PLAYLIST_KEY_MAX);
   pl->plinfo = datafileGetList (pl->plinfodf);

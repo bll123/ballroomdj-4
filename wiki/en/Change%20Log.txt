@@ -9,11 +9,13 @@
 * Bug Fixes:
     * player: multi-media stop key now properly pauses the music.
     * song list editor: remove export as mp3.
-PENDING    * export a mp3: fix to export with song start, song end, fade-in, fade-out, speed, gap applied properly.
+    PENDING
+    * export as mp3: fix to export with song start, song end, fade-in, fade-out, speed, gap applied properly.
 * Changes:
     * player: fade-in always uses the triangle curve.
 * Internal:
     * fade types: remove logarithmic, add exponential sine, quadratic.
+    * fixed various memory leaks and memory issues.
 
 -->
 

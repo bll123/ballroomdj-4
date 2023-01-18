@@ -267,6 +267,7 @@ datafileFree (void *tdf)
 
   logProcBegin (LOG_PROC, "datafileFree");
   if (df != NULL) {
+    logMsg (LOG_DBG, LOG_MAIN | LOG_DATAFILE, "datafile free %s", df->fname);
     datafileFreeInternal (df);
     dataFree (df->name);
     mdfree (df);

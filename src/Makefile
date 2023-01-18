@@ -16,7 +16,11 @@ release-gtk:
 
 .PHONY: memdebug-gtk
 memdebug-gtk:
-	BDJ4_BUILD=Memdebug-gtk $(MAKE) cmakesinglecpu
+	BDJ4_BUILD=Memdebug-gtk $(MAKE) cmake
+
+.PHONY: memdebug-sanitize-gtk
+memdebug-sanitize-gtk:
+	BDJ4_BUILD=Memdebug-Sanitize-gtk $(MAKE) cmake
 
 .PHONY: singlecpu-gtk
 singlecpu-gtk:

@@ -247,7 +247,6 @@ selectFileResponseHandler (void *udata, long responseid)
       if (selectfile->selfilecb != NULL) {
         selectfile->selfilecb (selectfile->cbudata, str);
       }
-      mdfree (str);
       selectfile->selfilecb = NULL;
       break;
     }

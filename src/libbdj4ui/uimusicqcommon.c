@@ -66,6 +66,7 @@ uimusicqMoveTop (uimusicq_t *uimusicq, int mqidx, long idx)
 {
   char        tbuff [40];
 
+  uimusicq->changed = true;
   snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_MOVE_TOP, tbuff);
@@ -76,6 +77,7 @@ uimusicqMoveUp (uimusicq_t *uimusicq, int mqidx, long idx)
 {
   char        tbuff [40];
 
+  uimusicq->changed = true;
   snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_UP, tbuff);
   logProcEnd (LOG_PROC, "uimusicqMoveUp", "");
@@ -86,6 +88,7 @@ uimusicqMoveDown (uimusicq_t *uimusicq, int mqidx, long idx)
 {
   char        tbuff [40];
 
+  uimusicq->changed = true;
   snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_MOVE_DOWN, tbuff);
 }
@@ -105,6 +108,7 @@ uimusicqRemove (uimusicq_t *uimusicq, int mqidx, long idx)
 {
   char        tbuff [40];
 
+  uimusicq->changed = true;
   snprintf (tbuff, sizeof (tbuff), "%d%c%ld", mqidx, MSG_ARGS_RS, idx);
   connSendMessage (uimusicq->conn, ROUTE_MAIN,
       MSG_MUSICQ_REMOVE, tbuff);
