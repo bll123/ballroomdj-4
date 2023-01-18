@@ -1373,9 +1373,10 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
     return;
   }
 
-  if (uiw->selectedBackup != NULL) {
+  if (uiw->selectedBackup != NULL &&
+      uisongsel->dispselType != DISP_SEL_MM) {
     /* if the music manager is currently using the song list */
-    /* don't do anything on a selection change */
+    /* only update the selection list for the music manager */
     return;
   }
 
