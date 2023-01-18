@@ -762,6 +762,10 @@ uisongselRestoreSelections (uisongsel_t *uisongsel)
   uisongselgtk_t  *uiw;
 
   uiw = uisongsel->uiWidgetData;
+  if (uiw->selectedBackup == NULL) {
+    return;
+  }
+
   nlistFree (uiw->selectedList);
   uiw->selectedList = uiw->selectedBackup;
   uiw->selectedBackup = NULL;
@@ -1366,6 +1370,12 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
   uiw = uisongsel->uiWidgetData;
 
   if (uiw->inscroll) {
+    return;
+  }
+
+  if (uiw->selectedBackup != NULL) {
+    /* if the music manager is currently using the song list */
+    /* don't do anything on a selection change */
     return;
   }
 
