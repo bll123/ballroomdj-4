@@ -7,7 +7,9 @@
 **4.0.8 beta 2023-1---**
 
 * Bug Fixes:
+    * music manager: fixed an internal issue causing a slow-down.
     * player: multi-media stop key now properly pauses the music.
+    * song editor: fix save of speed adjustment.
     * song list editor: remove export as mp3.
     PENDING
     * export as mp3: fix to export with song start, song end, fade-in, fade-out, speed, gap applied properly.

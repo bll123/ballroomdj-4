@@ -521,6 +521,8 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
         /* volume adjust percentage may be a negative value */
         if (dval == LIST_DOUBLE_INVALID) { dval = 0.0; }
         if (tagkey == TAG_SPEEDADJUSTMENT) {
+          /* speed adjustment uses a scale, but has a numeric stored */
+          dval = (double) val;
           if (dval < 0.0) { dval = 100.0; }
           if (dval == 0.0) { dval = 100.0; }
         }
@@ -630,6 +632,9 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
         break;
       }
       case ET_SCALE: {
+        if (tagkey == TAG_SPEEDADJUSTMENT) {
+          dval = (double) val;
+        }
         ndval = uiScaleGetValue (&uiw->items [count].uiwidget);
         if (ndval == LIST_DOUBLE_INVALID) { ndval = 0.0; }
         if (dval == LIST_DOUBLE_INVALID) { dval = 0.0; }
@@ -1083,6 +1088,10 @@ uisongeditSaveCallback (void *udata)
       case ET_SCALE: {
         ndval = uiScaleGetValue (&uiw->items [count].uiwidget);
         chkvalue = SONGEDIT_CHK_DOUBLE;
+        if (tagkey == TAG_SPEEDADJUSTMENT) {
+          nval = (long) ndval;
+          chkvalue = SONGEDIT_CHK_NUM;
+        }
         break;
       }
       default: {
