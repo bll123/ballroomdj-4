@@ -2640,7 +2640,7 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
   /* the duration by the speed of the song */
   /* this is the real duration for the song */
   if (speedCalcFlag == MAIN_CALC_WITH_SPEED && speed != 100) {
-    dur = songAdjustPosition (dur, speed);
+    dur = songAdjustPosReal (dur, speed);
     logMsg (LOG_DBG, LOG_MAIN, "dur-speed: %ld", dur);
   }
 

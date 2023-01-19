@@ -82,7 +82,7 @@ uisongGetValue (song_t *song, int tagidx, long *num, double *dval)
       if (speed > 0 && speed != 100) {
         val = *num;
         if (val > 0) {
-          val = songAdjustPosition (val, speed);
+          val = songAdjustPosReal (val, speed);
           *num = val;
         }
       }

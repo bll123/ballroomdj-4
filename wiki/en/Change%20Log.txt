@@ -5,27 +5,28 @@
 <!--
 
 **4.0.9 beta 2023-1---**
-
     PENDING
     * export as mp3: fix to export with song start, song end, fade-in, fade-out, speed, gap applied properly.
 
-**4.0.8 beta 2023-1---**
+-->
+
+**4.0.8 beta 2023-1-19**
 
 * Bug Fixes:
     * bpm counter: exit on save.
     * music manager: fixed an internal issue causing a slow-down.
-    * player: fix seek-in-song when there are speed adjustments.
+    * player: fix seek-in-song issues when there are speed adjustments.
     * player: multi-media stop key now properly pauses the music.
+    * song editor: adjust song start and song end on speed adjustment.
     * song editor: fix save of speed adjustment.
     * song list editor: remove export as mp3.
 * Changes:
-    * player: fade-in always uses the triangle curve.
     * player: export as MP3 disabled until it is completed.
+    * player: fade-in always uses the triangle curve.
 * Internal:
     * fade types: remove logarithmic, add exponential sine, quadratic.
     * fixed various memory leaks and memory issues.
-
--->
+    * code cleanup.
 
 **4.0.7 beta 2023-1-14**
 

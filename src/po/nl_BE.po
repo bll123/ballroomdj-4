@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2023-01-14\n"
+"PO-Revision-Date: 2023-01-18\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -707,7 +707,6 @@ msgid "Export"
 msgstr "Exporteren"
 
 #. CONTEXT: export as mp3: title of save dialog
-#. CONTEXT: managementui: menu selection: song list: export: export as MP3
 #. CONTEXT: player ui: menu selection: export: export as MP3
 #, c-format
 msgid "Export as %s"
@@ -1272,10 +1271,15 @@ msgid "Playlist Type"
 msgstr ""
 
 #. CONTEXT: installer: status message
-#. CONTEXT: export as mp3: please wait... status message
 #. CONTEXT: management ui: please wait... status message
+#. CONTEXT: export as mp3: please wait... status message
 msgid "Please wait…"
 msgstr "Even geduld…"
+
+#. CONTEXT: please wait... (count/total) status message
+#, c-format
+msgid "Please wait… (%d/%d)"
+msgstr "Even geduld… (%d/%d)"
 
 #. CONTEXT: configuration file: rating
 msgid "Poor"

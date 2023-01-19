@@ -10,6 +10,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <assert.h>
+#include <math.h>
 
 #include "bdj4.h"
 #include "bdjopt.h"
@@ -100,18 +101,18 @@ songConvAdjustFlags (datafileconv_t *conv)
 }
 
 ssize_t
-songAdjustPosition (ssize_t pos, int speed)
+songAdjustPosReal (ssize_t pos, int speed)
 {
   double    drate;
   double    dpos;
   ssize_t   npos;
 
-  if (speed == 100) {
+  if (speed < 0 || speed == 100) {
     return pos;
   }
   drate = (double) speed / 100.0;
-  dpos = (double) pos * drate;
-  npos = (ssize_t) dpos;
+  dpos = (double) pos / drate;
+  npos = (ssize_t) round (dpos);
   return npos;
 }
 
@@ -122,12 +123,12 @@ songNormalizePosition (ssize_t pos, int speed)
   double    dpos;
   ssize_t   npos;
 
-  if (speed == 100) {
+  if (speed < 0 || speed == 100) {
     return pos;
   }
   drate = (double) speed / 100.0;
-  dpos = (double) pos / drate;
-  npos = (ssize_t) dpos;
+  dpos = (double) pos * drate;
+  npos = (ssize_t) round (dpos);
   return npos;
 }
 

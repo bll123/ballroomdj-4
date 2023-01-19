@@ -118,6 +118,7 @@ typedef struct {
   mstime_t            mainlooptimer;
   uikey_t             *uikey;
   int                 bpmidx;
+  int                 lastspeed;
 } uisongeditgtk_t;
 
 static void uisongeditAddDisplay (uisongedit_t *songedit, UIWidget *col, UIWidget *sg, int dispsel);
@@ -153,6 +154,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   mstimeset (&uiw->mainlooptimer, UISONGEDIT_MAIN_TIMER);
   uiw->bpmidx = -1;
   uiw->dbidx = -1;
+  uiw->lastspeed = -1;
   for (int i = 0; i < UISONGEDIT_BUTTON_MAX; ++i) {
     uiw->buttons [i] = NULL;
   }
@@ -525,6 +527,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
           dval = (double) val;
           if (dval < 0.0) { dval = 100.0; }
           if (dval == 0.0) { dval = 100.0; }
+          uiw->lastspeed = val;
         }
         if (data != NULL) {
           fprintf (stderr, "et_scale: mismatch type\n");
@@ -576,7 +579,7 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
   mstimeset (&uiw->mainlooptimer, UISONGEDIT_MAIN_TIMER);
 
   /* look for changed items */
-  /* this is not very efficient, but it works well for the user, */
+  /* this is not very efficient at all, but it works well for the user, */
   /* as it is able to determine if a value has reverted back to */
   /* the original value */
   for (int count = 0; count < uiw->itemcount; ++count) {
@@ -644,6 +647,7 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
       case ET_SCALE: {
         if (tagkey == TAG_SPEEDADJUSTMENT) {
           dval = (double) val;
+          if (dval < 0.0) { dval = 0.0; }
         }
         ndval = uiScaleGetValue (&uiw->items [count].uiwidget);
         if (ndval == LIST_DOUBLE_INVALID) { ndval = 0.0; }
@@ -687,35 +691,48 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
 
     if (chkvalue == SONGEDIT_CHK_DOUBLE) {
       int   rc;
+      int   waschanged = false;
 
       /* for the speed adjustment, 0.0 (no setting) is changed to 100.0 */
       rc = (tagkey == TAG_SPEEDADJUSTMENT && ndval == 100.0 && dval == 0.0);
       if (! rc && fabs (ndval - dval) > 0.009 ) {
         uiw->items [count].changed = true;
+        waschanged = true;
       } else {
         if (uiw->items [count].changed) {
+          waschanged = true;
           uiw->items [count].changed = false;
         }
       }
 
-      if (tagkey == TAG_SPEEDADJUSTMENT) {
+      if (tagkey == TAG_SPEEDADJUSTMENT && waschanged) {
         int     speed;
 
         speed = (int) ndval;
         if (ssidx != -1) {
-          nval = songGetNum (uiw->song, TAG_SONGSTART);
+// how to do this...
+// have: original song start from song data
+// have: new song start setting
+// have: original speed setting from song data
+// have: new speed setting
+          nval = uiSpinboxTimeGetValue (uiw->items [ssidx].spinbox);
+//          nval = songGetNum (uiw->song, TAG_SONGSTART);
           if (nval > 0) {
-            nval = songAdjustPosition (nval, speed);
+            nval = songNormalizePosition (nval, uiw->lastspeed);
+            nval = songAdjustPosReal (nval, speed);
             uiSpinboxTimeSetValue (uiw->items [ssidx].spinbox, nval);
           }
         }
         if (seidx != -1) {
-          nval = songGetNum (uiw->song, TAG_SONGEND);
+          nval = uiSpinboxTimeGetValue (uiw->items [seidx].spinbox);
+//          nval = songGetNum (uiw->song, TAG_SONGEND);
           if (nval > 0) {
-            nval = songAdjustPosition (nval, speed);
+            nval = songNormalizePosition (nval, uiw->lastspeed);
+            nval = songAdjustPosReal (nval, speed);
             uiSpinboxTimeSetValue (uiw->items [seidx].spinbox, nval);
           }
         }
+        uiw->lastspeed = speed;
       }
     }
 
@@ -1019,7 +1036,8 @@ uisongeditScaleDisplayCallback (void *udata, double value)
 
   logProcBegin (LOG_PROC, "uisongeditScaleDisplayCallback");
   digits = uiScaleGetDigits (&item->uiwidget);
-  snprintf (tbuff, sizeof (tbuff), "%3.*f%%", digits, value);
+  value = uiScaleEnforceMax (&item->uiwidget, value);
+  snprintf (tbuff, sizeof (tbuff), "%4.*f%%", digits, value);
   uiLabelSetText (&item->display, tbuff);
   logProcEnd (LOG_PROC, "uisongeditScaleDisplayCallback", "");
   return UICB_CONT;
