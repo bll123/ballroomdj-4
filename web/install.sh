@@ -9,6 +9,7 @@ while test ! \( -d src -a -d web -a -d wiki \); do
   cd ..
 done
 
+# pkgnm.sh expects to be in the top level dir
 . ./src/utils/pkgnm.sh
 vers=$(pkgcurrvers)
 
@@ -95,5 +96,6 @@ sshpass -e rsync -v -e "$ssh" -aS \
 cd ..
 
 test -d $TMP && rm -rf $TMP
+test -f $TMPMAIN && rm -f $TMPMAIN
 
 exit 0
