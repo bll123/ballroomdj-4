@@ -2939,6 +2939,7 @@ mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
 
   sbuff = mdmalloc (BDJMSG_MAX);
   *sbuff = '\0';
+  snprintf (sbuff, BDJMSG_MAX, "%d%c", musicqLen, MSG_ARGS_RS);
 
   for (int i = 0; i <= musicqLen; ++i) {
     dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, i);

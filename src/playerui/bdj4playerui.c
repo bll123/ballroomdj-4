@@ -446,6 +446,9 @@ pluiBuildUI (playerui_t *plui)
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&plui->statusMsg, &uiwidget);
 
+  plui->callbacks [PLUI_CB_STATUS_DISP] = callbackInitIntInt (
+      pluiStatusMsgDisplay, &plui->statusMsg);
+
   /* actions */
   /* CONTEXT: playerui: menu selection: actions for the player */
   uiMenuCreateItem (&menubar, &menuitem, _("Actions"), NULL);
@@ -493,7 +496,6 @@ pluiBuildUI (playerui_t *plui)
   if (tempp == NULL) {
     uiWidgetDisable (&menuitem);
   }
-uiWidgetDisable (&menuitem); // ### FIX temporary
 
   /* options */
   /* CONTEXT: playerui: menu selection: options for the player */
@@ -990,6 +992,10 @@ pluiStatusMsgDisplay (void *udata, int count, int tot)
   UIWidget  *statusMsg = udata;
   char      tbuff [200];
 
+  if (statusMsg == NULL) {
+    return UICB_CONT;
+  }
+
   if (count < 0 && tot < 0) {
     uiLabelSetText (statusMsg, "");
   } else {
@@ -997,6 +1003,7 @@ pluiStatusMsgDisplay (void *udata, int count, int tot)
     snprintf (tbuff, sizeof (tbuff), _("Please wait\xe2\x80\xa6 (%d/%d)"), count, tot);
     uiLabelSetText (statusMsg, tbuff);
   }
+  uiUIProcessEvents ();
 
   return UICB_CONT;
 }
@@ -1485,9 +1492,6 @@ pluiExportMP3 (void *udata)
   char        tmp [40];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
-
-  plui->callbacks [PLUI_CB_STATUS_DISP] = callbackInitIntInt (
-      pluiStatusMsgDisplay, plui);
 
   /* CONTEXT: export as mp3: please wait... status message */
   uiLabelSetText (&plui->statusMsg, _("Please wait\xe2\x80\xa6"));

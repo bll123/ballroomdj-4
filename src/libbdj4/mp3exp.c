@@ -11,6 +11,7 @@
 #include "audioadjust.h"
 #include "bdj4.h"
 #include "bdjopt.h"
+#include "callback.h"
 #include "conn.h"
 #include "m3u.h"
 #include "mdebug.h"
@@ -21,7 +22,7 @@
 #include "song.h"
 #include "songutil.h"
 #include "tagdef.h"
-#include "callback.h"
+#include "tmutil.h"
 
 enum {
   MP3_EXP_DUR,
@@ -41,8 +42,10 @@ mp3ExportQueue (char *msg, musicdb_t *musicdb, const char *dirname,
   char        *p;
   char        *tokstr;
   int         counter;
+  int         totcount;
   int         fadein;
   int         fadeout;
+  mstime_t    chkTime;
 
   fadein = bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, mqidx);
   fadeout = bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, mqidx);
@@ -58,11 +61,23 @@ mp3ExportQueue (char *msg, musicdb_t *musicdb, const char *dirname,
 
   counter = 1;
   p = strtok_r (msg, MSG_ARGS_RS_STR, &tokstr);
+  if (p == NULL) {
+    return;
+  }
+  totcount = atoi (p);
+  mstimeset (&chkTime, 500);
+
+  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   while (p != NULL) {
     dbidx_t dbidx;
     long    dur;
     int     gap;
     song_t  *song;
+
+    if (mstimeCheck (&chkTime)) {
+      callbackHandlerIntInt ((callback_t *) dispcb, counter, totcount);
+      mstimeset (&chkTime, 500);
+    }
 
     dbidx = atol (p);
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
