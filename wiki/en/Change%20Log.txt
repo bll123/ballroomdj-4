@@ -10,7 +10,7 @@
 
 -->
 
-**4.0.8 beta 2023-1-19**
+**4.0.8 beta 2023-1-18**
 
 * Bug Fixes:
     * bpm counter: exit on save.
@@ -185,4 +185,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-14 12:35:44; BDJ4 version 4.0.7-beta)_
+<br>_(Updated 2023-01-18 17:29:50; BDJ4 version 4.0.8-beta)_

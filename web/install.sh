@@ -8,11 +8,16 @@
 while test ! \( -d src -a -d web -a -d wiki \); do
   cd ..
 done
+
+. ./src/utils/pkgnm.sh
+vers=$(pkgcurrvers)
+
 cd web
 cwd=$(pwd)
 
 echo "* Remember to install on both sourceforge and ballroomdj.org"
 
+TMPMAIN=bdj4tmp.html
 TMP=tmpweb
 TMPIMG=tmpweb/img
 
@@ -77,7 +82,8 @@ fi
 
 mkdir -p $TMP${testpath}
 cp -pf bdj4.css $TMP${testpath}
-cp -pf bdj4.html $TMP${testpath}/index.html
+sed "s/#VERSION#/${vers}/g" bdj4.html > $TMPMAIN
+cp -pf $TMPMAIN $TMP${testpath}/index.html
 cp -pf ../img/ballroomdj4-base.svg $TMPIMG/ballroomdj4.svg
 cp -pf ../img/menu-base.svg $TMPIMG/menu.svg
 cp -pf ../img/bdj4_icon.png $TMPIMG/bdj4_icon.png
