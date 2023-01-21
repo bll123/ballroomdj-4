@@ -109,7 +109,7 @@ songlistExists (const char *name)
 void
 songlistStartIterator (songlist_t *sl, ilistidx_t *iteridx)
 {
-  if (sl == NULL) {
+  if (sl == NULL || sl->songlist == NULL) {
     return;
   }
   ilistStartIterator (sl->songlist, iteridx);
@@ -118,7 +118,11 @@ songlistStartIterator (songlist_t *sl, ilistidx_t *iteridx)
 ilistidx_t
 songlistIterate (songlist_t *sl, ilistidx_t *iteridx)
 {
-  ilistidx_t    key;
+  ilistidx_t    key = LIST_VALUE_INVALID;
+
+  if (sl == NULL || sl->songlist == NULL) {
+    return key;
+  }
 
   key = ilistIterateKey (sl->songlist, iteridx);
   return key;
@@ -129,10 +133,7 @@ songlistGetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
 {
   ilistidx_t    val;
 
-  if (sl == NULL) {
-    return LIST_VALUE_INVALID;
-  }
-  if (sl->songlist == NULL) {
+  if (sl == NULL || sl->songlist == NULL) {
     return LIST_VALUE_INVALID;
   }
   val = ilistGetNum (sl->songlist, ikey, lidx);
@@ -144,10 +145,7 @@ songlistGetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
 {
   char    *val = NULL;
 
-  if (sl == NULL) {
-    return NULL;
-  }
-  if (sl->songlist == NULL) {
+  if (sl == NULL || sl->songlist == NULL) {
     return NULL;
   }
   val = ilistGetStr (sl->songlist, ikey, lidx);
@@ -157,10 +155,7 @@ songlistGetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx)
 void
 songlistSetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t val)
 {
-  if (sl == NULL) {
-    return;
-  }
-  if (sl->songlist == NULL) {
+  if (sl == NULL || sl->songlist == NULL) {
     return;
   }
   ilistSetNum (sl->songlist, ikey, lidx, val);
@@ -169,10 +164,7 @@ songlistSetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t val
 void
 songlistSetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, const char *sval)
 {
-  if (sl == NULL) {
-    return;
-  }
-  if (sl->songlist == NULL) {
+  if (sl == NULL || sl->songlist == NULL) {
     return;
   }
   ilistSetStr (sl->songlist, ikey, lidx, sval);

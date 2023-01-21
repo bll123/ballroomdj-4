@@ -46,6 +46,10 @@ enum {
 };
 
 enum {
+  MUSICQ_FORCE_LAST = 999,
+};
+
+enum {
   UIMUSICQ_CB_MOVE_TOP,
   UIMUSICQ_CB_MOVE_UP,
   UIMUSICQ_CB_MOVE_DOWN,
@@ -103,6 +107,7 @@ static bool   uimusicqPlayCallback (void *udata);
 static bool   uimusicqQueueCallback (void *udata);
 static dbidx_t uimusicqGetSelectionDbidx (uimusicq_t *uimusicq);
 static void   uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udata);
+static void   uimusicqSelectionChgProcess (uimusicq_t *uimusicq);
 static void   uimusicqSetDefaultSelection (uimusicq_t *uimusicq);
 static void   uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx);
 static bool   uimusicqSongEditCallback (void *udata);
@@ -578,7 +583,7 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
 
   uiw = uimusicq->ui [mqidx].uiWidgets;
 
-  loc = 999;
+  loc = MUSICQ_FORCE_LAST;
   if (uiw->musicqTree == NULL) {
     return loc;
   }
@@ -773,6 +778,10 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
     return;
   }
 
+  /* gtk selections will change internally quite a bit, bypass any change */
+  /* signals for the moment */
+  uimusicq->ui [ci].selchgbypass = true;
+
   valid = gtk_tree_model_get_iter_first (model, &iter);
 
   uimusicq->ui [ci].count = nlistGetCount (musicqupdate->dispList);
@@ -822,12 +831,23 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
     valid = gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
   }
 
+  /* now the selection change signal can be processed */
+  uimusicq->ui [ci].selchgbypass = false;
+
   if (uimusicq->ui [ci].haveselloc) {
     uimusicqSetSelection (uimusicq, ci);
     uimusicq->ui [ci].haveselloc = false;
+  } else {
+    uimusicq->ui [ci].selectLocation = uimusicqGetSelectLocation (uimusicq, ci);
+    uimusicqSetSelection (uimusicq, ci);
   }
 
   uimusicqSetDefaultSelection (uimusicq);
+
+  /* the selection may have been changed, but the chg processing was */
+  /* purposely bypassed.  Make sure the ui is notified about any change. */
+  uimusicqSelectionChgProcess (uimusicq);
+
   uimusicq->changed = true;
   logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDisplay", "");
 }
@@ -960,29 +980,52 @@ static void
 uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
 {
   uimusicq_t      *uimusicq = udata;
+
+  uimusicqSelectionChgProcess (uimusicq);
+}
+
+static void
+uimusicqSelectionChgProcess (uimusicq_t *uimusicq)
+{
   dbidx_t         dbidx;
   int             ci;
-  long            idx;
+  long            loc;
 
   ci = uimusicq->musicqManageIdx;
-  dbidx = uimusicqGetSelectionDbidx (uimusicq);
-  if (dbidx >= 0 &&
-      uimusicq->newselcb != NULL) {
-    callbackHandlerLong (uimusicq->newselcb, dbidx);
+
+  if (uimusicq->ispeercall) {
+    return;
+  }
+
+  if (uimusicq->ui [ci].selchgbypass) {
+    return;
   }
 
   if (uimusicq->ispeercall) {
     return;
   }
 
-  idx = uimusicqGetSelectLocation (uimusicq, ci);
+  loc = uimusicqGetSelectLocation (uimusicq, ci);
+  if (uimusicq->ui [ci].lastLocation == loc) {
+    return;
+  }
+
+  dbidx = uimusicqGetSelectionDbidx (uimusicq);
+  if (dbidx >= 0 &&
+      uimusicq->newselcb != NULL) {
+    callbackHandlerLong (uimusicq->newselcb, dbidx);
+  }
+
+  if (loc != MUSICQ_FORCE_LAST) {
+    uimusicq->ui [ci].lastLocation = loc;
+  }
 
   for (int i = 0; i < uimusicq->peercount; ++i) {
     if (uimusicq->peers [i] == NULL) {
       continue;
     }
     uimusicqSetPeerFlag (uimusicq->peers [i], true);
-    uimusicqSetSelectLocation (uimusicq->peers [i], ci, idx);
+    uimusicqSetSelectLocation (uimusicq->peers [i], ci, loc);
     uimusicqSetPeerFlag (uimusicq->peers [i], false);
   }
 }

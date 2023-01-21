@@ -36,6 +36,7 @@ typedef struct {
   int           count;          // how many songs displayed in queue
   dispselsel_t  dispselType;
   long          selectLocation;
+  long          lastLocation;
   /* music queue tab */
   UIWidget      mainbox;
   uidropdown_t  *playlistsel;
@@ -45,6 +46,7 @@ typedef struct {
   /* flags */
   bool          hasui : 1;
   bool          haveselloc : 1;
+  bool          selchgbypass : 1;
 } uimusicqui_t;
 
 typedef struct uimusicq uimusicq_t;

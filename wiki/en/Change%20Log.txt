@@ -5,6 +5,11 @@
 <!--
 
 **4.0.9 beta 2023-1---**
+
+* Bug Fixes:
+    * music manager: fix a crash when the song list was cleared.
+    * queue dance: fix bad template.
+
     PENDING
     * export as mp3: fix to export with song start, song end, fade-in, fade-out, speed, gap applied properly.
 

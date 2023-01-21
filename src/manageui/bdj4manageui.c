@@ -189,7 +189,6 @@ typedef struct {
   uibutton_t      *selectButton;
   dbidx_t         songlistdbidx;
   dbidx_t         seldbidx;
-  int             selbypass;
   /* song list ui major elements */
   uiplayer_t      *slplayer;
   uimusicq_t      *slmusicq;
@@ -238,6 +237,7 @@ typedef struct {
   bool            inload : 1;
   bool            bpmcounterstarted : 1;
   bool            pluiActive : 1;
+  bool            selbypass : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -393,7 +393,7 @@ main (int argc, char *argv[])
   manage.selusesonglist = false;
   manage.inload = false;
   manage.lastdisp = MANAGE_DISP_SONG_SEL;
-  manage.selbypass = 0;
+  manage.selbypass = false;
   manage.seldbidx = -1;
   manage.songlistdbidx = -1;
   manage.uisongfilter = NULL;
@@ -1187,11 +1187,11 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_DB_ENTRY_UPDATE: {
           dbLoadEntry (manage->musicdb, atol (targs));
           /* re-populate the display */
-          manage->selbypass = 1;
+          manage->selbypass = true;
           uisongselPopulateData (manage->slsongsel);
           uisongselPopulateData (manage->slezsongsel);
           uisongselPopulateData (manage->mmsongsel);
-          manage->selbypass = 0;
+          manage->selbypass = false;
           break;
         }
         default: {
@@ -1403,11 +1403,11 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
   /* re-populate the song selection displays to display the updated info */
-  manage->selbypass = 1;
+  manage->selbypass = true;
   uisongselPopulateData (manage->slsongsel);
   uisongselPopulateData (manage->slezsongsel);
   uisongselPopulateData (manage->mmsongsel);
-  manage->selbypass = 0;
+  manage->selbypass = false;
 
   /* re-load the song into the song editor */
   /* it is unknown if called from saving a favorite or from the song editor */
@@ -2084,6 +2084,9 @@ manageSonglistNew (void *udata)
   uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
   uimusicqTruncateQueueCallback (manage->slmusicq);
   manageNewPlaylistCB (manage);
+  /* the music manager must be reset to use the song selection as */
+  /* there are no songs selected */
+  manageNewSelectionSongSel (manage, manage->seldbidx);
   logProcEnd (LOG_PROC, "manageSonglistNew", "");
   return UICB_CONT;
 }
@@ -2790,9 +2793,9 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 
       loc = uisongselGetSelectLocation (manage->mmsongsel);
       uisfClearPlaylist (manage->uisongfilter);
-      manage->selbypass = 1;
+      manage->selbypass = true;
       uisongselApplySongFilter (manage->mmsongsel);
-      manage->selbypass = 0;
+      manage->selbypass = false;
       uisongselRestoreSelections (manage->mmsongsel);
       if (manage->selusesonglist) {
         uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, loc);
@@ -2807,6 +2810,13 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     char    *slname;
     song_t  *song;
     int     redisp = false;
+
+    /* need this check to handle a queue that has been completely truncated */
+    if (uimusicqGetCount (manage->slmusicq) <= 0 &&
+        manage->selusesonglist) {
+      manage->selusesonglist = false;
+      redisp = true;
+    }
 
     uisfShowPlaylistDisplay (manage->uisongfilter);
 
@@ -2824,7 +2834,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     }
 
     if (redisp) {
-      manage->selbypass = 1;
+      manage->selbypass = true;
       uisongselApplySongFilter (manage->mmsongsel);
 
       if (manage->selusesonglist) {
@@ -2836,7 +2846,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
         /* must set the selection offset by the idx-start */
         uisongselSetSelectionOffset (manage->mmsongsel, idx);
       }
-      manage->selbypass = 0;
+      manage->selbypass = false;
     }
 
     if (manage->selusesonglist) {
