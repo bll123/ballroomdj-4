@@ -1,7 +1,9 @@
 # playlist-dances
-# 2022-10-19
+# 2023-1-21
 version
 ..1
+count
+..13
 KEY
 ..0
 DANCE
@@ -151,7 +153,7 @@ SELECTED
 COUNT
 ..3
 MAXPLAYTIME
-..15000
+..
 BPMLOW
 ..
 BPMHIGH
@@ -167,9 +169,9 @@ COUNT
 MAXPLAYTIME
 ..
 BPMLOW
-..84
+..
 BPMHIGH
-..84
+..
 KEY
 ..12
 DANCE

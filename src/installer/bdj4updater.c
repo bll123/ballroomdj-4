@@ -442,13 +442,16 @@ main (int argc, char *argv [])
     long        mpt;
 
     /* 2023-1-21 : The QueueDance playlist had bad data in it. */
+    /* 2023-1-21 : The StandardRounds playlist had bad data in it. */
     /* check for VW w/a time limit of 0:15 and if there, reset it, */
     /* and reset the BPM limits on waltz. */
 
+    /* the music db is not needed to load the playlist */
+
     dances = bdjvarsdfGet (BDJVDF_DANCES);
     dnclist = danceGetDanceList (dances);
+
     didx = slistGetNum (dnclist, _("Viennese Waltz"));
-    /* the music db is not needed */
     pl = playlistLoad (_("QueueDance"), NULL);
     mpt = playlistGetDanceNum (pl, didx, PLDANCE_MAXPLAYTIME);
     if (mpt == 15000) {
@@ -458,6 +461,19 @@ main (int argc, char *argv [])
       playlistSetDanceNum (pl, didx, PLDANCE_BPM_LOW, 0);
       playlistSave (pl, _("QueueDance"));
       logMsg (LOG_INSTALL, LOG_MAIN, "queuedance playlist updated");
+    }
+    playlistFree (pl);
+
+    didx = slistGetNum (dnclist, _("Viennese Waltz"));
+    pl = playlistLoad (_("standardrounds"), NULL);
+    mpt = playlistGetDanceNum (pl, didx, PLDANCE_MAXPLAYTIME);
+    if (mpt == 15000) {
+      playlistSetDanceNum (pl, didx, PLDANCE_MAXPLAYTIME, 0);
+      didx = slistGetNum (dnclist, _("Waltz"));
+      playlistSetDanceNum (pl, didx, PLDANCE_BPM_HIGH, 0);
+      playlistSetDanceNum (pl, didx, PLDANCE_BPM_LOW, 0);
+      playlistSave (pl, _("standardrounds"));
+      logMsg (LOG_INSTALL, LOG_MAIN, "standardrounds playlist updated");
     }
     playlistFree (pl);
   }

@@ -7,13 +7,12 @@
 **4.0.9 beta 2023-1---**
 
 * Bug Fixes:
+P   * export as mp3: fix to export with song start, song end, fade-in, fade-out, speed, gap applied properly.
     * music manager: fix a crash when the song list was cleared.
-    * queue dance: fix bad template.
     * player ui: internal fixes, marquee menu disabled when marquee is off.
+    * queue dance: fix bad template.
     * song editor: fix play button to play correct song.
-
-    PENDING
-    * export as mp3: fix to export with song start, song end, fade-in, fade-out, speed, gap applied properly.
+    * standard rounds: fix bad template.
 
 -->
 
