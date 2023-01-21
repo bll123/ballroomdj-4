@@ -55,6 +55,8 @@ static datafilekey_t aadfkeys [AA_KEY_MAX] = {
   { "TRIMSILENCE_THRESHOLD",  AA_TRIMSILENCE_THRESHOLD, VALUE_NUM,  NULL, -1 },
 };
 
+static void aaApplySpeed (song_t *song, const char *infn, const char *outfn, int speed, int gap);
+
 aa_t *
 aaAlloc (void)
 {
@@ -86,7 +88,7 @@ aaFree (aa_t *aa)
 }
 
 void
-aaNormalize (const char *ffn)
+aaNormalize (const char *infn)
 {
   aa_t        *aa;
   const char  *targv [30];
@@ -104,7 +106,7 @@ aaNormalize (const char *ffn)
   bool        found = false;
   pathinfo_t  *pi;
 
-  pi = pathInfo (ffn);
+  pi = pathInfo (infn);
   snprintf (outfn, sizeof (outfn), "%.*s/n-%.*s",
       (int) pi->dlen, pi->dirname, (int) pi->flen, pi->filename);
   pathInfoFree (pi);
@@ -121,7 +123,7 @@ aaNormalize (const char *ffn)
   targv [targc++] = "-hide_banner";
   targv [targc++] = "-y";
   targv [targc++] = "-i";
-  targv [targc++] = ffn;
+  targv [targc++] = infn;
   targv [targc++] = "-af";
   targv [targc++] = ffargs;
   targv [targc++] = "-f";
@@ -207,7 +209,7 @@ aaNormalize (const char *ffn)
   targv [targc++] = "-hide_banner";
   targv [targc++] = "-y";
   targv [targc++] = "-i";
-  targv [targc++] = ffn;
+  targv [targc++] = infn;
   targv [targc++] = "-af";
   targv [targc++] = ffargs;
   targv [targc++] = outfn;
@@ -219,16 +221,16 @@ aaNormalize (const char *ffn)
 }
 
 void
-aaApplyAdjustments (song_t *song, const char *ffn, const char *outfn,
+aaApplyAdjustments (song_t *song, const char *infn, const char *outfn,
     int fadein, int fadeout, long dur, int gap)
 {
   const char  *targv [30];
   int         targc = 0;
   char        aftext [500];
   char        resp [2000];
-  char        sstmp [40];
-  char        durtmp [40];
-  char        tmp [80];
+  char        sstmp [60];
+  char        durtmp [60];
+  char        tmp [60];
   int         rc;
   long        songstart;
   long        songend;
@@ -272,22 +274,18 @@ aaApplyAdjustments (song_t *song, const char *ffn, const char *outfn,
   }
 
   targv [targc++] = "-i";
-  targv [targc++] = ffn;
+  targv [targc++] = infn;
 
   if (dur > 0 && dur < songdur) {
-    /* calculated duration does not include song start */
-    snprintf (durtmp, sizeof (durtmp), "%ldms", dur);
+    long    tdur = dur;
+
+    if (speed == 100 && gap > 0) {
+      /* duration passed to ffmpeg must include gap time */
+      tdur += gap;
+    }
+    snprintf (durtmp, sizeof (durtmp), "%ldms", tdur);
     targv [targc++] = "-t";
     targv [targc++] = durtmp;
-  }
-
-  /* done last, but before the fades are applied */
-  if (speed != 100) {
-    snprintf (tmp, sizeof (tmp), "%srubberband=tempo=%.2f",
-        afprefix, (double) speed / 100.0);
-    strlcat (aftext, tmp, sizeof (aftext));
-    targv [targc++] = tmp;
-    afprefix = ", ";
   }
 
   if (fadein > 0) {
@@ -306,6 +304,75 @@ aaApplyAdjustments (song_t *song, const char *ffn, const char *outfn,
     afprefix = ", ";
   }
 
+  /* if the speed is not 100, apply the gap along with the speed step */
+  /* otherwise, do it here. */
+  if (speed == 100 && gap > 0) {
+    snprintf (tmp, sizeof (tmp), "%sapad=pad_dur=%dms", afprefix, gap);
+    strlcat (aftext, tmp, sizeof (aftext));
+    afprefix = ", ";
+  }
+
+  if (*aftext) {
+    targv [targc++] = "-af";
+    targv [targc++] = aftext;
+  }
+  targv [targc++] = outfn;
+  targv [targc++] = NULL;
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
+  if (rc != 0) {
+    char  cmd [1000];
+
+    *cmd = '\0';
+    for (int i = 0; i < targc - 1; ++i) {
+      strlcat (cmd, targv [i], sizeof (cmd));;
+      strlcat (cmd, " ", sizeof (cmd));;
+    }
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-adj: cmd: %s", cmd);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-adj: rc: %d", rc);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-adj: resp:\n%s", resp);
+  }
+
+  /* applying the speed change afterwards is slower, but saves a lot */
+  /* of headache. */
+  if (speed != 100) {
+    char  tmpfn [MAXPATHLEN];
+
+    snprintf (tmpfn, sizeof (tmpfn), "%s.tmp", outfn);
+    filemanipMove (outfn, tmpfn);
+    aaApplySpeed (song, tmpfn, outfn, speed, gap);
+    fileopDelete (tmpfn);
+  }
+}
+
+static void
+aaApplySpeed (song_t *song, const char *infn, const char *outfn,
+    int speed, int gap)
+{
+  const char  *targv [30];
+  int         targc = 0;
+  char        aftext [500];
+  char        resp [2000];
+  char        tmp [60];
+  int         rc;
+  size_t      retsz;
+  const char  *afprefix = "";
+
+  *aftext = '\0';
+
+  targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
+  targv [targc++] = "-hide_banner";
+  targv [targc++] = "-y";
+
+  targv [targc++] = "-i";
+  targv [targc++] = infn;
+
+  if (speed > 0 && speed != 100) {
+    snprintf (tmp, sizeof (tmp), "%srubberband=tempo=%.2f",
+        afprefix, (double) speed / 100.0);
+    strlcat (aftext, tmp, sizeof (aftext));
+    afprefix = ", ";
+  }
+
   if (gap > 0) {
     snprintf (tmp, sizeof (tmp), "%sapad=pad_dur=%dms", afprefix, gap);
     strlcat (aftext, tmp, sizeof (aftext));
@@ -318,15 +385,18 @@ aaApplyAdjustments (song_t *song, const char *ffn, const char *outfn,
   }
   targv [targc++] = outfn;
   targv [targc++] = NULL;
-fprintf (stderr, "cmd: ");
-for (int i = 0; i < targc - 1; ++i) {
-fprintf (stderr, " %s", targv [i]);
-}
-fprintf (stderr, "\n");
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
   if (rc != 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-adj: rc: %d", rc);
+    char  cmd [1000];
+
+    *cmd = '\0';
+    for (int i = 0; i < targc - 1; ++i) {
+      strlcat (cmd, targv [i], sizeof (cmd));;
+      strlcat (cmd, " ", sizeof (cmd));;
+    }
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-spd: cmd: %s", cmd);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-spd: rc: %d", rc);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-spd: resp:\n%s", resp);
   }
-fprintf (stderr, "rc: %d\n", rc);
-fprintf (stderr, "resp:\n%s\n", resp);
 }
+

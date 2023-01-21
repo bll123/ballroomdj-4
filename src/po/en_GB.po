@@ -1271,7 +1271,7 @@ msgstr ""
 
 #. CONTEXT: please wait... (count/total) status message
 #, c-format
-msgid "Please wait… (%d/%d)"
+msgid "Please wait… (%1$d/%2$d)"
 msgstr ""
 
 #. CONTEXT: configuration file: rating

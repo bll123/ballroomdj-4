@@ -1016,7 +1016,7 @@ pluiStatusMsgDisplay (void *udata, int count, int tot)
     uiLabelSetText (statusMsg, "");
   } else {
     /* CONTEXT: please wait... (count/total) status message */
-    snprintf (tbuff, sizeof (tbuff), _("Please wait\xe2\x80\xa6 (%d/%d)"), count, tot);
+    snprintf (tbuff, sizeof (tbuff), _("Please wait\xe2\x80\xa6 (%1$d/%2$d)"), count, tot);
     uiLabelSetText (statusMsg, tbuff);
   }
   uiUIProcessEvents ();

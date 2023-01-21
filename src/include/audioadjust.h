@@ -28,7 +28,7 @@ typedef struct aa aa_t;
 
 aa_t * aaAlloc (void);
 void aaFree (aa_t *aa);
-void aaNormalize (const char *ffn);
-void aaApplyAdjustments (song_t *song, const char *ffn, const char *outfn, int fadein, int fadeout, long dur, int gap);
+void aaNormalize (const char *infn);
+void aaApplyAdjustments (song_t *song, const char *infn, const char *outfn, int fadein, int fadeout, long dur, int gap);
 
 #endif /* INC_AUDIOADJUST_H */

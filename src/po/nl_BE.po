@@ -1278,8 +1278,8 @@ msgstr "Even geduld…"
 
 #. CONTEXT: please wait... (count/total) status message
 #, c-format
-msgid "Please wait… (%d/%d)"
-msgstr "Even geduld… (%d/%d)"
+msgid "Please wait… (%1$d/%2$d)"
+msgstr "Even geduld… (%1$d/%2$d)"
 
 #. CONTEXT: configuration file: rating
 msgid "Poor"
