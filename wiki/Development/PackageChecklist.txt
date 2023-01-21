@@ -2,8 +2,8 @@
 <br>[Developer Notes](Development-Developer%20Notes)
 
 * on Linux:
-    * update README.txt
-    * update VERSION.txt
+    * update README.txt (version, date)
+    * update VERSION.txt (check version)
         * clear DEVELOPMENT tag
     * update change log
     * make sure all debugging is removed
@@ -35,7 +35,8 @@ on the other platforms.
     * hg: check in
     * hg: create a tag for the release
     * push to sourceforge
-    * web/wikiput.sh putall
+    * update the wiki: web/wikiput.sh putall
+    * update the website (version info): web/install.sh
 * final
     * update sourceforge, mark the packages
     * announce the release on the forum
@@ -46,4 +47,4 @@ on the other platforms.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2023-01-05 11:53:39; BDJ4 version 4.0.5-beta)_
+<br>_(Updated 2023-01-19 16:58:25; BDJ4 version 4.0.9-beta-dev)_

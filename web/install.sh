@@ -71,6 +71,12 @@ esac
 ssh="ssh -p $port"
 export ssh
 
+echo -n "Version [$vers]: "
+read tvers
+if [[ $tvers != "" ]]; then
+  vers=tvers
+fi
+
 echo -n "Remote Password: "
 read -s SSHPASS
 echo ""

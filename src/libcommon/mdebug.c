@@ -60,7 +60,10 @@ mdfree_r (void *data, const char *fn, int lineno)
 {
   long  loc;
 
-  if (initialized) {
+  if (initialized && data == NULL) {
+    fprintf (stderr, "%4s %p null %s %d\n", mdebugtag, data, fn, lineno);
+  }
+  if (initialized && data != NULL) {
     loc = mdebugFind (data);
     if (loc >= 0) {
       mdebugDel (loc);
@@ -70,7 +73,9 @@ mdfree_r (void *data, const char *fn, int lineno)
     }
     ++mdebugfreecount;
   }
-  free (data);
+  if (data != NULL) {
+    free (data);
+  }
 }
 
 void
@@ -78,7 +83,7 @@ mdextfree_r (void *data, const char *fn, int lineno)
 {
   long  loc;
 
-  if (initialized) {
+  if (initialized && data != NULL) {
     loc = mdebugFind (data);
     if (loc >= 0) {
       mdebugDel (loc);
@@ -152,7 +157,7 @@ mdstrdup_r (const char *s, const char *fn, int lineno)
 void *
 mdextalloc_r (void *data, const char *fn, int lineno)
 {
-  if (initialized) {
+  if (initialized && data != NULL) {
     mdebugResize ();
     mdebugAdd (data, MDEBUG_TYPE_ALLOC, fn, lineno);
     ++mdebugextalloccount;
