@@ -189,6 +189,7 @@ typedef struct {
   uibutton_t      *selectButton;
   dbidx_t         songlistdbidx;
   dbidx_t         seldbidx;
+  dbidx_t         songeditdbidx;
   /* song list ui major elements */
   uiplayer_t      *slplayer;
   uimusicq_t      *slmusicq;
@@ -396,6 +397,7 @@ main (int argc, char *argv[])
   manage.selbypass = false;
   manage.seldbidx = -1;
   manage.songlistdbidx = -1;
+  manage.songeditdbidx = -1;
   manage.uisongfilter = NULL;
   manage.dbchangecount = 0;
   manage.editmode = EDIT_TRUE;
@@ -1331,6 +1333,7 @@ manageNewSelectionSongSel (void *udata, long dbidx)
   manage->seldbidx = dbidx;
 
   song = dbGetByIdx (manage->musicdb, dbidx);
+  manage->songeditdbidx = dbidx;
   uisongeditLoadData (manage->mmsongedit, song, dbidx);
   manageSetBPMCounter (manage, song);
 
@@ -1413,6 +1416,7 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   /* it is unknown if called from saving a favorite or from the song editor */
   /* the overhead is minor */
   song = dbGetByIdx (manage->musicdb, dbidx);
+  manage->songeditdbidx = dbidx;
   uisongeditLoadData (manage->mmsongedit, song, dbidx);
 
   ++manage->dbchangecount;
@@ -2548,7 +2552,7 @@ managePlayProcessMusicManager (void *udata, long dbidx, int mqidx)
   /* if there is a multi-selection, uisongselgtk */
   /* will play the incorrect selection */
   if (manage->mmlasttab == MANAGE_TAB_SONGEDIT) {
-    dbidx = manage->seldbidx;
+    dbidx = manage->songeditdbidx;
   }
 
   manageQueueProcess (manage, dbidx, mqidx, DISP_SEL_MM, MANAGE_PLAY);
@@ -2856,6 +2860,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     }
 
     song = dbGetByIdx (manage->musicdb, dbidx);
+    manage->songeditdbidx = dbidx;
     uisongeditLoadData (manage->mmsongedit, song, dbidx);
     manageSetBPMCounter (manage, song);
   }
