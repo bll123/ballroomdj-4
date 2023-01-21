@@ -74,7 +74,7 @@ export ssh
 echo -n "Version [$vers]: "
 read tvers
 if [[ $tvers != "" ]]; then
-  vers=tvers
+  vers=$tvers
 fi
 
 echo -n "Remote Password: "
