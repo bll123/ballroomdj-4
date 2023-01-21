@@ -22,9 +22,11 @@
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4init.h"
+#include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjregex.h"
 #include "bdjstring.h"
+#include "bdjvarsdf.h"
 #include "bdjvarsdfload.h"
 #include "datafile.h"
 #include "dirlist.h"
@@ -41,6 +43,7 @@
 #include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
+#include "playlist.h"
 #include "slist.h"
 #include "song.h"
 #include "songutil.h"
@@ -78,6 +81,7 @@ enum {
 };
 
 static void updaterCleanFiles (void);
+static void updaterCleanProcess (bool macosonly, bool windowsonly, bool linuxonly, const char *basedir, nlist_t *cleanlist);
 static void updaterCleanlistFree (void *trx);
 static void updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist);
 static int  updateGetStatus (nlist_t *updlist, int key);
@@ -164,8 +168,8 @@ main (int argc, char *argv [])
 
   flags = BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "updt", ROUTE_NONE, &flags);
-  logSetLevel (LOG_INSTALL, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN, "up");
-  logSetLevel (LOG_DBG, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST, "up");
+  logSetLevel (LOG_INSTALL, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN, "updt");
+  logSetLevel (LOG_DBG, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST, "updt");
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== updater started");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -394,7 +398,7 @@ main (int argc, char *argv [])
     int         version;
     slist_t     *slist;
 
-    /* 4.0.5 2022-1-4 itunes-fields */
+    /* 4.0.5 2023-1-4 itunes-fields */
     /*   had the incorrect 'lastupdate' name removed completely (not needed) */
     /*   as itunes has not been implemented yet, it is safe to completely */
     /*   overwrite version 1. */
@@ -406,6 +410,7 @@ main (int argc, char *argv [])
     version = slistGetVersion (slist);
     if (version == 1) {
       templateFileCopy (ITUNES_FIELDS_FN BDJ4_CONFIG_EXT, ITUNES_FIELDS_FN BDJ4_CONFIG_EXT);
+      logMsg (LOG_INSTALL, LOG_MAIN, "itunes-fields updated");
     }
     datafileFree (tmpdf);
   }
@@ -417,17 +422,48 @@ main (int argc, char *argv [])
         AUDIOADJ_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
     if (! fileopFileExists (tbuff)) {
       templateFileCopy (AUDIOADJ_FN BDJ4_CONFIG_EXT, AUDIOADJ_FN BDJ4_CONFIG_EXT);
+      logMsg (LOG_INSTALL, LOG_MAIN, "audioadjust.txt installed");
     }
   }
 
-  /* All database processing must be done last after the updates to the */
-  /* datafiles are done.  The datafiles must now be loaded. */
+  /* The datafiles must now be loaded. */
 
   if (bdjvarsdfloadInit () < 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "Unable to load all data files");
     fprintf (stderr, "Unable to load all data files\n");
     exit (1);
   }
+
+  {
+    playlist_t  *pl;
+    dance_t     *dances;
+    slist_t     *dnclist;
+    int         didx;
+    long        mpt;
+
+    /* 2023-1-21 : The QueueDance playlist had bad data in it. */
+    /* check for VW w/a time limit of 0:15 and if there, reset it, */
+    /* and reset the BPM limits on waltz. */
+
+    dances = bdjvarsdfGet (BDJVDF_DANCES);
+    dnclist = danceGetDanceList (dances);
+    didx = slistGetNum (dnclist, _("Viennese Waltz"));
+    /* the music db is not needed */
+    pl = playlistLoad (_("QueueDance"), NULL);
+    mpt = playlistGetDanceNum (pl, didx, PLDANCE_MAXPLAYTIME);
+    if (mpt == 15000) {
+      playlistSetDanceNum (pl, didx, PLDANCE_MAXPLAYTIME, 0);
+      didx = slistGetNum (dnclist, _("Waltz"));
+      playlistSetDanceNum (pl, didx, PLDANCE_BPM_HIGH, 0);
+      playlistSetDanceNum (pl, didx, PLDANCE_BPM_LOW, 0);
+      playlistSave (pl, _("QueueDance"));
+      logMsg (LOG_INSTALL, LOG_MAIN, "queuedance playlist updated");
+    }
+    playlistFree (pl);
+  }
+
+  /* All database processing must be done last after the updates to the */
+  /* datafiles are done. */
 
   /* audio file conversions */
 
@@ -549,9 +585,7 @@ updaterCleanFiles (void)
   bool    macosonly = false;
   bool    linuxonly = false;
   bool    windowsonly = false;
-  bool    osflag = false;
   bool    processflag = false;
-  slist_t *filelist;
 
   /* look for development directories and do not run if any are found */
   if (fileopIsDirectory ("dev") ||
@@ -592,17 +626,7 @@ updaterCleanFiles (void)
       }
 
       if (processflag) {
-        osflag =
-            (macosonly == false && linuxonly == false && windowsonly == false) ||
-            (macosonly == true && isMacOS ()) ||
-            (linuxonly == true && isLinux ()) ||
-            (windowsonly == true && isWindows ());
-        if (osflag) {
-          filelist = dirlistRecursiveDirList (basedir,
-              DIRLIST_FILES | DIRLIST_DIRS | DIRLIST_LINKS);
-          updaterCleanRegex (basedir, filelist, cleanlist);
-          slistFree (filelist);
-        }
+        updaterCleanProcess (macosonly, windowsonly, linuxonly, basedir, cleanlist);
         nlistFree (cleanlist);
         cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
         processflag = false;
@@ -653,21 +677,34 @@ updaterCleanFiles (void)
     }
     fclose (fh);
 
-    osflag =
-        (macosonly == false && linuxonly == false && windowsonly == false) ||
-        (macosonly == true && isMacOS ()) ||
-        (linuxonly == true && isLinux ()) ||
-        (windowsonly == true && isWindows ());
-    if (osflag) {
-      filelist = dirlistRecursiveDirList (basedir,
-              DIRLIST_FILES | DIRLIST_DIRS | DIRLIST_LINKS);
-      updaterCleanRegex (basedir, filelist, cleanlist);
-      slistFree (filelist);
-    }
+    /* process what has been queued */
+    updaterCleanProcess (macosonly, windowsonly, linuxonly, basedir, cleanlist);
     nlistFree (cleanlist);
     cleanlist = NULL;
   }
 }
+
+static void
+updaterCleanProcess (bool macosonly, bool windowsonly, bool linuxonly,
+    const char *basedir, nlist_t *cleanlist)
+{
+  bool    cleanflag = false;
+
+  cleanflag =
+      (macosonly == false && linuxonly == false && windowsonly == false) ||
+      (macosonly == true && isMacOS ()) ||
+      (linuxonly == true && isLinux ()) ||
+      (windowsonly == true && isWindows ());
+  if (cleanflag) {
+    slist_t   *filelist;
+
+    filelist = dirlistRecursiveDirList (basedir,
+        DIRLIST_FILES | DIRLIST_DIRS | DIRLIST_LINKS);
+    updaterCleanRegex (basedir, filelist, cleanlist);
+    slistFree (filelist);
+  }
+}
+
 
 static void
 updaterCleanlistFree (void *trx)
