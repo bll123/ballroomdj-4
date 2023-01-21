@@ -120,6 +120,7 @@ typedef struct {
   bool            uibuilt : 1;
   bool            fontszdialogcreated : 1;
   bool            mainalready : 1;
+  bool            marqueeoff : 1;
 } playerui_t;
 
 static datafilekey_t playeruidfkeys [] = {
@@ -229,6 +230,7 @@ main (int argc, char *argv[])
   plui.fontszdialogcreated = false;
   plui.currpage = 0;
   plui.mainalready = false;
+  plui.marqueeoff = false;
   plui.setPlaybackButton = NULL;
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     plui.callbacks [i] = NULL;
@@ -241,6 +243,9 @@ main (int argc, char *argv[])
       "plui", ROUTE_PLAYERUI, &plui.dbgflags);
   logProcBegin (LOG_PROC, "playerui");
 
+  if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == MARQUEE_SHOW_OFF) {
+    plui.marqueeoff = true;
+  }
   plui.dispsel = dispselAlloc ();
 
   listenPort = bdjvarsGetNum (BDJVL_PLAYERUI_PORT);
@@ -464,6 +469,9 @@ pluiBuildUI (playerui_t *plui)
   /* marquee */
   /* CONTEXT: playerui: menu selection: marquee related options */
   uiMenuCreateItem (&menubar, &menuitem, _("Marquee"), NULL);
+  if (plui->marqueeoff) {
+    uiWidgetDisable (&menuitem);
+  }
 
   uiCreateSubMenu (&menuitem, &menu);
 
@@ -664,7 +672,8 @@ pluiMainLoop (void *tplui)
     pluiClock (plui);
   }
 
-  if (mstimeCheck (&plui->marqueeFontSizeCheck)) {
+  if (! plui->marqueeoff &&
+      mstimeCheck (&plui->marqueeFontSizeCheck)) {
     char        tbuff [40];
     int         sz;
 
@@ -729,8 +738,10 @@ pluiConnectingCallback (void *udata, programstate_t programState)
   if (! connIsConnected (plui->conn, ROUTE_PLAYER)) {
     connConnect (plui->conn, ROUTE_PLAYER);
   }
-  if (! connIsConnected (plui->conn, ROUTE_MARQUEE)) {
-    connConnect (plui->conn, ROUTE_MARQUEE);
+  if (! plui->marqueeoff) {
+    if (! connIsConnected (plui->conn, ROUTE_MARQUEE)) {
+      connConnect (plui->conn, ROUTE_MARQUEE);
+    }
   }
 
   connProcessUnconnected (plui->conn);
@@ -747,7 +758,7 @@ pluiConnectingCallback (void *udata, programstate_t programState)
 static bool
 pluiHandshakeCallback (void *udata, programstate_t programState)
 {
-  playerui_t   *plui = udata;
+  playerui_t    *plui = udata;
   bool          rc = STATE_NOT_FINISH;
 
   logProcBegin (LOG_PROC, "pluiHandshakeCallback");
@@ -758,13 +769,17 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
   if (! connIsConnected (plui->conn, ROUTE_PLAYER)) {
     connConnect (plui->conn, ROUTE_PLAYER);
   }
-  if (! connIsConnected (plui->conn, ROUTE_MARQUEE)) {
-    connConnect (plui->conn, ROUTE_MARQUEE);
+
+  if (! plui->marqueeoff) {
+    if (! connIsConnected (plui->conn, ROUTE_MARQUEE)) {
+      connConnect (plui->conn, ROUTE_MARQUEE);
+    }
   }
 
   connProcessUnconnected (plui->conn);
 
-  if (connHaveHandshake (plui->conn, ROUTE_MAIN) &&
+  if (! plui->marqueeoff &&
+      connHaveHandshake (plui->conn, ROUTE_MAIN) &&
       ! connIsConnected (plui->conn, ROUTE_MARQUEE)) {
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_START_MARQUEE, NULL);
   }
@@ -772,7 +787,8 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
   if (connHaveHandshake (plui->conn, ROUTE_STARTERUI) &&
       connHaveHandshake (plui->conn, ROUTE_MAIN) &&
       connHaveHandshake (plui->conn, ROUTE_PLAYER) &&
-      connHaveHandshake (plui->conn, ROUTE_MARQUEE)) {
+      (plui->marqueeoff ||
+      connHaveHandshake (plui->conn, ROUTE_MARQUEE))) {
     if (plui->mainalready) {
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_MAIN_REQ_STATUS, NULL);
     }

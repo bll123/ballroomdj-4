@@ -9,6 +9,7 @@
 * Bug Fixes:
     * music manager: fix a crash when the song list was cleared.
     * queue dance: fix bad template.
+    * player ui: internal fixes, marquee menu disabled when marquee is off.
 
     PENDING
     * export as mp3: fix to export with song start, song end, fade-in, fade-out, speed, gap applied properly.
