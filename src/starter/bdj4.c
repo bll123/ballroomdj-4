@@ -95,6 +95,7 @@ main (int argc, char * argv[])
     { "testregistration", no_argument,      NULL,   0 },
     { "unattended",     no_argument,        NULL,   0 },
     { "unpackdir",      required_argument,  NULL,   0 },
+    { "locale",         required_argument,  NULL,   0 },
     /* standard stuff */
     { "debug",          required_argument,  NULL,   0 },
     { "ignorelock",     no_argument,        NULL,   0 },
@@ -146,7 +147,6 @@ main (int argc, char * argv[])
   prog = "bdj4starterui";  // default
 
   sysvarsInit (argv [0]);
-
 #if BDJ4_USE_GTK
   if (getenv ("GTK_THEME") != NULL) {
     havetheme = true;

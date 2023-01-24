@@ -281,6 +281,7 @@ aaApplyAdjustments (song_t *song, const char *infn, const char *outfn,
 
     if (speed == 100 && gap > 0) {
       /* duration passed to ffmpeg must include gap time */
+      /* this is only done here if the speed is not changed */
       tdur += gap;
     }
     snprintf (durtmp, sizeof (durtmp), "%ldms", tdur);

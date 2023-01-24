@@ -2,7 +2,6 @@
 <br>[Developer Notes](Development-Developer%20Notes)
 
 * on Linux:
-    * update README.txt (version, date)
     * update VERSION.txt (check version)
         * clear DEVELOPMENT tag
     * update change log
@@ -47,4 +46,4 @@ on the other platforms.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2023-01-19 16:58:25; BDJ4 version 4.0.9-beta-dev)_
+<br>_(Updated 2023-01-24 08:51:22; BDJ4 version 4.0.9-beta)_

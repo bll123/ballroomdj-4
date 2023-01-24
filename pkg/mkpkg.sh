@@ -11,6 +11,18 @@ pkgnameuc=$(echo ${pkgname} | tr 'a-z' 'A-Z')
 pkgnamelc=$(echo ${pkgname} | tr 'A-Z' 'a-z')
 mksrcpkg=F
 
+function updatereadme {
+  stage=$1
+
+  echo "   updating readme"
+  fn="${stage}/README.txt"
+  cvers=$(pkgcurrvers)
+  if [[ -f ${fn} ]]; then
+    sed -e "s~#VERSION#~${cvers}~" -e "s~#BUILDDATE#~${BUILDDATE}~" "${fn}" > "${fn}.n"
+    mv -f "${fn}.n" "${fn}"
+  fi
+}
+
 function copysrcfiles {
   tag=$1
   stage=$2
@@ -30,6 +42,8 @@ function copysrcfiles {
     test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
     cp -pr ${d} ${stage}/${dir}
   done
+
+  updatereadme ${stage}
 
   echo "   removing exclusions"
   test -d ${stage}/src/build && rm -rf ${stage}/src/build
@@ -89,6 +103,8 @@ function copyreleasefiles {
     test -d ${stage}/${dir} || mkdir -p ${stage}/${dir}
     cp -pr ${d} ${stage}/${dir}
   done
+
+  updatereadme ${stage}
 
   echo "   removing exclusions"
   # bdj4se is only used for packaging

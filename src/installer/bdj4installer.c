@@ -126,7 +126,6 @@ typedef struct {
   char            *home;
   char            *target;
   char            *hostname;
-  char            locale [40];
   char            rundir [MAXPATHLEN];
   char            datatopdir [MAXPATHLEN];
   char            currdir [MAXPATHLEN];
@@ -267,6 +266,7 @@ main (int argc, char *argv[])
     { "testregistration", no_argument,  NULL,   'T' },
     { "unattended", no_argument,        NULL,   'U' },
     { "unpackdir",  required_argument,  NULL,   'u' },
+    { "locale",     required_argument,  NULL,   'L' },
     /* generic args */
     { "cli",        no_argument,        NULL,   'C' },
     { "quiet"  ,    no_argument,        NULL,   'Q' },
@@ -296,7 +296,6 @@ main (int argc, char *argv[])
   installer.lastInstState = INST_INITIALIZE;
   installer.target = mdstrdup ("");
   installer.rundir [0] = '\0';
-  installer.locale [0] = '\0';
   installer.bdj3loc = mdstrdup ("");
   installer.convidx = 0;
   installer.convlist = NULL;
@@ -422,6 +421,13 @@ main (int argc, char *argv[])
       }
       case 'N': {
         installer.nodatafiles = true;
+        break;
+      }
+      case 'L': {
+        sysvarsSetStr (SV_LOCALE, optarg);
+        snprintf (tbuff, sizeof (tbuff), "%.2s", optarg);
+        sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
+        sysvarsSetNum (SVL_LOCALE_SET, 1);
         break;
       }
       default: {

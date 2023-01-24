@@ -209,15 +209,22 @@ function checkInstallation {
     fi
 
     # automatic.pl file
+    fna="${DATADIR}/automatic.pl"
+    fnb="${DATADIR}/Automatisch.pl"
+    if [[ $section == nl ]]; then
+      temp="$fna"
+      fna="$fnb"
+      fnb="$temp"
+    fi
     res=$(($res+1))
-    if [[ -f "${DATADIR}/automatic.pl" || -f "${DATADIR}/Automatisch.pl" ]]; then
-      if [[ -f "${DATADIR}/automatic.pl" && -f "${DATADIR}/Automatisch.pl" ]]; then
-        echo "  dup automatic.pl"
+    if [[ -f ${fna} ]]; then
+      if [[ -f ${fnb} ]]; then
+        echo "  extra $(basename ${fnb})"
       else
         chk=$(($chk+1))
       fi
     else
-      echo "  no automatic.pl"
+      echo "  no $(basename ${fna})"
     fi
 
     res=$(($res+1))  # itunes-fields.txt file
@@ -236,7 +243,7 @@ function checkInstallation {
 
     res=$(($res+1))  # standardround.pldances file
     fn="${DATADIR}/QueueDance.pldances"
-    if [[ ! -f $fn ]]; then
+    if [[ $section == nl ]]; then
       fn="${DATADIR}/wachtrijendans.pldances"
     fi
     if [[ $fin == T && -f $fn ]]; then
@@ -245,15 +252,15 @@ function checkInstallation {
       if [[ $rc -ne 0 ]]; then
         chk=$(($chk+1))
       else
-        echo "  queuedance has bad vw maxplaytime"
+        echo "  $(basename $fn) has bad vw maxplaytime"
       fi
     else
-      echo "  no queuedance.pldances file"
+      echo "  no $(basename $fn) file"
     fi
 
     res=$(($res+1))  # standardround.pldances file
     fn="${DATADIR}/standardrounds.pldances"
-    if [[ ! -f $fn ]]; then
+    if [[ $section == nl ]]; then
       fn="${DATADIR}/Standaardrondes.pldances"
     fi
     if [[ $fin == T && -f $fn ]]; then
@@ -262,10 +269,10 @@ function checkInstallation {
       if [[ $rc -ne 0 ]]; then
         chk=$(($chk+1))
       else
-        echo "  standardrounds has bad vw maxplaytime"
+        echo "  $(basename $fn) has bad vw maxplaytime"
       fi
     else
-      echo "  no standardrounds.pldances file"
+      echo "  no $(basename $fn) file"
     fi
   fi
 
@@ -330,6 +337,7 @@ function checkInstallation {
 function cleanInstTest {
   test -d "$UNPACKDIR" && rm -rf "$UNPACKDIR"
   test -d "$TARGETTOPDIR" && rm -rf "$TARGETTOPDIR"
+  test -d "$DATATOPDIR" && rm -rf "$DATATOPDIR"
 }
 
 function resetUnpack {
@@ -430,17 +438,19 @@ rc=$?
 checkInstallation $section $tname "$out" $rc n n
 
 section=nl
+locale=nl_BE
 
 cleanInstTest
 resetUnpack
 
 # main test db : rebuild of standard test database
 tname=new-install-no-bdj3
-out=$(LANG=nl_BE.UTF-8 ./bin/bdj4 --bdj4installer --cli --wait \
+out=$(./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --msys \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
+    --locale ${locale} \
     )
 rc=$?
 checkInstallation $section $tname "$out" $rc n y
@@ -451,27 +461,35 @@ if [[ $crc -eq 0 ]]; then
   # this should get installed as of version 4.1.0
   resetUnpack
   tname=update-chk-updater
+
+  # force the locale setting within BDJ4
+  echo "nl_BE" > "$DATADIR/locale.txt"
+
   # audio adjust file should be installed if missing
   rm -f "$DATADIR/audioadjust.txt"
+
   # itunes-fields version number should be updated to version 2.
   fn="$DATADIR/itunes-fields.txt"
   sed -e 's/version 2/version 1/' "$fn" > "$fn.n"
   mv -f "$fn.n" "$fn"
+
   # standard rounds had bad data
   fn="$DATADIR/Standaardrondes.pldances"
   if [[ -f $fn ]]; then
     mkBadPldance "$fn"
   fi
+
   # queue dance had bad data
   fn="$DATADIR/wachtrijendans.pldances"
   if [[ -f $fn ]]; then
     mkBadPldance "$fn"
   fi
-  out=$(LANG=nl_BE.UTF-8 ./bin/bdj4 --bdj4installer --cli --wait \
+  out=$(./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
+      --locale ${locale} \
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc u y

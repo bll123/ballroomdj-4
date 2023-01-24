@@ -442,6 +442,7 @@ sysvarsInit (const char *argv0)
   /* localeinit will also convert the windows names to something normal */
   strlcpy (sysvars [SV_LOCALE_SYSTEM], "en_GB.UTF-8", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE], "en_GB", SV_MAX_SZ);
+  strlcpy (sysvars [SV_LOCALE_SHORT], "en", SV_MAX_SZ);
   strlcpy (sysvars [SV_LOCALE_RADIX], ".", SV_MAX_SZ);
 
   snprintf (buff, sizeof (buff), "%s/locale.txt", sysvars [SV_BDJ4_DREL_DATA]);
@@ -457,11 +458,10 @@ sysvarsInit (const char *argv0)
     if (*tbuff) {
       strlcpy (sysvars [SV_LOCALE], tbuff, SV_MAX_SZ);
       lsysvars [SVL_LOCALE_SET] = 1;
+      snprintf (buff, sizeof (buff), "%-.2s", tbuff);
+      strlcpy (sysvars [SV_LOCALE_SHORT], buff, SV_MAX_SZ);
     }
   }
-
-  snprintf (buff, sizeof (buff), "%-.2s", tbuff);
-  strlcpy (sysvars [SV_LOCALE_SHORT], buff, SV_MAX_SZ);
 
   strlcpy (sysvars [SV_BDJ4_VERSION], "unknown", SV_MAX_SZ);
   snprintf (buff, sizeof (buff), "%s/VERSION.txt", sysvars [SV_BDJ4_DIR_MAIN]);

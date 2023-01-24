@@ -33,6 +33,8 @@ case $systype in
     ;;
 esac
 
+. ./VERSION.txt
+cvers=$(pkgcurrvers)
 pnm=$(pkginstnm)
 case ${pnm} in
   *-dev)
@@ -40,12 +42,6 @@ case ${pnm} in
     exit 1
     ;;
 esac
-grep -- '202[0-9]-[0-9]*---' ../README.txt > /dev/null 2>&1
-rc=$?
-if [[ $rc -eq 0 ]]; then
-  echo "Failed: date not set in README.txt"
-  exit 1
-fi
 
 if [[ ! -f ${pnm} ]]; then
   echo "Failed: no release package found."
@@ -64,8 +60,11 @@ if [[ $platform != windows ]]; then
 fi
 
 if [[ $tag == linux ]]; then
-  sshpass -e rsync -v -e ssh README.txt \
-      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
+  fn=README.txt
+  sed -e "s~#VERSION#~${cvers}~" -e "s~#BUILDDATE#~${BUILDDATE}~" $fn > ${fn}.n
+  sshpass -e rsync -v -e ssh ${fn}.n \
+      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}
+  rm -f ${fn}.n
   sshpass -e rsync -v -e ssh install/linux-pre-install.sh \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
   sshpass -e rsync -v -e ssh install/linux-uninstall-bdj4.sh \
@@ -82,10 +81,7 @@ if [[ $tag == linux ]]; then
 
   echo "## updating version file"
   VERFILE=bdj4version.txt
-  . ./VERSION.txt
-  if [[ $RELEASELEVEL != "" ]]; then
-    bd=$BUILDDATE
-  fi
+  bd=$BUILDDATE
   echo "$VERSION $RELEASELEVEL ($bd)" > $VERFILE
   for f in $VERFILE; do
     sshpass -e rsync -e "$ssh" -aS \

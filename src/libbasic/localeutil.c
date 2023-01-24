@@ -35,13 +35,14 @@ localeInit (void)
 
 
   /* get the locale from the environment */
-  /* this does work on windows */
+  /* works on windows, but windows returns the old style locale name */
   if (setlocale (LC_ALL, "") == NULL) {
     fprintf (stderr, "set of locale from env failed\n");
   }
 
-  /* these will be incorrect for windows */
-
+  /* on windows, returns the locale set for the user, not what's set */
+  /* in the environment. but GTK apparently picks up the environmental */
+  /* setting and uses the appropriate locale */
   sysvarsSetStr (SV_LOCALE_SYSTEM, osGetLocale (tbuff, sizeof (tbuff)));
   snprintf (tbuff, sizeof (tbuff), "%-.5s", sysvarsGetStr (SV_LOCALE_SYSTEM));
 

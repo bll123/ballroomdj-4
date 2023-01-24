@@ -2,7 +2,7 @@
 
 ### Differences between BallroomDJ 3 and BallroomDJ 4
 
-As of 2022-12-01:
+As of 2023-1-23:
 
 At this time the supported platforms for BallroomDJ 4 will probably be:
 
@@ -42,6 +42,7 @@ __Features that have changed in BallroomDJ&nbsp;4:__
 <br>__BDJ4 only supports: Stop After &lt;song-count&gt; (per playlist).__
 * Playlist: Pause after each song.
 <br>__BDJ4 has a pause each song switch in the player per-queue configuration.__
+* Fade Out: If a fade out time is set, the fade out is always applied.
 * Auto Organization
 <br>BDJ4 has no auto organization path editor.   To add a new path, the
 configuration file (data/orgopt.txt) must be manually edited. (If the
@@ -114,4 +115,4 @@ compatible audio file tags' is turned on).
 (1) No one actually asked this, but I thought you might like to know.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-05 13:54:50; BDJ4 version 4.0.5-beta)_
+<br>_(Updated 2023-01-24 08:51:22; BDJ4 version 4.0.9-beta)_

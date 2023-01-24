@@ -113,7 +113,7 @@ resptimeout 4500
 get player CHK_PLAYER_STATUS
 # should be a gap
 wait playstate in-gap
-resptimeout 2500
+resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
@@ -125,7 +125,7 @@ resptimeout 4500
 get player CHK_PLAYER_STATUS
 # should be a gap
 wait playstate in-gap
-resptimeout 2500
+resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500

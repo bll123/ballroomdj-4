@@ -4,17 +4,20 @@
 
 <!--
 
-**4.0.9 beta 2023-1---**
+**4.0.10 beta 2023-1---**
+
+-->
+
+**4.0.9 beta 2023-1-23**
 
 * Bug Fixes:
-P   * export as mp3: fix to export with song start, song end, fade-in, fade-out, speed, gap applied properly.
     * music manager: fix a crash when the song list was cleared.
     * player ui: internal fixes, marquee menu disabled when marquee is off.
     * queue dance: fix bad template.
     * song editor: fix play button to play correct song.
     * standard rounds: fix bad template.
-
--->
+* New Features:
+    * player: export as mp3: export MP3 files with song start, song end, fade-in, fade-out, speed, and gap applied.
 
 **4.0.8 beta 2023-1-18**
 
@@ -191,4 +194,4 @@ P   * export as mp3: fix to export with song start, song end, fade-in, fade-out,
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-18 17:29:50; BDJ4 version 4.0.8-beta)_
+<br>_(Updated 2023-01-24 08:51:22; BDJ4 version 4.0.9-beta)_
