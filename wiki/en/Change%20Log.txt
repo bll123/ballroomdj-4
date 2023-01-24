@@ -8,7 +8,7 @@
 
 -->
 
-**4.0.9 beta 2023-1-23**
+**4.0.9 beta 2023-1-24**
 
 * Bug Fixes:
     * music manager: fix a crash when the song list was cleared.
@@ -194,4 +194,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 08:51:22; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-24 08:57:00; BDJ4 version 4.0.10-beta-dev)_

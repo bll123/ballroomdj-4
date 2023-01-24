@@ -133,23 +133,10 @@ Select a song and select the _Queue_ button to add a song to the music
 queue.  The selected song will be added after the currently selected
 song in the music queue.
 
-##### Options Menu
-
-<div markdown style="margin-right: 20px; text-align: center;">
-![player-options-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-options-menu-B.png)
-<br><span style="color:#4559bf;">**Player / Options Menu**</span> </div>
-
-___Options / Show Extra Queues___: Displays all music queues that are configured
-([Configuration&nbsp;/&nbsp;Player%20Queues](en-Configuration-Player%20Queues)) to be displayed.
-
-___Options / Switch Queue When Empty___: When selected and all the songs in a
-queue have been played, the player will check for another queue that
-has songs queued and start playing songs from it.
-
 ##### Actions Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-B.png)
+![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-C.png)
 <br><span style="color:#4559bf;">**Player / Actions Menu**</span> </div>
 
 ___Actions / Request External___: Starts a dialog to select an audio file. After
@@ -165,7 +152,7 @@ button to add the song to the music queue.
 ##### Marquee Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![player-marquee-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-menu-B.png)
+![player-marquee-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-marquee-menu-C.png)
 <br><span style="color:#4559bf;">**Player / Marquee Menu**</span> </div>
 
 ___Marquee / Font Size___: Starts a dialog where the marquee's font size may be
@@ -175,10 +162,39 @@ ___Marquee / Recover Marquee___: If the marquee is displayed somewhere where it
 cannot be located, this selection will bring the marquee window back
 to the current screen.
 
+##### Export Menu
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-export-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-export-menu-A.png)
+<br><span style="color:#4559bf;">**Player / Export Menu**</span> </div>
+
+___Export / Export as MP3___: Exports the current music queue to a
+folder.  Each song in the queue has the fade-in, fade-out, maximum
+play time, song start, song end, speed and gap applied and is written
+to the selected folder as a MP3 file.  In addition, a M3U playlist
+file is created.
+
+When selected, a dialog to select a folder is displayed.  It is highly
+recommended that a new empty folder be created and used to hold the
+exported files.
+
+##### Options Menu
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![player-options-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-options-menu-C.png)
+<br><span style="color:#4559bf;">**Player / Options Menu**</span> </div>
+
+___Options / Show Extra Queues___: Displays all music queues that are configured
+([Configuration&nbsp;/&nbsp;Player%20Queues](en-Configuration-Player%20Queues)) to be displayed.
+
+___Options / Switch Queue When Empty___: When selected and all the songs in a
+queue have been played, the player will check for another queue that
+has songs queued and start playing songs from it.
+
 See also
 <br>[Configuration / Player](en-Configuration-Player)
 <br>[Configuration / Player Queues](en-Configuration-Player%20Queues)
 <br>[Configuration / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-18 08:07:02; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2023-01-24 09:27:35; BDJ4 version 4.0.10-beta-dev)_
