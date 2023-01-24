@@ -40,4 +40,4 @@ function is used.
 <br><span style="color:#4559bf;">**Configuration / iTunes**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-05 13:51:54; BDJ4 version 4.0.5-beta)_
+<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_

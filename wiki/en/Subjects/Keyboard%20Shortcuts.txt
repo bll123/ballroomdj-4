@@ -1,0 +1,34 @@
+[Wiki Home](Home)
+
+### Keyboard Shortcuts
+
+##### Music Manager
+
+___Multi-media Play___: Plays the selected song.
+
+##### Player
+
+___Multi-media Play, Pause, Stop, Next Song___
+
+___Multi-media Previous___: Return to the beginning of the song.
+
+##### Song Selection
+
+___Multi-media Play___: Plays the selected song.
+
+##### Song Editor
+
+___Control-P___: Moves to the previous song.
+
+___Control-N___: Moves to the next song.
+
+___Control-S___: Saves the changes.
+
+___Multi-media Play___: Plays the selected song.
+
+##### Song List Editor
+
+___Multi-media Play___: Plays the selected song.
+
+[Wiki Home](Home)
+<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_

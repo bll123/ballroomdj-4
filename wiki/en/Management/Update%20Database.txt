@@ -47,4 +47,4 @@ _Action_ to _Check&nbsp;for&nbsp;New_.  Do not use
 _Rebuild&nbsp;Database_ to add an additional music folder.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-05 13:51:03; BDJ4 version 4.0.5-beta)_
+<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_

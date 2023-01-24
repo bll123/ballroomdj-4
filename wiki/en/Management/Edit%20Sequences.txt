@@ -68,4 +68,4 @@ played, change the settings in
 [Playlist%20Management](en-Management-Playlist%20Management).
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-17 09:55:19; BDJ4 version 4.0.0-beta)_
+<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_

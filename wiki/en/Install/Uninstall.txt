@@ -12,6 +12,7 @@ Open a terminal (Finder / Go / Utilities / Terminal) and run
 this script using the following command.
 
     :::bash
+    cd Downloads
     bash macos-uninstall-bdj4-v1.sh
 
 This script performs the following actions.  The script will ask for
@@ -27,11 +28,15 @@ Delete the BDJ4 folder from your %USERPROFILE% (home) folder.
 
 #### Linux
 
-Delete the BDJ4 folder from your $HOME folder.
+Download the linux-uninstall-bdj4.sh script from sourceforge.
+
+[BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
+
+Open a terminal and run this script using the following command.
 
     :::bash
-    rm -rf $HOME/BDJ4
-    rm -rf $HOME/.config/BDJ4
+    cd Downloads
+    bash linux-uninstall-bdj4.sh
 
 [Wiki Home](Home)
-<br>_(Updated 2022-12-31 13:34:30; BDJ4 version 4.0.4-beta-dev)_
+<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_

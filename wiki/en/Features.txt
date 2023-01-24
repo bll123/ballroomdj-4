@@ -2,7 +2,7 @@
 
 ## BallroomDJ 4 Features
 
-* Supported Platforms
+* Supported Platforms as of 2023-1-24
     * Windows 10, Windows 11
     * MacOS Catalina, Big Sur, Monterey, Ventura
     * Linux
@@ -42,7 +42,6 @@
 * Playlists
     * Song lists : pick and choose the songs to play.
         * Create song lists using sequenced or automatic playlists.
-        * Export the song list as MP3 files.
     * Sequenced : specify which dances and the order in which they are played.
     * Automatic : choose how many of each dance play and let BDJ4 do the rest.
     * Playlist Controls
@@ -74,12 +73,12 @@
 ##### Future Features
 
 * Song Editor.
-    * Batch Edit songs.
     * Apply adjustments (speed, song start, song end) to a song.
     * Normalize volume.
     * Trim silence.
-    * Audio Identification via MusicBrainz and AcoustID.
+    * Batch Edit songs.
+* Audio Identification via MusicBrainz and AcoustID.
 * Automatic Organization.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-14 12:35:44; BDJ4 version 4.0.7-beta)_
+<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_

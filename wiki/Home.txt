@@ -91,6 +91,7 @@
 ### Subjects
 [Adding Songs to the Database](en-Subjects-Adding%20Songs)
 <br>[Announcements](en-Subjects-Announcements)
+<br>[Keyboard Shortcuts](en-Subjects-Keyboard%20Shortcuts)
 <br>[Keyword](en-Subjects-Keyword)
 <br>[Music Queues](en-Subjects-Music%20Queues)
 <br>__Playlists__
@@ -111,4 +112,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2023-01-05 11:59:15; BDJ4 version 4.0.5-beta)_
+<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
