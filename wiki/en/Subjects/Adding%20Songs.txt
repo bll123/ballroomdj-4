@@ -2,7 +2,30 @@
 
 ### Adding Songs to the Database
 
-To be written...
+After you have added new songs to your music collection, the
+BallroomDJ&nbsp;4 database must be updated to include the new songs.
+
+Select _Management_ from the _Starter_ window, then select the
+[Update&nbsp;Database](en-Management-Update%20Database) section.
+
+Select ___Check&nbsp;for&nbsp;New___ in the _Action_ selection (this is the
+default).  Select the ___Start___ button.
+
+BallroomDJ&nbsp;4 will check the music folder for new audio files.
+When processing is complete, a _Complete_ messages will be displayed
+in the processing status box.  The _New Files_ message will indicate
+how many new audio files were added to the database.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![adding-songs-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/adding-songs-A.png)
+<br><span style="color:#4559bf;">**Management / Update Database**</span> </div>
+
+##### Adding Songs in a Separate Folder
+
+If you have audio files that are in a folder separate from your main
+music folder (configured in BDJ4), use the chooser button select the
+alternate location for the ___Music&nbsp;Folder___ entry.  Then start
+the _Check&nbsp;for&nbsp;New_ action.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-24 10:18:38; BDJ4 version 4.0.9-beta)_
