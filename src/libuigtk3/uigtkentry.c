@@ -141,21 +141,6 @@ uiEntrySetValue (uientry_t *entry, const char *value)
 }
 
 void
-uiEntrySetColor (uientry_t *entry, const char *color)
-{
-  char  tbuff [100];
-  if (entry == NULL) {
-    return;
-  }
-  if (entry->uientry.widget == NULL) {
-    return;
-  }
-
-  snprintf (tbuff, sizeof (tbuff), "entry { color: %s; }", color);
-  uiSetCss (entry->uientry.widget, tbuff);
-}
-
-void
 uiEntrySetValidate (uientry_t *entry, uientryval_t valfunc, void *udata,
     int valdelay)
 {

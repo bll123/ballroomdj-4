@@ -1,9 +1,10 @@
 /*
  * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_MISC_H
-#define INC_MISC_H
+#ifndef INC_COLORUTILS_H
+#define INC_COLORUTILS_H
 
-char *createRandomColor (char *tbuff, size_t sz);
+char    *createRandomColor (char *tbuff, size_t sz);
+double  colorLuminance (const char *color);
 
-#endif /* INC_MISC_H */
+#endif /* INC_COLORUTILS_H */

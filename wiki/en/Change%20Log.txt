@@ -5,6 +5,8 @@
 <!--
 
 **4.0.10 beta 2023-1---**
+* Changes:
+    * Minor user interface cleanup.
 
 -->
 

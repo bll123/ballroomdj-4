@@ -61,7 +61,6 @@ typedef struct managedb {
   nlist_t           *dblist;
   nlist_t           *dbhelp;
   UIWidget          dbpbar;
-  char              fgcolor [20];
 } managedb_t;
 
 static bool manageDbStart (void *udata);
@@ -91,7 +90,6 @@ manageDbAlloc (UIWidget *window, nlist_t *options,
   uiutilsUIWidgetInit (&managedb->dbhelpdisp);
   managedb->dbtopdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxInit ();
-  *managedb->fgcolor = '\0';
   managedb->statusMsg = statusMsg;
   for (int i = 0; i < MDB_CB_MAX; ++i) {
     managedb->callbacks [i] = NULL;
@@ -187,8 +185,6 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
   uiWidgetSetMarginStart (&uiwidget, 2);
-
-  uiGetForegroundColor (&uiwidget, managedb->fgcolor, sizeof (managedb->fgcolor));
 
   uiSpinboxTextCreate (managedb->dbspinbox, managedb);
   /* currently hard-coded at 30 chars */
@@ -302,9 +298,9 @@ manageDbChg (void *udata)
     UIWidget  *uiwidgetp;
 
     uiLabelSetText (&managedb->dbhelpdisp, sval);
-    uiLabelSetColor (&managedb->dbhelpdisp, managedb->fgcolor);
+    uiWidgetRemoveClass (&managedb->dbhelpdisp, ACCENT_CLASS);
     if (nval == MANAGE_DB_REBUILD) {
-      uiLabelSetColor (&managedb->dbhelpdisp, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+      uiWidgetSetClass (&managedb->dbhelpdisp, ACCENT_CLASS);
     }
     uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
     uiWidgetEnable (uiwidgetp);

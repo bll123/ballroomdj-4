@@ -50,6 +50,10 @@ enum {
   UIUTILS_MENU_MAX = 5,
 };
 
+#define ACCENT_CLASS "accent"
+#define DARKACCENT_CLASS "darkaccent"
+#define ERROR_CLASS "error"
+
 /* uigtkutils.c */
 extern int uiBaseMarginSz;
 
@@ -128,8 +132,7 @@ void uiMenuClear (uimenu_t *menu);
 /* uigtklabel.c */
 void  uiCreateLabel (UIWidget *uiwidget, const char *label);
 void  uiCreateColonLabel (UIWidget *uiwidget, const char *label);
-void  uiLabelSetColor (UIWidget *uilabel, const char *color);
-void  uiLabelDarkenColor (UIWidget *uilabel, const char *color);
+void  uiLabelAddClass (const char *classnm, const char *color);
 void  uiLabelSetFont (UIWidget *uilabel, const char *font);
 void  uiLabelSetBackgroundColor (UIWidget *uiwidget, const char *color);
 void  uiLabelSetText (UIWidget *uilabel, const char *text);
@@ -188,7 +191,6 @@ UIWidget * uiEntryGetUIWidget (uientry_t *entry);
 void uiEntryPeerBuffer (uientry_t *targetentry, uientry_t *sourceentry);
 const char * uiEntryGetValue (uientry_t *entry);
 void uiEntrySetValue (uientry_t *entry, const char *value);
-void uiEntrySetColor (uientry_t *entry, const char *color);
 void uiEntrySetValidate (uientry_t *entry,
     uientryval_t valfunc, void *udata, int valdelay);
 int uiEntryValidate (uientry_t *entry, bool forceflag);
@@ -237,7 +239,7 @@ void  uiSpinboxSetValue (UIWidget *uispinbox, double ivalue);
 bool  uiSpinboxIsChanged (uispinbox_t *spinbox);
 void  uiSpinboxResetChanged (uispinbox_t *spinbox);
 void  uiSpinboxAlignRight (uispinbox_t *spinbox);
-void  uiSpinboxSetColor (uispinbox_t *spinbox, const char *color);
+void  uiSpinboxAddClass (const char *classnm, const char *color);
 UIWidget * uiSpinboxGetUIWidget (uispinbox_t *spinbox);
 void uiSpinboxTextSetValueChangedCallback (uispinbox_t *spinbox, callback_t *uicb);
 void uiSpinboxTimeSetValueChangedCallback (uispinbox_t *spinbox, callback_t *uicb);
@@ -411,9 +413,10 @@ void  uiCleanup (void);
 #if BDJ4_USE_GTK
 void  uiSetCss (GtkWidget *w, const char *style);
 #endif
-void  uiSetUIFont (char *uifont);
+void  uiSetUIFont (const char *uifont, const char *accentcolor, const char *errorcolor);
+void  uiAddColorClass (const char *classnm, const char *color);
+void  uiAddBGColorClass (const char *classnm, const char *color);
 void  uiInitUILog (void);
-void  uiGetForegroundColor (UIWidget *uiwidget, char *buff, size_t sz);
 
 /* uigtkwidget.c */
 /* widget interface */
@@ -443,6 +446,7 @@ void  uiWidgetSetSizeRequest (UIWidget *uiuiwidget, int width, int height);
 bool  uiWidgetIsValid (UIWidget *uiwidget);
 void  uiWidgetGetPosition (UIWidget *widget, int *x, int *y);
 void  uiWidgetSetClass (UIWidget *uiwidget, const char *class);
+void  uiWidgetRemoveClass (UIWidget *uiwidget, const char *class);
 
 /* uigtkimage.c */
 void  uiImageFromFile (UIWidget *uiwidget, const char *fn);
@@ -477,7 +481,7 @@ void uiScrollbarSetPageSize (UIWidget *uisb, double sz);
 
 /* uigtksep.c */
 void uiCreateHorizSeparator (UIWidget *uiwidget);
-void uiSeparatorSetColor (UIWidget *uiwidget, const char *color);
+void uiSeparatorAddClass (const char *classnm, const char *color);
 
 /* uigtkclipboard.c */
 void uiClipboardSet (const char *txt);

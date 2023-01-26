@@ -358,7 +358,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
     if (validateFunc != NULL) {
       uiEntrySetValidate (entryp, validateFunc, statusMsg, UIENTRY_IMMEDIATE);
     }
-    uiEntrySetColor (entryp, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+    uiWidgetSetClass (uiEntryGetUIWidget (entryp), ACCENT_CLASS);
     if (uimusicq->ui [ci].dispselType == DISP_SEL_EZSONGLIST) {
       uiWidgetExpandHoriz (uiEntryGetUIWidget (entryp));
       uiWidgetAlignHorizFill (uiEntryGetUIWidget (entryp));

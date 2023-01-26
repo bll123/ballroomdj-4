@@ -177,7 +177,9 @@ typedef struct {
 } installer_t;
 
 #define INST_HL_COLOR "#b16400"
+#define INST_HL_CLASS "insthl"
 #define INST_SEP_COLOR "#733000"
+#define INST_SEP_CLASS "instsep"
 
 #define INST_NEW_FILE "data/newinstall.txt"
 #define INST_TEMP_FILE  "tmp/bdj4instout.txt"
@@ -522,7 +524,7 @@ main (int argc, char *argv[])
         uifont = "Arial Regular 17";
       }
     }
-    uiSetUIFont (uifont);
+    uiSetUIFont (uifont, INST_HL_COLOR, NULL);
   }
 
   installerCheckPackages (&installer);
@@ -580,6 +582,8 @@ installerBuildUI (installer_t *installer)
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
 
+  uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
+  uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
 
   uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);
@@ -611,7 +615,7 @@ installerBuildUI (installer_t *installer)
 
   uiCreateLabel (&installer->statusMsg, "");
   uiWidgetAlignHorizEnd (&installer->statusMsg);
-  uiLabelSetColor (&installer->statusMsg, INST_HL_COLOR);
+  uiWidgetSetClass (&installer->statusMsg, INST_HL_CLASS);
   uiBoxPackEndExpand (&hbox, &installer->statusMsg);
 
   uiCreateLabel (&uiwidget,
@@ -657,11 +661,11 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_REINST]);
 
   uiCreateLabel (&installer->feedbackMsg, "");
-  uiLabelSetColor (&installer->feedbackMsg, INST_HL_COLOR);
+  uiWidgetSetClass (&installer->feedbackMsg, INST_HL_CLASS);
   uiBoxPackStart (&hbox, &installer->feedbackMsg);
 
   uiCreateHorizSeparator (&uiwidget);
-  uiSeparatorSetColor (&uiwidget, INST_SEP_COLOR);
+  uiWidgetSetClass (&uiwidget, INST_SEP_CLASS);
   uiBoxPackStart (&vbox, &uiwidget);
 
   /* conversion process */
@@ -724,13 +728,13 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_CONV]);
 
   uiCreateLabel (&installer->convFeedbackMsg, "");
-  uiLabelSetColor (&installer->convFeedbackMsg, INST_HL_COLOR);
+  uiWidgetSetClass (&installer->convFeedbackMsg, INST_HL_CLASS);
   uiBoxPackStart (&hbox, &installer->convFeedbackMsg);
 
   /* VLC status */
 
   uiCreateHorizSeparator (&uiwidget);
-  uiSeparatorSetColor (&uiwidget, INST_SEP_COLOR);
+  uiWidgetSetClass (&uiwidget, INST_SEP_CLASS);
   uiBoxPackStart (&vbox, &uiwidget);
 
   uiCreateSizeGroupHoriz (&sg);
@@ -744,7 +748,7 @@ installerBuildUI (installer_t *installer)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   uiCreateLabel (&installer->vlcMsg, "");
-  uiLabelSetColor (&installer->vlcMsg, INST_HL_COLOR);
+  uiWidgetSetClass (&installer->vlcMsg, INST_HL_CLASS);
   uiBoxPackStart (&hbox, &installer->vlcMsg);
 
   /* python status */
@@ -757,7 +761,7 @@ installerBuildUI (installer_t *installer)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   uiCreateLabel (&installer->pythonMsg, "");
-  uiLabelSetColor (&installer->pythonMsg, INST_HL_COLOR);
+  uiWidgetSetClass (&installer->pythonMsg, INST_HL_CLASS);
   uiBoxPackStart (&hbox, &installer->pythonMsg);
 
   /* mutagen status */
@@ -770,7 +774,7 @@ installerBuildUI (installer_t *installer)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   uiCreateLabel (&installer->mutagenMsg, "");
-  uiLabelSetColor (&installer->mutagenMsg, INST_HL_COLOR);
+  uiWidgetSetClass (&installer->mutagenMsg, INST_HL_CLASS);
   uiBoxPackStart (&hbox, &installer->mutagenMsg);
 
   /* button box */

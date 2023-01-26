@@ -365,7 +365,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiCreateLabel (&uiwidget, " ");
   uiBoxPackStart (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&uiw->modified, &uiwidget);
-  uiLabelDarkenColor (&uiw->modified, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiWidgetSetClass (&uiw->modified, DARKACCENT_CLASS);
 
   uiw->callbacks [UISONGEDIT_CB_COPY_TEXT] = callbackInit (
       uisongeditCopyPath, uisongedit, "songedit: copy-text");
@@ -387,7 +387,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiLabelEllipsizeOn (&uiwidget);
   uiBoxPackStart (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&uiw->filedisp, &uiwidget);
-  uiLabelDarkenColor (&uiw->filedisp, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiWidgetSetClass (&uiw->filedisp, DARKACCENT_CLASS);
   uiLabelSetSelectable (&uiw->filedisp);
 
   uiCreateHorizBox (&hbox);

@@ -103,10 +103,13 @@ typedef struct {
   bool            hideonstart : 1;
 } marquee_t;
 
-#define INFO_LAB_HEIGHT_ADJUST    0.85
 enum {
   MARQUEE_UNMAX_WAIT_COUNT = 3,
 };
+#define INFO_LAB_HEIGHT_ADJUST  0.85
+#define MQ_ACCENT_CLASS         "mqaccent"
+#define MQ_TEXT_CLASS           "mqtext"
+#define MQ_INFO_CLASS           "mqinfo"
 
 static bool marqueeConnectingCallback (void *udata, programstate_t programState);
 static bool marqueeHandshakeCallback (void *udata, programstate_t programState);
@@ -143,7 +146,6 @@ main (int argc, char *argv[])
   int             status = 0;
   uint16_t        listenPort;
   marquee_t       marquee;
-  char            *mqfont;
   char            tbuff [MAXPATHLEN];
   long            flags;
 
@@ -221,8 +223,9 @@ main (int argc, char *argv[])
   }
 
   uiUIInitialize ();
-  mqfont = bdjoptGetStr (OPT_MP_MQFONT);
-  uiSetUIFont (mqfont);
+  uiSetUIFont (bdjoptGetStr (OPT_MP_MQFONT),
+      bdjoptGetStr (OPT_P_UI_ACCENT_COL),
+      bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
   marqueeBuildUI (&marquee);
   osuiFinalize ();
@@ -326,6 +329,12 @@ marqueeBuildUI (marquee_t *marquee)
   int       x, y;
 
   logProcBegin (LOG_PROC, "marqueeBuildUI");
+
+  uiLabelAddClass (MQ_ACCENT_CLASS, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+  uiLabelAddClass (MQ_TEXT_CLASS, bdjoptGetStr (OPT_P_MQ_TEXT_COL));
+  uiLabelAddClass (MQ_INFO_CLASS, bdjoptGetStr (OPT_P_MQ_INFO_COL));
+  uiSeparatorAddClass (MQ_ACCENT_CLASS, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+
   uiutilsUIWidgetInit (&mainvbox);
   uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);
@@ -382,7 +391,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiCreateLabel (&uiwidget, _("Not Playing"));
   uiWidgetAlignHorizStart (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
-  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+  uiWidgetSetClass (&uiwidget, MQ_ACCENT_CLASS);
   uiBoxPackStart (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&marquee->danceLab, &uiwidget);
 
@@ -390,7 +399,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiLabelSetMaxWidth (&uiwidget, 6);
   uiWidgetAlignHorizEnd (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
-  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+  uiWidgetSetClass (&uiwidget, MQ_ACCENT_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&marquee->countdownTimerLab, &uiwidget);
 
@@ -423,7 +432,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiutilsUIWidgetCopy (&marquee->infoTitleLab, &uiwidget);
 
   uiCreateHorizSeparator (&marquee->sep);
-  uiSeparatorSetColor (&marquee->sep, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+  uiWidgetSetClass (&marquee->sep, MQ_ACCENT_CLASS);
   uiWidgetExpandHoriz (&marquee->sep);
   uiWidgetSetMarginTop (&marquee->sep, 2);
   uiWidgetSetMarginBottom (&marquee->sep, 4);
@@ -975,18 +984,18 @@ marqueeSetFont (marquee_t *marquee, int sz)
   snprintf (tbuff, sizeof (tbuff), "%s %d", fontname, sz);
   for (int i = 0; i < marquee->mqLen; ++i) {
     marqueeSetFontSize (marquee, &marquee->marqueeLabs [i], tbuff);
-    uiLabelSetColor (&marquee->marqueeLabs [i], bdjoptGetStr (OPT_P_MQ_TEXT_COL));
+    uiWidgetSetClass (&marquee->marqueeLabs [i], MQ_TEXT_CLASS);
   }
 
   sz = (int) round ((double) sz * 0.7);
   snprintf (tbuff, sizeof (tbuff), "%s %d", fontname, sz);
   if (uiWidgetIsValid (&marquee->infoArtistLab)) {
     marqueeSetFontSize (marquee, &marquee->infoArtistLab, tbuff);
-    uiLabelSetColor (&marquee->infoArtistLab, bdjoptGetStr (OPT_P_MQ_INFO_COL));
+    uiWidgetSetClass (&marquee->infoArtistLab, MQ_INFO_CLASS);
     marqueeSetFontSize (marquee, &marquee->infoSepLab, tbuff);
-    uiLabelSetColor (&marquee->infoSepLab, bdjoptGetStr (OPT_P_MQ_INFO_COL));
+    uiWidgetSetClass (&marquee->infoSepLab, MQ_INFO_CLASS);
     marqueeSetFontSize (marquee, &marquee->infoTitleLab, tbuff);
-    uiLabelSetColor (&marquee->infoTitleLab, bdjoptGetStr (OPT_P_MQ_INFO_COL));
+    uiWidgetSetClass (&marquee->infoTitleLab, MQ_INFO_CLASS);
   }
 
   logProcEnd (LOG_PROC, "marqueeSetFont", "");

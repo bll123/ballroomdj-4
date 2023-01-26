@@ -30,12 +30,11 @@ uiCreateHorizSeparator (UIWidget *uiwidget)
 }
 
 void
-uiSeparatorSetColor (UIWidget *uiwidget, const char *color)
+uiSeparatorAddClass (const char *classnm, const char *color)
 {
-  char  tbuff [100];
+  char    tbuff [100];
 
-  snprintf (tbuff, sizeof (tbuff),
-      "separator { background-color: %s; }", color);
-  uiSetCss (uiwidget->widget, tbuff);
+  snprintf (tbuff, sizeof (tbuff), "separator.%s", classnm);
+  uiAddBGColorClass (tbuff, color);
 }
 

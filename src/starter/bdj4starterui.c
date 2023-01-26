@@ -239,7 +239,6 @@ main (int argc, char *argv[])
   int             status = 0;
   startui_t       starter;
   uint16_t        listenPort;
-  char            *uifont;
   long            flags;
 
 #if BDJ4_MEM_DEBUG
@@ -313,8 +312,9 @@ main (int argc, char *argv[])
   starterLoadOptions (&starter);
 
   uiUIInitialize ();
-  uifont = bdjoptGetStr (OPT_MP_UIFONT);
-  uiSetUIFont (uifont);
+  uiSetUIFont (bdjoptGetStr (OPT_MP_UIFONT),
+      bdjoptGetStr (OPT_P_UI_ACCENT_COL),
+      bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
   starterBuildUI (&starter);
   osuiFinalize ();
@@ -503,7 +503,7 @@ starterBuildUI (startui_t  *starter)
   uiutilsUIWidgetCopy (&starter->profileAccent, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
-  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
+  uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&starter->statusMsg, &uiwidget);
 
@@ -1226,7 +1226,7 @@ starterProcessSupport (void *udata)
   uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
-  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
+  uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiutilsUIWidgetCopy (&starter->supportStatusMsg, &uiwidget);
   uiBoxPackEnd (&hbox, &uiwidget);
   uiLabelSetText (&starter->supportStatusMsg, "");
@@ -1703,7 +1703,7 @@ starterCreateSupportDialog (void *udata)
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStart (&vbox, &uiwidget);
   uiLabelEllipsizeOn (&uiwidget);
-  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiutilsUIWidgetCopy (&starter->supportStatus, &uiwidget);
 
   uiWidgetShowAll (&uidialog);

@@ -109,6 +109,9 @@ typedef struct {
 } altsetup_t;
 
 #define INST_HL_COLOR "#b16400"
+#define INST_HL_CLASS "insthl"
+#define INST_SEP_COLOR "#733000"
+#define INST_SEP_CLASS "instsep"
 
 static void altsetupBuildUI (altsetup_t *altsetup);
 static int  altsetupMainLoop (void *udata);
@@ -188,7 +191,7 @@ main (int argc, char *argv[])
       uifont = "Arial Regular 17";
     }
   }
-  uiSetUIFont (uifont);
+  uiSetUIFont (uifont, INST_HL_COLOR, NULL);
 
   altsetupBuildUI (&altsetup);
   osuiFinalize ();
@@ -223,6 +226,8 @@ altsetupBuildUI (altsetup_t *altsetup)
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
 
+  uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
+  uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
 
   uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);
@@ -304,11 +309,11 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiToggleButtonSetCallback (&altsetup->reinstWidget, altsetup->callbacks [ALT_CB_REINST]);
 
   uiCreateLabel (&altsetup->feedbackMsg, "");
-  uiLabelSetColor (&altsetup->feedbackMsg, INST_HL_COLOR);
+  uiWidgetSetClass (&altsetup->feedbackMsg, INST_HL_CLASS);
   uiBoxPackStart (&hbox, &altsetup->feedbackMsg);
 
   uiCreateHorizSeparator (&uiwidget);
-  uiSeparatorSetColor (&uiwidget, INST_HL_COLOR);
+  uiWidgetSetClass (&uiwidget, INST_SEP_CLASS);
   uiBoxPackStart (&vbox, &uiwidget);
 
   /* button box */

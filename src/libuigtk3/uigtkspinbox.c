@@ -406,13 +406,12 @@ uiSpinboxAlignRight (uispinbox_t *spinbox)
 }
 
 void
-uiSpinboxSetColor (uispinbox_t *spinbox, const char *color)
+uiSpinboxAddClass (const char *classnm, const char *color)
 {
-  char  tbuff [200];
+  char    tbuff [100];
 
-  snprintf (tbuff, sizeof (tbuff),
-      "spinbutton { color: %s; } ", color);
-  uiSetCss (spinbox->uispinbox.widget, tbuff);
+  snprintf (tbuff, sizeof (tbuff), "spinbutton.%s", classnm);
+  uiAddColorClass (tbuff, color);
 }
 
 UIWidget *

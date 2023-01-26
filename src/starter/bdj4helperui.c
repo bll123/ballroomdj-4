@@ -83,7 +83,6 @@ main (int argc, char *argv[])
   int             status = 0;
   uint16_t        listenPort;
   helperui_t      helper;
-  char            *uifont;
   long            flags;
   char            tbuff [MAXPATHLEN];
 
@@ -128,8 +127,9 @@ main (int argc, char *argv[])
   helper.helpkey = ilistIterateKey (helper.helplist, &helper.helpiter);
 
   uiUIInitialize ();
-  uifont = bdjoptGetStr (OPT_MP_UIFONT);
-  uiSetUIFont (uifont);
+  uiSetUIFont (bdjoptGetStr (OPT_MP_UIFONT),
+      bdjoptGetStr (OPT_P_UI_ACCENT_COL),
+      bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
   helperBuildUI (&helper);
   osuiFinalize ();

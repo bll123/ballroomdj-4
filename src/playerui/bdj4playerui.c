@@ -194,7 +194,6 @@ main (int argc, char *argv[])
   int             status = 0;
   uint16_t        listenPort;
   playerui_t      plui;
-  char            *uifont;
   char            tbuff [MAXPATHLEN];
 
 #if BDJ4_MEM_DEBUG
@@ -275,8 +274,9 @@ main (int argc, char *argv[])
   }
 
   uiUIInitialize ();
-  uifont = bdjoptGetStr (OPT_MP_UIFONT);
-  uiSetUIFont (uifont);
+  uiSetUIFont (bdjoptGetStr (OPT_MP_UIFONT),
+      bdjoptGetStr (OPT_P_UI_ACCENT_COL),
+      bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
   pluiBuildUI (&plui);
   osuiFinalize ();
@@ -442,12 +442,12 @@ pluiBuildUI (playerui_t *plui)
   uiWidgetDisable (&plui->clock);
 
   uiCreateLabel (&uiwidget, "");
-  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
+  uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&plui->errorMsg, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
-  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&plui->statusMsg, &uiwidget);
 

@@ -83,7 +83,6 @@ main (int argc, char *argv[])
 {
   int             status = 0;
   uint16_t        listenPort;
-  char            *uifont = NULL;
   nlist_t         *llist = NULL;
   nlistidx_t      iteridx;
   configui_t      confui;
@@ -254,8 +253,9 @@ main (int argc, char *argv[])
       confuiClosingCallback, &confui);
 
   uiUIInitialize ();
-  uifont = bdjoptGetStr (OPT_MP_UIFONT);
-  uiSetUIFont (uifont);
+  uiSetUIFont (bdjoptGetStr (OPT_MP_UIFONT),
+      bdjoptGetStr (OPT_P_UI_ACCENT_COL),
+      bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
   confuiBuildUI (&confui);
   osuiFinalize ();
@@ -427,7 +427,7 @@ confuiBuildUI (configui_t *confui)
   uiutilsAddAccentColorDisplay (&confui->gui.vbox, &hbox, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
-  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ERROR_COL));
+  uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&confui->gui.statusMsg, &uiwidget);
 

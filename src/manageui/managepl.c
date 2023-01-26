@@ -200,7 +200,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiEntryCreate (managepl->plname);
   uiEntrySetValidate (managepl->plname, manageValidateName,
       managepl->statusMsg, UIENTRY_IMMEDIATE);
-  uiEntrySetColor (managepl->plname, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiWidgetSetClass (uiEntryGetUIWidget (managepl->plname), ACCENT_CLASS);
   uiBoxPackStart (&hbox, uiEntryGetUIWidget (managepl->plname));
 
   uiCreateHorizBox (&hbox);
@@ -213,7 +213,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
 
   /* CONTEXT: playlist management: default playlist type */
   uiCreateLabel (&uiwidget, _("Automatic"));
-  uiLabelSetColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiBoxPackStart (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&managepl->uipltype, &uiwidget);
 

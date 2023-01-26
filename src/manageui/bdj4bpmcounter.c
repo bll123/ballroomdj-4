@@ -123,7 +123,6 @@ main (int argc, char *argv[])
   int             status = 0;
   uint16_t        listenPort;
   bpmcounter_t    bpmcounter;
-  char            *uifont;
   char            tbuff [MAXPATHLEN];
   long            flags;
 
@@ -201,8 +200,9 @@ main (int argc, char *argv[])
   }
 
   uiUIInitialize ();
-  uifont = bdjoptGetStr (OPT_MP_UIFONT);
-  uiSetUIFont (uifont);
+  uiSetUIFont (bdjoptGetStr (OPT_MP_UIFONT),
+      bdjoptGetStr (OPT_P_UI_ACCENT_COL),
+      bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
   bpmcounterBuildUI (&bpmcounter);
   osuiFinalize ();

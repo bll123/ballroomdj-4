@@ -45,23 +45,12 @@ uiCreateColonLabel (UIWidget *uiwidget, const char *label)
 }
 
 void
-uiLabelSetColor (UIWidget *uiwidget, const char *color)
+uiLabelAddClass (const char *classnm, const char *color)
 {
-  char  tbuff [200];
+  char    tbuff [100];
 
-  snprintf (tbuff, sizeof (tbuff),
-      "label { color: %s; }", color);
-  uiSetCss (uiwidget->widget, tbuff);
-}
-
-void
-uiLabelDarkenColor (UIWidget *uiwidget, const char *color)
-{
-  char  tbuff [200];
-
-  snprintf (tbuff, sizeof (tbuff),
-      "label { color: shade(%s,0.7); }", color);
-  uiSetCss (uiwidget->widget, tbuff);
+  snprintf (tbuff, sizeof (tbuff), "label.%s", classnm);
+  uiAddColorClass (tbuff, color);
 }
 
 void

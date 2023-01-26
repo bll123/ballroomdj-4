@@ -280,3 +280,11 @@ uiWidgetSetClass (UIWidget *uiwidget, const char *class)
   gtk_style_context_add_class (
      gtk_widget_get_style_context (uiwidget->widget), class);
 }
+
+void
+uiWidgetRemoveClass (UIWidget *uiwidget, const char *class)
+{
+  gtk_style_context_remove_class (
+      gtk_widget_get_style_context (uiwidget->widget), class);
+}
+

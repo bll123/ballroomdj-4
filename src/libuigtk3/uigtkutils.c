@@ -15,6 +15,7 @@
 #include <gtk/gtk.h>
 
 #include "bdjstring.h"
+#include "colorutils.h"
 #include "localeutil.h"
 #include "log.h"  // needed for glogwriteroutput
 #include "mdebug.h"
@@ -27,6 +28,7 @@ static int  csscount = 0;
 
 static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel,
     const GLogField* fields, gsize n_fields, gpointer udata);
+static void uiAddScreenCSS (const char *css);
 
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 
@@ -92,80 +94,92 @@ uiSetCss (GtkWidget *w, const char *style)
 }
 
 void
-uiSetUIFont (char *uifont)
+uiSetUIFont (const char *uifont, const char *accentColor,
+    const char *errorColor)
 {
-  GtkCssProvider  *tcss;
-  GdkScreen       *screen;
-  char            tbuff [300];
+  char            tbuff [1024];
   char            wbuff [300];
   char            *p;
-  int             sz = 12;
+  int             sz = 0;
 
-  if (uifont == NULL || ! *uifont) {
-    return;
-  }
+  *tbuff = '\0';
 
-  strlcpy (wbuff, uifont, sizeof (wbuff));
   if (uifont != NULL && *uifont) {
-    p = strrchr (wbuff, ' ');
-    if (p != NULL) {
-      ++p;
-      if (isdigit (*p)) {
-        --p;
-        *p = '\0';
+    strlcpy (wbuff, uifont, sizeof (wbuff));
+    if (uifont != NULL && *uifont) {
+      p = strrchr (wbuff, ' ');
+      if (p != NULL) {
         ++p;
-        sz = atoi (p);
+        if (isdigit (*p)) {
+          --p;
+          *p = '\0';
+          ++p;
+          sz = atoi (p);
+        }
       }
-    }
 
-    tcss = gtk_css_provider_new ();
-    snprintf (tbuff, sizeof (tbuff), "* { font-family: '%s'; } ", wbuff);
-    snprintf (wbuff, sizeof (wbuff), "entry { color: @theme_fg_color; } ");
-    strlcat (tbuff, wbuff, sizeof (tbuff));
-    strlcat (tbuff, "menu { background-color: shade(@theme_base_color,0.75); } ", sizeof (tbuff));
-    if (sz > 0) {
-      snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; } ", sz);
-      strlcat (tbuff, wbuff, sizeof (tbuff));
-      sz -= 2;
-      snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; } ", sz);
-      strlcat (tbuff, wbuff, sizeof (tbuff));
-      snprintf (wbuff, sizeof (wbuff), " .confnotebook tab label { font-size: %dpt; } ", sz);
-      strlcat (tbuff, wbuff, sizeof (tbuff));
-    }
-
-    p = mdstrdup (tbuff);
-    ++csscount;
-    cssdata = mdrealloc (cssdata, sizeof (char *) * csscount);
-    cssdata [csscount-1] = p;
-
-    gtk_css_provider_load_from_data (tcss, p, -1, NULL);
-    screen = gdk_screen_get_default ();
-    if (screen != NULL) {
-      gtk_style_context_add_provider_for_screen (screen,
-          GTK_STYLE_PROVIDER (tcss),
-          GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+      snprintf (tbuff, sizeof (tbuff), "* { font-family: '%s'; } ", wbuff);
     }
   }
+
+  strlcat (tbuff, "entry { color: @theme_fg_color; } ", sizeof (tbuff));
+  strlcat (tbuff, "menu { background-color: shade(@theme_base_color,0.7); } ", sizeof (tbuff));
+  strlcat (tbuff, "progressbar { background-image: none; } ", sizeof (tbuff));
+  strlcat (tbuff, "trough { border-width: 0px; } ", sizeof (tbuff));
+  strlcat (tbuff, "trough progress { border-width: 0px; } ", sizeof (tbuff));
+
+  if (accentColor != NULL) {
+    snprintf (wbuff, sizeof (wbuff),
+        "label." ACCENT_CLASS " { color: %s; } ", accentColor);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+    snprintf (wbuff, sizeof (wbuff),
+        "label." DARKACCENT_CLASS " { color: shade(%s,0.7); } ", accentColor);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+    snprintf (wbuff, sizeof (wbuff),
+        "entry." ACCENT_CLASS " { color: %s; } ", accentColor);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+  }
+  if (errorColor != NULL) {
+    snprintf (wbuff, sizeof (wbuff),
+        "label." ERROR_CLASS " { color: %s; } ", errorColor);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+  }
+
+  if (sz > 0) {
+    snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; } ", sz);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+    sz -= 2;
+    snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; } ", sz);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+    snprintf (wbuff, sizeof (wbuff), " .confnotebook tab label { font-size: %dpt; } ", sz);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+  }
+
+  uiAddScreenCSS (tbuff);
+}
+
+void
+uiAddColorClass (const char *classnm, const char *color)
+{
+  char            tbuff [100];
+
+  snprintf (tbuff, sizeof (tbuff), "%s { color: %s; } ", classnm, color);
+  uiAddScreenCSS (tbuff);
+}
+
+void
+uiAddBGColorClass (const char *classnm, const char *color)
+{
+  char            tbuff [100];
+
+  snprintf (tbuff, sizeof (tbuff), "%s { background-color: %s; } ", classnm, color);
+  uiAddScreenCSS (tbuff);
 }
 
 void
 uiInitUILog (void)
 {
   g_log_set_writer_func (uiGtkLogger, NULL, NULL);
-}
-
-void
-uiGetForegroundColor (UIWidget *uiwidget, char *buff, size_t sz)
-{
-  GdkRGBA         gcolor;
-  GtkStyleContext *context;
-
-  context = gtk_widget_get_style_context (uiwidget->widget);
-  gtk_style_context_get_color (context, GTK_STATE_FLAG_NORMAL, &gcolor);
-  snprintf (buff, sz, "#%02x%02x%02x",
-      (int) round (gcolor.red * 255.0),
-      (int) round (gcolor.green * 255.0),
-      (int) round (gcolor.blue * 255.0));
 }
 
 /* internal routines */
@@ -190,3 +204,26 @@ uiGtkLogger (GLogLevelFlags logLevel,
 
   return G_LOG_WRITER_HANDLED;
 }
+
+static void
+uiAddScreenCSS (const char *css)
+{
+  GtkCssProvider  *tcss;
+  GdkScreen       *screen;
+  char            *p;
+
+  p = mdstrdup (css);
+  ++csscount;
+  cssdata = mdrealloc (cssdata, sizeof (char *) * csscount);
+  cssdata [csscount-1] = p;
+
+  tcss = gtk_css_provider_new ();
+  gtk_css_provider_load_from_data (tcss, p, -1, NULL);
+  screen = gdk_screen_get_default ();
+  if (screen != NULL) {
+    gtk_style_context_add_provider_for_screen (screen,
+        GTK_STYLE_PROVIDER (tcss),
+        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  }
+}
+

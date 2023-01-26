@@ -26,11 +26,11 @@
 typedef struct uifavorite {
   uispinbox_t   *spinbox;
   songfav_t     *songfav;
-  char          textcolor [40];
 } uifavorite_t;
 
+static bool initialized = false;
+
 static const char *uifavoriteFavoriteGet (void *udata, int idx);
-static void uifavoriteSetFavoriteForeground (uifavorite_t *uifavorite, const char *color);
 
 uifavorite_t *
 uifavoriteSpinboxCreate (UIWidget *boxp)
@@ -43,9 +43,24 @@ uifavoriteSpinboxCreate (UIWidget *boxp)
   uifavorite->spinbox = uiSpinboxInit ();
   uispinboxp = uiSpinboxGetUIWidget (uifavorite->spinbox);
   uiSpinboxTextCreate (uifavorite->spinbox, uifavorite);
-  /* get the foreground color once only before anything has been changed */
-  uiGetForegroundColor (uispinboxp,
-      uifavorite->textcolor, sizeof (uifavorite->textcolor));
+
+  if (! initialized) {
+    int         count;
+    const char  *name;
+    const char  *color;
+
+    count = songFavoriteGetCount (uifavorite->songfav);
+    for (int idx = 0; idx < count; ++idx) {
+      name = songFavoriteGetStr (uifavorite->songfav, idx, SONGFAV_NAME);
+      color = songFavoriteGetStr (uifavorite->songfav, idx, SONGFAV_COLOR);
+      if (name == NULL || ! *name) {
+        continue;
+      }
+      uiSpinboxAddClass (name, color);
+    }
+
+    initialized = true;
+  }
 
   uiSpinboxTextSet (uifavorite->spinbox, 0,
       songFavoriteGetCount (uifavorite->songfav),
@@ -113,20 +128,18 @@ static const char *
 uifavoriteFavoriteGet (void *udata, int idx)
 {
   uifavorite_t  *uifavorite = udata;
-  const char    *color;
+  const char    *name;
+  int           count;
 
-  color = songFavoriteGetStr (uifavorite->songfav, idx, SONGFAV_COLOR);
-  uifavoriteSetFavoriteForeground (uifavorite, color);
-  return songFavoriteGetStr (uifavorite->songfav, idx, SONGFAV_DISPLAY);
-}
-
-static void
-uifavoriteSetFavoriteForeground (uifavorite_t *uifavorite, const char *color)
-{
-  if (color != NULL && strcmp (color, "") != 0) {
-    uiSpinboxSetColor (uifavorite->spinbox, color);
-  } else {
-    uiSpinboxSetColor (uifavorite->spinbox, uifavorite->textcolor);
+  count = songFavoriteGetCount (uifavorite->songfav);
+  for (int i = 0; i < count; ++i) {
+    name = songFavoriteGetStr (uifavorite->songfav, i, SONGFAV_NAME);
+    if (i == idx) {
+      uiWidgetSetClass (uiSpinboxGetUIWidget (uifavorite->spinbox), name);
+    } else {
+      uiWidgetRemoveClass (uiSpinboxGetUIWidget (uifavorite->spinbox), name);
+    }
   }
+  return songFavoriteGetStr (uifavorite->songfav, idx, SONGFAV_DISPLAY);
 }
 

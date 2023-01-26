@@ -25,3 +25,17 @@ createRandomColor (char *tbuff, size_t sz)
   snprintf (tbuff, sz, "#%02x%02x%02x", r, g, b);
   return tbuff;
 }
+
+double
+colorLuminance (const char *color)
+{
+  int     r, g, b;
+  double  dr, dg, db;
+
+  sscanf (color, "#%2x%2x%2x", &r, &g, &b);
+  dr = 0.299 * (double) r;
+  dg = 0.587 * (double) g;
+  db = 0.114 * (double) b;
+  return dr + dg + db;
+}
+

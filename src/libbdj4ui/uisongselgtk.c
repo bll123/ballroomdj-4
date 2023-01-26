@@ -279,7 +279,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
     uiBoxPackStart (&hbox, uiwidgetp);
 
     uiCreateLabel (&uiwidget, "");
-    uiLabelDarkenColor (&uiwidget, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+    uiWidgetSetClass (&uiwidget, DARKACCENT_CLASS);
     uiBoxPackStart (&hbox, &uiwidget);
     uiutilsUIWidgetCopy (&uiw->reqQueueLabel, &uiwidget);
   }
