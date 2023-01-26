@@ -25,7 +25,8 @@ purposes of this example, it will be assumed that the announcements
 are named after the dance, and are stored in a folder named "Announce".
 
 Add the announcements to the BallroomDJ&nbsp;4 database using
-_Management_ / _Update&nbsp;Database_ / _Check&nbsp;for&nbsp;New (See
+_Management_ / _Update&nbsp;Database_ / _Check&nbsp;for&nbsp;New_
+<br>(See
 [Adding&nbsp;Songs&nbsp;to&nbsp;the&nbsp;Database](en-Subjects-Adding%20Songs)).
 
 ###### Associate the Announcement with a Dance
@@ -34,7 +35,7 @@ Now, using _Configure_ / _Edit&nbsp;Dances_, select the dance to edit,
 select the _Announcement_ file chooser button with the folder icon for
 and select the announcement audio file for that dance.  If a dance
 does not have an announcement assigned, no announcement will be
-played.  (See
+played. <br>(See
 [Configure&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)).
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -72,4 +73,4 @@ configured, and turn on the _Play&nbsp;Announcements_ switch.
 <br><span style="color:#4559bf;">**Manage / Playlist Management**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-26 10:02:31; BDJ4 version 4.0.10-beta-dev)_
