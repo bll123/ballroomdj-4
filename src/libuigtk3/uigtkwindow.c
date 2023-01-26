@@ -186,10 +186,6 @@ uiCreateScrolledWindow (UIWidget *uiwidget, int minheight)
   GtkWidget   *twidget;
 
   widget = gtk_scrolled_window_new (NULL, NULL);
-  uiSetCss (widget,
-      "undershoot.top, undershoot.right, "
-      "undershoot.left, undershoot.bottom "
-      "{ background-image: none; outline-width: 0; }");
   gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
   gtk_scrolled_window_set_kinetic_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
   /* propagate natural width works well */
@@ -203,8 +199,6 @@ uiCreateScrolledWindow (UIWidget *uiwidget, int minheight)
   gtk_widget_set_hexpand (widget, FALSE);
   gtk_widget_set_vexpand (widget, FALSE);
   twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (widget));
-  uiSetCss (twidget,
-      "scrollbar, scrollbar slider { min-width: 9px; } ");
 
   uiwidget->widget = widget;
 }

@@ -60,22 +60,7 @@ uiCreateSwitch (int value)
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
   uiSwitchSetImage (widget, uiswitch);
   gtk_button_set_always_show_image (GTK_BUTTON (widget), TRUE);
-  uiSetCss (widget,
-      "button { "
-      "  border-bottom-left-radius: 15px; "
-      "  border-bottom-right-radius: 15px; "
-      "  border-top-left-radius: 15px; "
-      "  border-top-right-radius: 15px; "
-      "  background-color: shade(@theme_base_color,0.8); "
-      "  border-color: shade(@theme_base_color,0.8); "
-      "} "
-      "button:checked { "
-      "  background-color: shade(@theme_base_color,0.8); "
-      "} "
-      "button:hover { "
-      "  background-color: shade(@theme_base_color,0.8); "
-      "} "
-      );
+  uiWidgetSetClass (&uiswitch->uiswitch, SWITCH_CLASS);
   g_signal_connect (widget, "toggled",
       G_CALLBACK (uiSwitchImageHandler), uiswitch);
   return uiswitch;

@@ -116,9 +116,7 @@ uiTreeViewDisableHeaders (uitree_t *uitree)
 void
 uiTreeViewDarkBackground (uitree_t *uitree)
 {
-  uiSetCss (uitree->uitree.widget,
-      "treeview { background-color: shade(@theme_base_color,0.8); } "
-      "treeview:selected { background-color: @theme_selected_bg_color; } ");
+  uiWidgetSetClass (&uitree->uitree, TREEVIEW_DARK_CLASS);
 }
 
 void

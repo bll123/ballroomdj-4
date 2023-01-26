@@ -171,17 +171,7 @@ uiButtonSetReliefNone (uibutton_t *uibutton)
 void
 uiButtonSetFlat (uibutton_t *uibutton)
 {
-  GtkWidget *aw;
-
-  uiSetCss (uibutton->uibutton.widget,
-      "button { "
-      "outline-width: 0; "
-      "padding: 0; "
-      "border-color: @theme_bg_color; "
-      "background-color: @theme_bg_color; "
-      "}");
-  aw = gtk_bin_get_child (GTK_BIN (uibutton->uibutton.widget));
-  uiSetCss (aw, "widget { outline-width: 0; }");
+  uiWidgetSetClass (&uibutton->uibutton, FLATBUTTON_CLASS);
 }
 
 void

@@ -49,23 +49,23 @@ uichgindFree (uichgind_t *uichgind)
 void
 uichgindMarkNormal (uichgind_t *uichgind)
 {
-  uiSetCss (uichgind->label.widget,
-      "label { border-left-style: solid; border-left-width: 2px; "
-      " border-left-color: transparent; }");
+  uiWidgetRemoveClass (&uichgind->label, CHGIND_CHANGED_CLASS);
+  uiWidgetRemoveClass (&uichgind->label, CHGIND_ERROR_CLASS);
+  uiWidgetSetClass (&uichgind->label, CHGIND_NORMAL_CLASS);
 }
 
 void
 uichgindMarkError (uichgind_t *uichgind)
 {
-  uiSetCss (uichgind->label.widget,
-      "label { border-left-style: solid; border-left-width: 2px; "
-      " border-left-color: #ff1111; }");
+  uiWidgetRemoveClass (&uichgind->label, CHGIND_NORMAL_CLASS);
+  uiWidgetRemoveClass (&uichgind->label, CHGIND_CHANGED_CLASS);
+  uiWidgetSetClass (&uichgind->label, CHGIND_ERROR_CLASS);
 }
 
 void
 uichgindMarkChanged (uichgind_t *uichgind)
 {
-  uiSetCss (uichgind->label.widget,
-      "label { border-left-style: solid; border-left-width: 2px; "
-      " border-left-color: #11ff11; }");
+  uiWidgetRemoveClass (&uichgind->label, CHGIND_NORMAL_CLASS);
+  uiWidgetRemoveClass (&uichgind->label, CHGIND_ERROR_CLASS);
+  uiWidgetSetClass (&uichgind->label, CHGIND_CHANGED_CLASS);
 }

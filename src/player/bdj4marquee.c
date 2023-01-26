@@ -223,7 +223,7 @@ main (int argc, char *argv[])
   }
 
   uiUIInitialize ();
-  uiSetUIFont (bdjoptGetStr (OPT_MP_MQFONT),
+  uiSetUICSS (bdjoptGetStr (OPT_MP_MQFONT),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
 

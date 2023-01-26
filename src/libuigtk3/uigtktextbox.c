@@ -156,8 +156,7 @@ uiTextBoxSetValue (uitextbox_t *tb, const char *str)
 void
 uiTextBoxDarken (uitextbox_t *tb)
 {
-  uiSetCss (tb->textbox.widget,
-      "textview text { background-color: shade(@theme_base_color,0.8); } ");
+  uiWidgetSetClass (&tb->textbox, TEXTBOX_DARK_CLASS);
 }
 
 void

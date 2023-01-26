@@ -94,10 +94,10 @@ uiSetCss (GtkWidget *w, const char *style)
 }
 
 void
-uiSetUIFont (const char *uifont, const char *accentColor,
+uiSetUICSS (const char *uifont, const char *accentColor,
     const char *errorColor)
 {
-  char            tbuff [1024];
+  char            tbuff [4096];
   char            wbuff [300];
   char            *p;
   int             sz = 0;
@@ -122,11 +122,85 @@ uiSetUIFont (const char *uifont, const char *accentColor,
     }
   }
 
+  /* note that these affect dialogs started by the application */
   strlcat (tbuff, "entry { color: @theme_fg_color; } ", sizeof (tbuff));
   strlcat (tbuff, "menu { background-color: shade(@theme_base_color,0.7); } ", sizeof (tbuff));
+  strlcat (tbuff, "scale, scale trough { min-height: 5px; } ", sizeof (tbuff));
+  strlcat (tbuff, "separator { min-height: 4px; } ", sizeof (tbuff));
+  strlcat (tbuff, "scrollbar, scrollbar slider { min-width: 9px; } ", sizeof (tbuff));
+
+  /* read-only spinbox */
+  /* for some reason, if the selection background color alone is set, the */
+  /* text color temporarily becomes white on light colored themes */
+  /* the text color must be set also */
+  /* these changes are to make the spinbox read-only */
+  strlcat (tbuff,
+      "spinbutton." SPINBOX_READONLY_CLASS " { caret-color: @theme_base_color; } "
+      "spinbutton." SPINBOX_READONLY_CLASS " selection { background-color: @theme_base_color; color: @theme_text_color; } ",
+      sizeof (tbuff));
+
+  /* progress bars */
   strlcat (tbuff, "progressbar { background-image: none; } ", sizeof (tbuff));
-  strlcat (tbuff, "trough { border-width: 0px; } ", sizeof (tbuff));
-  strlcat (tbuff, "trough progress { border-width: 0px; } ", sizeof (tbuff));
+  strlcat (tbuff, "progressbar > trough { border-width: 0px; min-height: 25px; } ", sizeof (tbuff));
+  strlcat (tbuff, "progressbar > trough progress { border-width: 0px; min-height: 25px; } ", sizeof (tbuff));
+
+  /* dark textbox */
+  strlcat (tbuff,
+      "textview." TEXTBOX_DARK_CLASS " text { background-color: shade(@theme_base_color,0.8); } ",
+      sizeof (tbuff));
+
+  /* dark tree view */
+  strlcat (tbuff,
+      "treeview." TREEVIEW_DARK_CLASS " { background-color: shade(@theme_base_color,0.8); } "
+      "treeview." TREEVIEW_DARK_CLASS ":selected { background-color: @theme_selected_bg_color; } ",
+      sizeof (tbuff));
+
+  /* notebooks */
+  // notebook header tabs tab label
+  strlcat (tbuff,
+      "notebook tab:checked { background-color: shade(@theme_base_color,0.6); } ",
+      sizeof (tbuff));
+
+  /* scrolled windows */
+  strlcat (tbuff,
+      "scrolledwindow undershoot.top, scrolledwindow undershoot.right, "
+      "scrolledwindow undershoot.left, scrolledwindow undershoot.bottom "
+      "{ background-image: none; outline-width: 0; } ", sizeof (tbuff));
+
+  /* our switch */
+  strlcat (tbuff,
+      "button." SWITCH_CLASS " { "
+      "  border-bottom-left-radius: 15px; "
+      "  border-bottom-right-radius: 15px; "
+      "  border-top-left-radius: 15px; "
+      "  border-top-right-radius: 15px; "
+      "  background-color: shade(@theme_base_color,0.8); "
+      "  border-color: shade(@theme_base_color,0.8); "
+      "} "
+      "button.switch:checked { "
+      "  background-color: shade(@theme_base_color,0.8); "
+      "} "
+      "button.switch:hover { "
+      "  background-color: shade(@theme_base_color,0.8); "
+      "} ",
+      sizeof (tbuff));
+
+  /* flat button */
+  strlcat (tbuff, "button." FLATBUTTON_CLASS " { outline-width: 0px; "
+      "padding: 0px; border-color: @theme_bg_color; "
+      "background-color: @theme_bg_color; } ", sizeof (tbuff));
+  strlcat (tbuff, "button." FLATBUTTON_CLASS " widget { outline-width: 0px; } ", sizeof (tbuff));
+
+  /* change indicators */
+  strlcat (tbuff,
+      "label." CHGIND_NORMAL_CLASS " { border-left-style: solid; border-left-width: 4px; "
+      " border-left-color: transparent; } ", sizeof (tbuff));
+  strlcat (tbuff,
+      "label." CHGIND_CHANGED_CLASS " { border-left-style: solid; border-left-width: 4px; "
+      " border-left-color: #11ff11; } ", sizeof (tbuff));
+  strlcat (tbuff,
+      "label." CHGIND_ERROR_CLASS " { border-left-style: solid; border-left-width: 4px; "
+      " border-left-color: #ff1111; } ", sizeof (tbuff));
 
   if (accentColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
@@ -137,6 +211,11 @@ uiSetUIFont (const char *uifont, const char *accentColor,
     strlcat (tbuff, wbuff, sizeof (tbuff));
     snprintf (wbuff, sizeof (wbuff),
         "entry." ACCENT_CLASS " { color: %s; } ", accentColor);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+
+    snprintf (wbuff, sizeof (wbuff),
+        "progressbar." ACCENT_CLASS " > trough > progress { background-color: %s; }",
+        accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
   if (errorColor != NULL) {
@@ -155,6 +234,9 @@ uiSetUIFont (const char *uifont, const char *accentColor,
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 
+  if (strlen (tbuff) >= sizeof (tbuff)) {
+    fprintf (stderr, "possible css overflow: %zd\n", strlen (tbuff));
+  }
   uiAddScreenCSS (tbuff);
 }
 

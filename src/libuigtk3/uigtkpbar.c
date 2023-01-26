@@ -28,8 +28,8 @@ uiCreateProgressBar (UIWidget *uiwidget, char *color)
   gtk_widget_set_hexpand (widget, TRUE);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
+  /* for the time being, this is still needed for the marquee */
   snprintf (tbuff, sizeof (tbuff),
-      "progress, trough { min-height: 25px; } "
       "progressbar > trough > progress { background-color: %s; }",
       color);
   uiSetCss (widget, tbuff);

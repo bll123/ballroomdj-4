@@ -710,13 +710,7 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
 
         speed = (int) ndval;
         if (ssidx != -1) {
-// how to do this...
-// have: original song start from song data
-// have: new song start setting
-// have: original speed setting from song data
-// have: new speed setting
           nval = uiSpinboxTimeGetValue (uiw->items [ssidx].spinbox);
-//          nval = songGetNum (uiw->song, TAG_SONGSTART);
           if (nval > 0) {
             nval = songNormalizePosition (nval, uiw->lastspeed);
             nval = songAdjustPosReal (nval, speed);
@@ -725,7 +719,6 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
         }
         if (seidx != -1) {
           nval = uiSpinboxTimeGetValue (uiw->items [seidx].spinbox);
-//          nval = songGetNum (uiw->song, TAG_SONGEND);
           if (nval > 0) {
             nval = songNormalizePosition (nval, uiw->lastspeed);
             nval = songAdjustPosReal (nval, speed);
@@ -840,6 +833,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
   uiw = uisongedit->uiWidgetData;
 
   uiw->items [uiw->itemcount].chgind = uiCreateChangeIndicator (hbox);
+  uichgindMarkNormal (uiw->items [uiw->itemcount].chgind);
   uiw->items [uiw->itemcount].changed = false;
   uiw->items [uiw->itemcount].lastchanged = false;
 

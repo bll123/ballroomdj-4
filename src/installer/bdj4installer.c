@@ -524,7 +524,7 @@ main (int argc, char *argv[])
         uifont = "Arial Regular 17";
       }
     }
-    uiSetUIFont (uifont, INST_HL_COLOR, NULL);
+    uiSetUICSS (uifont, INST_HL_COLOR, NULL);
   }
 
   installerCheckPackages (&installer);

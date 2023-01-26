@@ -18,15 +18,11 @@ void
 uiCreateHorizSeparator (UIWidget *uiwidget)
 {
   GtkWidget   *sep;
-  char        tbuff [100];
 
   sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
   uiwidget->widget = sep;
   uiWidgetExpandHoriz (uiwidget);
   uiWidgetSetMarginTop (uiwidget, uiBaseMarginSz);
-  snprintf (tbuff, sizeof (tbuff),
-      "separator { min-height: 4px; }");
-  uiSetCss (uiwidget->widget, tbuff);
 }
 
 void

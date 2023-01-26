@@ -265,6 +265,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiWidgetDisable (uiwidgetp);
 
   uiCreateProgressBar (&managedb->dbpbar, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiWidgetSetClass (&managedb->dbpbar, ACCENT_CLASS);
   uiWidgetSetMarginStart (&managedb->dbpbar, 2);
   uiWidgetSetMarginEnd (&managedb->dbpbar, 2);
   uiBoxPackStart (vboxp, &managedb->dbpbar);

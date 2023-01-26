@@ -99,14 +99,7 @@ uiSpinboxTextCreate (uispinbox_t *spinbox, void *udata)
   g_signal_connect (spinbox->uispinbox.widget, "input",
       G_CALLBACK (uiSpinboxTextInput), spinbox);
   spinbox->udata = udata;
-  /* for some reason, if the selection background color alone is set, the */
-  /* text color temporarily becomes white on light colored themes */
-  /* the text color must be set also */
-  /* these changes are to make the spinbox read-only */
-  uiSetCss (spinbox->uispinbox.widget,
-      "spinbutton { caret-color: @theme_base_color; } "
-      "selection { background-color: @theme_base_color; color: @theme_text_color; }"
-      );
+  uiWidgetSetClass (&spinbox->uispinbox, SPINBOX_READONLY_CLASS);
 }
 
 void

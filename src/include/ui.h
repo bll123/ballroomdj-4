@@ -53,6 +53,14 @@ enum {
 #define ACCENT_CLASS "accent"
 #define DARKACCENT_CLASS "darkaccent"
 #define ERROR_CLASS "error"
+#define CHGIND_NORMAL_CLASS "chgindnormal"
+#define CHGIND_ERROR_CLASS "chginderror"
+#define CHGIND_CHANGED_CLASS "chgindchanged"
+#define FLATBUTTON_CLASS "flatbutton"
+#define SWITCH_CLASS "switch"
+#define TREEVIEW_DARK_CLASS "dark"
+#define TEXTBOX_DARK_CLASS "dark"
+#define SPINBOX_READONLY_CLASS "readonly"
 
 /* uigtkutils.c */
 extern int uiBaseMarginSz;
@@ -413,7 +421,7 @@ void  uiCleanup (void);
 #if BDJ4_USE_GTK
 void  uiSetCss (GtkWidget *w, const char *style);
 #endif
-void  uiSetUIFont (const char *uifont, const char *accentcolor, const char *errorcolor);
+void  uiSetUICSS (const char *uifont, const char *accentcolor, const char *errorcolor);
 void  uiAddColorClass (const char *classnm, const char *color);
 void  uiAddBGColorClass (const char *classnm, const char *color);
 void  uiInitUILog (void);

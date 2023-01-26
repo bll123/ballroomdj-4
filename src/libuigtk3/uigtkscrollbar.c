@@ -23,8 +23,6 @@ uiCreateVerticalScrollbar (UIWidget *uiwidget, double upper)
   adjustment = gtk_adjustment_new (0.0, 0.0, upper, 1.0, 10.0, 10.0);
   sb = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);
   uiwidget->widget = sb;
-  uiSetCss (sb,
-      "scrollbar, scrollbar slider { min-width: 9px; } ");
   uiWidgetExpandVert (uiwidget);
 }
 
