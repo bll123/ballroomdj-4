@@ -4210,7 +4210,7 @@ DANCERATING
 TITLE
 ..ann-waltz
 DEST
-..ann-waltz
+..Announce/waltz
 
 KEY
 ..119
@@ -4245,4 +4245,4 @@ DANCERATING
 TITLE
 ..ann-tango
 DEST
-..ann-tango
+..Announce/tango
