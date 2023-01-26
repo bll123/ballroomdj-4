@@ -24,8 +24,8 @@ Folder_.
 ![Configuration / General / Music Folder](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-folder-C.png)
 <br><span style="color:#4559bf;">**Configuration / General / Music Folder**</span> </div>
 
-Use the chooser button with the folder icon on the far right to choose
-the location of your music folder.
+Use the directory chooser button with the folder icon on the far right
+to choose the location of your music folder.
 
 Leave the configuration window open.
 

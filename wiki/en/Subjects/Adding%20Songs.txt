@@ -23,9 +23,10 @@ how many new audio files were added to the database.
 ##### Adding Songs in a Separate Folder
 
 If you have audio files that are in a folder separate from your main
-music folder (configured in BDJ4), use the chooser button select the
-alternate location for the ___Music&nbsp;Folder___ entry.  Then start
-the _Check&nbsp;for&nbsp;New_ action.
+music folder (configured in BDJ4), use the directory chooser button
+with the folder icon to select the alternate location for the
+___Music&nbsp;Folder___ entry. Then start the
+_Check&nbsp;for&nbsp;New_ action.
 
 [Wiki Home](Home)
 <br>_(Updated 2023-01-24 10:18:38; BDJ4 version 4.0.9-beta)_

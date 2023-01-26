@@ -41,9 +41,9 @@ file tags will be lost.
 
 The __Music Folder__ will normally be set to the configured music
 folder.  If you want to add an additional music folder to the database
-that is not within the configured music folder, use the chooser button
-with the folder icon to select the additional music folder.  Set the
-_Action_ to _Check&nbsp;for&nbsp;New_.  Do not use
+that is not within the configured music folder, use the directory
+chooser button with the folder icon to select the additional music
+folder.  Set the _Action_ to _Check&nbsp;for&nbsp;New_.  Do not use
 _Rebuild&nbsp;Database_ to add an additional music folder.
 
 [Wiki Home](Home)
