@@ -797,9 +797,12 @@ pluiHandshakeCallback (void *udata, programstate_t programState)
       pluiSetManageQueue (plui, plui->musicqManageIdx);
       pluiSetSwitchQueue (plui);
     }
+
     /* on one computer at least, the extra queues are showing up */
-    /* try flushing all the ui events */
+    /* when they should not */
+    /* flushing all the ui events seems to prevent that */
     uiUIProcessWaitEvents ();
+
     pluiSetExtraQueues (plui);
     progstateLogTime (plui->progstate, "time-to-start-gui");
     rc = STATE_FINISHED;
