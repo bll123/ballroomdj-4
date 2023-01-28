@@ -568,6 +568,21 @@ playerProcessing (void *udata)
       queueGetCount (playerData->playRequest) > 0) {
     prepqueue_t   *pq = NULL;
     playrequest_t *preq = NULL;
+    bool          temprepeat = false;
+
+    temprepeat = playerData->repeat;
+
+    /* announcements are not repeated */
+    if (playerData->repeat) {
+      pq = playerData->currentSong;
+      if (pq->announce == PREP_ANNOUNCE) {
+        pq = NULL;
+        /* The user pressed the repeat toggle while the announcement */
+        /* was playing.  Force the code below to activate as if no */
+        /* repeat was on.  The repeat flag will be restored. */
+        playerData->repeat = false;
+      }
+    }
 
     if (! playerData->repeat) {
       preq = queueGetFirst (playerData->playRequest);
@@ -589,10 +604,7 @@ playerProcessing (void *udata)
         /* do not free */
       }
     }
-
-    if (playerData->repeat) {
-      pq = playerData->currentSong;
-    }
+    playerData->repeat = temprepeat;
 
     logMsg (LOG_DBG, LOG_BASIC, "play: %s", pq->tempname);
     playerData->realVolume = playerData->currentVolume;
@@ -708,8 +720,13 @@ playerProcessing (void *udata)
         playerData->inFade = false;
         playerData->inFadeOut = false;
         playerData->inFadeIn = false;
-        playerData->stopNextsongFlag = STOP_NORMAL;
-        playerData->stopPlaying = false;
+
+        /* protect the stop-playing flag so that it propagates */
+        /* past the announcement */
+        if (pq->announce == PREP_SONG) {
+          playerData->stopNextsongFlag = STOP_NORMAL;
+          playerData->stopPlaying = false;
+        }
         playerData->currentSpeed = 100;
 
         logMsg (LOG_DBG, LOG_BASIC, "actual play time: %"PRId64,
@@ -744,11 +761,12 @@ playerProcessing (void *udata)
                   MSG_PLAYBACK_FINISH, nsflag);
             }
           }
-        }
+        } /* song, not announcement */
 
         /* the play request for a song on repeat is left in the queue */
         /* so that the song will be re-played when finished. */
-        if (! playerData->repeat || pq->announce == PREP_ANNOUNCE) {
+        /* announcements are always cleared */
+        if (pq->announce == PREP_ANNOUNCE || ! playerData->repeat) {
           playrequest_t *preq;
 
           preq = queuePop (playerData->playRequest);
@@ -776,13 +794,14 @@ playerProcessing (void *udata)
         }
 
         if (pq->announce == PREP_SONG) {
+          /* protect the gap reset so it propagates past the announcement */
+          playerData->gap = playerData->priorGap;
+
           if (! playerData->repeat) {
             playerPrepQueueFree (playerData->currentSong);
             playerData->currentSong = NULL;
           }
         }
-
-        playerData->gap = playerData->priorGap;
       } /* has stopped */
     } /* time to check...*/
   } /* is playing */
@@ -1072,7 +1091,8 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
   count = 0;
   if (playerData->repeat) {
     pq = playerData->currentSong;
-    if (uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
+    if (pq->announce == PREP_SONG &&
+        uniqueidx != PL_UNIQUE_ANN && uniqueidx == pq->uniqueidx) {
       logMsg (LOG_DBG, LOG_BASIC, "locate %s found %ld as repeat", sfname, uniqueidx);
       logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
       found = true;
@@ -1109,11 +1129,13 @@ playerLocatePreppedSong (playerdata_t *playerData, long uniqueidx, const char *s
       ++count;
     }
   }
+
   if (! found) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: unable to locate song %s", sfname);
     logProcEnd (LOG_PROC, "playerSongPlay", "not-found");
     return NULL;
   }
+
   logMsg (LOG_DBG, LOG_BASIC, "  %ld %s", pq->uniqueidx, pq->songname);
   logProcEnd (LOG_PROC, "playerLocatePreppedSong", "");
   return pq;
@@ -1154,13 +1176,22 @@ songMakeTempName (playerdata_t *playerData, char *in, char *out, size_t maxlen)
 static void
 playerPause (playerdata_t *playerData)
 {
-  plistate_t plistate = pliState (playerData->pli);
+  prepqueue_t *pq = NULL;
+  plistate_t  plistate;
 
   if (! progstateIsRunning (playerData->progstate)) {
     return;
   }
 
   logProcBegin (LOG_PROC, "playerPause");
+
+  pq = playerData->currentSong;
+  if (pq != NULL && pq->announce == PREP_ANNOUNCE) {
+    logProcEnd (LOG_PROC, "playerPause", "play-announce");
+    return;
+  }
+
+  plistate = pliState (playerData->pli);
 
   if (playerData->inFadeOut) {
     playerData->pauseAtEnd = true;
@@ -1286,7 +1317,8 @@ playerSendPauseAtEndState (playerdata_t *playerData)
 static void
 playerFade (playerdata_t *playerData)
 {
-  plistate_t plistate = pliState (playerData->pli);
+  plistate_t  plistate;
+  prepqueue_t *pq = NULL;
 
   if (! progstateIsRunning (playerData->progstate)) {
     return;
@@ -1299,10 +1331,18 @@ playerFade (playerdata_t *playerData)
     return;
   }
 
+  pq = playerData->currentSong;
+  if (pq != NULL && pq->announce == PREP_ANNOUNCE) {
+    logProcEnd (LOG_PROC, "playerFade", "play-announce");
+    return;
+  }
+
   if (playerData->fadeoutTime == 0) {
     playerCheckSystemVolume (playerData);
     playerData->stopPlaying = true;
   }
+
+  plistate = pliState (playerData->pli);
 
   if (playerData->fadeoutTime > 0 &&
       plistate == PLI_STATE_PLAYING) {
@@ -1376,10 +1416,18 @@ playerStop (playerdata_t *playerData)
 static void
 playerSongBegin (playerdata_t *playerData)
 {
+  prepqueue_t   *pq = NULL;
+
   if (playerData->playerState != PL_STATE_PLAYING &&
       playerData->playerState != PL_STATE_PAUSED) {
     return;
   }
+
+  pq = playerData->currentSong;
+  if (pq != NULL && pq->announce == PREP_ANNOUNCE) {
+    return;
+  }
+
   playerSeek (playerData, 0);
   /* there is a change in position */
   playerSendStatus (playerData, STATUS_FORCE);
