@@ -56,6 +56,7 @@ main (int argc, char * argv[])
   const char *targv [BDJ4_LAUNCHER_MAX_ARGS];
   int       targc;
   bool      havetheme = false;
+  bool      havescale = false;
   FILE      *fh = NULL;
   int       rc;
 
@@ -150,6 +151,9 @@ main (int argc, char * argv[])
 #if BDJ4_USE_GTK
   if (getenv ("GTK_THEME") != NULL) {
     havetheme = true;
+  }
+  if (getenv ("GDK_SCALE") != NULL) {
+    havescale = true;
   }
 #endif
 
@@ -456,6 +460,23 @@ main (int argc, char * argv[])
       osSetEnv ("GTK_THEME", buff);
 #endif
       havetheme = true;
+    }
+  }
+
+  /* 4.0.10 2023-1-27 : set the GDK_SCALE env var */
+  /* not an issue if not set -- defaults to 1 */
+  if (! havescale) {
+    pathbldMakePath (buff, sizeof (buff),
+        "scale", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+    if (fileopFileExists (buff)) {
+      fh = fileopOpen (buff, "r");
+      (void) ! fgets (buff, sizeof (buff), fh);
+      fclose (fh);
+      stringTrim (buff);
+#if BDJ4_USE_GTK
+      osSetEnv ("GDK_SCALE", buff);
+#endif
+      havescale = true;
     }
   }
 

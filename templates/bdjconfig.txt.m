@@ -1,5 +1,5 @@
 # config-machine
-# 2022-12-12
+# 2023-1-27
 version
 ..1
 AUDIOTAG
@@ -12,6 +12,8 @@ ITUNESXMLFILE
 ..
 PLAYER
 ..libplivlc
+SCALE
+..1
 SHUTDOWNSCRIPT
 ..
 STARTUPSCRIPT

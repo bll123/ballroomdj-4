@@ -38,6 +38,7 @@ confuiPopulateOptions (confuigui_t *gui)
   bool        accentcolorchanged = false;
   bool        localechanged = false;
   bool        themechanged = false;
+  bool        scalechanged = false;
 
   logProcBegin (LOG_PROC, "confuiPopulateOptions");
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
@@ -159,6 +160,11 @@ confuiPopulateOptions (confuigui_t *gui)
         if (isqueueitem) {
           bdjoptSetNumPerQueue (gui->uiitem [i].bdjoptIdx, nval, musicq);
         } else {
+          if (i == CONFUI_WIDGET_UI_SCALE) {
+            if (nval != bdjoptGetNum (gui->uiitem [i].bdjoptIdx)) {
+              scalechanged = true;
+            }
+          }
           bdjoptSetNum (gui->uiitem [i].bdjoptIdx, nval);
         }
         break;
@@ -216,6 +222,18 @@ confuiPopulateOptions (confuigui_t *gui)
         fprintf (fh, "%s\n", sval);
         fclose (fh);
       }
+    }
+
+    if (i == CONFUI_WIDGET_UI_SCALE && scalechanged) {
+      FILE    *fh;
+
+      pathbldMakePath (tbuff, sizeof (tbuff),
+          "scale", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+      fileopDelete (tbuff);
+
+      fh = fileopOpen (tbuff, "w");
+      fprintf (fh, "%d\n", (int) nval);
+      fclose (fh);
     }
 
     if (i == CONFUI_ENTRY_CHOOSE_MUSIC_DIR) {

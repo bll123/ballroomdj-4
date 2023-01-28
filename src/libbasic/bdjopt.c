@@ -104,6 +104,7 @@ static datafilekey_t bdjoptmachinedfkeys [] = {
   { "DIROLDSKIP",     OPT_M_DIR_OLD_SKIP,   VALUE_STR, NULL, -1 },
   { "ITUNESXMLFILE",  OPT_M_ITUNES_XML_FILE,VALUE_STR, NULL, -1 },
   { "PLAYER",         OPT_M_PLAYER_INTFC,   VALUE_STR, NULL, -1 },
+  { "SCALE",          OPT_M_SCALE,          VALUE_NUM, NULL, -1 },
   { "SHUTDOWNSCRIPT", OPT_M_SHUTDOWNSCRIPT, VALUE_STR, NULL, -1 },
   { "STARTUPSCRIPT",  OPT_M_STARTUPSCRIPT,  VALUE_STR, NULL, -1 },
   { "VOLUME",         OPT_M_VOLUME_INTFC,   VALUE_STR, NULL, -1 },
@@ -207,6 +208,11 @@ bdjoptInit (void)
         bdjopt->dfkeys [i], bdjopt->dfcount [i], 0);
     datafileSetData (df, tlist);
     mdfree (ddata);
+  }
+
+  /* 4.0.10 OPT_M_SCALE added */
+  if (bdjoptGetNum (OPT_M_SCALE) <= 0) {
+    bdjoptSetNum (OPT_M_SCALE, 1);
   }
 
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {

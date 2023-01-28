@@ -59,6 +59,11 @@ confuiBuildUIUserInterface (confuigui_t *gui)
   confuiMakeItemFontButton (gui, &vbox, &sg, _("Listing Font"),
       CONFUI_WIDGET_UI_LISTING_FONT, OPT_MP_LISTING_FONT, tstr);
 
+  /* CONTEXT: configuration: scaling factor for the user interface */
+  confuiMakeItemSpinboxNum (gui, &vbox, &sg, NULL, _("Scale"),
+      CONFUI_WIDGET_UI_SCALE, OPT_M_SCALE,
+      1, 6, bdjoptGetNum (OPT_M_SCALE), NULL);
+
   /* CONTEXT: configuration: the accent color to use for the user interface */
   confuiMakeItemColorButton (gui, &vbox, &sg, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
