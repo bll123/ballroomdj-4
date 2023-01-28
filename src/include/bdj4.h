@@ -39,6 +39,7 @@ enum {
 #define BDJ4_IMG_SVG_EXT  ".svg"
 #define BDJ4_IMG_PNG_EXT  ".png"
 #define BDJ4_CONFIG_EXT   ".txt"
+#define BDJ4_CSS_EXT      ".css"
 /* when an audio file is modified, the original is saved with the */
 /* .original extension in the same directory */
 #define BDJ4_ORIGINAL_EXT ".original"

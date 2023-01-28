@@ -92,3 +92,6 @@ http/ballroomdj4\.svg\.bak\.1$
 http/curl-ca-bundle\.crt\.bak\.1$
 http/mrc/dark/[^/]*\.bak\.1$
 http/mrc/light/[^/]*\.bak\.1$
+
+# ui-starter.txt moved to main data dir
+data/profile0./ui-starter.txt$

@@ -1,0 +1,104 @@
+/* Copyright 2023 Brad Lanam Pleasant Hill CA */
+
+menu {
+  background-color: shade(@theme_base_color,0.7);
+}
+scale, scale trough {
+  min-height: 5px;
+}
+separator {
+  min-height: 4px;
+}
+scrollbar, scrollbar slider {
+  min-width: 9px;
+}
+
+/* for some reason, if the selection background color alone is set, the */
+/* text color temporarily becomes white on light colored themes */
+/* the text color must be set also */
+/* these changes are for read-only spinboxes */
+spinbutton.readonly {
+  caret-color: @theme_base_color;
+}
+spinbutton.readonly selection {
+  background-color: @theme_base_color;
+  color: @theme_text_color;
+}
+
+progressbar {
+  background-image: none;
+}
+progressbar > trough {
+  border-width: 0px;
+  min-height: 25px;
+}
+progressbar > trough progress {
+  border-width: 0px;
+  min-height: 25px;
+}
+
+textview.dark text {
+  background-color: shade(@theme_base_color,0.8);
+}
+
+treeview.dark {
+  background-color: shade(@theme_base_color,0.8);
+}
+treeview.dark:selected {
+  background-color: @theme_selected_bg_color;
+}
+
+/* make the selected notebook tab darker */
+notebook tab:checked {
+  background-color: shade(@theme_base_color,0.6);
+}
+
+scrolledwindow undershoot.top, scrolledwindow undershoot.right,
+scrolledwindow undershoot.left, scrolledwindow undershoot.bottom {
+  background-image: none;
+  outline-width: 0px;
+}
+
+button.switch {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  background-color: shade(@theme_base_color,0.8);
+  border-color: shade(@theme_base_color,0.8);
+}
+button.switch:checked {
+  background-color: shade(@theme_base_color,0.8);
+}
+button.switch:hover {
+  background-color: shade(@theme_base_color,0.8);
+}
+
+button.flatbutton {
+  outline-width: 0px;
+  padding: 0px; border-color: @theme_bg_color;
+  background-color: @theme_bg_color;
+}
+button.flatbutton widget {
+  outline-width: 0px;
+}
+
+label.chgindnormal {
+  border-left-style: solid;
+  border-left-width: 4px;
+  border-left-color: transparent;
+}
+label.chgindchanged {
+  border-left-style: solid;
+  border-left-width: 4px;
+  border-left-color: #11ff11;
+}
+label.chginderror {
+  border-left-style: solid;
+  border-left-width: 4px;
+  border-left-color: #ff1111;
+}
+
+entry {
+  color: @theme_fg_color;
+}

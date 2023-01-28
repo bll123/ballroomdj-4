@@ -6,6 +6,8 @@
 
 **4.0.10 beta 2023-1---**
 
+* Bug Fixes:
+    * Starter window position is saved globally, not per-profile.
 * Changes:
     * Minor user interface cleanup.
 * Internal:
