@@ -25,10 +25,9 @@ uiutilsAddAccentColorDisplay (UIWidget *vboxp, UIWidget *hboxp, UIWidget *uiwidg
   uiCreateHorizBox (hboxp);
   uiBoxPackStart (vboxp, hboxp);
 
-  /* black large square "\xE2\xAC\x9B" */
-  /* black square 0xE2 0x96 0xA0 */
-  /* black square centered 0xE2 0xAF 0x80 */
-  uiCreateLabel (uiwidgetp, "\xE2\xAC\x9B");
+  /* right half block 0xE2 0x96 0x90 */
+  /* full block 0xE2 0x96 0x88 */
+  uiCreateLabel (uiwidgetp, "\xE2\x96\x90\xE2\x96\x88");
   uiWidgetSetMarginStart (uiwidgetp, 3);
   uiutilsSetAccentColor (uiwidgetp);
   uiBoxPackEnd (hboxp, uiwidgetp);
