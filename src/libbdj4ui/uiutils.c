@@ -25,9 +25,23 @@ uiutilsAddAccentColorDisplay (UIWidget *vboxp, UIWidget *hboxp, UIWidget *uiwidg
   uiCreateHorizBox (hboxp);
   uiBoxPackStart (vboxp, hboxp);
 
-  uiCreateLabel (uiwidgetp, "");
-  uiWidgetSetSizeRequest (uiwidgetp, 25, 25);
+  /* black large square "\xE2\xAC\x9B" */
+  /* black square 0xE2 0x96 0xA0 */
+  /* black square centered 0xE2 0xAF 0x80 */
+  uiCreateLabel (uiwidgetp, "\xE2\xAC\x9B");
   uiWidgetSetMarginStart (uiwidgetp, 3);
-  uiLabelSetBackgroundColor (uiwidgetp, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+  uiutilsSetAccentColor (uiwidgetp);
   uiBoxPackEnd (hboxp, uiwidgetp);
 }
+
+void
+uiutilsSetAccentColor (UIWidget *uiwidgetp)
+{
+  char      classnm [100];
+
+  snprintf (classnm, sizeof (classnm), "profcol%s",
+      bdjoptGetStr (OPT_P_UI_PROFILE_COL) + 1);
+  uiLabelAddClass (classnm, bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+  uiWidgetSetClass (uiwidgetp, classnm);
+}
+

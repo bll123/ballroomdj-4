@@ -1467,8 +1467,9 @@ starterResetProfile (startui_t *starter, int profidx)
   if (profidx != starter->newprofile) {
     bdjoptInit ();
     uiWindowSetTitle (&starter->window, bdjoptGetStr (OPT_P_PROFILENAME));
-    uiLabelSetBackgroundColor (&starter->profileAccent,
-        bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+    uiutilsSetAccentColor (&starter->profileAccent);
+//    uiLabelSetBackgroundColor (&starter->profileAccent,
+//        bdjoptGetStr (OPT_P_UI_PROFILE_COL));
     starterLoadOptions (starter);
     bdjvarsAdjustPorts ();
   }
@@ -1521,8 +1522,9 @@ starterCheckProfile (startui_t *starter)
     /* select a completely random color */
     createRandomColor (tbuff, sizeof (tbuff));
     bdjoptSetStr (OPT_P_UI_PROFILE_COL, tbuff);
-    uiLabelSetBackgroundColor (&starter->profileAccent,
-        bdjoptGetStr (OPT_P_UI_PROFILE_COL));
+    uiutilsSetAccentColor (&starter->profileAccent);
+//    uiLabelSetBackgroundColor (&starter->profileAccent,
+//        bdjoptGetStr (OPT_P_UI_PROFILE_COL));
 
     bdjoptSave ();
 

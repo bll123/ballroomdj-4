@@ -68,17 +68,6 @@ uiLabelSetFont (UIWidget *uiwidget, const char *font)
   pango_attr_list_unref (attrlist);
 }
 
-
-void
-uiLabelSetBackgroundColor (UIWidget *uiwidget, const char *color)
-{
-  char  tbuff [200];
-
-  snprintf (tbuff, sizeof (tbuff),
-      "label { background-color: %s; }", color);
-  uiSetCss (uiwidget->widget, tbuff);
-}
-
 void
 uiLabelSetText (UIWidget *uiwidget, const char *text)
 {

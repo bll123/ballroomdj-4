@@ -142,7 +142,6 @@ void  uiCreateLabel (UIWidget *uiwidget, const char *label);
 void  uiCreateColonLabel (UIWidget *uiwidget, const char *label);
 void  uiLabelAddClass (const char *classnm, const char *color);
 void  uiLabelSetFont (UIWidget *uilabel, const char *font);
-void  uiLabelSetBackgroundColor (UIWidget *uiwidget, const char *color);
 void  uiLabelSetText (UIWidget *uilabel, const char *text);
 const char * uiLabelGetText (UIWidget *uiwidget);
 void  uiLabelEllipsizeOn (UIWidget *uiwidget);
