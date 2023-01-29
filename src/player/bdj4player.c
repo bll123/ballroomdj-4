@@ -336,7 +336,6 @@ playerClosingCallback (void *tpdata, programstate_t programState)
   }
 
   if (playerData->currentSong != NULL) {
-fprintf (stderr, "prep-free curr-song A\n");
     playerPrepQueueFree (playerData->currentSong);
     playerData->currentSong = NULL;
   }
@@ -799,7 +798,6 @@ playerProcessing (void *udata)
           playerData->gap = playerData->priorGap;
 
           if (! playerData->repeat) {
-fprintf (stderr, "prep-free curr-song B (not-repeat)\n");
             playerPrepQueueFree (playerData->currentSong);
             playerData->currentSong = NULL;
           }
@@ -977,7 +975,6 @@ playerSongClearPrep (playerdata_t *playerData, char *args)
     /* prevent any issues by checking the uniqueidx again */
     if (tpq != NULL && tpq->uniqueidx == uniqueidx) {
       logMsg (LOG_DBG, LOG_MAIN, "prep-clear: %ld %s r:%d p:%d", tpq->uniqueidx, tpq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
-fprintf (stderr, "clear-prep\n");
       playerPrepQueueFree (tpq);
     }
   }
@@ -1013,7 +1010,6 @@ playerProcessPrepRequest (playerdata_t *playerData)
   if (! fileopFileExists (npq->tempname)) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: file copy failed: %s", npq->tempname);
     logProcEnd (LOG_PROC, "playerSongPrep", "copy-failed");
-fprintf (stderr, "copy-fail\n");
     playerPrepQueueFree (npq);
     logProcEnd (LOG_PROC, "playerProcessPrepRequest", "copy-fail");
     return;
@@ -1279,7 +1275,6 @@ playerNextSong (playerdata_t *playerData)
       playerSetPlayerState (playerData, PL_STATE_STOPPED);
 
       if (playerData->currentSong != NULL) {
-fprintf (stderr, "prep-free curr-song C (next-song, paused)\n");
         playerPrepQueueFree (playerData->currentSong);
         playerData->currentSong = NULL;
       }
@@ -1495,7 +1490,6 @@ playerPrepQueueFree (void *data)
 
   if (pq != NULL) {
     logMsg (LOG_DBG, LOG_MAIN, "prep-free: %ld %s", pq->uniqueidx, pq->songname);
-fprintf (stderr, "prep-free: %ld %s\n", pq->uniqueidx, pq->songname);
     dataFree (pq->songfullpath);
     dataFree (pq->songname);
     if (pq->tempname != NULL) {
