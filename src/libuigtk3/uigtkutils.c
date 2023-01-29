@@ -93,7 +93,6 @@ uiSetUICSS (const char *uifont, const char *accentColor,
   strlcat (tbuff, p, sizeof (tbuff));
   mdfree (p);
 
-fprintf (stderr, "uifont: %s\n", uifont);
   if (uifont != NULL && *uifont) {
     char  tmp [100];
 
