@@ -38,6 +38,7 @@
 #include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uiutils.h"
 #include "callback.h"
 
 enum {
@@ -223,7 +224,7 @@ main (int argc, char *argv[])
   }
 
   uiUIInitialize ();
-  uiSetUICSS (bdjoptGetStr (OPT_MP_MQFONT),
+  uiSetUICSS (uiutilsGetCurrentFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
@@ -375,7 +376,9 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetExpandVert (&mainvbox);
   marquee->marginTotal = 20;
 
-  uiCreateProgressBar (&marquee->pbar, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+  uiCreateProgressBar (&marquee->pbar);
+  uiAddProgressbarClass (MQ_ACCENT_CLASS, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+  uiWidgetSetClass (&marquee->pbar, MQ_ACCENT_CLASS);
   uiBoxPackStart (&mainvbox, &marquee->pbar);
 
   uiCreateVertBox (&vbox);

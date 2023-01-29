@@ -1,5 +1,7 @@
 /* Copyright 2023 Brad Lanam Pleasant Hill CA */
 
+/* note that these may affect dialogs started by the application */
+
 menu {
   background-color: shade(@theme_base_color,0.7);
 }
@@ -25,6 +27,7 @@ spinbutton.readonly selection {
   color: @theme_text_color;
 }
 
+/* progress bars */
 progressbar {
   background-image: none;
 }
@@ -48,6 +51,7 @@ treeview.dark:selected {
   background-color: @theme_selected_bg_color;
 }
 
+/* gtk: notebook header tabs tab label */
 /* make the selected notebook tab darker */
 notebook tab:checked {
   background-color: shade(@theme_base_color,0.6);

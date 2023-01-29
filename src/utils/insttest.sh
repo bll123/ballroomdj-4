@@ -87,6 +87,35 @@ function mkBadPldance {
   mv -f "$tfn.n" "$tfn"
 }
 
+function checkUpdaterClean {
+  section=$1
+
+  # audio adjust file should be installed if missing
+  rm -f "$DATADIR/audioadjust.txt"
+  # gtk-static.css file should be installed if missing
+  rm -f "$DATADIR/gtk-static.css"
+  # itunes-fields version number should be updated to version 2.
+  fn="$DATADIR/itunes-fields.txt"
+  sed -e 's/version 2/version 1/' "$fn" > "$fn.n"
+  mv -f "$fn.n" "$fn"
+  # standard rounds had bad data
+  fn="$DATADIR/standardrounds.pldances"
+  if [[ $section == nl ]]; then
+    fn="$DATADIR/Standaardrondes.pldances"
+  fi
+  if [[ -f $fn ]]; then
+    mkBadPldance "$fn"
+  fi
+  # queue dance had bad data
+  fn="$DATADIR/QueueDance.pldances"
+  if [[ $section == nl ]]; then
+    fn="$DATADIR/wachtrijendans.pldances"
+  fi
+  if [[ -f $fn ]]; then
+    mkBadPldance "$fn"
+  fi
+}
+
 function checkInstallation {
   section=$1
   tname=$2
@@ -206,6 +235,13 @@ function checkInstallation {
       chk=$(($chk+1))
     else
       echo "  no audioadjust.txt file"
+    fi
+
+    res=$(($res+1))  # gtk-static.css file
+    if [[ $fin == T && -f "${DATADIR}/gtk-static.css" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no gtk-static.css file"
     fi
 
     # automatic.pl file
@@ -393,26 +429,11 @@ if [[ $crc -eq 0 ]]; then
   rc=$?
   checkInstallation $section $tname "$out" $rc u y
 
-  # update w/o audioadjust.txt data file
+  # update w/various update tasks
   # this should get installed as of version 4.1.0
   resetUnpack
   tname=update-chk-updater
-  # audio adjust file should be installed if missing
-  rm -f "$DATADIR/audioadjust.txt"
-  # itunes-fields version number should be updated to version 2.
-  fn="$DATADIR/itunes-fields.txt"
-  sed -e 's/version 2/version 1/' "$fn" > "$fn.n"
-  mv -f "$fn.n" "$fn"
-  # standard rounds had bad data
-  fn="$DATADIR/standardrounds.pldances"
-  if [[ -f $fn ]]; then
-    mkBadPldance "$fn"
-  fi
-  # queue dance had bad data
-  fn="$DATADIR/QueueDance.pldances"
-  if [[ -f $fn ]]; then
-    mkBadPldance "$fn"
-  fi
+  checkUpdaterClean $section
   out=$(./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \
@@ -457,33 +478,12 @@ checkInstallation $section $tname "$out" $rc n y
 crc=$?
 
 if [[ $crc -eq 0 ]]; then
-  # update w/o audioadjust.txt data file
-  # this should get installed as of version 4.1.0
   resetUnpack
   tname=update-chk-updater
 
   # force the locale setting within BDJ4
   echo "nl_BE" > "$DATADIR/locale.txt"
-
-  # audio adjust file should be installed if missing
-  rm -f "$DATADIR/audioadjust.txt"
-
-  # itunes-fields version number should be updated to version 2.
-  fn="$DATADIR/itunes-fields.txt"
-  sed -e 's/version 2/version 1/' "$fn" > "$fn.n"
-  mv -f "$fn.n" "$fn"
-
-  # standard rounds had bad data
-  fn="$DATADIR/Standaardrondes.pldances"
-  if [[ -f $fn ]]; then
-    mkBadPldance "$fn"
-  fi
-
-  # queue dance had bad data
-  fn="$DATADIR/wachtrijendans.pldances"
-  if [[ -f $fn ]]; then
-    mkBadPldance "$fn"
-  fi
+  checkUpdaterClean $section
   out=$(./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \

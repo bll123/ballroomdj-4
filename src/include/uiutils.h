@@ -8,5 +8,6 @@
 
 void uiutilsAddAccentColorDisplay (UIWidget *vbox, UIWidget *hbox, UIWidget *uiwidget);
 void uiutilsSetAccentColor (UIWidget *uiwidgetp);
+const char * uiutilsGetCurrentFont (void);
 
 #endif /* INC_UIUTILS_H */

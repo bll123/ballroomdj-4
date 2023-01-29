@@ -211,6 +211,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
 
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStartExpand (&hbox, &uiwidget);
+  uiWidgetSetMarginStart (&uiwidget, 6);
   uiutilsUIWidgetCopy (&managedb->dbhelpdisp, &uiwidget);
 
   /* db top dir  */
@@ -264,7 +265,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
   uiBoxPackStart (&hbox, uiwidgetp);
   uiWidgetDisable (uiwidgetp);
 
-  uiCreateProgressBar (&managedb->dbpbar, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiCreateProgressBar (&managedb->dbpbar);
   uiWidgetSetClass (&managedb->dbpbar, ACCENT_CLASS);
   uiWidgetSetMarginStart (&managedb->dbpbar, 2);
   uiWidgetSetMarginEnd (&managedb->dbpbar, 2);

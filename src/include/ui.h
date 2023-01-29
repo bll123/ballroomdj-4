@@ -61,6 +61,7 @@ enum {
 #define TREEVIEW_DARK_CLASS "dark"
 #define TEXTBOX_DARK_CLASS "dark"
 #define SPINBOX_READONLY_CLASS "readonly"
+#define MQ_ACCENT_CLASS "mqaccent"
 
 /* uigtkutils.c */
 extern int uiBaseMarginSz;
@@ -321,7 +322,7 @@ void uiBoxPackEnd (UIWidget *uibox, UIWidget *uiwidget);
 void uiBoxPackEndExpand (UIWidget *uibox, UIWidget *uiwidget);
 
 /* uigtkpbar.c */
-void uiCreateProgressBar (UIWidget *uiwidget, char *color);
+void uiCreateProgressBar (UIWidget *uiwidget);
 void uiProgressBarSet (UIWidget *uipb, double val);
 
 /* uigtktreeview.c */
@@ -417,12 +418,10 @@ void  uiUIInitialize (void);
 void  uiUIProcessEvents (void);
 void  uiUIProcessWaitEvents (void);     // a small delay
 void  uiCleanup (void);
-#if BDJ4_USE_GTK
-void  uiSetCss (GtkWidget *w, const char *style);
-#endif
 void  uiSetUICSS (const char *uifont, const char *accentcolor, const char *errorcolor);
 void  uiAddColorClass (const char *classnm, const char *color);
 void  uiAddBGColorClass (const char *classnm, const char *color);
+void  uiAddProgressbarClass (const char *classnm, const char *color);
 void  uiInitUILog (void);
 
 /* uigtkwidget.c */

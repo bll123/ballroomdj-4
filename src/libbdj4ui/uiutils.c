@@ -16,6 +16,7 @@
 #include "bdjopt.h"
 #include "ui.h"
 #include "uiutils.h"
+#include "sysvars.h"
 
 /* as a side effect, hbox is set, and */
 /* uiwidget is set to the accent color box (needed by bdj4starterui) */
@@ -44,3 +45,14 @@ uiutilsSetAccentColor (UIWidget *uiwidgetp)
   uiWidgetSetClass (uiwidgetp, classnm);
 }
 
+const char *
+uiutilsGetCurrentFont (void)
+{
+  const char  *tstr;
+
+  tstr = bdjoptGetStr (OPT_MP_UIFONT);
+  if (tstr == NULL || ! *tstr) {
+    tstr = sysvarsGetStr (SV_FONT_DEFAULT);
+  }
+  return tstr;
+}

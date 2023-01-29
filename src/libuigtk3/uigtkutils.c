@@ -16,8 +16,10 @@
 
 #include "bdjstring.h"
 #include "colorutils.h"
+#include "filedata.h"
 #include "localeutil.h"
-#include "log.h"  // needed for glogwriteroutput
+#include "log.h"          // needed for glogwriteroutput
+#include "pathbld.h"
 #include "mdebug.h"
 #include "sysvars.h"
 #include "tmutil.h"
@@ -75,25 +77,6 @@ uiCleanup (void)
 }
 
 void
-uiSetCss (GtkWidget *w, const char *style)
-{
-  GtkCssProvider  *tcss;
-  char            *tstyle;
-
-  tcss = gtk_css_provider_new ();
-  tstyle = mdstrdup (style);
-  ++csscount;
-  cssdata = mdrealloc (cssdata, sizeof (char *) * csscount);
-  cssdata [csscount-1] = tstyle;
-
-  gtk_css_provider_load_from_data (tcss, tstyle, -1, NULL);
-  gtk_style_context_add_provider (
-      gtk_widget_get_style_context (w),
-      GTK_STYLE_PROVIDER (tcss),
-      GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-}
-
-void
 uiSetUICSS (const char *uifont, const char *accentColor,
     const char *errorColor)
 {
@@ -102,12 +85,21 @@ uiSetUICSS (const char *uifont, const char *accentColor,
   char            *p;
   int             sz = 0;
 
-  *tbuff = '\0';
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "gtk-static", BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
+  p = filedataReadAll (tbuff, NULL);
 
+  *tbuff = '\0';
+  strlcat (tbuff, p, sizeof (tbuff));
+  mdfree (p);
+
+fprintf (stderr, "uifont: %s\n", uifont);
   if (uifont != NULL && *uifont) {
-    strlcpy (wbuff, uifont, sizeof (wbuff));
+    char  tmp [100];
+
+    strlcpy (tmp, uifont, sizeof (tmp));
     if (uifont != NULL && *uifont) {
-      p = strrchr (wbuff, ' ');
+      p = strrchr (tmp, ' ');
       if (p != NULL) {
         ++p;
         if (isdigit (*p)) {
@@ -118,89 +110,20 @@ uiSetUICSS (const char *uifont, const char *accentColor,
         }
       }
 
-      snprintf (tbuff, sizeof (tbuff), "* { font-family: '%s'; } ", wbuff);
+      snprintf (wbuff, sizeof (wbuff), "* { font-family: '%s'; } ", tmp);
+      strlcat (tbuff, wbuff, sizeof (tbuff));
     }
   }
 
-  /* note that these affect dialogs started by the application */
-  strlcat (tbuff, "entry { color: @theme_fg_color; } ", sizeof (tbuff));
-  strlcat (tbuff, "menu { background-color: shade(@theme_base_color,0.7); } ", sizeof (tbuff));
-  strlcat (tbuff, "scale, scale trough { min-height: 5px; } ", sizeof (tbuff));
-  strlcat (tbuff, "separator { min-height: 4px; } ", sizeof (tbuff));
-  strlcat (tbuff, "scrollbar, scrollbar slider { min-width: 9px; } ", sizeof (tbuff));
-
-  /* read-only spinbox */
-  /* for some reason, if the selection background color alone is set, the */
-  /* text color temporarily becomes white on light colored themes */
-  /* the text color must be set also */
-  /* these changes are to make the spinbox read-only */
-  strlcat (tbuff,
-      "spinbutton." SPINBOX_READONLY_CLASS " { caret-color: @theme_base_color; } "
-      "spinbutton." SPINBOX_READONLY_CLASS " selection { background-color: @theme_base_color; color: @theme_text_color; } ",
-      sizeof (tbuff));
-
-  /* progress bars */
-  strlcat (tbuff, "progressbar { background-image: none; } ", sizeof (tbuff));
-  strlcat (tbuff, "progressbar > trough { border-width: 0px; min-height: 25px; } ", sizeof (tbuff));
-  strlcat (tbuff, "progressbar > trough progress { border-width: 0px; min-height: 25px; } ", sizeof (tbuff));
-
-  /* dark textbox */
-  strlcat (tbuff,
-      "textview." TEXTBOX_DARK_CLASS " text { background-color: shade(@theme_base_color,0.8); } ",
-      sizeof (tbuff));
-
-  /* dark tree view */
-  strlcat (tbuff,
-      "treeview." TREEVIEW_DARK_CLASS " { background-color: shade(@theme_base_color,0.8); } "
-      "treeview." TREEVIEW_DARK_CLASS ":selected { background-color: @theme_selected_bg_color; } ",
-      sizeof (tbuff));
-
-  /* notebooks */
-  // notebook header tabs tab label
-  strlcat (tbuff,
-      "notebook tab:checked { background-color: shade(@theme_base_color,0.6); } ",
-      sizeof (tbuff));
-
-  /* scrolled windows */
-  strlcat (tbuff,
-      "scrolledwindow undershoot.top, scrolledwindow undershoot.right, "
-      "scrolledwindow undershoot.left, scrolledwindow undershoot.bottom "
-      "{ background-image: none; outline-width: 0; } ", sizeof (tbuff));
-
-  /* our switch */
-  strlcat (tbuff,
-      "button." SWITCH_CLASS " { "
-      "  border-bottom-left-radius: 15px; "
-      "  border-bottom-right-radius: 15px; "
-      "  border-top-left-radius: 15px; "
-      "  border-top-right-radius: 15px; "
-      "  background-color: shade(@theme_base_color,0.8); "
-      "  border-color: shade(@theme_base_color,0.8); "
-      "} "
-      "button.switch:checked { "
-      "  background-color: shade(@theme_base_color,0.8); "
-      "} "
-      "button.switch:hover { "
-      "  background-color: shade(@theme_base_color,0.8); "
-      "} ",
-      sizeof (tbuff));
-
-  /* flat button */
-  strlcat (tbuff, "button." FLATBUTTON_CLASS " { outline-width: 0px; "
-      "padding: 0px; border-color: @theme_bg_color; "
-      "background-color: @theme_bg_color; } ", sizeof (tbuff));
-  strlcat (tbuff, "button." FLATBUTTON_CLASS " widget { outline-width: 0px; } ", sizeof (tbuff));
-
-  /* change indicators */
-  strlcat (tbuff,
-      "label." CHGIND_NORMAL_CLASS " { border-left-style: solid; border-left-width: 4px; "
-      " border-left-color: transparent; } ", sizeof (tbuff));
-  strlcat (tbuff,
-      "label." CHGIND_CHANGED_CLASS " { border-left-style: solid; border-left-width: 4px; "
-      " border-left-color: #11ff11; } ", sizeof (tbuff));
-  strlcat (tbuff,
-      "label." CHGIND_ERROR_CLASS " { border-left-style: solid; border-left-width: 4px; "
-      " border-left-color: #ff1111; } ", sizeof (tbuff));
+  if (sz > 0) {
+    snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; } ", sz);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+    sz -= 2;
+    snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; } ", sz);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+    snprintf (wbuff, sizeof (wbuff), " .confnotebook tab label { font-size: %dpt; } ", sz);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
+  }
 
   if (accentColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),
@@ -224,16 +147,7 @@ uiSetUICSS (const char *uifont, const char *accentColor,
     strlcat (tbuff, wbuff, sizeof (tbuff));
   }
 
-  if (sz > 0) {
-    snprintf (wbuff, sizeof (wbuff), " * { font-size: %dpt; } ", sz);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
-    sz -= 2;
-    snprintf (wbuff, sizeof (wbuff), " menuitem label { font-size: %dpt; } ", sz);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
-    snprintf (wbuff, sizeof (wbuff), " .confnotebook tab label { font-size: %dpt; } ", sz);
-    strlcat (tbuff, wbuff, sizeof (tbuff));
-  }
-
+  /* as of 2023-1-29, the length is 2600+ */
   if (strlen (tbuff) >= sizeof (tbuff)) {
     fprintf (stderr, "possible css overflow: %zd\n", strlen (tbuff));
   }
@@ -243,7 +157,7 @@ uiSetUICSS (const char *uifont, const char *accentColor,
 void
 uiAddColorClass (const char *classnm, const char *color)
 {
-  char            tbuff [100];
+  char  tbuff [100];
 
   snprintf (tbuff, sizeof (tbuff), "%s { color: %s; } ", classnm, color);
   uiAddScreenCSS (tbuff);
@@ -252,9 +166,20 @@ uiAddColorClass (const char *classnm, const char *color)
 void
 uiAddBGColorClass (const char *classnm, const char *color)
 {
-  char            tbuff [100];
+  char  tbuff [100];
 
   snprintf (tbuff, sizeof (tbuff), "%s { background-color: %s; } ", classnm, color);
+  uiAddScreenCSS (tbuff);
+}
+
+void
+uiAddProgressbarClass (const char *classnm, const char *color)
+{
+  char  tbuff [100];
+
+  snprintf (tbuff, sizeof (tbuff),
+      "progressbar.%s > trough > progress { background-color: %s; }",
+      classnm, color);
   uiAddScreenCSS (tbuff);
 }
 

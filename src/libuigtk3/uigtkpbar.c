@@ -17,10 +17,9 @@
 #include "ui.h"
 
 void
-uiCreateProgressBar (UIWidget *uiwidget, char *color)
+uiCreateProgressBar (UIWidget *uiwidget)
 {
   GtkWidget *widget;
-  char      tbuff [200];
 
   widget = gtk_progress_bar_new ();
   uiwidget->widget = widget;
@@ -28,11 +27,6 @@ uiCreateProgressBar (UIWidget *uiwidget, char *color)
   gtk_widget_set_hexpand (widget, TRUE);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  /* for the time being, this is still needed for the marquee */
-  snprintf (tbuff, sizeof (tbuff),
-      "progressbar > trough > progress { background-color: %s; }",
-      color);
-  uiSetCss (widget, tbuff);
 }
 
 void

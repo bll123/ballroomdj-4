@@ -426,6 +426,17 @@ main (int argc, char *argv [])
     }
   }
 
+  {
+    /* 4.0.10 2023-1-29 gtk-static.css */
+    /*    This is a new file; simply check and see if it does not exist. */
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        "gtk-static", BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
+    if (! fileopFileExists (tbuff)) {
+      templateFileCopy ("gtk-static" BDJ4_CSS_EXT, "gtk-static" BDJ4_CSS_EXT);
+      logMsg (LOG_INSTALL, LOG_MAIN, "gtk-static.css installed");
+    }
+  }
+
   /* The datafiles must now be loaded. */
 
   if (bdjvarsdfloadInit () < 0) {

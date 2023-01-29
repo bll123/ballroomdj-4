@@ -312,7 +312,7 @@ main (int argc, char *argv[])
   starterLoadOptions (&starter);
 
   uiUIInitialize ();
-  uiSetUICSS (bdjoptGetStr (OPT_MP_UIFONT),
+  uiSetUICSS (uiutilsGetCurrentFont (),
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
