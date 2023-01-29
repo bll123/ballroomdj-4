@@ -30,4 +30,5 @@ syntax: regexp
 ^test-music/
 ^test-music-orig/
 ^tmp/
+^web/lastversion.txt$
 ^web/marquee4.html$

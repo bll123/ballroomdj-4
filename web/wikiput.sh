@@ -3,6 +3,8 @@
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
 
+LASTFN=web/lastversion.txt
+
 while test ! \( -d src -a -d web -a -d wiki \); do
   cd ..
 done
@@ -24,6 +26,15 @@ dt=$(date '+%Y-%m-%d %H:%M:%S')
 forceflag=F
 
 versstr=$(pkgcurrvers)
+if [[ -f $LASTFN && $LASTFN -nt VERSION.txt ]]; then
+  versstr=$(cat $LASTFN)
+fi
+echo -n "Version [$versstr]: "
+read tvers
+if [[ $tvers != "" ]]; then
+  versstr=$tvers
+  echo $versstr > $LASTFN
+fi
 
 function updateimages {
   test -d wikiimg && rm -rf wikiimg
@@ -65,7 +76,7 @@ function updateimages {
   test -d wikiimg && rm -rf wikiimg
 }
 
-function getupddate {
+function getupdate {
   tfn=$1
   grep 'Updated [0-9]*' $tfn |
   sed \
@@ -81,6 +92,7 @@ function gettitle {
       -e 's,\.txt$,,'
 }
 
+# this is a complete mess, but mostly works.
 function gettext {
   tfn=$1
 
@@ -196,7 +208,7 @@ function get {
       -e "s,\\\\r,,g" \
       -e "s,\\\\n,\n,g" \
       ${tmpfile} > $tfn
-  odt=$(getupddate $tfn)
+  odt=$(getupdate $tfn)
   touch --date "$odt" ${tfn}
 }
 
@@ -208,7 +220,7 @@ function put {
       ;;
   esac
   if [[ $forceflag == F ]]; then
-    odt=$(getupddate $tfn)
+    odt=$(getupdate $tfn)
     touch --date "$odt" ${compfile}
     if [[ ! ${tfn} -nt ${compfile} ]]; then
       # echo "$tfn: no change"

@@ -3,6 +3,8 @@
 <span style="color:#4559bf;">_Announcements are used to announce an
 upcoming dance._</span>
 
+[TOC]
+
 ### Announcements
 
 Announcements are audio files that are associated with a dance and are
@@ -14,7 +16,7 @@ Announcements are useful when a marquee cannot be displayed in the
 venue, and are also helpful if the marquee is not visible by all of
 the dancers.
 
-###### Adding the Announcements to the Database
+##### Adding the Announcements to the Database
 
 First, the announcements must be added to the BallroomDJ&nbsp;4
 database.  You can record your own announcements or find pre-recorded
@@ -22,39 +24,45 @@ announcements on the internet.
 
 Add the announcement audio file(s) to your music folder.  For the
 purposes of this example, it will be assumed that the announcements
-are named after the dance, and are stored in a folder named "Announce".
+are named after the dance, and are stored in a folder named
+"Announce".
 
 Add the announcements to the BallroomDJ&nbsp;4 database using
 _Management_ / _Update&nbsp;Database_ / _Check&nbsp;for&nbsp;New_
 <br>(See
 [Adding&nbsp;Songs&nbsp;to&nbsp;the&nbsp;Database](en-Subjects-Adding%20Songs)).
 
-###### Associate the Announcement with a Dance
+##### Associate the Announcement with a Dance
 
 Now, using _Configure_ / _Edit&nbsp;Dances_, select the dance to edit,
-select the _Announcement_ file chooser button with the folder icon for
-and select the announcement audio file for that dance.  If a dance
-does not have an announcement assigned, no announcement will be
-played. <br>(See
+select the _Announcement_ file chooser button with the folder icon and
+select the announcement audio file for that dance.  If a dance does
+not have an announcement assigned, no announcement will be played.
+<br>(See
 [Configure&nbsp;/&nbsp;Edit&nbsp;Dances](en-Configuration-Edit%20Dances)).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![ann-edit-dance-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-edit-dance-A.png)
 <br><span style="color:#4559bf;">**Configuration / Edit Dances**</span> </div>
 
-###### Playing Announcements
+##### Playing Announcements
 
 The announcement audio file(s) are now configured, but will not play
 unless turned on for the music queue or the playlist.
 
 If a music queue is configured to play announcements, all songs played
 in that music queue will always have the announcement for the dance
-played.
+played.  Since the music queue is set to always play an announcement,
+any songs that should not have an announcement should be played from a
+different music queue.
 
 If a playlist is configured to play announcements, the songs from that
-playlist will have the announcement for the dance played.
+playlist will have the announcement for the dance played.  One
+disadvantage of this method is that any requested songs added to the
+queue will not have an announcement played (as there is no playlist
+associated with the song added to the queue).
 
-###### Configuring a Music Queue to Play Announcements
+##### Configuring a Music Queue to Play Announcements
 
 In _Configure_ / _Player&nbsp;Queues_, turn on the
 _Play&nbsp;Announcements_ switch.
@@ -63,7 +71,7 @@ _Play&nbsp;Announcements_ switch.
 ![ann-mq-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-mq-A.png)
 <br><span style="color:#4559bf;">**Configuration / Player Queues**</span> </div>
 
-###### Configuring a Playlist to Play Announcements
+##### Configuring a Playlist to Play Announcements
 
 In _Manage_ / _Playlist&nbsp;Management_, load the playlist to be
 configured, and turn on the _Play&nbsp;Announcements_ switch.
@@ -73,4 +81,4 @@ configured, and turn on the _Play&nbsp;Announcements_ switch.
 <br><span style="color:#4559bf;">**Manage / Playlist Management**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-26 10:02:31; BDJ4 version 4.0.10-beta-dev)_
+<br>_(Updated 2023-01-29 06:45:35; BDJ4 version 4.0.9-beta)_
