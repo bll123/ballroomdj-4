@@ -159,6 +159,8 @@ typedef struct {
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
+  bool            supportactive : 1;
+  bool            supportmsgactive : 1;
 } startui_t;
 
 enum {
@@ -296,6 +298,8 @@ main (int argc, char *argv[])
   starter.options = NULL;
   starter.supportsubject = NULL;
   starter.supportemail = NULL;
+  starter.supportactive = false;
+  starter.supportmsgactive = false;
 
   procutilInitProcesses (starter.processes);
 
@@ -903,6 +907,7 @@ starterMainLoop (void *tstarter)
       starter->supportemail = NULL;
       uiDialogDestroy (&starter->supportMsgDialog);
       starter->startState = START_STATE_NONE;
+      starter->supportmsgactive = false;
       break;
     }
     case START_STATE_SUPPORT_SEND_FILE: {
@@ -1200,9 +1205,15 @@ starterProcessSupport (void *udata)
   char          *builddate;
   char          *rlslvl;
 
+  if (starter->supportactive) {
+    return UICB_STOP;
+  }
+
   if (starterCheckProfile (starter) < 0) {
     return UICB_STOP;
   }
+
+  starter->supportactive = true;
 
   starter->callbacks [START_CB_SUPPORT_RESP] = callbackInitLong (
       starterSupportResponseHandler, starter);
@@ -1352,11 +1363,13 @@ starterSupportResponseHandler (void *udata, long responseid)
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       uiLabelSetText (&starter->supportStatusMsg, "");
+      starter->supportactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
       uiLabelSetText (&starter->supportStatusMsg, "");
       uiDialogDestroy (&starter->supportDialog);
+      starter->supportactive = false;
       break;
     }
   }
@@ -1624,6 +1637,12 @@ starterCreateSupportDialog (void *udata)
   UIWidget      sg;
   uitextbox_t *tb;
 
+  if (starter->supportmsgactive) {
+    return UICB_STOP;
+  }
+
+  starter->supportmsgactive = true;
+
   uiutilsUIWidgetInit (&uiwidget);
   uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);
@@ -1721,6 +1740,7 @@ starterSupportMsgHandler (void *udata, long responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
+      starter->supportmsgactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
@@ -1729,6 +1749,7 @@ starterSupportMsgHandler (void *udata, long responseid)
       uiEntryFree (starter->supportemail);
       starter->supportemail = NULL;
       uiDialogDestroy (&starter->supportMsgDialog);
+      starter->supportmsgactive = false;
       break;
     }
     case RESPONSE_APPLY: {
