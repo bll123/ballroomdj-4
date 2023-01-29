@@ -199,7 +199,7 @@ main (int argc, char *argv[])
 
   confuiInitGeneral (&confui.gui);
   confuiInitPlayer (&confui.gui);
-  confuiInitPlayerQueue (&confui.gui);
+  confuiInitMusicQs (&confui.gui);
   confuiInitMarquee (&confui.gui);
   confuiInitOrganization (&confui.gui);
   confuiInitDispSettings (&confui.gui);
@@ -441,7 +441,7 @@ confuiBuildUI (configui_t *confui)
 
   confuiBuildUIGeneral (&confui->gui);
   confuiBuildUIPlayer (&confui->gui);
-  confuiBuildUIPlayerQueue (&confui->gui);
+  confuiBuildUIMusicQs (&confui->gui);
   confuiBuildUIMarquee (&confui->gui);
   confuiBuildUIUserInterface (&confui->gui);
   confuiBuildUIDispSettings (&confui->gui);

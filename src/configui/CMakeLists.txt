@@ -19,9 +19,9 @@ add_executable (bdj4configui
   conflevel.c
   confmarquee.c
   confmobmq.c
+  confmusicq.c
   conforg.c
   confplayer.c
-  confplayerqueue.c
   confpopulate.c
   confrating.c
   confrc.c

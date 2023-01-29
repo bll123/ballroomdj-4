@@ -26,41 +26,41 @@
 #include "sysvars.h"
 #include "ui.h"
 
-static bool confuiPlayerQueueActiveChg (void *udata);
-static bool confuiPlayerQueueChg (void *udata);
-static void confuiPlayerQueueUpdateState (confuigui_t *gui, int idx);
-static void confuiSetPlayerQueueList (confuigui_t *gui);
-static void confuiUpdatePlayerQueueList (confuigui_t *gui);
+static bool confuiMusicQActiveChg (void *udata);
+static bool confuiMusicQChg (void *udata);
+static void confuiMusicQUpdateState (confuigui_t *gui, int idx);
+static void confuiSetMusicQList (confuigui_t *gui);
+static void confuiUpdateMusicQList (confuigui_t *gui);
 
 void
-confuiInitPlayerQueue (confuigui_t *gui)
+confuiInitMusicQs (confuigui_t *gui)
 {
   gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].displist = NULL;
 
-  confuiSetPlayerQueueList (gui);
+  confuiSetMusicQList (gui);
 }
 
 void
-confuiBuildUIPlayerQueue (confuigui_t *gui)
+confuiBuildUIMusicQs (confuigui_t *gui)
 {
   UIWidget      vbox;
   UIWidget      sg;
   UIWidget      sgB;
 
-  logProcBegin (LOG_PROC, "confuiBuildUIPlayerQueue");
+  logProcBegin (LOG_PROC, "confuiBuildUIMusicQs");
   gui->inbuild = true;
   uiCreateVertBox (&vbox);
 
   confuiMakeNotebookTab (&vbox, gui,
-      /* CONTEXT: configuration: player queue configuration*/
-      _("Player Queues"), CONFUI_ID_NONE);
+      /* CONTEXT: configuration: music queue configuration*/
+      _("Music Queues"), CONFUI_ID_NONE);
   uiCreateSizeGroupHoriz (&sg);
   uiCreateSizeGroupHoriz (&sgB);
 
   /* CONTEXT: (noun) configuration: queue: select which queue to configure */
   confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Queue"),
       CONFUI_SPINBOX_PLAYER_QUEUE, -1, CONFUI_OUT_NUM,
-      gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx, confuiPlayerQueueChg);
+      gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx, confuiMusicQChg);
 
   /* CONTEXT: (noun) configuration: queue: the name of the music queue */
   confuiMakeItemEntry (gui, &vbox, &sg, _("Queue Name"),
@@ -71,7 +71,7 @@ confuiBuildUIPlayerQueue (confuigui_t *gui)
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Active"),
       CONFUI_SWITCH_Q_ACTIVE, OPT_Q_ACTIVE,
       bdjoptGetNumPerQueue (OPT_Q_ACTIVE, 0),
-      confuiPlayerQueueActiveChg, CONFUI_INDENT);
+      confuiMusicQActiveChg, CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: whether to display the queue */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Display"),
@@ -127,13 +127,13 @@ confuiBuildUIPlayerQueue (confuigui_t *gui)
       bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, 0), NULL, CONFUI_INDENT);
 
   gui->inbuild = false;
-  confuiPlayerQueueChg (gui);   // calls active-chg
+  confuiMusicQChg (gui);   // calls active-chg
 
-  logProcEnd (LOG_PROC, "confuiBuildUIPlayerQueue", "");
+  logProcEnd (LOG_PROC, "confuiBuildUIMusicQs", "");
 }
 
 static bool
-confuiPlayerQueueActiveChg (void *udata)
+confuiMusicQActiveChg (void *udata)
 {
   confuigui_t *gui = udata;
   int         tval = 0;
@@ -169,20 +169,20 @@ confuiPlayerQueueActiveChg (void *udata)
   }
 
   /* if called from init or from queue-chg, this is incorrect */
-  confuiPlayerQueueUpdateState (gui, 1);
+  confuiMusicQUpdateState (gui, 1);
 
   return UICB_CONT;
 }
 
 static bool
-confuiPlayerQueueChg (void *udata)
+confuiMusicQChg (void *udata)
 {
   confuigui_t *gui = udata;
   int         oselidx;
   int         nselidx;
   int         widx;
 
-  logProcBegin (LOG_PROC, "confuiPlayerQueueChg");
+  logProcBegin (LOG_PROC, "confuiMusicQChg");
 
   if (gui->inbuild) {
     return UICB_CONT;
@@ -201,8 +201,8 @@ confuiPlayerQueueChg (void *udata)
   if (oselidx != nselidx) {
     /* make sure the current selection gets saved to the options data */
     confuiPopulateOptions (gui);
-    confuiSetPlayerQueueList (gui);
-    confuiUpdatePlayerQueueList (gui);
+    confuiSetMusicQList (gui);
+    confuiUpdateMusicQList (gui);
     uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, nselidx);
   }
   gui->uiitem [widx].listidx = nselidx;
@@ -236,18 +236,18 @@ confuiPlayerQueueChg (void *udata)
 
   gui->inchange = false;
 
-  confuiPlayerQueueActiveChg (gui);
+  confuiMusicQActiveChg (gui);
 
   /* do this after the values have changed, otherwise the switches */
   /* may not display the insensitive/sensitive state correctly */
-  confuiPlayerQueueUpdateState (gui, nselidx);
+  confuiMusicQUpdateState (gui, nselidx);
 
-  logProcEnd (LOG_PROC, "confuiPlayerQueueChg", "");
+  logProcEnd (LOG_PROC, "confuiMusicQChg", "");
   return UICB_CONT;
 }
 
 static void
-confuiPlayerQueueUpdateState (confuigui_t *gui, int idx)
+confuiMusicQUpdateState (confuigui_t *gui, int idx)
 {
   if (idx == 0) {
     uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
@@ -259,7 +259,7 @@ confuiPlayerQueueUpdateState (confuigui_t *gui, int idx)
 }
 
 static void
-confuiSetPlayerQueueList (confuigui_t *gui)
+confuiSetMusicQList (confuigui_t *gui)
 {
   nlist_t     *tlist;
   int         widx;
@@ -276,7 +276,7 @@ confuiSetPlayerQueueList (confuigui_t *gui)
 }
 
 static void
-confuiUpdatePlayerQueueList (confuigui_t *gui)
+confuiUpdateMusicQList (confuigui_t *gui)
 {
   nlist_t     *tlist;
   int         widx;
