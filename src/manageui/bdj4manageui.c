@@ -239,6 +239,10 @@ typedef struct {
   bool            bpmcounterstarted : 1;
   bool            pluiActive : 1;
   bool            selbypass : 1;
+  bool            createfromplaylistactive : 1;
+  bool            importitunesactive : 1;
+  bool            importm3uactive : 1;
+  bool            exportm3uactive : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -411,6 +415,10 @@ main (int argc, char *argv[])
   manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.pluiActive = false;
   manage.selectButton = NULL;
+  manage.createfromplaylistactive = false;
+  manage.importitunesactive = false;
+  manage.importm3uactive = false;
+  manage.exportm3uactive = false;
   manage.uiaa = NULL;
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
@@ -1513,7 +1521,12 @@ manageSonglistExportM3U (void *udata)
   char        *fn;
   char        *slname;
 
+  if (manage->exportm3uactive) {
+    return UICB_STOP;
+  }
+
   logProcBegin (LOG_PROC, "manageSonglistExportM3U");
+  manage->exportm3uactive = true;
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export m3u");
 
   manageSonglistSave (manage);
@@ -1534,6 +1547,7 @@ manageSonglistExportM3U (void *udata)
   }
   mdfree (selectdata);
   mdfree (slname);
+  manage->exportm3uactive = false;
   logProcEnd (LOG_PROC, "manageSonglistExportM3U", "");
   return UICB_CONT;
 }
@@ -1548,7 +1562,12 @@ manageSonglistImportM3U (void *udata)
   char        *fn;
   pathinfo_t  *pi;
 
+  if (manage->importm3uactive) {
+    return UICB_STOP;
+  }
+
   logProcBegin (LOG_PROC, "manageSonglistImportM3U");
+  manage->importm3uactive = true;
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import m3u");
 
   manageSonglistSave (manage);
@@ -1602,6 +1621,7 @@ manageSonglistImportM3U (void *udata)
   mdfree (selectdata);
 
   manageLoadPlaylistCB (manage, nplname);
+  manage->importm3uactive = false;
   logProcEnd (LOG_PROC, "manageSonglistImportM3U", "");
   return UICB_CONT;
 }
@@ -1612,6 +1632,11 @@ manageSonglistImportiTunes (void *udata)
   manageui_t  *manage = udata;
   char        tbuff [MAXPATHLEN];
 
+  if (manage->importitunesactive) {
+    return UICB_STOP;
+  }
+
+  manage->importitunesactive = true;
   uiLabelSetText (&manage->errorMsg, "");
   uiLabelSetText (&manage->statusMsg, "");
   if (! itunesConfigured ()) {
@@ -1739,11 +1764,13 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: itunes: del window");
       uiutilsUIWidgetInit (&manage->itunesSelectDialog);
+      manage->importitunesactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: itunes: close window");
       uiWidgetHide (&manage->itunesSelectDialog);
+      manage->importitunesactive = false;
       break;
     }
     case RESPONSE_APPLY: {
@@ -1780,6 +1807,7 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
 
       manageSetSonglistName (manage, plname);
       uiWidgetHide (&manage->itunesSelectDialog);
+      manage->importitunesactive = false;
       break;
     }
   }
@@ -2133,7 +2161,12 @@ manageSonglistCreateFromPlaylist (void *udata)
   manageui_t  *manage = udata;
   int         x, y;
 
+  if (manage->createfromplaylistactive) {
+    return UICB_STOP;
+  }
+
   logProcBegin (LOG_PROC, "manageSonglistCreateFromPlaylist");
+  manage->createfromplaylistactive = true;
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: create from playlist");
   manageSonglistSave (manage);
 
@@ -2260,11 +2293,13 @@ manageCFPLResponseHandler (void *udata, long responseid)
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: del window");
       uiutilsUIWidgetInit (&manage->cfplDialog);
+      manage->createfromplaylistactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: close window");
       uiWidgetHide (&manage->cfplDialog);
+      manage->createfromplaylistactive = false;
       break;
     }
     case RESPONSE_APPLY: {
@@ -2314,6 +2349,7 @@ manageCFPLResponseHandler (void *udata, long responseid)
       tnm = uimusicqGetSonglistName (manage->slmusicq);
       manageLoadPlaylistCB (manage, tnm);
       mdfree (tnm);
+      manage->createfromplaylistactive = false;
       break;
     }
   }

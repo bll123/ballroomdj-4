@@ -121,6 +121,8 @@ typedef struct {
   bool            fontszdialogcreated : 1;
   bool            mainalready : 1;
   bool            marqueeoff : 1;
+  bool            exportmp3active : 1;
+  bool            mqfontsizeactive : 1;
 } playerui_t;
 
 static datafilekey_t playeruidfkeys [] = {
@@ -230,6 +232,7 @@ main (int argc, char *argv[])
   plui.currpage = 0;
   plui.mainalready = false;
   plui.marqueeoff = false;
+  plui.exportmp3active = false;
   plui.setPlaybackButton = NULL;
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     plui.callbacks [i] = NULL;
@@ -452,7 +455,7 @@ pluiBuildUI (playerui_t *plui)
   uiutilsUIWidgetCopy (&plui->statusMsg, &uiwidget);
 
   plui->callbacks [PLUI_CB_STATUS_DISP] = callbackInitIntInt (
-      pluiStatusMsgDisplay, &plui->statusMsg);
+      pluiStatusMsgDisplay, plui);
 
   /* actions */
   /* CONTEXT: playerui: menu selection: actions for the player */
@@ -1008,8 +1011,9 @@ pluiSigHandler (int sig)
 static bool
 pluiStatusMsgDisplay (void *udata, int count, int tot)
 {
-  UIWidget  *statusMsg = udata;
-  char      tbuff [200];
+  playerui_t  *plui = udata;
+  UIWidget    *statusMsg = &plui->statusMsg;
+  char        tbuff [200];
 
   if (statusMsg == NULL) {
     return UICB_CONT;
@@ -1017,6 +1021,7 @@ pluiStatusMsgDisplay (void *udata, int count, int tot)
 
   if (count < 0 && tot < 0) {
     uiLabelSetText (statusMsg, "");
+    plui->exportmp3active = false;
   } else {
     /* CONTEXT: please wait... (count/total) status message */
     snprintf (tbuff, sizeof (tbuff), _("Please wait\xe2\x80\xa6 (%1$d/%2$d)"), count, tot);
@@ -1229,7 +1234,12 @@ pluiMarqueeFontSizeDialog (void *udata)
   playerui_t      *plui = udata;
   int             sz;
 
+  if (plui->mqfontsizeactive) {
+    return UICB_STOP;
+  }
+
   logProcBegin (LOG_PROC, "pluiMarqueeFontSizeDialog");
+  plui->mqfontsizeactive = true;
 
   if (! plui->fontszdialogcreated) {
     pluiCreateMarqueeFontSizeDialog (plui);
@@ -1306,10 +1316,12 @@ pluiMarqueeFontSizeDialogResponse (void *udata, long responseid)
     case RESPONSE_DELETE_WIN: {
       uiutilsUIWidgetInit (&plui->marqueeFontSizeDialog);
       plui->fontszdialogcreated = false;
+      plui->mqfontsizeactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
       uiWidgetHide (&plui->marqueeFontSizeDialog);
+      plui->mqfontsizeactive = false;
       break;
     }
   }
@@ -1510,7 +1522,12 @@ pluiExportMP3 (void *udata)
   playerui_t  *plui = udata;
   char        tmp [40];
 
+  if (plui->exportmp3active) {
+    return UICB_STOP;
+  }
+
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
+  plui->exportmp3active = true;
 
   /* CONTEXT: export as mp3: please wait... status message */
   uiLabelSetText (&plui->statusMsg, _("Please wait\xe2\x80\xa6"));
