@@ -32,7 +32,7 @@ songs that do not have a dance level set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Edit Levels](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditLevels-C.png)
-<br><span style="color:#4559bf;">**Configuration / Edit Levels**</span> </div>
+<br><span style="color:#4559bf;">**Configure / Edit Levels**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_

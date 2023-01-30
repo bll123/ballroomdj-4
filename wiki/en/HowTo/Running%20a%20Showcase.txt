@@ -2,7 +2,22 @@
 
 ### How To : Running a Showcase
 
-To be written...
+##### Configuring a Music Queue for a Showcase
+
+For the showcase music queue, in
+__Configure&nbsp;/&nbsp;Music&nbsp;Queues__, configure a music queue
+with the __Gap&nbsp;Between&nbsp;Songs__ set to 0.0, and no fade-out
+time. Make sure __Play&nbsp;Announcements__ is off.  Turn
+__Pause&nbsp;Each&nbsp;Song__ on. The name of the music queue is set
+to _Showcase_.
+
+Close the configuration window to save the configuration changes.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![showcase-conf-musicq-a](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-conf-musicq-A.png)
+<br><span style="color:#4559bf;">**Configure / Music Queues**</span> </div>
+
+##### Running the Showcase
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 11:01:23; BDJ4 version 4.0.9-beta)_

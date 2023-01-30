@@ -16,7 +16,7 @@ _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Filter Display](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-C.png)
-<br><span style="color:#4559bf;">**Configuration / Filter Display**</span> </div>
+<br><span style="color:#4559bf;">**Configure / Filter Display**</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Filter Dialog (default)](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-Dialog-A.png)
@@ -27,4 +27,4 @@ _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 <br><span style="color:#4559bf;">**Filter Dialog - All filters enabled**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_

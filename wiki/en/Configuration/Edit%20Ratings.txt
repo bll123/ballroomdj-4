@@ -34,7 +34,7 @@ weight to change it.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Edit Ratings](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditRatings-C.png)
-<br><span style="color:#4559bf;">**Configuration / Edit Ratings**</span> </div>
+<br><span style="color:#4559bf;">**Configure / Edit Ratings**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_

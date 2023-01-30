@@ -16,7 +16,7 @@ the bottom of this wiki page.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-A.png)
-<br><span style="color:#4559bf;">**Management / Song Editor**</span> </div>
+<br><span style="color:#4559bf;">**Manage / Song Editor**</span> </div>
 
 ##### Traversing the Song Listing
 
@@ -31,7 +31,7 @@ details.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-file-disp](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-file-disp-A.png)
-<br><span style="color:#4559bf;">**Management / Song Editor / File Display**</span> </div>
+<br><span style="color:#4559bf;">**Manage / Song Editor / File Display**</span> </div>
 
 If the audio file has a MusicBrainz recording ID tag set, the
 MusicBrainz logo will be displayed.
@@ -45,7 +45,7 @@ The copy button
 may be used to copy the filename to the clipboard.
 
 The filename is displayed.  The music folder set in
-[Configuration&nbsp;/&nbsp;General](en-Configuration-General) is not
+[Configure&nbsp;/&nbsp;General](en-Configuration-General) is not
 displayed as part of the filename.
 
 ##### Change Bars
@@ -55,7 +55,7 @@ before the field's label.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-change-bar](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-change-bar-A.png)
-<br><span style="color:#4559bf;">**Management / Song Editor / Change Bars**</span> </div>
+<br><span style="color:#4559bf;">**Manage / Song Editor / Change Bars**</span> </div>
 
 ##### Saving the Changes
 
@@ -69,7 +69,7 @@ _Previous_ to switch to a different song, then switch back.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-A.png)
-<br><span style="color:#4559bf;">**Management / Song Editor / Actions Menu**</span> </div>
+<br><span style="color:#4559bf;">**Manage / Song Editor / Actions Menu**</span> </div>
 
 ___BPM___ starts the BPM Counter.
 
@@ -97,7 +97,7 @@ _Actions_ menu.  The BPM Counter will start.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-A.png)
-<br><span style="color:#4559bf;">**Management / Song Editor / BPM Counter**</span> </div>
+<br><span style="color:#4559bf;">**Manage / Song Editor / BPM Counter**</span> </div>
 
 Click in the blue box in time with the beat.  Once the BPM has
 stabilized, select the _Save_ button.  To restart the count, select
@@ -105,10 +105,10 @@ the _Reset_ button.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-bpm-saved](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-saved-A.png)
-<br><span style="color:#4559bf;">**Management / Song Editor / BPM**</span> </div>
+<br><span style="color:#4559bf;">**Manage / Song Editor / BPM**</span> </div>
 
 If the BPM setting in
-[Configuration&nbsp;/&nbsp;General](en-Configuration-General) is set to MPM
+[Configure&nbsp;/&nbsp;General](en-Configuration-General) is set to MPM
 (measures per minute), BDJ4 will select the MPM setting in the BPM
 Counter that matches the dance's time signature.
 
@@ -147,4 +147,4 @@ song editor is:
  Volume Adjustment|BDJ4|
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_

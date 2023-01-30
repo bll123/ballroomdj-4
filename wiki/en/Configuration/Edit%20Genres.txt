@@ -24,7 +24,7 @@ music support is not yet implemented in BDJ4.__
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Edit Genres](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditGenres-C.png)
-<br><span style="color:#4559bf;">**Configuration / Edit Genres**</span> </div>
+<br><span style="color:#4559bf;">**Configure / Edit Genres**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_

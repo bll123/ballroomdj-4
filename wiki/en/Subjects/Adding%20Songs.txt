@@ -18,7 +18,7 @@ how many new audio files were added to the database.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![adding-songs-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/adding-songs-A.png)
-<br><span style="color:#4559bf;">**Management / Update Database**</span> </div>
+<br><span style="color:#4559bf;">**Manage / Update Database**</span> </div>
 
 ##### Adding Songs in a Separate Folder
 
@@ -29,4 +29,4 @@ ___Music&nbsp;Folder___ entry. Then start the
 _Check&nbsp;for&nbsp;New_ action.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-26 10:01:18; BDJ4 version 4.0.10-beta-dev)_
+<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_

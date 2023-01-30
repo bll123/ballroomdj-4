@@ -14,7 +14,7 @@ The example below outlines one method for playing a mixer.
 ##### Configuring a Music Queue for a Mixer
 
 For the mixer music queue, in
-__Configure&nbsp;/&nbsp;Player&nbsp;Queues__, configure a music queue
+__Configure&nbsp;/&nbsp;Music&nbsp;Queues__, configure a music queue
 with the __Gap&nbsp;Between&nbsp;Songs__ set to 0.0, and a fast
 fade-out time. Also make sure __Play&nbsp;Announcements__ is off.  For
 this example the __Maximum&nbsp;Play&nbsp;Time__ is set to 1:30.  The
@@ -24,7 +24,7 @@ Close the configuration window to save the configuration changes.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![mixer-conf-musicq-a](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/mixer-conf-musicq-D.png)
-<br><span style="color:#4559bf;">**Configure / Player Queues**</span> </div>
+<br><span style="color:#4559bf;">**Configure / Music Queues**</span> </div>
 
 ##### Creating an Automatic Playlist for a Mixer
 
@@ -75,4 +75,4 @@ playback will automatically switch back to the main music queue, and
 playback will continue from the main music queue.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 09:25:17; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 11:01:23; BDJ4 version 4.0.9-beta)_

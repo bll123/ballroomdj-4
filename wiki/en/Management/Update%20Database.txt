@@ -29,7 +29,7 @@ set.
 ___Update from iTunes___: The BDJ4 database is updated from the
 information read from the iTunes database. If iTunes is not
 configured, the start button will be disabled.
-<br>See: [Configuration&nbsp;/&nbsp;iTunes](en-Configuration-iTunes)
+<br>See: [Configure&nbsp;/&nbsp;iTunes](en-Configuration-iTunes)
 
 ___Rebuild Database___: Rebuilds the database completely.  Any
 information stored in the database that is not stored in the audio
@@ -37,7 +37,7 @@ file tags will be lost.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![UpdateDB](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/UpdateDB-B.png)
-<br><span style="color:#4559bf;">**Management / Update Database**</span> </div>
+<br><span style="color:#4559bf;">**Manage / Update Database**</span> </div>
 
 The __Music Folder__ will normally be set to the configured music
 folder.  If you want to add an additional music folder to the database
@@ -47,4 +47,4 @@ folder.  Set the _Action_ to _Check&nbsp;for&nbsp;New_.  Do not use
 _Rebuild&nbsp;Database_ to add an additional music folder.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-26 10:01:18; BDJ4 version 4.0.10-beta-dev)_
+<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_

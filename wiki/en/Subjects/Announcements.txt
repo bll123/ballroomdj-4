@@ -43,7 +43,7 @@ not have an announcement assigned, no announcement will be played.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![ann-edit-dance-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-edit-dance-A.png)
-<br><span style="color:#4559bf;">**Configuration / Edit Dances**</span> </div>
+<br><span style="color:#4559bf;">**Configure / Edit Dances**</span> </div>
 
 ##### Playing Announcements
 
@@ -64,12 +64,12 @@ associated with the song added to the queue).
 
 ##### Configuring a Music Queue to Play Announcements
 
-In _Configure_ / _Player&nbsp;Queues_, turn on the
+In _Configure_ / _Music&nbsp;Queues_, turn on the
 _Play&nbsp;Announcements_ switch.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![ann-mq-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ann-mq-A.png)
-<br><span style="color:#4559bf;">**Configuration / Player Queues**</span> </div>
+<br><span style="color:#4559bf;">**Configure / Music Queues**</span> </div>
 
 ##### Configuring a Playlist to Play Announcements
 
@@ -81,4 +81,4 @@ configured, and turn on the _Play&nbsp;Announcements_ switch.
 <br><span style="color:#4559bf;">**Manage / Playlist Management**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-29 06:45:35; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_

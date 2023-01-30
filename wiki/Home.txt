@@ -53,7 +53,7 @@
 ### Configuration
 [General](en-Configuration-General)
 <br>[Player](en-Configuration-Player)
-<br>[Player Queues](en-Configuration-Player%20Queues)
+<br>[Music Queues](en-Configuration-Music%20Queues)
 <br>[Marquee](en-Configuration-Marquee)
 <br>[User Interface](en-Configuration-User%20Interface)
 <br>[Display Settings](en-Configuration-Display%20Settings)
@@ -112,4 +112,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 11:01:23; BDJ4 version 4.0.9-beta)_

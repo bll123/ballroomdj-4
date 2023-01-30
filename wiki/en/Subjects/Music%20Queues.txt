@@ -45,11 +45,11 @@ center;"></div>
 ##### Configuring Music Queues
 
 The music queues are configured in
-__Configure&nbsp;/&nbsp;Player&nbsp;Queues__.
+__Configure&nbsp;/&nbsp;Music&nbsp;Queues__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![musicq-conf-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-conf-A.png)
-<br><span style="color:#4559bf;">**Configure / Player Queues**</span> </div>
+<br><span style="color:#4559bf;">**Configure / Music Queues**</span> </div>
 
 If the __Active__ switch is off, the music queue inherits its
 configuration from the main music queue.  There is no need to copy the
@@ -91,8 +91,8 @@ __Show&nbsp;Queue&nbsp;Dance&nbsp;Buttons__ are generally used for
 teaching.  See the example below for a music queue set up for teaching.
 
 See also:
-<br>[Configuration / Player Queues](en-Configuration-Player%20Queues)
-<br>[Management / Playlist Management](en-Management-Playlist%20Management)
+<br>[Configure / Music Queues](en-Configuration-Music%20Queues)
+<br>[Manage / Playlist Management](en-Management-Playlist%20Management)
 
 ##### Example: Setting up a Music Queue for Teaching
 
@@ -107,7 +107,7 @@ __Pause&nbsp;Each&nbsp;Song__ and __Play&nbsp;Announcements__ are off.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![musicq-conf-teach-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-conf-teach-A.png)
-<br><span style="color:#4559bf;">**Configure / Player Queues**</span> </div>
+<br><span style="color:#4559bf;">**Configure / Music Queues**</span> </div>
 
 As the queue dance buttons will be active, it is easy to quickly
 select a dance using the _Queue&nbsp;Dance_ button (or five dances
@@ -119,7 +119,7 @@ wachtrijendans) that controls what songs are added to the queue by the
 queue dance buttons__.  If you try this example, you may need to
 adjust this special playlist to allow songs to be queued. (The
 _Request_ tab can also be used to add songs to the music queue).
-<br>(See [Management / Playlist
+<br>(See [Manage / Playlist
 Management](en-Management-Playlist%20Management))
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -170,4 +170,4 @@ See also:
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 08:07:05; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_

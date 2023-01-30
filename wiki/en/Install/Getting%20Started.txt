@@ -21,8 +21,8 @@ displayed. In the _General_ section, the first item is the _Music
 Folder_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Configuration / General / Music Folder](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-folder-C.png)
-<br><span style="color:#4559bf;">**Configuration / General / Music Folder**</span> </div>
+![Configure / General / Music Folder](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-folder-C.png)
+<br><span style="color:#4559bf;">**Configure / General / Music Folder**</span> </div>
 
 Use the directory chooser button with the folder icon on the far right
 to choose the location of your music folder.
@@ -40,8 +40,8 @@ In the configuration window, select the _Organization_ section from
 the list on the left side of the window.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Configuration / Organization](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-org-A.png)
-<br><span style="color:#4559bf;">**Configuration / Organization**</span> </div>
+![Configure / Organization](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-org-A.png)
+<br><span style="color:#4559bf;">**Configure / Organization**</span> </div>
 
 In the _Organization_ section, the default organization is
 _Dance/Title_.  This is a common organization method that many people
@@ -80,7 +80,7 @@ displayed when it is done.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![gs-update-db](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-update-db-C.png)
-<br><span style="color:#4559bf;">**Management / Update Database**</span> </div>
+<br><span style="color:#4559bf;">**Manage / Update Database**</span> </div>
 
 Leave the management window open.
 
@@ -93,7 +93,7 @@ assigned dance, but most should have a dance set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![gs-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-mm-B.png)
-<br><span style="color:#4559bf;">**Management / Music Manager**</span> </div>
+<br><span style="color:#4559bf;">**Manage / Music Manager**</span> </div>
 
 If the dance is not set, select the song in the listing, then select
 the _Song&nbsp;Editor_ tab.  Use the dance drop-down selection and
@@ -104,7 +104,7 @@ the dance set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![gs-se](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-se-B.png)
-<br><span style="color:#4559bf;">**Management / Song Editor**</span> </div>
+<br><span style="color:#4559bf;">**Manage / Song Editor**</span> </div>
 
 Leave the management window open.
 
@@ -126,7 +126,7 @@ Select some more songs and add each of them to the song list.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![gs-sl](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-sl-B.png)
-<br><span style="color:#4559bf;">**Management / Song List Editor**</span> </div>
+<br><span style="color:#4559bf;">**Manage / Song List Editor**</span> </div>
 
 Close the management window.  The song list is automatically saved.
 
@@ -158,4 +158,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-26 10:01:18; BDJ4 version 4.0.10-beta-dev)_
+<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
