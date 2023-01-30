@@ -73,15 +73,15 @@ __Previous__ to switch to a different song, then switch back.
 
 __BPM__ starts the BPM Counter.
 
-__Actions__&nbsp;/&nbsp;__Edit&nbsp;All__ starts the batch edit
+__Actions&nbsp;/&nbsp;Edit&nbsp;All__ starts the batch edit
 process.  ___This function is not yet implemented___.
 
-__Actions__&nbsp;/&nbsp;__Apply&nbsp;Edit&nbsp;All__ finalizes the
+__Actions&nbsp;/&nbsp;Apply&nbsp;Edit&nbsp;All__ finalizes the
 batch edit process. The changes made to the current song will be made
 to the rest of the selected songs.  ___This function is not yet
 implemented___.
 
-__Actions__&nbsp;/&nbsp;__Cancel&nbsp;Edit&nbsp;All__ cancels the
+__Actions&nbsp;/&nbsp;Cancel&nbsp;Edit&nbsp;All__ cancels the
 batch edit process. The changes made to the current song will be
 reverted. ___This function is not yet implemented___.
 

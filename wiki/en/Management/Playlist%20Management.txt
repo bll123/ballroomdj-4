@@ -116,19 +116,19 @@ _New&nbsp;Playlist_.
 <br><span style="color:#4559bf;">**Manage / Playlist Management / Edit Menu**</span> </div>
 
 An existing playlist can be loaded by selecting
-__Edit__&nbsp;/&nbsp;__Load__ from the menu.  A dialog will open allowing
+__Edit&nbsp;/&nbsp;Load__ from the menu.  A dialog will open allowing
 selection of an existing playlist.
 
-__Edit__&nbsp;/&nbsp;__New&nbsp;Automatic&nbsp;Playlist__ will clean out
+__Edit&nbsp;/&nbsp;New&nbsp;Automatic&nbsp;Playlist__ will clean out
 any loaded playlist and reset the name to _New&nbsp;Playlist_.  The
 playlist type will be set to _Automatic_.
 
-__Edit__&nbsp;/&nbsp;__Create&nbsp;Copy__ will create a copy of the
+__Edit&nbsp;/&nbsp;Create&nbsp;Copy__ will create a copy of the
 currently loaded playlist and create a new name with _Copy&nbsp;of_
 prefixed to the old name. If there is a song list or sequence
 associated with the playlist, it will also be copied.
 
-__Edit__&nbsp;/&nbsp;__Delete__ will delete the currently loaded playlist
+__Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)

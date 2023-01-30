@@ -48,17 +48,17 @@ _New&nbsp;Sequence_.
 <br><span style="color:#4559bf;">**Manage / Edit Sequences / Edit Menu**</span> </div>
 
 An existing sequence can be loaded by selecting
-__Edit__&nbsp;/&nbsp;__Load__ from the menu.  A dialog will open
+__Edit&nbsp;/&nbsp;Load__ from the menu.  A dialog will open
 allowing selection of an existing sequence.
 
-__Edit__&nbsp;/&nbsp;__Start&nbsp;New&nbsp;Sequence__ will clean
+__Edit&nbsp;/&nbsp;Start&nbsp;New&nbsp;Sequence__ will clean
 out any loaded sequence and reset the name to _New&nbsp;Sequence_.
 
-__Edit__&nbsp;/&nbsp;__Create&nbsp;Copy__ will create a copy of
+__Edit&nbsp;/&nbsp;Create&nbsp;Copy__ will create a copy of
 the currently loaded sequence and create a new name with
 _Copy&nbsp;of_ prefixed to the old name.
 
-__Edit__&nbsp;/&nbsp;__Delete__ will delete the currently loaded
+__Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded
 sequence from your storage device and start a new sequence.
 
 ##### Song Selection
