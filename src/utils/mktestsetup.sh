@@ -83,6 +83,7 @@ cp -f test-templates/dances.txt data
 cp -f test-templates/status.txt data
 cp -f test-templates/ds-songfilter.txt data/profile00
 cp -f test-templates/ui-*.txt data/profile00
+mv -f data/profile00/ui-starter.txt data
 
 # songlist a
 to=test-sl-a
