@@ -1,11 +1,11 @@
 # playlist
-# 2023-1-21
+# 2023-1-30
 version
 ..1
 ALLOWEDKEYWORDS
 ..
 DANCERATING
-..Great
+..Good
 GAP
 ..9
 MAXPLAYTIME

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-26 09:23-0800\n"
+"POT-Creation-Date: 2023-01-30 07:58-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1055,6 +1055,10 @@ msgstr ""
 msgid "Music Queue"
 msgstr ""
 
+#. CONTEXT: configuration: music queue configuration
+msgid "Music Queues"
+msgstr ""
+
 #. CONTEXT: set up alternate: name (for shortcut)
 msgid "Name"
 msgstr ""
@@ -1246,10 +1250,6 @@ msgstr ""
 #. CONTEXT: configuration: which player interface to use
 #. CONTEXT: starterui: button: starts the player user interface
 msgid "Player"
-msgstr ""
-
-#. CONTEXT: configuration: player queue configuration
-msgid "Player Queues"
 msgstr ""
 
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
@@ -1497,6 +1497,10 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 msgid "Saving install location."
+msgstr ""
+
+#. CONTEXT: configuration: scaling factor for the user interface
+msgid "Scale"
 msgstr ""
 
 #. CONTEXT: song selection filter: a filter: filter the song selection with a search for text

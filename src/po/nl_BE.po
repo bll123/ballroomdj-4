@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2023-01-26\n"
+"PO-Revision-Date: 2023-01-30\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -1058,6 +1058,10 @@ msgstr "Muziek Manager"
 msgid "Music Queue"
 msgstr "Muziek wachtrij"
 
+#. CONTEXT: configuration: music queue configuration
+msgid "Music Queues"
+msgstr ""
+
 #. CONTEXT: set up alternate: name (for shortcut)
 msgid "Name"
 msgstr ""
@@ -1250,10 +1254,6 @@ msgstr ""
 #. CONTEXT: starterui: button: starts the player user interface
 msgid "Player"
 msgstr "Speler"
-
-#. CONTEXT: configuration: player queue configuration
-msgid "Player Queues"
-msgstr ""
 
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
@@ -1500,6 +1500,10 @@ msgstr "Bewaren"
 
 #. CONTEXT: installer: status message
 msgid "Saving install location."
+msgstr ""
+
+#. CONTEXT: configuration: scaling factor for the user interface
+msgid "Scale"
 msgstr ""
 
 #. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
