@@ -14,28 +14,28 @@ Automatic playlists are created using playlist management.
 
 ##### Playlist Controls
 
-The playlist controls for _Maximum&nbsp;Play&nbsp;Time_, _Stop&nbsp;At_ time,
-_Stop&nbsp;After_ count, _Gap_ and _Play&nbsp;Announcements_ are
-available for all playlist types.
+The playlist controls for __Maximum&nbsp;Play&nbsp;Time__,
+__Stop&nbsp;At__ time, __Stop&nbsp;After__ count, __Gap__ and
+__Play&nbsp;Announcements__ are available for all playlist types.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![plmgmt-controls](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-controls-A.png)
 <br><span style="color:#4559bf;">**Manage / Playlist Management / Playlist Controls**</span> </div>
 
-___Maximum&nbsp;Play&nbsp;Time___ sets the maximum duration of a song for
+__Maximum&nbsp;Play&nbsp;Time__ sets the maximum duration of a song for
 this playlist.  The maximum play time set here will override the
-player per-queue _Maximum&nbsp;Play&nbsp;Time_ setting.
+music queue __Maximum&nbsp;Play&nbsp;Time__ setting.
 <br>(See also [Music&nbsp;Queues](en-Configuration-Music%20Queues)).
 
-___Stop&nbsp;At___ sets the time when the playlist will stop. The stop at
-time set here will override the player per-queue _Stop&nbsp;At_
+__Stop&nbsp;At__ sets the time when the playlist will stop. The stop at
+time set here will override the player per-queue __Stop&nbsp;At__
 setting.
 <br>(See also [Music&nbsp;Queues](en-Configuration-Music%20Queues)).
 
-___Stop&nbsp;After___ configures how many songs will play from this
+__Stop&nbsp;After__ configures how many songs will play from this
 playlist.
 
-If _Play&nbsp;Announcements_ is enabled, announcements will be played
+If __Play&nbsp;Announcements__ is enabled, announcements will be played
 for each song for this playlist.
 <br>(See also [Music&nbsp;Queues](en-Configuration-Music%20Queues),
 [Edit&nbsp;Dances](en-Configuration-Edit%20Dances)).
@@ -49,28 +49,28 @@ playlists.  The filters limit which songs can be played.
 ![plmgmt-ss](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/plmgmt-ss-A.png)
 <br><span style="color:#4559bf;">**Manage / Playlist Management / Song Selection**</span> </div>
 
-___Dance&nbsp;Rating___ sets the minimum rating for a song to be chosen.
+__Dance&nbsp;Rating__ sets the minimum rating for a song to be chosen.
 Any song with a rating equal to or better than the dance rating set
 here may be played.
 <br>(See also [Edit&nbsp;Ratings](en-Configuration-Edit%20Ratings))
 
-___Low&nbsp;Dance&nbsp;Level___ sets the lowest dance level.  Any song
+__Low&nbsp;Dance&nbsp;Level__ sets the lowest dance level.  Any song
 with a dance level equal to or higher than the dance level set here
 may be played.
 <br>(See also [Edit&nbsp;Levels](en-Configuration-Edit%20Levels))
 
-___High&nbsp;Dance&nbsp;Level___ sets the highest dance level.  Any song
+__High&nbsp;Dance&nbsp;Level__ sets the highest dance level.  Any song
 with a dance level equal to or lower than the dance level set here may
 be played.
 <br>(See also [Edit&nbsp;Levels](en-Configuration-Edit%20Levels))
 
 If a song has a keyword set, and the keyword is in the
-___Allowed&nbsp;Keywords___ list, then the song may be played.  If a song
+__Allowed&nbsp;Keywords__ list, then the song may be played.  If a song
 has a keyword set and the keyword is not in the
-_Allowed&nbsp;Keywords_ list, the song will not be played.
+__Allowed&nbsp;Keywords__ list, the song will not be played.
 
 In addition, the playable status is always used for song selection. If
-the song's status does not have the _Play?_ flag set, the song will
+the song's status does not have the __Play?__ flag set, the song will
 not be played.
 <br>(See also [Edit&nbsp;Status](en-Configuration-Edit%20Status))
 
@@ -116,20 +116,20 @@ _New&nbsp;Playlist_.
 <br><span style="color:#4559bf;">**Manage / Playlist Management / Edit Menu**</span> </div>
 
 An existing playlist can be loaded by selecting
-___Edit___&nbsp;/&nbsp;___Load___ from the menu.  A dialog will open allowing
+__Edit__&nbsp;/&nbsp;__Load__ from the menu.  A dialog will open allowing
 selection of an existing playlist.
 
-___Edit___&nbsp;/&nbsp;___New&nbsp;Automatic&nbsp;Playlist___ will clean out
+__Edit__&nbsp;/&nbsp;__New&nbsp;Automatic&nbsp;Playlist__ will clean out
 any loaded playlist and reset the name to _New&nbsp;Playlist_.  The
 playlist type will be set to _Automatic_.
 
-___Edit___&nbsp;/&nbsp;___Create&nbsp;Copy___ will create a copy of the
+__Edit__&nbsp;/&nbsp;__Create&nbsp;Copy__ will create a copy of the
 currently loaded playlist and create a new name with _Copy&nbsp;of_
 prefixed to the old name. If there is a song list or sequence
 associated with the playlist, it will also be copied.
 
-___Edit___&nbsp;/&nbsp;___Delete___ will delete the currently loaded playlist
+__Edit__&nbsp;/&nbsp;__Delete__ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:22:54; BDJ4 version 4.0.9-beta)_

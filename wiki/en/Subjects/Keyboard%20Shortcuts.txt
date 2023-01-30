@@ -4,31 +4,31 @@
 
 ##### Music Manager
 
-___Multi-media Play___: Plays the selected song.
+__Multi-media Play__: Plays the selected song.
 
 ##### Player
 
-___Multi-media Play, Pause, Stop, Next Song___
+__Multi-media Play, Pause, Stop, Next Song__
 
-___Multi-media Previous___: Return to the beginning of the song.
+__Multi-media Previous__: Return to the beginning of the song.
 
 ##### Song Selection
 
-___Multi-media Play___: Plays the selected song.
+__Multi-media Play__: Plays the selected song.
 
 ##### Song Editor
 
-___Control-P___: Moves to the previous song.
+__Control-P__: Moves to the previous song.
 
-___Control-N___: Moves to the next song.
+__Control-N__: Moves to the next song.
 
-___Control-S___: Saves the changes.
+__Control-S__: Saves the changes.
 
-___Multi-media Play___: Plays the selected song.
+__Multi-media Play__: Plays the selected song.
 
 ##### Song List Editor
 
-___Multi-media Play___: Plays the selected song.
+__Multi-media Play__: Plays the selected song.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_

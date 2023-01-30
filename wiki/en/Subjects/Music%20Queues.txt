@@ -31,6 +31,8 @@ be displayed.
 <div markdown style="clear: both; margin-right: 20px; text-align:
 center;"></div>
 
+<!-- re-used by howto/running-a-showcase -->
+
 <div markdown style="float: left; margin-right: 20px; text-align: center;">
 ![musicq-disp-option-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-disp-option-A.png)
 <br><span style="color:#4559bf;">**Player / Options**</span> </div>
@@ -170,4 +172,4 @@ See also:
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 11:42:12; BDJ4 version 4.0.9-beta)_

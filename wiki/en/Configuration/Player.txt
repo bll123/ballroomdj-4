@@ -6,15 +6,15 @@
 
 The __Player__ and __Audio__ settings generally do not change.
 
-___Audio Output___: Selects which audio output device will be used to
+__Audio Output__: Selects which audio output device will be used to
 play the audio.  If the selected device is not currently connected,
 the default device will be used.
 
-___Default Volume___: Sets the volume level when BDJ4 first starts.
+__Default Volume__: Sets the volume level when BDJ4 first starts.
 
-___Queue Length___: The number of songs the music queue is filled with.
+__Queue Length__: The number of songs the music queue is filled with.
 
-___Completion Message___: A message displayed on the marquee when the dance
+__Completion Message__: A message displayed on the marquee when the dance
 is finished (no more songs left to play).
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -22,4 +22,4 @@ is finished (no more songs left to play).
 <br><span style="color:#4559bf;">**Configure / Player**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_

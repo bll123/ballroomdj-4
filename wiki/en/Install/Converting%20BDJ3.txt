@@ -17,7 +17,7 @@ conversion process fails in some fashion, please contact
 ([Getting%20Help](en-Getting%20Help)) the development team.
 
 If you have an older version of BallroomDJ&nbsp;3, and the BDJ4
-installer displays the message ___BDJ3 database version is too old___
+installer displays the message __BDJ3 database version is too old__
 in the status box, use the following process.  The following process
 is set up to preserve your original BallroomDJ installation and make
 sure it is not changed.
@@ -41,4 +41,4 @@ location, choose the new location (BDJ3Temp) for BallroomDJ&nbsp;3.
 original BallroomDJ installation is untouched and can still be used.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_

@@ -17,8 +17,8 @@ For the mixer music queue, in
 __Configure&nbsp;/&nbsp;Music&nbsp;Queues__, configure a music queue
 with the __Gap&nbsp;Between&nbsp;Songs__ set to 0.0, and a fast
 fade-out time. Also make sure __Play&nbsp;Announcements__ is off.  For
-this example the __Maximum&nbsp;Play&nbsp;Time__ is set to 1:30.  The
-name of the music queue is set to _Mixer_.
+this example the __Maximum&nbsp;Play&nbsp;Time__ is set to 1:30
+minutes.  The name of the music queue is set to _Mixer_.
 
 Close the configuration window to save the configuration changes.
 
@@ -75,4 +75,4 @@ playback will automatically switch back to the main music queue, and
 playback will continue from the main music queue.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:01:23; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_

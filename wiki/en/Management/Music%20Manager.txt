@@ -44,7 +44,7 @@ currently selected playlist.
 This makes it easy to edit the songs in the song list.  Simply select
 the edit button in
 [Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists) to
-switch to the song editor.  Then the _Next_ and _Previous_ buttons
+switch to the song editor.  Then the __Next__ and __Previous__ buttons
 will traverse the songs in the song list, as the music manager's
 filter has been set to use the loaded playlist.
 
@@ -64,10 +64,10 @@ songs, and not the entire listing.
 ![mm-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/mm-actions-menu-C.png)
 <br><span style="color:#4559bf;">**Manage / Music Manager / Actions Menu**</span> </div>
 
-___Actions___&nbsp;/&nbsp;___Mark as Same Song___ will mark the
+__Actions__&nbsp;/&nbsp;__Mark as Same Song__ will mark the
 selected songs as the same song.
 
-___Actions___&nbsp;/&nbsp;___Clear Same Song Mark___ will clear the
+__Actions__&nbsp;/&nbsp;__Clear Same Song Mark__ will clear the
 same song markers from the selected songs.
 
 ##### Same Song Marks
@@ -76,8 +76,8 @@ Same song marks can be used to prevent the automatic or sequence song
 selection from choosing songs that are the same but played by
 different artists.
 
-For example, if you have a copy of ___Sway___ by ___Michael Bublé___
-and also a copy of ___Sway___ by ___Pussy Cat Dolls___, these can be
+For example, if you have a copy of __Sway__ by __Michael Bublé__
+and also a copy of __Sway__ by __Pussy Cat Dolls__, these can be
 marked as the same song.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -85,4 +85,4 @@ marked as the same song.
 <br><span style="color:#4559bf;">**Manage / Music Manager / Same Song Marks**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:22:54; BDJ4 version 4.0.9-beta)_

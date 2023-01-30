@@ -10,22 +10,22 @@ over the Wi&#8209;Fi network.  Access the web page via your mobile phone or
 tablet.  The computer running BDJ4 must be connected to a Wi&#8209;Fi
 network, but does not need to be connected to the internet.
 
-___Enable Remote Control___: Turns on the remote control function
+__Enable Remote Control__: Turns on the remote control function
 (activated when the player is started).
 
-___HTML Template___: Select the style (and language) of web page to
+__HTML Template__: Select the style (and language) of web page to
 display.
 
-___User ID___: The user ID to use when signing on to the remote control
+__User ID__: The user ID to use when signing on to the remote control
 web page.
 
-___Password___: The password to use when signing on the the remote
+__Password__: The password to use when signing on the the remote
 control web page.
 
-___Port___: The port to connect to.  This usually does not need to be
+__Port__: The port to connect to.  This usually does not need to be
 changed unless there is another device using this port.
 
-___QR Code___: Select the link to display a QR code in your browser.
+__QR Code__: Select the link to display a QR code in your browser.
 The QR code can be scanned with your mobile phone or tablet.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -38,4 +38,4 @@ The QR code can be scanned with your mobile phone or tablet.
 <br><span style="color:#4559bf;">**Mobile Device / Mobile Remote Control**</span></div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_

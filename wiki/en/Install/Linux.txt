@@ -47,8 +47,8 @@ folder will be pre-selected for you.
 
 The **Re-Install** checkbox is only used if you want to completely
 reset all of the BDJ4 data files.  Any changes you have made within
-BDJ4 will be lost if a re-install is done. ___(If you are updating an
-alpha installation, you must do a re-install.)___
+BDJ4 will be lost if a re-install is done. __(If you are updating an
+alpha installation, you must do a re-install.)__
 
 
 If you want to convert a BallroomDJ 3 installation, select the
@@ -62,4 +62,4 @@ button and wait for the **Installation Completed** message.
 <br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Linux**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_

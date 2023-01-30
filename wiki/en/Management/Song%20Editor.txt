@@ -21,8 +21,8 @@ the bottom of this wiki page.
 ##### Traversing the Song Listing
 
 The song editor works in conjunction with the
-[Music&nbsp;Manager](en-Management-Music%20Manager).  The _First_,
-_Next_ and _Previous_ buttons traverse the songs selected in the
+[Music&nbsp;Manager](en-Management-Music%20Manager).  The __First__,
+__Next__ and __Previous__ buttons traverse the songs selected in the
 [Music&nbsp;Manager](en-Management-Music%20Manager). See the
 [Music&nbsp;Manager](en-Management-Music%20Manager) wiki page for
 details.
@@ -60,10 +60,10 @@ before the field's label.
 ##### Saving the Changes
 
 The changes made in the song editor are not automatically saved.  Use
-the _Save_ button in the upper right to save the changes.
+the __Save__ button in the upper right to save the changes.
 
-If you want to reset the changes you have made, simply use _Next_ or
-_Previous_ to switch to a different song, then switch back.
+If you want to reset the changes you have made, simply use __Next__ or
+__Previous__ to switch to a different song, then switch back.
 
 ##### Actions Menu
 
@@ -71,19 +71,19 @@ _Previous_ to switch to a different song, then switch back.
 ![se-actions](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-actions-A.png)
 <br><span style="color:#4559bf;">**Manage / Song Editor / Actions Menu**</span> </div>
 
-___BPM___ starts the BPM Counter.
+__BPM__ starts the BPM Counter.
 
-___Actions___&nbsp;/&nbsp;___Edit&nbsp;All___ starts the batch edit
-process.  __This function is not yet implemented__.
+__Actions__&nbsp;/&nbsp;__Edit&nbsp;All__ starts the batch edit
+process.  ___This function is not yet implemented___.
 
-___Actions___&nbsp;/&nbsp;___Apply&nbsp;Edit&nbsp;All___ finalizes the
+__Actions__&nbsp;/&nbsp;__Apply&nbsp;Edit&nbsp;All__ finalizes the
 batch edit process. The changes made to the current song will be made
-to the rest of the selected songs.  __This function is not yet
-implemented__.
+to the rest of the selected songs.  ___This function is not yet
+implemented___.
 
-___Actions___&nbsp;/&nbsp;___Cancel&nbsp;Edit&nbsp;All___ cancels the
+__Actions__&nbsp;/&nbsp;__Cancel&nbsp;Edit&nbsp;All__ cancels the
 batch edit process. The changes made to the current song will be
-reverted. __This function is not yet implemented__.
+reverted. ___This function is not yet implemented___.
 
 ##### Using the BPM Counter
 
@@ -91,17 +91,17 @@ Before using the BPM Counter, the BPM setting should be added to the
 song editor using
 [Display&nbsp;Settings](en-Configuration-Display%20Settings).
 
-After selecting the song to edit in the song editor, use the _Play_
+After selecting the song to edit in the song editor, use the __Play__
 button to play the song.  Then select the _BPM_ menu selection in the
-_Actions_ menu.  The BPM Counter will start.
+__Actions__ menu.  The BPM Counter will start.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-bpm-counter](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-counter-A.png)
 <br><span style="color:#4559bf;">**Manage / Song Editor / BPM Counter**</span> </div>
 
 Click in the blue box in time with the beat.  Once the BPM has
-stabilized, select the _Save_ button.  To restart the count, select
-the _Reset_ button.
+stabilized, select the __Save__ button.  To restart the count, select
+the __Reset__ button.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![se-bpm-saved](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/se-bpm-saved-A.png)
@@ -147,4 +147,4 @@ song editor is:
  Volume Adjustment|BDJ4|
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:22:54; BDJ4 version 4.0.9-beta)_

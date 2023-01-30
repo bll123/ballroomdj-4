@@ -5,15 +5,15 @@
 After you have added new songs to your music collection, the
 BallroomDJ&nbsp;4 database must be updated to include the new songs.
 
-Select _Management_ from the _Starter_ window, then select the
+Select __Manage__ from the _Starter_ window, then select the
 [Update&nbsp;Database](en-Management-Update%20Database) section.
 
-Select ___Check&nbsp;for&nbsp;New___ in the _Action_ selection (this is the
-default).  Select the ___Start___ button.
+Select _Check&nbsp;for&nbsp;New_ in the __Action__ selection (this is the
+default).  Select the __Start__ button.
 
 BallroomDJ&nbsp;4 will check the music folder for new audio files.
 When processing is complete, a _Complete_ messages will be displayed
-in the processing status box.  The _New Files_ message will indicate
+in the processing status box.  The _New&nbsp;Files_ message will indicate
 how many new audio files were added to the database.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -25,8 +25,8 @@ how many new audio files were added to the database.
 If you have audio files that are in a folder separate from your main
 music folder (configured in BDJ4), use the directory chooser button
 with the folder icon to select the alternate location for the
-___Music&nbsp;Folder___ entry. Then start the
+__Music&nbsp;Folder__ entry. Then start the
 _Check&nbsp;for&nbsp;New_ action.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:22:54; BDJ4 version 4.0.9-beta)_

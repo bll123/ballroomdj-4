@@ -5,33 +5,33 @@
 <span style="color:#4559bf;">_Update database is used to manage the
 database of songs._</span>
 
-Update Database has several possible actions. Select the _Action_ you
+Update Database has several possible actions. Select the __Action__ you
 want to use, then select the _Start_ button to start processing.  The
-_Stop_ button will activate, and can be used to stop processing at any
+__Stop__ button will activate, and can be used to stop processing at any
 time.  When processing is finished, a _Complete_ message will be
 displayed in the processing status box.
 
-___Check for New___: Used to check for new audio files and add them to
+__Check for New__: Used to check for new audio files and add them to
 the database.  Any existing entries in the database are not changed.
 
-___Reorganize___: Re-organizes the audio files according to the
-organization configuration.  __This feature is not yet implemented.__
+__Reorganize__: Re-organizes the audio files according to the
+organization configuration.  ___This feature is not yet implemented.___
 
-___Update from Audio File Tags___: The BDJ4 database is updated from the
+__Update from Audio File Tags__: The BDJ4 database is updated from the
 information read from the audio file tags.  This action is used when
 a tagging program has been used to update the audio file tags.
 
-___Write Tags to Audio Files___: Uses the information in the BDJ4
+__Write Tags to Audio Files__: Uses the information in the BDJ4
 database to update the audio file tags in the audio files. The
-_Write&nbsp;Audio&nbsp;File&nbsp;Tags_ configuration setting must be
+__Write&nbsp;Audio&nbsp;File&nbsp;Tags__ configuration setting must be
 set.
 
-___Update from iTunes___: The BDJ4 database is updated from the
+__Update from iTunes__: The BDJ4 database is updated from the
 information read from the iTunes database. If iTunes is not
 configured, the start button will be disabled.
 <br>See: [Configure&nbsp;/&nbsp;iTunes](en-Configuration-iTunes)
 
-___Rebuild Database___: Rebuilds the database completely.  Any
+__Rebuild Database__: Rebuilds the database completely.  Any
 information stored in the database that is not stored in the audio
 file tags will be lost.
 
@@ -43,8 +43,8 @@ The __Music Folder__ will normally be set to the configured music
 folder.  If you want to add an additional music folder to the database
 that is not within the configured music folder, use the directory
 chooser button with the folder icon to select the additional music
-folder.  Set the _Action_ to _Check&nbsp;for&nbsp;New_.  Do not use
+folder.  Set the __Action__ to _Check&nbsp;for&nbsp;New_.  Do not use
 _Rebuild&nbsp;Database_ to add an additional music folder.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:22:54; BDJ4 version 4.0.9-beta)_

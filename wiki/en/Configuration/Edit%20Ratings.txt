@@ -11,12 +11,12 @@ any song without a rating.
 The ratings should be ordered from the lowest rating to the highest
 rating.
 
-The _Weight_ is used by the automatic and sequenced song selection to
+The __Weight__ is used by the automatic and sequenced song selection to
 adjust which songs are used.  A weight of zero will prevent a song
 with that rating from being selected.  A higher rating weight will
 make a song more likely to play.
 
-Added a new rating: Select the _Add New_ (![Add
+Added a new rating: Select the __Add&nbsp;New__ (![Add
 New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
 button to add a new rating. Click on the name of the new rating to
 change the name.  Then click on the weight to set the weight.  Use the
@@ -25,7 +25,7 @@ up and down arrows
 ![move-down](https://ballroomdj4.sourceforge.io/wikiimg/DownButton-B.png))
 to move the rating to its correct position.
 
-Removing a rating: Select the rating and select the _Delete_
+Removing a rating: Select the rating and select the __Delete__
 (![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
 button.
 
@@ -37,4 +37,4 @@ weight to change it.
 <br><span style="color:#4559bf;">**Configure / Edit Ratings**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:22:54; BDJ4 version 4.0.9-beta)_

@@ -17,8 +17,8 @@ the _Configure_ button.
 <br><span style="color:#4559bf;">**Starter**</span> </div>
 
 The configuration window will open and the _General_ section will be
-displayed. In the _General_ section, the first item is the _Music
-Folder_.
+displayed. In the _General_ section, the first item is the
+__Music&nbsp;Folder__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Configure / General / Music Folder](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-config-folder-C.png)
@@ -51,10 +51,10 @@ If you have iTunes installed, the organization path will be set to
 _Album&nbsp;Artist/Album/Disc&nbsp;-&nbsp;Track0&nbsp;Title_.
 
 Select the organization method you use for your songs in the
-_Organization&nbsp;Path_ drop-down.
+__Organization&nbsp;Path__ drop-down.
 
 If your audio files have the dance stored in the genre audio tag, turn
-on the _Database&nbsp;Loads&nbsp;Dance&nbsp;from&nbsp;Genre_ switch.
+on the __Database&nbsp;Loads&nbsp;Dance&nbsp;from&nbsp;Genre__ switch.
 
 If the organization path you need is not present, contact support
 using one of the methods in [Getting&nbsp;Help](en-Getting%20Help).
@@ -69,13 +69,13 @@ The BDJ4 database contains the information about your songs.  The
 information in the database must be populated the first time.
 
 In the _Starter_ window, select the _Manage_ button.  This will open
-the management user interface.  Select the _Update Database_ section
+the management user interface.  Select the _Update&nbsp;Database_ section
 in the left side of the management window.
 
 Use the plus and minus buttons to change the _Action_ to
-_Rebuild&nbsp;Database_.  Select the _Start_ button.  Depending on how
+_Rebuild&nbsp;Database_.  Select the __Start__ button.  Depending on how
 many songs you have, the database rebuild may take a long time.  Wait
-for the database rebuild to finish.  A __Complete__ message will be
+for the database rebuild to finish.  A _Complete_ message will be
 displayed when it is done.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -97,7 +97,7 @@ assigned dance, but most should have a dance set.
 
 If the dance is not set, select the song in the listing, then select
 the _Song&nbsp;Editor_ tab.  Use the dance drop-down selection and
-select the dance for the song.  Select the _Save_ button in the upper
+select the dance for the song.  Select the __Save__ button in the upper
 right of the _Song&nbsp;Editor_ tab.  Switch back to the
 _Music&nbsp;Manager_ tab and check for other songs that need to have
 the dance set.
@@ -132,12 +132,12 @@ Close the management window.  The song list is automatically saved.
 
 #### Play the example playlist
 
-Now select _Player_ in the starter window.  In the player window,
-select the _Queue&nbsp;Playlist_ drop-down, and select the example
+Now select __Player__ in the starter window.  In the player window,
+select the __Queue&nbsp;Playlist__ drop-down, and select the example
 song list that you just created.
 
 The song list will load into the player.  Select the
-_Play&nbsp;/&nbsp;Pause_ button
+__Play&nbsp;/&nbsp;Pause__ button
 (![b-pp](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-b-playpause-A.png))
 to start the music playing.
 
@@ -158,4 +158,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:22:54; BDJ4 version 4.0.9-beta)_

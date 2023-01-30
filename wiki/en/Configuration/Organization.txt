@@ -19,16 +19,16 @@ Many different organization paths can be supported.  Ask for help if
 you have an organization path that is not in the default list.
 <br>[Getting&nbsp;Help](en-Getting%20Help)
 
-___Database Loads Dance from Genre___: Used when the song's genre is set
+__Database Loads Dance from Genre__: Used when the song's genre is set
 to the dance. Enabling this option will try to set the dance from the
 song's genre field.
 
-___Auto Organise___: When enabled, the audio files are renamed to match
-the organization path. __This feature is not yet implemented.__
+__Auto Organise__: When enabled, the audio files are renamed to match
+the organization path. ___This feature is not yet implemented.___
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Organization](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Organization-C.png)
 <br><span style="color:#4559bf;">**Configure / Organization**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_

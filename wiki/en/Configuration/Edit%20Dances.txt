@@ -5,43 +5,43 @@
 __Edit Dances__ configures the dances that are known to BDJ4.  Dances
 can be added or removed and the configuration for each dance changed.
 
-Adding a new dance: Select the _Add New_ (![Add
+Adding a new dance: Select the __Add&nbsp;New__ (![Add
 New](https://ballroomdj4.sourceforge.io/wikiimg/AddNewButton-E.png))
 button to add a new dance. The dance is added with a default name of
 _New&nbsp;Dance_.  Change the name of the dance to what you want.
 
 Removing a dance: Select the dance to remove in the list.  Select the
-_Delete_
+__Delete__
 (![Delete](https://ballroomdj4.sourceforge.io/wikiimg/DeleteButton-E.png))
 button to remove the dance.
 
 Modifying a dance: Select the dance to change and change the dance
 configuration.
 
-___Dance___: The name of the dance. ___Note that changing the name of
-dance that is already in your database will cause many problems.___
+__Dance__: The name of the dance. __Note that changing the name of
+dance that is already in your database will cause many problems.__
 
-___Type___: The type is used for automatic playlists.  Dances with
+__Type__: The type is used for automatic playlists.  Dances with
 the same type are not as likely to be next to another dance of the
 same type.
 
-___Speed___: The speed is used for automatic playlists.  Fast dances are
+__Speed__: The speed is used for automatic playlists.  Fast dances are
 not placed at the very beginning of the playlist, and fast dances are
 not as likely to be next to another fast dance.
 
-___Tags___: Tags are used for automatic playlists.  Dances with matching
+__Tags__: Tags are used for automatic playlists.  Dances with matching
 tags are not as likely to be next to each other.
 
-___Announcement___: The announcement played before the dance is played.
+__Announcement__: The announcement played before the dance is played.
 Note that the announcement audio files must be in the database.
 
-___Low BPM___: This is a display option for use in the song editor.
-__This is not currently implemented.__
+__Low BPM__: This is a display option for use in the song editor.
+___This is not currently implemented.___
 
-___High BPM___: This is a display option for use in the song editor.
-__This is not currently implemented.__
+__High BPM__: This is a display option for use in the song editor.
+___This is not currently implemented.___
 
-___Time Signature___: This is used by the BPM counter to select the
+__Time Signature__: This is used by the BPM counter to select the
 proper default when MPM is selected in the
 [General&nbsp;Options](en-Configuration-General).
 
@@ -50,4 +50,4 @@ proper default when MPM is selected in the
 <br><span style="color:#4559bf;">**Configure / Edit Dances**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:22:54; BDJ4 version 4.0.9-beta)_

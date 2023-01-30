@@ -5,37 +5,37 @@
 <span style="color:#4559bf;">_The general tab provide settings that
 affect the entire BDJ4 application._</span>
 
-___Music Folder___: The main music folder where the music is found.
+__Music Folder__: The main music folder where the music is found.
 See also [Update&nbsp;Database](en-Management-Update%20Database)
 
-___Profile Name___: The name of this profile.  This name will appear in
+__Profile Name__: The name of this profile.  This name will appear in
 the title of all windows.
 
-___Profile Color___: The accent color used to identify this profile.
+__Profile Color__: The accent color used to identify this profile.
 This appears as a block of color in the upper right corner of each
 window.  Different profiles can be assigned different colors so that
 the window's profile can be quickly identified.
 
-___BPM___: The label to use for _beats&nbsp;per&nbsp;minute_ or
+__BPM__: The label to use for _beats&nbsp;per&nbsp;minute_ or
 _measures&nbsp;per&nbsp;minute_ or _bars&nbsp;per&nbsp;minute_. When
 set to MPM, the BPM counter will use the time signature of the dance
 to select the proper default.
 
-___Write Audio File Tags___: When set to __BDJ Tags Only__, only BDJ
+__Write Audio File Tags__: When set to __BDJ Tags Only__, only BDJ
 specific tags will be updated in the audio file when a song is edited.
 When set to __All Tags__, all audio file tags including BDJ specific
 tags will be updated in the audio file when a song is edited.
 
-___BallroomDJ 3 Compatible Audio File Tags___: If enabled, (and write
+__BallroomDJ 3 Compatible Audio File Tags__: If enabled, (and write
 audio file tags is on), the audio file tags will be kept compatible
 with BallroomDJ 3.
 
-___Locale___: Which locale is used for the text in BDJ4.
+__Locale__: Which locale is used for the text in BDJ4.
 
-___Startup Script___: A script that is run before the player is started.
+__Startup Script__: A script that is run before the player is started.
 This is automatically set for Linux installations.
 
-___Shutdown Script___: A script that is run after the player is stopped.
+__Shutdown Script__: A script that is run after the player is stopped.
 This is automatically set for Linux installations.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -43,4 +43,4 @@ This is automatically set for Linux installations.
 <br><span style="color:#4559bf;">**Configure / General**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_
