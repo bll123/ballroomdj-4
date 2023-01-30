@@ -6,10 +6,6 @@
 
 #include <stdbool.h>
 
-#if BDJ4_USE_GTK
-# include <gtk/gtk.h>
-#endif
-
 #include "nlist.h"
 #include "slist.h"
 #include "song.h"
@@ -17,33 +13,8 @@
 #include "callback.h"
 
 #if BDJ4_USE_GTK
-/* these are defined based on the gtk values */
-/* would change for a different gui package */
-enum {
-  UICB_STOP = true,
-  UICB_CONT = false,
-  UICB_DISPLAYED = true,
-  UICB_NO_DISP = false,
-  UICB_NO_CONV = false,
-  UICB_CONVERTED = true,
-  SELECT_SINGLE = GTK_SELECTION_SINGLE,
-  SELECT_MULTIPLE = GTK_SELECTION_MULTIPLE,
-  UICB_SUPPORTED = true,
-  UICB_NOT_SUPPORTED = false,
-};
+# include "uigtk.h"
 #endif
-
-typedef struct {
-  union {
-#if BDJ4_USE_GTK
-    GtkWidget         *widget;
-    GtkSizeGroup      *sg;
-    GdkPixbuf         *pixbuf;
-    GtkTreeSelection  *sel;
-    GtkTextBuffer     *buffer;
-#endif
-  };
-} UIWidget;
 
 enum {
   UIUTILS_BASE_MARGIN_SZ = 2,
