@@ -21,67 +21,73 @@ BallroomDJ&nbsp;4.
 
 ##### Displaying Music Queues in the Player
 
-Start the player, and in the _Options_ menu, select the
-_Show&nbsp;Extra&nbsp;Queues_ checkbox.
+Start the player, and in the __Options__ menu, select the
+__Show&nbsp;Extra&nbsp;Queues__ checkbox.
 
 Any music queues that are configured to display will be displayed as a
 notebook tab.  By default, the main music queue and _Queue B_ will
 be displayed.
 
-<div markdown style="margin-right: 20px; text-align: center;">
+<div markdown style="clear: both; margin-right: 20px; text-align:
+center;"></div>
+
+<div markdown style="float: left; margin-right: 20px; text-align: center;">
 ![musicq-disp-option-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-disp-option-A.png)
 <br><span style="color:#4559bf;">**Player / Options**</span> </div>
 
-<div markdown style="margin-right: 20px; text-align: center;">
+<div markdown style="float: left; margin-right: 20px; text-align: center;">
 ![musicq-tabs-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-tabs-A.png)
 <br><span style="color:#4559bf;">**Player : Music Queue Tabs**</span> </div>
+
+<div markdown style="clear: both; margin-right: 20px; text-align:
+center;"></div>
 
 ##### Configuring Music Queues
 
 The music queues are configured in
-_Configure&nbsp;/&nbsp;Player&nbsp;Queues_.
+__Configure&nbsp;/&nbsp;Player&nbsp;Queues__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![musicq-conf-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-conf-A.png)
 <br><span style="color:#4559bf;">**Configure / Player Queues**</span> </div>
 
-If the ___Active___ switch is off, the music queue inherits its
+If the __Active__ switch is off, the music queue inherits its
 configuration from the main music queue.  There is no need to copy the
 configuration from the main music queue or to make sure music queues
-with the _Active_ switch off are updated when the main music queue
+with the __Active__ switch off are updated when the main music queue
 configuration is changed.
 
-By default, _Queue&nbsp;B_ is set with the _Active_ switch off, so it
+By default, _Queue&nbsp;B_ is set with the __Active__ switch off, so it
 will have the same configuration as the main music queue.
 
-The ___Display___ switch should be turned on if you want the music
+The __Display__ switch should be turned on if you want the music
 queue to display in the player.  By default, _Queue&nbsp;B_ is
 displayed, and _Queue&nbsp;C_ and _Queue&nbsp;D_ are not displayed.
 
-The ___Queue&nbsp;Name___ can be changed to indicate what you use the
+The __Queue&nbsp;Name__ can be changed to indicate what you use the
 music queue for.
 
 To configure a music queue with different settings than the main music
-queue, turn on the _Active_ switch.  Then the fade-in time, fade-out
+queue, turn on the __Active__ switch.  Then the fade-in time, fade-out
 time, gap between songs, maximum play time and stop-at time can be
 configured.
 
-If the ___Stop&nbsp;At___ time is set, the music will stop playing at
+If the __Stop&nbsp;At__ time is set, the music will stop playing at
 that time.  After the music stops, more songs may be queued, but it is
 recommended that a second music queue be configured without no
-_Stop&nbsp;At_ time set for situations (special parties, showcases)
+__Stop&nbsp;At__ time set for situations (special parties, showcases)
 where the music will play past the usual stop-at time. Note that a
 playlist may also be configured with a stop-at time.
 
-The ___Pause&nbsp;Each&nbsp;Song___ switch is used for showcases and
+The __Pause&nbsp;Each&nbsp;Song__ switch is used for showcases and
 other situations where more control is needed over when the song will
 play.
 
-The ___Play&nbsp;Announcements___ switch will enable announcements for
+The __Play&nbsp;Announcements__ switch will enable announcements for
 all songs played with this music queue.
 
-The ___Play&nbsp;When&nbsp;Queued___ and
-___Show&nbsp;Queue&nbsp;Dance&nbsp;Buttons___ are generally used for
+The __Play&nbsp;When&nbsp;Queued__ and
+__Show&nbsp;Queue&nbsp;Dance&nbsp;Buttons__ are generally used for
 teaching.  See the example below for a music queue set up for teaching.
 
 See also:
@@ -95,33 +101,73 @@ fade-out time set to one second, the gap set to 0.5 seconds and the
 maximum play time in this example is set high so that the entire song
 will play.  The name of the music queue is set to "Teach".
 
-The ___Play&nbsp;When&nbsp;Queued___ and
-___Show&nbsp;Queue&nbsp;Dance&nbsp;Buttons___ switches are turned on.
-___Pause&nbsp;Each&nbsp;Song___ and ___Play&nbsp;Announcements___ are off.
-
-<div markdown style="margin-right: 20px; text-align: center;">
-![musicq-tabs-teach-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-tabs-teach-A.png)
-<br><span style="color:#4559bf;">**Player : Music Queues**</span> </div>
-
-As the queue dance buttons will be active, it is easy to quickly
-select a dance using the _Queue&nbsp;Dance_ button (or five dances
-with the _Queue&nbsp;5_ button) to add it to the queue (the song is
-chosen at random) and start it playing. ___\[Note that there is a
-special playlist named QueueDance (Nederlands: wachtrijendans) that
-controls what songs are added to the queue by the queue dance
-buttons\]___.
+The __Play&nbsp;When&nbsp;Queued__ and
+__Show&nbsp;Queue&nbsp;Dance&nbsp;Buttons__ switches are turned on.
+__Pause&nbsp;Each&nbsp;Song__ and __Play&nbsp;Announcements__ are off.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![musicq-conf-teach-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-conf-teach-A.png)
 <br><span style="color:#4559bf;">**Configure / Player Queues**</span> </div>
 
+As the queue dance buttons will be active, it is easy to quickly
+select a dance using the _Queue&nbsp;Dance_ button (or five dances
+with the _Queue&nbsp;5_ button) to add it to the queue (the song is
+chosen at random) and start it playing.
+
+__There is a special playlist named QueueDance (Nederlands:
+wachtrijendans) that controls what songs are added to the queue by the
+queue dance buttons__.  If you try this example, you may need to
+adjust this special playlist to allow songs to be queued. (The
+_Request_ tab can also be used to add songs to the music queue).
+<br>(See [Management / Playlist
+Management](en-Management-Playlist%20Management))
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![musicq-tabs-teach-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-tabs-teach-A.png)
+<br><span style="color:#4559bf;">**Player : Music Queues**</span> </div>
+
 ##### Using Music Queues in the Player
 
+In the player, each music queue is displayed as a notebook tab.
+Selecting a music queue allows you to manage that music queue.
 
+<div markdown style="margin-right: 20px; text-align: center;">
+![musicq-tabs-teach-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-tabs-teach-A.png)
+<br><span style="color:#4559bf;">**Player : Music Queues**</span> </div>
+
+In the __Request__ tab, the requests are queued to the last managed
+music queue. The name of the last managed queue will be displayed next
+to the __Queue__ button.  To change which music queue the request will
+be queued to, select the music queue you want, then re-select the
+_Request_ tab.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![musicq-req-b](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-req-B.png)
+<br><span style="color:#4559bf;">**Player / Request**</span> </div>
+
+The red light in the music queue tab indicates which music queue is
+selected for playback.  Songs to play will be pulled from the music
+queue that is selected for playback.  To change which queue is
+selected for playback, select the music queue you want to play from,
+and then select the __Set&nbsp;Queue&nbsp;for&nbsp;Playback__ button.
+
+In the _Teach_ music queue example from above, close the player and
+re-start the player.  Select the _Teach_ music queue.  Use the
+__Queue&nbsp;Dance__ button and select a dance (or use the _Request_
+tab to queue a song).  Since the _Teach_ music queue is not selected
+for playback, the song is queued, but it will not play.
+
+Now close the player and re-start the player again.  Select the
+_Teach_ music queue. Select the
+__Set&nbsp;Queue&nbsp;for&nbsp;Playback__ button to set the _Teach_
+music queue for playback. Use the __Queue&nbsp;Dance__ button and
+select a dance (or use the _Request_ tab to queue a song).  This time,
+the song will start playing, as the __Play&nbsp;When&nbsp;Queued__
+switch is on for the _Teach_ music queue.
 
 See also:
 <br>[Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-29 07:15:00; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-01-30 08:07:05; BDJ4 version 4.0.9-beta)_
