@@ -10,15 +10,15 @@ enum {
   SONG_ADJUST_NONE    = 0x0000,
   SONG_ADJUST_NORM    = 0x0001,
   SONG_ADJUST_TRIM    = 0x0002,
-  SONG_ADJUST_SPEED   = 0x0004,
+  SONG_ADJUST_ADJUST  = 0x0004,   // includes speed, song-start and song-end
   SONG_ADJUST_INVALID =
-      ~ (SONG_ADJUST_NORM | SONG_ADJUST_TRIM | SONG_ADJUST_SPEED),
+      ~ (SONG_ADJUST_NORM | SONG_ADJUST_TRIM | SONG_ADJUST_ADJUST),
 };
 
 enum {
   SONG_ADJUST_STR_NORM = 'N',
   SONG_ADJUST_STR_TRIM = 'T',
-  SONG_ADJUST_STR_SPEED = 'S',
+  SONG_ADJUST_STR_ADJUST = 'S',
 };
 
 char  *songFullFileName (const char *sfname);

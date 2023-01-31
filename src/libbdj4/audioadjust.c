@@ -88,11 +88,65 @@ aaFree (aa_t *aa)
 }
 
 void
-aaNormalize (const char *infn)
+aaTrimSilence (const char *infn, const char *outfn)
 {
   aa_t        *aa;
-  const char  *targv [30];
-  char        outfn [MAXPATHLEN];
+  const char  *targv [40];
+  int         targc = 0;
+  char        ffargs [300];
+  char        resp [2000];
+  int         rc;
+  size_t      retsz;
+
+  aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
+
+  targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
+  targv [targc++] = "-hide_banner";
+  targv [targc++] = "-y";
+  targv [targc++] = "-vn";
+  targv [targc++] = "-dn";
+  targv [targc++] = "-sn";
+
+  targv [targc++] = "-i";
+  targv [targc++] = infn;
+
+  snprintf (ffargs, sizeof (ffargs),
+      "silenceremove=start_periods=%d:start_silence=%.2f:start_threshold=%ddB:detection=peak,aformat=dblp,areverse,silenceremove=start_periods=%d:start_silence=%.2f:start_threshold=%ddB:detection=peak,aformat=dblp,areverse",
+      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_PERIOD),
+      nlistGetDouble (aa->values, AA_TRIMSILENCE_START),
+      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_THRESHOLD),
+      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_PERIOD),
+      nlistGetDouble (aa->values, AA_TRIMSILENCE_START),
+      (int) nlistGetNum (aa->values, AA_TRIMSILENCE_THRESHOLD));
+  targv [targc++] = "-af";
+  targv [targc++] = ffargs;
+
+  targv [targc++] = "-q:a";
+  targv [targc++] = "0";
+  targv [targc++] = outfn;
+
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
+  if (rc != 0) {
+    char  cmd [1000];
+
+    *cmd = '\0';
+    for (int i = 0; i < targc - 1; ++i) {
+      strlcat (cmd, targv [i], sizeof (cmd));;
+      strlcat (cmd, " ", sizeof (cmd));;
+    }
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-trim: cmd: %s", cmd);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-trim: rc: %d", rc);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-trim: resp:\n%s", resp);
+  }
+
+  return;
+}
+
+void
+aaNormalize (const char *infn, const char *outfn)
+{
+  aa_t        *aa;
+  const char  *targv [40];
   int         targc = 0;
   char        ffargs [300];
   char        resp [2000];
@@ -104,12 +158,6 @@ aaNormalize (const char *infn)
   int         inidx = AA_NONE;
   double      indata [AA_NORM_IN_MAX];
   bool        found = false;
-  pathinfo_t  *pi;
-
-  pi = pathInfo (infn);
-  snprintf (outfn, sizeof (outfn), "%.*s/n-%.*s",
-      (int) pi->dlen, pi->dirname, (int) pi->flen, pi->filename);
-  pathInfoFree (pi);
 
   aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
 
@@ -122,6 +170,9 @@ aaNormalize (const char *infn)
   targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
   targv [targc++] = "-hide_banner";
   targv [targc++] = "-y";
+  targv [targc++] = "-vn";
+  targv [targc++] = "-dn";
+  targv [targc++] = "-sn";
   targv [targc++] = "-i";
   targv [targc++] = infn;
   targv [targc++] = "-af";
@@ -132,7 +183,18 @@ aaNormalize (const char *infn)
   targv [targc++] = NULL;
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
   if (rc != 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: rc: %d", rc);
+    char  cmd [1000];
+
+    *cmd = '\0';
+    for (int i = 0; i < targc - 1; ++i) {
+      strlcat (cmd, targv [i], sizeof (cmd));;
+      strlcat (cmd, " ", sizeof (cmd));;
+    }
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: cmd: %s", cmd);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: rc: %d", rc);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: resp:\n%s", resp);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, pass one failed.");
+    return;
   }
 
 /*
@@ -208,23 +270,38 @@ aaNormalize (const char *infn)
   targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
   targv [targc++] = "-hide_banner";
   targv [targc++] = "-y";
+  targv [targc++] = "-vn";
+  targv [targc++] = "-dn";
+  targv [targc++] = "-sn";
   targv [targc++] = "-i";
   targv [targc++] = infn;
   targv [targc++] = "-af";
   targv [targc++] = ffargs;
+  targv [targc++] = "-q:a";
+  targv [targc++] = "0";
   targv [targc++] = outfn;
   targv [targc++] = NULL;
+
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
   if (rc != 0) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: rc: %d", rc);
+    char  cmd [1000];
+
+    *cmd = '\0';
+    for (int i = 0; i < targc - 1; ++i) {
+      strlcat (cmd, targv [i], sizeof (cmd));;
+      strlcat (cmd, " ", sizeof (cmd));;
+    }
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-b: cmd: %s", cmd);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-b: rc: %d", rc);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-b: resp:\n%s", resp);
   }
 }
 
 void
 aaApplyAdjustments (song_t *song, const char *infn, const char *outfn,
-    int fadein, int fadeout, long dur, int gap)
+    long dur, int fadein, int fadeout, int gap)
 {
-  const char  *targv [30];
+  const char  *targv [40];
   int         targc = 0;
   char        aftext [500];
   char        resp [2000];
@@ -265,6 +342,9 @@ aaApplyAdjustments (song_t *song, const char *infn, const char *outfn,
   targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
   targv [targc++] = "-hide_banner";
   targv [targc++] = "-y";
+  targv [targc++] = "-vn";
+  targv [targc++] = "-dn";
+  targv [targc++] = "-sn";
 
   if (songstart > 0) {
     /* seek start before input file is accurate and fast */
@@ -273,6 +353,8 @@ aaApplyAdjustments (song_t *song, const char *infn, const char *outfn,
     targv [targc++] = sstmp;
   }
 
+  targv [targc++] = "-q:a";
+  targv [targc++] = "0";
   targv [targc++] = "-i";
   targv [targc++] = infn;
 
@@ -363,6 +445,9 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
   targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
   targv [targc++] = "-hide_banner";
   targv [targc++] = "-y";
+  targv [targc++] = "-vn";
+  targv [targc++] = "-dn";
+  targv [targc++] = "-sn";
 
   targv [targc++] = "-i";
   targv [targc++] = infn;
@@ -384,8 +469,11 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
     targv [targc++] = "-af";
     targv [targc++] = aftext;
   }
+  targv [targc++] = "-q:a";
+  targv [targc++] = "0";
   targv [targc++] = outfn;
   targv [targc++] = NULL;
+
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
   if (rc != 0) {
     char  cmd [1000];

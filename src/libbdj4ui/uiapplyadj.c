@@ -25,6 +25,7 @@
 #include "nlist.h"
 #include "slist.h"
 #include "song.h"
+#include "songutil.h"
 #include "tagdef.h"
 #include "ui.h"
 #include "callback.h"
@@ -46,7 +47,7 @@ typedef struct uiaa {
   bool            isactive : 1;
 } uiaa_t;
 
-static void   uiaaCreateDialog (uiaa_t *uiaa);
+static void   uiaaCreateDialog (uiaa_t *uiaa, int aaflags);
 static void   uiaaInitDisplay (uiaa_t *uiaa);
 static bool   uiaaResponseHandler (void *udata, long responseid);
 
@@ -95,7 +96,7 @@ uiaaSetResponseCallback (uiaa_t *uiaa, callback_t *uicb)
 }
 
 bool
-uiaaDialog (uiaa_t *uiaa)
+uiaaDialog (uiaa_t *uiaa, int aaflags)
 {
   int         x, y;
 
@@ -104,7 +105,7 @@ uiaaDialog (uiaa_t *uiaa)
   }
 
   logProcBegin (LOG_PROC, "uiaaDialog");
-  uiaaCreateDialog (uiaa);
+  uiaaCreateDialog (uiaa, aaflags);
   uiaaInitDisplay (uiaa);
   uiWidgetShowAll (&uiaa->aaDialog);
   uiaa->isactive = true;
@@ -119,7 +120,7 @@ uiaaDialog (uiaa_t *uiaa)
 /* internal routines */
 
 static void
-uiaaCreateDialog (uiaa_t *uiaa)
+uiaaCreateDialog (uiaa_t *uiaa, int aaflags)
 {
   UIWidget      vbox;
   UIWidget      hbox;
@@ -168,7 +169,7 @@ uiaaCreateDialog (uiaa_t *uiaa)
 
   uiCreateCheckButton (&uiwidget,
       /* CONTEXT: apply adjustments: trim silence checkbox */
-      _("Trim Silence"), 0);
+      _("Trim Silence"), (aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM);
 
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -179,7 +180,7 @@ uiaaCreateDialog (uiaa_t *uiaa)
 
   uiCreateCheckButton (&uiwidget,
       /* CONTEXT: apply adjustments: normalize volume checkbox */
-      _("Normalize Volume"), 0);
+      _("Normalize Volume"), (aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM);
 
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
@@ -190,7 +191,8 @@ uiaaCreateDialog (uiaa_t *uiaa)
 
   uiCreateCheckButton (&uiwidget,
       /* CONTEXT: apply adjustments: apply adjustments checkbox */
-      _("Adjust Speed, Song Start and End"), 0);
+      _("Adjust Speed, Song Start and End"),
+      (aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST);
 
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);

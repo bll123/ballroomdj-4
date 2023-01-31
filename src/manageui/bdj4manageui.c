@@ -51,6 +51,7 @@
 #include "sockh.h"
 #include "song.h"
 #include "songdb.h"
+#include "songutil.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "tmutil.h"
@@ -1303,7 +1304,6 @@ manageSongEditMenu (manageui_t *manage)
     /* CONTEXT: managementui: menu selection: song editor: apply adjustments */
     uiMenuCreateItem (&menu, &menuitem, _("Apply Adjustments"),
         manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
-    uiWidgetDisable (&menuitem);
     /* a missing audio adjust file will not stop startup */
     tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
     if (tempp == NULL) {
@@ -1821,19 +1821,72 @@ manageApplyAdjDialog (void *udata)
 {
   manageui_t    *manage = udata;
   bool          rc;
+  song_t        *song;
 
-  rc = uiaaDialog (manage->uiaa);
+  if (manage->songeditdbidx < 0) {
+    return UICB_STOP;
+  }
+
+  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
+  rc = uiaaDialog (manage->uiaa, songGetNum (song, TAG_ADJUSTFLAGS));
   return rc;
 }
 
 static bool
 manageApplyAdjCallback (void *udata)
 {
-//  manageui_t    *manage = udata;
+  manageui_t  *manage = udata;
+  song_t      *song;
+  int         aaflags;
+  long        dur;
+  pathinfo_t  *pi;
+  char        *infn;
+  char        origfn [MAXPATHLEN];
+  char        fullfn [MAXPATHLEN];
+  char        outfn [MAXPATHLEN];
 
-// fprintf (stderr, "aa callback\n");
-// ### need current song in song editor
-  aaNormalize ("test-music/001-argentinetango.mp3");
+  if (manage->songeditdbidx < 0) {
+    return UICB_STOP;
+  }
+
+  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
+  dur = songGetNum (song, TAG_DURATION);
+  aaflags = songGetNum (song, TAG_ADJUSTFLAGS);
+
+  infn = songFullFileName (songGetStr (song, TAG_FILE));
+  strlcpy (fullfn, infn, sizeof (fullfn));
+  snprintf (origfn, sizeof (origfn), "%s%s",
+      infn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
+  if (! fileopFileExists (origfn)) {
+    // ### FIX: make sure BDJ tags are written out to the audio file
+    // must have song-start, song-end, speed
+    filemanipCopy (fullfn, origfn);
+  }
+
+  pi = pathInfo (infn);
+  snprintf (outfn, sizeof (outfn), "%*s/n-%*s",
+      (int) pi->dlen, pi->dirname,
+      (int) pi->flen, pi->filename);
+  pathInfoFree (pi);
+  dataFree (infn);
+
+  /* start with the input as the original filename */
+  infn = origfn;
+
+  if ((aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
+    aaTrimSilence (infn, outfn);
+    filemanipMove (outfn, fullfn);
+    infn = fullfn;
+  }
+  if ((aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM) {
+    aaNormalize (infn, outfn);
+    filemanipMove (outfn, fullfn);
+    infn = fullfn;
+  }
+  if ((aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST) {
+    aaApplyAdjustments (song, infn, outfn, dur, 0, 0, 0);
+    filemanipMove (outfn, fullfn);
+  }
 
   return UICB_CONT;
 }
