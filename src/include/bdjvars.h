@@ -7,6 +7,8 @@
 #include <stdint.h>
 
 typedef enum {
+  BDJV_ORIGINAL_EXT,
+  BDJV_DELETE_PFX,
   BDJV_DB_TOP_DIR,    // temporary
   BDJV_TS_SECTION,    // temporary
   BDJV_TS_TEST,       // temporary
@@ -31,6 +33,7 @@ typedef enum {
   BDJVL_TEST_SUITE_PORT,
   BDJVL_NUM_PORTS,
   /* insert non-port keys here */
+  BDJVL_DELETE_PFX_LEN,
   BDJVL_MAX,
 } bdjvarkeyl_t;
 

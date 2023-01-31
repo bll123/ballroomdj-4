@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-30 07:58-0800\n"
+"POT-Creation-Date: 2023-01-31 09:19-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1975,6 +1975,10 @@ msgstr ""
 msgid "club"
 msgstr ""
 
+#. CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated)
+msgid "delete"
+msgstr ""
+
 #. CONTEXT: configuration: dance speed
 msgid "fast"
 msgstr ""
@@ -1985,6 +1989,10 @@ msgstr ""
 
 #. CONTEXT: configuration: dance speed
 msgid "normal"
+msgstr ""
+
+#. CONTEXT: The suffix for an original audio file (may be abbreviated)
+msgid "original"
 msgstr ""
 
 #. CONTEXT: configuration: dance speed

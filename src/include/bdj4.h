@@ -40,12 +40,6 @@ enum {
 #define BDJ4_IMG_PNG_EXT  ".png"
 #define BDJ4_CONFIG_EXT   ".txt"
 #define BDJ4_CSS_EXT      ".css"
-/* when an audio file is modified, the original is saved with the */
-/* .original extension in the same directory */
-#define BDJ4_ORIGINAL_EXT ".original"
-/* when an audio file is marked for deletion, it is renamed with the */
-/* the 'delete-' prefix in the same directory */
-#define BDJ4_DELETE_PFX "delete-"
 
 /* some itunes stuff */
 #define ITUNES_NAME       "iTunes"

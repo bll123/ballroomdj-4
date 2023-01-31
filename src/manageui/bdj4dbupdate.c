@@ -90,7 +90,8 @@ enum {
   C_WRITE_TAGS,
   C_BAD,
   C_NON_AUDIO,
-  C_BDJ_SKIP,
+  C_ORIG_SKIP,
+  C_DEL_SKIP,
   C_BDJ_OLD_DIR,
   C_NULL_DATA,
   C_NO_TAGS,
@@ -449,10 +450,19 @@ dbupdateProcessing (void *udata)
         pathInfoFree (pi);
         continue;
       }
-      if (pathInfoExtCheck (pi, BDJ4_ORIGINAL_EXT)) {
+      if (pathInfoExtCheck (pi, ".original") ||
+          pathInfoExtCheck (pi, bdjvarsGetStr (BDJV_ORIGINAL_EXT))) {
         dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
-        dbupdateIncCount (dbupdate, C_BDJ_SKIP);
-        logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-orig/del");
+        dbupdateIncCount (dbupdate, C_ORIG_SKIP);
+        logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-orig");
+        pathInfoFree (pi);
+        continue;
+      }
+      if (strncmp (pi->filename, bdjvarsGetStr (BDJV_DELETE_PFX),
+          bdjvarsGetNum (BDJVL_DELETE_PFX_LEN)) == 0) {
+        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+        dbupdateIncCount (dbupdate, C_DEL_SKIP);
+        logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-del");
         pathInfoFree (pi);
         continue;
       }
@@ -595,7 +605,8 @@ dbupdateProcessing (void *udata)
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Other Files"),
         dbupdate->counts [C_BAD] + dbupdate->counts [C_NULL_DATA] +
         dbupdate->counts [C_NO_TAGS] + dbupdate->counts [C_NON_AUDIO] +
-        dbupdate->counts [C_BDJ_SKIP] + dbupdate->counts [C_BDJ_OLD_DIR]);
+        dbupdate->counts [C_ORIG_SKIP] + dbupdate->counts [C_BDJ_OLD_DIR] +
+        dbupdate->counts [C_DEL_SKIP]);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
     if (dbupdate->stoprequest) {
@@ -622,7 +633,8 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %u", dbupdate->counts [C_NULL_DATA]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %u", dbupdate->counts [C_NO_TAGS]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "not-audio: %u", dbupdate->counts [C_NON_AUDIO]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, " bdj-skip: %u", dbupdate->counts [C_BDJ_SKIP]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "orig-skip: %u", dbupdate->counts [C_ORIG_SKIP]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, " del-skip: %u", dbupdate->counts [C_DEL_SKIP]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  old-dir: %u", dbupdate->counts [C_BDJ_OLD_DIR]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "max-write: %"PRIu64, (uint64_t) dbupdate->maxWriteLen);
 
