@@ -21,18 +21,18 @@ enum {
   UIUTILS_MENU_MAX = 5,
 };
 
-#define ACCENT_CLASS "accent"
-#define DARKACCENT_CLASS "darkaccent"
-#define ERROR_CLASS "error"
-#define CHGIND_NORMAL_CLASS "chgindnormal"
-#define CHGIND_ERROR_CLASS "chginderror"
-#define CHGIND_CHANGED_CLASS "chgindchanged"
-#define FLATBUTTON_CLASS "flatbutton"
-#define SWITCH_CLASS "switch"
-#define TREEVIEW_DARK_CLASS "dark"
-#define TEXTBOX_DARK_CLASS "dark"
-#define SPINBOX_READONLY_CLASS "readonly"
-#define MQ_ACCENT_CLASS "mqaccent"
+#define ACCENT_CLASS "bdj-accent"
+#define DARKACCENT_CLASS "bdj-darkaccent"
+#define ERROR_CLASS "bdj-error"
+#define CHGIND_NORMAL_CLASS "bdj-chgindnormal"
+#define CHGIND_ERROR_CLASS "bdj-chginderror"
+#define CHGIND_CHANGED_CLASS "bdj-chgindchanged"
+#define FLATBUTTON_CLASS "bdj-flatbutton"
+#define SWITCH_CLASS "bdj-switch"
+#define TREEVIEW_DARK_CLASS "bdj-tv-dark"
+#define TEXTBOX_DARK_CLASS "bdj-tb-dark"
+#define SPINBOX_READONLY_CLASS "bdj-sb-readonly"
+#define MQ_ACCENT_CLASS "bdj-mqaccent"
 
 /* uigtkutils.c */
 extern int uiBaseMarginSz;

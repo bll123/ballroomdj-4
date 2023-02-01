@@ -1,4 +1,7 @@
-/* Copyright 2023 Brad Lanam Pleasant Hill CA */
+/*
+ * Copyright 2023 Brad Lanam Pleasant Hill CA
+ */
+/* version 2 2023-2-1 */
 
 /* note that these may affect dialogs started by the application */
 
@@ -19,10 +22,10 @@ scrollbar, scrollbar slider {
 /* text color temporarily becomes white on light colored themes */
 /* the text color must be set also */
 /* these changes are for read-only spinboxes */
-spinbutton.readonly {
+spinbutton.bdj-sb-readonly {
   caret-color: @theme_base_color;
 }
-spinbutton.readonly selection {
+spinbutton.bdj-sb-readonly selection {
   background-color: @theme_base_color;
   color: @theme_text_color;
 }
@@ -40,14 +43,14 @@ progressbar > trough progress {
   min-height: 25px;
 }
 
-textview.dark text {
+textview.bdj-tb-dark text {
   background-color: shade(@theme_base_color,0.8);
 }
 
-treeview.dark {
+treeview.bdj-tv-dark {
   background-color: shade(@theme_base_color,0.8);
 }
-treeview.dark:selected {
+treeview.bdj-tv-dark:selected {
   background-color: @theme_selected_bg_color;
 }
 
@@ -63,7 +66,7 @@ scrolledwindow undershoot.left, scrolledwindow undershoot.bottom {
   outline-width: 0px;
 }
 
-button.switch {
+button.bdj-switch {
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
   border-top-left-radius: 15px;
@@ -71,33 +74,33 @@ button.switch {
   background-color: shade(@theme_base_color,0.8);
   border-color: shade(@theme_base_color,0.8);
 }
-button.switch:checked {
+button.bdj-switch:checked {
   background-color: shade(@theme_base_color,0.8);
 }
-button.switch:hover {
+button.bdj-switch:hover {
   background-color: shade(@theme_base_color,0.8);
 }
 
-button.flatbutton {
+button.bdj-flatbutton {
   outline-width: 0px;
   padding: 0px; border-color: @theme_bg_color;
   background-color: @theme_bg_color;
 }
-button.flatbutton widget {
+button.bdj-flatbutton widget {
   outline-width: 0px;
 }
 
-label.chgindnormal {
+label.bdj-chgindnormal {
   border-left-style: solid;
   border-left-width: 4px;
   border-left-color: transparent;
 }
-label.chgindchanged {
+label.bdj-chgindchanged {
   border-left-style: solid;
   border-left-width: 4px;
   border-left-color: #11ff11;
 }
-label.chginderror {
+label.bdj-chginderror {
   border-left-style: solid;
   border-left-width: 4px;
   border-left-color: #ff1111;

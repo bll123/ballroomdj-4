@@ -108,7 +108,6 @@ enum {
   MARQUEE_UNMAX_WAIT_COUNT = 3,
 };
 #define INFO_LAB_HEIGHT_ADJUST  0.85
-#define MQ_ACCENT_CLASS         "mqaccent"
 #define MQ_TEXT_CLASS           "mqtext"
 #define MQ_INFO_CLASS           "mqinfo"
 
