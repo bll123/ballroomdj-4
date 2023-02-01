@@ -82,7 +82,7 @@ uiSelectFileDialog (uiselect_t *selectdata)
       selectdata->label,
       GTK_WINDOW (selectdata->window->widget),
       GTK_FILE_CHOOSER_ACTION_OPEN,
-      /* CONTEXT: actions associated with the select folder dialog */
+      /* CONTEXT: actions associated with the select file dialog */
       _("Select"), _("Close"));
 
   if (selectdata->startpath != NULL) {

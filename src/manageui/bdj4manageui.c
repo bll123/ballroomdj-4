@@ -1578,6 +1578,7 @@ manageSonglistImportM3U (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import m3u");
 
   manageSonglistSave (manage);
+  manageSonglistNew (manage);
 
   /* CONTEXT: managementui: song list: default name for a new song list */
   manageSetSonglistName (manage, _("New Song List"));

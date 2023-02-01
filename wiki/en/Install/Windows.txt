@@ -16,6 +16,12 @@ etc.).  You will need to change your account name (quite difficult),
 or create a new account for BDJ4 that does not have any diacritical
 marks.
 
+#### Internet Connection
+
+An internet connection is required the first time BallroomDJ&nbsp;4 is
+installed.  There are requisite packages (VLC, Python, Mutagen) that
+need to be installed from the internet.
+
 #### Install BallroomDJ 4
 
 Download the Windows installer from sourceforge.
@@ -73,4 +79,4 @@ After the VLC installation is complete, turn off the **Run VLC media
 player** checkbox, and select **Finish**.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-01 09:49:06; BDJ4 version 4.0.9-beta)_
