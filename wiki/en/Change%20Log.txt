@@ -14,9 +14,11 @@
     * Player: Fix next song while in gap.
     * Player: Fix player control interaction with announcements.
     * Player User Interface: Prevent multiple dialogs.
-    * Song List Editor: Fix import M3U on Windows.
+    * Song List Editor: Fix Export M3U.
+    * Song List Editor: Fix Import M3U (Windows).
     * Starter: Prevent multiple dialogs.
     * Starter: window position is saved globally, not per-profile.
+    * User Interface: Fix close/action button ordering for folder/file/save dialogs.
 * Changes:
     * Minor user interface cleanup.
 * Internal:
@@ -210,4 +212,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 07:39:36; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-01 09:49:06; BDJ4 version 4.0.9-beta)_
