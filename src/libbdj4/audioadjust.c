@@ -29,6 +29,7 @@
 #include "song.h"
 #include "sysvars.h"
 #include "tagdef.h"
+#include "tmutil.h"
 
 enum {
   AA_INPUT_I,
@@ -97,7 +98,9 @@ aaTrimSilence (const char *infn, const char *outfn)
   char        resp [2000];
   int         rc;
   size_t      retsz;
+  mstime_t    etm;
 
+  mstimestart (&etm);
   aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
 
   targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
@@ -138,6 +141,8 @@ aaTrimSilence (const char *infn, const char *outfn)
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-trim: rc: %d", rc);
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-trim: resp:\n%s", resp);
   }
+  logMsg (LOG_DBG, LOG_MAIN, "aa: trim: elapsed: %ld\n",
+      (long) mstimeend (&etm));
 
   return;
 }
@@ -158,7 +163,9 @@ aaNormalize (const char *infn, const char *outfn)
   int         inidx = AA_NONE;
   double      indata [AA_NORM_IN_MAX];
   bool        found = false;
+  mstime_t    etm;
 
+  mstimestart (&etm);
   aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
 
   snprintf (ffargs, sizeof (ffargs),
@@ -252,6 +259,8 @@ aaNormalize (const char *infn, const char *outfn)
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, could not find input data");
     return;
   }
+  logMsg (LOG_DBG, LOG_MAIN, "aa: norm: elapsed pass 1: %ld\n",
+      (long) mstimeend (&etm));
 
   /* now do the normalization */
 
@@ -295,6 +304,9 @@ aaNormalize (const char *infn, const char *outfn)
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-b: rc: %d", rc);
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-b: resp:\n%s", resp);
   }
+  logMsg (LOG_DBG, LOG_MAIN, "aa: norm: elapsed: %ld\n",
+      (long) mstimeend (&etm));
+  return;
 }
 
 void
@@ -317,7 +329,9 @@ aaApplyAdjustments (song_t *song, const char *infn, const char *outfn,
   size_t      retsz;
   const char  *afprefix = "";
   const char  *ftstr = "tri";
+  mstime_t    etm;
 
+  mstimestart (&etm);
   *aftext = '\0';
 
   songstart = songGetNum (song, TAG_SONGSTART);
@@ -414,6 +428,8 @@ aaApplyAdjustments (song_t *song, const char *infn, const char *outfn,
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-adj: rc: %d", rc);
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-adj: resp:\n%s", resp);
   }
+  logMsg (LOG_DBG, LOG_MAIN, "aa: adjust: elapsed: %ld\n",
+      (long) mstimeend (&etm));
 
   /* applying the speed change afterwards is slower, but saves a lot */
   /* of headache. */
@@ -424,6 +440,8 @@ aaApplyAdjustments (song_t *song, const char *infn, const char *outfn,
     filemanipMove (outfn, tmpfn);
     aaApplySpeed (song, tmpfn, outfn, speed, gap);
     fileopDelete (tmpfn);
+    logMsg (LOG_DBG, LOG_MAIN, "aa: adjust-with-speed: elapsed: %ld\n",
+        (long) mstimeend (&etm));
   }
 }
 

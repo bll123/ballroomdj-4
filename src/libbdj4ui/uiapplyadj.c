@@ -230,10 +230,14 @@ uiaaResponseHandler (void *udata, long responseid)
       break;
     }
     case RESPONSE_APPLY: {
+      long    aaflags = SONG_ADJUST_NONE;
+
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: apply");
       uiWidgetHide (&uiaa->aaDialog);
+      // ### FIX get flags from checkbuttons
+      aaflags = SONG_ADJUST_TRIM;
       if (uiaa->responsecb != NULL) {
-        callbackHandler (uiaa->responsecb);
+        callbackHandlerLong (uiaa->responsecb, aaflags);
       }
       break;
     }

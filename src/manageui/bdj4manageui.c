@@ -296,7 +296,7 @@ static void     manageiTunesDialogCreateList (manageui_t *manage);
 static bool     manageiTunesDialogSelectHandler (void *udata, long idx);
 static bool     manageiTunesDialogResponseHandler (void *udata, long responseid);
 static bool     manageApplyAdjDialog (void *udata);
-static bool     manageApplyAdjCallback (void *udata);
+static bool     manageApplyAdjCallback (void *udata, long aaflags);
 /* music manager */
 static void     manageBuildUIMusicManager (manageui_t *manage);
 static void     manageMusicManagerMenu (manageui_t *manage);
@@ -1265,8 +1265,8 @@ manageSongEditMenu (manageui_t *manage)
   logProcBegin (LOG_PROC, "manageSongEditMenu");
   if (! manage->songeditmenu.initialized) {
     manage->uiaa = uiaaInit (&manage->window, manage->options);
-    manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInit (
-        manageApplyAdjCallback, manage, "song editor: apply adj");
+    manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
+        manageApplyAdjCallback, manage);
     uiaaSetResponseCallback (manage->uiaa, manage->callbacks [MANAGE_CB_APPLY_ADJ]);
 
     uiMenuAddMainItem (&manage->menubar, &menuitem,
@@ -1309,6 +1309,8 @@ manageSongEditMenu (manageui_t *manage)
     if (tempp == NULL) {
       uiWidgetDisable (&menuitem);
     }
+// ### FIX for aa
+uiWidgetDisable (&menuitem);
 
     manage->songeditmenu.initialized = true;
   }
@@ -1833,11 +1835,10 @@ manageApplyAdjDialog (void *udata)
 }
 
 static bool
-manageApplyAdjCallback (void *udata)
+manageApplyAdjCallback (void *udata, long aaflags)
 {
   manageui_t  *manage = udata;
   song_t      *song;
-  int         aaflags;
   long        dur;
   pathinfo_t  *pi;
   char        *infn;
@@ -1845,13 +1846,19 @@ manageApplyAdjCallback (void *udata)
   char        fullfn [MAXPATHLEN];
   char        outfn [MAXPATHLEN];
 
+fprintf (stderr, "mui: aa resp callback\n");
   if (manage->songeditdbidx < 0) {
+fprintf (stderr, "  no edit dbidx\n");
     return UICB_STOP;
   }
 
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
+  if (song == NULL) {
+fprintf (stderr, "  no song\n");
+    return UICB_STOP;
+  }
+
   dur = songGetNum (song, TAG_DURATION);
-  aaflags = songGetNum (song, TAG_ADJUSTFLAGS);
 
   infn = songFullFileName (songGetStr (song, TAG_FILE));
   strlcpy (fullfn, infn, sizeof (fullfn));
@@ -1862,6 +1869,8 @@ manageApplyAdjCallback (void *udata)
     // must have song-start, song-end, speed
     filemanipCopy (fullfn, origfn);
   }
+fprintf (stderr, "  ffn: %s\n", fullfn);
+fprintf (stderr, "  origfn: %s\n", origfn);
 
   pi = pathInfo (infn);
   snprintf (outfn, sizeof (outfn), "%*s/n-%*s",
@@ -1874,16 +1883,19 @@ manageApplyAdjCallback (void *udata)
   infn = origfn;
 
   if ((aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
+fprintf (stderr, "running aa trim silence\n");
     aaTrimSilence (infn, outfn);
     filemanipMove (outfn, fullfn);
     infn = fullfn;
   }
   if ((aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM) {
+fprintf (stderr, "running aa normalize\n");
     aaNormalize (infn, outfn);
     filemanipMove (outfn, fullfn);
     infn = fullfn;
   }
   if ((aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST) {
+fprintf (stderr, "running aa adjust\n");
     aaApplyAdjustments (song, infn, outfn, dur, 0, 0, 0);
     filemanipMove (outfn, fullfn);
   }
