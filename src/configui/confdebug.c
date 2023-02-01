@@ -76,6 +76,10 @@ confuiBuildUIDebug (confuigui_t *gui)
   confuiMakeItemCheckButton (gui, &vbox, &sg, "Dance Selection",
       CONFUI_WIDGET_DEBUG_128, -1,
       (val & 128));
+
+  uiCreateVertBox (&vbox);
+  uiBoxPackStart (&hbox, &vbox);
+
   gui->uiitem [CONFUI_WIDGET_DEBUG_128].outtype = CONFUI_OUT_DEBUG;
   confuiMakeItemCheckButton (gui, &vbox, &sg, "Volume",
       CONFUI_WIDGET_DEBUG_256, -1,
@@ -92,12 +96,6 @@ confuiBuildUIDebug (confuigui_t *gui)
   confuiMakeItemCheckButton (gui, &vbox, &sg, "Random Access File",
       CONFUI_WIDGET_DEBUG_2048, -1,
       (val & 2048));
-
-  uiCreateVertBox (&vbox);
-  uiBoxPackStart (&hbox, &vbox);
-
-  uiCreateSizeGroupHoriz (&sg);
-
   gui->uiitem [CONFUI_WIDGET_DEBUG_2048].outtype = CONFUI_OUT_DEBUG;
   confuiMakeItemCheckButton (gui, &vbox, &sg, "Procedures",
       CONFUI_WIDGET_DEBUG_4096, -1,
@@ -115,6 +113,10 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_WIDGET_DEBUG_32768, -1,
       (val & 32768));
   gui->uiitem [CONFUI_WIDGET_DEBUG_32768].outtype = CONFUI_OUT_DEBUG;
+
+  uiCreateVertBox (&vbox);
+  uiBoxPackStart (&hbox, &vbox);
+
   confuiMakeItemCheckButton (gui, &vbox, &sg, "Web Server",
       CONFUI_WIDGET_DEBUG_65536, -1,
       (val & 65536));
@@ -135,6 +137,11 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_WIDGET_DEBUG_1048576, -1,
       (val & 1048576));
   gui->uiitem [CONFUI_WIDGET_DEBUG_1048576].outtype = CONFUI_OUT_DEBUG;
+  confuiMakeItemCheckButton (gui, &vbox, &sg, "Apply Adjustments",
+      CONFUI_WIDGET_DEBUG_2097152, -1,
+      (val & 1048576));
+  gui->uiitem [CONFUI_WIDGET_DEBUG_2097152].outtype = CONFUI_OUT_DEBUG;
+
   logProcEnd (LOG_PROC, "confuiBuildUIDebug", "");
 }
 
