@@ -33,6 +33,7 @@ static GLogWriterOutput uiGtkLogger (GLogLevelFlags logLevel,
 static void uiAddScreenCSS (const char *css);
 
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
+static bool inprocess = false;
 
 void
 uiUIInitialize (void)
@@ -48,10 +49,15 @@ uiUIInitialize (void)
 void
 uiUIProcessEvents (void)
 {
+  if (inprocess) {
+    return;
+  }
+  inprocess = true;
   gtk_main_iteration_do (FALSE);
   while (gtk_events_pending ()) {
     gtk_main_iteration_do (FALSE);
   }
+  inprocess = false;
 }
 
 void
