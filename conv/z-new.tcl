@@ -15,7 +15,7 @@ set datatopdir [lindex $argv 1]
 # the orgopt.txt file is always new
 # audioadjust is new as of version 4.0.5
 foreach fn [list audioadjust.txt autoselection.txt \
-    favorites.txt orgopt.txt sortopt.txt] {
+    favorites.txt orgopt.txt sortopt.txt gtk-static.css] {
   set nfn [file join $datatopdir data $fn]
 
   if { ! [file exists templates/$fn] } {

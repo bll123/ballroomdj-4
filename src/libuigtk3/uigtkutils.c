@@ -94,10 +94,17 @@ uiSetUICSS (const char *uifont, const char *accentColor,
   pathbldMakePath (tbuff, sizeof (tbuff),
       "gtk-static", BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
   p = filedataReadAll (tbuff, NULL);
+  if (p == NULL) {
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        "gtk-static", BDJ4_CSS_EXT, PATHBLD_MP_DIR_TEMPLATE);
+    p = filedataReadAll (tbuff, NULL);
+  }
 
   *tbuff = '\0';
-  strlcat (tbuff, p, sizeof (tbuff));
-  mdfree (p);
+  if (p != NULL) {
+    strlcat (tbuff, p, sizeof (tbuff));
+    mdfree (p);
+  }
 
   if (uifont != NULL && *uifont) {
     char  tmp [100];
