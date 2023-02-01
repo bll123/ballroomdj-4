@@ -72,6 +72,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
     }
     fprintf (fh, "%s\n", ffn);
   }
+  fclose (fh);
 }
 
 nlist_t *
