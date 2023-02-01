@@ -183,7 +183,6 @@ void
 uiCreateScrolledWindow (UIWidget *uiwidget, int minheight)
 {
   GtkWidget   *widget;
-  GtkWidget   *twidget;
 
   widget = gtk_scrolled_window_new (NULL, NULL);
   gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW (widget), FALSE);
@@ -198,7 +197,6 @@ uiCreateScrolledWindow (UIWidget *uiwidget, int minheight)
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (widget), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
   gtk_widget_set_hexpand (widget, FALSE);
   gtk_widget_set_vexpand (widget, FALSE);
-  twidget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (widget));
 
   uiwidget->widget = widget;
 }

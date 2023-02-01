@@ -322,7 +322,6 @@ aaApplyAdjustments (song_t *song, const char *infn, const char *outfn,
   char        tmp [60];
   int         rc;
   long        songstart;
-  long        songend;
   long        songdur;
   int         speed;
   int         fadetype;
@@ -335,7 +334,6 @@ aaApplyAdjustments (song_t *song, const char *infn, const char *outfn,
   *aftext = '\0';
 
   songstart = songGetNum (song, TAG_SONGSTART);
-  songend = songGetNum (song, TAG_SONGEND);
   songdur = songGetNum (song, TAG_DURATION);
   speed = songGetNum (song, TAG_SPEEDADJUSTMENT);
   if (speed < 0) {

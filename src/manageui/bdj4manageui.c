@@ -943,7 +943,7 @@ static int
 manageMainLoop (void *tmanage)
 {
   manageui_t   *manage = tmanage;
-  int         stop = 0;
+  int         stop = false;
 
   if (! stop) {
     uiUIProcessEvents ();
@@ -1264,10 +1264,15 @@ manageSongEditMenu (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
   if (! manage->songeditmenu.initialized) {
+/* 2023-2-1 at this time, this breaks windows
+ * the manageui does not display.
+ */
+#if 0
     manage->uiaa = uiaaInit (&manage->window, manage->options);
     manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
         manageApplyAdjCallback, manage);
     uiaaSetResponseCallback (manage->uiaa, manage->callbacks [MANAGE_CB_APPLY_ADJ]);
+#endif
 
     uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: managementui: menu selection: actions for song editor */
@@ -1568,8 +1573,8 @@ manageSonglistImportM3U (void *udata)
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "manageSonglistImportM3U");
   manage->importm3uactive = true;
+  logProcBegin (LOG_PROC, "manageSonglistImportM3U");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import m3u");
 
   manageSonglistSave (manage);
@@ -1846,15 +1851,12 @@ manageApplyAdjCallback (void *udata, long aaflags)
   char        fullfn [MAXPATHLEN];
   char        outfn [MAXPATHLEN];
 
-fprintf (stderr, "mui: aa resp callback\n");
   if (manage->songeditdbidx < 0) {
-fprintf (stderr, "  no edit dbidx\n");
     return UICB_STOP;
   }
 
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
   if (song == NULL) {
-fprintf (stderr, "  no song\n");
     return UICB_STOP;
   }
 
@@ -1869,8 +1871,6 @@ fprintf (stderr, "  no song\n");
     // must have song-start, song-end, speed
     filemanipCopy (fullfn, origfn);
   }
-fprintf (stderr, "  ffn: %s\n", fullfn);
-fprintf (stderr, "  origfn: %s\n", origfn);
 
   pi = pathInfo (infn);
   snprintf (outfn, sizeof (outfn), "%*s/n-%*s",
@@ -1883,19 +1883,16 @@ fprintf (stderr, "  origfn: %s\n", origfn);
   infn = origfn;
 
   if ((aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
-fprintf (stderr, "running aa trim silence\n");
     aaTrimSilence (infn, outfn);
     filemanipMove (outfn, fullfn);
     infn = fullfn;
   }
   if ((aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM) {
-fprintf (stderr, "running aa normalize\n");
     aaNormalize (infn, outfn);
     filemanipMove (outfn, fullfn);
     infn = fullfn;
   }
   if ((aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST) {
-fprintf (stderr, "running aa adjust\n");
     aaApplyAdjustments (song, infn, outfn, dur, 0, 0, 0);
     filemanipMove (outfn, fullfn);
   }
