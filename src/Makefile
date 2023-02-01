@@ -139,7 +139,8 @@ build:
 # testing
 .PHONY: check
 check:
-	(./utils/mktestsetup.sh;cd ..;./bin/bdj4 --check_all)
+	./utils/mktestsetup.sh --force
+	(cd ..;./bin/bdj4 --check_all)
 
 .PHONY: checkfast
 checkfast:

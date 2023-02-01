@@ -63,6 +63,7 @@ if [[ $tag == macos ]]; then
 fi
 DATADIR="${DATATOPDIR}/data"
 UNPACKDIR="${cwd}/tmp/bdj4-install"
+UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
 UNPACKDIRTMP="$UNPACKDIR.tmp"
 LOG="tmp/insttest-log.txt"
 
@@ -288,10 +289,10 @@ function checkInstallation {
       if [[ $rc -ne 0 ]]; then
         chk=$(($chk+1))
       else
-        echo "  $(basename $fn) has bad vw maxplaytime"
+        echo "  $(basename "$fn") has bad vw maxplaytime"
       fi
     else
-      echo "  no $(basename $fn) file"
+      echo "  no $(basename "$fn") file"
     fi
 
     res=$(($res+1))  # standardround.pldances file
@@ -305,10 +306,10 @@ function checkInstallation {
       if [[ $rc -ne 0 ]]; then
         chk=$(($chk+1))
       else
-        echo "  $(basename $fn) has bad vw maxplaytime"
+        echo "  $(basename "$fn") has bad vw maxplaytime"
       fi
     else
-      echo "  no $(basename $fn) file"
+      echo "  no $(basename "$fn") file"
     fi
   fi
 
@@ -393,7 +394,7 @@ resetUnpack
 
 # main test db : rebuild of standard test database
 tname=new-install-no-bdj3
-out=$(./bin/bdj4 --bdj4installer --cli --wait \
+out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --msys \
     --targetdir "$TARGETTOPDIR" \
@@ -407,7 +408,7 @@ if [[ $crc -eq 0 ]]; then
   # standard re-install
   resetUnpack
   tname=re-install-no-bdj3
-  out=$(./bin/bdj4 --bdj4installer --cli --wait \
+  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \
       --targetdir "$TARGETTOPDIR" \
@@ -420,7 +421,7 @@ if [[ $crc -eq 0 ]]; then
   # standard update
   resetUnpack
   tname=update-no-bdj3
-  out=$(./bin/bdj4 --bdj4installer --cli --wait \
+  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \
       --targetdir "$TARGETTOPDIR" \
@@ -434,7 +435,7 @@ if [[ $crc -eq 0 ]]; then
   resetUnpack
   tname=update-chk-updater
   checkUpdaterClean $section
-  out=$(./bin/bdj4 --bdj4installer --cli --wait \
+  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \
       --targetdir "$TARGETTOPDIR" \
@@ -448,7 +449,7 @@ fi
 cleanInstTest
 resetUnpack
 tname=install-no-data
-out=$(./bin/bdj4 --bdj4installer --cli --wait \
+out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --msys \
     --targetdir "$TARGETTOPDIR" \
@@ -466,7 +467,7 @@ resetUnpack
 
 # main test db : rebuild of standard test database
 tname=new-install-no-bdj3
-out=$(./bin/bdj4 --bdj4installer --cli --wait \
+out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --msys \
     --targetdir "$TARGETTOPDIR" \
@@ -484,7 +485,7 @@ if [[ $crc -eq 0 ]]; then
   # force the locale setting within BDJ4
   echo "nl_BE" > "$DATADIR/locale.txt"
   checkUpdaterClean $section
-  out=$(./bin/bdj4 --bdj4installer --cli --wait \
+  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \
       --targetdir "$TARGETTOPDIR" \

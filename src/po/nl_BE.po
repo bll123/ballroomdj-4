@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2023-01-31\n"
+"PO-Revision-Date: 2023-02-01\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -1518,6 +1518,7 @@ msgstr "Seconden"
 #. CONTEXT: select file: selects the file
 #. CONTEXT: song-selection: select a song to be added to the song list
 #. CONTEXT: actions associated with the select folder dialog
+#. CONTEXT: actions associated with the select file dialog
 #. CONTEXT: managementui: config: button: add the selected songs to the song list
 msgid "Select"
 msgstr "Selecteer"

@@ -6,10 +6,13 @@
 
 **4.0.11 beta 2023-1---**
 
-**4.0.10 beta 2023-1---**
+-->
+
+**4.0.10 beta 2023-2-1**
 
 * Bug Fixes:
     * Configuration: Changed 'Player Queues' to 'Music Queues'.
+    * Mac OS: Fix localization issue.
     * Management: Prevent multiple dialogs.
     * Player: Fix next song while in gap.
     * Player: Fix player control interaction with announcements.
@@ -22,8 +25,6 @@
     * Minor user interface cleanup.
 * Internal:
     * Code cleanup (ui).
-
--->
 
 **4.0.9 beta 2023-1-24**
 

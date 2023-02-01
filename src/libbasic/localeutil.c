@@ -74,13 +74,12 @@ localeInit (void)
     strlcpy (tbuff, lbuff, sizeof (tbuff));
   }
 
-  if (isWindows ()) {
-    /* windows doesn't work without this */
-    /* note that LC_MESSAGES is an msys2 extension */
-    /* windows normally has no LC_MESSAGES setting */
-    osSetEnv ("LC_MESSAGES", tbuff);
-    osSetEnv ("LC_COLLATE", tbuff);
-  }
+  /* windows doesn't work without this */
+  /* note that LC_MESSAGES is an msys2 extension */
+  /* windows normally has no LC_MESSAGES setting */
+  /* MacOS seems to need this also, setlocale() apparently is not enough */
+  osSetEnv ("LC_MESSAGES", tbuff);
+  osSetEnv ("LC_COLLATE", tbuff);
 
   pathbldMakePath (lbuff, sizeof (lbuff), "", "", PATHBLD_MP_DIR_LOCALE);
   bindtextdomain (GETTEXT_DOMAIN, lbuff);
@@ -129,4 +128,6 @@ localeDebug (void)
   fprintf (stderr, "  locale-short:%s\n", sysvarsGetStr (SV_LOCALE_SHORT));
   fprintf (stderr, "  env-all:%s\n", getenv ("LC_ALL"));
   fprintf (stderr, "  env-mess:%s\n", getenv ("LC_MESSAGES"));
+  fprintf (stderr, "  bindtextdomain:%s\n", bindtextdomain (GETTEXT_DOMAIN, NULL));
+  fprintf (stderr, "  textdomain:%s\n", textdomain (NULL));
 }
