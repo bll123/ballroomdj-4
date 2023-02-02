@@ -416,11 +416,20 @@ main (int argc, char *argv [])
   }
 
   {
-    /* 4.1.0 2023-1-5 audioadjust.txt */
-    /*    This is a new file; simply check and see if it does not exist. */
+    datafile_t  *tmpdf;
+    int         version;
+    slist_t     *slist;
+
+    /* 4.1.0 2023-2-2 audioadjust.txt */
+    /*    Check and see if it does not exist. */
+    /*    Also check the version number. Should be at version 2. */
     pathbldMakePath (tbuff, sizeof (tbuff),
         AUDIOADJ_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-    if (! fileopFileExists (tbuff)) {
+    tmpdf = datafileAllocParse (AUDIOADJ_FN,
+        DFTYPE_LIST, tbuff, NULL, 0);
+    slist = datafileGetList (tmpdf);
+    version = slistGetVersion (slist);
+    if (! fileopFileExists (tbuff) || version == 1) {
       templateFileCopy (AUDIOADJ_FN BDJ4_CONFIG_EXT, AUDIOADJ_FN BDJ4_CONFIG_EXT);
       logMsg (LOG_INSTALL, LOG_MAIN, "audioadjust.txt installed");
     }

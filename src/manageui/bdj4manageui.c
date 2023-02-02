@@ -285,6 +285,7 @@ static bool     manageNewSelectionSongSel (void *udata, long dbidx);
 static bool     manageNewSelectionSonglist (void *udata, long dbidx);
 static bool     manageSwitchToSongEditor (void *udata);
 static bool     manageSongEditSaveCallback (void *udata, long dbidx);
+static void     manageRePopulateData (manageui_t *manage);
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
 static void     manageSendBPMCounter (manageui_t *manage);
@@ -1197,12 +1198,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_DB_ENTRY_UPDATE: {
           dbLoadEntry (manage->musicdb, atol (targs));
-          /* re-populate the display */
-          manage->selbypass = true;
-          uisongselPopulateData (manage->slsongsel);
-          uisongselPopulateData (manage->slezsongsel);
-          uisongselPopulateData (manage->mmsongsel);
-          manage->selbypass = false;
+          manageRePopulateData (manage);
           break;
         }
         default: {
@@ -1264,8 +1260,6 @@ manageSongEditMenu (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
   if (! manage->songeditmenu.initialized) {
-// ### FIX 2023-2-1 at this time, these three lines break windows
-// ### the manageui does not display.
     manage->uiaa = uiaaInit (&manage->window, manage->options);
     manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
         manageApplyAdjCallback, manage);
@@ -1415,12 +1409,7 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   snprintf (tmp, sizeof (tmp), "%ld", dbidx);
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
-  /* re-populate the song selection displays to display the updated info */
-  manage->selbypass = true;
-  uisongselPopulateData (manage->slsongsel);
-  uisongselPopulateData (manage->slezsongsel);
-  uisongselPopulateData (manage->mmsongsel);
-  manage->selbypass = false;
+  manageRePopulateData (manage);
 
   /* re-load the song into the song editor */
   /* it is unknown if called from saving a favorite or from the song editor */
@@ -1433,6 +1422,17 @@ manageSongEditSaveCallback (void *udata, long dbidx)
 
   logProcEnd (LOG_PROC, "manageSongEditSaveCallback", "");
   return UICB_CONT;
+}
+
+static void
+manageRePopulateData (manageui_t *manage)
+{
+  /* re-populate the song selection displays to display the updated info */
+  manage->selbypass = true;
+  uisongselPopulateData (manage->slsongsel);
+  uisongselPopulateData (manage->slezsongsel);
+  uisongselPopulateData (manage->mmsongsel);
+  manage->selbypass = false;
 }
 
 static bool
@@ -1839,58 +1839,18 @@ static bool
 manageApplyAdjCallback (void *udata, long aaflags)
 {
   manageui_t  *manage = udata;
-  song_t      *song;
-  long        dur;
-  pathinfo_t  *pi;
-  char        *infn;
-  char        origfn [MAXPATHLEN];
-  char        fullfn [MAXPATHLEN];
-  char        outfn [MAXPATHLEN];
+  bool        changed;
+  song_t      *song = NULL;
 
   if (manage->songeditdbidx < 0) {
     return UICB_STOP;
   }
 
-  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-  if (song == NULL) {
-    return UICB_STOP;
-  }
+  changed = aaApplyAdjustments (manage->musicdb, manage->songeditdbidx, aaflags);
 
-  dur = songGetNum (song, TAG_DURATION);
-
-  infn = songFullFileName (songGetStr (song, TAG_FILE));
-  strlcpy (fullfn, infn, sizeof (fullfn));
-  snprintf (origfn, sizeof (origfn), "%s%s",
-      infn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
-  if (! fileopFileExists (origfn)) {
-    // ### FIX: make sure BDJ tags are written out to the audio file
-    // must have song-start, song-end, speed
-    filemanipCopy (fullfn, origfn);
-  }
-
-  pi = pathInfo (infn);
-  snprintf (outfn, sizeof (outfn), "%*s/n-%*s",
-      (int) pi->dlen, pi->dirname,
-      (int) pi->flen, pi->filename);
-  pathInfoFree (pi);
-  dataFree (infn);
-
-  /* start with the input as the original filename */
-  infn = origfn;
-
-  if ((aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
-    aaTrimSilence (infn, outfn);
-    filemanipMove (outfn, fullfn);
-    infn = fullfn;
-  }
-  if ((aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM) {
-    aaNormalize (infn, outfn);
-    filemanipMove (outfn, fullfn);
-    infn = fullfn;
-  }
-  if ((aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST) {
-    aaApplyAdjustments (song, infn, outfn, dur, 0, 0, 0);
-    filemanipMove (outfn, fullfn);
+  if (changed) {
+    manageRePopulateData (manage);
+    uisongeditLoadData (manage->mmsongedit, song, manage->songeditdbidx);
   }
 
   return UICB_CONT;

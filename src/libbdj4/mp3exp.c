@@ -101,7 +101,7 @@ mp3ExportQueue (char *msg, musicdb_t *musicdb, const char *dirname,
         dirname, counter, (int) pi->blen, pi->basename);
 
     nlistSetStr (savelist, dbidx, outfn);
-    aaApplyAdjustments (song, ffn, outfn, dur, fadein, fadeout, gap);
+    aaAdjust (song, ffn, outfn, dur, fadein, fadeout, gap);
 
     pathInfoFree (pi);
     mdfree (ffn);

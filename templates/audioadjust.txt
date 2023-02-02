@@ -1,6 +1,6 @@
 # audioadjust
-# 2023-1-5
-# version 1
+# 2023-2-2
+# version 2
 #
 # variables for trim silence
 # trimsilence-periods : numeric (1)
@@ -14,12 +14,17 @@ TRIMSILENCE_THRESHOLD
 ..-50
 #
 # variables for loudness normalization
-# target-il : double (-23.0)
-# target-lra : double (7.0)
-# target-tp : double (-2.0)
+# target-il : double (-9.0)
+# target-lra : double (11.0)
+# target-tp : double (-1.0)
+# The EBU R128 broadcast standard is
+#   IL: -23.0 TP: -1.0
+# Common levels found on the internet are:
+#   IL: -23.0 LRA: 7 TP: -2.0
+#   which is pretty soft.
 LOUDNORM_TARGET_IL
-..-23000
+..-9000
 LOUDNORM_TARGET_LRA
-..7000
+..11000
 LOUDNORM_TARGET_TP
-..-2000
+..-1000
