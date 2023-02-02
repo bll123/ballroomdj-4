@@ -389,13 +389,9 @@ main (int argc, char * argv[])
     size_t    sz = 4096;
 
     pbuff = mdmalloc (sz);
-    assert (pbuff != NULL);
     tbuff = mdmalloc (sz);
-    assert (tbuff != NULL);
     tmp = mdmalloc (sz);
-    assert (tmp != NULL);
     path = mdmalloc (sz);
-    assert (path != NULL);
 
     strlcpy (tbuff, getenv ("PATH"), sz);
     p = strtok_r (tbuff, ";", &tokstr);
@@ -445,6 +441,7 @@ main (int argc, char * argv[])
 
     mdfree (pbuff);
     mdfree (tbuff);
+    mdfree (tmp);
     mdfree (path);
   }
 

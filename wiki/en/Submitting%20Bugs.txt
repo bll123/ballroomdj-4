@@ -8,7 +8,7 @@ you can take the following steps to send in a problem report.
 Start BDJ4, select __Configure__, select __Debug__, and
 turn on at least _Important_, _Basic_, _Main_, and _Actions_.
 
-Close the configuration window.
+Exit BDJ4, and restart BDJ4.
 
 Take the steps necessary to re-create the issue you found.
 

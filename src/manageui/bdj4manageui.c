@@ -1264,15 +1264,12 @@ manageSongEditMenu (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
   if (! manage->songeditmenu.initialized) {
-/* 2023-2-1 at this time, this breaks windows
- * the manageui does not display.
- */
-#if 0
+// ### FIX 2023-2-1 at this time, these three lines break windows
+// ### the manageui does not display.
     manage->uiaa = uiaaInit (&manage->window, manage->options);
     manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
         manageApplyAdjCallback, manage);
     uiaaSetResponseCallback (manage->uiaa, manage->callbacks [MANAGE_CB_APPLY_ADJ]);
-#endif
 
     uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: managementui: menu selection: actions for song editor */
@@ -1288,7 +1285,7 @@ manageSongEditMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, tagdefs [TAG_BPM].displayname,
         manage->callbacks [MANAGE_MENU_CB_BPM]);
 
-    uiMenuAddSeparator (&manage->menubar, &menuitem);
+    uiMenuAddSeparator (&menu, &menuitem);
 
     /* CONTEXT: managementui: menu selection: song editor: edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Edit All"), NULL);
@@ -1302,7 +1299,7 @@ manageSongEditMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, _("Cancel Edit All"), NULL);
     uiWidgetDisable (&menuitem);
 
-    uiMenuAddSeparator (&manage->menubar, &menuitem);
+    uiMenuAddSeparator (&menu, &menuitem);
 
     manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ] = callbackInit (
         manageApplyAdjDialog, manage, NULL);
@@ -1314,8 +1311,6 @@ manageSongEditMenu (manageui_t *manage)
     if (tempp == NULL) {
       uiWidgetDisable (&menuitem);
     }
-// ### FIX for aa
-uiWidgetDisable (&menuitem);
 
     manage->songeditmenu.initialized = true;
   }

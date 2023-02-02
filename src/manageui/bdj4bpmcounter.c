@@ -274,6 +274,8 @@ bpmcounterStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (bpmcounter->options, BPMCOUNTER_POSITION_X, x);
   nlistSetNum (bpmcounter->options, BPMCOUNTER_POSITION_Y, y);
 
+  connDisconnectAll (bpmcounter->conn);
+
   logProcEnd (LOG_PROC, "bpmcounterStoppingCallback", "");
   return STATE_FINISHED;
 }
@@ -306,11 +308,11 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
 
   procutilFreeAll (bpmcounter->processes);
 
-  bdj4shutdown (ROUTE_BPM_COUNTER, NULL);
-
   pathbldMakePath (fn, sizeof (fn),
       BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("bpmcounter", fn, bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX, bpmcounter->options, 0);
+
+  bdj4shutdown (ROUTE_BPM_COUNTER, NULL);
 
   if (bpmcounter->optiondf != NULL) {
     datafileFree (bpmcounter->optiondf);

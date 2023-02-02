@@ -15,6 +15,9 @@ target_link_libraries (libbdj4vol
 )
 
 add_library (libvolnull SHARED volnull.c)
+target_link_libraries (libvolnull
+  libbdj4string
+)
 
 add_library (libvolmac SHARED volmac.m)
 if (APPLE)

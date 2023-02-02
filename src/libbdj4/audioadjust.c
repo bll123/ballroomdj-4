@@ -129,7 +129,7 @@ aaTrimSilence (const char *infn, const char *outfn)
   targv [targc++] = outfn;
 
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
-  if (rc != 0) {
+  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
     char  cmd [1000];
 
     *cmd = '\0';
@@ -189,7 +189,7 @@ aaNormalize (const char *infn, const char *outfn)
   targv [targc++] = "-";
   targv [targc++] = NULL;
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
-  if (rc != 0) {
+  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
     char  cmd [1000];
 
     *cmd = '\0';
@@ -200,8 +200,10 @@ aaNormalize (const char *infn, const char *outfn)
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: cmd: %s", cmd);
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: rc: %d", rc);
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: resp:\n%s", resp);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, pass one failed.");
-    return;
+    if (rc != 0) {
+      logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, pass one failed.");
+      return;
+    }
   }
 
 /*
@@ -292,7 +294,7 @@ aaNormalize (const char *infn, const char *outfn)
   targv [targc++] = NULL;
 
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
-  if (rc != 0) {
+  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
     char  cmd [1000];
 
     *cmd = '\0';
@@ -414,7 +416,7 @@ aaApplyAdjustments (song_t *song, const char *infn, const char *outfn,
   targv [targc++] = outfn;
   targv [targc++] = NULL;
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
-  if (rc != 0) {
+  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
     char  cmd [1000];
 
     *cmd = '\0';
@@ -491,7 +493,7 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
   targv [targc++] = NULL;
 
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
-  if (rc != 0) {
+  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
     char  cmd [1000];
 
     *cmd = '\0';

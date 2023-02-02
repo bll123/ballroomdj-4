@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <inttypes.h>
+#include <stdarg.h>
 
 #include "mdebug.h"
 
@@ -54,6 +55,8 @@ static void mdebugDel (long idx);
 static long mdebugFind (void *data);
 static int mdebugComp (const void *a, const void *b);
 static void mdebugSort (void);
+static void mdebugLog (const char *fmt, ...)
+    __attribute__ ((format (printf, 1, 2)));
 
 void
 mdfree_r (void *data, const char *fn, int lineno)
@@ -61,14 +64,14 @@ mdfree_r (void *data, const char *fn, int lineno)
   long  loc;
 
   if (initialized && data == NULL) {
-    fprintf (stderr, "%4s %p null %s %d\n", mdebugtag, data, fn, lineno);
+    mdebugLog ("%4s %p null %s %d\n", mdebugtag, data, fn, lineno);
   }
   if (initialized && data != NULL) {
     loc = mdebugFind (data);
     if (loc >= 0) {
       mdebugDel (loc);
     } else {
-      fprintf (stderr, "%4s %p free %s %d\n", mdebugtag, data, fn, lineno);
+      mdebugLog ("%4s %p free %s %d\n", mdebugtag, data, fn, lineno);
       ++mdebugerrors;
     }
     ++mdebugfreecount;
@@ -88,7 +91,7 @@ mdextfree_r (void *data, const char *fn, int lineno)
     if (loc >= 0) {
       mdebugDel (loc);
     } else {
-      fprintf (stderr, "%4s %p free %s %d\n", mdebugtag, data, fn, lineno);
+      mdebugLog ("%4s %p free %s %d\n", mdebugtag, data, fn, lineno);
       ++mdebugerrors;
     }
     ++mdebugfreecount;
@@ -126,7 +129,7 @@ mdrealloc_r (void *data, size_t sz, const char *fn, int lineno)
     if (loc >= 0) {
       mdebugDel (loc);
     } else {
-      fprintf (stderr, "%4s %p realloc %s %d\n", mdebugtag, data, fn, lineno);
+      mdebugLog ("%4s %p realloc %s %d\n", mdebugtag, data, fn, lineno);
       ++mdebugerrors;
     }
   }
@@ -196,20 +199,20 @@ void
 mdebugReport (void)
 {
   if (initialized) {
-    fprintf (stderr, "== %s ==\n", mdebugtag);
+    mdebugLog ("== %s ==\n", mdebugtag);
     for (long i = 0; i < mdebugcount; ++i) {
-      fprintf (stderr, "%4s 0x%08" PRIx64 " not freed %c %s %d\n", mdebugtag,
+      mdebugLog ("%4s 0x%08" PRIx64 " not freed %c %s %d\n", mdebugtag,
           (int64_t) mdebug [i].addr, mdebug [i].type, mdebug [i].fn, mdebug [i].lineno);
       ++mdebugerrors;
     }
-    fprintf (stderr, "  count: %ld\n", mdebugcount);
-    fprintf (stderr, " ERRORS: %ld\n", mdebugerrors);
-    fprintf (stderr, " malloc: %ld\n", mdebugmalloccount);
-    fprintf (stderr, "realloc: %ld\n", mdebugrealloccount);
-    fprintf (stderr, " strdup: %ld\n", mdebugstrdupcount);
-    fprintf (stderr, "Emalloc: %ld\n", mdebugextalloccount);
-    fprintf (stderr, "   free: %ld\n", mdebugfreecount);
-    fprintf (stderr, "    max: %ld\n", mdebugmax);
+    mdebugLog ("  count: %ld\n", mdebugcount);
+    mdebugLog (" ERRORS: %ld\n", mdebugerrors);
+    mdebugLog (" malloc: %ld\n", mdebugmalloccount);
+    mdebugLog ("realloc: %ld\n", mdebugrealloccount);
+    mdebugLog (" strdup: %ld\n", mdebugstrdupcount);
+    mdebugLog ("Emalloc: %ld\n", mdebugextalloccount);
+    mdebugLog ("   free: %ld\n", mdebugfreecount);
+    mdebugLog ("    max: %ld\n", mdebugmax);
   }
 }
 
@@ -332,3 +335,23 @@ mdebugSort (void)
     --prior;
   }
 }
+
+static void
+mdebugLog (const char *fmt, ...)
+{
+  va_list   args;
+#if __WINNT__
+  FILE      *fh;
+
+  fh = fopen ("mdebug.txt", "a");
+  va_start (args, fmt);
+  vfprintf (fh, fmt, args);
+  va_end (args);
+  fclose (fh);
+#else
+  va_start (args, fmt);
+  vfprintf (stderr, fmt, args);
+  va_end (args);
+#endif
+}
+
