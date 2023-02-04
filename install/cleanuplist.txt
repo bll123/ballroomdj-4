@@ -62,6 +62,10 @@ img/switch-on\.svg\.bak\.1$
 locale/tr$
 locale/tr_TR$
 
+# removed 2023-2-4 (4.0.11)
+install/install-startup\.sh$
+install/install-startup\.bat$
+
 ::macosonly
 
 # this should have been in the data/ directory (alpha 2022-12)

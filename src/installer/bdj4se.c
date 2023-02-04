@@ -14,6 +14,7 @@
 #include <unistd.h>
 
 #include "bdjstring.h"
+#include "fileop.h"
 #include "osprocess.h"
 #include "osutils.h"
 
@@ -24,6 +25,8 @@ enum {
 #define TAGSTRPFX  "!~~"
 #define TAGSTR     "BDJ4"
 #define TAGSTRSFX  "~~!"
+
+#define BDJ4_INST_DIR  "bdj4-install"
 
 static char * memsrch (char *buff, size_t bsz, char *srch, size_t ssz);
 
@@ -38,13 +41,17 @@ main (int argc, const char *argv [])
   char        tagstr [40];
   char        tbuff [1024];
   char        tmpdir [1024];
+  char        unpackdir [1024];
   char        *archivep = NULL;
   char        *p = NULL;
+  char        *tfn = NULL;
   ssize_t     sz;
   bool        first = true;
   int         rc;
   bool        isWindows = false;
   char        *archivenm = "bdj4-install.tar.gz";
+  const char  *targv [40];
+  int         targc = 0;
 
 
 #if __WINNT__
@@ -63,7 +70,7 @@ main (int argc, const char *argv [])
   strlcat (tagstr, TAGSTR, sizeof (tagstr));
   strlcat (tagstr, TAGSTRSFX, sizeof (tagstr));
 
-  ifh = fopen (fn, "rb");
+  ifh = fileopOpen (fn, "rb");
   if (ifh == NULL) {
     fprintf (stderr, "Unable to open input %s %d %s\n", fn, errno, strerror (errno));
     exit (1);
@@ -99,7 +106,7 @@ main (int argc, const char *argv [])
   }
 
   snprintf (tbuff, sizeof (tbuff), "%s/%s", tmpdir, archivenm);
-  archivefh = fopen (tbuff, "wb");
+  archivefh = fileopOpen (tbuff, "wb");
   if (archivefh == NULL) {
     fprintf (stderr, "Unable to open output %s %d %s\n", tbuff, errno, strerror (errno));
     exit (1);
@@ -141,7 +148,7 @@ main (int argc, const char *argv [])
     exit (1);
   }
 
-  rc = stat ("bdj4-install", &statbuf);
+  rc = stat (BDJ4_INST_DIR, &statbuf);
   if (rc == 0) {
     if (isWindows) {
       (void) ! system ("rmdir /s/q bdj4-install > NUL");
@@ -158,11 +165,24 @@ main (int argc, const char *argv [])
     (void) ! system ("tar -x -f bdj4-install.tar.gz");
   }
 
-  rc = chdir ("bdj4-install");
+  printf ("-- Cleaning temporary files.\n");
+  fflush (stdout);
+
+  if (fileopFileExists (archivenm)) {
+    fileopDelete (archivenm);
+  }
+  tfn = "bdj4-expand.log";
+  if (fileopFileExists (tfn)) {
+    fileopDelete (tfn);
+  }
+
+  rc = chdir (BDJ4_INST_DIR);
   if (rc != 0) {
-    fprintf (stderr, "Unable to chdir to %s %d %s\n", "bdj4-install", errno, strerror (errno));
+    fprintf (stderr, "Unable to chdir to %s %d %s\n", BDJ4_INST_DIR, errno, strerror (errno));
     exit (1);
   }
+  /* the unpackdir argument is the very top level, not using Contents/MacOS */
+  snprintf (unpackdir, sizeof (unpackdir), "%s/%s", tmpdir, BDJ4_INST_DIR);
 
   rc = stat ("Contents", &statbuf);
   if (rc == 0) {
@@ -175,13 +195,21 @@ main (int argc, const char *argv [])
 
   printf ("-- Starting install process.\n");
   fflush (stdout);
-  if (isWindows) {
-    argv [0] = ".\\install\\install-startup.bat";
-  } else {
-    argv [0] = "./install/install-startup.sh";
-  }
-  osProcessStart (argv, OS_PROC_NONE, NULL, NULL);
 
+  if (isWindows) {
+    targv [targc++] = ".\\bin\\bdj4.exe";
+  } else {
+    targv [targc++] = "./bin/bdj4";
+  }
+  targv [targc++] = "--bdj4installer";
+  targv [targc++] = "--unpackdir";
+  targv [targc++] = unpackdir;
+  for (int i = 1; i < argc && i < 39; ++i) {
+    targv [targc++] = argv [i];
+  }
+  targv [targc++] = NULL;
+
+  osProcessStart (targv, OS_PROC_WAIT, NULL, NULL);
   return 0;
 }
 

@@ -4,9 +4,14 @@
 
 <!--
 
-**4.0.11 beta 2023-1---**
+**4.0.12 beta 2023-2---**
 
 -->
+
+**4.0.11 beta 2023-2-4**
+
+* Bug Fixes:
+    * Installation: The installer was not working on Windows 11.
 
 **4.0.10 beta 2023-2-1**
 
