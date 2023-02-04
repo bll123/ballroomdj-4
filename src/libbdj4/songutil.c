@@ -15,7 +15,9 @@
 #include "bdj4.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
+#include "bdjvars.h"
 #include "datafile.h"
+#include "fileop.h"
 #include "mdebug.h"
 #include "songutil.h"
 
@@ -41,6 +43,33 @@ songFullFileName (const char *sfname)
         bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
   }
   return tname;
+}
+
+bool
+songHasOriginal (const char *sfname)
+{
+  char      origfn [MAXPATHLEN];
+  bool      exists = false;
+  char      *fullfn;
+
+  if (sfname == NULL) {
+    return NULL;
+  }
+
+  fullfn = songFullFileName (sfname);
+  snprintf (origfn, sizeof (origfn), "%s%s",
+      fullfn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
+  if (fileopFileExists (origfn)) {
+    exists = true;
+  }
+  if (! exists) {
+    snprintf (origfn, sizeof (origfn), "%s%s", fullfn, BDJ4_GENERIC_ORIG_EXT);
+    if (fileopFileExists (origfn)) {
+      exists = true;
+    }
+  }
+  dataFree (fullfn);
+  return exists;
 }
 
 void

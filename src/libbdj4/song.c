@@ -326,9 +326,9 @@ songAudioFileExists (song_t *song)
   return exists;
 }
 
-/* used by the song editor via uisong to get the values for display */
-/* used for tags that have a conversion set and also for strings */
-/* favorite returns the span-display string used by gtk */
+/* Used by the song editor via uisong to get the display strings. */
+/* Used for tags that have a conversion set and also for strings. */
+/* Favorite returns the span-display string used by gtk */
 /*     <span color="...">X</span> */
 char *
 songDisplayString (song_t *song, int tagidx)

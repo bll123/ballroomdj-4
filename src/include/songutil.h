@@ -10,7 +10,11 @@ enum {
   SONG_ADJUST_NONE    = 0x0000,
   SONG_ADJUST_NORM    = 0x0001,
   SONG_ADJUST_TRIM    = 0x0002,
-  SONG_ADJUST_ADJUST  = 0x0004,   // includes speed, song-start and song-end
+  /* song-adjust-adjust adjusts the speed, song-start and song-end */
+  SONG_ADJUST_ADJUST  = 0x0004,
+  /* special setting used for response from uiapplyadj */
+  SONG_ADJUST_RESTORE = 0x0008,
+  /* song-adjust-invalid checks for anything other than the normal settings */
   SONG_ADJUST_INVALID =
       ~ (SONG_ADJUST_NORM | SONG_ADJUST_TRIM | SONG_ADJUST_ADJUST),
 };
@@ -22,6 +26,7 @@ enum {
 };
 
 char  *songFullFileName (const char *sfname);
+bool  songHasOriginal (const char *sfname);
 void  songConvAdjustFlags (datafileconv_t *conv);
 ssize_t songAdjustPosReal (ssize_t pos, int speed);
 ssize_t songNormalizePosition (ssize_t pos, int speed);

@@ -25,7 +25,6 @@
 #include "nlist.h"
 #include "slist.h"
 #include "song.h"
-#include "songdb.h"
 #include "songutil.h"
 #include "tagdef.h"
 #include "ui.h"
@@ -51,7 +50,7 @@ typedef struct uiaa {
   bool            isactive : 1;
 } uiaa_t;
 
-static void   uiaaCreateDialog (uiaa_t *uiaa, int aaflags);
+static void   uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig);
 static void   uiaaInitDisplay (uiaa_t *uiaa);
 static bool   uiaaResponseHandler (void *udata, long responseid);
 
@@ -100,7 +99,7 @@ uiaaSetResponseCallback (uiaa_t *uiaa, callback_t *uicb)
 }
 
 bool
-uiaaDialog (uiaa_t *uiaa, int aaflags)
+uiaaDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 {
   int         x, y;
 
@@ -109,7 +108,7 @@ uiaaDialog (uiaa_t *uiaa, int aaflags)
   }
 
   logProcBegin (LOG_PROC, "uiaaDialog");
-  uiaaCreateDialog (uiaa, aaflags);
+  uiaaCreateDialog (uiaa, aaflags, hasorig);
   uiaaInitDisplay (uiaa);
   uiWidgetShowAll (&uiaa->aaDialog);
   uiaa->isactive = true;
@@ -126,7 +125,7 @@ uiaaDialog (uiaa_t *uiaa, int aaflags)
 /* internal routines */
 
 static void
-uiaaCreateDialog (uiaa_t *uiaa, int aaflags)
+uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 {
   UIWidget      vbox;
   UIWidget      hbox;
@@ -151,6 +150,15 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags)
       /* CONTEXT: apply adjustment dialog: closes the dialog */
       _("Close"),
       RESPONSE_CLOSE,
+      NULL);
+  if (hasorig) {
+    uiDialogAddButtons (&uiaa->aaDialog,
+        /* CONTEXT: apply adjustment dialog: restore original file */
+        _("Restore Original"),
+        RESPONSE_RESET,
+        NULL);
+  }
+  uiDialogAddButtons (&uiaa->aaDialog,
       /* CONTEXT: apply adjustment dialog: apply adjustments */
       _("Apply Adjustments"),
       RESPONSE_APPLY,
@@ -221,14 +229,24 @@ uiaaResponseHandler (void *udata, long responseid)
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: close window");
-      uiWidgetHide (&uiaa->aaDialog);
+      /* dialog should be destroyed, as the buttons are re-created each time */
+      uiDialogDestroy (&uiaa->aaDialog);
+      uiutilsUIWidgetInit (&uiaa->aaDialog);
+      break;
+    }
+    case RESPONSE_RESET: {
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: restore orig");
+      uiDialogDestroy (&uiaa->aaDialog);
+      uiutilsUIWidgetInit (&uiaa->aaDialog);
+      if (uiaa->responsecb != NULL) {
+        callbackHandlerLong (uiaa->responsecb, SONG_ADJUST_RESTORE);
+      }
       break;
     }
     case RESPONSE_APPLY: {
       long    aaflags = SONG_ADJUST_NONE;
 
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: apply");
-      uiWidgetHide (&uiaa->aaDialog);
       if (uiToggleButtonIsActive (&uiaa->cbTrim)) {
         aaflags |= SONG_ADJUST_TRIM;
       }
@@ -238,6 +256,8 @@ uiaaResponseHandler (void *udata, long responseid)
       if (uiToggleButtonIsActive (&uiaa->cbAdjust)) {
         aaflags |= SONG_ADJUST_ADJUST;
       }
+      uiDialogDestroy (&uiaa->aaDialog);
+      uiutilsUIWidgetInit (&uiaa->aaDialog);
       if (uiaa->responsecb != NULL) {
         callbackHandlerLong (uiaa->responsecb, aaflags);
       }

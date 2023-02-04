@@ -57,8 +57,8 @@ enum {
 char  *uiSelectDirDialog (uiselect_t *selectdata);
 char  *uiSelectFileDialog (uiselect_t *selectdata);
 char  *uiSaveFileDialog (uiselect_t *selectdata);
-void uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
-    callback_t *uicb, const char *title, ...);
+void  uiCreateDialog (UIWidget *uiwidget, UIWidget *window, callback_t *uicb, const char *title, ...);
+void  uiDialogAddButtons (UIWidget *uidialog, ...);
 void  uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp);
 void  uiDialogDestroy (UIWidget *uidialog);
 uiselect_t *uiDialogCreateSelect (UIWidget *window, const char *label, const char *startpath, const char *dfltname, const char *mimefiltername, const char *mimetype);
@@ -73,6 +73,7 @@ int     uiKeyEvent (uikey_t *uikey);
 bool    uiKeyIsPressEvent (uikey_t *uikey);
 bool    uiKeyIsReleaseEvent (uikey_t *uikey);
 bool    uiKeyIsMovementKey (uikey_t *uikey);
+bool    uiKeyIsAKey (uikey_t *uikey);
 bool    uiKeyIsNKey (uikey_t *uikey);
 bool    uiKeyIsPKey (uikey_t *uikey);
 bool    uiKeyIsSKey (uikey_t *uikey);

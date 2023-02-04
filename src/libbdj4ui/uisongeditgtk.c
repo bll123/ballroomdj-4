@@ -136,6 +136,7 @@ static bool uisongeditPreviousSelection (void *udata);
 static bool uisongeditNextSelection (void *udata);
 static bool uisongeditCopyPath (void *udata);
 static bool uisongeditKeyEvent (void *udata);
+static bool uisongeditApplyAdjCallback (void *udata);
 
 void
 uisongeditUIInit (uisongedit_t *uisongedit)
@@ -454,8 +455,8 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
   if (data != NULL && *data) {
     uiImageSetFromPixbuf (&uiw->audioidImg, &uiw->musicbrainzPixbuf);
   }
-  val = songGetNum (song, TAG_ADJUSTFLAGS);
 
+  val = songGetNum (song, TAG_ADJUSTFLAGS);
   uiLabelSetText (&uiw->modified, " ");
   if (val != SONG_ADJUST_NONE) {
     uiLabelSetText (&uiw->modified, "*");
@@ -1292,6 +1293,10 @@ uisongeditKeyEvent (void *udata)
 
   if (uiKeyIsControlPressed (uiw->uikey) &&
       uiKeyIsPressEvent (uiw->uikey)) {
+    if (uiKeyIsAKey (uiw->uikey)) {
+      uisongeditApplyAdjCallback (uisongedit);
+      return UICB_STOP;
+    }
     if (uiKeyIsSKey (uiw->uikey)) {
       uisongeditSaveCallback (uisongedit);
       return UICB_STOP;
@@ -1308,3 +1313,20 @@ uisongeditKeyEvent (void *udata)
 
   return UICB_CONT;
 }
+
+static bool
+uisongeditApplyAdjCallback (void *udata)
+{
+  uisongedit_t    *uisongedit = udata;
+
+  logProcBegin (LOG_PROC, "uisongeditApplyAdjCallbackback");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: apply-adj (kb)");
+
+  if (uisongedit->applyadjcb != NULL) {
+    callbackHandlerLong (uisongedit->applyadjcb, SONG_ADJUST_NONE);
+  }
+
+  logProcEnd (LOG_PROC, "uisongeditApplyAdjCallbackback", "");
+  return UICB_CONT;
+}
+

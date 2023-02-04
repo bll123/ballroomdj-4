@@ -40,6 +40,7 @@ enum {
 #define BDJ4_IMG_PNG_EXT  ".png"
 #define BDJ4_CONFIG_EXT   ".txt"
 #define BDJ4_CSS_EXT      ".css"
+#define BDJ4_GENERIC_ORIG_EXT ".original"
 
 /* some itunes stuff */
 #define ITUNES_NAME       "iTunes"

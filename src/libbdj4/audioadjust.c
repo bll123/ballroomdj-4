@@ -12,6 +12,7 @@
 #include <assert.h>
 
 #include "audioadjust.h"
+#include "audiotag.h"
 #include "bdj4.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
@@ -28,6 +29,7 @@
 #include "pathbld.h"
 #include "pathutil.h"
 #include "song.h"
+#include "songdb.h"
 #include "songutil.h"
 #include "sysvars.h"
 #include "tagdef.h"
@@ -98,6 +100,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, long aaflags)
   long        dur;
   long        newdur = -1;
   pathinfo_t  *pi;
+  const char  *songfn;
   char        *infn;
   char        origfn [MAXPATHLEN];
   char        fullfn [MAXPATHLEN];
@@ -111,13 +114,55 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, long aaflags)
 
   dur = songGetNum (song, TAG_DURATION);
 
-  infn = songFullFileName (songGetStr (song, TAG_FILE));
+  songfn = songGetStr (song, TAG_FILE);
+  infn = songFullFileName (songfn);
   strlcpy (fullfn, infn, sizeof (fullfn));
   snprintf (origfn, sizeof (origfn), "%s%s",
       infn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
-  if (! fileopFileExists (origfn)) {
-    // ### FIX: make sure BDJ tags are written out to the audio file
-    // must have song-start, song-end, speed
+
+  if (strcmp (BDJ4_GENERIC_ORIG_EXT, bdjvarsGetStr (BDJV_ORIGINAL_EXT)) != 0 &&
+      ! fileopFileExists (origfn)) {
+    /* check for a non-localized .original file, and if there, rename it */
+    /* use outfn as a temporary area */
+    snprintf (outfn, sizeof (outfn), "%s%s", infn, BDJ4_GENERIC_ORIG_EXT);
+    if (fileopFileExists (outfn)) {
+      filemanipMove (outfn, origfn);
+    }
+  }
+
+  if (aaflags == SONG_ADJUST_RESTORE) {
+    if (fileopFileExists (origfn)) {
+      char    *data;
+
+      filemanipMove (origfn, fullfn);
+      data = audiotagReadTags (fullfn);
+      if (data != NULL) {
+        slist_t *tagdata;
+        int     rewrite;
+
+        tagdata = audiotagParseData (fullfn, data, &rewrite);
+        slistSetStr (tagdata, tagdefs [TAG_ADJUSTFLAGS].tag, NULL);
+        dbWrite (musicdb, songfn, tagdata, songGetNum (song, TAG_RRN));
+        slistFree (tagdata);
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  if (aaflags != SONG_ADJUST_NONE &&
+      ! fileopFileExists (origfn)) {
+    int     value;
+    slist_t *taglist;
+
+    value = bdjoptGetNum (OPT_G_WRITETAGS);
+    if (value == WRITE_TAGS_NONE) {
+      bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_BDJ_ONLY);
+    }
+    taglist = songTagList (song);
+    audiotagWriteTags (fullfn, taglist, taglist, AF_REWRITE_BDJ, AT_KEEP_MOD_TIME);
+    bdjoptSetNum (OPT_G_WRITETAGS, value);
+    slistFree (taglist);
     filemanipCopy (fullfn, origfn);
   }
 
@@ -131,10 +176,13 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, long aaflags)
   /* start with the input as the original filename */
   infn = origfn;
 
-  /* the adjust flags must be reset, as the user may have selected */
-  /* different settings */
-  songSetNum (song, TAG_ADJUSTFLAGS, SONG_ADJUST_NONE);
+  if (aaflags != SONG_ADJUST_NONE) {
+    /* the adjust flags must be reset, as the user may have selected */
+    /* different settings */
+    songSetNum (song, TAG_ADJUSTFLAGS, SONG_ADJUST_NONE);
+  }
 
+  /* trim silence is done first */
   if ((aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
     newdur = aaTrimSilence (infn, outfn);
     if (fileopFileExists (outfn)) {
@@ -153,21 +201,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, long aaflags)
       }
     }
   }
-  if ((aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM) {
-fprintf (stderr, "loudness norm\n");
-    aaNormalize (infn, outfn);
-    if (fileopFileExists (outfn)) {
-      long    adjflags;
-
-      filemanipMove (outfn, fullfn);
-      infn = fullfn;
-      songSetNum (song, TAG_VOLUMEADJUSTPERC, 0.0);
-      adjflags = songGetNum (song, TAG_ADJUSTFLAGS);
-      adjflags |= SONG_ADJUST_NORM;
-      songSetNum (song, TAG_ADJUSTFLAGS, adjflags);
-      changed = true;
-    }
-  }
+  /* any adjustments to the song are made */
   if ((aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST) {
 fprintf (stderr, "adjust\n");
     newdur = aaAdjust (song, infn, outfn, 0, 0, 0, 0);
@@ -188,6 +222,22 @@ fprintf (stderr, "adjust\n");
       } else {
         fileopDelete (outfn);
       }
+    }
+  }
+  /* after the adjustments are done, then normalize */
+  if ((aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM) {
+fprintf (stderr, "loudness norm\n");
+    aaNormalize (infn, outfn);
+    if (fileopFileExists (outfn)) {
+      long    adjflags;
+
+      filemanipMove (outfn, fullfn);
+      infn = fullfn;
+      songSetNum (song, TAG_VOLUMEADJUSTPERC, 0.0);
+      adjflags = songGetNum (song, TAG_ADJUSTFLAGS);
+      adjflags |= SONG_ADJUST_NORM;
+      songSetNum (song, TAG_ADJUSTFLAGS, adjflags);
+      changed = true;
     }
   }
 

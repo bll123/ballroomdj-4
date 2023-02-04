@@ -18,6 +18,15 @@ enum {
   AUDIOTAG_NOT_SUPPORTED = 252,
 };
 
+enum {
+  /* some of the AF_ flags are only internal to audiotag.c */
+  AF_REWRITE_NONE     = 0x0000,
+  AF_REWRITE_MB       = 0x0001,
+  AF_REWRITE_DURATION = 0x0002,
+  AF_REWRITE_VARIOUS  = 0x0004,
+  AF_REWRITE_BDJ      = 0x0008,
+};
+
 void audiotagInit (void);
 void audiotagCleanup (void);
 char * audiotagReadTags (const char *ffn);

@@ -450,7 +450,7 @@ dbupdateProcessing (void *udata)
         pathInfoFree (pi);
         continue;
       }
-      if (pathInfoExtCheck (pi, ".original") ||
+      if (pathInfoExtCheck (pi, BDJ4_GENERIC_ORIG_EXT) ||
           pathInfoExtCheck (pi, bdjvarsGetStr (BDJV_ORIGINAL_EXT))) {
         dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
         dbupdateIncCount (dbupdate, C_ORIG_SKIP);
@@ -956,7 +956,7 @@ dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
   }
 
   newtaglist = songTagList (song);
-  audiotagWriteTags (ffn, tagdata, newtaglist, 0, AT_UPDATE_MOD_TIME);
+  audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
   slistFree (newtaglist);
   dbupdateIncCount (dbupdate, C_FILE_PROC);
   dbupdateIncCount (dbupdate, C_WRITE_TAGS);
@@ -1033,7 +1033,7 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
     if (changed) {
       newtaglist = songTagList (song);
       dbWriteSong (currdb, song);
-      audiotagWriteTags (ffn, tagdata, newtaglist, 0, AT_UPDATE_MOD_TIME);
+      audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
       slistFree (newtaglist);
       dbupdateIncCount (dbupdate, C_UPDATED);
     }

@@ -29,13 +29,6 @@
 #include "tmutil.h"
 
 enum {
-  AF_REWRITE_NONE     = 0x0000,
-  AF_REWRITE_MB       = 0x0001,
-  AF_REWRITE_DURATION = 0x0002,
-  AF_REWRITE_VARIOUS  = 0x0004,
-};
-
-enum {
   AFILE_TYPE_UNKNOWN,
   AFILE_TYPE_FLAC,
   AFILE_TYPE_MP4,
@@ -54,7 +47,7 @@ static int  audiotagWriteOtherTags (const char *ffn, slist_t *updatelist, slist_
 static bool audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value);
 static int  audiotagRunUpdate (const char *fn);
 static void audiotagMakeTempFilename (char *fn, size_t sz);
-static int  audiotagTagCheck (int writetags, int tagtype, const char *tag);
+static int  audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite);
 static void audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
     nlist_t *datalist, int totkey, int tagkey);
 
@@ -192,12 +185,17 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     bool  upd;
 
     upd = false;
-    tagkey = audiotagTagCheck (writetags, tagtype, tag);
+    tagkey = audiotagTagCheck (writetags, tagtype, tag, rewrite);
     if (tagkey < 0) {
       continue;
     }
 
     newvalue = slistGetStr (newtaglist, tag);
+
+    if (tagdefs [tagkey].isBDJTag &&
+        (rewrite & AF_REWRITE_BDJ) == AF_REWRITE_BDJ) {
+      upd = true;
+    }
 
     value = slistGetStr (tagdata, tag);
     if (newvalue != NULL && *newvalue && value == NULL) {
@@ -232,7 +230,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
 
   slistStartIterator (tagdata, &iteridx);
   while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
-    tagkey = audiotagTagCheck (writetags, tagtype, tag);
+    tagkey = audiotagTagCheck (writetags, tagtype, tag, rewrite);
     if (tagkey < 0) {
       continue;
     }
@@ -443,7 +441,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
       tagname = slistGetStr (tagLookup [tagtype], p);
       if (tagname != NULL) {
         logMsg (LOG_DBG, LOG_DBUPDATE, "taglookup: %s %s", p, tagname);
-        tagkey = audiotagTagCheck (writetags, tagtype, tagname);
+        tagkey = audiotagTagCheck (writetags, tagtype, tagname, AF_REWRITE_NONE);
         logMsg (LOG_DBG, LOG_DBUPDATE, "tag: %s raw-tag: %s", tagname, p);
       }
 
@@ -706,7 +704,7 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
       continue;
     }
 
-    tagkey = audiotagTagCheck (writetags, TAG_TYPE_MP3, tag);
+    tagkey = audiotagTagCheck (writetags, TAG_TYPE_MP3, tag, AF_REWRITE_NONE);
     if (tagkey < 0) {
       continue;
     }
@@ -723,7 +721,7 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
 
   slistStartIterator (updatelist, &iteridx);
   while ((tag = slistIterateKey (updatelist, &iteridx)) != NULL) {
-    tagkey = audiotagTagCheck (writetags, TAG_TYPE_MP3, tag);
+    tagkey = audiotagTagCheck (writetags, TAG_TYPE_MP3, tag, AF_REWRITE_NONE);
     if (tagkey < 0) {
       continue;
     }
@@ -832,7 +830,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
       continue;
     }
 
-    tagkey = audiotagTagCheck (writetags, tagtype, tag);
+    tagkey = audiotagTagCheck (writetags, tagtype, tag, AF_REWRITE_NONE);
     if (tagkey < 0) {
       continue;
     }
@@ -842,7 +840,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
 
   slistStartIterator (updatelist, &iteridx);
   while ((tag = slistIterateKey (updatelist, &iteridx)) != NULL) {
-    tagkey = audiotagTagCheck (writetags, tagtype, tag);
+    tagkey = audiotagTagCheck (writetags, tagtype, tag, AF_REWRITE_NONE);
     if (tagkey < 0) {
       continue;
     }
@@ -970,7 +968,7 @@ audiotagMakeTempFilename (char *fn, size_t sz)
 }
 
 static int
-audiotagTagCheck (int writetags, int tagtype, const char *tag)
+audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite)
 {
   int tagkey = -1;
 
@@ -985,8 +983,10 @@ audiotagTagCheck (int writetags, int tagtype, const char *tag)
     return -1;
   }
   if (writetags == WRITE_TAGS_BDJ_ONLY && tagdefs [tagkey].isNormTag) {
-    // logMsg (LOG_DBG, LOG_DBUPDATE, "bdj-only: %s\n", tag);
-    return -1;
+    if ((rewrite & AF_REWRITE_BDJ) != AF_REWRITE_BDJ) {
+      // logMsg (LOG_DBG, LOG_DBUPDATE, "bdj-only: %s\n", tag);
+      return -1;
+    }
   }
   if (tagdefs [tagkey].audiotags [tagtype].tag == NULL) {
     /* not a supported tag for this audio tag type */

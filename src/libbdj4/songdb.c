@@ -64,7 +64,7 @@ songWriteAudioTags (song_t *song)
     tagdata = audiotagParseData (ffn, data, &rewrite);
     mdfree (data);
     newtaglist = songTagList (song);
-    audiotagWriteTags (ffn, tagdata, newtaglist, 0, AT_UPDATE_MOD_TIME);
+    audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
     slistFree (tagdata);
     slistFree (newtaglist);
   }

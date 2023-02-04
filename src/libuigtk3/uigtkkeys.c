@@ -115,6 +115,22 @@ uiKeyIsMovementKey (uikey_t *uikey)
 }
 
 bool
+uiKeyIsAKey (uikey_t *uikey)
+{
+  bool  rc = false;
+
+  if (uikey == NULL) {
+    return rc;
+  }
+
+  if (uikey->keyval == GDK_KEY_A || uikey->keyval == GDK_KEY_a) {
+    rc = true;
+  }
+
+  return rc;
+}
+
+bool
 uiKeyIsNKey (uikey_t *uikey)
 {
   bool  rc = false;
