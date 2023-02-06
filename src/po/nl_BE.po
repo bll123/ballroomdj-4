@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2023-02-01\n"
+"PO-Revision-Date: 2023-02-06\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -397,6 +397,9 @@ msgstr "Klik met de muisaanwijzer in het blauwe vak op de maat van de muziek."
 #. CONTEXT: request external dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
+#. CONTEXT: select folder dialog: close
+#. CONTEXT: select file dialog: close
+#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -712,8 +715,8 @@ msgstr "Exporteren"
 msgid "Export as %s"
 msgstr "Exporteren als %s"
 
-#. CONTEXT: managementui: song list export: title of save dialog
 #. CONTEXT: managementui: menu selection: song list: export: export as m3u
+#. CONTEXT: managementui: song list export: title of save dialog
 #, c-format
 msgid "Export as M3U Playlist"
 msgstr "Exporteren als M3U afspeellijst"
@@ -846,8 +849,8 @@ msgstr ""
 msgid "Import"
 msgstr "Importeer"
 
-#. CONTEXT: managementui: song list import: title of dialog
 #. CONTEXT: managementui: menu selection: song list: import: import m3u
+#. CONTEXT: managementui: song list import: title of dialog
 msgid "Import M3U"
 msgstr ""
 
@@ -1467,6 +1470,11 @@ msgstr "Externe Aanvraag"
 msgid "Reset"
 msgstr "Resetten"
 
+#. CONTEXT: apply adjustment dialog: restore original file
+#. CONTEXT: managementui: menu selection: song editor: restore original
+msgid "Restore Original"
+msgstr ""
+
 #. CONTEXT: playerui: button: tooltip: return to the beginning of the song
 msgid "Return to beginning of song"
 msgstr ""
@@ -1493,7 +1501,7 @@ msgid "Samba"
 msgstr "Samba"
 
 #. CONTEXT: song editor : save data
-#. CONTEXT: actions associated with the save file dialog
+#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "Bewaren"
@@ -1517,8 +1525,8 @@ msgstr "Seconden"
 #. CONTEXT: side-by-side list: button: add the selected field
 #. CONTEXT: select file: selects the file
 #. CONTEXT: song-selection: select a song to be added to the song list
-#. CONTEXT: actions associated with the select folder dialog
-#. CONTEXT: actions associated with the select file dialog
+#. CONTEXT: select folder dialog: select folder
+#. CONTEXT: select file dialog: select file
 #. CONTEXT: managementui: config: button: add the selected songs to the song list
 msgid "Select"
 msgstr "Selecteer"

@@ -1001,7 +1001,6 @@ manageMainLoop (void *tmanage)
     }
     uiLabelSetText (&manage->statusMsg, "");
     manage->processapplyadj = MANAGE_APPLY_ADJ_OFF;
-
   }
 
   if (manage->processapplyadj == MANAGE_APPLY_ADJ_START) {
@@ -1540,24 +1539,13 @@ static bool
 manageRestoreOrigCallback (void *udata)
 {
   manageui_t    *manage = udata;
-  bool        changed;
 
   if (manage->songeditdbidx < 0) {
     return UICB_STOP;
   }
 
-  uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
-  changed = aaApplyAdjustments (manage->musicdb, manage->songeditdbidx, SONG_ADJUST_RESTORE);
-  uiLabelSetText (&manage->statusMsg, "");
-
-  if (changed) {
-    song_t      *song = NULL;
-
-    manageRePopulateData (manage);
-    song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-    uisongeditLoadData (manage->mmsongedit, song, manage->songeditdbidx);
-    manageSetEditMenuItems (manage);
-  }
+  manage->aaflags = SONG_ADJUST_RESTORE;
+  manage->processapplyadj = MANAGE_APPLY_ADJ_START;
 
   return UICB_CONT;
 }

@@ -125,7 +125,7 @@ songFree (void *tsong)
 }
 
 void
-songParse (song_t *song, char *data, ilistidx_t didx)
+songParse (song_t *song, char *data, ilistidx_t dbidx)
 {
   char        tbuff [40];
   ilistidx_t  lkey;
@@ -135,7 +135,7 @@ songParse (song_t *song, char *data, ilistidx_t didx)
     return;
   }
 
-  snprintf (tbuff, sizeof (tbuff), "song-%d", didx);
+  snprintf (tbuff, sizeof (tbuff), "song-%d", dbidx);
   nlistFree (song->songInfo);
   song->songInfo = datafileParse (data, tbuff, DFTYPE_KEY_VAL,
       songdfkeys, SONG_DFKEY_COUNT);
@@ -373,6 +373,44 @@ songDisplayString (song_t *song, int tagidx)
     str = songGetStr (song, tagidx);
     if (str == NULL) { str = ""; }
     str = mdstrdup (str);
+  }
+
+  if (tagidx == TAG_DURATION) {
+    long    dur;
+    long    val;
+    int     speed;
+    char    tbuff [100];
+    bool    changed = false;
+
+    dur = songGetNum (song, TAG_DURATION);
+    val = songGetNum (song, TAG_SONGEND);
+    if (val > 0 && val < dur) {
+      dur = val;
+      changed = true;
+    }
+    val = songGetNum (song, TAG_SONGSTART);
+    if (val > 0) {
+      dur -= val;
+      changed = true;
+    }
+    speed = songGetNum (song, TAG_SPEEDADJUSTMENT);
+    if (speed > 0 && speed != 100) {
+      dur = songAdjustPosReal (dur, speed);
+      changed = true;
+    }
+    if (changed) {
+      conv.allocated = false;
+      conv.num = dur;
+      conv.valuetype = VALUE_NUM;
+      convMS (&conv);
+      if (conv.str == NULL) { conv.str = ""; }
+      snprintf (tbuff, sizeof (tbuff), "%s (%s)", str, conv.str);
+      mdfree (str);
+      str = strdup (tbuff);
+      if (conv.allocated) {
+        mdfree (conv.str);
+      }
+    }
   }
 
   return str;

@@ -45,7 +45,6 @@ enum {
   AA_NORM_IN_MAX,
 };
 
-
 typedef struct aa {
   datafile_t      *df;
   nlist_t         *values;
@@ -139,13 +138,19 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, long aaflags)
       if (data != NULL) {
         slist_t *tagdata;
         int     rewrite;
+        char    tbuff [3096];
 
         tagdata = audiotagParseData (fullfn, data, &rewrite);
         slistSetStr (tagdata, tagdefs [TAG_ADJUSTFLAGS].tag, NULL);
+        /* the data in the database must be replaced with the original data */
         dbWrite (musicdb, songfn, tagdata, songGetNum (song, TAG_RRN));
+        /* and the song's data must be replaced with the original data */
+        dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
+            songfn, songGetNum (song, TAG_RRN));
+        songParse (song, tbuff, dbidx);
         slistFree (tagdata);
-        changed = true;
       }
+      changed = true;
     }
     return changed;
   }
@@ -203,7 +208,6 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, long aaflags)
   }
   /* any adjustments to the song are made */
   if ((aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST) {
-fprintf (stderr, "adjust\n");
     newdur = aaAdjust (song, infn, outfn, 0, 0, 0, 0);
     if (fileopFileExists (outfn)) {
       if (newdur > 0) {
@@ -226,7 +230,6 @@ fprintf (stderr, "adjust\n");
   }
   /* after the adjustments are done, then normalize */
   if ((aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM) {
-fprintf (stderr, "loudness norm\n");
     aaNormalize (infn, outfn);
     if (fileopFileExists (outfn)) {
       long    adjflags;

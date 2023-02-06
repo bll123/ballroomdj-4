@@ -4,6 +4,7 @@
 #ifndef INC_UILEVEL_H
 #define INC_UILEVEL_H
 
+#include "callback.h"
 #include "ui.h"
 
 typedef struct uilevel uilevel_t;
@@ -15,5 +16,6 @@ void uilevelSetValue (uilevel_t *uilevel, int value);
 void uilevelDisable (uilevel_t *uilevel);
 void uilevelEnable (uilevel_t *uilevel);
 void uilevelSizeGroupAdd (uilevel_t *uilevel, UIWidget *sg);
+void uilevelSetChangedCallback (uilevel_t *uilevel, callback_t *cb);
 
 #endif /* INC_UILEVEL_H */

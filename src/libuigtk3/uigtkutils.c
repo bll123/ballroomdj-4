@@ -50,7 +50,6 @@ void
 uiUIProcessEvents (void)
 {
   if (inprocess) {
-fprintf (stderr, "  in-process\n");
     return;
   }
   inprocess = true;
@@ -65,7 +64,6 @@ void
 uiUIProcessWaitEvents (void)
 {
   for (int i = 0; i < 4; ++i) {
-fprintf (stderr, "call proc-events\n");
     uiUIProcessEvents ();
     mssleep (5);
   }

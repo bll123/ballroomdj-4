@@ -122,6 +122,12 @@ uiratingSizeGroupAdd (uirating_t *uirating, UIWidget *sg)
   uiSizeGroupAdd (sg, uiSpinboxGetUIWidget (uirating->spinbox));
 }
 
+void
+uiratingSetChangedCallback (uirating_t *uirating, callback_t *cb)
+{
+  uiSpinboxTextSetValueChangedCallback (uirating->spinbox, cb);
+}
+
 /* internal routines */
 
 static const char *

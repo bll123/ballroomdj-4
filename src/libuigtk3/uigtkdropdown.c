@@ -30,7 +30,7 @@ enum {
 
 typedef struct uidropdown {
   char          *title;
-  callback_t  *selectcb;
+  callback_t    *selectcb;
   UIWidget      *parentwin;
   uibutton_t    *button;
   callback_t    *buttoncb;
