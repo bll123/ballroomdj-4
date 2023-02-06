@@ -11,6 +11,7 @@
 * Changes:
     * Minor user interface cleanup.
     * Song Editor: Duration display also shows adjusted duration.
+    * Song Editor: BPM Range is now displayed.
 * Bug Fixes:
     * BPM Counter: Fix slow exit.
 * Translations:

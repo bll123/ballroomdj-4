@@ -85,6 +85,13 @@ __Actions&nbsp;/&nbsp;Cancel&nbsp;Edit&nbsp;All__ cancels the
 batch edit process. The changes made to the current song will be
 reverted. ___This function is not yet implemented___.
 
+__Actions&nbsp;/&nbsp;Apply&nbsp;Adjustments__ modifies the audio file
+and applies the song start, song end and speed adjustments.  The
+original audio file is saved and can be restored.
+
+__Actions&nbsp;/&nbsp;Restore&nbsp;Original__ is only active if the
+audio file has been modified with the __Apply&nbsp;Adjustments__ action.
+
 ##### Using the BPM Counter
 
 Before using the BPM Counter, the BPM setting should be added to the
@@ -122,7 +129,7 @@ song editor is:
  Album|Audio|
  Album Artist|Audio|
  Artist|Audio|
- BPM|Audio|
+ BPM/MPM|Audio|
  Composer|Audio|
  Conductor|Audio|
  Dance|BDJ4|
