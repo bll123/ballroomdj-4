@@ -603,8 +603,7 @@ installerBuildUI (installer_t *installer)
   uiWindowSetDefaultSize (&installer->window, 1000, 600);
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, 10);
-  uiWidgetSetMarginTop (&vbox, 20);
+  uiWidgetSetAllMargins (&vbox, 4);
   uiWidgetExpandHoriz (&vbox);
   uiWidgetExpandVert (&vbox);
   uiBoxPackInWindow (&installer->window, &vbox);
