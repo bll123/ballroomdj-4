@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.0.11\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2023-02-04\n"
-"PO-Revision-Date: 2023-02-04\n"
+"POT-Creation-Date: 2023-02-06\n"
+"PO-Revision-Date: 2023-02-06\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -779,11 +779,8 @@ msgstr ""
 msgid "Foxtrot"
 msgstr ""
 
-#. CONTEXT: playlist management: Gap
-msgid "Gap"
-msgstr ""
-
 #. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
+#. CONTEXT: playlist management: Gap between songs
 msgid "Gap Between Songs"
 msgstr ""
 

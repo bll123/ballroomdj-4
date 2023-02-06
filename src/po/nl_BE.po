@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-02-06 16:59\n"
+"PO-Revision-Date: 2023-02-06\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -785,11 +785,8 @@ msgstr "Tekengrootte"
 msgid "Foxtrot"
 msgstr "Foxtrot"
 
-#. CONTEXT: playlist management: Gap
-msgid "Gap"
-msgstr "Kloof"
-
 #. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
+#. CONTEXT: playlist management: Gap between songs
 msgid "Gap Between Songs"
 msgstr "Pauzes tussen nummers"
 
@@ -993,7 +990,8 @@ msgid "Marquee Theme"
 msgstr ""
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid "Maximum\n"
+msgid ""
+"Maximum\n"
 "Play Time"
 msgstr "Maximale\n"
 "afspeeltijd"
@@ -1013,7 +1011,7 @@ msgstr ""
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
-msgstr ""
+msgstr "Mix"
 
 #. CONTEXT: configuration: qr code: title display for mobile marquee
 #. CONTEXT: configuration: options associated with the mobile marquee
@@ -1447,7 +1445,9 @@ msgid "Repeat"
 msgstr "Herhalen"
 
 #. CONTEXT: database update: rebuild: help text
-msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
+msgid ""
+"Replaces the BallroomDJ database in its entirety. All changes to the "
+"database will be lost."
 msgstr ""
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1515,6 +1515,7 @@ msgstr "Seconden"
 #. CONTEXT: select file: selects the file
 #. CONTEXT: song-selection: select a song to be added to the song list
 #. CONTEXT: actions associated with the select folder dialog
+#. CONTEXT: actions associated with the select file dialog
 #. CONTEXT: managementui: config: button: add the selected songs to the song list
 msgid "Select"
 msgstr "Selecteer"
@@ -1656,11 +1657,11 @@ msgstr "Song selectie"
 
 #. CONTEXT: label: time to start the song
 msgid "Song Start"
-msgstr ""
+msgstr "Song Start"
 
 #. CONTEXT: statistics: Label for number of songs in song list
 msgid "Songs"
-msgstr ""
+msgstr "Songs"
 
 #. CONTEXT: song selection filter: a filter: select the method to sort the song selection display
 msgid "Sort by"
@@ -1679,7 +1680,7 @@ msgstr "Tempo aanpassing"
 #. CONTEXT: set up alternate: start the set-up process
 #. CONTEXT: update database: button to start the database update process
 msgid "Start"
-msgstr ""
+msgstr "Start"
 
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence
 msgid "Start New Sequence"
@@ -1766,12 +1767,16 @@ msgid "The conversion process will not be run."
 msgstr ""
 
 #. CONTEXT: installer: instructions
-msgid "The conversion process will only run for new installations and for re-installations."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installations."
 msgstr ""
 
 #. CONTEXT: installer: command line interface: instructions
 #, c-format
-msgid "The conversion process will only run for new installations and for re-installs."
+msgid ""
+"The conversion process will only run for new installations and for re-"
+"installs."
 msgstr ""
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1825,7 +1830,7 @@ msgstr "Inkorten"
 
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -1865,11 +1870,13 @@ msgstr ""
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid "Updates the information in the BallroomDJ database from the %s database."
+msgid ""
+"Updates the information in the BallroomDJ database from the %s database."
 msgstr ""
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid "Updates the information in the BallroomDJ database from the audio file tags."
+msgid ""
+"Updates the information in the BallroomDJ database from the audio file tags."
 msgstr ""
 
 #. CONTEXT: set up alternate: status message
@@ -1952,7 +1959,9 @@ msgid "Write Tags to Audio Files"
 msgstr "Schrijf Tag info naar audiobestanden"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid "Writes the audio file tags using the information from the BallroomDJ database."
+msgid ""
+"Writes the audio file tags using the information from the BallroomDJ "
+"database."
 msgstr ""
 
 #. CONTEXT: configuration: dialog: XML file types
