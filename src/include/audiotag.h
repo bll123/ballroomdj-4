@@ -24,7 +24,7 @@ enum {
   AF_REWRITE_MB       = 0x0001,
   AF_REWRITE_DURATION = 0x0002,
   AF_REWRITE_VARIOUS  = 0x0004,
-  AF_REWRITE_BDJ      = 0x0008,
+  AF_FORCE_WRITE_BDJ  = 0x0008,
 };
 
 void audiotagInit (void);

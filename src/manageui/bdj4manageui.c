@@ -992,12 +992,16 @@ manageMainLoop (void *tmanage)
     changed = aaApplyAdjustments (manage->musicdb, manage->songeditdbidx, manage->aaflags);
 
     if (changed) {
-      song_t      *song = NULL;
+      song_t  *song = NULL;
+      char    tmp [40];
 
       manageRePopulateData (manage);
       song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
       uisongeditLoadData (manage->mmsongedit, song, manage->songeditdbidx);
       manageSetEditMenuItems (manage);
+
+      snprintf (tmp, sizeof (tmp), "%d", manage->songeditdbidx);
+      connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
     }
     uiLabelSetText (&manage->statusMsg, "");
     manage->processapplyadj = MANAGE_APPLY_ADJ_OFF;
@@ -1807,7 +1811,7 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
               manage->musicqManageIdx, MSG_ARGS_RS, 999, MSG_ARGS_RS, dbidx);
           connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
         } else {
-          logMsg (LOG_DBG, LOG_MAIN, "itunes import: song not found %s\n", songfn);
+          logMsg (LOG_DBG, LOG_MAIN, "itunes import: song not found %s", songfn);
         }
       }
 

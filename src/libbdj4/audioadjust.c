@@ -119,9 +119,9 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, long aaflags)
   snprintf (origfn, sizeof (origfn), "%s%s",
       infn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
 
+  /* check for a non-localized .original file, and if there, rename it */
   if (strcmp (BDJ4_GENERIC_ORIG_EXT, bdjvarsGetStr (BDJV_ORIGINAL_EXT)) != 0 &&
       ! fileopFileExists (origfn)) {
-    /* check for a non-localized .original file, and if there, rename it */
     /* use outfn as a temporary area */
     snprintf (outfn, sizeof (outfn), "%s%s", infn, BDJ4_GENERIC_ORIG_EXT);
     if (fileopFileExists (outfn)) {
@@ -165,7 +165,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, long aaflags)
       bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_BDJ_ONLY);
     }
     taglist = songTagList (song);
-    audiotagWriteTags (fullfn, taglist, taglist, AF_REWRITE_BDJ, AT_KEEP_MOD_TIME);
+    audiotagWriteTags (fullfn, taglist, taglist, AF_FORCE_WRITE_BDJ, AT_KEEP_MOD_TIME);
     bdjoptSetNum (OPT_G_WRITETAGS, value);
     slistFree (taglist);
     filemanipCopy (fullfn, origfn);
@@ -305,9 +305,9 @@ fprintf (stderr, "trim: %s\n", infn);
     }
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-trim: cmd: %s", cmd);
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-trim: rc: %d", rc);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-trim: resp:\n%s", resp);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-trim: resp: %s", resp);
   }
-  logMsg (LOG_DBG, LOG_MAIN, "aa: trim: elapsed: %ld\n",
+  logMsg (LOG_DBG, LOG_MAIN, "aa: trim: elapsed: %ld",
       (long) mstimeend (&etm));
 
   if (rc == 0) {
@@ -371,7 +371,7 @@ fprintf (stderr, "norm: %s\n", infn);
     }
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: cmd: %s", cmd);
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: rc: %d", rc);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: resp:\n%s", resp);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: resp: %s", resp);
     if (rc != 0) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, pass one failed.");
       return;
@@ -433,7 +433,7 @@ fprintf (stderr, "norm: %s\n", infn);
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, could not find input data");
     return;
   }
-  logMsg (LOG_DBG, LOG_MAIN, "aa: norm: elapsed pass 1: %ld\n",
+  logMsg (LOG_DBG, LOG_MAIN, "aa: norm: elapsed pass 1: %ld",
       (long) mstimeend (&etm));
 
   /* now do the normalization */
@@ -476,9 +476,9 @@ fprintf (stderr, "norm: %s\n", infn);
     }
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-b: cmd: %s", cmd);
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-b: rc: %d", rc);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-b: resp:\n%s", resp);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-b: resp: %s", resp);
   }
-  logMsg (LOG_DBG, LOG_MAIN, "aa: norm: elapsed: %ld\n",
+  logMsg (LOG_DBG, LOG_MAIN, "aa: norm: elapsed: %ld",
       (long) mstimeend (&etm));
   return;
 }
@@ -523,14 +523,19 @@ fprintf (stderr, "adjust: %s\n", infn);
   if (songstart == 0 && songend == 0 && speed == 100 && dur == 0 &&
       fadein == 0 && fadeout == 0 && gap == 0) {
     /* no adjustments need to be made */
+fprintf (stderr, "  no adjustments needed\n");
     return -1;
   }
 
   calcdur = dur;
   if (dur == 0) {
     calcdur = songdur;
-    calcdur -= songstart;
-    calcdur -= songend;
+    if (songend > 0 && songend < songdur) {
+      calcdur = songend;
+    }
+    if (songstart > 0) {
+      calcdur -= songstart;
+    }
   }
 
   /* translate to ffmpeg names */
@@ -557,8 +562,6 @@ fprintf (stderr, "adjust: %s\n", infn);
     targv [targc++] = sstmp;
   }
 
-  targv [targc++] = "-q:a";
-  targv [targc++] = "0";
   targv [targc++] = "-i";
   targv [targc++] = infn;
 
@@ -603,6 +606,8 @@ fprintf (stderr, "adjust: %s\n", infn);
     targv [targc++] = "-af";
     targv [targc++] = aftext;
   }
+  targv [targc++] = "-q:a";
+  targv [targc++] = "0";
   targv [targc++] = outfn;
   targv [targc++] = NULL;
 
@@ -615,11 +620,11 @@ fprintf (stderr, "adjust: %s\n", infn);
       strlcat (cmd, targv [i], sizeof (cmd));;
       strlcat (cmd, " ", sizeof (cmd));;
     }
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-adj: cmd: %s", cmd);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-adj: rc: %d", rc);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-adj: resp:\n%s", resp);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-adjust: cmd: %s", cmd);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-adjust: rc: %d", rc);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-adjust: resp: %s", resp);
   }
-  logMsg (LOG_DBG, LOG_MAIN, "aa: adjust: elapsed: %ld\n",
+  logMsg (LOG_DBG, LOG_MAIN, "aa: adjust: elapsed: %ld",
       (long) mstimeend (&etm));
 
   if (rc == 0) {
@@ -635,7 +640,7 @@ fprintf (stderr, "adjust: %s\n", infn);
     filemanipMove (outfn, tmpfn);
     newdur = aaApplySpeed (song, tmpfn, outfn, speed, gap);
     fileopDelete (tmpfn);
-    logMsg (LOG_DBG, LOG_MAIN, "aa: adjust-with-speed: elapsed: %ld\n",
+    logMsg (LOG_DBG, LOG_MAIN, "aa: adjust-with-speed: elapsed: %ld",
         (long) mstimeend (&etm));
   }
 
@@ -701,7 +706,7 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
     }
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-spd: cmd: %s", cmd);
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-spd: rc: %d", rc);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-spd: resp:\n%s", resp);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-spd: resp: %s", resp);
   }
 
   if (rc == 0) {

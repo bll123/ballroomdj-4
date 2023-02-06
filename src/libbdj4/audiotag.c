@@ -150,7 +150,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   }
 
   audiotagDetermineTagType (ffn, &tagtype, &filetype);
-  logMsg (LOG_DBG, LOG_DBUPDATE, "tagtype: %d afile-type: %d\n", tagtype, filetype);
+  logMsg (LOG_DBG, LOG_DBUPDATE, "tagtype: %d afile-type: %d", tagtype, filetype);
 
   if (tagtype != TAG_TYPE_VORBIS &&
       tagtype != TAG_TYPE_MP3 &&
@@ -193,7 +193,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     newvalue = slistGetStr (newtaglist, tag);
 
     if (tagdefs [tagkey].isBDJTag &&
-        (rewrite & AF_REWRITE_BDJ) == AF_REWRITE_BDJ) {
+        (rewrite & AF_FORCE_WRITE_BDJ) == AF_FORCE_WRITE_BDJ) {
       upd = true;
     }
 
@@ -983,8 +983,8 @@ audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite)
     return -1;
   }
   if (writetags == WRITE_TAGS_BDJ_ONLY && tagdefs [tagkey].isNormTag) {
-    if ((rewrite & AF_REWRITE_BDJ) != AF_REWRITE_BDJ) {
-      // logMsg (LOG_DBG, LOG_DBUPDATE, "bdj-only: %s\n", tag);
+    if ((rewrite & AF_FORCE_WRITE_BDJ) != AF_FORCE_WRITE_BDJ) {
+      // logMsg (LOG_DBG, LOG_DBUPDATE, "bdj-only: %s", tag);
       return -1;
     }
   }
