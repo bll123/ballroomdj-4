@@ -275,8 +275,8 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
 
-  /* CONTEXT: playlist management: Gap */
-  uiCreateColonLabel (&uiwidget, _("Gap"));
+  /* CONTEXT: playlist management: Gap between songs */
+  uiCreateColonLabel (&uiwidget, _("Gap Between Songs"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sg, &uiwidget);
 
