@@ -1,5 +1,7 @@
 [Wiki Home](Home)
 
+[TOC]
+
 ## Installing BallroomDJ 4 on Windows
 
 #### Updating BallroomDJ 4 : Make a Backup
@@ -7,6 +9,25 @@
 If you are updating BallroomDJ 4 to a new version, be sure to create a
 backup of your BDJ4 installation.  On Windows, simply make a copy of
 the entire BDJ4 folder.
+
+#### Windows 11 bug / Installation Issues
+
+Windows 11 has a bug where the BallroomDJ 4 installer will just exit
+or return an error 0xC0000142.
+
+This is possibly caused by corruption of the user profile or
+corruption of the user permissions.
+
+One work around is to right click on the BallroomDJ 4 installer and
+run the installer as adminstrator. BallroomDJ 4 does not require
+administrative permissions to install, this is a work around for the
+Windows 11 bug.
+
+Another method that may work is to delete the user account and
+re-create it. This is an extreme solution, and I do not know if the
+user account will stay uncorrupted.
+
+As far as I know, this bug does not occur on Windows 10.
 
 #### Windows Account Names with Diacritical Marks
 
@@ -79,4 +100,4 @@ After the VLC installation is complete, turn off the **Run VLC media
 player** checkbox, and select **Finish**.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-01 14:46:40; BDJ4 version 4.0.10-beta)_
+<br>_(Updated 2023-02-06 08:37:06; BDJ4 version 4.0.10-beta)_
