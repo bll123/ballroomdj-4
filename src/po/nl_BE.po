@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2022-09-10\n"
-"PO-Revision-Date: 2023-02-04\n"
+"POT-Creation-Date: 2023-01-31\n"
+"PO-Revision-Date: 2023-02-06 16:59\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -82,7 +82,7 @@ msgstr "%s Speler"
 #. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
 #, c-format
 msgid "%s Playlist"
-msgstr ""
+msgstr "%s Speellijst"
 
 #. CONTEXT: set up alternate: window title
 #, c-format
@@ -127,7 +127,7 @@ msgstr "%s is geïnstalleerd"
 #. CONTEXT: manage ui: status message: itunes is not configured
 #, c-format
 msgid "%s is not configured."
-msgstr ""
+msgstr "%s is niet geconfigureerd."
 
 #. CONTEXT: installer: display of package status
 #, c-format
@@ -204,7 +204,7 @@ msgstr "Acties"
 
 #. CONTEXT: configuration: queue: whether the queue is active
 msgid "Active"
-msgstr ""
+msgstr "Actief"
 
 #. CONTEXT: configuration: table edit: button: add new selection
 msgid "Add New"
@@ -212,7 +212,7 @@ msgstr "Voeg nieuwe toe"
 
 #. CONTEXT: apply adjustments: apply adjustments checkbox
 msgid "Adjust Speed, Song Start and End"
-msgstr ""
+msgstr "Snelheid aanpassen, Song Begin en Einde"
 
 #. CONTEXT: configuration file: dance level
 msgid "Advanced"
@@ -278,7 +278,7 @@ msgstr "Aanpassingen toepassen"
 
 #. CONTEXT: managementui: menu selection: song editor: apply edit all
 msgid "Apply Edit All"
-msgstr ""
+msgstr "Alles Bewerken Toepassen"
 
 #. CONTEXT: configuration file: dance
 msgid "Argentine Tango"
@@ -302,7 +302,7 @@ msgstr "Audio"
 
 #. CONTEXT: request external: enter the audio file location
 msgid "Audio File"
-msgstr ""
+msgstr "Audiobestand"
 
 #. CONTEXT: configuration: announcement selection dialog: audio file filter
 #. CONTEXT: request external: file selection dialog: audio file filter
@@ -354,7 +354,7 @@ msgstr "Slagen"
 
 #. CONTEXT: managementui: menu selection: song editor: cancel edit all
 msgid "Cancel Edit All"
-msgstr ""
+msgstr "Alles Bewerken Annuleren"
 
 #. CONTEXT: configuration file: dance
 msgid "Cha Cha"
@@ -482,22 +482,22 @@ msgstr "Profiel aanmaken"
 
 #. CONTEXT: starterui: menu item: create shortcut for profile
 msgid "Create Shortcut for Profile"
-msgstr ""
+msgstr "Snelkoppeling voor Profiel aanmaken"
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: create a song list from a playlist
 #. CONTEXT: create from playlist: title for the dialog
 msgid "Create from Playlist"
-msgstr ""
+msgstr "Aanmaken vanaf Speellijst"
 
 #. CONTEXT: set up alternate: status message
 #. CONTEXT: installer: status message
 msgid "Creating folder structure."
-msgstr ""
+msgstr "Mapstructuur maken."
 
 #. CONTEXT: set up alternate: status message
 #. CONTEXT: installer: status message
 msgid "Creating shortcut."
-msgstr ""
+msgstr "Snelkoppeling maken."
 
 #. CONTEXT: label: dance
 msgid "Dance"
@@ -505,7 +505,7 @@ msgstr "Dans"
 
 #. CONTEXT: label: dance level
 msgid "Dance Level"
-msgstr ""
+msgstr "Dans Niveau"
 
 #. CONTEXT: label: dance rating
 msgid "Dance Rating"
@@ -525,7 +525,7 @@ msgstr "Datum toegevoegd"
 
 #. CONTEXT: configuration: debug options that can be turned on and off
 msgid "Debug"
-msgstr ""
+msgstr "Debuggen"
 
 #. CONTEXT: configuration: level: title of the default selection column
 #. CONTEXT: configuration: audio: The default audio sink (audio output)
@@ -546,7 +546,7 @@ msgstr "Verwijderen"
 
 #. CONTEXT: starterui: menu item: delete profile
 msgid "Delete Profile"
-msgstr ""
+msgstr "Verwijder Profiel"
 
 #. CONTEXT: label: disc number
 msgid "Disc"
@@ -554,16 +554,16 @@ msgstr "Schijf"
 
 #. CONTEXT: label: disc count
 msgid "Disc Count"
-msgstr ""
+msgstr "Schijfaantal"
 
 #. CONTEXT: configuration: display settings: which set of display settings to update
 #. CONTEXT: configuration: queue: whether to display the queue
 msgid "Display"
-msgstr ""
+msgstr "Weergave"
 
 #. CONTEXT: configuration: change which fields are displayed in different contexts
 msgid "Display Settings"
-msgstr ""
+msgstr "Weergave-instellingen"
 
 #. CONTEXT: configuration: write audio file tags: do not write any tags to the audio file
 msgid "Don't Write"
@@ -574,17 +574,17 @@ msgstr "Niet wegschrijven"
 #. CONTEXT: configuration: dance ratings: information on how to edit a rating entry
 #. CONTEXT: configuration: status: information on how to edit a status entry
 msgid "Double click on a field to edit."
-msgstr ""
+msgstr "Dubbelklik op een veld om te bewerken."
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Download of %s failed."
-msgstr ""
+msgstr "Download van %s mislukt."
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Downloading %s."
-msgstr ""
+msgstr "Downloaden %s."
 
 #. CONTEXT: label: duration of the song
 msgid "Duration"
@@ -652,44 +652,44 @@ msgstr "Bewerk status"
 
 #. CONTEXT: configuration: enable mobile marquee
 msgid "Enable Mobile Marquee"
-msgstr ""
+msgstr "Mobiele Marquee inschakelen"
 
 #. CONTEXT: configuration: remote control: checkbox: enable/disable
 msgid "Enable Remote Control"
-msgstr ""
+msgstr "Afstandsbediening inschakelen"
 
 #. CONTEXT: set up alternate: ask for alternate folder
 msgid "Enter the alternate folder."
-msgstr ""
+msgstr "Voer plaatsvervangende map in."
 
 #. CONTEXT: installer: where BDJ4 gets installed
 msgid "Enter the destination folder where BDJ4 will be installed."
-msgstr ""
+msgstr "Geef de map op waarin BDJ zal worden in geïnstalleerd."
 
 #. CONTEXT: installer: command line interface: asking for the BDJ4 destination
 #, c-format
 msgid "Enter the destination folder."
-msgstr ""
+msgstr "Voer de doelmap in."
 
 #. CONTEXT: installer: asking where BallroomDJ 3 is installed
 #. CONTEXT: installer: command line interface: prompt for BDJ3 location
 #, c-format
 msgid "Enter the folder where %s is installed."
-msgstr ""
+msgstr "Geef de map op waar %s is geïnstalleerd."
 
 #. CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation
 #, c-format
 msgid "Error: Folder %s already exists."
-msgstr ""
+msgstr "Fout: Map %s bestaat al."
 
 #. CONTEXT: installer: the selected folder exists and is not a BDJ4 installation
 msgid "Error: Folder already exists."
-msgstr ""
+msgstr "Fout: Map bestaat al."
 
 #. CONTEXT: set up alternate: failure message
 #. CONTEXT: installer: failure message
 msgid "Error: Unable to set working folder."
-msgstr ""
+msgstr "Fout: Kan werkmap niet instellen."
 
 #. CONTEXT: configuration: examples displayed for the audio file organization path
 msgid "Examples"
@@ -738,23 +738,23 @@ msgstr "Fade-Out tijd"
 
 #. CONTEXT: label: favorite marker
 msgid "Favorite"
-msgstr ""
+msgstr "Favoriet"
 
 #. CONTEXT: configuration: itunes: which fields should be imported from itunes
 msgid "Fields to Import"
-msgstr ""
+msgstr "Te importeren velden"
 
 #. CONTEXT: song editor: label for displaying the audio file path
 msgid "File"
-msgstr ""
+msgstr "Bestand"
 
 #. CONTEXT: configuration: song filter display settings
 msgid "Filter Display"
-msgstr ""
+msgstr "Filter Weergave"
 
 #. CONTEXT: song selection filter: title for the filter dialog
 msgid "Filter Songs"
-msgstr ""
+msgstr "Filter Songs"
 
 #. CONTEXT: song-selection: a button that starts the filters (narrowing down song selections) dialog
 msgid "Filters"
@@ -770,7 +770,7 @@ msgstr "Map"
 
 #. CONTEXT: installer: command line interface: status message
 msgid "Folder already exists."
-msgstr ""
+msgstr "Map bestaat al."
 
 #. CONTEXT: configuration: the font to use for the user interface
 msgid "Font"
@@ -787,7 +787,7 @@ msgstr "Foxtrot"
 
 #. CONTEXT: playlist management: Gap
 msgid "Gap"
-msgstr ""
+msgstr "Kloof"
 
 #. CONTEXT: configuration: queue: the amount of time to wait inbetween songs
 msgid "Gap Between Songs"
@@ -795,7 +795,7 @@ msgstr "Pauzes tussen nummers"
 
 #. CONTEXT: configuration: general options that apply to everything
 msgid "General"
-msgstr ""
+msgstr "Algemeen"
 
 #. CONTEXT: label: genre
 msgid "Genre"
@@ -835,11 +835,11 @@ msgstr "Hystoriek"
 #. CONTEXT: installer: command line interface: instructions
 #, c-format
 msgid "If there is no %s installation, enter a single '-'."
-msgstr ""
+msgstr "Als er geen %s installatie is, voer dan een enkele '-' in."
 
 #. CONTEXT: installer: instructions
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
-msgstr ""
+msgstr "Als er geen BallroomDJ 3 installatie is, laat u de invoer leeg."
 
 #. CONTEXT: import from itunes: import the selected itunes playlist
 #. CONTEXT: managementui: menu selection: import actions for song list
@@ -849,7 +849,7 @@ msgstr "Importeer"
 #. CONTEXT: managementui: song list import: title of dialog
 #. CONTEXT: managementui: menu selection: song list: import: import m3u
 msgid "Import M3U"
-msgstr ""
+msgstr "Importeer M3U"
 
 #. CONTEXT: import from itunes: title for the dialog
 #. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
@@ -860,7 +860,7 @@ msgstr "Importeren van %s"
 
 #. CONTEXT: set up alternate: status message
 msgid "Initial Setup."
-msgstr ""
+msgstr "Oorspronkelijke instelling."
 
 #. CONTEXT: installer: start the installation process
 msgid "Install"
@@ -868,21 +868,21 @@ msgstr "Installeren"
 
 #. CONTEXT: installer: dialog title for selecting install location
 msgid "Install Location"
-msgstr ""
+msgstr "Installatie Locatie"
 
 #. CONTEXT: installer: command line interface: status message
 #. CONTEXT: installer: status message
 msgid "Installation aborted."
-msgstr ""
+msgstr "Installatie afgebroken."
 
 #. CONTEXT: installer: status message
 msgid "Installation complete."
-msgstr ""
+msgstr "Installatie voltooid."
 
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Installing %s."
-msgstr ""
+msgstr "%s Installeren."
 
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
@@ -902,7 +902,7 @@ msgstr "Laatst bijgewerkt"
 
 #. CONTEXT: starterui: basic support dialog, latest version display
 msgid "Latest Version"
-msgstr ""
+msgstr "Laatste Versie"
 
 #. CONTEXT: configuration: level: title of the level name column
 #. CONTEXT: label: dance level (short name for listing)
@@ -993,8 +993,7 @@ msgid "Marquee Theme"
 msgstr ""
 
 #. CONTEXT: playlist management: max play time column header (keep short)
-msgid ""
-"Maximum\n"
+msgid "Maximum\n"
 "Play Time"
 msgstr "Maximale\n"
 "afspeeltijd"
@@ -1014,7 +1013,7 @@ msgstr ""
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
-msgstr "Mix"
+msgstr ""
 
 #. CONTEXT: configuration: qr code: title display for mobile marquee
 #. CONTEXT: configuration: options associated with the mobile marquee
@@ -1448,9 +1447,7 @@ msgid "Repeat"
 msgstr "Herhalen"
 
 #. CONTEXT: database update: rebuild: help text
-msgid ""
-"Replaces the BallroomDJ database in its entirety. All changes to the "
-"database will be lost."
+msgid "Replaces the BallroomDJ database in its entirety. All changes to the database will be lost."
 msgstr ""
 
 #. CONTEXT: configuration: display settings for: requests
@@ -1518,7 +1515,6 @@ msgstr "Seconden"
 #. CONTEXT: select file: selects the file
 #. CONTEXT: song-selection: select a song to be added to the song list
 #. CONTEXT: actions associated with the select folder dialog
-#. CONTEXT: actions associated with the select file dialog
 #. CONTEXT: managementui: config: button: add the selected songs to the song list
 msgid "Select"
 msgstr "Selecteer"
@@ -1660,11 +1656,11 @@ msgstr "Song selectie"
 
 #. CONTEXT: label: time to start the song
 msgid "Song Start"
-msgstr "Song Start"
+msgstr ""
 
 #. CONTEXT: statistics: Label for number of songs in song list
 msgid "Songs"
-msgstr "Songs"
+msgstr ""
 
 #. CONTEXT: song selection filter: a filter: select the method to sort the song selection display
 msgid "Sort by"
@@ -1683,7 +1679,7 @@ msgstr "Tempo aanpassing"
 #. CONTEXT: set up alternate: start the set-up process
 #. CONTEXT: update database: button to start the database update process
 msgid "Start"
-msgstr "Start"
+msgstr ""
 
 #. CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence
 msgid "Start New Sequence"
@@ -1770,16 +1766,12 @@ msgid "The conversion process will not be run."
 msgstr ""
 
 #. CONTEXT: installer: instructions
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installations."
+msgid "The conversion process will only run for new installations and for re-installations."
 msgstr ""
 
 #. CONTEXT: installer: command line interface: instructions
 #, c-format
-msgid ""
-"The conversion process will only run for new installations and for re-"
-"installs."
+msgid "The conversion process will only run for new installations and for re-installs."
 msgstr ""
 
 #. CONTEXT: configuration: the theme to use for the user interface
@@ -1833,7 +1825,7 @@ msgstr "Inkorten"
 
 #. CONTEXT: configuration: dances: the type of the dance (club/latin/standard)
 msgid "Type"
-msgstr "Type"
+msgstr ""
 
 #. CONTEXT: installer: status message
 #, c-format
@@ -1873,13 +1865,11 @@ msgstr ""
 
 #. CONTEXT: database update: update from itunes: help text
 #, c-format
-msgid ""
-"Updates the information in the BallroomDJ database from the %s database."
+msgid "Updates the information in the BallroomDJ database from the %s database."
 msgstr ""
 
 #. CONTEXT: database update: update from audio file tags: help text
-msgid ""
-"Updates the information in the BallroomDJ database from the audio file tags."
+msgid "Updates the information in the BallroomDJ database from the audio file tags."
 msgstr ""
 
 #. CONTEXT: set up alternate: status message
@@ -1962,9 +1952,7 @@ msgid "Write Tags to Audio Files"
 msgstr "Schrijf Tag info naar audiobestanden"
 
 #. CONTEXT: database update: write tags to audio files: help text
-msgid ""
-"Writes the audio file tags using the information from the BallroomDJ "
-"database."
+msgid "Writes the audio file tags using the information from the BallroomDJ database."
 msgstr ""
 
 #. CONTEXT: configuration: dialog: XML file types
