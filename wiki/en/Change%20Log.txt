@@ -4,12 +4,13 @@
 
 <!--
 
-**4.0.11 beta 2023-2---**
+**4.1.0 beta 2023-2---**
 
 * New Features:
     * Song Editor: Apply Adjustments.
 * Changes:
     * Minor user interface cleanup.
+    * Song Editor: Duration display also shows adjusted duration.
 * Bug Fixes:
     * BPM Counter: Fix slow exit.
 * Translations:

@@ -3,6 +3,12 @@
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
 
+while test ! \( -d src -a -d web -a -d wiki \); do
+  cd ..
+done
+cd src/po
+cwd=$(pwd)
+
 TMP=xlatetmp
 
 test -d $TMP && rm -rf $TMP
