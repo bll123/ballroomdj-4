@@ -201,8 +201,10 @@ uiButtonCheckRepeat (uibutton_t *uibutton)
   if (uibutton->repeating) {
     if (mstimeCheck (&uibutton->repeatTimer)) {
       if (uibutton->cb != NULL) {
+        uibutton->repeating = false;
         callbackHandler (uibutton->cb);
         mstimeset (&uibutton->repeatTimer, uibutton->repeatMS);
+        uibutton->repeating = true;
       }
     }
   }
@@ -246,16 +248,19 @@ uiButtonPressCallback (void *udata)
     return UICB_CONT;
   }
 
+  uibutton->repeating = false;
   uicb = uibutton->cb;
   if (uicb == NULL) {
     return UICB_CONT;
   }
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-press");
-  uibutton->repeating = true;
   if (uicb != NULL) {
     callbackHandler (uicb);
   }
-  mstimeset (&uibutton->repeatTimer, uibutton->repeatMS);
+  /* the first time the button is pressed, the repeat timer should have */
+  /* a longer initial delay. */
+  mstimeset (&uibutton->repeatTimer, uibutton->repeatMS * 3);
+  uibutton->repeating = true;
   return UICB_CONT;
 }
 
@@ -263,18 +268,12 @@ static bool
 uiButtonReleaseCallback (void *udata)
 {
   uibutton_t  *uibutton = udata;
-  callback_t  *uicb = uibutton->cb;
 
   if (uibutton == NULL) {
     return UICB_CONT;
   }
 
-  uicb = uibutton->cb;
-  if (uicb == NULL) {
-    return UICB_CONT;
-  }
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-release");
   uibutton->repeating = false;
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: button-release");
   return UICB_CONT;
 }
-

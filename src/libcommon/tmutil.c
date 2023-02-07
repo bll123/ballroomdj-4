@@ -125,36 +125,45 @@ void
 mstimeset (mstime_t *mt, time_t addTime)
 {
   time_t            s;
+  struct timeval    ttm;
+  struct timeval    atm;
+  struct timeval    res;
 
-  gettimeofday (&mt->tm, NULL);
+  gettimeofday (&ttm, NULL);
   s = addTime / 1000;
-  mt->tm.tv_sec += s;
-  mt->tm.tv_usec += (addTime - (s * 1000)) * 1000;
+  atm.tv_sec = s;
+  atm.tv_usec = (addTime - (s * 1000)) * 1000;
+  timeradd (&ttm, &atm, &res);
+  /* avoid race conditions */
+  memcpy (&mt->tm, &res, sizeof (struct timeval));
 }
 
 void
 mstimesettm (mstime_t *mt, time_t setTime)
 {
   time_t            s;
+  struct timeval    ttm;
+  struct timeval    atm;
+  struct timeval    res;
 
-  mt->tm.tv_sec = 0;
-  mt->tm.tv_usec = 0;
+  timerclear (&ttm);
   s = setTime / 1000;
-  mt->tm.tv_sec += s;
-  mt->tm.tv_usec += (setTime - (s * 1000)) * 1000;
+  atm.tv_sec = s;
+  atm.tv_usec = (setTime - (s * 1000)) * 1000;
+  /* avoid race conditions */
+  timeradd (&ttm, &atm, &res);
+  memcpy (&mt->tm, &res, sizeof (struct timeval));
 }
 
 bool
 mstimeCheck (mstime_t *mt)
 {
-  struct timeval    ttm;
+  struct timeval  ttm;
+  int             rc;
 
   gettimeofday (&ttm, NULL);
-  if (ttm.tv_sec > mt->tm.tv_sec) {
-    return true;
-  }
-  if (ttm.tv_sec == mt->tm.tv_sec &&
-      ttm.tv_usec >= mt->tm.tv_usec) {
+  rc = timercmp (&ttm, &mt->tm, >);
+  if (rc) {
     return true;
   }
   return false;

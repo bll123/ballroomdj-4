@@ -290,38 +290,51 @@ static void
 audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 {
   pathinfo_t  *pi;
-  char        tmp [40];
+  char        tmp [MAXPATHLEN];
+  bool        found = false;
 
   pi = pathInfo (ffn);
 
-  *tmp = '\0';
-  if (pi->elen > 0 && pi->elen + 1 < sizeof (tmp)) {
-    strlcpy (tmp, pi->extension, pi->elen + 1);
-  }
-
   *filetype = AFILE_TYPE_UNKNOWN;
   *tagtype = TAG_TYPE_VORBIS;
-  if (strcmp (tmp, ".mp3") == 0) {
+
+  if (pathInfoExtCheck (pi, ".mp3") ||
+      pathInfoExtCheck (pi, ".m4a") ||
+      pathInfoExtCheck (pi, ".wma") ||
+      pathInfoExtCheck (pi, ".ogg") ||
+      pathInfoExtCheck (pi, ".opus") ||
+      pathInfoExtCheck (pi, ".flac")) {
+    found = true;
+  }
+
+  if (! found) {
+    /* this handles .mp3.original situations */
+    snprintf (tmp, sizeof (tmp), "%.*s", (int) pi->blen, pi->basename);
+    pathInfoFree (pi);
+    pi = pathInfo (tmp);
+  }
+
+  if (pathInfoExtCheck (pi, ".mp3")) {
     *tagtype = TAG_TYPE_MP3;
     *filetype = AFILE_TYPE_MP3;
   }
-  if (strcmp (tmp, ".m4a") == 0) {
+  if (pathInfoExtCheck (pi, ".m4a")) {
     *tagtype = TAG_TYPE_MP4;
     *filetype = AFILE_TYPE_MP4;
   }
-  if (strcmp (tmp, ".wma") == 0) {
+  if (pathInfoExtCheck (pi, ".wma")) {
     *tagtype = TAG_TYPE_WMA;
     *filetype = AFILE_TYPE_WMA;
   }
-  if (strcmp (tmp, ".ogg") == 0) {
+  if (pathInfoExtCheck (pi, ".ogg")) {
     *tagtype = TAG_TYPE_VORBIS;
     *filetype = AFILE_TYPE_OGGVORBIS;
   }
-  if (strcmp (tmp, ".opus") == 0) {
+  if (pathInfoExtCheck (pi, ".opus")) {
     *tagtype = TAG_TYPE_VORBIS;
     *filetype = AFILE_TYPE_OGGOPUS;
   }
-  if (strcmp (tmp, ".flac") == 0) {
+  if (pathInfoExtCheck (pi, ".flac")) {
     *tagtype = TAG_TYPE_VORBIS;
     *filetype = AFILE_TYPE_FLAC;
   }

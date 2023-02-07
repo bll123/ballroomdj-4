@@ -14,6 +14,7 @@
     * Song Editor: BPM Range is now displayed.
 * Bug Fixes:
     * BPM Counter: Fix slow exit.
+    * User Interface: Button Repeat: Longer initial delay, fixed.
 * Translations:
     * Updated Nederlands.
 * Internal:

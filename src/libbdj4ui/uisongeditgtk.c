@@ -1262,9 +1262,43 @@ uisongeditSaveCallback (void *udata)
   {
     long      songstart;
     long      songend;
+    long      dur;
+    int       speed;
 
+    speed = songGetNum (uiw->song, TAG_SPEEDADJUSTMENT);
     songstart = songGetNum (uiw->song, TAG_SONGSTART);
     songend = songGetNum (uiw->song, TAG_SONGEND);
+    /* for the validation checks, the song-start and song-end must be */
+    /* normalized. */
+    if (speed > 0 && speed != 100) {
+      if (songstart > 0) {
+        songstart = songNormalizePosition (songstart, speed);
+      }
+      if (songend > 0) {
+        songend = songNormalizePosition (songend, speed);
+      }
+    }
+    dur = songGetNum (uiw->song, TAG_DURATION);
+    if (songstart > 0 && songstart > dur) {
+      if (uisongedit->statusMsg != NULL) {
+        /* CONTEXT: song editor: status msg: (song start may not exceed the song duration) */
+        snprintf (tbuff, sizeof (tbuff), _("%s may not exceed the song duration"),
+            tagdefs [TAG_SONGSTART].displayname);
+        uiLabelSetText (uisongedit->statusMsg, tbuff);
+        logProcEnd (LOG_PROC, "uisongeditSaveCallback", "song-start>dur");
+        valid = false;
+      }
+    }
+    if (songend > 0 && songend > dur) {
+      if (uisongedit->statusMsg != NULL) {
+        /* CONTEXT: song editor: status msg: (song end may not exceed the song duration) */
+        snprintf (tbuff, sizeof (tbuff), _("%s may not exceed the song duration"),
+            tagdefs [TAG_SONGEND].displayname);
+        uiLabelSetText (uisongedit->statusMsg, tbuff);
+        logProcEnd (LOG_PROC, "uisongeditSaveCallback", "song-end>dur");
+        valid = false;
+      }
+    }
     if (songstart > 0 && songend > 0 && songstart >= songend) {
       if (uisongedit->statusMsg != NULL) {
         /* CONTEXT: song editor: status msg: (song end must be greater than song start) */

@@ -93,7 +93,7 @@ aaFree (aa_t *aa)
 }
 
 bool
-aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, long aaflags)
+aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
 {
   song_t      *song;
   long        dur;
@@ -112,6 +112,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, long aaflags)
   }
 
   dur = songGetNum (song, TAG_DURATION);
+fprintf (stderr, "  orig-rrn: dbidx:%d rrn:%ld\n", dbidx, songGetNum (song, TAG_RRN));
 
   songfn = songGetStr (song, TAG_FILE);
   infn = songFullFileName (songfn);
@@ -129,25 +130,34 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, long aaflags)
     }
   }
 
+fprintf (stderr, "aa: aaflags: %08x\n", aaflags);
   if (aaflags == SONG_ADJUST_RESTORE) {
+fprintf (stderr, "  restore\n");
     if (fileopFileExists (origfn)) {
       char    *data;
 
+fprintf (stderr, "  have file\n");
       filemanipMove (origfn, fullfn);
       data = audiotagReadTags (fullfn);
       if (data != NULL) {
         slist_t *tagdata;
         int     rewrite;
         char    tbuff [3096];
+        dbidx_t rrn;
 
+        rrn = songGetNum (song, TAG_RRN);
+fprintf (stderr, "  rrn: %d\n", rrn);
+fprintf (stderr, "  have tag data\n");
         tagdata = audiotagParseData (fullfn, data, &rewrite);
         slistSetStr (tagdata, tagdefs [TAG_ADJUSTFLAGS].tag, NULL);
         /* the data in the database must be replaced with the original data */
-        dbWrite (musicdb, songfn, tagdata, songGetNum (song, TAG_RRN));
+        dbWrite (musicdb, songfn, tagdata, rrn);
         /* and the song's data must be replaced with the original data */
         dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
-            songfn, songGetNum (song, TAG_RRN));
+            songfn, rrn);
         songParse (song, tbuff, dbidx);
+        /* reset the RRN back to the original */
+        songSetNum (song, TAG_RRN, rrn);
         slistFree (tagdata);
       }
       changed = true;
@@ -245,6 +255,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, long aaflags)
   }
 
   if (changed) {
+fprintf (stderr, "  call song-write-db: dbidx:%d rrn:%ld\n", dbidx, songGetNum (song, TAG_RRN));
     songWriteDB (musicdb, dbidx);
   }
 
@@ -520,7 +531,7 @@ fprintf (stderr, "adjust: %s\n", infn);
   }
   fadetype = bdjoptGetNum (OPT_P_FADETYPE);
 
-  if (songstart == 0 && songend == 0 && speed == 100 && dur == 0 &&
+  if (songstart <= 0 && songend <= 0 && speed == 100 && dur == 0 &&
       fadein == 0 && fadeout == 0 && gap == 0) {
     /* no adjustments need to be made */
 fprintf (stderr, "  no adjustments needed\n");
