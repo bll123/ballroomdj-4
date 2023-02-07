@@ -58,7 +58,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   uiCreateSizeGroupHoriz (&sgB);
 
   /* CONTEXT: (noun) configuration: queue: select which queue to configure */
-  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Queue"),
+  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Queue_noun"),
       CONFUI_SPINBOX_PLAYER_QUEUE, -1, CONFUI_OUT_NUM,
       gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx, confuiMusicQChg);
 

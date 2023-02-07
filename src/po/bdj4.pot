@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-06 09:22-0800\n"
+"POT-Creation-Date: 2023-02-07 09:44-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1333,7 +1333,6 @@ msgid "QR Code"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
-#. CONTEXT: (noun) configuration: queue: select which queue to configure
 #. CONTEXT: (verb) history: re-queue the selected song
 #. CONTEXT: (verb) request external dialog: queue the selected file
 #. CONTEXT: (verb) song-selection: queue a song to be played
@@ -1379,6 +1378,10 @@ msgstr ""
 #. CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button
 #. CONTEXT: player: the name of the special playlist for queueing a dance
 msgid "QueueDance"
+msgstr ""
+
+#. CONTEXT: (noun) configuration: queue: select which queue to configure
+msgid "Queue_noun"
 msgstr ""
 
 #. CONTEXT: configuration file: dance

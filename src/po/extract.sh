@@ -141,8 +141,11 @@ cd po
 awk -f extract-helptext.awk ${POTFILE} > ${POTFILE}.n
 mv -f ${POTFILE}.n ${POTFILE}
 
-mkpo en en_GB.po 'Automatically generated' 'English (GB)' english/gb
-rm -f en_GB.po.old
+fn=en_GB.po
+mkpo en ${fn} 'Automatically generated' 'English (GB)' english/gb
+rm -f ${fn}.old
+# The Queue_noun tag must be replaced with the correct noun.
+sed -i -e '/"Queue_noun"/ { n ; s,"","Queue", ; }' ${fn}
 
 # If a translation is removed, remember to also remove
 # the locale/xx files and directories.
