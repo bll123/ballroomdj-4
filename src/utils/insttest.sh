@@ -110,7 +110,7 @@ function checkUpdaterClean {
   # queue dance had bad data
   fn="$DATADIR/QueueDance.pldances"
   if [[ $section == nl ]]; then
-    fn="$DATADIR/wachtrijendans.pldances"
+    fn="$DATADIR/DansToevoegen.pldances"
   fi
   if [[ -f $fn ]]; then
     mkBadPldance "$fn"
@@ -281,7 +281,7 @@ function checkInstallation {
     res=$(($res+1))  # standardround.pldances file
     fn="${DATADIR}/QueueDance.pldances"
     if [[ $section == nl ]]; then
-      fn="${DATADIR}/wachtrijendans.pldances"
+      fn="${DATADIR}/DansToevoegen.pldances"
     fi
     if [[ $fin == T && -f $fn ]]; then
       grep '^\.\.15000' "$fn" > /dev/null 2>&1
