@@ -16,7 +16,7 @@
     * BPM Counter: Fix slow exit.
     * User Interface: Button Repeat: Longer initial delay, fixed.
 * Translations:
-    * Updated Nederlands.
+    * Nederlands updated.
 * Internal:
     * Song Editor: code cleanup.
     * Installer: code cleanup.
@@ -228,4 +228,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-01 14:54:09; BDJ4 version 4.0.10-beta)_
+<br>_(Updated 2023-02-07 12:11:10; BDJ4 version 4.0.10-beta)_
