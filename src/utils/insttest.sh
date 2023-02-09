@@ -110,7 +110,11 @@ function checkUpdaterClean {
   # queue dance had bad data
   fn="$DATADIR/QueueDance.pldances"
   if [[ $section == nl ]]; then
+    fn="$DATADIR/DansToevoegen.pl"
+    # nl was renamed after the bad data situation
+    rm -f "$fn"
     fn="$DATADIR/DansToevoegen.pldances"
+    rm -f "$fn"
   fi
   if [[ -f $fn ]]; then
     mkBadPldance "$fn"
@@ -231,6 +235,71 @@ function checkInstallation {
       echo "  no tmp directory"
     fi
 
+    res=$(($res+1))  # img dir
+    if [[ $fin == T && -d "${DATATOPDIR}/img" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no img directory"
+    fi
+
+    res=$(($res+1))  # img/profile00 dir
+    if [[ $fin == T && -d "${DATATOPDIR}/img/profile00" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no img/profile00 directory"
+    fi
+
+    # various image files
+    res=$(($res+1))
+    if [[ $fin == T && -f "${DATATOPDIR}/img/led_on.svg" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no img/led_on.svg file"
+    fi
+
+    res=$(($res+1))
+    if [[ $fin == T && -f "${DATATOPDIR}/img/profile00/button_add.svg" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no button_add.svg file"
+    fi
+
+    res=$(($res+1))  # http dir
+    if [[ $fin == T && -d "${DATATOPDIR}/http" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no http directory"
+    fi
+
+    # various http files
+    res=$(($res+1))
+    if [[ $fin == T && -f "${DATATOPDIR}/http/led_on.svg" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no http/led_on.svg file"
+    fi
+
+    res=$(($res+1))
+    if [[ $fin == T && -f "${DATATOPDIR}/http/ballroomdj4.svg" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no ballroomdj4.svg file"
+    fi
+
+    res=$(($res+1))
+    if [[ $fin == T && -f "${DATATOPDIR}/http/favicon.ico" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no favicon.ico file"
+    fi
+
+    res=$(($res+1))
+    if [[ $fin == T && -f "${DATATOPDIR}/http/mrc/dark/play.svg" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no mrc/dark/play.svg file"
+    fi
+
     res=$(($res+1))  # audioadjust.txt file
     if [[ $fin == T && -f "${DATADIR}/audioadjust.txt" ]]; then
       chk=$(($chk+1))
@@ -278,21 +347,46 @@ function checkInstallation {
       echo "  no itunes-fields.txt file"
     fi
 
-    res=$(($res+1))  # standardround.pldances file
-    fn="${DATADIR}/QueueDance.pldances"
+    res=$(($res+1))  # queuedance.pldances file
+    fna="${DATADIR}/QueueDance.pldances"
+    fnb="${DATADIR}/DansToevoegen.pldances"
     if [[ $section == nl ]]; then
-      fn="${DATADIR}/DansToevoegen.pldances"
+      temp="$fna"
+      fna="$fnb"
+      fnb="$temp"
     fi
-    if [[ $fin == T && -f $fn ]]; then
-      grep '^\.\.15000' "$fn" > /dev/null 2>&1
-      rc=$?
-      if [[ $rc -ne 0 ]]; then
-        chk=$(($chk+1))
+    if [[ $fin == T && -f ${fna} ]]; then
+      if [[ -f ${fnb} ]]; then
+        echo "  extra $(basename "$fnb") file"
       else
-        echo "  $(basename "$fn") has bad vw maxplaytime"
+        grep '^\.\.15000' "$fn" > /dev/null 2>&1
+        rc=$?
+        if [[ $rc -ne 0 ]]; then
+          chk=$(($chk+1))
+        else
+          echo "  $(basename "$fna") has bad vw maxplaytime"
+        fi
       fi
     else
-      echo "  no $(basename "$fn") file"
+      echo "  no $(basename "$fna") file"
+    fi
+
+    res=$(($res+1))  # queuedance.pl file
+    fna="${DATADIR}/QueueDance.pl"
+    fnb="${DATADIR}/DansToevoegen.pl"
+    if [[ $section == nl ]]; then
+      temp="$fna"
+      fna="$fnb"
+      fnb="$temp"
+    fi
+    if [[ $fin == T && -f ${fna} ]]; then
+      if [[ -f ${fnb} ]]; then
+        echo "  extra $(basename "$fnb") file"
+      else
+        chk=$(($chk+1))
+      fi
+    else
+      echo "  no $(basename "$fna") file"
     fi
 
     res=$(($res+1))  # standardround.pldances file
@@ -356,11 +450,11 @@ function checkInstallation {
   if [[ $chk -eq $res ]]; then
     tcrc=0
     pass=$(($pass+1))
-    echo "$section $tname OK"
+    echo "   $section $tname OK"
   else
     grc=1
     fail=$(($fail+1))
-    echo "$section $tname FAIL"
+    echo "   $section $tname FAIL"
     if [[ $verbose == T ]]; then
       echo "  rc: $trc"
       echo "  out:"
@@ -394,6 +488,7 @@ resetUnpack
 
 # main test db : rebuild of standard test database
 tname=new-install-no-bdj3
+echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --msys \
@@ -408,6 +503,7 @@ if [[ $crc -eq 0 ]]; then
   # standard re-install
   resetUnpack
   tname=re-install-no-bdj3
+  echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \
@@ -421,6 +517,7 @@ if [[ $crc -eq 0 ]]; then
   # standard update
   resetUnpack
   tname=update-no-bdj3
+  echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \
@@ -434,6 +531,7 @@ if [[ $crc -eq 0 ]]; then
   # this should get installed as of version 4.1.0
   resetUnpack
   tname=update-chk-updater
+  echo "== $section $tname"
   checkUpdaterClean $section
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
@@ -449,6 +547,7 @@ fi
 cleanInstTest
 resetUnpack
 tname=install-no-data
+echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --msys \
@@ -467,6 +566,7 @@ resetUnpack
 
 # main test db : rebuild of standard test database
 tname=new-install-no-bdj3
+echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --msys \
@@ -481,9 +581,8 @@ crc=$?
 if [[ $crc -eq 0 ]]; then
   resetUnpack
   tname=update-chk-updater
+  echo "== $section $tname"
 
-  # force the locale setting within BDJ4
-  echo "nl_BE" > "$DATADIR/locale.txt"
   checkUpdaterClean $section
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \

@@ -28,13 +28,12 @@
 #include "sysvars.h"
 #include "templateutil.h"
 
-static void templateCopy (const char *from, const char *to, const char *color);
+static void templateCopy (const char *fromdir, const char *fromfn, const char *to, const char *color);
 
 void
 templateImageCopy (const char *color)
 {
   char        tbuff [MAXPATHLEN];
-  char        from [MAXPATHLEN];
   char        to [MAXPATHLEN];
   slist_t     *dirlist;
   slistidx_t  iteridx;
@@ -47,11 +46,8 @@ templateImageCopy (const char *color)
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
     pathbldMakePath (to, sizeof (to), "", "", PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
     diropMakeDir (to);
-
-    snprintf (from, sizeof (from), "%s/%s", tbuff, fname);
     pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-
-    templateCopy (from, to, color);
+    templateCopy (tbuff, fname, to, color);
   }
   slistFree (dirlist);
 }
@@ -60,12 +56,12 @@ templateImageCopy (const char *color)
 void
 templateFileCopy (const char *fromfn, const char *tofn)
 {
-  char    from [MAXPATHLEN];
+  char    fromdir [MAXPATHLEN];
   char    to [MAXPATHLEN];
 
-  pathbldMakePath (from, sizeof (from), fromfn, "", PATHBLD_MP_DIR_TEMPLATE);
+  pathbldMakePath (fromdir, sizeof (fromdir), "", "", PATHBLD_MP_DIR_TEMPLATE);
   pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_DREL_DATA);
-  templateCopy (from, to, NULL);
+  templateCopy (fromdir, fromfn, to, NULL);
 }
 
 void
@@ -74,9 +70,9 @@ templateHttpCopy (const char *fromfn, const char *tofn)
   char    from [MAXPATHLEN];
   char    to [MAXPATHLEN];
 
-  pathbldMakePath (from, sizeof (from), fromfn, "", PATHBLD_MP_DIR_TEMPLATE);
+  pathbldMakePath (from, sizeof (from), "", "", PATHBLD_MP_DIR_TEMPLATE);
   pathbldMakePath (to, sizeof (to), tofn, "", PATHBLD_MP_DREL_HTTP);
-  templateCopy (from, to, NULL);
+  templateCopy (from, fromfn, to, NULL);
 }
 
 void
@@ -98,9 +94,9 @@ templateDisplaySettingsCopy (void)
       continue;
     }
 
-    pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_DIR_TEMPLATE);
+    pathbldMakePath (from, sizeof (from), "", "", PATHBLD_MP_DIR_TEMPLATE);
     pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-    templateCopy (from, to, NULL);
+    templateCopy (from, fname, to, NULL);
   }
   slistFree (dirlist);
 }
@@ -108,39 +104,34 @@ templateDisplaySettingsCopy (void)
 /* internal routines */
 
 static void
-templateCopy (const char *from, const char *to, const char *color)
+templateCopy (const char *fromdir, const char *fromfn, const char *to, const char *color)
 {
-  char      localesfx [20];
   char      tbuff [MAXPATHLEN];
 
-  if (! fileopFileExists (from)) {
-    return;
-  }
-
-  snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE));
-  strlcpy (tbuff, from, MAXPATHLEN);
-  strlcat (tbuff, localesfx, MAXPATHLEN);
-  if (fileopFileExists (tbuff)) {
-    from = tbuff;
-  } else {
-    snprintf (localesfx, sizeof (localesfx), ".%s", sysvarsGetStr (SV_LOCALE_SHORT));
-    strlcpy (tbuff, from, MAXPATHLEN);
-    strlcat (tbuff, localesfx, MAXPATHLEN);
-    if (fileopFileExists (tbuff)) {
-      from = tbuff;
+  snprintf (tbuff, sizeof (tbuff), "%s/%s/%s", fromdir,
+      sysvarsGetStr (SV_LOCALE), fromfn);
+  if (! fileopFileExists (tbuff)) {
+    snprintf (tbuff, sizeof (tbuff), "%s/%s/%s", fromdir,
+        sysvarsGetStr (SV_LOCALE_SHORT), fromfn);
+    if (! fileopFileExists (tbuff)) {
+      snprintf (tbuff, sizeof (tbuff), "%s/%s", fromdir, fromfn);
+      if (! fileopFileExists (tbuff)) {
+        fprintf (stderr, "  not found: %s %s\n", fromdir, fromfn);
+        return;
+      }
     }
   }
 
   if (color == NULL ||
       strcmp (color, "#ffa600") == 0) {
-    filemanipCopy (from, to);
+    filemanipCopy (tbuff, to);
   } else {
     char    *data;
     FILE    *fh;
     size_t  len;
     char    *ndata;
 
-    data = filedataReadAll (from, &len);
+    data = filedataReadAll (tbuff, &len);
     fh = fileopOpen (to, "w");
     ndata = filedataReplace (data, &len, "#ffa600", color);
     fwrite (ndata, len, 1, fh);

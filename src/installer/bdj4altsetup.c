@@ -27,6 +27,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
+#include "callback.h"
 #include "datafile.h"
 #include "dirlist.h"
 #include "dirop.h"
@@ -38,15 +39,16 @@
 #include "log.h"
 #include "mdebug.h"
 #include "osprocess.h"
+#include "ossignal.h"
 #include "osutils.h"
 #include "osuiutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
 #include "slist.h"
 #include "sysvars.h"
+#include "templateutil.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "callback.h"
 
 /* setup states */
 typedef enum {
@@ -106,6 +108,10 @@ typedef struct {
   bool            scrolltoend : 1;
   bool            newinstall : 1;
   bool            reinstall : 1;
+  bool            guienabled : 1;
+  bool            quiet : 1;
+  bool            verbose : 1;
+  bool            unattended : 1;
 } altsetup_t;
 
 #define INST_HL_COLOR "#b16400"
@@ -134,17 +140,37 @@ static void altsetupUpdateProcess (altsetup_t *altsetup);
 
 static void altsetupCleanup (altsetup_t *altsetup);
 static void altsetupDisplayText (altsetup_t *altsetup, char *pfx, char *txt, bool bold);
-static void altsetupTemplateCopy (const char *dir, const char *from, const char *to);
+static void altsetupTemplateCopy (const char *from, const char *to);
 static void altsetupFailWorkingDir (altsetup_t *altsetup, const char *dir);
 static void altsetupSetTargetDir (altsetup_t *altsetup, const char *fn);
 
 int
 main (int argc, char *argv[])
 {
-  altsetup_t   altsetup;
+  altsetup_t    altsetup;
   char          buff [MAXPATHLEN];
   char          *uifont;
+  int           c = 0;
+  int           option_index = 0;
 
+  static struct option bdj_options [] = {
+    { "bdj4altsetup",no_argument,       NULL,   0 },
+    { "targetdir",  required_argument,  NULL,   't' },
+    { "unattended", no_argument,        NULL,   'U' },
+    /* generic args */
+    { "cli",        no_argument,        NULL,   'C' },
+    { "quiet"  ,    no_argument,        NULL,   'Q' },
+    { "verbose",    no_argument,        NULL,   'V' },
+    /* bdj4 launcher args */
+    { "bdj4",       no_argument,        NULL,   0 },
+    { "debug",      required_argument,  NULL,   'd' },
+    { "debugself",  no_argument,        NULL,   0 },
+    { "msys",       no_argument,        NULL,   0 },
+    { "nodetach",   no_argument,        NULL,   0 },
+    { "theme",      required_argument,  NULL,   0 },
+    { "wait",       no_argument,        NULL,   0 },
+    { NULL,         0,                  NULL,   0 }
+  };
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("alt");
@@ -162,6 +188,10 @@ main (int argc, char *argv[])
   altsetup.hostname = NULL;
   altsetup.newinstall = false;
   altsetup.reinstall = false;
+  altsetup.guienabled = true;
+  altsetup.quiet = false;
+  altsetup.verbose = false;
+  altsetup.unattended = false;
   uiutilsUIWidgetInit (&altsetup.reinstWidget);
   uiutilsUIWidgetInit (&altsetup.feedbackMsg);
   for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
@@ -171,8 +201,39 @@ main (int argc, char *argv[])
     altsetup.callbacks [i] = NULL;
   }
 
-  altsetup.targetEntry = uiEntryInit (80, MAXPATHLEN);
-  altsetup.nameEntry = uiEntryInit (30, 30);
+  while ((c = getopt_long_only (argc, argv, "CUrVQt:", bdj_options, &option_index)) != -1) {
+    switch (c) {
+      case 'U': {
+        altsetup.unattended = true;
+        altsetup.guienabled = false;
+        break;
+      }
+      case 'r': {
+        altsetup.reinstall = true;
+        break;
+      }
+      case 'V': {
+        altsetup.verbose = true;
+        break;
+      }
+      case 'Q': {
+        altsetup.quiet = true;
+        break;
+      }
+      case 't': {
+        altsetupSetTargetDir (&altsetup, optarg);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
+  if (altsetup.guienabled) {
+    altsetup.targetEntry = uiEntryInit (80, MAXPATHLEN);
+    altsetup.nameEntry = uiEntryInit (30, 30);
+  }
 
   sysvarsInit (argv[0]);
   bdjvarsInit ();
@@ -182,27 +243,31 @@ main (int argc, char *argv[])
   altsetup.home = sysvarsGetStr (SV_HOME);
   altsetup.hostname = sysvarsGetStr (SV_HOSTNAME);
 
-  uiUIInitialize ();
+  if (altsetup.guienabled) {
+    uiUIInitialize ();
 
-  uifont = sysvarsGetStr (SV_FONT_DEFAULT);
-  if (uifont == NULL || ! *uifont) {
-    uifont = "Arial Regular 14";
-    if (isMacOS ()) {
-      uifont = "Arial Regular 17";
+    uifont = sysvarsGetStr (SV_FONT_DEFAULT);
+    if (uifont == NULL || ! *uifont) {
+      uifont = "Arial Regular 14";
+      if (isMacOS ()) {
+        uifont = "Arial Regular 17";
+      }
     }
-  }
-  uiSetUICSS (uifont, INST_HL_COLOR, NULL);
+    uiSetUICSS (uifont, INST_HL_COLOR, NULL);
 
-  altsetupBuildUI (&altsetup);
-  osuiFinalize ();
+    altsetupBuildUI (&altsetup);
+    osuiFinalize ();
+  }
 
   while (altsetup.instState != ALT_EXIT) {
     altsetupMainLoop (&altsetup);
     mssleep (10);
   }
 
-  /* process any final events */
-  uiUIProcessEvents ();
+  if (altsetup.guienabled) {
+    /* process any final events */
+    uiUIProcessEvents ();
+  }
 
   altsetupCleanup (&altsetup);
   bdjvarsCleanup ();
@@ -354,16 +419,18 @@ altsetupMainLoop (void *udata)
 {
   altsetup_t *altsetup = udata;
 
-  uiUIProcessEvents ();
+  if (altsetup->guienabled) {
+    uiUIProcessEvents ();
 
-  uiEntryValidate (altsetup->targetEntry, false);
+    uiEntryValidate (altsetup->targetEntry, false);
 
-  if (altsetup->scrolltoend) {
-    uiTextBoxScrollToEnd (altsetup->disptb);
-    altsetup->scrolltoend = false;
-    uiUIProcessWaitEvents ();
-    /* go through the main loop once more */
-    return TRUE;
+    if (altsetup->scrolltoend) {
+      uiTextBoxScrollToEnd (altsetup->disptb);
+      altsetup->scrolltoend = false;
+      uiUIProcessWaitEvents ();
+      /* go through the main loop once more */
+      return TRUE;
+    }
   }
 
   switch (altsetup->instState) {
@@ -372,7 +439,9 @@ altsetupMainLoop (void *udata)
       break;
     }
     case ALT_PREPARE: {
-      uiEntryValidate (altsetup->targetEntry, true);
+      if (altsetup->guienabled) {
+        uiEntryValidate (altsetup->targetEntry, true);
+      }
       altsetup->instState = ALT_WAIT_USER;
       break;
     }
@@ -635,8 +704,7 @@ altsetupCopyTemplates (altsetup_t *altsetup)
       "localized-qd", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
   qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL, tbuff, NULL, 0);
 
-  pathbldMakePath (dir, sizeof (dir),
-      "", "", PATHBLD_MP_DIR_TEMPLATE);
+  pathbldMakePath (dir, sizeof (dir), "", "", PATHBLD_MP_DIR_TEMPLATE);
   dirlist = dirlistBasicDirList (dir, NULL);
   slistStartIterator (dirlist, &iteridx);
   while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
@@ -662,15 +730,11 @@ altsetupCopyTemplates (altsetup_t *altsetup)
     strlcpy (from, fname, sizeof (from));
 
     if (strcmp (fname, "bdj-flex-dark.html") == 0) {
-      pathbldMakePath (to, sizeof (to),
-          "bdj4remote.html", "", PATHBLD_MP_DREL_HTTP);
-      altsetupTemplateCopy (dir, from, to);
+      templateHttpCopy (from, "bdj4remote.html");
       continue;
     }
     if (strcmp (fname, "mobilemq.html") == 0) {
-      pathbldMakePath (to, sizeof (to),
-          "mobilemq.html", "", PATHBLD_MP_DREL_HTTP);
-      altsetupTemplateCopy (dir, from, to);
+      templateHttpCopy (from, fname);
       continue;
     }
 
@@ -681,11 +745,8 @@ altsetupCopyTemplates (altsetup_t *altsetup)
     }
 
     if (pathInfoExtCheck (pi, ".crt")) {
-      pathbldMakePath (to, sizeof (to),
-          fname, "", PATHBLD_MP_DREL_HTTP);
-    } else if (pathInfoExtCheck (pi, ".svg")) {
-      pathbldMakePath (to, sizeof (to),
-          fname, "", PATHBLD_MP_DIR_IMG | PATHBLD_MP_USEIDX);
+      templateHttpCopy (fname, fname);
+      continue;
     } else if (strncmp (fname, "bdjconfig", 9) == 0) {
       snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
       if (pathInfoExtCheck (pi, ".g")) {
@@ -738,12 +799,9 @@ altsetupCopyTemplates (altsetup_t *altsetup)
 
       strlcpy (from, tbuff, sizeof (from));
       if (strncmp (pi->basename, "ds-", 3) == 0) {
-        pathbldMakePath (to, sizeof (to),
-            fname, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+        snprintf (to, sizeof (to), "profile00/%s", tbuff);
       } else {
-        pathbldMakePath (to, sizeof (to),
-            fname, "", PATHBLD_MP_DREL_DATA);
-        snprintf (to, sizeof (to), "data/%s", tbuff);
+        snprintf (to, sizeof (to), "%s", tbuff);
       }
     } else {
       /* unknown extension */
@@ -751,33 +809,40 @@ altsetupCopyTemplates (altsetup_t *altsetup)
       continue;
     }
 
-    altsetupTemplateCopy (dir, from, to);
+    altsetupTemplateCopy (from, to);
 
     mdfree (pi);
   }
   slistFree (dirlist);
 
-  snprintf (dir, sizeof (dir), "%s/img", altsetup->maindir);
+  pathbldMakePath (dir, sizeof (dir), "", "", PATHBLD_MP_DIR_IMG);
+  dirlist = dirlistBasicDirList (dir, NULL);
+  slistStartIterator (dirlist, &iteridx);
+  while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
+    pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_DIR_IMG);
+    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_DREL_IMG);
+    filemanipCopy (from, to);
+  }
 
-  strlcpy (from, "favicon.ico", sizeof (from));
-  pathbldMakePath (to, sizeof (to),
-      "favicon.ico", "", PATHBLD_MP_DREL_HTTP);
-  altsetupTemplateCopy (dir, from, to);
+  snprintf (from, sizeof (from), "%s/http/%s", altsetup->maindir, "favicon.ico");
+  snprintf (to, sizeof (to), "http/%s", "favicon.ico");
+  filemanipCopy (from, to);
 
-  strlcpy (from, "led_on.svg", sizeof (from));
+  pathbldMakePath (from, sizeof (from),
+      "led_on", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   pathbldMakePath (to, sizeof (to),
       "led_on", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
-  altsetupTemplateCopy (dir, from, to);
+  filemanipCopy (from, to);
 
-  strlcpy (from, "led_off.svg", sizeof (from));
+  pathbldMakePath (from, sizeof (from),
+      "led_off", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   pathbldMakePath (to, sizeof (to),
       "led_off", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
-  altsetupTemplateCopy (dir, from, to);
+  filemanipCopy (from, to);
 
-  strlcpy (from, "ballroomdj4.svg", sizeof (from));
-  pathbldMakePath (to, sizeof (to),
-      "ballroomdj", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
-  altsetupTemplateCopy (dir, from, to);
+  snprintf (from, sizeof (from), "%s/http/%s", altsetup->maindir, "ballroomdj4.svg");
+  snprintf (to, sizeof (to), "http/%s", "ballroomdj4.svg");
+  filemanipCopy (from, to);
 
   snprintf (from, sizeof (from), "%s/http/mrc", altsetup->maindir);
   snprintf (to, sizeof (to), "http/mrc");
@@ -792,6 +857,8 @@ altsetupCopyTemplates (altsetup_t *altsetup)
   }
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
   (void) ! system (tbuff);
+
+  templateImageCopy (NULL);
 
   datafileFree (srdf);
   datafileFree (autodf);
@@ -995,35 +1062,12 @@ altsetupDisplayText (altsetup_t *altsetup, char *pfx, char *txt, bool bold)
 }
 
 static void
-altsetupTemplateCopy (const char *dir, const char *from, const char *to)
+altsetupTemplateCopy (const char *from, const char *to)
 {
-  char      *localetmpldir;
-  char      tbuff [MAXPATHLEN];
-
-  localetmpldir = sysvarsGetStr (SV_LOCALE);
-  snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
-      dir, localetmpldir, from);
-  logMsg (LOG_INSTALL, LOG_MAIN, "check file: %s", tbuff);
-  if (fileopFileExists (tbuff)) {
-    logMsg (LOG_INSTALL, LOG_MAIN, "   found");
-    from = tbuff;
-  } else {
-    localetmpldir = sysvarsGetStr (SV_LOCALE_SHORT);
-    snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
-        dir, localetmpldir, from);
-    logMsg (LOG_INSTALL, LOG_MAIN, "check file: %s", tbuff);
-    if (fileopFileExists (tbuff)) {
-      logMsg (LOG_INSTALL, LOG_MAIN, "   found");
-      from = tbuff;
-    } else {
-      snprintf (tbuff, sizeof (tbuff), "%s/%s", dir, from);
-      from = tbuff;
-    }
-  }
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", from);
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
   filemanipBackup (to, 1);
-  filemanipCopy (from, to);
+  templateFileCopy (from, to);
 }
 
 static void

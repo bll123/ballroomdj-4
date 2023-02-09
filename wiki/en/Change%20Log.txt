@@ -4,14 +4,14 @@
 
 <!--
 
-**4.0.12 beta 2023-2---**
+**4.1.0 beta 2023-2---**
+
+* Translations:
+    * Nederlands: Fix incorrect queuedance special playlist name.
+* Internal:
+    * Code cleanup.
 
 -->
-
-**4.0.11 beta 2023-2-4**
-
-* Bug Fixes:
-    * Installation: The installer was not working on Windows 11.
 
 **4.0.10 beta 2023-2-1**
 

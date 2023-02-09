@@ -85,6 +85,7 @@ static void updaterCleanProcess (bool macosonly, bool windowsonly, bool linuxonl
 static void updaterCleanlistFree (void *trx);
 static void updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist);
 static int  updateGetStatus (nlist_t *updlist, int key);
+static void updaterCopyIfNotPresent (const char *fn, const char *ext);
 
 int
 main (int argc, char *argv [])
@@ -417,24 +418,19 @@ main (int argc, char *argv [])
 
   {
     /* 4.1.0 2023-1-5 audioadjust.txt */
-    /*    This is a new file; simply check and see if it does not exist. */
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        AUDIOADJ_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-    if (! fileopFileExists (tbuff)) {
-      templateFileCopy (AUDIOADJ_FN BDJ4_CONFIG_EXT, AUDIOADJ_FN BDJ4_CONFIG_EXT);
-      logMsg (LOG_INSTALL, LOG_MAIN, "audioadjust.txt installed");
-    }
+    updaterCopyIfNotPresent (AUDIOADJ_FN, BDJ4_CONFIG_EXT);
   }
 
   {
     /* 4.0.10 2023-1-29 gtk-static.css */
     /*    This is a new file; simply check and see if it does not exist. */
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        "gtk-static", BDJ4_CSS_EXT, PATHBLD_MP_DREL_DATA);
-    if (! fileopFileExists (tbuff)) {
-      templateFileCopy ("gtk-static" BDJ4_CSS_EXT, "gtk-static" BDJ4_CSS_EXT);
-      logMsg (LOG_INSTALL, LOG_MAIN, "gtk-static.css installed");
-    }
+    updaterCopyIfNotPresent ("gtk-static", BDJ4_CSS_EXT);
+  }
+
+  {
+    /* 4.1.0 2023-2-9 nl renamed, just re-install if not there */
+    updaterCopyIfNotPresent (_("QueueDance"), BDJ4_PLAYLIST_EXT);
+    updaterCopyIfNotPresent (_("QueueDance"), BDJ4_PL_DANCE_EXT);
   }
 
   /* The datafiles must now be loaded. */
@@ -784,4 +780,17 @@ updateGetStatus (nlist_t *updlist, int key)
   }
 
   return value;
+}
+
+static void
+updaterCopyIfNotPresent (const char *fn, const char *ext)
+{
+  char    tbuff [MAXPATHLEN];
+
+  pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
+  if (! fileopFileExists (tbuff)) {
+    snprintf (tbuff, sizeof (tbuff), "%s%s", fn, ext);
+    templateFileCopy (tbuff, tbuff);
+    logMsg (LOG_INSTALL, LOG_MAIN, "%s%s installed", fn, ext);
+  }
 }

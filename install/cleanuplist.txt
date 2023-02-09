@@ -62,9 +62,11 @@ img/switch-on\.svg\.bak\.1$
 locale/tr$
 locale/tr_TR$
 
-# removed 2023-2-4 (4.0.11)
+# removed 2023-2 (4.1.0)
 install/install-startup\.sh$
 install/install-startup\.bat$
+templates/nl/wachtrijendans.pldances$
+templates/nl/wachtrijendans.pl$
 
 ::macosonly
 
@@ -81,7 +83,7 @@ data/\.songlist$
 data/\.sequence$
 
 # in case an alpha version converted the special raffle songs songlist
-# this can be removed later.
+# this can be removed later. (early alpha)
 data/Raffle\ Songs\.songlist$
 data/Raffle\ Songs\.songlist\.bak\.\d$
 data/Loterij\ liedjes\.songlist$
@@ -99,3 +101,9 @@ http/mrc/light/[^/]*\.bak\.1$
 
 # ui-starter.txt moved to main data dir
 data/profile0./ui-starter.txt$
+
+# removed 2023-2 (4.1.0)
+data/nl/wachtrijendans.pldances$
+data/nl/wachtrijendans.pldances.bak.\d$
+data/nl/wachtrijendans.pl$
+data/nl/wachtrijendans.pl.bak.\d$

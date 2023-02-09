@@ -29,6 +29,7 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
+#include "callback.h"
 #include "datafile.h"
 #include "dirlist.h"
 #include "dirop.h"
@@ -49,7 +50,7 @@
 #include "sysvars.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "callback.h"
+#include "templateutil.h"
 #include "webclient.h"
 
 /* installation states */
@@ -174,6 +175,7 @@ typedef struct {
   bool            updatepython : 1;
   bool            verbose : 1;
   bool            vlcinstalled : 1;
+  bool            localespecified : 1;
 } installer_t;
 
 #define INST_HL_COLOR "#b16400"
@@ -237,7 +239,7 @@ static void installerCleanup (installer_t *installer);
 static void installerDisplayText (installer_t *installer, const char *pfx, const char *txt, bool bold);
 static void installerGetTargetSaveFname (installer_t *installer, char *buff, size_t len);
 static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t len);
-static void installerTemplateCopy (const char *dir, const char *from, const char *to);
+static void installerTemplateCopy (const char *from, const char *to);
 static void installerSetrundir (installer_t *installer, const char *dir);
 static void installerVLCGetVersion (installer_t *installer);
 static void installerPythonGetVersion (installer_t *installer);
@@ -322,6 +324,7 @@ main (int argc, char *argv[])
   installer.updatepython = false;
   installer.verbose = false;
   installer.vlcinstalled = false;
+  installer.localespecified = false;
   for (int i = 0; i < INST_CB_MAX; ++i) {
     installer.callbacks [i] = NULL;
   }
@@ -430,6 +433,7 @@ main (int argc, char *argv[])
         snprintf (tbuff, sizeof (tbuff), "%.2s", optarg);
         sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
         sysvarsSetNum (SVL_LOCALE_SET, 1);
+        installer.localespecified = true;
         break;
       }
       default: {
@@ -1729,14 +1733,14 @@ installerCopyTemplates (installer_t *installer)
 
     if (strcmp (fname, "bdj-flex-dark.html") == 0) {
       snprintf (from, sizeof (from), "%s", fname);
-      snprintf (to, sizeof (to), "http/bdj4remote.html");
-      installerTemplateCopy (dir, from, to);
+      snprintf (to, sizeof (to), "bdj4remote.html");
+      templateHttpCopy (from, to);
       continue;
     }
     if (strcmp (fname, "mobilemq.html") == 0) {
       snprintf (from, sizeof (from), "%s", fname);
-      snprintf (to, sizeof (to), "http/%s", fname);
-      installerTemplateCopy (dir, from, to);
+      snprintf (to, sizeof (to), "%s", fname);
+      templateHttpCopy (from, to);
       continue;
     }
 
@@ -1748,21 +1752,23 @@ installerCopyTemplates (installer_t *installer)
 
     if (pathInfoExtCheck (pi, ".crt")) {
       snprintf (from, sizeof (from), "%s", fname);
-      snprintf (to, sizeof (to), "http/%s", fname);
+      snprintf (to, sizeof (to), "%s", fname);
+      templateHttpCopy (from, to);
+      continue;
     } else if (strncmp (fname, "bdjconfig", 9) == 0) {
       snprintf (from, sizeof (from), "%s", fname);
 
       snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
       if (pathInfoExtCheck (pi, ".g")) {
-        snprintf (to, sizeof (to), "data/%s", tbuff);
+        snprintf (to, sizeof (to), "%s", tbuff);
       } else if (pathInfoExtCheck (pi, ".p")) {
-        snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
+        snprintf (to, sizeof (to), "profile00/%s", tbuff);
       } else if (pathInfoExtCheck (pi, ".txt")) {
-        snprintf (to, sizeof (to), "data/profile00/%s", fname);
+        snprintf (to, sizeof (to), "profile00/%s", fname);
       } else if (pathInfoExtCheck (pi, ".m")) {
-        snprintf (to, sizeof (to), "data/%s/%s", installer->hostname, tbuff);
+        snprintf (to, sizeof (to), "%s/%s", installer->hostname, tbuff);
       } else if (pathInfoExtCheck (pi, ".mp")) {
-        snprintf (to, sizeof (to), "data/%s/profile00/%s",
+        snprintf (to, sizeof (to), "%s/profile00/%s",
             installer->hostname, tbuff);
       } else {
         /* one of the localized versions */
@@ -1798,40 +1804,30 @@ installerCopyTemplates (installer_t *installer)
 
       snprintf (from, sizeof (from), "%s", tbuff);
       if (strncmp (pi->basename, "ds-", 3) == 0) {
-        snprintf (to, sizeof (to), "data/profile00/%s", tbuff);
+        snprintf (to, sizeof (to), "profile00/%s", tbuff);
       } else {
-        snprintf (to, sizeof (to), "data/%s", tbuff);
+        snprintf (to, sizeof (to), "%s", tbuff);
       }
     } else {
-      /* uknown extension, probably a localized file */
+      /* unknown extension, probably a localized file */
       continue;
     }
 
-    installerTemplateCopy (dir, from, to);
+    installerTemplateCopy (from, to);
   }
   pathInfoFree (pi);
   pi = NULL;
   slistFree (dirlist);
 
-  snprintf (dir, sizeof (dir), "%s/templates/img", installer->rundir);
-  dirlist = dirlistBasicDirList (dir, NULL);
-  slistStartIterator (dirlist, &iteridx);
-  while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
-    snprintf (from, sizeof (from), "%s", fname);
-    snprintf (to, sizeof (to), "img/profile00/%s", fname);
-    installerTemplateCopy (dir, from, to);
-  }
-  slistFree (dirlist);
-
-  snprintf (dir, sizeof (dir), "%s/img", installer->rundir);
-
-  strlcpy (from, "led_on.svg", sizeof (from));
+  snprintf (from, sizeof (from), "%s/img/led_on.svg", installer->rundir);
   snprintf (to, sizeof (to), "http/led_on.svg");
-  installerTemplateCopy (dir, from, to);
+  filemanipCopy (from, to);
 
-  strlcpy (from, "led_off.svg", sizeof (from));
+  snprintf (from, sizeof (from), "%s/img/led_off.svg", installer->rundir);
   snprintf (to, sizeof (to), "http/led_off.svg");
-  installerTemplateCopy (dir, from, to);
+  filemanipCopy (from, to);
+
+  templateImageCopy (NULL);
 
   if (isMacOS ()) {
     snprintf (to, sizeof (to), "%s/.themes", installer->home);
@@ -2413,6 +2409,22 @@ installerUpdateProcessInit (installer_t *installer)
 {
   char  buff [MAXPATHLEN];
 
+  if (chdir (installer->datatopdir)) {
+    installerFailWorkingDir (installer, installer->datatopdir, "copytemplates");
+    return;
+  }
+
+  /* the updater must be run in the same locale as the installer */
+  if (installer->localespecified) {
+    FILE    *fh;
+    char    tbuff [512];
+
+    strlcpy (tbuff, "data/locale.txt", sizeof (tbuff));
+    fh = fileopOpen (tbuff, "w");
+    fprintf (fh, "%s\n", sysvarsGetStr (SV_LOCALE));
+    fclose (fh);
+  }
+
   /* CONTEXT: installer: status message */
   snprintf (buff, sizeof (buff), _("Updating %s."), BDJ4_LONG_NAME);
   installerDisplayText (installer, INST_DISP_ACTION, buff, false);
@@ -2642,39 +2654,12 @@ installerGetBDJ3Fname (installer_t *installer, char *buff, size_t sz)
 }
 
 static void
-installerTemplateCopy (const char *dir, const char *from, const char *to)
+installerTemplateCopy (const char *from, const char *to)
 {
-  char      *localetmpldir;
-  char      tbuff [MAXPATHLEN];
-
-  localetmpldir = sysvarsGetStr (SV_LOCALE);
-  snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
-      dir, localetmpldir, from);
-  if (fileopFileExists (tbuff)) {
-    logMsg (LOG_INSTALL, LOG_MAIN, "found: %s", tbuff);
-    from = tbuff;
-  } else {
-    localetmpldir = sysvarsGetStr (SV_LOCALE_SHORT);
-    snprintf (tbuff, sizeof (tbuff), "%s/%s/%s",
-        dir, localetmpldir, from);
-    if (fileopFileExists (tbuff)) {
-      logMsg (LOG_INSTALL, LOG_MAIN, "found: %s", tbuff);
-      from = tbuff;
-    } else {
-      snprintf (tbuff, sizeof (tbuff), "%s/%s", dir, from);
-      if (fileopFileExists (tbuff)) {
-        logMsg (LOG_INSTALL, LOG_MAIN, "found: %s", tbuff);
-        from = tbuff;
-      } else {
-        logMsg (LOG_INSTALL, LOG_MAIN, "   ERR: not found");
-        return;
-      }
-    }
-  }
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", from);
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
   filemanipBackup (to, 1);
-  filemanipCopy (from, to);
+  templateFileCopy (from, to);
 }
 
 static void
