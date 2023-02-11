@@ -815,15 +815,6 @@ altsetupCopyTemplates (altsetup_t *altsetup)
   }
   slistFree (dirlist);
 
-  pathbldMakePath (dir, sizeof (dir), "", "", PATHBLD_MP_DIR_IMG);
-  dirlist = dirlistBasicDirList (dir, NULL);
-  slistStartIterator (dirlist, &iteridx);
-  while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
-    pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_DIR_IMG);
-    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_DREL_IMG);
-    filemanipCopy (from, to);
-  }
-
   snprintf (from, sizeof (from), "%s/http/%s", altsetup->maindir, "favicon.ico");
   snprintf (to, sizeof (to), "http/%s", "favicon.ico");
   filemanipCopy (from, to);
