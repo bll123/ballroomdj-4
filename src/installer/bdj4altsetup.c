@@ -140,7 +140,6 @@ static void altsetupUpdateProcess (altsetup_t *altsetup);
 
 static void altsetupCleanup (altsetup_t *altsetup);
 static void altsetupDisplayText (altsetup_t *altsetup, char *pfx, char *txt, bool bold);
-static void altsetupTemplateCopy (const char *from, const char *to);
 static void altsetupFailWorkingDir (altsetup_t *altsetup, const char *dir);
 static void altsetupSetTargetDir (altsetup_t *altsetup, const char *fn);
 
@@ -523,6 +522,10 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
   char          tbuff [MAXPATHLEN];
   int           rc = UIENTRY_OK;
 
+  if (! altsetup->guienabled) {
+    return UIENTRY_ERROR;
+  }
+
   if (! altsetup->uiBuilt) {
     return UIENTRY_RESET;
   }
@@ -535,9 +538,13 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
   exists = fileopIsDirectory (dir);
 
   strlcpy (tbuff, dir, sizeof (tbuff));
-  strlcat (tbuff, "/data", sizeof (tbuff));
-  if (! fileopIsDirectory (tbuff)) {
-    exists = false;
+  if (fileopIsDirectory (tbuff)) {
+    strlcat (tbuff, "/data", sizeof (tbuff));
+    if (! fileopIsDirectory (tbuff)) {
+      exists = false;
+      /* if there is an existing directory, the data/ sub-dir must exist */
+      rc = UIENTRY_ERROR;
+    }
   }
 
   if (exists) {
@@ -557,7 +564,7 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
     uiLabelSetText (&altsetup->feedbackMsg, tbuff);
   }
 
-  if (! *dir || ! fileopIsDirectory (dir)) {
+  if (! *dir) {
     rc = UIENTRY_ERROR;
   }
 
@@ -670,18 +677,9 @@ altsetupCreateDirs (altsetup_t *altsetup)
 static void
 altsetupCopyTemplates (altsetup_t *altsetup)
 {
-  char            dir [MAXPATHLEN];
-  char            from [MAXPATHLEN];
-  char            to [MAXPATHLEN];
-  char            tbuff [MAXPATHLEN];
-  const char      *fname;
-  pathinfo_t      *pi;
-  slist_t         *dirlist;
-  slistidx_t      iteridx;
-  datafile_t      *srdf;
-  datafile_t      *qddf;
-  datafile_t      *autodf;
-  slist_t         *renamelist;
+  char    from [MAXPATHLEN];
+  char    to [MAXPATHLEN];
+  char    tbuff [MAXPATHLEN];
 
 
   /* CONTEXT: set up alternate: status message */
@@ -692,152 +690,11 @@ altsetupCopyTemplates (altsetup_t *altsetup)
     return;
   }
 
-  renamelist = NULL;
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "localized-sr", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
-  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "localized-auto", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
-  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "localized-qd", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
-  qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL, tbuff, NULL, 0);
-
-  pathbldMakePath (dir, sizeof (dir), "", "", PATHBLD_MP_DIR_TEMPLATE);
-  dirlist = dirlistBasicDirList (dir, NULL);
-  slistStartIterator (dirlist, &iteridx);
-  while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
-    if (strcmp (fname, "qrcode") == 0) {
-      continue;
-    }
-    if (strcmp (fname, "qrcode.html") == 0) {
-      continue;
-    }
-    if (strcmp (fname, "html-list.txt") == 0) {
-      continue;
-    }
-    if (strcmp (fname, "helpdata.txt") == 0) {
-      continue;
-    }
-    if (strcmp (fname, "volintfc.txt") == 0) {
-      continue;
-    }
-    if (strcmp (fname, "playerintfc.txt") == 0) {
-      continue;
-    }
-
-    strlcpy (from, fname, sizeof (from));
-
-    if (strcmp (fname, "bdj-flex-dark.html") == 0) {
-      templateHttpCopy (from, "bdj4remote.html");
-      continue;
-    }
-    if (strcmp (fname, "mobilemq.html") == 0) {
-      templateHttpCopy (from, fname);
-      continue;
-    }
-
-    pi = pathInfo (fname);
-    if (pathInfoExtCheck (pi, ".html")) {
-      mdfree (pi);
-      continue;
-    }
-
-    if (pathInfoExtCheck (pi, ".crt")) {
-      templateHttpCopy (fname, fname);
-      continue;
-    } else if (strncmp (fname, "bdjconfig", 9) == 0) {
-      snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
-      if (pathInfoExtCheck (pi, ".g")) {
-        pathbldMakePath (to, sizeof (to),
-            tbuff, "", PATHBLD_MP_DREL_DATA);
-      } else if (pathInfoExtCheck (pi, ".p")) {
-        pathbldMakePath (to, sizeof (to),
-            tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-      } else if (pathInfoExtCheck (pi, ".txt")) {
-        pathbldMakePath (to, sizeof (to),
-            fname, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-      } else if (pathInfoExtCheck (pi, ".m")) {
-        pathbldMakePath (to, sizeof (to),
-            tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
-      } else if (pathInfoExtCheck (pi, ".mp")) {
-        pathbldMakePath (to, sizeof (to),
-            tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
-      } else {
-        /* unknown extension */
-        mdfree (pi);
-        continue;
-      }
-    } else if (pathInfoExtCheck (pi, BDJ4_CONFIG_EXT) ||
-        pathInfoExtCheck (pi, BDJ4_CSS_EXT) ||
-        pathInfoExtCheck (pi, BDJ4_SEQUENCE_EXT) ||
-        pathInfoExtCheck (pi, BDJ4_PL_DANCE_EXT) ||
-        pathInfoExtCheck (pi, BDJ4_PLAYLIST_EXT) ) {
-
-      renamelist = NULL;
-      if (strncmp (pi->basename, "automatic", pi->blen) == 0) {
-        renamelist = datafileGetList (autodf);
-      }
-      if (strncmp (pi->basename, "standardrounds", pi->blen) == 0) {
-        renamelist = datafileGetList (srdf);
-      }
-      if (strncmp (pi->basename, "QueueDance", pi->blen) == 0) {
-        renamelist = datafileGetList (qddf);
-      }
-
-      strlcpy (tbuff, fname, sizeof (tbuff));
-      if (renamelist != NULL) {
-        char    *tval;
-
-        tval = slistGetStr (renamelist, sysvarsGetStr (SV_LOCALE_SHORT));
-        if (tval != NULL) {
-          snprintf (tbuff, sizeof (tbuff), "%s%.*s", tval, (int) pi->elen,
-              pi->extension);
-        }
-      }
-
-      strlcpy (from, tbuff, sizeof (from));
-      if (strncmp (pi->basename, "ds-", 3) == 0) {
-        snprintf (to, sizeof (to), "profile00/%s", tbuff);
-      } else {
-        snprintf (to, sizeof (to), "%s", tbuff);
-      }
-    } else {
-      /* unknown extension */
-      mdfree (pi);
-      continue;
-    }
-
-    altsetupTemplateCopy (from, to);
-
-    mdfree (pi);
-  }
-  slistFree (dirlist);
-
-  pathbldMakePath (dir, sizeof (dir), "", "", PATHBLD_MP_DIR_IMG);
-  dirlist = dirlistBasicDirList (dir, NULL);
-  slistStartIterator (dirlist, &iteridx);
-  while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
-    pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_DIR_IMG);
-    pathbldMakePath (to, sizeof (to), fname, "", PATHBLD_MP_DREL_IMG);
-    filemanipCopy (from, to);
-  }
+  instutilCopyTemplates ();
+  instutilCopyHttpFiles ();
 
   snprintf (from, sizeof (from), "%s/http/%s", altsetup->maindir, "favicon.ico");
   snprintf (to, sizeof (to), "http/%s", "favicon.ico");
-  filemanipCopy (from, to);
-
-  pathbldMakePath (from, sizeof (from),
-      "led_on", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
-  pathbldMakePath (to, sizeof (to),
-      "led_on", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
-  filemanipCopy (from, to);
-
-  pathbldMakePath (from, sizeof (from),
-      "led_off", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
-  pathbldMakePath (to, sizeof (to),
-      "led_off", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
   filemanipCopy (from, to);
 
   snprintf (from, sizeof (from), "%s/http/%s", altsetup->maindir, "ballroomdj4.svg");
@@ -859,10 +716,6 @@ altsetupCopyTemplates (altsetup_t *altsetup)
   (void) ! system (tbuff);
 
   templateImageCopy (NULL);
-
-  datafileFree (srdf);
-  datafileFree (autodf);
-  datafileFree (qddf);
 
   altsetup->instState = ALT_SETUP;
 }
@@ -1059,15 +912,6 @@ altsetupDisplayText (altsetup_t *altsetup, char *pfx, char *txt, bool bold)
     uiTextBoxAppendStr (altsetup->disptb, "\n");
   }
   altsetup->scrolltoend = true;
-}
-
-static void
-altsetupTemplateCopy (const char *from, const char *to)
-{
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", from);
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
-  filemanipBackup (to, 1);
-  templateFileCopy (from, to);
 }
 
 static void

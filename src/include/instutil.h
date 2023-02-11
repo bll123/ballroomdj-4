@@ -6,5 +6,7 @@
 
 void  instutilCreateShortcut (const char *name, const char *maindir,
           const char *target, int profilenum);
+void  instutilCopyTemplates (void);
+void  instutilCopyHttpFiles (void);
 
 #endif /* INC_INSTUTIL_H */

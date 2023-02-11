@@ -52,7 +52,6 @@ templateImageCopy (const char *color)
   slistFree (dirlist);
 }
 
-/* used by the test suite */
 void
 templateFileCopy (const char *fromfn, const char *tofn)
 {
@@ -124,19 +123,27 @@ templateCopy (const char *fromdir, const char *fromfn, const char *to, const cha
 
   if (color == NULL ||
       strcmp (color, "#ffa600") == 0) {
-    filemanipCopy (tbuff, to);
+    filemanipBackup (to, 1);
+    if (filemanipCopy (tbuff, to) < 0) {
+      fprintf (stderr, "copy failed: %s %s\n", tbuff, to);
+    }
   } else {
     char    *data;
     FILE    *fh;
     size_t  len;
     char    *ndata;
 
+    filemanipBackup (to, 1);
     data = filedataReadAll (tbuff, &len);
-    fh = fileopOpen (to, "w");
-    ndata = filedataReplace (data, &len, "#ffa600", color);
-    fwrite (ndata, len, 1, fh);
-    fclose (fh);
-    mdfree (ndata);
-    mdfree (data);
+    if (data != NULL) {
+      fh = fileopOpen (to, "w");
+      if (fh != NULL) {
+        ndata = filedataReplace (data, &len, "#ffa600", color);
+        fwrite (ndata, len, 1, fh);
+        fclose (fh);
+        dataFree (ndata);
+      }
+      dataFree (data);
+    }
   }
 }
