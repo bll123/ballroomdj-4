@@ -148,10 +148,10 @@ enum {
   /* same song */
   MANAGE_SET_MARK,
   MANAGE_CLEAR_MARK,
-  /* apply adjustments */
-  MANAGE_APPLY_ADJ_OFF,
-  MANAGE_APPLY_ADJ_START,
-  MANAGE_APPLY_ADJ_PROCESS,
+  /* processing state */
+  MANAGE_STATE_OFF,
+  MANAGE_STATE_START,
+  MANAGE_STATE_PROCESS,
 };
 
 /* actions for the queue process */
@@ -237,7 +237,8 @@ typedef struct {
   /* song editor */
   uiaa_t          *uiaa;
   int             aaflags;
-  int             processapplyadj;
+  int             applyadjstate;
+  int             impitunesstate;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -434,7 +435,8 @@ main (int argc, char *argv[])
   manage.importitunesactive = false;
   manage.importm3uactive = false;
   manage.exportm3uactive = false;
-  manage.processapplyadj = MANAGE_APPLY_ADJ_OFF;
+  manage.applyadjstate = MANAGE_STATE_OFF;
+  manage.impitunesstate = MANAGE_STATE_OFF;
   manage.uiaa = NULL;
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
@@ -986,7 +988,9 @@ manageMainLoop (void *tmanage)
     }
   }
 
-  if (manage->processapplyadj == MANAGE_APPLY_ADJ_PROCESS) {
+  /* apply adjustments processing */
+
+  if (manage->applyadjstate == MANAGE_STATE_PROCESS) {
     bool    changed = false;
 
     changed = aaApplyAdjustments (manage->musicdb, manage->songeditdbidx, manage->aaflags);
@@ -1004,12 +1008,38 @@ manageMainLoop (void *tmanage)
       connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
     }
     uiLabelSetText (&manage->statusMsg, "");
-    manage->processapplyadj = MANAGE_APPLY_ADJ_OFF;
+    manage->applyadjstate = MANAGE_STATE_OFF;
   }
 
-  if (manage->processapplyadj == MANAGE_APPLY_ADJ_START) {
+  if (manage->applyadjstate == MANAGE_STATE_START) {
     uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
-    manage->processapplyadj = MANAGE_APPLY_ADJ_PROCESS;
+    manage->applyadjstate = MANAGE_STATE_PROCESS;
+  }
+
+  /* itunes processing */
+
+  if (manage->impitunesstate == MANAGE_STATE_PROCESS) {
+    manageSonglistSave (manage);
+
+    if (manage->itunes == NULL) {
+      manage->itunes = itunesAlloc ();
+    }
+
+    itunesParse (manage->itunes);
+
+    /* CONTEXT: managementui: song list: default name for a new song list */
+    manageSetSonglistName (manage, _("New Song List"));
+
+    manageiTunesCreateDialog (manage);
+    uiWidgetShowAll (&manage->itunesSelectDialog);
+
+    uiLabelSetText (&manage->statusMsg, "");
+    manage->impitunesstate = MANAGE_STATE_OFF;
+  }
+
+  if (manage->impitunesstate == MANAGE_STATE_START) {
+    uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
+    manage->impitunesstate = MANAGE_STATE_PROCESS;
   }
 
   uiplayerMainLoop (manage->slplayer);
@@ -1495,7 +1525,7 @@ manageSetEditMenuItems (manageui_t *manage)
   bool      hasorig;
 
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-  hasorig = songHasOriginal (songGetStr (song, TAG_FILE));
+  hasorig = songutilHasOriginal (songGetStr (song, TAG_FILE));
   if (! uiutilsUIWidgetSet (&manage->restoreOrigMenuItem)) {
     return;
   }
@@ -1519,7 +1549,7 @@ manageApplyAdjDialog (void *udata)
   }
 
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-  hasorig = songHasOriginal (songGetStr (song, TAG_FILE));
+  hasorig = songutilHasOriginal (songGetStr (song, TAG_FILE));
   rc = uiaaDialog (manage->uiaa, songGetNum (song, TAG_ADJUSTFLAGS), hasorig);
   return rc;
 }
@@ -1534,7 +1564,7 @@ manageApplyAdjCallback (void *udata, long aaflags)
   }
 
   manage->aaflags = aaflags;
-  manage->processapplyadj = MANAGE_APPLY_ADJ_START;
+  manage->applyadjstate = MANAGE_STATE_START;
 
   return UICB_CONT;
 }
@@ -1549,7 +1579,7 @@ manageRestoreOrigCallback (void *udata)
   }
 
   manage->aaflags = SONG_ADJUST_RESTORE;
-  manage->processapplyadj = MANAGE_APPLY_ADJ_START;
+  manage->applyadjstate = MANAGE_STATE_START;
 
   return UICB_CONT;
 }
@@ -1658,24 +1688,7 @@ manageSonglistImportiTunes (void *udata)
 
   logProcBegin (LOG_PROC, "manageSonglistImportiTunes");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import itunes");
-
-  manageSonglistSave (manage);
-
-  if (manage->itunes == NULL) {
-    manage->itunes = itunesAlloc ();
-  }
-
-  uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
-  uiUIProcessWaitEvents ();
-  itunesParse (manage->itunes);
-  uiLabelSetText (&manage->statusMsg, "");
-  uiUIProcessWaitEvents ();
-
-  /* CONTEXT: managementui: song list: default name for a new song list */
-  manageSetSonglistName (manage, _("New Song List"));
-
-  manageiTunesCreateDialog (manage);
-  uiWidgetShowAll (&manage->itunesSelectDialog);
+  manage->impitunesstate = MANAGE_STATE_START;
 
   logProcEnd (LOG_PROC, "manageSonglistImportiTunes", "");
   return UICB_CONT;

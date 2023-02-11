@@ -25,10 +25,12 @@ enum {
   SONG_ADJUST_STR_ADJUST = 'S',
 };
 
-char  *songFullFileName (const char *sfname);
-bool  songHasOriginal (const char *sfname);
-void  songConvAdjustFlags (datafileconv_t *conv);
-ssize_t songAdjustPosReal (ssize_t pos, int speed);
-ssize_t songNormalizePosition (ssize_t pos, int speed);
+char  *songutilFullFileName (const char *sfname);
+bool  songutilHasOriginal (const char *sfname);
+void  songutilConvAdjustFlags (datafileconv_t *conv);
+ssize_t songutilAdjustPosReal (ssize_t pos, int speed);
+ssize_t songutilNormalizePosition (ssize_t pos, int speed);
+int   songutilAdjustBPM (int bpm, int speed);
+int   songutilNormalizeBPM (int bpm, int speed);
 
 #endif /* INC_SONGUTIL_H */

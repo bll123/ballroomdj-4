@@ -123,6 +123,9 @@ typedef struct uisongeditgtk {
   int                 changed;
   uikey_t             *uikey;
   int                 bpmidx;
+  int                 songstartidx;
+  int                 songendidx;
+  int                 speedidx;
   int                 lastspeed;
   bool                checkchanged : 1;
 } uisongeditgtk_t;
@@ -163,6 +166,9 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uiw->uikey = NULL;
   uiw->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uiw->bpmidx = -1;
+  uiw->songstartidx = -1;
+  uiw->songendidx = -1;
+  uiw->speedidx = -1;
   uiw->dbidx = -1;
   uiw->lastspeed = -1;
   for (int i = 0; i < UISONGEDIT_BUTTON_MAX; ++i) {
@@ -586,8 +592,6 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
   char            *songdata;
   const char      *ndata;
   int             chkvalue;
-  int             ssidx = -1;
-  int             seidx = -1;
   int             bpmdispidx = -1;
   bool            spdchanged = false;
   int             speed = 100;
@@ -605,12 +609,6 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
     for (int count = 0; count < uiw->itemcount; ++count) {
       int tagkey = uiw->items [count].tagkey;
 
-      if (tagkey == TAG_SONGSTART) {
-        ssidx = count;
-      }
-      if (tagkey == TAG_SONGEND) {
-        seidx = count;
-      }
       if (tagkey == TAG_BPM_DISPLAY) {
         bpmdispidx = count;
       }
@@ -750,20 +748,28 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
     }
 
     if (spdchanged) {
-      if (ssidx != -1) {
-        nval = uiSpinboxTimeGetValue (uiw->items [ssidx].spinbox);
+      if (uiw->songstartidx != -1) {
+        nval = uiSpinboxTimeGetValue (uiw->items [uiw->songstartidx].spinbox);
         if (nval > 0) {
-          nval = songNormalizePosition (nval, uiw->lastspeed);
-          nval = songAdjustPosReal (nval, speed);
-          uiSpinboxTimeSetValue (uiw->items [ssidx].spinbox, nval);
+          nval = songutilNormalizePosition (nval, uiw->lastspeed);
+          nval = songutilAdjustPosReal (nval, speed);
+          uiSpinboxTimeSetValue (uiw->items [uiw->songstartidx].spinbox, nval);
         }
       }
-      if (seidx != -1) {
-        nval = uiSpinboxTimeGetValue (uiw->items [seidx].spinbox);
+      if (uiw->songendidx != -1) {
+        nval = uiSpinboxTimeGetValue (uiw->items [uiw->songendidx].spinbox);
         if (nval > 0) {
-          nval = songNormalizePosition (nval, uiw->lastspeed);
-          nval = songAdjustPosReal (nval, speed);
-          uiSpinboxTimeSetValue (uiw->items [seidx].spinbox, nval);
+          nval = songutilNormalizePosition (nval, uiw->lastspeed);
+          nval = songutilAdjustPosReal (nval, speed);
+          uiSpinboxTimeSetValue (uiw->items [uiw->songendidx].spinbox, nval);
+        }
+      }
+      if (uiw->bpmidx != -1) {
+        nval = uiSpinboxGetValue (&uiw->items [uiw->bpmidx].uiwidget);
+        if (nval > 0) {
+          nval = songutilNormalizeBPM (nval, uiw->lastspeed);
+          nval = songutilAdjustBPM (nval, speed);
+          uiSpinboxSetValue (&uiw->items [uiw->bpmidx].uiwidget, nval);
         }
       }
       uiw->lastspeed = speed;
@@ -934,14 +940,26 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
       break;
     }
     case ET_SPINBOX: {
+      if (tagkey == TAG_BPM) {
+        uiw->bpmidx = uiw->itemcount;
+      }
       uisongeditAddSpinboxInt (uisongedit, hbox, tagkey);
       break;
     }
     case ET_SPINBOX_TIME: {
+      if (tagkey == TAG_SONGSTART) {
+        uiw->songstartidx = uiw->itemcount;
+      }
+      if (tagkey == TAG_SONGEND) {
+        uiw->songendidx = uiw->itemcount;
+      }
       uisongeditAddSpinboxTime (uisongedit, hbox, tagkey);
       break;
     }
     case ET_SCALE: {
+      if (tagkey == TAG_SPEEDADJUSTMENT) {
+        uiw->speedidx = uiw->itemcount;
+      }
       uisongeditAddScale (uisongedit, hbox, tagkey);
       break;
     }
@@ -995,7 +1013,6 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
   uiSpinboxIntCreate (uiwidgetp);
   if (tagkey == TAG_BPM) {
     uiSpinboxSet (uiwidgetp, 0.0, 400.0);
-    uiw->bpmidx = uiw->itemcount;
   }
   if (tagkey == TAG_TRACKNUMBER || tagkey == TAG_DISCNUMBER) {
     uiSpinboxSet (uiwidgetp, 1.0, 300.0);
@@ -1150,11 +1167,74 @@ uisongeditSaveCallback (void *udata)
   const char      *ndata = NULL;
   int             chkvalue;
   char            tbuff [200];
-  bool            valid;
+  bool            valid = false;
 
   logProcBegin (LOG_PROC, "uisongeditSaveCallback");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: save");
   uiw = uisongedit->uiWidgetData;
+
+  valid = true;
+  uiLabelSetText (uisongedit->statusMsg, "");
+
+  /* do some validations */
+  {
+    long      songstart;
+    long      songend;
+    long      dur;
+    int       speed;
+
+    ndval = uiScaleGetValue (&uiw->items [uiw->speedidx].uiwidget);
+    speed = round (ndval);
+    songstart = uiSpinboxTimeGetValue (uiw->items [uiw->songstartidx].spinbox);
+    songend = uiSpinboxTimeGetValue (uiw->items [uiw->songendidx].spinbox);
+    /* for the validation checks, the song-start and song-end must be */
+    /* normalized. */
+    if (speed > 0 && speed != 100) {
+      if (songstart > 0) {
+        songstart = songutilNormalizePosition (songstart, speed);
+      }
+      if (songend > 0) {
+        songend = songutilNormalizePosition (songend, speed);
+      }
+    }
+    dur = songGetNum (uiw->song, TAG_DURATION);
+    if (songstart > 0 && songstart > dur) {
+      if (uisongedit->statusMsg != NULL) {
+        /* CONTEXT: song editor: status msg: (song start may not exceed the song duration) */
+        snprintf (tbuff, sizeof (tbuff), _("%s may not exceed the song duration"),
+            tagdefs [TAG_SONGSTART].displayname);
+        uiLabelSetText (uisongedit->statusMsg, tbuff);
+        logMsg (LOG_DBG, LOG_IMPORTANT, "song-start>dur");
+        valid = false;
+      }
+    }
+    if (songend > 0 && songend > dur) {
+      if (uisongedit->statusMsg != NULL) {
+        /* CONTEXT: song editor: status msg: (song end may not exceed the song duration) */
+        snprintf (tbuff, sizeof (tbuff), _("%s may not exceed the song duration"),
+            tagdefs [TAG_SONGEND].displayname);
+        uiLabelSetText (uisongedit->statusMsg, tbuff);
+        logMsg (LOG_DBG, LOG_IMPORTANT, "song-end>dur");
+        valid = false;
+      }
+    }
+    if (songstart > 0 && songend > 0 && songstart >= songend) {
+      if (uisongedit->statusMsg != NULL) {
+        /* CONTEXT: song editor: status msg: (song end must be greater than song start) */
+        snprintf (tbuff, sizeof (tbuff), _("%1$s must be greater than %2$s"),
+            tagdefs [TAG_SONGEND].displayname,
+            tagdefs [TAG_SONGSTART].displayname);
+        uiLabelSetText (uisongedit->statusMsg, tbuff);
+        logMsg (LOG_DBG, LOG_IMPORTANT, "song-end-<-song-start");
+        valid = false;
+      }
+    }
+  }
+
+  if (! valid) {
+    /* don't change anything if the validation checks fail */
+    return UICB_CONT;
+  }
 
   for (int count = 0; count < uiw->itemcount; ++count) {
     int tagkey = uiw->items [count].tagkey;
@@ -1218,7 +1298,7 @@ uisongeditSaveCallback (void *udata)
         ndval = uiScaleGetValue (&uiw->items [count].uiwidget);
         chkvalue = SONGEDIT_CHK_DOUBLE;
         if (tagkey == TAG_SPEEDADJUSTMENT) {
-          nval = (long) ndval;
+          nval = round (ndval);
           chkvalue = SONGEDIT_CHK_NUM;
         }
         break;
@@ -1249,86 +1329,57 @@ uisongeditSaveCallback (void *udata)
     if (chkvalue == SONGEDIT_CHK_LIST) {
       songSetList (uiw->song, tagkey, ndata);
     }
+  }
+
+  /* song start, song end and bpm must be adjusted if they changed */
+  /* on a speed change, the song start, song end and bpm will be modified */
+  /* and the changed flag will be set. */
+  if (uisongedit->savecb != NULL) {
+    int     speed;
+    ssize_t val;
+
+    speed = songGetNum (uiw->song, TAG_SPEEDADJUSTMENT);
+    if (speed > 0 && speed != 100) {
+      if (uiw->songstartidx != -1 && uiw->items [uiw->songstartidx].changed) {
+        val = songGetNum (uiw->song, TAG_SONGSTART);
+        if (val > 0) {
+          val = songutilNormalizePosition (val, speed);
+          songSetNum (uiw->song, TAG_SONGSTART, val);
+        }
+      }
+      if (uiw->songendidx != -1 && uiw->items [uiw->songendidx].changed) {
+        val = songGetNum (uiw->song, TAG_SONGEND);
+        if (val > 0) {
+          val = songutilNormalizePosition (val, speed);
+          songSetNum (uiw->song, TAG_SONGEND, val);
+        }
+      }
+      if (uiw->bpmidx != -1 && uiw->items [uiw->bpmidx].changed) {
+        val = songGetNum (uiw->song, TAG_BPM);
+        if (val > 0) {
+          val = songutilNormalizeBPM (val, speed);
+          songSetNum (uiw->song, TAG_BPM, val);
+        }
+      }
+    }
+  }
+
+  /* reset the changed flags and indicators */
+  for (int count = 0; count < uiw->itemcount; ++count) {
+    if (! uiw->items [count].changed) {
+      continue;
+    }
+    if (uiw->items [count].chgind == NULL) {
+      continue;
+    }
 
     uichgindMarkNormal (uiw->items [count].chgind);
     uiw->items [count].changed = false;
     uiw->items [count].lastchanged = false;
   }
 
-  valid = true;
-  uiLabelSetText (uisongedit->statusMsg, "");
-
-  /* do some validations */
-  {
-    long      songstart;
-    long      songend;
-    long      dur;
-    int       speed;
-
-    speed = songGetNum (uiw->song, TAG_SPEEDADJUSTMENT);
-    songstart = songGetNum (uiw->song, TAG_SONGSTART);
-    songend = songGetNum (uiw->song, TAG_SONGEND);
-    /* for the validation checks, the song-start and song-end must be */
-    /* normalized. */
-    if (speed > 0 && speed != 100) {
-      if (songstart > 0) {
-        songstart = songNormalizePosition (songstart, speed);
-      }
-      if (songend > 0) {
-        songend = songNormalizePosition (songend, speed);
-      }
-    }
-    dur = songGetNum (uiw->song, TAG_DURATION);
-    if (songstart > 0 && songstart > dur) {
-      if (uisongedit->statusMsg != NULL) {
-        /* CONTEXT: song editor: status msg: (song start may not exceed the song duration) */
-        snprintf (tbuff, sizeof (tbuff), _("%s may not exceed the song duration"),
-            tagdefs [TAG_SONGSTART].displayname);
-        uiLabelSetText (uisongedit->statusMsg, tbuff);
-        logProcEnd (LOG_PROC, "uisongeditSaveCallback", "song-start>dur");
-        valid = false;
-      }
-    }
-    if (songend > 0 && songend > dur) {
-      if (uisongedit->statusMsg != NULL) {
-        /* CONTEXT: song editor: status msg: (song end may not exceed the song duration) */
-        snprintf (tbuff, sizeof (tbuff), _("%s may not exceed the song duration"),
-            tagdefs [TAG_SONGEND].displayname);
-        uiLabelSetText (uisongedit->statusMsg, tbuff);
-        logProcEnd (LOG_PROC, "uisongeditSaveCallback", "song-end>dur");
-        valid = false;
-      }
-    }
-    if (songstart > 0 && songend > 0 && songstart >= songend) {
-      if (uisongedit->statusMsg != NULL) {
-        /* CONTEXT: song editor: status msg: (song end must be greater than song start) */
-        snprintf (tbuff, sizeof (tbuff), _("%1$s must be greater than %2$s"),
-            tagdefs [TAG_SONGEND].displayname,
-            tagdefs [TAG_SONGSTART].displayname);
-        uiLabelSetText (uisongedit->statusMsg, tbuff);
-        logProcEnd (LOG_PROC, "uisongeditSaveCallback", "song-end-<-song-start");
-        valid = false;
-      }
-    }
-  }
-
-  if (valid && uisongedit->savecb != NULL) {
-    int     speed;
-    ssize_t val;
-
-    speed = songGetNum (uiw->song, TAG_SPEEDADJUSTMENT);
-    if (speed > 0 && speed != 100) {
-      val = songGetNum (uiw->song, TAG_SONGSTART);
-      if (val > 0) {
-        val = songNormalizePosition (val, speed);
-        songSetNum (uiw->song, TAG_SONGSTART, val);
-      }
-      val = songGetNum (uiw->song, TAG_SONGEND);
-      if (val > 0) {
-        val = songNormalizePosition (val, speed);
-        songSetNum (uiw->song, TAG_SONGEND, val);
-      }
-    }
+  if (uisongedit->savecb != NULL) {
+    /* the callback re-loads the song editor */
     callbackHandlerLong (uisongedit->savecb, uiw->dbidx);
   }
 
@@ -1387,7 +1438,7 @@ uisongeditCopyPath (void *udata)
   uiw = uisongedit->uiWidgetData;
 
   txt = uiLabelGetText (&uiw->filedisp);
-  ffn = songFullFileName (txt);
+  ffn = songutilFullFileName (txt);
   strlcpy (tbuff, ffn, sizeof (tbuff));
   mdfree (ffn);
   if (isWindows ()) {

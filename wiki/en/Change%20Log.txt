@@ -11,15 +11,15 @@
 * Changes:
     * Minor user interface cleanup.
     * Song Editor: Duration display also shows adjusted duration.
-    * Song Editor: BPM Range is now displayed.
+    * Song Editor: BPM Range for the dance is now displayed.
+    * Song Editor: BPM, song start, song end are adjusted for speed.
 * Bug Fixes:
     * BPM Counter: Fix slow exit.
-    * User Interface: Button Repeat: Longer initial delay, fixed.
+    * User Interface: Button Repeat is fixed.
 * Translations:
     * Nederlands updated.
 * Internal:
-    * Song Editor: code cleanup.
-    * Installer: code cleanup.
+    * Code cleanup.
 
 -->
 

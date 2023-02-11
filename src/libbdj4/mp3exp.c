@@ -91,7 +91,7 @@ mp3ExportQueue (char *msg, musicdb_t *musicdb, const char *dirname,
     if (song == NULL) {
       continue;
     }
-    ffn = songFullFileName (songGetStr (song, TAG_FILE));
+    ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
     if (ffn == NULL) {
       continue;
     }

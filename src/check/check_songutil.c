@@ -46,7 +46,7 @@ START_TEST(songutil_chk)
   bdjoptInit ();
   bdjoptSetStr (OPT_M_DIR_MUSIC, "/testpath");
   for (int i = 0; i < tvaluesz; ++i) {
-    val = songFullFileName (tvalues [i].test);
+    val = songutilFullFileName (tvalues [i].test);
     ck_assert_str_eq (val, tvalues [i].result);
     mdfree (val);
   }
@@ -66,25 +66,25 @@ START_TEST(songutil_pos)
 
   pos = 40000;
   speed = 100;
-  rpos = songAdjustPosReal (pos, speed);
+  rpos = songutilAdjustPosReal (pos, speed);
   ck_assert_int_eq (rpos, pos);
-  npos = songNormalizePosition (rpos, speed);
+  npos = songutilNormalizePosition (rpos, speed);
   ck_assert_int_eq (rpos, pos);
   ck_assert_int_eq (npos, pos);
 
   pos = 40000;
   speed = 120;
-  rpos = songAdjustPosReal (pos, speed);
+  rpos = songutilAdjustPosReal (pos, speed);
   ck_assert_int_lt (rpos, pos);
-  npos = songNormalizePosition (rpos, speed);
+  npos = songutilNormalizePosition (rpos, speed);
   ck_assert_int_eq (npos, pos);
   ck_assert_int_gt (npos, rpos);
 
   pos = 40000;
   speed = 70;
-  rpos = songAdjustPosReal (pos, speed);
+  rpos = songutilAdjustPosReal (pos, speed);
   ck_assert_int_gt (rpos, pos);
-  npos = songNormalizePosition (rpos, speed);
+  npos = songutilNormalizePosition (rpos, speed);
   ck_assert_int_eq (npos, pos);
   ck_assert_int_lt (npos, rpos);
 }

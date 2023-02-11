@@ -44,7 +44,7 @@ static void songCleanup (void);
 
 /* must be sorted in ascii order */
 static datafilekey_t songdfkeys [] = {
-  { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_NUM, songConvAdjustFlags, -1 },
+  { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_NUM, songutilConvAdjustFlags, -1 },
   { "ALBUM",                TAG_ALBUM,                VALUE_STR, NULL, -1 },
   { "ALBUMARTIST",          TAG_ALBUMARTIST,          VALUE_STR, NULL, -1 },
   { "ARTIST",               TAG_ARTIST,               VALUE_STR, NULL, -1 },
@@ -317,7 +317,7 @@ songAudioFileExists (song_t *song)
   bool      exists = false;
 
   sfname = songGetStr (song, TAG_FILE);
-  ffn = songFullFileName (sfname);
+  ffn = songutilFullFileName (sfname);
   exists = false;
   if (ffn != NULL) {
     exists = fileopFileExists (ffn);
@@ -395,7 +395,7 @@ songDisplayString (song_t *song, int tagidx)
     }
     speed = songGetNum (song, TAG_SPEEDADJUSTMENT);
     if (speed > 0 && speed != 100) {
-      dur = songAdjustPosReal (dur, speed);
+      dur = songutilAdjustPosReal (dur, speed);
       changed = true;
     }
     if (changed) {

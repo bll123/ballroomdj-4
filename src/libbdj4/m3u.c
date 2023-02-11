@@ -65,7 +65,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
     ffn = nlistGetStr (list, dbidx);
     if (ffn == NULL) {
       str = songGetStr (song, TAG_FILE);
-      ffn = songFullFileName (str);
+      ffn = songutilFullFileName (str);
     }
     if (isWindows ()) {
       pathWinPath (ffn, strlen (ffn));

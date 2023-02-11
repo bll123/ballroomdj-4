@@ -537,7 +537,7 @@ main (int argc, char *argv [])
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "processing audio files");
     dbStartIterator (musicdb, &dbiteridx);
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
-      ffn = songFullFileName (songGetStr (song, TAG_FILE));
+      ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
       process = false;
 
       if (processflags [UPD_FIX_AF_TAGS]) {

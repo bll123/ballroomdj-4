@@ -22,7 +22,7 @@
 #include "songutil.h"
 
 char *
-songFullFileName (const char *sfname)
+songutilFullFileName (const char *sfname)
 {
   char      *tname;
   size_t    len;
@@ -46,7 +46,7 @@ songFullFileName (const char *sfname)
 }
 
 bool
-songHasOriginal (const char *sfname)
+songutilHasOriginal (const char *sfname)
 {
   char      origfn [MAXPATHLEN];
   bool      exists = false;
@@ -56,7 +56,7 @@ songHasOriginal (const char *sfname)
     return NULL;
   }
 
-  fullfn = songFullFileName (sfname);
+  fullfn = songutilFullFileName (sfname);
   snprintf (origfn, sizeof (origfn), "%s%s",
       fullfn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
   if (fileopFileExists (origfn)) {
@@ -73,7 +73,7 @@ songHasOriginal (const char *sfname)
 }
 
 void
-songConvAdjustFlags (datafileconv_t *conv)
+songutilConvAdjustFlags (datafileconv_t *conv)
 {
   if (conv->valuetype == VALUE_STR) {
     int   num;
@@ -130,7 +130,7 @@ songConvAdjustFlags (datafileconv_t *conv)
 }
 
 ssize_t
-songAdjustPosReal (ssize_t pos, int speed)
+songutilAdjustPosReal (ssize_t pos, int speed)
 {
   double    drate;
   double    dpos;
@@ -146,7 +146,7 @@ songAdjustPosReal (ssize_t pos, int speed)
 }
 
 ssize_t
-songNormalizePosition (ssize_t pos, int speed)
+songutilNormalizePosition (ssize_t pos, int speed)
 {
   double    drate;
   double    dpos;
@@ -159,5 +159,37 @@ songNormalizePosition (ssize_t pos, int speed)
   dpos = (double) pos * drate;
   npos = (ssize_t) round (dpos);
   return npos;
+}
+
+int
+songutilAdjustBPM (int bpm, int speed)
+{
+  double    drate;
+  double    dbpm;
+  int       nbpm;
+
+  if (speed < 0 || speed == 100) {
+    return bpm;
+  }
+  drate = (double) speed / 100.0;
+  dbpm = (double) bpm * drate;
+  nbpm = (int) round (dbpm);
+  return nbpm;
+}
+
+int
+songutilNormalizeBPM (int bpm, int speed)
+{
+  double    drate;
+  double    dbpm;
+  ssize_t   nbpm;
+
+  if (speed < 0 || speed == 100) {
+    return bpm;
+  }
+  drate = (double) speed / 100.0;
+  dbpm = (double) bpm / drate;
+  nbpm = (int) round (dbpm);
+  return nbpm;
 }
 

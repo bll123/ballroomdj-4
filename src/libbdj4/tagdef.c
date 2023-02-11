@@ -39,7 +39,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
-    songConvAdjustFlags,          /* conv func            */
+    songutilConvAdjustFlags,          /* conv func            */
     DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */

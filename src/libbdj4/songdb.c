@@ -54,7 +54,7 @@ songWriteAudioTags (song_t *song)
   char  *ffn;
   char  *data;
 
-  ffn = songFullFileName (songGetStr (song, TAG_FILE));
+  ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
   data = audiotagReadTags (ffn);
   if (data != NULL) {
     slist_t *tagdata;
