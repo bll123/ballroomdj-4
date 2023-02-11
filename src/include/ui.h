@@ -13,7 +13,7 @@
 #include "callback.h"
 
 #if BDJ4_USE_GTK
-# include "uigtk.h"
+# include "ui-gtk3.h"
 #endif
 
 enum {

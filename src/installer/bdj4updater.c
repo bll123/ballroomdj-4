@@ -84,8 +84,9 @@ static void updaterCleanFiles (void);
 static void updaterCleanProcess (bool macosonly, bool windowsonly, bool linuxonly, const char *basedir, nlist_t *cleanlist);
 static void updaterCleanlistFree (void *trx);
 static void updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist);
-static int  updateGetStatus (nlist_t *updlist, int key);
+static int  updaterGetStatus (nlist_t *updlist, int key);
 static void updaterCopyIfNotPresent (const char *fn, const char *ext);
+static void updaterCopyVersionCheck (const char *fn, const char *ext, int currvers);
 
 int
 main (int argc, char *argv [])
@@ -262,7 +263,7 @@ main (int argc, char *argv [])
 
   logMsg (LOG_INSTALL, LOG_MAIN, "homemusicdir: %s", homemusicdir);
 
-  value = updateGetStatus (updlist, UPD_FIX_AF_TAGS);
+  value = updaterGetStatus (updlist, UPD_FIX_AF_TAGS);
 
   if (newinstall) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "new install or re-install");
@@ -395,30 +396,17 @@ main (int argc, char *argv [])
   /* datafile updates */
 
   {
-    datafile_t  *tmpdf;
-    int         version;
-    slist_t     *slist;
-
     /* 4.0.5 2023-1-4 itunes-fields */
     /*   had the incorrect 'lastupdate' name removed completely (not needed) */
     /*   as itunes has not been implemented yet, it is safe to completely */
     /*   overwrite version 1. */
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-    tmpdf = datafileAllocParse (ITUNES_FIELDS_FN,
-        DFTYPE_LIST, tbuff, NULL, 0);
-    slist = datafileGetList (tmpdf);
-    version = slistGetVersion (slist);
-    if (version == 1) {
-      templateFileCopy (ITUNES_FIELDS_FN BDJ4_CONFIG_EXT, ITUNES_FIELDS_FN BDJ4_CONFIG_EXT);
-      logMsg (LOG_INSTALL, LOG_MAIN, "itunes-fields updated");
-    }
-    datafileFree (tmpdf);
+    updaterCopyVersionCheck (ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, 2);
   }
 
   {
     /* 4.1.0 2023-1-5 audioadjust.txt */
     updaterCopyIfNotPresent (AUDIOADJ_FN, BDJ4_CONFIG_EXT);
+    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, 2);
   }
 
   {
@@ -769,7 +757,7 @@ updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist)
 }
 
 static int
-updateGetStatus (nlist_t *updlist, int key)
+updaterGetStatus (nlist_t *updlist, int key)
 {
   int   value;
 
@@ -793,4 +781,26 @@ updaterCopyIfNotPresent (const char *fn, const char *ext)
     templateFileCopy (tbuff, tbuff);
     logMsg (LOG_INSTALL, LOG_MAIN, "%s%s installed", fn, ext);
   }
+}
+
+static void
+updaterCopyVersionCheck (const char *fn, const char *ext, int currvers)
+{
+  datafile_t  *tmpdf;
+  int         version;
+  slist_t     *slist;
+  char        tbuff [MAXPATHLEN];
+
+  pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
+  tmpdf = datafileAllocParse (fn, DFTYPE_LIST, tbuff, NULL, 0);
+  slist = datafileGetList (tmpdf);
+  version = slistGetVersion (slist);
+  if (version == 1) {
+    char  tmp [MAXPATHLEN];
+
+    snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
+    templateFileCopy (tmp, tmp);
+    logMsg (LOG_INSTALL, LOG_MAIN, "%s updated", fn);
+  }
+  datafileFree (tmpdf);
 }

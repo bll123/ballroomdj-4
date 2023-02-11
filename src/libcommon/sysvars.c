@@ -94,8 +94,6 @@ static sysvarsdesc_t sysvarsdesc [SV_MAX] = {
   [SV_SHLIB_EXT] = { "SHLIB_EXT" },
   [SV_THEME_DEFAULT] = { "THEME_DEFAULT" },
   [SV_URI_FORUM] = { "URI_FORUM" },
-  [SV_URI_MOBMQ_POST] = { "URI_MOBMQ_POST" },
-  [SV_URI_MOBMQ] = { "URI_MOBMQ" },
   [SV_URI_REGISTER] = { "URI_REGISTER" },
   [SV_URI_SUPPORTMSG] = { "URI_SUPPORTMSG" },
   [SV_URI_TICKET] = { "URI_TICKET" },
@@ -405,9 +403,6 @@ sysvarsInit (const char *argv0)
   strlcpy (sysvars [SV_BDJ4_DREL_IMG], "img", SV_MAX_SZ);
 
   strlcpy (sysvars [SV_SHLIB_EXT], SHLIB_EXT, SV_MAX_SZ);
-
-  strlcpy (sysvars [SV_URI_MOBMQ], "/marquee4.html", SV_MAX_SZ);
-  strlcpy (sysvars [SV_URI_MOBMQ_POST], "/marquee4.php", SV_MAX_SZ);
 
   strlcpy (sysvars [SV_HOST_WEB], "https://ballroomdj4.sourceforge.io", SV_MAX_SZ);
   strlcpy (sysvars [SV_WEB_VERSION_FILE], "bdj4version.txt", SV_MAX_SZ);
