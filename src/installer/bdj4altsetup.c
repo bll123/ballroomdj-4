@@ -522,6 +522,10 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
   char          tbuff [MAXPATHLEN];
   int           rc = UIENTRY_OK;
 
+  if (! altsetup->guienabled) {
+    return UIENTRY_ERROR;
+  }
+
   if (! altsetup->uiBuilt) {
     return UIENTRY_RESET;
   }
@@ -534,9 +538,13 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
   exists = fileopIsDirectory (dir);
 
   strlcpy (tbuff, dir, sizeof (tbuff));
-  strlcat (tbuff, "/data", sizeof (tbuff));
-  if (! fileopIsDirectory (tbuff)) {
-    exists = false;
+  if (fileopIsDirectory (tbuff)) {
+    strlcat (tbuff, "/data", sizeof (tbuff));
+    if (! fileopIsDirectory (tbuff)) {
+      exists = false;
+      /* if there is an existing directory, the data/ sub-dir must exist */
+      rc = UIENTRY_ERROR;
+    }
   }
 
   if (exists) {
@@ -556,7 +564,7 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
     uiLabelSetText (&altsetup->feedbackMsg, tbuff);
   }
 
-  if (! *dir || ! fileopIsDirectory (dir)) {
+  if (! *dir) {
     rc = UIENTRY_ERROR;
   }
 
