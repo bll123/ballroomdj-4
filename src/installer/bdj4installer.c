@@ -239,7 +239,6 @@ static void installerCleanup (installer_t *installer);
 static void installerDisplayText (installer_t *installer, const char *pfx, const char *txt, bool bold);
 static void installerGetTargetSaveFname (installer_t *installer, char *buff, size_t len);
 static void installerGetBDJ3Fname (installer_t *installer, char *buff, size_t len);
-static void installerTemplateCopy (const char *from, const char *to);
 static void installerSetrundir (installer_t *installer, const char *dir);
 static void installerVLCGetVersion (installer_t *installer);
 static void installerPythonGetVersion (installer_t *installer);
@@ -1676,18 +1675,8 @@ installerCopyTemplatesInit (installer_t *installer)
 static void
 installerCopyTemplates (installer_t *installer)
 {
-  char            dir [MAXPATHLEN];
-  char            from [MAXPATHLEN];
-  char            to [MAXPATHLEN];
-  char            tbuff [MAXPATHLEN];
-  const char      *fname;
-  slist_t         *dirlist;
-  slistidx_t      iteridx;
-  pathinfo_t      *pi = NULL;
-  datafile_t      *srdf;
-  datafile_t      *qddf;
-  datafile_t      *autodf;
-  slist_t         *renamelist;
+  char    from [MAXPATHLEN];
+  char    to [MAXPATHLEN];
 
 
   if (chdir (installer->datatopdir)) {
@@ -1695,138 +1684,8 @@ installerCopyTemplates (installer_t *installer)
     return;
   }
 
-  renamelist = NULL;
-
-  snprintf (tbuff, sizeof (tbuff), "%s/install/%s",
-      installer->rundir, "localized-sr.txt");
-  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
-  snprintf (tbuff, sizeof (tbuff), "%s/install/%s",
-      installer->rundir, "localized-auto.txt");
-  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
-  snprintf (tbuff, sizeof (tbuff), "%s/install/%s",
-      installer->rundir, "localized-qd.txt");
-  qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL, tbuff, NULL, 0);
-
-  snprintf (dir, sizeof (dir), "%s/templates", installer->rundir);
-
-  dirlist = dirlistBasicDirList (dir, NULL);
-  slistStartIterator (dirlist, &iteridx);
-  while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
-    if (strcmp (fname, "qrcode") == 0) {
-      continue;
-    }
-    if (strcmp (fname, "qrcode.html") == 0) {
-      continue;
-    }
-    if (strcmp (fname, "html-list.txt") == 0) {
-      continue;
-    }
-    if (strcmp (fname, "helpdata.txt") == 0) {
-      continue;
-    }
-    if (strcmp (fname, "volintfc.txt") == 0) {
-      continue;
-    }
-    if (strcmp (fname, "playerintfc.txt") == 0) {
-      continue;
-    }
-
-    if (strcmp (fname, "bdj-flex-dark.html") == 0) {
-      snprintf (from, sizeof (from), "%s", fname);
-      snprintf (to, sizeof (to), "bdj4remote.html");
-      templateHttpCopy (from, to);
-      continue;
-    }
-    if (strcmp (fname, "mobilemq.html") == 0) {
-      snprintf (from, sizeof (from), "%s", fname);
-      snprintf (to, sizeof (to), "%s", fname);
-      templateHttpCopy (from, to);
-      continue;
-    }
-
-    pathInfoFree (pi);
-    pi = pathInfo (fname);
-    if (pathInfoExtCheck (pi, ".html")) {
-      continue;
-    }
-
-    if (pathInfoExtCheck (pi, ".crt")) {
-      snprintf (from, sizeof (from), "%s", fname);
-      snprintf (to, sizeof (to), "%s", fname);
-      templateHttpCopy (from, to);
-      continue;
-    } else if (strncmp (fname, "bdjconfig", 9) == 0) {
-      snprintf (from, sizeof (from), "%s", fname);
-
-      snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
-      if (pathInfoExtCheck (pi, ".g")) {
-        snprintf (to, sizeof (to), "%s", tbuff);
-      } else if (pathInfoExtCheck (pi, ".p")) {
-        snprintf (to, sizeof (to), "profile00/%s", tbuff);
-      } else if (pathInfoExtCheck (pi, ".txt")) {
-        snprintf (to, sizeof (to), "profile00/%s", fname);
-      } else if (pathInfoExtCheck (pi, ".m")) {
-        snprintf (to, sizeof (to), "%s/%s", installer->hostname, tbuff);
-      } else if (pathInfoExtCheck (pi, ".mp")) {
-        snprintf (to, sizeof (to), "%s/profile00/%s",
-            installer->hostname, tbuff);
-      } else {
-        /* one of the localized versions */
-        continue;
-      }
-    } else if (pathInfoExtCheck (pi, BDJ4_CONFIG_EXT) ||
-        pathInfoExtCheck (pi, BDJ4_CSS_EXT) ||
-        pathInfoExtCheck (pi, BDJ4_SEQUENCE_EXT) ||
-        pathInfoExtCheck (pi, BDJ4_PL_DANCE_EXT) ||
-        pathInfoExtCheck (pi, BDJ4_PLAYLIST_EXT) ) {
-
-      renamelist = NULL;
-      if (strncmp (pi->basename, "automatic", pi->blen) == 0) {
-        renamelist = datafileGetList (autodf);
-      }
-      if (strncmp (pi->basename, "standardrounds", pi->blen) == 0) {
-        renamelist = datafileGetList (srdf);
-      }
-      if (strncmp (pi->basename, "QueueDance", pi->blen) == 0) {
-        renamelist = datafileGetList (qddf);
-      }
-
-      strlcpy (tbuff, fname, sizeof (tbuff));
-      if (renamelist != NULL) {
-        char    *tval;
-
-        tval = slistGetStr (renamelist, sysvarsGetStr (SV_LOCALE_SHORT));
-        if (tval != NULL) {
-          snprintf (tbuff, sizeof (tbuff), "%s%.*s", tval, (int) pi->elen,
-              pi->extension);
-        }
-      }
-
-      snprintf (from, sizeof (from), "%s", tbuff);
-      if (strncmp (pi->basename, "ds-", 3) == 0) {
-        snprintf (to, sizeof (to), "profile00/%s", tbuff);
-      } else {
-        snprintf (to, sizeof (to), "%s", tbuff);
-      }
-    } else {
-      /* unknown extension, probably a localized file */
-      continue;
-    }
-
-    installerTemplateCopy (from, to);
-  }
-  pathInfoFree (pi);
-  pi = NULL;
-  slistFree (dirlist);
-
-  snprintf (from, sizeof (from), "%s/img/led_on.svg", installer->rundir);
-  snprintf (to, sizeof (to), "http/led_on.svg");
-  filemanipCopy (from, to);
-
-  snprintf (from, sizeof (from), "%s/img/led_off.svg", installer->rundir);
-  snprintf (to, sizeof (to), "http/led_off.svg");
-  filemanipCopy (from, to);
-
+  instutilCopyTemplates ();
+  instutilCopyHttpFiles ();
   templateImageCopy (NULL);
 
   if (isMacOS ()) {
@@ -1841,10 +1700,6 @@ installerCopyTemplates (installer_t *installer)
     snprintf (to, sizeof (to), "%s/.themes/macOS-Mojave-light", installer->home);
     filemanipLinkCopy (from, to);
   }
-
-  datafileFree (srdf);
-  datafileFree (autodf);
-  datafileFree (qddf);
 
   installer->instState = INST_CONVERT_START;
 }
@@ -2651,15 +2506,6 @@ installerGetBDJ3Fname (installer_t *installer, char *buff, size_t sz)
           installer->target, BDJ3_LOC_FILE);
     }
   }
-}
-
-static void
-installerTemplateCopy (const char *from, const char *to)
-{
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", from);
-  logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
-  filemanipBackup (to, 1);
-  templateFileCopy (from, to);
 }
 
 static void

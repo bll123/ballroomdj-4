@@ -228,6 +228,38 @@ function checkInstallation {
       echo "  no data/profile00 directory"
     fi
 
+    fn=${DATADIR}/bdjconfig.txt
+    res=$(($res+1))
+    if [[ $fin == T && -f $fn ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no $fn"
+    fi
+
+    fn=${DATADIR}/profile00/bdjconfig.txt
+    res=$(($res+1))
+    if [[ $fin == T && -f $fn ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no $fn"
+    fi
+
+    fn=${DATADIR}/${hostname}/bdjconfig.txt
+    res=$(($res+1))
+    if [[ $fin == T && -f $fn ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no $fn"
+    fi
+
+    fn=${DATADIR}/${hostname}/profile00/bdjconfig.txt
+    res=$(($res+1))
+    if [[ $fin == T && -f $fn ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no $fn"
+    fi
+
     res=$(($res+1))  # tmp dir
     if [[ $fin == T && -d "${DATATOPDIR}/tmp" ]]; then
       chk=$(($chk+1))
@@ -595,8 +627,8 @@ if [[ $crc -eq 0 ]]; then
   checkInstallation $section $tname "$out" $rc u y
 fi
 
-cleanInstTest
-test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
+#cleanInstTest
+#test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
 
 echo "tests: $tcount pass: $pass fail: $fail"
 

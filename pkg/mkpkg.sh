@@ -291,6 +291,7 @@ case $tag in
 
     if [[ $insttest == T ]]; then
       rm -f plocal/bin/fpcalc*
+      rm -f ${tmpnm} ${tmpsep}
       exit 0
     fi
 
@@ -334,6 +335,7 @@ case $tag in
 
     if [[ $insttest == T ]]; then
       rm -f plocal/bin/fpcalc*
+      rm -f ${tmpnm} ${tmpsep}
       exit 0
     fi
 
@@ -370,6 +372,7 @@ case $tag in
 
     if [[ $insttest == T ]]; then
       rm -f plocal/bin/fpcalc*
+      rm -f ${tmpnm} ${tmpsep}
       exit 0
     fi
 

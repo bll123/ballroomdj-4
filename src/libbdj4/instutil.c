@@ -12,11 +12,18 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
+#include "datafile.h"
+#include "dirlist.h"
+#include "filemanip.h"
 #include "instutil.h"
+#include "log.h"
 #include "osprocess.h"
 #include "pathbld.h"
 #include "pathutil.h"
 #include "sysvars.h"
+#include "templateutil.h"
+
+static void instutilCopyHttpSVGFile (const char *fn);
 
 void
 instutilCreateShortcut (const char *name, const char *maindir,
@@ -62,3 +69,179 @@ instutilCreateShortcut (const char *name, const char *maindir,
   }
 }
 
+void
+instutilCopyTemplates (void)
+{
+  slist_t     *dirlist;
+  slist_t     *renamelist;
+  slistidx_t  iteridx;
+  const char  *fname;
+  char        from [MAXPATHLEN];
+  char        to [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
+  datafile_t  *srdf = NULL;
+  datafile_t  *qddf = NULL;
+  datafile_t  *autodf = NULL;
+  pathinfo_t  *pi;
+
+
+  renamelist = NULL;
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "localized-sr", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
+  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "localized-auto", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
+  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      "localized-qd", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
+  qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL, tbuff, NULL, 0);
+
+  pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DIR_TEMPLATE);
+
+  dirlist = dirlistBasicDirList (tbuff, NULL);
+  slistStartIterator (dirlist, &iteridx);
+  while ((fname = slistIterateKey (dirlist, &iteridx)) != NULL) {
+    if (strcmp (fname, "qrcode") == 0) {
+      continue;
+    }
+    if (strcmp (fname, "qrcode.html") == 0) {
+      continue;
+    }
+    if (strcmp (fname, "html-list.txt") == 0) {
+      continue;
+    }
+    if (strcmp (fname, "helpdata.txt") == 0) {
+      continue;
+    }
+    if (strcmp (fname, "volintfc.txt") == 0) {
+      continue;
+    }
+    if (strcmp (fname, "playerintfc.txt") == 0) {
+      continue;
+    }
+
+    strlcpy (from, fname, sizeof (from));
+
+    if (strcmp (fname, "bdj-flex-dark.html") == 0) {
+      templateHttpCopy (from, "bdj4remote.html");
+      continue;
+    }
+    if (strcmp (fname, "mobilemq.html") == 0) {
+      templateHttpCopy (from, fname);
+      continue;
+    }
+
+    pi = pathInfo (fname);
+    if (pathInfoExtCheck (pi, ".html")) {
+      pathInfoFree (pi);
+      continue;
+    }
+
+    if (pathInfoExtCheck (pi, ".crt")) {
+      templateHttpCopy (fname, fname);
+      continue;
+    } else if (strncmp (fname, "bdjconfig", 9) == 0) {
+      pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_DIR_TEMPLATE);
+      snprintf (tbuff, sizeof (tbuff), "%.*s", (int) pi->blen, pi->basename);
+      if (pathInfoExtCheck (pi, ".g")) {
+        pathbldMakePath (to, sizeof (to),
+            tbuff, "", PATHBLD_MP_DREL_DATA);
+      } else if (pathInfoExtCheck (pi, ".p")) {
+        pathbldMakePath (to, sizeof (to),
+            tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+      } else if (pathInfoExtCheck (pi, ".txt")) {
+        pathbldMakePath (to, sizeof (to),
+            fname, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
+      } else if (pathInfoExtCheck (pi, ".m")) {
+        pathbldMakePath (to, sizeof (to),
+            tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME);
+      } else if (pathInfoExtCheck (pi, ".mp")) {
+        pathbldMakePath (to, sizeof (to),
+            tbuff, "", PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
+      } else {
+        /* unknown extension */
+        fprintf (stderr, "unknown extension for bdjconfig %.*s\n", (int) pi->elen, pi->extension);
+        pathInfoFree (pi);
+        continue;
+      }
+
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", from);
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
+      filemanipBackup (to, 1);
+      filemanipCopy (from, to);
+      pathInfoFree (pi);
+      continue;
+    } else if (pathInfoExtCheck (pi, BDJ4_CONFIG_EXT) ||
+        pathInfoExtCheck (pi, BDJ4_CSS_EXT) ||
+        pathInfoExtCheck (pi, BDJ4_SEQUENCE_EXT) ||
+        pathInfoExtCheck (pi, BDJ4_PL_DANCE_EXT) ||
+        pathInfoExtCheck (pi, BDJ4_PLAYLIST_EXT) ) {
+
+      renamelist = NULL;
+      if (strncmp (pi->basename, "automatic", pi->blen) == 0) {
+        renamelist = datafileGetList (autodf);
+      }
+      if (strncmp (pi->basename, "standardrounds", pi->blen) == 0) {
+        renamelist = datafileGetList (srdf);
+      }
+      if (strncmp (pi->basename, "QueueDance", pi->blen) == 0) {
+        renamelist = datafileGetList (qddf);
+      }
+
+      strlcpy (tbuff, fname, sizeof (tbuff));
+      if (renamelist != NULL) {
+        char    *tval;
+
+        tval = slistGetStr (renamelist, sysvarsGetStr (SV_LOCALE_SHORT));
+        if (tval != NULL) {
+          snprintf (tbuff, sizeof (tbuff), "%s%.*s", tval, (int) pi->elen,
+              pi->extension);
+        }
+      }
+
+      strlcpy (from, tbuff, sizeof (from));
+      if (strncmp (pi->basename, "ds-", 3) == 0) {
+        snprintf (to, sizeof (to), "profile00/%s", tbuff);
+      } else {
+        snprintf (to, sizeof (to), "%s", tbuff);
+      }
+    } else {
+      /* unknown extension */
+      pathInfoFree (pi);
+      continue;
+    }
+
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "- copy: %s", from);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "    to: %s", to);
+    templateFileCopy (from, to);
+    pathInfoFree (pi);
+  }
+  slistFree (dirlist);
+
+  datafileFree (srdf);
+  datafileFree (autodf);
+  datafileFree (qddf);
+}
+
+void
+instutilCopyHttpFiles (void)
+{
+  instutilCopyHttpSVGFile ("led_on");
+  instutilCopyHttpSVGFile ("led_off");
+}
+
+/* internal routines */
+
+static void
+instutilCopyHttpSVGFile (const char *fn)
+{
+  char    from [MAXPATHLEN];
+  char    to [MAXPATHLEN];
+
+  pathbldMakePath (from, sizeof (from),
+      fn, BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
+  pathbldMakePath (to, sizeof (to),
+      fn, BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
+  filemanipCopy (from, to);
+}
