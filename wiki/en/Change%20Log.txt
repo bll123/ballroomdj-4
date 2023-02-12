@@ -11,6 +11,8 @@
 **4.0.10.1 beta 2023-2-12**
 
 * Bug Fixes:
+    * Conversion: Fix a processing problem with ancient leftover configuration files.
+    * iTunes Configuration: Change half-star character to 1/2 symbol for windows.
     * Windows: Fix conflicts with other installed programs.
 * Changes:
     * Windows: Reduce size of default font.

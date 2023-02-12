@@ -241,7 +241,7 @@ tclean:
 	@find .. -name '*~' -print0 | xargs -0 rm -f
 	@find .. -name '*.orig' -print0 | xargs -0 rm -f
 	@-$(RM) -f w ww www ../w ../ww ../www ../*/w ../*/ww ../*/www
-	@-$(RM) -f po/w po/ww ../asan.* ./asan.*
+	@-$(RM) -f po/w po/ww ../asan.* ./asan.* zz ../zz
 	@-$(RM) -f test.log
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f ../vgcore.* ../core gmon.out ../gmon.out

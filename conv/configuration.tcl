@@ -64,6 +64,13 @@ set mppath [file join $hostname profiles]
 set col {}
 foreach path [list {} profiles $mpath $mppath] {
   foreach sfx $suffixlist pfx $nprefixlist {
+    if { $path eq $mpath && $sfx ne {.txt} } {
+      # these are really old filenames from old versions of ballroomdj
+      # when profiles were in a different place.
+      # do not process these.
+      continue
+    }
+
     set fn "[file join $bdj3dir $path $cnm]$sfx"
     if { [file exists $fn] } {
       set olddirlist [list]
