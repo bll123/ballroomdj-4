@@ -28,6 +28,7 @@ typedef enum {
   SV_DIR_CONFIG,        // .config/BDJ4 or AppData/Roaming/BDJ4
   SV_FONT_DEFAULT,
   SV_HOME,
+  SV_HOST_DOWNLOAD,
   SV_HOST_FORUM,
   SV_HOSTNAME,
   SV_HOST_SUPPORTMSG,
@@ -57,6 +58,7 @@ typedef enum {
   SV_TEMP_A,
   SV_TEMP_B,
   SV_THEME_DEFAULT,
+  SV_URI_DOWNLOAD,
   SV_URI_FORUM,
   SV_URI_REGISTER,
   SV_URI_SUPPORTMSG,

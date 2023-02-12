@@ -8,6 +8,8 @@
 
 * Bug Fixes:
     * Alternate Installer: Various bug fixes.
+* Changes:
+    * Added BDJ4 download link to support dialog.
 * Translations:
     * Nederlands: Fix incorrect queuedance special playlist name.
 * Internal:
