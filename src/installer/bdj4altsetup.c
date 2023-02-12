@@ -247,7 +247,7 @@ main (int argc, char *argv[])
 
     uifont = sysvarsGetStr (SV_FONT_DEFAULT);
     if (uifont == NULL || ! *uifont) {
-      uifont = "Arial Regular 14";
+      uifont = "Arial Regular 11";
       if (isMacOS ()) {
         uifont = "Arial Regular 17";
       }

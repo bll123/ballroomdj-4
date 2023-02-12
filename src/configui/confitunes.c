@@ -193,8 +193,9 @@ confuiBuildUIiTunes (confuigui_t *gui)
       strlcat (tbuff, "\xe2\x98\x85", sizeof (tbuff));
     }
     if (i % 2 == 0) {
-      // star with left half black
-      strlcat (tbuff, "\xe2\xaf\xaa", sizeof (tbuff));
+      // star with left half black does not work on windows. "\xe2\xaf\xaa"
+      // left half black star does not work on windows "\xe2\xaf\xa8"
+      strlcat (tbuff, "\xc2\xbd", sizeof (tbuff));
     }
 
     uiCreateHorizBox (&hbox);

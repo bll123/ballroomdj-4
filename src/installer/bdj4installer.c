@@ -522,7 +522,7 @@ main (int argc, char *argv[])
 
     uifont = sysvarsGetStr (SV_FONT_DEFAULT);
     if (uifont == NULL || ! *uifont) {
-      uifont = "Arial Regular 14";
+      uifont = "Arial Regular 11";
       if (isMacOS ()) {
         uifont = "Arial Regular 17";
       }
@@ -606,8 +606,7 @@ installerBuildUI (installer_t *installer)
   uiWindowSetDefaultSize (&installer->window, 1000, 600);
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, 10);
-  uiWidgetSetMarginTop (&vbox, 20);
+  uiWidgetSetAllMargins (&vbox, 4);
   uiWidgetExpandHoriz (&vbox);
   uiWidgetExpandVert (&vbox);
   uiBoxPackInWindow (&installer->window, &vbox);
@@ -803,7 +802,7 @@ installerBuildUI (installer_t *installer)
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
-  installer->disptb = uiTextBoxCreate (300, INST_HL_COLOR);
+  installer->disptb = uiTextBoxCreate (250, INST_HL_COLOR);
   uiTextBoxSetReadonly (installer->disptb);
   uiTextBoxHorizExpand (installer->disptb);
   uiTextBoxVertExpand (installer->disptb);

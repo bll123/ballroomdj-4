@@ -27,7 +27,18 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
   puts "Invalid directory $bdj3dir"
   exit 1
 }
+if { ! [regexp {/data$} $bdj3dir] } {
+  append bdj3dir /data
+}
+if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
+  puts "Invalid directory $bdj3dir"
+  exit 1
+}
 set datatopdir [lindex $argv 1]
+if { ! [file exists $datatopdir/data] || ! [file isdirectory $datatopdir/data] } {
+  puts "Invalid directory $datatopdir"
+  exit 1
+}
 
 if { $::tcl_platform(platform) eq "windows" } {
   set hostname [info hostname]
@@ -53,6 +64,13 @@ set mppath [file join $hostname profiles]
 set col {}
 foreach path [list {} profiles $mpath $mppath] {
   foreach sfx $suffixlist pfx $nprefixlist {
+    if { $path eq $mpath && $sfx ne {.txt} } {
+      # these are really old filenames from old versions of ballroomdj
+      # when profiles were in a different place.
+      # do not process these.
+      continue
+    }
+
     set fn "[file join $bdj3dir $path $cnm]$sfx"
     if { [file exists $fn] } {
       set olddirlist [list]

@@ -10,7 +10,18 @@ if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
   puts "Invalid directory $bdj3dir"
   exit 1
 }
+if { ! [regexp {/data$} $bdj3dir] } {
+  append bdj3dir /data
+}
+if { ! [file exists $bdj3dir] || ! [file isdirectory $bdj3dir] } {
+  puts "Invalid directory $bdj3dir"
+  exit 1
+}
 set datatopdir [lindex $argv 1]
+if { ! [file exists $datatopdir/data] || ! [file isdirectory $datatopdir/data] } {
+  puts "Invalid directory $datatopdir"
+  exit 1
+}
 
 set fn dancetypes.tcl
 set infn [file join $bdj3dir $fn]

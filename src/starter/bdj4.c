@@ -380,59 +380,36 @@ main (int argc, char * argv[])
   }
 
   if (isWindows ()) {
-    char      * pbuff;
-    char      * tbuff;
-    char      * tmp;
-    char      * path;
-    char      * p;
-    char      * tokstr;
+    char      * pbuff = NULL;
+    char      * tbuff = NULL;
+    char      * path = NULL;
     size_t    sz = 4096;
 
     pbuff = mdmalloc (sz);
-    assert (pbuff != NULL);
     tbuff = mdmalloc (sz);
-    assert (tbuff != NULL);
-    tmp = mdmalloc (sz);
-    assert (tmp != NULL);
     path = mdmalloc (sz);
-    assert (path != NULL);
 
-    strlcpy (tbuff, getenv ("PATH"), sz);
-    p = strtok_r (tbuff, ";", &tokstr);
     *path = '\0';
-    while (p != NULL) {
-      snprintf (tmp, sz, "%s\\libgtk-3-0.dll", p);
-      if (usemsys || ! fileopFileExists (tmp)) {
-        if (debugself) {
-          fprintf (stderr, "path ok: %s\n", p);
-        }
-        strlcat (path, p, sz);
-        strlcat (path, ";", sz);
-      } else {
-        if (debugself) {
-          fprintf (stderr, "found dir with libgtk: %s\n", p);
-        }
-      }
-      p = strtok_r (NULL, ";", &tokstr);
-    }
 
     strlcpy (pbuff, sysvarsGetStr (SV_BDJ4_DIR_EXEC), sz);
     pathWinPath (pbuff, sz);
     strlcat (path, pbuff, sz);
-
-    if (debugself) {
-      fprintf (stderr, "execdir: %s\n", pbuff);
-      fprintf (stderr, "path: %s\n", path);
-    }
-
     strlcat (path, ";", sz);
+
     snprintf (pbuff, sz, "%s/../plocal/bin", sysvarsGetStr (SV_BDJ4_DIR_EXEC));
     pathRealPath (tbuff, pbuff, sz);
     strlcat (path, tbuff, sz);
-
     strlcat (path, ";", sz);
+
+    if (debugself) {
+      fprintf (stderr, "base path: %s\n", path);
+    }
+
     /* do not use double quotes w/environment var */
     strlcat (path, "C:\\Program Files\\VideoLAN\\VLC", sz);
+    strlcat (path, ";", sz);
+    strlcat (path, getenv ("PATH"), sz);
+
     osSetEnv ("PATH", path);
 
     if (debugself) {
@@ -443,9 +420,9 @@ main (int argc, char * argv[])
     osSetEnv ("PANGOCAIRO_BACKEND", "fc");
 #endif
 
-    mdfree (pbuff);
-    mdfree (tbuff);
-    mdfree (path);
+    dataFree (pbuff);
+    dataFree (tbuff);
+    dataFree (path);
   }
 
   if (! havetheme) {
