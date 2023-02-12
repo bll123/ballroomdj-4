@@ -4,9 +4,16 @@
 
 <!--
 
-**4.0.11 beta 2023-1---**
+**4.1.0 beta 2023-2---**
 
 -->
+
+**4.0.10.1 beta 2023-2-12**
+
+* Bug Fixes:
+    * Windows: Fix conflicts with other installed programs.
+* Changes:
+    * Windows: Reduce size of default font.
 
 **4.0.10 beta 2023-2-1**
 

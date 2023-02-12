@@ -307,20 +307,20 @@ main (int argc, char *argv [])
 
       /* need some decent default fonts for windows and macos */
       if (isWindows () || isMacOS ()) {
-        uifont = "Arial Regular 14";
+        uifont = "Arial Regular 12";
         if (isMacOS ()) {
           uifont = "Arial Regular 17";
         }
         bdjoptSetStr (OPT_MP_UIFONT, uifont);
 
         /* windows does not have a narrow font pre-installed */
-        uifont = "Arial Regular 13";
+        uifont = "Arial Regular 12";
         if (isMacOS ()) {
           uifont = "Arial Narrow Regular 16";
         }
         bdjoptSetStr (OPT_MP_MQFONT, uifont);
 
-        uifont = "Arial Regular 13";
+        uifont = "Arial Regular 11";
         if (isMacOS ()) {
           uifont = "Arial Regular 16";
         }
