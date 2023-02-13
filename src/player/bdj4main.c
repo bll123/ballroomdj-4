@@ -1532,6 +1532,11 @@ mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx)
       char  tmp [40];
 
       gap = bdjoptGetNumPerQueue (OPT_Q_GAP, mqidx);
+      /* special case: the manage ui playback queue has no gap */
+      /* the manage ui playback queue otherwise inherits from the music q */
+      if (mqidx == MUSICQ_MNG_PB) {
+        gap = 0;
+      }
       plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
       if (plgap >= 0) {
         gap = plgap;
