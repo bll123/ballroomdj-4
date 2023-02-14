@@ -189,13 +189,13 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   uiBoxPackStart (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&uiaa->cbNorm, &uiwidget);
 
-  /* normalize audio */
+  /* adjust audio */
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
   uiCreateCheckButton (&uiwidget,
       /* CONTEXT: apply adjustments: apply adjustments checkbox */
-      _("Adjust Speed, Song Start and End"),
+      _("Adjust Speed, Song Start and Song End"),
       (aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST);
   uiBoxPackStart (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&uiaa->cbAdjust, &uiwidget);

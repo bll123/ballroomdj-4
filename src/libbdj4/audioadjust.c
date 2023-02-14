@@ -112,7 +112,6 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
   }
 
   dur = songGetNum (song, TAG_DURATION);
-fprintf (stderr, "  orig-rrn: dbidx:%d rrn:%ld\n", dbidx, songGetNum (song, TAG_RRN));
 
   songfn = songGetStr (song, TAG_FILE);
   infn = songutilFullFileName (songfn);
@@ -130,13 +129,10 @@ fprintf (stderr, "  orig-rrn: dbidx:%d rrn:%ld\n", dbidx, songGetNum (song, TAG_
     }
   }
 
-fprintf (stderr, "aa: aaflags: %08x\n", aaflags);
   if (aaflags == SONG_ADJUST_RESTORE) {
-fprintf (stderr, "  restore\n");
     if (fileopFileExists (origfn)) {
       char    *data;
 
-fprintf (stderr, "  have file\n");
       filemanipMove (origfn, fullfn);
       data = audiotagReadTags (fullfn);
       if (data != NULL) {
@@ -146,8 +142,6 @@ fprintf (stderr, "  have file\n");
         dbidx_t rrn;
 
         rrn = songGetNum (song, TAG_RRN);
-fprintf (stderr, "  rrn: %d\n", rrn);
-fprintf (stderr, "  have tag data\n");
         tagdata = audiotagParseData (fullfn, data, &rewrite);
         slistSetStr (tagdata, tagdefs [TAG_ADJUSTFLAGS].tag, NULL);
         /* the data in the database must be replaced with the original data */
@@ -191,11 +185,9 @@ fprintf (stderr, "  have tag data\n");
   /* start with the input as the original filename */
   infn = origfn;
 
-  if (aaflags != SONG_ADJUST_NONE) {
-    /* the adjust flags must be reset, as the user may have selected */
-    /* different settings */
-    songSetNum (song, TAG_ADJUSTFLAGS, SONG_ADJUST_NONE);
-  }
+  /* the adjust flags must be reset, as the user may have selected */
+  /* different settings */
+  songSetNum (song, TAG_ADJUSTFLAGS, SONG_ADJUST_NONE);
 
   /* trim silence is done first */
   if ((aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
@@ -222,13 +214,22 @@ fprintf (stderr, "  have tag data\n");
     if (fileopFileExists (outfn)) {
       if (newdur > 0) {
         long    adjflags;
+        int     obpm, nbpm;
+        int     ospeed;
 
         filemanipMove (outfn, fullfn);
         infn = fullfn;
         songSetNum (song, TAG_DURATION, newdur);
+        ospeed = songGetNum (song, TAG_SPEEDADJUSTMENT);
         songSetNum (song, TAG_SPEEDADJUSTMENT, 0);
         songSetNum (song, TAG_SONGSTART, 0);
         songSetNum (song, TAG_SONGEND, 0);
+        obpm = songGetNum (song, TAG_BPM);
+        nbpm = 0;
+        if (obpm > 0 && ospeed > 0 && ospeed != 100) {
+          nbpm = songutilAdjustBPM (obpm, ospeed);
+          songSetNum (song, TAG_BPM, nbpm);
+        }
         adjflags = songGetNum (song, TAG_ADJUSTFLAGS);
         adjflags |= SONG_ADJUST_ADJUST;
         songSetNum (song, TAG_ADJUSTFLAGS, adjflags);
@@ -238,6 +239,7 @@ fprintf (stderr, "  have tag data\n");
       }
     }
   }
+
   /* after the adjustments are done, then normalize */
   if ((aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM) {
     aaNormalize (infn, outfn);
@@ -255,7 +257,6 @@ fprintf (stderr, "  have tag data\n");
   }
 
   if (changed) {
-fprintf (stderr, "  call song-write-db: dbidx:%d rrn:%ld\n", dbidx, songGetNum (song, TAG_RRN));
     songWriteDB (musicdb, dbidx);
   }
 
@@ -275,7 +276,6 @@ aaTrimSilence (const char *infn, const char *outfn)
   mstime_t    etm;
   long        newdur = -1;
 
-fprintf (stderr, "trim: %s\n", infn);
   mstimestart (&etm);
   aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
 
@@ -346,7 +346,6 @@ aaNormalize (const char *infn, const char *outfn)
   bool        found = false;
   mstime_t    etm;
 
-fprintf (stderr, "norm: %s\n", infn);
   mstimestart (&etm);
   aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
 
@@ -518,7 +517,6 @@ aaAdjust (song_t *song, const char *infn, const char *outfn,
   const char  *ftstr = "tri";
   mstime_t    etm;
 
-fprintf (stderr, "adjust: %s\n", infn);
   mstimestart (&etm);
   *aftext = '\0';
 
@@ -534,7 +532,6 @@ fprintf (stderr, "adjust: %s\n", infn);
   if (songstart <= 0 && songend <= 0 && speed == 100 && dur == 0 &&
       fadein == 0 && fadeout == 0 && gap == 0) {
     /* no adjustments need to be made */
-fprintf (stderr, "  no adjustments needed\n");
     return -1;
   }
 
@@ -731,11 +728,16 @@ static long
 aaParseDuration (const char *resp)
 {
   char    *p = NULL;
+  char    *tp = NULL;
   long    newdur = -1;
   int     h, m, s, ss;
 
   /* size=     932kB time=00:00:30.85 bitrate= 247.4kbits/s speed=65.2x */
+  /* when the speed is adjusted, the above line appears twice */
   p = strstr (resp, "time=");
+  while ((tp = strstr (p + 1, "time=")) != NULL) {
+    p = tp;
+  }
   if (p != NULL) {
     if (sscanf (p, "time=%d:%d:%d.%d", &h, &m, &s, &ss) == 4) {
       newdur = 0;
