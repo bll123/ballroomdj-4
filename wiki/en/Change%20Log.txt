@@ -6,8 +6,6 @@
 
 **4.1.0 beta 2023-2---**
 
-* Bug Fixes:
-    * Alternate Installer: Various bug fixes.
 * New Features:
     * Song Editor: Apply Adjustments.
 * Changes:
@@ -17,6 +15,7 @@
     * Song Editor: BPM, song start, song end are adjusted for speed.
     * Support: Added BDJ4 download link.
 * Bug Fixes:
+    * Alternate Installer: Various bug fixes.
     * BPM Counter: Fix slow exit.
     * User Interface: Button Repeat is fixed.
 * Translations:

@@ -98,7 +98,7 @@ add_subdirectory (libdylib)
 add_subdirectory (liblocbdj3)
 add_subdirectory (libwebsrv)
 # shared libraries that ship
-add_subdirectory (libaudiotag)
+add_subdirectory (libati)
 add_subdirectory (libcommon)
 add_subdirectory (libbasic)
 add_subdirectory (libbdj4)
