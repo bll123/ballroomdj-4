@@ -39,17 +39,18 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
-    songConvAdjustFlags,          /* conv func            */
+    songutilConvAdjustFlags,          /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_ALBUM] =
   { "ALBUM",                      /* tag */
@@ -65,15 +66,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_YES,                     /* audio id disp        */
-    1,                            /* listing display      */
-    1,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    1,                            /* text search          */
-    1,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    true,                         /* text search          */
+    true,                         /* is org tag           */
   },
   [TAG_ALBUMARTIST] =
   { "ALBUMARTIST",                /* tag */
@@ -89,15 +91,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_YES,                     /* audio id disp        */
-    1,                            /* listing display      */
-    1,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    1,                            /* text search          */
-    1,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    true,                         /* text search          */
+    true,                         /* is org tag           */
   },
   [TAG_ARTIST] =
   { "ARTIST",                     /* tag */
@@ -113,15 +116,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_YES,                     /* audio id disp        */
-    1,                            /* listing display      */
-    1,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    1,                            /* text search          */
-    1,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    true,                         /* text search          */
+    true,                         /* is org tag           */
   },
   [TAG_BPM] =
   { "BPM",                        /* tag */
@@ -137,15 +141,41 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    1,                            /* align right          */
-    1,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    true,                         /* align right          */
+    true,                         /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
+  },
+  [TAG_BPM_DISPLAY] =
+  { "BPMDISPLAY",                 /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { { NULL, NULL, NULL },
+      { NULL, NULL, NULL },
+      { NULL, NULL, NULL },
+      { NULL, NULL, NULL }
+    },       /* audio tags */
+    NULL,                         /* itunes name          */ // Total Time
+    ET_LABEL,                     /* edit type            */
+    VALUE_STR,                    /* value type           */
+    NULL,                         /* conv func            */
+    DISP_NO,                      /* audio id disp        */
+    false,                        /* listing display      */
+    true,                         /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_COMPOSER] =
   { "COMPOSER",                   /* tag */
@@ -161,15 +191,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_OPT,                     /* audio id disp        */
-    1,                            /* listing display      */
-    1,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    1,                            /* text search          */
-    1,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    true,                         /* text search          */
+    true,                         /* is org tag           */
   },
   [TAG_CONDUCTOR] =
   { "CONDUCTOR",                  /* tag */
@@ -185,15 +216,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_OPT,                     /* audio id disp        */
-    1,                            /* listing display      */
-    1,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    1,                            /* text search          */
-    1,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    true,                         /* text search          */
+    true,                         /* is org tag           */
   },
   [TAG_DANCE] =
   { "DANCE",                /* tag */
@@ -209,15 +241,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     danceConvDance,               /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    1,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    1,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    true,                         /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    true,                         /* is org tag           */
   },
   [TAG_DANCELEVEL] =
   { "DANCELEVEL",                 /* tag */
@@ -233,15 +266,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     levelConv,                    /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    1,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    true,                         /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_DANCERATING] =
   { "DANCERATING",                /* tag */
@@ -257,15 +291,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     ratingConv,                   /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    1,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    true,                         /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_DATE] =
   { "DATE",                       /* tag */
@@ -281,15 +316,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_OPT,                     /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_DBADDDATE] =
   { "DBADDDATE",                  /* tag */
@@ -305,15 +341,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_DISCNUMBER] =
   { "DISC",                       /* tag */
@@ -329,15 +366,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_YES,                     /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    1,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    1,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    true,                         /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    true,                         /* is org tag           */
   },
   [TAG_DISCTOTAL] =
   { "DISCTOTAL",                  /* tag */
@@ -353,15 +391,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_YES,                     /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    1,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    true,                         /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_DURATION] =
   { "DURATION",                   /* tag */
@@ -377,15 +416,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     convMS,                       /* conv func            */
     DISP_YES,                     /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    1,                            /* align right          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    true,                         /* align right          */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_FILE] =
   { "FILE",                       /* tag */
@@ -401,15 +441,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    1,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    true,                         /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_FAVORITE] =
   { "FAVORITE",                   /* tag */
@@ -425,15 +466,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     songFavoriteConv,             /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_GENRE] =
   { "GENRE",                      /* tag */
@@ -449,15 +491,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     genreConv,                    /* conv func            */
     DISP_YES,                     /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    1,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    1,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    true,                         /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    true,                         /* is org tag           */
   },
   [TAG_KEYWORD] =
   { "KEYWORD",                /* tag */
@@ -473,15 +516,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    1,                            /* all edit             */
-    1,                            /* editable             */
-    1,                            /* text search          */
-    0,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    true,                         /* all edit             */
+    true,                         /* editable             */
+    true,                         /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_MQDISPLAY] =
   { "MQDISPLAY",                /* tag */
@@ -497,15 +541,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    1,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    true,                         /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_RECORDING_ID] =
   { "RECORDING_ID",                /* tag */
@@ -521,15 +566,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_WORK_ID] =
   { "WORK_ID",
@@ -545,15 +591,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_TRACK_ID] =
   { "TRACK_ID",                    /* tag */
@@ -569,15 +616,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_NOTES] =
   { "NOTES",                /* tag */
@@ -593,15 +641,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    1,                            /* listing display      */
-    1,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    1,                            /* all edit             */
-    1,                            /* editable             */
-    1,                            /* text search          */
-    0,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    true,                         /* all edit             */
+    true,                         /* editable             */
+    true,                         /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_SAMESONG] =
   { "SAMESONG",                 /* tag */
@@ -617,15 +666,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_SONGEND] =
   { "SONGEND",                /* tag */
@@ -641,15 +691,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_SONGSTART] =
   { "SONGSTART",                  /* tag */
@@ -665,15 +716,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_SPEEDADJUSTMENT] =
   { "SPEEDADJUSTMENT",            /* tag */
@@ -689,15 +741,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_STATUS] =
   { "STATUS",                     /* tag */
@@ -713,15 +766,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     statusConv,                   /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    1,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    true,                         /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_TAGS] =
   { "TAGS",                       /* tag */
@@ -737,15 +791,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_LIST,                   /* value type           */
     convTextList,                 /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    1,                            /* listing display      */
-    1,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    1,                            /* all edit             */
-    1,                            /* editable             */
-    1,                            /* text search          */
-    0,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    true,                         /* all edit             */
+    true,                         /* editable             */
+    true,                         /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_TITLE] =
   { "TITLE",                      /* tag */
@@ -761,15 +816,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_YES,                     /* audio id disp        */
-    1,                            /* listing display      */
-    1,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    1,                            /* text search          */
-    1,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    true,                         /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    true,                         /* text search          */
+    true,                         /* is org tag           */
   },
   [TAG_TRACKNUMBER] =
   { "TRACKNUMBER",                /* tag */
@@ -785,15 +841,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_YES,                     /* audio id disp        */
-    1,                            /* listing display      */
-    0,                            /* ellipsize            */
-    1,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    1,                            /* is org tag           */
+    true,                         /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    true,                         /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    true,                         /* is org tag           */
   },
   [TAG_TRACKTOTAL] =
   { "TRACKTOTAL",                 /* tag */
@@ -809,15 +866,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_YES,                     /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    1,                            /* align right          */
-    0,                            /* is bdj tag           */
-    1,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    true,                         /* align right          */
+    false,                        /* is bdj tag           */
+    true,                         /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_LAST_UPDATED] =
   { "LASTUPDATED",                /* tag */
@@ -833,15 +891,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_VOLUMEADJUSTPERC] =
   { "VOLUMEADJUSTPERC",           /* tag */
@@ -857,15 +916,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_DOUBLE,                 /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    1,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    1,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    true,                         /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    true,                         /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_RRN] =
   { "RRN",                        /* tag */
@@ -881,15 +941,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_DBIDX] =
   { "DBIDX",                      /* tag */
@@ -905,15 +966,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
   [TAG_TEMPORARY] =
   { "TEMPORARY",                  /* tag */
@@ -929,15 +991,16 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
     DISP_NO,                      /* audio id disp        */
-    0,                            /* listing display      */
-    0,                            /* ellipsize            */
-    0,                            /* align right          */
-    0,                            /* is bdj tag           */
-    0,                            /* is norm tag          */
-    0,                            /* all edit             */
-    0,                            /* editable             */
-    0,                            /* text search          */
-    0,                            /* is org tag           */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* all edit             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
   },
 };
 

@@ -7,7 +7,6 @@ include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4common SHARED
   bdjmsg.c
-  bdjstring.c
   bdjvars.c
   callback.c
   colorutils.c
@@ -15,36 +14,29 @@ add_library (libbdj4common SHARED
   dirop.c
   filedata.c
   filemanip.c
-  fileop.c
   fileshared.c
   log.c
-  mdebug.c
   osdir.c
   oslocale.c
   osnetutils.c
-  osprocess.c
   osrandom.c
   ossignal.c
-  osutils.c
-  oslinuxutils.c
-  osmacutils.m
-  oswinprocess.c
-  oswinutils.c
   pathbld.c
   pathutil.c
   queue.c
   sock.c
   sockh.c
-  strlcat.c
-  strlcpy.c
   sysvars.c
-  tmutil.c
   vsencdec.c
 )
 target_include_directories (libbdj4common
   PUBLIC "${GLIB_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4common
+  libbdj4fileop     # fileop.c
+  libbdj4osutils    # osutils.c, osprocess.c
+  libbdj4tmutil     # tmutil.c
+  libbdj4string     # bdjstring, strlcat, strlcpy, mdebug
   ${GLIB_LDFLAGS}
   m
 )

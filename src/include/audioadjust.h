@@ -28,8 +28,9 @@ typedef struct aa aa_t;
 
 aa_t * aaAlloc (void);
 void aaFree (aa_t *aa);
-void aaTrimSilence (const char *infn, const char *outfn);
+bool aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags);
+long aaTrimSilence (const char *infn, const char *outfn);
 void aaNormalize (const char *infn, const char *outfn);
-void aaApplyAdjustments (song_t *song, const char *infn, const char *outfn, long dur, int fadein, int fadeout, int gap);
+long aaAdjust (song_t *song, const char *infn, const char *outfn, long dur, int fadein, int fadeout, int gap);
 
 #endif /* INC_AUDIOADJUST_H */

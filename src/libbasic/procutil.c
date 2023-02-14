@@ -240,7 +240,7 @@ procutilStartProcess (bdjmsgroute_t route, const char *fname, int detachflag,
   if (isWindows ()) {
     char  tmp [MAXPATHLEN];
     osGetEnv ("PATH", tmp, sizeof (tmp));
-    logMsg (LOG_DBG, LOG_BASIC, "PATH=%s\n", tmp);
+    logMsg (LOG_DBG, LOG_BASIC, "PATH=%s", tmp);
   }
   if (process == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "%s %s failed to start", fname, tbuff);

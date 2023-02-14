@@ -52,6 +52,7 @@ typedef struct {
   dfConvFunc_t        convfunc;
   tagdispflag_t       audioiddispflag;
   bool                listingDisplay : 1;
+  bool                secondaryDisplay : 1;
   bool                ellipsize : 1;
   bool                alignRight : 1;
   bool                isBDJTag : 1;
@@ -68,6 +69,7 @@ typedef enum {
   TAG_ALBUMARTIST,            //
   TAG_ARTIST,                 //
   TAG_BPM,                    //
+  TAG_BPM_DISPLAY,            //
   TAG_COMPOSER,               //
   TAG_CONDUCTOR,              //
   TAG_DANCE,                  //

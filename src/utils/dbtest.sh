@@ -135,7 +135,7 @@ TDBRDTAT=tmp/test-m-r-dtat.dat
 TMPA=tmp/dbtesta.txt
 TMPB=tmp/dbtestb.txt
 
-./src/utils/mktestsetup.sh
+./src/utils/mktestsetup.sh --force
 
 # get music dir
 hostname=$(hostname)

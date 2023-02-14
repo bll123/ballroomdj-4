@@ -292,35 +292,6 @@ uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname)
 }
 
 void
-uimusicqExportMP3Dialog (uimusicq_t *uimusicq, UIWidget *windowp,
-    callbackFuncIntInt dispcb, char *msg, int mqidx)
-{
-  uiselect_t  *selectdata;
-  char        *dir;
-  char        tbuff [200];
-
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
-
-  /* CONTEXT: export as mp3: title of save dialog */
-  snprintf (tbuff, sizeof (tbuff), _("Export as %s"), BDJ4_MP3_LABEL);
-  selectdata = uiDialogCreateSelect (windowp,
-      tbuff, sysvarsGetStr (SV_BDJ4_DREL_TMP), NULL, NULL, NULL);
-  dir = uiSelectDirDialog (selectdata);
-
-  /* clear the dialog */
-  uiUIProcessWaitEvents ();
-
-  if (dir != NULL) {
-    mp3ExportQueue (msg, uimusicq->musicdb, dir, mqidx, dispcb);
-    mdfree (dir);
-  }
-  mdfree (selectdata);
-  if (dispcb != NULL) {
-    callbackHandlerIntInt ((callback_t *) dispcb, -1, -1);
-  }
-}
-
-void
 uimusicqProcessSongSelect (uimusicq_t *uimusicq, mp_songselect_t *songselect)
 {
   uimusicq->ui [songselect->mqidx].haveselloc = true;

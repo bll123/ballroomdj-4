@@ -116,7 +116,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
       CONFUI_SWITCH_Q_PLAY_ANNOUNCE, OPT_Q_PLAY_ANNOUNCE,
       bdjoptGetNumPerQueue (OPT_Q_PLAY_ANNOUNCE, 0), NULL, CONFUI_INDENT);
 
-  /* CONTEXT: configuration: queue: play when queued */
+  /* CONTEXT: configuration: queue: play when queued (verb) */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Play When Queued"),
       CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED, OPT_Q_PLAY_WHEN_QUEUED,
       bdjoptGetNumPerQueue (OPT_Q_PLAY_WHEN_QUEUED, 0), NULL, CONFUI_INDENT);

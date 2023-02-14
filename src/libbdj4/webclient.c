@@ -121,7 +121,7 @@ webclientDownload (webclient_t *webclient, const char *uri, const char *outfile)
   mstimeset (&webclient->dlStart, 0);
   fh = fileopOpen (outfile, "wb");
   if (fh == NULL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "download: unable to open %s %d %s\n",
+    logMsg (LOG_DBG, LOG_IMPORTANT, "download: unable to open %s %d %s",
         outfile, errno, strerror (errno));
     return;
   }

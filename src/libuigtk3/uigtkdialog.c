@@ -32,6 +32,7 @@ typedef struct uiselect {
 
 static void uiDialogResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
 static gboolean uiDialogIsDirectory (const GtkFileFilterInfo* filterInfo, gpointer udata);
+static void uiDialogAddButtonsInternal (UIWidget *uiwidget, va_list valist);
 
 char *
 uiSelectDirDialog (uiselect_t *selectdata)
@@ -46,8 +47,10 @@ uiSelectDirDialog (uiselect_t *selectdata)
       selectdata->label,
       GTK_WINDOW (selectdata->window->widget),
       GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-      /* CONTEXT: actions associated with the select folder dialog */
-      _("Select"), _("Close"));
+      /* CONTEXT: select folder dialog: select folder */
+      _("Select"),
+      /* CONTEXT: select folder dialog: close */
+      _("Close"));
 
   if (selectdata->startpath != NULL) {
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
@@ -82,8 +85,10 @@ uiSelectFileDialog (uiselect_t *selectdata)
       selectdata->label,
       GTK_WINDOW (selectdata->window->widget),
       GTK_FILE_CHOOSER_ACTION_OPEN,
-      /* CONTEXT: actions associated with the select file dialog */
-      _("Select"), _("Close"));
+      /* CONTEXT: select file dialog: select file */
+      _("Select"),
+      /* CONTEXT: select file dialog: close */
+      _("Close"));
 
   if (selectdata->startpath != NULL) {
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
@@ -121,8 +126,10 @@ uiSaveFileDialog (uiselect_t *selectdata)
       selectdata->label,
       GTK_WINDOW (selectdata->window->widget),
       GTK_FILE_CHOOSER_ACTION_SAVE,
-      /* CONTEXT: actions associated with the save file dialog */
-      _("Save"), _("Close"));
+      /* CONTEXT: save file dialog: save */
+      _("Save"),
+      /* CONTEXT: save file dialog: close */
+      _("Close"));
 
   if (selectdata->startpath != NULL) {
     gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (widget),
@@ -159,8 +166,6 @@ uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
 {
   GtkWidget *dialog;
   va_list   valist;
-  char      *label;
-  int       resp;
 
   dialog = gtk_dialog_new ();
   gtk_window_set_title (GTK_WINDOW (dialog), title);
@@ -169,16 +174,27 @@ uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
   uiwidget->widget = dialog;
 
   va_start (valist, title);
-  while ((label = va_arg (valist, char *)) != NULL) {
-    resp = va_arg (valist, int);
-    gtk_dialog_add_button (GTK_DIALOG (dialog), label, resp);
-  }
+  uiDialogAddButtonsInternal (uiwidget, valist);
   va_end (valist);
 
   if (uicb != NULL) {
     g_signal_connect (dialog, "response",
         G_CALLBACK (uiDialogResponseHandler), uicb);
   }
+}
+
+void
+uiDialogAddButtons (UIWidget *uidialog, ...)
+{
+  va_list   valist;
+
+  if (uidialog == NULL) {
+    return;
+  }
+
+  va_start (valist, uidialog);
+  uiDialogAddButtonsInternal (uidialog, valist);
+  va_end (valist);
 }
 
 void
@@ -243,4 +259,22 @@ uiDialogIsDirectory (const GtkFileFilterInfo* filterInfo, gpointer udata)
   }
 
   return rc;
+}
+
+static void
+uiDialogAddButtonsInternal (UIWidget *uiwidget, va_list valist)
+{
+  GtkWidget *dialog;
+  char      *label;
+  int       resp;
+
+  if (uiwidget == NULL) {
+    return;
+  }
+
+  dialog = uiwidget->widget;
+  while ((label = va_arg (valist, char *)) != NULL) {
+    resp = va_arg (valist, int);
+    gtk_dialog_add_button (GTK_DIALOG (dialog), label, resp);
+  }
 }

@@ -95,6 +95,7 @@ enum {
   MANAGE_MENU_CB_SE_CANCEL_EDITALL,
   MANAGE_MENU_CB_SE_START_EDITALL,
   MANAGE_MENU_CB_SE_APPLY_ADJ,
+  MANAGE_MENU_CB_SE_RESTORE_ORIG,
   /* sl options menu */
   MANAGE_MENU_CB_SL_EZ_EDIT,
   /* sl edit menu */
@@ -147,6 +148,10 @@ enum {
   /* same song */
   MANAGE_SET_MARK,
   MANAGE_CLEAR_MARK,
+  /* processing state */
+  MANAGE_STATE_OFF,
+  MANAGE_STATE_START,
+  MANAGE_STATE_PROCESS,
 };
 
 /* actions for the queue process */
@@ -170,6 +175,7 @@ typedef struct {
   int             stopwaitcount;
   UIWidget        statusMsg;
   UIWidget        errorMsg;
+  UIWidget        restoreOrigMenuItem;
   const char      *pleasewaitmsg;
   /* notebook tab handling */
   int               mainlasttab;
@@ -230,6 +236,9 @@ typedef struct {
   int             currtimesig;
   /* song editor */
   uiaa_t          *uiaa;
+  int             aaflags;
+  int             applyadjstate;
+  int             impitunesstate;
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
@@ -285,18 +294,21 @@ static bool     manageNewSelectionSongSel (void *udata, long dbidx);
 static bool     manageNewSelectionSonglist (void *udata, long dbidx);
 static bool     manageSwitchToSongEditor (void *udata);
 static bool     manageSongEditSaveCallback (void *udata, long dbidx);
+static void     manageRePopulateData (manageui_t *manage);
+static void     manageSetEditMenuItems (manageui_t *manage);
+static bool     manageApplyAdjDialog (void *udata);
+static bool     manageApplyAdjCallback (void *udata, long aaflags);
+static bool     manageRestoreOrigCallback (void *udata);
+/* bpm counter */
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
 static void     manageSendBPMCounter (manageui_t *manage);
-static bool     manageSonglistExportM3U (void *udata);
-static bool     manageSonglistImportM3U (void *udata);
+/* itunes */
 static bool     manageSonglistImportiTunes (void *udata);
 static void     manageiTunesCreateDialog (manageui_t *manage);
 static void     manageiTunesDialogCreateList (manageui_t *manage);
 static bool     manageiTunesDialogSelectHandler (void *udata, long idx);
 static bool     manageiTunesDialogResponseHandler (void *udata, long responseid);
-static bool     manageApplyAdjDialog (void *udata);
-static bool     manageApplyAdjCallback (void *udata, long aaflags);
 /* music manager */
 static void     manageBuildUIMusicManager (manageui_t *manage);
 static void     manageMusicManagerMenu (manageui_t *manage);
@@ -329,6 +341,8 @@ static bool     managePlayProcessMusicManager (void *udata, long dbidx, int mqid
 static bool     manageQueueProcessSonglist (void *udata, long dbidx, int mqidx);
 static bool     manageQueueProcessEasySonglist (void *udata, long dbidx, int mqidx);
 static void     manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action);
+static bool     manageSonglistExportM3U (void *udata);
+static bool     manageSonglistImportM3U (void *udata);
 /* general */
 static bool     manageSwitchPageMain (void *udata, long pagenum);
 static bool     manageSwitchPageSonglist (void *udata, long pagenum);
@@ -386,6 +400,7 @@ main (int argc, char *argv[])
   uiMenuInit (&manage.slmenu);
   uiMenuInit (&manage.songeditmenu);
   uiMenuInit (&manage.mmmenu);
+  uiutilsUIWidgetInit (&manage.restoreOrigMenuItem);
   manage.mainnbtabid = uiutilsNotebookIDInit ();
   manage.slnbtabid = uiutilsNotebookIDInit ();
   manage.mmnbtabid = uiutilsNotebookIDInit ();
@@ -420,6 +435,8 @@ main (int argc, char *argv[])
   manage.importitunesactive = false;
   manage.importm3uactive = false;
   manage.exportm3uactive = false;
+  manage.applyadjstate = MANAGE_STATE_OFF;
+  manage.impitunesstate = MANAGE_STATE_OFF;
   manage.uiaa = NULL;
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
@@ -971,6 +988,60 @@ manageMainLoop (void *tmanage)
     }
   }
 
+  /* apply adjustments processing */
+
+  if (manage->applyadjstate == MANAGE_STATE_PROCESS) {
+    bool    changed = false;
+
+    changed = aaApplyAdjustments (manage->musicdb, manage->songeditdbidx, manage->aaflags);
+
+    if (changed) {
+      song_t  *song = NULL;
+      char    tmp [40];
+
+      manageRePopulateData (manage);
+      song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
+      uisongeditLoadData (manage->mmsongedit, song, manage->songeditdbidx);
+      manageSetEditMenuItems (manage);
+
+      snprintf (tmp, sizeof (tmp), "%d", manage->songeditdbidx);
+      connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
+    }
+    uiLabelSetText (&manage->statusMsg, "");
+    manage->applyadjstate = MANAGE_STATE_OFF;
+  }
+
+  if (manage->applyadjstate == MANAGE_STATE_START) {
+    uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
+    manage->applyadjstate = MANAGE_STATE_PROCESS;
+  }
+
+  /* itunes processing */
+
+  if (manage->impitunesstate == MANAGE_STATE_PROCESS) {
+    manageSonglistSave (manage);
+
+    if (manage->itunes == NULL) {
+      manage->itunes = itunesAlloc ();
+    }
+
+    itunesParse (manage->itunes);
+
+    /* CONTEXT: managementui: song list: default name for a new song list */
+    manageSetSonglistName (manage, _("New Song List"));
+
+    manageiTunesCreateDialog (manage);
+    uiWidgetShowAll (&manage->itunesSelectDialog);
+
+    uiLabelSetText (&manage->statusMsg, "");
+    manage->impitunesstate = MANAGE_STATE_OFF;
+  }
+
+  if (manage->impitunesstate == MANAGE_STATE_START) {
+    uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
+    manage->impitunesstate = MANAGE_STATE_PROCESS;
+  }
+
   uiplayerMainLoop (manage->slplayer);
   uiplayerMainLoop (manage->mmplayer);
   uimusicqMainLoop (manage->slmusicq);
@@ -1197,12 +1268,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_DB_ENTRY_UPDATE: {
           dbLoadEntry (manage->musicdb, atol (targs));
-          /* re-populate the display */
-          manage->selbypass = true;
-          uisongselPopulateData (manage->slsongsel);
-          uisongselPopulateData (manage->slezsongsel);
-          uisongselPopulateData (manage->mmsongsel);
-          manage->selbypass = false;
+          manageRePopulateData (manage);
           break;
         }
         default: {
@@ -1264,15 +1330,10 @@ manageSongEditMenu (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
   if (! manage->songeditmenu.initialized) {
-/* 2023-2-1 at this time, this breaks windows
- * the manageui does not display.
- */
-#if 0
     manage->uiaa = uiaaInit (&manage->window, manage->options);
     manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
         manageApplyAdjCallback, manage);
     uiaaSetResponseCallback (manage->uiaa, manage->callbacks [MANAGE_CB_APPLY_ADJ]);
-#endif
 
     uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: managementui: menu selection: actions for song editor */
@@ -1288,7 +1349,7 @@ manageSongEditMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, tagdefs [TAG_BPM].displayname,
         manage->callbacks [MANAGE_MENU_CB_BPM]);
 
-    uiMenuAddSeparator (&manage->menubar, &menuitem);
+    uiMenuAddSeparator (&menu, &menuitem);
 
     /* CONTEXT: managementui: menu selection: song editor: edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Edit All"), NULL);
@@ -1302,20 +1363,28 @@ manageSongEditMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, _("Cancel Edit All"), NULL);
     uiWidgetDisable (&menuitem);
 
-    uiMenuAddSeparator (&manage->menubar, &menuitem);
+    uiMenuAddSeparator (&menu, &menuitem);
 
     manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ] = callbackInit (
         manageApplyAdjDialog, manage, NULL);
+    uisongeditSetApplyAdjCallback (manage->mmsongedit, manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
     /* CONTEXT: managementui: menu selection: song editor: apply adjustments */
     uiMenuCreateItem (&menu, &menuitem, _("Apply Adjustments"),
         manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
+
+    manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG] = callbackInit (
+        manageRestoreOrigCallback, manage, NULL);
+    /* CONTEXT: managementui: menu selection: song editor: restore original */
+    uiMenuCreateItem (&menu, &menuitem, _("Restore Original"),
+        manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
+    uiutilsUIWidgetCopy (&manage->restoreOrigMenuItem, &menuitem);
+    uiWidgetDisable (&menuitem);
+
     /* a missing audio adjust file will not stop startup */
     tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
     if (tempp == NULL) {
       uiWidgetDisable (&menuitem);
     }
-// ### FIX for aa
-uiWidgetDisable (&menuitem);
 
     manage->songeditmenu.initialized = true;
   }
@@ -1350,6 +1419,7 @@ manageNewSelectionSongSel (void *udata, long dbidx)
   song = dbGetByIdx (manage->musicdb, dbidx);
   manage->songeditdbidx = dbidx;
   uisongeditLoadData (manage->mmsongedit, song, dbidx);
+  manageSetEditMenuItems (manage);
   manageSetBPMCounter (manage, song);
 
   logProcEnd (LOG_PROC, "manageNewSelectionSongSel", "");
@@ -1420,12 +1490,7 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   snprintf (tmp, sizeof (tmp), "%ld", dbidx);
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
 
-  /* re-populate the song selection displays to display the updated info */
-  manage->selbypass = true;
-  uisongselPopulateData (manage->slsongsel);
-  uisongselPopulateData (manage->slezsongsel);
-  uisongselPopulateData (manage->mmsongsel);
-  manage->selbypass = false;
+  manageRePopulateData (manage);
 
   /* re-load the song into the song editor */
   /* it is unknown if called from saving a favorite or from the song editor */
@@ -1433,12 +1498,93 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   song = dbGetByIdx (manage->musicdb, dbidx);
   manage->songeditdbidx = dbidx;
   uisongeditLoadData (manage->mmsongedit, song, dbidx);
+  manageSetEditMenuItems (manage);
 
   ++manage->dbchangecount;
 
   logProcEnd (LOG_PROC, "manageSongEditSaveCallback", "");
   return UICB_CONT;
 }
+
+static void
+manageRePopulateData (manageui_t *manage)
+{
+  /* re-populate the song selection displays to display the updated info */
+  manage->selbypass = true;
+  uisongselPopulateData (manage->slsongsel);
+  uisongselPopulateData (manage->slezsongsel);
+  uisongselPopulateData (manage->mmsongsel);
+  manage->selbypass = false;
+}
+
+
+static void
+manageSetEditMenuItems (manageui_t *manage)
+{
+  song_t    *song;
+  bool      hasorig;
+
+  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
+  hasorig = songutilHasOriginal (songGetStr (song, TAG_FILE));
+  if (! uiutilsUIWidgetSet (&manage->restoreOrigMenuItem)) {
+    return;
+  }
+  if (hasorig) {
+    uiWidgetEnable (&manage->restoreOrigMenuItem);
+  } else {
+    uiWidgetDisable (&manage->restoreOrigMenuItem);
+  }
+}
+
+static bool
+manageApplyAdjDialog (void *udata)
+{
+  manageui_t    *manage = udata;
+  bool          rc;
+  bool          hasorig;
+  song_t        *song;
+
+  if (manage->songeditdbidx < 0) {
+    return UICB_STOP;
+  }
+
+  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
+  hasorig = songutilHasOriginal (songGetStr (song, TAG_FILE));
+  rc = uiaaDialog (manage->uiaa, songGetNum (song, TAG_ADJUSTFLAGS), hasorig);
+  return rc;
+}
+
+static bool
+manageApplyAdjCallback (void *udata, long aaflags)
+{
+  manageui_t  *manage = udata;
+
+  if (manage->songeditdbidx < 0) {
+    return UICB_STOP;
+  }
+
+  manage->aaflags = aaflags;
+  manage->applyadjstate = MANAGE_STATE_START;
+
+  return UICB_CONT;
+}
+
+static bool
+manageRestoreOrigCallback (void *udata)
+{
+  manageui_t    *manage = udata;
+
+  if (manage->songeditdbidx < 0) {
+    return UICB_STOP;
+  }
+
+  manage->aaflags = SONG_ADJUST_RESTORE;
+  manage->applyadjstate = MANAGE_STATE_START;
+
+  return UICB_CONT;
+}
+
+/* bpm counter */
 
 static bool
 manageStartBPMCounter (void *udata)
@@ -1518,121 +1664,7 @@ manageSendBPMCounter (manageui_t *manage)
   logProcEnd (LOG_PROC, "manageSendBPMCounter", "");
 }
 
-static bool
-manageSonglistExportM3U (void *udata)
-{
-  manageui_t  *manage = udata;
-  char        tbuff [200];
-  char        tname [200];
-  uiselect_t  *selectdata;
-  char        *fn;
-  char        *slname;
-
-  if (manage->exportm3uactive) {
-    return UICB_STOP;
-  }
-
-  logProcBegin (LOG_PROC, "manageSonglistExportM3U");
-  manage->exportm3uactive = true;
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export m3u");
-
-  manageSonglistSave (manage);
-
-  slname = uimusicqGetSonglistName (manage->slmusicq);
-
-  /* CONTEXT: managementui: song list export: title of save dialog */
-  snprintf (tbuff, sizeof (tbuff), _("Export as M3U Playlist"));
-  snprintf (tname, sizeof (tname), "%s.m3u", slname);
-  selectdata = uiDialogCreateSelect (&manage->window,
-      tbuff, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tname,
-      /* CONTEXT: managementui: song list export: name of file save type */
-      _("M3U Files"), "audio/x-mpegurl");
-  fn = uiSaveFileDialog (selectdata);
-  if (fn != NULL) {
-    uimusicqExportM3U (manage->slmusicq, fn, slname);
-    mdfree (fn);
-  }
-  mdfree (selectdata);
-  mdfree (slname);
-  manage->exportm3uactive = false;
-  logProcEnd (LOG_PROC, "manageSonglistExportM3U", "");
-  return UICB_CONT;
-}
-
-static bool
-manageSonglistImportM3U (void *udata)
-{
-  manageui_t  *manage = udata;
-  char        nplname [200];
-  char        tbuff [MAXPATHLEN];
-  uiselect_t  *selectdata;
-  char        *fn;
-  pathinfo_t  *pi;
-
-  if (manage->importm3uactive) {
-    return UICB_STOP;
-  }
-
-  manage->importm3uactive = true;
-  logProcBegin (LOG_PROC, "manageSonglistImportM3U");
-  logMsg (LOG_DBG, LOG_ACTIONS, "= action: import m3u");
-
-  manageSonglistSave (manage);
-  manageSonglistNew (manage);
-
-  /* CONTEXT: managementui: song list: default name for a new song list */
-  manageSetSonglistName (manage, _("New Song List"));
-  strlcpy (nplname, manage->sloldname, sizeof (nplname));
-
-  selectdata = uiDialogCreateSelect (&manage->window,
-      /* CONTEXT: managementui: song list import: title of dialog */
-      _("Import M3U"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
-      /* CONTEXT: managementui: song list import: name of file type */
-      _("M3U Files"), "audio/x-mpegurl");
-
-  fn = uiSelectFileDialog (selectdata);
-
-  if (fn != NULL) {
-    nlist_t     *list;
-    int         mqidx;
-    dbidx_t     dbidx;
-    nlistidx_t  iteridx;
-    int         len;
-
-    pi = pathInfo (fn);
-    len = pi->blen + 1 > sizeof (nplname) ? sizeof (nplname) : pi->blen + 1;
-    strlcpy (nplname, pi->basename, len);
-
-    list = m3uImport (manage->musicdb, fn, nplname, sizeof (nplname));
-    pathbldMakePath (tbuff, sizeof (tbuff),
-        nplname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
-    if (! fileopFileExists (tbuff)) {
-      manageSetSonglistName (manage, nplname);
-    }
-
-    if (nlistGetCount (list) > 0) {
-      mqidx = manage->musicqManageIdx;
-
-      /* clear the entire queue */
-      uimusicqTruncateQueueCallback (manage->slmusicq);
-
-      nlistStartIterator (list, &iteridx);
-      while ((dbidx = nlistIterateKey (list, &iteridx)) >= 0) {
-        manageQueueProcess (manage, dbidx, mqidx,
-            DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
-      }
-    }
-
-    nlistFree (list);
-    mdfree (fn);
-  }
-  mdfree (selectdata);
-
-  manageLoadPlaylistCB (manage, nplname);
-  manage->importm3uactive = false;
-  logProcEnd (LOG_PROC, "manageSonglistImportM3U", "");
-  return UICB_CONT;
-}
+/* itunes */
 
 static bool
 manageSonglistImportiTunes (void *udata)
@@ -1656,24 +1688,7 @@ manageSonglistImportiTunes (void *udata)
 
   logProcBegin (LOG_PROC, "manageSonglistImportiTunes");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import itunes");
-
-  manageSonglistSave (manage);
-
-  if (manage->itunes == NULL) {
-    manage->itunes = itunesAlloc ();
-  }
-
-  uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
-  uiUIProcessEvents ();
-  itunesParse (manage->itunes);
-  uiLabelSetText (&manage->statusMsg, "");
-  uiUIProcessEvents ();
-
-  /* CONTEXT: managementui: song list: default name for a new song list */
-  manageSetSonglistName (manage, _("New Song List"));
-
-  manageiTunesCreateDialog (manage);
-  uiWidgetShowAll (&manage->itunesSelectDialog);
+  manage->impitunesstate = MANAGE_STATE_START;
 
   logProcEnd (LOG_PROC, "manageSonglistImportiTunes", "");
   return UICB_CONT;
@@ -1809,7 +1824,7 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
               manage->musicqManageIdx, MSG_ARGS_RS, 999, MSG_ARGS_RS, dbidx);
           connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
         } else {
-          logMsg (LOG_DBG, LOG_MAIN, "itunes import: song not found %s\n", songfn);
+          logMsg (LOG_DBG, LOG_MAIN, "itunes import: song not found %s", songfn);
         }
       }
 
@@ -1821,83 +1836,6 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
   }
 
   logProcEnd (LOG_PROC, "manageiTunesResponseHandler", "");
-  return UICB_CONT;
-}
-
-static bool
-manageApplyAdjDialog (void *udata)
-{
-  manageui_t    *manage = udata;
-  bool          rc;
-  song_t        *song;
-
-  if (manage->songeditdbidx < 0) {
-    return UICB_STOP;
-  }
-
-  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-  rc = uiaaDialog (manage->uiaa, songGetNum (song, TAG_ADJUSTFLAGS));
-  return rc;
-}
-
-static bool
-manageApplyAdjCallback (void *udata, long aaflags)
-{
-  manageui_t  *manage = udata;
-  song_t      *song;
-  long        dur;
-  pathinfo_t  *pi;
-  char        *infn;
-  char        origfn [MAXPATHLEN];
-  char        fullfn [MAXPATHLEN];
-  char        outfn [MAXPATHLEN];
-
-  if (manage->songeditdbidx < 0) {
-    return UICB_STOP;
-  }
-
-  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-  if (song == NULL) {
-    return UICB_STOP;
-  }
-
-  dur = songGetNum (song, TAG_DURATION);
-
-  infn = songFullFileName (songGetStr (song, TAG_FILE));
-  strlcpy (fullfn, infn, sizeof (fullfn));
-  snprintf (origfn, sizeof (origfn), "%s%s",
-      infn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
-  if (! fileopFileExists (origfn)) {
-    // ### FIX: make sure BDJ tags are written out to the audio file
-    // must have song-start, song-end, speed
-    filemanipCopy (fullfn, origfn);
-  }
-
-  pi = pathInfo (infn);
-  snprintf (outfn, sizeof (outfn), "%*s/n-%*s",
-      (int) pi->dlen, pi->dirname,
-      (int) pi->flen, pi->filename);
-  pathInfoFree (pi);
-  dataFree (infn);
-
-  /* start with the input as the original filename */
-  infn = origfn;
-
-  if ((aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
-    aaTrimSilence (infn, outfn);
-    filemanipMove (outfn, fullfn);
-    infn = fullfn;
-  }
-  if ((aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM) {
-    aaNormalize (infn, outfn);
-    filemanipMove (outfn, fullfn);
-    infn = fullfn;
-  }
-  if ((aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST) {
-    aaApplyAdjustments (song, infn, outfn, dur, 0, 0, 0);
-    filemanipMove (outfn, fullfn);
-  }
-
   return UICB_CONT;
 }
 
@@ -2722,6 +2660,122 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
   logProcEnd (LOG_PROC, "manageQueueProcess", "");
 }
 
+static bool
+manageSonglistExportM3U (void *udata)
+{
+  manageui_t  *manage = udata;
+  char        tbuff [200];
+  char        tname [200];
+  uiselect_t  *selectdata;
+  char        *fn;
+  char        *slname;
+
+  if (manage->exportm3uactive) {
+    return UICB_STOP;
+  }
+
+  logProcBegin (LOG_PROC, "manageSonglistExportM3U");
+  manage->exportm3uactive = true;
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export m3u");
+
+  manageSonglistSave (manage);
+
+  slname = uimusicqGetSonglistName (manage->slmusicq);
+
+  /* CONTEXT: managementui: song list export: title of save dialog */
+  snprintf (tbuff, sizeof (tbuff), _("Export as M3U Playlist"));
+  snprintf (tname, sizeof (tname), "%s.m3u", slname);
+  selectdata = uiDialogCreateSelect (&manage->window,
+      tbuff, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tname,
+      /* CONTEXT: managementui: song list export: name of file save type */
+      _("M3U Files"), "audio/x-mpegurl");
+  fn = uiSaveFileDialog (selectdata);
+  if (fn != NULL) {
+    uimusicqExportM3U (manage->slmusicq, fn, slname);
+    mdfree (fn);
+  }
+  mdfree (selectdata);
+  mdfree (slname);
+  manage->exportm3uactive = false;
+  logProcEnd (LOG_PROC, "manageSonglistExportM3U", "");
+  return UICB_CONT;
+}
+
+static bool
+manageSonglistImportM3U (void *udata)
+{
+  manageui_t  *manage = udata;
+  char        nplname [200];
+  char        tbuff [MAXPATHLEN];
+  uiselect_t  *selectdata;
+  char        *fn;
+  pathinfo_t  *pi;
+
+  if (manage->importm3uactive) {
+    return UICB_STOP;
+  }
+
+  manage->importm3uactive = true;
+  logProcBegin (LOG_PROC, "manageSonglistImportM3U");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: import m3u");
+
+  manageSonglistSave (manage);
+  manageSonglistNew (manage);
+
+  /* CONTEXT: managementui: song list: default name for a new song list */
+  manageSetSonglistName (manage, _("New Song List"));
+  strlcpy (nplname, manage->sloldname, sizeof (nplname));
+
+  selectdata = uiDialogCreateSelect (&manage->window,
+      /* CONTEXT: managementui: song list import: title of dialog */
+      _("Import M3U"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
+      /* CONTEXT: managementui: song list import: name of file type */
+      _("M3U Files"), "audio/x-mpegurl");
+
+  fn = uiSelectFileDialog (selectdata);
+
+  if (fn != NULL) {
+    nlist_t     *list;
+    int         mqidx;
+    dbidx_t     dbidx;
+    nlistidx_t  iteridx;
+    int         len;
+
+    pi = pathInfo (fn);
+    len = pi->blen + 1 > sizeof (nplname) ? sizeof (nplname) : pi->blen + 1;
+    strlcpy (nplname, pi->basename, len);
+
+    list = m3uImport (manage->musicdb, fn, nplname, sizeof (nplname));
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        nplname, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
+    if (! fileopFileExists (tbuff)) {
+      manageSetSonglistName (manage, nplname);
+    }
+
+    if (nlistGetCount (list) > 0) {
+      mqidx = manage->musicqManageIdx;
+
+      /* clear the entire queue */
+      uimusicqTruncateQueueCallback (manage->slmusicq);
+
+      nlistStartIterator (list, &iteridx);
+      while ((dbidx = nlistIterateKey (list, &iteridx)) >= 0) {
+        manageQueueProcess (manage, dbidx, mqidx,
+            DISP_SEL_SONGLIST, MANAGE_QUEUE_LAST);
+      }
+    }
+
+    nlistFree (list);
+    mdfree (fn);
+  }
+  mdfree (selectdata);
+
+  manageLoadPlaylistCB (manage, nplname);
+  manage->importm3uactive = false;
+  logProcEnd (LOG_PROC, "manageSonglistImportM3U", "");
+  return UICB_CONT;
+}
+
 /* general */
 
 static bool
@@ -2961,6 +3015,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
     song = dbGetByIdx (manage->musicdb, dbidx);
     manage->songeditdbidx = dbidx;
     uisongeditLoadData (manage->mmsongedit, song, dbidx);
+    manageSetEditMenuItems (manage);
     manageSetBPMCounter (manage, song);
   }
   logProcEnd (LOG_PROC, "manageSetDisplayPerSelection", "");
@@ -3055,4 +3110,3 @@ manageSameSongChangeMark (manageui_t *manage, int flag)
   uisongselPopulateData (manage->mmsongsel);
   logProcEnd (LOG_PROC, "manageSameSongChangeMark", "");
 }
-

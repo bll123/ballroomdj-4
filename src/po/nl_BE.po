@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-02-09\n"
+"PO-Revision-Date: 2023-02-14\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -134,6 +134,12 @@ msgstr "%s is niet geconfigureerd."
 msgid "%s is not installed"
 msgstr "%s is niet geïnstalleerd"
 
+#. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
+#. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
+#, c-format
+msgid "%s may not exceed the song duration"
+msgstr ""
+
 #. CONTEXT: validation: must be a numeric value
 #, c-format
 msgid "%s must be numeric."
@@ -210,9 +216,9 @@ msgstr "Actief"
 msgid "Add New"
 msgstr "Voeg nieuwe toe"
 
-#. CONTEXT: apply adjustments: apply adjustments checkbox
-msgid "Adjust Speed, Song Start and End"
-msgstr "Snelheid aanpassen, Song Begin en Einde"
+#. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
+msgid "Adjust Speed, Song Start and Song End"
+msgstr "Snelheid aanpassen, Song Begin en Song Einde"
 
 #. CONTEXT: configuration file: dance level
 msgid "Advanced"
@@ -397,6 +403,9 @@ msgstr "Klik met de muisaanwijzer in het blauwe vak op de maat van de muziek."
 #. CONTEXT: request external dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
+#. CONTEXT: select folder dialog: close
+#. CONTEXT: select file dialog: close
+#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -706,14 +715,14 @@ msgstr "Afsluiten"
 msgid "Export"
 msgstr "Exporteren"
 
-#. CONTEXT: export as mp3: title of save dialog
 #. CONTEXT: player ui: menu selection: export: export as MP3
+#. CONTEXT: export as mp3: title of save dialog
 #, c-format
 msgid "Export as %s"
 msgstr "Exporteren als %s"
 
-#. CONTEXT: managementui: song list export: title of save dialog
 #. CONTEXT: managementui: menu selection: song list: export: export as m3u
+#. CONTEXT: managementui: song list export: title of save dialog
 #, c-format
 msgid "Export as M3U Playlist"
 msgstr "Exporteren als M3U afspeellijst"
@@ -843,8 +852,8 @@ msgstr "Als er geen BallroomDJ 3 installatie is, laat u de invoer leeg."
 msgid "Import"
 msgstr "Importeer"
 
-#. CONTEXT: managementui: song list import: title of dialog
 #. CONTEXT: managementui: menu selection: song list: import: import m3u
+#. CONTEXT: managementui: song list import: title of dialog
 msgid "Import M3U"
 msgstr "Importeer M3U"
 
@@ -1233,7 +1242,7 @@ msgstr "Afspelen / Pauseren"
 msgid "Play Announcements"
 msgstr ""
 
-#. CONTEXT: configuration: queue: play when queued
+#. CONTEXT: configuration: queue: play when queued (verb)
 msgid "Play When Queued"
 msgstr ""
 
@@ -1467,6 +1476,11 @@ msgstr "Externe Aanvraag"
 msgid "Reset"
 msgstr "Resetten"
 
+#. CONTEXT: apply adjustment dialog: restore original file
+#. CONTEXT: managementui: menu selection: song editor: restore original
+msgid "Restore Original"
+msgstr ""
+
 #. CONTEXT: playerui: button: tooltip: return to the beginning of the song
 msgid "Return to beginning of song"
 msgstr ""
@@ -1493,7 +1507,7 @@ msgid "Samba"
 msgstr "Samba"
 
 #. CONTEXT: song editor : save data
-#. CONTEXT: actions associated with the save file dialog
+#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr "Bewaren"
@@ -1517,8 +1531,8 @@ msgstr "Seconden"
 #. CONTEXT: side-by-side list: button: add the selected field
 #. CONTEXT: select file: selects the file
 #. CONTEXT: song-selection: select a song to be added to the song list
-#. CONTEXT: actions associated with the select folder dialog
-#. CONTEXT: actions associated with the select file dialog
+#. CONTEXT: select folder dialog: select folder
+#. CONTEXT: select file dialog: select file
 #. CONTEXT: managementui: config: button: add the selected songs to the song list
 msgid "Select"
 msgstr "Selecteer"

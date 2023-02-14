@@ -152,6 +152,11 @@ uiSetUICSS (const char *uifont, const char *accentColor,
         "progressbar." ACCENT_CLASS " > trough > progress { background-color: %s; }",
         accentColor);
     strlcat (tbuff, wbuff, sizeof (tbuff));
+
+    snprintf (wbuff, sizeof (wbuff),
+        "menu separator { background-color: shade(%s,0.5); margin-right: 12px; margin-left: 8px; }",
+        accentColor);
+    strlcat (tbuff, wbuff, sizeof (tbuff));
   }
   if (errorColor != NULL) {
     snprintf (wbuff, sizeof (wbuff),

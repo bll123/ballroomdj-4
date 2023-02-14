@@ -132,7 +132,7 @@ dbLoad (musicdb_t *musicdb)
     song = songAlloc ();
     songParse (song, data, i);
     fstr = songGetStr (song, TAG_FILE);
-    ffn = songFullFileName (fstr);
+    ffn = songutilFullFileName (fstr);
     ok = false;
     if (fileopFileExists (ffn)) {
       ok = true;

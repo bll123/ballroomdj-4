@@ -1,5 +1,7 @@
 [Wiki Home](Home)
 
+[TOC]
+
 ## Installing BallroomDJ 4 on Linux
 
 #### Updating BallroomDJ 4 : Make a Backup
@@ -28,6 +30,12 @@ This script performs the following actions:
 * Installs the required software used by BallroomDJ 4 (vlc, ffmpeg, libcurl).
 * Adds the user to the 'audio' group.
 * Sets 'flat-volumes = no' in the $HOME/.config/pulse/daemon.conf file.
+
+#### Internet Connection
+
+An internet connection is required the first time BallroomDJ&nbsp;4 is
+installed.  There are requisite packages (Mutagen) that
+need to be installed from the internet.
 
 #### Install BallroomDJ 4
 

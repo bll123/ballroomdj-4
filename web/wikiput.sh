@@ -314,5 +314,5 @@ case $1 in
     ;;
 esac
 
-rm -f ${tmpfile} ${compfile} ${filelist}
+rm -f ${tmpfile} ${compfile} ${filelist} ${cookiejar}
 exit 0

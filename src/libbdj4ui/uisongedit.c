@@ -38,6 +38,7 @@ uisongeditInit (conn_t *conn, musicdb_t *musicdb,
   uisongedit->musicdb = musicdb;
   uisongedit->options = options;
   uisongedit->savecb = NULL;
+  uisongedit->applyadjcb = NULL;
   uisongedit->statusMsg = NULL;
 
   uisongeditUIInit (uisongedit);
@@ -119,5 +120,15 @@ uisongeditSetSaveCallback (uisongedit_t *uisongedit, callback_t *uicb)
   }
 
   uisongedit->savecb = uicb;
+}
+
+void
+uisongeditSetApplyAdjCallback (uisongedit_t *uisongedit, callback_t *uicb)
+{
+  if (uisongedit == NULL) {
+    return;
+  }
+
+  uisongedit->applyadjcb = uicb;
 }
 

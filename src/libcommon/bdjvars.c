@@ -36,13 +36,13 @@ bdjvarsInit (void)
     /* .original (localized) extension in the same directory */
     /* CONTEXT: The suffix for an original audio file (may be abbreviated) */
     snprintf (tbuff, sizeof (tbuff), ".%s", _("original"));
-    bdjvars [BDJV_ORIGINAL_EXT] = strdup (tbuff);
+    bdjvars [BDJV_ORIGINAL_EXT] = mdstrdup (tbuff);
 
     /* when an audio file is marked for deletion, it is renamed with the */
     /* the 'delete-' prefix in the same directory */
     /* CONTEXT: The prefix name for an audio file marked for deletion (may be abbreviated) */
     snprintf (tbuff, sizeof (tbuff), "%s-", _("delete"));
-    bdjvars [BDJV_DELETE_PFX] = strdup (tbuff);
+    bdjvars [BDJV_DELETE_PFX] = mdstrdup (tbuff);
     bdjvarsl [BDJVL_DELETE_PFX_LEN] = strlen (bdjvars [BDJV_DELETE_PFX]);
 
     bdjvarsl [BDJVL_NUM_PORTS] = BDJVL_NUM_PORTS;

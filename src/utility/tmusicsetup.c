@@ -208,7 +208,7 @@ main (int argc, char *argv [])
     src = ilistGetStr (tmlist, key, TM_SOURCE);
     dest = ilistGetStr (tmlist, key, TM_DEST);
     fn = createFile (src, dest);
-    audiotagWriteTags (fn, empty, tagdata, 0, AT_UPDATE_MOD_TIME);
+    audiotagWriteTags (fn, empty, tagdata, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
     if (emptydb) {
       slistFree (tagdata);
       tagdata = slistAlloc ("tm-slist", LIST_ORDERED, NULL);

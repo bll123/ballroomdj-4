@@ -156,6 +156,7 @@ callbackHandlerDouble (callback_t *cb, double value)
   return rc;
 }
 
+
 bool
 callbackHandlerLong (callback_t *cb, long value)
 {

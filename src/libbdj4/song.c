@@ -44,7 +44,7 @@ static void songCleanup (void);
 
 /* must be sorted in ascii order */
 static datafilekey_t songdfkeys [] = {
-  { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_NUM, songConvAdjustFlags, -1 },
+  { "ADJUSTFLAGS",          TAG_ADJUSTFLAGS,          VALUE_NUM, songutilConvAdjustFlags, -1 },
   { "ALBUM",                TAG_ALBUM,                VALUE_STR, NULL, -1 },
   { "ALBUMARTIST",          TAG_ALBUMARTIST,          VALUE_STR, NULL, -1 },
   { "ARTIST",               TAG_ARTIST,               VALUE_STR, NULL, -1 },
@@ -125,7 +125,7 @@ songFree (void *tsong)
 }
 
 void
-songParse (song_t *song, char *data, ilistidx_t didx)
+songParse (song_t *song, char *data, ilistidx_t dbidx)
 {
   char        tbuff [40];
   ilistidx_t  lkey;
@@ -135,7 +135,7 @@ songParse (song_t *song, char *data, ilistidx_t didx)
     return;
   }
 
-  snprintf (tbuff, sizeof (tbuff), "song-%d", didx);
+  snprintf (tbuff, sizeof (tbuff), "song-%d", dbidx);
   nlistFree (song->songInfo);
   song->songInfo = datafileParse (data, tbuff, DFTYPE_KEY_VAL,
       songdfkeys, SONG_DFKEY_COUNT);
@@ -317,7 +317,7 @@ songAudioFileExists (song_t *song)
   bool      exists = false;
 
   sfname = songGetStr (song, TAG_FILE);
-  ffn = songFullFileName (sfname);
+  ffn = songutilFullFileName (sfname);
   exists = false;
   if (ffn != NULL) {
     exists = fileopFileExists (ffn);
@@ -326,9 +326,9 @@ songAudioFileExists (song_t *song)
   return exists;
 }
 
-/* used by the song editor via uisong to get the values for display */
-/* used for tags that have a conversion set and also for strings */
-/* favorite returns the span-display string used by gtk */
+/* Used by the song editor via uisong to get the display strings. */
+/* Used for tags that have a conversion set and also for strings. */
+/* Favorite returns the span-display string used by gtk */
 /*     <span color="...">X</span> */
 char *
 songDisplayString (song_t *song, int tagidx)
@@ -373,6 +373,44 @@ songDisplayString (song_t *song, int tagidx)
     str = songGetStr (song, tagidx);
     if (str == NULL) { str = ""; }
     str = mdstrdup (str);
+  }
+
+  if (tagidx == TAG_DURATION) {
+    long    dur;
+    long    val;
+    int     speed;
+    char    tbuff [100];
+    bool    changed = false;
+
+    dur = songGetNum (song, TAG_DURATION);
+    val = songGetNum (song, TAG_SONGEND);
+    if (val > 0 && val < dur) {
+      dur = val;
+      changed = true;
+    }
+    val = songGetNum (song, TAG_SONGSTART);
+    if (val > 0) {
+      dur -= val;
+      changed = true;
+    }
+    speed = songGetNum (song, TAG_SPEEDADJUSTMENT);
+    if (speed > 0 && speed != 100) {
+      dur = songutilAdjustPosReal (dur, speed);
+      changed = true;
+    }
+    if (changed) {
+      conv.allocated = false;
+      conv.num = dur;
+      conv.valuetype = VALUE_NUM;
+      convMS (&conv);
+      if (conv.str == NULL) { conv.str = ""; }
+      snprintf (tbuff, sizeof (tbuff), "%s (%s)", str, conv.str);
+      mdfree (str);
+      str = strdup (tbuff);
+      if (conv.allocated) {
+        mdfree (conv.str);
+      }
+    }
   }
 
   return str;

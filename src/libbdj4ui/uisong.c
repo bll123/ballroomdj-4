@@ -82,7 +82,20 @@ uisongGetValue (song_t *song, int tagidx, long *num, double *dval)
       if (speed > 0 && speed != 100) {
         val = *num;
         if (val > 0) {
-          val = songAdjustPosReal (val, speed);
+          val = songutilAdjustPosReal (val, speed);
+          *num = val;
+        }
+      }
+    }
+    if (tagidx == TAG_BPM) {
+      int     speed;
+      ssize_t val;
+
+      speed = songGetNum (song, TAG_SPEEDADJUSTMENT);
+      if (speed > 0 && speed != 100) {
+        val = *num;
+        if (val > 0) {
+          val = songutilAdjustBPM (val, speed);
           *num = val;
         }
       }

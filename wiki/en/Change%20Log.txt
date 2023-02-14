@@ -8,10 +8,20 @@
 
 * Bug Fixes:
     * Alternate Installer: Various bug fixes.
+* New Features:
+    * Song Editor: Apply Adjustments.
 * Changes:
-    * Added BDJ4 download link to support dialog.
+    * Minor user interface cleanup.
+    * Song Editor: Duration display also shows adjusted duration.
+    * Song Editor: BPM Range for the dance is now displayed.
+    * Song Editor: BPM, song start, song end are adjusted for speed.
+    * Support: Added BDJ4 download link.
+* Bug Fixes:
+    * BPM Counter: Fix slow exit.
+    * User Interface: Button Repeat is fixed.
 * Translations:
     * Nederlands: Fix incorrect queuedance special playlist name.
+    * Nederlands updated.
 * Internal:
     * Code cleanup.
 
@@ -47,14 +57,14 @@
 
 **4.0.9 beta 2023-1-24**
 
+* New Features:
+    * player: export as mp3: export MP3 files with song start, song end, fade-in, fade-out, speed, and gap applied.
 * Bug Fixes:
     * music manager: fix a crash when the song list was cleared.
     * player ui: internal fixes, marquee menu disabled when marquee is off.
     * queue dance: fix bad template.
     * song editor: fix play button to play correct song.
     * standard rounds: fix bad template.
-* New Features:
-    * player: export as mp3: export MP3 files with song start, song end, fade-in, fade-out, speed, and gap applied.
 
 **4.0.8 beta 2023-1-18**
 
@@ -76,13 +86,6 @@
 
 **4.0.7 beta 2023-1-14**
 
-* Bug Fixes:
-    * A missing audioadjust.txt file will not prevent startup.
-    * installation: BDJ4 updater fixed.
-    * linux: Do not replace desktop shortcuts.
-    * mac os: Fixed theme installation.
-    * song editor: Fix incorrect playback when multi-selections are active.
-    * song selection: Turn off movement keys when multiple items selected.
 * New Features:
     * player: add support for multi-media keys.
     * player: export as MP3.
@@ -91,6 +94,13 @@
     * song list editor: export as MP3.
     * song list editor: add support for multi-media play key.
     * song selection: add support for multi-media play key.
+* Bug Fixes:
+    * A missing audioadjust.txt file will not prevent startup.
+    * installation: BDJ4 updater fixed.
+    * linux: Do not replace desktop shortcuts.
+    * mac os: Fixed theme installation.
+    * song editor: Fix incorrect playback when multi-selections are active.
+    * song selection: Turn off movement keys when multiple items selected.
 * Internal:
     * a few more memory leaks fixed.
     * code cleanup.
@@ -100,6 +110,10 @@
 
 **4.0.6 beta 2023-1-7**
 
+* New Features:
+    * song editor: Control-N switches to the next entry.
+    * song editor: Control-P switches to the previous entry.
+    * song editor: Control-S will now perform a save.
 * Bug Fixes:
     * configuration: Clean up edit dances display.
     * configuration: Fix a crash on exit.
@@ -111,10 +125,6 @@
     * player: re-arranged menu items.
     * user interface: Menu background is darker.
     * requests: Add a label indicating which queue is being managed when show extra queues is on.
-* New Features:
-    * song editor: Control-N switches to the next entry.
-    * song editor: Control-P switches to the previous entry.
-    * song editor: Control-S will now perform a save.
 
 **4.0.5 beta 2023-1-5**
 
@@ -172,6 +182,11 @@
 
 **4.0.0 beta 2022-12-20**
 
+* New Features:
+    * configuration: player queue: add 'show queue dance buttons'.
+    * configuration: player queue: add 'play when queued'.
+    * player user interface: added a 'queue 5' button.
+    * starter: added a 'create profile shortcut' menu selection.
 * Bug Fixes:
     * configuration: player queues: disable active/display switches for main music queue.
     * configuration: player queues: disable fields when queue is not active.
@@ -221,11 +236,6 @@
     * song editor: previous and next buttons will now repeat.
     * update database: add update from itunes for future use.
     * new player icon, new manage icon, clean up icons.
-* New Features:
-    * configuration: player queue: add 'show queue dance buttons'.
-    * configuration: player queue: add 'play when queued'.
-    * player user interface: added a 'queue 5' button.
-    * starter: added a 'create profile shortcut' menu selection.
 * Internal:
     * re-work button repeat.
     * code cleanup.

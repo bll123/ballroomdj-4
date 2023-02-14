@@ -1532,6 +1532,11 @@ mainMusicQueuePrep (maindata_t *mainData, musicqidx_t mqidx)
       char  tmp [40];
 
       gap = bdjoptGetNumPerQueue (OPT_Q_GAP, mqidx);
+      /* special case: the manage ui playback queue has no gap */
+      /* the manage ui playback queue otherwise inherits from the music q */
+      if (mqidx == MUSICQ_MNG_PB) {
+        gap = 0;
+      }
       plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
       if (plgap >= 0) {
         gap = plgap;
@@ -2640,7 +2645,7 @@ mainCalculateSongDuration (maindata_t *mainData, song_t *song,
   /* the duration by the speed of the song */
   /* this is the real duration for the song */
   if (speedCalcFlag == MAIN_CALC_WITH_SPEED && speed != 100) {
-    dur = songAdjustPosReal (dur, speed);
+    dur = songutilAdjustPosReal (dur, speed);
     logMsg (LOG_DBG, LOG_MAIN, "dur-speed: %ld", dur);
   }
 

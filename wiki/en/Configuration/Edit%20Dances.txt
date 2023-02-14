@@ -36,10 +36,8 @@ __Announcement__: The announcement played before the dance is played.
 Note that the announcement audio files must be in the database.
 
 __Low BPM__: This is a display option for use in the song editor.
-___This is not currently implemented.___
 
 __High BPM__: This is a display option for use in the song editor.
-___This is not currently implemented.___
 
 __Time Signature__: This is used by the BPM counter to select the
 proper default when MPM is selected in the

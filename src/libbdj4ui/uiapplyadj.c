@@ -41,13 +41,16 @@ typedef struct uiaa {
   UIWidget        *statusMsg;
   nlist_t         *options;
   UIWidget        aaDialog;
+  UIWidget        cbTrim;
+  UIWidget        cbNorm;
+  UIWidget        cbAdjust;
   callback_t      *callbacks [UIAA_CB_MAX];
   callback_t      *responsecb;
   song_t          *song;
   bool            isactive : 1;
 } uiaa_t;
 
-static void   uiaaCreateDialog (uiaa_t *uiaa, int aaflags);
+static void   uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig);
 static void   uiaaInitDisplay (uiaa_t *uiaa);
 static bool   uiaaResponseHandler (void *udata, long responseid);
 
@@ -96,7 +99,7 @@ uiaaSetResponseCallback (uiaa_t *uiaa, callback_t *uicb)
 }
 
 bool
-uiaaDialog (uiaa_t *uiaa, int aaflags)
+uiaaDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 {
   int         x, y;
 
@@ -105,14 +108,16 @@ uiaaDialog (uiaa_t *uiaa, int aaflags)
   }
 
   logProcBegin (LOG_PROC, "uiaaDialog");
-  uiaaCreateDialog (uiaa, aaflags);
+  uiaaCreateDialog (uiaa, aaflags, hasorig);
   uiaaInitDisplay (uiaa);
   uiWidgetShowAll (&uiaa->aaDialog);
   uiaa->isactive = true;
 
   x = nlistGetNum (uiaa->options, APPLY_ADJ_POSITION_X);
   y = nlistGetNum (uiaa->options, APPLY_ADJ_POSITION_Y);
-  uiWindowMove (&uiaa->aaDialog, x, y, -1);
+  if (x >= 0 && y >= 0) {
+    uiWindowMove (&uiaa->aaDialog, x, y, -1);
+  }
   logProcEnd (LOG_PROC, "uiaaDialog", "");
   return UICB_CONT;
 }
@@ -120,13 +125,11 @@ uiaaDialog (uiaa_t *uiaa, int aaflags)
 /* internal routines */
 
 static void
-uiaaCreateDialog (uiaa_t *uiaa, int aaflags)
+uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 {
   UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      uiwidget;
-  UIWidget      sg;  // labels
-  UIWidget      sgA; // title, artist
 
   logProcBegin (LOG_PROC, "uiaaCreateDialog");
 
@@ -138,9 +141,6 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags)
     return;
   }
 
-  uiCreateSizeGroupHoriz (&sg);
-  uiCreateSizeGroupHoriz (&sgA);
-
   uiaa->callbacks [UIAA_CB_DIALOG] = callbackInitLong (
       uiaaResponseHandler, uiaa);
   uiCreateDialog (&uiaa->aaDialog, uiaa->parentwin,
@@ -150,6 +150,15 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags)
       /* CONTEXT: apply adjustment dialog: closes the dialog */
       _("Close"),
       RESPONSE_CLOSE,
+      NULL);
+  if (hasorig) {
+    uiDialogAddButtons (&uiaa->aaDialog,
+        /* CONTEXT: apply adjustment dialog: restore original file */
+        _("Restore Original"),
+        RESPONSE_RESET,
+        NULL);
+  }
+  uiDialogAddButtons (&uiaa->aaDialog,
       /* CONTEXT: apply adjustment dialog: apply adjustments */
       _("Apply Adjustments"),
       RESPONSE_APPLY,
@@ -157,10 +166,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags)
       );
 
   uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, 10);
-  uiWidgetSetMarginTop (&vbox, 20);
-  uiWidgetExpandHoriz (&vbox);
-  uiWidgetExpandVert (&vbox);
+  uiWidgetSetAllMargins (&vbox, 4);
   uiDialogPackInDialog (&uiaa->aaDialog, &vbox);
 
   /* trim silence */
@@ -170,9 +176,8 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags)
   uiCreateCheckButton (&uiwidget,
       /* CONTEXT: apply adjustments: trim silence checkbox */
       _("Trim Silence"), (aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM);
-
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiutilsUIWidgetCopy (&uiaa->cbTrim, &uiwidget);
 
   /* normalize audio */
   uiCreateHorizBox (&hbox);
@@ -181,21 +186,19 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags)
   uiCreateCheckButton (&uiwidget,
       /* CONTEXT: apply adjustments: normalize volume checkbox */
       _("Normalize Volume"), (aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM);
-
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiutilsUIWidgetCopy (&uiaa->cbNorm, &uiwidget);
 
-  /* normalize audio */
+  /* adjust audio */
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
   uiCreateCheckButton (&uiwidget,
-      /* CONTEXT: apply adjustments: apply adjustments checkbox */
-      _("Adjust Speed, Song Start and End"),
+      /* CONTEXT: apply adjustments: adjust speed/song start/song end checkbox */
+      _("Adjust Speed, Song Start and Song End"),
       (aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST);
-
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiutilsUIWidgetCopy (&uiaa->cbAdjust, &uiwidget);
 
   logProcEnd (LOG_PROC, "uiaaCreateDialog", "");
 }
@@ -226,16 +229,35 @@ uiaaResponseHandler (void *udata, long responseid)
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: close window");
-      uiWidgetHide (&uiaa->aaDialog);
+      /* dialog should be destroyed, as the buttons are re-created each time */
+      uiDialogDestroy (&uiaa->aaDialog);
+      uiutilsUIWidgetInit (&uiaa->aaDialog);
+      break;
+    }
+    case RESPONSE_RESET: {
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: restore orig");
+      uiDialogDestroy (&uiaa->aaDialog);
+      uiutilsUIWidgetInit (&uiaa->aaDialog);
+      if (uiaa->responsecb != NULL) {
+        callbackHandlerLong (uiaa->responsecb, SONG_ADJUST_RESTORE);
+      }
       break;
     }
     case RESPONSE_APPLY: {
       long    aaflags = SONG_ADJUST_NONE;
 
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: apply");
-      uiWidgetHide (&uiaa->aaDialog);
-      // ### FIX get flags from checkbuttons
-      aaflags = SONG_ADJUST_TRIM;
+      if (uiToggleButtonIsActive (&uiaa->cbTrim)) {
+        aaflags |= SONG_ADJUST_TRIM;
+      }
+      if (uiToggleButtonIsActive (&uiaa->cbNorm)) {
+        aaflags |= SONG_ADJUST_NORM;
+      }
+      if (uiToggleButtonIsActive (&uiaa->cbAdjust)) {
+        aaflags |= SONG_ADJUST_ADJUST;
+      }
+      uiDialogDestroy (&uiaa->aaDialog);
+      uiutilsUIWidgetInit (&uiaa->aaDialog);
       if (uiaa->responsecb != NULL) {
         callbackHandlerLong (uiaa->responsecb, aaflags);
       }

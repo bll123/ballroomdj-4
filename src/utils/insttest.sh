@@ -91,8 +91,10 @@ function mkBadPldance {
 function checkUpdaterClean {
   section=$1
 
-  # audio adjust file should be installed if missing
-  rm -f "$DATADIR/audioadjust.txt"
+  # audio adjust file should be installed if missing or wrong version
+  # rm -f "$DATADIR/audioadjust.txt"
+  sed -e 's/version 2/version 1/' "$fn" > "$fn.n"
+  mv -f "$fn.n" "$fn"
   # gtk-static.css file should be installed if missing
   rm -f "$DATADIR/gtk-static.css"
   # itunes-fields version number should be updated to version 2.
@@ -333,8 +335,15 @@ function checkInstallation {
     fi
 
     res=$(($res+1))  # audioadjust.txt file
-    if [[ $fin == T && -f "${DATADIR}/audioadjust.txt" ]]; then
-      chk=$(($chk+1))
+    fn="${DATADIR}/audioadjust.txt"
+    if [[ $fin == T && -f "$fn" ]]; then
+      grep 'version 2' "$fn" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  audioadjust.txt file has wrong version"
+      fi
     else
       echo "  no audioadjust.txt file"
     fi

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-09 13:04-0800\n"
+"POT-Creation-Date: 2023-02-14 09:14-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,6 +132,12 @@ msgstr ""
 msgid "%s is not installed"
 msgstr ""
 
+#. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
+#. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
+#, c-format
+msgid "%s may not exceed the song duration"
+msgstr ""
+
 #. CONTEXT: validation: must be a numeric value
 #, c-format
 msgid "%s must be numeric."
@@ -208,8 +214,8 @@ msgstr ""
 msgid "Add New"
 msgstr ""
 
-#. CONTEXT: apply adjustments: apply adjustments checkbox
-msgid "Adjust Speed, Song Start and End"
+#. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
+msgid "Adjust Speed, Song Start and Song End"
 msgstr ""
 
 #. CONTEXT: configuration file: dance level
@@ -395,6 +401,9 @@ msgstr ""
 #. CONTEXT: request external dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
+#. CONTEXT: select folder dialog: close
+#. CONTEXT: select file dialog: close
+#. CONTEXT: save file dialog: close
 #. CONTEXT: bpm counter: close button
 #. CONTEXT: import from itunes: closes the dialog
 #. CONTEXT: create from playlist: closes the dialog
@@ -704,14 +713,14 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-#. CONTEXT: export as mp3: title of save dialog
 #. CONTEXT: player ui: menu selection: export: export as MP3
+#. CONTEXT: export as mp3: title of save dialog
 #, c-format
 msgid "Export as %s"
 msgstr ""
 
-#. CONTEXT: managementui: song list export: title of save dialog
 #. CONTEXT: managementui: menu selection: song list: export: export as m3u
+#. CONTEXT: managementui: song list export: title of save dialog
 #, c-format
 msgid "Export as M3U Playlist"
 msgstr ""
@@ -841,8 +850,8 @@ msgstr ""
 msgid "Import"
 msgstr ""
 
-#. CONTEXT: managementui: song list import: title of dialog
 #. CONTEXT: managementui: menu selection: song list: import: import m3u
+#. CONTEXT: managementui: song list import: title of dialog
 msgid "Import M3U"
 msgstr ""
 
@@ -1230,7 +1239,7 @@ msgstr ""
 msgid "Play Announcements"
 msgstr ""
 
-#. CONTEXT: configuration: queue: play when queued
+#. CONTEXT: configuration: queue: play when queued (verb)
 msgid "Play When Queued"
 msgstr ""
 
@@ -1464,6 +1473,11 @@ msgstr ""
 msgid "Reset"
 msgstr ""
 
+#. CONTEXT: apply adjustment dialog: restore original file
+#. CONTEXT: managementui: menu selection: song editor: restore original
+msgid "Restore Original"
+msgstr ""
+
 #. CONTEXT: playerui: button: tooltip: return to the beginning of the song
 msgid "Return to beginning of song"
 msgstr ""
@@ -1490,7 +1504,7 @@ msgid "Samba"
 msgstr ""
 
 #. CONTEXT: song editor : save data
-#. CONTEXT: actions associated with the save file dialog
+#. CONTEXT: save file dialog: save
 #. CONTEXT: bpm counter: save button
 msgid "Save"
 msgstr ""
@@ -1514,8 +1528,8 @@ msgstr ""
 #. CONTEXT: side-by-side list: button: add the selected field
 #. CONTEXT: select file: selects the file
 #. CONTEXT: song-selection: select a song to be added to the song list
-#. CONTEXT: actions associated with the select folder dialog
-#. CONTEXT: actions associated with the select file dialog
+#. CONTEXT: select folder dialog: select folder
+#. CONTEXT: select file dialog: select file
 #. CONTEXT: managementui: config: button: add the selected songs to the song list
 msgid "Select"
 msgstr ""

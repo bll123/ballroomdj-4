@@ -29,6 +29,7 @@ target_link_libraries (bdj4
   libbdj4launcher
   libbdj4fileop
   libbdj4osutils
+  libbdj4tmutil
   libbdj4string
   m
 )

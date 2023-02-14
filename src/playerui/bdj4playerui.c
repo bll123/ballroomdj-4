@@ -30,6 +30,7 @@
 #include "lock.h"
 #include "log.h"
 #include "mdebug.h"
+#include "mp3exp.h"
 #include "msgparse.h"
 #include "musicq.h"
 #include "ossignal.h"
@@ -70,7 +71,6 @@ enum {
   PLUI_CB_CLEAR_QUEUE,
   PLUI_CB_REQ_EXT,
   PLUI_CB_KEYB,
-  PLUI_CB_STATUS_DISP,
   PLUI_CB_MAX,
 };
 
@@ -116,12 +116,15 @@ typedef struct {
   /* options */
   datafile_t      *optiondf;
   nlist_t         *options;
+  /* export mp3 */
+  mp3exp_t        *mp3exp;
+  mstime_t        expmp3chkTime;
+  int             expmp3state;
   /* flags */
   bool            uibuilt : 1;
   bool            fontszdialogcreated : 1;
   bool            mainalready : 1;
   bool            marqueeoff : 1;
-  bool            exportmp3active : 1;
   bool            mqfontsizeactive : 1;
 } playerui_t;
 
@@ -145,6 +148,10 @@ enum {
 enum {
   PLUI_UPDATE_MAIN,
   PLUI_NO_UPDATE,
+  PLUI_STATE_OFF,
+  PLUI_STATE_START,
+  PLUI_STATE_WAIT,
+  PLUI_STATE_PROCESS,
 };
 
 static bool     pluiConnectingCallback (void *udata, programstate_t programState);
@@ -160,7 +167,8 @@ static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static bool     pluiCloseWin (void *udata);
 static void     pluiSigHandler (int sig);
-static bool     pluiStatusMsgDisplay (void *udata, int count, int tot);
+static char *   pluiExportMP3Dialog (UIWidget *windowp);
+static bool     pluiExportMP3Status (void *udata, int count, int tot);
 /* queue selection handlers */
 static bool     pluiSwitchPage (void *udata, long pagenum);
 static void     pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum);
@@ -232,7 +240,7 @@ main (int argc, char *argv[])
   plui.currpage = 0;
   plui.mainalready = false;
   plui.marqueeoff = false;
-  plui.exportmp3active = false;
+  plui.expmp3state = PLUI_STATE_OFF;
   plui.setPlaybackButton = NULL;
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     plui.callbacks [i] = NULL;
@@ -454,9 +462,6 @@ pluiBuildUI (playerui_t *plui)
   uiBoxPackEnd (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&plui->statusMsg, &uiwidget);
 
-  plui->callbacks [PLUI_CB_STATUS_DISP] = callbackInitIntInt (
-      pluiStatusMsgDisplay, plui);
-
   /* actions */
   /* CONTEXT: playerui: menu selection: actions for the player */
   uiMenuCreateItem (&menubar, &menuitem, _("Actions"), NULL);
@@ -673,6 +678,33 @@ pluiMainLoop (void *tplui)
 
   if (mstimeCheck (&plui->clockCheck)) {
     pluiClock (plui);
+  }
+
+  if (plui->expmp3state == PLUI_STATE_PROCESS) {
+    if (mstimeCheck (&plui->expmp3chkTime)) {
+      int   count, tot;
+
+      mp3ExportGetCount (plui->mp3exp, &count, &tot);
+      pluiExportMP3Status (plui, count, tot);
+      mstimeset (&plui->expmp3chkTime, 500);
+    }
+
+    if (mp3ExportQueue (plui->mp3exp)) {
+      pluiExportMP3Status (plui, -1, -1);
+      mp3ExportFree (plui->mp3exp);
+      plui->expmp3state = PLUI_STATE_OFF;
+    }
+  }
+
+  if (plui->expmp3state == PLUI_STATE_START) {
+    char  tmp [40];
+
+    /* CONTEXT: export as mp3: please wait... status message */
+    uiLabelSetText (&plui->statusMsg, _("Please wait\xe2\x80\xa6"));
+
+    snprintf (tmp, sizeof (tmp), "%d", plui->musicqManageIdx);
+    connSendMessage (plui->conn, ROUTE_MAIN, MSG_MAIN_REQ_QUEUE_INFO, tmp);
+    plui->expmp3state = PLUI_STATE_WAIT;
   }
 
   if (! plui->marqueeoff &&
@@ -956,9 +988,18 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_MAIN_QUEUE_INFO: {
-          uimusicqExportMP3Dialog (plui->uimusicq, &plui->window,
-              (callbackFuncIntInt) plui->callbacks [PLUI_CB_STATUS_DISP],
-              targs, plui->musicqManageIdx);
+          char    *dir = NULL;
+
+          dir = pluiExportMP3Dialog (&plui->window);
+          if (dir == NULL) {
+            uiLabelSetText (&plui->statusMsg, "");
+            plui->expmp3state = PLUI_STATE_OFF;
+          } else {
+            plui->mp3exp = mp3ExportInit (mdstrdup (args), plui->musicdb,
+                dir, plui->musicqManageIdx);
+            plui->expmp3state = PLUI_STATE_PROCESS;
+            mstimeset (&plui->expmp3chkTime, 500);
+          }
           break;
         }
         default: {
@@ -1008,8 +1049,26 @@ pluiSigHandler (int sig)
   gKillReceived = 1;
 }
 
+static char *
+pluiExportMP3Dialog (UIWidget *windowp)
+{
+  uiselect_t  *selectdata;
+  char        *dir;
+  char        tbuff [200];
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
+
+  /* CONTEXT: export as mp3: title of save dialog */
+  snprintf (tbuff, sizeof (tbuff), _("Export as %s"), BDJ4_MP3_LABEL);
+  selectdata = uiDialogCreateSelect (windowp,
+      tbuff, sysvarsGetStr (SV_BDJ4_DREL_TMP), NULL, NULL, NULL);
+  dir = uiSelectDirDialog (selectdata);
+  mdfree (selectdata);
+  return dir;
+}
+
 static bool
-pluiStatusMsgDisplay (void *udata, int count, int tot)
+pluiExportMP3Status (void *udata, int count, int tot)
 {
   playerui_t  *plui = udata;
   UIWidget    *statusMsg = &plui->statusMsg;
@@ -1021,7 +1080,7 @@ pluiStatusMsgDisplay (void *udata, int count, int tot)
 
   if (count < 0 && tot < 0) {
     uiLabelSetText (statusMsg, "");
-    plui->exportmp3active = false;
+    plui->expmp3state = PLUI_STATE_OFF;
   } else {
     /* CONTEXT: please wait... (count/total) status message */
     snprintf (tbuff, sizeof (tbuff), _("Please wait\xe2\x80\xa6 (%1$d/%2$d)"), count, tot);
@@ -1520,20 +1579,13 @@ static bool
 pluiExportMP3 (void *udata)
 {
   playerui_t  *plui = udata;
-  char        tmp [40];
 
-  if (plui->exportmp3active) {
+  if (plui->expmp3state != PLUI_STATE_OFF) {
     return UICB_STOP;
   }
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export mp3");
-  plui->exportmp3active = true;
-
-  /* CONTEXT: export as mp3: please wait... status message */
-  uiLabelSetText (&plui->statusMsg, _("Please wait\xe2\x80\xa6"));
-
-  snprintf (tmp, sizeof (tmp), "%d", plui->musicqManageIdx);
-  connSendMessage (plui->conn, ROUTE_MAIN, MSG_MAIN_REQ_QUEUE_INFO, tmp);
+  plui->expmp3state = PLUI_STATE_START;
   return UICB_CONT;
 }
 

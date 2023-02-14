@@ -381,6 +381,15 @@ main (int argc, char *argv [])
     bdjoptSetStr (OPT_M_DIR_MUSIC, musicdir);
   }
 
+  {
+    /* 4.1.0 change name of audiotag dylib (prep) */
+    tval = bdjoptGetStr (OPT_M_AUDIOTAG_INTFC);
+    if (strcmp (tval, "libaudiotagmutagen") == 0) {
+      bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, "libatmutagen");
+      bdjoptchanged = true;
+    }
+  }
+
   if (bdjoptchanged) {
     bdjoptSave ();
   }
@@ -512,7 +521,7 @@ main (int argc, char *argv [])
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "processing audio files");
     dbStartIterator (musicdb, &dbiteridx);
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
-      ffn = songFullFileName (songGetStr (song, TAG_FILE));
+      ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
       process = false;
 
       if (processflags [UPD_FIX_AF_TAGS]) {

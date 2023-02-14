@@ -917,7 +917,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   npq->songname = mdstrdup (p);
   assert (npq->songname != NULL);
   logMsg (LOG_DBG, LOG_BASIC, "prep request: %s", npq->songname);
-  npq->songfullpath = songFullFileName (npq->songname);
+  npq->songfullpath = songutilFullFileName (npq->songname);
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokptr);
   npq->dur = atol (p);
@@ -1394,7 +1394,7 @@ playerSeek (playerdata_t *playerData, ssize_t reqpos)
   /* need to change it back to something the player will understand */
   /* songstart is already normalized */
   seekpos = reqpos;
-  seekpos = songNormalizePosition (seekpos, pq->speed);
+  seekpos = songutilNormalizePosition (seekpos, pq->speed);
   seekpos += pq->songstart;
   pliSeek (playerData->pli, seekpos);
   playerData->playTimePlayed = reqpos;

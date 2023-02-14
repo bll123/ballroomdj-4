@@ -122,6 +122,12 @@ uilevelSizeGroupAdd (uilevel_t *uilevel, UIWidget *sg)
   uiSizeGroupAdd (sg, uiSpinboxGetUIWidget (uilevel->spinbox));
 }
 
+void
+uilevelSetChangedCallback (uilevel_t *uilevel, callback_t *cb)
+{
+  uiSpinboxTextSetValueChangedCallback (uilevel->spinbox, cb);
+}
+
 /* internal routines */
 
 static const char *
@@ -138,4 +144,3 @@ uilevelLevelGet (void *udata, int idx)
   }
   return levelGetLevel (uilevel->levels, idx);
 }
-

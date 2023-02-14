@@ -29,13 +29,6 @@
 #include "tmutil.h"
 
 enum {
-  AF_REWRITE_NONE     = 0x0000,
-  AF_REWRITE_MB       = 0x0001,
-  AF_REWRITE_DURATION = 0x0002,
-  AF_REWRITE_VARIOUS  = 0x0004,
-};
-
-enum {
   AFILE_TYPE_UNKNOWN,
   AFILE_TYPE_FLAC,
   AFILE_TYPE_MP4,
@@ -54,7 +47,7 @@ static int  audiotagWriteOtherTags (const char *ffn, slist_t *updatelist, slist_
 static bool audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value);
 static int  audiotagRunUpdate (const char *fn);
 static void audiotagMakeTempFilename (char *fn, size_t sz);
-static int  audiotagTagCheck (int writetags, int tagtype, const char *tag);
+static int  audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite);
 static void audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
     nlist_t *datalist, int totkey, int tagkey);
 
@@ -157,7 +150,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   }
 
   audiotagDetermineTagType (ffn, &tagtype, &filetype);
-  logMsg (LOG_DBG, LOG_DBUPDATE, "tagtype: %d afile-type: %d\n", tagtype, filetype);
+  logMsg (LOG_DBG, LOG_DBUPDATE, "tagtype: %d afile-type: %d", tagtype, filetype);
 
   if (tagtype != TAG_TYPE_VORBIS &&
       tagtype != TAG_TYPE_MP3 &&
@@ -192,12 +185,17 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     bool  upd;
 
     upd = false;
-    tagkey = audiotagTagCheck (writetags, tagtype, tag);
+    tagkey = audiotagTagCheck (writetags, tagtype, tag, rewrite);
     if (tagkey < 0) {
       continue;
     }
 
     newvalue = slistGetStr (newtaglist, tag);
+
+    if (tagdefs [tagkey].isBDJTag &&
+        (rewrite & AF_FORCE_WRITE_BDJ) == AF_FORCE_WRITE_BDJ) {
+      upd = true;
+    }
 
     value = slistGetStr (tagdata, tag);
     if (newvalue != NULL && *newvalue && value == NULL) {
@@ -232,7 +230,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
 
   slistStartIterator (tagdata, &iteridx);
   while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
-    tagkey = audiotagTagCheck (writetags, tagtype, tag);
+    tagkey = audiotagTagCheck (writetags, tagtype, tag, rewrite);
     if (tagkey < 0) {
       continue;
     }
@@ -292,38 +290,51 @@ static void
 audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 {
   pathinfo_t  *pi;
-  char        tmp [40];
+  char        tmp [MAXPATHLEN];
+  bool        found = false;
 
   pi = pathInfo (ffn);
 
-  *tmp = '\0';
-  if (pi->elen > 0 && pi->elen + 1 < sizeof (tmp)) {
-    strlcpy (tmp, pi->extension, pi->elen + 1);
-  }
-
   *filetype = AFILE_TYPE_UNKNOWN;
   *tagtype = TAG_TYPE_VORBIS;
-  if (strcmp (tmp, ".mp3") == 0) {
+
+  if (pathInfoExtCheck (pi, ".mp3") ||
+      pathInfoExtCheck (pi, ".m4a") ||
+      pathInfoExtCheck (pi, ".wma") ||
+      pathInfoExtCheck (pi, ".ogg") ||
+      pathInfoExtCheck (pi, ".opus") ||
+      pathInfoExtCheck (pi, ".flac")) {
+    found = true;
+  }
+
+  if (! found) {
+    /* this handles .mp3.original situations */
+    snprintf (tmp, sizeof (tmp), "%.*s", (int) pi->blen, pi->basename);
+    pathInfoFree (pi);
+    pi = pathInfo (tmp);
+  }
+
+  if (pathInfoExtCheck (pi, ".mp3")) {
     *tagtype = TAG_TYPE_MP3;
     *filetype = AFILE_TYPE_MP3;
   }
-  if (strcmp (tmp, ".m4a") == 0) {
+  if (pathInfoExtCheck (pi, ".m4a")) {
     *tagtype = TAG_TYPE_MP4;
     *filetype = AFILE_TYPE_MP4;
   }
-  if (strcmp (tmp, ".wma") == 0) {
+  if (pathInfoExtCheck (pi, ".wma")) {
     *tagtype = TAG_TYPE_WMA;
     *filetype = AFILE_TYPE_WMA;
   }
-  if (strcmp (tmp, ".ogg") == 0) {
+  if (pathInfoExtCheck (pi, ".ogg")) {
     *tagtype = TAG_TYPE_VORBIS;
     *filetype = AFILE_TYPE_OGGVORBIS;
   }
-  if (strcmp (tmp, ".opus") == 0) {
+  if (pathInfoExtCheck (pi, ".opus")) {
     *tagtype = TAG_TYPE_VORBIS;
     *filetype = AFILE_TYPE_OGGOPUS;
   }
-  if (strcmp (tmp, ".flac") == 0) {
+  if (pathInfoExtCheck (pi, ".flac")) {
     *tagtype = TAG_TYPE_VORBIS;
     *filetype = AFILE_TYPE_FLAC;
   }
@@ -443,7 +454,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
       tagname = slistGetStr (tagLookup [tagtype], p);
       if (tagname != NULL) {
         logMsg (LOG_DBG, LOG_DBUPDATE, "taglookup: %s %s", p, tagname);
-        tagkey = audiotagTagCheck (writetags, tagtype, tagname);
+        tagkey = audiotagTagCheck (writetags, tagtype, tagname, AF_REWRITE_NONE);
         logMsg (LOG_DBG, LOG_DBUPDATE, "tag: %s raw-tag: %s", tagname, p);
       }
 
@@ -706,7 +717,7 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
       continue;
     }
 
-    tagkey = audiotagTagCheck (writetags, TAG_TYPE_MP3, tag);
+    tagkey = audiotagTagCheck (writetags, TAG_TYPE_MP3, tag, AF_REWRITE_NONE);
     if (tagkey < 0) {
       continue;
     }
@@ -723,7 +734,7 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
 
   slistStartIterator (updatelist, &iteridx);
   while ((tag = slistIterateKey (updatelist, &iteridx)) != NULL) {
-    tagkey = audiotagTagCheck (writetags, TAG_TYPE_MP3, tag);
+    tagkey = audiotagTagCheck (writetags, TAG_TYPE_MP3, tag, AF_REWRITE_NONE);
     if (tagkey < 0) {
       continue;
     }
@@ -832,7 +843,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
       continue;
     }
 
-    tagkey = audiotagTagCheck (writetags, tagtype, tag);
+    tagkey = audiotagTagCheck (writetags, tagtype, tag, AF_REWRITE_NONE);
     if (tagkey < 0) {
       continue;
     }
@@ -842,7 +853,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
 
   slistStartIterator (updatelist, &iteridx);
   while ((tag = slistIterateKey (updatelist, &iteridx)) != NULL) {
-    tagkey = audiotagTagCheck (writetags, tagtype, tag);
+    tagkey = audiotagTagCheck (writetags, tagtype, tag, AF_REWRITE_NONE);
     if (tagkey < 0) {
       continue;
     }
@@ -970,7 +981,7 @@ audiotagMakeTempFilename (char *fn, size_t sz)
 }
 
 static int
-audiotagTagCheck (int writetags, int tagtype, const char *tag)
+audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite)
 {
   int tagkey = -1;
 
@@ -985,8 +996,10 @@ audiotagTagCheck (int writetags, int tagtype, const char *tag)
     return -1;
   }
   if (writetags == WRITE_TAGS_BDJ_ONLY && tagdefs [tagkey].isNormTag) {
-    // logMsg (LOG_DBG, LOG_DBUPDATE, "bdj-only: %s\n", tag);
-    return -1;
+    if ((rewrite & AF_FORCE_WRITE_BDJ) != AF_FORCE_WRITE_BDJ) {
+      // logMsg (LOG_DBG, LOG_DBUPDATE, "bdj-only: %s", tag);
+      return -1;
+    }
   }
   if (tagdefs [tagkey].audiotags [tagtype].tag == NULL) {
     /* not a supported tag for this audio tag type */
