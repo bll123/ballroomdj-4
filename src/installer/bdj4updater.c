@@ -379,6 +379,15 @@ main (int argc, char *argv [])
     bdjoptSetStr (OPT_M_DIR_MUSIC, musicdir);
   }
 
+  {
+    /* 4.1.0 change name of audiotag dylib (prep) */
+    tval = bdjoptGetStr (OPT_M_AUDIOTAG_INTFC);
+    if (strcmp (tval, "libaudiotagmutagen") == 0) {
+      bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, "libatmutagen");
+      bdjoptchanged = true;
+    }
+  }
+
   if (bdjoptchanged) {
     bdjoptSave ();
   }

@@ -21,7 +21,7 @@ if (WIN32)
   target_compile_options (bdj4tags PRIVATE -municode)
 endif()
 target_link_libraries (bdj4tags
-  libbdj4 libbdj4basic libbdj4common
+  libbdj4audiotag libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
   m
@@ -33,7 +33,7 @@ if (WIN32)
   target_compile_options (tdbcompare PRIVATE -municode)
 endif()
 target_link_libraries (tdbcompare
-  libbdj4 libbdj4basic libbdj4common
+  libbdj4audiotag libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
   m
@@ -44,7 +44,7 @@ if (WIN32)
   target_compile_options (tdbdump PRIVATE -municode)
 endif()
 target_link_libraries (tdbdump
-  libbdj4 libbdj4basic libbdj4common
+  libbdj4audiotag libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
   m

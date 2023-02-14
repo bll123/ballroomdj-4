@@ -7,7 +7,6 @@ include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4 SHARED
   audioadjust.c
-  audiotag.c
   autosel.c
   bdj4init.c
   bdjvarsdf.c
@@ -52,7 +51,7 @@ target_include_directories (libbdj4
   PUBLIC "${XML2_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4
-  libbdjregex libbdj4basic libbdj4common
+  libbdjregex libbdj4audiotag libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GLIB_LDFLAGS}

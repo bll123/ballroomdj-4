@@ -69,7 +69,7 @@ if (WIN32)
   target_compile_options (bdj4updater PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4updater
-  libbdj4 libbdj4basic libbdj4common
+  libbdj4audiotag libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
   m

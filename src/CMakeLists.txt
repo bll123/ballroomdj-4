@@ -53,6 +53,14 @@ add_library (libbdj4string STATIC
   libcommon/strlcpy.c
   libcommon/mdebug.c
 )
+
+add_library (libbdj4tmutil STATIC
+  libcommon/tmutil.c
+)
+target_link_libraries (libbdj4tmutil
+  m
+)
+
 add_library (libbdj4osutils STATIC
   libcommon/oslinuxutils.c
   libcommon/osmacutils.m
@@ -60,17 +68,19 @@ add_library (libbdj4osutils STATIC
   libcommon/osutils.c
   libcommon/oswinprocess.c
   libcommon/oswinutils.c
-  libcommon/tmutil.c
 )
 target_link_libraries (libbdj4osutils
+  libbdj4tmutil
   libbdj4string
   m
 )
+
 add_library (libbdj4fileop STATIC
   libcommon/fileop.c
 )
 target_link_libraries (libbdj4fileop
   libbdj4osutils
+  libbdj4tmutil
   libbdj4string
   m
 )
@@ -88,6 +98,7 @@ add_subdirectory (libdylib)
 add_subdirectory (liblocbdj3)
 add_subdirectory (libwebsrv)
 # shared libraries that ship
+add_subdirectory (libaudiotag)
 add_subdirectory (libcommon)
 add_subdirectory (libbasic)
 add_subdirectory (libbdj4)

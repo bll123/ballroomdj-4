@@ -416,7 +416,7 @@ foreach path [list {} profiles $mpath $mppath] {
       }
       if { $path eq $mpath } {
         puts $ofh AUDIOTAG
-        puts $ofh "..libaudiotagmutagen"
+        puts $ofh "..libatmutagen"
         puts $ofh VOLUME
         if { $::tcl_platform(os) eq "Linux" } { set value libvolpa }
         if { $::tcl_platform(platform) eq "windows" } { set value libvolwin }
