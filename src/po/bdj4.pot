@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-06 11:46-0800\n"
+"POT-Creation-Date: 2023-02-14 09:14-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -132,6 +132,12 @@ msgstr ""
 msgid "%s is not installed"
 msgstr ""
 
+#. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
+#. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
+#, c-format
+msgid "%s may not exceed the song duration"
+msgstr ""
+
 #. CONTEXT: validation: must be a numeric value
 #, c-format
 msgid "%s must be numeric."
@@ -208,8 +214,8 @@ msgstr ""
 msgid "Add New"
 msgstr ""
 
-#. CONTEXT: apply adjustments: apply adjustments checkbox
-msgid "Adjust Speed, Song Start and End"
+#. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
+msgid "Adjust Speed, Song Start and Song End"
 msgstr ""
 
 #. CONTEXT: configuration file: dance level
@@ -707,8 +713,8 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-#. CONTEXT: export as mp3: title of save dialog
 #. CONTEXT: player ui: menu selection: export: export as MP3
+#. CONTEXT: export as mp3: title of save dialog
 #, c-format
 msgid "Export as %s"
 msgstr ""
@@ -1236,7 +1242,7 @@ msgstr ""
 msgid "Play Announcements"
 msgstr ""
 
-#. CONTEXT: configuration: queue: play when queued
+#. CONTEXT: configuration: queue: play when queued (verb)
 msgid "Play When Queued"
 msgstr ""
 

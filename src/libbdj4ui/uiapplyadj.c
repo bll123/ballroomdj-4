@@ -194,7 +194,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   uiBoxPackStart (&vbox, &hbox);
 
   uiCreateCheckButton (&uiwidget,
-      /* CONTEXT: apply adjustments: apply adjustments checkbox */
+      /* CONTEXT: apply adjustments: adjust speed/song start/song end checkbox */
       _("Adjust Speed, Song Start and Song End"),
       (aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST);
   uiBoxPackStart (&hbox, &uiwidget);

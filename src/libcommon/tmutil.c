@@ -24,6 +24,31 @@
 #include "mdebug.h"
 #include "tmutil.h"
 
+/* windows may not define these, notably timeradd() */
+
+#ifndef timerclear
+# define timerclear(tvp)         (tvp)->tv_sec = (tvp)->tv_usec = 0
+#endif
+
+#ifndef timercmp
+# define timercmp(tvp, uvp, cmp) \
+  (((tvp)->tv_sec == (uvp)->tv_sec) ? \
+  ((tvp)->tv_usec cmp (uvp)->tv_usec) : \
+  ((tvp)->tv_sec cmp (uvp)->tv_sec))
+#endif
+
+#ifndef timeradd
+# define timeradd(tvp, uvp, vvp) \
+  do { \
+    (vvp)->tv_sec = (tvp)->tv_sec + (uvp)->tv_sec; \
+    (vvp)->tv_usec = (tvp)->tv_usec + (uvp)->tv_usec; \
+    if ((vvp)->tv_usec >= 1000000) { \
+      (vvp)->tv_sec++; \
+      (vvp)->tv_usec -= 1000000; \
+    } \
+  } while (0)
+#endif
+
 static char radixchar [2] = { "." };
 static bool initialized = false;
 
@@ -40,7 +65,6 @@ mssleep (time_t mt)
   Sleep ((DWORD) mt);
 #endif
 #if ! _lib_Sleep && _lib_nanosleep
-//  int               rc;
   struct timespec   ts;
   struct timespec   rem;
 
@@ -53,10 +77,6 @@ mssleep (time_t mt)
     /* remainder is only valid when EINTR is returned */
     /* most of the time, an interrupt is caused by a control-c while testing */
     /* just let an interrupt stop the sleep */
-//    if (rc < 0 && errno == EINTR) {
-//      ts.tv_sec = rem.tv_sec;
-//      ts.tv_nsec = rem.tv_nsec;
-//    }
   }
 #endif
 }

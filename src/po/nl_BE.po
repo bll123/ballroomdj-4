@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-02-06\n"
+"PO-Revision-Date: 2023-02-14\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -134,6 +134,12 @@ msgstr "%s is niet geconfigureerd."
 msgid "%s is not installed"
 msgstr "%s is niet geïnstalleerd"
 
+#. CONTEXT: song editor: status msg: (song start may not exceed the song duration)
+#. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
+#, c-format
+msgid "%s may not exceed the song duration"
+msgstr ""
+
 #. CONTEXT: validation: must be a numeric value
 #, c-format
 msgid "%s must be numeric."
@@ -210,9 +216,9 @@ msgstr "Actief"
 msgid "Add New"
 msgstr "Voeg nieuwe toe"
 
-#. CONTEXT: apply adjustments: apply adjustments checkbox
-msgid "Adjust Speed, Song Start and End"
-msgstr "Snelheid aanpassen, Song Begin en Einde"
+#. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
+msgid "Adjust Speed, Song Start and Song End"
+msgstr "Snelheid aanpassen, Song Begin en Song Einde"
 
 #. CONTEXT: configuration file: dance level
 msgid "Advanced"
@@ -709,8 +715,8 @@ msgstr "Afsluiten"
 msgid "Export"
 msgstr "Exporteren"
 
-#. CONTEXT: export as mp3: title of save dialog
 #. CONTEXT: player ui: menu selection: export: export as MP3
+#. CONTEXT: export as mp3: title of save dialog
 #, c-format
 msgid "Export as %s"
 msgstr "Exporteren als %s"
@@ -1239,7 +1245,7 @@ msgstr "Afspelen / Pauseren"
 msgid "Play Announcements"
 msgstr ""
 
-#. CONTEXT: configuration: queue: play when queued
+#. CONTEXT: configuration: queue: play when queued (verb)
 msgid "Play When Queued"
 msgstr ""
 
