@@ -33,10 +33,10 @@ target_include_directories (libbdj4common
   PUBLIC "${GLIB_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4common
-  libbdj4fileop
-  libbdj4osutils
-  libbdj4tmutil
-  libbdj4string
+  libbdj4fileop     # fileop.c
+  libbdj4osutils    # osutils.c, osprocess.c
+  libbdj4tmutil     # tmutil.c
+  libbdj4string     # bdjstring, strlcat, strlcpy, mdebug
   ${GLIB_LDFLAGS}
   m
 )
