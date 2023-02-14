@@ -100,7 +100,7 @@ http/mrc/dark/[^/]*\.bak\.1$
 http/mrc/light/[^/]*\.bak\.1$
 
 # ui-starter.txt moved to main data dir
-data/profile0./ui-starter.txt$
+data/profile\d\d/ui-starter.txt$
 
 # removed 2023-2 (4.1.0)
 data/nl/wachtrijendans.pldances$

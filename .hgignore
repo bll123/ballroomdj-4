@@ -7,6 +7,7 @@ syntax: regexp
 ^dev/
 # for the time being, ignore this (doxygen output)
 ^doxygen/
+^http/.*\.bak.\d$
 ^http/.*\.html$
 ^http/.*\.crt$
 ^http/led_o.*\.svg$
