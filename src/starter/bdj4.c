@@ -90,6 +90,7 @@ main (int argc, char * argv[])
     { "newinstall",     no_argument,        NULL,   0 },
     /* used by installer */
     { "bdj3dir",        required_argument,  NULL,   0 },
+    { "nomutagen",      no_argument,        NULL,   0 },
     { "nodatafiles",    no_argument,        NULL,   0 },
     { "reinstall",      no_argument,        NULL,   0 },
     { "targetdir",      required_argument,  NULL,   0 },

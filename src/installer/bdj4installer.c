@@ -164,6 +164,7 @@ typedef struct {
   bool            guienabled : 1;
   bool            inSetConvert : 1;
   bool            newinstall : 1;
+  bool            nomutagen : 1;
   bool            nodatafiles : 1;
   bool            pythoninstalled : 1;
   bool            quiet : 1;
@@ -263,6 +264,7 @@ main (int argc, char *argv[])
   static struct option bdj_options [] = {
     { "bdj3dir",    required_argument,  NULL,   '3' },
     { "bdj4installer",no_argument,      NULL,   0 },
+    { "nomutagen",  no_argument,        NULL,   'M' },
     { "nodatafiles", no_argument,       NULL,   'N' },
     { "reinstall",  no_argument,        NULL,   'r' },
     { "targetdir",  required_argument,  NULL,   't' },
@@ -313,6 +315,7 @@ main (int argc, char *argv[])
   installer.guienabled = true;
   installer.inSetConvert = false;
   installer.newinstall = true;
+  installer.nomutagen = false;
   installer.nodatafiles = false;
   installer.pythoninstalled = false;
   installer.quiet = false;
@@ -424,16 +427,20 @@ main (int argc, char *argv[])
         installerSetBDJ3LocDir (&installer, optarg);
         break;
       }
-      case 'N': {
-        installer.nodatafiles = true;
-        break;
-      }
       case 'L': {
         sysvarsSetStr (SV_LOCALE, optarg);
         snprintf (tbuff, sizeof (tbuff), "%.2s", optarg);
         sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
         sysvarsSetNum (SVL_LOCALE_SET, 1);
         installer.localespecified = true;
+        break;
+      }
+      case 'M': {
+        installer.nomutagen = true;
+        break;
+      }
+      case 'N': {
+        installer.nodatafiles = true;
         break;
       }
       default: {
@@ -2218,6 +2225,12 @@ installerMutagenCheck (installer_t *installer)
 
   if (installer->nodatafiles) {
     installer->instState = INST_FINALIZE;
+    return;
+  }
+
+  /* must appear after the nodatafiles check */
+  if (installer->nomutagen) {
+    installer->instState = INST_UPDATE_PROCESS_INIT;
     return;
   }
 

@@ -57,11 +57,20 @@ if [[ $tag == linux ]]; then
   (cd src/po; ./install.sh)
 
   tfn=curl-ca-bundle.crt
-  curl --silent -JL --time-cond templates/${tfn} \
-      https://curl.se/ca/cacert.pem -o templates/${tfn}
-  if [[ templates/${tfn} -nt http/${tfn} ]]; then
-    cp -f templates/${tfn} http/${tfn}
+  ttfn=templates/${tfn}
+  htfn=http/${tfn}
+  curl --silent --connect-timeout 3 \
+      -JL --time-cond ${ttfn} \
+      https://curl.se/ca/cacert.pem \
+      -o ${ttfn}.n
+  rc=$?
+  if [[ $rc -eq 0 && -f ${ttfn}.n ]]; then
+    mv -f ${ttfn}.n ${ttfn}
   fi
+  if [[ ${ttfn} -nt ${htfn} ]]; then
+    cp -pf ${ttfn} ${htfn}
+  fi
+  rm -f ${ttfn}.n
 fi
 
 ./src/utils/makehtmllist.sh

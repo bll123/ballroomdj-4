@@ -533,6 +533,7 @@ echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --msys \
+    --nomutagen \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
     )
@@ -548,6 +549,7 @@ if [[ $crc -eq 0 ]]; then
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \
+      --nomutagen \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
       --reinstall \
@@ -562,6 +564,7 @@ if [[ $crc -eq 0 ]]; then
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \
+      --nomutagen \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
       )
@@ -577,6 +580,7 @@ if [[ $crc -eq 0 ]]; then
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \
+      --nomutagen \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
       )
@@ -592,6 +596,7 @@ echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --msys \
+    --nomutagen \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
     --nodatafiles \
@@ -611,6 +616,7 @@ echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --msys \
+    --nomutagen \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
     --locale ${locale} \
@@ -628,6 +634,7 @@ if [[ $crc -eq 0 ]]; then
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --msys \
+      --nomutagen \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
       --locale ${locale} \

@@ -31,6 +31,11 @@ main (int argc, char *argv [])
 {
   SRunner *sr = NULL;
   int     number_failed = 0;
+  FILE    *fh;
+
+  fh = fopen ("data/locale.txt", "w");
+  fputs ("en_GB\n", fh);
+  fclose (fh);
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("chk");
