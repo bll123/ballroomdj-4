@@ -253,6 +253,7 @@ typedef struct {
   bool            importitunesactive : 1;
   bool            importm3uactive : 1;
   bool            exportm3uactive : 1;
+  bool            enablerestoreorig : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -435,6 +436,7 @@ main (int argc, char *argv[])
   manage.importitunesactive = false;
   manage.importm3uactive = false;
   manage.exportm3uactive = false;
+  manage.enablerestoreorig = false;
   manage.applyadjstate = MANAGE_STATE_OFF;
   manage.impitunesstate = MANAGE_STATE_OFF;
   manage.uiaa = NULL;
@@ -1378,7 +1380,11 @@ manageSongEditMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, _("Restore Original"),
         manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
     uiutilsUIWidgetCopy (&manage->restoreOrigMenuItem, &menuitem);
-    uiWidgetDisable (&menuitem);
+    if (manage->enablerestoreorig) {
+      uiWidgetEnable (&menuitem);
+    } else {
+      uiWidgetDisable (&menuitem);
+    }
 
     /* a missing audio adjust file will not stop startup */
     tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
@@ -1526,6 +1532,11 @@ manageSetEditMenuItems (manageui_t *manage)
 
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
   hasorig = songutilHasOriginal (songGetStr (song, TAG_FILE));
+  if (hasorig) {
+    manage->enablerestoreorig = true;
+  } else {
+    manage->enablerestoreorig = false;
+  }
   if (! uiutilsUIWidgetSet (&manage->restoreOrigMenuItem)) {
     return;
   }

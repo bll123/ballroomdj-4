@@ -38,7 +38,6 @@ enum {
 
 typedef struct uiaa {
   UIWidget        *parentwin;
-  UIWidget        *statusMsg;
   nlist_t         *options;
   UIWidget        aaDialog;
   UIWidget        cbTrim;
@@ -62,7 +61,6 @@ uiaaInit (UIWidget *windowp, nlist_t *opts)
   uiaa = mdmalloc (sizeof (uiaa_t));
   uiutilsUIWidgetInit (&uiaa->aaDialog);
   uiaa->parentwin = windowp;
-  uiaa->statusMsg = NULL;
   uiaa->options = opts;
   uiaa->song = NULL;
   for (int i = 0; i < UIAA_CB_MAX; ++i) {
