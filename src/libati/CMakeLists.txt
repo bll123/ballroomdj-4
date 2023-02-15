@@ -5,21 +5,22 @@ cmake_minimum_required (VERSION 3.18)
 
 include (../utils/bdj4macros.cmake)
 
-# add_library (libbdj4audiotag SHARED
-#   ati.c
-# )
-# target_link_libraries (libbdj4audiotag
-#   libdylib
-#   libbdj4basic libbdj4common
-#   m
-# )
+add_library (libbdj4ati SHARED
+  ati.c
+)
+target_link_libraries (libbdj4ati
+  libdylib
+  libbdj4common
+  m
+)
 
-# add_library (libatmutagen SHARED atmutagen.c)
-# target_link_libraries (libatmutagen
-#   libbdj4string
-# )
+add_library (libatimutagen SHARED atimutagen.c)
+target_link_libraries (libatimutagen
+  libbdj4string
+)
 
-# install (TARGETS
-#   libbdj4audiotag
-#   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
-# )
+install (TARGETS
+  libbdj4ati
+  libatimutagen
+  DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+)

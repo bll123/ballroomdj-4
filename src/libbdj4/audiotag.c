@@ -11,6 +11,7 @@
 #include <inttypes.h>
 #include <assert.h>
 
+#include "ati.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdjopt.h"
@@ -38,6 +39,13 @@ enum {
   AFILE_TYPE_WMA,
 };
 
+typedef struct audiotag {
+  ati_t     *ati;
+  slist_t   *tagLookup [TAG_TYPE_MAX];
+} audiotag_t;
+
+static audiotag_t *at = NULL;
+
 static void audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype);
 static void audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite);
 static void audiotagCreateLookupTable (int tagtype);
@@ -51,27 +59,35 @@ static int  audiotagTagCheck (int writetags, int tagtype, const char *tag, int r
 static void audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
     nlist_t *datalist, int totkey, int tagkey);
 
-static slist_t    * tagLookup [TAG_TYPE_MAX];
-
 static ssize_t globalCounter = 0;
 
 void
 audiotagInit (void)
 {
+  at = mdmalloc (sizeof (audiotag_t));
+  at->ati = atiInit (bdjoptGetStr (OPT_M_AUDIOTAG_INTFC));
+
   for (int i = 0; i < TAG_TYPE_MAX; ++i) {
-    tagLookup [i] = NULL;
+    at->tagLookup [i] = NULL;
   }
 }
 
 void
 audiotagCleanup (void)
 {
+  if (at == NULL) {
+    return;
+  }
+
   for (int i = 0; i < TAG_TYPE_MAX; ++i) {
-    if (tagLookup [i] != NULL) {
-      slistFree (tagLookup [i]);
-      tagLookup [i] = NULL;
+    if (at->tagLookup [i] != NULL) {
+      slistFree (at->tagLookup [i]);
+      at->tagLookup [i] = NULL;
     }
   }
+  atiFree (at->ati);
+  mdfree (at);
+  at = NULL;
 }
 
 /*
@@ -451,7 +467,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
         *rewrite |= AF_REWRITE_DURATION;
       }
 
-      tagname = slistGetStr (tagLookup [tagtype], p);
+      tagname = slistGetStr (at->tagLookup [tagtype], p);
       if (tagname != NULL) {
         logMsg (LOG_DBG, LOG_DBUPDATE, "taglookup: %s %s", p, tagname);
         tagkey = audiotagTagCheck (writetags, tagtype, tagname, AF_REWRITE_NONE);
@@ -630,13 +646,13 @@ audiotagCreateLookupTable (int tagtype)
 
   tagdefInit ();
 
-  if (tagLookup [tagtype] != NULL) {
+  if (at->tagLookup [tagtype] != NULL) {
     return;
   }
 
   snprintf (buff, sizeof (buff), "tag-%d", tagtype);
-  tagLookup [tagtype] = slistAlloc (buff, LIST_ORDERED, NULL);
-  taglist = tagLookup [tagtype];
+  at->tagLookup [tagtype] = slistAlloc (buff, LIST_ORDERED, NULL);
+  taglist = at->tagLookup [tagtype];
 
   for (int i = 0; i < TAG_KEY_MAX; ++i) {
     if (! tagdefs [i].isNormTag && ! tagdefs [i].isBDJTag) {

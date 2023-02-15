@@ -111,7 +111,6 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
   sysvarsInit (argv[0]);
   localeInit ();
   bdjvarsInit ();
-  audiotagInit ();
 
   optind = 0;
   while ((c = getopt_long_only (argc, argv, "BChPOUWcld:p:mnNRst:T", bdj_options, &option_index)) != -1) {
@@ -268,6 +267,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
 
   bdjoptInit ();
   tagdefInit ();
+  audiotagInit ();
 
   if (! loglevelset) {
     loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);

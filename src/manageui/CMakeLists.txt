@@ -55,7 +55,7 @@ if (WIN32)
   target_compile_options (bdj4dbupdate PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4dbupdate
-  libbdjregex libbdj4 libbdj4basic libbdj4common
+  libbdj4ati libbdjregex libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
   m
@@ -72,7 +72,7 @@ if (WIN32)
   target_compile_options (bdj4dbtag PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4dbtag
-  libbdj4 libbdj4basic libbdj4common
+  libbdj4ati libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
   m

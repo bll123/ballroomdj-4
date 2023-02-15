@@ -27,10 +27,12 @@ enum {
   AF_FORCE_WRITE_BDJ  = 0x0008,
 };
 
-void audiotagInit (void);
-void audiotagCleanup (void);
-char * audiotagReadTags (const char *ffn);
+typedef struct audiotag audiotag_t;
+
+void    audiotagInit (void);
+void    audiotagCleanup (void);
+char *  audiotagReadTags (const char *ffn);
 slist_t * audiotagParseData (const char *ffn, char *data, int *rewrite);
-int  audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist, int rewrite, int modTimeFlag);
+int     audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist, int rewrite, int modTimeFlag);
 
 #endif /* INC_AUDIOTAG_H */
