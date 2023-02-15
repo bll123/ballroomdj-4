@@ -18,7 +18,7 @@
 #include "sysvars.h"
 #include "volsink.h"
 
-char *plistateTxt [PLI_STATE_MAX] = {
+static char *plistateTxt [PLI_STATE_MAX] = {
   [PLI_STATE_NONE] = "none",
   [PLI_STATE_OPENING] = "opening",
   [PLI_STATE_BUFFERING] = "buffering",
@@ -28,6 +28,26 @@ char *plistateTxt [PLI_STATE_MAX] = {
   [PLI_STATE_ENDED] = "ended",
   [PLI_STATE_ERROR] = "error",
 };
+
+typedef struct pli {
+  dlhandle_t        *dlHandle;
+  plidata_t         *(*pliiInit) (const char *plipkg, const char *sinkname);
+  void              (*pliiFree) (plidata_t *pliData);
+  void              (*pliiMediaSetup) (plidata_t *pliData, const char *mediapath);
+  void              (*pliiStartPlayback) (plidata_t *pliData, ssize_t pos, ssize_t speed);
+  void              (*pliiClose) (plidata_t *pliData);
+  void              (*pliiPause) (plidata_t *pliData);
+  void              (*pliiPlay) (plidata_t *pliData);
+  void              (*pliiStop) (plidata_t *pliData);
+  ssize_t           (*pliiSeek) (plidata_t *pliData, ssize_t pos);
+  ssize_t           (*pliiRate) (plidata_t *pliData, ssize_t rate);
+  ssize_t           (*pliiGetDuration) (plidata_t *pliData);
+  ssize_t           (*pliiGetTime) (plidata_t *pliData);
+  plistate_t        (*pliiState) (plidata_t *pliData);
+  int               (*pliiSetAudioDevice) (plidata_t *pliData, const char *dev);
+  int               (*pliiAudioDeviceList) (plidata_t *pliData, volsinklist_t *sinklist);
+  plidata_t         *pliData;
+} pli_t;
 
 pli_t *
 pliInit (const char *plipkg, const char *sinkname)
@@ -221,4 +241,17 @@ pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist)
     return pli->pliiAudioDeviceList (pli->pliData, sinklist);
   }
   return -1;
+}
+
+const char *
+pliStateText (pli_t *pli)
+{
+  if (pli == NULL) {
+    return "unknown";
+  }
+  if (pli->pliiState == NULL) {
+    return "unknown";
+  }
+
+  return plistateTxt [pli->pliiState (pli->pliData)];
 }

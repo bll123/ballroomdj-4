@@ -1897,7 +1897,7 @@ playerChkPlayerStatus (playerdata_t *playerData, int routefrom)
       "prepqueuecount%c%d%c"
       "currentsink%c%s",
       MSG_ARGS_RS, plstateDebugText (playerData->playerState), MSG_ARGS_RS,
-      MSG_ARGS_RS, plistateTxt [pliState (playerData->pli)], MSG_ARGS_RS,
+      MSG_ARGS_RS, pliStateText (playerData->pli), MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->currentVolume, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->realVolume, MSG_ARGS_RS,
       MSG_ARGS_RS, playerData->actualVolume, MSG_ARGS_RS,
