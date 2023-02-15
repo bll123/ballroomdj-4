@@ -223,6 +223,28 @@ _HERE_
   fi
 fi
 
+if [[ $pkgname == "" || $pkgname = "taglib" ]]; then
+  cd $cwd
+  cd taglib*
+  if [ $? -eq 0 ]; then
+    echo "## build taglib"
+    if [ $noclean = F ]; then
+      make distclean
+      cmake --build . --target clean
+      rm -f CMakeCache.txt
+    fi
+    cmake -DCMAKE_INSTALL_PREFIX=$INSTLOC \
+        -G "MSYS Makefiles" \
+        -DBUILD_TESTING=OFF \
+	-DBUILD_SHARED_LIBS=ON \
+	-DBUILD_EXAMPLES=OFF \
+	-DBUILD_BINDINGS=OFF \
+	-DCMAKE_BUILD_TYPE=Release .
+    make -j $procs
+    make install
+  fi
+fi
+
 if [[ $pkgname == "" || $pkgname = "ffmpeg" ]]; then
   cd $cwd
   cd ffmpeg*
