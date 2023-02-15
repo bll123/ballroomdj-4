@@ -36,6 +36,7 @@
 #include <assert.h>
 #include <signal.h>
 
+#include "audiofile.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4init.h"

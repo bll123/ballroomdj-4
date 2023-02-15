@@ -12,6 +12,7 @@
 
 #include "ati.h"
 #include "bdj4.h"
+#include "bdjopt.h"
 #include "pathbld.h"
 #include "dylib.h"
 #include "mdebug.h"
@@ -22,20 +23,24 @@
 
 typedef struct ati {
   dlhandle_t        *dlHandle;
-  void              (*atiiInit) (const char *atipkg);
-  char              *(*atiiReadTags) (const char *ffn);
-  void              (*atiiParseTags) (slist_t *tagdata, char *data, int tagtype, int *rewrite);
-  int               (*atiiWriteTags) (const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int filetype, int writetags);
+  atidata_t         *(*atiiInit) (const char *, const char *, const char *, const char *, int, taglookup_t, tagcheck_t);
+  void              (*atiiFree) (atidata_t *atidata);
+  char              *(*atiiReadTags) (atidata_t *atidata, const char *ffn);
+  void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, char *data, int tagtype, int *rewrite);
+  int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int filetype, int writetags);
+  atidata_t         *atidata;
+  taglookup_t       tagLookup;
 } ati_t;
 
 ati_t *
-atiInit (const char *atipkg)
+atiInit (const char *atipkg, taglookup_t tagLookup, tagcheck_t tagCheck)
 {
   ati_t     *ati;
   char      dlpath [MAXPATHLEN];
 
   ati = mdmalloc (sizeof (ati_t));
   ati->atiiInit = NULL;
+  ati->atiiFree = NULL;
   ati->atiiReadTags = NULL;
   ati->atiiParseTags = NULL;
   ati->atiiWriteTags = NULL;
@@ -52,13 +57,19 @@ atiInit (const char *atipkg)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpedantic"
   ati->atiiInit = dylibLookup (ati->dlHandle, "atiiInit");
+  ati->atiiFree = dylibLookup (ati->dlHandle, "atiiFree");
   ati->atiiReadTags = dylibLookup (ati->dlHandle, "atiiReadTags");
   ati->atiiParseTags = dylibLookup (ati->dlHandle, "atiiParseTags");
   ati->atiiWriteTags = dylibLookup (ati->dlHandle, "atiiWriteTags");
 #pragma clang diagnostic pop
 
   if (ati->atiiInit != NULL) {
-    ati->atiiInit (atipkg);
+    ati->atidata = ati->atiiInit (atipkg,
+        sysvarsGetStr (SV_PATH_PYTHON),
+        sysvarsGetStr (SV_PYTHON_MUTAGEN),
+        sysvarsGetStr (SV_LOCALE_RADIX),
+        bdjoptGetNum (OPT_G_WRITETAGS),
+        tagLookup, tagCheck);
   }
   return ati;
 }
@@ -67,6 +78,9 @@ void
 atiFree (ati_t *ati)
 {
   if (ati != NULL) {
+    if (ati->atiiFree != NULL) {
+      ati->atiiFree (ati->atidata);
+    }
     if (ati->dlHandle != NULL) {
       dylibClose (ati->dlHandle);
     }
@@ -78,7 +92,7 @@ char *
 atiReadTags (ati_t *ati, const char *ffn)
 {
   if (ati != NULL && ati->atiiReadTags != NULL) {
-    return ati->atiiReadTags (ffn);
+    return ati->atiiReadTags (ati->atidata, ffn);
   }
   return NULL;
 }
@@ -88,7 +102,7 @@ atiParseTags (ati_t *ati, slist_t *tagdata,
     char *data, int tagtype, int *rewrite)
 {
   if (ati != NULL && ati->atiiParseTags != NULL) {
-    ati->atiiParseTags (tagdata, data, tagtype, rewrite);
+    ati->atiiParseTags (ati->atidata, tagdata, data, tagtype, rewrite);
   }
   return;
 }
@@ -99,7 +113,8 @@ atiWriteTags (ati_t *ati, const char *ffn,
     int filetype, int writetags)
 {
   if (ati != NULL && ati->atiiWriteTags != NULL) {
-    return ati->atiiWriteTags (ffn, updatelist, dellist, datalist,
+    return ati->atiiWriteTags (ati->atidata, ffn,
+        updatelist, dellist, datalist,
         filetype, writetags);
   }
   return 0;

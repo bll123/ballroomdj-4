@@ -16,6 +16,7 @@ target_link_libraries (libbdj4ati
 
 add_library (libatimutagen SHARED atimutagen.c)
 target_link_libraries (libatimutagen
+  libbdj4osutils
   libbdj4string
 )
 

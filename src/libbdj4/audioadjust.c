@@ -12,6 +12,7 @@
 #include <assert.h>
 
 #include "audioadjust.h"
+#include "audiofile.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdjopt.h"

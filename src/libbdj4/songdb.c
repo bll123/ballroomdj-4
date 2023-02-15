@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <assert.h>
 
+#include "audiofile.h"
 #include "audiotag.h"
 #include "ilist.h"
 #include "mdebug.h"
