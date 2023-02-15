@@ -365,11 +365,7 @@ starterInitDataCallback (void *udata, programstate_t programState)
   if (fileopFileExists (tbuff)) {
     const char  *targv [5];
     int         targc = 0;
-    char        tmp [40];
 
-    snprintf (tmp, sizeof (tmp), "%d", starter->loglevel);
-    targv [targc++] = "--debug";
-    targv [targc++] = tmp;
     targv [targc++] = NULL;
     starter->processes [ROUTE_HELPERUI] = procutilStartProcess (
         ROUTE_HELPERUI, "bdj4helperui", PROCUTIL_DETACH, targv);
@@ -992,6 +988,7 @@ starterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_DEBUG_LEVEL: {
           starter->loglevel = atol (args);
+          bdjoptSetNum (OPT_G_DEBUGLVL, starter->loglevel);
           logSetLevelAll (starter->loglevel);
           break;
         }
@@ -1059,16 +1056,11 @@ starterStartMain (startui_t *starter, bdjmsgroute_t routefrom, char *args)
   int         targc = 0;
 
   if (starter->started [ROUTE_MAIN] == 0) {
-    char        tmp [40];
 
     flags = PROCUTIL_DETACH;
     if (atoi (args)) {
       targv [targc++] = "--nomarquee";
     }
-
-    snprintf (tmp, sizeof (tmp), "%d", starter->loglevel);
-    targv [targc++] = "--debug";
-    targv [targc++] = tmp;
     targv [targc++] = NULL;
 
     starter->processes [ROUTE_MAIN] = procutilStartProcess (
@@ -1156,7 +1148,6 @@ starterStartProcess (startui_t *starter, const char *procname,
 {
   const char  *targv [5];
   int         targc = 0;
-  char        tmp [40];
 
   if (starterCheckProfile (starter) < 0) {
     return UICB_STOP;
@@ -1169,9 +1160,6 @@ starterStartProcess (startui_t *starter, const char *procname,
     }
   }
 
-  snprintf (tmp, sizeof (tmp), "%d", starter->loglevel);
-  targv [targc++] = "--debug";
-  targv [targc++] = tmp;
   targv [targc++] = NULL;
 
   starter->processes [route] = procutilStartProcess (

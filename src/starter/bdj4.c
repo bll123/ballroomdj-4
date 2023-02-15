@@ -101,6 +101,7 @@ main (int argc, char * argv[])
     { "debug",          required_argument,  NULL,   0 },
     { "ignorelock",     no_argument,        NULL,   0 },
     { "profile",        required_argument,  NULL,   'p' },
+    { "scale",          required_argument,  NULL,   'S' },
     { "theme",          required_argument,  NULL,   'T' },
     /* this process */
     { "debugself",      no_argument,        NULL,   'D' },
@@ -330,6 +331,13 @@ main (int argc, char * argv[])
         osSetEnv ("GTK_THEME", optarg);
 #endif
         havetheme = true;
+        break;
+      }
+      case 'S': {
+#if BDJ4_USE_GTK
+        osSetEnv ("GDK_SCALE", optarg);
+#endif
+        havescale = true;
         break;
       }
       default: {

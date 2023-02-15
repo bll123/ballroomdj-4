@@ -56,7 +56,8 @@ main (int argc, char *argv [])
     { "quiet",        no_argument,      NULL,   'Q', },
     { "cleantags",    no_argument,      NULL,   'L', },
     { "nodetach",     no_argument,      NULL,   0, },
-    { "theme",        no_argument,      NULL,   0 },
+    { "scale",        required_argument,NULL,   0 },
+    { "theme",        required_argument,NULL,   0 },
     { "msys",         no_argument,      NULL,   0 },
   };
 

@@ -112,7 +112,8 @@ main (int argc, char *argv [])
     { "msys",         no_argument,        NULL,   0 },
     { "nodetach",     no_argument,        NULL,   0, },
     { "outfile",      required_argument,  NULL,   'O' },
-    { "theme",        no_argument,        NULL,   0 },
+    { "scale",        required_argument,  NULL,   0 },
+    { "theme",        required_argument,  NULL,   0 },
     { "tmusicsetup",  no_argument,        NULL,   0 },
   };
 

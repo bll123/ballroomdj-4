@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-14 09:14-0800\n"
+"POT-Creation-Date: 2023-02-15 06:06-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,12 +37,17 @@ msgstr ""
 msgid "%s Configuration"
 msgstr ""
 
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
+#, c-format
+msgid "%s Download"
+msgstr ""
+
 #. CONTEXT: installer: command line interface: BDJ3 location prompt
 #, c-format
 msgid "%s Folder"
 msgstr ""
 
-#. CONTEXT: starterui: basic support dialog: support option
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 forums)
 #, c-format
 msgid "%s Forums"
 msgstr ""
@@ -87,7 +92,7 @@ msgstr ""
 msgid "%s Set Up Alternate"
 msgstr ""
 
-#. CONTEXT: starterui: basic support dialog: support option
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets)
 #, c-format
 msgid "%s Support Tickets"
 msgstr ""
@@ -97,7 +102,7 @@ msgstr ""
 msgid "%s Version"
 msgstr ""
 
-#. CONTEXT: starterui: basic support dialog: support option
+#. CONTEXT: starterui: basic support dialog: support option (bdj4 wiki)
 #, c-format
 msgid "%s Wiki"
 msgstr ""

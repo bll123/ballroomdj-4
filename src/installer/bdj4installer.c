@@ -280,6 +280,7 @@ main (int argc, char *argv[])
     { "debugself",  no_argument,        NULL,   0 },
     { "msys",       no_argument,        NULL,   0 },
     { "nodetach",   no_argument,        NULL,   0 },
+    { "scale",      required_argument,  NULL,   0 },
     { "theme",      required_argument,  NULL,   0 },
     { "wait",       no_argument,        NULL,   0 },
     { NULL,         0,                  NULL,   0 }
