@@ -148,10 +148,6 @@ enum {
   /* same song */
   MANAGE_SET_MARK,
   MANAGE_CLEAR_MARK,
-  /* processing state */
-  MANAGE_STATE_OFF,
-  MANAGE_STATE_START,
-  MANAGE_STATE_PROCESS,
 };
 
 /* actions for the queue process */
@@ -437,8 +433,8 @@ main (int argc, char *argv[])
   manage.importm3uactive = false;
   manage.exportm3uactive = false;
   manage.enablerestoreorig = false;
-  manage.applyadjstate = MANAGE_STATE_OFF;
-  manage.impitunesstate = MANAGE_STATE_OFF;
+  manage.applyadjstate = BDJ4_STATE_OFF;
+  manage.impitunesstate = BDJ4_STATE_OFF;
   manage.uiaa = NULL;
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
@@ -992,7 +988,7 @@ manageMainLoop (void *tmanage)
 
   /* apply adjustments processing */
 
-  if (manage->applyadjstate == MANAGE_STATE_PROCESS) {
+  if (manage->applyadjstate == BDJ4_STATE_PROCESS) {
     bool    changed = false;
 
     changed = aaApplyAdjustments (manage->musicdb, manage->songeditdbidx, manage->aaflags);
@@ -1010,17 +1006,18 @@ manageMainLoop (void *tmanage)
       connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
     }
     uiLabelSetText (&manage->statusMsg, "");
-    manage->applyadjstate = MANAGE_STATE_OFF;
+    uiaaDialogClear (manage->uiaa);
+    manage->applyadjstate = BDJ4_STATE_OFF;
   }
 
-  if (manage->applyadjstate == MANAGE_STATE_START) {
+  if (manage->applyadjstate == BDJ4_STATE_START) {
     uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
-    manage->applyadjstate = MANAGE_STATE_PROCESS;
+    manage->applyadjstate = BDJ4_STATE_PROCESS;
   }
 
   /* itunes processing */
 
-  if (manage->impitunesstate == MANAGE_STATE_PROCESS) {
+  if (manage->impitunesstate == BDJ4_STATE_PROCESS) {
     manageSonglistSave (manage);
 
     if (manage->itunes == NULL) {
@@ -1036,12 +1033,12 @@ manageMainLoop (void *tmanage)
     uiWidgetShowAll (&manage->itunesSelectDialog);
 
     uiLabelSetText (&manage->statusMsg, "");
-    manage->impitunesstate = MANAGE_STATE_OFF;
+    manage->impitunesstate = BDJ4_STATE_OFF;
   }
 
-  if (manage->impitunesstate == MANAGE_STATE_START) {
+  if (manage->impitunesstate == BDJ4_STATE_START) {
     uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
-    manage->impitunesstate = MANAGE_STATE_PROCESS;
+    manage->impitunesstate = BDJ4_STATE_PROCESS;
   }
 
   uiplayerMainLoop (manage->slplayer);
@@ -1575,7 +1572,7 @@ manageApplyAdjCallback (void *udata, long aaflags)
   }
 
   manage->aaflags = aaflags;
-  manage->applyadjstate = MANAGE_STATE_START;
+  manage->applyadjstate = BDJ4_STATE_START;
 
   return UICB_CONT;
 }
@@ -1590,7 +1587,7 @@ manageRestoreOrigCallback (void *udata)
   }
 
   manage->aaflags = SONG_ADJUST_RESTORE;
-  manage->applyadjstate = MANAGE_STATE_START;
+  manage->applyadjstate = BDJ4_STATE_START;
 
   return UICB_CONT;
 }
@@ -1699,7 +1696,7 @@ manageSonglistImportiTunes (void *udata)
 
   logProcBegin (LOG_PROC, "manageSonglistImportiTunes");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import itunes");
-  manage->impitunesstate = MANAGE_STATE_START;
+  manage->impitunesstate = BDJ4_STATE_START;
 
   logProcEnd (LOG_PROC, "manageSonglistImportiTunes", "");
   return UICB_CONT;

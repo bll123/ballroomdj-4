@@ -40,12 +40,14 @@ typedef struct uiaa {
   UIWidget        *parentwin;
   nlist_t         *options;
   UIWidget        aaDialog;
+  UIWidget        statusMsg;
   UIWidget        cbTrim;
   UIWidget        cbNorm;
   UIWidget        cbAdjust;
   callback_t      *callbacks [UIAA_CB_MAX];
   callback_t      *responsecb;
   song_t          *song;
+  const char      *pleasewaitmsg;
   bool            isactive : 1;
 } uiaa_t;
 
@@ -68,6 +70,8 @@ uiaaInit (UIWidget *windowp, nlist_t *opts)
   }
   uiaa->responsecb = NULL;
   uiaa->isactive = false;
+  /* CONTEXT: apply adjustments: please wait... status message */
+  uiaa->pleasewaitmsg = _("Please wait\xe2\x80\xa6");
 
   return uiaa;
 }
@@ -120,6 +124,14 @@ uiaaDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   return UICB_CONT;
 }
 
+void
+uiaaDialogClear (uiaa_t *uiaa)
+{
+  uiutilsUIWidgetInit (&uiaa->statusMsg);
+  uiDialogDestroy (&uiaa->aaDialog);
+  uiutilsUIWidgetInit (&uiaa->aaDialog);
+}
+
 /* internal routines */
 
 static void
@@ -166,6 +178,14 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 4);
   uiDialogPackInDialog (&uiaa->aaDialog, &vbox);
+
+  /* status message */
+  uiCreateHorizBox (&hbox);
+  uiBoxPackStart (&vbox, &hbox);
+  uiCreateLabel (&uiwidget, "");
+  uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
+  uiBoxPackEnd (&hbox, &uiwidget);
+  uiutilsUIWidgetCopy (&uiaa->statusMsg, &uiwidget);
 
   /* trim silence */
   uiCreateHorizBox (&hbox);
@@ -234,8 +254,7 @@ uiaaResponseHandler (void *udata, long responseid)
     }
     case RESPONSE_RESET: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: restore orig");
-      uiDialogDestroy (&uiaa->aaDialog);
-      uiutilsUIWidgetInit (&uiaa->aaDialog);
+      uiLabelSetText (&uiaa->statusMsg, uiaa->pleasewaitmsg);
       if (uiaa->responsecb != NULL) {
         callbackHandlerLong (uiaa->responsecb, SONG_ADJUST_RESTORE);
       }
@@ -254,8 +273,7 @@ uiaaResponseHandler (void *udata, long responseid)
       if (uiToggleButtonIsActive (&uiaa->cbAdjust)) {
         aaflags |= SONG_ADJUST_ADJUST;
       }
-      uiDialogDestroy (&uiaa->aaDialog);
-      uiutilsUIWidgetInit (&uiaa->aaDialog);
+      uiLabelSetText (&uiaa->statusMsg, uiaa->pleasewaitmsg);
       if (uiaa->responsecb != NULL) {
         callbackHandlerLong (uiaa->responsecb, aaflags);
       }

@@ -14,6 +14,11 @@ enum {
   /* used for queueing playlists */
   EDIT_TRUE,
   EDIT_FALSE,
+  /* processing states */
+  BDJ4_STATE_OFF,
+  BDJ4_STATE_START,
+  BDJ4_STATE_WAIT,
+  BDJ4_STATE_PROCESS,
 };
 
 enum {
