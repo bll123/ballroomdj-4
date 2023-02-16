@@ -2,7 +2,7 @@
 
 spath=$HOME/.config/BDJ4
 test -d "$spath" || mkdir -p "$spath"
-RESTFILE="$spath/.ballroomdj-ss-restore"
+RESTFILE="$spath/bdj4-ss-restore"
 
 restoreflag=F
 if [[ -f $RESTFILE ]]; then
@@ -40,13 +40,24 @@ function do_xfcesettings () {
   setting=$2
   shift; shift
   for skey in $*; do
-    val=$(xfconf-query -c $schema -p /$schema/$skey 2>/dev/null)
-    if [[ $? -eq 0 ]]; then
+    case $skey in
+      /*)
+        val=$(xfconf-query -c $schema -p $skey 2>/dev/null)
+        trc=$?
+        tskey=$skey
+        ;;
+      *)
+        val=$(xfconf-query -c $schema -p /$schema/$skey 2>/dev/null)
+        tskey=/$schema/$skey
+        trc=$?
+        ;;
+    esac
+    if [[ $trc -eq 0 ]]; then
       rc=0
       if [[ $restoreflag == F ]]; then
-        echo "xfconf-query -c $schema -p /$schema/$skey -s $val" >> $RESTFILE
+        echo "xfconf-query -c $schema -p $tskey -s $val" >> $RESTFILE
       fi
-      xfconf-query -c $schema -p /$schema/$skey -s $setting
+      xfconf-query -c $schema -p $tskey -s $setting
     fi
   done
   return $rc
@@ -64,6 +75,9 @@ do_gsettings $schema false \
 schema=org.gnome.desktop.screensaver
 do_gsettings $schema false \
     idle-activation-enabled
+schema=org.gnome.desktop.notifications
+do_gsettings $schema false \
+    show-banners
 
 # mate power management/screensaver
 schema=org.mate.power-manager
@@ -74,10 +88,12 @@ do_gsettings $schema 0 \
     sleep-display-battery
 do_gsettings $schema false \
     backlight-battery-reduce
-
 schema=org.mate.screensaver
 do_gsettings $schema false \
     idle-activation-enabled
+schema=org.mate.caja.preferences
+do_gsettings $schema false \
+    show-notifications
 
 # xfce power settings
 # presentation-mode may not exist in settings the first time, force it.
@@ -92,6 +108,8 @@ if [ $rc -eq 0 ]; then
       dpms-on-ac-off dpms-on-ac-sleep dpms-on-battery-off \
       dpms-on-battery-sleep inactivity-on-ac inactivity-on-battery \
       blank-on-ac blank-on-battery brightness-on-ac brightness-on-battery
+  do_xfcesettings xfce4-notifyd false \
+      /do-not-disturb
 fi
 
 if [[ -f $RESTFILE && ! -f $RESTFILE.orig ]]; then

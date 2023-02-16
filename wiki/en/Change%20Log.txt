@@ -9,11 +9,12 @@
 * New Features:
     * Song Editor: Apply Adjustments.
 * Changes:
-    * Minor user interface cleanup.
+    * Linux: Updated player start/stop scripts to turn off and restore notifications.
     * Song Editor: Duration display also shows adjusted duration.
     * Song Editor: BPM Range for the dance is now displayed.
     * Song Editor: BPM, song start, song end are adjusted for speed.
     * Support: Added BDJ4 download link.
+    * User interface: Minor cleanup.
 * Bug Fixes:
     * Alternate Installer: Various bug fixes.
     * BPM Counter: Fix slow exit.
