@@ -4,12 +4,17 @@
 
 <!--
 
-**4.1.0 beta 2023-2---**
+**4.1.1 beta 2023-2---**
+
+-->
+
+**4.1.0 beta 2023-2-16**
 
 * New Features:
     * Song Editor: Apply Adjustments.
 * Changes:
-    * Linux: Updated player start/stop scripts to turn off and restore notifications.
+    * Linux: player start/stop scripts updated to turn off and restore notifications.
+    * Mac OS: Installer: Fix installation of http/ folder.
     * Song Editor: Duration display also shows adjusted duration.
     * Song Editor: BPM Range for the dance is now displayed.
     * Song Editor: BPM, song start, song end are adjusted for speed.
@@ -24,8 +29,6 @@
     * Nederlands updated.
 * Internal:
     * Code cleanup.
-
--->
 
 **4.0.10.1 beta 2023-2-12**
 
@@ -241,4 +244,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-12 09:32:26; BDJ4 version 4.0.10.1-beta)_
+<br>_(Updated 2023-02-16 10:45:29; BDJ4 version 4.1.0-beta)_

@@ -51,7 +51,6 @@ main (int argc, char * argv[])
   bool      forcenodetach = false;
   bool      forcewait = false;
   bool      isinstaller = false;
-  bool      usemsys = false;
   int       flags;
   const char *targv [BDJ4_LAUNCHER_MAX_ARGS];
   int       targc;
@@ -106,7 +105,6 @@ main (int argc, char * argv[])
     { "theme",          required_argument,  NULL,   'T' },
     /* this process */
     { "debugself",      no_argument,        NULL,   'D' },
-    { "msys",           no_argument,        NULL,   'M' },
     { "nodetach",       no_argument,        NULL,   'N' },
     { "nostart",        no_argument,        NULL,   0 },
     { "wait",           no_argument,        NULL,   'w' },
@@ -315,10 +313,6 @@ main (int argc, char * argv[])
       }
       case 'w': {
         forcewait = true;
-        break;
-      }
-      case 'M': {
-        usemsys = true;
         break;
       }
       case 'p': {

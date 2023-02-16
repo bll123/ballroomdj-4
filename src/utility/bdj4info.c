@@ -34,7 +34,6 @@ main (int argc, char *argv [])
     /* ignored */
     { "nodetach",     no_argument,      NULL,   0 },
     { "debugself",    no_argument,      NULL,   0 },
-    { "msys",         no_argument,      NULL,   0 },
     { "scale",        required_argument,NULL,   0 },
     { "theme",        required_argument,NULL,   0 },
     { NULL,         0,                  NULL,   0 }

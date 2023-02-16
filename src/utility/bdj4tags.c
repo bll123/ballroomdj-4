@@ -58,7 +58,6 @@ main (int argc, char *argv [])
     { "nodetach",     no_argument,      NULL,   0, },
     { "scale",        required_argument,NULL,   0 },
     { "theme",        required_argument,NULL,   0 },
-    { "msys",         no_argument,      NULL,   0 },
   };
 
 #if BDJ4_MEM_DEBUG

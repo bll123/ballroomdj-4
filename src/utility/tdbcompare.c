@@ -53,7 +53,6 @@ main (int argc, char *argv [])
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,        NULL,   'B' },
     { "tdbcompare",   no_argument,        NULL,   0 },
-    { "msys",         no_argument,        NULL,   0 },
     { "debug",        required_argument,  NULL,   'd' },
     { "debugself",    no_argument,        NULL,   0 },
     { "nodetach",     no_argument,        NULL,   0, },

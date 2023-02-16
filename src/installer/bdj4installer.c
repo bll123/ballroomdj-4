@@ -280,7 +280,6 @@ main (int argc, char *argv[])
     { "bdj4",       no_argument,        NULL,   0 },
     { "debug",      required_argument,  NULL,   'd' },
     { "debugself",  no_argument,        NULL,   0 },
-    { "msys",       no_argument,        NULL,   0 },
     { "nodetach",   no_argument,        NULL,   0 },
     { "scale",      required_argument,  NULL,   0 },
     { "theme",      required_argument,  NULL,   0 },
@@ -1658,9 +1657,11 @@ installerCreateDirs (installer_t *installer)
   installerDisplayText (installer, INST_DISP_ACTION, _("Creating folder structure."), false);
 
   /* this will create the directories necessary for the configs */
+  /* namely: profile00, <hostname>, <hostname>/profile00 */
   bdjoptCreateDirectories ();
   /* create the directories that are not included in the distribution */
   diropMakeDir ("tmp");
+  diropMakeDir ("http");
   diropMakeDir ("img/profile00");
 
   installer->instState = INST_COPY_TEMPLATES_INIT;
@@ -1692,7 +1693,7 @@ installerCopyTemplates (installer_t *installer)
   }
 
   instutilCopyTemplates ();
-  instutilCopyHttpFiles ();
+  instutilCopyHttpFiles ();     /* copies led_on, led_off */
   templateImageCopy (NULL);
 
   if (isMacOS ()) {

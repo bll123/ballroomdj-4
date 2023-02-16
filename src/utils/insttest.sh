@@ -262,6 +262,14 @@ function checkInstallation {
       echo "  no $fn"
     fi
 
+    # main image files
+    res=$(($res+1))
+    if [[ $fin == T && -f "${TARGETDIR}/img/led_on.svg" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no img/led_on.svg file"
+    fi
+
     res=$(($res+1))  # tmp dir
     if [[ $fin == T && -d "${DATATOPDIR}/tmp" ]]; then
       chk=$(($chk+1))
@@ -281,14 +289,6 @@ function checkInstallation {
       chk=$(($chk+1))
     else
       echo "  no img/profile00 directory"
-    fi
-
-    # various image files
-    res=$(($res+1))
-    if [[ $fin == T && -f "${DATATOPDIR}/img/led_on.svg" ]]; then
-      chk=$(($chk+1))
-    else
-      echo "  no img/led_on.svg file"
     fi
 
     res=$(($res+1))
@@ -317,21 +317,21 @@ function checkInstallation {
     if [[ $fin == T && -f "${DATATOPDIR}/http/ballroomdj4.svg" ]]; then
       chk=$(($chk+1))
     else
-      echo "  no ballroomdj4.svg file"
+      echo "  no http/ballroomdj4.svg file"
     fi
 
     res=$(($res+1))
     if [[ $fin == T && -f "${DATATOPDIR}/http/favicon.ico" ]]; then
       chk=$(($chk+1))
     else
-      echo "  no favicon.ico file"
+      echo "  no http/favicon.ico file"
     fi
 
     res=$(($res+1))
     if [[ $fin == T && -f "${DATATOPDIR}/http/mrc/dark/play.svg" ]]; then
       chk=$(($chk+1))
     else
-      echo "  no mrc/dark/play.svg file"
+      echo "  no http/mrc/dark/play.svg file"
     fi
 
     res=$(($res+1))  # audioadjust.txt file
@@ -532,7 +532,6 @@ tname=new-install-no-bdj3
 echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
-    --msys \
     --nomutagen \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
@@ -548,7 +547,6 @@ if [[ $crc -eq 0 ]]; then
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
-      --msys \
       --nomutagen \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
@@ -563,7 +561,6 @@ if [[ $crc -eq 0 ]]; then
   echo "== $section $tname"
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
-      --msys \
       --nomutagen \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
@@ -579,7 +576,6 @@ if [[ $crc -eq 0 ]]; then
   checkUpdaterClean $section
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
-      --msys \
       --nomutagen \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
@@ -595,7 +591,6 @@ tname=install-no-data
 echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
-    --msys \
     --nomutagen \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
@@ -615,7 +610,6 @@ tname=new-install-no-bdj3
 echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
-    --msys \
     --nomutagen \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
@@ -633,7 +627,6 @@ if [[ $crc -eq 0 ]]; then
   checkUpdaterClean $section
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
-      --msys \
       --nomutagen \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \

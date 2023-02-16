@@ -229,7 +229,7 @@ fi
 cwd=$(pwd)
 
 # make sure various variables are set appropriately.
-./bin/bdj4 --msys --bdj4updater --newinstall \
+./bin/bdj4 --bdj4updater --newinstall \
     --musicdir "${cwd}/test-music"
 
 if [[ $os == macos ]]; then
