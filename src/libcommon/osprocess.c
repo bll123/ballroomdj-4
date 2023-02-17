@@ -158,6 +158,9 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 
   pid = tpid;
 
+  /* if waiting on a pipe, the pipe buffer may fill up, and the program */
+  /* will hang. there is only a certain amount of output that can be */
+  /* handled. */
   if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
     int   rc, wstatus;
 

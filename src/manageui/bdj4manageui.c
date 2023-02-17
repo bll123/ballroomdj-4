@@ -96,6 +96,7 @@ enum {
   MANAGE_MENU_CB_SE_START_EDITALL,
   MANAGE_MENU_CB_SE_APPLY_ADJ,
   MANAGE_MENU_CB_SE_RESTORE_ORIG,
+  MANAGE_MENU_CB_SE_REPAIR,
   /* sl options menu */
   MANAGE_MENU_CB_SL_EZ_EDIT,
   /* sl edit menu */
@@ -296,6 +297,7 @@ static void     manageSetEditMenuItems (manageui_t *manage);
 static bool     manageApplyAdjDialog (void *udata);
 static bool     manageApplyAdjCallback (void *udata, long aaflags);
 static bool     manageRestoreOrigCallback (void *udata);
+static bool     manageRepairCallback (void *udata);
 /* bpm counter */
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
@@ -1383,6 +1385,12 @@ manageSongEditMenu (manageui_t *manage)
       uiWidgetDisable (&menuitem);
     }
 
+    manage->callbacks [MANAGE_MENU_CB_SE_REPAIR] = callbackInit (
+        manageRepairCallback, manage, NULL);
+    /* CONTEXT: managementui: menu selection: song editor: repair */
+    uiMenuCreateItem (&menu, &menuitem, _("Repair"),
+        manage->callbacks [MANAGE_MENU_CB_SE_REPAIR]);
+
     /* a missing audio adjust file will not stop startup */
     tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
     if (tempp == NULL) {
@@ -1587,6 +1595,21 @@ manageRestoreOrigCallback (void *udata)
   }
 
   manage->aaflags = SONG_ADJUST_RESTORE;
+  manage->applyadjstate = BDJ4_STATE_START;
+
+  return UICB_CONT;
+}
+
+static bool
+manageRepairCallback (void *udata)
+{
+  manageui_t    *manage = udata;
+
+  if (manage->songeditdbidx < 0) {
+    return UICB_STOP;
+  }
+
+  manage->aaflags = SONG_ADJUST_REPAIR;
   manage->applyadjstate = BDJ4_STATE_START;
 
   return UICB_CONT;

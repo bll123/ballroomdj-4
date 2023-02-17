@@ -45,6 +45,12 @@ enum {
   AA_NORM_IN_MAX,
 };
 
+enum {
+  /* ffmpeg output progress lines */
+  /* also, if there are errors in the audio file, the output can be long */
+  AA_RESP_BUFF_SZ = 60000,
+};
+
 typedef struct aa {
   datafile_t      *df;
   nlist_t         *values;
@@ -60,6 +66,8 @@ static datafilekey_t aadfkeys [AA_KEY_MAX] = {
 };
 
 static long aaApplySpeed (song_t *song, const char *infn, const char *outfn, int speed, int gap);
+static void aaRepair (const char *infn, const char *outfn);
+static void aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx, const char *infn, const char *songfn);
 static long aaParseDuration (const char *resp);
 
 aa_t *
@@ -131,29 +139,8 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
 
   if (aaflags == SONG_ADJUST_RESTORE) {
     if (fileopFileExists (origfn)) {
-      char    *data;
-
       filemanipMove (origfn, fullfn);
-      data = audiotagReadTags (fullfn);
-      if (data != NULL) {
-        slist_t *tagdata;
-        int     rewrite;
-        char    tbuff [3096];
-        dbidx_t rrn;
-
-        rrn = songGetNum (song, TAG_RRN);
-        tagdata = audiotagParseData (fullfn, data, &rewrite);
-        slistSetStr (tagdata, tagdefs [TAG_ADJUSTFLAGS].tag, NULL);
-        /* the data in the database must be replaced with the original data */
-        dbWrite (musicdb, songfn, tagdata, rrn);
-        /* and the song's data must be replaced with the original data */
-        dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
-            songfn, rrn);
-        songParse (song, tbuff, dbidx);
-        /* reset the RRN back to the original */
-        songSetNum (song, TAG_RRN, rrn);
-        slistFree (tagdata);
-      }
+      aaRestoreTags (musicdb, song, dbidx, fullfn, songfn);
       changed = true;
     }
     return changed;
@@ -188,6 +175,19 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
   /* the adjust flags must be reset, as the user may have selected */
   /* different settings */
   songSetNum (song, TAG_ADJUSTFLAGS, SONG_ADJUST_NONE);
+
+  if (aaflags == SONG_ADJUST_REPAIR) {
+    aaRepair (infn, fullfn);
+    if (fileopFileExists (fullfn)) {
+      aaRestoreTags (musicdb, song, dbidx, origfn, songfn);
+      fileopDelete (origfn);
+      changed = true;
+    } else {
+      filemanipMove (origfn, fullfn);
+    }
+    /* when repairing, no other processing is done */
+    return changed;
+  }
 
   /* trim silence is done first */
   if ((aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
@@ -270,7 +270,7 @@ aaTrimSilence (const char *infn, const char *outfn)
   const char  *targv [40];
   int         targc = 0;
   char        ffargs [300];
-  char        resp [10000];
+  char        *resp;
   int         rc;
   size_t      retsz;
   mstime_t    etm;
@@ -305,7 +305,8 @@ aaTrimSilence (const char *infn, const char *outfn)
   targv [targc++] = outfn;
   targv [targc++] = NULL;
 
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
+  resp = mdmalloc (AA_RESP_BUFF_SZ);
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, &retsz);
   if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
     char  cmd [1000];
 
@@ -324,6 +325,7 @@ aaTrimSilence (const char *infn, const char *outfn)
   if (rc == 0) {
     newdur = aaParseDuration (resp);
   }
+  dataFree (resp);
 
   return newdur;
 }
@@ -335,7 +337,7 @@ aaNormalize (const char *infn, const char *outfn)
   const char  *targv [40];
   int         targc = 0;
   char        ffargs [300];
-  char        resp [10000];
+  char        *resp;
   int         rc;
   size_t      retsz;
   char        *p;
@@ -370,7 +372,8 @@ aaNormalize (const char *infn, const char *outfn)
   targv [targc++] = "-";
   targv [targc++] = NULL;
 
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
+  resp = mdmalloc (AA_RESP_BUFF_SZ);
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, &retsz);
   if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
     char  cmd [1000];
 
@@ -383,8 +386,8 @@ aaNormalize (const char *infn, const char *outfn)
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: rc: %d", rc);
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: resp: %s", resp);
     if (rc != 0) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, pass one failed.");
-      return;
+      logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: pass one had errors.");
+      /* even though the audio file has errors, still try to process it */
     }
   }
 
@@ -407,6 +410,11 @@ aaNormalize (const char *infn, const char *outfn)
   found = false;
 
   p = strstr (resp, "{");
+  if (p == NULL) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, no data");
+    dataFree (resp);
+    return;
+  }
   p = strtok_r (p, "\": ,", &tokstr);
   while (p != NULL) {
     if (found) {
@@ -441,6 +449,7 @@ aaNormalize (const char *infn, const char *outfn)
 
   if (incount != 5) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, could not find input data");
+    dataFree (resp);
     return;
   }
   logMsg (LOG_DBG, LOG_MAIN, "aa: norm: elapsed pass 1: %ld",
@@ -475,7 +484,7 @@ aaNormalize (const char *infn, const char *outfn)
   targv [targc++] = outfn;
   targv [targc++] = NULL;
 
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, &retsz);
   if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
     char  cmd [1000];
 
@@ -490,6 +499,7 @@ aaNormalize (const char *infn, const char *outfn)
   }
   logMsg (LOG_DBG, LOG_MAIN, "aa: norm: elapsed: %ld",
       (long) mstimeend (&etm));
+  dataFree (resp);
   return;
 }
 
@@ -500,7 +510,7 @@ aaAdjust (song_t *song, const char *infn, const char *outfn,
   const char  *targv [40];
   int         targc = 0;
   char        aftext [500];
-  char        resp [10000];
+  char        *resp;
   char        sstmp [60];
   char        durtmp [60];
   char        tmp [60];
@@ -619,7 +629,8 @@ aaAdjust (song_t *song, const char *infn, const char *outfn,
   targv [targc++] = outfn;
   targv [targc++] = NULL;
 
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
+  resp = mdmalloc (AA_RESP_BUFF_SZ);
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, &retsz);
   if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
     char  cmd [1000];
 
@@ -652,6 +663,7 @@ aaAdjust (song_t *song, const char *infn, const char *outfn,
         (long) mstimeend (&etm));
   }
 
+  dataFree (resp);
   return newdur;
 }
 
@@ -662,7 +674,7 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
   const char  *targv [30];
   int         targc = 0;
   char        aftext [500];
-  char        resp [10000];
+  char        *resp;
   char        tmp [60];
   int         rc;
   size_t      retsz;
@@ -703,7 +715,8 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
   targv [targc++] = outfn;
   targv [targc++] = NULL;
 
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, sizeof (resp), &retsz);
+  resp = mdmalloc (AA_RESP_BUFF_SZ);
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, &retsz);
   if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
     char  cmd [1000];
 
@@ -721,8 +734,80 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
     newdur = aaParseDuration (resp);
   }
 
+  dataFree (resp);
   return newdur;
 }
+
+static void
+aaRepair (const char *infn, const char *outfn)
+{
+  const char  *targv [30];
+  int         targc = 0;
+  int         rc;
+
+
+  targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
+  targv [targc++] = "-hide_banner";
+  targv [targc++] = "-y";
+  targv [targc++] = "-vn";
+  targv [targc++] = "-dn";
+  targv [targc++] = "-sn";
+  /* don't want to see the output */
+  targv [targc++] = "-loglevel";
+  targv [targc++] = "quiet";
+  targv [targc++] = "-i";
+  targv [targc++] = infn;
+  targv [targc++] = "-q:a";
+  targv [targc++] = "0";
+  targv [targc++] = outfn;
+  targv [targc++] = NULL;
+
+  /* as the response may be too long to process, ignore it */
+  rc = osProcessStart (targv, OS_PROC_WAIT | OS_PROC_DETACH, NULL, NULL);
+  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
+    char  cmd [1000];
+
+    *cmd = '\0';
+    for (int i = 0; i < targc - 1; ++i) {
+      strlcat (cmd, targv [i], sizeof (cmd));;
+      strlcat (cmd, " ", sizeof (cmd));;
+    }
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-repair: cmd: %s", cmd);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-repair: rc: %d", rc);
+  }
+
+  return;
+}
+
+static void
+aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
+    const char *infn, const char *songfn)
+{
+  char  *data = NULL;
+
+  data = audiotagReadTags (infn);
+  if (data != NULL) {
+    slist_t *tagdata;
+    int     rewrite;
+    char    tbuff [3096];
+    dbidx_t rrn;
+
+    rrn = songGetNum (song, TAG_RRN);
+    tagdata = audiotagParseData (infn, data, &rewrite);
+    slistSetStr (tagdata, tagdefs [TAG_ADJUSTFLAGS].tag, NULL);
+    /* the data in the database must be replaced with the original data */
+    dbWrite (musicdb, songfn, tagdata, rrn);
+    /* and the song's data must be replaced with the original data */
+    dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagdata,
+        songfn, rrn);
+    songParse (song, tbuff, dbidx);
+    /* reset the RRN back to the original */
+    songSetNum (song, TAG_RRN, rrn);
+    slistFree (tagdata);
+  }
+  dataFree (data);
+}
+
 
 static long
 aaParseDuration (const char *resp)
