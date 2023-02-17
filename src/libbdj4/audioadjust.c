@@ -270,7 +270,7 @@ aaTrimSilence (const char *infn, const char *outfn)
   const char  *targv [40];
   int         targc = 0;
   char        ffargs [300];
-  char        resp [2000];
+  char        resp [10000];
   int         rc;
   size_t      retsz;
   mstime_t    etm;
@@ -335,7 +335,7 @@ aaNormalize (const char *infn, const char *outfn)
   const char  *targv [40];
   int         targc = 0;
   char        ffargs [300];
-  char        resp [2000];
+  char        resp [10000];
   int         rc;
   size_t      retsz;
   char        *p;
@@ -500,7 +500,7 @@ aaAdjust (song_t *song, const char *infn, const char *outfn,
   const char  *targv [40];
   int         targc = 0;
   char        aftext [500];
-  char        resp [2000];
+  char        resp [10000];
   char        sstmp [60];
   char        durtmp [60];
   char        tmp [60];
@@ -662,7 +662,7 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
   const char  *targv [30];
   int         targc = 0;
   char        aftext [500];
-  char        resp [2000];
+  char        resp [10000];
   char        tmp [60];
   int         rc;
   size_t      retsz;

@@ -8,6 +8,12 @@
 
 -->
 
+**4.1.0.1 beta 2023-2-17**
+
+* Bug Fixes:
+    * Configuration: Debug: Fix apply adjustments.
+    * Song Editor: Fix apply adjustment processing.
+
 **4.1.0 beta 2023-2-16**
 
 * New Features:
@@ -244,4 +250,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-16 10:45:29; BDJ4 version 4.1.0-beta)_
+<br>_(Updated 2023-02-17 10:08:57; BDJ4 version 4.1.0.1-beta)_
