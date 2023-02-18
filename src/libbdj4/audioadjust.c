@@ -383,7 +383,6 @@ aaNormalize (const char *infn, const char *outfn)
   }
   if (p != NULL) {
     if (sscanf (p, "mean_volume: %lf dB", &meanvol) == 1) {
-fprintf (stderr, "mean: %.2f\n", meanvol);
       ++incount;
     }
   }
@@ -395,7 +394,6 @@ fprintf (stderr, "mean: %.2f\n", meanvol);
   }
   if (p != NULL) {
     if (sscanf (p, "max_volume: %lf dB", &maxvol) == 1) {
-fprintf (stderr, "max: %.2f\n", maxvol);
       ++incount;
     }
   }
@@ -411,27 +409,26 @@ fprintf (stderr, "max: %.2f\n", maxvol);
   /* now do the normalization */
 
   targetvol = nlistGetDouble (aa->values, AA_NORMVOL_TARGET);
-fprintf (stderr, "targetvol: %.2f\n", targetvol);
   targetmax= nlistGetDouble (aa->values, AA_NORMVOL_MAX);
-fprintf (stderr, "targetmax: %.2f\n", targetmax);
+  logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mean volume: %.2f", meanvol);
+  logMsg (LOG_DBG, LOG_MAIN, "aa-norm: max volume: %.2f", maxvol);
 
-fprintf (stderr, "mean:%.2f > t:%.2f %d\n", meanvol, targetvol, meanvol > targetvol);
   if (maxvol > targetmax) {
     /* softer */
     /* -0.5 / -1.0 : -0.5 */
     /* 0.0 / -1.0 : -1.0 */
     voldiff = targetmax - maxvol;
-fprintf (stderr, "softer-max: t-max: %.2f max:%.2f d:%.2f\n", targetmax, maxvol, voldiff);
+    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: max-high: voldiff: %.2f", voldiff);
   }
   if (meanvol > targetvol && maxvol < targetmax) {
     /* softer */
     voldiff = meanvol - targetvol;
-fprintf (stderr, "softer-mean: m:%.2f t:%.2f d:%.2f\n", meanvol, targetvol, voldiff);
+    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mean-high: voldiff: %.2f", voldiff);
   }
   if (meanvol < targetvol && maxvol < targetmax) {
     /* louder */
-    voldiff = - maxvol;
-fprintf (stderr, "louder-max: max:%.2f d:%.2f\n", maxvol, voldiff);
+    voldiff = (- maxvol) + targetmax;
+    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mean-low: max-low: voldiff: %.2f", voldiff);
   }
 
   snprintf (ffargs, sizeof (ffargs), "volume=%.3fdB", voldiff);
