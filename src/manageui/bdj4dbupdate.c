@@ -82,6 +82,7 @@ enum {
   C_FILE_COUNT,
   C_FILE_PROC,
   C_FILE_SKIPPED,
+  C_KNOWN_SKIP,
   C_FILE_SENT,
   C_FILE_RCV,
   C_IN_DB,
@@ -452,7 +453,7 @@ dbupdateProcessing (void *udata)
       }
       if (pathInfoExtCheck (pi, BDJ4_GENERIC_ORIG_EXT) ||
           pathInfoExtCheck (pi, bdjvarsGetStr (BDJV_ORIGINAL_EXT))) {
-        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+        dbupdateIncCount (dbupdate, C_KNOWN_SKIP);
         dbupdateIncCount (dbupdate, C_ORIG_SKIP);
         logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-orig");
         pathInfoFree (pi);
@@ -460,7 +461,7 @@ dbupdateProcessing (void *udata)
       }
       if (strncmp (pi->filename, bdjvarsGetStr (BDJV_DELETE_PFX),
           bdjvarsGetNum (BDJVL_DELETE_PFX_LEN)) == 0) {
-        dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
+        dbupdateIncCount (dbupdate, C_KNOWN_SKIP);
         dbupdateIncCount (dbupdate, C_DEL_SKIP);
         logMsg (LOG_DBG, LOG_DBUPDATE, "  skip-del");
         pathInfoFree (pi);
@@ -529,14 +530,17 @@ dbupdateProcessing (void *udata)
 
   if (dbupdate->state == DB_UPD_SEND ||
       dbupdate->state == DB_UPD_PROCESS) {
+    dbidx_t   tcount;
+
     dbupdateOutputProgress (dbupdate);
+    tcount = dbupdate->counts [C_FILE_PROC] + dbupdate->counts [C_FILE_SKIPPED] +
+        dbupdate->counts [C_KNOWN_SKIP];
     logMsg (LOG_DBG, LOG_DBUPDATE, "progress: %u+%u(%u) >= %u",
         dbupdate->counts [C_FILE_PROC],
-        dbupdate->counts [C_FILE_SKIPPED],
-        dbupdate->counts [C_FILE_PROC] + dbupdate->counts [C_FILE_SKIPPED],
+        dbupdate->counts [C_FILE_SKIPPED] + dbupdate->counts [C_KNOWN_SKIP],
+        tcount,
         dbupdate->counts [C_FILE_COUNT]);
-    if (dbupdate->counts [C_FILE_PROC] + dbupdate->counts [C_FILE_SKIPPED] >=
-        dbupdate->counts [C_FILE_COUNT]) {
+    if (tcount >= dbupdate->counts [C_FILE_COUNT]) {
       logMsg (LOG_DBG, LOG_DBUPDATE, "  done");
       dbupdate->state = DB_UPD_FINISH;
       if (dbupdate->cli) {
@@ -621,22 +625,23 @@ dbupdateProcessing (void *udata)
 
     logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %"PRId64" ms stop-req: %d",
         (int64_t) mstimeend (&dbupdate->starttm), dbupdate->stoprequest);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "    found: %u", dbupdate->counts [C_FILE_COUNT]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %u", dbupdate->counts [C_FILE_SKIPPED]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "     sent: %u", dbupdate->counts [C_FILE_SENT]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "processed: %u", dbupdate->counts [C_FILE_PROC]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "    in-db: %u", dbupdate->counts [C_IN_DB]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %u", dbupdate->counts [C_NEW]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  updated: %u", dbupdate->counts [C_UPDATED]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "write-tag: %u", dbupdate->counts [C_WRITE_TAGS]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "      bad: %u", dbupdate->counts [C_BAD]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "     null: %u", dbupdate->counts [C_NULL_DATA]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  no tags: %u", dbupdate->counts [C_NO_TAGS]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "not-audio: %u", dbupdate->counts [C_NON_AUDIO]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "orig-skip: %u", dbupdate->counts [C_ORIG_SKIP]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, " del-skip: %u", dbupdate->counts [C_DEL_SKIP]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "  old-dir: %u", dbupdate->counts [C_BDJ_OLD_DIR]);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "max-write: %"PRIu64, (uint64_t) dbupdate->maxWriteLen);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "     found: %u", dbupdate->counts [C_FILE_COUNT]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "   skipped: %u", dbupdate->counts [C_FILE_SKIPPED]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "known-skip: %u", dbupdate->counts [C_KNOWN_SKIP]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "      sent: %u", dbupdate->counts [C_FILE_SENT]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, " processed: %u", dbupdate->counts [C_FILE_PROC]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "     in-db: %u", dbupdate->counts [C_IN_DB]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "       new: %u", dbupdate->counts [C_NEW]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "   updated: %u", dbupdate->counts [C_UPDATED]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, " write-tag: %u", dbupdate->counts [C_WRITE_TAGS]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "       bad: %u", dbupdate->counts [C_BAD]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "      null: %u", dbupdate->counts [C_NULL_DATA]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "   no tags: %u", dbupdate->counts [C_NO_TAGS]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, " not-audio: %u", dbupdate->counts [C_NON_AUDIO]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, " orig-skip: %u", dbupdate->counts [C_ORIG_SKIP]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "  del-skip: %u", dbupdate->counts [C_DEL_SKIP]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "   old-dir: %u", dbupdate->counts [C_BDJ_OLD_DIR]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, " max-write: %"PRIu64, (uint64_t) dbupdate->maxWriteLen);
 
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_PROGRESS, "END");
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_FINISH, NULL);
@@ -1076,7 +1081,8 @@ dbupdateOutputProgress (dbupdate_t *dbupdate)
 
   /* files processed / filecount */
   dval = ((double) dbupdate->counts [C_FILE_PROC] +
-      (double) dbupdate->counts [C_FILE_SKIPPED]) /
+      (double) dbupdate->counts [C_FILE_SKIPPED] +
+      (double) dbupdate->counts [C_KNOWN_SKIP]) /
       (double) dbupdate->counts [C_FILE_COUNT];
   snprintf (tbuff, sizeof (tbuff), "PROG %.2f", dval);
   if (dbupdate->cli) {

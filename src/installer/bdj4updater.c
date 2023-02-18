@@ -415,7 +415,8 @@ main (int argc, char *argv [])
   {
     /* 4.1.0 2023-1-5 audioadjust.txt */
     updaterCopyIfNotPresent (AUDIOADJ_FN, BDJ4_CONFIG_EXT);
-    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, 2);
+    /* 4.1.1 2023-2-18 (version number bump) audioadjust.txt */
+    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, 3);
   }
 
   {

@@ -36,11 +36,6 @@
 #include "tmutil.h"
 
 enum {
-  AA_INPUT_I,
-  AA_INPUT_TP,
-  AA_INPUT_LRA,
-  AA_INPUT_THRESH,
-  AA_TARGET_OFFSET,
   AA_NONE,
   AA_NORM_IN_MAX,
 };
@@ -48,7 +43,7 @@ enum {
 enum {
   /* ffmpeg output progress lines */
   /* also, if there are errors in the audio file, the output can be long */
-  AA_RESP_BUFF_SZ = 60000,
+  AA_RESP_BUFF_SZ = 300000,
 };
 
 typedef struct aa {
@@ -57,16 +52,14 @@ typedef struct aa {
 } aa_t;
 
 static datafilekey_t aadfkeys [AA_KEY_MAX] = {
-  { "LOUDNORM_TARGET_IL",     AA_LOUDNORM_TARGET_IL,  VALUE_DOUBLE, NULL, -1 },
-  { "LOUDNORM_TARGET_LRA",    AA_LOUDNORM_TARGET_LRA, VALUE_DOUBLE, NULL, -1 },
-  { "LOUDNORM_TARGET_TP",     AA_LOUDNORM_TARGET_TP,  VALUE_DOUBLE, NULL, -1 },
+  { "NORMVOL_MAX",            AA_NORMVOL_MAX,         VALUE_DOUBLE, NULL, -1 },
+  { "NORMVOL_TARGET",         AA_NORMVOL_TARGET,      VALUE_DOUBLE, NULL, -1 },
   { "TRIMSILENCE_PERIOD",     AA_TRIMSILENCE_PERIOD,  VALUE_NUM,    NULL, -1 },
   { "TRIMSILENCE_START",      AA_TRIMSILENCE_START,   VALUE_DOUBLE, NULL, -1 },
   { "TRIMSILENCE_THRESHOLD",  AA_TRIMSILENCE_THRESHOLD, VALUE_NUM,  NULL, -1 },
 };
 
 static long aaApplySpeed (song_t *song, const char *infn, const char *outfn, int speed, int gap);
-static void aaRepair (const char *infn, const char *outfn);
 static void aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx, const char *infn, const char *songfn);
 static long aaParseDuration (const char *resp);
 
@@ -175,19 +168,6 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
   /* the adjust flags must be reset, as the user may have selected */
   /* different settings */
   songSetNum (song, TAG_ADJUSTFLAGS, SONG_ADJUST_NONE);
-
-  if (aaflags == SONG_ADJUST_REPAIR) {
-    aaRepair (infn, fullfn);
-    if (fileopFileExists (fullfn)) {
-      aaRestoreTags (musicdb, song, dbidx, origfn, songfn);
-      fileopDelete (origfn);
-      changed = true;
-    } else {
-      filemanipMove (origfn, fullfn);
-    }
-    /* when repairing, no other processing is done */
-    return changed;
-  }
 
   /* trim silence is done first */
   if ((aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
@@ -341,21 +321,18 @@ aaNormalize (const char *infn, const char *outfn)
   int         rc;
   size_t      retsz;
   char        *p;
-  char        *tokstr;
   int         incount = 0;
-  int         inidx = AA_NONE;
-  double      indata [AA_NORM_IN_MAX];
-  bool        found = false;
   mstime_t    etm;
+  double      meanvol = -9.0;
+  double      maxvol = 0.0;
+  double      voldiff;
+  double      targetvol;
+  double      targetmax;
 
   mstimestart (&etm);
   aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
 
-  snprintf (ffargs, sizeof (ffargs),
-      "loudnorm=I=%.3f:LRA=%.3f:tp=%.3f:print_format=json",
-      nlistGetDouble (aa->values, AA_LOUDNORM_TARGET_IL),
-      nlistGetDouble (aa->values, AA_LOUDNORM_TARGET_LRA),
-      nlistGetDouble (aa->values, AA_LOUDNORM_TARGET_TP));
+  snprintf (ffargs, sizeof (ffargs), "volumedetect");
 
   targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
   targv [targc++] = "-hide_banner";
@@ -392,62 +369,38 @@ aaNormalize (const char *infn, const char *outfn)
   }
 
 /*
- * {
- *         "input_i" : "-21.65",
- *         "input_tp" : "-4.83",
- *         "input_lra" : "6.80",
- *         "input_thresh" : "-31.82",
- *         "output_i" : "-22.02",
- *         "output_tp" : "-5.83",
- *         "output_lra" : "5.30",
- *         "output_thresh" : "-32.15",
- *         "normalization_type" : "dynamic",
- *         "target_offset" : "-0.98"
- * }
+ * [Parsed_volumedetect_0 @ 0x56397203a5c0] mean_volume: -17.8 dB
+ * [Parsed_volumedetect_0 @ 0x56397203a5c0] max_volume: -1.4 dB
  */
 
   incount = 0;
-  found = false;
 
-  p = strstr (resp, "{");
+  p = strstr (resp, "mean_volume:");
   if (p == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, no data");
     dataFree (resp);
     return;
   }
-  p = strtok_r (p, "\": ,", &tokstr);
-  while (p != NULL) {
-    if (found) {
-      indata [inidx] = atof (p);
-      found = false;
-      inidx = AA_NONE;
+  if (p != NULL) {
+    if (sscanf (p, "mean_volume: %lf dB", &meanvol) == 1) {
+fprintf (stderr, "mean: %.2f\n", meanvol);
       ++incount;
     }
-
-    if (strcmp (p, "input_i") == 0) {
-      found = true;
-      inidx = AA_INPUT_I;
+  }
+  p = strstr (p, "max_volume:");
+  if (p == NULL) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, no data");
+    dataFree (resp);
+    return;
+  }
+  if (p != NULL) {
+    if (sscanf (p, "max_volume: %lf dB", &maxvol) == 1) {
+fprintf (stderr, "max: %.2f\n", maxvol);
+      ++incount;
     }
-    if (strcmp (p, "input_tp") == 0) {
-      found = true;
-      inidx = AA_INPUT_TP;
-    }
-    if (strcmp (p, "input_lra") == 0) {
-      found = true;
-      inidx = AA_INPUT_LRA;
-    }
-    if (strcmp (p, "input_thresh") == 0) {
-      found = true;
-      inidx = AA_INPUT_THRESH;
-    }
-    if (strcmp (p, "target_offset") == 0) {
-      found = true;
-      inidx = AA_TARGET_OFFSET;
-    }
-    p = strtok_r (NULL, "\": ,", &tokstr);
   }
 
-  if (incount != 5) {
+  if (incount != 2) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, could not find input data");
     dataFree (resp);
     return;
@@ -457,16 +410,31 @@ aaNormalize (const char *infn, const char *outfn)
 
   /* now do the normalization */
 
-  snprintf (ffargs, sizeof (ffargs),
-      "loudnorm=print_format=summary:linear=true:"
-      "I=%.3f:LRA=%.3f:tp=%.3f:"
-      "measured_I=%.3f:measured_LRA=%.3f:measured_tp=%.3f"
-      ":measured_thresh=%.3f:offset=%.3f",
-      nlistGetDouble (aa->values, AA_LOUDNORM_TARGET_IL),
-      nlistGetDouble (aa->values, AA_LOUDNORM_TARGET_LRA),
-      nlistGetDouble (aa->values, AA_LOUDNORM_TARGET_TP),
-      indata [AA_INPUT_I], indata [AA_INPUT_LRA], indata [AA_INPUT_TP],
-      indata [AA_INPUT_THRESH], indata [AA_TARGET_OFFSET]);
+  targetvol = nlistGetDouble (aa->values, AA_NORMVOL_TARGET);
+fprintf (stderr, "targetvol: %.2f\n", targetvol);
+  targetmax= nlistGetDouble (aa->values, AA_NORMVOL_MAX);
+fprintf (stderr, "targetmax: %.2f\n", targetmax);
+
+fprintf (stderr, "mean:%.2f > t:%.2f %d\n", meanvol, targetvol, meanvol > targetvol);
+  if (maxvol > targetmax) {
+    /* softer */
+    /* -0.5 / -1.0 : -0.5 */
+    /* 0.0 / -1.0 : -1.0 */
+    voldiff = targetmax - maxvol;
+fprintf (stderr, "softer-max: t-max: %.2f max:%.2f d:%.2f\n", targetmax, maxvol, voldiff);
+  }
+  if (meanvol > targetvol && maxvol < targetmax) {
+    /* softer */
+    voldiff = meanvol - targetvol;
+fprintf (stderr, "softer-mean: m:%.2f t:%.2f d:%.2f\n", meanvol, targetvol, voldiff);
+  }
+  if (meanvol < targetvol && maxvol < targetmax) {
+    /* louder */
+    voldiff = - maxvol;
+fprintf (stderr, "louder-max: max:%.2f d:%.2f\n", maxvol, voldiff);
+  }
+
+  snprintf (ffargs, sizeof (ffargs), "volume=%.3fdB", voldiff);
 
   targc = 0;
   targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
@@ -736,47 +704,6 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
 
   dataFree (resp);
   return newdur;
-}
-
-static void
-aaRepair (const char *infn, const char *outfn)
-{
-  const char  *targv [30];
-  int         targc = 0;
-  int         rc;
-
-
-  targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
-  targv [targc++] = "-hide_banner";
-  targv [targc++] = "-y";
-  targv [targc++] = "-vn";
-  targv [targc++] = "-dn";
-  targv [targc++] = "-sn";
-  /* don't want to see the output */
-  targv [targc++] = "-loglevel";
-  targv [targc++] = "quiet";
-  targv [targc++] = "-i";
-  targv [targc++] = infn;
-  targv [targc++] = "-q:a";
-  targv [targc++] = "0";
-  targv [targc++] = outfn;
-  targv [targc++] = NULL;
-
-  /* as the response may be too long to process, ignore it */
-  rc = osProcessStart (targv, OS_PROC_WAIT | OS_PROC_DETACH, NULL, NULL);
-  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
-    char  cmd [1000];
-
-    *cmd = '\0';
-    for (int i = 0; i < targc - 1; ++i) {
-      strlcat (cmd, targv [i], sizeof (cmd));;
-      strlcat (cmd, " ", sizeof (cmd));;
-    }
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-repair: cmd: %s", cmd);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-repair: rc: %d", rc);
-  }
-
-  return;
 }
 
 static void
