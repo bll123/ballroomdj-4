@@ -4,6 +4,7 @@
 #ifndef INC_UIFAVORITE_H
 #define INC_UIFAVORITE_H
 
+#include "callback.h"
 #include "musicdb.h"
 #include "ui.h"
 
@@ -15,5 +16,6 @@ int uifavoriteGetValue (uifavorite_t *uifavorite);
 void uifavoriteSetValue (uifavorite_t *uifavorite, int value);
 void uifavoriteDisable (uifavorite_t *uifavorite);
 void uifavoriteEnable (uifavorite_t *uifavorite);
+void uifavoriteSetChangedCallback (uifavorite_t *uifavorite, callback_t *cb);
 
 #endif /* INC_UIFAVORITE_H */

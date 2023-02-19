@@ -11,6 +11,7 @@
 * Bug Fixes:
     * Apply Adjustments: Fixed a crash when processing audio files.
     * Apply Adjustments: New method for normalizing volume.
+    * Song Editor: Fix changed detection for status, favorite.
 
 -->
 

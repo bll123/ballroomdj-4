@@ -122,6 +122,12 @@ uistatusSizeGroupAdd (uistatus_t *uistatus, UIWidget *sg)
   uiSizeGroupAdd (sg, uiSpinboxGetUIWidget (uistatus->spinbox));
 }
 
+void
+uistatusSetChangedCallback (uistatus_t *uistatus, callback_t *cb)
+{
+  uiSpinboxTextSetValueChangedCallback (uistatus->spinbox, cb);
+}
+
 /* internal routines */
 
 static const char *

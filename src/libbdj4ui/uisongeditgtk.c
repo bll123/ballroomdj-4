@@ -917,6 +917,8 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
       if (tagkey == TAG_FAVORITE) {
         uiw->items [uiw->itemcount].uifavorite =
             uifavoriteSpinboxCreate (hbox);
+        uifavoriteSetChangedCallback (uiw->items [uiw->itemcount].uifavorite,
+            uiw->callbacks [UISONGEDIT_CB_CHANGED]);
       }
       if (tagkey == TAG_DANCELEVEL) {
         uiw->items [uiw->itemcount].uilevel =
@@ -936,6 +938,8 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
         uiw->items [uiw->itemcount].uistatus =
             uistatusSpinboxCreate (hbox, FALSE);
         uistatusSizeGroupAdd (uiw->items [uiw->itemcount].uistatus, &uiw->sgsbtext);
+        uistatusSetChangedCallback (uiw->items [uiw->itemcount].uistatus,
+            uiw->callbacks [UISONGEDIT_CB_CHANGED]);
       }
       break;
     }
