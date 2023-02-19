@@ -15,10 +15,15 @@
 #include <gtk/gtk.h>
 
 #include "bdj4intl.h"
+#include "callback.h"
 #include "mdebug.h"
 #include "tmutil.h"
-#include "ui.h"
-#include "callback.h"
+#include "uiclass.h"
+
+#include "ui/uikeys.h"
+#include "ui/uiui.h"
+#include "ui/uiwidget.h"
+#include "ui/uispinbox.h"
 
 typedef struct uispinbox {
   int             sbtype;

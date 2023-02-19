@@ -14,10 +14,15 @@
 
 #include <gtk/gtk.h>
 
+#include "callback.h"
 #include "mdebug.h"
 #include "tagdef.h"
-#include "ui.h"
-#include "callback.h"
+#include "uiclass.h"
+
+#include "ui/uibox.h"
+#include "ui/uitreeview.h"
+#include "ui/uiui.h"
+#include "ui/uiwidget.h"
 
 static GType * uiAppendType (GType *types, int ncol, int type);
 static void uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);

@@ -13,7 +13,12 @@
 #include <gtk/gtk.h>
 
 #include "mdebug.h"
-#include "ui.h"
+#include "uiclass.h"
+
+#include "ui/uiui.h"
+#include "ui/uibox.h"
+#include "ui/uiwidget.h"
+#include "ui/uichgind.h"
 
 typedef struct uichgind {
   UIWidget    label;

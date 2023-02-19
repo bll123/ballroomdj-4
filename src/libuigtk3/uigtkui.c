@@ -23,7 +23,9 @@
 #include "mdebug.h"
 #include "sysvars.h"
 #include "tmutil.h"
-#include "ui.h"
+#include "uiclass.h"
+
+#include "ui/uiui.h"
 
 static char **cssdata = NULL;
 static int  csscount = 0;

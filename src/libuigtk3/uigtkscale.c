@@ -14,8 +14,10 @@
 
 #include <gtk/gtk.h>
 
-#include "ui.h"
 #include "callback.h"
+
+#include "ui/uiwidget.h"
+#include "ui/uiscale.h"
 
 static gboolean uiScaleChangeValueHandler (GtkRange *range, GtkScrollType scroll, gdouble value, gpointer udata);
 

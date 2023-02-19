@@ -13,10 +13,14 @@
 #include <math.h>
 
 #include "bdj4.h"
+#include "callback.h"
 #include "mdebug.h"
 #include "pathbld.h"
-#include "ui.h"
-#include "callback.h"
+#include "uiclass.h"
+
+#include "ui/uiui.h"
+#include "ui/uiwidget.h"
+#include "ui/uiswitch.h"
 
 typedef struct uiswitch {
   UIWidget    uiswitch;

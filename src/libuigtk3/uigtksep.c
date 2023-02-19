@@ -12,7 +12,9 @@
 
 #include <gtk/gtk.h>
 
-#include "ui.h"
+#include "ui/uiui.h"
+#include "ui/uiwidget.h"
+#include "ui/uisep.h"
 
 void
 uiCreateHorizSeparator (UIWidget *uiwidget)

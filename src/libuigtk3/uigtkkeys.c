@@ -15,8 +15,9 @@
 #include <gtk/gtk.h>
 
 #include "mdebug.h"
-#include "ui.h"
 #include "callback.h"
+
+#include "ui/uikeys.h"
 
 enum {
   KEY_EVENT_NONE,

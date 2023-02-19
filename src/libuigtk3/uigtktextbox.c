@@ -15,7 +15,13 @@
 #include <gtk/gtk.h>
 
 #include "mdebug.h"
-#include "ui.h"
+#include "uiclass.h"
+
+#include "ui/uibox.h"
+#include "ui/uitextbox.h"
+#include "ui/uiui.h"
+#include "ui/uiwidget.h"
+#include "ui/uiwindow.h"
 
 typedef struct uitextbox {
   UIWidget      scw;

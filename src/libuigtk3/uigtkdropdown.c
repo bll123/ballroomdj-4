@@ -16,9 +16,19 @@
 
 #include "bdj4.h"
 #include "bdjstring.h"
-#include "mdebug.h"
-#include "ui.h"
 #include "callback.h"
+#include "ilist.h"
+#include "mdebug.h"
+#include "nlist.h"
+#include "slist.h"
+
+#include "ui/uibox.h"
+#include "ui/uibutton.h"
+#include "ui/uidialog.h"
+#include "ui/uidropdown.h"
+#include "ui/uitreeview.h"
+#include "ui/uiwidget.h"
+#include "ui/uiwindow.h"
 
 enum {
   UIUTILS_DROPDOWN_COL_IDX,

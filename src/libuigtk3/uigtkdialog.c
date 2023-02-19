@@ -18,8 +18,9 @@
 #include "bdj4intl.h"
 #include "fileop.h"
 #include "mdebug.h"
-#include "ui.h"
 #include "callback.h"
+
+#include "ui/uidialog.h"
 
 typedef struct uiselect {
   UIWidget    *window;

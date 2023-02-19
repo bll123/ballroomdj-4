@@ -10,7 +10,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "ui.h"
+#include "ui/uigeneral.h"
 
 void
 uiutilsUIWidgetInit (UIWidget *uiwidget)

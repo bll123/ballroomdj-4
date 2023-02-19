@@ -13,7 +13,7 @@
 
 #include <gtk/gtk.h>
 
-#include "ui.h"
+#include "ui/uimiscbutton.h"
 
 void
 uiCreateFontButton (UIWidget *uiwidget, const char *fontname)

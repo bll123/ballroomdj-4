@@ -12,7 +12,8 @@
 
 #include <gtk/gtk.h>
 
-#include "ui.h"
+#include "ui/uiui.h"
+#include "ui/uilabel.h"
 
 void
 uiCreateLabel (UIWidget *uiwidget, const char *label)

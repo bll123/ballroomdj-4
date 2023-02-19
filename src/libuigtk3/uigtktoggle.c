@@ -12,8 +12,9 @@
 
 #include <gtk/gtk.h>
 
-#include "ui.h"
 #include "callback.h"
+#include "ui/uiui.h"
+#include "ui/uitoggle.h"
 
 static void uiToggleButtonToggleHandler (GtkButton *b, gpointer udata);
 

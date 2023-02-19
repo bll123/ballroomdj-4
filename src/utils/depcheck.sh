@@ -24,8 +24,8 @@ grc=0
 # a) check to make sure the include files can be compiled w/o dependencies
 echo "## checking include file compilation"
 test -f $INCTOUT && rm -f $INCTOUT
-for fn in include/*.h; do
-  bfn=$(basename $fn)
+for fn in include/*.h include/ui/*.h; do
+  bfn=$(echo $fn | sed 's,include/,,')
   cat > $INCTC << _HERE_
 #include "config.h"
 
@@ -67,7 +67,7 @@ rm -f $INCTOUT
 # b) check the include file hierarchy for problems.
 echo "## checking include file hierarchy"
 > $TIN
-for fn in */*.c */*.h build/config.h; do
+for fn in */*.c */*.h */ui/*.h build/config.h; do
   echo $fn $fn >> $TIN
   grep -E '^#include "' $fn |
       sed -e 's,^#include ",,' \

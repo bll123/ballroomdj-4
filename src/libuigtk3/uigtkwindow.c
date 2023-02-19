@@ -17,8 +17,11 @@
 # include <gdk/gdkx.h>
 #endif
 
-#include "ui.h"
 #include "callback.h"
+
+#include "ui/uiui.h"
+#include "ui/uiwidget.h"
+#include "ui/uiwindow.h"
 
 static gboolean uiWindowFocusOutCallback (GtkWidget *w, GdkEventFocus *event, gpointer udata);
 static gboolean uiWindowCloseCallback (GtkWidget *window, GdkEvent *event, gpointer udata);
