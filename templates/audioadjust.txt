@@ -15,9 +15,9 @@ TRIMSILENCE_THRESHOLD
 #
 # normalize volume
 #
-# normvol-target : double (-9.0)
+# normvol-target : double (-10.0)
 # normvol-max : double (-1.0)
 NORMVOL_TARGET
-..-9000
+..-10000
 NORMVOL_MAX
 ..-1000

@@ -62,6 +62,7 @@ static datafilekey_t aadfkeys [AA_KEY_MAX] = {
 static long aaApplySpeed (song_t *song, const char *infn, const char *outfn, int speed, int gap);
 static void aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx, const char *infn, const char *songfn);
 static long aaParseDuration (const char *resp);
+static int  aaRunCommand (const char *tag, const char *targv [], int targc, char *resp, size_t *retsz);
 
 aa_t *
 aaAlloc (void)
@@ -286,20 +287,8 @@ aaTrimSilence (const char *infn, const char *outfn)
   targv [targc++] = NULL;
 
   resp = mdmalloc (AA_RESP_BUFF_SZ);
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, &retsz);
-  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
-    char  cmd [1000];
-
-    *cmd = '\0';
-    for (int i = 0; i < targc - 1; ++i) {
-      strlcat (cmd, targv [i], sizeof (cmd));;
-      strlcat (cmd, " ", sizeof (cmd));;
-    }
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-trim: cmd: %s", cmd);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-trim: rc: %d", rc);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-trim: resp: %s", resp);
-  }
-  logMsg (LOG_DBG, LOG_MAIN, "aa: trim: elapsed: %ld",
+  rc = aaRunCommand ("aa-trim", targv, targc, resp, &retsz);
+  logMsg (LOG_DBG, LOG_MAIN, "aa-trim: elapsed: %ld",
       (long) mstimeend (&etm));
 
   if (rc == 0) {
@@ -317,13 +306,13 @@ aaNormalize (const char *infn, const char *outfn)
   const char  *targv [40];
   int         targc = 0;
   char        ffargs [300];
-  char        *resp;
   int         rc;
+  char        *resp;
   size_t      retsz;
   char        *p;
   int         incount = 0;
   mstime_t    etm;
-  double      meanvol = -9.0;
+  double      measuredi = -9.0;
   double      maxvol = 0.0;
   double      voldiff;
   double      targetvol;
@@ -350,23 +339,7 @@ aaNormalize (const char *infn, const char *outfn)
   targv [targc++] = NULL;
 
   resp = mdmalloc (AA_RESP_BUFF_SZ);
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, &retsz);
-  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
-    char  cmd [1000];
-
-    *cmd = '\0';
-    for (int i = 0; i < targc - 1; ++i) {
-      strlcat (cmd, targv [i], sizeof (cmd));;
-      strlcat (cmd, " ", sizeof (cmd));;
-    }
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: cmd: %s", cmd);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: rc: %d", rc);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: resp: %s", resp);
-    if (rc != 0) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-a: pass one had errors.");
-      /* even though the audio file has errors, still try to process it */
-    }
-  }
+  rc = aaRunCommand ("aa-norm-vd", targv, targc, resp, &retsz);
 
 /*
  * [Parsed_volumedetect_0 @ 0x56397203a5c0] mean_volume: -17.8 dB
@@ -375,20 +348,9 @@ aaNormalize (const char *infn, const char *outfn)
 
   incount = 0;
 
-  p = strstr (resp, "mean_volume:");
+  p = strstr (resp, "max_volume:");
   if (p == NULL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, no data");
-    dataFree (resp);
-    return;
-  }
-  if (p != NULL) {
-    if (sscanf (p, "mean_volume: %lf dB", &meanvol) == 1) {
-      ++incount;
-    }
-  }
-  p = strstr (p, "max_volume:");
-  if (p == NULL) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, no data");
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-vd: failed, no data");
     dataFree (resp);
     return;
   }
@@ -398,37 +360,123 @@ aaNormalize (const char *infn, const char *outfn)
     }
   }
 
-  if (incount != 2) {
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm: failed, could not find input data");
+  if (incount != 1) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-vd: failed, could not find input data");
     dataFree (resp);
     return;
   }
-  logMsg (LOG_DBG, LOG_MAIN, "aa: norm: elapsed pass 1: %ld",
+  logMsg (LOG_DBG, LOG_MAIN, "aa-norm-vd: elapsed: %ld",
       (long) mstimeend (&etm));
+
+  /* run the loudness normalization first pass to get the input */
+  /* perceived volume */
+
+  /* the passed arguments do not affect the measured values */
+  snprintf (ffargs, sizeof (ffargs),
+      "loudnorm=I=-23:LRA=11:tp=0.0:print_format=json");
+  targc = 0;
+  targv [targc++] = sysvarsGetStr (SV_PATH_FFMPEG);
+  targv [targc++] = "-hide_banner";
+  targv [targc++] = "-y";
+  targv [targc++] = "-vn";
+  targv [targc++] = "-dn";
+  targv [targc++] = "-sn";
+  targv [targc++] = "-i";
+  targv [targc++] = infn;
+  targv [targc++] = "-af";
+  targv [targc++] = ffargs;
+  targv [targc++] = "-f";
+  targv [targc++] = "null";
+  targv [targc++] = "-";
+  targv [targc++] = NULL;
+
+  rc = aaRunCommand ("aa-norm-ln", targv, targc, resp, &retsz);
+  logMsg (LOG_DBG, LOG_MAIN, "aa-norm-ln: elapsed: %ld",
+      (long) mstimeend (&etm));
+
+/*
+ * {
+ *         "input_i" : "-21.65",
+ *         "input_tp" : "-4.83",
+ *         "input_lra" : "6.80",
+ *         "input_thresh" : "-31.82",
+ *         "output_i" : "-22.02",
+ *         "output_tp" : "-5.83",
+ *         "output_lra" : "5.30",
+ *         "output_thresh" : "-32.15",
+ *         "normalization_type" : "dynamic",
+ *         "target_offset" : "-0.98"
+ * }
+ */
+
+  incount = 0;
+
+  p = strstr (resp, "{");
+  if (p == NULL) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-ln: failed, no data");
+    dataFree (resp);
+    return;
+  }
+  p = strstr (p, "input_i");
+  if (p == NULL) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-ln: failed, no data");
+    dataFree (resp);
+    return;
+  }
+  p = strstr (p, ": \"");
+  if (p == NULL) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-ln: failed, no data");
+    dataFree (resp);
+    return;
+  }
+  p += 3;
+  measuredi = atof (p);
 
   /* now do the normalization */
 
   targetvol = nlistGetDouble (aa->values, AA_NORMVOL_TARGET);
   targetmax= nlistGetDouble (aa->values, AA_NORMVOL_MAX);
-  logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mean volume: %.2f", meanvol);
   logMsg (LOG_DBG, LOG_MAIN, "aa-norm: max volume: %.2f", maxvol);
+  logMsg (LOG_DBG, LOG_MAIN, "aa-norm: measured I: %.2f", measuredi);
 
-  if (maxvol > targetmax) {
+  /* there are various situations to handle */
+  /*
+   * measuredi > targetvol (too loud)
+   *    lower by the diff
+   * measuredi < targetvol (too soft)
+   *    raise by diff of max or diff of vol, whichever is lower
+   *    if the resulting target volume is still on the low side,
+   *    try using 0 dB as the target maximum.
+   */
+
+  if (measuredi > targetvol) {
     /* softer */
-    /* -0.5 / -1.0 : -0.5 */
-    /* 0.0 / -1.0 : -1.0 */
-    voldiff = targetmax - maxvol;
-    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: max-high: voldiff: %.2f", voldiff);
+    /* - -9 + -10 = -1 lower by 1 dB */
+    voldiff = (- measuredi) + targetvol;
+    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mi-high: voldiff: %.2f (softer)", voldiff);
   }
-  if (meanvol > targetvol && maxvol < targetmax) {
-    /* softer */
-    voldiff = meanvol - targetvol;
-    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mean-high: voldiff: %.2f", voldiff);
-  }
-  if (meanvol < targetvol && maxvol < targetmax) {
+  if (measuredi < targetvol) {
+    double    dvol;
+    double    dmax;
+
     /* louder */
-    voldiff = (- maxvol) + targetmax;
-    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mean-low: max-low: voldiff: %.2f", voldiff);
+    dvol = (- measuredi) + targetvol;
+    dmax = (- maxvol) + targetmax;
+    voldiff = dmax < dvol ? dmax : dvol;
+    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mi-low: initial: dmax:%.2f dvol:%2.f (louder)", dmax, dvol);
+    /* -15 - -1 : -16 */
+    if (measuredi - voldiff < targetvol) {
+      dmax = (- maxvol);
+      voldiff = dmax < dvol ? dmax : dvol;
+      logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mi-low: second: dmax:%.2f dvol:%2.f (louder)", dmax, dvol);
+    }
+    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mi-low: voldiff: %.2f (louder)", voldiff);
+  }
+
+  if (voldiff > -0.05 && voldiff < 0.05) {
+    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: not worth processing.");
+    dataFree (resp);
+    return;
   }
 
   snprintf (ffargs, sizeof (ffargs), "volume=%.3fdB", voldiff);
@@ -449,20 +497,8 @@ aaNormalize (const char *infn, const char *outfn)
   targv [targc++] = outfn;
   targv [targc++] = NULL;
 
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, &retsz);
-  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
-    char  cmd [1000];
-
-    *cmd = '\0';
-    for (int i = 0; i < targc - 1; ++i) {
-      strlcat (cmd, targv [i], sizeof (cmd));;
-      strlcat (cmd, " ", sizeof (cmd));;
-    }
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-b: cmd: %s", cmd);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-b: rc: %d", rc);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-norm-b: resp: %s", resp);
-  }
-  logMsg (LOG_DBG, LOG_MAIN, "aa: norm: elapsed: %ld",
+  rc = aaRunCommand ("aa-norm-vol", targv, targc, resp, &retsz);
+  logMsg (LOG_DBG, LOG_MAIN, "aa-norm-vol: elapsed: %ld",
       (long) mstimeend (&etm));
   dataFree (resp);
   return;
@@ -595,19 +631,7 @@ aaAdjust (song_t *song, const char *infn, const char *outfn,
   targv [targc++] = NULL;
 
   resp = mdmalloc (AA_RESP_BUFF_SZ);
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, &retsz);
-  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
-    char  cmd [1000];
-
-    *cmd = '\0';
-    for (int i = 0; i < targc - 1; ++i) {
-      strlcat (cmd, targv [i], sizeof (cmd));;
-      strlcat (cmd, " ", sizeof (cmd));;
-    }
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-adjust: cmd: %s", cmd);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-adjust: rc: %d", rc);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-adjust: resp: %s", resp);
-  }
+  rc = aaRunCommand ("aa-adjust", targv, targc, resp, &retsz);
   logMsg (LOG_DBG, LOG_MAIN, "aa: adjust: elapsed: %ld",
       (long) mstimeend (&etm));
 
@@ -681,19 +705,7 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
   targv [targc++] = NULL;
 
   resp = mdmalloc (AA_RESP_BUFF_SZ);
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, &retsz);
-  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
-    char  cmd [1000];
-
-    *cmd = '\0';
-    for (int i = 0; i < targc - 1; ++i) {
-      strlcat (cmd, targv [i], sizeof (cmd));;
-      strlcat (cmd, " ", sizeof (cmd));;
-    }
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-spd: cmd: %s", cmd);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-spd: rc: %d", rc);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "aa-apply-spd: resp: %s", resp);
-  }
+  rc = aaRunCommand ("aa-adjust-spd", targv, targc, resp, &retsz);
 
   if (rc == 0) {
     newdur = aaParseDuration (resp);
@@ -761,4 +773,27 @@ aaParseDuration (const char *resp)
   }
 
   return newdur;
+}
+
+static int
+aaRunCommand (const char *tag, const char *targv [], int targc,
+    char *resp, size_t *retsz)
+{
+  int     rc;
+
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, retsz);
+  if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
+    char  cmd [1000];
+
+    *cmd = '\0';
+    for (int i = 0; i < targc - 1; ++i) {
+      strlcat (cmd, targv [i], sizeof (cmd));;
+      strlcat (cmd, " ", sizeof (cmd));;
+    }
+    logMsg (LOG_DBG, LOG_IMPORTANT, "%s: cmd: %s", tag, cmd);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "%s: rc: %d", tag, rc);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "%s: resp: %s", tag, resp);
+  }
+
+  return rc;
 }
