@@ -20,6 +20,7 @@
 #include "tmutil.h"
 #include "uiclass.h"
 
+#include "ui/uigeneral.h"
 #include "ui/uikeys.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"

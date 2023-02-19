@@ -21,6 +21,7 @@
 #include "pathutil.h"
 #include "tmutil.h"
 
+#include "ui/uigeneral.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 #include "ui/uientry.h"

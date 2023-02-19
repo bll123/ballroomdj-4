@@ -18,6 +18,7 @@
 #include "uiclass.h"
 
 #include "ui/uibox.h"
+#include "ui/uigeneral.h"
 #include "ui/uitextbox.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
