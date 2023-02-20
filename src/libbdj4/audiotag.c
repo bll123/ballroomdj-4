@@ -955,13 +955,12 @@ audiotagRunUpdate (const char *fn)
   int         targc = 0;
   int         rc;
   char        dbuff [4096];
-  size_t      retsz;
 
   targv [targc++] = sysvarsGetStr (SV_PATH_PYTHON);
   targv [targc++] = fn;
   targv [targc++] = NULL;
   /* the wait flag is on, the return code is the process return code */
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, dbuff, sizeof (dbuff), &retsz);
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, dbuff, sizeof (dbuff), NULL);
   if (rc == 0) {
     fileopDelete (fn);
   } else {

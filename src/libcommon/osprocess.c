@@ -158,19 +158,6 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 
   pid = tpid;
 
-  /* if there is no data return, can simply wait for the process to exit */
-  if (rbuff == NULL &&
-      (flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
-    int   rc, wstatus;
-
-    if (waitpid (pid, &wstatus, 0) < 0) {
-      rc = 0;
-      // fprintf (stderr, "waitpid: errno %d %s\n", errno, strerror (errno));
-    } else {
-      rc = osProcessWaitStatus (wstatus);
-    }
-  }
-
   if (rbuff != NULL) {
     int     rc, wstatus;
     ssize_t bytesread = 0;

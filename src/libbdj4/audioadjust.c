@@ -59,10 +59,10 @@ static datafilekey_t aadfkeys [AA_KEY_MAX] = {
   { "TRIMSILENCE_THRESHOLD",  AA_TRIMSILENCE_THRESHOLD, VALUE_NUM,  NULL, -1 },
 };
 
-static long aaApplySpeed (song_t *song, const char *infn, const char *outfn, int speed, int gap);
+static void aaApplySpeed (song_t *song, const char *infn, const char *outfn, int speed, int gap);
 static void aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx, const char *infn, const char *songfn);
-static long aaParseDuration (const char *resp);
-static int  aaRunCommand (const char *tag, const char *targv [], int targc, char *resp, size_t *retsz);
+static void aaSetDuration (musicdb_t *musicdb, song_t *song, const char *ffn);
+static int  aaProcess (const char *tag, const char *targv [], int targc, char *resp);
 
 aa_t *
 aaAlloc (void)
@@ -98,8 +98,6 @@ bool
 aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
 {
   song_t      *song;
-  long        dur;
-  long        newdur = -1;
   pathinfo_t  *pi;
   const char  *songfn;
   char        *infn;
@@ -112,8 +110,6 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
   if (song == NULL) {
     return changed;
   }
-
-  dur = songGetNum (song, TAG_DURATION);
 
   songfn = songGetStr (song, TAG_FILE);
   infn = songutilFullFileName (songfn);
@@ -172,52 +168,47 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
 
   /* trim silence is done first */
   if ((aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM) {
-    newdur = aaTrimSilence (infn, outfn);
+    aaTrimSilence (musicdb, dbidx, infn, outfn);
     if (fileopFileExists (outfn)) {
-      if (newdur > 1 && newdur != dur) {
-        long    adjflags;
+      long    adjflags;
 
-        filemanipMove (outfn, fullfn);
-        infn = fullfn;
-        songSetNum (song, TAG_DURATION, newdur);
-        adjflags = songGetNum (song, TAG_ADJUSTFLAGS);
-        adjflags |= SONG_ADJUST_TRIM;
-        songSetNum (song, TAG_ADJUSTFLAGS, adjflags);
-        changed = true;
-      } else {
-        fileopDelete (outfn);
-      }
+      filemanipMove (outfn, fullfn);
+      infn = fullfn;
+      adjflags = songGetNum (song, TAG_ADJUSTFLAGS);
+      adjflags |= SONG_ADJUST_TRIM;
+      songSetNum (song, TAG_ADJUSTFLAGS, adjflags);
+      changed = true;
+    } else {
+      fileopDelete (outfn);
     }
   }
+
   /* any adjustments to the song are made */
   if ((aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST) {
-    newdur = aaAdjust (song, infn, outfn, 0, 0, 0, 0);
+    aaAdjust (musicdb, song, infn, outfn, 0, 0, 0, 0);
     if (fileopFileExists (outfn)) {
-      if (newdur > 0) {
-        long    adjflags;
-        int     obpm, nbpm;
-        int     ospeed;
+      long    adjflags;
+      int     obpm, nbpm;
+      int     ospeed;
 
-        filemanipMove (outfn, fullfn);
-        infn = fullfn;
-        songSetNum (song, TAG_DURATION, newdur);
-        ospeed = songGetNum (song, TAG_SPEEDADJUSTMENT);
-        songSetNum (song, TAG_SPEEDADJUSTMENT, 0);
-        songSetNum (song, TAG_SONGSTART, 0);
-        songSetNum (song, TAG_SONGEND, 0);
-        obpm = songGetNum (song, TAG_BPM);
-        nbpm = 0;
-        if (obpm > 0 && ospeed > 0 && ospeed != 100) {
-          nbpm = songutilAdjustBPM (obpm, ospeed);
-          songSetNum (song, TAG_BPM, nbpm);
-        }
-        adjflags = songGetNum (song, TAG_ADJUSTFLAGS);
-        adjflags |= SONG_ADJUST_ADJUST;
-        songSetNum (song, TAG_ADJUSTFLAGS, adjflags);
-        changed = true;
-      } else {
-        fileopDelete (outfn);
+      filemanipMove (outfn, fullfn);
+      infn = fullfn;
+      ospeed = songGetNum (song, TAG_SPEEDADJUSTMENT);
+      songSetNum (song, TAG_SPEEDADJUSTMENT, 0);
+      songSetNum (song, TAG_SONGSTART, 0);
+      songSetNum (song, TAG_SONGEND, 0);
+      obpm = songGetNum (song, TAG_BPM);
+      nbpm = 0;
+      if (obpm > 0 && ospeed > 0 && ospeed != 100) {
+        nbpm = songutilAdjustBPM (obpm, ospeed);
+        songSetNum (song, TAG_BPM, nbpm);
       }
+      adjflags = songGetNum (song, TAG_ADJUSTFLAGS);
+      adjflags |= SONG_ADJUST_ADJUST;
+      songSetNum (song, TAG_ADJUSTFLAGS, adjflags);
+      changed = true;
+    } else {
+      fileopDelete (outfn);
     }
   }
 
@@ -244,18 +235,23 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
   return changed;
 }
 
-long
-aaTrimSilence (const char *infn, const char *outfn)
+void
+aaTrimSilence (musicdb_t *musicdb, dbidx_t dbidx,
+    const char *infn, const char *outfn)
 {
   aa_t        *aa;
   const char  *targv [40];
   int         targc = 0;
   char        ffargs [300];
-  char        *resp;
   int         rc;
-  size_t      retsz;
   mstime_t    etm;
-  long        newdur = -1;
+  song_t      *song = NULL;
+  char        *resp;
+
+  song = dbGetByIdx (musicdb, dbidx);
+  if (song == NULL) {
+    return;
+  }
 
   mstimestart (&etm);
   aa = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
@@ -287,16 +283,16 @@ aaTrimSilence (const char *infn, const char *outfn)
   targv [targc++] = NULL;
 
   resp = mdmalloc (AA_RESP_BUFF_SZ);
-  rc = aaRunCommand ("aa-trim", targv, targc, resp, &retsz);
+  rc = aaProcess ("aa-trim", targv, targc, resp);
   logMsg (LOG_DBG, LOG_MAIN, "aa-trim: elapsed: %ld",
       (long) mstimeend (&etm));
 
   if (rc == 0) {
-    newdur = aaParseDuration (resp);
+    aaSetDuration (musicdb, song, outfn);
   }
-  dataFree (resp);
 
-  return newdur;
+  dataFree (resp);
+  return;
 }
 
 void
@@ -306,15 +302,13 @@ aaNormalize (const char *infn, const char *outfn)
   const char  *targv [40];
   int         targc = 0;
   char        ffargs [300];
-  int         rc;
   char        *resp;
-  size_t      retsz;
   char        *p;
   int         incount = 0;
   mstime_t    etm;
   double      measuredi = -9.0;
   double      maxvol = 0.0;
-  double      voldiff;
+  double      voldiff = 0.0;
   double      targetvol;
   double      targetmax;
 
@@ -339,7 +333,7 @@ aaNormalize (const char *infn, const char *outfn)
   targv [targc++] = NULL;
 
   resp = mdmalloc (AA_RESP_BUFF_SZ);
-  rc = aaRunCommand ("aa-norm-vd", targv, targc, resp, &retsz);
+  aaProcess ("aa-norm-vd", targv, targc, resp);
 
 /*
  * [Parsed_volumedetect_0 @ 0x56397203a5c0] mean_volume: -17.8 dB
@@ -390,7 +384,7 @@ aaNormalize (const char *infn, const char *outfn)
   targv [targc++] = "-";
   targv [targc++] = NULL;
 
-  rc = aaRunCommand ("aa-norm-ln", targv, targc, resp, &retsz);
+  aaProcess ("aa-norm-ln", targv, targc, resp);
   logMsg (LOG_DBG, LOG_MAIN, "aa-norm-ln: elapsed: %ld",
       (long) mstimeend (&etm));
 
@@ -497,21 +491,21 @@ aaNormalize (const char *infn, const char *outfn)
   targv [targc++] = outfn;
   targv [targc++] = NULL;
 
-  rc = aaRunCommand ("aa-norm-vol", targv, targc, resp, &retsz);
+  aaProcess ("aa-norm-vol", targv, targc, resp);
   logMsg (LOG_DBG, LOG_MAIN, "aa-norm-vol: elapsed: %ld",
       (long) mstimeend (&etm));
   dataFree (resp);
   return;
 }
 
-long
-aaAdjust (song_t *song, const char *infn, const char *outfn,
+void
+aaAdjust (musicdb_t *musicdb, song_t *song,
+    const char *infn, const char *outfn,
     long dur, int fadein, int fadeout, int gap)
 {
   const char  *targv [40];
   int         targc = 0;
   char        aftext [500];
-  char        *resp;
   char        sstmp [60];
   char        durtmp [60];
   char        tmp [60];
@@ -520,13 +514,12 @@ aaAdjust (song_t *song, const char *infn, const char *outfn,
   long        songend;
   long        songdur;
   long        calcdur;
-  long        newdur = -1;
   int         speed;
   int         fadetype;
-  size_t      retsz;
   const char  *afprefix = "";
   const char  *ftstr = "tri";
   mstime_t    etm;
+  char        *resp;
 
   mstimestart (&etm);
   *aftext = '\0';
@@ -543,7 +536,7 @@ aaAdjust (song_t *song, const char *infn, const char *outfn,
   if (songstart <= 0 && songend <= 0 && speed == 100 && dur == 0 &&
       fadein == 0 && fadeout == 0 && gap == 0) {
     /* no adjustments need to be made */
-    return -1;
+    return;
   }
 
   calcdur = dur;
@@ -631,13 +624,9 @@ aaAdjust (song_t *song, const char *infn, const char *outfn,
   targv [targc++] = NULL;
 
   resp = mdmalloc (AA_RESP_BUFF_SZ);
-  rc = aaRunCommand ("aa-adjust", targv, targc, resp, &retsz);
+  rc = aaProcess ("aa-adjust", targv, targc, resp);
   logMsg (LOG_DBG, LOG_MAIN, "aa: adjust: elapsed: %ld",
       (long) mstimeend (&etm));
-
-  if (rc == 0) {
-    newdur = aaParseDuration (resp);
-  }
 
   /* applying the speed change afterwards is slower, but saves a lot */
   /* of headache. */
@@ -646,17 +635,21 @@ aaAdjust (song_t *song, const char *infn, const char *outfn,
 
     snprintf (tmpfn, sizeof (tmpfn), "%s.tmp", outfn);
     filemanipMove (outfn, tmpfn);
-    newdur = aaApplySpeed (song, tmpfn, outfn, speed, gap);
+    aaApplySpeed (song, tmpfn, outfn, speed, gap);
     fileopDelete (tmpfn);
     logMsg (LOG_DBG, LOG_MAIN, "aa: adjust-with-speed: elapsed: %ld",
         (long) mstimeend (&etm));
   }
 
+  if (rc == 0) {
+    aaSetDuration (musicdb, song, outfn);
+  }
+
   dataFree (resp);
-  return newdur;
+  return;
 }
 
-static long
+static void
 aaApplySpeed (song_t *song, const char *infn, const char *outfn,
     int speed, int gap)
 {
@@ -665,10 +658,7 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
   char        aftext [500];
   char        *resp;
   char        tmp [60];
-  int         rc;
-  size_t      retsz;
   const char  *afprefix = "";
-  long        newdur = -1;
 
   *aftext = '\0';
 
@@ -705,14 +695,9 @@ aaApplySpeed (song_t *song, const char *infn, const char *outfn,
   targv [targc++] = NULL;
 
   resp = mdmalloc (AA_RESP_BUFF_SZ);
-  rc = aaRunCommand ("aa-adjust-spd", targv, targc, resp, &retsz);
-
-  if (rc == 0) {
-    newdur = aaParseDuration (resp);
-  }
+  aaProcess ("aa-adjust-spd", targv, targc, resp);
 
   dataFree (resp);
-  return newdur;
 }
 
 static void
@@ -745,43 +730,35 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
 }
 
 
-static long
-aaParseDuration (const char *resp)
+static void
+aaSetDuration (musicdb_t *musicdb, song_t *song, const char *ffn)
 {
-  char    *p = NULL;
-  char    *tp = NULL;
-  long    newdur = -1;
-  int     h, m, s, ss;
+  char  *data = NULL;
 
-  /* size=     932kB time=00:00:30.85 bitrate= 247.4kbits/s speed=65.2x */
-  /* when the speed is adjusted, the above line appears twice */
-  p = strstr (resp, "time=");
-  while ((tp = strstr (p + 1, "time=")) != NULL) {
-    p = tp;
-  }
-  if (p != NULL) {
-    if (sscanf (p, "time=%d:%d:%d.%d", &h, &m, &s, &ss) == 4) {
-      newdur = 0;
-      newdur += h;
-      newdur *= 60;
-      newdur += m;
-      newdur *= 60;
-      newdur += s;
-      newdur *= 1000;
-      newdur += ss * 10;
-    }
+  if (! fileopFileExists (ffn)) {
+    return;
   }
 
-  return newdur;
+  data = audiotagReadTags (ffn);
+  if (data != NULL) {
+    slist_t     *tagdata;
+    int         rewrite;
+    long        dur;
+
+    tagdata = audiotagParseData (ffn, data, &rewrite);
+    dur = atol (slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
+    songSetNum (song, TAG_DURATION, dur);
+    slistFree (tagdata);
+    dataFree (data);
+  }
 }
 
 static int
-aaRunCommand (const char *tag, const char *targv [], int targc,
-    char *resp, size_t *retsz)
+aaProcess (const char *tag, const char *targv [], int targc, char *resp)
 {
   int     rc;
 
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, retsz);
+  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, resp, AA_RESP_BUFF_SZ, NULL);
   if (rc != 0 || logCheck (LOG_DBG, LOG_AUDIO_ADJUST)) {
     char  cmd [1000];
 
