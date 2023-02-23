@@ -835,8 +835,22 @@ songfilterMakeSortKey (songfilter_t *sf,
       }
       snprintf (tbuff, sizeof (tbuff), "/%02d", idx);
       strlcat (sortkey, tbuff, sz);
-    } else if (tagkey == TAG_DBADDDATE ||
-        tagkey == TAG_LAST_UPDATED) {
+    } else if (tagkey == TAG_DBADDDATE) {
+      const char  *str;
+      int         yr, mon, day;
+
+      str = songGetStr (song, tagkey);
+      /* unknown date */
+      strlcpy (tbuff, "/9999-99-99", sizeof (tbuff));
+      if (str != NULL && *str) {
+        if (sscanf (str, "%4d-%2d-%2d", &yr, &mon, &day) == 3) {
+          snprintf (tbuff, sizeof (tbuff), "/%4d-%2d-%2d",
+              9999 - yr, 99 - mon, 99 - day);
+        }
+      }
+fprintf (stderr, "db-add-date: %s\n", tbuff);
+      strlcat (sortkey, tbuff, sz);
+    } else if (tagkey == TAG_LAST_UPDATED) {
       size_t    tval;
 
       tval = songGetNum (song, tagkey);
@@ -904,6 +918,9 @@ songfilterParseSortKey (songfilter_t *sf)
     tagkey = tagdefLookup (p);
     if (tagkey >= 0) {
       nlistSetNum (parsed, tagkey, 0);
+      if (tagkey == TAG_DBADDDATE) {
+        nlistSetNum (parsed, TAG_TITLE, 0);
+      }
     } else {
       logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: invalid sort key: %s", p);
     }
