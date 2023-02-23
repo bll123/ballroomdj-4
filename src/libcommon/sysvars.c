@@ -559,7 +559,6 @@ sysvarsInit (const char *argv0)
   if (fileopFileExists (buff)) {
     FILE    *fh;
 
-fprintf (stderr, "found baseport file\n");
     *tbuff = '\0';
     fh = fileopOpen (buff, "r");
     (void) ! fgets (tbuff, sizeof (tbuff), fh);
@@ -733,7 +732,6 @@ sysvarsGetPythonVersion (void)
 
       snprintf (tfn, sizeof (tfn), "%s/%s%s", sysvars [SV_BDJ4_DREL_DATA],
           SYSVARS_PY_DOT_VERS_FN, BDJ4_CONFIG_EXT);
-fprintf (stderr, "tfn-a: %s\n", tfn);
       fh = fileopOpen (tfn, "w");
       if (fh != NULL) {
         fprintf (fh, "%s\n", sysvars [SV_PYTHON_DOT_VERSION]);
@@ -753,7 +751,6 @@ fprintf (stderr, "tfn-a: %s\n", tfn);
 
       snprintf (tfn, sizeof (tfn), "%s/%s%s", sysvars [SV_BDJ4_DREL_DATA],
           SYSVARS_PY_VERS_FN, BDJ4_CONFIG_EXT);
-fprintf (stderr, "tfn-b: %s\n", tfn);
       fh = fileopOpen (tfn, "w");
       if (fh != NULL) {
         fprintf (fh, "%s\n", sysvars [SV_PYTHON_VERSION]);

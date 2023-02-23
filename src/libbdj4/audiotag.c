@@ -97,7 +97,7 @@ audiotagReadTags (const char *ffn)
   data = mdmalloc (AUDIOTAG_TAG_BUFF_SIZE);
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, AUDIOTAG_TAG_BUFF_SIZE, &retsz);
   if (rc != 0) {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "read tags: rc: %d", rc);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "read tags: rc: %d", rc);
   }
   for (size_t i = 0; i < retsz; ++i) {
     if (data [i] == '\0') {
@@ -144,13 +144,13 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
 
   writetags = bdjoptGetNum (OPT_G_WRITETAGS);
   if (writetags == WRITE_TAGS_NONE) {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "write-tags-none");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-tags-none");
     logProcEnd (LOG_PROC, "audiotagsWriteTags", "write-none");
     return AUDIOTAG_WRITE_OFF;
   }
 
   audiotagDetermineTagType (ffn, &tagtype, &filetype);
-  logMsg (LOG_DBG, LOG_DBUPDATE, "tagtype: %d afile-type: %d", tagtype, filetype);
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tagtype: %d afile-type: %d", tagtype, filetype);
 
   if (tagtype != TAG_TYPE_VORBIS &&
       tagtype != TAG_TYPE_MP3 &&
@@ -267,8 +267,8 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
       slistGetCount (dellist) > 0) {
     time_t    origtm;
 
-    logMsg (LOG_DBG, LOG_DBUPDATE, "writing tags");
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  %s", ffn);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "writing tags");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  %s", ffn);
     origtm = fileopModTime (ffn);
     if (tagtype == TAG_TYPE_MP3 && filetype == AFILE_TYPE_MP3) {
       rc = audiotagWriteMP3Tags (ffn, updatelist, dellist, datalist, writetags);
@@ -397,7 +397,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
   tstr = strtok_r (data, "\r\n", &tokstr);
   count = 0;
   while (tstr != NULL) {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "raw: %s", tstr);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: %s", tstr);
     if (count == 1) {
       p = strstr (tstr, "seconds");
       if (p != NULL) {
@@ -413,7 +413,7 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
         snprintf (duration, sizeof (duration), "%.0f", tm);
         slistSetStr (tagdata, tagdefs [TAG_DURATION].tag, duration);
       } else {
-        logMsg (LOG_DBG, LOG_DBUPDATE, "no 'seconds' found");
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "no 'seconds' found");
       }
     }
 
@@ -442,20 +442,20 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
       /* some old audio file tag handling */
       if (strcmp (p, "TXXX=VARIOUSARTISTS") == 0 ||
           strcmp (p, "VARIOUSARTISTS") == 0) {
-        logMsg (LOG_DBG, LOG_DBUPDATE, "rewrite: various");
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "rewrite: various");
         *rewrite |= AF_REWRITE_VARIOUS;
       }
       if (strcmp (p, "TXXX=DURATION") == 0 ||
           strcmp (p, "DURATION") == 0) {
-        logMsg (LOG_DBG, LOG_DBUPDATE, "rewrite: duration");
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "rewrite: duration");
         *rewrite |= AF_REWRITE_DURATION;
       }
 
       tagname = slistGetStr (tagLookup [tagtype], p);
       if (tagname != NULL) {
-        logMsg (LOG_DBG, LOG_DBUPDATE, "taglookup: %s %s", p, tagname);
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "taglookup: %s %s", p, tagname);
         tagkey = audiotagTagCheck (writetags, tagtype, tagname, AF_REWRITE_NONE);
-        logMsg (LOG_DBG, LOG_DBUPDATE, "tag: %s raw-tag: %s", tagname, p);
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag: %s raw-tag: %s", tagname, p);
       }
 
       if (tagname != NULL && *tagname != '\0') {
@@ -741,7 +741,7 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
 
     value = slistGetStr (updatelist, tag);
 
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  write: %s %s",
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write: %s %s",
         tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
     if (tagkey == TAG_RECORDING_ID) {
       fprintf (ofh, "  audio.delall('%s:%s')\n",
@@ -786,7 +786,7 @@ audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
 
   rc = audiotagRunUpdate (fn);
   if (rc != 0) {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  write failed: %s", ffn);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write failed: %s", ffn);
   }
 
   logProcEnd (LOG_PROC, "audiotagsWriteMP3Tags", "");
@@ -811,22 +811,22 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
   audiotagMakeTempFilename (fn, sizeof (fn));
   ofh = fileopOpen (fn, "w");
   if (filetype == AFILE_TYPE_FLAC) {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "file-type: flac");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: flac");
     fprintf (ofh, "from mutagen.flac import FLAC\n");
     fprintf (ofh, "audio = FLAC('%s')\n", ffn);
   }
   if (filetype == AFILE_TYPE_MP4) {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "file-type: mp4");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: mp4");
     fprintf (ofh, "from mutagen.mp4 import MP4\n");
     fprintf (ofh, "audio = MP4('%s')\n", ffn);
   }
   if (filetype == AFILE_TYPE_OGGOPUS) {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "file-type: opus");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: opus");
     fprintf (ofh, "from mutagen.oggopus import OggOpus\n");
     fprintf (ofh, "audio = OggOpus('%s')\n", ffn);
   }
   if (filetype == AFILE_TYPE_OGGVORBIS) {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "file-type: oggvorbis");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: oggvorbis");
     fprintf (ofh, "from mutagen.oggvorbis import OggVorbis\n");
     fprintf (ofh, "audio = OggVorbis('%s')\n", ffn);
   }
@@ -860,7 +860,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
 
     value = slistGetStr (updatelist, tag);
 
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  write: %s %s",
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write: %s %s",
         tagdefs [tagkey].audiotags [tagtype].tag, value);
     if (tagtype == TAG_TYPE_MP4 &&
         tagkey == TAG_BPM) {
@@ -899,7 +899,7 @@ audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
 
   rc = audiotagRunUpdate (fn);
   if (rc != 0) {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  write failed: %s", ffn);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write failed: %s", ffn);
   }
 
   logProcEnd (LOG_PROC, "audiotagsWriteOtherTags", "");
@@ -964,8 +964,8 @@ audiotagRunUpdate (const char *fn)
   if (rc == 0) {
     fileopDelete (fn);
   } else {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  write tags failed %d (%s)", rc, fn);
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  output: %s", dbuff);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write tags failed %d (%s)", rc, fn);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  output: %s", dbuff);
   }
   return rc;
 }
@@ -987,22 +987,22 @@ audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite)
   tagkey = tagdefLookup (tag);
   if (tagkey < 0) {
     /* unknown tag  */
-    // logMsg (LOG_DBG, LOG_DBUPDATE, "unknown-tag: %s", tag);
+    // logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unknown-tag: %s", tag);
     return tagkey;
   }
   if (! tagdefs [tagkey].isNormTag && ! tagdefs [tagkey].isBDJTag) {
-    // logMsg (LOG_DBG, LOG_DBUPDATE, "not-written: %s", tag);
+    // logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "not-written: %s", tag);
     return -1;
   }
   if (writetags == WRITE_TAGS_BDJ_ONLY && tagdefs [tagkey].isNormTag) {
     if ((rewrite & AF_FORCE_WRITE_BDJ) != AF_FORCE_WRITE_BDJ) {
-      // logMsg (LOG_DBG, LOG_DBUPDATE, "bdj-only: %s", tag);
+      // logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "bdj-only: %s", tag);
       return -1;
     }
   }
   if (tagdefs [tagkey].audiotags [tagtype].tag == NULL) {
     /* not a supported tag for this audio tag type */
-    // logMsg (LOG_DBG, LOG_DBUPDATE, "unsupported: %s", tag);
+    // logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unsupported: %s", tag);
     return -1;
   }
 

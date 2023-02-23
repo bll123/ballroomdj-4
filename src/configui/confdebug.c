@@ -141,6 +141,10 @@ confuiBuildUIDebug (confuigui_t *gui)
       CONFUI_WIDGET_DEBUG_2097152, -1,
       (val & 2097152));
   gui->uiitem [CONFUI_WIDGET_DEBUG_2097152].outtype = CONFUI_OUT_DEBUG;
+  confuiMakeItemCheckButton (gui, &vbox, &sg, "Audio Tags",
+      CONFUI_WIDGET_DEBUG_4194304, -1,
+      (val & 4194304));
+  gui->uiitem [CONFUI_WIDGET_DEBUG_4194304].outtype = CONFUI_OUT_DEBUG;
 
   logProcEnd (LOG_PROC, "confuiBuildUIDebug", "");
 }
