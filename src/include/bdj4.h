@@ -71,5 +71,8 @@ enum {
 /* alternates/base port */
 #define ALT_COUNT_FN        "altcount"
 #define BASE_PORT_FN        "baseport"
+/* cache files */
+#define SYSVARS_PY_DOT_VERS_FN  "pydotvers"
+#define SYSVARS_PY_VERS_FN      "pyvers"
 
 #endif /* INC_BDJ4_H */

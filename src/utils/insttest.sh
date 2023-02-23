@@ -337,7 +337,7 @@ function checkInstallation {
     res=$(($res+1))  # audioadjust.txt file
     fn="${DATADIR}/audioadjust.txt"
     if [[ $fin == T && -f "$fn" ]]; then
-      grep 'version 2' "$fn" > /dev/null 2>&1
+      grep 'version 3' "$fn" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))

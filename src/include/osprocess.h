@@ -19,7 +19,7 @@ enum {
 };
 
 pid_t osProcessStart (const char *targv[], int flags, void **handle, char *outfname);
-int  osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *retsz);
+int osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *retsz);
 char *osRunProgram (const char *prog, ...);
 
 #if defined (__cplusplus) || defined (c_plusplus)

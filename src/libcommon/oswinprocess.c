@@ -157,6 +157,8 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   DWORD               rbytes;
   DWORD               rc = 0;
 
+  flags |= OS_PROC_WAIT;      // required
+
   memset (&si, '\0', sizeof (si));
   si.cb = sizeof (si);
   memset (&pi, '\0', sizeof (pi));
@@ -229,8 +231,8 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 
   if (rbuff != NULL) {
     ssize_t bytesread = 0;
+    bool    wait = true;
 
-    rc = 1;
     rbuff [sz - 1] = '\0';
 
     while (1) {
@@ -242,14 +244,17 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
       if (retsz != NULL) {
         *retsz = bytesread;
       }
-      if (rc == 0) {
+      if (! wait) {
         break;
       }
       if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
         if (WaitForSingleObject (pi.hProcess, 2) != WAIT_TIMEOUT) {
           GetExitCodeProcess (pi.hProcess, &rc);
-          if (rc == 1) { rc = 0; }
+          wait = false;
         }
+      }
+      if (wait) {
+        Sleep (2);
       }
     }
     CloseHandle (handleStdoutRead);

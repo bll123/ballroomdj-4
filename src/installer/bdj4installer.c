@@ -1381,7 +1381,7 @@ installerVerifyInstall (installer_t *installer)
       targv [0] = "./Contents/MacOS/install/verifychksum.sh";
     }
     targv [1] = NULL;
-    osProcessPipe (targv, OS_PROC_DETACH, tmp, sizeof (tmp), NULL);
+    osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, tmp, sizeof (tmp), NULL);
   }
 
   uiLabelSetText (&installer->statusMsg, "");
@@ -2332,6 +2332,16 @@ installerUpdateProcess (installer_t *installer)
 static void
 installerFinalize (installer_t *installer)
 {
+  char    tbuff [MAXPATHLEN];
+
+  /* clear the python version cache files */
+  snprintf (tbuff, sizeof (tbuff), "%s/%s%s", "data",
+      SYSVARS_PY_DOT_VERS_FN, BDJ4_CONFIG_EXT);
+  fileopDelete (tbuff);
+  snprintf (tbuff, sizeof (tbuff), "%s/%s%s", "data",
+      SYSVARS_PY_VERS_FN, BDJ4_CONFIG_EXT);
+  fileopDelete (tbuff);
+
   if (installer->verbose) {
     fprintf (stdout, "finish OK\n");
     if (*installer->bdj3version) {

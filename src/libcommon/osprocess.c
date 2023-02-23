@@ -114,6 +114,8 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   pid_t   tpid;
   int     pipefd [2];
 
+  flags |= OS_PROC_WAIT;      // required
+
   if (rbuff != NULL) {
     *rbuff = '\0';
   }
@@ -133,13 +135,8 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 
   if (tpid == 0) {
     /* child */
-    /* close any open file descriptors, but not the pipe write side */
-    for (int i = 3; i < 30; ++i) {
-      if (pipefd [1] == i) {
-        continue;
-      }
-      close (i);
-    }
+    /* close the pipe read side */
+    close (pipefd [0]);
 
     dup2 (pipefd [1], STDOUT_FILENO);
     dup2 (pipefd [1], STDERR_FILENO);
@@ -159,10 +156,10 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   pid = tpid;
 
   if (rbuff != NULL) {
-    int     rc, wstatus;
+    bool    wait = true;
+    int     wstatus;
     ssize_t bytesread = 0;
 
-    rc = 1;
     rbuff [sz - 1] = '\0';
 
     while (1) {
@@ -176,20 +173,24 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
       if (retsz != NULL) {
         *retsz = bytesread;
       }
-      if (rc == 0) {
+      if (! wait) {
         break;
       }
       if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
-        mssleep (2);
         rc = waitpid (pid, &wstatus, WNOHANG);
         if (rc < 0) {
           rc = 0;
+          wait = false;
           // fprintf (stderr, "waitpid: errno %d %s\n", errno, strerror (errno));
         } else if (rc != 0) {
           rc = osProcessWaitStatus (wstatus);
+          wait = false;
         } else {
           /* force continuation */
-          rc = 1;
+          wait = true;
+        }
+        if (wait) {
+          mssleep (2);
         }
       }
     }

@@ -203,8 +203,7 @@ START_TEST(osprocess_pipe)
   char        pbuff [MAXPATHLEN];
   const char  *targv [10];
   int         targc = 0;
-  int         pid = 0;
-  procutil_t  process;
+  int         rc = -2;
   char        *extension;
   int         flags = 0;
   size_t      retsz;
@@ -224,10 +223,9 @@ START_TEST(osprocess_pipe)
   targv [targc++] = "xyzzy";          // data to write
   targv [targc++] = "--bdj4";
   targv [targc++] = NULL;
-  flags = 0;
-  pid = osProcessPipe (targv, flags, tbuff, sizeof (tbuff), &retsz);
-  process.pid = pid;
-  ck_assert_int_gt (pid, 0);
+  flags = OS_PROC_WAIT;           // must have wait on
+  rc = osProcessPipe (targv, flags, tbuff, sizeof (tbuff), &retsz);
+  ck_assert_int_eq (rc, 0);
   stringTrim (tbuff);
   ck_assert_str_eq (tbuff, "xyzzy");
   /* retsz still includes the trailing newline */
@@ -267,7 +265,7 @@ START_TEST(osprocess_pipe_rc)
   targv [targc++] = "--bdj4";
   targv [targc++] = "--debug";
   rcidx = targc;
-  targv [targc++] = "0";
+  targv [targc++] = "0";          // return code
   targv [targc++] = NULL;
 
   flags = OS_PROC_WAIT | OS_PROC_DETACH;
@@ -311,7 +309,7 @@ START_TEST(osprocess_run)
   data = osRunProgram (tbuff, "--profile", "0", "--theme", "xyzzy", "--bdj4", NULL);
   stringTrim (data);
   ck_assert_str_eq (data, "xyzzy");
-  mdfree (data);
+  dataFree (data);
 }
 END_TEST
 
