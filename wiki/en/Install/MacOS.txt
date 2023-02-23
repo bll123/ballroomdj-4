@@ -16,7 +16,7 @@ $HOME/Library/Application&nbsp;Support/BDJ4 folder.
 This step only needs to be run once, not for every installation or
 update.
 
-Download the macos-pre-install-v6.sh script from sourceforge.
+Download the macos-pre-install-v7.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -26,7 +26,7 @@ time to finish (especially slow on Ventura as of 2022-11).  You may be
 required to enter your administrative password more than once during
 the installation process.
 
-    bash macos-pre-install-v6.sh
+    bash macos-pre-install-v7.sh
 
 This script performs the following actions:
 
@@ -82,4 +82,4 @@ icon to the Applications Folder icon.
 <br><span style="color:#4559bf;">**VLC Installation on Mac OS**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-16 10:45:07; BDJ4 version 4.1.0-beta)_
+<br>_(Updated 2023-02-23 10:37:29; BDJ4 version 4.1.1-beta)_

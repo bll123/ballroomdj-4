@@ -92,8 +92,9 @@ function checkUpdaterClean {
   section=$1
 
   # audio adjust file should be installed if missing or wrong version
-  # rm -f "$DATADIR/audioadjust.txt"
-  sed -e 's/version 2/version 1/' "$fn" > "$fn.n"
+  fn="$DATADIR/audioadjust.txt"
+  # rm -f "$fn"
+  sed -e 's/version [23]/version 1/' "$fn" > "$fn.n"
   mv -f "$fn.n" "$fn"
   # gtk-static.css file should be installed if missing
   rm -f "$DATADIR/gtk-static.css"

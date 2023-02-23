@@ -805,7 +805,7 @@ updaterCopyVersionCheck (const char *fn, const char *ext, int currvers)
   tmpdf = datafileAllocParse (fn, DFTYPE_LIST, tbuff, NULL, 0);
   slist = datafileGetList (tmpdf);
   version = slistGetVersion (slist);
-  if (version == 1) {
+  if (version < currvers) {
     char  tmp [MAXPATHLEN];
 
     snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
