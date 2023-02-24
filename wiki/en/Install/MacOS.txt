@@ -56,22 +56,21 @@ this script using the following command:
 Choose the folder in which to install BallroomDJ 4.  The
 $HOME/Applications/BDJ4.app folder will be pre-selected for you.
 
-The **Re-Install** checkbox is only used if you want to completely
+The __Re-Install__ checkbox is only used if you want to completely
 reset all of the BDJ4 data files.  Any changes you have made within
 BDJ4 will be lost if a re-install is done. __(If you are updating an
 alpha installation, you must do a re-install.)__
 
-
 If you want to convert a BallroomDJ 3 installation, select the
 BallroomDJ 3 folder ($HOME/Library/Application Support/BallroomDJ) and
-select the **Convert BallroomDJ 3** checkbox.
+select the __Convert BallroomDJ 3__ checkbox.
 
-After you have selected the installation folder, select the **Install**
-button and wait for the **Installation Completed** message.
+After you have selected the installation folder, select the __Install__
+button and wait for the __Installation Completed__ message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BallroomDJ 4 Installer on Mac OS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Installer.png)
-<br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Mac OS**</span> </div>
+<br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Mac OS__</span> </div>
 
 If VLC is not already installed on your computer, the installation
 process will download and start the VLC installation.  Drag the VLC.app
@@ -79,7 +78,7 @@ icon to the Applications Folder icon.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![VLC Installation on Mac OS](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/MacOS-Install-VLC.png)
-<br><span style="color:#4559bf;">**VLC Installation on Mac OS**</span> </div>
+<br><span style="color:#4559bf;">__VLC Installation on Mac OS__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-23 10:37:29; BDJ4 version 4.1.1-beta)_
+<br>_(Updated 2023-02-24 06:23:43; BDJ4 version 4.1.1-beta)_

@@ -2,6 +2,14 @@
 
 ### Converting BallroomDJ 3
 
+It is recommended to upgrade BallroomDJ&nbsp;3 to the latest version
+(3.32.23) before installing BDJ4.  Some changes have been made to
+BallroomDJ&nbsp;3 to improve compatibility with BDJ4.
+
+Due to some bugs in the conversion process, it is recommended that the
+conversion be run (or re-run) with BDJ4 version 4.0.10.1-beta or
+later.
+
 If you have a recent version (the BallroomDJ&nbsp;3 database version
 must be version&nbsp;7 or later (approximately
 BDJ3&nbsp;version&nbsp;2.21 or later)) of BallroomDJ&nbsp;3, and the
@@ -41,4 +49,4 @@ location, choose the new location (BDJ3Temp) for BallroomDJ&nbsp;3.
 original BallroomDJ installation is untouched and can still be used.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-24 06:23:43; BDJ4 version 4.1.1-beta)_
