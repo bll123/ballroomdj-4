@@ -15,16 +15,16 @@ The additional filters that can be selected are _Genre_,
 _Dance&nbsp;Level_, _Status_, _Favorite_, and _Playable&nbsp;Status_.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Filter Display](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-C.png)
-<br><span style="color:#4559bf;">**Configure / Filter Display**</span> </div>
+![filter-display](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-D.png)
+<br><span style="color:#4559bf;">__Configure / Filter Display__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Filter Dialog (default)](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-Dialog-A.png)
-<br><span style="color:#4559bf;">**Filter Dialog - Default filters**</span> </div>
+![filter-dialog-default](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-Dialog-A.png)
+<br><span style="color:#4559bf;">__Filter Dialog - Default filters__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Filter Dialog (all)](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-Dialog-All-A.png)
-<br><span style="color:#4559bf;">**Filter Dialog - All filters enabled**</span> </div>
+![filter-dialog-all](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/FilterDisplay-Dialog-All-A.png)
+<br><span style="color:#4559bf;">__Filter Dialog - All filters enabled__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 11:06:59; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-24 07:28:24; BDJ4 version 4.1.1-beta)_

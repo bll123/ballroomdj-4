@@ -10,7 +10,7 @@ database.  If you want to use the status field, you will also want to
 change the
 [Display&nbsp;Settings](en-Configuration-Display%20Settings).
 
-The _New_ and _Complete_ statuses may not be removed or have their
+The _New_ and _Complete_ status may not be removed or have their
 names changed.  Songs newly added to the database are assigned the
 _New_ status.
 
@@ -27,12 +27,12 @@ button to remove a status.
 The __Play?__ selection indicates whether the song will be used in
 automatic or sequenced playlists and whether it will show up in the
 request selection.  This selection corresponds to the
-_Playable&nbsp;Status_ filter (see:
+_Playable&nbsp;Status_ filter <br>See
 [Filter&nbsp;Display](en-Configuration-Filter%20Display).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Edit Status](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditStatus-C.png)
-<br><span style="color:#4559bf;">**Configure / Edit Status**</span> </div>
+![edit-status](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditStatus-D.png)
+<br><span style="color:#4559bf;">__Configure / Edit Status__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:22:54; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-24 07:28:24; BDJ4 version 4.1.1-beta)_

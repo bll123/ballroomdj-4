@@ -43,6 +43,8 @@ Download the Linux installer from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
+Make sure to exit BDJ4 if it is already started.
+
 Open a terminal and run the installer:
 
 (This is an example and may not be up to date.)
@@ -69,4 +71,4 @@ button and wait for the __Installation Completed__ message.
 <br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Linux__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-24 06:23:43; BDJ4 version 4.1.1-beta)_
+<br>_(Updated 2023-02-24 06:50:09; BDJ4 version 4.1.1-beta)_

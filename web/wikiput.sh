@@ -68,7 +68,7 @@ function updateimages {
     fi
     touch -r $ifile $ifn
   done
-  echo "Enter sf password"
+  echo "Enter SourceForge password"
   rsync -v -e ssh -aS --delete \
       wikiimg \
       ${sfuser}@web.sourceforge.net:/home/project-web/${project}/htdocs

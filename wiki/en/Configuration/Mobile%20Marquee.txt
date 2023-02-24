@@ -10,10 +10,11 @@ mobile phone or tablet.  The computer running BDJ4 must be connected
 to a Wi&#8209;Fi network, but does not need to be connected to the
 internet.
 
-This is useful for venues where the marquee cannot be displayed.
+This is useful for venues where the marquee cannot be displayed or is
+not readily visible from all parts of the room.
 
-__Enable Mobile Marquee__: Turns on the mobile marquee. (activated
-when then player is started).
+__Enable Mobile Marquee__: Turns on the mobile marquee.  The mobile
+marquee is activated when then player is started.
 
 __Title__: An optional title to display on the mobile marquee.
 
@@ -25,12 +26,12 @@ QR code can be copied from the browser and embedded in a document to
 be printed out so that the dancers can scan the QR Code.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Mobile Marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileMarquee-C.png)
-<br><span style="color:#4559bf;">**Configure / Mobile Marquee**</span> </div>
+![mobile-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileMarquee-D.png)
+<br><span style="color:#4559bf;">__Configure / Mobile Marquee__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Screen 1](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileMarquee-Screen1-B.jpg)
-<br><span style="color:#4559bf;">**Mobile Device / Mobile Marquee**</span> </div>
+![screen-1](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileMarquee-Screen1-B.jpg)
+<br><span style="color:#4559bf;">__Mobile Device / Mobile Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-24 07:28:24; BDJ4 version 4.1.1-beta)_

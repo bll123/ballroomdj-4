@@ -36,8 +36,8 @@ __Fields to Import__: Select which fields to import when the
 function is used.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![iTunes](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/iTunes-A.png)
-<br><span style="color:#4559bf;">**Configure / iTunes**</span> </div>
+![iTunes](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/iTunes-B.png)
+<br><span style="color:#4559bf;">__Configure / iTunes__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-24 07:28:24; BDJ4 version 4.1.1-beta)_

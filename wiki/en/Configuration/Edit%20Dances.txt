@@ -18,8 +18,8 @@ button to remove the dance.
 Modifying a dance: Select the dance to change and change the dance
 configuration.
 
-__Dance__: The name of the dance. __Note that changing the name of
-dance that is already in your database will cause many problems.__
+__Dance__: The name of the dance. ___Note that changing the name of
+dance that is already in your database will cause many problems.___
 
 __Type__: The type is used for automatic playlists.  Dances with
 the same type are not as likely to be next to another dance of the
@@ -41,11 +41,11 @@ __High BPM__: This is a display option for use in the song editor.
 
 __Time Signature__: This is used by the BPM counter to select the
 proper default when MPM is selected in the
-[General&nbsp;Options](en-Configuration-General).
+[General](en-Configuration-General) configuration.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Edit Dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-D.png)
-<br><span style="color:#4559bf;">**Configure / Edit Dances**</span> </div>
+![edit-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-E.png)
+<br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-16 10:45:07; BDJ4 version 4.1.0-beta)_
+<br>_(Updated 2023-02-24 07:28:24; BDJ4 version 4.1.1-beta)_

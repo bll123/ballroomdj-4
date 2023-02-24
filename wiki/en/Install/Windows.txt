@@ -49,6 +49,8 @@ Download the Windows installer from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
+Make sure to exit BDJ4 if it is already started.
+
 Start the installer by double clicking the downloaded file in your
 Downloads folder. (This image shows an out of date installer).
 
@@ -101,4 +103,4 @@ installation is complete, turn off the __Run VLC media player__
 checkbox, and select __Finish__.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-24 06:23:43; BDJ4 version 4.1.1-beta)_
+<br>_(Updated 2023-02-24 06:50:09; BDJ4 version 4.1.1-beta)_
