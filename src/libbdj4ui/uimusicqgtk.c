@@ -797,19 +797,19 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
     if (! valid) {
       gtk_list_store_append (GTK_LIST_STORE (model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-          MUSICQ_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
+          MUSICQ_COL_ELLIPSIZE, TREE_ELLIPSIZE_END,
           MUSICQ_COL_FONT, listingFont,
-          MUSICQ_COL_DISP_IDX, (glong) musicqupditem->dispidx,
-          MUSICQ_COL_UNIQUE_IDX, (glong) musicqupditem->uniqueidx,
-          MUSICQ_COL_DBIDX, (glong) musicqupditem->dbidx,
+          MUSICQ_COL_DISP_IDX, (treenum_t) musicqupditem->dispidx,
+          MUSICQ_COL_UNIQUE_IDX, (treenum_t) musicqupditem->uniqueidx,
+          MUSICQ_COL_DBIDX, (treenum_t) musicqupditem->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           -1);
     } else {
-      /* all data must be updated */
+      /* all data must be updated, except the font and ellipsize */
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-          MUSICQ_COL_DISP_IDX, (glong) musicqupditem->dispidx,
-          MUSICQ_COL_UNIQUE_IDX, (glong) musicqupditem->uniqueidx,
-          MUSICQ_COL_DBIDX, (glong) musicqupditem->dbidx,
+          MUSICQ_COL_DISP_IDX, (treenum_t) musicqupditem->dispidx,
+          MUSICQ_COL_UNIQUE_IDX, (treenum_t) musicqupditem->uniqueidx,
+          MUSICQ_COL_DBIDX, (treenum_t) musicqupditem->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           -1);
     }

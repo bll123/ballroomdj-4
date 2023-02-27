@@ -6,6 +6,8 @@
 
 #include <gtk/gtk.h>
 
+typedef glong treenum_t;
+
 /* tree view storage types */
 enum {
   TREE_TYPE_STRING = G_TYPE_STRING,
@@ -16,6 +18,7 @@ enum {
   TREE_TYPE_IMAGE = -5,               // will be set to GDK_TYPE_PIXBUF
   TREE_COL_DISP_NORM = GTK_TREE_VIEW_COLUMN_AUTOSIZE,
   TREE_COL_DISP_GROW = GTK_TREE_VIEW_COLUMN_GROW_ONLY,
+  TREE_ELLIPSIZE_END = PANGO_ELLIPSIZE_END,
 };
 
 enum {
