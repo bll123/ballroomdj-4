@@ -1468,19 +1468,19 @@ uisongeditKeyEvent (void *udata)
 
   if (uiKeyIsControlPressed (uiw->uikey) &&
       uiKeyIsPressEvent (uiw->uikey)) {
-    if (uiKeyIsAKey (uiw->uikey)) {
+    if (uiKeyIsKey (uiw->uikey, 'A')) {
       uisongeditApplyAdjCallback (uisongedit);
       return UICB_STOP;
     }
-    if (uiKeyIsSKey (uiw->uikey)) {
+    if (uiKeyIsKey (uiw->uikey, 'S')) {
       uisongeditSaveCallback (uisongedit);
       return UICB_STOP;
     }
-    if (uiKeyIsNKey (uiw->uikey)) {
+    if (uiKeyIsKey (uiw->uikey, 'N')) {
       uisongeditNextSelection (uisongedit);
       return UICB_STOP;
     }
-    if (uiKeyIsPKey (uiw->uikey)) {
+    if (uiKeyIsKey (uiw->uikey, 'P')) {
       uisongeditPreviousSelection (uisongedit);
       return UICB_STOP;
     }
