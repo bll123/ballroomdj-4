@@ -121,7 +121,7 @@ confuiBuildUIMusicQs (confuigui_t *gui)
       CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED, OPT_Q_PLAY_WHEN_QUEUED,
       bdjoptGetNumPerQueue (OPT_Q_PLAY_WHEN_QUEUED, 0), NULL, CONFUI_INDENT);
 
-  /* CONTEXT: configuration: queue: whether to show the 'queue dance' buttons */
+  /* CONTEXT: configuration: queue: whether to show the 'queue dance' buttons (verb) */
   confuiMakeItemSwitch (gui, &vbox, &sg, _("Show Queue Dance Buttons"),
       CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE, OPT_Q_SHOW_QUEUE_DANCE,
       bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, 0), NULL, CONFUI_INDENT);
