@@ -13,7 +13,11 @@ enum {
   TREE_TYPE_IMAGE = G_TYPE_OBJECT,
   TREE_TYPE_BOOLEAN = G_TYPE_BOOLEAN,
   TREE_TYPE_ELLIPSIZE = G_TYPE_INT,
+  TREE_COL_DISP_NORM = GTK_TREE_VIEW_COLUMN_AUTOSIZE,
+  TREE_COL_DISP_GROW = GTK_TREE_VIEW_COLUMN_GROW_ONLY,
 };
+
+#define TREE_COL_MODE_TEXT "text"
 
 /* these are defined based on the gtk values */
 /* would change for a different gui package */

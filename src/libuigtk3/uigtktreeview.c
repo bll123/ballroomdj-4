@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <assert.h>
 #include <ctype.h>
 #include <math.h>
@@ -20,6 +21,7 @@
 #include "uiclass.h"
 
 #include "ui/uibox.h"
+#include "ui/uigeneral.h"
 #include "ui/uitreeview.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
@@ -28,9 +30,9 @@ static GType * uiAppendType (GType *types, int ncol, int type);
 static void uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 
 typedef struct uitree {
-  UIWidget    uitree;
-  UIWidget    sel;
-  callback_t  *editedcb;
+  UIWidget      uitree;
+  UIWidget      sel;
+  callback_t    *editedcb;
 } uitree_t;
 
 uitree_t *
@@ -76,6 +78,78 @@ uiTreeViewGetUIWidget (uitree_t *uitree)
   }
 
   return &uitree->uitree;
+}
+
+void
+uiTreeViewCreateStorage (uitree_t *uitree, int colmax, ...)
+{
+  GtkListStore  *store = NULL;
+  GType         *types;
+  va_list       args;
+
+  if (uitree == NULL) {
+    return;
+  }
+
+  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+    return;
+  }
+
+  if (colmax <= 0 || colmax > 90) {
+    return;
+  }
+
+  types = mdmalloc (sizeof (GType) * colmax);
+
+  if (types != NULL) {
+    va_start (args, colmax);
+    for (int i = 0; i < colmax; ++i) {
+      types [i] = va_arg (args, int);
+    }
+    va_end (args);
+
+    store = gtk_list_store_newv (colmax, types);
+    gtk_tree_view_set_model (GTK_TREE_VIEW (uitree->uitree.widget),
+        GTK_TREE_MODEL (store));
+    g_object_unref (store);
+    mdfree (types);
+  }
+}
+
+void
+uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
+{
+  GtkCellRenderer   *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
+  va_list           args;
+  char              *coltype;
+  int               col;
+
+  if (uitree == NULL) {
+    return;
+  }
+
+  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+    return;
+  }
+
+  column = gtk_tree_view_column_new ();
+  renderer = gtk_cell_renderer_text_new ();
+  gtk_tree_view_column_pack_start (column, renderer, TRUE);
+
+  va_start (args, title);
+  coltype = va_arg (args, char *);
+  while (coltype != NULL) {
+    col = va_arg (args, int);
+    gtk_tree_view_column_add_attribute (column, renderer, coltype, col);
+
+    coltype = va_arg (args, char *);
+  }
+  va_end (args);
+
+  gtk_tree_view_column_set_sizing (column, coldisp);
+  gtk_tree_view_column_set_title (column, title);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->uitree.widget), column);
 }
 
 int
