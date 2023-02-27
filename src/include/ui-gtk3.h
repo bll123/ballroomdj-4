@@ -6,6 +6,7 @@
 
 #include <gtk/gtk.h>
 
+/* tree view storage types */
 enum {
   TREE_TYPE_STRING = G_TYPE_STRING,
   TREE_TYPE_NUM = G_TYPE_LONG,
