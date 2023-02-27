@@ -81,6 +81,42 @@ uiTreeViewGetUIWidget (uitree_t *uitree)
 }
 
 void
+uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
+{
+  GtkCellRenderer   *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
+  va_list           args;
+  char              *coltype;
+  int               col;
+
+  if (uitree == NULL) {
+    return;
+  }
+
+  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+    return;
+  }
+
+  column = gtk_tree_view_column_new ();
+  renderer = gtk_cell_renderer_text_new ();
+  gtk_tree_view_column_pack_start (column, renderer, TRUE);
+
+  va_start (args, title);
+  coltype = va_arg (args, char *);
+  while (coltype != NULL) {
+    col = va_arg (args, int);
+    gtk_tree_view_column_add_attribute (column, renderer, coltype, col);
+
+    coltype = va_arg (args, char *);
+  }
+  va_end (args);
+
+  gtk_tree_view_column_set_sizing (column, coldisp);
+  gtk_tree_view_column_set_title (column, title);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->uitree.widget), column);
+}
+
+void
 uiTreeViewCreateStorage (uitree_t *uitree, int colmax, ...)
 {
   GtkListStore  *store = NULL;
@@ -117,13 +153,11 @@ uiTreeViewCreateStorage (uitree_t *uitree, int colmax, ...)
 }
 
 void
-uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
+uiTreeViewAppendStorage (uitree_t *uitree, ...)
 {
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
-  va_list           args;
-  char              *coltype;
-  int               col;
+  GtkListStore  *store = NULL;
+  GtkTreeIter   iter;
+  va_list       args;
 
   if (uitree == NULL) {
     return;
@@ -133,23 +167,12 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
     return;
   }
 
-  column = gtk_tree_view_column_new ();
-  renderer = gtk_cell_renderer_text_new ();
-  gtk_tree_view_column_pack_start (column, renderer, TRUE);
-
-  va_start (args, title);
-  coltype = va_arg (args, char *);
-  while (coltype != NULL) {
-    col = va_arg (args, int);
-    gtk_tree_view_column_add_attribute (column, renderer, coltype, col);
-
-    coltype = va_arg (args, char *);
-  }
+  store = GTK_LIST_STORE (
+      gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->uitree.widget)));
+  gtk_list_store_append (store, &iter);
+  va_start (args, uitree);
+  gtk_list_store_set_valist (store, &iter, args);
   va_end (args);
-
-  gtk_tree_view_column_set_sizing (column, coldisp);
-  gtk_tree_view_column_set_title (column, title);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->uitree.widget), column);
 }
 
 int

@@ -266,11 +266,10 @@ void
 uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
 {
   UIWidget      *uiwidgetp = NULL;
-  GtkListStore  *store;
-  GtkTreeIter   iter;
   char          *keystr;
   slistidx_t    siteridx;
   char          tmp [40];
+  uitree_t      *uitree = NULL;
 
 
   if (duallist == NULL) {
@@ -281,7 +280,8 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
     return;
   }
 
-  uiwidgetp = uiTreeViewGetUIWidget (duallist->trees [which].uitree);
+  uitree = duallist->trees [which].uitree;
+  uiwidgetp = uiTreeViewGetUIWidget (uitree);
   if (uiwidgetp->widget == NULL) {
     return;
   }
@@ -292,17 +292,15 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   /* the assumption made is that the source tree has been populated */
   /* just before the target tree */
 
-  store = gtk_list_store_new (DUALLIST_COL_MAX,
+  uiTreeViewCreateStorage (uitree, DUALLIST_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM);
-  assert (store != NULL);
 
   slistStartIterator (slist, &siteridx);
   while ((keystr = slistIterateKey (slist, &siteridx)) != NULL) {
     long    val;
 
     val = slistGetNum (slist, keystr);
-    gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
+    uiTreeViewAppendStorage (uitree,
         DUALLIST_COL_DISP, keystr,
         DUALLIST_COL_SB_PAD, "    ",
         DUALLIST_COL_DISP_IDX, val,
@@ -339,9 +337,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
     }
   }
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidgetp->widget), GTK_TREE_MODEL (store));
   uiduallistSetDefaultSelection (duallist, which);
-  g_object_unref (store);
 }
 
 bool

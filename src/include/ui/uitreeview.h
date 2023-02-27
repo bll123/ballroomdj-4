@@ -20,8 +20,9 @@ typedef struct uitree uitree_t;
 uitree_t *uiCreateTreeView (void);
 void  uiTreeViewFree (uitree_t *uitree);
 UIWidget * uiTreeViewGetUIWidget (uitree_t *uitree);
-void  uiTreeViewCreateStorage (uitree_t *uitree, int colmax, ...);
 void  uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...);
+void  uiTreeViewCreateStorage (uitree_t *uitree, int colmax, ...);
+void  uiTreeViewAppendStorage (uitree_t *uitree, ...);
 #if BDJ4_USE_GTK
 int   uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *iter);
 #endif
