@@ -723,7 +723,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
     uisongAddDisplayTypes (sellist,
         uimusicqProcessMusicQueueDataNewCallback, uimusicq);
 
-    uiTreeViewCreateValuesFromList (uiw->musicqTree, uiw->colcount, uiw->typelist);
+    uiTreeViewCreateValueStoreFromList (uiw->musicqTree, uiw->colcount, uiw->typelist);
     mdfree (uiw->typelist);
   }
 

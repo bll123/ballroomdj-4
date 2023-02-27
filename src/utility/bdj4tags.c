@@ -183,7 +183,7 @@ main (int argc, char *argv [])
   }
 
   if (verbose) {
-//    fprintf (stdout, "-- %s\n", argv [fidx]);
+    // fprintf (stdout, "-- %s\n", argv [fidx]);
     slistStartIterator (wlist, &iteridx);
     while ((key = slistIterateKey (wlist, &iteridx)) != NULL) {
       val = slistGetStr (wlist, key);

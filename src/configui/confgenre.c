@@ -64,8 +64,6 @@ confuiBuildUIEditGenres (confuigui_t *gui)
 void
 confuiCreateGenreTable (confuigui_t *gui)
 {
-  GtkTreeIter       iter;
-  GtkListStore      *store = NULL;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
   ilistidx_t        iteridx;
@@ -78,9 +76,12 @@ confuiCreateGenreTable (confuigui_t *gui)
 
   genres = bdjvarsdfGet (BDJVDF_GENRES);
 
-  store = gtk_list_store_new (CONFUI_GENRE_COL_MAX,
-      TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_BOOLEAN, TREE_TYPE_STRING);
-  assert (store != NULL);
+  uitree = gui->tables [CONFUI_ID_GENRES].uitree;
+  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
+
+  uiTreeViewCreateValueStore (uitree, CONFUI_GENRE_COL_MAX,
+      TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_BOOLEAN, TREE_TYPE_STRING,
+      TREE_TYPE_END);
 
   genreStartIterator (genres, &iteridx);
 
@@ -91,17 +92,11 @@ confuiCreateGenreTable (confuigui_t *gui)
     genredisp = genreGetGenre (genres, key);
     clflag = genreGetClassicalFlag (genres, key);
 
-    gtk_list_store_append (store, &iter);
-    confuiGenreSet (store, &iter, TRUE, genredisp, clflag);
+    uiTreeViewAppendValueStore (uitree);
+    confuiGenreSet (uitree, TRUE, genredisp, clflag);
     gui->tables [CONFUI_ID_GENRES].currcount += 1;
   }
 
-  uitree = gui->tables [CONFUI_ID_GENRES].uitree;
-  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
-
-//  uiTreeViewAddEditableColumn (uitree, CONFUI_GENRE_COL_GENRE,
-//      CONFUI_GENRE_COL_EDITABLE, tagdefs [TAG_GENRE].displayname,
-//      confuiTableEditTextCallback);
   renderer = gtk_cell_renderer_text_new ();
   g_object_set_data (G_OBJECT (renderer), "uicolumn",
       GUINT_TO_POINTER (CONFUI_GENRE_COL_GENRE));
@@ -132,8 +127,6 @@ confuiCreateGenreTable (confuigui_t *gui)
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), GTK_TREE_MODEL (store));
-  g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateGenreTable", "");
 }
 

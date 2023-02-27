@@ -848,7 +848,6 @@ songfilterMakeSortKey (songfilter_t *sf,
               9999 - yr, 99 - mon, 99 - day);
         }
       }
-fprintf (stderr, "db-add-date: %s\n", tbuff);
       strlcat (sortkey, tbuff, sz);
     } else if (tagkey == TAG_LAST_UPDATED) {
       size_t    tval;

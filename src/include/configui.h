@@ -12,6 +12,8 @@
 #include "uiduallist.h"
 #include "uinbutil.h"
 
+#include "ui.h"
+
 /* base type */
 typedef enum {
   CONFUI_NONE,
@@ -499,13 +501,19 @@ bool confuiTableAdd (void *udata);
 
 /* conftabledance.c */
 void confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
+void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
 
 /* conftableset.c */
-void confuiDanceSet (GtkListStore *store, GtkTreeIter *iter, char *dancedisp, ilistidx_t key);
-void confuiGenreSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *genredisp, int clflag);
-void confuiLevelSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *leveldisp, long weight, int def);
-void confuiRatingSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *ratingdisp, long weight);
-void confuiStatusSet (GtkListStore *store, GtkTreeIter *iter, int editable, char *statusdisp, int playflag);
+// GtkListStore *store, GtkTreeIter *iter,
+void confuiDanceSet (uitree_t *uitree, char *dancedisp, ilistidx_t key);
+// GtkListStore *store, GtkTreeIter *iter,
+void confuiGenreSet (uitree_t *uitree, int editable, char *genredisp, int clflag);
+// GtkListStore *store, GtkTreeIter *iter,
+void confuiLevelSet (uitree_t *uitree, int editable, char *leveldisp, long weight, int def);
+// GtkListStore *store, GtkTreeIter *iter,
+void confuiRatingSet (uitree_t *uitree, int editable, char *ratingdisp, long weight);
+// GtkListStore *store, GtkTreeIter *iter,
+void confuiStatusSet (uitree_t *uitree, int editable, char *statusdisp, int playflag);
 
 /* confui.c */
 void confuiBuildUIUserInterface (confuigui_t *gui);

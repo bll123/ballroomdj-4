@@ -183,10 +183,6 @@ confuiBuildUIEditDances (confuigui_t *gui)
 static void
 confuiCreateDanceTable (confuigui_t *gui)
 {
-  GtkTreeIter       iter;
-  GtkListStore      *store = NULL;
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
   slistidx_t        iteridx;
   ilistidx_t        key;
   dance_t           *dances;
@@ -199,9 +195,12 @@ confuiCreateDanceTable (confuigui_t *gui)
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
-  store = gtk_list_store_new (CONFUI_DANCE_COL_MAX,
-      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM);
-  assert (store != NULL);
+  uitree = gui->tables [CONFUI_ID_DANCE].uitree;
+  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
+  uiTreeViewDisableHeaders (uitree);
+
+  uiTreeViewCreateValueStore (uitree, CONFUI_DANCE_COL_MAX,
+      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
 
   dancelist = danceGetDanceList (dances);
   slistStartIterator (dancelist, &iteridx);
@@ -210,33 +209,16 @@ confuiCreateDanceTable (confuigui_t *gui)
 
     dancedisp = danceGetStr (dances, key, DANCE_DANCE);
 
-    gtk_list_store_append (store, &iter);
-    confuiDanceSet (store, &iter, dancedisp, key);
+    uiTreeViewAppendValueStore (uitree);
+    confuiDanceSet (uitree, dancedisp, key);
     gui->tables [CONFUI_ID_DANCE].currcount += 1;
   }
 
-  uitree = gui->tables [CONFUI_ID_DANCE].uitree;
-  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
-  uiTreeViewDisableHeaders (uitree);
+  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
+      TREE_COL_MODE_TEXT, CONFUI_DANCE_COL_DANCE, -1);
+  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
+      TREE_COL_MODE_TEXT, CONFUI_DANCE_COL_SB_PAD, -1);
 
-  renderer = gtk_cell_renderer_text_new ();
-  g_object_set_data (G_OBJECT (renderer), "uicolumn",
-      GUINT_TO_POINTER (CONFUI_DANCE_COL_DANCE));
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", CONFUI_DANCE_COL_DANCE,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", CONFUI_DANCE_COL_SB_PAD,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
-
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), GTK_TREE_MODEL (store));
-  g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateDanceTable", "");
 }
 

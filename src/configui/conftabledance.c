@@ -37,14 +37,8 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   confuigui_t   *gui = udata;
   GtkTreeIter   iter;
   GtkTreeModel  *model = NULL;
-  gulong        idx = 0;
+  glong         idx = 0;
   ilistidx_t    key;
-  int           widx;
-  char          *sval;
-  nlistidx_t    num;
-  slist_t       *slist;
-  datafileconv_t conv;
-  dance_t       *dances;
 
   logProcBegin (LOG_PROC, "confuiDanceSelect");
   gui->inchange = true;
@@ -63,6 +57,21 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   }
   gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
   key = (ilistidx_t) idx;
+
+  confuiDanceSelectLoadValues (gui, key);
+  gui->inchange = false;
+  logProcEnd (LOG_PROC, "confuiDanceSelect", "");
+}
+
+void
+confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key)
+{
+  dance_t       *dances;
+  char          *sval;
+  slist_t       *slist;
+  datafileconv_t conv;
+  int           widx;
+  nlistidx_t    num;
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
@@ -106,8 +115,4 @@ confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
   num = danceGetNum (dances, key, DANCE_TYPE);
   widx = CONFUI_SPINBOX_DANCE_TYPE;
   uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, num);
-
-  gui->inchange = false;
-  logProcEnd (LOG_PROC, "confuiDanceSelect", "");
 }
-

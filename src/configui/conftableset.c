@@ -24,24 +24,23 @@
 #include "ui.h"
 
 void
-confuiDanceSet (GtkListStore *store, GtkTreeIter *iter,
-    char *dancedisp, ilistidx_t key)
+confuiDanceSet (uitree_t *uitree, char *dancedisp, ilistidx_t key)
 {
   logProcBegin (LOG_PROC, "confuiDanceSet");
-  gtk_list_store_set (store, iter,
+  uiTreeViewSetValues (uitree,
       CONFUI_DANCE_COL_DANCE, dancedisp,
       CONFUI_DANCE_COL_SB_PAD, "    ",
-      CONFUI_DANCE_COL_DANCE_IDX, (glong) key,
+      CONFUI_DANCE_COL_DANCE_IDX, (treenum_t) key,
       -1);
   logProcEnd (LOG_PROC, "confuiDanceSet", "");
 }
 
 void
-confuiGenreSet (GtkListStore *store, GtkTreeIter *iter,
+confuiGenreSet (uitree_t *uitree,
     int editable, char *genredisp, int clflag)
 {
   logProcBegin (LOG_PROC, "confuiGenreSet");
-  gtk_list_store_set (store, iter,
+  uiTreeViewSetValues (uitree,
       CONFUI_GENRE_COL_EDITABLE, editable,
       CONFUI_GENRE_COL_GENRE, genredisp,
       CONFUI_GENRE_COL_CLASSICAL, clflag,
@@ -50,14 +49,14 @@ confuiGenreSet (GtkListStore *store, GtkTreeIter *iter,
 }
 
 void
-confuiLevelSet (GtkListStore *store, GtkTreeIter *iter,
+confuiLevelSet (uitree_t *uitree,
     int editable, char *leveldisp, long weight, int def)
 {
   GtkAdjustment     *adjustment;
 
   logProcBegin (LOG_PROC, "confuiLevelSet");
   adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
-  gtk_list_store_set (store, iter,
+  uiTreeViewSetValues (uitree,
       CONFUI_LEVEL_COL_EDITABLE, editable,
       CONFUI_LEVEL_COL_LEVEL, leveldisp,
       CONFUI_LEVEL_COL_WEIGHT, weight,
@@ -69,14 +68,14 @@ confuiLevelSet (GtkListStore *store, GtkTreeIter *iter,
 }
 
 void
-confuiRatingSet (GtkListStore *store, GtkTreeIter *iter,
+confuiRatingSet (uitree_t *uitree,
     int editable, char *ratingdisp, long weight)
 {
   GtkAdjustment     *adjustment;
 
   logProcBegin (LOG_PROC, "confuiRatingSet");
   adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
-  gtk_list_store_set (store, iter,
+  uiTreeViewSetValues (uitree,
       CONFUI_RATING_COL_R_EDITABLE, editable,
       CONFUI_RATING_COL_W_EDITABLE, TRUE,
       CONFUI_RATING_COL_RATING, ratingdisp,
@@ -88,11 +87,11 @@ confuiRatingSet (GtkListStore *store, GtkTreeIter *iter,
 }
 
 void
-confuiStatusSet (GtkListStore *store, GtkTreeIter *iter,
+confuiStatusSet (uitree_t *uitree,
     int editable, char *statusdisp, int playflag)
 {
   logProcBegin (LOG_PROC, "confuiStatusSet");
-  gtk_list_store_set (store, iter,
+  uiTreeViewSetValues (uitree,
       CONFUI_STATUS_COL_EDITABLE, editable,
       CONFUI_STATUS_COL_STATUS, statusdisp,
       CONFUI_STATUS_COL_PLAY_FLAG, playflag,

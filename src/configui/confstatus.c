@@ -66,8 +66,8 @@ confuiBuildUIEditStatus (confuigui_t *gui)
 void
 confuiCreateStatusTable (confuigui_t *gui)
 {
-  GtkTreeIter       iter;
-  GtkListStore      *store = NULL;
+//  GtkTreeIter       iter;
+//  GtkListStore      *store = NULL;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
   ilistidx_t        iteridx;
@@ -81,9 +81,13 @@ confuiCreateStatusTable (confuigui_t *gui)
 
   status = bdjvarsdfGet (BDJVDF_STATUS);
 
-  store = gtk_list_store_new (CONFUI_STATUS_COL_MAX,
-      TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_BOOLEAN);
-  assert (store != NULL);
+  uitree = gui->tables [CONFUI_ID_STATUS].uitree;
+  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
+
+// store = gtk_list_store_new
+  uiTreeViewCreateValueStore (uitree, CONFUI_STATUS_COL_MAX,
+      TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_BOOLEAN, TREE_TYPE_END);
+//  assert (store != NULL);
 
   statusStartIterator (status, &iteridx);
 
@@ -99,15 +103,14 @@ confuiCreateStatusTable (confuigui_t *gui)
       editable = FALSE;
     }
 
-    gtk_list_store_append (store, &iter);
-    confuiStatusSet (store, &iter, editable, statusdisp, playflag);
+    uiTreeViewAppendValueStore (uitree);
+//    gtk_list_store_append (store, &iter);
+    confuiStatusSet (uitree, editable, statusdisp, playflag);
+//    confuiStatusSet (store, &iter, editable, statusdisp, playflag);
     /* all cells other than the very first (Unrated) are editable */
     editable = TRUE;
     gui->tables [CONFUI_ID_STATUS].currcount += 1;
   }
-
-  uitree = gui->tables [CONFUI_ID_STATUS].uitree;
-  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
 
   renderer = gtk_cell_renderer_text_new ();
   g_object_set_data (G_OBJECT (renderer), "uicolumn",
@@ -132,8 +135,8 @@ confuiCreateStatusTable (confuigui_t *gui)
   gtk_tree_view_column_set_title (column, _("Play?"));
   gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), GTK_TREE_MODEL (store));
-  g_object_unref (store);
+//  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), GTK_TREE_MODEL (store));
+//  g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateStatusTable", "");
 }
 

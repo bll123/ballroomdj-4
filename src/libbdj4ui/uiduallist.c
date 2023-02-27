@@ -160,8 +160,8 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   duallist->trees [DUALLIST_TREE_SOURCE].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
-  uiTreeViewCreateValues (uitree, DUALLIST_COL_MAX,
-      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM);
+  uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
+      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
   uiTreeViewDisableHeaders (uitree);
 
   uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
@@ -212,8 +212,8 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   duallist->trees [DUALLIST_TREE_TARGET].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
-  uiTreeViewCreateValues (uitree, DUALLIST_COL_MAX,
-      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM);
+  uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
+      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
   uiTreeViewDisableHeaders (uitree);
 
   uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
@@ -292,15 +292,15 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   /* the assumption made is that the source tree has been populated */
   /* just before the target tree */
 
-  uiTreeViewCreateValues (uitree, DUALLIST_COL_MAX,
-      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM);
+  uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
+      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
 
   slistStartIterator (slist, &siteridx);
   while ((keystr = slistIterateKey (slist, &siteridx)) != NULL) {
     long    val;
 
     val = slistGetNum (slist, keystr);
-    uiTreeViewAppendValue (uitree);
+    uiTreeViewAppendValueStore (uitree);
     uiTreeViewSetValues (uitree,
         DUALLIST_COL_DISP, keystr,
         DUALLIST_COL_SB_PAD, "    ",
