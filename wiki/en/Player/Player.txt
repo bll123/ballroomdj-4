@@ -121,6 +121,17 @@ Clears the queue from the selected position to the end of the queue.
 __Queue Playlist__:
 Select a playlist from the drop-down to add the playlist to the queue.
 
+When __Show&nbsp;Queue&nbsp;Dance&nbsp;Buttons__ is turned on for the
+selected music queue, two additional buttons are shown.
+
+__Queue Dance__: Select a dance from the drop-down to add that dance
+to the queue.  The special playlist __QueueDance__ is used to select
+the song.
+
+__Queue 5__: Select a dance from the drop-down to add five instances
+of that dance to the queue.  The special playlist __QueueDance__ is
+used to select the songs.
+
 ##### Requests
 
 Select the _Request_ tab to view the song selection listing.  The
@@ -197,4 +208,4 @@ See also
 <br>[Configure / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:22:54; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-27 12:26:29; BDJ4 version 4.1.1-beta)_

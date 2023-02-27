@@ -95,9 +95,9 @@
 <br>[Keyword](en-Subjects-Keyword)
 <br>[Music Queues](en-Subjects-Music%20Queues)
 <br>__Playlists__
-<br>&nbsp;&nbsp;&nbsp;[Automatic Playlists](en-Subjects-Automatic%20Playlists)
-<br>&nbsp;&nbsp;&nbsp;[Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
 <br>&nbsp;&nbsp;&nbsp;[Song Lists](en-Subjects-Song%20Lists)
+<br>&nbsp;&nbsp;&nbsp;[Sequenced Playlists](en-Subjects-Sequenced%20Playlists)
+<br>&nbsp;&nbsp;&nbsp;[Automatic Playlists](en-Subjects-Automatic%20Playlists)
 <br>__Advanced Setup__
 <br>&nbsp;&nbsp;&nbsp;[Alternate Folders](en-Subjects-Alternate%20Folders)
 <br>&nbsp;&nbsp;&nbsp;[Profiles](en-Subjects-Profiles)
@@ -112,4 +112,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2023-01-30 11:01:23; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-27 12:26:29; BDJ4 version 4.1.1-beta)_

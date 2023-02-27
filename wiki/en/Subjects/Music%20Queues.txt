@@ -50,7 +50,7 @@ The music queues are configured in
 __Configure&nbsp;/&nbsp;Music&nbsp;Queues__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![musicq-conf-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-conf-A.png)
+![musicq-conf-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-conf-B.png)
 <br><span style="color:#4559bf;">**Configure / Music Queues**</span> </div>
 
 If the __Active__ switch is off, the music queue inherits its
@@ -108,7 +108,7 @@ __Show&nbsp;Queue&nbsp;Dance&nbsp;Buttons__ switches are turned on.
 __Pause&nbsp;Each&nbsp;Song__ and __Play&nbsp;Announcements__ are off.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![musicq-conf-teach-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-conf-teach-A.png)
+![musicq-conf-teach-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/musicq-conf-teach-B.png)
 <br><span style="color:#4559bf;">**Configure / Music Queues**</span> </div>
 
 As the queue dance buttons will be active, it is easy to quickly
@@ -172,4 +172,4 @@ See also:
 <br>[Running a Showcase](en-HowTo-Running%20a%20Showcase)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-16 10:45:07; BDJ4 version 4.1.0-beta)_
+<br>_(Updated 2023-02-27 12:26:29; BDJ4 version 4.1.1-beta)_

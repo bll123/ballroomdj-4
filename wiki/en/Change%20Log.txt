@@ -8,6 +8,10 @@
 
 * Bug Fixes:
     * Song Selection: Fix 'Date Added' filter.
+* Changes:
+    * song editor: Changed Control-A to Control-Shift-A.
+* Internal:
+    * Code cleanup.
 
 -->
 
@@ -264,4 +268,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-24 05:51:40; BDJ4 version 4.1.1-beta)_
+<br>_(Updated 2023-02-27 12:26:29; BDJ4 version 4.1.1-beta)_

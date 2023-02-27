@@ -36,7 +36,7 @@ Close the configuration window to save the configuration changes.
 Start the __Player__, and in the __Options__ menu, set
 __Show&nbsp;Extra&nbsp;Queues__ to on.
 __Switch&nbsp;Queue&nbsp;When&nbsp;Empty__ should be off. Select the
-_Showcase_ music queue, and select the
+___Showcase___ music queue, and select the
 __Set&nbsp;Queue&nbsp;for&nbsp;Playback__ button.
 
 <!-- re-used by subjects/music-queues -->
@@ -64,8 +64,8 @@ the music queue.
 
 ###### Playing a Song in the Database
 
-Select the _Request_ tab, and choose the song to play.  Select the
-__Queue__ button to add the song to the _Showcase_ music queue.
+Select the ___Request___ tab, and choose the song to play.  Select the
+__Queue__ button to add the song to the ___Showcase___ music queue.
 
 Use the __Play&nbsp;/&nbsp;Pause__
 (![b-pp](https://ballroomdj4.sourceforge.io/wikiimg/player-b-playpause-A.png))
@@ -79,13 +79,15 @@ playing the song at the appropriate time.
 The songs for the showcase may be queued ahead of time, it is not
 necessary to queue them one by one.
 
-In some cases, the participants might not be ready, and a different song
-must be played.  For example, there is a Waltz ready to be played, and
-instead a Tango will be played.  Move the Tango to the top of the
-queue, then select the __Move&nbsp;Up__ button once more.
+In some cases, the participants might not be ready, and a different
+song must be played.  For example, there is a Waltz ready to be
+played, and instead a Tango will be played.  Move the Tango to the top
+of the queue, then select the __Move&nbsp;Up__ button once more.
 (![move-up](https://ballroomdj4.sourceforge.io/wikiimg/UpButton-B.png))
-This will swap the Tango and the Waltz.  The Tango will be ready to
-play, and the Waltz will be put back into the music queue.
+This will swap the Tango and the Waltz.  The music must be stopped in
+order to swap the song at the top of the queue with the song that is
+ready to be played.  The Tango will be ready to play, and the Waltz
+will be put back into the music queue.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-27 12:26:29; BDJ4 version 4.1.1-beta)_
