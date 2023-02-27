@@ -1547,13 +1547,9 @@ pluiKeyEvent (void *udata)
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
     return UICB_STOP;
   }
+  /* isaudiopausekey() also checks for the stop key */
   if (uiKeyIsPressEvent (plui->uikey) &&
       uiKeyIsAudioPauseKey (plui->uikey)) {
-    connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_PAUSE, NULL);
-    return UICB_STOP;
-  }
-  if (uiKeyIsPressEvent (plui->uikey) &&
-      uiKeyIsAudioStopKey (plui->uikey)) {
     connSendMessage (plui->conn, ROUTE_PLAYER, MSG_PLAY_PAUSE, NULL);
     return UICB_STOP;
   }

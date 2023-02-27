@@ -163,22 +163,10 @@ uiKeyIsAudioPauseKey (uikey_t *uikey)
   if (uikey->keyval == GDK_KEY_AudioPause) {
     rc = true;
   }
-
-  return rc;
-}
-
-bool
-uiKeyIsAudioStopKey (uikey_t *uikey)
-{
-  bool  rc = false;
-
-  if (uikey == NULL) {
-    return rc;
-  }
-
   if (uikey->keyval == GDK_KEY_AudioStop) {
     rc = true;
   }
+
 
   return rc;
 }

@@ -22,7 +22,6 @@ bool    uiKeyIsMovementKey (uikey_t *uikey);
 bool    uiKeyIsKey (uikey_t *uikey, unsigned char keyval);
 bool    uiKeyIsAudioPlayKey (uikey_t *uikey);
 bool    uiKeyIsAudioPauseKey (uikey_t *uikey);
-bool    uiKeyIsAudioStopKey (uikey_t *uikey);
 bool    uiKeyIsAudioNextKey (uikey_t *uikey);
 bool    uiKeyIsAudioPrevKey (uikey_t *uikey);
 bool    uiKeyIsUpKey (uikey_t *uikey);
