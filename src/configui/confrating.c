@@ -84,7 +84,7 @@ confuiCreateRatingTable (confuigui_t *gui)
 
   store = gtk_list_store_new (CONFUI_RATING_COL_MAX,
       TREE_TYPE_NUM, TREE_TYPE_NUM, TREE_TYPE_STRING,
-      TREE_TYPE_NUM, TREE_TYPE_IMAGE, TREE_TYPE_NUM);
+      TREE_TYPE_NUM, TREE_TYPE_WIDGET, TREE_TYPE_NUM);
   assert (store != NULL);
 
   ratingStartIterator (ratings, &iteridx);

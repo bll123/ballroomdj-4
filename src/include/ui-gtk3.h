@@ -10,14 +10,20 @@
 enum {
   TREE_TYPE_STRING = G_TYPE_STRING,
   TREE_TYPE_NUM = G_TYPE_LONG,
-  TREE_TYPE_IMAGE = G_TYPE_OBJECT,
+  TREE_TYPE_WIDGET = G_TYPE_OBJECT,
   TREE_TYPE_BOOLEAN = G_TYPE_BOOLEAN,
   TREE_TYPE_ELLIPSIZE = G_TYPE_INT,
+  TREE_TYPE_IMAGE = -5,               // will be set to GDK_TYPE_PIXBUF
   TREE_COL_DISP_NORM = GTK_TREE_VIEW_COLUMN_AUTOSIZE,
   TREE_COL_DISP_GROW = GTK_TREE_VIEW_COLUMN_GROW_ONLY,
 };
 
-#define TREE_COL_MODE_TEXT "text"
+enum {
+  TREE_COL_MODE_TEXT,
+  TREE_COL_MODE_EDITABLE,
+  TREE_COL_MODE_FONT,
+  TREE_COL_MODE_MARKUP,
+};
 
 /* these are defined based on the gtk values */
 /* would change for a different gui package */
@@ -41,6 +47,7 @@ typedef struct {
     GdkPixbuf         *pixbuf;
     GtkTreeSelection  *sel;
     GtkTextBuffer     *buffer;
+    GtkAdjustment     *adjustment;
   };
 } UIWidget;
 

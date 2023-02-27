@@ -21,8 +21,11 @@ uitree_t *uiCreateTreeView (void);
 void  uiTreeViewFree (uitree_t *uitree);
 UIWidget * uiTreeViewGetUIWidget (uitree_t *uitree);
 void  uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...);
-void  uiTreeViewCreateStorage (uitree_t *uitree, int colmax, ...);
-void  uiTreeViewAppendStorage (uitree_t *uitree, ...);
+void  uiTreeViewCreateValues (uitree_t *uitree, int colmax, ...);
+void  uiTreeViewCreateValuesFromList (uitree_t *uitree, int colmax, int *typelist);
+void  uiTreeViewAppendValue (uitree_t *uitree);
+void  uiTreeViewSetValues (uitree_t *uitree, ...);
+int   uiTreeViewGetSelectionNew (uitree_t *uitree);
 #if BDJ4_USE_GTK
 int   uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *iter);
 #endif

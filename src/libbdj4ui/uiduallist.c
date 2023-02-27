@@ -160,14 +160,14 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   duallist->trees [DUALLIST_TREE_SOURCE].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
-  uiTreeViewCreateStorage (uitree, DUALLIST_COL_MAX,
+  uiTreeViewCreateValues (uitree, DUALLIST_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM);
   uiTreeViewDisableHeaders (uitree);
 
   uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
-      TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, NULL);
+      TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, -1);
   uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
-      TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, NULL);
+      TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, -1);
 
   uiCreateVertBox (&dvbox);
   uiWidgetSetAllMargins (&dvbox, 4);
@@ -212,14 +212,14 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   duallist->trees [DUALLIST_TREE_TARGET].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
-  uiTreeViewCreateStorage (uitree, DUALLIST_COL_MAX,
+  uiTreeViewCreateValues (uitree, DUALLIST_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM);
   uiTreeViewDisableHeaders (uitree);
 
   uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
-      TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, NULL);
+      TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, -1);
   uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
-      TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, NULL);
+      TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, -1);
 
   uiCreateVertBox (&dvbox);
   uiWidgetSetAllMargins (&dvbox, 4);
@@ -292,7 +292,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   /* the assumption made is that the source tree has been populated */
   /* just before the target tree */
 
-  uiTreeViewCreateStorage (uitree, DUALLIST_COL_MAX,
+  uiTreeViewCreateValues (uitree, DUALLIST_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM);
 
   slistStartIterator (slist, &siteridx);
@@ -300,7 +300,8 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
     long    val;
 
     val = slistGetNum (slist, keystr);
-    uiTreeViewAppendStorage (uitree,
+    uiTreeViewAppendValue (uitree);
+    uiTreeViewSetValues (uitree,
         DUALLIST_COL_DISP, keystr,
         DUALLIST_COL_SB_PAD, "    ",
         DUALLIST_COL_DISP_IDX, val,

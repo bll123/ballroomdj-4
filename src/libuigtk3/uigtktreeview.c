@@ -33,6 +33,10 @@ typedef struct uitree {
   UIWidget      uitree;
   UIWidget      sel;
   callback_t    *editedcb;
+  GtkTreeIter   storeiter;
+  GtkTreeIter   selectiter;
+  GtkTreeModel  *model;
+  bool          selectset;
 } uitree_t;
 
 uitree_t *
@@ -56,6 +60,8 @@ uiCreateTreeView (void)
   uitree->uitree.widget = tree;
   uitree->editedcb = NULL;
   uitree->sel.sel = sel;
+  uitree->selectset = false;
+  uitree->model = NULL;
   uiWidgetSetAllMargins (&uitree->uitree, 2);
   return uitree;
 }
@@ -86,13 +92,13 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
   va_list           args;
-  char              *coltype;
+  int               coltype;
   int               col;
+  char              *gtkcoltype = "text";
 
   if (uitree == NULL) {
     return;
   }
-
   if (! uiutilsUIWidgetSet (&uitree->uitree)) {
     return;
   }
@@ -102,12 +108,31 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
   gtk_tree_view_column_pack_start (column, renderer, TRUE);
 
   va_start (args, title);
-  coltype = va_arg (args, char *);
-  while (coltype != NULL) {
-    col = va_arg (args, int);
-    gtk_tree_view_column_add_attribute (column, renderer, coltype, col);
+  coltype = va_arg (args, int);
+  while (coltype != -1) {
+    switch (coltype) {
+      case TREE_COL_MODE_TEXT: {
+        gtkcoltype = "text";
+        break;
+      }
+      case TREE_COL_MODE_EDITABLE: {
+        gtkcoltype = "editable";
+        break;
+      }
+      case TREE_COL_MODE_FONT: {
+        gtkcoltype = "font";
+        break;
+      }
+      case TREE_COL_MODE_MARKUP: {
+        gtkcoltype = "markup";
+        break;
+      }
+    }
 
-    coltype = va_arg (args, char *);
+    col = va_arg (args, int);
+    gtk_tree_view_column_add_attribute (column, renderer, gtkcoltype, col);
+
+    coltype = va_arg (args, int);
   }
   va_end (args);
 
@@ -117,7 +142,7 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
 }
 
 void
-uiTreeViewCreateStorage (uitree_t *uitree, int colmax, ...)
+uiTreeViewCreateValues (uitree_t *uitree, int colmax, ...)
 {
   GtkListStore  *store = NULL;
   GType         *types;
@@ -126,11 +151,9 @@ uiTreeViewCreateStorage (uitree_t *uitree, int colmax, ...)
   if (uitree == NULL) {
     return;
   }
-
   if (! uiutilsUIWidgetSet (&uitree->uitree)) {
     return;
   }
-
   if (colmax <= 0 || colmax > 90) {
     return;
   }
@@ -149,30 +172,110 @@ uiTreeViewCreateStorage (uitree_t *uitree, int colmax, ...)
         GTK_TREE_MODEL (store));
     g_object_unref (store);
     mdfree (types);
+    uitree->model = NULL;
   }
 }
 
 void
-uiTreeViewAppendStorage (uitree_t *uitree, ...)
+uiTreeViewCreateValuesFromList (uitree_t *uitree, int colmax, int *typelist)
 {
   GtkListStore  *store = NULL;
-  GtkTreeIter   iter;
+  GType         *types;
+
+  if (uitree == NULL) {
+    return;
+  }
+  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+    return;
+  }
+  if (colmax <= 0 || colmax > 90) {
+    return;
+  }
+
+  types = mdmalloc (sizeof (GType) * colmax);
+
+  if (types != NULL) {
+    for (int i = 0; i < colmax; ++i) {
+      if (typelist [i] == TREE_TYPE_IMAGE) {
+        types [i] = GDK_TYPE_PIXBUF;
+      } else {
+        types [i] = typelist [i];
+      }
+    }
+
+    store = gtk_list_store_newv (colmax, types);
+    gtk_tree_view_set_model (GTK_TREE_VIEW (uitree->uitree.widget),
+        GTK_TREE_MODEL (store));
+    g_object_unref (store);
+    mdfree (types);
+    uitree->model = NULL;
+  }
+}
+
+void
+uiTreeViewAppendValue (uitree_t *uitree)
+{
+  GtkListStore  *store = NULL;
+
+  if (uitree == NULL) {
+    return;
+  }
+  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+    return;
+  }
+
+  if (uitree->model == NULL) {
+    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->uitree.widget));
+  }
+  store = GTK_LIST_STORE (uitree->model);
+  gtk_list_store_append (store, &uitree->storeiter);
+}
+
+void
+uiTreeViewSetValues (uitree_t *uitree, ...)
+{
+  GtkListStore  *store = NULL;
   va_list       args;
 
   if (uitree == NULL) {
     return;
   }
-
   if (! uiutilsUIWidgetSet (&uitree->uitree)) {
     return;
   }
 
-  store = GTK_LIST_STORE (
-      gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->uitree.widget)));
-  gtk_list_store_append (store, &iter);
+  if (uitree->model == NULL) {
+    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->uitree.widget));
+  }
+  store = GTK_LIST_STORE (uitree->model);
   va_start (args, uitree);
-  gtk_list_store_set_valist (store, &iter, args);
+  gtk_list_store_set_valist (store, &uitree->storeiter, args);
   va_end (args);
+}
+
+
+int
+uiTreeViewGetSelectionNew (uitree_t *uitree)
+{
+  GtkTreeSelection  *sel;
+  int               count;
+
+  uitree->selectset = false;
+  if (uitree == NULL) {
+    return 0;
+  }
+  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+    return 0;
+  }
+
+  sel = uitree->sel.sel;
+  count = gtk_tree_selection_count_selected_rows (sel);
+  if (count == 1) {
+    /* this only works if the treeview is in single-selection mode */
+    gtk_tree_selection_get_selected (sel, &uitree->model, &uitree->selectiter);
+    uitree->selectset = true;
+  }
+  return count;
 }
 
 int
@@ -181,7 +284,10 @@ uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *ite
   GtkTreeSelection  *sel;
   int               count;
 
-  if (uitree == NULL || uitree->uitree.widget == NULL) {
+  if (uitree == NULL) {
+    return 0;
+  }
+  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
     return 0;
   }
 
@@ -386,9 +492,12 @@ uiTreeViewSetDisplayColumn (GtkTreeModel *model, GtkTreeIter *iter,
 GType *
 uiTreeViewAddDisplayType (GType *types, int valtype, int col)
 {
-  int     type;
+  GType     type;
 
   type = valtype;
+  if (valtype == TREE_TYPE_IMAGE) {
+    type = GDK_TYPE_PIXBUF;
+  }
   if (type == TREE_TYPE_NUM) {
     /* despite being a numeric type, the display needs a string */
     /* so that empty values can be displayed */

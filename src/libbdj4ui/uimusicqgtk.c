@@ -88,9 +88,9 @@ typedef struct uimusicqgtk {
   uibutton_t        *buttons [UIMUSICQ_BUTTON_MAX];
   GtkTreeModel      *model;
   GtkTreeIter       *iter;
-  GType             *typelist;
+  int               *typelist;
   uikey_t           *uikey;
-  int               col;        // for the display type callback
+  int               colcount;        // for the display type callback
 } uimusicqgtk_t;
 
 static bool   uimusicqQueueDanceCallback (void *udata, long idx, int count);
@@ -696,7 +696,6 @@ static void
 uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
     mp_musicqupdate_t *musicqupdate, int newdispflag)
 {
-  GtkListStore      *store = NULL;
   slist_t           *sellist;
   uimusicqgtk_t     *uiw;
   int               ci;
@@ -707,31 +706,25 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
   uiw = uimusicq->ui [ci].uiWidgets;
 
   if (newdispflag == MUSICQ_NEW_DISP) {
-    UIWidget    *uiwidgetp;
-
-    uiw->typelist = mdmalloc (sizeof (GType) * MUSICQ_COL_MAX);
-    uiw->col = 0;
+    uiw->typelist = mdmalloc (sizeof (int) * MUSICQ_COL_MAX);
+    uiw->colcount = 0;
     /* attributes: ellipsize / font */
-    uiw->typelist [uiw->col++] = TREE_TYPE_ELLIPSIZE;
-    uiw->typelist [uiw->col++] = TREE_TYPE_STRING;
+    uiw->typelist [uiw->colcount++] = TREE_TYPE_ELLIPSIZE;
+    uiw->typelist [uiw->colcount++] = TREE_TYPE_STRING;
     /* unique idx / dbidx */
-    uiw->typelist [uiw->col++] = TREE_TYPE_NUM;
-    uiw->typelist [uiw->col++] = TREE_TYPE_NUM;
+    uiw->typelist [uiw->colcount++] = TREE_TYPE_NUM;
+    uiw->typelist [uiw->colcount++] = TREE_TYPE_NUM;
     /* display disp idx / pause ind */
-    uiw->typelist [uiw->col++] = TREE_TYPE_NUM;
-    uiw->typelist [uiw->col++] = GDK_TYPE_PIXBUF;
+    uiw->typelist [uiw->colcount++] = TREE_TYPE_NUM;
+    uiw->typelist [uiw->colcount++] = TREE_TYPE_IMAGE;
 
     sellist = dispselGetList (uimusicq->dispsel, uimusicq->ui [ci].dispselType);
     uimusicq->cbci = ci;
     uisongAddDisplayTypes (sellist,
         uimusicqProcessMusicQueueDataNewCallback, uimusicq);
 
-    store = gtk_list_store_newv (uiw->col, uiw->typelist);
+    uiTreeViewCreateValuesFromList (uiw->musicqTree, uiw->colcount, uiw->typelist);
     mdfree (uiw->typelist);
-    uiwidgetp = uiTreeViewGetUIWidget (uiw->musicqTree);
-    gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidgetp->widget),
-        GTK_TREE_MODEL (store));
-    g_object_unref (G_OBJECT (store));
   }
 
   uimusicqProcessMusicQueueDisplay (uimusicq, musicqupdate);
@@ -745,8 +738,9 @@ uimusicqProcessMusicQueueDataNewCallback (int type, void *udata)
   uimusicqgtk_t *uiw;
 
   uiw = uimusicq->ui [uimusicq->cbci].uiWidgets;
-  uiw->typelist = uiTreeViewAddDisplayType (uiw->typelist, type, uiw->col);
-  ++uiw->col;
+  uiw->typelist = mdrealloc (uiw->typelist, sizeof (int) * (uiw->colcount + 1));
+  uiw->typelist [uiw->colcount] = type;
+  ++uiw->colcount;
 }
 
 static void

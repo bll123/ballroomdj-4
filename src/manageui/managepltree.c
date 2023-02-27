@@ -507,17 +507,17 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
   uitree = managepltree->uitree;
 
   store = gtk_list_store_new (MPLTREE_COL_MAX,
-      TREE_TYPE_BOOLEAN, // dance select
-      TREE_TYPE_STRING,  // dance
-      TREE_TYPE_NUM,    // count
-      TREE_TYPE_STRING,  // max play time
-      TREE_TYPE_NUM,    // low bpm
-      TREE_TYPE_NUM,    // high bpm
-      TREE_TYPE_STRING,  // pad
-      TREE_TYPE_NUM,    // dance idx
-      TREE_TYPE_NUM,    // editable
-      TREE_TYPE_IMAGE,  // adjust
-      TREE_TYPE_NUM);   // digits
+      TREE_TYPE_BOOLEAN,  // dance select
+      TREE_TYPE_STRING,   // dance
+      TREE_TYPE_NUM,      // count
+      TREE_TYPE_STRING,   // max play time
+      TREE_TYPE_NUM,      // low bpm
+      TREE_TYPE_NUM,      // high bpm
+      TREE_TYPE_STRING,   // pad
+      TREE_TYPE_NUM,      // dance idx
+      TREE_TYPE_NUM,      // editable
+      TREE_TYPE_WIDGET,   // adjust
+      TREE_TYPE_NUM);     // digits
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancelist = danceGetDanceList (dances);
