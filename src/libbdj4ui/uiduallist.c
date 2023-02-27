@@ -164,7 +164,7 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
       gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
   store = gtk_list_store_new (DUALLIST_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_LONG);
+      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM);
   gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget),
       GTK_TREE_MODEL (store));
   g_object_unref (store);
@@ -229,7 +229,7 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
       gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
   store = gtk_list_store_new (DUALLIST_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_LONG);
+      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM);
   gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), GTK_TREE_MODEL (store));
   g_object_unref (store);
 
@@ -321,7 +321,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   /* just before the target tree */
 
   store = gtk_list_store_new (DUALLIST_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_LONG);
+      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM);
   assert (store != NULL);
 
   slistStartIterator (slist, &siteridx);

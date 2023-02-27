@@ -200,7 +200,7 @@ confuiCreateDanceTable (confuigui_t *gui)
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   store = gtk_list_store_new (CONFUI_DANCE_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_LONG);
+      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM);
   assert (store != NULL);
 
   dancelist = danceGetDanceList (dances);

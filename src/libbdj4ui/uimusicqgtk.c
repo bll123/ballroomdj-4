@@ -711,14 +711,14 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
 
     uiw->typelist = mdmalloc (sizeof (GType) * MUSICQ_COL_MAX);
     uiw->col = 0;
-    /* attributes: ellipsize / align / font */
-    uiw->typelist [uiw->col++] = G_TYPE_INT;
-    uiw->typelist [uiw->col++] = G_TYPE_STRING;
+    /* attributes: ellipsize / font */
+    uiw->typelist [uiw->col++] = TREE_TYPE_ELLIPSIZE;
+    uiw->typelist [uiw->col++] = TREE_TYPE_STRING;
     /* unique idx / dbidx */
-    uiw->typelist [uiw->col++] = G_TYPE_LONG;
-    uiw->typelist [uiw->col++] = G_TYPE_LONG;
+    uiw->typelist [uiw->col++] = TREE_TYPE_NUM;
+    uiw->typelist [uiw->col++] = TREE_TYPE_NUM;
     /* display disp idx / pause ind */
-    uiw->typelist [uiw->col++] = G_TYPE_LONG;
+    uiw->typelist [uiw->col++] = TREE_TYPE_NUM;
     uiw->typelist [uiw->col++] = GDK_TYPE_PIXBUF;
 
     sellist = dispselGetList (uimusicq->dispsel, uimusicq->ui [ci].dispselType);

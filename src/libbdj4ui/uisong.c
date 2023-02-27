@@ -120,7 +120,7 @@ uisongAddDisplayTypes (slist_t *sellist, uisongdtcb_t cb, void *udata)
     int         type;
 
     vt = uisongDetermineDisplayValueType (tagidx);
-    type = vt == VALUE_STR ? UITREE_TYPE_STRING : UITREE_TYPE_NUM;
+    type = vt == VALUE_STR ? TREE_TYPE_STRING : TREE_TYPE_NUM;
     if (cb != NULL) {
       cb (type, udata);
     }

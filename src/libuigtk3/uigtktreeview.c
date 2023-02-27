@@ -291,13 +291,11 @@ uiTreeViewAddDisplayType (GType *types, int valtype, int col)
 {
   int     type;
 
-  if (valtype == UITREE_TYPE_NUM) {
+  type = valtype;
+  if (type == TREE_TYPE_NUM) {
     /* despite being a numeric type, the display needs a string */
     /* so that empty values can be displayed */
-    type = G_TYPE_STRING;
-  }
-  if (valtype == UITREE_TYPE_STRING) {
-    type = G_TYPE_STRING;
+    type = TREE_TYPE_STRING;
   }
   types = uiAppendType (types, col, type);
 

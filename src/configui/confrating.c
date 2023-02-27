@@ -83,8 +83,8 @@ confuiCreateRatingTable (confuigui_t *gui)
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
   store = gtk_list_store_new (CONFUI_RATING_COL_MAX,
-      G_TYPE_LONG, G_TYPE_LONG, G_TYPE_STRING,
-      G_TYPE_LONG, G_TYPE_OBJECT, G_TYPE_LONG);
+      TREE_TYPE_NUM, TREE_TYPE_NUM, TREE_TYPE_STRING,
+      TREE_TYPE_NUM, TREE_TYPE_IMAGE, TREE_TYPE_NUM);
   assert (store != NULL);
 
   ratingStartIterator (ratings, &iteridx);

@@ -79,7 +79,7 @@ confuiCreateGenreTable (confuigui_t *gui)
   genres = bdjvarsdfGet (BDJVDF_GENRES);
 
   store = gtk_list_store_new (CONFUI_GENRE_COL_MAX,
-      G_TYPE_LONG, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_STRING);
+      TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_BOOLEAN, TREE_TYPE_STRING);
   assert (store != NULL);
 
   genreStartIterator (genres, &iteridx);

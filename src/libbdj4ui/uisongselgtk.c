@@ -998,15 +998,15 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   uiw->typelist = mdmalloc (sizeof (GType) * SONGSEL_COL_MAX);
   uiw->col = 0;
   /* attributes ellipsize/font*/
-  uiw->typelist [uiw->col++] = G_TYPE_INT;
-  uiw->typelist [uiw->col++] = G_TYPE_STRING;
+  uiw->typelist [uiw->col++] = TREE_TYPE_ELLIPSIZE;
+  uiw->typelist [uiw->col++] = TREE_TYPE_STRING;
   /* internal idx/sortidx/dbidx */
-  uiw->typelist [uiw->col++] = G_TYPE_LONG,
-  uiw->typelist [uiw->col++] = G_TYPE_LONG,
-  uiw->typelist [uiw->col++] = G_TYPE_LONG,
+  uiw->typelist [uiw->col++] = TREE_TYPE_NUM,
+  uiw->typelist [uiw->col++] = TREE_TYPE_NUM,
+  uiw->typelist [uiw->col++] = TREE_TYPE_NUM,
   /* fav color/mark color/mark/samesong color */
-  uiw->typelist [uiw->col++] = G_TYPE_STRING,
-  uiw->typelist [uiw->col++] = G_TYPE_STRING,
+  uiw->typelist [uiw->col++] = TREE_TYPE_STRING,
+  uiw->typelist [uiw->col++] = TREE_TYPE_STRING,
   assert (uiw->col == SONGSEL_COL_MAX);
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);

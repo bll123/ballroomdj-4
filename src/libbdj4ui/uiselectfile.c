@@ -162,7 +162,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiBoxPackInWindow (&scwindow, uitreewidgetp);
 
   store = gtk_list_store_new (SELFILE_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING);
+      TREE_TYPE_STRING, TREE_TYPE_STRING);
   assert (store != NULL);
 
   slistStartIterator (filelist, &fliteridx);

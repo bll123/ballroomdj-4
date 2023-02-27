@@ -17,11 +17,6 @@
 
 typedef struct uitree uitree_t;
 
-enum {
-  UITREE_TYPE_NUM,
-  UITREE_TYPE_STRING,
-};
-
 uitree_t *uiCreateTreeView (void);
 void  uiTreeViewFree (uitree_t *uitree);
 UIWidget * uiTreeViewGetUIWidget (uitree_t *uitree);

@@ -82,7 +82,7 @@ confuiCreateStatusTable (confuigui_t *gui)
   status = bdjvarsdfGet (BDJVDF_STATUS);
 
   store = gtk_list_store_new (CONFUI_STATUS_COL_MAX,
-      G_TYPE_LONG, G_TYPE_STRING, G_TYPE_BOOLEAN);
+      TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_BOOLEAN);
   assert (store != NULL);
 
   statusStartIterator (status, &iteridx);

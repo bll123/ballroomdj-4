@@ -6,6 +6,14 @@
 
 #include <gtk/gtk.h>
 
+enum {
+  TREE_TYPE_STRING = G_TYPE_STRING,
+  TREE_TYPE_NUM = G_TYPE_LONG,
+  TREE_TYPE_IMAGE = G_TYPE_OBJECT,
+  TREE_TYPE_BOOLEAN = G_TYPE_BOOLEAN,
+  TREE_TYPE_ELLIPSIZE = G_TYPE_INT,
+};
+
 /* these are defined based on the gtk values */
 /* would change for a different gui package */
 enum {
