@@ -1,0 +1,132 @@
+[Wiki Home](Home)
+
+[TOC]
+
+### Setting up Windows for DJ Work
+
+The settings outlined here prevent Windows from interrupting a DJ
+session.
+
+##### Scheduling Windows Updates
+
+###### Windows 10
+
+In __Settings__, select
+__Update&nbsp;&amp;&nbsp;Security__, then select
+__Windows&nbsp;Update__.  Select __Change&nbsp;active&nbsp;hours__.
+
+Make sure the __Automatically&nbsp;adjust&nbsp;active&nbsp;hours__
+toggle switch is off.
+
+Select the __change__ link next to __Current&nbsp;active&nbsp;hours__.
+
+Set the start time to 2:00&nbsp;pm and the end time to 1:00&nbsp;am (or the
+hours you prefer).
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![set-win10-upd](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win10-upd-A.png)
+<br><span style="color:#4559bf;">__Settings / Windows Update / Active hours__</span> </div>
+</div>
+
+###### Windows 11
+
+In __Settings__, select __Windows&nbsp;Update__, then select
+__Advanced&nbsp;options__.  Select __Active&nbsp;hours__.
+
+Change the __Adjust&nbsp;active&nbsp;hours__ drop-down to __Manual__.
+
+Set the start time to 2:00&nbsp;pm and the end time to 1:00&nbsp;am (or the
+hours you prefer).
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![set-win11-upd](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win11-upd-A.png)
+<br><span style="color:#4559bf;">__Settings / Windows Update / Active hours__</span> </div>
+</div>
+
+##### Power Settings
+
+###### Windows 10
+
+From the __Settings__ home, select __System__. Select
+__Power&nbsp;&amp;&nbsp;Sleep__.
+
+In both the __On&nbsp;battery&nbsp;power__ and the
+__When&nbsp;plugged&nbsp;in__ drop-downs, select __Never__.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![set-win10-power](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win10-power-A.png)
+<br><span style="color:#4559bf;">__Settings / Power &amp; Sleep__</span> </div>
+</div>
+
+###### Windows 11
+
+From the __Settings__ home, select __System__. Select
+__Power&nbsp;&amp;&nbsp;battery__.  Select
+__Screen&nbsp;&amp;&nbsp;Sleep__.
+
+In both the __On&nbsp;battery&nbsp;power__ and the
+__When&nbsp;plugged&nbsp;in__ drop-downs, select __Never__.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![set-win11-power](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win11-power-A.png)
+<br><span style="color:#4559bf;">__Settings / Power &amp; Sleep__</span> </div>
+</div>
+
+##### Notification Settings
+
+This is one method to prevent notifications. There are alternative
+methods to prevent notifications that can be used.
+
+###### Windows 10
+
+From the __Settings__ home, select __System__. Select
+__Notifications&nbsp;&amp;&nbsp;Actions__.
+
+Turn the __Get&nbsp;notifications&nbsp;from&nbsp;apps__ toggle switch off.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![set-win10-notify](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win10-notify-A.png)
+<br><span style="color:#4559bf;">__Settings / Notifications__</span> </div>
+</div>
+
+###### Windows 11
+
+From the __Settings__ home, select __System__. Select
+__Notifications__.
+
+Turn the __Notifications__ toggle switch off.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![set-win11-notify](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win11-notify-A.png)
+<br><span style="color:#4559bf;">__Settings / Notifications__</span> </div>
+</div>
+
+##### System Sounds
+
+System sounds made by various programs and widgets may interrupt the
+dancer's experience.
+
+###### Windows 10
+
+From the __Settings__ home, enter __change&nbsp;system&nbsp;sounds__
+in the search box.  Select __Change&nbsp;system&nbsp;sounds__.
+
+In the __Sound&nbsp;Scheme__ drop-down, select __No&nbsp;Sounds__.
+Select __OK__.
+
+###### Windows 11
+
+From the __Settings__ home, select __System__, then select __Sound__.
+Select __More&nbsp;sound&nsbp;settings__, then select the __Sound__
+tab in the pop-up window.
+
+In the __Sound&nbsp;Scheme__ drop-down, select __No&nbsp;Sounds__.
+Select __OK__.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![set-win-sound](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win-sound-C.png)
+<br><span style="color:#4559bf;">__Settings / Sound__</span> </div>
+</div>
+
+[Wiki Home](Home)
+<br>_(Updated 2023-03-01 07:30:52; BDJ4 version 4.1.1-beta)_
