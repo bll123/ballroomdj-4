@@ -1,0 +1,19 @@
+[Wiki Home](Home)
+<br>[Developer Notes](Development-Developer%20Notes)
+
+  package | url
+  ------- | ---
+  check | https://libcheck.github.io/check/
+  &nbsp; | https://github.com/libcheck/check/releases
+  chromaprint | https://acoustid.org/chromaprint
+  curl | https://curl.se/
+  ffmpeg | https://ffmpeg.org/download.html#build-windows
+  &nbsp; | https://github.com/GyanD/codexffmpeg/releases
+  libressl | https://www.libressl.org/
+  mongoose | https://github.com/cesanta/mongoose
+  &nbsp; |
+  taglib | https://taglib.org/
+
+[Developer Notes](Development-Developer%20Notes)
+<br>[Wiki Home](Home)
+<br>_(Updated 2023-03-01 06:30:16; BDJ4 version 4.1.1-beta)_
