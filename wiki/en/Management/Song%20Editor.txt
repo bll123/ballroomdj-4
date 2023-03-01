@@ -27,6 +27,20 @@ __Next__ and __Previous__ buttons traverse the songs selected in the
 [Music&nbsp;Manager](en-Management-Music%20Manager) wiki page for
 details.
 
+When a song is selected in
+[Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists), or the
+edit button is used, the __Next__ and __Previous__ buttons will
+traverse the songs in the song list.
+
+When a song is selected in the song selection tab, or the edit button
+is used in the song selection tab, the song editor
+will traverse the songs in the song selection.
+
+If you have a listing loaded in the music manager, multiple songs may
+be selected (using control-click).  When multiple songs are selected
+in the music manager, the song editor will traverse the selected
+songs, and not the entire listing.
+
 ##### File Display
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -83,12 +97,16 @@ __Actions&nbsp;/&nbsp;Cancel&nbsp;Edit&nbsp;All__ cancels the
 batch edit process. The changes made to the current song will be
 reverted. ___This function is not yet implemented___.
 
-__Actions&nbsp;/&nbsp;Apply&nbsp;Adjustments__ modifies the audio file
-and applies the song start, song end and speed adjustments.  The
-original audio file is saved and can be restored.
+__Actions&nbsp;/&nbsp;Apply&nbsp;Adjustments__ starts a dialog to
+modify the audio file.  The audio file may have its silence trimmed,
+volume normalized or adjusted to apply the song start, song end and
+speed adjustments.  The original audio file is saved and can be
+restored.
 
 __Actions&nbsp;/&nbsp;Restore&nbsp;Original__ is only active if the
-audio file has been modified with the __Apply&nbsp;Adjustments__ action.
+audio file has been modified with the __Apply&nbsp;Adjustments__
+action.  Selection __Restore&nbsp;Original__ will revert any changes
+made and restore the original audio file.
 
 ##### Using the BPM Counter
 
@@ -152,4 +170,4 @@ song editor is:
  Volume Adjustment|BDJ4|
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-27 12:26:29; BDJ4 version 4.1.1-beta)_
+<br>_(Updated 2023-03-01 07:40:43; BDJ4 version 4.1.1-beta)_
