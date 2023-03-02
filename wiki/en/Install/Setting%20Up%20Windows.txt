@@ -117,7 +117,7 @@ Select __OK__.
 ###### Windows 11
 
 From the __Settings__ home, select __System__, then select __Sound__.
-Select __More&nbsp;sound&nsbp;settings__, then select the __Sound__
+Select __More&nbsp;sound&nbsp;settings__, then select the __Sound__
 tab in the pop-up window.
 
 In the __Sound&nbsp;Scheme__ drop-down, select __No&nbsp;Sounds__.
@@ -129,4 +129,4 @@ Select __OK__.
 </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-01 07:30:52; BDJ4 version 4.1.1-beta)_
+<br>_(Updated 2023-03-02 06:59:05; BDJ4 version 4.1.1-beta)_
