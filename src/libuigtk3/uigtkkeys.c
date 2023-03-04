@@ -26,8 +26,8 @@ enum {
 };
 
 typedef struct uikey {
-  callback_t  *presscb;
-  callback_t  *releasecb;
+  callback_t    *presscb;
+  callback_t    *releasecb;
   int           eventtype;
   bool          controlpressed;
   bool          shiftpressed;
@@ -64,6 +64,7 @@ void
 uiKeySetKeyCallback (uikey_t *uikey, UIWidget *uiwidgetp, callback_t *uicb)
 {
   uikey->presscb = uicb;
+  uikey->releasecb = uicb;
   g_signal_connect (uiwidgetp->widget, "key-press-event",
       G_CALLBACK (uiKeyCallback), uikey);
   g_signal_connect (uiwidgetp->widget, "key-release-event",

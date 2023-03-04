@@ -116,6 +116,10 @@ typedef struct uisongselgtk {
   GType             *typelist;
   int               col;        // for the display type callback
   const char        *markcolor;
+  /* for shift-click */
+  nlistidx_t        shiftfirstidx;
+  nlistidx_t        shiftlastidx;
+  /* for double-click checks */
   dbidx_t           lastRowDBIdx;
   mstime_t          lastRowCheck;
   bool              controlPressed : 1;
@@ -1230,7 +1234,6 @@ uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
   /* set the selections based on the saved selection list */
   nlistStartIterator (uiw->selectedList, &iteridx);
   while ((idx = nlistIterateKey (uiw->selectedList, &iteridx)) >= 0) {
-
     if (idx >= uisongsel->idxStart &&
         idx < uisongsel->idxStart + uiw->maxRows) {
       uiTreeViewSelectionSet (uiw->songselTree, idx - uisongsel->idxStart);
@@ -1342,6 +1345,8 @@ uisongselKeyEvent (void *udata)
 
   uiw = uisongsel->uiWidgetData;
 
+  uiw->shiftPressed = false;
+  uiw->controlPressed = false;
   if (uiKeyIsShiftPressed (uiw->uikey)) {
     uiw->shiftPressed = true;
   }
@@ -1408,9 +1413,24 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
   /* then this is a new selection and not a modification */
   tlist = nlistAlloc ("selected-list-chg", LIST_ORDERED, NULL);
 
-  /* if the control-key or the shift-key are pressed, add any current */
+  /* if the shift key is pressed, get the first and the last item */
+  /* in the selection list (both, as it is not yet known where */
+  /* the new selection is in relation). */
+  if (uiw->shiftPressed) {
+    uiw->shiftfirstidx = -1;
+    uiw->shiftlastidx = -1;
+    nlistStartIterator (uiw->selectedList, &iteridx);
+    while ((idx = nlistIterateKey (uiw->selectedList, &iteridx)) >= 0) {
+      if (uiw->shiftfirstidx == -1) {
+        uiw->shiftfirstidx = idx;
+      }
+      uiw->shiftlastidx = idx;
+    }
+  }
+
+  /* if the control-key is pressed, add any current */
   /* selection that is not in view to the new selection list */
-  if (uiw->controlPressed || uiw->shiftPressed) {
+  if (uiw->controlPressed) {
     nlistStartIterator (uiw->selectedList, &iteridx);
     while ((idx = nlistIterateKey (uiw->selectedList, &iteridx)) >= 0) {
       if (idx < uisongsel->idxStart ||
@@ -1469,8 +1489,32 @@ uisongselProcessSelection (GtkTreeModel *model,
   uiw = uisongsel->uiWidgetData;
 
   gtk_tree_model_get (model, iter, SONGSEL_COL_IDX, &idx, -1);
-  gtk_tree_model_get (model, iter, SONGSEL_COL_DBIDX, &dbidx, -1);
-  nlistSetNum (uiw->selectedList, idx, dbidx);
+
+  if (uiw->shiftPressed) {
+    nlistidx_t    beg = 0;
+    nlistidx_t    end = -1;
+
+    if (idx <= uiw->shiftfirstidx) {
+      beg = idx;
+      end = uiw->shiftfirstidx;
+    }
+    if (idx >= uiw->shiftlastidx) {
+      beg = uiw->shiftlastidx;
+      end = idx;
+    }
+
+    for (nlistidx_t i = beg; i <= end; ++i) {
+      if (i >= uisongsel->idxStart &&
+          i < uisongsel->idxStart + uiw->maxRows) {
+        uiTreeViewSelectionSet (uiw->songselTree, i - uisongsel->idxStart);
+      }
+      dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
+      nlistSetNum (uiw->selectedList, i, dbidx);
+    }
+  } else {
+    gtk_tree_model_get (model, iter, SONGSEL_COL_DBIDX, &dbidx, -1);
+    nlistSetNum (uiw->selectedList, idx, dbidx);
+  }
 
   uisongsel->lastdbidx = dbidx;
 
