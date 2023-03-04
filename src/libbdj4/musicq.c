@@ -497,6 +497,30 @@ musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx)
   logProcEnd (LOG_PROC, "musicqRemove", "");
 }
 
+void
+musicqSwap (musicq_t *musicq, musicqidx_t musicqidx, qidx_t fromidx, qidx_t toidx)
+{
+  int           olddispidx;
+
+
+  logProcBegin (LOG_PROC, "musicqSwap");
+  if (fromidx < 0 || fromidx >= queueGetCount (musicq->q [musicqidx])) {
+    logProcEnd (LOG_PROC, "musicqSwap", "bad-idx-from");
+    return;
+  }
+  if (toidx < 0 || toidx >= queueGetCount (musicq->q [musicqidx])) {
+    logProcEnd (LOG_PROC, "musicqSwap", "bad-idx-to");
+    return;
+  }
+
+  olddispidx = musicqRenumberStart (musicq, musicqidx);
+  queueMove (musicq->q [musicqidx], fromidx, toidx);
+
+  musicqRenumber (musicq, musicqidx, olddispidx);
+
+  logProcEnd (LOG_PROC, "musicqRemove", "");
+}
+
 int
 musicqGetLen (musicq_t *musicq, musicqidx_t musicqidx)
 {

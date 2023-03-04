@@ -138,6 +138,14 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
         gtkcoltype = "active";
         break;
       }
+      case TREE_COL_MODE_FOREGROUND: {
+        gtkcoltype = "foreground";
+        break;
+      }
+      case TREE_COL_MODE_FOREGROUND_SET: {
+        gtkcoltype = "foreground-set";
+        break;
+      }
     }
 
     col = va_arg (args, int);

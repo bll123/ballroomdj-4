@@ -143,7 +143,7 @@ uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->sortbyfilter = uiDropDownInit ();
   uisf->uidance = NULL;
   uiutilsUIWidgetInit (&uisf->playlistdisp);
-  uisf->searchentry = uiEntryInit (30, 100);
+  uisf->searchentry = uiEntryInit (20, 100);
   uisf->uigenre = NULL;
   uisf->uirating = NULL;
   uisf->uilevel = NULL;

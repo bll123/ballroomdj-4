@@ -115,6 +115,26 @@ uimusicqRemove (uimusicq_t *uimusicq, int mqidx, long idx)
 }
 
 void
+uimusicqSwap (uimusicq_t *uimusicq, int mqidx)
+{
+  char        tbuff [100];
+
+  if (uimusicq->ui [mqidx].prevSelection < 0 ||
+      uimusicq->ui [mqidx].currSelection < 0 ||
+      uimusicq->ui [mqidx].prevSelection >= uimusicq->ui [mqidx].count ||
+      uimusicq->ui [mqidx].currSelection >= uimusicq->ui [mqidx].count ||
+      uimusicq->ui [mqidx].prevSelection == uimusicq->ui [mqidx].currSelection) {
+    return;
+  }
+
+  uimusicq->changed = true;
+  snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", mqidx,
+      MSG_ARGS_RS, uimusicq->ui [mqidx].prevSelection + 1,
+      MSG_ARGS_RS, uimusicq->ui [mqidx].currSelection + 1);
+  connSendMessage (uimusicq->conn, ROUTE_MAIN, MSG_MUSICQ_SWAP, tbuff);
+}
+
+void
 uimusicqCreatePlaylistList (uimusicq_t *uimusicq)
 {
   int               ci;

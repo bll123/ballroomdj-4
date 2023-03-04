@@ -15,6 +15,18 @@
 #include "callback.h"
 #include "slist.h"
 
+enum {
+  TREE_COL_MODE_TEXT,
+  TREE_COL_MODE_EDITABLE,
+  TREE_COL_MODE_FONT,
+  TREE_COL_MODE_MARKUP,
+  TREE_COL_MODE_ADJUSTMENT,
+  TREE_COL_MODE_DIGITS,
+  TREE_COL_MODE_ACTIVE,
+  TREE_COL_MODE_FOREGROUND,
+  TREE_COL_MODE_FOREGROUND_SET,
+};
+
 typedef struct uitree uitree_t;
 
 uitree_t *uiCreateTreeView (void);

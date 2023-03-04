@@ -63,6 +63,8 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     uimusicq->ui [i].count = 0;
     uimusicq->ui [i].haveselloc = false;
     uimusicq->ui [i].lastLocation = -1;
+    uimusicq->ui [i].prevSelection = -1;
+    uimusicq->ui [i].currSelection = -1;
     uimusicq->ui [i].selchgbypass = false;
     uimusicq->ui [i].playlistsel = uiDropDownInit ();
     sz = 20;

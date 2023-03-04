@@ -32,6 +32,8 @@ enum {
   MUSICQ_COL_FONT,
   MUSICQ_COL_UNIQUE_IDX,
   MUSICQ_COL_DBIDX,
+  MUSICQ_COL_DISP_IDX_COLOR,
+  MUSICQ_COL_DISP_IDX_COLOR_SET,
   MUSICQ_COL_DISP_IDX,
   MUSICQ_COL_PAUSEIND,
   MUSICQ_COL_MAX,
@@ -83,7 +85,6 @@ typedef struct uimusicqgtk {
   uitree_t          *musicqTree;
   GtkTreeSelection  *sel;
   GtkTreeViewColumn *favColumn;
-  char              *selPathStr;
   callback_t        *callbacks [UIMUSICQ_CB_MAX];
   uibutton_t        *buttons [UIMUSICQ_BUTTON_MAX];
   GtkTreeModel      *model;
@@ -108,6 +109,7 @@ static bool   uimusicqQueueCallback (void *udata);
 static dbidx_t uimusicqGetSelectionDbidx (uimusicq_t *uimusicq);
 static void   uimusicqSelectionChgCallback (GtkTreeSelection *sel, gpointer udata);
 static void   uimusicqSelectionChgProcess (uimusicq_t *uimusicq);
+static void   uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, long loc);
 static void   uimusicqSetDefaultSelection (uimusicq_t *uimusicq);
 static void   uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx);
 static bool   uimusicqSongEditCallback (void *udata);
@@ -118,6 +120,8 @@ static bool   uimusicqTogglePauseCallback (void *udata);
 static bool   uimusicqRemoveCallback (void *udata);
 static void   uimusicqCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
 static bool   uimusicqKeyEvent (void *udata);
+static void   uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp);
+static void   uimusicqCopySelections (uimusicq_t *uimusicq, uimusicq_t *peer, int mqidx);
 
 void
 uimusicqUIInit (uimusicq_t *uimusicq)
@@ -129,7 +133,6 @@ uimusicqUIInit (uimusicq_t *uimusicq)
     uimusicq->ui [i].uiWidgets = uiw;
     uiw->uidance = NULL;
     uiw->uidance5 = NULL;
-    uiw->selPathStr = NULL;
     uiw->musicqTree = NULL;
     uiw->favColumn = NULL;
     uiw->uikey = NULL;
@@ -156,7 +159,6 @@ uimusicqUIFree (uimusicq_t *uimusicq)
       for (int j = 0; j < UIMUSICQ_BUTTON_MAX; ++j) {
         uiButtonFree (uiw->buttons [j]);
       }
-      dataFree (uiw->selPathStr);   // allocated by gtk
       uidanceFree (uiw->uidance);
       uidanceFree (uiw->uidance5);
       uiTreeViewFree (uiw->musicqTree);
@@ -395,9 +397,13 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
 
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
+  /* it appears that foreground-set must appear in the attributes */
+  /* before foreground */
   column = gtk_tree_view_column_new_with_attributes ("", renderer,
       "text", MUSICQ_COL_DISP_IDX,
       "font", MUSICQ_COL_FONT,
+      "foreground-set", MUSICQ_COL_DISP_IDX_COLOR_SET,
+      "foreground", MUSICQ_COL_DISP_IDX_COLOR,
       NULL);
   gtk_tree_view_column_set_title (column, "");
   gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
@@ -505,10 +511,6 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
     path = gtk_tree_model_get_path (model, &iter);
     mdextalloc (path);
     if (path != NULL) {
-      dataFree (uiw->selPathStr);
-      uiw->selPathStr = gtk_tree_path_to_string (path);
-      mdextalloc (uiw->selPathStr);
-
       uiwidgetp = uiTreeViewGetUIWidget (uiw->musicqTree);
       if (uimusicq->ui [mqidx].count > 0 &&
           GTK_IS_TREE_VIEW (uiwidgetp->widget)) {
@@ -714,7 +716,9 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
     /* unique idx / dbidx */
     uiw->typelist [uiw->colcount++] = TREE_TYPE_NUM;
     uiw->typelist [uiw->colcount++] = TREE_TYPE_NUM;
-    /* display disp idx / pause ind */
+    /* disp idx color / disp idx color set / display disp idx / pause ind */
+    uiw->typelist [uiw->colcount++] = TREE_TYPE_STRING;
+    uiw->typelist [uiw->colcount++] = TREE_TYPE_BOOLEAN;
     uiw->typelist [uiw->colcount++] = TREE_TYPE_NUM;
     uiw->typelist [uiw->colcount++] = TREE_TYPE_IMAGE;
 
@@ -799,6 +803,8 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
           MUSICQ_COL_ELLIPSIZE, TREE_ELLIPSIZE_END,
           MUSICQ_COL_FONT, listingFont,
+          MUSICQ_COL_DISP_IDX_COLOR, bdjoptGetStr (OPT_P_UI_ACCENT_COL),
+          MUSICQ_COL_DISP_IDX_COLOR_SET, FALSE,
           MUSICQ_COL_DISP_IDX, (treenum_t) musicqupditem->dispidx,
           MUSICQ_COL_UNIQUE_IDX, (treenum_t) musicqupditem->uniqueidx,
           MUSICQ_COL_DBIDX, (treenum_t) musicqupditem->dbidx,
@@ -807,6 +813,7 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
     } else {
       /* all data must be updated, except the font and ellipsize */
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+          MUSICQ_COL_DISP_IDX_COLOR_SET, FALSE,
           MUSICQ_COL_DISP_IDX, (treenum_t) musicqupditem->dispidx,
           MUSICQ_COL_UNIQUE_IDX, (treenum_t) musicqupditem->uniqueidx,
           MUSICQ_COL_DBIDX, (treenum_t) musicqupditem->dbidx,
@@ -995,11 +1002,10 @@ uimusicqSelectionChgProcess (uimusicq_t *uimusicq)
     return;
   }
 
-  if (uimusicq->ispeercall) {
-    return;
-  }
-
   loc = uimusicqGetSelectLocation (uimusicq, ci);
+
+  uimusicqSelectionPreviousProcess (uimusicq, loc);
+
   if (uimusicq->ui [ci].lastLocation == loc) {
     return;
   }
@@ -1020,6 +1026,38 @@ uimusicqSelectionChgProcess (uimusicq_t *uimusicq)
     }
     uimusicqSetPeerFlag (uimusicq->peers [i], true);
     uimusicqSetSelectLocation (uimusicq->peers [i], ci, loc);
+    uimusicqSetPeerFlag (uimusicq->peers [i], false);
+  }
+}
+
+void
+uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, long loc)
+{
+  int   ci;
+  bool  sameprev = false;
+
+  ci = uimusicq->musicqManageIdx;
+
+  if (uimusicq->ui [ci].currSelection == loc) {
+    sameprev = true;
+  }
+
+  if (! sameprev) {
+    uimusicqMarkPreviousSelection (uimusicq, FALSE);
+    uimusicq->ui [ci].prevSelection = uimusicq->ui [ci].currSelection;
+    uimusicq->ui [ci].currSelection = loc;
+  }
+  uimusicqMarkPreviousSelection (uimusicq, TRUE);
+
+  for (int i = 0; i < uimusicq->peercount; ++i) {
+    if (uimusicq->peers [i] == NULL) {
+      continue;
+    }
+    uimusicqSetPeerFlag (uimusicq->peers [i], true);
+    if (! sameprev) {
+      uimusicqCopySelections (uimusicq, uimusicq->peers [i], ci);
+    }
+    uimusicqMarkPreviousSelection (uimusicq->peers [i], TRUE);
     uimusicqSetPeerFlag (uimusicq->peers [i], false);
   }
 }
@@ -1296,5 +1334,52 @@ uimusicqKeyEvent (void *udata)
   }
 
   return UICB_CONT;
+}
+
+static void
+uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp)
+{
+  int           ci;
+  uimusicqgtk_t *uiw;
+  UIWidget      *uiwidgetp;
+  GtkTreeModel  *model = NULL;
+  GtkTreeIter   iter;
+  char          tmp [40];
+
+  ci = uimusicq->musicqManageIdx;
+  uiw = uimusicq->ui [ci].uiWidgets;
+
+  if (! uimusicq->ui [ci].hasui) {
+    return;
+  }
+  if (uimusicq->ui [ci].prevSelection < 0) {
+    return;
+  }
+  if (uimusicq->ui [ci].prevSelection >= uimusicq->ui [ci].count) {
+    return;
+  }
+
+  uiwidgetp = uiTreeViewGetUIWidget (uiw->musicqTree);
+  if (uiwidgetp == NULL) {
+    return;
+  }
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
+  if (model == NULL) {
+    return;
+  }
+
+  snprintf (tmp, sizeof (tmp), "%d", uimusicq->ui [ci].prevSelection);
+  gtk_tree_model_get_iter_from_string (model, &iter, tmp);
+  gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+      MUSICQ_COL_DISP_IDX_COLOR_SET, (gboolean) disp,
+      -1);
+}
+
+static void
+uimusicqCopySelections (uimusicq_t *uimusicq, uimusicq_t *peer, int mqidx)
+{
+  uimusicqMarkPreviousSelection (peer, FALSE);
+  peer->ui [mqidx].prevSelection = uimusicq->ui [mqidx].prevSelection;
+  peer->ui [mqidx].currSelection = uimusicq->ui [mqidx].currSelection;
 }
 

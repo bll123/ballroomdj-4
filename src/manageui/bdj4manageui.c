@@ -106,6 +106,7 @@ enum {
   /* sl actions menu */
   MANAGE_MENU_CB_BPM,
   MANAGE_MENU_CB_SL_MIX,
+  MANAGE_MENU_CB_SL_SWAP,
   MANAGE_MENU_CB_SL_TRUNCATE,
   MANAGE_MENU_CB_SL_MK_FROM_PL,
   /* sl export menu */
@@ -324,6 +325,7 @@ static void     manageCFPLCreatePlaylistList (manageui_t *manage);
 static bool     manageCFPLPlaylistSelectHandler (void *udata, long idx);
 static bool     manageCFPLResponseHandler (void *udata, long responseid);
 static bool     manageSonglistMix (void *udata);
+static bool     manageSonglistSwap (void *udata);
 static void     manageSonglistLoadFile (void *udata, const char *fn, int preloadflag);
 static long     manageLoadPlaylistCB (void *udata, const char *fn);
 static bool     manageNewPlaylistCB (void *udata);
@@ -1985,6 +1987,11 @@ manageSonglistMenu (manageui_t *manage)
   uiMenuCreateItem (&menu, &menuitem, _("Mix"),
       manage->callbacks [MANAGE_MENU_CB_SL_MIX]);
 
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_SWAP, manageSonglistSwap);
+  /* CONTEXT: managementui: menu selection: song list: actions menu: swap two songs */
+  uiMenuCreateItem (&menu, &menuitem, _("Swap"),
+      manage->callbacks [MANAGE_MENU_CB_SL_SWAP]);
+
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_TRUNCATE,
       manageSonglistTruncate);
   /* CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list */
@@ -2378,6 +2385,18 @@ manageSonglistMix (void *udata)
   snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_MIX, tbuff);
   logProcEnd (LOG_PROC, "manageSonglistMix", "");
+  return UICB_CONT;
+}
+
+static bool
+manageSonglistSwap (void *udata)
+{
+  manageui_t  *manage = udata;
+
+  logProcBegin (LOG_PROC, "manageSonglistSwap");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: songlist swap");
+  uimusicqSwap (manage->slmusicq, manage->musicqManageIdx);
+  logProcEnd (LOG_PROC, "manageSonglistSwap", "");
   return UICB_CONT;
 }
 

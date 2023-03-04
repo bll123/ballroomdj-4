@@ -22,16 +22,6 @@ enum {
   TREE_ELLIPSIZE_END = PANGO_ELLIPSIZE_END,
 };
 
-enum {
-  TREE_COL_MODE_TEXT,
-  TREE_COL_MODE_EDITABLE,
-  TREE_COL_MODE_FONT,
-  TREE_COL_MODE_MARKUP,
-  TREE_COL_MODE_ADJUSTMENT,
-  TREE_COL_MODE_DIGITS,
-  TREE_COL_MODE_ACTIVE,
-};
-
 /* these are defined based on the gtk values */
 /* would change for a different gui package */
 enum {

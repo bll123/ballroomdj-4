@@ -2,10 +2,10 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.1.1\n"
+"Project-Id-Version: ballroomdj-4 4.1.1.1\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2023-02-23\n"
-"PO-Revision-Date: 2023-02-23\n"
+"POT-Creation-Date: 2023-03-03\n"
+"PO-Revision-Date: 2023-03-03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -1628,7 +1628,7 @@ msgstr ""
 msgid "Show Marquee"
 msgstr ""
 
-#. CONTEXT: configuration: queue: whether to show the 'queue dance' buttons
+#. CONTEXT: configuration: queue: whether to show the 'queue dance' buttons (verb)
 msgid "Show Queue Dance Buttons"
 msgstr ""
 

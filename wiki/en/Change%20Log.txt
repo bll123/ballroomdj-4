@@ -4,12 +4,14 @@
 
 <!--
 
-**4.1.1.1 beta 2023-2---**
+**4.2.0 beta 2023-2---**
 
+* New Features:
+    * Song List Editor: Added swap function.
 * Bug Fixes:
     * Song Selection: Fix 'Date Added' filter.
 * Changes:
-    * song editor: Changed Control-A to Control-Shift-A.
+    * Song Editor: Changed Control-A to Control-Shift-A.
 * Internal:
     * Code cleanup.
 
