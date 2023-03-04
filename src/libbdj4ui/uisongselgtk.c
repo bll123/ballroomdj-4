@@ -20,6 +20,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
+#include "callback.h"
 #include "colorutils.h"
 #include "conn.h"
 #include "log.h"
@@ -28,10 +29,10 @@
 #include "nlist.h"
 #include "songfav.h"
 #include "songfilter.h"
+#include "tmutil.h"
 #include "uidance.h"
 #include "uifavorite.h"
 #include "ui.h"
-#include "callback.h"
 #include "uisongfilter.h"
 #include "uisong.h"
 #include "uisongsel.h"
@@ -115,6 +116,8 @@ typedef struct uisongselgtk {
   GType             *typelist;
   int               col;        // for the display type callback
   const char        *markcolor;
+  dbidx_t           lastRowDBIdx;
+  mstime_t          lastRowCheck;
   bool              controlPressed : 1;
   bool              shiftPressed : 1;
   bool              inscroll : 1;
@@ -180,6 +183,8 @@ uisongselUIInit (uisongsel_t *uisongsel)
   for (int i = 0; i < SONGSEL_BUTTON_MAX; ++i) {
     uiw->buttons [i] = NULL;
   }
+  uiw->lastRowDBIdx = -1;
+  mstimeset (&uiw->lastRowCheck, 0);
 
   uiw->uikey = uiKeyAlloc ();
   uiw->callbacks [SONGSEL_CB_KEYB] = callbackInit (
@@ -1063,8 +1068,6 @@ uisongselProcessSongFilter (uisongsel_t *uisongsel)
       uisongsel->songfilter, uisongsel->musicdb);
 }
 
-
-
 static void
 uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
     GtkTreeViewColumn* column, gpointer udata)
@@ -1075,6 +1078,27 @@ uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
   logProcBegin (LOG_PROC, "uisongselCheckFavChgSignal");
 
   uiw = uisongsel->uiWidgetData;
+
+  /* double-click processing */
+  if (uiw->lastRowDBIdx == uisongsel->lastdbidx &&
+      ! mstimeCheck (&uiw->lastRowCheck)) {
+    /* double-click in the song selection or ez-song selection adds */
+    /* the song to the song list */
+    if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
+        uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
+      uisongselSelectCallback (uisongsel);
+    }
+    /* double-click in the music manager edits the song */
+    if (uisongsel->dispselType == DISP_SEL_MM) {
+      uisongselSongEditCallback (uisongsel);
+    }
+    if (uisongsel->dispselType == DISP_SEL_REQUEST) {
+      uisongselQueueCallback (uisongsel);
+    }
+  }
+  mstimeset (&uiw->lastRowCheck, 250);
+  uiw->lastRowDBIdx = uisongsel->lastdbidx;
+
   if (column != uiw->favColumn) {
     logProcEnd (LOG_PROC, "uisongselCheckFavChgSignal", "not-fav-col");
     return;

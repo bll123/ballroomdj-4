@@ -8,6 +8,9 @@
 
 * New Features:
     * Song List Editor: Added swap function.
+    * Song List Editor: Double-click in song selection to add song.
+    * Music Manager: Double-click in list to edit song.
+    * Player: Double-click in request list to add to music queue.
 * Bug Fixes:
     * Song Selection: Fix 'Date Added' filter.
 * Changes:
