@@ -1313,9 +1313,13 @@ uimusicqKeyEvent (void *udata)
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
 
-  if (uiKeyIsPressEvent (uiw->uikey) &&
-      uiKeyIsAudioPlayKey (uiw->uikey)) {
-    uimusicqPlayCallback (uimusicq);
+  if (uiKeyIsPressEvent (uiw->uikey)) {
+    if (uiKeyIsAudioPlayKey (uiw->uikey)) {
+      uimusicqPlayCallback (uimusicq);
+    }
+    if (uiKeyIsKey (uiw->uikey, 'S')) {
+      uimusicqSwap (uimusicq, ci);
+    }
   }
 
   if (uiKeyIsControlPressed (uiw->uikey) &&
