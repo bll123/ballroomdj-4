@@ -21,6 +21,7 @@ void check_libbdj4 (SRunner *sr);
 Suite *     bdjmsg_suite (void);
 Suite *     bdjstring_suite (void);
 Suite *     bdjvars_suite (void);
+Suite *     callback_suite (void);
 Suite *     colorutils_suite (void);
 Suite *     dirop_suite (void);
 Suite *     filedata_suite (void);

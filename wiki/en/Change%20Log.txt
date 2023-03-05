@@ -7,14 +7,14 @@
 **4.2.0 beta 2023-2---**
 
 * New Features:
-    * Song List Editor: Added swap function.
-    * Song List Editor: Double-click in song selection to add song.
     * Music Manager: Double-click in list to edit song.
     * Player: Double-click in request list to add to music queue.
+    * Song List Editor: Added swap function.
+    * Song List Editor: Double-click in song selection to add song.
     * Song Selection: Shift-click is now working.
 * Bug Fixes:
-    * Song Selection: Fix 'Date Added' filter.
     * Song Selection: Fix control-click.
+    * Song Selection: Fix 'Date Added' filter.
 * Changes:
     * Song Editor: Changed Control-A to Control-Shift-A.
 * Internal:
