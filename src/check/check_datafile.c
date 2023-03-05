@@ -832,7 +832,9 @@ START_TEST(datafile_keyval_save)
   fn = "tmp/dftestl.txt";
   datafileSaveKeyVal ("chk-df-i", fn, dfkeyskl, DFKEY_COUNT, list, 0);
   tdf = datafileAllocParse ("chk-df-i", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT);
+
   tlist = datafileGetList (tdf);
+  vers = -1;
   vers = nlistGetVersion (tlist);
   ck_assert_int_eq (vers, 13);
 
@@ -918,7 +920,9 @@ START_TEST(datafile_indirect_save)
   fn = "tmp/dftestn.txt";
   datafileSaveIndirect ("chk-df-j", fn, dfkeyskl, DFKEY_COUNT, list);
   tdf = datafileAllocParse ("chk-df-j", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT);
+
   tlist = datafileGetList (tdf);
+  vers = -1;
   vers = ilistGetVersion (tlist);
   ck_assert_int_eq (vers, 14);
 
