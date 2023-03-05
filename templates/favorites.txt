@@ -1,5 +1,5 @@
 # favorites
-# 2022-10-12
+# 2023-3-5
 #
 #   There is no configuration tool to change the favorites, but they
 #     may be changed manually.
@@ -13,7 +13,7 @@ version
 ..1
 count
 ..9
-# key 0 may not be changed, except for the display.
+# key 0 values may not be changed, except for the display symbol.
 # key 0 is used as the indicator that there is no favorite setting.
 KEY
 ..0
@@ -77,7 +77,7 @@ USERSEL
 ..yes
 # pinkheart is used in itunes conversion
 # the name should not be changed.
-# the symbol and color may be changed
+# the display symbol and color may be changed
 KEY
 ..6
 NAME
@@ -90,7 +90,7 @@ USERSEL
 ..yes
 # brokenheart is used in itunes conversion
 # the name should not be changed.
-# the symbol and color may be changed
+# the display symbol and color may be changed
 KEY
 ..7
 NAME
@@ -103,6 +103,7 @@ USERSEL
 ..yes
 # 'imported' is used to display a symbol
 # for external requests.
+# the name should not be changed.
 # it is not user-selectable.
 KEY
 ..8

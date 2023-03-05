@@ -91,17 +91,25 @@ function mkBadPldance {
 function checkUpdaterClean {
   section=$1
 
+  # 4.2.0 2023-3-5 autoselection values changed
+  fn="$DATADIR/autoselection.txt"
+  sed -e 's/version [23]/version 1/;s/^\.\.[23]/..1/' "$fn" > "$fn.n"
+  mv -f "$fn.n" "$fn"
+
   # audio adjust file should be installed if missing or wrong version
   fn="$DATADIR/audioadjust.txt"
   # rm -f "$fn"
-  sed -e 's/version [23]/version 1/' "$fn" > "$fn.n"
+  sed -e 's/version [23]/version 1/;s/^\.\.[23]/..1/' "$fn" > "$fn.n"
   mv -f "$fn.n" "$fn"
+
   # gtk-static.css file should be installed if missing
   rm -f "$DATADIR/gtk-static.css"
+
   # itunes-fields version number should be updated to version 2.
   fn="$DATADIR/itunes-fields.txt"
   sed -e 's/version 2/version 1/' "$fn" > "$fn.n"
   mv -f "$fn.n" "$fn"
+
   # standard rounds had bad data
   fn="$DATADIR/standardrounds.pldances"
   if [[ $section == nl ]]; then
@@ -341,12 +349,38 @@ function checkInstallation {
       grep 'version 3' "$fn" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
-        chk=$(($chk+1))
+        grep '^\.\.3' "$fn" > /dev/null 2>&1
+        rc=$?
+        if [[ $rc -eq 0 ]]; then
+          chk=$(($chk+1))
+        else
+          echo "  audioadjust.txt file has wrong version (a)"
+        fi
       else
-        echo "  audioadjust.txt file has wrong version"
+        echo "  audioadjust.txt file has wrong version (b)"
       fi
     else
       echo "  no audioadjust.txt file"
+    fi
+
+    res=$(($res+1))  # autoselection.txt file
+    fn="${DATADIR}/autoselection.txt"
+    if [[ $fin == T && -f "$fn" ]]; then
+      grep 'version 3' "$fn" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        grep '^\.\.3' "$fn" > /dev/null 2>&1
+        rc=$?
+        if [[ $rc -eq 0 ]]; then
+          chk=$(($chk+1))
+        else
+          echo "  autoselection.txt file has wrong version (a)"
+        fi
+      else
+        echo "  autoselection.txt file has wrong version (b)"
+      fi
+    else
+      echo "  no autoselection.txt file"
     fi
 
     res=$(($res+1))  # gtk-static.css file

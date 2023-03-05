@@ -17,6 +17,7 @@
     * Song Selection: Fix 'Date Added' filter.
 * Changes:
     * Song Editor: Changed Control-A to Control-Shift-A.
+    * Automatic Playlists: Dance selection values adjusted.
 * Internal:
     * Code cleanup.
 
