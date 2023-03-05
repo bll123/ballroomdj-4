@@ -64,11 +64,11 @@ START_TEST(autosel_get)
   ck_assert_int_eq (val, 5);
 
   dval = autoselGetDouble (autosel, AUTOSEL_PREV_TAGMATCH);
-  ck_assert_float_eq (dval, 10.0);
+  ck_assert_float_eq (dval, 20.0);
   dval = autoselGetDouble (autosel, AUTOSEL_TYPE_MATCH);
-  ck_assert_float_eq (dval, 30.0);
+  ck_assert_float_eq (dval, 40.0);
   dval = autoselGetDouble (autosel, AUTOSEL_TAGMATCH);
-  ck_assert_float_eq (dval, 5.0);
+  ck_assert_float_eq (dval, 10.0);
   dval = autoselGetDouble (autosel, AUTOSEL_TAGMATCH_EXP);
   ck_assert_float_eq (dval, 1.3);
 

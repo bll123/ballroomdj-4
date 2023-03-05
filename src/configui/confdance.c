@@ -187,7 +187,6 @@ confuiCreateDanceTable (confuigui_t *gui)
   ilistidx_t        key;
   dance_t           *dances;
   uitree_t          *uitree;
-  UIWidget          *uitreewidgetp;
   slist_t           *dancelist;
 
 
@@ -196,7 +195,6 @@ confuiCreateDanceTable (confuigui_t *gui)
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   uitree = gui->tables [CONFUI_ID_DANCE].uitree;
-  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
   uiTreeViewDisableHeaders (uitree);
 
   uiTreeViewCreateValueStore (uitree, CONFUI_DANCE_COL_MAX,

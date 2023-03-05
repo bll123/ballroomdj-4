@@ -18,6 +18,7 @@
 * Changes:
     * Song Editor: Changed Control-A to Control-Shift-A.
     * Automatic Playlists: Dance selection values adjusted.
+    * Playlist Management: User Interface: Selecting the dance name no longer changes the selection.
 * Internal:
     * Code cleanup.
 
