@@ -251,7 +251,7 @@ uisfDialog (void *udata)
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
     uiSwitchSetValue (uisf->playstatusswitch, uisf->dfltpbflag);
   }
-  uiWidgetShowAll (&uisf->filterDialog);
+  uiDialogShow (&uisf->filterDialog);
 
   uisfUpdateFilterDialogDisplay (uisf);
 

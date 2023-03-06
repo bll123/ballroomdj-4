@@ -383,6 +383,7 @@ uiDropDownWindowShow (void *udata)
   }
   uiWidgetShowAll (&dropdown->window);
   uiWindowMove (&dropdown->window, bx + x + 4, by + y + 4 + 30, -1);
+  uiWindowPresent (&dropdown->window);
   dropdown->open = true;
   return UICB_CONT;
 }

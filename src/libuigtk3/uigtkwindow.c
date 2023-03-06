@@ -278,6 +278,7 @@ uiWindowSetMappedCallback (UIWidget *uiwidget, callback_t *uicb)
 void
 uiWindowPresent (UIWidget *uiwindow)
 {
+  /* this does not work on mac os */
   gtk_window_present (GTK_WINDOW (uiwindow->widget));
 }
 

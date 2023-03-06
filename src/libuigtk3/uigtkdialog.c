@@ -21,6 +21,8 @@
 #include "callback.h"
 
 #include "ui/uidialog.h"
+#include "ui/uiwidget.h"
+#include "ui/uiwindow.h"
 
 typedef struct uiselect {
   UIWidget    *window;
@@ -182,6 +184,13 @@ uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
     g_signal_connect (dialog, "response",
         G_CALLBACK (uiDialogResponseHandler), uicb);
   }
+}
+
+void
+uiDialogShow (UIWidget *uiwidgetp)
+{
+  uiWidgetShowAll (uiwidgetp);
+  uiWindowPresent (uiwidgetp);
 }
 
 void

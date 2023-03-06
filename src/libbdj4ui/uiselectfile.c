@@ -91,7 +91,7 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
     filelist = playlistGetPlaylistList (playlistSel);
 
     selectFileCreateDialog (selectfile, filelist, title, cb);
-    uiWidgetShowAll (&selectfile->uidialog);
+    uiDialogShow (&selectfile->uidialog);
 
     x = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_X);
     y = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_Y);

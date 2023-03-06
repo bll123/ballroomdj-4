@@ -1307,7 +1307,7 @@ pluiMarqueeFontSizeDialog (void *udata)
   }
 
   uiSpinboxSetValue (&plui->marqueeSpinBox, (double) sz);
-  uiWidgetShowAll (&plui->marqueeFontSizeDialog);
+  uiDialogShow (&plui->marqueeFontSizeDialog);
 
   logProcEnd (LOG_PROC, "pluiMarqueeFontSizeDialog", "");
   return UICB_CONT;

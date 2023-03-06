@@ -112,7 +112,7 @@ uiaaDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   logProcBegin (LOG_PROC, "uiaaDialog");
   uiaaCreateDialog (uiaa, aaflags, hasorig);
   uiaaInitDisplay (uiaa);
-  uiWidgetShowAll (&uiaa->aaDialog);
+  uiDialogShow (&uiaa->aaDialog);
   uiaa->isactive = true;
 
   x = nlistGetNum (uiaa->options, APPLY_ADJ_POSITION_X);

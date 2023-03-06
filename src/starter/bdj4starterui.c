@@ -1352,8 +1352,8 @@ starterProcessSupport (void *udata)
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiWidgetShowAll (&uidialog);
   uiutilsUIWidgetCopy (&starter->supportDialog, &uidialog);
+  uiDialogShow (&uidialog);
   return UICB_CONT;
 }
 
@@ -1726,8 +1726,8 @@ starterCreateSupportDialog (void *udata)
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiutilsUIWidgetCopy (&starter->supportStatus, &uiwidget);
 
-  uiWidgetShowAll (&uidialog);
   uiutilsUIWidgetCopy (&starter->supportMsgDialog, &uidialog);
+  uiDialogShow (&uidialog);
   return UICB_CONT;
 }
 

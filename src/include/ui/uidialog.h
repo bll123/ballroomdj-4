@@ -24,6 +24,7 @@ char  *uiSelectDirDialog (uiselect_t *selectdata);
 char  *uiSelectFileDialog (uiselect_t *selectdata);
 char  *uiSaveFileDialog (uiselect_t *selectdata);
 void  uiCreateDialog (UIWidget *uiwidget, UIWidget *window, callback_t *uicb, const char *title, ...);
+void  uiDialogShow (UIWidget *uiwidgetp);
 void  uiDialogAddButtons (UIWidget *uidialog, ...);
 void  uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp);
 void  uiDialogDestroy (UIWidget *uidialog);

@@ -1032,7 +1032,7 @@ manageMainLoop (void *tmanage)
     manageSetSonglistName (manage, _("New Song List"));
 
     manageiTunesCreateDialog (manage);
-    uiWidgetShowAll (&manage->itunesSelectDialog);
+    uiDialogShow (&manage->itunesSelectDialog);
 
     uiLabelSetText (&manage->statusMsg, "");
     manage->impitunesstate = BDJ4_STATE_OFF;
@@ -2196,7 +2196,7 @@ manageSonglistCreateFromPlaylist (void *udata)
   manageSongListCFPLCreateDialog (manage);
   uiDropDownSelectionSetNum (manage->cfplsel, -1);
 
-  uiWidgetShowAll (&manage->cfplDialog);
+  uiDialogShow (&manage->cfplDialog);
 
   x = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_X);
   y = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_Y);
