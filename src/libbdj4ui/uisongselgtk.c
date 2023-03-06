@@ -63,6 +63,7 @@ enum {
 
 enum {
   STORE_ROWS = 60,
+  TREE_DOUBLE_CLICK_TIME = 250,
 };
 
 /* for callbacks */
@@ -1096,11 +1097,12 @@ uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
     if (uisongsel->dispselType == DISP_SEL_MM) {
       uisongselSongEditCallback (uisongsel);
     }
+    /* double-click in the request window queues the song */
     if (uisongsel->dispselType == DISP_SEL_REQUEST) {
       uisongselQueueCallback (uisongsel);
     }
   }
-  mstimeset (&uiw->lastRowCheck, 250);
+  mstimeset (&uiw->lastRowCheck, TREE_DOUBLE_CLICK_TIME);
   uiw->lastRowDBIdx = uisongsel->lastdbidx;
 
   if (column != uiw->favColumn) {
