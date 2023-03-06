@@ -156,7 +156,6 @@ checksuite:
 
 .PHONY: testsuite
 testsuite:
-	# --force is needed for windows
 	./utils/mktestsetup.sh --force
 	(cd ..;./bin/bdj4 --testsuite)
 
