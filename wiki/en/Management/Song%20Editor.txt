@@ -37,9 +37,9 @@ is used in the song selection tab, the song editor
 will traverse the songs in the song selection.
 
 If you have a listing loaded in the music manager, multiple songs may
-be selected (using control-click).  When multiple songs are selected
-in the music manager, the song editor will traverse the selected
-songs, and not the entire listing.
+be selected (using control-click or shift-click).  When multiple songs
+are selected in the music manager, the song editor will traverse the
+selected songs, and not the entire listing.
 
 ##### File Display
 
@@ -170,4 +170,4 @@ song editor is:
  Volume Adjustment|BDJ4|
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-01 07:40:43; BDJ4 version 4.1.1-beta)_
+<br>_(Updated 2023-03-07 06:08:10; BDJ4 version 4.2.0-beta)_
