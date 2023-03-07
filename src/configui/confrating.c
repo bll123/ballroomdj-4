@@ -67,8 +67,6 @@ confuiBuildUIEditRatings (confuigui_t *gui)
 void
 confuiCreateRatingTable (confuigui_t *gui)
 {
-  GtkTreeIter       iter;
-  GtkListStore      *store = NULL;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
   ilistidx_t        iteridx;
@@ -82,10 +80,14 @@ confuiCreateRatingTable (confuigui_t *gui)
 
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
-  store = gtk_list_store_new (CONFUI_RATING_COL_MAX,
-      G_TYPE_LONG, G_TYPE_LONG, G_TYPE_STRING,
-      G_TYPE_LONG, G_TYPE_OBJECT, G_TYPE_LONG);
-  assert (store != NULL);
+  uitree = gui->tables [CONFUI_ID_RATINGS].uitree;
+  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
+
+  /* rating-editable, weight-editable, rating-disp, */
+  /* weight, adjustment, digits */
+  uiTreeViewCreateValueStore (uitree, CONFUI_RATING_COL_MAX,
+      TREE_TYPE_NUM, TREE_TYPE_NUM, TREE_TYPE_STRING,
+      TREE_TYPE_NUM, TREE_TYPE_WIDGET, TREE_TYPE_NUM, TREE_TYPE_END);
 
   ratingStartIterator (ratings, &iteridx);
 
@@ -97,15 +99,12 @@ confuiCreateRatingTable (confuigui_t *gui)
     ratingdisp = ratingGetRating (ratings, key);
     weight = ratingGetWeight (ratings, key);
 
-    gtk_list_store_append (store, &iter);
-    confuiRatingSet (store, &iter, editable, ratingdisp, weight);
+    uiTreeViewAppendValueStore (uitree);
+    confuiRatingSet (uitree, editable, ratingdisp, weight);
     /* all cells other than the very first (Unrated) are editable */
     editable = TRUE;
     gui->tables [CONFUI_ID_RATINGS].currcount += 1;
   }
-
-  uitree = gui->tables [CONFUI_ID_RATINGS].uitree;
-  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
 
   renderer = gtk_cell_renderer_text_new ();
   g_object_set_data (G_OBJECT (renderer), "uicolumn",
@@ -136,8 +135,6 @@ confuiCreateRatingTable (confuigui_t *gui)
   g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditSpinbox), gui);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), GTK_TREE_MODEL (store));
-  g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateRatingTable", "");
 }
 

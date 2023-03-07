@@ -20,7 +20,11 @@
 #include "mdebug.h"
 #include "pathutil.h"
 #include "tmutil.h"
-#include "ui.h"
+
+#include "ui/uigeneral.h"
+#include "ui/uiui.h"
+#include "ui/uiwidget.h"
+#include "ui/uientry.h"
 
 typedef struct uientry {
   GtkEntryBuffer  *buffer;

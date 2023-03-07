@@ -8,7 +8,11 @@ __Multi-media Play__: Plays the selected song.
 
 ##### Player
 
-__Multi-media Play, Pause, Stop, Next Song__
+__Multi-media Play__: Plays the current song.
+
+__Multi-media Pause__, __Multi-Media Stop__: Pauses the current song.
+
+__Multi-media Next Song__: Skip to the next song.
 
 __Multi-media Previous__: Return to the beginning of the song.
 
@@ -17,6 +21,8 @@ __Multi-media Previous__: Return to the beginning of the song.
 __Multi-media Play__: Plays the selected song.
 
 ##### Song Editor
+
+__Control-Shift-A__: Starts _Apply Adjustments_ dialog.
 
 __Control-P__: Moves to the previous song.
 
@@ -30,5 +36,7 @@ __Multi-media Play__: Plays the selected song.
 
 __Multi-media Play__: Plays the selected song.
 
+__Control-S__: Swap songs.
+
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-03-06 11:40:42; BDJ4 version 4.2.0-beta)_

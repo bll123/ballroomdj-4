@@ -15,8 +15,9 @@
 #include <gtk/gtk.h>
 
 #include "mdebug.h"
-#include "ui.h"
 #include "callback.h"
+
+#include "ui/uikeys.h"
 
 enum {
   KEY_EVENT_NONE,
@@ -25,8 +26,8 @@ enum {
 };
 
 typedef struct uikey {
-  callback_t  *presscb;
-  callback_t  *releasecb;
+  callback_t    *presscb;
+  callback_t    *releasecb;
   int           eventtype;
   bool          controlpressed;
   bool          shiftpressed;
@@ -63,6 +64,7 @@ void
 uiKeySetKeyCallback (uikey_t *uikey, UIWidget *uiwidgetp, callback_t *uicb)
 {
   uikey->presscb = uicb;
+  uikey->releasecb = uicb;
   g_signal_connect (uiwidgetp->widget, "key-press-event",
       G_CALLBACK (uiKeyCallback), uikey);
   g_signal_connect (uiwidgetp->widget, "key-release-event",
@@ -115,63 +117,19 @@ uiKeyIsMovementKey (uikey_t *uikey)
 }
 
 bool
-uiKeyIsAKey (uikey_t *uikey)
+uiKeyIsKey (uikey_t *uikey, unsigned char keyval)
 {
   bool  rc = false;
+  guint tval1, tval2;
 
   if (uikey == NULL) {
     return rc;
   }
 
-  if (uikey->keyval == GDK_KEY_A || uikey->keyval == GDK_KEY_a) {
-    rc = true;
-  }
+  tval1 = GDK_KEY_A - 'A' + toupper (keyval);
+  tval2 = GDK_KEY_a - 'a' + tolower (keyval);
 
-  return rc;
-}
-
-bool
-uiKeyIsNKey (uikey_t *uikey)
-{
-  bool  rc = false;
-
-  if (uikey == NULL) {
-    return rc;
-  }
-
-  if (uikey->keyval == GDK_KEY_N || uikey->keyval == GDK_KEY_n) {
-    rc = true;
-  }
-
-  return rc;
-}
-
-bool
-uiKeyIsPKey (uikey_t *uikey)
-{
-  bool  rc = false;
-
-  if (uikey == NULL) {
-    return rc;
-  }
-
-  if (uikey->keyval == GDK_KEY_P || uikey->keyval == GDK_KEY_p) {
-    rc = true;
-  }
-
-  return rc;
-}
-
-bool
-uiKeyIsSKey (uikey_t *uikey)
-{
-  bool  rc = false;
-
-  if (uikey == NULL) {
-    return rc;
-  }
-
-  if (uikey->keyval == GDK_KEY_S || uikey->keyval == GDK_KEY_s) {
+  if (uikey->keyval == tval1 || uikey->keyval == tval2) {
     rc = true;
   }
 
@@ -206,22 +164,10 @@ uiKeyIsAudioPauseKey (uikey_t *uikey)
   if (uikey->keyval == GDK_KEY_AudioPause) {
     rc = true;
   }
-
-  return rc;
-}
-
-bool
-uiKeyIsAudioStopKey (uikey_t *uikey)
-{
-  bool  rc = false;
-
-  if (uikey == NULL) {
-    return rc;
-  }
-
   if (uikey->keyval == GDK_KEY_AudioStop) {
     rc = true;
   }
+
 
   return rc;
 }

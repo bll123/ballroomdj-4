@@ -14,5 +14,6 @@ uiaa_t  *uiaaInit (UIWidget *windowp, nlist_t *opts);
 void    uiaaFree (uiaa_t *uiaa);
 void    uiaaSetResponseCallback (uiaa_t *uiaa, callback_t *uicb);
 bool    uiaaDialog (uiaa_t *uiaa, int aaflags, bool hasorig);
+void    uiaaDialogClear (uiaa_t *uiaa);
 
 #endif /* INC_UIAPPLYADJ_H */

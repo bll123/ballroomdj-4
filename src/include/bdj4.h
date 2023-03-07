@@ -14,6 +14,11 @@ enum {
   /* used for queueing playlists */
   EDIT_TRUE,
   EDIT_FALSE,
+  /* processing states */
+  BDJ4_STATE_OFF,
+  BDJ4_STATE_START,
+  BDJ4_STATE_WAIT,
+  BDJ4_STATE_PROCESS,
 };
 
 enum {
@@ -66,5 +71,8 @@ enum {
 /* alternates/base port */
 #define ALT_COUNT_FN        "altcount"
 #define BASE_PORT_FN        "baseport"
+/* cache files */
+#define SYSVARS_PY_DOT_VERS_FN  "pydotvers"
+#define SYSVARS_PY_VERS_FN      "pyvers"
 
 #endif /* INC_BDJ4_H */

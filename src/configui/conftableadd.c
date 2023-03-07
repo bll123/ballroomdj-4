@@ -32,13 +32,9 @@ confuiTableAdd (void *udata)
   confuigui_t       *gui = udata;
   uitree_t          *uitree = NULL;
   UIWidget          *uiwidgetp;
-  GtkTreeModel      *model = NULL;
-  GtkTreeIter       iter;
-  GtkTreeIter       niter;
-  GtkTreeIter       *titer;
-  GtkTreePath       *path;
   int               count;
   int               flags;
+  bool              found = false;
 
   logProcBegin (LOG_PROC, "confuiTableAdd");
 
@@ -55,45 +51,32 @@ confuiTableAdd (void *udata)
   }
 
   flags = gui->tables [gui->tablecurr].flags;
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
   count = uiTreeViewSelectionGetCount (uitree);
-  titer = NULL;
   if (count == 1) {
     int   valid;
 
-    valid = gtk_tree_selection_get_selected (
-        gui->tables [gui->tablecurr].sel, &model, &iter);
-    if (valid) {
-      titer = &iter;
+    valid = uiTreeViewGetSelectionNew (uitree);
+    if (valid == 1) {
+      found = true;
     }
   }
 
-  if (titer != NULL) {
-    GtkTreePath       *path;
-    char              *pathstr;
-    int               idx;
+  if (found) {
+    int     idx;
 
-    idx = 0;
-    path = gtk_tree_model_get_path (model, titer);
-    mdextalloc (path);
-    if (path != NULL) {
-      pathstr = gtk_tree_path_to_string (path);
-      mdextalloc (pathstr);
-      sscanf (pathstr, "%d", &idx);
-      mdextfree (path);
-      gtk_tree_path_free (path);
-      mdfree (pathstr);       // allocated by gtk
-    }
+    idx = uiTreeViewGetSelectionIndex (uitree);
     if (idx == 0 &&
         (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
-      gtk_tree_model_iter_next (model, &iter);
+      if (! uiTreeViewSelectNext (uitree)) {
+        found = false;
+      }
     }
   }
 
-  if (titer == NULL) {
-    gtk_list_store_append (GTK_LIST_STORE (model), &niter);
+  if (! found) {
+    uiTreeViewAppendValueStore (uitree);
   } else {
-    gtk_list_store_insert_before (GTK_LIST_STORE (model), &niter, &iter);
+    uiTreeViewInsertValueStore (uitree);
   }
 
   switch (gui->tablecurr) {
@@ -105,31 +88,31 @@ confuiTableAdd (void *udata)
       /* CONTEXT: configuration: dance name that is set when adding a new dance */
       dkey = danceAdd (dances, _("New Dance"));
       /* CONTEXT: configuration: dance name that is set when adding a new dance */
-      confuiDanceSet (GTK_LIST_STORE (model), &niter, _("New Dance"), dkey);
+      confuiDanceSet (uitree, _("New Dance"), dkey);
       break;
     }
 
     case CONFUI_ID_GENRES: {
       /* CONTEXT: configuration: genre name that is set when adding a new genre */
-      confuiGenreSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Genre"), 0);
+      confuiGenreSet (uitree, TRUE, _("New Genre"), 0);
       break;
     }
 
     case CONFUI_ID_RATINGS: {
       /* CONTEXT: configuration: rating name that is set when adding a new rating */
-      confuiRatingSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Rating"), 0);
+      confuiRatingSet (uitree, TRUE, _("New Rating"), 0);
       break;
     }
 
     case CONFUI_ID_LEVELS: {
       /* CONTEXT: configuration: level name that is set when adding a new level */
-      confuiLevelSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Level"), 0, 0);
+      confuiLevelSet (uitree, TRUE, _("New Level"), 0, 0);
       break;
     }
 
     case CONFUI_ID_STATUS: {
       /* CONTEXT: configuration: status name that is set when adding a new status */
-      confuiStatusSet (GTK_LIST_STORE (model), &niter, TRUE, _("New Status"), 0);
+      confuiStatusSet (uitree, TRUE, _("New Status"), 0);
       break;
     }
 
@@ -138,15 +121,13 @@ confuiTableAdd (void *udata)
     }
   }
 
-  path = gtk_tree_model_get_path (model, &niter);
-  mdextalloc (path);
-  if (path != NULL) {
-    gtk_tree_selection_select_path (gui->tables [gui->tablecurr].sel, path);
-    if (gui->tablecurr == CONFUI_ID_DANCE) {
-      confuiDanceSelect (GTK_TREE_VIEW (uiwidgetp->widget), path, NULL, gui);
-    }
-    mdextfree (path);
-    gtk_tree_path_free (path);
+  uiTreeViewSelectCurrent (uitree);
+
+  if (gui->tablecurr == CONFUI_ID_DANCE) {
+    ilistidx_t    key;
+
+    key = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
+    confuiDanceSelectLoadValues (gui, key);
   }
 
   gui->tables [gui->tablecurr].changed = true;

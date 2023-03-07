@@ -50,7 +50,7 @@ enum {
   SONGEDIT_CHK_LIST,
 };
 
-typedef struct uisongeditgtk uisongeditgtk_t;
+typedef struct uisongeditgtk se_internal_t;
 
 typedef struct {
   int         tagkey;
@@ -65,12 +65,12 @@ typedef struct {
     uirating_t    *uirating;
     uistatus_t    *uistatus;
   };
-  uichgind_t  *chgind;
-  UIWidget    display;
-  callback_t  *callback;
-  uisongeditgtk_t *uiw;           // need for scale changed.
-  bool        lastchanged : 1;
-  bool        changed : 1;
+  uichgind_t      *chgind;
+  UIWidget        display;
+  callback_t      *callback;
+  se_internal_t   *uiw;           // need for scale changed.
+  bool            lastchanged : 1;
+  bool            changed : 1;
 } uisongedititem_t;
 
 enum {
@@ -128,7 +128,7 @@ typedef struct uisongeditgtk {
   int                 speedidx;
   int                 lastspeed;
   bool                checkchanged : 1;
-} uisongeditgtk_t;
+} se_internal_t;
 
 static void uisongeditAddDisplay (uisongedit_t *songedit, UIWidget *col, UIWidget *sg, int dispsel);
 static void uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int tagkey);
@@ -154,11 +154,11 @@ static char * uisongeditGetBPMRangeDisplay (int danceidx);
 void
 uisongeditUIInit (uisongedit_t *uisongedit)
 {
-  uisongeditgtk_t  *uiw;
+  se_internal_t  *uiw;
 
   logProcBegin (LOG_PROC, "uisongeditUIInit");
 
-  uiw = mdmalloc (sizeof (uisongeditgtk_t));
+  uiw = mdmalloc (sizeof (se_internal_t));
   uiw->parentwin = NULL;
   uiw->itemcount = 0;
   uiw->items = NULL;
@@ -197,7 +197,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
 void
 uisongeditUIFree (uisongedit_t *uisongedit)
 {
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
 
   logProcBegin (LOG_PROC, "uisongeditUIFree");
   if (uisongedit == NULL) {
@@ -280,7 +280,7 @@ UIWidget *
 uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     UIWidget *parentwin, UIWidget *statusMsg)
 {
-  uisongeditgtk_t   *uiw;
+  se_internal_t   *uiw;
   UIWidget          hbox;
   UIWidget          col;
   UIWidget          sg;
@@ -456,7 +456,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 void
 uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
 {
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
   char            *data;
   long            val;
   double          dval;
@@ -586,7 +586,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
 void
 uisongeditUIMainLoop (uisongedit_t *uisongedit)
 {
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
   double          dval, ndval;
   long            val, nval;
   char            *songdata;
@@ -793,7 +793,7 @@ uisongeditUIMainLoop (uisongedit_t *uisongedit)
 void
 uisongeditSetBPMValue (uisongedit_t *uisongedit, const char *args)
 {
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
   int             val;
 
   logProcBegin (LOG_PROC, "uisongeditSetBPMValue");
@@ -812,7 +812,7 @@ uisongeditSetBPMValue (uisongedit_t *uisongedit, const char *args)
 void
 uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active)
 {
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
   UIWidget        *uiwidgetp;
 
   logProcBegin (LOG_PROC, "uisongeditSetPlayButtonState");
@@ -837,7 +837,7 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, UIWidget *col, UIWidget *sg, int
   UIWidget        hbox;
   char            *keystr;
   slistidx_t      dsiteridx;
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
 
   logProcBegin (LOG_PROC, "uisongeditAddDisplay");
   uiw = uisongedit->uiWidgetData;
@@ -876,7 +876,7 @@ static void
 uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int tagkey)
 {
   UIWidget        uiwidget;
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
 
   logProcBegin (LOG_PROC, "uisongeditAddItem");
   uiw = uisongedit->uiWidgetData;
@@ -917,6 +917,8 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
       if (tagkey == TAG_FAVORITE) {
         uiw->items [uiw->itemcount].uifavorite =
             uifavoriteSpinboxCreate (hbox);
+        uifavoriteSetChangedCallback (uiw->items [uiw->itemcount].uifavorite,
+            uiw->callbacks [UISONGEDIT_CB_CHANGED]);
       }
       if (tagkey == TAG_DANCELEVEL) {
         uiw->items [uiw->itemcount].uilevel =
@@ -936,6 +938,8 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
         uiw->items [uiw->itemcount].uistatus =
             uistatusSpinboxCreate (hbox, FALSE);
         uistatusSizeGroupAdd (uiw->items [uiw->itemcount].uistatus, &uiw->sgsbtext);
+        uistatusSetChangedCallback (uiw->items [uiw->itemcount].uistatus,
+            uiw->callbacks [UISONGEDIT_CB_CHANGED]);
       }
       break;
     }
@@ -983,7 +987,7 @@ uisongeditAddEntry (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 {
   uientry_t       *entryp;
   UIWidget        *uiwidgetp;
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
 
   logProcBegin (LOG_PROC, "uisongeditAddEntry");
   uiw = uisongedit->uiWidgetData;
@@ -1005,7 +1009,7 @@ static void
 uisongeditAddSpinboxInt (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 {
   UIWidget        *uiwidgetp;
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
 
   logProcBegin (LOG_PROC, "uisongeditAddSpinboxInt");
   uiw = uisongedit->uiWidgetData;
@@ -1028,7 +1032,7 @@ static void
 uisongeditAddLabel (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 {
   UIWidget        *uiwidgetp;
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
 
   logProcBegin (LOG_PROC, "uisongeditAddLabel");
   uiw = uisongedit->uiWidgetData;
@@ -1043,7 +1047,7 @@ static void
 uisongeditAddSecondaryLabel (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 {
   UIWidget        *uiwidgetp;
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
 
   logProcBegin (LOG_PROC, "uisongeditAddSecondaryLabel");
   uiw = uisongedit->uiWidgetData;
@@ -1057,7 +1061,7 @@ static void
 uisongeditAddSpinboxTime (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 {
   uispinbox_t     *sbp;
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
   UIWidget        *uiwidgetp;
 
   logProcBegin (LOG_PROC, "uisongeditAddSpinboxTime");
@@ -1079,7 +1083,7 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 static void
 uisongeditAddScale (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 {
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
   UIWidget        *uiwidgetp;
   double          lower, upper;
   double          inca, incb;
@@ -1123,7 +1127,7 @@ static bool
 uisongeditScaleDisplayCallback (void *udata, double value)
 {
   uisongedititem_t  *item = udata;
-  uisongeditgtk_t   *uiw;
+  se_internal_t   *uiw;
   char              tbuff [40];
   int               digits;
 
@@ -1141,7 +1145,7 @@ uisongeditScaleDisplayCallback (void *udata, double value)
 static void
 uisongeditClearChanged (uisongedit_t *uisongedit)
 {
-  uisongeditgtk_t *uiw = NULL;
+  se_internal_t *uiw = NULL;
 
   logProcBegin (LOG_PROC, "uisongeditClearChanged");
   uiw = uisongedit->uiWidgetData;
@@ -1161,7 +1165,7 @@ static bool
 uisongeditSaveCallback (void *udata)
 {
   uisongedit_t    *uisongedit = udata;
-  uisongeditgtk_t *uiw = NULL;
+  se_internal_t *uiw = NULL;
   double          ndval;
   long            nval;
   const char      *ndata = NULL;
@@ -1430,7 +1434,7 @@ static bool
 uisongeditCopyPath (void *udata)
 {
   uisongedit_t  *uisongedit = udata;
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
   const char    *txt;
   char          *ffn;
   char          tbuff [MAXPATHLEN];
@@ -1453,7 +1457,7 @@ static bool
 uisongeditKeyEvent (void *udata)
 {
   uisongedit_t    *uisongedit = udata;
-  uisongeditgtk_t *uiw;
+  se_internal_t *uiw;
 
   uiw = uisongedit->uiWidgetData;
 
@@ -1462,23 +1466,26 @@ uisongeditKeyEvent (void *udata)
     uisongselPlayCallback (uisongedit->uisongsel);
   }
 
-  if (uiKeyIsControlPressed (uiw->uikey) &&
-      uiKeyIsPressEvent (uiw->uikey)) {
-    if (uiKeyIsAKey (uiw->uikey)) {
-      uisongeditApplyAdjCallback (uisongedit);
-      return UICB_STOP;
-    }
-    if (uiKeyIsSKey (uiw->uikey)) {
-      uisongeditSaveCallback (uisongedit);
-      return UICB_STOP;
-    }
-    if (uiKeyIsNKey (uiw->uikey)) {
-      uisongeditNextSelection (uisongedit);
-      return UICB_STOP;
-    }
-    if (uiKeyIsPKey (uiw->uikey)) {
-      uisongeditPreviousSelection (uisongedit);
-      return UICB_STOP;
+  if (uiKeyIsPressEvent (uiw->uikey)) {
+    if (uiKeyIsControlPressed (uiw->uikey)) {
+      if (uiKeyIsShiftPressed (uiw->uikey)) {
+        if (uiKeyIsKey (uiw->uikey, 'A')) {
+          uisongeditApplyAdjCallback (uisongedit);
+          return UICB_STOP;
+        }
+      }
+      if (uiKeyIsKey (uiw->uikey, 'S')) {
+        uisongeditSaveCallback (uisongedit);
+        return UICB_STOP;
+      }
+      if (uiKeyIsKey (uiw->uikey, 'N')) {
+        uisongeditNextSelection (uisongedit);
+        return UICB_STOP;
+      }
+      if (uiKeyIsKey (uiw->uikey, 'P')) {
+        uisongeditPreviousSelection (uisongedit);
+        return UICB_STOP;
+      }
     }
   }
 
@@ -1504,7 +1511,7 @@ uisongeditApplyAdjCallback (void *udata)
 static int
 uisongeditEntryChangedCallback (uientry_t *entry, void *udata)
 {
-  uisongeditgtk_t *uiw = udata;
+  se_internal_t *uiw = udata;
 
   uiw->checkchanged = true;
   return 0;
@@ -1513,7 +1520,7 @@ uisongeditEntryChangedCallback (uientry_t *entry, void *udata)
 static bool
 uisongeditChangedCallback (void *udata)
 {
-  uisongeditgtk_t *uiw = udata;
+  se_internal_t *uiw = udata;
 
   uiw->checkchanged = true;
   return UICB_CONT;

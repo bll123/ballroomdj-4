@@ -18,6 +18,7 @@ requires a SourceForge account.
 
 __BallroomDJ 4 Forums__: The BallroomDJ 4 forums also require
 registration.
+<br>[BDJ4 Forum Registration](https://ballroomdj.org/forum/ucp.php?mode=register)
 <br>[BDJ4 Problem Reports](https://ballroomdj.org/forum/viewforum.php?f=29)
 
 __BDJ4 Built-In Support__: If you have BDJ4 installed, you can use the
@@ -30,4 +31,4 @@ Message__ button when finished.
 __E-Mail__: E-Mail me (Brad Lanam) : brad.lanam.di AT gmail.com
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-24 07:32:13; BDJ4 version 4.1.1-beta)_

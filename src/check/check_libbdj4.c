@@ -28,10 +28,8 @@ check_libbdj4 (SRunner *sr)
 
   /* libbdj4
    *  bdjvarsdf             complete // needed by tests
-   *  templateutil          complete // needed by tests; needs localized tests
-   *  bdjvarsdfload         complete // needed by tests; uses templateutil
-   *  dance                 complete
    *  dnctypes              complete
+   *  dance                 complete
    *  genre                 complete
    *  level                 complete
    *  rating                complete
@@ -47,24 +45,28 @@ check_libbdj4 (SRunner *sr)
    *  dancesel              complete
    *  sequence              complete
    *  songsel
+   *  audiotag
    *  playlist
    *  sortopt               complete
    *  dispsel               complete
    *  orgutil               partial
    *  webclient             complete 2022-12-27
    *  validate              complete
+   *  songdb
    *  samesong              complete
+   *  audioadjust
+   *  templateutil          complete // needed by tests; needs localized tests
+   *  bdjvarsdfload         complete // needed by tests; uses templateutil
    *  msgparse              complete 2022-12-27
    *  orgopt                complete
    *  volreg                complete 2022-12-27 (missing lock tests)
-   *  audiotag
    *  m3u
+   *  itunes
    *  bdj4init
    *  instutil
    *  support
-   *  songdb
+   *  mp3exp
    *  musicq
-   *  bdj4itunes
    */
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "==chk== libbdj4");
@@ -72,16 +74,10 @@ check_libbdj4 (SRunner *sr)
   s = bdjvarsdf_suite();
   srunner_add_suite (sr, s);
 
-  s = templateutil_suite();
-  srunner_add_suite (sr, s);
-
-  s = bdjvarsdfload_suite();
+  s = dnctypes_suite();
   srunner_add_suite (sr, s);
 
   s = dance_suite();
-  srunner_add_suite (sr, s);
-
-  s = dnctypes_suite();
   srunner_add_suite (sr, s);
 
   s = genre_suite();
@@ -142,6 +138,12 @@ check_libbdj4 (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = samesong_suite();
+  srunner_add_suite (sr, s);
+
+  s = templateutil_suite();
+  srunner_add_suite (sr, s);
+
+  s = bdjvarsdfload_suite();
   srunner_add_suite (sr, s);
 
   s = msgparse_suite();

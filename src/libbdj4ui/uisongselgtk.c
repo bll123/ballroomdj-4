@@ -20,6 +20,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
+#include "callback.h"
 #include "colorutils.h"
 #include "conn.h"
 #include "log.h"
@@ -28,10 +29,10 @@
 #include "nlist.h"
 #include "songfav.h"
 #include "songfilter.h"
+#include "tmutil.h"
 #include "uidance.h"
 #include "uifavorite.h"
 #include "ui.h"
-#include "callback.h"
 #include "uisongfilter.h"
 #include "uisong.h"
 #include "uisongsel.h"
@@ -62,6 +63,7 @@ enum {
 
 enum {
   STORE_ROWS = 60,
+  TREE_DOUBLE_CLICK_TIME = 250,
 };
 
 /* for callbacks */
@@ -115,6 +117,12 @@ typedef struct uisongselgtk {
   GType             *typelist;
   int               col;        // for the display type callback
   const char        *markcolor;
+  /* for shift-click */
+  nlistidx_t        shiftfirstidx;
+  nlistidx_t        shiftlastidx;
+  /* for double-click checks */
+  dbidx_t           lastRowDBIdx;
+  mstime_t          lastRowCheck;
   bool              controlPressed : 1;
   bool              shiftPressed : 1;
   bool              inscroll : 1;
@@ -180,6 +188,8 @@ uisongselUIInit (uisongsel_t *uisongsel)
   for (int i = 0; i < SONGSEL_BUTTON_MAX; ++i) {
     uiw->buttons [i] = NULL;
   }
+  uiw->lastRowDBIdx = -1;
+  mstimeset (&uiw->lastRowCheck, 0);
 
   uiw->uikey = uiKeyAlloc ();
   uiw->callbacks [SONGSEL_CB_KEYB] = callbackInit (
@@ -998,15 +1008,15 @@ uisongselInitializeStore (uisongsel_t *uisongsel)
   uiw->typelist = mdmalloc (sizeof (GType) * SONGSEL_COL_MAX);
   uiw->col = 0;
   /* attributes ellipsize/font*/
-  uiw->typelist [uiw->col++] = G_TYPE_INT;
-  uiw->typelist [uiw->col++] = G_TYPE_STRING;
+  uiw->typelist [uiw->col++] = TREE_TYPE_ELLIPSIZE;
+  uiw->typelist [uiw->col++] = TREE_TYPE_STRING;
   /* internal idx/sortidx/dbidx */
-  uiw->typelist [uiw->col++] = G_TYPE_LONG,
-  uiw->typelist [uiw->col++] = G_TYPE_LONG,
-  uiw->typelist [uiw->col++] = G_TYPE_LONG,
+  uiw->typelist [uiw->col++] = TREE_TYPE_NUM,
+  uiw->typelist [uiw->col++] = TREE_TYPE_NUM,
+  uiw->typelist [uiw->col++] = TREE_TYPE_NUM,
   /* fav color/mark color/mark/samesong color */
-  uiw->typelist [uiw->col++] = G_TYPE_STRING,
-  uiw->typelist [uiw->col++] = G_TYPE_STRING,
+  uiw->typelist [uiw->col++] = TREE_TYPE_STRING,
+  uiw->typelist [uiw->col++] = TREE_TYPE_STRING,
   assert (uiw->col == SONGSEL_COL_MAX);
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
@@ -1063,8 +1073,6 @@ uisongselProcessSongFilter (uisongsel_t *uisongsel)
       uisongsel->songfilter, uisongsel->musicdb);
 }
 
-
-
 static void
 uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
     GtkTreeViewColumn* column, gpointer udata)
@@ -1075,6 +1083,28 @@ uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
   logProcBegin (LOG_PROC, "uisongselCheckFavChgSignal");
 
   uiw = uisongsel->uiWidgetData;
+
+  /* double-click processing */
+  if (uiw->lastRowDBIdx == uisongsel->lastdbidx &&
+      ! mstimeCheck (&uiw->lastRowCheck)) {
+    /* double-click in the song selection or ez-song selection adds */
+    /* the song to the song list */
+    if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
+        uisongsel->dispselType == DISP_SEL_EZSONGSEL) {
+      uisongselSelectCallback (uisongsel);
+    }
+    /* double-click in the music manager edits the song */
+    if (uisongsel->dispselType == DISP_SEL_MM) {
+      uisongselSongEditCallback (uisongsel);
+    }
+    /* double-click in the request window queues the song */
+    if (uisongsel->dispselType == DISP_SEL_REQUEST) {
+      uisongselQueueCallback (uisongsel);
+    }
+  }
+  mstimeset (&uiw->lastRowCheck, TREE_DOUBLE_CLICK_TIME);
+  uiw->lastRowDBIdx = uisongsel->lastdbidx;
+
   if (column != uiw->favColumn) {
     logProcEnd (LOG_PROC, "uisongselCheckFavChgSignal", "not-fav-col");
     return;
@@ -1206,7 +1236,6 @@ uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
   /* set the selections based on the saved selection list */
   nlistStartIterator (uiw->selectedList, &iteridx);
   while ((idx = nlistIterateKey (uiw->selectedList, &iteridx)) >= 0) {
-
     if (idx >= uisongsel->idxStart &&
         idx < uisongsel->idxStart + uiw->maxRows) {
       uiTreeViewSelectionSet (uiw->songselTree, idx - uisongsel->idxStart);
@@ -1318,6 +1347,8 @@ uisongselKeyEvent (void *udata)
 
   uiw = uisongsel->uiWidgetData;
 
+  uiw->shiftPressed = false;
+  uiw->controlPressed = false;
   if (uiKeyIsShiftPressed (uiw->uikey)) {
     uiw->shiftPressed = true;
   }
@@ -1384,9 +1415,24 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
   /* then this is a new selection and not a modification */
   tlist = nlistAlloc ("selected-list-chg", LIST_ORDERED, NULL);
 
-  /* if the control-key or the shift-key are pressed, add any current */
+  /* if the shift key is pressed, get the first and the last item */
+  /* in the selection list (both, as it is not yet known where */
+  /* the new selection is in relation). */
+  if (uiw->shiftPressed) {
+    uiw->shiftfirstidx = -1;
+    uiw->shiftlastidx = -1;
+    nlistStartIterator (uiw->selectedList, &iteridx);
+    while ((idx = nlistIterateKey (uiw->selectedList, &iteridx)) >= 0) {
+      if (uiw->shiftfirstidx == -1) {
+        uiw->shiftfirstidx = idx;
+      }
+      uiw->shiftlastidx = idx;
+    }
+  }
+
+  /* if the control-key is pressed, add any current */
   /* selection that is not in view to the new selection list */
-  if (uiw->controlPressed || uiw->shiftPressed) {
+  if (uiw->controlPressed) {
     nlistStartIterator (uiw->selectedList, &iteridx);
     while ((idx = nlistIterateKey (uiw->selectedList, &iteridx)) >= 0) {
       if (idx < uisongsel->idxStart ||
@@ -1445,8 +1491,32 @@ uisongselProcessSelection (GtkTreeModel *model,
   uiw = uisongsel->uiWidgetData;
 
   gtk_tree_model_get (model, iter, SONGSEL_COL_IDX, &idx, -1);
-  gtk_tree_model_get (model, iter, SONGSEL_COL_DBIDX, &dbidx, -1);
-  nlistSetNum (uiw->selectedList, idx, dbidx);
+
+  if (uiw->shiftPressed) {
+    nlistidx_t    beg = 0;
+    nlistidx_t    end = -1;
+
+    if (idx <= uiw->shiftfirstidx) {
+      beg = idx;
+      end = uiw->shiftfirstidx;
+    }
+    if (idx >= uiw->shiftlastidx) {
+      beg = uiw->shiftlastidx;
+      end = idx;
+    }
+
+    for (nlistidx_t i = beg; i <= end; ++i) {
+      if (i >= uisongsel->idxStart &&
+          i < uisongsel->idxStart + uiw->maxRows) {
+        uiTreeViewSelectionSet (uiw->songselTree, i - uisongsel->idxStart);
+      }
+      dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
+      nlistSetNum (uiw->selectedList, i, dbidx);
+    }
+  } else {
+    gtk_tree_model_get (model, iter, SONGSEL_COL_DBIDX, &dbidx, -1);
+    nlistSetNum (uiw->selectedList, idx, dbidx);
+  }
 
   uisongsel->lastdbidx = dbidx;
 

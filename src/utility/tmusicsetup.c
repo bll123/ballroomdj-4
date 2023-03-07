@@ -110,7 +110,6 @@ main (int argc, char *argv [])
     { "debug",        no_argument,        NULL,   'd' },
     { "emptydb",      no_argument,        NULL,   'E' },
     { "infile",       required_argument,  NULL,   'I' },
-    { "msys",         no_argument,        NULL,   0 },
     { "nodetach",     no_argument,        NULL,   0, },
     { "outfile",      required_argument,  NULL,   'O' },
     { "scale",        required_argument,  NULL,   0 },

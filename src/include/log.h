@@ -68,8 +68,9 @@ enum {
   LOG_PROGSTATE       = 0x00080000,  // 524288
   LOG_ITUNES          = 0x00100000,  // 1048576
   LOG_AUDIO_ADJUST    = 0x00200000,  // 2097152
+  LOG_AUDIO_TAG       = 0x00400000,  // 4194304
   /* insert new values here, push redir_inst down */
-  LOG_REDIR_INST      = 0x00400000,  // 4194304
+  LOG_REDIR_INST      = 0x40000000,
   LOG_ALL             = ~LOG_REDIR_INST,
 };
 

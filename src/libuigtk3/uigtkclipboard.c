@@ -12,7 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#include "ui.h"
+#include "ui/uiclipboard.h"
 
 void
 uiClipboardSet (const char *txt)

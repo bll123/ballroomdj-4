@@ -2,8 +2,8 @@
 
 ### Configuration : User Interface
 
-<span style="color:#4559bf;">_The user interface tab provide settings
-for how the user interface is displayed._</span>
+<span style="color:#4559bf;">_The user interface tab has settings for
+how the user interface is displayed._</span>
 
 __Theme__: The theme to use for the user interface.  Mac OS and
 Windows only have a few themes shipped with the installation package.
@@ -14,12 +14,15 @@ __Font__: The display font used for the main user interface.
 __Listing Font__: The font used to display lists of songs in the music
 queues, requests, song selection, &etc.
 
+__Scale__: The scale of the user interface.  Only needs to be changed
+for 4K or larger displays.
+
 __Accent Color__: The color used for important status messages and for
 the color of the buttons.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![User Interface](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/UI-C.png)
-<br><span style="color:#4559bf;">**Configure / User Interface**</span> </div>
+![user-interface](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/UI-D.png)
+<br><span style="color:#4559bf;">__Configure / User Interface__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-24 07:28:24; BDJ4 version 4.1.1-beta)_

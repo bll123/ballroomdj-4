@@ -122,6 +122,12 @@ uifavoriteEnable (uifavorite_t *uifavorite)
   uiSpinboxEnable (uifavorite->spinbox);
 }
 
+void
+uifavoriteSetChangedCallback (uifavorite_t *uifavorite, callback_t *cb)
+{
+  uiSpinboxTextSetValueChangedCallback (uifavorite->spinbox, cb);
+}
+
 /* internal routines */
 
 static const char *

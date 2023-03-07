@@ -6,6 +6,9 @@
 
 The __Player__ and __Audio__ settings generally do not change.
 
+__Player__: Selects the player interface.  At this time, only
+_Integrated&nbsp;VLC_ is supported.
+
 __Audio Output__: Selects which audio output device will be used to
 play the audio.  If the selected device is not currently connected,
 the default device will be used.
@@ -18,8 +21,8 @@ __Completion Message__: A message displayed on the marquee when the dance
 is finished (no more songs left to play).
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-C.png)
-<br><span style="color:#4559bf;">**Configure / Player**</span> </div>
+![Player](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/Player-D.png)
+<br><span style="color:#4559bf;">__Configure / Player__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-24 07:28:24; BDJ4 version 4.1.1-beta)_

@@ -9,12 +9,11 @@
 #include "song.h"
 
 enum {
+  AA_NORMVOL_MAX,
+  AA_NORMVOL_TARGET,
   AA_TRIMSILENCE_PERIOD,
   AA_TRIMSILENCE_START,
   AA_TRIMSILENCE_THRESHOLD,
-  AA_LOUDNORM_TARGET_IL,
-  AA_LOUDNORM_TARGET_LRA,
-  AA_LOUDNORM_TARGET_TP,
   AA_KEY_MAX,
 };
 
@@ -29,8 +28,8 @@ typedef struct aa aa_t;
 aa_t * aaAlloc (void);
 void aaFree (aa_t *aa);
 bool aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags);
-long aaTrimSilence (const char *infn, const char *outfn);
+void aaTrimSilence (musicdb_t *musicdb, dbidx_t dbidx, const char *infn, const char *outfn);
 void aaNormalize (const char *infn, const char *outfn);
-long aaAdjust (song_t *song, const char *infn, const char *outfn, long dur, int fadein, int fadeout, int gap);
+void aaAdjust (musicdb_t *musicdb, song_t *song, const char *infn, const char *outfn, long dur, int fadein, int fadeout, int gap);
 
 #endif /* INC_AUDIOADJUST_H */

@@ -31,7 +31,7 @@ As far as I know, this bug does not occur on Windows 10.
 
 #### Windows Account Names with Diacritical Marks
 
-The BallroomDJ 4 installer will not run if the windows account name
+The BallroomDJ 4 installer may not run if the windows account name
 has any diacritical marks (e.g. Gergő; accents, umlauts, circumflex,
 etc.).  You will need to change your account name (quite difficult),
 or create a new account for BDJ4 that does not have any diacritical
@@ -49,55 +49,58 @@ Download the Windows installer from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
+Make sure to exit BDJ4 if it is already started.
+
 Start the installer by double clicking the downloaded file in your
 Downloads folder. (This image shows an out of date installer).
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BallroomDJ 4 File Selection on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Install-File-Select.png)
-<br><span style="color:#4559bf;">**BallroomDJ 4 Installer Selection **</span> </div>
+<br><span style="color:#4559bf;">__BallroomDJ 4 Installer Selection __</span> </div>
 
-If windows displays the **Windows Protected your PC** message,
-select **More Info**, then **Run Anyway**.  BallroomDJ 4 has no malware
+If windows displays the __Windows Protected your PC__ message, select
+__More Info__, then __Run Anyway__.  BallroomDJ 4 has no malware
 present in it.
 
-Choose the folder in which to install BallroomDJ 4.  The %USERPROFILE%\BDJ4
-folder will be pre-selected for you.
+Choose the folder in which to install BallroomDJ 4.  The
+%USERPROFILE%\BDJ4 folder will be pre-selected for you.
 
-The **Re-Install** checkbox is only used if you want to completely
+The __Re-Install__ checkbox is only used if you want to completely
 reset all of the BDJ4 data files.  Any changes you have made within
 BDJ4 will be lost if a re-install is done. __(If you are updating an
 alpha installation, you must do a re-install.)__
 
 If you want to convert a BallroomDJ 3 installation, select the
-BallroomDJ 3 folder and select the **Convert BallroomDJ 3** checkbox.
+BallroomDJ 3 folder and select the __Convert BallroomDJ 3__ checkbox.
 
-After you have selected the installation folder, select the **Install**
-button and wait for the **Installation Completed** message.
+After you have selected the installation folder, select the
+__Install__ button and wait for the __Installation Completed__
+message.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![BallroomDJ 4 Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Installer.png)
-<br><span style="color:#4559bf;">**BallroomDJ 4 Installer on Windows**</span> </div>
+<br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Windows__</span> </div>
 
 If the VLC application is not installed, the VLC installer will be
-downloaded and started for you.  In the Windows **User Account
-Control** window, select **Yes**.  Select the VLC installation language
-and select **OK**. Select the **Next** button twice and you should be
-in the VLC **Choose Components** selection.
+downloaded and started for you.  In the Windows __User Account
+Control__ window, select __Yes__.  Select the VLC installation
+language and select __OK__. Select the __Next__ button twice and you
+should be in the VLC __Choose Components__ selection.
 
-Scroll down until you see **File Type Associations**.
+Scroll down until you see __File Type Associations__.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![VLC Installer on Windows](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/Windows-Install-VLC-Comp.png)
-<br><span style="color:#4559bf;">**VLC Installer on Windows**</span> </div>
+<br><span style="color:#4559bf;">__VLC Installer on Windows__</span> </div>
 
-If you do not use VLC as your current media player, select the **File
-Type Associations** checkbox twice.  The first click will turn on all
+If you do not use VLC as your current media player, select the __File
+Type Associations__ checkbox twice.  The first click will turn on all
 file type associations, the second click will turn all file type
 associations off.
 
-Now select **Next**, then select **Install**.
-After the VLC installation is complete, turn off the **Run VLC media
-player** checkbox, and select **Finish**.
+Now select __Next__, then select __Install__. After the VLC
+installation is complete, turn off the __Run VLC media player__
+checkbox, and select __Finish__.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-12 09:32:26; BDJ4 version 4.0.10.1-beta)_
+<br>_(Updated 2023-02-24 06:50:09; BDJ4 version 4.1.1-beta)_

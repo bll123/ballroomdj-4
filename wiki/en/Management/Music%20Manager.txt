@@ -54,9 +54,9 @@ automatically use the filters set in song selection. The song editor
 can then be used to traverse the songs that have been selected.
 
 If you have a listing loaded in the music manager, multiple songs may
-be selected (using control-click).  When multiple songs are selected
-in the music manager, the song editor will traverse the selected
-songs, and not the entire listing.
+be selected (using control-click or shift-click).  When multiple songs
+are selected in the music manager, the song editor will traverse the
+selected songs, and not the entire listing.
 
 ##### Actions Menu
 
@@ -85,4 +85,4 @@ marked as the same song.
 <br><span style="color:#4559bf;">**Manage / Music Manager / Same Song Marks**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:26:14; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-03-07 06:08:10; BDJ4 version 4.2.0-beta)_

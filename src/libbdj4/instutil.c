@@ -227,8 +227,41 @@ instutilCopyTemplates (void)
 void
 instutilCopyHttpFiles (void)
 {
+  char    from [MAXPATHLEN];
+  char    to [MAXPATHLEN];
+  char    tmp [MAXPATHLEN];
+  char    tbuff [200];
+
   instutilCopyHttpSVGFile ("led_on");
   instutilCopyHttpSVGFile ("led_off");
+
+  pathbldMakePath (from, sizeof (from),
+      "http/favicon.ico", "", PATHBLD_MP_DIR_MAIN);
+  pathbldMakePath (to, sizeof (to),
+      "favicon.ico", "", PATHBLD_MP_DREL_HTTP);
+  filemanipCopy (from, to);
+
+  pathbldMakePath (from, sizeof (from),
+      "http/ballroomdj4", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_MAIN);
+  pathbldMakePath (to, sizeof (to),
+      "ballroomdj4", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
+  filemanipCopy (from, to);
+
+  pathbldMakePath (tmp, sizeof (tmp), "", "", PATHBLD_MP_DIR_MAIN);
+  snprintf (from, sizeof (from), "%s/http/mrc", tmp);
+  pathbldMakePath (to, sizeof (to),
+      "mrc", "", PATHBLD_MP_DREL_HTTP);
+  *tbuff = '\0';
+  if (isWindows ()) {
+    pathWinPath (from, sizeof (from));
+    pathWinPath (to, sizeof (to));
+    snprintf (tbuff, sizeof (tbuff), "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl \"%s\" \"%s\"",
+        from, to);
+  } else {
+    snprintf (tbuff, sizeof (tbuff), "cp -r '%s' '%s'", from, "http");
+  }
+  logMsg (LOG_INSTALL, LOG_IMPORTANT, "copy files: %s", tbuff);
+  (void) ! system (tbuff);
 }
 
 /* internal routines */

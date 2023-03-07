@@ -146,6 +146,7 @@ static void mainMusicqMove (maindata_t *mainData, char *args, mainmove_t directi
 static void mainMusicqMoveTop (maindata_t *mainData, char *args);
 static void mainMusicqClear (maindata_t *mainData, char *args);
 static void mainMusicqRemove (maindata_t *mainData, char *args);
+static void mainMusicqSwap (maindata_t *mainData, char *args);
 static void mainNextSong (maindata_t *mainData);
 static void mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t route, char *args);
 static void mainMusicqSetManage (maindata_t *mainData, char *args);
@@ -161,7 +162,7 @@ static void mainSendDanceList (maindata_t *mainData, bdjmsgroute_t route);
 static void mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route);
 static void mainSendPlayerStatus (maindata_t *mainData, char *playerResp);
 static void mainSendMusicqStatus (maindata_t *mainData);
-static int  mainParseMqidxNum (maindata_t *mainData, char *args, ilistidx_t *b);
+static int  mainParseMqidxNum (maindata_t *mainData, char *args, ilistidx_t *b, ilistidx_t *c);
 static int  mainParseQueuePlaylist (maindata_t *mainData, char *args, char **b, int *editmode);
 static int  mainMusicqIndexParse (maindata_t *mainData, const char *p);
 static void mainSendFinished (maindata_t *mainData);
@@ -518,6 +519,11 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_MUSICQ_REMOVE: {
           mainMusicqRemove (mainData, targs);
+          dbgdisp = true;
+          break;
+        }
+        case MSG_MUSICQ_SWAP: {
+          mainMusicqSwap (mainData, targs);
           dbgdisp = true;
           break;
         }
@@ -1300,7 +1306,7 @@ mainQueueDance (maindata_t *mainData, char *args, int count)
   /* get the musicq length before any songs are added */
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
 
-  mi = mainParseMqidxNum (mainData, args, &danceIdx);
+  mi = mainParseMqidxNum (mainData, args, &danceIdx, NULL);
 
   logMsg (LOG_DBG, LOG_BASIC, "queue dance %d %d %d", mi, danceIdx, count);
   /* CONTEXT: player: the name of the special playlist for queueing a dance */
@@ -1715,7 +1721,7 @@ mainTogglePause (maindata_t *mainData, char *args)
 
   logProcBegin (LOG_PROC, "mainTogglePause");
 
-  mi = mainParseMqidxNum (mainData, args, &idx);
+  mi = mainParseMqidxNum (mainData, args, &idx, NULL);
 
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);
   if (idx <= 0 || idx > musicqLen) {
@@ -1744,7 +1750,7 @@ mainMusicqMove (maindata_t *mainData, char *args, mainmove_t direction)
   logProcBegin (LOG_PROC, "mainMusicqMove");
 
 
-  mi = mainParseMqidxNum (mainData, args, &fromidx);
+  mi = mainParseMqidxNum (mainData, args, &fromidx, NULL);
 
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);
 
@@ -1785,7 +1791,7 @@ mainMusicqMoveTop (maindata_t *mainData, char *args)
 
   logProcBegin (LOG_PROC, "mainMusicqMoveTop");
 
-  mi = mainParseMqidxNum (mainData, args, &fromidx);
+  mi = mainParseMqidxNum (mainData, args, &fromidx, NULL);
 
   musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);
 
@@ -1814,7 +1820,7 @@ mainMusicqClear (maindata_t *mainData, char *args)
 
   logProcBegin (LOG_PROC, "mainMusicqClear");
 
-  mi = mainParseMqidxNum (mainData, args, &idx);
+  mi = mainParseMqidxNum (mainData, args, &idx, NULL);
 
   mainMusicqClearPreppedSongs (mainData, mainData->musicqManageIdx, idx);
   musicqClear (mainData->musicQueue, mainData->musicqManageIdx, idx);
@@ -1835,7 +1841,7 @@ mainMusicqRemove (maindata_t *mainData, char *args)
 
   logProcBegin (LOG_PROC, "mainMusicqRemove");
 
-  mi = mainParseMqidxNum (mainData, args, &idx);
+  mi = mainParseMqidxNum (mainData, args, &idx, NULL);
 
   mainMusicqClearPrep (mainData, mainData->musicqManageIdx, idx);
   musicqRemove (mainData->musicQueue, mainData->musicqManageIdx, idx);
@@ -1844,6 +1850,26 @@ mainMusicqRemove (maindata_t *mainData, char *args)
   mainData->musicqChanged [mi] = MAIN_CHG_START;
   mainData->marqueeChanged [mi] = true;
   logProcEnd (LOG_PROC, "mainMusicqRemove", "");
+}
+
+static void
+mainMusicqSwap (maindata_t *mainData, char *args)
+{
+  int           mi;
+  ilistidx_t    fromidx;
+  ilistidx_t    toidx;
+
+
+  logProcBegin (LOG_PROC, "mainMusicqSwap");
+
+  mi = mainParseMqidxNum (mainData, args, &fromidx, &toidx);
+  if (fromidx >= 1 && toidx >= 1) {
+    musicqSwap (mainData->musicQueue, mainData->musicqManageIdx, fromidx, toidx);
+    mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
+    mainData->musicqChanged [mi] = MAIN_CHG_START;
+    mainData->marqueeChanged [mi] = true;
+  }
+  logProcEnd (LOG_PROC, "mainMusicqSwap", "");
 }
 
 static void
@@ -2513,7 +2539,7 @@ mainSendMusicqStatus (maindata_t *mainData)
 /* calls mainMusicqIndexParse, */
 /* which will set musicqManageIdx */
 static int
-mainParseMqidxNum (maindata_t *mainData, char *args, ilistidx_t *b)
+mainParseMqidxNum (maindata_t *mainData, char *args, ilistidx_t *b, ilistidx_t *c)
 {
   int     mi;
   char    *p;
@@ -2525,6 +2551,13 @@ mainParseMqidxNum (maindata_t *mainData, char *args, ilistidx_t *b)
   *b = 0;
   if (p != NULL) {
     *b = atol (p);
+  }
+  if (c != NULL) {
+    p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+    *c = 0;
+    if (p != NULL && *p) {
+      *c = atol (p);
+    }
   }
 
   return mi;
@@ -2547,6 +2580,7 @@ mainParseQueuePlaylist (maindata_t *mainData, char *args, char **b, int *editmod
 
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   *editmode = EDIT_FALSE;
+
   /* one of the few messages where a null is allowed */
   /* the remote-control module's playlist-clear-play and queue-playlist */
   /* messages do not include the edit mode flag */

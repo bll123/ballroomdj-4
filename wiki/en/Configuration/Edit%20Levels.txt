@@ -6,9 +6,8 @@
 in automatic and sequenced playlists._</span>
 
 The dance level can be used to help filter songs according to their
-difficulty.   If you want to use levels, you will also want to change
-the
-[Display&nbsp;Settings](en-Configuration-Display%20Settings).
+difficulty.  If you want to use levels, you will also want to change
+the [Display&nbsp;Settings](en-Configuration-Display%20Settings).
 
 Levels should be ordered from the easiest to the most advanced.
 
@@ -31,8 +30,8 @@ The __Default__ selection determines which dance level is assigned to
 songs that do not have a dance level set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![Edit Levels](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditLevels-C.png)
-<br><span style="color:#4559bf;">**Configure / Edit Levels**</span> </div>
+![edit-levels](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditLevels-D.png)
+<br><span style="color:#4559bf;">__Configure / Edit Levels__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:22:54; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-24 07:28:24; BDJ4 version 4.1.1-beta)_

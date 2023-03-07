@@ -4,16 +4,57 @@
 
 <!--
 
-**4.1.0 beta 2023-2---**
+**4.2.0.1 beta 2023-2---**
+
+-->
+
+**4.2.0 beta 2023-3-6**
+
+* New Features:
+    * Music Manager: Double-click in list to edit song.
+    * Player: Double-click in request list to add to music queue.
+    * Song List Editor: Added swap function.
+    * Song List Editor: Double-click in song selection to add song.
+    * Song Selection: Shift-click is now working.
+* Bug Fixes:
+    * Song Selection: Fix control-click.
+    * Song Selection: Fix 'Date Added' filter.
+* Changes:
+    * Song Editor: Changed Control-A to Control-Shift-A.
+    * Automatic Playlists: Dance selection values adjusted.
+    * Playlist Management: User Interface: Selecting the dance name no longer changes the selection.
+* Internal:
+    * Code cleanup.
+
+**4.1.1 beta 2023-2-23**
+
+* Bug Fixes:
+    * Apply Adjustments: Fixed a crash when processing audio files.
+    * Apply Adjustments: Fixed a hang when processing audio files.
+    * Song Editor: Fix changed detection for status, favorite.
+* Changes:
+    * Apply Adjustments: New method for normalizing volume.
+* Internal:
+    * Code cleanup (ui).
+
+**4.1.0.1 beta 2023-2-17**
+
+* Bug Fixes:
+    * Configuration: Debug: Fix apply adjustments.
+    * Song Editor: Fix apply adjustment processing.
+
+**4.1.0 beta 2023-2-16**
 
 * New Features:
     * Song Editor: Apply Adjustments.
 * Changes:
-    * Minor user interface cleanup.
+    * Linux: player start/stop scripts updated to turn off and restore notifications.
+    * Mac OS: Installer: Fix installation of http/ folder.
     * Song Editor: Duration display also shows adjusted duration.
     * Song Editor: BPM Range for the dance is now displayed.
     * Song Editor: BPM, song start, song end are adjusted for speed.
     * Support: Added BDJ4 download link.
+    * User interface: Minor cleanup.
 * Bug Fixes:
     * Alternate Installer: Various bug fixes.
     * BPM Counter: Fix slow exit.
@@ -23,8 +64,6 @@
     * Nederlands updated.
 * Internal:
     * Code cleanup.
-
--->
 
 **4.0.10.1 beta 2023-2-12**
 
@@ -240,4 +279,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-12 09:32:26; BDJ4 version 4.0.10.1-beta)_
+<br>_(Updated 2023-03-06 11:40:42; BDJ4 version 4.2.0-beta)_

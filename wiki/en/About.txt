@@ -3,8 +3,8 @@
 ## About BallroomDJ 4
 
 BallroomDJ&nbsp;4 (BDJ4) is a music player designed for laptops and
-desktops.  It is designed to play music for an entire evening without
-any intervention.
+desktops (and some tablets).  It is designed to play music for an
+entire evening without any intervention.
 
 BDJ4 provides the tools to organize the ballroom music by dance and
 into song lists, sequences and automatic playlists. Though it is
@@ -26,11 +26,13 @@ continue.  And to ensure the long term existence of a ballroom music
 player, the programming language and tools used needed to change.
 
 BDJ4 is a complete rewrite designed to replace BallroomDJ 3.  Work
-started on BDJ4 in December of 2021.  BDJ4 is not an upgrade to
-BallroomDJ, but rather a separate installation with its own database
-and configuration files.  A conversion process can be used during
-installation to convert the BallroomDJ&nbsp;3 data files and database
-to files that can be used by BDJ4.
+started on BDJ4 in December of 2021.
+
+BDJ4 is not an upgrade to BallroomDJ, but rather a separate
+installation with its own database and configuration files.  A
+conversion process can be used during installation to convert the
+BallroomDJ&nbsp;3 data files and database to files that can be used by
+BDJ4.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-24 06:23:43; BDJ4 version 4.1.1-beta)_

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-02-15\n"
+"PO-Revision-Date: 2023-03-06\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -1282,6 +1282,7 @@ msgid "Playlist Type"
 msgstr ""
 
 #. CONTEXT: installer: status message
+#. CONTEXT: apply adjustments: please wait... status message
 #. CONTEXT: management ui: please wait... status message
 #. CONTEXT: export as mp3: please wait... status message
 msgid "Please wait…"
@@ -1634,7 +1635,7 @@ msgstr ""
 msgid "Show Marquee"
 msgstr ""
 
-#. CONTEXT: configuration: queue: whether to show the 'queue dance' buttons
+#. CONTEXT: configuration: queue: whether to show the 'queue dance' buttons (verb)
 msgid "Show Queue Dance Buttons"
 msgstr ""
 
@@ -1766,6 +1767,10 @@ msgstr ""
 #. CONTEXT: starterui: basic support dialog, list of support options
 msgid "Support options"
 msgstr ""
+
+#. CONTEXT: managementui: menu selection: song list: actions menu: swap two songs
+msgid "Swap"
+msgstr "Wisselen"
 
 #. CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue
 msgid "Switch Queue When Empty"

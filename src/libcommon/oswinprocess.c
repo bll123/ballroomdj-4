@@ -114,7 +114,6 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
 
     WaitForSingleObject (pi.hProcess, INFINITE);
     GetExitCodeProcess (pi.hProcess, &rc);
-    /* more to be done, overload the pid */
     pid = rc;
   }
 
@@ -139,7 +138,7 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
 }
 
 /* creates a pipe for re-direction and grabs the output */
-pid_t
+int
 osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *retsz)
 {
   pid_t   pid;
@@ -155,7 +154,10 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   HANDLE              handleStdinRead = INVALID_HANDLE_VALUE;
   HANDLE              handleStdinWrite = INVALID_HANDLE_VALUE;
   SECURITY_ATTRIBUTES sao;
-  DWORD               bytesRead;
+  DWORD               rbytes;
+  DWORD               rc = 0;
+
+  flags |= OS_PROC_WAIT;      // required
 
   memset (&si, '\0', sizeof (si));
   si.cb = sizeof (si);
@@ -225,31 +227,42 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
   pid = pi.dwProcessId;
   CloseHandle (pi.hThread);
 
-  if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
-    DWORD   rc;
-
-    WaitForSingleObject (pi.hProcess, INFINITE);
-    GetExitCodeProcess (pi.hProcess, &rc);
-    /* more to be done, overload the pid */
-    pid = rc;
-  }
-
   CloseHandle (handleStdoutWrite);
 
   if (rbuff != NULL) {
-    /* the application wants all the data in one chunk */
-    ReadFile (handleStdoutRead, rbuff, sz, &bytesRead, NULL);
-    rbuff [bytesRead] = '\0';
-    if (retsz != NULL) {
-      *retsz = bytesRead;
-    }
+    ssize_t bytesread = 0;
+    bool    wait = true;
 
+    rbuff [sz - 1] = '\0';
+
+    while (1) {
+      ReadFile (handleStdoutRead, rbuff + bytesread, sz - bytesread, &rbytes, NULL);
+      bytesread += rbytes;
+      if (bytesread < (ssize_t) sz) {
+        rbuff [bytesread] = '\0';
+      }
+      if (retsz != NULL) {
+        *retsz = bytesread;
+      }
+      if (! wait) {
+        break;
+      }
+      if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
+        if (WaitForSingleObject (pi.hProcess, 2) != WAIT_TIMEOUT) {
+          GetExitCodeProcess (pi.hProcess, &rc);
+          wait = false;
+        }
+      }
+      if (wait) {
+        Sleep (2);
+      }
+    }
     CloseHandle (handleStdoutRead);
     CloseHandle (pi.hProcess);
   }
 
   mdfree (wbuff);
-  return pid;
+  return rc;
 }
 
 #endif /* __WINNT__ */

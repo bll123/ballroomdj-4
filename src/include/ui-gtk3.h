@@ -6,6 +6,22 @@
 
 #include <gtk/gtk.h>
 
+typedef glong treenum_t;
+
+/* tree view storage types */
+enum {
+  TREE_TYPE_STRING = G_TYPE_STRING,
+  TREE_TYPE_NUM = G_TYPE_LONG,
+  TREE_TYPE_WIDGET = G_TYPE_OBJECT,
+  TREE_TYPE_BOOLEAN = G_TYPE_BOOLEAN,
+  TREE_TYPE_ELLIPSIZE = G_TYPE_INT,
+  TREE_TYPE_IMAGE = -5,               // will be set to GDK_TYPE_PIXBUF
+  TREE_TYPE_END = -1,
+  TREE_COL_DISP_NORM = GTK_TREE_VIEW_COLUMN_AUTOSIZE,
+  TREE_COL_DISP_GROW = GTK_TREE_VIEW_COLUMN_GROW_ONLY,
+  TREE_ELLIPSIZE_END = PANGO_ELLIPSIZE_END,
+};
+
 /* these are defined based on the gtk values */
 /* would change for a different gui package */
 enum {
@@ -28,6 +44,7 @@ typedef struct {
     GdkPixbuf         *pixbuf;
     GtkTreeSelection  *sel;
     GtkTextBuffer     *buffer;
+    GtkAdjustment     *adjustment;
   };
 } UIWidget;
 

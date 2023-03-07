@@ -56,8 +56,8 @@ __Switch&nbsp;Queue&nbsp;When&nbsp;Empty__.
 <br><span style="color:#4559bf;">**Player / Options**</span> </div>
 
 Select the main music queue and use the __Queue&nbsp;Playlist__ button
-to queue the playlist for the dance.  Select the _Mixer_ music queue
-and use the __Queue&nbsp;Playlist__ button to queue the
+to queue the regular playlist for the dance.  Select the ___Mixer___
+music queue and use the __Queue&nbsp;Playlist__ button to queue the
 _Waltz&nbsp;Mixer_ playlist that was created.
 
 Use the __Play&nbsp;/&nbsp;Pause__
@@ -65,7 +65,7 @@ Use the __Play&nbsp;/&nbsp;Pause__
 button to start the dance.
 
 When you are ready to play the mixer, select the
-__Pause&nbsp;at&nbsp;End__ button, select the _Mixer_ music queue, and
+__Pause&nbsp;at&nbsp;End__ button, select the ___Mixer___ music queue, and
 select the __Set&nbsp;Queue&nbsp;for&nbsp;Playback__ button.  When the
 music stops playing, make the mixer announcement, then select the
 __Play&nbsp;/&nbsp;Pause__
@@ -75,4 +75,4 @@ playback will automatically switch back to the main music queue, and
 playback will continue from the main music queue.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-27 12:26:29; BDJ4 version 4.1.1-beta)_

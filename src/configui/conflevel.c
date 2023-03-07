@@ -68,8 +68,6 @@ confuiBuildUIEditLevels (confuigui_t *gui)
 void
 confuiCreateLevelTable (confuigui_t *gui)
 {
-  GtkTreeIter       iter;
-  GtkListStore      *store = NULL;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
   ilistidx_t        iteridx;
@@ -82,10 +80,12 @@ confuiCreateLevelTable (confuigui_t *gui)
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
-  store = gtk_list_store_new (CONFUI_LEVEL_COL_MAX,
-      G_TYPE_LONG, G_TYPE_STRING, G_TYPE_LONG, G_TYPE_BOOLEAN,
-      G_TYPE_OBJECT, G_TYPE_LONG);
-  assert (store != NULL);
+  uitree = gui->tables [CONFUI_ID_LEVELS].uitree;
+  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
+
+  uiTreeViewCreateValueStore (uitree, CONFUI_LEVEL_COL_MAX,
+      TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_BOOLEAN,
+      TREE_TYPE_WIDGET, TREE_TYPE_NUM, TREE_TYPE_END);
 
   levelStartIterator (levels, &iteridx);
 
@@ -101,14 +101,11 @@ confuiCreateLevelTable (confuigui_t *gui)
       gui->tables [CONFUI_ID_LEVELS].radiorow = key;
     }
 
-    gtk_list_store_append (store, &iter);
-    confuiLevelSet (store, &iter, TRUE, leveldisp, weight, def);
+    uiTreeViewAppendValueStore (uitree);
+    confuiLevelSet (uitree, TRUE, leveldisp, weight, def);
     /* all cells other than the very first (Unrated) are editable */
     gui->tables [CONFUI_ID_LEVELS].currcount += 1;
   }
-
-  uitree = gui->tables [CONFUI_ID_LEVELS].uitree;
-  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
 
   renderer = gtk_cell_renderer_text_new ();
   g_object_set_data (G_OBJECT (renderer), "uicolumn",
@@ -151,8 +148,6 @@ confuiCreateLevelTable (confuigui_t *gui)
   gtk_tree_view_column_set_title (column, _("Default"));
   gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), GTK_TREE_MODEL (store));
-  g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateLevelTable", "");
 }
 

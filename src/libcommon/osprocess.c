@@ -33,6 +33,7 @@
 #include "bdjstring.h"
 #include "mdebug.h"
 #include "osprocess.h"
+#include "tmutil.h"
 
 #if _define_WIFEXITED
 
@@ -105,14 +106,15 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
 #if _lib_fork
 
 /* creates a pipe for re-direction and grabs the output */
-pid_t
+int
 osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *retsz)
 {
   pid_t   pid;
-  int     rc;
+  int     rc = 0;
   pid_t   tpid;
   int     pipefd [2];
-  ssize_t bytesread;
+
+  flags |= OS_PROC_WAIT;      // required
 
   if (rbuff != NULL) {
     *rbuff = '\0';
@@ -133,13 +135,8 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 
   if (tpid == 0) {
     /* child */
-    /* close any open file descriptors, but not the pipe write side */
-    for (int i = 3; i < 30; ++i) {
-      if (pipefd [1] == i) {
-        continue;
-      }
-      close (i);
-    }
+    /* close the pipe read side */
+    close (pipefd [0]);
 
     dup2 (pipefd [1], STDOUT_FILENO);
     dup2 (pipefd [1], STDERR_FILENO);
@@ -158,28 +155,44 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 
   pid = tpid;
 
-  if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
-    int   rc, wstatus;
-
-    if (waitpid (pid, &wstatus, 0) < 0) {
-      rc = 0;
-      // fprintf (stderr, "waitpid: errno %d %s\n", errno, strerror (errno));
-    } else {
-      rc = osProcessWaitStatus (wstatus);
-    }
-    /* more processing to do, so overload the pid return */
-    pid = rc;
-  }
-
   if (rbuff != NULL) {
-    /* the application wants all the data in one chunk */
-    bytesread = read (pipefd [0], rbuff, sz);
+    bool    wait = true;
+    int     wstatus;
+    ssize_t bytesread = 0;
+
     rbuff [sz - 1] = '\0';
-    if (bytesread < (ssize_t) sz) {
-      rbuff [bytesread] = '\0';
-    }
-    if (retsz != NULL) {
-      *retsz = bytesread;
+
+    while (1) {
+      size_t    rbytes;
+
+      rbytes = read (pipefd [0], rbuff + bytesread, sz - bytesread);
+      bytesread += rbytes;
+      if (bytesread < (ssize_t) sz) {
+        rbuff [bytesread] = '\0';
+      }
+      if (retsz != NULL) {
+        *retsz = bytesread;
+      }
+      if (! wait) {
+        break;
+      }
+      if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
+        rc = waitpid (pid, &wstatus, WNOHANG);
+        if (rc < 0) {
+          rc = 0;
+          wait = false;
+          // fprintf (stderr, "waitpid: errno %d %s\n", errno, strerror (errno));
+        } else if (rc != 0) {
+          rc = osProcessWaitStatus (wstatus);
+          wait = false;
+        } else {
+          /* force continuation */
+          wait = true;
+        }
+        if (wait) {
+          mssleep (2);
+        }
+      }
     }
     close (pipefd [0]);
   } else {
@@ -188,7 +201,7 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
     dup2 (pipefd [0], STDIN_FILENO);
   }
 
-  return pid;
+  return rc;
 }
 
 #endif /* if _lib_fork */
@@ -226,7 +239,6 @@ osProcessWaitStatus (int wstatus)
   if (WIFEXITED (wstatus)) {
     rc = WEXITSTATUS (wstatus);
   } else if (WIFSIGNALED (wstatus)) {
-    rc = WEXITSTATUS (wstatus);
     rc = WTERMSIG (wstatus);
   }
   return rc;

@@ -2,7 +2,7 @@
 
 spath=$HOME/.config/BDJ4
 test -d "$spath" || mkdir -p "$spath"
-RESTFILE="$spath/.ballroomdj-ss-restore"
+RESTFILE="$spath/bdj4-ss-restore"
 
 # turn screen savers/power management back on
 xset +dpms

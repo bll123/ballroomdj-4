@@ -17,9 +17,8 @@ window.  Different profiles can be assigned different colors so that
 the window's profile can be quickly identified.
 
 __BPM__: The label to use for _beats&nbsp;per&nbsp;minute_ or
-_measures&nbsp;per&nbsp;minute_ or _bars&nbsp;per&nbsp;minute_. When
-set to MPM, the BPM counter will use the time signature of the dance
-to select the proper default.
+_measures&nbsp;per&nbsp;minute_. When set to MPM, the BPM counter will
+use the time signature of the dance to select the proper default.
 
 __Write Audio File Tags__: When set to __BDJ Tags Only__, only BDJ
 specific tags will be updated in the audio file when a song is edited.
@@ -39,8 +38,8 @@ __Shutdown Script__: A script that is run after the player is stopped.
 This is automatically set for Linux installations.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-D.png)
-<br><span style="color:#4559bf;">**Configure / General**</span> </div>
+![General](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/General-E.png)
+<br><span style="color:#4559bf;">__Configure / General__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-01-30 12:09:57; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-02-24 07:28:24; BDJ4 version 4.1.1-beta)_

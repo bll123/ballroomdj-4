@@ -15,11 +15,16 @@
 #include <gtk/gtk.h>
 
 #include "bdj4.h"
+#include "callback.h"
 #include "log.h"
 #include "mdebug.h"
 #include "pathbld.h"
-#include "ui.h"
-#include "callback.h"
+#include "tmutil.h"
+#include "uiclass.h"
+
+#include "ui/uiui.h"
+#include "ui/uiwidget.h"
+#include "ui/uibutton.h"
 
 static void uiButtonSignalHandler (GtkButton *b, gpointer udata);
 static void uiButtonRepeatSignalHandler (GtkButton *b, gpointer udata);

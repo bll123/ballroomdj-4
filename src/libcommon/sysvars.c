@@ -427,7 +427,7 @@ sysvarsInit (const char *argv0)
     }
     if (*cacertFiles [i] != '/') {
       snprintf (tbuff, sizeof (tbuff), "%s/%s",
-        sysvars [SV_BDJ4_DIR_MAIN], cacertFiles [i]);
+          sysvars [SV_BDJ4_DIR_MAIN], cacertFiles [i]);
       if (fileopFileExists (tbuff)) {
         strlcpy (sysvars [SV_CA_FILE], tbuff, SV_MAX_SZ);
         break;
@@ -672,43 +672,91 @@ void
 sysvarsGetPythonVersion (void)
 {
   if (*sysvars [SV_PATH_PYTHON]) {
-    char    buff [SV_MAX_SZ];
-    char    *data;
-    char    *p;
-    int     j;
+    char        tfn [MAXPATHLEN];
+    char        buff [SV_MAX_SZ];
+    FILE        *fh;
 
-    data = osRunProgram (sysvars [SV_PATH_PYTHON], "--version", NULL);
+    *sysvars [SV_PYTHON_DOT_VERSION] = '\0';
+    *sysvars [SV_PYTHON_VERSION] = '\0';
 
-    // Python 3.9.2
-
-    p = NULL;
-    if (data != NULL) {
-      p = strstr (data, "3");
+    /* on windows, use the cache files */
+    /* do not use these on linux and macos */
+    if (isWindows ()) {
+      snprintf (tfn, sizeof (tfn), "%s/%s%s", sysvars [SV_BDJ4_DREL_DATA],
+          SYSVARS_PY_DOT_VERS_FN, BDJ4_CONFIG_EXT);
+      if (fileopFileExists (tfn)) {
+        fh = fileopOpen (tfn, "r");
+        *buff = '\0';
+        (void) ! fgets (buff, sizeof (buff), fh);
+        fclose (fh);
+        stringTrim (buff);
+        strlcpy (sysvars [SV_PYTHON_DOT_VERSION], buff, SV_MAX_SZ);
+      }
+      snprintf (tfn, sizeof (tfn), "%s/%s%s", sysvars [SV_BDJ4_DREL_DATA],
+          SYSVARS_PY_VERS_FN, BDJ4_CONFIG_EXT);
+      if (fileopFileExists (tfn)) {
+        fh = fileopOpen (tfn, "r");
+        *buff = '\0';
+        (void) ! fgets (buff, sizeof (buff), fh);
+        fclose (fh);
+        stringTrim (buff);
+        strlcpy (sysvars [SV_PYTHON_VERSION], buff, SV_MAX_SZ);
+      }
     }
 
-    if (p != NULL) {
-      strlcpy (buff, p, sizeof (buff));
-      p = strstr (buff, ".");
+    if (! *sysvars [SV_PYTHON_DOT_VERSION]) {
+      char        *data;
+      char        *p;
+
+      data = osRunProgram (sysvars [SV_PATH_PYTHON], "--version", NULL);
+
+      // Python 3.9.2
+
+      p = NULL;
+      if (data != NULL) {
+        p = strstr (data, "3");
+      }
+
       if (p != NULL) {
-        p = strstr (p + 1, ".");
+        strlcpy (buff, p, sizeof (buff));
+        p = strstr (buff, ".");
         if (p != NULL) {
-          *p = '\0';
-          strlcpy (sysvars [SV_PYTHON_DOT_VERSION], buff, SV_MAX_SZ);
-          j = 0;
-          for (size_t i = 0; i < strlen (buff); ++i) {
-            if (buff [i] != '.') {
-              sysvars [SV_PYTHON_VERSION][j++] = buff [i];
-            }
+          p = strstr (p + 1, ".");
+          if (p != NULL) {
+            *p = '\0';
+            strlcpy (sysvars [SV_PYTHON_DOT_VERSION], buff, SV_MAX_SZ);
           }
-          sysvars [SV_PYTHON_VERSION][j] = '\0';
-        }
-      } /* found the first '.' */
-    } else {
-      /* possibly the windows store version that is not installed */
-      /* clear the path */
-      strcpy (sysvars [SV_PATH_PYTHON], "");
+        } /* found the first '.' */
+      }
+      mdfree (data);
+
+      snprintf (tfn, sizeof (tfn), "%s/%s%s", sysvars [SV_BDJ4_DREL_DATA],
+          SYSVARS_PY_DOT_VERS_FN, BDJ4_CONFIG_EXT);
+      fh = fileopOpen (tfn, "w");
+      if (fh != NULL) {
+        fprintf (fh, "%s\n", sysvars [SV_PYTHON_DOT_VERSION]);
+        fclose (fh);
+      }
     }
-    mdfree (data);
+
+    if (! *sysvars [SV_PYTHON_VERSION]) {
+      size_t  j = 0;
+
+      for (size_t i = 0; i < strlen (sysvars [SV_PYTHON_DOT_VERSION]); ++i) {
+        if (sysvars [SV_PYTHON_DOT_VERSION][i] != '.') {
+          sysvars [SV_PYTHON_VERSION][j++] = sysvars [SV_PYTHON_DOT_VERSION][i];
+        }
+      }
+      sysvars [SV_PYTHON_VERSION][j] = '\0';
+
+      snprintf (tfn, sizeof (tfn), "%s/%s%s", sysvars [SV_BDJ4_DREL_DATA],
+          SYSVARS_PY_VERS_FN, BDJ4_CONFIG_EXT);
+      fh = fileopOpen (tfn, "w");
+      if (fh != NULL) {
+        fprintf (fh, "%s\n", sysvars [SV_PYTHON_VERSION]);
+        fclose (fh);
+      }
+    }
   } /* if python was found */
 }
 

@@ -138,7 +138,7 @@ uireqextDialog (uireqext_t *uireqext)
   logProcBegin (LOG_PROC, "uireqextDialog");
   uireqextCreateDialog (uireqext);
   uireqextInitDisplay (uireqext);
-  uiWidgetShowAll (&uireqext->reqextDialog);
+  uiDialogShow (&uireqext->reqextDialog);
   uireqext->isactive = true;
 
   x = nlistGetNum (uireqext->options, REQ_EXT_POSITION_X);

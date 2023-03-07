@@ -12,7 +12,8 @@
 
 #include <gtk/gtk.h>
 
-#include "ui.h"
+#include "ui/uiwidget.h"
+#include "ui/uiscrollbar.h"
 
 void
 uiCreateVerticalScrollbar (UIWidget *uiwidget, double upper)

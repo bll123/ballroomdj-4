@@ -141,7 +141,8 @@ mp3ExportQueue (mp3exp_t *mp3exp)
           mp3exp->dirname, mp3exp->counter, (int) pi->blen, pi->basename);
 
       nlistSetStr (mp3exp->savelist, dbidx, outfn);
-      aaAdjust (song, ffn, outfn, dur, mp3exp->fadein, mp3exp->fadeout, gap);
+      aaAdjust (mp3exp->musicdb, song, ffn, outfn,
+          dur, mp3exp->fadein, mp3exp->fadeout, gap);
 
       pathInfoFree (pi);
       mdfree (ffn);

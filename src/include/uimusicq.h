@@ -37,6 +37,8 @@ typedef struct {
   dispselsel_t  dispselType;
   long          selectLocation;
   long          lastLocation;
+  int           prevSelection;
+  int           currSelection;
   /* music queue tab */
   UIWidget      mainbox;
   uidropdown_t  *playlistsel;
@@ -129,6 +131,7 @@ void  uimusicqMoveUp (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqMoveDown (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqTogglePause (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqRemove (uimusicq_t *uimusicq, int mqidx, long idx);
+void  uimusicqSwap (uimusicq_t *uimusicq, int mqidx);
 void  uimusicqCreatePlaylistList (uimusicq_t *uimusicq);
 void  uimusicqTruncateQueue (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);

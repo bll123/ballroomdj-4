@@ -106,6 +106,7 @@ enum {
   /* sl actions menu */
   MANAGE_MENU_CB_BPM,
   MANAGE_MENU_CB_SL_MIX,
+  MANAGE_MENU_CB_SL_SWAP,
   MANAGE_MENU_CB_SL_TRUNCATE,
   MANAGE_MENU_CB_SL_MK_FROM_PL,
   /* sl export menu */
@@ -148,10 +149,6 @@ enum {
   /* same song */
   MANAGE_SET_MARK,
   MANAGE_CLEAR_MARK,
-  /* processing state */
-  MANAGE_STATE_OFF,
-  MANAGE_STATE_START,
-  MANAGE_STATE_PROCESS,
 };
 
 /* actions for the queue process */
@@ -253,6 +250,7 @@ typedef struct {
   bool            importitunesactive : 1;
   bool            importm3uactive : 1;
   bool            exportm3uactive : 1;
+  bool            enablerestoreorig : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -327,6 +325,7 @@ static void     manageCFPLCreatePlaylistList (manageui_t *manage);
 static bool     manageCFPLPlaylistSelectHandler (void *udata, long idx);
 static bool     manageCFPLResponseHandler (void *udata, long responseid);
 static bool     manageSonglistMix (void *udata);
+static bool     manageSonglistSwap (void *udata);
 static void     manageSonglistLoadFile (void *udata, const char *fn, int preloadflag);
 static long     manageLoadPlaylistCB (void *udata, const char *fn);
 static bool     manageNewPlaylistCB (void *udata);
@@ -435,8 +434,9 @@ main (int argc, char *argv[])
   manage.importitunesactive = false;
   manage.importm3uactive = false;
   manage.exportm3uactive = false;
-  manage.applyadjstate = MANAGE_STATE_OFF;
-  manage.impitunesstate = MANAGE_STATE_OFF;
+  manage.enablerestoreorig = false;
+  manage.applyadjstate = BDJ4_STATE_OFF;
+  manage.impitunesstate = BDJ4_STATE_OFF;
   manage.uiaa = NULL;
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
@@ -990,7 +990,7 @@ manageMainLoop (void *tmanage)
 
   /* apply adjustments processing */
 
-  if (manage->applyadjstate == MANAGE_STATE_PROCESS) {
+  if (manage->applyadjstate == BDJ4_STATE_PROCESS) {
     bool    changed = false;
 
     changed = aaApplyAdjustments (manage->musicdb, manage->songeditdbidx, manage->aaflags);
@@ -1008,17 +1008,18 @@ manageMainLoop (void *tmanage)
       connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
     }
     uiLabelSetText (&manage->statusMsg, "");
-    manage->applyadjstate = MANAGE_STATE_OFF;
+    uiaaDialogClear (manage->uiaa);
+    manage->applyadjstate = BDJ4_STATE_OFF;
   }
 
-  if (manage->applyadjstate == MANAGE_STATE_START) {
+  if (manage->applyadjstate == BDJ4_STATE_START) {
     uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
-    manage->applyadjstate = MANAGE_STATE_PROCESS;
+    manage->applyadjstate = BDJ4_STATE_PROCESS;
   }
 
   /* itunes processing */
 
-  if (manage->impitunesstate == MANAGE_STATE_PROCESS) {
+  if (manage->impitunesstate == BDJ4_STATE_PROCESS) {
     manageSonglistSave (manage);
 
     if (manage->itunes == NULL) {
@@ -1031,15 +1032,15 @@ manageMainLoop (void *tmanage)
     manageSetSonglistName (manage, _("New Song List"));
 
     manageiTunesCreateDialog (manage);
-    uiWidgetShowAll (&manage->itunesSelectDialog);
+    uiDialogShow (&manage->itunesSelectDialog);
 
     uiLabelSetText (&manage->statusMsg, "");
-    manage->impitunesstate = MANAGE_STATE_OFF;
+    manage->impitunesstate = BDJ4_STATE_OFF;
   }
 
-  if (manage->impitunesstate == MANAGE_STATE_START) {
+  if (manage->impitunesstate == BDJ4_STATE_START) {
     uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
-    manage->impitunesstate = MANAGE_STATE_PROCESS;
+    manage->impitunesstate = BDJ4_STATE_PROCESS;
   }
 
   uiplayerMainLoop (manage->slplayer);
@@ -1378,7 +1379,11 @@ manageSongEditMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, _("Restore Original"),
         manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
     uiutilsUIWidgetCopy (&manage->restoreOrigMenuItem, &menuitem);
-    uiWidgetDisable (&menuitem);
+    if (manage->enablerestoreorig) {
+      uiWidgetEnable (&menuitem);
+    } else {
+      uiWidgetDisable (&menuitem);
+    }
 
     /* a missing audio adjust file will not stop startup */
     tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
@@ -1526,6 +1531,11 @@ manageSetEditMenuItems (manageui_t *manage)
 
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
   hasorig = songutilHasOriginal (songGetStr (song, TAG_FILE));
+  if (hasorig) {
+    manage->enablerestoreorig = true;
+  } else {
+    manage->enablerestoreorig = false;
+  }
   if (! uiutilsUIWidgetSet (&manage->restoreOrigMenuItem)) {
     return;
   }
@@ -1564,7 +1574,7 @@ manageApplyAdjCallback (void *udata, long aaflags)
   }
 
   manage->aaflags = aaflags;
-  manage->applyadjstate = MANAGE_STATE_START;
+  manage->applyadjstate = BDJ4_STATE_START;
 
   return UICB_CONT;
 }
@@ -1579,7 +1589,7 @@ manageRestoreOrigCallback (void *udata)
   }
 
   manage->aaflags = SONG_ADJUST_RESTORE;
-  manage->applyadjstate = MANAGE_STATE_START;
+  manage->applyadjstate = BDJ4_STATE_START;
 
   return UICB_CONT;
 }
@@ -1688,7 +1698,7 @@ manageSonglistImportiTunes (void *udata)
 
   logProcBegin (LOG_PROC, "manageSonglistImportiTunes");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import itunes");
-  manage->impitunesstate = MANAGE_STATE_START;
+  manage->impitunesstate = BDJ4_STATE_START;
 
   logProcEnd (LOG_PROC, "manageSonglistImportiTunes", "");
   return UICB_CONT;
@@ -1977,6 +1987,11 @@ manageSonglistMenu (manageui_t *manage)
   uiMenuCreateItem (&menu, &menuitem, _("Mix"),
       manage->callbacks [MANAGE_MENU_CB_SL_MIX]);
 
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_SWAP, manageSonglistSwap);
+  /* CONTEXT: managementui: menu selection: song list: actions menu: swap two songs */
+  uiMenuCreateItem (&menu, &menuitem, _("Swap"),
+      manage->callbacks [MANAGE_MENU_CB_SL_SWAP]);
+
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_TRUNCATE,
       manageSonglistTruncate);
   /* CONTEXT: managementui: menu selection: song list: actions menu: truncate the song list */
@@ -2181,7 +2196,7 @@ manageSonglistCreateFromPlaylist (void *udata)
   manageSongListCFPLCreateDialog (manage);
   uiDropDownSelectionSetNum (manage->cfplsel, -1);
 
-  uiWidgetShowAll (&manage->cfplDialog);
+  uiDialogShow (&manage->cfplDialog);
 
   x = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_X);
   y = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_Y);
@@ -2370,6 +2385,18 @@ manageSonglistMix (void *udata)
   snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_MIX, tbuff);
   logProcEnd (LOG_PROC, "manageSonglistMix", "");
+  return UICB_CONT;
+}
+
+static bool
+manageSonglistSwap (void *udata)
+{
+  manageui_t  *manage = udata;
+
+  logProcBegin (LOG_PROC, "manageSonglistSwap");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: songlist swap");
+  uimusicqSwap (manage->slmusicq, manage->musicqManageIdx);
+  logProcEnd (LOG_PROC, "manageSonglistSwap", "");
   return UICB_CONT;
 }
 

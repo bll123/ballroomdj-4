@@ -11,8 +11,11 @@
 
 #include <gtk/gtk.h>
 
-#include "ui.h"
 #include "callback.h"
+
+#include "ui/uigeneral.h"
+#include "ui/uiwidget.h"
+#include "ui/uimenu.h"
 
 static void uiMenuActivateHandler (GtkMenuItem *mi, gpointer udata);
 static void uiMenuToggleHandler (GtkWidget *mi, gpointer udata);

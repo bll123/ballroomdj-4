@@ -66,7 +66,6 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "testsuite",      no_argument,        NULL,   0 },
     /* bdj4 loader options to ignore */
     { "debugself",      no_argument,        NULL,   0 },
-    { "msys",           no_argument,        NULL,   0 },
     { "scale",          required_argument,  NULL,   0 },
     { "theme",          required_argument,  NULL,   0 },
     /* normal options */

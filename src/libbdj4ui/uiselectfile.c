@@ -91,7 +91,7 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
     filelist = playlistGetPlaylistList (playlistSel);
 
     selectFileCreateDialog (selectfile, filelist, title, cb);
-    uiWidgetShowAll (&selectfile->uidialog);
+    uiDialogShow (&selectfile->uidialog);
 
     x = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_X);
     y = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_Y);
@@ -162,7 +162,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiBoxPackInWindow (&scwindow, uitreewidgetp);
 
   store = gtk_list_store_new (SELFILE_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING);
+      TREE_TYPE_STRING, TREE_TYPE_STRING);
   assert (store != NULL);
 
   slistStartIterator (filelist, &fliteridx);

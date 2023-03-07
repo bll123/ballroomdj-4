@@ -14,8 +14,10 @@
 
 #include <gtk/gtk.h>
 
-#include "ui.h"
 #include "callback.h"
+
+#include "ui/uiui.h"
+#include "ui/uinotebook.h"
 
 static void
 uiNotebookSwitchPageHandler (GtkNotebook *nb, GtkWidget *page,

@@ -14,7 +14,8 @@
 
 #include <gtk/gtk.h>
 
-#include "ui.h"
+#include "ui/uiui.h"
+#include "ui/uipbar.h"
 
 void
 uiCreateProgressBar (UIWidget *uiwidget)

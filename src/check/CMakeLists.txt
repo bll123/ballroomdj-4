@@ -12,6 +12,7 @@ add_executable (check_all
   check_bdjmsg.c
   check_bdjstring.c
   check_bdjvars.c
+  check_callback.c
   check_colorutils.c
   check_dirop.c
   check_filedata.c

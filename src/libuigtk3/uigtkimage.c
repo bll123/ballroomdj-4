@@ -12,7 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#include "ui.h"
+#include "ui/uiimage.h"
 
 void
 uiImageNew (UIWidget *uiwidget)

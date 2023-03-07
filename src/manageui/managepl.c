@@ -213,7 +213,6 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
 
   /* CONTEXT: playlist management: default playlist type */
   uiCreateLabel (&uiwidget, _("Automatic"));
-  uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiBoxPackStart (&hbox, &uiwidget);
   uiutilsUIWidgetCopy (&managepl->uipltype, &uiwidget);
 

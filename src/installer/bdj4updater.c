@@ -86,7 +86,7 @@ static void updaterCleanlistFree (void *trx);
 static void updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist);
 static int  updaterGetStatus (nlist_t *updlist, int key);
 static void updaterCopyIfNotPresent (const char *fn, const char *ext);
-static void updaterCopyVersionCheck (const char *fn, const char *ext, int currvers);
+static void updaterCopyVersionCheck (const char *fn, const char *ext, int dftype, int currvers);
 
 int
 main (int argc, char *argv [])
@@ -123,7 +123,6 @@ main (int argc, char *argv [])
     { "nodetach",   no_argument,        NULL,   0 },
     { "wait",       no_argument,        NULL,   0 },
     { "debugself",  no_argument,        NULL,   0 },
-    { "msys",       no_argument,        NULL,   0 },
     { "scale",      required_argument,  NULL,   0 },
     { "theme",      required_argument,  NULL,   0 },
     { NULL,         0,                  NULL,   0 }
@@ -222,7 +221,7 @@ main (int argc, char *argv [])
       targv [targc++] = prog;
       targv [targc++] = "MUSIC";
       targv [targc++] = NULL;
-      osProcessPipe (targv, OS_PROC_DETACH, data, sizeof (data), NULL);
+      osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data), NULL);
       stringTrim (data);
       stringTrimChar (data, '/');
 
@@ -407,16 +406,23 @@ main (int argc, char *argv [])
 
   {
     /* 4.0.5 2023-1-4 itunes-fields */
-    /*   had the incorrect 'lastupdate' name removed completely (not needed) */
+    /*   'lastupdate' name removed completely (not needed) */
     /*   as itunes has not been implemented yet, it is safe to completely */
     /*   overwrite version 1. */
-    updaterCopyVersionCheck (ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, 2);
+    updaterCopyVersionCheck (ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, DFTYPE_LIST, 2);
+  }
+
+  {
+    /* 4.2.0 2023-3-5 autoselection.txt */
+    /* updated values (version 3) */
+    updaterCopyVersionCheck (AUTOSEL_FN, BDJ4_CONFIG_EXT, DFTYPE_KEY_VAL, 3);
   }
 
   {
     /* 4.1.0 2023-1-5 audioadjust.txt */
     updaterCopyIfNotPresent (AUDIOADJ_FN, BDJ4_CONFIG_EXT);
-    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, 2);
+    /* 4.1.1 2023-2-18 (version number bump) audioadjust.txt */
+    updaterCopyVersionCheck (AUDIOADJ_FN, BDJ4_CONFIG_EXT, DFTYPE_KEY_VAL, 3);
   }
 
   {
@@ -794,7 +800,8 @@ updaterCopyIfNotPresent (const char *fn, const char *ext)
 }
 
 static void
-updaterCopyVersionCheck (const char *fn, const char *ext, int currvers)
+updaterCopyVersionCheck (const char *fn, const char *ext,
+    int dftype, int currvers)
 {
   datafile_t  *tmpdf;
   int         version;
@@ -802,10 +809,11 @@ updaterCopyVersionCheck (const char *fn, const char *ext, int currvers)
   char        tbuff [MAXPATHLEN];
 
   pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
-  tmpdf = datafileAllocParse (fn, DFTYPE_LIST, tbuff, NULL, 0);
+  tmpdf = datafileAllocParse (fn, dftype, tbuff, NULL, 0);
   slist = datafileGetList (tmpdf);
   version = slistGetVersion (slist);
-  if (version == 1) {
+  logMsg (LOG_INSTALL, LOG_MAIN, "version check %s : %d < %d", fn, version, currvers);
+  if (version < currvers) {
     char  tmp [MAXPATHLEN];
 
     snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);

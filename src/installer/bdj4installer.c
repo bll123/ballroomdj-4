@@ -280,7 +280,6 @@ main (int argc, char *argv[])
     { "bdj4",       no_argument,        NULL,   0 },
     { "debug",      required_argument,  NULL,   'd' },
     { "debugself",  no_argument,        NULL,   0 },
-    { "msys",       no_argument,        NULL,   0 },
     { "nodetach",   no_argument,        NULL,   0 },
     { "scale",      required_argument,  NULL,   0 },
     { "theme",      required_argument,  NULL,   0 },
@@ -1382,7 +1381,7 @@ installerVerifyInstall (installer_t *installer)
       targv [0] = "./Contents/MacOS/install/verifychksum.sh";
     }
     targv [1] = NULL;
-    osProcessPipe (targv, OS_PROC_DETACH, tmp, sizeof (tmp), NULL);
+    osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, tmp, sizeof (tmp), NULL);
   }
 
   uiLabelSetText (&installer->statusMsg, "");
@@ -1658,9 +1657,11 @@ installerCreateDirs (installer_t *installer)
   installerDisplayText (installer, INST_DISP_ACTION, _("Creating folder structure."), false);
 
   /* this will create the directories necessary for the configs */
+  /* namely: profile00, <hostname>, <hostname>/profile00 */
   bdjoptCreateDirectories ();
   /* create the directories that are not included in the distribution */
   diropMakeDir ("tmp");
+  diropMakeDir ("http");
   diropMakeDir ("img/profile00");
 
   installer->instState = INST_COPY_TEMPLATES_INIT;
@@ -1692,7 +1693,7 @@ installerCopyTemplates (installer_t *installer)
   }
 
   instutilCopyTemplates ();
-  instutilCopyHttpFiles ();
+  instutilCopyHttpFiles ();     /* copies led_on, led_off */
   templateImageCopy (NULL);
 
   if (isMacOS ()) {
@@ -2331,6 +2332,16 @@ installerUpdateProcess (installer_t *installer)
 static void
 installerFinalize (installer_t *installer)
 {
+  char    tbuff [MAXPATHLEN];
+
+  /* clear the python version cache files */
+  snprintf (tbuff, sizeof (tbuff), "%s/%s%s", "data",
+      SYSVARS_PY_DOT_VERS_FN, BDJ4_CONFIG_EXT);
+  fileopDelete (tbuff);
+  snprintf (tbuff, sizeof (tbuff), "%s/%s%s", "data",
+      SYSVARS_PY_VERS_FN, BDJ4_CONFIG_EXT);
+  fileopDelete (tbuff);
+
   if (installer->verbose) {
     fprintf (stdout, "finish OK\n");
     if (*installer->bdj3version) {

@@ -100,9 +100,6 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   UIWidget      *uiwidgetp = NULL;
   uitree_t      *uitree;
   UIWidget      *uitreewidgetp = NULL;
-  GtkListStore  *store;
-  GtkCellRenderer *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
 
   duallist = mdmalloc (sizeof (uiduallist_t));
   for (int i = 0; i < DUALLIST_TREE_MAX; ++i) {
@@ -163,27 +160,14 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   duallist->trees [DUALLIST_TREE_SOURCE].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
-  store = gtk_list_store_new (DUALLIST_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_LONG);
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget),
-      GTK_TREE_MODEL (store));
-  g_object_unref (store);
-
+  uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
+      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
   uiTreeViewDisableHeaders (uitree);
 
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", DUALLIST_COL_DISP,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", DUALLIST_COL_SB_PAD,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
+  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
+      TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, -1);
+  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
+      TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, -1);
 
   uiCreateVertBox (&dvbox);
   uiWidgetSetAllMargins (&dvbox, 4);
@@ -228,26 +212,14 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   duallist->trees [DUALLIST_TREE_TARGET].sel =
       gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
-  store = gtk_list_store_new (DUALLIST_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_LONG);
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), GTK_TREE_MODEL (store));
-  g_object_unref (store);
-
+  uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
+      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
   uiTreeViewDisableHeaders (uitree);
 
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", DUALLIST_COL_DISP,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", DUALLIST_COL_SB_PAD,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
+  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
+      TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, -1);
+  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
+      TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, -1);
 
   uiCreateVertBox (&dvbox);
   uiWidgetSetAllMargins (&dvbox, 4);
@@ -294,11 +266,10 @@ void
 uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
 {
   UIWidget      *uiwidgetp = NULL;
-  GtkListStore  *store;
-  GtkTreeIter   iter;
   char          *keystr;
   slistidx_t    siteridx;
   char          tmp [40];
+  uitree_t      *uitree = NULL;
 
 
   if (duallist == NULL) {
@@ -309,7 +280,8 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
     return;
   }
 
-  uiwidgetp = uiTreeViewGetUIWidget (duallist->trees [which].uitree);
+  uitree = duallist->trees [which].uitree;
+  uiwidgetp = uiTreeViewGetUIWidget (uitree);
   if (uiwidgetp->widget == NULL) {
     return;
   }
@@ -320,17 +292,16 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   /* the assumption made is that the source tree has been populated */
   /* just before the target tree */
 
-  store = gtk_list_store_new (DUALLIST_COL_MAX,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_LONG);
-  assert (store != NULL);
+  uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
+      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
 
   slistStartIterator (slist, &siteridx);
   while ((keystr = slistIterateKey (slist, &siteridx)) != NULL) {
     long    val;
 
     val = slistGetNum (slist, keystr);
-    gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
+    uiTreeViewAppendValueStore (uitree);
+    uiTreeViewSetValues (uitree,
         DUALLIST_COL_DISP, keystr,
         DUALLIST_COL_SB_PAD, "    ",
         DUALLIST_COL_DISP_IDX, val,
@@ -367,9 +338,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
     }
   }
 
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidgetp->widget), GTK_TREE_MODEL (store));
   uiduallistSetDefaultSelection (duallist, which);
-  g_object_unref (store);
 }
 
 bool
