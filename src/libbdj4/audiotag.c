@@ -17,14 +17,10 @@
 #include "bdj4.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
-#include "filedata.h"
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
-#include "nlist.h"
-#include "osprocess.h"
 #include "pathutil.h"
-#include "pathbld.h"
 #include "slist.h"
 #include "sysvars.h"
 #include "tagdef.h"
@@ -299,26 +295,24 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
   if (pathInfoExtCheck (pi, ".mp3")) {
     *tagtype = TAG_TYPE_MP3;
     *filetype = AFILE_TYPE_MP3;
-  }
-  if (pathInfoExtCheck (pi, ".m4a")) {
+  } else if (pathInfoExtCheck (pi, ".m4a")) {
     *tagtype = TAG_TYPE_MP4;
     *filetype = AFILE_TYPE_MP4;
-  }
-  if (pathInfoExtCheck (pi, ".wma")) {
+  } else if (pathInfoExtCheck (pi, ".wma")) {
     *tagtype = TAG_TYPE_WMA;
     *filetype = AFILE_TYPE_WMA;
-  }
-  if (pathInfoExtCheck (pi, ".ogg")) {
+  } else if (pathInfoExtCheck (pi, ".ogg")) {
     *tagtype = TAG_TYPE_VORBIS;
     *filetype = AFILE_TYPE_OGGVORBIS;
-  }
-  if (pathInfoExtCheck (pi, ".opus")) {
+  } else if (pathInfoExtCheck (pi, ".opus")) {
     *tagtype = TAG_TYPE_VORBIS;
     *filetype = AFILE_TYPE_OGGOPUS;
-  }
-  if (pathInfoExtCheck (pi, ".flac")) {
+  } else if (pathInfoExtCheck (pi, ".flac")) {
     *tagtype = TAG_TYPE_VORBIS;
     *filetype = AFILE_TYPE_FLAC;
+  } else {
+    *tagtype = TAG_TYPE_VORBIS;
+    *filetype = AFILE_TYPE_UNKNOWN;
   }
 
   pathInfoFree (pi);
