@@ -30,16 +30,6 @@
 #include "tagdef.h"
 #include "tmutil.h"
 
-enum {
-  AFILE_TYPE_UNKNOWN,
-  AFILE_TYPE_FLAC,
-  AFILE_TYPE_MP4,
-  AFILE_TYPE_MP3,
-  AFILE_TYPE_OGGOPUS,
-  AFILE_TYPE_OGGVORBIS,
-  AFILE_TYPE_WMA,
-};
-
 typedef struct audiotag {
   ati_t     *ati;
   slist_t   *tagTypeLookup [TAG_TYPE_MAX];
@@ -50,17 +40,11 @@ static audiotag_t *at = NULL;
 static void audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype);
 static void audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite);
 static void audiotagCreateLookupTable (int tagtype);
-static int  audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int writetags);
-static int  audiotagWriteOtherTags (const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype, int writetags);
 static bool audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value);
-static int  audiotagRunUpdate (const char *fn);
-static void audiotagMakeTempFilename (char *fn, size_t sz);
 static int  audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite);
 static void audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
     nlist_t *datalist, int totkey, int tagkey);
 static const char * audiotagTagLookup (int tagtype, const char *val);
-
-static ssize_t globalCounter = 0;
 
 void
 audiotagInit (void)
@@ -139,7 +123,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   int         rc = AUDIOTAG_WRITE_OK; // if no update
 
 
-  logProcBegin (LOG_PROC, "audiotagsWriteTags");
+  logProcBegin (LOG_PROC, "audiotagWriteTags");
 
   writetags = bdjoptGetNum (OPT_G_WRITETAGS);
   if (writetags == WRITE_TAGS_NONE) {
@@ -269,11 +253,10 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "writing tags");
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  %s", ffn);
     origtm = fileopModTime (ffn);
-    if (tagtype == TAG_TYPE_MP3 && filetype == AFILE_TYPE_MP3) {
-      rc = audiotagWriteMP3Tags (ffn, updatelist, dellist, datalist, writetags);
-    } else {
-      rc = audiotagWriteOtherTags (ffn, updatelist, dellist, datalist, tagtype, filetype, writetags);
-    }
+
+    atiWriteTags (at->ati, ffn, updatelist, dellist, datalist,
+        tagtype, filetype);
+
     if (modTimeFlag == AT_KEEP_MOD_TIME) {
       fileopSetModTime (ffn, origtm);
     }
@@ -376,234 +359,6 @@ audiotagCreateLookupTable (int tagtype)
   }
 }
 
-static int
-audiotagWriteMP3Tags (const char *ffn, slist_t *updatelist, slist_t *dellist,
-    nlist_t *datalist, int writetags)
-{
-  char        fn [MAXPATHLEN];
-  int         tagkey;
-  slistidx_t  iteridx;
-  char        *tag;
-  char        *value;
-  FILE        *ofh;
-  int         rc;
-
-  logProcBegin (LOG_PROC, "audiotagsWriteMP3Tags");
-
-  audiotagMakeTempFilename (fn, sizeof (fn));
-  ofh = fileopOpen (fn, "w");
-  fprintf (ofh, "from mutagen.id3 import ID3,TXXX,UFID");
-  for (int i = 0; i < TAG_KEY_MAX; ++i) {
-    if (tagdefs [i].audiotags [TAG_TYPE_MP3].tag != NULL &&
-        tagdefs [i].audiotags [TAG_TYPE_MP3].desc == NULL) {
-      fprintf (ofh, ",%s", tagdefs [i].audiotags [TAG_TYPE_MP3].tag);
-    }
-  }
-  fprintf (ofh, ",ID3NoHeaderError\n");
-  fprintf (ofh, "try:\n");
-  fprintf (ofh, "  audio = ID3('%s')\n", ffn);
-
-  slistStartIterator (dellist, &iteridx);
-  while ((tag = slistIterateKey (dellist, &iteridx)) != NULL) {
-    /* special cases - old audio tags */
-    if (strcmp (tag, "VARIOUSARTISTS") == 0) {
-      fprintf (ofh, "  audio.delall('TXXX:VARIOUSARTISTS')\n");
-      continue;
-    }
-    if (strcmp (tag, "DURATION") == 0) {
-      fprintf (ofh, "  audio.delall('TXXX:DURATION')\n");
-      continue;
-    }
-
-    tagkey = audiotagTagCheck (writetags, TAG_TYPE_MP3, tag, AF_REWRITE_NONE);
-    if (tagkey < 0) {
-      continue;
-    }
-
-    if (tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc != NULL) {
-      fprintf (ofh, "  audio.delall('%s:%s')\n",
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc);
-    } else {
-      fprintf (ofh, "  audio.delall('%s')\n",
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag);
-    }
-  }
-
-  slistStartIterator (updatelist, &iteridx);
-  while ((tag = slistIterateKey (updatelist, &iteridx)) != NULL) {
-    tagkey = audiotagTagCheck (writetags, TAG_TYPE_MP3, tag, AF_REWRITE_NONE);
-    if (tagkey < 0) {
-      continue;
-    }
-
-    value = slistGetStr (updatelist, tag);
-
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write: %s %s",
-        tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
-    if (tagkey == TAG_RECORDING_ID) {
-      fprintf (ofh, "  audio.delall('%s:%s')\n",
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc);
-      fprintf (ofh, "  audio.add(%s(encoding=3, owner=u'%s', data=b'%s'))\n",
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc, value);
-    } else if (tagkey == TAG_TRACKNUMBER ||
-        tagkey == TAG_DISCNUMBER) {
-      if (value != NULL && *value) {
-        const char  *tot = NULL;
-
-        if (tagkey == TAG_TRACKNUMBER) {
-          tot = nlistGetStr (datalist, TAG_TRACKTOTAL);
-        }
-        if (tagkey == TAG_DISCNUMBER) {
-          tot = nlistGetStr (datalist, TAG_DISCTOTAL);
-        }
-        if (tot != NULL) {
-          fprintf (ofh, "  audio.add(%s(encoding=3, text=u'%s/%s'))\n",
-              tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value, tot);
-        } else {
-          fprintf (ofh, "  audio.add(%s(encoding=3, text=u'%s'))\n",
-              tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
-        }
-      }
-    } else if (tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc != NULL) {
-      fprintf (ofh, "  audio.add(%s(encoding=3, desc=u'%s', text=u'%s'))\n",
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc, value);
-    } else {
-      fprintf (ofh, "  audio.add(%s(encoding=3, text=u'%s'))\n",
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
-    }
-  }
-
-  fprintf (ofh, "  audio.save()\n");
-  fprintf (ofh, "except ID3NoHeaderError as e:\n");
-  fprintf (ofh, "  exit (1)\n");
-  fclose (ofh);
-
-  rc = audiotagRunUpdate (fn);
-  if (rc != 0) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write failed: %s", ffn);
-  }
-
-  logProcEnd (LOG_PROC, "audiotagsWriteMP3Tags", "");
-  return rc;
-}
-
-static int
-audiotagWriteOtherTags (const char *ffn, slist_t *updatelist,
-    slist_t *dellist, nlist_t *datalist,
-    int tagtype, int filetype, int writetags)
-{
-  char        fn [MAXPATHLEN];
-  int         tagkey;
-  slistidx_t  iteridx;
-  char        *tag;
-  char        *value;
-  FILE        *ofh;
-  int         rc;
-
-  logProcBegin (LOG_PROC, "audiotagsWriteOtherTags");
-
-  audiotagMakeTempFilename (fn, sizeof (fn));
-  ofh = fileopOpen (fn, "w");
-  if (filetype == AFILE_TYPE_FLAC) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: flac");
-    fprintf (ofh, "from mutagen.flac import FLAC\n");
-    fprintf (ofh, "audio = FLAC('%s')\n", ffn);
-  }
-  if (filetype == AFILE_TYPE_MP4) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: mp4");
-    fprintf (ofh, "from mutagen.mp4 import MP4\n");
-    fprintf (ofh, "audio = MP4('%s')\n", ffn);
-  }
-  if (filetype == AFILE_TYPE_OGGOPUS) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: opus");
-    fprintf (ofh, "from mutagen.oggopus import OggOpus\n");
-    fprintf (ofh, "audio = OggOpus('%s')\n", ffn);
-  }
-  if (filetype == AFILE_TYPE_OGGVORBIS) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: oggvorbis");
-    fprintf (ofh, "from mutagen.oggvorbis import OggVorbis\n");
-    fprintf (ofh, "audio = OggVorbis('%s')\n", ffn);
-  }
-
-  slistStartIterator (dellist, &iteridx);
-  while ((tag = slistIterateKey (dellist, &iteridx)) != NULL) {
-    /* special cases - old audio tags */
-    if (strcmp (tag, "VARIOUSARTISTS") == 0) {
-      fprintf (ofh, "audio.pop('VARIOUSARTISTS')\n");
-      continue;
-    }
-    if (strcmp (tag, "DURATION") == 0) {
-      fprintf (ofh, "audio.pop('DURATION')\n");
-      continue;
-    }
-
-    tagkey = audiotagTagCheck (writetags, tagtype, tag, AF_REWRITE_NONE);
-    if (tagkey < 0) {
-      continue;
-    }
-    fprintf (ofh, "audio.pop('%s')\n",
-        tagdefs [tagkey].audiotags [tagtype].tag);
-  }
-
-  slistStartIterator (updatelist, &iteridx);
-  while ((tag = slistIterateKey (updatelist, &iteridx)) != NULL) {
-    tagkey = audiotagTagCheck (writetags, tagtype, tag, AF_REWRITE_NONE);
-    if (tagkey < 0) {
-      continue;
-    }
-
-    value = slistGetStr (updatelist, tag);
-
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write: %s %s",
-        tagdefs [tagkey].audiotags [tagtype].tag, value);
-    if (tagtype == TAG_TYPE_MP4 &&
-        tagkey == TAG_BPM) {
-      fprintf (ofh, "audio['%s'] = [%s]\n",
-          tagdefs [tagkey].audiotags [tagtype].tag, value);
-    } else if (tagtype == TAG_TYPE_MP4 &&
-        (tagkey == TAG_TRACKNUMBER ||
-        tagkey == TAG_DISCNUMBER)) {
-      if (value != NULL && *value) {
-        const char  *tot = NULL;
-
-        if (tagkey == TAG_TRACKNUMBER) {
-          tot = nlistGetStr (datalist, TAG_TRACKTOTAL);
-        }
-        if (tagkey == TAG_DISCNUMBER) {
-          tot = nlistGetStr (datalist, TAG_DISCTOTAL);
-        }
-        if (tot == NULL || *tot == '\0') {
-          tot = "0";
-        }
-        fprintf (ofh, "audio['%s'] = [(%s,%s)]\n",
-            tagdefs [tagkey].audiotags [tagtype].tag, value, tot);
-      }
-    } else if (tagtype == TAG_TYPE_MP4 &&
-        tagdefs [tagkey].audiotags [tagtype].base != NULL) {
-      fprintf (ofh, "audio['%s'] = bytes ('%s', 'UTF-8')\n",
-          tagdefs [tagkey].audiotags [tagtype].tag, value);
-    } else {
-      fprintf (ofh, "audio['%s'] = u'%s'\n",
-          tagdefs [tagkey].audiotags [tagtype].tag, value);
-    }
-  }
-
-  fprintf (ofh, "audio.save()\n");
-  fclose (ofh);
-
-  rc = audiotagRunUpdate (fn);
-  if (rc != 0) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write failed: %s", ffn);
-  }
-
-  logProcEnd (LOG_PROC, "audiotagsWriteOtherTags", "");
-  return rc;
-}
-
 static bool
 audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value)
 {
@@ -644,37 +399,6 @@ audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value)
   }
 
   return rc;
-}
-
-static int
-audiotagRunUpdate (const char *fn)
-{
-  const char  *targv [5];
-  int         targc = 0;
-  int         rc;
-  char        dbuff [4096];
-
-  targv [targc++] = sysvarsGetStr (SV_PATH_PYTHON);
-  targv [targc++] = fn;
-  targv [targc++] = NULL;
-  /* the wait flag is on, the return code is the process return code */
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, dbuff, sizeof (dbuff), NULL);
-  if (rc == 0) {
-    fileopDelete (fn);
-  } else {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write tags failed %d (%s)", rc, fn);
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  output: %s", dbuff);
-  }
-  return rc;
-}
-
-static void
-audiotagMakeTempFilename (char *fn, size_t sz)
-{
-  char        tbuff [MAXPATHLEN];
-
-  snprintf (tbuff, sizeof (tbuff), "audiotag-%"PRId64".py", (int64_t) globalCounter++);
-  pathbldMakePath (fn, sz, tbuff, "", PATHBLD_MP_DREL_TMP);
 }
 
 static int

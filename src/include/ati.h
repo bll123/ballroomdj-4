@@ -8,6 +8,16 @@
 #include "slist.h"
 
 enum {
+  AFILE_TYPE_UNKNOWN,
+  AFILE_TYPE_FLAC,
+  AFILE_TYPE_MP4,
+  AFILE_TYPE_MP3,
+  AFILE_TYPE_OGGOPUS,
+  AFILE_TYPE_OGGVORBIS,
+  AFILE_TYPE_WMA,
+};
+
+enum {
   ATI_TAG_BUFF_SIZE = 16384,
 };
 
@@ -20,12 +30,12 @@ ati_t   *atiInit (const char *atipkg, taglookup_t tagLookup, tagcheck_t tagCheck
 void    atiFree (ati_t *ati);
 char    *atiReadTags (ati_t *ati, const char *ffn);
 void    atiParseTags (ati_t *ati, slist_t *tagdata, char *data, int tagtype, int *rewrite);
-int     atiWriteTags (ati_t *ati, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int filetype, int writetags);
+int     atiWriteTags (ati_t *ati, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 
 atidata_t *atiiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck);
 void    atiiFree (atidata_t *atidata);
 char    *atiiReadTags (atidata_t *atidata, const char *ffn);
 void    atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data, int tagtype, int *rewrite);
-int     atiiWriteTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int filetype, int writetags);
+int     atiiWriteTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 
 #endif /* INC_ATI_H */
