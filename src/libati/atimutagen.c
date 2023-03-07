@@ -13,14 +13,15 @@
 
 #include "ati.h"
 #include "audiofile.h"
+#include "log.h"
 #include "mdebug.h"
 #include "osprocess.h"
+#include "sysvars.h"
 #include "tagdef.h"
 
 typedef struct atidata {
   const char    *python;
   const char    *mutagen;
-  const char    *radix;
   int           writetags;
   taglookup_t   tagLookup;
   tagcheck_t    tagCheck;
@@ -30,15 +31,13 @@ static void atimutagenParseNumberPair (atidata_t *atidata, char *data, int *a, i
 
 atidata_t *
 atiiInit (const char *atipkg,
-    const char *python, const char *mutagen, const char *radix,
     int writetags, taglookup_t tagLookup, tagcheck_t tagCheck)
 {
   atidata_t *atidata;
 
   atidata = mdmalloc (sizeof (atidata_t));
-  atidata->python = python;
-  atidata->mutagen = mutagen;
-  atidata->radix = radix;
+  atidata->python = sysvarsGetStr (SV_PATH_PYTHON);
+  atidata->mutagen = sysvarsGetStr (SV_PYTHON_MUTAGEN);
   atidata->writetags = writetags;
   atidata->tagLookup = tagLookup;
   atidata->tagCheck = tagCheck;
@@ -83,7 +82,6 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
   char        *p;
   char        *tokstrB;
   char        *pC;
-  char        *tokstrC;
   const char  *tagname;
   char        duration [40];
   char        pbuff [40];
@@ -94,42 +92,42 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
 
   writetags = atidata->writetags;
 
-/*
- * mutagen output:
- *
- * m4a output from mutagen is very bizarre for freeform tags
- * - MPEG-4 audio (ALAC), 210.81 seconds, 1536000 bps (audio/mp4)
- * ----:BDJ4:DANCE=MP4FreeForm(b'Waltz', <AtomDataType.UTF8: 1>)
- * ----:com.apple.iTunes:MusicBrainz Track Id=MP4FreeForm(b'blah', <AtomDataType.UTF8: 1>)
- * ----:BDJ4:NOTES=MP4FreeForm(b'NOTES3 NOTES4 \xc3\x84\xc3\x84\xc3\x84\xc3\x84\xc3\x84\xc3\x84\xc3\x84\xc3\x84', <AtomDataType.UTF8: 1>)
- * trkn=(1, 0)
- * ©ART=2NE1
- * ©alb=2nd Mini Album
- * ©day=2011
- * ©gen=Electronic
- * ©nam=xyzzy
- * ©too=Lavf56.15.102
- *
- * - FLAC, 20.80 seconds, 44100 Hz (audio/flac)
- * ARTIST=artist
- * TITLE=zzz
- *
- * - MPEG 1 layer 3, 64000 bps (CBR?), 48000 Hz, 1 chn, 304.54 seconds (audio/mp3)
- * TALB=130.01-alb
- * TIT2=05 Rumba
- * TPE1=130.01-art
- * TPE2=130.01-albart
- * TRCK=122
- * TXXX=DANCE=Rumba
- * TXXX=DANCERATING=Good
- * TXXX=STATUS=Complete
- * UFID=http://musicbrainz.org=...
- */
+  /*
+   * mutagen output:
+   *
+   * m4a output from mutagen is very bizarre for freeform tags
+   * - MPEG-4 audio (ALAC), 210.81 seconds, 1536000 bps (audio/mp4)
+   * ----:BDJ4:DANCE=MP4FreeForm(b'Waltz', <AtomDataType.UTF8: 1>)
+   * ----:com.apple.iTunes:MusicBrainz Track Id=MP4FreeForm(b'blah', <AtomDataType.UTF8: 1>)
+   * ----:BDJ4:NOTES=MP4FreeForm(b'NOTES3 NOTES4 \xc3\x84\xc3\x84\xc3\x84\xc3\x84\xc3\x84\xc3\x84\xc3\x84\xc3\x84', <AtomDataType.UTF8: 1>)
+   * trkn=(1, 0)
+   * ©ART=2NE1
+   * ©alb=2nd Mini Album
+   * ©day=2011
+   * ©gen=Electronic
+   * ©nam=xyzzy
+   * ©too=Lavf56.15.102
+   *
+   * - FLAC, 20.80 seconds, 44100 Hz (audio/flac)
+   * ARTIST=artist
+   * TITLE=zzz
+   *
+   * - MPEG 1 layer 3, 64000 bps (CBR?), 48000 Hz, 1 chn, 304.54 seconds (audio/mp3)
+   * TALB=130.01-alb
+   * TIT2=05 Rumba
+   * TPE1=130.01-art
+   * TPE2=130.01-albart
+   * TRCK=122
+   * TXXX=DANCE=Rumba
+   * TXXX=DANCERATING=Good
+   * TXXX=STATUS=Complete
+   * UFID=http://musicbrainz.org=...
+   */
 
   tstr = strtok_r (data, "\r\n", &tokstr);
   count = 0;
   while (tstr != NULL) {
-//    logMsg (LOG_DBG, LOG_DBUPDATE, "raw: %s", tstr);
+    logMsg (LOG_DBG, LOG_DBUPDATE, "raw: %s", tstr);
     if (count == 1) {
       p = strstr (tstr, "seconds");
       if (p != NULL) {
@@ -145,7 +143,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
         snprintf (duration, sizeof (duration), "%.0f", tm);
         slistSetStr (tagdata, tagdefs [TAG_DURATION].tag, duration);
       } else {
-//        logMsg (LOG_DBG, LOG_DBUPDATE, "no 'seconds' found");
+        logMsg (LOG_DBG, LOG_DBUPDATE, "no 'seconds' found");
       }
     }
 
@@ -171,24 +169,17 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
 
       /* p is pointing to the tag name */
 
-      /* some old audio file tag handling */
       if (strcmp (p, "TXXX=VARIOUSARTISTS") == 0 ||
           strcmp (p, "VARIOUSARTISTS") == 0) {
-//        logMsg (LOG_DBG, LOG_DBUPDATE, "rewrite: various");
+        logMsg (LOG_DBG, LOG_DBUPDATE, "rewrite: various");
         *rewrite |= AF_REWRITE_VARIOUS;
-      }
-      if (strcmp (p, "TXXX=DURATION") == 0 ||
-          strcmp (p, "DURATION") == 0) {
-//        logMsg (LOG_DBG, LOG_DBUPDATE, "rewrite: duration");
-        *rewrite |= AF_REWRITE_DURATION;
       }
 
       tagname = atidata->tagLookup (tagtype, p);
-//      tagname = slistGetStr (at->tagLookup [tagtype], p);
       if (tagname != NULL) {
-//        logMsg (LOG_DBG, LOG_DBUPDATE, "taglookup: %s %s", p, tagname);
+        logMsg (LOG_DBG, LOG_DBUPDATE, "taglookup: %s %s", p, tagname);
         tagkey = atidata->tagCheck (writetags, tagtype, tagname, AF_REWRITE_NONE);
-//        logMsg (LOG_DBG, LOG_DBUPDATE, "tag: %s raw-tag: %s", tagname, p);
+        logMsg (LOG_DBG, LOG_DBUPDATE, "tag: %s raw-tag: %s", tagname, p);
       }
 
       if (tagname != NULL && *tagname != '\0') {
@@ -294,49 +285,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
           p = pbuff;
         }
 
-        /* old songend/songstart handling */
-        if (strcmp (tagname, tagdefs [TAG_SONGSTART].tag) == 0 ||
-            strcmp (tagname, tagdefs [TAG_SONGEND].tag) == 0) {
-          char      *tmp;
-          double    tm = 0.0;
-
-          if (strstr (p, ":") != NULL) {
-            tmp = mdstrdup (p);
-            pC = strtok_r (tmp, ":", &tokstrC);
-            if (pC != NULL) {
-              tm += atof (pC) * 60.0;
-              pC = strtok_r (NULL, ":", &tokstrC);
-              tm += atof (pC);
-              tm *= 1000;
-              snprintf (pbuff, sizeof (pbuff), "%.0f", tm);
-              p = pbuff;
-            }
-            mdfree (tmp);
-          }
-        }
-
-        /* old volumeadjustperc handling */
-        if (strcmp (tagname, tagdefs [TAG_VOLUMEADJUSTPERC].tag) == 0) {
-          double    tm = 0.0;
-
-          /* the BDJ3 volume adjust percentage is a double */
-          /* with or without a decimal point */
-          /* convert it to BDJ4 style */
-          /* this will fail for large BDJ3 values w/no decimal */
-          pC = strstr (p, ".");
-          if (pC != NULL || strlen (p) <= 3) {
-            if (pC != NULL) {
-              if (atidata->radix != NULL) {
-                *pC = *atidata->radix;
-              }
-            }
-            tm = atof (p);
-            tm /= 10.0;
-            tm *= DF_DOUBLE_MULT;
-            snprintf (pbuff, sizeof (pbuff), "%.0f", tm);
-            p = pbuff;
-          }
-        }
+        /* p is pointing to the tag value */
 
         if (p != NULL && *p != '\0') {
           slistSetStr (tagdata, tagname, p);

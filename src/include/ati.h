@@ -22,7 +22,7 @@ char    *atiReadTags (ati_t *ati, const char *ffn);
 void    atiParseTags (ati_t *ati, slist_t *tagdata, char *data, int tagtype, int *rewrite);
 int     atiWriteTags (ati_t *ati, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int filetype, int writetags);
 
-atidata_t *atiiInit (const char *atipkg, const char *python, const char *mutagen, const char *radix, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck);
+atidata_t *atiiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck);
 void    atiiFree (atidata_t *atidata);
 char    *atiiReadTags (atidata_t *atidata, const char *ffn);
 void    atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data, int tagtype, int *rewrite);
