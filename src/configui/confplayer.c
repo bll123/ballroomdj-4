@@ -30,6 +30,7 @@
 
 static void confuiLoadVolIntfcList (confuigui_t *gui);
 static void confuiLoadPlayerIntfcList (confuigui_t *gui);
+static void confuiLoadAudioTagIntfcList (confuigui_t *gui);
 
 void
 confuiInitPlayer (confuigui_t *gui)
@@ -41,6 +42,7 @@ confuiInitPlayer (confuigui_t *gui)
 
   confuiLoadVolIntfcList (gui);
   confuiLoadPlayerIntfcList (gui);
+  confuiLoadAudioTagIntfcList (gui);
 
   volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
   assert (volume != NULL);
@@ -92,13 +94,18 @@ confuiBuildUIPlayer (confuigui_t *gui)
 
   /* CONTEXT: configuration: which player interface to use */
   confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Player"),
-      CONFUI_SPINBOX_PLAYER, OPT_M_PLAYER_INTFC,
-      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_PLAYER].listidx, NULL);
+      CONFUI_SPINBOX_PLI, OPT_M_PLAYER_INTFC,
+      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_PLI].listidx, NULL);
 
   /* CONTEXT: configuration: which audio interface to use */
   confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Audio"),
       CONFUI_SPINBOX_VOL_INTFC, OPT_M_VOLUME_INTFC,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx, NULL);
+
+  /* CONTEXT: configuration: which audio tag interface to use */
+  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Audio Tags"),
+      CONFUI_SPINBOX_ATI, OPT_M_AUDIOTAG_INTFC,
+      CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_ATI].listidx, NULL);
 
   /* CONTEXT: configuration: which audio sink (output) to use */
   confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Audio Output"),
@@ -193,10 +200,10 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
   nlist_t       *llist;
   int           count;
 
-  static datafilekey_t dfkeys [CONFUI_PLAYER_MAX] = {
-    { "DESC",   CONFUI_PLAYER_DESC,  VALUE_STR, NULL, -1 },
-    { "INTFC",  CONFUI_PLAYER_INTFC, VALUE_STR, NULL, -1 },
-    { "OS",     CONFUI_PLAYER_OS,    VALUE_STR, NULL, -1 },
+  static datafilekey_t dfkeys [CONFUI_PLI_MAX] = {
+    { "DESC",   CONFUI_PLI_DESC,  VALUE_STR, NULL, -1 },
+    { "INTFC",  CONFUI_PLI_INTFC, VALUE_STR, NULL, -1 },
+    { "OS",     CONFUI_PLI_OS,    VALUE_STR, NULL, -1 },
   };
 
   logProcBegin (LOG_PROC, "confuiLoadPlayerIntfcList");
@@ -207,19 +214,19 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
   pathbldMakePath (tbuff, sizeof (tbuff),
       "playerintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
   df = datafileAllocParse ("conf-playerintfc-list", DFTYPE_INDIRECT, tbuff,
-      dfkeys, CONFUI_PLAYER_MAX);
+      dfkeys, CONFUI_PLI_MAX);
   list = datafileGetList (df);
 
   ilistStartIterator (list, &iteridx);
   count = 0;
   while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
-    intfc = ilistGetStr (list, key, CONFUI_PLAYER_INTFC);
-    desc = ilistGetStr (list, key, CONFUI_PLAYER_DESC);
-    os = ilistGetStr (list, key, CONFUI_PLAYER_OS);
+    intfc = ilistGetStr (list, key, CONFUI_PLI_INTFC);
+    desc = ilistGetStr (list, key, CONFUI_PLI_DESC);
+    os = ilistGetStr (list, key, CONFUI_PLI_OS);
     if (strcmp (os, sysvarsGetStr (SV_OSNAME)) == 0 ||
         strcmp (os, "all") == 0) {
       if (strcmp (intfc, bdjoptGetStr (OPT_M_PLAYER_INTFC)) == 0) {
-        gui->uiitem [CONFUI_SPINBOX_PLAYER].listidx = count;
+        gui->uiitem [CONFUI_SPINBOX_PLI].listidx = count;
       }
       nlistSetStr (tlist, count, desc);
       nlistSetStr (llist, count, intfc);
@@ -228,8 +235,57 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
   }
   datafileFree (df);
 
-  gui->uiitem [CONFUI_SPINBOX_PLAYER].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_PLAYER].sbkeylist = llist;
+  gui->uiitem [CONFUI_SPINBOX_PLI].displist = tlist;
+  gui->uiitem [CONFUI_SPINBOX_PLI].sbkeylist = llist;
   logProcEnd (LOG_PROC, "confuiLoadPlayerIntfcList", "");
+}
+
+static void
+confuiLoadAudioTagIntfcList (confuigui_t *gui)
+{
+  char          tbuff [MAXPATHLEN];
+  nlist_t       *tlist = NULL;
+  datafile_t    *df = NULL;
+  ilist_t       *list = NULL;
+  ilistidx_t    iteridx;
+  ilistidx_t    key;
+  char          *intfc;
+  char          *desc;
+  nlist_t       *llist;
+  int           count;
+
+  static datafilekey_t dfkeys [CONFUI_ATI_MAX] = {
+    { "DESC",   CONFUI_ATI_DESC,  VALUE_STR, NULL, -1 },
+    { "INTFC",  CONFUI_ATI_INTFC, VALUE_STR, NULL, -1 },
+  };
+
+  logProcBegin (LOG_PROC, "confuiLoadAudioTagIntfcList");
+
+  tlist = nlistAlloc ("cu-audiotagintfc-list", LIST_ORDERED, NULL);
+  llist = nlistAlloc ("cu-audiotagintfc-list-l", LIST_ORDERED, NULL);
+
+  pathbldMakePath (tbuff, sizeof (tbuff),
+      AUDIOTAGINTFC_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
+  df = datafileAllocParse ("conf-audiotagintfc-list", DFTYPE_INDIRECT, tbuff,
+      dfkeys, CONFUI_ATI_MAX);
+  list = datafileGetList (df);
+
+  ilistStartIterator (list, &iteridx);
+  count = 0;
+  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
+    intfc = ilistGetStr (list, key, CONFUI_ATI_INTFC);
+    desc = ilistGetStr (list, key, CONFUI_ATI_DESC);
+    if (strcmp (intfc, bdjoptGetStr (OPT_M_AUDIOTAG_INTFC)) == 0) {
+      gui->uiitem [CONFUI_SPINBOX_ATI].listidx = count;
+    }
+    nlistSetStr (tlist, count, desc);
+    nlistSetStr (llist, count, intfc);
+    ++count;
+  }
+  datafileFree (df);
+
+  gui->uiitem [CONFUI_SPINBOX_ATI].displist = tlist;
+  gui->uiitem [CONFUI_SPINBOX_ATI].sbkeylist = llist;
+  logProcEnd (LOG_PROC, "confuiLoadAudioTagIntfcList", "");
 }
 

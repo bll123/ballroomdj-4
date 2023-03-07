@@ -20,8 +20,15 @@ target_link_libraries (libatimutagen
   m
 )
 
+add_library (libatitaglib SHARED atitaglib.cpp)
+target_link_libraries (libatitaglib
+  libbdj4common
+  m
+)
+
 install (TARGETS
   libbdj4ati
   libatimutagen
+  libatitaglib
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )

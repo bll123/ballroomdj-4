@@ -4,6 +4,10 @@
 #ifndef INC_ATI_H
 #define INC_ATI_H
 
+#if defined (__cplusplus) || defined (c_plusplus)
+extern "C" {
+#endif
+
 #include "nlist.h"
 #include "slist.h"
 
@@ -37,5 +41,9 @@ void    atiiFree (atidata_t *atidata);
 char    *atiiReadTags (atidata_t *atidata, const char *ffn);
 void    atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data, int tagtype, int *rewrite);
 int     atiiWriteTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+
+#if defined (__cplusplus) || defined (c_plusplus)
+} /* extern C */
+#endif
 
 #endif /* INC_ATI_H */

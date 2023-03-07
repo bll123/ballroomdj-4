@@ -57,6 +57,9 @@ atiiInit (const char *atipkg,
 void
 atiiFree (atidata_t *atidata)
 {
+  if (atidata != NULL) {
+    mdfree (atidata);
+  }
 }
 
 char *

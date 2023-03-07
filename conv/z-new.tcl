@@ -25,7 +25,7 @@ if { ! [file exists $datatopdir/data] || ! [file isdirectory $datatopdir/data] }
 
 # the orgopt.txt file is always new
 # audioadjust is new as of version 4.0.5
-foreach fn [list audioadjust.txt autoselection.txt \
+foreach fn [list audioadjust.txt audiotagintfc.txt autoselection.txt \
     favorites.txt orgopt.txt sortopt.txt gtk-static.css] {
   set nfn [file join $datatopdir data $fn]
 

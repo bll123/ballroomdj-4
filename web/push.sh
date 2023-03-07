@@ -65,9 +65,13 @@ if [[ $tag == linux ]]; then
   sshpass -e rsync -v -e ssh ${fn}.n \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}
   rm -f ${fn}.n
-  sshpass -e rsync -v -e ssh install/linux-pre-install.sh \
-      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
-  sshpass -e rsync -v -e ssh install/linux-uninstall-bdj4.sh \
+
+  fn=linux-pre-install
+  ver=$(install/${fn}.sh --version)
+  sshpass -e rsync -v -e ssh install/${fn}.sh \
+      bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
+  fn=linux-uinstall-bdj4
+  sshpass -e rsync -v -e ssh install/${fn}.sh \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 
   server=web.sourceforge.net

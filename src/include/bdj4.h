@@ -54,6 +54,7 @@ enum {
 
 /* data files */
 #define AUDIOADJ_FN         "audioadjust"
+#define AUDIOTAGINTFC_FN    "audiotagintfc"
 #define AUTOSEL_FN          "autoselection"
 #define ITUNES_FIELDS_FN    "itunes-fields"
 #define ITUNES_STARS_FN     "itunes-stars"

@@ -125,7 +125,7 @@ confuiPopulateOptions (confuigui_t *gui)
     }
 
     if (gui->uiitem [i].bdjoptIdx >= OPT_Q_ACTIVE) {
-      musicq = gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx;
+      musicq = gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].listidx;
       isqueueitem = true;
     }
 
