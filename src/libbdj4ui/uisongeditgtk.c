@@ -644,9 +644,9 @@ uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active)
 
   /* if the player is active, disable the button */
   if (active) {
-    uiButtonDisable (uiw->buttons [UISONGEDIT_BUTTON_PLAY]);
+    uiButtonSetState (uiw->buttons [UISONGEDIT_BUTTON_PLAY], UIWIDGET_DISABLE);
   } else {
-    uiButtonEnable (uiw->buttons [UISONGEDIT_BUTTON_PLAY]);
+    uiButtonSetState (uiw->buttons [UISONGEDIT_BUTTON_PLAY], UIWIDGET_ENABLE);
   }
   logProcEnd (LOG_PROC, "uisongeditSetPlayButtonState", "");
 }
@@ -657,17 +657,23 @@ void
 uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag)
 {
   se_internal_t *uiw;
+  int           newstate;
 
   uiw = uisongedit->uiWidgetData;
+
+  newstate = UIWIDGET_ENABLE;
+  if (editflag == UISONGEDIT_EDITALL_ON) {
+    newstate = UIWIDGET_DISABLE;
+  }
 
   if (editflag == UISONGEDIT_EDITALL_ON) {
     /* CONTEXT: song editor: display indicator that the song editor is in edit all mode */
     uiLabelSetText (&uiw->editalldisp, _("Edit All"));
-    uiButtonDisable (uiw->buttons [UISONGEDIT_BUTTON_SAVE]);
   } else {
     uiLabelSetText (&uiw->editalldisp, "");
-    uiButtonEnable (uiw->buttons [UISONGEDIT_BUTTON_SAVE]);
   }
+
+  uiButtonSetState (uiw->buttons [UISONGEDIT_BUTTON_SAVE], newstate);
 
   for (int count = 0; count < uiw->itemcount; ++count) {
     int   tagkey;
@@ -686,85 +692,45 @@ uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag)
 
     if (tagdefs [tagkey].editType != ET_LABEL &&
         tagdefs [tagkey].editType != ET_NA) {
-      if (editflag == UISONGEDIT_EDITALL_ON) {
-        uiWidgetSetState (&uiw->items [count].label, UIWIDGET_DISABLE);
-      } else {
-        uiWidgetEnable (&uiw->items [count].label);
-      }
+      uiWidgetSetState (&uiw->items [count].label, newstate);
     }
 
     switch (tagdefs [tagkey].editType) {
       case ET_ENTRY: {
-        if (editflag == UISONGEDIT_EDITALL_ON) {
-          uiEntryDisable (uiw->items [count].entry);
-        } else {
-          uiEntryEnable (uiw->items [count].entry);
-        }
+        uiEntrySetState (uiw->items [count].entry, newstate);
         break;
       }
       case ET_COMBOBOX: {
         if (tagkey == TAG_DANCE) {
-          if (editflag == UISONGEDIT_EDITALL_ON) {
-            uidanceDisable (uiw->items [count].uidance);
-          } else {
-            uidanceEnable (uiw->items [count].uidance);
-          }
+          uidanceSetState (uiw->items [count].uidance, newstate);
         }
         if (tagkey == TAG_GENRE) {
-          if (editflag == UISONGEDIT_EDITALL_ON) {
-            uigenreDisable (uiw->items [count].uigenre);
-          } else {
-            uigenreEnable (uiw->items [count].uigenre);
-          }
+          uigenreSetState (uiw->items [count].uigenre, newstate);
         }
         break;
       }
       case ET_SPINBOX_TIME: {
-        if (editflag == UISONGEDIT_EDITALL_ON) {
-          uiSpinboxDisable (uiw->items [count].spinbox);
-        } else {
-          uiSpinboxEnable (uiw->items [count].spinbox);
-        }
+        uiSpinboxSetState (uiw->items [count].spinbox, newstate);
         break;
       }
       case ET_SPINBOX_TEXT: {
         if (tagkey == TAG_FAVORITE) {
-          if (editflag == UISONGEDIT_EDITALL_ON) {
-            uifavoriteDisable (uiw->items [count].uifavorite);
-          } else {
-            uifavoriteEnable (uiw->items [count].uifavorite);
-          }
+          uifavoriteSetState (uiw->items [count].uifavorite, newstate);
         }
         if (tagkey == TAG_DANCELEVEL) {
-          if (editflag == UISONGEDIT_EDITALL_ON) {
-            uilevelDisable (uiw->items [count].uilevel);
-          } else {
-            uilevelEnable (uiw->items [count].uilevel);
-          }
+          uilevelSetState (uiw->items [count].uilevel, newstate);
         }
         if (tagkey == TAG_DANCERATING) {
-          if (editflag == UISONGEDIT_EDITALL_ON) {
-            uiratingDisable (uiw->items [count].uirating);
-          } else {
-            uiratingEnable (uiw->items [count].uirating);
-          }
+          uiratingSetState (uiw->items [count].uirating, newstate);
         }
         if (tagkey == TAG_STATUS) {
-          if (editflag == UISONGEDIT_EDITALL_ON) {
-            uistatusDisable (uiw->items [count].uistatus);
-          } else {
-            uistatusEnable (uiw->items [count].uistatus);
-          }
+          uistatusSetState (uiw->items [count].uistatus, newstate);
         }
         break;
       }
       case ET_SPINBOX:
       case ET_SCALE: {
-        if (editflag == UISONGEDIT_EDITALL_ON) {
-          uiWidgetSetState (&uiw->items [count].uiwidget, UIWIDGET_DISABLE);
-        } else {
-          uiWidgetEnable (&uiw->items [count].uiwidget);
-        }
+        uiWidgetSetState (&uiw->items [count].uiwidget, newstate);
         break;
       }
       case ET_LABEL: {

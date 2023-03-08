@@ -137,6 +137,7 @@ confuiMusicQActiveChg (void *udata)
 {
   confuigui_t *gui = udata;
   int         tval = 0;
+  int         state;
 
   if (gui->inbuild) {
     return UICB_CONT;
@@ -146,27 +147,20 @@ confuiMusicQActiveChg (void *udata)
   }
 
   tval = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
+  state = UIWIDGET_DISABLE;
   if (tval) {
-    uiWidgetEnable (&gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidget);
-    uiWidgetEnable (&gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidget);
-    uiWidgetEnable (&gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidget);
-    uiSpinboxEnable (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].spinbox);
-    uiSpinboxEnable (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].spinbox);
-    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiswitch);
-    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiswitch);
-    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiswitch);
-    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch);
-  } else {
-    uiWidgetDisable (&gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidget);
-    uiWidgetDisable (&gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidget);
-    uiWidgetDisable (&gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidget);
-    uiSpinboxDisable (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].spinbox);
-    uiSpinboxDisable (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].spinbox);
-    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiswitch);
-    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiswitch);
-    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiswitch);
-    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch);
+    state = UIWIDGET_ENABLE;
   }
+
+  uiWidgetSetState (&gui->uiitem [CONFUI_WIDGET_Q_FADE_IN_TIME].uiwidget, state);
+  uiWidgetSetState (&gui->uiitem [CONFUI_WIDGET_Q_FADE_OUT_TIME].uiwidget, state);
+  uiWidgetSetState (&gui->uiitem [CONFUI_WIDGET_Q_GAP].uiwidget, state);
+  uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_Q_MAX_PLAY_TIME].spinbox, state);
+  uiSpinboxSetState (gui->uiitem [CONFUI_SPINBOX_Q_STOP_AT_TIME].spinbox, state);
+  uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_PAUSE_EACH_SONG].uiswitch, state);
+  uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_ANNOUNCE].uiswitch, state);
+  uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiswitch, state);
+  uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch, state);
 
   /* if called from init or from queue-chg, this is incorrect */
   confuiMusicQUpdateState (gui, 1);
@@ -249,13 +243,15 @@ confuiMusicQChg (void *udata)
 static void
 confuiMusicQUpdateState (confuigui_t *gui, int idx)
 {
+  int   state;
+
+  state = UIWIDGET_ENABLE;
   if (idx == 0) {
-    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
-    uiSwitchDisable (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch);
-  } else {
-    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
-    uiSwitchEnable (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch);
+    state = UIWIDGET_DISABLE;
   }
+
+  uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch, state);
+  uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch, state);
 }
 
 static void

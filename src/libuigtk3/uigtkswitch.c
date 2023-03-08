@@ -119,17 +119,13 @@ uiSwitchSetCallback (uiswitch_t *uiswitch, callback_t *uicb)
 }
 
 void
-uiSwitchDisable (uiswitch_t *uiswitch)
+uiSwitchSetState (uiswitch_t *uiswitch, int state)
 {
-  uiWidgetDisable (&uiswitch->uiswitch);
+  if (uiswitch == NULL) {
+    return;
+  }
+  uiWidgetSetState (&uiswitch->uiswitch, state);
 }
-
-void
-uiSwitchEnable (uiswitch_t *uiswitch)
-{
-  uiWidgetEnable (&uiswitch->uiswitch);
-}
-
 
 /* internal routines */
 

@@ -18,7 +18,6 @@ void uiSwitchSetValue (uiswitch_t *uiswitch, int value);
 int uiSwitchGetValue (uiswitch_t *uiswitch);
 UIWidget *uiSwitchGetUIWidget (uiswitch_t *uiswitch);
 void uiSwitchSetCallback (uiswitch_t *uiswitch, callback_t *uicb);
-void uiSwitchDisable (uiswitch_t *uiswitch);
-void uiSwitchEnable (uiswitch_t *uiswitch);
+void uiSwitchSetState (uiswitch_t *uiswitch, int state);
 
 #endif /* INC_UISWITCH_H */

@@ -13,8 +13,7 @@ uilevel_t * uilevelSpinboxCreate (UIWidget *boxp, bool allflag);
 void uilevelFree (uilevel_t *uilevel);
 int uilevelGetValue (uilevel_t *uilevel);
 void uilevelSetValue (uilevel_t *uilevel, int value);
-void uilevelDisable (uilevel_t *uilevel);
-void uilevelEnable (uilevel_t *uilevel);
+void uilevelSetState (uilevel_t *uilevel, int state);
 void uilevelSizeGroupAdd (uilevel_t *uilevel, UIWidget *sg);
 void uilevelSetChangedCallback (uilevel_t *uilevel, callback_t *cb);
 

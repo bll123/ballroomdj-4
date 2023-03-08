@@ -666,9 +666,9 @@ uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active)
 
   /* if the player is active, disable the button */
   if (active) {
-    uiButtonDisable (uiw->buttons [UIMUSICQ_BUTTON_PLAY]);
+    uiButtonSetState (uiw->buttons [UIMUSICQ_BUTTON_PLAY], UIWIDGET_DISABLE);
   } else {
-    uiButtonEnable (uiw->buttons [UIMUSICQ_BUTTON_PLAY]);
+    uiButtonSetState (uiw->buttons [UIMUSICQ_BUTTON_PLAY], UIWIDGET_ENABLE);
   }
 }
 

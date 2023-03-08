@@ -105,21 +105,12 @@ uifavoriteSetValue (uifavorite_t *uifavorite, int value)
 }
 
 void
-uifavoriteDisable (uifavorite_t *uifavorite)
+uifavoriteSetState (uifavorite_t *uifavorite, int state)
 {
   if (uifavorite == NULL || uifavorite->spinbox == NULL) {
     return;
   }
-  uiSpinboxDisable (uifavorite->spinbox);
-}
-
-void
-uifavoriteEnable (uifavorite_t *uifavorite)
-{
-  if (uifavorite == NULL || uifavorite->spinbox == NULL) {
-    return;
-  }
-  uiSpinboxEnable (uifavorite->spinbox);
+  uiSpinboxSetState (uifavorite->spinbox, state);
 }
 
 void

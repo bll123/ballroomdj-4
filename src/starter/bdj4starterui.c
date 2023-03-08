@@ -1553,7 +1553,7 @@ starterCheckProfile (startui_t *starter)
     /* CONTEXT: starterui: profile is already in use */
     uiLabelSetText (&starter->statusMsg, _("Profile in use"));
   } else {
-    uiWidgetDisable (uiSpinboxGetUIWidget (starter->profilesel));
+    uiSpinboxSetState (starter->profilesel, UIWIDGET_DISABLE);
     starterSetWindowPosition (starter);
   }
 

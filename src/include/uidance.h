@@ -21,8 +21,7 @@ UIWidget * uidanceGetButton (uidance_t *uidance);
 void uidanceFree (uidance_t *uidance);
 int uidanceGetValue (uidance_t *uidance);
 void uidanceSetValue (uidance_t *uidance, int value);
-void uidanceDisable (uidance_t *uidance);
-void uidanceEnable (uidance_t *uidance);
+void uidanceSetState (uidance_t *uidance, int state);
 void uidanceSizeGroupAdd (uidance_t *uidance, UIWidget *sg);
 void uidanceSetCallback (uidance_t *uidance, callback_t *cb);
 

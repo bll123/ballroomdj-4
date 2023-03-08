@@ -118,21 +118,12 @@ uidanceSetValue (uidance_t *uidance, int value)
 }
 
 void
-uidanceDisable (uidance_t *uidance)
+uidanceSetState (uidance_t *uidance, int state)
 {
   if (uidance == NULL || uidance->dropdown == NULL) {
     return;
   }
-  uiDropDownDisable (uidance->dropdown);
-}
-
-void
-uidanceEnable (uidance_t *uidance)
-{
-  if (uidance == NULL || uidance->dropdown == NULL) {
-    return;
-  }
-  uiDropDownEnable (uidance->dropdown);
+  uiDropDownSetState (uidance->dropdown, state);
 }
 
 void

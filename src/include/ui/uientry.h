@@ -36,7 +36,6 @@ void uiEntrySetValidate (uientry_t *entry,
 int uiEntryValidate (uientry_t *entry, bool forceflag);
 int uiEntryValidateDir (uientry_t *edata, void *udata);
 int uiEntryValidateFile (uientry_t *edata, void *udata);
-void uiEntryDisable (uientry_t *entry);
-void uiEntryEnable (uientry_t *entry);
+void uiEntrySetState (uientry_t *entry, int state);
 
 #endif /* INC_UIENTRY_H */

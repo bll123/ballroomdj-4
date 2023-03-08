@@ -100,15 +100,12 @@ uiScaleSetRange (UIWidget *uiscale, double start, double end)
 }
 
 void
-uiScaleDisable (UIWidget *uiscale)
+uiScaleSetState (UIWidget *uiscale, int state)
 {
-  uiWidgetDisable (uiscale);
-}
-
-void
-uiScaleEnable (UIWidget *uiscale)
-{
-  uiWidgetEnable (uiscale);
+  if (uiscale == NULL) {
+    return;
+  }
+  uiWidgetSetState (uiscale, state);
 }
 
 /* internal routines */

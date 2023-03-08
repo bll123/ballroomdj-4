@@ -245,15 +245,15 @@ managePlaylistTreePrePopulate (managepltree_t *managepltree, playlist_t *pl)
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
   if (pltype == PLTYPE_SONGLIST) {
-    uiWidgetDisable (&managepltree->uihideunsel);
+    uiWidgetSetState (&managepltree->uihideunsel, UIWIDGET_DISABLE);
   }
   if (pltype == PLTYPE_SEQUENCE) {
     /* a sequence has no need to display the non-selected dances */
     hideunselstate = true;
-    uiWidgetDisable (&managepltree->uihideunsel);
+    uiWidgetSetState (&managepltree->uihideunsel, UIWIDGET_DISABLE);
   }
   if (pltype == PLTYPE_AUTO) {
-    uiWidgetEnable (&managepltree->uihideunsel);
+    uiWidgetSetState (&managepltree->uihideunsel, UIWIDGET_ENABLE);
   }
   uiToggleButtonSetState (&managepltree->uihideunsel, hideunselstate);
   managepltree->inprepop = false;

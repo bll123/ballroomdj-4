@@ -246,21 +246,12 @@ uiEntryValidateFile (uientry_t *entry, void *udata)
 }
 
 void
-uiEntryDisable (uientry_t *entry)
+uiEntrySetState (uientry_t *entry, int state)
 {
   if (entry == NULL) {
     return;
   }
-  uiWidgetDisable (&entry->uientry);
-}
-
-void
-uiEntryEnable (uientry_t *entry)
-{
-  if (entry == NULL) {
-    return;
-  }
-  uiWidgetEnable (&entry->uientry);
+  uiWidgetSetState (&entry->uientry, state);
 }
 
 /* internal routines */

@@ -327,21 +327,12 @@ uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx)
 }
 
 void
-uiDropDownDisable (uidropdown_t *dropdown)
+uiDropDownSetState (uidropdown_t *dropdown, int state)
 {
   if (dropdown == NULL) {
     return;
   }
-  uiButtonDisable (dropdown->button);
-}
-
-void
-uiDropDownEnable (uidropdown_t *dropdown)
-{
-  if (dropdown == NULL) {
-    return;
-  }
-  uiButtonEnable (dropdown->button);
+  uiButtonSetState (dropdown->button, state);
 }
 
 char *

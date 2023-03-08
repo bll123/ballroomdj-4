@@ -1362,21 +1362,18 @@ manageSongEditMenu (manageui_t *manage)
     /* CONTEXT: managementui: menu selection: song editor: edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Edit All"),
         manage->callbacks [MANAGE_MENU_CB_SE_START_EDIT_ALL]);
-//    uiWidgetDisable (&menuitem);
 
     manage->callbacks [MANAGE_MENU_CB_SE_APPLY_EDIT_ALL] = callbackInit (
         manageEditAllApply, manage, NULL);
     /* CONTEXT: managementui: menu selection: song editor: apply edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Apply Edit All"),
         manage->callbacks [MANAGE_MENU_CB_SE_APPLY_EDIT_ALL]);
-//    uiWidgetDisable (&menuitem);
 
     manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL] = callbackInit (
         manageEditAllCancel, manage, NULL);
     /* CONTEXT: managementui: menu selection: song editor: cancel edit all */
     uiMenuCreateItem (&menu, &menuitem, _("Cancel Edit All"),
         manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL]);
-//    uiWidgetDisable (&menuitem);
 
     uiMenuAddSeparator (&menu, &menuitem);
 
@@ -1394,15 +1391,15 @@ manageSongEditMenu (manageui_t *manage)
         manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
     uiutilsUIWidgetCopy (&manage->restoreOrigMenuItem, &menuitem);
     if (manage->enablerestoreorig) {
-      uiWidgetEnable (&menuitem);
+      uiWidgetSetState (&menuitem, UIWIDGET_ENABLE);
     } else {
-      uiWidgetDisable (&menuitem);
+      uiWidgetSetState (&menuitem, UIWIDGET_DISABLE);
     }
 
     /* a missing audio adjust file will not stop startup */
     tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
     if (tempp == NULL) {
-      uiWidgetDisable (&menuitem);
+      uiWidgetSetState (&menuitem, UIWIDGET_DISABLE);
     }
 
     manage->songeditmenu.initialized = true;
@@ -1554,9 +1551,9 @@ manageSetEditMenuItems (manageui_t *manage)
     return;
   }
   if (hasorig) {
-    uiWidgetEnable (&manage->restoreOrigMenuItem);
+    uiWidgetSetState (&manage->restoreOrigMenuItem, UIWIDGET_ENABLE);
   } else {
-    uiWidgetDisable (&manage->restoreOrigMenuItem);
+    uiWidgetSetState (&manage->restoreOrigMenuItem, UIWIDGET_DISABLE);
   }
 }
 
@@ -2077,7 +2074,7 @@ manageSonglistMenu (manageui_t *manage)
   /* CONTEXT: managementui: menu selection: song list: export: export for ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
   uiMenuCreateItem (&menu, &menuitem, tbuff, NULL);
-  uiWidgetDisable (&menuitem);
+  uiWidgetSetState (&menuitem, UIWIDGET_DISABLE);
 
   /* import */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
@@ -2095,7 +2092,7 @@ manageSonglistMenu (manageui_t *manage)
   /* CONTEXT: managementui: menu selection: song list: import: import from ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
   uiMenuCreateItem (&menu, &menuitem, tbuff, NULL);
-  uiWidgetDisable (&menuitem);
+  uiWidgetSetState (&menuitem, UIWIDGET_DISABLE);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_ITUNES_IMP,
       manageSonglistImportiTunes);

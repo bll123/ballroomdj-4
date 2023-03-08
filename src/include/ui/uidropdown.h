@@ -28,8 +28,7 @@ void uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel);
 void uiDropDownSelectionSetNum (uidropdown_t *dropdown, nlistidx_t idx);
 void uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx);
-void uiDropDownDisable (uidropdown_t *dropdown);
-void uiDropDownEnable (uidropdown_t *dropdown);
+void uiDropDownSetState (uidropdown_t *dropdown, int state);
 char *uiDropDownGetString (uidropdown_t *dropdown);
 
 #endif /* INC_UIDROPDOWN_H */

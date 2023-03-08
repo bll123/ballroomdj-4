@@ -795,17 +795,17 @@ uisfDisableWidgets (uisongfilter_t *uisf)
   }
 
   for (int i = 0; i < UISF_LABEL_MAX; ++i) {
-    uiWidgetDisable (&uisf->labels [i]);
+    uiWidgetSetState (&uisf->labels [i], UIWIDGET_DISABLE);
   }
-  uiDropDownDisable (uisf->sortbyfilter);
-  uiEntryDisable (uisf->searchentry);
-  uidanceDisable (uisf->uidance);
-  uigenreDisable (uisf->uigenre);
-  uiratingDisable (uisf->uirating);
-  uilevelDisable (uisf->uilevel);
-  uistatusDisable (uisf->uistatus);
-  uifavoriteDisable (uisf->uifavorite);
-  uiSwitchDisable (uisf->playstatusswitch);
+  uiDropDownSetState (uisf->sortbyfilter, UIWIDGET_DISABLE);
+  uiEntrySetState (uisf->searchentry, UIWIDGET_DISABLE);
+  uidanceSetState (uisf->uidance, UIWIDGET_DISABLE);
+  uigenreSetState (uisf->uigenre, UIWIDGET_DISABLE);
+  uiratingSetState (uisf->uirating, UIWIDGET_DISABLE);
+  uilevelSetState (uisf->uilevel, UIWIDGET_DISABLE);
+  uistatusSetState (uisf->uistatus, UIWIDGET_DISABLE);
+  uifavoriteSetState (uisf->uifavorite, UIWIDGET_DISABLE);
+  uiSwitchSetState (uisf->playstatusswitch, UIWIDGET_DISABLE);
 }
 
 static void
@@ -816,17 +816,17 @@ uisfEnableWidgets (uisongfilter_t *uisf)
   }
 
   for (int i = 0; i < UISF_LABEL_MAX; ++i) {
-    uiWidgetEnable (&uisf->labels [i]);
+    uiWidgetSetState (&uisf->labels [i], UIWIDGET_ENABLE);
   }
-  uiDropDownEnable (uisf->sortbyfilter);
-  uiEntryEnable (uisf->searchentry);
-  uidanceEnable (uisf->uidance);
-  uigenreEnable (uisf->uigenre);
-  uiratingEnable (uisf->uirating);
-  uilevelEnable (uisf->uilevel);
-  uistatusEnable (uisf->uistatus);
-  uifavoriteEnable (uisf->uifavorite);
-  uiSwitchEnable (uisf->playstatusswitch);
+  uiDropDownSetState (uisf->sortbyfilter, UIWIDGET_ENABLE);
+  uiEntrySetState (uisf->searchentry, UIWIDGET_ENABLE);
+  uidanceSetState (uisf->uidance, UIWIDGET_ENABLE);
+  uigenreSetState (uisf->uigenre, UIWIDGET_ENABLE);
+  uiratingSetState (uisf->uirating, UIWIDGET_ENABLE);
+  uilevelSetState (uisf->uilevel, UIWIDGET_ENABLE);
+  uistatusSetState (uisf->uistatus, UIWIDGET_ENABLE);
+  uifavoriteSetState (uisf->uifavorite, UIWIDGET_ENABLE);
+  uiSwitchSetState (uisf->playstatusswitch, UIWIDGET_ENABLE);
 }
 
 static bool

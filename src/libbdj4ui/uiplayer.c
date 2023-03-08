@@ -694,21 +694,21 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on)
 static void
 uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
 {
+  int   state;
+
   logProcBegin (LOG_PROC, "uiplayerProcessPlayerState");
 
   uiplayer->playerState = playerState;
 
+  state = UIWIDGET_ENABLE;
   if (playerState == PL_STATE_IN_FADEOUT) {
-    uiWidgetDisable (&uiplayer->volumeScale);
-    uiWidgetDisable (&uiplayer->speedScale);
-    uiWidgetDisable (&uiplayer->seekScale);
-    uiWidgetDisable (&uiplayer->songbeginButton);
-  } else {
-    uiWidgetEnable (&uiplayer->volumeScale);
-    uiWidgetEnable (&uiplayer->speedScale);
-    uiWidgetEnable (&uiplayer->seekScale);
-    uiWidgetEnable (&uiplayer->songbeginButton);
+    state = UIWIDGET_DISABLE;
   }
+
+  uiWidgetSetState (&uiplayer->volumeScale, state);
+  uiWidgetSetState (&uiplayer->speedScale, state);
+  uiWidgetSetState (&uiplayer->seekScale, state);
+  uiWidgetSetState (&uiplayer->songbeginButton, state);
 
   switch (playerState) {
     case PL_STATE_UNKNOWN:

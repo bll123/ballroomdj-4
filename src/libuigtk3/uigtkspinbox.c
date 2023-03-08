@@ -176,21 +176,12 @@ uiSpinboxTextSetValue (uispinbox_t *spinbox, int value)
 }
 
 void
-uiSpinboxDisable (uispinbox_t *uispinbox)
+uiSpinboxSetState (uispinbox_t *uispinbox, int state)
 {
   if (uispinbox == NULL) {
     return;
   }
-  uiWidgetDisable (&uispinbox->uispinbox);
-}
-
-void
-uiSpinboxEnable (uispinbox_t *uispinbox)
-{
-  if (uispinbox == NULL) {
-    return;
-  }
-  uiWidgetEnable (&uispinbox->uispinbox);
+  uiWidgetSetState (&uispinbox->uispinbox, state);
 }
 
 uispinbox_t *

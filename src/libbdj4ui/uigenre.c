@@ -102,21 +102,12 @@ uigenreSetValue (uigenre_t *uigenre, int value)
 }
 
 void
-uigenreDisable (uigenre_t *uigenre)
+uigenreSetState (uigenre_t *uigenre, int state)
 {
   if (uigenre == NULL || uigenre->dropdown == NULL) {
     return;
   }
-  uiDropDownDisable (uigenre->dropdown);
-}
-
-void
-uigenreEnable (uigenre_t *uigenre)
-{
-  if (uigenre == NULL || uigenre->dropdown == NULL) {
-    return;
-  }
-  uiDropDownEnable (uigenre->dropdown);
+  uiDropDownSetState (uigenre->dropdown, state);
 }
 
 void

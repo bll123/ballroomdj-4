@@ -14,8 +14,7 @@ uifavorite_t * uifavoriteSpinboxCreate (UIWidget *boxp);
 void uifavoriteFree (uifavorite_t *uifavorite);
 int uifavoriteGetValue (uifavorite_t *uifavorite);
 void uifavoriteSetValue (uifavorite_t *uifavorite, int value);
-void uifavoriteDisable (uifavorite_t *uifavorite);
-void uifavoriteEnable (uifavorite_t *uifavorite);
+void uifavoriteSetState (uifavorite_t *uifavorite, int state);
 void uifavoriteSetChangedCallback (uifavorite_t *uifavorite, callback_t *cb);
 
 #endif /* INC_UIFAVORITE_H */

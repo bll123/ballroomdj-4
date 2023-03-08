@@ -263,7 +263,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
       _("Stop"), NULL);
   uiwidgetp = uiButtonGetUIWidget (managedb->dbstop);
   uiBoxPackStart (&hbox, uiwidgetp);
-  uiWidgetDisable (uiwidgetp);
+  uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
 
   uiCreateProgressBar (&managedb->dbpbar);
   uiWidgetSetClass (&managedb->dbpbar, ACCENT_CLASS);
@@ -305,7 +305,7 @@ manageDbChg (void *udata)
       uiWidgetSetClass (&managedb->dbhelpdisp, ACCENT_CLASS);
     }
     uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
-    uiWidgetEnable (uiwidgetp);
+    uiWidgetSetState (uiwidgetp, UIWIDGET_ENABLE);
     if (nval == MANAGE_DB_UPD_FROM_ITUNES) {
       if (! itunesConfigured ()) {
         char  tbuff [200];
@@ -314,7 +314,7 @@ manageDbChg (void *udata)
         snprintf (tbuff, sizeof (tbuff), _("%s is not configured."), ITUNES_NAME);
         uiLabelSetText (managedb->statusMsg, tbuff);
         uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
-        uiWidgetDisable (uiwidgetp);
+        uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
       }
     }
   }
@@ -362,9 +362,9 @@ manageDbClose (managedb_t *managedb)
 void
 manageDbResetButtons (managedb_t *managedb)
 {
-  uiButtonEnable (managedb->dbstart);
-  uiButtonDisable (managedb->dbstop);
-  uiSpinboxEnable (managedb->dbspinbox);
+  uiButtonSetState (managedb->dbstart, UIWIDGET_ENABLE);
+  uiButtonSetState (managedb->dbstop, UIWIDGET_DISABLE);
+  uiSpinboxSetState (managedb->dbspinbox, UIWIDGET_ENABLE);
 }
 
 /* internal routines */
@@ -380,9 +380,9 @@ manageDbStart (void *udata)
   char        tbuff [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db start");
-  uiButtonDisable (managedb->dbstart);
-  uiButtonEnable (managedb->dbstop);
-  uiSpinboxDisable (managedb->dbspinbox);
+  uiButtonSetState (managedb->dbstart, UIWIDGET_DISABLE);
+  uiButtonSetState (managedb->dbstop, UIWIDGET_ENABLE);
+  uiSpinboxSetState (managedb->dbspinbox, UIWIDGET_DISABLE);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "bdj4dbupdate", sysvarsGetStr (SV_OS_EXEC_EXT), PATHBLD_MP_DIR_EXEC);

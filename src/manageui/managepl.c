@@ -510,10 +510,10 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
   }
 
   if (uiutilsUIWidgetSet (&managepl->menuDelete)) {
-    uiWidgetEnable (&managepl->menuDelete);
+    uiWidgetSetState (&managepl->menuDelete, UIWIDGET_ENABLE);
     /* CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button */
     if (strcmp (playlistGetName (pl), _("QueueDance")) == 0) {
-      uiWidgetDisable (&managepl->menuDelete);
+      uiWidgetSetState (&managepl->menuDelete, UIWIDGET_DISABLE);
     }
   }
 

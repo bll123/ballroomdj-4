@@ -99,21 +99,12 @@ uistatusSetValue (uistatus_t *uistatus, int value)
 }
 
 void
-uistatusDisable (uistatus_t *uistatus)
+uistatusSetState (uistatus_t *uistatus, int state)
 {
   if (uistatus == NULL || uistatus->spinbox == NULL) {
     return;
   }
-  uiSpinboxDisable (uistatus->spinbox);
-}
-
-void
-uistatusEnable (uistatus_t *uistatus)
-{
-  if (uistatus == NULL || uistatus->spinbox == NULL) {
-    return;
-  }
-  uiSpinboxEnable (uistatus->spinbox);
+  uiSpinboxSetState (uistatus->spinbox, state);
 }
 
 void

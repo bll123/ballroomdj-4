@@ -99,21 +99,12 @@ uilevelSetValue (uilevel_t *uilevel, int value)
 }
 
 void
-uilevelDisable (uilevel_t *uilevel)
+uilevelSetState (uilevel_t *uilevel, int state)
 {
   if (uilevel == NULL || uilevel->spinbox == NULL) {
     return;
   }
-  uiSpinboxDisable (uilevel->spinbox);
-}
-
-void
-uilevelEnable (uilevel_t *uilevel)
-{
-  if (uilevel == NULL || uilevel->spinbox == NULL) {
-    return;
-  }
-  uiSpinboxEnable (uilevel->spinbox);
+  uiSpinboxSetState (uilevel->spinbox, state);
 }
 
 void

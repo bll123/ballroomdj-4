@@ -30,8 +30,7 @@ void  uiSpinboxTextSet (uispinbox_t *spinbox, int min, int count,
 int   uiSpinboxTextGetIdx (uispinbox_t *spinbox);
 int   uiSpinboxTextGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTextSetValue (uispinbox_t *spinbox, int ivalue);
-void  uiSpinboxDisable (uispinbox_t *spinbox);
-void  uiSpinboxEnable (uispinbox_t *spinbox);
+void  uiSpinboxSetState (uispinbox_t *spinbox, int state);
 
 void  uiSpinboxIntCreate (UIWidget *uiwidget);
 void  uiSpinboxDoubleCreate (UIWidget *uiwidget);

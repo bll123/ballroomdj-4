@@ -446,7 +446,7 @@ pluiBuildUI (playerui_t *plui)
   uiCreateLabel (&plui->clock, "");
   uiBoxPackEnd (&hbox, &plui->clock);
   uiWidgetSetMarginStart (&plui->clock, 4);
-  uiWidgetDisable (&plui->clock);
+  uiWidgetSetState (&plui->clock, UIWIDGET_DISABLE);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
@@ -474,7 +474,7 @@ pluiBuildUI (playerui_t *plui)
   /* CONTEXT: playerui: menu selection: marquee related options */
   uiMenuCreateItem (&menubar, &menuitem, _("Marquee"), NULL);
   if (plui->marqueeoff) {
-    uiWidgetDisable (&menuitem);
+    uiWidgetSetState (&menuitem, UIWIDGET_DISABLE);
   }
 
   uiCreateSubMenu (&menuitem, &menu);
@@ -506,7 +506,7 @@ pluiBuildUI (playerui_t *plui)
   /* a missing audio adjust file will not stop startup */
   tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
   if (tempp == NULL) {
-    uiWidgetDisable (&menuitem);
+    uiWidgetSetState (&menuitem, UIWIDGET_DISABLE);
   }
 
   /* options */

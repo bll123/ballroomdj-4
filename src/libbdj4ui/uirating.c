@@ -99,21 +99,12 @@ uiratingSetValue (uirating_t *uirating, int value)
 }
 
 void
-uiratingDisable (uirating_t *uirating)
+uiratingSetState (uirating_t *uirating, int state)
 {
   if (uirating == NULL || uirating->spinbox == NULL) {
     return;
   }
-  uiSpinboxDisable (uirating->spinbox);
-}
-
-void
-uiratingEnable (uirating_t *uirating)
-{
-  if (uirating == NULL || uirating->spinbox == NULL) {
-    return;
-  }
-  uiSpinboxEnable (uirating->spinbox);
+  uiSpinboxSetState (uirating->spinbox, state);
 }
 
 void

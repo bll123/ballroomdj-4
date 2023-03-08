@@ -13,8 +13,7 @@ UIWidget * uigenreGetButton (uigenre_t *uigenre);
 void uigenreFree (uigenre_t *uigenre);
 int uigenreGetValue (uigenre_t *uigenre);
 void uigenreSetValue (uigenre_t *uigenre, int value);
-void uigenreDisable (uigenre_t *uigenre);
-void uigenreEnable (uigenre_t *uigenre);
+void uigenreSetState (uigenre_t *uigenre, int state);
 void uigenreSizeGroupAdd (uigenre_t *uigenre, UIWidget *sg);
 void uigenreSetCallback (uigenre_t *uigenre, callback_t *cb);
 
