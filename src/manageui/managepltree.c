@@ -238,23 +238,25 @@ void
 managePlaylistTreePrePopulate (managepltree_t *managepltree, playlist_t *pl)
 {
   int     pltype;
-  bool    hideunselstate = false;
+  int     hideunselstate = UI_TOGGLE_BUTTON_OFF;
+  int     widgetstate = UIWIDGET_DISABLE;
 
   managepltree->playlist = pl;
   managepltree->inprepop = true;
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
   if (pltype == PLTYPE_SONGLIST) {
-    uiWidgetSetState (&managepltree->uihideunsel, UIWIDGET_DISABLE);
+    widgetstate = UIWIDGET_DISABLE;
   }
   if (pltype == PLTYPE_SEQUENCE) {
     /* a sequence has no need to display the non-selected dances */
-    hideunselstate = true;
-    uiWidgetSetState (&managepltree->uihideunsel, UIWIDGET_DISABLE);
+    hideunselstate = UI_TOGGLE_BUTTON_ON;
+    widgetstate = UIWIDGET_DISABLE;
   }
   if (pltype == PLTYPE_AUTO) {
-    uiWidgetSetState (&managepltree->uihideunsel, UIWIDGET_ENABLE);
+    widgetstate = UIWIDGET_ENABLE;
   }
+  uiWidgetSetState (&managepltree->uihideunsel, widgetstate);
   uiToggleButtonSetState (&managepltree->uihideunsel, hideunselstate);
   managepltree->inprepop = false;
 }

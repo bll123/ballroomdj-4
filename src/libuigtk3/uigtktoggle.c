@@ -109,6 +109,7 @@ uiToggleButtonSetState (UIWidget *uiwidget, int state)
   if (uiwidget->widget == NULL) {
     return;
   }
+
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (uiwidget->widget), state);
 }
 

@@ -37,6 +37,8 @@ enum {
   UICB_NOT_SUPPORTED = false,
   UIWIDGET_DISABLE = false,
   UIWIDGET_ENABLE = true,
+  UI_TOGGLE_BUTTON_ON = true,
+  UI_TOGGLE_BUTTON_OFF = false,
 };
 
 typedef struct {

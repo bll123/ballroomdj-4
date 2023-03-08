@@ -680,11 +680,11 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on)
 
   if (on && ! uiplayer->pauseatendstate) {
     uiToggleButtonSetImage (&uiplayer->pauseatendButton, &uiplayer->ledonImg);
-    uiToggleButtonSetState (&uiplayer->pauseatendButton, TRUE);
+    uiToggleButtonSetState (&uiplayer->pauseatendButton, UI_TOGGLE_BUTTON_ON);
   }
   if (! on && uiplayer->pauseatendstate) {
     uiToggleButtonSetImage (&uiplayer->pauseatendButton, &uiplayer->ledoffImg);
-    uiToggleButtonSetState (&uiplayer->pauseatendButton, FALSE);
+    uiToggleButtonSetState (&uiplayer->pauseatendButton, UI_TOGGLE_BUTTON_OFF);
   }
   uiplayer->pauseatendLock = false;
   uiplayer->pauseatendstate = on;
@@ -760,10 +760,10 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     if (atol (p)) {
       uiImageClear (&uiplayer->repeatImg);
       uiImageSetFromPixbuf (&uiplayer->repeatImg, &uiplayer->repeatPixbuf);
-      uiToggleButtonSetState (&uiplayer->repeatButton, TRUE);
+      uiToggleButtonSetState (&uiplayer->repeatButton, UI_TOGGLE_BUTTON_ON);
     } else {
       uiImageClear (&uiplayer->repeatImg);
-      uiToggleButtonSetState (&uiplayer->repeatButton, FALSE);
+      uiToggleButtonSetState (&uiplayer->repeatButton, UI_TOGGLE_BUTTON_OFF);
     }
     uiplayer->repeatLock = false;
   }

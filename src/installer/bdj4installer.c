@@ -1110,17 +1110,17 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
         /* CONTEXT: installer: message indicating the action that will be taken */
         snprintf (tbuff, sizeof (tbuff), _("Re-install %s."), BDJ4_NAME);
         uiLabelSetText (&installer->feedbackMsg, tbuff);
-        installerSetConvert (installer, TRUE);
+        installerSetConvert (installer, UI_TOGGLE_BUTTON_ON);
       } else {
         /* CONTEXT: installer: message indicating the action that will be taken */
         snprintf (tbuff, sizeof (tbuff), _("Updating existing %s installation."), BDJ4_NAME);
         uiLabelSetText (&installer->feedbackMsg, tbuff);
-        installerSetConvert (installer, FALSE);
+        installerSetConvert (installer, UI_TOGGLE_BUTTON_OFF);
       }
     } else {
       /* CONTEXT: installer: the selected folder exists and is not a BDJ4 installation */
       uiLabelSetText (&installer->feedbackMsg, _("Error: Folder already exists."));
-      installerSetConvert (installer, FALSE);
+      installerSetConvert (installer, UI_TOGGLE_BUTTON_OFF);
       rc = UIENTRY_ERROR;
     }
   }
@@ -1128,7 +1128,7 @@ installerValidateProcessTarget (installer_t *installer, const char *dir)
     /* CONTEXT: installer: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("New %s installation."), BDJ4_NAME);
     uiLabelSetText (&installer->feedbackMsg, tbuff);
-    installerSetConvert (installer, TRUE);
+    installerSetConvert (installer, UI_TOGGLE_BUTTON_ON);
   }
 
   if (rc == UIENTRY_OK) {
@@ -1180,7 +1180,7 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
     /* CONTEXT: installer: the location entered is not a valid BDJ3 location. */
     snprintf (tbuff, sizeof (tbuff), _("Not a valid %s folder."), BDJ3_NAME);
     uiLabelSetText (&installer->convFeedbackMsg, tbuff);
-    installerSetConvert (installer, FALSE);
+    installerSetConvert (installer, UI_TOGGLE_BUTTON_OFF);
   }
 
   /* will call display-convert */
@@ -1248,10 +1248,10 @@ installerBDJ3LocDirDialog (void *udata)
 }
 
 static void
-installerSetConvert (installer_t *installer, int val)
+installerSetConvert (installer_t *installer, int state)
 {
   installer->inSetConvert = true;
-  uiToggleButtonSetState (&installer->convWidget, val);
+  uiToggleButtonSetState (&installer->convWidget, state);
   installer->inSetConvert = false;
 }
 
@@ -1268,9 +1268,9 @@ installerDisplayConvert (installer_t *installer)
   if (strcmp (installer->bdj3loc, "-") == 0 ||
       *installer->bdj3loc == '\0' ||
       installer->nodatafiles) {
-    nval = 0;
+    nval = false;
     nodir = true;
-    installerSetConvert (installer, nval);
+    installerSetConvert (installer, UI_TOGGLE_BUTTON_OFF);
   }
 
   installer->convprocess = nval;

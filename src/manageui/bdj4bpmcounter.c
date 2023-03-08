@@ -713,7 +713,7 @@ bpmcounterProcessTimesig (bpmcounter_t *bpmcounter, char *args)
   }
   idx += BPMCOUNT_DISP_BPM;
   bpmcounter->timesigidx = idx;
-  uiToggleButtonSetState (&bpmcounter->timesigsel [idx], 1);
+  uiToggleButtonSetState (&bpmcounter->timesigsel [idx], UI_TOGGLE_BUTTON_ON);
 }
 
 static bool
