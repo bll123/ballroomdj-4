@@ -10,10 +10,10 @@ INTFC
 ..libatimutagen
 DESC
 ..Mutagen
-KEY
-..1
-INTFC
-..libatitaglib
-DESC
-..taglib
+#KEY
+#..1
+#INTFC
+#..libatitaglib
+#DESC
+#..taglib
 
