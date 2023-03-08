@@ -66,7 +66,6 @@ typedef struct uiduallist {
   uiduallisttree_t  trees [DUALLIST_TREE_MAX];
   callback_t        *callbacks [DUALLIST_CB_MAX];
   uibutton_t        *buttons [DUALLIST_BUTTON_MAX];
-  slist_t           *sourcelist;
   int               flags;
   char              *searchstr;
   int               pos;
@@ -286,9 +285,6 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
     return;
   }
 
-  if (which == DUALLIST_TREE_SOURCE) {
-    duallist->sourcelist = slist;
-  }
   /* the assumption made is that the source tree has been populated */
   /* just before the target tree */
 

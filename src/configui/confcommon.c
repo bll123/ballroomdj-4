@@ -40,6 +40,7 @@ static slist_t * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
 static char * confuiGetLocalIP (confuigui_t *gui);
 static char * confuiMakeQRCodeFile (char *title, char *uri);
 static void confuiUpdateOrgExample (org_t *org, char *data, UIWidget *uiwidgetp);
+static bool confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp);
 
 
 /* the theme list is used by both the ui and the marquee selections */
@@ -229,6 +230,7 @@ void
 confuiCreateTagListingDisp (confuigui_t *gui)
 {
   dispselsel_t  selidx;
+  slist_t       *editlist = NULL;
 
   logProcBegin (LOG_PROC, "confuiCreateTagListingDisp");
 
@@ -237,8 +239,28 @@ confuiCreateTagListingDisp (confuigui_t *gui)
   if (selidx == DISP_SEL_SONGEDIT_A ||
       selidx == DISP_SEL_SONGEDIT_B ||
       selidx == DISP_SEL_SONGEDIT_C) {
-    uiduallistSet (gui->dispselduallist, gui->edittaglist,
-        DUALLIST_TREE_SOURCE);
+    const char    *disp;
+    slistidx_t    iteridx;
+
+    editlist = slistAlloc ("dyn-edit-tag-list", LIST_ORDERED, NULL);
+
+    slistStartIterator (gui->edittaglist, &iteridx);
+    while ((disp = slistIterateKey (gui->edittaglist, &iteridx)) != NULL) {
+      bool    found;
+
+      /* this is very inefficient, as the dispsel lists are unordered */
+      found = false;
+      found |= confuiSearchDispSel (gui, DISP_SEL_SONGEDIT_A, disp);
+      found |= confuiSearchDispSel (gui, DISP_SEL_SONGEDIT_B, disp);
+      found |= confuiSearchDispSel (gui, DISP_SEL_SONGEDIT_C, disp);
+
+      if (! found) {
+        slistSetNum (editlist, disp, slistGetNum (gui->edittaglist, disp));
+      }
+    }
+
+    uiduallistSet (gui->dispselduallist, editlist, DUALLIST_TREE_SOURCE);
+    slistFree (editlist);
   } else {
     uiduallistSet (gui->dispselduallist, gui->listingtaglist,
         DUALLIST_TREE_SOURCE);
@@ -254,7 +276,6 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
   dispsel_t     *dispsel;
 
   logProcBegin (LOG_PROC, "confuiCreateTagSelectedDisp");
-
 
   selidx = uiSpinboxTextGetValue (
       gui->uiitem [CONFUI_SPINBOX_DISP_SEL].spinbox);
@@ -469,3 +490,25 @@ confuiOrgPathSelect (void *udata, long idx)
   return UICB_CONT;
 }
 
+static bool
+confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp)
+{
+  dispsel_t     *dispsel;
+  slist_t       *sellist;
+  slistidx_t    iteridx;
+  const char    *tkey;
+  bool          found = false;
+
+  dispsel = gui->dispsel;
+
+  sellist = dispselGetList (dispsel, selidx);
+  slistStartIterator (sellist, &iteridx);
+  while ((tkey = slistIterateKey (sellist, &iteridx)) != NULL) {
+    if (strcmp (tkey, disp) == 0) {
+      found = true;
+      break;
+    }
+  }
+
+  return found;
+}
