@@ -4,10 +4,15 @@
 
 <span style="color:#4559bf;">_Basic configuration for the player._</span>
 
-The __Player__ and __Audio__ settings generally do not change.
+The __Player__, __Audio__ and __Audio&nbsp;Tags__ settings generally
+do not change.
 
 __Player__: Selects the player interface.  At this time, only
 _Integrated&nbsp;VLC_ is supported.
+
+__Audio__: Selects the audio interface.
+
+__Audio Tags__: Selects the audio tag interface.
 
 __Audio Output__: Selects which audio output device will be used to
 play the audio.  If the selected device is not currently connected,
