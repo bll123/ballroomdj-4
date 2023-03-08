@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-06 11:17-0800\n"
+"POT-Creation-Date: 2023-03-08 11:48-0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -322,6 +322,10 @@ msgstr ""
 msgid "Audio Output"
 msgstr ""
 
+#. CONTEXT: configuration: which audio tag interface to use
+msgid "Audio Tags"
+msgstr ""
+
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
 msgid "Auto Organise"
 msgstr ""
@@ -630,6 +634,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+#. CONTEXT: song editor: display indicator that the song editor is in edit all mode
 #. CONTEXT: managementui: menu selection: song editor: edit all
 msgid "Edit All"
 msgstr ""
