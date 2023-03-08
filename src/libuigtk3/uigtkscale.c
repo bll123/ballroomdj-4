@@ -99,6 +99,18 @@ uiScaleSetRange (UIWidget *uiscale, double start, double end)
   gtk_range_set_range (GTK_RANGE (uiscale->widget), start, end);
 }
 
+void
+uiScaleDisable (UIWidget *uiscale)
+{
+  uiWidgetDisable (uiscale);
+}
+
+void
+uiScaleEnable (UIWidget *uiscale)
+{
+  uiWidgetEnable (uiscale);
+}
+
 /* internal routines */
 
 /* the gtk documentation is incorrect.  scrolltype is not a pointer. */

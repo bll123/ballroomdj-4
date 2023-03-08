@@ -27,6 +27,11 @@ typedef struct {
 } uisongedit_t;
 
 enum {
+  UISONGEDIT_EDITALL,
+  UISONGEDIT_ALL,
+};
+
+enum {
   UISONGEDIT_REPEAT_TIME = 200,
 };
 
@@ -45,10 +50,12 @@ void  uisongeditSetApplyAdjCallback (uisongedit_t *uisongedit, callback_t *uicb)
 void  uisongeditUIInit (uisongedit_t *uisongedit);
 void  uisongeditUIFree (uisongedit_t *uisongedit);
 UIWidget  * uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit, UIWidget *parentwin, UIWidget *statusMsg);
-void  uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx);
+void  uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx, int editallflag);
 void  uisongeditUIMainLoop (uisongedit_t *uisongedit);
 void  uisongeditSetBPMValue (uisongedit_t *uisongedit, const char *args);
 void  uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active);
+void  uisongeditEditAllSetFields (uisongedit_t *uisongedit, bool state);
+void  uisongeditClearChanged (uisongedit_t *uisongedit, int editallflag);
 
 #endif /* INC_UISONGEDIT_H */
 

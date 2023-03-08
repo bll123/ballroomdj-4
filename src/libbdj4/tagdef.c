@@ -39,7 +39,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
-    songutilConvAdjustFlags,          /* conv func            */
+    songutilConvAdjustFlags,      /* conv func            */
     DISP_NO,                      /* audio id disp        */
     false,                        /* listing display      */
     false,                        /* secondary display    */
@@ -47,7 +47,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -72,7 +72,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     true,                         /* text search          */
     true,                         /* is org tag           */
@@ -97,7 +97,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     true,                         /* text search          */
     true,                         /* is org tag           */
@@ -122,7 +122,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     true,                         /* text search          */
     true,                         /* is org tag           */
@@ -147,7 +147,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* align right          */
     true,                         /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -161,7 +161,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       { NULL, NULL, NULL },
       { NULL, NULL, NULL }
     },       /* audio tags */
-    NULL,                         /* itunes name          */ // Total Time
+    NULL,                         /* itunes name          */
     ET_LABEL,                     /* edit type            */
     VALUE_STR,                    /* value type           */
     NULL,                         /* conv func            */
@@ -172,7 +172,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -197,7 +197,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     true,                         /* text search          */
     true,                         /* is org tag           */
@@ -222,7 +222,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     true,                         /* text search          */
     true,                         /* is org tag           */
@@ -247,7 +247,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    true,                         /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     true,                         /* is org tag           */
@@ -272,7 +272,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    true,                         /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -297,7 +297,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    true,                         /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -322,7 +322,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -347,7 +347,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -372,7 +372,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     true,                         /* is org tag           */
@@ -397,7 +397,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -411,7 +411,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       { NULL, NULL, NULL },
       { NULL, NULL, NULL }
     },       /* audio tags */
-    NULL,                         /* itunes name          */ // Total Time
+    NULL,                         /* itunes name          */
     ET_LABEL,                     /* edit type            */
     VALUE_NUM,                    /* value type           */
     convMS,                       /* conv func            */
@@ -422,7 +422,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* align right          */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -447,7 +447,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     true,                         /* text search          */
     false,                        /* is org tag           */
@@ -472,7 +472,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -497,7 +497,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    true,                         /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     true,                         /* is org tag           */
@@ -522,7 +522,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    true,                         /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     true,                         /* text search          */
     false,                        /* is org tag           */
@@ -547,7 +547,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     true,                         /* editable             */
     true,                         /* text search          */
     false,                        /* is org tag           */
@@ -572,7 +572,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -597,7 +597,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -622,7 +622,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -647,7 +647,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    true,                         /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     true,                         /* text search          */
     false,                        /* is org tag           */
@@ -672,7 +672,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -697,7 +697,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -722,7 +722,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -747,7 +747,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -772,7 +772,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    true,                         /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -797,7 +797,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    true,                         /* all edit             */
+    true,                         /* edit-all             */
     true,                         /* editable             */
     true,                         /* text search          */
     false,                        /* is org tag           */
@@ -822,7 +822,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     true,                         /* editable             */
     true,                         /* text search          */
     true,                         /* is org tag           */
@@ -847,7 +847,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     true,                         /* is org tag           */
@@ -872,7 +872,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* align right          */
     false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -886,7 +886,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       { NULL, NULL, NULL },
       { NULL, NULL, NULL }
     },         /* audio tags */
-    NULL,                         /* itunes name          */ // Date Modified
+    NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
     VALUE_NUM,                    /* value type           */
     NULL,                         /* conv func            */
@@ -897,7 +897,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -922,7 +922,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     true,                         /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     true,                         /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -947,7 +947,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -972,7 +972,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */
@@ -997,7 +997,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* align right          */
     false,                        /* is bdj tag           */
     false,                        /* is norm tag          */
-    false,                        /* all edit             */
+    false,                        /* edit-all             */
     false,                        /* editable             */
     false,                        /* text search          */
     false,                        /* is org tag           */

@@ -18,5 +18,7 @@ double  uiScaleGetValue (UIWidget *uiscale);
 int     uiScaleGetDigits (UIWidget *uiscale);
 void    uiScaleSetValue (UIWidget *uiscale, double value);
 void    uiScaleSetRange (UIWidget *uiscale, double start, double end);
+void    uiScaleEnable (UIWidget *uiscale);
+void    uiScaleDisable (UIWidget *uiscale);
 
 #endif /* INC_UISCALE_H */

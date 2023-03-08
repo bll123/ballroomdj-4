@@ -91,9 +91,10 @@ enum {
   MANAGE_MENU_CB_MM_CLEAR_MARK,
   MANAGE_MENU_CB_MM_SET_MARK,
   /* song editor */
-  MANAGE_MENU_CB_SE_APPLY_EDITALL,
-  MANAGE_MENU_CB_SE_CANCEL_EDITALL,
-  MANAGE_MENU_CB_SE_START_EDITALL,
+  MANAGE_MENU_CB_SE_BPM,
+  MANAGE_MENU_CB_SE_APPLY_EDIT_ALL,
+  MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL,
+  MANAGE_MENU_CB_SE_START_EDIT_ALL,
   MANAGE_MENU_CB_SE_APPLY_ADJ,
   MANAGE_MENU_CB_SE_RESTORE_ORIG,
   /* sl options menu */
@@ -104,7 +105,6 @@ enum {
   MANAGE_MENU_CB_SL_COPY,
   MANAGE_MENU_CB_SL_DELETE,
   /* sl actions menu */
-  MANAGE_MENU_CB_BPM,
   MANAGE_MENU_CB_SL_MIX,
   MANAGE_MENU_CB_SL_SWAP,
   MANAGE_MENU_CB_SL_TRUNCATE,
@@ -117,6 +117,7 @@ enum {
   /* sl import menu */
   MANAGE_MENU_CB_SL_M3U_IMP,
   MANAGE_MENU_CB_SL_ITUNES_IMP,
+  /* other callbacks */
   MANAGE_CB_EZ_SELECT,
   MANAGE_CB_NEW_SEL_SONGSEL,
   MANAGE_CB_NEW_SEL_SONGLIST,
@@ -297,6 +298,9 @@ static void     manageSetEditMenuItems (manageui_t *manage);
 static bool     manageApplyAdjDialog (void *udata);
 static bool     manageApplyAdjCallback (void *udata, long aaflags);
 static bool     manageRestoreOrigCallback (void *udata);
+static bool     manageEditAllStart (void *udata);
+static bool     manageEditAllApply (void *udata);
+static bool     manageEditAllCancel (void *udata);
 /* bpm counter */
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
@@ -1001,7 +1005,8 @@ manageMainLoop (void *tmanage)
 
       manageRePopulateData (manage);
       song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-      uisongeditLoadData (manage->mmsongedit, song, manage->songeditdbidx);
+      uisongeditLoadData (manage->mmsongedit, song,
+          manage->songeditdbidx, UISONGEDIT_ALL);
       manageSetEditMenuItems (manage);
 
       snprintf (tmp, sizeof (tmp), "%d", manage->songeditdbidx);
@@ -1345,24 +1350,33 @@ manageSongEditMenu (manageui_t *manage)
     /* I would prefer to have BPM as a stand-alone menu item, but */
     /* gtk does not appear to have a way to create a top-level */
     /* menu item in the menu bar. */
-    manage->callbacks [MANAGE_MENU_CB_BPM] = callbackInit (
+    manage->callbacks [MANAGE_MENU_CB_SE_BPM] = callbackInit (
         manageStartBPMCounter, manage, NULL);
     uiMenuCreateItem (&menu, &menuitem, tagdefs [TAG_BPM].displayname,
-        manage->callbacks [MANAGE_MENU_CB_BPM]);
+        manage->callbacks [MANAGE_MENU_CB_SE_BPM]);
 
     uiMenuAddSeparator (&menu, &menuitem);
 
+    manage->callbacks [MANAGE_MENU_CB_SE_START_EDIT_ALL] = callbackInit (
+        manageEditAllStart, manage, NULL);
     /* CONTEXT: managementui: menu selection: song editor: edit all */
-    uiMenuCreateItem (&menu, &menuitem, _("Edit All"), NULL);
-    uiWidgetDisable (&menuitem);
+    uiMenuCreateItem (&menu, &menuitem, _("Edit All"),
+        manage->callbacks [MANAGE_MENU_CB_SE_START_EDIT_ALL]);
+//    uiWidgetDisable (&menuitem);
 
+    manage->callbacks [MANAGE_MENU_CB_SE_APPLY_EDIT_ALL] = callbackInit (
+        manageEditAllApply, manage, NULL);
     /* CONTEXT: managementui: menu selection: song editor: apply edit all */
-    uiMenuCreateItem (&menu, &menuitem, _("Apply Edit All"), NULL);
-    uiWidgetDisable (&menuitem);
+    uiMenuCreateItem (&menu, &menuitem, _("Apply Edit All"),
+        manage->callbacks [MANAGE_MENU_CB_SE_APPLY_EDIT_ALL]);
+//    uiWidgetDisable (&menuitem);
 
+    manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL] = callbackInit (
+        manageEditAllCancel, manage, NULL);
     /* CONTEXT: managementui: menu selection: song editor: cancel edit all */
-    uiMenuCreateItem (&menu, &menuitem, _("Cancel Edit All"), NULL);
-    uiWidgetDisable (&menuitem);
+    uiMenuCreateItem (&menu, &menuitem, _("Cancel Edit All"),
+        manage->callbacks [MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL]);
+//    uiWidgetDisable (&menuitem);
 
     uiMenuAddSeparator (&menu, &menuitem);
 
@@ -1423,7 +1437,7 @@ manageNewSelectionSongSel (void *udata, long dbidx)
 
   song = dbGetByIdx (manage->musicdb, dbidx);
   manage->songeditdbidx = dbidx;
-  uisongeditLoadData (manage->mmsongedit, song, dbidx);
+  uisongeditLoadData (manage->mmsongedit, song, dbidx, UISONGEDIT_ALL);
   manageSetEditMenuItems (manage);
   manageSetBPMCounter (manage, song);
 
@@ -1502,7 +1516,7 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   /* the overhead is minor */
   song = dbGetByIdx (manage->musicdb, dbidx);
   manage->songeditdbidx = dbidx;
-  uisongeditLoadData (manage->mmsongedit, song, dbidx);
+  uisongeditLoadData (manage->mmsongedit, song, dbidx, UISONGEDIT_ALL);
   manageSetEditMenuItems (manage);
 
   ++manage->dbchangecount;
@@ -1591,6 +1605,49 @@ manageRestoreOrigCallback (void *udata)
   manage->aaflags = SONG_ADJUST_RESTORE;
   manage->applyadjstate = BDJ4_STATE_START;
 
+  return UICB_CONT;
+}
+
+/* edit all */
+
+static bool
+manageEditAllStart (void *udata)
+{
+  manageui_t  *manage = udata;
+  song_t      *song;
+
+  /* do this to make sure any changes to non edit-all fields are reverted */
+  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
+  uisongeditLoadData (manage->mmsongedit, song, manage->songeditdbidx,
+      UISONGEDIT_EDITALL);
+  uisongeditClearChanged (manage->mmsongedit, UISONGEDIT_EDITALL);
+
+  uisongeditEditAllSetFields (manage->mmsongedit, false);
+  return UICB_CONT;
+}
+
+static bool
+manageEditAllApply (void *udata)
+{
+  manageui_t  *manage = udata;
+
+  uisongeditEditAllSetFields (manage->mmsongedit, true);
+  return UICB_CONT;
+}
+
+static bool
+manageEditAllCancel (void *udata)
+{
+  manageui_t  *manage = udata;
+  song_t      *song;
+
+  /* revert any changes */
+  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
+  uisongeditLoadData (manage->mmsongedit, song, manage->songeditdbidx,
+      UISONGEDIT_ALL);
+  uisongeditClearChanged (manage->mmsongedit, UISONGEDIT_ALL);
+
+  uisongeditEditAllSetFields (manage->mmsongedit, true);
   return UICB_CONT;
 }
 
@@ -3041,7 +3098,7 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
 
     song = dbGetByIdx (manage->musicdb, dbidx);
     manage->songeditdbidx = dbidx;
-    uisongeditLoadData (manage->mmsongedit, song, dbidx);
+    uisongeditLoadData (manage->mmsongedit, song, dbidx, UISONGEDIT_ALL);
     manageSetEditMenuItems (manage);
     manageSetBPMCounter (manage, song);
   }

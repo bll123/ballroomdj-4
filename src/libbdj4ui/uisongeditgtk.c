@@ -54,6 +54,8 @@ typedef struct uisongeditgtk se_internal_t;
 
 typedef struct {
   int         tagkey;
+  uichgind_t      *chgind;
+  UIWidget        label;
   union {
     uientry_t     *entry;
     uispinbox_t   *spinbox;
@@ -65,7 +67,6 @@ typedef struct {
     uirating_t    *uirating;
     uistatus_t    *uistatus;
   };
-  uichgind_t      *chgind;
   UIWidget        display;
   callback_t      *callback;
   se_internal_t   *uiw;           // need for scale changed.
@@ -139,7 +140,6 @@ static void uisongeditAddSecondaryLabel (uisongedit_t *uisongedit, UIWidget *hbo
 static void uisongeditAddSpinboxTime (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
 static void uisongeditAddScale (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
 static bool uisongeditScaleDisplayCallback (void *udata, double value);
-static void uisongeditClearChanged (uisongedit_t *uisongedit);
 static bool uisongeditSaveCallback (void *udata);
 static bool uisongeditFirstSelection (void *udata);
 static bool uisongeditPreviousSelection (void *udata);
@@ -454,7 +454,8 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 }
 
 void
-uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
+uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
+    dbidx_t dbidx, int editallflag)
 {
   se_internal_t *uiw;
   char            *data;
@@ -486,6 +487,14 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx)
 
   for (int count = 0; count < uiw->itemcount; ++count) {
     int tagkey = uiw->items [count].tagkey;
+
+    if (editallflag == UISONGEDIT_EDITALL) {
+      /* if the editallflag is used, only re-load those items that are */
+      /* not set for edit-all */
+      if (tagdefs [tagkey].allEdit) {
+        continue;
+      }
+    }
 
     if (tagkey == TAG_BPM_DISPLAY) {
       data = uisongeditGetBPMRangeDisplay (songGetNum (song, TAG_DANCE));
@@ -828,6 +837,147 @@ uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active)
   logProcEnd (LOG_PROC, "uisongeditSetPlayButtonState", "");
 }
 
+void
+uisongeditEditAllSetFields (uisongedit_t *uisongedit, bool state)
+{
+  se_internal_t *uiw;
+
+  uiw = uisongedit->uiWidgetData;
+  for (int count = 0; count < uiw->itemcount; ++count) {
+    int   tagkey;
+
+    tagkey = uiw->items [count].tagkey;
+
+    if (tagdefs [tagkey].editType != ET_LABEL &&
+        ! tagdefs [tagkey].isEditable) {
+      continue;
+    }
+
+    if (tagdefs [tagkey].allEdit) {
+      /* fields with the edit-all flag set are left enabled */
+      continue;
+    }
+
+    if (tagdefs [tagkey].editType != ET_LABEL &&
+        tagdefs [tagkey].editType != ET_NA) {
+      if (state) {
+        uiWidgetEnable (&uiw->items [count].label);
+      } else {
+        uiWidgetDisable (&uiw->items [count].label);
+      }
+    }
+
+    switch (tagdefs [tagkey].editType) {
+      case ET_ENTRY: {
+        if (state) {
+          uiEntryEnable (uiw->items [count].entry);
+        } else {
+          uiEntryDisable (uiw->items [count].entry);
+        }
+        break;
+      }
+      case ET_COMBOBOX: {
+        if (tagkey == TAG_DANCE) {
+          if (state) {
+            uidanceEnable (uiw->items [count].uidance);
+          } else {
+            uidanceDisable (uiw->items [count].uidance);
+          }
+        }
+        if (tagkey == TAG_GENRE) {
+          if (state) {
+            uigenreEnable (uiw->items [count].uigenre);
+          } else {
+            uigenreDisable (uiw->items [count].uigenre);
+          }
+        }
+        break;
+      }
+      case ET_SPINBOX_TIME: {
+        if (state) {
+          uiSpinboxEnable (uiw->items [count].spinbox);
+        } else {
+          uiSpinboxDisable (uiw->items [count].spinbox);
+        }
+        break;
+      }
+      case ET_SPINBOX_TEXT: {
+        if (tagkey == TAG_FAVORITE) {
+          if (state) {
+            uifavoriteEnable (uiw->items [count].uifavorite);
+          } else {
+            uifavoriteDisable (uiw->items [count].uifavorite);
+          }
+        }
+        if (tagkey == TAG_DANCELEVEL) {
+          if (state) {
+            uilevelEnable (uiw->items [count].uilevel);
+          } else {
+            uilevelDisable (uiw->items [count].uilevel);
+          }
+        }
+        if (tagkey == TAG_DANCERATING) {
+          if (state) {
+            uiratingEnable (uiw->items [count].uirating);
+          } else {
+            uiratingDisable (uiw->items [count].uirating);
+          }
+        }
+        if (tagkey == TAG_STATUS) {
+          if (state) {
+            uistatusEnable (uiw->items [count].uistatus);
+          } else {
+            uistatusDisable (uiw->items [count].uistatus);
+          }
+        }
+        break;
+      }
+      case ET_SPINBOX:
+      case ET_SCALE: {
+        if (state) {
+          uiWidgetEnable (&uiw->items [count].uiwidget);
+        } else {
+          uiWidgetDisable (&uiw->items [count].uiwidget);
+        }
+        break;
+      }
+      case ET_LABEL: {
+        break;
+      }
+      case ET_NA: {
+        break;
+      }
+    } /* switch on item type */
+  } /* for each displayed item */
+}
+
+void
+uisongeditClearChanged (uisongedit_t *uisongedit, int editallflag)
+{
+  se_internal_t *uiw = NULL;
+
+  logProcBegin (LOG_PROC, "uisongeditClearChanged");
+  uiw = uisongedit->uiWidgetData;
+  for (int count = 0; count < uiw->itemcount; ++count) {
+    int tagkey = uiw->items [count].tagkey;
+
+    if (uiw->items [count].chgind == NULL) {
+      continue;
+    }
+    if (editallflag == UISONGEDIT_EDITALL) {
+      if (tagdefs [tagkey].allEdit) {
+        continue;
+      }
+    }
+    uichgindMarkNormal (uiw->items [count].chgind);
+    uiw->items [count].changed = false;
+    uiw->items [count].lastchanged = false;
+  }
+  uiw->changed = 0;
+  logProcEnd (LOG_PROC, "uisongeditClearChanged", "");
+}
+
+
 /* internal routines */
 
 static void
@@ -890,6 +1040,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
     uiCreateColonLabel (&uiwidget, tagdefs [tagkey].displayname);
     uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (sg, &uiwidget);
+    uiutilsUIWidgetCopy (&uiw->items [uiw->itemcount].label, &uiwidget);
   }
 
   switch (tagdefs [tagkey].editType) {
@@ -1142,25 +1293,6 @@ uisongeditScaleDisplayCallback (void *udata, double value)
   return UICB_CONT;
 }
 
-static void
-uisongeditClearChanged (uisongedit_t *uisongedit)
-{
-  se_internal_t *uiw = NULL;
-
-  logProcBegin (LOG_PROC, "uisongeditClearChanged");
-  uiw = uisongedit->uiWidgetData;
-  for (int count = 0; count < uiw->itemcount; ++count) {
-    if (uiw->items [count].chgind == NULL) {
-      continue;
-    }
-    uichgindMarkNormal (uiw->items [count].chgind);
-    uiw->items [count].changed = false;
-    uiw->items [count].lastchanged = false;
-  }
-  uiw->changed = 0;
-  logProcEnd (LOG_PROC, "uisongeditClearChanged", "");
-}
-
 static bool
 uisongeditSaveCallback (void *udata)
 {
@@ -1399,7 +1531,7 @@ uisongeditFirstSelection (void *udata)
   logProcBegin (LOG_PROC, "uisongeditFirstSelection");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: first");
   uisongselFirstSelection (uisongedit->uisongsel);
-  uisongeditClearChanged (uisongedit);
+  uisongeditClearChanged (uisongedit, UISONGEDIT_ALL);
   logProcEnd (LOG_PROC, "uisongeditFirstSelection", "");
   return UICB_CONT;
 }
@@ -1412,7 +1544,7 @@ uisongeditPreviousSelection (void *udata)
   logProcBegin (LOG_PROC, "uisongeditPreviousSelection");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: previous");
   uisongselPreviousSelection (uisongedit->uisongsel);
-  uisongeditClearChanged (uisongedit);
+  uisongeditClearChanged (uisongedit, UISONGEDIT_ALL);
   logProcEnd (LOG_PROC, "uisongeditPreviousSelection", "");
   return UICB_CONT;
 }
@@ -1425,7 +1557,7 @@ uisongeditNextSelection (void *udata)
   logProcBegin (LOG_PROC, "uisongeditNextSelection");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: next");
   uisongselNextSelection (uisongedit->uisongsel);
-  uisongeditClearChanged (uisongedit);
+  uisongeditClearChanged (uisongedit, UISONGEDIT_ALL);
   logProcEnd (LOG_PROC, "uisongeditNextSelection", "");
   return UICB_CONT;
 }
