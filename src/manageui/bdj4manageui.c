@@ -252,6 +252,7 @@ typedef struct {
   bool            importm3uactive : 1;
   bool            exportm3uactive : 1;
   bool            enablerestoreorig : 1;
+  bool            ineditall : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -439,6 +440,7 @@ main (int argc, char *argv[])
   manage.importm3uactive = false;
   manage.exportm3uactive = false;
   manage.enablerestoreorig = false;
+  manage.ineditall = false;
   manage.applyadjstate = BDJ4_STATE_OFF;
   manage.impitunesstate = BDJ4_STATE_OFF;
   manage.uiaa = NULL;
@@ -1618,8 +1620,9 @@ manageEditAllStart (void *udata)
   uisongeditLoadData (manage->mmsongedit, song, manage->songeditdbidx,
       UISONGEDIT_EDITALL);
   uisongeditClearChanged (manage->mmsongedit, UISONGEDIT_EDITALL);
-
   uisongeditEditAllSetFields (manage->mmsongedit, UISONGEDIT_EDITALL_ON);
+  manage->ineditall = true;
+
   return UICB_CONT;
 }
 
@@ -1628,7 +1631,13 @@ manageEditAllApply (void *udata)
 {
   manageui_t  *manage = udata;
 
+  if (! manage->ineditall) {
+    return UICB_STOP;
+  }
+  uisongeditEditAllApply (manage->mmsongedit);
   uisongeditEditAllSetFields (manage->mmsongedit, UISONGEDIT_EDITALL_OFF);
+  manage->ineditall = false;
+
   return UICB_CONT;
 }
 
@@ -1638,13 +1647,18 @@ manageEditAllCancel (void *udata)
   manageui_t  *manage = udata;
   song_t      *song;
 
+  if (! manage->ineditall) {
+    return UICB_STOP;
+  }
+
   /* revert any changes */
   song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
   uisongeditLoadData (manage->mmsongedit, song, manage->songeditdbidx,
       UISONGEDIT_ALL);
   uisongeditClearChanged (manage->mmsongedit, UISONGEDIT_ALL);
-
   uisongeditEditAllSetFields (manage->mmsongedit, UISONGEDIT_EDITALL_OFF);
+  manage->ineditall = false;
+
   return UICB_CONT;
 }
 

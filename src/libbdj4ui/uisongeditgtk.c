@@ -130,6 +130,7 @@ typedef struct uisongeditgtk {
   int                 speedidx;
   int                 lastspeed;
   bool                checkchanged : 1;
+  bool                ineditallapply : 1;
 } se_internal_t;
 
 static void uisongeditCheckChanged (uisongedit_t *uisongedit);
@@ -143,6 +144,7 @@ static void uisongeditAddSpinboxTime (uisongedit_t *uisongedit, UIWidget *hbox, 
 static void uisongeditAddScale (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
 static bool uisongeditScaleDisplayCallback (void *udata, double value);
 static bool uisongeditSaveCallback (void *udata);
+static bool uisongeditSave (void *udata, nlist_t *chglist);
 static int  uisongeditGetCheckValue (uisongedit_t *uisongedit, int tagkey);
 static nlist_t * uisongeditGetChangedData (uisongedit_t *uisongedit);
 static bool uisongeditFirstSelection (void *udata);
@@ -182,6 +184,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
     uiw->callbacks [i] = NULL;
   }
   uiw->checkchanged = false;
+  uiw->ineditallapply = false;
 
   uiutilsUIWidgetInit (&uiw->vbox);
   uiutilsUIWidgetInit (&uiw->audioidImg);
@@ -513,8 +516,10 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
       continue;
     }
     data = uisongGetDisplay (song, tagkey, &val, &dval);
-    uiw->items [count].changed = false;
-    uiw->items [count].lastchanged = false;
+    if (! uiw->ineditallapply) {
+      uiw->items [count].changed = false;
+      uiw->items [count].lastchanged = false;
+    }
 
     switch (tagdefs [tagkey].editType) {
       case ET_ENTRY: {
@@ -769,6 +774,33 @@ uisongeditClearChanged (uisongedit_t *uisongedit, int editallflag)
   logProcEnd (LOG_PROC, "uisongeditClearChanged", "");
 }
 
+bool
+uisongeditEditAllApply (uisongedit_t *uisongedit)
+{
+  se_internal_t   *uiw = NULL;
+  nlist_t         *chglist;
+  dbidx_t         lastdbidx;
+
+  logProcBegin (LOG_PROC, "uisongeditEditAllApply");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: edit-all apply");
+  uiw = uisongedit->uiWidgetData;
+
+  chglist = uisongeditGetChangedData (uisongedit);
+
+  uiw->ineditallapply = true;
+  lastdbidx = -1;
+  while (uiw->dbidx != lastdbidx) {
+    uisongeditSave (uisongedit, chglist);
+    lastdbidx = uiw->dbidx;
+    uisongselNextSelection (uisongedit->uisongsel);
+  }
+  nlistFree (chglist);
+  uisongeditClearChanged (uisongedit, UISONGEDIT_ALL);
+  uiw->ineditallapply = false;
+
+  logProcEnd (LOG_PROC, "uisongeditEditAllApply", "");
+  return UICB_CONT;
+}
 
 /* internal routines */
 
@@ -1286,11 +1318,18 @@ static bool
 uisongeditSaveCallback (void *udata)
 {
   uisongedit_t    *uisongedit = udata;
+
+  return uisongeditSave (uisongedit, NULL);
+}
+
+static bool
+uisongeditSave (void *udata, nlist_t *chglist)
+{
+  uisongedit_t    *uisongedit = udata;
   se_internal_t   *uiw = NULL;
   long            nval;
   char            tbuff [200];
   bool            valid = false;
-  nlist_t         *chglist;
 
   logProcBegin (LOG_PROC, "uisongeditSaveCallback");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: song edit: save");
@@ -1300,7 +1339,9 @@ uisongeditSaveCallback (void *udata)
   uiLabelSetText (uisongedit->statusMsg, "");
 
   /* do some validations */
-  {
+  /* this is not necessary with an edit-all-apply */
+  /* as the validation checks currently are only for non-edit-all fields */
+  if (chglist == NULL) {
     long      songstart;
     long      songend;
     long      dur;
@@ -1360,7 +1401,9 @@ uisongeditSaveCallback (void *udata)
     return UICB_CONT;
   }
 
-  chglist = uisongeditGetChangedData (uisongedit);
+  if (! uiw->ineditallapply) {
+    chglist = uisongeditGetChangedData (uisongedit);
+  }
 
   for (int count = 0; count < uiw->itemcount; ++count) {
     int   chkvalue;
@@ -1427,10 +1470,11 @@ uisongeditSaveCallback (void *udata)
     }
   }
 
-  nlistFree (chglist);
-
-  /* reset the changed flags and indicators */
-  uisongeditClearChanged (uisongedit, UISONGEDIT_ALL);
+  if (! uiw->ineditallapply) {
+    nlistFree (chglist);
+    /* reset the changed flags and indicators */
+    uisongeditClearChanged (uisongedit, UISONGEDIT_ALL);
+  }
 
   if (uisongedit->savecb != NULL) {
     /* the callback re-loads the song editor */

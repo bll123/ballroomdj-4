@@ -58,6 +58,7 @@ void  uisongeditSetBPMValue (uisongedit_t *uisongedit, const char *args);
 void  uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active);
 void  uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag);
 void  uisongeditClearChanged (uisongedit_t *uisongedit, int editallflag);
+bool  uisongeditEditAllApply (uisongedit_t *uisongedit);
 
 #endif /* INC_UISONGEDIT_H */
 
