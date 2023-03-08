@@ -35,7 +35,7 @@ static void confuiUpdateMusicQList (confuigui_t *gui);
 void
 confuiInitMusicQs (confuigui_t *gui)
 {
-  gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].displist = NULL;
+  gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].displist = NULL;
 
   confuiSetMusicQList (gui);
 }
@@ -59,8 +59,8 @@ confuiBuildUIMusicQs (confuigui_t *gui)
 
   /* CONTEXT: (noun) configuration: queue: select which queue to configure */
   confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Queue_noun"),
-      CONFUI_SPINBOX_PLAYER_QUEUE, -1, CONFUI_OUT_NUM,
-      gui->uiitem [CONFUI_SPINBOX_PLAYER_QUEUE].listidx, confuiMusicQChg);
+      CONFUI_SPINBOX_MUSIC_QUEUE, -1, CONFUI_OUT_NUM,
+      gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].listidx, confuiMusicQChg);
 
   /* CONTEXT: (noun) configuration: queue: the name of the music queue */
   confuiMakeItemEntry (gui, &vbox, &sg, _("Queue Name"),
@@ -189,7 +189,7 @@ confuiMusicQChg (void *udata)
   /* toggle switches do not display correctly otherwise */
   gui->inchange = true;
 
-  widx = CONFUI_SPINBOX_PLAYER_QUEUE;
+  widx = CONFUI_SPINBOX_MUSIC_QUEUE;
   oselidx = gui->uiitem [widx].listidx;
   nselidx = uiSpinboxTextGetValue (gui->uiitem [widx].spinbox);
   if (oselidx != nselidx) {
@@ -260,7 +260,7 @@ confuiSetMusicQList (confuigui_t *gui)
   nlist_t     *tlist;
   int         widx;
 
-  widx = CONFUI_SPINBOX_PLAYER_QUEUE;
+  widx = CONFUI_SPINBOX_MUSIC_QUEUE;
 
   tlist = nlistAlloc ("queue-name", LIST_ORDERED, NULL);
   gui->uiitem [widx].listidx = 0;
@@ -281,7 +281,7 @@ confuiUpdateMusicQList (confuigui_t *gui)
   char        *val;
   size_t      maxWidth = 10;
 
-  widx = CONFUI_SPINBOX_PLAYER_QUEUE;
+  widx = CONFUI_SPINBOX_MUSIC_QUEUE;
   if (gui->uiitem [widx].spinbox == NULL) {
     return;
   }

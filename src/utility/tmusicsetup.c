@@ -12,6 +12,7 @@
 #include <getopt.h>
 #include <unistd.h>
 
+#include "audiofile.h"
 #include "audiotag.h"
 #include "bdjstring.h"
 #include "dance.h"

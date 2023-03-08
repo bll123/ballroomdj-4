@@ -1,0 +1,19 @@
+# audio tag interfaces
+# 2022-3-7
+version
+..1
+count
+..1
+KEY
+..0
+INTFC
+..libatimutagen
+DESC
+..Mutagen
+#KEY
+#..1
+#INTFC
+#..libatitaglib
+#DESC
+#..taglib
+

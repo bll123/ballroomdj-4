@@ -38,7 +38,7 @@ void      volumeDisconnect (void);
 void      volumeCleanup (void **udata);
 
 #if defined (__cplusplus) || defined (c_plusplus)
-}
+} /* extern C */
 #endif
 
 #endif /* INC_VOLUME */
