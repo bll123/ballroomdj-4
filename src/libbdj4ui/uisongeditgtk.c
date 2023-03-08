@@ -354,12 +354,6 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiCreateLabel (&uiwidget, "");
-  uiBoxPackEnd (&hbox, &uiwidget);
-  uiWidgetSetMarginEnd (&uiwidget, 6);
-  uiWidgetSetClass (&uiwidget, DARKACCENT_CLASS);
-  uiutilsUIWidgetCopy (&uiw->editalldisp, &uiwidget);
-
   uiw->callbacks [UISONGEDIT_CB_SAVE] = callbackInit (
       uisongeditSaveCallback, uisongedit, "songedit: save");
   uibutton = uiCreateButton (uiw->callbacks [UISONGEDIT_CB_SAVE],
@@ -368,6 +362,12 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiw->buttons [UISONGEDIT_BUTTON_SAVE] = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
+
+  uiCreateLabel (&uiwidget, "");
+  uiBoxPackEnd (&hbox, &uiwidget);
+  uiWidgetSetMarginEnd (&uiwidget, 6);
+  uiWidgetSetClass (&uiwidget, DARKACCENT_CLASS);
+  uiutilsUIWidgetCopy (&uiw->editalldisp, &uiwidget);
 
   /* audio-identification logo, modified indicator, */
   /* copy button, file label, filename */
@@ -849,6 +849,9 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
           if (tagkey == TAG_SPEEDADJUSTMENT) {
             dval = (double) val;
             if (dval < 0.0) { dval = 0.0; }
+            /* for the purposes of check-changed processing, check */
+            /* speed adjustment as a double */
+            chkvalue = SONGEDIT_CHK_DOUBLE;
           }
           ndval = uiScaleGetValue (&uiw->items [count].uiwidget);
           if (ndval == LIST_DOUBLE_INVALID) { ndval = 0.0; }
