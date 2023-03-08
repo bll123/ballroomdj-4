@@ -659,18 +659,16 @@ void
 uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active)
 {
   uimusicqgtk_t *uiw;
-  UIWidget      *uiwidgetp;
   int           ci;
 
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
-  uiwidgetp = uiButtonGetUIWidget (uiw->buttons [UIMUSICQ_BUTTON_PLAY]);
 
   /* if the player is active, disable the button */
   if (active) {
-    uiWidgetDisable (uiwidgetp);
+    uiButtonDisable (uiw->buttons [UIMUSICQ_BUTTON_PLAY]);
   } else {
-    uiWidgetEnable (uiwidgetp);
+    uiButtonEnable (uiw->buttons [UIMUSICQ_BUTTON_PLAY]);
   }
 }
 

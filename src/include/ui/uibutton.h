@@ -24,5 +24,7 @@ void uiButtonSetReliefNone (uibutton_t *uibutton);
 void uiButtonSetFlat (uibutton_t *uibutton);
 void uiButtonSetRepeat (uibutton_t *uibutton, int repeatms);
 void uiButtonCheckRepeat (uibutton_t *uibutton);
+void uiButtonDisable (uibutton_t *uibutton);
+void uiButtonEnable (uibutton_t *uibutton);
 
 #endif /* INC_UIBUTTON_H */

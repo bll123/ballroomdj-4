@@ -1622,7 +1622,7 @@ manageEditAllStart (void *udata)
       UISONGEDIT_EDITALL);
   uisongeditClearChanged (manage->mmsongedit, UISONGEDIT_EDITALL);
 
-  uisongeditEditAllSetFields (manage->mmsongedit, false);
+  uisongeditEditAllSetFields (manage->mmsongedit, UISONGEDIT_EDITALL_ON);
   return UICB_CONT;
 }
 
@@ -1631,7 +1631,7 @@ manageEditAllApply (void *udata)
 {
   manageui_t  *manage = udata;
 
-  uisongeditEditAllSetFields (manage->mmsongedit, true);
+  uisongeditEditAllSetFields (manage->mmsongedit, UISONGEDIT_EDITALL_OFF);
   return UICB_CONT;
 }
 
@@ -1647,7 +1647,7 @@ manageEditAllCancel (void *udata)
       UISONGEDIT_ALL);
   uisongeditClearChanged (manage->mmsongedit, UISONGEDIT_ALL);
 
-  uisongeditEditAllSetFields (manage->mmsongedit, true);
+  uisongeditEditAllSetFields (manage->mmsongedit, UISONGEDIT_EDITALL_OFF);
   return UICB_CONT;
 }
 

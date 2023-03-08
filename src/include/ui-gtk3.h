@@ -35,6 +35,8 @@ enum {
   SELECT_MULTIPLE = GTK_SELECTION_MULTIPLE,
   UICB_SUPPORTED = true,
   UICB_NOT_SUPPORTED = false,
+  UIWIDGET_DISABLE = false,
+  UIWIDGET_ENABLE = true,
 };
 
 typedef struct {

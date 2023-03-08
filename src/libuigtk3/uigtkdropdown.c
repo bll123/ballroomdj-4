@@ -329,25 +329,19 @@ uiDropDownSelectionSetStr (uidropdown_t *dropdown, const char *stridx)
 void
 uiDropDownDisable (uidropdown_t *dropdown)
 {
-  UIWidget  *uiwidgetp;
-
   if (dropdown == NULL) {
     return;
   }
-  uiwidgetp = uiButtonGetUIWidget (dropdown->button);
-  uiWidgetDisable (uiwidgetp);
+  uiButtonDisable (dropdown->button);
 }
 
 void
 uiDropDownEnable (uidropdown_t *dropdown)
 {
-  UIWidget  *uiwidgetp;
-
   if (dropdown == NULL) {
     return;
   }
-  uiwidgetp = uiButtonGetUIWidget (dropdown->button);
-  uiWidgetEnable (uiwidgetp);
+  uiButtonEnable (dropdown->button);
 }
 
 char *

@@ -813,16 +813,14 @@ void
 uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active)
 {
   uisongselgtk_t  *uiw;
-  UIWidget        *uiwidgetp;
 
   uiw = uisongsel->uiWidgetData;
 
-  uiwidgetp = uiButtonGetUIWidget (uiw->buttons [SONGSEL_BUTTON_PLAY]);
   /* if the player is active, disable the button */
   if (active) {
-    uiWidgetDisable (uiwidgetp);
+    uiButtonDisable (uiw->buttons [SONGSEL_BUTTON_PLAY]);
   } else {
-    uiWidgetEnable (uiwidgetp);
+    uiButtonEnable (uiw->buttons [SONGSEL_BUTTON_PLAY]);
   }
 }
 

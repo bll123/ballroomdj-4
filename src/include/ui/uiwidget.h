@@ -9,7 +9,7 @@
 #endif
 
 /* widget interface */
-void  uiWidgetDisable (UIWidget *uiwidget);
+void  uiWidgetSetState (UIWidget *uiwidget, int state);
 void  uiWidgetEnable (UIWidget *uiwidget);
 void  uiWidgetExpandHoriz (UIWidget *uiwidget);
 void  uiWidgetExpandVert (UIWidget *uiwidget);

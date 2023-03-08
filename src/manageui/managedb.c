@@ -362,12 +362,8 @@ manageDbClose (managedb_t *managedb)
 void
 manageDbResetButtons (managedb_t *managedb)
 {
-  UIWidget  *uiwidgetp;
-
-  uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
-  uiWidgetEnable (uiwidgetp);
-  uiwidgetp = uiButtonGetUIWidget (managedb->dbstop);
-  uiWidgetDisable (uiwidgetp);
+  uiButtonEnable (managedb->dbstart);
+  uiButtonDisable (managedb->dbstop);
   uiSpinboxEnable (managedb->dbspinbox);
 }
 
@@ -377,7 +373,6 @@ static bool
 manageDbStart (void *udata)
 {
   managedb_t  *managedb = udata;
-  UIWidget    *uiwidgetp;
   int         nval;
   char        *sval = NULL;
   const char  *targv [10];
@@ -385,10 +380,8 @@ manageDbStart (void *udata)
   char        tbuff [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db start");
-  uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
-  uiWidgetDisable (uiwidgetp);
-  uiwidgetp = uiButtonGetUIWidget (managedb->dbstop);
-  uiWidgetEnable (uiwidgetp);
+  uiButtonDisable (managedb->dbstart);
+  uiButtonEnable (managedb->dbstop);
   uiSpinboxDisable (managedb->dbspinbox);
 
   pathbldMakePath (tbuff, sizeof (tbuff),

@@ -215,6 +215,24 @@ uiButtonCheckRepeat (uibutton_t *uibutton)
   }
 }
 
+void
+uiButtonDisable (uibutton_t *uibutton)
+{
+  if (uibutton == NULL) {
+    return;
+  }
+  uiWidgetDisable (&uibutton->uibutton);
+}
+
+void
+uiButtonEnable (uibutton_t *uibutton)
+{
+  if (uibutton == NULL) {
+    return;
+  }
+  uiWidgetEnable (&uibutton->uibutton);
+}
+
 /* internal routines */
 
 static inline void

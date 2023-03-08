@@ -18,21 +18,12 @@
 /* widget interface */
 
 void
-uiWidgetDisable (UIWidget *uiwidget)
+uiWidgetSetState (UIWidget *uiwidget, int state)
 {
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
   }
-  gtk_widget_set_sensitive (uiwidget->widget, FALSE);
-}
-
-void
-uiWidgetEnable (UIWidget *uiwidget)
-{
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
-    return;
-  }
-  gtk_widget_set_sensitive (uiwidget->widget, TRUE);
+  gtk_widget_set_sensitive (uiwidget->widget, state);
 }
 
 void
