@@ -34,3 +34,4 @@ install (TARGETS
   libatitaglib
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+

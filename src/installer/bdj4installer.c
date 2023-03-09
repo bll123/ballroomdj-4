@@ -1565,6 +1565,9 @@ installerMakeTarget (installer_t *installer)
       tp = strtok_r (NULL, "\r\n", &tokptr);
     }
     strlcat (installer->oldversion, ver, sizeof (installer->oldversion));
+    if (strcmp (rlvl, "production") == 0) {
+      rlvl = "";
+    }
     if (*rlvl) {
       strlcat (installer->oldversion, "-", sizeof (installer->oldversion));
       strlcat (installer->oldversion, rlvl, sizeof (installer->oldversion));

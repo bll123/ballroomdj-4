@@ -209,7 +209,7 @@ function checkInstallation {
           if [[ $fin == T && $1 == $currvers ]]; then
             chk=$(($chk+1))
           else
-            echo "  incorrect version"
+            echo "  incorrect version $1 $currvers"
           fi
         fi
         ;;

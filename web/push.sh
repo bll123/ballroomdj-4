@@ -70,7 +70,7 @@ if [[ $tag == linux ]]; then
   ver=$(install/${fn}.sh --version)
   sshpass -e rsync -v -e ssh install/${fn}.sh \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/${fn}-v${ver}.sh
-  fn=linux-uinstall-bdj4
+  fn=linux-uninstall-bdj4
   sshpass -e rsync -v -e ssh install/${fn}.sh \
       bll123@frs.sourceforge.net:/home/frs/project/ballroomdj4/
 

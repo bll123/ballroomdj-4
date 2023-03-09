@@ -8,20 +8,14 @@ fi
 target=$1
 
 install_name_tool \
-  -change "@rpath/libbdj4.dylib" \
-    "@executable_path/libbdj4.dylib" \
-  -change "@rpath/libbdj4common.dylib" \
-    "@executable_path/libbdj4common.dylib" \
-  -change "@rpath/libbdj4basic.dylib" \
-    "@executable_path/libbdj4basic.dylib" \
-  -change "@rpath/libbdj4pli.dylib" \
-    "@executable_path/libbdj4pli.dylib" \
-  -change "@rpath/libbdj4ui.dylib" \
-    "@executable_path/libbdj4ui.dylib" \
-  -change "@rpath/libbdj4vol.dylib" \
-    "@executable_path/libbdj4vol.dylib" \
-  -change "@rpath/libuigtk3.dylib" \
-    "@executable_path/libuigtk3.dylib" \
+  -change "@rpath/libbdj4ati.dylib" "@executable_path/libbdj4ati.dylib" \
+  -change "@rpath/libbdj4basic.dylib" "@executable_path/libbdj4basic.dylib" \
+  -change "@rpath/libbdj4common.dylib" "@executable_path/libbdj4common.dylib" \
+  -change "@rpath/libbdj4.dylib" "@executable_path/libbdj4.dylib" \
+  -change "@rpath/libbdj4pli.dylib" "@executable_path/libbdj4pli.dylib" \
+  -change "@rpath/libbdj4ui.dylib" "@executable_path/libbdj4ui.dylib" \
+  -change "@rpath/libbdj4vol.dylib" "@executable_path/libbdj4vol.dylib" \
+  -change "@rpath/libuigtk3.dylib" "@executable_path/libuigtk3.dylib" \
   $target
 
 # /Volumes/Users/bll/bdj4/packages/icu/lib/libicudata.72.dylib
