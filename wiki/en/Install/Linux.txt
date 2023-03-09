@@ -15,14 +15,14 @@ $HOME/BDJ4 folder
 This step only needs to be run once, not for every installation or
 update.
 
-Download the linux-pre-install.sh script from sourceforge.
+Download the linux-pre-install-v3.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
 Open a terminal and run this script using the following command:
 
 ~~~
-bash linux-pre-install.sh
+bash linux-pre-install-v3.sh
 ~~~
 
 This script performs the following actions:
@@ -71,4 +71,4 @@ button and wait for the __Installation Completed__ message.
 <br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Linux__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-24 06:50:09; BDJ4 version 4.1.1-beta)_
+<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_

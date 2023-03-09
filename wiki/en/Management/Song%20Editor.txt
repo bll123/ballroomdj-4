@@ -170,4 +170,4 @@ song editor is:
  Volume Adjustment|BDJ4|
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-07 06:08:10; BDJ4 version 4.2.0-beta)_
+<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_

@@ -49,4 +49,4 @@ location, choose the new location (BDJ3Temp) for BallroomDJ&nbsp;3.
 original BallroomDJ installation is untouched and can still be used.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-02-24 06:23:43; BDJ4 version 4.1.1-beta)_
+<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_

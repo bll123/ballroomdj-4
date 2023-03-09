@@ -4,13 +4,18 @@
 
 <!--
 
-**4.3.0 beta 2023-2---**
-* New Features:
-    * Song Editor: Implement batch editing.
-* Internal:
-    * Code cleanup.
+**4.3.1 2023-2---**
 
 -->
+
+**4.3.0 2023-3-9**
+
+* New Features:
+    * Song Editor: Implement batch editing.
+* Changes:
+    * Configuration: Display Settings: Improve user experience for song editor display.
+* Internal:
+    * Code cleanup.
 
 **4.2.0 beta 2023-3-6**
 
@@ -283,4 +288,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-06 11:40:42; BDJ4 version 4.2.0-beta)_
+<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
