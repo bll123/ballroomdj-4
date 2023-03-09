@@ -16,12 +16,14 @@ target_link_libraries (libbdj4ati
 
 add_library (libatimutagen SHARED atimutagen.c)
 target_link_libraries (libatimutagen
+  libbdj4basic
   libbdj4common
   m
 )
 
 add_library (libatitaglib SHARED atitaglib.cpp)
 target_link_libraries (libatitaglib
+  libbdj4basic
   libbdj4common
   m
 )

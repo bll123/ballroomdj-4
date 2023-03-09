@@ -41,13 +41,17 @@ static int  audiotagTagCheck (int writetags, int tagtype, const char *tag, int r
 static void audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
     nlist_t *datalist, int totkey, int tagkey);
 static const char * audiotagTagLookup (int tagtype, const char *val);
+static const char * audiotagTagName (int tagkey);
+static const tagaudiotag_t *audiotagRawLookup (int tagkey, int tagtype);
 
 void
 audiotagInit (void)
 {
   at = mdmalloc (sizeof (audiotag_t));
   at->ati = atiInit (bdjoptGetStr (OPT_M_AUDIOTAG_INTFC),
-      audiotagTagLookup, audiotagTagCheck);
+      bdjoptGetNum (OPT_G_WRITETAGS),
+      audiotagTagLookup, audiotagTagCheck,
+      audiotagTagName, audiotagRawLookup);
 
   for (int i = 0; i < TAG_TYPE_MAX; ++i) {
     at->tagTypeLookup [i] = NULL;
@@ -321,7 +325,78 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 static void
 audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
 {
+  slistidx_t    iteridx;
+  const char    *tag;
+
   atiParseTags (at->ati, tagdata, data, tagtype, rewrite);
+
+  slistStartIterator (tagdata, &iteridx);
+  while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
+    /* some old audio file tag handling */
+    if (strcmp (tag, tagdefs [TAG_DURATION].tag) == 0) {
+      logMsg (LOG_DBG, LOG_DBUPDATE, "rewrite: duration");
+      *rewrite |= AF_REWRITE_DURATION;
+    }
+
+    /* old songend/songstart handling */
+    if (strcmp (tag, tagdefs [TAG_SONGSTART].tag) == 0 ||
+        strcmp (tag, tagdefs [TAG_SONGEND].tag) == 0) {
+      const char  *tagval;
+      char        *p;
+      char        *tokstr;
+      char        *tmp;
+      char        pbuff [40];
+      double      tm = 0.0;
+
+      tagval = slistGetStr (tagdata, tag);
+      if (strstr (tagval, ":") != NULL) {
+        tmp = mdstrdup (tagval);
+        p = strtok_r (tmp, ":", &tokstr);
+        if (p != NULL) {
+          tm += atof (p) * 60.0;
+          p = strtok_r (NULL, ":", &tokstr);
+          tm += atof (p);
+          tm *= 1000;
+          snprintf (pbuff, sizeof (pbuff), "%.0f", tm);
+          slistSetStr (tagdata, tag, pbuff);
+        }
+        mdfree (tmp);
+      }
+    }
+
+    /* old volumeadjustperc handling */
+    if (strcmp (tag, tagdefs [TAG_VOLUMEADJUSTPERC].tag) == 0) {
+      const char  *tagval;
+      const char  *radix;
+      char        *tmp;
+      char        *p;
+      char        pbuff [40];
+      double      tm = 0.0;
+
+      tagval = slistGetStr (tagdata, tag);
+      radix = sysvarsGetStr (SV_LOCALE_RADIX);
+
+      /* the BDJ3 volume adjust percentage is a double */
+      /* with or without a decimal point */
+      /* convert it to BDJ4 style */
+      /* this will fail for large BDJ3 values w/no decimal */
+      if (strstr (tagval, ".") != NULL || strlen (tagval) <= 3) {
+        tmp = mdstrdup (tagval);
+        p = strstr (tmp, ".");
+        if (p != NULL) {
+          if (radix != NULL) {
+            *p = *radix;
+          }
+        }
+        tm = atof (tagval);
+        tm /= 10.0;
+        tm *= DF_DOUBLE_MULT;
+        snprintf (pbuff, sizeof (pbuff), "%.0f", tm);
+        slistSetStr (tagdata, tag, pbuff);
+        mdfree (tmp);
+      }
+    }
+  }
 }
 
 /*
@@ -447,6 +522,8 @@ audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
   nlistSetStr (datalist, totkey, newvalue);
 }
 
+/* returns the tag name given the tagtype specific raw name */
+/* the atimutagen library needs this process */
 static const char *
 audiotagTagLookup (int tagtype, const char *val)
 {
@@ -454,4 +531,20 @@ audiotagTagLookup (int tagtype, const char *val)
 
   tagname = slistGetStr (at->tagTypeLookup [tagtype], val);
   return tagname;
+}
+
+/* returns the tag name given the tag identifier constant */
+static const char *
+audiotagTagName (int tagkey)
+{
+  const char  *tagname;
+
+  tagname = tagdefs [tagkey].tag;
+  return tagname;
+}
+
+static const tagaudiotag_t *
+audiotagRawLookup (int tagkey, int tagtype)
+{
+  return &tagdefs [tagkey].audiotags [tagtype];
 }

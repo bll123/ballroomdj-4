@@ -13,30 +13,28 @@
 #include "ati.h"
 #include "audiofile.h"
 #include "bdj4.h"
-#include "bdjopt.h"
-#include "pathbld.h"
 #include "dylib.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "pathbld.h"
 #include "slist.h"
 #include "sysvars.h"
-#include "tagdef.h"
-#include "volsink.h"
 
 typedef struct ati {
   dlhandle_t        *dlHandle;
-  atidata_t         *(*atiiInit) (const char *, int, taglookup_t, tagcheck_t);
+  atidata_t         *(*atiiInit) (const char *, int, taglookup_t, tagcheck_t, tagname_t, audiotaglookup_t);
   void              (*atiiFree) (atidata_t *atidata);
   char              *(*atiiReadTags) (atidata_t *atidata, const char *ffn);
   void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, char *data, int tagtype, int *rewrite);
   int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
   atidata_t         *atidata;
-  taglookup_t       tagLookup;
 } ati_t;
 
 ati_t *
-atiInit (const char *atipkg, taglookup_t tagLookup, tagcheck_t tagCheck)
+atiInit (const char *atipkg, int writetags,
+    taglookup_t tagLookup, tagcheck_t tagCheck,
+    tagname_t tagName, audiotaglookup_t audioTagLookup)
 {
   ati_t     *ati;
   char      dlpath [MAXPATHLEN];
@@ -67,9 +65,8 @@ atiInit (const char *atipkg, taglookup_t tagLookup, tagcheck_t tagCheck)
 #pragma clang diagnostic pop
 
   if (ati->atiiInit != NULL) {
-    ati->atidata = ati->atiiInit (atipkg,
-        bdjoptGetNum (OPT_G_WRITETAGS),
-        tagLookup, tagCheck);
+    ati->atidata = ati->atiiInit (atipkg, writetags,
+        tagLookup, tagCheck, tagName, audioTagLookup);
   }
   return ati;
 }
@@ -101,79 +98,8 @@ void
 atiParseTags (ati_t *ati, slist_t *tagdata,
     char *data, int tagtype, int *rewrite)
 {
-  slistidx_t    iteridx;
-  const char    *tag;
-
   if (ati != NULL && ati->atiiParseTags != NULL) {
     ati->atiiParseTags (ati->atidata, tagdata, data, tagtype, rewrite);
-  }
-
-  slistStartIterator (tagdata, &iteridx);
-  while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
-    /* some old audio file tag handling */
-    if (strcmp (tag, tagdefs [TAG_DURATION].tag) == 0) {
-      logMsg (LOG_DBG, LOG_DBUPDATE, "rewrite: duration");
-      *rewrite |= AF_REWRITE_DURATION;
-    }
-
-    /* old songend/songstart handling */
-    if (strcmp (tag, tagdefs [TAG_SONGSTART].tag) == 0 ||
-        strcmp (tag, tagdefs [TAG_SONGEND].tag) == 0) {
-      const char  *tagval;
-      char        *p;
-      char        *tokstr;
-      char        *tmp;
-      char        pbuff [40];
-      double      tm = 0.0;
-
-      tagval = slistGetStr (tagdata, tag);
-      if (strstr (tagval, ":") != NULL) {
-        tmp = mdstrdup (tagval);
-        p = strtok_r (tmp, ":", &tokstr);
-        if (p != NULL) {
-          tm += atof (p) * 60.0;
-          p = strtok_r (NULL, ":", &tokstr);
-          tm += atof (p);
-          tm *= 1000;
-          snprintf (pbuff, sizeof (pbuff), "%.0f", tm);
-          slistSetStr (tagdata, tag, pbuff);
-        }
-        mdfree (tmp);
-      }
-    }
-
-    /* old volumeadjustperc handling */
-    if (strcmp (tag, tagdefs [TAG_VOLUMEADJUSTPERC].tag) == 0) {
-      const char  *tagval;
-      const char  *radix;
-      char        *tmp;
-      char        *p;
-      char        pbuff [40];
-      double      tm = 0.0;
-
-      tagval = slistGetStr (tagdata, tag);
-      radix = sysvarsGetStr (SV_LOCALE_RADIX);
-
-      /* the BDJ3 volume adjust percentage is a double */
-      /* with or without a decimal point */
-      /* convert it to BDJ4 style */
-      /* this will fail for large BDJ3 values w/no decimal */
-      if (strstr (tagval, ".") != NULL || strlen (tagval) <= 3) {
-        tmp = mdstrdup (tagval);
-        p = strstr (tmp, ".");
-        if (p != NULL) {
-          if (radix != NULL) {
-            *p = *radix;
-          }
-        }
-        tm = atof (tagval);
-        tm /= 10.0;
-        tm *= DF_DOUBLE_MULT;
-        snprintf (pbuff, sizeof (pbuff), "%.0f", tm);
-        slistSetStr (tagdata, tag, pbuff);
-        mdfree (tmp);
-      }
-    }
   }
 
   return;

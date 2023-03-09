@@ -23,11 +23,13 @@
 #include "tagdef.h"
 
 typedef struct atidata {
-  const char    *python;
-  const char    *mutagen;
-  int           writetags;
-  taglookup_t   tagLookup;
-  tagcheck_t    tagCheck;
+  const char        *python;
+  const char        *mutagen;
+  int               writetags;
+  taglookup_t       tagLookup;
+  tagcheck_t        tagCheck;
+  tagname_t         tagName;
+  audiotaglookup_t  audioTagLookup;
 } atidata_t;
 
 static ssize_t globalCounter = 0;
@@ -39,8 +41,9 @@ static void atimutagenMakeTempFilename (char *fn, size_t sz);
 static int  atimutagenRunUpdate (const char *fn);
 
 atidata_t *
-atiiInit (const char *atipkg,
-    int writetags, taglookup_t tagLookup, tagcheck_t tagCheck)
+atiiInit (const char *atipkg, int writetags,
+    taglookup_t tagLookup, tagcheck_t tagCheck,
+    tagname_t tagName, audiotaglookup_t audioTagLookup)
 {
   atidata_t *atidata;
 
@@ -50,6 +53,8 @@ atiiInit (const char *atipkg,
   atidata->writetags = writetags;
   atidata->tagLookup = tagLookup;
   atidata->tagCheck = tagCheck;
+  atidata->tagName = tagName;
+  atidata->audioTagLookup = audioTagLookup;
 
   return atidata;
 }
@@ -68,7 +73,6 @@ atiiReadTags (atidata_t *atidata, const char *ffn)
   char        * data;
   const char  * targv [5];
   size_t      retsz;
-  int         rc;
 
   targv [0] = atidata->python;
   targv [1] = atidata->mutagen;
@@ -76,7 +80,7 @@ atiiReadTags (atidata_t *atidata, const char *ffn)
   targv [3] = NULL;
 
   data = mdmalloc (ATI_TAG_BUFF_SIZE);
-  rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, ATI_TAG_BUFF_SIZE, &retsz);
+  osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, ATI_TAG_BUFF_SIZE, &retsz);
   for (size_t i = 0; i < retsz; ++i) {
     if (data [i] == '\0') {
       data [i] = 'X';
@@ -153,7 +157,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
         tm = atof (p);
         tm *= 1000.0;
         snprintf (duration, sizeof (duration), "%.0f", tm);
-        slistSetStr (tagdata, tagdefs [TAG_DURATION].tag, duration);
+        slistSetStr (tagdata, atidata->tagName (TAG_DURATION), duration);
       } else {
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "no 'seconds' found");
       }
@@ -272,26 +276,26 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
         }
 
         /* track number / track total handling */
-        if (strcmp (tagname, tagdefs [TAG_TRACKNUMBER].tag) == 0) {
+        if (strcmp (tagname, atidata->tagName (TAG_TRACKNUMBER)) == 0) {
           int   tnum, ttot;
           atimutagenParseNumberPair (atidata, p, &tnum, &ttot);
 
           if (ttot != 0) {
             snprintf (pbuff, sizeof (pbuff), "%d", ttot);
-            slistSetStr (tagdata, tagdefs [TAG_TRACKTOTAL].tag, pbuff);
+            slistSetStr (tagdata, atidata->tagName (TAG_TRACKTOTAL), pbuff);
           }
           snprintf (pbuff, sizeof (pbuff), "%d", tnum);
           p = pbuff;
         }
 
         /* disc number / disc total handling */
-        if (strcmp (tagname, tagdefs [TAG_DISCNUMBER].tag) == 0) {
+        if (strcmp (tagname, atidata->tagName (TAG_DISCNUMBER)) == 0) {
           int   dnum, dtot;
           atimutagenParseNumberPair (atidata, p, &dnum, &dtot);
 
           if (dtot != 0) {
             snprintf (pbuff, sizeof (pbuff), "%d", dtot);
-            slistSetStr (tagdata, tagdefs [TAG_DISCTOTAL].tag, pbuff);
+            slistSetStr (tagdata, atidata->tagName (TAG_DISCTOTAL), pbuff);
           }
           snprintf (pbuff, sizeof (pbuff), "%d", dnum);
           p = pbuff;
@@ -316,9 +320,6 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
     int tagtype, int filetype)
 {
   int         rc = -1;
-  int         writetags;
-
-  writetags = atidata->writetags;
 
   if (tagtype == TAG_TYPE_MP3 && filetype == AFILE_TYPE_MP3) {
     rc = atimutagenWriteMP3Tags (atidata, ffn, updatelist, dellist, datalist);
@@ -365,14 +366,15 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
     slist_t *updatelist, slist_t *dellist,
     nlist_t *datalist)
 {
-  char        fn [MAXPATHLEN];
-  int         tagkey;
-  slistidx_t  iteridx;
-  char        *tag;
-  char        *value;
-  FILE        *ofh;
-  int         rc;
-  int         writetags;
+  char                fn [MAXPATHLEN];
+  int                 tagkey;
+  slistidx_t          iteridx;
+  char                *tag;
+  char                *value;
+  FILE                *ofh;
+  int                 rc;
+  int                 writetags;
+  const tagaudiotag_t *audiotag;
 
   logProcBegin (LOG_PROC, "atimutagenWriteMP3Tags");
   writetags = atidata->writetags;
@@ -381,9 +383,9 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
   ofh = fileopOpen (fn, "w");
   fprintf (ofh, "from mutagen.id3 import ID3,TXXX,UFID");
   for (int i = 0; i < TAG_KEY_MAX; ++i) {
-    if (tagdefs [i].audiotags [TAG_TYPE_MP3].tag != NULL &&
-        tagdefs [i].audiotags [TAG_TYPE_MP3].desc == NULL) {
-      fprintf (ofh, ",%s", tagdefs [i].audiotags [TAG_TYPE_MP3].tag);
+    audiotag = atidata->audioTagLookup (i, TAG_TYPE_MP3);
+    if (audiotag->tag != NULL && audiotag->desc == NULL) {
+      fprintf (ofh, ",%s", audiotag->tag);
     }
   }
   fprintf (ofh, ",ID3NoHeaderError\n");
@@ -407,13 +409,12 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
       continue;
     }
 
-    if (tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc != NULL) {
+    audiotag = atidata->audioTagLookup (tagkey, TAG_TYPE_MP3);
+    if (audiotag->desc != NULL) {
       fprintf (ofh, "  audio.delall('%s:%s')\n",
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc);
+          audiotag->base, audiotag->desc);
     } else {
-      fprintf (ofh, "  audio.delall('%s')\n",
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag);
+      fprintf (ofh, "  audio.delall('%s')\n", audiotag->tag);
     }
   }
 
@@ -426,15 +427,13 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
 
     value = slistGetStr (updatelist, tag);
 
+    audiotag = atidata->audioTagLookup (tagkey, TAG_TYPE_MP3);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write: %s %s",
-        tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
+        audiotag->tag, value);
     if (tagkey == TAG_RECORDING_ID) {
-      fprintf (ofh, "  audio.delall('%s:%s')\n",
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc);
+      fprintf (ofh, "  audio.delall('%s:%s')\n", audiotag->base, audiotag->desc);
       fprintf (ofh, "  audio.add(%s(encoding=3, owner=u'%s', data=b'%s'))\n",
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc, value);
+          audiotag->base, audiotag->desc, value);
     } else if (tagkey == TAG_TRACKNUMBER ||
         tagkey == TAG_DISCNUMBER) {
       if (value != NULL && *value) {
@@ -448,19 +447,18 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
         }
         if (tot != NULL) {
           fprintf (ofh, "  audio.add(%s(encoding=3, text=u'%s/%s'))\n",
-              tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value, tot);
+              audiotag->tag, value, tot);
         } else {
           fprintf (ofh, "  audio.add(%s(encoding=3, text=u'%s'))\n",
-              tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
+              audiotag->tag, value);
         }
       }
-    } else if (tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc != NULL) {
+    } else if (audiotag->desc != NULL) {
       fprintf (ofh, "  audio.add(%s(encoding=3, desc=u'%s', text=u'%s'))\n",
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].base,
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].desc, value);
+          audiotag->base, audiotag->desc, value);
     } else {
       fprintf (ofh, "  audio.add(%s(encoding=3, text=u'%s'))\n",
-          tagdefs [tagkey].audiotags [TAG_TYPE_MP3].tag, value);
+          audiotag->tag, value);
     }
   }
 
@@ -483,14 +481,15 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
     slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
     int tagtype, int filetype)
 {
-  char        fn [MAXPATHLEN];
-  int         tagkey;
-  slistidx_t  iteridx;
-  char        *tag;
-  char        *value;
-  FILE        *ofh;
-  int         rc;
-  int         writetags;
+  char                fn [MAXPATHLEN];
+  int                 tagkey;
+  slistidx_t          iteridx;
+  char                *tag;
+  char                *value;
+  FILE                *ofh;
+  int                 rc;
+  int                 writetags;
+  const tagaudiotag_t *audiotag;
 
   logProcBegin (LOG_PROC, "atimutagenWriteOtherTags");
   writetags = atidata->writetags;
@@ -534,8 +533,8 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
     if (tagkey < 0) {
       continue;
     }
-    fprintf (ofh, "audio.pop('%s')\n",
-        tagdefs [tagkey].audiotags [tagtype].tag);
+    audiotag = atidata->audioTagLookup (tagkey, tagtype);
+    fprintf (ofh, "audio.pop('%s')\n", audiotag->tag);
   }
 
   slistStartIterator (updatelist, &iteridx);
@@ -547,12 +546,12 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
 
     value = slistGetStr (updatelist, tag);
 
+    audiotag = atidata->audioTagLookup (tagkey, tagtype);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write: %s %s",
-        tagdefs [tagkey].audiotags [tagtype].tag, value);
+        audiotag->tag, value);
     if (tagtype == TAG_TYPE_MP4 &&
         tagkey == TAG_BPM) {
-      fprintf (ofh, "audio['%s'] = [%s]\n",
-          tagdefs [tagkey].audiotags [tagtype].tag, value);
+      fprintf (ofh, "audio['%s'] = [%s]\n", audiotag->tag, value);
     } else if (tagtype == TAG_TYPE_MP4 &&
         (tagkey == TAG_TRACKNUMBER ||
         tagkey == TAG_DISCNUMBER)) {
@@ -568,16 +567,13 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
         if (tot == NULL || *tot == '\0') {
           tot = "0";
         }
-        fprintf (ofh, "audio['%s'] = [(%s,%s)]\n",
-            tagdefs [tagkey].audiotags [tagtype].tag, value, tot);
+        fprintf (ofh, "audio['%s'] = [(%s,%s)]\n", audiotag->tag, value, tot);
       }
-    } else if (tagtype == TAG_TYPE_MP4 &&
-        tagdefs [tagkey].audiotags [tagtype].base != NULL) {
+    } else if (tagtype == TAG_TYPE_MP4 && audiotag->base != NULL) {
       fprintf (ofh, "audio['%s'] = bytes ('%s', 'UTF-8')\n",
-          tagdefs [tagkey].audiotags [tagtype].tag, value);
+          audiotag->tag, value);
     } else {
-      fprintf (ofh, "audio['%s'] = u'%s'\n",
-          tagdefs [tagkey].audiotags [tagtype].tag, value);
+      fprintf (ofh, "audio['%s'] = u'%s'\n", audiotag->tag, value);
     }
   }
 

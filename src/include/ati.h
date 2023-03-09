@@ -10,6 +10,7 @@ extern "C" {
 
 #include "nlist.h"
 #include "slist.h"
+#include "tagdef.h"
 
 enum {
   AFILE_TYPE_UNKNOWN,
@@ -29,14 +30,16 @@ typedef struct ati ati_t;
 typedef struct atidata atidata_t;
 typedef const char *(*taglookup_t)(int, const char *);
 typedef int (*tagcheck_t)(int, int, const char *, int);
+typedef const char *(*tagname_t)(int);
+typedef const tagaudiotag_t *(*audiotaglookup_t)(int, int);
 
-ati_t   *atiInit (const char *atipkg, taglookup_t tagLookup, tagcheck_t tagCheck);
+ati_t   *atiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck, tagname_t tagName, audiotaglookup_t tagRawLookup);
 void    atiFree (ati_t *ati);
 char    *atiReadTags (ati_t *ati, const char *ffn);
 void    atiParseTags (ati_t *ati, slist_t *tagdata, char *data, int tagtype, int *rewrite);
 int     atiWriteTags (ati_t *ati, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 
-atidata_t *atiiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck);
+atidata_t *atiiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck, tagname_t tagName, audiotaglookup_t tagRawLookup);
 void    atiiFree (atidata_t *atidata);
 char    *atiiReadTags (atidata_t *atidata, const char *ffn);
 void    atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data, int tagtype, int *rewrite);

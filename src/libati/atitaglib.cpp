@@ -21,14 +21,17 @@ extern "C" {
 #include "tagdef.h"
 
 typedef struct atidata {
-  int           writetags;
-  taglookup_t   tagLookup;
-  tagcheck_t    tagCheck;
+  int               writetags;
+  taglookup_t       tagLookup;
+  tagcheck_t        tagCheck;
+  tagname_t         tagName;
+  audiotaglookup_t  audioTagLookup;
 } atidata_t;
 
 atidata_t *
-atiiInit (const char *atipkg,
-    int writetags, taglookup_t tagLookup, tagcheck_t tagCheck)
+atiiInit (const char *atipkg, int writetags,
+    taglookup_t tagLookup, tagcheck_t tagCheck,
+    tagname_t tagName, audiotaglookup_t audioTagLookup)
 {
   atidata_t *atidata;
 
@@ -36,6 +39,8 @@ atiiInit (const char *atipkg,
   atidata->writetags = writetags;
   atidata->tagLookup = tagLookup;
   atidata->tagCheck = tagCheck;
+  atidata->tagName = tagName;
+  atidata->audioTagLookup = audioTagLookup;
 
   return atidata;
 }
