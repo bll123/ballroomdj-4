@@ -1242,6 +1242,9 @@ starterProcessSupport (void *udata)
 
   builddate = sysvarsGetStr (SV_BDJ4_BUILDDATE);
   rlslvl = sysvarsGetStr (SV_BDJ4_RELEASELEVEL);
+  if (strcmp (rlslvl, "production") == 0) {
+    rlslvl="";
+  }
   snprintf (tbuff, sizeof (tbuff), "%s %s (%s)",
       sysvarsGetStr (SV_BDJ4_VERSION), rlslvl, builddate);
   uiCreateLabel (&uiwidget, tbuff);

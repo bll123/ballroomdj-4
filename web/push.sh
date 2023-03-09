@@ -86,7 +86,8 @@ if [[ $tag == linux ]]; then
   echo "## updating version file"
   VERFILE=bdj4version.txt
   bd=$BUILDDATE
-  echo "$VERSION $RELEASELEVEL ($bd)" > $VERFILE
+  cvers=$(pkgcurrvers)
+  echo "$cvers ($bd)" > $VERFILE
   for f in $VERFILE; do
     sshpass -e rsync -e "$ssh" -aS \
         $f ${remuser}@${server}:${wwwpath}
