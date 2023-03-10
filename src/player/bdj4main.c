@@ -19,6 +19,7 @@
 #include <inttypes.h>
 #include <errno.h>
 #include <signal.h>
+#include <math.h>
 
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -1631,6 +1632,7 @@ mainPrepSong (maindata_t *mainData, int prepflag, musicqidx_t mqidx,
 
   sfname = songGetStr (song, TAG_FILE);
   voladjperc = songGetDouble (song, TAG_VOLUMEADJUSTPERC);
+  if (isnan (voladjperc)) { voladjperc = 0.0; }
   if (voladjperc == LIST_DOUBLE_INVALID) {
     voladjperc = 0.0;
   }
