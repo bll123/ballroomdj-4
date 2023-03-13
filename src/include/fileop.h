@@ -12,6 +12,7 @@ bool  fileopFileExists (const char *fname);
 ssize_t fileopSize (const char *fname);
 time_t  fileopModTime (const char *fname);
 void  fileopSetModTime (const char *fname, time_t tm);
+time_t  fileopCreateTime (const char *fname);
 bool  fileopIsDirectory (const char *fname);
 int   fileopDelete (const char *fname);
 FILE  * fileopOpen (const char *fname, const char *mode);

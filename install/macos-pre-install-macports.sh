@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=7
+ver=8
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -60,7 +60,11 @@ fi
 
 # not sure if there's a way to determine the latest python version
 # this needs to be fixed.
-pyver=310
+
+# 2023-3-10 m1-ventura still has a dependency on python310 for glib2
+# 310
+oldpyverlist=""
+pyver=311
 
 skipmpinst=F
 case $vers in
@@ -156,6 +160,7 @@ sudo port -N install \
     curl-ca-bundle \
     librsvg \
     taglib \
+    glib2 +quartz \
     gtk3 +quartz \
     adwaita-icon-theme \
     ffmpeg +nonfree -x11
@@ -166,10 +171,12 @@ sudo port select --set pip pip${pyver}
 sudo port select --set pip3 pip${pyver}
 
 echo "-- Cleaning up old MacPorts files"
+for pyver in $oldpyverlist; do
+  sudo port uninstall -N --follow-dependents python${pyver}
+done
+
 if [[ -z "$(port -q list inactive)" ]]; then
-  sudo port -N reclaim > /dev/null 2>&1 << _HERE_
-n
-_HERE_
+  sudo port reclaim --disable-reminders
 fi
 
 sudo -k

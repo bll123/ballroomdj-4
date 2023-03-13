@@ -68,6 +68,7 @@ enum {
   UPD_FIRST_VERS,
   UPD_CONVERTED,        // was the original installation converted ?
   UPD_FIX_AF_TAGS,
+  UPD_FIX_DBADDDATE,    // 2023-3-13 4.3.0.2
   UPD_MAX,
 };
 
@@ -75,6 +76,7 @@ static datafilekey_t upddfkeys[] = {
   { "CONVERTED",        UPD_CONVERTED,      VALUE_NUM, NULL, -1 },
   { "FIRSTVERSION",     UPD_FIRST_VERS,     VALUE_STR, NULL, -1 },
   { "FIX_AF_TAGS",      UPD_FIX_AF_TAGS,    VALUE_NUM, NULL, -1 },
+  { "FIX_DB_ADD_DATE",  UPD_FIX_DBADDDATE,  VALUE_NUM, NULL, -1 },
 };
 enum {
   UPD_DF_COUNT = (sizeof (upddfkeys) / sizeof (datafilekey_t))
@@ -99,13 +101,12 @@ main (int argc, char *argv [])
   char        *home = NULL;
   char        homemusicdir [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
-  int         value;
   char        *tval = NULL;
   bool        isbdj4 = false;
   bool        bdjoptchanged = false;
   int         haveitunes = 0;
   int         statusflags [UPD_MAX];
-  int         processflags [UPD_MAX];
+  bool        processflags [UPD_MAX];
   bool        processaf = false;
   bool        processdb = false;
   datafile_t  *df;
@@ -165,7 +166,7 @@ main (int argc, char *argv [])
   }
 
   for (int i = 0; i < UPD_MAX; ++i) {
-    processflags [i] = 0;
+    processflags [i] = false;
   }
 
   flags = BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
@@ -263,7 +264,8 @@ main (int argc, char *argv [])
 
   logMsg (LOG_INSTALL, LOG_MAIN, "homemusicdir: %s", homemusicdir);
 
-  value = updaterGetStatus (updlist, UPD_FIX_AF_TAGS);
+  statusflags [UPD_FIX_AF_TAGS] = updaterGetStatus (updlist, UPD_FIX_AF_TAGS);
+  statusflags [UPD_FIX_DBADDDATE] = updaterGetStatus (updlist, UPD_FIX_DBADDDATE);
 
   if (newinstall) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "new install or re-install");
@@ -304,8 +306,8 @@ main (int argc, char *argv [])
       const char  *uifont = NULL;
 
       bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, false);
-      value = UPD_SKIP;
-      nlistSetNum (updlist, UPD_FIX_AF_TAGS, value);
+      statusflags [UPD_FIX_AF_TAGS] = UPD_SKIP;
+      nlistSetNum (updlist, UPD_FIX_AF_TAGS, statusflags [UPD_FIX_AF_TAGS]);
 
       /* need some decent default fonts for windows and macos */
       if (isWindows () || isMacOS ()) {
@@ -414,7 +416,7 @@ main (int argc, char *argv [])
 
   {
     /* 4.2.0 2023-3-5 autoselection.txt */
-    /* updated values (version 3) */
+    /* updated value (version 3) */
     updaterCopyVersionCheck (AUTOSEL_FN, BDJ4_CONFIG_EXT, DFTYPE_KEY_VAL, 3);
   }
 
@@ -506,14 +508,19 @@ main (int argc, char *argv [])
   /* - write-tag is on */
   /* - bdj3-compat-tags is off */
 
-  statusflags [UPD_FIX_AF_TAGS] = value;
   processflags [UPD_FIX_AF_TAGS] =
       converted &&
-      value == UPD_NOT_DONE &&
+      statusflags [UPD_FIX_AF_TAGS] == UPD_NOT_DONE &&
       strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") != 0 &&
       bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE &&
       bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) == false;
   if (processflags [UPD_FIX_AF_TAGS]) { processaf = true; }
+
+  if (statusflags [UPD_FIX_DBADDDATE] == UPD_NOT_DONE) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "process db : fix db add date");
+    processflags [UPD_FIX_DBADDDATE] = true;
+    processdb = true;
+  }
 
   if (processaf || processdb) {
     pathbldMakePath (tbuff, sizeof (tbuff),
@@ -577,7 +584,23 @@ main (int argc, char *argv [])
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "processing database");
     dbStartIterator (musicdb, &dbiteridx);
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
-      ;
+      char      *ffn;
+
+      if (processflags [UPD_FIX_DBADDDATE]) {
+        /* 2023-3-13 : the database add date could be missing due to */
+        /* bugs in restore-original and restore audio file data */
+        if (songGetStr (song, TAG_DBADDDATE) == NULL) {
+          time_t    ctime;
+
+          ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
+          ctime = fileopCreateTime (ffn);
+          tmutilToDate (ctime * 1000, tbuff, sizeof (tbuff));
+          songSetStr (song, TAG_DBADDDATE, tbuff);
+          dbWriteSong (musicdb, song);
+          logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix dbadddate: %s", ffn);
+          mdfree (ffn);
+        }
+      }
     }
     dbEndBatch (musicdb);
   }
@@ -585,6 +608,9 @@ main (int argc, char *argv [])
   if (processaf || processdb) {
     if (processflags [UPD_FIX_AF_TAGS]) {
       nlistSetNum (updlist, UPD_FIX_AF_TAGS, UPD_COMPLETE);
+    }
+    if (processflags [UPD_FIX_DBADDDATE]) {
+      nlistSetNum (updlist, UPD_FIX_DBADDDATE, UPD_COMPLETE);
     }
     dbClose (musicdb);
   }

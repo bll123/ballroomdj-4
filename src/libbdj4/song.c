@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
 #include <assert.h>
@@ -470,4 +471,32 @@ songCleanup (void)
   gsonginit.initialized = false;
 }
 
+#if 0
+void
+songDump (song_t *song)
+{
+  if (song == NULL) {
+    return;
+  }
 
+  for (int i = 0; i < SONG_DFKEY_COUNT; ++i) {
+    switch (songdfkeys [i].valuetype) {
+      case VALUE_STR: {
+        fprintf (stderr, "%s : %s\n", songdfkeys [i].name, songGetStr (song, songdfkeys [i].itemkey));
+        break;
+      }
+      case VALUE_NUM: {
+        fprintf (stderr, "%s : %"PRId64"\n", songdfkeys [i].name, songGetNum (song, songdfkeys [i].itemkey));
+        break;
+      }
+      case VALUE_DOUBLE: {
+        fprintf (stderr, "%s : %.2f\n", songdfkeys [i].name, songGetDouble (song, songdfkeys [i].itemkey));
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+}
+#endif

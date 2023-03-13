@@ -6,6 +6,9 @@
 
 #### Updating BallroomDJ 4 : Make a Backup
 
+Be sure to exit BallroomDJ 4 before creating a backup or updating the
+software.
+
 If you are updating BallroomDJ 4 to a new version, be sure to create a
 backup of your BDJ4 installation.  On Windows, simply make a copy of
 the entire BDJ4 folder.

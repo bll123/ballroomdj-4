@@ -356,6 +356,7 @@ check_function_exists (signal _lib_signal)
 check_function_exists (srand48 _lib_srand48)
 check_function_exists (srand _lib_srand)
 check_function_exists (srandom _lib_srandom)
+check_function_exists (statx _lib_statx)
 check_function_exists (strlcat _lib_strlcat)
 check_function_exists (strlcpy _lib_strlcpy)
 check_function_exists (strtok_r _lib_strtok_r)
@@ -378,6 +379,9 @@ if (temp_mkdir)
 else()
   set (_args_mkdir 1)
 endif()
+
+# st_birthtime is a define pointing to a member of the structure
+check_symbol_exists (st_birthtime sys/stat.h _mem_struct_stat_st_birthtime)
 
 check_symbol_exists (INVALID_SOCKET winsock2.h;windows.h _define_INVALID_SOCKET)
 if (WIN32)

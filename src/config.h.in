@@ -100,6 +100,7 @@
 #cmakedefine01 _lib_srand48
 #cmakedefine01 _lib_srandom
 #cmakedefine01 _lib_srand
+#cmakedefine01 _lib_statx
 #cmakedefine01 _lib_strlcpy
 #cmakedefine01 _lib_strlcat
 #cmakedefine01 _lib_strtok_r
@@ -121,6 +122,9 @@
 #cmakedefine01 _define_SOCK_CLOEXEC
 #cmakedefine01 _define_SO_REUSEPORT
 #cmakedefine01 _define_WIFEXITED
+
+#cmakedefine01 _mem_struct_stat_st_birthtime
+#cmakedefine _siz_struct_statx
 
 #cmakedefine01 _typ_HANDLE
 #cmakedefine01 _typ_SOCKET

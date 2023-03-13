@@ -3,6 +3,8 @@
  */
 #include "config.h"
 
+#define _GNU_SOURCE 1   // for statx()
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -160,6 +162,57 @@ fileopSetModTime (const char *fname, time_t mtime)
   }
 #endif
 }
+
+time_t
+fileopCreateTime (const char *fname)
+{
+  time_t  ctime = 0;
+
+#if _lib__wstat
+  {
+    struct _stat  statbuf;
+    wchar_t       *tfname = NULL;
+    int           rc;
+
+    tfname = osToWideChar (fname);
+    rc = _wstat (tfname, &statbuf);
+    if (rc == 0) {
+      ctime = statbuf.st_ctime;
+    }
+    mdfree (tfname);
+  }
+#else
+  {
+    int rc = -1;
+#if _lib_statx && _GNU_SOURCE
+    struct statx statbufx;
+#endif
+    struct stat statbuf;
+
+#if _lib_statx && _GNU_SOURCE
+    rc = statx (0, fname, 0, STATX_BTIME, &statbufx);
+    if (rc == 0) {
+      if ((statbufx.stx_mask & STATX_BTIME) == STATX_BTIME) {
+        ctime = statbufx.stx_btime.tv_sec;
+      }
+    }
+#endif
+
+    if (ctime == 0) {
+      rc = stat (fname, &statbuf);
+      if (rc == 0) {
+#if _mem_struct_stat_st_birthtime
+        ctime = statbuf.st_birthtime;
+#else
+        ctime = statbuf.st_ctime;
+#endif
+      }
+    }
+  }
+#endif
+  return ctime;
+}
+
 
 bool
 fileopIsDirectory (const char *fname)

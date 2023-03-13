@@ -4,13 +4,19 @@
 
 <!--
 
-**4.3.1 2023-2---**
+**4.3.0.2 2023-3---**
 
 -->
 
+**4.3.0.2 2023-3-13**
+
+* Bug Fixes:
+    * Apply Adjustments: Restore Original: Restore database information.
+    * Update Database: Restore from audio file tags: Restore database information.
+
 **4.3.0.1 2023-3-9**
 
-* Bug Fixes
+* Bug Fixes:
     * Song Editor: Fix volume adjustment processing.
 
 **4.3.0 2023-3-9**

@@ -6,6 +6,9 @@
 
 #### Updating BallroomDJ 4 : Make a Backup
 
+Be sure to exit BallroomDJ 4 before creating a backup or updating the
+software.
+
 If you are updating BallroomDJ 4 to a new version, be sure to create a
 backup of your BDJ4 installation.  On Mac OS make a copy of the
 $HOME/Applications/BDJ4.app folder and the
@@ -16,7 +19,7 @@ $HOME/Library/Application&nbsp;Support/BDJ4 folder.
 This step only needs to be run once, not for every installation or
 update.
 
-Download the macos-pre-install-v7.sh script from sourceforge.
+Download the macos-pre-install-v8.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -26,7 +29,7 @@ time to finish (especially slow on Ventura as of 2022-11).  You may be
 required to enter your administrative password more than once during
 the installation process.
 
-    bash macos-pre-install-v7.sh
+    bash macos-pre-install-v8.sh
 
 This script performs the following actions:
 

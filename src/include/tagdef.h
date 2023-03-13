@@ -76,8 +76,8 @@ typedef enum {
   TAG_DANCELEVEL,             //
   TAG_DANCERATING,            //
   TAG_DATE,                   //
-  TAG_DBADDDATE,              //
-  TAG_DBIDX,                  // not saved
+  TAG_DBADDDATE,              // only in the database, treated as special case
+  TAG_DBIDX,                  // not saved to db or af
   TAG_DISCNUMBER,             //
   TAG_DISCTOTAL,              //
   TAG_DURATION,               // not saved to af
@@ -88,7 +88,7 @@ typedef enum {
   TAG_MQDISPLAY,              //
   TAG_NOTES,                  //
   TAG_RECORDING_ID,           // musicbrainz_trackid
-  TAG_RRN,                    // not save to af
+  TAG_RRN,                    // not saved to db or af
   TAG_SAMESONG,               //
   TAG_SONGEND,                //
   TAG_SONGSTART,              //

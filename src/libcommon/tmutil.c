@@ -354,6 +354,26 @@ tmutilToMSD (time_t ms, char *buff, size_t max, int decimals)
 
 
 char *
+tmutilToDate (time_t ms, char *buff, size_t max)
+{
+  struct tm         *tp;
+  time_t            s;
+#if _lib_localtime_r
+  struct tm         t;
+#endif
+
+  s = ms / 1000;
+#if _lib_localtime_r
+  localtime_r (&s, &t);
+  tp = &t;
+#else
+  tp = localtime (&s);
+#endif
+  strftime (buff, max, "%Y-%m-%d", tp);
+  return buff;
+}
+
+char *
 tmutilToDateHM (time_t ms, char *buff, size_t max)
 {
   struct tm         *tp;

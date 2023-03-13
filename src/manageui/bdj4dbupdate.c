@@ -908,11 +908,18 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   if (dbupdate->usingmusicdir) {
     dbfname = dbupdateGetRelativePath (dbupdate, ffn);
   }
+
   rrn = MUSICDB_ENTRY_NEW;
   if (! dbupdate->rebuild) {
     song = dbGetByName (dbupdate->musicdb, dbfname);
     if (song != NULL) {
+      char      *tmp;
+
       rrn = songGetNum (song, TAG_RRN);
+      tmp = songGetStr (song, TAG_DBADDDATE);
+      if (tmp != NULL) {
+        slistSetStr (tagdata, tagdefs [TAG_DBADDDATE].tag, tmp);
+      }
     }
   }
 
