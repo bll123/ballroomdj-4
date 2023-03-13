@@ -179,13 +179,21 @@ main (int argc, char *argv [])
       continue;
     }
 
+    /* it's ok for dbadddate to be mismatched, but it must exist in both */
+    for (int i = 0; i < DB_MAX; ++i) {
+      char    *val;
+
+      val = songGetStr (song [i], TAG_DBADDDATE);
+      if (val == NULL) {
+        fprintf (stderr, "    dbadddate missing in %d\n", i);
+        grc = 1;
+      }
+    }
+
     slistStartIterator (taglist [DB_A], &tagiteridx [DB_A]);
     while ((tag [DB_A] = slistIterateKey (taglist [DB_A], &tagiteridx [DB_A])) != NULL) {
       char  *val [DB_MAX];
 
-      if (strcmp (tag [DB_A], tagdefs [TAG_DBADDDATE].tag) == 0) {
-        continue;
-      }
       if (strcmp (tag [DB_A], tagdefs [TAG_LAST_UPDATED].tag) == 0) {
         continue;
       }
