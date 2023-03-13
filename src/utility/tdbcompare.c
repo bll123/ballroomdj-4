@@ -194,6 +194,9 @@ main (int argc, char *argv [])
     while ((tag [DB_A] = slistIterateKey (taglist [DB_A], &tagiteridx [DB_A])) != NULL) {
       char  *val [DB_MAX];
 
+      if (strcmp (tag [DB_A], tagdefs [TAG_DBADDDATE].tag) == 0) {
+        continue;
+      }
       if (strcmp (tag [DB_A], tagdefs [TAG_LAST_UPDATED].tag) == 0) {
         continue;
       }
