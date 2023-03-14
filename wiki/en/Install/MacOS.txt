@@ -86,4 +86,4 @@ icon to the Applications Folder icon.
 <br><span style="color:#4559bf;">__VLC Installation on Mac OS__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-03-14 05:15:12; BDJ4 version 4.3.0.2)_

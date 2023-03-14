@@ -13,19 +13,27 @@ pass=0
 fail=0
 emsg=""
 
+function updateCounts {
+  trc=$1
+
+  tcount=$(($tcount+1))
+  if [[ $trc -eq 0 ]]; then
+    pass=$(($pass+1))
+  else
+    fail=$(($fail+1))
+  fi
+}
+
 function checkres {
   tname=$1
   r=$2
   e=$3
 
-  tcount=$(($tcount+1))
   if [[ $r == $e ]]; then
-    pass=$(($pass+1))
     trc=0
   else
     echo "         Got: $r"
     echo "    Expected: $e"
-    fail=$(($fail+1))
     trc=1
   fi
   return $trc
@@ -35,13 +43,10 @@ function compcheck {
   tname=$1
   retc=$2
 
-  tcount=$(($tcount+1))
   if [[ $retc -eq 0 ]]; then
-    pass=$(($pass+1))
     trc=0
   else
     echo "    comparison failed"
-    fail=$(($fail+1))
     trc=1
   fi
   return $trc
@@ -152,9 +157,11 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMM} skip 0 indb 0 new ${NUMM} updated 0 notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
+updateCounts $rc
 msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat test-templates/musicdb.dat)
 crc=$?
-msg+=$(compcheck $tname $rc)
+updateCounts $crc
+msg+=$(compcheck $tname $crc)
 dispres $tname $rc $crc
 
 # main test db : check-new with no changes
@@ -167,8 +174,10 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMM} skip ${NUMM} indb ${NUMM} new 0 updated 0 notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
+updateCounts $rc
 msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat test-templates/musicdb.dat)
 crc=$?
+updateCounts $crc
 msg+=$(compcheck $tname $rc)
 dispres $tname $rc $crc
 
@@ -182,8 +191,10 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMM} skip 0 indb ${NUMM} new 0 updated ${NUMM} notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
+updateCounts $rc
 msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat test-templates/musicdb.dat)
 crc=$?
+updateCounts $crc
 msg+=$(compcheck $tname $rc)
 dispres $tname $rc $crc
 
@@ -220,8 +231,10 @@ else
   exp="found ${NUMBL1} skip 0 indb 0 new ${NUMBL1} updated 0 notaudio 0 writetag 0"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
+  updateCounts $rc
   msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBB)
   crc=$?
+  updateCounts $crc
   msg+=$(compcheck $tname $rc)
   dispres $tname $rc $crc
 fi
@@ -239,8 +252,10 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMB} skip ${NUMBL1} indb ${NUMBL1} new 1 updated 0 notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
+updateCounts $rc
 msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC)
 crc=$?
+updateCounts $crc
 msg+=$(compcheck $tname $crc)
 dispres $tname $rc $crc
 
@@ -257,6 +272,7 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMB} skip 0 indb 0 new ${NUMB} updated 0 notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
+updateCounts $rc
 # no db comparison
 dispres $tname $rc $rc
 
@@ -275,13 +291,16 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated 0 notaudio 0 writetag ${NUMB}"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
+updateCounts $rc
 msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC)
 crc=$?
+updateCounts $crc
 msg+=$(compcheck $tname $crc)
 
 if [[ $rc -eq 0 && $crc -eq 0 ]]; then
   msg+=$(checkaudiotags $tname)
   trc=$?
+  updateCounts $trc
   if [[ $trc -ne 0 ]]; then
     rc=$trc
   fi
@@ -303,13 +322,16 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated 0 notaudio 0 writetag ${NUMB}"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
+updateCounts $rc
 msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC)
 crc=$?
+updateCounts $crc
 msg+=$(compcheck $tname $crc)
 
 if [[ $rc -eq 0 && $crc -eq 0 ]]; then
   msg+=$(checkaudiotags $tname)
   trc=$?
+  updateCounts $trc
   if [[ $trc -ne 0 ]]; then
     rc=$trc
   fi
@@ -330,13 +352,16 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated ${NUMB} notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
+updateCounts $rc
 msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC)
 crc=$?
+updateCounts $crc
 msg+=$(compcheck $tname $crc)
 
 if [[ $rc -eq 0 && $crc -eq 0 ]]; then
   msg+=$(checkaudiotags $tname)
   trc=$?
+  updateCounts $trc
   if [[ $trc -ne 0 ]]; then
     rc=$trc
   fi
@@ -372,8 +397,10 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
+updateCounts $rc
 msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDAT)
 crc=$?
+updateCounts $crc
 msg+=$(compcheck $tname $crc)
 dispres $tname $rc $crc
 
@@ -388,8 +415,10 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
+updateCounts $rc
 msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDT)
 crc=$?
+updateCounts $crc
 msg+=$(compcheck $tname $crc)
 dispres $tname $rc $crc
 
@@ -404,8 +433,10 @@ got=$(./bin/bdj4 --bdj4dbupdate \
 exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
+updateCounts $rc
 msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDTAT)
 crc=$?
+updateCounts $crc
 msg+=$(compcheck $tname $crc)
 dispres $tname $rc $crc
 
