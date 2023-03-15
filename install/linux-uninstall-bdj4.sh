@@ -48,7 +48,7 @@ fi
   test -d ${confdir} && rm -rf ${confdir}
   test -f ${desktop}/BDJ4.desktop && rm -f ${desktop}/BDJ4.desktop
   test -f ${appdir}/BDJ4.desktop && rm -f ${appdir}/BDJ4.desktop
-  echo "## BDJ4 application removed."
+  echo "-- BDJ4 application removed."
 fi
 
 exit 0

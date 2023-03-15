@@ -68,7 +68,7 @@ if [[ $gr == Y ]]; then
   fn="$HOME/Desktop/BDJ4.app"
   test -h "$fn" && rm -f "$fn"
 
-  echo "## BDJ4 application removed."
+  echo "-- BDJ4 application removed."
 fi
 
 sudo -v
@@ -78,7 +78,7 @@ gr=$(getresponse)
 if [[ $gr == Y ]]; then
   dir="$HOME/Library/Application Support/BDJ4"
   test -d "$dir" && rm -rf "$dir"
-  echo "## BDJ4 data removed."
+  echo "-- BDJ4 data removed."
 fi
 
 sudo -v
@@ -88,13 +88,13 @@ gr=$(getresponse)
 if [[ $gr == Y ]]; then
   TMP=tmp-umacports.txt
 
-  echo "## getting ports list"
+  echo "-- getting ports list"
   sudo port list installed > $TMP
   sudo -v
-  echo "## uninstalling all ports"
+  echo "-- uninstalling all ports"
   sudo port -N uninstall $(cat $TMP)
   sudo -v
-  echo "## cleaning all ports"
+  echo "-- cleaning all ports"
   sudo port -N clean --all $(cat $TMP)
   sudo -v
   rm -f ${TMP} > /dev/null 2>&1
@@ -110,7 +110,7 @@ if [[ $gr == Y ]]; then
       /Library/Tcl/macports1.0 \
       ~/.macports \
       ; do
-    echo "## removing ${d}"
+    echo "-- removing ${d}"
     sudo rm -rf ${d}
   done
 fi

@@ -4,6 +4,9 @@
 
 ## Installing BallroomDJ 4 on Windows
 
+Supported Platforms as of 2023-3-15: Windows&nbsp;10&nbsp;(64-bit),
+Windows&nbsp;11&nbsp;(64-bit).
+
 #### Updating BallroomDJ 4 : Make a Backup
 
 Be sure to exit BallroomDJ 4 before creating a backup or updating the
@@ -106,4 +109,4 @@ installation is complete, turn off the __Run VLC media player__
 checkbox, and select __Finish__.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-14 05:15:12; BDJ4 version 4.3.0.2)_
+<br>_(Updated 2023-03-15 07:34:40; BDJ4 version 4.3.0.3)_

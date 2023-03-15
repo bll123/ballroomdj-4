@@ -4,9 +4,14 @@
 
 <!--
 
-**4.3.0.2 2023-3---**
+**4.3.0.4 2023-3---**
 
 -->
+
+**4.3.0.3 2023-3-14**
+
+* Bug Fixes:
+    * Mac OS: Fix build process to allow older versions of Mac OS.
 
 **4.3.0.2 2023-3-13**
 
@@ -299,4 +304,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-14 05:15:12; BDJ4 version 4.3.0.2)_
+<br>_(Updated 2023-03-15 07:34:40; BDJ4 version 4.3.0.3)_

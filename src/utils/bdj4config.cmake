@@ -208,6 +208,7 @@ if (NOT WIN32)
   if (APPLE)
     # 10.14 = Mojave
     add_compile_options (-mmacosx-version-min=10.14)
+    add_link_options (-mmacosx-version-min=10.14)
     # The following does not work.
     # SET (CMAKE_INSTALL_RPATH "@executable_path")
   endif()
