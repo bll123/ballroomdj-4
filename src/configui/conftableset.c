@@ -14,8 +14,6 @@
 #include <math.h>
 #include <stdarg.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjvarsdf.h"
@@ -31,7 +29,7 @@ confuiDanceSet (uitree_t *uitree, char *dancedisp, ilistidx_t key)
       CONFUI_DANCE_COL_DANCE, dancedisp,
       CONFUI_DANCE_COL_SB_PAD, "    ",
       CONFUI_DANCE_COL_DANCE_IDX, (treenum_t) key,
-      -1);
+      TREE_VALUE_END);
   logProcEnd (LOG_PROC, "confuiDanceSet", "");
 }
 
@@ -44,7 +42,7 @@ confuiGenreSet (uitree_t *uitree,
       CONFUI_GENRE_COL_EDITABLE, editable,
       CONFUI_GENRE_COL_GENRE, genredisp,
       CONFUI_GENRE_COL_CLASSICAL, clflag,
-      -1);
+      TREE_VALUE_END);
   logProcEnd (LOG_PROC, "confuiGenreSet", "");
 }
 
@@ -52,18 +50,18 @@ void
 confuiLevelSet (uitree_t *uitree,
     int editable, char *leveldisp, long weight, int def)
 {
-  GtkAdjustment     *adjustment;
+  UIWidget        adjustment;
 
   logProcBegin (LOG_PROC, "confuiLevelSet");
-  adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
+  uiCreateAdjustment (&adjustment, weight, 0.0, 100.0, 1.0, 5.0, 0.0);
   uiTreeViewSetValues (uitree,
       CONFUI_LEVEL_COL_EDITABLE, editable,
       CONFUI_LEVEL_COL_LEVEL, leveldisp,
       CONFUI_LEVEL_COL_WEIGHT, weight,
-      CONFUI_LEVEL_COL_ADJUST, adjustment,
+      CONFUI_LEVEL_COL_ADJUST, uiAdjustmentGetAdjustment (&adjustment),
       CONFUI_LEVEL_COL_DIGITS, 0,
       CONFUI_LEVEL_COL_DEFAULT, def,
-      -1);
+      TREE_VALUE_END);
   logProcEnd (LOG_PROC, "confuiLevelSet", "");
 }
 
@@ -71,10 +69,10 @@ void
 confuiRatingSet (uitree_t *uitree,
     int editable, char *ratingdisp, long weight)
 {
-  GtkAdjustment     *adjustment;
+  UIWidget    adjustment;
 
   logProcBegin (LOG_PROC, "confuiRatingSet");
-  adjustment = gtk_adjustment_new (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
+  uiCreateAdjustment (&adjustment, weight, 0.0, 100.0, 1.0, 5.0, 0.0);
   uiTreeViewSetValues (uitree,
       CONFUI_RATING_COL_R_EDITABLE, editable,
       CONFUI_RATING_COL_W_EDITABLE, TRUE,
@@ -82,7 +80,7 @@ confuiRatingSet (uitree_t *uitree,
       CONFUI_RATING_COL_WEIGHT, weight,
       CONFUI_RATING_COL_ADJUST, adjustment,
       CONFUI_RATING_COL_DIGITS, 0,
-      -1);
+      TREE_VALUE_END);
   logProcEnd (LOG_PROC, "confuiRatingSet", "");
 }
 
@@ -95,7 +93,7 @@ confuiStatusSet (uitree_t *uitree,
       CONFUI_STATUS_COL_EDITABLE, editable,
       CONFUI_STATUS_COL_STATUS, statusdisp,
       CONFUI_STATUS_COL_PLAY_FLAG, playflag,
-      -1);
+      TREE_VALUE_END);
   logProcEnd (LOG_PROC, "confuiStatusSet", "");
 }
 

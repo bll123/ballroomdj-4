@@ -4,8 +4,8 @@
 
 ## Installing BallroomDJ 4 on Mac OS
 
-Supported Platforms as of 2023-3-15: Mojave, Big&nbsp;Sur, Monterey,
-Ventura.
+Supported Platforms as of 2023-3-15: Mojave, Catalina, Big&nbsp;Sur,
+Monterey, Ventura.
 
 #### Updating BallroomDJ 4 : Make a Backup
 
@@ -91,4 +91,4 @@ icon to the Applications Folder icon.
 <br><span style="color:#4559bf;">__VLC Installation on Mac OS__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-15 07:34:40; BDJ4 version 4.3.0.3)_
+<br>_(Updated 2023-03-15 07:45:42; BDJ4 version 4.3.0.3)_

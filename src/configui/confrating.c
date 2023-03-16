@@ -106,6 +106,11 @@ confuiCreateRatingTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_RATINGS].currcount += 1;
   }
 
+  /* CONTEXT: configuration: rating: title of the rating name column */
+//  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, _("Rating"),
+//      TREE_COL_MODE_TEXT, CONFUI_RATING_COL_RATING,
+//      TREE_COL_MODE_EDITABLE, CONFUI_RATING_COL_R_EDITABLE,
+//      TREE_COL_MODE_END);
   renderer = gtk_cell_renderer_text_new ();
   g_object_set_data (G_OBJECT (renderer), "uicolumn",
       GUINT_TO_POINTER (CONFUI_RATING_COL_RATING));

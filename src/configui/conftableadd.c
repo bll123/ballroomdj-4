@@ -14,8 +14,6 @@
 #include <math.h>
 #include <stdarg.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjvarsdf.h"
@@ -55,7 +53,7 @@ confuiTableAdd (void *udata)
   if (count == 1) {
     int   valid;
 
-    valid = uiTreeViewGetSelectionNew (uitree);
+    valid = uiTreeViewGetSelectCount (uitree);
     if (valid == 1) {
       found = true;
     }

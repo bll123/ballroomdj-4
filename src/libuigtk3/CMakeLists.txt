@@ -7,6 +7,7 @@ include (../utils/bdj4macros.cmake)
 
 add_library (libuigtk3 SHARED
   uigeneral.c
+  uigtkadjustment.c
   uigtkbox.c
   uigtkbutton.c
   uigtkchgind.c

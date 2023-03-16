@@ -30,12 +30,12 @@ static GType * uiAppendType (GType *types, int ncol, int type);
 static void uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 
 typedef struct uitree {
-  UIWidget      uitree;
-  UIWidget      sel;
-  callback_t    *editedcb;
-  GtkTreeIter   selectiter;
-  GtkTreeModel  *model;
-  bool          selectset;
+  UIWidget          uitree;
+  GtkTreeSelection  *sel;
+  callback_t        *editedcb;
+  GtkTreeIter       selectiter;
+  GtkTreeModel      *model;
+  bool              selectset;
 } uitree_t;
 
 uitree_t *
@@ -58,7 +58,7 @@ uiCreateTreeView (void)
   gtk_widget_set_vexpand (tree, FALSE);
   uitree->uitree.widget = tree;
   uitree->editedcb = NULL;
-  uitree->sel.sel = sel;
+  uitree->sel = sel;
   uitree->selectset = false;
   uitree->model = NULL;
   uiWidgetSetAllMargins (&uitree->uitree, 2);
@@ -94,6 +94,7 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
   int               coltype;
   int               col;
   char              *gtkcoltype = "text";
+//  bool              first = true;
 
   if (uitree == NULL) {
     return;
@@ -149,6 +150,10 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
     }
 
     col = va_arg (args, int);
+//    if (first) {
+//      g_object_set_data (G_OBJECT (renderer), "uicolumn", GUINT_TO_POINTER (col));
+//      first = false;
+//    }
     gtk_tree_view_column_add_attribute (column, renderer, gtkcoltype, col);
 
     coltype = va_arg (args, int);
@@ -310,7 +315,7 @@ uiTreeViewSetValues (uitree_t *uitree, ...)
 }
 
 int
-uiTreeViewGetSelectionNew (uitree_t *uitree)
+uiTreeViewGetSelectCount (uitree_t *uitree)
 {
   GtkTreeSelection  *sel;
   int               count;
@@ -326,7 +331,7 @@ uiTreeViewGetSelectionNew (uitree_t *uitree)
     return 0;
   }
 
-  sel = uitree->sel.sel;
+  sel = uitree->sel;
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count == 0) {
     uitree->selectset = false;
@@ -392,7 +397,7 @@ uiTreeViewSelectCurrent (uitree_t *uitree)
   path = gtk_tree_model_get_path (uitree->model, &uitree->selectiter);
   mdextalloc (path);
   if (path != NULL) {
-    gtk_tree_selection_select_path (uitree->sel.sel, path);
+    gtk_tree_selection_select_path (uitree->sel, path);
     mdextfree (path);
     gtk_tree_path_free (path);
   }
@@ -446,6 +451,22 @@ uiTreeViewSelectPrevious (uitree_t *uitree)
   return valid;
 }
 
+int
+uiTreeViewSelectDefault (uitree_t *uitree)
+{
+  int               count = 0;
+  GtkTreeIter       iter;
+  GtkTreeModel      *model;
+
+
+  count = uiTreeViewGetSelection (uitree, &model, &iter);
+  if (count != 1) {
+    uiTreeViewSelectionSet (uitree, 0);
+  }
+
+  return count;
+}
+
 long
 uiTreeViewGetValue (uitree_t *uitree, int col)
 {
@@ -475,7 +496,7 @@ uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *ite
     return 0;
   }
 
-  sel = uitree->sel.sel;
+  sel = uitree->sel;
   count = gtk_tree_selection_count_selected_rows (sel);
   if (count == 1) {
     /* this only works if the treeview is in single-selection mode */
@@ -489,7 +510,7 @@ uiTreeViewAllowMultiple (uitree_t *uitree)
 {
   GtkTreeSelection  *sel;
 
-  sel = uitree->sel.sel;
+  sel = uitree->sel;
   gtk_tree_selection_set_mode (sel, GTK_SELECTION_MULTIPLE);
 }
 
@@ -520,7 +541,7 @@ uiTreeViewDisableSingleClick (uitree_t *uitree)
 void
 uiTreeViewSelectionSetMode (uitree_t *uitree, int mode)
 {
-  gtk_tree_selection_set_mode (uitree->sel.sel, mode);
+  gtk_tree_selection_set_mode (uitree->sel, mode);
 }
 
 void
@@ -533,7 +554,7 @@ uiTreeViewSelectionSet (uitree_t *uitree, int row)
   path = gtk_tree_path_new_from_string (tbuff);
   mdextalloc (path);
   if (path != NULL) {
-    gtk_tree_selection_select_path (uitree->sel.sel, path);
+    gtk_tree_selection_select_path (uitree->sel, path);
     mdextfree (path);
     gtk_tree_path_free (path);
   }
@@ -547,11 +568,11 @@ uiTreeViewSelectionGetCount (uitree_t *uitree)
   if (uitree == NULL) {
     return count;
   }
-  if (uitree->sel.sel == NULL) {
+  if (uitree->sel == NULL) {
     return count;
   }
 
-  count = gtk_tree_selection_count_selected_rows (uitree->sel.sel);
+  count = gtk_tree_selection_count_selected_rows (uitree->sel);
   return count;
 }
 

@@ -33,7 +33,7 @@ static bool   confuiTableMoveUp (void *udata);
 static bool   confuiTableMoveDown (void *udata);
 static void   confuiTableMove (confuigui_t *gui, int dir);
 static bool   confuiTableRemove (void *udata);
-static void   confuiTableSetDefaultSelection (confuigui_t *gui, uitree_t *uitree, GtkTreeSelection *sel);
+static void   confuiTableSetDefaultSelection (confuigui_t *gui, uitree_t *uitree);
 static void   confuiTableEdit (confuigui_t *gui, int col,
     const char* path, const char* ntext, int type);
 
@@ -59,8 +59,8 @@ confuiMakeItemTable (confuigui_t *gui, UIWidget *boxp, confuiident_t id,
 
   gui->tables [id].uitree = uiCreateTreeView ();
   uiwidgetp = uiTreeViewGetUIWidget (gui->tables [id].uitree);
-  gui->tables [id].sel =
-      gtk_tree_view_get_selection (GTK_TREE_VIEW (uiwidgetp->widget));
+//  gui->tables [id].sel =
+//      gtk_tree_view_get_selection (GTK_TREE_VIEW (uiwidgetp->widget));
   gui->tables [id].flags = flags;
 
   uiWidgetSetMarginStart (uiwidgetp, 8);
@@ -311,8 +311,7 @@ confuiSwitchTable (void *udata, long pagenum)
     return UICB_CONT;
   }
 
-  confuiTableSetDefaultSelection (gui, uitree,
-      gui->tables [gui->tablecurr].sel);
+  confuiTableSetDefaultSelection (gui, uitree);
 
   logProcEnd (LOG_PROC, "confuiSwitchTable", "");
   return UICB_CONT;
@@ -517,19 +516,15 @@ confuiTableRemove (void *udata)
 }
 
 static void
-confuiTableSetDefaultSelection (confuigui_t *gui, uitree_t *uitree,
-    GtkTreeSelection *sel)
+confuiTableSetDefaultSelection (confuigui_t *gui, uitree_t *uitree)
 {
   int               count;
-  GtkTreeIter       iter;
-  GtkTreeModel      *model;
 
 
-  count = uiTreeViewGetSelection (uitree, &model, &iter);
+  count = uiTreeViewSelectDefault (uitree);
   if (count != 1) {
     GtkTreePath   *path = NULL;
 
-    uiTreeViewSelectionSet (uitree, 0);
     path = gtk_tree_path_new_from_string ("0");
     mdextalloc (path);
     if (path != NULL) {

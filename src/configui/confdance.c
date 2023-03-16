@@ -14,8 +14,6 @@
 #include <math.h>
 #include <stdarg.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjstring.h"
@@ -213,9 +211,9 @@ confuiCreateDanceTable (confuigui_t *gui)
   }
 
   uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
-      TREE_COL_MODE_TEXT, CONFUI_DANCE_COL_DANCE, -1);
+      TREE_COL_MODE_TEXT, CONFUI_DANCE_COL_DANCE, TREE_COL_MODE_END);
   uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
-      TREE_COL_MODE_TEXT, CONFUI_DANCE_COL_SB_PAD, -1);
+      TREE_COL_MODE_TEXT, CONFUI_DANCE_COL_SB_PAD, TREE_COL_MODE_END);
 
   logProcEnd (LOG_PROC, "confuiCreateDanceTable", "");
 }
@@ -244,11 +242,8 @@ confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
   confuigui_t     *gui = udata;
   const char      *str;
   uitree_t        *uitree;
-  UIWidget        *uiwidgetp;
-  GtkTreeModel    *model;
-  GtkTreeIter     iter;
   int             count;
-  glong           key;
+  ilistidx_t      key;
   dance_t         *dances;
   int             didx;
   datafileconv_t  conv;
@@ -269,21 +264,17 @@ confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
   didx = gui->uiitem [widx].danceidx;
 
   uitree = gui->tables [CONFUI_ID_DANCE].uitree;
-  uiwidgetp = uiTreeViewGetUIWidget (uitree);
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-  count = uiTreeViewGetSelection (uitree, &model, &iter);
+  count = uiTreeViewGetSelectCount (uitree);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiDanceEntryChg", "no-selection");
     return UIENTRY_OK;
   }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
-  gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &key, -1);
+  key = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
 
   if (widx == CONFUI_ENTRY_DANCE_DANCE) {
-    gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-        CONFUI_DANCE_COL_DANCE, str,
-        -1);
+    uiTreeViewSetValues (uitree, CONFUI_DANCE_COL_DANCE, str, TREE_VALUE_END);
     danceSetStr (dances, key, didx, str);
     entryrc = UIENTRY_OK;
   }
@@ -351,10 +342,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
 {
   confuigui_t     *gui = udata;
   uitree_t        *uitree;
-  GtkTreeModel    *model;
-  GtkTreeIter     iter;
   int             count;
-  glong           idx;
   double          value;
   long            nval = 0;
   ilistidx_t      key;
@@ -379,15 +367,14 @@ confuiDanceSpinboxChg (void *udata, int widx)
   }
 
   uitree = gui->tables [CONFUI_ID_DANCE].uitree;
-  count = uiTreeViewGetSelection (uitree, &model, &iter);
+  count = uiTreeViewGetSelectCount (uitree);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "no-selection");
     return;
   }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
-  gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
-  key = (ilistidx_t) idx;
+  key = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
   danceSetNum (dances, key, didx, nval);
   gui->tables [gui->tablecurr].changed = true;
   logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "");

@@ -301,7 +301,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
         DUALLIST_COL_DISP, keystr,
         DUALLIST_COL_SB_PAD, "    ",
         DUALLIST_COL_DISP_IDX, val,
-        -1);
+        TREE_VALUE_END);
 
     /* if inserting into the target tree, and the persistent flag */
     /* is not set, remove the matching entries from the source tree */

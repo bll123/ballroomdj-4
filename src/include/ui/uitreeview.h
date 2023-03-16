@@ -27,6 +27,12 @@ enum {
   TREE_COL_MODE_FOREGROUND_SET,
 };
 
+enum {
+  TREE_TYPE_END = -1,
+  TREE_COL_MODE_END = -1,
+  TREE_VALUE_END = -1,
+};
+
 typedef struct uitree uitree_t;
 
 uitree_t *uiCreateTreeView (void);
@@ -38,12 +44,13 @@ void  uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typ
 void  uiTreeViewAppendValueStore (uitree_t *uitree);
 void  uiTreeViewInsertValueStore (uitree_t *uitree);
 void  uiTreeViewSetValues (uitree_t *uitree, ...);
-int   uiTreeViewGetSelectionNew (uitree_t *uitree);
+int   uiTreeViewGetSelectCount (uitree_t *uitree);
 int   uiTreeViewGetSelectionIndex (uitree_t *uitree);
 void  uiTreeViewSelectCurrent (uitree_t *uitree);
 bool  uiTreeViewSelectFirst (uitree_t *uitree);
 bool  uiTreeViewSelectNext (uitree_t *uitree);
 bool  uiTreeViewSelectPrevious (uitree_t *uitree);
+int   uiTreeViewSelectDefault (uitree_t *uitree);
 long  uiTreeViewGetValue (uitree_t *uitree, int col);
 #if BDJ4_USE_GTK
 int   uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *iter);
