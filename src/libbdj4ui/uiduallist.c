@@ -164,9 +164,9 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
   uiTreeViewDisableHeaders (uitree);
 
   uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
-      TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, -1);
-  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
-      TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, -1);
+      TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, TREE_COL_MODE_END);
+  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_NORM, "",
+      TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, TREE_COL_MODE_END);
 
   uiCreateVertBox (&dvbox);
   uiWidgetSetAllMargins (&dvbox, 4);
@@ -217,7 +217,7 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
 
   uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
       TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, -1);
-  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
+  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_NORM, "",
       TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, -1);
 
   uiCreateVertBox (&dvbox);

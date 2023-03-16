@@ -37,6 +37,7 @@ typedef struct uitree uitree_t;
 
 uitree_t *uiCreateTreeView (void);
 void  uiTreeViewFree (uitree_t *uitree);
+void  uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb);
 UIWidget * uiTreeViewGetUIWidget (uitree_t *uitree);
 void  uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...);
 void  uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...);
@@ -52,6 +53,7 @@ bool  uiTreeViewSelectNext (uitree_t *uitree);
 bool  uiTreeViewSelectPrevious (uitree_t *uitree);
 int   uiTreeViewSelectDefault (uitree_t *uitree);
 long  uiTreeViewGetValue (uitree_t *uitree, int col);
+const char *uiTreeViewGetValueStr (uitree_t *uitree, int col);
 #if BDJ4_USE_GTK
 int   uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *iter);
 #endif

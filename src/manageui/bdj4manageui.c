@@ -140,6 +140,7 @@ enum {
   MANAGE_CB_ITUNES_DIALOG,
   MANAGE_CB_ITUNES_SEL,
   MANAGE_CB_APPLY_ADJ,
+  MANAGE_CB_SL_SEL_FILE,
   MANAGE_CB_MAX,
 };
 
@@ -319,7 +320,7 @@ static void     manageMusicManagerMenu (manageui_t *manage);
 static void     manageBuildUISongListEditor (manageui_t *manage);
 static void     manageSonglistMenu (manageui_t *manage);
 static bool     manageSonglistLoad (void *udata);
-static void     manageSonglistLoadCB (void *udata, const char *fn);
+static long     manageSonglistLoadCB (void *udata, const char *fn);
 static bool     manageSonglistCopy (void *udata);
 static bool     manageSonglistNew (void *udata);
 static bool     manageSonglistDelete (void *udata);
@@ -2144,18 +2145,21 @@ manageSonglistLoad (void *udata)
   logProcBegin (LOG_PROC, "manageSonglistLoad");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load songlist");
   manageSonglistSave (manage);
+  manage->callbacks [MANAGE_CB_SL_SEL_FILE] =
+      callbackInitStr (manageSonglistLoadCB, manage);
   selectFileDialog (SELFILE_SONGLIST, &manage->window, manage->options,
-      manage, manageSonglistLoadCB);
+      manage->callbacks [MANAGE_CB_SL_SEL_FILE]);
   logProcEnd (LOG_PROC, "manageSonglistLoad", "");
   return UICB_CONT;
 }
 
-static void
+static long
 manageSonglistLoadCB (void *udata, const char *fn)
 {
   manageui_t  *manage = udata;
 
   manageSonglistLoadFile (manage, fn, MANAGE_STD);
+  return 0;
 }
 
 static bool

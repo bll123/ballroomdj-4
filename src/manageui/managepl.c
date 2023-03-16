@@ -38,6 +38,7 @@ enum {
   MPL_CB_MENU_PL_DELETE,
   MPL_CB_MAXPLAYTIME,
   MPL_CB_STOPAT,
+  MPL_CB_SEL_FILE,
   MPL_CB_MAX,
 };
 
@@ -74,7 +75,7 @@ typedef struct managepl {
 } managepl_t;
 
 static bool managePlaylistLoad (void *udata);
-static void managePlaylistLoadCB (void *udata, const char *fn);
+static long managePlaylistLoadCB (void *udata, const char *fn);
 static bool managePlaylistNewCB (void *udata);
 static bool managePlaylistCopy (void *udata);
 static void managePlaylistUpdateData (managepl_t *managepl);
@@ -579,13 +580,15 @@ managePlaylistLoad (void *udata)
   logProcBegin (LOG_PROC, "managePlaylistLoad");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load playlist");
   managePlaylistSave (managepl);
+  managepl->callbacks [MPL_CB_SEL_FILE] =
+      callbackInitStr (managePlaylistLoadCB, managepl);
   selectFileDialog (SELFILE_PLAYLIST, managepl->windowp, managepl->options,
-      managepl, managePlaylistLoadCB);
+      managepl->callbacks [MPL_CB_SEL_FILE]);
   logProcEnd (LOG_PROC, "managePlaylistLoad", "");
   return UICB_CONT;
 }
 
-static void
+static long
 managePlaylistLoadCB (void *udata, const char *fn)
 {
   managepl_t  *managepl = udata;
@@ -593,6 +596,7 @@ managePlaylistLoadCB (void *udata, const char *fn)
   logProcBegin (LOG_PROC, "managePlaylistLoadCB");
   managePlaylistLoadFile (managepl, fn, MANAGE_STD);
   logProcEnd (LOG_PROC, "managePlaylistLoadCB", "");
+  return 0;
 }
 
 static bool

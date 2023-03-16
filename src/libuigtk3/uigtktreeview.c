@@ -28,6 +28,7 @@
 
 static GType * uiAppendType (GType *types, int ncol, int type);
 static void uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
+static void uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
 
 typedef struct uitree {
   UIWidget          uitree;
@@ -35,6 +36,7 @@ typedef struct uitree {
   callback_t        *editedcb;
   GtkTreeIter       selectiter;
   GtkTreeModel      *model;
+  callback_t        *rowactivecb;
   bool              selectset;
 } uitree_t;
 
@@ -61,6 +63,7 @@ uiCreateTreeView (void)
   uitree->sel = sel;
   uitree->selectset = false;
   uitree->model = NULL;
+  uitree->rowactivecb = NULL;
   uiWidgetSetAllMargins (&uitree->uitree, 2);
   return uitree;
 }
@@ -73,6 +76,17 @@ uiTreeViewFree (uitree_t *uitree)
   }
 
   mdfree (uitree);
+}
+
+void
+uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb)
+{
+  if (uitree == NULL) {
+    return;
+  }
+  uitree->rowactivecb = cb;
+  g_signal_connect (uitree->uitree.widget, "row-activated",
+      G_CALLBACK (uiTreeViewRowActiveHandler), uitree);
 }
 
 UIWidget *
@@ -483,6 +497,22 @@ uiTreeViewGetValue (uitree_t *uitree, int col)
   return idx;
 }
 
+const char *
+uiTreeViewGetValueStr (uitree_t *uitree, int col)
+{
+  char    *str;
+
+  if (uitree == NULL) {
+    return NULL;
+  }
+  if (uitree->model == NULL) {
+    return NULL;
+  }
+
+  gtk_tree_model_get (uitree->model, &uitree->selectiter, col, &str, -1);
+  return str;
+}
+
 int
 uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *iter)
 {
@@ -754,3 +784,25 @@ uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path,
     gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, val, -1);
   }
 }
+
+static void
+uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path,
+    GtkTreeViewColumn* column, gpointer udata)
+{
+  uitree_t    *uitree = udata;
+  int         count;
+
+  if (uitree == NULL) {
+    return;
+  }
+
+  count = uiTreeViewGetSelectCount (uitree);
+  if (count == 1) {
+    gtk_tree_selection_get_selected (uitree->sel, &uitree->model, &uitree->selectiter);
+  }
+  if (uitree->rowactivecb != NULL) {
+    callbackHandler (uitree->rowactivecb);
+  }
+}
+
+

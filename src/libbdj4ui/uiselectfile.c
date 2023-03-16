@@ -13,9 +13,8 @@
 #include <unistd.h>
 #include <math.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4intl.h"
+#include "bdj4ui.h"
 #include "mdebug.h"
 #include "nlist.h"
 #include "playlist.h"
@@ -33,21 +32,20 @@ typedef struct uiselectfile {
   UIWidget          *parentwinp;
   UIWidget          uidialog;
   uitree_t          *selfiletree;
-  callback_t        *cb;
-  selfilecb_t       selfilecb;
+  callback_t        *rowactivecb;
+  callback_t        *respcb;
+  callback_t        *selfilecb;
   nlist_t           *options;
-  void              *cbudata;
 } uiselectfile_t;
 
 static void selectFileCreateDialog (uiselectfile_t *selectfile,
-    slist_t *filelist, const char *filetype, selfilecb_t cb);
-static void selectFileSelect (GtkTreeView* tv, GtkTreePath* path,
-    GtkTreeViewColumn* column, gpointer udata);
+    slist_t *filelist, const char *filetype, callback_t *cb);
+static bool selectFileSelect (void *udata);
 static bool selectFileResponseHandler (void *udata, long responseid);
 
 void
 selectFileDialog (int type, UIWidget *window, nlist_t *options,
-    void *udata, selfilecb_t cb)
+    callback_t *cb)
 {
   uiselectfile_t *selectfile;
   slist_t     *filelist;
@@ -59,10 +57,10 @@ selectFileDialog (int type, UIWidget *window, nlist_t *options,
   selectfile->parentwinp = window;
   uiutilsUIWidgetInit (&selectfile->uidialog);
   selectfile->selfiletree = NULL;
-  selectfile->cb = NULL;
+  selectfile->rowactivecb = NULL;
+  selectfile->respcb = NULL;
   selectfile->selfilecb = NULL;
   selectfile->options = options;
-  selectfile->cbudata = udata;
 
   /* CONTEXT: select file: file type for the file selection dialog (song list) */
   title = _("Song List");
@@ -105,7 +103,8 @@ void
 selectFileFree (uiselectfile_t *selectfile)
 {
   if (selectfile != NULL) {
-    callbackFree (selectfile->cb);
+    callbackFree (selectfile->respcb);
+    callbackFree (selectfile->rowactivecb);
     uiTreeViewFree (selectfile->selfiletree);
     mdfree (selectfile);
   }
@@ -113,7 +112,7 @@ selectFileFree (uiselectfile_t *selectfile)
 
 static void
 selectFileCreateDialog (uiselectfile_t *selectfile,
-    slist_t *filelist, const char *filetype, selfilecb_t cb)
+    slist_t *filelist, const char *filetype, callback_t *cb)
 {
   UIWidget      vbox;
   UIWidget      hbox;
@@ -121,23 +120,19 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   UIWidget      *uitreewidgetp;
   UIWidget      scwindow;
   char          tbuff [200];
-  GtkListStore  *store;
-  GtkTreeIter   iter;
   slistidx_t    fliteridx;
   char          *disp;
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
 
 
   selectfile->selfilecb = cb;
 
-  selectfile->cb = callbackInitLong (
+  selectfile->respcb = callbackInitLong (
       selectFileResponseHandler, selectfile);
 
   /* CONTEXT: select file: title of window: select <file-type> */
   snprintf (tbuff, sizeof (tbuff), _("Select %s"), filetype);
   uiCreateDialog (&selectfile->uidialog,
-      selectfile->parentwinp, selectfile->cb, tbuff,
+      selectfile->parentwinp, selectfile->respcb, tbuff,
       /* CONTEXT: select file: closes the dialog */
       _("Close"), RESPONSE_CLOSE,
       /* CONTEXT: select file: selects the file */
@@ -161,39 +156,25 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiWidgetAlignVertFill (uitreewidgetp);
   uiBoxPackInWindow (&scwindow, uitreewidgetp);
 
-  store = gtk_list_store_new (SELFILE_COL_MAX,
-      TREE_TYPE_STRING, TREE_TYPE_STRING);
-  assert (store != NULL);
+  uiTreeViewCreateValueStore (selectfile->selfiletree, SELFILE_COL_MAX,
+      TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_END);
 
   slistStartIterator (filelist, &fliteridx);
   while ((disp = slistIterateKey (filelist, &fliteridx)) != NULL) {
-    gtk_list_store_append (store, &iter);
-    gtk_list_store_set (store, &iter,
+    uiTreeViewAppendValueStore (selectfile->selfiletree);
+    uiTreeViewSetValues (selectfile->selfiletree,
         SELFILE_COL_DISP, disp,
         SELFILE_COL_SB_PAD, "  ",
-        -1);
+        TREE_VALUE_END);
   }
 
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", SELFILE_COL_DISP,
-      NULL);
-  gtk_tree_view_column_set_title (column, "");
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
+  uiTreeViewAppendColumn (selectfile->selfiletree, TREE_COL_DISP_GROW, "",
+      TREE_COL_MODE_TEXT, SELFILE_COL_DISP, TREE_COL_MODE_END);
+  uiTreeViewAppendColumn (selectfile->selfiletree, TREE_COL_DISP_NORM, "",
+      TREE_COL_MODE_TEXT, SELFILE_COL_SB_PAD, TREE_COL_MODE_END);
 
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", SELFILE_COL_SB_PAD,
-      NULL);
-  gtk_tree_view_column_set_title (column, "");
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
-
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), GTK_TREE_MODEL (store));
-  g_object_unref (store);
-
-  g_signal_connect (uitreewidgetp->widget, "row-activated",
-      G_CALLBACK (selectFileSelect), selectfile);
+  selectfile->rowactivecb = callbackInit (selectFileSelect, selectfile, NULL);
+  uiTreeViewSetRowActivatedCallback (selectfile->selfiletree, selectfile->rowactivecb);
 
   /* the dialog doesn't have any space above the buttons */
   uiCreateHorizBox (&hbox);
@@ -203,13 +184,13 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiBoxPackStart (&hbox, &uiwidget);
 }
 
-static void
-selectFileSelect (GtkTreeView* tv, GtkTreePath* path,
-    GtkTreeViewColumn* column, gpointer udata)
+static bool
+selectFileSelect (void *udata)
 {
   uiselectfile_t  *selectfile = udata;
 
   selectFileResponseHandler (selectfile, RESPONSE_APPLY);
+  return UICB_CONT;
 }
 
 static bool
@@ -217,9 +198,7 @@ selectFileResponseHandler (void *udata, long responseid)
 {
   uiselectfile_t  *selectfile = udata;
   int           x, y, ws;
-  char          *str;
-  GtkTreeModel  *model;
-  GtkTreeIter   iter;
+  const char    *str;
   int           count;
 
   uiWindowGetPosition (&selectfile->uidialog, &x, &y, &ws);
@@ -237,15 +216,15 @@ selectFileResponseHandler (void *udata, long responseid)
       break;
     }
     case RESPONSE_APPLY: {
-      count = uiTreeViewGetSelection (selectfile->selfiletree, &model, &iter);
+      count = uiTreeViewGetSelectCount (selectfile->selfiletree);
       if (count != 1) {
         break;
       }
 
-      gtk_tree_model_get (model, &iter, SELFILE_COL_DISP, &str, -1);
+      str = uiTreeViewGetValueStr (selectfile->selfiletree, SELFILE_COL_DISP);
       uiCloseWindow (&selectfile->uidialog);
       if (selectfile->selfilecb != NULL) {
-        selectfile->selfilecb (selectfile->cbudata, str);
+        callbackHandlerStr (selectfile->selfilecb, str);
       }
       selectfile->selfilecb = NULL;
       break;

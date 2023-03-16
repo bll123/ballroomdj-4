@@ -36,6 +36,7 @@ enum {
   MSEQ_MENU_CB_SEQ_COPY,
   MSEQ_MENU_CB_SEQ_NEW,
   MSEQ_MENU_CB_SEQ_DELETE,
+  MSEQ_CB_SEL_FILE,
   MSEQ_CB_MAX,
 };
 
@@ -56,7 +57,7 @@ typedef struct manageseq {
 } manageseq_t;
 
 static bool   manageSequenceLoad (void *udata);
-static void   manageSequenceLoadCB (void *udata, const char *fn);
+static long   manageSequenceLoadCB (void *udata, const char *fn);
 static bool   manageSequenceCopy (void *udata);
 static bool   manageSequenceNew (void *udata);
 static bool   manageSequenceDelete (void *udata);
@@ -366,13 +367,15 @@ manageSequenceLoad (void *udata)
   logProcBegin (LOG_PROC, "manageSequenceLoad");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load sequence");
   manageSequenceSave (manageseq);
+  manageseq->callbacks [MSEQ_CB_SEL_FILE] =
+      callbackInitStr (manageSequenceLoadCB, manageseq);
   selectFileDialog (SELFILE_SEQUENCE, manageseq->windowp, manageseq->options,
-      manageseq, manageSequenceLoadCB);
+      manageseq->callbacks [MSEQ_CB_SEL_FILE]);
   logProcEnd (LOG_PROC, "manageSequenceLoad", "");
   return UICB_CONT;
 }
 
-static void
+static long
 manageSequenceLoadCB (void *udata, const char *fn)
 {
   manageseq_t *manageseq = udata;
@@ -380,6 +383,7 @@ manageSequenceLoadCB (void *udata, const char *fn)
   logProcBegin (LOG_PROC, "manageSequenceLoadCB");
   manageSequenceLoadFile (manageseq, fn, MANAGE_STD);
   logProcEnd (LOG_PROC, "manageSequenceLoadCB", "");
+  return 0;
 }
 
 static bool

@@ -66,8 +66,6 @@ confuiBuildUIEditStatus (confuigui_t *gui)
 void
 confuiCreateStatusTable (confuigui_t *gui)
 {
-//  GtkTreeIter       iter;
-//  GtkListStore      *store = NULL;
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
   ilistidx_t        iteridx;
@@ -84,10 +82,8 @@ confuiCreateStatusTable (confuigui_t *gui)
   uitree = gui->tables [CONFUI_ID_STATUS].uitree;
   uitreewidgetp = uiTreeViewGetUIWidget (uitree);
 
-// store = gtk_list_store_new
   uiTreeViewCreateValueStore (uitree, CONFUI_STATUS_COL_MAX,
       TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_BOOLEAN, TREE_TYPE_END);
-//  assert (store != NULL);
 
   statusStartIterator (status, &iteridx);
 
