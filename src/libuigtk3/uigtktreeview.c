@@ -109,6 +109,7 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
   int               col;
   char              *gtkcoltype = "text";
 //  bool              first = true;
+  int               gtkcoldisp;
 
   if (uitree == NULL) {
     return;
@@ -174,7 +175,18 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
   }
   va_end (args);
 
-  gtk_tree_view_column_set_sizing (column, coldisp);
+  gtkcoldisp = GTK_TREE_VIEW_COLUMN_AUTOSIZE;
+  switch (coldisp) {
+    case TREE_COL_DISP_NORM: {
+      gtkcoldisp = GTK_TREE_VIEW_COLUMN_AUTOSIZE;
+      break;
+    }
+    case TREE_COL_DISP_GROW: {
+      gtkcoldisp = GTK_TREE_VIEW_COLUMN_GROW_ONLY;
+      break;
+    }
+  }
+  gtk_tree_view_column_set_sizing (column, gtkcoldisp);
   gtk_tree_view_column_set_title (column, title);
   gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->uitree.widget), column);
 }
