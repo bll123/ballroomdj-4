@@ -15,6 +15,7 @@
 #include "mdebug.h"
 #include "uiclass.h"
 
+#include "ui/uiinternal.h"
 #include "ui/uiui.h"
 #include "ui/uibox.h"
 #include "ui/uiwidget.h"

@@ -4,19 +4,13 @@
 #ifndef INC_UIGTK_H
 #define INC_UIGTK_H
 
-#include <gtk/gtk.h>
+#include <gtk/gtk.h>        // will go away
 
-typedef glong treenum_t;
+typedef glong treenum_t;      // will go away
 
 /* tree view storage types */
 enum {
-  TREE_TYPE_STRING = G_TYPE_STRING,
-  TREE_TYPE_NUM = G_TYPE_LONG,
-  TREE_TYPE_WIDGET = G_TYPE_OBJECT,
-  TREE_TYPE_BOOLEAN = G_TYPE_BOOLEAN,
-  TREE_TYPE_ELLIPSIZE = G_TYPE_INT,
-  TREE_TYPE_IMAGE = -5,               // will be set to GDK_TYPE_PIXBUF
-  TREE_ELLIPSIZE_END = PANGO_ELLIPSIZE_END,
+  TREE_ELLIPSIZE_END = PANGO_ELLIPSIZE_END,     // will be moved
 };
 
 /* these are defined based on the gtk values */
@@ -28,8 +22,6 @@ enum {
   UICB_NO_DISP = false,
   UICB_NO_CONV = false,
   UICB_CONVERTED = true,
-  SELECT_SINGLE = GTK_SELECTION_SINGLE,
-  SELECT_MULTIPLE = GTK_SELECTION_MULTIPLE,
   UICB_SUPPORTED = true,
   UICB_NOT_SUPPORTED = false,
   UIWIDGET_DISABLE = false,
@@ -38,15 +30,7 @@ enum {
   UI_TOGGLE_BUTTON_OFF = false,
 };
 
-typedef struct {
-  union {
-    GtkWidget         *widget;
-    GtkSizeGroup      *sg;
-    GdkPixbuf         *pixbuf;
-    GtkTreeSelection  *sel;
-    GtkTextBuffer     *buffer;
-    GtkAdjustment     *adjustment;
-  };
-} UIWidget;
+typedef union uiwidget uiwidget_t;
+typedef union uiwidget UIWidget; // temporary, will be removed later
 
 #endif /* INC_UIGTK_H */

@@ -25,6 +25,7 @@
 #include "tmutil.h"
 #include "uiclass.h"
 
+#include "ui/uiinternal.h"
 #include "ui/uiui.h"
 
 static char **cssdata = NULL;

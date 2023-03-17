@@ -588,7 +588,7 @@ uisongselSetSelection (uisongsel_t *uisongsel, long idx)
     return;
   }
 
-  uiTreeViewSelectionSet (uiw->songselTree, idx);
+  uiTreeViewSelectSet (uiw->songselTree, idx);
 }
 
 void
@@ -608,7 +608,7 @@ uisongselSetSelectionOffset (uisongsel_t *uisongsel, long idx)
   uisongselScrollSelection (uisongsel, idx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_DIR_NONE);
   idx -= uisongsel->idxStart;
 
-  uiTreeViewSelectionSet (uiw->songselTree, idx);
+  uiTreeViewSelectSet (uiw->songselTree, idx);
 }
 
 bool
@@ -1236,7 +1236,7 @@ uisongselScroll (GtkRange *range, GtkScrollType scrolltype,
   while ((idx = nlistIterateKey (uiw->selectedList, &iteridx)) >= 0) {
     if (idx >= uisongsel->idxStart &&
         idx < uisongsel->idxStart + uiw->maxRows) {
-      uiTreeViewSelectionSet (uiw->songselTree, idx - uisongsel->idxStart);
+      uiTreeViewSelectSet (uiw->songselTree, idx - uisongsel->idxStart);
     }
   }
 
@@ -1506,7 +1506,7 @@ uisongselProcessSelection (GtkTreeModel *model,
     for (nlistidx_t i = beg; i <= end; ++i) {
       if (i >= uisongsel->idxStart &&
           i < uisongsel->idxStart + uiw->maxRows) {
-        uiTreeViewSelectionSet (uiw->songselTree, i - uisongsel->idxStart);
+        uiTreeViewSelectSet (uiw->songselTree, i - uisongsel->idxStart);
       }
       dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
       nlistSetNum (uiw->selectedList, i, dbidx);

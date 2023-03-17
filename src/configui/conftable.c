@@ -59,8 +59,6 @@ confuiMakeItemTable (confuigui_t *gui, UIWidget *boxp, confuiident_t id,
 
   gui->tables [id].uitree = uiCreateTreeView ();
   uiwidgetp = uiTreeViewGetUIWidget (gui->tables [id].uitree);
-//  gui->tables [id].sel =
-//      gtk_tree_view_get_selection (GTK_TREE_VIEW (uiwidgetp->widget));
   gui->tables [id].flags = flags;
 
   uiWidgetSetMarginStart (uiwidgetp, 8);
@@ -342,52 +340,22 @@ confuiTableMoveDown (void *udata)
 static void
 confuiTableMove (confuigui_t *gui, int dir)
 {
-  UIWidget          *uiwidgetp;
-  GtkWidget         *tree;
-  GtkTreeModel      *model;
-  GtkTreeIter       iter;
-  GtkTreeIter       citer;
-  GtkTreePath       *path = NULL;
-  char              *pathstr = NULL;
+  uitree_t          *uitree;
   int               count;
-  int               valid;
   int               idx;
   int               flags;
 
   logProcBegin (LOG_PROC, "confuiTableMove");
-  uiwidgetp = uiTreeViewGetUIWidget (gui->tables [gui->tablecurr].uitree);
-  tree = uiwidgetp->widget;
   flags = gui->tables [gui->tablecurr].flags;
 
-  if (tree == NULL) {
-    return;
-  }
-
-  count = uiTreeViewSelectGetCount (gui->tables [gui->tablecurr].uitree);
+  uitree = gui->tables [gui->tablecurr].uitree;
+  count = uiTreeViewSelectGetCount (uitree);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiTableMove", "no-selection");
     return;
   }
 
-  valid = gtk_tree_selection_get_selected (
-      gui->tables [gui->tablecurr].sel, &model, &iter);
-
-  if (! valid) {
-    return;
-  }
-
-  path = gtk_tree_model_get_path (model, &iter);
-  mdextalloc (path);
-  if (path == NULL) {
-    return;
-  }
-
-  pathstr = gtk_tree_path_to_string (path);
-  mdextalloc (pathstr);
-  sscanf (pathstr, "%d", &idx);
-  mdextfree (path);
-  gtk_tree_path_free (path);
-  mdfree (pathstr);   // allocated by gtk
+  idx = uiTreeViewSelectGetIndex (uitree);
 
   if (idx == 1 &&
       dir == CONFUI_MOVE_PREV &&
@@ -414,17 +382,10 @@ confuiTableMove (confuigui_t *gui, int dir)
     return;
   }
 
-  memcpy (&citer, &iter, sizeof (iter));
   if (dir == CONFUI_MOVE_PREV) {
-    valid = gtk_tree_model_iter_previous (model, &iter);
-    if (valid) {
-      gtk_list_store_move_before (GTK_LIST_STORE (model), &citer, &iter);
-    }
+    uiTreeViewMoveBefore (uitree);
   } else {
-    valid = gtk_tree_model_iter_next (model, &iter);
-    if (valid) {
-      gtk_list_store_move_after (GTK_LIST_STORE (model), &citer, &iter);
-    }
+    uiTreeViewMoveAfter (uitree);
   }
   gui->tables [gui->tablecurr].changed = true;
   logProcEnd (LOG_PROC, "confuiTableMove", "");

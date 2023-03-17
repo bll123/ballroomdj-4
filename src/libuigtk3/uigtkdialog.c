@@ -20,6 +20,7 @@
 #include "mdebug.h"
 #include "callback.h"
 
+#include "ui/uiinternal.h"
 #include "ui/uidialog.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"

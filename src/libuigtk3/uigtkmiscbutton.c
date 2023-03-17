@@ -13,6 +13,7 @@
 
 #include <gtk/gtk.h>
 
+#include "ui/uiinternal.h"
 #include "ui/uimiscbutton.h"
 
 void

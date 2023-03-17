@@ -1108,7 +1108,7 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
   }
   uiw = uimusicq->ui [mqidx].uiWidgets;
 
-  uiTreeViewSelectionSet (uiw->musicqTree, uimusicq->ui [mqidx].selectLocation);
+  uiTreeViewSelectSet (uiw->musicqTree, uimusicq->ui [mqidx].selectLocation);
   snprintf (tbuff, sizeof (tbuff), "%ld", uimusicq->ui [mqidx].selectLocation);
   path = gtk_tree_path_new_from_string (tbuff);
   mdextalloc (path);

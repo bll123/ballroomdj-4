@@ -10,6 +10,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "ui/uiinternal.h"
 #include "ui/uigeneral.h"
 
 void

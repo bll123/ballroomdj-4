@@ -22,6 +22,7 @@
 #include "nlist.h"
 #include "slist.h"
 
+#include "ui/uiinternal.h"
 #include "ui/uibox.h"
 #include "ui/uibutton.h"
 #include "ui/uidialog.h"
@@ -435,7 +436,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
     g_object_ref_sink (G_OBJECT (uiwidgetp->widget));
   }
   uiTreeViewDisableHeaders (dropdown->uitree);
-  uiTreeViewSelectionSetMode (dropdown->uitree, SELECT_SINGLE);
+  uiTreeViewSelectSetMode (dropdown->uitree, SELECT_SINGLE);
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetExpandVert (uiwidgetp);
   uiBoxPackInWindow (&uiscwin, uiwidgetp);
@@ -469,7 +470,7 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
     internalidx = 0;
   }
 
-  uiTreeViewSelectionSet (dropdown->uitree, internalidx);
+  uiTreeViewSelectSet (dropdown->uitree, internalidx);
 
   // the next two lines can be removed once path is no longer needed.
   snprintf (tbuff, sizeof (tbuff), "%d", internalidx);

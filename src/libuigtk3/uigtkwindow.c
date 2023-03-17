@@ -19,6 +19,7 @@
 
 #include "callback.h"
 
+#include "ui/uiinternal.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"

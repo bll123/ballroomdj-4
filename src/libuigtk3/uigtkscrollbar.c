@@ -12,6 +12,7 @@
 
 #include <gtk/gtk.h>
 
+#include "ui/uiinternal.h"
 #include "ui/uiwidget.h"
 #include "ui/uiscrollbar.h"
 

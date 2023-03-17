@@ -10,6 +10,8 @@
 
 #include "uiclass.h"
 
+#include "ui/uiinternal.h"      // will go away
+
 #include "ui/uiadjustment.h"
 #include "ui/uibox.h"
 #include "ui/uibutton.h"

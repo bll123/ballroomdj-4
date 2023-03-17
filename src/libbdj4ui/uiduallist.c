@@ -263,7 +263,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   UIWidget      *uiwidgetp = NULL;
   char          *keystr;
   slistidx_t    siteridx;
-  char          tmp [40];
+//  char          tmp [40];
   uitree_t      *uitree = NULL;
   uitree_t      *uistree = NULL;
 
@@ -304,14 +304,14 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
     /* is not set, remove the matching entries from the source tree */
     if (which == DUALLIST_TREE_TARGET &&
         (duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
-      UIWidget          *stree;
-      GtkTreeModel      *smodel;
-      GtkTreePath       *path;
-      GtkTreeIter       siter;
+//      UIWidget          *stree;
+//      GtkTreeModel      *smodel;
+//      GtkTreePath       *path;
+//      GtkTreeIter       siter;
       callback_t        *cb;
 
-      stree = uiTreeViewGetUIWidget (duallist->trees [DUALLIST_TREE_SOURCE].uitree);
-      smodel = gtk_tree_view_get_model (GTK_TREE_VIEW (stree->widget));
+//      stree = uiTreeViewGetUIWidget (duallist->trees [DUALLIST_TREE_SOURCE].uitree);
+//      smodel = gtk_tree_view_get_model (GTK_TREE_VIEW (stree->widget));
 
       duallist->pos = 0;
       duallist->searchstr = keystr;
@@ -320,6 +320,13 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
       cb = callbackInit (uiduallistSourceSearch, duallist, NULL);
       uiTreeViewForeach (uistree, cb);
 
+      if (duallist->pos != 0) {
+        uiTreeViewSelectSave (uistree);
+        uiTreeViewSelectSet (uistree, duallist->pos);
+        uiTreeViewValueRemove (uistree);
+        uiTreeViewSelectRestore (uistree);
+      }
+#if 0
       snprintf (tmp, sizeof (tmp), "%d", duallist->pos);
       path = gtk_tree_path_new_from_string (tmp);
       mdextalloc (path);
@@ -330,6 +337,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
         mdextfree (path);
         gtk_tree_path_free (path);
       }
+#endif
     }
   }
 
@@ -401,7 +409,7 @@ uiduallistMove (uiduallist_t *duallist, int which, int dir)
   if (duallist == NULL) {
     return;
   }
-  if (which >= DUALLIST_TREE_MAX) {
+  if (which < 0 || which >= DUALLIST_TREE_MAX) {
     return;
   }
 
@@ -597,7 +605,7 @@ uiduallistSetDefaultSelection (uiduallist_t *duallist, int which)
   if (duallist == NULL) {
     return;
   }
-  if (which >= DUALLIST_TREE_MAX) {
+  if (which < 0 || which >= DUALLIST_TREE_MAX) {
     return;
   }
 
