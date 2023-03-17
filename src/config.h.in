@@ -124,7 +124,6 @@
 #cmakedefine01 _define_WIFEXITED
 
 #cmakedefine01 _mem_struct_stat_st_birthtime
-#cmakedefine _siz_struct_statx
 
 #cmakedefine01 _typ_HANDLE
 #cmakedefine01 _typ_SOCKET
