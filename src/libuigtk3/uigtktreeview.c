@@ -27,7 +27,7 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
-static GType * uiAppendType (GType *types, int ncol, int type);
+static int * uiAppendType (int *types, int ncol, int type);
 static void uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 static void uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
 static gboolean uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
@@ -42,6 +42,7 @@ typedef struct uitree {
   GtkTreeModel      *model;
   callback_t        *rowactivecb;
   callback_t        *foreachcb;
+  int               selmode;
   bool              selectset;
   bool              savedselectset;
 } uitree_t;
@@ -71,6 +72,7 @@ uiCreateTreeView (void)
   uitree->savedselectset = false;
   uitree->model = NULL;
   uitree->rowactivecb = NULL;
+  uitree->selmode = SELECT_MULTIPLE;
   uiWidgetSetAllMargins (&uitree->uitree, 2);
   return uitree;
 }
@@ -150,8 +152,12 @@ uiTreeViewSelectSetMode (uitree_t *uitree, int mode)
   if (mode == SELECT_SINGLE) {
     gtkmode = GTK_SELECTION_SINGLE;
   }
+  if (mode == SELECT_MULTIPLE) {
+    gtkmode = GTK_SELECTION_MULTIPLE;
+  }
 
   gtk_tree_selection_set_mode (uitree->sel, gtkmode);
+  uitree->selmode = mode;
 }
 
 void
@@ -292,14 +298,14 @@ uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...)
     for (int i = 0; i < colmax; ++i) {
       tval = va_arg (args, int);
       if (tval == TREE_TYPE_END) {
-        fprintf (stderr, "uiTreeViewCreateValueStore: not enough values\n");
+        fprintf (stderr, "ERR: uiTreeViewCreateValueStore: not enough values\n");
         break;
       }
       types [i] = uiTreeViewConvertTreeType (tval);
     }
     tval = va_arg (args, int);
     if (tval != TREE_TYPE_END) {
-      fprintf (stderr, "uiTreeViewCreateValueStore: too many values\n");
+      fprintf (stderr, "ERR: uiTreeViewCreateValueStore: too many values\n");
     }
     va_end (args);
 
@@ -498,7 +504,7 @@ uiTreeViewSelectGetCount (uitree_t *uitree)
   sel = uitree->sel;
   count = gtk_tree_selection_count_selected_rows (sel);
   uitree->selectset = false;
-  if (count == 1) {
+  if (count == 1 && uitree->selmode == SELECT_SINGLE) {
     bool    valid;
 
     /* this only works if the treeview is in single-selection mode */
@@ -786,9 +792,11 @@ uiTreeViewSelectSet (uitree_t *uitree, int row)
     gtk_tree_selection_select_path (uitree->sel, path);
     mdextfree (path);
     gtk_tree_path_free (path);
-    valid = gtk_tree_selection_get_selected (uitree->sel, &uitree->model, &uitree->selectiter);
-    if (valid) {
-      uitree->selectset = true;
+    if (uitree->selmode == SELECT_SINGLE) {
+      valid = gtk_tree_selection_get_selected (uitree->sel, &uitree->model, &uitree->selectiter);
+      if (valid) {
+        uitree->selectset = true;
+      }
     }
   }
 }
@@ -911,18 +919,15 @@ uiTreeViewSetDisplayColumn (GtkTreeModel *model, GtkTreeIter *iter,
 }
 
 
-GType *
-uiTreeViewAddDisplayType (GType *types, int type, int col)
+int *
+uiTreeViewAddDisplayType (int *types, int type, int col)
 {
-  GType     gtktype;
-
-  gtktype = uiTreeViewConvertTreeType (type);
   if (type == TREE_TYPE_NUM) {
     /* despite being a numeric type, the display needs a string */
     /* so that empty values can be displayed */
-    gtktype = TREE_TYPE_STRING;
+    type = TREE_TYPE_STRING;
   }
-  types = uiAppendType (types, col, gtktype);
+  types = uiAppendType (types, col, type);
 
   return types;
 }
@@ -945,7 +950,7 @@ uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *ite
   sel = uitree->sel;
   count = gtk_tree_selection_count_selected_rows (sel);
   uitree->selectset = false;
-  if (count == 1) {
+  if (count == 1 && uitree->selmode == SELECT_SINGLE) {
     bool    valid;
 
     /* this only works if the treeview is in single-selection mode */
@@ -960,10 +965,10 @@ uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *ite
 /* internal routines */
 
 /* used by the listing display routines */
-static GType *
-uiAppendType (GType *types, int ncol, int type)
+static int *
+uiAppendType (int *types, int ncol, int type)
 {
-  types = mdrealloc (types, (ncol + 1) * sizeof (GType));
+  types = mdrealloc (types, (ncol + 1) * sizeof (int));
   types [ncol] = type;
 
   return types;
@@ -1012,7 +1017,7 @@ uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path,
 
   count = uiTreeViewSelectGetCount (uitree);
   uitree->selectset = false;
-  if (count == 1) {
+  if (count == 1 && uitree->selmode == SELECT_SINGLE) {
     bool  valid;
 
     valid = gtk_tree_selection_get_selected (uitree->sel, &uitree->model, &uitree->selectiter);
@@ -1067,7 +1072,11 @@ uiTreeViewConvertTreeType (int type)
       break;
     }
     case TREE_TYPE_END: {
-      fprintf (stderr, "fail: tree-type-end found in conversion\n");
+      fprintf (stderr, "ERR: tree-type-end found in conversion\n");
+      break;
+    }
+    default: {
+      fprintf (stderr, "ERR: unknown tree type: %d\n", type);
       break;
     }
   }

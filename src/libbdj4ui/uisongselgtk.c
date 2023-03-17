@@ -114,8 +114,8 @@ typedef struct uisongselgtk {
   GtkTreeIter       currIter;
   GtkTreeModel      *model;
   GtkTreeIter       *iterp;
-  GType             *typelist;
-  int               col;        // for the display type callback
+  int               *typelist;
+  int               colcount;            // for the display type callback
   const char        *markcolor;
   /* for shift-click */
   nlistidx_t        shiftfirstidx;
@@ -996,36 +996,33 @@ static void
 uisongselInitializeStore (uisongsel_t *uisongsel)
 {
   uisongselgtk_t      * uiw;
-  GtkListStore      *store = NULL;
   slist_t           *sellist;
-  UIWidget          *uiwidgetp;
 
   logProcBegin (LOG_PROC, "uisongselInitializeStore");
 
   uiw = uisongsel->uiWidgetData;
-  uiw->typelist = mdmalloc (sizeof (GType) * SONGSEL_COL_MAX);
-  uiw->col = 0;
+  uiw->typelist = mdmalloc (sizeof (int) * SONGSEL_COL_MAX);
+  uiw->colcount = 0;
   /* attributes ellipsize/font*/
-  uiw->typelist [uiw->col++] = TREE_TYPE_ELLIPSIZE;
-  uiw->typelist [uiw->col++] = TREE_TYPE_STRING;
+  uiw->typelist [uiw->colcount++] = TREE_TYPE_ELLIPSIZE;
+  uiw->typelist [uiw->colcount++] = TREE_TYPE_STRING;
   /* internal idx/sortidx/dbidx */
-  uiw->typelist [uiw->col++] = TREE_TYPE_NUM,
-  uiw->typelist [uiw->col++] = TREE_TYPE_NUM,
-  uiw->typelist [uiw->col++] = TREE_TYPE_NUM,
+  uiw->typelist [uiw->colcount++] = TREE_TYPE_NUM;
+  uiw->typelist [uiw->colcount++] = TREE_TYPE_NUM;
+  uiw->typelist [uiw->colcount++] = TREE_TYPE_NUM;
   /* fav color/mark color/mark/samesong color */
-  uiw->typelist [uiw->col++] = TREE_TYPE_STRING,
-  uiw->typelist [uiw->col++] = TREE_TYPE_STRING,
-  assert (uiw->col == SONGSEL_COL_MAX);
+  uiw->typelist [uiw->colcount++] = TREE_TYPE_STRING;
+  uiw->typelist [uiw->colcount++] = TREE_TYPE_STRING;
+  if (uiw->colcount != SONGSEL_COL_MAX) {
+    fprintf (stderr, "ERR: mismatched SONGSEL_COL_MAX and %d\n", uiw->colcount);
+  }
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
   uisongAddDisplayTypes (sellist, uisongselInitializeStoreCallback, uisongsel);
 
-  store = gtk_list_store_newv (uiw->col, uiw->typelist);
+  uiTreeViewCreateValueStoreFromList (uiw->songselTree, uiw->colcount, uiw->typelist);
   mdfree (uiw->typelist);
 
-  uiwidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidgetp->widget),
-      GTK_TREE_MODEL (store));
   logProcEnd (LOG_PROC, "uisongselInitializeStore", "");
 }
 
@@ -1036,8 +1033,8 @@ uisongselInitializeStoreCallback (int type, void *udata)
   uisongselgtk_t  *uiw;
 
   uiw = uisongsel->uiWidgetData;
-  uiw->typelist = uiTreeViewAddDisplayType (uiw->typelist, type, uiw->col);
-  ++uiw->col;
+  uiw->typelist = uiTreeViewAddDisplayType (uiw->typelist, type, uiw->colcount);
+  ++uiw->colcount;
 }
 
 

@@ -274,6 +274,10 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
   char          tbuff [40];
   UIWidget      *uiwidgetp;
 
+  if (managepltree->uitree == NULL) {
+    return;
+  }
+
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
   managepltree->playlist = pl;
@@ -496,12 +500,13 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
   ilistidx_t    key;
   uitree_t      *uitree;
   UIWidget      *uiwidgetp;
+  GtkTreeModel  *model;
   GtkListStore  *store;
   GtkAdjustment *adjustment;
 
   uitree = managepltree->uitree;
 
-  store = gtk_list_store_new (MPLTREE_COL_MAX,
+  uiTreeViewCreateValueStore (uitree, MPLTREE_COL_MAX,
       TREE_TYPE_BOOLEAN,  // dance select
       TREE_TYPE_STRING,   // dance
       TREE_TYPE_NUM,      // count
@@ -512,7 +517,12 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
       TREE_TYPE_NUM,      // dance idx
       TREE_TYPE_NUM,      // editable
       TREE_TYPE_WIDGET,   // adjust
-      TREE_TYPE_NUM);     // digits
+      TREE_TYPE_NUM,      // digits
+      TREE_TYPE_END);
+
+  uiwidgetp = uiTreeViewGetUIWidget (uitree);
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
+  store = GTK_LIST_STORE (model);
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancelist = danceGetDanceList (dances);
@@ -551,8 +561,6 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
   }
 
   uiwidgetp = uiTreeViewGetUIWidget (uitree);
-  gtk_tree_view_set_model (GTK_TREE_VIEW (uiwidgetp->widget), GTK_TREE_MODEL (store));
-  g_object_unref (store);
 }
 
 static bool

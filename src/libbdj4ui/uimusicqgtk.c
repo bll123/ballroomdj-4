@@ -719,6 +719,9 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
     uiw->typelist [uiw->colcount++] = TREE_TYPE_BOOLEAN;
     uiw->typelist [uiw->colcount++] = TREE_TYPE_NUM;
     uiw->typelist [uiw->colcount++] = TREE_TYPE_IMAGE;
+    if (uiw->colcount != MUSICQ_COL_MAX) {
+      fprintf (stderr, "ERR: mismatched MUSICQ_COL_MAX %d\n", uiw->colcount);
+    }
 
     sellist = dispselGetList (uimusicq->dispsel, uimusicq->ui [ci].dispselType);
     uimusicq->cbci = ci;

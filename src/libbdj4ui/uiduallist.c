@@ -304,14 +304,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
     /* is not set, remove the matching entries from the source tree */
     if (which == DUALLIST_TREE_TARGET &&
         (duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
-//      UIWidget          *stree;
-//      GtkTreeModel      *smodel;
-//      GtkTreePath       *path;
-//      GtkTreeIter       siter;
       callback_t        *cb;
-
-//      stree = uiTreeViewGetUIWidget (duallist->trees [DUALLIST_TREE_SOURCE].uitree);
-//      smodel = gtk_tree_view_get_model (GTK_TREE_VIEW (stree->widget));
 
       duallist->pos = 0;
       duallist->searchstr = keystr;
@@ -326,18 +319,6 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
         uiTreeViewValueRemove (uistree);
         uiTreeViewSelectRestore (uistree);
       }
-#if 0
-      snprintf (tmp, sizeof (tmp), "%d", duallist->pos);
-      path = gtk_tree_path_new_from_string (tmp);
-      mdextalloc (path);
-      if (path != NULL) {
-        if (gtk_tree_model_get_iter (smodel, &siter, path)) {
-          gtk_list_store_remove (GTK_LIST_STORE (smodel), &siter);
-        }
-        mdextfree (path);
-        gtk_tree_path_free (path);
-      }
-#endif
     }
   }
 
