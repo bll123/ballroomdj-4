@@ -158,6 +158,9 @@ static void uisongselGetIter (GtkTreeModel *model,
 static bool uisongselUIDanceSelectCallback (void *udata, long idx, int count);
 static bool uisongselSongEditCallback (void *udata);
 
+static int * uiTreeViewAddDisplayType (int *types, int type, int col);
+static int * uiAppendType (int *types, int ncol, int type);
+
 void
 uisongselUIInit (uisongsel_t *uisongsel)
 {
@@ -1713,5 +1716,27 @@ uisongselSongEditCallback (void *udata)
     callbackHandlerLong (uisongsel->newselcb, dbidx);
   }
   return callbackHandler (uisongsel->editcb);
+}
+
+static int *
+uiTreeViewAddDisplayType (int *types, int type, int col)
+{
+  if (type == TREE_TYPE_NUM) {
+    /* despite being a numeric type, the display needs a string */
+    /* so that empty values can be displayed */
+    type = TREE_TYPE_STRING;
+  }
+  types = uiAppendType (types, col, type);
+
+  return types;
+}
+
+static int *
+uiAppendType (int *types, int ncol, int type)
+{
+  types = mdrealloc (types, (ncol + 1) * sizeof (int));
+  types [ncol] = type;
+
+  return types;
 }
 

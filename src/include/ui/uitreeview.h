@@ -85,7 +85,6 @@ void  uiTreeViewAddEditableColumn (uitree_t *uitree, int col, int editcol, const
 #if BDJ4_USE_GTK
 GtkTreeViewColumn * uiTreeViewAddDisplayColumns (uitree_t *uitree,
     slist_t *sellist, int col, int fontcol, int ellipsizeCol);
-int * uiTreeViewAddDisplayType (int *types, int valtype, int col);
 void  uiTreeViewSetDisplayColumn (GtkTreeModel *model, GtkTreeIter *iter,
     int col, long num, const char *str);
 #endif

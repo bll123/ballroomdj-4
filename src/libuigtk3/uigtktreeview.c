@@ -27,7 +27,6 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
-static int * uiAppendType (int *types, int ncol, int type);
 static void uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 static void uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
 static gboolean uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
@@ -919,19 +918,6 @@ uiTreeViewSetDisplayColumn (GtkTreeModel *model, GtkTreeIter *iter,
 }
 
 
-int *
-uiTreeViewAddDisplayType (int *types, int type, int col)
-{
-  if (type == TREE_TYPE_NUM) {
-    /* despite being a numeric type, the display needs a string */
-    /* so that empty values can be displayed */
-    type = TREE_TYPE_STRING;
-  }
-  types = uiAppendType (types, col, type);
-
-  return types;
-}
-
 /* these routines will be removed at a later date */
 
 int
@@ -963,16 +949,6 @@ uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *ite
 }
 
 /* internal routines */
-
-/* used by the listing display routines */
-static int *
-uiAppendType (int *types, int ncol, int type)
-{
-  types = mdrealloc (types, (ncol + 1) * sizeof (int));
-  types [ncol] = type;
-
-  return types;
-}
 
 /* used by the editable column routines */
 static void
