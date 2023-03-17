@@ -363,7 +363,7 @@ confuiTableMove (confuigui_t *gui, int dir)
     return;
   }
 
-  count = uiTreeViewSelectionGetCount (gui->tables [gui->tablecurr].uitree);
+  count = uiTreeViewSelectGetCount (gui->tables [gui->tablecurr].uitree);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiTableMove", "no-selection");
     return;

@@ -99,7 +99,7 @@ confuiCreateRatingTable (confuigui_t *gui)
     ratingdisp = ratingGetRating (ratings, key);
     weight = ratingGetWeight (ratings, key);
 
-    uiTreeViewAppendValueStore (uitree);
+    uiTreeViewValueAppend (uitree);
     confuiRatingSet (uitree, editable, ratingdisp, weight);
     /* all cells other than the very first (Unrated) are editable */
     editable = TRUE;

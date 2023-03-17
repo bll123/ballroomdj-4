@@ -39,34 +39,38 @@ typedef struct uitree uitree_t;
 
 uitree_t *uiCreateTreeView (void);
 void  uiTreeViewFree (uitree_t *uitree);
-void  uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb);
-UIWidget * uiTreeViewGetUIWidget (uitree_t *uitree);
-void  uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...);
-void  uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...);
-void  uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typelist);
-void  uiTreeViewAppendValueStore (uitree_t *uitree);
-void  uiTreeViewInsertValueStore (uitree_t *uitree);
-void  uiTreeViewSetValues (uitree_t *uitree, ...);
-int   uiTreeViewGetSelectCount (uitree_t *uitree);
-int   uiTreeViewGetSelectionIndex (uitree_t *uitree);
-void  uiTreeViewSelectCurrent (uitree_t *uitree);
-bool  uiTreeViewSelectFirst (uitree_t *uitree);
-bool  uiTreeViewSelectNext (uitree_t *uitree);
-bool  uiTreeViewSelectPrevious (uitree_t *uitree);
-int   uiTreeViewSelectDefault (uitree_t *uitree);
-long  uiTreeViewGetValue (uitree_t *uitree, int col);
-const char *uiTreeViewGetValueStr (uitree_t *uitree, int col);
-#if BDJ4_USE_GTK
-int   uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *iter);
-#endif
 void  uiTreeViewAllowMultiple (uitree_t *uitree);
 void  uiTreeViewEnableHeaders (uitree_t *uitree);
 void  uiTreeViewDisableHeaders (uitree_t *uitree);
 void  uiTreeViewDarkBackground (uitree_t *uitree);
 void  uiTreeViewDisableSingleClick (uitree_t *uitree);
 void  uiTreeViewSelectionSetMode (uitree_t *uitree, int mode);
+void  uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb);
+UIWidget * uiTreeViewGetUIWidget (uitree_t *uitree);
+void  uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...);
+void  uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...);
+void  uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typelist);
+void  uiTreeViewValueAppend (uitree_t *uitree);
+void  uiTreeViewValueInsertBefore (uitree_t *uitree);
+void  uiTreeViewValueInsertAfter (uitree_t *uitree);
+void  uiTreeViewValueRemove (uitree_t *uitree);
+void  uiTreeViewSetValues (uitree_t *uitree, ...);
+int   uiTreeViewSelectGetCount (uitree_t *uitree);
+int   uiTreeViewSelectGetIndex (uitree_t *uitree);
+void  uiTreeViewSelectCurrent (uitree_t *uitree);
+bool  uiTreeViewSelectFirst (uitree_t *uitree);
+bool  uiTreeViewSelectNext (uitree_t *uitree);
+bool  uiTreeViewSelectPrevious (uitree_t *uitree);
+int   uiTreeViewSelectDefault (uitree_t *uitree);
+void  uiTreeViewMoveBefore (uitree_t *uitree);
+void  uiTreeViewMoveAfter (uitree_t *uitree);
+long  uiTreeViewGetValue (uitree_t *uitree, int col);
+const char *uiTreeViewGetValueStr (uitree_t *uitree, int col);
+void  uiTreeViewForeach (uitree_t *uitree, callback_t *cb);
+#if BDJ4_USE_GTK
+int   uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *iter);
+#endif
 void  uiTreeViewSelectionSet (uitree_t *uitree, int row);
-int   uiTreeViewSelectionGetCount (uitree_t *uitree);
 #if BDJ4_USE_GTK
 GtkTreeViewColumn * uiTreeViewAddDisplayColumns (uitree_t *uitree,
     slist_t *sellist, int col, int fontcol, int ellipsizeCol);

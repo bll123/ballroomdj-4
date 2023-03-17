@@ -161,7 +161,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
 
   slistStartIterator (filelist, &fliteridx);
   while ((disp = slistIterateKey (filelist, &fliteridx)) != NULL) {
-    uiTreeViewAppendValueStore (selectfile->selfiletree);
+    uiTreeViewValueAppend (selectfile->selfiletree);
     uiTreeViewSetValues (selectfile->selfiletree,
         SELFILE_COL_DISP, disp,
         SELFILE_COL_SB_PAD, "  ",
@@ -216,7 +216,7 @@ selectFileResponseHandler (void *udata, long responseid)
       break;
     }
     case RESPONSE_APPLY: {
-      count = uiTreeViewGetSelectCount (selectfile->selfiletree);
+      count = uiTreeViewSelectGetCount (selectfile->selfiletree);
       if (count != 1) {
         break;
       }

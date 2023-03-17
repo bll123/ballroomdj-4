@@ -205,7 +205,7 @@ confuiCreateDanceTable (confuigui_t *gui)
 
     dancedisp = danceGetStr (dances, key, DANCE_DANCE);
 
-    uiTreeViewAppendValueStore (uitree);
+    uiTreeViewValueAppend (uitree);
     confuiDanceSet (uitree, dancedisp, key);
     gui->tables [CONFUI_ID_DANCE].currcount += 1;
   }
@@ -264,7 +264,7 @@ confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
   didx = gui->uiitem [widx].danceidx;
 
   uitree = gui->tables [CONFUI_ID_DANCE].uitree;
-  count = uiTreeViewGetSelectCount (uitree);
+  count = uiTreeViewSelectGetCount (uitree);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiDanceEntryChg", "no-selection");
     return UIENTRY_OK;
@@ -367,7 +367,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
   }
 
   uitree = gui->tables [CONFUI_ID_DANCE].uitree;
-  count = uiTreeViewGetSelectCount (uitree);
+  count = uiTreeViewSelectGetCount (uitree);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "no-selection");
     return;

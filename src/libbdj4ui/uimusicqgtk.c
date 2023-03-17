@@ -478,7 +478,7 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
   }
   uiw = uimusicq->ui [mqidx].uiWidgets;
 
-  count = uiTreeViewSelectionGetCount (uiw->musicqTree);
+  count = uiTreeViewSelectGetCount (uiw->musicqTree);
   if (count != 1) {
     logProcEnd (LOG_PROC, "uimusicqMusicQueueSetSelected", "count != 1");
     return;
@@ -590,7 +590,7 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
     return loc;
   }
 
-  count = uiTreeViewSelectionGetCount (uiw->musicqTree);
+  count = uiTreeViewSelectGetCount (uiw->musicqTree);
   if (count == 1) {
     GtkTreeModel  *model;
     GtkTreeIter   iter;
@@ -907,7 +907,7 @@ uimusicqPlayCallback (void *udata)
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
 
-  count = uiTreeViewSelectionGetCount (uiw->musicqTree);
+  count = uiTreeViewSelectGetCount (uiw->musicqTree);
   if (count != 1) {
     return UICB_CONT;
   }
@@ -932,7 +932,7 @@ uimusicqQueueCallback (void *udata)
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
 
-  count = uiTreeViewSelectionGetCount (uiw->musicqTree);
+  count = uiTreeViewSelectGetCount (uiw->musicqTree);
   if (count != 1) {
     return UICB_CONT;
   }
@@ -963,7 +963,7 @@ uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
     return -1;
   }
 
-  count = uiTreeViewSelectionGetCount (uiw->musicqTree);
+  count = uiTreeViewSelectGetCount (uiw->musicqTree);
   if (count != 1) {
     return -1;
   }
@@ -1074,7 +1074,7 @@ uimusicqSetDefaultSelection (uimusicq_t *uimusicq)
     return;
   }
 
-  count = uiTreeViewSelectionGetCount (uiw->musicqTree);
+  count = uiTreeViewSelectGetCount (uiw->musicqTree);
   if (uimusicq->ui [ci].count > 0 && count < 1) {
     GtkTreeModel  *model;
     GtkTreeIter   iter;

@@ -101,7 +101,7 @@ confuiCreateLevelTable (confuigui_t *gui)
       gui->tables [CONFUI_ID_LEVELS].radiorow = key;
     }
 
-    uiTreeViewAppendValueStore (uitree);
+    uiTreeViewValueAppend (uitree);
     confuiLevelSet (uitree, TRUE, leveldisp, weight, def);
     /* all cells other than the very first (Unrated) are editable */
     gui->tables [CONFUI_ID_LEVELS].currcount += 1;

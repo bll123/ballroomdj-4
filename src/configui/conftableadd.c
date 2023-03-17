@@ -49,11 +49,11 @@ confuiTableAdd (void *udata)
   }
 
   flags = gui->tables [gui->tablecurr].flags;
-  count = uiTreeViewSelectionGetCount (uitree);
+  count = uiTreeViewSelectGetCount (uitree);
   if (count == 1) {
     int   valid;
 
-    valid = uiTreeViewGetSelectCount (uitree);
+    valid = uiTreeViewSelectGetCount (uitree);
     if (valid == 1) {
       found = true;
     }
@@ -62,7 +62,7 @@ confuiTableAdd (void *udata)
   if (found) {
     int     idx;
 
-    idx = uiTreeViewGetSelectionIndex (uitree);
+    idx = uiTreeViewSelectGetIndex (uitree);
     if (idx == 0 &&
         (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
       if (! uiTreeViewSelectNext (uitree)) {
@@ -72,9 +72,9 @@ confuiTableAdd (void *udata)
   }
 
   if (! found) {
-    uiTreeViewAppendValueStore (uitree);
+    uiTreeViewValueAppend (uitree);
   } else {
-    uiTreeViewInsertValueStore (uitree);
+    uiTreeViewValueInsertBefore (uitree);
   }
 
   switch (gui->tablecurr) {

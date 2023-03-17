@@ -557,7 +557,7 @@ uisongselSetDefaultSelection (uisongsel_t *uisongsel)
     return;
   }
 
-  count = uiTreeViewSelectionGetCount (uiw->songselTree);
+  count = uiTreeViewSelectGetCount (uiw->songselTree);
   if (count < 1) {
     GtkTreeModel  *model;
     GtkTreeIter   iter;
@@ -644,7 +644,7 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   UIWidget        *uiwidgetp;
 
   uiw = uisongsel->uiWidgetData;
-  count = uiTreeViewSelectionGetCount (uiw->songselTree);
+  count = uiTreeViewSelectGetCount (uiw->songselTree);
   if (count != 1) {
     return 0;
   }

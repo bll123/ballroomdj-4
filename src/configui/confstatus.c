@@ -99,7 +99,7 @@ confuiCreateStatusTable (confuigui_t *gui)
       editable = FALSE;
     }
 
-    uiTreeViewAppendValueStore (uitree);
+    uiTreeViewValueAppend (uitree);
 //    gtk_list_store_append (store, &iter);
     confuiStatusSet (uitree, editable, statusdisp, playflag);
 //    confuiStatusSet (store, &iter, editable, statusdisp, playflag);

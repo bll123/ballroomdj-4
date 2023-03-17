@@ -29,6 +29,7 @@
 static GType * uiAppendType (GType *types, int ncol, int type);
 static void uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 static void uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
+static gboolean uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
 
 typedef struct uitree {
   UIWidget          uitree;
@@ -37,6 +38,7 @@ typedef struct uitree {
   GtkTreeIter       selectiter;
   GtkTreeModel      *model;
   callback_t        *rowactivecb;
+  callback_t        *foreachcb;
   bool              selectset;
 } uitree_t;
 
@@ -76,6 +78,69 @@ uiTreeViewFree (uitree_t *uitree)
   }
 
   mdfree (uitree);
+}
+
+void
+uiTreeViewAllowMultiple (uitree_t *uitree)
+{
+  if (uitree == NULL) {
+    return;
+  }
+  if (uitree->sel == NULL) {
+    return;
+  }
+
+  gtk_tree_selection_set_mode (uitree->sel, GTK_SELECTION_MULTIPLE);
+}
+
+void
+uiTreeViewEnableHeaders (uitree_t *uitree)
+{
+  if (uitree == NULL) {
+    return;
+  }
+
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->uitree.widget), TRUE);
+}
+
+void
+uiTreeViewDisableHeaders (uitree_t *uitree)
+{
+  if (uitree == NULL) {
+    return;
+  }
+
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->uitree.widget), FALSE);
+}
+
+void
+uiTreeViewDarkBackground (uitree_t *uitree)
+{
+  if (uitree == NULL) {
+    return;
+  }
+
+  uiWidgetSetClass (&uitree->uitree, TREEVIEW_DARK_CLASS);
+}
+
+void
+uiTreeViewDisableSingleClick (uitree_t *uitree)
+{
+  if (uitree == NULL) {
+    return;
+  }
+
+  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uitree->uitree.widget), FALSE);
+}
+
+void
+uiTreeViewSelectionSetMode (uitree_t *uitree, int mode)
+{
+  if (uitree == NULL) {
+    return;
+  }
+
+  gtk_tree_selection_set_mode (uitree->sel, mode);
 }
 
 void
@@ -273,7 +338,7 @@ uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typelist)
 }
 
 void
-uiTreeViewAppendValueStore (uitree_t *uitree)
+uiTreeViewValueAppend (uitree_t *uitree)
 {
   GtkListStore  *store = NULL;
 
@@ -293,10 +358,12 @@ uiTreeViewAppendValueStore (uitree_t *uitree)
 }
 
 void
-uiTreeViewInsertValueStore (uitree_t *uitree)
+uiTreeViewValueInsertBefore (uitree_t *uitree)
 {
   GtkListStore  *store = NULL;
   GtkTreeIter   titer;
+  GtkTreeIter   *titerp;
+  int           count;
 
   if (uitree == NULL) {
     return;
@@ -312,9 +379,73 @@ uiTreeViewInsertValueStore (uitree_t *uitree)
   }
 
   store = GTK_LIST_STORE (uitree->model);
-  memcpy (&titer, &uitree->selectiter, sizeof (GtkTreeIter));
-  gtk_list_store_insert_before (store, &uitree->selectiter, &titer);
+  count = gtk_tree_selection_count_selected_rows (uitree->sel);
+  if (count == 0) {
+    titerp = NULL;
+  } else {
+    memcpy (&titer, &uitree->selectiter, sizeof (GtkTreeIter));
+    titerp = &titer;
+  }
+  gtk_list_store_insert_before (store, &uitree->selectiter, titerp);
+  gtk_tree_selection_select_iter (uitree->sel, &uitree->selectiter);
   uitree->selectset = true;
+}
+
+void
+uiTreeViewValueInsertAfter (uitree_t *uitree)
+{
+  GtkListStore  *store = NULL;
+  GtkTreeIter   titer;
+  GtkTreeIter   *titerp;
+  int           count;
+
+  if (uitree == NULL) {
+    return;
+  }
+  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+    return;
+  }
+  if (uitree->model == NULL) {
+    return;
+  }
+  if (! uitree->selectset) {
+    return;
+  }
+
+  store = GTK_LIST_STORE (uitree->model);
+  count = gtk_tree_selection_count_selected_rows (uitree->sel);
+  if (count == 0) {
+    titerp = NULL;
+  } else {
+    memcpy (&titer, &uitree->selectiter, sizeof (GtkTreeIter));
+    titerp = &titer;
+  }
+  gtk_list_store_insert_after (store, &uitree->selectiter, titerp);
+  gtk_tree_selection_select_iter (uitree->sel, &uitree->selectiter);
+  uitree->selectset = true;
+}
+
+void
+uiTreeViewValueRemove (uitree_t *uitree)
+{
+  if (uitree == NULL) {
+    return;
+  }
+  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+    return;
+  }
+  if (uitree->model == NULL) {
+    return;
+  }
+  if (! uitree->selectset) {
+    return;
+  }
+
+  gtk_list_store_remove (GTK_LIST_STORE (uitree->model), &uitree->selectiter);
+  uitree->selectset = false;
+  if (gtk_tree_selection_count_selected_rows (uitree->sel) == 1) {
+    uitree->selectset = true;
+  }
 }
 
 void
@@ -341,7 +472,7 @@ uiTreeViewSetValues (uitree_t *uitree, ...)
 }
 
 int
-uiTreeViewGetSelectCount (uitree_t *uitree)
+uiTreeViewSelectGetCount (uitree_t *uitree)
 {
   GtkTreeSelection  *sel;
   int               count;
@@ -371,7 +502,7 @@ uiTreeViewGetSelectCount (uitree_t *uitree)
 }
 
 int
-uiTreeViewGetSelectionIndex (uitree_t *uitree)
+uiTreeViewSelectGetIndex (uitree_t *uitree)
 {
   GtkTreePath       *path;
   char              *pathstr;
@@ -442,6 +573,9 @@ uiTreeViewSelectFirst (uitree_t *uitree)
   }
 
   valid = gtk_tree_model_get_iter_first (uitree->model, &uitree->selectiter);
+  if (valid) {
+    uitree->selectset = true;
+  }
   return valid;
 }
 
@@ -458,6 +592,9 @@ uiTreeViewSelectNext (uitree_t *uitree)
   }
 
   valid = gtk_tree_model_iter_next (uitree->model, &uitree->selectiter);
+  if (valid) {
+    uitree->selectset = true;
+  }
   return valid;
 }
 
@@ -474,6 +611,9 @@ uiTreeViewSelectPrevious (uitree_t *uitree)
   }
 
   valid = gtk_tree_model_iter_previous (uitree->model, &uitree->selectiter);
+  if (valid) {
+    uitree->selectset = true;
+  }
   return valid;
 }
 
@@ -493,6 +633,50 @@ uiTreeViewSelectDefault (uitree_t *uitree)
   return count;
 }
 
+void
+uiTreeViewMoveBefore (uitree_t *uitree)
+{
+  GtkTreeIter   citer;
+  bool          valid = false;
+
+  if (uitree == NULL) {
+    return;
+  }
+  if (uitree->model == NULL) {
+    return;
+  }
+
+  memcpy (&citer, &uitree->selectiter, sizeof (citer));
+  valid = gtk_tree_model_iter_previous (uitree->model, &uitree->selectiter);
+  if (valid) {
+    gtk_list_store_move_before (GTK_LIST_STORE (uitree->model),
+        &citer, &uitree->selectiter);
+    uitree->selectset = true;
+  }
+}
+
+void
+uiTreeViewMoveAfter (uitree_t *uitree)
+{
+  GtkTreeIter   citer;
+  bool          valid = false;
+
+  if (uitree == NULL) {
+    return;
+  }
+  if (uitree->model == NULL) {
+    return;
+  }
+
+  memcpy (&citer, &uitree->selectiter, sizeof (citer));
+  valid = gtk_tree_model_iter_next (uitree->model, &uitree->selectiter);
+  if (valid) {
+    gtk_list_store_move_after (GTK_LIST_STORE (uitree->model),
+        &citer, &uitree->selectiter);
+    uitree->selectset = true;
+  }
+}
+
 long
 uiTreeViewGetValue (uitree_t *uitree, int col)
 {
@@ -502,6 +686,9 @@ uiTreeViewGetValue (uitree_t *uitree, int col)
     return -1;
   }
   if (uitree->model == NULL) {
+    return -1;
+  }
+  if (! uitree->selectset) {
     return -1;
   }
 
@@ -520,10 +707,34 @@ uiTreeViewGetValueStr (uitree_t *uitree, int col)
   if (uitree->model == NULL) {
     return NULL;
   }
+  if (! uitree->selectset) {
+    return NULL;
+  }
 
   gtk_tree_model_get (uitree->model, &uitree->selectiter, col, &str, -1);
   return str;
 }
+
+void
+uiTreeViewForeach (uitree_t *uitree, callback_t *cb)
+{
+  GtkTreeIter   siter;
+
+  if (uitree == NULL) {
+    return;
+  }
+  if (uitree->model == NULL) {
+    return;
+  }
+
+  /* save the selection iter */
+  /* the foreach handler sets it so that data can be retrieved */
+  memcpy (&siter, &uitree->selectiter, sizeof (GtkTreeIter));
+  uitree->foreachcb = cb;
+  gtk_tree_model_foreach (uitree->model, uiTreeViewForeachHandler, uitree);
+  memcpy (&uitree->selectiter, &siter, sizeof (GtkTreeIter));
+}
+
 
 int
 uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *iter)
@@ -548,45 +759,6 @@ uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *ite
 }
 
 void
-uiTreeViewAllowMultiple (uitree_t *uitree)
-{
-  GtkTreeSelection  *sel;
-
-  sel = uitree->sel;
-  gtk_tree_selection_set_mode (sel, GTK_SELECTION_MULTIPLE);
-}
-
-void
-uiTreeViewEnableHeaders (uitree_t *uitree)
-{
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->uitree.widget), TRUE);
-}
-
-void
-uiTreeViewDisableHeaders (uitree_t *uitree)
-{
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->uitree.widget), FALSE);
-}
-
-void
-uiTreeViewDarkBackground (uitree_t *uitree)
-{
-  uiWidgetSetClass (&uitree->uitree, TREEVIEW_DARK_CLASS);
-}
-
-void
-uiTreeViewDisableSingleClick (uitree_t *uitree)
-{
-  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uitree->uitree.widget), FALSE);
-}
-
-void
-uiTreeViewSelectionSetMode (uitree_t *uitree, int mode)
-{
-  gtk_tree_selection_set_mode (uitree->sel, mode);
-}
-
-void
 uiTreeViewSelectionSet (uitree_t *uitree, int row)
 {
   char        tbuff [40];
@@ -599,23 +771,9 @@ uiTreeViewSelectionSet (uitree_t *uitree, int row)
     gtk_tree_selection_select_path (uitree->sel, path);
     mdextfree (path);
     gtk_tree_path_free (path);
+    gtk_tree_selection_get_selected (uitree->sel, &uitree->model, &uitree->selectiter);
+    uitree->selectset = true;
   }
-}
-
-int
-uiTreeViewSelectionGetCount (uitree_t *uitree)
-{
-  int   count = 0;
-
-  if (uitree == NULL) {
-    return count;
-  }
-  if (uitree->sel == NULL) {
-    return count;
-  }
-
-  count = gtk_tree_selection_count_selected_rows (uitree->sel);
-  return count;
 }
 
 /* used by configuration */
@@ -808,13 +966,24 @@ uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path,
     return;
   }
 
-  count = uiTreeViewGetSelectCount (uitree);
+  count = uiTreeViewSelectGetCount (uitree);
   if (count == 1) {
     gtk_tree_selection_get_selected (uitree->sel, &uitree->model, &uitree->selectiter);
+    uitree->selectset = true;
   }
   if (uitree->rowactivecb != NULL) {
     callbackHandler (uitree->rowactivecb);
   }
+}
+
+static gboolean
+uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path,
+    GtkTreeIter* iter, gpointer udata)
+{
+  uitree_t      *uitree = udata;
+
+  memcpy (&uitree->selectiter, iter, sizeof (GtkTreeIter));
+  return callbackHandler (uitree->foreachcb);
 }
 
 
