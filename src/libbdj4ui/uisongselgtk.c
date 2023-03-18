@@ -358,7 +358,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
       uisongsel->dispselType == DISP_SEL_MM) {
-    uiTreeViewAllowMultiple (uiw->songselTree);
+    uiTreeViewSelectSetMode (uiw->songselTree, SELECT_MULTIPLE);
   }
   uiKeySetKeyCallback (uiw->uikey, uitreewidgetp,
       uiw->callbacks [SONGSEL_CB_KEYB]);

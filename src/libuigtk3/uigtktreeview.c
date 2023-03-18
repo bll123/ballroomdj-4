@@ -60,7 +60,10 @@ uiCreateTreeView (void)
   gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (tree), TRUE);
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), FALSE);
   sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree));
+
   gtk_tree_selection_set_mode (sel, GTK_SELECTION_SINGLE);
+  uitree->selmode = SELECT_SINGLE;
+
   gtk_widget_set_halign (tree, GTK_ALIGN_START);
   gtk_widget_set_hexpand (tree, FALSE);
   gtk_widget_set_vexpand (tree, FALSE);
@@ -71,7 +74,6 @@ uiCreateTreeView (void)
   uitree->savedselectset = false;
   uitree->model = NULL;
   uitree->rowactivecb = NULL;
-  uitree->selmode = SELECT_MULTIPLE;
   uiWidgetSetAllMargins (&uitree->uitree, 2);
   return uitree;
 }
@@ -86,18 +88,6 @@ uiTreeViewFree (uitree_t *uitree)
   mdfree (uitree);
 }
 
-void
-uiTreeViewAllowMultiple (uitree_t *uitree)
-{
-  if (uitree == NULL) {
-    return;
-  }
-  if (uitree->sel == NULL) {
-    return;
-  }
-
-  gtk_tree_selection_set_mode (uitree->sel, GTK_SELECTION_MULTIPLE);
-}
 
 void
 uiTreeViewEnableHeaders (uitree_t *uitree)
@@ -142,7 +132,7 @@ uiTreeViewDisableSingleClick (uitree_t *uitree)
 void
 uiTreeViewSelectSetMode (uitree_t *uitree, int mode)
 {
-  int     gtkmode = GTK_SELECTION_MULTIPLE;
+  int     gtkmode = GTK_SELECTION_SINGLE;
 
   if (uitree == NULL) {
     return;
@@ -386,13 +376,10 @@ uiTreeViewValueInsertBefore (uitree_t *uitree)
   if (uitree->model == NULL) {
     return;
   }
-  if (! uitree->selectset) {
-    return;
-  }
 
   store = GTK_LIST_STORE (uitree->model);
   count = gtk_tree_selection_count_selected_rows (uitree->sel);
-  if (count == 0) {
+  if (count == 0 || ! uitree->selectset) {
     titerp = NULL;
   } else {
     memcpy (&titer, &uitree->selectiter, sizeof (GtkTreeIter));
@@ -420,13 +407,10 @@ uiTreeViewValueInsertAfter (uitree_t *uitree)
   if (uitree->model == NULL) {
     return;
   }
-  if (! uitree->selectset) {
-    return;
-  }
 
   store = GTK_LIST_STORE (uitree->model);
   count = gtk_tree_selection_count_selected_rows (uitree->sel);
-  if (count == 0) {
+  if (count == 0 || ! uitree->selectset) {
     titerp = NULL;
   } else {
     memcpy (&titer, &uitree->selectiter, sizeof (GtkTreeIter));
@@ -440,6 +424,11 @@ uiTreeViewValueInsertAfter (uitree_t *uitree)
 void
 uiTreeViewValueRemove (uitree_t *uitree)
 {
+  int     count = 0;
+  int     idx;
+  bool    valid = false;
+
+
   if (uitree == NULL) {
     return;
   }
@@ -453,10 +442,22 @@ uiTreeViewValueRemove (uitree_t *uitree)
     return;
   }
 
+  idx = uiTreeViewSelectGetIndex (uitree);
   gtk_list_store_remove (GTK_LIST_STORE (uitree->model), &uitree->selectiter);
   uitree->selectset = false;
-  if (gtk_tree_selection_count_selected_rows (uitree->sel) == 1) {
-    uitree->selectset = true;
+  count = gtk_tree_selection_count_selected_rows (uitree->sel);
+  if (count == 1 && uitree->selmode == SELECT_SINGLE) {
+    valid = gtk_tree_selection_get_selected (uitree->sel, &uitree->model, &uitree->selectiter);
+    if (valid) {
+      uitree->selectset = true;
+    }
+  }
+
+  /* count == 0 will default to ! valid */
+  if (! valid && idx >= 0) {
+    --idx;
+    if (idx < 0) { idx = 0; }
+    uiTreeViewSelectSet (uitree, idx);
   }
 }
 
@@ -486,7 +487,6 @@ uiTreeViewSetValues (uitree_t *uitree, ...)
 int
 uiTreeViewSelectGetCount (uitree_t *uitree)
 {
-  GtkTreeSelection  *sel;
   int               count;
 
   uitree->selectset = false;
@@ -500,14 +500,13 @@ uiTreeViewSelectGetCount (uitree_t *uitree)
     return 0;
   }
 
-  sel = uitree->sel;
-  count = gtk_tree_selection_count_selected_rows (sel);
+  count = gtk_tree_selection_count_selected_rows (uitree->sel);
   uitree->selectset = false;
   if (count == 1 && uitree->selmode == SELECT_SINGLE) {
     bool    valid;
 
     /* this only works if the treeview is in single-selection mode */
-    valid = gtk_tree_selection_get_selected (sel, &uitree->model, &uitree->selectiter);
+    valid = gtk_tree_selection_get_selected (uitree->sel, &uitree->model, &uitree->selectiter);
     if (valid) {
       uitree->selectset = true;
     }
@@ -535,7 +534,7 @@ uiTreeViewSelectGetIndex (uitree_t *uitree)
     return -1;
   }
 
-  idx = 0;
+  idx = -1;
   path = gtk_tree_model_get_path (uitree->model, &uitree->selectiter);
   mdextalloc (path);
   if (path != NULL) {
@@ -780,6 +779,11 @@ uiTreeViewSelectSet (uitree_t *uitree, int row)
 {
   char        tbuff [40];
   GtkTreePath *path = NULL;
+
+  if (row < 0) {
+    uitree->selectset = false;
+    return;
+  }
 
   snprintf (tbuff, sizeof (tbuff), "%d", row);
   path = gtk_tree_path_new_from_string (tbuff);

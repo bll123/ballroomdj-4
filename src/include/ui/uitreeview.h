@@ -47,7 +47,6 @@ typedef struct uitree uitree_t;
 
 uitree_t *uiCreateTreeView (void);
 void  uiTreeViewFree (uitree_t *uitree);
-void  uiTreeViewAllowMultiple (uitree_t *uitree);
 void  uiTreeViewEnableHeaders (uitree_t *uitree);
 void  uiTreeViewDisableHeaders (uitree_t *uitree);
 void  uiTreeViewDarkBackground (uitree_t *uitree);
