@@ -246,7 +246,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   pathbldMakePath (tbuff, sizeof (tbuff), "button_stop", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiplayer->stopPixbuf, tbuff);
-  uiImageGetPixbuf (&uiplayer->stopPixbuf);
+  uiImageConvertToPixbuf (&uiplayer->stopPixbuf);
   uiWidgetMakePersistent (&uiplayer->stopPixbuf);
 
   uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->stopPixbuf);
@@ -257,19 +257,19 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiplayer->playPixbuf, tbuff);
-  uiImageGetPixbuf (&uiplayer->playPixbuf);
+  uiImageConvertToPixbuf (&uiplayer->playPixbuf);
   uiWidgetMakePersistent (&uiplayer->playPixbuf);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiplayer->pausePixbuf, tbuff);
-  uiImageGetPixbuf (&uiplayer->pausePixbuf);
+  uiImageConvertToPixbuf (&uiplayer->pausePixbuf);
   uiWidgetMakePersistent (&uiplayer->pausePixbuf);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uiplayer->repeatPixbuf, tbuff);
-  uiImageGetPixbuf (&uiplayer->repeatPixbuf);
+  uiImageConvertToPixbuf (&uiplayer->repeatPixbuf);
   uiWidgetMakePersistent (&uiplayer->repeatPixbuf);
 
   uiImageNew (&uiplayer->repeatImg);

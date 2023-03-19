@@ -60,7 +60,7 @@ uiImageClear (UIWidget *uiwidget)
 }
 
 void
-uiImageGetPixbuf (UIWidget *uiwidget)
+uiImageConvertToPixbuf (UIWidget *uiwidget)
 {
   GdkPixbuf   *pixbuf;
 
@@ -73,6 +73,19 @@ uiImageGetPixbuf (UIWidget *uiwidget)
 
   pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (uiwidget->widget));
   uiwidget->pixbuf = pixbuf;
+}
+
+void *
+uiImageGetPixbuf (UIWidget *uiwidget)
+{
+  if (uiwidget == NULL) {
+    return NULL;
+  }
+  if (uiwidget->pixbuf == NULL) {
+    return NULL;
+  }
+
+  return uiwidget->pixbuf;
 }
 
 void

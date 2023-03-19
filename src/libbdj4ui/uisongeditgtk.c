@@ -382,7 +382,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   uiImageFromFile (&uiw->musicbrainzPixbuf, tbuff);
-  uiImageGetPixbuf (&uiw->musicbrainzPixbuf);
+  uiImageConvertToPixbuf (&uiw->musicbrainzPixbuf);
   uiWidgetMakePersistent (&uiw->musicbrainzPixbuf);
 
   uiImageNew (&uiw->audioidImg);

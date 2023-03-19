@@ -193,7 +193,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiImageFromFile (&uimusicq->pausePixbuf, tbuff);
-  uiImageGetPixbuf (&uimusicq->pausePixbuf);
+  uiImageConvertToPixbuf (&uimusicq->pausePixbuf);
   uiWidgetMakePersistent (&uimusicq->pausePixbuf);
 
   uiCreateVertBox (&uimusicq->ui [ci].mainbox);
@@ -723,11 +723,11 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   nlistStartIterator (musicqupdate->dispList, &iteridx);
   while ((musicqupditem = nlistIterateValueData (musicqupdate->dispList, &iteridx)) != NULL) {
     song_t        *song;
-    GdkPixbuf     *pixbuf;
+    void          *pixbuf;
 
     pixbuf = NULL;
     if (musicqupditem->pauseind) {
-      pixbuf = uimusicq->pausePixbuf.pixbuf;
+      pixbuf = uiImageGetPixbuf (&uimusicq->pausePixbuf);
     }
 
     song = dbGetByIdx (uimusicq->musicdb, musicqupditem->dbidx);

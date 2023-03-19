@@ -405,13 +405,13 @@ pluiBuildUI (playerui_t *plui)
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   uiImageFromFile (&plui->ledoffPixbuf, tbuff);
-  uiImageGetPixbuf (&plui->ledoffPixbuf);
+  uiImageConvertToPixbuf (&plui->ledoffPixbuf);
   uiWidgetMakePersistent (&plui->ledoffPixbuf);
 
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_on", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
   uiImageFromFile (&plui->ledonPixbuf, tbuff);
-  uiImageGetPixbuf (&plui->ledonPixbuf);
+  uiImageConvertToPixbuf (&plui->ledonPixbuf);
   uiWidgetMakePersistent (&plui->ledonPixbuf);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
