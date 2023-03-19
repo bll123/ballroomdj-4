@@ -63,13 +63,13 @@ confuiInitDispSettings (confuigui_t *gui)
 void
 confuiBuildUIDispSettings (confuigui_t *gui)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    uiwidget;
-  uiwidget_t    sg;
+  uiwcont_t    vbox;
+  uiwcont_t    uiwidget;
+  uiwcont_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIDispSettings");
-  uiwidgetInit (&uiwidget);
-  uiwidgetInit (&sg);
+  uiwcontInit (&uiwidget);
+  uiwcontInit (&sg);
 
   uiCreateVertBox (&vbox);
 

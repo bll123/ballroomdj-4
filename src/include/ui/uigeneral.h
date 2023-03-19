@@ -9,11 +9,11 @@
 #endif
 
 /* general routines that are called by the ui specific code */
-uiwidget_t *uiwidgetAlloc (void);
-void  uiwidgetFree (uiwidget_t *);
+uiwcont_t *uiwcontAlloc (void);
+void  uiwcontFree (uiwcont_t *);
 /* these routines will be removed at a later date */
-void uiwidgetInit (uiwidget_t *uiwidget);
-bool uiwidgetIsSet (uiwidget_t *uiwidget);
-void uiwidgetCopy (uiwidget_t *target, uiwidget_t *source);
+void uiwcontInit (uiwcont_t *uiwidget);
+bool uiwcontIsSet (uiwcont_t *uiwidget);
+void uiwcontCopy (uiwcont_t *target, uiwcont_t *source);
 
 #endif /* INC_UIGENERAL_H */

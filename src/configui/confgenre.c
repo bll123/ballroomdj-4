@@ -31,10 +31,10 @@ static void confuiGenreSave (confuigui_t *gui);
 void
 confuiBuildUIEditGenres (confuigui_t *gui)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    hbox;
-  uiwidget_t    uiwidget;
-  uiwidget_t    sg;
+  uiwcont_t    vbox;
+  uiwcont_t    hbox;
+  uiwcont_t    uiwidget;
+  uiwcont_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditGenres");
   uiCreateVertBox (&vbox);

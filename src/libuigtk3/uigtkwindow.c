@@ -32,7 +32,7 @@ static void uiWindowNoDimHandler (GtkWidget *window, GtkStateType flags, gpointe
 static gboolean uiWindowMappedHandler (GtkWidget *window, GdkEventAny *event, gpointer udata);
 
 void
-uiCreateMainWindow (uiwidget_t *uiwidget, callback_t *uicb,
+uiCreateMainWindow (uiwcont_t *uiwidget, callback_t *uicb,
     const char *title, const char *imagenm)
 {
   GtkWidget *window;
@@ -55,7 +55,7 @@ uiCreateMainWindow (uiwidget_t *uiwidget, callback_t *uicb,
 }
 
 void
-uiWindowSetTitle (uiwidget_t *uiwidget, const char *title)
+uiWindowSetTitle (uiwcont_t *uiwidget, const char *title)
 {
   if (title != NULL && uiwidget != NULL && uiwidget->widget != NULL) {
     gtk_window_set_title (GTK_WINDOW (uiwidget->widget), title);
@@ -63,7 +63,7 @@ uiWindowSetTitle (uiwidget_t *uiwidget, const char *title)
 }
 
 void
-uiCloseWindow (uiwidget_t *uiwindow)
+uiCloseWindow (uiwcont_t *uiwindow)
 {
   if (GTK_IS_WIDGET (uiwindow->widget)) {
     gtk_widget_destroy (uiwindow->widget);
@@ -71,43 +71,43 @@ uiCloseWindow (uiwidget_t *uiwindow)
 }
 
 bool
-uiWindowIsMaximized (uiwidget_t *uiwindow)
+uiWindowIsMaximized (uiwcont_t *uiwindow)
 {
   return (bool) gtk_window_is_maximized (GTK_WINDOW (uiwindow->widget));
 }
 
 void
-uiWindowIconify (uiwidget_t *uiwindow)
+uiWindowIconify (uiwcont_t *uiwindow)
 {
   gtk_window_iconify (GTK_WINDOW (uiwindow->widget));
 }
 
 void
-uiWindowDeIconify (uiwidget_t *uiwindow)
+uiWindowDeIconify (uiwcont_t *uiwindow)
 {
   gtk_window_deiconify (GTK_WINDOW (uiwindow->widget));
 }
 
 void
-uiWindowMaximize (uiwidget_t *uiwindow)
+uiWindowMaximize (uiwcont_t *uiwindow)
 {
   gtk_window_maximize (GTK_WINDOW (uiwindow->widget));
 }
 
 void
-uiWindowUnMaximize (uiwidget_t *uiwindow)
+uiWindowUnMaximize (uiwcont_t *uiwindow)
 {
   gtk_window_unmaximize (GTK_WINDOW (uiwindow->widget));
 }
 
 void
-uiWindowDisableDecorations (uiwidget_t *uiwindow)
+uiWindowDisableDecorations (uiwcont_t *uiwindow)
 {
   gtk_window_set_decorated (GTK_WINDOW (uiwindow->widget), FALSE);
 }
 
 void
-uiWindowEnableDecorations (uiwidget_t *uiwindow)
+uiWindowEnableDecorations (uiwcont_t *uiwindow)
 {
   /* this does not work on windows, the decorations are not recovered */
   /* after being disabled. */
@@ -115,13 +115,13 @@ uiWindowEnableDecorations (uiwidget_t *uiwindow)
 }
 
 void
-uiWindowGetSize (uiwidget_t *uiwindow, int *x, int *y)
+uiWindowGetSize (uiwcont_t *uiwindow, int *x, int *y)
 {
   gtk_window_get_size (GTK_WINDOW (uiwindow->widget), x, y);
 }
 
 void
-uiWindowSetDefaultSize (uiwidget_t *uiwindow, int x, int y)
+uiWindowSetDefaultSize (uiwcont_t *uiwindow, int x, int y)
 {
   if (x >= 0 && y >= 0) {
     gtk_window_set_default_size (GTK_WINDOW (uiwindow->widget), x, y);
@@ -129,7 +129,7 @@ uiWindowSetDefaultSize (uiwidget_t *uiwindow, int x, int y)
 }
 
 void
-uiWindowGetPosition (uiwidget_t *uiwindow, int *x, int *y, int *ws)
+uiWindowGetPosition (uiwcont_t *uiwindow, int *x, int *y, int *ws)
 {
   GdkWindow *gdkwin;
 
@@ -145,7 +145,7 @@ uiWindowGetPosition (uiwidget_t *uiwindow, int *x, int *y, int *ws)
 }
 
 void
-uiWindowMove (uiwidget_t *uiwindow, int x, int y, int ws)
+uiWindowMove (uiwcont_t *uiwindow, int x, int y, int ws)
 {
   GdkWindow *gdkwin;
 
@@ -163,7 +163,7 @@ uiWindowMove (uiwidget_t *uiwindow, int x, int y, int ws)
 }
 
 void
-uiWindowMoveToCurrentWorkspace (uiwidget_t *uiwindow)
+uiWindowMoveToCurrentWorkspace (uiwcont_t *uiwindow)
 {
   GdkWindow *gdkwin;
 
@@ -178,13 +178,13 @@ uiWindowMoveToCurrentWorkspace (uiwidget_t *uiwindow)
 }
 
 void
-uiWindowNoFocusOnStartup (uiwidget_t *uiwindow)
+uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
 {
   gtk_window_set_focus_on_map (GTK_WINDOW (uiwindow->widget), FALSE);
 }
 
 void
-uiCreateScrolledWindow (uiwidget_t *uiwidget, int minheight)
+uiCreateScrolledWindow (uiwcont_t *uiwidget, int minheight)
 {
   GtkWidget   *widget;
 
@@ -206,15 +206,15 @@ uiCreateScrolledWindow (uiwidget_t *uiwidget, int minheight)
 }
 
 void
-uiWindowSetPolicyExternal (uiwidget_t *uisw)
+uiWindowSetPolicyExternal (uiwcont_t *uisw)
 {
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (uisw->widget),
       GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
 }
 
 void
-uiCreateDialogWindow (uiwidget_t *uiwidget, uiwidget_t *parentwin,
-    uiwidget_t *attachment, callback_t *uicb, const char *title)
+uiCreateDialogWindow (uiwcont_t *uiwidget, uiwcont_t *parentwin,
+    uiwcont_t *attachment, callback_t *uicb, const char *title)
 {
   GtkWidget *window;
 
@@ -249,42 +249,42 @@ uiCreateDialogWindow (uiwidget_t *uiwidget, uiwidget_t *parentwin,
 }
 
 void
-uiWindowSetDoubleClickCallback (uiwidget_t *uiwidget, callback_t *uicb)
+uiWindowSetDoubleClickCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   g_signal_connect (uiwidget->widget, "button-press-event",
       G_CALLBACK (uiWindowDoubleClickHandler), uicb);
 }
 
 void
-uiWindowSetWinStateCallback (uiwidget_t *uiwindow, callback_t *uicb)
+uiWindowSetWinStateCallback (uiwcont_t *uiwindow, callback_t *uicb)
 {
   g_signal_connect (uiwindow->widget, "window-state-event",
       G_CALLBACK (uiWindowWinStateHandler), uicb);
 }
 
 void
-uiWindowNoDim (uiwidget_t *uiwidget)
+uiWindowNoDim (uiwcont_t *uiwidget)
 {
   g_signal_connect (uiwidget->widget, "state-flags-changed",
       G_CALLBACK (uiWindowNoDimHandler), uiwidget);
 }
 
 void
-uiWindowSetMappedCallback (uiwidget_t *uiwidget, callback_t *uicb)
+uiWindowSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   g_signal_connect (uiwidget->widget, "map-event",
       G_CALLBACK (uiWindowMappedHandler), uicb);
 }
 
 void
-uiWindowPresent (uiwidget_t *uiwindow)
+uiWindowPresent (uiwcont_t *uiwindow)
 {
   /* this does not work on mac os */
   gtk_window_present (GTK_WINDOW (uiwindow->widget));
 }
 
 void
-uiWindowRaise (uiwidget_t *uiwindow)
+uiWindowRaise (uiwcont_t *uiwindow)
 {
   int   x, y, ws;
 
@@ -295,7 +295,7 @@ uiWindowRaise (uiwidget_t *uiwindow)
 }
 
 void
-uiWindowFind (uiwidget_t *window)
+uiWindowFind (uiwcont_t *window)
 {
   uiWindowMoveToCurrentWorkspace (window);
   uiWindowRaise (window);

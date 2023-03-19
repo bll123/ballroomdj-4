@@ -10,7 +10,7 @@
 
 typedef struct uifavorite uifavorite_t;
 
-uifavorite_t * uifavoriteSpinboxCreate (uiwidget_t *boxp);
+uifavorite_t * uifavoriteSpinboxCreate (uiwcont_t *boxp);
 void uifavoriteFree (uifavorite_t *uifavorite);
 int uifavoriteGetValue (uifavorite_t *uifavorite);
 void uifavoriteSetValue (uifavorite_t *uifavorite, int value);

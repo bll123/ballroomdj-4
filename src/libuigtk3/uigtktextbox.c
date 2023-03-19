@@ -26,9 +26,9 @@
 #include "ui/uiwindow.h"
 
 typedef struct uitextbox {
-  uiwidget_t    scw;
-  uiwidget_t    textbox;
-  uiwidget_t    buffer;
+  uiwcont_t    scw;
+  uiwcont_t    textbox;
+  uiwcont_t    buffer;
 } uitextbox_t;
 
 uitextbox_t *
@@ -38,9 +38,9 @@ uiTextBoxCreate (int height, const char *hlcolor)
 
   tb = mdmalloc (sizeof (uitextbox_t));
   assert (tb != NULL);
-  uiwidgetInit (&tb->scw);
-  uiwidgetInit (&tb->textbox);
-  uiwidgetInit (&tb->buffer);
+  uiwcontInit (&tb->scw);
+  uiwcontInit (&tb->textbox);
+  uiwcontInit (&tb->buffer);
 
   uiCreateScrolledWindow (&tb->scw, height);
 
@@ -69,7 +69,7 @@ uiTextBoxFree (uitextbox_t *tb)
   }
 }
 
-uiwidget_t *
+uiwcont_t *
 uiTextBoxGetScrolledWindow (uitextbox_t *tb)
 {
   return &tb->scw;

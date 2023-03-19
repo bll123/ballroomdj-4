@@ -92,16 +92,16 @@ enum {
 
 typedef struct uisongselgtk {
   callback_t          *callbacks [SONGSEL_CB_MAX];
-  uiwidget_t          *parentwin;
-  uiwidget_t          vbox;
+  uiwcont_t          *parentwin;
+  uiwcont_t          vbox;
   uitree_t            *songselTree;
   GtkTreeSelection    *sel;
-  uiwidget_t          songselScrollbar;
+  uiwcont_t          songselScrollbar;
   GtkEventController  *scrollController;
   GtkTreeViewColumn   *favColumn;
-  uiwidget_t          scrolledwin;
+  uiwcont_t          scrolledwin;
   uibutton_t          *buttons [SONGSEL_BUTTON_MAX];
-  uiwidget_t          reqQueueLabel;
+  uiwcont_t          reqQueueLabel;
   uikey_t             *uikey;
   /* other data */
   int               lastTreeSize;
@@ -166,10 +166,10 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ss_internal_t  *uiw;
 
   uiw = mdmalloc (sizeof (ss_internal_t));
-  uiwidgetInit (&uiw->vbox);
+  uiwcontInit (&uiw->vbox);
   uiw->songselTree = NULL;
   uiw->sel = NULL;
-  uiwidgetInit (&uiw->songselScrollbar);
+  uiwcontInit (&uiw->songselScrollbar);
   uiw->scrollController = NULL;
   uiw->favColumn = NULL;
   uiw->lastTreeSize = 0;
@@ -222,16 +222,16 @@ uisongselUIFree (uisongsel_t *uisongsel)
   }
 }
 
-uiwidget_t *
-uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
+uiwcont_t *
+uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 {
   ss_internal_t    *uiw;
   uibutton_t        *uibutton;
-  uiwidget_t        uiwidget;
-  uiwidget_t        *uiwidgetp;
-  uiwidget_t        *uitreewidgetp;
-  uiwidget_t        hbox;
-  uiwidget_t        vbox;
+  uiwcont_t        uiwidget;
+  uiwcont_t        *uiwidgetp;
+  uiwcont_t        *uitreewidgetp;
+  uiwcont_t        hbox;
+  uiwcont_t        vbox;
   GtkAdjustment     *adjustment;
   slist_t           *sellist;
   char              tbuff [200];
@@ -261,7 +261,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
     uibutton = uiCreateButton (
         uiw->callbacks [SONGSEL_CB_SELECT], tbuff, NULL);
     uiw->buttons [SONGSEL_BUTTON_SELECT] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
   }
 
@@ -273,7 +273,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
         /* CONTEXT: song-selection: edit the selected song */
         _("Edit"), "button_edit");
     uiw->buttons [SONGSEL_BUTTON_EDIT] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
   }
 
@@ -285,13 +285,13 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
     uibutton = uiCreateButton (
         uiw->callbacks [SONGSEL_CB_QUEUE], tbuff, NULL);
     uiw->buttons [SONGSEL_BUTTON_QUEUE] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
 
     uiCreateLabel (&uiwidget, "");
     uiWidgetSetClass (&uiwidget, DARKACCENT_CLASS);
     uiBoxPackStart (&hbox, &uiwidget);
-    uiwidgetCopy (&uiw->reqQueueLabel, &uiwidget);
+    uiwcontCopy (&uiw->reqQueueLabel, &uiwidget);
   }
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
@@ -303,7 +303,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
     uibutton = uiCreateButton (
         uiw->callbacks [SONGSEL_CB_PLAY], tbuff, NULL);
     uiw->buttons [SONGSEL_BUTTON_PLAY] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
   }
 
@@ -322,7 +322,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
       /* CONTEXT: song-selection: a button that starts the filters (narrowing down song selections) dialog */
       _("Filters"), NULL);
   uiw->buttons [SONGSEL_BUTTON_FILTER] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
@@ -343,7 +343,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
   uiBoxPackStartExpand (&vbox, &uiw->scrolledwin);
 
   uiw->songselTree = uiCreateTreeView ();
-  uitreewidgetp = uiTreeViewGetWidget (uiw->songselTree);
+  uitreewidgetp = uiTreeViewGetWidgetContainer (uiw->songselTree);
   uiWidgetAlignHorizFill (uitreewidgetp);
   uiWidgetExpandHoriz (uitreewidgetp);
   uiWidgetExpandVert (uitreewidgetp);
@@ -421,12 +421,12 @@ uisongselClearData (uisongsel_t *uisongsel)
 {
   ss_internal_t  * uiw;
   GtkTreeModel    * model = NULL;
-  uiwidget_t      * uiwidgetp;
+  uiwcont_t      * uiwidgetp;
 
   logProcBegin (LOG_PROC, "uisongselClearData");
 
   uiw = uisongsel->uiWidgetData;
-  uiwidgetp = uiTreeViewGetWidget (uiw->songselTree);
+  uiwidgetp = uiTreeViewGetWidgetContainer (uiw->songselTree);
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
   gtk_list_store_clear (GTK_LIST_STORE (model));
   /* having cleared the list, the rows must be re-created */
@@ -622,7 +622,7 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   GtkTreeModel    *model = NULL;
   GtkTreePath     *path;
   char            *pathstr;
-  uiwidget_t      *uiwidgetp;
+  uiwcont_t      *uiwidgetp;
 
   uiw = uisongsel->uiWidgetData;
   count = uiTreeViewSelectGetCount (uiw->songselTree);
@@ -631,7 +631,7 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   }
   gtk_tree_selection_selected_foreach (uiw->sel,
       uisongselGetIter, uisongsel);
-  uiwidgetp = uiTreeViewGetWidget (uiw->songselTree);
+  uiwidgetp = uiTreeViewGetWidgetContainer (uiw->songselTree);
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
   path = gtk_tree_model_get_path (model, &uiw->currIter);
   mdextalloc (path);
@@ -1101,7 +1101,7 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
   uiw = uisongsel->uiWidgetData;
 
   if (allocation->height != uiw->lastTreeSize) {
-    uiwidget_t  *uiwidgetp;
+    uiwcont_t  *uiwidgetp;
 
     if (allocation->height < 200) {
       logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "small-alloc-height");
@@ -1111,7 +1111,7 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     /* the step increment is useless */
     /* the page-size and upper can be used to determine */
     /* how many rows can be displayed */
-    uiwidgetp = uiTreeViewGetWidget (uiw->songselTree);
+    uiwidgetp = uiTreeViewGetWidgetContainer (uiw->songselTree);
     adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uiwidgetp->widget));
     ps = gtk_adjustment_get_page_size (adjustment);
 
@@ -1591,12 +1591,12 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
   }
 
   if (count == 1) {
-    uiwidget_t  *uiwidgetp;
+    uiwcont_t  *uiwidgetp;
 
     /* calling getSelectLocation() will set currIter */
     uisongselGetSelectLocation (uisongsel);
 
-    uiwidgetp = uiTreeViewGetWidget (uiw->songselTree);
+    uiwidgetp = uiTreeViewGetWidgetContainer (uiw->songselTree);
     model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
     path = gtk_tree_model_get_path (model, &uiw->currIter);
     mdextalloc (path);

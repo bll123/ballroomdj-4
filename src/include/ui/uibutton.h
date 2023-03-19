@@ -14,7 +14,7 @@ typedef struct uibutton uibutton_t;
 
 uibutton_t *uiCreateButton (callback_t *uicb, char *title, char *imagenm);
 void uiButtonFree (uibutton_t *uibutton);
-uiwidget_t *uiButtonGetWidget (uibutton_t *uibutton);
+uiwcont_t *uiButtonGetWidgetContainer (uibutton_t *uibutton);
 void uiButtonSetImagePosRight (uibutton_t *uibutton);
 void uiButtonSetImage (uibutton_t *uibutton, const char *imagenm, const char *tooltip);
 void uiButtonSetImageIcon (uibutton_t *uibutton, const char *nm);

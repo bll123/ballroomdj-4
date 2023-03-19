@@ -43,11 +43,11 @@ enum {
 };
 
 typedef struct managepl {
-  uiwidget_t      *windowp;
+  uiwcont_t      *windowp;
   nlist_t         *options;
-  uiwidget_t      *statusMsg;
+  uiwcont_t      *statusMsg;
   uimenu_t        *plmenu;
-  uiwidget_t      menuDelete;
+  uiwcont_t      menuDelete;
   callback_t      *callbacks [MPL_CB_MAX];
   callback_t      *plloadcb;
   char            *ploldname;
@@ -56,17 +56,17 @@ typedef struct managepl {
   pltype_t        pltype;
   uispinbox_t     *uimaxplaytime;
   uispinbox_t     *uistopat;
-  uiwidget_t      uistopafter;
+  uiwcont_t      uistopafter;
   uispinbox_t     *uigap;
   uirating_t      *uirating;
-  uiwidget_t      uiratingitem;
+  uiwcont_t      uiratingitem;
   uilevel_t       *uilowlevel;
-  uiwidget_t      uilowlevelitem;
+  uiwcont_t      uilowlevelitem;
   uilevel_t       *uihighlevel;
-  uiwidget_t      uihighlevelitem;
+  uiwcont_t      uihighlevelitem;
   uientry_t       *allowedkeywords;
-  uiwidget_t      uiallowedkeywordsitem;
-  uiwidget_t      uipltype;
+  uiwcont_t      uiallowedkeywordsitem;
+  uiwcont_t      uipltype;
   managepltree_t  *managepltree;
   playlist_t      *playlist;
   uiswitch_t      *plannswitch;
@@ -88,13 +88,13 @@ static bool managePlaylistCheckChanged (managepl_t *managepl);
 static int  managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata);
 
 managepl_t *
-managePlaylistAlloc (uiwidget_t *window, nlist_t *options, uiwidget_t *statusMsg)
+managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg)
 {
   managepl_t *managepl;
 
   managepl = mdmalloc (sizeof (managepl_t));
-  uiwidgetInit (&managepl->uipltype);
-  uiwidgetInit (&managepl->menuDelete);
+  uiwcontInit (&managepl->uipltype);
+  uiwcontInit (&managepl->menuDelete);
   managepl->ploldname = NULL;
   managepl->plbackupcreated = false;
   managepl->plmenu = uiMenuAlloc ();
@@ -105,17 +105,17 @@ managePlaylistAlloc (uiwidget_t *window, nlist_t *options, uiwidget_t *statusMsg
   managepl->pltype = PLTYPE_AUTO;
   managepl->uimaxplaytime = uiSpinboxTimeInit (SB_TIME_BASIC);
   managepl->uistopat = uiSpinboxTimeInit (SB_TIME_BASIC);
-  uiwidgetInit (&managepl->uistopafter);
+  uiwcontInit (&managepl->uistopafter);
   managepl->uigap = uiSpinboxInit ();
   managepl->managepltree = NULL;
   managepl->uirating = NULL;
   managepl->uilowlevel = NULL;
   managepl->uihighlevel = NULL;
-  uiwidgetInit (&managepl->uiratingitem);
-  uiwidgetInit (&managepl->uilowlevelitem);
-  uiwidgetInit (&managepl->uihighlevelitem);
+  uiwcontInit (&managepl->uiratingitem);
+  uiwcontInit (&managepl->uilowlevelitem);
+  uiwcontInit (&managepl->uihighlevelitem);
   managepl->allowedkeywords = uiEntryInit (15, 50);
-  uiwidgetInit (&managepl->uiallowedkeywordsitem);
+  uiwcontInit (&managepl->uiallowedkeywordsitem);
   managepl->playlist = NULL;
   managepl->changed = false;
   managepl->inload = false;
@@ -164,23 +164,23 @@ managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb)
 }
 
 void
-manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
+manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 {
-  uiwidget_t          lcol;
-  uiwidget_t          rcol;
-  uiwidget_t          mainhbox;
-  uiwidget_t          tophbox;
-  uiwidget_t          hbox;
-  uiwidget_t          uiwidget;
-  uiwidget_t          *uiwidgetp;
-  uiwidget_t          sg;
-  uiwidget_t          sgA;
-  uiwidget_t          sgB;
-  uiwidget_t          sgC;
+  uiwcont_t          lcol;
+  uiwcont_t          rcol;
+  uiwcont_t          mainhbox;
+  uiwcont_t          tophbox;
+  uiwcont_t          hbox;
+  uiwcont_t          uiwidget;
+  uiwcont_t          *uiwidgetp;
+  uiwcont_t          sg;
+  uiwcont_t          sgA;
+  uiwcont_t          sgB;
+  uiwcont_t          sgC;
 
   logProcBegin (LOG_PROC, "manageBuildUIPlaylist");
-  uiwidgetInit (&hbox);
-  uiwidgetInit (&uiwidget);
+  uiwcontInit (&hbox);
+  uiwcontInit (&uiwidget);
   uiCreateSizeGroupHoriz (&sg);   // labels
   uiCreateSizeGroupHoriz (&sgA);  // time widgets + gap widget
   uiCreateSizeGroupHoriz (&sgB);  // numeric widgets
@@ -202,8 +202,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
   uiEntryCreate (managepl->plname);
   uiEntrySetValidate (managepl->plname, manageValidateName,
       managepl->statusMsg, UIENTRY_IMMEDIATE);
-  uiWidgetSetClass (uiEntryGetWidget (managepl->plname), ACCENT_CLASS);
-  uiBoxPackStart (&hbox, uiEntryGetWidget (managepl->plname));
+  uiWidgetSetClass (uiEntryGetWidgetContainer (managepl->plname), ACCENT_CLASS);
+  uiBoxPackStart (&hbox, uiEntryGetWidgetContainer (managepl->plname));
 
   uiCreateHorizBox (&hbox);
   uiWidgetSetMarginStart (&hbox, 20);
@@ -216,7 +216,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
   /* CONTEXT: playlist management: default playlist type */
   uiCreateLabel (&uiwidget, _("Automatic"));
   uiBoxPackStart (&hbox, &uiwidget);
-  uiwidgetCopy (&managepl->uipltype, &uiwidget);
+  uiwcontCopy (&managepl->uipltype, &uiwidget);
 
   uiCreateHorizBox (&mainhbox);
   uiBoxPackStartExpand (vboxp, &mainhbox);
@@ -237,7 +237,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
       managePlaylistValMSCallback, managepl);
   uiSpinboxTimeCreate (managepl->uimaxplaytime, managepl,
       managepl->callbacks [MPL_CB_MAXPLAYTIME]);
-  uiwidgetp = uiSpinboxGetWidget (managepl->uimaxplaytime);
+  uiwidgetp = uiSpinboxGetWidgetContainer (managepl->uimaxplaytime);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiSizeGroupAdd (&sgA, uiwidgetp);
 
@@ -255,7 +255,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
       managepl->callbacks [MPL_CB_STOPAT]);
   uiSpinboxSetRange (managepl->uistopat, 0.0, 1440000.0);
   uiSpinboxWrap (managepl->uistopat);
-  uiwidgetp = uiSpinboxGetWidget (managepl->uistopat);
+  uiwidgetp = uiSpinboxGetWidgetContainer (managepl->uistopat);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiSizeGroupAdd (&sgA, uiwidgetp);
 
@@ -271,7 +271,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
   uiSpinboxSet (&uiwidget, 0.0, 500.0);
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sgB, &uiwidget);
-  uiwidgetCopy (&managepl->uistopafter, &uiwidget);
+  uiwcontCopy (&managepl->uistopafter, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -283,7 +283,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 
   uiSpinboxDoubleDefaultCreate (managepl->uigap);
   uiSpinboxSetRange (managepl->uigap, -1.0, 60.0);
-  uiwidgetp = uiSpinboxGetWidget (managepl->uigap);
+  uiwidgetp = uiSpinboxGetWidgetContainer (managepl->uigap);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiSizeGroupAdd (&sgC, uiwidgetp);
 
@@ -296,7 +296,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
   uiSizeGroupAdd (&sg, &uiwidget);
 
   managepl->plannswitch = uiCreateSwitch (0);
-  uiBoxPackStart (&hbox, uiSwitchGetWidget (managepl->plannswitch));
+  uiBoxPackStart (&hbox, uiSwitchGetWidgetContainer (managepl->plannswitch));
 
   /* automatic and sequenced playlists; keep the widget so these */
   /* can be hidden */
@@ -311,7 +311,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
-  uiwidgetCopy (&managepl->uiratingitem, &hbox);
+  uiwcontCopy (&managepl->uiratingitem, &hbox);
 
   uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCERATING].displayname);
   uiBoxPackStart (&hbox, &uiwidget);
@@ -322,7 +322,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
-  uiwidgetCopy (&managepl->uilowlevelitem, &hbox);
+  uiwcontCopy (&managepl->uilowlevelitem, &hbox);
 
   /* CONTEXT: playlist management: Low Dance Level */
   uiCreateColonLabel (&uiwidget, _("Low Dance Level"));
@@ -334,7 +334,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
-  uiwidgetCopy (&managepl->uihighlevelitem, &hbox);
+  uiwcontCopy (&managepl->uihighlevelitem, &hbox);
 
   /* CONTEXT: playlist management: High Dance Level */
   uiCreateColonLabel (&uiwidget, _("High Dance Level"));
@@ -346,7 +346,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
-  uiwidgetCopy (&managepl->uiallowedkeywordsitem, &hbox);
+  uiwcontCopy (&managepl->uiallowedkeywordsitem, &hbox);
 
   /* CONTEXT: playlist management: allowed keywords */
   uiCreateColonLabel (&uiwidget, _("Allowed Keywords"));
@@ -356,7 +356,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
   uiEntryCreate (managepl->allowedkeywords);
   uiEntrySetValidate (managepl->allowedkeywords,
       managePlaylistAllowedKeywordsChg, managepl, UIENTRY_IMMEDIATE);
-  uiBoxPackStart (&hbox, uiEntryGetWidget (managepl->allowedkeywords));
+  uiBoxPackStart (&hbox, uiEntryGetWidgetContainer (managepl->allowedkeywords));
 
   /* right side to hold the tree */
   uiCreateVertBox (&rcol);
@@ -374,10 +374,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 }
 
 uimenu_t *
-managePlaylistMenu (managepl_t *managepl, uiwidget_t *uimenubar)
+managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
 {
-  uiwidget_t  menu;
-  uiwidget_t  menuitem;
+  uiwcont_t  menu;
+  uiwcont_t  menuitem;
 
   logProcBegin (LOG_PROC, "managePlaylistMenu");
   if (! uiMenuInitialized (managepl->plmenu)) {
@@ -410,7 +410,7 @@ managePlaylistMenu (managepl_t *managepl, uiwidget_t *uimenubar)
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist */
     uiMenuCreateItem (&menu, &menuitem, _("Delete"),
         managepl->callbacks [MPL_CB_MENU_PL_DELETE]);
-    uiwidgetCopy (&managepl->menuDelete, &menuitem);
+    uiwcontCopy (&managepl->menuDelete, &menuitem);
 
     uiMenuSetInitialized (managepl->plmenu);
   }
@@ -511,7 +511,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
     return;
   }
 
-  if (uiwidgetIsSet (&managepl->menuDelete)) {
+  if (uiwcontIsSet (&managepl->menuDelete)) {
     uiWidgetSetState (&managepl->menuDelete, UIWIDGET_ENABLE);
     /* CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button */
     if (strcmp (playlistGetName (pl), _("QueueDance")) == 0) {
@@ -653,7 +653,7 @@ managePlaylistUpdateData (managepl_t *managepl)
       playlistGetConfigNum (pl, PLAYLIST_STOP_TIME) / 60);
   uiSpinboxSetValue (&managepl->uistopafter,
       playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER));
-  uiSpinboxSetValue (uiSpinboxGetWidget (managepl->uigap),
+  uiSpinboxSetValue (uiSpinboxGetWidgetContainer (managepl->uigap),
       (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0);
   uiratingSetValue (managepl->uirating,
       playlistGetConfigNum (pl, PLAYLIST_RATING));
@@ -790,10 +790,10 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
 
   managePlaylistTreeUpdatePlaylist (managepl->managepltree);
 
-  tval = uiSpinboxGetValue (uiSpinboxGetWidget (managepl->uimaxplaytime));
+  tval = uiSpinboxGetValue (uiSpinboxGetWidgetContainer (managepl->uimaxplaytime));
   playlistSetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME, tval);
 
-  tval = uiSpinboxGetValue (uiSpinboxGetWidget (managepl->uistopat));
+  tval = uiSpinboxGetValue (uiSpinboxGetWidgetContainer (managepl->uistopat));
   /* convert the mm:ss value to hh:mm for stop-time */
   tval *= 60;
   playlistSetConfigNum (pl, PLAYLIST_STOP_TIME, tval);
@@ -801,7 +801,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   tval = uiSpinboxGetValue (&managepl->uistopafter);
   playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, tval);
 
-  dval = uiSpinboxGetValue (uiSpinboxGetWidget (managepl->uigap));
+  dval = uiSpinboxGetValue (uiSpinboxGetWidgetContainer (managepl->uigap));
   playlistSetConfigNum (pl, PLAYLIST_GAP, (long) (dval * 1000.0));
 
   tval = uiratingGetValue (managepl->uirating);
@@ -852,7 +852,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
     managepl->changed = true;
   }
 
-  dval = uiSpinboxGetValue (uiSpinboxGetWidget (managepl->uigap));
+  dval = uiSpinboxGetValue (uiSpinboxGetWidgetContainer (managepl->uigap));
   if (dval != (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0 ) {
     managepl->changed = true;
   }

@@ -16,7 +16,7 @@
 #include "ui/uiimage.h"
 
 void
-uiImageNew (uiwidget_t *uiwidget)
+uiImageNew (uiwcont_t *uiwidget)
 {
   GtkWidget *image;
 
@@ -25,7 +25,7 @@ uiImageNew (uiwidget_t *uiwidget)
 }
 
 void
-uiImageFromFile (uiwidget_t *uiwidget, const char *fn)
+uiImageFromFile (uiwcont_t *uiwidget, const char *fn)
 {
   GtkWidget *image;
 
@@ -34,7 +34,7 @@ uiImageFromFile (uiwidget_t *uiwidget, const char *fn)
 }
 
 void
-uiImageScaledFromFile (uiwidget_t *uiwidget, const char *fn, int scale)
+uiImageScaledFromFile (uiwcont_t *uiwidget, const char *fn, int scale)
 {
   GdkPixbuf *pixbuf;
   GtkWidget *image;
@@ -47,7 +47,7 @@ uiImageScaledFromFile (uiwidget_t *uiwidget, const char *fn, int scale)
 }
 
 void
-uiImageClear (uiwidget_t *uiwidget)
+uiImageClear (uiwcont_t *uiwidget)
 {
   if (uiwidget == NULL) {
     return;
@@ -60,7 +60,7 @@ uiImageClear (uiwidget_t *uiwidget)
 }
 
 void
-uiImageConvertToPixbuf (uiwidget_t *uiwidget)
+uiImageConvertToPixbuf (uiwcont_t *uiwidget)
 {
   GdkPixbuf   *pixbuf;
 
@@ -76,7 +76,7 @@ uiImageConvertToPixbuf (uiwidget_t *uiwidget)
 }
 
 void *
-uiImageGetPixbuf (uiwidget_t *uiwidget)
+uiImageGetPixbuf (uiwcont_t *uiwidget)
 {
   if (uiwidget == NULL) {
     return NULL;
@@ -89,7 +89,7 @@ uiImageGetPixbuf (uiwidget_t *uiwidget)
 }
 
 void
-uiImageSetFromPixbuf (uiwidget_t *uiwidget, uiwidget_t *uipixbuf)
+uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf)
 {
   if (uiwidget == NULL) {
     return;

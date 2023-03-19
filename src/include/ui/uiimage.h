@@ -8,15 +8,15 @@
 # include "ui-gtk3.h"
 #endif
 
-void  uiImageFromFile (uiwidget_t *uiwidget, const char *fn);
-void  uiImagePersistentFromFile (uiwidget_t *uiwidget, const char *fn);
-void  uiImagePersistentFree (uiwidget_t *uiwidget);
-void  uiImageNew (uiwidget_t *uiwidget);
-void  uiImageFromFile (uiwidget_t *uiwidget, const char *fn);
-void  uiImageScaledFromFile (uiwidget_t *uiwidget, const char *fn, int scale);
-void  uiImageClear (uiwidget_t *uiwidget);
-void  uiImageConvertToPixbuf (uiwidget_t *uiwidget);
-void  uiImageSetFromPixbuf (uiwidget_t *uiwidget, uiwidget_t *uipixbuf);
-void  *uiImageGetPixbuf (uiwidget_t *uiwidget);
+void  uiImageFromFile (uiwcont_t *uiwidget, const char *fn);
+void  uiImagePersistentFromFile (uiwcont_t *uiwidget, const char *fn);
+void  uiImagePersistentFree (uiwcont_t *uiwidget);
+void  uiImageNew (uiwcont_t *uiwidget);
+void  uiImageFromFile (uiwcont_t *uiwidget, const char *fn);
+void  uiImageScaledFromFile (uiwcont_t *uiwidget, const char *fn, int scale);
+void  uiImageClear (uiwcont_t *uiwidget);
+void  uiImageConvertToPixbuf (uiwcont_t *uiwidget);
+void  uiImageSetFromPixbuf (uiwcont_t *uiwidget, uiwcont_t *uipixbuf);
+void  *uiImageGetPixbuf (uiwcont_t *uiwidget);
 
 #endif /* INC_UIIMAGE_H */

@@ -50,7 +50,7 @@ void
 confuiLevelSet (uitree_t *uitree,
     int editable, char *leveldisp, long weight, int def)
 {
-  uiwidget_t      adjustment;
+  uiwcont_t      adjustment;
 
   logProcBegin (LOG_PROC, "confuiLevelSet");
   uiCreateAdjustment (&adjustment, weight, 0.0, 100.0, 1.0, 5.0, 0.0);
@@ -69,7 +69,7 @@ void
 confuiRatingSet (uitree_t *uitree,
     int editable, char *ratingdisp, long weight)
 {
-  uiwidget_t  adjustment;
+  uiwcont_t  adjustment;
 
   logProcBegin (LOG_PROC, "confuiRatingSet");
   uiCreateAdjustment (&adjustment, weight, 0.0, 100.0, 1.0, 5.0, 0.0);

@@ -22,7 +22,7 @@
 static gboolean uiLinkCallback (GtkLinkButton *lb, gpointer udata);
 
 void
-uiCreateLink (uiwidget_t *uiwidget, const char *label, const char *uri)
+uiCreateLink (uiwcont_t *uiwidget, const char *label, const char *uri)
 {
   GtkWidget *widget;
   GtkWidget *lwidget;
@@ -41,7 +41,7 @@ uiCreateLink (uiwidget_t *uiwidget, const char *label, const char *uri)
 }
 
 void
-uiLinkSet (uiwidget_t *uilink, const char *label, const char *uri)
+uiLinkSet (uiwcont_t *uilink, const char *label, const char *uri)
 {
   if (uri != NULL) {
     gtk_link_button_set_uri (GTK_LINK_BUTTON (uilink->widget), uri);
@@ -52,7 +52,7 @@ uiLinkSet (uiwidget_t *uilink, const char *label, const char *uri)
 }
 
 void
-uiLinkSetActivateCallback (uiwidget_t *uilink, callback_t *uicb)
+uiLinkSetActivateCallback (uiwcont_t *uilink, callback_t *uicb)
 {
   g_signal_connect (uilink->widget, "activate-link",
       G_CALLBACK (uiLinkCallback), uicb);

@@ -20,19 +20,19 @@
 #include "mdebug.h"
 #include "uinbutil.h"
 
-uiutilsnbtabid_t *
-uiutilsNotebookIDInit (void)
+uinbtabid_t *
+uinbutilIDInit (void)
 {
-  uiutilsnbtabid_t *nbtabid;
+  uinbtabid_t *nbtabid;
 
-  nbtabid = mdmalloc (sizeof (uiutilsnbtabid_t));
+  nbtabid = mdmalloc (sizeof (uinbtabid_t));
   nbtabid->tabcount = 0;
   nbtabid->tabids = NULL;
   return nbtabid;
 }
 
 void
-uiutilsNotebookIDFree (uiutilsnbtabid_t *nbtabid)
+uinbutilIDFree (uinbtabid_t *nbtabid)
 {
   if (nbtabid != NULL) {
     dataFree (nbtabid->tabids);
@@ -41,7 +41,7 @@ uiutilsNotebookIDFree (uiutilsnbtabid_t *nbtabid)
 }
 
 void
-uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id)
+uinbutilIDAdd (uinbtabid_t *nbtabid, int id)
 {
   nbtabid->tabids = mdrealloc (nbtabid->tabids,
       sizeof (int) * (nbtabid->tabcount + 1));
@@ -50,7 +50,7 @@ uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id)
 }
 
 int
-uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx)
+uinbutilIDGet (uinbtabid_t *nbtabid, int idx)
 {
   if (nbtabid == NULL) {
     return 0;
@@ -62,7 +62,7 @@ uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx)
 }
 
 int
-uiutilsNotebookIDGetPage (uiutilsnbtabid_t *nbtabid, int id)
+uinbutilIDGetPage (uinbtabid_t *nbtabid, int id)
 {
   if (nbtabid == NULL) {
     return 0;
@@ -80,13 +80,13 @@ uiutilsNotebookIDGetPage (uiutilsnbtabid_t *nbtabid, int id)
 }
 
 void
-uiutilsNotebookIDStartIterator (uiutilsnbtabid_t *nbtabid, int *iteridx)
+uinbutilIDStartIterator (uinbtabid_t *nbtabid, int *iteridx)
 {
   *iteridx = -1;
 }
 
 int
-uiutilsNotebookIDIterate (uiutilsnbtabid_t *nbtabid, int *iteridx)
+uinbutilIDIterate (uinbtabid_t *nbtabid, int *iteridx)
 {
   ++(*iteridx);
   if (*iteridx >= nbtabid->tabcount) {

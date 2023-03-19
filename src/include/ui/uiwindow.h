@@ -10,32 +10,32 @@
 
 #include "callback.h"
 
-void uiCreateMainWindow (uiwidget_t *uiwidget, callback_t *uicb,
+void uiCreateMainWindow (uiwcont_t *uiwidget, callback_t *uicb,
     const char *title, const char *imagenm);
-void uiWindowSetTitle (uiwidget_t *uiwidget, const char *title);
-void uiCloseWindow (uiwidget_t *uiwindow);
-bool uiWindowIsMaximized (uiwidget_t *uiwindow);
-void uiWindowIconify (uiwidget_t *uiwindow);
-void uiWindowDeIconify (uiwidget_t *uiwindow);
-void uiWindowMaximize (uiwidget_t *uiwindow);
-void uiWindowUnMaximize (uiwidget_t *uiwindow);
-void uiWindowDisableDecorations (uiwidget_t *uiwindow);
-void uiWindowEnableDecorations (uiwidget_t *uiwindow);
-void uiWindowGetSize (uiwidget_t *uiwindow, int *x, int *y);
-void uiWindowSetDefaultSize (uiwidget_t *uiwindow, int x, int y);
-void uiWindowGetPosition (uiwidget_t *uiwindow, int *x, int *y, int *ws);
-void uiWindowMove (uiwidget_t *uiwindow, int x, int y, int ws);
-void uiWindowMoveToCurrentWorkspace (uiwidget_t *uiwindow);
-void uiWindowNoFocusOnStartup (uiwidget_t *uiwindow);
-void uiCreateScrolledWindow (uiwidget_t *uiwindow, int minheight);
-void uiWindowSetPolicyExternal (uiwidget_t *uisw);
-void uiCreateDialogWindow (uiwidget_t *uiwidget, uiwidget_t *parentwin, uiwidget_t *attachment, callback_t *uicb, const char *title);
-void uiWindowSetDoubleClickCallback (uiwidget_t *uiwindow, callback_t *uicb);
-void uiWindowSetWinStateCallback (uiwidget_t *uiwindow, callback_t *uicb);
-void uiWindowNoDim (uiwidget_t *uiwidget);
-void uiWindowSetMappedCallback (uiwidget_t *uiwidget, callback_t *uicb);
-void uiWindowPresent (uiwidget_t *uiwidget);
-void uiWindowRaise (uiwidget_t *uiwidget);
-void uiWindowFind (uiwidget_t *window);
+void uiWindowSetTitle (uiwcont_t *uiwidget, const char *title);
+void uiCloseWindow (uiwcont_t *uiwindow);
+bool uiWindowIsMaximized (uiwcont_t *uiwindow);
+void uiWindowIconify (uiwcont_t *uiwindow);
+void uiWindowDeIconify (uiwcont_t *uiwindow);
+void uiWindowMaximize (uiwcont_t *uiwindow);
+void uiWindowUnMaximize (uiwcont_t *uiwindow);
+void uiWindowDisableDecorations (uiwcont_t *uiwindow);
+void uiWindowEnableDecorations (uiwcont_t *uiwindow);
+void uiWindowGetSize (uiwcont_t *uiwindow, int *x, int *y);
+void uiWindowSetDefaultSize (uiwcont_t *uiwindow, int x, int y);
+void uiWindowGetPosition (uiwcont_t *uiwindow, int *x, int *y, int *ws);
+void uiWindowMove (uiwcont_t *uiwindow, int x, int y, int ws);
+void uiWindowMoveToCurrentWorkspace (uiwcont_t *uiwindow);
+void uiWindowNoFocusOnStartup (uiwcont_t *uiwindow);
+void uiCreateScrolledWindow (uiwcont_t *uiwindow, int minheight);
+void uiWindowSetPolicyExternal (uiwcont_t *uisw);
+void uiCreateDialogWindow (uiwcont_t *uiwidget, uiwcont_t *parentwin, uiwcont_t *attachment, callback_t *uicb, const char *title);
+void uiWindowSetDoubleClickCallback (uiwcont_t *uiwindow, callback_t *uicb);
+void uiWindowSetWinStateCallback (uiwcont_t *uiwindow, callback_t *uicb);
+void uiWindowNoDim (uiwcont_t *uiwidget);
+void uiWindowSetMappedCallback (uiwcont_t *uiwidget, callback_t *uicb);
+void uiWindowPresent (uiwcont_t *uiwidget);
+void uiWindowRaise (uiwcont_t *uiwidget);
+void uiWindowFind (uiwcont_t *window);
 
 #endif /* INC_UIWINDOW_H */

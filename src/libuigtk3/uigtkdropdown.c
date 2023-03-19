@@ -43,10 +43,10 @@ enum {
 typedef struct uidropdown {
   char          *title;
   callback_t    *selectcb;
-  uiwidget_t    *parentwin;
+  uiwcont_t    *parentwin;
   uibutton_t    *button;
   callback_t    *buttoncb;
-  uiwidget_t    window;
+  uiwcont_t    window;
   callback_t    *closecb;
   uitree_t      *uitree;
   slist_t       *strIndexMap;
@@ -77,7 +77,7 @@ uiDropDownInit (void)
   dropdown->title = NULL;
   dropdown->parentwin = NULL;
   dropdown->button = NULL;
-  uiwidgetInit (&dropdown->window);
+  uiwcontInit (&dropdown->window);
   dropdown->uitree = NULL;
   dropdown->closeHandlerId = 0;
   dropdown->strSelection = NULL;
@@ -111,8 +111,8 @@ uiDropDownFree (uidropdown_t *dropdown)
   }
 }
 
-uiwidget_t *
-uiDropDownCreate (uiwidget_t *parentwin,
+uiwcont_t *
+uiDropDownCreate (uiwcont_t *parentwin,
     const char *title, callback_t *uicb,
     uidropdown_t *dropdown, void *udata)
 {
@@ -120,11 +120,11 @@ uiDropDownCreate (uiwidget_t *parentwin,
   dropdown->title = mdstrdup (title);
   uiDropDownButtonCreate (dropdown);
   uiDropDownWindowCreate (dropdown, uicb, udata);
-  return uiButtonGetWidget (dropdown->button);
+  return uiButtonGetWidgetContainer (dropdown->button);
 }
 
-uiwidget_t *
-uiComboboxCreate (uiwidget_t *parentwin,
+uiwcont_t *
+uiComboboxCreate (uiwcont_t *parentwin,
     const char *title, callback_t *uicb,
     uidropdown_t *dropdown, void *udata)
 {
@@ -144,7 +144,7 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   GtkTreeViewColumn *column = NULL;
   ilistidx_t        iteridx;
   nlistidx_t        internalidx;
-  uiwidget_t        *uitreewidgetp;
+  uiwcont_t        *uitreewidgetp;
   char              tbuff [200];
 
   if (dropdown == NULL || list == NULL) {
@@ -159,7 +159,7 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   internalidx = 0;
 
   dropdown->maxwidth = slistGetMaxKeyWidth (list);
-  uitreewidgetp = uiTreeViewGetWidget (dropdown->uitree);
+  uitreewidgetp = uiTreeViewGetWidgetContainer (dropdown->uitree);
 
   snprintf (tbuff, sizeof (tbuff), "%-*s",
       dropdown->maxwidth, dropdown->title);
@@ -224,7 +224,7 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   ilistidx_t        iteridx;
   nlistidx_t        internalidx;
   nlistidx_t        idx;
-  uiwidget_t        *uitreewidgetp;
+  uiwcont_t        *uitreewidgetp;
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_LONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
@@ -234,7 +234,7 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   internalidx = 0;
 
   dropdown->maxwidth = slistGetMaxKeyWidth (list);
-  uitreewidgetp = uiTreeViewGetWidget (dropdown->uitree);
+  uitreewidgetp = uiTreeViewGetWidgetContainer (dropdown->uitree);
 
   snprintf (tbuff, sizeof (tbuff), "%-*s",
       dropdown->maxwidth, dropdown->title);
@@ -351,7 +351,7 @@ static bool
 uiDropDownWindowShow (void *udata)
 {
   uidropdown_t  *dropdown = udata;
-  uiwidget_t    *uiwidgetp;
+  uiwcont_t    *uiwidgetp;
   int           x, y, ws;
   int           bx, by;
 
@@ -363,8 +363,8 @@ uiDropDownWindowShow (void *udata)
   bx = 0;
   by = 0;
   uiWindowGetPosition (dropdown->parentwin, &x, &y, &ws);
-  uiwidgetp = uiButtonGetWidget (dropdown->button);
-  if (uiwidgetIsSet (uiwidgetp)) {
+  uiwidgetp = uiButtonGetWidgetContainer (dropdown->button);
+  if (uiwcontIsSet (uiwidgetp)) {
     uiWidgetGetPosition (uiwidgetp, &bx, &by);
   }
   uiWidgetShowAll (&dropdown->window);
@@ -391,14 +391,14 @@ uiDropDownClose (void *udata)
 static void
 uiDropDownButtonCreate (uidropdown_t *dropdown)
 {
-  uiwidget_t  *uiwidgetp;
+  uiwcont_t  *uiwidgetp;
 
   dropdown->buttoncb = callbackInit ( uiDropDownWindowShow, dropdown, NULL);
   dropdown->button = uiCreateButton (dropdown->buttoncb, NULL,
       "button_down_small");
   uiButtonAlignLeft (dropdown->button);
   uiButtonSetImagePosRight (dropdown->button);
-  uiwidgetp = uiButtonGetWidget (dropdown->button);
+  uiwidgetp = uiButtonGetWidgetContainer (dropdown->button);
   uiWidgetSetMarginTop (uiwidgetp, 1);
   uiWidgetSetMarginStart (uiwidgetp, 1);
 }
@@ -408,15 +408,15 @@ static void
 uiDropDownWindowCreate (uidropdown_t *dropdown,
     callback_t *uicb, void *udata)
 {
-  uiwidget_t        uiwidget;
-  uiwidget_t        *uiwidgetp;
-  uiwidget_t        vbox;
-  uiwidget_t        uiscwin;
+  uiwcont_t        uiwidget;
+  uiwcont_t        *uiwidgetp;
+  uiwcont_t        vbox;
+  uiwcont_t        uiscwin;
 
 
   dropdown->closecb = callbackInit ( uiDropDownClose, dropdown, NULL);
   uiCreateDialogWindow (&dropdown->window, dropdown->parentwin,
-      uiButtonGetWidget (dropdown->button), dropdown->closecb, "");
+      uiButtonGetWidgetContainer (dropdown->button), dropdown->closecb, "");
 
   uiCreateVertBox (&uiwidget);
   uiWidgetExpandHoriz (&uiwidget);
@@ -431,7 +431,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   uiBoxPackStartExpand (&vbox, &uiscwin);
 
   dropdown->uitree = uiCreateTreeView ();
-  uiwidgetp = uiTreeViewGetWidget (dropdown->uitree);
+  uiwidgetp = uiTreeViewGetWidgetContainer (dropdown->uitree);
   if (G_IS_OBJECT (uiwidgetp->widget)) {
     g_object_ref_sink (G_OBJECT (uiwidgetp->widget));
   }
@@ -455,13 +455,13 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
   GtkTreeIter   iter;
   char          tbuff [200];
   char          *p;
-  uiwidget_t    *uitreewidgetp;
+  uiwcont_t    *uitreewidgetp;
 
 
   if (dropdown == NULL || dropdown->uitree == NULL) {
     return;
   }
-  uitreewidgetp = uiTreeViewGetWidget (dropdown->uitree);
+  uitreewidgetp = uiTreeViewGetWidgetContainer (dropdown->uitree);
   if (uitreewidgetp->widget == NULL) {
     return;
   }
@@ -511,9 +511,9 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
   glong         idx = 0;
   nlistidx_t    retval;
   char          tbuff [200];
-  uiwidget_t    *uitreewidgetp;
+  uiwcont_t    *uitreewidgetp;
 
-  uitreewidgetp = uiTreeViewGetWidget (dropdown->uitree);
+  uitreewidgetp = uiTreeViewGetWidgetContainer (dropdown->uitree);
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitreewidgetp->widget));
   if (gtk_tree_model_get_iter (model, &iter, path)) {

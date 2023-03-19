@@ -10,7 +10,7 @@
 
 typedef struct uichgind uichgind_t;
 
-uichgind_t *uiCreateChangeIndicator (uiwidget_t *boxp);
+uichgind_t *uiCreateChangeIndicator (uiwcont_t *boxp);
 void  uichgindFree (uichgind_t *uichgind);
 void  uichgindMarkNormal (uichgind_t *uichgind);
 void  uichgindMarkError (uichgind_t *uichgind);

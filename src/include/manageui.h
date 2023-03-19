@@ -24,12 +24,12 @@ enum {
 /* managepl.c */
 typedef struct managepl managepl_t;
 
-managepl_t *managePlaylistAlloc (uiwidget_t *window, nlist_t *options,
-    uiwidget_t *statusMsg);
+managepl_t *managePlaylistAlloc (uiwcont_t *window, nlist_t *options,
+    uiwcont_t *statusMsg);
 void managePlaylistFree (managepl_t *managepl);
 void managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb);
-void manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp);
-uimenu_t *managePlaylistMenu (managepl_t *managepl, uiwidget_t *menubar);
+void manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp);
+uimenu_t *managePlaylistMenu (managepl_t *managepl, uiwcont_t *menubar);
 void managePlaylistSave (managepl_t *managepl);
 void managePlaylistLoadCheck (managepl_t *managepl);
 void managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag);
@@ -38,9 +38,9 @@ bool managePlaylistNew (managepl_t *managepl, int preloadflag);
 /* managepltree.c */
 typedef struct managepltree managepltree_t;
 
-managepltree_t *managePlaylistTreeAlloc (uiwidget_t *statusMsg);
+managepltree_t *managePlaylistTreeAlloc (uiwcont_t *statusMsg);
 void managePlaylistTreeFree (managepltree_t *managepltree);
-void manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwidget_t *vboxp,  uiwidget_t *tophbox);
+void manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,  uiwcont_t *tophbox);
 void managePlaylistTreePrePopulate (managepltree_t *managepltree, playlist_t *pl);
 void managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl);
 bool managePlaylistTreeIsChanged (managepltree_t *managepltree);
@@ -49,13 +49,13 @@ void managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree);
 /* manageseq.c */
 typedef struct manageseq manageseq_t;
 
-manageseq_t *manageSequenceAlloc (uiwidget_t *window, nlist_t *options,
-    uiwidget_t *statusMsg);
+manageseq_t *manageSequenceAlloc (uiwcont_t *window, nlist_t *options,
+    uiwcont_t *statusMsg);
 void manageSequenceFree (manageseq_t *manageseq);
 void manageSequenceSetLoadCallback (manageseq_t *manageseq, callback_t *uicb);
 void manageSequenceSetNewCallback (manageseq_t *manageseq, callback_t *uicb);
-void manageBuildUISequence (manageseq_t *manageseq, uiwidget_t *vboxp);
-uimenu_t *manageSequenceMenu (manageseq_t *manageseq, uiwidget_t *menubar);
+void manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp);
+uimenu_t *manageSequenceMenu (manageseq_t *manageseq, uiwcont_t *menubar);
 void manageSequenceSave (manageseq_t *manageseq);
 void manageSequenceLoadCheck (manageseq_t *manageseq);
 void manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag);
@@ -63,9 +63,9 @@ void manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preload
 /* managedb.c */
 typedef struct managedb managedb_t;
 
-managedb_t *manageDbAlloc (uiwidget_t *window, nlist_t *options, uiwidget_t *statusMsg, conn_t *conn, procutil_t **processes);
+managedb_t *manageDbAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg, conn_t *conn, procutil_t **processes);
 void  manageDbFree (managedb_t *managedb);
-void  manageBuildUIUpdateDatabase (managedb_t *managedb, uiwidget_t *vboxp);
+void  manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp);
 bool  manageDbChg (void *udata);
 void  manageDbProgressMsg (managedb_t *managedb, char *args);
 void  manageDbStatusMsg (managedb_t *managedb, char *args);
@@ -74,10 +74,10 @@ void  manageDbClose (managedb_t *managedb);
 void  manageDbResetButtons (managedb_t *managedb);
 
 /* managemisc.c */
-bool manageCreatePlaylistCopy (uiwidget_t *statusMsg,
+bool manageCreatePlaylistCopy (uiwcont_t *statusMsg,
     const char *oname, const char *newname);
 int manageValidateName (uientry_t *entry, void *udata);
-void manageDeletePlaylist (uiwidget_t *statusMsg, const char *name);
+void manageDeletePlaylist (uiwcont_t *statusMsg, const char *name);
 char * manageTrimName (const char *name);
 
 /* managestats.c */
@@ -85,7 +85,7 @@ typedef struct managestats managestats_t;
 
 managestats_t *manageStatsInit (conn_t *conn, musicdb_t *musicdb);
 void  manageStatsFree (managestats_t *managestats);
-uiwidget_t *manageBuildUIStats (managestats_t *managestats);
+uiwcont_t *manageBuildUIStats (managestats_t *managestats);
 void manageStatsProcessData (managestats_t *managestats, mp_musicqupdate_t *musicqupdate);
 
 #endif /* INC_MANAGEUI_H */

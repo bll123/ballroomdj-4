@@ -14,7 +14,7 @@ typedef union uiwidget {
   GtkTreeSelection  *sel;
   GtkTextBuffer     *buffer;
   GtkAdjustment     *adjustment;
-} uiwidget_t;
+} uiwcont_t;
 
 #endif /* BDJ4_USE_GTK */
 

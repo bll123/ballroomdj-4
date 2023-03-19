@@ -43,9 +43,9 @@ confuiInitMusicQs (confuigui_t *gui)
 void
 confuiBuildUIMusicQs (confuigui_t *gui)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    sg;
-  uiwidget_t    sgB;
+  uiwcont_t    vbox;
+  uiwcont_t    sg;
+  uiwcont_t    sgB;
 
   logProcBegin (LOG_PROC, "confuiBuildUIMusicQs");
   gui->inbuild = true;

@@ -29,7 +29,7 @@
 
 typedef struct uispinbox {
   int             sbtype;
-  uiwidget_t      uispinbox;
+  uiwcont_t      uispinbox;
   callback_t    *convcb;
   int             curridx;
   uispinboxdisp_t textGetProc;
@@ -62,7 +62,7 @@ uiSpinboxInit (void)
   uispinbox_t   *spinbox;
 
   spinbox = mdmalloc (sizeof (uispinbox_t));
-  uiwidgetInit (&spinbox->uispinbox);
+  uiwcontInit (&spinbox->uispinbox);
   spinbox->convcb = NULL;
   spinbox->curridx = 0;
   spinbox->textGetProc = NULL;
@@ -254,14 +254,14 @@ uiSpinboxTimeSetValueChangedCallback (uispinbox_t *spinbox, callback_t *uicb)
 }
 
 void
-uiSpinboxSetValueChangedCallback (uiwidget_t *uiwidget, callback_t *uicb)
+uiSpinboxSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
 {
   g_signal_connect (uiwidget->widget, "value-changed",
       G_CALLBACK (uiSpinboxValueChangedHandler), uicb);
 }
 
 void
-uiSpinboxIntCreate (uiwidget_t *uiwidget)
+uiSpinboxIntCreate (uiwcont_t *uiwidget)
 {
   GtkWidget   *spinbox;
 
@@ -278,7 +278,7 @@ uiSpinboxIntCreate (uiwidget_t *uiwidget)
 }
 
 void
-uiSpinboxDoubleCreate (uiwidget_t *uiwidget)
+uiSpinboxDoubleCreate (uiwcont_t *uiwidget)
 {
   GtkWidget   *spinbox;
 
@@ -328,14 +328,14 @@ uiSpinboxWrap (uispinbox_t *spinbox)
 }
 
 void
-uiSpinboxSet (uiwidget_t *uispinbox, double min, double max)
+uiSpinboxSet (uiwcont_t *uispinbox, double min, double max)
 {
   gtk_spin_button_set_range (GTK_SPIN_BUTTON (uispinbox->widget), min, max);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (uispinbox->widget), min);
 }
 
 double
-uiSpinboxGetValue (uiwidget_t *uispinbox)
+uiSpinboxGetValue (uiwcont_t *uispinbox)
 {
   GtkAdjustment     *adjustment;
   gdouble           value;
@@ -355,7 +355,7 @@ uiSpinboxGetValue (uiwidget_t *uispinbox)
 }
 
 void
-uiSpinboxSetValue (uiwidget_t *uispinbox, double value)
+uiSpinboxSetValue (uiwcont_t *uispinbox, double value)
 {
   GtkAdjustment     *adjustment;
 
@@ -405,8 +405,8 @@ uiSpinboxAddClass (const char *classnm, const char *color)
   uiAddColorClass (tbuff, color);
 }
 
-uiwidget_t *
-uiSpinboxGetWidget (uispinbox_t *spinbox)
+uiwcont_t *
+uiSpinboxGetWidgetContainer (uispinbox_t *spinbox)
 {
   return &spinbox->uispinbox;
 }

@@ -102,13 +102,13 @@ main (int argc, char *argv[])
   confui.filterDisplayDf = NULL;
 
   confui.gui.localip = NULL;
-  uiwidgetInit (&confui.gui.window);
+  uiwcontInit (&confui.gui.window);
   confui.gui.closecb = NULL;
-  uiwidgetInit (&confui.gui.notebook);
+  uiwcontInit (&confui.gui.notebook);
   confui.gui.nbcb = NULL;
-  confui.gui.nbtabid = uiutilsNotebookIDInit ();
-  uiwidgetInit (&confui.gui.vbox);
-  uiwidgetInit (&confui.gui.statusMsg);
+  confui.gui.nbtabid = uinbutilIDInit ();
+  uiwcontInit (&confui.gui.vbox);
+  uiwcontInit (&confui.gui.statusMsg);
   confui.gui.tablecurr = CONFUI_ID_NONE;
   confui.gui.dispsel = NULL;
   confui.gui.dispselduallist = NULL;
@@ -151,7 +151,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].displist = NULL;
     confui.gui.uiitem [i].sbkeylist = NULL;
     confui.gui.uiitem [i].danceidx = DANCE_DANCE;
-    uiwidgetInit (&confui.gui.uiitem [i].uiwidget);
+    uiwcontInit (&confui.gui.uiitem [i].uiwidget);
     confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].uri = NULL;
 
@@ -382,7 +382,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   } else if (confui->options != NULL) {
     nlistFree (confui->options);
   }
-  uiutilsNotebookIDFree (confui->gui.nbtabid);
+  uinbutilIDFree (confui->gui.nbtabid);
   slistFree (confui->gui.listingtaglist);
   slistFree (confui->gui.edittaglist);
   callbackFree (confui->gui.closecb);
@@ -399,9 +399,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
 static void
 confuiBuildUI (configui_t *confui)
 {
-  uiwidget_t    menubar;
-  uiwidget_t    hbox;
-  uiwidget_t    uiwidget;
+  uiwcont_t    menubar;
+  uiwcont_t    hbox;
+  uiwcont_t    uiwidget;
   char          imgbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
   int           x, y;
@@ -427,7 +427,7 @@ confuiBuildUI (configui_t *confui)
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiwidgetCopy (&confui->gui.statusMsg, &uiwidget);
+  uiwcontCopy (&confui->gui.statusMsg, &uiwidget);
 
   uiCreateMenubar (&menubar);
   uiBoxPackStart (&hbox, &menubar);

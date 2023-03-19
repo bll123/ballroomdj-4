@@ -78,9 +78,9 @@ confuiInitPlayer (confuigui_t *gui)
 void
 confuiBuildUIPlayer (confuigui_t *gui)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    sg;
-  uiwidget_t    sgB;
+  uiwcont_t    vbox;
+  uiwcont_t    sg;
+  uiwcont_t    sgB;
 
   logProcBegin (LOG_PROC, "confuiBuildUIPlayer");
   uiCreateVertBox (&vbox);

@@ -17,7 +17,7 @@
 #include "ui/uimiscbutton.h"
 
 void
-uiCreateFontButton (uiwidget_t *uiwidget, const char *fontname)
+uiCreateFontButton (uiwcont_t *uiwidget, const char *fontname)
 {
   GtkWidget   *fb;
 
@@ -30,7 +30,7 @@ uiCreateFontButton (uiwidget_t *uiwidget, const char *fontname)
 }
 
 const char *
-uiFontButtonGetFont (uiwidget_t *uiwidget)
+uiFontButtonGetFont (uiwcont_t *uiwidget)
 {
   const char *sval;
 
@@ -39,7 +39,7 @@ uiFontButtonGetFont (uiwidget_t *uiwidget)
 }
 
 void
-uiCreateColorButton (uiwidget_t *uiwidget, const char *color)
+uiCreateColorButton (uiwcont_t *uiwidget, const char *color)
 {
   GtkWidget   *cb;
   GdkRGBA     rgba;
@@ -54,7 +54,7 @@ uiCreateColorButton (uiwidget_t *uiwidget, const char *color)
 }
 
 void
-uiColorButtonGetColor (uiwidget_t *uiwidget, char *tbuff, size_t sz)
+uiColorButtonGetColor (uiwcont_t *uiwidget, char *tbuff, size_t sz)
 {
   GdkRGBA     gcolor;
 

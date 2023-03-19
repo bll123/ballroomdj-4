@@ -37,13 +37,13 @@ enum {
 };
 
 typedef struct uiaa {
-  uiwidget_t      *parentwin;
+  uiwcont_t      *parentwin;
   nlist_t         *options;
-  uiwidget_t      aaDialog;
-  uiwidget_t      statusMsg;
-  uiwidget_t      cbTrim;
-  uiwidget_t      cbNorm;
-  uiwidget_t      cbAdjust;
+  uiwcont_t      aaDialog;
+  uiwcont_t      statusMsg;
+  uiwcont_t      cbTrim;
+  uiwcont_t      cbNorm;
+  uiwcont_t      cbAdjust;
   callback_t      *callbacks [UIAA_CB_MAX];
   callback_t      *responsecb;
   song_t          *song;
@@ -56,12 +56,12 @@ static void   uiaaInitDisplay (uiaa_t *uiaa);
 static bool   uiaaResponseHandler (void *udata, long responseid);
 
 uiaa_t *
-uiaaInit (uiwidget_t *windowp, nlist_t *opts)
+uiaaInit (uiwcont_t *windowp, nlist_t *opts)
 {
   uiaa_t  *uiaa;
 
   uiaa = mdmalloc (sizeof (uiaa_t));
-  uiwidgetInit (&uiaa->aaDialog);
+  uiwcontInit (&uiaa->aaDialog);
   uiaa->parentwin = windowp;
   uiaa->options = opts;
   uiaa->song = NULL;
@@ -127,9 +127,9 @@ uiaaDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 void
 uiaaDialogClear (uiaa_t *uiaa)
 {
-  uiwidgetInit (&uiaa->statusMsg);
+  uiwcontInit (&uiaa->statusMsg);
   uiDialogDestroy (&uiaa->aaDialog);
-  uiwidgetInit (&uiaa->aaDialog);
+  uiwcontInit (&uiaa->aaDialog);
 }
 
 /* internal routines */
@@ -137,9 +137,9 @@ uiaaDialogClear (uiaa_t *uiaa)
 static void
 uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    hbox;
-  uiwidget_t    uiwidget;
+  uiwcont_t    vbox;
+  uiwcont_t    hbox;
+  uiwcont_t    uiwidget;
 
   logProcBegin (LOG_PROC, "uiaaCreateDialog");
 
@@ -147,7 +147,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
     return;
   }
 
-  if (uiwidgetIsSet (&uiaa->aaDialog)) {
+  if (uiwcontIsSet (&uiaa->aaDialog)) {
     return;
   }
 
@@ -185,7 +185,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiwidgetCopy (&uiaa->statusMsg, &uiwidget);
+  uiwcontCopy (&uiaa->statusMsg, &uiwidget);
 
   /* trim silence */
   uiCreateHorizBox (&hbox);
@@ -195,7 +195,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
       /* CONTEXT: apply adjustments: trim silence checkbox */
       _("Trim Silence"), (aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiwidgetCopy (&uiaa->cbTrim, &uiwidget);
+  uiwcontCopy (&uiaa->cbTrim, &uiwidget);
 
   /* normalize audio */
   uiCreateHorizBox (&hbox);
@@ -205,7 +205,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
       /* CONTEXT: apply adjustments: normalize volume checkbox */
       _("Normalize Volume"), (aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiwidgetCopy (&uiaa->cbNorm, &uiwidget);
+  uiwcontCopy (&uiaa->cbNorm, &uiwidget);
 
   /* adjust audio */
   uiCreateHorizBox (&hbox);
@@ -216,7 +216,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
       _("Adjust Speed, Song Start and Song End"),
       (aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiwidgetCopy (&uiaa->cbAdjust, &uiwidget);
+  uiwcontCopy (&uiaa->cbAdjust, &uiwidget);
 
   logProcEnd (LOG_PROC, "uiaaCreateDialog", "");
 }
@@ -242,14 +242,14 @@ uiaaResponseHandler (void *udata, long responseid)
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: del window");
-      uiwidgetInit (&uiaa->aaDialog);
+      uiwcontInit (&uiaa->aaDialog);
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: close window");
       /* dialog should be destroyed, as the buttons are re-created each time */
       uiDialogDestroy (&uiaa->aaDialog);
-      uiwidgetInit (&uiaa->aaDialog);
+      uiwcontInit (&uiaa->aaDialog);
       break;
     }
     case RESPONSE_RESET: {

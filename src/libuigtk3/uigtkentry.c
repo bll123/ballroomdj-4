@@ -29,7 +29,7 @@
 
 typedef struct uientry {
   GtkEntryBuffer  *buffer;
-  uiwidget_t      uientry;
+  uiwcont_t      uientry;
   int             entrySize;
   int             maxSize;
   uientryval_t    validateFunc;
@@ -50,7 +50,7 @@ uiEntryInit (int entrySize, int maxSize)
   entry->entrySize = entrySize;
   entry->maxSize = maxSize;
   entry->buffer = NULL;
-  uiwidgetInit (&entry->uientry);
+  uiwcontInit (&entry->uientry);
   entry->validateFunc = NULL;
   entry->udata = NULL;
   mstimeset (&entry->validateTimer, 3600000);
@@ -95,8 +95,8 @@ uiEntryClearIcon (uientry_t *entry)
       GTK_ENTRY_ICON_SECONDARY, NULL);
 }
 
-uiwidget_t *
-uiEntryGetWidget (uientry_t *entry)
+uiwcont_t *
+uiEntryGetWidgetContainer (uientry_t *entry)
 {
   if (entry == NULL) {
     return NULL;

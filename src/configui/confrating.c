@@ -29,10 +29,10 @@ static void   confuiRatingSave (confuigui_t *gui);
 void
 confuiBuildUIEditRatings (confuigui_t *gui)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    hbox;
-  uiwidget_t    uiwidget;
-  uiwidget_t    sg;
+  uiwcont_t    vbox;
+  uiwcont_t    hbox;
+  uiwcont_t    uiwidget;
+  uiwcont_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditRatings");
   uiCreateVertBox (&vbox);

@@ -9,32 +9,32 @@
 #endif
 
 /* widget interface */
-void  uiWidgetSetState (uiwidget_t *uiwidget, int state);
-void  uiWidgetEnable (uiwidget_t *uiwidget);
-void  uiWidgetExpandHoriz (uiwidget_t *uiwidget);
-void  uiWidgetExpandVert (uiwidget_t *uiwidget);
-void  uiWidgetSetAllMargins (uiwidget_t *uiwidget, int mult);
-void  uiWidgetSetMarginTop (uiwidget_t *uiwidget, int mult);
-void  uiWidgetSetMarginBottom (uiwidget_t *uiwidget, int mult);
-void  uiWidgetSetMarginStart (uiwidget_t *uiwidget, int mult);
-void  uiWidgetSetMarginEnd (uiwidget_t *uiwidget, int mult);
-void  uiWidgetAlignHorizFill (uiwidget_t *uiwidget);
-void  uiWidgetAlignHorizStart (uiwidget_t *uiwidget);
-void  uiWidgetAlignHorizEnd (uiwidget_t *uiwidget);
-void  uiWidgetAlignHorizCenter (uiwidget_t *uiwidget);
-void  uiWidgetAlignVertFill (uiwidget_t *uiwidget);
-void  uiWidgetAlignVertStart (uiwidget_t *uiwidget);
-void  uiWidgetAlignVertCenter (uiwidget_t *uiwidget);
-void  uiWidgetDisableFocus (uiwidget_t *uiwidget);
-void  uiWidgetHide (uiwidget_t *uiwidget);
-void  uiWidgetShow (uiwidget_t *uiwidget);
-void  uiWidgetShowAll (uiwidget_t *uiwidget);
-void  uiWidgetMakePersistent (uiwidget_t *uiuiwidget);
-void  uiWidgetClearPersistent (uiwidget_t *uiuiwidget);
-void  uiWidgetSetSizeRequest (uiwidget_t *uiuiwidget, int width, int height);
-bool  uiWidgetIsValid (uiwidget_t *uiwidget);
-void  uiWidgetGetPosition (uiwidget_t *widget, int *x, int *y);
-void  uiWidgetSetClass (uiwidget_t *uiwidget, const char *class);
-void  uiWidgetRemoveClass (uiwidget_t *uiwidget, const char *class);
+void  uiWidgetSetState (uiwcont_t *uiwidget, int state);
+void  uiWidgetEnable (uiwcont_t *uiwidget);
+void  uiWidgetExpandHoriz (uiwcont_t *uiwidget);
+void  uiWidgetExpandVert (uiwcont_t *uiwidget);
+void  uiWidgetSetAllMargins (uiwcont_t *uiwidget, int mult);
+void  uiWidgetSetMarginTop (uiwcont_t *uiwidget, int mult);
+void  uiWidgetSetMarginBottom (uiwcont_t *uiwidget, int mult);
+void  uiWidgetSetMarginStart (uiwcont_t *uiwidget, int mult);
+void  uiWidgetSetMarginEnd (uiwcont_t *uiwidget, int mult);
+void  uiWidgetAlignHorizFill (uiwcont_t *uiwidget);
+void  uiWidgetAlignHorizStart (uiwcont_t *uiwidget);
+void  uiWidgetAlignHorizEnd (uiwcont_t *uiwidget);
+void  uiWidgetAlignHorizCenter (uiwcont_t *uiwidget);
+void  uiWidgetAlignVertFill (uiwcont_t *uiwidget);
+void  uiWidgetAlignVertStart (uiwcont_t *uiwidget);
+void  uiWidgetAlignVertCenter (uiwcont_t *uiwidget);
+void  uiWidgetDisableFocus (uiwcont_t *uiwidget);
+void  uiWidgetHide (uiwcont_t *uiwidget);
+void  uiWidgetShow (uiwcont_t *uiwidget);
+void  uiWidgetShowAll (uiwcont_t *uiwidget);
+void  uiWidgetMakePersistent (uiwcont_t *uiuiwidget);
+void  uiWidgetClearPersistent (uiwcont_t *uiuiwidget);
+void  uiWidgetSetSizeRequest (uiwcont_t *uiuiwidget, int width, int height);
+bool  uiWidgetIsValid (uiwcont_t *uiwidget);
+void  uiWidgetGetPosition (uiwcont_t *widget, int *x, int *y);
+void  uiWidgetSetClass (uiwcont_t *uiwidget, const char *class);
+void  uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class);
 
 #endif /* INC_UIWIDGET_H */

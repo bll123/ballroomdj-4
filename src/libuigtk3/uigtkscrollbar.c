@@ -17,7 +17,7 @@
 #include "ui/uiscrollbar.h"
 
 void
-uiCreateVerticalScrollbar (uiwidget_t *uiwidget, double upper)
+uiCreateVerticalScrollbar (uiwcont_t *uiwidget, double upper)
 {
   GtkWidget     *sb;
   GtkAdjustment *adjustment;
@@ -29,7 +29,7 @@ uiCreateVerticalScrollbar (uiwidget_t *uiwidget, double upper)
 }
 
 void
-uiScrollbarSetUpper (uiwidget_t *uisb, double upper)
+uiScrollbarSetUpper (uiwcont_t *uisb, double upper)
 {
   GtkAdjustment   *adjustment;
 
@@ -38,7 +38,7 @@ uiScrollbarSetUpper (uiwidget_t *uisb, double upper)
 }
 
 void
-uiScrollbarSetPosition (uiwidget_t *uisb, double pos)
+uiScrollbarSetPosition (uiwcont_t *uisb, double pos)
 {
   GtkAdjustment   *adjustment;
 
@@ -47,7 +47,7 @@ uiScrollbarSetPosition (uiwidget_t *uisb, double pos)
 }
 
 void
-uiScrollbarSetStepIncrement (uiwidget_t *uisb, double step)
+uiScrollbarSetStepIncrement (uiwcont_t *uisb, double step)
 {
   GtkAdjustment   *adjustment;
 
@@ -56,7 +56,7 @@ uiScrollbarSetStepIncrement (uiwidget_t *uisb, double step)
 }
 
 void
-uiScrollbarSetPageIncrement (uiwidget_t *uisb, double page)
+uiScrollbarSetPageIncrement (uiwcont_t *uisb, double page)
 {
   GtkAdjustment   *adjustment;
 
@@ -65,7 +65,7 @@ uiScrollbarSetPageIncrement (uiwidget_t *uisb, double page)
 }
 
 void
-uiScrollbarSetPageSize (uiwidget_t *uisb, double sz)
+uiScrollbarSetPageSize (uiwcont_t *uisb, double sz)
 {
   GtkAdjustment   *adjustment;
 

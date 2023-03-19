@@ -16,7 +16,7 @@
 #include "ui/uisizegrp.h"
 
 void
-uiCreateSizeGroupHoriz (uiwidget_t *uiw)
+uiCreateSizeGroupHoriz (uiwcont_t *uiw)
 {
   GtkSizeGroup  *sg;
 
@@ -25,7 +25,7 @@ uiCreateSizeGroupHoriz (uiwidget_t *uiw)
 }
 
 void
-uiSizeGroupAdd (uiwidget_t *uisg, uiwidget_t *uiwidget)
+uiSizeGroupAdd (uiwcont_t *uisg, uiwcont_t *uiwidget)
 {
   gtk_size_group_add_widget (uisg->sg, uiwidget->widget);
 }

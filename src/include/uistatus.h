@@ -9,12 +9,12 @@
 
 typedef struct uistatus uistatus_t;
 
-uistatus_t * uistatusSpinboxCreate (uiwidget_t *boxp, bool allflag);
+uistatus_t * uistatusSpinboxCreate (uiwcont_t *boxp, bool allflag);
 void uistatusFree (uistatus_t *uistatus);
 int uistatusGetValue (uistatus_t *uistatus);
 void uistatusSetValue (uistatus_t *uistatus, int value);
 void uistatusSetState (uistatus_t *uistatus, int state);
-void uistatusSizeGroupAdd (uistatus_t *uistatus, uiwidget_t *sg);
+void uistatusSizeGroupAdd (uistatus_t *uistatus, uiwcont_t *sg);
 void uistatusSetChangedCallback (uistatus_t *uistatus, callback_t *cb);
 
 #endif /* INC_UISTATUS_H */

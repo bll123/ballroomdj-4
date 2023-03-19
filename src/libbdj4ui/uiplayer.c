@@ -69,47 +69,47 @@ typedef struct uiplayer {
   callback_t      *callbacks [UIPLAYER_CB_MAX];
   dbidx_t         curr_dbidx;
   /* song display */
-  uiwidget_t      vbox;
-  uiwidget_t      statusImg;
-  uiwidget_t      repeatImg;
-  uiwidget_t      danceLab;
-  uiwidget_t      artistLab;
-  uiwidget_t      titleLab;
+  uiwcont_t      vbox;
+  uiwcont_t      statusImg;
+  uiwcont_t      repeatImg;
+  uiwcont_t      danceLab;
+  uiwcont_t      artistLab;
+  uiwcont_t      titleLab;
   uibutton_t      *buttons [UIPLAYER_BUTTON_MAX];
   /* speed controls / display */
-  uiwidget_t      speedScale;
-  uiwidget_t      speedDisplayLab;
+  uiwcont_t      speedScale;
+  uiwcont_t      speedDisplayLab;
   bool            speedLock;
   mstime_t        speedLockTimeout;
   mstime_t        speedLockSend;
   /* position controls / display */
-  uiwidget_t      countdownTimerLab;
-  uiwidget_t      durationLab;
-  uiwidget_t      seekScale;
-  uiwidget_t      seekDisplayLab;
+  uiwcont_t      countdownTimerLab;
+  uiwcont_t      durationLab;
+  uiwcont_t      seekScale;
+  uiwcont_t      seekDisplayLab;
   ssize_t         lastdur;
   bool            seekLock;
   mstime_t        seekLockTimeout;
   mstime_t        seekLockSend;
   /* main controls */
-  uiwidget_t      repeatButton;
-  uiwidget_t      songbeginButton;
-  uiwidget_t      pauseatendButton;
-  uiwidget_t      playPixbuf;
-  uiwidget_t      stopPixbuf;
-  uiwidget_t      pausePixbuf;
-  uiwidget_t      repeatPixbuf;
-  uiwidget_t      ledoffImg;
-  uiwidget_t      ledonImg;
+  uiwcont_t      repeatButton;
+  uiwcont_t      songbeginButton;
+  uiwcont_t      pauseatendButton;
+  uiwcont_t      playPixbuf;
+  uiwcont_t      stopPixbuf;
+  uiwcont_t      pausePixbuf;
+  uiwcont_t      repeatPixbuf;
+  uiwcont_t      ledoffImg;
+  uiwcont_t      ledonImg;
   bool            repeatLock;
   bool            pauseatendLock;
   bool            pauseatendstate;
   /* volume controls / display */
-  uiwidget_t      volumeScale;
+  uiwcont_t      volumeScale;
   bool            volumeLock;
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;
-  uiwidget_t      volumeDisplayLab;
+  uiwcont_t      volumeDisplayLab;
   bool            uibuilt;
 } uiplayer_t;
 
@@ -145,29 +145,29 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->uibuilt = false;
   uiplayer->curr_dbidx = -1;
 
-  uiwidgetInit (&uiplayer->vbox);
-  uiwidgetInit (&uiplayer->statusImg);
-  uiwidgetInit (&uiplayer->repeatImg);
-  uiwidgetInit (&uiplayer->danceLab);
-  uiwidgetInit (&uiplayer->artistLab);
-  uiwidgetInit (&uiplayer->titleLab);
-  uiwidgetInit (&uiplayer->countdownTimerLab);
-  uiwidgetInit (&uiplayer->durationLab);
-  uiwidgetInit (&uiplayer->speedDisplayLab);
-  uiwidgetInit (&uiplayer->seekDisplayLab);
-  uiwidgetInit (&uiplayer->speedScale);
-  uiwidgetInit (&uiplayer->seekScale);
-  uiwidgetInit (&uiplayer->repeatButton);
-  uiwidgetInit (&uiplayer->songbeginButton);
-  uiwidgetInit (&uiplayer->pauseatendButton);
-  uiwidgetInit (&uiplayer->playPixbuf);
-  uiwidgetInit (&uiplayer->stopPixbuf);
-  uiwidgetInit (&uiplayer->pausePixbuf);
-  uiwidgetInit (&uiplayer->repeatPixbuf);
-  uiwidgetInit (&uiplayer->ledoffImg);
-  uiwidgetInit (&uiplayer->ledonImg);
-  uiwidgetInit (&uiplayer->volumeDisplayLab);
-  uiwidgetInit (&uiplayer->volumeScale);
+  uiwcontInit (&uiplayer->vbox);
+  uiwcontInit (&uiplayer->statusImg);
+  uiwcontInit (&uiplayer->repeatImg);
+  uiwcontInit (&uiplayer->danceLab);
+  uiwcontInit (&uiplayer->artistLab);
+  uiwcontInit (&uiplayer->titleLab);
+  uiwcontInit (&uiplayer->countdownTimerLab);
+  uiwcontInit (&uiplayer->durationLab);
+  uiwcontInit (&uiplayer->speedDisplayLab);
+  uiwcontInit (&uiplayer->seekDisplayLab);
+  uiwcontInit (&uiplayer->speedScale);
+  uiwcontInit (&uiplayer->seekScale);
+  uiwcontInit (&uiplayer->repeatButton);
+  uiwcontInit (&uiplayer->songbeginButton);
+  uiwcontInit (&uiplayer->pauseatendButton);
+  uiwcontInit (&uiplayer->playPixbuf);
+  uiwcontInit (&uiplayer->stopPixbuf);
+  uiwcontInit (&uiplayer->pausePixbuf);
+  uiwcontInit (&uiplayer->repeatPixbuf);
+  uiwcontInit (&uiplayer->ledoffImg);
+  uiwcontInit (&uiplayer->ledonImg);
+  uiwcontInit (&uiplayer->volumeDisplayLab);
+  uiwcontInit (&uiplayer->volumeScale);
   for (int i = 0; i < UIPLAYER_BUTTON_MAX; ++i) {
     uiplayer->buttons [i] = NULL;
   }
@@ -204,20 +204,20 @@ uiplayerFree (uiplayer_t *uiplayer)
   logProcEnd (LOG_PROC, "uiplayerFree", "");
 }
 
-uiwidget_t *
+uiwcont_t *
 uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];
-  uiwidget_t      uiwidget;
+  uiwcont_t      uiwidget;
   uibutton_t      *uibutton;
-  uiwidget_t      *uiwidgetp;
-  uiwidget_t      hbox;
-  uiwidget_t      tbox;
-  uiwidget_t      sgA;
-  uiwidget_t      sgB;
-  uiwidget_t      sgC;
-  uiwidget_t      sgD;
-  uiwidget_t      sgE;
+  uiwcont_t      *uiwidgetp;
+  uiwcont_t      hbox;
+  uiwcont_t      tbox;
+  uiwcont_t      sgA;
+  uiwcont_t      sgB;
+  uiwcont_t      sgC;
+  uiwcont_t      sgD;
+  uiwcont_t      sgE;
 
   logProcBegin (LOG_PROC, "uiplayerBuildUI");
 
@@ -403,7 +403,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       /* CONTEXT: playerui: button: fade out the song and stop playing it */
       _("Fade"), NULL);
   uiplayer->buttons [UIPLAYER_BUTTON_FADE] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   uiplayer->callbacks [UIPLAYER_CB_PLAYPAUSE] = callbackInit (
@@ -413,7 +413,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       /* CONTEXT: playerui: button: tooltip: play or pause the song */
       _("Play / Pause"), "button_playpause");
   uiplayer->buttons [UIPLAYER_BUTTON_PLAYPAUSE] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
@@ -434,7 +434,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       /* CONTEXT: playerui: button: tooltip: return to the beginning of the song */
       _("Return to beginning of song"), "button_begin");
   uiplayer->buttons [UIPLAYER_BUTTON_BEGSONG] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   uiplayer->callbacks [UIPLAYER_CB_NEXTSONG] = callbackInit (
@@ -444,7 +444,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       /* CONTEXT: playerui: button: tooltip: start playing the next song (immediate) */
       _("Next Song"), "button_nextsong");
   uiplayer->buttons [UIPLAYER_BUTTON_NEXTSONG] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_on", ".svg",

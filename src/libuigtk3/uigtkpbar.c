@@ -19,7 +19,7 @@
 #include "ui/uipbar.h"
 
 void
-uiCreateProgressBar (uiwidget_t *uiwidget)
+uiCreateProgressBar (uiwcont_t *uiwidget)
 {
   GtkWidget *widget;
 
@@ -32,7 +32,7 @@ uiCreateProgressBar (uiwidget_t *uiwidget)
 }
 
 void
-uiProgressBarSet (uiwidget_t *uipb, double val)
+uiProgressBarSet (uiwcont_t *uipb, double val)
 {
   gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (uipb->widget), val);
 }

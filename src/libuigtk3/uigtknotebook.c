@@ -25,7 +25,7 @@ uiNotebookSwitchPageHandler (GtkNotebook *nb, GtkWidget *page,
     guint pagenum, gpointer udata);
 
 void
-uiCreateNotebook (uiwidget_t *uiwidget)
+uiCreateNotebook (uiwcont_t *uiwidget)
 {
   GtkWidget   *widget;
 
@@ -40,34 +40,34 @@ uiCreateNotebook (uiwidget_t *uiwidget)
 }
 
 void
-uiNotebookTabPositionLeft (uiwidget_t *uiwidget)
+uiNotebookTabPositionLeft (uiwcont_t *uiwidget)
 {
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (uiwidget->widget), GTK_POS_LEFT);
 }
 
 void
-uiNotebookAppendPage (uiwidget_t *uinotebook, uiwidget_t *uiwidget,
-    uiwidget_t *uilabel)
+uiNotebookAppendPage (uiwcont_t *uinotebook, uiwcont_t *uiwidget,
+    uiwcont_t *uilabel)
 {
   gtk_notebook_append_page (GTK_NOTEBOOK (uinotebook->widget),
       uiwidget->widget, uilabel->widget);
 }
 
 void
-uiNotebookSetActionWidget (uiwidget_t *uinotebook, uiwidget_t *uiwidget)
+uiNotebookSetActionWidget (uiwcont_t *uinotebook, uiwcont_t *uiwidget)
 {
   gtk_notebook_set_action_widget (GTK_NOTEBOOK (uinotebook->widget),
       uiwidget->widget, GTK_PACK_END);
 }
 
 void
-uiNotebookSetPage (uiwidget_t *uinotebook, int pagenum)
+uiNotebookSetPage (uiwcont_t *uinotebook, int pagenum)
 {
   gtk_notebook_set_current_page (GTK_NOTEBOOK (uinotebook->widget), pagenum);
 }
 
 void
-uiNotebookHideShowPage (uiwidget_t *uinotebook, int pagenum, bool show)
+uiNotebookHideShowPage (uiwcont_t *uinotebook, int pagenum, bool show)
 {
   GtkWidget       *page;
 
@@ -77,7 +77,7 @@ uiNotebookHideShowPage (uiwidget_t *uinotebook, int pagenum, bool show)
 }
 
 void
-uiNotebookSetCallback (uiwidget_t *uinotebook, callback_t *uicb)
+uiNotebookSetCallback (uiwcont_t *uinotebook, callback_t *uicb)
 {
   g_signal_connect (uinotebook->widget, "switch-page",
       G_CALLBACK (uiNotebookSwitchPageHandler), uicb);

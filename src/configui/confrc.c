@@ -36,8 +36,8 @@ confuiInitMobileRemoteControl (confuigui_t *gui)
 void
 confuiBuildUIMobileRemoteControl (confuigui_t *gui)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    sg;
+  uiwcont_t    vbox;
+  uiwcont_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIMobileRemoteControl");
   uiCreateVertBox (&vbox);

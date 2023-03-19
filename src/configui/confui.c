@@ -25,8 +25,8 @@
 void
 confuiBuildUIUserInterface (confuigui_t *gui)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    sg;
+  uiwcont_t    vbox;
+  uiwcont_t    sg;
   char          *tstr;
 
   logProcBegin (LOG_PROC, "confuiBuildUIUserInterface");

@@ -68,9 +68,9 @@ typedef struct {
   char            *locknm;
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
-  uiwidget_t      window;
-  uiwidget_t      timesigsel [BPMCOUNT_DISP_MAX];
-  uiwidget_t      dispvalue [BPMCOUNT_DISP_MAX];
+  uiwcont_t      window;
+  uiwcont_t      timesigsel [BPMCOUNT_DISP_MAX];
+  uiwcont_t      dispvalue [BPMCOUNT_DISP_MAX];
   uibutton_t      *buttons [BPMCOUNT_BUTTON_MAX];
   int             values [BPMCOUNT_DISP_MAX];
   callback_t      *callbacks [BPMCOUNT_CB_MAX];
@@ -148,8 +148,8 @@ main (int argc, char *argv[])
   bpmcounter.timesigidx = BPMCOUNT_DISP_BPM;
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     bpmcounter.values [i] = 0;
-    uiwidgetInit (&bpmcounter.timesigsel [i]);
-    uiwidgetInit (&bpmcounter.dispvalue [i]);
+    uiwcontInit (&bpmcounter.timesigsel [i]);
+    uiwcontInit (&bpmcounter.dispvalue [i]);
   }
   for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
     bpmcounter.callbacks [i] = NULL;
@@ -172,7 +172,7 @@ main (int argc, char *argv[])
   progstateSetCallback (bpmcounter.progstate, STATE_CLOSING,
       bpmcounterClosingCallback, &bpmcounter);
 
-  uiwidgetInit (&bpmcounter.window);
+  uiwcontInit (&bpmcounter.window);
 
   procutilInitProcesses (bpmcounter.processes);
 
@@ -327,21 +327,21 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
 static void
 bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 {
-  uiwidget_t  grpuiwidget;
-  uiwidget_t  uiwidget;
+  uiwcont_t  grpuiwidget;
+  uiwcont_t  uiwidget;
   uibutton_t  *uibutton;
-  uiwidget_t  *uiwidgetp;
-  uiwidget_t  vboxmain;
-  uiwidget_t  vbox;
-  uiwidget_t  hboxbpm;
-  uiwidget_t  hbox;
-  uiwidget_t  sg;
-  uiwidget_t  sgb;
+  uiwcont_t  *uiwidgetp;
+  uiwcont_t  vboxmain;
+  uiwcont_t  vbox;
+  uiwcont_t  hboxbpm;
+  uiwcont_t  hbox;
+  uiwcont_t  sg;
+  uiwcont_t  sgb;
   char        imgbuff [MAXPATHLEN];
   int         x, y;
 
   logProcBegin (LOG_PROC, "bpmcounterBuildUI");
-  uiwidgetInit (&grpuiwidget);
+  uiwcontInit (&grpuiwidget);
   uiCreateSizeGroupHoriz (&sg);
   uiCreateSizeGroupHoriz (&sgb);
 
@@ -398,11 +398,11 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       uiCreateColonLabel (&uiwidget, disptxt [i]);
     } else if (i == BPMCOUNT_DISP_BPM) {
       uiCreateRadioButton (&uiwidget, NULL, disptxt [i], 1);
-      uiwidgetCopy (&grpuiwidget, &uiwidget);
+      uiwcontCopy (&grpuiwidget, &uiwidget);
     } else {
       uiCreateRadioButton (&uiwidget, &grpuiwidget, disptxt [i], 0);
     }
-    uiwidgetCopy (&bpmcounter->timesigsel [i], &uiwidget);
+    uiwcontCopy (&bpmcounter->timesigsel [i], &uiwidget);
     if (i >= BPMCOUNT_DISP_BPM) {
       uiToggleButtonSetCallback (&bpmcounter->timesigsel [i],
           bpmcounter->callbacks [BPMCOUNT_CB_RADIO]);
@@ -432,7 +432,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       bpmcounter->callbacks [BPMCOUNT_CB_CLICK],
       NULL, "bluebox");
   bpmcounter->buttons [BPMCOUNT_BUTTON_BLUEBOX] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiButtonSetReliefNone (uibutton);
   uiButtonSetFlat (uibutton);
   uiWidgetDisableFocus (uiwidgetp);
@@ -450,7 +450,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       /* CONTEXT: bpm counter: save button */
       _("Save"), NULL);
   bpmcounter->buttons [BPMCOUNT_BUTTON_SAVE] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
@@ -461,7 +461,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       /* CONTEXT: bpm counter: reset button */
       _("Reset"), NULL);
   bpmcounter->buttons [BPMCOUNT_BUTTON_RESET] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
@@ -470,7 +470,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       /* CONTEXT: bpm counter: close button */
       _("Close"), NULL);
   bpmcounter->buttons [BPMCOUNT_BUTTON_CLOSE] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (&hbox, uiwidgetp);
 

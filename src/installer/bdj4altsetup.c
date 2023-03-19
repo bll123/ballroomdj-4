@@ -97,11 +97,11 @@ typedef struct {
   char            *home;
   char            dlfname [MAXPATHLEN];
   /* conversion */
-  uiwidget_t      window;
+  uiwcont_t      window;
   uientry_t       *targetEntry;
   uientry_t       *nameEntry;
-  uiwidget_t      reinstWidget;
-  uiwidget_t      feedbackMsg;
+  uiwcont_t      reinstWidget;
+  uiwcont_t      feedbackMsg;
   uitextbox_t     *disptb;
   /* flags */
   bool            uiBuilt : 1;
@@ -177,7 +177,7 @@ main (int argc, char *argv[])
 
   buff [0] = '\0';
 
-  uiwidgetInit (&altsetup.window);
+  uiwcontInit (&altsetup.window);
   altsetup.instState = ALT_PRE_INIT;
   altsetup.target = mdstrdup ("");
   altsetup.uiBuilt = false;
@@ -191,8 +191,8 @@ main (int argc, char *argv[])
   altsetup.quiet = false;
   altsetup.verbose = false;
   altsetup.unattended = false;
-  uiwidgetInit (&altsetup.reinstWidget);
-  uiwidgetInit (&altsetup.feedbackMsg);
+  uiwcontInit (&altsetup.reinstWidget);
+  uiwcontInit (&altsetup.feedbackMsg);
   for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
     altsetup.buttons [i] = NULL;
   }
@@ -282,20 +282,20 @@ main (int argc, char *argv[])
 static void
 altsetupBuildUI (altsetup_t *altsetup)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    hbox;
-  uiwidget_t    uiwidget;
+  uiwcont_t    vbox;
+  uiwcont_t    hbox;
+  uiwcont_t    uiwidget;
   uibutton_t    *uibutton;
-  uiwidget_t    *uiwidgetp;
+  uiwcont_t    *uiwidgetp;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
 
   uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
   uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
 
-  uiwidgetInit (&vbox);
-  uiwidgetInit (&hbox);
-  uiwidgetInit (&uiwidget);
+  uiwcontInit (&vbox);
+  uiwcontInit (&hbox);
+  uiwcontInit (&uiwidget);
 
   strlcpy (imgbuff, "img/bdj4_icon_inst.png", sizeof (imgbuff));
   osuiSetIcon (imgbuff);
@@ -327,7 +327,7 @@ altsetupBuildUI (altsetup_t *altsetup)
 
   uiEntryCreate (altsetup->targetEntry);
   uiEntrySetValue (altsetup->targetEntry, altsetup->target);
-  uiwidgetp = uiEntryGetWidget (altsetup->targetEntry);
+  uiwidgetp = uiEntryGetWidgetContainer (altsetup->targetEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
@@ -340,7 +340,7 @@ altsetupBuildUI (altsetup_t *altsetup)
       altsetup->callbacks [ALT_CB_TARGET_DIR],
       "", NULL);
   altsetup->buttons [ALT_BUTTON_TARGET_DIR] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -356,7 +356,7 @@ altsetupBuildUI (altsetup_t *altsetup)
 
   uiEntryCreate (altsetup->nameEntry);
   uiEntrySetValue (altsetup->nameEntry, "BDJ4 B");
-  uiwidgetp = uiEntryGetWidget (altsetup->nameEntry);
+  uiwidgetp = uiEntryGetWidgetContainer (altsetup->nameEntry);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
@@ -389,7 +389,7 @@ altsetupBuildUI (altsetup_t *altsetup)
       /* CONTEXT: set up alternate: exits the altsetup */
       _("Exit"), NULL);
   altsetup->buttons [ALT_BUTTON_EXIT] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   altsetup->callbacks [ALT_CB_START] = callbackInit (
@@ -399,7 +399,7 @@ altsetupBuildUI (altsetup_t *altsetup)
       /* CONTEXT: set up alternate: start the set-up process */
       _("Start"), NULL);
   altsetup->buttons [ALT_BUTTON_START] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   altsetup->disptb = uiTextBoxCreate (200, NULL);

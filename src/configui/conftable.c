@@ -33,14 +33,14 @@ static void   confuiTableMove (confuigui_t *gui, int dir);
 static bool   confuiTableRemove (void *udata);
 
 void
-confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
+confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
     int flags)
 {
-  uiwidget_t  mhbox;
-  uiwidget_t  bvbox;
-  uiwidget_t  scwindow;
+  uiwcont_t  mhbox;
+  uiwcont_t  bvbox;
+  uiwcont_t  scwindow;
   uibutton_t  *uibutton;
-  uiwidget_t  *uiwidgetp;
+  uiwcont_t  *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemTable");
 
@@ -53,7 +53,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
   uiBoxPackStartExpand (&mhbox, &scwindow);
 
   gui->tables [id].uitree = uiCreateTreeView ();
-  uiwidgetp = uiTreeViewGetWidget (gui->tables [id].uitree);
+  uiwidgetp = uiTreeViewGetWidgetContainer (gui->tables [id].uitree);
   gui->tables [id].flags = flags;
 
   uiWidgetSetMarginStart (uiwidgetp, 8);
@@ -74,7 +74,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
         /* CONTEXT: configuration: table edit: button: move selection up */
         _("Move Up"), "button_up");
     gui->tables [id].buttons [CONFUI_BUTTON_TABLE_UP] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&bvbox, uiwidgetp);
 
     gui->tables [id].callbacks [CONFUI_TABLE_CB_DOWN] = callbackInit (
@@ -84,7 +84,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
         /* CONTEXT: configuration: table edit: button: move selection down */
         _("Move Down"), "button_down");
     gui->tables [id].buttons [CONFUI_BUTTON_TABLE_DOWN] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&bvbox, uiwidgetp);
   }
 
@@ -95,7 +95,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
       /* CONTEXT: configuration: table edit: button: delete selection */
       _("Delete"), "button_remove");
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_DELETE] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&bvbox, uiwidgetp);
 
   gui->tables [id].callbacks [CONFUI_TABLE_CB_ADD] = callbackInit (
@@ -105,7 +105,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
       /* CONTEXT: configuration: table edit: button: add new selection */
       _("Add New"), "button_add");
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_ADD] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&bvbox, uiwidgetp);
 
   logProcEnd (LOG_PROC, "confuiMakeItemTable", "");
@@ -175,7 +175,7 @@ confuiSwitchTable (void *udata, long pagenum)
   confuiident_t     newid;
 
   logProcBegin (LOG_PROC, "confuiSwitchTable");
-  if ((newid = (confuiident_t) uiutilsNotebookIDGet (gui->nbtabid, pagenum)) < 0) {
+  if ((newid = (confuiident_t) uinbutilIDGet (gui->nbtabid, pagenum)) < 0) {
     logProcEnd (LOG_PROC, "confuiSwitchTable", "bad-pagenum");
     return UICB_STOP;
   }
@@ -187,7 +187,7 @@ confuiSwitchTable (void *udata, long pagenum)
 
   confuiSetStatusMsg (gui, "");
 
-  gui->tablecurr = (confuiident_t) uiutilsNotebookIDGet (
+  gui->tablecurr = (confuiident_t) uinbutilIDGet (
       gui->nbtabid, pagenum);
 
   if (gui->tablecurr == CONFUI_ID_MOBILE_MQ) {

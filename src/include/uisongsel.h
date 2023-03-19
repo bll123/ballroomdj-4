@@ -45,7 +45,7 @@ typedef struct uisongsel {
   samesong_t        *samesong;
   dispselsel_t      dispselType;
   double            dfilterCount;
-  uiwidget_t        *windowp;
+  uiwcont_t        *windowp;
   callback_t        *queuecb;
   callback_t        *playcb;
   callback_t        *editcb;
@@ -90,7 +90,7 @@ void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t 
 /* uisongselgtk.c */
 void  uisongselUIInit (uisongsel_t *uisongsel);
 void  uisongselUIFree (uisongsel_t *uisongsel);
-UIWidget  * uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin);
+UIWidget  * uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin);
 bool  uisongselPlayCallback (void *udata);
 void  uisongselClearData (uisongsel_t *uisongsel);
 void  uisongselPopulateData (uisongsel_t *uisongsel);

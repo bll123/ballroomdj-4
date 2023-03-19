@@ -59,8 +59,8 @@ confuiInitGeneral (confuigui_t *gui)
 void
 confuiBuildUIGeneral (confuigui_t *gui)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    sg;
+  uiwcont_t    vbox;
+  uiwcont_t    sg;
   char          tbuff [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "confuiBuildUIGeneral");

@@ -31,7 +31,7 @@ typedef struct uistatus {
 static const char *uistatusStatusGet (void *udata, int idx);
 
 uistatus_t *
-uistatusSpinboxCreate (uiwidget_t *boxp, bool allflag)
+uistatusSpinboxCreate (uiwcont_t *boxp, bool allflag)
 {
   uistatus_t  *uistatus;
   int         maxw;
@@ -60,7 +60,7 @@ uistatusSpinboxCreate (uiwidget_t *boxp, bool allflag)
       statusGetCount (uistatus->status),
       maxw, NULL, NULL, uistatusStatusGet);
 
-  uiBoxPackStart (boxp, uiSpinboxGetWidget (uistatus->spinbox));
+  uiBoxPackStart (boxp, uiSpinboxGetWidgetContainer (uistatus->spinbox));
 
   return uistatus;
 }
@@ -108,9 +108,9 @@ uistatusSetState (uistatus_t *uistatus, int state)
 }
 
 void
-uistatusSizeGroupAdd (uistatus_t *uistatus, uiwidget_t *sg)
+uistatusSizeGroupAdd (uistatus_t *uistatus, uiwcont_t *sg)
 {
-  uiSizeGroupAdd (sg, uiSpinboxGetWidget (uistatus->spinbox));
+  uiSizeGroupAdd (sg, uiSpinboxGetWidgetContainer (uistatus->spinbox));
 }
 
 void

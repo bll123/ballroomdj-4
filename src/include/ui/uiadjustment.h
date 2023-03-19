@@ -8,7 +8,7 @@
 # include "ui-gtk3.h"
 #endif
 
-void  uiCreateAdjustment (uiwidget_t *uiwidget, double value, double start, double end, double stepinc, double pageinc, double pagesz);
-void * uiAdjustmentGetAdjustment (uiwidget_t *uiwidget);
+void  uiCreateAdjustment (uiwcont_t *uiwidget, double value, double start, double end, double stepinc, double pageinc, double pagesz);
+void * uiAdjustmentGetAdjustment (uiwcont_t *uiwidget);
 
 #endif /* INC_UIADJUSTMENT_H */

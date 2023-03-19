@@ -14,7 +14,7 @@ typedef struct uikey uikey_t;
 
 uikey_t * uiKeyAlloc (void);
 void    uiKeyFree (uikey_t *uikey);
-void    uiKeySetKeyCallback (uikey_t *uikey, uiwidget_t *uiwidgetp, callback_t *uicb);
+void    uiKeySetKeyCallback (uikey_t *uikey, uiwcont_t *uiwidgetp, callback_t *uicb);
 int     uiKeyEvent (uikey_t *uikey);
 bool    uiKeyIsPressEvent (uikey_t *uikey);
 bool    uiKeyIsReleaseEvent (uikey_t *uikey);

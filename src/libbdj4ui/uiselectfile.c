@@ -29,8 +29,8 @@ enum {
 };
 
 typedef struct uiselectfile {
-  uiwidget_t        *parentwinp;
-  uiwidget_t        uidialog;
+  uiwcont_t        *parentwinp;
+  uiwcont_t        uidialog;
   uitree_t          *selfiletree;
   callback_t        *rowactivecb;
   callback_t        *respcb;
@@ -44,7 +44,7 @@ static bool selectFileSelect (void *udata);
 static bool selectFileResponseHandler (void *udata, long responseid);
 
 void
-selectFileDialog (int type, uiwidget_t *window, nlist_t *options,
+selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
     callback_t *cb)
 {
   uiselectfile_t *selectfile;
@@ -55,7 +55,7 @@ selectFileDialog (int type, uiwidget_t *window, nlist_t *options,
 
   selectfile = mdmalloc (sizeof (uiselectfile_t));
   selectfile->parentwinp = window;
-  uiwidgetInit (&selectfile->uidialog);
+  uiwcontInit (&selectfile->uidialog);
   selectfile->selfiletree = NULL;
   selectfile->rowactivecb = NULL;
   selectfile->respcb = NULL;
@@ -114,11 +114,11 @@ static void
 selectFileCreateDialog (uiselectfile_t *selectfile,
     slist_t *filelist, const char *filetype, callback_t *cb)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    hbox;
-  uiwidget_t    uiwidget;
-  uiwidget_t    *uitreewidgetp;
-  uiwidget_t    scwindow;
+  uiwcont_t    vbox;
+  uiwcont_t    hbox;
+  uiwcont_t    uiwidget;
+  uiwcont_t    *uitreewidgetp;
+  uiwcont_t    scwindow;
   char          tbuff [200];
   slistidx_t    fliteridx;
   char          *disp;
@@ -150,7 +150,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiBoxPackStartExpand (&vbox, &scwindow);
 
   selectfile->selfiletree = uiCreateTreeView ();
-  uitreewidgetp = uiTreeViewGetWidget (selectfile->selfiletree);
+  uitreewidgetp = uiTreeViewGetWidgetContainer (selectfile->selfiletree);
   uiTreeViewDisableSingleClick (selectfile->selfiletree);
   uiWidgetAlignHorizFill (uitreewidgetp);
   uiWidgetAlignVertFill (uitreewidgetp);

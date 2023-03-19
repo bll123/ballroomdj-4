@@ -22,7 +22,7 @@ enum {
 
 typedef struct uiduallist uiduallist_t;
 
-uiduallist_t * uiCreateDualList (uiwidget_t *vbox, int flags,
+uiduallist_t * uiCreateDualList (uiwcont_t *vbox, int flags,
     const char *sourcetitle, const char *targettitle);
 void uiduallistFree (uiduallist_t *uiduallist);
 void uiduallistSet (uiduallist_t *uiduallist, slist_t *slist, int which);

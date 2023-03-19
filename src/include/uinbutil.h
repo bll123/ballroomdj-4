@@ -17,15 +17,15 @@ enum {
 typedef struct {
   int     tabcount;
   int     *tabids;
-} uiutilsnbtabid_t;
+} uinbtabid_t;
 
 /* notebook ui helper routines */
-uiutilsnbtabid_t * uiutilsNotebookIDInit (void);
-void uiutilsNotebookIDFree (uiutilsnbtabid_t *nbtabid);
-void uiutilsNotebookIDAdd (uiutilsnbtabid_t *nbtabid, int id);
-int  uiutilsNotebookIDGet (uiutilsnbtabid_t *nbtabid, int idx);
-int  uiutilsNotebookIDGetPage (uiutilsnbtabid_t *nbtabid, int id);
-void uiutilsNotebookIDStartIterator (uiutilsnbtabid_t *nbtabid, int *iteridx);
-int  uiutilsNotebookIDIterate (uiutilsnbtabid_t *nbtabid, int *iteridx);
+uinbtabid_t * uinbutilIDInit (void);
+void uinbutilIDFree (uinbtabid_t *nbtabid);
+void uinbutilIDAdd (uinbtabid_t *nbtabid, int id);
+int  uinbutilIDGet (uinbtabid_t *nbtabid, int idx);
+int  uinbutilIDGetPage (uinbtabid_t *nbtabid, int id);
+void uinbutilIDStartIterator (uinbtabid_t *nbtabid, int *iteridx);
+int  uinbutilIDIterate (uinbtabid_t *nbtabid, int *iteridx);
 
 #endif /* INC_UINBUTIL_H */

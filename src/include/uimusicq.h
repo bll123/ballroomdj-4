@@ -42,7 +42,7 @@ typedef struct {
   int           prevSelection;
   int           currSelection;
   /* music queue tab */
-  uiwidget_t    mainbox;
+  uiwcont_t    mainbox;
   uidropdown_t  *playlistsel;
   uientry_t     *slname;
   /* widget data */
@@ -64,9 +64,9 @@ typedef struct uimusicq {
   conn_t            *conn;
   dispsel_t         *dispsel;
   musicdb_t         *musicdb;
-  uiwidget_t        *parentwin;
-  uiwidget_t        pausePixbuf;
-  uiwidget_t        *statusMsg;
+  uiwcont_t        *parentwin;
+  uiwcont_t        pausePixbuf;
+  uiwcont_t        *statusMsg;
   callback_t        *newselcb;
   callback_t        *editcb;
   callback_t        *songsavecb;
@@ -113,7 +113,7 @@ void  uimusicqSetQueueCallback (uimusicq_t *uimusicq, callback_t *uicb);
 /* uimusicqgtk.c */
 void      uimusicqUIInit (uimusicq_t *uimusicq);
 void      uimusicqUIFree (uimusicq_t *uimusicq);
-UIWidget  * uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci, uiwidget_t *statusMsg, uientryval_t validateFunc);
+UIWidget  * uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci, uiwcont_t *statusMsg, uientryval_t validateFunc);
 void      uimusicqUIMainLoop (uimusicq_t *uimuiscq);
 void      uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx);
 ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);

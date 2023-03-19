@@ -81,7 +81,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq->iteratecb = NULL;
   uimusicq->savelist = NULL;
   uimusicq->cbci = MUSICQ_PB_A;
-  uiwidgetInit (&uimusicq->pausePixbuf);
+  uiwcontInit (&uimusicq->pausePixbuf);
   uimusicqUIInit (uimusicq);
   uimusicq->newselcb = NULL;
   uimusicq->editcb = NULL;

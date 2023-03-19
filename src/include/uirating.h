@@ -9,12 +9,12 @@
 
 typedef struct uirating uirating_t;
 
-uirating_t * uiratingSpinboxCreate (uiwidget_t *boxp, bool allflag);
+uirating_t * uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag);
 void uiratingFree (uirating_t *uirating);
 int uiratingGetValue (uirating_t *uirating);
 void uiratingSetValue (uirating_t *uirating, int value);
 void uiratingSetState (uirating_t *uirating, int state);
-void uiratingSizeGroupAdd (uirating_t *uirating, uiwidget_t *sg);
+void uiratingSizeGroupAdd (uirating_t *uirating, uiwcont_t *sg);
 void uiratingSetChangedCallback (uirating_t *uirating, callback_t *cb);
 
 #endif /* INC_UIRATING_H */

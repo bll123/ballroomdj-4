@@ -41,7 +41,7 @@ enum {
 };
 
 typedef struct manageseq {
-  uiwidget_t      *windowp;
+  uiwcont_t      *windowp;
   nlist_t         *options;
   uimenu_t        *seqmenu;
   callback_t      *callbacks [MSEQ_CB_MAX];
@@ -49,7 +49,7 @@ typedef struct manageseq {
   callback_t      *seqnewcb;
   uiduallist_t    *seqduallist;
   uientry_t       *seqname;
-  uiwidget_t      *statusMsg;
+  uiwcont_t      *statusMsg;
   char            *seqoldname;
   bool            seqbackupcreated : 1;
   bool            changed : 1;
@@ -64,7 +64,7 @@ static bool   manageSequenceDelete (void *udata);
 static void   manageSetSequenceName (manageseq_t *manageseq, const char *nm);
 
 manageseq_t *
-manageSequenceAlloc (uiwidget_t *window, nlist_t *options, uiwidget_t *statusMsg)
+manageSequenceAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg)
 {
   manageseq_t *manageseq;
 
@@ -122,16 +122,16 @@ manageSequenceSetNewCallback (manageseq_t *manageseq, callback_t *uicb)
 }
 
 void
-manageBuildUISequence (manageseq_t *manageseq, uiwidget_t *vboxp)
+manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
 {
-  uiwidget_t          hbox;
-  uiwidget_t          uiwidget;
+  uiwcont_t          hbox;
+  uiwcont_t          uiwidget;
   dance_t             *dances;
   slist_t             *dancelist;
 
   logProcBegin (LOG_PROC, "manageBuildUISequence");
-  uiwidgetInit (&hbox);
-  uiwidgetInit (&uiwidget);
+  uiwcontInit (&hbox);
+  uiwcontInit (&uiwidget);
 
   /* edit sequences */
   uiWidgetSetAllMargins (vboxp, 2);
@@ -146,10 +146,10 @@ manageBuildUISequence (manageseq_t *manageseq, uiwidget_t *vboxp)
   uiEntryCreate (manageseq->seqname);
   uiEntrySetValidate (manageseq->seqname, manageValidateName,
       manageseq->statusMsg, UIENTRY_IMMEDIATE);
-  uiWidgetSetClass (uiEntryGetWidget (manageseq->seqname), ACCENT_CLASS);
+  uiWidgetSetClass (uiEntryGetWidgetContainer (manageseq->seqname), ACCENT_CLASS);
   /* CONTEXT: sequence editor: default name for a new sequence */
   manageSetSequenceName (manageseq, _("New Sequence"));
-  uiBoxPackStart (&hbox, uiEntryGetWidget (manageseq->seqname));
+  uiBoxPackStart (&hbox, uiEntryGetWidgetContainer (manageseq->seqname));
 
   manageseq->seqduallist = uiCreateDualList (vboxp,
       DUALLIST_FLAGS_MULTIPLE | DUALLIST_FLAGS_PERSISTENT,
@@ -164,10 +164,10 @@ manageBuildUISequence (manageseq_t *manageseq, uiwidget_t *vboxp)
 }
 
 uimenu_t *
-manageSequenceMenu (manageseq_t *manageseq, uiwidget_t *uimenubar)
+manageSequenceMenu (manageseq_t *manageseq, uiwcont_t *uimenubar)
 {
-  uiwidget_t  menu;
-  uiwidget_t  menuitem;
+  uiwcont_t  menu;
+  uiwcont_t  menuitem;
 
   logProcBegin (LOG_PROC, "manageSequenceMenu");
   if (! uiMenuInitialized (manageseq->seqmenu)) {

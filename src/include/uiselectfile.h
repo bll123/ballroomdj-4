@@ -16,7 +16,7 @@ enum {
 
 typedef struct uiselectfile uiselectfile_t;
 
-void selectFileDialog (int type, uiwidget_t *window, nlist_t *options, callback_t *cb);
+void selectFileDialog (int type, uiwcont_t *window, nlist_t *options, callback_t *cb);
 void selectFileFree (uiselectfile_t *selectfile);
 
 #endif /* INC_UISELECTFILE_H */

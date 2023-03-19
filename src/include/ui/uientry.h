@@ -27,7 +27,7 @@ void uiEntryFree (uientry_t *entry);
 void uiEntryCreate (uientry_t *entry);
 void uiEntrySetIcon (uientry_t *entry, const char *name);
 void uiEntryClearIcon (uientry_t *entry);
-uiwidget_t * uiEntryGetWidget (uientry_t *entry);
+uiwcont_t * uiEntryGetWidgetContainer (uientry_t *entry);
 void uiEntryPeerBuffer (uientry_t *targetentry, uientry_t *sourceentry);
 const char * uiEntryGetValue (uientry_t *entry);
 void uiEntrySetValue (uientry_t *entry, const char *value);

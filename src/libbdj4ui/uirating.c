@@ -31,7 +31,7 @@ typedef struct uirating {
 static const char *uiratingRatingGet (void *udata, int idx);
 
 uirating_t *
-uiratingSpinboxCreate (uiwidget_t *boxp, bool allflag)
+uiratingSpinboxCreate (uiwcont_t *boxp, bool allflag)
 {
   uirating_t  *uirating;
   int         maxw;
@@ -60,7 +60,7 @@ uiratingSpinboxCreate (uiwidget_t *boxp, bool allflag)
       ratingGetCount (uirating->ratings),
       maxw, NULL, NULL, uiratingRatingGet);
 
-  uiBoxPackStart (boxp, uiSpinboxGetWidget (uirating->spinbox));
+  uiBoxPackStart (boxp, uiSpinboxGetWidgetContainer (uirating->spinbox));
 
   return uirating;
 }
@@ -108,9 +108,9 @@ uiratingSetState (uirating_t *uirating, int state)
 }
 
 void
-uiratingSizeGroupAdd (uirating_t *uirating, uiwidget_t *sg)
+uiratingSizeGroupAdd (uirating_t *uirating, uiwcont_t *sg)
 {
-  uiSizeGroupAdd (sg, uiSpinboxGetWidget (uirating->spinbox));
+  uiSizeGroupAdd (sg, uiSpinboxGetWidgetContainer (uirating->spinbox));
 }
 
 void

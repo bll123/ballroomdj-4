@@ -42,7 +42,7 @@ enum {
 typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
-  uiwidget_t      window;
+  uiwcont_t      window;
   uitextbox_t     *tb;
   uibutton_t      *buttons [HELPER_BUTTON_MAX];
   callback_t      *closeCallback;
@@ -97,7 +97,7 @@ main (int argc, char *argv[])
   helper.helplist = NULL;
   helper.helpiter = 0;
   helper.scrollendflag = false;
-  uiwidgetInit (&helper.window);
+  uiwcontInit (&helper.window);
   for (int i = 0; i < HELPER_BUTTON_MAX; ++i) {
     helper.buttons [i] = NULL;
   }
@@ -185,17 +185,17 @@ helperClosingCallback (void *udata, programstate_t programState)
 static void
 helperBuildUI (helperui_t  *helper)
 {
-  uiwidget_t          uiwidget;
+  uiwcont_t          uiwidget;
   uibutton_t          *uibutton;
-  uiwidget_t          *uiwidgetp;
-  uiwidget_t          vbox;
-  uiwidget_t          hbox;
+  uiwcont_t          *uiwidgetp;
+  uiwcont_t          vbox;
+  uiwcont_t          hbox;
   char                tbuff [MAXPATHLEN];
   char                imgbuff [MAXPATHLEN];
 
-  uiwidgetInit (&uiwidget);
-  uiwidgetInit (&vbox);
-  uiwidgetInit (&hbox);
+  uiwcontInit (&uiwidget);
+  uiwcontInit (&vbox);
+  uiwcontInit (&hbox);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -223,14 +223,14 @@ helperBuildUI (helperui_t  *helper)
       /* CONTEXT: helperui: proceed to the next step */
       _("Next"), NULL);
   helper->buttons [HELPER_BUTTON_NEXT] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   uibutton = uiCreateButton (helper->closeCallback,
       /* CONTEXT: helperui: close the helper window */
       _("Close"), NULL);
   helper->buttons [HELPER_BUTTON_CLOSE] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   uiWindowSetDefaultSize (&helper->window, 1100, 400);

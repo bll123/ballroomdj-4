@@ -42,10 +42,10 @@ enum {
 };
 
 typedef struct uireqext {
-  uiwidget_t      *parentwin;
-  uiwidget_t      *statusMsg;
+  uiwcont_t      *parentwin;
+  uiwcont_t      *statusMsg;
   nlist_t         *options;
-  uiwidget_t      reqextDialog;
+  uiwcont_t      reqextDialog;
   uientry_t       *audioFileEntry;
   uientry_t       *artistEntry;
   uientry_t       *titleEntry;
@@ -71,12 +71,12 @@ static int    uireqextValidateArtist (uientry_t *entry, void *udata);
 static int    uireqextValidateTitle (uientry_t *entry, void *udata);
 
 uireqext_t *
-uireqextInit (uiwidget_t *windowp, nlist_t *opts)
+uireqextInit (uiwcont_t *windowp, nlist_t *opts)
 {
   uireqext_t  *uireqext;
 
   uireqext = mdmalloc (sizeof (uireqext_t));
-  uiwidgetInit (&uireqext->reqextDialog);
+  uiwcontInit (&uireqext->reqextDialog);
   uireqext->audioFileEntry = uiEntryInit (50, MAXPATHLEN);
   uireqext->artistEntry = uiEntryInit (40, MAXPATHLEN);
   uireqext->titleEntry = uiEntryInit (40, MAXPATHLEN);
@@ -189,13 +189,13 @@ uireqextProcess (uireqext_t *uireqext)
 static void
 uireqextCreateDialog (uireqext_t *uireqext)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    hbox;
-  uiwidget_t    uiwidget;
+  uiwcont_t    vbox;
+  uiwcont_t    hbox;
+  uiwcont_t    uiwidget;
   uibutton_t    *uibutton;
-  uiwidget_t    *uiwidgetp;
-  uiwidget_t    sg;  // labels
-  uiwidget_t    sgA; // title, artist
+  uiwcont_t    *uiwidgetp;
+  uiwcont_t    sg;  // labels
+  uiwcont_t    sgA; // title, artist
 
   logProcBegin (LOG_PROC, "uireqextCreateDialog");
 
@@ -203,7 +203,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
     return;
   }
 
-  if (uiwidgetIsSet (&uireqext->reqextDialog)) {
+  if (uiwcontIsSet (&uireqext->reqextDialog)) {
     return;
   }
 
@@ -244,7 +244,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
 
   uiEntryCreate (uireqext->audioFileEntry);
   uiEntrySetValue (uireqext->audioFileEntry, "");
-  uiwidgetp = uiEntryGetWidget (uireqext->audioFileEntry);
+  uiwidgetp = uiEntryGetWidgetContainer (uireqext->audioFileEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
@@ -257,7 +257,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
       uireqext->callbacks [UIREQEXT_CB_AUDIO_FILE],
       "", NULL);
   uireqext->audioFileDialogButton = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -272,7 +272,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
 
   uiEntryCreate (uireqext->artistEntry);
   uiEntrySetValue (uireqext->artistEntry, "");
-  uiwidgetp = uiEntryGetWidget (uireqext->artistEntry);
+  uiwidgetp = uiEntryGetWidgetContainer (uireqext->artistEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiEntrySetValidate (uireqext->artistEntry, uireqextValidateArtist,
@@ -288,7 +288,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
 
   uiEntryCreate (uireqext->titleEntry);
   uiEntrySetValue (uireqext->titleEntry, "");
-  uiwidgetp = uiEntryGetWidget (uireqext->titleEntry);
+  uiwidgetp = uiEntryGetWidgetContainer (uireqext->titleEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiEntrySetValidate (uireqext->titleEntry, uireqextValidateTitle,
@@ -394,7 +394,7 @@ uireqextResponseHandler (void *udata, long responseid)
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: reqext: del window");
-      uiwidgetInit (&uireqext->reqextDialog);
+      uiwcontInit (&uireqext->reqextDialog);
       uireqextClearSong (uireqext);
       break;
     }

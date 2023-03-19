@@ -38,11 +38,11 @@ enum {
 typedef struct managestats {
   conn_t      *conn;
   musicdb_t   *musicdb;
-  uiwidget_t  vboxmain;
-  uiwidget_t  dancedisp [STATS_MAX_DISP];
+  uiwcont_t  vboxmain;
+  uiwcont_t  dancedisp [STATS_MAX_DISP];
   nlist_t     *dancecounts;
-  uiwidget_t  songcountdisp;
-  uiwidget_t  tottimedisp;
+  uiwcont_t  songcountdisp;
+  uiwcont_t  tottimedisp;
   int         songcount;
   long        tottime;
 } managestats_t;
@@ -58,14 +58,14 @@ manageStatsInit (conn_t *conn, musicdb_t *musicdb)
   managestats = mdmalloc (sizeof (managestats_t));
   managestats->conn = conn;
   managestats->musicdb = musicdb;
-  uiwidgetInit (&managestats->vboxmain);
-  uiwidgetInit (&managestats->songcountdisp);
-  uiwidgetInit (&managestats->tottimedisp);
+  uiwcontInit (&managestats->vboxmain);
+  uiwcontInit (&managestats->songcountdisp);
+  uiwcontInit (&managestats->tottimedisp);
   managestats->songcount = 0;
   managestats->tottime = 0;
   managestats->dancecounts = NULL;
   for (int i = 0; i < STATS_MAX_DISP; ++i) {
-    uiwidgetInit (&managestats->dancedisp [i]);
+    uiwcontInit (&managestats->dancedisp [i]);
   }
 
   return managestats;
@@ -80,12 +80,12 @@ manageStatsFree (managestats_t *managestats)
   }
 }
 
-uiwidget_t *
+uiwcont_t *
 manageBuildUIStats (managestats_t *managestats)
 {
-  uiwidget_t  uiwidget;
-  uiwidget_t  hbox;
-  uiwidget_t  chbox;
+  uiwcont_t  uiwidget;
+  uiwcont_t  hbox;
+  uiwcont_t  chbox;
   const char  *listingFont;
 
   uiCreateVertBox (&managestats->vboxmain);
@@ -130,7 +130,7 @@ manageBuildUIStats (managestats_t *managestats)
   uiBoxPackStart (&managestats->vboxmain, &chbox);
 
   for (int i = 0; i < STATS_COLS; ++i) {
-    uiwidget_t  vbox;
+    uiwcont_t  vbox;
 
     /* vertical box for each column */
     uiCreateVertBox (&vbox);

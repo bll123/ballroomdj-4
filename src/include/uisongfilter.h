@@ -11,7 +11,7 @@
 typedef struct uisongfilter uisongfilter_t;
 
 /* uisongfilter.c */
-uisongfilter_t * uisfInit (uiwidget_t *windowp, nlist_t *options, songfilterpb_t pbflag);
+uisongfilter_t * uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag);
 void uisfFree (uisongfilter_t *uisf);
 void uisfSetApplyCallback (uisongfilter_t *uisf, callback_t *applycb);
 void uisfSetDanceSelectCallback (uisongfilter_t *uisf, callback_t *danceselcb);

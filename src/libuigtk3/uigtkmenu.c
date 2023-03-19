@@ -21,7 +21,7 @@
 
 typedef struct uimenu {
   int             menucount;
-  uiwidget_t      menuitem [UIUTILS_MENU_MAX];
+  uiwcont_t      menuitem [UIUTILS_MENU_MAX];
   bool            initialized : 1;
 } uimenu_t;
 
@@ -29,7 +29,7 @@ static void uiMenuActivateHandler (GtkMenuItem *mi, gpointer udata);
 static void uiMenuToggleHandler (GtkWidget *mi, gpointer udata);
 
 void
-uiCreateMenubar (uiwidget_t *uiwidget)
+uiCreateMenubar (uiwcont_t *uiwidget)
 {
   GtkWidget *menubar;
 
@@ -38,7 +38,7 @@ uiCreateMenubar (uiwidget_t *uiwidget)
 }
 
 void
-uiCreateSubMenu (uiwidget_t *uimenuitem, uiwidget_t *uimenu)
+uiCreateSubMenu (uiwcont_t *uimenuitem, uiwcont_t *uimenu)
 {
   GtkWidget *menu;
 
@@ -48,7 +48,7 @@ uiCreateSubMenu (uiwidget_t *uimenuitem, uiwidget_t *uimenu)
 }
 
 void
-uiMenuCreateItem (uiwidget_t *uimenu, uiwidget_t *uimenuitem,
+uiMenuCreateItem (uiwcont_t *uimenu, uiwcont_t *uimenuitem,
     const char *txt, callback_t *uicb)
 {
   GtkWidget *menuitem;
@@ -63,7 +63,7 @@ uiMenuCreateItem (uiwidget_t *uimenu, uiwidget_t *uimenuitem,
 }
 
 void
-uiMenuAddSeparator (uiwidget_t *uimenu, uiwidget_t *uimenuitem)
+uiMenuAddSeparator (uiwcont_t *uimenu, uiwcont_t *uimenuitem)
 {
   GtkWidget *menuitem;
 
@@ -73,7 +73,7 @@ uiMenuAddSeparator (uiwidget_t *uimenu, uiwidget_t *uimenuitem)
 }
 
 void
-uiMenuCreateCheckbox (uiwidget_t *uimenu, uiwidget_t *uimenuitem,
+uiMenuCreateCheckbox (uiwcont_t *uimenu, uiwcont_t *uimenuitem,
     const char *txt, int active, callback_t *uicb)
 {
   GtkWidget *menuitem;
@@ -97,7 +97,7 @@ uiMenuAlloc (void)
   menu->initialized = false;
   menu->menucount = 0;
   for (int i = 0; i < UIUTILS_MENU_MAX; ++i) {
-    uiwidgetInit (&menu->menuitem [i]);
+    uiwcontInit (&menu->menuitem [i]);
   }
   return menu;
 }
@@ -131,7 +131,7 @@ uiMenuSetInitialized (uimenu_t *menu)
 }
 
 void
-uiMenuAddMainItem (uiwidget_t *uimenubar, uiwidget_t *uimenuitem,
+uiMenuAddMainItem (uiwcont_t *uimenubar, uiwcont_t *uimenuitem,
     uimenu_t *menu, const char *txt)
 {
   int   i;
@@ -146,7 +146,7 @@ uiMenuAddMainItem (uiwidget_t *uimenubar, uiwidget_t *uimenuitem,
   gtk_menu_shell_append (GTK_MENU_SHELL (uimenubar->widget),
       uimenuitem->widget);
   uiWidgetHide (uimenuitem);
-  memcpy (&menu->menuitem [i], uimenuitem, sizeof (uiwidget_t));
+  memcpy (&menu->menuitem [i], uimenuitem, sizeof (uiwcont_t));
 }
 
 void

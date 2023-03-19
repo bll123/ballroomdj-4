@@ -78,17 +78,17 @@ typedef struct {
   int             stopwaitcount;
   datafile_t      *optiondf;
   nlist_t         *options;
-  uiwidget_t      window;
+  uiwcont_t      window;
   callback_t      *callbacks [MQ_CB_MAX];
-  uiwidget_t      pbar;
-  uiwidget_t      infoBox;
-  uiwidget_t      sep;
-  uiwidget_t      countdownTimerLab;
-  uiwidget_t      infoArtistLab;
-  uiwidget_t      infoSepLab;
-  uiwidget_t      infoTitleLab;
-  uiwidget_t      danceLab;
-  uiwidget_t      *marqueeLabs;   // array of uiwidget_t
+  uiwcont_t      pbar;
+  uiwcont_t      infoBox;
+  uiwcont_t      sep;
+  uiwcont_t      countdownTimerLab;
+  uiwcont_t      infoArtistLab;
+  uiwcont_t      infoSepLab;
+  uiwcont_t      infoTitleLab;
+  uiwcont_t      danceLab;
+  uiwcont_t      *marqueeLabs;   // array of uiwcont_t
   int             marginTotal;
   double          fontAdjustment;
   int             mqLen;
@@ -131,7 +131,7 @@ static bool marqueeWinMapped (void *udata);
 static void marqueeSaveWindowPosition (marquee_t *);
 static void marqueeMoveWindow (marquee_t *);
 static void marqueeSigHandler (int sig);
-static void marqueeSetFontSize (marquee_t *marquee, uiwidget_t *lab, const char *font);
+static void marqueeSetFontSize (marquee_t *marquee, uiwcont_t *lab, const char *font);
 static void marqueePopulate (marquee_t *marquee, char *args);
 static void marqueeSetTimer (marquee_t *marquee, char *args);
 static void marqueeSetFont (marquee_t *marquee, int sz);
@@ -165,15 +165,15 @@ main (int argc, char *argv[])
   progstateSetCallback (marquee.progstate, STATE_CLOSING,
       marqueeClosingCallback, &marquee);
 
-  uiwidgetInit (&marquee.window);
-  uiwidgetInit (&marquee.pbar);
-  uiwidgetInit (&marquee.sep);
-  uiwidgetInit (&marquee.countdownTimerLab);
-  uiwidgetInit (&marquee.infoBox);
-  uiwidgetInit (&marquee.infoArtistLab);
-  uiwidgetInit (&marquee.infoSepLab);
-  uiwidgetInit (&marquee.infoTitleLab);
-  uiwidgetInit (&marquee.danceLab);
+  uiwcontInit (&marquee.window);
+  uiwcontInit (&marquee.pbar);
+  uiwcontInit (&marquee.sep);
+  uiwcontInit (&marquee.countdownTimerLab);
+  uiwcontInit (&marquee.infoBox);
+  uiwcontInit (&marquee.infoArtistLab);
+  uiwcontInit (&marquee.infoSepLab);
+  uiwcontInit (&marquee.infoTitleLab);
+  uiwcontInit (&marquee.danceLab);
   marquee.marqueeLabs = NULL;
   marquee.lastHeight = 0;
   marquee.priorSize = 0;
@@ -322,10 +322,10 @@ static void
 marqueeBuildUI (marquee_t *marquee)
 {
   char        imgbuff [MAXPATHLEN];
-  uiwidget_t  uiwidget;
-  uiwidget_t  mainvbox;
-  uiwidget_t  hbox;
-  uiwidget_t  vbox;
+  uiwcont_t  uiwidget;
+  uiwcont_t  mainvbox;
+  uiwcont_t  hbox;
+  uiwcont_t  vbox;
   int         x, y;
 
   logProcBegin (LOG_PROC, "marqueeBuildUI");
@@ -335,9 +335,9 @@ marqueeBuildUI (marquee_t *marquee)
   uiLabelAddClass (MQ_INFO_CLASS, bdjoptGetStr (OPT_P_MQ_INFO_COL));
   uiSeparatorAddClass (MQ_ACCENT_CLASS, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
 
-  uiwidgetInit (&mainvbox);
-  uiwidgetInit (&vbox);
-  uiwidgetInit (&hbox);
+  uiwcontInit (&mainvbox);
+  uiwcontInit (&vbox);
+  uiwcontInit (&hbox);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_marquee", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -362,7 +362,7 @@ marqueeBuildUI (marquee_t *marquee)
 
   uiWindowNoDim (&uiwidget);
 
-  uiwidgetCopy (&marquee->window, &uiwidget);
+  uiwcontCopy (&marquee->window, &uiwidget);
 
   x = nlistGetNum (marquee->options, MQ_SIZE_X);
   y = nlistGetNum (marquee->options, MQ_SIZE_Y);
@@ -395,7 +395,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetDisableFocus (&uiwidget);
   uiWidgetSetClass (&uiwidget, MQ_ACCENT_CLASS);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiwidgetCopy (&marquee->danceLab, &uiwidget);
+  uiwcontCopy (&marquee->danceLab, &uiwidget);
 
   uiCreateLabel (&uiwidget, "0:00");
   uiLabelSetMaxWidth (&uiwidget, 6);
@@ -403,20 +403,20 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetDisableFocus (&uiwidget);
   uiWidgetSetClass (&uiwidget, MQ_ACCENT_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiwidgetCopy (&marquee->countdownTimerLab, &uiwidget);
+  uiwcontCopy (&marquee->countdownTimerLab, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiWidgetAlignHorizFill (&hbox);
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&vbox, &hbox);
-  uiwidgetCopy (&marquee->infoBox, &hbox);
+  uiwcontCopy (&marquee->infoBox, &hbox);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetAlignHorizStart (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
   uiLabelEllipsizeOn (&uiwidget);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiwidgetCopy (&marquee->infoArtistLab, &uiwidget);
+  uiwcontCopy (&marquee->infoArtistLab, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetAlignHorizStart (&uiwidget);
@@ -424,14 +424,14 @@ marqueeBuildUI (marquee_t *marquee)
   uiBoxPackStart (&hbox, &uiwidget);
   uiWidgetSetMarginStart (&uiwidget, 2);
   uiWidgetSetMarginEnd (&uiwidget, 2);
-  uiwidgetCopy (&marquee->infoSepLab, &uiwidget);
+  uiwcontCopy (&marquee->infoSepLab, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetAlignHorizStart (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
   uiLabelEllipsizeOn (&uiwidget);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiwidgetCopy (&marquee->infoTitleLab, &uiwidget);
+  uiwcontCopy (&marquee->infoTitleLab, &uiwidget);
 
   uiCreateHorizSeparator (&marquee->sep);
   uiWidgetSetClass (&marquee->sep, MQ_ACCENT_CLASS);
@@ -440,10 +440,10 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetSetMarginBottom (&marquee->sep, 4);
   uiBoxPackEnd (&vbox, &marquee->sep);
 
-  marquee->marqueeLabs = mdmalloc (sizeof (uiwidget_t) * marquee->mqLen);
+  marquee->marqueeLabs = mdmalloc (sizeof (uiwcont_t) * marquee->mqLen);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
-    uiwidgetInit (&marquee->marqueeLabs [i]);
+    uiwcontInit (&marquee->marqueeLabs [i]);
     uiCreateLabel (&marquee->marqueeLabs [i], "");
     uiWidgetAlignHorizStart (&marquee->marqueeLabs [i]);
     uiWidgetExpandHoriz (&marquee->marqueeLabs [i]);
@@ -834,7 +834,7 @@ marqueeSigHandler (int sig)
 }
 
 static void
-marqueeSetFontSize (marquee_t *marquee, uiwidget_t *uilab, const char *font)
+marqueeSetFontSize (marquee_t *marquee, uiwcont_t *uilab, const char *font)
 {
   logProcBegin (LOG_PROC, "marqueeSetFontSize");
 

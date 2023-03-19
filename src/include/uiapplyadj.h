@@ -10,7 +10,7 @@
 
 typedef struct uiaa uiaa_t;
 
-uiaa_t  *uiaaInit (uiwidget_t *windowp, nlist_t *opts);
+uiaa_t  *uiaaInit (uiwcont_t *windowp, nlist_t *opts);
 void    uiaaFree (uiaa_t *uiaa);
 void    uiaaSetResponseCallback (uiaa_t *uiaa, callback_t *uicb);
 bool    uiaaDialog (uiaa_t *uiaa, int aaflags, bool hasorig);

@@ -62,7 +62,7 @@ uiKeyFree (uikey_t *uikey)
 }
 
 void
-uiKeySetKeyCallback (uikey_t *uikey, uiwidget_t *uiwidgetp, callback_t *uicb)
+uiKeySetKeyCallback (uikey_t *uikey, uiwcont_t *uiwidgetp, callback_t *uicb)
 {
   uikey->presscb = uicb;
   uikey->releasecb = uicb;

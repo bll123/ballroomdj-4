@@ -15,18 +15,18 @@
 #include "ui/uiinternal.h"
 #include "ui/uigeneral.h"
 
-uiwidget_t *
-uiwidgetAlloc (void)
+uiwcont_t *
+uiwcontAlloc (void)
 {
-  uiwidget_t    *uiwidget;
+  uiwcont_t    *uiwidget;
 
-  uiwidget = mdmalloc (sizeof (uiwidget_t));
+  uiwidget = mdmalloc (sizeof (uiwcont_t));
   uiwidget->widget = NULL;
   return uiwidget;
 }
 
 void
-uiwidgetFree (uiwidget_t *uiwidget)
+uiwcontFree (uiwcont_t *uiwidget)
 {
   if (uiwidget != NULL) {
     mdfree (uiwidget);
@@ -34,7 +34,7 @@ uiwidgetFree (uiwidget_t *uiwidget)
 }
 
 void
-uiwidgetInit (uiwidget_t *uiwidget)
+uiwcontInit (uiwcont_t *uiwidget)
 {
   if (uiwidget == NULL) {
     return;
@@ -43,7 +43,7 @@ uiwidgetInit (uiwidget_t *uiwidget)
 }
 
 bool
-uiwidgetIsSet (uiwidget_t *uiwidget)
+uiwcontIsSet (uiwcont_t *uiwidget)
 {
   bool rc = true;
 
@@ -55,7 +55,7 @@ uiwidgetIsSet (uiwidget_t *uiwidget)
 
 
 void
-uiwidgetCopy (uiwidget_t *target, uiwidget_t *source)
+uiwcontCopy (uiwcont_t *target, uiwcont_t *source)
 {
   if (target == NULL) {
     return;
@@ -63,6 +63,6 @@ uiwidgetCopy (uiwidget_t *target, uiwidget_t *source)
   if (source == NULL) {
     return;
   }
-  memcpy (target, source, sizeof (uiwidget_t));
+  memcpy (target, source, sizeof (uiwcont_t));
 }
 

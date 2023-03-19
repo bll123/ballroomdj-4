@@ -39,7 +39,7 @@ static nlist_t * confuiGetThemeList (void);
 static slist_t * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
 static char * confuiGetLocalIP (confuigui_t *gui);
 static char * confuiMakeQRCodeFile (char *title, char *uri);
-static void confuiUpdateOrgExample (org_t *org, char *data, uiwidget_t *uiwidgetp);
+static void confuiUpdateOrgExample (org_t *org, char *data, uiwcont_t *uiwidgetp);
 static bool confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp);
 
 
@@ -88,7 +88,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   char          *qruri = "";
   char          tbuff [MAXPATHLEN];
   bool          enabled;
-  uiwidget_t    *uiwidgetp = NULL;
+  uiwcont_t    *uiwidgetp = NULL;
 
   logProcBegin (LOG_PROC, "confuiUpdateMobmqQrcode");
 
@@ -130,7 +130,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
   char          *qruri = "";
   char          tbuff [MAXPATHLEN];
   bool          enabled;
-  uiwidget_t    *uiwidgetp;
+  uiwcont_t    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiUpdateRemctrlQrcode");
 
@@ -169,7 +169,7 @@ confuiUpdateOrgExamples (confuigui_t *gui, char *orgpath)
 {
   char      *data;
   org_t     *org;
-  uiwidget_t*uiwidgetp;
+  uiwcont_t*uiwidgetp;
 
   if (orgpath == NULL) {
     return;
@@ -445,7 +445,7 @@ confuiMakeQRCodeFile (char *title, char *uri)
 }
 
 static void
-confuiUpdateOrgExample (org_t *org, char *data, uiwidget_t *uiwidgetp)
+confuiUpdateOrgExample (org_t *org, char *data, uiwcont_t *uiwidgetp)
 {
   song_t    *song;
   char      *tdata;

@@ -21,7 +21,7 @@ enum {
   UI_TOGGLE_BUTTON_OFF = false,
 };
 
-typedef union uiwidget uiwidget_t;
+typedef union uiwidget uiwcont_t;
 typedef union uiwidget UIWidget; // temporary, will be removed later
 
 #endif /* INC_UIGTK_H */

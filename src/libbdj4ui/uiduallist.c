@@ -77,19 +77,19 @@ static bool uiduallistGetData (void *udata);
 static void uiduallistSetDefaultSelection (uiduallist_t *duallist, int which);
 
 uiduallist_t *
-uiCreateDualList (uiwidget_t *mainvbox, int flags,
+uiCreateDualList (uiwcont_t *mainvbox, int flags,
     const char *sourcetitle, const char *targettitle)
 {
   uiduallist_t  *duallist;
-  uiwidget_t    vbox;
-  uiwidget_t    hbox;
-  uiwidget_t    dvbox;
-  uiwidget_t    uiwidget;
-  uiwidget_t    scwindow;
+  uiwcont_t    vbox;
+  uiwcont_t    hbox;
+  uiwcont_t    dvbox;
+  uiwcont_t    uiwidget;
+  uiwcont_t    scwindow;
   uibutton_t    *uibutton;
-  uiwidget_t    *uiwidgetp = NULL;
+  uiwcont_t    *uiwidgetp = NULL;
   uitree_t      *uitree;
-  uiwidget_t    *uitreewidgetp = NULL;
+  uiwcont_t    *uitreewidgetp = NULL;
 
   duallist = mdmalloc (sizeof (uiduallist_t));
   for (int i = 0; i < DUALLIST_TREE_MAX; ++i) {
@@ -122,10 +122,10 @@ uiCreateDualList (uiwidget_t *mainvbox, int flags,
   duallist->callbacks [DUALLIST_CB_SRC_SEARCH] = callbackInit (
       uiduallistSourceSearch, duallist, NULL);
 
-  uiwidgetInit (&vbox);
-  uiwidgetInit (&hbox);
-  uiwidgetInit (&dvbox);
-  uiwidgetInit (&uiwidget);
+  uiwcontInit (&vbox);
+  uiwcontInit (&hbox);
+  uiwcontInit (&dvbox);
+  uiwcontInit (&uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiWidgetAlignHorizStart (&hbox);
@@ -147,7 +147,7 @@ uiCreateDualList (uiwidget_t *mainvbox, int flags,
 
   uitree = uiCreateTreeView ();
   duallist->uitrees [DUALLIST_TREE_SOURCE] = uitree;
-  uitreewidgetp = uiTreeViewGetWidget (uitree);
+  uitreewidgetp = uiTreeViewGetWidgetContainer (uitree);
   uiTreeViewDarkBackground (uitree);
   uiWidgetExpandVert (uitreewidgetp);
   uiBoxPackInWindow (&scwindow, uitreewidgetp);
@@ -175,14 +175,14 @@ uiCreateDualList (uiwidget_t *mainvbox, int flags,
       /* CONTEXT: side-by-side list: button: add the selected field */
       _("Select"), "button_right");
   duallist->buttons [DUALLIST_BUTTON_SELECT] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&dvbox, uiwidgetp);
 
   uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_REMOVE],
       /* CONTEXT: side-by-side list: button: remove the selected field */
       _("Remove"), "button_left");
   duallist->buttons [DUALLIST_BUTTON_REMOVE] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&dvbox, uiwidgetp);
 
   uiCreateVertBox (&vbox);
@@ -201,7 +201,7 @@ uiCreateDualList (uiwidget_t *mainvbox, int flags,
 
   uitree = uiCreateTreeView ();
   duallist->uitrees [DUALLIST_TREE_TARGET] = uitree;
-  uitreewidgetp = uiTreeViewGetWidget (uitree);
+  uitreewidgetp = uiTreeViewGetWidgetContainer (uitree);
   uiTreeViewDarkBackground (uitree);
   uiWidgetExpandVert (uitreewidgetp);
   uiBoxPackInWindow (&scwindow, uitreewidgetp);
@@ -229,14 +229,14 @@ uiCreateDualList (uiwidget_t *mainvbox, int flags,
       /* CONTEXT: side-by-side list: button: move the selected field up */
       _("Move Up"), "button_up");
   duallist->buttons [DUALLIST_BUTTON_MOVE_UP] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&dvbox, uiwidgetp);
 
   uibutton = uiCreateButton (duallist->callbacks [DUALLIST_CB_MOVENEXT],
       /* CONTEXT: side-by-side list: button: move the selected field down */
       _("Move Down"), "button_down");
   duallist->buttons [DUALLIST_BUTTON_MOVE_DOWN] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&dvbox, uiwidgetp);
 
   return duallist;

@@ -146,17 +146,17 @@ typedef struct {
   char            *tclshloc;
   slist_t         *convlist;
   slistidx_t      convidx;
-  uiwidget_t      window;
-  uiwidget_t      statusMsg;
+  uiwcont_t      window;
+  uiwcont_t      statusMsg;
   uientry_t       *targetEntry;
-  uiwidget_t      reinstWidget;
-  uiwidget_t      feedbackMsg;
+  uiwcont_t      reinstWidget;
+  uiwcont_t      feedbackMsg;
   uientry_t       *bdj3locEntry;
-  uiwidget_t      convWidget;
-  uiwidget_t      convFeedbackMsg;
-  uiwidget_t      vlcMsg;
-  uiwidget_t      pythonMsg;
-  uiwidget_t      mutagenMsg;
+  uiwcont_t      convWidget;
+  uiwcont_t      convFeedbackMsg;
+  uiwcont_t      vlcMsg;
+  uiwcont_t      pythonMsg;
+  uiwcont_t      mutagenMsg;
   uitextbox_t     *disptb;
   uibutton_t      *buttons [INST_BUTTON_MAX];
   /* flags */
@@ -296,7 +296,7 @@ main (int argc, char *argv[])
 
   installer.unpackdir [0] = '\0';
   installer.home = NULL;
-  uiwidgetInit (&installer.window);
+  uiwcontInit (&installer.window);
   installer.instState = INST_INITIALIZE;
   installer.lastInstState = INST_INITIALIZE;
   installer.target = mdstrdup ("");
@@ -332,14 +332,14 @@ main (int argc, char *argv[])
   }
 
   installer.loglevel = LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST;
-  uiwidgetInit (&installer.statusMsg);
-  uiwidgetInit (&installer.reinstWidget);
-  uiwidgetInit (&installer.feedbackMsg);
-  uiwidgetInit (&installer.convFeedbackMsg);
-  uiwidgetInit (&installer.vlcMsg);
-  uiwidgetInit (&installer.pythonMsg);
-  uiwidgetInit (&installer.mutagenMsg);
-  uiwidgetInit (&installer.convWidget);
+  uiwcontInit (&installer.statusMsg);
+  uiwcontInit (&installer.reinstWidget);
+  uiwcontInit (&installer.feedbackMsg);
+  uiwcontInit (&installer.convFeedbackMsg);
+  uiwcontInit (&installer.vlcMsg);
+  uiwcontInit (&installer.pythonMsg);
+  uiwcontInit (&installer.mutagenMsg);
+  uiwcontInit (&installer.convWidget);
   (void) ! getcwd (installer.currdir, sizeof (installer.currdir));
   installer.webclient = NULL;
   strcpy (installer.vlcversion, "");
@@ -583,21 +583,21 @@ main (int argc, char *argv[])
 static void
 installerBuildUI (installer_t *installer)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    hbox;
-  uiwidget_t    uiwidget;
+  uiwcont_t    vbox;
+  uiwcont_t    hbox;
+  uiwcont_t    uiwidget;
   uibutton_t    *uibutton;
-  uiwidget_t    *uiwidgetp;
-  uiwidget_t    sg;
+  uiwcont_t    *uiwidgetp;
+  uiwcont_t    sg;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
 
   uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
   uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
 
-  uiwidgetInit (&vbox);
-  uiwidgetInit (&hbox);
-  uiwidgetInit (&uiwidget);
+  uiwcontInit (&vbox);
+  uiwcontInit (&hbox);
+  uiwcontInit (&uiwidget);
 
   strlcpy (imgbuff, "img/bdj4_icon_inst.png", sizeof (imgbuff));
   osuiSetIcon (imgbuff);
@@ -638,7 +638,7 @@ installerBuildUI (installer_t *installer)
 
   uiEntryCreate (installer->targetEntry);
   uiEntrySetValue (installer->targetEntry, installer->target);
-  uiwidgetp = uiEntryGetWidget (installer->targetEntry);
+  uiwidgetp = uiEntryGetWidgetContainer (installer->targetEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
@@ -651,7 +651,7 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_TARGET_DIR],
       "", NULL);
   installer->buttons [INST_BUTTON_TARGET_DIR] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -705,7 +705,7 @@ installerBuildUI (installer_t *installer)
 
   uiEntryCreate (installer->bdj3locEntry);
   installerSetBDJ3LocEntry (installer, installer->bdj3loc);
-  uiwidgetp = uiEntryGetWidget (installer->bdj3locEntry);
+  uiwidgetp = uiEntryGetWidgetContainer (installer->bdj3locEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
@@ -718,7 +718,7 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_BDJ3LOC_DIR],
       "", NULL);
   installer->buttons [INST_BUTTON_BDJ3LOC_DIR] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -796,7 +796,7 @@ installerBuildUI (installer_t *installer)
       /* CONTEXT: installer: exits the installer */
       _("Exit"), NULL);
   installer->buttons [INST_BUTTON_EXIT] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   installer->callbacks [INST_CB_INSTALL] = callbackInit (
@@ -806,7 +806,7 @@ installerBuildUI (installer_t *installer)
       /* CONTEXT: installer: start the installation process */
       _("Install"), NULL);
   installer->buttons [INST_BUTTON_INSTALL] = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   installer->disptb = uiTextBoxCreate (250, INST_HL_COLOR);

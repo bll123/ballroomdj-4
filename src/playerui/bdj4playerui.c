@@ -94,22 +94,22 @@ typedef struct {
   uireqext_t      *uireqext;
   uikey_t         *uikey;
   /* notebook */
-  uiwidget_t      notebook;
-  uiutilsnbtabid_t *nbtabid;
+  uiwcont_t      notebook;
+  uinbtabid_t *nbtabid;
   int             currpage;
-  uiwidget_t      window;
-  uiwidget_t      vbox;
+  uiwcont_t      window;
+  uiwcont_t      vbox;
   callback_t      *callbacks [PLUI_CB_MAX];
-  uiwidget_t      clock;
-  uiwidget_t      musicqImage [MUSICQ_PB_MAX];
+  uiwcont_t      clock;
+  uiwcont_t      musicqImage [MUSICQ_PB_MAX];
   uibutton_t      *setPlaybackButton;
-  uiwidget_t      ledoffPixbuf;
-  uiwidget_t      ledonPixbuf;
-  uiwidget_t      marqueeFontSizeDialog;
-  uiwidget_t      marqueeSpinBox;
+  uiwcont_t      ledoffPixbuf;
+  uiwcont_t      ledonPixbuf;
+  uiwcont_t      marqueeFontSizeDialog;
+  uiwcont_t      marqueeSpinBox;
   /* ui major elements */
-  uiwidget_t      statusMsg;
-  uiwidget_t      errorMsg;
+  uiwcont_t      statusMsg;
+  uiwcont_t      errorMsg;
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
   uisongsel_t     *uisongsel;
@@ -163,7 +163,7 @@ static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static bool     pluiCloseWin (void *udata);
 static void     pluiSigHandler (int sig);
-static char *   pluiExportMP3Dialog (uiwidget_t *windowp);
+static char *   pluiExportMP3Dialog (uiwcont_t *windowp);
 static bool     pluiExportMP3Status (void *udata, int count, int tot);
 /* queue selection handlers */
 static bool     pluiSwitchPage (void *udata, long pagenum);
@@ -206,10 +206,10 @@ main (int argc, char *argv[])
   mdebugInit ("plui");
 #endif
 
-  uiwidgetInit (&plui.window);
-  uiwidgetInit (&plui.clock);
-  uiwidgetInit (&plui.notebook);
-  uiwidgetInit (&plui.marqueeFontSizeDialog);
+  uiwcontInit (&plui.window);
+  uiwcontInit (&plui.clock);
+  uiwcontInit (&plui.notebook);
+  uiwcontInit (&plui.marqueeFontSizeDialog);
   plui.progstate = progstateInit ("playerui");
   progstateSetCallback (plui.progstate, STATE_CONNECTING,
       pluiConnectingCallback, &plui);
@@ -227,7 +227,7 @@ main (int argc, char *argv[])
   mstimeset (&plui.marqueeFontSizeCheck, 3600000);
   mstimeset (&plui.clockCheck, 0);
   plui.stopwaitcount = 0;
-  plui.nbtabid = uiutilsNotebookIDInit ();
+  plui.nbtabid = uinbutilIDInit ();
   plui.uisongfilter = NULL;
   plui.uireqext = NULL;
   plui.uikey = NULL;
@@ -365,7 +365,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);
 
-  uiutilsNotebookIDFree (plui->nbtabid);
+  uinbutilIDFree (plui->nbtabid);
   uisfFree (plui->uisongfilter);
   uiKeyFree (plui->uikey);
   uireqextFree (plui->uireqext);
@@ -387,12 +387,12 @@ pluiClosingCallback (void *udata, programstate_t programState)
 static void
 pluiBuildUI (playerui_t *plui)
 {
-  uiwidget_t  menubar;
-  uiwidget_t  menu;
-  uiwidget_t  menuitem;
-  uiwidget_t  hbox;
-  uiwidget_t  uiwidget;
-  uiwidget_t  *uiwidgetp;
+  uiwcont_t  menubar;
+  uiwcont_t  menu;
+  uiwcont_t  menuitem;
+  uiwcont_t  hbox;
+  uiwcont_t  uiwidget;
+  uiwcont_t  *uiwidgetp;
   uibutton_t  *uibutton;
   char        *str;
   char        imgbuff [MAXPATHLEN];
@@ -451,12 +451,12 @@ pluiBuildUI (playerui_t *plui)
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiwidgetCopy (&plui->errorMsg, &uiwidget);
+  uiwcontCopy (&plui->errorMsg, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiwidgetCopy (&plui->statusMsg, &uiwidget);
+  uiwcontCopy (&plui->statusMsg, &uiwidget);
 
   /* actions */
   /* CONTEXT: playerui: menu selection: actions for the player */
@@ -546,7 +546,7 @@ pluiBuildUI (playerui_t *plui)
       /* CONTEXT: playerui: select the current queue for playback */
       _("Set Queue for Playback"), NULL);
   plui->setPlaybackButton = uibutton;
-  uiwidgetp = uiButtonGetWidget (uibutton);
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiNotebookSetActionWidget (&plui->notebook, uiwidgetp);
   uiWidgetShowAll (uiwidgetp);
 
@@ -583,7 +583,7 @@ pluiBuildUI (playerui_t *plui)
     }
 
     uiNotebookAppendPage (&plui->notebook, uiwidgetp, &hbox);
-    uiutilsNotebookIDAdd (plui->nbtabid, tabtype);
+    uinbutilIDAdd (plui->nbtabid, tabtype);
     uiWidgetShowAll (&hbox);
   }
 
@@ -592,7 +592,7 @@ pluiBuildUI (playerui_t *plui)
   /* CONTEXT: playerui: name of request tab : lists the songs in the database */
   uiCreateLabel (&uiwidget, _("Request"));
   uiNotebookAppendPage (&plui->notebook, uiwidgetp, &uiwidget);
-  uiutilsNotebookIDAdd (plui->nbtabid, UI_TAB_SONGSEL);
+  uinbutilIDAdd (plui->nbtabid, UI_TAB_SONGSEL);
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
@@ -1046,7 +1046,7 @@ pluiSigHandler (int sig)
 }
 
 static char *
-pluiExportMP3Dialog (uiwidget_t *windowp)
+pluiExportMP3Dialog (uiwcont_t *windowp)
 {
   uiselect_t  *selectdata;
   char        *dir;
@@ -1067,7 +1067,7 @@ static bool
 pluiExportMP3Status (void *udata, int count, int tot)
 {
   playerui_t  *plui = udata;
-  uiwidget_t  *statusMsg = &plui->statusMsg;
+  uiwcont_t  *statusMsg = &plui->statusMsg;
   char        tbuff [200];
 
   if (statusMsg == NULL) {
@@ -1100,7 +1100,7 @@ pluiSwitchPage (void *udata, long pagenum)
     return UICB_STOP;
   }
 
-  tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
+  tabid = uinbutilIDGet (plui->nbtabid, pagenum);
   plui->currpage = pagenum;
   /* do not call set-manage-queue on the request tab */
   if (tabid == UI_TAB_MUSICQ) {
@@ -1119,11 +1119,11 @@ static void
 pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum)
 {
   int         tabid;
-  uiwidget_t  *uiwidgetp;
+  uiwcont_t  *uiwidgetp;
 
-  tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
+  tabid = uinbutilIDGet (plui->nbtabid, pagenum);
 
-  uiwidgetp = uiButtonGetWidget (plui->setPlaybackButton);
+  uiwidgetp = uiButtonGetWidgetContainer (plui->setPlaybackButton);
   uiWidgetHide (uiwidgetp);
   if (tabid == UI_TAB_MUSICQ) {
     if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {
@@ -1238,8 +1238,8 @@ pluiSetExtraQueues (playerui_t *plui)
   }
 
   show = nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES);
-  uiutilsNotebookIDStartIterator (plui->nbtabid, &pagenum);
-  while ((tabid = uiutilsNotebookIDIterate (plui->nbtabid, &pagenum)) >= 0) {
+  uinbutilIDStartIterator (plui->nbtabid, &pagenum);
+  while ((tabid = uinbutilIDIterate (plui->nbtabid, &pagenum)) >= 0) {
     if (tabid == UI_TAB_MUSICQ && pagenum > 0) {
       if (! show && plui->currpage == pagenum) {
         resetcurr = true;
@@ -1316,9 +1316,9 @@ pluiMarqueeFontSizeDialog (void *udata)
 static void
 pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    hbox;
-  uiwidget_t    uiwidget;
+  uiwcont_t    vbox;
+  uiwcont_t    hbox;
+  uiwcont_t    uiwidget;
 
   logProcBegin (LOG_PROC, "pluiCreateMarqueeFontSizeDialog");
 
@@ -1369,7 +1369,7 @@ pluiMarqueeFontSizeDialogResponse (void *udata, long responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
-      uiwidgetInit (&plui->marqueeFontSizeDialog);
+      uiwcontInit (&plui->marqueeFontSizeDialog);
       plui->fontszdialogcreated = false;
       plui->mqfontsizeactive = false;
       break;

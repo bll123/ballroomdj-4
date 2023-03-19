@@ -8,7 +8,7 @@
 # include "ui-gtk3.h"
 #endif
 
-void uiCreateSizeGroupHoriz (uiwidget_t *);
-void uiSizeGroupAdd (uiwidget_t *uiw, uiwidget_t *uiwidget);
+void uiCreateSizeGroupHoriz (uiwcont_t *);
+void uiSizeGroupAdd (uiwcont_t *uiw, uiwcont_t *uiwidget);
 
 #endif /* INC_UISIZEGRP_H */

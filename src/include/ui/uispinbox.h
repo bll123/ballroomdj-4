@@ -32,8 +32,8 @@ int   uiSpinboxTextGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTextSetValue (uispinbox_t *spinbox, int ivalue);
 void  uiSpinboxSetState (uispinbox_t *spinbox, int state);
 
-void  uiSpinboxIntCreate (uiwidget_t *uiwidget);
-void  uiSpinboxDoubleCreate (uiwidget_t *uiwidget);
+void  uiSpinboxIntCreate (uiwcont_t *uiwidget);
+void  uiSpinboxDoubleCreate (uiwcont_t *uiwidget);
 
 void  uiSpinboxDoubleDefaultCreate (uispinbox_t *spinbox);
 
@@ -44,16 +44,16 @@ void  uiSpinboxTimeSetValue (uispinbox_t *spinbox, ssize_t value);
 
 void  uiSpinboxSetRange (uispinbox_t *spinbox, double min, double max);
 void  uiSpinboxWrap (uispinbox_t *spinbox);
-void  uiSpinboxSet (uiwidget_t *uispinbox, double min, double max);
-double uiSpinboxGetValue (uiwidget_t *uispinbox);
-void  uiSpinboxSetValue (uiwidget_t *uispinbox, double ivalue);
+void  uiSpinboxSet (uiwcont_t *uispinbox, double min, double max);
+double uiSpinboxGetValue (uiwcont_t *uispinbox);
+void  uiSpinboxSetValue (uiwcont_t *uispinbox, double ivalue);
 bool  uiSpinboxIsChanged (uispinbox_t *spinbox);
 void  uiSpinboxResetChanged (uispinbox_t *spinbox);
 void  uiSpinboxAlignRight (uispinbox_t *spinbox);
 void  uiSpinboxAddClass (const char *classnm, const char *color);
-uiwidget_t * uiSpinboxGetWidget (uispinbox_t *spinbox);
+uiwcont_t * uiSpinboxGetWidgetContainer (uispinbox_t *spinbox);
 void uiSpinboxTextSetValueChangedCallback (uispinbox_t *spinbox, callback_t *uicb);
 void uiSpinboxTimeSetValueChangedCallback (uispinbox_t *spinbox, callback_t *uicb);
-void uiSpinboxSetValueChangedCallback (uiwidget_t *uiwidget, callback_t *uicb);
+void uiSpinboxSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb);
 
 #endif /* INC_UISPINBOX_H */

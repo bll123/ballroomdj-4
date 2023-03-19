@@ -25,8 +25,8 @@
 typedef struct uidance {
   dance_t       *dances;
   uidropdown_t  *dropdown;
-  uiwidget_t    *parentwin;
-  uiwidget_t    *buttonp;
+  uiwcont_t    *parentwin;
+  uiwcont_t    *buttonp;
   callback_t    *cb;
   callback_t    *selectcb;
   const char    *label;
@@ -39,7 +39,7 @@ static bool uidanceSelectHandler (void *udata, long idx);
 static void uidanceCreateDanceList (uidance_t *uidance);
 
 uidance_t *
-uidanceDropDownCreate (uiwidget_t *boxp, uiwidget_t *parentwin, int flags,
+uidanceDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
     const char *label, int where, int count)
 {
   uidance_t  *uidance;
@@ -76,7 +76,7 @@ uidanceDropDownCreate (uiwidget_t *boxp, uiwidget_t *parentwin, int flags,
   return uidance;
 }
 
-uiwidget_t *
+uiwcont_t *
 uidanceGetButton (uidance_t *uidance)
 {
   if (uidance == NULL) {
@@ -127,7 +127,7 @@ uidanceSetState (uidance_t *uidance, int state)
 }
 
 void
-uidanceSizeGroupAdd (uidance_t *uidance, uiwidget_t *sg)
+uidanceSizeGroupAdd (uidance_t *uidance, uiwcont_t *sg)
 {
   uiSizeGroupAdd (sg, uidance->buttonp);
 }

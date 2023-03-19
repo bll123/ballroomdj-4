@@ -25,8 +25,8 @@
 void
 confuiBuildUIFilterDisplay (confuigui_t *gui)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    sg;
+  uiwcont_t    vbox;
+  uiwcont_t    sg;
   nlistidx_t    val;
 
   logProcBegin (LOG_PROC, "confuiBuildUIFilterDisplay");

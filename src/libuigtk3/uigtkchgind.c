@@ -22,11 +22,11 @@
 #include "ui/uichgind.h"
 
 typedef struct uichgind {
-  uiwidget_t  label;
+  uiwcont_t  label;
 } uichgind_t;
 
 uichgind_t *
-uiCreateChangeIndicator (uiwidget_t *boxp)
+uiCreateChangeIndicator (uiwcont_t *boxp)
 {
   uichgind_t  *uichgind;
   GtkWidget   *widget;

@@ -49,8 +49,8 @@ enum {
 
 typedef struct managepltree {
   uitree_t          *uitree;
-  uiwidget_t        *statusMsg;
-  uiwidget_t        uihideunsel;
+  uiwcont_t        *statusMsg;
+  uiwcont_t        uihideunsel;
   callback_t        *callbacks [MPLTREE_CB_MAX];
   playlist_t        *playlist;
   int               currcount;
@@ -65,7 +65,7 @@ static void managePlaylistTreeCreate (managepltree_t *managepltree);
 static bool managePlaylistTreeHideUnselectedCallback (void *udata);
 
 managepltree_t *
-managePlaylistTreeAlloc (uiwidget_t *statusMsg)
+managePlaylistTreeAlloc (uiwcont_t *statusMsg)
 {
   managepltree_t *managepltree;
 
@@ -97,13 +97,13 @@ managePlaylistTreeFree (managepltree_t *managepltree)
 }
 
 void
-manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwidget_t *vboxp,
-    uiwidget_t *tophbox)
+manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
+    uiwcont_t *tophbox)
 {
-  uiwidget_t  hbox;
-  uiwidget_t  uiwidget;
-  uiwidget_t  *uitreewidgetp;
-  uiwidget_t  scwindow;
+  uiwcont_t  hbox;
+  uiwcont_t  uiwidget;
+  uiwcont_t  *uitreewidgetp;
+  uiwcont_t  scwindow;
   const char  *bpmstr;
   char        tbuff [100];
 
@@ -116,14 +116,14 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwidget_t *vboxp,
       managePlaylistTreeHideUnselectedCallback, managepltree, NULL);
   uiToggleButtonSetCallback (&uiwidget, managepltree->callbacks [MPLTREE_CB_UNSEL]);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiwidgetCopy (&managepltree->uihideunsel, &uiwidget);
+  uiwcontCopy (&managepltree->uihideunsel, &uiwidget);
 
   uiCreateScrolledWindow (&scwindow, 300);
   uiWidgetExpandVert (&scwindow);
   uiBoxPackStartExpand (vboxp, &scwindow);
 
   managepltree->uitree = uiCreateTreeView ();
-  uitreewidgetp = uiTreeViewGetWidget (managepltree->uitree);
+  uitreewidgetp = uiTreeViewGetWidgetContainer (managepltree->uitree);
 
   managepltree->callbacks [MPLTREE_CB_CHANGED] = callbackInitLong (
       managePlaylistTreeChanged, managepltree);
@@ -428,7 +428,7 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
   slistidx_t    iteridx;
   ilistidx_t    key;
   uitree_t      *uitree;
-  uiwidget_t    adjustment;
+  uiwcont_t    adjustment;
 
   uitree = managepltree->uitree;
 

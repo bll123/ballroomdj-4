@@ -33,8 +33,8 @@ confuiInitMobileMarquee (confuigui_t *gui)
 void
 confuiBuildUIMobileMarquee (confuigui_t *gui)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    sg;
+  uiwcont_t    vbox;
+  uiwcont_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIMobileMarquee");
   uiCreateVertBox (&vbox);

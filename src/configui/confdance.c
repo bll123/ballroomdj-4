@@ -81,12 +81,12 @@ confuiInitEditDances (confuigui_t *gui)
 void
 confuiBuildUIEditDances (confuigui_t *gui)
 {
-  uiwidget_t    vbox;
-  uiwidget_t    hbox;
-  uiwidget_t    dvbox;
-  uiwidget_t    sg;
-  uiwidget_t    sgB;
-  uiwidget_t    sgC;
+  uiwcont_t    vbox;
+  uiwcont_t    hbox;
+  uiwcont_t    dvbox;
+  uiwcont_t    sg;
+  uiwcont_t    sgB;
+  uiwcont_t    sgC;
   const char    *bpmstr;
   char          tbuff [MAXPATHLEN];
 

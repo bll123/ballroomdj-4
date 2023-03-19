@@ -25,8 +25,8 @@
 typedef struct uigenre {
   genre_t       *genres;
   uidropdown_t  *dropdown;
-  uiwidget_t    *parentwin;
-  uiwidget_t    *buttonp;
+  uiwcont_t    *parentwin;
+  uiwcont_t    *buttonp;
   callback_t    *cb;
   callback_t    *selectcb;
   long          selectedidx;
@@ -37,7 +37,7 @@ static bool uigenreSelectHandler (void *udata, long idx);
 static void uigenreCreateGenreList (uigenre_t *uigenre);
 
 uigenre_t *
-uigenreDropDownCreate (uiwidget_t *boxp, uiwidget_t *parentwin, bool allflag)
+uigenreDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, bool allflag)
 {
   uigenre_t  *uigenre;
 
@@ -60,7 +60,7 @@ uigenreDropDownCreate (uiwidget_t *boxp, uiwidget_t *parentwin, bool allflag)
   return uigenre;
 }
 
-uiwidget_t *
+uiwcont_t *
 uigenreGetButton (uigenre_t *uigenre)
 {
   if (uigenre == NULL) {
@@ -111,7 +111,7 @@ uigenreSetState (uigenre_t *uigenre, int state)
 }
 
 void
-uigenreSizeGroupAdd (uigenre_t *uigenre, uiwidget_t *sg)
+uigenreSizeGroupAdd (uigenre_t *uigenre, uiwcont_t *sg)
 {
   uiSizeGroupAdd (sg, uigenre->buttonp);
 }

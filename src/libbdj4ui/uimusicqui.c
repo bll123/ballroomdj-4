@@ -161,17 +161,17 @@ uimusicqUIFree (uimusicq_t *uimusicq)
   }
 }
 
-uiwidget_t *
-uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
-    uiwidget_t *statusMsg, uientryval_t validateFunc)
+uiwcont_t *
+uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
+    uiwcont_t *statusMsg, uientryval_t validateFunc)
 {
   int               saveci;
   char              tbuff [MAXPATHLEN];
-  uiwidget_t        hbox;
-  uiwidget_t        uiwidget;
-  uiwidget_t        *uitreewidgetp;
+  uiwcont_t        hbox;
+  uiwcont_t        uiwidget;
+  uiwcont_t        *uitreewidgetp;
   uibutton_t        *uibutton;
-  uiwidget_t        *uiwidgetp;
+  uiwcont_t        *uiwidgetp;
   slist_t           *sellist;
   mq_internal_t     *uiw;
 
@@ -216,7 +216,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
         /* CONTEXT: music queue: button: move the selected song to the top of the queue */
         _("Move to Top"), "button_movetop");
     uiw->buttons [UIMUSICQ_BUTTON_MOVE_TOP] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
 
     uiw->callbacks [UIMUSICQ_CB_MOVE_UP] = callbackInit (
@@ -226,7 +226,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
         _("Move Up"), "button_up");
     uiw->buttons [UIMUSICQ_BUTTON_MOVE_UP] = uibutton;
     uiButtonSetRepeat (uibutton, UIMUSICQ_REPEAT_TIME);
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
 
     uiw->callbacks [UIMUSICQ_CB_MOVE_DOWN] = callbackInit (
@@ -236,7 +236,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
         _("Move Down"), "button_down");
     uiw->buttons [UIMUSICQ_BUTTON_MOVE_DOWN] = uibutton;
     uiButtonSetRepeat (uibutton, UIMUSICQ_REPEAT_TIME);
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
   }
 
@@ -248,7 +248,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
         /* CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle) */
         _("Toggle Pause"), "button_pause");
     uiw->buttons [UIMUSICQ_BUTTON_TOGGLE_PAUSE] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
   }
 
@@ -262,7 +262,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
         /* CONTEXT: music queue: button: remove the song from the queue */
         _("Remove"), "button_audioremove");
     uiw->buttons [UIMUSICQ_BUTTON_REMOVE] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiWidgetSetMarginStart (uiwidgetp, 3);
     uiWidgetSetMarginEnd (uiwidgetp, 2);
     uiBoxPackStart (&hbox, uiwidgetp);
@@ -276,7 +276,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
         /* CONTEXT: music queue: button: clear the queue */
         _("Clear Queue"), NULL);
     uiw->buttons [UIMUSICQ_BUTTON_CLEAR_QUEUE] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiWidgetSetMarginStart (uiwidgetp, 2);
     uiBoxPackStart (&hbox, uiwidgetp);
   }
@@ -289,7 +289,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
         /* CONTEXT: music queue: edit the selected song */
         _("Edit"), "button_edit");
     uiw->buttons [UIMUSICQ_BUTTON_EDIT] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
 
     uiw->callbacks [UIMUSICQ_CB_PLAY] = callbackInit (
@@ -298,7 +298,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
         /* CONTEXT: music queue: play the selected song */
         _("Play"), NULL);
     uiw->buttons [UIMUSICQ_BUTTON_PLAY] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
   }
 
@@ -309,7 +309,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
         /* CONTEXT: (verb) history: re-queue the selected song */
         _("Queue"), NULL);
     uiw->buttons [UIMUSICQ_BUTTON_QUEUE] = uibutton;
-    uiwidgetp = uiButtonGetWidget (uibutton);
+    uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
   }
 
@@ -351,14 +351,14 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
     if (validateFunc != NULL) {
       uiEntrySetValidate (entryp, validateFunc, statusMsg, UIENTRY_IMMEDIATE);
     }
-    uiWidgetSetClass (uiEntryGetWidget (entryp), ACCENT_CLASS);
+    uiWidgetSetClass (uiEntryGetWidgetContainer (entryp), ACCENT_CLASS);
     if (uimusicq->ui [ci].dispselType == DISP_SEL_EZSONGLIST) {
-      uiWidgetExpandHoriz (uiEntryGetWidget (entryp));
-      uiWidgetAlignHorizFill (uiEntryGetWidget (entryp));
-      uiBoxPackEndExpand (&hbox, uiEntryGetWidget (entryp));
+      uiWidgetExpandHoriz (uiEntryGetWidgetContainer (entryp));
+      uiWidgetAlignHorizFill (uiEntryGetWidgetContainer (entryp));
+      uiBoxPackEndExpand (&hbox, uiEntryGetWidgetContainer (entryp));
     }
     if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST) {
-      uiBoxPackEnd (&hbox, uiEntryGetWidget (entryp));
+      uiBoxPackEnd (&hbox, uiEntryGetWidgetContainer (entryp));
     }
 
     /* CONTEXT: music queue: label for song list name */
@@ -374,7 +374,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
   uiBoxPackStartExpand (&uimusicq->ui [ci].mainbox, &uiwidget);
 
   uiw->musicqTree = uiCreateTreeView ();
-  uitreewidgetp = uiTreeViewGetWidget (uiw->musicqTree);
+  uitreewidgetp = uiTreeViewGetWidgetContainer (uiw->musicqTree);
 
   uiw->sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
@@ -497,12 +497,12 @@ uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx
 {
   GtkTreeModel  *model;
   mq_internal_t *uiw;
-  uiwidget_t    *uiwidgetp;
+  uiwcont_t    *uiwidgetp;
 
 
   uimusicq->iteratecb = cb;
   uiw = uimusicq->ui [mqidx].uiWidgets;
-  uiwidgetp = uiTreeViewGetWidget (uiw->musicqTree);
+  uiwidgetp = uiTreeViewGetWidgetContainer (uiw->musicqTree);
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
   gtk_tree_model_foreach (model, uimusicqIterateCallback, uimusicq);
 }
@@ -679,7 +679,7 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   uiw = uimusicq->ui [ci].uiWidgets;
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
-//  uiwidgetp = uiTreeViewGetWidget (uiw->musicqTree);
+//  uiwidgetp = uiTreeViewGetWidgetContainer (uiw->musicqTree);
 //  if (uiwidgetp->widget != NULL) {
 //    model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
 //  }
@@ -1001,7 +1001,7 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
 //  GtkTreePath   *path;
   mq_internal_t *uiw;
 //  char          tbuff [40];
-//  uiwidget_t    *uiwidgetp;
+//  uiwcont_t    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "uimusicqSetSelection");
 

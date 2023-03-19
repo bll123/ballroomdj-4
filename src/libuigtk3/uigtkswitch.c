@@ -26,9 +26,9 @@
 #include "ui/uiswitch.h"
 
 typedef struct uiswitch {
-  uiwidget_t  uiswitch;
-  uiwidget_t  switchoffimg;
-  uiwidget_t  switchonimg;
+  uiwcont_t  uiswitch;
+  uiwcont_t  switchoffimg;
+  uiwcont_t  switchonimg;
 } uiswitch_t;
 
 static void uiSwitchImageHandler (GtkButton *b, gpointer udata);
@@ -46,9 +46,9 @@ uiCreateSwitch (int value)
   /* great.  use a toggle button instead and set our own image */
 
   uiswitch = mdmalloc (sizeof (uiswitch_t));
-  uiwidgetInit (&uiswitch->uiswitch);
-  uiwidgetInit (&uiswitch->switchoffimg);
-  uiwidgetInit (&uiswitch->switchonimg);
+  uiwcontInit (&uiswitch->uiswitch);
+  uiwcontInit (&uiswitch->switchoffimg);
+  uiwcontInit (&uiswitch->switchonimg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "switch-off", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
@@ -103,8 +103,8 @@ uiSwitchGetValue (uiswitch_t *uiswitch)
   return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiswitch->uiswitch.widget));
 }
 
-uiwidget_t *
-uiSwitchGetWidget (uiswitch_t *uiswitch)
+uiwcont_t *
+uiSwitchGetWidgetContainer (uiswitch_t *uiswitch)
 {
   if (uiswitch == NULL) {
     return NULL;
