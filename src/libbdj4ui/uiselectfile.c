@@ -168,12 +168,14 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
         TREE_VALUE_END);
   }
 
-  uiTreeViewAppendColumn (selectfile->selfiletree, TREE_WIDGET_TEXT,
+  uiTreeViewAppendColumn (selectfile->selfiletree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, "",
-      TREE_COL_MODE_TEXT, SELFILE_COL_DISP, TREE_COL_MODE_END);
-  uiTreeViewAppendColumn (selectfile->selfiletree, TREE_WIDGET_TEXT,
-      TREE_COL_DISP_NORM, "",
-      TREE_COL_MODE_TEXT, SELFILE_COL_SB_PAD, TREE_COL_MODE_END);
+      TREE_COL_TYPE_TEXT, SELFILE_COL_DISP, TREE_COL_TYPE_END);
+  uiTreeViewAppendColumn (selectfile->selfiletree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
+      TREE_COL_DISP_GROW, "",
+      TREE_COL_TYPE_TEXT, SELFILE_COL_SB_PAD, TREE_COL_TYPE_END);
 
   selectfile->rowactivecb = callbackInit (selectFileSelect, selectfile, NULL);
   uiTreeViewSetRowActivatedCallback (selectfile->selfiletree, selectfile->rowactivecb);

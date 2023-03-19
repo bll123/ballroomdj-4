@@ -107,17 +107,19 @@ confuiCreateStatusTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_STATUS].currcount += 1;
   }
 
-  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+  uiTreeViewAppendColumn (uitree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, tagdefs [TAG_STATUS].displayname,
-      TREE_COL_MODE_TEXT, CONFUI_STATUS_COL_STATUS,
-      TREE_COL_MODE_EDITABLE, CONFUI_STATUS_COL_EDITABLE,
-      TREE_COL_MODE_END);
+      TREE_COL_TYPE_TEXT, CONFUI_STATUS_COL_STATUS,
+      TREE_COL_TYPE_EDITABLE, CONFUI_STATUS_COL_EDITABLE,
+      TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (uitree, TREE_WIDGET_CHECKBOX,
+  uiTreeViewAppendColumn (uitree,
+      TREE_WIDGET_CHECKBOX, TREE_ALIGN_CENTER,
       /* CONTEXT: configuration: status: title of the "playable" column */
-      TREE_COL_DISP_NORM, _("Play?"),
-      TREE_COL_MODE_ACTIVE, CONFUI_STATUS_COL_PLAY_FLAG,
-      TREE_COL_MODE_END);
+      TREE_COL_DISP_GROW, _("Play?"),
+      TREE_COL_TYPE_ACTIVE, CONFUI_STATUS_COL_PLAY_FLAG,
+      TREE_COL_TYPE_END);
 
   logProcEnd (LOG_PROC, "confuiCreateStatusTable", "");
 }

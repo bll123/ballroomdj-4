@@ -156,12 +156,14 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
   uiTreeViewDisableHeaders (uitree);
 
-  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+  uiTreeViewAppendColumn (uitree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, "",
-      TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, TREE_COL_MODE_END);
-  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
-      TREE_COL_DISP_NORM, "",
-      TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, TREE_COL_MODE_END);
+      TREE_COL_TYPE_TEXT, DUALLIST_COL_DISP, TREE_COL_TYPE_END);
+  uiTreeViewAppendColumn (uitree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
+      TREE_COL_DISP_GROW, "",
+      TREE_COL_TYPE_TEXT, DUALLIST_COL_SB_PAD, TREE_COL_TYPE_END);
 
   uiCreateVertBox (&dvbox);
   uiWidgetSetAllMargins (&dvbox, 4);
@@ -208,12 +210,14 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
   uiTreeViewDisableHeaders (uitree);
 
-  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+  uiTreeViewAppendColumn (uitree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, "",
-      TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, TREE_COL_MODE_END);
-  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
-      TREE_COL_DISP_NORM, "",
-      TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, TREE_COL_MODE_END);
+      TREE_COL_TYPE_TEXT, DUALLIST_COL_DISP, TREE_COL_TYPE_END);
+  uiTreeViewAppendColumn (uitree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
+      TREE_COL_DISP_GROW, "",
+      TREE_COL_TYPE_TEXT, DUALLIST_COL_SB_PAD, TREE_COL_TYPE_END);
 
   uiCreateVertBox (&dvbox);
   uiWidgetSetAllMargins (&dvbox, 4);

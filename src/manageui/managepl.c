@@ -46,7 +46,7 @@ typedef struct managepl {
   UIWidget        *windowp;
   nlist_t         *options;
   UIWidget        *statusMsg;
-  uimenu_t        plmenu;
+  uimenu_t        *plmenu;
   UIWidget        menuDelete;
   callback_t      *callbacks [MPL_CB_MAX];
   callback_t      *plloadcb;
@@ -97,7 +97,7 @@ managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   uiutilsUIWidgetInit (&managepl->menuDelete);
   managepl->ploldname = NULL;
   managepl->plbackupcreated = false;
-  uiMenuInit (&managepl->plmenu);
+  managepl->plmenu = uiMenuAlloc ();
   managepl->plname = uiEntryInit (20, 50);
   managepl->statusMsg = statusMsg;
   managepl->windowp = window;
@@ -132,6 +132,7 @@ void
 managePlaylistFree (managepl_t *managepl)
 {
   if (managepl != NULL) {
+    uiMenuFree (managepl->plmenu);
     dataFree (managepl->ploldname);
     if (managepl->managepltree != NULL) {
       managePlaylistTreeFree (managepl->managepltree);
@@ -379,10 +380,10 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
   UIWidget  menuitem;
 
   logProcBegin (LOG_PROC, "managePlaylistMenu");
-  if (! managepl->plmenu.initialized) {
+  if (! uiMenuInitialized (managepl->plmenu)) {
     uiMenuAddMainItem (uimenubar, &menuitem,
         /* CONTEXT: playlist management: menu selection: playlist: edit menu */
-        &managepl->plmenu, _("Edit"));
+        managepl->plmenu, _("Edit"));
 
     uiCreateSubMenu (&menuitem, &menu);
 
@@ -411,12 +412,12 @@ managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
         managepl->callbacks [MPL_CB_MENU_PL_DELETE]);
     uiutilsUIWidgetCopy (&managepl->menuDelete, &menuitem);
 
-    managepl->plmenu.initialized = true;
+    uiMenuSetInitialized (managepl->plmenu);
   }
 
-  uiMenuDisplay (&managepl->plmenu);
+  uiMenuDisplay (managepl->plmenu);
   logProcEnd (LOG_PROC, "managePlaylistMenu", "");
-  return &managepl->plmenu;
+  return managepl->plmenu;
 }
 
 void

@@ -34,6 +34,7 @@ add_library (libbdj4ui SHARED
   uisongselcommon.c
   uisongselgtk.c
   uistatus.c
+  uitreedisp.c
   uiutils.c
 )
 target_include_directories (libbdj4ui

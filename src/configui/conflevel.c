@@ -119,26 +119,29 @@ confuiCreateLevelTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_LEVELS].currcount += 1;
   }
 
-  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+  uiTreeViewAppendColumn (uitree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, tagdefs [TAG_DANCELEVEL].shortdisplayname,
-      TREE_COL_MODE_TEXT, CONFUI_LEVEL_COL_LEVEL,
-      TREE_COL_MODE_EDITABLE, CONFUI_LEVEL_COL_EDITABLE,
-      TREE_COL_MODE_END);
+      TREE_COL_TYPE_TEXT, CONFUI_LEVEL_COL_LEVEL,
+      TREE_COL_TYPE_EDITABLE, CONFUI_LEVEL_COL_EDITABLE,
+      TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (uitree, TREE_WIDGET_SPINBOX,
+  uiTreeViewAppendColumn (uitree,
+      TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       /* CONTEXT: configuration: level: title of the weight column */
       TREE_COL_DISP_GROW, _("Weight"),
-      TREE_COL_MODE_TEXT, CONFUI_LEVEL_COL_WEIGHT,
-      TREE_COL_MODE_EDITABLE, CONFUI_LEVEL_COL_EDITABLE,
-      TREE_COL_MODE_ADJUSTMENT, CONFUI_LEVEL_COL_ADJUST,
-      TREE_COL_MODE_DIGITS, CONFUI_LEVEL_COL_DIGITS,
-      TREE_COL_MODE_END);
+      TREE_COL_TYPE_TEXT, CONFUI_LEVEL_COL_WEIGHT,
+      TREE_COL_TYPE_EDITABLE, CONFUI_LEVEL_COL_EDITABLE,
+      TREE_COL_TYPE_ADJUSTMENT, CONFUI_LEVEL_COL_ADJUST,
+      TREE_COL_TYPE_DIGITS, CONFUI_LEVEL_COL_DIGITS,
+      TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (uitree, TREE_WIDGET_RADIO,
+  uiTreeViewAppendColumn (uitree,
+      TREE_WIDGET_RADIO, TREE_ALIGN_CENTER,
       /* CONTEXT: configuration: level: title of the default selection column */
       TREE_COL_DISP_GROW, _("Default"),
-      TREE_COL_MODE_ACTIVE, CONFUI_LEVEL_COL_DEFAULT,
-      TREE_COL_MODE_END);
+      TREE_COL_TYPE_ACTIVE, CONFUI_LEVEL_COL_DEFAULT,
+      TREE_COL_TYPE_END);
 
   logProcEnd (LOG_PROC, "confuiCreateLevelTable", "");
 }

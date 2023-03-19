@@ -10,8 +10,28 @@
 #include <string.h>
 #include <assert.h>
 
+#include "mdebug.h"
+
 #include "ui/uiinternal.h"
 #include "ui/uigeneral.h"
+
+uiwidget_t *
+uiwidgetAlloc (void)
+{
+  uiwidget_t    *uiwidget;
+
+  uiwidget = mdmalloc (sizeof (uiwidget_t));
+  uiwidget->widget = NULL;
+  return uiwidget;
+}
+
+void
+uiwidgetFree (uiwidget_t *uiwidget)
+{
+  if (uiwidget != NULL) {
+    mdfree (uiwidget);
+  }
+}
 
 void
 uiutilsUIWidgetInit (UIWidget *uiwidget)

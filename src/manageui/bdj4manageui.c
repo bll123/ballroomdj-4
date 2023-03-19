@@ -181,9 +181,9 @@ typedef struct {
   int               sllasttab;
   int               mmlasttab;
   uimenu_t          *currmenu;
-  uimenu_t          slmenu;
-  uimenu_t          songeditmenu;
-  uimenu_t          mmmenu;
+  uimenu_t          *slmenu;
+  uimenu_t          *songeditmenu;
+  uimenu_t          *mmmenu;
   uiutilsnbtabid_t  *mainnbtabid;
   uiutilsnbtabid_t  *slnbtabid;
   uiutilsnbtabid_t  *mmnbtabid;
@@ -402,9 +402,9 @@ main (int argc, char *argv[])
   manage.mainlasttab = MANAGE_TAB_MAIN_SL;
   manage.sllasttab = MANAGE_TAB_SONGLIST;
   manage.mmlasttab = MANAGE_TAB_MM;
-  uiMenuInit (&manage.slmenu);
-  uiMenuInit (&manage.songeditmenu);
-  uiMenuInit (&manage.mmmenu);
+  manage.slmenu = uiMenuAlloc ();
+  manage.songeditmenu = uiMenuAlloc ();
+  manage.mmmenu = uiMenuAlloc ();
   uiutilsUIWidgetInit (&manage.restoreOrigMenuItem);
   manage.mainnbtabid = uiutilsNotebookIDInit ();
   manage.slnbtabid = uiutilsNotebookIDInit ();
@@ -574,6 +574,9 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageClosingCallback");
 
+  uiMenuFree (manage->slmenu);
+  uiMenuFree (manage->songeditmenu);
+  uiMenuFree (manage->mmmenu);
   itunesFree (manage->itunes);
   samesongFree (manage->samesong);
   manageDbClose (manage->managedb);
@@ -1338,7 +1341,7 @@ manageSongEditMenu (manageui_t *manage)
   void      *tempp;
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
-  if (! manage->songeditmenu.initialized) {
+  if (! uiMenuInitialized (manage->songeditmenu)) {
     manage->uiaa = uiaaInit (&manage->window, manage->options);
     manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
         manageApplyAdjCallback, manage);
@@ -1346,7 +1349,7 @@ manageSongEditMenu (manageui_t *manage)
 
     uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: managementui: menu selection: actions for song editor */
-        &manage->songeditmenu, _("Actions"));
+        manage->songeditmenu, _("Actions"));
 
     uiCreateSubMenu (&menuitem, &menu);
 
@@ -1405,11 +1408,11 @@ manageSongEditMenu (manageui_t *manage)
       uiWidgetSetState (&menuitem, UIWIDGET_DISABLE);
     }
 
-    manage->songeditmenu.initialized = true;
+    uiMenuSetInitialized (manage->songeditmenu);
   }
 
-  uiMenuDisplay (&manage->songeditmenu);
-  manage->currmenu = &manage->songeditmenu;
+  uiMenuDisplay (manage->songeditmenu);
+  manage->currmenu = manage->songeditmenu;
   logProcEnd (LOG_PROC, "manageSongEditMenu", "");
 }
 
@@ -1973,10 +1976,10 @@ manageMusicManagerMenu (manageui_t *manage)
   UIWidget  menuitem;
 
   logProcBegin (LOG_PROC, "manageMusicManagerMenu");
-  if (! manage->mmmenu.initialized) {
+  if (! uiMenuInitialized (manage->mmmenu)) {
     uiMenuAddMainItem (&manage->menubar, &menuitem,
         /* CONTEXT: managementui: menu selection: actions for music manager */
-        &manage->mmmenu, _("Actions"));
+        manage->mmmenu, _("Actions"));
 
     uiCreateSubMenu (&menuitem, &menu);
 
@@ -1992,11 +1995,11 @@ manageMusicManagerMenu (manageui_t *manage)
     uiMenuCreateItem (&menu, &menuitem, _("Clear Same Song Mark"),
         manage->callbacks [MANAGE_MENU_CB_MM_CLEAR_MARK]);
 
-    manage->mmmenu.initialized = true;
+    uiMenuSetInitialized (manage->mmmenu);
   }
 
-  uiMenuDisplay (&manage->mmmenu);
-  manage->currmenu = &manage->mmmenu;
+  uiMenuDisplay (manage->mmmenu);
+  manage->currmenu = manage->mmmenu;
   logProcEnd (LOG_PROC, "manageMusicManagerMenu", "");
 }
 
@@ -2010,9 +2013,9 @@ manageSonglistMenu (manageui_t *manage)
   UIWidget  menuitem;
 
   logProcBegin (LOG_PROC, "manageSonglistMenu");
-  if (manage->slmenu.initialized) {
-    uiMenuDisplay (&manage->slmenu);
-    manage->currmenu = &manage->slmenu;
+  if (uiMenuInitialized (manage->slmenu)) {
+    uiMenuDisplay (manage->slmenu);
+    manage->currmenu = manage->slmenu;
     logProcEnd (LOG_PROC, "manageSonglistMenu", "already");
     return;
   }
@@ -2020,7 +2023,7 @@ manageSonglistMenu (manageui_t *manage)
   /* edit */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
       /* CONTEXT: managementui: menu selection: song list: edit menu */
-      &manage->slmenu, _("Edit"));
+      manage->slmenu, _("Edit"));
 
   uiCreateSubMenu (&menuitem, &menu);
 
@@ -2047,7 +2050,7 @@ manageSonglistMenu (manageui_t *manage)
   /* actions */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
       /* CONTEXT: managementui: menu selection: actions for song list */
-      &manage->slmenu, _("Actions"));
+      manage->slmenu, _("Actions"));
 
   uiCreateSubMenu (&menuitem, &menu);
 
@@ -2076,7 +2079,7 @@ manageSonglistMenu (manageui_t *manage)
   /* export */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
       /* CONTEXT: managementui: menu selection: export actions for song list */
-      &manage->slmenu, _("Export"));
+      manage->slmenu, _("Export"));
 
   uiCreateSubMenu (&menuitem, &menu);
 
@@ -2094,7 +2097,7 @@ manageSonglistMenu (manageui_t *manage)
   /* import */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
       /* CONTEXT: managementui: menu selection: import actions for song list */
-      &manage->slmenu, _("Import"));
+      manage->slmenu, _("Import"));
 
   uiCreateSubMenu (&menuitem, &menu);
 
@@ -2119,7 +2122,7 @@ manageSonglistMenu (manageui_t *manage)
   /* options */
   uiMenuAddMainItem (&manage->menubar, &menuitem,
       /* CONTEXT: managementui: menu selection: song list: options menu */
-      &manage->slmenu, _("Options"));
+      manage->slmenu, _("Options"));
 
   uiCreateSubMenu (&menuitem, &menu);
 
@@ -2130,10 +2133,10 @@ manageSonglistMenu (manageui_t *manage)
       nlistGetNum (manage->options, MANAGE_EASY_SONGLIST),
       manage->callbacks [MANAGE_MENU_CB_SL_EZ_EDIT]);
 
-  manage->slmenu.initialized = true;
+  uiMenuSetInitialized (manage->slmenu);
 
-  uiMenuDisplay (&manage->slmenu);
-  manage->currmenu = &manage->slmenu;
+  uiMenuDisplay (manage->slmenu);
+  manage->currmenu = manage->slmenu;
   logProcEnd (LOG_PROC, "manageSonglistMenu", "");
 }
 

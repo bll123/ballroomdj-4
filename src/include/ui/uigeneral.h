@@ -9,8 +9,11 @@
 #endif
 
 /* general routines that are called by the ui specific code */
-void uiutilsUIWidgetInit (UIWidget *uiwidget);
-bool uiutilsUIWidgetSet (UIWidget *uiwidget);
-void uiutilsUIWidgetCopy (UIWidget *target, UIWidget *source);
+uiwidget_t *uiwidgetAlloc (void);
+void  uiwidgetFree (uiwidget_t *);
+/* these routines will be removed at a later date */
+void uiutilsUIWidgetInit (uiwidget_t *uiwidget);
+bool uiutilsUIWidgetSet (uiwidget_t *uiwidget);
+void uiutilsUIWidgetCopy (uiwidget_t *target, uiwidget_t *source);
 
 #endif /* INC_UIGENERAL_H */

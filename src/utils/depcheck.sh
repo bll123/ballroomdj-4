@@ -16,7 +16,7 @@ fi
 
 INCTC=inctest.c
 INCTO=inctest.o
-INCTOUT=inctest.txt
+INCTOUT=inctest.log
 TIN=dep-in.txt
 TSORT=dep-sort.txt
 grc=0

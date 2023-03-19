@@ -43,7 +43,7 @@ enum {
 typedef struct manageseq {
   UIWidget        *windowp;
   nlist_t         *options;
-  uimenu_t        seqmenu;
+  uimenu_t        *seqmenu;
   callback_t      *callbacks [MSEQ_CB_MAX];
   callback_t      *seqloadcb;
   callback_t      *seqnewcb;
@@ -72,7 +72,7 @@ manageSequenceAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
   manageseq->seqduallist = NULL;
   manageseq->seqoldname = NULL;
   manageseq->seqbackupcreated = false;
-  uiMenuInit (&manageseq->seqmenu);
+  manageseq->seqmenu = uiMenuAlloc ();
   manageseq->seqname = uiEntryInit (20, 50);
   manageseq->statusMsg = statusMsg;
   manageseq->windowp = window;
@@ -92,6 +92,7 @@ void
 manageSequenceFree (manageseq_t *manageseq)
 {
   if (manageseq != NULL) {
+    uiMenuFree (manageseq->seqmenu);
     uiduallistFree (manageseq->seqduallist);
     dataFree (manageseq->seqoldname);
     uiEntryFree (manageseq->seqname);
@@ -169,10 +170,10 @@ manageSequenceMenu (manageseq_t *manageseq, UIWidget *uimenubar)
   UIWidget  menuitem;
 
   logProcBegin (LOG_PROC, "manageSequenceMenu");
-  if (! manageseq->seqmenu.initialized) {
+  if (! uiMenuInitialized (manageseq->seqmenu)) {
     uiMenuAddMainItem (uimenubar, &menuitem,
         /* CONTEXT: sequence editor: menu selection: sequence: edit menu */
-        &manageseq->seqmenu, _("Edit"));
+        manageseq->seqmenu, _("Edit"));
 
     uiCreateSubMenu (&menuitem, &menu);
 
@@ -200,12 +201,12 @@ manageSequenceMenu (manageseq_t *manageseq, UIWidget *uimenubar)
     uiMenuCreateItem (&menu, &menuitem, _("Delete"),
         manageseq->callbacks [MSEQ_MENU_CB_SEQ_DELETE]);
 
-    manageseq->seqmenu.initialized = true;
+    uiMenuSetInitialized (manageseq->seqmenu);
   }
 
-  uiMenuDisplay (&manageseq->seqmenu);
+  uiMenuDisplay (manageseq->seqmenu);
   logProcEnd (LOG_PROC, "manageSequenceMenu", "");
-  return &manageseq->seqmenu;
+  return manageseq->seqmenu;
 }
 
 void

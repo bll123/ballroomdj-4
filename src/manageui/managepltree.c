@@ -135,58 +135,65 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
 
   uiTreeViewEnableHeaders (managepltree->uitree);
 
-  uiTreeViewAppendColumn (managepltree->uitree, TREE_WIDGET_CHECKBOX,
-      TREE_COL_DISP_NORM, NULL,
-      TREE_COL_MODE_ACTIVE, MPLTREE_COL_DANCE_SELECT,
-      TREE_COL_MODE_END);
+  uiTreeViewAppendColumn (managepltree->uitree,
+      TREE_WIDGET_CHECKBOX, TREE_ALIGN_CENTER,
+      TREE_COL_DISP_GROW, NULL,
+      TREE_COL_TYPE_ACTIVE, MPLTREE_COL_DANCE_SELECT,
+      TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (managepltree->uitree, TREE_WIDGET_TEXT,
+  uiTreeViewAppendColumn (managepltree->uitree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, tagdefs [TAG_DANCE].displayname,
-      TREE_COL_MODE_TEXT, MPLTREE_COL_DANCE,
-      TREE_COL_MODE_END);
+      TREE_COL_TYPE_TEXT, MPLTREE_COL_DANCE,
+      TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (managepltree->uitree, TREE_WIDGET_SPINBOX,
+  uiTreeViewAppendColumn (managepltree->uitree,
+      TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       /* CONTEXT: playlist management: count column header */
       TREE_COL_DISP_GROW, _("Count"),
-      TREE_COL_MODE_TEXT, MPLTREE_COL_COUNT,
-      TREE_COL_MODE_EDITABLE, MPLTREE_COL_EDITABLE,
-      TREE_COL_MODE_ADJUSTMENT, MPLTREE_COL_ADJUST,
-      TREE_COL_MODE_DIGITS, MPLTREE_COL_DIGITS,
-      TREE_COL_MODE_END);
+      TREE_COL_TYPE_TEXT, MPLTREE_COL_COUNT,
+      TREE_COL_TYPE_EDITABLE, MPLTREE_COL_EDITABLE,
+      TREE_COL_TYPE_ADJUSTMENT, MPLTREE_COL_ADJUST,
+      TREE_COL_TYPE_DIGITS, MPLTREE_COL_DIGITS,
+      TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (managepltree->uitree, TREE_WIDGET_TIME,
+  uiTreeViewAppendColumn (managepltree->uitree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_RIGHT,
       /* CONTEXT: playlist management: max play time column header (keep short) */
       TREE_COL_DISP_GROW, _("Maximum\nPlay Time"),
-      TREE_COL_MODE_TEXT, MPLTREE_COL_MAXPLAYTIME,
-      TREE_COL_MODE_EDITABLE, MPLTREE_COL_EDITABLE,
-      TREE_COL_MODE_END);
+      TREE_COL_TYPE_TEXT, MPLTREE_COL_MAXPLAYTIME,
+      TREE_COL_TYPE_EDITABLE, MPLTREE_COL_EDITABLE,
+      TREE_COL_TYPE_END);
 
   bpmstr = tagdefs [TAG_BPM].displayname;
 
   /* CONTEXT: playlist management: low bpm/mpm column header */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
-  uiTreeViewAppendColumn (managepltree->uitree, TREE_WIDGET_SPINBOX,
+  uiTreeViewAppendColumn (managepltree->uitree,
+      TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       TREE_COL_DISP_GROW, tbuff,
-      TREE_COL_MODE_TEXT, MPLTREE_COL_LOWBPM,
-      TREE_COL_MODE_EDITABLE, MPLTREE_COL_EDITABLE,
-      TREE_COL_MODE_ADJUSTMENT, MPLTREE_COL_ADJUST,
-      TREE_COL_MODE_DIGITS, MPLTREE_COL_DIGITS,
-      TREE_COL_MODE_END);
+      TREE_COL_TYPE_TEXT, MPLTREE_COL_LOWBPM,
+      TREE_COL_TYPE_EDITABLE, MPLTREE_COL_EDITABLE,
+      TREE_COL_TYPE_ADJUSTMENT, MPLTREE_COL_ADJUST,
+      TREE_COL_TYPE_DIGITS, MPLTREE_COL_DIGITS,
+      TREE_COL_TYPE_END);
 
   /* CONTEXT: playlist management: high bpm/mpm column header */
   snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
-  uiTreeViewAppendColumn (managepltree->uitree, TREE_WIDGET_SPINBOX,
+  uiTreeViewAppendColumn (managepltree->uitree,
+      TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       TREE_COL_DISP_GROW, tbuff,
-      TREE_COL_MODE_TEXT, MPLTREE_COL_HIGHBPM,
-      TREE_COL_MODE_EDITABLE, MPLTREE_COL_EDITABLE,
-      TREE_COL_MODE_ADJUSTMENT, MPLTREE_COL_ADJUST,
-      TREE_COL_MODE_DIGITS, MPLTREE_COL_DIGITS,
-      TREE_COL_MODE_END);
+      TREE_COL_TYPE_TEXT, MPLTREE_COL_HIGHBPM,
+      TREE_COL_TYPE_EDITABLE, MPLTREE_COL_EDITABLE,
+      TREE_COL_TYPE_ADJUSTMENT, MPLTREE_COL_ADJUST,
+      TREE_COL_TYPE_DIGITS, MPLTREE_COL_DIGITS,
+      TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (managepltree->uitree, TREE_WIDGET_TEXT,
-      TREE_COL_DISP_NORM, NULL,
-      TREE_COL_MODE_TEXT, MPLTREE_COL_SB_PAD,
-      TREE_COL_MODE_END);
+  uiTreeViewAppendColumn (managepltree->uitree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
+      TREE_COL_DISP_GROW, NULL,
+      TREE_COL_TYPE_TEXT, MPLTREE_COL_SB_PAD,
+      TREE_COL_TYPE_END);
 
   managePlaylistTreeCreate (managepltree);
 }

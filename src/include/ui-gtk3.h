@@ -4,13 +4,6 @@
 #ifndef INC_UIGTK_H
 #define INC_UIGTK_H
 
-#include <gtk/gtk.h>        // will go away
-
-/* tree view storage types */
-enum {
-  TREE_ELLIPSIZE_END = PANGO_ELLIPSIZE_END,     // will be moved
-};
-
 /* these are defined based on the gtk values */
 /* would change for a different gui package */
 enum {

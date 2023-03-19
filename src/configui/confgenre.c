@@ -99,22 +99,25 @@ confuiCreateGenreTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_GENRES].currcount += 1;
   }
 
-  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+  uiTreeViewAppendColumn (uitree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, tagdefs [TAG_GENRE].displayname,
-      TREE_COL_MODE_TEXT, CONFUI_GENRE_COL_GENRE,
-      TREE_COL_MODE_EDITABLE, CONFUI_GENRE_COL_EDITABLE,
-      TREE_COL_MODE_END);
+      TREE_COL_TYPE_TEXT, CONFUI_GENRE_COL_GENRE,
+      TREE_COL_TYPE_EDITABLE, CONFUI_GENRE_COL_EDITABLE,
+      TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (uitree, TREE_WIDGET_CHECKBOX,
+  uiTreeViewAppendColumn (uitree,
+      TREE_WIDGET_CHECKBOX, TREE_ALIGN_CENTER,
       /* CONTEXT: configuration: genre: title of the classical setting column */
-      TREE_COL_DISP_NORM, _("Classical?"),
-      TREE_COL_MODE_ACTIVE, CONFUI_GENRE_COL_CLASSICAL,
-      TREE_COL_MODE_END);
+      TREE_COL_DISP_GROW, _("Classical?"),
+      TREE_COL_TYPE_ACTIVE, CONFUI_GENRE_COL_CLASSICAL,
+      TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
-      TREE_COL_DISP_NORM, NULL,
-      TREE_COL_MODE_TEXT, CONFUI_GENRE_COL_SB_PAD,
-      TREE_COL_MODE_END);
+  uiTreeViewAppendColumn (uitree,
+      TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
+      TREE_COL_DISP_GROW, NULL,
+      TREE_COL_TYPE_TEXT, CONFUI_GENRE_COL_SB_PAD,
+      TREE_COL_TYPE_END);
 
   logProcEnd (LOG_PROC, "confuiCreateGenreTable", "");
 }

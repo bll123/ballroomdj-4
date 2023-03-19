@@ -12,17 +12,24 @@
 #include <gtk/gtk.h>
 
 #include "callback.h"
+#include "mdebug.h"
 
 #include "ui/uiinternal.h"
 #include "ui/uigeneral.h"
 #include "ui/uiwidget.h"
 #include "ui/uimenu.h"
 
+typedef struct uimenu {
+  int             menucount;
+  uiwidget_t      menuitem [UIUTILS_MENU_MAX];
+  bool            initialized : 1;
+} uimenu_t;
+
 static void uiMenuActivateHandler (GtkMenuItem *mi, gpointer udata);
 static void uiMenuToggleHandler (GtkWidget *mi, gpointer udata);
 
 void
-uiCreateMenubar (UIWidget *uiwidget)
+uiCreateMenubar (uiwidget_t *uiwidget)
 {
   GtkWidget *menubar;
 
@@ -31,7 +38,7 @@ uiCreateMenubar (UIWidget *uiwidget)
 }
 
 void
-uiCreateSubMenu (UIWidget *uimenuitem, UIWidget *uimenu)
+uiCreateSubMenu (uiwidget_t *uimenuitem, uiwidget_t *uimenu)
 {
   GtkWidget *menu;
 
@@ -41,7 +48,7 @@ uiCreateSubMenu (UIWidget *uimenuitem, UIWidget *uimenu)
 }
 
 void
-uiMenuCreateItem (UIWidget *uimenu, UIWidget *uimenuitem,
+uiMenuCreateItem (uiwidget_t *uimenu, uiwidget_t *uimenuitem,
     const char *txt, callback_t *uicb)
 {
   GtkWidget *menuitem;
@@ -56,7 +63,7 @@ uiMenuCreateItem (UIWidget *uimenu, UIWidget *uimenuitem,
 }
 
 void
-uiMenuAddSeparator (UIWidget *uimenu, UIWidget *uimenuitem)
+uiMenuAddSeparator (uiwidget_t *uimenu, uiwidget_t *uimenuitem)
 {
   GtkWidget *menuitem;
 
@@ -66,7 +73,7 @@ uiMenuAddSeparator (UIWidget *uimenu, UIWidget *uimenuitem)
 }
 
 void
-uiMenuCreateCheckbox (UIWidget *uimenu, UIWidget *uimenuitem,
+uiMenuCreateCheckbox (uiwidget_t *uimenu, uiwidget_t *uimenuitem,
     const char *txt, int active, callback_t *uicb)
 {
   GtkWidget *menuitem;
@@ -81,18 +88,50 @@ uiMenuCreateCheckbox (UIWidget *uimenu, UIWidget *uimenuitem,
   uimenuitem->widget = menuitem;
 }
 
-void
-uiMenuInit (uimenu_t *menu)
+uimenu_t *
+uiMenuAlloc (void)
 {
+  uimenu_t    *menu;
+
+  menu = mdmalloc (sizeof (uimenu_t));
   menu->initialized = false;
   menu->menucount = 0;
   for (int i = 0; i < UIUTILS_MENU_MAX; ++i) {
     uiutilsUIWidgetInit (&menu->menuitem [i]);
   }
+  return menu;
 }
 
 void
-uiMenuAddMainItem (UIWidget *uimenubar, UIWidget *uimenuitem,
+uiMenuFree (uimenu_t *menu)
+{
+  if (menu != NULL) {
+    mdfree (menu);
+  }
+}
+
+bool
+uiMenuInitialized (uimenu_t *menu)
+{
+  if (menu == NULL) {
+    return false;
+  }
+
+  return menu->initialized;
+}
+
+void
+uiMenuSetInitialized (uimenu_t *menu)
+{
+  if (menu == NULL) {
+    return;
+  }
+
+  menu->initialized = true;
+}
+
+void
+uiMenuAddMainItem (uiwidget_t *uimenubar, uiwidget_t *uimenuitem,
     uimenu_t *menu, const char *txt)
 {
   int   i;
