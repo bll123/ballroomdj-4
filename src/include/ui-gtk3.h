@@ -22,6 +22,5 @@ enum {
 };
 
 typedef union uiwidget uiwcont_t;
-typedef union uiwidget UIWidget; // temporary, will be removed later
 
 #endif /* INC_UIGTK_H */
