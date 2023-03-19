@@ -113,8 +113,6 @@ typedef struct uisongselgtk {
   nlistidx_t        selectListIter;
   nlistidx_t        selectListKey;
   GtkTreeIter       currIter;
-//  GtkTreeModel      *model;
-//  GtkTreeIter       *iterp;
   int               *typelist;
   int               colcount;            // for the display type callback
   const char        *markcolor;
@@ -238,8 +236,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
   slist_t           *sellist;
   char              tbuff [200];
   double            tupper;
-//  GtkCellRenderer   *renderer = NULL;
-//  GtkTreeViewColumn *column = NULL;
   int               col;
 
   logProcBegin (LOG_PROC, "uisongselBuildUI");
@@ -396,16 +392,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
       TREE_COL_TYPE_FONT, SONGSEL_COL_FONT,
       TREE_COL_TYPE_END);
 
-#if 0
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "markup", col,
-      "font", SONGSEL_COL_FONT,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
-#endif
-
   uitreedispAddDisplayColumns (
       uiw->songselTree, sellist, SONGSEL_COL_MAX,
       SONGSEL_COL_FONT, SONGSEL_COL_ELLIPSIZE);
@@ -453,18 +439,14 @@ void
 uisongselPopulateData (uisongsel_t *uisongsel)
 {
   uisongselgtk_t  * uiw;
-//  GtkTreeModel    * model = NULL;
-//  GtkTreeIter     iter;
   long            idx;
   int             row;
   song_t          * song;
-//  char            tbuff [100];
   dbidx_t         dbidx;
   char            * listingFont;
   slist_t         * sellist;
   double          tupper;
   const char      * sscolor = ""; // "#000000";
-//  UIWidget        * uiwidgetp;
 
   logProcBegin (LOG_PROC, "uisongselPopulateData");
 
@@ -478,17 +460,12 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   tupper = uisongsel->dfilterCount;
   uiScrollbarSetUpper (&uiw->songselScrollbar, tupper);
 
-//  uiwidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
-//  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-
   row = 0;
   idx = uisongsel->idxStart;
   while (row < uiw->maxRows) {
     char        colorbuff [200];
 
-//    snprintf (tbuff, sizeof (tbuff), "%d", row);
     uiTreeViewValueIteratorSet (uiw->songselTree, row);
-//    if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
 
     dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
     song = NULL;
@@ -526,17 +503,6 @@ uisongselPopulateData (uisongsel_t *uisongsel)
           SONGSEL_COL_MARK_MARKUP, colorbuff,
           SONGSEL_COL_SAMESONG_MARKUP, colorbuff,
           TREE_VALUE_END);
-#if 0
-      gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-          SONGSEL_COL_ELLIPSIZE, PANGO_ELLIPSIZE_END,
-          SONGSEL_COL_FONT, listingFont,
-          SONGSEL_COL_IDX, (glong) idx,
-          SONGSEL_COL_SORTIDX, (glong) idx,
-          SONGSEL_COL_DBIDX, (glong) dbidx,
-          SONGSEL_COL_MARK_MARKUP, colorbuff,
-          SONGSEL_COL_SAMESONG_MARKUP, colorbuff,
-          -1);
-#endif
 
       sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
       // uiw->model = model;
@@ -544,12 +510,12 @@ uisongselPopulateData (uisongsel_t *uisongsel)
       uisongSetDisplayColumns (sellist, song, SONGSEL_COL_MAX,
           uisongselPopulateDataCallback, uisongsel);
     } /* song is not null */
-//    } /* iter is valid */
 
     ++idx;
     ++row;
   }
 
+  uiTreeViewValueIteratorClear (uiw->songselTree);
   logProcEnd (LOG_PROC, "uisongselPopulateData", "");
 }
 
@@ -565,7 +531,7 @@ uisongselSelectCallback (void *udata)
   mqidx = MUSICQ_SL;
   uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_QUEUE);
   /* don't clear the selected list or the displayed selections */
-  /* it's confusing */
+  /* it's confusing for the user */
   return UICB_CONT;
 }
 
@@ -574,7 +540,6 @@ uisongselSetDefaultSelection (uisongsel_t *uisongsel)
 {
   uisongselgtk_t  *uiw;
   int             count;
-//  UIWidget        *uiwidgetp;
 
   uiw = uisongsel->uiWidgetData;
 
@@ -584,17 +549,7 @@ uisongselSetDefaultSelection (uisongsel_t *uisongsel)
 
   count = uiTreeViewSelectGetCount (uiw->songselTree);
   if (count < 1) {
-//    GtkTreeModel  *model;
-//    GtkTreeIter   iter;
-//    int           valid;
-
     uiTreeViewSelectFirst (uiw->songselTree);
-//    uiwidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
-//    model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-//    valid = gtk_tree_model_get_iter_first (model, &iter);
-//    if (valid) {
-//      gtk_tree_selection_select_iter (uiw->sel, &iter);
-//    }
   }
 
   return;
@@ -614,11 +569,6 @@ uisongselSetSelection (uisongsel_t *uisongsel, long idx)
     return;
   }
 
-// ### FIX
-  if (idx == 999) {
-    return;
-  }
-
   uiTreeViewSelectSet (uiw->songselTree, idx);
 }
 
@@ -633,11 +583,6 @@ uisongselSetSelectionOffset (uisongsel_t *uisongsel, long idx)
     return;
   }
   if (idx < 0) {
-    return;
-  }
-
-// ### FIX
-  if (idx == 999) {
     return;
   }
 
@@ -1078,21 +1023,15 @@ static void
 uisongselCreateRows (uisongsel_t *uisongsel)
 {
   uisongselgtk_t    *uiw;
-//  GtkTreeModel      *model = NULL;
-//  GtkTreeIter       iter;
-//  UIWidget          *uiwidgetp;
 
   logProcBegin (LOG_PROC, "uisongselCreateRows");
 
   uiw = uisongsel->uiWidgetData;
-//  uiwidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
-//  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
   /* enough pre-allocated rows are needed so that if the windows is */
   /* maximized and the font size is not large, enough rows are available */
   /* to be displayed */
   for (int i = 0; i < STORE_ROWS; ++i) {
     uiTreeViewValueAppend (uiw->songselTree);
-//    gtk_list_store_append (GTK_LIST_STORE (model), &iter);
   }
   logProcEnd (LOG_PROC, "uisongselCreateRows", "");
 }

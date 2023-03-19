@@ -46,6 +46,7 @@ uitreedispAddDisplayColumns (uitree_t *uitree, slist_t *sellist, int col,
     if (tagdefs [tagidx].alignRight) {
       alignment = TREE_ALIGN_RIGHT;
     }
+
     if (tagdefs [tagidx].shortdisplayname != NULL) {
       title = tagdefs [tagidx].shortdisplayname;
     } else {
@@ -77,7 +78,7 @@ uitreedispAddDisplayColumns (uitree_t *uitree, slist_t *sellist, int col,
           TREE_COL_TYPE_END);
     }
 
-    col++;
+    ++col;
   }
 
   return;

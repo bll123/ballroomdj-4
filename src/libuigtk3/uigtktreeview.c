@@ -656,8 +656,6 @@ uiTreeViewSetValues (uitree_t *uitree, ...)
     gtk_list_store_set_valist (store, &uitree->selectiter, args);
   }
   va_end (args);
-  /* the value iter is used on a line by line basis */
-  uitree->valueiterset = false;
 }
 
 int
@@ -973,8 +971,8 @@ uiTreeViewSelectSet (uitree_t *uitree, int row)
 void
 uiTreeViewValueIteratorSet (uitree_t *uitree, int row)
 {
-  char        tbuff [40];
-//  GtkTreePath *path = NULL;
+  char    tbuff [40];
+  bool    valid = false;
 
   uitree->valueiterset = false;
 
@@ -983,19 +981,16 @@ uiTreeViewValueIteratorSet (uitree_t *uitree, int row)
   }
 
   snprintf (tbuff, sizeof (tbuff), "%d", row);
-//  path = gtk_tree_path_new_from_string (tbuff);
-//  mdextalloc (path);
-//  if (path != NULL) {
-  {
-    bool    valid = false;
-
-    valid = gtk_tree_model_get_iter_from_string (uitree->model, &uitree->valueiter, tbuff);
-    if (valid) {
-      uitree->valueiterset = true;
-    }
-//    mdextfree (path);
-//    gtk_tree_path_free (path);
+  valid = gtk_tree_model_get_iter_from_string (uitree->model, &uitree->valueiter, tbuff);
+  if (valid) {
+    uitree->valueiterset = true;
   }
+}
+
+void
+uiTreeViewValueIteratorClear (uitree_t *uitree)
+{
+  uitree->valueiterset = false;
 }
 
 /* internal routines */

@@ -97,5 +97,6 @@ char *uiTreeViewGetValueStr (uitree_t *uitree, int col);
 void  uiTreeViewForeach (uitree_t *uitree, callback_t *cb);
 void  uiTreeViewSelectSet (uitree_t *uitree, int row);
 void  uiTreeViewValueIteratorSet (uitree_t *uitree, int row);
+void  uiTreeViewValueIteratorClear (uitree_t *uitree);
 
 #endif /* INC_UITREEVIEW_H */

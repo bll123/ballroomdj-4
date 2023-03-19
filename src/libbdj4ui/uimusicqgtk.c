@@ -88,8 +88,6 @@ typedef struct uimusicqgtk {
   GtkTreeViewColumn *favColumn;
   callback_t        *callbacks [UIMUSICQ_CB_MAX];
   uibutton_t        *buttons [UIMUSICQ_BUTTON_MAX];
-//  GtkTreeModel      *model;
-//  GtkTreeIter       *iter;
   int               *typelist;
   uikey_t           *uikey;
   int               colcount;        // for the display type callback
@@ -482,7 +480,6 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
     logProcEnd (LOG_PROC, "uimusicqMusicQueueSetSelected", "count != 1");
     return;
   }
-//  valid = gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
 
   switch (which) {
     case UIMUSICQ_SEL_CURR: {
@@ -490,17 +487,14 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
     }
     case UIMUSICQ_SEL_PREV: {
       uiTreeViewSelectPrevious (uiw->musicqTree);
-//      valid = gtk_tree_model_iter_previous (model, &iter);
       break;
     }
     case UIMUSICQ_SEL_NEXT: {
       uiTreeViewSelectNext (uiw->musicqTree);
-//      valid = gtk_tree_model_iter_next (model, &iter);
       break;
     }
     case UIMUSICQ_SEL_TOP: {
       uiTreeViewSelectFirst (uiw->musicqTree);
-//      valid = gtk_tree_model_get_iter_first (model, &iter);
       break;
     }
   }
@@ -856,9 +850,6 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
     }
     uimusicqSetMusicqDisplay (uimusicq, song, ci);
 
-//    if (valid) {
-//      valid = gtk_tree_model_iter_next (model, &iter);
-//    }
     ++row;
   }
 
@@ -901,8 +892,6 @@ uimusicqSetMusicqDisplay (uimusicq_t *uimusicq, song_t *song, int ci)
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->ui [ci].dispselType);
   uimusicq->cbci = ci;
-//  uiw->model = model;
-//  uiw->iter = iter;
   uisongSetDisplayColumns (sellist, song, MUSICQ_COL_MAX,
       uimusicqSetMusicqDisplayCallback, uimusicq);
 }
@@ -1386,10 +1375,6 @@ uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp)
 {
   int           ci;
   uimusicqinternal_t *uiw;
-//  UIWidget      *uiwidgetp;
-//  GtkTreeModel  *model = NULL;
-//  GtkTreeIter   iter;
-//  char          tmp [40];
 
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
@@ -1400,31 +1385,15 @@ uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp)
   if (uimusicq->ui [ci].prevSelection < 0) {
     return;
   }
-  if (uimusicq->ui [ci].prevSelection == MUSICQ_FORCE_LAST) {
-    return;
-  }
   if (uimusicq->ui [ci].prevSelection >= uimusicq->ui [ci].count) {
     return;
   }
 
-//  uiwidgetp = uiTreeViewGetUIWidget (uiw->musicqTree);
-//  if (uiwidgetp == NULL) {
-//    return;
-//  }
-//  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-//  if (model == NULL) {
-//    return;
-//  }
-
-//  snprintf (tmp, sizeof (tmp), "%d", uimusicq->ui [ci].prevSelection);
-//  gtk_tree_model_get_iter_from_string (model, &iter, tmp);
-//  uiTreeViewSelectSave (uiw->musicqTree);
-//fprintf (stderr, "%s call select-set ccc %d\n", uimusicq->tag, uimusicq->ui [ci].prevSelection);
-//  uiTreeViewSelectSet (uiw->musicqTree, uimusicq->ui [ci].prevSelection);
-//  uiTreeViewSetValues (uiw->musicqTree,
-//      MUSICQ_COL_DISP_IDX_COLOR_SET, (treebool_t) disp,
-//      TREE_VALUE_END);
-//  uiTreeViewSelectRestore (uiw->musicqTree);
+  uiTreeViewValueIteratorSet (uiw->musicqTree, uimusicq->ui [ci].prevSelection);
+  uiTreeViewSetValues (uiw->musicqTree,
+      MUSICQ_COL_DISP_IDX_COLOR_SET, (treebool_t) disp,
+      TREE_VALUE_END);
+  uiTreeViewValueIteratorClear (uiw->musicqTree);
 }
 
 static void
