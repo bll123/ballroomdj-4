@@ -20,7 +20,7 @@ add_library (libbdj4ui SHARED
   uilevel.c
   uimusicq.c
   uimusicqcommon.c
-  uimusicqgtk.c
+  uimusicqui.c
   uinbutil.c
   uiplayer.c
   uirating.c
@@ -28,11 +28,11 @@ add_library (libbdj4ui SHARED
   uiselectfile.c
   uisong.c
   uisongedit.c
-  uisongeditgtk.c
+  uisongeditui.c
   uisongfilter.c
   uisongsel.c
   uisongselcommon.c
-  uisongselgtk.c
+  uisongselui.c
   uistatus.c
   uitreedisp.c
   uiutils.c
