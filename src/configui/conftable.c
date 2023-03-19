@@ -53,7 +53,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
   uiBoxPackStartExpand (&mhbox, &scwindow);
 
   gui->tables [id].uitree = uiCreateTreeView ();
-  uiwidgetp = uiTreeViewGetUIWidget (gui->tables [id].uitree);
+  uiwidgetp = uiTreeViewGetWidget (gui->tables [id].uitree);
   gui->tables [id].flags = flags;
 
   uiWidgetSetMarginStart (uiwidgetp, 8);
@@ -74,7 +74,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
         /* CONTEXT: configuration: table edit: button: move selection up */
         _("Move Up"), "button_up");
     gui->tables [id].buttons [CONFUI_BUTTON_TABLE_UP] = uibutton;
-    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiwidgetp = uiButtonGetWidget (uibutton);
     uiBoxPackStart (&bvbox, uiwidgetp);
 
     gui->tables [id].callbacks [CONFUI_TABLE_CB_DOWN] = callbackInit (
@@ -84,7 +84,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
         /* CONTEXT: configuration: table edit: button: move selection down */
         _("Move Down"), "button_down");
     gui->tables [id].buttons [CONFUI_BUTTON_TABLE_DOWN] = uibutton;
-    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiwidgetp = uiButtonGetWidget (uibutton);
     uiBoxPackStart (&bvbox, uiwidgetp);
   }
 
@@ -95,7 +95,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
       /* CONTEXT: configuration: table edit: button: delete selection */
       _("Delete"), "button_remove");
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_DELETE] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackStart (&bvbox, uiwidgetp);
 
   gui->tables [id].callbacks [CONFUI_TABLE_CB_ADD] = callbackInit (
@@ -105,7 +105,7 @@ confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
       /* CONTEXT: configuration: table edit: button: add new selection */
       _("Add New"), "button_add");
   gui->tables [id].buttons [CONFUI_BUTTON_TABLE_ADD] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackStart (&bvbox, uiwidgetp);
 
   logProcEnd (LOG_PROC, "confuiMakeItemTable", "");

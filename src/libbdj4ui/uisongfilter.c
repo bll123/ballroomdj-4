@@ -512,7 +512,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_SEARCH], &uiwidget);
 
   uiEntryCreate (uisf->searchentry);
-  uiwidgetp = uiEntryGetUIWidget (uisf->searchentry);
+  uiwidgetp = uiEntryGetWidget (uisf->searchentry);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiSizeGroupAdd (&sgA, uiwidgetp);
@@ -616,7 +616,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiutilsUIWidgetCopy (&uisf->labels [UISF_LABEL_PLAY_STATUS], &uiwidget);
 
     uisf->playstatusswitch = uiCreateSwitch (uisf->dfltpbflag);
-    uiBoxPackStart (&hbox, uiSwitchGetUIWidget (uisf->playstatusswitch));
+    uiBoxPackStart (&hbox, uiSwitchGetWidget (uisf->playstatusswitch));
   }
 
   /* the dialog doesn't have any space above the buttons */

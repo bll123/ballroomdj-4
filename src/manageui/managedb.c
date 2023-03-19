@@ -192,7 +192,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwidget_t *vboxp)
       nlistGetCount (managedb->dblist), 30,
       managedb->dblist, NULL, NULL);
   uiSpinboxTextSetValue (managedb->dbspinbox, MANAGE_DB_CHECK_NEW);
-  uiwidgetp = uiSpinboxGetUIWidget (managedb->dbspinbox);
+  uiwidgetp = uiSpinboxGetWidget (managedb->dbspinbox);
   managedb->callbacks [MDB_CB_DB_CHG] = callbackInit (
       manageDbChg, managedb, NULL);
   uiSpinboxTextSetValueChangedCallback (managedb->dbspinbox,
@@ -227,7 +227,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwidget_t *vboxp)
 
   uiEntryCreate (managedb->dbtopdir);
   uiEntrySetValue (managedb->dbtopdir, bdjoptGetStr (OPT_M_DIR_MUSIC));
-  uiwidgetp = uiEntryGetUIWidget (managedb->dbtopdir);
+  uiwidgetp = uiEntryGetWidget (managedb->dbtopdir);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
@@ -237,7 +237,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwidget_t *vboxp)
   managedb->topdirsel = uiCreateButton (
       managedb->callbacks [MDB_CB_TOPDIR_SEL], "", NULL);
   uiButtonSetImageIcon (managedb->topdirsel, "folder");
-  uiwidgetp = uiButtonGetUIWidget (managedb->topdirsel);
+  uiwidgetp = uiButtonGetWidget (managedb->topdirsel);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   /* buttons */
@@ -253,7 +253,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwidget_t *vboxp)
   managedb->dbstart = uiCreateButton (managedb->callbacks [MDB_CB_START],
       /* CONTEXT: update database: button to start the database update process */
       _("Start"), NULL);
-  uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
+  uiwidgetp = uiButtonGetWidget (managedb->dbstart);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   managedb->callbacks [MDB_CB_STOP] = callbackInit (
@@ -261,7 +261,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwidget_t *vboxp)
   managedb->dbstop = uiCreateButton (managedb->callbacks [MDB_CB_STOP],
       /* CONTEXT: update database: button to stop the database update process */
       _("Stop"), NULL);
-  uiwidgetp = uiButtonGetUIWidget (managedb->dbstop);
+  uiwidgetp = uiButtonGetWidget (managedb->dbstop);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
 
@@ -304,7 +304,7 @@ manageDbChg (void *udata)
     if (nval == MANAGE_DB_REBUILD) {
       uiWidgetSetClass (&managedb->dbhelpdisp, ACCENT_CLASS);
     }
-    uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
+    uiwidgetp = uiButtonGetWidget (managedb->dbstart);
     uiWidgetSetState (uiwidgetp, UIWIDGET_ENABLE);
     if (nval == MANAGE_DB_UPD_FROM_ITUNES) {
       if (! itunesConfigured ()) {
@@ -313,7 +313,7 @@ manageDbChg (void *udata)
         /* CONTEXT: manage ui: status message: itunes is not configured */
         snprintf (tbuff, sizeof (tbuff), _("%s is not configured."), ITUNES_NAME);
         uiLabelSetText (managedb->statusMsg, tbuff);
-        uiwidgetp = uiButtonGetUIWidget (managedb->dbstart);
+        uiwidgetp = uiButtonGetWidget (managedb->dbstart);
         uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
       }
     }

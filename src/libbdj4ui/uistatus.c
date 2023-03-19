@@ -60,7 +60,7 @@ uistatusSpinboxCreate (uiwidget_t *boxp, bool allflag)
       statusGetCount (uistatus->status),
       maxw, NULL, NULL, uistatusStatusGet);
 
-  uiBoxPackStart (boxp, uiSpinboxGetUIWidget (uistatus->spinbox));
+  uiBoxPackStart (boxp, uiSpinboxGetWidget (uistatus->spinbox));
 
   return uistatus;
 }
@@ -110,7 +110,7 @@ uistatusSetState (uistatus_t *uistatus, int state)
 void
 uistatusSizeGroupAdd (uistatus_t *uistatus, uiwidget_t *sg)
 {
-  uiSizeGroupAdd (sg, uiSpinboxGetUIWidget (uistatus->spinbox));
+  uiSizeGroupAdd (sg, uiSpinboxGetWidget (uistatus->spinbox));
 }
 
 void

@@ -104,7 +104,7 @@ uiSwitchGetValue (uiswitch_t *uiswitch)
 }
 
 uiwidget_t *
-uiSwitchGetUIWidget (uiswitch_t *uiswitch)
+uiSwitchGetWidget (uiswitch_t *uiswitch)
 {
   if (uiswitch == NULL) {
     return NULL;

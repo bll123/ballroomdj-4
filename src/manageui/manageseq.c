@@ -146,10 +146,10 @@ manageBuildUISequence (manageseq_t *manageseq, uiwidget_t *vboxp)
   uiEntryCreate (manageseq->seqname);
   uiEntrySetValidate (manageseq->seqname, manageValidateName,
       manageseq->statusMsg, UIENTRY_IMMEDIATE);
-  uiWidgetSetClass (uiEntryGetUIWidget (manageseq->seqname), ACCENT_CLASS);
+  uiWidgetSetClass (uiEntryGetWidget (manageseq->seqname), ACCENT_CLASS);
   /* CONTEXT: sequence editor: default name for a new sequence */
   manageSetSequenceName (manageseq, _("New Sequence"));
-  uiBoxPackStart (&hbox, uiEntryGetUIWidget (manageseq->seqname));
+  uiBoxPackStart (&hbox, uiEntryGetWidget (manageseq->seqname));
 
   manageseq->seqduallist = uiCreateDualList (vboxp,
       DUALLIST_FLAGS_MULTIPLE | DUALLIST_FLAGS_PERSISTENT,

@@ -432,7 +432,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       bpmcounter->callbacks [BPMCOUNT_CB_CLICK],
       NULL, "bluebox");
   bpmcounter->buttons [BPMCOUNT_BUTTON_BLUEBOX] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiButtonSetReliefNone (uibutton);
   uiButtonSetFlat (uibutton);
   uiWidgetDisableFocus (uiwidgetp);
@@ -450,7 +450,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       /* CONTEXT: bpm counter: save button */
       _("Save"), NULL);
   bpmcounter->buttons [BPMCOUNT_BUTTON_SAVE] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
@@ -461,7 +461,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       /* CONTEXT: bpm counter: reset button */
       _("Reset"), NULL);
   bpmcounter->buttons [BPMCOUNT_BUTTON_RESET] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
@@ -470,7 +470,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       /* CONTEXT: bpm counter: close button */
       _("Close"), NULL);
   bpmcounter->buttons [BPMCOUNT_BUTTON_CLOSE] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiBoxPackEnd (&hbox, uiwidgetp);
 

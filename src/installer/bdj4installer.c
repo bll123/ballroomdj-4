@@ -638,7 +638,7 @@ installerBuildUI (installer_t *installer)
 
   uiEntryCreate (installer->targetEntry);
   uiEntrySetValue (installer->targetEntry, installer->target);
-  uiwidgetp = uiEntryGetUIWidget (installer->targetEntry);
+  uiwidgetp = uiEntryGetWidget (installer->targetEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
@@ -651,7 +651,7 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_TARGET_DIR],
       "", NULL);
   installer->buttons [INST_BUTTON_TARGET_DIR] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -705,7 +705,7 @@ installerBuildUI (installer_t *installer)
 
   uiEntryCreate (installer->bdj3locEntry);
   installerSetBDJ3LocEntry (installer, installer->bdj3loc);
-  uiwidgetp = uiEntryGetUIWidget (installer->bdj3locEntry);
+  uiwidgetp = uiEntryGetWidget (installer->bdj3locEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
@@ -718,7 +718,7 @@ installerBuildUI (installer_t *installer)
       installer->callbacks [INST_CB_BDJ3LOC_DIR],
       "", NULL);
   installer->buttons [INST_BUTTON_BDJ3LOC_DIR] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -796,7 +796,7 @@ installerBuildUI (installer_t *installer)
       /* CONTEXT: installer: exits the installer */
       _("Exit"), NULL);
   installer->buttons [INST_BUTTON_EXIT] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   installer->callbacks [INST_CB_INSTALL] = callbackInit (
@@ -806,7 +806,7 @@ installerBuildUI (installer_t *installer)
       /* CONTEXT: installer: start the installation process */
       _("Install"), NULL);
   installer->buttons [INST_BUTTON_INSTALL] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   installer->disptb = uiTextBoxCreate (250, INST_HL_COLOR);

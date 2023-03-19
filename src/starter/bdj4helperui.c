@@ -223,14 +223,14 @@ helperBuildUI (helperui_t  *helper)
       /* CONTEXT: helperui: proceed to the next step */
       _("Next"), NULL);
   helper->buttons [HELPER_BUTTON_NEXT] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   uibutton = uiCreateButton (helper->closeCallback,
       /* CONTEXT: helperui: close the helper window */
       _("Close"), NULL);
   helper->buttons [HELPER_BUTTON_CLOSE] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   uiWindowSetDefaultSize (&helper->window, 1100, 400);

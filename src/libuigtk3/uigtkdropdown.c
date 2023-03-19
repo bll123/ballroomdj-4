@@ -120,7 +120,7 @@ uiDropDownCreate (uiwidget_t *parentwin,
   dropdown->title = mdstrdup (title);
   uiDropDownButtonCreate (dropdown);
   uiDropDownWindowCreate (dropdown, uicb, udata);
-  return uiButtonGetUIWidget (dropdown->button);
+  return uiButtonGetWidget (dropdown->button);
 }
 
 uiwidget_t *
@@ -159,7 +159,7 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   internalidx = 0;
 
   dropdown->maxwidth = slistGetMaxKeyWidth (list);
-  uitreewidgetp = uiTreeViewGetUIWidget (dropdown->uitree);
+  uitreewidgetp = uiTreeViewGetWidget (dropdown->uitree);
 
   snprintf (tbuff, sizeof (tbuff), "%-*s",
       dropdown->maxwidth, dropdown->title);
@@ -234,7 +234,7 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   internalidx = 0;
 
   dropdown->maxwidth = slistGetMaxKeyWidth (list);
-  uitreewidgetp = uiTreeViewGetUIWidget (dropdown->uitree);
+  uitreewidgetp = uiTreeViewGetWidget (dropdown->uitree);
 
   snprintf (tbuff, sizeof (tbuff), "%-*s",
       dropdown->maxwidth, dropdown->title);
@@ -363,7 +363,7 @@ uiDropDownWindowShow (void *udata)
   bx = 0;
   by = 0;
   uiWindowGetPosition (dropdown->parentwin, &x, &y, &ws);
-  uiwidgetp = uiButtonGetUIWidget (dropdown->button);
+  uiwidgetp = uiButtonGetWidget (dropdown->button);
   if (uiutilsUIWidgetSet (uiwidgetp)) {
     uiWidgetGetPosition (uiwidgetp, &bx, &by);
   }
@@ -398,7 +398,7 @@ uiDropDownButtonCreate (uidropdown_t *dropdown)
       "button_down_small");
   uiButtonAlignLeft (dropdown->button);
   uiButtonSetImagePosRight (dropdown->button);
-  uiwidgetp = uiButtonGetUIWidget (dropdown->button);
+  uiwidgetp = uiButtonGetWidget (dropdown->button);
   uiWidgetSetMarginTop (uiwidgetp, 1);
   uiWidgetSetMarginStart (uiwidgetp, 1);
 }
@@ -416,7 +416,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
 
   dropdown->closecb = callbackInit ( uiDropDownClose, dropdown, NULL);
   uiCreateDialogWindow (&dropdown->window, dropdown->parentwin,
-      uiButtonGetUIWidget (dropdown->button), dropdown->closecb, "");
+      uiButtonGetWidget (dropdown->button), dropdown->closecb, "");
 
   uiCreateVertBox (&uiwidget);
   uiWidgetExpandHoriz (&uiwidget);
@@ -431,7 +431,7 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   uiBoxPackStartExpand (&vbox, &uiscwin);
 
   dropdown->uitree = uiCreateTreeView ();
-  uiwidgetp = uiTreeViewGetUIWidget (dropdown->uitree);
+  uiwidgetp = uiTreeViewGetWidget (dropdown->uitree);
   if (G_IS_OBJECT (uiwidgetp->widget)) {
     g_object_ref_sink (G_OBJECT (uiwidgetp->widget));
   }
@@ -461,7 +461,7 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
   if (dropdown == NULL || dropdown->uitree == NULL) {
     return;
   }
-  uitreewidgetp = uiTreeViewGetUIWidget (dropdown->uitree);
+  uitreewidgetp = uiTreeViewGetWidget (dropdown->uitree);
   if (uitreewidgetp->widget == NULL) {
     return;
   }
@@ -513,7 +513,7 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
   char          tbuff [200];
   uiwidget_t    *uitreewidgetp;
 
-  uitreewidgetp = uiTreeViewGetUIWidget (dropdown->uitree);
+  uitreewidgetp = uiTreeViewGetWidget (dropdown->uitree);
 
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitreewidgetp->widget));
   if (gtk_tree_model_get_iter (model, &iter, path)) {

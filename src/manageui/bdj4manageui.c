@@ -929,7 +929,7 @@ manageBuildUISongListEditor (manageui_t *manage)
       /* CONTEXT: managementui: config: button: add the selected songs to the song list */
       _("Select"), "button_left");
   manage->selectButton = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackStart (&vbox, uiwidgetp);
 
   uiwidgetp = uisongselBuildUI (manage->slezsongsel, &manage->window);
@@ -2344,7 +2344,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiSpinboxTimeCreate (manage->cfpltmlimit, manage, NULL);
   uiSpinboxTimeSetValue (manage->cfpltmlimit, 3 * 60 * 1000);
   uiSpinboxSetRange (manage->cfpltmlimit, 0.0, 600000.0);
-  uiwidgetp = uiSpinboxGetUIWidget (manage->cfpltmlimit);
+  uiwidgetp = uiSpinboxGetWidget (manage->cfpltmlimit);
   uiBoxPackStart (&hbox, uiwidgetp);
   logProcEnd (LOG_PROC, "manageSongListCFPLCreateDialog", "");
 }

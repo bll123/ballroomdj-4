@@ -191,7 +191,7 @@ uiTreeViewRadioSetRow (uitree_t *uitree, int row)
 }
 
 uiwidget_t *
-uiTreeViewGetUIWidget (uitree_t *uitree)
+uiTreeViewGetWidget (uitree_t *uitree)
 {
   if (uitree == NULL) {
     return NULL;

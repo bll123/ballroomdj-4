@@ -60,7 +60,7 @@ uilevelSpinboxCreate (uiwidget_t *boxp, bool allflag)
       levelGetCount (uilevel->levels),
       maxw, NULL, NULL, uilevelLevelGet);
 
-  uiBoxPackStart (boxp, uiSpinboxGetUIWidget (uilevel->spinbox));
+  uiBoxPackStart (boxp, uiSpinboxGetWidget (uilevel->spinbox));
 
   return uilevel;
 }
@@ -110,7 +110,7 @@ uilevelSetState (uilevel_t *uilevel, int state)
 void
 uilevelSizeGroupAdd (uilevel_t *uilevel, uiwidget_t *sg)
 {
-  uiSizeGroupAdd (sg, uiSpinboxGetUIWidget (uilevel->spinbox));
+  uiSizeGroupAdd (sg, uiSpinboxGetWidget (uilevel->spinbox));
 }
 
 void

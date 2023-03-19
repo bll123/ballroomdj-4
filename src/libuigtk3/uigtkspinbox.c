@@ -406,7 +406,7 @@ uiSpinboxAddClass (const char *classnm, const char *color)
 }
 
 uiwidget_t *
-uiSpinboxGetUIWidget (uispinbox_t *spinbox)
+uiSpinboxGetWidget (uispinbox_t *spinbox)
 {
   return &spinbox->uispinbox;
 }

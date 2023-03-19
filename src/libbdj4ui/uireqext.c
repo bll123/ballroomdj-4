@@ -244,7 +244,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
 
   uiEntryCreate (uireqext->audioFileEntry);
   uiEntrySetValue (uireqext->audioFileEntry, "");
-  uiwidgetp = uiEntryGetUIWidget (uireqext->audioFileEntry);
+  uiwidgetp = uiEntryGetWidget (uireqext->audioFileEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
@@ -257,7 +257,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
       uireqext->callbacks [UIREQEXT_CB_AUDIO_FILE],
       "", NULL);
   uireqext->audioFileDialogButton = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -272,7 +272,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
 
   uiEntryCreate (uireqext->artistEntry);
   uiEntrySetValue (uireqext->artistEntry, "");
-  uiwidgetp = uiEntryGetUIWidget (uireqext->artistEntry);
+  uiwidgetp = uiEntryGetWidget (uireqext->artistEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiEntrySetValidate (uireqext->artistEntry, uireqextValidateArtist,
@@ -288,7 +288,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
 
   uiEntryCreate (uireqext->titleEntry);
   uiEntrySetValue (uireqext->titleEntry, "");
-  uiwidgetp = uiEntryGetUIWidget (uireqext->titleEntry);
+  uiwidgetp = uiEntryGetWidget (uireqext->titleEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiEntrySetValidate (uireqext->titleEntry, uireqextValidateTitle,

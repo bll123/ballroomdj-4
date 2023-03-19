@@ -546,7 +546,7 @@ pluiBuildUI (playerui_t *plui)
       /* CONTEXT: playerui: select the current queue for playback */
       _("Set Queue for Playback"), NULL);
   plui->setPlaybackButton = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiNotebookSetActionWidget (&plui->notebook, uiwidgetp);
   uiWidgetShowAll (uiwidgetp);
 
@@ -1123,7 +1123,7 @@ pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum)
 
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
 
-  uiwidgetp = uiButtonGetUIWidget (plui->setPlaybackButton);
+  uiwidgetp = uiButtonGetWidget (plui->setPlaybackButton);
   uiWidgetHide (uiwidgetp);
   if (tabid == UI_TAB_MUSICQ) {
     if (nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES)) {

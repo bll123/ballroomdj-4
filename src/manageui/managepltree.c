@@ -123,7 +123,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwidget_t *vboxp,
   uiBoxPackStartExpand (vboxp, &scwindow);
 
   managepltree->uitree = uiCreateTreeView ();
-  uitreewidgetp = uiTreeViewGetUIWidget (managepltree->uitree);
+  uitreewidgetp = uiTreeViewGetWidget (managepltree->uitree);
 
   managepltree->callbacks [MPLTREE_CB_CHANGED] = callbackInitLong (
       managePlaylistTreeChanged, managepltree);

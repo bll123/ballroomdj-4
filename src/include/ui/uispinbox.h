@@ -51,7 +51,7 @@ bool  uiSpinboxIsChanged (uispinbox_t *spinbox);
 void  uiSpinboxResetChanged (uispinbox_t *spinbox);
 void  uiSpinboxAlignRight (uispinbox_t *spinbox);
 void  uiSpinboxAddClass (const char *classnm, const char *color);
-uiwidget_t * uiSpinboxGetUIWidget (uispinbox_t *spinbox);
+uiwidget_t * uiSpinboxGetWidget (uispinbox_t *spinbox);
 void uiSpinboxTextSetValueChangedCallback (uispinbox_t *spinbox, callback_t *uicb);
 void uiSpinboxTimeSetValueChangedCallback (uispinbox_t *spinbox, callback_t *uicb);
 void uiSpinboxSetValueChangedCallback (uiwidget_t *uiwidget, callback_t *uicb);

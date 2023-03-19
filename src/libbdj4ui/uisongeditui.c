@@ -325,7 +325,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       /* CONTEXT: song editor : first song */
       _("First"), NULL);
   uiw->buttons [UISONGEDIT_BUTTON_FIRST] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   uiw->callbacks [UISONGEDIT_CB_PREV] = callbackInit (
@@ -335,7 +335,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       _("Previous"), NULL);
   uiw->buttons [UISONGEDIT_BUTTON_PREV] = uibutton;
   uiButtonSetRepeat (uibutton, UISONGEDIT_REPEAT_TIME);
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   uiw->callbacks [UISONGEDIT_CB_NEXT] = callbackInit (
@@ -345,7 +345,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       _("Next"), NULL);
   uiw->buttons [UISONGEDIT_BUTTON_NEXT] = uibutton;
   uiButtonSetRepeat (uibutton, UISONGEDIT_REPEAT_TIME);
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   uiw->callbacks [UISONGEDIT_CB_PLAY] = callbackInit (
@@ -354,7 +354,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       /* CONTEXT: song editor : play song */
       _("Play"), NULL);
   uiw->buttons [UISONGEDIT_BUTTON_PLAY] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   uiw->callbacks [UISONGEDIT_CB_SAVE] = callbackInit (
@@ -363,7 +363,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       /* CONTEXT: song editor : save data */
       _("Save"), NULL);
   uiw->buttons [UISONGEDIT_BUTTON_SAVE] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   uiCreateLabel (&uiwidget, "");
@@ -402,7 +402,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       uiw->callbacks [UISONGEDIT_CB_COPY_TEXT],
       "", NULL);
   uiw->buttons [UISONGEDIT_BUTTON_COPY_TEXT] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiButtonSetImageIcon (uibutton, "edit-copy");
   uiWidgetSetMarginStart (uiwidgetp, 1);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -1172,7 +1172,7 @@ uisongeditAddEntry (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey)
   uiEntrySetValidate (entryp,
       uisongeditEntryChangedCallback, uiw, UIENTRY_IMMEDIATE);
 
-  uiwidgetp = uiEntryGetUIWidget (entryp);
+  uiwidgetp = uiEntryGetWidget (entryp);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiSizeGroupAdd (&uiw->sgentry, uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
@@ -1248,7 +1248,7 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey
   uiSpinboxTimeSetValueChangedCallback (sbp,
       uiw->callbacks [UISONGEDIT_CB_CHANGED]);
 
-  uiwidgetp = uiSpinboxGetUIWidget (sbp);
+  uiwidgetp = uiSpinboxGetWidget (sbp);
   uiSizeGroupAdd (&uiw->sgsbtime, uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   logProcEnd (LOG_PROC, "uisongeditAddSpinboxTime", "");

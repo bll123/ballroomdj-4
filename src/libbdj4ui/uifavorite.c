@@ -41,7 +41,7 @@ uifavoriteSpinboxCreate (uiwidget_t *boxp)
   uifavorite = mdmalloc (sizeof (uifavorite_t));
   uifavorite->songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
   uifavorite->spinbox = uiSpinboxInit ();
-  uispinboxp = uiSpinboxGetUIWidget (uifavorite->spinbox);
+  uispinboxp = uiSpinboxGetWidget (uifavorite->spinbox);
   uiSpinboxTextCreate (uifavorite->spinbox, uifavorite);
 
   if (! initialized) {
@@ -132,9 +132,9 @@ uifavoriteFavoriteGet (void *udata, int idx)
   for (int i = 0; i < count; ++i) {
     name = songFavoriteGetStr (uifavorite->songfav, i, SONGFAV_NAME);
     if (i == idx) {
-      uiWidgetSetClass (uiSpinboxGetUIWidget (uifavorite->spinbox), name);
+      uiWidgetSetClass (uiSpinboxGetWidget (uifavorite->spinbox), name);
     } else {
-      uiWidgetRemoveClass (uiSpinboxGetUIWidget (uifavorite->spinbox), name);
+      uiWidgetRemoveClass (uiSpinboxGetWidget (uifavorite->spinbox), name);
     }
   }
   return songFavoriteGetStr (uifavorite->songfav, idx, SONGFAV_DISPLAY);

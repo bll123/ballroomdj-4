@@ -327,7 +327,7 @@ altsetupBuildUI (altsetup_t *altsetup)
 
   uiEntryCreate (altsetup->targetEntry);
   uiEntrySetValue (altsetup->targetEntry, altsetup->target);
-  uiwidgetp = uiEntryGetUIWidget (altsetup->targetEntry);
+  uiwidgetp = uiEntryGetWidget (altsetup->targetEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (&hbox, uiwidgetp);
@@ -340,7 +340,7 @@ altsetupBuildUI (altsetup_t *altsetup)
       altsetup->callbacks [ALT_CB_TARGET_DIR],
       "", NULL);
   altsetup->buttons [ALT_BUTTON_TARGET_DIR] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -356,7 +356,7 @@ altsetupBuildUI (altsetup_t *altsetup)
 
   uiEntryCreate (altsetup->nameEntry);
   uiEntrySetValue (altsetup->nameEntry, "BDJ4 B");
-  uiwidgetp = uiEntryGetUIWidget (altsetup->nameEntry);
+  uiwidgetp = uiEntryGetWidget (altsetup->nameEntry);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
@@ -389,7 +389,7 @@ altsetupBuildUI (altsetup_t *altsetup)
       /* CONTEXT: set up alternate: exits the altsetup */
       _("Exit"), NULL);
   altsetup->buttons [ALT_BUTTON_EXIT] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   altsetup->callbacks [ALT_CB_START] = callbackInit (
@@ -399,7 +399,7 @@ altsetupBuildUI (altsetup_t *altsetup)
       /* CONTEXT: set up alternate: start the set-up process */
       _("Start"), NULL);
   altsetup->buttons [ALT_BUTTON_START] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   altsetup->disptb = uiTextBoxCreate (200, NULL);

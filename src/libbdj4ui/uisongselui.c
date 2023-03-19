@@ -261,7 +261,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
     uibutton = uiCreateButton (
         uiw->callbacks [SONGSEL_CB_SELECT], tbuff, NULL);
     uiw->buttons [SONGSEL_BUTTON_SELECT] = uibutton;
-    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiwidgetp = uiButtonGetWidget (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
   }
 
@@ -273,7 +273,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
         /* CONTEXT: song-selection: edit the selected song */
         _("Edit"), "button_edit");
     uiw->buttons [SONGSEL_BUTTON_EDIT] = uibutton;
-    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiwidgetp = uiButtonGetWidget (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
   }
 
@@ -285,7 +285,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
     uibutton = uiCreateButton (
         uiw->callbacks [SONGSEL_CB_QUEUE], tbuff, NULL);
     uiw->buttons [SONGSEL_BUTTON_QUEUE] = uibutton;
-    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiwidgetp = uiButtonGetWidget (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
 
     uiCreateLabel (&uiwidget, "");
@@ -303,7 +303,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
     uibutton = uiCreateButton (
         uiw->callbacks [SONGSEL_CB_PLAY], tbuff, NULL);
     uiw->buttons [SONGSEL_BUTTON_PLAY] = uibutton;
-    uiwidgetp = uiButtonGetUIWidget (uibutton);
+    uiwidgetp = uiButtonGetWidget (uibutton);
     uiBoxPackStart (&hbox, uiwidgetp);
   }
 
@@ -322,7 +322,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
       /* CONTEXT: song-selection: a button that starts the filters (narrowing down song selections) dialog */
       _("Filters"), NULL);
   uiw->buttons [SONGSEL_BUTTON_FILTER] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
   uiCreateHorizBox (&hbox);
@@ -343,7 +343,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
   uiBoxPackStartExpand (&vbox, &uiw->scrolledwin);
 
   uiw->songselTree = uiCreateTreeView ();
-  uitreewidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
+  uitreewidgetp = uiTreeViewGetWidget (uiw->songselTree);
   uiWidgetAlignHorizFill (uitreewidgetp);
   uiWidgetExpandHoriz (uitreewidgetp);
   uiWidgetExpandVert (uitreewidgetp);
@@ -426,7 +426,7 @@ uisongselClearData (uisongsel_t *uisongsel)
   logProcBegin (LOG_PROC, "uisongselClearData");
 
   uiw = uisongsel->uiWidgetData;
-  uiwidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
+  uiwidgetp = uiTreeViewGetWidget (uiw->songselTree);
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
   gtk_list_store_clear (GTK_LIST_STORE (model));
   /* having cleared the list, the rows must be re-created */
@@ -631,7 +631,7 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   }
   gtk_tree_selection_selected_foreach (uiw->sel,
       uisongselGetIter, uisongsel);
-  uiwidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
+  uiwidgetp = uiTreeViewGetWidget (uiw->songselTree);
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
   path = gtk_tree_model_get_path (model, &uiw->currIter);
   mdextalloc (path);
@@ -1111,7 +1111,7 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
     /* the step increment is useless */
     /* the page-size and upper can be used to determine */
     /* how many rows can be displayed */
-    uiwidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
+    uiwidgetp = uiTreeViewGetWidget (uiw->songselTree);
     adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uiwidgetp->widget));
     ps = gtk_adjustment_get_page_size (adjustment);
 
@@ -1596,7 +1596,7 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
     /* calling getSelectLocation() will set currIter */
     uisongselGetSelectLocation (uisongsel);
 
-    uiwidgetp = uiTreeViewGetUIWidget (uiw->songselTree);
+    uiwidgetp = uiTreeViewGetWidget (uiw->songselTree);
     model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
     path = gtk_tree_model_get_path (model, &uiw->currIter);
     mdextalloc (path);

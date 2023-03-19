@@ -563,7 +563,7 @@ starterBuildUI (startui_t  *starter)
       nlistGetCount (starter->proflist), starter->maxProfileWidth,
       starter->proflist, NULL, starterSetProfile);
   uiSpinboxTextSetValue (starter->profilesel, dispidx);
-  uiwidgetp = uiSpinboxGetUIWidget (starter->profilesel);
+  uiwidgetp = uiSpinboxGetWidget (starter->profilesel);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -589,7 +589,7 @@ starterBuildUI (startui_t  *starter)
       /* CONTEXT: starterui: button: starts the player user interface */
       _("Player"), NULL);
   starter->buttons [START_BUTTON_PLAYER] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiSizeGroupAdd (&sg, uiwidgetp);
@@ -603,7 +603,7 @@ starterBuildUI (startui_t  *starter)
       /* CONTEXT: starterui: button: starts the management user interface */
       _("Manage"), NULL);
   starter->buttons [START_BUTTON_MANAGE] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiSizeGroupAdd (&sg, uiwidgetp);
@@ -617,7 +617,7 @@ starterBuildUI (startui_t  *starter)
       /* CONTEXT: starterui: button: starts the configuration user interface */
       _("Configure"), NULL);
   starter->buttons [START_BUTTON_CONFIG] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiSizeGroupAdd (&sg, uiwidgetp);
@@ -631,7 +631,7 @@ starterBuildUI (startui_t  *starter)
       /* CONTEXT: starterui: button: support : support information */
       _("Support"), NULL);
   starter->buttons [START_BUTTON_SUPPORT] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiSizeGroupAdd (&sg, uiwidgetp);
@@ -643,7 +643,7 @@ starterBuildUI (startui_t  *starter)
       /* CONTEXT: starterui: button: exits BDJ4 (exits everything) */
       _("Exit"), NULL);
   starter->buttons [START_BUTTON_EXIT] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiSizeGroupAdd (&sg, uiwidgetp);
@@ -1349,7 +1349,7 @@ starterProcessSupport (void *udata)
       /* CONTEXT: starterui: basic support dialog: button: support option */
       _("Send Support Message"), NULL);
   starter->buttons [START_BUTTON_SEND_SUPPORT] = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   uiutilsUIWidgetCopy (&starter->supportDialog, &uidialog);
@@ -1682,7 +1682,7 @@ starterCreateSupportDialog (void *udata)
 
   starter->supportemail = uiEntryInit (50, 100);
   uiEntryCreate (starter->supportemail);
-  uiBoxPackStart (&hbox, uiEntryGetUIWidget (starter->supportemail));
+  uiBoxPackStart (&hbox, uiEntryGetWidget (starter->supportemail));
 
   /* line 2 */
   uiCreateHorizBox (&hbox);
@@ -1695,7 +1695,7 @@ starterCreateSupportDialog (void *udata)
 
   starter->supportsubject = uiEntryInit (50, 100);
   uiEntryCreate (starter->supportsubject);
-  uiBoxPackStart (&hbox, uiEntryGetUIWidget (starter->supportsubject));
+  uiBoxPackStart (&hbox, uiEntryGetWidget (starter->supportsubject));
 
   /* line 3 */
   /* CONTEXT: starterui: sending support message: message text */

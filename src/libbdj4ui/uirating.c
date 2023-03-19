@@ -60,7 +60,7 @@ uiratingSpinboxCreate (uiwidget_t *boxp, bool allflag)
       ratingGetCount (uirating->ratings),
       maxw, NULL, NULL, uiratingRatingGet);
 
-  uiBoxPackStart (boxp, uiSpinboxGetUIWidget (uirating->spinbox));
+  uiBoxPackStart (boxp, uiSpinboxGetWidget (uirating->spinbox));
 
   return uirating;
 }
@@ -110,7 +110,7 @@ uiratingSetState (uirating_t *uirating, int state)
 void
 uiratingSizeGroupAdd (uirating_t *uirating, uiwidget_t *sg)
 {
-  uiSizeGroupAdd (sg, uiSpinboxGetUIWidget (uirating->spinbox));
+  uiSizeGroupAdd (sg, uiSpinboxGetWidget (uirating->spinbox));
 }
 
 void

@@ -96,7 +96,7 @@ uiEntryClearIcon (uientry_t *entry)
 }
 
 uiwidget_t *
-uiEntryGetUIWidget (uientry_t *entry)
+uiEntryGetWidget (uientry_t *entry)
 {
   if (entry == NULL) {
     return NULL;

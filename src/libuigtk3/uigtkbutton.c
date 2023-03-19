@@ -100,7 +100,7 @@ uiButtonFree (uibutton_t *uibutton)
 }
 
 uiwidget_t *
-uiButtonGetUIWidget (uibutton_t *uibutton)
+uiButtonGetWidget (uibutton_t *uibutton)
 {
   if (uibutton == NULL) {
     return NULL;

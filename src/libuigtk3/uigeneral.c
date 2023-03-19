@@ -63,6 +63,6 @@ uiutilsUIWidgetCopy (uiwidget_t *target, uiwidget_t *source)
   if (source == NULL) {
     return;
   }
-  memcpy (target, source, sizeof (UIWidget));
+  memcpy (target, source, sizeof (uiwidget_t));
 }
 

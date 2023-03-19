@@ -150,7 +150,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiBoxPackStartExpand (&vbox, &scwindow);
 
   selectfile->selfiletree = uiCreateTreeView ();
-  uitreewidgetp = uiTreeViewGetUIWidget (selectfile->selfiletree);
+  uitreewidgetp = uiTreeViewGetWidget (selectfile->selfiletree);
   uiTreeViewDisableSingleClick (selectfile->selfiletree);
   uiWidgetAlignHorizFill (uitreewidgetp);
   uiWidgetAlignVertFill (uitreewidgetp);

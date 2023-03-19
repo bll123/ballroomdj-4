@@ -84,7 +84,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwidget_t *boxp,
   gui->uiitem [widx].callback = callbackInit (dialogFunc, gui, NULL);
   uibutton = uiCreateButton (gui->uiitem [widx].callback, "", NULL);
   gui->uiitem [widx].uibutton = uibutton;
-  uiwidgetp = uiButtonGetUIWidget (uibutton);
+  uiwidgetp = uiButtonGetWidget (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -235,7 +235,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   uiSpinboxTextSet (gui->uiitem [widx].spinbox, 0,
       nlistGetCount (list), maxWidth, list, keylist, NULL);
   uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, value);
-  uiwidgetp = uiSpinboxGetUIWidget (gui->uiitem [widx].spinbox);
+  uiwidgetp = uiSpinboxGetWidget (gui->uiitem [widx].spinbox);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   if (sgB != NULL) {
     uiSizeGroupAdd (sgB, uiwidgetp);
@@ -284,7 +284,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwidget_t *boxp,
     uiSpinboxSetRange (gui->uiitem [widx].spinbox, 0.0, 1440000.0);
   }
   uiSpinboxTimeSetValue (gui->uiitem [widx].spinbox, value);
-  uiwidgetp = uiSpinboxGetUIWidget (gui->uiitem [widx].spinbox);
+  uiwidgetp = uiSpinboxGetWidget (gui->uiitem [widx].spinbox);
   uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   if (sgB != NULL) {
@@ -371,7 +371,7 @@ confuiMakeItemSwitch (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   confuiMakeItemLabel (&hbox, sg, txt, indent);
 
   gui->uiitem [widx].uiswitch = uiCreateSwitch (value);
-  uiwidgetp = uiSwitchGetUIWidget (gui->uiitem [widx].uiswitch);
+  uiwidgetp = uiSwitchGetWidget (gui->uiitem [widx].uiswitch);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uiBoxPackStart (&hbox, uiwidgetp);
   uiBoxPackStart (boxp, &hbox);
@@ -497,7 +497,7 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
   confuiMakeItemLabel (boxp, sg, txt, indent);
   uiEntryCreate (gui->uiitem [widx].entry);
-  uiwidgetp = uiEntryGetUIWidget (gui->uiitem [widx].entry);
+  uiwidgetp = uiEntryGetWidget (gui->uiitem [widx].entry);
   uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   if (expand == CONFUI_EXPAND) {
