@@ -345,6 +345,10 @@ uiTreeViewAppendColumn (uitree_t *uitree, int widgettype,
         gtkcoltype = "foreground-set";
         break;
       }
+      case TREE_COL_TYPE_IMAGE: {
+        gtkcoltype = "pixbuf";
+        break;
+      }
       default: {
         fprintf (stderr, "ERR: unhandled column mode: %d\n", coltype);
         break;

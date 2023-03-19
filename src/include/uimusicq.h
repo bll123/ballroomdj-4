@@ -23,6 +23,8 @@ enum {
   UIMUSICQ_SEL_PREV,
   UIMUSICQ_SEL_NEXT,
   UIMUSICQ_SEL_TOP,
+  MUSICQ_NEW_DISP,
+  MUSICQ_UPD_DISP,
 };
 
 enum {
@@ -83,6 +85,7 @@ typedef struct uimusicq {
   int               cbci;
   bool              backupcreated : 1;
   bool              changed : 1;
+  bool              newflag : 1;
 } uimusicq_t;
 
 /* uimusicq.c */
@@ -115,13 +118,13 @@ void      uimusicqUIMainLoop (uimusicq_t *uimuiscq);
 void      uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx);
 ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);
 void      uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);
-void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
 void      uimusicqRemoveHandler (GtkButton *b, gpointer udata);
 void      uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx);
 long      uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx);
 void      uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc);
 bool      uimusicqTruncateQueueCallback (void *udata);
 void      uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active);
+void      uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate, int newdispflag);
 
 /* uimusicqcommon.c */
 void  uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx, int count);
@@ -137,6 +140,7 @@ void  uimusicqTruncateQueue (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);
 void  uimusicqQueue (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);
 void  uimusicqSetPeerFlag (uimusicq_t *uimusicq, bool val);
+void  uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
 
 #endif /* INC_UIMUSICQ_H */
 

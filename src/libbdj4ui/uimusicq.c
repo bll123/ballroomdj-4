@@ -93,6 +93,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq->peercount = 0;
   uimusicq->backupcreated = false;
   uimusicq->changed = false;
+  uimusicq->newflag = true;
   uimusicq->ispeercall = false;
   for (int i = 0; i < UIMUSICQ_PEER_MAX; ++i) {
     uimusicq->peers [i] = NULL;
@@ -316,4 +317,3 @@ uimusicqSaveListCallback (uimusicq_t *uimusicq, dbidx_t dbidx)
 {
   nlistSetStr (uimusicq->savelist, dbidx, NULL);
 }
-
