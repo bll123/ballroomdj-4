@@ -67,7 +67,6 @@ confuiCreateStatusTable (confuigui_t *gui)
   ilistidx_t        key;
   status_t          *status;
   uitree_t          *uitree;
-  UIWidget          *uitreewidgetp;
   int               editable;
 
   logProcBegin (LOG_PROC, "confuiCreateStatusTable");
@@ -75,7 +74,6 @@ confuiCreateStatusTable (confuigui_t *gui)
   status = bdjvarsdfGet (BDJVDF_STATUS);
 
   uitree = gui->tables [CONFUI_ID_STATUS].uitree;
-  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
 
   gui->tables [CONFUI_ID_STATUS].callbacks [CONFUI_TABLE_CB_CHANGED] =
       callbackInitLong (confuiTableChanged, gui);

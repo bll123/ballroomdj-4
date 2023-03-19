@@ -421,7 +421,6 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
   slistidx_t    iteridx;
   ilistidx_t    key;
   uitree_t      *uitree;
-  UIWidget      *uiwidgetp;
   UIWidget      adjustment;
 
   uitree = managepltree->uitree;
@@ -475,8 +474,6 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
         MPLTREE_COL_DIGITS, (treeint_t) 0,
         TREE_VALUE_END);
   }
-
-  uiwidgetp = uiTreeViewGetUIWidget (uitree);
 }
 
 static bool

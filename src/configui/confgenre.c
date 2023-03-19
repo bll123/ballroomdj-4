@@ -66,14 +66,12 @@ confuiCreateGenreTable (confuigui_t *gui)
   ilistidx_t        key;
   genre_t           *genres;
   uitree_t          *uitree;
-  UIWidget          *uitreewidgetp;
 
   logProcBegin (LOG_PROC, "confuiCreateGenreTable");
 
   genres = bdjvarsdfGet (BDJVDF_GENRES);
 
   uitree = gui->tables [CONFUI_ID_GENRES].uitree;
-  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
 
   gui->tables [CONFUI_ID_GENRES].callbacks [CONFUI_TABLE_CB_CHANGED] =
       callbackInitLong (confuiTableChanged, gui);

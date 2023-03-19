@@ -68,7 +68,6 @@ confuiCreateRatingTable (confuigui_t *gui)
   ilistidx_t        key;
   rating_t          *ratings;
   uitree_t          *uitree;
-  UIWidget          *uitreewidgetp;
   int               editable;
 
   logProcBegin (LOG_PROC, "confuiCreateRatingTable");
@@ -76,7 +75,6 @@ confuiCreateRatingTable (confuigui_t *gui)
   ratings = bdjvarsdfGet (BDJVDF_RATINGS);
 
   uitree = gui->tables [CONFUI_ID_RATINGS].uitree;
-  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
 
   gui->tables [CONFUI_ID_RATINGS].callbacks [CONFUI_TABLE_CB_CHANGED] =
       callbackInitLong (confuiTableChanged, gui);

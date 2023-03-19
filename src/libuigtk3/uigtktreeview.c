@@ -1000,7 +1000,6 @@ uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* pathstr,
     const gchar* ntext, gpointer udata)
 {
   uitree_t      *uitree = udata;
-  GtkWidget     *tree;
   GtkTreeIter   iter;
   GType         coltype;
   int           col;
@@ -1009,8 +1008,6 @@ uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* pathstr,
   if (uitree == NULL) {
     return;
   }
-
-  tree = uitree->uitree.widget;
 
   /* retrieve the column number from the 'uicolumn' value set when */
   /* the column was created */

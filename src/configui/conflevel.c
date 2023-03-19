@@ -69,14 +69,12 @@ confuiCreateLevelTable (confuigui_t *gui)
   ilistidx_t        key;
   level_t           *levels;
   uitree_t          *uitree;
-  UIWidget          *uitreewidgetp;
 
   logProcBegin (LOG_PROC, "confuiCreateLevelTable");
 
   levels = bdjvarsdfGet (BDJVDF_LEVELS);
 
   uitree = gui->tables [CONFUI_ID_LEVELS].uitree;
-  uitreewidgetp = uiTreeViewGetUIWidget (uitree);
 
   gui->tables [CONFUI_ID_LEVELS].callbacks [CONFUI_TABLE_CB_CHANGED] =
       callbackInitLong (confuiTableChanged, gui);
