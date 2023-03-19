@@ -14,8 +14,6 @@
 #include <math.h>
 #include <stdarg.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjvarsdf.h"
