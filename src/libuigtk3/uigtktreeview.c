@@ -47,7 +47,7 @@ typedef struct uitree {
   callback_t        *radiocb;
   int               selmode;
   int               minwidth;           // prep for append column
-  int               ellipsizeColumn;    // for append column
+  int               ellipsizeColumn;    // prep for append column
   bool              selectset : 1;
   bool              savedselectset : 1;
   bool              valueiterset : 1;
@@ -85,7 +85,7 @@ uiCreateTreeView (void)
   uitree->editedcb = NULL;
   uitree->radiocb = NULL;
   uitree->minwidth = TREE_NO_MIN_WIDTH;
-  uitree->minwidth = TREE_NO_COLUMN;
+  uitree->ellipsizeColumn = TREE_NO_COLUMN;
   uiWidgetSetAllMargins (&uitree->uitree, 2);
   return uitree;
 }
@@ -218,7 +218,6 @@ uiTreeViewPreColumnSetEllipsizeColumn (uitree_t *uitree, int ellipsizeColumn)
   }
 
   uitree->ellipsizeColumn = ellipsizeColumn;
-fprintf (stderr, "set ec: %d\n", ellipsizeColumn);
 }
 
 void
@@ -232,7 +231,6 @@ uiTreeViewAppendColumn (uitree_t *uitree, int widgettype,
   int               col;
   char              *gtkcoltype = "text";
   int               gtkcoldisp;
-  bool              haveellipsize = false;
 
   if (uitree == NULL) {
     return;
@@ -285,7 +283,6 @@ uiTreeViewAppendColumn (uitree_t *uitree, int widgettype,
     gtk_tree_view_column_set_min_width (column, uitree->minwidth);
     /* only good for one column */
     uitree->minwidth = TREE_NO_MIN_WIDTH;
-    haveellipsize = true;
   }
 
   gtk_tree_view_column_pack_start (column, renderer, TRUE);
@@ -348,10 +345,6 @@ uiTreeViewAppendColumn (uitree_t *uitree, int widgettype,
         gtkcoltype = "foreground-set";
         break;
       }
-      case TREE_COL_TYPE_ELLIPSIZE: {
-        gtkcoltype = "ellipsize";
-        break;
-      }
       default: {
         fprintf (stderr, "ERR: unhandled column mode: %d\n", coltype);
         break;
@@ -364,11 +357,11 @@ uiTreeViewAppendColumn (uitree_t *uitree, int widgettype,
   }
   va_end (args);
 
-  if (haveellipsize && uitree->ellipsizeColumn != TREE_NO_COLUMN) {
-fprintf (stderr, "have-ellipsize %d\n", col);
+  if (uitree->ellipsizeColumn != TREE_NO_COLUMN) {
     gtk_tree_view_column_add_attribute (column, renderer, "ellipsize", uitree->ellipsizeColumn);
     gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
     gtk_tree_view_column_set_expand (column, TRUE);
+    uitree->ellipsizeColumn = TREE_NO_COLUMN;
   }
 
   gtkcoldisp = GTK_TREE_VIEW_COLUMN_AUTOSIZE;

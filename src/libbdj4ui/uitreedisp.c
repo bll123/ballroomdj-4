@@ -37,10 +37,6 @@ uitreedispAddDisplayColumns (uitree_t *uitree, slist_t *sellist, int col,
     return;
   }
 
-  if (ellipsizeColumn != TREE_NO_COLUMN) {
-    uiTreeViewPreColumnSetEllipsizeColumn (uitree, ellipsizeColumn);
-  }
-
   slistStartIterator (sellist, &seliteridx);
   while ((tagidx = slistIterateValueNum (sellist, &seliteridx)) >= 0) {
     int         alignment;
@@ -58,9 +54,11 @@ uitreedispAddDisplayColumns (uitree_t *uitree, slist_t *sellist, int col,
 
     if (tagidx == TAG_TITLE) {
       uiTreeViewPreColumnSetMinWidth (uitree, 200);
+      uiTreeViewPreColumnSetEllipsizeColumn (uitree, ellipsizeColumn);
     }
     if (tagidx == TAG_ARTIST) {
       uiTreeViewPreColumnSetMinWidth (uitree, 100);
+      uiTreeViewPreColumnSetEllipsizeColumn (uitree, ellipsizeColumn);
     }
 
     if (tagidx == TAG_FAVORITE) {
