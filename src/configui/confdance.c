@@ -84,7 +84,6 @@ confuiBuildUIEditDances (confuigui_t *gui)
   UIWidget      vbox;
   UIWidget      hbox;
   UIWidget      dvbox;
-  UIWidget      *uiwidgetp;
   UIWidget      sg;
   UIWidget      sgB;
   UIWidget      sgC;
@@ -109,10 +108,8 @@ confuiBuildUIEditDances (confuigui_t *gui)
 
   confuiMakeItemTable (gui, &hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
   gui->tables [CONFUI_ID_DANCE].savefunc = confuiDanceSave;
+
   confuiCreateDanceTable (gui);
-  uiwidgetp = uiTreeViewGetUIWidget (gui->tables [CONFUI_ID_DANCE].uitree);
-  g_signal_connect (uiwidgetp->widget, "row-activated",
-      G_CALLBACK (confuiDanceSelect), gui);
 
   uiCreateVertBox (&dvbox);
   uiWidgetSetMarginStart (&dvbox, 8);
@@ -171,6 +168,14 @@ confuiBuildUIEditDances (confuigui_t *gui)
       CONFUI_SPINBOX_DANCE_TIME_SIG, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxTimeSigChg);
   gui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceidx = DANCE_TIMESIG;
+
+  gui->tables [CONFUI_ID_DANCE].callbacks [CONFUI_TABLE_CB_DANCE_SELECT] =
+      callbackInit (confuiDanceSelect, gui, NULL);
+  uiTreeViewSetRowActivatedCallback (gui->tables [CONFUI_ID_DANCE].uitree,
+      gui->tables [CONFUI_ID_DANCE].callbacks [CONFUI_TABLE_CB_DANCE_SELECT]);
+
+  uiTreeViewSelectSet (gui->tables [CONFUI_ID_DANCE].uitree, 0);
+  confuiDanceSelect (gui);
 
   gui->inchange = false;
   logProcEnd (LOG_PROC, "confuiBuildUIEditDances", "");

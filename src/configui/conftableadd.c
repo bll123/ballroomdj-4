@@ -29,7 +29,6 @@ confuiTableAdd (void *udata)
 {
   confuigui_t       *gui = udata;
   uitree_t          *uitree = NULL;
-  UIWidget          *uiwidgetp;
   int               count;
   int               flags;
   bool              found = false;
@@ -42,8 +41,7 @@ confuiTableAdd (void *udata)
   }
 
   uitree = gui->tables [gui->tablecurr].uitree;
-  uiwidgetp = uiTreeViewGetUIWidget (uitree);
-  if (uiwidgetp->widget == NULL) {
+  if (uitree == NULL) {
     logProcEnd (LOG_PROC, "confuiTableAdd", "no-tree");
     return UICB_STOP;
   }

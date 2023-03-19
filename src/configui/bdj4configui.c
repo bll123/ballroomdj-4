@@ -414,7 +414,7 @@ confuiBuildUI (configui_t *confui)
   /* CONTEXT: configuration: configuration user interface window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"),
       bdjoptGetStr (OPT_P_PROFILENAME));
-  confui->gui.closecb = callbackInit ( confuiCloseWin, confui, NULL);
+  confui->gui.closecb = callbackInit (confuiCloseWin, confui, NULL);
   uiCreateMainWindow (&confui->gui.window, confui->gui.closecb, tbuff, imgbuff);
 
   uiCreateVertBox (&confui->gui.vbox);

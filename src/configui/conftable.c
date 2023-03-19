@@ -14,19 +14,17 @@
 #include <math.h>
 #include <stdarg.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
+#include "callback.h"
 #include "configui.h"
 #include "dance.h"
 #include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
 #include "ui.h"
-#include "callback.h"
 
 /* table editing */
 static bool   confuiTableMoveUp (void *udata);
@@ -131,10 +129,8 @@ confuiTableFree (confuigui_t *gui, confuiident_t id)
 void
 confuiTableSave (confuigui_t *gui, confuiident_t id)
 {
-//  GtkTreeModel  *model;
   savefunc_t    savefunc;
   char          tbuff [40];
-//  UIWidget      *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiTableSave");
   if (gui->tables [id].changed == false) {
@@ -156,14 +152,7 @@ confuiTableSave (confuigui_t *gui, confuiident_t id)
     uiTreeViewForeach (gui->tables [id].uitree, cb);
     callbackFree (cb);
   }
-//  uiwidgetp = uiTreeViewGetUIWidget (gui->tables [id].uitree);
-//  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-//  if (gui->tables [id].listcreatefunc != NULL) {
-//    snprintf (tbuff, sizeof (tbuff), "cu-table-save-%d", id);
-//    gui->tables [id].savelist = ilistAlloc (tbuff, LIST_ORDERED);
-//    gui->tables [id].saveidx = 0;
-//    gtk_tree_model_foreach (model, gui->tables [id].listcreatefunc, gui);
-//  }
+
   savefunc = gui->tables [id].savefunc;
   savefunc (gui);
   logProcEnd (LOG_PROC, "confuiTableSave", "");
@@ -201,7 +190,6 @@ confuiSwitchTable (void *udata, long pagenum)
 {
   confuigui_t       *gui = udata;
   uitree_t          *uitree;
-  UIWidget          *uiwidgetp;
   confuiident_t     newid;
 
   logProcBegin (LOG_PROC, "confuiSwitchTable");
@@ -243,11 +231,6 @@ confuiSwitchTable (void *udata, long pagenum)
   uitree = gui->tables [gui->tablecurr].uitree;
   if (uitree == NULL) {
     logProcEnd (LOG_PROC, "confuiSwitchTable", "no-tree-a");
-    return UICB_CONT;
-  }
-  uiwidgetp = uiTreeViewGetUIWidget (uitree);
-  if (uiwidgetp->widget == NULL) {
-    logProcEnd (LOG_PROC, "confuiSwitchTable", "no-tree-b");
     return UICB_CONT;
   }
 
@@ -338,41 +321,25 @@ confuiTableRemove (void *udata)
 {
   confuigui_t       *gui = udata;
   uitree_t          *uitree;
-  UIWidget          *uiwidgetp;
-  GtkTreeModel      *model;
-  GtkTreeIter       iter;
-  GtkTreePath       *path;
-  char              *pathstr;
   int               idx;
   int               count;
   int               flags;
 
   logProcBegin (LOG_PROC, "confuiTableRemove");
-  uitree = gui->tables [gui->tablecurr].uitree;
-  uiwidgetp = uiTreeViewGetUIWidget (uitree);
 
-  if (uiwidgetp->widget == NULL) {
+  uitree = gui->tables [gui->tablecurr].uitree;
+  if (uitree == NULL) {
     return UICB_STOP;
   }
 
   flags = gui->tables [gui->tablecurr].flags;
-  count = uiTreeViewGetSelection (uitree, &model, &iter);
+  count = uiTreeViewSelectGetCount (uitree);
   if (count != 1) {
     logProcEnd (LOG_PROC, "confuiTableRemove", "no-selection");
     return UICB_STOP;
   }
 
-  idx = 0;
-  path = gtk_tree_model_get_path (model, &iter);
-  mdextalloc (path);
-  if (path != NULL) {
-    pathstr = gtk_tree_path_to_string (path);
-    mdextalloc (pathstr);
-    sscanf (pathstr, "%d", &idx);
-    mdextfree (path);
-    gtk_tree_path_free (path);
-    mdfree (pathstr);     // allocated by gtk
-  }
+  idx = uiTreeViewSelectGetIndex (uitree);
   if (idx == 0 &&
       (flags & CONFUI_TABLE_KEEP_FIRST) == CONFUI_TABLE_KEEP_FIRST) {
     logProcEnd (LOG_PROC, "confuiTableRemove", "keep-first");
@@ -385,38 +352,22 @@ confuiTableRemove (void *udata)
   }
 
   if (gui->tablecurr == CONFUI_ID_DANCE) {
-    glong         idx;
+    listidx_t     dkey;
     dance_t       *dances;
-    GtkTreeModel  *model;
-    GtkTreeIter   iter;
 
-    uiTreeViewGetSelection (uitree, &model, &iter);
-    gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
+    dkey = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
     dances = bdjvarsdfGet (BDJVDF_DANCES);
-    danceDelete (dances, idx);
+    danceDelete (dances, dkey);
   }
 
-  gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
+  uiTreeViewValueRemove (uitree);
   gui->tables [gui->tablecurr].changed = true;
   gui->tables [gui->tablecurr].currcount -= 1;
-  logProcEnd (LOG_PROC, "confuiTableRemove", "");
 
   if (gui->tablecurr == CONFUI_ID_DANCE) {
-    GtkTreePath *path = NULL;
-    GtkTreeIter iter;
-
-    uiTreeViewGetSelection (uitree, &model, &iter);
-    path = gtk_tree_model_get_path (model, &iter);
-    mdextalloc (path);
-    if (path != NULL) {
-      confuiDanceSelect (GTK_TREE_VIEW (uiwidgetp->widget), path, NULL, gui);
-      mdextfree (path);
-      gtk_tree_path_free (path);
-    }
+    confuiDanceSelect (gui);
   }
 
+  logProcEnd (LOG_PROC, "confuiTableRemove", "");
   return UICB_CONT;
 }
-
-
-

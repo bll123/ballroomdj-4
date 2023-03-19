@@ -578,7 +578,6 @@ uiTreeViewSelectGetCount (uitree_t *uitree)
 {
   int               count;
 
-  uitree->selectset = false;
   if (uitree == NULL) {
     return 0;
   }

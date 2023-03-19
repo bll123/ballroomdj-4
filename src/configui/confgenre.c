@@ -62,8 +62,6 @@ confuiBuildUIEditGenres (confuigui_t *gui)
 void
 confuiCreateGenreTable (confuigui_t *gui)
 {
-//  GtkCellRenderer   *renderer = NULL;
-//  GtkTreeViewColumn *column = NULL;
   ilistidx_t        iteridx;
   ilistidx_t        key;
   genre_t           *genres;

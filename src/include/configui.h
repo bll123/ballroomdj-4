@@ -271,6 +271,7 @@ enum {
   CONFUI_TABLE_CB_ADD,
   CONFUI_TABLE_CB_CHANGED,
   CONFUI_TABLE_CB_RADIO,
+  CONFUI_TABLE_CB_DANCE_SELECT,
   CONFUI_TABLE_CB_MAX,
 };
 
@@ -506,7 +507,8 @@ bool confuiSwitchTable (void *udata, long pagenum);
 bool confuiTableAdd (void *udata);
 
 /* conftabledance.c */
-void confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
+bool confuiDanceSelect (void *udata);
+// void confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
 void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
 
 /* conftableset.c */

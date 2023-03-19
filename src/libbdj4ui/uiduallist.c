@@ -259,7 +259,6 @@ uiduallistFree (uiduallist_t *duallist)
 void
 uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
 {
-  UIWidget      *uiwidgetp = NULL;
   char          *keystr;
   slistidx_t    siteridx;
   uitree_t      *uitree = NULL;
@@ -274,8 +273,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   }
 
   uitree = duallist->uitrees [which];
-  uiwidgetp = uiTreeViewGetUIWidget (uitree);
-  if (uiwidgetp->widget == NULL) {
+  if (uitree == NULL) {
     return;
   }
 
@@ -510,12 +508,14 @@ uiduallistSourceSearch (void *udata)
   if (duallist->searchtype == DUALLIST_SEARCH_INSERT) {
     if (istringCompare (duallist->searchstr, str) < 0) {
       duallist->searchfound = true;
+      dataFree (str);
       return TRUE;
     }
   }
   if (duallist->searchtype == DUALLIST_SEARCH_REMOVE) {
     if (istringCompare (duallist->searchstr, str) == 0) {
       duallist->searchfound = true;
+      dataFree (str);
       return TRUE;
     }
   }

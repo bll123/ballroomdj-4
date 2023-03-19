@@ -81,10 +81,8 @@ confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp,
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
   confuiMakeItemEntryBasic (gui, &hbox, sg, txt, widx, bdjoptIdx, disp, CONFUI_NO_INDENT, CONFUI_EXPAND);
-  gui->uiitem [widx].callback = callbackInit (
-      dialogFunc, gui, NULL);
-  uibutton = uiCreateButton (gui->uiitem [widx].callback,
-      "", NULL);
+  gui->uiitem [widx].callback = callbackInit (dialogFunc, gui, NULL);
+  uibutton = uiCreateButton (gui->uiitem [widx].callback, "", NULL);
   gui->uiitem [widx].uibutton = uibutton;
   uiwidgetp = uiButtonGetUIWidget (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
@@ -249,7 +247,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   if (cb != NULL) {
-    gui->uiitem [widx].callback = callbackInit ( cb, gui, NULL);
+    gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
     uiSpinboxTextSetValueChangedCallback (gui->uiitem [widx].spinbox,
         gui->uiitem [widx].callback);
   }
@@ -323,7 +321,7 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   uiBoxPackStart (boxp, &hbox);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   if (cb != NULL) {
-    gui->uiitem [widx].callback = callbackInit ( cb, gui, NULL);
+    gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
     uiSpinboxSetValueChangedCallback (&uiwidget, gui->uiitem [widx].callback);
   }
   uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
@@ -380,7 +378,7 @@ confuiMakeItemSwitch (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   if (cb != NULL) {
-    gui->uiitem [widx].callback = callbackInit ( cb, gui, NULL);
+    gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
     uiSwitchSetCallback (gui->uiitem [widx].uiswitch,
         gui->uiitem [widx].callback);
   }

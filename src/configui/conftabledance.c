@@ -14,8 +14,6 @@
 #include <math.h>
 #include <stdarg.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
@@ -30,48 +28,39 @@
 #include "slist.h"
 #include "ui.h"
 
-void
-confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path,
-    GtkTreeViewColumn *column, gpointer udata)
+bool
+confuiDanceSelect (void *udata)
 {
   confuigui_t   *gui = udata;
-  GtkTreeIter   iter;
-  GtkTreeModel  *model = NULL;
-  glong         idx = 0;
+  uitree_t      *uitree = NULL;
   ilistidx_t    key;
 
   logProcBegin (LOG_PROC, "confuiDanceSelect");
   gui->inchange = true;
 
-  if (path == NULL) {
-    gui->inchange = false;
-    return;
+  uitree = gui->tables [CONFUI_ID_DANCE].uitree;
+  if (uitree == NULL) {
+    return UICB_CONT;
   }
 
-  model = gtk_tree_view_get_model (tv);
+  uiTreeViewSelectCurrent (uitree);
 
-  if (! gtk_tree_model_get_iter (model, &iter, path)) {
-    logProcEnd (LOG_PROC, "confuiDanceSelect", "no model/iter");
-    gui->inchange = false;
-    return;
-  }
-  gtk_tree_model_get (model, &iter, CONFUI_DANCE_COL_DANCE_IDX, &idx, -1);
-  key = (ilistidx_t) idx;
-
+  key = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
   confuiDanceSelectLoadValues (gui, key);
   gui->inchange = false;
   logProcEnd (LOG_PROC, "confuiDanceSelect", "");
+  return UICB_CONT;
 }
 
 void
 confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key)
 {
-  dance_t       *dances;
-  char          *sval;
-  slist_t       *slist;
-  datafileconv_t conv;
-  int           widx;
-  nlistidx_t    num;
+  dance_t         *dances;
+  char            *sval;
+  slist_t         *slist;
+  datafileconv_t  conv;
+  int             widx;
+  nlistidx_t      num;
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
