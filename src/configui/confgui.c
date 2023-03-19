@@ -33,7 +33,7 @@ enum {
   CONFUI_NO_EXPAND,
 };
 
-static void confuiMakeItemEntryBasic (confuigui_t *gui, UIWidget *boxp, UIWidget *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent, int expand);
+static void confuiMakeItemEntryBasic (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent, int expand);
 static bool confuiLinkCallback (void *udata);
 static long confuiValMSCallback (void *udata, const char *txt);
 static long confuiValHMCallback (void *udata, const char *txt);
@@ -56,7 +56,7 @@ confuiMakeNotebookTab (UIWidget *boxp, confuigui_t *gui, const char *txt, int id
 }
 
 void
-confuiMakeItemEntry (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
+confuiMakeItemEntry (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, const char *disp, int indent)
 {
   UIWidget    hbox;
@@ -69,8 +69,8 @@ confuiMakeItemEntry (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 }
 
 void
-confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp,
-    UIWidget *sg, const char *txt, int widx, int bdjoptIdx,
+confuiMakeItemEntryChooser (confuigui_t *gui, uiwidget_t *boxp,
+    uiwidget_t *sg, const char *txt, int widx, int bdjoptIdx,
     const char *disp, void *dialogFunc)
 {
   UIWidget    hbox;
@@ -93,7 +93,7 @@ confuiMakeItemEntryChooser (confuigui_t *gui, UIWidget *boxp,
 }
 
 void
-confuiMakeItemCombobox (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
+confuiMakeItemCombobox (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb,
     char *value)
 {
@@ -126,7 +126,7 @@ confuiMakeItemCombobox (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 }
 
 void
-confuiMakeItemLink (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
+confuiMakeItemLink (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, const char *disp)
 {
   UIWidget    hbox;
@@ -150,7 +150,7 @@ confuiMakeItemLink (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 }
 
 void
-confuiMakeItemFontButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
+confuiMakeItemFontButton (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, const char *fontname)
 {
   UIWidget    hbox;
@@ -172,7 +172,7 @@ confuiMakeItemFontButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 }
 
 void
-confuiMakeItemColorButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
+confuiMakeItemColorButton (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, const char *color)
 {
   UIWidget    hbox;
@@ -194,8 +194,8 @@ confuiMakeItemColorButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 }
 
 void
-confuiMakeItemSpinboxText (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    UIWidget *sgB, const char *txt, int widx, int bdjoptIdx,
+confuiMakeItemSpinboxText (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
+    uiwidget_t *sgB, const char *txt, int widx, int bdjoptIdx,
     confuiouttype_t outtype, ssize_t value, void *cb)
 {
   UIWidget    hbox;
@@ -255,8 +255,8 @@ confuiMakeItemSpinboxText (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 }
 
 void
-confuiMakeItemSpinboxTime (confuigui_t *gui, UIWidget *boxp,
-    UIWidget *sg, UIWidget *sgB, const char *txt, int widx,
+confuiMakeItemSpinboxTime (confuigui_t *gui, uiwidget_t *boxp,
+    uiwidget_t *sg, uiwidget_t *sgB, const char *txt, int widx,
     int bdjoptIdx, ssize_t value, int indent)
 {
   UIWidget    hbox;
@@ -297,8 +297,8 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, UIWidget *boxp,
 }
 
 void
-confuiMakeItemSpinboxNum (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    UIWidget *sgB, const char *txt, int widx, int bdjoptIdx,
+confuiMakeItemSpinboxNum (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
+    uiwidget_t *sgB, const char *txt, int widx, int bdjoptIdx,
     int min, int max, int value, void *cb)
 {
   UIWidget    hbox;
@@ -329,8 +329,8 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 }
 
 void
-confuiMakeItemSpinboxDouble (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
-    UIWidget *sgB, const char *txt, int widx, int bdjoptIdx,
+confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
+    uiwidget_t *sgB, const char *txt, int widx, int bdjoptIdx,
     double min, double max, double value, int indent)
 {
   UIWidget    hbox;
@@ -357,7 +357,7 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 }
 
 void
-confuiMakeItemSwitch (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
+confuiMakeItemSwitch (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, int value, void *cb, int indent)
 {
   UIWidget    hbox;
@@ -387,7 +387,7 @@ confuiMakeItemSwitch (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 }
 
 void
-confuiMakeItemLabelDisp (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
+confuiMakeItemLabelDisp (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx)
 {
   UIWidget    hbox;
@@ -409,7 +409,7 @@ confuiMakeItemLabelDisp (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 }
 
 void
-confuiMakeItemCheckButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
+confuiMakeItemCheckButton (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, int value)
 {
   UIWidget    uiwidget;
@@ -427,7 +427,7 @@ confuiMakeItemCheckButton (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
 }
 
 void
-confuiMakeItemLabel (UIWidget *boxp, UIWidget *sg, const char *txt, int indent)
+confuiMakeItemLabel (UIWidget *boxp, uiwidget_t *sg, const char *txt, int indent)
 {
   UIWidget    uiwidget;
   char        ntxt [200];
@@ -487,7 +487,7 @@ confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...)
 /* internal routines */
 
 static void
-confuiMakeItemEntryBasic (confuigui_t *gui, UIWidget *boxp, UIWidget *sg,
+confuiMakeItemEntryBasic (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, const char *disp,
     int indent, int expand)
 {

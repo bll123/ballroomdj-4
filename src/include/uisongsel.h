@@ -90,7 +90,7 @@ void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t 
 /* uisongselgtk.c */
 void  uisongselUIInit (uisongsel_t *uisongsel);
 void  uisongselUIFree (uisongsel_t *uisongsel);
-UIWidget  * uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin);
+UIWidget  * uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin);
 bool  uisongselPlayCallback (void *udata);
 void  uisongselClearData (uisongsel_t *uisongsel);
 void  uisongselPopulateData (uisongsel_t *uisongsel);

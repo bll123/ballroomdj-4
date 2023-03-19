@@ -134,14 +134,14 @@ typedef struct uisongeditgtk {
 } se_internal_t;
 
 static void uisongeditCheckChanged (uisongedit_t *uisongedit);
-static void uisongeditAddDisplay (uisongedit_t *songedit, UIWidget *col, UIWidget *sg, int dispsel);
-static void uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int tagkey);
-static void uisongeditAddEntry (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
-static void uisongeditAddSpinboxInt (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
-static void uisongeditAddLabel (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
-static void uisongeditAddSecondaryLabel (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
-static void uisongeditAddSpinboxTime (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
-static void uisongeditAddScale (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey);
+static void uisongeditAddDisplay (uisongedit_t *songedit, uiwidget_t *col, uiwidget_t *sg, int dispsel);
+static void uisongeditAddItem (uisongedit_t *uisongedit, uiwidget_t *hbox, uiwidget_t *sg, int tagkey);
+static void uisongeditAddEntry (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey);
+static void uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey);
+static void uisongeditAddLabel (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey);
+static void uisongeditAddSecondaryLabel (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey);
+static void uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey);
+static void uisongeditAddScale (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey);
 static bool uisongeditScaleDisplayCallback (void *udata, double value);
 static bool uisongeditSaveCallback (void *udata);
 static bool uisongeditSave (void *udata, nlist_t *chglist);
@@ -285,7 +285,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
 
 UIWidget *
 uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
-    UIWidget *parentwin, UIWidget *statusMsg)
+    uiwidget_t *parentwin, uiwidget_t *statusMsg)
 {
   se_internal_t   *uiw;
   UIWidget          hbox;
@@ -1004,7 +1004,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
 }
 
 static void
-uisongeditAddDisplay (uisongedit_t *uisongedit, UIWidget *col, UIWidget *sg, int dispsel)
+uisongeditAddDisplay (uisongedit_t *uisongedit, uiwidget_t *col, uiwidget_t *sg, int dispsel)
 {
   slist_t         *sellist;
   UIWidget        hbox;
@@ -1046,7 +1046,7 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, UIWidget *col, UIWidget *sg, int
 }
 
 static void
-uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int tagkey)
+uisongeditAddItem (uisongedit_t *uisongedit, uiwidget_t *hbox, uiwidget_t *sg, int tagkey)
 {
   UIWidget        uiwidget;
   se_internal_t *uiw;
@@ -1157,7 +1157,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, UIWidget *hbox, UIWidget *sg, int t
 }
 
 static void
-uisongeditAddEntry (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
+uisongeditAddEntry (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey)
 {
   uientry_t       *entryp;
   UIWidget        *uiwidgetp;
@@ -1180,7 +1180,7 @@ uisongeditAddEntry (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 }
 
 static void
-uisongeditAddSpinboxInt (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
+uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey)
 {
   UIWidget        *uiwidgetp;
   se_internal_t *uiw;
@@ -1203,7 +1203,7 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 }
 
 static void
-uisongeditAddLabel (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
+uisongeditAddLabel (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey)
 {
   UIWidget        *uiwidgetp;
   se_internal_t *uiw;
@@ -1218,7 +1218,7 @@ uisongeditAddLabel (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 }
 
 static void
-uisongeditAddSecondaryLabel (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
+uisongeditAddSecondaryLabel (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey)
 {
   UIWidget        *uiwidgetp;
   se_internal_t *uiw;
@@ -1232,7 +1232,7 @@ uisongeditAddSecondaryLabel (uisongedit_t *uisongedit, UIWidget *hbox, int tagke
 }
 
 static void
-uisongeditAddSpinboxTime (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
+uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey)
 {
   uispinbox_t     *sbp;
   se_internal_t *uiw;
@@ -1255,7 +1255,7 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
 }
 
 static void
-uisongeditAddScale (uisongedit_t *uisongedit, UIWidget *hbox, int tagkey)
+uisongeditAddScale (uisongedit_t *uisongedit, uiwidget_t *hbox, int tagkey)
 {
   se_internal_t *uiw;
   UIWidget        *uiwidgetp;

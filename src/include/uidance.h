@@ -16,13 +16,13 @@ enum {
 
 typedef struct uidance uidance_t;
 
-uidance_t * uidanceDropDownCreate (UIWidget *boxp, UIWidget *parentwin, int flags, const char *label, int where, int count);
+uidance_t * uidanceDropDownCreate (UIWidget *boxp, uiwidget_t *parentwin, int flags, const char *label, int where, int count);
 UIWidget * uidanceGetButton (uidance_t *uidance);
 void uidanceFree (uidance_t *uidance);
 int uidanceGetValue (uidance_t *uidance);
 void uidanceSetValue (uidance_t *uidance, int value);
 void uidanceSetState (uidance_t *uidance, int state);
-void uidanceSizeGroupAdd (uidance_t *uidance, UIWidget *sg);
+void uidanceSizeGroupAdd (uidance_t *uidance, uiwidget_t *sg);
 void uidanceSetCallback (uidance_t *uidance, callback_t *cb);
 
 #endif /* INC_UIDANCE_H */

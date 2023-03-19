@@ -6,7 +6,7 @@
 
 #include "ui.h"
 
-void uiutilsAddAccentColorDisplay (UIWidget *vbox, UIWidget *hbox, UIWidget *uiwidget);
+void uiutilsAddAccentColorDisplay (UIWidget *vbox, uiwidget_t *hbox, uiwidget_t *uiwidget);
 void uiutilsSetAccentColor (UIWidget *uiwidgetp);
 const char * uiutilsGetCurrentFont (void);
 

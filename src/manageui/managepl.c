@@ -88,7 +88,7 @@ static bool managePlaylistCheckChanged (managepl_t *managepl);
 static int  managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata);
 
 managepl_t *
-managePlaylistAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
+managePlaylistAlloc (UIWidget *window, nlist_t *options, uiwidget_t *statusMsg)
 {
   managepl_t *managepl;
 
@@ -164,7 +164,7 @@ managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb)
 }
 
 void
-manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
+manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 {
   UIWidget            lcol;
   UIWidget            rcol;
@@ -374,7 +374,7 @@ manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp)
 }
 
 uimenu_t *
-managePlaylistMenu (managepl_t *managepl, UIWidget *uimenubar)
+managePlaylistMenu (managepl_t *managepl, uiwidget_t *uimenubar)
 {
   UIWidget  menu;
   UIWidget  menuitem;

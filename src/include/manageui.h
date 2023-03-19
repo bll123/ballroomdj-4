@@ -25,11 +25,11 @@ enum {
 typedef struct managepl managepl_t;
 
 managepl_t *managePlaylistAlloc (UIWidget *window, nlist_t *options,
-    UIWidget *statusMsg);
+    uiwidget_t *statusMsg);
 void managePlaylistFree (managepl_t *managepl);
 void managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb);
-void manageBuildUIPlaylist (managepl_t *managepl, UIWidget *vboxp);
-uimenu_t *managePlaylistMenu (managepl_t *managepl, UIWidget *menubar);
+void manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp);
+uimenu_t *managePlaylistMenu (managepl_t *managepl, uiwidget_t *menubar);
 void managePlaylistSave (managepl_t *managepl);
 void managePlaylistLoadCheck (managepl_t *managepl);
 void managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag);
@@ -40,7 +40,7 @@ typedef struct managepltree managepltree_t;
 
 managepltree_t *managePlaylistTreeAlloc (UIWidget *statusMsg);
 void managePlaylistTreeFree (managepltree_t *managepltree);
-void manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,  UIWidget *tophbox);
+void manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwidget_t *vboxp,  uiwidget_t *tophbox);
 void managePlaylistTreePrePopulate (managepltree_t *managepltree, playlist_t *pl);
 void managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl);
 bool managePlaylistTreeIsChanged (managepltree_t *managepltree);
@@ -50,12 +50,12 @@ void managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree);
 typedef struct manageseq manageseq_t;
 
 manageseq_t *manageSequenceAlloc (UIWidget *window, nlist_t *options,
-    UIWidget *statusMsg);
+    uiwidget_t *statusMsg);
 void manageSequenceFree (manageseq_t *manageseq);
 void manageSequenceSetLoadCallback (manageseq_t *manageseq, callback_t *uicb);
 void manageSequenceSetNewCallback (manageseq_t *manageseq, callback_t *uicb);
-void manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp);
-uimenu_t *manageSequenceMenu (manageseq_t *manageseq, UIWidget *menubar);
+void manageBuildUISequence (manageseq_t *manageseq, uiwidget_t *vboxp);
+uimenu_t *manageSequenceMenu (manageseq_t *manageseq, uiwidget_t *menubar);
 void manageSequenceSave (manageseq_t *manageseq);
 void manageSequenceLoadCheck (manageseq_t *manageseq);
 void manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preloadflag);
@@ -63,9 +63,9 @@ void manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preload
 /* managedb.c */
 typedef struct managedb managedb_t;
 
-managedb_t *manageDbAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg, conn_t *conn, procutil_t **processes);
+managedb_t *manageDbAlloc (UIWidget *window, nlist_t *options, uiwidget_t *statusMsg, conn_t *conn, procutil_t **processes);
 void  manageDbFree (managedb_t *managedb);
-void  manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp);
+void  manageBuildUIUpdateDatabase (managedb_t *managedb, uiwidget_t *vboxp);
 bool  manageDbChg (void *udata);
 void  manageDbProgressMsg (managedb_t *managedb, char *args);
 void  manageDbStatusMsg (managedb_t *managedb, char *args);

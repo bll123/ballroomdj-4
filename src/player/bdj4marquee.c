@@ -131,7 +131,7 @@ static bool marqueeWinMapped (void *udata);
 static void marqueeSaveWindowPosition (marquee_t *);
 static void marqueeMoveWindow (marquee_t *);
 static void marqueeSigHandler (int sig);
-static void marqueeSetFontSize (marquee_t *marquee, UIWidget *lab, const char *font);
+static void marqueeSetFontSize (marquee_t *marquee, uiwidget_t *lab, const char *font);
 static void marqueePopulate (marquee_t *marquee, char *args);
 static void marqueeSetTimer (marquee_t *marquee, char *args);
 static void marqueeSetFont (marquee_t *marquee, int sz);
@@ -834,7 +834,7 @@ marqueeSigHandler (int sig)
 }
 
 static void
-marqueeSetFontSize (marquee_t *marquee, UIWidget *uilab, const char *font)
+marqueeSetFontSize (marquee_t *marquee, uiwidget_t *uilab, const char *font)
 {
   logProcBegin (LOG_PROC, "marqueeSetFontSize");
 

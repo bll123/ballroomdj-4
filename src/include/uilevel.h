@@ -14,7 +14,7 @@ void uilevelFree (uilevel_t *uilevel);
 int uilevelGetValue (uilevel_t *uilevel);
 void uilevelSetValue (uilevel_t *uilevel, int value);
 void uilevelSetState (uilevel_t *uilevel, int state);
-void uilevelSizeGroupAdd (uilevel_t *uilevel, UIWidget *sg);
+void uilevelSizeGroupAdd (uilevel_t *uilevel, uiwidget_t *sg);
 void uilevelSetChangedCallback (uilevel_t *uilevel, callback_t *cb);
 
 #endif /* INC_UILEVEL_H */

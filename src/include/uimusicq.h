@@ -113,7 +113,7 @@ void  uimusicqSetQueueCallback (uimusicq_t *uimusicq, callback_t *uicb);
 /* uimusicqgtk.c */
 void      uimusicqUIInit (uimusicq_t *uimusicq);
 void      uimusicqUIFree (uimusicq_t *uimusicq);
-UIWidget  * uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci, UIWidget *statusMsg, uientryval_t validateFunc);
+UIWidget  * uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci, uiwidget_t *statusMsg, uientryval_t validateFunc);
 void      uimusicqUIMainLoop (uimusicq_t *uimuiscq);
 void      uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx);
 ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);

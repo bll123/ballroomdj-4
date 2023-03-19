@@ -21,7 +21,7 @@
 /* as a side effect, hbox is set, and */
 /* uiwidget is set to the accent color box (needed by bdj4starterui) */
 void
-uiutilsAddAccentColorDisplay (UIWidget *vboxp, UIWidget *hboxp, UIWidget *uiwidgetp)
+uiutilsAddAccentColorDisplay (UIWidget *vboxp, uiwidget_t *hboxp, uiwidget_t *uiwidgetp)
 {
   uiCreateHorizBox (hboxp);
   uiBoxPackStart (vboxp, hboxp);

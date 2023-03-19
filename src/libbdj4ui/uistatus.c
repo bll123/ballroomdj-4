@@ -108,7 +108,7 @@ uistatusSetState (uistatus_t *uistatus, int state)
 }
 
 void
-uistatusSizeGroupAdd (uistatus_t *uistatus, UIWidget *sg)
+uistatusSizeGroupAdd (uistatus_t *uistatus, uiwidget_t *sg)
 {
   uiSizeGroupAdd (sg, uiSpinboxGetUIWidget (uistatus->spinbox));
 }

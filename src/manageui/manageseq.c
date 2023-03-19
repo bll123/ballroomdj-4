@@ -64,7 +64,7 @@ static bool   manageSequenceDelete (void *udata);
 static void   manageSetSequenceName (manageseq_t *manageseq, const char *nm);
 
 manageseq_t *
-manageSequenceAlloc (UIWidget *window, nlist_t *options, UIWidget *statusMsg)
+manageSequenceAlloc (UIWidget *window, nlist_t *options, uiwidget_t *statusMsg)
 {
   manageseq_t *manageseq;
 
@@ -122,7 +122,7 @@ manageSequenceSetNewCallback (manageseq_t *manageseq, callback_t *uicb)
 }
 
 void
-manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp)
+manageBuildUISequence (manageseq_t *manageseq, uiwidget_t *vboxp)
 {
   UIWidget            hbox;
   UIWidget            uiwidget;
@@ -164,7 +164,7 @@ manageBuildUISequence (manageseq_t *manageseq, UIWidget *vboxp)
 }
 
 uimenu_t *
-manageSequenceMenu (manageseq_t *manageseq, UIWidget *uimenubar)
+manageSequenceMenu (manageseq_t *manageseq, uiwidget_t *uimenubar)
 {
   UIWidget  menu;
   UIWidget  menuitem;

@@ -69,7 +69,7 @@ static bool manageDbSelectDirCallback (void *udata);
 
 managedb_t *
 manageDbAlloc (UIWidget *window, nlist_t *options,
-    UIWidget *statusMsg, conn_t *conn, procutil_t **processes)
+    uiwidget_t *statusMsg, conn_t *conn, procutil_t **processes)
 {
   managedb_t      *managedb;
   nlist_t         *tlist;
@@ -165,7 +165,7 @@ manageDbFree (managedb_t *managedb)
 
 
 void
-manageBuildUIUpdateDatabase (managedb_t *managedb, UIWidget *vboxp)
+manageBuildUIUpdateDatabase (managedb_t *managedb, uiwidget_t *vboxp)
 {
   UIWidget      uiwidget;
   UIWidget      *uiwidgetp;

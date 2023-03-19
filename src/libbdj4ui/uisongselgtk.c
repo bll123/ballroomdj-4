@@ -223,7 +223,7 @@ uisongselUIFree (uisongsel_t *uisongsel)
 }
 
 UIWidget *
-uisongselBuildUI (uisongsel_t *uisongsel, UIWidget *parentwin)
+uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
 {
   uisongselgtk_t    *uiw;
   uibutton_t        *uibutton;

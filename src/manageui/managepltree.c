@@ -97,8 +97,8 @@ managePlaylistTreeFree (managepltree_t *managepltree)
 }
 
 void
-manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
-    UIWidget *tophbox)
+manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwidget_t *vboxp,
+    uiwidget_t *tophbox)
 {
   UIWidget    hbox;
   UIWidget    uiwidget;

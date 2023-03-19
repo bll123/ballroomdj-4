@@ -37,7 +37,7 @@ static bool uigenreSelectHandler (void *udata, long idx);
 static void uigenreCreateGenreList (uigenre_t *uigenre);
 
 uigenre_t *
-uigenreDropDownCreate (UIWidget *boxp, UIWidget *parentwin, bool allflag)
+uigenreDropDownCreate (UIWidget *boxp, uiwidget_t *parentwin, bool allflag)
 {
   uigenre_t  *uigenre;
 
@@ -111,7 +111,7 @@ uigenreSetState (uigenre_t *uigenre, int state)
 }
 
 void
-uigenreSizeGroupAdd (uigenre_t *uigenre, UIWidget *sg)
+uigenreSizeGroupAdd (uigenre_t *uigenre, uiwidget_t *sg)
 {
   uiSizeGroupAdd (sg, uigenre->buttonp);
 }

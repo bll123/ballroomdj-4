@@ -51,7 +51,7 @@ void  uisongeditSetApplyAdjCallback (uisongedit_t *uisongedit, callback_t *uicb)
 /* uisongeditgtk.c */
 void  uisongeditUIInit (uisongedit_t *uisongedit);
 void  uisongeditUIFree (uisongedit_t *uisongedit);
-UIWidget  * uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit, UIWidget *parentwin, UIWidget *statusMsg);
+UIWidget  * uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit, uiwidget_t *parentwin, uiwidget_t *statusMsg);
 void  uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx, int editallflag);
 void  uisongeditUIMainLoop (uisongedit_t *uisongedit);
 void  uisongeditSetBPMValue (uisongedit_t *uisongedit, const char *args);

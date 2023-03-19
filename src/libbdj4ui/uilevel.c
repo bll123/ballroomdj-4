@@ -108,7 +108,7 @@ uilevelSetState (uilevel_t *uilevel, int state)
 }
 
 void
-uilevelSizeGroupAdd (uilevel_t *uilevel, UIWidget *sg)
+uilevelSizeGroupAdd (uilevel_t *uilevel, uiwidget_t *sg)
 {
   uiSizeGroupAdd (sg, uiSpinboxGetUIWidget (uilevel->spinbox));
 }

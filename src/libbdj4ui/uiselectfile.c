@@ -44,7 +44,7 @@ static bool selectFileSelect (void *udata);
 static bool selectFileResponseHandler (void *udata, long responseid);
 
 void
-selectFileDialog (int type, UIWidget *window, nlist_t *options,
+selectFileDialog (int type, uiwidget_t *window, nlist_t *options,
     callback_t *cb)
 {
   uiselectfile_t *selectfile;

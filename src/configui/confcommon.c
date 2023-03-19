@@ -39,7 +39,7 @@ static nlist_t * confuiGetThemeList (void);
 static slist_t * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
 static char * confuiGetLocalIP (confuigui_t *gui);
 static char * confuiMakeQRCodeFile (char *title, char *uri);
-static void confuiUpdateOrgExample (org_t *org, char *data, UIWidget *uiwidgetp);
+static void confuiUpdateOrgExample (org_t *org, char *data, uiwidget_t *uiwidgetp);
 static bool confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp);
 
 
@@ -445,7 +445,7 @@ confuiMakeQRCodeFile (char *title, char *uri)
 }
 
 static void
-confuiUpdateOrgExample (org_t *org, char *data, UIWidget *uiwidgetp)
+confuiUpdateOrgExample (org_t *org, char *data, uiwidget_t *uiwidgetp)
 {
   song_t    *song;
   char      *tdata;

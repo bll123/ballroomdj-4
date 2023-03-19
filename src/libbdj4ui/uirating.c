@@ -108,7 +108,7 @@ uiratingSetState (uirating_t *uirating, int state)
 }
 
 void
-uiratingSizeGroupAdd (uirating_t *uirating, UIWidget *sg)
+uiratingSizeGroupAdd (uirating_t *uirating, uiwidget_t *sg)
 {
   uiSizeGroupAdd (sg, uiSpinboxGetUIWidget (uirating->spinbox));
 }

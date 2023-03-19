@@ -33,7 +33,7 @@ static void   confuiTableMove (confuigui_t *gui, int dir);
 static bool   confuiTableRemove (void *udata);
 
 void
-confuiMakeItemTable (confuigui_t *gui, UIWidget *boxp, confuiident_t id,
+confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
     int flags)
 {
   UIWidget    mhbox;

@@ -161,8 +161,8 @@ uimusicqUIFree (uimusicq_t *uimusicq)
 }
 
 UIWidget *
-uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
-    UIWidget *statusMsg, uientryval_t validateFunc)
+uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
+    uiwidget_t *statusMsg, uientryval_t validateFunc)
 {
   int               saveci;
   char              tbuff [MAXPATHLEN];

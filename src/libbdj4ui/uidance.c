@@ -39,7 +39,7 @@ static bool uidanceSelectHandler (void *udata, long idx);
 static void uidanceCreateDanceList (uidance_t *uidance);
 
 uidance_t *
-uidanceDropDownCreate (UIWidget *boxp, UIWidget *parentwin, int flags,
+uidanceDropDownCreate (UIWidget *boxp, uiwidget_t *parentwin, int flags,
     const char *label, int where, int count)
 {
   uidance_t  *uidance;
@@ -127,7 +127,7 @@ uidanceSetState (uidance_t *uidance, int state)
 }
 
 void
-uidanceSizeGroupAdd (uidance_t *uidance, UIWidget *sg)
+uidanceSizeGroupAdd (uidance_t *uidance, uiwidget_t *sg)
 {
   uiSizeGroupAdd (sg, uidance->buttonp);
 }
