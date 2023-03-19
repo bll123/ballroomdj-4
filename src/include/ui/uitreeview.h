@@ -68,7 +68,7 @@ void  uiTreeViewDisableSingleClick (uitree_t *uitree);
 void  uiTreeViewSelectSetMode (uitree_t *uitree, int mode);
 void  uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb);
 void  uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *cb);
-void  uiTreeViewSetRadioCallback (uitree_t *uitree, callback_t *cb);
+void  uiTreeViewRadioSetRow (uitree_t *uitree, int row);
 UIWidget * uiTreeViewGetUIWidget (uitree_t *uitree);
 void  uiTreeViewPreColumnSetMinWidth (uitree_t *uitree, int minwidth);
 void  uiTreeViewPreColumnSetEllipsizeColumn (uitree_t *uitree, int ellipsizeColumn);

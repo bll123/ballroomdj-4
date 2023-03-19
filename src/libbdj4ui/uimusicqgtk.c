@@ -407,9 +407,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, UIWidget *parentwin, int ci,
   uitreedispAddDisplayColumns (uiw->musicqTree, sellist,
       MUSICQ_COL_MAX, MUSICQ_COL_FONT, MUSICQ_COL_ELLIPSIZE);
 
-// newflag is set in uimusicq.c
-//  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), NULL);
-
   g_signal_connect ((GtkWidget *) uiw->sel, "changed",
       G_CALLBACK (uimusicqSelectionChgCallback), uimusicq);
 
@@ -533,8 +530,8 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
 {
   uimusicqinternal_t *uiw;
   long          loc;
-  int           count = 0;
-  char          *pathstr;
+//  int           count = 0;
+//  char          *pathstr;
 
   uiw = uimusicq->ui [mqidx].uiWidgets;
 
@@ -543,6 +540,8 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
     return loc;
   }
 
+  loc = uiTreeViewSelectGetIndex (uiw->musicqTree);
+#if 0
   count = uiTreeViewSelectGetCount (uiw->musicqTree);
   if (count == 1) {
     GtkTreeModel  *model;
@@ -564,6 +563,7 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
       }
     }
   }
+#endif
 
   return loc;
 }

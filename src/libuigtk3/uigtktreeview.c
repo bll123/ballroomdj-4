@@ -44,10 +44,10 @@ typedef struct uitree {
   callback_t        *rowactivecb;
   callback_t        *foreachcb;
   callback_t        *editedcb;
-  callback_t        *radiocb;
   int               selmode;
   int               minwidth;           // prep for append column
   int               ellipsizeColumn;    // prep for append column
+  int               radiorow;
   bool              selectset : 1;
   bool              savedselectset : 1;
   bool              valueiterset : 1;
@@ -83,9 +83,9 @@ uiCreateTreeView (void)
   uitree->rowactivecb = NULL;
   uitree->foreachcb = NULL;
   uitree->editedcb = NULL;
-  uitree->radiocb = NULL;
   uitree->minwidth = TREE_NO_MIN_WIDTH;
   uitree->ellipsizeColumn = TREE_NO_COLUMN;
+  uitree->radiorow = -1;
   uiWidgetSetAllMargins (&uitree->uitree, 2);
   return uitree;
 }
@@ -182,12 +182,12 @@ uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *cb)
 }
 
 void
-uiTreeViewSetRadioCallback (uitree_t *uitree, callback_t *cb)
+uiTreeViewRadioSetRow (uitree_t *uitree, int row)
 {
   if (uitree == NULL) {
     return;
   }
-  uitree->radiocb = cb;
+  uitree->radiorow = row;
 }
 
 UIWidget *
@@ -1096,9 +1096,18 @@ uiTreeViewRadioHandler (GtkCellRendererToggle *r,
   gtk_tree_model_get_iter_from_string (model, &iter, pathstr);
   gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, 1, -1);
 
-  if (uitree->radiocb != NULL) {
-    /* the callback must handle clearing the old value */
-    callbackHandlerIntInt (uitree->radiocb, atoi (pathstr), col);
+  if (uitree->radiorow != -1) {
+    char  tmp [40];
+
+    snprintf (tmp, sizeof (tmp), "%d", uitree->radiorow);
+    gtk_tree_model_get_iter_from_string (model, &iter, tmp);
+    gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, 0, -1);
+  }
+
+  uitree->radiorow = atoi (pathstr);
+
+  if (uitree->editedcb != NULL) {
+    callbackHandlerLong (uitree->editedcb, col);
   }
 }
 

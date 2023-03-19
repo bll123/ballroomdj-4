@@ -270,7 +270,6 @@ enum {
   CONFUI_TABLE_CB_REMOVE,
   CONFUI_TABLE_CB_ADD,
   CONFUI_TABLE_CB_CHANGED,
-  CONFUI_TABLE_CB_RADIO,
   CONFUI_TABLE_CB_DANCE_SELECT,
   CONFUI_TABLE_CB_MAX,
 };
@@ -294,7 +293,6 @@ typedef struct confuitable {
   GtkTreeSelection  *sel;
   callback_t        *callbacks [CONFUI_TABLE_CB_MAX];
   uibutton_t        *buttons [CONFUI_BUTTON_TABLE_MAX];
-  int               radiorow;
   int               flags;
   bool              changed;
   int               currcount;
@@ -500,7 +498,6 @@ void confuiMakeItemTable (confuigui_t *gui, UIWidget *box, confuiident_t id, int
 void confuiTableFree (confuigui_t *gui, confuiident_t id);
 void confuiTableSave (confuigui_t *gui, confuiident_t id);
 bool confuiTableChanged (void *udata, long col);
-bool confuiTableRadioChanged (void *udata, int row, int col);
 bool confuiSwitchTable (void *udata, long pagenum);
 
 /* conftableadd.c */
@@ -508,19 +505,13 @@ bool confuiTableAdd (void *udata);
 
 /* conftabledance.c */
 bool confuiDanceSelect (void *udata);
-// void confuiDanceSelect (GtkTreeView *tv, GtkTreePath *path, GtkTreeViewColumn *column, gpointer udata);
 void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
 
 /* conftableset.c */
-// GtkListStore *store, GtkTreeIter *iter,
 void confuiDanceSet (uitree_t *uitree, char *dancedisp, ilistidx_t key);
-// GtkListStore *store, GtkTreeIter *iter,
 void confuiGenreSet (uitree_t *uitree, int editable, char *genredisp, int clflag);
-// GtkListStore *store, GtkTreeIter *iter,
 void confuiLevelSet (uitree_t *uitree, int editable, char *leveldisp, long weight, int def);
-// GtkListStore *store, GtkTreeIter *iter,
 void confuiRatingSet (uitree_t *uitree, int editable, char *ratingdisp, long weight);
-// GtkListStore *store, GtkTreeIter *iter,
 void confuiStatusSet (uitree_t *uitree, int editable, char *statusdisp, int playflag);
 
 /* confui.c */

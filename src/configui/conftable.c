@@ -168,24 +168,6 @@ confuiTableChanged (void *udata, long col)
 }
 
 bool
-confuiTableRadioChanged (void *udata, int row, int col)
-{
-  confuigui_t   *gui = udata;
-
-  uiTreeViewSelectSave (gui->tables [gui->tablecurr].uitree);
-  uiTreeViewSelectSet (gui->tables [gui->tablecurr].uitree,
-      gui->tables [gui->tablecurr].radiorow);
-  uiTreeViewSetValues (gui->tables [gui->tablecurr].uitree,
-      col, (treeint_t) 0,
-      TREE_VALUE_END);
-  uiTreeViewSelectRestore (gui->tables [gui->tablecurr].uitree);
-
-  gui->tables [gui->tablecurr].radiorow = row;
-  gui->tables [gui->tablecurr].changed = true;
-  return UICB_CONT;
-}
-
-bool
 confuiSwitchTable (void *udata, long pagenum)
 {
   confuigui_t       *gui = udata;

@@ -80,10 +80,6 @@ confuiCreateLevelTable (confuigui_t *gui)
       callbackInitLong (confuiTableChanged, gui);
   uiTreeViewSetEditedCallback (uitree,
       gui->tables [CONFUI_ID_LEVELS].callbacks [CONFUI_TABLE_CB_CHANGED]);
-  gui->tables [CONFUI_ID_LEVELS].callbacks [CONFUI_TABLE_CB_RADIO] =
-      callbackInitIntInt (confuiTableRadioChanged, gui);
-  uiTreeViewSetRadioCallback (uitree,
-      gui->tables [CONFUI_ID_LEVELS].callbacks [CONFUI_TABLE_CB_RADIO]);
 
   uiTreeViewCreateValueStore (uitree, CONFUI_LEVEL_COL_MAX,
       TREE_TYPE_INT,          // editable
@@ -109,7 +105,7 @@ confuiCreateLevelTable (confuigui_t *gui)
       def = 0;
     }
     if (def && ! deffound) {
-      gui->tables [CONFUI_ID_LEVELS].radiorow = key;
+      uiTreeViewRadioSetRow (uitree, key);
       deffound = true;
     }
 
