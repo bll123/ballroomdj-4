@@ -540,30 +540,8 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
     return loc;
   }
 
+  uiTreeViewSelectCurrent (uiw->musicqTree);
   loc = uiTreeViewSelectGetIndex (uiw->musicqTree);
-#if 0
-  count = uiTreeViewSelectGetCount (uiw->musicqTree);
-  if (count == 1) {
-    GtkTreeModel  *model;
-    GtkTreeIter   iter;
-    GtkTreePath   *path;
-    int           valid;
-
-    valid = gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
-    if (valid) {
-      path = gtk_tree_model_get_path (model, &iter);
-      mdextalloc (path);
-      if (path != NULL) {
-        pathstr = gtk_tree_path_to_string (path);
-        mdextalloc (pathstr);
-        loc = atol (pathstr);
-        mdextfree (path);
-        gtk_tree_path_free (path);
-        mdfree (pathstr);       // allocated by gtk
-      }
-    }
-  }
-#endif
 
   return loc;
 }
@@ -769,19 +747,6 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
           MUSICQ_COL_DBIDX, (treenum_t) musicqupditem->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           TREE_VALUE_END);
-#if 0
-      gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-      gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-          MUSICQ_COL_ELLIPSIZE, (treeint_t) TREE_ELLIPSIZE_END,
-          MUSICQ_COL_FONT, (treeint_t) listingFont,
-          MUSICQ_COL_DISP_IDX_COLOR, bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-          MUSICQ_COL_DISP_IDX_COLOR_SET, (treebool_t) FALSE,
-          MUSICQ_COL_DISP_IDX, (treenum_t) musicqupditem->dispidx,
-          MUSICQ_COL_UNIQUE_IDX, (treenum_t) musicqupditem->uniqueidx,
-          MUSICQ_COL_DBIDX, (treenum_t) musicqupditem->dbidx,
-          MUSICQ_COL_PAUSEIND, pixbuf,
-          -1);
-#endif
     } else {
       uiTreeViewSelectSet (uiw->musicqTree, row);
       /* all data must be updated, except the font and ellipsize */
@@ -792,15 +757,6 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
           MUSICQ_COL_DBIDX, (treenum_t) musicqupditem->dbidx,
           MUSICQ_COL_PAUSEIND, pixbuf,
           TREE_VALUE_END);
-#if 0
-      gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-          MUSICQ_COL_DISP_IDX_COLOR_SET, (treebool_t) FALSE,
-          MUSICQ_COL_DISP_IDX, (treenum_t) musicqupditem->dispidx,
-          MUSICQ_COL_UNIQUE_IDX, (treenum_t) musicqupditem->uniqueidx,
-          MUSICQ_COL_DBIDX, (treenum_t) musicqupditem->dbidx,
-          MUSICQ_COL_PAUSEIND, pixbuf,
-          -1);
-#endif
     }
     uimusicqSetMusicqDisplay (uimusicq, song, ci);
 
@@ -931,11 +887,11 @@ uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
 {
   int             ci;
   uimusicqinternal_t   *uiw;
-  GtkTreeModel    *model;
-  GtkTreeIter     iter;
-  glong           dbidx = -1;
+//  GtkTreeModel    *model;
+//  GtkTreeIter     iter;
+  dbidx_t         dbidx = -1;
   int             count;
-  int             valid;
+//  int             valid;
 
   ci = uimusicq->musicqManageIdx;
   uiw = uimusicq->ui [ci].uiWidgets;
@@ -949,10 +905,11 @@ uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
     return -1;
   }
 
-  valid = gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
-  if (valid) {
-    gtk_tree_model_get (model, &iter, MUSICQ_COL_DBIDX, &dbidx, -1);
-  }
+  dbidx = uiTreeViewGetValue (uiw->musicqTree, MUSICQ_COL_DBIDX);
+//  valid = gtk_tree_selection_get_selected (uiw->sel, &model, &iter);
+//  if (valid) {
+//    gtk_tree_model_get (model, &iter, MUSICQ_COL_DBIDX, &dbidx, -1);
+//  }
   return dbidx;
 }
 
@@ -1057,17 +1014,18 @@ uimusicqSetDefaultSelection (uimusicq_t *uimusicq)
 
   count = uiTreeViewSelectGetCount (uiw->musicqTree);
   if (uimusicq->ui [ci].count > 0 && count < 1) {
-    GtkTreeModel  *model;
-    GtkTreeIter   iter;
-    int           valid;
-    UIWidget      *uiwidgetp;
+//    GtkTreeModel  *model;
+//    GtkTreeIter   iter;
+//    int           valid;
+//    UIWidget      *uiwidgetp;
 
-    uiwidgetp = uiTreeViewGetUIWidget (uiw->musicqTree);
-    model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-    valid = gtk_tree_model_get_iter_first (model, &iter);
-    if (valid) {
-      gtk_tree_selection_select_iter (uiw->sel, &iter);
-    }
+    uiTreeViewSelectFirst (uiw->musicqTree);
+//    uiwidgetp = uiTreeViewGetUIWidget (uiw->musicqTree);
+//    model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
+//    valid = gtk_tree_model_get_iter_first (model, &iter);
+//    if (valid) {
+//      gtk_tree_selection_select_iter (uiw->sel, &iter);
+//    }
   }
 
   return;
@@ -1093,8 +1051,13 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
     logProcEnd (LOG_PROC, "uimusicqSetSelection", "select-999");
     return;
   }
+  if (uimusicq->ui [mqidx].selectLocation < 0) {
+    logProcEnd (LOG_PROC, "uimusicqSetSelection", "select-not-set");
+    return;
+  }
 
   uiTreeViewSelectSet (uiw->musicqTree, uimusicq->ui [mqidx].selectLocation);
+
   snprintf (tbuff, sizeof (tbuff), "%ld", uimusicq->ui [mqidx].selectLocation);
   path = gtk_tree_path_new_from_string (tbuff);
   mdextalloc (path);
