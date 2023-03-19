@@ -324,6 +324,29 @@ uiTreeViewAppendColumn (uitree_t *uitree, int widgettype,
 }
 
 void
+uiTreeViewColumnSetVisible (uitree_t *uitree, int col, int flag)
+{
+  GtkTreeViewColumn   *column = NULL;
+
+  if (uitree == NULL) {
+    return;
+  }
+
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (uitree->uitree.widget), col);
+  if (column != NULL) {
+    int     val = TRUE;
+
+    if (flag == TREE_COLUMN_HIDDEN) {
+      val = FALSE;
+    }
+    if (flag == TREE_COLUMN_SHOWN) {
+      val = TRUE;
+    }
+    gtk_tree_view_column_set_visible (column, val);
+  }
+}
+
+void
 uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...)
 {
   GtkListStore  *store = NULL;
@@ -990,10 +1013,10 @@ uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* pathstr,
 {
   uitree_t      *uitree = udata;
   GtkWidget     *tree;
-  GtkTreeModel  *model;
   GtkTreeIter   iter;
   GType         coltype;
   int           col;
+  char          *oldstr = NULL;
 
   if (uitree == NULL) {
     return;
@@ -1005,20 +1028,27 @@ uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* pathstr,
   /* the column was created */
   col = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (r), "uicolumn"));
 
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
-  gtk_tree_model_get_iter_from_string (model, &iter, pathstr);
-  coltype = gtk_tree_model_get_column_type (model, col);
+  gtk_tree_model_get_iter_from_string (uitree->model, &iter, pathstr);
+  coltype = gtk_tree_model_get_column_type (uitree->model, col);
+
   if (coltype == G_TYPE_STRING) {
-    gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, ntext, -1);
+    gtk_tree_model_get (uitree->model, &iter, col, &oldstr, -1);
+    gtk_list_store_set (GTK_LIST_STORE (uitree->model), &iter, col, ntext, -1);
   }
   if (coltype == G_TYPE_LONG) {
     long val = atol (ntext);
-    gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, val, -1);
+    gtk_list_store_set (GTK_LIST_STORE (uitree->model), &iter, col, val, -1);
   }
 
   if (uitree->editedcb != NULL) {
-    callbackHandlerLong (uitree->editedcb, col);
+    int   rc;
+
+    rc = callbackHandlerLong (uitree->editedcb, col);
+    if (oldstr != NULL && rc == UICB_STOP) {
+      gtk_list_store_set (GTK_LIST_STORE (uitree->model), &iter, col, oldstr, -1);
+    }
   }
+  dataFree (oldstr);
 }
 
 static void

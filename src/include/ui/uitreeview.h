@@ -38,6 +38,8 @@ enum {
   TREE_WIDGET_IMAGE,
   TREE_WIDGET_CHECKBOX,
   TREE_WIDGET_RADIO,
+  TREE_COLUMN_HIDDEN,
+  TREE_COLUMN_SHOWN,
   SELECT_SINGLE,
   SELECT_MULTIPLE,
 };
@@ -62,6 +64,7 @@ void  uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *cb);
 void  uiTreeViewSetRadioCallback (uitree_t *uitree, callback_t *cb);
 UIWidget * uiTreeViewGetUIWidget (uitree_t *uitree);
 void  uiTreeViewAppendColumn (uitree_t *uitree, int widgettype, int coldisp, const char *title, ...);
+void  uiTreeViewColumnSetVisible (uitree_t *uitree, int col, int flag);
 void  uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...);
 void  uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typelist);
 void  uiTreeViewValueAppend (uitree_t *uitree);
