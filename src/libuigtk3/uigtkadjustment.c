@@ -17,7 +17,7 @@
 #include "ui/uiadjustment.h"
 
 void
-uiCreateAdjustment (UIWidget *uiwidget, double value, double start, double end,
+uiCreateAdjustment (uiwidget_t *uiwidget, double value, double start, double end,
     double stepinc, double pageinc, double pagesz)
 {
   GtkAdjustment     *adjustment;
@@ -32,7 +32,7 @@ uiCreateAdjustment (UIWidget *uiwidget, double value, double start, double end,
 }
 
 void *
-uiAdjustmentGetAdjustment (UIWidget *uiwidget)
+uiAdjustmentGetAdjustment (uiwidget_t *uiwidget)
 {
   if (uiwidget == NULL) {
     return NULL;

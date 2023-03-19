@@ -23,7 +23,7 @@
 static gboolean uiScaleChangeValueHandler (GtkRange *range, GtkScrollType scroll, gdouble value, gpointer udata);
 
 void
-uiCreateScale (UIWidget *uiwidget, double lower, double upper,
+uiCreateScale (uiwidget_t *uiwidget, double lower, double upper,
     double stepinc, double pageinc, double initvalue, int digits)
 {
   GtkWidget     *scale;
@@ -48,14 +48,14 @@ uiCreateScale (UIWidget *uiwidget, double lower, double upper,
 }
 
 void
-uiScaleSetCallback (UIWidget *uiscale, callback_t *uicb)
+uiScaleSetCallback (uiwidget_t *uiscale, callback_t *uicb)
 {
   g_signal_connect (uiscale->widget, "change-value",
       G_CALLBACK (uiScaleChangeValueHandler), uicb);
 }
 
 double
-uiScaleEnforceMax (UIWidget *uiscale, double value)
+uiScaleEnforceMax (uiwidget_t *uiscale, double value)
 {
   GtkAdjustment   *adjustment;
   double          max;
@@ -71,7 +71,7 @@ uiScaleEnforceMax (UIWidget *uiscale, double value)
 }
 
 double
-uiScaleGetValue (UIWidget *uiscale)
+uiScaleGetValue (uiwidget_t *uiscale)
 {
   double value;
 
@@ -80,7 +80,7 @@ uiScaleGetValue (UIWidget *uiscale)
 }
 
 int
-uiScaleGetDigits (UIWidget *uiscale)
+uiScaleGetDigits (uiwidget_t *uiscale)
 {
   int value;
 
@@ -89,19 +89,19 @@ uiScaleGetDigits (UIWidget *uiscale)
 }
 
 void
-uiScaleSetValue (UIWidget *uiscale, double value)
+uiScaleSetValue (uiwidget_t *uiscale, double value)
 {
   gtk_range_set_value (GTK_RANGE (uiscale->widget), value);
 }
 
 void
-uiScaleSetRange (UIWidget *uiscale, double start, double end)
+uiScaleSetRange (uiwidget_t *uiscale, double start, double end)
 {
   gtk_range_set_range (GTK_RANGE (uiscale->widget), start, end);
 }
 
 void
-uiScaleSetState (UIWidget *uiscale, int state)
+uiScaleSetState (uiwidget_t *uiscale, int state)
 {
   if (uiscale == NULL) {
     return;

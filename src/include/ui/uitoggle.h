@@ -10,13 +10,13 @@
 
 #include "callback.h"
 
-void uiCreateCheckButton (UIWidget *uiwidget, const char *txt, int value);
-void uiCreateRadioButton (UIWidget *uiwidget, UIWidget *widgetgrp, const char *txt, int value);
-void uiCreateToggleButton (UIWidget *uiwidget, const char *txt, const char *imgname,
-    const char *tooltiptxt, UIWidget *image, int value);
-void uiToggleButtonSetCallback (UIWidget *uiwidget, callback_t *uicb);
-void uiToggleButtonSetImage (UIWidget *uiwidget, UIWidget *image);
-bool uiToggleButtonIsActive (UIWidget *uiwidget);
-void uiToggleButtonSetState (UIWidget *uiwidget, int state);
+void uiCreateCheckButton (uiwidget_t *uiwidget, const char *txt, int value);
+void uiCreateRadioButton (uiwidget_t *uiwidget, uiwidget_t *widgetgrp, const char *txt, int value);
+void uiCreateToggleButton (uiwidget_t *uiwidget, const char *txt, const char *imgname,
+    const char *tooltiptxt, uiwidget_t *image, int value);
+void uiToggleButtonSetCallback (uiwidget_t *uiwidget, callback_t *uicb);
+void uiToggleButtonSetImage (uiwidget_t *uiwidget, uiwidget_t *image);
+bool uiToggleButtonIsActive (uiwidget_t *uiwidget);
+void uiToggleButtonSetState (uiwidget_t *uiwidget, int state);
 
 #endif /* INC_UITOGGLE_H */

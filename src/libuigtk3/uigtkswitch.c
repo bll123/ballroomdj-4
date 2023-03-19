@@ -26,9 +26,9 @@
 #include "ui/uiswitch.h"
 
 typedef struct uiswitch {
-  UIWidget    uiswitch;
-  UIWidget    switchoffimg;
-  UIWidget    switchonimg;
+  uiwidget_t  uiswitch;
+  uiwidget_t  switchoffimg;
+  uiwidget_t  switchonimg;
 } uiswitch_t;
 
 static void uiSwitchImageHandler (GtkButton *b, gpointer udata);
@@ -103,7 +103,7 @@ uiSwitchGetValue (uiswitch_t *uiswitch)
   return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiswitch->uiswitch.widget));
 }
 
-UIWidget *
+uiwidget_t *
 uiSwitchGetUIWidget (uiswitch_t *uiswitch)
 {
   if (uiswitch == NULL) {

@@ -33,7 +33,7 @@ static bool uiButtonPressCallback (void *udata);
 static bool uiButtonReleaseCallback (void *udata);
 
 typedef struct uibutton {
-  UIWidget    uibutton;
+  uiwidget_t  uibutton;
   mstime_t    repeatTimer;
   int         repeatMS;
   callback_t  *cb;
@@ -99,7 +99,7 @@ uiButtonFree (uibutton_t *uibutton)
   }
 }
 
-UIWidget *
+uiwidget_t *
 uiButtonGetUIWidget (uibutton_t *uibutton)
 {
   if (uibutton == NULL) {

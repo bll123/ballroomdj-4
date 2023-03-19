@@ -12,7 +12,7 @@ typedef struct uitextbox uitextbox_t;
 
 uitextbox_t  *uiTextBoxCreate (int height, const char *hlcolor);
 void  uiTextBoxFree (uitextbox_t *tb);
-UIWidget * uiTextBoxGetScrolledWindow (uitextbox_t *tb);
+uiwidget_t * uiTextBoxGetScrolledWindow (uitextbox_t *tb);
 char  *uiTextBoxGetValue (uitextbox_t *tb);
 void  uiTextBoxSetReadonly (uitextbox_t *tb);
 void  uiTextBoxScrollToEnd (uitextbox_t *tb);

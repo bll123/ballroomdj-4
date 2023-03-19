@@ -18,7 +18,7 @@
 #include "ui/uibox.h"
 
 void
-uiCreateVertBox (UIWidget *uiwidget)
+uiCreateVertBox (uiwidget_t *uiwidget)
 {
   GtkWidget *box;
 
@@ -27,7 +27,7 @@ uiCreateVertBox (UIWidget *uiwidget)
 }
 
 void
-uiCreateHorizBox (UIWidget *uiwidget)
+uiCreateHorizBox (uiwidget_t *uiwidget)
 {
   GtkWidget *box;
 
@@ -36,31 +36,31 @@ uiCreateHorizBox (UIWidget *uiwidget)
 }
 
 void
-uiBoxPackInWindow (UIWidget *uiwindow, UIWidget *uibox)
+uiBoxPackInWindow (uiwidget_t *uiwindow, uiwidget_t *uibox)
 {
   gtk_container_add (GTK_CONTAINER (uiwindow->widget), uibox->widget);
 }
 
 void
-uiBoxPackStart (UIWidget *uibox, UIWidget *uiwidget)
+uiBoxPackStart (uiwidget_t *uibox, uiwidget_t *uiwidget)
 {
   gtk_box_pack_start (GTK_BOX (uibox->widget), uiwidget->widget, FALSE, FALSE, 0);
 }
 
 void
-uiBoxPackStartExpand (UIWidget *uibox, UIWidget *uiwidget)
+uiBoxPackStartExpand (uiwidget_t *uibox, uiwidget_t *uiwidget)
 {
   gtk_box_pack_start (GTK_BOX (uibox->widget), uiwidget->widget, TRUE, TRUE, 0);
 }
 
 void
-uiBoxPackEnd (UIWidget *uibox, UIWidget *uiwidget)
+uiBoxPackEnd (uiwidget_t *uibox, uiwidget_t *uiwidget)
 {
   gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, FALSE, FALSE, 0);
 }
 
 void
-uiBoxPackEndExpand (UIWidget *uibox, UIWidget *uiwidget)
+uiBoxPackEndExpand (uiwidget_t *uibox, uiwidget_t *uiwidget)
 {
   gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, TRUE, TRUE, 0);
 }

@@ -19,7 +19,7 @@
 /* widget interface */
 
 void
-uiWidgetSetState (UIWidget *uiwidget, int state)
+uiWidgetSetState (uiwidget_t *uiwidget, int state)
 {
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
@@ -28,19 +28,19 @@ uiWidgetSetState (UIWidget *uiwidget, int state)
 }
 
 void
-uiWidgetExpandHoriz (UIWidget *uiwidget)
+uiWidgetExpandHoriz (uiwidget_t *uiwidget)
 {
   gtk_widget_set_hexpand (uiwidget->widget, TRUE);
 }
 
 void
-uiWidgetExpandVert (UIWidget *uiwidget)
+uiWidgetExpandVert (uiwidget_t *uiwidget)
 {
   gtk_widget_set_vexpand (uiwidget->widget, TRUE);
 }
 
 void
-uiWidgetSetAllMargins (UIWidget *uiwidget, int mult)
+uiWidgetSetAllMargins (uiwidget_t *uiwidget, int mult)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -53,7 +53,7 @@ uiWidgetSetAllMargins (UIWidget *uiwidget, int mult)
 }
 
 void
-uiWidgetSetMarginTop (UIWidget *uiwidget, int mult)
+uiWidgetSetMarginTop (uiwidget_t *uiwidget, int mult)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -63,7 +63,7 @@ uiWidgetSetMarginTop (UIWidget *uiwidget, int mult)
 }
 
 void
-uiWidgetSetMarginBottom (UIWidget *uiwidget, int mult)
+uiWidgetSetMarginBottom (uiwidget_t *uiwidget, int mult)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -73,7 +73,7 @@ uiWidgetSetMarginBottom (UIWidget *uiwidget, int mult)
 }
 
 void
-uiWidgetSetMarginStart (UIWidget *uiwidget, int mult)
+uiWidgetSetMarginStart (uiwidget_t *uiwidget, int mult)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -84,7 +84,7 @@ uiWidgetSetMarginStart (UIWidget *uiwidget, int mult)
 
 
 void
-uiWidgetSetMarginEnd (UIWidget *uiwidget, int mult)
+uiWidgetSetMarginEnd (uiwidget_t *uiwidget, int mult)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -94,7 +94,7 @@ uiWidgetSetMarginEnd (UIWidget *uiwidget, int mult)
 }
 
 void
-uiWidgetAlignHorizFill (UIWidget *uiwidget)
+uiWidgetAlignHorizFill (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -104,7 +104,7 @@ uiWidgetAlignHorizFill (UIWidget *uiwidget)
 }
 
 void
-uiWidgetAlignHorizStart (UIWidget *uiwidget)
+uiWidgetAlignHorizStart (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -114,7 +114,7 @@ uiWidgetAlignHorizStart (UIWidget *uiwidget)
 }
 
 void
-uiWidgetAlignHorizEnd (UIWidget *uiwidget)
+uiWidgetAlignHorizEnd (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -124,7 +124,7 @@ uiWidgetAlignHorizEnd (UIWidget *uiwidget)
 }
 
 void
-uiWidgetAlignHorizCenter (UIWidget *uiwidget)
+uiWidgetAlignHorizCenter (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -134,7 +134,7 @@ uiWidgetAlignHorizCenter (UIWidget *uiwidget)
 }
 
 void
-uiWidgetAlignVertFill (UIWidget *uiwidget)
+uiWidgetAlignVertFill (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -144,7 +144,7 @@ uiWidgetAlignVertFill (UIWidget *uiwidget)
 }
 
 void
-uiWidgetAlignVertStart (UIWidget *uiwidget)
+uiWidgetAlignVertStart (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -154,7 +154,7 @@ uiWidgetAlignVertStart (UIWidget *uiwidget)
 }
 
 void
-uiWidgetAlignVertCenter (UIWidget *uiwidget)
+uiWidgetAlignVertCenter (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -164,7 +164,7 @@ uiWidgetAlignVertCenter (UIWidget *uiwidget)
 }
 
 void
-uiWidgetDisableFocus (UIWidget *uiwidget)
+uiWidgetDisableFocus (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -174,7 +174,7 @@ uiWidgetDisableFocus (UIWidget *uiwidget)
 }
 
 void
-uiWidgetHide (UIWidget *uiwidget)
+uiWidgetHide (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -184,7 +184,7 @@ uiWidgetHide (UIWidget *uiwidget)
 }
 
 void
-uiWidgetShow (UIWidget *uiwidget)
+uiWidgetShow (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -194,7 +194,7 @@ uiWidgetShow (UIWidget *uiwidget)
 }
 
 void
-uiWidgetShowAll (UIWidget *uiwidget)
+uiWidgetShowAll (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -205,7 +205,7 @@ uiWidgetShowAll (UIWidget *uiwidget)
 
 
 void
-uiWidgetMakePersistent (UIWidget *uiwidget)
+uiWidgetMakePersistent (uiwidget_t *uiwidget)
 {
   if (uiwidget == NULL) {
     return;
@@ -220,7 +220,7 @@ uiWidgetMakePersistent (UIWidget *uiwidget)
 }
 
 void
-uiWidgetClearPersistent (UIWidget *uiwidget)
+uiWidgetClearPersistent (uiwidget_t *uiwidget)
 {
   if (uiwidget == NULL) {
     return;
@@ -235,7 +235,7 @@ uiWidgetClearPersistent (UIWidget *uiwidget)
 }
 
 void
-uiWidgetSetSizeRequest (UIWidget *uiwidget, int width, int height)
+uiWidgetSetSizeRequest (uiwidget_t *uiwidget, int width, int height)
 {
   if (uiwidget == NULL) {
     return;
@@ -248,7 +248,7 @@ uiWidgetSetSizeRequest (UIWidget *uiwidget, int width, int height)
 }
 
 bool
-uiWidgetIsValid (UIWidget *uiwidget)
+uiWidgetIsValid (uiwidget_t *uiwidget)
 {
   bool    rc = false;
   if (uiwidget->widget != NULL) {
@@ -258,7 +258,7 @@ uiWidgetIsValid (UIWidget *uiwidget)
 }
 
 void
-uiWidgetGetPosition (UIWidget *uiwidget, int *x, int *y)
+uiWidgetGetPosition (uiwidget_t *uiwidget, int *x, int *y)
 {
   GtkAllocation alloc;
 
@@ -268,14 +268,14 @@ uiWidgetGetPosition (UIWidget *uiwidget, int *x, int *y)
 }
 
 void
-uiWidgetSetClass (UIWidget *uiwidget, const char *class)
+uiWidgetSetClass (uiwidget_t *uiwidget, const char *class)
 {
   gtk_style_context_add_class (
      gtk_widget_get_style_context (uiwidget->widget), class);
 }
 
 void
-uiWidgetRemoveClass (UIWidget *uiwidget, const char *class)
+uiWidgetRemoveClass (uiwidget_t *uiwidget, const char *class)
 {
   gtk_style_context_remove_class (
       gtk_widget_get_style_context (uiwidget->widget), class);

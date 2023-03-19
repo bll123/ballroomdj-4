@@ -26,9 +26,9 @@
 #include "ui/uiwindow.h"
 
 typedef struct uitextbox {
-  UIWidget      scw;
-  UIWidget      textbox;
-  UIWidget      buffer;
+  uiwidget_t    scw;
+  uiwidget_t    textbox;
+  uiwidget_t    buffer;
 } uitextbox_t;
 
 uitextbox_t *
@@ -69,7 +69,7 @@ uiTextBoxFree (uitextbox_t *tb)
   }
 }
 
-UIWidget *
+uiwidget_t *
 uiTextBoxGetScrolledWindow (uitextbox_t *tb)
 {
   return &tb->scw;

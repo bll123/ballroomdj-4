@@ -29,7 +29,7 @@
 
 typedef struct uispinbox {
   int             sbtype;
-  UIWidget        uispinbox;
+  uiwidget_t      uispinbox;
   callback_t    *convcb;
   int             curridx;
   uispinboxdisp_t textGetProc;
@@ -254,14 +254,14 @@ uiSpinboxTimeSetValueChangedCallback (uispinbox_t *spinbox, callback_t *uicb)
 }
 
 void
-uiSpinboxSetValueChangedCallback (UIWidget *uiwidget, callback_t *uicb)
+uiSpinboxSetValueChangedCallback (uiwidget_t *uiwidget, callback_t *uicb)
 {
   g_signal_connect (uiwidget->widget, "value-changed",
       G_CALLBACK (uiSpinboxValueChangedHandler), uicb);
 }
 
 void
-uiSpinboxIntCreate (UIWidget *uiwidget)
+uiSpinboxIntCreate (uiwidget_t *uiwidget)
 {
   GtkWidget   *spinbox;
 
@@ -278,7 +278,7 @@ uiSpinboxIntCreate (UIWidget *uiwidget)
 }
 
 void
-uiSpinboxDoubleCreate (UIWidget *uiwidget)
+uiSpinboxDoubleCreate (uiwidget_t *uiwidget)
 {
   GtkWidget   *spinbox;
 
@@ -328,14 +328,14 @@ uiSpinboxWrap (uispinbox_t *spinbox)
 }
 
 void
-uiSpinboxSet (UIWidget *uispinbox, double min, double max)
+uiSpinboxSet (uiwidget_t *uispinbox, double min, double max)
 {
   gtk_spin_button_set_range (GTK_SPIN_BUTTON (uispinbox->widget), min, max);
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (uispinbox->widget), min);
 }
 
 double
-uiSpinboxGetValue (UIWidget *uispinbox)
+uiSpinboxGetValue (uiwidget_t *uispinbox)
 {
   GtkAdjustment     *adjustment;
   gdouble           value;
@@ -355,7 +355,7 @@ uiSpinboxGetValue (UIWidget *uispinbox)
 }
 
 void
-uiSpinboxSetValue (UIWidget *uispinbox, double value)
+uiSpinboxSetValue (uiwidget_t *uispinbox, double value)
 {
   GtkAdjustment     *adjustment;
 
@@ -405,7 +405,7 @@ uiSpinboxAddClass (const char *classnm, const char *color)
   uiAddColorClass (tbuff, color);
 }
 
-UIWidget *
+uiwidget_t *
 uiSpinboxGetUIWidget (uispinbox_t *spinbox)
 {
   return &spinbox->uispinbox;

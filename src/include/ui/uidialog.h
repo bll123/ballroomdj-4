@@ -23,11 +23,11 @@ enum {
 char  *uiSelectDirDialog (uiselect_t *selectdata);
 char  *uiSelectFileDialog (uiselect_t *selectdata);
 char  *uiSaveFileDialog (uiselect_t *selectdata);
-void  uiCreateDialog (UIWidget *uiwidget, UIWidget *window, callback_t *uicb, const char *title, ...);
-void  uiDialogShow (UIWidget *uiwidgetp);
-void  uiDialogAddButtons (UIWidget *uidialog, ...);
-void  uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp);
-void  uiDialogDestroy (UIWidget *uidialog);
-uiselect_t *uiDialogCreateSelect (UIWidget *window, const char *label, const char *startpath, const char *dfltname, const char *mimefiltername, const char *mimetype);
+void  uiCreateDialog (uiwidget_t *uiwidget, uiwidget_t *window, callback_t *uicb, const char *title, ...);
+void  uiDialogShow (uiwidget_t *uiwidgetp);
+void  uiDialogAddButtons (uiwidget_t *uidialog, ...);
+void  uiDialogPackInDialog (uiwidget_t *uidialog, uiwidget_t *boxp);
+void  uiDialogDestroy (uiwidget_t *uidialog);
+uiselect_t *uiDialogCreateSelect (uiwidget_t *window, const char *label, const char *startpath, const char *dfltname, const char *mimefiltername, const char *mimetype);
 
 #endif /* INC_UIDIALOG_H */

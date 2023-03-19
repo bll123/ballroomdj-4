@@ -35,7 +35,7 @@ static gboolean uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path
 static GType uiTreeViewConvertTreeType (int type);
 
 typedef struct uitree {
-  UIWidget          uitree;
+  uiwidget_t        uitree;
   GtkTreeSelection  *sel;
   GtkTreeIter       selectiter;
   GtkTreeIter       savedselectiter;
@@ -190,7 +190,7 @@ uiTreeViewRadioSetRow (uitree_t *uitree, int row)
   uitree->radiorow = row;
 }
 
-UIWidget *
+uiwidget_t *
 uiTreeViewGetUIWidget (uitree_t *uitree)
 {
   if (uitree == NULL) {

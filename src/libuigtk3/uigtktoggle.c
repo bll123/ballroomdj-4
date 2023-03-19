@@ -21,7 +21,7 @@
 static void uiToggleButtonToggleHandler (GtkButton *b, gpointer udata);
 
 void
-uiCreateCheckButton (UIWidget *uiwidget, const char *txt, int value)
+uiCreateCheckButton (uiwidget_t *uiwidget, const char *txt, int value)
 {
   GtkWidget   *widget;
 
@@ -34,7 +34,7 @@ uiCreateCheckButton (UIWidget *uiwidget, const char *txt, int value)
 }
 
 void
-uiCreateRadioButton (UIWidget *uiwidget, UIWidget *widgetgrp,
+uiCreateRadioButton (uiwidget_t *uiwidget, uiwidget_t *widgetgrp,
     const char *txt, int value)
 {
   GtkWidget   *widget;
@@ -53,8 +53,8 @@ uiCreateRadioButton (UIWidget *uiwidget, UIWidget *widgetgrp,
 }
 
 void
-uiCreateToggleButton (UIWidget *uiwidget, const char *txt,
-    const char *imgname, const char *tooltiptxt, UIWidget *image, int value)
+uiCreateToggleButton (uiwidget_t *uiwidget, const char *txt,
+    const char *imgname, const char *tooltiptxt, uiwidget_t *image, int value)
 {
   GtkWidget   *widget;
   GtkWidget   *imagewidget = NULL;
@@ -84,20 +84,20 @@ uiCreateToggleButton (UIWidget *uiwidget, const char *txt,
 }
 
 void
-uiToggleButtonSetCallback (UIWidget *uiwidget, callback_t *uicb)
+uiToggleButtonSetCallback (uiwidget_t *uiwidget, callback_t *uicb)
 {
   g_signal_connect (uiwidget->widget, "toggled",
       G_CALLBACK (uiToggleButtonToggleHandler), uicb);
 }
 
 void
-uiToggleButtonSetImage (UIWidget *uiwidget, UIWidget *image)
+uiToggleButtonSetImage (uiwidget_t *uiwidget, uiwidget_t *image)
 {
   gtk_button_set_image (GTK_BUTTON (uiwidget->widget), image->widget);
 }
 
 bool
-uiToggleButtonIsActive (UIWidget *uiwidget)
+uiToggleButtonIsActive (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return 0;
@@ -106,7 +106,7 @@ uiToggleButtonIsActive (UIWidget *uiwidget)
 }
 
 void
-uiToggleButtonSetState (UIWidget *uiwidget, int state)
+uiToggleButtonSetState (uiwidget_t *uiwidget, int state)
 {
   if (uiwidget->widget == NULL) {
     return;

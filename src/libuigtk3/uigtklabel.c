@@ -17,7 +17,7 @@
 #include "ui/uilabel.h"
 
 void
-uiCreateLabel (UIWidget *uiwidget, const char *label)
+uiCreateLabel (uiwidget_t *uiwidget, const char *label)
 {
   GtkWidget *widget;
 
@@ -31,7 +31,7 @@ uiCreateLabel (UIWidget *uiwidget, const char *label)
 }
 
 void
-uiCreateColonLabel (UIWidget *uiwidget, const char *label)
+uiCreateColonLabel (uiwidget_t *uiwidget, const char *label)
 {
   GtkWidget *widget;
   char      tbuff [200];
@@ -56,7 +56,7 @@ uiLabelAddClass (const char *classnm, const char *color)
 }
 
 void
-uiLabelSetFont (UIWidget *uiwidget, const char *font)
+uiLabelSetFont (uiwidget_t *uiwidget, const char *font)
 {
   PangoFontDescription  *font_desc;
   PangoAttribute        *attr;
@@ -71,7 +71,7 @@ uiLabelSetFont (UIWidget *uiwidget, const char *font)
 }
 
 void
-uiLabelSetText (UIWidget *uiwidget, const char *text)
+uiLabelSetText (uiwidget_t *uiwidget, const char *text)
 {
   if (uiwidget == NULL || uiwidget->widget == NULL) {
     return;
@@ -81,7 +81,7 @@ uiLabelSetText (UIWidget *uiwidget, const char *text)
 }
 
 const char *
-uiLabelGetText (UIWidget *uiwidget)
+uiLabelGetText (uiwidget_t *uiwidget)
 {
   const char *txt;
 
@@ -94,7 +94,7 @@ uiLabelGetText (UIWidget *uiwidget)
 }
 
 void
-uiLabelEllipsizeOn (UIWidget *uiwidget)
+uiLabelEllipsizeOn (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -104,7 +104,7 @@ uiLabelEllipsizeOn (UIWidget *uiwidget)
 }
 
 void
-uiLabelSetSelectable (UIWidget *uiwidget)
+uiLabelSetSelectable (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -114,7 +114,7 @@ uiLabelSetSelectable (UIWidget *uiwidget)
 }
 
 void
-uiLabelSetMaxWidth (UIWidget *uiwidget, int width)
+uiLabelSetMaxWidth (uiwidget_t *uiwidget, int width)
 {
   if (uiwidget->widget == NULL) {
     return;
@@ -124,7 +124,7 @@ uiLabelSetMaxWidth (UIWidget *uiwidget, int width)
 }
 
 void
-uiLabelAlignEnd (UIWidget *uiwidget)
+uiLabelAlignEnd (uiwidget_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {
     return;

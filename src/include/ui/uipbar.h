@@ -8,7 +8,7 @@
 # include "ui-gtk3.h"
 #endif
 
-void uiCreateProgressBar (UIWidget *uiwidget);
-void uiProgressBarSet (UIWidget *uipb, double val);
+void uiCreateProgressBar (uiwidget_t *uiwidget);
+void uiProgressBarSet (uiwidget_t *uipb, double val);
 
 #endif /* INC_UIPBAR_H */

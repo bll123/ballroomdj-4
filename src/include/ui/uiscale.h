@@ -10,14 +10,14 @@
 
 #include "callback.h"
 
-void    uiCreateScale (UIWidget *uiwidget, double lower, double upper,
+void    uiCreateScale (uiwidget_t *uiwidget, double lower, double upper,
     double stepinc, double pageinc, double initvalue, int digits);
-void    uiScaleSetCallback (UIWidget *uiscale, callback_t *uicb);
-double  uiScaleEnforceMax (UIWidget *uiscale, double value);
-double  uiScaleGetValue (UIWidget *uiscale);
-int     uiScaleGetDigits (UIWidget *uiscale);
-void    uiScaleSetValue (UIWidget *uiscale, double value);
-void    uiScaleSetRange (UIWidget *uiscale, double start, double end);
-void    uiScaleSetState (UIWidget *uiscale, int state);
+void    uiScaleSetCallback (uiwidget_t *uiscale, callback_t *uicb);
+double  uiScaleEnforceMax (uiwidget_t *uiscale, double value);
+double  uiScaleGetValue (uiwidget_t *uiscale);
+int     uiScaleGetDigits (uiwidget_t *uiscale);
+void    uiScaleSetValue (uiwidget_t *uiscale, double value);
+void    uiScaleSetRange (uiwidget_t *uiscale, double start, double end);
+void    uiScaleSetState (uiwidget_t *uiscale, int state);
 
 #endif /* INC_UISCALE_H */

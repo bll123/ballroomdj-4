@@ -10,12 +10,12 @@
 
 #include "callback.h"
 
-void  uiCreateNotebook (UIWidget *uiwidget);
-void  uiNotebookTabPositionLeft (UIWidget *uiwidget);
-void  uiNotebookAppendPage (UIWidget *uinotebook, UIWidget *uiwidget, UIWidget *uilabel);
-void  uiNotebookSetActionWidget (UIWidget *uinotebook, UIWidget *uiwidget);
-void  uiNotebookSetPage (UIWidget *uinotebook, int pagenum);
-void  uiNotebookSetCallback (UIWidget *uinotebook, callback_t *uicb);
-void  uiNotebookHideShowPage (UIWidget *uinotebook, int pagenum, bool show);
+void  uiCreateNotebook (uiwidget_t *uiwidget);
+void  uiNotebookTabPositionLeft (uiwidget_t *uiwidget);
+void  uiNotebookAppendPage (uiwidget_t *uinotebook, uiwidget_t *uiwidget, uiwidget_t *uilabel);
+void  uiNotebookSetActionWidget (uiwidget_t *uinotebook, uiwidget_t *uiwidget);
+void  uiNotebookSetPage (uiwidget_t *uinotebook, int pagenum);
+void  uiNotebookSetCallback (uiwidget_t *uinotebook, callback_t *uicb);
+void  uiNotebookHideShowPage (uiwidget_t *uinotebook, int pagenum, bool show);
 
 #endif /* INC_UINOTEBOOK_H */

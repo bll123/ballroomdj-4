@@ -18,7 +18,7 @@
 #include "ui/uisep.h"
 
 void
-uiCreateHorizSeparator (UIWidget *uiwidget)
+uiCreateHorizSeparator (uiwidget_t *uiwidget)
 {
   GtkWidget   *sep;
 

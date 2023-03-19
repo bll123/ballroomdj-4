@@ -26,7 +26,7 @@
 #include "ui/uiwindow.h"
 
 typedef struct uiselect {
-  UIWidget    *window;
+  uiwidget_t  *window;
   const char  *label;
   const char  *startpath;
   const char  *dfltname;
@@ -36,7 +36,7 @@ typedef struct uiselect {
 
 static void uiDialogResponseHandler (GtkDialog *d, gint responseid, gpointer udata);
 static gboolean uiDialogIsDirectory (const GtkFileFilterInfo* filterInfo, gpointer udata);
-static void uiDialogAddButtonsInternal (UIWidget *uiwidget, va_list valist);
+static void uiDialogAddButtonsInternal (uiwidget_t *uiwidget, va_list valist);
 
 char *
 uiSelectDirDialog (uiselect_t *selectdata)
@@ -165,7 +165,7 @@ uiSaveFileDialog (uiselect_t *selectdata)
 }
 
 void
-uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
+uiCreateDialog (uiwidget_t *uiwidget, uiwidget_t *window,
     callback_t *uicb, const char *title, ...)
 {
   GtkWidget *dialog;
@@ -188,14 +188,14 @@ uiCreateDialog (UIWidget *uiwidget, UIWidget *window,
 }
 
 void
-uiDialogShow (UIWidget *uiwidgetp)
+uiDialogShow (uiwidget_t *uiwidgetp)
 {
   uiWidgetShowAll (uiwidgetp);
   uiWindowPresent (uiwidgetp);
 }
 
 void
-uiDialogAddButtons (UIWidget *uidialog, ...)
+uiDialogAddButtons (uiwidget_t *uidialog, ...)
 {
   va_list   valist;
 
@@ -209,7 +209,7 @@ uiDialogAddButtons (UIWidget *uidialog, ...)
 }
 
 void
-uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp)
+uiDialogPackInDialog (uiwidget_t *uidialog, uiwidget_t *boxp)
 {
   GtkWidget *content;
 
@@ -218,7 +218,7 @@ uiDialogPackInDialog (UIWidget *uidialog, UIWidget *boxp)
 }
 
 void
-uiDialogDestroy (UIWidget *uidialog)
+uiDialogDestroy (uiwidget_t *uidialog)
 {
   if (uidialog->widget == NULL) {
     return;
@@ -231,7 +231,7 @@ uiDialogDestroy (UIWidget *uidialog)
 }
 
 uiselect_t *
-uiDialogCreateSelect (UIWidget *window, const char *label,
+uiDialogCreateSelect (uiwidget_t *window, const char *label,
     const char *startpath, const char *dfltname,
     const char *mimefiltername, const char *mimetype)
 {
@@ -273,7 +273,7 @@ uiDialogIsDirectory (const GtkFileFilterInfo* filterInfo, gpointer udata)
 }
 
 static void
-uiDialogAddButtonsInternal (UIWidget *uiwidget, va_list valist)
+uiDialogAddButtonsInternal (uiwidget_t *uiwidget, va_list valist)
 {
   GtkWidget *dialog;
   char      *label;

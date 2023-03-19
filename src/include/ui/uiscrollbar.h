@@ -8,11 +8,11 @@
 # include "ui-gtk3.h"
 #endif
 
-void uiCreateVerticalScrollbar (UIWidget *uiwidget, double upper);
-void uiScrollbarSetUpper (UIWidget *uisb, double upper);
-void uiScrollbarSetPosition (UIWidget *uisb, double pos);
-void uiScrollbarSetStepIncrement (UIWidget *uisb, double step);
-void uiScrollbarSetPageIncrement (UIWidget *uisb, double page);
-void uiScrollbarSetPageSize (UIWidget *uisb, double sz);
+void uiCreateVerticalScrollbar (uiwidget_t *uiwidget, double upper);
+void uiScrollbarSetUpper (uiwidget_t *uisb, double upper);
+void uiScrollbarSetPosition (uiwidget_t *uisb, double pos);
+void uiScrollbarSetStepIncrement (uiwidget_t *uisb, double step);
+void uiScrollbarSetPageIncrement (uiwidget_t *uisb, double page);
+void uiScrollbarSetPageSize (uiwidget_t *uisb, double sz);
 
 #endif /* INC_UISCROLLBAR_H */
