@@ -58,7 +58,7 @@ static int      sockWriteData (Sock_t, char *, size_t);
 static void     sockFlush (Sock_t);
 static Sock_t   sockCanWrite (Sock_t);
 static int      sockSetNonblocking (Sock_t sock);
-// static int       sockSetBlocking (Sock_t sock);
+ // static int       sockSetBlocking (Sock_t sock);
 static void     sockInit (void);
 static void     sockCleanup (void);
 static Sock_t   sockSetOptions (Sock_t sock, int *err);

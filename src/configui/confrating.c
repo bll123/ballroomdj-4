@@ -25,8 +25,7 @@
 #include "rating.h"
 #include "ui.h"
 
-static int    confuiRatingListCreate (GtkTreeModel *model, GtkTreePath *path,
-    GtkTreeIter *iter, gpointer udata);
+static bool confuiRatingListCreate (void *udata);
 static void   confuiRatingSave (confuigui_t *gui);
 
 void
@@ -67,8 +66,6 @@ confuiBuildUIEditRatings (confuigui_t *gui)
 void
 confuiCreateRatingTable (confuigui_t *gui)
 {
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
   ilistidx_t        iteridx;
   ilistidx_t        key;
   rating_t          *ratings;
@@ -83,11 +80,19 @@ confuiCreateRatingTable (confuigui_t *gui)
   uitree = gui->tables [CONFUI_ID_RATINGS].uitree;
   uitreewidgetp = uiTreeViewGetUIWidget (uitree);
 
-  /* rating-editable, weight-editable, rating-disp, */
-  /* weight, adjustment, digits */
+  gui->tables [CONFUI_ID_RATINGS].callbacks [CONFUI_TABLE_CB_CHANGED] =
+      callbackInitLong (confuiTableChanged, gui);
+  uiTreeViewSetEditedCallback (uitree,
+      gui->tables [CONFUI_ID_RATINGS].callbacks [CONFUI_TABLE_CB_CHANGED]);
+
   uiTreeViewCreateValueStore (uitree, CONFUI_RATING_COL_MAX,
-      TREE_TYPE_NUM, TREE_TYPE_NUM, TREE_TYPE_STRING,
-      TREE_TYPE_NUM, TREE_TYPE_WIDGET, TREE_TYPE_NUM, TREE_TYPE_END);
+      TREE_TYPE_NUM,        // rating-editable
+      TREE_TYPE_NUM,        // weight-editable
+      TREE_TYPE_STRING,     // rating-disp
+      TREE_TYPE_NUM,        // weight
+      TREE_TYPE_WIDGET,     // adjustment
+      TREE_TYPE_NUM,        // digits
+      TREE_TYPE_END);
 
   ratingStartIterator (ratings, &iteridx);
 
@@ -106,61 +111,41 @@ confuiCreateRatingTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_RATINGS].currcount += 1;
   }
 
-  /* CONTEXT: configuration: rating: title of the rating name column */
-//  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, _("Rating"),
-//      TREE_COL_MODE_TEXT, CONFUI_RATING_COL_RATING,
-//      TREE_COL_MODE_EDITABLE, CONFUI_RATING_COL_R_EDITABLE,
-//      TREE_COL_MODE_END);
-  renderer = gtk_cell_renderer_text_new ();
-  g_object_set_data (G_OBJECT (renderer), "uicolumn",
-      GUINT_TO_POINTER (CONFUI_RATING_COL_RATING));
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", CONFUI_RATING_COL_RATING,
-      "editable", CONFUI_RATING_COL_R_EDITABLE,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: configuration: rating: title of the rating name column */
-  gtk_tree_view_column_set_title (column, _("Rating"));
-  g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), gui);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+      TREE_COL_DISP_GROW, tagdefs [TAG_DANCERATING].shortdisplayname,
+      TREE_COL_MODE_TEXT, CONFUI_RATING_COL_RATING,
+      TREE_COL_MODE_EDITABLE, CONFUI_RATING_COL_R_EDITABLE,
+      TREE_COL_MODE_END);
 
-  renderer = gtk_cell_renderer_spin_new ();
-  gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
-  g_object_set_data (G_OBJECT (renderer), "uicolumn",
-      GUINT_TO_POINTER (CONFUI_RATING_COL_WEIGHT));
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", CONFUI_RATING_COL_WEIGHT,
-      "editable", CONFUI_RATING_COL_W_EDITABLE,
-      "adjustment", CONFUI_RATING_COL_ADJUST,
-      "digits", CONFUI_RATING_COL_DIGITS,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: configuration: rating: title of the weight column */
-  gtk_tree_view_column_set_title (column, _("Weight"));
-  g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditSpinbox), gui);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_SPINBOX,
+      /* CONTEXT: configuration: rating: title of the weight column */
+      TREE_COL_DISP_GROW, _("Weight"),
+      TREE_COL_MODE_TEXT, CONFUI_RATING_COL_WEIGHT,
+      TREE_COL_MODE_EDITABLE, CONFUI_RATING_COL_W_EDITABLE,
+      TREE_COL_MODE_ADJUSTMENT, CONFUI_RATING_COL_ADJUST,
+      TREE_COL_MODE_DIGITS, CONFUI_RATING_COL_DIGITS,
+      TREE_COL_MODE_END);
 
   logProcEnd (LOG_PROC, "confuiCreateRatingTable", "");
 }
 
-static gboolean
-confuiRatingListCreate (GtkTreeModel *model, GtkTreePath *path,
-    GtkTreeIter *iter, gpointer udata)
+static bool
+confuiRatingListCreate (void *udata)
 {
   confuigui_t *gui = udata;
   char        *ratingdisp;
-  glong       weight;
+  int         weight;
 
   logProcBegin (LOG_PROC, "confuiRatingListCreate");
-  gtk_tree_model_get (model, iter,
-      CONFUI_RATING_COL_RATING, &ratingdisp,
-      CONFUI_RATING_COL_WEIGHT, &weight,
-      -1);
+  ratingdisp = uiTreeViewGetValueStr (gui->tables [CONFUI_ID_RATINGS].uitree,
+      CONFUI_RATING_COL_RATING);
+  weight = uiTreeViewGetValue (gui->tables [CONFUI_ID_RATINGS].uitree,
+      CONFUI_RATING_COL_WEIGHT);
   ilistSetStr (gui->tables [CONFUI_ID_RATINGS].savelist,
       gui->tables [CONFUI_ID_RATINGS].saveidx, RATING_RATING, ratingdisp);
   ilistSetNum (gui->tables [CONFUI_ID_RATINGS].savelist,
       gui->tables [CONFUI_ID_RATINGS].saveidx, RATING_WEIGHT, weight);
-  mdfree (ratingdisp);
+  dataFree (ratingdisp);
   gui->tables [CONFUI_ID_RATINGS].saveidx += 1;
   logProcEnd (LOG_PROC, "confuiRatingListCreate", "");
   return FALSE;

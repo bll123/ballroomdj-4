@@ -283,7 +283,7 @@ orgGetFromPath (org_t *org, const char *path, tagdefkey_t tagkey)
     org->rxdata = regexGet (org->rx, path);
     org->rxlen = 0;
     while (org->rxdata [c] != NULL) {
-//fprintf (stderr, "%d %s\n", c, org->rxdata [c]);
+      // fprintf (stderr, "%d %s\n", c, org->rxdata [c]);
       ++c;
     }
     org->rxlen = c;

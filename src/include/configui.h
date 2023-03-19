@@ -269,7 +269,8 @@ enum {
   CONFUI_TABLE_CB_DOWN,
   CONFUI_TABLE_CB_REMOVE,
   CONFUI_TABLE_CB_ADD,
-  CONFUI_TABLE_CB_EDIT_TEXT,
+  CONFUI_TABLE_CB_CHANGED,
+  CONFUI_TABLE_CB_RADIO,
   CONFUI_TABLE_CB_MAX,
 };
 
@@ -277,6 +278,7 @@ typedef struct configui configui_t;
 typedef struct confuigui confuigui_t;
 typedef struct confuitable confuitable_t;
 typedef void (*savefunc_t) (confuigui_t *);
+typedef bool (*listcreatefunc_t) (void *);
 
 enum {
   CONFUI_BUTTON_TABLE_UP,
@@ -291,15 +293,14 @@ typedef struct confuitable {
   GtkTreeSelection  *sel;
   callback_t        *callbacks [CONFUI_TABLE_CB_MAX];
   uibutton_t        *buttons [CONFUI_BUTTON_TABLE_MAX];
-  int       radiorow;
-  int       togglecol;
-  int       flags;
-  bool      changed;
-  int       currcount;
-  int       saveidx;
-  ilist_t   *savelist;
-  GtkTreeModelForeachFunc listcreatefunc;
-  savefunc_t  savefunc;
+  int               radiorow;
+  int               flags;
+  bool              changed;
+  int               currcount;
+  int               saveidx;
+  ilist_t           *savelist;
+  listcreatefunc_t  listcreatefunc;
+  savefunc_t        savefunc;
 } confuitable_t;
 
 enum {
@@ -497,10 +498,8 @@ void confuiCreateStatusTable (confuigui_t *gui);
 void confuiMakeItemTable (confuigui_t *gui, UIWidget *box, confuiident_t id, int flags);
 void confuiTableFree (confuigui_t *gui, confuiident_t id);
 void confuiTableSave (confuigui_t *gui, confuiident_t id);
-void confuiTableEditText (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
-void confuiTableToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer udata);
-void confuiTableEditSpinbox (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
-void confuiTableRadioToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer udata);
+bool confuiTableChanged (void *udata, long col);
+bool confuiTableRadioChanged (void *udata, int row, int col);
 bool confuiSwitchTable (void *udata, long pagenum);
 
 /* conftableadd.c */

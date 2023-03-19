@@ -26,7 +26,7 @@
 #include "mdebug.h"
 #include "ui.h"
 
-static int  confuiLevelListCreate (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
+static bool confuiLevelListCreate (void *udata);
 static void confuiLevelSave (confuigui_t *gui);
 
 void
@@ -58,7 +58,6 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   uiBoxPackStartExpand (&vbox, &hbox);
 
   confuiMakeItemTable (gui, &hbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);
-  gui->tables [CONFUI_ID_LEVELS].togglecol = CONFUI_LEVEL_COL_DEFAULT;
   gui->tables [CONFUI_ID_LEVELS].listcreatefunc = confuiLevelListCreate;
   gui->tables [CONFUI_ID_LEVELS].savefunc = confuiLevelSave;
   confuiCreateLevelTable (gui);
@@ -68,8 +67,6 @@ confuiBuildUIEditLevels (confuigui_t *gui)
 void
 confuiCreateLevelTable (confuigui_t *gui)
 {
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
   ilistidx_t        iteridx;
   ilistidx_t        key;
   level_t           *levels;
@@ -83,6 +80,15 @@ confuiCreateLevelTable (confuigui_t *gui)
   uitree = gui->tables [CONFUI_ID_LEVELS].uitree;
   uitreewidgetp = uiTreeViewGetUIWidget (uitree);
 
+  gui->tables [CONFUI_ID_LEVELS].callbacks [CONFUI_TABLE_CB_CHANGED] =
+      callbackInitLong (confuiTableChanged, gui);
+  uiTreeViewSetEditedCallback (uitree,
+      gui->tables [CONFUI_ID_LEVELS].callbacks [CONFUI_TABLE_CB_CHANGED]);
+  gui->tables [CONFUI_ID_LEVELS].callbacks [CONFUI_TABLE_CB_RADIO] =
+      callbackInitIntInt (confuiTableRadioChanged, gui);
+  uiTreeViewSetRadioCallback (uitree,
+      gui->tables [CONFUI_ID_LEVELS].callbacks [CONFUI_TABLE_CB_RADIO]);
+
   uiTreeViewCreateValueStore (uitree, CONFUI_LEVEL_COL_MAX,
       TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_BOOLEAN,
       TREE_TYPE_WIDGET, TREE_TYPE_NUM, TREE_TYPE_END);
@@ -90,15 +96,20 @@ confuiCreateLevelTable (confuigui_t *gui)
   levelStartIterator (levels, &iteridx);
 
   while ((key = levelIterate (levels, &iteridx)) >= 0) {
-    char    *leveldisp;
-    long weight;
-    long def;
+    char  *leveldisp;
+    long  weight;
+    long  def;
+    bool  deffound = false;
 
     leveldisp = levelGetLevel (levels, key);
     weight = levelGetWeight (levels, key);
     def = levelGetDefault (levels, key);
-    if (def) {
+    if (def && deffound) {
+      def = 0;
+    }
+    if (def && ! deffound) {
       gui->tables [CONFUI_ID_LEVELS].radiorow = key;
+      deffound = true;
     }
 
     uiTreeViewValueAppend (uitree);
@@ -107,73 +118,53 @@ confuiCreateLevelTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_LEVELS].currcount += 1;
   }
 
-  renderer = gtk_cell_renderer_text_new ();
-  g_object_set_data (G_OBJECT (renderer), "uicolumn",
-      GUINT_TO_POINTER (CONFUI_LEVEL_COL_LEVEL));
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", CONFUI_LEVEL_COL_LEVEL,
-      "editable", CONFUI_LEVEL_COL_EDITABLE,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: configuration: level: title of the level name column */
-  gtk_tree_view_column_set_title (column, _("Level"));
-  g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), gui);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+      TREE_COL_DISP_GROW, tagdefs [TAG_DANCELEVEL].shortdisplayname,
+      TREE_COL_MODE_TEXT, CONFUI_LEVEL_COL_LEVEL,
+      TREE_COL_MODE_EDITABLE, CONFUI_LEVEL_COL_EDITABLE,
+      TREE_COL_MODE_END);
 
-  renderer = gtk_cell_renderer_spin_new ();
-  gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
-  g_object_set_data (G_OBJECT (renderer), "uicolumn",
-      GUINT_TO_POINTER (CONFUI_LEVEL_COL_WEIGHT));
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", CONFUI_LEVEL_COL_WEIGHT,
-      "editable", CONFUI_LEVEL_COL_EDITABLE,
-      "adjustment", CONFUI_LEVEL_COL_ADJUST,
-      "digits", CONFUI_LEVEL_COL_DIGITS,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: configuration: level: title of the weight column */
-  gtk_tree_view_column_set_title (column, _("Weight"));
-  g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditSpinbox), gui);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_SPINBOX,
+      /* CONTEXT: configuration: level: title of the weight column */
+      TREE_COL_DISP_GROW, _("Weight"),
+      TREE_COL_MODE_TEXT, CONFUI_LEVEL_COL_WEIGHT,
+      TREE_COL_MODE_EDITABLE, CONFUI_LEVEL_COL_EDITABLE,
+      TREE_COL_MODE_ADJUSTMENT, CONFUI_LEVEL_COL_ADJUST,
+      TREE_COL_MODE_DIGITS, CONFUI_LEVEL_COL_DIGITS,
+      TREE_COL_MODE_END);
 
-  renderer = gtk_cell_renderer_toggle_new ();
-  g_signal_connect (G_OBJECT(renderer), "toggled",
-      G_CALLBACK (confuiTableRadioToggle), gui);
-  gtk_cell_renderer_toggle_set_radio (GTK_CELL_RENDERER_TOGGLE (renderer), TRUE);
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "active", CONFUI_LEVEL_COL_DEFAULT,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: configuration: level: title of the default selection column */
-  gtk_tree_view_column_set_title (column, _("Default"));
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_RADIO,
+      /* CONTEXT: configuration: level: title of the default selection column */
+      TREE_COL_DISP_GROW, _("Default"),
+      TREE_COL_MODE_ACTIVE, CONFUI_LEVEL_COL_DEFAULT,
+      TREE_COL_MODE_END);
 
   logProcEnd (LOG_PROC, "confuiCreateLevelTable", "");
 }
 
-static gboolean
-confuiLevelListCreate (GtkTreeModel *model, GtkTreePath *path,
-    GtkTreeIter *iter, gpointer udata)
+static bool
+confuiLevelListCreate (void *udata)
 {
   confuigui_t *gui = udata;
   char        *leveldisp;
-  glong       weight;
-  gboolean    def;
+  int         weight;
+  int         def;
 
   logProcBegin (LOG_PROC, "confuiLevelListCreate");
-  gtk_tree_model_get (model, iter,
-      CONFUI_LEVEL_COL_LEVEL, &leveldisp,
-      CONFUI_LEVEL_COL_WEIGHT, &weight,
-      CONFUI_LEVEL_COL_DEFAULT, &def,
-      -1);
+  leveldisp = uiTreeViewGetValueStr (gui->tables [CONFUI_ID_LEVELS].uitree,
+      CONFUI_LEVEL_COL_LEVEL);
+  weight = uiTreeViewGetValue (gui->tables [CONFUI_ID_LEVELS].uitree,
+      CONFUI_LEVEL_COL_WEIGHT);
+  def = uiTreeViewGetValue (gui->tables [CONFUI_ID_LEVELS].uitree,
+      CONFUI_LEVEL_COL_DEFAULT);
   ilistSetStr (gui->tables [CONFUI_ID_LEVELS].savelist,
       gui->tables [CONFUI_ID_LEVELS].saveidx, LEVEL_LEVEL, leveldisp);
   ilistSetNum (gui->tables [CONFUI_ID_LEVELS].savelist,
       gui->tables [CONFUI_ID_LEVELS].saveidx, LEVEL_WEIGHT, weight);
   ilistSetNum (gui->tables [CONFUI_ID_LEVELS].savelist,
       gui->tables [CONFUI_ID_LEVELS].saveidx, LEVEL_DEFAULT_FLAG, def);
-  mdfree (leveldisp);
   gui->tables [CONFUI_ID_LEVELS].saveidx += 1;
+  dataFree (leveldisp);
   logProcEnd (LOG_PROC, "confuiLevelListCreate", "");
   return FALSE;
 }

@@ -210,9 +210,11 @@ confuiCreateDanceTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_DANCE].currcount += 1;
   }
 
-  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+      TREE_COL_DISP_GROW, "",
       TREE_COL_MODE_TEXT, CONFUI_DANCE_COL_DANCE, TREE_COL_MODE_END);
-  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+      TREE_COL_DISP_GROW, "",
       TREE_COL_MODE_TEXT, CONFUI_DANCE_COL_SB_PAD, TREE_COL_MODE_END);
 
   logProcEnd (LOG_PROC, "confuiCreateDanceTable", "");

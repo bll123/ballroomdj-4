@@ -33,6 +33,11 @@ enum {
   TREE_TYPE_BOOLEAN,
   TREE_TYPE_ELLIPSIZE,
   TREE_TYPE_IMAGE,
+  TREE_WIDGET_TEXT,
+  TREE_WIDGET_SPINBOX,
+  TREE_WIDGET_IMAGE,
+  TREE_WIDGET_CHECKBOX,
+  TREE_WIDGET_RADIO,
   SELECT_SINGLE,
   SELECT_MULTIPLE,
 };
@@ -53,8 +58,10 @@ void  uiTreeViewDarkBackground (uitree_t *uitree);
 void  uiTreeViewDisableSingleClick (uitree_t *uitree);
 void  uiTreeViewSelectSetMode (uitree_t *uitree, int mode);
 void  uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb);
+void  uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *cb);
+void  uiTreeViewSetRadioCallback (uitree_t *uitree, callback_t *cb);
 UIWidget * uiTreeViewGetUIWidget (uitree_t *uitree);
-void  uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...);
+void  uiTreeViewAppendColumn (uitree_t *uitree, int widgettype, int coldisp, const char *title, ...);
 void  uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...);
 void  uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typelist);
 void  uiTreeViewValueAppend (uitree_t *uitree);
@@ -74,11 +81,9 @@ void  uiTreeViewSelectRestore (uitree_t *uitree);
 void  uiTreeViewMoveBefore (uitree_t *uitree);
 void  uiTreeViewMoveAfter (uitree_t *uitree);
 long  uiTreeViewGetValue (uitree_t *uitree, int col);
-const char *uiTreeViewGetValueStr (uitree_t *uitree, int col);
+char *uiTreeViewGetValueStr (uitree_t *uitree, int col);
 void  uiTreeViewForeach (uitree_t *uitree, callback_t *cb);
 void  uiTreeViewSelectSet (uitree_t *uitree, int row);
-void  uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *uicb);
-void  uiTreeViewAddEditableColumn (uitree_t *uitree, int col, int editcol, const char *title);
 /* these routines will be re-worked at a later date */
 /* these routines will be moved into libbdj4ui later */
 #if BDJ4_USE_GTK

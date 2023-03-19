@@ -49,6 +49,8 @@ enum {
   DUALLIST_CB_MOVENEXT,
   DUALLIST_CB_SELECT,
   DUALLIST_CB_REMOVE,
+  DUALLIST_CB_GET_DATA,
+  DUALLIST_CB_SRC_SEARCH,
   DUALLIST_CB_MAX,
 };
 
@@ -115,6 +117,10 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
       uiduallistDispSelect, duallist, NULL);
   duallist->callbacks [DUALLIST_CB_REMOVE] = callbackInit (
       uiduallistDispRemove, duallist, NULL);
+  duallist->callbacks [DUALLIST_CB_GET_DATA] = callbackInit (
+      uiduallistGetData, duallist, NULL);
+  duallist->callbacks [DUALLIST_CB_SRC_SEARCH] = callbackInit (
+      uiduallistSourceSearch, duallist, NULL);
 
   uiutilsUIWidgetInit (&vbox);
   uiutilsUIWidgetInit (&hbox);
@@ -150,9 +156,11 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
   uiTreeViewDisableHeaders (uitree);
 
-  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+      TREE_COL_DISP_GROW, "",
       TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, TREE_COL_MODE_END);
-  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_NORM, "",
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+      TREE_COL_DISP_NORM, "",
       TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, TREE_COL_MODE_END);
 
   uiCreateVertBox (&dvbox);
@@ -200,9 +208,11 @@ uiCreateDualList (UIWidget *mainvbox, int flags,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
   uiTreeViewDisableHeaders (uitree);
 
-  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_GROW, "",
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+      TREE_COL_DISP_GROW, "",
       TREE_COL_MODE_TEXT, DUALLIST_COL_DISP, TREE_COL_MODE_END);
-  uiTreeViewAppendColumn (uitree, TREE_COL_DISP_NORM, "",
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+      TREE_COL_DISP_NORM, "",
       TREE_COL_MODE_TEXT, DUALLIST_COL_SB_PAD, TREE_COL_MODE_END);
 
   uiCreateVertBox (&dvbox);
@@ -292,15 +302,12 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
     /* is not set, remove the matching entries from the source tree */
     if (which == DUALLIST_TREE_TARGET &&
         (duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
-      callback_t        *cb;
-
       duallist->pos = 0;
       duallist->searchstr = keystr;
       duallist->searchtype = DUALLIST_SEARCH_REMOVE;
       duallist->searchfound = false;
       /* this is not efficient, but the lists are relatively short */
-      cb = callbackInit (uiduallistSourceSearch, duallist, NULL);
-      uiTreeViewForeach (uistree, cb);
+      uiTreeViewForeach (uistree, duallist->callbacks [DUALLIST_CB_SRC_SEARCH]);
 
       if (duallist->searchfound) {
         uiTreeViewSelectSave (uistree);
@@ -340,14 +347,12 @@ uiduallistGetList (uiduallist_t *duallist)
 {
   uitree_t      *uittree;
   slist_t       *slist;
-  callback_t    *cb;
 
 
   uittree = duallist->uitrees [DUALLIST_TREE_TARGET];
   slist = slistAlloc ("duallist-return", LIST_UNORDERED, NULL);
   duallist->savelist = slist;
-  cb = callbackInit (uiduallistGetData, duallist, NULL);
-  uiTreeViewForeach (uittree, cb);
+  uiTreeViewForeach (uittree, duallist->callbacks [DUALLIST_CB_GET_DATA]);
   return slist;
 }
 
@@ -409,7 +414,7 @@ uiduallistDispSelect (void *udata)
   uitree_t          *uistree;
   int               count;
   uitree_t          *uittree;
-  const char        *str;
+  char              *str;
   int               tval;
 
   uistree = duallist->uitrees [DUALLIST_TREE_SOURCE];
@@ -432,6 +437,7 @@ uiduallistDispSelect (void *udata)
       DUALLIST_COL_SB_PAD, "    ",
       DUALLIST_COL_DISP_IDX, tval,
       TREE_VALUE_END);
+  dataFree (str);
 
   if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
     uiTreeViewValueRemove (uistree);
@@ -462,7 +468,7 @@ uiduallistDispRemove (void *udata)
   uiTreeViewSelectGetCount (uistree);
 
   if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
-    const char    *str;
+    char          *str;
     long          tval;
     callback_t    *cb;
 
@@ -486,6 +492,7 @@ uiduallistDispRemove (void *udata)
         DUALLIST_COL_SB_PAD, "    ",
         DUALLIST_COL_DISP_IDX, tval,
         TREE_VALUE_END);
+    dataFree (str);
   }
 
   uiTreeViewValueRemove (uittree);
@@ -497,7 +504,7 @@ static bool
 uiduallistSourceSearch (void *udata)
 {
   uiduallist_t  *duallist = udata;
-  const char    *str;
+  char          *str;
 
   str = uiTreeViewGetValueStr (duallist->uitrees [DUALLIST_TREE_SOURCE],
       DUALLIST_COL_DISP);
@@ -514,6 +521,7 @@ uiduallistSourceSearch (void *udata)
     }
   }
 
+  dataFree (str);
   duallist->pos += 1;
   return FALSE; // continue iterating
 }
@@ -523,13 +531,14 @@ uiduallistGetData (void *udata)
 {
   uiduallist_t  *duallist = udata;
   uitree_t      *uittree;
-  const char    *str;
+  char          *str;
   long          tval;
 
   uittree = duallist->uitrees [DUALLIST_TREE_TARGET];
   str = uiTreeViewGetValueStr (uittree, DUALLIST_COL_DISP);
   tval = uiTreeViewGetValue (uittree, DUALLIST_COL_DISP_IDX);
   slistSetNum (duallist->savelist, str, tval);
+  dataFree (str);
   return FALSE;     // continue iterating
 }
 

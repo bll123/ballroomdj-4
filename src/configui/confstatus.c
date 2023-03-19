@@ -27,7 +27,7 @@
 #include "tagdef.h"
 #include "ui.h"
 
-static int  confuiStatusListCreate (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
+static bool confuiStatusListCreate (void *udata);
 static void confuiStatusSave (confuigui_t *gui);
 
 void
@@ -56,7 +56,6 @@ confuiBuildUIEditStatus (confuigui_t *gui)
 
   confuiMakeItemTable (gui, &hbox, CONFUI_ID_STATUS,
       CONFUI_TABLE_KEEP_FIRST | CONFUI_TABLE_KEEP_LAST);
-  gui->tables [CONFUI_ID_STATUS].togglecol = CONFUI_STATUS_COL_PLAY_FLAG;
   gui->tables [CONFUI_ID_STATUS].listcreatefunc = confuiStatusListCreate;
   gui->tables [CONFUI_ID_STATUS].savefunc = confuiStatusSave;
   confuiCreateStatusTable (gui);
@@ -66,8 +65,6 @@ confuiBuildUIEditStatus (confuigui_t *gui)
 void
 confuiCreateStatusTable (confuigui_t *gui)
 {
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
   ilistidx_t        iteridx;
   ilistidx_t        key;
   status_t          *status;
@@ -81,6 +78,11 @@ confuiCreateStatusTable (confuigui_t *gui)
 
   uitree = gui->tables [CONFUI_ID_STATUS].uitree;
   uitreewidgetp = uiTreeViewGetUIWidget (uitree);
+
+  gui->tables [CONFUI_ID_STATUS].callbacks [CONFUI_TABLE_CB_CHANGED] =
+      callbackInitLong (confuiTableChanged, gui);
+  uiTreeViewSetEditedCallback (uitree,
+      gui->tables [CONFUI_ID_STATUS].callbacks [CONFUI_TABLE_CB_CHANGED]);
 
   uiTreeViewCreateValueStore (uitree, CONFUI_STATUS_COL_MAX,
       TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_BOOLEAN, TREE_TYPE_END);
@@ -100,61 +102,45 @@ confuiCreateStatusTable (confuigui_t *gui)
     }
 
     uiTreeViewValueAppend (uitree);
-//    gtk_list_store_append (store, &iter);
     confuiStatusSet (uitree, editable, statusdisp, playflag);
-//    confuiStatusSet (store, &iter, editable, statusdisp, playflag);
     /* all cells other than the very first (Unrated) are editable */
     editable = TRUE;
     gui->tables [CONFUI_ID_STATUS].currcount += 1;
   }
 
-  renderer = gtk_cell_renderer_text_new ();
-  g_object_set_data (G_OBJECT (renderer), "uicolumn",
-      GUINT_TO_POINTER (CONFUI_STATUS_COL_STATUS));
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", CONFUI_STATUS_COL_STATUS,
-      "editable", CONFUI_STATUS_COL_EDITABLE,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_column_set_title (column, tagdefs [TAG_STATUS].displayname);
-  g_signal_connect (renderer, "edited", G_CALLBACK (confuiTableEditText), gui);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_TEXT,
+      TREE_COL_DISP_GROW, tagdefs [TAG_STATUS].displayname,
+      TREE_COL_MODE_TEXT, CONFUI_STATUS_COL_STATUS,
+      TREE_COL_MODE_EDITABLE, CONFUI_STATUS_COL_EDITABLE,
+      TREE_COL_MODE_END);
 
-  renderer = gtk_cell_renderer_toggle_new ();
-  g_signal_connect (G_OBJECT(renderer), "toggled",
-      G_CALLBACK (confuiTableToggle), gui);
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "active", CONFUI_STATUS_COL_PLAY_FLAG,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  /* CONTEXT: configuration: status: title of the "playable" column */
-  gtk_tree_view_column_set_title (column, _("Play?"));
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
+  uiTreeViewAppendColumn (uitree, TREE_WIDGET_CHECKBOX,
+      /* CONTEXT: configuration: status: title of the "playable" column */
+      TREE_COL_DISP_NORM, _("Play?"),
+      TREE_COL_MODE_ACTIVE, CONFUI_STATUS_COL_PLAY_FLAG,
+      TREE_COL_MODE_END);
 
-//  gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget), GTK_TREE_MODEL (store));
-//  g_object_unref (store);
   logProcEnd (LOG_PROC, "confuiCreateStatusTable", "");
 }
 
-static gboolean
-confuiStatusListCreate (GtkTreeModel *model, GtkTreePath *path,
-    GtkTreeIter *iter, gpointer udata)
+static bool
+confuiStatusListCreate (void *udata)
 {
   confuigui_t *gui = udata;
   char        *statusdisp;
-  gboolean    playflag;
+  int         playflag;
 
   logProcBegin (LOG_PROC, "confuiStatusListCreate");
-  gtk_tree_model_get (model, iter,
-      CONFUI_STATUS_COL_STATUS, &statusdisp,
-      CONFUI_STATUS_COL_PLAY_FLAG, &playflag,
-      -1);
+  statusdisp = uiTreeViewGetValueStr (gui->tables [CONFUI_ID_STATUS].uitree,
+      CONFUI_STATUS_COL_STATUS);
+  playflag = uiTreeViewGetValue (gui->tables [CONFUI_ID_STATUS].uitree,
+      CONFUI_STATUS_COL_PLAY_FLAG);
   ilistSetStr (gui->tables [CONFUI_ID_STATUS].savelist,
       gui->tables [CONFUI_ID_STATUS].saveidx, STATUS_STATUS, statusdisp);
   ilistSetNum (gui->tables [CONFUI_ID_STATUS].savelist,
       gui->tables [CONFUI_ID_STATUS].saveidx, STATUS_PLAY_FLAG, playflag);
-  mdfree (statusdisp);
   gui->tables [CONFUI_ID_STATUS].saveidx += 1;
+  dataFree (statusdisp);
   logProcEnd (LOG_PROC, "confuiStatusListCreate", "");
   return FALSE;
 }

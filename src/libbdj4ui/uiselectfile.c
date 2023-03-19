@@ -168,9 +168,11 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
         TREE_VALUE_END);
   }
 
-  uiTreeViewAppendColumn (selectfile->selfiletree, TREE_COL_DISP_GROW, "",
+  uiTreeViewAppendColumn (selectfile->selfiletree, TREE_WIDGET_TEXT,
+      TREE_COL_DISP_GROW, "",
       TREE_COL_MODE_TEXT, SELFILE_COL_DISP, TREE_COL_MODE_END);
-  uiTreeViewAppendColumn (selectfile->selfiletree, TREE_COL_DISP_NORM, "",
+  uiTreeViewAppendColumn (selectfile->selfiletree, TREE_WIDGET_TEXT,
+      TREE_COL_DISP_NORM, "",
       TREE_COL_MODE_TEXT, SELFILE_COL_SB_PAD, TREE_COL_MODE_END);
 
   selectfile->rowactivecb = callbackInit (selectFileSelect, selectfile, NULL);
@@ -198,7 +200,7 @@ selectFileResponseHandler (void *udata, long responseid)
 {
   uiselectfile_t  *selectfile = udata;
   int           x, y, ws;
-  const char    *str;
+  char          *str;
   int           count;
 
   uiWindowGetPosition (&selectfile->uidialog, &x, &y, &ws);
@@ -226,6 +228,7 @@ selectFileResponseHandler (void *udata, long responseid)
       if (selectfile->selfilecb != NULL) {
         callbackHandlerStr (selectfile->selfilecb, str);
       }
+      dataFree (str);
       selectfile->selfilecb = NULL;
       break;
     }

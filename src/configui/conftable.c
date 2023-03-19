@@ -33,9 +33,6 @@ static bool   confuiTableMoveUp (void *udata);
 static bool   confuiTableMoveDown (void *udata);
 static void   confuiTableMove (confuigui_t *gui, int dir);
 static bool   confuiTableRemove (void *udata);
-static void   confuiTableSetDefaultSelection (confuigui_t *gui, uitree_t *uitree);
-static void   confuiTableEdit (confuigui_t *gui, int col,
-    const char* path, const char* ntext, int type);
 
 void
 confuiMakeItemTable (confuigui_t *gui, UIWidget *boxp, confuiident_t id,
@@ -134,10 +131,10 @@ confuiTableFree (confuigui_t *gui, confuiident_t id)
 void
 confuiTableSave (confuigui_t *gui, confuiident_t id)
 {
-  GtkTreeModel  *model;
+//  GtkTreeModel  *model;
   savefunc_t    savefunc;
   char          tbuff [40];
-  UIWidget      *uiwidgetp;
+//  UIWidget      *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiTableSave");
   if (gui->tables [id].changed == false) {
@@ -149,109 +146,52 @@ confuiTableSave (confuigui_t *gui, confuiident_t id)
     return;
   }
 
-  uiwidgetp = uiTreeViewGetUIWidget (gui->tables [id].uitree);
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
   if (gui->tables [id].listcreatefunc != NULL) {
+    callback_t    *cb;
+
     snprintf (tbuff, sizeof (tbuff), "cu-table-save-%d", id);
     gui->tables [id].savelist = ilistAlloc (tbuff, LIST_ORDERED);
     gui->tables [id].saveidx = 0;
-    gtk_tree_model_foreach (model, gui->tables [id].listcreatefunc, gui);
+    cb = callbackInit (gui->tables [id].listcreatefunc, gui, NULL);
+    uiTreeViewForeach (gui->tables [id].uitree, cb);
+    callbackFree (cb);
   }
+//  uiwidgetp = uiTreeViewGetUIWidget (gui->tables [id].uitree);
+//  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
+//  if (gui->tables [id].listcreatefunc != NULL) {
+//    snprintf (tbuff, sizeof (tbuff), "cu-table-save-%d", id);
+//    gui->tables [id].savelist = ilistAlloc (tbuff, LIST_ORDERED);
+//    gui->tables [id].saveidx = 0;
+//    gtk_tree_model_foreach (model, gui->tables [id].listcreatefunc, gui);
+//  }
   savefunc = gui->tables [id].savefunc;
   savefunc (gui);
   logProcEnd (LOG_PROC, "confuiTableSave", "");
 }
 
-void
-confuiTableEditText (GtkCellRendererText* r, const gchar* path,
-    const gchar* ntext, gpointer udata)
+bool
+confuiTableChanged (void *udata, long col)
 {
   confuigui_t   *gui = udata;
-  int           col;
 
-  logProcBegin (LOG_PROC, "confuiTableEditText");
-  col = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (r), "uicolumn"));
-  confuiTableEdit (gui, col, path, ntext, CONFUI_TABLE_TEXT);
-  logProcEnd (LOG_PROC, "confuiTableEditText", "");
-}
-
-void
-confuiTableToggle (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata)
-{
-  confuigui_t   *gui = udata;
-  gint          val;
-  GtkTreeIter   iter;
-  GtkTreePath   *path;
-  GtkTreeModel  *model;
-  int           col;
-  UIWidget      *uiwidgetp;
-
-  logProcBegin (LOG_PROC, "confuiTableToggle");
-  uiwidgetp = uiTreeViewGetUIWidget (gui->tables [gui->tablecurr].uitree);
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-  path = gtk_tree_path_new_from_string (spath);
-  mdextalloc (path);
-  if (path != NULL) {
-    if (gtk_tree_model_get_iter (model, &iter, path) == FALSE) {
-      logProcEnd (LOG_PROC, "confuiTableToggle", "no model/iter");
-      return;
-    }
-    col = gui->tables [gui->tablecurr].togglecol;
-    gtk_tree_model_get (model, &iter, col, &val, -1);
-    gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, !val, -1);
-    mdextfree (path);
-    gtk_tree_path_free (path);
-  }
   gui->tables [gui->tablecurr].changed = true;
-  logProcEnd (LOG_PROC, "confuiTableToggle", "");
+  return UICB_CONT;
 }
 
-void
-confuiTableEditSpinbox (GtkCellRendererText* r, const gchar* path,
-    const gchar* ntext, gpointer udata)
+bool
+confuiTableRadioChanged (void *udata, int row, int col)
 {
   confuigui_t   *gui = udata;
-  int           col;
 
-  logProcBegin (LOG_PROC, "confuiTableEditSpinbox");
-  col = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (r), "uicolumn"));
-  confuiTableEdit (gui, col, path, ntext, CONFUI_TABLE_NUM);
-  logProcEnd (LOG_PROC, "confuiTableEditSpinbox", "");
-}
+  uiTreeViewSelectSave (gui->tables [gui->tablecurr].uitree);
+  uiTreeViewSelectSet (gui->tables [gui->tablecurr].uitree,
+      gui->tables [gui->tablecurr].radiorow);
+  uiTreeViewSetValues (gui->tables [gui->tablecurr].uitree, col, 0, TREE_VALUE_END);
+  uiTreeViewSelectRestore (gui->tables [gui->tablecurr].uitree);
 
-void
-confuiTableRadioToggle (GtkCellRendererToggle *renderer, gchar *path, gpointer udata)
-{
-  confuigui_t   *gui = udata;
-  GtkTreeIter   iter;
-  GtkTreeModel  *model;
-  GtkListStore  *store;
-  char          tmp [40];
-  int           col;
-  int           row;
-  UIWidget      *uiwidgetp;
-
-  logProcBegin (LOG_PROC, "confuiTableRadioToggle");
-  uiwidgetp = uiTreeViewGetUIWidget (gui->tables [gui->tablecurr].uitree);
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-
-  store = GTK_LIST_STORE (model);
-  col = gui->tables [gui->tablecurr].togglecol;
-  row = gui->tables [gui->tablecurr].radiorow;
-  snprintf (tmp, sizeof (tmp), "%d", row);
-
-  if (gtk_tree_model_get_iter_from_string (model, &iter, path)) {
-    gtk_list_store_set (store, &iter, col, 1, -1);
-  }
-
-  if (gtk_tree_model_get_iter_from_string (model, &iter, tmp)) {
-    gtk_list_store_set (store, &iter, col, 0, -1);
-  }
-
-  sscanf (path, "%d", &row);
   gui->tables [gui->tablecurr].radiorow = row;
   gui->tables [gui->tablecurr].changed = true;
-  logProcEnd (LOG_PROC, "confuiTableRadioToggle", "");
+  return UICB_CONT;
 }
 
 bool
@@ -309,7 +249,7 @@ confuiSwitchTable (void *udata, long pagenum)
     return UICB_CONT;
   }
 
-  confuiTableSetDefaultSelection (gui, uitree);
+  uiTreeViewSelectDefault (uitree);
 
   logProcEnd (LOG_PROC, "confuiSwitchTable", "");
   return UICB_CONT;
@@ -476,51 +416,5 @@ confuiTableRemove (void *udata)
   return UICB_CONT;
 }
 
-static void
-confuiTableSetDefaultSelection (confuigui_t *gui, uitree_t *uitree)
-{
-  int               count;
 
-
-  count = uiTreeViewSelectDefault (uitree);
-  if (count != 1) {
-    GtkTreePath   *path = NULL;
-
-    path = gtk_tree_path_new_from_string ("0");
-    mdextalloc (path);
-    if (path != NULL) {
-      UIWidget      *uiwidgetp;
-
-      if (gui->tablecurr == CONFUI_ID_DANCE) {
-        uiwidgetp = uiTreeViewGetUIWidget (uitree);
-        confuiDanceSelect (GTK_TREE_VIEW (uiwidgetp->widget), path, NULL, gui);
-      }
-      mdextfree (path);
-      gtk_tree_path_free (path);
-    }
-  }
-}
-
-static void
-confuiTableEdit (confuigui_t *gui, int col,
-    const char* path, const char* ntext, int type)
-{
-  GtkTreeModel  *model;
-  GtkTreeIter   iter;
-  UIWidget      *uiwidgetp;
-
-  logProcBegin (LOG_PROC, "confuiTableEdit");
-  uiwidgetp = uiTreeViewGetUIWidget (gui->tables [gui->tablecurr].uitree);
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-  gtk_tree_model_get_iter_from_string (model, &iter, path);
-  if (type == CONFUI_TABLE_TEXT) {
-    gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, ntext, -1);
-  }
-  if (type == CONFUI_TABLE_NUM) {
-    long val = atol (ntext);
-    gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, val, -1);
-  }
-  gui->tables [gui->tablecurr].changed = true;
-  logProcEnd (LOG_PROC, "confuiTableEdit", "");
-}
 

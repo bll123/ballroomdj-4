@@ -27,7 +27,9 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
-static void uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
+static void uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
+static void uiTreeViewCheckboxHandler (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata);
+static void uiTreeViewRadioHandler (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata);
 static void uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
 static gboolean uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
 static GType uiTreeViewConvertTreeType (int type);
@@ -35,12 +37,13 @@ static GType uiTreeViewConvertTreeType (int type);
 typedef struct uitree {
   UIWidget          uitree;
   GtkTreeSelection  *sel;
-  callback_t        *editedcb;
   GtkTreeIter       selectiter;
   GtkTreeIter       savedselectiter;
   GtkTreeModel      *model;
   callback_t        *rowactivecb;
   callback_t        *foreachcb;
+  callback_t        *editedcb;
+  callback_t        *radiocb;
   int               selmode;
   bool              selectset;
   bool              savedselectset;
@@ -68,12 +71,14 @@ uiCreateTreeView (void)
   gtk_widget_set_hexpand (tree, FALSE);
   gtk_widget_set_vexpand (tree, FALSE);
   uitree->uitree.widget = tree;
-  uitree->editedcb = NULL;
   uitree->sel = sel;
   uitree->selectset = false;
   uitree->savedselectset = false;
   uitree->model = NULL;
   uitree->rowactivecb = NULL;
+  uitree->foreachcb = NULL;
+  uitree->editedcb = NULL;
+  uitree->radiocb = NULL;
   uiWidgetSetAllMargins (&uitree->uitree, 2);
   return uitree;
 }
@@ -160,6 +165,24 @@ uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb)
       G_CALLBACK (uiTreeViewRowActiveHandler), uitree);
 }
 
+void
+uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *cb)
+{
+  if (uitree == NULL) {
+    return;
+  }
+  uitree->editedcb = cb;
+}
+
+void
+uiTreeViewSetRadioCallback (uitree_t *uitree, callback_t *cb)
+{
+  if (uitree == NULL) {
+    return;
+  }
+  uitree->radiocb = cb;
+}
+
 UIWidget *
 uiTreeViewGetUIWidget (uitree_t *uitree)
 {
@@ -171,7 +194,8 @@ uiTreeViewGetUIWidget (uitree_t *uitree)
 }
 
 void
-uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
+uiTreeViewAppendColumn (uitree_t *uitree, int widgettype,
+    int coldisp, const char *title, ...)
 {
   GtkCellRenderer   *renderer = NULL;
   GtkTreeViewColumn *column = NULL;
@@ -179,7 +203,6 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
   int               coltype;
   int               col;
   char              *gtkcoltype = "text";
-//  bool              first = true;
   int               gtkcoldisp;
 
   if (uitree == NULL) {
@@ -190,18 +213,48 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
   }
 
   column = gtk_tree_view_column_new ();
-  renderer = gtk_cell_renderer_text_new ();
+  switch (widgettype) {
+    case TREE_WIDGET_TEXT: {
+      renderer = gtk_cell_renderer_text_new ();
+      break;
+    }
+    case TREE_WIDGET_SPINBOX: {
+      renderer = gtk_cell_renderer_spin_new ();
+      gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
+      break;
+    }
+    case TREE_WIDGET_IMAGE: {
+      renderer = gtk_cell_renderer_pixbuf_new ();
+      break;
+    }
+    case TREE_WIDGET_CHECKBOX: {
+      renderer = gtk_cell_renderer_toggle_new ();
+      break;
+    }
+    case TREE_WIDGET_RADIO: {
+      renderer = gtk_cell_renderer_toggle_new ();
+      gtk_cell_renderer_toggle_set_radio (GTK_CELL_RENDERER_TOGGLE (renderer), TRUE);
+      break;
+    }
+  }
   gtk_tree_view_column_pack_start (column, renderer, TRUE);
 
   va_start (args, title);
   coltype = va_arg (args, int);
   while (coltype != -1) {
+    col = va_arg (args, int);
+
     switch (coltype) {
       case TREE_COL_MODE_TEXT: {
+        /* the stupid "edited" signal has no way to retrieve the column number */
+        /* so set some data in the renderer to save the column number */
+        g_object_set_data (G_OBJECT (renderer), "uicolumn", GUINT_TO_POINTER (col));
         gtkcoltype = "text";
         break;
       }
       case TREE_COL_MODE_EDITABLE: {
+        g_signal_connect (renderer, "edited",
+            G_CALLBACK (uiTreeViewEditedHandler), uitree);
         gtkcoltype = "editable";
         break;
       }
@@ -222,6 +275,17 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
         break;
       }
       case TREE_COL_MODE_ACTIVE: {
+        /* the stupid "toggled" signal has no way to retrieve the column number */
+        /* so set some data in the renderer to save the column number */
+        g_object_set_data (G_OBJECT (renderer), "uicolumn", GUINT_TO_POINTER (col));
+        if (widgettype == TREE_WIDGET_CHECKBOX) {
+          g_signal_connect (G_OBJECT(renderer), "toggled",
+              G_CALLBACK (uiTreeViewCheckboxHandler), uitree);
+        }
+        if (widgettype == TREE_WIDGET_RADIO) {
+          g_signal_connect (G_OBJECT(renderer), "toggled",
+              G_CALLBACK (uiTreeViewRadioHandler), uitree);
+        }
         gtkcoltype = "active";
         break;
       }
@@ -235,11 +299,6 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
       }
     }
 
-    col = va_arg (args, int);
-//    if (first) {
-//      g_object_set_data (G_OBJECT (renderer), "uicolumn", GUINT_TO_POINTER (col));
-//      first = false;
-//    }
     gtk_tree_view_column_add_attribute (column, renderer, gtkcoltype, col);
 
     coltype = va_arg (args, int);
@@ -258,7 +317,9 @@ uiTreeViewAppendColumn (uitree_t *uitree, int coldisp, const char *title, ...)
     }
   }
   gtk_tree_view_column_set_sizing (column, gtkcoldisp);
-  gtk_tree_view_column_set_title (column, title);
+  if (title != NULL) {
+    gtk_tree_view_column_set_title (column, title);
+  }
   gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->uitree.widget), column);
 }
 
@@ -737,7 +798,7 @@ uiTreeViewGetValue (uitree_t *uitree, int col)
   return idx;
 }
 
-const char *
+char *
 uiTreeViewGetValueStr (uitree_t *uitree, int col)
 {
   char    *str;
@@ -753,6 +814,7 @@ uiTreeViewGetValueStr (uitree_t *uitree, int col)
   }
 
   gtk_tree_model_get (uitree->model, &uitree->selectiter, col, &str, -1);
+  mdextalloc (str);
   return str;
 }
 
@@ -802,39 +864,6 @@ uiTreeViewSelectSet (uitree_t *uitree, int row)
       }
     }
   }
-}
-
-/* used by configuration */
-
-void
-uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *uicb)
-{
-  if (uitree == NULL) {
-    return;
-  }
-  uitree->editedcb = uicb;
-}
-
-void
-uiTreeViewAddEditableColumn (uitree_t *uitree, int col, int editcol,
-    const char *title)
-{
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
-
-  if (uitree == NULL) {
-    return;
-  }
-  renderer = gtk_cell_renderer_text_new ();
-  g_object_set_data (G_OBJECT (renderer), "uicolumn", GUINT_TO_POINTER (col));
-  column = gtk_tree_view_column_new_with_attributes ("", renderer,
-      "text", col,
-      "editable", editcol,
-      NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_column_set_title (column, title);
-  g_signal_connect (renderer, "edited", G_CALLBACK (uiTreeViewEditedCallback), uitree);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->uitree.widget), column);
 }
 
 /* the display routines are used by song selection and the music queue */
@@ -956,7 +985,7 @@ uiTreeViewGetSelection (uitree_t *uitree, GtkTreeModel **model, GtkTreeIter *ite
 
 /* used by the editable column routines */
 static void
-uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path,
+uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* pathstr,
     const gchar* ntext, gpointer udata)
 {
   uitree_t      *uitree = udata;
@@ -971,9 +1000,13 @@ uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path,
   }
 
   tree = uitree->uitree.widget;
+
+  /* retrieve the column number from the 'uicolumn' value set when */
+  /* the column was created */
   col = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (r), "uicolumn"));
+
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
-  gtk_tree_model_get_iter_from_string (model, &iter, path);
+  gtk_tree_model_get_iter_from_string (model, &iter, pathstr);
   coltype = gtk_tree_model_get_column_type (model, col);
   if (coltype == G_TYPE_STRING) {
     gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, ntext, -1);
@@ -981,6 +1014,71 @@ uiTreeViewEditedCallback (GtkCellRendererText* r, const gchar* path,
   if (coltype == G_TYPE_LONG) {
     long val = atol (ntext);
     gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, val, -1);
+  }
+
+  if (uitree->editedcb != NULL) {
+    callbackHandlerLong (uitree->editedcb, col);
+  }
+}
+
+static void
+uiTreeViewCheckboxHandler (GtkCellRendererToggle *r,
+    gchar *pathstr, gpointer udata)
+{
+  uitree_t      *uitree = udata;
+  GtkWidget     *tree;
+  GtkTreeModel  *model;
+  GtkTreeIter   iter;
+  int           col;
+  gint          val;
+
+  if (uitree == NULL) {
+    return;
+  }
+
+  tree = uitree->uitree.widget;
+
+  /* retrieve the column number from the 'uicolumn' value set when */
+  /* the column was created */
+  col = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (r), "uicolumn"));
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
+  gtk_tree_model_get_iter_from_string (model, &iter, pathstr);
+  gtk_tree_model_get (model, &iter, col, &val, -1);
+  gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, !val, -1);
+
+  if (uitree->editedcb != NULL) {
+    callbackHandlerLong (uitree->editedcb, col);
+  }
+}
+
+static void
+uiTreeViewRadioHandler (GtkCellRendererToggle *r,
+    gchar *pathstr, gpointer udata)
+{
+  uitree_t      *uitree = udata;
+  GtkWidget     *tree;
+  GtkTreeModel  *model;
+  GtkTreeIter   iter;
+  int           col;
+
+  if (uitree == NULL) {
+    return;
+  }
+
+  tree = uitree->uitree.widget;
+
+  /* retrieve the column number from the 'uicolumn' value set when */
+  /* the column was created */
+  col = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (r), "uicolumn"));
+
+  model = gtk_tree_view_get_model (GTK_TREE_VIEW (tree));
+  gtk_tree_model_get_iter_from_string (model, &iter, pathstr);
+  gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, 1, -1);
+
+  if (uitree->radiocb != NULL) {
+    /* the callback must handle clearing the old value */
+    callbackHandlerIntInt (uitree->radiocb, atoi (pathstr), col);
   }
 }
 
