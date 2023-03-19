@@ -85,7 +85,8 @@ typedef struct uimusicqgtk {
   uibutton_t        *buttons [UIMUSICQ_BUTTON_MAX];
   int               *typelist;
   uikey_t           *uikey;
-  int               colcount;        // for the display type callback
+  int               colcount;         // for the display type callback
+  int               rowcount;         // current size of tree view storage
 } mq_internal_t;
 
 static bool   uimusicqQueueDanceCallback (void *udata, long idx, int count);
@@ -484,25 +485,8 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
   }
 
   if (valid) {
-    GtkTreePath *path = NULL;
-    uiwidget_t  *uiwidgetp;
-    GtkTreeModel      *model;
-    GtkTreeIter       iter;
-
-    uiwidgetp = uiTreeViewGetWidget (uiw->musicqTree);
-    model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-    gtk_tree_selection_select_iter (uiw->sel, &iter);
-    path = gtk_tree_model_get_path (model, &iter);
-    mdextalloc (path);
-    if (path != NULL) {
-      uiwidgetp = uiTreeViewGetWidget (uiw->musicqTree);
-      if (uimusicq->ui [mqidx].count > 0 &&
-          GTK_IS_TREE_VIEW (uiwidgetp->widget)) {
-        gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uiwidgetp->widget),
-            path, NULL, FALSE, 0.0, 0.0);
-      }
-      mdextfree (path);
-      gtk_tree_path_free (path);
+    if (uimusicq->ui [mqidx].count > 0) {
+      uiTreeViewScrollToCell (uiw->musicqTree);
     }
   }
   logProcEnd (LOG_PROC, "uimusicqMusicQueueSetSelected", "");
@@ -615,6 +599,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
   if (newdispflag == MUSICQ_NEW_DISP) {
     uiw->typelist = mdmalloc (sizeof (int) * MUSICQ_COL_MAX);
     uiw->colcount = 0;
+    uiw->rowcount = 0;
     /* attributes: ellipsize / font */
     uiw->typelist [uiw->colcount++] = TREE_TYPE_ELLIPSIZE;
     uiw->typelist [uiw->colcount++] = TREE_TYPE_STRING;
@@ -680,16 +665,13 @@ static void
 uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
     mp_musicqupdate_t *musicqupdate)
 {
-  GtkTreeModel  *model = NULL;
-  GtkTreeIter   iter;
-  bool          valid;
   const char    *listingFont;
   mp_musicqupditem_t *musicqupditem;
   nlistidx_t    iteridx;
   mq_internal_t *uiw;
   int           ci;
-  uiwidget_t    *uiwidgetp;
   int           row;
+  int           trow;
 
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDisplay");
 
@@ -697,22 +679,22 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   uiw = uimusicq->ui [ci].uiWidgets;
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
-  uiwidgetp = uiTreeViewGetWidget (uiw->musicqTree);
-  if (uiwidgetp->widget != NULL) {
-    model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-  }
-  if (model == NULL) {
-    logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDisplay", "null-model");
-    return;
-  }
+//  uiwidgetp = uiTreeViewGetWidget (uiw->musicqTree);
+//  if (uiwidgetp->widget != NULL) {
+//    model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
+//  }
+//  if (model == NULL) {
+//    logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDisplay", "null-model");
+//    return;
+//  }
 
   /* gtk selections will change internally quite a bit, bypass any change */
   /* signals for the moment */
   uimusicq->ui [ci].selchgbypass = true;
 
-  valid = gtk_tree_model_get_iter_first (model, &iter);
-
+//  valid = gtk_tree_model_get_iter_first (model, &iter);
   uiTreeViewSelectSave (uiw->musicqTree);
+  uiTreeViewSelectFirst (uiw->musicqTree);
 
   row = 0;
   uimusicq->ui [ci].count = nlistGetCount (musicqupdate->dispList);
@@ -731,7 +713,7 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
     /* there's no need to determine if the entry is new or not    */
     /* simply overwrite everything until the end of the gtk-store */
     /* is reached, then start appending. */
-    if (! valid) {
+    if (row >= uiw->rowcount) {
       uiTreeViewValueAppend (uiw->musicqTree);
       uiTreeViewSetValueEllipsize (uiw->musicqTree, MUSICQ_COL_ELLIPSIZE);
       uiTreeViewSetValues (uiw->musicqTree,
@@ -760,10 +742,13 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   }
 
   /* remove any other rows past the end of the display */
-//### FIX
-//  while (valid) {
+  trow = row;
+  while (trow < uiw->rowcount) {
 //    valid = gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
-//  }
+    ++trow;
+  }
+
+  uiw->rowcount = row;
 
   /* now the selection change signal can be processed */
   uimusicq->ui [ci].selchgbypass = false;
@@ -1013,10 +998,10 @@ uimusicqSetDefaultSelection (uimusicq_t *uimusicq)
 static void
 uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
 {
-  GtkTreePath   *path;
+//  GtkTreePath   *path;
   mq_internal_t *uiw;
-  char          tbuff [40];
-  uiwidget_t    *uiwidgetp;
+//  char          tbuff [40];
+//  uiwidget_t    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "uimusicqSetSelection");
 
@@ -1037,21 +1022,8 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
 
   uiTreeViewSelectSet (uiw->musicqTree, uimusicq->ui [mqidx].selectLocation);
 
-  snprintf (tbuff, sizeof (tbuff), "%ld", uimusicq->ui [mqidx].selectLocation);
-  path = gtk_tree_path_new_from_string (tbuff);
-  mdextalloc (path);
-  uiwidgetp = uiTreeViewGetWidget (uiw->musicqTree);
-  if (path != NULL && GTK_IS_TREE_VIEW (uiwidgetp->widget)) {
-    uimusicqMusicQueueSetSelected (uimusicq, mqidx, UIMUSICQ_SEL_CURR);
-    if (uimusicq->ui [mqidx].count > 0 &&
-        GTK_IS_TREE_VIEW (uiwidgetp->widget)) {
-      gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uiwidgetp->widget),
-          path, NULL, FALSE, 0.0, 0.0);
-    }
-  }
-  if (path != NULL) {
-    mdextfree (path);
-    gtk_tree_path_free (path);
+  if (uimusicq->ui [mqidx].count > 0) {
+    uiTreeViewScrollToCell (uiw->musicqTree);
   }
   logProcEnd (LOG_PROC, "uimusicqSetSelection", "");
 }

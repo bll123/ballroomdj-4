@@ -997,6 +997,29 @@ uiTreeViewValueIteratorClear (uitree_t *uitree)
   uitree->valueiterset = false;
 }
 
+void
+uiTreeViewScrollToCell (uitree_t *uitree)
+{
+  GtkTreePath *path = NULL;
+
+  if (uitree == NULL) {
+    return;
+  }
+
+  if (! GTK_IS_TREE_VIEW (uitree->uitree.widget)) {
+    return;
+  }
+
+  path = gtk_tree_model_get_path (uitree->model, &uitree->selectiter);
+  mdextalloc (path);
+  if (path != NULL) {
+    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uitree->uitree.widget),
+        path, NULL, FALSE, 0.0, 0.0);
+    mdextfree (path);
+    gtk_tree_path_free (path);
+  }
+}
+
 /* internal routines */
 
 /* used by the editable column routines */
