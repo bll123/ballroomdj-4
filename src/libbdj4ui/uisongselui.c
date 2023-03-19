@@ -166,10 +166,10 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ss_internal_t  *uiw;
 
   uiw = mdmalloc (sizeof (ss_internal_t));
-  uiutilsUIWidgetInit (&uiw->vbox);
+  uiwidgetInit (&uiw->vbox);
   uiw->songselTree = NULL;
   uiw->sel = NULL;
-  uiutilsUIWidgetInit (&uiw->songselScrollbar);
+  uiwidgetInit (&uiw->songselScrollbar);
   uiw->scrollController = NULL;
   uiw->favColumn = NULL;
   uiw->lastTreeSize = 0;
@@ -222,7 +222,7 @@ uisongselUIFree (uisongsel_t *uisongsel)
   }
 }
 
-UIWidget *
+uiwidget_t *
 uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
 {
   ss_internal_t    *uiw;
@@ -291,7 +291,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
     uiCreateLabel (&uiwidget, "");
     uiWidgetSetClass (&uiwidget, DARKACCENT_CLASS);
     uiBoxPackStart (&hbox, &uiwidget);
-    uiutilsUIWidgetCopy (&uiw->reqQueueLabel, &uiwidget);
+    uiwidgetCopy (&uiw->reqQueueLabel, &uiwidget);
   }
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL ||

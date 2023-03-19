@@ -77,7 +77,7 @@ uiDropDownInit (void)
   dropdown->title = NULL;
   dropdown->parentwin = NULL;
   dropdown->button = NULL;
-  uiutilsUIWidgetInit (&dropdown->window);
+  uiwidgetInit (&dropdown->window);
   dropdown->uitree = NULL;
   dropdown->closeHandlerId = 0;
   dropdown->strSelection = NULL;
@@ -364,7 +364,7 @@ uiDropDownWindowShow (void *udata)
   by = 0;
   uiWindowGetPosition (dropdown->parentwin, &x, &y, &ws);
   uiwidgetp = uiButtonGetWidget (dropdown->button);
-  if (uiutilsUIWidgetSet (uiwidgetp)) {
+  if (uiwidgetIsSet (uiwidgetp)) {
     uiWidgetGetPosition (uiwidgetp, &bx, &by);
   }
   uiWidgetShowAll (&dropdown->window);

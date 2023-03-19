@@ -383,8 +383,8 @@ main (int argc, char *argv[])
   progstateSetCallback (manage.progstate, STATE_WAIT_HANDSHAKE,
       manageHandshakeCallback, &manage);
 
-  uiutilsUIWidgetInit (&manage.mainnotebook);
-  uiutilsUIWidgetInit (&manage.window);
+  uiwidgetInit (&manage.mainnotebook);
+  uiwidgetInit (&manage.window);
   manage.slplayer = NULL;
   manage.slmusicq = NULL;
   manage.slstats = NULL;
@@ -405,14 +405,14 @@ main (int argc, char *argv[])
   manage.slmenu = uiMenuAlloc ();
   manage.songeditmenu = uiMenuAlloc ();
   manage.mmmenu = uiMenuAlloc ();
-  uiutilsUIWidgetInit (&manage.restoreOrigMenuItem);
+  uiwidgetInit (&manage.restoreOrigMenuItem);
   manage.mainnbtabid = uiutilsNotebookIDInit ();
   manage.slnbtabid = uiutilsNotebookIDInit ();
   manage.mmnbtabid = uiutilsNotebookIDInit ();
   manage.sloldname = NULL;
   manage.slpriorname = NULL;
   manage.itunes = NULL;
-  uiutilsUIWidgetInit (&manage.itunesSelectDialog);
+  uiwidgetInit (&manage.itunesSelectDialog);
   manage.itunessel = uiDropDownInit ();
   manage.slbackupcreated = false;
   manage.selusesonglist = false;
@@ -431,7 +431,7 @@ main (int argc, char *argv[])
   manage.bpmcounterstarted = false;
   manage.currbpmsel = BPM_BPM;
   manage.currtimesig = DANCE_TIMESIG_44;
-  uiutilsUIWidgetInit (&manage.cfplDialog);
+  uiwidgetInit (&manage.cfplDialog);
   manage.cfplsel = uiDropDownInit ();
   manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.pluiActive = false;
@@ -646,9 +646,9 @@ manageBuildUI (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageBuildUI");
   *imgbuff = '\0';
-  uiutilsUIWidgetInit (&vbox);
-  uiutilsUIWidgetInit (&hbox);
-  uiutilsUIWidgetInit (&uiwidget);
+  uiwidgetInit (&vbox);
+  uiwidgetInit (&hbox);
+  uiwidgetInit (&uiwidget);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_manage", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -672,12 +672,12 @@ manageBuildUI (manageui_t *manage)
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&manage->errorMsg, &uiwidget);
+  uiwidgetCopy (&manage->errorMsg, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&manage->statusMsg, &uiwidget);
+  uiwidgetCopy (&manage->statusMsg, &uiwidget);
 
   uiCreateMenubar (&manage->menubar);
   uiBoxPackStart (&hbox, &manage->menubar);
@@ -883,7 +883,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwidget_t          notebook;
 
   /* song list editor */
-  uiutilsUIWidgetInit (&hbox);
+  uiwidgetInit (&hbox);
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 2);
@@ -899,7 +899,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   uiCreateNotebook (&notebook);
   uiBoxPackStartExpand (&vbox, &notebook);
-  uiutilsUIWidgetCopy (&manage->slnotebook, &notebook);
+  uiwidgetCopy (&manage->slnotebook, &notebook);
 
   /* song list editor: easy song list tab */
   uiCreateHorizBox (&mainhbox);
@@ -908,7 +908,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiCreateLabel (&uiwidget, _("Song List"));
   uiNotebookAppendPage (&notebook, &mainhbox, &uiwidget);
   uiutilsNotebookIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
-  uiutilsUIWidgetCopy (&manage->slezmusicqtabwidget, &mainhbox);
+  uiwidgetCopy (&manage->slezmusicqtabwidget, &mainhbox);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStartExpand (&mainhbox, &hbox);
@@ -1395,7 +1395,7 @@ manageSongEditMenu (manageui_t *manage)
     /* CONTEXT: managementui: menu selection: song editor: restore original */
     uiMenuCreateItem (&menu, &menuitem, _("Restore Original"),
         manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
-    uiutilsUIWidgetCopy (&manage->restoreOrigMenuItem, &menuitem);
+    uiwidgetCopy (&manage->restoreOrigMenuItem, &menuitem);
     if (manage->enablerestoreorig) {
       uiWidgetSetState (&menuitem, UIWIDGET_ENABLE);
     } else {
@@ -1553,7 +1553,7 @@ manageSetEditMenuItems (manageui_t *manage)
   } else {
     manage->enablerestoreorig = false;
   }
-  if (! uiutilsUIWidgetSet (&manage->restoreOrigMenuItem)) {
+  if (! uiwidgetIsSet (&manage->restoreOrigMenuItem)) {
     return;
   }
   if (hasorig) {
@@ -1786,7 +1786,7 @@ manageiTunesCreateDialog (manageui_t *manage)
   char        tbuff [50];
 
   logProcBegin (LOG_PROC, "manageiTunesCreateDialog");
-  if (uiutilsUIWidgetSet (&manage->itunesSelectDialog)) {
+  if (uiwidgetIsSet (&manage->itunesSelectDialog)) {
     logProcEnd (LOG_PROC, "manageiTunesCreateDialog", "already");
     return;
   }
@@ -1868,7 +1868,7 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: itunes: del window");
-      uiutilsUIWidgetInit (&manage->itunesSelectDialog);
+      uiwidgetInit (&manage->itunesSelectDialog);
       manage->importitunesactive = false;
       break;
     }
@@ -1946,7 +1946,7 @@ manageBuildUIMusicManager (manageui_t *manage)
 
   uiCreateNotebook (&notebook);
   uiBoxPackStartExpand (&vbox, &notebook);
-  uiutilsUIWidgetCopy (&manage->mmnotebook, &notebook);
+  uiwidgetCopy (&manage->mmnotebook, &notebook);
 
   /* music manager: song selection tab*/
   uiwidgetp = uisongselBuildUI (manage->mmsongsel, &manage->window);
@@ -2291,7 +2291,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiwidget_t  sg;  // labels
 
   logProcBegin (LOG_PROC, "manageSongListCFPLCreateDialog");
-  if (uiutilsUIWidgetSet (&manage->cfplDialog)) {
+  if (uiwidgetIsSet (&manage->cfplDialog)) {
     logProcEnd (LOG_PROC, "manageSongListCFPLCreateDialog", "already");
     return;
   }
@@ -2383,7 +2383,7 @@ manageCFPLResponseHandler (void *udata, long responseid)
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: del window");
-      uiutilsUIWidgetInit (&manage->cfplDialog);
+      uiwidgetInit (&manage->cfplDialog);
       manage->createfromplaylistactive = false;
       break;
     }

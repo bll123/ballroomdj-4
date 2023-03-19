@@ -116,7 +116,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwidget_t *vboxp,
       managePlaylistTreeHideUnselectedCallback, managepltree, NULL);
   uiToggleButtonSetCallback (&uiwidget, managepltree->callbacks [MPLTREE_CB_UNSEL]);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&managepltree->uihideunsel, &uiwidget);
+  uiwidgetCopy (&managepltree->uihideunsel, &uiwidget);
 
   uiCreateScrolledWindow (&scwindow, 300);
   uiWidgetExpandVert (&scwindow);

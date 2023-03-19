@@ -235,7 +235,7 @@ uiTreeViewAppendColumn (uitree_t *uitree, int widgettype,
   if (uitree == NULL) {
     return;
   }
-  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+  if (! uiwidgetIsSet (&uitree->uitree)) {
     return;
   }
 
@@ -420,7 +420,7 @@ uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...)
   if (uitree == NULL) {
     return;
   }
-  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+  if (! uiwidgetIsSet (&uitree->uitree)) {
     return;
   }
   if (colmax <= 0 || colmax > 90) {
@@ -463,7 +463,7 @@ uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typelist)
   if (uitree == NULL) {
     return;
   }
-  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+  if (! uiwidgetIsSet (&uitree->uitree)) {
     return;
   }
   if (colmax <= 0 || colmax > 90) {
@@ -497,7 +497,7 @@ uiTreeViewValueAppend (uitree_t *uitree)
   if (uitree->model == NULL) {
     return;
   }
-  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+  if (! uiwidgetIsSet (&uitree->uitree)) {
     return;
   }
 
@@ -517,7 +517,7 @@ uiTreeViewValueInsertBefore (uitree_t *uitree)
   if (uitree == NULL) {
     return;
   }
-  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+  if (! uiwidgetIsSet (&uitree->uitree)) {
     return;
   }
   if (uitree->model == NULL) {
@@ -548,7 +548,7 @@ uiTreeViewValueInsertAfter (uitree_t *uitree)
   if (uitree == NULL) {
     return;
   }
-  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+  if (! uiwidgetIsSet (&uitree->uitree)) {
     return;
   }
   if (uitree->model == NULL) {
@@ -579,7 +579,7 @@ uiTreeViewValueRemove (uitree_t *uitree)
   if (uitree == NULL) {
     return;
   }
-  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+  if (! uiwidgetIsSet (&uitree->uitree)) {
     return;
   }
   if (uitree->model == NULL) {
@@ -620,7 +620,7 @@ uiTreeViewSetValueEllipsize (uitree_t *uitree, int col)
   if (uitree->model == NULL) {
     return;
   }
-  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+  if (! uiwidgetIsSet (&uitree->uitree)) {
     return;
   }
 
@@ -648,7 +648,7 @@ uiTreeViewSetValues (uitree_t *uitree, ...)
   if (uitree->model == NULL) {
     return;
   }
-  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+  if (! uiwidgetIsSet (&uitree->uitree)) {
     return;
   }
 
@@ -674,7 +674,7 @@ uiTreeViewSelectGetCount (uitree_t *uitree)
   if (uitree->model == NULL) {
     return 0;
   }
-  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+  if (! uiwidgetIsSet (&uitree->uitree)) {
     return 0;
   }
 
@@ -703,7 +703,7 @@ uiTreeViewSelectGetIndex (uitree_t *uitree)
   if (uitree->model == NULL) {
     return -1;
   }
-  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
+  if (! uiwidgetIsSet (&uitree->uitree)) {
     return -1;
   }
   if (! uitree->selectset) {

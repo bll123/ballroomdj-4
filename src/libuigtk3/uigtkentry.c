@@ -50,7 +50,7 @@ uiEntryInit (int entrySize, int maxSize)
   entry->entrySize = entrySize;
   entry->maxSize = maxSize;
   entry->buffer = NULL;
-  uiutilsUIWidgetInit (&entry->uientry);
+  uiwidgetInit (&entry->uientry);
   entry->validateFunc = NULL;
   entry->udata = NULL;
   mstimeset (&entry->validateTimer, 3600000);

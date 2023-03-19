@@ -76,7 +76,7 @@ uireqextInit (uiwidget_t *windowp, nlist_t *opts)
   uireqext_t  *uireqext;
 
   uireqext = mdmalloc (sizeof (uireqext_t));
-  uiutilsUIWidgetInit (&uireqext->reqextDialog);
+  uiwidgetInit (&uireqext->reqextDialog);
   uireqext->audioFileEntry = uiEntryInit (50, MAXPATHLEN);
   uireqext->artistEntry = uiEntryInit (40, MAXPATHLEN);
   uireqext->titleEntry = uiEntryInit (40, MAXPATHLEN);
@@ -203,7 +203,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
     return;
   }
 
-  if (uiutilsUIWidgetSet (&uireqext->reqextDialog)) {
+  if (uiwidgetIsSet (&uireqext->reqextDialog)) {
     return;
   }
 
@@ -394,7 +394,7 @@ uireqextResponseHandler (void *udata, long responseid)
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: reqext: del window");
-      uiutilsUIWidgetInit (&uireqext->reqextDialog);
+      uiwidgetInit (&uireqext->reqextDialog);
       uireqextClearSong (uireqext);
       break;
     }

@@ -206,10 +206,10 @@ main (int argc, char *argv[])
   mdebugInit ("plui");
 #endif
 
-  uiutilsUIWidgetInit (&plui.window);
-  uiutilsUIWidgetInit (&plui.clock);
-  uiutilsUIWidgetInit (&plui.notebook);
-  uiutilsUIWidgetInit (&plui.marqueeFontSizeDialog);
+  uiwidgetInit (&plui.window);
+  uiwidgetInit (&plui.clock);
+  uiwidgetInit (&plui.notebook);
+  uiwidgetInit (&plui.marqueeFontSizeDialog);
   plui.progstate = progstateInit ("playerui");
   progstateSetCallback (plui.progstate, STATE_CONNECTING,
       pluiConnectingCallback, &plui);
@@ -451,12 +451,12 @@ pluiBuildUI (playerui_t *plui)
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&plui->errorMsg, &uiwidget);
+  uiwidgetCopy (&plui->errorMsg, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&plui->statusMsg, &uiwidget);
+  uiwidgetCopy (&plui->statusMsg, &uiwidget);
 
   /* actions */
   /* CONTEXT: playerui: menu selection: actions for the player */
@@ -1369,7 +1369,7 @@ pluiMarqueeFontSizeDialogResponse (void *udata, long responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
-      uiutilsUIWidgetInit (&plui->marqueeFontSizeDialog);
+      uiwidgetInit (&plui->marqueeFontSizeDialog);
       plui->fontszdialogcreated = false;
       plui->mqfontsizeactive = false;
       break;

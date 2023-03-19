@@ -102,13 +102,13 @@ main (int argc, char *argv[])
   confui.filterDisplayDf = NULL;
 
   confui.gui.localip = NULL;
-  uiutilsUIWidgetInit (&confui.gui.window);
+  uiwidgetInit (&confui.gui.window);
   confui.gui.closecb = NULL;
-  uiutilsUIWidgetInit (&confui.gui.notebook);
+  uiwidgetInit (&confui.gui.notebook);
   confui.gui.nbcb = NULL;
   confui.gui.nbtabid = uiutilsNotebookIDInit ();
-  uiutilsUIWidgetInit (&confui.gui.vbox);
-  uiutilsUIWidgetInit (&confui.gui.statusMsg);
+  uiwidgetInit (&confui.gui.vbox);
+  uiwidgetInit (&confui.gui.statusMsg);
   confui.gui.tablecurr = CONFUI_ID_NONE;
   confui.gui.dispsel = NULL;
   confui.gui.dispselduallist = NULL;
@@ -151,7 +151,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].displist = NULL;
     confui.gui.uiitem [i].sbkeylist = NULL;
     confui.gui.uiitem [i].danceidx = DANCE_DANCE;
-    uiutilsUIWidgetInit (&confui.gui.uiitem [i].uiwidget);
+    uiwidgetInit (&confui.gui.uiitem [i].uiwidget);
     confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].uri = NULL;
 
@@ -427,7 +427,7 @@ confuiBuildUI (configui_t *confui)
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&confui->gui.statusMsg, &uiwidget);
+  uiwidgetCopy (&confui->gui.statusMsg, &uiwidget);
 
   uiCreateMenubar (&menubar);
   uiBoxPackStart (&hbox, &menubar);

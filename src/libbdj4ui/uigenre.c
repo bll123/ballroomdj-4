@@ -60,7 +60,7 @@ uigenreDropDownCreate (uiwidget_t *boxp, uiwidget_t *parentwin, bool allflag)
   return uigenre;
 }
 
-UIWidget *
+uiwidget_t *
 uigenreGetButton (uigenre_t *uigenre)
 {
   if (uigenre == NULL) {

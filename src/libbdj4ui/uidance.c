@@ -76,7 +76,7 @@ uidanceDropDownCreate (uiwidget_t *boxp, uiwidget_t *parentwin, int flags,
   return uidance;
 }
 
-UIWidget *
+uiwidget_t *
 uidanceGetButton (uidance_t *uidance)
 {
   if (uidance == NULL) {

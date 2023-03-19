@@ -186,9 +186,9 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   uiw->checkchanged = false;
   uiw->ineditallapply = false;
 
-  uiutilsUIWidgetInit (&uiw->vbox);
-  uiutilsUIWidgetInit (&uiw->audioidImg);
-  uiutilsUIWidgetInit (&uiw->modified);
+  uiwidgetInit (&uiw->vbox);
+  uiwidgetInit (&uiw->audioidImg);
+  uiwidgetInit (&uiw->modified);
 
   uiCreateSizeGroupHoriz (&uiw->sgentry);
   uiCreateSizeGroupHoriz (&uiw->sgsbint);
@@ -283,7 +283,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
   logProcEnd (LOG_PROC, "uisongeditUIFree", "");
 }
 
-UIWidget *
+uiwidget_t *
 uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     uiwidget_t *parentwin, uiwidget_t *statusMsg)
 {
@@ -370,7 +370,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiBoxPackEnd (&hbox, &uiwidget);
   uiWidgetSetMarginEnd (&uiwidget, 6);
   uiWidgetSetClass (&uiwidget, DARKACCENT_CLASS);
-  uiutilsUIWidgetCopy (&uiw->editalldisp, &uiwidget);
+  uiwidgetCopy (&uiw->editalldisp, &uiwidget);
 
   /* audio-identification logo, modified indicator, */
   /* copy button, file label, filename */
@@ -393,7 +393,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   uiCreateLabel (&uiwidget, " ");
   uiBoxPackStart (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&uiw->modified, &uiwidget);
+  uiwidgetCopy (&uiw->modified, &uiwidget);
   uiWidgetSetClass (&uiw->modified, DARKACCENT_CLASS);
 
   uiw->callbacks [UISONGEDIT_CB_COPY_TEXT] = callbackInit (
@@ -415,7 +415,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiCreateLabel (&uiwidget, "");
   uiLabelEllipsizeOn (&uiwidget);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&uiw->filedisp, &uiwidget);
+  uiwidgetCopy (&uiw->filedisp, &uiwidget);
   uiWidgetSetClass (&uiw->filedisp, DARKACCENT_CLASS);
   uiLabelSetSelectable (&uiw->filedisp);
 
@@ -438,7 +438,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiw->items = mdmalloc (sizeof (uisongedititem_t) * (count + 1));
   for (int i = 0; i < count + 1; ++i) {
     uiw->items [i].tagkey = 0;
-    uiutilsUIWidgetInit (&uiw->items [i].uiwidget);
+    uiwidgetInit (&uiw->items [i].uiwidget);
     uiw->items [i].entry = NULL;
     uiw->items [i].chgind = NULL;
     uiw->items [i].lastchanged = false;
@@ -1063,7 +1063,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwidget_t *hbox, uiwidget_t *sg, i
     uiCreateColonLabel (&uiwidget, tagdefs [tagkey].displayname);
     uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (sg, &uiwidget);
-    uiutilsUIWidgetCopy (&uiw->items [uiw->itemcount].label, &uiwidget);
+    uiwidgetCopy (&uiw->items [uiw->itemcount].label, &uiwidget);
   }
 
   switch (tagdefs [tagkey].editType) {

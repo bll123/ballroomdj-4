@@ -122,10 +122,10 @@ uiCreateDualList (uiwidget_t *mainvbox, int flags,
   duallist->callbacks [DUALLIST_CB_SRC_SEARCH] = callbackInit (
       uiduallistSourceSearch, duallist, NULL);
 
-  uiutilsUIWidgetInit (&vbox);
-  uiutilsUIWidgetInit (&hbox);
-  uiutilsUIWidgetInit (&dvbox);
-  uiutilsUIWidgetInit (&uiwidget);
+  uiwidgetInit (&vbox);
+  uiwidgetInit (&hbox);
+  uiwidgetInit (&dvbox);
+  uiwidgetInit (&uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiWidgetAlignHorizStart (&hbox);

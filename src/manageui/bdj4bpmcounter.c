@@ -148,8 +148,8 @@ main (int argc, char *argv[])
   bpmcounter.timesigidx = BPMCOUNT_DISP_BPM;
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     bpmcounter.values [i] = 0;
-    uiutilsUIWidgetInit (&bpmcounter.timesigsel [i]);
-    uiutilsUIWidgetInit (&bpmcounter.dispvalue [i]);
+    uiwidgetInit (&bpmcounter.timesigsel [i]);
+    uiwidgetInit (&bpmcounter.dispvalue [i]);
   }
   for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
     bpmcounter.callbacks [i] = NULL;
@@ -172,7 +172,7 @@ main (int argc, char *argv[])
   progstateSetCallback (bpmcounter.progstate, STATE_CLOSING,
       bpmcounterClosingCallback, &bpmcounter);
 
-  uiutilsUIWidgetInit (&bpmcounter.window);
+  uiwidgetInit (&bpmcounter.window);
 
   procutilInitProcesses (bpmcounter.processes);
 
@@ -341,7 +341,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   int         x, y;
 
   logProcBegin (LOG_PROC, "bpmcounterBuildUI");
-  uiutilsUIWidgetInit (&grpuiwidget);
+  uiwidgetInit (&grpuiwidget);
   uiCreateSizeGroupHoriz (&sg);
   uiCreateSizeGroupHoriz (&sgb);
 
@@ -398,11 +398,11 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       uiCreateColonLabel (&uiwidget, disptxt [i]);
     } else if (i == BPMCOUNT_DISP_BPM) {
       uiCreateRadioButton (&uiwidget, NULL, disptxt [i], 1);
-      uiutilsUIWidgetCopy (&grpuiwidget, &uiwidget);
+      uiwidgetCopy (&grpuiwidget, &uiwidget);
     } else {
       uiCreateRadioButton (&uiwidget, &grpuiwidget, disptxt [i], 0);
     }
-    uiutilsUIWidgetCopy (&bpmcounter->timesigsel [i], &uiwidget);
+    uiwidgetCopy (&bpmcounter->timesigsel [i], &uiwidget);
     if (i >= BPMCOUNT_DISP_BPM) {
       uiToggleButtonSetCallback (&bpmcounter->timesigsel [i],
           bpmcounter->callbacks [BPMCOUNT_CB_RADIO]);

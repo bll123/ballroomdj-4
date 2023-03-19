@@ -38,9 +38,9 @@ uiTextBoxCreate (int height, const char *hlcolor)
 
   tb = mdmalloc (sizeof (uitextbox_t));
   assert (tb != NULL);
-  uiutilsUIWidgetInit (&tb->scw);
-  uiutilsUIWidgetInit (&tb->textbox);
-  uiutilsUIWidgetInit (&tb->buffer);
+  uiwidgetInit (&tb->scw);
+  uiwidgetInit (&tb->textbox);
+  uiwidgetInit (&tb->buffer);
 
   uiCreateScrolledWindow (&tb->scw, height);
 

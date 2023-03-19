@@ -93,8 +93,8 @@ managePlaylistAlloc (uiwidget_t *window, nlist_t *options, uiwidget_t *statusMsg
   managepl_t *managepl;
 
   managepl = mdmalloc (sizeof (managepl_t));
-  uiutilsUIWidgetInit (&managepl->uipltype);
-  uiutilsUIWidgetInit (&managepl->menuDelete);
+  uiwidgetInit (&managepl->uipltype);
+  uiwidgetInit (&managepl->menuDelete);
   managepl->ploldname = NULL;
   managepl->plbackupcreated = false;
   managepl->plmenu = uiMenuAlloc ();
@@ -105,17 +105,17 @@ managePlaylistAlloc (uiwidget_t *window, nlist_t *options, uiwidget_t *statusMsg
   managepl->pltype = PLTYPE_AUTO;
   managepl->uimaxplaytime = uiSpinboxTimeInit (SB_TIME_BASIC);
   managepl->uistopat = uiSpinboxTimeInit (SB_TIME_BASIC);
-  uiutilsUIWidgetInit (&managepl->uistopafter);
+  uiwidgetInit (&managepl->uistopafter);
   managepl->uigap = uiSpinboxInit ();
   managepl->managepltree = NULL;
   managepl->uirating = NULL;
   managepl->uilowlevel = NULL;
   managepl->uihighlevel = NULL;
-  uiutilsUIWidgetInit (&managepl->uiratingitem);
-  uiutilsUIWidgetInit (&managepl->uilowlevelitem);
-  uiutilsUIWidgetInit (&managepl->uihighlevelitem);
+  uiwidgetInit (&managepl->uiratingitem);
+  uiwidgetInit (&managepl->uilowlevelitem);
+  uiwidgetInit (&managepl->uihighlevelitem);
   managepl->allowedkeywords = uiEntryInit (15, 50);
-  uiutilsUIWidgetInit (&managepl->uiallowedkeywordsitem);
+  uiwidgetInit (&managepl->uiallowedkeywordsitem);
   managepl->playlist = NULL;
   managepl->changed = false;
   managepl->inload = false;
@@ -179,8 +179,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
   uiwidget_t          sgC;
 
   logProcBegin (LOG_PROC, "manageBuildUIPlaylist");
-  uiutilsUIWidgetInit (&hbox);
-  uiutilsUIWidgetInit (&uiwidget);
+  uiwidgetInit (&hbox);
+  uiwidgetInit (&uiwidget);
   uiCreateSizeGroupHoriz (&sg);   // labels
   uiCreateSizeGroupHoriz (&sgA);  // time widgets + gap widget
   uiCreateSizeGroupHoriz (&sgB);  // numeric widgets
@@ -216,7 +216,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
   /* CONTEXT: playlist management: default playlist type */
   uiCreateLabel (&uiwidget, _("Automatic"));
   uiBoxPackStart (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&managepl->uipltype, &uiwidget);
+  uiwidgetCopy (&managepl->uipltype, &uiwidget);
 
   uiCreateHorizBox (&mainhbox);
   uiBoxPackStartExpand (vboxp, &mainhbox);
@@ -271,7 +271,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
   uiSpinboxSet (&uiwidget, 0.0, 500.0);
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (&sgB, &uiwidget);
-  uiutilsUIWidgetCopy (&managepl->uistopafter, &uiwidget);
+  uiwidgetCopy (&managepl->uistopafter, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
@@ -311,7 +311,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
-  uiutilsUIWidgetCopy (&managepl->uiratingitem, &hbox);
+  uiwidgetCopy (&managepl->uiratingitem, &hbox);
 
   uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCERATING].displayname);
   uiBoxPackStart (&hbox, &uiwidget);
@@ -322,7 +322,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
-  uiutilsUIWidgetCopy (&managepl->uilowlevelitem, &hbox);
+  uiwidgetCopy (&managepl->uilowlevelitem, &hbox);
 
   /* CONTEXT: playlist management: Low Dance Level */
   uiCreateColonLabel (&uiwidget, _("Low Dance Level"));
@@ -334,7 +334,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
-  uiutilsUIWidgetCopy (&managepl->uihighlevelitem, &hbox);
+  uiwidgetCopy (&managepl->uihighlevelitem, &hbox);
 
   /* CONTEXT: playlist management: High Dance Level */
   uiCreateColonLabel (&uiwidget, _("High Dance Level"));
@@ -346,7 +346,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&lcol, &hbox);
-  uiutilsUIWidgetCopy (&managepl->uiallowedkeywordsitem, &hbox);
+  uiwidgetCopy (&managepl->uiallowedkeywordsitem, &hbox);
 
   /* CONTEXT: playlist management: allowed keywords */
   uiCreateColonLabel (&uiwidget, _("Allowed Keywords"));
@@ -410,7 +410,7 @@ managePlaylistMenu (managepl_t *managepl, uiwidget_t *uimenubar)
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist */
     uiMenuCreateItem (&menu, &menuitem, _("Delete"),
         managepl->callbacks [MPL_CB_MENU_PL_DELETE]);
-    uiutilsUIWidgetCopy (&managepl->menuDelete, &menuitem);
+    uiwidgetCopy (&managepl->menuDelete, &menuitem);
 
     uiMenuSetInitialized (managepl->plmenu);
   }
@@ -511,7 +511,7 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
     return;
   }
 
-  if (uiutilsUIWidgetSet (&managepl->menuDelete)) {
+  if (uiwidgetIsSet (&managepl->menuDelete)) {
     uiWidgetSetState (&managepl->menuDelete, UIWIDGET_ENABLE);
     /* CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button */
     if (strcmp (playlistGetName (pl), _("QueueDance")) == 0) {

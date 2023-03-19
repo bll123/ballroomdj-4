@@ -34,7 +34,7 @@ uiwidgetFree (uiwidget_t *uiwidget)
 }
 
 void
-uiutilsUIWidgetInit (uiwidget_t *uiwidget)
+uiwidgetInit (uiwidget_t *uiwidget)
 {
   if (uiwidget == NULL) {
     return;
@@ -43,7 +43,7 @@ uiutilsUIWidgetInit (uiwidget_t *uiwidget)
 }
 
 bool
-uiutilsUIWidgetSet (uiwidget_t *uiwidget)
+uiwidgetIsSet (uiwidget_t *uiwidget)
 {
   bool rc = true;
 
@@ -55,7 +55,7 @@ uiutilsUIWidgetSet (uiwidget_t *uiwidget)
 
 
 void
-uiutilsUIWidgetCopy (uiwidget_t *target, uiwidget_t *source)
+uiwidgetCopy (uiwidget_t *target, uiwidget_t *source)
 {
   if (target == NULL) {
     return;

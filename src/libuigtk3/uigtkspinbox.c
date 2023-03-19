@@ -62,7 +62,7 @@ uiSpinboxInit (void)
   uispinbox_t   *spinbox;
 
   spinbox = mdmalloc (sizeof (uispinbox_t));
-  uiutilsUIWidgetInit (&spinbox->uispinbox);
+  uiwidgetInit (&spinbox->uispinbox);
   spinbox->convcb = NULL;
   spinbox->curridx = 0;
   spinbox->textGetProc = NULL;

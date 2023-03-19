@@ -55,7 +55,7 @@ selectFileDialog (int type, uiwidget_t *window, nlist_t *options,
 
   selectfile = mdmalloc (sizeof (uiselectfile_t));
   selectfile->parentwinp = window;
-  uiutilsUIWidgetInit (&selectfile->uidialog);
+  uiwidgetInit (&selectfile->uidialog);
   selectfile->selfiletree = NULL;
   selectfile->rowactivecb = NULL;
   selectfile->respcb = NULL;

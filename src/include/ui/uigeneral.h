@@ -12,8 +12,8 @@
 uiwidget_t *uiwidgetAlloc (void);
 void  uiwidgetFree (uiwidget_t *);
 /* these routines will be removed at a later date */
-void uiutilsUIWidgetInit (uiwidget_t *uiwidget);
-bool uiutilsUIWidgetSet (uiwidget_t *uiwidget);
-void uiutilsUIWidgetCopy (uiwidget_t *target, uiwidget_t *source);
+void uiwidgetInit (uiwidget_t *uiwidget);
+bool uiwidgetIsSet (uiwidget_t *uiwidget);
+void uiwidgetCopy (uiwidget_t *target, uiwidget_t *source);
 
 #endif /* INC_UIGENERAL_H */

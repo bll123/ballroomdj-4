@@ -88,7 +88,7 @@ typedef struct {
   uiwidget_t      infoSepLab;
   uiwidget_t      infoTitleLab;
   uiwidget_t      danceLab;
-  uiwidget_t      *marqueeLabs;   // array of UIWidget
+  uiwidget_t      *marqueeLabs;   // array of uiwidget_t
   int             marginTotal;
   double          fontAdjustment;
   int             mqLen;
@@ -165,15 +165,15 @@ main (int argc, char *argv[])
   progstateSetCallback (marquee.progstate, STATE_CLOSING,
       marqueeClosingCallback, &marquee);
 
-  uiutilsUIWidgetInit (&marquee.window);
-  uiutilsUIWidgetInit (&marquee.pbar);
-  uiutilsUIWidgetInit (&marquee.sep);
-  uiutilsUIWidgetInit (&marquee.countdownTimerLab);
-  uiutilsUIWidgetInit (&marquee.infoBox);
-  uiutilsUIWidgetInit (&marquee.infoArtistLab);
-  uiutilsUIWidgetInit (&marquee.infoSepLab);
-  uiutilsUIWidgetInit (&marquee.infoTitleLab);
-  uiutilsUIWidgetInit (&marquee.danceLab);
+  uiwidgetInit (&marquee.window);
+  uiwidgetInit (&marquee.pbar);
+  uiwidgetInit (&marquee.sep);
+  uiwidgetInit (&marquee.countdownTimerLab);
+  uiwidgetInit (&marquee.infoBox);
+  uiwidgetInit (&marquee.infoArtistLab);
+  uiwidgetInit (&marquee.infoSepLab);
+  uiwidgetInit (&marquee.infoTitleLab);
+  uiwidgetInit (&marquee.danceLab);
   marquee.marqueeLabs = NULL;
   marquee.lastHeight = 0;
   marquee.priorSize = 0;
@@ -335,9 +335,9 @@ marqueeBuildUI (marquee_t *marquee)
   uiLabelAddClass (MQ_INFO_CLASS, bdjoptGetStr (OPT_P_MQ_INFO_COL));
   uiSeparatorAddClass (MQ_ACCENT_CLASS, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
 
-  uiutilsUIWidgetInit (&mainvbox);
-  uiutilsUIWidgetInit (&vbox);
-  uiutilsUIWidgetInit (&hbox);
+  uiwidgetInit (&mainvbox);
+  uiwidgetInit (&vbox);
+  uiwidgetInit (&hbox);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_marquee", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -362,7 +362,7 @@ marqueeBuildUI (marquee_t *marquee)
 
   uiWindowNoDim (&uiwidget);
 
-  uiutilsUIWidgetCopy (&marquee->window, &uiwidget);
+  uiwidgetCopy (&marquee->window, &uiwidget);
 
   x = nlistGetNum (marquee->options, MQ_SIZE_X);
   y = nlistGetNum (marquee->options, MQ_SIZE_Y);
@@ -395,7 +395,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetDisableFocus (&uiwidget);
   uiWidgetSetClass (&uiwidget, MQ_ACCENT_CLASS);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&marquee->danceLab, &uiwidget);
+  uiwidgetCopy (&marquee->danceLab, &uiwidget);
 
   uiCreateLabel (&uiwidget, "0:00");
   uiLabelSetMaxWidth (&uiwidget, 6);
@@ -403,20 +403,20 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetDisableFocus (&uiwidget);
   uiWidgetSetClass (&uiwidget, MQ_ACCENT_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&marquee->countdownTimerLab, &uiwidget);
+  uiwidgetCopy (&marquee->countdownTimerLab, &uiwidget);
 
   uiCreateHorizBox (&hbox);
   uiWidgetAlignHorizFill (&hbox);
   uiWidgetExpandHoriz (&hbox);
   uiBoxPackStart (&vbox, &hbox);
-  uiutilsUIWidgetCopy (&marquee->infoBox, &hbox);
+  uiwidgetCopy (&marquee->infoBox, &hbox);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetAlignHorizStart (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
   uiLabelEllipsizeOn (&uiwidget);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&marquee->infoArtistLab, &uiwidget);
+  uiwidgetCopy (&marquee->infoArtistLab, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetAlignHorizStart (&uiwidget);
@@ -424,14 +424,14 @@ marqueeBuildUI (marquee_t *marquee)
   uiBoxPackStart (&hbox, &uiwidget);
   uiWidgetSetMarginStart (&uiwidget, 2);
   uiWidgetSetMarginEnd (&uiwidget, 2);
-  uiutilsUIWidgetCopy (&marquee->infoSepLab, &uiwidget);
+  uiwidgetCopy (&marquee->infoSepLab, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetAlignHorizStart (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
   uiLabelEllipsizeOn (&uiwidget);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&marquee->infoTitleLab, &uiwidget);
+  uiwidgetCopy (&marquee->infoTitleLab, &uiwidget);
 
   uiCreateHorizSeparator (&marquee->sep);
   uiWidgetSetClass (&marquee->sep, MQ_ACCENT_CLASS);
@@ -440,10 +440,10 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetSetMarginBottom (&marquee->sep, 4);
   uiBoxPackEnd (&vbox, &marquee->sep);
 
-  marquee->marqueeLabs = mdmalloc (sizeof (UIWidget) * marquee->mqLen);
+  marquee->marqueeLabs = mdmalloc (sizeof (uiwidget_t) * marquee->mqLen);
 
   for (int i = 0; i < marquee->mqLen; ++i) {
-    uiutilsUIWidgetInit (&marquee->marqueeLabs [i]);
+    uiwidgetInit (&marquee->marqueeLabs [i]);
     uiCreateLabel (&marquee->marqueeLabs [i], "");
     uiWidgetAlignHorizStart (&marquee->marqueeLabs [i]);
     uiWidgetExpandHoriz (&marquee->marqueeLabs [i]);

@@ -97,7 +97,7 @@ uiMenuAlloc (void)
   menu->initialized = false;
   menu->menucount = 0;
   for (int i = 0; i < UIUTILS_MENU_MAX; ++i) {
-    uiutilsUIWidgetInit (&menu->menuitem [i]);
+    uiwidgetInit (&menu->menuitem [i]);
   }
   return menu;
 }
@@ -146,7 +146,7 @@ uiMenuAddMainItem (uiwidget_t *uimenubar, uiwidget_t *uimenuitem,
   gtk_menu_shell_append (GTK_MENU_SHELL (uimenubar->widget),
       uimenuitem->widget);
   uiWidgetHide (uimenuitem);
-  memcpy (&menu->menuitem [i], uimenuitem, sizeof (UIWidget));
+  memcpy (&menu->menuitem [i], uimenuitem, sizeof (uiwidget_t));
 }
 
 void

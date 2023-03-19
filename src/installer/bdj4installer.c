@@ -296,7 +296,7 @@ main (int argc, char *argv[])
 
   installer.unpackdir [0] = '\0';
   installer.home = NULL;
-  uiutilsUIWidgetInit (&installer.window);
+  uiwidgetInit (&installer.window);
   installer.instState = INST_INITIALIZE;
   installer.lastInstState = INST_INITIALIZE;
   installer.target = mdstrdup ("");
@@ -332,14 +332,14 @@ main (int argc, char *argv[])
   }
 
   installer.loglevel = LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST;
-  uiutilsUIWidgetInit (&installer.statusMsg);
-  uiutilsUIWidgetInit (&installer.reinstWidget);
-  uiutilsUIWidgetInit (&installer.feedbackMsg);
-  uiutilsUIWidgetInit (&installer.convFeedbackMsg);
-  uiutilsUIWidgetInit (&installer.vlcMsg);
-  uiutilsUIWidgetInit (&installer.pythonMsg);
-  uiutilsUIWidgetInit (&installer.mutagenMsg);
-  uiutilsUIWidgetInit (&installer.convWidget);
+  uiwidgetInit (&installer.statusMsg);
+  uiwidgetInit (&installer.reinstWidget);
+  uiwidgetInit (&installer.feedbackMsg);
+  uiwidgetInit (&installer.convFeedbackMsg);
+  uiwidgetInit (&installer.vlcMsg);
+  uiwidgetInit (&installer.pythonMsg);
+  uiwidgetInit (&installer.mutagenMsg);
+  uiwidgetInit (&installer.convWidget);
   (void) ! getcwd (installer.currdir, sizeof (installer.currdir));
   installer.webclient = NULL;
   strcpy (installer.vlcversion, "");
@@ -595,9 +595,9 @@ installerBuildUI (installer_t *installer)
   uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
   uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
 
-  uiutilsUIWidgetInit (&vbox);
-  uiutilsUIWidgetInit (&hbox);
-  uiutilsUIWidgetInit (&uiwidget);
+  uiwidgetInit (&vbox);
+  uiwidgetInit (&hbox);
+  uiwidgetInit (&uiwidget);
 
   strlcpy (imgbuff, "img/bdj4_icon_inst.png", sizeof (imgbuff));
   osuiSetIcon (imgbuff);

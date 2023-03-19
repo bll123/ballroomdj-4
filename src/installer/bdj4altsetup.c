@@ -177,7 +177,7 @@ main (int argc, char *argv[])
 
   buff [0] = '\0';
 
-  uiutilsUIWidgetInit (&altsetup.window);
+  uiwidgetInit (&altsetup.window);
   altsetup.instState = ALT_PRE_INIT;
   altsetup.target = mdstrdup ("");
   altsetup.uiBuilt = false;
@@ -191,8 +191,8 @@ main (int argc, char *argv[])
   altsetup.quiet = false;
   altsetup.verbose = false;
   altsetup.unattended = false;
-  uiutilsUIWidgetInit (&altsetup.reinstWidget);
-  uiutilsUIWidgetInit (&altsetup.feedbackMsg);
+  uiwidgetInit (&altsetup.reinstWidget);
+  uiwidgetInit (&altsetup.feedbackMsg);
   for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
     altsetup.buttons [i] = NULL;
   }
@@ -293,9 +293,9 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
   uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
 
-  uiutilsUIWidgetInit (&vbox);
-  uiutilsUIWidgetInit (&hbox);
-  uiutilsUIWidgetInit (&uiwidget);
+  uiwidgetInit (&vbox);
+  uiwidgetInit (&hbox);
+  uiwidgetInit (&uiwidget);
 
   strlcpy (imgbuff, "img/bdj4_icon_inst.png", sizeof (imgbuff));
   osuiSetIcon (imgbuff);

@@ -9,7 +9,7 @@
 typedef struct uigenre uigenre_t;
 
 uigenre_t * uigenreDropDownCreate (uiwidget_t *boxp, uiwidget_t *parentwin, bool allflag);
-UIWidget * uigenreGetButton (uigenre_t *uigenre);
+uiwidget_t * uigenreGetButton (uigenre_t *uigenre);
 void uigenreFree (uigenre_t *uigenre);
 int uigenreGetValue (uigenre_t *uigenre);
 void uigenreSetValue (uigenre_t *uigenre, int value);

@@ -145,29 +145,29 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->uibuilt = false;
   uiplayer->curr_dbidx = -1;
 
-  uiutilsUIWidgetInit (&uiplayer->vbox);
-  uiutilsUIWidgetInit (&uiplayer->statusImg);
-  uiutilsUIWidgetInit (&uiplayer->repeatImg);
-  uiutilsUIWidgetInit (&uiplayer->danceLab);
-  uiutilsUIWidgetInit (&uiplayer->artistLab);
-  uiutilsUIWidgetInit (&uiplayer->titleLab);
-  uiutilsUIWidgetInit (&uiplayer->countdownTimerLab);
-  uiutilsUIWidgetInit (&uiplayer->durationLab);
-  uiutilsUIWidgetInit (&uiplayer->speedDisplayLab);
-  uiutilsUIWidgetInit (&uiplayer->seekDisplayLab);
-  uiutilsUIWidgetInit (&uiplayer->speedScale);
-  uiutilsUIWidgetInit (&uiplayer->seekScale);
-  uiutilsUIWidgetInit (&uiplayer->repeatButton);
-  uiutilsUIWidgetInit (&uiplayer->songbeginButton);
-  uiutilsUIWidgetInit (&uiplayer->pauseatendButton);
-  uiutilsUIWidgetInit (&uiplayer->playPixbuf);
-  uiutilsUIWidgetInit (&uiplayer->stopPixbuf);
-  uiutilsUIWidgetInit (&uiplayer->pausePixbuf);
-  uiutilsUIWidgetInit (&uiplayer->repeatPixbuf);
-  uiutilsUIWidgetInit (&uiplayer->ledoffImg);
-  uiutilsUIWidgetInit (&uiplayer->ledonImg);
-  uiutilsUIWidgetInit (&uiplayer->volumeDisplayLab);
-  uiutilsUIWidgetInit (&uiplayer->volumeScale);
+  uiwidgetInit (&uiplayer->vbox);
+  uiwidgetInit (&uiplayer->statusImg);
+  uiwidgetInit (&uiplayer->repeatImg);
+  uiwidgetInit (&uiplayer->danceLab);
+  uiwidgetInit (&uiplayer->artistLab);
+  uiwidgetInit (&uiplayer->titleLab);
+  uiwidgetInit (&uiplayer->countdownTimerLab);
+  uiwidgetInit (&uiplayer->durationLab);
+  uiwidgetInit (&uiplayer->speedDisplayLab);
+  uiwidgetInit (&uiplayer->seekDisplayLab);
+  uiwidgetInit (&uiplayer->speedScale);
+  uiwidgetInit (&uiplayer->seekScale);
+  uiwidgetInit (&uiplayer->repeatButton);
+  uiwidgetInit (&uiplayer->songbeginButton);
+  uiwidgetInit (&uiplayer->pauseatendButton);
+  uiwidgetInit (&uiplayer->playPixbuf);
+  uiwidgetInit (&uiplayer->stopPixbuf);
+  uiwidgetInit (&uiplayer->pausePixbuf);
+  uiwidgetInit (&uiplayer->repeatPixbuf);
+  uiwidgetInit (&uiplayer->ledoffImg);
+  uiwidgetInit (&uiplayer->ledonImg);
+  uiwidgetInit (&uiplayer->volumeDisplayLab);
+  uiwidgetInit (&uiplayer->volumeScale);
   for (int i = 0; i < UIPLAYER_BUTTON_MAX; ++i) {
     uiplayer->buttons [i] = NULL;
   }
@@ -204,7 +204,7 @@ uiplayerFree (uiplayer_t *uiplayer)
   logProcEnd (LOG_PROC, "uiplayerFree", "");
 }
 
-UIWidget *
+uiwidget_t *
 uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];

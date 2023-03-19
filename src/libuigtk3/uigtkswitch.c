@@ -46,9 +46,9 @@ uiCreateSwitch (int value)
   /* great.  use a toggle button instead and set our own image */
 
   uiswitch = mdmalloc (sizeof (uiswitch_t));
-  uiutilsUIWidgetInit (&uiswitch->uiswitch);
-  uiutilsUIWidgetInit (&uiswitch->switchoffimg);
-  uiutilsUIWidgetInit (&uiswitch->switchonimg);
+  uiwidgetInit (&uiswitch->uiswitch);
+  uiwidgetInit (&uiswitch->switchoffimg);
+  uiwidgetInit (&uiswitch->switchonimg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "switch-off", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);

@@ -58,14 +58,14 @@ manageStatsInit (conn_t *conn, musicdb_t *musicdb)
   managestats = mdmalloc (sizeof (managestats_t));
   managestats->conn = conn;
   managestats->musicdb = musicdb;
-  uiutilsUIWidgetInit (&managestats->vboxmain);
-  uiutilsUIWidgetInit (&managestats->songcountdisp);
-  uiutilsUIWidgetInit (&managestats->tottimedisp);
+  uiwidgetInit (&managestats->vboxmain);
+  uiwidgetInit (&managestats->songcountdisp);
+  uiwidgetInit (&managestats->tottimedisp);
   managestats->songcount = 0;
   managestats->tottime = 0;
   managestats->dancecounts = NULL;
   for (int i = 0; i < STATS_MAX_DISP; ++i) {
-    uiutilsUIWidgetInit (&managestats->dancedisp [i]);
+    uiwidgetInit (&managestats->dancedisp [i]);
   }
 
   return managestats;
@@ -80,7 +80,7 @@ manageStatsFree (managestats_t *managestats)
   }
 }
 
-UIWidget *
+uiwidget_t *
 manageBuildUIStats (managestats_t *managestats)
 {
   uiwidget_t  uiwidget;

@@ -160,7 +160,7 @@ uimusicqUIFree (uimusicq_t *uimusicq)
   }
 }
 
-UIWidget *
+uiwidget_t *
 uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
     uiwidget_t *statusMsg, uientryval_t validateFunc)
 {

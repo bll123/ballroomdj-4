@@ -289,11 +289,11 @@ main (int argc, char *argv[])
   for (int i = 0; i < START_BUTTON_MAX; ++i) {
     starter.buttons [i] = NULL;
   }
-  uiutilsUIWidgetInit (&starter.window);
+  uiwidgetInit (&starter.window);
   starter.support = NULL;
-  uiutilsUIWidgetInit (&starter.supportStatus);
-  uiutilsUIWidgetInit (&starter.supportSendFiles);
-  uiutilsUIWidgetInit (&starter.supportSendDB);
+  uiwidgetInit (&starter.supportStatus);
+  uiwidgetInit (&starter.supportSendFiles);
+  uiwidgetInit (&starter.supportSendDB);
   starter.optiondf = NULL;
   starter.options = NULL;
   starter.supportsubject = NULL;
@@ -482,9 +482,9 @@ starterBuildUI (startui_t  *starter)
   int         dispidx;
 
   logProcBegin (LOG_PROC, "starterBuildUI");
-  uiutilsUIWidgetInit (&vbox);
-  uiutilsUIWidgetInit (&bvbox);
-  uiutilsUIWidgetInit (&hbox);
+  uiwidgetInit (&vbox);
+  uiwidgetInit (&bvbox);
+  uiwidgetInit (&hbox);
   uiCreateSizeGroupHoriz (&sg);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
@@ -500,12 +500,12 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackInWindow (&starter->window, &vbox);
 
   uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&starter->profileAccent, &uiwidget);
+  uiwidgetCopy (&starter->profileAccent, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiutilsUIWidgetCopy (&starter->statusMsg, &uiwidget);
+  uiwidgetCopy (&starter->statusMsg, &uiwidget);
 
   uiCreateMenubar (&menubar);
   uiBoxPackStart (&hbox, &menubar);
@@ -1226,7 +1226,7 @@ starterProcessSupport (void *udata)
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
-  uiutilsUIWidgetCopy (&starter->supportStatusMsg, &uiwidget);
+  uiwidgetCopy (&starter->supportStatusMsg, &uiwidget);
   uiBoxPackEnd (&hbox, &uiwidget);
   uiLabelSetText (&starter->supportStatusMsg, "");
 
@@ -1352,7 +1352,7 @@ starterProcessSupport (void *udata)
   uiwidgetp = uiButtonGetWidget (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiutilsUIWidgetCopy (&starter->supportDialog, &uidialog);
+  uiwidgetCopy (&starter->supportDialog, &uidialog);
   uiDialogShow (&uidialog);
   return UICB_CONT;
 }
@@ -1642,9 +1642,9 @@ starterCreateSupportDialog (void *udata)
 
   starter->supportmsgactive = true;
 
-  uiutilsUIWidgetInit (&uiwidget);
-  uiutilsUIWidgetInit (&vbox);
-  uiutilsUIWidgetInit (&hbox);
+  uiwidgetInit (&uiwidget);
+  uiwidgetInit (&vbox);
+  uiwidgetInit (&hbox);
 
   starter->callbacks [START_CB_SUPPORT_MSG_RESP] = callbackInitLong (
       starterSupportMsgHandler, starter);
@@ -1724,9 +1724,9 @@ starterCreateSupportDialog (void *udata)
   uiBoxPackStart (&vbox, &uiwidget);
   uiLabelEllipsizeOn (&uiwidget);
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
-  uiutilsUIWidgetCopy (&starter->supportStatus, &uiwidget);
+  uiwidgetCopy (&starter->supportStatus, &uiwidget);
 
-  uiutilsUIWidgetCopy (&starter->supportMsgDialog, &uidialog);
+  uiwidgetCopy (&starter->supportMsgDialog, &uidialog);
   uiDialogShow (&uidialog);
   return UICB_CONT;
 }

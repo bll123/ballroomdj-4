@@ -130,8 +130,8 @@ manageBuildUISequence (manageseq_t *manageseq, uiwidget_t *vboxp)
   slist_t             *dancelist;
 
   logProcBegin (LOG_PROC, "manageBuildUISequence");
-  uiutilsUIWidgetInit (&hbox);
-  uiutilsUIWidgetInit (&uiwidget);
+  uiwidgetInit (&hbox);
+  uiwidgetInit (&uiwidget);
 
   /* edit sequences */
   uiWidgetSetAllMargins (vboxp, 2);

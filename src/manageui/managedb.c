@@ -83,11 +83,11 @@ manageDbAlloc (uiwidget_t *window, nlist_t *options,
   managedb->processes = processes;
   managedb->dblist = NULL;
   managedb->dbhelp = NULL;
-  uiutilsUIWidgetInit (&managedb->dbpbar);
+  uiwidgetInit (&managedb->dbpbar);
   managedb->topdirsel = NULL;
   managedb->dbstart = NULL;
   managedb->dbstop = NULL;
-  uiutilsUIWidgetInit (&managedb->dbhelpdisp);
+  uiwidgetInit (&managedb->dbhelpdisp);
   managedb->dbtopdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxInit ();
   managedb->statusMsg = statusMsg;
@@ -212,7 +212,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwidget_t *vboxp)
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStartExpand (&hbox, &uiwidget);
   uiWidgetSetMarginStart (&uiwidget, 6);
-  uiutilsUIWidgetCopy (&managedb->dbhelpdisp, &uiwidget);
+  uiwidgetCopy (&managedb->dbhelpdisp, &uiwidget);
 
   /* db top dir  */
   uiCreateHorizBox (&hbox);
@@ -296,7 +296,7 @@ manageDbChg (void *udata)
   sval = nlistGetStr (managedb->dbhelp, nval);
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector : %s", sval);
 
-  if (uiutilsUIWidgetSet (&managedb->dbhelpdisp)) {
+  if (uiwidgetIsSet (&managedb->dbhelpdisp)) {
     uiwidget_t*uiwidgetp;
 
     uiLabelSetText (&managedb->dbhelpdisp, sval);

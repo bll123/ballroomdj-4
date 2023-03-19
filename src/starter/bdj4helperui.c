@@ -97,7 +97,7 @@ main (int argc, char *argv[])
   helper.helplist = NULL;
   helper.helpiter = 0;
   helper.scrollendflag = false;
-  uiutilsUIWidgetInit (&helper.window);
+  uiwidgetInit (&helper.window);
   for (int i = 0; i < HELPER_BUTTON_MAX; ++i) {
     helper.buttons [i] = NULL;
   }
@@ -193,9 +193,9 @@ helperBuildUI (helperui_t  *helper)
   char                tbuff [MAXPATHLEN];
   char                imgbuff [MAXPATHLEN];
 
-  uiutilsUIWidgetInit (&uiwidget);
-  uiutilsUIWidgetInit (&vbox);
-  uiutilsUIWidgetInit (&hbox);
+  uiwidgetInit (&uiwidget);
+  uiwidgetInit (&vbox);
+  uiwidgetInit (&hbox);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);

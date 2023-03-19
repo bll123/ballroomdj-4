@@ -120,7 +120,7 @@ confuiMakeItemCombobox (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   uiBoxPackStart (&hbox, uiwidgetp);
   uiBoxPackStart (boxp, &hbox);
 
-  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  uiwidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemCombobox", "");
 }
@@ -135,7 +135,7 @@ confuiMakeItemLink (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   logProcBegin (LOG_PROC, "confuiMakeItemLink");
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt, CONFUI_NO_INDENT);
-  uiutilsUIWidgetInit (&uiwidget);
+  uiwidgetInit (&uiwidget);
   uiCreateLink (&uiwidget, disp, NULL);
   if (isMacOS ()) {
     gui->uiitem [widx].callback = callbackInit (
@@ -145,7 +145,7 @@ confuiMakeItemLink (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   }
   uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
-  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  uiwidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
   logProcEnd (LOG_PROC, "confuiMakeItemLink", "");
 }
 
@@ -166,7 +166,7 @@ confuiMakeItemFontButton (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   uiWidgetSetMarginStart (&uiwidget, 4);
   uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
-  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  uiwidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemFontButton", "");
 }
@@ -188,7 +188,7 @@ confuiMakeItemColorButton (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   uiWidgetSetMarginStart (&uiwidget, 4);
   uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
-  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  uiwidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemColorButton", "");
 }
@@ -243,7 +243,7 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   uiBoxPackStart (&hbox, uiwidgetp);
   uiBoxPackStart (boxp, &hbox);
 
-  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
+  uiwidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
 
   if (cb != NULL) {
@@ -285,7 +285,7 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwidget_t *boxp,
   }
   uiSpinboxTimeSetValue (gui->uiitem [widx].spinbox, value);
   uiwidgetp = uiSpinboxGetWidget (gui->uiitem [widx].spinbox);
-  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
+  uiwidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   if (sgB != NULL) {
     uiSizeGroupAdd (sgB, uiwidgetp);
@@ -324,7 +324,7 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
     uiSpinboxSetValueChangedCallback (&uiwidget, gui->uiitem [widx].callback);
   }
-  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  uiwidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxNum", "");
 }
 
@@ -352,7 +352,7 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  uiwidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxDouble", "");
 }
 
@@ -403,7 +403,7 @@ confuiMakeItemLabelDisp (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   uiWidgetSetMarginStart (&uiwidget, 4);
   uiBoxPackStart (&hbox, &uiwidget);
   uiBoxPackStart (boxp, &hbox);
-  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  uiwidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemLabelDisp", "");
 }
@@ -421,7 +421,7 @@ confuiMakeItemCheckButton (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   uiCreateCheckButton (&uiwidget, txt, value);
   uiWidgetSetMarginStart (&uiwidget, 4);
   uiBoxPackStart (boxp, &uiwidget);
-  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  uiwidgetCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemCheckButton", "");
 }
@@ -498,7 +498,7 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
   confuiMakeItemLabel (boxp, sg, txt, indent);
   uiEntryCreate (gui->uiitem [widx].entry);
   uiwidgetp = uiEntryGetWidget (gui->uiitem [widx].entry);
-  uiutilsUIWidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
+  uiwidgetCopy (&gui->uiitem [widx].uiwidget, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   if (expand == CONFUI_EXPAND) {
     uiWidgetAlignHorizFill (uiwidgetp);
