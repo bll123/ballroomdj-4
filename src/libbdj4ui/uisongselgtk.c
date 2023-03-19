@@ -92,16 +92,16 @@ enum {
 
 typedef struct uisongselgtk {
   callback_t          *callbacks [SONGSEL_CB_MAX];
-  UIWidget            *parentwin;
-  UIWidget            vbox;
+  uiwidget_t          *parentwin;
+  uiwidget_t          vbox;
   uitree_t            *songselTree;
   GtkTreeSelection    *sel;
-  UIWidget            songselScrollbar;
+  uiwidget_t          songselScrollbar;
   GtkEventController  *scrollController;
   GtkTreeViewColumn   *favColumn;
-  UIWidget            scrolledwin;
+  uiwidget_t          scrolledwin;
   uibutton_t          *buttons [SONGSEL_BUTTON_MAX];
-  UIWidget            reqQueueLabel;
+  uiwidget_t          reqQueueLabel;
   uikey_t             *uikey;
   /* other data */
   int               lastTreeSize;
@@ -227,11 +227,11 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwidget_t *parentwin)
 {
   uisongselgtk_t    *uiw;
   uibutton_t        *uibutton;
-  UIWidget          uiwidget;
-  UIWidget          *uiwidgetp;
-  UIWidget          *uitreewidgetp;
-  UIWidget          hbox;
-  UIWidget          vbox;
+  uiwidget_t        uiwidget;
+  uiwidget_t        *uiwidgetp;
+  uiwidget_t        *uitreewidgetp;
+  uiwidget_t        hbox;
+  uiwidget_t        vbox;
   GtkAdjustment     *adjustment;
   slist_t           *sellist;
   char              tbuff [200];
@@ -421,7 +421,7 @@ uisongselClearData (uisongsel_t *uisongsel)
 {
   uisongselgtk_t  * uiw;
   GtkTreeModel    * model = NULL;
-  UIWidget        * uiwidgetp;
+  uiwidget_t      * uiwidgetp;
 
   logProcBegin (LOG_PROC, "uisongselClearData");
 
@@ -622,7 +622,7 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   GtkTreeModel    *model = NULL;
   GtkTreePath     *path;
   char            *pathstr;
-  UIWidget        *uiwidgetp;
+  uiwidget_t      *uiwidgetp;
 
   uiw = uisongsel->uiWidgetData;
   count = uiTreeViewSelectGetCount (uiw->songselTree);
@@ -1101,7 +1101,7 @@ uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
   uiw = uisongsel->uiWidgetData;
 
   if (allocation->height != uiw->lastTreeSize) {
-    UIWidget    *uiwidgetp;
+    uiwidget_t  *uiwidgetp;
 
     if (allocation->height < 200) {
       logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "small-alloc-height");
@@ -1591,7 +1591,7 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
   }
 
   if (count == 1) {
-    UIWidget    *uiwidgetp;
+    uiwidget_t  *uiwidgetp;
 
     /* calling getSelectLocation() will set currIter */
     uisongselGetSelectLocation (uisongsel);

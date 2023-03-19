@@ -63,9 +63,9 @@ confuiInitDispSettings (confuigui_t *gui)
 void
 confuiBuildUIDispSettings (confuigui_t *gui)
 {
-  UIWidget      vbox;
-  UIWidget      uiwidget;
-  UIWidget      sg;
+  uiwidget_t    vbox;
+  uiwidget_t    uiwidget;
+  uiwidget_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIDispSettings");
   uiutilsUIWidgetInit (&uiwidget);

@@ -38,11 +38,11 @@ enum {
 typedef struct managestats {
   conn_t      *conn;
   musicdb_t   *musicdb;
-  UIWidget    vboxmain;
-  UIWidget    dancedisp [STATS_MAX_DISP];
+  uiwidget_t  vboxmain;
+  uiwidget_t  dancedisp [STATS_MAX_DISP];
   nlist_t     *dancecounts;
-  UIWidget    songcountdisp;
-  UIWidget    tottimedisp;
+  uiwidget_t  songcountdisp;
+  uiwidget_t  tottimedisp;
   int         songcount;
   long        tottime;
 } managestats_t;
@@ -83,9 +83,9 @@ manageStatsFree (managestats_t *managestats)
 UIWidget *
 manageBuildUIStats (managestats_t *managestats)
 {
-  UIWidget    uiwidget;
-  UIWidget    hbox;
-  UIWidget    chbox;
+  uiwidget_t  uiwidget;
+  uiwidget_t  hbox;
+  uiwidget_t  chbox;
   const char  *listingFont;
 
   uiCreateVertBox (&managestats->vboxmain);
@@ -130,7 +130,7 @@ manageBuildUIStats (managestats_t *managestats)
   uiBoxPackStart (&managestats->vboxmain, &chbox);
 
   for (int i = 0; i < STATS_COLS; ++i) {
-    UIWidget    vbox;
+    uiwidget_t  vbox;
 
     /* vertical box for each column */
     uiCreateVertBox (&vbox);

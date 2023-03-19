@@ -69,47 +69,47 @@ typedef struct uiplayer {
   callback_t      *callbacks [UIPLAYER_CB_MAX];
   dbidx_t         curr_dbidx;
   /* song display */
-  UIWidget        vbox;
-  UIWidget        statusImg;
-  UIWidget        repeatImg;
-  UIWidget        danceLab;
-  UIWidget        artistLab;
-  UIWidget        titleLab;
+  uiwidget_t      vbox;
+  uiwidget_t      statusImg;
+  uiwidget_t      repeatImg;
+  uiwidget_t      danceLab;
+  uiwidget_t      artistLab;
+  uiwidget_t      titleLab;
   uibutton_t      *buttons [UIPLAYER_BUTTON_MAX];
   /* speed controls / display */
-  UIWidget        speedScale;
-  UIWidget        speedDisplayLab;
+  uiwidget_t      speedScale;
+  uiwidget_t      speedDisplayLab;
   bool            speedLock;
   mstime_t        speedLockTimeout;
   mstime_t        speedLockSend;
   /* position controls / display */
-  UIWidget        countdownTimerLab;
-  UIWidget        durationLab;
-  UIWidget        seekScale;
-  UIWidget        seekDisplayLab;
+  uiwidget_t      countdownTimerLab;
+  uiwidget_t      durationLab;
+  uiwidget_t      seekScale;
+  uiwidget_t      seekDisplayLab;
   ssize_t         lastdur;
   bool            seekLock;
   mstime_t        seekLockTimeout;
   mstime_t        seekLockSend;
   /* main controls */
-  UIWidget        repeatButton;
-  UIWidget        songbeginButton;
-  UIWidget        pauseatendButton;
-  UIWidget        playPixbuf;
-  UIWidget        stopPixbuf;
-  UIWidget        pausePixbuf;
-  UIWidget        repeatPixbuf;
-  UIWidget        ledoffImg;
-  UIWidget        ledonImg;
+  uiwidget_t      repeatButton;
+  uiwidget_t      songbeginButton;
+  uiwidget_t      pauseatendButton;
+  uiwidget_t      playPixbuf;
+  uiwidget_t      stopPixbuf;
+  uiwidget_t      pausePixbuf;
+  uiwidget_t      repeatPixbuf;
+  uiwidget_t      ledoffImg;
+  uiwidget_t      ledonImg;
   bool            repeatLock;
   bool            pauseatendLock;
   bool            pauseatendstate;
   /* volume controls / display */
-  UIWidget        volumeScale;
+  uiwidget_t      volumeScale;
   bool            volumeLock;
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;
-  UIWidget        volumeDisplayLab;
+  uiwidget_t      volumeDisplayLab;
   bool            uibuilt;
 } uiplayer_t;
 
@@ -208,16 +208,16 @@ UIWidget *
 uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];
-  UIWidget        uiwidget;
+  uiwidget_t      uiwidget;
   uibutton_t      *uibutton;
-  UIWidget        *uiwidgetp;
-  UIWidget        hbox;
-  UIWidget        tbox;
-  UIWidget        sgA;
-  UIWidget        sgB;
-  UIWidget        sgC;
-  UIWidget        sgD;
-  UIWidget        sgE;
+  uiwidget_t      *uiwidgetp;
+  uiwidget_t      hbox;
+  uiwidget_t      tbox;
+  uiwidget_t      sgA;
+  uiwidget_t      sgB;
+  uiwidget_t      sgC;
+  uiwidget_t      sgD;
+  uiwidget_t      sgE;
 
   logProcBegin (LOG_PROC, "uiplayerBuildUI");
 

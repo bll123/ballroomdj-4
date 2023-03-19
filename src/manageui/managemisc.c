@@ -28,7 +28,7 @@
 #include "validate.h"
 
 bool
-manageCreatePlaylistCopy (UIWidget *statusMsg,
+manageCreatePlaylistCopy (uiwidget_t *statusMsg,
     const char *oname, const char *newname)
 {
   char  tbuff [MAXPATHLEN];
@@ -49,7 +49,7 @@ manageCreatePlaylistCopy (UIWidget *statusMsg,
 int
 manageValidateName (uientry_t *entry, void *udata)
 {
-  UIWidget    *statusMsg = udata;
+  uiwidget_t  *statusMsg = udata;
   int         rc;
   const char  *str;
   char        tbuff [200];
@@ -73,7 +73,7 @@ manageValidateName (uientry_t *entry, void *udata)
 }
 
 void
-manageDeletePlaylist (UIWidget *statusMsg, const char *name)
+manageDeletePlaylist (uiwidget_t *statusMsg, const char *name)
 {
   char  tbuff [MAXPATHLEN];
 

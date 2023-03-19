@@ -45,9 +45,9 @@ enum {
 };
 
 typedef struct managedb {
-  UIWidget          *windowp;
+  uiwidget_t        *windowp;
   nlist_t           *options;
-  UIWidget          *statusMsg;
+  uiwidget_t        *statusMsg;
   procutil_t        **processes;
   conn_t            *conn;
   uientry_t         *dbtopdir;
@@ -56,11 +56,11 @@ typedef struct managedb {
   uispinbox_t       *dbspinbox;
   uibutton_t        *dbstart;
   uibutton_t        *dbstop;
-  UIWidget          dbhelpdisp;
+  uiwidget_t        dbhelpdisp;
   uitextbox_t       *dbstatus;
   nlist_t           *dblist;
   nlist_t           *dbhelp;
-  UIWidget          dbpbar;
+  uiwidget_t        dbpbar;
 } managedb_t;
 
 static bool manageDbStart (void *udata);
@@ -68,7 +68,7 @@ static bool manageDbStop (void *udata);
 static bool manageDbSelectDirCallback (void *udata);
 
 managedb_t *
-manageDbAlloc (UIWidget *window, nlist_t *options,
+manageDbAlloc (uiwidget_t *window, nlist_t *options,
     uiwidget_t *statusMsg, conn_t *conn, procutil_t **processes)
 {
   managedb_t      *managedb;
@@ -167,10 +167,10 @@ manageDbFree (managedb_t *managedb)
 void
 manageBuildUIUpdateDatabase (managedb_t *managedb, uiwidget_t *vboxp)
 {
-  UIWidget      uiwidget;
-  UIWidget      *uiwidgetp;
-  UIWidget      hbox;
-  UIWidget      sg;
+  uiwidget_t    uiwidget;
+  uiwidget_t    *uiwidgetp;
+  uiwidget_t    hbox;
+  uiwidget_t    sg;
   uitextbox_t   *tb;
 
 
@@ -297,7 +297,7 @@ manageDbChg (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector : %s", sval);
 
   if (uiutilsUIWidgetSet (&managedb->dbhelpdisp)) {
-    UIWidget  *uiwidgetp;
+    uiwidget_t*uiwidgetp;
 
     uiLabelSetText (&managedb->dbhelpdisp, sval);
     uiWidgetRemoveClass (&managedb->dbhelpdisp, ACCENT_CLASS);

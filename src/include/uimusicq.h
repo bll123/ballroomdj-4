@@ -42,7 +42,7 @@ typedef struct {
   int           prevSelection;
   int           currSelection;
   /* music queue tab */
-  UIWidget      mainbox;
+  uiwidget_t    mainbox;
   uidropdown_t  *playlistsel;
   uientry_t     *slname;
   /* widget data */
@@ -64,9 +64,9 @@ typedef struct uimusicq {
   conn_t            *conn;
   dispsel_t         *dispsel;
   musicdb_t         *musicdb;
-  UIWidget          *parentwin;
-  UIWidget          pausePixbuf;
-  UIWidget          *statusMsg;
+  uiwidget_t        *parentwin;
+  uiwidget_t        pausePixbuf;
+  uiwidget_t        *statusMsg;
   callback_t        *newselcb;
   callback_t        *editcb;
   callback_t        *songsavecb;

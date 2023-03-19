@@ -16,7 +16,7 @@ enum {
 
 typedef struct uidance uidance_t;
 
-uidance_t * uidanceDropDownCreate (UIWidget *boxp, uiwidget_t *parentwin, int flags, const char *label, int where, int count);
+uidance_t * uidanceDropDownCreate (uiwidget_t *boxp, uiwidget_t *parentwin, int flags, const char *label, int where, int count);
 UIWidget * uidanceGetButton (uidance_t *uidance);
 void uidanceFree (uidance_t *uidance);
 int uidanceGetValue (uidance_t *uidance);

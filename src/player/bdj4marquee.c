@@ -78,17 +78,17 @@ typedef struct {
   int             stopwaitcount;
   datafile_t      *optiondf;
   nlist_t         *options;
-  UIWidget        window;
+  uiwidget_t      window;
   callback_t      *callbacks [MQ_CB_MAX];
-  UIWidget        pbar;
-  UIWidget        infoBox;
-  UIWidget        sep;
-  UIWidget        countdownTimerLab;
-  UIWidget        infoArtistLab;
-  UIWidget        infoSepLab;
-  UIWidget        infoTitleLab;
-  UIWidget        danceLab;
-  UIWidget        *marqueeLabs;   // array of UIWidget
+  uiwidget_t      pbar;
+  uiwidget_t      infoBox;
+  uiwidget_t      sep;
+  uiwidget_t      countdownTimerLab;
+  uiwidget_t      infoArtistLab;
+  uiwidget_t      infoSepLab;
+  uiwidget_t      infoTitleLab;
+  uiwidget_t      danceLab;
+  uiwidget_t      *marqueeLabs;   // array of UIWidget
   int             marginTotal;
   double          fontAdjustment;
   int             mqLen;
@@ -321,12 +321,12 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 static void
 marqueeBuildUI (marquee_t *marquee)
 {
-  char      imgbuff [MAXPATHLEN];
-  UIWidget  uiwidget;
-  UIWidget  mainvbox;
-  UIWidget  hbox;
-  UIWidget  vbox;
-  int       x, y;
+  char        imgbuff [MAXPATHLEN];
+  uiwidget_t  uiwidget;
+  uiwidget_t  mainvbox;
+  uiwidget_t  hbox;
+  uiwidget_t  vbox;
+  int         x, y;
 
   logProcBegin (LOG_PROC, "marqueeBuildUI");
 

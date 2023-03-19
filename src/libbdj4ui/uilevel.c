@@ -31,7 +31,7 @@ typedef struct uilevel {
 static const char *uilevelLevelGet (void *udata, int idx);
 
 uilevel_t *
-uilevelSpinboxCreate (UIWidget *boxp, bool allflag)
+uilevelSpinboxCreate (uiwidget_t *boxp, bool allflag)
 {
   uilevel_t  *uilevel;
   int         maxw;

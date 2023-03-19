@@ -172,9 +172,9 @@ typedef struct {
   musicqidx_t     musicqManageIdx;
   dispsel_t       *dispsel;
   int             stopwaitcount;
-  UIWidget        statusMsg;
-  UIWidget        errorMsg;
-  UIWidget        restoreOrigMenuItem;
+  uiwidget_t      statusMsg;
+  uiwidget_t      errorMsg;
+  uiwidget_t      restoreOrigMenuItem;
   const char      *pleasewaitmsg;
   /* notebook tab handling */
   int               mainlasttab;
@@ -187,11 +187,11 @@ typedef struct {
   uiutilsnbtabid_t  *mainnbtabid;
   uiutilsnbtabid_t  *slnbtabid;
   uiutilsnbtabid_t  *mmnbtabid;
-  UIWidget        window;
-  UIWidget        menubar;
-  UIWidget        mainnotebook;
-  UIWidget        slnotebook;
-  UIWidget        mmnotebook;
+  uiwidget_t      window;
+  uiwidget_t      menubar;
+  uiwidget_t      mainnotebook;
+  uiwidget_t      slnotebook;
+  uiwidget_t      mmnotebook;
   uibutton_t      *selectButton;
   dbidx_t         songlistdbidx;
   dbidx_t         seldbidx;
@@ -203,17 +203,17 @@ typedef struct {
   uisongsel_t     *slsongsel;
   uimusicq_t      *slezmusicq;
   uisongsel_t     *slezsongsel;
-  UIWidget        slezmusicqtabwidget;
-  UIWidget        *slmusicqtabwidget;
-  UIWidget        *slsongseltabwidget;
+  uiwidget_t      slezmusicqtabwidget;
+  uiwidget_t      *slmusicqtabwidget;
+  uiwidget_t      *slsongseltabwidget;
   char            *sloldname;
   itunes_t        *itunes;
-  UIWidget        itunesSelectDialog;
+  uiwidget_t      itunesSelectDialog;
   uidropdown_t    *itunessel;
   /* prior name is used by create-from-playlist */
   char            *slpriorname;
   uisongfilter_t  *uisongfilter;
-  UIWidget        cfplDialog;
+  uiwidget_t      cfplDialog;
   uidropdown_t    *cfplsel;
   uispinbox_t     *cfpltmlimit;
   /* music manager ui */
@@ -637,9 +637,9 @@ manageClosingCallback (void *udata, programstate_t programState)
 static void
 manageBuildUI (manageui_t *manage)
 {
-  UIWidget            vbox;
-  UIWidget            hbox;
-  UIWidget            uiwidget;
+  uiwidget_t          vbox;
+  uiwidget_t          hbox;
+  uiwidget_t          uiwidget;
   char                imgbuff [MAXPATHLEN];
   char                tbuff [MAXPATHLEN];
   int                 x, y;
@@ -874,13 +874,13 @@ manageInitializeUI (manageui_t *manage)
 static void
 manageBuildUISongListEditor (manageui_t *manage)
 {
-  UIWidget            uiwidget;
+  uiwidget_t          uiwidget;
   uibutton_t          *uibutton;
-  UIWidget            *uiwidgetp;
-  UIWidget            vbox;
-  UIWidget            hbox;
-  UIWidget            mainhbox;
-  UIWidget            notebook;
+  uiwidget_t          *uiwidgetp;
+  uiwidget_t          vbox;
+  uiwidget_t          hbox;
+  uiwidget_t          mainhbox;
+  uiwidget_t          notebook;
 
   /* song list editor */
   uiutilsUIWidgetInit (&hbox);
@@ -1336,9 +1336,9 @@ manageSigHandler (int sig)
 static void
 manageSongEditMenu (manageui_t *manage)
 {
-  UIWidget  menu;
-  UIWidget  menuitem;
-  void      *tempp;
+  uiwidget_t  menu;
+  uiwidget_t  menuitem;
+  void        *tempp;
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
   if (! uiMenuInitialized (manage->songeditmenu)) {
@@ -1779,10 +1779,10 @@ manageSonglistImportiTunes (void *udata)
 static void
 manageiTunesCreateDialog (manageui_t *manage)
 {
-  UIWidget    vbox;
-  UIWidget    hbox;
-  UIWidget    uiwidget;
-  UIWidget    *uiwidgetp;
+  uiwidget_t  vbox;
+  uiwidget_t  hbox;
+  uiwidget_t  uiwidget;
+  uiwidget_t  *uiwidgetp;
   char        tbuff [50];
 
   logProcBegin (LOG_PROC, "manageiTunesCreateDialog");
@@ -1926,10 +1926,10 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
 void
 manageBuildUIMusicManager (manageui_t *manage)
 {
-  UIWidget            *uiwidgetp;
-  UIWidget            vbox;
-  UIWidget            uiwidget;
-  UIWidget            notebook;
+  uiwidget_t          *uiwidgetp;
+  uiwidget_t          vbox;
+  uiwidget_t          uiwidget;
+  uiwidget_t          notebook;
 
   logProcBegin (LOG_PROC, "manageBuildUIMusicManager");
   /* music manager */
@@ -1972,8 +1972,8 @@ manageBuildUIMusicManager (manageui_t *manage)
 void
 manageMusicManagerMenu (manageui_t *manage)
 {
-  UIWidget  menu;
-  UIWidget  menuitem;
+  uiwidget_t  menu;
+  uiwidget_t  menuitem;
 
   logProcBegin (LOG_PROC, "manageMusicManagerMenu");
   if (! uiMenuInitialized (manage->mmmenu)) {
@@ -2008,9 +2008,9 @@ manageMusicManagerMenu (manageui_t *manage)
 static void
 manageSonglistMenu (manageui_t *manage)
 {
-  char      tbuff [200];
-  UIWidget  menu;
-  UIWidget  menuitem;
+  char        tbuff [200];
+  uiwidget_t  menu;
+  uiwidget_t  menuitem;
 
   logProcBegin (LOG_PROC, "manageSonglistMenu");
   if (uiMenuInitialized (manage->slmenu)) {
@@ -2284,11 +2284,11 @@ manageSonglistCreateFromPlaylist (void *udata)
 static void
 manageSongListCFPLCreateDialog (manageui_t *manage)
 {
-  UIWidget    vbox;
-  UIWidget    hbox;
-  UIWidget    uiwidget;
-  UIWidget    *uiwidgetp;
-  UIWidget    sg;  // labels
+  uiwidget_t  vbox;
+  uiwidget_t  hbox;
+  uiwidget_t  uiwidget;
+  uiwidget_t  *uiwidgetp;
+  uiwidget_t  sg;  // labels
 
   logProcBegin (LOG_PROC, "manageSongListCFPLCreateDialog");
   if (uiutilsUIWidgetSet (&manage->cfplDialog)) {

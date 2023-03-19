@@ -207,7 +207,7 @@ typedef struct {
   nlist_t     *sbkeylist;     // indexed by spinbox index
                               //    value: key
   int         danceidx;       // for dance edit
-  UIWidget    uiwidget;
+  uiwidget_t  uiwidget;
   callback_t  *callback;
   char        *uri;
 } confuiitem_t;
@@ -367,15 +367,15 @@ typedef struct confuigui {
   char              *localip;
   bool              inbuild : 1;
   /* main window */
-  UIWidget          window;
+  uiwidget_t        window;
   callback_t        *closecb;
   /* main notebook */
   uiutilsnbtabid_t  *nbtabid;
-  UIWidget          notebook;
+  uiwidget_t        notebook;
   callback_t        *nbcb;
   /* widgets */
-  UIWidget          vbox;
-  UIWidget          statusMsg;
+  uiwidget_t        vbox;
+  uiwidget_t        statusMsg;
   /* display select */
   dispsel_t         *dispsel;
   uiduallist_t      *dispselduallist;
@@ -429,7 +429,7 @@ void confuiBuildUIEditGenres (confuigui_t *gui);
 void confuiCreateGenreTable (confuigui_t *gui);
 
 /* confgui.c */
-void confuiMakeNotebookTab (UIWidget *boxp, confuigui_t *gui, const char *txt, int);
+void confuiMakeNotebookTab (uiwidget_t *boxp, confuigui_t *gui, const char *txt, int);
 void confuiMakeItemEntry (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, int indent);
 void confuiMakeItemEntryChooser (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg, const char *txt, int widx, int bdjoptIdx, const char *disp, void *dialogFunc);
 void confuiMakeItemCombobox (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg, const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb, char *value);
@@ -443,7 +443,7 @@ void confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t
 void confuiMakeItemSwitch (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg, const char *txt, int widx, int bdjoptIdx, int value, void *cb, int indent);
 void confuiMakeItemLabelDisp (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg, const char *txt, int widx, int bdjoptIdx);
 void confuiMakeItemCheckButton (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg, const char *txt, int widx, int bdjoptIdx, int value);
-void confuiMakeItemLabel (UIWidget *boxp, uiwidget_t *sg, const char *txt, int indent);
+void confuiMakeItemLabel (uiwidget_t *boxp, uiwidget_t *sg, const char *txt, int indent);
 void confuiSpinboxTextInitDataNum (confuigui_t *gui, char *tag, int widx, ...);
 
 /* confitunes.c */

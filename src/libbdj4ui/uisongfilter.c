@@ -74,14 +74,14 @@ typedef struct uisongfilter {
   level_t           *levels;
   status_t          *status;
   sortopt_t         *sortopt;
-  UIWidget          *parentwin;
+  uiwidget_t        *parentwin;
   nlist_t           *options;
   callback_t        *callbacks [UISF_CB_MAX];
   callback_t        *applycb;
   callback_t        *danceselcb;
   songfilter_t      *songfilter;
-  UIWidget          filterDialog;
-  UIWidget          playlistdisp;
+  uiwidget_t        filterDialog;
+  uiwidget_t        playlistdisp;
   uidropdown_t      *playlistfilter;
   uidropdown_t      *sortbyfilter;
   uidance_t         *uidance;
@@ -92,7 +92,7 @@ typedef struct uisongfilter {
   uistatus_t        *uistatus;
   uifavorite_t      *uifavorite;
   uiswitch_t        *playstatusswitch;
-  UIWidget          labels [UISF_LABEL_MAX];
+  uiwidget_t        labels [UISF_LABEL_MAX];
   songfilterpb_t    dfltpbflag;
   int               danceIdx;
   bool              showplaylist : 1;
@@ -118,7 +118,7 @@ static void uisfGenreSelect (uisongfilter_t *uisf, ssize_t idx);
 static void uisfUpdateFilterDialogDisplay (uisongfilter_t *uisf);
 
 uisongfilter_t *
-uisfInit (UIWidget *windowp, nlist_t *options, songfilterpb_t pbflag)
+uisfInit (uiwidget_t *windowp, nlist_t *options, songfilterpb_t pbflag)
 {
   uisongfilter_t *uisf;
 
@@ -420,14 +420,14 @@ uisfGenreSelect (uisongfilter_t *uisf, ssize_t idx)
 static void
 uisfCreateDialog (uisongfilter_t *uisf)
 {
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      uiwidget;
-  UIWidget      *uiwidgetp;
-  UIWidget      sg;  // labels
-  UIWidget      sgA; // playlist, title, search
-  UIWidget      sgB; // drop-downs, not including title
-  UIWidget      sgC; // spinboxes, not including favorite
+  uiwidget_t    vbox;
+  uiwidget_t    hbox;
+  uiwidget_t    uiwidget;
+  uiwidget_t    *uiwidgetp;
+  uiwidget_t    sg;  // labels
+  uiwidget_t    sgA; // playlist, title, search
+  uiwidget_t    sgB; // drop-downs, not including title
+  uiwidget_t    sgC; // spinboxes, not including favorite
 
   logProcBegin (LOG_PROC, "uisfCreateDialog");
 

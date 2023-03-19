@@ -10,7 +10,7 @@
 
 typedef struct uireqext uireqext_t;
 
-uireqext_t  *uireqextInit (UIWidget *windowp, nlist_t *opts);
+uireqext_t  *uireqextInit (uiwidget_t *windowp, nlist_t *opts);
 void    uireqextFree (uireqext_t *uireqext);
 void    uireqextSetResponseCallback (uireqext_t *uireqext, callback_t *uicb);
 bool    uireqextDialog (uireqext_t *uireqext);

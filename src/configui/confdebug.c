@@ -24,9 +24,9 @@
 void
 confuiBuildUIDebug (confuigui_t *gui)
 {
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      sg;
+  uiwidget_t    vbox;
+  uiwidget_t    hbox;
+  uiwidget_t    sg;
   nlistidx_t    val;
 
   logProcBegin (LOG_PROC, "confuiBuildUIDebug");

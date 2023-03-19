@@ -9,7 +9,7 @@
 
 typedef struct uirating uirating_t;
 
-uirating_t * uiratingSpinboxCreate (UIWidget *boxp, bool allflag);
+uirating_t * uiratingSpinboxCreate (uiwidget_t *boxp, bool allflag);
 void uiratingFree (uirating_t *uirating);
 int uiratingGetValue (uirating_t *uirating);
 void uiratingSetValue (uirating_t *uirating, int value);

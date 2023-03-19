@@ -146,17 +146,17 @@ typedef struct {
   char            *tclshloc;
   slist_t         *convlist;
   slistidx_t      convidx;
-  UIWidget        window;
-  UIWidget        statusMsg;
+  uiwidget_t      window;
+  uiwidget_t      statusMsg;
   uientry_t       *targetEntry;
-  UIWidget        reinstWidget;
-  UIWidget        feedbackMsg;
+  uiwidget_t      reinstWidget;
+  uiwidget_t      feedbackMsg;
   uientry_t       *bdj3locEntry;
-  UIWidget        convWidget;
-  UIWidget        convFeedbackMsg;
-  UIWidget        vlcMsg;
-  UIWidget        pythonMsg;
-  UIWidget        mutagenMsg;
+  uiwidget_t      convWidget;
+  uiwidget_t      convFeedbackMsg;
+  uiwidget_t      vlcMsg;
+  uiwidget_t      pythonMsg;
+  uiwidget_t      mutagenMsg;
   uitextbox_t     *disptb;
   uibutton_t      *buttons [INST_BUTTON_MAX];
   /* flags */
@@ -583,12 +583,12 @@ main (int argc, char *argv[])
 static void
 installerBuildUI (installer_t *installer)
 {
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      uiwidget;
+  uiwidget_t    vbox;
+  uiwidget_t    hbox;
+  uiwidget_t    uiwidget;
   uibutton_t    *uibutton;
-  UIWidget      *uiwidgetp;
-  UIWidget      sg;
+  uiwidget_t    *uiwidgetp;
+  uiwidget_t    sg;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
 

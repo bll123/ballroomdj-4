@@ -42,7 +42,7 @@ enum {
 typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
-  UIWidget        window;
+  uiwidget_t      window;
   uitextbox_t     *tb;
   uibutton_t      *buttons [HELPER_BUTTON_MAX];
   callback_t      *closeCallback;
@@ -185,11 +185,11 @@ helperClosingCallback (void *udata, programstate_t programState)
 static void
 helperBuildUI (helperui_t  *helper)
 {
-  UIWidget            uiwidget;
+  uiwidget_t          uiwidget;
   uibutton_t          *uibutton;
-  UIWidget            *uiwidgetp;
-  UIWidget            vbox;
-  UIWidget            hbox;
+  uiwidget_t          *uiwidgetp;
+  uiwidget_t          vbox;
+  uiwidget_t          hbox;
   char                tbuff [MAXPATHLEN];
   char                imgbuff [MAXPATHLEN];
 

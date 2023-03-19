@@ -37,13 +37,13 @@ enum {
 };
 
 typedef struct uiaa {
-  UIWidget        *parentwin;
+  uiwidget_t      *parentwin;
   nlist_t         *options;
-  UIWidget        aaDialog;
-  UIWidget        statusMsg;
-  UIWidget        cbTrim;
-  UIWidget        cbNorm;
-  UIWidget        cbAdjust;
+  uiwidget_t      aaDialog;
+  uiwidget_t      statusMsg;
+  uiwidget_t      cbTrim;
+  uiwidget_t      cbNorm;
+  uiwidget_t      cbAdjust;
   callback_t      *callbacks [UIAA_CB_MAX];
   callback_t      *responsecb;
   song_t          *song;
@@ -56,7 +56,7 @@ static void   uiaaInitDisplay (uiaa_t *uiaa);
 static bool   uiaaResponseHandler (void *udata, long responseid);
 
 uiaa_t *
-uiaaInit (UIWidget *windowp, nlist_t *opts)
+uiaaInit (uiwidget_t *windowp, nlist_t *opts)
 {
   uiaa_t  *uiaa;
 
@@ -137,9 +137,9 @@ uiaaDialogClear (uiaa_t *uiaa)
 static void
 uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 {
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      uiwidget;
+  uiwidget_t    vbox;
+  uiwidget_t    hbox;
+  uiwidget_t    uiwidget;
 
   logProcBegin (LOG_PROC, "uiaaCreateDialog");
 

@@ -36,11 +36,11 @@ void
 confuiMakeItemTable (confuigui_t *gui, uiwidget_t *boxp, confuiident_t id,
     int flags)
 {
-  UIWidget    mhbox;
-  UIWidget    bvbox;
-  UIWidget    scwindow;
+  uiwidget_t  mhbox;
+  uiwidget_t  bvbox;
+  uiwidget_t  scwindow;
   uibutton_t  *uibutton;
-  UIWidget    *uiwidgetp;
+  uiwidget_t  *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemTable");
 

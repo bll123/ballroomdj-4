@@ -65,8 +65,8 @@ confuiCleanOrganization (confuigui_t *gui)
 void
 confuiBuildUIOrganization (confuigui_t *gui)
 {
-  UIWidget      vbox;
-  UIWidget      sg;
+  uiwidget_t    vbox;
+  uiwidget_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIOrganization");
   uiCreateVertBox (&vbox);

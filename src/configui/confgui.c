@@ -39,9 +39,9 @@ static long confuiValMSCallback (void *udata, const char *txt);
 static long confuiValHMCallback (void *udata, const char *txt);
 
 void
-confuiMakeNotebookTab (UIWidget *boxp, confuigui_t *gui, const char *txt, int id)
+confuiMakeNotebookTab (uiwidget_t *boxp, confuigui_t *gui, const char *txt, int id)
 {
-  UIWidget    uiwidget;
+  uiwidget_t  uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeNotebookTab");
   uiCreateLabel (&uiwidget, txt);
@@ -59,7 +59,7 @@ void
 confuiMakeItemEntry (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, const char *disp, int indent)
 {
-  UIWidget    hbox;
+  uiwidget_t  hbox;
 
   logProcBegin (LOG_PROC, "confuiMakeItemEntry");
   uiCreateHorizBox (&hbox);
@@ -73,8 +73,8 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwidget_t *boxp,
     uiwidget_t *sg, const char *txt, int widx, int bdjoptIdx,
     const char *disp, void *dialogFunc)
 {
-  UIWidget    hbox;
-  UIWidget    *uiwidgetp;
+  uiwidget_t  hbox;
+  uiwidget_t  *uiwidgetp;
   uibutton_t  *uibutton;
 
   logProcBegin (LOG_PROC, "confuiMakeItemEntryChooser");
@@ -97,9 +97,9 @@ confuiMakeItemCombobox (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, callbackFuncLong ddcb,
     char *value)
 {
-  UIWidget    hbox;
-  UIWidget    uiwidget;
-  UIWidget    *uiwidgetp;
+  uiwidget_t  hbox;
+  uiwidget_t  uiwidget;
+  uiwidget_t  *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemCombobox");
   gui->uiitem [widx].basetype = CONFUI_COMBOBOX;
@@ -129,8 +129,8 @@ void
 confuiMakeItemLink (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, const char *disp)
 {
-  UIWidget    hbox;
-  UIWidget    uiwidget;
+  uiwidget_t  hbox;
+  uiwidget_t  uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemLink");
   uiCreateHorizBox (&hbox);
@@ -153,8 +153,8 @@ void
 confuiMakeItemFontButton (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, const char *fontname)
 {
-  UIWidget    hbox;
-  UIWidget    uiwidget;
+  uiwidget_t  hbox;
+  uiwidget_t  uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemFontButton");
   gui->uiitem [widx].basetype = CONFUI_FONT;
@@ -175,8 +175,8 @@ void
 confuiMakeItemColorButton (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, const char *color)
 {
-  UIWidget    hbox;
-  UIWidget    uiwidget;
+  uiwidget_t  hbox;
+  uiwidget_t  uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemColorButton");
 
@@ -198,8 +198,8 @@ confuiMakeItemSpinboxText (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     uiwidget_t *sgB, const char *txt, int widx, int bdjoptIdx,
     confuiouttype_t outtype, ssize_t value, void *cb)
 {
-  UIWidget    hbox;
-  UIWidget    *uiwidgetp;
+  uiwidget_t  hbox;
+  uiwidget_t  *uiwidgetp;
   nlist_t     *list;
   nlist_t     *keylist;
   size_t      maxWidth;
@@ -259,8 +259,8 @@ confuiMakeItemSpinboxTime (confuigui_t *gui, uiwidget_t *boxp,
     uiwidget_t *sg, uiwidget_t *sgB, const char *txt, int widx,
     int bdjoptIdx, ssize_t value, int indent)
 {
-  UIWidget    hbox;
-  UIWidget    *uiwidgetp;
+  uiwidget_t  hbox;
+  uiwidget_t  *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSpinboxTime");
 
@@ -301,8 +301,8 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     uiwidget_t *sgB, const char *txt, int widx, int bdjoptIdx,
     int min, int max, int value, void *cb)
 {
-  UIWidget    hbox;
-  UIWidget    uiwidget;
+  uiwidget_t  hbox;
+  uiwidget_t  uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSpinboxNum");
 
@@ -333,8 +333,8 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     uiwidget_t *sgB, const char *txt, int widx, int bdjoptIdx,
     double min, double max, double value, int indent)
 {
-  UIWidget    hbox;
-  UIWidget    uiwidget;
+  uiwidget_t  hbox;
+  uiwidget_t  uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSpinboxDouble");
 
@@ -360,8 +360,8 @@ void
 confuiMakeItemSwitch (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, int value, void *cb, int indent)
 {
-  UIWidget    hbox;
-  UIWidget    *uiwidgetp;
+  uiwidget_t  hbox;
+  uiwidget_t  *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSwitch");
 
@@ -390,8 +390,8 @@ void
 confuiMakeItemLabelDisp (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx)
 {
-  UIWidget    hbox;
-  UIWidget    uiwidget;
+  uiwidget_t  hbox;
+  uiwidget_t  uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemLabelDisp");
 
@@ -412,7 +412,7 @@ void
 confuiMakeItemCheckButton (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, int value)
 {
-  UIWidget    uiwidget;
+  uiwidget_t  uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeItemCheckButton");
 
@@ -427,9 +427,9 @@ confuiMakeItemCheckButton (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
 }
 
 void
-confuiMakeItemLabel (UIWidget *boxp, uiwidget_t *sg, const char *txt, int indent)
+confuiMakeItemLabel (uiwidget_t *boxp, uiwidget_t *sg, const char *txt, int indent)
 {
-  UIWidget    uiwidget;
+  uiwidget_t  uiwidget;
   char        ntxt [200];
   const char  *ttxt;
 
@@ -491,7 +491,7 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwidget_t *boxp, uiwidget_t *sg,
     const char *txt, int widx, int bdjoptIdx, const char *disp,
     int indent, int expand)
 {
-  UIWidget  *uiwidgetp;
+  uiwidget_t*uiwidgetp;
 
   gui->uiitem [widx].basetype = CONFUI_ENTRY;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;

@@ -68,9 +68,9 @@ typedef struct {
   char            *locknm;
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
-  UIWidget        window;
-  UIWidget        timesigsel [BPMCOUNT_DISP_MAX];
-  UIWidget        dispvalue [BPMCOUNT_DISP_MAX];
+  uiwidget_t      window;
+  uiwidget_t      timesigsel [BPMCOUNT_DISP_MAX];
+  uiwidget_t      dispvalue [BPMCOUNT_DISP_MAX];
   uibutton_t      *buttons [BPMCOUNT_BUTTON_MAX];
   int             values [BPMCOUNT_DISP_MAX];
   callback_t      *callbacks [BPMCOUNT_CB_MAX];
@@ -327,16 +327,16 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
 static void
 bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 {
-  UIWidget    grpuiwidget;
-  UIWidget    uiwidget;
+  uiwidget_t  grpuiwidget;
+  uiwidget_t  uiwidget;
   uibutton_t  *uibutton;
-  UIWidget    *uiwidgetp;
-  UIWidget    vboxmain;
-  UIWidget    vbox;
-  UIWidget    hboxbpm;
-  UIWidget    hbox;
-  UIWidget    sg;
-  UIWidget    sgb;
+  uiwidget_t  *uiwidgetp;
+  uiwidget_t  vboxmain;
+  uiwidget_t  vbox;
+  uiwidget_t  hboxbpm;
+  uiwidget_t  hbox;
+  uiwidget_t  sg;
+  uiwidget_t  sgb;
   char        imgbuff [MAXPATHLEN];
   int         x, y;
 

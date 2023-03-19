@@ -24,7 +24,7 @@ enum {
 /* managepl.c */
 typedef struct managepl managepl_t;
 
-managepl_t *managePlaylistAlloc (UIWidget *window, nlist_t *options,
+managepl_t *managePlaylistAlloc (uiwidget_t *window, nlist_t *options,
     uiwidget_t *statusMsg);
 void managePlaylistFree (managepl_t *managepl);
 void managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb);
@@ -38,7 +38,7 @@ bool managePlaylistNew (managepl_t *managepl, int preloadflag);
 /* managepltree.c */
 typedef struct managepltree managepltree_t;
 
-managepltree_t *managePlaylistTreeAlloc (UIWidget *statusMsg);
+managepltree_t *managePlaylistTreeAlloc (uiwidget_t *statusMsg);
 void managePlaylistTreeFree (managepltree_t *managepltree);
 void manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwidget_t *vboxp,  uiwidget_t *tophbox);
 void managePlaylistTreePrePopulate (managepltree_t *managepltree, playlist_t *pl);
@@ -49,7 +49,7 @@ void managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree);
 /* manageseq.c */
 typedef struct manageseq manageseq_t;
 
-manageseq_t *manageSequenceAlloc (UIWidget *window, nlist_t *options,
+manageseq_t *manageSequenceAlloc (uiwidget_t *window, nlist_t *options,
     uiwidget_t *statusMsg);
 void manageSequenceFree (manageseq_t *manageseq);
 void manageSequenceSetLoadCallback (manageseq_t *manageseq, callback_t *uicb);
@@ -63,7 +63,7 @@ void manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preload
 /* managedb.c */
 typedef struct managedb managedb_t;
 
-managedb_t *manageDbAlloc (UIWidget *window, nlist_t *options, uiwidget_t *statusMsg, conn_t *conn, procutil_t **processes);
+managedb_t *manageDbAlloc (uiwidget_t *window, nlist_t *options, uiwidget_t *statusMsg, conn_t *conn, procutil_t **processes);
 void  manageDbFree (managedb_t *managedb);
 void  manageBuildUIUpdateDatabase (managedb_t *managedb, uiwidget_t *vboxp);
 bool  manageDbChg (void *udata);
@@ -74,10 +74,10 @@ void  manageDbClose (managedb_t *managedb);
 void  manageDbResetButtons (managedb_t *managedb);
 
 /* managemisc.c */
-bool manageCreatePlaylistCopy (UIWidget *statusMsg,
+bool manageCreatePlaylistCopy (uiwidget_t *statusMsg,
     const char *oname, const char *newname);
 int manageValidateName (uientry_t *entry, void *udata);
-void manageDeletePlaylist (UIWidget *statusMsg, const char *name);
+void manageDeletePlaylist (uiwidget_t *statusMsg, const char *name);
 char * manageTrimName (const char *name);
 
 /* managestats.c */

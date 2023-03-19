@@ -166,11 +166,11 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwidget_t *parentwin, int ci,
 {
   int               saveci;
   char              tbuff [MAXPATHLEN];
-  UIWidget          hbox;
-  UIWidget          uiwidget;
-  UIWidget          *uitreewidgetp;
+  uiwidget_t        hbox;
+  uiwidget_t        uiwidget;
+  uiwidget_t        *uitreewidgetp;
   uibutton_t        *uibutton;
-  UIWidget          *uiwidgetp;
+  uiwidget_t        *uiwidgetp;
 //  GtkCellRenderer   *renderer = NULL;
 //  GtkTreeViewColumn *column = NULL;
   slist_t           *sellist;
@@ -487,7 +487,7 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
 
   if (valid) {
     GtkTreePath *path = NULL;
-    UIWidget    *uiwidgetp;
+    uiwidget_t  *uiwidgetp;
     GtkTreeModel      *model;
     GtkTreeIter       iter;
 
@@ -515,7 +515,7 @@ uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx
 {
   GtkTreeModel  *model;
   uimusicqinternal_t *uiw;
-  UIWidget      *uiwidgetp;
+  uiwidget_t    *uiwidgetp;
 
 
   uimusicq->iteratecb = cb;
@@ -692,7 +692,7 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   nlistidx_t    iteridx;
   uimusicqinternal_t *uiw;
   int           ci;
-  UIWidget      *uiwidgetp;
+  uiwidget_t    *uiwidgetp;
   int           row;
 
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDisplay");
@@ -1017,7 +1017,7 @@ uimusicqSetDefaultSelection (uimusicq_t *uimusicq)
 //    GtkTreeModel  *model;
 //    GtkTreeIter   iter;
 //    int           valid;
-//    UIWidget      *uiwidgetp;
+//    uiwidget_t    *uiwidgetp;
 
     uiTreeViewSelectFirst (uiw->musicqTree);
 //    uiwidgetp = uiTreeViewGetUIWidget (uiw->musicqTree);
@@ -1037,7 +1037,7 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
   GtkTreePath   *path;
   uimusicqinternal_t *uiw;
   char          tbuff [40];
-  UIWidget      *uiwidgetp;
+  uiwidget_t    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "uimusicqSetSelection");
 

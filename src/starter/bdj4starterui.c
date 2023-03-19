@@ -144,15 +144,15 @@ typedef struct {
   startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
   uispinbox_t     *profilesel;
   uibutton_t      *buttons [START_BUTTON_MAX];
-  UIWidget        supportDialog;
-  UIWidget        supportMsgDialog;
-  UIWidget        supportSendFiles;
-  UIWidget        supportSendDB;
-  UIWidget        window;
-  UIWidget        supportStatus;
-  UIWidget        statusMsg;
-  UIWidget        supportStatusMsg;
-  UIWidget        profileAccent;
+  uiwidget_t      supportDialog;
+  uiwidget_t      supportMsgDialog;
+  uiwidget_t      supportSendFiles;
+  uiwidget_t      supportSendDB;
+  uiwidget_t      window;
+  uiwidget_t      supportStatus;
+  uiwidget_t      statusMsg;
+  uiwidget_t      supportStatusMsg;
+  uiwidget_t      profileAccent;
   uitextbox_t     *supporttb;
   uientry_t       *supportsubject;
   uientry_t       *supportemail;
@@ -467,16 +467,16 @@ starterClosingCallback (void *udata, programstate_t programState)
 static void
 starterBuildUI (startui_t  *starter)
 {
-  UIWidget    uiwidget;
-  UIWidget    *uiwidgetp;
+  uiwidget_t  uiwidget;
+  uiwidget_t  *uiwidgetp;
   uibutton_t  *uibutton;
-  UIWidget    menubar;
-  UIWidget    menu;
-  UIWidget    menuitem;
-  UIWidget    vbox;
-  UIWidget    bvbox;
-  UIWidget    hbox;
-  UIWidget    sg;
+  uiwidget_t  menubar;
+  uiwidget_t  menu;
+  uiwidget_t  menuitem;
+  uiwidget_t  vbox;
+  uiwidget_t  bvbox;
+  uiwidget_t  hbox;
+  uiwidget_t  sg;
   char        imgbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   int         dispidx;
@@ -1181,12 +1181,12 @@ static bool
 starterProcessSupport (void *udata)
 {
   startui_t     *starter = udata;
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      uiwidget;
-  UIWidget      *uiwidgetp;
-  UIWidget      uidialog;
-  UIWidget      sg;
+  uiwidget_t    vbox;
+  uiwidget_t    hbox;
+  uiwidget_t    uiwidget;
+  uiwidget_t    *uiwidgetp;
+  uiwidget_t    uidialog;
+  uiwidget_t    sg;
   uibutton_t    *uibutton;
   char          tbuff [MAXPATHLEN];
   char          uri [MAXPATHLEN];
@@ -1629,11 +1629,11 @@ static bool
 starterCreateSupportDialog (void *udata)
 {
   startui_t     *starter = udata;
-  UIWidget      uiwidget;
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      uidialog;
-  UIWidget      sg;
+  uiwidget_t    uiwidget;
+  uiwidget_t    vbox;
+  uiwidget_t    hbox;
+  uiwidget_t    uidialog;
+  uiwidget_t    sg;
   uitextbox_t *tb;
 
   if (starter->supportmsgactive) {

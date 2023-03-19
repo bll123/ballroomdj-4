@@ -25,8 +25,8 @@
 typedef struct uidance {
   dance_t       *dances;
   uidropdown_t  *dropdown;
-  UIWidget      *parentwin;
-  UIWidget      *buttonp;
+  uiwidget_t    *parentwin;
+  uiwidget_t    *buttonp;
   callback_t    *cb;
   callback_t    *selectcb;
   const char    *label;
@@ -39,7 +39,7 @@ static bool uidanceSelectHandler (void *udata, long idx);
 static void uidanceCreateDanceList (uidance_t *uidance);
 
 uidance_t *
-uidanceDropDownCreate (UIWidget *boxp, uiwidget_t *parentwin, int flags,
+uidanceDropDownCreate (uiwidget_t *boxp, uiwidget_t *parentwin, int flags,
     const char *label, int where, int count)
 {
   uidance_t  *uidance;

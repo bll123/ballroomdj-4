@@ -9,7 +9,7 @@
 
 typedef struct uilevel uilevel_t;
 
-uilevel_t * uilevelSpinboxCreate (UIWidget *boxp, bool allflag);
+uilevel_t * uilevelSpinboxCreate (uiwidget_t *boxp, bool allflag);
 void uilevelFree (uilevel_t *uilevel);
 int uilevelGetValue (uilevel_t *uilevel);
 void uilevelSetValue (uilevel_t *uilevel, int value);

@@ -33,10 +33,10 @@ static bool initialized = false;
 static const char *uifavoriteFavoriteGet (void *udata, int idx);
 
 uifavorite_t *
-uifavoriteSpinboxCreate (UIWidget *boxp)
+uifavoriteSpinboxCreate (uiwidget_t *boxp)
 {
   uifavorite_t  *uifavorite;
-  UIWidget      *uispinboxp;
+  uiwidget_t    *uispinboxp;
 
   uifavorite = mdmalloc (sizeof (uifavorite_t));
   uifavorite->songfav = bdjvarsdfGet (BDJVDF_FAVORITES);

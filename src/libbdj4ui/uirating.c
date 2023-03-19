@@ -31,7 +31,7 @@ typedef struct uirating {
 static const char *uiratingRatingGet (void *udata, int idx);
 
 uirating_t *
-uiratingSpinboxCreate (UIWidget *boxp, bool allflag)
+uiratingSpinboxCreate (uiwidget_t *boxp, bool allflag)
 {
   uirating_t  *uirating;
   int         maxw;

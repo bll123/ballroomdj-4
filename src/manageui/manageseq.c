@@ -41,7 +41,7 @@ enum {
 };
 
 typedef struct manageseq {
-  UIWidget        *windowp;
+  uiwidget_t      *windowp;
   nlist_t         *options;
   uimenu_t        *seqmenu;
   callback_t      *callbacks [MSEQ_CB_MAX];
@@ -49,7 +49,7 @@ typedef struct manageseq {
   callback_t      *seqnewcb;
   uiduallist_t    *seqduallist;
   uientry_t       *seqname;
-  UIWidget        *statusMsg;
+  uiwidget_t      *statusMsg;
   char            *seqoldname;
   bool            seqbackupcreated : 1;
   bool            changed : 1;
@@ -64,7 +64,7 @@ static bool   manageSequenceDelete (void *udata);
 static void   manageSetSequenceName (manageseq_t *manageseq, const char *nm);
 
 manageseq_t *
-manageSequenceAlloc (UIWidget *window, nlist_t *options, uiwidget_t *statusMsg)
+manageSequenceAlloc (uiwidget_t *window, nlist_t *options, uiwidget_t *statusMsg)
 {
   manageseq_t *manageseq;
 
@@ -124,8 +124,8 @@ manageSequenceSetNewCallback (manageseq_t *manageseq, callback_t *uicb)
 void
 manageBuildUISequence (manageseq_t *manageseq, uiwidget_t *vboxp)
 {
-  UIWidget            hbox;
-  UIWidget            uiwidget;
+  uiwidget_t          hbox;
+  uiwidget_t          uiwidget;
   dance_t             *dances;
   slist_t             *dancelist;
 
@@ -166,8 +166,8 @@ manageBuildUISequence (manageseq_t *manageseq, uiwidget_t *vboxp)
 uimenu_t *
 manageSequenceMenu (manageseq_t *manageseq, uiwidget_t *uimenubar)
 {
-  UIWidget  menu;
-  UIWidget  menuitem;
+  uiwidget_t  menu;
+  uiwidget_t  menuitem;
 
   logProcBegin (LOG_PROC, "manageSequenceMenu");
   if (! uiMenuInitialized (manageseq->seqmenu)) {

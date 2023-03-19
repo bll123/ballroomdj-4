@@ -399,9 +399,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
 static void
 confuiBuildUI (configui_t *confui)
 {
-  UIWidget      menubar;
-  UIWidget      hbox;
-  UIWidget      uiwidget;
+  uiwidget_t    menubar;
+  uiwidget_t    hbox;
+  uiwidget_t    uiwidget;
   char          imgbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
   int           x, y;

@@ -97,11 +97,11 @@ typedef struct {
   char            *home;
   char            dlfname [MAXPATHLEN];
   /* conversion */
-  UIWidget        window;
+  uiwidget_t      window;
   uientry_t       *targetEntry;
   uientry_t       *nameEntry;
-  UIWidget        reinstWidget;
-  UIWidget        feedbackMsg;
+  uiwidget_t      reinstWidget;
+  uiwidget_t      feedbackMsg;
   uitextbox_t     *disptb;
   /* flags */
   bool            uiBuilt : 1;
@@ -282,11 +282,11 @@ main (int argc, char *argv[])
 static void
 altsetupBuildUI (altsetup_t *altsetup)
 {
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      uiwidget;
+  uiwidget_t    vbox;
+  uiwidget_t    hbox;
+  uiwidget_t    uiwidget;
   uibutton_t    *uibutton;
-  UIWidget      *uiwidgetp;
+  uiwidget_t    *uiwidgetp;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
 

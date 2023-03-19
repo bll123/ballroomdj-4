@@ -88,7 +88,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
   char          *qruri = "";
   char          tbuff [MAXPATHLEN];
   bool          enabled;
-  UIWidget      *uiwidgetp = NULL;
+  uiwidget_t    *uiwidgetp = NULL;
 
   logProcBegin (LOG_PROC, "confuiUpdateMobmqQrcode");
 
@@ -130,7 +130,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
   char          *qruri = "";
   char          tbuff [MAXPATHLEN];
   bool          enabled;
-  UIWidget      *uiwidgetp;
+  uiwidget_t    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiUpdateRemctrlQrcode");
 
@@ -169,7 +169,7 @@ confuiUpdateOrgExamples (confuigui_t *gui, char *orgpath)
 {
   char      *data;
   org_t     *org;
-  UIWidget  *uiwidgetp;
+  uiwidget_t*uiwidgetp;
 
   if (orgpath == NULL) {
     return;

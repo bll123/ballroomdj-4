@@ -42,10 +42,10 @@ enum {
 };
 
 typedef struct uireqext {
-  UIWidget        *parentwin;
-  UIWidget        *statusMsg;
+  uiwidget_t      *parentwin;
+  uiwidget_t      *statusMsg;
   nlist_t         *options;
-  UIWidget        reqextDialog;
+  uiwidget_t      reqextDialog;
   uientry_t       *audioFileEntry;
   uientry_t       *artistEntry;
   uientry_t       *titleEntry;
@@ -71,7 +71,7 @@ static int    uireqextValidateArtist (uientry_t *entry, void *udata);
 static int    uireqextValidateTitle (uientry_t *entry, void *udata);
 
 uireqext_t *
-uireqextInit (UIWidget *windowp, nlist_t *opts)
+uireqextInit (uiwidget_t *windowp, nlist_t *opts)
 {
   uireqext_t  *uireqext;
 
@@ -189,13 +189,13 @@ uireqextProcess (uireqext_t *uireqext)
 static void
 uireqextCreateDialog (uireqext_t *uireqext)
 {
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      uiwidget;
+  uiwidget_t    vbox;
+  uiwidget_t    hbox;
+  uiwidget_t    uiwidget;
   uibutton_t    *uibutton;
-  UIWidget      *uiwidgetp;
-  UIWidget      sg;  // labels
-  UIWidget      sgA; // title, artist
+  uiwidget_t    *uiwidgetp;
+  uiwidget_t    sg;  // labels
+  uiwidget_t    sgA; // title, artist
 
   logProcBegin (LOG_PROC, "uireqextCreateDialog");
 

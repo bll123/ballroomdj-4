@@ -31,7 +31,7 @@ typedef struct uistatus {
 static const char *uistatusStatusGet (void *udata, int idx);
 
 uistatus_t *
-uistatusSpinboxCreate (UIWidget *boxp, bool allflag)
+uistatusSpinboxCreate (uiwidget_t *boxp, bool allflag)
 {
   uistatus_t  *uistatus;
   int         maxw;

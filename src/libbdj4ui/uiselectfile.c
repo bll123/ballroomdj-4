@@ -29,8 +29,8 @@ enum {
 };
 
 typedef struct uiselectfile {
-  UIWidget          *parentwinp;
-  UIWidget          uidialog;
+  uiwidget_t        *parentwinp;
+  uiwidget_t        uidialog;
   uitree_t          *selfiletree;
   callback_t        *rowactivecb;
   callback_t        *respcb;
@@ -114,11 +114,11 @@ static void
 selectFileCreateDialog (uiselectfile_t *selectfile,
     slist_t *filelist, const char *filetype, callback_t *cb)
 {
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      uiwidget;
-  UIWidget      *uitreewidgetp;
-  UIWidget      scwindow;
+  uiwidget_t    vbox;
+  uiwidget_t    hbox;
+  uiwidget_t    uiwidget;
+  uiwidget_t    *uitreewidgetp;
+  uiwidget_t    scwindow;
   char          tbuff [200];
   slistidx_t    fliteridx;
   char          *disp;

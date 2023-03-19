@@ -25,8 +25,8 @@
 typedef struct uigenre {
   genre_t       *genres;
   uidropdown_t  *dropdown;
-  UIWidget      *parentwin;
-  UIWidget      *buttonp;
+  uiwidget_t    *parentwin;
+  uiwidget_t    *buttonp;
   callback_t    *cb;
   callback_t    *selectcb;
   long          selectedidx;
@@ -37,7 +37,7 @@ static bool uigenreSelectHandler (void *udata, long idx);
 static void uigenreCreateGenreList (uigenre_t *uigenre);
 
 uigenre_t *
-uigenreDropDownCreate (UIWidget *boxp, uiwidget_t *parentwin, bool allflag)
+uigenreDropDownCreate (uiwidget_t *boxp, uiwidget_t *parentwin, bool allflag)
 {
   uigenre_t  *uigenre;
 

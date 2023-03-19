@@ -38,8 +38,8 @@ confuiInitMarquee (confuigui_t *gui)
 void
 confuiBuildUIMarquee (confuigui_t *gui)
 {
-  UIWidget      vbox;
-  UIWidget      sg;
+  uiwidget_t    vbox;
+  uiwidget_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIMarquee");
   uiCreateVertBox (&vbox);

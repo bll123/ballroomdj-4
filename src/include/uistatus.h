@@ -9,7 +9,7 @@
 
 typedef struct uistatus uistatus_t;
 
-uistatus_t * uistatusSpinboxCreate (UIWidget *boxp, bool allflag);
+uistatus_t * uistatusSpinboxCreate (uiwidget_t *boxp, bool allflag);
 void uistatusFree (uistatus_t *uistatus);
 int uistatusGetValue (uistatus_t *uistatus);
 void uistatusSetValue (uistatus_t *uistatus, int value);

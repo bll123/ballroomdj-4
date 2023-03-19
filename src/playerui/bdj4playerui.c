@@ -94,22 +94,22 @@ typedef struct {
   uireqext_t      *uireqext;
   uikey_t         *uikey;
   /* notebook */
-  UIWidget        notebook;
+  uiwidget_t      notebook;
   uiutilsnbtabid_t *nbtabid;
   int             currpage;
-  UIWidget        window;
-  UIWidget        vbox;
+  uiwidget_t      window;
+  uiwidget_t      vbox;
   callback_t      *callbacks [PLUI_CB_MAX];
-  UIWidget        clock;
-  UIWidget        musicqImage [MUSICQ_PB_MAX];
+  uiwidget_t      clock;
+  uiwidget_t      musicqImage [MUSICQ_PB_MAX];
   uibutton_t      *setPlaybackButton;
-  UIWidget        ledoffPixbuf;
-  UIWidget        ledonPixbuf;
-  UIWidget        marqueeFontSizeDialog;
-  UIWidget        marqueeSpinBox;
+  uiwidget_t      ledoffPixbuf;
+  uiwidget_t      ledonPixbuf;
+  uiwidget_t      marqueeFontSizeDialog;
+  uiwidget_t      marqueeSpinBox;
   /* ui major elements */
-  UIWidget        statusMsg;
-  UIWidget        errorMsg;
+  uiwidget_t      statusMsg;
+  uiwidget_t      errorMsg;
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
   uisongsel_t     *uisongsel;
@@ -163,7 +163,7 @@ static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                     bdjmsgmsg_t msg, char *args, void *udata);
 static bool     pluiCloseWin (void *udata);
 static void     pluiSigHandler (int sig);
-static char *   pluiExportMP3Dialog (UIWidget *windowp);
+static char *   pluiExportMP3Dialog (uiwidget_t *windowp);
 static bool     pluiExportMP3Status (void *udata, int count, int tot);
 /* queue selection handlers */
 static bool     pluiSwitchPage (void *udata, long pagenum);
@@ -387,12 +387,12 @@ pluiClosingCallback (void *udata, programstate_t programState)
 static void
 pluiBuildUI (playerui_t *plui)
 {
-  UIWidget    menubar;
-  UIWidget    menu;
-  UIWidget    menuitem;
-  UIWidget    hbox;
-  UIWidget    uiwidget;
-  UIWidget    *uiwidgetp;
+  uiwidget_t  menubar;
+  uiwidget_t  menu;
+  uiwidget_t  menuitem;
+  uiwidget_t  hbox;
+  uiwidget_t  uiwidget;
+  uiwidget_t  *uiwidgetp;
   uibutton_t  *uibutton;
   char        *str;
   char        imgbuff [MAXPATHLEN];
@@ -1046,7 +1046,7 @@ pluiSigHandler (int sig)
 }
 
 static char *
-pluiExportMP3Dialog (UIWidget *windowp)
+pluiExportMP3Dialog (uiwidget_t *windowp)
 {
   uiselect_t  *selectdata;
   char        *dir;
@@ -1067,7 +1067,7 @@ static bool
 pluiExportMP3Status (void *udata, int count, int tot)
 {
   playerui_t  *plui = udata;
-  UIWidget    *statusMsg = &plui->statusMsg;
+  uiwidget_t  *statusMsg = &plui->statusMsg;
   char        tbuff [200];
 
   if (statusMsg == NULL) {
@@ -1119,7 +1119,7 @@ static void
 pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum)
 {
   int         tabid;
-  UIWidget    *uiwidgetp;
+  uiwidget_t  *uiwidgetp;
 
   tabid = uiutilsNotebookIDGet (plui->nbtabid, pagenum);
 
@@ -1316,9 +1316,9 @@ pluiMarqueeFontSizeDialog (void *udata)
 static void
 pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 {
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      uiwidget;
+  uiwidget_t    vbox;
+  uiwidget_t    hbox;
+  uiwidget_t    uiwidget;
 
   logProcBegin (LOG_PROC, "pluiCreateMarqueeFontSizeDialog");
 

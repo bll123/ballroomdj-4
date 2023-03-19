@@ -30,10 +30,10 @@ static void confuiLevelSave (confuigui_t *gui);
 void
 confuiBuildUIEditLevels (confuigui_t *gui)
 {
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      uiwidget;
-  UIWidget      sg;
+  uiwidget_t    vbox;
+  uiwidget_t    hbox;
+  uiwidget_t    uiwidget;
+  uiwidget_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditLevels");
   uiCreateVertBox (&vbox);

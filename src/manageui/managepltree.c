@@ -49,8 +49,8 @@ enum {
 
 typedef struct managepltree {
   uitree_t          *uitree;
-  UIWidget          *statusMsg;
-  UIWidget          uihideunsel;
+  uiwidget_t        *statusMsg;
+  uiwidget_t        uihideunsel;
   callback_t        *callbacks [MPLTREE_CB_MAX];
   playlist_t        *playlist;
   int               currcount;
@@ -65,7 +65,7 @@ static void managePlaylistTreeCreate (managepltree_t *managepltree);
 static bool managePlaylistTreeHideUnselectedCallback (void *udata);
 
 managepltree_t *
-managePlaylistTreeAlloc (UIWidget *statusMsg)
+managePlaylistTreeAlloc (uiwidget_t *statusMsg)
 {
   managepltree_t *managepltree;
 
@@ -100,10 +100,10 @@ void
 manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwidget_t *vboxp,
     uiwidget_t *tophbox)
 {
-  UIWidget    hbox;
-  UIWidget    uiwidget;
-  UIWidget    *uitreewidgetp;
-  UIWidget    scwindow;
+  uiwidget_t  hbox;
+  uiwidget_t  uiwidget;
+  uiwidget_t  *uitreewidgetp;
+  uiwidget_t  scwindow;
   const char  *bpmstr;
   char        tbuff [100];
 
@@ -428,7 +428,7 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
   slistidx_t    iteridx;
   ilistidx_t    key;
   uitree_t      *uitree;
-  UIWidget      adjustment;
+  uiwidget_t    adjustment;
 
   uitree = managepltree->uitree;
 

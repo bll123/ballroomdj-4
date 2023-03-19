@@ -77,19 +77,19 @@ static bool uiduallistGetData (void *udata);
 static void uiduallistSetDefaultSelection (uiduallist_t *duallist, int which);
 
 uiduallist_t *
-uiCreateDualList (UIWidget *mainvbox, int flags,
+uiCreateDualList (uiwidget_t *mainvbox, int flags,
     const char *sourcetitle, const char *targettitle)
 {
   uiduallist_t  *duallist;
-  UIWidget      vbox;
-  UIWidget      hbox;
-  UIWidget      dvbox;
-  UIWidget      uiwidget;
-  UIWidget      scwindow;
+  uiwidget_t    vbox;
+  uiwidget_t    hbox;
+  uiwidget_t    dvbox;
+  uiwidget_t    uiwidget;
+  uiwidget_t    scwindow;
   uibutton_t    *uibutton;
-  UIWidget      *uiwidgetp = NULL;
+  uiwidget_t    *uiwidgetp = NULL;
   uitree_t      *uitree;
-  UIWidget      *uitreewidgetp = NULL;
+  uiwidget_t    *uitreewidgetp = NULL;
 
   duallist = mdmalloc (sizeof (uiduallist_t));
   for (int i = 0; i < DUALLIST_TREE_MAX; ++i) {

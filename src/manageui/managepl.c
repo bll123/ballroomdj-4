@@ -43,11 +43,11 @@ enum {
 };
 
 typedef struct managepl {
-  UIWidget        *windowp;
+  uiwidget_t      *windowp;
   nlist_t         *options;
-  UIWidget        *statusMsg;
+  uiwidget_t      *statusMsg;
   uimenu_t        *plmenu;
-  UIWidget        menuDelete;
+  uiwidget_t      menuDelete;
   callback_t      *callbacks [MPL_CB_MAX];
   callback_t      *plloadcb;
   char            *ploldname;
@@ -56,17 +56,17 @@ typedef struct managepl {
   pltype_t        pltype;
   uispinbox_t     *uimaxplaytime;
   uispinbox_t     *uistopat;
-  UIWidget        uistopafter;
+  uiwidget_t      uistopafter;
   uispinbox_t     *uigap;
   uirating_t      *uirating;
-  UIWidget        uiratingitem;
+  uiwidget_t      uiratingitem;
   uilevel_t       *uilowlevel;
-  UIWidget        uilowlevelitem;
+  uiwidget_t      uilowlevelitem;
   uilevel_t       *uihighlevel;
-  UIWidget        uihighlevelitem;
+  uiwidget_t      uihighlevelitem;
   uientry_t       *allowedkeywords;
-  UIWidget        uiallowedkeywordsitem;
-  UIWidget        uipltype;
+  uiwidget_t      uiallowedkeywordsitem;
+  uiwidget_t      uipltype;
   managepltree_t  *managepltree;
   playlist_t      *playlist;
   uiswitch_t      *plannswitch;
@@ -88,7 +88,7 @@ static bool managePlaylistCheckChanged (managepl_t *managepl);
 static int  managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata);
 
 managepl_t *
-managePlaylistAlloc (UIWidget *window, nlist_t *options, uiwidget_t *statusMsg)
+managePlaylistAlloc (uiwidget_t *window, nlist_t *options, uiwidget_t *statusMsg)
 {
   managepl_t *managepl;
 
@@ -166,17 +166,17 @@ managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb)
 void
 manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 {
-  UIWidget            lcol;
-  UIWidget            rcol;
-  UIWidget            mainhbox;
-  UIWidget            tophbox;
-  UIWidget            hbox;
-  UIWidget            uiwidget;
-  UIWidget            *uiwidgetp;
-  UIWidget            sg;
-  UIWidget            sgA;
-  UIWidget            sgB;
-  UIWidget            sgC;
+  uiwidget_t          lcol;
+  uiwidget_t          rcol;
+  uiwidget_t          mainhbox;
+  uiwidget_t          tophbox;
+  uiwidget_t          hbox;
+  uiwidget_t          uiwidget;
+  uiwidget_t          *uiwidgetp;
+  uiwidget_t          sg;
+  uiwidget_t          sgA;
+  uiwidget_t          sgB;
+  uiwidget_t          sgC;
 
   logProcBegin (LOG_PROC, "manageBuildUIPlaylist");
   uiutilsUIWidgetInit (&hbox);
@@ -376,8 +376,8 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwidget_t *vboxp)
 uimenu_t *
 managePlaylistMenu (managepl_t *managepl, uiwidget_t *uimenubar)
 {
-  UIWidget  menu;
-  UIWidget  menuitem;
+  uiwidget_t  menu;
+  uiwidget_t  menuitem;
 
   logProcBegin (LOG_PROC, "managePlaylistMenu");
   if (! uiMenuInitialized (managepl->plmenu)) {
