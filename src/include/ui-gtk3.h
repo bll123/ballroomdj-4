@@ -6,8 +6,6 @@
 
 #include <gtk/gtk.h>        // will go away
 
-typedef glong treenum_t;      // will go away
-
 /* tree view storage types */
 enum {
   TREE_ELLIPSIZE_END = PANGO_ELLIPSIZE_END,     // will be moved
@@ -18,10 +16,10 @@ enum {
 enum {
   UICB_STOP = true,
   UICB_CONT = false,
-  UICB_DISPLAYED = true,
-  UICB_NO_DISP = false,
-  UICB_NO_CONV = false,
+  UICB_DISPLAY_ON = true,
+  UICB_DISPLAY_OFF = false,
   UICB_CONVERTED = true,
+  UICB_NOT_CONVERTED = false,
   UICB_SUPPORTED = true,
   UICB_NOT_SUPPORTED = false,
   UIWIDGET_DISABLE = false,

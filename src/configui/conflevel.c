@@ -88,8 +88,13 @@ confuiCreateLevelTable (confuigui_t *gui)
       gui->tables [CONFUI_ID_LEVELS].callbacks [CONFUI_TABLE_CB_RADIO]);
 
   uiTreeViewCreateValueStore (uitree, CONFUI_LEVEL_COL_MAX,
-      TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_BOOLEAN,
-      TREE_TYPE_WIDGET, TREE_TYPE_NUM, TREE_TYPE_END);
+      TREE_TYPE_INT,          // editable
+      TREE_TYPE_STRING,       // display
+      TREE_TYPE_NUM,          // weight
+      TREE_TYPE_BOOLEAN,      // default
+      TREE_TYPE_WIDGET,
+      TREE_TYPE_INT,          // digits
+      TREE_TYPE_END);
 
   levelStartIterator (levels, &iteridx);
 

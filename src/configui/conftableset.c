@@ -39,9 +39,9 @@ confuiGenreSet (uitree_t *uitree,
 {
   logProcBegin (LOG_PROC, "confuiGenreSet");
   uiTreeViewSetValues (uitree,
-      CONFUI_GENRE_COL_EDITABLE, editable,
+      CONFUI_GENRE_COL_EDITABLE, (treeint_t) editable,
       CONFUI_GENRE_COL_GENRE, genredisp,
-      CONFUI_GENRE_COL_CLASSICAL, clflag,
+      CONFUI_GENRE_COL_CLASSICAL, (treeint_t) clflag,
       TREE_VALUE_END);
   logProcEnd (LOG_PROC, "confuiGenreSet", "");
 }
@@ -55,12 +55,12 @@ confuiLevelSet (uitree_t *uitree,
   logProcBegin (LOG_PROC, "confuiLevelSet");
   uiCreateAdjustment (&adjustment, weight, 0.0, 100.0, 1.0, 5.0, 0.0);
   uiTreeViewSetValues (uitree,
-      CONFUI_LEVEL_COL_EDITABLE, editable,
+      CONFUI_LEVEL_COL_EDITABLE, (treeint_t) editable,
       CONFUI_LEVEL_COL_LEVEL, leveldisp,
-      CONFUI_LEVEL_COL_WEIGHT, weight,
+      CONFUI_LEVEL_COL_WEIGHT, (treenum_t) weight,
       CONFUI_LEVEL_COL_ADJUST, uiAdjustmentGetAdjustment (&adjustment),
-      CONFUI_LEVEL_COL_DIGITS, 0,
-      CONFUI_LEVEL_COL_DEFAULT, def,
+      CONFUI_LEVEL_COL_DIGITS, (treeint_t) 0,
+      CONFUI_LEVEL_COL_DEFAULT, (treebool_t) def,
       TREE_VALUE_END);
   logProcEnd (LOG_PROC, "confuiLevelSet", "");
 }
@@ -74,12 +74,12 @@ confuiRatingSet (uitree_t *uitree,
   logProcBegin (LOG_PROC, "confuiRatingSet");
   uiCreateAdjustment (&adjustment, weight, 0.0, 100.0, 1.0, 5.0, 0.0);
   uiTreeViewSetValues (uitree,
-      CONFUI_RATING_COL_R_EDITABLE, editable,
-      CONFUI_RATING_COL_W_EDITABLE, TRUE,
+      CONFUI_RATING_COL_R_EDITABLE, (treeint_t) editable,
+      CONFUI_RATING_COL_W_EDITABLE, (treeint_t) TRUE,
       CONFUI_RATING_COL_RATING, ratingdisp,
-      CONFUI_RATING_COL_WEIGHT, weight,
+      CONFUI_RATING_COL_WEIGHT, (treenum_t) weight,
       CONFUI_RATING_COL_ADJUST, adjustment,
-      CONFUI_RATING_COL_DIGITS, 0,
+      CONFUI_RATING_COL_DIGITS, (treeint_t) 0,
       TREE_VALUE_END);
   logProcEnd (LOG_PROC, "confuiRatingSet", "");
 }
@@ -90,9 +90,9 @@ confuiStatusSet (uitree_t *uitree,
 {
   logProcBegin (LOG_PROC, "confuiStatusSet");
   uiTreeViewSetValues (uitree,
-      CONFUI_STATUS_COL_EDITABLE, editable,
+      CONFUI_STATUS_COL_EDITABLE, (treeint_t) editable,
       CONFUI_STATUS_COL_STATUS, statusdisp,
-      CONFUI_STATUS_COL_PLAY_FLAG, playflag,
+      CONFUI_STATUS_COL_PLAY_FLAG, (treebool_t) playflag,
       TREE_VALUE_END);
   logProcEnd (LOG_PROC, "confuiStatusSet", "");
 }

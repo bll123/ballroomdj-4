@@ -13,8 +13,6 @@
 #include <unistd.h>
 #include <math.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
@@ -55,6 +53,7 @@ typedef struct managepltree {
   UIWidget          uihideunsel;
   callback_t        *callbacks [MPLTREE_CB_MAX];
   playlist_t        *playlist;
+  int               currcount;
   bool              changed : 1;
   bool              hideunselected : 1;
   bool              inprepop : 1;
@@ -74,6 +73,7 @@ managePlaylistTreeAlloc (UIWidget *statusMsg)
   managepltree->uitree = NULL;
   managepltree->statusMsg = statusMsg;
   managepltree->playlist = NULL;
+  managepltree->currcount = 0;
   managepltree->changed = false;
   managepltree->hideunselected = false;
   managepltree->inprepop = false;
@@ -154,7 +154,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
       TREE_COL_MODE_DIGITS, MPLTREE_COL_DIGITS,
       TREE_COL_MODE_END);
 
-  uiTreeViewAppendColumn (managepltree->uitree, TREE_WIDGET_TEXT,
+  uiTreeViewAppendColumn (managepltree->uitree, TREE_WIDGET_TIME,
       /* CONTEXT: playlist management: max play time column header (keep short) */
       TREE_COL_DISP_GROW, _("Maximum\nPlay Time"),
       TREE_COL_MODE_TEXT, MPLTREE_COL_MAXPLAYTIME,
@@ -177,7 +177,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, UIWidget *vboxp,
   snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
   uiTreeViewAppendColumn (managepltree->uitree, TREE_WIDGET_SPINBOX,
       TREE_COL_DISP_GROW, tbuff,
-      TREE_COL_MODE_TEXT, MPLTREE_COL_LOWBPM,
+      TREE_COL_MODE_TEXT, MPLTREE_COL_HIGHBPM,
       TREE_COL_MODE_EDITABLE, MPLTREE_COL_EDITABLE,
       TREE_COL_MODE_ADJUSTMENT, MPLTREE_COL_ADJUST,
       TREE_COL_MODE_DIGITS, MPLTREE_COL_DIGITS,
@@ -225,11 +225,7 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
   int           pltype;
   ilistidx_t    iteridx;
   ilistidx_t    dkey;
-  GtkTreeModel  *model;
-  GtkTreeIter   iter;
   int           count;
-  char          tbuff [40];
-  UIWidget      *uiwidgetp;
 
   if (managepltree->uitree == NULL) {
     return;
@@ -241,9 +237,6 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
   pltype = playlistGetConfigNum (pl, PLAYLIST_TYPE);
 
   managePlaylistTreeSetColumnVisibility (managepltree, pltype);
-
-  uiwidgetp = uiTreeViewGetUIWidget (managepltree->uitree);
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
 
   danceStartIterator (dances, &iteridx);
   count = 0;
@@ -270,19 +263,19 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
     bpmhigh = playlistGetDanceNum (pl, dkey, PLDANCE_BPM_HIGH);
     if (bpmhigh < 0) { bpmhigh = 0; }
 
-    snprintf (tbuff, sizeof (tbuff), "%d", count);
-    if (gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
-      gtk_list_store_set (GTK_LIST_STORE (model), &iter,
-          MPLTREE_COL_DANCE_SELECT, (glong) sel,
-          MPLTREE_COL_MAXPLAYTIME, mptdisp,
-          MPLTREE_COL_COUNT, (glong) dcount,
-          MPLTREE_COL_LOWBPM, (glong) bpmlow,
-          MPLTREE_COL_HIGHBPM, (glong) bpmhigh,
-          -1);
-    }
+    uiTreeViewSelectSet (managepltree->uitree, count);
+    uiTreeViewSetValues (managepltree->uitree,
+        MPLTREE_COL_DANCE_SELECT, (treebool_t) sel,
+        MPLTREE_COL_MAXPLAYTIME, mptdisp,
+        MPLTREE_COL_COUNT, (treenum_t) dcount,
+        MPLTREE_COL_LOWBPM, (treenum_t) bpmlow,
+        MPLTREE_COL_HIGHBPM, (treenum_t) bpmhigh,
+        TREE_VALUE_END);
     ++count;
   }
 
+  uiTreeViewSelectSet (managepltree->uitree, 0);
+  managepltree->currcount = count;
   managepltree->changed = false;
 }
 
@@ -296,15 +289,11 @@ managePlaylistTreeIsChanged (managepltree_t *managepltree)
 void
 managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree)
 {
-  GtkTreeModel    *model;
-  GtkTreeIter     iter;
-  glong            tval;
-  char            *tstr;
-  char            tbuff [40];
-  ilistidx_t      dkey;
   playlist_t      *pl;
+  long            tval;
+  char            *tstr = NULL;
+  ilistidx_t      dkey;
   int             count;
-  UIWidget        *uiwidgetp;
 
   if (! managepltree->changed) {
     return;
@@ -315,31 +304,32 @@ managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree)
   /* hide unselected may be on, and only the displayed dances will */
   /* be updated */
 
-  uiwidgetp = uiTreeViewGetUIWidget (managepltree->uitree);
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-  count = 0;
-  while (1) {
-    snprintf (tbuff, sizeof (tbuff), "%d", count);
-    if (! gtk_tree_model_get_iter_from_string (model, &iter, tbuff)) {
-      break;
-    }
+  uiTreeViewSelectSave (managepltree->uitree);
 
-    gtk_tree_model_get (model, &iter, MPLTREE_COL_DANCE_IDX, &tval, -1);
+  for (count = 0; count < managepltree->currcount; ++count) {
+    uiTreeViewSelectSet (managepltree->uitree, count);
+
+    tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_DANCE_IDX);
     dkey = tval;
-    gtk_tree_model_get (model, &iter, MPLTREE_COL_DANCE_SELECT, &tval, -1);
+    tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_DANCE_SELECT);
     playlistSetDanceNum (pl, dkey, PLDANCE_SELECTED, tval);
-    gtk_tree_model_get (model, &iter, MPLTREE_COL_COUNT, &tval, -1);
-    playlistSetDanceNum (pl, dkey, PLDANCE_COUNT, tval);
-    gtk_tree_model_get (model, &iter, MPLTREE_COL_MAXPLAYTIME, &tstr, -1);
-    tval = tmutilStrToMS (tstr);
-    playlistSetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME, tval);
-    gtk_tree_model_get (model, &iter, MPLTREE_COL_LOWBPM, &tval, -1);
-    playlistSetDanceNum (pl, dkey, PLDANCE_BPM_LOW, tval);
-    gtk_tree_model_get (model, &iter, MPLTREE_COL_HIGHBPM, &tval, -1);
-    playlistSetDanceNum (pl, dkey, PLDANCE_BPM_HIGH, tval);
 
-    ++count;
+    tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_COUNT);
+    playlistSetDanceNum (pl, dkey, PLDANCE_COUNT, tval);
+
+    tstr = uiTreeViewGetValueStr (managepltree->uitree, MPLTREE_COL_MAXPLAYTIME);
+    tval = tmutilStrToMS (tstr);
+    dataFree (tstr);
+    playlistSetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME, tval);
+
+    tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_LOWBPM);
+    playlistSetDanceNum (pl, dkey, PLDANCE_BPM_LOW, tval);
+
+    tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_HIGHBPM);
+    playlistSetDanceNum (pl, dkey, PLDANCE_BPM_HIGH, tval);
   }
+
+  uiTreeViewSelectRestore (managepltree->uitree);
 }
 
 /* internal routines */
@@ -390,10 +380,10 @@ managePlaylistTreeChanged (void *udata, long col)
   managepltree_t  *managepltree = udata;
   bool            rc = UICB_CONT;
 
-  /* force the selection iter to be updated */
-  uiTreeViewSelectGetCount (managepltree->uitree);
+  uiTreeViewSelectCurrent (managepltree->uitree);
 
   uiLabelSetText (managepltree->statusMsg, "");
+  managepltree->changed = true;
 
   if (col == MPLTREE_COL_MAXPLAYTIME) {
     const char  *valstr;
@@ -402,11 +392,10 @@ managePlaylistTreeChanged (void *udata, long col)
 
     str = uiTreeViewGetValueStr (managepltree->uitree, MPLTREE_COL_MAXPLAYTIME);
     valstr = validate (str, VAL_MIN_SEC);
-    if (valstr == NULL) {
-      managepltree->changed = true;
-    } else {
+    if (valstr != NULL) {
       snprintf (tbuff, sizeof (tbuff), valstr, str);
       uiLabelSetText (managepltree->statusMsg, tbuff);
+      managepltree->changed = false;
       rc = UICB_STOP;
     }
     dataFree (str);
@@ -421,7 +410,6 @@ managePlaylistTreeChanged (void *udata, long col)
     playlistSetDanceNum (managepltree->playlist, dkey, PLDANCE_SELECTED, val);
   }
 
-  managepltree->changed = true;
   return rc;
 }
 
@@ -429,15 +417,12 @@ static void
 managePlaylistTreeCreate (managepltree_t *managepltree)
 {
   dance_t       *dances;
-  GtkTreeIter   iter;
   slist_t       *dancelist;
   slistidx_t    iteridx;
   ilistidx_t    key;
   uitree_t      *uitree;
   UIWidget      *uiwidgetp;
-  GtkTreeModel  *model;
-  GtkListStore  *store;
-  GtkAdjustment *adjustment;
+  UIWidget      adjustment;
 
   uitree = managepltree->uitree;
 
@@ -450,14 +435,10 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
       TREE_TYPE_NUM,      // high bpm
       TREE_TYPE_STRING,   // pad
       TREE_TYPE_NUM,      // dance idx
-      TREE_TYPE_NUM,      // editable
+      TREE_TYPE_INT,      // editable
       TREE_TYPE_WIDGET,   // adjust
-      TREE_TYPE_NUM,      // digits
+      TREE_TYPE_INT,      // digits
       TREE_TYPE_END);
-
-  uiwidgetp = uiTreeViewGetUIWidget (uitree);
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-  store = GTK_LIST_STORE (model);
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancelist = danceGetDanceList (dances);
@@ -479,20 +460,20 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
       }
     }
 
-    gtk_list_store_append (store, &iter);
-    adjustment = gtk_adjustment_new (0, 0.0, 200.0, 1.0, 5.0, 0.0);
-    gtk_list_store_set (store, &iter,
-        MPLTREE_COL_DANCE_SELECT, 0,
+    uiTreeViewValueAppend (uitree);
+    uiCreateAdjustment (&adjustment, 0, 0.0, 200.0, 1.0, 5.0, 0.0);
+    uiTreeViewSetValues (managepltree->uitree,
+        MPLTREE_COL_DANCE_SELECT, (treebool_t) 0,
         MPLTREE_COL_DANCE, dancedisp,
         MPLTREE_COL_MAXPLAYTIME, "0:00",
-        MPLTREE_COL_LOWBPM, 0,
-        MPLTREE_COL_HIGHBPM, 0,
+        MPLTREE_COL_LOWBPM, (treenum_t) 0,
+        MPLTREE_COL_HIGHBPM, (treenum_t) 0,
         MPLTREE_COL_SB_PAD, "  ",
-        MPLTREE_COL_DANCE_IDX, key,
-        MPLTREE_COL_EDITABLE, 1,
-        MPLTREE_COL_ADJUST, adjustment,
-        MPLTREE_COL_DIGITS, 0,
-        -1);
+        MPLTREE_COL_DANCE_IDX, (treenum_t) key,
+        MPLTREE_COL_EDITABLE, (treeint_t) 1,
+        MPLTREE_COL_ADJUST, uiAdjustmentGetAdjustment (&adjustment),
+        MPLTREE_COL_DIGITS, (treeint_t) 0,
+        TREE_VALUE_END);
   }
 
   uiwidgetp = uiTreeViewGetUIWidget (uitree);

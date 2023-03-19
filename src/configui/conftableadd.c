@@ -51,12 +51,7 @@ confuiTableAdd (void *udata)
   flags = gui->tables [gui->tablecurr].flags;
   count = uiTreeViewSelectGetCount (uitree);
   if (count == 1) {
-    int   valid;
-
-    valid = uiTreeViewSelectGetCount (uitree);
-    if (valid == 1) {
-      found = true;
-    }
+    found = true;
   }
 
   if (found) {

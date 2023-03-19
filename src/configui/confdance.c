@@ -276,7 +276,9 @@ confuiDanceEntryChg (uientry_t *entry, void *udata, int widx)
   key = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
 
   if (widx == CONFUI_ENTRY_DANCE_DANCE) {
-    uiTreeViewSetValues (uitree, CONFUI_DANCE_COL_DANCE, str, TREE_VALUE_END);
+    uiTreeViewSetValues (uitree,
+        CONFUI_DANCE_COL_DANCE, str,
+        TREE_VALUE_END);
     danceSetStr (dances, key, didx, str);
     entryrc = UIENTRY_OK;
   }

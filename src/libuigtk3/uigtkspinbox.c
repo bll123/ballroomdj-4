@@ -474,7 +474,7 @@ uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
   long          newvalue = -1;
 
   if (spinbox->processing) {
-    return UICB_NO_CONV;
+    return UICB_NOT_CONVERTED;
   }
   spinbox->processing = true;
 
@@ -487,7 +487,7 @@ uiSpinboxTimeInput (GtkSpinButton *sb, gdouble *newval, gpointer udata)
 
   if (newvalue < 0) {
     spinbox->processing = false;
-    return UICB_NO_CONV;
+    return UICB_NOT_CONVERTED;
   }
 
   adjustment = gtk_spin_button_get_adjustment (GTK_SPIN_BUTTON (spinbox->uispinbox.widget));
@@ -512,7 +512,7 @@ uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata)
 
 
   if (spinbox->processing) {
-    return UICB_NO_DISP;
+    return UICB_DISPLAY_OFF;
   }
   spinbox->processing = true;
 
@@ -531,7 +531,7 @@ uiSpinboxTextDisplay (GtkSpinButton *sb, gpointer udata)
   snprintf (tbuff, sizeof (tbuff), "%-*s", spinbox->maxWidth, disp);
   gtk_entry_set_text (GTK_ENTRY (spinbox->uispinbox.widget), tbuff);
   spinbox->processing = false;
-  return UICB_DISPLAYED;
+  return UICB_DISPLAY_ON;
 }
 
 static gboolean
@@ -543,7 +543,7 @@ uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
   char          tbuff [100];
 
   if (spinbox->processing) {
-    return UICB_NO_DISP;
+    return UICB_DISPLAY_OFF;
   }
   spinbox->processing = true;
 
@@ -559,7 +559,7 @@ uiSpinboxTimeDisplay (GtkSpinButton *sb, gpointer udata)
   }
   gtk_entry_set_text (GTK_ENTRY (spinbox->uispinbox.widget), tbuff);
   spinbox->processing = false;
-  return UICB_DISPLAYED;
+  return UICB_DISPLAY_ON;
 }
 
 static char *
@@ -607,13 +607,13 @@ uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata)
   char          tbuff [100];
 
   if (spinbox == NULL) {
-    return UICB_NO_DISP;
+    return UICB_DISPLAY_OFF;
   }
   if (spinbox->processing) {
-    return UICB_NO_DISP;
+    return UICB_DISPLAY_OFF;
   }
   if (spinbox->uispinbox.widget == NULL) {
-    return UICB_NO_DISP;
+    return UICB_DISPLAY_OFF;
   }
   spinbox->processing = true;
 
@@ -626,6 +626,6 @@ uiSpinboxDoubleDefaultDisplay (GtkSpinButton *sb, gpointer udata)
     gtk_entry_set_text (GTK_ENTRY (spinbox->uispinbox.widget), _("Default"));
   }
   spinbox->processing = false;
-  return UICB_DISPLAYED;
+  return UICB_DISPLAY_ON;
 }
 

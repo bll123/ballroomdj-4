@@ -714,7 +714,6 @@ managePlaylistDelete (void *udata)
   managepl->changed = false;
 
   managePlaylistNew (managepl, MANAGE_STD);
-  managePlaylistUpdateData (managepl);
 
   mdfree (oname);
   logProcEnd (LOG_PROC, "managePlaylistDelete", "");

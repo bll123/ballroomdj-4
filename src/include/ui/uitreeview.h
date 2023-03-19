@@ -15,6 +15,10 @@
 #include "callback.h"
 #include "slist.h"
 
+typedef long  treenum_t;
+typedef int   treeint_t;
+typedef int   treebool_t;
+
 enum {
   TREE_COL_MODE_TEXT,
   TREE_COL_MODE_EDITABLE,
@@ -29,6 +33,7 @@ enum {
   TREE_COL_DISP_GROW,
   TREE_TYPE_STRING,
   TREE_TYPE_NUM,
+  TREE_TYPE_INT,
   TREE_TYPE_WIDGET,
   TREE_TYPE_BOOLEAN,
   TREE_TYPE_ELLIPSIZE,
@@ -38,6 +43,7 @@ enum {
   TREE_WIDGET_IMAGE,
   TREE_WIDGET_CHECKBOX,
   TREE_WIDGET_RADIO,
+  TREE_WIDGET_TIME,
   TREE_COLUMN_HIDDEN,
   TREE_COLUMN_SHOWN,
   SELECT_SINGLE,

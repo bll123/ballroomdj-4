@@ -83,7 +83,10 @@ confuiCreateStatusTable (confuigui_t *gui)
       gui->tables [CONFUI_ID_STATUS].callbacks [CONFUI_TABLE_CB_CHANGED]);
 
   uiTreeViewCreateValueStore (uitree, CONFUI_STATUS_COL_MAX,
-      TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_BOOLEAN, TREE_TYPE_END);
+      TREE_TYPE_NUM,        // editable
+      TREE_TYPE_STRING,     // display
+      TREE_TYPE_BOOLEAN,    // play-flag
+      TREE_TYPE_END);
 
   statusStartIterator (status, &iteridx);
 

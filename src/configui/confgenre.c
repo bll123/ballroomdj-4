@@ -83,7 +83,10 @@ confuiCreateGenreTable (confuigui_t *gui)
       gui->tables [CONFUI_ID_GENRES].callbacks [CONFUI_TABLE_CB_CHANGED]);
 
   uiTreeViewCreateValueStore (uitree, CONFUI_GENRE_COL_MAX,
-      TREE_TYPE_NUM, TREE_TYPE_STRING, TREE_TYPE_BOOLEAN, TREE_TYPE_STRING,
+      TREE_TYPE_INT,        // editable
+      TREE_TYPE_STRING,     // display
+      TREE_TYPE_BOOLEAN,    // classical flag
+      TREE_TYPE_STRING,     // scrollbar pad
       TREE_TYPE_END);
 
   genreStartIterator (genres, &iteridx);

@@ -84,12 +84,12 @@ confuiCreateRatingTable (confuigui_t *gui)
       gui->tables [CONFUI_ID_RATINGS].callbacks [CONFUI_TABLE_CB_CHANGED]);
 
   uiTreeViewCreateValueStore (uitree, CONFUI_RATING_COL_MAX,
-      TREE_TYPE_NUM,        // rating-editable
-      TREE_TYPE_NUM,        // weight-editable
+      TREE_TYPE_INT,        // rating-editable
+      TREE_TYPE_INT,        // weight-editable
       TREE_TYPE_STRING,     // rating-disp
       TREE_TYPE_NUM,        // weight
       TREE_TYPE_WIDGET,     // adjustment
-      TREE_TYPE_NUM,        // digits
+      TREE_TYPE_INT,        // digits
       TREE_TYPE_END);
 
   ratingStartIterator (ratings, &iteridx);

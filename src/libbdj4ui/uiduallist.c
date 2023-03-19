@@ -295,7 +295,7 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
     uiTreeViewSetValues (uitree,
         DUALLIST_COL_DISP, keystr,
         DUALLIST_COL_SB_PAD, "    ",
-        DUALLIST_COL_DISP_IDX, val,
+        DUALLIST_COL_DISP_IDX, (treenum_t) val,
         TREE_VALUE_END);
 
     /* if inserting into the target tree, and the persistent flag */
@@ -425,8 +425,7 @@ uiduallistDispSelect (void *udata)
   }
 
   uittree = duallist->uitrees [DUALLIST_TREE_TARGET];
-  /* need to make sure the selection pointer is set to the current selection */
-  uiTreeViewSelectGetCount (uittree);
+  uiTreeViewSelectCurrent (uittree);
 
   str = uiTreeViewGetValueStr (uistree, DUALLIST_COL_DISP);
   tval = uiTreeViewGetValue (uistree, DUALLIST_COL_DISP_IDX);
@@ -435,7 +434,7 @@ uiduallistDispSelect (void *udata)
   uiTreeViewSetValues (uittree,
       DUALLIST_COL_DISP, str,
       DUALLIST_COL_SB_PAD, "    ",
-      DUALLIST_COL_DISP_IDX, tval,
+      DUALLIST_COL_DISP_IDX, (treenum_t) tval,
       TREE_VALUE_END);
   dataFree (str);
 
@@ -465,7 +464,7 @@ uiduallistDispRemove (void *udata)
   }
 
   uistree = duallist->uitrees [DUALLIST_TREE_SOURCE];
-  uiTreeViewSelectGetCount (uistree);
+  uiTreeViewSelectCurrent (uistree);
 
   if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
     char          *str;
@@ -490,7 +489,7 @@ uiduallistDispRemove (void *udata)
     uiTreeViewSetValues (uistree,
         DUALLIST_COL_DISP, str,
         DUALLIST_COL_SB_PAD, "    ",
-        DUALLIST_COL_DISP_IDX, tval,
+        DUALLIST_COL_DISP_IDX, (treenum_t) tval,
         TREE_VALUE_END);
     dataFree (str);
   }

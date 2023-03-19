@@ -218,6 +218,11 @@ uiTreeViewAppendColumn (uitree_t *uitree, int widgettype,
       renderer = gtk_cell_renderer_text_new ();
       break;
     }
+    case TREE_WIDGET_TIME: {
+      renderer = gtk_cell_renderer_text_new ();
+      gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
+      break;
+    }
     case TREE_WIDGET_SPINBOX: {
       renderer = gtk_cell_renderer_spin_new ();
       gtk_cell_renderer_set_alignment (renderer, 1.0, 0.5);
@@ -636,25 +641,7 @@ uiTreeViewSelectGetIndex (uitree_t *uitree)
 void
 uiTreeViewSelectCurrent (uitree_t *uitree)
 {
-  GtkTreePath       *path;
-
-  if (uitree == NULL) {
-    return;
-  }
-  if (uitree->model == NULL) {
-    return;
-  }
-  if (! uiutilsUIWidgetSet (&uitree->uitree)) {
-    return;
-  }
-
-  path = gtk_tree_model_get_path (uitree->model, &uitree->selectiter);
-  mdextalloc (path);
-  if (path != NULL) {
-    gtk_tree_selection_select_path (uitree->sel, path);
-    mdextfree (path);
-    gtk_tree_path_free (path);
-  }
+  uiTreeViewSelectGetCount (uitree);
 }
 
 bool
@@ -740,6 +727,7 @@ uiTreeViewSelectSave (uitree_t *uitree)
     return;
   }
 
+  uiTreeViewSelectGetCount (uitree);
   memcpy (&uitree->savedselectiter, &uitree->selectiter, sizeof (GtkTreeIter));
   uitree->savedselectset = uitree->selectset;
 }
@@ -756,6 +744,7 @@ uiTreeViewSelectRestore (uitree_t *uitree)
 
   memcpy (&uitree->selectiter, &uitree->savedselectiter, sizeof (GtkTreeIter));
   uitree->selectset = uitree->savedselectset;
+  gtk_tree_selection_select_iter (uitree->sel, &uitree->selectiter);
 }
 
 void
@@ -1163,16 +1152,17 @@ uiTreeViewConvertTreeType (int type)
       gtktype = G_TYPE_LONG;
       break;
     }
+    case TREE_TYPE_ELLIPSIZE:
+    case TREE_TYPE_INT: {
+      gtktype = G_TYPE_INT;
+      break;
+    }
     case TREE_TYPE_WIDGET: {
       gtktype = G_TYPE_OBJECT;
       break;
     }
     case TREE_TYPE_BOOLEAN: {
       gtktype = G_TYPE_BOOLEAN;
-      break;
-    }
-    case TREE_TYPE_ELLIPSIZE: {
-      gtktype = G_TYPE_INT;
       break;
     }
     case TREE_TYPE_IMAGE: {
