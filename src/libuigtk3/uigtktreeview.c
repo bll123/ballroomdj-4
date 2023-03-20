@@ -608,6 +608,29 @@ uiTreeViewValueRemove (uitree_t *uitree)
   }
 }
 
+void
+uiTreeViewValueClear (uitree_t *uitree, int startrow)
+{
+  if (uitree == NULL) {
+    return;
+  }
+
+  if (startrow == 0) {
+    gtk_list_store_clear (GTK_LIST_STORE (uitree->model));
+  } else if (startrow > 0) {
+    char        tbuff [40];
+    GtkTreeIter iter;
+    bool        valid = false;
+
+    snprintf (tbuff, sizeof (tbuff), "%d", startrow);
+    valid = gtk_tree_model_get_iter_from_string (uitree->model, &iter, tbuff);
+    while (valid) {
+      gtk_list_store_remove (GTK_LIST_STORE (uitree->model), &iter);
+      valid = gtk_tree_model_iter_next (uitree->model, &iter);
+    }
+  }
+}
+
 /* must be called before set-values if the value iter is being used */
 void
 uiTreeViewSetValueEllipsize (uitree_t *uitree, int col)

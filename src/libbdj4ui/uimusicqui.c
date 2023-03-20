@@ -671,7 +671,6 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   mq_internal_t *uiw;
   int           ci;
   int           row;
-  int           trow;
 
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDisplay");
 
@@ -732,12 +731,7 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   }
 
   /* remove any other rows past the end of the display */
-  trow = row;
-  while (trow < uiw->rowcount) {
-// ### FIX
-//    valid = gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
-    ++trow;
-  }
+  uiTreeViewValueClear (uiw->musicqTree, row);
 
   uiw->rowcount = row;
 
@@ -989,10 +983,7 @@ uimusicqSetDefaultSelection (uimusicq_t *uimusicq)
 static void
 uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
 {
-//  GtkTreePath   *path;
   mq_internal_t *uiw;
-//  char          tbuff [40];
-//  uiwcont_t    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "uimusicqSetSelection");
 

@@ -423,15 +423,13 @@ void
 uisongselClearData (uisongsel_t *uisongsel)
 {
   ss_internal_t   * ssint;
-  GtkTreeModel    * model = NULL;
-  uiwcont_t       * uiwidgetp;
 
   logProcBegin (LOG_PROC, "uisongselClearData");
 
   ssint = uisongsel->ssInternalData;
-  uiwidgetp = uiTreeViewGetWidgetContainer (ssint->songselTree);
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-  gtk_list_store_clear (GTK_LIST_STORE (model));
+
+  uiTreeViewValueClear (ssint->songselTree, 0);
+
   /* having cleared the list, the rows must be re-created */
   uisongselCreateRows (uisongsel);
   uiScrollbarSetPosition (ssint->songselScrollbar, 0.0);

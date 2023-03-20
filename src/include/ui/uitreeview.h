@@ -80,6 +80,7 @@ void  uiTreeViewValueAppend (uitree_t *uitree);
 void  uiTreeViewValueInsertBefore (uitree_t *uitree);
 void  uiTreeViewValueInsertAfter (uitree_t *uitree);
 void  uiTreeViewValueRemove (uitree_t *uitree);
+void  uiTreeViewValueClear (uitree_t *uitree, int startidx);
 void  uiTreeViewSetValueEllipsize (uitree_t *uitree, int col);
 void  uiTreeViewSetValues (uitree_t *uitree, ...);
 int   uiTreeViewSelectGetCount (uitree_t *uitree);
