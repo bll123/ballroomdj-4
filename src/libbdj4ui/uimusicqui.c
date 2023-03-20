@@ -75,7 +75,7 @@ enum {
   UIMUSICQ_BUTTON_MAX,
 };
 
-typedef struct uimusicqgtk {
+typedef struct mq_internal {
   uidance_t         *uidance;
   uidance_t         *uidance5;
   uitree_t          *musicqTree;
@@ -123,7 +123,7 @@ uimusicqUIInit (uimusicq_t *uimusicq)
 
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     uiw = mdmalloc (sizeof (mq_internal_t));
-    uimusicq->ui [i].uiWidgets = uiw;
+    uimusicq->ui [i].mqInternalData = uiw;
     uiw->uidance = NULL;
     uiw->uidance5 = NULL;
     uiw->musicqTree = NULL;
@@ -144,7 +144,7 @@ uimusicqUIFree (uimusicq_t *uimusicq)
   mq_internal_t   *uiw;
 
   for (int i = 0; i < MUSICQ_MAX; ++i) {
-    uiw = uimusicq->ui [i].uiWidgets;
+    uiw = uimusicq->ui [i].mqInternalData;
     if (uiw != NULL) {
       for (int j = 0; j < UIMUSICQ_CB_MAX; ++j) {
         callbackFree (uiw->callbacks [j]);
@@ -181,7 +181,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   saveci = uimusicq->musicqManageIdx;
   /* temporary */
   uimusicq->musicqManageIdx = ci;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
   uimusicq->statusMsg = statusMsg;
 
   uimusicq->ui [ci].hasui = true;
@@ -431,7 +431,7 @@ uimusicqUIMainLoop (uimusicq_t *uimusicq)
   int           ci;
 
   ci = uimusicq->musicqManageIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
 
   uiButtonCheckRepeat (uiw->buttons [UIMUSICQ_BUTTON_MOVE_DOWN]);
   uiButtonCheckRepeat (uiw->buttons [UIMUSICQ_BUTTON_MOVE_UP]);
@@ -458,7 +458,7 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
     logProcEnd (LOG_PROC, "uimusicqMusicQueueSetSelected", "no-ui");
     return;
   }
-  uiw = uimusicq->ui [mqidx].uiWidgets;
+  uiw = uimusicq->ui [mqidx].mqInternalData;
 
   count = uiTreeViewSelectGetCount (uiw->musicqTree);
   if (count != 1) {
@@ -501,7 +501,7 @@ uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx
 
 
   uimusicq->iteratecb = cb;
-  uiw = uimusicq->ui [mqidx].uiWidgets;
+  uiw = uimusicq->ui [mqidx].mqInternalData;
   uiwidgetp = uiTreeViewGetWidgetContainer (uiw->musicqTree);
   model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
   gtk_tree_model_foreach (model, uimusicqIterateCallback, uimusicq);
@@ -513,7 +513,7 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
   mq_internal_t *uiw;
   long          loc;
 
-  uiw = uimusicq->ui [mqidx].uiWidgets;
+  uiw = uimusicq->ui [mqidx].mqInternalData;
 
   loc = MUSICQ_FORCE_LAST;
   if (uiw->musicqTree == NULL) {
@@ -573,7 +573,7 @@ uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active)
   int           ci;
 
   ci = uimusicq->musicqManageIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
 
   /* if the player is active, disable the button */
   if (active) {
@@ -594,7 +594,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDataUpdate");
 
   ci = musicqupdate->mqidx;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
 
   if (newdispflag == MUSICQ_NEW_DISP) {
     uiw->typelist = mdmalloc (sizeof (int) * MUSICQ_COL_MAX);
@@ -655,7 +655,7 @@ uimusicqProcessMusicQueueDataNewCallback (int type, void *udata)
   uimusicq_t    *uimusicq = udata;
   mq_internal_t *uiw;
 
-  uiw = uimusicq->ui [uimusicq->cbci].uiWidgets;
+  uiw = uimusicq->ui [uimusicq->cbci].mqInternalData;
   uiw->typelist = mdrealloc (uiw->typelist, sizeof (int) * (uiw->colcount + 1));
   uiw->typelist [uiw->colcount] = type;
   ++uiw->colcount;
@@ -676,23 +676,13 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueDisplay");
 
   ci = musicqupdate->mqidx;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
-
-//  uiwidgetp = uiTreeViewGetWidgetContainer (uiw->musicqTree);
-//  if (uiwidgetp->widget != NULL) {
-//    model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-//  }
-//  if (model == NULL) {
-//    logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDisplay", "null-model");
-//    return;
-//  }
 
   /* gtk selections will change internally quite a bit, bypass any change */
   /* signals for the moment */
   uimusicq->ui [ci].selchgbypass = true;
 
-//  valid = gtk_tree_model_get_iter_first (model, &iter);
   uiTreeViewSelectSave (uiw->musicqTree);
   uiTreeViewSelectFirst (uiw->musicqTree);
 
@@ -744,6 +734,7 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
   /* remove any other rows past the end of the display */
   trow = row;
   while (trow < uiw->rowcount) {
+// ### FIX
 //    valid = gtk_list_store_remove (GTK_LIST_STORE (model), &iter);
     ++trow;
   }
@@ -780,7 +771,7 @@ uimusicqSetMusicqDisplay (uimusicq_t *uimusicq, song_t *song, int ci)
   mq_internal_t *uiw;
   slist_t       *sellist;
 
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->ui [ci].dispselType);
   uimusicq->cbci = ci;
@@ -796,7 +787,7 @@ uimusicqSetMusicqDisplayCallback (int col, long num, const char *str, void *udat
   int           ci;
 
   ci = uimusicq->cbci;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
 
   uitreedispSetDisplayColumn (uiw->musicqTree, col, num, str);
 }
@@ -824,7 +815,7 @@ uimusicqPlayCallback (void *udata)
   int           count;
 
   ci = uimusicq->musicqManageIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
 
   count = uiTreeViewSelectGetCount (uiw->musicqTree);
   if (count != 1) {
@@ -849,7 +840,7 @@ uimusicqQueueCallback (void *udata)
   int           count;
 
   ci = uimusicq->musicqManageIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
 
   count = uiTreeViewSelectGetCount (uiw->musicqTree);
   if (count != 1) {
@@ -873,7 +864,7 @@ uimusicqGetSelectionDbidx (uimusicq_t *uimusicq)
   int             count;
 
   ci = uimusicq->musicqManageIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
 
   if (uiw == NULL || uiw->sel == NULL) {
     return -1;
@@ -981,7 +972,7 @@ uimusicqSetDefaultSelection (uimusicq_t *uimusicq)
   int             count;
 
   ci = uimusicq->musicqManageIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
 
   if (uiw->sel == NULL) {
     return;
@@ -1009,7 +1000,7 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
     logProcEnd (LOG_PROC, "uimusicqSetSelection", "no-ui");
     return;
   }
-  uiw = uimusicq->ui [mqidx].uiWidgets;
+  uiw = uimusicq->ui [mqidx].mqInternalData;
 
   if (uimusicq->ui [mqidx].selectLocation == MUSICQ_FORCE_LAST) {
     logProcEnd (LOG_PROC, "uimusicqSetSelection", "select-999");
@@ -1180,7 +1171,7 @@ uimusicqCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
   logProcBegin (LOG_PROC, "uimusicqCheckFavChgSignal");
 
   ci = uimusicq->musicqManageIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
   if (column != uiw->favColumn) {
     logProcEnd (LOG_PROC, "uimusicqCheckFavChgSignal", "not-fav-col");
     return;
@@ -1209,7 +1200,7 @@ uimusicqKeyEvent (void *udata)
   }
 
   ci = uimusicq->musicqManageIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
 
   if (uiKeyIsPressEvent (uiw->uikey)) {
     if (uiKeyIsAudioPlayKey (uiw->uikey)) {
@@ -1245,7 +1236,7 @@ uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp)
   mq_internal_t *uiw;
 
   ci = uimusicq->musicqManageIdx;
-  uiw = uimusicq->ui [ci].uiWidgets;
+  uiw = uimusicq->ui [ci].mqInternalData;
 
   if (! uimusicq->ui [ci].hasui) {
     return;

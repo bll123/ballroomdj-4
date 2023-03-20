@@ -23,7 +23,7 @@
 #include "ui.h"
 
 typedef struct uisongsel uisongsel_t;
-typedef struct uisongselgtk uisongselgtk_t;
+typedef struct ss_internal ss_internal_t;
 
 enum {
   UISONGSEL_MARK_REPLACE,
@@ -63,8 +63,8 @@ typedef struct uisongsel {
   songfilter_t      *songfilter;
   /* song selection tab */
   uidance_t         *uidance;
-  /* widget data */
-  uisongselgtk_t    *uiWidgetData;
+  /* internal data */
+  ss_internal_t     *ssInternalData;
   /* song editor */
   callback_t        *newselcb;
 } uisongsel_t;
@@ -87,7 +87,7 @@ void  uisongselSetSongSaveCallback (uisongsel_t *uisongsel, callback_t *uicb);
 void  uisongselSetEditCallback (uisongsel_t *uisongsel, callback_t *uicb);
 void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t *musicqupdate, int updflag);
 
-/* uisongselgtk.c */
+/* uisongselui.c */
 void  uisongselUIInit (uisongsel_t *uisongsel);
 void  uisongselUIFree (uisongsel_t *uisongsel);
 uiwcont_t   * uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin);

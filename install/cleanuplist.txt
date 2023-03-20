@@ -25,6 +25,10 @@ templates/[^/]*\.en_US$
 # old library (early alpha)
 # this can be removed later
 bin/libbdj4uigtk\.(so|dylib|dll)$
+bin/testsuite$
+bin/testsuite\.exe$
+bin/tmusicsetup$
+bin/tmusicsetup\.exe$
 
 # unneeded executables
 plocal/bin/curl\.exe$

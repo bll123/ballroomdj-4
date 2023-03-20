@@ -32,7 +32,7 @@ enum {
   UIMUSICQ_REPEAT_TIME = 200,
 };
 
-typedef struct uimusicqgtk uimusicqgtk_t;
+typedef struct mq_internal mq_internal_t;
 
 typedef struct {
   int           count;          // how many songs displayed in queue
@@ -46,7 +46,7 @@ typedef struct {
   uidropdown_t  *playlistsel;
   uientry_t     *slname;
   /* widget data */
-  uimusicqgtk_t *uiWidgets;
+  mq_internal_t *mqInternalData;
   /* flags */
   bool          hasui : 1;
   bool          haveselloc : 1;
@@ -110,7 +110,7 @@ void  uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *sl
 void  uimusicqProcessSongSelect (uimusicq_t *uimusicq, mp_songselect_t *songselect);
 void  uimusicqSetQueueCallback (uimusicq_t *uimusicq, callback_t *uicb);
 
-/* uimusicqgtk.c */
+/* uimusicqui.c */
 void      uimusicqUIInit (uimusicq_t *uimusicq);
 void      uimusicqUIFree (uimusicq_t *uimusicq);
 uiwcont_t   * uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci, uiwcont_t *statusMsg, uientryval_t validateFunc);
