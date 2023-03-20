@@ -77,6 +77,7 @@ enum {
   SONGSEL_CB_DANCE_SEL,
   SONGSEL_CB_KEYB,
   SONGSEL_CB_SCROLL_CHG,
+  SONGSEL_CB_SELECT_PROCESS,
   SONGSEL_CB_MAX,
 };
 
@@ -143,8 +144,6 @@ static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation, g
 static bool uisongselScroll (void *udata, double value);
 static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata);
 static void uisongselProcessScroll (uisongsel_t *uisongsel, int dir, int lines);
-static void uisongselClearSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
-static void uisongselClearSingleSelection (uisongsel_t *uisongsel);
 static bool uisongselKeyEvent (void *udata);
 static void uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata);
 static void uisongselProcessSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
@@ -630,6 +629,7 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   if (count != 1) {
     return 0;
   }
+
   gtk_tree_selection_selected_foreach (ssint->sel,
       uisongselGetIter, uisongsel);
   uiwidgetp = uiTreeViewGetWidgetContainer (ssint->songselTree);
@@ -826,13 +826,12 @@ uisongselGetSelectedList (uisongsel_t *uisongsel)
 }
 
 void
-uisongselClearAllSelections (uisongsel_t *uisongsel)
+uisongselClearAllUISelections (uisongsel_t *uisongsel)
 {
   ss_internal_t  *ssint;
 
   ssint = uisongsel->ssInternalData;
-  gtk_tree_selection_selected_foreach (ssint->sel,
-      uisongselClearSelection, uisongsel);
+  uiTreeViewSelectClearAll (ssint->songselTree);
 }
 
 double
@@ -1201,7 +1200,7 @@ uisongselScroll (void *udata, double value)
   ssint->inscroll = true;
 
   /* clear the current selections */
-  uisongselClearAllSelections (uisongsel);
+  uisongselClearAllUISelections (uisongsel);
 
   logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: scroll", uisongsel->tag);
   uisongselPopulateData (uisongsel);
@@ -1282,31 +1281,6 @@ uisongselProcessScroll (uisongsel_t *uisongsel, int dir, int lines)
   uisongselScroll (uisongsel, (double) uisongsel->idxStart);
 
   logProcEnd (LOG_PROC, "uisongselScrollEvent", "");
-}
-
-/* used by clear all selections */
-static void
-uisongselClearSelection (GtkTreeModel *model,
-    GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
-{
-  uisongsel_t       *uisongsel = udata;
-  ss_internal_t    *ssint;
-
-  ssint = uisongsel->ssInternalData;
-  gtk_tree_selection_unselect_iter (ssint->sel, iter);
-}
-
-/* clears a single selection.  use when only one item is selected */
-static void
-uisongselClearSingleSelection (uisongsel_t *uisongsel)
-{
-  ss_internal_t  *ssint;
-
-  ssint = uisongsel->ssInternalData;
-  gtk_tree_selection_selected_foreach (ssint->sel,
-      uisongselGetIter, uisongsel);
-
-  gtk_tree_selection_unselect_iter (ssint->sel, &ssint->currIter);
 }
 
 static bool
@@ -1422,7 +1396,7 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
         continue;
       }
       uisongselSetPeerFlag (uisongsel->peers [i], true);
-      uisongselClearAllSelections (uisongsel->peers [i]);
+      uisongselClearAllUISelections (uisongsel->peers [i]);
       uisongselSetPeerFlag (uisongsel->peers [i], false);
     }
   }
@@ -1457,9 +1431,9 @@ uisongselProcessSelection (GtkTreeModel *model,
     GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
 {
   uisongsel_t       *uisongsel = udata;
-  ss_internal_t    *ssint;
-  glong             idx;
-  glong             dbidx;
+  ss_internal_t     *ssint;
+  long              idx;
+  long              dbidx = -1;
   char              *pathstr;
 
   ssint = uisongsel->ssInternalData;
@@ -1527,12 +1501,9 @@ static void
 uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
 {
   uisongsel_t     *uisongsel = udata;
-  GtkTreeModel    *model = NULL;
-  GtkTreePath     *path;
-  ss_internal_t  *ssint;
+  ss_internal_t   *ssint;
   int             count;
   long            loc = -1;
-  char            *pathstr;
   dbidx_t         nidx;
   bool            scrolled = false;
 
@@ -1594,43 +1565,30 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
   }
 
   if (count == 1) {
-    uiwcont_t  *uiwidgetp;
+    uiTreeViewSelectCurrent (ssint->songselTree);
+    nidx = uisongselGetSelectLocation (uisongsel);
+    loc = nidx - uisongsel->idxStart;
 
-    /* calling getSelectLocation() will set currIter */
-    uisongselGetSelectLocation (uisongsel);
-
-    uiwidgetp = uiTreeViewGetWidgetContainer (ssint->songselTree);
-    model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-    path = gtk_tree_model_get_path (model, &ssint->currIter);
-    mdextalloc (path);
-    loc = 0;
-    if (path != NULL) {
-      pathstr = gtk_tree_path_to_string (path);
-      mdextalloc (pathstr);
-      loc = atol (pathstr);
-      mdextfree (path);
-      gtk_tree_path_free (path);
-      mdfree (pathstr);     // allocated by gtk
-    }
-
-    uisongselClearSingleSelection (uisongsel);
+    /* there's only one selected, clear them all */
+    uisongselClearAllUISelections (uisongsel);
 
     if (where == UISONGSEL_FIRST) {
       scrolled = uisongselScrollSelection (uisongsel, 0, UISONGSEL_SCROLL_NORMAL, UISONGSEL_DIR_NONE);
-      gtk_tree_model_get_iter_first (model, &ssint->currIter);
+      uiTreeViewSelectFirst (ssint->songselTree);
     }
     if (where == UISONGSEL_NEXT) {
-      nidx = uisongsel->idxStart + loc;
       while (lines > 0) {
         ++nidx;
         scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_NEXT);
         if (! scrolled) {
-          glong    idx;
+          long    idx;
 
-          gtk_tree_model_get (model, &ssint->currIter, SONGSEL_COL_IDX, &idx, -1);
+          idx = uiTreeViewGetValue (ssint->songselTree, SONGSEL_COL_IDX);
           if (loc < ssint->maxRows - 1 &&
               idx < uisongsel->dfilterCount - 1) {
-            gtk_tree_model_iter_next (model, &ssint->currIter);
+            /* any current selection must be re-cleared */
+            uisongselClearAllUISelections (uisongsel);
+            uiTreeViewSelectNext (ssint->songselTree);
             ++loc;
           } else {
             break;
@@ -1640,13 +1598,14 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
       }
     }
     if (where == UISONGSEL_PREVIOUS) {
-      nidx = uisongsel->idxStart + loc;
       while (lines > 0) {
         --nidx;
         scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_PREVIOUS);
         if (! scrolled) {
           if (loc > 0) {
-            gtk_tree_model_iter_previous (model, &ssint->currIter);
+            /* any current selection must be re-cleared */
+            uisongselClearAllUISelections (uisongsel);
+            uiTreeViewSelectPrevious (ssint->songselTree);
             --loc;
           } else {
             break;
@@ -1656,12 +1615,11 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
       }
     }
 
-    /* if the scroll was bumped, 'currIter' is still pointing to the same */
+    /* if the scroll was bumped, the iterator is still pointing to the same */
     /* row (but a new dbidx), re-select it */
-    /* if the iter was moved, currIter is pointing at the new selection */
+    /* if the iter was moved, it is pointing at the new selection */
     /* if the iter was not moved, the original must be re-selected */
-    /* no need to check the return value from the iter change */
-    gtk_tree_selection_select_iter (ssint->sel, &ssint->currIter);
+    uiTreeViewSelectCurrent (ssint->songselTree);
   }
 }
 

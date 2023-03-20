@@ -27,11 +27,18 @@
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 
+enum {
+  SELECT_PROCESS_NONE,
+  SELECT_PROCESS_CLEAR_ALL,
+  SELECT_PROCESS_GET_SELECT_ITER,
+};
+
 static void uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* path, const gchar* ntext, gpointer udata);
 static void uiTreeViewCheckboxHandler (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata);
 static void uiTreeViewRadioHandler (GtkCellRendererToggle *renderer, gchar *spath, gpointer udata);
 static void uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
 static gboolean uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
+static void uiTreeViewSelectForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
 static GType uiTreeViewConvertTreeType (int type);
 
 typedef struct uitree {
@@ -44,6 +51,7 @@ typedef struct uitree {
   callback_t        *rowactivecb;
   callback_t        *foreachcb;
   callback_t        *editedcb;
+  int               selectprocessmode;
   int               selmode;
   int               minwidth;           // prep for append column
   int               ellipsizeColumn;    // prep for append column
@@ -86,6 +94,7 @@ uiCreateTreeView (void)
   uitree->minwidth = TREE_NO_MIN_WIDTH;
   uitree->ellipsizeColumn = TREE_NO_COLUMN;
   uitree->radiorow = -1;
+  uitree->selectprocessmode = SELECT_PROCESS_NONE;
   uiWidgetSetAllMargins (&uitree->uitree, 2);
   return uitree;
 }
@@ -748,10 +757,21 @@ uiTreeViewSelectGetIndex (uitree_t *uitree)
   return idx;
 }
 
+/* makes sure that the stored selectiter is pointing to the current selection */
+/* coded for both select-mode single and multiple */
+/* makes sure the iterator is actually selected */
 void
 uiTreeViewSelectCurrent (uitree_t *uitree)
 {
-  uiTreeViewSelectGetCount (uitree);
+  if (uitree->selmode == SELECT_SINGLE) {
+    uiTreeViewSelectGetCount (uitree);
+  }
+  if (uitree->selmode == SELECT_MULTIPLE) {
+    uitree->selectprocessmode = SELECT_PROCESS_GET_SELECT_ITER;
+    uiTreeViewSelectForeach (uitree, NULL);
+    uitree->selectprocessmode = SELECT_PROCESS_NONE;
+  }
+  gtk_tree_selection_select_iter (uitree->sel, &uitree->selectiter);
 }
 
 bool
@@ -862,6 +882,30 @@ uiTreeViewSelectRestore (uitree_t *uitree)
   }
 }
 
+/* use when the select mode is select-multiple */
+void
+uiTreeViewSelectClearAll (uitree_t *uitree)
+{
+  uitree->selectprocessmode = SELECT_PROCESS_CLEAR_ALL;
+  uiTreeViewSelectForeach (uitree, NULL);
+  uitree->selectprocessmode = SELECT_PROCESS_NONE;
+}
+
+void
+uiTreeViewSelectForeach (uitree_t *uitree, callback_t *cb)
+{
+  if (uitree == NULL) {
+    return;
+  }
+  if (uitree->model == NULL) {
+    return;
+  }
+
+  uitree->foreachcb = cb;
+  gtk_tree_selection_selected_foreach (uitree->sel,
+      uiTreeViewSelectForeachHandler, uitree);
+}
+
 void
 uiTreeViewMoveBefore (uitree_t *uitree)
 {
@@ -917,6 +961,13 @@ uiTreeViewGetValue (uitree_t *uitree, int col)
   if (uitree->model == NULL) {
     return -1;
   }
+
+  if (uitree->selmode == SELECT_MULTIPLE) {
+    uitree->selectprocessmode = SELECT_PROCESS_GET_SELECT_ITER;
+    uiTreeViewSelectForeach (uitree, NULL);
+    uitree->selectprocessmode = SELECT_PROCESS_NONE;
+  }
+
   if (! uitree->selectset) {
     return -1;
   }
@@ -1236,4 +1287,32 @@ uiTreeViewConvertTreeType (int type)
   }
 
   return gtktype;
+}
+
+static void
+uiTreeViewSelectForeachHandler (GtkTreeModel *model,
+    GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
+{
+  uitree_t  *uitree = udata;
+
+  if (uitree->selectprocessmode == SELECT_PROCESS_CLEAR_ALL) {
+    gtk_tree_selection_unselect_iter (uitree->sel, iter);
+  }
+
+  if (uitree->selectprocessmode == SELECT_PROCESS_GET_SELECT_ITER) {
+    memcpy (&uitree->selectiter, iter, sizeof (GtkTreeIter));
+    uitree->selectset = true;
+  }
+
+  if (uitree->foreachcb != NULL) {
+    char      *pathstr;
+    int       row;
+
+    pathstr = gtk_tree_path_to_string (path);
+    mdextalloc (pathstr);
+    row = atoi (pathstr);
+    mdfree (pathstr);
+
+    callbackHandlerLong (uitree->foreachcb, row);
+  }
 }

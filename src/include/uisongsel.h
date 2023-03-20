@@ -110,7 +110,7 @@ void  uisongselSaveSelections (uisongsel_t *uisongsel);
 void  uisongselRestoreSelections (uisongsel_t *uisongsel);
 void  uisongselSetPlayButtonState (uisongsel_t *uisongsel, int active);
 nlist_t *uisongselGetSelectedList (uisongsel_t *uisongsel);
-void uisongselClearAllSelections (uisongsel_t *uisongsel);
+void uisongselClearAllUISelections (uisongsel_t *uisongsel);
 double uisongselGetUpperWorkaround (uisongsel_t *uisongsel);
 void uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt);
 
