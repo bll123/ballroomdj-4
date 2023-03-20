@@ -50,18 +50,19 @@ void
 confuiLevelSet (uitree_t *uitree,
     int editable, char *leveldisp, long weight, int def)
 {
-  uiwcont_t      adjustment;
+  uiwcont_t      *adjustment;
 
   logProcBegin (LOG_PROC, "confuiLevelSet");
-  uiCreateAdjustment (&adjustment, weight, 0.0, 100.0, 1.0, 5.0, 0.0);
+  adjustment = uiCreateAdjustment (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
   uiTreeViewSetValues (uitree,
       CONFUI_LEVEL_COL_EDITABLE, (treeint_t) editable,
       CONFUI_LEVEL_COL_LEVEL, leveldisp,
       CONFUI_LEVEL_COL_WEIGHT, (treenum_t) weight,
-      CONFUI_LEVEL_COL_ADJUST, uiAdjustmentGetAdjustment (&adjustment),
+      CONFUI_LEVEL_COL_ADJUST, uiAdjustmentGetAdjustment (adjustment),
       CONFUI_LEVEL_COL_DIGITS, (treeint_t) 0,
       CONFUI_LEVEL_COL_DEFAULT, (treebool_t) def,
       TREE_VALUE_END);
+  uiwcontFree (adjustment);
   logProcEnd (LOG_PROC, "confuiLevelSet", "");
 }
 
@@ -69,18 +70,19 @@ void
 confuiRatingSet (uitree_t *uitree,
     int editable, char *ratingdisp, long weight)
 {
-  uiwcont_t  adjustment;
+  uiwcont_t   *adjustment;
 
   logProcBegin (LOG_PROC, "confuiRatingSet");
-  uiCreateAdjustment (&adjustment, weight, 0.0, 100.0, 1.0, 5.0, 0.0);
+  adjustment = uiCreateAdjustment (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
   uiTreeViewSetValues (uitree,
       CONFUI_RATING_COL_R_EDITABLE, (treeint_t) editable,
       CONFUI_RATING_COL_W_EDITABLE, (treeint_t) TRUE,
       CONFUI_RATING_COL_RATING, ratingdisp,
       CONFUI_RATING_COL_WEIGHT, (treenum_t) weight,
-      CONFUI_RATING_COL_ADJUST, adjustment,
+      CONFUI_RATING_COL_ADJUST, uiAdjustmentGetAdjustment (adjustment),
       CONFUI_RATING_COL_DIGITS, (treeint_t) 0,
       TREE_VALUE_END);
+  uiwcontFree (adjustment);
   logProcEnd (LOG_PROC, "confuiRatingSet", "");
 }
 

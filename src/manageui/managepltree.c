@@ -431,7 +431,7 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
   slistidx_t    iteridx;
   ilistidx_t    key;
   uitree_t      *uitree;
-  uiwcont_t    adjustment;
+  uiwcont_t     *adjustment;
 
   uitree = managepltree->uitree;
 
@@ -470,7 +470,7 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
     }
 
     uiTreeViewValueAppend (uitree);
-    uiCreateAdjustment (&adjustment, 0, 0.0, 200.0, 1.0, 5.0, 0.0);
+    adjustment = uiCreateAdjustment (0, 0.0, 200.0, 1.0, 5.0, 0.0);
     uiTreeViewSetValues (managepltree->uitree,
         MPLTREE_COL_DANCE_SELECT, (treebool_t) 0,
         MPLTREE_COL_DANCE, dancedisp,
@@ -480,9 +480,10 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
         MPLTREE_COL_SB_PAD, "  ",
         MPLTREE_COL_DANCE_IDX, (treenum_t) key,
         MPLTREE_COL_EDITABLE, (treeint_t) 1,
-        MPLTREE_COL_ADJUST, uiAdjustmentGetAdjustment (&adjustment),
+        MPLTREE_COL_ADJUST, uiAdjustmentGetAdjustment (adjustment),
         MPLTREE_COL_DIGITS, (treeint_t) 0,
         TREE_VALUE_END);
+    uiwcontFree (adjustment);
   }
 }
 

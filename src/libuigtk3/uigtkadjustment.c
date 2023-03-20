@@ -14,30 +14,31 @@
 
 #include "ui/uiinternal.h"
 
-#include "ui/uiui.h"
 #include "ui/uiadjustment.h"
+#include "ui/uigeneral.h"
+// #include "ui/uiui.h"
 
-void
-uiCreateAdjustment (uiwcont_t *uiwidget, double value, double start, double end,
+uiwcont_t *
+uiCreateAdjustment (double value, double start, double end,
     double stepinc, double pageinc, double pagesz)
 {
-  GtkAdjustment     *adjustment;
+  uiwcont_t       *uiadj;
+  GtkAdjustment   *adjustment;
 
-  uiwidget->widget = NULL;
-  if (uiwidget == NULL) {
-    return;
-  }
+  uiadj = uiwcontAlloc ();
+  uiadj->widget = NULL;
 
   adjustment = gtk_adjustment_new (value, start, end, stepinc, pageinc, pagesz);
-  uiwidget->adjustment = adjustment;
+  uiadj->adjustment = adjustment;
+  return uiadj;
 }
 
 void *
-uiAdjustmentGetAdjustment (uiwcont_t *uiwidget)
+uiAdjustmentGetAdjustment (uiwcont_t *uiadj)
 {
-  if (uiwidget == NULL) {
+  if (uiadj == NULL) {
     return NULL;
   }
 
-  return uiwidget->adjustment;
+  return uiadj->adjustment;
 }
