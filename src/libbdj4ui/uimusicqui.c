@@ -167,11 +167,12 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 {
   int               saveci;
   char              tbuff [MAXPATHLEN];
-  uiwcont_t        hbox;
-  uiwcont_t        uiwidget;
-  uiwcont_t        *uitreewidgetp;
+  uiwcont_t         hbox;
+  uiwcont_t         uiwidget;
+  uiwcont_t         *scwin;
+  uiwcont_t         *uitreewidgetp;
   uibutton_t        *uibutton;
-  uiwcont_t        *uiwidgetp;
+  uiwcont_t         *uiwidgetp;
   slist_t           *sellist;
   mq_internal_t     *mqint;
 
@@ -369,9 +370,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   /* musicq tree view */
 
-  uiCreateScrolledWindow (&uiwidget, 400);
-  uiWidgetExpandHoriz (&uiwidget);
-  uiBoxPackStartExpand (&uimusicq->ui [ci].mainbox, &uiwidget);
+  scwin = uiCreateScrolledWindow (400);
+  uiWidgetExpandHoriz (scwin);
+  uiBoxPackStartExpand (&uimusicq->ui [ci].mainbox, scwin);
 
   mqint->musicqTree = uiCreateTreeView ();
   uitreewidgetp = uiTreeViewGetWidgetContainer (mqint->musicqTree);
@@ -380,7 +381,8 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   uiWidgetAlignHorizFill (uitreewidgetp);
   uiWidgetExpandHoriz (uitreewidgetp);
   uiWidgetExpandVert (uitreewidgetp);
-  uiBoxPackInWindow (&uiwidget, uitreewidgetp);
+  uiBoxPackInWindow (scwin, uitreewidgetp);
+  uiwcontFree (scwin);
 
   mqint->callbacks [UIMUSICQ_CB_CHK_FAV_CHG] = callbackInitLong (
         uimusicqCheckFavChgCallback, uimusicq);

@@ -35,7 +35,7 @@ void  uiSpinboxSetState (uispinbox_t *spinbox, int state);
 void  uiSpinboxIntCreate (uiwcont_t *uiwidget);
 void  uiSpinboxDoubleCreate (uiwcont_t *uiwidget);
 
-void  uiSpinboxDoubleDefaultCreate (uispinbox_t *spinbox);
+void  uiSpinboxDoubleDefaultCreate (uispinbox_t *uispinbox);
 
 uispinbox_t *uiSpinboxTimeInit (int sbtype);
 void  uiSpinboxTimeCreate (uispinbox_t *spinbox, void *udata, callback_t *convcb);

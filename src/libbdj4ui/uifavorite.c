@@ -36,13 +36,13 @@ uifavorite_t *
 uifavoriteSpinboxCreate (uiwcont_t *boxp)
 {
   uifavorite_t  *uifavorite;
-  uiwcont_t    *uispinboxp;
+  uiwcont_t     *uispinboxp;
 
   uifavorite = mdmalloc (sizeof (uifavorite_t));
   uifavorite->songfav = bdjvarsdfGet (BDJVDF_FAVORITES);
   uifavorite->spinbox = uiSpinboxInit ();
-  uispinboxp = uiSpinboxGetWidgetContainer (uifavorite->spinbox);
   uiSpinboxTextCreate (uifavorite->spinbox, uifavorite);
+  uispinboxp = uiSpinboxGetWidgetContainer (uifavorite->spinbox);
 
   if (! initialized) {
     int         count;

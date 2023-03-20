@@ -36,11 +36,11 @@ void
 confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
     int flags)
 {
-  uiwcont_t  mhbox;
-  uiwcont_t  bvbox;
-  uiwcont_t  scwindow;
+  uiwcont_t   mhbox;
+  uiwcont_t   bvbox;
+  uiwcont_t   *scwindow;
   uibutton_t  *uibutton;
-  uiwcont_t  *uiwidgetp;
+  uiwcont_t   *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemTable");
 
@@ -48,9 +48,9 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
   uiWidgetSetMarginTop (&mhbox, 2);
   uiBoxPackStart (boxp, &mhbox);
 
-  uiCreateScrolledWindow (&scwindow, 300);
-  uiWidgetExpandVert (&scwindow);
-  uiBoxPackStartExpand (&mhbox, &scwindow);
+  scwindow = uiCreateScrolledWindow (300);
+  uiWidgetExpandVert (scwindow);
+  uiBoxPackStartExpand (&mhbox, scwindow);
 
   gui->tables [id].uitree = uiCreateTreeView ();
   uiwidgetp = uiTreeViewGetWidgetContainer (gui->tables [id].uitree);
@@ -58,7 +58,9 @@ confuiMakeItemTable (confuigui_t *gui, uiwcont_t *boxp, confuiident_t id,
 
   uiWidgetSetMarginStart (uiwidgetp, 8);
   uiTreeViewEnableHeaders (gui->tables [id].uitree);
-  uiBoxPackInWindow (&scwindow, uiwidgetp);
+  uiBoxPackInWindow (scwindow, uiwidgetp);
+
+  uiwcontFree (scwindow);
 
   uiCreateVertBox (&bvbox);
   uiWidgetSetAllMargins (&bvbox, 4);

@@ -43,11 +43,11 @@ enum {
 };
 
 typedef struct managepl {
-  uiwcont_t      *windowp;
+  uiwcont_t       *windowp;
   nlist_t         *options;
-  uiwcont_t      *statusMsg;
+  uiwcont_t       *statusMsg;
   uimenu_t        *plmenu;
-  uiwcont_t      menuDelete;
+  uiwcont_t       menuDelete;
   callback_t      *callbacks [MPL_CB_MAX];
   callback_t      *plloadcb;
   char            *ploldname;
@@ -56,17 +56,17 @@ typedef struct managepl {
   pltype_t        pltype;
   uispinbox_t     *uimaxplaytime;
   uispinbox_t     *uistopat;
-  uiwcont_t      uistopafter;
+  uiwcont_t       uistopafter;
   uispinbox_t     *uigap;
   uirating_t      *uirating;
-  uiwcont_t      uiratingitem;
+  uiwcont_t       uiratingitem;
   uilevel_t       *uilowlevel;
-  uiwcont_t      uilowlevelitem;
+  uiwcont_t       uilowlevelitem;
   uilevel_t       *uihighlevel;
-  uiwcont_t      uihighlevelitem;
+  uiwcont_t       uihighlevelitem;
   uientry_t       *allowedkeywords;
-  uiwcont_t      uiallowedkeywordsitem;
-  uiwcont_t      uipltype;
+  uiwcont_t       uiallowedkeywordsitem;
+  uiwcont_t       uipltype;
   managepltree_t  *managepltree;
   playlist_t      *playlist;
   uiswitch_t      *plannswitch;

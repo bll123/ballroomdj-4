@@ -15,6 +15,7 @@
 #include <gtk/gtk.h>
 
 #include "ui/uiinternal.h"
+
 #include "ui/uibox.h"
 
 void

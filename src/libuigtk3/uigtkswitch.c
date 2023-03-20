@@ -19,6 +19,7 @@
 #include "uiclass.h"
 
 #include "ui/uiinternal.h"
+
 #include "ui/uigeneral.h"
 #include "ui/uiimage.h"
 #include "ui/uiui.h"

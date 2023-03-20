@@ -21,12 +21,13 @@
 #include "callback.h"
 
 #include "ui/uiinternal.h"
+
 #include "ui/uidialog.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
 
 typedef struct uiselect {
-  uiwcont_t  *window;
+  uiwcont_t   *window;
   const char  *label;
   const char  *startpath;
   const char  *dfltname;

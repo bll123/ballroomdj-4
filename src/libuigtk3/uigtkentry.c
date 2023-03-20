@@ -22,6 +22,7 @@
 #include "tmutil.h"
 
 #include "ui/uiinternal.h"
+
 #include "ui/uigeneral.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
@@ -29,7 +30,7 @@
 
 typedef struct uientry {
   GtkEntryBuffer  *buffer;
-  uiwcont_t      uientry;
+  uiwcont_t       *entry;
   int             entrySize;
   int             maxSize;
   uientryval_t    validateFunc;
@@ -38,103 +39,105 @@ typedef struct uientry {
   bool            valdelay : 1;
 } uientry_t;
 
-static void uiEntryValidateStart (uientry_t *entry);
+static void uiEntryValidateStart (uientry_t *uientry);
 static void uiEntryValidateHandler (GtkEditable *e, gpointer udata);
 
 uientry_t *
 uiEntryInit (int entrySize, int maxSize)
 {
-  uientry_t *entry;
+  uientry_t *uientry;
 
-  entry = mdmalloc (sizeof (uientry_t));
-  entry->entrySize = entrySize;
-  entry->maxSize = maxSize;
-  entry->buffer = NULL;
-  uiwcontInit (&entry->uientry);
-  entry->validateFunc = NULL;
-  entry->udata = NULL;
-  mstimeset (&entry->validateTimer, 3600000);
-  entry->valdelay = false;
-  return entry;
+  uientry = mdmalloc (sizeof (uientry_t));
+  uientry->entrySize = entrySize;
+  uientry->maxSize = maxSize;
+  uientry->buffer = NULL;
+  uientry->entry = NULL;
+  uientry->validateFunc = NULL;
+  uientry->udata = NULL;
+  mstimeset (&uientry->validateTimer, 3600000);
+  uientry->valdelay = false;
+  return uientry;
 }
 
 
 void
-uiEntryFree (uientry_t *entry)
+uiEntryFree (uientry_t *uientry)
 {
-  if (entry != NULL) {
-    mdfree (entry);
+  if (uientry != NULL) {
+    uiwcontFree (uientry->entry);
+    mdfree (uientry);
   }
 }
 
 void
-uiEntryCreate (uientry_t *entry)
+uiEntryCreate (uientry_t *uientry)
 {
-  entry->buffer = gtk_entry_buffer_new (NULL, -1);
-  entry->uientry.widget = gtk_entry_new_with_buffer (entry->buffer);
-  gtk_entry_set_width_chars (GTK_ENTRY (entry->uientry.widget), entry->entrySize);
-  gtk_entry_set_max_length (GTK_ENTRY (entry->uientry.widget), entry->maxSize);
-  gtk_entry_set_input_purpose (GTK_ENTRY (entry->uientry.widget), GTK_INPUT_PURPOSE_FREE_FORM);
-  gtk_widget_set_margin_top (entry->uientry.widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (entry->uientry.widget, uiBaseMarginSz * 2);
-  gtk_widget_set_halign (entry->uientry.widget, GTK_ALIGN_START);
-  gtk_widget_set_hexpand (entry->uientry.widget, FALSE);
+  uientry->buffer = gtk_entry_buffer_new (NULL, -1);
+  uientry->entry = uiwcontAlloc ();
+  uientry->entry->widget = gtk_entry_new_with_buffer (uientry->buffer);
+  gtk_entry_set_width_chars (GTK_ENTRY (uientry->entry->widget), uientry->entrySize);
+  gtk_entry_set_max_length (GTK_ENTRY (uientry->entry->widget), uientry->maxSize);
+  gtk_entry_set_input_purpose (GTK_ENTRY (uientry->entry->widget), GTK_INPUT_PURPOSE_FREE_FORM);
+  gtk_widget_set_margin_top (uientry->entry->widget, uiBaseMarginSz);
+  gtk_widget_set_margin_start (uientry->entry->widget, uiBaseMarginSz * 2);
+  gtk_widget_set_halign (uientry->entry->widget, GTK_ALIGN_START);
+  gtk_widget_set_hexpand (uientry->entry->widget, FALSE);
 }
 
 void
-uiEntrySetIcon (uientry_t *entry, const char *name)
+uiEntrySetIcon (uientry_t *uientry, const char *name)
 {
-  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->uientry.widget),
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uientry->entry->widget),
       GTK_ENTRY_ICON_SECONDARY, name);
 }
 
 void
-uiEntryClearIcon (uientry_t *entry)
+uiEntryClearIcon (uientry_t *uientry)
 {
-  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->uientry.widget),
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uientry->entry->widget),
       GTK_ENTRY_ICON_SECONDARY, NULL);
 }
 
 uiwcont_t *
-uiEntryGetWidgetContainer (uientry_t *entry)
+uiEntryGetWidgetContainer (uientry_t *uientry)
 {
-  if (entry == NULL) {
+  if (uientry == NULL) {
     return NULL;
   }
 
-  return &entry->uientry;
+  return uientry->entry;
 }
 
 void
 uiEntryPeerBuffer (uientry_t *targetentry, uientry_t *sourceentry)
 {
-  gtk_entry_set_buffer (GTK_ENTRY (targetentry->uientry.widget), sourceentry->buffer);
+  gtk_entry_set_buffer (GTK_ENTRY (targetentry->entry->widget), sourceentry->buffer);
   targetentry->buffer = sourceentry->buffer;
 }
 
 const char *
-uiEntryGetValue (uientry_t *entry)
+uiEntryGetValue (uientry_t *uientry)
 {
   const char  *value;
 
-  if (entry == NULL) {
+  if (uientry == NULL) {
     return NULL;
   }
-  if (entry->buffer == NULL) {
+  if (uientry->buffer == NULL) {
     return NULL;
   }
 
-  value = gtk_entry_buffer_get_text (entry->buffer);
+  value = gtk_entry_buffer_get_text (uientry->buffer);
   return value;
 }
 
 void
-uiEntrySetValue (uientry_t *entry, const char *value)
+uiEntrySetValue (uientry_t *uientry, const char *value)
 {
-  if (entry == NULL) {
+  if (uientry == NULL) {
     return;
   }
-  if (entry->buffer == NULL) {
+  if (uientry->buffer == NULL) {
     return;
   }
 
@@ -142,71 +145,71 @@ uiEntrySetValue (uientry_t *entry, const char *value)
     value = "";
   }
 
-  gtk_entry_buffer_set_text (entry->buffer, value, -1);
+  gtk_entry_buffer_set_text (uientry->buffer, value, -1);
 }
 
 void
-uiEntrySetValidate (uientry_t *entry, uientryval_t valfunc, void *udata,
+uiEntrySetValidate (uientry_t *uientry, uientryval_t valfunc, void *udata,
     int valdelay)
 {
-  entry->validateFunc = valfunc;
-  entry->udata = udata;
+  uientry->validateFunc = valfunc;
+  uientry->udata = udata;
   if (valfunc != NULL) {
     if (valdelay == UIENTRY_DELAYED) {
-      mstimeset (&entry->validateTimer, 500);
-      entry->valdelay = true;
+      mstimeset (&uientry->validateTimer, 500);
+      uientry->valdelay = true;
     }
-    g_signal_connect (entry->uientry.widget, "changed",
-        G_CALLBACK (uiEntryValidateHandler), entry);
+    g_signal_connect (uientry->entry->widget, "changed",
+        G_CALLBACK (uiEntryValidateHandler), uientry);
   }
 }
 
 int
-uiEntryValidate (uientry_t *entry, bool forceflag)
+uiEntryValidate (uientry_t *uientry, bool forceflag)
 {
   int   rc;
 
-  if (entry == NULL) {
+  if (uientry == NULL) {
     return UIENTRY_OK;
   }
-  if (entry->uientry.widget == NULL) {
+  if (uientry->entry->widget == NULL) {
     return UIENTRY_OK;
   }
-  if (entry->validateFunc == NULL) {
+  if (uientry->validateFunc == NULL) {
     return UIENTRY_OK;
   }
   if (forceflag == false &&
-      ! mstimeCheck (&entry->validateTimer)) {
+      ! mstimeCheck (&uientry->validateTimer)) {
     return UIENTRY_OK;
   }
 
-  rc = entry->validateFunc (entry, entry->udata);
+  rc = uientry->validateFunc (uientry, uientry->udata);
   if (rc == UIENTRY_RESET) {
-    mstimeset (&entry->validateTimer, 500);
+    mstimeset (&uientry->validateTimer, 500);
   }
   if (rc == UIENTRY_ERROR) {
-    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->uientry.widget),
+    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uientry->entry->widget),
         GTK_ENTRY_ICON_SECONDARY, "dialog-error");
   }
   if (rc == UIENTRY_OK) {
-    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->uientry.widget),
+    gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uientry->entry->widget),
         GTK_ENTRY_ICON_SECONDARY, NULL);
   }
-  mstimeset (&entry->validateTimer, 3600000);
+  mstimeset (&uientry->validateTimer, 3600000);
   return rc;
 }
 
 int
-uiEntryValidateDir (uientry_t *entry, void *udata)
+uiEntryValidateDir (uientry_t *uientry, void *udata)
 {
   int               rc;
   const char        *dir;
   char              tbuff [MAXPATHLEN];
 
   rc = UIENTRY_OK;
-  if (entry->buffer != NULL) {
+  if (uientry->buffer != NULL) {
     rc = UIENTRY_ERROR;
-    dir = gtk_entry_buffer_get_text (entry->buffer);
+    dir = gtk_entry_buffer_get_text (uientry->buffer);
     if (dir != NULL) {
       strlcpy (tbuff, dir, sizeof (tbuff));
       pathNormPath (tbuff, sizeof (tbuff));
@@ -220,16 +223,16 @@ uiEntryValidateDir (uientry_t *entry, void *udata)
 }
 
 int
-uiEntryValidateFile (uientry_t *entry, void *udata)
+uiEntryValidateFile (uientry_t *uientry, void *udata)
 {
   int              rc;
   const char        *fn;
   char              tbuff [MAXPATHLEN];
 
   rc = UIENTRY_OK;
-  if (entry->buffer != NULL) {
+  if (uientry->buffer != NULL) {
     rc = UIENTRY_ERROR;
-    fn = gtk_entry_buffer_get_text (entry->buffer);
+    fn = gtk_entry_buffer_get_text (uientry->buffer);
     if (fn != NULL) {
       if (*fn == '\0') {
         rc = UIENTRY_OK;
@@ -247,36 +250,36 @@ uiEntryValidateFile (uientry_t *entry, void *udata)
 }
 
 void
-uiEntrySetState (uientry_t *entry, int state)
+uiEntrySetState (uientry_t *uientry, int state)
 {
-  if (entry == NULL) {
+  if (uientry == NULL) {
     return;
   }
-  uiWidgetSetState (&entry->uientry, state);
+  uiWidgetSetState (uientry->entry, state);
 }
 
 /* internal routines */
 
 static void
-uiEntryValidateStart (uientry_t *entry)
+uiEntryValidateStart (uientry_t *uientry)
 {
-  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (entry->uientry.widget),
+  gtk_entry_set_icon_from_icon_name (GTK_ENTRY (uientry->entry->widget),
       GTK_ENTRY_ICON_SECONDARY, NULL);
-  if (entry->validateFunc != NULL) {
-    mstimeset (&entry->validateTimer, 500);
+  if (uientry->validateFunc != NULL) {
+    mstimeset (&uientry->validateTimer, 500);
   }
 }
 
 static void
 uiEntryValidateHandler (GtkEditable *e, gpointer udata)
 {
-  uientry_t  *entry = udata;
+  uientry_t  *uientry = udata;
 
-  if (entry->validateFunc != NULL) {
-    entry->validateFunc (entry, entry->udata);
+  if (uientry->validateFunc != NULL) {
+    uientry->validateFunc (uientry, uientry->udata);
   }
-  if (entry->valdelay) {
-    uiEntryValidateStart (entry);
+  if (uientry->valdelay) {
+    uiEntryValidateStart (uientry);
   }
   return;
 }

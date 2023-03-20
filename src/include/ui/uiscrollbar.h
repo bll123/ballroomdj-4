@@ -8,6 +8,8 @@
 # include "ui-gtk3.h"
 #endif
 
+#include "callback.h"
+
 typedef struct uiscrollbar uiscrollbar_t;
 
 uiscrollbar_t *uiCreateVerticalScrollbar (double upper);

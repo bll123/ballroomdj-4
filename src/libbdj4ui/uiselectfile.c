@@ -114,11 +114,11 @@ static void
 selectFileCreateDialog (uiselectfile_t *selectfile,
     slist_t *filelist, const char *filetype, callback_t *cb)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
-  uiwcont_t    uiwidget;
-  uiwcont_t    *uitreewidgetp;
-  uiwcont_t    scwindow;
+  uiwcont_t     vbox;
+  uiwcont_t     hbox;
+  uiwcont_t     uiwidget;
+  uiwcont_t     *uitreewidgetp;
+  uiwcont_t     *scwindow;
   char          tbuff [200];
   slistidx_t    fliteridx;
   char          *disp;
@@ -144,17 +144,19 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiWidgetExpandVert (&vbox);
   uiDialogPackInDialog (&selectfile->uidialog, &vbox);
 
-  uiCreateScrolledWindow (&scwindow, 200);
-  uiWidgetExpandHoriz (&scwindow);
-  uiWidgetExpandVert (&scwindow);
-  uiBoxPackStartExpand (&vbox, &scwindow);
+  scwindow = uiCreateScrolledWindow (200);
+  uiWidgetExpandHoriz (scwindow);
+  uiWidgetExpandVert (scwindow);
+  uiBoxPackStartExpand (&vbox, scwindow);
 
   selectfile->selfiletree = uiCreateTreeView ();
   uitreewidgetp = uiTreeViewGetWidgetContainer (selectfile->selfiletree);
   uiTreeViewDisableSingleClick (selectfile->selfiletree);
   uiWidgetAlignHorizFill (uitreewidgetp);
   uiWidgetAlignVertFill (uitreewidgetp);
-  uiBoxPackInWindow (&scwindow, uitreewidgetp);
+  uiBoxPackInWindow (scwindow, uitreewidgetp);
+
+  uiwcontFree (scwindow);
 
   uiTreeViewCreateValueStore (selectfile->selfiletree, SELFILE_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_END);

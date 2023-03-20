@@ -81,15 +81,15 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     const char *sourcetitle, const char *targettitle)
 {
   uiduallist_t  *duallist;
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
-  uiwcont_t    dvbox;
-  uiwcont_t    uiwidget;
-  uiwcont_t    scwindow;
+  uiwcont_t     vbox;
+  uiwcont_t     hbox;
+  uiwcont_t     dvbox;
+  uiwcont_t     uiwidget;
+  uiwcont_t     *scwindow;
   uibutton_t    *uibutton;
-  uiwcont_t    *uiwidgetp = NULL;
+  uiwcont_t     *uiwidgetp = NULL;
   uitree_t      *uitree;
-  uiwcont_t    *uitreewidgetp = NULL;
+  uiwcont_t     *uitreewidgetp = NULL;
 
   duallist = mdmalloc (sizeof (uiduallist_t));
   for (int i = 0; i < DUALLIST_TREE_MAX; ++i) {
@@ -141,16 +141,18 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiBoxPackStart (&vbox, &uiwidget);
   }
 
-  uiCreateScrolledWindow (&scwindow, 300);
-  uiWidgetExpandVert (&scwindow);
-  uiBoxPackStartExpand (&vbox, &scwindow);
+  scwindow = uiCreateScrolledWindow (300);
+  uiWidgetExpandVert (scwindow);
+  uiBoxPackStartExpand (&vbox, scwindow);
 
   uitree = uiCreateTreeView ();
   duallist->uitrees [DUALLIST_TREE_SOURCE] = uitree;
   uitreewidgetp = uiTreeViewGetWidgetContainer (uitree);
   uiTreeViewDarkBackground (uitree);
   uiWidgetExpandVert (uitreewidgetp);
-  uiBoxPackInWindow (&scwindow, uitreewidgetp);
+  uiBoxPackInWindow (scwindow, uitreewidgetp);
+
+  uiwcontFree (scwindow);
 
   uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
@@ -195,16 +197,18 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
     uiBoxPackStart (&vbox, &uiwidget);
   }
 
-  uiCreateScrolledWindow (&scwindow, 300);
-  uiWidgetExpandVert (&scwindow);
-  uiBoxPackStartExpand (&vbox, &scwindow);
+  scwindow = uiCreateScrolledWindow (300);
+  uiWidgetExpandVert (scwindow);
+  uiBoxPackStartExpand (&vbox, scwindow);
 
   uitree = uiCreateTreeView ();
   duallist->uitrees [DUALLIST_TREE_TARGET] = uitree;
   uitreewidgetp = uiTreeViewGetWidgetContainer (uitree);
   uiTreeViewDarkBackground (uitree);
   uiWidgetExpandVert (uitreewidgetp);
-  uiBoxPackInWindow (&scwindow, uitreewidgetp);
+  uiBoxPackInWindow (scwindow, uitreewidgetp);
+
+  uiwcontFree (scwindow);
 
   uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);

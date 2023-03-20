@@ -100,10 +100,10 @@ void
 manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
     uiwcont_t *tophbox)
 {
-  uiwcont_t  hbox;
-  uiwcont_t  uiwidget;
-  uiwcont_t  *uitreewidgetp;
-  uiwcont_t  scwindow;
+  uiwcont_t   hbox;
+  uiwcont_t   uiwidget;
+  uiwcont_t   *uitreewidgetp;
+  uiwcont_t   *scwindow;
   const char  *bpmstr;
   char        tbuff [100];
 
@@ -118,9 +118,9 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
   uiBoxPackStart (&hbox, &uiwidget);
   uiwcontCopy (&managepltree->uihideunsel, &uiwidget);
 
-  uiCreateScrolledWindow (&scwindow, 300);
-  uiWidgetExpandVert (&scwindow);
-  uiBoxPackStartExpand (vboxp, &scwindow);
+  scwindow = uiCreateScrolledWindow (300);
+  uiWidgetExpandVert (scwindow);
+  uiBoxPackStartExpand (vboxp, scwindow);
 
   managepltree->uitree = uiCreateTreeView ();
   uitreewidgetp = uiTreeViewGetWidgetContainer (managepltree->uitree);
@@ -131,7 +131,10 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
       managepltree->callbacks [MPLTREE_CB_CHANGED]);
 
   uiWidgetExpandVert (uitreewidgetp);
-  uiBoxPackInWindow (&scwindow, uitreewidgetp);
+  uiBoxPackInWindow (scwindow, uitreewidgetp);
+
+  /* done with the scrolled window */
+  uiwcontFree (scwindow);
 
   uiTreeViewEnableHeaders (managepltree->uitree);
 

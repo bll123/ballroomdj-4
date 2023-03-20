@@ -15,6 +15,7 @@
 #include <gtk/gtk.h>
 
 #include "ui/uiinternal.h"
+
 #include "ui/uiui.h"
 #include "ui/uipbar.h"
 

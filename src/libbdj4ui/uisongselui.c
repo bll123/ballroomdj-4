@@ -102,7 +102,7 @@ typedef struct ss_internal {
   uiscrollbar_t       *songselScrollbar;
   GtkEventController  *scrollController;
   GtkTreeViewColumn   *favColumn;
-  uiwcont_t           scrolledwin;
+  uiwcont_t           *scrolledwin;
   uibutton_t          *buttons [SONGSEL_BUTTON_MAX];
   uiwcont_t           reqQueueLabel;
   uikey_t             *uikey;
@@ -192,6 +192,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   }
   ssint->lastRowDBIdx = -1;
   mstimeset (&ssint->lastRowCheck, 0);
+  ssint->scrolledwin = NULL;
 
   ssint->uikey = uiKeyAlloc ();
   ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
@@ -207,6 +208,7 @@ uisongselUIFree (uisongsel_t *uisongsel)
     ss_internal_t    *ssint;
 
     ssint = uisongsel->ssInternalData;
+    uiwcontFree (ssint->scrolledwin);
     uiScrollbarFree (ssint->songselScrollbar);
     uiKeyFree (ssint->uikey);
     nlistFree (ssint->selectedBackup);
@@ -340,10 +342,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiScrollbarSetChangeCallback (ssint->songselScrollbar,
       ssint->callbacks [SONGSEL_CB_SCROLL_CHG]);
 
-  uiCreateScrolledWindow (&ssint->scrolledwin, 400);
-  uiWindowSetPolicyExternal (&ssint->scrolledwin);
-  uiWidgetExpandHoriz (&ssint->scrolledwin);
-  uiBoxPackStartExpand (&vbox, &ssint->scrolledwin);
+  ssint->scrolledwin = uiCreateScrolledWindow (400);
+  uiWindowSetPolicyExternal (ssint->scrolledwin);
+  uiWidgetExpandHoriz (ssint->scrolledwin);
+  uiBoxPackStartExpand (&vbox, ssint->scrolledwin);
 
   ssint->songselTree = uiCreateTreeView ();
   uitreewidgetp = uiTreeViewGetWidgetContainer (ssint->songselTree);
@@ -372,7 +374,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL |
       GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
   gtk_widget_add_events (uitreewidgetp->widget, GDK_SCROLL_MASK);
-  uiBoxPackInWindow (&ssint->scrolledwin, uitreewidgetp);
+  uiBoxPackInWindow (ssint->scrolledwin, uitreewidgetp);
 
   ssint->callbacks [SONGSEL_CB_CHK_FAV_CHG] = callbackInitLong (
         uisongselCheckFavChgCallback, uisongsel);

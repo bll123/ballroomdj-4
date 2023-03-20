@@ -23,6 +23,7 @@
 #include "slist.h"
 
 #include "ui/uiinternal.h"
+
 #include "ui/uibox.h"
 #include "ui/uibutton.h"
 #include "ui/uidialog.h"
@@ -43,10 +44,10 @@ enum {
 typedef struct uidropdown {
   char          *title;
   callback_t    *selectcb;
-  uiwcont_t    *parentwin;
+  uiwcont_t     *parentwin;
   uibutton_t    *button;
   callback_t    *buttoncb;
-  uiwcont_t    window;
+  uiwcont_t     *window;
   callback_t    *closecb;
   uitree_t      *uitree;
   slist_t       *strIndexMap;
@@ -77,7 +78,7 @@ uiDropDownInit (void)
   dropdown->title = NULL;
   dropdown->parentwin = NULL;
   dropdown->button = NULL;
-  uiwcontInit (&dropdown->window);
+  dropdown->window = NULL;
   dropdown->uitree = NULL;
   dropdown->closeHandlerId = 0;
   dropdown->strSelection = NULL;
@@ -97,6 +98,7 @@ void
 uiDropDownFree (uidropdown_t *dropdown)
 {
   if (dropdown != NULL) {
+    uiwcontFree (dropdown->window);
     callbackFree (dropdown->buttoncb);
     callbackFree (dropdown->closecb);
     uiButtonFree (dropdown->button);
@@ -367,9 +369,9 @@ uiDropDownWindowShow (void *udata)
   if (uiwcontIsSet (uiwidgetp)) {
     uiWidgetGetPosition (uiwidgetp, &bx, &by);
   }
-  uiWidgetShowAll (&dropdown->window);
-  uiWindowMove (&dropdown->window, bx + x + 4, by + y + 4 + 30, -1);
-  uiWindowPresent (&dropdown->window);
+  uiWidgetShowAll (dropdown->window);
+  uiWindowMove (dropdown->window, bx + x + 4, by + y + 4 + 30, -1);
+  uiWindowPresent (dropdown->window);
   dropdown->open = true;
   return UICB_CONT;
 }
@@ -380,7 +382,7 @@ uiDropDownClose (void *udata)
   uidropdown_t *dropdown = udata;
 
   if (dropdown->open) {
-    uiWidgetHide (&dropdown->window);
+    uiWidgetHide (dropdown->window);
     dropdown->open = false;
   }
   uiWindowPresent (dropdown->parentwin);
@@ -411,24 +413,24 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   uiwcont_t        uiwidget;
   uiwcont_t        *uiwidgetp;
   uiwcont_t        vbox;
-  uiwcont_t        uiscwin;
+  uiwcont_t        *uiscwin;
 
 
   dropdown->closecb = callbackInit ( uiDropDownClose, dropdown, NULL);
-  uiCreateDialogWindow (&dropdown->window, dropdown->parentwin,
+  dropdown->window = uiCreateDialogWindow (dropdown->parentwin,
       uiButtonGetWidgetContainer (dropdown->button), dropdown->closecb, "");
 
   uiCreateVertBox (&uiwidget);
   uiWidgetExpandHoriz (&uiwidget);
   uiWidgetExpandVert (&uiwidget);
-  uiBoxPackInWindow (&dropdown->window, &uiwidget);
+  uiBoxPackInWindow (dropdown->window, &uiwidget);
 
   uiCreateVertBox (&vbox);
   uiBoxPackStartExpand (&uiwidget, &vbox);
 
-  uiCreateScrolledWindow (&uiscwin, 300);
-  uiWidgetExpandHoriz (&uiscwin);
-  uiBoxPackStartExpand (&vbox, &uiscwin);
+  uiscwin = uiCreateScrolledWindow (300);
+  uiWidgetExpandHoriz (uiscwin);
+  uiBoxPackStartExpand (&vbox, uiscwin);
 
   dropdown->uitree = uiCreateTreeView ();
   uiwidgetp = uiTreeViewGetWidgetContainer (dropdown->uitree);
@@ -439,12 +441,14 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   uiTreeViewSelectSetMode (dropdown->uitree, SELECT_SINGLE);
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetExpandVert (uiwidgetp);
-  uiBoxPackInWindow (&uiscwin, uiwidgetp);
+  uiBoxPackInWindow (uiscwin, uiwidgetp);
   if (uicb != NULL) {
     dropdown->selectcb = uicb;
     g_signal_connect (uiwidgetp->widget, "row-activated",
         G_CALLBACK (uiDropDownSelectHandler), dropdown);
   }
+
+  uiwcontFree (uiscwin);
 }
 
 static void
@@ -532,7 +536,7 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
       snprintf (tbuff, sizeof (tbuff), "%-*s", dropdown->maxwidth, p);
       uiButtonSetText (dropdown->button, tbuff);
     }
-    uiWidgetHide (&dropdown->window);
+    uiWidgetHide (dropdown->window);
     dropdown->open = false;
   } else {
     return -1;

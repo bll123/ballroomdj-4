@@ -20,6 +20,8 @@
 #include "callback.h"
 
 #include "ui/uiinternal.h"
+
+#include "ui/uigeneral.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"
@@ -183,9 +185,10 @@ uiWindowNoFocusOnStartup (uiwcont_t *uiwindow)
   gtk_window_set_focus_on_map (GTK_WINDOW (uiwindow->widget), FALSE);
 }
 
-void
-uiCreateScrolledWindow (uiwcont_t *uiwidget, int minheight)
+uiwcont_t *
+uiCreateScrolledWindow (int minheight)
 {
+  uiwcont_t   *scwindow;
   GtkWidget   *widget;
 
   widget = gtk_scrolled_window_new (NULL, NULL);
@@ -202,7 +205,9 @@ uiCreateScrolledWindow (uiwcont_t *uiwidget, int minheight)
   gtk_widget_set_hexpand (widget, FALSE);
   gtk_widget_set_vexpand (widget, FALSE);
 
-  uiwidget->widget = widget;
+  scwindow = uiwcontAlloc ();
+  scwindow->widget = widget;
+  return scwindow;
 }
 
 void
@@ -212,10 +217,11 @@ uiWindowSetPolicyExternal (uiwcont_t *uisw)
       GTK_POLICY_NEVER, GTK_POLICY_EXTERNAL);
 }
 
-void
-uiCreateDialogWindow (uiwcont_t *uiwidget, uiwcont_t *parentwin,
+uiwcont_t *
+uiCreateDialogWindow (uiwcont_t *parentwin,
     uiwcont_t *attachment, callback_t *uicb, const char *title)
 {
+  uiwcont_t *uiwindow;
   GtkWidget *window;
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -245,7 +251,9 @@ uiCreateDialogWindow (uiwcont_t *uiwidget, uiwcont_t *parentwin,
         "focus-out-event", G_CALLBACK (uiWindowFocusOutCallback), uicb);
   }
 
-  uiwidget->widget = window;
+  uiwindow = uiwcontAlloc ();
+  uiwindow->widget = window;
+  return uiwindow;
 }
 
 void

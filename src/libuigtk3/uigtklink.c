@@ -17,6 +17,7 @@
 #include "callback.h"
 
 #include "ui/uiinternal.h"
+
 #include "ui/uilink.h"
 
 static gboolean uiLinkCallback (GtkLinkButton *lb, gpointer udata);

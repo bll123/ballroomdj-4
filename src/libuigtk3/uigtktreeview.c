@@ -21,6 +21,7 @@
 #include "uiclass.h"
 
 #include "ui/uiinternal.h"
+
 #include "ui/uibox.h"
 #include "ui/uigeneral.h"
 #include "ui/uitreeview.h"
@@ -43,7 +44,7 @@ static GType uiTreeViewConvertTreeType (int type);
 static void uiTreeViewSelectChangedHandler (GtkTreeSelection *sel, gpointer udata);
 
 typedef struct uitree {
-  uiwcont_t        uitree;
+  uiwcont_t         *tree;
   GtkTreeSelection  *sel;
   GtkTreeIter       selectiter;
   GtkTreeIter       savedselectiter;
@@ -87,7 +88,8 @@ uiCreateTreeView (void)
   gtk_widget_set_halign (tree, GTK_ALIGN_START);
   gtk_widget_set_hexpand (tree, FALSE);
   gtk_widget_set_vexpand (tree, FALSE);
-  uitree->uitree.widget = tree;
+  uitree->tree = uiwcontAlloc ();
+  uitree->tree->widget = tree;
   uitree->sel = sel;
   uitree->selectset = false;
   uitree->savedselectset = false;
@@ -104,7 +106,7 @@ uiCreateTreeView (void)
   uitree->radiorow = -1;
   uitree->activecol = TREE_NO_COLUMN;
   uitree->selectprocessmode = SELECT_PROCESS_NONE;
-  uiWidgetSetAllMargins (&uitree->uitree, 2);
+  uiWidgetSetAllMargins (uitree->tree, 2);
   return uitree;
 }
 
@@ -115,6 +117,7 @@ uiTreeViewFree (uitree_t *uitree)
     return;
   }
 
+  uiwcontFree (uitree->tree);
   mdfree (uitree);
 }
 
@@ -126,7 +129,7 @@ uiTreeViewEnableHeaders (uitree_t *uitree)
     return;
   }
 
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->uitree.widget), TRUE);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->tree->widget), TRUE);
 }
 
 void
@@ -136,7 +139,7 @@ uiTreeViewDisableHeaders (uitree_t *uitree)
     return;
   }
 
-  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->uitree.widget), FALSE);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (uitree->tree->widget), FALSE);
 }
 
 void
@@ -146,7 +149,7 @@ uiTreeViewDarkBackground (uitree_t *uitree)
     return;
   }
 
-  uiWidgetSetClass (&uitree->uitree, TREEVIEW_DARK_CLASS);
+  uiWidgetSetClass (uitree->tree, TREEVIEW_DARK_CLASS);
 }
 
 void
@@ -156,7 +159,7 @@ uiTreeViewDisableSingleClick (uitree_t *uitree)
     return;
   }
 
-  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uitree->uitree.widget), FALSE);
+  gtk_tree_view_set_activate_on_single_click (GTK_TREE_VIEW (uitree->tree->widget), FALSE);
 }
 
 void
@@ -197,7 +200,7 @@ uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb)
     return;
   }
   uitree->rowactivecb = cb;
-  g_signal_connect (uitree->uitree.widget, "row-activated",
+  g_signal_connect (uitree->tree->widget, "row-activated",
       G_CALLBACK (uiTreeViewRowActiveHandler), uitree);
 }
 
@@ -226,7 +229,7 @@ uiTreeViewGetWidgetContainer (uitree_t *uitree)
     return NULL;
   }
 
-  return &uitree->uitree;
+  return uitree->tree;
 }
 
 void
@@ -264,7 +267,7 @@ uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
   if (uitree == NULL) {
     return;
   }
-  if (! uiwcontIsSet (&uitree->uitree)) {
+  if (uitree->tree == NULL) {
     return;
   }
 
@@ -412,7 +415,7 @@ uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
   if (title != NULL) {
     gtk_tree_view_column_set_title (column, title);
   }
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->uitree.widget), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->tree->widget), column);
 
   if (activecol != TREE_NO_COLUMN) {
     uitree->activeColumn = column;
@@ -429,7 +432,7 @@ uiTreeViewColumnSetVisible (uitree_t *uitree, int col, int flag)
     return;
   }
 
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (uitree->uitree.widget), col);
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (uitree->tree->widget), col);
   if (column != NULL) {
     int     val = TRUE;
 
@@ -454,7 +457,7 @@ uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...)
   if (uitree == NULL) {
     return;
   }
-  if (! uiwcontIsSet (&uitree->uitree)) {
+  if (uitree->tree == NULL) {
     return;
   }
   if (colmax <= 0 || colmax > 90) {
@@ -480,11 +483,11 @@ uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...)
     va_end (args);
 
     store = gtk_list_store_newv (colmax, types);
-    gtk_tree_view_set_model (GTK_TREE_VIEW (uitree->uitree.widget),
+    gtk_tree_view_set_model (GTK_TREE_VIEW (uitree->tree->widget),
         GTK_TREE_MODEL (store));
     g_object_unref (store);
     mdfree (types);
-    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->uitree.widget));
+    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->tree->widget));
   }
 }
 
@@ -497,7 +500,7 @@ uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typelist)
   if (uitree == NULL) {
     return;
   }
-  if (! uiwcontIsSet (&uitree->uitree)) {
+  if (uitree->tree == NULL) {
     return;
   }
   if (colmax <= 0 || colmax > 90) {
@@ -512,11 +515,11 @@ uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typelist)
     }
 
     store = gtk_list_store_newv (colmax, types);
-    gtk_tree_view_set_model (GTK_TREE_VIEW (uitree->uitree.widget),
+    gtk_tree_view_set_model (GTK_TREE_VIEW (uitree->tree->widget),
         GTK_TREE_MODEL (store));
     g_object_unref (store);
     mdfree (types);
-    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->uitree.widget));
+    uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->tree->widget));
   }
 }
 
@@ -531,7 +534,7 @@ uiTreeViewValueAppend (uitree_t *uitree)
   if (uitree->model == NULL) {
     return;
   }
-  if (! uiwcontIsSet (&uitree->uitree)) {
+  if (uitree->tree == NULL) {
     return;
   }
 
@@ -551,7 +554,7 @@ uiTreeViewValueInsertBefore (uitree_t *uitree)
   if (uitree == NULL) {
     return;
   }
-  if (! uiwcontIsSet (&uitree->uitree)) {
+  if (uitree->tree == NULL) {
     return;
   }
   if (uitree->model == NULL) {
@@ -582,7 +585,7 @@ uiTreeViewValueInsertAfter (uitree_t *uitree)
   if (uitree == NULL) {
     return;
   }
-  if (! uiwcontIsSet (&uitree->uitree)) {
+  if (uitree->tree == NULL) {
     return;
   }
   if (uitree->model == NULL) {
@@ -613,7 +616,7 @@ uiTreeViewValueRemove (uitree_t *uitree)
   if (uitree == NULL) {
     return;
   }
-  if (! uiwcontIsSet (&uitree->uitree)) {
+  if (uitree->tree == NULL) {
     return;
   }
   if (uitree->model == NULL) {
@@ -677,7 +680,7 @@ uiTreeViewSetValueEllipsize (uitree_t *uitree, int col)
   if (uitree->model == NULL) {
     return;
   }
-  if (! uiwcontIsSet (&uitree->uitree)) {
+  if (uitree->tree == NULL) {
     return;
   }
 
@@ -705,7 +708,7 @@ uiTreeViewSetValues (uitree_t *uitree, ...)
   if (uitree->model == NULL) {
     return;
   }
-  if (! uiwcontIsSet (&uitree->uitree)) {
+  if (uitree->tree == NULL) {
     return;
   }
 
@@ -731,7 +734,7 @@ uiTreeViewSelectGetCount (uitree_t *uitree)
   if (uitree->model == NULL) {
     return 0;
   }
-  if (! uiwcontIsSet (&uitree->uitree)) {
+  if (uitree->tree == NULL) {
     return 0;
   }
 
@@ -760,7 +763,7 @@ uiTreeViewSelectGetIndex (uitree_t *uitree)
   if (uitree->model == NULL) {
     return -1;
   }
-  if (! uiwcontIsSet (&uitree->uitree)) {
+  if (uitree->tree == NULL) {
     return -1;
   }
   if (! uitree->selectset) {
@@ -1114,14 +1117,14 @@ uiTreeViewScrollToCell (uitree_t *uitree)
     return;
   }
 
-  if (! GTK_IS_TREE_VIEW (uitree->uitree.widget)) {
+  if (! GTK_IS_TREE_VIEW (uitree->tree->widget)) {
     return;
   }
 
   path = gtk_tree_model_get_path (uitree->model, &uitree->selectiter);
   mdextalloc (path);
   if (path != NULL) {
-    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uitree->uitree.widget),
+    gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (uitree->tree->widget),
         path, NULL, FALSE, 0.0, 0.0);
     mdextfree (path);
     gtk_tree_path_free (path);
@@ -1187,7 +1190,7 @@ uiTreeViewCheckboxHandler (GtkCellRendererToggle *r,
     return;
   }
 
-  tree = uitree->uitree.widget;
+  tree = uitree->tree->widget;
 
   /* retrieve the column number from the 'uicolumn' value set when */
   /* the column was created */
@@ -1217,7 +1220,7 @@ uiTreeViewRadioHandler (GtkCellRendererToggle *r,
     return;
   }
 
-  tree = uitree->uitree.widget;
+  tree = uitree->tree->widget;
 
   /* retrieve the column number from the 'uicolumn' value set when */
   /* the column was created */

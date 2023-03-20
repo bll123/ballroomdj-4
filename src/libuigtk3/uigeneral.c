@@ -13,6 +13,7 @@
 #include "mdebug.h"
 
 #include "ui/uiinternal.h"
+
 #include "ui/uigeneral.h"
 
 uiwcont_t *
@@ -32,6 +33,8 @@ uiwcontFree (uiwcont_t *uiwidget)
     mdfree (uiwidget);
   }
 }
+
+/* the following routines will be removed at a later date */
 
 void
 uiwcontInit (uiwcont_t *uiwidget)

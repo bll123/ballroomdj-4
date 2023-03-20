@@ -16,13 +16,15 @@
 #include "uiclass.h"
 
 #include "ui/uiinternal.h"
+
+#include "ui/uigeneral.h"
 #include "ui/uiui.h"
 #include "ui/uibox.h"
 #include "ui/uiwidget.h"
 #include "ui/uichgind.h"
 
 typedef struct uichgind {
-  uiwcont_t  label;
+  uiwcont_t  *label;
 } uichgind_t;
 
 uichgind_t *
@@ -39,8 +41,9 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_widget_set_margin_end (widget, uiBaseMarginSz);
 
-  uichgind->label.widget = widget;
-  uiBoxPackStart (boxp, &uichgind->label);
+  uichgind->label = uiwcontAlloc ();
+  uichgind->label->widget = widget;
+  uiBoxPackStart (boxp, uichgind->label);
   return uichgind;
 }
 
@@ -48,6 +51,7 @@ void
 uichgindFree (uichgind_t *uichgind)
 {
   if (uichgind != NULL) {
+    uiwcontFree (uichgind->label);
     mdfree (uichgind);
   }
 }
@@ -55,23 +59,23 @@ uichgindFree (uichgind_t *uichgind)
 void
 uichgindMarkNormal (uichgind_t *uichgind)
 {
-  uiWidgetRemoveClass (&uichgind->label, CHGIND_CHANGED_CLASS);
-  uiWidgetRemoveClass (&uichgind->label, CHGIND_ERROR_CLASS);
-  uiWidgetSetClass (&uichgind->label, CHGIND_NORMAL_CLASS);
+  uiWidgetRemoveClass (uichgind->label, CHGIND_CHANGED_CLASS);
+  uiWidgetRemoveClass (uichgind->label, CHGIND_ERROR_CLASS);
+  uiWidgetSetClass (uichgind->label, CHGIND_NORMAL_CLASS);
 }
 
 void
 uichgindMarkError (uichgind_t *uichgind)
 {
-  uiWidgetRemoveClass (&uichgind->label, CHGIND_NORMAL_CLASS);
-  uiWidgetRemoveClass (&uichgind->label, CHGIND_CHANGED_CLASS);
-  uiWidgetSetClass (&uichgind->label, CHGIND_ERROR_CLASS);
+  uiWidgetRemoveClass (uichgind->label, CHGIND_NORMAL_CLASS);
+  uiWidgetRemoveClass (uichgind->label, CHGIND_CHANGED_CLASS);
+  uiWidgetSetClass (uichgind->label, CHGIND_ERROR_CLASS);
 }
 
 void
 uichgindMarkChanged (uichgind_t *uichgind)
 {
-  uiWidgetRemoveClass (&uichgind->label, CHGIND_NORMAL_CLASS);
-  uiWidgetRemoveClass (&uichgind->label, CHGIND_ERROR_CLASS);
-  uiWidgetSetClass (&uichgind->label, CHGIND_CHANGED_CLASS);
+  uiWidgetRemoveClass (uichgind->label, CHGIND_NORMAL_CLASS);
+  uiWidgetRemoveClass (uichgind->label, CHGIND_ERROR_CLASS);
+  uiWidgetSetClass (uichgind->label, CHGIND_CHANGED_CLASS);
 }
