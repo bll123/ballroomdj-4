@@ -504,7 +504,7 @@ bool confuiSwitchTable (void *udata, long pagenum);
 bool confuiTableAdd (void *udata);
 
 /* conftabledance.c */
-bool confuiDanceSelect (void *udata);
+bool confuiDanceSelect (void *udata, long col);
 void confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key);
 
 /* conftableset.c */

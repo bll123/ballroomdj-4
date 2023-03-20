@@ -135,19 +135,19 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
 
   uiTreeViewEnableHeaders (managepltree->uitree);
 
-  uiTreeViewAppendColumn (managepltree->uitree,
+  uiTreeViewAppendColumn (managepltree->uitree, TREE_NO_COLUMN,
       TREE_WIDGET_CHECKBOX, TREE_ALIGN_CENTER,
       TREE_COL_DISP_GROW, NULL,
       TREE_COL_TYPE_ACTIVE, MPLTREE_COL_DANCE_SELECT,
       TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (managepltree->uitree,
+  uiTreeViewAppendColumn (managepltree->uitree, TREE_NO_COLUMN,
       TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, tagdefs [TAG_DANCE].displayname,
       TREE_COL_TYPE_TEXT, MPLTREE_COL_DANCE,
       TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (managepltree->uitree,
+  uiTreeViewAppendColumn (managepltree->uitree, TREE_NO_COLUMN,
       TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       /* CONTEXT: playlist management: count column header */
       TREE_COL_DISP_GROW, _("Count"),
@@ -157,7 +157,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
       TREE_COL_TYPE_DIGITS, MPLTREE_COL_DIGITS,
       TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (managepltree->uitree,
+  uiTreeViewAppendColumn (managepltree->uitree, TREE_NO_COLUMN,
       TREE_WIDGET_TEXT, TREE_ALIGN_RIGHT,
       /* CONTEXT: playlist management: max play time column header (keep short) */
       TREE_COL_DISP_GROW, _("Maximum\nPlay Time"),
@@ -169,7 +169,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
 
   /* CONTEXT: playlist management: low bpm/mpm column header */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
-  uiTreeViewAppendColumn (managepltree->uitree,
+  uiTreeViewAppendColumn (managepltree->uitree, TREE_NO_COLUMN,
       TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       TREE_COL_DISP_GROW, tbuff,
       TREE_COL_TYPE_TEXT, MPLTREE_COL_LOWBPM,
@@ -180,7 +180,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
 
   /* CONTEXT: playlist management: high bpm/mpm column header */
   snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
-  uiTreeViewAppendColumn (managepltree->uitree,
+  uiTreeViewAppendColumn (managepltree->uitree, TREE_NO_COLUMN,
       TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       TREE_COL_DISP_GROW, tbuff,
       TREE_COL_TYPE_TEXT, MPLTREE_COL_HIGHBPM,
@@ -189,7 +189,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
       TREE_COL_TYPE_DIGITS, MPLTREE_COL_DIGITS,
       TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (managepltree->uitree,
+  uiTreeViewAppendColumn (managepltree->uitree, TREE_NO_COLUMN,
       TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, NULL,
       TREE_COL_TYPE_TEXT, MPLTREE_COL_SB_PAD,

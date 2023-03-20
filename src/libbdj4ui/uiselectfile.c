@@ -40,7 +40,7 @@ typedef struct uiselectfile {
 
 static void selectFileCreateDialog (uiselectfile_t *selectfile,
     slist_t *filelist, const char *filetype, callback_t *cb);
-static bool selectFileSelect (void *udata);
+static bool selectFileSelect (void *udata, long col);
 static bool selectFileResponseHandler (void *udata, long responseid);
 
 void
@@ -168,16 +168,16 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
         TREE_VALUE_END);
   }
 
-  uiTreeViewAppendColumn (selectfile->selfiletree,
+  uiTreeViewAppendColumn (selectfile->selfiletree, TREE_NO_COLUMN,
       TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, "",
       TREE_COL_TYPE_TEXT, SELFILE_COL_DISP, TREE_COL_TYPE_END);
-  uiTreeViewAppendColumn (selectfile->selfiletree,
+  uiTreeViewAppendColumn (selectfile->selfiletree, TREE_NO_COLUMN,
       TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, "",
       TREE_COL_TYPE_TEXT, SELFILE_COL_SB_PAD, TREE_COL_TYPE_END);
 
-  selectfile->rowactivecb = callbackInit (selectFileSelect, selectfile, NULL);
+  selectfile->rowactivecb = callbackInitLong (selectFileSelect, selectfile);
   uiTreeViewSetRowActivatedCallback (selectfile->selfiletree, selectfile->rowactivecb);
 
   /* the dialog doesn't have any space above the buttons */
@@ -189,7 +189,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
 }
 
 static bool
-selectFileSelect (void *udata)
+selectFileSelect (void *udata, long col)
 {
   uiselectfile_t  *selectfile = udata;
 

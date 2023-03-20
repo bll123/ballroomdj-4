@@ -107,14 +107,14 @@ confuiCreateRatingTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_RATINGS].currcount += 1;
   }
 
-  uiTreeViewAppendColumn (uitree,
+  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
       TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, tagdefs [TAG_DANCERATING].shortdisplayname,
       TREE_COL_TYPE_TEXT, CONFUI_RATING_COL_RATING,
       TREE_COL_TYPE_EDITABLE, CONFUI_RATING_COL_R_EDITABLE,
       TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (uitree,
+  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
       TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       /* CONTEXT: configuration: rating: title of the weight column */
       TREE_COL_DISP_GROW, _("Weight"),

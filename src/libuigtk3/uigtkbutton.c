@@ -76,9 +76,9 @@ uiCreateButton (callback_t *uicb,
         G_CALLBACK (uiButtonSignalHandler), uibutton);
   }
   uibutton->cb = uicb;
-  uibutton->presscb = callbackInit ( uiButtonPressCallback,
+  uibutton->presscb = callbackInit (uiButtonPressCallback,
       uibutton, "button-repeat-press");
-  uibutton->releasecb = callbackInit ( uiButtonReleaseCallback,
+  uibutton->releasecb = callbackInit (uiButtonReleaseCallback,
       uibutton, "button-repeat-release");
   uibutton->repeating = false;
   uibutton->repeatOn = false;

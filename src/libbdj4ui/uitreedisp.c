@@ -64,13 +64,13 @@ uitreedispAddDisplayColumns (uitree_t *uitree, slist_t *sellist, int col,
 
     if (tagidx == TAG_FAVORITE) {
       /* use the normal sized UI font here */
-      uiTreeViewAppendColumn (uitree,
+      uiTreeViewAppendColumn (uitree, col,
           TREE_WIDGET_TEXT, TREE_ALIGN_CENTER,
           TREE_COL_DISP_GROW, "\xE2\x98\x86",
           TREE_COL_TYPE_MARKUP, col,
           TREE_COL_TYPE_END);
     } else {
-      uiTreeViewAppendColumn (uitree,
+      uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
           TREE_WIDGET_TEXT, alignment,
           TREE_COL_DISP_GROW, title,
           TREE_COL_TYPE_TEXT, col,

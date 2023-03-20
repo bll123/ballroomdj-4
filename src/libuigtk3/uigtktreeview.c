@@ -40,6 +40,7 @@ static void uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path, GtkT
 static gboolean uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
 static void uiTreeViewSelectForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
 static GType uiTreeViewConvertTreeType (int type);
+static void uiTreeViewSelectChangedHandler (GtkTreeSelection *sel, gpointer udata);
 
 typedef struct uitree {
   uiwcont_t        uitree;
@@ -48,14 +49,18 @@ typedef struct uitree {
   GtkTreeIter       savedselectiter;
   GtkTreeIter       valueiter;
   GtkTreeModel      *model;
+  GtkTreeViewColumn *activeColumn;
+  callback_t        *selchgcb;
   callback_t        *rowactivecb;
   callback_t        *foreachcb;
   callback_t        *editedcb;
+  callback_t        *colclickcb;        // only one column is supported
   int               selectprocessmode;
   int               selmode;
   int               minwidth;           // prep for append column
   int               ellipsizeColumn;    // prep for append column
   int               radiorow;
+  int               activecol;
   bool              selectset : 1;
   bool              savedselectset : 1;
   bool              valueiterset : 1;
@@ -88,12 +93,16 @@ uiCreateTreeView (void)
   uitree->savedselectset = false;
   uitree->valueiterset = false;
   uitree->model = NULL;
+  uitree->activeColumn = NULL;
+  uitree->selchgcb = NULL;
   uitree->rowactivecb = NULL;
   uitree->foreachcb = NULL;
   uitree->editedcb = NULL;
+  uitree->colclickcb = NULL;
   uitree->minwidth = TREE_NO_MIN_WIDTH;
   uitree->ellipsizeColumn = TREE_NO_COLUMN;
   uitree->radiorow = -1;
+  uitree->activecol = TREE_NO_COLUMN;
   uitree->selectprocessmode = SELECT_PROCESS_NONE;
   uiWidgetSetAllMargins (&uitree->uitree, 2);
   return uitree;
@@ -171,6 +180,17 @@ uiTreeViewSelectSetMode (uitree_t *uitree, int mode)
 }
 
 void
+uiTreeViewSetSelectChangedCallback (uitree_t *uitree, callback_t *cb)
+{
+  if (uitree == NULL) {
+    return;
+  }
+  uitree->selchgcb = cb;
+  g_signal_connect (uitree->sel, "changed",
+      G_CALLBACK (uiTreeViewSelectChangedHandler), uitree);
+}
+
+void
 uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb)
 {
   if (uitree == NULL) {
@@ -230,7 +250,7 @@ uiTreeViewPreColumnSetEllipsizeColumn (uitree_t *uitree, int ellipsizeColumn)
 }
 
 void
-uiTreeViewAppendColumn (uitree_t *uitree, int widgettype,
+uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
     int alignment, int coldisp, const char *title, ...)
 {
   GtkCellRenderer   *renderer = NULL;
@@ -393,6 +413,11 @@ uiTreeViewAppendColumn (uitree_t *uitree, int widgettype,
     gtk_tree_view_column_set_title (column, title);
   }
   gtk_tree_view_append_column (GTK_TREE_VIEW (uitree->uitree.widget), column);
+
+  if (activecol != TREE_NO_COLUMN) {
+    uitree->activeColumn = column;
+    uitree->activecol = activecol;
+  }
 }
 
 void
@@ -763,15 +788,23 @@ uiTreeViewSelectGetIndex (uitree_t *uitree)
 void
 uiTreeViewSelectCurrent (uitree_t *uitree)
 {
+  if (uitree == NULL) {
+    return;
+  }
+
+  /* select-get-count will handle the select-single case */
   if (uitree->selmode == SELECT_SINGLE) {
     uiTreeViewSelectGetCount (uitree);
   }
   if (uitree->selmode == SELECT_MULTIPLE) {
+    uitree->selectset = false;
     uitree->selectprocessmode = SELECT_PROCESS_GET_SELECT_ITER;
     uiTreeViewSelectForeach (uitree, NULL);
     uitree->selectprocessmode = SELECT_PROCESS_NONE;
   }
-  gtk_tree_selection_select_iter (uitree->sel, &uitree->selectiter);
+  if (uitree->selectset) {
+    gtk_tree_selection_select_iter (uitree->sel, &uitree->selectiter);
+  }
 }
 
 bool
@@ -963,6 +996,7 @@ uiTreeViewGetValue (uitree_t *uitree, int col)
   }
 
   if (uitree->selmode == SELECT_MULTIPLE) {
+    uitree->selectset = false;
     uitree->selectprocessmode = SELECT_PROCESS_GET_SELECT_ITER;
     uiTreeViewSelectForeach (uitree, NULL);
     uitree->selectprocessmode = SELECT_PROCESS_NONE;
@@ -1214,9 +1248,16 @@ uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path,
 {
   uitree_t    *uitree = udata;
   int         count;
+  int         col = TREE_NO_COLUMN;
 
   if (uitree == NULL) {
     return;
+  }
+
+  if (uitree->activeColumn != NULL) {
+    if (uitree->activeColumn == column) {
+      col = uitree->activecol;
+    }
   }
 
   count = uiTreeViewSelectGetCount (uitree);
@@ -1230,7 +1271,7 @@ uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path,
     }
   }
   if (uitree->rowactivecb != NULL) {
-    callbackHandler (uitree->rowactivecb);
+    callbackHandlerLong (uitree->rowactivecb, col);
   }
 }
 
@@ -1316,3 +1357,14 @@ uiTreeViewSelectForeachHandler (GtkTreeModel *model,
     callbackHandlerLong (uitree->foreachcb, row);
   }
 }
+
+static void
+uiTreeViewSelectChangedHandler (GtkTreeSelection *sel, gpointer udata)
+{
+  uitree_t  *uitree = udata;
+
+  if (uitree->selchgcb != NULL) {
+    callbackHandler (uitree->selchgcb);
+  }
+}
+

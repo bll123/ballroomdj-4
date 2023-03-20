@@ -115,14 +115,14 @@ confuiCreateLevelTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_LEVELS].currcount += 1;
   }
 
-  uiTreeViewAppendColumn (uitree,
+  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
       TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, tagdefs [TAG_DANCELEVEL].shortdisplayname,
       TREE_COL_TYPE_TEXT, CONFUI_LEVEL_COL_LEVEL,
       TREE_COL_TYPE_EDITABLE, CONFUI_LEVEL_COL_EDITABLE,
       TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (uitree,
+  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
       TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       /* CONTEXT: configuration: level: title of the weight column */
       TREE_COL_DISP_GROW, _("Weight"),
@@ -132,7 +132,7 @@ confuiCreateLevelTable (confuigui_t *gui)
       TREE_COL_TYPE_DIGITS, CONFUI_LEVEL_COL_DIGITS,
       TREE_COL_TYPE_END);
 
-  uiTreeViewAppendColumn (uitree,
+  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
       TREE_WIDGET_RADIO, TREE_ALIGN_CENTER,
       /* CONTEXT: configuration: level: title of the default selection column */
       TREE_COL_DISP_GROW, _("Default"),

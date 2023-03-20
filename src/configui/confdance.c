@@ -170,12 +170,12 @@ confuiBuildUIEditDances (confuigui_t *gui)
   gui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceidx = DANCE_TIMESIG;
 
   gui->tables [CONFUI_ID_DANCE].callbacks [CONFUI_TABLE_CB_DANCE_SELECT] =
-      callbackInit (confuiDanceSelect, gui, NULL);
+      callbackInitLong (confuiDanceSelect, gui);
   uiTreeViewSetRowActivatedCallback (gui->tables [CONFUI_ID_DANCE].uitree,
       gui->tables [CONFUI_ID_DANCE].callbacks [CONFUI_TABLE_CB_DANCE_SELECT]);
 
   uiTreeViewSelectSet (gui->tables [CONFUI_ID_DANCE].uitree, 0);
-  confuiDanceSelect (gui);
+  confuiDanceSelect (gui, 0);
 
   gui->inchange = false;
   logProcEnd (LOG_PROC, "confuiBuildUIEditDances", "");
@@ -215,11 +215,11 @@ confuiCreateDanceTable (confuigui_t *gui)
     gui->tables [CONFUI_ID_DANCE].currcount += 1;
   }
 
-  uiTreeViewAppendColumn (uitree,
+  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
       TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, "",
       TREE_COL_TYPE_TEXT, CONFUI_DANCE_COL_DANCE, TREE_COL_TYPE_END);
-  uiTreeViewAppendColumn (uitree,
+  uiTreeViewAppendColumn (uitree, TREE_NO_COLUMN,
       TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, "",
       TREE_COL_TYPE_TEXT, CONFUI_DANCE_COL_SB_PAD, TREE_COL_TYPE_END);

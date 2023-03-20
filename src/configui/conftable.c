@@ -347,7 +347,7 @@ confuiTableRemove (void *udata)
   gui->tables [gui->tablecurr].currcount -= 1;
 
   if (gui->tablecurr == CONFUI_ID_DANCE) {
-    confuiDanceSelect (gui);
+    confuiDanceSelect (gui, 0);
   }
 
   logProcEnd (LOG_PROC, "confuiTableRemove", "");

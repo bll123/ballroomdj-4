@@ -10,33 +10,33 @@ GXX = g++
 CLANG = clang
 CLANGXX = clang++
 
-.PHONY: release-gtk
-release-gtk:
-	BDJ4_BUILD=Release-gtk $(MAKE) cmake
+.PHONY: release
+release:
+	BDJ4_BUILD=Release $(MAKE) cmake
 
-.PHONY: memdebug-gtk
-memdebug-gtk:
-	BDJ4_BUILD=Memdebug-gtk $(MAKE) cmake
+.PHONY: memdebug
+memdebug:
+	BDJ4_BUILD=Memdebug $(MAKE) cmake
 
-.PHONY: memdebug-sanitize-gtk
-memdebug-sanitize-gtk:
-	BDJ4_BUILD=Memdebug-Sanitize-gtk $(MAKE) cmake
+.PHONY: memdebug-sanitize
+memdebug-sanitize:
+	BDJ4_BUILD=Memdebug-Sanitize $(MAKE) cmake
 
-.PHONY: singlecpu-gtk
-singlecpu-gtk:
-	BDJ4_BUILD=Release-gtk $(MAKE) cmakesinglecpu
+.PHONY: singlecpu
+singlecpu:
+	BDJ4_BUILD=Release $(MAKE) cmakesinglecpu
 
-.PHONY: debug-gtk
-debug-gtk:
-	BDJ4_BUILD=Debug-gtk $(MAKE) cmake
+.PHONY: debug
+debug:
+	BDJ4_BUILD=Debug $(MAKE) cmake
 
-.PHONY: profile-gtk
-profile-gtk:
-	BDJ4_BUILD=Profile-gtk $(MAKE) cmake
+.PHONY: profile
+profile:
+	BDJ4_BUILD=Profile $(MAKE) cmake
 
-.PHONY: debug-clang-gtk
-debug-clang-gtk:
-	BDJ4_BUILD=Debug-gtk $(MAKE) cmakeclang
+.PHONY: debug-clang
+debug-clang:
+	BDJ4_BUILD=Debug $(MAKE) cmakeclang
 
 .PHONY: sanitizeaddress
 sanitizeaddress:
@@ -57,6 +57,7 @@ sanitizeundef:
 .PHONY: cmake cmakesinglecpu cmakesinglecpuverbose
 .PHONY: cmakeclang cmake-unix cmake-windows
 
+# parallel doesn't seem to work under msys2
 .PHONY: cmake
 cmake:
 	if test $$(uname -s) = Linux; then \

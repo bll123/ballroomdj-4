@@ -1,6 +1,8 @@
 #ifndef INC_UITREEDDISP_H
 #define INC_UITREEDDISP_H
 
+#include "callback.h"
+
 #include "ui/uitreeview.h"
 
 void uitreedispAddDisplayColumns (uitree_t *uitree, slist_t *sellist, int col, int fontcol, int ellipsizeColumn);

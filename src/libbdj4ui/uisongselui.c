@@ -78,6 +78,7 @@ enum {
   SONGSEL_CB_KEYB,
   SONGSEL_CB_SCROLL_CHG,
   SONGSEL_CB_SELECT_PROCESS,
+  SONGSEL_CB_CHK_FAV_CHG,
   SONGSEL_CB_MAX,
 };
 
@@ -138,7 +139,7 @@ static void uisongselInitializeStoreCallback (int type, void *udata);
 static void uisongselCreateRows (uisongsel_t *uisongsel);
 static void uisongselProcessSongFilter (uisongsel_t *uisongsel);
 
-static void uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path, GtkTreeViewColumn* column, gpointer udata);
+static bool uisongselCheckFavChgCallback (void *udata, long col);
 
 static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation, gpointer user_data);
 static bool uisongselScroll (void *udata, double value);
@@ -372,8 +373,13 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
   gtk_widget_add_events (uitreewidgetp->widget, GDK_SCROLL_MASK);
   uiBoxPackInWindow (&ssint->scrolledwin, uitreewidgetp);
-  g_signal_connect (uitreewidgetp->widget, "row-activated",
-      G_CALLBACK (uisongselCheckFavChgSignal), uisongsel);
+
+  ssint->callbacks [SONGSEL_CB_CHK_FAV_CHG] = callbackInitLong (
+        uisongselCheckFavChgCallback, uisongsel);
+  uiTreeViewSetRowActivatedCallback (ssint->songselTree,
+        ssint->callbacks [SONGSEL_CB_CHK_FAV_CHG]);
+//  g_signal_connect (uitreewidgetp->widget, "row-activated",
+//      G_CALLBACK (uisongselCheckFavChgCallback), uisongsel);
   g_signal_connect (uitreewidgetp->widget, "scroll-event",
       G_CALLBACK (uisongselScrollEvent), uisongsel);
 
@@ -387,7 +393,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   if (uisongsel->dispselType == DISP_SEL_MM) {
     col = SONGSEL_COL_SAMESONG_MARKUP;
   }
-  uiTreeViewAppendColumn (ssint->songselTree,
+  uiTreeViewAppendColumn (ssint->songselTree, TREE_NO_COLUMN,
       TREE_WIDGET_TEXT, TREE_ALIGN_NORM,
       TREE_COL_DISP_GROW, "",
       TREE_COL_TYPE_MARKUP, col,
@@ -1043,14 +1049,13 @@ uisongselProcessSongFilter (uisongsel_t *uisongsel)
       uisongsel->songfilter, uisongsel->musicdb);
 }
 
-static void
-uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
-    GtkTreeViewColumn* column, gpointer udata)
+static bool
+uisongselCheckFavChgCallback (void *udata, long col)
 {
   uisongsel_t   * uisongsel = udata;
   ss_internal_t * ssint;
 
-  logProcBegin (LOG_PROC, "uisongselCheckFavChgSignal");
+  logProcBegin (LOG_PROC, "uisongselCheckFavChgCallback");
 
   ssint = uisongsel->ssInternalData;
 
@@ -1075,14 +1080,15 @@ uisongselCheckFavChgSignal (GtkTreeView* tv, GtkTreePath* path,
   mstimeset (&ssint->lastRowCheck, TREE_DOUBLE_CLICK_TIME);
   ssint->lastRowDBIdx = uisongsel->lastdbidx;
 
-  if (column != ssint->favColumn) {
-    logProcEnd (LOG_PROC, "uisongselCheckFavChgSignal", "not-fav-col");
-    return;
+  if (col == TREE_NO_COLUMN) {
+    logProcEnd (LOG_PROC, "uisongselCheckFavChgCallback", "not-fav-col");
+    return UICB_CONT;
   }
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel: change favorite");
   uisongselChangeFavorite (uisongsel, uisongsel->lastdbidx);
-  logProcEnd (LOG_PROC, "uisongselCheckFavChgSignal", "");
+  logProcEnd (LOG_PROC, "uisongselCheckFavChgCallback", "");
+  return UICB_CONT;
 }
 
 static void

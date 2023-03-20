@@ -298,13 +298,16 @@ songSetList (song_t *song, nlistidx_t tagidx, const char *str)
 void
 songChangeFavorite (song_t *song)
 {
-  ssize_t fav = SONG_FAVORITE_NONE;
+  int fav = SONG_FAVORITE_NONE;
 
   if (song == NULL || song->songInfo == NULL) {
     return;
   }
 
   fav = nlistGetNum (song->songInfo, TAG_FAVORITE);
+  if (fav < 0) {
+    fav = SONG_FAVORITE_NONE;
+  }
   fav = songFavoriteGetNextValue (gsonginit.songfav, fav);
   nlistSetNum (song->songInfo, TAG_FAVORITE, fav);
   song->changed = true;
