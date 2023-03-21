@@ -78,17 +78,17 @@ typedef struct {
   int             stopwaitcount;
   datafile_t      *optiondf;
   nlist_t         *options;
-  uiwcont_t      window;
+  uiwcont_t       window;
   callback_t      *callbacks [MQ_CB_MAX];
-  uiwcont_t      pbar;
-  uiwcont_t      infoBox;
-  uiwcont_t      sep;
-  uiwcont_t      countdownTimerLab;
-  uiwcont_t      infoArtistLab;
-  uiwcont_t      infoSepLab;
-  uiwcont_t      infoTitleLab;
-  uiwcont_t      danceLab;
-  uiwcont_t      *marqueeLabs;   // array of uiwcont_t
+  uiwcont_t       *pbar;
+  uiwcont_t       infoBox;
+  uiwcont_t       sep;
+  uiwcont_t       countdownTimerLab;
+  uiwcont_t       infoArtistLab;
+  uiwcont_t       infoSepLab;
+  uiwcont_t       infoTitleLab;
+  uiwcont_t       danceLab;
+  uiwcont_t       *marqueeLabs;   // array of uiwcont_t
   int             marginTotal;
   double          fontAdjustment;
   int             mqLen;
@@ -166,7 +166,7 @@ main (int argc, char *argv[])
       marqueeClosingCallback, &marquee);
 
   uiwcontInit (&marquee.window);
-  uiwcontInit (&marquee.pbar);
+  marquee.pbar = NULL;
   uiwcontInit (&marquee.sep);
   uiwcontInit (&marquee.countdownTimerLab);
   uiwcontInit (&marquee.infoBox);
@@ -306,6 +306,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_MARQUEE, NULL);
 
+  uiwcontFree (marquee->pbar);
   dataFree (marquee->marqueeLabs);
   if (marquee->options != NULL) {
     if (marquee->options != datafileGetList (marquee->optiondf)) {
@@ -375,10 +376,10 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetExpandVert (&mainvbox);
   marquee->marginTotal = 20;
 
-  uiCreateProgressBar (&marquee->pbar);
+  marquee->pbar = uiCreateProgressBar ();
   uiAddProgressbarClass (MQ_ACCENT_CLASS, bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
-  uiWidgetSetClass (&marquee->pbar, MQ_ACCENT_CLASS);
-  uiBoxPackStart (&mainvbox, &marquee->pbar);
+  uiWidgetSetClass (marquee->pbar, MQ_ACCENT_CLASS);
+  uiBoxPackStart (&mainvbox, marquee->pbar);
 
   uiCreateVertBox (&vbox);
   uiWidgetExpandHoriz (&vbox);
@@ -944,7 +945,7 @@ marqueeSetTimer (marquee_t *marquee, char *args)
   } else {
     dratio = 0.0;
   }
-  uiProgressBarSet (&marquee->pbar, dratio);
+  uiProgressBarSet (marquee->pbar, dratio);
   logProcEnd (LOG_PROC, "marqueeSetTimer", "");
 }
 

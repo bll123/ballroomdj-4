@@ -56,11 +56,11 @@ typedef struct managedb {
   uispinbox_t       *dbspinbox;
   uibutton_t        *dbstart;
   uibutton_t        *dbstop;
-  uiwcont_t        dbhelpdisp;
+  uiwcont_t         dbhelpdisp;
   uitextbox_t       *dbstatus;
   nlist_t           *dblist;
   nlist_t           *dbhelp;
-  uiwcont_t        dbpbar;
+  uiwcont_t         *dbpbar;
 } managedb_t;
 
 static bool manageDbStart (void *udata);
@@ -83,7 +83,7 @@ manageDbAlloc (uiwcont_t *window, nlist_t *options,
   managedb->processes = processes;
   managedb->dblist = NULL;
   managedb->dbhelp = NULL;
-  uiwcontInit (&managedb->dbpbar);
+  managedb->dbpbar = NULL;
   managedb->topdirsel = NULL;
   managedb->dbstart = NULL;
   managedb->dbstop = NULL;
@@ -150,6 +150,7 @@ manageDbFree (managedb_t *managedb)
     nlistFree (managedb->dblist);
     nlistFree (managedb->dbhelp);
 
+    uiwcontFree (managedb->dbpbar);
     uiTextBoxFree (managedb->dbstatus);
     uiEntryFree (managedb->dbtopdir);
     uiSpinboxFree (managedb->dbspinbox);
@@ -265,11 +266,11 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiBoxPackStart (&hbox, uiwidgetp);
   uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
 
-  uiCreateProgressBar (&managedb->dbpbar);
-  uiWidgetSetClass (&managedb->dbpbar, ACCENT_CLASS);
-  uiWidgetSetMarginStart (&managedb->dbpbar, 2);
-  uiWidgetSetMarginEnd (&managedb->dbpbar, 2);
-  uiBoxPackStart (vboxp, &managedb->dbpbar);
+  managedb->dbpbar = uiCreateProgressBar ();
+  uiWidgetSetClass (managedb->dbpbar, ACCENT_CLASS);
+  uiWidgetSetMarginStart (managedb->dbpbar, 2);
+  uiWidgetSetMarginEnd (managedb->dbpbar, 2);
+  uiBoxPackStart (vboxp, managedb->dbpbar);
 
   tb = uiTextBoxCreate (200, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   uiTextBoxSetReadonly (tb);
@@ -327,10 +328,10 @@ manageDbProgressMsg (managedb_t *managedb, char *args)
   double    progval;
 
   if (strncmp ("END", args, 3) == 0) {
-    uiProgressBarSet (&managedb->dbpbar, 100.0);
+    uiProgressBarSet (managedb->dbpbar, 100.0);
   } else {
     if (sscanf (args, "PROG %lf", &progval) == 1) {
-      uiProgressBarSet (&managedb->dbpbar, progval);
+      uiProgressBarSet (managedb->dbpbar, progval);
     }
   }
 }
@@ -427,7 +428,7 @@ manageDbStart (void *udata)
   targv [targc++] = NULL;
   logMsg (LOG_DBG, LOG_BASIC, "start dbupdate %s", uiEntryGetValue (managedb->dbtopdir));
 
-  uiProgressBarSet (&managedb->dbpbar, 0.0);
+  uiProgressBarSet (managedb->dbpbar, 0.0);
   managedb->processes [ROUTE_DBUPDATE] = procutilStartProcess (
       ROUTE_DBUPDATE, "bdj4dbupdate", OS_PROC_DETACH, targv);
   return UICB_CONT;
