@@ -1283,60 +1283,64 @@ starterProcessSupport (void *udata)
       sysvarsGetStr (SV_HOST_DOWNLOAD), sysvarsGetStr (SV_URI_DOWNLOAD));
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 download) */
   snprintf (tbuff, sizeof (tbuff), _("%s Download"), BDJ4_NAME);
-  uiCreateLink (&uiwidget, tbuff, uri);
+  uiwidgetp = uiCreateLink (tbuff, uri);
   if (isMacOS ()) {
     starter->macoslinkcb [START_LINK_CB_WIKI].cb = callbackInit (
         starterWikiLinkHandler, starter, NULL);
     starter->macoslinkcb [START_LINK_CB_WIKI].uri = mdstrdup (uri);
-    uiLinkSetActivateCallback (&uiwidget,
+    uiLinkSetActivateCallback (uiwidgetp,
         starter->macoslinkcb [START_LINK_CB_WIKI].cb);
   }
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (&vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_HOST_WIKI), sysvarsGetStr (SV_URI_WIKI));
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 wiki) */
   snprintf (tbuff, sizeof (tbuff), _("%s Wiki"), BDJ4_NAME);
-  uiCreateLink (&uiwidget, tbuff, uri);
+  uiwidgetp = uiCreateLink (tbuff, uri);
   if (isMacOS ()) {
     starter->macoslinkcb [START_LINK_CB_WIKI].cb = callbackInit (
         starterWikiLinkHandler, starter, NULL);
     starter->macoslinkcb [START_LINK_CB_WIKI].uri = mdstrdup (uri);
-    uiLinkSetActivateCallback (&uiwidget,
+    uiLinkSetActivateCallback (uiwidgetp,
         starter->macoslinkcb [START_LINK_CB_WIKI].cb);
   }
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (&vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_HOST_FORUM), sysvarsGetStr (SV_URI_FORUM));
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 forums) */
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
-  uiCreateLink (&uiwidget, tbuff, uri);
+  uiwidgetp = uiCreateLink (tbuff, uri);
   if (isMacOS ()) {
     starter->macoslinkcb [START_LINK_CB_FORUM].cb = callbackInit (
         starterForumLinkHandler, starter, NULL);
     starter->macoslinkcb [START_LINK_CB_FORUM].uri = mdstrdup (uri);
-    uiLinkSetActivateCallback (&uiwidget,
+    uiLinkSetActivateCallback (uiwidgetp,
         starter->macoslinkcb [START_LINK_CB_FORUM].cb);
   }
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (&vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
       sysvarsGetStr (SV_HOST_TICKET), sysvarsGetStr (SV_URI_TICKET));
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets) */
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
-  uiCreateLink (&uiwidget, tbuff, uri);
+  uiwidgetp = uiCreateLink (tbuff, uri);
   if (isMacOS ()) {
     starter->macoslinkcb [START_LINK_CB_TICKETS].cb = callbackInit (
         starterTicketLinkHandler, starter, NULL);
     starter->macoslinkcb [START_LINK_CB_TICKETS].uri = mdstrdup (uri);
-    uiLinkSetActivateCallback (&uiwidget,
+    uiLinkSetActivateCallback (uiwidgetp,
         starter->macoslinkcb [START_LINK_CB_TICKETS].cb);
   }
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (&vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* begin line */
   uiCreateHorizBox (&hbox);

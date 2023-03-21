@@ -152,6 +152,7 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].sbkeylist = NULL;
     confui.gui.uiitem [i].danceidx = DANCE_DANCE;
     uiwcontInit (&confui.gui.uiitem [i].uiwidget);
+    confui.gui.uiitem [i].uiwidgetp = NULL;
     confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].uri = NULL;
 
@@ -367,6 +368,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   }
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
     callbackFree (confui->gui.uiitem [i].callback);
+    uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
   }
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confuiTableFree (&confui->gui, i);
@@ -399,9 +401,9 @@ confuiClosingCallback (void *udata, programstate_t programState)
 static void
 confuiBuildUI (configui_t *confui)
 {
-  uiwcont_t    menubar;
-  uiwcont_t    hbox;
-  uiwcont_t    uiwidget;
+  uiwcont_t     menubar;
+  uiwcont_t     hbox;
+  uiwcont_t     uiwidget;
   char          imgbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
   int           x, y;

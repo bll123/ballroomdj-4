@@ -18,13 +18,15 @@
 
 #include "ui/uiinternal.h"
 
+#include "ui/uigeneral.h"
 #include "ui/uilink.h"
 
 static gboolean uiLinkCallback (GtkLinkButton *lb, gpointer udata);
 
-void
-uiCreateLink (uiwcont_t *uiwidget, const char *label, const char *uri)
+uiwcont_t *
+uiCreateLink (const char *label, const char *uri)
 {
+  uiwcont_t *uiwidget;
   GtkWidget *widget;
   GtkWidget *lwidget;
 
@@ -38,7 +40,10 @@ uiCreateLink (uiwcont_t *uiwidget, const char *label, const char *uri)
   lwidget = gtk_bin_get_child (GTK_BIN (widget));
   gtk_label_set_xalign (GTK_LABEL (lwidget), 0.0);
   gtk_label_set_track_visited_links (GTK_LABEL (lwidget), FALSE);
+
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = widget;
+  return uiwidget;
 }
 
 void

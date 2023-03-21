@@ -130,22 +130,21 @@ confuiMakeItemLink (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg,
     const char *txt, int widx, const char *disp)
 {
   uiwcont_t  hbox;
-  uiwcont_t  uiwidget;
+  uiwcont_t  *uiwidgetp = NULL;
 
   logProcBegin (LOG_PROC, "confuiMakeItemLink");
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt, CONFUI_NO_INDENT);
-  uiwcontInit (&uiwidget);
-  uiCreateLink (&uiwidget, disp, NULL);
+  uiwidgetp = uiCreateLink (disp, NULL);
   if (isMacOS ()) {
     gui->uiitem [widx].callback = callbackInit (
         confuiLinkCallback, gui, NULL);
     gui->uiitem [widx].uri = NULL;
-    uiLinkSetActivateCallback (&uiwidget, gui->uiitem [widx].callback);
+    uiLinkSetActivateCallback (uiwidgetp, gui->uiitem [widx].callback);
   }
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (&hbox, uiwidgetp);
   uiBoxPackStart (boxp, &hbox);
-  uiwcontCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
   logProcEnd (LOG_PROC, "confuiMakeItemLink", "");
 }
 

@@ -207,7 +207,8 @@ typedef struct {
   nlist_t     *sbkeylist;     // indexed by spinbox index
                               //    value: key
   int         danceidx;       // for dance edit
-  uiwcont_t  uiwidget;
+  uiwcont_t   uiwidget;
+  uiwcont_t   *uiwidgetp;
   callback_t  *callback;
   char        *uri;
 } confuiitem_t;

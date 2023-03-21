@@ -10,7 +10,7 @@
 
 #include "callback.h"
 
-void uiCreateLink (uiwcont_t *uiwidget, const char *label, const char *uri);
+uiwcont_t *uiCreateLink (const char *label, const char *uri);
 void uiLinkSet (uiwcont_t *uilink, const char *label, const char *uri);
 void uiLinkSetActivateCallback (uiwcont_t *uilink, callback_t *uicb);
 

@@ -113,7 +113,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
     qruri = confuiMakeQRCodeFile (_("Mobile Marquee"), uridisp);
   }
 
-  uiwidgetp = &gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uiwidget;
+  uiwidgetp = gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uiwidgetp;
   uiLinkSet (uiwidgetp, uridisp, qruri);
   dataFree (gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri);
   gui->uiitem [CONFUI_WIDGET_MMQ_QR_CODE].uri = mdstrdup (qruri);
@@ -154,7 +154,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
     qruri = confuiMakeQRCodeFile (_("Mobile Remote Control"), uridisp);
   }
 
-  uiwidgetp = &gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uiwidget;
+  uiwidgetp = gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uiwidgetp;
   uiLinkSet (uiwidgetp, uridisp, qruri);
   dataFree (gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri);
   gui->uiitem [CONFUI_WIDGET_RC_QR_CODE].uri = mdstrdup (qruri);
