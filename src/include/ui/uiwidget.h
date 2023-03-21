@@ -4,9 +4,7 @@
 #ifndef INC_UIWIDGET_H
 #define INC_UIWIDGET_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
+#include "uiwcont.h"
 
 /* widget interface */
 void  uiWidgetSetState (uiwcont_t *uiwidget, int state);

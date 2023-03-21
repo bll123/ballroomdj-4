@@ -4,11 +4,8 @@
 #ifndef INC_UISWITCH_H
 #define INC_UISWITCH_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
-
 #include "callback.h"
+#include "uiwcont.h"
 
 typedef struct uiswitch uiswitch_t;
 

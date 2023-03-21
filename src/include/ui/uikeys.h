@@ -4,11 +4,8 @@
 #ifndef INC_UIKEYS_H
 #define INC_UIKEYS_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
-
 #include "callback.h"
+#include "uiwcont.h"
 
 typedef struct uikey uikey_t;
 

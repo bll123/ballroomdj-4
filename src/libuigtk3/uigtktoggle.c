@@ -53,15 +53,15 @@ uiCreateRadioButton (uiwcont_t *uiwidget, uiwcont_t *widgetgrp,
   uiwidget->widget = widget;
 }
 
-void
-uiCreateToggleButton (uiwcont_t *uiwidget, const char *txt,
+uiwcont_t *
+uiCreateToggleButton (const char *txt,
     const char *imgname, const char *tooltiptxt, uiwcont_t *image, int value)
 {
+  uiwcont_t   *uiwidget;
   GtkWidget   *widget;
   GtkWidget   *imagewidget = NULL;
 
   widget = gtk_toggle_button_new_with_label (txt);
-  assert (widget != NULL);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
@@ -81,7 +81,9 @@ uiCreateToggleButton (uiwcont_t *uiwidget, const char *txt,
   if (tooltiptxt != NULL) {
     gtk_widget_set_tooltip_text (widget, tooltiptxt);
   }
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = widget;
+  return uiwidget;
 }
 
 void

@@ -4,11 +4,8 @@
 #ifndef INC_UISCROLLBAR_H
 #define INC_UISCROLLBAR_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
-
 #include "callback.h"
+#include "uiwcont.h"
 
 typedef struct uiscrollbar uiscrollbar_t;
 

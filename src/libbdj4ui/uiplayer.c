@@ -92,9 +92,9 @@ typedef struct uiplayer {
   mstime_t        seekLockTimeout;
   mstime_t        seekLockSend;
   /* main controls */
-  uiwcont_t      repeatButton;
+  uiwcont_t       *repeatButton;
   uiwcont_t      songbeginButton;
-  uiwcont_t      pauseatendButton;
+  uiwcont_t      *pauseatendButton;
   uiwcont_t      playPixbuf;
   uiwcont_t      stopPixbuf;
   uiwcont_t      pausePixbuf;
@@ -157,9 +157,9 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiwcontInit (&uiplayer->seekDisplayLab);
   uiwcontInit (&uiplayer->speedScale);
   uiwcontInit (&uiplayer->seekScale);
-  uiwcontInit (&uiplayer->repeatButton);
+  uiplayer->repeatButton = NULL;
   uiwcontInit (&uiplayer->songbeginButton);
-  uiwcontInit (&uiplayer->pauseatendButton);
+  uiplayer->pauseatendButton = NULL;
   uiwcontInit (&uiplayer->playPixbuf);
   uiwcontInit (&uiplayer->stopPixbuf);
   uiwcontInit (&uiplayer->pausePixbuf);
@@ -420,11 +420,11 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiplayer->callbacks [UIPLAYER_CB_REPEAT] = callbackInit (
       uiplayerRepeatCallback, uiplayer, NULL);
-  uiCreateToggleButton (&uiplayer->repeatButton, "",
+  uiplayer->repeatButton = uiCreateToggleButton ("", tbuff,
       /* CONTEXT: playerui: button: tooltip: toggle the repeat song on and off */
-      tbuff, _("Toggle Repeat"), NULL, 0);
-  uiBoxPackStart (&hbox, &uiplayer->repeatButton);
-  uiToggleButtonSetCallback (&uiplayer->repeatButton,
+      _("Toggle Repeat"), NULL, 0);
+  uiBoxPackStart (&hbox, uiplayer->repeatButton);
+  uiToggleButtonSetCallback (uiplayer->repeatButton,
       uiplayer->callbacks [UIPLAYER_CB_REPEAT]);
 
   uiplayer->callbacks [UIPLAYER_CB_BEGSONG] = callbackInit (
@@ -460,10 +460,10 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiplayer->callbacks [UIPLAYER_CB_PAUSEATEND] = callbackInit (
       uiplayerPauseatendCallback, uiplayer, NULL);
   /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
-  uiCreateToggleButton (&uiplayer->pauseatendButton, _("Pause at End"),
+  uiplayer->pauseatendButton = uiCreateToggleButton (_("Pause at End"),
       NULL, NULL, &uiplayer->ledoffImg, 0);
-  uiBoxPackStart (&hbox, &uiplayer->pauseatendButton);
-  uiToggleButtonSetCallback (&uiplayer->pauseatendButton,
+  uiBoxPackStart (&hbox, uiplayer->pauseatendButton);
+  uiToggleButtonSetCallback (uiplayer->pauseatendButton,
       uiplayer->callbacks [UIPLAYER_CB_PAUSEATEND]);
 
   /* volume controls / display */
@@ -679,12 +679,12 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on)
   uiplayer->pauseatendLock = true;
 
   if (on && ! uiplayer->pauseatendstate) {
-    uiToggleButtonSetImage (&uiplayer->pauseatendButton, &uiplayer->ledonImg);
-    uiToggleButtonSetState (&uiplayer->pauseatendButton, UI_TOGGLE_BUTTON_ON);
+    uiToggleButtonSetImage (uiplayer->pauseatendButton, &uiplayer->ledonImg);
+    uiToggleButtonSetState (uiplayer->pauseatendButton, UI_TOGGLE_BUTTON_ON);
   }
   if (! on && uiplayer->pauseatendstate) {
-    uiToggleButtonSetImage (&uiplayer->pauseatendButton, &uiplayer->ledoffImg);
-    uiToggleButtonSetState (&uiplayer->pauseatendButton, UI_TOGGLE_BUTTON_OFF);
+    uiToggleButtonSetImage (uiplayer->pauseatendButton, &uiplayer->ledoffImg);
+    uiToggleButtonSetState (uiplayer->pauseatendButton, UI_TOGGLE_BUTTON_OFF);
   }
   uiplayer->pauseatendLock = false;
   uiplayer->pauseatendstate = on;
@@ -760,10 +760,10 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     if (atol (p)) {
       uiImageClear (&uiplayer->repeatImg);
       uiImageSetFromPixbuf (&uiplayer->repeatImg, &uiplayer->repeatPixbuf);
-      uiToggleButtonSetState (&uiplayer->repeatButton, UI_TOGGLE_BUTTON_ON);
+      uiToggleButtonSetState (uiplayer->repeatButton, UI_TOGGLE_BUTTON_ON);
     } else {
       uiImageClear (&uiplayer->repeatImg);
-      uiToggleButtonSetState (&uiplayer->repeatButton, UI_TOGGLE_BUTTON_OFF);
+      uiToggleButtonSetState (uiplayer->repeatButton, UI_TOGGLE_BUTTON_OFF);
     }
     uiplayer->repeatLock = false;
   }

@@ -4,11 +4,8 @@
 #ifndef INC_UIMENU_H
 #define INC_UIMENU_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
-
 #include "callback.h"
+#include "uiwcont.h"
 
 enum {
   UIUTILS_MENU_MAX = 5,

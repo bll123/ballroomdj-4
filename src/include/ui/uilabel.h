@@ -4,9 +4,7 @@
 #ifndef INC_UILABEL_H
 #define INC_UILABEL_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
+#include "uiwcont.h"
 
 void  uiCreateLabel (uiwcont_t *uiwidget, const char *label);
 void  uiCreateColonLabel (uiwcont_t *uiwidget, const char *label);

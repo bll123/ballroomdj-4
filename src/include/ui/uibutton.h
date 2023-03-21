@@ -4,11 +4,8 @@
 #ifndef INC_UIBUTTON_H
 #define INC_UIBUTTON_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
-
 #include "callback.h"
+#include "uiwcont.h"
 
 typedef struct uibutton uibutton_t;
 

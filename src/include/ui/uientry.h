@@ -4,9 +4,7 @@
 #ifndef INC_UIENTRY_H
 #define INC_UIENTRY_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
+#include "uiwcont.h"
 
 typedef struct uientry uientry_t;
 typedef int (*uientryval_t)(uientry_t *entry, void *udata);

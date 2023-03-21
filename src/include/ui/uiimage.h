@@ -4,9 +4,7 @@
 #ifndef INC_UIIMAGE_H
 #define INC_UIIMAGE_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
+#include "uiwcont.h"
 
 void  uiImageFromFile (uiwcont_t *uiwidget, const char *fn);
 void  uiImagePersistentFromFile (uiwcont_t *uiwidget, const char *fn);

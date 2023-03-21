@@ -4,9 +4,7 @@
 #ifndef INC_UIBOX_H
 #define INC_UIBOX_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
+#include "uiwcont.h"
 
 void uiCreateVertBox (uiwcont_t *uiwidget);
 void uiCreateHorizBox (uiwcont_t *uiwidget);

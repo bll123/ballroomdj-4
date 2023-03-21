@@ -4,9 +4,7 @@
 #ifndef INC_UITEXTBOX_H
 #define INC_UITEXTBOX_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
+#include "uiwcont.h"
 
 typedef struct uitextbox uitextbox_t;
 

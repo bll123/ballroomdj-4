@@ -4,9 +4,7 @@
 #ifndef INC_UISIZEGRP_H
 #define INC_UISIZEGRP_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
+#include "uiwcont.h"
 
 void uiCreateSizeGroupHoriz (uiwcont_t *);
 void uiSizeGroupAdd (uiwcont_t *uiw, uiwcont_t *uiwidget);

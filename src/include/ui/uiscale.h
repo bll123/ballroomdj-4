@@ -4,11 +4,8 @@
 #ifndef INC_UISCALE_H
 #define INC_UISCALE_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
-
 #include "callback.h"
+#include "uiwcont.h"
 
 void    uiCreateScale (uiwcont_t *uiwidget, double lower, double upper,
     double stepinc, double pageinc, double initvalue, int digits);

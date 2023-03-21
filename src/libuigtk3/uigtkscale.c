@@ -16,6 +16,10 @@
 
 #include "callback.h"
 
+#if BDJ4_USE_GTK
+# include "ui-gtk3.h"
+#endif
+
 #include "ui/uiinternal.h"
 
 #include "ui/uiwidget.h"

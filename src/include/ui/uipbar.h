@@ -4,9 +4,7 @@
 #ifndef INC_UIPBAR_H
 #define INC_UIPBAR_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
+#include "uiwcont.h"
 
 uiwcont_t *uiCreateProgressBar (void);
 void uiProgressBarSet (uiwcont_t *uipb, double val);

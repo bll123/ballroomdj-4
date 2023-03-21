@@ -4,9 +4,7 @@
 #ifndef INC_UIGENERAL_H
 #define INC_UIGENERAL_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
+typedef union uiwidget uiwcont_t;
 
 /* general routines that are called by the ui specific code */
 uiwcont_t *uiwcontAlloc (void);

@@ -4,9 +4,7 @@
 #ifndef INC_UIDIALOG_H
 #define INC_UIDIALOG_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
+#include "uiwcont.h"
 
 typedef struct uiselect uiselect_t;
 

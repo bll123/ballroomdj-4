@@ -4,9 +4,7 @@
 #ifndef INC_UICHGIND_H
 #define INC_UICHGIND_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
+#include "uiwcont.h"
 
 typedef struct uichgind uichgind_t;
 

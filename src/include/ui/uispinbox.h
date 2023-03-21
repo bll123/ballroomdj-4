@@ -4,13 +4,10 @@
 #ifndef INC_UISPINBOX_H
 #define INC_UISPINBOX_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
-
 #include "callback.h"
 #include "nlist.h"
 #include "slist.h"
+#include "uiwcont.h"
 
 enum {
   SB_TEXT,

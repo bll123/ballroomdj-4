@@ -4,11 +4,8 @@
 #ifndef INC_UIWINDOW_H
 #define INC_UIWINDOW_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
-
 #include "callback.h"
+#include "uiwcont.h"
 
 void uiCreateMainWindow (uiwcont_t *uiwidget, callback_t *uicb,
     const char *title, const char *imagenm);

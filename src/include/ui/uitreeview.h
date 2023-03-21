@@ -4,12 +4,9 @@
 #ifndef INC_UITREEVIEW_H
 #define INC_UITREEVIEW_H
 
-#if BDJ4_USE_GTK
-# include "ui-gtk3.h"
-#endif
-
 #include "callback.h"
 #include "slist.h"
+#include "uiwcont.h"
 
 typedef long  treenum_t;
 typedef int   treeint_t;

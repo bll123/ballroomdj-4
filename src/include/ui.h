@@ -4,12 +4,12 @@
 #ifndef INC_UI_H
 #define INC_UI_H
 
+#include "uiclass.h"
+#include "uiwcont.h"
+
 #if BDJ4_USE_GTK
 # include "ui-gtk3.h"
 #endif
-
-#include "uiclass.h"
-#include "uiwcont.h"
 
 #include "ui/uiinternal.h"      // will go away
 
