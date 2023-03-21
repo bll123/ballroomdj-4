@@ -104,7 +104,7 @@ main (int argc, char *argv[])
   confui.gui.localip = NULL;
   uiwcontInit (&confui.gui.window);
   confui.gui.closecb = NULL;
-  uiwcontInit (&confui.gui.notebook);
+  confui.gui.notebook = NULL;
   confui.gui.nbcb = NULL;
   confui.gui.nbtabid = uinbutilIDInit ();
   uiwcontInit (&confui.gui.vbox);
@@ -434,10 +434,10 @@ confuiBuildUI (configui_t *confui)
   uiCreateMenubar (&menubar);
   uiBoxPackStart (&hbox, &menubar);
 
-  uiCreateNotebook (&confui->gui.notebook);
-  uiWidgetSetClass (&confui->gui.notebook, "confnotebook");
-  uiNotebookTabPositionLeft (&confui->gui.notebook);
-  uiBoxPackStartExpand (&confui->gui.vbox, &confui->gui.notebook);
+  confui->gui.notebook = uiCreateNotebook ();
+  uiWidgetSetClass (confui->gui.notebook, "confnotebook");
+  uiNotebookTabPositionLeft (confui->gui.notebook);
+  uiBoxPackStartExpand (&confui->gui.vbox, confui->gui.notebook);
 
   confuiBuildUIGeneral (&confui->gui);
   confuiBuildUIPlayer (&confui->gui);
@@ -458,7 +458,7 @@ confuiBuildUI (configui_t *confui)
   confuiBuildUIDebug (&confui->gui);
 
   confui->gui.nbcb = callbackInitLong (confuiSwitchTable, &confui->gui);
-  uiNotebookSetCallback (&confui->gui.notebook, confui->gui.nbcb);
+  uiNotebookSetCallback (confui->gui.notebook, confui->gui.nbcb);
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);
   y = nlistGetNum (confui->options, CONFUI_SIZE_Y);

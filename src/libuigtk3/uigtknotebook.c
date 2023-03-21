@@ -18,6 +18,7 @@
 
 #include "ui/uiinternal.h"
 
+#include "ui/uigeneral.h"
 #include "ui/uiui.h"
 #include "ui/uinotebook.h"
 
@@ -25,9 +26,10 @@ static void
 uiNotebookSwitchPageHandler (GtkNotebook *nb, GtkWidget *page,
     guint pagenum, gpointer udata);
 
-void
-uiCreateNotebook (uiwcont_t *uiwidget)
+uiwcont_t *
+uiCreateNotebook (void)
 {
+  uiwcont_t   *uiwidget;
   GtkWidget   *widget;
 
   widget = gtk_notebook_new ();
@@ -37,7 +39,9 @@ uiCreateNotebook (uiwcont_t *uiwidget)
   gtk_widget_set_hexpand (widget, TRUE);
   gtk_widget_set_vexpand (widget, FALSE);
   gtk_notebook_set_tab_pos (GTK_NOTEBOOK (widget), GTK_POS_TOP);
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = widget;
+  return uiwidget;
 }
 
 void

@@ -49,7 +49,7 @@ confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int i
   uiWidgetExpandHoriz (boxp);
   uiWidgetExpandVert (boxp);
   uiWidgetSetAllMargins (boxp, 2);
-  uiNotebookAppendPage (&gui->notebook, boxp, &uiwidget);
+  uiNotebookAppendPage (gui->notebook, boxp, &uiwidget);
   uinbutilIDAdd (gui->nbtabid, id);
 
   logProcEnd (LOG_PROC, "confuiMakeNotebookTab", "");

@@ -368,15 +368,15 @@ typedef struct confuigui {
   char              *localip;
   bool              inbuild : 1;
   /* main window */
-  uiwcont_t        window;
+  uiwcont_t         window;
   callback_t        *closecb;
   /* main notebook */
-  uinbtabid_t  *nbtabid;
-  uiwcont_t        notebook;
+  uinbtabid_t       *nbtabid;
+  uiwcont_t         *notebook;
   callback_t        *nbcb;
   /* widgets */
-  uiwcont_t        vbox;
-  uiwcont_t        statusMsg;
+  uiwcont_t         vbox;
+  uiwcont_t         statusMsg;
   /* display select */
   dispsel_t         *dispsel;
   uiduallist_t      *dispselduallist;

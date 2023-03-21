@@ -94,22 +94,22 @@ typedef struct {
   uireqext_t      *uireqext;
   uikey_t         *uikey;
   /* notebook */
-  uiwcont_t      notebook;
-  uinbtabid_t *nbtabid;
+  uiwcont_t       *notebook;
+  uinbtabid_t     *nbtabid;
   int             currpage;
-  uiwcont_t      window;
-  uiwcont_t      vbox;
+  uiwcont_t       window;
+  uiwcont_t       vbox;
   callback_t      *callbacks [PLUI_CB_MAX];
-  uiwcont_t      clock;
-  uiwcont_t      musicqImage [MUSICQ_PB_MAX];
+  uiwcont_t       clock;
+  uiwcont_t       musicqImage [MUSICQ_PB_MAX];
   uibutton_t      *setPlaybackButton;
-  uiwcont_t      ledoffPixbuf;
-  uiwcont_t      ledonPixbuf;
-  uiwcont_t      marqueeFontSizeDialog;
-  uiwcont_t      marqueeSpinBox;
+  uiwcont_t       ledoffPixbuf;
+  uiwcont_t       ledonPixbuf;
+  uiwcont_t       marqueeFontSizeDialog;
+  uiwcont_t       marqueeSpinBox;
   /* ui major elements */
-  uiwcont_t      statusMsg;
-  uiwcont_t      errorMsg;
+  uiwcont_t       statusMsg;
+  uiwcont_t       errorMsg;
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
   uisongsel_t     *uisongsel;
@@ -208,7 +208,7 @@ main (int argc, char *argv[])
 
   uiwcontInit (&plui.window);
   uiwcontInit (&plui.clock);
-  uiwcontInit (&plui.notebook);
+  plui.notebook = NULL;
   uiwcontInit (&plui.marqueeFontSizeDialog);
   plui.progstate = progstateInit ("playerui");
   progstateSetCallback (plui.progstate, STATE_CONNECTING,
@@ -357,6 +357,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     callbackFree (plui->callbacks [i]);
   }
+  uiwcontFree (plui->notebook);
 
   pathbldMakePath (fn, sizeof (fn),
       PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
@@ -533,12 +534,12 @@ pluiBuildUI (playerui_t *plui)
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
   uiBoxPackStart (&plui->vbox, uiwidgetp);
 
-  uiCreateNotebook (&plui->notebook);
-  uiBoxPackStartExpand (&plui->vbox, &plui->notebook);
+  plui->notebook = uiCreateNotebook ();
+  uiBoxPackStartExpand (&plui->vbox, plui->notebook);
 
   plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitLong (
       pluiSwitchPage, plui);
-  uiNotebookSetCallback (&plui->notebook, plui->callbacks [PLUI_CB_NOTEBOOK]);
+  uiNotebookSetCallback (plui->notebook, plui->callbacks [PLUI_CB_NOTEBOOK]);
 
   plui->callbacks [PLUI_CB_PLAYBACK_QUEUE] = callbackInit (
       pluiProcessSetPlaybackQueue, plui, NULL);
@@ -547,7 +548,7 @@ pluiBuildUI (playerui_t *plui)
       _("Set Queue for Playback"), NULL);
   plui->setPlaybackButton = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiNotebookSetActionWidget (&plui->notebook, uiwidgetp);
+  uiNotebookSetActionWidget (plui->notebook, uiwidgetp);
   uiWidgetShowAll (uiwidgetp);
 
   for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
@@ -582,7 +583,7 @@ pluiBuildUI (playerui_t *plui)
       uiBoxPackStart (&hbox, &plui->musicqImage [i]);
     }
 
-    uiNotebookAppendPage (&plui->notebook, uiwidgetp, &hbox);
+    uiNotebookAppendPage (plui->notebook, uiwidgetp, &hbox);
     uinbutilIDAdd (plui->nbtabid, tabtype);
     uiWidgetShowAll (&hbox);
   }
@@ -591,7 +592,7 @@ pluiBuildUI (playerui_t *plui)
   uiwidgetp = uisongselBuildUI (plui->uisongsel, &plui->window);
   /* CONTEXT: playerui: name of request tab : lists the songs in the database */
   uiCreateLabel (&uiwidget, _("Request"));
-  uiNotebookAppendPage (&plui->notebook, uiwidgetp, &uiwidget);
+  uiNotebookAppendPage (plui->notebook, uiwidgetp, &uiwidget);
   uinbutilIDAdd (plui->nbtabid, UI_TAB_SONGSEL);
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
@@ -1244,7 +1245,7 @@ pluiSetExtraQueues (playerui_t *plui)
       if (! show && plui->currpage == pagenum) {
         resetcurr = true;
       }
-      uiNotebookHideShowPage (&plui->notebook, pagenum, show);
+      uiNotebookHideShowPage (plui->notebook, pagenum, show);
     }
   }
   if (resetcurr) {

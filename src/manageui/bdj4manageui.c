@@ -161,21 +161,21 @@ enum {
 };
 
 typedef struct {
-  progstate_t     *progstate;
-  char            *locknm;
-  conn_t          *conn;
-  procutil_t      *processes [ROUTE_MAX];
-  callback_t      *callbacks [MANAGE_CB_MAX];
-  musicdb_t       *musicdb;
-  samesong_t      *samesong;
-  musicqidx_t     musicqPlayIdx;
-  musicqidx_t     musicqManageIdx;
-  dispsel_t       *dispsel;
-  int             stopwaitcount;
-  uiwcont_t      statusMsg;
-  uiwcont_t      errorMsg;
-  uiwcont_t      restoreOrigMenuItem;
-  const char      *pleasewaitmsg;
+  progstate_t       *progstate;
+  char              *locknm;
+  conn_t            *conn;
+  procutil_t        *processes [ROUTE_MAX];
+  callback_t        *callbacks [MANAGE_CB_MAX];
+  musicdb_t         *musicdb;
+  samesong_t        *samesong;
+  musicqidx_t       musicqPlayIdx;
+  musicqidx_t       musicqManageIdx;
+  dispsel_t         *dispsel;
+  int               stopwaitcount;
+  uiwcont_t         statusMsg;
+  uiwcont_t         errorMsg;
+  uiwcont_t         restoreOrigMenuItem;
+  const char        *pleasewaitmsg;
   /* notebook tab handling */
   int               mainlasttab;
   int               sllasttab;
@@ -184,76 +184,76 @@ typedef struct {
   uimenu_t          *slmenu;
   uimenu_t          *songeditmenu;
   uimenu_t          *mmmenu;
-  uinbtabid_t  *mainnbtabid;
-  uinbtabid_t  *slnbtabid;
-  uinbtabid_t  *mmnbtabid;
-  uiwcont_t      window;
-  uiwcont_t      menubar;
-  uiwcont_t      mainnotebook;
-  uiwcont_t      slnotebook;
-  uiwcont_t      mmnotebook;
-  uibutton_t      *selectButton;
-  dbidx_t         songlistdbidx;
-  dbidx_t         seldbidx;
-  dbidx_t         songeditdbidx;
+  uinbtabid_t       *mainnbtabid;
+  uinbtabid_t       *slnbtabid;
+  uinbtabid_t       *mmnbtabid;
+  uiwcont_t         window;
+  uiwcont_t         menubar;
+  uiwcont_t         *mainnotebook;
+  uiwcont_t         *slnotebook;
+  uiwcont_t         *mmnotebook;
+  uibutton_t        *selectButton;
+  dbidx_t           songlistdbidx;
+  dbidx_t           seldbidx;
+  dbidx_t           songeditdbidx;
   /* song list ui major elements */
-  uiplayer_t      *slplayer;
-  uimusicq_t      *slmusicq;
-  managestats_t   *slstats;
-  uisongsel_t     *slsongsel;
-  uimusicq_t      *slezmusicq;
-  uisongsel_t     *slezsongsel;
-  uiwcont_t      slezmusicqtabwidget;
-  uiwcont_t      *slmusicqtabwidget;
-  uiwcont_t      *slsongseltabwidget;
-  char            *sloldname;
-  itunes_t        *itunes;
-  uiwcont_t      itunesSelectDialog;
-  uidropdown_t    *itunessel;
+  uiplayer_t        *slplayer;
+  uimusicq_t        *slmusicq;
+  managestats_t     *slstats;
+  uisongsel_t       *slsongsel;
+  uimusicq_t        *slezmusicq;
+  uisongsel_t       *slezsongsel;
+  uiwcont_t         slezmusicqtabwidget;
+  uiwcont_t         *slmusicqtabwidget;
+  uiwcont_t         *slsongseltabwidget;
+  char              *sloldname;
+  itunes_t          *itunes;
+  uiwcont_t         itunesSelectDialog;
+  uidropdown_t      *itunessel;
   /* prior name is used by create-from-playlist */
-  char            *slpriorname;
-  uisongfilter_t  *uisongfilter;
-  uiwcont_t      cfplDialog;
-  uidropdown_t    *cfplsel;
-  uispinbox_t     *cfpltmlimit;
+  char              *slpriorname;
+  uisongfilter_t    *uisongfilter;
+  uiwcont_t         cfplDialog;
+  uidropdown_t      *cfplsel;
+  uispinbox_t       *cfpltmlimit;
   /* music manager ui */
-  uiplayer_t      *mmplayer;
-  uimusicq_t      *mmmusicq;
-  uisongsel_t     *mmsongsel;
-  uisongedit_t    *mmsongedit;
-  int             lastdisp;
-  int             dbchangecount;
-  int             editmode;
+  uiplayer_t        *mmplayer;
+  uimusicq_t        *mmmusicq;
+  uisongsel_t       *mmsongsel;
+  uisongedit_t      *mmsongedit;
+  int               lastdisp;
+  int               dbchangecount;
+  int               editmode;
   /* sequence */
-  manageseq_t     *manageseq;
+  manageseq_t       *manageseq;
   /* playlist management */
-  managepl_t      *managepl;
+  managepl_t        *managepl;
   /* update database */
-  managedb_t      *managedb;
+  managedb_t        *managedb;
   /* bpm counter */
-  int             currbpmsel;
-  int             currtimesig;
+  int               currbpmsel;
+  int               currtimesig;
   /* song editor */
-  uiaa_t          *uiaa;
-  int             aaflags;
-  int             applyadjstate;
-  int             impitunesstate;
+  uiaa_t            *uiaa;
+  int               aaflags;
+  int               applyadjstate;
+  int               impitunesstate;
   /* options */
-  datafile_t      *optiondf;
-  nlist_t         *options;
+  datafile_t        *optiondf;
+  nlist_t           *options;
   /* various flags */
-  bool            slbackupcreated : 1;
-  bool            selusesonglist : 1;
-  bool            inload : 1;
-  bool            bpmcounterstarted : 1;
-  bool            pluiActive : 1;
-  bool            selbypass : 1;
-  bool            createfromplaylistactive : 1;
-  bool            importitunesactive : 1;
-  bool            importm3uactive : 1;
-  bool            exportm3uactive : 1;
-  bool            enablerestoreorig : 1;
-  bool            ineditall : 1;
+  bool              slbackupcreated : 1;
+  bool              selusesonglist : 1;
+  bool              inload : 1;
+  bool              bpmcounterstarted : 1;
+  bool              pluiActive : 1;
+  bool              selbypass : 1;
+  bool              createfromplaylistactive : 1;
+  bool              importitunesactive : 1;
+  bool              importm3uactive : 1;
+  bool              exportm3uactive : 1;
+  bool              enablerestoreorig : 1;
+  bool              ineditall : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -383,7 +383,9 @@ main (int argc, char *argv[])
   progstateSetCallback (manage.progstate, STATE_WAIT_HANDSHAKE,
       manageHandshakeCallback, &manage);
 
-  uiwcontInit (&manage.mainnotebook);
+  manage.mainnotebook = NULL;
+  manage.slnotebook = NULL;
+  manage.mmnotebook = NULL;
   uiwcontInit (&manage.window);
   manage.slplayer = NULL;
   manage.slmusicq = NULL;
@@ -574,6 +576,9 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageClosingCallback");
 
+  uiwcontFree (manage->mainnotebook);
+  uiwcontFree (manage->slnotebook);
+  uiwcontFree (manage->mmnotebook);
   uiMenuFree (manage->slmenu);
   uiMenuFree (manage->songeditmenu);
   uiMenuFree (manage->mmmenu);
@@ -682,9 +687,9 @@ manageBuildUI (manageui_t *manage)
   uiCreateMenubar (&manage->menubar);
   uiBoxPackStart (&hbox, &manage->menubar);
 
-  uiCreateNotebook (&manage->mainnotebook);
-  uiNotebookTabPositionLeft (&manage->mainnotebook);
-  uiBoxPackStartExpand (&vbox, &manage->mainnotebook);
+  manage->mainnotebook = uiCreateNotebook ();
+  uiNotebookTabPositionLeft (manage->mainnotebook);
+  uiBoxPackStartExpand (&vbox, manage->mainnotebook);
 
   /* edit song lists */
   manageBuildUISongListEditor (manage);
@@ -697,7 +702,7 @@ manageBuildUI (manageui_t *manage)
   manageBuildUISequence (manage->manageseq, &vbox);
   /* CONTEXT: managementui: notebook tab title: edit sequences */
   uiCreateLabel (&uiwidget, _("Edit Sequences"));
-  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
+  uiNotebookAppendPage (manage->mainnotebook, &vbox, &uiwidget);
   uinbutilIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SEQ);
 
   /* playlist management */
@@ -709,7 +714,7 @@ manageBuildUI (manageui_t *manage)
 
   /* CONTEXT: managementui: notebook tab title: playlist management */
   uiCreateLabel (&uiwidget, _("Playlist Management"));
-  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
+  uiNotebookAppendPage (manage->mainnotebook, &vbox, &uiwidget);
   uinbutilIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_PL);
 
   /* music manager */
@@ -723,7 +728,7 @@ manageBuildUI (manageui_t *manage)
   manageBuildUIUpdateDatabase (manage->managedb, &vbox);
   /* CONTEXT: managementui: notebook tab title: update database */
   uiCreateLabel (&uiwidget, _("Update Database"));
-  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
+  uiNotebookAppendPage (manage->mainnotebook, &vbox, &uiwidget);
   uinbutilIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_OTHER);
 
   x = nlistGetNum (manage->options, MANAGE_SIZE_X);
@@ -732,7 +737,7 @@ manageBuildUI (manageui_t *manage)
 
   manage->callbacks [MANAGE_CB_MAIN_NB] = callbackInitLong (
       manageSwitchPageMain, manage);
-  uiNotebookSetCallback (&manage->mainnotebook,
+  uiNotebookSetCallback (manage->mainnotebook,
       manage->callbacks [MANAGE_CB_MAIN_NB]);
 
   uiWidgetShowAll (&manage->window);
@@ -880,7 +885,6 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwcont_t          vbox;
   uiwcont_t          hbox;
   uiwcont_t          mainhbox;
-  uiwcont_t          notebook;
 
   /* song list editor */
   uiwcontInit (&hbox);
@@ -890,23 +894,22 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* CONTEXT: managementui: notebook tab title: edit song lists */
   uiCreateLabel (&uiwidget, _("Edit Song Lists"));
-  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
+  uiNotebookAppendPage (manage->mainnotebook, &vbox, &uiwidget);
   uinbutilIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SL);
 
   /* song list editor: player */
   uiwidgetp = uiplayerBuildUI (manage->slplayer);
   uiBoxPackStart (&vbox, uiwidgetp);
 
-  uiCreateNotebook (&notebook);
-  uiBoxPackStartExpand (&vbox, &notebook);
-  uiwcontCopy (&manage->slnotebook, &notebook);
+  manage->slnotebook = uiCreateNotebook ();
+  uiBoxPackStartExpand (&vbox, manage->slnotebook);
 
   /* song list editor: easy song list tab */
   uiCreateHorizBox (&mainhbox);
 
   /* CONTEXT: managementui: name of easy song list song selection tab */
   uiCreateLabel (&uiwidget, _("Song List"));
-  uiNotebookAppendPage (&notebook, &mainhbox, &uiwidget);
+  uiNotebookAppendPage (manage->slnotebook, &mainhbox, &uiwidget);
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
   uiwcontCopy (&manage->slezmusicqtabwidget, &mainhbox);
 
@@ -940,7 +943,7 @@ manageBuildUISongListEditor (manageui_t *manage)
       &manage->errorMsg, manageValidateName);
   /* CONTEXT: managementui: name of song list notebook tab */
   uiCreateLabel (&uiwidget, _("Song List"));
-  uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
+  uiNotebookAppendPage (manage->slnotebook, uiwidgetp, &uiwidget);
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
   manage->slmusicqtabwidget = uiwidgetp;
 
@@ -948,7 +951,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwidgetp = uisongselBuildUI (manage->slsongsel, &manage->window);
   /* CONTEXT: managementui: name of song selection notebook tab */
   uiCreateLabel (&uiwidget, _("Song Selection"));
-  uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
+  uiNotebookAppendPage (manage->slnotebook, uiwidgetp, &uiwidget);
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_OTHER);
   manage->slsongseltabwidget = uiwidgetp;
 
@@ -958,12 +961,12 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwidgetp = manageBuildUIStats (manage->slstats);
   /* CONTEXT: managementui: name of statistics tab */
   uiCreateLabel (&uiwidget, _("Statistics"));
-  uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
+  uiNotebookAppendPage (manage->slnotebook, uiwidgetp, &uiwidget);
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_STATISTICS);
 
   manage->callbacks [MANAGE_CB_SL_NB] = callbackInitLong (
       manageSwitchPageSonglist, manage);
-  uiNotebookSetCallback (&notebook, manage->callbacks [MANAGE_CB_SL_NB]);
+  uiNotebookSetCallback (manage->slnotebook, manage->callbacks [MANAGE_CB_SL_NB]);
 }
 
 static int
@@ -1479,11 +1482,11 @@ manageSwitchToSongEditor (void *udata)
     /* switching to the music manager tab will also apply the appropriate */
     /* song filter and load the editor */
     pagenum = uinbutilIDGetPage (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
-    uiNotebookSetPage (&manage->mainnotebook, pagenum);
+    uiNotebookSetPage (manage->mainnotebook, pagenum);
   }
   if (manage->mmlasttab != MANAGE_TAB_SONGEDIT) {
     pagenum = uinbutilIDGetPage (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
-    uiNotebookSetPage (&manage->mmnotebook, pagenum);
+    uiNotebookSetPage (manage->mmnotebook, pagenum);
   }
 
   logProcEnd (LOG_PROC, "manageSwitchToSongEditor", "");
@@ -1929,7 +1932,6 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiwcont_t          *uiwidgetp;
   uiwcont_t          vbox;
   uiwcont_t          uiwidget;
-  uiwcont_t          notebook;
 
   logProcBegin (LOG_PROC, "manageBuildUIMusicManager");
   /* music manager */
@@ -1937,35 +1939,34 @@ manageBuildUIMusicManager (manageui_t *manage)
   uiWidgetSetAllMargins (&vbox, 2);
   /* CONTEXT: managementui: name of music manager notebook tab */
   uiCreateLabel (&uiwidget, _("Music Manager"));
-  uiNotebookAppendPage (&manage->mainnotebook, &vbox, &uiwidget);
+  uiNotebookAppendPage (manage->mainnotebook, &vbox, &uiwidget);
   uinbutilIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
 
   /* music manager: player */
   uiwidgetp = uiplayerBuildUI (manage->mmplayer);
   uiBoxPackStart (&vbox, uiwidgetp);
 
-  uiCreateNotebook (&notebook);
-  uiBoxPackStartExpand (&vbox, &notebook);
-  uiwcontCopy (&manage->mmnotebook, &notebook);
+  manage->mmnotebook = uiCreateNotebook ();
+  uiBoxPackStartExpand (&vbox, manage->mmnotebook);
 
   /* music manager: song selection tab*/
   uiwidgetp = uisongselBuildUI (manage->mmsongsel, &manage->window);
   uiWidgetExpandHoriz (uiwidgetp);
   /* CONTEXT: managementui: name of song selection notebook tab */
   uiCreateLabel (&uiwidget, _("Music Manager"));
-  uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
+  uiNotebookAppendPage (manage->mmnotebook, uiwidgetp, &uiwidget);
   uinbutilIDAdd (manage->mmnbtabid, MANAGE_TAB_MM);
 
   /* music manager: song editor tab */
   uiwidgetp = uisongeditBuildUI (manage->mmsongsel, manage->mmsongedit, &manage->window, &manage->errorMsg);
   /* CONTEXT: managementui: name of song editor notebook tab */
   uiCreateLabel (&uiwidget, _("Song Editor"));
-  uiNotebookAppendPage (&notebook, uiwidgetp, &uiwidget);
+  uiNotebookAppendPage (manage->mmnotebook, uiwidgetp, &uiwidget);
   uinbutilIDAdd (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
 
   manage->callbacks [MANAGE_CB_MM_NB] = callbackInitLong (
       manageSwitchPageMM, manage);
-  uiNotebookSetCallback (&notebook, manage->callbacks [MANAGE_CB_MM_NB]);
+  uiNotebookSetCallback (manage->mmnotebook, manage->callbacks [MANAGE_CB_MM_NB]);
   logProcEnd (LOG_PROC, "manageBuildUIMusicManager", "");
 }
 
@@ -2596,12 +2597,12 @@ manageSetEasySonglist (manageui_t *manage)
     uiWidgetShowAll (&manage->slezmusicqtabwidget);
     uiWidgetHide (manage->slmusicqtabwidget);
     uiWidgetHide (manage->slsongseltabwidget);
-    uiNotebookSetPage (&manage->slnotebook, 0);
+    uiNotebookSetPage (manage->slnotebook, 0);
   } else {
     uiWidgetHide (&manage->slezmusicqtabwidget);
     uiWidgetShowAll (manage->slmusicqtabwidget);
     uiWidgetShowAll (manage->slsongseltabwidget);
-    uiNotebookSetPage (&manage->slnotebook, 1);
+    uiNotebookSetPage (manage->slnotebook, 1);
   }
   logProcEnd (LOG_PROC, "manageSetEasySonglist", "");
 }
