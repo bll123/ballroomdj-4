@@ -97,11 +97,11 @@ typedef struct {
   char            *home;
   char            dlfname [MAXPATHLEN];
   /* conversion */
-  uiwcont_t      window;
+  uiwcont_t       *window;
   uientry_t       *targetEntry;
   uientry_t       *nameEntry;
   uiwcont_t       *reinstWidget;
-  uiwcont_t      feedbackMsg;
+  uiwcont_t       feedbackMsg;
   uitextbox_t     *disptb;
   /* flags */
   bool            uiBuilt : 1;
@@ -177,7 +177,7 @@ main (int argc, char *argv[])
 
   buff [0] = '\0';
 
-  uiwcontInit (&altsetup.window);
+  altsetup.window = NULL;
   altsetup.instState = ALT_PRE_INIT;
   altsetup.target = mdstrdup ("");
   altsetup.uiBuilt = false;
@@ -266,6 +266,8 @@ main (int argc, char *argv[])
   if (altsetup.guienabled) {
     /* process any final events */
     uiUIProcessEvents ();
+    uiCloseWindow (altsetup.window);
+    uiCleanup ();
   }
 
   altsetupCleanup (&altsetup);
@@ -305,16 +307,15 @@ altsetupBuildUI (altsetup_t *altsetup)
   snprintf (tbuff, sizeof (tbuff), _("%s Set Up Alternate"), BDJ4_NAME);
   altsetup->callbacks [ALT_CB_EXIT] = callbackInit (
       altsetupExitCallback, altsetup, NULL);
-  uiCreateMainWindow (&altsetup->window,
-      altsetup->callbacks [ALT_CB_EXIT],
-      tbuff, imgbuff);
-  uiWindowSetDefaultSize (&altsetup->window, 1000, 600);
+  altsetup->window = uiCreateMainWindow (
+      altsetup->callbacks [ALT_CB_EXIT], tbuff, imgbuff);
+  uiWindowSetDefaultSize (altsetup->window, 1000, 600);
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 4);
   uiWidgetExpandHoriz (&vbox);
   uiWidgetExpandVert (&vbox);
-  uiBoxPackInWindow (&altsetup->window, &vbox);
+  uiBoxPackInWindow (altsetup->window, &vbox);
 
   uiCreateLabel (&uiwidget,
       /* CONTEXT: set up alternate: ask for alternate folder */
@@ -409,7 +410,7 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiTextBoxVertExpand (altsetup->disptb);
   uiBoxPackStartExpand (&vbox, uiTextBoxGetScrolledWindow (altsetup->disptb));
 
-  uiWidgetShowAll (&altsetup->window);
+  uiWidgetShowAll (altsetup->window);
   altsetup->uiBuilt = true;
 }
 
@@ -581,7 +582,7 @@ altsetupTargetDirDialog (void *udata)
   char        *fn = NULL;
   uiselect_t  *selectdata;
 
-  selectdata = uiDialogCreateSelect (&altsetup->window,
+  selectdata = uiDialogCreateSelect (altsetup->window,
       /* CONTEXT: set up alternate: dialog title for selecting location */
       _("Alternate Location"),
       uiEntryGetValue (altsetup->targetEntry), NULL, NULL, NULL);
@@ -859,6 +860,7 @@ static void
 altsetupCleanup (altsetup_t *altsetup)
 {
   if (altsetup->target != NULL) {
+    uiwcontFree (altsetup->window);
     uiwcontFree (altsetup->reinstWidget);
     for (int i = 0; i < ALT_CB_MAX; ++i) {
       callbackFree (altsetup->callbacks [i]);

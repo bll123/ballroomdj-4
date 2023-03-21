@@ -68,7 +68,7 @@ typedef struct {
   char            *locknm;
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
-  uiwcont_t       window;
+  uiwcont_t       *window;
   uiwcont_t       *timesigsel [BPMCOUNT_DISP_MAX];
   uiwcont_t       dispvalue [BPMCOUNT_DISP_MAX];
   uibutton_t      *buttons [BPMCOUNT_BUTTON_MAX];
@@ -172,7 +172,7 @@ main (int argc, char *argv[])
   progstateSetCallback (bpmcounter.progstate, STATE_CLOSING,
       bpmcounterClosingCallback, &bpmcounter);
 
-  uiwcontInit (&bpmcounter.window);
+  bpmcounter.window = NULL;
 
   procutilInitProcesses (bpmcounter.processes);
 
@@ -267,10 +267,10 @@ bpmcounterStoppingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "bpmcounterStoppingCallback");
 
-  uiWindowGetSize (&bpmcounter->window, &x, &y);
+  uiWindowGetSize (bpmcounter->window, &x, &y);
   nlistSetNum (bpmcounter->options, BPMCOUNTER_SIZE_X, x);
   nlistSetNum (bpmcounter->options, BPMCOUNTER_SIZE_Y, y);
-  uiWindowGetPosition (&bpmcounter->window, &x, &y, &ws);
+  uiWindowGetPosition (bpmcounter->window, &x, &y, &ws);
   nlistSetNum (bpmcounter->options, BPMCOUNTER_POSITION_X, x);
   nlistSetNum (bpmcounter->options, BPMCOUNTER_POSITION_Y, y);
 
@@ -297,8 +297,9 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
   char        fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "bpmcounterClosingCallback");
-  uiCloseWindow (&bpmcounter->window);
+  uiCloseWindow (bpmcounter->window);
   uiCleanup ();
+  uiwcontFree (bpmcounter->window);
   for (int i = 0; i < BPMCOUNT_BUTTON_MAX; ++i) {
     uiButtonFree (bpmcounter->buttons [i]);
   }
@@ -351,14 +352,14 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   bpmcounter->callbacks [BPMCOUNT_CB_EXIT] = callbackInit (
       bpmcounterCloseCallback, bpmcounter, NULL);
-  uiCreateMainWindow (&bpmcounter->window,
+  bpmcounter->window = uiCreateMainWindow (
       bpmcounter->callbacks [BPMCOUNT_CB_EXIT],
       /* CONTEXT: bpm counter: title of window*/
       _("BPM Counter"), imgbuff);
 
   uiCreateVertBox (&vboxmain);
   uiWidgetSetAllMargins (&vboxmain, 2);
-  uiBoxPackInWindow (&bpmcounter->window, &vboxmain);
+  uiBoxPackInWindow (bpmcounter->window, &vboxmain);
 
   uiutilsAddAccentColorDisplay (&vboxmain, &hbox, &uiwidget);
 
@@ -480,13 +481,13 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
   x = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_X);
   y = nlistGetNum (bpmcounter->options, BPMCOUNTER_POSITION_Y);
-  uiWindowMove (&bpmcounter->window, x, y, -1);
+  uiWindowMove (bpmcounter->window, x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
-  uiWidgetShowAll (&bpmcounter->window);
+  uiWidgetShowAll (bpmcounter->window);
 
   uiwcontFree (szgrp);
   uiwcontFree (szgrpDisp);
@@ -562,7 +563,7 @@ bpmcounterProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_WINDOW_FIND: {
-          uiWindowFind (&bpmcounter->window);
+          uiWindowFind (bpmcounter->window);
           break;
         }
         case MSG_BPM_TIMESIG: {

@@ -7,8 +7,7 @@
 #include "callback.h"
 #include "uiwcont.h"
 
-void uiCreateMainWindow (uiwcont_t *uiwidget, callback_t *uicb,
-    const char *title, const char *imagenm);
+uiwcont_t *uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm);
 void uiWindowSetTitle (uiwcont_t *uiwidget, const char *title);
 void uiCloseWindow (uiwcont_t *uiwindow);
 bool uiWindowIsMaximized (uiwcont_t *uiwindow);

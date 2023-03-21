@@ -144,15 +144,15 @@ typedef struct {
   startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
   uispinbox_t     *profilesel;
   uibutton_t      *buttons [START_BUTTON_MAX];
-  uiwcont_t      supportDialog;
-  uiwcont_t      supportMsgDialog;
+  uiwcont_t       supportDialog;
+  uiwcont_t       supportMsgDialog;
   uiwcont_t       *supportSendFiles;
   uiwcont_t       *supportSendDB;
-  uiwcont_t      window;
-  uiwcont_t      supportStatus;
-  uiwcont_t      statusMsg;
-  uiwcont_t      supportStatusMsg;
-  uiwcont_t      profileAccent;
+  uiwcont_t       *window;
+  uiwcont_t       supportStatus;
+  uiwcont_t       statusMsg;
+  uiwcont_t       supportStatusMsg;
+  uiwcont_t       profileAccent;
   uitextbox_t     *supporttb;
   uientry_t       *supportsubject;
   uientry_t       *supportemail;
@@ -289,7 +289,7 @@ main (int argc, char *argv[])
   for (int i = 0; i < START_BUTTON_MAX; ++i) {
     starter.buttons [i] = NULL;
   }
-  uiwcontInit (&starter.window);
+  starter.window = NULL;
   starter.support = NULL;
   uiwcontInit (&starter.supportStatus);
   starter.supportSendFiles = NULL;
@@ -391,10 +391,10 @@ starterStoppingCallback (void *udata, programstate_t programState)
     }
   }
 
-  uiWindowGetSize (&starter->window, &x, &y);
+  uiWindowGetSize (starter->window, &x, &y);
   nlistSetNum (starter->options, STARTERUI_SIZE_X, x);
   nlistSetNum (starter->options, STARTERUI_SIZE_Y, y);
-  uiWindowGetPosition (&starter->window, &x, &y, &ws);
+  uiWindowGetPosition (starter->window, &x, &y, &ws);
   nlistSetNum (starter->options, STARTERUI_POSITION_X, x);
   nlistSetNum (starter->options, STARTERUI_POSITION_Y, y);
 
@@ -422,18 +422,20 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "starterClosingCallback");
 
+  uiCloseWindow (starter->window);
+  uiCleanup ();
+
   uiwcontFree (starter->supportSendFiles);
   uiwcontFree (starter->supportSendDB);
   uiEntryFree (starter->supportemail);
   uiEntryFree (starter->supportsubject);
-  uiCloseWindow (&starter->window);
+  uiwcontFree (starter->window);
   for (int i = 0; i < START_BUTTON_MAX; ++i) {
     uiButtonFree (starter->buttons [i]);
   }
   for (int i = 0; i < START_CB_MAX; ++i) {
     callbackFree (starter->callbacks [i]);
   }
-  uiCleanup ();
 
   procutilStopAllProcess (starter->processes, starter->conn, true);
   procutilFreeAll (starter->processes);
@@ -495,13 +497,13 @@ starterBuildUI (startui_t  *starter)
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   starter->callbacks [START_CB_EXIT] = callbackInit (
       starterCloseCallback, starter, NULL);
-  uiCreateMainWindow (&starter->window,
+  starter->window = uiCreateMainWindow (
       starter->callbacks [START_CB_EXIT],
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff);
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 2);
-  uiBoxPackInWindow (&starter->window, &vbox);
+  uiBoxPackInWindow (starter->window, &vbox);
 
   uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
   uiwcontCopy (&starter->profileAccent, &uiwidget);
@@ -661,7 +663,7 @@ starterBuildUI (startui_t  *starter)
       "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
-  uiWidgetShowAll (&starter->window);
+  uiWidgetShowAll (starter->window);
 
   uiwcontFree (szgrp);
 
@@ -1212,7 +1214,7 @@ starterProcessSupport (void *udata)
 
   starter->callbacks [START_CB_SUPPORT_RESP] = callbackInitLong (
       starterSupportResponseHandler, starter);
-  uiCreateDialog (&uidialog, &starter->window,
+  uiCreateDialog (&uidialog, starter->window,
       starter->callbacks [START_CB_SUPPORT_RESP],
       /* CONTEXT: starterui: title for the support dialog */
       _("Support"),
@@ -1496,7 +1498,7 @@ starterResetProfile (startui_t *starter, int profidx)
   /* if a button is pressed */
   if (profidx != starter->newprofile) {
     bdjoptInit ();
-    uiWindowSetTitle (&starter->window, bdjoptGetStr (OPT_P_PROFILENAME));
+    uiWindowSetTitle (starter->window, bdjoptGetStr (OPT_P_PROFILENAME));
     uiutilsSetAccentColor (&starter->profileAccent);
     starterLoadOptions (starter);
     bdjvarsAdjustPorts ();
@@ -1545,7 +1547,7 @@ starterCheckProfile (startui_t *starter)
     /* CONTEXT: starterui: name of the new profile (New profile 9) */
     snprintf (tbuff, sizeof (tbuff), _("New Profile %d"), profidx);
     bdjoptSetStr (OPT_P_PROFILENAME, tbuff);
-    uiWindowSetTitle (&starter->window, tbuff);
+    uiWindowSetTitle (starter->window, tbuff);
 
     /* select a completely random color */
     createRandomColor (tbuff, sizeof (tbuff));
@@ -1662,7 +1664,7 @@ starterCreateSupportDialog (void *udata)
 
   starter->callbacks [START_CB_SUPPORT_MSG_RESP] = callbackInitLong (
       starterSupportMsgHandler, starter);
-  uiCreateDialog (&uidialog, &starter->window,
+  uiCreateDialog (&uidialog, starter->window,
       starter->callbacks [START_CB_SUPPORT_MSG_RESP],
       /* CONTEXT: starterui: title for the support message dialog */
       _("Support Message"),
@@ -2068,7 +2070,7 @@ starterSetWindowPosition (startui_t *starter)
 
   x = nlistGetNum (starter->options, STARTERUI_POSITION_X);
   y = nlistGetNum (starter->options, STARTERUI_POSITION_Y);
-  uiWindowMove (&starter->window, x, y, -1);
+  uiWindowMove (starter->window, x, y, -1);
 }
 
 static void

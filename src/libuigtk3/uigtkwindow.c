@@ -37,10 +37,10 @@ static gboolean uiWindowWinStateHandler (GtkWidget *window, GdkEventWindowState 
 static void uiWindowNoDimHandler (GtkWidget *window, GtkStateType flags, gpointer udata);
 static gboolean uiWindowMappedHandler (GtkWidget *window, GdkEventAny *event, gpointer udata);
 
-void
-uiCreateMainWindow (uiwcont_t *uiwidget, callback_t *uicb,
-    const char *title, const char *imagenm)
+uiwcont_t *
+uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
 {
+  uiwcont_t *uiwin;
   GtkWidget *window;
   GError    *gerr = NULL;
 
@@ -57,7 +57,9 @@ uiCreateMainWindow (uiwcont_t *uiwidget, callback_t *uicb,
     g_signal_connect (window, "delete-event", G_CALLBACK (uiWindowCloseCallback), uicb);
   }
 
-  uiwidget->widget = window;
+  uiwin = uiwcontAlloc ();
+  uiwin->widget = window;
+  return uiwin;
 }
 
 void

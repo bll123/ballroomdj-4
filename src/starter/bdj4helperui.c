@@ -42,7 +42,7 @@ enum {
 typedef struct {
   progstate_t     *progstate;
   conn_t          *conn;
-  uiwcont_t      window;
+  uiwcont_t       *window;
   uitextbox_t     *tb;
   uibutton_t      *buttons [HELPER_BUTTON_MAX];
   callback_t      *closeCallback;
@@ -97,7 +97,7 @@ main (int argc, char *argv[])
   helper.helplist = NULL;
   helper.helpiter = 0;
   helper.scrollendflag = false;
-  uiwcontInit (&helper.window);
+  helper.window = NULL;
   for (int i = 0; i < HELPER_BUTTON_MAX; ++i) {
     helper.buttons [i] = NULL;
   }
@@ -167,12 +167,15 @@ helperClosingCallback (void *udata, programstate_t programState)
   helperui_t   *helper = udata;
 
   logProcBegin (LOG_PROC, "helperClosingCallback");
-  uiCloseWindow (&helper->window);
+
+  uiCloseWindow (helper->window);
+  uiCleanup ();
+
+  uiwcontFree (helper->window);
   uiTextBoxFree (helper->tb);
   for (int i = 0; i < HELPER_BUTTON_MAX; ++i) {
     uiButtonFree (helper->buttons [i]);
   }
-  uiCleanup ();
 
   bdj4shutdown (ROUTE_HELPERUI, NULL);
 
@@ -202,12 +205,11 @@ helperBuildUI (helperui_t  *helper)
   helper->closeCallback = callbackInit (helperCloseCallback, helper, NULL);
   /* CONTEXT: helperui: the window title for the BDJ4 helper */
   snprintf (tbuff, sizeof (tbuff), _("%s Helper"), BDJ4_LONG_NAME);
-  uiCreateMainWindow (&helper->window, helper->closeCallback,
-      tbuff, imgbuff);
+  helper->window = uiCreateMainWindow (helper->closeCallback, tbuff, imgbuff);
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 2);
-  uiBoxPackInWindow (&helper->window, &vbox);
+  uiBoxPackInWindow (helper->window, &vbox);
 
   helper->tb = uiTextBoxCreate (400, NULL);
   uiTextBoxHorizExpand (helper->tb);
@@ -233,13 +235,13 @@ helperBuildUI (helperui_t  *helper)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (&hbox, uiwidgetp);
 
-  uiWindowSetDefaultSize (&helper->window, 1100, 400);
+  uiWindowSetDefaultSize (helper->window, 1100, 400);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
-  uiWidgetShowAll (&helper->window);
+  uiWidgetShowAll (helper->window);
 }
 
 static int

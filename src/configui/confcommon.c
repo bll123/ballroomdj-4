@@ -213,7 +213,7 @@ confuiSelectFileDialog (confuigui_t *gui, int widx, char *startpath,
   uiselect_t  *selectdata;
 
   logProcBegin (LOG_PROC, "confuiSelectFileDialog");
-  selectdata = uiDialogCreateSelect (&gui->window,
+  selectdata = uiDialogCreateSelect (gui->window,
       /* CONTEXT: configuration: file selection dialog: window title */
       _("Select File"), startpath, NULL, mimefiltername, mimetype);
   fn = uiSelectFileDialog (selectdata);

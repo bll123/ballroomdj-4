@@ -110,7 +110,7 @@ confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
 
   gui->uiitem [widx].callback = callbackInitLong (ddcb, gui);
   uiwidgetp = uiComboboxCreate (gui->uiitem [widx].dropdown,
-      &gui->window, txt, gui->uiitem [widx].callback, gui);
+      gui->window, txt, gui->uiitem [widx].callback, gui);
 
   uiDropDownSetList (gui->uiitem [widx].dropdown,
       gui->uiitem [widx].displist, NULL);

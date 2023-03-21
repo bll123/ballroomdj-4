@@ -146,17 +146,17 @@ typedef struct {
   char            *tclshloc;
   slist_t         *convlist;
   slistidx_t      convidx;
-  uiwcont_t      window;
-  uiwcont_t      statusMsg;
+  uiwcont_t       *window;
+  uiwcont_t       statusMsg;
   uientry_t       *targetEntry;
   uiwcont_t       *reinstWidget;
-  uiwcont_t      feedbackMsg;
+  uiwcont_t       feedbackMsg;
   uientry_t       *bdj3locEntry;
   uiwcont_t       *convWidget;
-  uiwcont_t      convFeedbackMsg;
-  uiwcont_t      vlcMsg;
-  uiwcont_t      pythonMsg;
-  uiwcont_t      mutagenMsg;
+  uiwcont_t       convFeedbackMsg;
+  uiwcont_t       vlcMsg;
+  uiwcont_t       pythonMsg;
+  uiwcont_t       mutagenMsg;
   uitextbox_t     *disptb;
   uibutton_t      *buttons [INST_BUTTON_MAX];
   /* flags */
@@ -296,7 +296,7 @@ main (int argc, char *argv[])
 
   installer.unpackdir [0] = '\0';
   installer.home = NULL;
-  uiwcontInit (&installer.window);
+  installer.window = NULL;
   installer.instState = INST_INITIALIZE;
   installer.lastInstState = INST_INITIALIZE;
   installer.target = mdstrdup ("");
@@ -566,6 +566,7 @@ main (int argc, char *argv[])
   /* process any final events */
   if (installer.guienabled) {
     uiUIProcessEvents ();
+    uiCloseWindow (installer.window);
     uiCleanup ();
   }
 
@@ -607,16 +608,16 @@ installerBuildUI (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff), _("%s Installer"), BDJ4_NAME);
   installer->callbacks [INST_CB_EXIT] = callbackInit (
       installerExitCallback, installer, NULL);
-  uiCreateMainWindow (&installer->window,
+  installer->window = uiCreateMainWindow (
       installer->callbacks [INST_CB_EXIT],
       tbuff, imgbuff);
-  uiWindowSetDefaultSize (&installer->window, 1000, 600);
+  uiWindowSetDefaultSize (installer->window, 1000, 600);
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 4);
   uiWidgetExpandHoriz (&vbox);
   uiWidgetExpandVert (&vbox);
-  uiBoxPackInWindow (&installer->window, &vbox);
+  uiBoxPackInWindow (installer->window, &vbox);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
@@ -817,7 +818,7 @@ installerBuildUI (installer_t *installer)
   uiTextBoxVertExpand (installer->disptb);
   uiBoxPackStartExpand (&vbox, uiTextBoxGetScrolledWindow (installer->disptb));
 
-  uiWidgetShowAll (&installer->window);
+  uiWidgetShowAll (installer->window);
   installer->uiBuilt = true;
 
   uiwcontFree (szgrp);
@@ -1199,7 +1200,7 @@ installerTargetDirDialog (void *udata)
   char        *fn = NULL;
   uiselect_t  *selectdata;
 
-  selectdata = uiDialogCreateSelect (&installer->window,
+  selectdata = uiDialogCreateSelect (installer->window,
       /* CONTEXT: installer: dialog title for selecting install location */
       _("Install Location"),
       uiEntryGetValue (installer->targetEntry),
@@ -1239,7 +1240,7 @@ installerBDJ3LocDirDialog (void *udata)
 
   /* CONTEXT: installer: dialog title for selecting BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("Select %s Location"), BDJ3_NAME);
-  selectdata = uiDialogCreateSelect (&installer->window,
+  selectdata = uiDialogCreateSelect (installer->window,
       tbuff, uiEntryGetValue (installer->bdj3locEntry), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
@@ -2461,6 +2462,7 @@ installerCleanup (installer_t *installer)
   const char  *targv [10];
 
   if (installer->guienabled) {
+    uiwcontFree (installer->window);
     uiwcontFree (installer->reinstWidget);
     uiwcontFree (installer->convWidget);
     uiEntryFree (installer->targetEntry);

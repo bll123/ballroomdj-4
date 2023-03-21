@@ -97,7 +97,7 @@ typedef struct {
   uiwcont_t       *notebook;
   uinbtabid_t     *nbtabid;
   int             currpage;
-  uiwcont_t       window;
+  uiwcont_t       *window;
   uiwcont_t       vbox;
   callback_t      *callbacks [PLUI_CB_MAX];
   uiwcont_t       clock;
@@ -206,7 +206,7 @@ main (int argc, char *argv[])
   mdebugInit ("plui");
 #endif
 
-  uiwcontInit (&plui.window);
+  plui.window = NULL;
   uiwcontInit (&plui.clock);
   plui.notebook = NULL;
   uiwcontInit (&plui.marqueeFontSizeDialog);
@@ -323,10 +323,10 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "pluiStoppingCallback");
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
-  uiWindowGetSize (&plui->window, &x, &y);
+  uiWindowGetSize (plui->window, &x, &y);
   nlistSetNum (plui->options, PLUI_SIZE_X, x);
   nlistSetNum (plui->options, PLUI_SIZE_Y, y);
-  uiWindowGetPosition (&plui->window, &x, &y, &ws);
+  uiWindowGetPosition (plui->window, &x, &y, &ws);
   nlistSetNum (plui->options, PLUI_POSITION_X, x);
   nlistSetNum (plui->options, PLUI_POSITION_Y, y);
 
@@ -353,7 +353,10 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "pluiClosingCallback");
 
-  uiCloseWindow (&plui->window);
+  uiCloseWindow (plui->window);
+  uiCleanup ();
+
+  uiwcontFree (plui->window);
   uiWidgetClearPersistent (plui->ledonPixbuf);
   uiWidgetClearPersistent (plui->ledoffPixbuf);
   uiButtonFree (plui->setPlaybackButton);
@@ -385,7 +388,6 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiplayerFree (plui->uiplayer);
   uimusicqFree (plui->uimusicq);
   uisongselFree (plui->uisongsel);
-  uiCleanup ();
 
   logProcEnd (LOG_PROC, "pluiClosingCallback", "");
   return STATE_FINISHED;
@@ -428,13 +430,13 @@ pluiBuildUI (playerui_t *plui)
   /* CONTEXT: playerui: main window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Player"),
       bdjoptGetStr (OPT_P_PROFILENAME));
-  uiCreateMainWindow (&plui->window, plui->callbacks [PLUI_CB_CLOSE],
+  plui->window = uiCreateMainWindow (plui->callbacks [PLUI_CB_CLOSE],
       tbuff, imgbuff);
 
   pluiInitializeUI (plui);
 
   uiCreateVertBox (&plui->vbox);
-  uiBoxPackInWindow (&plui->window, &plui->vbox);
+  uiBoxPackInWindow (plui->window, &plui->vbox);
   uiWidgetSetAllMargins (&plui->vbox, 2);
 
   plui->uikey = uiKeyAlloc ();
@@ -571,7 +573,7 @@ pluiBuildUI (playerui_t *plui)
       tabtype = UI_TAB_HISTORY;
     }
 
-    uiwidgetp = uimusicqBuildUI (plui->uimusicq, &plui->window, i,
+    uiwidgetp = uimusicqBuildUI (plui->uimusicq, plui->window, i,
         &plui->errorMsg, NULL);
     uiCreateHorizBox (&hbox);
     if (tabtype == UI_TAB_HISTORY) {
@@ -595,7 +597,7 @@ pluiBuildUI (playerui_t *plui)
   }
 
   /* request tab */
-  uiwidgetp = uisongselBuildUI (plui->uisongsel, &plui->window);
+  uiwidgetp = uisongselBuildUI (plui->uisongsel, plui->window);
   /* CONTEXT: playerui: name of request tab : lists the songs in the database */
   uiCreateLabel (&uiwidget, _("Request"));
   uiNotebookAppendPage (plui->notebook, uiwidgetp, &uiwidget);
@@ -603,13 +605,13 @@ pluiBuildUI (playerui_t *plui)
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
-  uiWindowSetDefaultSize (&plui->window, x, y);
+  uiWindowSetDefaultSize (plui->window, x, y);
 
-  uiWidgetShowAll (&plui->window);
+  uiWidgetShowAll (plui->window);
 
   x = nlistGetNum (plui->options, PLUI_POSITION_X);
   y = nlistGetNum (plui->options, PLUI_POSITION_Y);
-  uiWindowMove (&plui->window, x, y, -1);
+  uiWindowMove (plui->window, x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_player", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
@@ -635,7 +637,7 @@ pluiInitializeUI (playerui_t *plui)
 {
   plui->uiplayer = uiplayerInit (plui->progstate, plui->conn, plui->musicdb);
 
-  plui->uireqext = uireqextInit (&plui->window, plui->options);
+  plui->uireqext = uireqextInit (plui->window, plui->options);
   plui->callbacks [PLUI_CB_REQ_EXT] = callbackInit (
       pluiReqextCallback,
       plui, "musicq: request external response");
@@ -644,7 +646,7 @@ pluiInitializeUI (playerui_t *plui)
   plui->uimusicq = uimusicqInit ("plui", plui->conn, plui->musicdb,
       plui->dispsel, DISP_SEL_MUSICQ);
 
-  plui->uisongfilter = uisfInit (&plui->window, plui->options,
+  plui->uisongfilter = uisfInit (plui->window, plui->options,
       SONG_FILTER_FOR_PLAYBACK);
   plui->uisongsel = uisongselInit ("plui-req", plui->conn, plui->musicdb,
       plui->dispsel, NULL, plui->options,
@@ -890,7 +892,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_WINDOW_FIND: {
-          uiWindowFind (&plui->window);
+          uiWindowFind (plui->window);
           break;
         }
         case MSG_QUEUE_SWITCH: {
@@ -993,7 +995,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_MAIN_QUEUE_INFO: {
           char    *dir = NULL;
 
-          dir = pluiExportMP3Dialog (&plui->window);
+          dir = pluiExportMP3Dialog (plui->window);
           if (dir == NULL) {
             uiLabelSetText (&plui->statusMsg, "");
             plui->expmp3state = BDJ4_STATE_OFF;
@@ -1331,7 +1333,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   plui->callbacks [PLUI_CB_FONT_SIZE] = callbackInitLong (
       pluiMarqueeFontSizeDialogResponse, plui);
-  uiCreateDialog (&plui->marqueeFontSizeDialog, &plui->window,
+  uiCreateDialog (&plui->marqueeFontSizeDialog, plui->window,
       plui->callbacks [PLUI_CB_FONT_SIZE],
       /* CONTEXT: playerui: marquee font size dialog: window title */
       _("Marquee Font Size"),

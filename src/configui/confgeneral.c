@@ -149,7 +149,7 @@ confuiSelectMusicDir (void *udata)
   uiselect_t  *selectdata;
 
   logProcBegin (LOG_PROC, "confuiSelectMusicDir");
-  selectdata = uiDialogCreateSelect (&gui->window,
+  selectdata = uiDialogCreateSelect (gui->window,
       /* CONTEXT: configuration: folder selection dialog: window title */
       _("Select Music Folder Location"),
       bdjoptGetStr (OPT_M_DIR_MUSIC), NULL, NULL, NULL);

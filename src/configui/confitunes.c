@@ -275,7 +275,7 @@ confuiSelectiTunesDir (void *udata)
   logProcBegin (LOG_PROC, "confuiSelectiTunesDir");
   /* CONTEXT: configuration: itunes media folder selection dialog: window title */
   snprintf (tbuff, sizeof (tbuff), _("Select %s Media Location"), ITUNES_NAME);
-  selectdata = uiDialogCreateSelect (&gui->window, tbuff,
+  selectdata = uiDialogCreateSelect (gui->window, tbuff,
       bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA), NULL, NULL, NULL);
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
@@ -299,7 +299,7 @@ confuiSelectiTunesFile (void *udata)
   logProcBegin (LOG_PROC, "confuiSelectiTunesFile");
   /* CONTEXT: configuration: itunes xml file selection dialog: window title */
   snprintf (tbuff, sizeof (tbuff), _("Select %s XML File"), ITUNES_NAME);
-  selectdata = uiDialogCreateSelect (&gui->window, tbuff,
+  selectdata = uiDialogCreateSelect (gui->window, tbuff,
       /* CONTEXT: configuration: dialog: XML file types */
       bdjoptGetStr (OPT_M_ITUNES_XML_FILE), NULL, _("XML Files"), "application/xml");
   fn = uiSelectFileDialog (selectdata);

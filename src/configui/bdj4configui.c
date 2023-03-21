@@ -102,7 +102,7 @@ main (int argc, char *argv[])
   confui.filterDisplayDf = NULL;
 
   confui.gui.localip = NULL;
-  uiwcontInit (&confui.gui.window);
+  confui.gui.window = NULL;
   confui.gui.closecb = NULL;
   confui.gui.notebook = NULL;
   confui.gui.nbcb = NULL;
@@ -298,10 +298,10 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   }
   confuiSaveiTunes (&confui->gui);
 
-  uiWindowGetSize (&confui->gui.window, &x, &y);
+  uiWindowGetSize (confui->gui.window, &x, &y);
   nlistSetNum (confui->options, CONFUI_SIZE_X, x);
   nlistSetNum (confui->options, CONFUI_SIZE_Y, y);
-  uiWindowGetPosition (&confui->gui.window, &x, &y, &ws);
+  uiWindowGetPosition (confui->gui.window, &x, &y, &ws);
   nlistSetNum (confui->options, CONFUI_POSITION_X, x);
   nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
 
@@ -338,7 +338,10 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "confuiClosingCallback");
 
-  uiCloseWindow (&confui->gui.window);
+  uiCloseWindow (confui->gui.window);
+  uiCleanup ();
+
+  uiwcontFree (confui->gui.window);
 
   for (int i = CONFUI_COMBOBOX_BEGIN + 1; i < CONFUI_COMBOBOX_MAX; ++i) {
     uiDropDownFree (confui->gui.uiitem [i].dropdown);
@@ -392,8 +395,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_CONFIGUI, NULL);
 
-  uiCleanup ();
-
   logProcEnd (LOG_PROC, "confuiClosingCallback", "");
   return STATE_FINISHED;
 }
@@ -416,13 +417,13 @@ confuiBuildUI (configui_t *confui)
   snprintf (tbuff, sizeof (tbuff), _("%s Configuration"),
       bdjoptGetStr (OPT_P_PROFILENAME));
   confui->gui.closecb = callbackInit (confuiCloseWin, confui, NULL);
-  uiCreateMainWindow (&confui->gui.window, confui->gui.closecb, tbuff, imgbuff);
+  confui->gui.window = uiCreateMainWindow (confui->gui.closecb, tbuff, imgbuff);
 
   uiCreateVertBox (&confui->gui.vbox);
   uiWidgetExpandHoriz (&confui->gui.vbox);
   uiWidgetExpandVert (&confui->gui.vbox);
   uiWidgetSetAllMargins (&confui->gui.vbox, 2);
-  uiBoxPackInWindow (&confui->gui.window, &confui->gui.vbox);
+  uiBoxPackInWindow (confui->gui.window, &confui->gui.vbox);
 
   uiutilsAddAccentColorDisplay (&confui->gui.vbox, &hbox, &uiwidget);
 
@@ -462,13 +463,13 @@ confuiBuildUI (configui_t *confui)
 
   x = nlistGetNum (confui->options, CONFUI_SIZE_X);
   y = nlistGetNum (confui->options, CONFUI_SIZE_Y);
-  uiWindowSetDefaultSize (&confui->gui.window, x, y);
+  uiWindowSetDefaultSize (confui->gui.window, x, y);
 
-  uiWidgetShowAll (&confui->gui.window);
+  uiWidgetShowAll (confui->gui.window);
 
   x = nlistGetNum (confui->options, CONFUI_POSITION_X);
   y = nlistGetNum (confui->options, CONFUI_POSITION_Y);
-  uiWindowMove (&confui->gui.window, x, y, -1);
+  uiWindowMove (confui->gui.window, x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".png", PATHBLD_MP_DIR_IMG);
@@ -564,7 +565,7 @@ confuiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_WINDOW_FIND: {
-          uiWindowFind (&confui->gui.window);
+          uiWindowFind (confui->gui.window);
           break;
         }
         default: {

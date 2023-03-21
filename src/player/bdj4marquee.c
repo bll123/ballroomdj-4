@@ -78,7 +78,7 @@ typedef struct {
   int             stopwaitcount;
   datafile_t      *optiondf;
   nlist_t         *options;
-  uiwcont_t       window;
+  uiwcont_t       *window;
   callback_t      *callbacks [MQ_CB_MAX];
   uiwcont_t       *pbar;
   uiwcont_t       infoBox;
@@ -165,7 +165,7 @@ main (int argc, char *argv[])
   progstateSetCallback (marquee.progstate, STATE_CLOSING,
       marqueeClosingCallback, &marquee);
 
-  uiwcontInit (&marquee.window);
+  marquee.window = NULL;
   marquee.pbar = NULL;
   marquee.sep = NULL;
   uiwcontInit (&marquee.countdownTimerLab);
@@ -260,12 +260,12 @@ marqueeStoppingCallback (void *udata, programstate_t programState)
     return STATE_NOT_FINISH;
   }
 
-  if (uiWindowIsMaximized (&marquee->window)) {
+  if (uiWindowIsMaximized (marquee->window)) {
     logProcEnd (LOG_PROC, "marqueeStoppingCallback", "is-maximized-b");
     return STATE_NOT_FINISH;
   }
 
-  uiWindowGetSize (&marquee->window, &x, &y);
+  uiWindowGetSize (marquee->window, &x, &y);
   nlistSetNum (marquee->options, MQ_SIZE_X, x);
   nlistSetNum (marquee->options, MQ_SIZE_Y, y);
   if (! marquee->isIconified) {
@@ -297,7 +297,8 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   /* these are moved here so that the window can be un-maximized and */
   /* the size/position saved */
-  uiCloseWindow (&marquee->window);
+  uiCloseWindow (marquee->window);
+  uiwcontFree (marquee->window);
   uiCleanup ();
 
   pathbldMakePath (fn, sizeof (fn),
@@ -308,6 +309,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   uiwcontFree (marquee->pbar);
   uiwcontFree (marquee->sep);
+
   dataFree (marquee->marqueeLabs);
   if (marquee->options != NULL) {
     if (marquee->options != datafileGetList (marquee->optiondf)) {
@@ -324,10 +326,10 @@ static void
 marqueeBuildUI (marquee_t *marquee)
 {
   char        imgbuff [MAXPATHLEN];
-  uiwcont_t  uiwidget;
-  uiwcont_t  mainvbox;
-  uiwcont_t  hbox;
-  uiwcont_t  vbox;
+  uiwcont_t   uiwidget;
+  uiwcont_t   mainvbox;
+  uiwcont_t   hbox;
+  uiwcont_t   vbox;
   int         x, y;
 
   logProcBegin (LOG_PROC, "marqueeBuildUI");
@@ -346,33 +348,31 @@ marqueeBuildUI (marquee_t *marquee)
 
   marquee->callbacks [MQ_CB_EXIT] = callbackInit (
       marqueeCloseCallback, marquee, NULL);
-  uiCreateMainWindow (&uiwidget, marquee->callbacks [MQ_CB_EXIT],
+  marquee->window = uiCreateMainWindow (marquee->callbacks [MQ_CB_EXIT],
       /* CONTEXT: marquee: marquee window title */
       _("Marquee"), imgbuff);
-  uiWindowNoFocusOnStartup (&uiwidget);
+  uiWindowNoFocusOnStartup (marquee->window);
 
   marquee->callbacks [MQ_CB_DBL_CLICK] = callbackInit (
       marqueeToggleFullscreen, marquee, NULL);
-  uiWindowSetDoubleClickCallback (&uiwidget, marquee->callbacks [MQ_CB_DBL_CLICK]);
+  uiWindowSetDoubleClickCallback (marquee->window, marquee->callbacks [MQ_CB_DBL_CLICK]);
 
   marquee->callbacks [MQ_CB_WINSTATE] = callbackInitIntInt (
       marqueeWinState, marquee);
-  uiWindowSetWinStateCallback (&uiwidget, marquee->callbacks [MQ_CB_WINSTATE]);
+  uiWindowSetWinStateCallback (marquee->window, marquee->callbacks [MQ_CB_WINSTATE]);
 
   marquee->callbacks [MQ_CB_WINMAP] = callbackInit (marqueeWinMapped, marquee, NULL);
-  uiWindowSetMappedCallback (&uiwidget, marquee->callbacks [MQ_CB_WINMAP]);
+  uiWindowSetMappedCallback (marquee->window, marquee->callbacks [MQ_CB_WINMAP]);
 
-  uiWindowNoDim (&uiwidget);
-
-  uiwcontCopy (&marquee->window, &uiwidget);
+  uiWindowNoDim (marquee->window);
 
   x = nlistGetNum (marquee->options, MQ_SIZE_X);
   y = nlistGetNum (marquee->options, MQ_SIZE_Y);
-  uiWindowSetDefaultSize (&marquee->window, x, y);
+  uiWindowSetDefaultSize (marquee->window, x, y);
 
   uiCreateVertBox (&mainvbox);
   uiWidgetSetAllMargins (&mainvbox, 10);
-  uiBoxPackInWindow (&marquee->window, &mainvbox);
+  uiBoxPackInWindow (marquee->window, &mainvbox);
   uiWidgetExpandHoriz (&mainvbox);
   uiWidgetExpandVert (&mainvbox);
   marquee->marginTotal = 20;
@@ -457,14 +457,14 @@ marqueeBuildUI (marquee_t *marquee)
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ));
 
   if (marquee->hideonstart) {
-    uiWindowIconify (&marquee->window);
+    uiWindowIconify (marquee->window);
     marquee->isIconified = true;
   }
 
   if (! marquee->mqShowInfo) {
     uiWidgetHide (&marquee->infoBox);
   }
-  uiWidgetShowAll (&marquee->window);
+  uiWidgetShowAll (marquee->window);
 
   marqueeMoveWindow (marquee);
 
@@ -662,7 +662,7 @@ marqueeCloseCallback (void *udata)
     }
 
     marquee->mqIconifyAction = true;
-    uiWindowIconify (&marquee->window);
+    uiWindowIconify (marquee->window);
     marquee->isIconified = true;
     logProcEnd (LOG_PROC, "marqueeCloseWin", "user-close-win");
     return UICB_STOP;
@@ -697,9 +697,9 @@ marqueeSetMaximized (marquee_t *marquee)
   marquee->isMaximized = true;
   if (! isWindows()) {
     /* decorations are not recovered after disabling on windows */
-    uiWindowDisableDecorations (&marquee->window);
+    uiWindowDisableDecorations (marquee->window);
   }
-  uiWindowMaximize (&marquee->window);
+  uiWindowMaximize (marquee->window);
   marqueeSetFont (marquee, nlistGetNum (marquee->options, MQ_FONT_SZ_FS));
   marqueeSendMaximizeState (marquee);
 }
@@ -724,10 +724,10 @@ static void
 marqueeSetNotMaximizeFinish (marquee_t *marquee)
 {
   marquee->setPrior = true;
-  uiWindowUnMaximize (&marquee->window);
+  uiWindowUnMaximize (marquee->window);
   if (! isWindows()) {
     /* does not work on windows platforms */
-    uiWindowEnableDecorations (&marquee->window);
+    uiWindowEnableDecorations (marquee->window);
   }
   marqueeSendMaximizeState (marquee);
   logProcEnd (LOG_PROC, "marqueeSetNotMaximized", "");
@@ -808,7 +808,7 @@ marqueeSaveWindowPosition (marquee_t *marquee)
 {
   int   x, y, ws;
 
-  uiWindowGetPosition (&marquee->window, &x, &y, &ws);
+  uiWindowGetPosition (marquee->window, &x, &y, &ws);
   /* on windows, when the window is iconified, the position cannot be */
   /* fetched like on linux; -32000 is returned for the position */
   if (x != -32000 && y != -32000 ) {
@@ -826,7 +826,7 @@ marqueeMoveWindow (marquee_t *marquee)
   x = nlistGetNum (marquee->options, MQ_POSITION_X);
   y = nlistGetNum (marquee->options, MQ_POSITION_Y);
   ws = nlistGetNum (marquee->options, MQ_WORKSPACE);
-  uiWindowMove (&marquee->window, x, y, ws);
+  uiWindowMove (marquee->window, x, y, ws);
 }
 
 static void
@@ -1014,12 +1014,12 @@ marqueeFind (marquee_t *marquee)
   nlistSetNum (marquee->options, MQ_POSITION_Y, 200);
 
   if (marquee->isIconified) {
-    uiWindowDeIconify (&marquee->window);
+    uiWindowDeIconify (marquee->window);
   }
   marqueeSetNotMaximized (marquee);
   marqueeMoveWindow (marquee);
-  uiWindowFind (&marquee->window);
-  uiWindowPresent (&marquee->window);
+  uiWindowFind (marquee->window);
+  uiWindowPresent (marquee->window);
   marqueeSaveWindowPosition (marquee);
 }
 

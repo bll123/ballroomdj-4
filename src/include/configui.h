@@ -368,7 +368,7 @@ typedef struct confuigui {
   char              *localip;
   bool              inbuild : 1;
   /* main window */
-  uiwcont_t         window;
+  uiwcont_t         *window;
   callback_t        *closecb;
   /* main notebook */
   uinbtabid_t       *nbtabid;
