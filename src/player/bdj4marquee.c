@@ -82,7 +82,7 @@ typedef struct {
   callback_t      *callbacks [MQ_CB_MAX];
   uiwcont_t       *pbar;
   uiwcont_t       infoBox;
-  uiwcont_t       sep;
+  uiwcont_t       *sep;
   uiwcont_t       countdownTimerLab;
   uiwcont_t       infoArtistLab;
   uiwcont_t       infoSepLab;
@@ -167,7 +167,7 @@ main (int argc, char *argv[])
 
   uiwcontInit (&marquee.window);
   marquee.pbar = NULL;
-  uiwcontInit (&marquee.sep);
+  marquee.sep = NULL;
   uiwcontInit (&marquee.countdownTimerLab);
   uiwcontInit (&marquee.infoBox);
   uiwcontInit (&marquee.infoArtistLab);
@@ -307,6 +307,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
   bdj4shutdown (ROUTE_MARQUEE, NULL);
 
   uiwcontFree (marquee->pbar);
+  uiwcontFree (marquee->sep);
   dataFree (marquee->marqueeLabs);
   if (marquee->options != NULL) {
     if (marquee->options != datafileGetList (marquee->optiondf)) {
@@ -434,12 +435,12 @@ marqueeBuildUI (marquee_t *marquee)
   uiBoxPackStart (&hbox, &uiwidget);
   uiwcontCopy (&marquee->infoTitleLab, &uiwidget);
 
-  uiCreateHorizSeparator (&marquee->sep);
-  uiWidgetSetClass (&marquee->sep, MQ_ACCENT_CLASS);
-  uiWidgetExpandHoriz (&marquee->sep);
-  uiWidgetSetMarginTop (&marquee->sep, 2);
-  uiWidgetSetMarginBottom (&marquee->sep, 4);
-  uiBoxPackEnd (&vbox, &marquee->sep);
+  marquee->sep = uiCreateHorizSeparator ();
+  uiWidgetSetClass (marquee->sep, MQ_ACCENT_CLASS);
+  uiWidgetExpandHoriz (marquee->sep);
+  uiWidgetSetMarginTop (marquee->sep, 2);
+  uiWidgetSetMarginBottom (marquee->sep, 4);
+  uiBoxPackEnd (&vbox, marquee->sep);
 
   marquee->marqueeLabs = mdmalloc (sizeof (uiwcont_t) * marquee->mqLen);
 

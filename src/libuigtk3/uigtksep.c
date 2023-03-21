@@ -14,19 +14,23 @@
 
 #include "ui/uiinternal.h"
 
+#include "ui/uigeneral.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 #include "ui/uisep.h"
 
-void
-uiCreateHorizSeparator (uiwcont_t *uiwidget)
+uiwcont_t *
+uiCreateHorizSeparator (void)
 {
+  uiwcont_t   *uiwidget;
   GtkWidget   *sep;
 
   sep = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = sep;
   uiWidgetExpandHoriz (uiwidget);
   uiWidgetSetMarginTop (uiwidget, uiBaseMarginSz);
+  return uiwidget;
 }
 
 void

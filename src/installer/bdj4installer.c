@@ -583,12 +583,12 @@ main (int argc, char *argv[])
 static void
 installerBuildUI (installer_t *installer)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
-  uiwcont_t    uiwidget;
+  uiwcont_t     vbox;
+  uiwcont_t     hbox;
+  uiwcont_t     uiwidget;
   uibutton_t    *uibutton;
-  uiwcont_t    *uiwidgetp;
-  uiwcont_t    sg;
+  uiwcont_t     *uiwidgetp;
+  uiwcont_t     sg;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
 
@@ -673,9 +673,10 @@ installerBuildUI (installer_t *installer)
   uiWidgetSetClass (&installer->feedbackMsg, INST_HL_CLASS);
   uiBoxPackStart (&hbox, &installer->feedbackMsg);
 
-  uiCreateHorizSeparator (&uiwidget);
-  uiWidgetSetClass (&uiwidget, INST_SEP_CLASS);
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiwidgetp = uiCreateHorizSeparator ();
+  uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
+  uiBoxPackStart (&vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* conversion process */
   snprintf (tbuff, sizeof (tbuff),
@@ -742,9 +743,10 @@ installerBuildUI (installer_t *installer)
 
   /* VLC status */
 
-  uiCreateHorizSeparator (&uiwidget);
-  uiWidgetSetClass (&uiwidget, INST_SEP_CLASS);
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiwidgetp = uiCreateHorizSeparator ();
+  uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
+  uiBoxPackStart (&vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiCreateSizeGroupHoriz (&sg);
 

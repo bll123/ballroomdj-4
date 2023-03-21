@@ -8,7 +8,7 @@
 # include "ui-gtk3.h"
 #endif
 
-void uiCreateHorizSeparator (uiwcont_t *uiwidget);
+uiwcont_t *uiCreateHorizSeparator (void);
 void uiSeparatorAddClass (const char *classnm, const char *color);
 
 #endif /* INC_UISEP_H */

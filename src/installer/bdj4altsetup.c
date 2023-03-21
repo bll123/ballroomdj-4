@@ -375,9 +375,10 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiWidgetSetClass (&altsetup->feedbackMsg, INST_HL_CLASS);
   uiBoxPackStart (&hbox, &altsetup->feedbackMsg);
 
-  uiCreateHorizSeparator (&uiwidget);
-  uiWidgetSetClass (&uiwidget, INST_SEP_CLASS);
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiwidgetp = uiCreateHorizSeparator ();
+  uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
+  uiBoxPackStart (&vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* button box */
   uiCreateHorizBox (&hbox);
