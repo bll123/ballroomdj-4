@@ -18,6 +18,7 @@
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjvars.h"
+#include "callback.h"
 #include "conn.h"
 #include "filedata.h"
 #include "datafile.h"
@@ -31,7 +32,7 @@
 #include "sockh.h"
 #include "ui.h"
 #include "uiutils.h"
-#include "callback.h"
+#include "uiwcont.h"
 
 enum {
   HELPER_BUTTON_CLOSE,

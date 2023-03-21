@@ -13,13 +13,16 @@
 
 #include <gtk/gtk.h>
 
+#include "uiwcont.h"
+
 #include "ui/uiinternal.h"
 
 #include "ui/uimiscbutton.h"
 
-void
-uiCreateFontButton (uiwcont_t *uiwidget, const char *fontname)
+uiwcont_t *
+uiCreateFontButton (const char *fontname)
 {
+  uiwcont_t   *uiwidget;
   GtkWidget   *fb;
 
   if (fontname != NULL && *fontname) {
@@ -27,7 +30,9 @@ uiCreateFontButton (uiwcont_t *uiwidget, const char *fontname)
   } else {
     fb = gtk_font_button_new ();
   }
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = fb;
+  return uiwidget;
 }
 
 const char *
@@ -39,9 +44,10 @@ uiFontButtonGetFont (uiwcont_t *uiwidget)
   return sval;
 }
 
-void
-uiCreateColorButton (uiwcont_t *uiwidget, const char *color)
+uiwcont_t *
+uiCreateColorButton (const char *color)
 {
+  uiwcont_t   *uiwidget;
   GtkWidget   *cb;
   GdkRGBA     rgba;
 
@@ -51,7 +57,9 @@ uiCreateColorButton (uiwcont_t *uiwidget, const char *color)
   } else {
     cb = gtk_color_button_new ();
   }
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = cb;
+  return uiwidget;
 }
 
 void

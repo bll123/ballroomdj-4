@@ -14,6 +14,7 @@
 #include "bdj4intl.h"
 #include "bdj4ui.h"
 #include "bdjopt.h"
+#include "callback.h"
 #include "dispsel.h"
 #include "log.h"
 #include "mdebug.h"
@@ -21,12 +22,12 @@
 #include "musicdb.h"
 #include "pathbld.h"
 #include "ui.h"
-#include "callback.h"
 #include "uidance.h"
 #include "uifavorite.h"
 #include "uimusicq.h"
 #include "uisong.h"
 #include "uitreedisp.h"
+#include "uiwcont.h"
 
 enum {
   MUSICQ_COL_ELLIPSIZE,

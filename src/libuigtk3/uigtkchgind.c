@@ -14,10 +14,10 @@
 
 #include "mdebug.h"
 #include "uiclass.h"
+#include "uiwcont.h"
 
 #include "ui/uiinternal.h"
 
-#include "ui/uigeneral.h"
 #include "ui/uiui.h"
 #include "ui/uibox.h"
 #include "ui/uiwidget.h"

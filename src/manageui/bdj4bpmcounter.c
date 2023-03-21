@@ -20,6 +20,7 @@
 #include "bdjmsg.h"
 #include "bdjopt.h"
 #include "bdjvars.h"
+#include "callback.h"
 #include "conn.h"
 #include "log.h"
 #include "mdebug.h"
@@ -31,8 +32,8 @@
 #include "sockh.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "callback.h"
 #include "uiutils.h"
+#include "uiwcont.h"
 
 enum {
   BPMCOUNT_CB_EXIT,

@@ -21,6 +21,7 @@
 #include "ui.h"
 #include "callback.h"
 #include "uiselectfile.h"
+#include "uiwcont.h"
 
 enum {
   SELFILE_COL_DISP,

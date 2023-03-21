@@ -18,6 +18,7 @@
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
+#include "callback.h"
 #include "dance.h"
 #include "filemanip.h"
 #include "log.h"
@@ -27,9 +28,9 @@
 #include "playlist.h"
 #include "tagdef.h"
 #include "ui.h"
-#include "callback.h"
 #include "uiduallist.h"
 #include "uiselectfile.h"
+#include "uiwcont.h"
 
 enum {
   MSEQ_MENU_CB_SEQ_LOAD,

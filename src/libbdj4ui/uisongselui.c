@@ -37,6 +37,7 @@
 #include "uisong.h"
 #include "uisongsel.h"
 #include "uitreedisp.h"
+#include "uiwcont.h"
 
 enum {
   SONGSEL_COL_ELLIPSIZE,

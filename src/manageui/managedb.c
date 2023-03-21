@@ -25,6 +25,7 @@
 #include "procutil.h"
 #include "sysvars.h"
 #include "ui.h"
+#include "uiwcont.h"
 #include "callback.h"
 
 enum {

@@ -90,13 +90,13 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_COLOR: {
-        uiColorButtonGetColor (&gui->uiitem [i].uiwidget,
+        uiColorButtonGetColor (gui->uiitem [i].uiwidgetp,
             tbuff, sizeof (tbuff));
         sval = tbuff;
         break;
       }
       case CONFUI_FONT: {
-        sval = uiFontButtonGetFont (&gui->uiitem [i].uiwidget);
+        sval = uiFontButtonGetFont (gui->uiitem [i].uiwidgetp);
         break;
       }
       case CONFUI_SWITCH: {

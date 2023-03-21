@@ -19,11 +19,11 @@
 #include "mdebug.h"
 #include "tagdef.h"
 #include "uiclass.h"
+#include "uiwcont.h"
 
 #include "ui/uiinternal.h"
 
 #include "ui/uibox.h"
-#include "ui/uigeneral.h"
 #include "ui/uitreeview.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"

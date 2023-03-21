@@ -21,6 +21,7 @@
 #include "slist.h"
 #include "ui.h"
 #include "uiduallist.h"
+#include "uiwcont.h"
 
 static bool confuiDispSettingChg (void *udata);
 

@@ -53,6 +53,7 @@
 #include "uisongfilter.h"
 #include "uisongsel.h"
 #include "uiutils.h"
+#include "uiwcont.h"
 
 enum {
   PLUI_MENU_CB_PLAY_QUEUE,

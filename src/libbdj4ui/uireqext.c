@@ -33,6 +33,7 @@
 #include "callback.h"
 #include "uidance.h"
 #include "uireqext.h"
+#include "uiwcont.h"
 
 enum {
   UIREQEXT_CB_DIALOG,

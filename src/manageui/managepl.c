@@ -16,6 +16,7 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
+#include "callback.h"
 #include "filemanip.h"
 #include "log.h"
 #include "manageui.h"
@@ -25,10 +26,10 @@
 #include "tmutil.h"
 #include "tagdef.h"
 #include "ui.h"
-#include "callback.h"
 #include "uilevel.h"
 #include "uirating.h"
 #include "uiselectfile.h"
+#include "uiwcont.h"
 #include "validate.h"
 
 enum {

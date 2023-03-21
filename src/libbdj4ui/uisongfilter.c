@@ -19,6 +19,7 @@
 #include "bdj4ui.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
+#include "callback.h"
 #include "genre.h"
 #include "ilist.h"
 #include "level.h"
@@ -35,7 +36,6 @@
 #include "status.h"
 #include "tagdef.h"
 #include "ui.h"
-#include "callback.h"
 #include "uidance.h"
 #include "uifavorite.h"
 #include "uigenre.h"
@@ -44,6 +44,7 @@
 #include "uisongfilter.h"
 #include "uistatus.h"
 #include "uiutils.h"
+#include "uiwcont.h"
 
 enum {
   UISF_LABEL_SORTBY,

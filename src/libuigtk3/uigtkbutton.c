@@ -21,10 +21,10 @@
 #include "pathbld.h"
 #include "tmutil.h"
 #include "uiclass.h"
+#include "uiwcont.h"
 
 #include "ui/uiinternal.h"
 
-#include "ui/uigeneral.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 #include "ui/uibutton.h"

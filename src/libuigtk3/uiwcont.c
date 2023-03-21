@@ -11,10 +11,9 @@
 #include <assert.h>
 
 #include "mdebug.h"
+#include "uiwcont.h"
 
 #include "ui/uiinternal.h"
-
-#include "ui/uigeneral.h"
 
 uiwcont_t *
 uiwcontAlloc (void)

@@ -16,6 +16,7 @@
 #include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjvarsdf.h"
+#include "callback.h"
 #include "conn.h"
 #include "dance.h"
 #include "level.h"
@@ -31,7 +32,6 @@
 #include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
-#include "callback.h"
 #include "uidance.h"
 #include "uifavorite.h"
 #include "uigenre.h"
@@ -41,6 +41,7 @@
 #include "uisong.h"
 #include "uisongsel.h"
 #include "uisongedit.h"
+#include "uiwcont.h"
 
 enum {
   SONGEDIT_CHK_NONE,

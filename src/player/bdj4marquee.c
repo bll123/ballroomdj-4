@@ -23,6 +23,7 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "datafile.h"
+#include "callback.h"
 #include "conn.h"
 #include "localeutil.h"
 #include "lock.h"
@@ -39,7 +40,7 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiutils.h"
-#include "callback.h"
+#include "uiwcont.h"
 
 enum {
   MQ_POSITION_X,

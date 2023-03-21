@@ -24,6 +24,7 @@
 #include "tagdef.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uiwcont.h"
 #include "validate.h"
 
 enum {

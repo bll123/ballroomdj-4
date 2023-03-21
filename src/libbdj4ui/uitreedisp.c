@@ -19,8 +19,8 @@
 #include "tagdef.h"
 #include "uiclass.h"
 #include "uitreedisp.h"
+#include "uiwcont.h"
 
-#include "ui/uigeneral.h"
 #include "ui/uitreeview.h"
 
 /* the tree display routines are used by song selection and the music queue */

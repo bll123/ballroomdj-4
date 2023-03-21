@@ -26,6 +26,7 @@
 #include "callback.h"
 #include "uiduallist.h"
 #include "uinbutil.h"
+#include "uiwcont.h"
 #include "validate.h"
 
 enum {
@@ -153,7 +154,7 @@ confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg,
     const char *txt, int widx, int bdjoptIdx, const char *fontname)
 {
   uiwcont_t  hbox;
-  uiwcont_t  uiwidget;
+  uiwcont_t  *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemFontButton");
   gui->uiitem [widx].basetype = CONFUI_FONT;
@@ -161,11 +162,12 @@ confuiMakeItemFontButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg,
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt, CONFUI_NO_INDENT);
 
-  uiCreateFontButton (&uiwidget, fontname);
-  uiWidgetSetMarginStart (&uiwidget, 4);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiwidgetp = uiCreateFontButton (fontname);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+  uiBoxPackStart (&hbox, uiwidgetp);
+
   uiBoxPackStart (boxp, &hbox);
-  uiwcontCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemFontButton", "");
 }
@@ -175,19 +177,22 @@ confuiMakeItemColorButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg,
     const char *txt, int widx, int bdjoptIdx, const char *color)
 {
   uiwcont_t  hbox;
-  uiwcont_t  uiwidget;
+  uiwcont_t  *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemColorButton");
 
   gui->uiitem [widx].basetype = CONFUI_COLOR;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;
+
   uiCreateHorizBox (&hbox);
   confuiMakeItemLabel (&hbox, sg, txt, CONFUI_NO_INDENT);
-  uiCreateColorButton (&uiwidget, color);
-  uiWidgetSetMarginStart (&uiwidget, 4);
-  uiBoxPackStart (&hbox, &uiwidget);
+
+  uiwidgetp = uiCreateColorButton (color);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+  uiBoxPackStart (&hbox, uiwidgetp);
+
   uiBoxPackStart (boxp, &hbox);
-  uiwcontCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemColorButton", "");
 }

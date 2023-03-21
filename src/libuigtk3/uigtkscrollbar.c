@@ -14,10 +14,10 @@
 
 #include "callback.h"
 #include "mdebug.h"
+#include "uiwcont.h"
 
 #include "ui/uiinternal.h"
 
-#include "ui/uigeneral.h"
 #include "ui/uiwidget.h"
 #include "ui/uiscrollbar.h"
 

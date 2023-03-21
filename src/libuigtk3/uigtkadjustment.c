@@ -12,11 +12,11 @@
 
 #include <gtk/gtk.h>
 
+#include "uiwcont.h"
+
 #include "ui/uiinternal.h"
 
 #include "ui/uiadjustment.h"
-#include "ui/uigeneral.h"
-// #include "ui/uiui.h"
 
 uiwcont_t *
 uiCreateAdjustment (double value, double start, double end,

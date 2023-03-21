@@ -23,6 +23,7 @@
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "bdjvarsdf.h"
+#include "callback.h"
 #include "conn.h"
 #include "dance.h"
 #include "datafile.h"
@@ -57,7 +58,6 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiapplyadj.h"
-#include "callback.h"
 #include "uimusicq.h"
 #include "uinbutil.h"
 #include "uiplayer.h"
@@ -66,6 +66,7 @@
 #include "uisongfilter.h"
 #include "uisongsel.h"
 #include "uiutils.h"
+#include "uiwcont.h"
 
 enum {
   MANAGE_TAB_MAIN_OTHER,

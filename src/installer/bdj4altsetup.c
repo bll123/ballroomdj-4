@@ -49,6 +49,7 @@
 #include "templateutil.h"
 #include "tmutil.h"
 #include "ui.h"
+#include "uiwcont.h"
 
 /* setup states */
 typedef enum {

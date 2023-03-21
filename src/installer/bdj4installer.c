@@ -49,8 +49,9 @@
 #include "slist.h"
 #include "sysvars.h"
 #include "tmutil.h"
-#include "ui.h"
 #include "templateutil.h"
+#include "ui.h"
+#include "uiwcont.h"
 #include "webclient.h"
 
 /* installation states */

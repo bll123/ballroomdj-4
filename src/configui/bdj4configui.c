@@ -41,6 +41,7 @@
 #include "callback.h"
 #include "uinbutil.h"
 #include "uiutils.h"
+#include "uiwcont.h"
 
 typedef struct configui {
   progstate_t       *progstate;

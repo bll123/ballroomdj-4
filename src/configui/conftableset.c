@@ -20,6 +20,7 @@
 #include "configui.h"
 #include "log.h"
 #include "ui.h"
+#include "uiwcont.h"
 
 void
 confuiDanceSet (uitree_t *uitree, char *dancedisp, ilistidx_t key)

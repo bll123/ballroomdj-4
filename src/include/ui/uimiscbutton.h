@@ -8,9 +8,9 @@
 # include "ui-gtk3.h"
 #endif
 
-void uiCreateFontButton (uiwcont_t *uiwidget, const char *fontname);
+uiwcont_t *uiCreateFontButton (const char *fontname);
 const char * uiFontButtonGetFont (uiwcont_t *uiwidget);
-void uiCreateColorButton (uiwcont_t *uiwidget, const char *color);
+uiwcont_t *uiCreateColorButton (const char *color);
 void uiColorButtonGetColor (uiwcont_t *uiwidget, char *tbuff, size_t sz);
 
 #endif /* INC_UIMISCBUTTON_H */

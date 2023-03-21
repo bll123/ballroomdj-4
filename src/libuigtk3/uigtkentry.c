@@ -20,10 +20,10 @@
 #include "mdebug.h"
 #include "pathutil.h"
 #include "tmutil.h"
+#include "uiwcont.h"
 
 #include "ui/uiinternal.h"
 
-#include "ui/uigeneral.h"
 #include "ui/uiui.h"
 #include "ui/uiwidget.h"
 #include "ui/uientry.h"

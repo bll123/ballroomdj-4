@@ -15,10 +15,10 @@
 #include <gtk/gtk.h>
 
 #include "callback.h"
+#include "uiwcont.h"
 
 #include "ui/uiinternal.h"
 
-#include "ui/uigeneral.h"
 #include "ui/uiui.h"
 #include "ui/uinotebook.h"
 

@@ -6,7 +6,6 @@ cmake_minimum_required (VERSION 3.18)
 include (../utils/bdj4macros.cmake)
 
 add_library (libuigtk3 SHARED
-  uigeneral.c
   uigtkadjustment.c
   uigtkbox.c
   uigtkbutton.c
@@ -35,6 +34,7 @@ add_library (libuigtk3 SHARED
   uigtkui.c
   uigtkwidget.c
   uigtkwindow.c
+  uiwcont.c
 )
 target_include_directories (libuigtk3
   PUBLIC ${GTK_INCLUDE_DIRS}

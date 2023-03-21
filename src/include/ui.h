@@ -20,7 +20,6 @@
 #include "ui/uidialog.h"
 #include "ui/uidropdown.h"
 #include "ui/uientry.h"
-#include "ui/uigeneral.h"
 #include "ui/uiimage.h"
 #include "ui/uikeys.h"
 #include "ui/uilabel.h"

@@ -21,6 +21,7 @@
 #include "mdebug.h"
 #include "nlist.h"
 #include "slist.h"
+#include "uiwcont.h"
 
 #include "ui/uiinternal.h"
 
@@ -28,7 +29,6 @@
 #include "ui/uibutton.h"
 #include "ui/uidialog.h"
 #include "ui/uidropdown.h"
-#include "ui/uigeneral.h"
 #include "ui/uitreeview.h"
 #include "ui/uiwidget.h"
 #include "ui/uiwindow.h"

@@ -30,6 +30,7 @@
 #include "ui.h"
 #include "callback.h"
 #include "uiapplyadj.h"
+#include "uiwcont.h"
 
 enum {
   UIAA_CB_DIALOG,
