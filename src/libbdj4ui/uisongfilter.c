@@ -424,10 +424,10 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiwcont_t    hbox;
   uiwcont_t    uiwidget;
   uiwcont_t    *uiwidgetp;
-  uiwcont_t    sg;  // labels
-  uiwcont_t    sgA; // playlist, title, search
-  uiwcont_t    sgB; // drop-downs, not including title
-  uiwcont_t    sgC; // spinboxes, not including favorite
+  uiwcont_t    *szgrp;          // labels
+  uiwcont_t    *szgrpEntry;     // playlist, title, search
+  uiwcont_t    *szgrpDD;        // drop-downs, not including title
+  uiwcont_t    *szgrpSpinText;  // spinboxes, not including favorite
 
   logProcBegin (LOG_PROC, "uisfCreateDialog");
 
@@ -435,10 +435,10 @@ uisfCreateDialog (uisongfilter_t *uisf)
     return;
   }
 
-  uiCreateSizeGroupHoriz (&sg);
-  uiCreateSizeGroupHoriz (&sgA);
-  uiCreateSizeGroupHoriz (&sgB);
-  uiCreateSizeGroupHoriz (&sgC);
+  szgrp = uiCreateSizeGroupHoriz ();
+  szgrpEntry = uiCreateSizeGroupHoriz ();
+  szgrpDD = uiCreateSizeGroupHoriz ();
+  szgrpSpinText = uiCreateSizeGroupHoriz ();
 
   uisf->callbacks [UISF_CB_FILTER] = callbackInitLong (
       uisfResponseHandler, uisf);
@@ -473,7 +473,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* CONTEXT: song selection filter: a filter: select a playlist to work with (music manager) */
   uiCreateColonLabel (&uiwidget, _("Playlist"));
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   uisf->callbacks [UISF_CB_PLAYLIST_SEL] = callbackInitLong (
       uisfPlaylistSelectHandler, uisf);
@@ -490,7 +490,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* CONTEXT: song selection filter: a filter: select the method to sort the song selection display */
   uiCreateColonLabel (&uiwidget, _("Sort by"));
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
   uiwcontCopy (&uisf->labels [UISF_LABEL_SORTBY], &uiwidget);
 
   uisf->callbacks [UISF_CB_SORT_BY_SEL] = callbackInitLong (
@@ -508,14 +508,14 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* CONTEXT: song selection filter: a filter: filter the song selection with a search for text */
   uiCreateColonLabel (&uiwidget, _("Search"));
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
   uiwcontCopy (&uisf->labels [UISF_LABEL_SEARCH], &uiwidget);
 
   uiEntryCreate (uisf->searchentry);
   uiwidgetp = uiEntryGetWidgetContainer (uisf->searchentry);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiBoxPackStart (&hbox, uiwidgetp);
-  uiSizeGroupAdd (&sgA, uiwidgetp);
+  uiSizeGroupAdd (szgrpEntry, uiwidgetp);
 
   /* genre */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_GENRE)) {
@@ -524,7 +524,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
     uiCreateColonLabel (&uiwidget, tagdefs [TAG_GENRE].displayname);
     uiBoxPackStart (&hbox, &uiwidget);
-    uiSizeGroupAdd (&sg, &uiwidget);
+    uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_GENRE], &uiwidget);
 
     uisf->callbacks [UISF_CB_GENRE_SEL] = callbackInitLong (
@@ -540,7 +540,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCE].displayname);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
   uiwcontCopy (&uisf->labels [UISF_LABEL_DANCE], &uiwidget);
 
   uisf->callbacks [UISF_CB_DANCE_SEL] = callbackInitLongInt (
@@ -557,11 +557,11 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCERATING].displayname);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
   uiwcontCopy (&uisf->labels [UISF_LABEL_DANCE_RATING], &uiwidget);
 
   uisf->uirating = uiratingSpinboxCreate (&hbox, true);
-  uiratingSizeGroupAdd (uisf->uirating, &sgC);
+  uiratingSizeGroupAdd (uisf->uirating, szgrpSpinText);
 
   /* level */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCELEVEL)) {
@@ -570,11 +570,11 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
     uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCELEVEL].displayname);
     uiBoxPackStart (&hbox, &uiwidget);
-    uiSizeGroupAdd (&sg, &uiwidget);
+    uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_DANCE_LEVEL], &uiwidget);
 
     uisf->uilevel = uilevelSpinboxCreate (&hbox, true);
-    uilevelSizeGroupAdd (uisf->uilevel, &sgC);
+    uilevelSizeGroupAdd (uisf->uilevel, szgrpSpinText);
   }
 
   /* status */
@@ -584,11 +584,11 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
     uiCreateColonLabel (&uiwidget, tagdefs [TAG_STATUS].displayname);
     uiBoxPackStart (&hbox, &uiwidget);
-    uiSizeGroupAdd (&sg, &uiwidget);
+    uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_STATUS], &uiwidget);
 
     uisf->uistatus = uistatusSpinboxCreate (&hbox, true);
-    uistatusSizeGroupAdd (uisf->uistatus, &sgC);
+    uistatusSizeGroupAdd (uisf->uistatus, szgrpSpinText);
   }
 
   /* favorite */
@@ -598,7 +598,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
     uiCreateColonLabel (&uiwidget, tagdefs [TAG_FAVORITE].displayname);
     uiBoxPackStart (&hbox, &uiwidget);
-    uiSizeGroupAdd (&sg, &uiwidget);
+    uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_FAVORITE], &uiwidget);
 
     uisf->uifavorite = uifavoriteSpinboxCreate (&hbox);
@@ -612,7 +612,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     /* CONTEXT: song selection filter: a filter: the song status is marked as playable */
     uiCreateColonLabel (&uiwidget, _("Playable Status"));
     uiBoxPackStart (&hbox, &uiwidget);
-    uiSizeGroupAdd (&sg, &uiwidget);
+    uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_PLAY_STATUS], &uiwidget);
 
     uisf->playstatusswitch = uiCreateSwitch (uisf->dfltpbflag);
@@ -625,6 +625,11 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   uiCreateLabel (&uiwidget, " ");
   uiBoxPackStart (&hbox, &uiwidget);
+
+  uiwcontFree (szgrp);
+  uiwcontFree (szgrpEntry);
+  uiwcontFree (szgrpDD);
+  uiwcontFree (szgrpSpinText);
 
   logProcEnd (LOG_PROC, "uisfCreateDialog", "");
 }

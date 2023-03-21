@@ -39,46 +39,49 @@ void
 confuiBuildUIMarquee (confuigui_t *gui)
 {
   uiwcont_t    vbox;
-  uiwcont_t    sg;
+  uiwcont_t    *szgrp;
 
   logProcBegin (LOG_PROC, "confuiBuildUIMarquee");
   uiCreateVertBox (&vbox);
+
+  szgrp = uiCreateSizeGroupHoriz ();
 
   /* marquee */
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: options associated with the marquee */
       _("Marquee"), CONFUI_ID_NONE);
-  uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: show-marquee: selection */
-  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Show Marquee"),
+  confuiMakeItemSpinboxText (gui, &vbox, szgrp, NULL, _("Show Marquee"),
       CONFUI_SPINBOX_MARQUEE_SHOW, OPT_P_MARQUEE_SHOW,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_P_MARQUEE_SHOW), NULL);
 
   /* CONTEXT: configuration: The theme to use for the marquee display */
-  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Marquee Theme"),
+  confuiMakeItemSpinboxText (gui, &vbox, szgrp, NULL, _("Marquee Theme"),
       CONFUI_SPINBOX_MQ_THEME, OPT_MP_MQ_THEME,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_MQ_THEME].listidx, NULL);
 
   /* CONTEXT: configuration: The font to use for the marquee display */
-  confuiMakeItemFontButton (gui, &vbox, &sg, _("Marquee Font"),
+  confuiMakeItemFontButton (gui, &vbox, szgrp, _("Marquee Font"),
       CONFUI_WIDGET_MQ_FONT, OPT_MP_MQFONT,
       bdjoptGetStr (OPT_MP_MQFONT));
 
   /* CONTEXT: (noun) configuration: the length of the queue displayed on the marquee */
-  confuiMakeItemSpinboxNum (gui, &vbox, &sg, NULL, _("Queue Length"),
+  confuiMakeItemSpinboxNum (gui, &vbox, szgrp, NULL, _("Queue Length"),
       CONFUI_WIDGET_MQ_QUEUE_LEN, OPT_P_MQQLEN,
       1, 20, bdjoptGetNum (OPT_P_MQQLEN), NULL);
 
   /* CONTEXT: configuration: marquee: show the song information (artist/title) on the marquee */
-  confuiMakeItemSwitch (gui, &vbox, &sg, _("Show Song Information"),
+  confuiMakeItemSwitch (gui, &vbox, szgrp, _("Show Song Information"),
       CONFUI_SWITCH_MQ_SHOW_SONG_INFO, OPT_P_MQ_SHOW_INFO,
       bdjoptGetNum (OPT_P_MQ_SHOW_INFO), NULL, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: marquee: the accent color used for the marquee */
-  confuiMakeItemColorButton (gui, &vbox, &sg, _("Accent Colour"),
+  confuiMakeItemColorButton (gui, &vbox, szgrp, _("Accent Colour"),
       CONFUI_WIDGET_MQ_ACCENT_COLOR, OPT_P_MQ_ACCENT_COL,
       bdjoptGetStr (OPT_P_MQ_ACCENT_COL));
+
+  uiwcontFree (szgrp);
 
   logProcEnd (LOG_PROC, "confuiBuildUIMarquee", "");
 }

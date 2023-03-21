@@ -338,14 +338,14 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiwcont_t   vbox;
   uiwcont_t   hboxbpm;
   uiwcont_t   hbox;
-  uiwcont_t   sg;
-  uiwcont_t   sgb;
+  uiwcont_t   *szgrp;
+  uiwcont_t   *szgrpDisp;
   char        imgbuff [MAXPATHLEN];
   int         x, y;
 
   logProcBegin (LOG_PROC, "bpmcounterBuildUI");
-  uiCreateSizeGroupHoriz (&sg);
-  uiCreateSizeGroupHoriz (&sgb);
+  szgrp = uiCreateSizeGroupHoriz ();      // labels
+  szgrpDisp = uiCreateSizeGroupHoriz ();     // display
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -411,12 +411,12 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
       uiToggleButtonSetCallback (uiwidgetp,
           bpmcounter->callbacks [BPMCOUNT_CB_RADIO]);
     }
-    uiSizeGroupAdd (&sg, uiwidgetp);
+    uiSizeGroupAdd (szgrp, uiwidgetp);
     uiBoxPackStart (&hbox, uiwidgetp);
 
     uiCreateLabel (&bpmcounter->dispvalue [i], "");
     uiLabelAlignEnd (&bpmcounter->dispvalue [i]);
-    uiSizeGroupAdd (&sgb, &bpmcounter->dispvalue [i]);
+    uiSizeGroupAdd (szgrpDisp, &bpmcounter->dispvalue [i]);
     uiBoxPackStart (&hbox, &bpmcounter->dispvalue [i]);
   }
 
@@ -487,6 +487,9 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   osuiSetIcon (imgbuff);
 
   uiWidgetShowAll (&bpmcounter->window);
+
+  uiwcontFree (szgrp);
+  uiwcontFree (szgrpDisp);
 
   logProcEnd (LOG_PROC, "bpmcounterBuildUI", "");
 }

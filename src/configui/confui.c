@@ -25,21 +25,22 @@
 void
 confuiBuildUIUserInterface (confuigui_t *gui)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    sg;
+  uiwcont_t     vbox;
+  uiwcont_t     *szgrp;
   char          *tstr;
 
   logProcBegin (LOG_PROC, "confuiBuildUIUserInterface");
   uiCreateVertBox (&vbox);
 
+  szgrp = uiCreateSizeGroupHoriz ();
+
   /* user interface */
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: options associated with the user interface */
       _("User Interface"), CONFUI_ID_NONE);
-  uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: the theme to use for the user interface */
-  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Theme"),
+  confuiMakeItemSpinboxText (gui, &vbox, szgrp, NULL, _("Theme"),
       CONFUI_SPINBOX_UI_THEME, OPT_MP_UI_THEME, CONFUI_OUT_STR,
       gui->uiitem [CONFUI_SPINBOX_UI_THEME].listidx, NULL);
 
@@ -48,7 +49,7 @@ confuiBuildUIUserInterface (confuigui_t *gui)
     tstr = sysvarsGetStr (SV_FONT_DEFAULT);
   }
   /* CONTEXT: configuration: the font to use for the user interface */
-  confuiMakeItemFontButton (gui, &vbox, &sg, _("Font"),
+  confuiMakeItemFontButton (gui, &vbox, szgrp, _("Font"),
       CONFUI_WIDGET_UI_FONT, OPT_MP_UIFONT, tstr);
 
   tstr = bdjoptGetStr (OPT_MP_LISTING_FONT);
@@ -56,18 +57,20 @@ confuiBuildUIUserInterface (confuigui_t *gui)
     tstr = sysvarsGetStr (SV_FONT_DEFAULT);
   }
   /* CONTEXT: configuration: the font to use for the queues and song lists */
-  confuiMakeItemFontButton (gui, &vbox, &sg, _("Listing Font"),
+  confuiMakeItemFontButton (gui, &vbox, szgrp, _("Listing Font"),
       CONFUI_WIDGET_UI_LISTING_FONT, OPT_MP_LISTING_FONT, tstr);
 
   /* CONTEXT: configuration: scaling factor for the user interface */
-  confuiMakeItemSpinboxNum (gui, &vbox, &sg, NULL, _("Scale"),
+  confuiMakeItemSpinboxNum (gui, &vbox, szgrp, NULL, _("Scale"),
       CONFUI_WIDGET_UI_SCALE, OPT_M_SCALE,
       1, 4, bdjoptGetNum (OPT_M_SCALE), NULL);
 
   /* CONTEXT: configuration: the accent color to use for the user interface */
-  confuiMakeItemColorButton (gui, &vbox, &sg, _("Accent Colour"),
+  confuiMakeItemColorButton (gui, &vbox, szgrp, _("Accent Colour"),
       CONFUI_WIDGET_UI_ACCENT_COLOR, OPT_P_UI_ACCENT_COL,
       bdjoptGetStr (OPT_P_UI_ACCENT_COL));
   logProcEnd (LOG_PROC, "confuiBuildUIUserInterface", "");
+
+  uiwcontFree (szgrp);
 }
 

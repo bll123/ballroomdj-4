@@ -168,14 +168,14 @@ manageDbFree (managedb_t *managedb)
 void
 manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
 {
-  uiwcont_t    uiwidget;
-  uiwcont_t    *uiwidgetp;
-  uiwcont_t    hbox;
-  uiwcont_t    sg;
+  uiwcont_t     uiwidget;
+  uiwcont_t     *uiwidgetp;
+  uiwcont_t     hbox;
+  uiwcont_t     *szgrp;
   uitextbox_t   *tb;
 
 
-  uiCreateSizeGroupHoriz (&sg);   // labels
+  szgrp = uiCreateSizeGroupHoriz ();   // labels
 
   /* action selection */
   uiCreateHorizBox (&hbox);
@@ -184,7 +184,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   /* CONTEXT: update database: select database update action */
   uiCreateColonLabel (&uiwidget, _("Action"));
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
   uiWidgetSetMarginStart (&uiwidget, 2);
 
   uiSpinboxTextCreate (managedb->dbspinbox, managedb);
@@ -208,7 +208,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStart (&hbox, &uiwidget);
   uiWidgetSetMarginStart (&uiwidget, 2);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStartExpand (&hbox, &uiwidget);
@@ -224,7 +224,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiCreateColonLabel (&uiwidget, _("Music Folder"));
   uiBoxPackStart (&hbox, &uiwidget);
   uiWidgetSetMarginStart (&uiwidget, 2);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   uiEntryCreate (managedb->dbtopdir);
   uiEntrySetValue (managedb->dbtopdir, bdjoptGetStr (OPT_M_DIR_MUSIC));
@@ -247,7 +247,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
 
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   managedb->callbacks [MDB_CB_START] = callbackInit (
       manageDbStart, managedb, NULL);
@@ -278,6 +278,8 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiTextBoxSetHeight (tb, 300);
   uiBoxPackStartExpand (vboxp, uiTextBoxGetScrolledWindow (tb));
   managedb->dbstatus = tb;
+
+  uiwcontFree (szgrp);
 }
 
 bool

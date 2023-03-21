@@ -66,41 +66,45 @@ void
 confuiBuildUIOrganization (confuigui_t *gui)
 {
   uiwcont_t    vbox;
-  uiwcont_t    sg;
+  uiwcont_t    *szgrp;
 
   logProcBegin (LOG_PROC, "confuiBuildUIOrganization");
   uiCreateVertBox (&vbox);
+
+  szgrp = uiCreateSizeGroupHoriz ();
 
   /* organization */
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: options associated with how audio files are organized */
       _("Organisation"), CONFUI_ID_ORGANIZATION);
-  uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: the audio file organization path */
-  confuiMakeItemCombobox (gui, &vbox, &sg, _("Organisation Path"),
+  confuiMakeItemCombobox (gui, &vbox, szgrp, _("Organisation Path"),
       CONFUI_COMBOBOX_ORGPATH, OPT_G_ORGPATH,
       confuiOrgPathSelect, bdjoptGetStr (OPT_G_ORGPATH));
   /* CONTEXT: configuration: examples displayed for the audio file organization path */
-  confuiMakeItemLabelDisp (gui, &vbox, &sg, _("Examples"),
+  confuiMakeItemLabelDisp (gui, &vbox, szgrp, _("Examples"),
       CONFUI_WIDGET_AO_EXAMPLE_1, -1);
-  confuiMakeItemLabelDisp (gui, &vbox, &sg, "",
+  confuiMakeItemLabelDisp (gui, &vbox, szgrp, "",
       CONFUI_WIDGET_AO_EXAMPLE_2, -1);
-  confuiMakeItemLabelDisp (gui, &vbox, &sg, "",
+  confuiMakeItemLabelDisp (gui, &vbox, szgrp, "",
       CONFUI_WIDGET_AO_EXAMPLE_3, -1);
-  confuiMakeItemLabelDisp (gui, &vbox, &sg, "",
+  confuiMakeItemLabelDisp (gui, &vbox, szgrp, "",
       CONFUI_WIDGET_AO_EXAMPLE_4, -1);
 
-  confuiMakeItemSwitch (gui, &vbox, &sg,
+  confuiMakeItemSwitch (gui, &vbox, szgrp,
       /* CONTEXT: configuration: checkbox: the database will load the dance from the audio file genre tag */
       _("Database Loads Dance From Genre"),
       CONFUI_SWITCH_DB_LOAD_FROM_GENRE, OPT_G_LOADDANCEFROMGENRE,
       bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE), NULL, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: checkbox: is automatic organization enabled */
-  confuiMakeItemSwitch (gui, &vbox, &sg, _("Auto Organise"),
+  confuiMakeItemSwitch (gui, &vbox, szgrp, _("Auto Organise"),
       CONFUI_SWITCH_AUTO_ORGANIZE, OPT_G_AUTOORGANIZE,
       bdjoptGetNum (OPT_G_AUTOORGANIZE), NULL, CONFUI_NO_INDENT);
+
+  uiwcontFree (szgrp);
+
   logProcEnd (LOG_PROC, "confuiBuildUIOrganization", "");
 }
 

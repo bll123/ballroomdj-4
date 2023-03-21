@@ -34,7 +34,6 @@ confuiBuildUIEditGenres (confuigui_t *gui)
   uiwcont_t    vbox;
   uiwcont_t    hbox;
   uiwcont_t    uiwidget;
-  uiwcont_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditGenres");
   uiCreateVertBox (&vbox);
@@ -43,7 +42,6 @@ confuiBuildUIEditGenres (confuigui_t *gui)
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: edit genres table */
       _("Edit Genres"), CONFUI_ID_GENRES);
-  uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: genres: information on how to edit a genre entry */
   uiCreateLabel (&uiwidget, _("Double click on a field to edit."));

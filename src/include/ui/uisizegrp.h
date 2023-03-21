@@ -6,7 +6,7 @@
 
 #include "uiwcont.h"
 
-void uiCreateSizeGroupHoriz (uiwcont_t *);
+uiwcont_t *uiCreateSizeGroupHoriz (void);
 void uiSizeGroupAdd (uiwcont_t *uiw, uiwcont_t *uiwidget);
 
 #endif /* INC_UISIZEGRP_H */

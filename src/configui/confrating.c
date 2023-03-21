@@ -32,7 +32,6 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   uiwcont_t    vbox;
   uiwcont_t    hbox;
   uiwcont_t    uiwidget;
-  uiwcont_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditRatings");
   uiCreateVertBox (&vbox);
@@ -41,7 +40,6 @@ confuiBuildUIEditRatings (confuigui_t *gui)
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: edit the dance ratings table */
       _("Edit Ratings"), CONFUI_ID_RATINGS);
-  uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: dance ratings: information on how to order the ratings */
   uiCreateLabel (&uiwidget, _("Order from the lowest rating to the highest rating."));

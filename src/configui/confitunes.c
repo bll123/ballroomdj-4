@@ -132,8 +132,8 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiwcont_t    hbox;
   uiwcont_t    uiwidget;
   uiwcont_t    *vboxp;
-  uiwcont_t    sg;
-  uiwcont_t    sgr;
+  uiwcont_t    *szgrp;
+  uiwcont_t    *szgrpr;
   int           count;
   const char    *itunesName;
   int           tagidx;
@@ -141,10 +141,11 @@ confuiBuildUIiTunes (confuigui_t *gui)
   logProcBegin (LOG_PROC, "confuiBuildUIiTunes");
   uiCreateVertBox (&mvbox);
 
+  szgrp = uiCreateSizeGroupHoriz ();
+  szgrpr = uiCreateSizeGroupHoriz ();
+
   /* filter display */
   confuiMakeNotebookTab (&mvbox, gui, ITUNES_NAME, CONFUI_ID_FILTER);
-  uiCreateSizeGroupHoriz (&sg);
-  uiCreateSizeGroupHoriz (&sgr);
 
   *tbuff = '\0';
   tdata = bdjoptGetStr (OPT_M_DIR_ITUNES_MEDIA);
@@ -154,7 +155,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   /* CONTEXT: configuration: itunes: the itunes media folder */
   snprintf (tmp, sizeof (tmp), _("%s Media Folder"), ITUNES_NAME);
-  confuiMakeItemEntryChooser (gui, &mvbox, &sg, tmp,
+  confuiMakeItemEntryChooser (gui, &mvbox, szgrp, tmp,
       CONFUI_ENTRY_CHOOSE_ITUNES_DIR, OPT_M_DIR_ITUNES_MEDIA,
       tbuff, confuiSelectiTunesDir);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_DIR].entry,
@@ -168,7 +169,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
 
   /* CONTEXT: configuration: itunes: the itunes xml file */
   snprintf (tmp, sizeof (tmp), _("%s XML File"), ITUNES_NAME);
-  confuiMakeItemEntryChooser (gui, &mvbox, &sg, tmp,
+  confuiMakeItemEntryChooser (gui, &mvbox, szgrp, tmp,
       CONFUI_ENTRY_CHOOSE_ITUNES_XML, OPT_M_ITUNES_XML_FILE,
       tbuff, confuiSelectiTunesFile);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry,
@@ -202,7 +203,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
     uiBoxPackStart (&vbox, &hbox);
 
     uiCreateLabel (&uiwidget, tbuff);
-    uiSizeGroupAdd (&sgr, &uiwidget);
+    uiSizeGroupAdd (szgrpr, &uiwidget);
     uiBoxPackStart (&hbox, &uiwidget);
 
     gui->itunes->uirating [i] = uiratingSpinboxCreate (&hbox, false);
@@ -244,7 +245,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
     if (itunesGetField (gui->itunes->itunes, tagidx) >= 0) {
       tval = true;
     }
-    confuiMakeItemCheckButton (gui, vboxp, &sg, tagdefs [tagidx].displayname,
+    confuiMakeItemCheckButton (gui, vboxp, szgrp, tagdefs [tagidx].displayname,
         CONFUI_WIDGET_ITUNES_FIELD_1 + count, -1, tval);
     ++count;
     if (count > TAG_ITUNES_MAX / 2) {
@@ -254,6 +255,9 @@ confuiBuildUIiTunes (confuigui_t *gui)
       break;
     }
   }
+
+  uiwcontFree (szgrp);
+  uiwcontFree (szgrpr);
 
   logProcEnd (LOG_PROC, "confuiBuildUIiTunes", "");
 }

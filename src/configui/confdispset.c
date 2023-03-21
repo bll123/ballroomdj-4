@@ -65,11 +65,9 @@ confuiBuildUIDispSettings (confuigui_t *gui)
 {
   uiwcont_t    vbox;
   uiwcont_t    uiwidget;
-  uiwcont_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIDispSettings");
   uiwcontInit (&uiwidget);
-  uiwcontInit (&sg);
 
   uiCreateVertBox (&vbox);
 
@@ -77,10 +75,9 @@ confuiBuildUIDispSettings (confuigui_t *gui)
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: change which fields are displayed in different contexts */
       _("Display Settings"), CONFUI_ID_DISP_SEL_LIST);
-  uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: display settings: which set of display settings to update */
-  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Display"),
+  confuiMakeItemSpinboxText (gui, &vbox, NULL, NULL, _("Display"),
       CONFUI_SPINBOX_DISP_SEL, -1, CONFUI_OUT_NUM,
       gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx,
       confuiDispSettingChg);

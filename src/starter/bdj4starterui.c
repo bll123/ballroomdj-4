@@ -470,16 +470,16 @@ starterClosingCallback (void *udata, programstate_t programState)
 static void
 starterBuildUI (startui_t  *starter)
 {
-  uiwcont_t  uiwidget;
-  uiwcont_t  *uiwidgetp;
+  uiwcont_t   uiwidget;
+  uiwcont_t   *uiwidgetp;
   uibutton_t  *uibutton;
-  uiwcont_t  menubar;
-  uiwcont_t  menu;
-  uiwcont_t  menuitem;
-  uiwcont_t  vbox;
-  uiwcont_t  bvbox;
-  uiwcont_t  hbox;
-  uiwcont_t  sg;
+  uiwcont_t   menubar;
+  uiwcont_t   menu;
+  uiwcont_t   menuitem;
+  uiwcont_t   vbox;
+  uiwcont_t   bvbox;
+  uiwcont_t   hbox;
+  uiwcont_t   *szgrp;
   char        imgbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   int         dispidx;
@@ -488,7 +488,8 @@ starterBuildUI (startui_t  *starter)
   uiwcontInit (&vbox);
   uiwcontInit (&bvbox);
   uiwcontInit (&hbox);
-  uiCreateSizeGroupHoriz (&sg);
+
+  szgrp = uiCreateSizeGroupHoriz ();
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -595,7 +596,7 @@ starterBuildUI (startui_t  *starter)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
-  uiSizeGroupAdd (&sg, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiBoxPackStart (&bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
@@ -609,7 +610,7 @@ starterBuildUI (startui_t  *starter)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
-  uiSizeGroupAdd (&sg, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiBoxPackStart (&bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
@@ -623,7 +624,7 @@ starterBuildUI (startui_t  *starter)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
-  uiSizeGroupAdd (&sg, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiBoxPackStart (&bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
@@ -637,7 +638,7 @@ starterBuildUI (startui_t  *starter)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
-  uiSizeGroupAdd (&sg, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiBoxPackStart (&bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
@@ -649,7 +650,7 @@ starterBuildUI (startui_t  *starter)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
-  uiSizeGroupAdd (&sg, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
   uiBoxPackStart (&bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
@@ -660,6 +661,8 @@ starterBuildUI (startui_t  *starter)
   osuiSetIcon (imgbuff);
 
   uiWidgetShowAll (&starter->window);
+
+  uiwcontFree (szgrp);
 
   logProcEnd (LOG_PROC, "starterBuildUI", "");
 }
@@ -1184,12 +1187,12 @@ static bool
 starterProcessSupport (void *udata)
 {
   startui_t     *starter = udata;
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
-  uiwcont_t    uiwidget;
-  uiwcont_t    *uiwidgetp;
-  uiwcont_t    uidialog;
-  uiwcont_t    sg;
+  uiwcont_t     vbox;
+  uiwcont_t     hbox;
+  uiwcont_t     uiwidget;
+  uiwcont_t     *uiwidgetp;
+  uiwcont_t     uidialog;
+  uiwcont_t     *szgrp;
   uibutton_t    *uibutton;
   char          tbuff [MAXPATHLEN];
   char          uri [MAXPATHLEN];
@@ -1218,7 +1221,7 @@ starterProcessSupport (void *udata)
       NULL
       );
 
-  uiCreateSizeGroupHoriz (&sg);
+  szgrp = uiCreateSizeGroupHoriz ();
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 2);
@@ -1241,7 +1244,7 @@ starterProcessSupport (void *udata)
   snprintf (tbuff, sizeof (tbuff), _("%s Version"), BDJ4_NAME);
   uiCreateColonLabel (&uiwidget, tbuff);
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   builddate = sysvarsGetStr (SV_BDJ4_BUILDDATE);
   rlslvl = sysvarsGetStr (SV_BDJ4_RELEASELEVEL);
@@ -1260,7 +1263,7 @@ starterProcessSupport (void *udata)
   /* CONTEXT: starterui: basic support dialog, latest version display */
   uiCreateColonLabel (&uiwidget, _("Latest Version"));
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStart (&hbox, &uiwidget);
@@ -1279,7 +1282,7 @@ starterProcessSupport (void *udata)
   /* CONTEXT: starterui: basic support dialog, list of support options */
   uiCreateColonLabel (&uiwidget, _("Support options"));
   uiBoxPackStart (&vbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   /* begin line */
   snprintf (uri, sizeof (uri), "%s%s",
@@ -1361,6 +1364,9 @@ starterProcessSupport (void *udata)
 
   uiwcontCopy (&starter->supportDialog, &uidialog);
   uiDialogShow (&uidialog);
+
+  uiwcontFree (szgrp);
+
   return UICB_CONT;
 }
 
@@ -1636,12 +1642,12 @@ static bool
 starterCreateSupportDialog (void *udata)
 {
   startui_t     *starter = udata;
-  uiwcont_t    uiwidget;
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
-  uiwcont_t    uidialog;
-  uiwcont_t    sg;
-  uitextbox_t *tb;
+  uiwcont_t     uiwidget;
+  uiwcont_t     vbox;
+  uiwcont_t     hbox;
+  uiwcont_t     uidialog;
+  uiwcont_t     *szgrp;
+  uitextbox_t   *tb;
 
   if (starter->supportmsgactive) {
     return UICB_STOP;
@@ -1669,7 +1675,7 @@ starterCreateSupportDialog (void *udata)
       );
   uiWindowSetDefaultSize (&uidialog, -1, 400);
 
-  uiCreateSizeGroupHoriz (&sg);
+  szgrp = uiCreateSizeGroupHoriz ();
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 2);
@@ -1685,7 +1691,7 @@ starterCreateSupportDialog (void *udata)
   /* CONTEXT: starterui: sending support message: user's e-mail address */
   uiCreateColonLabel (&uiwidget, _("E-Mail Address"));
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   starter->supportemail = uiEntryInit (50, 100);
   uiEntryCreate (starter->supportemail);
@@ -1698,7 +1704,7 @@ starterCreateSupportDialog (void *udata)
   /* CONTEXT: starterui: sending support message: subject of message */
   uiCreateColonLabel (&uiwidget, _("Subject"));
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   starter->supportsubject = uiEntryInit (50, 100);
   uiEntryCreate (starter->supportsubject);
@@ -1735,6 +1741,8 @@ starterCreateSupportDialog (void *udata)
 
   uiwcontCopy (&starter->supportMsgDialog, &uidialog);
   uiDialogShow (&uidialog);
+
+  uiwcontFree (szgrp);
   return UICB_CONT;
 }
 

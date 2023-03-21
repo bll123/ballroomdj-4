@@ -208,24 +208,24 @@ uiwcont_t *
 uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];
-  uiwcont_t      uiwidget;
+  uiwcont_t       uiwidget;
   uibutton_t      *uibutton;
-  uiwcont_t      *uiwidgetp;
-  uiwcont_t      hbox;
-  uiwcont_t      tbox;
-  uiwcont_t      sgA;
-  uiwcont_t      sgB;
-  uiwcont_t      sgC;
-  uiwcont_t      sgD;
-  uiwcont_t      sgE;
+  uiwcont_t       *uiwidgetp;
+  uiwcont_t       hbox;
+  uiwcont_t       tbox;
+  uiwcont_t       *szgrpA;
+  uiwcont_t       *szgrpB;
+  uiwcont_t       *szgrpC;
+  uiwcont_t       *szgrpD;
+  uiwcont_t       *szgrpE;
 
   logProcBegin (LOG_PROC, "uiplayerBuildUI");
 
-  uiCreateSizeGroupHoriz (&sgA);
-  uiCreateSizeGroupHoriz (&sgB);
-  uiCreateSizeGroupHoriz (&sgC);
-  uiCreateSizeGroupHoriz (&sgD);
-  uiCreateSizeGroupHoriz (&sgE);
+  szgrpA = uiCreateSizeGroupHoriz ();
+  szgrpB = uiCreateSizeGroupHoriz ();
+  szgrpC = uiCreateSizeGroupHoriz ();
+  szgrpD = uiCreateSizeGroupHoriz ();
+  szgrpE = uiCreateSizeGroupHoriz ();
 
   uiCreateVertBox (&uiplayer->vbox);
   uiWidgetExpandHoriz (&uiplayer->vbox);
@@ -239,7 +239,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group E */
   uiCreateHorizBox (&tbox);
   uiBoxPackStart (&hbox, &tbox);
-  uiSizeGroupAdd (&sgE, &tbox);
+  uiSizeGroupAdd (szgrpE, &tbox);
 
   uiImageNew (&uiplayer->statusImg);
 
@@ -307,18 +307,18 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group A */
   uiCreateLabel (&uiwidget, "%");
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sgA, &uiwidget);
+  uiSizeGroupAdd (szgrpA, &uiwidget);
 
   /* size group B */
   uiCreateLabel (&uiplayer->speedDisplayLab, "100");
   uiLabelAlignEnd (&uiplayer->speedDisplayLab);
   uiBoxPackEnd (&hbox, &uiplayer->speedDisplayLab);
-  uiSizeGroupAdd (&sgB, &uiplayer->speedDisplayLab);
+  uiSizeGroupAdd (szgrpB, &uiplayer->speedDisplayLab);
 
   /* size group C */
   uiCreateScale (&uiplayer->speedScale, 70.0, 130.0, 1.0, 10.0, 100.0, 0);
   uiBoxPackEnd (&hbox, &uiplayer->speedScale);
-  uiSizeGroupAdd (&sgC, &uiplayer->speedScale);
+  uiSizeGroupAdd (szgrpC, &uiplayer->speedScale);
   uiplayer->callbacks [UIPLAYER_CB_SPEED] = callbackInitDouble (
       uiplayerSpeedCallback, uiplayer);
   uiScaleSetCallback (&uiplayer->speedScale, uiplayer->callbacks [UIPLAYER_CB_SPEED]);
@@ -329,7 +329,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiLabelAlignEnd (&uiwidget);
   uiWidgetSetMarginEnd (&uiwidget, 1);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sgD, &uiwidget);
+  uiSizeGroupAdd (szgrpD, &uiwidget);
 
   /* position controls / display */
 
@@ -340,7 +340,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group E */
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sgE, &uiwidget);
+  uiSizeGroupAdd (szgrpE, &uiwidget);
 
   uiCreateLabel (&uiplayer->countdownTimerLab, " 0:00");
   uiLabelAlignEnd (&uiplayer->countdownTimerLab);
@@ -361,18 +361,18 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group A */
   uiCreateLabel (&uiwidget, "");
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sgA, &uiwidget);
+  uiSizeGroupAdd (szgrpA, &uiwidget);
 
   /* size group B */
   uiCreateLabel (&uiplayer->seekDisplayLab, "0:00");
   uiLabelAlignEnd (&uiplayer->seekDisplayLab);
-  uiSizeGroupAdd (&sgB, &uiplayer->seekDisplayLab);
+  uiSizeGroupAdd (szgrpB, &uiplayer->seekDisplayLab);
   uiBoxPackEnd (&hbox, &uiplayer->seekDisplayLab);
 
   /* size group C */
   uiCreateScale (&uiplayer->seekScale, 0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
   uiBoxPackEnd (&hbox, &uiplayer->seekScale);
-  uiSizeGroupAdd (&sgC, &uiplayer->seekScale);
+  uiSizeGroupAdd (szgrpC, &uiplayer->seekScale);
   uiplayer->callbacks [UIPLAYER_CB_SEEK] = callbackInitDouble (
       uiplayerSeekCallback, uiplayer);
   uiScaleSetCallback (&uiplayer->seekScale, uiplayer->callbacks [UIPLAYER_CB_SEEK]);
@@ -383,7 +383,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiLabelAlignEnd (&uiwidget);
   uiWidgetSetMarginEnd (&uiwidget, 1);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sgD, &uiwidget);
+  uiSizeGroupAdd (szgrpD, &uiwidget);
 
   /* main controls */
 
@@ -394,7 +394,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group E */
   uiCreateLabel (&uiwidget, "");
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sgE, &uiwidget);
+  uiSizeGroupAdd (szgrpE, &uiwidget);
 
   uiplayer->callbacks [UIPLAYER_CB_FADE] = callbackInit (
       uiplayerFadeProcess, uiplayer, NULL);
@@ -471,18 +471,18 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* size group A */
   uiCreateLabel (&uiwidget, "%");
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sgA, &uiwidget);
+  uiSizeGroupAdd (szgrpA, &uiwidget);
 
   /* size group B */
   uiCreateLabel (&uiplayer->volumeDisplayLab, "100");
   uiLabelAlignEnd (&uiplayer->volumeDisplayLab);
   uiBoxPackEnd (&hbox, &uiplayer->volumeDisplayLab);
-  uiSizeGroupAdd (&sgB, &uiplayer->volumeDisplayLab);
+  uiSizeGroupAdd (szgrpB, &uiplayer->volumeDisplayLab);
 
   /* size group C */
   uiCreateScale (&uiplayer->volumeScale, 0.0, 100.0, 1.0, 10.0, 0.0, 0);
   uiBoxPackEnd (&hbox, &uiplayer->volumeScale);
-  uiSizeGroupAdd (&sgC, &uiplayer->volumeScale);
+  uiSizeGroupAdd (szgrpC, &uiplayer->volumeScale);
   uiplayer->callbacks [UIPLAYER_CB_VOLUME] = callbackInitDouble (
       uiplayerVolumeCallback, uiplayer);
   uiScaleSetCallback (&uiplayer->volumeScale, uiplayer->callbacks [UIPLAYER_CB_VOLUME]);
@@ -493,9 +493,15 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiLabelAlignEnd (&uiwidget);
   uiWidgetSetMarginEnd (&uiwidget, 1);
   uiBoxPackEnd (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sgD, &uiwidget);
+  uiSizeGroupAdd (szgrpD, &uiwidget);
 
   uiplayer->uibuilt = true;
+
+  uiwcontFree (szgrpA);
+  uiwcontFree (szgrpB);
+  uiwcontFree (szgrpC);
+  uiwcontFree (szgrpD);
+  uiwcontFree (szgrpE);
 
   logProcEnd (LOG_PROC, "uiplayerBuildUI", "");
   return &uiplayer->vbox;

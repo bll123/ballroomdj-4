@@ -588,7 +588,7 @@ installerBuildUI (installer_t *installer)
   uiwcont_t     uiwidget;
   uibutton_t    *uibutton;
   uiwcont_t     *uiwidgetp;
-  uiwcont_t     sg;
+  uiwcont_t     *szgrp;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
 
@@ -748,7 +748,7 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (&vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiCreateSizeGroupHoriz (&sg);
+  szgrp = uiCreateSizeGroupHoriz ();
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
@@ -756,7 +756,7 @@ installerBuildUI (installer_t *installer)
 
   uiCreateColonLabel (&uiwidget, "VLC");
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   uiCreateLabel (&installer->vlcMsg, "");
   uiWidgetSetClass (&installer->vlcMsg, INST_HL_CLASS);
@@ -769,7 +769,7 @@ installerBuildUI (installer_t *installer)
 
   uiCreateColonLabel (&uiwidget, "Python");
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   uiCreateLabel (&installer->pythonMsg, "");
   uiWidgetSetClass (&installer->pythonMsg, INST_HL_CLASS);
@@ -782,7 +782,7 @@ installerBuildUI (installer_t *installer)
 
   uiCreateColonLabel (&uiwidget, "Mutagen");
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   uiCreateLabel (&installer->mutagenMsg, "");
   uiWidgetSetClass (&installer->mutagenMsg, INST_HL_CLASS);
@@ -819,6 +819,8 @@ installerBuildUI (installer_t *installer)
 
   uiWidgetShowAll (&installer->window);
   installer->uiBuilt = true;
+
+  uiwcontFree (szgrp);
 }
 
 static int

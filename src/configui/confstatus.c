@@ -34,7 +34,6 @@ confuiBuildUIEditStatus (confuigui_t *gui)
   uiwcont_t    vbox;
   uiwcont_t    hbox;
   uiwcont_t    uiwidget;
-  uiwcont_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditStatus");
   uiCreateVertBox (&vbox);
@@ -43,7 +42,6 @@ confuiBuildUIEditStatus (confuigui_t *gui)
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: edit status table */
       _("Edit Status"), CONFUI_ID_STATUS);
-  uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: status: information on how to edit a status entry */
   uiCreateLabel (&uiwidget, _("Double click on a field to edit."));

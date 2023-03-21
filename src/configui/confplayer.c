@@ -79,53 +79,57 @@ void
 confuiBuildUIPlayer (confuigui_t *gui)
 {
   uiwcont_t    vbox;
-  uiwcont_t    sg;
-  uiwcont_t    sgB;
+  uiwcont_t    *szgrp;
+  uiwcont_t    *szgrpB;
 
   logProcBegin (LOG_PROC, "confuiBuildUIPlayer");
   uiCreateVertBox (&vbox);
+
+  szgrp = uiCreateSizeGroupHoriz ();
+  szgrpB = uiCreateSizeGroupHoriz ();
 
   /* player */
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: options associated with the player */
       _("Player"), CONFUI_ID_NONE);
-  uiCreateSizeGroupHoriz (&sg);
-  uiCreateSizeGroupHoriz (&sgB);
 
   /* CONTEXT: configuration: which player interface to use */
-  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Player"),
+  confuiMakeItemSpinboxText (gui, &vbox, szgrp, NULL, _("Player"),
       CONFUI_SPINBOX_PLI, OPT_M_PLAYER_INTFC,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_PLI].listidx, NULL);
 
   /* CONTEXT: configuration: which audio interface to use */
-  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Audio"),
+  confuiMakeItemSpinboxText (gui, &vbox, szgrp, NULL, _("Audio"),
       CONFUI_SPINBOX_VOL_INTFC, OPT_M_VOLUME_INTFC,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx, NULL);
 
   /* CONTEXT: configuration: which audio tag interface to use */
-  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Audio Tags"),
+  confuiMakeItemSpinboxText (gui, &vbox, szgrp, NULL, _("Audio Tags"),
       CONFUI_SPINBOX_ATI, OPT_M_AUDIOTAG_INTFC,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_ATI].listidx, NULL);
 
   /* CONTEXT: configuration: which audio sink (output) to use */
-  confuiMakeItemSpinboxText (gui, &vbox, &sg, NULL, _("Audio Output"),
+  confuiMakeItemSpinboxText (gui, &vbox, szgrp, NULL, _("Audio Output"),
       CONFUI_SPINBOX_AUDIO_OUTPUT, OPT_MP_AUDIOSINK,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_AUDIO_OUTPUT].listidx, NULL);
 
   /* CONTEXT: configuration: the volume used when starting the player */
-  confuiMakeItemSpinboxNum (gui, &vbox, &sg, &sgB, _("Default Volume"),
+  confuiMakeItemSpinboxNum (gui, &vbox, szgrp, szgrpB, _("Default Volume"),
       CONFUI_WIDGET_DEFAULT_VOL, OPT_P_DEFAULTVOLUME,
       10, 100, bdjoptGetNum (OPT_P_DEFAULTVOLUME), NULL);
 
   /* CONTEXT: (noun) configuration: the number of items loaded into the music queue */
-  confuiMakeItemSpinboxNum (gui, &vbox, &sg, &sgB, _("Queue Length"),
+  confuiMakeItemSpinboxNum (gui, &vbox, szgrp, szgrpB, _("Queue Length"),
       CONFUI_WIDGET_PL_QUEUE_LEN, OPT_G_PLAYERQLEN,
       20, 400, bdjoptGetNum (OPT_G_PLAYERQLEN), NULL);
 
   /* CONTEXT: configuration: The completion message displayed on the marquee when a playlist is finished */
-  confuiMakeItemEntry (gui, &vbox, &sg, _("Completion Message"),
+  confuiMakeItemEntry (gui, &vbox, szgrp, _("Completion Message"),
       CONFUI_ENTRY_COMPLETE_MSG, OPT_P_COMPLETE_MSG,
       bdjoptGetStr (OPT_P_COMPLETE_MSG), CONFUI_NO_INDENT);
+
+  uiwcontFree (szgrp);
+  uiwcontFree (szgrpB);
 
   logProcEnd (LOG_PROC, "confuiBuildUIPlayer", "");
 }

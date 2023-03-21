@@ -19,8 +19,8 @@ typedef struct {
   dispsel_t         *dispsel;
   musicdb_t         *musicdb;
   nlist_t           *options;
-  void              *uiWidgetData;
-  uiwcont_t        *statusMsg;
+  void              *seInternalData;
+  uiwcont_t         *statusMsg;
   callback_t        *savecb;
   callback_t        *applyadjcb;
   uisongsel_t       *uisongsel;

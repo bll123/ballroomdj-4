@@ -2289,7 +2289,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiwcont_t  hbox;
   uiwcont_t  uiwidget;
   uiwcont_t  *uiwidgetp;
-  uiwcont_t  sg;  // labels
+  uiwcont_t  *szgrp;  // labels
 
   logProcBegin (LOG_PROC, "manageSongListCFPLCreateDialog");
   if (uiwcontIsSet (&manage->cfplDialog)) {
@@ -2297,7 +2297,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
     return;
   }
 
-  uiCreateSizeGroupHoriz (&sg);
+  szgrp = uiCreateSizeGroupHoriz ();
 
   manage->callbacks [MANAGE_CB_CFPL_DIALOG] = callbackInitLong (
       manageCFPLResponseHandler, manage);
@@ -2324,7 +2324,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   /* CONTEXT: create from playlist: select the playlist to use */
   uiCreateColonLabel (&uiwidget, _("Playlist"));
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL] = callbackInitLong (
       manageCFPLPlaylistSelectHandler, manage);
@@ -2339,13 +2339,16 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   /* CONTEXT: create from playlist: set the maximum time for the song list */
   uiCreateColonLabel (&uiwidget, _("Time Limit"));
   uiBoxPackStart (&hbox, &uiwidget);
-  uiSizeGroupAdd (&sg, &uiwidget);
+  uiSizeGroupAdd (szgrp, &uiwidget);
 
   uiSpinboxTimeCreate (manage->cfpltmlimit, manage, NULL);
   uiSpinboxTimeSetValue (manage->cfpltmlimit, 3 * 60 * 1000);
   uiSpinboxSetRange (manage->cfpltmlimit, 0.0, 600000.0);
   uiwidgetp = uiSpinboxGetWidgetContainer (manage->cfpltmlimit);
   uiBoxPackStart (&hbox, uiwidgetp);
+
+  uiwcontFree (szgrp);
+
   logProcEnd (LOG_PROC, "manageSongListCFPLCreateDialog", "");
 }
 

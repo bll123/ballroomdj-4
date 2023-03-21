@@ -33,7 +33,6 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   uiwcont_t    vbox;
   uiwcont_t    hbox;
   uiwcont_t    uiwidget;
-  uiwcont_t    sg;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditLevels");
   uiCreateVertBox (&vbox);
@@ -42,7 +41,6 @@ confuiBuildUIEditLevels (confuigui_t *gui)
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: edit dance levels table */
       _("Edit Levels"), CONFUI_ID_LEVELS);
-  uiCreateSizeGroupHoriz (&sg);
 
   /* CONTEXT: configuration: dance levels: instructions */
   uiCreateLabel (&uiwidget, _("Order from easiest to most advanced."));

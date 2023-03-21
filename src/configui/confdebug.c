@@ -24,19 +24,20 @@
 void
 confuiBuildUIDebug (confuigui_t *gui)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
-  uiwcont_t    sg;
+  uiwcont_t     vbox;
+  uiwcont_t     hbox;
+  uiwcont_t     *szgrp;
   nlistidx_t    val;
 
   logProcBegin (LOG_PROC, "confuiBuildUIDebug");
   uiCreateVertBox (&vbox);
 
+  szgrp = uiCreateSizeGroupHoriz ();
+
   /* debug */
   confuiMakeNotebookTab (&vbox, gui,
       /* CONTEXT: configuration: debug options that can be turned on and off */
       _("Debug"), CONFUI_ID_NONE);
-  uiCreateSizeGroupHoriz (&sg);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
@@ -45,35 +46,35 @@ confuiBuildUIDebug (confuigui_t *gui)
   uiBoxPackStart (&hbox, &vbox);
 
   val = bdjoptGetNum (OPT_G_DEBUGLVL);
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Important",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Important",
       CONFUI_WIDGET_DEBUG_1, -1,
       (val & 1));
   gui->uiitem [CONFUI_WIDGET_DEBUG_1].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Basic",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Basic",
       CONFUI_WIDGET_DEBUG_2, -1,
       (val & 2));
   gui->uiitem [CONFUI_WIDGET_DEBUG_2].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Messages",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Messages",
       CONFUI_WIDGET_DEBUG_4, -1,
       (val & 4));
   gui->uiitem [CONFUI_WIDGET_DEBUG_4].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Main",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Main",
       CONFUI_WIDGET_DEBUG_8, -1,
       (val & 8));
   gui->uiitem [CONFUI_WIDGET_DEBUG_8].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Actions",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Actions",
       CONFUI_WIDGET_DEBUG_16, -1,
       (val & 16));
   gui->uiitem [CONFUI_WIDGET_DEBUG_16].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "List",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "List",
       CONFUI_WIDGET_DEBUG_32, -1,
       (val & 32));
   gui->uiitem [CONFUI_WIDGET_DEBUG_32].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Song Selection",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Song Selection",
       CONFUI_WIDGET_DEBUG_64, -1,
       (val & 64));
   gui->uiitem [CONFUI_WIDGET_DEBUG_64].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Dance Selection",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Dance Selection",
       CONFUI_WIDGET_DEBUG_128, -1,
       (val & 128));
 
@@ -81,35 +82,35 @@ confuiBuildUIDebug (confuigui_t *gui)
   uiBoxPackStart (&hbox, &vbox);
 
   gui->uiitem [CONFUI_WIDGET_DEBUG_128].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Volume",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Volume",
       CONFUI_WIDGET_DEBUG_256, -1,
       (val & 256));
   gui->uiitem [CONFUI_WIDGET_DEBUG_256].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Socket",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Socket",
       CONFUI_WIDGET_DEBUG_512, -1,
       (val & 512));
   gui->uiitem [CONFUI_WIDGET_DEBUG_512].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Database",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Database",
       CONFUI_WIDGET_DEBUG_1024, -1,
       (val & 1024));
   gui->uiitem [CONFUI_WIDGET_DEBUG_1024].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Random Access File",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Random Access File",
       CONFUI_WIDGET_DEBUG_2048, -1,
       (val & 2048));
   gui->uiitem [CONFUI_WIDGET_DEBUG_2048].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Procedures",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Procedures",
       CONFUI_WIDGET_DEBUG_4096, -1,
       (val & 4096));
   gui->uiitem [CONFUI_WIDGET_DEBUG_4096].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Player",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Player",
       CONFUI_WIDGET_DEBUG_8192, -1,
       (val & 8192));
   gui->uiitem [CONFUI_WIDGET_DEBUG_8192].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Datafile",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Datafile",
       CONFUI_WIDGET_DEBUG_16384, -1,
       (val & 16384));
   gui->uiitem [CONFUI_WIDGET_DEBUG_16384].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Process",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Process",
       CONFUI_WIDGET_DEBUG_32768, -1,
       (val & 32768));
   gui->uiitem [CONFUI_WIDGET_DEBUG_32768].outtype = CONFUI_OUT_DEBUG;
@@ -117,34 +118,36 @@ confuiBuildUIDebug (confuigui_t *gui)
   uiCreateVertBox (&vbox);
   uiBoxPackStart (&hbox, &vbox);
 
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Web Server",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Web Server",
       CONFUI_WIDGET_DEBUG_65536, -1,
       (val & 65536));
   gui->uiitem [CONFUI_WIDGET_DEBUG_65536].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Web Client",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Web Client",
       CONFUI_WIDGET_DEBUG_131072, -1,
       (val & 131072));
   gui->uiitem [CONFUI_WIDGET_DEBUG_131072].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Database Update",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Database Update",
       CONFUI_WIDGET_DEBUG_262144, -1,
       (val & 262144));
   gui->uiitem [CONFUI_WIDGET_DEBUG_262144].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Program State",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Program State",
       CONFUI_WIDGET_DEBUG_524288, -1,
       (val & 524288));
   gui->uiitem [CONFUI_WIDGET_DEBUG_524288].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "iTunes Parse",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "iTunes Parse",
       CONFUI_WIDGET_DEBUG_1048576, -1,
       (val & 1048576));
   gui->uiitem [CONFUI_WIDGET_DEBUG_1048576].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Apply Adjustments",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Apply Adjustments",
       CONFUI_WIDGET_DEBUG_2097152, -1,
       (val & 2097152));
   gui->uiitem [CONFUI_WIDGET_DEBUG_2097152].outtype = CONFUI_OUT_DEBUG;
-  confuiMakeItemCheckButton (gui, &vbox, &sg, "Audio Tags",
+  confuiMakeItemCheckButton (gui, &vbox, szgrp, "Audio Tags",
       CONFUI_WIDGET_DEBUG_4194304, -1,
       (val & 4194304));
   gui->uiitem [CONFUI_WIDGET_DEBUG_4194304].outtype = CONFUI_OUT_DEBUG;
+
+  uiwcontFree (szgrp);
 
   logProcEnd (LOG_PROC, "confuiBuildUIDebug", "");
 }

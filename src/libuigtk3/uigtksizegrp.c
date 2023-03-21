@@ -18,13 +18,16 @@
 
 #include "ui/uisizegrp.h"
 
-void
-uiCreateSizeGroupHoriz (uiwcont_t *uiw)
+uiwcont_t *
+uiCreateSizeGroupHoriz (void)
 {
+  uiwcont_t     *szgrp;
   GtkSizeGroup  *sg;
 
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-  uiw->sg = sg;
+  szgrp = uiwcontAlloc ();
+  szgrp->sg = sg;
+  return szgrp;
 }
 
 void
