@@ -1282,11 +1282,16 @@ static gboolean
 uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path,
     GtkTreeIter* iter, gpointer udata)
 {
-  uitree_t      *uitree = udata;
+  uitree_t  *uitree = udata;
+  bool      rc = UICB_CONT;
 
   memcpy (&uitree->selectiter, iter, sizeof (GtkTreeIter));
   uitree->selectset = true;
-  return callbackHandler (uitree->foreachcb);
+  if (uitree->foreachcb != NULL) {
+    rc = callbackHandler (uitree->foreachcb);
+  }
+
+  return rc;
 }
 
 static GType

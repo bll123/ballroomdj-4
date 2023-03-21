@@ -42,7 +42,7 @@ typedef struct {
   int           prevSelection;
   int           currSelection;
   /* music queue tab */
-  uiwcont_t    mainbox;
+  uiwcont_t     mainbox;
   uidropdown_t  *playlistsel;
   uientry_t     *slname;
   /* widget data */
@@ -55,8 +55,6 @@ typedef struct {
 
 typedef struct uimusicq uimusicq_t;
 
-typedef void (*uimusicqiteratecb_t)(uimusicq_t *uimusicq, dbidx_t dbidx);
-
 typedef struct uimusicq {
   const char        *tag;
   int               musicqPlayIdx;    // needed for clear queue
@@ -64,9 +62,9 @@ typedef struct uimusicq {
   conn_t            *conn;
   dispsel_t         *dispsel;
   musicdb_t         *musicdb;
-  uiwcont_t        *parentwin;
-  uiwcont_t        pausePixbuf;
-  uiwcont_t        *statusMsg;
+  uiwcont_t         *parentwin;
+  uiwcont_t         pausePixbuf;
+  uiwcont_t         *statusMsg;
   callback_t        *newselcb;
   callback_t        *editcb;
   callback_t        *songsavecb;
@@ -74,13 +72,14 @@ typedef struct uimusicq {
   callback_t        *clearqueuecb;
   callback_t        *queueplcb;
   callback_t        *queuedancecb;
+  callback_t        *savelistcb;
   uimusicqui_t      ui [MUSICQ_MAX];
   /* peers */
   int               peercount;
   uimusicq_t        *peers [UIMUSICQ_PEER_MAX];
   bool              ispeercall;
   /* temporary for save */
-  uimusicqiteratecb_t iteratecb;
+  callback_t        *iteratecb;
   nlist_t           *savelist;
   int               cbci;
   bool              backupcreated : 1;
@@ -119,7 +118,7 @@ void      uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx);
 ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);
 void      uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);
 void      uimusicqRemoveHandler (GtkButton *b, gpointer udata);
-void      uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx);
+void      uimusicqIterate (uimusicq_t *uimusicq, callback_t *cb, musicqidx_t mqidx);
 long      uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx);
 void      uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc);
 bool      uimusicqTruncateQueueCallback (void *udata);

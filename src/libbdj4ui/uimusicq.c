@@ -31,7 +31,7 @@
 #include "callback.h"
 #include "uimusicq.h"
 
-static void   uimusicqSaveListCallback (uimusicq_t *uimusicq, dbidx_t dbidx);
+static bool   uimusicqSaveListCallback (void *udata, long dbidx);
 
 uimusicq_t *
 uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
@@ -50,6 +50,31 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq->dispsel = dispsel;
   uimusicq->musicdb = musicdb;
   uimusicq->statusMsg = NULL;
+  uimusicq->newselcb = NULL;
+  uimusicq->editcb = NULL;
+  uimusicq->songsavecb = NULL;
+  uimusicq->queuecb = NULL;
+  uimusicq->clearqueuecb = NULL;
+  uimusicq->queueplcb = NULL;
+  uimusicq->queuedancecb = NULL;
+  uimusicq->savelistcb = callbackInitLong (
+        uimusicqSaveListCallback, uimusicq);
+  uimusicq->musicqManageIdx = MUSICQ_PB_A;
+  uimusicq->musicqPlayIdx = MUSICQ_PB_A;
+  uimusicq->iteratecb = NULL;
+  uimusicq->savelist = NULL;
+  uimusicq->cbci = MUSICQ_PB_A;
+  uiwcontInit (&uimusicq->pausePixbuf);
+  uimusicq->peercount = 0;
+  uimusicq->backupcreated = false;
+  uimusicq->changed = false;
+  uimusicq->newflag = true;
+  uimusicq->ispeercall = false;
+  for (int i = 0; i < UIMUSICQ_PEER_MAX; ++i) {
+    uimusicq->peers [i] = NULL;
+  }
+
+  uimusicqUIInit (uimusicq);
 
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     int     sz;
@@ -75,28 +100,6 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
       sz = 15;
     }
     uimusicq->ui [i].slname = uiEntryInit (sz, 40);
-  }
-  uimusicq->musicqManageIdx = MUSICQ_PB_A;
-  uimusicq->musicqPlayIdx = MUSICQ_PB_A;
-  uimusicq->iteratecb = NULL;
-  uimusicq->savelist = NULL;
-  uimusicq->cbci = MUSICQ_PB_A;
-  uiwcontInit (&uimusicq->pausePixbuf);
-  uimusicqUIInit (uimusicq);
-  uimusicq->newselcb = NULL;
-  uimusicq->editcb = NULL;
-  uimusicq->songsavecb = NULL;
-  uimusicq->queuecb = NULL;
-  uimusicq->clearqueuecb = NULL;
-  uimusicq->queueplcb = NULL;
-  uimusicq->queuedancecb = NULL;
-  uimusicq->peercount = 0;
-  uimusicq->backupcreated = false;
-  uimusicq->changed = false;
-  uimusicq->newflag = true;
-  uimusicq->ispeercall = false;
-  for (int i = 0; i < UIMUSICQ_PEER_MAX; ++i) {
-    uimusicq->peers [i] = NULL;
   }
 
   logProcEnd (LOG_PROC, "uimusicqInit", "");
@@ -124,13 +127,12 @@ uimusicqFree (uimusicq_t *uimusicq)
 {
   logProcBegin (LOG_PROC, "uimusicqFree");
   if (uimusicq != NULL) {
+    callbackFree (uimusicq->savelistcb);
     uiWidgetClearPersistent (&uimusicq->pausePixbuf);
     for (int i = 0; i < MUSICQ_MAX; ++i) {
       uiDropDownFree (uimusicq->ui [i].playlistsel);
       uiEntryFree (uimusicq->ui [i].slname);
     }
-    callbackFree (uimusicq->queueplcb);
-    callbackFree (uimusicq->queuedancecb);
     uimusicqUIFree (uimusicq);
     mdfree (uimusicq);
   }
@@ -249,7 +251,7 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
 
   snprintf (tbuff, sizeof (tbuff), "save-%s", fname);
   uimusicq->savelist = nlistAlloc (tbuff, LIST_UNORDERED, NULL);
-  uimusicqIterate (uimusicq, uimusicqSaveListCallback, MUSICQ_SL);
+  uimusicqIterate (uimusicq, uimusicq->savelistcb, MUSICQ_SL);
 
   songlist = songlistAlloc (fname);
 
@@ -286,7 +288,7 @@ void
 uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname)
 {
   uimusicq->savelist = nlistAlloc ("m3u-export", LIST_UNORDERED, NULL);
-  uimusicqIterate (uimusicq, uimusicqSaveListCallback, MUSICQ_SL);
+  uimusicqIterate (uimusicq, uimusicq->savelistcb, MUSICQ_SL);
 
   m3uExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
 
@@ -312,8 +314,11 @@ uimusicqSetQueueCallback (uimusicq_t *uimusicq, callback_t *uicb)
 
 /* internal routines */
 
-static void
-uimusicqSaveListCallback (uimusicq_t *uimusicq, dbidx_t dbidx)
+static bool
+uimusicqSaveListCallback (void *udata, long dbidx)
 {
+  uimusicq_t  *uimusicq = udata;
+
   nlistSetStr (uimusicq->savelist, dbidx, NULL);
+  return UICB_CONT;
 }

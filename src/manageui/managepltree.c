@@ -49,8 +49,8 @@ enum {
 
 typedef struct managepltree {
   uitree_t          *uitree;
-  uiwcont_t        *statusMsg;
-  uiwcont_t        uihideunsel;
+  uiwcont_t         *statusMsg;
+  uiwcont_t         uihideunsel;
   callback_t        *callbacks [MPLTREE_CB_MAX];
   playlist_t        *playlist;
   int               currcount;

@@ -125,6 +125,9 @@ managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg)
     managepl->callbacks [i] = NULL;
   }
 
+  managepl->callbacks [MPL_CB_SEL_FILE] =
+      callbackInitStr (managePlaylistLoadCB, managepl);
+
   return managepl;
 }
 
@@ -581,8 +584,6 @@ managePlaylistLoad (void *udata)
   logProcBegin (LOG_PROC, "managePlaylistLoad");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load playlist");
   managePlaylistSave (managepl);
-  managepl->callbacks [MPL_CB_SEL_FILE] =
-      callbackInitStr (managePlaylistLoadCB, managepl);
   selectFileDialog (SELFILE_PLAYLIST, managepl->windowp, managepl->options,
       managepl->callbacks [MPL_CB_SEL_FILE]);
   logProcEnd (LOG_PROC, "managePlaylistLoad", "");

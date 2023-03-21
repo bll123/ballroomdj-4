@@ -48,6 +48,18 @@ enum {
 };
 
 enum {
+  MUSICQ_CB_NEW_SEL,
+  MUSICQ_CB_EDIT,
+  MUSICQ_CB_SONG_SAVE,
+  MUSICQ_CB_QUEUE,
+  MUSICQ_CB_CLEAR_QUEUE,
+  MUSICQ_CB_QUEUE_PLAYLIST,
+  MUSICQ_CB_QUEUE_DANCE,
+  MUSICQ_CB_SAVE_LIST,
+  MUSICQ_CB_MAX,
+};
+
+enum {
   UIMUSICQ_CB_MOVE_TOP,
   UIMUSICQ_CB_MOVE_UP,
   UIMUSICQ_CB_MOVE_DOWN,
@@ -61,6 +73,7 @@ enum {
   UIMUSICQ_CB_KEYB,
   UIMUSICQ_CB_CHK_FAV_CHG,
   UIMUSICQ_CB_SEL_CHG,
+  UIMUSICQ_CB_ITERATE,
   UIMUSICQ_CB_MAX,
 };
 
@@ -81,7 +94,6 @@ typedef struct mq_internal {
   uidance_t         *uidance;
   uidance_t         *uidance5;
   uitree_t          *musicqTree;
-//  GtkTreeViewColumn *favColumn;
   callback_t        *callbacks [UIMUSICQ_CB_MAX];
   uibutton_t        *buttons [UIMUSICQ_BUTTON_MAX];
   int               *typelist;
@@ -96,8 +108,7 @@ static void   uimusicqProcessMusicQueueDataNewCallback (int type, void *udata);
 static void   uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
 static void   uimusicqSetMusicqDisplay (uimusicq_t *uimusicq, song_t *song, int ci);
 static void   uimusicqSetMusicqDisplayCallback (int col, long num, const char *str, void *udata);
-static int    uimusicqIterateCallback (GtkTreeModel *model,
-    GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
+static bool   uimusicqIterateCallback (void *udata);
 static bool   uimusicqPlayCallback (void *udata);
 static bool   uimusicqQueueCallback (void *udata);
 static dbidx_t uimusicqGetSelectionDbidx (uimusicq_t *uimusicq);
@@ -388,8 +399,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         uimusicqCheckFavChgCallback, uimusicq);
   uiTreeViewSetRowActivatedCallback (mqint->musicqTree,
         mqint->callbacks [UIMUSICQ_CB_CHK_FAV_CHG]);
-//  g_signal_connect (uitreewidgetp->widget, "row-activated",
-//      G_CALLBACK (uimusicqCheckFavChgCallback), uimusicq);
 
   uiTreeViewAppendColumn (mqint->musicqTree, TREE_NO_COLUMN,
       TREE_WIDGET_TEXT, TREE_ALIGN_RIGHT,
@@ -425,6 +434,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiKeySetKeyCallback (mqint->uikey, uitreewidgetp,
         mqint->callbacks [UIMUSICQ_CB_KEYB]);
   }
+
+  mqint->callbacks [UIMUSICQ_CB_ITERATE] = callbackInit (
+        uimusicqIterateCallback, uimusicq, NULL);
 
   logProcEnd (LOG_PROC, "uimusicqBuildUI", "");
   return &uimusicq->ui [ci].mainbox;
@@ -499,18 +511,14 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
 }
 
 void
-uimusicqIterate (uimusicq_t *uimusicq, uimusicqiteratecb_t cb, musicqidx_t mqidx)
+uimusicqIterate (uimusicq_t *uimusicq, callback_t *cb, musicqidx_t mqidx)
 {
-  GtkTreeModel  *model;
   mq_internal_t *mqint;
-  uiwcont_t    *uiwidgetp;
-
 
   uimusicq->iteratecb = cb;
   mqint = uimusicq->ui [mqidx].mqInternalData;
-  uiwidgetp = uiTreeViewGetWidgetContainer (mqint->musicqTree);
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-  gtk_tree_model_foreach (model, uimusicqIterateCallback, uimusicq);
+  uiTreeViewForeach (mqint->musicqTree,
+      mqint->callbacks [UIMUSICQ_CB_ITERATE]);
 }
 
 long
@@ -792,16 +800,26 @@ uimusicqSetMusicqDisplayCallback (int col, long num, const char *str, void *udat
   uitreedispSetDisplayColumn (mqint->musicqTree, col, num, str);
 }
 
-static int
-uimusicqIterateCallback (GtkTreeModel *model,
-    GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
+static bool
+uimusicqIterateCallback (void *udata)
 {
-  uimusicq_t  *uimusicq = udata;
-  glong       dbidx;
+  uimusicq_t    *uimusicq = udata;
+  mq_internal_t *mqint;
+  int           ci;
+  dbidx_t       dbidx;
 
-  gtk_tree_model_get (model, iter, MUSICQ_COL_DBIDX, &dbidx, -1);
-  uimusicq->iteratecb (uimusicq, dbidx);
-  return FALSE;
+  ci = uimusicq->musicqManageIdx;
+  mqint = uimusicq->ui [ci].mqInternalData;
+
+  if (mqint == NULL) {
+    return UICB_CONT;
+  }
+
+  dbidx = uiTreeViewGetValue (mqint->musicqTree, MUSICQ_COL_DBIDX);
+  if (uimusicq->iteratecb != NULL) {
+    callbackHandlerLong (uimusicq->iteratecb, dbidx);
+  }
+  return UICB_CONT;
 }
 
 /* used by song list editor */
@@ -1152,9 +1170,6 @@ uimusicqRemoveCallback (void *udata)
   return UICB_CONT;
 }
 
-//static void
-//uimusicqCheckFavChgCallback (GtkTreeView* tv, GtkTreePath* path,
-//    GtkTreeViewColumn* column, gpointer udata)
 static bool
 uimusicqCheckFavChgCallback (void *udata, long col)
 {
