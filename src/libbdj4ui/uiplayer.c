@@ -70,8 +70,8 @@ typedef struct uiplayer {
   dbidx_t         curr_dbidx;
   /* song display */
   uiwcont_t      vbox;
-  uiwcont_t      statusImg;
-  uiwcont_t      repeatImg;
+  uiwcont_t       *statusImg;
+  uiwcont_t       *repeatImg;
   uiwcont_t      danceLab;
   uiwcont_t      artistLab;
   uiwcont_t      titleLab;
@@ -146,8 +146,8 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->curr_dbidx = -1;
 
   uiwcontInit (&uiplayer->vbox);
-  uiwcontInit (&uiplayer->statusImg);
-  uiwcontInit (&uiplayer->repeatImg);
+  uiplayer->statusImg = NULL;
+  uiplayer->repeatImg = NULL;
   uiwcontInit (&uiplayer->danceLab);
   uiwcontInit (&uiplayer->artistLab);
   uiwcontInit (&uiplayer->titleLab);
@@ -241,7 +241,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (&hbox, &tbox);
   uiSizeGroupAdd (szgrpE, &tbox);
 
-  uiImageNew (&uiplayer->statusImg);
+  uiplayer->statusImg = uiImageNew ();
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_stop", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
@@ -249,10 +249,10 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageConvertToPixbuf (&uiplayer->stopPixbuf);
   uiWidgetMakePersistent (&uiplayer->stopPixbuf);
 
-  uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->stopPixbuf);
-  uiWidgetSetSizeRequest (&uiplayer->statusImg, 18, -1);
-  uiWidgetSetMarginStart (&uiplayer->statusImg, 1);
-  uiBoxPackStart (&tbox, &uiplayer->statusImg);
+  uiImageSetFromPixbuf (uiplayer->statusImg, &uiplayer->stopPixbuf);
+  uiWidgetSetSizeRequest (uiplayer->statusImg, 18, -1);
+  uiWidgetSetMarginStart (uiplayer->statusImg, 1);
+  uiBoxPackStart (&tbox, uiplayer->statusImg);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
@@ -272,11 +272,11 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiImageConvertToPixbuf (&uiplayer->repeatPixbuf);
   uiWidgetMakePersistent (&uiplayer->repeatPixbuf);
 
-  uiImageNew (&uiplayer->repeatImg);
-  uiImageClear (&uiplayer->repeatImg);
-  uiWidgetSetSizeRequest (&uiplayer->repeatImg, 18, -1);
-  uiWidgetSetMarginStart (&uiplayer->repeatImg, 1);
-  uiBoxPackStart (&tbox, &uiplayer->repeatImg);
+  uiplayer->repeatImg = uiImageNew ();
+  uiImageClear (uiplayer->repeatImg);
+  uiWidgetSetSizeRequest (uiplayer->repeatImg, 18, -1);
+  uiWidgetSetMarginStart (uiplayer->repeatImg, 1);
+  uiBoxPackStart (&tbox, uiplayer->repeatImg);
 
   uiCreateLabel (&uiplayer->danceLab, "");
   uiBoxPackStart (&hbox, &uiplayer->danceLab);
@@ -719,26 +719,26 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
   switch (playerState) {
     case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
-      uiImageClear (&uiplayer->statusImg);
-      uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->stopPixbuf);
+      uiImageClear (uiplayer->statusImg);
+      uiImageSetFromPixbuf (uiplayer->statusImg, &uiplayer->stopPixbuf);
       break;
     }
     case PL_STATE_LOADING:
     case PL_STATE_IN_FADEOUT:
     case PL_STATE_IN_GAP:
     case PL_STATE_PLAYING: {
-      uiImageClear (&uiplayer->statusImg);
-      uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->playPixbuf);
+      uiImageClear (uiplayer->statusImg);
+      uiImageSetFromPixbuf (uiplayer->statusImg, &uiplayer->playPixbuf);
       break;
     }
     case PL_STATE_PAUSED: {
-      uiImageClear (&uiplayer->statusImg);
-      uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->pausePixbuf);
+      uiImageClear (uiplayer->statusImg);
+      uiImageSetFromPixbuf (uiplayer->statusImg, &uiplayer->pausePixbuf);
       break;
     }
     default: {
-      uiImageClear (&uiplayer->statusImg);
-      uiImageSetFromPixbuf (&uiplayer->statusImg, &uiplayer->stopPixbuf);
+      uiImageClear (uiplayer->statusImg);
+      uiImageSetFromPixbuf (uiplayer->statusImg, &uiplayer->stopPixbuf);
       break;
     }
   }
@@ -764,11 +764,11 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   if (p != NULL) {
     uiplayer->repeatLock = true;
     if (atol (p)) {
-      uiImageClear (&uiplayer->repeatImg);
-      uiImageSetFromPixbuf (&uiplayer->repeatImg, &uiplayer->repeatPixbuf);
+      uiImageClear (uiplayer->repeatImg);
+      uiImageSetFromPixbuf (uiplayer->repeatImg, &uiplayer->repeatPixbuf);
       uiToggleButtonSetState (uiplayer->repeatButton, UI_TOGGLE_BUTTON_ON);
     } else {
-      uiImageClear (&uiplayer->repeatImg);
+      uiImageClear (uiplayer->repeatImg);
       uiToggleButtonSetState (uiplayer->repeatButton, UI_TOGGLE_BUTTON_OFF);
     }
     uiplayer->repeatLock = false;

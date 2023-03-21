@@ -50,6 +50,16 @@ enum {
   SONGEDIT_CHK_LIST,
 };
 
+enum {
+  SE_SZGRP_ENTRY,
+  SE_SZGRP_SPIN_NUM,
+  SE_SZGRP_SPIN_TEXT,
+  SE_SZGRP_SPIN_TIME,
+  SE_SZGRP_SCALE,
+  SE_SZGRP_SCALE_DISP,
+  SE_SZGRP_MAX,
+};
+
 typedef struct se_internal se_internal_t;
 
 typedef struct {
@@ -102,19 +112,14 @@ enum {
 
 
 typedef struct se_internal {
-  uiwcont_t          editalldisp;
-  uiwcont_t          *parentwin;
-  uiwcont_t          vbox;
-  uiwcont_t          musicbrainzPixbuf;
-  uiwcont_t          modified;
-  uiwcont_t          audioidImg;
-  uiwcont_t          filedisp;
-  uiwcont_t           *sgentry;
-  uiwcont_t           *sgsbint;
-  uiwcont_t           *sgsbtext;
-  uiwcont_t           *sgsbtime;
-  uiwcont_t           *sgscale;
-  uiwcont_t           *sgscaledisp;
+  uiwcont_t           editalldisp;
+  uiwcont_t           *parentwin;
+  uiwcont_t           vbox;
+  uiwcont_t           musicbrainzPixbuf;
+  uiwcont_t           modified;
+  uiwcont_t           *audioidImg;
+  uiwcont_t           filedisp;
+  uiwcont_t           *szgrp [SE_SZGRP_MAX];
   callback_t          *callbacks [UISONGEDIT_CB_MAX];
   uibutton_t          *buttons [UISONGEDIT_BUTTON_MAX];
   level_t             *levels;
@@ -183,19 +188,22 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   for (int i = 0; i < UISONGEDIT_CB_MAX; ++i) {
     seint->callbacks [i] = NULL;
   }
+  for (int i = 0; i < SE_SZGRP_MAX; ++i) {
+    seint->szgrp [i] = NULL;
+  }
   seint->checkchanged = false;
   seint->ineditallapply = false;
 
   uiwcontInit (&seint->vbox);
-  uiwcontInit (&seint->audioidImg);
+  seint->audioidImg = NULL;
   uiwcontInit (&seint->modified);
 
-  seint->sgentry = uiCreateSizeGroupHoriz ();
-  seint->sgsbint = uiCreateSizeGroupHoriz ();
-  seint->sgsbtext = uiCreateSizeGroupHoriz ();
-  seint->sgsbtime = uiCreateSizeGroupHoriz ();
-  seint->sgscale = uiCreateSizeGroupHoriz ();
-  seint->sgscaledisp = uiCreateSizeGroupHoriz ();
+  seint->szgrp [SE_SZGRP_ENTRY] = uiCreateSizeGroupHoriz ();
+  seint->szgrp [SE_SZGRP_SPIN_NUM] = uiCreateSizeGroupHoriz ();
+  seint->szgrp [SE_SZGRP_SPIN_TEXT] = uiCreateSizeGroupHoriz ();
+  seint->szgrp [SE_SZGRP_SPIN_TIME] = uiCreateSizeGroupHoriz ();
+  seint->szgrp [SE_SZGRP_SCALE] = uiCreateSizeGroupHoriz ();
+  seint->szgrp [SE_SZGRP_SCALE_DISP] = uiCreateSizeGroupHoriz ();
 
   uisongedit->seInternalData = seint;
   logProcEnd (LOG_PROC, "uisongeditUIInit", "");
@@ -268,12 +276,11 @@ uisongeditUIFree (uisongedit_t *uisongedit)
       callbackFree (seint->items [count].callback);
     }
 
-    uiwcontFree (seint->sgentry);
-    uiwcontFree (seint->sgsbint);
-    uiwcontFree (seint->sgsbtext);
-    uiwcontFree (seint->sgsbtime);
-    uiwcontFree (seint->sgscale);
-    uiwcontFree (seint->sgscaledisp);
+    uiwcontFree (seint->audioidImg);
+
+    for (int i = 0; i < SE_SZGRP_MAX; ++i) {
+      uiwcontFree (seint->szgrp [i]);
+    }
 
     for (int i = 0; i < UISONGEDIT_BUTTON_MAX; ++i) {
       uiButtonFree (seint->buttons [i]);
@@ -392,11 +399,11 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiImageConvertToPixbuf (&seint->musicbrainzPixbuf);
   uiWidgetMakePersistent (&seint->musicbrainzPixbuf);
 
-  uiImageNew (&seint->audioidImg);
-  uiImageClear (&seint->audioidImg);
-  uiWidgetSetSizeRequest (&seint->audioidImg, 24, -1);
-  uiWidgetSetMarginStart (&seint->audioidImg, 1);
-  uiBoxPackStart (&hbox, &seint->audioidImg);
+  seint->audioidImg = uiImageNew ();
+  uiImageClear (seint->audioidImg);
+  uiWidgetSetSizeRequest (seint->audioidImg, 24, -1);
+  uiWidgetSetMarginStart (seint->audioidImg, 1);
+  uiBoxPackStart (&hbox, seint->audioidImg);
 
   uiCreateLabel (&uiwidget, " ");
   uiBoxPackStart (&hbox, &uiwidget);
@@ -496,10 +503,10 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
   dataFree (data);
   data = NULL;
 
-  uiImageClear (&seint->audioidImg);
+  uiImageClear (seint->audioidImg);
   data = songGetStr (song, TAG_RECORDING_ID);
   if (data != NULL && *data) {
-    uiImageSetFromPixbuf (&seint->audioidImg, &seint->musicbrainzPixbuf);
+    uiImageSetFromPixbuf (seint->audioidImg, &seint->musicbrainzPixbuf);
   }
 
   val = songGetNum (song, TAG_ADJUSTFLAGS);
@@ -1107,21 +1114,21 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *hbox, uiwcont_t *sg, int
       if (tagkey == TAG_DANCELEVEL) {
         seint->items [seint->itemcount].uilevel =
             uilevelSpinboxCreate (hbox, FALSE);
-        uilevelSizeGroupAdd (seint->items [seint->itemcount].uilevel, seint->sgsbtext);
+        uilevelSizeGroupAdd (seint->items [seint->itemcount].uilevel, seint->szgrp [SE_SZGRP_SPIN_TEXT]);
         uilevelSetChangedCallback (seint->items [seint->itemcount].uilevel,
             seint->callbacks [UISONGEDIT_CB_CHANGED]);
       }
       if (tagkey == TAG_DANCERATING) {
         seint->items [seint->itemcount].uirating =
             uiratingSpinboxCreate (hbox, FALSE);
-        uiratingSizeGroupAdd (seint->items [seint->itemcount].uirating, seint->sgsbtext);
+        uiratingSizeGroupAdd (seint->items [seint->itemcount].uirating, seint->szgrp [SE_SZGRP_SPIN_TEXT]);
         uiratingSetChangedCallback (seint->items [seint->itemcount].uirating,
             seint->callbacks [UISONGEDIT_CB_CHANGED]);
       }
       if (tagkey == TAG_STATUS) {
         seint->items [seint->itemcount].uistatus =
             uistatusSpinboxCreate (hbox, FALSE);
-        uistatusSizeGroupAdd (seint->items [seint->itemcount].uistatus, seint->sgsbtext);
+        uistatusSizeGroupAdd (seint->items [seint->itemcount].uistatus, seint->szgrp [SE_SZGRP_SPIN_TEXT]);
         uistatusSetChangedCallback (seint->items [seint->itemcount].uistatus,
             seint->callbacks [UISONGEDIT_CB_CHANGED]);
       }
@@ -1184,7 +1191,7 @@ uisongeditAddEntry (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 
   uiwidgetp = uiEntryGetWidgetContainer (entryp);
   uiWidgetAlignHorizFill (uiwidgetp);
-  uiSizeGroupAdd (seint->sgentry, uiwidgetp);
+  uiSizeGroupAdd (seint->szgrp [SE_SZGRP_ENTRY], uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   logProcEnd (LOG_PROC, "uisongeditAddEntry", "");
 }
@@ -1207,7 +1214,7 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   }
   uiSpinboxSetValueChangedCallback (uiwidgetp,
       seint->callbacks [UISONGEDIT_CB_CHANGED]);
-  uiSizeGroupAdd (seint->sgsbint, uiwidgetp);
+  uiSizeGroupAdd (seint->szgrp [SE_SZGRP_SPIN_NUM], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   logProcEnd (LOG_PROC, "uisongeditAddSpinboxInt", "");
 }
@@ -1222,7 +1229,7 @@ uisongeditAddLabel (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   seint = uisongedit->seInternalData;
   uiwidgetp = &seint->items [seint->itemcount].uiwidget;
   uiCreateLabel (uiwidgetp, "");
-  uiSizeGroupAdd (seint->sgentry, uiwidgetp);
+  uiSizeGroupAdd (seint->szgrp [SE_SZGRP_ENTRY], uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   logProcEnd (LOG_PROC, "uisongeditAddLabel", "");
 }
@@ -1259,7 +1266,7 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
       seint->callbacks [UISONGEDIT_CB_CHANGED]);
 
   uiwidgetp = uiSpinboxGetWidgetContainer (sbp);
-  uiSizeGroupAdd (seint->sgsbtime, uiwidgetp);
+  uiSizeGroupAdd (seint->szgrp [SE_SZGRP_SPIN_TIME], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   logProcEnd (LOG_PROC, "uisongeditAddSpinboxTime", "");
 }
@@ -1295,13 +1302,13 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
       uisongeditScaleDisplayCallback, &seint->items [seint->itemcount]);
   uiScaleSetCallback (uiwidgetp, seint->items [seint->itemcount].callback);
 
-  uiSizeGroupAdd (seint->sgscale, uiwidgetp);
+  uiSizeGroupAdd (seint->szgrp [SE_SZGRP_SCALE], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
 
   uiwidgetp = &seint->items [seint->itemcount].display;
   uiCreateLabel (uiwidgetp, "100%");
   uiLabelAlignEnd (uiwidgetp);
-  uiSizeGroupAdd (seint->sgscaledisp, uiwidgetp);
+  uiSizeGroupAdd (seint->szgrp [SE_SZGRP_SCALE_DISP], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
   logProcEnd (LOG_PROC, "uisongeditAddScale", "");
 }

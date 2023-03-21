@@ -101,7 +101,7 @@ typedef struct {
   uiwcont_t       vbox;
   callback_t      *callbacks [PLUI_CB_MAX];
   uiwcont_t       clock;
-  uiwcont_t       musicqImage [MUSICQ_PB_MAX];
+  uiwcont_t       *musicqImage [MUSICQ_PB_MAX];
   uibutton_t      *setPlaybackButton;
   uiwcont_t       ledoffPixbuf;
   uiwcont_t       ledonPixbuf;
@@ -241,6 +241,9 @@ main (int argc, char *argv[])
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     plui.callbacks [i] = NULL;
   }
+  for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
+    plui.musicqImage [i] = NULL;
+  }
 
   osSetStandardSignals (pluiSigHandler);
 
@@ -356,6 +359,9 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiButtonFree (plui->setPlaybackButton);
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     callbackFree (plui->callbacks [i]);
+  }
+  for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
+    uiwcontFree (plui->musicqImage [i]);
   }
   uiwcontFree (plui->notebook);
 
@@ -577,10 +583,10 @@ pluiBuildUI (playerui_t *plui)
     uiCreateLabel (&uiwidget, str);
     uiBoxPackStart (&hbox, &uiwidget);
     if (i < MUSICQ_HISTORY) {
-      uiImageNew (&plui->musicqImage [i]);
-      uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
-      uiWidgetSetMarginStart (&plui->musicqImage [i], 1);
-      uiBoxPackStart (&hbox, &plui->musicqImage [i]);
+      plui->musicqImage [i] = uiImageNew ();
+      uiImageSetFromPixbuf (plui->musicqImage [i], &plui->ledonPixbuf);
+      uiWidgetSetMarginStart (plui->musicqImage [i], 1);
+      uiBoxPackStart (&hbox, plui->musicqImage [i]);
     }
 
     uiNotebookAppendPage (plui->notebook, uiwidgetp, &hbox);
@@ -1160,9 +1166,9 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue, int updateFlag)
     }
 
     if ((int) plui->musicqPlayIdx == i) {
-      uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledonPixbuf);
+      uiImageSetFromPixbuf (plui->musicqImage [i], &plui->ledonPixbuf);
     } else {
-      uiImageSetFromPixbuf (&plui->musicqImage [i], &plui->ledoffPixbuf);
+      uiImageSetFromPixbuf (plui->musicqImage [i], &plui->ledoffPixbuf);
     }
   }
 

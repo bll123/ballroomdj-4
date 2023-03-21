@@ -18,13 +18,16 @@
 
 #include "ui/uiimage.h"
 
-void
-uiImageNew (uiwcont_t *uiwidget)
+uiwcont_t *
+uiImageNew (void)
 {
+  uiwcont_t *uiwidget;
   GtkWidget *image;
 
   image = gtk_image_new ();
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = image;
+  return uiwidget;
 }
 
 void
