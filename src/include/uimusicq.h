@@ -63,7 +63,7 @@ typedef struct uimusicq {
   dispsel_t         *dispsel;
   musicdb_t         *musicdb;
   uiwcont_t         *parentwin;
-  uiwcont_t         pausePixbuf;
+  uiwcont_t         *pausePixbuf;
   uiwcont_t         *statusMsg;
   callback_t        *newselcb;
   callback_t        *editcb;

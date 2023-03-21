@@ -7,7 +7,7 @@
 #include "uiwcont.h"
 
 uiwcont_t *uiImageNew (void);
-void  uiImageFromFile (uiwcont_t *uiwidget, const char *fn);
+uiwcont_t *uiImageFromFile (const char *fn);
 void  uiImageScaledFromFile (uiwcont_t *uiwidget, const char *fn, int scale);
 void  uiImagePersistentFromFile (uiwcont_t *uiwidget, const char *fn);
 void  uiImagePersistentFree (uiwcont_t *uiwidget);

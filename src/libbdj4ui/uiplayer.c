@@ -40,67 +40,71 @@ enum {
 };
 
 enum {
-  UIPLAYER_CB_FADE,
-  UIPLAYER_CB_PLAYPAUSE,
-  UIPLAYER_CB_BEGSONG,
-  UIPLAYER_CB_NEXTSONG,
-  UIPLAYER_CB_PAUSEATEND,
-  UIPLAYER_CB_REPEAT,
-  UIPLAYER_CB_SPEED,
-  UIPLAYER_CB_SEEK,
-  UIPLAYER_CB_VOLUME,
-  UIPLAYER_CB_MAX,
+  UIPL_CB_FADE,
+  UIPL_CB_PLAYPAUSE,
+  UIPL_CB_BEGSONG,
+  UIPL_CB_NEXTSONG,
+  UIPL_CB_PAUSEATEND,
+  UIPL_CB_REPEAT,
+  UIPL_CB_SPEED,
+  UIPL_CB_SEEK,
+  UIPL_CB_VOLUME,
+  UIPL_CB_MAX,
 };
 
 enum {
-  UIPLAYER_BUTTON_FADE,
-  UIPLAYER_BUTTON_PLAYPAUSE,
-  UIPLAYER_BUTTON_BEGSONG,
-  UIPLAYER_BUTTON_NEXTSONG,
-  UIPLAYER_BUTTON_MAX,
+  UIPL_BUTTON_FADE,
+  UIPL_BUTTON_PLAYPAUSE,
+  UIPL_BUTTON_BEGSONG,
+  UIPL_BUTTON_NEXTSONG,
+  UIPL_BUTTON_MAX,
 };
 
+enum {
+  UIPL_IMG_STATUS,
+  UIPL_IMG_REPEAT,
+  UIPL_PIX_PLAY,
+  UIPL_PIX_STOP,
+  UIPL_PIX_PAUSE,
+  UIPL_PIX_REPEAT,
+  UIPL_IMG_LED_OFF,
+  UIPL_IMG_LED_ON,
+  UIPL_IMG_MAX,
+};
 
 typedef struct uiplayer {
   progstate_t     *progstate;
   conn_t          *conn;
   playerstate_t   playerState;
   musicdb_t       *musicdb;
-  callback_t      *callbacks [UIPLAYER_CB_MAX];
+  callback_t      *callbacks [UIPL_CB_MAX];
   dbidx_t         curr_dbidx;
   /* song display */
-  uiwcont_t      vbox;
-  uiwcont_t       *statusImg;
-  uiwcont_t       *repeatImg;
-  uiwcont_t      danceLab;
-  uiwcont_t      artistLab;
-  uiwcont_t      titleLab;
-  uibutton_t      *buttons [UIPLAYER_BUTTON_MAX];
+  uiwcont_t       vbox;
+  uiwcont_t       *images [UIPL_IMG_MAX];
+  uiwcont_t       danceLab;
+  uiwcont_t       artistLab;
+  uiwcont_t       titleLab;
+  uibutton_t      *buttons [UIPL_BUTTON_MAX];
   /* speed controls / display */
-  uiwcont_t      speedScale;
-  uiwcont_t      speedDisplayLab;
+  uiwcont_t       speedScale;
+  uiwcont_t       speedDisplayLab;
   bool            speedLock;
   mstime_t        speedLockTimeout;
   mstime_t        speedLockSend;
   /* position controls / display */
-  uiwcont_t      countdownTimerLab;
-  uiwcont_t      durationLab;
-  uiwcont_t      seekScale;
-  uiwcont_t      seekDisplayLab;
+  uiwcont_t       countdownTimerLab;
+  uiwcont_t       durationLab;
+  uiwcont_t       seekScale;
+  uiwcont_t       seekDisplayLab;
   ssize_t         lastdur;
   bool            seekLock;
   mstime_t        seekLockTimeout;
   mstime_t        seekLockSend;
   /* main controls */
   uiwcont_t       *repeatButton;
-  uiwcont_t      songbeginButton;
-  uiwcont_t      *pauseatendButton;
-  uiwcont_t      playPixbuf;
-  uiwcont_t      stopPixbuf;
-  uiwcont_t      pausePixbuf;
-  uiwcont_t      repeatPixbuf;
-  uiwcont_t      ledoffImg;
-  uiwcont_t      ledonImg;
+  uiwcont_t       songbeginButton;
+  uiwcont_t       *pauseatendButton;
   bool            repeatLock;
   bool            pauseatendLock;
   bool            pauseatendstate;
@@ -146,8 +150,6 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->curr_dbidx = -1;
 
   uiwcontInit (&uiplayer->vbox);
-  uiplayer->statusImg = NULL;
-  uiplayer->repeatImg = NULL;
   uiwcontInit (&uiplayer->danceLab);
   uiwcontInit (&uiplayer->artistLab);
   uiwcontInit (&uiplayer->titleLab);
@@ -160,19 +162,16 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->repeatButton = NULL;
   uiwcontInit (&uiplayer->songbeginButton);
   uiplayer->pauseatendButton = NULL;
-  uiwcontInit (&uiplayer->playPixbuf);
-  uiwcontInit (&uiplayer->stopPixbuf);
-  uiwcontInit (&uiplayer->pausePixbuf);
-  uiwcontInit (&uiplayer->repeatPixbuf);
-  uiwcontInit (&uiplayer->ledoffImg);
-  uiwcontInit (&uiplayer->ledonImg);
   uiwcontInit (&uiplayer->volumeDisplayLab);
   uiwcontInit (&uiplayer->volumeScale);
-  for (int i = 0; i < UIPLAYER_BUTTON_MAX; ++i) {
+  for (int i = 0; i < UIPL_BUTTON_MAX; ++i) {
     uiplayer->buttons [i] = NULL;
   }
-  for (int i = 0; i < UIPLAYER_CB_MAX; ++i) {
+  for (int i = 0; i < UIPL_CB_MAX; ++i) {
     uiplayer->callbacks [i] = NULL;
+  }
+  for (int i = 0; i < UIPL_IMG_MAX; ++i) {
+    uiplayer->images [i] = NULL;
   }
 
   progstateSetCallback (uiplayer->progstate, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
@@ -193,11 +192,14 @@ uiplayerFree (uiplayer_t *uiplayer)
 {
   logProcBegin (LOG_PROC, "uiplayerFree");
   if (uiplayer != NULL) {
-    for (int i = 0; i < UIPLAYER_CB_MAX; ++i) {
+    for (int i = 0; i < UIPL_CB_MAX; ++i) {
       callbackFree (uiplayer->callbacks [i]);
     }
-    for (int i = 0; i < UIPLAYER_BUTTON_MAX; ++i) {
+    for (int i = 0; i < UIPL_BUTTON_MAX; ++i) {
       uiButtonFree (uiplayer->buttons [i]);
+    }
+    for (int i = 0; i < UIPL_IMG_MAX; ++i) {
+      uiwcontFree (uiplayer->images [i]);
     }
     mdfree (uiplayer);
   }
@@ -241,42 +243,42 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (&hbox, &tbox);
   uiSizeGroupAdd (szgrpE, &tbox);
 
-  uiplayer->statusImg = uiImageNew ();
+  uiplayer->images [UIPL_IMG_STATUS] = uiImageNew ();
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_stop", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-  uiImageFromFile (&uiplayer->stopPixbuf, tbuff);
-  uiImageConvertToPixbuf (&uiplayer->stopPixbuf);
-  uiWidgetMakePersistent (&uiplayer->stopPixbuf);
+  uiplayer->images [UIPL_PIX_STOP] = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (uiplayer->images [UIPL_PIX_STOP]);
+  uiWidgetMakePersistent (uiplayer->images [UIPL_PIX_STOP]);
 
-  uiImageSetFromPixbuf (uiplayer->statusImg, &uiplayer->stopPixbuf);
-  uiWidgetSetSizeRequest (uiplayer->statusImg, 18, -1);
-  uiWidgetSetMarginStart (uiplayer->statusImg, 1);
-  uiBoxPackStart (&tbox, uiplayer->statusImg);
+  uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
+  uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_STATUS], 18, -1);
+  uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_STATUS], 1);
+  uiBoxPackStart (&tbox, uiplayer->images [UIPL_IMG_STATUS]);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_play", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-  uiImageFromFile (&uiplayer->playPixbuf, tbuff);
-  uiImageConvertToPixbuf (&uiplayer->playPixbuf);
-  uiWidgetMakePersistent (&uiplayer->playPixbuf);
+  uiplayer->images [UIPL_PIX_PLAY] = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (uiplayer->images [UIPL_PIX_PLAY]);
+  uiWidgetMakePersistent (uiplayer->images [UIPL_PIX_PLAY]);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-  uiImageFromFile (&uiplayer->pausePixbuf, tbuff);
-  uiImageConvertToPixbuf (&uiplayer->pausePixbuf);
-  uiWidgetMakePersistent (&uiplayer->pausePixbuf);
+  uiplayer->images [UIPL_PIX_PAUSE] = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (uiplayer->images [UIPL_PIX_PAUSE]);
+  uiWidgetMakePersistent (uiplayer->images [UIPL_PIX_PAUSE]);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-  uiImageFromFile (&uiplayer->repeatPixbuf, tbuff);
-  uiImageConvertToPixbuf (&uiplayer->repeatPixbuf);
-  uiWidgetMakePersistent (&uiplayer->repeatPixbuf);
+  uiplayer->images [UIPL_PIX_REPEAT] = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (uiplayer->images [UIPL_PIX_REPEAT]);
+  uiWidgetMakePersistent (uiplayer->images [UIPL_PIX_REPEAT]);
 
-  uiplayer->repeatImg = uiImageNew ();
-  uiImageClear (uiplayer->repeatImg);
-  uiWidgetSetSizeRequest (uiplayer->repeatImg, 18, -1);
-  uiWidgetSetMarginStart (uiplayer->repeatImg, 1);
-  uiBoxPackStart (&tbox, uiplayer->repeatImg);
+  uiplayer->images [UIPL_IMG_REPEAT] = uiImageNew ();
+  uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
+  uiWidgetSetSizeRequest (uiplayer->images [UIPL_IMG_REPEAT], 18, -1);
+  uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_REPEAT], 1);
+  uiBoxPackStart (&tbox, uiplayer->images [UIPL_IMG_REPEAT]);
 
   uiCreateLabel (&uiplayer->danceLab, "");
   uiBoxPackStart (&hbox, &uiplayer->danceLab);
@@ -319,9 +321,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiCreateScale (&uiplayer->speedScale, 70.0, 130.0, 1.0, 10.0, 100.0, 0);
   uiBoxPackEnd (&hbox, &uiplayer->speedScale);
   uiSizeGroupAdd (szgrpC, &uiplayer->speedScale);
-  uiplayer->callbacks [UIPLAYER_CB_SPEED] = callbackInitDouble (
+  uiplayer->callbacks [UIPL_CB_SPEED] = callbackInitDouble (
       uiplayerSpeedCallback, uiplayer);
-  uiScaleSetCallback (&uiplayer->speedScale, uiplayer->callbacks [UIPLAYER_CB_SPEED]);
+  uiScaleSetCallback (&uiplayer->speedScale, uiplayer->callbacks [UIPL_CB_SPEED]);
 
   /* size group D */
   /* CONTEXT: playerui: the current speed for song playback */
@@ -373,9 +375,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiCreateScale (&uiplayer->seekScale, 0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
   uiBoxPackEnd (&hbox, &uiplayer->seekScale);
   uiSizeGroupAdd (szgrpC, &uiplayer->seekScale);
-  uiplayer->callbacks [UIPLAYER_CB_SEEK] = callbackInitDouble (
+  uiplayer->callbacks [UIPL_CB_SEEK] = callbackInitDouble (
       uiplayerSeekCallback, uiplayer);
-  uiScaleSetCallback (&uiplayer->seekScale, uiplayer->callbacks [UIPLAYER_CB_SEEK]);
+  uiScaleSetCallback (&uiplayer->seekScale, uiplayer->callbacks [UIPL_CB_SEEK]);
 
   /* size group D */
   /* CONTEXT: playerui: the current position of the song during song playback */
@@ -396,75 +398,75 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (&hbox, &uiwidget);
   uiSizeGroupAdd (szgrpE, &uiwidget);
 
-  uiplayer->callbacks [UIPLAYER_CB_FADE] = callbackInit (
+  uiplayer->callbacks [UIPL_CB_FADE] = callbackInit (
       uiplayerFadeProcess, uiplayer, NULL);
   uibutton = uiCreateButton (
-      uiplayer->callbacks [UIPLAYER_CB_FADE],
+      uiplayer->callbacks [UIPL_CB_FADE],
       /* CONTEXT: playerui: button: fade out the song and stop playing it */
       _("Fade"), NULL);
-  uiplayer->buttons [UIPLAYER_BUTTON_FADE] = uibutton;
+  uiplayer->buttons [UIPL_BUTTON_FADE] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiplayer->callbacks [UIPLAYER_CB_PLAYPAUSE] = callbackInit (
+  uiplayer->callbacks [UIPL_CB_PLAYPAUSE] = callbackInit (
       uiplayerPlayPauseProcess, uiplayer, NULL);
   uibutton = uiCreateButton (
-      uiplayer->callbacks [UIPLAYER_CB_PLAYPAUSE],
+      uiplayer->callbacks [UIPL_CB_PLAYPAUSE],
       /* CONTEXT: playerui: button: tooltip: play or pause the song */
       _("Play / Pause"), "button_playpause");
-  uiplayer->buttons [UIPLAYER_BUTTON_PLAYPAUSE] = uibutton;
+  uiplayer->buttons [UIPL_BUTTON_PLAYPAUSE] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-  uiplayer->callbacks [UIPLAYER_CB_REPEAT] = callbackInit (
+  uiplayer->callbacks [UIPL_CB_REPEAT] = callbackInit (
       uiplayerRepeatCallback, uiplayer, NULL);
   uiplayer->repeatButton = uiCreateToggleButton ("", tbuff,
       /* CONTEXT: playerui: button: tooltip: toggle the repeat song on and off */
       _("Toggle Repeat"), NULL, 0);
   uiBoxPackStart (&hbox, uiplayer->repeatButton);
   uiToggleButtonSetCallback (uiplayer->repeatButton,
-      uiplayer->callbacks [UIPLAYER_CB_REPEAT]);
+      uiplayer->callbacks [UIPL_CB_REPEAT]);
 
-  uiplayer->callbacks [UIPLAYER_CB_BEGSONG] = callbackInit (
+  uiplayer->callbacks [UIPL_CB_BEGSONG] = callbackInit (
       uiplayerSongBeginProcess, uiplayer, NULL);
   uibutton = uiCreateButton (
-      uiplayer->callbacks [UIPLAYER_CB_BEGSONG],
+      uiplayer->callbacks [UIPL_CB_BEGSONG],
       /* CONTEXT: playerui: button: tooltip: return to the beginning of the song */
       _("Return to beginning of song"), "button_begin");
-  uiplayer->buttons [UIPLAYER_BUTTON_BEGSONG] = uibutton;
+  uiplayer->buttons [UIPL_BUTTON_BEGSONG] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiplayer->callbacks [UIPLAYER_CB_NEXTSONG] = callbackInit (
+  uiplayer->callbacks [UIPL_CB_NEXTSONG] = callbackInit (
       uiplayerNextSongProcess, uiplayer, NULL);
   uibutton = uiCreateButton (
-      uiplayer->callbacks [UIPLAYER_CB_NEXTSONG],
+      uiplayer->callbacks [UIPL_CB_NEXTSONG],
       /* CONTEXT: playerui: button: tooltip: start playing the next song (immediate) */
       _("Next Song"), "button_nextsong");
-  uiplayer->buttons [UIPLAYER_BUTTON_NEXTSONG] = uibutton;
+  uiplayer->buttons [UIPL_BUTTON_NEXTSONG] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_on", ".svg",
       PATHBLD_MP_DIR_IMG);
-  uiImageFromFile (&uiplayer->ledonImg, tbuff);
-  uiWidgetMakePersistent (&uiplayer->ledonImg);
+  uiplayer->images [UIPL_IMG_LED_ON] = uiImageFromFile (tbuff);
+  uiWidgetMakePersistent (uiplayer->images [UIPL_IMG_LED_ON]);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "led_off", ".svg",
       PATHBLD_MP_DIR_IMG);
-  uiImageFromFile (&uiplayer->ledoffImg, tbuff);
-  uiWidgetMakePersistent (&uiplayer->ledoffImg);
+  uiplayer->images [UIPL_IMG_LED_OFF] = uiImageFromFile (tbuff);
+  uiWidgetMakePersistent (uiplayer->images [UIPL_IMG_LED_OFF]);
 
-  uiplayer->callbacks [UIPLAYER_CB_PAUSEATEND] = callbackInit (
+  uiplayer->callbacks [UIPL_CB_PAUSEATEND] = callbackInit (
       uiplayerPauseatendCallback, uiplayer, NULL);
   /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
   uiplayer->pauseatendButton = uiCreateToggleButton (_("Pause at End"),
-      NULL, NULL, &uiplayer->ledoffImg, 0);
+      NULL, NULL, uiplayer->images [UIPL_IMG_LED_OFF], 0);
   uiBoxPackStart (&hbox, uiplayer->pauseatendButton);
   uiToggleButtonSetCallback (uiplayer->pauseatendButton,
-      uiplayer->callbacks [UIPLAYER_CB_PAUSEATEND]);
+      uiplayer->callbacks [UIPL_CB_PAUSEATEND]);
 
   /* volume controls / display */
 
@@ -483,9 +485,9 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiCreateScale (&uiplayer->volumeScale, 0.0, 100.0, 1.0, 10.0, 0.0, 0);
   uiBoxPackEnd (&hbox, &uiplayer->volumeScale);
   uiSizeGroupAdd (szgrpC, &uiplayer->volumeScale);
-  uiplayer->callbacks [UIPLAYER_CB_VOLUME] = callbackInitDouble (
+  uiplayer->callbacks [UIPL_CB_VOLUME] = callbackInitDouble (
       uiplayerVolumeCallback, uiplayer);
-  uiScaleSetCallback (&uiplayer->volumeScale, uiplayer->callbacks [UIPLAYER_CB_VOLUME]);
+  uiScaleSetCallback (&uiplayer->volumeScale, uiplayer->callbacks [UIPL_CB_VOLUME]);
 
   /* size group D */
   /* CONTEXT: playerui: The current volume of the song */
@@ -663,12 +665,12 @@ uiplayerClosingCallback (void *udata, programstate_t programState)
   uiplayer_t      *uiplayer = udata;
 
   logProcBegin (LOG_PROC, "uiplayerClosingCallback");
-  uiWidgetClearPersistent (&uiplayer->stopPixbuf);
-  uiWidgetClearPersistent (&uiplayer->playPixbuf);
-  uiWidgetClearPersistent (&uiplayer->pausePixbuf);
-  uiWidgetClearPersistent (&uiplayer->repeatPixbuf);
-  uiWidgetClearPersistent (&uiplayer->ledonImg);
-  uiWidgetClearPersistent (&uiplayer->ledoffImg);
+  uiWidgetClearPersistent (uiplayer->images [UIPL_PIX_STOP]);
+  uiWidgetClearPersistent (uiplayer->images [UIPL_PIX_PLAY]);
+  uiWidgetClearPersistent (uiplayer->images [UIPL_PIX_PAUSE]);
+  uiWidgetClearPersistent (uiplayer->images [UIPL_PIX_REPEAT]);
+  uiWidgetClearPersistent (uiplayer->images [UIPL_IMG_LED_ON]);
+  uiWidgetClearPersistent (uiplayer->images [UIPL_IMG_LED_OFF]);
   logProcEnd (LOG_PROC, "uiplayerClosingCallback", "");
   return STATE_FINISHED;
 }
@@ -685,11 +687,11 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on)
   uiplayer->pauseatendLock = true;
 
   if (on && ! uiplayer->pauseatendstate) {
-    uiToggleButtonSetImage (uiplayer->pauseatendButton, &uiplayer->ledonImg);
+    uiToggleButtonSetImage (uiplayer->pauseatendButton, uiplayer->images [UIPL_IMG_LED_ON]);
     uiToggleButtonSetState (uiplayer->pauseatendButton, UI_TOGGLE_BUTTON_ON);
   }
   if (! on && uiplayer->pauseatendstate) {
-    uiToggleButtonSetImage (uiplayer->pauseatendButton, &uiplayer->ledoffImg);
+    uiToggleButtonSetImage (uiplayer->pauseatendButton, uiplayer->images [UIPL_IMG_LED_OFF]);
     uiToggleButtonSetState (uiplayer->pauseatendButton, UI_TOGGLE_BUTTON_OFF);
   }
   uiplayer->pauseatendLock = false;
@@ -719,26 +721,26 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
   switch (playerState) {
     case PL_STATE_UNKNOWN:
     case PL_STATE_STOPPED: {
-      uiImageClear (uiplayer->statusImg);
-      uiImageSetFromPixbuf (uiplayer->statusImg, &uiplayer->stopPixbuf);
+      uiImageClear (uiplayer->images [UIPL_IMG_STATUS]);
+      uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
       break;
     }
     case PL_STATE_LOADING:
     case PL_STATE_IN_FADEOUT:
     case PL_STATE_IN_GAP:
     case PL_STATE_PLAYING: {
-      uiImageClear (uiplayer->statusImg);
-      uiImageSetFromPixbuf (uiplayer->statusImg, &uiplayer->playPixbuf);
+      uiImageClear (uiplayer->images [UIPL_IMG_STATUS]);
+      uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_PLAY]);
       break;
     }
     case PL_STATE_PAUSED: {
-      uiImageClear (uiplayer->statusImg);
-      uiImageSetFromPixbuf (uiplayer->statusImg, &uiplayer->pausePixbuf);
+      uiImageClear (uiplayer->images [UIPL_IMG_STATUS]);
+      uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_PAUSE]);
       break;
     }
     default: {
-      uiImageClear (uiplayer->statusImg);
-      uiImageSetFromPixbuf (uiplayer->statusImg, &uiplayer->stopPixbuf);
+      uiImageClear (uiplayer->images [UIPL_IMG_STATUS]);
+      uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_STATUS], uiplayer->images [UIPL_PIX_STOP]);
       break;
     }
   }
@@ -764,11 +766,11 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   if (p != NULL) {
     uiplayer->repeatLock = true;
     if (atol (p)) {
-      uiImageClear (uiplayer->repeatImg);
-      uiImageSetFromPixbuf (uiplayer->repeatImg, &uiplayer->repeatPixbuf);
+      uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
+      uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_REPEAT], uiplayer->images [UIPL_PIX_REPEAT]);
       uiToggleButtonSetState (uiplayer->repeatButton, UI_TOGGLE_BUTTON_ON);
     } else {
-      uiImageClear (uiplayer->repeatImg);
+      uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
       uiToggleButtonSetState (uiplayer->repeatButton, UI_TOGGLE_BUTTON_OFF);
     }
     uiplayer->repeatLock = false;

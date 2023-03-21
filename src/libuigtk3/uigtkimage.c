@@ -30,13 +30,16 @@ uiImageNew (void)
   return uiwidget;
 }
 
-void
-uiImageFromFile (uiwcont_t *uiwidget, const char *fn)
+uiwcont_t *
+uiImageFromFile (const char *fn)
 {
+  uiwcont_t *uiwidget;
   GtkWidget *image;
 
   image = gtk_image_new_from_file (fn);
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = image;
+  return uiwidget;
 }
 
 void

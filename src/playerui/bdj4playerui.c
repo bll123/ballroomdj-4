@@ -103,8 +103,8 @@ typedef struct {
   uiwcont_t       clock;
   uiwcont_t       *musicqImage [MUSICQ_PB_MAX];
   uibutton_t      *setPlaybackButton;
-  uiwcont_t       ledoffPixbuf;
-  uiwcont_t       ledonPixbuf;
+  uiwcont_t       *ledoffPixbuf;
+  uiwcont_t       *ledonPixbuf;
   uiwcont_t       marqueeFontSizeDialog;
   uiwcont_t       marqueeSpinBox;
   /* ui major elements */
@@ -354,8 +354,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "pluiClosingCallback");
 
   uiCloseWindow (&plui->window);
-  uiWidgetClearPersistent (&plui->ledonPixbuf);
-  uiWidgetClearPersistent (&plui->ledoffPixbuf);
+  uiWidgetClearPersistent (plui->ledonPixbuf);
+  uiWidgetClearPersistent (plui->ledoffPixbuf);
   uiButtonFree (plui->setPlaybackButton);
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     callbackFree (plui->callbacks [i]);
@@ -411,15 +411,15 @@ pluiBuildUI (playerui_t *plui)
 
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
-  uiImageFromFile (&plui->ledoffPixbuf, tbuff);
-  uiImageConvertToPixbuf (&plui->ledoffPixbuf);
-  uiWidgetMakePersistent (&plui->ledoffPixbuf);
+  plui->ledoffPixbuf = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (plui->ledoffPixbuf);
+  uiWidgetMakePersistent (plui->ledoffPixbuf);
 
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_on", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
-  uiImageFromFile (&plui->ledonPixbuf, tbuff);
-  uiImageConvertToPixbuf (&plui->ledonPixbuf);
-  uiWidgetMakePersistent (&plui->ledonPixbuf);
+  plui->ledonPixbuf = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (plui->ledonPixbuf);
+  uiWidgetMakePersistent (plui->ledonPixbuf);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_player", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -584,7 +584,7 @@ pluiBuildUI (playerui_t *plui)
     uiBoxPackStart (&hbox, &uiwidget);
     if (i < MUSICQ_HISTORY) {
       plui->musicqImage [i] = uiImageNew ();
-      uiImageSetFromPixbuf (plui->musicqImage [i], &plui->ledonPixbuf);
+      uiImageSetFromPixbuf (plui->musicqImage [i], plui->ledonPixbuf);
       uiWidgetSetMarginStart (plui->musicqImage [i], 1);
       uiBoxPackStart (&hbox, plui->musicqImage [i]);
     }
@@ -1166,9 +1166,9 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue, int updateFlag)
     }
 
     if ((int) plui->musicqPlayIdx == i) {
-      uiImageSetFromPixbuf (plui->musicqImage [i], &plui->ledonPixbuf);
+      uiImageSetFromPixbuf (plui->musicqImage [i], plui->ledonPixbuf);
     } else {
-      uiImageSetFromPixbuf (plui->musicqImage [i], &plui->ledoffPixbuf);
+      uiImageSetFromPixbuf (plui->musicqImage [i], plui->ledoffPixbuf);
     }
   }
 

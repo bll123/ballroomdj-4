@@ -115,7 +115,7 @@ typedef struct se_internal {
   uiwcont_t           editalldisp;
   uiwcont_t           *parentwin;
   uiwcont_t           vbox;
-  uiwcont_t           musicbrainzPixbuf;
+  uiwcont_t           *musicbrainzPixbuf;
   uiwcont_t           modified;
   uiwcont_t           *audioidImg;
   uiwcont_t           filedisp;
@@ -395,9 +395,9 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 
   pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
-  uiImageFromFile (&seint->musicbrainzPixbuf, tbuff);
-  uiImageConvertToPixbuf (&seint->musicbrainzPixbuf);
-  uiWidgetMakePersistent (&seint->musicbrainzPixbuf);
+  seint->musicbrainzPixbuf = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (seint->musicbrainzPixbuf);
+  uiWidgetMakePersistent (seint->musicbrainzPixbuf);
 
   seint->audioidImg = uiImageNew ();
   uiImageClear (seint->audioidImg);
@@ -506,7 +506,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
   uiImageClear (seint->audioidImg);
   data = songGetStr (song, TAG_RECORDING_ID);
   if (data != NULL && *data) {
-    uiImageSetFromPixbuf (seint->audioidImg, &seint->musicbrainzPixbuf);
+    uiImageSetFromPixbuf (seint->audioidImg, seint->musicbrainzPixbuf);
   }
 
   val = songGetNum (song, TAG_ADJUSTFLAGS);

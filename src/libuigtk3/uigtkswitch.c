@@ -28,8 +28,8 @@
 
 typedef struct uiswitch {
   uiwcont_t  *switchw;
-  uiwcont_t  switchoffimg;
-  uiwcont_t  switchonimg;
+  uiwcont_t  *switchoffimg;
+  uiwcont_t  *switchonimg;
 } uiswitch_t;
 
 static void uiSwitchImageHandler (GtkButton *b, gpointer udata);
@@ -48,17 +48,17 @@ uiCreateSwitch (int value)
 
   uiswitch = mdmalloc (sizeof (uiswitch_t));
   uiswitch->switchw = NULL;
-  uiwcontInit (&uiswitch->switchoffimg);
-  uiwcontInit (&uiswitch->switchonimg);
+  uiswitch->switchoffimg = NULL;
+  uiswitch->switchonimg = NULL;
 
   pathbldMakePath (tbuff, sizeof (tbuff), "switch-off", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-  uiImageFromFile (&uiswitch->switchoffimg, tbuff);
-  uiWidgetMakePersistent (&uiswitch->switchoffimg);
+  uiswitch->switchoffimg = uiImageFromFile (tbuff);
+  uiWidgetMakePersistent (uiswitch->switchoffimg);
   pathbldMakePath (tbuff, sizeof (tbuff), "switch-on", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-  uiImageFromFile (&uiswitch->switchonimg, tbuff);
-  uiWidgetMakePersistent (&uiswitch->switchonimg);
+  uiswitch->switchonimg = uiImageFromFile (tbuff);
+  uiWidgetMakePersistent (uiswitch->switchonimg);
 
   widget = gtk_toggle_button_new ();
   uiswitch->switchw = uiwcontAlloc ();
@@ -79,8 +79,8 @@ void
 uiSwitchFree (uiswitch_t *uiswitch)
 {
   if (uiswitch != NULL) {
-    uiWidgetClearPersistent (&uiswitch->switchoffimg);
-    uiWidgetClearPersistent (&uiswitch->switchonimg);
+    uiWidgetClearPersistent (uiswitch->switchoffimg);
+    uiWidgetClearPersistent (uiswitch->switchonimg);
     mdfree (uiswitch);
   }
 }
@@ -161,8 +161,8 @@ uiSwitchSetImage (GtkWidget *w, void *udata)
 
   value = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (uiswitch->switchw->widget));
   if (value) {
-    gtk_button_set_image (GTK_BUTTON (w), uiswitch->switchonimg.widget);
+    gtk_button_set_image (GTK_BUTTON (w), uiswitch->switchonimg->widget);
   } else {
-    gtk_button_set_image (GTK_BUTTON (w), uiswitch->switchoffimg.widget);
+    gtk_button_set_image (GTK_BUTTON (w), uiswitch->switchoffimg->widget);
   }
 }

@@ -20,7 +20,6 @@
 #include "mdebug.h"
 #include "msgparse.h"
 #include "musicdb.h"
-#include "pathbld.h"
 #include "ui.h"
 #include "uidance.h"
 #include "uifavorite.h"
@@ -177,7 +176,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiwcont_t *statusMsg, uientryval_t validateFunc)
 {
   int               saveci;
-  char              tbuff [MAXPATHLEN];
   uiwcont_t         hbox;
   uiwcont_t         uiwidget;
   uiwcont_t         *scwin;
@@ -199,13 +197,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   uimusicq->ui [ci].hasui = true;
 
   uimusicq->parentwin = parentwin;
-
-  /* want a copy of the pixbuf for this image */
-  pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
-      PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
-  uiImageFromFile (&uimusicq->pausePixbuf, tbuff);
-  uiImageConvertToPixbuf (&uimusicq->pausePixbuf);
-  uiWidgetMakePersistent (&uimusicq->pausePixbuf);
 
   uiCreateVertBox (&uimusicq->ui [ci].mainbox);
   uiWidgetExpandHoriz (&uimusicq->ui [ci].mainbox);
@@ -736,7 +727,7 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
 
     pixbuf = NULL;
     if (musicqupditem->pauseind) {
-      pixbuf = uiImageGetPixbuf (&uimusicq->pausePixbuf);
+      pixbuf = uiImageGetPixbuf (uimusicq->pausePixbuf);
     }
 
     song = dbGetByIdx (uimusicq->musicdb, musicqupditem->dbidx);

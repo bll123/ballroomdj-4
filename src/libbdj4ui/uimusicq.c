@@ -22,6 +22,7 @@
 #include "mp3exp.h"
 #include "musicq.h"
 #include "nlist.h"
+#include "pathbld.h"
 #include "pathutil.h"
 #include "song.h"
 #include "songlist.h"
@@ -38,7 +39,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     dispsel_t *dispsel, dispselsel_t dispselType)
 {
   uimusicq_t    *uimusicq;
-
+  char          tbuff [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "uimusicqInit");
 
@@ -64,7 +65,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq->iteratecb = NULL;
   uimusicq->savelist = NULL;
   uimusicq->cbci = MUSICQ_PB_A;
-  uiwcontInit (&uimusicq->pausePixbuf);
+  uimusicq->pausePixbuf = NULL;
   uimusicq->peercount = 0;
   uimusicq->backupcreated = false;
   uimusicq->changed = false;
@@ -73,6 +74,13 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   for (int i = 0; i < UIMUSICQ_PEER_MAX; ++i) {
     uimusicq->peers [i] = NULL;
   }
+
+  /* want a copy of the pixbuf for this image */
+  pathbldMakePath (tbuff, sizeof (tbuff), "button_pause", ".svg",
+      PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
+  uimusicq->pausePixbuf = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (uimusicq->pausePixbuf);
+  uiWidgetMakePersistent (uimusicq->pausePixbuf);
 
   uimusicqUIInit (uimusicq);
 
@@ -128,12 +136,15 @@ uimusicqFree (uimusicq_t *uimusicq)
   logProcBegin (LOG_PROC, "uimusicqFree");
   if (uimusicq != NULL) {
     callbackFree (uimusicq->savelistcb);
-    uiWidgetClearPersistent (&uimusicq->pausePixbuf);
     for (int i = 0; i < MUSICQ_MAX; ++i) {
       uiDropDownFree (uimusicq->ui [i].playlistsel);
       uiEntryFree (uimusicq->ui [i].slname);
     }
     uimusicqUIFree (uimusicq);
+
+    uiWidgetClearPersistent (uimusicq->pausePixbuf);
+    uiwcontFree (uimusicq->pausePixbuf);
+
     mdfree (uimusicq);
   }
   logProcEnd (LOG_PROC, "uimusicqFree", "");
