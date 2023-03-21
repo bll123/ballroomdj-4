@@ -581,10 +581,11 @@ starterBuildUI (startui_t  *starter)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
-  uiImageScaledFromFile (&uiwidget, tbuff, 128);
-  uiWidgetExpandHoriz (&uiwidget);
-  uiWidgetSetAllMargins (&uiwidget, 10);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiwidgetp = uiImageScaledFromFile (tbuff, 128);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiWidgetSetAllMargins (uiwidgetp, 10);
+  uiBoxPackStart (&hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   starter->callbacks [START_CB_PLAYER] = callbackInit (
       starterStartPlayerui, starter, NULL);

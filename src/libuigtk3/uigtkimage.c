@@ -42,9 +42,10 @@ uiImageFromFile (const char *fn)
   return uiwidget;
 }
 
-void
-uiImageScaledFromFile (uiwcont_t *uiwidget, const char *fn, int scale)
+uiwcont_t *
+uiImageScaledFromFile (const char *fn, int scale)
 {
+  uiwcont_t *uiwidget;
   GdkPixbuf *pixbuf;
   GtkWidget *image;
   GError    *gerr = NULL;
@@ -52,7 +53,9 @@ uiImageScaledFromFile (uiwcont_t *uiwidget, const char *fn, int scale)
   pixbuf = gdk_pixbuf_new_from_file_at_scale (fn, scale, -1, TRUE, &gerr);
   image = gtk_image_new ();
   gtk_image_set_from_pixbuf (GTK_IMAGE (image), pixbuf);
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = image;
+  return uiwidget;
 }
 
 void
