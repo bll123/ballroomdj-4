@@ -44,7 +44,6 @@
 #include "uisongfilter.h"
 #include "uistatus.h"
 #include "uiutils.h"
-#include "uiwcont.h"
 
 enum {
   UISF_LABEL_SORTBY,

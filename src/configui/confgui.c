@@ -26,7 +26,6 @@
 #include "callback.h"
 #include "uiduallist.h"
 #include "uinbutil.h"
-#include "uiwcont.h"
 #include "validate.h"
 
 enum {

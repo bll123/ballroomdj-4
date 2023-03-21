@@ -30,7 +30,6 @@
 #include "ui.h"
 #include "uiduallist.h"
 #include "uiselectfile.h"
-#include "uiwcont.h"
 
 enum {
   MSEQ_MENU_CB_SEQ_LOAD,

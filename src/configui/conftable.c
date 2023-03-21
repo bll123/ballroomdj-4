@@ -25,7 +25,6 @@
 #include "log.h"
 #include "mdebug.h"
 #include "ui.h"
-#include "uiwcont.h"
 
 /* table editing */
 static bool   confuiTableMoveUp (void *udata);

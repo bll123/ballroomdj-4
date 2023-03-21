@@ -33,7 +33,6 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiutils.h"
-#include "uiwcont.h"
 
 enum {
   BPMCOUNT_CB_EXIT,

@@ -21,7 +21,6 @@
 #include "ui.h"
 #include "callback.h"
 #include "uiduallist.h"
-#include "uiwcont.h"
 
 enum {
   DUALLIST_COL_DISP,

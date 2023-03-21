@@ -32,7 +32,6 @@
 #include "sockh.h"
 #include "ui.h"
 #include "uiutils.h"
-#include "uiwcont.h"
 
 enum {
   HELPER_BUTTON_CLOSE,

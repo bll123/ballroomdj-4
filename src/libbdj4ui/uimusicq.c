@@ -30,7 +30,6 @@
 #include "ui.h"
 #include "callback.h"
 #include "uimusicq.h"
-#include "uiwcont.h"
 
 static bool   uimusicqSaveListCallback (void *udata, long dbidx);
 

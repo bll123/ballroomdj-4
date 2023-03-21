@@ -29,7 +29,6 @@
 #include "uilevel.h"
 #include "uirating.h"
 #include "uiselectfile.h"
-#include "uiwcont.h"
 #include "validate.h"
 
 enum {

@@ -27,7 +27,6 @@
 #include "uimusicq.h"
 #include "uisong.h"
 #include "uitreedisp.h"
-#include "uiwcont.h"
 
 enum {
   MUSICQ_COL_ELLIPSIZE,

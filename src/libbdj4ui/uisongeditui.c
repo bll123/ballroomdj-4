@@ -41,7 +41,6 @@
 #include "uisong.h"
 #include "uisongsel.h"
 #include "uisongedit.h"
-#include "uiwcont.h"
 
 enum {
   SONGEDIT_CHK_NONE,

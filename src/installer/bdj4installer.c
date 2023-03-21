@@ -51,7 +51,6 @@
 #include "tmutil.h"
 #include "templateutil.h"
 #include "ui.h"
-#include "uiwcont.h"
 #include "webclient.h"
 
 /* installation states */

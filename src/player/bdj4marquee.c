@@ -40,7 +40,6 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiutils.h"
-#include "uiwcont.h"
 
 enum {
   MQ_POSITION_X,

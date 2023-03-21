@@ -44,7 +44,6 @@
 #include "ui.h"
 #include "callback.h"
 #include "uiutils.h"
-#include "uiwcont.h"
 #include "volreg.h"
 #include "webclient.h"
 

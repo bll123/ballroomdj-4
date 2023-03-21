@@ -9,6 +9,7 @@
 #endif
 
 #include "uiclass.h"
+#include "uiwcont.h"
 
 #include "ui/uiinternal.h"      // will go away
 

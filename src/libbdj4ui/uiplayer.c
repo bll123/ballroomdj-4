@@ -30,7 +30,6 @@
 #include "ui.h"
 #include "callback.h"
 #include "uiplayer.h"
-#include "uiwcont.h"
 
 /* there are all sorts of latency issues making the sliders work nicely */
 /* it will take at least 100ms and at most 200ms for the message to get */

@@ -66,7 +66,6 @@
 #include "uisongfilter.h"
 #include "uisongsel.h"
 #include "uiutils.h"
-#include "uiwcont.h"
 
 enum {
   MANAGE_TAB_MAIN_OTHER,
