@@ -477,8 +477,8 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   uisf->callbacks [UISF_CB_PLAYLIST_SEL] = callbackInitLong (
       uisfPlaylistSelectHandler, uisf);
-  uiwidgetp = uiComboboxCreate (&uisf->filterDialog, "",
-      uisf->callbacks [UISF_CB_PLAYLIST_SEL], uisf->playlistfilter, uisf);
+  uiwidgetp = uiComboboxCreate (uisf->playlistfilter,
+      &uisf->filterDialog, "", uisf->callbacks [UISF_CB_PLAYLIST_SEL], uisf);
   uisfCreatePlaylistList (uisf);
   uiBoxPackStart (&hbox, uiwidgetp);
   /* looks bad if added to the size group */
@@ -495,8 +495,8 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   uisf->callbacks [UISF_CB_SORT_BY_SEL] = callbackInitLong (
       uisfSortBySelectHandler, uisf);
-  uiwidgetp = uiComboboxCreate (&uisf->filterDialog, "",
-      uisf->callbacks [UISF_CB_SORT_BY_SEL], uisf->sortbyfilter, uisf);
+  uiwidgetp = uiComboboxCreate (uisf->sortbyfilter,
+      &uisf->filterDialog, "", uisf->callbacks [UISF_CB_SORT_BY_SEL], uisf);
   uisfCreateSortByList (uisf);
   uiBoxPackStart (&hbox, uiwidgetp);
   /* looks bad if added to the size group */

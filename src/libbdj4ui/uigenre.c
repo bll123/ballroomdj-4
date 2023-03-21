@@ -52,8 +52,8 @@ uigenreDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, bool allflag)
   uigenre->selectcb = NULL;
 
   uigenre->cb = callbackInitLong (uigenreSelectHandler, uigenre);
-  uigenre->buttonp = uiComboboxCreate (parentwin, "",
-      uigenre->cb, uigenre->dropdown, uigenre);
+  uigenre->buttonp = uiComboboxCreate (uigenre->dropdown,
+      parentwin, "", uigenre->cb, uigenre);
   uigenreCreateGenreList (uigenre);
   uiBoxPackStart (boxp, uigenre->buttonp);
 

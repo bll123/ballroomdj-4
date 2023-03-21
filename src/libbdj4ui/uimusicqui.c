@@ -330,10 +330,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
       uimusicq->queueplcb = callbackInitLong (
           uimusicqQueuePlaylistCallback, uimusicq);
     }
-    uiwidgetp = uiDropDownCreate (parentwin,
+    uiwidgetp = uiDropDownCreate (uimusicq->ui [ci].playlistsel, parentwin,
         /* CONTEXT: (verb) music queue: button: queue a playlist for playback */
-        _("Queue Playlist"), uimusicq->queueplcb,
-        uimusicq->ui [ci].playlistsel, uimusicq);
+        _("Queue Playlist"), uimusicq->queueplcb, uimusicq);
     uiBoxPackEnd (&hbox, uiwidgetp);
     uimusicqCreatePlaylistList (uimusicq);
 
@@ -517,8 +516,10 @@ uimusicqIterate (uimusicq_t *uimusicq, callback_t *cb, musicqidx_t mqidx)
 
   uimusicq->iteratecb = cb;
   mqint = uimusicq->ui [mqidx].mqInternalData;
+  uiTreeViewValueIteratorSet (mqint->musicqTree, 0);
   uiTreeViewForeach (mqint->musicqTree,
       mqint->callbacks [UIMUSICQ_CB_ITERATE]);
+  uiTreeViewValueIteratorClear (mqint->musicqTree);
 }
 
 long

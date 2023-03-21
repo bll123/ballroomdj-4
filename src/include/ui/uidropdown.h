@@ -13,12 +13,10 @@ typedef struct uidropdown uidropdown_t;
 
 uidropdown_t *uiDropDownInit (void);
 void uiDropDownFree (uidropdown_t *dropdown);
-uiwcont_t *uiDropDownCreate (uiwcont_t *parentwin,
-    const char *title, callback_t *uicb,
-    uidropdown_t *dropdown, void *udata);
-uiwcont_t *uiComboboxCreate (uiwcont_t *parentwin,
-    const char *title, callback_t *uicb,
-    uidropdown_t *dropdown, void *udata);
+uiwcont_t *uiDropDownCreate (uidropdown_t *dropdown,
+    uiwcont_t *parentwin, const char *title, callback_t *uicb, void *udata);
+uiwcont_t *uiComboboxCreate (uidropdown_t *dropdown,
+    uiwcont_t *parentwin, const char *title, callback_t *uicb, void *udata);
 void uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
     const char *selectLabel);
 void uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,

@@ -97,7 +97,6 @@ uiDropDownInit (void)
   return dropdown;
 }
 
-
 void
 uiDropDownFree (uidropdown_t *dropdown)
 {
@@ -118,9 +117,8 @@ uiDropDownFree (uidropdown_t *dropdown)
 }
 
 uiwcont_t *
-uiDropDownCreate (uiwcont_t *parentwin,
-    const char *title, callback_t *uicb,
-    uidropdown_t *dropdown, void *udata)
+uiDropDownCreate (uidropdown_t *dropdown, uiwcont_t *parentwin,
+    const char *title, callback_t *uicb, void *udata)
 {
   dropdown->parentwin = parentwin;
   dropdown->title = mdstrdup (title);
@@ -130,12 +128,11 @@ uiDropDownCreate (uiwcont_t *parentwin,
 }
 
 uiwcont_t *
-uiComboboxCreate (uiwcont_t *parentwin,
-    const char *title, callback_t *uicb,
-    uidropdown_t *dropdown, void *udata)
+uiComboboxCreate (uidropdown_t *dropdown, uiwcont_t *parentwin,
+    const char *title, callback_t *uicb, void *udata)
 {
   dropdown->iscombobox = true;
-  return uiDropDownCreate (parentwin, title, uicb, dropdown, udata);
+  return uiDropDownCreate (dropdown, parentwin, title, uicb, udata);
 }
 
 void

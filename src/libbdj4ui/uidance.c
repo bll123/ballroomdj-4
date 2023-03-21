@@ -58,12 +58,12 @@ uidanceDropDownCreate (uiwcont_t *boxp, uiwcont_t *parentwin, int flags,
   uidance->cb = callbackInitLong (uidanceSelectHandler, uidance);
   uidance->label = label;  /* this is a temporary value */
   if (flags == UIDANCE_NONE) {
-    uidance->buttonp = uiDropDownCreate (parentwin, label,
-        uidance->cb, uidance->dropdown, uidance);
+    uidance->buttonp = uiDropDownCreate (uidance->dropdown,
+        parentwin, label, uidance->cb, uidance);
   } else {
     /* UIDANCE_ALL_DANCES or UIDANCE_EMPTY_DANCE */
-    uidance->buttonp = uiComboboxCreate (parentwin, label,
-        uidance->cb, uidance->dropdown, uidance);
+    uidance->buttonp = uiComboboxCreate (uidance->dropdown,
+        parentwin, label, uidance->cb, uidance);
   }
   uidanceCreateDanceList (uidance);
   if (where == UIDANCE_PACK_END) {

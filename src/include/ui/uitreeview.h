@@ -51,6 +51,7 @@ enum {
   TREE_COL_TYPE_END = -1,
   TREE_VALUE_END = -1,
   TREE_NO_COLUMN = -1,
+  TREE_NO_ROW = -1,
   TREE_NO_MIN_WIDTH = -1,
 };
 

@@ -109,9 +109,8 @@ confuiMakeItemCombobox (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg,
   confuiMakeItemLabel (&hbox, sg, txt, CONFUI_NO_INDENT);
 
   gui->uiitem [widx].callback = callbackInitLong (ddcb, gui);
-  uiwidgetp = uiComboboxCreate (&gui->window, txt,
-      gui->uiitem [widx].callback,
-      gui->uiitem [widx].dropdown, gui);
+  uiwidgetp = uiComboboxCreate (gui->uiitem [widx].dropdown,
+      &gui->window, txt, gui->uiitem [widx].callback, gui);
 
   uiDropDownSetList (gui->uiitem [widx].dropdown,
       gui->uiitem [widx].displist, NULL);

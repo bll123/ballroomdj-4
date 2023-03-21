@@ -4,7 +4,7 @@
 #ifndef INC_UIGENERAL_H
 #define INC_UIGENERAL_H
 
-typedef union uiwidget uiwcont_t;
+typedef struct uiwidget uiwcont_t;
 
 /* general routines that are called by the ui specific code */
 uiwcont_t *uiwcontAlloc (void);

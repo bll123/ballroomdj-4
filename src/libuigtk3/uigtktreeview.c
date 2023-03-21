@@ -51,7 +51,6 @@ typedef struct uitree {
   uiwcont_t         *tree;
   GtkTreeSelection  *sel;
   GtkTreeIter       selectiter;
-  GtkTreeIter       savedselectiter;
   GtkTreeIter       valueiter;
   GtkTreeModel      *model;
   GtkTreeViewColumn *activeColumn;
@@ -60,6 +59,7 @@ typedef struct uitree {
   callback_t        *foreachcb;
   callback_t        *editedcb;
   callback_t        *colclickcb;        // only one column is supported
+  int               savedrow;
   int               selectprocessmode;
   int               selmode;
   int               minwidth;           // prep for append column
@@ -96,6 +96,7 @@ uiCreateTreeView (void)
   uitree->tree->widget = tree;
   uitree->sel = sel;
   uitree->selectset = false;
+  uitree->savedrow = TREE_NO_ROW;
   uitree->savedselectset = false;
   uitree->valueiterset = false;
   uitree->model = NULL;
@@ -107,7 +108,7 @@ uiCreateTreeView (void)
   uitree->colclickcb = NULL;
   uitree->minwidth = TREE_NO_MIN_WIDTH;
   uitree->ellipsizeColumn = TREE_NO_COLUMN;
-  uitree->radiorow = -1;
+  uitree->radiorow = TREE_NO_ROW;
   uitree->activecol = TREE_NO_COLUMN;
   uitree->selectprocessmode = SELECT_PROCESS_NONE;
   uiWidgetSetAllMargins (uitree->tree, 2);
@@ -325,7 +326,7 @@ uiTreeViewAppendColumn (uitree_t *uitree, int activecol, int widgettype,
 
   va_start (args, title);
   coltype = va_arg (args, int);
-  while (coltype != -1) {
+  while (coltype != TREE_COL_TYPE_END) {
     col = va_arg (args, int);
 
     switch (coltype) {
@@ -762,19 +763,19 @@ uiTreeViewSelectGetIndex (uitree_t *uitree)
   int               idx;
 
   if (uitree == NULL) {
-    return -1;
+    return TREE_NO_ROW;
   }
   if (uitree->model == NULL) {
-    return -1;
+    return TREE_NO_ROW;
   }
   if (uitree->tree == NULL) {
-    return -1;
+    return TREE_NO_ROW;
   }
   if (! uitree->selectset) {
-    return -1;
+    return TREE_NO_ROW;
   }
 
-  idx = -1;
+  idx = TREE_NO_ROW;
   path = gtk_tree_model_get_path (uitree->model, &uitree->selectiter);
   mdextalloc (path);
   if (path != NULL) {
@@ -900,7 +901,7 @@ uiTreeViewSelectSave (uitree_t *uitree)
 
   if (uitree->selmode == SELECT_SINGLE) {
     uiTreeViewSelectCurrent (uitree);
-    memcpy (&uitree->savedselectiter, &uitree->selectiter, sizeof (GtkTreeIter));
+    uitree->savedrow = uiTreeViewSelectGetIndex (uitree);
     uitree->savedselectset = uitree->selectset;
   }
 }
@@ -911,14 +912,13 @@ uiTreeViewSelectRestore (uitree_t *uitree)
   if (uitree == NULL) {
     return;
   }
-  if (! uitree->selectset) {
-    return;
-  }
 
   if (uitree->selmode == SELECT_SINGLE) {
-    memcpy (&uitree->selectiter, &uitree->savedselectiter, sizeof (GtkTreeIter));
     uitree->selectset = uitree->savedselectset;
-    gtk_tree_selection_select_iter (uitree->sel, &uitree->selectiter);
+    if (uitree->selectset && uitree->savedrow != TREE_NO_ROW) {
+      uiTreeViewSelectSet (uitree, uitree->savedrow);
+    }
+    uitree->savedrow = TREE_NO_ROW;
   }
 }
 
@@ -1234,7 +1234,7 @@ uiTreeViewRadioHandler (GtkCellRendererToggle *r,
   gtk_tree_model_get_iter_from_string (model, &iter, pathstr);
   gtk_list_store_set (GTK_LIST_STORE (model), &iter, col, 1, -1);
 
-  if (uitree->radiorow != -1) {
+  if (uitree->radiorow != TREE_NO_ROW) {
     char  tmp [40];
 
     snprintf (tmp, sizeof (tmp), "%d", uitree->radiorow);

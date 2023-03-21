@@ -1825,9 +1825,9 @@ manageiTunesCreateDialog (manageui_t *manage)
 
   manage->callbacks [MANAGE_CB_ITUNES_SEL] = callbackInitLong (
       manageiTunesDialogSelectHandler, manage);
-  uiwidgetp = uiComboboxCreate (&manage->itunesSelectDialog, "",
-      manage->callbacks [MANAGE_CB_ITUNES_SEL],
-      manage->itunessel, manage);
+  uiwidgetp = uiComboboxCreate (manage->itunessel,
+      &manage->itunesSelectDialog, "",
+      manage->callbacks [MANAGE_CB_ITUNES_SEL], manage);
   manageiTunesDialogCreateList (manage);
   uiBoxPackStart (&hbox, uiwidgetp);
 
@@ -2328,9 +2328,8 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
 
   manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL] = callbackInitLong (
       manageCFPLPlaylistSelectHandler, manage);
-  uiwidgetp = uiComboboxCreate (&manage->cfplDialog, "",
-      manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL],
-      manage->cfplsel, manage);
+  uiwidgetp = uiComboboxCreate (manage->cfplsel, &manage->cfplDialog, "",
+      manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL], manage);
   manageCFPLCreatePlaylistList (manage);
   uiBoxPackStart (&hbox, uiwidgetp);
 
