@@ -252,7 +252,7 @@ bool
 uiWidgetIsValid (uiwcont_t *uiwidget)
 {
   bool    rc = false;
-  if (uiwidget->widget != NULL) {
+  if (uiwidget != NULL && uiwidget->widget != NULL) {
     rc = true;
   }
   return rc;

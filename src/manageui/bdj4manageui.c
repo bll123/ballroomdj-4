@@ -2689,7 +2689,7 @@ managePlayProcessMusicManager (void *udata, long dbidx, int mqidx)
 
   /* if using the song editor, the play button should play the song */
   /* being currently edited.  */
-  /* if there is a multi-selection, uisongselgtk */
+  /* if there is a multi-selection, uisongselui */
   /* will play the incorrect selection */
   if (manage->mmlasttab == MANAGE_TAB_SONGEDIT) {
     dbidx = manage->songeditdbidx;

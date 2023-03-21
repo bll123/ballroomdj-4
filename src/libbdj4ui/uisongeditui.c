@@ -50,7 +50,7 @@ enum {
   SONGEDIT_CHK_LIST,
 };
 
-typedef struct uisongeditgtk se_internal_t;
+typedef struct se_internal se_internal_t;
 
 typedef struct {
   int             tagkey;
@@ -101,7 +101,7 @@ enum {
 };
 
 
-typedef struct uisongeditgtk {
+typedef struct se_internal {
   uiwcont_t          editalldisp;
   uiwcont_t          *parentwin;
   uiwcont_t          vbox;
