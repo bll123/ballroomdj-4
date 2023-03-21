@@ -22,9 +22,10 @@
 
 static void uiToggleButtonToggleHandler (GtkButton *b, gpointer udata);
 
-void
-uiCreateCheckButton (uiwcont_t *uiwidget, const char *txt, int value)
+uiwcont_t *
+uiCreateCheckButton (const char *txt, int value)
 {
+  uiwcont_t   *uiwidget;
   GtkWidget   *widget;
 
   widget = gtk_check_button_new_with_label (txt);
@@ -32,7 +33,9 @@ uiCreateCheckButton (uiwcont_t *uiwidget, const char *txt, int value)
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = widget;
+  return uiwidget;
 }
 
 uiwcont_t *

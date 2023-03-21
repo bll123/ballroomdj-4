@@ -415,16 +415,16 @@ void
 confuiMakeItemCheckButton (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *sg,
     const char *txt, int widx, int bdjoptIdx, int value)
 {
-  uiwcont_t  uiwidget;
+  uiwcont_t  *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemCheckButton");
 
   gui->uiitem [widx].basetype = CONFUI_CHECK_BUTTON;
   gui->uiitem [widx].outtype = CONFUI_OUT_BOOL;
-  uiCreateCheckButton (&uiwidget, txt, value);
-  uiWidgetSetMarginStart (&uiwidget, 4);
-  uiBoxPackStart (boxp, &uiwidget);
-  uiwcontCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  uiwidgetp = uiCreateCheckButton (txt, value);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
+  uiBoxPackStart (boxp, uiwidgetp);
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   logProcEnd (LOG_PROC, "confuiMakeItemCheckButton", "");
 }

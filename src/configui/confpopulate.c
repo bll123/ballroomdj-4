@@ -104,7 +104,7 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_CHECK_BUTTON: {
-        nval = uiToggleButtonIsActive (&gui->uiitem [i].uiwidget);
+        nval = uiToggleButtonIsActive (gui->uiitem [i].uiwidgetp);
         break;
       }
       case CONFUI_COMBOBOX: {

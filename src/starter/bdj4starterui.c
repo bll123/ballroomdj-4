@@ -146,8 +146,8 @@ typedef struct {
   uibutton_t      *buttons [START_BUTTON_MAX];
   uiwcont_t      supportDialog;
   uiwcont_t      supportMsgDialog;
-  uiwcont_t      supportSendFiles;
-  uiwcont_t      supportSendDB;
+  uiwcont_t       *supportSendFiles;
+  uiwcont_t       *supportSendDB;
   uiwcont_t      window;
   uiwcont_t      supportStatus;
   uiwcont_t      statusMsg;
@@ -292,8 +292,8 @@ main (int argc, char *argv[])
   uiwcontInit (&starter.window);
   starter.support = NULL;
   uiwcontInit (&starter.supportStatus);
-  uiwcontInit (&starter.supportSendFiles);
-  uiwcontInit (&starter.supportSendDB);
+  starter.supportSendFiles = NULL;
+  starter.supportSendDB = NULL;
   starter.optiondf = NULL;
   starter.options = NULL;
   starter.supportsubject = NULL;
@@ -421,6 +421,9 @@ starterClosingCallback (void *udata, programstate_t programState)
   char        fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "starterClosingCallback");
+
+  uiwcontFree (starter->supportSendFiles);
+  uiwcontFree (starter->supportSendDB);
   uiEntryFree (starter->supportemail);
   uiEntryFree (starter->supportsubject);
   uiCloseWindow (&starter->window);
@@ -800,7 +803,7 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_FILES_DATA: {
       bool        sendfiles;
 
-      sendfiles = uiToggleButtonIsActive (&starter->supportSendFiles);
+      sendfiles = uiToggleButtonIsActive (starter->supportSendFiles);
       if (! sendfiles) {
         starter->startState = START_STATE_SUPPORT_SEND_DIAG_INIT;
         break;
@@ -869,7 +872,7 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_DB_PRE: {
       bool        senddb;
 
-      senddb = uiToggleButtonIsActive (&starter->supportSendDB);
+      senddb = uiToggleButtonIsActive (starter->supportSendDB);
       if (! senddb) {
         starter->startState = START_STATE_SUPPORT_FINISH;
         break;
@@ -886,7 +889,7 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_SEND_DB: {
       bool        senddb;
 
-      senddb = uiToggleButtonIsActive (&starter->supportSendDB);
+      senddb = uiToggleButtonIsActive (starter->supportSendDB);
       if (senddb) {
         strlcpy (tbuff, "data/musicdb.dat", sizeof (tbuff));
         supportSendFile (starter->support, starter->ident, tbuff, SUPPORT_COMPRESSED);
@@ -1715,13 +1718,13 @@ starterCreateSupportDialog (void *udata)
 
   /* line 5 */
   /* CONTEXT: starterui: sending support message: checkbox: option to send data files */
-  uiCreateCheckButton (&starter->supportSendFiles, _("Attach Data Files"), 0);
-  uiBoxPackStart (&vbox, &starter->supportSendFiles);
+  starter->supportSendFiles = uiCreateCheckButton (_("Attach Data Files"), 0);
+  uiBoxPackStart (&vbox, starter->supportSendFiles);
 
   /* line 6 */
   /* CONTEXT: starterui: sending support message: checkbox: option to send database */
-  uiCreateCheckButton (&starter->supportSendDB, _("Attach Database"), 0);
-  uiBoxPackStart (&vbox, &starter->supportSendDB);
+  starter->supportSendDB = uiCreateCheckButton (_("Attach Database"), 0);
+  uiBoxPackStart (&vbox, starter->supportSendDB);
 
   /* line 7 */
   uiCreateLabel (&uiwidget, "");

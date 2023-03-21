@@ -7,7 +7,7 @@
 #include "callback.h"
 #include "uiwcont.h"
 
-void uiCreateCheckButton (uiwcont_t *uiwidget, const char *txt, int value);
+uiwcont_t *uiCreateCheckButton (const char *txt, int value);
 uiwcont_t *uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value);
 uiwcont_t *uiCreateToggleButton (const char *txt, const char *imgname,
     const char *tooltiptxt, uiwcont_t *image, int value);

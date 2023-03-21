@@ -149,10 +149,10 @@ typedef struct {
   uiwcont_t      window;
   uiwcont_t      statusMsg;
   uientry_t       *targetEntry;
-  uiwcont_t      reinstWidget;
+  uiwcont_t       *reinstWidget;
   uiwcont_t      feedbackMsg;
   uientry_t       *bdj3locEntry;
-  uiwcont_t      convWidget;
+  uiwcont_t       *convWidget;
   uiwcont_t      convFeedbackMsg;
   uiwcont_t      vlcMsg;
   uiwcont_t      pythonMsg;
@@ -333,13 +333,13 @@ main (int argc, char *argv[])
 
   installer.loglevel = LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST;
   uiwcontInit (&installer.statusMsg);
-  uiwcontInit (&installer.reinstWidget);
+  installer.reinstWidget = NULL;
   uiwcontInit (&installer.feedbackMsg);
   uiwcontInit (&installer.convFeedbackMsg);
   uiwcontInit (&installer.vlcMsg);
   uiwcontInit (&installer.pythonMsg);
   uiwcontInit (&installer.mutagenMsg);
-  uiwcontInit (&installer.convWidget);
+  installer.convWidget = NULL;
   (void) ! getcwd (installer.currdir, sizeof (installer.currdir));
   installer.webclient = NULL;
   strcpy (installer.vlcversion, "");
@@ -661,12 +661,12 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (&vbox, &hbox);
 
   /* CONTEXT: installer: checkbox: re-install BDJ4 */
-  uiCreateCheckButton (&installer->reinstWidget, _("Re-Install"),
+  installer->reinstWidget = uiCreateCheckButton (_("Re-Install"),
       installer->reinstall);
-  uiBoxPackStart (&hbox, &installer->reinstWidget);
+  uiBoxPackStart (&hbox, installer->reinstWidget);
   installer->callbacks [INST_CB_REINST] = callbackInit (
       installerCheckDirTarget, installer, NULL);
-  uiToggleButtonSetCallback (&installer->reinstWidget,
+  uiToggleButtonSetCallback (installer->reinstWidget,
       installer->callbacks [INST_CB_REINST]);
 
   uiCreateLabel (&installer->feedbackMsg, "");
@@ -730,11 +730,11 @@ installerBuildUI (installer_t *installer)
 
   /* CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation */
   snprintf (tbuff, sizeof (tbuff), _("Convert %s"), BDJ3_NAME);
-  uiCreateCheckButton (&installer->convWidget, tbuff, 0);
-  uiBoxPackStart (&hbox, &installer->convWidget);
+  installer->convWidget = uiCreateCheckButton (tbuff, 0);
+  uiBoxPackStart (&hbox, installer->convWidget);
   installer->callbacks [INST_CB_CONV] = callbackInit (
       installerCheckDirConv, installer, NULL);
-  uiToggleButtonSetCallback (&installer->convWidget,
+  uiToggleButtonSetCallback (installer->convWidget,
       installer->callbacks [INST_CB_CONV]);
 
   uiCreateLabel (&installer->convFeedbackMsg, "");
@@ -1049,7 +1049,7 @@ installerValidateTarget (uientry_t *entry, void *udata)
   }
 
   dir = uiEntryGetValue (installer->targetEntry);
-  tbool = uiToggleButtonIsActive (&installer->reinstWidget);
+  tbool = uiToggleButtonIsActive (installer->reinstWidget);
   installer->reinstall = tbool;
   if (installer->newinstall) {
     installer->reinstall = false;
@@ -1253,7 +1253,7 @@ static void
 installerSetConvert (installer_t *installer, int state)
 {
   installer->inSetConvert = true;
-  uiToggleButtonSetState (&installer->convWidget, state);
+  uiToggleButtonSetState (installer->convWidget, state);
   installer->inSetConvert = false;
 }
 
@@ -1265,7 +1265,7 @@ installerDisplayConvert (installer_t *installer)
   char          tbuff [200];
   bool          nodir = false;
 
-  nval = uiToggleButtonIsActive (&installer->convWidget);
+  nval = uiToggleButtonIsActive (installer->convWidget);
 
   if (strcmp (installer->bdj3loc, "-") == 0 ||
       *installer->bdj3loc == '\0' ||
@@ -1410,7 +1410,7 @@ installerInstInit (installer_t *installer)
   }
 
   if (installer->guienabled) {
-    installer->reinstall = uiToggleButtonIsActive (&installer->reinstWidget);
+    installer->reinstall = uiToggleButtonIsActive (installer->reinstWidget);
     if (installer->newinstall) {
       installer->reinstall = false;
     }
@@ -2459,6 +2459,8 @@ installerCleanup (installer_t *installer)
   const char  *targv [10];
 
   if (installer->guienabled) {
+    uiwcontFree (installer->reinstWidget);
+    uiwcontFree (installer->convWidget);
     uiEntryFree (installer->targetEntry);
     uiEntryFree (installer->bdj3locEntry);
     uiTextBoxFree (installer->disptb);

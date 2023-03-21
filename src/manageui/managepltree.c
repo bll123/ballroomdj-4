@@ -50,7 +50,7 @@ enum {
 typedef struct managepltree {
   uitree_t          *uitree;
   uiwcont_t         *statusMsg;
-  uiwcont_t         uihideunsel;
+  uiwcont_t         *uihideunsel;
   callback_t        *callbacks [MPLTREE_CB_MAX];
   playlist_t        *playlist;
   int               currcount;
@@ -75,6 +75,7 @@ managePlaylistTreeAlloc (uiwcont_t *statusMsg)
   managepltree->playlist = NULL;
   managepltree->currcount = 0;
   managepltree->changed = false;
+  managepltree->uihideunsel = NULL;
   managepltree->hideunselected = false;
   managepltree->inprepop = false;
   for (int i = 0; i < MPLTREE_CB_MAX; ++i) {
@@ -88,6 +89,7 @@ void
 managePlaylistTreeFree (managepltree_t *managepltree)
 {
   if (managepltree != NULL) {
+    uiwcontFree (managepltree->uihideunsel);
     uiTreeViewFree (managepltree->uitree);
     for (int i = 0; i < MPLTREE_CB_MAX; ++i) {
       callbackFree (managepltree->callbacks [i]);
@@ -101,7 +103,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
     uiwcont_t *tophbox)
 {
   uiwcont_t   hbox;
-  uiwcont_t   uiwidget;
+  uiwcont_t   *uiwidgetp;
   uiwcont_t   *uitreewidgetp;
   uiwcont_t   *scwindow;
   const char  *bpmstr;
@@ -111,12 +113,12 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
   uiBoxPackEnd (tophbox, &hbox);
 
   /* CONTEXT: playlist management: hide unselected dances */
-  uiCreateCheckButton (&uiwidget, _("Hide Unselected"), 0);
+  uiwidgetp = uiCreateCheckButton (_("Hide Unselected"), 0);
   managepltree->callbacks [MPLTREE_CB_UNSEL] = callbackInit (
       managePlaylistTreeHideUnselectedCallback, managepltree, NULL);
-  uiToggleButtonSetCallback (&uiwidget, managepltree->callbacks [MPLTREE_CB_UNSEL]);
-  uiBoxPackStart (&hbox, &uiwidget);
-  uiwcontCopy (&managepltree->uihideunsel, &uiwidget);
+  uiToggleButtonSetCallback (uiwidgetp, managepltree->callbacks [MPLTREE_CB_UNSEL]);
+  uiBoxPackStart (&hbox, uiwidgetp);
+  managepltree->uihideunsel = uiwidgetp;
 
   scwindow = uiCreateScrolledWindow (300);
   uiWidgetExpandVert (scwindow);
@@ -223,8 +225,8 @@ managePlaylistTreePrePopulate (managepltree_t *managepltree, playlist_t *pl)
   if (pltype == PLTYPE_AUTO) {
     widgetstate = UIWIDGET_ENABLE;
   }
-  uiWidgetSetState (&managepltree->uihideunsel, widgetstate);
-  uiToggleButtonSetState (&managepltree->uihideunsel, hideunselstate);
+  uiWidgetSetState (managepltree->uihideunsel, widgetstate);
+  uiToggleButtonSetState (managepltree->uihideunsel, hideunselstate);
   managepltree->inprepop = false;
 }
 
@@ -496,7 +498,7 @@ managePlaylistTreeHideUnselectedCallback (void *udata)
   tchg = managepltree->changed;
   if (managepltree->inprepop) {
     managepltree->hideunselected =
-        uiToggleButtonIsActive (&managepltree->uihideunsel);
+        uiToggleButtonIsActive (managepltree->uihideunsel);
   }
   if (! managepltree->inprepop) {
     managepltree->hideunselected = ! managepltree->hideunselected;

@@ -100,7 +100,7 @@ typedef struct {
   uiwcont_t      window;
   uientry_t       *targetEntry;
   uientry_t       *nameEntry;
-  uiwcont_t      reinstWidget;
+  uiwcont_t       *reinstWidget;
   uiwcont_t      feedbackMsg;
   uitextbox_t     *disptb;
   /* flags */
@@ -191,7 +191,7 @@ main (int argc, char *argv[])
   altsetup.quiet = false;
   altsetup.verbose = false;
   altsetup.unattended = false;
-  uiwcontInit (&altsetup.reinstWidget);
+  altsetup.reinstWidget = NULL;
   uiwcontInit (&altsetup.feedbackMsg);
   for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
     altsetup.buttons [i] = NULL;
@@ -364,12 +364,12 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiBoxPackStart (&vbox, &hbox);
 
   /* CONTEXT: set up alternate: checkbox: re-install alternate */
-  uiCreateCheckButton (&altsetup->reinstWidget, _("Re-Install"),
+  altsetup->reinstWidget = uiCreateCheckButton (_("Re-Install"),
       altsetup->reinstall);
-  uiBoxPackStart (&hbox, &altsetup->reinstWidget);
+  uiBoxPackStart (&hbox, altsetup->reinstWidget);
   altsetup->callbacks [ALT_CB_REINST] = callbackInit (
       altsetupCheckDirTarget, altsetup, NULL);
-  uiToggleButtonSetCallback (&altsetup->reinstWidget, altsetup->callbacks [ALT_CB_REINST]);
+  uiToggleButtonSetCallback (altsetup->reinstWidget, altsetup->callbacks [ALT_CB_REINST]);
 
   uiCreateLabel (&altsetup->feedbackMsg, "");
   uiWidgetSetClass (&altsetup->feedbackMsg, INST_HL_CLASS);
@@ -531,7 +531,7 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
   }
 
   dir = uiEntryGetValue (altsetup->targetEntry);
-  tbool = uiToggleButtonIsActive (&altsetup->reinstWidget);
+  tbool = uiToggleButtonIsActive (altsetup->reinstWidget);
   altsetup->newinstall = false;
   altsetup->reinstall = tbool;
 
@@ -629,7 +629,7 @@ static void
 altsetupInit (altsetup_t *altsetup)
 {
   altsetupSetPaths (altsetup);
-  altsetup->reinstall = uiToggleButtonIsActive (&altsetup->reinstWidget);
+  altsetup->reinstall = uiToggleButtonIsActive (altsetup->reinstWidget);
   altsetup->instState = ALT_MAKE_TARGET;
 }
 
@@ -859,6 +859,7 @@ static void
 altsetupCleanup (altsetup_t *altsetup)
 {
   if (altsetup->target != NULL) {
+    uiwcontFree (altsetup->reinstWidget);
     for (int i = 0; i < ALT_CB_MAX; ++i) {
       callbackFree (altsetup->callbacks [i]);
     }
