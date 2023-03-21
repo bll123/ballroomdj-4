@@ -16,6 +16,7 @@
 
 #include "mdebug.h"
 #include "callback.h"
+#include "uiwcont.h"
 
 #if BDJ4_USE_GTK
 # include "ui-gtk3.h"

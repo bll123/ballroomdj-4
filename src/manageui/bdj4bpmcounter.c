@@ -68,9 +68,9 @@ typedef struct {
   char            *locknm;
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
-  uiwcont_t      window;
-  uiwcont_t      timesigsel [BPMCOUNT_DISP_MAX];
-  uiwcont_t      dispvalue [BPMCOUNT_DISP_MAX];
+  uiwcont_t       window;
+  uiwcont_t       *timesigsel [BPMCOUNT_DISP_MAX];
+  uiwcont_t       dispvalue [BPMCOUNT_DISP_MAX];
   uibutton_t      *buttons [BPMCOUNT_BUTTON_MAX];
   int             values [BPMCOUNT_DISP_MAX];
   callback_t      *callbacks [BPMCOUNT_CB_MAX];
@@ -148,7 +148,7 @@ main (int argc, char *argv[])
   bpmcounter.timesigidx = BPMCOUNT_DISP_BPM;
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     bpmcounter.values [i] = 0;
-    uiwcontInit (&bpmcounter.timesigsel [i]);
+    bpmcounter.timesigsel [i] = NULL;
     uiwcontInit (&bpmcounter.dispvalue [i]);
   }
   for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
@@ -305,6 +305,9 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
     callbackFree (bpmcounter->callbacks [i]);
   }
+  for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
+    uiwcontFree (bpmcounter->timesigsel [i]);
+  }
 
   procutilFreeAll (bpmcounter->processes);
 
@@ -327,21 +330,20 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
 static void
 bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 {
-  uiwcont_t  grpuiwidget;
-  uiwcont_t  uiwidget;
+  uiwcont_t   *grpuiwidgetp = NULL;
+  uiwcont_t   uiwidget;
   uibutton_t  *uibutton;
-  uiwcont_t  *uiwidgetp;
-  uiwcont_t  vboxmain;
-  uiwcont_t  vbox;
-  uiwcont_t  hboxbpm;
-  uiwcont_t  hbox;
-  uiwcont_t  sg;
-  uiwcont_t  sgb;
+  uiwcont_t   *uiwidgetp = NULL;
+  uiwcont_t   vboxmain;
+  uiwcont_t   vbox;
+  uiwcont_t   hboxbpm;
+  uiwcont_t   hbox;
+  uiwcont_t   sg;
+  uiwcont_t   sgb;
   char        imgbuff [MAXPATHLEN];
   int         x, y;
 
   logProcBegin (LOG_PROC, "bpmcounterBuildUI");
-  uiwcontInit (&grpuiwidget);
   uiCreateSizeGroupHoriz (&sg);
   uiCreateSizeGroupHoriz (&sgb);
 
@@ -396,19 +398,21 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 
     if (i < BPMCOUNT_DISP_BPM) {
       uiCreateColonLabel (&uiwidget, disptxt [i]);
+      uiwidgetp = &uiwidget;
     } else if (i == BPMCOUNT_DISP_BPM) {
-      uiCreateRadioButton (&uiwidget, NULL, disptxt [i], 1);
-      uiwcontCopy (&grpuiwidget, &uiwidget);
+      uiwidgetp = uiCreateRadioButton (NULL, disptxt [i], 1);
+      grpuiwidgetp = uiwidgetp;
+      bpmcounter->timesigsel [i] = uiwidgetp;
     } else {
-      uiCreateRadioButton (&uiwidget, &grpuiwidget, disptxt [i], 0);
+      uiwidgetp = uiCreateRadioButton (grpuiwidgetp, disptxt [i], 0);
+      bpmcounter->timesigsel [i] = uiwidgetp;
     }
-    uiwcontCopy (&bpmcounter->timesigsel [i], &uiwidget);
     if (i >= BPMCOUNT_DISP_BPM) {
-      uiToggleButtonSetCallback (&bpmcounter->timesigsel [i],
+      uiToggleButtonSetCallback (uiwidgetp,
           bpmcounter->callbacks [BPMCOUNT_CB_RADIO]);
     }
-    uiSizeGroupAdd (&sg, &uiwidget);
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiSizeGroupAdd (&sg, uiwidgetp);
+    uiBoxPackStart (&hbox, uiwidgetp);
 
     uiCreateLabel (&bpmcounter->dispvalue [i], "");
     uiLabelAlignEnd (&bpmcounter->dispvalue [i]);
@@ -713,7 +717,7 @@ bpmcounterProcessTimesig (bpmcounter_t *bpmcounter, char *args)
   }
   idx += BPMCOUNT_DISP_BPM;
   bpmcounter->timesigidx = idx;
-  uiToggleButtonSetState (&bpmcounter->timesigsel [idx], UI_TOGGLE_BUTTON_ON);
+  uiToggleButtonSetState (bpmcounter->timesigsel [idx], UI_TOGGLE_BUTTON_ON);
 }
 
 static bool
@@ -723,7 +727,7 @@ bpmcounterRadioChanged (void *udata)
 
   /* gtk radio buttons are not very friendly */
   for (int i = BPMCOUNT_DISP_BPM; i < BPMCOUNT_DISP_MAX; ++i) {
-    if (uiToggleButtonIsActive (&bpmcounter->timesigsel [i])) {
+    if (uiToggleButtonIsActive (bpmcounter->timesigsel [i])) {
       bpmcounter->timesigidx = i;
       break;
     }

@@ -13,6 +13,7 @@
 #include <gtk/gtk.h>
 
 #include "callback.h"
+#include "uiwcont.h"
 
 #include "ui/uiinternal.h"
 
@@ -34,11 +35,11 @@ uiCreateCheckButton (uiwcont_t *uiwidget, const char *txt, int value)
   uiwidget->widget = widget;
 }
 
-void
-uiCreateRadioButton (uiwcont_t *uiwidget, uiwcont_t *widgetgrp,
-    const char *txt, int value)
+uiwcont_t *
+uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
 {
-  GtkWidget   *widget;
+  uiwcont_t   *uiwidget = NULL;
+  GtkWidget   *widget = NULL;
   GtkWidget   *gwidget = NULL;
 
   if (widgetgrp != NULL) {
@@ -46,11 +47,12 @@ uiCreateRadioButton (uiwcont_t *uiwidget, uiwcont_t *widgetgrp,
   }
   widget = gtk_radio_button_new_with_label_from_widget (
       GTK_RADIO_BUTTON (gwidget), txt);
-  assert (widget != NULL);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = widget;
+  return uiwidget;
 }
 
 uiwcont_t *

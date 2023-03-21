@@ -16,9 +16,10 @@
 #include <gtk/gtk.h>
 
 #include "bdj4intl.h"
+#include "callback.h"
 #include "fileop.h"
 #include "mdebug.h"
-#include "callback.h"
+#include "uiwcont.h"
 
 #include "ui/uiinternal.h"
 
