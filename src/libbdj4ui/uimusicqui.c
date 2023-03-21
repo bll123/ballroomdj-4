@@ -598,6 +598,33 @@ uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active)
 }
 
 void
+uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate)
+{
+  int               ci;
+  int               newdispflag;
+
+  logProcBegin (LOG_PROC, "uimusicqProcessMusicQueueData");
+
+  ci = musicqupdate->mqidx;
+  if (ci < 0 || ci >= MUSICQ_MAX) {
+    logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "bad-mq-idx");
+    return;
+  }
+
+  if (! uimusicq->ui [ci].hasui) {
+    logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "no-ui");
+    return;
+  }
+
+  newdispflag = MUSICQ_UPD_DISP;
+  if (uimusicq->newflag) {
+    newdispflag = MUSICQ_NEW_DISP;
+  }
+  uimusicqProcessMusicQueueDataUpdate (uimusicq, musicqupdate, newdispflag);
+  logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "");
+}
+
+void
 uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
     mp_musicqupdate_t *musicqupdate, int newdispflag)
 {

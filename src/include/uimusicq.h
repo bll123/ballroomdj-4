@@ -123,6 +123,7 @@ long      uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx);
 void      uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc);
 bool      uimusicqTruncateQueueCallback (void *udata);
 void      uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active);
+void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
 void      uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate, int newdispflag);
 
 /* uimusicqcommon.c */
@@ -139,7 +140,6 @@ void  uimusicqTruncateQueue (uimusicq_t *uimusicq, int mqidx, long idx);
 void  uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);
 void  uimusicqQueue (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx);
 void  uimusicqSetPeerFlag (uimusicq_t *uimusicq, bool val);
-void  uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
 
 #endif /* INC_UIMUSICQ_H */
 
