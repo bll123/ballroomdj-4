@@ -47,7 +47,7 @@ typedef struct managepl {
   nlist_t         *options;
   uiwcont_t       *statusMsg;
   uimenu_t        *plmenu;
-  uiwcont_t       menuDelete;
+  uiwcont_t       *menuDelete;
   callback_t      *callbacks [MPL_CB_MAX];
   callback_t      *plloadcb;
   char            *ploldname;
@@ -94,7 +94,7 @@ managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg)
 
   managepl = mdmalloc (sizeof (managepl_t));
   uiwcontInit (&managepl->uipltype);
-  uiwcontInit (&managepl->menuDelete);
+  managepl->menuDelete = NULL;
   managepl->ploldname = NULL;
   managepl->plbackupcreated = false;
   managepl->plmenu = uiMenuAlloc ();
@@ -135,6 +135,7 @@ void
 managePlaylistFree (managepl_t *managepl)
 {
   if (managepl != NULL) {
+    uiwcontFree (managepl->menuDelete);
     uiMenuFree (managepl->plmenu);
     dataFree (managepl->ploldname);
     if (managepl->managepltree != NULL) {
@@ -386,46 +387,52 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 uimenu_t *
 managePlaylistMenu (managepl_t *managepl, uiwcont_t *uimenubar)
 {
-  uiwcont_t  menu;
-  uiwcont_t  menuitem;
+  uiwcont_t   *menu = NULL;
+  uiwcont_t   *menuitem = NULL;
 
   logProcBegin (LOG_PROC, "managePlaylistMenu");
   if (! uiMenuInitialized (managepl->plmenu)) {
-    uiMenuAddMainItem (uimenubar, &menuitem,
+    menuitem = uiMenuAddMainItem (uimenubar,
         /* CONTEXT: playlist management: menu selection: playlist: edit menu */
         managepl->plmenu, _("Edit"));
-
-    uiCreateSubMenu (&menuitem, &menu);
+    menu = uiCreateSubMenu (menuitem);
+    uiwcontFree (menuitem);
 
     managepl->callbacks [MPL_CB_MENU_PL_LOAD] = callbackInit (
         managePlaylistLoad, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: load */
-    uiMenuCreateItem (&menu, &menuitem, _("Load"),
+    menuitem = uiMenuCreateItem (menu, _("Load"),
         managepl->callbacks [MPL_CB_MENU_PL_LOAD]);
+    uiwcontFree (menuitem);
 
     managepl->callbacks [MPL_CB_MENU_PL_NEW] = callbackInit (
         managePlaylistNewCB, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist */
-    uiMenuCreateItem (&menu, &menuitem, _("New Automatic Playlist"),
+    menuitem = uiMenuCreateItem (menu, _("New Automatic Playlist"),
         managepl->callbacks [MPL_CB_MENU_PL_NEW]);
+    uiwcontFree (menuitem);
 
     managepl->callbacks [MPL_CB_MENU_PL_COPY] = callbackInit (
         managePlaylistCopy, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: create copy */
-    uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
+    menuitem = uiMenuCreateItem (menu, _("Create Copy"),
         managepl->callbacks [MPL_CB_MENU_PL_COPY]);
+    uiwcontFree (menuitem);
 
     managepl->callbacks [MPL_CB_MENU_PL_DELETE] = callbackInit (
         managePlaylistDelete, managepl, NULL);
     /* CONTEXT: playlist management: menu selection: playlist: edit menu: delete playlist */
-    uiMenuCreateItem (&menu, &menuitem, _("Delete"),
+    menuitem = uiMenuCreateItem (menu, _("Delete"),
         managepl->callbacks [MPL_CB_MENU_PL_DELETE]);
-    uiwcontCopy (&managepl->menuDelete, &menuitem);
+    managepl->menuDelete = menuitem;
+    /* do not free this menu item here */
 
     uiMenuSetInitialized (managepl->plmenu);
+    uiwcontFree (menu);
   }
 
   uiMenuDisplay (managepl->plmenu);
+
   logProcEnd (LOG_PROC, "managePlaylistMenu", "");
   return managepl->plmenu;
 }
@@ -521,11 +528,11 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
     return;
   }
 
-  if (uiwcontIsSet (&managepl->menuDelete)) {
-    uiWidgetSetState (&managepl->menuDelete, UIWIDGET_ENABLE);
+  if (uiwcontIsSet (managepl->menuDelete)) {
+    uiWidgetSetState (managepl->menuDelete, UIWIDGET_ENABLE);
     /* CONTEXT: edit sequences: the name for the special playlist used for the 'queue dance' button */
     if (strcmp (playlistGetName (pl), _("QueueDance")) == 0) {
-      uiWidgetSetState (&managepl->menuDelete, UIWIDGET_DISABLE);
+      uiWidgetSetState (managepl->menuDelete, UIWIDGET_DISABLE);
     }
   }
 

@@ -166,45 +166,51 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
 uimenu_t *
 manageSequenceMenu (manageseq_t *manageseq, uiwcont_t *uimenubar)
 {
-  uiwcont_t  menu;
-  uiwcont_t  menuitem;
+  uiwcont_t   *menu = NULL;
+  uiwcont_t   *menuitem = NULL;
 
   logProcBegin (LOG_PROC, "manageSequenceMenu");
   if (! uiMenuInitialized (manageseq->seqmenu)) {
-    uiMenuAddMainItem (uimenubar, &menuitem,
+    menuitem = uiMenuAddMainItem (uimenubar,
         /* CONTEXT: sequence editor: menu selection: sequence: edit menu */
         manageseq->seqmenu, _("Edit"));
-
-    uiCreateSubMenu (&menuitem, &menu);
+    menu = uiCreateSubMenu (menuitem);
+    uiwcontFree (menuitem);
 
     manageseq->callbacks [MSEQ_MENU_CB_SEQ_LOAD] = callbackInit (
         manageSequenceLoad, manageseq, NULL);
     /* CONTEXT: sequence editor: menu selection: sequence: edit menu: load */
-    uiMenuCreateItem (&menu, &menuitem, _("Load"),
+    menuitem = uiMenuCreateItem (menu, _("Load"),
         manageseq->callbacks [MSEQ_MENU_CB_SEQ_LOAD]);
+    uiwcontFree (menuitem);
 
     manageseq->callbacks [MSEQ_MENU_CB_SEQ_NEW] = callbackInit (
         manageSequenceNew, manageseq, NULL);
     /* CONTEXT: sequence editor: menu selection: sequence: edit menu: start new sequence */
-    uiMenuCreateItem (&menu, &menuitem, _("Start New Sequence"),
+    menuitem = uiMenuCreateItem (menu, _("Start New Sequence"),
         manageseq->callbacks [MSEQ_MENU_CB_SEQ_NEW]);
+    uiwcontFree (menuitem);
 
     manageseq->callbacks [MSEQ_MENU_CB_SEQ_COPY] = callbackInit (
         manageSequenceCopy, manageseq, NULL);
     /* CONTEXT: sequence editor: menu selection: sequence: edit menu: create copy */
-    uiMenuCreateItem (&menu, &menuitem, _("Create Copy"),
+    menuitem = uiMenuCreateItem (menu, _("Create Copy"),
         manageseq->callbacks [MSEQ_MENU_CB_SEQ_COPY]);
+    uiwcontFree (menuitem);
 
     manageseq->callbacks [MSEQ_MENU_CB_SEQ_DELETE] = callbackInit (
         manageSequenceDelete, manageseq, NULL);
     /* CONTEXT: sequence editor: menu selection: sequence: edit menu: delete sequence */
-    uiMenuCreateItem (&menu, &menuitem, _("Delete"),
+    menuitem = uiMenuCreateItem (menu, _("Delete"),
         manageseq->callbacks [MSEQ_MENU_CB_SEQ_DELETE]);
+    uiwcontFree (menuitem);
 
     uiMenuSetInitialized (manageseq->seqmenu);
+    uiwcontFree (menu);
   }
 
   uiMenuDisplay (manageseq->seqmenu);
+
   logProcEnd (LOG_PROC, "manageSequenceMenu", "");
   return manageseq->seqmenu;
 }

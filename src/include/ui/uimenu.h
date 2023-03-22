@@ -17,14 +17,13 @@ uimenu_t *uiMenuAlloc (void);
 void uiMenuFree (uimenu_t *);
 bool uiMenuInitialized (uimenu_t *);
 void uiMenuSetInitialized (uimenu_t *menu);
-void uiCreateMenubar (uiwcont_t *uiwidget);
-void uiCreateSubMenu (uiwcont_t *uimenuitem, uiwcont_t *uimenu);
-void uiMenuCreateItem (uiwcont_t *uimenu, uiwcont_t *uimenuitem, const char *txt, callback_t *uicb);
-void uiMenuCreateCheckbox (uiwcont_t *uimenu, uiwcont_t *uimenuitem,
+uiwcont_t *uiCreateMenubar (void);
+uiwcont_t *uiCreateSubMenu (uiwcont_t *uimenuitem);
+uiwcont_t *uiMenuCreateItem (uiwcont_t *uimenu, const char *txt, callback_t *uicb);
+uiwcont_t *uiMenuCreateCheckbox (uiwcont_t *uimenu,
     const char *txt, int active, callback_t *uicb);
-void uiMenuAddMainItem (uiwcont_t *uimenubar, uiwcont_t *uimenuitem,
-    uimenu_t *menu, const char *txt);
-void uiMenuAddSeparator (uiwcont_t *uimenu, uiwcont_t *uimenuitem);
+uiwcont_t *uiMenuAddMainItem (uiwcont_t *uimenubar, uimenu_t *menu, const char *txt);
+void uiMenuAddSeparator (uiwcont_t *uimenu);
 void uiMenuSetMainCallback (uiwcont_t *uimenuitem, callback_t *uicb);
 void uiMenuDisplay (uimenu_t *menu);
 void uiMenuClear (uimenu_t *menu);

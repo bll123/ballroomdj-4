@@ -396,12 +396,12 @@ pluiClosingCallback (void *udata, programstate_t programState)
 static void
 pluiBuildUI (playerui_t *plui)
 {
-  uiwcont_t  menubar;
-  uiwcont_t  menu;
-  uiwcont_t  menuitem;
-  uiwcont_t  hbox;
-  uiwcont_t  uiwidget;
-  uiwcont_t  *uiwidgetp;
+  uiwcont_t   *menubar;
+  uiwcont_t   *menu;
+  uiwcont_t   *menuitem;
+  uiwcont_t   hbox;
+  uiwcont_t   uiwidget;
+  uiwcont_t   *uiwidgetp;
   uibutton_t  *uibutton;
   char        *str;
   char        imgbuff [MAXPATHLEN];
@@ -449,8 +449,8 @@ pluiBuildUI (playerui_t *plui)
   uiutilsAddAccentColorDisplay (&plui->vbox, &hbox, &uiwidget);
   uiWidgetExpandHoriz (&hbox);
 
-  uiCreateMenubar (&menubar);
-  uiBoxPackStart (&hbox, &menubar);
+  menubar = uiCreateMenubar ();
+  uiBoxPackStart (&hbox, menubar);
 
   uiCreateLabel (&plui->clock, "");
   uiBoxPackEnd (&hbox, &plui->clock);
@@ -469,74 +469,83 @@ pluiBuildUI (playerui_t *plui)
 
   /* actions */
   /* CONTEXT: playerui: menu selection: actions for the player */
-  uiMenuCreateItem (&menubar, &menuitem, _("Actions"), NULL);
-
-  uiCreateSubMenu (&menuitem, &menu);
+  menuitem = uiMenuCreateItem (menubar, _("Actions"), NULL);
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
 
   plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL] = callbackInit (
       pluiRequestExternalDialog, plui, NULL);
   /* CONTEXT: playerui: menu selection: action: request external */
-  uiMenuCreateItem (&menu, &menuitem, _("Request External"),
+  menuitem = uiMenuCreateItem (menu, _("Request External"),
       plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL]);
+  uiwcontFree (menuitem);
 
   /* marquee */
   /* CONTEXT: playerui: menu selection: marquee related options */
-  uiMenuCreateItem (&menubar, &menuitem, _("Marquee"), NULL);
+  uiwcontFree (menu);
+  menuitem = uiMenuCreateItem (menubar, _("Marquee"), NULL);
   if (plui->marqueeoff) {
-    uiWidgetSetState (&menuitem, UIWIDGET_DISABLE);
+    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
   }
-
-  uiCreateSubMenu (&menuitem, &menu);
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
 
   plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ] = callbackInit (
       pluiMarqueeFontSizeDialog, plui, NULL);
   /* CONTEXT: playerui: menu selection: marquee: change the marquee font size */
-  uiMenuCreateItem (&menu, &menuitem, _("Font Size"),
+  menuitem = uiMenuCreateItem (menu, _("Font Size"),
       plui->callbacks [PLUI_MENU_CB_MQ_FONT_SZ]);
+  uiwcontFree (menuitem);
 
   plui->callbacks [PLUI_MENU_CB_MQ_FIND] = callbackInit (
       pluiMarqueeFind, plui, NULL);
   /* CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen */
-  uiMenuCreateItem (&menu, &menuitem, _("Recover Marquee"),
+  menuitem = uiMenuCreateItem (menu, _("Recover Marquee"),
       plui->callbacks [PLUI_MENU_CB_MQ_FIND]);
+  uiwcontFree (menuitem);
 
   /* export */
   /* CONTEXT: playerui: menu selection: export */
-  uiMenuCreateItem (&menubar, &menuitem, _("Export"), NULL);
-
-  uiCreateSubMenu (&menuitem, &menu);
+  uiwcontFree (menu);
+  menuitem = uiMenuCreateItem (menubar, _("Export"), NULL);
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
 
   plui->callbacks [PLUI_MENU_CB_EXP_MP3] = callbackInit (
       pluiExportMP3, plui, NULL);
   /* CONTEXT: player ui: menu selection: export: export as MP3 */
   snprintf (tbuff, sizeof (tbuff), _("Export as %s"), BDJ4_MP3_LABEL);
-  uiMenuCreateItem (&menu, &menuitem, tbuff,
+  menuitem = uiMenuCreateItem (menu, tbuff,
       plui->callbacks [PLUI_MENU_CB_EXP_MP3]);
   /* a missing audio adjust file will not stop startup */
   tempp = bdjvarsdfGet (BDJVDF_AUDIO_ADJUST);
   if (tempp == NULL) {
-    uiWidgetSetState (&menuitem, UIWIDGET_DISABLE);
+    uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
   }
+  uiwcontFree (menuitem);
 
   /* options */
   /* CONTEXT: playerui: menu selection: options for the player */
-  uiMenuCreateItem (&menubar, &menuitem, _("Options"), NULL);
-
-  uiCreateSubMenu (&menuitem, &menu);
+  uiwcontFree (menu);
+  menuitem = uiMenuCreateItem (menubar, _("Options"), NULL);
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
 
   plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE] = callbackInit (
       pluiToggleExtraQueues, plui, NULL);
   /* CONTEXT: playerui: menu checkbox: show the extra queues (in addition to the main music queue) */
-  uiMenuCreateCheckbox (&menu, &menuitem, _("Show Extra Queues"),
+  menuitem = uiMenuCreateCheckbox (menu, _("Show Extra Queues"),
       nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES),
       plui->callbacks [PLUI_MENU_CB_EXTRA_QUEUE]);
+  uiwcontFree (menuitem);
 
   plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE] = callbackInit (
       pluiToggleSwitchQueue, plui, NULL);
   /* CONTEXT: playerui: menu checkbox: when a queue is emptied, switch playback to the next queue */
-  uiMenuCreateCheckbox (&menu, &menuitem, _("Switch Queue When Empty"),
+  menuitem = uiMenuCreateCheckbox (menu, _("Switch Queue When Empty"),
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY),
       plui->callbacks [PLUI_MENU_CB_SWITCH_QUEUE]);
+  uiwcontFree (menuitem);
 
   /* player */
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
@@ -628,6 +637,8 @@ pluiBuildUI (playerui_t *plui)
   uimusicqSetClearQueueCallback (plui->uimusicq, plui->callbacks [PLUI_CB_CLEAR_QUEUE]);
 
   plui->uibuilt = true;
+
+  uiwcontFree (menu);
 
   logProcEnd (LOG_PROC, "pluiBuildUI", "");
 }

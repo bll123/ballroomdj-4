@@ -475,9 +475,9 @@ starterBuildUI (startui_t  *starter)
   uiwcont_t   uiwidget;
   uiwcont_t   *uiwidgetp;
   uibutton_t  *uibutton;
-  uiwcont_t   menubar;
-  uiwcont_t   menu;
-  uiwcont_t   menuitem;
+  uiwcont_t   *menubar;
+  uiwcont_t   *menu;
+  uiwcont_t   *menuitem;
   uiwcont_t   vbox;
   uiwcont_t   bvbox;
   uiwcont_t   hbox;
@@ -513,33 +513,36 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackEnd (&hbox, &uiwidget);
   uiwcontCopy (&starter->statusMsg, &uiwidget);
 
-  uiCreateMenubar (&menubar);
-  uiBoxPackStart (&hbox, &menubar);
+  menubar = uiCreateMenubar ();
+  uiBoxPackStart (&hbox, menubar);
 
   /* CONTEXT: starterui: action menu for the starter user interface */
-  uiMenuCreateItem (&menubar, &menuitem, _("Actions"), NULL);
-
-  uiCreateSubMenu (&menuitem, &menu);
+  menuitem = uiMenuCreateItem (menubar, _("Actions"), NULL);
+  menu = uiCreateSubMenu (menuitem);
+  uiwcontFree (menuitem);
 
   /* CONTEXT: starterui: menu item: stop all BDJ4 processes */
   snprintf (tbuff, sizeof (tbuff), _("Stop All %s Processes"), BDJ4_NAME);
   starter->callbacks [START_CB_MENU_STOP_ALL] = callbackInit (
       starterStopAllProcesses, starter, NULL);
-  uiMenuCreateItem (&menu, &menuitem, tbuff,
+  menuitem = uiMenuCreateItem (menu, tbuff,
       starter->callbacks [START_CB_MENU_STOP_ALL]);
+  uiwcontFree (menuitem);
 
   starter->callbacks [START_CB_MENU_DEL_PROFILE] = callbackInit (
       starterDeleteProfile, starter, NULL);
   /* CONTEXT: starterui: menu item: delete profile */
-  uiMenuCreateItem (&menu, &menuitem, _("Delete Profile"),
+  menuitem = uiMenuCreateItem (menu, _("Delete Profile"),
       starter->callbacks [START_CB_MENU_DEL_PROFILE]);
+  uiwcontFree (menuitem);
 
   if (! isMacOS ()) {
     starter->callbacks [START_CB_MENU_PROFILE_SHORTCUT] = callbackInit (
         starterCreateProfileShortcut, starter, NULL);
     /* CONTEXT: starterui: menu item: create shortcut for profile */
-    uiMenuCreateItem (&menu, &menuitem, _("Create Shortcut for Profile"),
+    menuitem = uiMenuCreateItem (menu, _("Create Shortcut for Profile"),
         starter->callbacks [START_CB_MENU_PROFILE_SHORTCUT]);
+    uiwcontFree (menuitem);
   }
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -549,8 +552,9 @@ starterBuildUI (startui_t  *starter)
     snprintf (tbuff, sizeof (tbuff), _("Set Up Alternate Folder"));
     starter->callbacks [START_CB_MENU_ALT_SETUP] = callbackInit (
         starterSetUpAlternate, starter, NULL);
-    uiMenuCreateItem (&menu, &menuitem, tbuff,
+    menuitem = uiMenuCreateItem (menu, tbuff,
         starter->callbacks [START_CB_MENU_ALT_SETUP]);
+    uiwcontFree (menuitem);
   }
 
   /* main display */
@@ -666,6 +670,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetShowAll (starter->window);
 
   uiwcontFree (szgrp);
+  uiwcontFree (menu);
 
   logProcEnd (LOG_PROC, "starterBuildUI", "");
 }

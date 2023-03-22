@@ -402,7 +402,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
 static void
 confuiBuildUI (configui_t *confui)
 {
-  uiwcont_t     menubar;
+  uiwcont_t     *menubar;
   uiwcont_t     hbox;
   uiwcont_t     uiwidget;
   char          imgbuff [MAXPATHLEN];
@@ -432,8 +432,8 @@ confuiBuildUI (configui_t *confui)
   uiBoxPackEnd (&hbox, &uiwidget);
   uiwcontCopy (&confui->gui.statusMsg, &uiwidget);
 
-  uiCreateMenubar (&menubar);
-  uiBoxPackStart (&hbox, &menubar);
+  menubar = uiCreateMenubar ();
+  uiBoxPackStart (&hbox, menubar);
 
   confui->gui.notebook = uiCreateNotebook ();
   uiWidgetSetClass (confui->gui.notebook, "confnotebook");
