@@ -201,6 +201,8 @@ uiplayerFree (uiplayer_t *uiplayer)
     for (int i = 0; i < UIPL_IMG_MAX; ++i) {
       uiwcontFree (uiplayer->images [i]);
     }
+    uiwcontFree (uiplayer->repeatButton);
+    uiwcontFree (uiplayer->pauseatendButton);
     mdfree (uiplayer);
   }
   logProcEnd (LOG_PROC, "uiplayerFree", "");

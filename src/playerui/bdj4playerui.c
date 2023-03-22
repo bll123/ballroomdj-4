@@ -359,6 +359,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiwcontFree (plui->window);
   uiWidgetClearPersistent (plui->ledonPixbuf);
   uiWidgetClearPersistent (plui->ledoffPixbuf);
+  uiwcontFree (plui->ledonPixbuf);
+  uiwcontFree (plui->ledoffPixbuf);
 
   uiwcontFree (plui->marqueeFontSizeDialog);
   uiButtonFree (plui->setPlaybackButton);
@@ -641,6 +643,7 @@ pluiBuildUI (playerui_t *plui)
   plui->uibuilt = true;
 
   uiwcontFree (menu);
+  uiwcontFree (menubar);
 
   logProcEnd (LOG_PROC, "pluiBuildUI", "");
 }

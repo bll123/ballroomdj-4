@@ -135,6 +135,7 @@ uimusicqFree (uimusicq_t *uimusicq)
 {
   logProcBegin (LOG_PROC, "uimusicqFree");
   if (uimusicq != NULL) {
+    callbackFree (uimusicq->queueplcb);
     callbackFree (uimusicq->savelistcb);
     for (int i = 0; i < MUSICQ_MAX; ++i) {
       uiDropDownFree (uimusicq->ui [i].playlistsel);
