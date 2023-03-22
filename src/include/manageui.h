@@ -6,6 +6,7 @@
 
 #include "conn.h"
 #include "msgparse.h"
+#include "musicdb.h"
 #include "nlist.h"
 #include "playlist.h"
 #include "procutil.h"
@@ -85,6 +86,7 @@ typedef struct managestats managestats_t;
 
 managestats_t *manageStatsInit (conn_t *conn, musicdb_t *musicdb);
 void  manageStatsFree (managestats_t *managestats);
+void  manageStatsSetDatabase (managestats_t *managestats, musicdb_t *musicdb);
 uiwcont_t *manageBuildUIStats (managestats_t *managestats);
 void manageStatsProcessData (managestats_t *managestats, mp_musicqupdate_t *musicqupdate);
 

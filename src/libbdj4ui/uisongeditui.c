@@ -193,6 +193,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   }
   seint->checkchanged = false;
   seint->ineditallapply = false;
+  seint->musicbrainzPixbuf = NULL;
 
   uiwcontInit (&seint->vbox);
   seint->audioidImg = NULL;
@@ -276,6 +277,8 @@ uisongeditUIFree (uisongedit_t *uisongedit)
       callbackFree (seint->items [count].callback);
     }
 
+    uiWidgetClearPersistent (seint->musicbrainzPixbuf);
+    uiwcontFree (seint->musicbrainzPixbuf);
     uiwcontFree (seint->audioidImg);
 
     for (int i = 0; i < SE_SZGRP_MAX; ++i) {

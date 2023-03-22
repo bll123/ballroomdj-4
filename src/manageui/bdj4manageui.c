@@ -1210,10 +1210,14 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_DB_FINISH: {
           manageDbFinish (manage->managedb, routefrom);
 
+          /* the database has been updated, tell the other processes to */
+          /* reload it, and reload it ourselves */
+
           samesongFree (manage->samesong);
           manage->musicdb = bdj4ReloadDatabase (manage->musicdb);
           manage->samesong = samesongAlloc (manage->musicdb);
 
+          manageStatsSetDatabase (manage->slstats, manage->musicdb);
           uiplayerSetDatabase (manage->slplayer, manage->musicdb);
           uiplayerSetDatabase (manage->mmplayer, manage->musicdb);
           uisongselSetDatabase (manage->slsongsel, manage->musicdb);
@@ -1226,8 +1230,6 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           uimusicqSetDatabase (manage->slezmusicq, manage->musicdb);
           uimusicqSetDatabase (manage->mmmusicq, manage->musicdb);
 
-          /* the database has been updated, tell the other processes to */
-          /* reload it, and reload it ourselves */
           connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
 
           uisongselApplySongFilter (manage->slsongsel);
@@ -2855,7 +2857,6 @@ manageSonglistImportM3U (void *udata)
   char        tbuff [MAXPATHLEN];
   uiselect_t  *selectdata;
   char        *fn;
-  pathinfo_t  *pi;
 
   if (manage->importm3uactive) {
     return UICB_STOP;
@@ -2886,10 +2887,12 @@ manageSonglistImportM3U (void *udata)
     dbidx_t     dbidx;
     nlistidx_t  iteridx;
     int         len;
+    pathinfo_t  *pi;
 
     pi = pathInfo (fn);
     len = pi->blen + 1 > sizeof (nplname) ? sizeof (nplname) : pi->blen + 1;
     strlcpy (nplname, pi->basename, len);
+    pathInfoFree (pi);
 
     list = m3uImport (manage->musicdb, fn, nplname, sizeof (nplname));
     pathbldMakePath (tbuff, sizeof (tbuff),

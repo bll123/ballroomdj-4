@@ -36,6 +36,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
   char        tbuff [MAXPATHLEN];
   char        *str;
   char        *ffn;
+  bool        ffnallocated = false;
 
   fh = fileopOpen (fname, "w");
   if (fh == NULL) {
@@ -63,14 +64,19 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
       fprintf (fh, "#EXTART:%s\n", str);
     }
     ffn = nlistGetStr (list, dbidx);
+    ffnallocated = false;
     if (ffn == NULL) {
       str = songGetStr (song, TAG_FILE);
       ffn = songutilFullFileName (str);
+      ffnallocated = true;
     }
     if (isWindows ()) {
       pathWinPath (ffn, strlen (ffn));
     }
     fprintf (fh, "%s\n", ffn);
+    if (ffnallocated) {
+      dataFree (ffn);
+    }
   }
   fclose (fh);
 }

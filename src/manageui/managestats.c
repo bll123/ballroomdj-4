@@ -80,6 +80,12 @@ manageStatsFree (managestats_t *managestats)
   }
 }
 
+void
+manageStatsSetDatabase (managestats_t *managestats, musicdb_t *musicdb)
+{
+  managestats->musicdb = musicdb;
+}
+
 uiwcont_t *
 manageBuildUIStats (managestats_t *managestats)
 {
