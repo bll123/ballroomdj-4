@@ -93,6 +93,7 @@ enum {
   START_LINK_CB_WIKI,
   START_LINK_CB_FORUM,
   START_LINK_CB_TICKETS,
+  START_LINK_CB_DOWNLOAD,
   START_LINK_CB_MAX,
 };
 
@@ -107,9 +108,10 @@ enum {
 };
 
 typedef struct {
-  callback_t    *cb;
+  uiwcont_t     *uiwidgetp;
+  callback_t    *macoscb;
   char          *uri;
-} startlinkcb_t;
+} startlinkinfo_t;
 
 typedef struct {
   progstate_t     *progstate;
@@ -141,7 +143,7 @@ typedef struct {
   nlist_t         *proflist;
   nlist_t         *profidxlist;
   callback_t      *callbacks [START_CB_MAX];
-  startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
+  startlinkinfo_t linkinfo [START_LINK_CB_MAX];
   uispinbox_t     *profilesel;
   uibutton_t      *buttons [START_BUTTON_MAX];
   uiwcont_t       *supportDialog;
@@ -212,7 +214,8 @@ static bool     starterCreateProfileShortcut (void *udata);
 static void     starterSupportInit (startui_t *starter);
 static bool     starterProcessSupport (void *udata);
 static bool     starterSupportResponseHandler (void *udata, long responseid);
-static bool     starterCreateSupportDialog (void *udata);
+static bool     starterCreateSupportMsgDialog (void *udata);
+static void     starterSupportMsgDialogClear (startui_t *starter);
 static bool     starterSupportMsgHandler (void *udata, long responseid);
 static void     starterSendFilesInit (startui_t *starter, char *dir, int type);
 static void     starterSendFiles (startui_t *starter);
@@ -238,10 +241,11 @@ static bool gStopProgram = false;
 int
 main (int argc, char *argv[])
 {
-  int             status = 0;
-  startui_t       starter;
-  uint16_t        listenPort;
-  long            flags;
+  int         status = 0;
+  startui_t   starter;
+  uint16_t    listenPort;
+  long        flags;
+  char        uri [MAXPATHLEN];
 
 #if BDJ4_MEM_DEBUG
   mdebugInit ("strt");
@@ -283,8 +287,9 @@ main (int argc, char *argv[])
     starter.callbacks [i] = NULL;
   }
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
-    starter.macoslinkcb [i].cb = NULL;
-    starter.macoslinkcb [i].uri = NULL;
+    starter.linkinfo [i].uiwidgetp = NULL;
+    starter.linkinfo [i].macoscb = NULL;
+    starter.linkinfo [i].uri = NULL;
   }
   for (int i = 0; i < START_BUTTON_MAX; ++i) {
     starter.buttons [i] = NULL;
@@ -302,6 +307,47 @@ main (int argc, char *argv[])
   starter.supportemail = NULL;
   starter.supportactive = false;
   starter.supportmsgactive = false;
+
+  starter.callbacks [START_CB_SEND_SUPPORT] = callbackInit (
+      starterCreateSupportMsgDialog, &starter, NULL);
+  starter.callbacks [START_CB_SUPPORT_MSG_RESP] = callbackInitLong (
+      starterSupportMsgHandler, &starter);
+  starter.callbacks [START_CB_SUPPORT_RESP] = callbackInitLong (
+      starterSupportResponseHandler, &starter);
+  starter.callbacks [START_CB_MENU_PROFILE_SHORTCUT] = callbackInit (
+      starterCreateProfileShortcut, &starter, NULL);
+
+  snprintf (uri, sizeof (uri), "%s%s",
+      sysvarsGetStr (SV_HOST_DOWNLOAD), sysvarsGetStr (SV_URI_DOWNLOAD));
+  starter.linkinfo [START_LINK_CB_DOWNLOAD].uri = mdstrdup (uri);
+  if (isMacOS ()) {
+    starter.linkinfo [START_LINK_CB_DOWNLOAD].macoscb = callbackInit (
+        starterWikiLinkHandler, &starter, NULL);
+  }
+
+  snprintf (uri, sizeof (uri), "%s%s",
+      sysvarsGetStr (SV_HOST_WIKI), sysvarsGetStr (SV_URI_WIKI));
+  starter.linkinfo [START_LINK_CB_WIKI].uri = mdstrdup (uri);
+  if (isMacOS ()) {
+    starter.linkinfo [START_LINK_CB_WIKI].macoscb = callbackInit (
+        starterWikiLinkHandler, &starter, NULL);
+  }
+
+  snprintf (uri, sizeof (uri), "%s%s",
+      sysvarsGetStr (SV_HOST_FORUM), sysvarsGetStr (SV_URI_FORUM));
+  starter.linkinfo [START_LINK_CB_FORUM].uri = mdstrdup (uri);
+  if (isMacOS ()) {
+    starter.linkinfo [START_LINK_CB_FORUM].macoscb = callbackInit (
+        starterForumLinkHandler, &starter, NULL);
+  }
+
+  snprintf (uri, sizeof (uri), "%s%s",
+      sysvarsGetStr (SV_HOST_TICKET), sysvarsGetStr (SV_URI_TICKET));
+  starter.linkinfo [START_LINK_CB_TICKETS].uri = mdstrdup (uri);
+  if (isMacOS ()) {
+    starter.linkinfo [START_LINK_CB_TICKETS].macoscb = callbackInit (
+        starterTicketLinkHandler, &starter, NULL);
+  }
 
   procutilInitProcesses (starter.processes);
 
@@ -427,12 +473,12 @@ starterClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (starter->window);
   uiCleanup ();
 
-  uiwcontFree (starter->supportMsgDialog);
+  uiDialogDestroy (starter->supportMsgDialog);
+  starterSupportMsgDialogClear (starter);
+  uiDialogDestroy (starter->supportDialog);
   uiwcontFree (starter->supportDialog);
   uiwcontFree (starter->supportSendFiles);
   uiwcontFree (starter->supportSendDB);
-  uiEntryFree (starter->supportemail);
-  uiEntryFree (starter->supportsubject);
   uiwcontFree (starter->window);
   for (int i = 0; i < START_BUTTON_MAX; ++i) {
     uiButtonFree (starter->buttons [i]);
@@ -456,8 +502,9 @@ starterClosingCallback (void *udata, programstate_t programState)
   datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options, 0);
 
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
-    callbackFree (starter->macoslinkcb [i].cb);
-    dataFree (starter->macoslinkcb [i].uri);
+    uiwcontFree (starter->linkinfo [i].uiwidgetp);
+    callbackFree (starter->linkinfo [i].macoscb);
+    dataFree (starter->linkinfo [i].uri);
   }
   if (starter->optiondf != NULL) {
     datafileFree (starter->optiondf);
@@ -541,8 +588,6 @@ starterBuildUI (startui_t  *starter)
   uiwcontFree (menuitem);
 
   if (! isMacOS ()) {
-    starter->callbacks [START_CB_MENU_PROFILE_SHORTCUT] = callbackInit (
-        starterCreateProfileShortcut, starter, NULL);
     /* CONTEXT: starterui: menu item: create shortcut for profile */
     menuitem = uiMenuCreateItem (menu, _("Create Shortcut for Profile"),
         starter->callbacks [START_CB_MENU_PROFILE_SHORTCUT]);
@@ -675,6 +720,7 @@ starterBuildUI (startui_t  *starter)
 
   uiwcontFree (szgrp);
   uiwcontFree (menu);
+  uiwcontFree (menubar);
 
   logProcEnd (LOG_PROC, "starterBuildUI", "");
 }
@@ -915,13 +961,8 @@ starterMainLoop (void *tstarter)
     case START_STATE_SUPPORT_FINISH: {
       webclientClose (starter->webclient);
       starter->webclient = NULL;
-      uiEntryFree (starter->supportsubject);
-      starter->supportsubject = NULL;
-      uiEntryFree (starter->supportemail);
-      starter->supportemail = NULL;
       uiDialogDestroy (starter->supportMsgDialog);
-      uiwcontFree (starter->supportMsgDialog);
-      starter->supportMsgDialog = NULL;
+      starterSupportMsgDialogClear (starter);
       starter->startState = START_STATE_NONE;
       starter->supportmsgactive = false;
       break;
@@ -1209,7 +1250,6 @@ starterProcessSupport (void *udata)
   uiwcont_t     *szgrp;
   uibutton_t    *uibutton;
   char          tbuff [MAXPATHLEN];
-  char          uri [MAXPATHLEN];
   char          *builddate;
   char          *rlslvl;
 
@@ -1223,8 +1263,6 @@ starterProcessSupport (void *udata)
 
   starter->supportactive = true;
 
-  starter->callbacks [START_CB_SUPPORT_RESP] = callbackInitLong (
-      starterSupportResponseHandler, starter);
   uidialog = uiCreateDialog (starter->window,
       starter->callbacks [START_CB_SUPPORT_RESP],
       /* CONTEXT: starterui: title for the support dialog */
@@ -1299,75 +1337,57 @@ starterProcessSupport (void *udata)
   uiSizeGroupAdd (szgrp, &uiwidget);
 
   /* begin line */
-  snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_HOST_DOWNLOAD), sysvarsGetStr (SV_URI_DOWNLOAD));
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 download) */
   snprintf (tbuff, sizeof (tbuff), _("%s Download"), BDJ4_NAME);
-  uiwidgetp = uiCreateLink (tbuff, uri);
+  uiwidgetp = uiCreateLink (tbuff,
+      starter->linkinfo [START_LINK_CB_DOWNLOAD].uri);
   if (isMacOS ()) {
-    starter->macoslinkcb [START_LINK_CB_WIKI].cb = callbackInit (
-        starterWikiLinkHandler, starter, NULL);
-    starter->macoslinkcb [START_LINK_CB_WIKI].uri = mdstrdup (uri);
     uiLinkSetActivateCallback (uiwidgetp,
-        starter->macoslinkcb [START_LINK_CB_WIKI].cb);
+        starter->linkinfo [START_LINK_CB_DOWNLOAD].macoscb);
   }
   uiBoxPackStart (&vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  starter->linkinfo [START_LINK_CB_DOWNLOAD].uiwidgetp = uiwidgetp;
 
   /* begin line */
-  snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_HOST_WIKI), sysvarsGetStr (SV_URI_WIKI));
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 wiki) */
   snprintf (tbuff, sizeof (tbuff), _("%s Wiki"), BDJ4_NAME);
-  uiwidgetp = uiCreateLink (tbuff, uri);
+  uiwidgetp = uiCreateLink (tbuff,
+      starter->linkinfo [START_LINK_CB_WIKI].uri);
   if (isMacOS ()) {
-    starter->macoslinkcb [START_LINK_CB_WIKI].cb = callbackInit (
-        starterWikiLinkHandler, starter, NULL);
-    starter->macoslinkcb [START_LINK_CB_WIKI].uri = mdstrdup (uri);
     uiLinkSetActivateCallback (uiwidgetp,
-        starter->macoslinkcb [START_LINK_CB_WIKI].cb);
+        starter->linkinfo [START_LINK_CB_WIKI].macoscb);
   }
   uiBoxPackStart (&vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  starter->linkinfo [START_LINK_CB_WIKI].uiwidgetp = uiwidgetp;
 
   /* begin line */
-  snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_HOST_FORUM), sysvarsGetStr (SV_URI_FORUM));
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 forums) */
   snprintf (tbuff, sizeof (tbuff), _("%s Forums"), BDJ4_NAME);
-  uiwidgetp = uiCreateLink (tbuff, uri);
+  uiwidgetp = uiCreateLink (tbuff,
+      starter->linkinfo [START_LINK_CB_FORUM].uri);
   if (isMacOS ()) {
-    starter->macoslinkcb [START_LINK_CB_FORUM].cb = callbackInit (
-        starterForumLinkHandler, starter, NULL);
-    starter->macoslinkcb [START_LINK_CB_FORUM].uri = mdstrdup (uri);
     uiLinkSetActivateCallback (uiwidgetp,
-        starter->macoslinkcb [START_LINK_CB_FORUM].cb);
+        starter->linkinfo [START_LINK_CB_FORUM].macoscb);
   }
   uiBoxPackStart (&vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  starter->linkinfo [START_LINK_CB_FORUM].uiwidgetp = uiwidgetp;
 
   /* begin line */
-  snprintf (uri, sizeof (uri), "%s%s",
-      sysvarsGetStr (SV_HOST_TICKET), sysvarsGetStr (SV_URI_TICKET));
   /* CONTEXT: starterui: basic support dialog: support option (bdj4 support tickets) */
   snprintf (tbuff, sizeof (tbuff), _("%s Support Tickets"), BDJ4_NAME);
-  uiwidgetp = uiCreateLink (tbuff, uri);
+  uiwidgetp = uiCreateLink (tbuff,
+      starter->linkinfo [START_LINK_CB_TICKETS].uri);
   if (isMacOS ()) {
-    starter->macoslinkcb [START_LINK_CB_TICKETS].cb = callbackInit (
-        starterTicketLinkHandler, starter, NULL);
-    starter->macoslinkcb [START_LINK_CB_TICKETS].uri = mdstrdup (uri);
     uiLinkSetActivateCallback (uiwidgetp,
-        starter->macoslinkcb [START_LINK_CB_TICKETS].cb);
+        starter->linkinfo [START_LINK_CB_TICKETS].macoscb);
   }
   uiBoxPackStart (&vbox, uiwidgetp);
-  uiwcontFree (uiwidgetp);
+  starter->linkinfo [START_LINK_CB_TICKETS].uiwidgetp = uiwidgetp;
 
   /* begin line */
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
 
-  starter->callbacks [START_CB_SEND_SUPPORT] = callbackInit (
-      starterCreateSupportDialog, starter, NULL);
   uibutton = uiCreateButton (
       starter->callbacks [START_CB_SEND_SUPPORT],
       /* CONTEXT: starterui: basic support dialog: button: support option */
@@ -1384,29 +1404,32 @@ starterProcessSupport (void *udata)
   return UICB_CONT;
 }
 
+static void
+starterSupportDialogClear (startui_t *starter)
+{
+  for (int i = 0; i < START_LINK_CB_MAX; ++i) {
+    uiwcontFree (starter->linkinfo [i].uiwidgetp);
+    starter->linkinfo [i].uiwidgetp = NULL;
+  }
+  uiButtonFree (starter->buttons [START_BUTTON_SEND_SUPPORT]);
+  starter->buttons [START_BUTTON_SEND_SUPPORT] = NULL;
+  uiwcontFree (starter->supportDialog);
+  starter->supportDialog = NULL;
+  starter->supportactive = false;
+}
+
 
 static bool
 starterSupportResponseHandler (void *udata, long responseid)
 {
   startui_t *starter = udata;
 
-  switch (responseid) {
-    case RESPONSE_DELETE_WIN: {
-      uiLabelSetText (&starter->supportStatusMsg, "");
-      uiwcontFree (starter->supportDialog);
-      starter->supportDialog = NULL;
-      starter->supportactive = false;
-      break;
-    }
-    case RESPONSE_CLOSE: {
-      uiLabelSetText (&starter->supportStatusMsg, "");
-      uiDialogDestroy (starter->supportDialog);
-      uiwcontFree (starter->supportDialog);
-      starter->supportDialog = NULL;
-      starter->supportactive = false;
-      break;
-    }
+  uiDialogDestroy (starter->supportMsgDialog);
+  if (responseid == RESPONSE_CLOSE) {
+    uiDialogDestroy (starter->supportDialog);
   }
+  starterSupportMsgDialogClear (starter);
+  starterSupportDialogClear (starter);
   return UICB_CONT;
 }
 
@@ -1657,7 +1680,7 @@ starterCreateProfileShortcut (void *udata)
 }
 
 static bool
-starterCreateSupportDialog (void *udata)
+starterCreateSupportMsgDialog (void *udata)
 {
   startui_t     *starter = udata;
   uiwcont_t     uiwidget;
@@ -1677,8 +1700,6 @@ starterCreateSupportDialog (void *udata)
   uiwcontInit (&vbox);
   uiwcontInit (&hbox);
 
-  starter->callbacks [START_CB_SUPPORT_MSG_RESP] = callbackInitLong (
-      starterSupportMsgHandler, starter);
   uidialog = uiCreateDialog (starter->window,
       starter->callbacks [START_CB_SUPPORT_MSG_RESP],
       /* CONTEXT: starterui: title for the support message dialog */
@@ -1761,7 +1782,26 @@ starterCreateSupportDialog (void *udata)
   uiDialogShow (uidialog);
 
   uiwcontFree (szgrp);
+
   return UICB_CONT;
+}
+
+static void
+starterSupportMsgDialogClear (startui_t *starter)
+{
+  uiwcontFree (starter->supportSendFiles);
+  starter->supportSendFiles = NULL;
+  uiwcontFree (starter->supportSendDB);
+  starter->supportSendDB = NULL;
+  uiTextBoxFree (starter->supporttb);
+  starter->supporttb = NULL;
+  uiEntryFree (starter->supportsubject);
+  starter->supportsubject = NULL;
+  uiEntryFree (starter->supportemail);
+  starter->supportemail = NULL;
+  uiwcontFree (starter->supportMsgDialog);
+  starter->supportMsgDialog = NULL;
+  starter->supportmsgactive = false;
 }
 
 
@@ -1772,20 +1812,12 @@ starterSupportMsgHandler (void *udata, long responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
-      starter->supportmsgactive = false;
-      uiwcontFree (starter->supportMsgDialog);
-      starter->supportMsgDialog = NULL;
+      starterSupportMsgDialogClear (starter);
       break;
     }
     case RESPONSE_CLOSE: {
-      uiEntryFree (starter->supportsubject);
-      starter->supportsubject = NULL;
-      uiEntryFree (starter->supportemail);
-      starter->supportemail = NULL;
       uiDialogDestroy (starter->supportMsgDialog);
-      uiwcontFree (starter->supportMsgDialog);
-      starter->supportMsgDialog = NULL;
-      starter->supportmsgactive = false;
+      starterSupportMsgDialogClear (starter);
       break;
     }
     case RESPONSE_APPLY: {
@@ -2068,6 +2100,13 @@ starterTicketLinkHandler (void *udata)
   return UICB_STOP;
 }
 
+static inline bool
+starterDownloadLinkHandler (void *udata)
+{
+  starterLinkHandler (udata, START_LINK_CB_DOWNLOAD);
+  return UICB_STOP;
+}
+
 static void
 starterLinkHandler (void *udata, int cbidx)
 {
@@ -2075,7 +2114,7 @@ starterLinkHandler (void *udata, int cbidx)
   char        *uri;
   char        tmp [200];
 
-  uri = starter->macoslinkcb [cbidx].uri;
+  uri = starter->linkinfo [cbidx].uri;
   if (uri != NULL) {
     snprintf (tmp, sizeof (tmp), "open %s", uri);
     (void) ! system (tmp);
