@@ -367,7 +367,7 @@ uiDropDownWindowShow (void *udata)
   by = 0;
   uiWindowGetPosition (dropdown->parentwin, &x, &y, &ws);
   uiwidgetp = uiButtonGetWidgetContainer (dropdown->button);
-  if (uiwcontIsSet (uiwidgetp)) {
+  if (uiwidgetp != NULL) {
     uiWidgetGetPosition (uiwidgetp, &bx, &by);
   }
   uiWidgetShowAll (dropdown->window);

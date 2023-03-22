@@ -144,8 +144,8 @@ typedef struct {
   startlinkcb_t   macoslinkcb [START_LINK_CB_MAX];
   uispinbox_t     *profilesel;
   uibutton_t      *buttons [START_BUTTON_MAX];
-  uiwcont_t       supportDialog;
-  uiwcont_t       supportMsgDialog;
+  uiwcont_t       *supportDialog;
+  uiwcont_t       *supportMsgDialog;
   uiwcont_t       *supportSendFiles;
   uiwcont_t       *supportSendDB;
   uiwcont_t       *window;
@@ -291,6 +291,8 @@ main (int argc, char *argv[])
   }
   starter.window = NULL;
   starter.support = NULL;
+  starter.supportDialog = NULL;
+  starter.supportMsgDialog = NULL;
   uiwcontInit (&starter.supportStatus);
   starter.supportSendFiles = NULL;
   starter.supportSendDB = NULL;
@@ -425,6 +427,8 @@ starterClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (starter->window);
   uiCleanup ();
 
+  uiwcontFree (starter->supportMsgDialog);
+  uiwcontFree (starter->supportDialog);
   uiwcontFree (starter->supportSendFiles);
   uiwcontFree (starter->supportSendDB);
   uiEntryFree (starter->supportemail);
@@ -915,7 +919,9 @@ starterMainLoop (void *tstarter)
       starter->supportsubject = NULL;
       uiEntryFree (starter->supportemail);
       starter->supportemail = NULL;
-      uiDialogDestroy (&starter->supportMsgDialog);
+      uiDialogDestroy (starter->supportMsgDialog);
+      uiwcontFree (starter->supportMsgDialog);
+      starter->supportMsgDialog = NULL;
       starter->startState = START_STATE_NONE;
       starter->supportmsgactive = false;
       break;
@@ -1199,7 +1205,7 @@ starterProcessSupport (void *udata)
   uiwcont_t     hbox;
   uiwcont_t     uiwidget;
   uiwcont_t     *uiwidgetp;
-  uiwcont_t     uidialog;
+  uiwcont_t     *uidialog;
   uiwcont_t     *szgrp;
   uibutton_t    *uibutton;
   char          tbuff [MAXPATHLEN];
@@ -1219,7 +1225,7 @@ starterProcessSupport (void *udata)
 
   starter->callbacks [START_CB_SUPPORT_RESP] = callbackInitLong (
       starterSupportResponseHandler, starter);
-  uiCreateDialog (&uidialog, starter->window,
+  uidialog = uiCreateDialog (starter->window,
       starter->callbacks [START_CB_SUPPORT_RESP],
       /* CONTEXT: starterui: title for the support dialog */
       _("Support"),
@@ -1233,7 +1239,7 @@ starterProcessSupport (void *udata)
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 2);
-  uiDialogPackInDialog (&uidialog, &vbox);
+  uiDialogPackInDialog (uidialog, &vbox);
 
   /* status message line */
   uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
@@ -1370,8 +1376,8 @@ starterProcessSupport (void *udata)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (&hbox, uiwidgetp);
 
-  uiwcontCopy (&starter->supportDialog, &uidialog);
-  uiDialogShow (&uidialog);
+  starter->supportDialog = uidialog;
+  uiDialogShow (uidialog);
 
   uiwcontFree (szgrp);
 
@@ -1387,12 +1393,16 @@ starterSupportResponseHandler (void *udata, long responseid)
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       uiLabelSetText (&starter->supportStatusMsg, "");
+      uiwcontFree (starter->supportDialog);
+      starter->supportDialog = NULL;
       starter->supportactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
       uiLabelSetText (&starter->supportStatusMsg, "");
-      uiDialogDestroy (&starter->supportDialog);
+      uiDialogDestroy (starter->supportDialog);
+      uiwcontFree (starter->supportDialog);
+      starter->supportDialog = NULL;
       starter->supportactive = false;
       break;
     }
@@ -1653,7 +1663,7 @@ starterCreateSupportDialog (void *udata)
   uiwcont_t     uiwidget;
   uiwcont_t     vbox;
   uiwcont_t     hbox;
-  uiwcont_t     uidialog;
+  uiwcont_t     *uidialog;
   uiwcont_t     *szgrp;
   uitextbox_t   *tb;
 
@@ -1669,7 +1679,7 @@ starterCreateSupportDialog (void *udata)
 
   starter->callbacks [START_CB_SUPPORT_MSG_RESP] = callbackInitLong (
       starterSupportMsgHandler, starter);
-  uiCreateDialog (&uidialog, starter->window,
+  uidialog = uiCreateDialog (starter->window,
       starter->callbacks [START_CB_SUPPORT_MSG_RESP],
       /* CONTEXT: starterui: title for the support message dialog */
       _("Support Message"),
@@ -1681,13 +1691,13 @@ starterCreateSupportDialog (void *udata)
       RESPONSE_APPLY,
       NULL
       );
-  uiWindowSetDefaultSize (&uidialog, -1, 400);
+  uiWindowSetDefaultSize (uidialog, -1, 400);
 
   szgrp = uiCreateSizeGroupHoriz ();
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 2);
-  uiDialogPackInDialog (&uidialog, &vbox);
+  uiDialogPackInDialog (uidialog, &vbox);
 
   /* profile color line */
   uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
@@ -1747,8 +1757,8 @@ starterCreateSupportDialog (void *udata)
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiwcontCopy (&starter->supportStatus, &uiwidget);
 
-  uiwcontCopy (&starter->supportMsgDialog, &uidialog);
-  uiDialogShow (&uidialog);
+  starter->supportMsgDialog = uidialog;
+  uiDialogShow (uidialog);
 
   uiwcontFree (szgrp);
   return UICB_CONT;
@@ -1763,6 +1773,8 @@ starterSupportMsgHandler (void *udata, long responseid)
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       starter->supportmsgactive = false;
+      uiwcontFree (starter->supportMsgDialog);
+      starter->supportMsgDialog = NULL;
       break;
     }
     case RESPONSE_CLOSE: {
@@ -1770,7 +1782,9 @@ starterSupportMsgHandler (void *udata, long responseid)
       starter->supportsubject = NULL;
       uiEntryFree (starter->supportemail);
       starter->supportemail = NULL;
-      uiDialogDestroy (&starter->supportMsgDialog);
+      uiDialogDestroy (starter->supportMsgDialog);
+      uiwcontFree (starter->supportMsgDialog);
+      starter->supportMsgDialog = NULL;
       starter->supportmsgactive = false;
       break;
     }

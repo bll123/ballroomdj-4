@@ -166,10 +166,11 @@ uiSaveFileDialog (uiselect_t *selectdata)
   return fn;
 }
 
-void
-uiCreateDialog (uiwcont_t *uiwidget, uiwcont_t *window,
+uiwcont_t *
+uiCreateDialog (uiwcont_t *window,
     callback_t *uicb, const char *title, ...)
 {
+  uiwcont_t *uiwidget;
   GtkWidget *dialog;
   va_list   valist;
 
@@ -177,6 +178,8 @@ uiCreateDialog (uiwcont_t *uiwidget, uiwcont_t *window,
   gtk_window_set_title (GTK_WINDOW (dialog), title);
   gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
   gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (window->widget));
+
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = dialog;
 
   va_start (valist, title);
@@ -187,6 +190,8 @@ uiCreateDialog (uiwcont_t *uiwidget, uiwcont_t *window,
     g_signal_connect (dialog, "response",
         G_CALLBACK (uiDialogResponseHandler), uicb);
   }
+
+  return uiwidget;
 }
 
 void
@@ -222,7 +227,7 @@ uiDialogPackInDialog (uiwcont_t *uidialog, uiwcont_t *boxp)
 void
 uiDialogDestroy (uiwcont_t *uidialog)
 {
-  if (uidialog->widget == NULL) {
+  if (uidialog == NULL || uidialog->widget == NULL) {
     return;
   }
 

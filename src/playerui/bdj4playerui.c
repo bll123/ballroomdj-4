@@ -105,7 +105,7 @@ typedef struct {
   uibutton_t      *setPlaybackButton;
   uiwcont_t       *ledoffPixbuf;
   uiwcont_t       *ledonPixbuf;
-  uiwcont_t       marqueeFontSizeDialog;
+  uiwcont_t       *marqueeFontSizeDialog;
   uiwcont_t       marqueeSpinBox;
   /* ui major elements */
   uiwcont_t       statusMsg;
@@ -209,7 +209,7 @@ main (int argc, char *argv[])
   plui.window = NULL;
   uiwcontInit (&plui.clock);
   plui.notebook = NULL;
-  uiwcontInit (&plui.marqueeFontSizeDialog);
+  plui.marqueeFontSizeDialog = NULL;
   plui.progstate = progstateInit ("playerui");
   progstateSetCallback (plui.progstate, STATE_CONNECTING,
       pluiConnectingCallback, &plui);
@@ -359,6 +359,8 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiwcontFree (plui->window);
   uiWidgetClearPersistent (plui->ledonPixbuf);
   uiWidgetClearPersistent (plui->ledoffPixbuf);
+
+  uiwcontFree (plui->marqueeFontSizeDialog);
   uiButtonFree (plui->setPlaybackButton);
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     callbackFree (plui->callbacks [i]);
@@ -1327,7 +1329,7 @@ pluiMarqueeFontSizeDialog (void *udata)
   }
 
   uiSpinboxSetValue (&plui->marqueeSpinBox, (double) sz);
-  uiDialogShow (&plui->marqueeFontSizeDialog);
+  uiDialogShow (plui->marqueeFontSizeDialog);
 
   logProcEnd (LOG_PROC, "pluiMarqueeFontSizeDialog", "");
   return UICB_CONT;
@@ -1344,7 +1346,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 
   plui->callbacks [PLUI_CB_FONT_SIZE] = callbackInitLong (
       pluiMarqueeFontSizeDialogResponse, plui);
-  uiCreateDialog (&plui->marqueeFontSizeDialog, plui->window,
+  plui->marqueeFontSizeDialog = uiCreateDialog (plui->window,
       plui->callbacks [PLUI_CB_FONT_SIZE],
       /* CONTEXT: playerui: marquee font size dialog: window title */
       _("Marquee Font Size"),
@@ -1355,7 +1357,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
       );
 
   uiCreateVertBox (&vbox);
-  uiDialogPackInDialog (&plui->marqueeFontSizeDialog, &vbox);
+  uiDialogPackInDialog (plui->marqueeFontSizeDialog, &vbox);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
@@ -1389,13 +1391,14 @@ pluiMarqueeFontSizeDialogResponse (void *udata, long responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
-      uiwcontInit (&plui->marqueeFontSizeDialog);
+      uiwcontFree (plui->marqueeFontSizeDialog);
+      plui->marqueeFontSizeDialog = NULL;
       plui->fontszdialogcreated = false;
       plui->mqfontsizeactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
-      uiWidgetHide (&plui->marqueeFontSizeDialog);
+      uiWidgetHide (plui->marqueeFontSizeDialog);
       plui->mqfontsizeactive = false;
       break;
     }

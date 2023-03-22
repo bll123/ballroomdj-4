@@ -39,8 +39,8 @@ enum {
 typedef struct uiaa {
   uiwcont_t      *parentwin;
   nlist_t         *options;
-  uiwcont_t      aaDialog;
-  uiwcont_t      statusMsg;
+  uiwcont_t       *aaDialog;
+  uiwcont_t       statusMsg;
   uiwcont_t       *cbTrim;
   uiwcont_t       *cbNorm;
   uiwcont_t       *cbAdjust;
@@ -61,7 +61,7 @@ uiaaInit (uiwcont_t *windowp, nlist_t *opts)
   uiaa_t  *uiaa;
 
   uiaa = mdmalloc (sizeof (uiaa_t));
-  uiwcontInit (&uiaa->aaDialog);
+  uiaa->aaDialog = NULL;
   uiaa->parentwin = windowp;
   uiaa->options = opts;
   uiaa->song = NULL;
@@ -92,7 +92,8 @@ uiaaFree (uiaa_t *uiaa)
     if (uiaa->song != NULL) {
       songFree (uiaa->song);
     }
-    uiDialogDestroy (&uiaa->aaDialog);
+    uiDialogDestroy (uiaa->aaDialog);
+    uiwcontFree (uiaa->aaDialog);
     mdfree (uiaa);
   }
 }
@@ -118,13 +119,13 @@ uiaaDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   logProcBegin (LOG_PROC, "uiaaDialog");
   uiaaCreateDialog (uiaa, aaflags, hasorig);
   uiaaInitDisplay (uiaa);
-  uiDialogShow (&uiaa->aaDialog);
+  uiDialogShow (uiaa->aaDialog);
   uiaa->isactive = true;
 
   x = nlistGetNum (uiaa->options, APPLY_ADJ_POSITION_X);
   y = nlistGetNum (uiaa->options, APPLY_ADJ_POSITION_Y);
   if (x >= 0 && y >= 0) {
-    uiWindowMove (&uiaa->aaDialog, x, y, -1);
+    uiWindowMove (uiaa->aaDialog, x, y, -1);
   }
   logProcEnd (LOG_PROC, "uiaaDialog", "");
   return UICB_CONT;
@@ -134,8 +135,9 @@ void
 uiaaDialogClear (uiaa_t *uiaa)
 {
   uiwcontInit (&uiaa->statusMsg);
-  uiDialogDestroy (&uiaa->aaDialog);
-  uiwcontInit (&uiaa->aaDialog);
+  uiDialogDestroy (uiaa->aaDialog);
+  uiwcontFree (uiaa->aaDialog);
+  uiaa->aaDialog = NULL;
 }
 
 /* internal routines */
@@ -154,13 +156,13 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
     return;
   }
 
-  if (uiwcontIsSet (&uiaa->aaDialog)) {
+  if (uiaa->aaDialog != NULL) {
     return;
   }
 
   uiaa->callbacks [UIAA_CB_DIALOG] = callbackInitLong (
       uiaaResponseHandler, uiaa);
-  uiCreateDialog (&uiaa->aaDialog, uiaa->parentwin,
+  uiaa->aaDialog = uiCreateDialog (uiaa->parentwin,
       uiaa->callbacks [UIAA_CB_DIALOG],
       /* CONTEXT: apply adjustment dialog: title for the dialog */
       _("Apply Adjustments"),
@@ -169,13 +171,13 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
       RESPONSE_CLOSE,
       NULL);
   if (hasorig) {
-    uiDialogAddButtons (&uiaa->aaDialog,
+    uiDialogAddButtons (uiaa->aaDialog,
         /* CONTEXT: apply adjustment dialog: restore original file */
         _("Restore Original"),
         RESPONSE_RESET,
         NULL);
   }
-  uiDialogAddButtons (&uiaa->aaDialog,
+  uiDialogAddButtons (uiaa->aaDialog,
       /* CONTEXT: apply adjustment dialog: apply adjustments */
       _("Apply Adjustments"),
       RESPONSE_APPLY,
@@ -184,7 +186,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 4);
-  uiDialogPackInDialog (&uiaa->aaDialog, &vbox);
+  uiDialogPackInDialog (uiaa->aaDialog, &vbox);
 
   /* status message */
   uiCreateHorizBox (&hbox);
@@ -241,21 +243,23 @@ uiaaResponseHandler (void *udata, long responseid)
   uiaa_t  *uiaa = udata;
   int         x, y, ws;
 
-  uiWindowGetPosition (&uiaa->aaDialog, &x, &y, &ws);
+  uiWindowGetPosition (uiaa->aaDialog, &x, &y, &ws);
   nlistSetNum (uiaa->options, APPLY_ADJ_POSITION_X, x);
   nlistSetNum (uiaa->options, APPLY_ADJ_POSITION_Y, y);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: del window");
-      uiwcontInit (&uiaa->aaDialog);
+      uiwcontFree (uiaa->aaDialog);
+      uiaa->aaDialog = NULL;
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: close window");
       /* dialog should be destroyed, as the buttons are re-created each time */
-      uiDialogDestroy (&uiaa->aaDialog);
-      uiwcontInit (&uiaa->aaDialog);
+      uiDialogDestroy (uiaa->aaDialog);
+      uiwcontFree (uiaa->aaDialog);
+      uiaa->aaDialog = NULL;
       break;
     }
     case RESPONSE_RESET: {

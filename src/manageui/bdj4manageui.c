@@ -208,12 +208,12 @@ typedef struct {
   uiwcont_t         *slsongseltabwidget;
   char              *sloldname;
   itunes_t          *itunes;
-  uiwcont_t         itunesSelectDialog;
+  uiwcont_t         *itunesSelectDialog;
   uidropdown_t      *itunessel;
   /* prior name is used by create-from-playlist */
   char              *slpriorname;
   uisongfilter_t    *uisongfilter;
-  uiwcont_t         cfplDialog;
+  uiwcont_t         *cfplDialog;
   uidropdown_t      *cfplsel;
   uispinbox_t       *cfpltmlimit;
   /* music manager ui */
@@ -414,7 +414,7 @@ main (int argc, char *argv[])
   manage.sloldname = NULL;
   manage.slpriorname = NULL;
   manage.itunes = NULL;
-  uiwcontInit (&manage.itunesSelectDialog);
+  manage.itunesSelectDialog = NULL;
   manage.itunessel = uiDropDownInit ();
   manage.slbackupcreated = false;
   manage.selusesonglist = false;
@@ -433,7 +433,7 @@ main (int argc, char *argv[])
   manage.bpmcounterstarted = false;
   manage.currbpmsel = BPM_BPM;
   manage.currtimesig = DANCE_TIMESIG_44;
-  uiwcontInit (&manage.cfplDialog);
+  manage.cfplDialog = NULL;
   manage.cfplsel = uiDropDownInit ();
   manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.pluiActive = false;
@@ -593,6 +593,10 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiwcontFree (manage->window);
   uiButtonFree (manage->selectButton);
   uiaaFree (manage->uiaa);
+  uiDialogDestroy (manage->itunesSelectDialog);
+  uiDialogDestroy (manage->cfplDialog);
+  uiwcontFree (manage->itunesSelectDialog);
+  uiwcontFree (manage->cfplDialog);
 
   procutilStopAllProcess (manage->processes, manage->conn, true);
   procutilFreeAll (manage->processes);
@@ -1050,7 +1054,7 @@ manageMainLoop (void *tmanage)
     manageSetSonglistName (manage, _("New Song List"));
 
     manageiTunesCreateDialog (manage);
-    uiDialogShow (&manage->itunesSelectDialog);
+    uiDialogShow (manage->itunesSelectDialog);
 
     uiLabelSetText (&manage->statusMsg, "");
     manage->impitunesstate = BDJ4_STATE_OFF;
@@ -1799,7 +1803,7 @@ manageiTunesCreateDialog (manageui_t *manage)
   char        tbuff [50];
 
   logProcBegin (LOG_PROC, "manageiTunesCreateDialog");
-  if (uiwcontIsSet (&manage->itunesSelectDialog)) {
+  if (manage->itunesSelectDialog != NULL) {
     logProcEnd (LOG_PROC, "manageiTunesCreateDialog", "already");
     return;
   }
@@ -1809,7 +1813,7 @@ manageiTunesCreateDialog (manageui_t *manage)
 
   /* CONTEXT: import from itunes: title for the dialog */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), ITUNES_NAME);
-  uiCreateDialog (&manage->itunesSelectDialog, manage->window,
+  manage->itunesSelectDialog = uiCreateDialog (manage->window,
       manage->callbacks [MANAGE_CB_ITUNES_DIALOG],
       tbuff,
       /* CONTEXT: import from itunes: closes the dialog */
@@ -1823,7 +1827,7 @@ manageiTunesCreateDialog (manageui_t *manage)
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 4);
-  uiDialogPackInDialog (&manage->itunesSelectDialog, &vbox);
+  uiDialogPackInDialog (manage->itunesSelectDialog, &vbox);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
@@ -1836,7 +1840,7 @@ manageiTunesCreateDialog (manageui_t *manage)
   manage->callbacks [MANAGE_CB_ITUNES_SEL] = callbackInitLong (
       manageiTunesDialogSelectHandler, manage);
   uiwidgetp = uiComboboxCreate (manage->itunessel,
-      &manage->itunesSelectDialog, "",
+      manage->itunesSelectDialog, "",
       manage->callbacks [MANAGE_CB_ITUNES_SEL], manage);
   manageiTunesDialogCreateList (manage);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -1881,13 +1885,14 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: itunes: del window");
-      uiwcontInit (&manage->itunesSelectDialog);
+      uiwcontFree (manage->itunesSelectDialog);
+      manage->itunesSelectDialog = NULL;
       manage->importitunesactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: itunes: close window");
-      uiWidgetHide (&manage->itunesSelectDialog);
+      uiWidgetHide (manage->itunesSelectDialog);
       manage->importitunesactive = false;
       break;
     }
@@ -1924,7 +1929,7 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
       }
 
       manageSetSonglistName (manage, plname);
-      uiWidgetHide (&manage->itunesSelectDialog);
+      uiWidgetHide (manage->itunesSelectDialog);
       manage->importitunesactive = false;
       break;
     }
@@ -2307,11 +2312,11 @@ manageSonglistCreateFromPlaylist (void *udata)
   manageSongListCFPLCreateDialog (manage);
   uiDropDownSelectionSetNum (manage->cfplsel, -1);
 
-  uiDialogShow (&manage->cfplDialog);
+  uiDialogShow (manage->cfplDialog);
 
   x = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_X);
   y = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_Y);
-  uiWindowMove (&manage->cfplDialog, x, y, -1);
+  uiWindowMove (manage->cfplDialog, x, y, -1);
 
   logProcEnd (LOG_PROC, "manageSonglistCreateFromPlaylist", "");
   return UICB_CONT;
@@ -2327,7 +2332,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiwcont_t  *szgrp;  // labels
 
   logProcBegin (LOG_PROC, "manageSongListCFPLCreateDialog");
-  if (uiwcontIsSet (&manage->cfplDialog)) {
+  if (manage->cfplDialog != NULL) {
     logProcEnd (LOG_PROC, "manageSongListCFPLCreateDialog", "already");
     return;
   }
@@ -2336,7 +2341,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
 
   manage->callbacks [MANAGE_CB_CFPL_DIALOG] = callbackInitLong (
       manageCFPLResponseHandler, manage);
-  uiCreateDialog (&manage->cfplDialog, manage->window,
+  manage->cfplDialog = uiCreateDialog (manage->window,
       manage->callbacks [MANAGE_CB_CFPL_DIALOG],
       /* CONTEXT: create from playlist: title for the dialog */
       _("Create from Playlist"),
@@ -2351,7 +2356,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
 
   uiCreateVertBox (&vbox);
   uiWidgetSetAllMargins (&vbox, 4);
-  uiDialogPackInDialog (&manage->cfplDialog, &vbox);
+  uiDialogPackInDialog (manage->cfplDialog, &vbox);
 
   uiCreateHorizBox (&hbox);
   uiBoxPackStart (&vbox, &hbox);
@@ -2363,7 +2368,7 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
 
   manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL] = callbackInitLong (
       manageCFPLPlaylistSelectHandler, manage);
-  uiwidgetp = uiComboboxCreate (manage->cfplsel, &manage->cfplDialog, "",
+  uiwidgetp = uiComboboxCreate (manage->cfplsel, manage->cfplDialog, "",
       manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL], manage);
   manageCFPLCreatePlaylistList (manage);
   uiBoxPackStart (&hbox, uiwidgetp);
@@ -2414,20 +2419,21 @@ manageCFPLResponseHandler (void *udata, long responseid)
   int         x, y, ws;
 
   logProcBegin (LOG_PROC, "manageCFPLResponseHandler");
-  uiWindowGetPosition (&manage->cfplDialog, &x, &y, &ws);
+  uiWindowGetPosition (manage->cfplDialog, &x, &y, &ws);
   nlistSetNum (manage->options, MANAGE_CFPL_POSITION_X, x);
   nlistSetNum (manage->options, MANAGE_CFPL_POSITION_Y, y);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: del window");
-      uiwcontInit (&manage->cfplDialog);
+      uiwcontFree (manage->cfplDialog);
+      manage->cfplDialog = NULL;
       manage->createfromplaylistactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: close window");
-      uiWidgetHide (&manage->cfplDialog);
+      uiWidgetHide (manage->cfplDialog);
       manage->createfromplaylistactive = false;
       break;
     }
@@ -2474,7 +2480,7 @@ manageCFPLResponseHandler (void *udata, long responseid)
       snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
       connSendMessage (manage->conn, ROUTE_MAIN, MSG_PL_CLEAR_QUEUE, tbuff);
       manage->slbackupcreated = false;
-      uiWidgetHide (&manage->cfplDialog);
+      uiWidgetHide (manage->cfplDialog);
       tnm = uimusicqGetSonglistName (manage->slmusicq);
       manageLoadPlaylistCB (manage, tnm);
       mdfree (tnm);

@@ -45,7 +45,7 @@ typedef struct uireqext {
   uiwcont_t      *parentwin;
   uiwcont_t      *statusMsg;
   nlist_t         *options;
-  uiwcont_t      reqextDialog;
+  uiwcont_t       *reqextDialog;
   uientry_t       *audioFileEntry;
   uientry_t       *artistEntry;
   uientry_t       *titleEntry;
@@ -76,7 +76,7 @@ uireqextInit (uiwcont_t *windowp, nlist_t *opts)
   uireqext_t  *uireqext;
 
   uireqext = mdmalloc (sizeof (uireqext_t));
-  uiwcontInit (&uireqext->reqextDialog);
+  uireqext->reqextDialog = NULL;
   uireqext->audioFileEntry = uiEntryInit (50, MAXPATHLEN);
   uireqext->artistEntry = uiEntryInit (40, MAXPATHLEN);
   uireqext->titleEntry = uiEntryInit (40, MAXPATHLEN);
@@ -110,7 +110,8 @@ uireqextFree (uireqext_t *uireqext)
     uiEntryFree (uireqext->audioFileEntry);
     uiEntryFree (uireqext->artistEntry);
     uiEntryFree (uireqext->titleEntry);
-    uiDialogDestroy (&uireqext->reqextDialog);
+    uiDialogDestroy (uireqext->reqextDialog);
+    uiwcontFree (uireqext->reqextDialog);
     uiButtonFree (uireqext->audioFileDialogButton);
     uidanceFree (uireqext->uidance);
     mdfree (uireqext);
@@ -138,12 +139,12 @@ uireqextDialog (uireqext_t *uireqext)
   logProcBegin (LOG_PROC, "uireqextDialog");
   uireqextCreateDialog (uireqext);
   uireqextInitDisplay (uireqext);
-  uiDialogShow (&uireqext->reqextDialog);
+  uiDialogShow (uireqext->reqextDialog);
   uireqext->isactive = true;
 
   x = nlistGetNum (uireqext->options, REQ_EXT_POSITION_X);
   y = nlistGetNum (uireqext->options, REQ_EXT_POSITION_Y);
-  uiWindowMove (&uireqext->reqextDialog, x, y, -1);
+  uiWindowMove (uireqext->reqextDialog, x, y, -1);
   logProcEnd (LOG_PROC, "uireqextDialog", "");
   return UICB_CONT;
 }
@@ -203,7 +204,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
     return;
   }
 
-  if (uiwcontIsSet (&uireqext->reqextDialog)) {
+  if (uireqext->reqextDialog != NULL) {
     return;
   }
 
@@ -212,7 +213,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
 
   uireqext->callbacks [UIREQEXT_CB_DIALOG] = callbackInitLong (
       uireqextResponseHandler, uireqext);
-  uiCreateDialog (&uireqext->reqextDialog, uireqext->parentwin,
+  uireqext->reqextDialog = uiCreateDialog (uireqext->parentwin,
       uireqext->callbacks [UIREQEXT_CB_DIALOG],
       /* CONTEXT: request external dialog: title for the dialog */
       _("Select Audio File"),
@@ -230,7 +231,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiWidgetSetMarginTop (&vbox, 20);
   uiWidgetExpandHoriz (&vbox);
   uiWidgetExpandVert (&vbox);
-  uiDialogPackInDialog (&uireqext->reqextDialog, &vbox);
+  uiDialogPackInDialog (uireqext->reqextDialog, &vbox);
 
   uiCreateHorizBox (&hbox);
   uiWidgetExpandHoriz (&hbox);
@@ -304,7 +305,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
 
   uireqext->callbacks [UIREQEXT_CB_DANCE] = callbackInitLongInt (
       uireqextDanceSelectHandler, uireqext);
-  uireqext->uidance = uidanceDropDownCreate (&hbox, &uireqext->reqextDialog,
+  uireqext->uidance = uidanceDropDownCreate (&hbox, uireqext->reqextDialog,
       /* CONTEXT: request external: dance drop-down */
       UIDANCE_EMPTY_DANCE, _("Select Dance"), UIDANCE_PACK_START, 1);
   uidanceSetCallback (uireqext->uidance, uireqext->callbacks [UIREQEXT_CB_DANCE]);
@@ -390,26 +391,27 @@ uireqextResponseHandler (void *udata, long responseid)
   uireqext_t  *uireqext = udata;
   int         x, y, ws;
 
-  uiWindowGetPosition (&uireqext->reqextDialog, &x, &y, &ws);
+  uiWindowGetPosition (uireqext->reqextDialog, &x, &y, &ws);
   nlistSetNum (uireqext->options, REQ_EXT_POSITION_X, x);
   nlistSetNum (uireqext->options, REQ_EXT_POSITION_Y, y);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: reqext: del window");
-      uiwcontInit (&uireqext->reqextDialog);
+      uiwcontFree (uireqext->reqextDialog);
+      uireqext->reqextDialog = NULL;
       uireqextClearSong (uireqext);
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: reqext: close window");
-      uiWidgetHide (&uireqext->reqextDialog);
+      uiWidgetHide (uireqext->reqextDialog);
       uireqextClearSong (uireqext);
       break;
     }
     case RESPONSE_APPLY: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: reqext: apply");
-      uiWidgetHide (&uireqext->reqextDialog);
+      uiWidgetHide (uireqext->reqextDialog);
       if (uireqext->responsecb != NULL) {
         callbackHandler (uireqext->responsecb);
       }

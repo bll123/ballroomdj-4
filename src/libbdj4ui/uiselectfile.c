@@ -30,7 +30,7 @@ enum {
 
 typedef struct uiselectfile {
   uiwcont_t        *parentwinp;
-  uiwcont_t        uidialog;
+  uiwcont_t         *selfileDialog;
   uitree_t          *selfiletree;
   callback_t        *rowactivecb;
   callback_t        *respcb;
@@ -55,12 +55,14 @@ selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
 
   selectfile = mdmalloc (sizeof (uiselectfile_t));
   selectfile->parentwinp = window;
-  uiwcontInit (&selectfile->uidialog);
+  selectfile->selfileDialog = NULL;
   selectfile->selfiletree = NULL;
   selectfile->rowactivecb = NULL;
   selectfile->respcb = NULL;
   selectfile->selfilecb = NULL;
   selectfile->options = options;
+  selectfile->respcb = callbackInitLong (
+      selectFileResponseHandler, selectfile);
 
   /* CONTEXT: select file: file type for the file selection dialog (song list) */
   title = _("Song List");
@@ -89,11 +91,11 @@ selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
     filelist = playlistGetPlaylistList (playlistSel);
 
     selectFileCreateDialog (selectfile, filelist, title, cb);
-    uiDialogShow (&selectfile->uidialog);
+    uiDialogShow (selectfile->selfileDialog);
 
     x = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_X);
     y = nlistGetNum (selectfile->options, MANAGE_SELFILE_POSITION_Y);
-    uiWindowMove (&selectfile->uidialog, x, y, -1);
+    uiWindowMove (selectfile->selfileDialog, x, y, -1);
 
     slistFree (filelist);
   }
@@ -103,6 +105,8 @@ void
 selectFileFree (uiselectfile_t *selectfile)
 {
   if (selectfile != NULL) {
+    uiDialogDestroy (selectfile->selfileDialog);
+    uiwcontFree (selectfile->selfileDialog);
     callbackFree (selectfile->respcb);
     callbackFree (selectfile->rowactivecb);
     uiTreeViewFree (selectfile->selfiletree);
@@ -126,12 +130,9 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
 
   selectfile->selfilecb = cb;
 
-  selectfile->respcb = callbackInitLong (
-      selectFileResponseHandler, selectfile);
-
   /* CONTEXT: select file: title of window: select <file-type> */
   snprintf (tbuff, sizeof (tbuff), _("Select %s"), filetype);
-  uiCreateDialog (&selectfile->uidialog,
+  selectfile->selfileDialog = uiCreateDialog (
       selectfile->parentwinp, selectfile->respcb, tbuff,
       /* CONTEXT: select file: closes the dialog */
       _("Close"), RESPONSE_CLOSE,
@@ -142,7 +143,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
 
   uiCreateVertBox (&vbox);
   uiWidgetExpandVert (&vbox);
-  uiDialogPackInDialog (&selectfile->uidialog, &vbox);
+  uiDialogPackInDialog (selectfile->selfileDialog, &vbox);
 
   scwindow = uiCreateScrolledWindow (200);
   uiWidgetExpandHoriz (scwindow);
@@ -207,17 +208,21 @@ selectFileResponseHandler (void *udata, long responseid)
   char          *str;
   int           count;
 
-  uiWindowGetPosition (&selectfile->uidialog, &x, &y, &ws);
+  uiWindowGetPosition (selectfile->selfileDialog, &x, &y, &ws);
   nlistSetNum (selectfile->options, MANAGE_SELFILE_POSITION_X, x);
   nlistSetNum (selectfile->options, MANAGE_SELFILE_POSITION_Y, y);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       selectfile->selfilecb = NULL;
+      uiwcontFree (selectfile->selfileDialog);
+      selectfile->selfileDialog = NULL;
       break;
     }
     case RESPONSE_CLOSE: {
-      uiCloseWindow (&selectfile->uidialog);
+      uiDialogDestroy (selectfile->selfileDialog);
+      uiwcontFree (selectfile->selfileDialog);
+      selectfile->selfileDialog = NULL;
       selectfile->selfilecb = NULL;
       break;
     }
@@ -228,7 +233,9 @@ selectFileResponseHandler (void *udata, long responseid)
       }
 
       str = uiTreeViewGetValueStr (selectfile->selfiletree, SELFILE_COL_DISP);
-      uiCloseWindow (&selectfile->uidialog);
+      uiDialogDestroy (selectfile->selfileDialog);
+      uiwcontFree (selectfile->selfileDialog);
+      selectfile->selfileDialog = NULL;
       if (selectfile->selfilecb != NULL) {
         callbackHandlerStr (selectfile->selfilecb, str);
       }

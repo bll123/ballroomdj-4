@@ -74,14 +74,14 @@ typedef struct uisongfilter {
   level_t           *levels;
   status_t          *status;
   sortopt_t         *sortopt;
-  uiwcont_t        *parentwin;
+  uiwcont_t         *parentwin;
   nlist_t           *options;
   callback_t        *callbacks [UISF_CB_MAX];
   callback_t        *applycb;
   callback_t        *danceselcb;
   songfilter_t      *songfilter;
-  uiwcont_t        filterDialog;
-  uiwcont_t        playlistdisp;
+  uiwcont_t         *filterDialog;
+  uiwcont_t         playlistdisp;
   uidropdown_t      *playlistfilter;
   uidropdown_t      *sortbyfilter;
   uidance_t         *uidance;
@@ -136,7 +136,7 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->songfilter = songfilterAlloc ();
   songfilterSetSort (uisf->songfilter,
       nlistGetStr (options, SONGSEL_SORT_BY));
-  uiwcontInit (&uisf->filterDialog);
+  uisf->filterDialog = NULL;
   uisf->dfltpbflag = pbflag;
   songfilterSetNum (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE, pbflag);
   uisf->playlistfilter = uiDropDownInit ();
@@ -168,7 +168,8 @@ uisfFree (uisongfilter_t *uisf)
 {
   if (uisf != NULL) {
     dataFree (uisf->playlistname);
-    uiDialogDestroy (&uisf->filterDialog);
+    uiDialogDestroy (uisf->filterDialog);
+    uiwcontFree (uisf->filterDialog);
     uiDropDownFree (uisf->playlistfilter);
     uiDropDownFree (uisf->sortbyfilter);
     uiEntryFree (uisf->searchentry);
@@ -251,13 +252,13 @@ uisfDialog (void *udata)
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
     uiSwitchSetValue (uisf->playstatusswitch, uisf->dfltpbflag);
   }
-  uiDialogShow (&uisf->filterDialog);
+  uiDialogShow (uisf->filterDialog);
 
   uisfUpdateFilterDialogDisplay (uisf);
 
   x = nlistGetNum (uisf->options, SONGSEL_FILTER_POSITION_X);
   y = nlistGetNum (uisf->options, SONGSEL_FILTER_POSITION_Y);
-  uiWindowMove (&uisf->filterDialog, x, y, -1);
+  uiWindowMove (uisf->filterDialog, x, y, -1);
   logProcEnd (LOG_PROC, "uisfDialog", "");
   return UICB_CONT;
 }
@@ -431,7 +432,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   logProcBegin (LOG_PROC, "uisfCreateDialog");
 
-  if (uiwcontIsSet (&uisf->filterDialog)) {
+  if (uisf->filterDialog != NULL) {
     return;
   }
 
@@ -442,7 +443,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   uisf->callbacks [UISF_CB_FILTER] = callbackInitLong (
       uisfResponseHandler, uisf);
-  uiCreateDialog (&uisf->filterDialog, uisf->parentwin,
+  uisf->filterDialog = uiCreateDialog (uisf->parentwin,
       uisf->callbacks [UISF_CB_FILTER],
       /* CONTEXT: song selection filter: title for the filter dialog */
       _("Filter Songs"),
@@ -459,7 +460,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
       );
 
   uiCreateVertBox (&vbox);
-  uiDialogPackInDialog (&uisf->filterDialog, &vbox);
+  uiDialogPackInDialog (uisf->filterDialog, &vbox);
 
   /* accent color */
   uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
@@ -478,7 +479,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uisf->callbacks [UISF_CB_PLAYLIST_SEL] = callbackInitLong (
       uisfPlaylistSelectHandler, uisf);
   uiwidgetp = uiComboboxCreate (uisf->playlistfilter,
-      &uisf->filterDialog, "", uisf->callbacks [UISF_CB_PLAYLIST_SEL], uisf);
+      uisf->filterDialog, "", uisf->callbacks [UISF_CB_PLAYLIST_SEL], uisf);
   uisfCreatePlaylistList (uisf);
   uiBoxPackStart (&hbox, uiwidgetp);
   /* looks bad if added to the size group */
@@ -496,7 +497,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uisf->callbacks [UISF_CB_SORT_BY_SEL] = callbackInitLong (
       uisfSortBySelectHandler, uisf);
   uiwidgetp = uiComboboxCreate (uisf->sortbyfilter,
-      &uisf->filterDialog, "", uisf->callbacks [UISF_CB_SORT_BY_SEL], uisf);
+      uisf->filterDialog, "", uisf->callbacks [UISF_CB_SORT_BY_SEL], uisf);
   uisfCreateSortByList (uisf);
   uiBoxPackStart (&hbox, uiwidgetp);
   /* looks bad if added to the size group */
@@ -529,7 +530,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
     uisf->callbacks [UISF_CB_GENRE_SEL] = callbackInitLong (
         uisfGenreSelectHandler, uisf);
-    uisf->uigenre = uigenreDropDownCreate (&hbox, &uisf->filterDialog, true);
+    uisf->uigenre = uigenreDropDownCreate (&hbox, uisf->filterDialog, true);
     uigenreSetCallback (uisf->uigenre, uisf->callbacks [UISF_CB_GENRE_SEL]);
     /* looks bad if added to the size group */
  }
@@ -545,7 +546,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   uisf->callbacks [UISF_CB_DANCE_SEL] = callbackInitLongInt (
       uisfDanceSelectHandler, uisf);
-  uisf->uidance = uidanceDropDownCreate (&hbox, &uisf->filterDialog,
+  uisf->uidance = uidanceDropDownCreate (&hbox, uisf->filterDialog,
       /* CONTEXT: song selection filter: a filter: all dances are selected */
       UIDANCE_ALL_DANCES,  _("All Dances"), UIDANCE_PACK_START, 1);
   uidanceSetCallback (uisf->uidance, uisf->callbacks [UISF_CB_DANCE_SEL]);
@@ -642,19 +643,20 @@ uisfResponseHandler (void *udata, long responseid)
 
   logProcBegin (LOG_PROC, "uisfResponseHandler");
 
-  uiWindowGetPosition (&uisf->filterDialog, &x, &y, &ws);
+  uiWindowGetPosition (uisf->filterDialog, &x, &y, &ws);
   nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_X, x);
   nlistSetNum (uisf->options, SONGSEL_FILTER_POSITION_Y, y);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: sf: del window");
-      uiwcontInit (&uisf->filterDialog);
+      uiwcontFree (uisf->filterDialog);
+      uisf->filterDialog = NULL;
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: sf: close window");
-      uiWidgetHide (&uisf->filterDialog);
+      uiWidgetHide (uisf->filterDialog);
       break;
     }
     case RESPONSE_APPLY: {
@@ -795,7 +797,7 @@ uisfUpdate (uisongfilter_t *uisf)
 static void
 uisfDisableWidgets (uisongfilter_t *uisf)
 {
-  if (! uiwcontIsSet (&uisf->filterDialog)) {
+  if (uisf->filterDialog == NULL) {
     return;
   }
 
@@ -816,7 +818,7 @@ uisfDisableWidgets (uisongfilter_t *uisf)
 static void
 uisfEnableWidgets (uisongfilter_t *uisf)
 {
-  if (! uiwcontIsSet (&uisf->filterDialog)) {
+  if (uisf->filterDialog == NULL) {
     return;
   }
 
@@ -885,7 +887,7 @@ uisfUpdateFilterDialogDisplay (uisongfilter_t *uisf)
   if (uisf->showplaylist) {
     songfilterOn (uisf->songfilter, SONG_FILTER_PLAYLIST);
 
-    if (! uiwcontIsSet (&uisf->filterDialog)) {
+    if (uisf->filterDialog == NULL) {
       return;
     }
 
@@ -895,7 +897,7 @@ uisfUpdateFilterDialogDisplay (uisongfilter_t *uisf)
   if (! uisf->showplaylist) {
     songfilterOff (uisf->songfilter, SONG_FILTER_PLAYLIST);
 
-    if (! uiwcontIsSet (&uisf->filterDialog)) {
+    if (uisf->filterDialog == NULL) {
       return;
     }
 

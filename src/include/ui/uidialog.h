@@ -21,7 +21,7 @@ enum {
 char  *uiSelectDirDialog (uiselect_t *selectdata);
 char  *uiSelectFileDialog (uiselect_t *selectdata);
 char  *uiSaveFileDialog (uiselect_t *selectdata);
-void  uiCreateDialog (uiwcont_t *uiwidget, uiwcont_t *window, callback_t *uicb, const char *title, ...);
+uiwcont_t *uiCreateDialog (uiwcont_t *window, callback_t *uicb, const char *title, ...);
 void  uiDialogShow (uiwcont_t *uiwidgetp);
 void  uiDialogAddButtons (uiwcont_t *uidialog, ...);
 void  uiDialogPackInDialog (uiwcont_t *uidialog, uiwcont_t *boxp);
