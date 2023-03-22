@@ -392,6 +392,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
   slistFree (confui->gui.edittaglist);
   callbackFree (confui->gui.closecb);
   callbackFree (confui->gui.nbcb);
+  uiwcontFree (confui->gui.notebook);
 
   bdj4shutdown (ROUTE_CONFIGUI, NULL);
 
@@ -402,7 +403,6 @@ confuiClosingCallback (void *udata, programstate_t programState)
 static void
 confuiBuildUI (configui_t *confui)
 {
-  uiwcont_t     *menubar;
   uiwcont_t     hbox;
   uiwcont_t     uiwidget;
   char          imgbuff [MAXPATHLEN];
@@ -431,9 +431,6 @@ confuiBuildUI (configui_t *confui)
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (&hbox, &uiwidget);
   uiwcontCopy (&confui->gui.statusMsg, &uiwidget);
-
-  menubar = uiCreateMenubar ();
-  uiBoxPackStart (&hbox, menubar);
 
   confui->gui.notebook = uiCreateNotebook ();
   uiWidgetSetClass (confui->gui.notebook, "confnotebook");

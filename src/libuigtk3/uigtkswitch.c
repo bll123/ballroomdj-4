@@ -81,6 +81,9 @@ uiSwitchFree (uiswitch_t *uiswitch)
   if (uiswitch != NULL) {
     uiWidgetClearPersistent (uiswitch->switchoffimg);
     uiWidgetClearPersistent (uiswitch->switchonimg);
+    uiwcontFree (uiswitch->switchoffimg);
+    uiwcontFree (uiswitch->switchonimg);
+    uiwcontFree (uiswitch->switchw);
     mdfree (uiswitch);
   }
 }
