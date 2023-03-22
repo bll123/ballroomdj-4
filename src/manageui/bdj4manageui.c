@@ -1364,6 +1364,7 @@ manageSongEditMenu (manageui_t *manage)
         /* CONTEXT: managementui: menu selection: actions for song editor */
         manage->songeditmenu, _("Actions"));
     menu = uiCreateSubMenu (menuitem);
+    uiwcontFree (menuitem);
 
     /* I would prefer to have BPM as a stand-alone menu item, but */
     /* gtk does not appear to have a way to create a top-level */

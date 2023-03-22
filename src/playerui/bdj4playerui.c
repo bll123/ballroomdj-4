@@ -1021,6 +1021,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             plui->expmp3state = BDJ4_STATE_PROCESS;
             mstimeset (&plui->expmp3chkTime, 500);
           }
+          dataFree (dir);
           break;
         }
         default: {

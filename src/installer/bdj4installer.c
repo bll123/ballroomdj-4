@@ -1245,8 +1245,8 @@ installerBDJ3LocDirDialog (void *udata)
   fn = uiSelectDirDialog (selectdata);
   if (fn != NULL) {
     installerSetBDJ3LocEntry (installer, fn);
-    mdfree (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected bdj3 loc: %s", installer->bdj3loc);
+    mdfree (fn);
   }
   mdfree (selectdata);
   return UICB_CONT;

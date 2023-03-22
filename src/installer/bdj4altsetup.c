@@ -593,8 +593,8 @@ altsetupTargetDirDialog (void *udata)
     strlcpy (tbuff, fn, sizeof (tbuff));
     /* validation gets called again upon set */
     uiEntrySetValue (altsetup->targetEntry, tbuff);
-    mdfree (fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected target loc: %s", altsetup->target);
+    mdfree (fn);
   }
   mdfree (selectdata);
   return UICB_CONT;
