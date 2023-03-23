@@ -81,6 +81,7 @@ enum {
   SONGSEL_CB_SELECT_PROCESS,
   SONGSEL_CB_CHK_FAV_CHG,
   SONGSEL_CB_SZ_CHG,
+  SONGSEL_CB_SCROLL_EVENT,
   SONGSEL_CB_MAX,
 };
 
@@ -142,7 +143,7 @@ static bool uisongselCheckFavChgCallback (void *udata, long col);
 static bool uisongselProcessTreeSize (void *udata, long rows);
 static bool uisongselScroll (void *udata, double value);
 static void uisongselUpdateSelections (uisongsel_t *uisongsel);
-static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata);
+static bool uisongselScrollEvent (void *udata, long dir);
 static void uisongselProcessScroll (uisongsel_t *uisongsel, int dir, int lines);
 static bool uisongselKeyEvent (void *udata);
 static bool uisongselSelectionChgCallback (void *udata);
@@ -376,8 +377,11 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
         uisongselCheckFavChgCallback, uisongsel);
   uiTreeViewSetRowActivatedCallback (ssint->songselTree,
         ssint->callbacks [SONGSEL_CB_CHK_FAV_CHG]);
-  g_signal_connect (uitreewidgetp->widget, "scroll-event",
-      G_CALLBACK (uisongselScrollEvent), uisongsel);
+
+  ssint->callbacks [SONGSEL_CB_SCROLL_EVENT] = callbackInitLong (
+        uisongselScrollEvent, uisongsel);
+  uiTreeViewSetScrollEventCallback (ssint->songselTree,
+        ssint->callbacks [SONGSEL_CB_SCROLL_EVENT]);
 
   gtk_event_controller_scroll_new (uitreewidgetp->widget,
       GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
@@ -1181,34 +1185,22 @@ uisongselUpdateSelections (uisongsel_t *uisongsel)
   ssint->inselectchgprocess = false;
 }
 
-static gboolean
-uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata)
+static bool
+uisongselScrollEvent (void *udata, long dir)
 {
   uisongsel_t     *uisongsel = udata;
-  int             dir = UISONGSEL_NEXT;
+  int             ndir = UISONGSEL_NEXT;
 
   logProcBegin (LOG_PROC, "uisongselScrollEvent");
+fprintf (stderr, "ssui: scroll-event: dir:%ld\n", dir);
 
-  /* i'd like to have a way to turn off smooth scrolling for the application */
-  if (event->direction == GDK_SCROLL_SMOOTH) {
-    double dx, dy;
-
-    gdk_event_get_scroll_deltas ((GdkEvent *) event, &dx, &dy);
-    if (dy < 0.0) {
-      dir = UISONGSEL_PREVIOUS;
-    }
-    if (dy > 0.0) {
-      dir = UISONGSEL_NEXT;
-    }
+  if (dir == TREE_SCROLL_NEXT) {
+    ndir = UISONGSEL_NEXT;
   }
-  if (event->direction == GDK_SCROLL_DOWN) {
-    dir = UISONGSEL_NEXT;
+  if (dir == TREE_SCROLL_PREV) {
+    ndir = UISONGSEL_PREVIOUS;
   }
-  if (event->direction == GDK_SCROLL_UP) {
-    dir = UISONGSEL_PREVIOUS;
-  }
-
-  uisongselProcessScroll (uisongsel, dir, 1);
+  uisongselProcessScroll (uisongsel, ndir, 1);
 
   logProcEnd (LOG_PROC, "uisongselScrollEvent", "");
   return UICB_STOP;

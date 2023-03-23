@@ -47,6 +47,7 @@ static void uiTreeViewSelectForeachHandler (GtkTreeModel* model, GtkTreePath* pa
 static GType uiTreeViewConvertTreeType (int type);
 static void uiTreeViewSelectChangedHandler (GtkTreeSelection *sel, gpointer udata);
 static void uiTreeViewSizeChangeHandler (GtkWidget* w, GtkAllocation* allocation, gpointer udata);
+static gboolean uiTreeViewScrollEventHandler (GtkWidget* tv, GdkEventScroll *event, gpointer udata);
 
 typedef struct uitree {
   uiwcont_t         *tree;
@@ -56,6 +57,7 @@ typedef struct uitree {
   GtkTreeIter       selectforeachiter;
   GtkTreeModel      *model;
   GtkTreeViewColumn *activeColumn;
+  callback_t        *scrolleventcb;
   callback_t        *szchgcb;
   callback_t        *selchgcb;
   callback_t        *rowactivecb;
@@ -109,6 +111,7 @@ uiCreateTreeView (void)
   uitree->valueiterset = false;
   uitree->model = NULL;
   uitree->activeColumn = NULL;
+  uitree->scrolleventcb = NULL;
   uitree->szchgcb = NULL;
   uitree->selchgcb = NULL;
   uitree->rowactivecb = NULL;
@@ -219,6 +222,17 @@ uiTreeViewSetSizeChangeCallback (uitree_t *uitree, callback_t *cb)
   uitree->szchgcb = cb;
   g_signal_connect (uitree->tree->widget, "size-allocate",
       G_CALLBACK (uiTreeViewSizeChangeHandler), uitree);
+}
+
+void
+uiTreeViewSetScrollEventCallback (uitree_t *uitree, callback_t *cb)
+{
+  if (uitree == NULL) {
+    return;
+  }
+  uitree->scrolleventcb = cb;
+  g_signal_connect (uitree->tree->widget, "scroll-event",
+      G_CALLBACK (uiTreeViewScrollEventHandler), uitree);
 }
 
 void
@@ -1489,5 +1503,43 @@ uiTreeViewSizeChangeHandler (GtkWidget* w, GtkAllocation* allocation,
   if (uitree->szchgcb != NULL) {
     callbackHandlerLong (uitree->szchgcb, rows);
   }
+}
+
+static gboolean
+uiTreeViewScrollEventHandler (GtkWidget* tv, GdkEventScroll *event,
+    gpointer udata)
+{
+  uitree_t  *uitree = udata;
+  int       dir = TREE_SCROLL_NEXT;
+  int       rc = UICB_CONT;
+
+fprintf (stderr, "tv: scroll-event: direction: %d\n", event->direction);
+  /* i'd like to have a way to turn off smooth scrolling for the application */
+  if (event->direction == GDK_SCROLL_SMOOTH) {
+    double dx, dy;
+
+    gdk_event_get_scroll_deltas ((GdkEvent *) event, &dx, &dy);
+fprintf (stderr, "   smooth %.2f\n", dy);
+    if (dy < 0.0) {
+      dir = TREE_SCROLL_PREV;
+    }
+    if (dy > 0.0) {
+      dir = TREE_SCROLL_NEXT;
+    }
+  }
+  if (event->direction == GDK_SCROLL_DOWN) {
+fprintf (stderr, "   down\n");
+    dir = TREE_SCROLL_NEXT;
+  }
+  if (event->direction == GDK_SCROLL_UP) {
+fprintf (stderr, "   up\n");
+    dir = TREE_SCROLL_PREV;
+  }
+
+  if (uitree->scrolleventcb != NULL) {
+    rc = callbackHandlerLong (uitree->scrolleventcb, dir);
+  }
+
+  return rc;
 }
 

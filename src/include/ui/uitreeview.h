@@ -44,6 +44,8 @@ enum {
   TREE_COLUMN_SHOWN,
   SELECT_SINGLE,
   SELECT_MULTIPLE,
+  TREE_SCROLL_NEXT,
+  TREE_SCROLL_PREV,
 };
 
 enum {
@@ -66,6 +68,7 @@ void  uiTreeViewDisableSingleClick (uitree_t *uitree);
 void  uiTreeViewSelectSetMode (uitree_t *uitree, int mode);
 void  uiTreeViewSetSelectChangedCallback (uitree_t *uitree, callback_t *cb);
 void  uiTreeViewSetSizeChangeCallback (uitree_t *uitree, callback_t *cb);
+void  uiTreeViewSetScrollEventCallback (uitree_t *uitree, callback_t *cb);
 void  uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb);
 void  uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *cb);
 void  uiTreeViewRadioSetRow (uitree_t *uitree, int row);
