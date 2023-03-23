@@ -415,7 +415,7 @@ songDisplayString (song_t *song, int tagidx)
         mdfree (conv.str);
       }
       mdfree (str);
-      str = strdup (tbuff);
+      str = mdstrdup (tbuff);
     }
   }
 
