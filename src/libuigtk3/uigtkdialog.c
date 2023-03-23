@@ -48,7 +48,6 @@ uiSelectDirDialog (uiselect_t *selectdata)
   char      *fn = NULL;
   GtkFileFilter   *ff;
 
-
   widget = gtk_file_chooser_native_new (
       selectdata->label,
       GTK_WINDOW (selectdata->window->widget),
@@ -74,6 +73,7 @@ uiSelectDirDialog (uiselect_t *selectdata)
   res = gtk_native_dialog_run (GTK_NATIVE_DIALOG (widget));
   if (res == GTK_RESPONSE_ACCEPT) {
     fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (widget));
+    mdextalloc (fn);
   }
 
   g_object_unref (widget);
