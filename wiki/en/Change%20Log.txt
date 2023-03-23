@@ -4,10 +4,8 @@
 
 <!--
 
-**4.3.0.4 2023-3---**
+**4.3.0.4 2023-4---**
 
-* Bug Fixes:
-    * Fix accent color display in starter to change as it should.
 * Internal:
     * Code cleanup.
 

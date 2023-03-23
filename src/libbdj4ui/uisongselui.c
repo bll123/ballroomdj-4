@@ -1632,6 +1632,9 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
     /* row (but a new dbidx), re-select it */
     /* if the iter was moved, it is pointing at the new selection */
     /* if the iter was not moved, the original must be re-selected */
+    if (where != UISONGSEL_FIRST) {
+      uiTreeViewSelectSet (ssint->songselTree, loc);
+    }
     uiTreeViewSelectCurrent (ssint->songselTree);
   }
 }
