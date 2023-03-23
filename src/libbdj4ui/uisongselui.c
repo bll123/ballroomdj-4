@@ -77,6 +77,7 @@ enum {
   SONGSEL_CB_DANCE_SEL,
   SONGSEL_CB_KEYB,
   SONGSEL_CB_SCROLL_CHG,
+  SONGSEL_CB_SEL_CHG,
   SONGSEL_CB_SELECT_PROCESS,
   SONGSEL_CB_CHK_FAV_CHG,
   SONGSEL_CB_MAX,
@@ -98,36 +99,35 @@ typedef struct ss_internal {
   uiwcont_t           *parentwin;
   uiwcont_t           *vbox;
   uitree_t            *songselTree;
-  GtkTreeSelection    *sel;
   uiscrollbar_t       *songselScrollbar;
   GtkEventController  *scrollController;
-  GtkTreeViewColumn   *favColumn;
   uiwcont_t           *scrolledwin;
   uibutton_t          *buttons [SONGSEL_BUTTON_MAX];
   uiwcont_t           reqQueueLabel;
   uikey_t             *uikey;
   /* other data */
-  int               lastTreeSize;
-  double            lastRowHeight;
-  double            upperLimit;         // for windows work-around
-  int               maxRows;
-  nlist_t           *selectedBackup;
-  nlist_t           *selectedList;
-  nlistidx_t        selectListIter;
-  nlistidx_t        selectListKey;
-  GtkTreeIter       currIter;
-  int               *typelist;
-  int               colcount;            // for the display type callback
-  const char        *markcolor;
+  int                 lastTreeSize;
+  double              lastRowHeight;
+  double              upperLimit;         // for windows work-around
+  int                 maxRows;
+  nlist_t             *selectedBackup;
+  nlist_t             *selectedList;
+  nlistidx_t          selectListIter;
+  nlistidx_t          selectListKey;
+  GtkTreeIter         currIter;
+  int                 *typelist;
+  int                 colcount;            // for the display type callback
+  const   char        *markcolor;
   /* for shift-click */
-  nlistidx_t        shiftfirstidx;
-  nlistidx_t        shiftlastidx;
+  nlistidx_t          shiftfirstidx;
+  nlistidx_t          shiftlastidx;
   /* for double-click checks */
-  dbidx_t           lastRowDBIdx;
-  mstime_t          lastRowCheck;
-  bool              controlPressed : 1;
-  bool              shiftPressed : 1;
-  bool              inscroll : 1;
+  dbidx_t             lastRowDBIdx;
+  mstime_t            lastRowCheck;
+  bool                controlPressed : 1;
+  bool                shiftPressed : 1;
+  bool                inscroll : 1;
+  bool                inselectchgprocess : 1;
 } ss_internal_t;
 
 static void uisongselClearSelections (uisongsel_t *uisongsel);
@@ -143,16 +143,15 @@ static bool uisongselCheckFavChgCallback (void *udata, long col);
 
 static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation, gpointer user_data);
 static bool uisongselScroll (void *udata, double value);
+static void uisongselUpdateSelections (uisongsel_t *uisongsel);
 static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata);
 static void uisongselProcessScroll (uisongsel_t *uisongsel, int dir, int lines);
 static bool uisongselKeyEvent (void *udata);
-static void uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata);
-static void uisongselProcessSelection (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
+static bool uisongselSelectionChgCallback (void *udata);
+static bool uisongselProcessSelection (void *udata, long row);
 static void uisongselPopulateDataCallback (int col, long num, const char *str, void *udata);
 
 static void uisongselMoveSelection (void *udata, int where, int lines, int moveflag);
-static void uisongselGetIter (GtkTreeModel *model,
-    GtkTreePath *path, GtkTreeIter *iter, gpointer udata);
 
 static bool uisongselUIDanceSelectCallback (void *udata, long idx, int count);
 static bool uisongselSongEditCallback (void *udata);
@@ -168,10 +167,8 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint = mdmalloc (sizeof (ss_internal_t));
   ssint->vbox = NULL;
   ssint->songselTree = NULL;
-  ssint->sel = NULL;
   ssint->songselScrollbar = NULL;
   ssint->scrollController = NULL;
-  ssint->favColumn = NULL;
   ssint->lastTreeSize = 0;
   ssint->lastRowHeight = 0.0;
   ssint->upperLimit = 0.0;
@@ -179,6 +176,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint->controlPressed = false;
   ssint->shiftPressed = false;
   ssint->inscroll = false;
+  ssint->inselectchgprocess = false;
   ssint->selectedBackup = NULL;
   ssint->selectedList = nlistAlloc ("selected-list-a", LIST_ORDERED, NULL);
   nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
@@ -197,6 +195,8 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint->uikey = uiKeyAlloc ();
   ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
       uisongselKeyEvent, uisongsel, NULL);
+  ssint->callbacks [SONGSEL_CB_SELECT_PROCESS] = callbackInitLong (
+      uisongselProcessSelection, uisongsel);
 
   uisongsel->ssInternalData = ssint;
 }
@@ -366,7 +366,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   }
   uiKeySetKeyCallback (ssint->uikey, uitreewidgetp,
       ssint->callbacks [SONGSEL_CB_KEYB]);
-  ssint->sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (uitreewidgetp->widget));
 
   adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uitreewidgetp->widget));
   tupper = uisongsel->dfilterCount;
@@ -382,8 +381,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
         uisongselCheckFavChgCallback, uisongsel);
   uiTreeViewSetRowActivatedCallback (ssint->songselTree,
         ssint->callbacks [SONGSEL_CB_CHK_FAV_CHG]);
-//  g_signal_connect (uitreewidgetp->widget, "row-activated",
-//      G_CALLBACK (uisongselCheckFavChgCallback), uisongsel);
   g_signal_connect (uitreewidgetp->widget, "scroll-event",
       G_CALLBACK (uisongselScrollEvent), uisongsel);
 
@@ -419,8 +416,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   uidanceSetValue (uisongsel->uidance, -1);
 
-  g_signal_connect ((GtkWidget *) ssint->sel, "changed",
-      G_CALLBACK (uisongselSelectionChgCallback), uisongsel);
+  ssint->callbacks [SONGSEL_CB_SEL_CHG] = callbackInit (
+      uisongselSelectionChgCallback, uisongsel, NULL);
+  uiTreeViewSetSelectChangedCallback (ssint->songselTree,
+      ssint->callbacks [SONGSEL_CB_SEL_CHG]);
   g_signal_connect (uitreewidgetp->widget, "size-allocate",
       G_CALLBACK (uisongselProcessTreeSize), uisongsel);
 
@@ -556,10 +555,6 @@ uisongselSetDefaultSelection (uisongsel_t *uisongsel)
 
   ssint = uisongsel->ssInternalData;
 
-  if (ssint->sel == NULL) {
-    return;
-  }
-
   count = uiTreeViewSelectGetCount (ssint->songselTree);
   if (count < 1) {
     uiTreeViewSelectFirst (ssint->songselTree);
@@ -575,9 +570,6 @@ uisongselSetSelection (uisongsel_t *uisongsel, long idx)
 
   ssint = uisongsel->ssInternalData;
 
-  if (ssint->sel == NULL) {
-    return;
-  }
   if (idx < 0) {
     return;
   }
@@ -592,9 +584,6 @@ uisongselSetSelectionOffset (uisongsel_t *uisongsel, long idx)
 
   ssint = uisongsel->ssInternalData;
 
-  if (ssint->sel == NULL) {
-    return;
-  }
   if (idx < 0) {
     return;
   }
@@ -632,33 +621,14 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   ss_internal_t  *ssint;
   int             count;
   long            loc = -1;
-  GtkTreeModel    *model = NULL;
-  GtkTreePath     *path;
-  char            *pathstr;
-  uiwcont_t      *uiwidgetp;
 
   ssint = uisongsel->ssInternalData;
   count = uiTreeViewSelectGetCount (ssint->songselTree);
   if (count != 1) {
-    return 0;
+    return -1;
   }
 
-  gtk_tree_selection_selected_foreach (ssint->sel,
-      uisongselGetIter, uisongsel);
-  uiwidgetp = uiTreeViewGetWidgetContainer (ssint->songselTree);
-  model = gtk_tree_view_get_model (GTK_TREE_VIEW (uiwidgetp->widget));
-  path = gtk_tree_model_get_path (model, &ssint->currIter);
-  mdextalloc (path);
-  loc = 0;
-  if (path != NULL) {
-    pathstr = gtk_tree_path_to_string (path);
-    mdextalloc (pathstr);
-    loc = atol (pathstr);
-    mdextfree (path);
-    gtk_tree_path_free (path);
-    mdfree (pathstr);     // allocated by gtk
-  }
-
+  loc = uiTreeViewSelectGetIndex (ssint->songselTree);
   return loc + uisongsel->idxStart;
 }
 
@@ -844,7 +814,9 @@ uisongselClearAllUISelections (uisongsel_t *uisongsel)
   ss_internal_t  *ssint;
 
   ssint = uisongsel->ssInternalData;
+  ssint->inselectchgprocess = true;
   uiTreeViewSelectClearAll (ssint->songselTree);
+  ssint->inselectchgprocess = false;
 }
 
 double
@@ -882,7 +854,6 @@ uisongselClearSelections (uisongsel_t *uisongsel)
 
   ssint = uisongsel->ssInternalData;
 
-  uisongsel->idxStart = 0;
   nlistFree (ssint->selectedList);
   ssint->selectedList = nlistAlloc ("selected-list-clr", LIST_ORDERED, NULL);
   nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
@@ -930,7 +901,6 @@ uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart,
   }
 
   uisongselPopulateData (uisongsel);
-
   uisongselScroll (uisongsel, (double) uisongsel->idxStart);
 
   scrolled = true;
@@ -1183,8 +1153,6 @@ uisongselScroll (void *udata, double value)
   ss_internal_t   *ssint;
   double          start;
   double          tval;
-  nlistidx_t      idx;
-  nlistidx_t      iteridx;
 
   logProcBegin (LOG_PROC, "uisongselScroll");
 
@@ -1194,6 +1162,9 @@ uisongselScroll (void *udata, double value)
 
   ssint = uisongsel->ssInternalData;
   if (ssint == NULL) {
+    return UICB_STOP;
+  }
+  if (ssint->inselectchgprocess) {
     return UICB_STOP;
   }
 
@@ -1212,26 +1183,50 @@ uisongselScroll (void *udata, double value)
 
   ssint->inscroll = true;
 
+  logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: scroll", uisongsel->tag);
+  uisongselPopulateData (uisongsel);
+  uiScrollbarSetPosition (ssint->songselScrollbar, value);
+  uisongselUpdateSelections (uisongsel);
+
+  ssint->inscroll = false;
+  logProcEnd (LOG_PROC, "uisongselScroll", "");
+  return UICB_CONT;
+}
+
+static void
+uisongselUpdateSelections (uisongsel_t *uisongsel)
+{
+  nlistidx_t    idx;
+  nlistidx_t    iteridx;
+  ss_internal_t *ssint;
+
+  ssint = uisongsel->ssInternalData;
+
   /* clear the current selections */
   uisongselClearAllUISelections (uisongsel);
 
-  logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: scroll", uisongsel->tag);
-  uisongselPopulateData (uisongsel);
-
-  uiScrollbarSetPosition (ssint->songselScrollbar, value);
-
+  ssint->inselectchgprocess = true;
   /* set the selections based on the saved selection list */
   nlistStartIterator (ssint->selectedList, &iteridx);
   while ((idx = nlistIterateKey (ssint->selectedList, &iteridx)) >= 0) {
     if (idx >= uisongsel->idxStart &&
         idx < uisongsel->idxStart + ssint->maxRows) {
       uiTreeViewSelectSet (ssint->songselTree, idx - uisongsel->idxStart);
+
+      if (! uisongsel->ispeercall) {
+        for (int i = 0; i < uisongsel->peercount; ++i) {
+          if (uisongsel->peers [i] == NULL) {
+            continue;
+          }
+          uisongselSetPeerFlag (uisongsel->peers [i], true);
+          uisongselSetSelectionOffset (uisongsel->peers [i], idx);
+          uisongselSetPeerFlag (uisongsel->peers [i], false);
+        }
+      }
     }
   }
 
-  ssint->inscroll = false;
-  logProcEnd (LOG_PROC, "uisongselScroll", "");
-  return UICB_CONT;
+  ssint->inselectchgprocess = false;
 }
 
 static gboolean
@@ -1350,11 +1345,11 @@ uisongselKeyEvent (void *udata)
   return UICB_CONT;
 }
 
-static void
-uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
+static bool
+uisongselSelectionChgCallback (void *udata)
 {
   uisongsel_t       *uisongsel = udata;
-  ss_internal_t    *ssint;
+  ss_internal_t     *ssint;
   nlist_t           *tlist;
   nlistidx_t        idx;
   nlistidx_t        iteridx;
@@ -1362,19 +1357,37 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
   ssint = uisongsel->ssInternalData;
 
   if (ssint->inscroll) {
-    return;
+    return UICB_CONT;
+  }
+  if (ssint->inselectchgprocess) {
+    return UICB_CONT;
   }
 
   if (ssint->selectedBackup != NULL &&
       uisongsel->dispselType != DISP_SEL_MM) {
     /* if the music manager is currently using the song list */
-    /* only update the selection list for the music manager */
-    return;
+    /* do not update the selection list for the music manager */
+    return UICB_CONT;
   }
 
+  ssint->inselectchgprocess = true;
+
   /* if neither the control key nor the shift key are pressed */
-  /* then this is a new selection and not a modification */
+  /* then this will be a new selection and not a modification */
   tlist = nlistAlloc ("selected-list-chg", LIST_ORDERED, NULL);
+
+  /* clear the selections from the peers first */
+  if (! uisongsel->ispeercall) {
+    for (int i = 0; i < uisongsel->peercount; ++i) {
+      if (uisongsel->peers [i] == NULL) {
+        continue;
+      }
+      uisongselSetPeerFlag (uisongsel->peers [i], true);
+      uisongselClearSelections (uisongsel->peers [i]);
+      uisongselClearAllUISelections (uisongsel->peers [i]);
+      uisongselSetPeerFlag (uisongsel->peers [i], false);
+    }
+  }
 
   /* if the shift key is pressed, get the first and the last item */
   /* in the selection list (both, as it is not yet known where */
@@ -1403,30 +1416,31 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
     }
   }
 
+  nlistFree (ssint->selectedList);
+  ssint->selectedList = tlist;
+
+  /* and now process the selections from gtk */
+  uiTreeViewSelectForeach (ssint->songselTree,
+      ssint->callbacks [SONGSEL_CB_SELECT_PROCESS]);
+
+  /* any time the selection is changed, re-start the edit iterator */
+  nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
+  ssint->selectListKey = nlistIterateKey (ssint->selectedList, &ssint->selectListIter);
+
+  /* update the current song-selection's selections */
+  uisongselUpdateSelections (uisongsel);
+
+  /* process the peers after the selections have been made */
   if (! uisongsel->ispeercall) {
     for (int i = 0; i < uisongsel->peercount; ++i) {
       if (uisongsel->peers [i] == NULL) {
         continue;
       }
       uisongselSetPeerFlag (uisongsel->peers [i], true);
-      uisongselClearAllUISelections (uisongsel->peers [i]);
+      uisongselScroll (uisongsel->peers [i], (double) uisongsel->idxStart);
       uisongselSetPeerFlag (uisongsel->peers [i], false);
     }
   }
-
-  nlistFree (ssint->selectedList);
-  ssint->selectedList = tlist;
-  nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
-
-  ssint->selectListKey = nlistIterateKey (ssint->selectedList, &ssint->selectListIter);
-
-  /* and now process the selections from gtk */
-  gtk_tree_selection_selected_foreach (sel,
-      uisongselProcessSelection, uisongsel);
-
-  /* any time the selection is changed, re-start the edit iterator */
-  nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
-  ssint->selectListKey = nlistIterateKey (ssint->selectedList, &ssint->selectListIter);
 
   if (uisongsel->newselcb != NULL) {
     dbidx_t   dbidx;
@@ -1437,21 +1451,22 @@ uisongselSelectionChgCallback (GtkTreeSelection *sel, gpointer udata)
       callbackHandlerLong (uisongsel->newselcb, dbidx);
     }
   }
+
+  ssint->inselectchgprocess = false;
+  return UICB_CONT;
 }
 
-static void
-uisongselProcessSelection (GtkTreeModel *model,
-    GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
+static bool
+uisongselProcessSelection (void *udata, long row)
 {
   uisongsel_t       *uisongsel = udata;
   ss_internal_t     *ssint;
   long              idx;
-  long              dbidx = -1;
-  char              *pathstr;
+  dbidx_t           dbidx = -1;
 
   ssint = uisongsel->ssInternalData;
 
-  gtk_tree_model_get (model, iter, SONGSEL_COL_IDX, &idx, -1);
+  idx = uiTreeViewSelectForeachGetValue (ssint->songselTree, SONGSEL_COL_IDX);
 
   if (ssint->shiftPressed) {
     nlistidx_t    beg = 0;
@@ -1467,36 +1482,17 @@ uisongselProcessSelection (GtkTreeModel *model,
     }
 
     for (nlistidx_t i = beg; i <= end; ++i) {
-      if (i >= uisongsel->idxStart &&
-          i < uisongsel->idxStart + ssint->maxRows) {
-        uiTreeViewSelectSet (ssint->songselTree, i - uisongsel->idxStart);
-      }
       dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
       nlistSetNum (ssint->selectedList, i, dbidx);
     }
   } else {
-    gtk_tree_model_get (model, iter, SONGSEL_COL_DBIDX, &dbidx, -1);
+    dbidx = uiTreeViewSelectForeachGetValue (ssint->songselTree, SONGSEL_COL_DBIDX);
     nlistSetNum (ssint->selectedList, idx, dbidx);
   }
 
   uisongsel->lastdbidx = dbidx;
 
-  if (uisongsel->ispeercall) {
-    return;
-  }
-
-  for (int i = 0; i < uisongsel->peercount; ++i) {
-    if (uisongsel->peers [i] == NULL) {
-      continue;
-    }
-    uisongselSetPeerFlag (uisongsel->peers [i], true);
-    uisongselScrollSelection (uisongsel->peers [i], uisongsel->idxStart, UISONGSEL_SCROLL_FORCE, UISONGSEL_DIR_NONE);
-    pathstr = gtk_tree_path_to_string (path);
-    mdextalloc (pathstr);
-    uisongselSetSelection (uisongsel->peers [i], atol (pathstr));
-    mdfree (pathstr);     // allocated by gtk
-    uisongselSetPeerFlag (uisongsel->peers [i], false);
-  }
+  return UICB_CONT;
 }
 
 static void
@@ -1521,10 +1517,6 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
   bool            scrolled = false;
 
   ssint = uisongsel->ssInternalData;
-
-  if (ssint->sel == NULL) {
-    return;
-  }
 
   count = nlistGetCount (ssint->selectedList);
 
@@ -1583,9 +1575,12 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
     loc = nidx - uisongsel->idxStart;
 
     /* there's only one selected, clear them all */
+    uisongselClearSelections (uisongsel);
     uisongselClearAllUISelections (uisongsel);
 
     if (where == UISONGSEL_FIRST) {
+      nidx = 0;
+      loc = 0;
       scrolled = uisongselScrollSelection (uisongsel, 0, UISONGSEL_SCROLL_NORMAL, UISONGSEL_DIR_NONE);
       uiTreeViewSelectFirst (ssint->songselTree);
     }
@@ -1637,17 +1632,6 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
     }
     uiTreeViewSelectCurrent (ssint->songselTree);
   }
-}
-
-static void
-uisongselGetIter (GtkTreeModel *model,
-    GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
-{
-  uisongsel_t     *uisongsel = udata;
-  ss_internal_t  *ssint = NULL;
-
-  ssint = uisongsel->ssInternalData;
-  memcpy (&ssint->currIter, iter, sizeof (GtkTreeIter));
 }
 
 /* have to handle the case where the user switches tabs back to the */

@@ -52,6 +52,7 @@ typedef struct uitree {
   GtkTreeSelection  *sel;
   GtkTreeIter       selectiter;
   GtkTreeIter       valueiter;
+  GtkTreeIter       selectforeachiter;
   GtkTreeModel      *model;
   GtkTreeViewColumn *activeColumn;
   callback_t        *selchgcb;
@@ -643,9 +644,9 @@ uiTreeViewValueRemove (uitree_t *uitree)
   }
 
   /* count == 0 will default to ! valid */
-  if (! valid && idx >= 0) {
+  if (! valid && idx > 0) {
     --idx;
-    if (idx < 0) { idx = 0; }
+    if (idx <= 0) { idx = 0; }
     uiTreeViewSelectSet (uitree, idx);
   }
 }
@@ -744,8 +745,9 @@ uiTreeViewSelectGetCount (uitree_t *uitree)
   }
 
   count = gtk_tree_selection_count_selected_rows (uitree->sel);
-  uitree->selectset = false;
   if (count == 1 && uitree->selmode == SELECT_SINGLE) {
+    /* don't muck up uitree->selectset if in multi-selection mode */
+    uitree->selectset = false;
     /* this only works if the treeview is in single-selection mode */
     valid = gtk_tree_selection_get_selected (uitree->sel, &uitree->model, &uitree->selectiter);
     if (valid) {
@@ -792,7 +794,7 @@ uiTreeViewSelectGetIndex (uitree_t *uitree)
 
 /* makes sure that the stored selectiter is pointing to the current selection */
 /* coded for both select-mode single and multiple */
-/* makes sure the iterator is actually selected */
+/* makes sure the iterator is actually selected and selectiter is set */
 void
 uiTreeViewSelectCurrent (uitree_t *uitree)
 {
@@ -990,10 +992,11 @@ uiTreeViewMoveAfter (uitree_t *uitree)
   }
 }
 
+/* gets the value for the selected row */
 long
 uiTreeViewGetValue (uitree_t *uitree, int col)
 {
-  glong     idx;
+  glong     val;
 
   if (uitree == NULL) {
     return -1;
@@ -1013,10 +1016,11 @@ uiTreeViewGetValue (uitree_t *uitree, int col)
     return -1;
   }
 
-  gtk_tree_model_get (uitree->model, &uitree->selectiter, col, &idx, -1);
-  return idx;
+  gtk_tree_model_get (uitree->model, &uitree->selectiter, col, &val, -1);
+  return val;
 }
 
+/* gets the string value for the selected row */
 char *
 uiTreeViewGetValueStr (uitree_t *uitree, int col)
 {
@@ -1035,6 +1039,23 @@ uiTreeViewGetValueStr (uitree_t *uitree, int col)
   gtk_tree_model_get (uitree->model, &uitree->selectiter, col, &str, -1);
   mdextalloc (str);
   return str;
+}
+
+/* gets the value for the row just processed by select-foreach */
+long
+uiTreeViewSelectForeachGetValue (uitree_t *uitree, int col)
+{
+  glong     val;
+
+  if (uitree == NULL) {
+    return -1;
+  }
+  if (uitree->model == NULL) {
+    return -1;
+  }
+
+  gtk_tree_model_get (uitree->model, &uitree->selectforeachiter, col, &val, -1);
+  return val;
 }
 
 void
@@ -1357,7 +1378,8 @@ uiTreeViewSelectForeachHandler (GtkTreeModel *model,
     uitree->selectset = true;
   }
 
-  if (uitree->foreachcb != NULL) {
+  if (uitree->selectprocessmode == SELECT_PROCESS_NONE &&
+      uitree->foreachcb != NULL) {
     char      *pathstr;
     int       row;
 
@@ -1365,6 +1387,8 @@ uiTreeViewSelectForeachHandler (GtkTreeModel *model,
     mdextalloc (pathstr);
     row = atoi (pathstr);
     mdfree (pathstr);
+
+    memcpy (&uitree->selectforeachiter, iter, sizeof (GtkTreeIter));
 
     callbackHandlerLong (uitree->foreachcb, row);
   }

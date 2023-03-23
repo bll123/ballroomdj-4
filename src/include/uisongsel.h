@@ -45,7 +45,7 @@ typedef struct uisongsel {
   samesong_t        *samesong;
   dispselsel_t      dispselType;
   double            dfilterCount;
-  uiwcont_t        *windowp;
+  uiwcont_t         *windowp;
   callback_t        *queuecb;
   callback_t        *playcb;
   callback_t        *editcb;
