@@ -72,11 +72,11 @@ confuiPopulateOptions (confuigui_t *gui)
         break;
       }
       case CONFUI_SPINBOX_NUM: {
-        nval = (ssize_t) uiSpinboxGetValue (&gui->uiitem [i].uiwidget);
+        nval = (ssize_t) uiSpinboxGetValue (gui->uiitem [i].uiwidgetp);
         break;
       }
       case CONFUI_SPINBOX_DOUBLE: {
-        dval = uiSpinboxGetValue (&gui->uiitem [i].uiwidget);
+        dval = uiSpinboxGetValue (gui->uiitem [i].uiwidgetp);
         nval = (ssize_t) (dval * 1000.0);
         outtype = CONFUI_OUT_NUM;
         break;

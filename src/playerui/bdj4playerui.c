@@ -71,6 +71,7 @@ enum {
   PLUI_CB_CLEAR_QUEUE,
   PLUI_CB_REQ_EXT,
   PLUI_CB_KEYB,
+  PLUI_CB_FONT_SZ_CHG,
   PLUI_CB_MAX,
 };
 
@@ -106,7 +107,7 @@ typedef struct {
   uiwcont_t       *ledoffPixbuf;
   uiwcont_t       *ledonPixbuf;
   uiwcont_t       *marqueeFontSizeDialog;
-  uiwcont_t       marqueeSpinBox;
+  uiwcont_t       *marqueeSpinBox;
   /* ui major elements */
   uiwcont_t       statusMsg;
   uiwcont_t       errorMsg;
@@ -180,7 +181,8 @@ static void     pluiSetSwitchQueue (playerui_t *plui);
 static bool     pluiMarqueeFontSizeDialog (void *udata);
 static void     pluiCreateMarqueeFontSizeDialog (playerui_t *plui);
 static bool     pluiMarqueeFontSizeDialogResponse (void *udata, long responseid);
-static void     pluiMarqueeFontSizeChg (GtkSpinButton *fb, gpointer udata);
+static bool     pluiMarqueeFontSizeChg (void *udata);
+//static void     pluiMarqueeFontSizeChg (GtkSpinButton *fb, gpointer udata);
 static bool     pluiMarqueeFind (void *udata);
 static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
@@ -1337,7 +1339,7 @@ pluiMarqueeFontSizeDialog (void *udata)
     sz = plui->marqueeFontSize;
   }
 
-  uiSpinboxSetValue (&plui->marqueeSpinBox, (double) sz);
+  uiSpinboxSetValue (plui->marqueeSpinBox, (double) sz);
   uiDialogShow (plui->marqueeFontSizeDialog);
 
   logProcEnd (LOG_PROC, "pluiMarqueeFontSizeDialog", "");
@@ -1375,12 +1377,17 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiCreateColonLabel (&uiwidget, _("Font Size"));
   uiBoxPackStart (hbox, &uiwidget);
 
-  uiSpinboxIntCreate (&plui->marqueeSpinBox);
-  uiSpinboxSet (&plui->marqueeSpinBox, 10.0, 300.0);
-  uiSpinboxSetValue (&plui->marqueeSpinBox, 36.0);
-  uiBoxPackStart (hbox, &plui->marqueeSpinBox);
-  g_signal_connect (plui->marqueeSpinBox.widget, "value-changed",
-      G_CALLBACK (pluiMarqueeFontSizeChg), plui);
+  plui->marqueeSpinBox = uiSpinboxIntCreate ();
+  uiSpinboxSet (plui->marqueeSpinBox, 10.0, 300.0);
+  uiSpinboxSetValue (plui->marqueeSpinBox, 36.0);
+  uiBoxPackStart (hbox, plui->marqueeSpinBox);
+
+  plui->callbacks [PLUI_CB_FONT_SZ_CHG] = callbackInit (
+      pluiMarqueeFontSizeChg, plui, NULL);
+  uiSpinboxSetValueChangedCallback (plui->marqueeSpinBox,
+      plui->callbacks [PLUI_CB_FONT_SZ_CHG]);
+//  g_signal_connect (plui->marqueeSpinBox.widget, "value-changed",
+//      G_CALLBACK (pluiMarqueeFontSizeChg), plui);
 
   /* the dialog doesn't have any space above the buttons */
   uiwcontFree (hbox);
@@ -1419,14 +1426,14 @@ pluiMarqueeFontSizeDialogResponse (void *udata, long responseid)
   return UICB_CONT;
 }
 
-static void
-pluiMarqueeFontSizeChg (GtkSpinButton *sb, gpointer udata)
+static bool
+pluiMarqueeFontSizeChg (void *udata)
 {
   playerui_t  *plui = udata;
   int         fontsz;
   double      value;
 
-  value = uiSpinboxGetValue (&plui->marqueeSpinBox);
+  value = uiSpinboxGetValue (plui->marqueeSpinBox);
   fontsz = (int) round (value);
   if (plui->marqueeIsMaximized) {
     plui->marqueeFontSizeFS = fontsz;
@@ -1434,6 +1441,8 @@ pluiMarqueeFontSizeChg (GtkSpinButton *sb, gpointer udata)
     plui->marqueeFontSize = fontsz;
   }
   mstimeset (&plui->marqueeFontSizeCheck, 100);
+
+  return UICB_CONT;
 }
 
 static bool

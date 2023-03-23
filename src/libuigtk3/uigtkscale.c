@@ -28,10 +28,11 @@
 
 static gboolean uiScaleChangeValueHandler (GtkRange *range, GtkScrollType scroll, gdouble value, gpointer udata);
 
-void
-uiCreateScale (uiwcont_t *uiwidget, double lower, double upper,
+uiwcont_t *
+uiCreateScale (double lower, double upper,
     double stepinc, double pageinc, double initvalue, int digits)
 {
+  uiwcont_t     *uiwidget;
   GtkWidget     *scale;
   GtkAdjustment *adjustment;
 
@@ -48,9 +49,14 @@ uiCreateScale (uiwcont_t *uiwidget, double lower, double upper,
   gtk_range_set_round_digits (GTK_RANGE (scale), digits);
   gtk_scale_set_has_origin (GTK_SCALE (scale), TRUE);
   gtk_range_set_value (GTK_RANGE (scale), initvalue);
+
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = scale;
+
   uiWidgetSetMarginTop (uiwidget, 1);
   uiWidgetSetMarginStart (uiwidget, 2);
+
+  return uiwidget;
 }
 
 void

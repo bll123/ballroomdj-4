@@ -70,6 +70,7 @@ typedef struct {
     uientry_t     *entry;
     uispinbox_t   *spinbox;
     uiwcont_t     uiwidget;
+    uiwcont_t     *uiwidgetp;
     uidance_t     *uidance;
     uifavorite_t  *uifavorite;
     uigenre_t     *uigenre;
@@ -458,6 +459,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   for (int i = 0; i < count + 1; ++i) {
     seint->items [i].tagkey = 0;
     uiwcontInit (&seint->items [i].uiwidget);
+    seint->items [i].uiwidgetp = NULL;
     seint->items [i].entry = NULL;
     seint->items [i].chgind = NULL;
     seint->items [i].lastchanged = false;
@@ -592,7 +594,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
           fprintf (stderr, "et_spinbox: mismatch type\n");
         }
         if (val < 0) { val = 0; }
-        uiSpinboxSetValue (&seint->items [count].uiwidget, val);
+        uiSpinboxSetValue (seint->items [count].uiwidgetp, val);
         break;
       }
       case ET_SPINBOX_TIME: {
@@ -613,7 +615,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
         if (data != NULL) {
           fprintf (stderr, "et_scale: mismatch type\n");
         }
-        uiScaleSetValue (&seint->items [count].uiwidget, dval);
+        uiScaleSetValue (seint->items [count].uiwidgetp, dval);
         uisongeditScaleDisplayCallback (&seint->items [count], dval);
         break;
       }
@@ -663,7 +665,7 @@ uisongeditSetBPMValue (uisongedit_t *uisongedit, const char *args)
   }
 
   val = atoi (args);
-  uiSpinboxSetValue (&seint->items [seint->bpmidx].uiwidget, val);
+  uiSpinboxSetValue (seint->items [seint->bpmidx].uiwidgetp, val);
   logProcEnd (LOG_PROC, "uisongeditSetBPMValue", "");
 }
 
@@ -761,9 +763,9 @@ uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag)
         }
         break;
       }
-      case ET_SPINBOX:
-      case ET_SCALE: {
-        uiWidgetSetState (&seint->items [count].uiwidget, newstate);
+      case ET_SCALE:
+      case ET_SPINBOX: {
+        uiWidgetSetState (seint->items [count].uiwidgetp, newstate);
         break;
       }
       case ET_LABEL: {
@@ -897,7 +899,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
         }
         case ET_SPINBOX: {
           if (val < 0) { val = 0; }
-          nval = uiSpinboxGetValue (&seint->items [count].uiwidget);
+          nval = uiSpinboxGetValue (seint->items [count].uiwidgetp);
           break;
         }
         case ET_SPINBOX_TIME: {
@@ -914,7 +916,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
             /* speed adjustment as a double */
             chkvalue = SONGEDIT_CHK_DOUBLE;
           }
-          ndval = uiScaleGetValue (&seint->items [count].uiwidget);
+          ndval = uiScaleGetValue (seint->items [count].uiwidgetp);
           if (ndval == LIST_DOUBLE_INVALID) { ndval = 0.0; }
           if (dval == LIST_DOUBLE_INVALID) { dval = 0.0; }
           if (isnan (dval)) { dval = 0.0; }
@@ -1218,8 +1220,8 @@ uisongeditAddSpinboxInt (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 
   logProcBegin (LOG_PROC, "uisongeditAddSpinboxInt");
   seint = uisongedit->seInternalData;
-  uiwidgetp = &seint->items [seint->itemcount].uiwidget;
-  uiSpinboxIntCreate (uiwidgetp);
+  uiwidgetp = uiSpinboxIntCreate ();
+  seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
   if (tagkey == TAG_BPM) {
     uiSpinboxSet (uiwidgetp, 0.0, 400.0);
   }
@@ -1288,15 +1290,14 @@ uisongeditAddSpinboxTime (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 static void
 uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 {
-  se_internal_t *seint;
-  uiwcont_t      *uiwidgetp;
+  se_internal_t   *seint;
+  uiwcont_t       *uiwidgetp;
   double          lower, upper;
   double          inca, incb;
   int             digits;
 
   logProcBegin (LOG_PROC, "uisongeditAddScale");
   seint = uisongedit->seInternalData;
-  uiwidgetp = &seint->items [seint->itemcount].uiwidget;
   if (tagkey == TAG_SPEEDADJUSTMENT) {
     lower = 70.0;
     upper = 130.0;
@@ -1311,7 +1312,8 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
     inca = 0.1;
     incb = 5.0;
   }
-  uiCreateScale (uiwidgetp, lower, upper, inca, incb, 0.0, digits);
+  uiwidgetp = uiCreateScale (lower, upper, inca, incb, 0.0, digits);
+  seint->items [seint->itemcount].uiwidgetp = uiwidgetp;
   seint->items [seint->itemcount].callback = callbackInitDouble (
       uisongeditScaleDisplayCallback, &seint->items [seint->itemcount]);
   uiScaleSetCallback (uiwidgetp, seint->items [seint->itemcount].callback);
@@ -1631,7 +1633,7 @@ uisongeditGetChangedData (uisongedit_t *uisongedit)
         break;
       }
       case ET_SPINBOX: {
-        nval = uiSpinboxGetValue (&seint->items [count].uiwidget);
+        nval = uiSpinboxGetValue (seint->items [count].uiwidgetp);
         break;
       }
       case ET_SPINBOX_TIME: {
@@ -1639,7 +1641,7 @@ uisongeditGetChangedData (uisongedit_t *uisongedit)
         break;
       }
       case ET_SCALE: {
-        ndval = uiScaleGetValue (&seint->items [count].uiwidget);
+        ndval = uiScaleGetValue (seint->items [count].uiwidgetp);
         if (tagkey == TAG_SPEEDADJUSTMENT) {
           nval = round (ndval);
         }

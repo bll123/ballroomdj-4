@@ -7,7 +7,7 @@
 #include "callback.h"
 #include "uiwcont.h"
 
-void    uiCreateScale (uiwcont_t *uiwidget, double lower, double upper,
+uiwcont_t *uiCreateScale (double lower, double upper,
     double stepinc, double pageinc, double initvalue, int digits);
 void    uiScaleSetCallback (uiwcont_t *uiscale, callback_t *uicb);
 double  uiScaleEnforceMax (uiwcont_t *uiscale, double value);

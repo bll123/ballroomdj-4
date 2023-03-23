@@ -110,7 +110,6 @@ typedef struct ss_internal {
   nlist_t             *selectedList;
   nlistidx_t          selectListIter;
   nlistidx_t          selectListKey;
-  GtkTreeIter         currIter;
   int                 *typelist;
   int                 colcount;            // for the display type callback
   const   char        *markcolor;

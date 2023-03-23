@@ -312,7 +312,7 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     int min, int max, int value, void *cb)
 {
   uiwcont_t  *hbox;
-  uiwcont_t  uiwidget;
+  uiwcont_t  *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSpinboxNum");
 
@@ -320,22 +320,24 @@ confuiMakeItemSpinboxNum (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].outtype = CONFUI_OUT_NUM;
   hbox = uiCreateHorizBox ();
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
-  uiSpinboxIntCreate (&uiwidget);
-  uiSpinboxSet (&uiwidget, (double) min, (double) max);
-  uiSpinboxSetValue (&uiwidget, (double) value);
-  uiWidgetSetMarginStart (&uiwidget, 4);
+  uiwidgetp = uiSpinboxIntCreate ();
+  uiSpinboxSet (uiwidgetp, (double) min, (double) max);
+  uiSpinboxSetValue (uiwidgetp, (double) value);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
-    uiSizeGroupAdd (szgrpB, &uiwidget);
+    uiSizeGroupAdd (szgrpB, uiwidgetp);
   }
-  uiBoxPackStart (hbox, &uiwidget);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiBoxPackStart (boxp, hbox);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
   if (cb != NULL) {
     gui->uiitem [widx].callback = callbackInit (cb, gui, NULL);
-    uiSpinboxSetValueChangedCallback (&uiwidget, gui->uiitem [widx].callback);
+    uiSpinboxSetValueChangedCallback (uiwidgetp, gui->uiitem [widx].callback);
   }
-  uiwcontCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
+
   uiwcontFree (hbox);
+
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxNum", "");
 }
 
@@ -345,7 +347,7 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
     double min, double max, double value, int indent)
 {
   uiwcont_t  *hbox;
-  uiwcont_t  uiwidget;
+  uiwcont_t  *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiMakeItemSpinboxDouble");
 
@@ -353,17 +355,17 @@ confuiMakeItemSpinboxDouble (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp
   gui->uiitem [widx].outtype = CONFUI_OUT_DOUBLE;
   hbox = uiCreateHorizBox ();
   confuiMakeItemLabel (hbox, szgrp, txt, indent);
-  uiSpinboxDoubleCreate (&uiwidget);
-  uiSpinboxSet (&uiwidget, min, max);
-  uiSpinboxSetValue (&uiwidget, value);
-  uiWidgetSetMarginStart (&uiwidget, 4);
+  uiwidgetp = uiSpinboxDoubleCreate ();
+  uiSpinboxSet (uiwidgetp, min, max);
+  uiSpinboxSetValue (uiwidgetp, value);
+  uiWidgetSetMarginStart (uiwidgetp, 4);
   if (szgrpB != NULL) {
-    uiSizeGroupAdd (szgrpB, &uiwidget);
+    uiSizeGroupAdd (szgrpB, uiwidgetp);
   }
-  uiBoxPackStart (hbox, &uiwidget);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiBoxPackStart (boxp, hbox);
   gui->uiitem [widx].bdjoptIdx = bdjoptIdx;
-  uiwcontCopy (&gui->uiitem [widx].uiwidget, &uiwidget);
+  gui->uiitem [widx].uiwidgetp = uiwidgetp;
   uiwcontFree (hbox);
   logProcEnd (LOG_PROC, "confuiMakeItemSpinboxDouble", "");
 }

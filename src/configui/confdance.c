@@ -382,7 +382,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
     nval = uiSpinboxTextGetValue (gui->uiitem [widx].spinbox);
   }
   if (gui->uiitem [widx].basetype == CONFUI_SPINBOX_NUM) {
-    value = uiSpinboxGetValue (&gui->uiitem [widx].uiwidget);
+    value = uiSpinboxGetValue (gui->uiitem [widx].uiwidgetp);
     nval = (long) value;
   }
 

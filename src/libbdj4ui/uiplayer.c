@@ -87,7 +87,7 @@ typedef struct uiplayer {
   uiwcont_t       titleLab;
   uibutton_t      *buttons [UIPL_BUTTON_MAX];
   /* speed controls / display */
-  uiwcont_t       speedScale;
+  uiwcont_t       *speedScale;
   uiwcont_t       speedDisplayLab;
   bool            speedLock;
   mstime_t        speedLockTimeout;
@@ -95,7 +95,7 @@ typedef struct uiplayer {
   /* position controls / display */
   uiwcont_t       countdownTimerLab;
   uiwcont_t       durationLab;
-  uiwcont_t       seekScale;
+  uiwcont_t       *seekScale;
   uiwcont_t       seekDisplayLab;
   ssize_t         lastdur;
   bool            seekLock;
@@ -109,7 +109,7 @@ typedef struct uiplayer {
   bool            pauseatendLock;
   bool            pauseatendstate;
   /* volume controls / display */
-  uiwcont_t      volumeScale;
+  uiwcont_t       *volumeScale;
   bool            volumeLock;
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;
@@ -157,13 +157,13 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiwcontInit (&uiplayer->durationLab);
   uiwcontInit (&uiplayer->speedDisplayLab);
   uiwcontInit (&uiplayer->seekDisplayLab);
-  uiwcontInit (&uiplayer->speedScale);
-  uiwcontInit (&uiplayer->seekScale);
+  uiplayer->speedScale = NULL;
+  uiplayer->seekScale = NULL;
   uiplayer->repeatButton = NULL;
   uiwcontInit (&uiplayer->songbeginButton);
   uiplayer->pauseatendButton = NULL;
   uiwcontInit (&uiplayer->volumeDisplayLab);
-  uiwcontInit (&uiplayer->volumeScale);
+  uiplayer->volumeScale = NULL;
   for (int i = 0; i < UIPL_BUTTON_MAX; ++i) {
     uiplayer->buttons [i] = NULL;
   }
@@ -321,12 +321,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (szgrpB, &uiplayer->speedDisplayLab);
 
   /* size group C */
-  uiCreateScale (&uiplayer->speedScale, 70.0, 130.0, 1.0, 10.0, 100.0, 0);
-  uiBoxPackEnd (hbox, &uiplayer->speedScale);
-  uiSizeGroupAdd (szgrpC, &uiplayer->speedScale);
+  uiplayer->speedScale = uiCreateScale (70.0, 130.0, 1.0, 10.0, 100.0, 0);
+  uiBoxPackEnd (hbox, uiplayer->speedScale);
+  uiSizeGroupAdd (szgrpC, uiplayer->speedScale);
   uiplayer->callbacks [UIPL_CB_SPEED] = callbackInitDouble (
       uiplayerSpeedCallback, uiplayer);
-  uiScaleSetCallback (&uiplayer->speedScale, uiplayer->callbacks [UIPL_CB_SPEED]);
+  uiScaleSetCallback (uiplayer->speedScale, uiplayer->callbacks [UIPL_CB_SPEED]);
 
   /* size group D */
   /* CONTEXT: playerui: the current speed for song playback */
@@ -376,12 +376,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackEnd (hbox, &uiplayer->seekDisplayLab);
 
   /* size group C */
-  uiCreateScale (&uiplayer->seekScale, 0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
-  uiBoxPackEnd (hbox, &uiplayer->seekScale);
-  uiSizeGroupAdd (szgrpC, &uiplayer->seekScale);
+  uiplayer->seekScale = uiCreateScale (0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
+  uiBoxPackEnd (hbox, uiplayer->seekScale);
+  uiSizeGroupAdd (szgrpC, uiplayer->seekScale);
   uiplayer->callbacks [UIPL_CB_SEEK] = callbackInitDouble (
       uiplayerSeekCallback, uiplayer);
-  uiScaleSetCallback (&uiplayer->seekScale, uiplayer->callbacks [UIPL_CB_SEEK]);
+  uiScaleSetCallback (uiplayer->seekScale, uiplayer->callbacks [UIPL_CB_SEEK]);
 
   /* size group D */
   /* CONTEXT: playerui: the current position of the song during song playback */
@@ -487,12 +487,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiSizeGroupAdd (szgrpB, &uiplayer->volumeDisplayLab);
 
   /* size group C */
-  uiCreateScale (&uiplayer->volumeScale, 0.0, 100.0, 1.0, 10.0, 0.0, 0);
-  uiBoxPackEnd (hbox, &uiplayer->volumeScale);
-  uiSizeGroupAdd (szgrpC, &uiplayer->volumeScale);
+  uiplayer->volumeScale = uiCreateScale (0.0, 100.0, 1.0, 10.0, 0.0, 0);
+  uiBoxPackEnd (hbox, uiplayer->volumeScale);
+  uiSizeGroupAdd (szgrpC, uiplayer->volumeScale);
   uiplayer->callbacks [UIPL_CB_VOLUME] = callbackInitDouble (
       uiplayerVolumeCallback, uiplayer);
-  uiScaleSetCallback (&uiplayer->volumeScale, uiplayer->callbacks [UIPL_CB_VOLUME]);
+  uiScaleSetCallback (uiplayer->volumeScale, uiplayer->callbacks [UIPL_CB_VOLUME]);
 
   /* size group D */
   /* CONTEXT: playerui: The current volume of the song */
@@ -528,7 +528,7 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     double        value;
     char          tbuff [40];
 
-    value = uiScaleGetValue (&uiplayer->volumeScale);
+    value = uiScaleGetValue (uiplayer->volumeScale);
     snprintf (tbuff, sizeof (tbuff), "%.0f", value);
     connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tbuff);
     if (uiplayer->volumeLock) {
@@ -547,7 +547,7 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     double        value;
     char          tbuff [40];
 
-    value = uiScaleGetValue (&uiplayer->speedScale);
+    value = uiScaleGetValue (uiplayer->speedScale);
     snprintf (tbuff, sizeof (tbuff), "%.0f", value);
     connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SPEED, tbuff);
     if (uiplayer->speedLock) {
@@ -566,7 +566,7 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     double        value;
     char          tbuff [40];
 
-    value = uiScaleGetValue (&uiplayer->seekScale);
+    value = uiScaleGetValue (uiplayer->seekScale);
     snprintf (tbuff, sizeof (tbuff), "%.0f", round (value));
     connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tbuff);
     if (uiplayer->seekLock) {
@@ -720,9 +720,9 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
     state = UIWIDGET_DISABLE;
   }
 
-  uiWidgetSetState (&uiplayer->volumeScale, state);
-  uiWidgetSetState (&uiplayer->speedScale, state);
-  uiWidgetSetState (&uiplayer->seekScale, state);
+  uiWidgetSetState (uiplayer->volumeScale, state);
+  uiWidgetSetState (uiplayer->speedScale, state);
+  uiWidgetSetState (uiplayer->seekScale, state);
   uiWidgetSetState (&uiplayer->songbeginButton, state);
 
   switch (playerState) {
@@ -793,7 +793,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     snprintf (tbuff, sizeof (tbuff), "%3s", p);
     uiLabelSetText (&uiplayer->volumeDisplayLab, p);
     dval = atof (p);
-    uiScaleSetValue (&uiplayer->volumeScale, dval);
+    uiScaleSetValue (uiplayer->volumeScale, dval);
   }
 
   /* speed */
@@ -802,7 +802,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     snprintf (tbuff, sizeof (tbuff), "%3s", p);
     uiLabelSetText (&uiplayer->speedDisplayLab, p);
     dval = atof (p);
-    uiScaleSetValue (&uiplayer->speedScale, dval);
+    uiScaleSetValue (uiplayer->speedScale, dval);
   }
 
   /* playedtime */
@@ -817,7 +817,7 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   if (ddur > 0.0 && dur != uiplayer->lastdur) {
     tmutilToMS (dur, tbuff, sizeof (tbuff));
     uiLabelSetText (&uiplayer->durationLab, tbuff);
-    uiScaleSetRange (&uiplayer->seekScale, 0.0, ddur);
+    uiScaleSetRange (uiplayer->seekScale, 0.0, ddur);
     uiplayer->lastdur = dur;
   }
 
@@ -830,9 +830,9 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     uiLabelSetText (&uiplayer->countdownTimerLab, tbuff);
 
     if (ddur == 0.0) {
-      uiScaleSetValue (&uiplayer->seekScale, 0.0);
+      uiScaleSetValue (uiplayer->seekScale, 0.0);
     } else {
-      uiScaleSetValue (&uiplayer->seekScale, dval);
+      uiScaleSetValue (uiplayer->seekScale, dval);
     }
   }
   logProcEnd (LOG_PROC, "uiplayerProcessPlayerStatusData", "");
@@ -985,7 +985,7 @@ uiplayerSpeedCallback (void *udata, double value)
   }
   uiplayer->speedLock = true;
   mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
-  value = uiScaleEnforceMax (&uiplayer->speedScale, value);
+  value = uiScaleEnforceMax (uiplayer->speedScale, value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
   uiLabelSetText (&uiplayer->speedDisplayLab, tbuff);
   logProcEnd (LOG_PROC, "uiplayerSpeedCallback", "");
@@ -1009,7 +1009,7 @@ uiplayerSeekCallback (void *udata, double value)
   uiplayer->seekLock = true;
   mstimeset (&uiplayer->seekLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
 
-  value = uiScaleEnforceMax (&uiplayer->seekScale, value);
+  value = uiScaleEnforceMax (uiplayer->seekScale, value);
   position = (ssize_t) round (value);
 
   tmutilToMS (position, tbuff, sizeof (tbuff));
@@ -1037,7 +1037,7 @@ uiplayerVolumeCallback (void *udata, double value)
   uiplayer->volumeLock = true;
   mstimeset (&uiplayer->volumeLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
 
-  value = uiScaleEnforceMax (&uiplayer->volumeScale, value);
+  value = uiScaleEnforceMax (uiplayer->volumeScale, value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
   uiLabelSetText (&uiplayer->volumeDisplayLab, tbuff);
   logProcEnd (LOG_PROC, "uiplayerVolumeCallback", "");

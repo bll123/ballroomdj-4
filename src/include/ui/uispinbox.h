@@ -29,8 +29,8 @@ int   uiSpinboxTextGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTextSetValue (uispinbox_t *spinbox, int ivalue);
 void  uiSpinboxSetState (uispinbox_t *spinbox, int state);
 
-void  uiSpinboxIntCreate (uiwcont_t *uiwidget);
-void  uiSpinboxDoubleCreate (uiwcont_t *uiwidget);
+uiwcont_t *uiSpinboxIntCreate (void);
+uiwcont_t *uiSpinboxDoubleCreate (void);
 
 void  uiSpinboxDoubleDefaultCreate (uispinbox_t *uispinbox);
 

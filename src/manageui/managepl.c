@@ -56,7 +56,7 @@ typedef struct managepl {
   pltype_t        pltype;
   uispinbox_t     *uimaxplaytime;
   uispinbox_t     *uistopat;
-  uiwcont_t       uistopafter;
+  uiwcont_t       *uistopafter;
   uispinbox_t     *uigap;
   uirating_t      *uirating;
   uiwcont_t       uiratingitem;
@@ -105,7 +105,7 @@ managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg)
   managepl->pltype = PLTYPE_AUTO;
   managepl->uimaxplaytime = uiSpinboxTimeInit (SB_TIME_BASIC);
   managepl->uistopat = uiSpinboxTimeInit (SB_TIME_BASIC);
-  uiwcontInit (&managepl->uistopafter);
+  managepl->uistopafter = NULL;
   managepl->uigap = uiSpinboxInit ();
   managepl->managepltree = NULL;
   managepl->uirating = NULL;
@@ -275,11 +275,11 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
-  uiSpinboxIntCreate (&uiwidget);
-  uiSpinboxSet (&uiwidget, 0.0, 500.0);
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrpNum, &uiwidget);
-  uiwcontCopy (&managepl->uistopafter, &uiwidget);
+  uiwidgetp = uiSpinboxIntCreate ();
+  uiSpinboxSet (uiwidgetp, 0.0, 500.0);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrpNum, uiwidgetp);
+  managepl->uistopafter = uiwidgetp;
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
@@ -681,7 +681,7 @@ managePlaylistUpdateData (managepl_t *managepl)
   /* convert the hh:mm value to mm:ss for the spinbox */
   uiSpinboxTimeSetValue (managepl->uistopat,
       playlistGetConfigNum (pl, PLAYLIST_STOP_TIME) / 60);
-  uiSpinboxSetValue (&managepl->uistopafter,
+  uiSpinboxSetValue (managepl->uistopafter,
       playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER));
   uiSpinboxSetValue (uiSpinboxGetWidgetContainer (managepl->uigap),
       (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0);
@@ -828,7 +828,7 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   tval *= 60;
   playlistSetConfigNum (pl, PLAYLIST_STOP_TIME, tval);
 
-  tval = uiSpinboxGetValue (&managepl->uistopafter);
+  tval = uiSpinboxGetValue (managepl->uistopafter);
   playlistSetConfigNum (pl, PLAYLIST_STOP_AFTER, tval);
 
   dval = uiSpinboxGetValue (uiSpinboxGetWidgetContainer (managepl->uigap));
@@ -877,7 +877,7 @@ managePlaylistCheckChanged (managepl_t *managepl)
 
   pl = managepl->playlist;
 
-  tval = uiSpinboxGetValue (&managepl->uistopafter);
+  tval = uiSpinboxGetValue (managepl->uistopafter);
   if (tval != playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER)) {
     managepl->changed = true;
   }

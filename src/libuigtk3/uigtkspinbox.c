@@ -276,9 +276,10 @@ uiSpinboxSetValueChangedCallback (uiwcont_t *uiwidget, callback_t *uicb)
       G_CALLBACK (uiSpinboxValueChangedHandler), uicb);
 }
 
-void
-uiSpinboxIntCreate (uiwcont_t *uiwidget)
+uiwcont_t *
+uiSpinboxIntCreate (void)
 {
+  uiwcont_t   *uiwidget;
   GtkWidget   *spinbox;
 
   spinbox = gtk_spin_button_new (NULL, 0.0, 0);
@@ -290,12 +291,16 @@ uiSpinboxIntCreate (uiwcont_t *uiwidget)
   gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
   g_signal_connect (spinbox, "input",
       G_CALLBACK (uiSpinboxNumInput), NULL);
+
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = spinbox;
+  return uiwidget;
 }
 
-void
-uiSpinboxDoubleCreate (uiwcont_t *uiwidget)
+uiwcont_t *
+uiSpinboxDoubleCreate (void)
 {
+  uiwcont_t   *uiwidget;
   GtkWidget   *spinbox;
 
   spinbox = gtk_spin_button_new (NULL, 0.0, 1);
@@ -307,7 +312,10 @@ uiSpinboxDoubleCreate (uiwcont_t *uiwidget)
   gtk_widget_set_margin_start (spinbox, uiBaseMarginSz);
   g_signal_connect (spinbox, "input",
       G_CALLBACK (uiSpinboxDoubleInput), NULL);
+
+  uiwidget = uiwcontAlloc ();
   uiwidget->widget = spinbox;
+  return uiwidget;
 }
 
 void
