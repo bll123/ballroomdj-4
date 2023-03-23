@@ -224,6 +224,7 @@ static void     starterSendFiles (startui_t *starter);
 static bool     starterStopAllProcesses (void *udata);
 static int      starterCountProcesses (startui_t *starter);
 
+static bool     starterDownloadLinkHandler (void *udata);
 static bool     starterWikiLinkHandler (void *udata);
 static bool     starterForumLinkHandler (void *udata);
 static bool     starterTicketLinkHandler (void *udata);
@@ -324,7 +325,7 @@ main (int argc, char *argv[])
   starter.linkinfo [START_LINK_CB_DOWNLOAD].uri = mdstrdup (uri);
   if (isMacOS ()) {
     starter.linkinfo [START_LINK_CB_DOWNLOAD].macoscb = callbackInit (
-        starterWikiLinkHandler, &starter, NULL);
+        starterDownloadLinkHandler, &starter, NULL);
   }
 
   snprintf (uri, sizeof (uri), "%s%s",
@@ -2097,11 +2098,10 @@ starterCountProcesses (startui_t *starter)
   return count;
 }
 
-
 static inline bool
-starterForumLinkHandler (void *udata)
+starterDownloadLinkHandler (void *udata)
 {
-  starterLinkHandler (udata, START_LINK_CB_FORUM);
+  starterLinkHandler (udata, START_LINK_CB_DOWNLOAD);
   return UICB_STOP;
 }
 
@@ -2113,16 +2113,16 @@ starterWikiLinkHandler (void *udata)
 }
 
 static inline bool
-starterTicketLinkHandler (void *udata)
+starterForumLinkHandler (void *udata)
 {
-  starterLinkHandler (udata, START_LINK_CB_TICKETS);
+  starterLinkHandler (udata, START_LINK_CB_FORUM);
   return UICB_STOP;
 }
 
 static inline bool
-starterDownloadLinkHandler (void *udata)
+starterTicketLinkHandler (void *udata)
 {
-  starterLinkHandler (udata, START_LINK_CB_DOWNLOAD);
+  starterLinkHandler (udata, START_LINK_CB_TICKETS);
   return UICB_STOP;
 }
 

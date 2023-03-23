@@ -797,10 +797,7 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
 static void
 uimusicqSetMusicqDisplay (uimusicq_t *uimusicq, song_t *song, int ci)
 {
-  mq_internal_t *mqint;
   slist_t       *sellist;
-
-  mqint = uimusicq->ui [ci].mqInternalData;
 
   sellist = dispselGetList (uimusicq->dispsel, uimusicq->ui [ci].dispselType);
   uimusicq->cbci = ci;
@@ -1195,7 +1192,6 @@ static bool
 uimusicqCheckFavChgCallback (void *udata, long col)
 {
   uimusicq_t    * uimusicq = udata;
-  mq_internal_t * mqint;
   int           ci;
   dbidx_t       dbidx;
   song_t        *song;
@@ -1203,7 +1199,6 @@ uimusicqCheckFavChgCallback (void *udata, long col)
   logProcBegin (LOG_PROC, "uimusicqCheckFavChgCallback");
 
   ci = uimusicq->musicqManageIdx;
-  mqint = uimusicq->ui [ci].mqInternalData;
 
   if (col == TREE_NO_COLUMN) {
     logProcEnd (LOG_PROC, "uimusicqCheckFavChgCallback", "not-fav-col");
