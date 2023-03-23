@@ -688,7 +688,6 @@ manageBuildUI (manageui_t *manage)
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (hbox, &uiwidget);
   uiwcontCopy (&manage->errorMsg, &uiwidget);
-  uiwcontFree (hbox);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
@@ -798,6 +797,7 @@ manageBuildUI (manageui_t *manage)
   /* set up the initial menu */
   manageSwitchPage (manage, 0, MANAGE_NB_SONGLIST);
 
+  uiwcontFree (hbox);
   uiwcontFree (vbox);
 
   logProcEnd (LOG_PROC, "manageBuildUI", "");
@@ -806,6 +806,17 @@ manageBuildUI (manageui_t *manage)
 static void
 manageInitializeUI (manageui_t *manage)
 {
+  manage->callbacks [MANAGE_CB_SL_SEL_FILE] =
+      callbackInitStr (manageSonglistLoadCB, manage);
+  manage->callbacks [MANAGE_CB_CFPL_DIALOG] = callbackInitLong (
+      manageCFPLResponseHandler, manage);
+  manage->callbacks [MANAGE_CB_ITUNES_DIALOG] = callbackInitLong (
+      manageiTunesDialogResponseHandler, manage);
+  manage->callbacks [MANAGE_CB_ITUNES_SEL] = callbackInitLong (
+      manageiTunesDialogSelectHandler, manage);
+  manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL] = callbackInitLong (
+      manageCFPLPlaylistSelectHandler, manage);
+
   manage->samesong = samesongAlloc (manage->musicdb);
   manage->uisongfilter = uisfInit (manage->window, manage->options,
       SONG_FILTER_FOR_SELECTION);
@@ -1823,9 +1834,6 @@ manageiTunesCreateDialog (manageui_t *manage)
     return;
   }
 
-  manage->callbacks [MANAGE_CB_ITUNES_DIALOG] = callbackInitLong (
-      manageiTunesDialogResponseHandler, manage);
-
   /* CONTEXT: import from itunes: title for the dialog */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), ITUNES_NAME);
   manage->itunesSelectDialog = uiCreateDialog (manage->window,
@@ -1852,8 +1860,6 @@ manageiTunesCreateDialog (manageui_t *manage)
   uiCreateColonLabel (&uiwidget, tbuff);
   uiBoxPackStart (hbox, &uiwidget);
 
-  manage->callbacks [MANAGE_CB_ITUNES_SEL] = callbackInitLong (
-      manageiTunesDialogSelectHandler, manage);
   uiwidgetp = uiComboboxCreate (manage->itunessel,
       manage->itunesSelectDialog, "",
       manage->callbacks [MANAGE_CB_ITUNES_SEL], manage);
@@ -2211,8 +2217,6 @@ manageSonglistLoad (void *udata)
   logProcBegin (LOG_PROC, "manageSonglistLoad");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load songlist");
   manageSonglistSave (manage);
-  manage->callbacks [MANAGE_CB_SL_SEL_FILE] =
-      callbackInitStr (manageSonglistLoadCB, manage);
   selectFileDialog (SELFILE_SONGLIST, manage->window, manage->options,
       manage->callbacks [MANAGE_CB_SL_SEL_FILE]);
   logProcEnd (LOG_PROC, "manageSonglistLoad", "");
@@ -2361,8 +2365,6 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
 
   szgrp = uiCreateSizeGroupHoriz ();
 
-  manage->callbacks [MANAGE_CB_CFPL_DIALOG] = callbackInitLong (
-      manageCFPLResponseHandler, manage);
   manage->cfplDialog = uiCreateDialog (manage->window,
       manage->callbacks [MANAGE_CB_CFPL_DIALOG],
       /* CONTEXT: create from playlist: title for the dialog */
@@ -2388,8 +2390,6 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
-  manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL] = callbackInitLong (
-      manageCFPLPlaylistSelectHandler, manage);
   uiwidgetp = uiComboboxCreate (manage->cfplsel, manage->cfplDialog, "",
       manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL], manage);
   manageCFPLCreatePlaylistList (manage);

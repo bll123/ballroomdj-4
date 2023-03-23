@@ -85,6 +85,9 @@ manageSequenceAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg)
     manageseq->callbacks [i] = NULL;
   }
 
+  manageseq->callbacks [MSEQ_CB_SEL_FILE] =
+      callbackInitStr (manageSequenceLoadCB, manageseq);
+
   return manageseq;
 }
 
@@ -376,8 +379,6 @@ manageSequenceLoad (void *udata)
   logProcBegin (LOG_PROC, "manageSequenceLoad");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load sequence");
   manageSequenceSave (manageseq);
-  manageseq->callbacks [MSEQ_CB_SEL_FILE] =
-      callbackInitStr (manageSequenceLoadCB, manageseq);
   selectFileDialog (SELFILE_SEQUENCE, manageseq->windowp, manageseq->options,
       manageseq->callbacks [MSEQ_CB_SEL_FILE]);
   logProcEnd (LOG_PROC, "manageSequenceLoad", "");
