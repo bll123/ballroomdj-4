@@ -1192,13 +1192,10 @@ static bool
 uimusicqCheckFavChgCallback (void *udata, long col)
 {
   uimusicq_t    * uimusicq = udata;
-  int           ci;
   dbidx_t       dbidx;
   song_t        *song;
 
   logProcBegin (LOG_PROC, "uimusicqCheckFavChgCallback");
-
-  ci = uimusicq->musicqManageIdx;
 
   if (col == TREE_NO_COLUMN) {
     logProcEnd (LOG_PROC, "uimusicqCheckFavChgCallback", "not-fav-col");
