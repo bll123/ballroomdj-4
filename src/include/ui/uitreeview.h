@@ -65,6 +65,7 @@ void  uiTreeViewDarkBackground (uitree_t *uitree);
 void  uiTreeViewDisableSingleClick (uitree_t *uitree);
 void  uiTreeViewSelectSetMode (uitree_t *uitree, int mode);
 void  uiTreeViewSetSelectChangedCallback (uitree_t *uitree, callback_t *cb);
+void  uiTreeViewSetSizeChangeCallback (uitree_t *uitree, callback_t *cb);
 void  uiTreeViewSetRowActivatedCallback (uitree_t *uitree, callback_t *cb);
 void  uiTreeViewSetEditedCallback (uitree_t *uitree, callback_t *cb);
 void  uiTreeViewRadioSetRow (uitree_t *uitree, int row);

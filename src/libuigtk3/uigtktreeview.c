@@ -46,6 +46,7 @@ static gboolean uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path
 static void uiTreeViewSelectForeachHandler (GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, gpointer udata);
 static GType uiTreeViewConvertTreeType (int type);
 static void uiTreeViewSelectChangedHandler (GtkTreeSelection *sel, gpointer udata);
+static void uiTreeViewSizeChangeHandler (GtkWidget* w, GtkAllocation* allocation, gpointer udata);
 
 typedef struct uitree {
   uiwcont_t         *tree;
@@ -55,6 +56,7 @@ typedef struct uitree {
   GtkTreeIter       selectforeachiter;
   GtkTreeModel      *model;
   GtkTreeViewColumn *activeColumn;
+  callback_t        *szchgcb;
   callback_t        *selchgcb;
   callback_t        *rowactivecb;
   callback_t        *foreachcb;
@@ -67,10 +69,15 @@ typedef struct uitree {
   int               ellipsizeColumn;    // prep for append column
   int               radiorow;
   int               activecol;
+  int               lastTreeSize;
+  int               valueRowCount;
+  double            lastRowHeight;
   bool              selectset : 1;
   bool              savedselectset : 1;
   bool              valueiterset : 1;
 } uitree_t;
+
+static double   upperLimit = 0.0;
 
 uitree_t *
 uiCreateTreeView (void)
@@ -102,6 +109,7 @@ uiCreateTreeView (void)
   uitree->valueiterset = false;
   uitree->model = NULL;
   uitree->activeColumn = NULL;
+  uitree->szchgcb = NULL;
   uitree->selchgcb = NULL;
   uitree->rowactivecb = NULL;
   uitree->foreachcb = NULL;
@@ -112,6 +120,9 @@ uiCreateTreeView (void)
   uitree->radiorow = TREE_NO_ROW;
   uitree->activecol = TREE_NO_COLUMN;
   uitree->selectprocessmode = SELECT_PROCESS_NONE;
+  uitree->lastTreeSize = -1;
+  uitree->lastRowHeight = 0.0;
+  uitree->valueRowCount = 0;
   uiWidgetSetAllMargins (uitree->tree, 2);
   return uitree;
 }
@@ -197,6 +208,17 @@ uiTreeViewSetSelectChangedCallback (uitree_t *uitree, callback_t *cb)
   uitree->selchgcb = cb;
   g_signal_connect (uitree->sel, "changed",
       G_CALLBACK (uiTreeViewSelectChangedHandler), uitree);
+}
+
+void
+uiTreeViewSetSizeChangeCallback (uitree_t *uitree, callback_t *cb)
+{
+  if (uitree == NULL) {
+    return;
+  }
+  uitree->szchgcb = cb;
+  g_signal_connect (uitree->tree->widget, "size-allocate",
+      G_CALLBACK (uiTreeViewSizeChangeHandler), uitree);
 }
 
 void
@@ -495,6 +517,8 @@ uiTreeViewCreateValueStore (uitree_t *uitree, int colmax, ...)
     mdfree (types);
     uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->tree->widget));
   }
+
+  uitree->valueRowCount = 0;
 }
 
 void
@@ -527,6 +551,8 @@ uiTreeViewCreateValueStoreFromList (uitree_t *uitree, int colmax, int *typelist)
     mdfree (types);
     uitree->model = gtk_tree_view_get_model (GTK_TREE_VIEW (uitree->tree->widget));
   }
+
+  uitree->valueRowCount = 0;
 }
 
 void
@@ -547,6 +573,7 @@ uiTreeViewValueAppend (uitree_t *uitree)
   store = GTK_LIST_STORE (uitree->model);
   gtk_list_store_append (store, &uitree->selectiter);
   uitree->selectset = true;
+  ++uitree->valueRowCount;
 }
 
 void
@@ -578,6 +605,7 @@ uiTreeViewValueInsertBefore (uitree_t *uitree)
   gtk_list_store_insert_before (store, &uitree->selectiter, titerp);
   gtk_tree_selection_select_iter (uitree->sel, &uitree->selectiter);
   uitree->selectset = true;
+  ++uitree->valueRowCount;
 }
 
 void
@@ -609,6 +637,7 @@ uiTreeViewValueInsertAfter (uitree_t *uitree)
   gtk_list_store_insert_after (store, &uitree->selectiter, titerp);
   gtk_tree_selection_select_iter (uitree->sel, &uitree->selectiter);
   uitree->selectset = true;
+  ++uitree->valueRowCount;
 }
 
 void
@@ -634,6 +663,7 @@ uiTreeViewValueRemove (uitree_t *uitree)
 
   idx = uiTreeViewSelectGetIndex (uitree);
   gtk_list_store_remove (GTK_LIST_STORE (uitree->model), &uitree->selectiter);
+  --uitree->valueRowCount;
   uitree->selectset = false;
   count = gtk_tree_selection_count_selected_rows (uitree->sel);
   if (count == 1 && uitree->selmode == SELECT_SINGLE) {
@@ -660,6 +690,7 @@ uiTreeViewValueClear (uitree_t *uitree, int startrow)
 
   if (startrow == 0) {
     gtk_list_store_clear (GTK_LIST_STORE (uitree->model));
+    uitree->valueRowCount = 0;
   } else if (startrow > 0) {
     char        tbuff [40];
     GtkTreeIter iter;
@@ -669,6 +700,7 @@ uiTreeViewValueClear (uitree_t *uitree, int startrow)
     valid = gtk_tree_model_get_iter_from_string (uitree->model, &iter, tbuff);
     while (valid) {
       gtk_list_store_remove (GTK_LIST_STORE (uitree->model), &iter);
+      --uitree->valueRowCount;
       valid = gtk_tree_model_iter_next (uitree->model, &iter);
     }
   }
@@ -1401,6 +1433,61 @@ uiTreeViewSelectChangedHandler (GtkTreeSelection *sel, gpointer udata)
 
   if (uitree->selchgcb != NULL) {
     callbackHandler (uitree->selchgcb);
+  }
+}
+
+static void
+uiTreeViewSizeChangeHandler (GtkWidget* w, GtkAllocation* allocation,
+    gpointer udata)
+{
+  uitree_t        *uitree = udata;
+  GtkWidget       *tree;
+  GtkAdjustment   *adjustment;
+  int             ps;
+  int             rows;
+  double          tmax;
+
+  if (allocation->height == uitree->lastTreeSize) {
+    return;
+  }
+
+  if (allocation->height < 200) {
+    return;
+  }
+
+  /* the step increment is useless */
+  /* the page-size and upper can be used to determine */
+  /* how many rows can be displayed */
+  tree = uitree->tree->widget;
+  adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (tree));
+  ps = gtk_adjustment_get_page_size (adjustment);
+
+  if (uitree->lastRowHeight == 0.0) {
+    double      u, hpr;
+
+    u = gtk_adjustment_get_upper (adjustment);
+
+    /* this is a really gross work-around for a windows gtk problem */
+    /* the music manager internal v-scroll adjustment is not set correctly */
+    /* use the value from one of the peers instead */
+    /* note that this only works for a single size-allocate signal */
+    if (upperLimit > u) {
+      u = upperLimit;
+    }
+
+    hpr = u / uitree->valueRowCount;
+    /* save the original step increment for use in calculations later */
+    /* the current step increment has been adjusted for the current */
+    /* number of rows that are displayed */
+    uitree->lastRowHeight = hpr;
+    upperLimit = u;
+  }
+
+  tmax = ps / uitree->lastRowHeight;
+  rows = (int) round (tmax);
+
+  if (uitree->szchgcb != NULL) {
+    callbackHandlerLong (uitree->szchgcb, rows);
   }
 }
 

@@ -80,6 +80,7 @@ enum {
   SONGSEL_CB_SEL_CHG,
   SONGSEL_CB_SELECT_PROCESS,
   SONGSEL_CB_CHK_FAV_CHG,
+  SONGSEL_CB_SZ_CHG,
   SONGSEL_CB_MAX,
 };
 
@@ -106,9 +107,6 @@ typedef struct ss_internal {
   uiwcont_t           reqQueueLabel;
   uikey_t             *uikey;
   /* other data */
-  int                 lastTreeSize;
-  double              lastRowHeight;
-  double              upperLimit;         // for windows work-around
   int                 maxRows;
   nlist_t             *selectedBackup;
   nlist_t             *selectedList;
@@ -141,7 +139,7 @@ static void uisongselProcessSongFilter (uisongsel_t *uisongsel);
 
 static bool uisongselCheckFavChgCallback (void *udata, long col);
 
-static void uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation, gpointer user_data);
+static bool uisongselProcessTreeSize (void *udata, long rows);
 static bool uisongselScroll (void *udata, double value);
 static void uisongselUpdateSelections (uisongsel_t *uisongsel);
 static gboolean uisongselScrollEvent (GtkWidget* tv, GdkEventScroll *event, gpointer udata);
@@ -169,9 +167,6 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint->songselTree = NULL;
   ssint->songselScrollbar = NULL;
   ssint->scrollController = NULL;
-  ssint->lastTreeSize = 0;
-  ssint->lastRowHeight = 0.0;
-  ssint->upperLimit = 0.0;
   ssint->maxRows = 0;
   ssint->controlPressed = false;
   ssint->shiftPressed = false;
@@ -420,8 +415,11 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       uisongselSelectionChgCallback, uisongsel, NULL);
   uiTreeViewSetSelectChangedCallback (ssint->songselTree,
       ssint->callbacks [SONGSEL_CB_SEL_CHG]);
-  g_signal_connect (uitreewidgetp->widget, "size-allocate",
-      G_CALLBACK (uisongselProcessTreeSize), uisongsel);
+
+  ssint->callbacks [SONGSEL_CB_SZ_CHG] = callbackInitLong (
+      uisongselProcessTreeSize, uisongsel);
+  uiTreeViewSetSizeChangeCallback (ssint->songselTree,
+      ssint->callbacks [SONGSEL_CB_SZ_CHG]);
 
   uiwcontFree (hbox);
   uiwcontFree (vbox);
@@ -819,19 +817,6 @@ uisongselClearAllUISelections (uisongsel_t *uisongsel)
   ssint->inselectchgprocess = false;
 }
 
-double
-uisongselGetUpperWorkaround (uisongsel_t *uisongsel)
-{
-  ss_internal_t  *ssint;
-
-  if (uisongsel == NULL) {
-    return 0.0;
-  }
-
-  ssint = uisongsel->ssInternalData;
-  return ssint->upperLimit;
-}
-
 void
 uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt)
 {
@@ -1068,82 +1053,49 @@ uisongselCheckFavChgCallback (void *udata, long col)
   return UICB_CONT;
 }
 
-static void
-uisongselProcessTreeSize (GtkWidget* w, GtkAllocation* allocation,
-    gpointer udata)
+static bool
+uisongselProcessTreeSize (void *udata, long rows)
 {
-  ss_internal_t  *ssint;
   uisongsel_t     *uisongsel = udata;
-  GtkAdjustment   *adjustment;
-  double          ps;
-  double          tmax;
+  ss_internal_t   *ssint;
+
+  if (uisongsel->ispeercall) {
+    return UICB_CONT;
+  }
 
   logProcBegin (LOG_PROC, "uisongselProcessTreeSize");
 
   ssint = uisongsel->ssInternalData;
 
-  if (allocation->height != ssint->lastTreeSize) {
-    uiwcont_t  *uiwidgetp;
+  ssint->maxRows = rows;
+  logMsg (LOG_DBG, LOG_IMPORTANT, "%s max-rows:%d", uisongsel->tag, ssint->maxRows);
 
-    if (allocation->height < 200) {
-      logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "small-alloc-height");
-      return;
+  /* the step increment does not work correctly with smooth scrolling */
+  /* and it appears there's no easy way to turn smooth scrolling off */
+  uiScrollbarSetStepIncrement (ssint->songselScrollbar, 4.0);
+  uiScrollbarSetPageIncrement (ssint->songselScrollbar, (double) ssint->maxRows);
+  uiScrollbarSetPageSize (ssint->songselScrollbar, (double) ssint->maxRows);
+
+  logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: tree size change", uisongsel->tag);
+  uisongselPopulateData (uisongsel);
+
+  /* neither queue_draw nor queue_resize on the tree */
+  /* does not help with the redraw issue */
+
+  /* this is necessary because gtk on windows has a bug where the */
+  /* music manager song-selection does not receive the size-allocate */
+  /* signal from gtk */
+  for (int i = 0; i < uisongsel->peercount; ++i) {
+    if (uisongsel->peers [i] == NULL) {
+      continue;
     }
-
-    /* the step increment is useless */
-    /* the page-size and upper can be used to determine */
-    /* how many rows can be displayed */
-    uiwidgetp = uiTreeViewGetWidgetContainer (ssint->songselTree);
-    adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uiwidgetp->widget));
-    ps = gtk_adjustment_get_page_size (adjustment);
-
-    if (ssint->lastRowHeight == 0.0) {
-      double      u, ub, hpr;
-
-      u = gtk_adjustment_get_upper (adjustment);
-
-      /* this is a really gross work-around for a windows gtk problem */
-      /* the music manager internal v-scroll adjustment is not set correctly */
-      /* use the value from one of the peers instead */
-      ub = 0.0;
-      for (int i = 0; i < uisongsel->peercount; ++i) {
-        if (uisongsel->peers [i] == NULL) {
-          continue;
-        }
-        ub = uisongselGetUpperWorkaround (uisongsel->peers [i]);
-        break;
-      }
-      if (ub > u) {
-        u = ub;
-      }
-
-      hpr = u / STORE_ROWS;
-      /* save the original step increment for use in calculations later */
-      /* the current step increment has been adjusted for the current */
-      /* number of rows that are displayed */
-      ssint->lastRowHeight = hpr;
-      ssint->upperLimit = u;
-    }
-
-    tmax = ps / ssint->lastRowHeight;
-    ssint->maxRows = (int) round (tmax);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "%s max-rows:%d", uisongsel->tag, ssint->maxRows);
-
-    /* the step increment does not work correctly with smooth scrolling */
-    /* and it appears there's no easy way to turn smooth scrolling off */
-    uiScrollbarSetStepIncrement (ssint->songselScrollbar, 4.0);
-    uiScrollbarSetPageIncrement (ssint->songselScrollbar, (double) ssint->maxRows);
-    uiScrollbarSetPageSize (ssint->songselScrollbar, (double) ssint->maxRows);
-
-    ssint->lastTreeSize = allocation->height;
-
-    logMsg (LOG_DBG, LOG_SONGSEL, "%s populate: tree size change", uisongsel->tag);
-    uisongselPopulateData (uisongsel);
-
-    /* neither queue_draw nor queue_resize on the tree */
-    /* does not help with the redraw issue */
+    uisongselSetPeerFlag (uisongsel->peers [i], true);
+    uisongselProcessTreeSize (uisongsel->peers [i], rows);
+    uisongselSetPeerFlag (uisongsel->peers [i], false);
   }
+
   logProcEnd (LOG_PROC, "uisongselProcessTreeSize", "");
+  return UICB_CONT;
 }
 
 static bool
