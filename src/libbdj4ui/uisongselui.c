@@ -13,8 +13,6 @@
 #include <assert.h>
 #include <math.h>
 
-#include <gtk/gtk.h>
-
 #include "bdj4intl.h"
 #include "bdj4ui.h"
 #include "bdjopt.h"
@@ -102,7 +100,6 @@ typedef struct ss_internal {
   uiwcont_t           *vbox;
   uitree_t            *songselTree;
   uiscrollbar_t       *songselScrollbar;
-  GtkEventController  *scrollController;
   uiwcont_t           *scrolledwin;
   uibutton_t          *buttons [SONGSEL_BUTTON_MAX];
   uiwcont_t           reqQueueLabel;
@@ -167,7 +164,6 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ssint->vbox = NULL;
   ssint->songselTree = NULL;
   ssint->songselScrollbar = NULL;
-  ssint->scrollController = NULL;
   ssint->maxRows = 0;
   ssint->controlPressed = false;
   ssint->shiftPressed = false;
@@ -232,10 +228,8 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiwcont_t         *uitreewidgetp;
   uiwcont_t         *hbox;
   uiwcont_t         *vbox;
-  GtkAdjustment     *adjustment;
   slist_t           *sellist;
   char              tbuff [200];
-  double            tupper;
   int               col;
 
   logProcBegin (LOG_PROC, "uisongselBuildUI");
@@ -332,8 +326,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   vbox = uiCreateVertBox ();
   uiBoxPackStartExpand (hbox, vbox);
 
-  tupper = uisongsel->dfilterCount;
-  ssint->songselScrollbar = uiCreateVerticalScrollbar (tupper);
+  ssint->songselScrollbar = uiCreateVerticalScrollbar (uisongsel->dfilterCount);
   uiBoxPackEnd (hbox, uiScrollbarGetWidgetContainer (ssint->songselScrollbar));
   ssint->callbacks [SONGSEL_CB_SCROLL_CHG] = callbackInitDouble (
       uisongselScroll, uisongsel);
@@ -363,14 +356,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiKeySetKeyCallback (ssint->uikey, uitreewidgetp,
       ssint->callbacks [SONGSEL_CB_KEYB]);
 
-  adjustment = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (uitreewidgetp->widget));
-  tupper = uisongsel->dfilterCount;
-  gtk_adjustment_set_upper (adjustment, tupper);
-  ssint->scrollController =
-      gtk_event_controller_scroll_new (uitreewidgetp->widget,
-      GTK_EVENT_CONTROLLER_SCROLL_VERTICAL |
-      GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
-  gtk_widget_add_events (uitreewidgetp->widget, GDK_SCROLL_MASK);
+  uiTreeViewAttachScrollController (ssint->songselTree, uisongsel->dfilterCount);
   uiBoxPackInWindow (ssint->scrolledwin, uitreewidgetp);
 
   ssint->callbacks [SONGSEL_CB_CHK_FAV_CHG] = callbackInitLong (
@@ -382,9 +368,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
         uisongselScrollEvent, uisongsel);
   uiTreeViewSetScrollEventCallback (ssint->songselTree,
         ssint->callbacks [SONGSEL_CB_SCROLL_EVENT]);
-
-  gtk_event_controller_scroll_new (uitreewidgetp->widget,
-      GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
 
   sellist = dispselGetList (uisongsel->dispsel, uisongsel->dispselType);
 
@@ -459,7 +442,6 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   dbidx_t         dbidx;
   char            * listingFont;
   slist_t         * sellist;
-  double          tupper;
   const char      * sscolor = ""; // "#000000";
 
   logProcBegin (LOG_PROC, "uisongselPopulateData");
@@ -471,8 +453,7 @@ uisongselPopulateData (uisongsel_t *uisongsel)
   /* processed by this instance */
   uisongsel->dfilterCount = (double) songfilterGetCount (uisongsel->songfilter);
 
-  tupper = uisongsel->dfilterCount;
-  uiScrollbarSetUpper (ssint->songselScrollbar, tupper);
+  uiScrollbarSetUpper (ssint->songselScrollbar, uisongsel->dfilterCount);
 
   row = 0;
   idx = uisongsel->idxStart;
@@ -1192,7 +1173,6 @@ uisongselScrollEvent (void *udata, long dir)
   int             ndir = UISONGSEL_NEXT;
 
   logProcBegin (LOG_PROC, "uisongselScrollEvent");
-fprintf (stderr, "ssui: scroll-event: dir:%ld\n", dir);
 
   if (dir == TREE_SCROLL_NEXT) {
     ndir = UISONGSEL_NEXT;

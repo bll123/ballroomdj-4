@@ -57,6 +57,7 @@ typedef struct uitree {
   GtkTreeIter       selectforeachiter;
   GtkTreeModel      *model;
   GtkTreeViewColumn *activeColumn;
+  GtkEventController *scrollController;
   callback_t        *scrolleventcb;
   callback_t        *szchgcb;
   callback_t        *selchgcb;
@@ -111,6 +112,7 @@ uiCreateTreeView (void)
   uitree->valueiterset = false;
   uitree->model = NULL;
   uitree->activeColumn = NULL;
+  uitree->scrollController = NULL;
   uitree->scrolleventcb = NULL;
   uitree->szchgcb = NULL;
   uitree->selchgcb = NULL;
@@ -1202,6 +1204,21 @@ uiTreeViewScrollToCell (uitree_t *uitree)
   }
 }
 
+void
+uiTreeViewAttachScrollController (uitree_t *uitree, double upper)
+{
+  GtkAdjustment       *adjustment;
+
+  adjustment = gtk_scrollable_get_vadjustment (
+      GTK_SCROLLABLE (uitree->tree->widget));
+  gtk_adjustment_set_upper (adjustment, upper);
+  uitree->scrollController =
+      gtk_event_controller_scroll_new (uitree->tree->widget,
+      GTK_EVENT_CONTROLLER_SCROLL_VERTICAL |
+      GTK_EVENT_CONTROLLER_SCROLL_DISCRETE);
+  gtk_widget_add_events (uitree->tree->widget, GDK_SCROLL_MASK);
+}
+
 /* internal routines */
 
 /* used by the editable column routines */
@@ -1513,13 +1530,11 @@ uiTreeViewScrollEventHandler (GtkWidget* tv, GdkEventScroll *event,
   int       dir = TREE_SCROLL_NEXT;
   int       rc = UICB_CONT;
 
-fprintf (stderr, "tv: scroll-event: direction: %d\n", event->direction);
   /* i'd like to have a way to turn off smooth scrolling for the application */
   if (event->direction == GDK_SCROLL_SMOOTH) {
     double dx, dy;
 
     gdk_event_get_scroll_deltas ((GdkEvent *) event, &dx, &dy);
-fprintf (stderr, "   smooth %.2f\n", dy);
     if (dy < 0.0) {
       dir = TREE_SCROLL_PREV;
     }
@@ -1528,11 +1543,9 @@ fprintf (stderr, "   smooth %.2f\n", dy);
     }
   }
   if (event->direction == GDK_SCROLL_DOWN) {
-fprintf (stderr, "   down\n");
     dir = TREE_SCROLL_NEXT;
   }
   if (event->direction == GDK_SCROLL_UP) {
-fprintf (stderr, "   up\n");
     dir = TREE_SCROLL_PREV;
   }
 
