@@ -118,8 +118,8 @@ static void
 selectFileCreateDialog (uiselectfile_t *selectfile,
     slist_t *filelist, const char *filetype, callback_t *cb)
 {
-  uiwcont_t     vbox;
-  uiwcont_t     hbox;
+  uiwcont_t     *vbox;
+  uiwcont_t     *hbox;
   uiwcont_t     uiwidget;
   uiwcont_t     *uitreewidgetp;
   uiwcont_t     *scwindow;
@@ -141,14 +141,14 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
       NULL
       );
 
-  uiCreateVertBox (&vbox);
-  uiWidgetExpandVert (&vbox);
-  uiDialogPackInDialog (selectfile->selfileDialog, &vbox);
+  vbox = uiCreateVertBox ();
+  uiWidgetExpandVert (vbox);
+  uiDialogPackInDialog (selectfile->selfileDialog, vbox);
 
   scwindow = uiCreateScrolledWindow (200);
   uiWidgetExpandHoriz (scwindow);
   uiWidgetExpandVert (scwindow);
-  uiBoxPackStartExpand (&vbox, scwindow);
+  uiBoxPackStartExpand (vbox, scwindow);
 
   selectfile->selfiletree = uiCreateTreeView ();
   uitreewidgetp = uiTreeViewGetWidgetContainer (selectfile->selfiletree);
@@ -184,11 +184,14 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   uiTreeViewSetRowActivatedCallback (selectfile->selfiletree, selectfile->rowactivecb);
 
   /* the dialog doesn't have any space above the buttons */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   uiCreateLabel (&uiwidget, " ");
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
+
+  uiwcontFree (hbox);
+  uiwcontFree (vbox);
 }
 
 static bool

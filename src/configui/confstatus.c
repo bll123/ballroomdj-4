@@ -31,30 +31,34 @@ static void confuiStatusSave (confuigui_t *gui);
 void
 confuiBuildUIEditStatus (confuigui_t *gui)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
+  uiwcont_t    *vbox;
+  uiwcont_t    *hbox;
   uiwcont_t    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditStatus");
-  uiCreateVertBox (&vbox);
+  vbox = uiCreateVertBox ();
 
   /* edit status */
-  confuiMakeNotebookTab (&vbox, gui,
+  confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: edit status table */
       _("Edit Status"), CONFUI_ID_STATUS);
 
   /* CONTEXT: configuration: status: information on how to edit a status entry */
   uiCreateLabel (&uiwidget, _("Double click on a field to edit."));
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (vbox, &uiwidget);
 
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStartExpand (&vbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStartExpand (vbox, hbox);
 
-  confuiMakeItemTable (gui, &hbox, CONFUI_ID_STATUS,
+  confuiMakeItemTable (gui, hbox, CONFUI_ID_STATUS,
       CONFUI_TABLE_KEEP_FIRST | CONFUI_TABLE_KEEP_LAST);
   gui->tables [CONFUI_ID_STATUS].listcreatefunc = confuiStatusListCreate;
   gui->tables [CONFUI_ID_STATUS].savefunc = confuiStatusSave;
   confuiCreateStatusTable (gui);
+
+  uiwcontFree (vbox);
+  uiwcontFree (hbox);
+
   logProcEnd (LOG_PROC, "confuiBuildUIEditStatus", "");
 }
 

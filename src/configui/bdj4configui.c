@@ -53,6 +53,7 @@ typedef struct configui {
   /* options */
   datafile_t        *optiondf;
   nlist_t           *options;
+  bool              optionsalloc : 1;
 } configui_t;
 
 static datafilekey_t configuidfkeys [CONFUI_KEY_MAX] = {
@@ -107,7 +108,7 @@ main (int argc, char *argv[])
   confui.gui.notebook = NULL;
   confui.gui.nbcb = NULL;
   confui.gui.nbtabid = uinbutilIDInit ();
-  uiwcontInit (&confui.gui.vbox);
+  confui.gui.vbox = NULL;
   uiwcontInit (&confui.gui.statusMsg);
   confui.gui.tablecurr = CONFUI_ID_NONE;
   confui.gui.dispsel = NULL;
@@ -123,6 +124,7 @@ main (int argc, char *argv[])
 
   confui.optiondf = NULL;
   confui.options = NULL;
+  confui.optionsalloc = false;
 
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     for (int j = 0; j < CONFUI_TABLE_CB_MAX; ++j) {
@@ -234,6 +236,7 @@ main (int argc, char *argv[])
       configuidfkeys, CONFUI_KEY_MAX);
   confui.options = datafileGetList (confui.optiondf);
   if (confui.options == NULL) {
+    confui.optionsalloc = true;
     confui.options = nlistAlloc ("configui-opt", LIST_ORDERED, NULL);
 
     nlistSetNum (confui.options, CONFUI_POSITION_X, -1);
@@ -377,14 +380,14 @@ confuiClosingCallback (void *udata, programstate_t programState)
     confuiTableFree (&confui->gui, i);
   }
 
+  uiwcontFree (confui->gui.vbox);
   uiduallistFree (confui->gui.dispselduallist);
   datafileFree (confui->filterDisplayDf);
   nlistFree (confui->gui.filterLookup);
   dispselFree (confui->gui.dispsel);
   dataFree (confui->gui.localip);
-  if (confui->optiondf != NULL) {
-    datafileFree (confui->optiondf);
-  } else if (confui->options != NULL) {
+  datafileFree (confui->optiondf);
+  if (confui->optionsalloc) {
     nlistFree (confui->options);
   }
   uinbutilIDFree (confui->gui.nbtabid);
@@ -403,7 +406,7 @@ confuiClosingCallback (void *udata, programstate_t programState)
 static void
 confuiBuildUI (configui_t *confui)
 {
-  uiwcont_t     hbox;
+  uiwcont_t     *hbox;
   uiwcont_t     uiwidget;
   char          imgbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
@@ -419,23 +422,24 @@ confuiBuildUI (configui_t *confui)
   confui->gui.closecb = callbackInit (confuiCloseWin, confui, NULL);
   confui->gui.window = uiCreateMainWindow (confui->gui.closecb, tbuff, imgbuff);
 
-  uiCreateVertBox (&confui->gui.vbox);
-  uiWidgetExpandHoriz (&confui->gui.vbox);
-  uiWidgetExpandVert (&confui->gui.vbox);
-  uiWidgetSetAllMargins (&confui->gui.vbox, 2);
-  uiBoxPackInWindow (confui->gui.window, &confui->gui.vbox);
+  confui->gui.vbox = uiCreateVertBox ();
+  uiWidgetExpandHoriz (confui->gui.vbox);
+  uiWidgetExpandVert (confui->gui.vbox);
+  uiWidgetSetAllMargins (confui->gui.vbox, 2);
+  uiBoxPackInWindow (confui->gui.window, confui->gui.vbox);
 
-  uiutilsAddAccentColorDisplay (&confui->gui.vbox, &hbox, &uiwidget);
+  hbox = uiutilsAddAccentColorDisplay (confui->gui.vbox);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  uiBoxPackEnd (hbox, &uiwidget);
   uiwcontCopy (&confui->gui.statusMsg, &uiwidget);
+  uiwcontFree (hbox);
 
   confui->gui.notebook = uiCreateNotebook ();
   uiWidgetSetClass (confui->gui.notebook, "confnotebook");
   uiNotebookTabPositionLeft (confui->gui.notebook);
-  uiBoxPackStartExpand (&confui->gui.vbox, confui->gui.notebook);
+  uiBoxPackStartExpand (confui->gui.vbox, confui->gui.notebook);
 
   confuiBuildUIGeneral (&confui->gui);
   confuiBuildUIPlayer (&confui->gui);

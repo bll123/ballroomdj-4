@@ -42,7 +42,7 @@ typedef struct {
   int           prevSelection;
   int           currSelection;
   /* music queue tab */
-  uiwcont_t     mainbox;
+  uiwcont_t     *mainbox;
   uidropdown_t  *playlistsel;
   uientry_t     *slname;
   /* widget data */

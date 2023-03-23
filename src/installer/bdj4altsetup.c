@@ -284,19 +284,17 @@ main (int argc, char *argv[])
 static void
 altsetupBuildUI (altsetup_t *altsetup)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
-  uiwcont_t    uiwidget;
+  uiwcont_t     *vbox;
+  uiwcont_t     *hbox;
+  uiwcont_t     uiwidget;
   uibutton_t    *uibutton;
-  uiwcont_t    *uiwidgetp;
+  uiwcont_t     *uiwidgetp;
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
 
   uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
   uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
 
-  uiwcontInit (&vbox);
-  uiwcontInit (&hbox);
   uiwcontInit (&uiwidget);
 
   strlcpy (imgbuff, "img/bdj4_icon_inst.png", sizeof (imgbuff));
@@ -311,27 +309,27 @@ altsetupBuildUI (altsetup_t *altsetup)
       altsetup->callbacks [ALT_CB_EXIT], tbuff, imgbuff);
   uiWindowSetDefaultSize (altsetup->window, 1000, 600);
 
-  uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, 4);
-  uiWidgetExpandHoriz (&vbox);
-  uiWidgetExpandVert (&vbox);
-  uiBoxPackInWindow (altsetup->window, &vbox);
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, 4);
+  uiWidgetExpandHoriz (vbox);
+  uiWidgetExpandVert (vbox);
+  uiBoxPackInWindow (altsetup->window, vbox);
 
   uiCreateLabel (&uiwidget,
       /* CONTEXT: set up alternate: ask for alternate folder */
       _("Enter the alternate folder."));
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (vbox, &uiwidget);
 
-  uiCreateHorizBox (&hbox);
-  uiWidgetExpandHoriz (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
   uiEntryCreate (altsetup->targetEntry);
   uiEntrySetValue (altsetup->targetEntry, altsetup->target);
   uiwidgetp = uiEntryGetWidgetContainer (altsetup->targetEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStartExpand (&hbox, uiwidgetp);
+  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiEntrySetValidate (altsetup->targetEntry,
       altsetupValidateTarget, altsetup, UIENTRY_DELAYED);
 
@@ -344,47 +342,50 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
 
-  uiCreateHorizBox (&hbox);
-  uiWidgetExpandHoriz (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
   uiCreateColonLabel (&uiwidget,
       /* CONTEXT: set up alternate: name (for shortcut) */
       _("Name"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
 
   uiEntryCreate (altsetup->nameEntry);
   uiEntrySetValue (altsetup->nameEntry, "BDJ4 B");
   uiwidgetp = uiEntryGetWidgetContainer (altsetup->nameEntry);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
 
-  uiCreateHorizBox (&hbox);
-  uiWidgetExpandHoriz (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: set up alternate: checkbox: re-install alternate */
   altsetup->reinstWidget = uiCreateCheckButton (_("Re-Install"),
       altsetup->reinstall);
-  uiBoxPackStart (&hbox, altsetup->reinstWidget);
+  uiBoxPackStart (hbox, altsetup->reinstWidget);
   altsetup->callbacks [ALT_CB_REINST] = callbackInit (
       altsetupCheckDirTarget, altsetup, NULL);
   uiToggleButtonSetCallback (altsetup->reinstWidget, altsetup->callbacks [ALT_CB_REINST]);
 
   uiCreateLabel (&altsetup->feedbackMsg, "");
   uiWidgetSetClass (&altsetup->feedbackMsg, INST_HL_CLASS);
-  uiBoxPackStart (&hbox, &altsetup->feedbackMsg);
+  uiBoxPackStart (hbox, &altsetup->feedbackMsg);
 
   uiwidgetp = uiCreateHorizSeparator ();
   uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
-  uiBoxPackStart (&vbox, uiwidgetp);
+  uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   /* button box */
-  uiCreateHorizBox (&hbox);
-  uiWidgetExpandHoriz (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
   uibutton = uiCreateButton (
       altsetup->callbacks [ALT_CB_EXIT],
@@ -392,7 +393,7 @@ altsetupBuildUI (altsetup_t *altsetup)
       _("Exit"), NULL);
   altsetup->buttons [ALT_BUTTON_EXIT] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiBoxPackEnd (&hbox, uiwidgetp);
+  uiBoxPackEnd (hbox, uiwidgetp);
 
   altsetup->callbacks [ALT_CB_START] = callbackInit (
       altsetupSetupCallback, altsetup, NULL);
@@ -402,16 +403,19 @@ altsetupBuildUI (altsetup_t *altsetup)
       _("Start"), NULL);
   altsetup->buttons [ALT_BUTTON_START] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiBoxPackEnd (&hbox, uiwidgetp);
+  uiBoxPackEnd (hbox, uiwidgetp);
 
   altsetup->disptb = uiTextBoxCreate (200, NULL);
   uiTextBoxSetReadonly (altsetup->disptb);
   uiTextBoxHorizExpand (altsetup->disptb);
   uiTextBoxVertExpand (altsetup->disptb);
-  uiBoxPackStartExpand (&vbox, uiTextBoxGetScrolledWindow (altsetup->disptb));
+  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (altsetup->disptb));
 
   uiWidgetShowAll (altsetup->window);
   altsetup->uiBuilt = true;
+
+  uiwcontFree (vbox);
+  uiwcontFree (hbox);
 }
 
 static int

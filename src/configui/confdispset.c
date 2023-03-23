@@ -63,21 +63,21 @@ confuiInitDispSettings (confuigui_t *gui)
 void
 confuiBuildUIDispSettings (confuigui_t *gui)
 {
-  uiwcont_t    vbox;
+  uiwcont_t    *vbox;
   uiwcont_t    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiBuildUIDispSettings");
   uiwcontInit (&uiwidget);
 
-  uiCreateVertBox (&vbox);
+  vbox = uiCreateVertBox ();
 
   /* display settings */
-  confuiMakeNotebookTab (&vbox, gui,
+  confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: change which fields are displayed in different contexts */
       _("Display Settings"), CONFUI_ID_DISP_SEL_LIST);
 
   /* CONTEXT: configuration: display settings: which set of display settings to update */
-  confuiMakeItemSpinboxText (gui, &vbox, NULL, NULL, _("Display"),
+  confuiMakeItemSpinboxText (gui, vbox, NULL, NULL, _("Display"),
       CONFUI_SPINBOX_DISP_SEL, -1, CONFUI_OUT_NUM,
       gui->uiitem [CONFUI_SPINBOX_DISP_SEL].listidx,
       confuiDispSettingChg);
@@ -85,8 +85,10 @@ confuiBuildUIDispSettings (confuigui_t *gui)
   gui->tables [CONFUI_ID_DISP_SEL_LIST].flags = CONFUI_TABLE_NONE;
   gui->tables [CONFUI_ID_DISP_SEL_TABLE].flags = CONFUI_TABLE_NONE;
 
-  gui->dispselduallist = uiCreateDualList (&vbox,
+  gui->dispselduallist = uiCreateDualList (vbox,
       DUALLIST_FLAGS_NONE, NULL, NULL);
+
+  uiwcontFree (vbox);
   logProcEnd (LOG_PROC, "confuiBuildUIDispSettings", "");
 }
 

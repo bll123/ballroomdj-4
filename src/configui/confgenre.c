@@ -31,29 +31,31 @@ static void confuiGenreSave (confuigui_t *gui);
 void
 confuiBuildUIEditGenres (confuigui_t *gui)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
+  uiwcont_t    *vbox;
+  uiwcont_t    *hbox;
   uiwcont_t    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditGenres");
-  uiCreateVertBox (&vbox);
+  vbox = uiCreateVertBox ();
 
   /* edit genres */
-  confuiMakeNotebookTab (&vbox, gui,
+  confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: edit genres table */
       _("Edit Genres"), CONFUI_ID_GENRES);
 
   /* CONTEXT: configuration: genres: information on how to edit a genre entry */
   uiCreateLabel (&uiwidget, _("Double click on a field to edit."));
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (vbox, &uiwidget);
 
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStartExpand (&vbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStartExpand (vbox, hbox);
 
-  confuiMakeItemTable (gui, &hbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);
+  confuiMakeItemTable (gui, hbox, CONFUI_ID_GENRES, CONFUI_TABLE_NONE);
   gui->tables [CONFUI_ID_GENRES].listcreatefunc = confuiGenreListCreate;
   gui->tables [CONFUI_ID_GENRES].savefunc = confuiGenreSave;
   confuiCreateGenreTable (gui);
+  uiwcontFree (hbox);
+  uiwcontFree (vbox);
   logProcEnd (LOG_PROC, "confuiBuildUIEditGenres", "");
 }
 

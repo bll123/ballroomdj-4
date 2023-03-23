@@ -6,8 +6,8 @@
 
 #include "uiwcont.h"
 
-void uiCreateVertBox (uiwcont_t *uiwidget);
-void uiCreateHorizBox (uiwcont_t *uiwidget);
+uiwcont_t *uiCreateVertBox (void);
+uiwcont_t *uiCreateHorizBox (void);
 void uiBoxPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uibox);
 void uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget);
 void uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget);

@@ -38,11 +38,11 @@ enum {
 typedef struct managestats {
   conn_t      *conn;
   musicdb_t   *musicdb;
-  uiwcont_t  vboxmain;
-  uiwcont_t  dancedisp [STATS_MAX_DISP];
+  uiwcont_t   *vboxmain;
+  uiwcont_t   dancedisp [STATS_MAX_DISP];
   nlist_t     *dancecounts;
-  uiwcont_t  songcountdisp;
-  uiwcont_t  tottimedisp;
+  uiwcont_t   songcountdisp;
+  uiwcont_t   tottimedisp;
   int         songcount;
   long        tottime;
 } managestats_t;
@@ -58,7 +58,7 @@ manageStatsInit (conn_t *conn, musicdb_t *musicdb)
   managestats = mdmalloc (sizeof (managestats_t));
   managestats->conn = conn;
   managestats->musicdb = musicdb;
-  uiwcontInit (&managestats->vboxmain);
+  managestats->vboxmain = NULL;
   uiwcontInit (&managestats->songcountdisp);
   uiwcontInit (&managestats->tottimedisp);
   managestats->songcount = 0;
@@ -75,6 +75,7 @@ void
 manageStatsFree (managestats_t *managestats)
 {
   if (managestats != NULL) {
+    uiwcontFree (managestats->vboxmain);
     nlistFree (managestats->dancecounts);
     mdfree (managestats);
   }
@@ -89,35 +90,36 @@ manageStatsSetDatabase (managestats_t *managestats, musicdb_t *musicdb)
 uiwcont_t *
 manageBuildUIStats (managestats_t *managestats)
 {
-  uiwcont_t  uiwidget;
-  uiwcont_t  hbox;
-  uiwcont_t  chbox;
+  uiwcont_t   uiwidget;
+  uiwcont_t   *hbox;
+  uiwcont_t   *chbox;
   const char  *listingFont;
 
-  uiCreateVertBox (&managestats->vboxmain);
+  managestats->vboxmain = uiCreateVertBox ();
 
   /* Number of songs */
-  uiCreateHorizBox (&hbox);
-  uiWidgetSetMarginTop (&hbox, 2);
-  uiBoxPackStart (&managestats->vboxmain, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetMarginTop (hbox, 2);
+  uiBoxPackStart (managestats->vboxmain, hbox);
 
   /* CONTEXT: statistics: Label for number of songs in song list */
   uiCreateColonLabel (&uiwidget, _("Songs"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
 
   uiCreateLabel (&managestats->songcountdisp, "");
   uiLabelAlignEnd (&managestats->songcountdisp);
-  uiBoxPackStart (&hbox, &managestats->songcountdisp);
+  uiBoxPackStart (hbox, &managestats->songcountdisp);
 
   /* total time (same horiz row) */
   /* CONTEXT: statistics: Label for total song list duration */
   uiCreateColonLabel (&uiwidget, _("Total Time"));
   uiWidgetSetMarginStart (&uiwidget, 10);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
 
   uiCreateLabel (&managestats->tottimedisp, "");
   uiLabelAlignEnd (&managestats->tottimedisp);
-  uiBoxPackStart (&hbox, &managestats->tottimedisp);
+  uiBoxPackStart (hbox, &managestats->tottimedisp);
+  uiwcontFree (hbox);
 
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
@@ -131,32 +133,38 @@ manageBuildUIStats (managestats_t *managestats)
   }
 
   /* horizontal box to hold the columns */
-  uiCreateHorizBox (&chbox);
-  uiWidgetSetMarginTop (&chbox, 2);
-  uiBoxPackStart (&managestats->vboxmain, &chbox);
+  chbox = uiCreateHorizBox ();
+  uiWidgetSetMarginTop (chbox, 2);
+  uiBoxPackStart (managestats->vboxmain, chbox);
 
   for (int i = 0; i < STATS_COLS; ++i) {
-    uiwcont_t  vbox;
+    uiwcont_t  *vbox;
 
     /* vertical box for each column */
-    uiCreateVertBox (&vbox);
-    uiWidgetSetMarginTop (&vbox, 2);
-    uiWidgetSetMarginStart (&vbox, 2);
-    uiWidgetSetMarginEnd (&vbox, 8);
-    uiBoxPackStart (&chbox, &vbox);
+    vbox = uiCreateVertBox ();
+    uiWidgetSetMarginTop (vbox, 2);
+    uiWidgetSetMarginStart (vbox, 2);
+    uiWidgetSetMarginEnd (vbox, 8);
+    uiBoxPackStart (chbox, vbox);
 
     for (int j = 0; j < STATS_PER_COL; ++j) {
       int   idx;
 
       idx = i * STATS_PER_COL * 2 + j * 2;
-      uiCreateHorizBox (&hbox);
-      uiBoxPackStart (&vbox, &hbox);
-      uiBoxPackStart (&hbox, &managestats->dancedisp [idx]);
-      uiBoxPackEnd (&hbox, &managestats->dancedisp [idx + 1]);
+      hbox = uiCreateHorizBox ();
+      uiBoxPackStart (vbox, hbox);
+      uiBoxPackStart (hbox, &managestats->dancedisp [idx]);
+      uiBoxPackEnd (hbox, &managestats->dancedisp [idx + 1]);
+      uiwcontFree (hbox);
+      hbox = NULL;
     }
+
+    uiwcontFree (vbox);
   }
 
-  return &managestats->vboxmain;
+  uiwcontFree (chbox);
+
+  return managestats->vboxmain;
 }
 
 void

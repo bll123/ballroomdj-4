@@ -33,41 +33,42 @@ confuiInitMobileMarquee (confuigui_t *gui)
 void
 confuiBuildUIMobileMarquee (confuigui_t *gui)
 {
-  uiwcont_t    vbox;
+  uiwcont_t    *vbox;
   uiwcont_t    *szgrp;
 
   logProcBegin (LOG_PROC, "confuiBuildUIMobileMarquee");
-  uiCreateVertBox (&vbox);
+  vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
 
   /* mobile marquee */
-  confuiMakeNotebookTab (&vbox, gui,
+  confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: options associated with the mobile marquee */
       _("Mobile Marquee"), CONFUI_ID_MOBILE_MQ);
 
   /* CONTEXT: configuration: enable mobile marquee */
-  confuiMakeItemSwitch (gui, &vbox, szgrp, _("Enable Mobile Marquee"),
+  confuiMakeItemSwitch (gui, vbox, szgrp, _("Enable Mobile Marquee"),
       CONFUI_SWITCH_MOBILE_MQ, OPT_P_MOBILEMARQUEE,
       bdjoptGetNum (OPT_P_MOBILEMARQUEE), confuiMobmqTypeChg, CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: the port to use for the mobile marquee */
-  confuiMakeItemSpinboxNum (gui, &vbox, szgrp, NULL, _("Port"),
+  confuiMakeItemSpinboxNum (gui, vbox, szgrp, NULL, _("Port"),
       CONFUI_WIDGET_MMQ_PORT, OPT_P_MOBILEMQPORT,
       8000, 30000, bdjoptGetNum (OPT_P_MOBILEMQPORT),
       confuiMobmqPortChg);
 
   /* CONTEXT: configuration: the title to display on the mobile marquee */
-  confuiMakeItemEntry (gui, &vbox, szgrp, _("Title"),
+  confuiMakeItemEntry (gui, vbox, szgrp, _("Title"),
       CONFUI_ENTRY_MM_TITLE, OPT_P_MOBILEMQTITLE,
       bdjoptGetStr (OPT_P_MOBILEMQTITLE), CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_MM_TITLE].entry,
       confuiMobmqTitleChg, gui, UIENTRY_IMMEDIATE);
 
   /* CONTEXT: configuration: mobile marquee: the link to display the QR code for the mobile marquee */
-  confuiMakeItemLink (gui, &vbox, szgrp, _("QR Code"),
+  confuiMakeItemLink (gui, vbox, szgrp, _("QR Code"),
       CONFUI_WIDGET_MMQ_QR_CODE, "");
 
+  uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
   logProcEnd (LOG_PROC, "confuiBuildUIMobileMarquee", "");

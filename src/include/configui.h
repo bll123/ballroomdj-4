@@ -375,7 +375,7 @@ typedef struct confuigui {
   uiwcont_t         *notebook;
   callback_t        *nbcb;
   /* widgets */
-  uiwcont_t         vbox;
+  uiwcont_t         *vbox;
   uiwcont_t         statusMsg;
   /* display select */
   dispsel_t         *dispsel;

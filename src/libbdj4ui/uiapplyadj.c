@@ -145,8 +145,8 @@ uiaaDialogClear (uiaa_t *uiaa)
 static void
 uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
+  uiwcont_t    *vbox;
+  uiwcont_t    *hbox;
   uiwcont_t    uiwidget;
   uiwcont_t    *uiwidgetp;
 
@@ -184,47 +184,53 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
       NULL
       );
 
-  uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, 4);
-  uiDialogPackInDialog (uiaa->aaDialog, &vbox);
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, 4);
+  uiDialogPackInDialog (uiaa->aaDialog, vbox);
 
   /* status message */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  uiBoxPackEnd (hbox, &uiwidget);
   uiwcontCopy (&uiaa->statusMsg, &uiwidget);
 
   /* trim silence */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: apply adjustments: trim silence checkbox */
   uiwidgetp = uiCreateCheckButton (_("Trim Silence"),
       (aaflags & SONG_ADJUST_TRIM) == SONG_ADJUST_TRIM);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiaa->cbTrim = uiwidgetp;
 
   /* normalize audio */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: apply adjustments: normalize volume checkbox */
   uiwidgetp = uiCreateCheckButton (_("Normalize Volume"),
       (aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiaa->cbNorm = uiwidgetp;
 
   /* adjust audio */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: apply adjustments: adjust speed/song start/song end checkbox */
   uiwidgetp = uiCreateCheckButton (_("Adjust Speed, Song Start and Song End"),
       (aaflags & SONG_ADJUST_ADJUST) == SONG_ADJUST_ADJUST);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiaa->cbAdjust = uiwidgetp;
+
+  uiwcontFree (hbox);
+  uiwcontFree (vbox);
 
   logProcEnd (LOG_PROC, "uiaaCreateDialog", "");
 }

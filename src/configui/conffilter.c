@@ -25,47 +25,48 @@
 void
 confuiBuildUIFilterDisplay (confuigui_t *gui)
 {
-  uiwcont_t     vbox;
+  uiwcont_t     *vbox;
   uiwcont_t     *szgrp;
   nlistidx_t    val;
 
   logProcBegin (LOG_PROC, "confuiBuildUIFilterDisplay");
-  uiCreateVertBox (&vbox);
+  vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
 
   /* filter display */
-  confuiMakeNotebookTab (&vbox, gui,
+  confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: song filter display settings */
       _("Filter Display"), CONFUI_ID_FILTER);
 
   val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_GENRE);
   /* CONTEXT: configuration: filter display: checkbox: genre */
-  confuiMakeItemCheckButton (gui, &vbox, szgrp, tagdefs [TAG_GENRE].displayname,
+  confuiMakeItemCheckButton (gui, vbox, szgrp, tagdefs [TAG_GENRE].displayname,
       CONFUI_WIDGET_FILTER_GENRE, -1, val);
   gui->uiitem [CONFUI_WIDGET_FILTER_GENRE].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_DANCELEVEL);
-  confuiMakeItemCheckButton (gui, &vbox, szgrp, tagdefs [TAG_DANCELEVEL].displayname,
+  confuiMakeItemCheckButton (gui, vbox, szgrp, tagdefs [TAG_DANCELEVEL].displayname,
       CONFUI_WIDGET_FILTER_DANCELEVEL, -1, val);
   gui->uiitem [CONFUI_WIDGET_FILTER_DANCELEVEL].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_STATUS);
-  confuiMakeItemCheckButton (gui, &vbox, szgrp, tagdefs [TAG_STATUS].displayname,
+  confuiMakeItemCheckButton (gui, vbox, szgrp, tagdefs [TAG_STATUS].displayname,
       CONFUI_WIDGET_FILTER_STATUS, -1, val);
   gui->uiitem [CONFUI_WIDGET_FILTER_STATUS].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_FAVORITE);
-  confuiMakeItemCheckButton (gui, &vbox, szgrp, tagdefs [TAG_FAVORITE].displayname,
+  confuiMakeItemCheckButton (gui, vbox, szgrp, tagdefs [TAG_FAVORITE].displayname,
       CONFUI_WIDGET_FILTER_FAVORITE, -1, val);
   gui->uiitem [CONFUI_WIDGET_FILTER_FAVORITE].outtype = CONFUI_OUT_CB;
 
   val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_STATUSPLAYABLE);
   /* CONTEXT: configuration: filter display: checkbox: status is playable */
-  confuiMakeItemCheckButton (gui, &vbox, szgrp, _("Playable Status"),
+  confuiMakeItemCheckButton (gui, vbox, szgrp, _("Playable Status"),
       CONFUI_SWITCH_FILTER_STATUS_PLAYABLE, -1, val);
   gui->uiitem [CONFUI_SWITCH_FILTER_STATUS_PLAYABLE].outtype = CONFUI_OUT_CB;
 
+  uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
   logProcEnd (LOG_PROC, "confuiBuildUIFilterDisplay", "");

@@ -188,17 +188,15 @@ helperClosingCallback (void *udata, programstate_t programState)
 static void
 helperBuildUI (helperui_t  *helper)
 {
-  uiwcont_t          uiwidget;
+  uiwcont_t           uiwidget;
   uibutton_t          *uibutton;
-  uiwcont_t          *uiwidgetp;
-  uiwcont_t          vbox;
-  uiwcont_t          hbox;
+  uiwcont_t           *uiwidgetp;
+  uiwcont_t           *vbox;
+  uiwcont_t           *hbox;
   char                tbuff [MAXPATHLEN];
   char                imgbuff [MAXPATHLEN];
 
   uiwcontInit (&uiwidget);
-  uiwcontInit (&vbox);
-  uiwcontInit (&hbox);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -207,18 +205,18 @@ helperBuildUI (helperui_t  *helper)
   snprintf (tbuff, sizeof (tbuff), _("%s Helper"), BDJ4_LONG_NAME);
   helper->window = uiCreateMainWindow (helper->closeCallback, tbuff, imgbuff);
 
-  uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, 2);
-  uiBoxPackInWindow (helper->window, &vbox);
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, 2);
+  uiBoxPackInWindow (helper->window, vbox);
 
   helper->tb = uiTextBoxCreate (400, NULL);
   uiTextBoxHorizExpand (helper->tb);
   uiTextBoxVertExpand (helper->tb);
   uiTextBoxSetReadonly (helper->tb);
-  uiBoxPackStartExpand (&vbox, uiTextBoxGetScrolledWindow (helper->tb));
+  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (helper->tb));
 
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   helper->nextCallback = callbackInit (helperNextCallback, helper, NULL);
   uibutton = uiCreateButton (helper->nextCallback,
@@ -226,14 +224,14 @@ helperBuildUI (helperui_t  *helper)
       _("Next"), NULL);
   helper->buttons [HELPER_BUTTON_NEXT] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiBoxPackEnd (&hbox, uiwidgetp);
+  uiBoxPackEnd (hbox, uiwidgetp);
 
   uibutton = uiCreateButton (helper->closeCallback,
       /* CONTEXT: helperui: close the helper window */
       _("Close"), NULL);
   helper->buttons [HELPER_BUTTON_CLOSE] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiBoxPackEnd (&hbox, uiwidgetp);
+  uiBoxPackEnd (hbox, uiwidgetp);
 
   uiWindowSetDefaultSize (helper->window, 1100, 400);
 
@@ -242,6 +240,9 @@ helperBuildUI (helperui_t  *helper)
   osuiSetIcon (imgbuff);
 
   uiWidgetShowAll (helper->window);
+
+  uiwcontFree (vbox);
+  uiwcontFree (hbox);
 }
 
 static int

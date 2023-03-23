@@ -176,7 +176,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiwcont_t *statusMsg, uientryval_t validateFunc)
 {
   int               saveci;
-  uiwcont_t         hbox;
+  uiwcont_t         *hbox;
   uiwcont_t         uiwidget;
   uiwcont_t         *scwin;
   uiwcont_t         *uitreewidgetp;
@@ -198,14 +198,14 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   uimusicq->parentwin = parentwin;
 
-  uiCreateVertBox (&uimusicq->ui [ci].mainbox);
-  uiWidgetExpandHoriz (&uimusicq->ui [ci].mainbox);
-  uiWidgetExpandVert (&uimusicq->ui [ci].mainbox);
+  uimusicq->ui [ci].mainbox = uiCreateVertBox ();
+  uiWidgetExpandHoriz (uimusicq->ui [ci].mainbox);
+  uiWidgetExpandVert (uimusicq->ui [ci].mainbox);
 
-  uiCreateHorizBox (&hbox);
-  uiWidgetSetMarginTop (&hbox, 1);
-  uiWidgetExpandHoriz (&hbox);
-  uiBoxPackStart (&uimusicq->ui [ci].mainbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetMarginTop (hbox, 1);
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (uimusicq->ui [ci].mainbox, hbox);
 
   /* dispseltype can be a music queue, history, a song list or ez song list */
 
@@ -220,7 +220,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         _("Move to Top"), "button_movetop");
     mqint->buttons [UIMUSICQ_BUTTON_MOVE_TOP] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
 
     mqint->callbacks [UIMUSICQ_CB_MOVE_UP] = callbackInit (
         uimusicqMoveUpCallback, uimusicq, "musicq: move-up");
@@ -230,7 +230,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     mqint->buttons [UIMUSICQ_BUTTON_MOVE_UP] = uibutton;
     uiButtonSetRepeat (uibutton, UIMUSICQ_REPEAT_TIME);
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
 
     mqint->callbacks [UIMUSICQ_CB_MOVE_DOWN] = callbackInit (
         uimusicqMoveDownCallback, uimusicq, "musicq: move-down");
@@ -240,7 +240,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     mqint->buttons [UIMUSICQ_BUTTON_MOVE_DOWN] = uibutton;
     uiButtonSetRepeat (uibutton, UIMUSICQ_REPEAT_TIME);
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
@@ -252,7 +252,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         _("Toggle Pause"), "button_pause");
     mqint->buttons [UIMUSICQ_BUTTON_TOGGLE_PAUSE] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ ||
@@ -268,7 +268,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiWidgetSetMarginStart (uiwidgetp, 3);
     uiWidgetSetMarginEnd (uiwidgetp, 2);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
@@ -281,7 +281,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     mqint->buttons [UIMUSICQ_BUTTON_CLEAR_QUEUE] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiWidgetSetMarginStart (uiwidgetp, 2);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
@@ -293,7 +293,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         _("Edit"), "button_edit");
     mqint->buttons [UIMUSICQ_BUTTON_EDIT] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
 
     mqint->callbacks [UIMUSICQ_CB_PLAY] = callbackInit (
         uimusicqPlayCallback, uimusicq, "musicq: play");
@@ -302,7 +302,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         _("Play"), NULL);
     mqint->buttons [UIMUSICQ_BUTTON_PLAY] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_HISTORY) {
@@ -313,7 +313,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         _("Queue"), NULL);
     mqint->buttons [UIMUSICQ_BUTTON_QUEUE] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
@@ -324,7 +324,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiwidgetp = uiDropDownCreate (uimusicq->ui [ci].playlistsel, parentwin,
         /* CONTEXT: (verb) music queue: button: queue a playlist for playback */
         _("Queue Playlist"), uimusicq->queueplcb, uimusicq);
-    uiBoxPackEnd (&hbox, uiwidgetp);
+    uiBoxPackEnd (hbox, uiwidgetp);
     uimusicqCreatePlaylistList (uimusicq);
 
     if (bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, ci)) {
@@ -332,12 +332,12 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
         uimusicq->queuedancecb = callbackInitLongInt (
             uimusicqQueueDanceCallback, uimusicq);
       }
-      mqint->uidance5 = uidanceDropDownCreate (&hbox, parentwin,
+      mqint->uidance5 = uidanceDropDownCreate (hbox, parentwin,
           /* CONTEXT: (verb) music queue: button: queue 5 dances for playback */
           UIDANCE_NONE, _("Queue 5"), UIDANCE_PACK_END, 5);
       uidanceSetCallback (mqint->uidance5, uimusicq->queuedancecb);
 
-      mqint->uidance = uidanceDropDownCreate (&hbox, parentwin,
+      mqint->uidance = uidanceDropDownCreate (hbox, parentwin,
           /* CONTEXT: (verb) music queue: button: queue a dance for playback */
           UIDANCE_NONE, _("Queue Dance"), UIDANCE_PACK_END, 1);
       uidanceSetCallback (mqint->uidance, uimusicq->queuedancecb);
@@ -357,23 +357,23 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     if (uimusicq->ui [ci].dispselType == DISP_SEL_EZSONGLIST) {
       uiWidgetExpandHoriz (uiEntryGetWidgetContainer (entryp));
       uiWidgetAlignHorizFill (uiEntryGetWidgetContainer (entryp));
-      uiBoxPackEndExpand (&hbox, uiEntryGetWidgetContainer (entryp));
+      uiBoxPackEndExpand (hbox, uiEntryGetWidgetContainer (entryp));
     }
     if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST) {
-      uiBoxPackEnd (&hbox, uiEntryGetWidgetContainer (entryp));
+      uiBoxPackEnd (hbox, uiEntryGetWidgetContainer (entryp));
     }
 
     /* CONTEXT: music queue: label for song list name */
     uiCreateColonLabel (&uiwidget, _("Song List"));
     uiWidgetSetMarginStart (&uiwidget, 6);
-    uiBoxPackEnd (&hbox, &uiwidget);
+    uiBoxPackEnd (hbox, &uiwidget);
   }
 
   /* musicq tree view */
 
   scwin = uiCreateScrolledWindow (400);
   uiWidgetExpandHoriz (scwin);
-  uiBoxPackStartExpand (&uimusicq->ui [ci].mainbox, scwin);
+  uiBoxPackStartExpand (uimusicq->ui [ci].mainbox, scwin);
 
   mqint->musicqTree = uiCreateTreeView ();
   uitreewidgetp = uiTreeViewGetWidgetContainer (mqint->musicqTree);
@@ -428,8 +428,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   mqint->callbacks [UIMUSICQ_CB_ITERATE] = callbackInit (
         uimusicqIterateCallback, uimusicq, NULL);
 
+  uiwcontFree (hbox);
+
   logProcEnd (LOG_PROC, "uimusicqBuildUI", "");
-  return &uimusicq->ui [ci].mainbox;
+  return uimusicq->ui [ci].mainbox;
 }
 
 void

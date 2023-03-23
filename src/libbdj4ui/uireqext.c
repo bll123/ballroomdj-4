@@ -190,8 +190,8 @@ uireqextProcess (uireqext_t *uireqext)
 static void
 uireqextCreateDialog (uireqext_t *uireqext)
 {
-  uiwcont_t     vbox;
-  uiwcont_t     hbox;
+  uiwcont_t     *vbox;
+  uiwcont_t     *hbox;
   uiwcont_t     uiwidget;
   uibutton_t    *uibutton;
   uiwcont_t     *uiwidgetp;
@@ -226,21 +226,21 @@ uireqextCreateDialog (uireqext_t *uireqext)
       NULL
       );
 
-  uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, 10);
-  uiWidgetSetMarginTop (&vbox, 20);
-  uiWidgetExpandHoriz (&vbox);
-  uiWidgetExpandVert (&vbox);
-  uiDialogPackInDialog (uireqext->reqextDialog, &vbox);
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, 10);
+  uiWidgetSetMarginTop (vbox, 20);
+  uiWidgetExpandHoriz (vbox);
+  uiWidgetExpandVert (vbox);
+  uiDialogPackInDialog (uireqext->reqextDialog, vbox);
 
-  uiCreateHorizBox (&hbox);
-  uiWidgetExpandHoriz (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
   uiCreateColonLabel (&uiwidget,
       /* CONTEXT: request external: enter the audio file location */
       _("Audio File"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
   uiEntryCreate (uireqext->audioFileEntry);
@@ -248,7 +248,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiwidgetp = uiEntryGetWidgetContainer (uireqext->audioFileEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
-  uiBoxPackStartExpand (&hbox, uiwidgetp);
+  uiBoxPackStartExpand (hbox, uiwidgetp);
   uiEntrySetValidate (uireqext->audioFileEntry, uireqextValidateAudioFile,
       uireqext, UIENTRY_DELAYED);
 
@@ -261,55 +261,60 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiButtonSetImageIcon (uibutton, "folder");
   uiWidgetSetMarginStart (uiwidgetp, 0);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
 
   /* artist display */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   uiCreateColonLabel (&uiwidget, tagdefs [TAG_ARTIST].displayname);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
   uiEntryCreate (uireqext->artistEntry);
   uiEntrySetValue (uireqext->artistEntry, "");
   uiwidgetp = uiEntryGetWidgetContainer (uireqext->artistEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiEntrySetValidate (uireqext->artistEntry, uireqextValidateArtist,
       uireqext, UIENTRY_IMMEDIATE);
 
   /* title display */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   uiCreateColonLabel (&uiwidget, tagdefs [TAG_TITLE].displayname);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
   uiEntryCreate (uireqext->titleEntry);
   uiEntrySetValue (uireqext->titleEntry, "");
   uiwidgetp = uiEntryGetWidgetContainer (uireqext->titleEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiEntrySetValidate (uireqext->titleEntry, uireqextValidateTitle,
       uireqext, UIENTRY_IMMEDIATE);
 
   /* dance : always available */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCE].displayname);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
   uireqext->callbacks [UIREQEXT_CB_DANCE] = callbackInitLongInt (
       uireqextDanceSelectHandler, uireqext);
-  uireqext->uidance = uidanceDropDownCreate (&hbox, uireqext->reqextDialog,
+  uireqext->uidance = uidanceDropDownCreate (hbox, uireqext->reqextDialog,
       /* CONTEXT: request external: dance drop-down */
       UIDANCE_EMPTY_DANCE, _("Select Dance"), UIDANCE_PACK_START, 1);
   uidanceSetCallback (uireqext->uidance, uireqext->callbacks [UIREQEXT_CB_DANCE]);
 
+  uiwcontFree (hbox);
+  uiwcontFree (vbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpEntry);
 

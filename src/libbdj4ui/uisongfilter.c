@@ -421,8 +421,8 @@ uisfGenreSelect (uisongfilter_t *uisf, ssize_t idx)
 static void
 uisfCreateDialog (uisongfilter_t *uisf)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
+  uiwcont_t    *vbox;
+  uiwcont_t    *hbox;
   uiwcont_t    uiwidget;
   uiwcont_t    *uiwidgetp;
   uiwcont_t    *szgrp;          // labels
@@ -459,21 +459,22 @@ uisfCreateDialog (uisongfilter_t *uisf)
       NULL
       );
 
-  uiCreateVertBox (&vbox);
-  uiDialogPackInDialog (uisf->filterDialog, &vbox);
+  vbox = uiCreateVertBox ();
+  uiDialogPackInDialog (uisf->filterDialog, vbox);
 
   /* accent color */
-  uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
+  hbox = uiutilsAddAccentColorDisplay (vbox);
 
   /* playlist : only available for the music manager */
   /* in this case, the entire hbox will be shown/hidden */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
-  uiwcontCopy (&uisf->playlistdisp, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
+  uiwcontCopy (&uisf->playlistdisp, hbox);
 
   /* CONTEXT: song selection filter: a filter: select a playlist to work with (music manager) */
   uiCreateColonLabel (&uiwidget, _("Playlist"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
   uisf->callbacks [UISF_CB_PLAYLIST_SEL] = callbackInitLong (
@@ -481,16 +482,17 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiwidgetp = uiComboboxCreate (uisf->playlistfilter,
       uisf->filterDialog, "", uisf->callbacks [UISF_CB_PLAYLIST_SEL], uisf);
   uisfCreatePlaylistList (uisf);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
   /* looks bad if added to the size group */
 
   /* sort-by : always available */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song selection filter: a filter: select the method to sort the song selection display */
   uiCreateColonLabel (&uiwidget, _("Sort by"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
   uiwcontCopy (&uisf->labels [UISF_LABEL_SORTBY], &uiwidget);
 
@@ -499,134 +501,145 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiwidgetp = uiComboboxCreate (uisf->sortbyfilter,
       uisf->filterDialog, "", uisf->callbacks [UISF_CB_SORT_BY_SEL], uisf);
   uisfCreateSortByList (uisf);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
   /* looks bad if added to the size group */
 
   /* search : always available */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song selection filter: a filter: filter the song selection with a search for text */
   uiCreateColonLabel (&uiwidget, _("Search"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
   uiwcontCopy (&uisf->labels [UISF_LABEL_SEARCH], &uiwidget);
 
   uiEntryCreate (uisf->searchentry);
   uiwidgetp = uiEntryGetWidgetContainer (uisf->searchentry);
   uiWidgetAlignHorizStart (uiwidgetp);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrpEntry, uiwidgetp);
 
   /* genre */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_GENRE)) {
-    uiCreateHorizBox (&hbox);
-    uiBoxPackStart (&vbox, &hbox);
+    uiwcontFree (hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
 
     uiCreateColonLabel (&uiwidget, tagdefs [TAG_GENRE].displayname);
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_GENRE], &uiwidget);
 
     uisf->callbacks [UISF_CB_GENRE_SEL] = callbackInitLong (
         uisfGenreSelectHandler, uisf);
-    uisf->uigenre = uigenreDropDownCreate (&hbox, uisf->filterDialog, true);
+    uisf->uigenre = uigenreDropDownCreate (hbox, uisf->filterDialog, true);
     uigenreSetCallback (uisf->uigenre, uisf->callbacks [UISF_CB_GENRE_SEL]);
     /* looks bad if added to the size group */
  }
 
   /* dance : always available */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCE].displayname);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
   uiwcontCopy (&uisf->labels [UISF_LABEL_DANCE], &uiwidget);
 
   uisf->callbacks [UISF_CB_DANCE_SEL] = callbackInitLongInt (
       uisfDanceSelectHandler, uisf);
-  uisf->uidance = uidanceDropDownCreate (&hbox, uisf->filterDialog,
+  uisf->uidance = uidanceDropDownCreate (hbox, uisf->filterDialog,
       /* CONTEXT: song selection filter: a filter: all dances are selected */
       UIDANCE_ALL_DANCES,  _("All Dances"), UIDANCE_PACK_START, 1);
   uidanceSetCallback (uisf->uidance, uisf->callbacks [UISF_CB_DANCE_SEL]);
   /* adding to the size group makes it look weird */
 
   /* rating : always available */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCERATING].displayname);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
   uiwcontCopy (&uisf->labels [UISF_LABEL_DANCE_RATING], &uiwidget);
 
-  uisf->uirating = uiratingSpinboxCreate (&hbox, true);
+  uisf->uirating = uiratingSpinboxCreate (hbox, true);
   uiratingSizeGroupAdd (uisf->uirating, szgrpSpinText);
 
   /* level */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_DANCELEVEL)) {
-    uiCreateHorizBox (&hbox);
-    uiBoxPackStart (&vbox, &hbox);
+    uiwcontFree (hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
 
     uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCELEVEL].displayname);
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_DANCE_LEVEL], &uiwidget);
 
-    uisf->uilevel = uilevelSpinboxCreate (&hbox, true);
+    uisf->uilevel = uilevelSpinboxCreate (hbox, true);
     uilevelSizeGroupAdd (uisf->uilevel, szgrpSpinText);
   }
 
   /* status */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUS)) {
-    uiCreateHorizBox (&hbox);
-    uiBoxPackStart (&vbox, &hbox);
+    uiwcontFree (hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
 
     uiCreateColonLabel (&uiwidget, tagdefs [TAG_STATUS].displayname);
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_STATUS], &uiwidget);
 
-    uisf->uistatus = uistatusSpinboxCreate (&hbox, true);
+    uisf->uistatus = uistatusSpinboxCreate (hbox, true);
     uistatusSizeGroupAdd (uisf->uistatus, szgrpSpinText);
   }
 
   /* favorite */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_FAVORITE)) {
-    uiCreateHorizBox (&hbox);
-    uiBoxPackStart (&vbox, &hbox);
+    uiwcontFree (hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
 
     uiCreateColonLabel (&uiwidget, tagdefs [TAG_FAVORITE].displayname);
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_FAVORITE], &uiwidget);
 
-    uisf->uifavorite = uifavoriteSpinboxCreate (&hbox);
+    uisf->uifavorite = uifavoriteSpinboxCreate (hbox);
   }
 
   /* status playable */
   if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
-    uiCreateHorizBox (&hbox);
-    uiBoxPackStart (&vbox, &hbox);
+    uiwcontFree (hbox);
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
 
     /* CONTEXT: song selection filter: a filter: the song status is marked as playable */
     uiCreateColonLabel (&uiwidget, _("Playable Status"));
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_PLAY_STATUS], &uiwidget);
 
     uisf->playstatusswitch = uiCreateSwitch (uisf->dfltpbflag);
-    uiBoxPackStart (&hbox, uiSwitchGetWidgetContainer (uisf->playstatusswitch));
+    uiBoxPackStart (hbox, uiSwitchGetWidgetContainer (uisf->playstatusswitch));
   }
 
   /* the dialog doesn't have any space above the buttons */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   uiCreateLabel (&uiwidget, " ");
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
 
+  uiwcontFree (vbox);
+  uiwcontFree (hbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpEntry);
   uiwcontFree (szgrpDD);

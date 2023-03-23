@@ -96,7 +96,7 @@ enum {
 typedef struct ss_internal {
   callback_t          *callbacks [SONGSEL_CB_MAX];
   uiwcont_t           *parentwin;
-  uiwcont_t           vbox;
+  uiwcont_t           *vbox;
   uitree_t            *songselTree;
   GtkTreeSelection    *sel;
   uiscrollbar_t       *songselScrollbar;
@@ -166,7 +166,7 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ss_internal_t  *ssint;
 
   ssint = mdmalloc (sizeof (ss_internal_t));
-  uiwcontInit (&ssint->vbox);
+  ssint->vbox = NULL;
   ssint->songselTree = NULL;
   ssint->sel = NULL;
   ssint->songselScrollbar = NULL;
@@ -208,6 +208,7 @@ uisongselUIFree (uisongsel_t *uisongsel)
     ss_internal_t    *ssint;
 
     ssint = uisongsel->ssInternalData;
+    uiwcontFree (ssint->vbox);
     uiwcontFree (ssint->scrolledwin);
     uiScrollbarFree (ssint->songselScrollbar);
     uiKeyFree (ssint->uikey);
@@ -228,13 +229,13 @@ uisongselUIFree (uisongsel_t *uisongsel)
 uiwcont_t *
 uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 {
-  ss_internal_t    *ssint;
+  ss_internal_t     *ssint;
   uibutton_t        *uibutton;
-  uiwcont_t        uiwidget;
-  uiwcont_t        *uiwidgetp;
-  uiwcont_t        *uitreewidgetp;
-  uiwcont_t        hbox;
-  uiwcont_t        vbox;
+  uiwcont_t         uiwidget;
+  uiwcont_t         *uiwidgetp;
+  uiwcont_t         *uitreewidgetp;
+  uiwcont_t         *hbox;
+  uiwcont_t         *vbox;
   GtkAdjustment     *adjustment;
   slist_t           *sellist;
   char              tbuff [200];
@@ -246,13 +247,13 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   ssint = uisongsel->ssInternalData;
   uisongsel->windowp = parentwin;
 
-  uiCreateVertBox (&ssint->vbox);
-  uiWidgetExpandHoriz (&ssint->vbox);
-  uiWidgetExpandVert (&ssint->vbox);
+  ssint->vbox = uiCreateVertBox ();
+  uiWidgetExpandHoriz (ssint->vbox);
+  uiWidgetExpandVert (ssint->vbox);
 
-  uiCreateHorizBox (&hbox);
-  uiWidgetExpandHoriz (&hbox);
-  uiBoxPackStart (&ssint->vbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (ssint->vbox, hbox);
 
   /* The ez song selection does not need a select button, as it has */
   /* the left-arrow button.  Saves real estate. */
@@ -265,7 +266,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
         ssint->callbacks [SONGSEL_CB_SELECT], tbuff, NULL);
     ssint->buttons [SONGSEL_BUTTON_SELECT] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
   }
 
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
@@ -277,7 +278,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
         _("Edit"), "button_edit");
     ssint->buttons [SONGSEL_BUTTON_EDIT] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
   }
 
   if (uisongsel->dispselType == DISP_SEL_REQUEST) {
@@ -289,11 +290,11 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
         ssint->callbacks [SONGSEL_CB_QUEUE], tbuff, NULL);
     ssint->buttons [SONGSEL_BUTTON_QUEUE] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
 
     uiCreateLabel (&uiwidget, "");
     uiWidgetSetClass (&uiwidget, DARKACCENT_CLASS);
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiBoxPackStart (hbox, &uiwidget);
     uiwcontCopy (&ssint->reqQueueLabel, &uiwidget);
   }
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
@@ -307,12 +308,12 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
         ssint->callbacks [SONGSEL_CB_PLAY], tbuff, NULL);
     ssint->buttons [SONGSEL_BUTTON_PLAY] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-    uiBoxPackStart (&hbox, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
   }
 
   ssint->callbacks [SONGSEL_CB_DANCE_SEL] = callbackInitLongInt (
       uisongselUIDanceSelectCallback, uisongsel);
-  uisongsel->uidance = uidanceDropDownCreate (&hbox, parentwin,
+  uisongsel->uidance = uidanceDropDownCreate (hbox, parentwin,
       /* CONTEXT: song-selection: filter: all dances are selected */
       UIDANCE_ALL_DANCES, _("All Dances"), UIDANCE_PACK_END, 1);
   uidanceSetCallback (uisongsel->uidance,
@@ -326,17 +327,18 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       _("Filters"), NULL);
   ssint->buttons [SONGSEL_BUTTON_FILTER] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiBoxPackEnd (&hbox, uiwidgetp);
+  uiBoxPackEnd (hbox, uiwidgetp);
 
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStartExpand (&ssint->vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStartExpand (ssint->vbox, hbox);
 
-  uiCreateVertBox (&vbox);
-  uiBoxPackStartExpand (&hbox, &vbox);
+  vbox = uiCreateVertBox ();
+  uiBoxPackStartExpand (hbox, vbox);
 
   tupper = uisongsel->dfilterCount;
   ssint->songselScrollbar = uiCreateVerticalScrollbar (tupper);
-  uiBoxPackEnd (&hbox, uiScrollbarGetWidgetContainer (ssint->songselScrollbar));
+  uiBoxPackEnd (hbox, uiScrollbarGetWidgetContainer (ssint->songselScrollbar));
   ssint->callbacks [SONGSEL_CB_SCROLL_CHG] = callbackInitDouble (
       uisongselScroll, uisongsel);
   uiScrollbarSetChangeCallback (ssint->songselScrollbar,
@@ -345,7 +347,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   ssint->scrolledwin = uiCreateScrolledWindow (400);
   uiWindowSetPolicyExternal (ssint->scrolledwin);
   uiWidgetExpandHoriz (ssint->scrolledwin);
-  uiBoxPackStartExpand (&vbox, ssint->scrolledwin);
+  uiBoxPackStartExpand (vbox, ssint->scrolledwin);
 
   ssint->songselTree = uiCreateTreeView ();
   uitreewidgetp = uiTreeViewGetWidgetContainer (ssint->songselTree);
@@ -422,8 +424,11 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   g_signal_connect (uitreewidgetp->widget, "size-allocate",
       G_CALLBACK (uisongselProcessTreeSize), uisongsel);
 
+  uiwcontFree (hbox);
+  uiwcontFree (vbox);
+
   logProcEnd (LOG_PROC, "uisongselBuildUI", "");
-  return &ssint->vbox;
+  return ssint->vbox;
 }
 
 void

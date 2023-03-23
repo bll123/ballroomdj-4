@@ -41,7 +41,7 @@ enum {
 };
 
 typedef struct manageseq {
-  uiwcont_t      *windowp;
+  uiwcont_t       *windowp;
   nlist_t         *options;
   uimenu_t        *seqmenu;
   callback_t      *callbacks [MSEQ_CB_MAX];
@@ -49,7 +49,7 @@ typedef struct manageseq {
   callback_t      *seqnewcb;
   uiduallist_t    *seqduallist;
   uientry_t       *seqname;
-  uiwcont_t      *statusMsg;
+  uiwcont_t       *statusMsg;
   char            *seqoldname;
   bool            seqbackupcreated : 1;
   bool            changed : 1;
@@ -124,24 +124,23 @@ manageSequenceSetNewCallback (manageseq_t *manageseq, callback_t *uicb)
 void
 manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
 {
-  uiwcont_t          hbox;
-  uiwcont_t          uiwidget;
+  uiwcont_t           *hbox;
+  uiwcont_t           uiwidget;
   dance_t             *dances;
   slist_t             *dancelist;
 
   logProcBegin (LOG_PROC, "manageBuildUISequence");
-  uiwcontInit (&hbox);
   uiwcontInit (&uiwidget);
 
   /* edit sequences */
   uiWidgetSetAllMargins (vboxp, 2);
 
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (vboxp, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: sequence editor: label for sequence name */
   uiCreateColonLabel (&uiwidget, _("Sequence"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
 
   uiEntryCreate (manageseq->seqname);
   uiEntrySetValidate (manageseq->seqname, manageValidateName,
@@ -149,7 +148,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   uiWidgetSetClass (uiEntryGetWidgetContainer (manageseq->seqname), ACCENT_CLASS);
   /* CONTEXT: sequence editor: default name for a new sequence */
   manageSetSequenceName (manageseq, _("New Sequence"));
-  uiBoxPackStart (&hbox, uiEntryGetWidgetContainer (manageseq->seqname));
+  uiBoxPackStart (hbox, uiEntryGetWidgetContainer (manageseq->seqname));
 
   manageseq->seqduallist = uiCreateDualList (vboxp,
       DUALLIST_FLAGS_MULTIPLE | DUALLIST_FLAGS_PERSISTENT,
@@ -160,6 +159,9 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancelist = danceGetDanceList (dances);
   uiduallistSet (manageseq->seqduallist, dancelist, DUALLIST_TREE_SOURCE);
+
+  uiwcontFree (hbox);
+
   logProcEnd (LOG_PROC, "manageBuildUISequence", "");
 }
 

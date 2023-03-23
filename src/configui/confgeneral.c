@@ -59,17 +59,17 @@ confuiInitGeneral (confuigui_t *gui)
 void
 confuiBuildUIGeneral (confuigui_t *gui)
 {
-  uiwcont_t     vbox;
+  uiwcont_t     *vbox;
   uiwcont_t     *szgrp;
   char          tbuff [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "confuiBuildUIGeneral");
-  uiCreateVertBox (&vbox);
+  vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
 
   /* general */
-  confuiMakeNotebookTab (&vbox, gui,
+  confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: general options that apply to everything */
       _("General"), CONFUI_ID_NONE);
 
@@ -79,60 +79,61 @@ confuiBuildUIGeneral (confuigui_t *gui)
   }
 
   /* CONTEXT: configuration: the music folder where the user store their music */
-  confuiMakeItemEntryChooser (gui, &vbox, szgrp, _("Music Folder"),
+  confuiMakeItemEntryChooser (gui, vbox, szgrp, _("Music Folder"),
       CONFUI_ENTRY_CHOOSE_MUSIC_DIR, OPT_M_DIR_MUSIC,
       tbuff, confuiSelectMusicDir);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_MUSIC_DIR].entry,
       uiEntryValidateDir, gui, UIENTRY_DELAYED);
 
   /* CONTEXT: configuration: the name of this profile */
-  confuiMakeItemEntry (gui, &vbox, szgrp, _("Profile Name"),
+  confuiMakeItemEntry (gui, vbox, szgrp, _("Profile Name"),
       CONFUI_ENTRY_PROFILE_NAME, OPT_P_PROFILENAME,
       bdjoptGetStr (OPT_P_PROFILENAME), CONFUI_NO_INDENT);
 
   /* CONTEXT: configuration: the profile accent color (identifies profile) */
-  confuiMakeItemColorButton (gui, &vbox, szgrp, _("Profile Colour"),
+  confuiMakeItemColorButton (gui, vbox, szgrp, _("Profile Colour"),
       CONFUI_WIDGET_UI_PROFILE_COLOR, OPT_P_UI_PROFILE_COL,
       bdjoptGetStr (OPT_P_UI_PROFILE_COL));
 
   /* CONTEXT: configuration: Whether to display BPM as BPM or MPM */
-  confuiMakeItemSpinboxText (gui, &vbox, szgrp, NULL, _("BPM"),
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("BPM"),
       CONFUI_SPINBOX_BPM, OPT_G_BPM,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_BPM), NULL);
 
   /* database */
 
   /* CONTEXT: configuration: which audio tags will be written to the audio file */
-  confuiMakeItemSpinboxText (gui, &vbox, szgrp, NULL, _("Write Audio File Tags"),
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Write Audio File Tags"),
       CONFUI_SPINBOX_WRITE_AUDIO_FILE_TAGS, OPT_G_WRITETAGS,
       CONFUI_OUT_NUM, bdjoptGetNum (OPT_G_WRITETAGS), NULL);
 
   /* CONTEXT: configuration: write audio file tags in ballroomdj 3 compatibility mode */
   snprintf (tbuff, sizeof (tbuff), _("%s Compatible Audio File Tags"), BDJ3_NAME);
-  confuiMakeItemSwitch (gui, &vbox, szgrp, tbuff,
+  confuiMakeItemSwitch (gui, vbox, szgrp, tbuff,
       CONFUI_SWITCH_BDJ3_COMPAT_TAGS, OPT_G_BDJ3_COMPAT_TAGS,
       bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS), NULL, CONFUI_NO_INDENT);
 
   /* bdj4 */
   /* CONTEXT: configuration: the locale to use (e.g. English or Nederlands) */
-  confuiMakeItemSpinboxText (gui, &vbox, szgrp, NULL, _("Locale"),
+  confuiMakeItemSpinboxText (gui, vbox, szgrp, NULL, _("Locale"),
       CONFUI_SPINBOX_LOCALE, -1,
       CONFUI_OUT_STR, gui->uiitem [CONFUI_SPINBOX_LOCALE].listidx, NULL);
 
   /* CONTEXT: configuration: the startup script to run before starting the player.  Used on Linux. */
-  confuiMakeItemEntryChooser (gui, &vbox, szgrp, _("Startup Script"),
+  confuiMakeItemEntryChooser (gui, vbox, szgrp, _("Startup Script"),
       CONFUI_ENTRY_CHOOSE_STARTUP, OPT_M_STARTUPSCRIPT,
       bdjoptGetStr (OPT_M_STARTUPSCRIPT), confuiSelectStartup);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_STARTUP].entry,
       uiEntryValidateFile, gui, UIENTRY_DELAYED);
 
   /* CONTEXT: configuration: the shutdown script to run before starting the player.  Used on Linux. */
-  confuiMakeItemEntryChooser (gui, &vbox, szgrp, _("Shutdown Script"),
+  confuiMakeItemEntryChooser (gui, vbox, szgrp, _("Shutdown Script"),
       CONFUI_ENTRY_CHOOSE_SHUTDOWN, OPT_M_SHUTDOWNSCRIPT,
       bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT), confuiSelectShutdown);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_SHUTDOWN].entry,
       uiEntryValidateFile, gui, UIENTRY_DELAYED);
 
+  uiwcontFree (vbox);
   uiwcontFree (szgrp);
 
   logProcEnd (LOG_PROC, "confuiBuildUIGeneral", "");

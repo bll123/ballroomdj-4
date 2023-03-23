@@ -114,7 +114,7 @@ enum {
 typedef struct se_internal {
   uiwcont_t           editalldisp;
   uiwcont_t           *parentwin;
-  uiwcont_t           vbox;
+  uiwcont_t           *vbox;
   uiwcont_t           *musicbrainzPixbuf;
   uiwcont_t           modified;
   uiwcont_t           *audioidImg;
@@ -195,7 +195,7 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   seint->ineditallapply = false;
   seint->musicbrainzPixbuf = NULL;
 
-  uiwcontInit (&seint->vbox);
+  seint->vbox = NULL;
   seint->audioidImg = NULL;
   uiwcontInit (&seint->modified);
 
@@ -278,6 +278,7 @@ uisongeditUIFree (uisongedit_t *uisongedit)
     }
 
     uiWidgetClearPersistent (seint->musicbrainzPixbuf);
+    uiwcontFree (seint->vbox);
     uiwcontFree (seint->musicbrainzPixbuf);
     uiwcontFree (seint->audioidImg);
 
@@ -305,8 +306,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     uiwcont_t *parentwin, uiwcont_t *statusMsg)
 {
   se_internal_t     *seint;
-  uiwcont_t         hbox;
-  uiwcont_t         col;
+  uiwcont_t         *hbox;
   uiwcont_t         *szgrp;
   uiwcont_t         uiwidget;
   uibutton_t        *uibutton;
@@ -322,19 +322,19 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   seint = uisongedit->seInternalData;
   seint->parentwin = parentwin;
 
-  uiCreateVertBox (&seint->vbox);
-  uiWidgetExpandHoriz (&seint->vbox);
+  seint->vbox = uiCreateVertBox ();
+  uiWidgetExpandHoriz (seint->vbox);
 
   seint->uikey = uiKeyAlloc ();
   seint->callbacks [UISONGEDIT_CB_KEYB] = callbackInit (
       uisongeditKeyEvent, uisongedit, NULL);
-  uiKeySetKeyCallback (seint->uikey, &seint->vbox,
+  uiKeySetKeyCallback (seint->uikey, seint->vbox,
       seint->callbacks [UISONGEDIT_CB_KEYB]);
 
-  uiCreateHorizBox (&hbox);
-  uiWidgetExpandHoriz (&hbox);
-  uiWidgetAlignHorizFill (&hbox);
-  uiBoxPackStart (&seint->vbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiWidgetAlignHorizFill (hbox);
+  uiBoxPackStart (seint->vbox, hbox);
 
   seint->callbacks [UISONGEDIT_CB_FIRST] = callbackInit (
       uisongeditFirstSelection, uisongedit, "songedit: first");
@@ -343,7 +343,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       _("First"), NULL);
   seint->buttons [UISONGEDIT_BUTTON_FIRST] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
 
   seint->callbacks [UISONGEDIT_CB_PREV] = callbackInit (
       uisongeditPreviousSelection, uisongedit, "songedit: previous");
@@ -353,7 +353,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   seint->buttons [UISONGEDIT_BUTTON_PREV] = uibutton;
   uiButtonSetRepeat (uibutton, UISONGEDIT_REPEAT_TIME);
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
 
   seint->callbacks [UISONGEDIT_CB_NEXT] = callbackInit (
       uisongeditNextSelection, uisongedit, "songedit: next");
@@ -363,7 +363,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   seint->buttons [UISONGEDIT_BUTTON_NEXT] = uibutton;
   uiButtonSetRepeat (uibutton, UISONGEDIT_REPEAT_TIME);
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
 
   seint->callbacks [UISONGEDIT_CB_PLAY] = callbackInit (
       uisongselPlayCallback, uisongsel, "songedit: play");
@@ -372,7 +372,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       _("Play"), NULL);
   seint->buttons [UISONGEDIT_BUTTON_PLAY] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
 
   seint->callbacks [UISONGEDIT_CB_SAVE] = callbackInit (
       uisongeditSaveCallback, uisongedit, "songedit: save");
@@ -381,20 +381,21 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
       _("Save"), NULL);
   seint->buttons [UISONGEDIT_BUTTON_SAVE] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiBoxPackEnd (&hbox, uiwidgetp);
+  uiBoxPackEnd (hbox, uiwidgetp);
 
   uiCreateLabel (&uiwidget, "");
-  uiBoxPackEnd (&hbox, &uiwidget);
+  uiBoxPackEnd (hbox, &uiwidget);
   uiWidgetSetMarginEnd (&uiwidget, 6);
   uiWidgetSetClass (&uiwidget, DARKACCENT_CLASS);
   uiwcontCopy (&seint->editalldisp, &uiwidget);
 
   /* audio-identification logo, modified indicator, */
   /* copy button, file label, filename */
-  uiCreateHorizBox (&hbox);
-  uiWidgetExpandHoriz (&hbox);
-  uiWidgetAlignHorizFill (&hbox);
-  uiBoxPackStart (&seint->vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiWidgetAlignHorizFill (hbox);
+  uiBoxPackStart (seint->vbox, hbox);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "musicbrainz-logo", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
@@ -406,10 +407,10 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiImageClear (seint->audioidImg);
   uiWidgetSetSizeRequest (seint->audioidImg, 24, -1);
   uiWidgetSetMarginStart (seint->audioidImg, 1);
-  uiBoxPackStart (&hbox, seint->audioidImg);
+  uiBoxPackStart (hbox, seint->audioidImg);
 
   uiCreateLabel (&uiwidget, " ");
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiwcontCopy (&seint->modified, &uiwidget);
   uiWidgetSetClass (&seint->modified, DARKACCENT_CLASS);
 
@@ -422,24 +423,25 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiButtonSetImageIcon (uibutton, "edit-copy");
   uiWidgetSetMarginStart (uiwidgetp, 1);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
 
   /* CONTEXT: song editor: label for displaying the audio file path */
   uiCreateColonLabel (&uiwidget, _("File"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiWidgetSetState (&uiwidget, UIWIDGET_DISABLE);
 
   uiCreateLabel (&uiwidget, "");
   uiLabelEllipsizeOn (&uiwidget);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiwcontCopy (&seint->filedisp, &uiwidget);
   uiWidgetSetClass (&seint->filedisp, DARKACCENT_CLASS);
   uiLabelSetSelectable (&seint->filedisp);
 
-  uiCreateHorizBox (&hbox);
-  uiWidgetExpandHoriz (&hbox);
-  uiWidgetAlignHorizFill (&hbox);
-  uiBoxPackStartExpand (&seint->vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiWidgetAlignHorizFill (hbox);
+  uiBoxPackStartExpand (seint->vbox, hbox);
 
   count = 0;
   for (int i = DISP_SEL_SONGEDIT_A; i <= DISP_SEL_SONGEDIT_C; ++i) {
@@ -471,19 +473,23 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   szgrp = uiCreateSizeGroupHoriz ();
 
   for (int i = DISP_SEL_SONGEDIT_A; i <= DISP_SEL_SONGEDIT_C; ++i) {
-    uiCreateVertBox (&col);
-    uiWidgetSetAllMargins (&col, 4);
-    uiWidgetExpandHoriz (&col);
-    uiWidgetExpandVert (&col);
-    uiBoxPackStartExpand (&hbox, &col);
+    uiwcont_t   *col;
 
-    uisongeditAddDisplay (uisongedit, &col, szgrp, i);
+    col = uiCreateVertBox ();
+    uiWidgetSetAllMargins (col, 4);
+    uiWidgetExpandHoriz (col);
+    uiWidgetExpandVert (col);
+    uiBoxPackStartExpand (hbox, col);
+
+    uisongeditAddDisplay (uisongedit, col, szgrp, i);
+    uiwcontFree (col);
   }
 
+  uiwcontFree (hbox);
   uiwcontFree (szgrp);
 
   logProcEnd (LOG_PROC, "uisongeditBuildUI", "");
-  return &seint->vbox;
+  return seint->vbox;
 }
 
 void
@@ -1027,10 +1033,9 @@ static void
 uisongeditAddDisplay (uisongedit_t *uisongedit, uiwcont_t *col, uiwcont_t *sg, int dispsel)
 {
   slist_t         *sellist;
-  uiwcont_t      hbox;
   char            *keystr;
   slistidx_t      dsiteridx;
-  se_internal_t *seint;
+  se_internal_t   *seint;
 
   logProcBegin (LOG_PROC, "uisongeditAddDisplay");
   seint = uisongedit->seInternalData;
@@ -1038,7 +1043,8 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, uiwcont_t *col, uiwcont_t *sg, i
 
   slistStartIterator (sellist, &dsiteridx);
   while ((keystr = slistIterateKey (sellist, &dsiteridx)) != NULL) {
-    int   tagkey;
+    uiwcont_t   *hbox;
+    int         tagkey;
 
     tagkey = slistGetNum (sellist, keystr);
 
@@ -1050,18 +1056,20 @@ uisongeditAddDisplay (uisongedit_t *uisongedit, uiwcont_t *col, uiwcont_t *sg, i
       continue;
     }
 
-    uiCreateHorizBox (&hbox);
-    uiWidgetExpandHoriz (&hbox);
-    uiBoxPackStart (col, &hbox);
-    uisongeditAddItem (uisongedit, &hbox, sg, tagkey);
+    hbox = uiCreateHorizBox ();
+    uiWidgetExpandHoriz (hbox);
+    uiBoxPackStart (col, hbox);
+    uisongeditAddItem (uisongedit, hbox, sg, tagkey);
     seint->items [seint->itemcount].tagkey = tagkey;
     if (tagkey == TAG_BPM) {
       ++seint->itemcount;
-      uisongeditAddItem (uisongedit, &hbox, sg, TAG_BPM_DISPLAY);
+      uisongeditAddItem (uisongedit, hbox, sg, TAG_BPM_DISPLAY);
       seint->items [seint->itemcount].tagkey = TAG_BPM_DISPLAY;
     }
     ++seint->itemcount;
+    uiwcontFree (hbox);
   }
+
   logProcEnd (LOG_PROC, "uisongeditAddDisplay", "");
 }
 

@@ -20,22 +20,18 @@
 
 #include "ui/uibox.h"
 
-void
-uiCreateVertBox (uiwcont_t *uiwidget)
-{
-  GtkWidget *box;
+static uiwcont_t * uiCreateBox (int orientation);
 
-  box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  uiwidget->widget = box;
+uiwcont_t *
+uiCreateVertBox (void)
+{
+  return uiCreateBox (GTK_ORIENTATION_VERTICAL);
 }
 
-void
-uiCreateHorizBox (uiwcont_t *uiwidget)
+uiwcont_t *
+uiCreateHorizBox (void)
 {
-  GtkWidget *box;
-
-  box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  uiwidget->widget = box;
+  return uiCreateBox (GTK_ORIENTATION_HORIZONTAL);
 }
 
 void
@@ -66,5 +62,17 @@ void
 uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
   gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, TRUE, TRUE, 0);
+}
+
+static uiwcont_t *
+uiCreateBox (int orientation)
+{
+  uiwcont_t *uiwidget;
+  GtkWidget *box;
+
+  box = gtk_box_new (orientation, 0);
+  uiwidget = uiwcontAlloc ();
+  uiwidget->widget = box;
+  return uiwidget;
 }
 

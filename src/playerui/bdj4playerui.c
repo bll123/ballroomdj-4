@@ -98,7 +98,7 @@ typedef struct {
   uinbtabid_t     *nbtabid;
   int             currpage;
   uiwcont_t       *window;
-  uiwcont_t       vbox;
+  uiwcont_t       *vbox;
   callback_t      *callbacks [PLUI_CB_MAX];
   uiwcont_t       clock;
   uiwcont_t       *musicqImage [MUSICQ_PB_MAX];
@@ -126,6 +126,7 @@ typedef struct {
   bool            mainalready : 1;
   bool            marqueeoff : 1;
   bool            mqfontsizeactive : 1;
+  bool            optionsalloc : 1;
 } playerui_t;
 
 static datafilekey_t playeruidfkeys [] = {
@@ -265,9 +266,9 @@ main (int argc, char *argv[])
   plui.optiondf = datafileAllocParse ("playerui-opt", DFTYPE_KEY_VAL, tbuff,
       playeruidfkeys, PLAYERUI_DFKEY_COUNT);
   plui.options = datafileGetList (plui.optiondf);
+  plui.optionsalloc = false;
   if (plui.options == NULL) {
-    datafileFree (plui.optiondf);
-    plui.optiondf = NULL;
+    plui.optionsalloc = true;
     plui.options = nlistAlloc ("playerui-opt", LIST_ORDERED, NULL);
 
     nlistSetNum (plui.options, PLUI_SHOW_EXTRA_QUEUES, false);
@@ -356,6 +357,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (plui->window);
   uiCleanup ();
 
+  uiwcontFree (plui->vbox);
   uiwcontFree (plui->window);
   uiWidgetClearPersistent (plui->ledonPixbuf);
   uiWidgetClearPersistent (plui->ledoffPixbuf);
@@ -383,11 +385,10 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uisfFree (plui->uisongfilter);
   uiKeyFree (plui->uikey);
   uireqextFree (plui->uireqext);
-  if (plui->optiondf != NULL) {
-    datafileFree (plui->optiondf);
-  } else if (plui->options != NULL) {
+  if (plui->optionsalloc) {
     nlistFree (plui->options);
   }
+  datafileFree (plui->optiondf);
 
   uiplayerFree (plui->uiplayer);
   uimusicqFree (plui->uimusicq);
@@ -403,7 +404,7 @@ pluiBuildUI (playerui_t *plui)
   uiwcont_t   *menubar;
   uiwcont_t   *menu;
   uiwcont_t   *menuitem;
-  uiwcont_t   hbox;
+  uiwcont_t   *hbox;
   uiwcont_t   uiwidget;
   uiwcont_t   *uiwidgetp;
   uibutton_t  *uibutton;
@@ -439,36 +440,36 @@ pluiBuildUI (playerui_t *plui)
 
   pluiInitializeUI (plui);
 
-  uiCreateVertBox (&plui->vbox);
-  uiBoxPackInWindow (plui->window, &plui->vbox);
-  uiWidgetSetAllMargins (&plui->vbox, 2);
+  plui->vbox = uiCreateVertBox ();
+  uiBoxPackInWindow (plui->window, plui->vbox);
+  uiWidgetSetAllMargins (plui->vbox, 2);
 
   plui->uikey = uiKeyAlloc ();
   plui->callbacks [PLUI_CB_KEYB] = callbackInit (
       pluiKeyEvent, plui, NULL);
-  uiKeySetKeyCallback (plui->uikey, &plui->vbox,
+  uiKeySetKeyCallback (plui->uikey, plui->vbox,
       plui->callbacks [PLUI_CB_KEYB]);
 
   /* menu */
-  uiutilsAddAccentColorDisplay (&plui->vbox, &hbox, &uiwidget);
-  uiWidgetExpandHoriz (&hbox);
+  hbox = uiutilsAddAccentColorDisplay (plui->vbox);
+  uiWidgetExpandHoriz (hbox);
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStart (&hbox, menubar);
+  uiBoxPackStart (hbox, menubar);
 
   uiCreateLabel (&plui->clock, "");
-  uiBoxPackEnd (&hbox, &plui->clock);
+  uiBoxPackEnd (hbox, &plui->clock);
   uiWidgetSetMarginStart (&plui->clock, 4);
   uiWidgetSetState (&plui->clock, UIWIDGET_DISABLE);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  uiBoxPackEnd (hbox, &uiwidget);
   uiwcontCopy (&plui->errorMsg, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  uiBoxPackEnd (hbox, &uiwidget);
   uiwcontCopy (&plui->statusMsg, &uiwidget);
 
   /* actions */
@@ -553,10 +554,10 @@ pluiBuildUI (playerui_t *plui)
 
   /* player */
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
-  uiBoxPackStart (&plui->vbox, uiwidgetp);
+  uiBoxPackStart (plui->vbox, uiwidgetp);
 
   plui->notebook = uiCreateNotebook ();
-  uiBoxPackStartExpand (&plui->vbox, plui->notebook);
+  uiBoxPackStartExpand (plui->vbox, plui->notebook);
 
   plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitLong (
       pluiSwitchPage, plui);
@@ -588,7 +589,7 @@ pluiBuildUI (playerui_t *plui)
 
     uiwidgetp = uimusicqBuildUI (plui->uimusicq, plui->window, i,
         &plui->errorMsg, NULL);
-    uiCreateHorizBox (&hbox);
+    hbox = uiCreateHorizBox ();
     if (tabtype == UI_TAB_HISTORY) {
       /* CONTEXT: playerui: name of the history tab : displayed played songs */
       str = _("History");
@@ -596,17 +597,17 @@ pluiBuildUI (playerui_t *plui)
       str = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, i);
     }
     uiCreateLabel (&uiwidget, str);
-    uiBoxPackStart (&hbox, &uiwidget);
+    uiBoxPackStart (hbox, &uiwidget);
     if (i < MUSICQ_HISTORY) {
       plui->musicqImage [i] = uiImageNew ();
       uiImageSetFromPixbuf (plui->musicqImage [i], plui->ledonPixbuf);
       uiWidgetSetMarginStart (plui->musicqImage [i], 1);
-      uiBoxPackStart (&hbox, plui->musicqImage [i]);
+      uiBoxPackStart (hbox, plui->musicqImage [i]);
     }
 
-    uiNotebookAppendPage (plui->notebook, uiwidgetp, &hbox);
+    uiNotebookAppendPage (plui->notebook, uiwidgetp, hbox);
     uinbutilIDAdd (plui->nbtabid, tabtype);
-    uiWidgetShowAll (&hbox);
+    uiWidgetShowAll (hbox);
   }
 
   /* request tab */
@@ -642,6 +643,7 @@ pluiBuildUI (playerui_t *plui)
 
   plui->uibuilt = true;
 
+  uiwcontFree (hbox);
   uiwcontFree (menu);
   uiwcontFree (menubar);
 
@@ -1342,8 +1344,8 @@ pluiMarqueeFontSizeDialog (void *udata)
 static void
 pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
+  uiwcont_t    *vbox;
+  uiwcont_t    *hbox;
   uiwcont_t    uiwidget;
 
   logProcBegin (LOG_PROC, "pluiCreateMarqueeFontSizeDialog");
@@ -1360,30 +1362,34 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
       NULL
       );
 
-  uiCreateVertBox (&vbox);
-  uiDialogPackInDialog (plui->marqueeFontSizeDialog, &vbox);
+  vbox = uiCreateVertBox ();
+  uiDialogPackInDialog (plui->marqueeFontSizeDialog, vbox);
 
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playerui: marquee font size dialog: the font size selector */
   uiCreateColonLabel (&uiwidget, _("Font Size"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
 
   uiSpinboxIntCreate (&plui->marqueeSpinBox);
   uiSpinboxSet (&plui->marqueeSpinBox, 10.0, 300.0);
   uiSpinboxSetValue (&plui->marqueeSpinBox, 36.0);
-  uiBoxPackStart (&hbox, &plui->marqueeSpinBox);
+  uiBoxPackStart (hbox, &plui->marqueeSpinBox);
   g_signal_connect (plui->marqueeSpinBox.widget, "value-changed",
       G_CALLBACK (pluiMarqueeFontSizeChg), plui);
 
   /* the dialog doesn't have any space above the buttons */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   uiCreateLabel (&uiwidget, "");
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   plui->fontszdialogcreated = true;
+
+  uiwcontFree (vbox);
+  uiwcontFree (hbox);
 
   logProcEnd (LOG_PROC, "pluiCreateMarqueeFontSizeDialog", "");
 }

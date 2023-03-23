@@ -87,6 +87,7 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     int     sz;
 
+    uimusicq->ui [i].mainbox = NULL;
     uimusicq->ui [i].dispselType = dispselType;
     if (i == MUSICQ_HISTORY) {
       /* override the setting from the player ui */
@@ -138,6 +139,7 @@ uimusicqFree (uimusicq_t *uimusicq)
     callbackFree (uimusicq->queueplcb);
     callbackFree (uimusicq->savelistcb);
     for (int i = 0; i < MUSICQ_MAX; ++i) {
+      uiwcontFree (uimusicq->ui [i].mainbox);
       uiDropDownFree (uimusicq->ui [i].playlistsel);
       uiEntryFree (uimusicq->ui [i].slname);
     }

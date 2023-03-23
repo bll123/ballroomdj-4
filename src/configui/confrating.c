@@ -29,33 +29,37 @@ static void   confuiRatingSave (confuigui_t *gui);
 void
 confuiBuildUIEditRatings (confuigui_t *gui)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
+  uiwcont_t    *vbox;
+  uiwcont_t    *hbox;
   uiwcont_t    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditRatings");
-  uiCreateVertBox (&vbox);
+  vbox = uiCreateVertBox ();
 
   /* edit ratings */
-  confuiMakeNotebookTab (&vbox, gui,
+  confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: edit the dance ratings table */
       _("Edit Ratings"), CONFUI_ID_RATINGS);
 
   /* CONTEXT: configuration: dance ratings: information on how to order the ratings */
   uiCreateLabel (&uiwidget, _("Order from the lowest rating to the highest rating."));
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (vbox, &uiwidget);
 
   /* CONTEXT: configuration: dance ratings: information on how to edit a rating entry */
   uiCreateLabel (&uiwidget, _("Double click on a field to edit."));
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (vbox, &uiwidget);
 
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStartExpand (&vbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStartExpand (vbox, hbox);
 
-  confuiMakeItemTable (gui, &hbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
+  confuiMakeItemTable (gui, hbox, CONFUI_ID_RATINGS, CONFUI_TABLE_KEEP_FIRST);
   gui->tables [CONFUI_ID_RATINGS].listcreatefunc = confuiRatingListCreate;
   gui->tables [CONFUI_ID_RATINGS].savefunc = confuiRatingSave;
   confuiCreateRatingTable (gui);
+
+  uiwcontFree (vbox);
+  uiwcontFree (hbox);
+
   logProcEnd (LOG_PROC, "confuiBuildUIEditRatings", "");
 }
 

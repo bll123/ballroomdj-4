@@ -154,7 +154,7 @@ typedef struct {
   uiwcont_t       supportStatus;
   uiwcont_t       statusMsg;
   uiwcont_t       supportStatusMsg;
-  uiwcont_t       profileAccent;
+  uiwcont_t       *profileAccent;
   uitextbox_t     *supporttb;
   uientry_t       *supportsubject;
   uientry_t       *supportemail;
@@ -163,6 +163,7 @@ typedef struct {
   nlist_t         *options;
   bool            supportactive : 1;
   bool            supportmsgactive : 1;
+  bool            optionsalloc : 1;
 } startui_t;
 
 enum {
@@ -303,6 +304,7 @@ main (int argc, char *argv[])
   starter.supportSendDB = NULL;
   starter.optiondf = NULL;
   starter.options = NULL;
+  starter.optionsalloc = false;
   starter.supportsubject = NULL;
   starter.supportemail = NULL;
   starter.supportactive = false;
@@ -473,6 +475,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (starter->window);
   uiCleanup ();
 
+  uiwcontFree (starter->profileAccent);
   uiDialogDestroy (starter->supportMsgDialog);
   starterSupportMsgDialogClear (starter);
   uiDialogDestroy (starter->supportDialog);
@@ -506,11 +509,10 @@ starterClosingCallback (void *udata, programstate_t programState)
     callbackFree (starter->linkinfo [i].macoscb);
     dataFree (starter->linkinfo [i].uri);
   }
-  if (starter->optiondf != NULL) {
-    datafileFree (starter->optiondf);
-  } else if (starter->options != NULL) {
+  if (starter->optionsalloc) {
     nlistFree (starter->options);
   }
+  datafileFree (starter->optiondf);
   dataFree (starter->supportDir);
   slistFree (starter->supportFileList);
   nlistFree (starter->proflist);
@@ -529,18 +531,15 @@ starterBuildUI (startui_t  *starter)
   uiwcont_t   *menubar;
   uiwcont_t   *menu;
   uiwcont_t   *menuitem;
-  uiwcont_t   vbox;
-  uiwcont_t   bvbox;
-  uiwcont_t   hbox;
+  uiwcont_t   *vbox;
+  uiwcont_t   *bvbox;
+  uiwcont_t   *hbox;
   uiwcont_t   *szgrp;
   char        imgbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   int         dispidx;
 
   logProcBegin (LOG_PROC, "starterBuildUI");
-  uiwcontInit (&vbox);
-  uiwcontInit (&bvbox);
-  uiwcontInit (&hbox);
 
   szgrp = uiCreateSizeGroupHoriz ();
 
@@ -552,20 +551,20 @@ starterBuildUI (startui_t  *starter)
       starter->callbacks [START_CB_EXIT],
       bdjoptGetStr (OPT_P_PROFILENAME), imgbuff);
 
-  uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, 2);
-  uiBoxPackInWindow (starter->window, &vbox);
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, 2);
+  uiBoxPackInWindow (starter->window, vbox);
 
-  uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
-  uiwcontCopy (&starter->profileAccent, &uiwidget);
+  hbox = uiutilsAddAccentColorDisplay (vbox);
+  starter->profileAccent = hbox;
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  uiBoxPackEnd (hbox, &uiwidget);
   uiwcontCopy (&starter->statusMsg, &uiwidget);
 
   menubar = uiCreateMenubar ();
-  uiBoxPackStart (&hbox, menubar);
+  uiBoxPackStart (hbox, menubar);
 
   /* CONTEXT: starterui: action menu for the starter user interface */
   menuitem = uiMenuCreateItem (menubar, _("Actions"), NULL);
@@ -607,13 +606,14 @@ starterBuildUI (startui_t  *starter)
   }
 
   /* main display */
-  uiCreateHorizBox (&hbox);
-  uiWidgetSetMarginTop (&hbox, 4);
-  uiBoxPackStart (&vbox, &hbox);
+  /* do not free the profile accent hbox */
+  hbox = uiCreateHorizBox ();
+  uiWidgetSetMarginTop (hbox, 4);
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: profile to be used when starting BDJ4 */
   uiCreateColonLabel (&uiwidget, _("Profile"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
 
   /* get the profile list after bdjopt has been initialized */
   dispidx = starterGetProfiles (starter);
@@ -625,21 +625,22 @@ starterBuildUI (startui_t  *starter)
   uiwidgetp = uiSpinboxGetWidgetContainer (starter->profilesel);
   uiWidgetSetMarginStart (uiwidgetp, 4);
   uiWidgetAlignHorizFill (uiwidgetp);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
 
-  uiCreateHorizBox (&hbox);
-  uiWidgetExpandHoriz (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
 
-  uiCreateVertBox (&bvbox);
-  uiBoxPackStart (&hbox, &bvbox);
+  bvbox = uiCreateVertBox ();
+  uiBoxPackStart (hbox, bvbox);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
      "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
   uiwidgetp = uiImageScaledFromFile (tbuff, 128);
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetSetAllMargins (uiwidgetp, 10);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
   starter->callbacks [START_CB_PLAYER] = callbackInit (
@@ -653,7 +654,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiBoxPackStart (&bvbox, uiwidgetp);
+  uiBoxPackStart (bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
   starter->callbacks [START_CB_MANAGE] = callbackInit (
@@ -667,7 +668,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiBoxPackStart (&bvbox, uiwidgetp);
+  uiBoxPackStart (bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
   starter->callbacks [START_CB_CONFIG] = callbackInit (
@@ -681,7 +682,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiBoxPackStart (&bvbox, uiwidgetp);
+  uiBoxPackStart (bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
   starter->callbacks [START_CB_SUPPORT] = callbackInit (
@@ -695,7 +696,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiBoxPackStart (&bvbox, uiwidgetp);
+  uiBoxPackStart (bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
   uibutton = uiCreateButton (
@@ -707,7 +708,7 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetMarginTop (uiwidgetp, 2);
   uiWidgetAlignHorizStart (uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
-  uiBoxPackStart (&bvbox, uiwidgetp);
+  uiBoxPackStart (bvbox, uiwidgetp);
   uiButtonAlignLeft (uibutton);
 
   starterSetWindowPosition (starter);
@@ -718,6 +719,9 @@ starterBuildUI (startui_t  *starter)
 
   uiWidgetShowAll (starter->window);
 
+  uiwcontFree (vbox);
+  uiwcontFree (bvbox);
+  uiwcontFree (hbox);
   uiwcontFree (szgrp);
   uiwcontFree (menu);
   uiwcontFree (menubar);
@@ -1242,8 +1246,8 @@ static bool
 starterProcessSupport (void *udata)
 {
   startui_t     *starter = udata;
-  uiwcont_t     vbox;
-  uiwcont_t     hbox;
+  uiwcont_t     *vbox;
+  uiwcont_t     *hbox;
   uiwcont_t     uiwidget;
   uiwcont_t     *uiwidgetp;
   uiwcont_t     *uidialog;
@@ -1275,27 +1279,28 @@ starterProcessSupport (void *udata)
 
   szgrp = uiCreateSizeGroupHoriz ();
 
-  uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, 2);
-  uiDialogPackInDialog (uidialog, &vbox);
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, 2);
+  uiDialogPackInDialog (uidialog, vbox);
 
   /* status message line */
-  uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
+  hbox = uiutilsAddAccentColorDisplay (vbox);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiwcontCopy (&starter->supportStatusMsg, &uiwidget);
-  uiBoxPackEnd (&hbox, &uiwidget);
+  uiBoxPackEnd (hbox, &uiwidget);
   uiLabelSetText (&starter->supportStatusMsg, "");
 
   /* begin line */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog, version display */
   snprintf (tbuff, sizeof (tbuff), _("%s Version"), BDJ4_NAME);
   uiCreateColonLabel (&uiwidget, tbuff);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
   builddate = sysvarsGetStr (SV_BDJ4_BUILDDATE);
@@ -1306,19 +1311,20 @@ starterProcessSupport (void *udata)
   snprintf (tbuff, sizeof (tbuff), "%s %s (%s)",
       sysvarsGetStr (SV_BDJ4_VERSION), rlslvl, builddate);
   uiCreateLabel (&uiwidget, tbuff);
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
 
   /* begin line */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog, latest version display */
   uiCreateColonLabel (&uiwidget, _("Latest Version"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
   uiCreateLabel (&uiwidget, "");
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
 
   if (*starter->latestversion == '\0') {
     starterSupportInit (starter);
@@ -1333,7 +1339,7 @@ starterProcessSupport (void *udata)
   /* begin line */
   /* CONTEXT: starterui: basic support dialog, list of support options */
   uiCreateColonLabel (&uiwidget, _("Support options"));
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (vbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
   /* begin line */
@@ -1345,7 +1351,7 @@ starterProcessSupport (void *udata)
     uiLinkSetActivateCallback (uiwidgetp,
         starter->linkinfo [START_LINK_CB_DOWNLOAD].macoscb);
   }
-  uiBoxPackStart (&vbox, uiwidgetp);
+  uiBoxPackStart (vbox, uiwidgetp);
   starter->linkinfo [START_LINK_CB_DOWNLOAD].uiwidgetp = uiwidgetp;
 
   /* begin line */
@@ -1357,7 +1363,7 @@ starterProcessSupport (void *udata)
     uiLinkSetActivateCallback (uiwidgetp,
         starter->linkinfo [START_LINK_CB_WIKI].macoscb);
   }
-  uiBoxPackStart (&vbox, uiwidgetp);
+  uiBoxPackStart (vbox, uiwidgetp);
   starter->linkinfo [START_LINK_CB_WIKI].uiwidgetp = uiwidgetp;
 
   /* begin line */
@@ -1369,7 +1375,7 @@ starterProcessSupport (void *udata)
     uiLinkSetActivateCallback (uiwidgetp,
         starter->linkinfo [START_LINK_CB_FORUM].macoscb);
   }
-  uiBoxPackStart (&vbox, uiwidgetp);
+  uiBoxPackStart (vbox, uiwidgetp);
   starter->linkinfo [START_LINK_CB_FORUM].uiwidgetp = uiwidgetp;
 
   /* begin line */
@@ -1381,12 +1387,13 @@ starterProcessSupport (void *udata)
     uiLinkSetActivateCallback (uiwidgetp,
         starter->linkinfo [START_LINK_CB_TICKETS].macoscb);
   }
-  uiBoxPackStart (&vbox, uiwidgetp);
+  uiBoxPackStart (vbox, uiwidgetp);
   starter->linkinfo [START_LINK_CB_TICKETS].uiwidgetp = uiwidgetp;
 
   /* begin line */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   uibutton = uiCreateButton (
       starter->callbacks [START_CB_SEND_SUPPORT],
@@ -1394,11 +1401,13 @@ starterProcessSupport (void *udata)
       _("Send Support Message"), NULL);
   starter->buttons [START_BUTTON_SEND_SUPPORT] = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiBoxPackStart (&hbox, uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
 
   starter->supportDialog = uidialog;
   uiDialogShow (uidialog);
 
+  uiwcontFree (vbox);
+  uiwcontFree (hbox);
   uiwcontFree (szgrp);
 
   return UICB_CONT;
@@ -1537,7 +1546,7 @@ starterResetProfile (startui_t *starter, int profidx)
   if (profidx != starter->newprofile) {
     bdjoptInit ();
     uiWindowSetTitle (starter->window, bdjoptGetStr (OPT_P_PROFILENAME));
-    uiutilsSetAccentColor (&starter->profileAccent);
+    uiutilsSetAccentColor (starter->profileAccent);
     starterLoadOptions (starter);
     bdjvarsAdjustPorts ();
   }
@@ -1590,7 +1599,7 @@ starterCheckProfile (startui_t *starter)
     /* select a completely random color */
     createRandomColor (tbuff, sizeof (tbuff));
     bdjoptSetStr (OPT_P_UI_PROFILE_COL, tbuff);
-    uiutilsSetAccentColor (&starter->profileAccent);
+    uiutilsSetAccentColor (starter->profileAccent);
 
     bdjoptSave ();
 
@@ -1684,8 +1693,8 @@ starterCreateSupportMsgDialog (void *udata)
 {
   startui_t     *starter = udata;
   uiwcont_t     uiwidget;
-  uiwcont_t     vbox;
-  uiwcont_t     hbox;
+  uiwcont_t     *vbox;
+  uiwcont_t     *hbox;
   uiwcont_t     *uidialog;
   uiwcont_t     *szgrp;
   uitextbox_t   *tb;
@@ -1697,8 +1706,6 @@ starterCreateSupportMsgDialog (void *udata)
   starter->supportmsgactive = true;
 
   uiwcontInit (&uiwidget);
-  uiwcontInit (&vbox);
-  uiwcontInit (&hbox);
 
   uidialog = uiCreateDialog (starter->window,
       starter->callbacks [START_CB_SUPPORT_MSG_RESP],
@@ -1716,64 +1723,66 @@ starterCreateSupportMsgDialog (void *udata)
 
   szgrp = uiCreateSizeGroupHoriz ();
 
-  uiCreateVertBox (&vbox);
-  uiWidgetSetAllMargins (&vbox, 2);
-  uiDialogPackInDialog (uidialog, &vbox);
+  vbox = uiCreateVertBox ();
+  uiWidgetSetAllMargins (vbox, 2);
+  uiDialogPackInDialog (uidialog, vbox);
 
   /* profile color line */
-  uiutilsAddAccentColorDisplay (&vbox, &hbox, &uiwidget);
+  hbox = uiutilsAddAccentColorDisplay (vbox);
 
   /* line 1 */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: sending support message: user's e-mail address */
   uiCreateColonLabel (&uiwidget, _("E-Mail Address"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
   starter->supportemail = uiEntryInit (50, 100);
   uiEntryCreate (starter->supportemail);
-  uiBoxPackStart (&hbox, uiEntryGetWidgetContainer (starter->supportemail));
+  uiBoxPackStart (hbox, uiEntryGetWidgetContainer (starter->supportemail));
 
   /* line 2 */
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStart (&vbox, &hbox);
+  uiwcontFree (hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: sending support message: subject of message */
   uiCreateColonLabel (&uiwidget, _("Subject"));
-  uiBoxPackStart (&hbox, &uiwidget);
+  uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
   starter->supportsubject = uiEntryInit (50, 100);
   uiEntryCreate (starter->supportsubject);
-  uiBoxPackStart (&hbox, uiEntryGetWidgetContainer (starter->supportsubject));
+  uiBoxPackStart (hbox, uiEntryGetWidgetContainer (starter->supportsubject));
 
   /* line 3 */
   /* CONTEXT: starterui: sending support message: message text */
   uiCreateColonLabel (&uiwidget, _("Message"));
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (vbox, &uiwidget);
 
   /* line 4 */
   tb = uiTextBoxCreate (200, NULL);
   uiTextBoxHorizExpand (tb);
   uiTextBoxVertExpand (tb);
-  uiBoxPackStartExpand (&vbox, uiTextBoxGetScrolledWindow (tb));
+  uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (tb));
   starter->supporttb = tb;
 
   /* line 5 */
   /* CONTEXT: starterui: sending support message: checkbox: option to send data files */
   starter->supportSendFiles = uiCreateCheckButton (_("Attach Data Files"), 0);
-  uiBoxPackStart (&vbox, starter->supportSendFiles);
+  uiBoxPackStart (vbox, starter->supportSendFiles);
 
   /* line 6 */
   /* CONTEXT: starterui: sending support message: checkbox: option to send database */
   starter->supportSendDB = uiCreateCheckButton (_("Attach Database"), 0);
-  uiBoxPackStart (&vbox, starter->supportSendDB);
+  uiBoxPackStart (vbox, starter->supportSendDB);
 
   /* line 7 */
   uiCreateLabel (&uiwidget, "");
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (vbox, &uiwidget);
   uiLabelEllipsizeOn (&uiwidget);
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiwcontCopy (&starter->supportStatus, &uiwidget);
@@ -1781,6 +1790,8 @@ starterCreateSupportMsgDialog (void *udata)
   starter->supportMsgDialog = uidialog;
   uiDialogShow (uidialog);
 
+  uiwcontFree (vbox);
+  uiwcontFree (hbox);
   uiwcontFree (szgrp);
 
   return UICB_CONT;
@@ -2136,13 +2147,13 @@ starterLoadOptions (startui_t *starter)
 {
   char  tbuff [MAXPATHLEN];
 
-  if (starter->optiondf != NULL) {
-    datafileFree (starter->optiondf);
-  } else if (starter->options != NULL) {
+  if (starter->optionsalloc) {
     nlistFree (starter->options);
   }
+  datafileFree (starter->optiondf);
   starter->optiondf = NULL;
   starter->options = NULL;
+  starter->optionsalloc = false;
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
@@ -2150,6 +2161,7 @@ starterLoadOptions (startui_t *starter)
       starteruidfkeys, STARTERUI_KEY_MAX);
   starter->options = datafileGetList (starter->optiondf);
   if (starter->options == NULL) {
+    starter->optionsalloc = true;
     starter->options = nlistAlloc ("starterui-opt", LIST_ORDERED, NULL);
 
     nlistSetNum (starter->options, STARTERUI_POSITION_X, -1);

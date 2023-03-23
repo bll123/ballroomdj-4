@@ -81,9 +81,9 @@ confuiInitEditDances (confuigui_t *gui)
 void
 confuiBuildUIEditDances (confuigui_t *gui)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
-  uiwcont_t    dvbox;
+  uiwcont_t     *vbox;
+  uiwcont_t     *hbox;
+  uiwcont_t     *dvbox;
   uiwcont_t     *szgrp;
   uiwcont_t     *szgrpB;
   uiwcont_t     *szgrpC;
@@ -92,57 +92,57 @@ confuiBuildUIEditDances (confuigui_t *gui)
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditDances");
   gui->inchange = true;
-  uiCreateVertBox (&vbox);
+  vbox = uiCreateVertBox ();
 
   szgrp = uiCreateSizeGroupHoriz ();
   szgrpB = uiCreateSizeGroupHoriz ();
   szgrpC = uiCreateSizeGroupHoriz ();
 
   /* edit dances */
-  confuiMakeNotebookTab (&vbox, gui,
+  confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: edit the dance table */
       _("Edit Dances"), CONFUI_ID_DANCE);
 
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStartExpand (&vbox, &hbox);
-  uiWidgetAlignHorizStart (&hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStartExpand (vbox, hbox);
+  uiWidgetAlignHorizStart (hbox);
 
-  confuiMakeItemTable (gui, &hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
+  confuiMakeItemTable (gui, hbox, CONFUI_ID_DANCE, CONFUI_TABLE_NO_UP_DOWN);
   gui->tables [CONFUI_ID_DANCE].savefunc = confuiDanceSave;
 
   confuiCreateDanceTable (gui);
 
-  uiCreateVertBox (&dvbox);
-  uiWidgetSetMarginStart (&dvbox, 8);
-  uiBoxPackStart (&hbox, &dvbox);
+  dvbox = uiCreateVertBox ();
+  uiWidgetSetMarginStart (dvbox, 8);
+  uiBoxPackStart (hbox, dvbox);
 
-  confuiMakeItemEntry (gui, &dvbox, szgrp, tagdefs [TAG_DANCE].displayname,
+  confuiMakeItemEntry (gui, dvbox, szgrp, tagdefs [TAG_DANCE].displayname,
       CONFUI_ENTRY_DANCE_DANCE, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].entry,
       confuiDanceEntryDanceChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_DANCE_DANCE].danceidx = DANCE_DANCE;
 
   /* CONTEXT: configuration: dances: the type of the dance (club/latin/standard) */
-  confuiMakeItemSpinboxText (gui, &dvbox, szgrp, szgrpB, _("Type"),
+  confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, _("Type"),
       CONFUI_SPINBOX_DANCE_TYPE, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxTypeChg);
   gui->uiitem [CONFUI_SPINBOX_DANCE_TYPE].danceidx = DANCE_TYPE;
 
   /* CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow) */
-  confuiMakeItemSpinboxText (gui, &dvbox, szgrp, szgrpB, _("Speed"),
+  confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpB, _("Speed"),
       CONFUI_SPINBOX_DANCE_SPEED, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxSpeedChg);
   gui->uiitem [CONFUI_SPINBOX_DANCE_SPEED].danceidx = DANCE_SPEED;
 
   /* CONTEXT: configuration: dances: tags associated with the dance */
-  confuiMakeItemEntry (gui, &dvbox, szgrp, _("Tags"),
+  confuiMakeItemEntry (gui, dvbox, szgrp, _("Tags"),
       CONFUI_ENTRY_DANCE_TAGS, -1, "", CONFUI_NO_INDENT);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].entry,
       confuiDanceEntryTagsChg, gui, UIENTRY_IMMEDIATE);
   gui->uiitem [CONFUI_ENTRY_DANCE_TAGS].danceidx = DANCE_TAGS;
 
   /* CONTEXT: configuration: dances: play the selected announcement before the dance is played */
-  confuiMakeItemEntryChooser (gui, &dvbox, szgrp, _("Announcement"),
+  confuiMakeItemEntryChooser (gui, dvbox, szgrp, _("Announcement"),
       CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT, -1, "",
       confuiSelectAnnouncement);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].entry,
@@ -152,20 +152,20 @@ confuiBuildUIEditDances (confuigui_t *gui)
   bpmstr = tagdefs [TAG_BPM].displayname;
   /* CONTEXT: configuration: dances: low BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
-  confuiMakeItemSpinboxNum (gui, &dvbox, szgrp, szgrpC, tbuff,
+  confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpC, tbuff,
       CONFUI_SPINBOX_DANCE_LOW_BPM, -1, 10, 500, 0,
       confuiDanceSpinboxLowBPMChg);
   gui->uiitem [CONFUI_SPINBOX_DANCE_LOW_BPM].danceidx = DANCE_LOW_BPM;
 
   /* CONTEXT: configuration: dances: high BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
-  confuiMakeItemSpinboxNum (gui, &dvbox, szgrp, szgrpC, tbuff,
+  confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpC, tbuff,
       CONFUI_SPINBOX_DANCE_HIGH_BPM, -1, 10, 500, 0,
       confuiDanceSpinboxHighBPMChg);
   gui->uiitem [CONFUI_SPINBOX_DANCE_HIGH_BPM].danceidx = DANCE_HIGH_BPM;
 
   /* CONTEXT: configuration: dances: time signature for the dance */
-  confuiMakeItemSpinboxText (gui, &dvbox, szgrp, szgrpC, _("Time Signature"),
+  confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpC, _("Time Signature"),
       CONFUI_SPINBOX_DANCE_TIME_SIG, -1, CONFUI_OUT_NUM, 0,
       confuiDanceSpinboxTimeSigChg);
   gui->uiitem [CONFUI_SPINBOX_DANCE_TIME_SIG].danceidx = DANCE_TIMESIG;
@@ -180,6 +180,9 @@ confuiBuildUIEditDances (confuigui_t *gui)
 
   gui->inchange = false;
 
+  uiwcontFree (dvbox);
+  uiwcontFree (vbox);
+  uiwcontFree (hbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpB);
   uiwcontFree (szgrpC);

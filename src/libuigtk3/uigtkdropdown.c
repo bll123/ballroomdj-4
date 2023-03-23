@@ -120,6 +120,10 @@ uiwcont_t *
 uiDropDownCreate (uidropdown_t *dropdown, uiwcont_t *parentwin,
     const char *title, callback_t *uicb, void *udata)
 {
+  if (dropdown == NULL) {
+    return NULL;
+  }
+
   dropdown->parentwin = parentwin;
   dropdown->title = mdstrdup (title);
   uiDropDownButtonCreate (dropdown);
@@ -131,6 +135,10 @@ uiwcont_t *
 uiComboboxCreate (uidropdown_t *dropdown, uiwcont_t *parentwin,
     const char *title, callback_t *uicb, void *udata)
 {
+  if (dropdown == NULL) {
+    return NULL;
+  }
+
   dropdown->iscombobox = true;
   return uiDropDownCreate (dropdown, parentwin, title, uicb, udata);
 }
@@ -411,9 +419,9 @@ static void
 uiDropDownWindowCreate (uidropdown_t *dropdown,
     callback_t *uicb, void *udata)
 {
-  uiwcont_t        uiwidget;
   uiwcont_t        *uiwidgetp;
-  uiwcont_t        vbox;
+  uiwcont_t        *vbox = NULL;
+  uiwcont_t        *mainvbox = NULL;
   uiwcont_t        *uiscwin;
 
 
@@ -421,17 +429,17 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   dropdown->window = uiCreateDialogWindow (dropdown->parentwin,
       uiButtonGetWidgetContainer (dropdown->button), dropdown->closecb, "");
 
-  uiCreateVertBox (&uiwidget);
-  uiWidgetExpandHoriz (&uiwidget);
-  uiWidgetExpandVert (&uiwidget);
-  uiBoxPackInWindow (dropdown->window, &uiwidget);
+  mainvbox = uiCreateVertBox ();
+  uiWidgetExpandHoriz (mainvbox);
+  uiWidgetExpandVert (mainvbox);
+  uiBoxPackInWindow (dropdown->window, mainvbox);
 
-  uiCreateVertBox (&vbox);
-  uiBoxPackStartExpand (&uiwidget, &vbox);
+  vbox = uiCreateVertBox ();
+  uiBoxPackStartExpand (mainvbox, vbox);
 
   uiscwin = uiCreateScrolledWindow (300);
   uiWidgetExpandHoriz (uiscwin);
-  uiBoxPackStartExpand (&vbox, uiscwin);
+  uiBoxPackStartExpand (vbox, uiscwin);
 
   dropdown->uitree = uiCreateTreeView ();
   uiwidgetp = uiTreeViewGetWidgetContainer (dropdown->uitree);
@@ -449,6 +457,8 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
         G_CALLBACK (uiDropDownSelectHandler), dropdown);
   }
 
+  uiwcontFree (mainvbox);
+  uiwcontFree (vbox);
   uiwcontFree (uiscwin);
 }
 
@@ -516,7 +526,7 @@ uiDropDownSelectionGet (uidropdown_t *dropdown, GtkTreePath *path)
   glong         idx = 0;
   nlistidx_t    retval;
   char          tbuff [200];
-  uiwcont_t    *uitreewidgetp;
+  uiwcont_t     *uitreewidgetp;
 
   uitreewidgetp = uiTreeViewGetWidgetContainer (dropdown->uitree);
 

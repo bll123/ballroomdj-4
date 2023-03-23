@@ -30,33 +30,37 @@ static void confuiLevelSave (confuigui_t *gui);
 void
 confuiBuildUIEditLevels (confuigui_t *gui)
 {
-  uiwcont_t    vbox;
-  uiwcont_t    hbox;
+  uiwcont_t    *vbox;
+  uiwcont_t    *hbox;
   uiwcont_t    uiwidget;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditLevels");
-  uiCreateVertBox (&vbox);
+  vbox = uiCreateVertBox ();
 
   /* edit levels */
-  confuiMakeNotebookTab (&vbox, gui,
+  confuiMakeNotebookTab (vbox, gui,
       /* CONTEXT: configuration: edit dance levels table */
       _("Edit Levels"), CONFUI_ID_LEVELS);
 
   /* CONTEXT: configuration: dance levels: instructions */
   uiCreateLabel (&uiwidget, _("Order from easiest to most advanced."));
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (vbox, &uiwidget);
 
   /* CONTEXT: configuration: dance levels: information on how to edit a level entry */
   uiCreateLabel (&uiwidget, _("Double click on a field to edit."));
-  uiBoxPackStart (&vbox, &uiwidget);
+  uiBoxPackStart (vbox, &uiwidget);
 
-  uiCreateHorizBox (&hbox);
-  uiBoxPackStartExpand (&vbox, &hbox);
+  hbox = uiCreateHorizBox ();
+  uiBoxPackStartExpand (vbox, hbox);
 
-  confuiMakeItemTable (gui, &hbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);
+  confuiMakeItemTable (gui, hbox, CONFUI_ID_LEVELS, CONFUI_TABLE_NONE);
   gui->tables [CONFUI_ID_LEVELS].listcreatefunc = confuiLevelListCreate;
   gui->tables [CONFUI_ID_LEVELS].savefunc = confuiLevelSave;
   confuiCreateLevelTable (gui);
+
+  uiwcontFree (hbox);
+  uiwcontFree (vbox);
+
   logProcEnd (LOG_PROC, "confuiBuildUIEditLevels", "");
 }
 
