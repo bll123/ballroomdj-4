@@ -538,6 +538,7 @@ starterBuildUI (startui_t  *starter)
   char        imgbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   int         dispidx;
+  uiutilsaccent_t accent;
 
   logProcBegin (LOG_PROC, "starterBuildUI");
 
@@ -555,8 +556,9 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetAllMargins (vbox, 2);
   uiBoxPackInWindow (starter->window, vbox);
 
-  hbox = uiutilsAddAccentColorDisplay (vbox);
-  starter->profileAccent = hbox;
+  uiutilsAddAccentColorDisplay (vbox, &accent);
+  hbox = accent.hbox;
+  starter->profileAccent = accent.label;
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
@@ -606,7 +608,7 @@ starterBuildUI (startui_t  *starter)
   }
 
   /* main display */
-  /* do not free the profile accent hbox */
+  uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiWidgetSetMarginTop (hbox, 4);
   uiBoxPackStart (vbox, hbox);
@@ -1256,6 +1258,7 @@ starterProcessSupport (void *udata)
   char          tbuff [MAXPATHLEN];
   char          *builddate;
   char          *rlslvl;
+  uiutilsaccent_t accent;
 
   if (starter->supportactive) {
     return UICB_STOP;
@@ -1284,7 +1287,9 @@ starterProcessSupport (void *udata)
   uiDialogPackInDialog (uidialog, vbox);
 
   /* status message line */
-  hbox = uiutilsAddAccentColorDisplay (vbox);
+  uiutilsAddAccentColorDisplay (vbox, &accent);
+  hbox = accent.hbox;
+  uiwcontFree (accent.label);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
@@ -1698,6 +1703,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiwcont_t     *uidialog;
   uiwcont_t     *szgrp;
   uitextbox_t   *tb;
+  uiutilsaccent_t accent;
 
   if (starter->supportmsgactive) {
     return UICB_STOP;
@@ -1728,7 +1734,9 @@ starterCreateSupportMsgDialog (void *udata)
   uiDialogPackInDialog (uidialog, vbox);
 
   /* profile color line */
-  hbox = uiutilsAddAccentColorDisplay (vbox);
+  uiutilsAddAccentColorDisplay (vbox, &accent);
+  hbox = accent.hbox;
+  uiwcontFree (accent.label);
 
   /* line 1 */
   uiwcontFree (hbox);

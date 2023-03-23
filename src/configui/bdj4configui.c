@@ -411,6 +411,7 @@ confuiBuildUI (configui_t *confui)
   char          imgbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
   int           x, y;
+  uiutilsaccent_t accent;
 
   logProcBegin (LOG_PROC, "confuiBuildUI");
 
@@ -428,7 +429,9 @@ confuiBuildUI (configui_t *confui)
   uiWidgetSetAllMargins (confui->gui.vbox, 2);
   uiBoxPackInWindow (confui->gui.window, confui->gui.vbox);
 
-  hbox = uiutilsAddAccentColorDisplay (confui->gui.vbox);
+  uiutilsAddAccentColorDisplay (confui->gui.vbox, &accent);
+  hbox = accent.hbox;
+  uiwcontFree (accent.label);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);

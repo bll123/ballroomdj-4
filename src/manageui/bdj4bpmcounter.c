@@ -345,6 +345,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiwcont_t   *szgrpDisp;
   char        imgbuff [MAXPATHLEN];
   int         x, y;
+  uiutilsaccent_t accent;
 
   logProcBegin (LOG_PROC, "bpmcounterBuildUI");
   szgrp = uiCreateSizeGroupHoriz ();      // labels
@@ -363,7 +364,9 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiWidgetSetAllMargins (vboxmain, 2);
   uiBoxPackInWindow (bpmcounter->window, vboxmain);
 
-  hbox = uiutilsAddAccentColorDisplay (vboxmain);
+  uiutilsAddAccentColorDisplay (vboxmain, &accent);
+  hbox = accent.hbox;
+  uiwcontFree (accent.label);
 
   /* instructions */
   uiwcontFree (hbox);

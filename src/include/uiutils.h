@@ -7,7 +7,12 @@
 #include "ui.h"
 #include "uiwcont.h"
 
-uiwcont_t *uiutilsAddAccentColorDisplay (uiwcont_t *vbox);
+typedef struct {
+  uiwcont_t   *hbox;
+  uiwcont_t   *label;
+} uiutilsaccent_t;
+
+void uiutilsAddAccentColorDisplay (uiwcont_t *vbox, uiutilsaccent_t *accent);
 void uiutilsSetAccentColor (uiwcont_t *uiwidgetp);
 const char * uiutilsGetCurrentFont (void);
 

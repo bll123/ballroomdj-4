@@ -429,6 +429,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiwcont_t    *szgrpEntry;     // playlist, title, search
   uiwcont_t    *szgrpDD;        // drop-downs, not including title
   uiwcont_t    *szgrpSpinText;  // spinboxes, not including favorite
+  uiutilsaccent_t accent;
 
   logProcBegin (LOG_PROC, "uisfCreateDialog");
 
@@ -463,7 +464,9 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiDialogPackInDialog (uisf->filterDialog, vbox);
 
   /* accent color */
-  hbox = uiutilsAddAccentColorDisplay (vbox);
+  uiutilsAddAccentColorDisplay (vbox, &accent);
+  hbox = accent.hbox;
+  uiwcontFree (accent.label);
 
   /* playlist : only available for the music manager */
   /* in this case, the entire hbox will be shown/hidden */

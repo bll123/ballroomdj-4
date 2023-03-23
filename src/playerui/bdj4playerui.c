@@ -413,6 +413,7 @@ pluiBuildUI (playerui_t *plui)
   char        tbuff [MAXPATHLEN];
   int         x, y;
   void        *tempp;
+  uiutilsaccent_t accent;
 
   logProcBegin (LOG_PROC, "pluiBuildUI");
 
@@ -451,7 +452,9 @@ pluiBuildUI (playerui_t *plui)
       plui->callbacks [PLUI_CB_KEYB]);
 
   /* menu */
-  hbox = uiutilsAddAccentColorDisplay (plui->vbox);
+  uiutilsAddAccentColorDisplay (plui->vbox, &accent);
+  hbox = accent.hbox;
+  uiwcontFree (accent.label);
   uiWidgetExpandHoriz (hbox);
 
   menubar = uiCreateMenubar ();

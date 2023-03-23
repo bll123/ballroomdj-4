@@ -20,23 +20,25 @@
 
 /* as a side effect, hbox is set, and */
 /* uiwidget is set to the accent color box (needed by bdj4starterui) */
-uiwcont_t *
-uiutilsAddAccentColorDisplay (uiwcont_t *vboxp)
+void
+uiutilsAddAccentColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
 {
-  uiwcont_t   *hbox;
-  uiwcont_t   uiwidget;
+  uiwcont_t       *hbox;
+  uiwcont_t       *label;
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox);
 
+  label = uiwcontAlloc ();
   /* right half block 0xE2 0x96 0x90 */
   /* full block 0xE2 0x96 0x88 */
-  uiCreateLabel (&uiwidget, "\xE2\x96\x90\xE2\x96\x88");
-  uiWidgetSetMarginStart (&uiwidget, 3);
-  uiutilsSetAccentColor (&uiwidget);
-  uiBoxPackEnd (hbox, &uiwidget);
+  uiCreateLabel (label, "\xE2\x96\x90\xE2\x96\x88");
+  uiWidgetSetMarginStart (label, 3);
+  uiutilsSetAccentColor (label);
+  uiBoxPackEnd (hbox, label);
 
-  return hbox;
+  accent->hbox = hbox;
+  accent->label = label;
 }
 
 void

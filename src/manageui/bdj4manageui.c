@@ -660,6 +660,7 @@ manageBuildUI (manageui_t *manage)
   char        imgbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   int         x, y;
+  uiutilsaccent_t accent;
 
   logProcBegin (LOG_PROC, "manageBuildUI");
   *imgbuff = '\0';
@@ -682,7 +683,9 @@ manageBuildUI (manageui_t *manage)
   uiWidgetSetAllMargins (vbox, 4);
   uiBoxPackInWindow (manage->window, vbox);
 
-  hbox = uiutilsAddAccentColorDisplay (vbox);
+  uiutilsAddAccentColorDisplay (vbox, &accent);
+  hbox = accent.hbox;
+  uiwcontFree (accent.label);
 
   uiCreateLabel (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
