@@ -64,14 +64,14 @@ mdfree_r (void *data, const char *fn, int lineno)
   long  loc;
 
   if (initialized && data == NULL) {
-    mdebugLog ("%4s %p null %s %d\n", mdebugtag, data, fn, lineno);
+    mdebugLog ("%4s %p free-null %s %d\n", mdebugtag, data, fn, lineno);
   }
   if (initialized && data != NULL) {
     loc = mdebugFind (data);
     if (loc >= 0) {
       mdebugDel (loc);
     } else {
-      mdebugLog ("%4s %p free %s %d\n", mdebugtag, data, fn, lineno);
+      mdebugLog ("%4s %p free-bad %s %d\n", mdebugtag, data, fn, lineno);
       ++mdebugerrors;
     }
     ++mdebugfreecount;
@@ -91,7 +91,7 @@ mdextfree_r (void *data, const char *fn, int lineno)
     if (loc >= 0) {
       mdebugDel (loc);
     } else {
-      mdebugLog ("%4s %p free %s %d\n", mdebugtag, data, fn, lineno);
+      mdebugLog ("%4s %p ext-free-dup %s %d\n", mdebugtag, data, fn, lineno);
       ++mdebugerrors;
     }
     ++mdebugfreecount;
@@ -129,7 +129,7 @@ mdrealloc_r (void *data, size_t sz, const char *fn, int lineno)
     if (loc >= 0) {
       mdebugDel (loc);
     } else {
-      mdebugLog ("%4s %p realloc %s %d\n", mdebugtag, data, fn, lineno);
+      mdebugLog ("%4s %p realloc-bad %s %d\n", mdebugtag, data, fn, lineno);
       ++mdebugerrors;
     }
   }
@@ -201,7 +201,7 @@ mdebugReport (void)
   if (initialized) {
     mdebugLog ("== %s ==\n", mdebugtag);
     for (long i = 0; i < mdebugcount; ++i) {
-      mdebugLog ("%4s 0x%08" PRIx64 " not freed %c %s %d\n", mdebugtag,
+      mdebugLog ("%4s 0x%08" PRIx64 " no-free %c %s %d\n", mdebugtag,
           (int64_t) mdebug [i].addr, mdebug [i].type, mdebug [i].fn, mdebug [i].lineno);
       ++mdebugerrors;
     }

@@ -359,6 +359,7 @@ songDisplayString (song_t *song, int tagidx)
   vt = tagdefs [tagidx].valueType;
 
   convfunc = tagdefs [tagidx].convfunc;
+
   if (convfunc != NULL) {
     conv.allocated = false;
     if (vt == VALUE_NUM) {
@@ -379,6 +380,7 @@ songDisplayString (song_t *song, int tagidx)
     str = mdstrdup (str);
   }
 
+  /* uses the display string from the conversion */
   if (tagidx == TAG_DURATION) {
     long    dur;
     long    val;
@@ -409,11 +411,11 @@ songDisplayString (song_t *song, int tagidx)
       convMS (&conv);
       if (conv.str == NULL) { conv.str = ""; }
       snprintf (tbuff, sizeof (tbuff), "%s (%s)", str, conv.str);
-      mdfree (str);
-      str = strdup (tbuff);
       if (conv.allocated) {
         mdfree (conv.str);
       }
+      mdfree (str);
+      str = strdup (tbuff);
     }
   }
 

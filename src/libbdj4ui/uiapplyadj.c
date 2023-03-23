@@ -76,6 +76,9 @@ uiaaInit (uiwcont_t *windowp, nlist_t *opts)
   /* CONTEXT: apply adjustments: please wait... status message */
   uiaa->pleasewaitmsg = _("Please wait\xe2\x80\xa6");
 
+  uiaa->callbacks [UIAA_CB_DIALOG] = callbackInitLong (
+      uiaaResponseHandler, uiaa);
+
   return uiaa;
 }
 
@@ -127,6 +130,7 @@ uiaaDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   if (x >= 0 && y >= 0) {
     uiWindowMove (uiaa->aaDialog, x, y, -1);
   }
+
   logProcEnd (LOG_PROC, "uiaaDialog", "");
   return UICB_CONT;
 }
@@ -160,8 +164,6 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
     return;
   }
 
-  uiaa->callbacks [UIAA_CB_DIALOG] = callbackInitLong (
-      uiaaResponseHandler, uiaa);
   uiaa->aaDialog = uiCreateDialog (uiaa->parentwin,
       uiaa->callbacks [UIAA_CB_DIALOG],
       /* CONTEXT: apply adjustment dialog: title for the dialog */

@@ -1,8 +1,8 @@
 /*
  * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
  */
-#ifndef INC_procutil_H
-#define INC_procutil_H
+#ifndef INC_PROCUTIL_H
+#define INC_PROCUTIL_H
 
 #include "config.h"
 
@@ -45,4 +45,4 @@ void        procutilCloseProcess (procutil_t *process, conn_t *conn,
 void        procutilForceStop (procutil_t *process, int flags,
     bdjmsgroute_t route);
 
-#endif /* INC_procutil_H */
+#endif /* INC_PROCUTIL_H */

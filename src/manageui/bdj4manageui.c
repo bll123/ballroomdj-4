@@ -1200,6 +1200,8 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_SOCKET_CLOSE: {
           connDisconnect (manage->conn, routefrom);
           if (routefrom == ROUTE_BPM_COUNTER) {
+            procutilFree (manage->processes [ROUTE_BPM_COUNTER]);
+            manage->processes [ROUTE_BPM_COUNTER] = NULL;
             manage->bpmcounterstarted = false;
           }
           break;

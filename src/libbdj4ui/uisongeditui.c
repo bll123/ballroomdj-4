@@ -539,8 +539,10 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
       data = uisongeditGetBPMRangeDisplay (songGetNum (song, TAG_DANCE));
       uiLabelSetText (&seint->items [count].uiwidget, data);
       dataFree (data);
+      data = NULL;
       continue;
     }
+
     data = uisongGetDisplay (song, tagkey, &val, &dval);
     if (! seint->ineditallapply) {
       seint->items [count].changed = false;
@@ -986,6 +988,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
       }
 
       dataFree (songdata);
+      songdata = NULL;
     }
 
     if (spdchanged) {

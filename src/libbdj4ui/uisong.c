@@ -56,7 +56,6 @@ uisongGetDisplay (song_t *song, int tagidx, long *num, double *dval)
     dataFree (str);
     str = songDisplayString (song, tagidx);
   }
-
   return str;
 }
 
@@ -64,12 +63,12 @@ char *
 uisongGetValue (song_t *song, int tagidx, long *num, double *dval)
 {
   valuetype_t   vt;
-  char          *str;
+  char          *str = NULL;
 
   vt = uisongDetermineValueType (tagidx);
   *num = 0;
   *dval = 0.0;
-  str = NULL;
+
   if (vt == VALUE_STR) {
     str = songDisplayString (song, tagidx);
   } else if (vt == VALUE_NUM) {

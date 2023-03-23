@@ -134,6 +134,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
       aaRestoreTags (musicdb, song, dbidx, fullfn, songfn);
       changed = true;
     }
+    dataFree (infn);
     return changed;
   }
 
