@@ -128,12 +128,11 @@ void
 manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
 {
   uiwcont_t           *hbox;
-  uiwcont_t           uiwidget;
+  uiwcont_t           *uiwidgetp;
   dance_t             *dances;
   slist_t             *dancelist;
 
   logProcBegin (LOG_PROC, "manageBuildUISequence");
-  uiwcontInit (&uiwidget);
 
   /* edit sequences */
   uiWidgetSetAllMargins (vboxp, 2);
@@ -142,8 +141,9 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: sequence editor: label for sequence name */
-  uiCreateColonLabelOld (&uiwidget, _("Sequence"));
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Sequence"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiEntryCreate (manageseq->seqname);
   uiEntrySetValidate (manageseq->seqname, manageValidateName,

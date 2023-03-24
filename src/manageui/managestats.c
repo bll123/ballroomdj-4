@@ -39,10 +39,10 @@ typedef struct managestats {
   conn_t      *conn;
   musicdb_t   *musicdb;
   uiwcont_t   *vboxmain;
-  uiwcont_t   dancedisp [STATS_MAX_DISP];
+  uiwcont_t   *dancedisp [STATS_MAX_DISP];
   nlist_t     *dancecounts;
-  uiwcont_t   songcountdisp;
-  uiwcont_t   tottimedisp;
+  uiwcont_t   *songcountdisp;
+  uiwcont_t   *tottimedisp;
   int         songcount;
   long        tottime;
 } managestats_t;
@@ -59,13 +59,13 @@ manageStatsInit (conn_t *conn, musicdb_t *musicdb)
   managestats->conn = conn;
   managestats->musicdb = musicdb;
   managestats->vboxmain = NULL;
-  uiwcontInit (&managestats->songcountdisp);
-  uiwcontInit (&managestats->tottimedisp);
+  managestats->songcountdisp = NULL;
+  managestats->tottimedisp = NULL;
   managestats->songcount = 0;
   managestats->tottime = 0;
   managestats->dancecounts = NULL;
   for (int i = 0; i < STATS_MAX_DISP; ++i) {
-    uiwcontInit (&managestats->dancedisp [i]);
+    managestats->dancedisp [i] = NULL;
   }
 
   return managestats;
@@ -77,6 +77,11 @@ manageStatsFree (managestats_t *managestats)
   if (managestats != NULL) {
     uiwcontFree (managestats->vboxmain);
     nlistFree (managestats->dancecounts);
+    for (int i = 0; i < STATS_MAX_DISP; ++i) {
+      uiwcontFree (managestats->dancedisp [i]);
+    }
+    uiwcontFree (managestats->songcountdisp);
+    uiwcontFree (managestats->tottimedisp);
     mdfree (managestats);
   }
 }
@@ -90,7 +95,7 @@ manageStatsSetDatabase (managestats_t *managestats, musicdb_t *musicdb)
 uiwcont_t *
 manageBuildUIStats (managestats_t *managestats)
 {
-  uiwcont_t   uiwidget;
+  uiwcont_t   *uiwidgetp;
   uiwcont_t   *hbox;
   uiwcont_t   *chbox;
   const char  *listingFont;
@@ -103,33 +108,34 @@ manageBuildUIStats (managestats_t *managestats)
   uiBoxPackStart (managestats->vboxmain, hbox);
 
   /* CONTEXT: statistics: Label for number of songs in song list */
-  uiCreateColonLabelOld (&uiwidget, _("Songs"));
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Songs"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
-  uiCreateLabelOld (&managestats->songcountdisp, "");
-  uiLabelAlignEnd (&managestats->songcountdisp);
-  uiBoxPackStart (hbox, &managestats->songcountdisp);
+  managestats->songcountdisp = uiCreateLabel ("");
+  uiLabelAlignEnd (managestats->songcountdisp);
+  uiBoxPackStart (hbox, managestats->songcountdisp);
 
   /* total time (same horiz row) */
   /* CONTEXT: statistics: Label for total song list duration */
-  uiCreateColonLabelOld (&uiwidget, _("Total Time"));
-  uiWidgetSetMarginStart (&uiwidget, 10);
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Total Time"));
+  uiWidgetSetMarginStart (uiwidgetp, 10);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
-  uiCreateLabelOld (&managestats->tottimedisp, "");
-  uiLabelAlignEnd (&managestats->tottimedisp);
-  uiBoxPackStart (hbox, &managestats->tottimedisp);
-  uiwcontFree (hbox);
+  managestats->tottimedisp = uiCreateLabel ("");
+  uiLabelAlignEnd (managestats->tottimedisp);
+  uiBoxPackStart (hbox, managestats->tottimedisp);
 
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
   for (int i = 0; i < STATS_MAX_DISP; ++i) {
-    uiCreateLabelOld (&managestats->dancedisp [i], "");
+    managestats->dancedisp [i] = uiCreateLabel ("");
     if (i % 2 == 1) {
-      uiWidgetSetSizeRequest (&managestats->dancedisp [i], 30, -1);
-      uiLabelAlignEnd (&managestats->dancedisp [i]);
+      uiWidgetSetSizeRequest (managestats->dancedisp [i], 30, -1);
+      uiLabelAlignEnd (managestats->dancedisp [i]);
     }
-    uiLabelSetFont (&managestats->dancedisp [i], listingFont);
+    uiLabelSetFont (managestats->dancedisp [i], listingFont);
   }
 
   /* horizontal box to hold the columns */
@@ -151,17 +157,17 @@ manageBuildUIStats (managestats_t *managestats)
       int   idx;
 
       idx = i * STATS_PER_COL * 2 + j * 2;
+      uiwcontFree (hbox);
       hbox = uiCreateHorizBox ();
       uiBoxPackStart (vbox, hbox);
-      uiBoxPackStart (hbox, &managestats->dancedisp [idx]);
-      uiBoxPackEnd (hbox, &managestats->dancedisp [idx + 1]);
-      uiwcontFree (hbox);
-      hbox = NULL;
+      uiBoxPackStart (hbox, managestats->dancedisp [idx]);
+      uiBoxPackEnd (hbox, managestats->dancedisp [idx + 1]);
     }
 
     uiwcontFree (vbox);
   }
 
+  uiwcontFree (hbox);
   uiwcontFree (chbox);
 
   return managestats->vboxmain;
@@ -218,13 +224,13 @@ manageStatsDisplayStats (managestats_t *managestats)
 
 
   tmutilToMS (managestats->tottime, tbuff, sizeof (tbuff));
-  uiLabelSetText (&managestats->tottimedisp, tbuff);
+  uiLabelSetText (managestats->tottimedisp, tbuff);
 
   snprintf (tbuff, sizeof (tbuff), "%d", managestats->songcount);
-  uiLabelSetText (&managestats->songcountdisp, tbuff);
+  uiLabelSetText (managestats->songcountdisp, tbuff);
 
   for (int i = 0; i < STATS_MAX_DISP; ++i) {
-    uiLabelSetText (&managestats->dancedisp [i], "");
+    uiLabelSetText (managestats->dancedisp [i], "");
   }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
@@ -235,10 +241,10 @@ manageStatsDisplayStats (managestats_t *managestats)
     didx = slistGetNum (danceList, dancedisp);
     val = nlistGetNum (managestats->dancecounts, didx);
     if (val > 0) {
-      uiLabelSetText (&managestats->dancedisp [count], dancedisp);
+      uiLabelSetText (managestats->dancedisp [count], dancedisp);
       ++count;
       snprintf (tbuff, sizeof (tbuff), "%d", val);
-      uiLabelSetText (&managestats->dancedisp [count], tbuff);
+      uiLabelSetText (managestats->dancedisp [count], tbuff);
       ++count;
     }
   }

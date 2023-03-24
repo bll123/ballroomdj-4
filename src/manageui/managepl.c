@@ -42,6 +42,15 @@ enum {
   MPL_CB_MAX,
 };
 
+enum {
+  MPL_W_RATING_ITEM,
+  MPL_W_LOW_LEVEL_ITEM,
+  MPL_W_HIGH_LEVEL_ITEM,
+  MPL_W_ALLOWED_KEYWORDS,
+  MPL_W_PL_TYPE,
+  MPL_W_MAX,
+};
+
 typedef struct managepl {
   uiwcont_t       *windowp;
   nlist_t         *options;
@@ -59,14 +68,10 @@ typedef struct managepl {
   uiwcont_t       *uistopafter;
   uispinbox_t     *uigap;
   uirating_t      *uirating;
-  uiwcont_t       uiratingitem;
+  uiwcont_t       *wcont [MPL_W_MAX];
   uilevel_t       *uilowlevel;
-  uiwcont_t       uilowlevelitem;
   uilevel_t       *uihighlevel;
-  uiwcont_t       uihighlevelitem;
   uientry_t       *allowedkeywords;
-  uiwcont_t       uiallowedkeywordsitem;
-  uiwcont_t       uipltype;
   managepltree_t  *managepltree;
   playlist_t      *playlist;
   uiswitch_t      *plannswitch;
@@ -93,7 +98,6 @@ managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg)
   managepl_t *managepl;
 
   managepl = mdmalloc (sizeof (managepl_t));
-  uiwcontInit (&managepl->uipltype);
   managepl->menuDelete = NULL;
   managepl->ploldname = NULL;
   managepl->plbackupcreated = false;
@@ -111,11 +115,10 @@ managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg)
   managepl->uirating = NULL;
   managepl->uilowlevel = NULL;
   managepl->uihighlevel = NULL;
-  uiwcontInit (&managepl->uiratingitem);
-  uiwcontInit (&managepl->uilowlevelitem);
-  uiwcontInit (&managepl->uihighlevelitem);
   managepl->allowedkeywords = uiEntryInit (15, 50);
-  uiwcontInit (&managepl->uiallowedkeywordsitem);
+  for (int i = 0; i < MPL_W_MAX; ++i) {
+    managepl->wcont [i] = NULL;
+  }
   managepl->playlist = NULL;
   managepl->changed = false;
   managepl->inload = false;
@@ -151,6 +154,9 @@ managePlaylistFree (managepl_t *managepl)
     uiSpinboxFree (managepl->uimaxplaytime);
     uiSpinboxFree (managepl->uistopat);
     uiSpinboxFree (managepl->uigap);
+    for (int i = 0; i < MPL_W_MAX; ++i) {
+      uiwcontFree (managepl->wcont [i]);
+    }
     for (int i = 0; i < MPL_CB_MAX; ++i) {
       callbackFree (managepl->callbacks [i]);
     }
@@ -176,7 +182,6 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcont_t          *mainhbox;
   uiwcont_t          *tophbox;
   uiwcont_t          *hbox;
-  uiwcont_t          uiwidget;
   uiwcont_t          *uiwidgetp;
   uiwcont_t          *szgrp;
   uiwcont_t          *szgrpSpinText;
@@ -184,7 +189,6 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcont_t          *szgrpText;
 
   logProcBegin (LOG_PROC, "manageBuildUIPlaylist");
-  uiwcontInit (&uiwidget);
 
   szgrp = uiCreateSizeGroupHoriz ();   // labels
   szgrpSpinText = uiCreateSizeGroupHoriz ();  // time widgets + gap widget
@@ -201,8 +205,9 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (tophbox, hbox);
 
   /* CONTEXT: playlist management: label for playlist name */
-  uiCreateColonLabelOld (&uiwidget, _("Playlist"));
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Playlist"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiEntryCreate (managepl->plname);
   uiEntrySetValidate (managepl->plname, manageValidateName,
@@ -216,13 +221,14 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (tophbox, hbox);
 
   /* CONTEXT: playlist management: label for playlist name */
-  uiCreateColonLabelOld (&uiwidget, _("Playlist Type"));
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Playlist Type"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* CONTEXT: playlist management: default playlist type */
-  uiCreateLabelOld (&uiwidget, _("Automatic"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiwcontCopy (&managepl->uipltype, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Automatic"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  managepl->wcont [MPL_W_PL_TYPE] = uiwidgetp;
 
   mainhbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (vboxp, mainhbox);
@@ -236,9 +242,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
 
   /* CONTEXT: playlist management: maximum play time */
-  uiCreateColonLabelOld (&uiwidget, _("Maximum Play Time"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Maximum Play Time"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   managepl->callbacks [MPL_CB_MAXPLAYTIME] = callbackInitStr (
       managePlaylistValMSCallback, managepl);
@@ -253,9 +260,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
 
   /* CONTEXT: playlist management: stop at */
-  uiCreateColonLabelOld (&uiwidget, _("Stop At"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Stop At"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   managepl->callbacks [MPL_CB_STOPAT] = callbackInitStr (
       managePlaylistValHMCallback, managepl);
@@ -272,9 +280,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
 
   /* CONTEXT: playlist management: stop after */
-  uiCreateColonLabelOld (&uiwidget, _("Stop After"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Stop After"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiSpinboxIntCreate ();
   uiSpinboxSet (uiwidgetp, 0.0, 500.0);
@@ -287,9 +296,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
 
   /* CONTEXT: playlist management: Gap between songs */
-  uiCreateColonLabelOld (&uiwidget, _("Gap Between Songs"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Gap Between Songs"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiSpinboxDoubleDefaultCreate (managepl->uigap);
   uiSpinboxSetRange (managepl->uigap, -1.0, 60.0);
@@ -302,9 +312,10 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
 
   /* CONTEXT: playlist management: Play Announcements */
-  uiCreateColonLabelOld (&uiwidget, _("Play Announcements"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Play Announcements"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   managepl->plannswitch = uiCreateSwitch (0);
   uiBoxPackStart (hbox, uiSwitchGetWidgetContainer (managepl->plannswitch));
@@ -317,57 +328,59 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
 
   /* add a blank line between the playlist controls and song selection */
-  uiCreateLabelOld (&uiwidget, "");
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (lcolvbox, hbox);
-  uiwcontCopy (&managepl->uiratingitem, hbox);
+  managepl->wcont [MPL_W_RATING_ITEM] = hbox;
 
-  uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_DANCERATING].displayname);
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCERATING].displayname);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   managepl->uirating = uiratingSpinboxCreate (hbox, false);
   uiratingSizeGroupAdd (managepl->uirating, szgrpText);
 
-  uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (lcolvbox, hbox);
-  uiwcontCopy (&managepl->uilowlevelitem, hbox);
+  managepl->wcont [MPL_W_LOW_LEVEL_ITEM] = hbox;
 
   /* CONTEXT: playlist management: Low Dance Level */
-  uiCreateColonLabelOld (&uiwidget, _("Low Dance Level"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Low Dance Level"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   managepl->uilowlevel = uilevelSpinboxCreate (hbox, false);
   uilevelSizeGroupAdd (managepl->uilowlevel, szgrpText);
 
-  uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (lcolvbox, hbox);
-  uiwcontCopy (&managepl->uihighlevelitem, hbox);
+  managepl->wcont [MPL_W_HIGH_LEVEL_ITEM] = hbox;
 
   /* CONTEXT: playlist management: High Dance Level */
-  uiCreateColonLabelOld (&uiwidget, _("High Dance Level"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("High Dance Level"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   managepl->uihighlevel = uilevelSpinboxCreate (hbox, false);
   uilevelSizeGroupAdd (managepl->uilowlevel, szgrpText);
 
-  uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (lcolvbox, hbox);
-  uiwcontCopy (&managepl->uiallowedkeywordsitem, hbox);
+  managepl->wcont [MPL_W_ALLOWED_KEYWORDS] = hbox;
 
   /* CONTEXT: playlist management: allowed keywords */
-  uiCreateColonLabelOld (&uiwidget, _("Allowed Keywords"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Allowed Keywords"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiEntryCreate (managepl->allowedkeywords);
   uiEntrySetValidate (managepl->allowedkeywords,
@@ -389,7 +402,6 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiwcontFree (lcolvbox);
   uiwcontFree (rcolvbox);
-  uiwcontFree (hbox);
   uiwcontFree (mainhbox);
   uiwcontFree (tophbox);
   uiwcontFree (szgrp);
@@ -656,24 +668,24 @@ managePlaylistUpdateData (managepl_t *managepl)
   managePlaylistTreePopulate (managepl->managepltree, pl);
 
   if (pltype == PLTYPE_SONGLIST) {
-    uiWidgetHide (&managepl->uiratingitem);
-    uiWidgetHide (&managepl->uilowlevelitem);
-    uiWidgetHide (&managepl->uihighlevelitem);
-    uiWidgetHide (&managepl->uiallowedkeywordsitem);
+    uiWidgetHide (managepl->wcont [MPL_W_RATING_ITEM]);
+    uiWidgetHide (managepl->wcont [MPL_W_LOW_LEVEL_ITEM]);
+    uiWidgetHide (managepl->wcont [MPL_W_HIGH_LEVEL_ITEM]);
+    uiWidgetHide (managepl->wcont [MPL_W_ALLOWED_KEYWORDS]);
     /* CONTEXT: playlist management: type of playlist */
-    uiLabelSetText (&managepl->uipltype, _("Song List"));
+    uiLabelSetText (managepl->wcont [MPL_W_PL_TYPE], _("Song List"));
   } else {
-    uiWidgetShow (&managepl->uiratingitem);
-    uiWidgetShow (&managepl->uilowlevelitem);
-    uiWidgetShow (&managepl->uihighlevelitem);
-    uiWidgetShow (&managepl->uiallowedkeywordsitem);
+    uiWidgetShow (managepl->wcont [MPL_W_RATING_ITEM]);
+    uiWidgetShow (managepl->wcont [MPL_W_LOW_LEVEL_ITEM]);
+    uiWidgetShow (managepl->wcont [MPL_W_HIGH_LEVEL_ITEM]);
+    uiWidgetShow (managepl->wcont [MPL_W_ALLOWED_KEYWORDS]);
     if (pltype == PLTYPE_SEQUENCE) {
       /* CONTEXT: playlist management: type of playlist */
-      uiLabelSetText (&managepl->uipltype, _("Sequence"));
+      uiLabelSetText (managepl->wcont [MPL_W_PL_TYPE], _("Sequence"));
     }
     if (pltype == PLTYPE_AUTO) {
       /* CONTEXT: playlist management: type of playlist */
-      uiLabelSetText (&managepl->uipltype, _("Automatic"));
+      uiLabelSetText (managepl->wcont [MPL_W_PL_TYPE], _("Automatic"));
     }
   }
 

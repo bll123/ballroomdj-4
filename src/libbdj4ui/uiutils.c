@@ -29,7 +29,6 @@ uiutilsAddAccentColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox);
 
-  label = uiwcontAlloc ();
   /* right half block 0xE2 0x96 0x90 */
   /* full block 0xE2 0x96 0x88 */
   label = uiCreateLabel ("\xE2\x96\x90\xE2\x96\x88");
