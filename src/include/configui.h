@@ -291,7 +291,6 @@ enum {
 
 typedef struct confuitable {
   uitree_t          *uitree;
-  GtkTreeSelection  *sel;
   callback_t        *callbacks [CONFUI_TABLE_CB_MAX];
   uibutton_t        *buttons [CONFUI_BUTTON_TABLE_MAX];
   int               flags;

@@ -7,8 +7,6 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
-#include <gtk/gtk.h>
-
 #include "conn.h"
 #include "dispsel.h"
 #include "msgparse.h"

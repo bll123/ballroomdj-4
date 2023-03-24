@@ -5,7 +5,6 @@
 #define INC_UIMUSICQ_H
 
 #include <stdbool.h>
-#include <gtk/gtk.h>
 
 #include "bdj4.h"
 #include "conn.h"
@@ -117,7 +116,6 @@ void      uimusicqUIMainLoop (uimusicq_t *uimuiscq);
 void      uimusicqSetSelectionFirst (uimusicq_t *uimusicq, int mqidx);
 ssize_t   uimusicqGetSelection (uimusicq_t *uimusicq);
 void      uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int ci, int which);
-void      uimusicqRemoveHandler (GtkButton *b, gpointer udata);
 void      uimusicqIterate (uimusicq_t *uimusicq, callback_t *cb, musicqidx_t mqidx);
 long      uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx);
 void      uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc);

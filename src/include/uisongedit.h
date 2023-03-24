@@ -48,7 +48,7 @@ void  uisongeditNewSelection (uisongedit_t *uisongedit, dbidx_t dbidx);
 void  uisongeditSetSaveCallback (uisongedit_t *uisongedit, callback_t *uicb);
 void  uisongeditSetApplyAdjCallback (uisongedit_t *uisongedit, callback_t *uicb);
 
-/* uisongeditgtk.c */
+/* uisongeditui.c */
 void  uisongeditUIInit (uisongedit_t *uisongedit);
 void  uisongeditUIFree (uisongedit_t *uisongedit);
 uiwcont_t   * uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit, uiwcont_t *parentwin, uiwcont_t *statusMsg);

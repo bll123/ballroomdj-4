@@ -131,7 +131,6 @@ main (int argc, char *argv[])
       confui.gui.tables [i].callbacks [j] = NULL;
     }
     confui.gui.tables [i].uitree = NULL;
-    confui.gui.tables [i].sel = NULL;
     confui.gui.tables [i].flags = CONFUI_TABLE_NONE;
     confui.gui.tables [i].changed = false;
     confui.gui.tables [i].currcount = 0;

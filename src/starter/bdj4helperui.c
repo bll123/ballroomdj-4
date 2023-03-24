@@ -188,15 +188,12 @@ helperClosingCallback (void *udata, programstate_t programState)
 static void
 helperBuildUI (helperui_t  *helper)
 {
-  uiwcont_t           uiwidget;
   uibutton_t          *uibutton;
   uiwcont_t           *uiwidgetp;
   uiwcont_t           *vbox;
   uiwcont_t           *hbox;
   char                tbuff [MAXPATHLEN];
   char                imgbuff [MAXPATHLEN];
-
-  uiwcontInit (&uiwidget);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
