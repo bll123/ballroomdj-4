@@ -47,7 +47,7 @@ enum {
 typedef struct managedb {
   uiwcont_t        *windowp;
   nlist_t           *options;
-  uiwcont_t        *statusMsg;
+  uiwcont_t         *statusMsg;
   procutil_t        **processes;
   conn_t            *conn;
   uientry_t         *dbtopdir;
@@ -56,7 +56,7 @@ typedef struct managedb {
   uispinbox_t       *dbspinbox;
   uibutton_t        *dbstart;
   uibutton_t        *dbstop;
-  uiwcont_t         dbhelpdisp;
+  uiwcont_t         *dbhelpdisp;
   uitextbox_t       *dbstatus;
   nlist_t           *dblist;
   nlist_t           *dbhelp;
@@ -87,7 +87,7 @@ manageDbAlloc (uiwcont_t *window, nlist_t *options,
   managedb->topdirsel = NULL;
   managedb->dbstart = NULL;
   managedb->dbstop = NULL;
-  uiwcontInit (&managedb->dbhelpdisp);
+  managedb->dbhelpdisp = NULL;
   managedb->dbtopdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxInit ();
   managedb->statusMsg = statusMsg;
@@ -160,6 +160,7 @@ manageDbFree (managedb_t *managedb)
     for (int i = 0; i < MDB_CB_MAX; ++i) {
       callbackFree (managedb->callbacks [i]);
     }
+    uiwcontFree (managedb->dbhelpdisp);
     mdfree (managedb);
   }
 }
@@ -168,7 +169,6 @@ manageDbFree (managedb_t *managedb)
 void
 manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
 {
-  uiwcont_t     uiwidget;
   uiwcont_t     *uiwidgetp;
   uiwcont_t     *hbox;
   uiwcont_t     *szgrp;
@@ -182,10 +182,11 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: update database: select database update action */
-  uiCreateColonLabelOld (&uiwidget, _("Action"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
-  uiWidgetSetMarginStart (&uiwidget, 2);
+  uiwidgetp = uiCreateColonLabel (_("Action"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 2);
+  uiwcontFree (uiwidgetp);
 
   uiSpinboxTextCreate (managedb->dbspinbox, managedb);
   /* currently hard-coded at 30 chars */
@@ -206,15 +207,16 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vboxp, hbox);
 
-  uiCreateLabelOld (&uiwidget, "");
-  uiBoxPackStart (hbox, &uiwidget);
-  uiWidgetSetMarginStart (&uiwidget, 2);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 2);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
-  uiCreateLabelOld (&uiwidget, "");
-  uiBoxPackStartExpand (hbox, &uiwidget);
-  uiWidgetSetMarginStart (&uiwidget, 6);
-  uiwcontCopy (&managedb->dbhelpdisp, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 6);
+  managedb->dbhelpdisp = uiwidgetp;
 
   /* db top dir  */
   uiwcontFree (hbox);
@@ -223,10 +225,11 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: update database: music folder to process */
-  uiCreateColonLabelOld (&uiwidget, _("Music Folder"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiWidgetSetMarginStart (&uiwidget, 2);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Music Folder"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiWidgetSetMarginStart (uiwidgetp, 2);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiEntryCreate (managedb->dbtopdir);
   uiEntrySetValue (managedb->dbtopdir, bdjoptGetStr (OPT_M_DIR_MUSIC));
@@ -248,9 +251,10 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox);
 
-  uiCreateLabelOld (&uiwidget, "");
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   managedb->callbacks [MDB_CB_START] = callbackInit (
       manageDbStart, managedb, NULL);
@@ -303,13 +307,13 @@ manageDbChg (void *udata)
   sval = nlistGetStr (managedb->dbhelp, nval);
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector : %s", sval);
 
-  if (uiwcontIsSet (&managedb->dbhelpdisp)) {
-    uiwcont_t*uiwidgetp;
+  if (managedb->dbhelpdisp != NULL) {
+    uiwcont_t   *uiwidgetp;
 
-    uiLabelSetText (&managedb->dbhelpdisp, sval);
-    uiWidgetRemoveClass (&managedb->dbhelpdisp, ACCENT_CLASS);
+    uiLabelSetText (managedb->dbhelpdisp, sval);
+    uiWidgetRemoveClass (managedb->dbhelpdisp, ACCENT_CLASS);
     if (nval == MANAGE_DB_REBUILD) {
-      uiWidgetSetClass (&managedb->dbhelpdisp, ACCENT_CLASS);
+      uiWidgetSetClass (managedb->dbhelpdisp, ACCENT_CLASS);
     }
     uiwidgetp = uiButtonGetWidgetContainer (managedb->dbstart);
     uiWidgetSetState (uiwidgetp, UIWIDGET_ENABLE);
