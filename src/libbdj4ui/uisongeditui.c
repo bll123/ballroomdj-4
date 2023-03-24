@@ -260,7 +260,9 @@ uisongeditUIFree (uisongedit_t *uisongedit)
           }
           break;
         }
+        case ET_SCALE:
         case ET_SPINBOX: {
+          uiwcontFree (seint->items [count].uiwidgetp);
           break;
         }
         case ET_SPINBOX_TIME: {
@@ -270,7 +272,6 @@ uisongeditUIFree (uisongedit_t *uisongedit)
           break;
         }
         case ET_NA:
-        case ET_SCALE:
         case ET_LABEL: {
           break;
         }
@@ -1341,8 +1342,8 @@ uisongeditScaleDisplayCallback (void *udata, double value)
   logProcBegin (LOG_PROC, "uisongeditScaleDisplayCallback");
   seint = item->seint;
   seint->checkchanged = true;
-  digits = uiScaleGetDigits (&item->uiwidget);
-  value = uiScaleEnforceMax (&item->uiwidget, value);
+  digits = uiScaleGetDigits (item->uiwidgetp);
+  value = uiScaleEnforceMax (item->uiwidgetp, value);
   snprintf (tbuff, sizeof (tbuff), "%4.*f%%", digits, value);
   uiLabelSetText (&item->display, tbuff);
   logProcEnd (LOG_PROC, "uisongeditScaleDisplayCallback", "");
@@ -1828,6 +1829,6 @@ uisongeditGetBPMRangeDisplay (int danceidx)
       snprintf (tbuff, sizeof (tbuff), " (%d - %d)", lowbpm, highbpm);
     }
   }
-  str = strdup (tbuff);
+  str = mdstrdup (tbuff);
   return str;
 }

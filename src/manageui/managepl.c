@@ -135,6 +135,7 @@ void
 managePlaylistFree (managepl_t *managepl)
 {
   if (managepl != NULL) {
+    uiwcontFree (managepl->uistopafter);
     uiwcontFree (managepl->menuDelete);
     uiMenuFree (managepl->plmenu);
     dataFree (managepl->ploldname);

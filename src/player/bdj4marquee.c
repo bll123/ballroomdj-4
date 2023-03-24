@@ -301,7 +301,6 @@ marqueeClosingCallback (void *udata, programstate_t programState)
   /* these are moved here so that the window can be un-maximized and */
   /* the size/position saved */
   uiCloseWindow (marquee->window);
-  uiwcontFree (marquee->window);
   uiCleanup ();
 
   pathbldMakePath (fn, sizeof (fn),
@@ -310,6 +309,8 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   bdj4shutdown (ROUTE_MARQUEE, NULL);
 
+  uiwcontFree (marquee->window);
+  uiwcontFree (marquee->infoBox);
   uiwcontFree (marquee->pbar);
   uiwcontFree (marquee->sep);
 
@@ -472,9 +473,9 @@ marqueeBuildUI (marquee_t *marquee)
       "bdj4_icon_marquee", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
 
+  /* do not free the infobox hbox */
   uiwcontFree (mainvbox);
   uiwcontFree (vbox);
-  uiwcontFree (hbox);
 
   logProcEnd (LOG_PROC, "marqueeBuildUI", "");
 }

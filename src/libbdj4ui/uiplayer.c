@@ -201,6 +201,9 @@ uiplayerFree (uiplayer_t *uiplayer)
     for (int i = 0; i < UIPL_IMG_MAX; ++i) {
       uiwcontFree (uiplayer->images [i]);
     }
+    uiwcontFree (uiplayer->volumeScale);
+    uiwcontFree (uiplayer->seekScale);
+    uiwcontFree (uiplayer->speedScale);
     uiwcontFree (uiplayer->vbox);
     uiwcontFree (uiplayer->repeatButton);
     uiwcontFree (uiplayer->pauseatendButton);

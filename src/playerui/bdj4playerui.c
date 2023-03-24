@@ -359,6 +359,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (plui->window);
   uiCleanup ();
 
+  uiwcontFree (plui->marqueeSpinBox);
   uiwcontFree (plui->vbox);
   uiwcontFree (plui->window);
   uiWidgetClearPersistent (plui->ledonPixbuf);
@@ -1386,8 +1387,6 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
       pluiMarqueeFontSizeChg, plui, NULL);
   uiSpinboxSetValueChangedCallback (plui->marqueeSpinBox,
       plui->callbacks [PLUI_CB_FONT_SZ_CHG]);
-//  g_signal_connect (plui->marqueeSpinBox.widget, "value-changed",
-//      G_CALLBACK (pluiMarqueeFontSizeChg), plui);
 
   /* the dialog doesn't have any space above the buttons */
   uiwcontFree (hbox);
