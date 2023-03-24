@@ -32,7 +32,7 @@ uiutilsAddAccentColorDisplay (uiwcont_t *vboxp, uiutilsaccent_t *accent)
   label = uiwcontAlloc ();
   /* right half block 0xE2 0x96 0x90 */
   /* full block 0xE2 0x96 0x88 */
-  uiCreateLabelOld (label, "\xE2\x96\x90\xE2\x96\x88");
+  label = uiCreateLabel ("\xE2\x96\x90\xE2\x96\x88");
   uiWidgetSetMarginStart (label, 3);
   uiutilsSetAccentColor (label);
   uiBoxPackEnd (hbox, label);

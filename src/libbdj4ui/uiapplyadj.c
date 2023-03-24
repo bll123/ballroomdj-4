@@ -40,7 +40,7 @@ typedef struct uiaa {
   uiwcont_t      *parentwin;
   nlist_t         *options;
   uiwcont_t       *aaDialog;
-  uiwcont_t       statusMsg;
+  uiwcont_t       *statusMsg;
   uiwcont_t       *cbTrim;
   uiwcont_t       *cbNorm;
   uiwcont_t       *cbAdjust;
@@ -96,7 +96,7 @@ uiaaFree (uiaa_t *uiaa)
       songFree (uiaa->song);
     }
     uiDialogDestroy (uiaa->aaDialog);
-    uiwcontFree (uiaa->aaDialog);
+    uiaaDialogClear (uiaa);
     mdfree (uiaa);
   }
 }
@@ -138,7 +138,8 @@ uiaaDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 void
 uiaaDialogClear (uiaa_t *uiaa)
 {
-  uiwcontInit (&uiaa->statusMsg);
+  uiwcontFree (uiaa->statusMsg);
+  uiaa->statusMsg = NULL;
   uiDialogDestroy (uiaa->aaDialog);
   uiwcontFree (uiaa->aaDialog);
   uiaa->aaDialog = NULL;
@@ -151,7 +152,6 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
-  uiwcont_t    uiwidget;
   uiwcont_t    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "uiaaCreateDialog");
@@ -193,10 +193,10 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   /* status message */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
-  uiCreateLabelOld (&uiwidget, "");
-  uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
-  uiBoxPackEnd (hbox, &uiwidget);
-  uiwcontCopy (&uiaa->statusMsg, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  uiaa->statusMsg = uiwidgetp;
 
   /* trim silence */
   uiwcontFree (hbox);
@@ -272,7 +272,7 @@ uiaaResponseHandler (void *udata, long responseid)
     }
     case RESPONSE_RESET: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: restore orig");
-      uiLabelSetText (&uiaa->statusMsg, uiaa->pleasewaitmsg);
+      uiLabelSetText (uiaa->statusMsg, uiaa->pleasewaitmsg);
       if (uiaa->responsecb != NULL) {
         callbackHandlerLong (uiaa->responsecb, SONG_ADJUST_RESTORE);
       }
@@ -291,7 +291,7 @@ uiaaResponseHandler (void *udata, long responseid)
       if (uiToggleButtonIsActive (uiaa->cbAdjust)) {
         aaflags |= SONG_ADJUST_ADJUST;
       }
-      uiLabelSetText (&uiaa->statusMsg, uiaa->pleasewaitmsg);
+      uiLabelSetText (uiaa->statusMsg, uiaa->pleasewaitmsg);
       if (uiaa->responsecb != NULL) {
         callbackHandlerLong (uiaa->responsecb, aaflags);
       }

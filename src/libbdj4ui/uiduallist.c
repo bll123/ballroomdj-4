@@ -84,7 +84,6 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
   uiwcont_t     *dvbox;
-  uiwcont_t     uiwidget;
   uiwcont_t     *scwindow;
   uibutton_t    *uibutton;
   uiwcont_t     *uiwidgetp = NULL;
@@ -122,8 +121,6 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   duallist->callbacks [DUALLIST_CB_SRC_SEARCH] = callbackInit (
       uiduallistSourceSearch, duallist, NULL);
 
-  uiwcontInit (&uiwidget);
-
   hbox = uiCreateHorizBox ();
   uiWidgetAlignHorizStart (hbox);
   uiBoxPackStartExpand (mainvbox, hbox);
@@ -134,8 +131,9 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiBoxPackStartExpand (hbox, vbox);
 
   if (sourcetitle != NULL) {
-    uiCreateLabelOld (&uiwidget, sourcetitle);
-    uiBoxPackStart (vbox, &uiwidget);
+    uiwidgetp = uiCreateLabel (sourcetitle);
+    uiBoxPackStart (vbox, uiwidgetp);
+    uiwcontFree (uiwidgetp);
   }
 
   scwindow = uiCreateScrolledWindow (300);
@@ -148,8 +146,6 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiTreeViewDarkBackground (uitree);
   uiWidgetExpandVert (uitreewidgetp);
   uiBoxPackInWindow (scwindow, uitreewidgetp);
-
-  uiwcontFree (scwindow);
 
   uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
@@ -191,10 +187,12 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiBoxPackStartExpand (hbox, vbox);
 
   if (targettitle != NULL) {
-    uiCreateLabelOld (&uiwidget, targettitle);
-    uiBoxPackStart (vbox, &uiwidget);
+    uiwidgetp = uiCreateLabel (targettitle);
+    uiBoxPackStart (vbox, uiwidgetp);
+    uiwcontFree (uiwidgetp);
   }
 
+  uiwcontFree (scwindow);
   scwindow = uiCreateScrolledWindow (300);
   uiWidgetExpandVert (scwindow);
   uiBoxPackStartExpand (vbox, scwindow);
@@ -205,8 +203,6 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiTreeViewDarkBackground (uitree);
   uiWidgetExpandVert (uitreewidgetp);
   uiBoxPackInWindow (scwindow, uitreewidgetp);
-
-  uiwcontFree (scwindow);
 
   uiTreeViewCreateValueStore (uitree, DUALLIST_COL_MAX,
       TREE_TYPE_STRING, TREE_TYPE_STRING, TREE_TYPE_NUM, TREE_TYPE_END);
@@ -242,6 +238,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (dvbox, uiwidgetp);
 
+  uiwcontFree (scwindow);
   uiwcontFree (dvbox);
   uiwcontFree (vbox);
   uiwcontFree (hbox);

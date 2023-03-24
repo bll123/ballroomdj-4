@@ -120,7 +120,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
-  uiwcont_t     uiwidget;
+  uiwcont_t     *uiwidgetp;
   uiwcont_t     *uitreewidgetp;
   uiwcont_t     *scwindow;
   char          tbuff [200];
@@ -187,8 +187,9 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateLabelOld (&uiwidget, " ");
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (" ");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
   uiwcontFree (vbox);

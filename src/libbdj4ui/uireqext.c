@@ -192,9 +192,8 @@ uireqextCreateDialog (uireqext_t *uireqext)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
-  uiwcont_t     uiwidget;
-  uibutton_t    *uibutton;
   uiwcont_t     *uiwidgetp;
+  uibutton_t    *uibutton;
   uiwcont_t     *szgrp;  // labels
   uiwcont_t     *szgrpEntry; // title, artist
 
@@ -237,11 +236,12 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabelOld (&uiwidget,
+  uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: request external: enter the audio file location */
       _("Audio File"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiEntryCreate (uireqext->audioFileEntry);
   uiEntrySetValue (uireqext->audioFileEntry, "");
@@ -268,9 +268,10 @@ uireqextCreateDialog (uireqext_t *uireqext)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_ARTIST].displayname);
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_ARTIST].displayname);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiEntryCreate (uireqext->artistEntry);
   uiEntrySetValue (uireqext->artistEntry, "");
@@ -285,9 +286,10 @@ uireqextCreateDialog (uireqext_t *uireqext)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_TITLE].displayname);
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_TITLE].displayname);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiEntryCreate (uireqext->titleEntry);
   uiEntrySetValue (uireqext->titleEntry, "");
@@ -302,9 +304,10 @@ uireqextCreateDialog (uireqext_t *uireqext)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_DANCE].displayname);
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (tagdefs [TAG_DANCE].displayname);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uireqext->callbacks [UIREQEXT_CB_DANCE] = callbackInitLongInt (
       uireqextDanceSelectHandler, uireqext);
