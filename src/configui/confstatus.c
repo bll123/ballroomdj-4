@@ -44,7 +44,7 @@ confuiBuildUIEditStatus (confuigui_t *gui)
       _("Edit Status"), CONFUI_ID_STATUS);
 
   /* CONTEXT: configuration: status: information on how to edit a status entry */
-  uiCreateLabel (&uiwidget, _("Double click on a field to edit."));
+  uiCreateLabelOld (&uiwidget, _("Double click on a field to edit."));
   uiBoxPackStart (vbox, &uiwidget);
 
   hbox = uiCreateHorizBox ();

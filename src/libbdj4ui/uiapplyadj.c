@@ -193,7 +193,7 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   /* status message */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiBoxPackEnd (hbox, &uiwidget);
   uiwcontCopy (&uiaa->statusMsg, &uiwidget);

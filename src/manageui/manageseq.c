@@ -142,7 +142,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: sequence editor: label for sequence name */
-  uiCreateColonLabel (&uiwidget, _("Sequence"));
+  uiCreateColonLabelOld (&uiwidget, _("Sequence"));
   uiBoxPackStart (hbox, &uiwidget);
 
   uiEntryCreate (manageseq->seqname);

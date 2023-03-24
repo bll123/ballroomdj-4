@@ -621,12 +621,12 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateLabel (&installer->statusMsg, "");
+  uiCreateLabelOld (&installer->statusMsg, "");
   uiWidgetAlignHorizEnd (&installer->statusMsg);
   uiWidgetSetClass (&installer->statusMsg, INST_HL_CLASS);
   uiBoxPackEndExpand (hbox, &installer->statusMsg);
 
-  uiCreateLabel (&uiwidget,
+  uiCreateLabelOld (&uiwidget,
       /* CONTEXT: installer: where BDJ4 gets installed */
       _("Enter the destination folder where BDJ4 will be installed."));
   uiBoxPackStart (vbox, &uiwidget);
@@ -670,7 +670,7 @@ installerBuildUI (installer_t *installer)
   uiToggleButtonSetCallback (installer->reinstWidget,
       installer->callbacks [INST_CB_REINST]);
 
-  uiCreateLabel (&installer->feedbackMsg, "");
+  uiCreateLabelOld (&installer->feedbackMsg, "");
   uiWidgetSetClass (&installer->feedbackMsg, INST_HL_CLASS);
   uiBoxPackStart (hbox, &installer->feedbackMsg);
 
@@ -683,15 +683,15 @@ installerBuildUI (installer_t *installer)
   snprintf (tbuff, sizeof (tbuff),
       /* CONTEXT: installer: asking where BallroomDJ 3 is installed */
       _("Enter the folder where %s is installed."), BDJ3_NAME);
-  uiCreateLabel (&uiwidget, tbuff);
+  uiCreateLabelOld (&uiwidget, tbuff);
   uiBoxPackStart (vbox, &uiwidget);
 
-  uiCreateLabel (&uiwidget,
+  uiCreateLabelOld (&uiwidget,
       /* CONTEXT: installer: instructions */
       _("If there is no BallroomDJ 3 installation, leave the entry blank."));
   uiBoxPackStart (vbox, &uiwidget);
 
-  uiCreateLabel (&uiwidget,
+  uiCreateLabelOld (&uiwidget,
       /* CONTEXT: installer: instructions */
       _("The conversion process will only run for new installations and for re-installations."));
   uiBoxPackStart (vbox, &uiwidget);
@@ -703,7 +703,7 @@ installerBuildUI (installer_t *installer)
 
   /* CONTEXT: installer: label for entry field asking for BDJ3 location */
   snprintf (tbuff, sizeof (tbuff), _("%s Location"), BDJ3_NAME);
-  uiCreateColonLabel (&uiwidget, tbuff);
+  uiCreateColonLabelOld (&uiwidget, tbuff);
   uiBoxPackStart (hbox, &uiwidget);
 
   uiEntryCreate (installer->bdj3locEntry);
@@ -740,7 +740,7 @@ installerBuildUI (installer_t *installer)
   uiToggleButtonSetCallback (installer->convWidget,
       installer->callbacks [INST_CB_CONV]);
 
-  uiCreateLabel (&installer->convFeedbackMsg, "");
+  uiCreateLabelOld (&installer->convFeedbackMsg, "");
   uiWidgetSetClass (&installer->convFeedbackMsg, INST_HL_CLASS);
   uiBoxPackStart (hbox, &installer->convFeedbackMsg);
 
@@ -757,11 +757,11 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabel (&uiwidget, "VLC");
+  uiCreateColonLabelOld (&uiwidget, "VLC");
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
-  uiCreateLabel (&installer->vlcMsg, "");
+  uiCreateLabelOld (&installer->vlcMsg, "");
   uiWidgetSetClass (&installer->vlcMsg, INST_HL_CLASS);
   uiBoxPackStart (hbox, &installer->vlcMsg);
 
@@ -771,11 +771,11 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabel (&uiwidget, "Python");
+  uiCreateColonLabelOld (&uiwidget, "Python");
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
-  uiCreateLabel (&installer->pythonMsg, "");
+  uiCreateLabelOld (&installer->pythonMsg, "");
   uiWidgetSetClass (&installer->pythonMsg, INST_HL_CLASS);
   uiBoxPackStart (hbox, &installer->pythonMsg);
 
@@ -785,11 +785,11 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabel (&uiwidget, "Mutagen");
+  uiCreateColonLabelOld (&uiwidget, "Mutagen");
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
-  uiCreateLabel (&installer->mutagenMsg, "");
+  uiCreateLabelOld (&installer->mutagenMsg, "");
   uiWidgetSetClass (&installer->mutagenMsg, INST_HL_CLASS);
   uiBoxPackStart (hbox, &installer->mutagenMsg);
 

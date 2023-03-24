@@ -561,7 +561,7 @@ starterBuildUI (startui_t  *starter)
   hbox = accent.hbox;
   starter->profileAccent = accent.label;
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (hbox, &uiwidget);
   uiwcontCopy (&starter->statusMsg, &uiwidget);
@@ -615,7 +615,7 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: profile to be used when starting BDJ4 */
-  uiCreateColonLabel (&uiwidget, _("Profile"));
+  uiCreateColonLabelOld (&uiwidget, _("Profile"));
   uiBoxPackStart (hbox, &uiwidget);
 
   /* get the profile list after bdjopt has been initialized */
@@ -1292,7 +1292,7 @@ starterProcessSupport (void *udata)
   hbox = accent.hbox;
   uiwcontFree (accent.label);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiwcontCopy (&starter->supportStatusMsg, &uiwidget);
   uiBoxPackEnd (hbox, &uiwidget);
@@ -1305,7 +1305,7 @@ starterProcessSupport (void *udata)
 
   /* CONTEXT: starterui: basic support dialog, version display */
   snprintf (tbuff, sizeof (tbuff), _("%s Version"), BDJ4_NAME);
-  uiCreateColonLabel (&uiwidget, tbuff);
+  uiCreateColonLabelOld (&uiwidget, tbuff);
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -1316,7 +1316,7 @@ starterProcessSupport (void *udata)
   }
   snprintf (tbuff, sizeof (tbuff), "%s %s (%s)",
       sysvarsGetStr (SV_BDJ4_VERSION), rlslvl, builddate);
-  uiCreateLabel (&uiwidget, tbuff);
+  uiCreateLabelOld (&uiwidget, tbuff);
   uiBoxPackStart (hbox, &uiwidget);
 
   /* begin line */
@@ -1325,11 +1325,11 @@ starterProcessSupport (void *udata)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: basic support dialog, latest version display */
-  uiCreateColonLabel (&uiwidget, _("Latest Version"));
+  uiCreateColonLabelOld (&uiwidget, _("Latest Version"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiBoxPackStart (hbox, &uiwidget);
 
   if (*starter->latestversion == '\0') {
@@ -1344,7 +1344,7 @@ starterProcessSupport (void *udata)
 
   /* begin line */
   /* CONTEXT: starterui: basic support dialog, list of support options */
-  uiCreateColonLabel (&uiwidget, _("Support options"));
+  uiCreateColonLabelOld (&uiwidget, _("Support options"));
   uiBoxPackStart (vbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -1745,7 +1745,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: sending support message: user's e-mail address */
-  uiCreateColonLabel (&uiwidget, _("E-Mail Address"));
+  uiCreateColonLabelOld (&uiwidget, _("E-Mail Address"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -1759,7 +1759,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: starterui: sending support message: subject of message */
-  uiCreateColonLabel (&uiwidget, _("Subject"));
+  uiCreateColonLabelOld (&uiwidget, _("Subject"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -1769,7 +1769,7 @@ starterCreateSupportMsgDialog (void *udata)
 
   /* line 3 */
   /* CONTEXT: starterui: sending support message: message text */
-  uiCreateColonLabel (&uiwidget, _("Message"));
+  uiCreateColonLabelOld (&uiwidget, _("Message"));
   uiBoxPackStart (vbox, &uiwidget);
 
   /* line 4 */
@@ -1790,7 +1790,7 @@ starterCreateSupportMsgDialog (void *udata)
   uiBoxPackStart (vbox, starter->supportSendDB);
 
   /* line 7 */
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiBoxPackStart (vbox, &uiwidget);
   uiLabelEllipsizeOn (&uiwidget);
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);

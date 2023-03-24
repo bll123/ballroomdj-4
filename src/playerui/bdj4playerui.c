@@ -463,17 +463,17 @@ pluiBuildUI (playerui_t *plui)
   menubar = uiCreateMenubar ();
   uiBoxPackStart (hbox, menubar);
 
-  uiCreateLabel (&plui->clock, "");
+  uiCreateLabelOld (&plui->clock, "");
   uiBoxPackEnd (hbox, &plui->clock);
   uiWidgetSetMarginStart (&plui->clock, 4);
   uiWidgetSetState (&plui->clock, UIWIDGET_DISABLE);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (hbox, &uiwidget);
   uiwcontCopy (&plui->errorMsg, &uiwidget);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
   uiBoxPackEnd (hbox, &uiwidget);
   uiwcontCopy (&plui->statusMsg, &uiwidget);
@@ -603,7 +603,7 @@ pluiBuildUI (playerui_t *plui)
     } else {
       str = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, i);
     }
-    uiCreateLabel (&uiwidget, str);
+    uiCreateLabelOld (&uiwidget, str);
     uiBoxPackStart (hbox, &uiwidget);
     if (i < MUSICQ_HISTORY) {
       plui->musicqImage [i] = uiImageNew ();
@@ -620,7 +620,7 @@ pluiBuildUI (playerui_t *plui)
   /* request tab */
   uiwidgetp = uisongselBuildUI (plui->uisongsel, plui->window);
   /* CONTEXT: playerui: name of request tab : lists the songs in the database */
-  uiCreateLabel (&uiwidget, _("Request"));
+  uiCreateLabelOld (&uiwidget, _("Request"));
   uiNotebookAppendPage (plui->notebook, uiwidgetp, &uiwidget);
   uinbutilIDAdd (plui->nbtabid, UI_TAB_SONGSEL);
 
@@ -1376,7 +1376,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playerui: marquee font size dialog: the font size selector */
-  uiCreateColonLabel (&uiwidget, _("Font Size"));
+  uiCreateColonLabelOld (&uiwidget, _("Font Size"));
   uiBoxPackStart (hbox, &uiwidget);
 
   plui->marqueeSpinBox = uiSpinboxIntCreate ();
@@ -1394,7 +1394,7 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiBoxPackStart (hbox, &uiwidget);
   plui->fontszdialogcreated = true;
 

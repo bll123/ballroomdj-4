@@ -183,7 +183,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiBoxPackStart (mhbox, vbox);
 
   /* CONTEXT: configuration: itunes: label for itunes rating conversion */
-  uiCreateLabel (&uiwidget, _("Rating"));
+  uiCreateLabelOld (&uiwidget, _("Rating"));
   uiBoxPackStart (vbox, &uiwidget);
 
   /* itunes uses 10..100 mapping to 0.5,1,1.5,...,4.5,5 stars */
@@ -202,7 +202,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiCreateLabel (&uiwidget, tbuff);
+    uiCreateLabelOld (&uiwidget, tbuff);
     uiSizeGroupAdd (szgrpr, &uiwidget);
     uiBoxPackStart (hbox, &uiwidget);
 
@@ -219,7 +219,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiBoxPackStart (mhbox, vbox);
 
   /* CONTEXT: configuration: itunes: which fields should be imported from itunes */
-  uiCreateLabel (&uiwidget, _("Fields to Import"));
+  uiCreateLabelOld (&uiwidget, _("Fields to Import"));
   uiBoxPackStart (vbox, &uiwidget);
 
   hbox = uiCreateHorizBox ();

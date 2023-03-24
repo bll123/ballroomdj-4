@@ -19,8 +19,34 @@
 #include "ui/uiui.h"
 #include "ui/uilabel.h"
 
+uiwcont_t *
+uiCreateLabel (const char *label)
+{
+  uiwcont_t *uiwidget;
+  GtkWidget *widget;
+
+  widget = gtk_label_new (label);
+  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
+  gtk_widget_set_halign (widget, GTK_ALIGN_START);
+  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
+  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
+
+  uiwidget = uiwcontAlloc ();
+  uiwidget->widget = widget;
+  return uiwidget;
+}
+
+uiwcont_t *
+uiCreateColonLabel (const char *label)
+{
+  char      tbuff [300];
+
+  snprintf (tbuff, sizeof (tbuff), "%s:", label);
+  return uiCreateLabel (tbuff);
+}
+
 void
-uiCreateLabel (uiwcont_t *uiwidget, const char *label)
+uiCreateLabelOld (uiwcont_t *uiwidget, const char *label)
 {
   GtkWidget *widget;
 
@@ -34,7 +60,7 @@ uiCreateLabel (uiwcont_t *uiwidget, const char *label)
 }
 
 void
-uiCreateColonLabel (uiwcont_t *uiwidget, const char *label)
+uiCreateColonLabelOld (uiwcont_t *uiwidget, const char *label)
 {
   GtkWidget *widget;
   char      tbuff [200];

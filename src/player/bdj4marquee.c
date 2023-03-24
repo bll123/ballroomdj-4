@@ -390,14 +390,14 @@ marqueeBuildUI (marquee_t *marquee)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: marquee: displayed when nothing is set to be played */
-  uiCreateLabel (&uiwidget, _("Not Playing"));
+  uiCreateLabelOld (&uiwidget, _("Not Playing"));
   uiWidgetAlignHorizStart (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
   uiWidgetSetClass (&uiwidget, MQ_ACCENT_CLASS);
   uiBoxPackStart (hbox, &uiwidget);
   uiwcontCopy (&marquee->danceLab, &uiwidget);
 
-  uiCreateLabel (&uiwidget, "0:00");
+  uiCreateLabelOld (&uiwidget, "0:00");
   uiLabelSetMaxWidth (&uiwidget, 6);
   uiWidgetAlignHorizEnd (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
@@ -412,14 +412,14 @@ marqueeBuildUI (marquee_t *marquee)
   uiBoxPackStart (vbox, hbox);
   marquee->infoBox = hbox;
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiWidgetAlignHorizStart (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
   uiLabelEllipsizeOn (&uiwidget);
   uiBoxPackStart (hbox, &uiwidget);
   uiwcontCopy (&marquee->infoArtistLab, &uiwidget);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiWidgetAlignHorizStart (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
   uiBoxPackStart (hbox, &uiwidget);
@@ -427,7 +427,7 @@ marqueeBuildUI (marquee_t *marquee)
   uiWidgetSetMarginEnd (&uiwidget, 2);
   uiwcontCopy (&marquee->infoSepLab, &uiwidget);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiWidgetAlignHorizStart (&uiwidget);
   uiWidgetDisableFocus (&uiwidget);
   uiLabelEllipsizeOn (&uiwidget);
@@ -445,7 +445,7 @@ marqueeBuildUI (marquee_t *marquee)
 
   for (int i = 0; i < marquee->mqLen; ++i) {
     uiwcontInit (&marquee->marqueeLabs [i]);
-    uiCreateLabel (&marquee->marqueeLabs [i], "");
+    uiCreateLabelOld (&marquee->marqueeLabs [i], "");
     uiWidgetAlignHorizStart (&marquee->marqueeLabs [i]);
     uiWidgetExpandHoriz (&marquee->marqueeLabs [i]);
     uiWidgetDisableFocus (&marquee->marqueeLabs [i]);

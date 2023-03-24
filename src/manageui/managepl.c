@@ -201,7 +201,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (tophbox, hbox);
 
   /* CONTEXT: playlist management: label for playlist name */
-  uiCreateColonLabel (&uiwidget, _("Playlist"));
+  uiCreateColonLabelOld (&uiwidget, _("Playlist"));
   uiBoxPackStart (hbox, &uiwidget);
 
   uiEntryCreate (managepl->plname);
@@ -216,11 +216,11 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (tophbox, hbox);
 
   /* CONTEXT: playlist management: label for playlist name */
-  uiCreateColonLabel (&uiwidget, _("Playlist Type"));
+  uiCreateColonLabelOld (&uiwidget, _("Playlist Type"));
   uiBoxPackStart (hbox, &uiwidget);
 
   /* CONTEXT: playlist management: default playlist type */
-  uiCreateLabel (&uiwidget, _("Automatic"));
+  uiCreateLabelOld (&uiwidget, _("Automatic"));
   uiBoxPackStart (hbox, &uiwidget);
   uiwcontCopy (&managepl->uipltype, &uiwidget);
 
@@ -236,7 +236,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
 
   /* CONTEXT: playlist management: maximum play time */
-  uiCreateColonLabel (&uiwidget, _("Maximum Play Time"));
+  uiCreateColonLabelOld (&uiwidget, _("Maximum Play Time"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -253,7 +253,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
 
   /* CONTEXT: playlist management: stop at */
-  uiCreateColonLabel (&uiwidget, _("Stop At"));
+  uiCreateColonLabelOld (&uiwidget, _("Stop At"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -272,7 +272,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
 
   /* CONTEXT: playlist management: stop after */
-  uiCreateColonLabel (&uiwidget, _("Stop After"));
+  uiCreateColonLabelOld (&uiwidget, _("Stop After"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -287,7 +287,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
 
   /* CONTEXT: playlist management: Gap between songs */
-  uiCreateColonLabel (&uiwidget, _("Gap Between Songs"));
+  uiCreateColonLabelOld (&uiwidget, _("Gap Between Songs"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -302,7 +302,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
 
   /* CONTEXT: playlist management: Play Announcements */
-  uiCreateColonLabel (&uiwidget, _("Play Announcements"));
+  uiCreateColonLabelOld (&uiwidget, _("Play Announcements"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -317,7 +317,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
 
   /* add a blank line between the playlist controls and song selection */
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -326,7 +326,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiBoxPackStart (lcolvbox, hbox);
   uiwcontCopy (&managepl->uiratingitem, hbox);
 
-  uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCERATING].displayname);
+  uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_DANCERATING].displayname);
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -339,7 +339,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcontCopy (&managepl->uilowlevelitem, hbox);
 
   /* CONTEXT: playlist management: Low Dance Level */
-  uiCreateColonLabel (&uiwidget, _("Low Dance Level"));
+  uiCreateColonLabelOld (&uiwidget, _("Low Dance Level"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -352,7 +352,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcontCopy (&managepl->uihighlevelitem, hbox);
 
   /* CONTEXT: playlist management: High Dance Level */
-  uiCreateColonLabel (&uiwidget, _("High Dance Level"));
+  uiCreateColonLabelOld (&uiwidget, _("High Dance Level"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -365,7 +365,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcontCopy (&managepl->uiallowedkeywordsitem, hbox);
 
   /* CONTEXT: playlist management: allowed keywords */
-  uiCreateColonLabel (&uiwidget, _("Allowed Keywords"));
+  uiCreateColonLabelOld (&uiwidget, _("Allowed Keywords"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 

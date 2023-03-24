@@ -103,20 +103,20 @@ manageBuildUIStats (managestats_t *managestats)
   uiBoxPackStart (managestats->vboxmain, hbox);
 
   /* CONTEXT: statistics: Label for number of songs in song list */
-  uiCreateColonLabel (&uiwidget, _("Songs"));
+  uiCreateColonLabelOld (&uiwidget, _("Songs"));
   uiBoxPackStart (hbox, &uiwidget);
 
-  uiCreateLabel (&managestats->songcountdisp, "");
+  uiCreateLabelOld (&managestats->songcountdisp, "");
   uiLabelAlignEnd (&managestats->songcountdisp);
   uiBoxPackStart (hbox, &managestats->songcountdisp);
 
   /* total time (same horiz row) */
   /* CONTEXT: statistics: Label for total song list duration */
-  uiCreateColonLabel (&uiwidget, _("Total Time"));
+  uiCreateColonLabelOld (&uiwidget, _("Total Time"));
   uiWidgetSetMarginStart (&uiwidget, 10);
   uiBoxPackStart (hbox, &uiwidget);
 
-  uiCreateLabel (&managestats->tottimedisp, "");
+  uiCreateLabelOld (&managestats->tottimedisp, "");
   uiLabelAlignEnd (&managestats->tottimedisp);
   uiBoxPackStart (hbox, &managestats->tottimedisp);
   uiwcontFree (hbox);
@@ -124,7 +124,7 @@ manageBuildUIStats (managestats_t *managestats)
   listingFont = bdjoptGetStr (OPT_MP_LISTING_FONT);
 
   for (int i = 0; i < STATS_MAX_DISP; ++i) {
-    uiCreateLabel (&managestats->dancedisp [i], "");
+    uiCreateLabelOld (&managestats->dancedisp [i], "");
     if (i % 2 == 1) {
       uiWidgetSetSizeRequest (&managestats->dancedisp [i], 30, -1);
       uiLabelAlignEnd (&managestats->dancedisp [i]);

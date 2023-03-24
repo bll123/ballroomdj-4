@@ -374,7 +374,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackStart (vboxmain, hbox);
 
   /* CONTEXT: bpm counter: instructions, line 1 */
-  uiCreateLabel (&uiwidget, _("Click the mouse in the blue box in time with the beat."));
+  uiCreateLabelOld (&uiwidget, _("Click the mouse in the blue box in time with the beat."));
   uiBoxPackStart (hbox, &uiwidget);
 
   uiwcontFree (hbox);
@@ -382,7 +382,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackStart (vboxmain, hbox);
 
   /* CONTEXT: bpm counter: instructions, line 2 */
-  uiCreateLabel (&uiwidget, _("When the BPM value is stable, select the Save button."));
+  uiCreateLabelOld (&uiwidget, _("When the BPM value is stable, select the Save button."));
   uiBoxPackStart (hbox, &uiwidget);
 
   /* secondary box */
@@ -394,7 +394,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackStartExpand (hboxbpm, vbox);
 
   /* some spacing */
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiBoxPackStart (vbox, &uiwidget);
 
   bpmcounter->callbacks [BPMCOUNT_CB_RADIO] = callbackInit (
@@ -406,7 +406,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
     uiBoxPackStart (vbox, hbox);
 
     if (i < BPMCOUNT_DISP_BPM) {
-      uiCreateColonLabel (&uiwidget, disptxt [i]);
+      uiCreateColonLabelOld (&uiwidget, disptxt [i]);
       uiwidgetp = &uiwidget;
     } else if (i == BPMCOUNT_DISP_BPM) {
       uiwidgetp = uiCreateRadioButton (NULL, disptxt [i], 1);
@@ -423,7 +423,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
 
-    uiCreateLabel (&bpmcounter->dispvalue [i], "");
+    uiCreateLabelOld (&bpmcounter->dispvalue [i], "");
     uiLabelAlignEnd (&bpmcounter->dispvalue [i]);
     uiSizeGroupAdd (szgrpDisp, &bpmcounter->dispvalue [i]);
     uiBoxPackStart (hbox, &bpmcounter->dispvalue [i]);

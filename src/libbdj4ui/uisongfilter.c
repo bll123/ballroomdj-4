@@ -476,7 +476,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiwcontCopy (&uisf->playlistdisp, hbox);
 
   /* CONTEXT: song selection filter: a filter: select a playlist to work with (music manager) */
-  uiCreateColonLabel (&uiwidget, _("Playlist"));
+  uiCreateColonLabelOld (&uiwidget, _("Playlist"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -494,7 +494,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song selection filter: a filter: select the method to sort the song selection display */
-  uiCreateColonLabel (&uiwidget, _("Sort by"));
+  uiCreateColonLabelOld (&uiwidget, _("Sort by"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
   uiwcontCopy (&uisf->labels [UISF_LABEL_SORTBY], &uiwidget);
@@ -513,7 +513,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: song selection filter: a filter: filter the song selection with a search for text */
-  uiCreateColonLabel (&uiwidget, _("Search"));
+  uiCreateColonLabelOld (&uiwidget, _("Search"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
   uiwcontCopy (&uisf->labels [UISF_LABEL_SEARCH], &uiwidget);
@@ -530,7 +530,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiCreateColonLabel (&uiwidget, tagdefs [TAG_GENRE].displayname);
+    uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_GENRE].displayname);
     uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_GENRE], &uiwidget);
@@ -547,7 +547,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCE].displayname);
+  uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_DANCE].displayname);
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
   uiwcontCopy (&uisf->labels [UISF_LABEL_DANCE], &uiwidget);
@@ -565,7 +565,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCERATING].displayname);
+  uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_DANCERATING].displayname);
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
   uiwcontCopy (&uisf->labels [UISF_LABEL_DANCE_RATING], &uiwidget);
@@ -579,7 +579,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCELEVEL].displayname);
+    uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_DANCELEVEL].displayname);
     uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_DANCE_LEVEL], &uiwidget);
@@ -594,7 +594,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiCreateColonLabel (&uiwidget, tagdefs [TAG_STATUS].displayname);
+    uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_STATUS].displayname);
     uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_STATUS], &uiwidget);
@@ -609,7 +609,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiCreateColonLabel (&uiwidget, tagdefs [TAG_FAVORITE].displayname);
+    uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_FAVORITE].displayname);
     uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_FAVORITE], &uiwidget);
@@ -624,7 +624,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uiBoxPackStart (vbox, hbox);
 
     /* CONTEXT: song selection filter: a filter: the song status is marked as playable */
-    uiCreateColonLabel (&uiwidget, _("Playable Status"));
+    uiCreateColonLabelOld (&uiwidget, _("Playable Status"));
     uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (szgrp, &uiwidget);
     uiwcontCopy (&uisf->labels [UISF_LABEL_PLAY_STATUS], &uiwidget);
@@ -638,7 +638,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateLabel (&uiwidget, " ");
+  uiCreateLabelOld (&uiwidget, " ");
   uiBoxPackStart (hbox, &uiwidget);
 
   uiwcontFree (vbox);

@@ -182,7 +182,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: update database: select database update action */
-  uiCreateColonLabel (&uiwidget, _("Action"));
+  uiCreateColonLabelOld (&uiwidget, _("Action"));
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
   uiWidgetSetMarginStart (&uiwidget, 2);
@@ -206,12 +206,12 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vboxp, hbox);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiBoxPackStart (hbox, &uiwidget);
   uiWidgetSetMarginStart (&uiwidget, 2);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiBoxPackStartExpand (hbox, &uiwidget);
   uiWidgetSetMarginStart (&uiwidget, 6);
   uiwcontCopy (&managedb->dbhelpdisp, &uiwidget);
@@ -223,7 +223,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiBoxPackStart (vboxp, hbox);
 
   /* CONTEXT: update database: music folder to process */
-  uiCreateColonLabel (&uiwidget, _("Music Folder"));
+  uiCreateColonLabelOld (&uiwidget, _("Music Folder"));
   uiBoxPackStart (hbox, &uiwidget);
   uiWidgetSetMarginStart (&uiwidget, 2);
   uiSizeGroupAdd (szgrp, &uiwidget);
@@ -248,7 +248,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxp, hbox);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 

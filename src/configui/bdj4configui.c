@@ -433,7 +433,7 @@ confuiBuildUI (configui_t *confui)
   hbox = accent.hbox;
   uiwcontFree (accent.label);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiWidgetSetClass (&uiwidget, ERROR_CLASS);
   uiBoxPackEnd (hbox, &uiwidget);
   uiwcontCopy (&confui->gui.statusMsg, &uiwidget);

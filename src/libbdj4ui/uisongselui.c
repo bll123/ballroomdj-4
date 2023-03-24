@@ -281,7 +281,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (hbox, uiwidgetp);
 
-    uiCreateLabel (&uiwidget, "");
+    uiCreateLabelOld (&uiwidget, "");
     uiWidgetSetClass (&uiwidget, DARKACCENT_CLASS);
     uiBoxPackStart (hbox, &uiwidget);
     uiwcontCopy (&ssint->reqQueueLabel, &uiwidget);

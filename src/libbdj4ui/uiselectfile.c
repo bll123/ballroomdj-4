@@ -187,7 +187,7 @@ selectFileCreateDialog (uiselectfile_t *selectfile,
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateLabel (&uiwidget, " ");
+  uiCreateLabelOld (&uiwidget, " ");
   uiBoxPackStart (hbox, &uiwidget);
 
   uiwcontFree (hbox);

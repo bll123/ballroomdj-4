@@ -134,7 +134,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiBoxPackStartExpand (hbox, vbox);
 
   if (sourcetitle != NULL) {
-    uiCreateLabel (&uiwidget, sourcetitle);
+    uiCreateLabelOld (&uiwidget, sourcetitle);
     uiBoxPackStart (vbox, &uiwidget);
   }
 
@@ -191,7 +191,7 @@ uiCreateDualList (uiwcont_t *mainvbox, int flags,
   uiBoxPackStartExpand (hbox, vbox);
 
   if (targettitle != NULL) {
-    uiCreateLabel (&uiwidget, targettitle);
+    uiCreateLabelOld (&uiwidget, targettitle);
     uiBoxPackStart (vbox, &uiwidget);
   }
 

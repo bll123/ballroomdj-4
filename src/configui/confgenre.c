@@ -44,7 +44,7 @@ confuiBuildUIEditGenres (confuigui_t *gui)
       _("Edit Genres"), CONFUI_ID_GENRES);
 
   /* CONTEXT: configuration: genres: information on how to edit a genre entry */
-  uiCreateLabel (&uiwidget, _("Double click on a field to edit."));
+  uiCreateLabelOld (&uiwidget, _("Double click on a field to edit."));
   uiBoxPackStart (vbox, &uiwidget);
 
   hbox = uiCreateHorizBox ();

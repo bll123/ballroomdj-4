@@ -42,11 +42,11 @@ confuiBuildUIEditRatings (confuigui_t *gui)
       _("Edit Ratings"), CONFUI_ID_RATINGS);
 
   /* CONTEXT: configuration: dance ratings: information on how to order the ratings */
-  uiCreateLabel (&uiwidget, _("Order from the lowest rating to the highest rating."));
+  uiCreateLabelOld (&uiwidget, _("Order from the lowest rating to the highest rating."));
   uiBoxPackStart (vbox, &uiwidget);
 
   /* CONTEXT: configuration: dance ratings: information on how to edit a rating entry */
-  uiCreateLabel (&uiwidget, _("Double click on a field to edit."));
+  uiCreateLabelOld (&uiwidget, _("Double click on a field to edit."));
   uiBoxPackStart (vbox, &uiwidget);
 
   hbox = uiCreateHorizBox ();

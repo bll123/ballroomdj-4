@@ -44,7 +44,7 @@ confuiMakeNotebookTab (uiwcont_t *boxp, confuigui_t *gui, const char *txt, int i
   uiwcont_t  uiwidget;
 
   logProcBegin (LOG_PROC, "confuiMakeNotebookTab");
-  uiCreateLabel (&uiwidget, txt);
+  uiCreateLabelOld (&uiwidget, txt);
   uiWidgetSetAllMargins (&uiwidget, 0);
   uiWidgetExpandHoriz (boxp);
   uiWidgetExpandVert (boxp);
@@ -414,7 +414,7 @@ confuiMakeItemLabelDisp (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
   gui->uiitem [widx].outtype = CONFUI_OUT_NONE;
   hbox = uiCreateHorizBox ();
   confuiMakeItemLabel (hbox, szgrp, txt, CONFUI_NO_INDENT);
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiWidgetSetMarginStart (&uiwidget, 4);
   uiBoxPackStart (hbox, &uiwidget);
   uiBoxPackStart (boxp, hbox);
@@ -458,9 +458,9 @@ confuiMakeItemLabel (uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int ind
   }
 
   if (*ttxt == '\0') {
-    uiCreateLabel (&uiwidget, ttxt);
+    uiCreateLabelOld (&uiwidget, ttxt);
   } else {
-    uiCreateColonLabel (&uiwidget, ttxt);
+    uiCreateColonLabelOld (&uiwidget, ttxt);
   }
   uiBoxPackStart (boxp, &uiwidget);
   if (szgrp != NULL) {
@@ -468,7 +468,7 @@ confuiMakeItemLabel (uiwcont_t *boxp, uiwcont_t *szgrp, const char *txt, int ind
   }
   if (indent == CONFUI_INDENT) {
     strlcpy (ntxt, "      ", sizeof (ntxt));
-    uiCreateLabel (&uiwidget, ttxt);
+    uiCreateLabelOld (&uiwidget, ttxt);
     uiBoxPackStart (boxp, &uiwidget);
   }
   logProcEnd (LOG_PROC, "confuiMakeItemLabel", "");

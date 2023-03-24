@@ -43,11 +43,11 @@ confuiBuildUIEditLevels (confuigui_t *gui)
       _("Edit Levels"), CONFUI_ID_LEVELS);
 
   /* CONTEXT: configuration: dance levels: instructions */
-  uiCreateLabel (&uiwidget, _("Order from easiest to most advanced."));
+  uiCreateLabelOld (&uiwidget, _("Order from easiest to most advanced."));
   uiBoxPackStart (vbox, &uiwidget);
 
   /* CONTEXT: configuration: dance levels: information on how to edit a level entry */
-  uiCreateLabel (&uiwidget, _("Double click on a field to edit."));
+  uiCreateLabelOld (&uiwidget, _("Double click on a field to edit."));
   uiBoxPackStart (vbox, &uiwidget);
 
   hbox = uiCreateHorizBox ();

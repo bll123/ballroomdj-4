@@ -286,39 +286,39 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_REPEAT], 1);
   uiBoxPackStart (tbox, uiplayer->images [UIPL_IMG_REPEAT]);
 
-  uiCreateLabel (&uiplayer->danceLab, "");
+  uiCreateLabelOld (&uiplayer->danceLab, "");
   uiBoxPackStart (hbox, &uiplayer->danceLab);
 
-  uiCreateLabel (&uiwidget, " : ");
+  uiCreateLabelOld (&uiwidget, " : ");
   uiWidgetSetMarginStart (&uiwidget, 0);
   uiBoxPackStart (hbox, &uiwidget);
 
-  uiCreateLabel (&uiplayer->artistLab, "");
+  uiCreateLabelOld (&uiplayer->artistLab, "");
   uiWidgetSetMarginStart (&uiplayer->artistLab, 0);
   uiLabelEllipsizeOn (&uiplayer->artistLab);
   uiBoxPackStart (hbox, &uiplayer->artistLab);
 
-  uiCreateLabel (&uiwidget, " : ");
+  uiCreateLabelOld (&uiwidget, " : ");
   uiWidgetSetMarginStart (&uiwidget, 0);
   uiBoxPackStart (hbox, &uiwidget);
 
-  uiCreateLabel (&uiplayer->titleLab, "");
+  uiCreateLabelOld (&uiplayer->titleLab, "");
   uiWidgetSetMarginStart (&uiplayer->titleLab, 0);
   uiLabelEllipsizeOn (&uiplayer->titleLab);
   uiBoxPackStart (hbox, &uiplayer->titleLab);
 
   /* expanding label to take space */
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiWidgetExpandHoriz (&uiwidget);
   uiBoxPackStart (hbox, &uiwidget);
 
   /* size group A */
-  uiCreateLabel (&uiwidget, "%");
+  uiCreateLabelOld (&uiwidget, "%");
   uiBoxPackEnd (hbox, &uiwidget);
   uiSizeGroupAdd (szgrpA, &uiwidget);
 
   /* size group B */
-  uiCreateLabel (&uiplayer->speedDisplayLab, "100");
+  uiCreateLabelOld (&uiplayer->speedDisplayLab, "100");
   uiLabelAlignEnd (&uiplayer->speedDisplayLab);
   uiBoxPackEnd (hbox, &uiplayer->speedDisplayLab);
   uiSizeGroupAdd (szgrpB, &uiplayer->speedDisplayLab);
@@ -333,7 +333,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group D */
   /* CONTEXT: playerui: the current speed for song playback */
-  uiCreateColonLabel (&uiwidget, _("Speed"));
+  uiCreateColonLabelOld (&uiwidget, _("Speed"));
   uiLabelAlignEnd (&uiwidget);
   uiWidgetSetMarginEnd (&uiwidget, 1);
   uiBoxPackEnd (hbox, &uiwidget);
@@ -347,33 +347,33 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (uiplayer->vbox, hbox);
 
   /* size group E */
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrpE, &uiwidget);
 
-  uiCreateLabel (&uiplayer->countdownTimerLab, " 0:00");
+  uiCreateLabelOld (&uiplayer->countdownTimerLab, " 0:00");
   uiLabelAlignEnd (&uiplayer->countdownTimerLab);
   uiBoxPackStart (hbox, &uiplayer->countdownTimerLab);
 
-  uiCreateLabel (&uiwidget, " / ");
+  uiCreateLabelOld (&uiwidget, " / ");
   uiWidgetSetMarginStart (&uiwidget, 0);
   uiBoxPackStart (hbox, &uiwidget);
 
-  uiCreateLabel (&uiplayer->durationLab, " 0:00");
+  uiCreateLabelOld (&uiplayer->durationLab, " 0:00");
   uiLabelAlignEnd (&uiplayer->durationLab);
   uiBoxPackStart (hbox, &uiplayer->durationLab);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiWidgetExpandHoriz (&uiwidget);
   uiBoxPackStart (hbox, &uiwidget);
 
   /* size group A */
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiBoxPackEnd (hbox, &uiwidget);
   uiSizeGroupAdd (szgrpA, &uiwidget);
 
   /* size group B */
-  uiCreateLabel (&uiplayer->seekDisplayLab, "0:00");
+  uiCreateLabelOld (&uiplayer->seekDisplayLab, "0:00");
   uiLabelAlignEnd (&uiplayer->seekDisplayLab);
   uiSizeGroupAdd (szgrpB, &uiplayer->seekDisplayLab);
   uiBoxPackEnd (hbox, &uiplayer->seekDisplayLab);
@@ -388,7 +388,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group D */
   /* CONTEXT: playerui: the current position of the song during song playback */
-  uiCreateColonLabel (&uiwidget, _("Position"));
+  uiCreateColonLabelOld (&uiwidget, _("Position"));
   uiLabelAlignEnd (&uiwidget);
   uiWidgetSetMarginEnd (&uiwidget, 1);
   uiBoxPackEnd (hbox, &uiwidget);
@@ -402,7 +402,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (uiplayer->vbox, hbox);
 
   /* size group E */
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrpE, &uiwidget);
 
@@ -479,12 +479,12 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   /* volume controls / display */
 
   /* size group A */
-  uiCreateLabel (&uiwidget, "%");
+  uiCreateLabelOld (&uiwidget, "%");
   uiBoxPackEnd (hbox, &uiwidget);
   uiSizeGroupAdd (szgrpA, &uiwidget);
 
   /* size group B */
-  uiCreateLabel (&uiplayer->volumeDisplayLab, "100");
+  uiCreateLabelOld (&uiplayer->volumeDisplayLab, "100");
   uiLabelAlignEnd (&uiplayer->volumeDisplayLab);
   uiBoxPackEnd (hbox, &uiplayer->volumeDisplayLab);
   uiSizeGroupAdd (szgrpB, &uiplayer->volumeDisplayLab);
@@ -499,7 +499,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
 
   /* size group D */
   /* CONTEXT: playerui: The current volume of the song */
-  uiCreateColonLabel (&uiwidget, _("Volume"));
+  uiCreateColonLabelOld (&uiwidget, _("Volume"));
   uiLabelAlignEnd (&uiwidget);
   uiWidgetSetMarginEnd (&uiwidget, 1);
   uiBoxPackEnd (hbox, &uiwidget);

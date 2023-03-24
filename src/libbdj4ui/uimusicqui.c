@@ -364,7 +364,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     }
 
     /* CONTEXT: music queue: label for song list name */
-    uiCreateColonLabel (&uiwidget, _("Song List"));
+    uiCreateColonLabelOld (&uiwidget, _("Song List"));
     uiWidgetSetMarginStart (&uiwidget, 6);
     uiBoxPackEnd (hbox, &uiwidget);
   }

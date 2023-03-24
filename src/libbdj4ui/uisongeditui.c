@@ -385,7 +385,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (hbox, uiwidgetp);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiBoxPackEnd (hbox, &uiwidget);
   uiWidgetSetMarginEnd (&uiwidget, 6);
   uiWidgetSetClass (&uiwidget, DARKACCENT_CLASS);
@@ -411,7 +411,7 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiWidgetSetMarginStart (seint->audioidImg, 1);
   uiBoxPackStart (hbox, seint->audioidImg);
 
-  uiCreateLabel (&uiwidget, " ");
+  uiCreateLabelOld (&uiwidget, " ");
   uiBoxPackStart (hbox, &uiwidget);
   uiwcontCopy (&seint->modified, &uiwidget);
   uiWidgetSetClass (&seint->modified, DARKACCENT_CLASS);
@@ -428,11 +428,11 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   uiBoxPackStart (hbox, uiwidgetp);
 
   /* CONTEXT: song editor: label for displaying the audio file path */
-  uiCreateColonLabel (&uiwidget, _("File"));
+  uiCreateColonLabelOld (&uiwidget, _("File"));
   uiBoxPackStart (hbox, &uiwidget);
   uiWidgetSetState (&uiwidget, UIWIDGET_DISABLE);
 
-  uiCreateLabel (&uiwidget, "");
+  uiCreateLabelOld (&uiwidget, "");
   uiLabelEllipsizeOn (&uiwidget);
   uiBoxPackStart (hbox, &uiwidget);
   uiwcontCopy (&seint->filedisp, &uiwidget);
@@ -1094,7 +1094,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *hbox, uiwcont_t *sg, int
     seint->items [seint->itemcount].changed = false;
     seint->items [seint->itemcount].lastchanged = false;
 
-    uiCreateColonLabel (&uiwidget, tagdefs [tagkey].displayname);
+    uiCreateColonLabelOld (&uiwidget, tagdefs [tagkey].displayname);
     uiBoxPackStart (hbox, &uiwidget);
     uiSizeGroupAdd (sg, &uiwidget);
     uiwcontCopy (&seint->items [seint->itemcount].label, &uiwidget);
@@ -1245,7 +1245,7 @@ uisongeditAddLabel (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   logProcBegin (LOG_PROC, "uisongeditAddLabel");
   seint = uisongedit->seInternalData;
   uiwidgetp = &seint->items [seint->itemcount].uiwidget;
-  uiCreateLabel (uiwidgetp, "");
+  uiCreateLabelOld (uiwidgetp, "");
   uiSizeGroupAdd (seint->szgrp [SE_SZGRP_ENTRY], uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   logProcEnd (LOG_PROC, "uisongeditAddLabel", "");
@@ -1260,7 +1260,7 @@ uisongeditAddSecondaryLabel (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagk
   logProcBegin (LOG_PROC, "uisongeditAddSecondaryLabel");
   seint = uisongedit->seInternalData;
   uiwidgetp = &seint->items [seint->itemcount].uiwidget;
-  uiCreateLabel (uiwidgetp, "");
+  uiCreateLabelOld (uiwidgetp, "");
   uiBoxPackStart (hbox, uiwidgetp);
   logProcEnd (LOG_PROC, "uisongeditAddSecondaryLabel", "");
 }
@@ -1323,7 +1323,7 @@ uisongeditAddScale (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
   uiBoxPackStart (hbox, uiwidgetp);
 
   uiwidgetp = &seint->items [seint->itemcount].display;
-  uiCreateLabel (uiwidgetp, "100%");
+  uiCreateLabelOld (uiwidgetp, "100%");
   uiLabelAlignEnd (uiwidgetp);
   uiSizeGroupAdd (seint->szgrp [SE_SZGRP_SCALE_DISP], uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);

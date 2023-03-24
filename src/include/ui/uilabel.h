@@ -6,8 +6,10 @@
 
 #include "uiwcont.h"
 
-void  uiCreateLabel (uiwcont_t *uiwidget, const char *label);
-void  uiCreateColonLabel (uiwcont_t *uiwidget, const char *label);
+uiwcont_t *uiCreateLabel (const char *label);
+uiwcont_t *uiCreateColonLabel (const char *label);
+void  uiCreateLabelOld (uiwcont_t *uiwidget, const char *label);
+void  uiCreateColonLabelOld (uiwcont_t *uiwidget, const char *label);
 void  uiLabelAddClass (const char *classnm, const char *color);
 void  uiLabelSetFont (uiwcont_t *uilabel, const char *font);
 void  uiLabelSetText (uiwcont_t *uilabel, const char *text);

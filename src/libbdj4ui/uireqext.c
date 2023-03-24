@@ -237,7 +237,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabel (&uiwidget,
+  uiCreateColonLabelOld (&uiwidget,
       /* CONTEXT: request external: enter the audio file location */
       _("Audio File"));
   uiBoxPackStart (hbox, &uiwidget);
@@ -268,7 +268,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabel (&uiwidget, tagdefs [TAG_ARTIST].displayname);
+  uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_ARTIST].displayname);
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -285,7 +285,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabel (&uiwidget, tagdefs [TAG_TITLE].displayname);
+  uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_TITLE].displayname);
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 
@@ -302,7 +302,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabel (&uiwidget, tagdefs [TAG_DANCE].displayname);
+  uiCreateColonLabelOld (&uiwidget, tagdefs [TAG_DANCE].displayname);
   uiBoxPackStart (hbox, &uiwidget);
   uiSizeGroupAdd (szgrp, &uiwidget);
 

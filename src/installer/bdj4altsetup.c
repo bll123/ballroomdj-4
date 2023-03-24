@@ -315,7 +315,7 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiWidgetExpandVert (vbox);
   uiBoxPackInWindow (altsetup->window, vbox);
 
-  uiCreateLabel (&uiwidget,
+  uiCreateLabelOld (&uiwidget,
       /* CONTEXT: set up alternate: ask for alternate folder */
       _("Enter the alternate folder."));
   uiBoxPackStart (vbox, &uiwidget);
@@ -349,7 +349,7 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabel (&uiwidget,
+  uiCreateColonLabelOld (&uiwidget,
       /* CONTEXT: set up alternate: name (for shortcut) */
       _("Name"));
   uiBoxPackStart (hbox, &uiwidget);
@@ -372,7 +372,7 @@ altsetupBuildUI (altsetup_t *altsetup)
       altsetupCheckDirTarget, altsetup, NULL);
   uiToggleButtonSetCallback (altsetup->reinstWidget, altsetup->callbacks [ALT_CB_REINST]);
 
-  uiCreateLabel (&altsetup->feedbackMsg, "");
+  uiCreateLabelOld (&altsetup->feedbackMsg, "");
   uiWidgetSetClass (&altsetup->feedbackMsg, INST_HL_CLASS);
   uiBoxPackStart (hbox, &altsetup->feedbackMsg);
 
