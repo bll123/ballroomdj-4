@@ -12,7 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#include "ui/uiinternal.h"
+#include "ui/uiwcont-int.h"
 
 #include "ui/uiclipboard.h"
 

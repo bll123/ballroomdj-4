@@ -21,7 +21,7 @@
 # include "ui-gtk3.h"
 #endif
 
-#include "ui/uiinternal.h"
+#include "ui/uiwcont-int.h"
 
 #include "ui/uiwidget.h"
 #include "ui/uiscale.h"

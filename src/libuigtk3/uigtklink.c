@@ -17,7 +17,7 @@
 #include "callback.h"
 #include "uiwcont.h"
 
-#include "ui/uiinternal.h"
+#include "ui/uiwcont-int.h"
 
 #include "ui/uilink.h"
 

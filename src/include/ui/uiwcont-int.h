@@ -1,5 +1,5 @@
-#ifndef INC_UIINTERNAL_H
-#define INC_UIINTERNAL_H
+#ifndef INC_UIWCONT_INT_H
+#define INC_UIWCONT_INT_H
 
 # if BDJ4_USE_GTK /* gtk3 */
 
@@ -18,4 +18,4 @@ typedef struct uiwidget {
 
 # endif /* BDJ4_USE_GTK */
 
-#endif /* INC_UIINTERNAL_H */
+#endif /* INC_UIWCONT_INT_H */

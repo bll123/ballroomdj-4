@@ -18,7 +18,7 @@
 #include "uiclass.h"
 #include "uiwcont.h"
 
-#include "ui/uiinternal.h"
+#include "ui/uiwcont-int.h"
 
 #include "ui/uibox.h"
 #include "ui/uitextbox.h"

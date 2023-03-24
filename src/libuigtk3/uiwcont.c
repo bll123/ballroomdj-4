@@ -13,7 +13,7 @@
 #include "mdebug.h"
 #include "uiwcont.h"
 
-#include "ui/uiinternal.h"
+#include "ui/uiwcont-int.h"
 
 uiwcont_t *
 uiwcontAlloc (void)

@@ -11,7 +11,7 @@
 # include "ui-gtk3.h"
 #endif
 
-#include "ui/uiinternal.h"      // will go away
+#include "ui/uiwcont-int.h"      // will go away
 
 #include "ui/uiadjustment.h"
 #include "ui/uibox.h"

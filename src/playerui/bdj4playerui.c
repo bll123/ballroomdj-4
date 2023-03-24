@@ -595,6 +595,7 @@ pluiBuildUI (playerui_t *plui)
 
     uiwidgetp = uimusicqBuildUI (plui->uimusicq, plui->window, i,
         &plui->errorMsg, NULL);
+    uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
     if (tabtype == UI_TAB_HISTORY) {
       /* CONTEXT: playerui: name of the history tab : displayed played songs */

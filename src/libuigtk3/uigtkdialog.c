@@ -21,7 +21,7 @@
 #include "mdebug.h"
 #include "uiwcont.h"
 
-#include "ui/uiinternal.h"
+#include "ui/uiwcont-int.h"
 
 #include "ui/uidialog.h"
 #include "ui/uiwidget.h"

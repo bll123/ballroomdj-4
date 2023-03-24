@@ -19,7 +19,7 @@
 #include "uiclass.h"
 #include "uiwcont.h"
 
-#include "ui/uiinternal.h"
+#include "ui/uiwcont-int.h"
 
 #include "ui/uiimage.h"
 #include "ui/uiui.h"

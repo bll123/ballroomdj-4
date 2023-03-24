@@ -25,7 +25,7 @@
 #include "tmutil.h"
 #include "uiclass.h"
 
-#include "ui/uiinternal.h"
+#include "ui/uiwcont-int.h"
 
 #include "ui/uiui.h"
 
