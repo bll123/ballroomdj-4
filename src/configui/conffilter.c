@@ -63,8 +63,8 @@ confuiBuildUIFilterDisplay (confuigui_t *gui)
   val = nlistGetNum (gui->filterDisplaySel, FILTER_DISP_STATUSPLAYABLE);
   /* CONTEXT: configuration: filter display: checkbox: status is playable */
   confuiMakeItemCheckButton (gui, vbox, szgrp, _("Playable Status"),
-      CONFUI_SWITCH_FILTER_STATUS_PLAYABLE, -1, val);
-  gui->uiitem [CONFUI_SWITCH_FILTER_STATUS_PLAYABLE].outtype = CONFUI_OUT_CB;
+      CONFUI_WIDGET_FILTER_STATUS_PLAYABLE, -1, val);
+  gui->uiitem [CONFUI_WIDGET_FILTER_STATUS_PLAYABLE].outtype = CONFUI_OUT_CB;
 
   uiwcontFree (vbox);
   uiwcontFree (szgrp);

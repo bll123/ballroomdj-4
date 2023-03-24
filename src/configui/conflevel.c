@@ -32,7 +32,7 @@ confuiBuildUIEditLevels (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
-  uiwcont_t    uiwidget;
+  uiwcont_t    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditLevels");
   vbox = uiCreateVertBox ();
@@ -43,12 +43,14 @@ confuiBuildUIEditLevels (confuigui_t *gui)
       _("Edit Levels"), CONFUI_ID_LEVELS);
 
   /* CONTEXT: configuration: dance levels: instructions */
-  uiCreateLabelOld (&uiwidget, _("Order from easiest to most advanced."));
-  uiBoxPackStart (vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Order from easiest to most advanced."));
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* CONTEXT: configuration: dance levels: information on how to edit a level entry */
-  uiCreateLabelOld (&uiwidget, _("Double click on a field to edit."));
-  uiBoxPackStart (vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Double click on a field to edit."));
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (vbox, hbox);

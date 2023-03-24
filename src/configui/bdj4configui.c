@@ -109,7 +109,7 @@ main (int argc, char *argv[])
   confui.gui.nbcb = NULL;
   confui.gui.nbtabid = uinbutilIDInit ();
   confui.gui.vbox = NULL;
-  uiwcontInit (&confui.gui.statusMsg);
+  confui.gui.statusMsg = NULL;
   confui.gui.tablecurr = CONFUI_ID_NONE;
   confui.gui.dispsel = NULL;
   confui.gui.dispselduallist = NULL;
@@ -152,7 +152,6 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].displist = NULL;
     confui.gui.uiitem [i].sbkeylist = NULL;
     confui.gui.uiitem [i].danceidx = DANCE_DANCE;
-    uiwcontInit (&confui.gui.uiitem [i].uiwidget);
     confui.gui.uiitem [i].uiwidgetp = NULL;
     confui.gui.uiitem [i].callback = NULL;
     confui.gui.uiitem [i].uri = NULL;
@@ -223,7 +222,7 @@ main (int argc, char *argv[])
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_DANCELEVEL, FILTER_DISP_DANCELEVEL);
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_STATUS, FILTER_DISP_STATUS);
   nlistSetNum (llist, CONFUI_WIDGET_FILTER_FAVORITE, FILTER_DISP_FAVORITE);
-  nlistSetNum (llist, CONFUI_SWITCH_FILTER_STATUS_PLAYABLE, FILTER_DISP_STATUSPLAYABLE);
+  nlistSetNum (llist, CONFUI_WIDGET_FILTER_STATUS_PLAYABLE, FILTER_DISP_STATUSPLAYABLE);
   confui.gui.filterLookup = llist;
 
   listenPort = bdjvarsGetNum (BDJVL_CONFIGUI_PORT);
@@ -370,16 +369,17 @@ confuiClosingCallback (void *udata, programstate_t programState)
   }
   for (int i = CONFUI_WIDGET_BEGIN + 1; i < CONFUI_WIDGET_MAX; ++i) {
     dataFree (confui->gui.uiitem [i].uri);
+    uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
   }
   for (int i = 0; i < CONFUI_ITEM_MAX; ++i) {
     callbackFree (confui->gui.uiitem [i].callback);
-    uiwcontFree (confui->gui.uiitem [i].uiwidgetp);
   }
   for (int i = 0; i < CONFUI_ID_TABLE_MAX; ++i) {
     confuiTableFree (&confui->gui, i);
   }
 
   uiwcontFree (confui->gui.vbox);
+  uiwcontFree (confui->gui.statusMsg);
   uiduallistFree (confui->gui.dispselduallist);
   datafileFree (confui->filterDisplayDf);
   nlistFree (confui->gui.filterLookup);
@@ -406,7 +406,7 @@ static void
 confuiBuildUI (configui_t *confui)
 {
   uiwcont_t     *hbox;
-  uiwcont_t     uiwidget;
+  uiwcont_t     *uiwidgetp;
   char          imgbuff [MAXPATHLEN];
   char          tbuff [MAXPATHLEN];
   int           x, y;
@@ -432,11 +432,10 @@ confuiBuildUI (configui_t *confui)
   hbox = accent.hbox;
   uiwcontFree (accent.label);
 
-  uiCreateLabelOld (&uiwidget, "");
-  uiWidgetSetClass (&uiwidget, ERROR_CLASS);
-  uiBoxPackEnd (hbox, &uiwidget);
-  uiwcontCopy (&confui->gui.statusMsg, &uiwidget);
-  uiwcontFree (hbox);
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  confui->gui.statusMsg = uiwidgetp;
 
   confui->gui.notebook = uiCreateNotebook ();
   uiWidgetSetClass (confui->gui.notebook, "confnotebook");
@@ -477,6 +476,8 @@ confuiBuildUI (configui_t *confui)
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_config", ".png", PATHBLD_MP_DIR_IMG);
   osuiSetIcon (imgbuff);
+
+  uiwcontFree (hbox);
 
   logProcEnd (LOG_PROC, "confuiBuildUI", "");
 }

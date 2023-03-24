@@ -68,8 +68,6 @@ enum {
   CONFUI_SPINBOX_BEGIN,
   CONFUI_SPINBOX_AUDIO_OUTPUT,
   CONFUI_SPINBOX_BPM,
-  CONFUI_SPINBOX_DANCE_HIGH_BPM,
-  CONFUI_SPINBOX_DANCE_LOW_BPM,
   CONFUI_SPINBOX_DANCE_SPEED,
   CONFUI_SPINBOX_DANCE_TIME_SIG,
   CONFUI_SPINBOX_DANCE_TYPE,
@@ -103,7 +101,6 @@ enum {
   CONFUI_SWITCH_BDJ3_COMPAT_TAGS,
   CONFUI_SWITCH_DB_LOAD_FROM_GENRE,
   CONFUI_SWITCH_ENABLE_ITUNES,
-  CONFUI_SWITCH_FILTER_STATUS_PLAYABLE,
   CONFUI_SWITCH_MOBILE_MQ,
   CONFUI_SWITCH_MQ_SHOW_SONG_INFO,
   CONFUI_SWITCH_Q_ACTIVE,
@@ -119,6 +116,8 @@ enum {
   CONFUI_WIDGET_AO_EXAMPLE_2,
   CONFUI_WIDGET_AO_EXAMPLE_3,
   CONFUI_WIDGET_AO_EXAMPLE_4,
+  CONFUI_WIDGET_DANCE_HIGH_BPM,
+  CONFUI_WIDGET_DANCE_LOW_BPM,
   /* the debug enums must be in numeric order */
   CONFUI_WIDGET_DEBUG_1,
   CONFUI_WIDGET_DEBUG_2,
@@ -149,6 +148,7 @@ enum {
   CONFUI_WIDGET_FILTER_FAVORITE,
   CONFUI_WIDGET_FILTER_GENRE,
   CONFUI_WIDGET_FILTER_STATUS,
+  CONFUI_WIDGET_FILTER_STATUS_PLAYABLE,
   CONFUI_WIDGET_ITUNES_FIELD_1,
   CONFUI_WIDGET_ITUNES_FIELD_2,
   CONFUI_WIDGET_ITUNES_FIELD_3,
@@ -207,7 +207,6 @@ typedef struct {
   nlist_t     *sbkeylist;     // indexed by spinbox index
                               //    value: key
   int         danceidx;       // for dance edit
-  uiwcont_t   uiwidget;
   uiwcont_t   *uiwidgetp;
   callback_t  *callback;
   char        *uri;
@@ -375,7 +374,7 @@ typedef struct confuigui {
   callback_t        *nbcb;
   /* widgets */
   uiwcont_t         *vbox;
-  uiwcont_t         statusMsg;
+  uiwcont_t         *statusMsg;
   /* display select */
   dispsel_t         *dispsel;
   uiduallist_t      *dispselduallist;

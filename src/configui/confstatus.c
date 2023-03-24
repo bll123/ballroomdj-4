@@ -33,7 +33,7 @@ confuiBuildUIEditStatus (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
-  uiwcont_t    uiwidget;
+  uiwcont_t    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditStatus");
   vbox = uiCreateVertBox ();
@@ -44,8 +44,9 @@ confuiBuildUIEditStatus (confuigui_t *gui)
       _("Edit Status"), CONFUI_ID_STATUS);
 
   /* CONTEXT: configuration: status: information on how to edit a status entry */
-  uiCreateLabelOld (&uiwidget, _("Double click on a field to edit."));
-  uiBoxPackStart (vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Double click on a field to edit."));
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (vbox, hbox);

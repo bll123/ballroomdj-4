@@ -31,7 +31,7 @@ confuiBuildUIEditRatings (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
-  uiwcont_t    uiwidget;
+  uiwcont_t    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditRatings");
   vbox = uiCreateVertBox ();
@@ -42,12 +42,14 @@ confuiBuildUIEditRatings (confuigui_t *gui)
       _("Edit Ratings"), CONFUI_ID_RATINGS);
 
   /* CONTEXT: configuration: dance ratings: information on how to order the ratings */
-  uiCreateLabelOld (&uiwidget, _("Order from the lowest rating to the highest rating."));
-  uiBoxPackStart (vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Order from the lowest rating to the highest rating."));
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* CONTEXT: configuration: dance ratings: information on how to edit a rating entry */
-  uiCreateLabelOld (&uiwidget, _("Double click on a field to edit."));
-  uiBoxPackStart (vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Double click on a field to edit."));
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (vbox, hbox);

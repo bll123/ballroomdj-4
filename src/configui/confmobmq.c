@@ -100,7 +100,7 @@ confuiMobmqPortChg (void *udata)
   long          nval;
 
   logProcBegin (LOG_PROC, "confuiMobmqPortChg");
-  value = uiSpinboxGetValue (&gui->uiitem [CONFUI_WIDGET_MMQ_PORT].uiwidget);
+  value = uiSpinboxGetValue (gui->uiitem [CONFUI_WIDGET_MMQ_PORT].uiwidgetp);
   nval = (long) value;
   bdjoptSetNum (OPT_P_MOBILEMQPORT, nval);
   confuiUpdateMobmqQrcode (gui);

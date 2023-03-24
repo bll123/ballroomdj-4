@@ -106,7 +106,7 @@ confuiSaveiTunes (confuigui_t *gui)
       oval = true;
     }
     tval = uiToggleButtonIsActive (
-        &gui->uiitem [CONFUI_WIDGET_ITUNES_FIELD_1 + count].uiwidget);
+        gui->uiitem [CONFUI_WIDGET_ITUNES_FIELD_1 + count].uiwidgetp);
     if (oval != tval) {
       changed = true;
       itunesSetField (gui->itunes->itunes, tagidx, tval);
@@ -130,7 +130,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiwcont_t     *vboxb;
   uiwcont_t     *mhbox;
   uiwcont_t     *hbox;
-  uiwcont_t     uiwidget;
+  uiwcont_t     *uiwidgetp;
   uiwcont_t     *vboxp;
   uiwcont_t     *szgrp;
   uiwcont_t     *szgrpr;
@@ -183,8 +183,9 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiBoxPackStart (mhbox, vbox);
 
   /* CONTEXT: configuration: itunes: label for itunes rating conversion */
-  uiCreateLabelOld (&uiwidget, _("Rating"));
-  uiBoxPackStart (vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Rating"));
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* itunes uses 10..100 mapping to 0.5,1,1.5,...,4.5,5 stars */
   for (int i = 0; i < ITUNES_STARS_MAX; ++i) {
@@ -202,9 +203,10 @@ confuiBuildUIiTunes (confuigui_t *gui)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    uiCreateLabelOld (&uiwidget, tbuff);
-    uiSizeGroupAdd (szgrpr, &uiwidget);
-    uiBoxPackStart (hbox, &uiwidget);
+    uiwidgetp = uiCreateLabel (tbuff);
+    uiSizeGroupAdd (szgrpr, uiwidgetp);
+    uiBoxPackStart (hbox, uiwidgetp);
+    uiwcontFree (uiwidgetp);
 
     gui->itunes->uirating [i] = uiratingSpinboxCreate (hbox, false);
 
@@ -219,8 +221,9 @@ confuiBuildUIiTunes (confuigui_t *gui)
   uiBoxPackStart (mhbox, vbox);
 
   /* CONTEXT: configuration: itunes: which fields should be imported from itunes */
-  uiCreateLabelOld (&uiwidget, _("Fields to Import"));
-  uiBoxPackStart (vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Fields to Import"));
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);

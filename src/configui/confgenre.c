@@ -33,7 +33,7 @@ confuiBuildUIEditGenres (confuigui_t *gui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
-  uiwcont_t    uiwidget;
+  uiwcont_t    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "confuiBuildUIEditGenres");
   vbox = uiCreateVertBox ();
@@ -44,8 +44,9 @@ confuiBuildUIEditGenres (confuigui_t *gui)
       _("Edit Genres"), CONFUI_ID_GENRES);
 
   /* CONTEXT: configuration: genres: information on how to edit a genre entry */
-  uiCreateLabelOld (&uiwidget, _("Double click on a field to edit."));
-  uiBoxPackStart (vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Double click on a field to edit."));
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (vbox, hbox);

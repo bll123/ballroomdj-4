@@ -153,16 +153,16 @@ confuiBuildUIEditDances (confuigui_t *gui)
   /* CONTEXT: configuration: dances: low BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
   confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpC, tbuff,
-      CONFUI_SPINBOX_DANCE_LOW_BPM, -1, 10, 500, 0,
+      CONFUI_WIDGET_DANCE_LOW_BPM, -1, 10, 500, 0,
       confuiDanceSpinboxLowBPMChg);
-  gui->uiitem [CONFUI_SPINBOX_DANCE_LOW_BPM].danceidx = DANCE_LOW_BPM;
+  gui->uiitem [CONFUI_WIDGET_DANCE_LOW_BPM].danceidx = DANCE_LOW_BPM;
 
   /* CONTEXT: configuration: dances: high BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
   confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpC, tbuff,
-      CONFUI_SPINBOX_DANCE_HIGH_BPM, -1, 10, 500, 0,
+      CONFUI_WIDGET_DANCE_HIGH_BPM, -1, 10, 500, 0,
       confuiDanceSpinboxHighBPMChg);
-  gui->uiitem [CONFUI_SPINBOX_DANCE_HIGH_BPM].danceidx = DANCE_HIGH_BPM;
+  gui->uiitem [CONFUI_WIDGET_DANCE_HIGH_BPM].danceidx = DANCE_HIGH_BPM;
 
   /* CONTEXT: configuration: dances: time signature for the dance */
   confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpC, _("Time Signature"),
@@ -339,14 +339,14 @@ confuiDanceSpinboxSpeedChg (void *udata)
 static bool
 confuiDanceSpinboxLowBPMChg (void *udata)
 {
-  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_LOW_BPM);
+  confuiDanceSpinboxChg (udata, CONFUI_WIDGET_DANCE_LOW_BPM);
   return UICB_CONT;
 }
 
 static bool
 confuiDanceSpinboxHighBPMChg (void *udata)
 {
-  confuiDanceSpinboxChg (udata, CONFUI_SPINBOX_DANCE_HIGH_BPM);
+  confuiDanceSpinboxChg (udata, CONFUI_WIDGET_DANCE_HIGH_BPM);
   return UICB_CONT;
 }
 

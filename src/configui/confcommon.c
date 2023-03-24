@@ -180,19 +180,19 @@ confuiUpdateOrgExamples (confuigui_t *gui, char *orgpath)
   assert (org != NULL);
 
   data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..1\nALBUM\n..Smooth\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Cha Cha\nGENRE\n..Ballroom Dance\nTITLE\n..Smooth\n";
-  uiwidgetp = &gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_1].uiwidget;
+  uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_1].uiwidgetp;
   confuiUpdateOrgExample (org, data, uiwidgetp);
 
   data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..2\nALBUM\n..The Ultimate Latin Album 4: Latin Eyes\nALBUMARTIST\n..WRD\nARTIST\n..Gizelle D'Cole\nDANCE\n..Rumba\nGENRE\n..Ballroom Dance\nTITLE\n..Asi\n";
-  uiwidgetp = &gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_2].uiwidget;
+  uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_2].uiwidgetp;
   confuiUpdateOrgExample (org, data, uiwidgetp);
 
   data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..3\nALBUM\n..Shaman\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Waltz\nTITLE\n..The Game of Love\nGENRE\n..Latin";
-  uiwidgetp = &gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_3].uiwidget;
+  uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_3].uiwidgetp;
   confuiUpdateOrgExample (org, data, uiwidgetp);
 
   data = "FILE\n..none\nDISC\n..2\nTRACKNUMBER\n..2\nALBUM\n..The Ultimate Latin Album 9: Footloose\nALBUMARTIST\n..\nARTIST\n..Raphael\nDANCE\n..Rumba\nTITLE\n..Ni tú ni yo\nGENRE\n..Latin";
-  uiwidgetp = &gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_4].uiwidget;
+  uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_4].uiwidgetp;
   confuiUpdateOrgExample (org, data, uiwidgetp);
 
   orgFree (org);
@@ -202,7 +202,7 @@ confuiUpdateOrgExamples (confuigui_t *gui, char *orgpath)
 void
 confuiSetStatusMsg (confuigui_t *gui, const char *msg)
 {
-  uiLabelSetText (&gui->statusMsg, msg);
+  uiLabelSetText (gui->statusMsg, msg);
 }
 
 void
