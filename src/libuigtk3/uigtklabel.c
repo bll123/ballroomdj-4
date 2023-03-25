@@ -45,34 +45,6 @@ uiCreateColonLabel (const char *label)
 }
 
 void
-uiCreateLabelOld (uiwcont_t *uiwidget, const char *label)
-{
-  GtkWidget *widget;
-
-  widget = gtk_label_new (label);
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
-  gtk_widget_set_halign (widget, GTK_ALIGN_START);
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
-  uiwidget->widget = widget;
-}
-
-void
-uiCreateColonLabelOld (uiwcont_t *uiwidget, const char *label)
-{
-  GtkWidget *widget;
-  char      tbuff [200];
-
-  snprintf (tbuff, sizeof (tbuff), "%s:", label);
-  widget = gtk_label_new (tbuff);
-  gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
-  gtk_widget_set_margin_top (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_start (widget, uiBaseMarginSz);
-  gtk_widget_set_margin_end (widget, uiBaseMarginSz * 2);
-  uiwidget->widget = widget;
-}
-
-void
 uiLabelAddClass (const char *classnm, const char *color)
 {
   char    tbuff [100];
