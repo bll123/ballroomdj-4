@@ -12,7 +12,6 @@ void  uiwcontFree (uiwcont_t *);
 
 /* the follwing routines will be removed at a later date */
 void uiwcontInit (uiwcont_t *uiwidget);
-bool uiwcontIsSet (uiwcont_t *uiwidget);
 void uiwcontCopy (uiwcont_t *target, uiwcont_t *source);
 
 #endif /* INC_UIGENERAL_H */

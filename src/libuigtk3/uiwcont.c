@@ -44,18 +44,6 @@ uiwcontInit (uiwcont_t *uiwidget)
   uiwidget->widget = NULL;
 }
 
-bool
-uiwcontIsSet (uiwcont_t *uiwidget)
-{
-  bool rc = true;
-
-  if (uiwidget == NULL || uiwidget->widget == NULL) {
-    rc = false;
-  }
-  return rc;
-}
-
-
 void
 uiwcontCopy (uiwcont_t *target, uiwcont_t *source)
 {

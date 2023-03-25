@@ -92,17 +92,23 @@ enum {
   SONGSEL_BUTTON_MAX,
 };
 
+enum {
+  SONGSEL_W_MAIN_VBOX,
+  SONGSEL_W_SCROLL_WIN,
+  SONGSEL_W_REQ_QUEUE,
+  SONGSEL_W_MAX,
+};
+
+
 #define MARK_DISPLAY "\xe2\x96\x8B"  // left five-eights block
 
 typedef struct ss_internal {
   callback_t          *callbacks [SONGSEL_CB_MAX];
-  uiwcont_t           *parentwin;
-  uiwcont_t           *vbox;
+  uiwcont_t           *wcont [SONGSEL_W_MAX];
   uitree_t            *songselTree;
   uiscrollbar_t       *songselScrollbar;
-  uiwcont_t           *scrolledwin;
   uibutton_t          *buttons [SONGSEL_BUTTON_MAX];
-  uiwcont_t           reqQueueLabel;
+  uiwcont_t           *reqQueueLabel;
   uikey_t             *uikey;
   /* other data */
   int                 maxRows;
@@ -160,7 +166,6 @@ uisongselUIInit (uisongsel_t *uisongsel)
   ss_internal_t  *ssint;
 
   ssint = mdmalloc (sizeof (ss_internal_t));
-  ssint->vbox = NULL;
   ssint->songselTree = NULL;
   ssint->songselScrollbar = NULL;
   ssint->maxRows = 0;
@@ -175,13 +180,15 @@ uisongselUIInit (uisongsel_t *uisongsel)
   for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
     ssint->callbacks [i] = NULL;
   }
+  for (int i = 0; i < SONGSEL_W_MAX; ++i) {
+    ssint->wcont [i] = NULL;
+  }
   ssint->markcolor = bdjoptGetStr (OPT_P_UI_MARK_COL);
   for (int i = 0; i < SONGSEL_BUTTON_MAX; ++i) {
     ssint->buttons [i] = NULL;
   }
   ssint->lastRowDBIdx = -1;
   mstimeset (&ssint->lastRowCheck, 0);
-  ssint->scrolledwin = NULL;
 
   ssint->uikey = uiKeyAlloc ();
   ssint->callbacks [SONGSEL_CB_KEYB] = callbackInit (
@@ -199,8 +206,7 @@ uisongselUIFree (uisongsel_t *uisongsel)
     ss_internal_t    *ssint;
 
     ssint = uisongsel->ssInternalData;
-    uiwcontFree (ssint->vbox);
-    uiwcontFree (ssint->scrolledwin);
+
     uiScrollbarFree (ssint->songselScrollbar);
     uiKeyFree (ssint->uikey);
     nlistFree (ssint->selectedBackup);
@@ -212,6 +218,9 @@ uisongselUIFree (uisongsel_t *uisongsel)
     for (int i = 0; i < SONGSEL_CB_MAX; ++i) {
       callbackFree (ssint->callbacks [i]);
     }
+    for (int i = 0; i < SONGSEL_W_MAX; ++i) {
+      uiwcontFree (ssint->wcont [i]);
+    }
     mdfree (ssint);
     uisongsel->ssInternalData = NULL;
   }
@@ -222,7 +231,6 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 {
   ss_internal_t     *ssint;
   uibutton_t        *uibutton;
-  uiwcont_t         uiwidget;
   uiwcont_t         *uiwidgetp;
   uiwcont_t         *uitreewidgetp;
   uiwcont_t         *hbox;
@@ -236,13 +244,13 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   ssint = uisongsel->ssInternalData;
   uisongsel->windowp = parentwin;
 
-  ssint->vbox = uiCreateVertBox ();
-  uiWidgetExpandHoriz (ssint->vbox);
-  uiWidgetExpandVert (ssint->vbox);
+  ssint->wcont [SONGSEL_W_MAIN_VBOX] = uiCreateVertBox ();
+  uiWidgetExpandHoriz (ssint->wcont [SONGSEL_W_MAIN_VBOX]);
+  uiWidgetExpandVert (ssint->wcont [SONGSEL_W_MAIN_VBOX]);
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (ssint->vbox, hbox);
+  uiBoxPackStart (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
 
   /* The ez song selection does not need a select button, as it has */
   /* the left-arrow button.  Saves real estate. */
@@ -281,10 +289,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (hbox, uiwidgetp);
 
-    uiCreateLabelOld (&uiwidget, "");
-    uiWidgetSetClass (&uiwidget, DARKACCENT_CLASS);
-    uiBoxPackStart (hbox, &uiwidget);
-    uiwcontCopy (&ssint->reqQueueLabel, &uiwidget);
+    uiwidgetp = uiCreateLabel ("");
+    uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
+    uiBoxPackStart (hbox, uiwidgetp);
+    ssint->wcont [SONGSEL_W_REQ_QUEUE] = uiwidgetp;
   }
   if (uisongsel->dispselType == DISP_SEL_SONGSEL ||
       uisongsel->dispselType == DISP_SEL_EZSONGSEL ||
@@ -320,7 +328,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
-  uiBoxPackStartExpand (ssint->vbox, hbox);
+  uiBoxPackStartExpand (ssint->wcont [SONGSEL_W_MAIN_VBOX], hbox);
 
   vbox = uiCreateVertBox ();
   uiBoxPackStartExpand (hbox, vbox);
@@ -332,10 +340,10 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiScrollbarSetChangeCallback (ssint->songselScrollbar,
       ssint->callbacks [SONGSEL_CB_SCROLL_CHG]);
 
-  ssint->scrolledwin = uiCreateScrolledWindow (400);
-  uiWindowSetPolicyExternal (ssint->scrolledwin);
-  uiWidgetExpandHoriz (ssint->scrolledwin);
-  uiBoxPackStartExpand (vbox, ssint->scrolledwin);
+  ssint->wcont [SONGSEL_W_SCROLL_WIN] = uiCreateScrolledWindow (400);
+  uiWindowSetPolicyExternal (ssint->wcont [SONGSEL_W_SCROLL_WIN]);
+  uiWidgetExpandHoriz (ssint->wcont [SONGSEL_W_SCROLL_WIN]);
+  uiBoxPackStartExpand (vbox, ssint->wcont [SONGSEL_W_SCROLL_WIN]);
 
   ssint->songselTree = uiCreateTreeView ();
   uitreewidgetp = uiTreeViewGetWidgetContainer (ssint->songselTree);
@@ -356,7 +364,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
       ssint->callbacks [SONGSEL_CB_KEYB]);
 
   uiTreeViewAttachScrollController (ssint->songselTree, uisongsel->dfilterCount);
-  uiBoxPackInWindow (ssint->scrolledwin, uitreewidgetp);
+  uiBoxPackInWindow (ssint->wcont [SONGSEL_W_SCROLL_WIN], uitreewidgetp);
 
   ssint->callbacks [SONGSEL_CB_CHK_FAV_CHG] = callbackInitLong (
         uisongselCheckFavChgCallback, uisongsel);
@@ -411,7 +419,7 @@ uisongselBuildUI (uisongsel_t *uisongsel, uiwcont_t *parentwin)
   uiwcontFree (vbox);
 
   logProcEnd (LOG_PROC, "uisongselBuildUI", "");
-  return ssint->vbox;
+  return ssint->wcont [SONGSEL_W_MAIN_VBOX];
 }
 
 void
@@ -811,7 +819,7 @@ uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt)
   }
 
   ssint = uisongsel->ssInternalData;
-  uiLabelSetText (&ssint->reqQueueLabel, txt);
+  uiLabelSetText (ssint->wcont [SONGSEL_W_REQ_QUEUE], txt);
 }
 
 /* internal routines */

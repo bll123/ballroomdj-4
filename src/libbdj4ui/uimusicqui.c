@@ -177,7 +177,6 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 {
   int               saveci;
   uiwcont_t         *hbox;
-  uiwcont_t         uiwidget;
   uiwcont_t         *scwin;
   uiwcont_t         *uitreewidgetp;
   uibutton_t        *uibutton;
@@ -364,9 +363,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     }
 
     /* CONTEXT: music queue: label for song list name */
-    uiCreateColonLabelOld (&uiwidget, _("Song List"));
-    uiWidgetSetMarginStart (&uiwidget, 6);
-    uiBoxPackEnd (hbox, &uiwidget);
+    uiwidgetp = uiCreateColonLabel (_("Song List"));
+    uiWidgetSetMarginStart (uiwidgetp, 6);
+    uiBoxPackEnd (hbox, uiwidgetp);
+    uiwcontFree (uiwidgetp);
   }
 
   /* musicq tree view */
