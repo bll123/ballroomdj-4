@@ -72,6 +72,26 @@ enum {
   UIPL_IMG_MAX,
 };
 
+enum {
+  UIPL_W_MAIN_VBOX,
+  UIPL_W_DANCE,
+  UIPL_W_ARTIST,
+  UIPL_W_TITLE,
+  UIPL_W_SPEED,
+  UIPL_W_SPEED_DISP,
+  UIPL_W_COUNTDOWN_TIMER,
+  UIPL_W_DURATION,
+  UIPL_W_SEEK,
+  UIPL_W_SEEK_DISP,
+  UIPL_W_REPEAT_B,
+  UIPL_W_SONG_BEGIN_B,
+  UIPL_W_PAUSE_AT_END_B,
+  UIPL_W_VOLUME,
+  UIPL_W_VOLUME_DISP,
+  UIPL_W_MAX,
+};
+
+
 typedef struct uiplayer {
   progstate_t     *progstate;
   conn_t          *conn;
@@ -79,37 +99,24 @@ typedef struct uiplayer {
   musicdb_t       *musicdb;
   callback_t      *callbacks [UIPL_CB_MAX];
   dbidx_t         curr_dbidx;
+  uiwcont_t       *wcont [UIPL_W_MAX];
   /* song display */
-  uiwcont_t       *vbox;
   uiwcont_t       *images [UIPL_IMG_MAX];
-  uiwcont_t       danceLab;
-  uiwcont_t       artistLab;
-  uiwcont_t       titleLab;
   uibutton_t      *buttons [UIPL_BUTTON_MAX];
   /* speed controls / display */
-  uiwcont_t       *speedScale;
-  uiwcont_t       speedDisplayLab;
   bool            speedLock;
   mstime_t        speedLockTimeout;
   mstime_t        speedLockSend;
   /* position controls / display */
-  uiwcont_t       countdownTimerLab;
-  uiwcont_t       durationLab;
-  uiwcont_t       *seekScale;
-  uiwcont_t       seekDisplayLab;
   ssize_t         lastdur;
   bool            seekLock;
   mstime_t        seekLockTimeout;
   mstime_t        seekLockSend;
   /* main controls */
-  uiwcont_t       *repeatButton;
-  uiwcont_t       songbeginButton;
-  uiwcont_t       *pauseatendButton;
   bool            repeatLock;
   bool            pauseatendLock;
   bool            pauseatendstate;
   /* volume controls / display */
-  uiwcont_t       *volumeScale;
   bool            volumeLock;
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;
@@ -149,21 +156,6 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   uiplayer->uibuilt = false;
   uiplayer->curr_dbidx = -1;
 
-  uiplayer->vbox = NULL;
-  uiwcontInit (&uiplayer->danceLab);
-  uiwcontInit (&uiplayer->artistLab);
-  uiwcontInit (&uiplayer->titleLab);
-  uiwcontInit (&uiplayer->countdownTimerLab);
-  uiwcontInit (&uiplayer->durationLab);
-  uiwcontInit (&uiplayer->speedDisplayLab);
-  uiwcontInit (&uiplayer->seekDisplayLab);
-  uiplayer->speedScale = NULL;
-  uiplayer->seekScale = NULL;
-  uiplayer->repeatButton = NULL;
-  uiwcontInit (&uiplayer->songbeginButton);
-  uiplayer->pauseatendButton = NULL;
-  uiwcontInit (&uiplayer->volumeDisplayLab);
-  uiplayer->volumeScale = NULL;
   for (int i = 0; i < UIPL_BUTTON_MAX; ++i) {
     uiplayer->buttons [i] = NULL;
   }
@@ -172,6 +164,9 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
   }
   for (int i = 0; i < UIPL_IMG_MAX; ++i) {
     uiplayer->images [i] = NULL;
+  }
+  for (int i = 0; i < UIPL_W_MAX; ++i) {
+    uiplayer->wcont [i] = NULL;
   }
 
   progstateSetCallback (uiplayer->progstate, STATE_CONNECTING, uiplayerInitCallback, uiplayer);
@@ -201,12 +196,9 @@ uiplayerFree (uiplayer_t *uiplayer)
     for (int i = 0; i < UIPL_IMG_MAX; ++i) {
       uiwcontFree (uiplayer->images [i]);
     }
-    uiwcontFree (uiplayer->volumeScale);
-    uiwcontFree (uiplayer->seekScale);
-    uiwcontFree (uiplayer->speedScale);
-    uiwcontFree (uiplayer->vbox);
-    uiwcontFree (uiplayer->repeatButton);
-    uiwcontFree (uiplayer->pauseatendButton);
+    for (int i = 0; i < UIPL_W_MAX; ++i) {
+      uiwcontFree (uiplayer->wcont [i]);
+    }
     mdfree (uiplayer);
   }
   logProcEnd (LOG_PROC, "uiplayerFree", "");
@@ -216,7 +208,6 @@ uiwcont_t *
 uiplayerBuildUI (uiplayer_t *uiplayer)
 {
   char            tbuff [MAXPATHLEN];
-  uiwcont_t       uiwidget;
   uibutton_t      *uibutton;
   uiwcont_t       *uiwidgetp;
   uiwcont_t       *hbox;
@@ -235,14 +226,14 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   szgrpD = uiCreateSizeGroupHoriz ();
   szgrpE = uiCreateSizeGroupHoriz ();
 
-  uiplayer->vbox = uiCreateVertBox ();
-  uiWidgetExpandHoriz (uiplayer->vbox);
+  uiplayer->wcont [UIPL_W_MAIN_VBOX] = uiCreateVertBox ();
+  uiWidgetExpandHoriz (uiplayer->wcont [UIPL_W_MAIN_VBOX]);
 
   /* song display */
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (uiplayer->vbox, hbox);
+  uiBoxPackStart (uiplayer->wcont [UIPL_W_MAIN_VBOX], hbox);
 
   /* size group E */
   tbox = uiCreateHorizBox ();
@@ -286,125 +277,136 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiWidgetSetMarginStart (uiplayer->images [UIPL_IMG_REPEAT], 1);
   uiBoxPackStart (tbox, uiplayer->images [UIPL_IMG_REPEAT]);
 
-  uiCreateLabelOld (&uiplayer->danceLab, "");
-  uiBoxPackStart (hbox, &uiplayer->danceLab);
+  uiplayer->wcont [UIPL_W_DANCE] = uiCreateLabel ("");
+  uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_DANCE]);
 
-  uiCreateLabelOld (&uiwidget, " : ");
-  uiWidgetSetMarginStart (&uiwidget, 0);
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (" : ");
+  uiWidgetSetMarginStart (uiwidgetp, 0);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
-  uiCreateLabelOld (&uiplayer->artistLab, "");
-  uiWidgetSetMarginStart (&uiplayer->artistLab, 0);
-  uiLabelEllipsizeOn (&uiplayer->artistLab);
-  uiBoxPackStart (hbox, &uiplayer->artistLab);
+  uiplayer->wcont [UIPL_W_ARTIST] = uiCreateLabel ("");
+  uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_ARTIST], 0);
+  uiLabelEllipsizeOn (uiplayer->wcont [UIPL_W_ARTIST]);
+  uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_ARTIST]);
 
-  uiCreateLabelOld (&uiwidget, " : ");
-  uiWidgetSetMarginStart (&uiwidget, 0);
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (" : ");
+  uiWidgetSetMarginStart (uiwidgetp, 0);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
-  uiCreateLabelOld (&uiplayer->titleLab, "");
-  uiWidgetSetMarginStart (&uiplayer->titleLab, 0);
-  uiLabelEllipsizeOn (&uiplayer->titleLab);
-  uiBoxPackStart (hbox, &uiplayer->titleLab);
+  uiplayer->wcont [UIPL_W_TITLE] = uiCreateLabel ("");
+  uiWidgetSetMarginStart (uiplayer->wcont [UIPL_W_TITLE], 0);
+  uiLabelEllipsizeOn (uiplayer->wcont [UIPL_W_TITLE]);
+  uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_TITLE]);
 
   /* expanding label to take space */
-  uiCreateLabelOld (&uiwidget, "");
-  uiWidgetExpandHoriz (&uiwidget);
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* size group A */
-  uiCreateLabelOld (&uiwidget, "%");
-  uiBoxPackEnd (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrpA, &uiwidget);
+  uiwidgetp = uiCreateLabel ("%");
+  uiBoxPackEnd (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrpA, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* size group B */
-  uiCreateLabelOld (&uiplayer->speedDisplayLab, "100");
-  uiLabelAlignEnd (&uiplayer->speedDisplayLab);
-  uiBoxPackEnd (hbox, &uiplayer->speedDisplayLab);
-  uiSizeGroupAdd (szgrpB, &uiplayer->speedDisplayLab);
+  uiplayer->wcont [UIPL_W_SPEED_DISP] = uiCreateLabel ("100");
+  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SPEED_DISP]);
+  uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SPEED_DISP]);
+  uiSizeGroupAdd (szgrpB, uiplayer->wcont [UIPL_W_SPEED_DISP]);
 
   /* size group C */
-  uiplayer->speedScale = uiCreateScale (70.0, 130.0, 1.0, 10.0, 100.0, 0);
-  uiBoxPackEnd (hbox, uiplayer->speedScale);
-  uiSizeGroupAdd (szgrpC, uiplayer->speedScale);
+  uiplayer->wcont [UIPL_W_SPEED] = uiCreateScale (70.0, 130.0, 1.0, 10.0, 100.0, 0);
+  uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SPEED]);
+  uiSizeGroupAdd (szgrpC, uiplayer->wcont [UIPL_W_SPEED]);
   uiplayer->callbacks [UIPL_CB_SPEED] = callbackInitDouble (
       uiplayerSpeedCallback, uiplayer);
-  uiScaleSetCallback (uiplayer->speedScale, uiplayer->callbacks [UIPL_CB_SPEED]);
+  uiScaleSetCallback (uiplayer->wcont [UIPL_W_SPEED], uiplayer->callbacks [UIPL_CB_SPEED]);
 
   /* size group D */
   /* CONTEXT: playerui: the current speed for song playback */
-  uiCreateColonLabelOld (&uiwidget, _("Speed"));
-  uiLabelAlignEnd (&uiwidget);
-  uiWidgetSetMarginEnd (&uiwidget, 1);
-  uiBoxPackEnd (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrpD, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Speed"));
+  uiLabelAlignEnd (uiwidgetp);
+  uiWidgetSetMarginEnd (uiwidgetp, 1);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrpD, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* position controls / display */
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (uiplayer->vbox, hbox);
+  uiBoxPackStart (uiplayer->wcont [UIPL_W_MAIN_VBOX], hbox);
 
   /* size group E */
-  uiCreateLabelOld (&uiwidget, "");
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrpE, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrpE, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
-  uiCreateLabelOld (&uiplayer->countdownTimerLab, " 0:00");
-  uiLabelAlignEnd (&uiplayer->countdownTimerLab);
-  uiBoxPackStart (hbox, &uiplayer->countdownTimerLab);
+  uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER] = uiCreateLabel (" 0:00");
+  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER]);
+  uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER]);
 
-  uiCreateLabelOld (&uiwidget, " / ");
-  uiWidgetSetMarginStart (&uiwidget, 0);
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (" / ");
+  uiWidgetSetMarginStart (uiwidgetp, 0);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
-  uiCreateLabelOld (&uiplayer->durationLab, " 0:00");
-  uiLabelAlignEnd (&uiplayer->durationLab);
-  uiBoxPackStart (hbox, &uiplayer->durationLab);
+  uiplayer->wcont [UIPL_W_DURATION] = uiCreateLabel (" 0:00");
+  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_DURATION]);
+  uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_DURATION]);
 
-  uiCreateLabelOld (&uiwidget, "");
-  uiWidgetExpandHoriz (&uiwidget);
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* size group A */
-  uiCreateLabelOld (&uiwidget, "");
-  uiBoxPackEnd (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrpA, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackEnd (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrpA, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* size group B */
-  uiCreateLabelOld (&uiplayer->seekDisplayLab, "0:00");
-  uiLabelAlignEnd (&uiplayer->seekDisplayLab);
-  uiSizeGroupAdd (szgrpB, &uiplayer->seekDisplayLab);
-  uiBoxPackEnd (hbox, &uiplayer->seekDisplayLab);
+  uiplayer->wcont [UIPL_W_SEEK_DISP] = uiCreateLabel ("0:00");
+  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_SEEK_DISP]);
+  uiSizeGroupAdd (szgrpB, uiplayer->wcont [UIPL_W_SEEK_DISP]);
+  uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK_DISP]);
 
   /* size group C */
-  uiplayer->seekScale = uiCreateScale (0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
-  uiBoxPackEnd (hbox, uiplayer->seekScale);
-  uiSizeGroupAdd (szgrpC, uiplayer->seekScale);
+  uiplayer->wcont [UIPL_W_SEEK] = uiCreateScale (0.0, 180000.0, 1000.0, 10000.0, 0.0, 0);
+  uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_SEEK]);
+  uiSizeGroupAdd (szgrpC, uiplayer->wcont [UIPL_W_SEEK]);
   uiplayer->callbacks [UIPL_CB_SEEK] = callbackInitDouble (
       uiplayerSeekCallback, uiplayer);
-  uiScaleSetCallback (uiplayer->seekScale, uiplayer->callbacks [UIPL_CB_SEEK]);
+  uiScaleSetCallback (uiplayer->wcont [UIPL_W_SEEK], uiplayer->callbacks [UIPL_CB_SEEK]);
 
   /* size group D */
   /* CONTEXT: playerui: the current position of the song during song playback */
-  uiCreateColonLabelOld (&uiwidget, _("Position"));
-  uiLabelAlignEnd (&uiwidget);
-  uiWidgetSetMarginEnd (&uiwidget, 1);
-  uiBoxPackEnd (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrpD, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Position"));
+  uiLabelAlignEnd (uiwidgetp);
+  uiWidgetSetMarginEnd (uiwidgetp, 1);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrpD, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* main controls */
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (uiplayer->vbox, hbox);
+  uiBoxPackStart (uiplayer->wcont [UIPL_W_MAIN_VBOX], hbox);
 
   /* size group E */
-  uiCreateLabelOld (&uiwidget, "");
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrpE, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrpE, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiplayer->callbacks [UIPL_CB_FADE] = callbackInit (
       uiplayerFadeProcess, uiplayer, NULL);
@@ -430,11 +432,11 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiplayer->callbacks [UIPL_CB_REPEAT] = callbackInit (
       uiplayerRepeatCallback, uiplayer, NULL);
-  uiplayer->repeatButton = uiCreateToggleButton ("", tbuff,
+  uiplayer->wcont [UIPL_W_REPEAT_B] = uiCreateToggleButton ("", tbuff,
       /* CONTEXT: playerui: button: tooltip: toggle the repeat song on and off */
       _("Toggle Repeat"), NULL, 0);
-  uiBoxPackStart (hbox, uiplayer->repeatButton);
-  uiToggleButtonSetCallback (uiplayer->repeatButton,
+  uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_REPEAT_B]);
+  uiToggleButtonSetCallback (uiplayer->wcont [UIPL_W_REPEAT_B],
       uiplayer->callbacks [UIPL_CB_REPEAT]);
 
   uiplayer->callbacks [UIPL_CB_BEGSONG] = callbackInit (
@@ -470,40 +472,42 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiplayer->callbacks [UIPL_CB_PAUSEATEND] = callbackInit (
       uiplayerPauseatendCallback, uiplayer, NULL);
   /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
-  uiplayer->pauseatendButton = uiCreateToggleButton (_("Pause at End"),
+  uiplayer->wcont [UIPL_W_PAUSE_AT_END_B] = uiCreateToggleButton (_("Pause at End"),
       NULL, NULL, uiplayer->images [UIPL_IMG_LED_OFF], 0);
-  uiBoxPackStart (hbox, uiplayer->pauseatendButton);
-  uiToggleButtonSetCallback (uiplayer->pauseatendButton,
+  uiBoxPackStart (hbox, uiplayer->wcont [UIPL_W_PAUSE_AT_END_B]);
+  uiToggleButtonSetCallback (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B],
       uiplayer->callbacks [UIPL_CB_PAUSEATEND]);
 
   /* volume controls / display */
 
   /* size group A */
-  uiCreateLabelOld (&uiwidget, "%");
-  uiBoxPackEnd (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrpA, &uiwidget);
+  uiwidgetp = uiCreateLabel ("%");
+  uiBoxPackEnd (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrpA, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* size group B */
-  uiCreateLabelOld (&uiplayer->volumeDisplayLab, "100");
-  uiLabelAlignEnd (&uiplayer->volumeDisplayLab);
-  uiBoxPackEnd (hbox, &uiplayer->volumeDisplayLab);
-  uiSizeGroupAdd (szgrpB, &uiplayer->volumeDisplayLab);
+  uiplayer->wcont [UIPL_W_VOLUME_DISP] = uiCreateLabel ("100");
+  uiLabelAlignEnd (uiplayer->wcont [UIPL_W_VOLUME_DISP]);
+  uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_VOLUME_DISP]);
+  uiSizeGroupAdd (szgrpB, uiplayer->wcont [UIPL_W_VOLUME_DISP]);
 
   /* size group C */
-  uiplayer->volumeScale = uiCreateScale (0.0, 100.0, 1.0, 10.0, 0.0, 0);
-  uiBoxPackEnd (hbox, uiplayer->volumeScale);
-  uiSizeGroupAdd (szgrpC, uiplayer->volumeScale);
+  uiplayer->wcont [UIPL_W_VOLUME] = uiCreateScale (0.0, 100.0, 1.0, 10.0, 0.0, 0);
+  uiBoxPackEnd (hbox, uiplayer->wcont [UIPL_W_VOLUME]);
+  uiSizeGroupAdd (szgrpC, uiplayer->wcont [UIPL_W_VOLUME]);
   uiplayer->callbacks [UIPL_CB_VOLUME] = callbackInitDouble (
       uiplayerVolumeCallback, uiplayer);
-  uiScaleSetCallback (uiplayer->volumeScale, uiplayer->callbacks [UIPL_CB_VOLUME]);
+  uiScaleSetCallback (uiplayer->wcont [UIPL_W_VOLUME], uiplayer->callbacks [UIPL_CB_VOLUME]);
 
   /* size group D */
   /* CONTEXT: playerui: The current volume of the song */
-  uiCreateColonLabelOld (&uiwidget, _("Volume"));
-  uiLabelAlignEnd (&uiwidget);
-  uiWidgetSetMarginEnd (&uiwidget, 1);
-  uiBoxPackEnd (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrpD, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Volume"));
+  uiLabelAlignEnd (uiwidgetp);
+  uiWidgetSetMarginEnd (uiwidgetp, 1);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrpD, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiplayer->uibuilt = true;
 
@@ -516,7 +520,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiwcontFree (szgrpE);
 
   logProcEnd (LOG_PROC, "uiplayerBuildUI", "");
-  return uiplayer->vbox;
+  return uiplayer->wcont [UIPL_W_MAIN_VBOX];
 }
 
 void
@@ -531,7 +535,7 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     double        value;
     char          tbuff [40];
 
-    value = uiScaleGetValue (uiplayer->volumeScale);
+    value = uiScaleGetValue (uiplayer->wcont [UIPL_W_VOLUME]);
     snprintf (tbuff, sizeof (tbuff), "%.0f", value);
     connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAYER_VOLUME, tbuff);
     if (uiplayer->volumeLock) {
@@ -550,7 +554,7 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     double        value;
     char          tbuff [40];
 
-    value = uiScaleGetValue (uiplayer->speedScale);
+    value = uiScaleGetValue (uiplayer->wcont [UIPL_W_SPEED]);
     snprintf (tbuff, sizeof (tbuff), "%.0f", value);
     connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SPEED, tbuff);
     if (uiplayer->speedLock) {
@@ -569,7 +573,7 @@ uiplayerMainLoop (uiplayer_t *uiplayer)
     double        value;
     char          tbuff [40];
 
-    value = uiScaleGetValue (uiplayer->seekScale);
+    value = uiScaleGetValue (uiplayer->wcont [UIPL_W_SEEK]);
     snprintf (tbuff, sizeof (tbuff), "%.0f", round (value));
     connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SEEK, tbuff);
     if (uiplayer->seekLock) {
@@ -697,12 +701,12 @@ uiplayerProcessPauseatend (uiplayer_t *uiplayer, int on)
   uiplayer->pauseatendLock = true;
 
   if (on && ! uiplayer->pauseatendstate) {
-    uiToggleButtonSetImage (uiplayer->pauseatendButton, uiplayer->images [UIPL_IMG_LED_ON]);
-    uiToggleButtonSetState (uiplayer->pauseatendButton, UI_TOGGLE_BUTTON_ON);
+    uiToggleButtonSetImage (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], uiplayer->images [UIPL_IMG_LED_ON]);
+    uiToggleButtonSetState (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_ON);
   }
   if (! on && uiplayer->pauseatendstate) {
-    uiToggleButtonSetImage (uiplayer->pauseatendButton, uiplayer->images [UIPL_IMG_LED_OFF]);
-    uiToggleButtonSetState (uiplayer->pauseatendButton, UI_TOGGLE_BUTTON_OFF);
+    uiToggleButtonSetImage (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], uiplayer->images [UIPL_IMG_LED_OFF]);
+    uiToggleButtonSetState (uiplayer->wcont [UIPL_W_PAUSE_AT_END_B], UI_TOGGLE_BUTTON_OFF);
   }
   uiplayer->pauseatendLock = false;
   uiplayer->pauseatendstate = on;
@@ -723,10 +727,10 @@ uiplayerProcessPlayerState (uiplayer_t *uiplayer, int playerState)
     state = UIWIDGET_DISABLE;
   }
 
-  uiWidgetSetState (uiplayer->volumeScale, state);
-  uiWidgetSetState (uiplayer->speedScale, state);
-  uiWidgetSetState (uiplayer->seekScale, state);
-  uiWidgetSetState (&uiplayer->songbeginButton, state);
+  uiWidgetSetState (uiplayer->wcont [UIPL_W_VOLUME], state);
+  uiWidgetSetState (uiplayer->wcont [UIPL_W_SPEED], state);
+  uiWidgetSetState (uiplayer->wcont [UIPL_W_SEEK], state);
+  uiWidgetSetState (uiplayer->wcont [UIPL_W_SONG_BEGIN_B], state);
 
   switch (playerState) {
     case PL_STATE_UNKNOWN:
@@ -778,10 +782,10 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
     if (atol (p)) {
       uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
       uiImageSetFromPixbuf (uiplayer->images [UIPL_IMG_REPEAT], uiplayer->images [UIPL_PIX_REPEAT]);
-      uiToggleButtonSetState (uiplayer->repeatButton, UI_TOGGLE_BUTTON_ON);
+      uiToggleButtonSetState (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_ON);
     } else {
       uiImageClear (uiplayer->images [UIPL_IMG_REPEAT]);
-      uiToggleButtonSetState (uiplayer->repeatButton, UI_TOGGLE_BUTTON_OFF);
+      uiToggleButtonSetState (uiplayer->wcont [UIPL_W_REPEAT_B], UI_TOGGLE_BUTTON_OFF);
     }
     uiplayer->repeatLock = false;
   }
@@ -794,18 +798,18 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (! uiplayer->volumeLock) {
     snprintf (tbuff, sizeof (tbuff), "%3s", p);
-    uiLabelSetText (&uiplayer->volumeDisplayLab, p);
+    uiLabelSetText (uiplayer->wcont [UIPL_W_VOLUME_DISP], p);
     dval = atof (p);
-    uiScaleSetValue (uiplayer->volumeScale, dval);
+    uiScaleSetValue (uiplayer->wcont [UIPL_W_VOLUME], dval);
   }
 
   /* speed */
   p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   if (! uiplayer->speedLock) {
     snprintf (tbuff, sizeof (tbuff), "%3s", p);
-    uiLabelSetText (&uiplayer->speedDisplayLab, p);
+    uiLabelSetText (uiplayer->wcont [UIPL_W_SPEED_DISP], p);
     dval = atof (p);
-    uiScaleSetValue (uiplayer->speedScale, dval);
+    uiScaleSetValue (uiplayer->wcont [UIPL_W_SPEED], dval);
   }
 
   /* playedtime */
@@ -819,23 +823,23 @@ uiplayerProcessPlayerStatusData (uiplayer_t *uiplayer, char *args)
   dur = atol (p);
   if (ddur > 0.0 && dur != uiplayer->lastdur) {
     tmutilToMS (dur, tbuff, sizeof (tbuff));
-    uiLabelSetText (&uiplayer->durationLab, tbuff);
-    uiScaleSetRange (uiplayer->seekScale, 0.0, ddur);
+    uiLabelSetText (uiplayer->wcont [UIPL_W_DURATION], tbuff);
+    uiScaleSetRange (uiplayer->wcont [UIPL_W_SEEK], 0.0, ddur);
     uiplayer->lastdur = dur;
   }
 
   if (! uiplayer->seekLock) {
     tmutilToMS (position, tbuff, sizeof (tbuff));
-    uiLabelSetText (&uiplayer->seekDisplayLab, tbuff);
+    uiLabelSetText (uiplayer->wcont [UIPL_W_SEEK_DISP], tbuff);
 
     timeleft = dur - position;
     tmutilToMS (timeleft, tbuff, sizeof (tbuff));
-    uiLabelSetText (&uiplayer->countdownTimerLab, tbuff);
+    uiLabelSetText (uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER], tbuff);
 
     if (ddur == 0.0) {
-      uiScaleSetValue (uiplayer->seekScale, 0.0);
+      uiScaleSetValue (uiplayer->wcont [UIPL_W_SEEK], 0.0);
     } else {
-      uiScaleSetValue (uiplayer->seekScale, dval);
+      uiScaleSetValue (uiplayer->wcont [UIPL_W_SEEK], dval);
     }
   }
   logProcEnd (LOG_PROC, "uiplayerProcessPlayerStatusData", "");
@@ -879,15 +883,15 @@ uiplayerProcessMusicqStatusData (uiplayer_t *uiplayer, char *args)
 
   danceIdx = songGetNum (song, TAG_DANCE);
   data = danceGetStr (dances, danceIdx, DANCE_DANCE);
-  uiLabelSetText (&uiplayer->danceLab, data);
+  uiLabelSetText (uiplayer->wcont [UIPL_W_DANCE], data);
 
   /* artist */
   data = songGetStr (song, TAG_ARTIST);
-  uiLabelSetText (&uiplayer->artistLab, data);
+  uiLabelSetText (uiplayer->wcont [UIPL_W_ARTIST], data);
 
   /* title */
   data = songGetStr (song, TAG_TITLE);
-  uiLabelSetText (&uiplayer->titleLab, data);
+  uiLabelSetText (uiplayer->wcont [UIPL_W_TITLE], data);
   logProcEnd (LOG_PROC, "uiplayerProcessMusicqStatusData", "");
 }
 
@@ -988,9 +992,9 @@ uiplayerSpeedCallback (void *udata, double value)
   }
   uiplayer->speedLock = true;
   mstimeset (&uiplayer->speedLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
-  value = uiScaleEnforceMax (uiplayer->speedScale, value);
+  value = uiScaleEnforceMax (uiplayer->wcont [UIPL_W_SPEED], value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
-  uiLabelSetText (&uiplayer->speedDisplayLab, tbuff);
+  uiLabelSetText (uiplayer->wcont [UIPL_W_SPEED_DISP], tbuff);
   logProcEnd (LOG_PROC, "uiplayerSpeedCallback", "");
   return UICB_CONT;
 }
@@ -1012,15 +1016,15 @@ uiplayerSeekCallback (void *udata, double value)
   uiplayer->seekLock = true;
   mstimeset (&uiplayer->seekLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
 
-  value = uiScaleEnforceMax (uiplayer->seekScale, value);
+  value = uiScaleEnforceMax (uiplayer->wcont [UIPL_W_SEEK], value);
   position = (ssize_t) round (value);
 
   tmutilToMS (position, tbuff, sizeof (tbuff));
-  uiLabelSetText (&uiplayer->seekDisplayLab, tbuff);
+  uiLabelSetText (uiplayer->wcont [UIPL_W_SEEK_DISP], tbuff);
 
   timeleft = uiplayer->lastdur - position;
   tmutilToMS (timeleft, tbuff, sizeof (tbuff));
-  uiLabelSetText (&uiplayer->countdownTimerLab, tbuff);
+  uiLabelSetText (uiplayer->wcont [UIPL_W_COUNTDOWN_TIMER], tbuff);
   logProcEnd (LOG_PROC, "uiplayerSeekCallback", "");
   return UICB_CONT;
 }
@@ -1040,9 +1044,9 @@ uiplayerVolumeCallback (void *udata, double value)
   uiplayer->volumeLock = true;
   mstimeset (&uiplayer->volumeLockTimeout, UIPLAYER_LOCK_TIME_WAIT);
 
-  value = uiScaleEnforceMax (uiplayer->volumeScale, value);
+  value = uiScaleEnforceMax (uiplayer->wcont [UIPL_W_VOLUME], value);
   snprintf (tbuff, sizeof (tbuff), "%3.0f", value);
-  uiLabelSetText (&uiplayer->volumeDisplayLab, tbuff);
+  uiLabelSetText (uiplayer->wcont [UIPL_W_VOLUME_DISP], tbuff);
   logProcEnd (LOG_PROC, "uiplayerVolumeCallback", "");
   return UICB_CONT;
 }
@@ -1050,7 +1054,7 @@ uiplayerVolumeCallback (void *udata, double value)
 static void
 uiplayerClearDisplay (uiplayer_t *uiplayer)
 {
-  uiLabelSetText (&uiplayer->danceLab, "");
-  uiLabelSetText (&uiplayer->artistLab, "");
-  uiLabelSetText (&uiplayer->titleLab, "");
+  uiLabelSetText (uiplayer->wcont [UIPL_W_DANCE], "");
+  uiLabelSetText (uiplayer->wcont [UIPL_W_ARTIST], "");
+  uiLabelSetText (uiplayer->wcont [UIPL_W_TITLE], "");
 }

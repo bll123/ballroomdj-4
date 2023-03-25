@@ -75,6 +75,20 @@ enum {
   PLUI_CB_MAX,
 };
 
+enum {
+  PLUI_W_WINDOW,
+  PLUI_W_MAIN_VBOX,
+  PLUI_W_NOTEBOOK,
+  PLUI_W_CLOCK,
+  PLUI_W_LED_OFF,
+  PLUI_W_LED_ON,
+  PLUI_W_MQ_FONT_SZ_DIALOG,
+  PLUI_W_MQ_SZ,
+  PLUI_W_STATUS_MSG,
+  PLUI_W_ERROR_MSG,
+  PLUI_W_MAX,
+};
+
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
@@ -94,23 +108,14 @@ typedef struct {
   uisongfilter_t  *uisongfilter;
   uireqext_t      *uireqext;
   uikey_t         *uikey;
+  uiwcont_t       *wcont [PLUI_W_MAX];
   /* notebook */
-  uiwcont_t       *notebook;
   uinbtabid_t     *nbtabid;
   int             currpage;
-  uiwcont_t       *window;
-  uiwcont_t       *vbox;
   callback_t      *callbacks [PLUI_CB_MAX];
-  uiwcont_t       clock;
   uiwcont_t       *musicqImage [MUSICQ_PB_MAX];
   uibutton_t      *setPlaybackButton;
-  uiwcont_t       *ledoffPixbuf;
-  uiwcont_t       *ledonPixbuf;
-  uiwcont_t       *marqueeFontSizeDialog;
-  uiwcont_t       *marqueeSpinBox;
   /* ui major elements */
-  uiwcont_t       statusMsg;
-  uiwcont_t       errorMsg;
   uiplayer_t      *uiplayer;
   uimusicq_t      *uimusicq;
   uisongsel_t     *uisongsel;
@@ -209,15 +214,12 @@ main (int argc, char *argv[])
   mdebugInit ("plui");
 #endif
 
-  plui.window = NULL;
-  uiwcontInit (&plui.clock);
-  plui.notebook = NULL;
-  plui.marqueeFontSizeDialog = NULL;
   plui.progstate = progstateInit ("playerui");
   progstateSetCallback (plui.progstate, STATE_CONNECTING,
       pluiConnectingCallback, &plui);
   progstateSetCallback (plui.progstate, STATE_WAIT_HANDSHAKE,
       pluiHandshakeCallback, &plui);
+
   plui.uiplayer = NULL;
   plui.uimusicq = NULL;
   plui.uisongsel = NULL;
@@ -246,6 +248,9 @@ main (int argc, char *argv[])
   }
   for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
     plui.musicqImage [i] = NULL;
+  }
+  for (int i = 0; i < PLUI_W_MAX; ++i) {
+    plui.wcont [i] = NULL;
   }
 
   osSetStandardSignals (pluiSigHandler);
@@ -291,7 +296,9 @@ main (int argc, char *argv[])
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
+fprintf (stderr, "aaa\n");
   pluiBuildUI (&plui);
+fprintf (stderr, "bbb\n");
   osuiFinalize ();
 
   /* register these after calling the sub-window initialization */
@@ -326,10 +333,10 @@ pluiStoppingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "pluiStoppingCallback");
   connSendMessage (plui->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
-  uiWindowGetSize (plui->window, &x, &y);
+  uiWindowGetSize (plui->wcont [PLUI_W_WINDOW], &x, &y);
   nlistSetNum (plui->options, PLUI_SIZE_X, x);
   nlistSetNum (plui->options, PLUI_SIZE_Y, y);
-  uiWindowGetPosition (plui->window, &x, &y, &ws);
+  uiWindowGetPosition (plui->wcont [PLUI_W_WINDOW], &x, &y, &ws);
   nlistSetNum (plui->options, PLUI_POSITION_X, x);
   nlistSetNum (plui->options, PLUI_POSITION_Y, y);
 
@@ -356,18 +363,12 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "pluiClosingCallback");
 
-  uiCloseWindow (plui->window);
+  uiCloseWindow (plui->wcont [PLUI_W_WINDOW]);
   uiCleanup ();
 
-  uiwcontFree (plui->marqueeSpinBox);
-  uiwcontFree (plui->vbox);
-  uiwcontFree (plui->window);
-  uiWidgetClearPersistent (plui->ledonPixbuf);
-  uiWidgetClearPersistent (plui->ledoffPixbuf);
-  uiwcontFree (plui->ledonPixbuf);
-  uiwcontFree (plui->ledoffPixbuf);
+  uiWidgetClearPersistent (plui->wcont [PLUI_W_LED_ON]);
+  uiWidgetClearPersistent (plui->wcont [PLUI_W_LED_OFF]);
 
-  uiwcontFree (plui->marqueeFontSizeDialog);
   uiButtonFree (plui->setPlaybackButton);
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
     callbackFree (plui->callbacks [i]);
@@ -375,7 +376,9 @@ pluiClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < MUSICQ_PB_MAX; ++i) {
     uiwcontFree (plui->musicqImage [i]);
   }
-  uiwcontFree (plui->notebook);
+  for (int i = 0; i < PLUI_W_MAX; ++i) {
+    uiwcontFree (plui->wcont [i]);
+  }
 
   pathbldMakePath (fn, sizeof (fn),
       PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
@@ -408,7 +411,7 @@ pluiBuildUI (playerui_t *plui)
   uiwcont_t   *menu;
   uiwcont_t   *menuitem;
   uiwcont_t   *hbox;
-  uiwcont_t   uiwidget;
+  uiwcont_t   *uip;
   uiwcont_t   *uiwidgetp;
   uibutton_t  *uibutton;
   char        *str;
@@ -422,15 +425,15 @@ pluiBuildUI (playerui_t *plui)
 
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_off", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
-  plui->ledoffPixbuf = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (plui->ledoffPixbuf);
-  uiWidgetMakePersistent (plui->ledoffPixbuf);
+  plui->wcont [PLUI_W_LED_OFF] = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (plui->wcont [PLUI_W_LED_OFF]);
+  uiWidgetMakePersistent (plui->wcont [PLUI_W_LED_OFF]);
 
   pathbldMakePath (tbuff, sizeof (tbuff),  "led_on", BDJ4_IMG_SVG_EXT,
       PATHBLD_MP_DIR_IMG);
-  plui->ledonPixbuf = uiImageFromFile (tbuff);
-  uiImageConvertToPixbuf (plui->ledonPixbuf);
-  uiWidgetMakePersistent (plui->ledonPixbuf);
+  plui->wcont [PLUI_W_LED_ON] = uiImageFromFile (tbuff);
+  uiImageConvertToPixbuf (plui->wcont [PLUI_W_LED_ON]);
+  uiWidgetMakePersistent (plui->wcont [PLUI_W_LED_ON]);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_player", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -439,23 +442,23 @@ pluiBuildUI (playerui_t *plui)
   /* CONTEXT: playerui: main window title */
   snprintf (tbuff, sizeof (tbuff), _("%s Player"),
       bdjoptGetStr (OPT_P_PROFILENAME));
-  plui->window = uiCreateMainWindow (plui->callbacks [PLUI_CB_CLOSE],
+  plui->wcont [PLUI_W_WINDOW] = uiCreateMainWindow (plui->callbacks [PLUI_CB_CLOSE],
       tbuff, imgbuff);
 
   pluiInitializeUI (plui);
 
-  plui->vbox = uiCreateVertBox ();
-  uiBoxPackInWindow (plui->window, plui->vbox);
-  uiWidgetSetAllMargins (plui->vbox, 2);
+  plui->wcont [PLUI_W_MAIN_VBOX] = uiCreateVertBox ();
+  uiBoxPackInWindow (plui->wcont [PLUI_W_WINDOW], plui->wcont [PLUI_W_MAIN_VBOX]);
+  uiWidgetSetAllMargins (plui->wcont [PLUI_W_MAIN_VBOX], 2);
 
   plui->uikey = uiKeyAlloc ();
   plui->callbacks [PLUI_CB_KEYB] = callbackInit (
       pluiKeyEvent, plui, NULL);
-  uiKeySetKeyCallback (plui->uikey, plui->vbox,
+  uiKeySetKeyCallback (plui->uikey, plui->wcont [PLUI_W_MAIN_VBOX],
       plui->callbacks [PLUI_CB_KEYB]);
 
   /* menu */
-  uiutilsAddAccentColorDisplay (plui->vbox, &accent);
+  uiutilsAddAccentColorDisplay (plui->wcont [PLUI_W_MAIN_VBOX], &accent);
   hbox = accent.hbox;
   uiwcontFree (accent.label);
   uiWidgetExpandHoriz (hbox);
@@ -463,20 +466,20 @@ pluiBuildUI (playerui_t *plui)
   menubar = uiCreateMenubar ();
   uiBoxPackStart (hbox, menubar);
 
-  uiCreateLabelOld (&plui->clock, "");
-  uiBoxPackEnd (hbox, &plui->clock);
-  uiWidgetSetMarginStart (&plui->clock, 4);
-  uiWidgetSetState (&plui->clock, UIWIDGET_DISABLE);
+  plui->wcont [PLUI_W_CLOCK] = uiCreateLabel ("");
+  uiBoxPackEnd (hbox, plui->wcont [PLUI_W_CLOCK]);
+  uiWidgetSetMarginStart (plui->wcont [PLUI_W_CLOCK], 4);
+  uiWidgetSetState (plui->wcont [PLUI_W_CLOCK], UIWIDGET_DISABLE);
 
-  uiCreateLabelOld (&uiwidget, "");
-  uiWidgetSetClass (&uiwidget, ERROR_CLASS);
-  uiBoxPackEnd (hbox, &uiwidget);
-  uiwcontCopy (&plui->errorMsg, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  plui->wcont [PLUI_W_ERROR_MSG] = uiwidgetp;
 
-  uiCreateLabelOld (&uiwidget, "");
-  uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
-  uiBoxPackEnd (hbox, &uiwidget);
-  uiwcontCopy (&plui->statusMsg, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  plui->wcont [PLUI_W_STATUS_MSG] = uiwidgetp;
 
   /* actions */
   /* CONTEXT: playerui: menu selection: actions for the player */
@@ -559,15 +562,17 @@ pluiBuildUI (playerui_t *plui)
   uiwcontFree (menuitem);
 
   /* player */
+fprintf (stderr, "ccc\n");
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
-  uiBoxPackStart (plui->vbox, uiwidgetp);
+  uiBoxPackStart (plui->wcont [PLUI_W_MAIN_VBOX], uiwidgetp);
+fprintf (stderr, "ddd\n");
 
-  plui->notebook = uiCreateNotebook ();
-  uiBoxPackStartExpand (plui->vbox, plui->notebook);
+  plui->wcont [PLUI_W_NOTEBOOK] = uiCreateNotebook ();
+  uiBoxPackStartExpand (plui->wcont [PLUI_W_MAIN_VBOX], plui->wcont [PLUI_W_NOTEBOOK]);
 
   plui->callbacks [PLUI_CB_NOTEBOOK] = callbackInitLong (
       pluiSwitchPage, plui);
-  uiNotebookSetCallback (plui->notebook, plui->callbacks [PLUI_CB_NOTEBOOK]);
+  uiNotebookSetCallback (plui->wcont [PLUI_W_NOTEBOOK], plui->callbacks [PLUI_CB_NOTEBOOK]);
 
   plui->callbacks [PLUI_CB_PLAYBACK_QUEUE] = callbackInit (
       pluiProcessSetPlaybackQueue, plui, NULL);
@@ -576,7 +581,7 @@ pluiBuildUI (playerui_t *plui)
       _("Set Queue for Playback"), NULL);
   plui->setPlaybackButton = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
-  uiNotebookSetActionWidget (plui->notebook, uiwidgetp);
+  uiNotebookSetActionWidget (plui->wcont [PLUI_W_NOTEBOOK], uiwidgetp);
   uiWidgetShowAll (uiwidgetp);
 
   for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
@@ -593,8 +598,8 @@ pluiBuildUI (playerui_t *plui)
       tabtype = UI_TAB_HISTORY;
     }
 
-    uiwidgetp = uimusicqBuildUI (plui->uimusicq, plui->window, i,
-        &plui->errorMsg, NULL);
+    uip = uimusicqBuildUI (plui->uimusicq, plui->wcont [PLUI_W_WINDOW], i,
+        plui->wcont [PLUI_W_ERROR_MSG], NULL);
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
     if (tabtype == UI_TAB_HISTORY) {
@@ -603,36 +608,40 @@ pluiBuildUI (playerui_t *plui)
     } else {
       str = bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, i);
     }
-    uiCreateLabelOld (&uiwidget, str);
-    uiBoxPackStart (hbox, &uiwidget);
+
+    uiwidgetp = uiCreateLabel (str);
+    uiBoxPackStart (hbox, uiwidgetp);
+
     if (i < MUSICQ_HISTORY) {
       plui->musicqImage [i] = uiImageNew ();
-      uiImageSetFromPixbuf (plui->musicqImage [i], plui->ledonPixbuf);
+      uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
       uiWidgetSetMarginStart (plui->musicqImage [i], 1);
       uiBoxPackStart (hbox, plui->musicqImage [i]);
     }
 
-    uiNotebookAppendPage (plui->notebook, uiwidgetp, hbox);
+    uiNotebookAppendPage (plui->wcont [PLUI_W_NOTEBOOK], uip, hbox);
+    uiwcontFree (uiwidgetp);
     uinbutilIDAdd (plui->nbtabid, tabtype);
     uiWidgetShowAll (hbox);
   }
 
   /* request tab */
-  uiwidgetp = uisongselBuildUI (plui->uisongsel, plui->window);
+  uip = uisongselBuildUI (plui->uisongsel, plui->wcont [PLUI_W_WINDOW]);
   /* CONTEXT: playerui: name of request tab : lists the songs in the database */
-  uiCreateLabelOld (&uiwidget, _("Request"));
-  uiNotebookAppendPage (plui->notebook, uiwidgetp, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Request"));
+  uiNotebookAppendPage (plui->wcont [PLUI_W_NOTEBOOK], uip, uiwidgetp);
   uinbutilIDAdd (plui->nbtabid, UI_TAB_SONGSEL);
+  uiwcontFree (uiwidgetp);
 
   x = nlistGetNum (plui->options, PLUI_SIZE_X);
   y = nlistGetNum (plui->options, PLUI_SIZE_Y);
-  uiWindowSetDefaultSize (plui->window, x, y);
+  uiWindowSetDefaultSize (plui->wcont [PLUI_W_WINDOW], x, y);
 
-  uiWidgetShowAll (plui->window);
+  uiWidgetShowAll (plui->wcont [PLUI_W_WINDOW]);
 
   x = nlistGetNum (plui->options, PLUI_POSITION_X);
   y = nlistGetNum (plui->options, PLUI_POSITION_Y);
-  uiWindowMove (plui->window, x, y, -1);
+  uiWindowMove (plui->wcont [PLUI_W_WINDOW], x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_player", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
@@ -662,7 +671,7 @@ pluiInitializeUI (playerui_t *plui)
 {
   plui->uiplayer = uiplayerInit (plui->progstate, plui->conn, plui->musicdb);
 
-  plui->uireqext = uireqextInit (plui->window, plui->options);
+  plui->uireqext = uireqextInit (plui->wcont [PLUI_W_WINDOW], plui->options);
   plui->callbacks [PLUI_CB_REQ_EXT] = callbackInit (
       pluiReqextCallback,
       plui, "musicq: request external response");
@@ -671,7 +680,7 @@ pluiInitializeUI (playerui_t *plui)
   plui->uimusicq = uimusicqInit ("plui", plui->conn, plui->musicdb,
       plui->dispsel, DISP_SEL_MUSICQ);
 
-  plui->uisongfilter = uisfInit (plui->window, plui->options,
+  plui->uisongfilter = uisfInit (plui->wcont [PLUI_W_WINDOW], plui->options,
       SONG_FILTER_FOR_PLAYBACK);
   plui->uisongsel = uisongselInit ("plui-req", plui->conn, plui->musicdb,
       plui->dispsel, NULL, plui->options,
@@ -730,7 +739,7 @@ pluiMainLoop (void *tplui)
     char  tmp [40];
 
     /* CONTEXT: export as mp3: please wait... status message */
-    uiLabelSetText (&plui->statusMsg, _("Please wait\xe2\x80\xa6"));
+    uiLabelSetText (plui->wcont [PLUI_W_STATUS_MSG], _("Please wait\xe2\x80\xa6"));
 
     snprintf (tmp, sizeof (tmp), "%d", plui->musicqManageIdx);
     connSendMessage (plui->conn, ROUTE_MAIN, MSG_MAIN_REQ_QUEUE_INFO, tmp);
@@ -776,7 +785,7 @@ pluiClock (playerui_t *plui)
     return;
   }
 
-  uiLabelSetText (&plui->clock,
+  uiLabelSetText (plui->wcont [PLUI_W_CLOCK],
       tmutilDisp (tbuff, sizeof (tbuff), bdjoptGetNum (OPT_G_CLOCK_DISP)));
   if (bdjoptGetNum (OPT_G_CLOCK_DISP) == TM_CLOCK_OFF) {
     mstimeset (&plui->clockCheck, 3600000);
@@ -917,7 +926,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_WINDOW_FIND: {
-          uiWindowFind (plui->window);
+          uiWindowFind (plui->wcont [PLUI_W_WINDOW]);
           break;
         }
         case MSG_QUEUE_SWITCH: {
@@ -990,15 +999,15 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_SONG_FINISH: {
-          uiLabelSetText (&plui->statusMsg, "");
-          uiLabelSetText (&plui->errorMsg, "");
+          uiLabelSetText (plui->wcont [PLUI_W_STATUS_MSG], "");
+          uiLabelSetText (plui->wcont [PLUI_W_ERROR_MSG], "");
           pluiPushHistory (plui, targs);
           break;
         }
         case MSG_MAIN_ALREADY: {
           plui->mainalready = true;
           /* CONTEXT: player-ui: error message */
-          uiLabelSetText (&plui->errorMsg, _("Recovered from crash."));
+          uiLabelSetText (plui->wcont [PLUI_W_ERROR_MSG], _("Recovered from crash."));
           break;
         }
         case MSG_MAIN_CURR_MANAGE: {
@@ -1020,9 +1029,9 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_MAIN_QUEUE_INFO: {
           char    *dir = NULL;
 
-          dir = pluiExportMP3Dialog (plui->window);
+          dir = pluiExportMP3Dialog (plui->wcont [PLUI_W_WINDOW]);
           if (dir == NULL) {
-            uiLabelSetText (&plui->statusMsg, "");
+            uiLabelSetText (plui->wcont [PLUI_W_STATUS_MSG], "");
             plui->expmp3state = BDJ4_STATE_OFF;
           } else {
             plui->mp3exp = mp3ExportInit (mdstrdup (args), plui->musicdb,
@@ -1102,7 +1111,7 @@ static bool
 pluiExportMP3Status (void *udata, int count, int tot)
 {
   playerui_t  *plui = udata;
-  uiwcont_t  *statusMsg = &plui->statusMsg;
+  uiwcont_t   *statusMsg = plui->wcont [PLUI_W_STATUS_MSG];
   char        tbuff [200];
 
   if (statusMsg == NULL) {
@@ -1194,9 +1203,9 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue, int updateFlag)
     }
 
     if ((int) plui->musicqPlayIdx == i) {
-      uiImageSetFromPixbuf (plui->musicqImage [i], plui->ledonPixbuf);
+      uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
     } else {
-      uiImageSetFromPixbuf (plui->musicqImage [i], plui->ledoffPixbuf);
+      uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_OFF]);
     }
   }
 
@@ -1279,7 +1288,7 @@ pluiSetExtraQueues (playerui_t *plui)
       if (! show && plui->currpage == pagenum) {
         resetcurr = true;
       }
-      uiNotebookHideShowPage (plui->notebook, pagenum, show);
+      uiNotebookHideShowPage (plui->wcont [PLUI_W_NOTEBOOK], pagenum, show);
     }
   }
   if (resetcurr) {
@@ -1341,8 +1350,8 @@ pluiMarqueeFontSizeDialog (void *udata)
     sz = plui->marqueeFontSize;
   }
 
-  uiSpinboxSetValue (plui->marqueeSpinBox, (double) sz);
-  uiDialogShow (plui->marqueeFontSizeDialog);
+  uiSpinboxSetValue (plui->wcont [PLUI_W_MQ_SZ], (double) sz);
+  uiDialogShow (plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG]);
 
   logProcEnd (LOG_PROC, "pluiMarqueeFontSizeDialog", "");
   return UICB_CONT;
@@ -1353,13 +1362,13 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
 {
   uiwcont_t    *vbox;
   uiwcont_t    *hbox;
-  uiwcont_t    uiwidget;
+  uiwcont_t    *uiwidgetp;
 
   logProcBegin (LOG_PROC, "pluiCreateMarqueeFontSizeDialog");
 
   plui->callbacks [PLUI_CB_FONT_SIZE] = callbackInitLong (
       pluiMarqueeFontSizeDialogResponse, plui);
-  plui->marqueeFontSizeDialog = uiCreateDialog (plui->window,
+  plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG] = uiCreateDialog (plui->wcont [PLUI_W_WINDOW],
       plui->callbacks [PLUI_CB_FONT_SIZE],
       /* CONTEXT: playerui: marquee font size dialog: window title */
       _("Marquee Font Size"),
@@ -1370,23 +1379,24 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
       );
 
   vbox = uiCreateVertBox ();
-  uiDialogPackInDialog (plui->marqueeFontSizeDialog, vbox);
+  uiDialogPackInDialog (plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG], vbox);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: playerui: marquee font size dialog: the font size selector */
-  uiCreateColonLabelOld (&uiwidget, _("Font Size"));
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Font Size"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
-  plui->marqueeSpinBox = uiSpinboxIntCreate ();
-  uiSpinboxSet (plui->marqueeSpinBox, 10.0, 300.0);
-  uiSpinboxSetValue (plui->marqueeSpinBox, 36.0);
-  uiBoxPackStart (hbox, plui->marqueeSpinBox);
+  plui->wcont [PLUI_W_MQ_SZ] = uiSpinboxIntCreate ();
+  uiSpinboxSet (plui->wcont [PLUI_W_MQ_SZ], 10.0, 300.0);
+  uiSpinboxSetValue (plui->wcont [PLUI_W_MQ_SZ], 36.0);
+  uiBoxPackStart (hbox, plui->wcont [PLUI_W_MQ_SZ]);
 
   plui->callbacks [PLUI_CB_FONT_SZ_CHG] = callbackInit (
       pluiMarqueeFontSizeChg, plui, NULL);
-  uiSpinboxSetValueChangedCallback (plui->marqueeSpinBox,
+  uiSpinboxSetValueChangedCallback (plui->wcont [PLUI_W_MQ_SZ],
       plui->callbacks [PLUI_CB_FONT_SZ_CHG]);
 
   /* the dialog doesn't have any space above the buttons */
@@ -1394,8 +1404,9 @@ pluiCreateMarqueeFontSizeDialog (playerui_t *plui)
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateLabelOld (&uiwidget, "");
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
   plui->fontszdialogcreated = true;
 
   uiwcontFree (vbox);
@@ -1411,14 +1422,14 @@ pluiMarqueeFontSizeDialogResponse (void *udata, long responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
-      uiwcontFree (plui->marqueeFontSizeDialog);
-      plui->marqueeFontSizeDialog = NULL;
+      uiwcontFree (plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG]);
+      plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG] = NULL;
       plui->fontszdialogcreated = false;
       plui->mqfontsizeactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
-      uiWidgetHide (plui->marqueeFontSizeDialog);
+      uiWidgetHide (plui->wcont [PLUI_W_MQ_FONT_SZ_DIALOG]);
       plui->mqfontsizeactive = false;
       break;
     }
@@ -1433,7 +1444,7 @@ pluiMarqueeFontSizeChg (void *udata)
   int         fontsz;
   double      value;
 
-  value = uiSpinboxGetValue (plui->marqueeSpinBox);
+  value = uiSpinboxGetValue (plui->wcont [PLUI_W_MQ_SZ]);
   fontsz = (int) round (value);
   if (plui->marqueeIsMaximized) {
     plui->marqueeFontSizeFS = fontsz;
