@@ -166,8 +166,8 @@ enum {
   MANAGE_W_SONGLIST_NB,
   MANAGE_W_MM_NB,
   MANAGE_W_SL_EZ_MUSICQ_TAB,
-  MANAGE_W_SL_MUSICQ_TAB,
-  MANAGE_W_SONGSEL_TAB,
+  MANAGE_W_SL_MUSICQ_TAB,         // not owner
+  MANAGE_W_SONGSEL_TAB,           // not owner
   MANAGE_W_STATUS_MSG,
   MANAGE_W_ERROR_MSG,
   MANAGE_W_MENU_RESTORE_ORIG,
@@ -587,6 +587,10 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiDialogDestroy (manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG]);
   uiDialogDestroy (manage->wcont [MANAGE_W_CFPL_DIALOG]);
   for (int i = 0; i < MANAGE_W_MAX; ++i) {
+    if (i == MANAGE_W_SL_MUSICQ_TAB ||
+        i == MANAGE_W_SONGSEL_TAB) {
+      continue;
+    }
     uiwcontFree (manage->wcont [i]);
   }
   uiMenuFree (manage->slmenu);
@@ -975,7 +979,8 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwidgetp = uiCreateLabel (_("Song List"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], uip, uiwidgetp);
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
-  manage->wcont [MANAGE_W_SL_MUSICQ_TAB] = uiwidgetp;
+  manage->wcont [MANAGE_W_SL_MUSICQ_TAB] = uip;
+  uiwcontFree (uiwidgetp);
 
   /* song list editor: song selection tab */
   uip = uisongselBuildUI (manage->slsongsel, manage->wcont [MANAGE_W_WINDOW]);
@@ -983,7 +988,8 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwidgetp = uiCreateLabel (_("Song Selection"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], uip, uiwidgetp);
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_OTHER);
-  manage->wcont [MANAGE_W_SONGSEL_TAB] = uiwidgetp;
+  manage->wcont [MANAGE_W_SONGSEL_TAB] = uip;
+  uiwcontFree (uiwidgetp);
 
   uimusicqPeerSonglistName (manage->slmusicq, manage->slezmusicq);
 

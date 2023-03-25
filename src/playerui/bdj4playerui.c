@@ -295,9 +295,7 @@ main (int argc, char *argv[])
       bdjoptGetStr (OPT_P_UI_ACCENT_COL),
       bdjoptGetStr (OPT_P_UI_ERROR_COL));
 
-fprintf (stderr, "aaa\n");
   pluiBuildUI (&plui);
-fprintf (stderr, "bbb\n");
   osuiFinalize ();
 
   /* register these after calling the sub-window initialization */
@@ -561,10 +559,8 @@ pluiBuildUI (playerui_t *plui)
   uiwcontFree (menuitem);
 
   /* player */
-fprintf (stderr, "ccc\n");
   uiwidgetp = uiplayerBuildUI (plui->uiplayer);
   uiBoxPackStart (plui->wcont [PLUI_W_MAIN_VBOX], uiwidgetp);
-fprintf (stderr, "ddd\n");
 
   plui->wcont [PLUI_W_NOTEBOOK] = uiCreateNotebook ();
   uiBoxPackStartExpand (plui->wcont [PLUI_W_MAIN_VBOX], plui->wcont [PLUI_W_NOTEBOOK]);
