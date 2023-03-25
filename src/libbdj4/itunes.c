@@ -759,6 +759,7 @@ itunesParseXPath (xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr,
     if (nodes->nodeTab [i]->type == XML_ELEMENT_NODE)  {
       cur = nodes->nodeTab [i];
       val = xmlNodeGetContent (cur);
+      mdextalloc (val);
       logMsg (LOG_DBG, LOG_ITUNES, "xml: raw: %s %s", cur->name, val);
       // fprintf (stderr, "i: %s %s\n", cur->name, val);
       if (strcmp ((const char *) cur->name, "key") == 0) {

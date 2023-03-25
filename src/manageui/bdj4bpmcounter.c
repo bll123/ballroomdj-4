@@ -70,7 +70,7 @@ typedef struct {
   conn_t          *conn;
   uiwcont_t       *window;
   uiwcont_t       *timesigsel [BPMCOUNT_DISP_MAX];
-  uiwcont_t       dispvalue [BPMCOUNT_DISP_MAX];
+  uiwcont_t       *dispvalue [BPMCOUNT_DISP_MAX];
   uibutton_t      *buttons [BPMCOUNT_BUTTON_MAX];
   int             values [BPMCOUNT_DISP_MAX];
   callback_t      *callbacks [BPMCOUNT_CB_MAX];
@@ -150,7 +150,7 @@ main (int argc, char *argv[])
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     bpmcounter.values [i] = 0;
     bpmcounter.timesigsel [i] = NULL;
-    uiwcontInit (&bpmcounter.dispvalue [i]);
+    bpmcounter.dispvalue [i] = NULL;
   }
   for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
     bpmcounter.callbacks [i] = NULL;
@@ -311,6 +311,7 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
   }
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     uiwcontFree (bpmcounter->timesigsel [i]);
+    uiwcontFree (bpmcounter->dispvalue [i]);
   }
 
   procutilFreeAll (bpmcounter->processes);
@@ -334,7 +335,6 @@ static void
 bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 {
   uiwcont_t   *grpuiwidgetp = NULL;
-  uiwcont_t   uiwidget;
   uibutton_t  *uibutton;
   uiwcont_t   *uiwidgetp = NULL;
   uiwcont_t   *vboxmain;
@@ -374,16 +374,18 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackStart (vboxmain, hbox);
 
   /* CONTEXT: bpm counter: instructions, line 1 */
-  uiCreateLabelOld (&uiwidget, _("Click the mouse in the blue box in time with the beat."));
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Click the mouse in the blue box in time with the beat."));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vboxmain, hbox);
 
   /* CONTEXT: bpm counter: instructions, line 2 */
-  uiCreateLabelOld (&uiwidget, _("When the BPM value is stable, select the Save button."));
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("When the BPM value is stable, select the Save button."));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   /* secondary box */
   hboxbpm = uiCreateHorizBox ();
@@ -394,8 +396,9 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiBoxPackStartExpand (hboxbpm, vbox);
 
   /* some spacing */
-  uiCreateLabelOld (&uiwidget, "");
-  uiBoxPackStart (vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   bpmcounter->callbacks [BPMCOUNT_CB_RADIO] = callbackInit (
       bpmcounterRadioChanged, bpmcounter, NULL);
@@ -406,8 +409,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
     uiBoxPackStart (vbox, hbox);
 
     if (i < BPMCOUNT_DISP_BPM) {
-      uiCreateColonLabelOld (&uiwidget, disptxt [i]);
-      uiwidgetp = &uiwidget;
+      uiwidgetp = uiCreateColonLabel (disptxt [i]);
     } else if (i == BPMCOUNT_DISP_BPM) {
       uiwidgetp = uiCreateRadioButton (NULL, disptxt [i], 1);
       grpuiwidgetp = uiwidgetp;
@@ -423,10 +425,10 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
 
-    uiCreateLabelOld (&bpmcounter->dispvalue [i], "");
-    uiLabelAlignEnd (&bpmcounter->dispvalue [i]);
-    uiSizeGroupAdd (szgrpDisp, &bpmcounter->dispvalue [i]);
-    uiBoxPackStart (hbox, &bpmcounter->dispvalue [i]);
+    bpmcounter->dispvalue [i] = uiCreateLabel ("");
+    uiLabelAlignEnd (bpmcounter->dispvalue [i]);
+    uiSizeGroupAdd (szgrpDisp, bpmcounter->dispvalue [i]);
+    uiBoxPackStart (hbox, bpmcounter->dispvalue [i]);
   }
 
   /* right side */
@@ -642,7 +644,7 @@ bpmcounterProcessReset (void *udata)
   bpmcounter_t *bpmcounter = udata;
 
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
-    uiLabelSetText (&bpmcounter->dispvalue [i], "");
+    uiLabelSetText (bpmcounter->dispvalue [i], "");
     bpmcounter->values [i] = 0;
   }
   bpmcounter->count = 0;
@@ -688,29 +690,29 @@ bpmcounterProcessClick (void *udata)
 
     bpmcounter->values [BPMCOUNT_DISP_BPM] = (int) dval;
     snprintf (tbuff, sizeof (tbuff), "%d", (int) dval);
-    uiLabelSetText (&bpmcounter->dispvalue [BPMCOUNT_DISP_BPM], tbuff);
+    uiLabelSetText (bpmcounter->dispvalue [BPMCOUNT_DISP_BPM], tbuff);
 
     bpmcounter->values [BPMCOUNT_DISP_MPM_24] = (int) (dval / 2.0);
     snprintf (tbuff, sizeof (tbuff), "%d",
         bpmcounter->values [BPMCOUNT_DISP_MPM_24]);
-    uiLabelSetText (&bpmcounter->dispvalue [BPMCOUNT_DISP_MPM_24], tbuff);
+    uiLabelSetText (bpmcounter->dispvalue [BPMCOUNT_DISP_MPM_24], tbuff);
 
     bpmcounter->values [BPMCOUNT_DISP_MPM_34] = (int) (dval / 3.0);
     snprintf (tbuff, sizeof (tbuff), "%d",
         bpmcounter->values [BPMCOUNT_DISP_MPM_34]);
-    uiLabelSetText (&bpmcounter->dispvalue [BPMCOUNT_DISP_MPM_34], tbuff);
+    uiLabelSetText (bpmcounter->dispvalue [BPMCOUNT_DISP_MPM_34], tbuff);
 
     bpmcounter->values [BPMCOUNT_DISP_MPM_44] = (int) (dval / 4.0);
     snprintf (tbuff, sizeof (tbuff), "%d",
         bpmcounter->values [BPMCOUNT_DISP_MPM_44]);
-    uiLabelSetText (&bpmcounter->dispvalue [BPMCOUNT_DISP_MPM_44], tbuff);
+    uiLabelSetText (bpmcounter->dispvalue [BPMCOUNT_DISP_MPM_44], tbuff);
   }
 
   /* these are always displayed */
   snprintf (tbuff, sizeof (tbuff), "%d", bpmcounter->count);
-  uiLabelSetText (&bpmcounter->dispvalue [BPMCOUNT_DISP_BEATS], tbuff);
+  uiLabelSetText (bpmcounter->dispvalue [BPMCOUNT_DISP_BEATS], tbuff);
   snprintf (tbuff, sizeof (tbuff), "%.1f", elapsed);
-  uiLabelSetText (&bpmcounter->dispvalue [BPMCOUNT_DISP_SECONDS], tbuff);
+  uiLabelSetText (bpmcounter->dispvalue [BPMCOUNT_DISP_SECONDS], tbuff);
 
   return UICB_CONT;
 }

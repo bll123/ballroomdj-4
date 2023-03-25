@@ -160,6 +160,23 @@ enum {
   MANAGE_QUEUE_LAST,
 };
 
+enum {
+  MANAGE_W_WINDOW,
+  MANAGE_W_MENUBAR,
+  MANAGE_W_MAIN_NB,
+  MANAGE_W_SONGLIST_NB,
+  MANAGE_W_MM_NB,
+  MANAGE_W_SL_EZ_MUSICQ_TAB,
+  MANAGE_W_SL_MUSICQ_TAB,
+  MANAGE_W_SONGSEL_TAB,
+  MANAGE_W_STATUS_MSG,
+  MANAGE_W_ERROR_MSG,
+  MANAGE_W_MENU_RESTORE_ORIG,
+  MANAGE_W_ITUNES_SEL_DIALOG,
+  MANAGE_W_CFPL_DIALOG,
+  MANAGE_W_MAX,
+};
+
 typedef struct {
   progstate_t       *progstate;
   char              *locknm;
@@ -172,9 +189,7 @@ typedef struct {
   musicqidx_t       musicqManageIdx;
   dispsel_t         *dispsel;
   int               stopwaitcount;
-  uiwcont_t         statusMsg;
-  uiwcont_t         errorMsg;
-  uiwcont_t         *menuitemRestoreOriginal;
+  uiwcont_t         *wcont [MANAGE_W_MAX];
   const char        *pleasewaitmsg;
   /* notebook tab handling */
   int               mainlasttab;
@@ -187,11 +202,6 @@ typedef struct {
   uinbtabid_t       *mainnbtabid;
   uinbtabid_t       *slnbtabid;
   uinbtabid_t       *mmnbtabid;
-  uiwcont_t         *window;
-  uiwcont_t         *menubar;
-  uiwcont_t         *mainnotebook;
-  uiwcont_t         *slnotebook;
-  uiwcont_t         *mmnotebook;
   uibutton_t        *selectButton;
   dbidx_t           songlistdbidx;
   dbidx_t           seldbidx;
@@ -203,17 +213,12 @@ typedef struct {
   uisongsel_t       *slsongsel;
   uimusicq_t        *slezmusicq;
   uisongsel_t       *slezsongsel;
-  uiwcont_t         slezmusicqtabwidget;
-  uiwcont_t         *slmusicqtabwidget;
-  uiwcont_t         *slsongseltabwidget;
   char              *sloldname;
   itunes_t          *itunes;
-  uiwcont_t         *itunesSelectDialog;
   uidropdown_t      *itunessel;
   /* prior name is used by create-from-playlist */
   char              *slpriorname;
   uisongfilter_t    *uisongfilter;
-  uiwcont_t         *cfplDialog;
   uidropdown_t      *cfplsel;
   uispinbox_t       *cfpltmlimit;
   /* music manager ui */
@@ -384,10 +389,9 @@ main (int argc, char *argv[])
   progstateSetCallback (manage.progstate, STATE_WAIT_HANDSHAKE,
       manageHandshakeCallback, &manage);
 
-  manage.mainnotebook = NULL;
-  manage.slnotebook = NULL;
-  manage.mmnotebook = NULL;
-  manage.window = NULL;
+  for (int i = 0; i < MANAGE_W_MAX; ++i) {
+    manage.wcont [i] = NULL;
+  }
   manage.slplayer = NULL;
   manage.slmusicq = NULL;
   manage.slstats = NULL;
@@ -408,14 +412,12 @@ main (int argc, char *argv[])
   manage.slmenu = uiMenuAlloc ();
   manage.songeditmenu = uiMenuAlloc ();
   manage.mmmenu = uiMenuAlloc ();
-  manage.menuitemRestoreOriginal = NULL;
   manage.mainnbtabid = uinbutilIDInit ();
   manage.slnbtabid = uinbutilIDInit ();
   manage.mmnbtabid = uinbutilIDInit ();
   manage.sloldname = NULL;
   manage.slpriorname = NULL;
   manage.itunes = NULL;
-  manage.itunesSelectDialog = NULL;
   manage.itunessel = uiDropDownInit ();
   manage.slbackupcreated = false;
   manage.selusesonglist = false;
@@ -434,7 +436,6 @@ main (int argc, char *argv[])
   manage.bpmcounterstarted = false;
   manage.currbpmsel = BPM_BPM;
   manage.currtimesig = DANCE_TIMESIG_44;
-  manage.cfplDialog = NULL;
   manage.cfplsel = uiDropDownInit ();
   manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.pluiActive = false;
@@ -550,10 +551,10 @@ manageStoppingCallback (void *udata, programstate_t programState)
   manageSequenceSave (manage->manageseq);
   managePlaylistSave (manage->managepl);
 
-  uiWindowGetSize (manage->window, &x, &y);
+  uiWindowGetSize (manage->wcont [MANAGE_W_WINDOW], &x, &y);
   nlistSetNum (manage->options, MANAGE_SIZE_X, x);
   nlistSetNum (manage->options, MANAGE_SIZE_Y, y);
-  uiWindowGetPosition (manage->window, &x, &y, &ws);
+  uiWindowGetPosition (manage->wcont [MANAGE_W_WINDOW], &x, &y, &ws);
   nlistSetNum (manage->options, MANAGE_POSITION_X, x);
   nlistSetNum (manage->options, MANAGE_POSITION_Y, y);
 
@@ -579,27 +580,23 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "manageClosingCallback");
 
-  uiCloseWindow (manage->window);
+  uiCloseWindow (manage->wcont [MANAGE_W_WINDOW]);
   uiCleanup ();
 
-  uiwcontFree (manage->mainnotebook);
-  uiwcontFree (manage->slnotebook);
-  uiwcontFree (manage->mmnotebook);
-  uiwcontFree (manage->menuitemRestoreOriginal);
+  manageDbClose (manage->managedb);
+
+  uiDialogDestroy (manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG]);
+  uiDialogDestroy (manage->wcont [MANAGE_W_CFPL_DIALOG]);
+  for (int i = 0; i < MANAGE_W_MAX; ++i) {
+    uiwcontFree (manage->wcont [i]);
+  }
   uiMenuFree (manage->slmenu);
   uiMenuFree (manage->songeditmenu);
   uiMenuFree (manage->mmmenu);
-  uiwcontFree (manage->menubar);
   itunesFree (manage->itunes);
   samesongFree (manage->samesong);
-  manageDbClose (manage->managedb);
-  uiwcontFree (manage->window);
   uiButtonFree (manage->selectButton);
   uiaaFree (manage->uiaa);
-  uiDialogDestroy (manage->itunesSelectDialog);
-  uiDialogDestroy (manage->cfplDialog);
-  uiwcontFree (manage->itunesSelectDialog);
-  uiwcontFree (manage->cfplDialog);
 
   procutilStopAllProcess (manage->processes, manage->conn, true);
   procutilFreeAll (manage->processes);
@@ -656,7 +653,7 @@ manageBuildUI (manageui_t *manage)
 {
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
-  uiwcont_t   uiwidget;
+  uiwcont_t   *uiwidgetp;
   char        imgbuff [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   int         x, y;
@@ -664,7 +661,6 @@ manageBuildUI (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageBuildUI");
   *imgbuff = '\0';
-  uiwcontInit (&uiwidget);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_manage", BDJ4_IMG_SVG_EXT, PATHBLD_MP_DIR_IMG);
@@ -674,93 +670,96 @@ manageBuildUI (manageui_t *manage)
 
   manage->callbacks [MANAGE_CB_CLOSE] = callbackInit (
       manageCloseWin, manage, NULL);
-  manage->window = uiCreateMainWindow (
+  manage->wcont [MANAGE_W_WINDOW] = uiCreateMainWindow (
       manage->callbacks [MANAGE_CB_CLOSE], tbuff, imgbuff);
 
   manageInitializeUI (manage);
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
-  uiBoxPackInWindow (manage->window, vbox);
+  uiBoxPackInWindow (manage->wcont [MANAGE_W_WINDOW], vbox);
 
   uiutilsAddAccentColorDisplay (vbox, &accent);
   hbox = accent.hbox;
   uiwcontFree (accent.label);
 
-  uiCreateLabelOld (&uiwidget, "");
-  uiWidgetSetClass (&uiwidget, ERROR_CLASS);
-  uiBoxPackEnd (hbox, &uiwidget);
-  uiwcontCopy (&manage->errorMsg, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  manage->wcont [MANAGE_W_ERROR_MSG] = uiwidgetp;
 
-  uiCreateLabelOld (&uiwidget, "");
-  uiWidgetSetClass (&uiwidget, ACCENT_CLASS);
-  uiBoxPackEnd (hbox, &uiwidget);
-  uiwcontCopy (&manage->statusMsg, &uiwidget);
+  uiwidgetp = uiCreateLabel ("");
+  uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
+  uiBoxPackEnd (hbox, uiwidgetp);
+  manage->wcont [MANAGE_W_STATUS_MSG] = uiwidgetp;
 
-  manage->menubar = uiCreateMenubar ();
-  uiBoxPackStart (hbox, manage->menubar);
+  manage->wcont [MANAGE_W_MENUBAR] = uiCreateMenubar ();
+  uiBoxPackStart (hbox, manage->wcont [MANAGE_W_MENUBAR]);
 
-  manage->mainnotebook = uiCreateNotebook ();
-  uiNotebookTabPositionLeft (manage->mainnotebook);
-  uiBoxPackStartExpand (vbox, manage->mainnotebook);
+  manage->wcont [MANAGE_W_MAIN_NB] = uiCreateNotebook ();
+  uiNotebookTabPositionLeft (manage->wcont [MANAGE_W_MAIN_NB]);
+  uiBoxPackStartExpand (vbox, manage->wcont [MANAGE_W_MAIN_NB]);
 
   /* edit song lists */
   manageBuildUISongListEditor (manage);
 
   /* sequence editor */
-  manage->manageseq = manageSequenceAlloc (manage->window,
-      manage->options, &manage->errorMsg);
+  manage->manageseq = manageSequenceAlloc (manage->wcont [MANAGE_W_WINDOW],
+      manage->options, manage->wcont [MANAGE_W_ERROR_MSG]);
 
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   manageBuildUISequence (manage->manageseq, vbox);
   /* CONTEXT: managementui: notebook tab title: edit sequences */
-  uiCreateLabelOld (&uiwidget, _("Edit Sequences"));
-  uiNotebookAppendPage (manage->mainnotebook, vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Edit Sequences"));
+  uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
   uinbutilIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SEQ);
+  uiwcontFree (uiwidgetp);
 
   /* playlist management */
-  manage->managepl = managePlaylistAlloc (manage->window,
-      manage->options, &manage->errorMsg);
+  manage->managepl = managePlaylistAlloc (manage->wcont [MANAGE_W_WINDOW],
+      manage->options, manage->wcont [MANAGE_W_ERROR_MSG]);
 
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   manageBuildUIPlaylist (manage->managepl, vbox);
 
   /* CONTEXT: managementui: notebook tab title: playlist management */
-  uiCreateLabelOld (&uiwidget, _("Playlist Management"));
-  uiNotebookAppendPage (manage->mainnotebook, vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Playlist Management"));
+  uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
   uinbutilIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_PL);
+  uiwcontFree (uiwidgetp);
 
   /* music manager */
   manageBuildUIMusicManager (manage);
 
   /* update database */
-  manage->managedb = manageDbAlloc (manage->window,
-      manage->options, &manage->errorMsg, manage->conn, manage->processes);
+  manage->managedb = manageDbAlloc (manage->wcont [MANAGE_W_WINDOW],
+      manage->options, manage->wcont [MANAGE_W_ERROR_MSG], manage->conn, manage->processes);
 
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
   manageBuildUIUpdateDatabase (manage->managedb, vbox);
   /* CONTEXT: managementui: notebook tab title: update database */
-  uiCreateLabelOld (&uiwidget, _("Update Database"));
-  uiNotebookAppendPage (manage->mainnotebook, vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Update Database"));
+  uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
   uinbutilIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_OTHER);
+  uiwcontFree (uiwidgetp);
 
   x = nlistGetNum (manage->options, MANAGE_SIZE_X);
   y = nlistGetNum (manage->options, MANAGE_SIZE_Y);
-  uiWindowSetDefaultSize (manage->window, x, y);
+  uiWindowSetDefaultSize (manage->wcont [MANAGE_W_WINDOW], x, y);
 
   manage->callbacks [MANAGE_CB_MAIN_NB] = callbackInitLong (
       manageSwitchPageMain, manage);
-  uiNotebookSetCallback (manage->mainnotebook,
+  uiNotebookSetCallback (manage->wcont [MANAGE_W_MAIN_NB],
       manage->callbacks [MANAGE_CB_MAIN_NB]);
 
-  uiWidgetShowAll (manage->window);
+  uiWidgetShowAll (manage->wcont [MANAGE_W_WINDOW]);
 
   x = nlistGetNum (manage->options, MANAGE_POSITION_X);
   y = nlistGetNum (manage->options, MANAGE_POSITION_Y);
-  uiWindowMove (manage->window, x, y, -1);
+  uiWindowMove (manage->wcont [MANAGE_W_WINDOW], x, y, -1);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon_manage", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
@@ -821,7 +820,7 @@ manageInitializeUI (manageui_t *manage)
       manageCFPLPlaylistSelectHandler, manage);
 
   manage->samesong = samesongAlloc (manage->musicdb);
-  manage->uisongfilter = uisfInit (manage->window, manage->options,
+  manage->uisongfilter = uisfInit (manage->wcont [MANAGE_W_WINDOW], manage->options,
       SONG_FILTER_FOR_SELECTION);
 
   manage->slplayer = uiplayerInit (manage->progstate, manage->conn,
@@ -909,8 +908,8 @@ manageInitializeUI (manageui_t *manage)
 static void
 manageBuildUISongListEditor (manageui_t *manage)
 {
-  uiwcont_t   uiwidget;
   uibutton_t  *uibutton;
+  uiwcont_t   *uip;
   uiwcont_t   *uiwidgetp;
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
@@ -922,31 +921,33 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiWidgetSetAllMargins (vbox, 2);
 
   /* CONTEXT: managementui: notebook tab title: edit song lists */
-  uiCreateLabelOld (&uiwidget, _("Edit Song Lists"));
-  uiNotebookAppendPage (manage->mainnotebook, vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Edit Song Lists"));
+  uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
   uinbutilIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_SL);
+  uiwcontFree (uiwidgetp);
 
   /* song list editor: player */
   uiwidgetp = uiplayerBuildUI (manage->slplayer);
   uiBoxPackStart (vbox, uiwidgetp);
 
-  manage->slnotebook = uiCreateNotebook ();
-  uiBoxPackStartExpand (vbox, manage->slnotebook);
+  manage->wcont [MANAGE_W_SONGLIST_NB] = uiCreateNotebook ();
+  uiBoxPackStartExpand (vbox, manage->wcont [MANAGE_W_SONGLIST_NB]);
 
   /* song list editor: easy song list tab */
   mainhbox = uiCreateHorizBox ();
 
   /* CONTEXT: managementui: name of easy song list song selection tab */
-  uiCreateLabelOld (&uiwidget, _("Song List"));
-  uiNotebookAppendPage (manage->slnotebook, mainhbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Song List"));
+  uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], mainhbox, uiwidgetp);
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
-  uiwcontCopy (&manage->slezmusicqtabwidget, mainhbox);
+  manage->wcont [MANAGE_W_SL_EZ_MUSICQ_TAB] = mainhbox;
+  uiwcontFree (uiwidgetp);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStartExpand (mainhbox, hbox);
 
-  uiwidgetp = uimusicqBuildUI (manage->slezmusicq, manage->window, MUSICQ_SL,
-      &manage->errorMsg, manageValidateName);
+  uiwidgetp = uimusicqBuildUI (manage->slezmusicq, manage->wcont [MANAGE_W_WINDOW], MUSICQ_SL,
+      manage->wcont [MANAGE_W_ERROR_MSG], manageValidateName);
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
   uiwcontFree (vbox);
@@ -965,42 +966,42 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (vbox, uiwidgetp);
 
-  uiwidgetp = uisongselBuildUI (manage->slezsongsel, manage->window);
+  uiwidgetp = uisongselBuildUI (manage->slezsongsel, manage->wcont [MANAGE_W_WINDOW]);
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
   /* song list editor: music queue tab */
-  uiwidgetp = uimusicqBuildUI (manage->slmusicq, manage->window, MUSICQ_SL,
-      &manage->errorMsg, manageValidateName);
+  uip = uimusicqBuildUI (manage->slmusicq, manage->wcont [MANAGE_W_WINDOW], MUSICQ_SL,
+      manage->wcont [MANAGE_W_ERROR_MSG], manageValidateName);
   /* CONTEXT: managementui: name of song list notebook tab */
-  uiCreateLabelOld (&uiwidget, _("Song List"));
-  uiNotebookAppendPage (manage->slnotebook, uiwidgetp, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Song List"));
+  uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], uip, uiwidgetp);
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_SONGLIST);
-  manage->slmusicqtabwidget = uiwidgetp;
+  manage->wcont [MANAGE_W_SL_MUSICQ_TAB] = uiwidgetp;
 
   /* song list editor: song selection tab */
-  uiwidgetp = uisongselBuildUI (manage->slsongsel, manage->window);
+  uip = uisongselBuildUI (manage->slsongsel, manage->wcont [MANAGE_W_WINDOW]);
   /* CONTEXT: managementui: name of song selection notebook tab */
-  uiCreateLabelOld (&uiwidget, _("Song Selection"));
-  uiNotebookAppendPage (manage->slnotebook, uiwidgetp, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Song Selection"));
+  uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], uip, uiwidgetp);
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_OTHER);
-  manage->slsongseltabwidget = uiwidgetp;
+  manage->wcont [MANAGE_W_SONGSEL_TAB] = uiwidgetp;
 
   uimusicqPeerSonglistName (manage->slmusicq, manage->slezmusicq);
 
   /* song list editor: statistics tab */
-  uiwidgetp = manageBuildUIStats (manage->slstats);
+  uip = manageBuildUIStats (manage->slstats);
   /* CONTEXT: managementui: name of statistics tab */
-  uiCreateLabelOld (&uiwidget, _("Statistics"));
-  uiNotebookAppendPage (manage->slnotebook, uiwidgetp, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Statistics"));
+  uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], uip, uiwidgetp);
   uinbutilIDAdd (manage->slnbtabid, MANAGE_TAB_STATISTICS);
+  uiwcontFree (uiwidgetp);
 
   manage->callbacks [MANAGE_CB_SL_NB] = callbackInitLong (
       manageSwitchPageSonglist, manage);
-  uiNotebookSetCallback (manage->slnotebook, manage->callbacks [MANAGE_CB_SL_NB]);
+  uiNotebookSetCallback (manage->wcont [MANAGE_W_SONGLIST_NB], manage->callbacks [MANAGE_CB_SL_NB]);
 
   uiwcontFree (vbox);
   uiwcontFree (hbox);
-  uiwcontFree (mainhbox);
 }
 
 static int
@@ -1055,13 +1056,13 @@ manageMainLoop (void *tmanage)
       snprintf (tmp, sizeof (tmp), "%d", manage->songeditdbidx);
       connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
     }
-    uiLabelSetText (&manage->statusMsg, "");
+    uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], "");
     uiaaDialogClear (manage->uiaa);
     manage->applyadjstate = BDJ4_STATE_OFF;
   }
 
   if (manage->applyadjstate == BDJ4_STATE_START) {
-    uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
+    uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], manage->pleasewaitmsg);
     manage->applyadjstate = BDJ4_STATE_PROCESS;
   }
 
@@ -1080,14 +1081,14 @@ manageMainLoop (void *tmanage)
     manageSetSonglistName (manage, _("New Song List"));
 
     manageiTunesCreateDialog (manage);
-    uiDialogShow (manage->itunesSelectDialog);
+    uiDialogShow (manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG]);
 
-    uiLabelSetText (&manage->statusMsg, "");
+    uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], "");
     manage->impitunesstate = BDJ4_STATE_OFF;
   }
 
   if (manage->impitunesstate == BDJ4_STATE_START) {
-    uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
+    uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], manage->pleasewaitmsg);
     manage->impitunesstate = BDJ4_STATE_PROCESS;
   }
 
@@ -1216,15 +1217,15 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_WINDOW_FIND: {
-          uiWindowFind (manage->window);
+          uiWindowFind (manage->wcont [MANAGE_W_WINDOW]);
           break;
         }
         case MSG_DB_WAIT: {
-          uiLabelSetText (&manage->statusMsg, manage->pleasewaitmsg);
+          uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], manage->pleasewaitmsg);
           break;
         }
         case MSG_DB_WAIT_FINISH: {
-          uiLabelSetText (&manage->statusMsg, "");
+          uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], "");
           break;
         }
         case MSG_DB_PROGRESS: {
@@ -1383,12 +1384,12 @@ manageSongEditMenu (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
   if (! uiMenuInitialized (manage->songeditmenu)) {
-    manage->uiaa = uiaaInit (manage->window, manage->options);
+    manage->uiaa = uiaaInit (manage->wcont [MANAGE_W_WINDOW], manage->options);
     manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
         manageApplyAdjCallback, manage);
     uiaaSetResponseCallback (manage->uiaa, manage->callbacks [MANAGE_CB_APPLY_ADJ]);
 
-    menuitem = uiMenuAddMainItem (manage->menubar,
+    menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
         /* CONTEXT: managementui: menu selection: actions for song editor */
         manage->songeditmenu, _("Actions"));
     menu = uiCreateSubMenu (menuitem);
@@ -1441,7 +1442,7 @@ manageSongEditMenu (manageui_t *manage)
     /* CONTEXT: managementui: menu selection: song editor: restore original */
     menuitem = uiMenuCreateItem (menu, _("Restore Original"),
         manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG]);
-    manage->menuitemRestoreOriginal = menuitem;
+    manage->wcont [MANAGE_W_MENU_RESTORE_ORIG] = menuitem;
     if (manage->enablerestoreorig) {
       uiWidgetSetState (menuitem, UIWIDGET_ENABLE);
     } else {
@@ -1527,11 +1528,11 @@ manageSwitchToSongEditor (void *udata)
     /* switching to the music manager tab will also apply the appropriate */
     /* song filter and load the editor */
     pagenum = uinbutilIDGetPage (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
-    uiNotebookSetPage (manage->mainnotebook, pagenum);
+    uiNotebookSetPage (manage->wcont [MANAGE_W_MAIN_NB], pagenum);
   }
   if (manage->mmlasttab != MANAGE_TAB_SONGEDIT) {
     pagenum = uinbutilIDGetPage (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
-    uiNotebookSetPage (manage->mmnotebook, pagenum);
+    uiNotebookSetPage (manage->wcont [MANAGE_W_MM_NB], pagenum);
   }
 
   logProcEnd (LOG_PROC, "manageSwitchToSongEditor", "");
@@ -1601,13 +1602,13 @@ manageSetEditMenuItems (manageui_t *manage)
   } else {
     manage->enablerestoreorig = false;
   }
-  if (manage->menuitemRestoreOriginal == NULL) {
+  if (manage->wcont [MANAGE_W_MENU_RESTORE_ORIG] == NULL) {
     return;
   }
   if (hasorig) {
-    uiWidgetSetState (manage->menuitemRestoreOriginal, UIWIDGET_ENABLE);
+    uiWidgetSetState (manage->wcont [MANAGE_W_MENU_RESTORE_ORIG], UIWIDGET_ENABLE);
   } else {
-    uiWidgetSetState (manage->menuitemRestoreOriginal, UIWIDGET_DISABLE);
+    uiWidgetSetState (manage->wcont [MANAGE_W_MENU_RESTORE_ORIG], UIWIDGET_DISABLE);
   }
 }
 
@@ -1807,12 +1808,12 @@ manageSonglistImportiTunes (void *udata)
   }
 
   manage->importitunesactive = true;
-  uiLabelSetText (&manage->errorMsg, "");
-  uiLabelSetText (&manage->statusMsg, "");
+  uiLabelSetText (manage->wcont [MANAGE_W_ERROR_MSG], "");
+  uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], "");
   if (! itunesConfigured ()) {
     /* CONTEXT: manage ui: status message: itunes is not configured */
     snprintf (tbuff, sizeof (tbuff), _("%s is not configured."), ITUNES_NAME);
-    uiLabelSetText (&manage->errorMsg, tbuff);
+    uiLabelSetText (manage->wcont [MANAGE_W_ERROR_MSG], tbuff);
     return UICB_CONT;
   }
 
@@ -1829,19 +1830,18 @@ manageiTunesCreateDialog (manageui_t *manage)
 {
   uiwcont_t   *vbox;
   uiwcont_t   *hbox;
-  uiwcont_t   uiwidget;
   uiwcont_t   *uiwidgetp;
   char        tbuff [50];
 
   logProcBegin (LOG_PROC, "manageiTunesCreateDialog");
-  if (manage->itunesSelectDialog != NULL) {
+  if (manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG] != NULL) {
     logProcEnd (LOG_PROC, "manageiTunesCreateDialog", "already");
     return;
   }
 
   /* CONTEXT: import from itunes: title for the dialog */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), ITUNES_NAME);
-  manage->itunesSelectDialog = uiCreateDialog (manage->window,
+  manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG] = uiCreateDialog (manage->wcont [MANAGE_W_WINDOW],
       manage->callbacks [MANAGE_CB_ITUNES_DIALOG],
       tbuff,
       /* CONTEXT: import from itunes: closes the dialog */
@@ -1855,18 +1855,19 @@ manageiTunesCreateDialog (manageui_t *manage)
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
-  uiDialogPackInDialog (manage->itunesSelectDialog, vbox);
+  uiDialogPackInDialog (manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG], vbox);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist) */
   snprintf (tbuff, sizeof (tbuff), _("%s Playlist"), ITUNES_NAME);
-  uiCreateColonLabelOld (&uiwidget, tbuff);
-  uiBoxPackStart (hbox, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (tbuff);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiComboboxCreate (manage->itunessel,
-      manage->itunesSelectDialog, "",
+      manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG], "",
       manage->callbacks [MANAGE_CB_ITUNES_SEL], manage);
   manageiTunesDialogCreateList (manage);
   uiBoxPackStart (hbox, uiwidgetp);
@@ -1896,6 +1897,7 @@ manageiTunesDialogCreateList (manageui_t *manage)
   }
   /* what text is best to use for 'no selection'? */
   uiDropDownSetList (manage->itunessel, pllist, "");
+  slistFree (pllist);
   logProcEnd (LOG_PROC, "manageiTunesCreateList", "");
 }
 
@@ -1915,14 +1917,14 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: itunes: del window");
-      uiwcontFree (manage->itunesSelectDialog);
-      manage->itunesSelectDialog = NULL;
+      uiwcontFree (manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG]);
+      manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG] = NULL;
       manage->importitunesactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: itunes: close window");
-      uiWidgetHide (manage->itunesSelectDialog);
+      uiWidgetHide (manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG]);
       manage->importitunesactive = false;
       break;
     }
@@ -1959,7 +1961,7 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
       }
 
       manageSetSonglistName (manage, plname);
-      uiWidgetHide (manage->itunesSelectDialog);
+      uiWidgetHide (manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG]);
       manage->importitunesactive = false;
       break;
     }
@@ -1974,44 +1976,47 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
 void
 manageBuildUIMusicManager (manageui_t *manage)
 {
-  uiwcont_t          *uiwidgetp;
-  uiwcont_t          *vbox;
-  uiwcont_t          uiwidget;
+  uiwcont_t  *uip;
+  uiwcont_t  *uiwidgetp;
+  uiwcont_t  *vbox;
 
   logProcBegin (LOG_PROC, "manageBuildUIMusicManager");
   /* music manager */
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 2);
   /* CONTEXT: managementui: name of music manager notebook tab */
-  uiCreateLabelOld (&uiwidget, _("Music Manager"));
-  uiNotebookAppendPage (manage->mainnotebook, vbox, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Music Manager"));
+  uiNotebookAppendPage (manage->wcont [MANAGE_W_MAIN_NB], vbox, uiwidgetp);
   uinbutilIDAdd (manage->mainnbtabid, MANAGE_TAB_MAIN_MM);
+  uiwcontFree (uiwidgetp);
 
   /* music manager: player */
   uiwidgetp = uiplayerBuildUI (manage->mmplayer);
   uiBoxPackStart (vbox, uiwidgetp);
 
-  manage->mmnotebook = uiCreateNotebook ();
-  uiBoxPackStartExpand (vbox, manage->mmnotebook);
+  manage->wcont [MANAGE_W_MM_NB] = uiCreateNotebook ();
+  uiBoxPackStartExpand (vbox, manage->wcont [MANAGE_W_MM_NB]);
 
   /* music manager: song selection tab*/
-  uiwidgetp = uisongselBuildUI (manage->mmsongsel, manage->window);
+  uip = uisongselBuildUI (manage->mmsongsel, manage->wcont [MANAGE_W_WINDOW]);
   uiWidgetExpandHoriz (uiwidgetp);
   /* CONTEXT: managementui: name of song selection notebook tab */
-  uiCreateLabelOld (&uiwidget, _("Music Manager"));
-  uiNotebookAppendPage (manage->mmnotebook, uiwidgetp, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Music Manager"));
+  uiNotebookAppendPage (manage->wcont [MANAGE_W_MM_NB], uip, uiwidgetp);
   uinbutilIDAdd (manage->mmnbtabid, MANAGE_TAB_MM);
+  uiwcontFree (uiwidgetp);
 
   /* music manager: song editor tab */
-  uiwidgetp = uisongeditBuildUI (manage->mmsongsel, manage->mmsongedit, manage->window, &manage->errorMsg);
+  uip = uisongeditBuildUI (manage->mmsongsel, manage->mmsongedit, manage->wcont [MANAGE_W_WINDOW], manage->wcont [MANAGE_W_ERROR_MSG]);
   /* CONTEXT: managementui: name of song editor notebook tab */
-  uiCreateLabelOld (&uiwidget, _("Song Editor"));
-  uiNotebookAppendPage (manage->mmnotebook, uiwidgetp, &uiwidget);
+  uiwidgetp = uiCreateLabel (_("Song Editor"));
+  uiNotebookAppendPage (manage->wcont [MANAGE_W_MM_NB], uip, uiwidgetp);
   uinbutilIDAdd (manage->mmnbtabid, MANAGE_TAB_SONGEDIT);
+  uiwcontFree (uiwidgetp);
 
   manage->callbacks [MANAGE_CB_MM_NB] = callbackInitLong (
       manageSwitchPageMM, manage);
-  uiNotebookSetCallback (manage->mmnotebook, manage->callbacks [MANAGE_CB_MM_NB]);
+  uiNotebookSetCallback (manage->wcont [MANAGE_W_MM_NB], manage->callbacks [MANAGE_CB_MM_NB]);
 
   uiwcontFree (vbox);
 
@@ -2026,7 +2031,7 @@ manageMusicManagerMenu (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageMusicManagerMenu");
   if (! uiMenuInitialized (manage->mmmenu)) {
-    menuitem = uiMenuAddMainItem (manage->menubar,
+    menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
         /* CONTEXT: managementui: menu selection: actions for music manager */
         manage->mmmenu, _("Actions"));
     menu = uiCreateSubMenu (menuitem);
@@ -2074,7 +2079,7 @@ manageSonglistMenu (manageui_t *manage)
   }
 
   /* edit */
-  menuitem = uiMenuAddMainItem (manage->menubar,
+  menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
       /* CONTEXT: managementui: menu selection: song list: edit menu */
       manage->slmenu, _("Edit"));
   menu = uiCreateSubMenu (menuitem);
@@ -2106,7 +2111,7 @@ manageSonglistMenu (manageui_t *manage)
 
   /* actions */
   uiwcontFree (menu);
-  menuitem = uiMenuAddMainItem (manage->menubar,
+  menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
       /* CONTEXT: managementui: menu selection: actions for song list */
       manage->slmenu, _("Actions"));
   menu = uiCreateSubMenu (menuitem);
@@ -2140,7 +2145,7 @@ manageSonglistMenu (manageui_t *manage)
 
   /* export */
   uiwcontFree (menu);
-  menuitem = uiMenuAddMainItem (manage->menubar,
+  menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
       /* CONTEXT: managementui: menu selection: export actions for song list */
       manage->slmenu, _("Export"));
   menu = uiCreateSubMenu (menuitem);
@@ -2161,7 +2166,7 @@ manageSonglistMenu (manageui_t *manage)
 
   /* import */
   uiwcontFree (menu);
-  menuitem = uiMenuAddMainItem (manage->menubar,
+  menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
       /* CONTEXT: managementui: menu selection: import actions for song list */
       manage->slmenu, _("Import"));
   menu = uiCreateSubMenu (menuitem);
@@ -2190,7 +2195,7 @@ manageSonglistMenu (manageui_t *manage)
 
   /* options */
   uiwcontFree (menu);
-  menuitem = uiMenuAddMainItem (manage->menubar,
+  menuitem = uiMenuAddMainItem (manage->wcont [MANAGE_W_MENUBAR],
       /* CONTEXT: managementui: menu selection: song list: options menu */
       manage->slmenu, _("Options"));
   menu = uiCreateSubMenu (menuitem);
@@ -2222,7 +2227,7 @@ manageSonglistLoad (void *udata)
   logProcBegin (LOG_PROC, "manageSonglistLoad");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: load songlist");
   manageSonglistSave (manage);
-  selectFileDialog (SELFILE_SONGLIST, manage->window, manage->options,
+  selectFileDialog (SELFILE_SONGLIST, manage->wcont [MANAGE_W_WINDOW], manage->options,
       manage->callbacks [MANAGE_CB_SL_SEL_FILE]);
   logProcEnd (LOG_PROC, "manageSonglistLoad", "");
   return UICB_CONT;
@@ -2252,7 +2257,7 @@ manageSonglistCopy (void *udata)
 
   /* CONTEXT: managementui: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
-  if (manageCreatePlaylistCopy (&manage->errorMsg, oname, newname)) {
+  if (manageCreatePlaylistCopy (manage->wcont [MANAGE_W_ERROR_MSG], oname, newname)) {
     manageSetSonglistName (manage, newname);
     manageLoadPlaylistCB (manage, newname);
     manage->slbackupcreated = false;
@@ -2296,7 +2301,7 @@ manageSonglistDelete (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
   oname = uimusicqGetSonglistName (manage->slmusicq);
 
-  manageDeletePlaylist (&manage->errorMsg, oname);
+  manageDeletePlaylist (manage->wcont [MANAGE_W_ERROR_MSG], oname);
   /* no save */
   dataFree (manage->sloldname);
   manage->sloldname = NULL;
@@ -2343,11 +2348,11 @@ manageSonglistCreateFromPlaylist (void *udata)
   manageSongListCFPLCreateDialog (manage);
   uiDropDownSelectionSetNum (manage->cfplsel, -1);
 
-  uiDialogShow (manage->cfplDialog);
+  uiDialogShow (manage->wcont [MANAGE_W_CFPL_DIALOG]);
 
   x = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_X);
   y = nlistGetNum (manage->options, MANAGE_CFPL_POSITION_Y);
-  uiWindowMove (manage->cfplDialog, x, y, -1);
+  uiWindowMove (manage->wcont [MANAGE_W_CFPL_DIALOG], x, y, -1);
 
   logProcEnd (LOG_PROC, "manageSonglistCreateFromPlaylist", "");
   return UICB_CONT;
@@ -2358,19 +2363,18 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
 {
   uiwcont_t  *vbox;
   uiwcont_t  *hbox;
-  uiwcont_t  uiwidget;
   uiwcont_t  *uiwidgetp;
   uiwcont_t  *szgrp;  // labels
 
   logProcBegin (LOG_PROC, "manageSongListCFPLCreateDialog");
-  if (manage->cfplDialog != NULL) {
+  if (manage->wcont [MANAGE_W_CFPL_DIALOG] != NULL) {
     logProcEnd (LOG_PROC, "manageSongListCFPLCreateDialog", "already");
     return;
   }
 
   szgrp = uiCreateSizeGroupHoriz ();
 
-  manage->cfplDialog = uiCreateDialog (manage->window,
+  manage->wcont [MANAGE_W_CFPL_DIALOG] = uiCreateDialog (manage->wcont [MANAGE_W_WINDOW],
       manage->callbacks [MANAGE_CB_CFPL_DIALOG],
       /* CONTEXT: create from playlist: title for the dialog */
       _("Create from Playlist"),
@@ -2385,17 +2389,18 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
-  uiDialogPackInDialog (manage->cfplDialog, vbox);
+  uiDialogPackInDialog (manage->wcont [MANAGE_W_CFPL_DIALOG], vbox);
 
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: create from playlist: select the playlist to use */
-  uiCreateColonLabelOld (&uiwidget, _("Playlist"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Playlist"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiComboboxCreate (manage->cfplsel, manage->cfplDialog, "",
+  uiwidgetp = uiComboboxCreate (manage->cfplsel, manage->wcont [MANAGE_W_CFPL_DIALOG], "",
       manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL], manage);
   manageCFPLCreatePlaylistList (manage);
   uiBoxPackStart (hbox, uiwidgetp);
@@ -2405,9 +2410,10 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: create from playlist: set the maximum time for the song list */
-  uiCreateColonLabelOld (&uiwidget, _("Time Limit"));
-  uiBoxPackStart (hbox, &uiwidget);
-  uiSizeGroupAdd (szgrp, &uiwidget);
+  uiwidgetp = uiCreateColonLabel (_("Time Limit"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiSizeGroupAdd (szgrp, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiSpinboxTimeCreate (manage->cfpltmlimit, manage, NULL);
   uiSpinboxTimeSetValue (manage->cfpltmlimit, 3 * 60 * 1000);
@@ -2449,21 +2455,21 @@ manageCFPLResponseHandler (void *udata, long responseid)
   int         x, y, ws;
 
   logProcBegin (LOG_PROC, "manageCFPLResponseHandler");
-  uiWindowGetPosition (manage->cfplDialog, &x, &y, &ws);
+  uiWindowGetPosition (manage->wcont [MANAGE_W_CFPL_DIALOG], &x, &y, &ws);
   nlistSetNum (manage->options, MANAGE_CFPL_POSITION_X, x);
   nlistSetNum (manage->options, MANAGE_CFPL_POSITION_Y, y);
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: del window");
-      uiwcontFree (manage->cfplDialog);
-      manage->cfplDialog = NULL;
+      uiwcontFree (manage->wcont [MANAGE_W_CFPL_DIALOG]);
+      manage->wcont [MANAGE_W_CFPL_DIALOG] = NULL;
       manage->createfromplaylistactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: close window");
-      uiWidgetHide (manage->cfplDialog);
+      uiWidgetHide (manage->wcont [MANAGE_W_CFPL_DIALOG]);
       manage->createfromplaylistactive = false;
       break;
     }
@@ -2510,7 +2516,7 @@ manageCFPLResponseHandler (void *udata, long responseid)
       snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
       connSendMessage (manage->conn, ROUTE_MAIN, MSG_PL_CLEAR_QUEUE, tbuff);
       manage->slbackupcreated = false;
-      uiWidgetHide (manage->cfplDialog);
+      uiWidgetHide (manage->wcont [MANAGE_W_CFPL_DIALOG]);
       tnm = uimusicqGetSonglistName (manage->slmusicq);
       manageLoadPlaylistCB (manage, tnm);
       mdfree (tnm);
@@ -2667,15 +2673,15 @@ manageSetEasySonglist (manageui_t *manage)
   logProcBegin (LOG_PROC, "manageSetEasySonglist");
   val = nlistGetNum (manage->options, MANAGE_EASY_SONGLIST);
   if (val) {
-    uiWidgetShowAll (&manage->slezmusicqtabwidget);
-    uiWidgetHide (manage->slmusicqtabwidget);
-    uiWidgetHide (manage->slsongseltabwidget);
-    uiNotebookSetPage (manage->slnotebook, 0);
+    uiWidgetShowAll (manage->wcont [MANAGE_W_SL_EZ_MUSICQ_TAB]);
+    uiWidgetHide (manage->wcont [MANAGE_W_SL_MUSICQ_TAB]);
+    uiWidgetHide (manage->wcont [MANAGE_W_SONGSEL_TAB]);
+    uiNotebookSetPage (manage->wcont [MANAGE_W_SONGLIST_NB], 0);
   } else {
-    uiWidgetHide (&manage->slezmusicqtabwidget);
-    uiWidgetShowAll (manage->slmusicqtabwidget);
-    uiWidgetShowAll (manage->slsongseltabwidget);
-    uiNotebookSetPage (manage->slnotebook, 1);
+    uiWidgetHide (manage->wcont [MANAGE_W_SL_EZ_MUSICQ_TAB]);
+    uiWidgetShowAll (manage->wcont [MANAGE_W_SL_MUSICQ_TAB]);
+    uiWidgetShowAll (manage->wcont [MANAGE_W_SONGSEL_TAB]);
+    uiNotebookSetPage (manage->wcont [MANAGE_W_SONGLIST_NB], 1);
   }
   logProcEnd (LOG_PROC, "manageSetEasySonglist", "");
 }
@@ -2861,7 +2867,7 @@ manageSonglistExportM3U (void *udata)
   /* CONTEXT: managementui: song list export: title of save dialog */
   snprintf (tbuff, sizeof (tbuff), _("Export as M3U Playlist"));
   snprintf (tname, sizeof (tname), "%s.m3u", slname);
-  selectdata = uiDialogCreateSelect (manage->window,
+  selectdata = uiDialogCreateSelect (manage->wcont [MANAGE_W_WINDOW],
       tbuff, sysvarsGetStr (SV_BDJ4_DIR_DATATOP), tname,
       /* CONTEXT: managementui: song list export: name of file save type */
       _("M3U Files"), "audio/x-mpegurl");
@@ -2901,7 +2907,7 @@ manageSonglistImportM3U (void *udata)
   manageSetSonglistName (manage, _("New Song List"));
   strlcpy (nplname, manage->sloldname, sizeof (nplname));
 
-  selectdata = uiDialogCreateSelect (manage->window,
+  selectdata = uiDialogCreateSelect (manage->wcont [MANAGE_W_WINDOW],
       /* CONTEXT: managementui: song list import: title of dialog */
       _("Import M3U"), sysvarsGetStr (SV_BDJ4_DIR_DATATOP), NULL,
       /* CONTEXT: managementui: song list import: name of file type */
@@ -2992,8 +2998,8 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
   uinbtabid_t  *nbtabid = NULL;
 
   logProcBegin (LOG_PROC, "manageSwitchPage");
-  uiLabelSetText (&manage->errorMsg, "");
-  uiLabelSetText (&manage->statusMsg, "");
+  uiLabelSetText (manage->wcont [MANAGE_W_ERROR_MSG], "");
+  uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], "");
 
   /* need to know which notebook is selected so that the correct id value */
   /* can be retrieved */
@@ -3063,13 +3069,13 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
     case MANAGE_TAB_MAIN_PL: {
       logMsg (LOG_DBG, LOG_MAIN, "new tab: main-pl");
       managePlaylistLoadCheck (manage->managepl);
-      manage->currmenu = managePlaylistMenu (manage->managepl, manage->menubar);
+      manage->currmenu = managePlaylistMenu (manage->managepl, manage->wcont [MANAGE_W_MENUBAR]);
       break;
     }
     case MANAGE_TAB_MAIN_SEQ: {
       logMsg (LOG_DBG, LOG_MAIN, "new tab: main-seq");
       manageSequenceLoadCheck (manage->manageseq);
-      manage->currmenu = manageSequenceMenu (manage->manageseq, manage->menubar);
+      manage->currmenu = manageSequenceMenu (manage->manageseq, manage->wcont [MANAGE_W_MENUBAR]);
       break;
     }
     default: {

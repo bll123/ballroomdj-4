@@ -65,6 +65,7 @@ uiaaInit (uiwcont_t *windowp, nlist_t *opts)
   uiaa->parentwin = windowp;
   uiaa->options = opts;
   uiaa->song = NULL;
+  uiaa->statusMsg = NULL;
   uiaa->cbTrim = NULL;
   uiaa->cbNorm = NULL;
   uiaa->cbAdjust = NULL;
@@ -86,6 +87,8 @@ void
 uiaaFree (uiaa_t *uiaa)
 {
   if (uiaa != NULL) {
+    uiDialogDestroy (uiaa->aaDialog);
+    uiaaDialogClear (uiaa);
     uiwcontFree (uiaa->cbTrim);
     uiwcontFree (uiaa->cbNorm);
     uiwcontFree (uiaa->cbAdjust);
@@ -95,8 +98,6 @@ uiaaFree (uiaa_t *uiaa)
     if (uiaa->song != NULL) {
       songFree (uiaa->song);
     }
-    uiDialogDestroy (uiaa->aaDialog);
-    uiaaDialogClear (uiaa);
     mdfree (uiaa);
   }
 }
