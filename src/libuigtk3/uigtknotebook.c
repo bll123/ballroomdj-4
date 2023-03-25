@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include <ctype.h>
 #include <math.h>
 
@@ -33,7 +32,6 @@ uiCreateNotebook (void)
   GtkWidget   *widget;
 
   widget = gtk_notebook_new ();
-  assert (widget != NULL);
   gtk_notebook_set_show_border (GTK_NOTEBOOK (widget), TRUE);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz * 2);
   gtk_widget_set_hexpand (widget, TRUE);

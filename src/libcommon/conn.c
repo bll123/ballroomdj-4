@@ -10,7 +10,6 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#include <assert.h>
 
 #include "bdjvars.h"
 #include "conn.h"
@@ -47,9 +46,11 @@ connInit (bdjmsgroute_t routefrom)
   conn_t     *conn;
 
   conn = mdmalloc (sizeof (conn_t) * ROUTE_MAX);
-  assert (conn != NULL);
 
-  assert (bdjvarsIsInitialized () == true);
+  if (bdjvarsIsInitialized () != true) {
+    fprintf (stderr, "ERR: connInit called before bdjvars-init\n");
+    return NULL;
+  }
 
   if (! initialized) {
     connports [ROUTE_NONE] = 0;

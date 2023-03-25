@@ -14,7 +14,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdjstring.h"
@@ -148,7 +147,6 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
     snprintf (pidstr, sizeof (pidstr), "%"PRId64, (int64_t) pid);
     len = strnlen (pidstr, sizeof (pidstr));
     rwlen = write (fd, pidstr, len);
-    assert (rwlen == (ssize_t) len);
     close (fd);
   }
   return fd;

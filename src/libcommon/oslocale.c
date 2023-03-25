@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #include <locale.h>
 
 #if _hdr_winsock2

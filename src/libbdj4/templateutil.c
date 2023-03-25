@@ -11,7 +11,6 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <assert.h>
 #include <ctype.h>
 
 #include "bdj4.h"

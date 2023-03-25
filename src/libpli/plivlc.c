@@ -11,7 +11,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #include <math.h>
 
 #include "pli.h"
@@ -53,7 +52,6 @@ pliiInit (const char *volpkg, const char *sinkname)
   char      * vlcOptions [5];
 
   pliData = mdmalloc (sizeof (plidata_t));
-  assert (pliData != NULL);
 
   vlcOptions [0] = NULL;
   pliData->plData = vlcInit (VLC_DFLT_OPT_SZ, vlcDefaultOptions, vlcOptions);

@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "autosel.h"
@@ -56,7 +55,6 @@ autoselAlloc (void)
   }
 
   autosel = mdmalloc (sizeof (autosel_t));
-  assert (autosel != NULL);
 
   autosel->df = datafileAllocParse ("autosel", DFTYPE_KEY_VAL, fname,
       autoseldfkeys, AUTOSEL_KEY_MAX);

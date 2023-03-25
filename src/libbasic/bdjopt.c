@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdj4intl.h"
@@ -135,7 +134,6 @@ bdjoptInit (void)
   }
 
   bdjopt = mdmalloc (sizeof (bdjopt_t));
-  assert (bdjopt != NULL);
   bdjopt->currprofile = 0;
   bdjopt->bdjoptList = NULL;
 

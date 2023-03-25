@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -33,7 +32,6 @@ filedataReadAll (const char *fname, size_t *rlen)
   fh = fileopOpen (fname, "r");
   if (fh != NULL) {
     data = mdmalloc (len + 1);
-    assert (data != NULL);
     len = fread (data, 1, len, fh);
     data [len] = '\0';
     fclose (fh);
@@ -67,7 +65,6 @@ filedataReplace (char *data, size_t *dlen, const char *target, const char *repl)
   nlen = *dlen;
   nlenalloc = nlen;
   ndata = mdmalloc (nlenalloc + 1);
-  assert (ndata != NULL);
   lastp = data;
 
   nlenpos = 0;
@@ -76,7 +73,6 @@ filedataReplace (char *data, size_t *dlen, const char *target, const char *repl)
     tlen = nlenalloc + (repllen - targetlen);
     if (tlen > nlenalloc) {
       ndata = mdrealloc (ndata, tlen + 1);
-      assert (ndata != NULL);
       nlenalloc = tlen;
     }
     nlen += (repllen - targetlen);

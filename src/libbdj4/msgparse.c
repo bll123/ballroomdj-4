@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #include <getopt.h>
 #include <unistd.h>
 
@@ -62,7 +61,6 @@ msgparseMusicQueueData (char *args)
   idx = 1;
   while (p != NULL) {
     musicqupditem = mdmalloc (sizeof (mp_musicqupditem_t));
-    assert (musicqupditem != NULL);
     musicqupditem->dispidx = atoi (p);
 
     p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);

@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 
 #include "mdebug.h"
 #include "pli.h"
@@ -22,7 +21,6 @@ pliiInit (const char *volpkg, const char *sinkname)
   plidata_t *pliData;
 
   pliData = mdmalloc (sizeof (plidata_t));
-  assert (pliData != NULL);
   pliData->plData = NULL;
   pliData->duration = 20000;
   pliData->playTime = 0;

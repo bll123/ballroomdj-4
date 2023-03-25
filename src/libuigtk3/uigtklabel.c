@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
 #include <gtk/gtk.h>
 
@@ -51,7 +50,6 @@ uiCreateLabelOld (uiwcont_t *uiwidget, const char *label)
   GtkWidget *widget;
 
   widget = gtk_label_new (label);
-  assert (widget != NULL);
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_widget_set_halign (widget, GTK_ALIGN_START);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
@@ -67,7 +65,6 @@ uiCreateColonLabelOld (uiwcont_t *uiwidget, const char *label)
 
   snprintf (tbuff, sizeof (tbuff), "%s:", label);
   widget = gtk_label_new (tbuff);
-  assert (widget != NULL);
   gtk_label_set_xalign (GTK_LABEL (widget), 0.0);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);

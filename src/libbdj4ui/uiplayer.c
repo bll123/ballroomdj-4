@@ -10,7 +10,6 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#include <assert.h>
 #include <math.h>
 
 #include "bdj4.h"
@@ -148,7 +147,6 @@ uiplayerInit (progstate_t *progstate, conn_t *conn, musicdb_t *musicdb)
 
   logProcBegin (LOG_PROC, "uiplayerInit");
   uiplayer = mdmalloc (sizeof (uiplayer_t));
-  assert (uiplayer != NULL);
   uiplayer->progstate = progstate;
   uiplayer->conn = conn;
   uiplayer->musicdb = musicdb;

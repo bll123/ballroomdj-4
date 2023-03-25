@@ -12,7 +12,6 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#include <assert.h>
 
 #include "ilist.h"
 #include "log.h"
@@ -57,7 +56,6 @@ progstateInit (char *progtag)
   char            tbuff [40];
 
   progstate = mdmalloc (sizeof (progstate_t));
-  assert (progstate != NULL);
   progstate->programState = STATE_NOT_RUNNING;
   for (programstate_t i = STATE_NOT_RUNNING; i < STATE_MAX; ++i) {
     snprintf (tbuff, sizeof (tbuff), "progstate-cb-%d", i);

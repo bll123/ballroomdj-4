@@ -9,7 +9,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
-#include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>

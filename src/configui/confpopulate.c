@@ -9,7 +9,6 @@
 #include <string.h>
 #include <inttypes.h>
 #include <errno.h>
-#include <assert.h>
 #include <math.h>
 
 #include "bdj4.h"

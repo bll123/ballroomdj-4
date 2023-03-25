@@ -33,7 +33,6 @@
 #include <string.h>
 #include <inttypes.h>
 #include <errno.h>
-#include <assert.h>
 #include <signal.h>
 
 #include "audiofile.h"
@@ -385,7 +384,6 @@ dbupdateProcessing (void *udata)
           MUSICDB_TMP_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
       fileopDelete (tbuff);
       dbupdate->newmusicdb = dbOpen (tbuff);
-      assert (dbupdate->newmusicdb != NULL);
       dbStartBatch (dbupdate->newmusicdb);
     } else {
       dbStartBatch (dbupdate->musicdb);

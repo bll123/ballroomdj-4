@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "datafile.h"
@@ -49,7 +48,6 @@ dispselAlloc (void)
 
 
   dispsel = mdmalloc (sizeof (dispsel_t));
-  assert (dispsel != NULL);
 
   for (dispselsel_t i = 0; i < DISP_SEL_MAX; ++i) {
     dispsel->dispsel [i] = NULL;

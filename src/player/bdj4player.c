@@ -16,7 +16,6 @@
 #include <string.h>
 #include <inttypes.h>
 #include <errno.h>
-#include <assert.h>
 #include <getopt.h>
 #include <ctype.h>
 #include <unistd.h>
@@ -241,7 +240,6 @@ main (int argc, char *argv[])
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "volume interface: %s", bdjoptGetStr (OPT_M_VOLUME_INTFC));
   playerData.volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
-  assert (playerData.volume != NULL);
 
   playerInitSinklist (&playerData);
 
@@ -913,9 +911,7 @@ playerSongPrep (playerdata_t *playerData, char *args)
   }
 
   npq = mdmalloc (sizeof (prepqueue_t));
-  assert (npq != NULL);
   npq->songname = mdstrdup (p);
-  assert (npq->songname != NULL);
   logMsg (LOG_DBG, LOG_BASIC, "prep request: %s", npq->songname);
   npq->songfullpath = songutilFullFileName (npq->songname);
 
@@ -945,7 +941,6 @@ playerSongPrep (playerdata_t *playerData, char *args)
 
   songMakeTempName (playerData, npq->songname, stname, sizeof (stname));
   npq->tempname = mdstrdup (stname);
-  assert (npq->tempname != NULL);
   queuePush (playerData->prepRequestQueue, npq);
   logMsg (LOG_DBG, LOG_MAIN, "prep-req-add: %ld %s r:%d p:%d", npq->uniqueidx, npq->songname, queueGetCount (playerData->prepRequestQueue), queueGetCount (playerData->prepQueue));
   logProcEnd (LOG_PROC, "playerSongPrep", "");

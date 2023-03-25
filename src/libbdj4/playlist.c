@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdj4intl.h"
@@ -823,7 +822,6 @@ playlistSetSongFilter (playlist_t *pl)
 
   logMsg (LOG_DBG, LOG_SONGSEL, "initializing song filter");
   pl->songfilter = songfilterAlloc ();
-  assert (pl->songfilter != NULL);
   songfilterSetNum (pl->songfilter, SONG_FILTER_STATUS_PLAYABLE,
       SONG_FILTER_FOR_PLAYBACK);
 

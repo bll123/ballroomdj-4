@@ -11,7 +11,6 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <assert.h>
 #include <ctype.h>
 
 #include "bdj4.h"
@@ -53,7 +52,6 @@ orgoptAlloc (void)
   }
 
   orgopt = mdmalloc (sizeof (orgopt_t));
-  assert (orgopt != NULL);
 
   orgopt->df = datafileAllocParse ("org", DFTYPE_LIST, path, NULL, 0);
   dflist = datafileGetList (orgopt->df);

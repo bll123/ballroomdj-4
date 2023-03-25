@@ -10,7 +10,6 @@
 #include <string.h>
 #include <inttypes.h>
 #include <errno.h>
-#include <assert.h>
 
 #include "bdjmsg.h"
 #include "log.h"
@@ -60,7 +59,6 @@ sockhStartServer (uint16_t listenPort)
   sockserver_t  *sockserver;
 
   sockserver = mdmalloc (sizeof (sockserver_t));
-  assert (sockserver != NULL);
   sockserver->listenSock = INVALID_SOCKET;
   sockserver->si = NULL;
 

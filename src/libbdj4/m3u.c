@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <inttypes.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdjopt.h"

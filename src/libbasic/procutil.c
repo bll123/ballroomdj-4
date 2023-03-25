@@ -12,7 +12,6 @@
 #include <inttypes.h>
 #include <errno.h>
 #include <unistd.h>
-#include <assert.h>
 #include <signal.h>
 
 #if _hdr_winsock2
@@ -98,7 +97,6 @@ procutilStart (const char *fn, int profile, loglevel_t loglvl,
 
 
   process = mdmalloc (sizeof (procutil_t));
-  assert (process != NULL);
   process->pid = 0;
   process->hasHandle = false;
   process->started = false;

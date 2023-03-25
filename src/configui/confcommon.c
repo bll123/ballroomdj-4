@@ -9,7 +9,6 @@
 #include <string.h>
 #include <inttypes.h>
 #include <errno.h>
-#include <assert.h>
 #include <getopt.h>
 #include <unistd.h>
 #include <math.h>
@@ -177,7 +176,6 @@ confuiUpdateOrgExamples (confuigui_t *gui, char *orgpath)
 
   logProcBegin (LOG_PROC, "confuiUpdateOrgExamples");
   org = orgAlloc (orgpath);
-  assert (org != NULL);
 
   data = "FILE\n..none\nDISC\n..1\nTRACKNUMBER\n..1\nALBUM\n..Smooth\nALBUMARTIST\n..Santana\nARTIST\n..Santana\nDANCE\n..Cha Cha\nGENRE\n..Ballroom Dance\nTITLE\n..Smooth\n";
   uiwidgetp = gui->uiitem [CONFUI_WIDGET_AO_EXAMPLE_1].uiwidgetp;
@@ -458,7 +456,6 @@ confuiUpdateOrgExample (org_t *org, char *data, uiwcont_t *uiwidgetp)
   logProcBegin (LOG_PROC, "confuiUpdateOrgExample");
   tdata = mdstrdup (data);
   song = songAlloc ();
-  assert (song != NULL);
   songParse (song, tdata, 0);
   disp = orgMakeSongPath (org, song);
   if (isWindows ()) {

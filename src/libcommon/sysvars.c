@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <assert.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -186,7 +185,6 @@ sysvarsInit (const char *argv0)
 
 #if _lib_uname
   rc = uname (&ubuf);
-  assert (rc == 0);
   strlcpy (sysvars [SV_OSNAME], ubuf.sysname, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSDISP], ubuf.sysname, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSVERS], ubuf.version, SV_MAX_SZ);

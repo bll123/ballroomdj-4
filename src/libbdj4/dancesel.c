@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <inttypes.h>
-#include <assert.h>
 #include <math.h>
 
 #include "bdj4.h"
@@ -90,7 +89,6 @@ danceselAlloc (nlist_t *countList,
 
   logProcBegin (LOG_PROC, "danceselAlloc");
   dancesel = mdmalloc (sizeof (dancesel_t));
-  assert (dancesel != NULL);
   dancesel->dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancesel->autosel = bdjvarsdfGet (BDJVDF_AUTO_SEL);
   dancesel->base = nlistAlloc ("dancesel-base", LIST_ORDERED, NULL);

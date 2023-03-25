@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include <ctype.h>
 #include <math.h>
 
@@ -164,7 +163,6 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_LONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-  assert (store != NULL);
 
   dropdown->strIndexMap = slistAlloc ("uiutils-str-index", LIST_ORDERED, NULL);
   internalidx = 0;
@@ -239,7 +237,6 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_LONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-  assert (store != NULL);
 
   dropdown->keylist = nlistAlloc ("uiutils-keylist", LIST_ORDERED, NULL);
   internalidx = 0;

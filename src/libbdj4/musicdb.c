@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <assert.h>
 #include <string.h>
 #include <inttypes.h>
 #include <time.h>
@@ -54,7 +53,6 @@ dbOpen (const char *fn)
   dcount = danceGetCount (dances);
 
   musicdb = mdmalloc (sizeof (musicdb_t));
-  assert (musicdb != NULL);
 
   musicdb->songs = slistAlloc ("db-songs", LIST_UNORDERED, songFree);
   musicdb->danceCounts = nlistAlloc ("db-dance-counts", LIST_ORDERED, NULL);

@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 #include <sys/types.h>
 
 #include "bdj4.h"
@@ -103,7 +102,6 @@ songfilterAlloc (void)
   logProcBegin (LOG_PROC, "songfilterAlloc");
 
   sf = mdmalloc (sizeof (songfilter_t));
-  assert (sf != NULL);
 
   sf->sortselection = mdstrdup (SONG_FILTER_SORT_DEFAULT);
   sf->parsed = songfilterParseSortKey (sf);

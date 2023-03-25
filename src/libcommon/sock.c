@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <assert.h>
 #include <errno.h>
 #include <inttypes.h>
 #include <signal.h>
@@ -155,7 +154,6 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
 
   if (sockinfo == NULL) {
     sockinfo = mdmalloc (sizeof (sockinfo_t));
-    assert (sockinfo != NULL);
     sockinfo->count = 0;
     sockinfo->max = 0;
     sockinfo->socklist = NULL;
@@ -170,7 +168,6 @@ sockAddCheck (sockinfo_t *sockinfo, Sock_t sock)
   ++sockinfo->count;
   sockinfo->socklist = mdrealloc (sockinfo->socklist,
       (size_t) sockinfo->count * sizeof (Sock_t));
-  assert (sockinfo->socklist != NULL);
   sockinfo->socklist[idx] = sock;
   if (sock > sockinfo->max) {
     sockinfo->max = sock;
@@ -440,7 +437,6 @@ sockRead (Sock_t sock, size_t *rlen)
   }
   len = ntohl (len);
   data = mdmalloc (len);
-  assert (data != NULL);
   rc = sockReadData (sock, data, len);
   if (rc < 0) {
     return NULL;
@@ -775,7 +771,6 @@ sockInit (void)
     logMsg (LOG_DBG, LOG_SOCKET, "wsastartup: wsa last-error:%d", WSAGetLastError());
 #endif
   }
-  assert (rc == 0);
 #endif
   sockInitialized = 1;
 }

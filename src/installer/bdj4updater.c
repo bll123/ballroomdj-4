@@ -14,7 +14,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #include <getopt.h>
 #include <unistd.h>
 #include <getopt.h>

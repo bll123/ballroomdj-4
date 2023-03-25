@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdjstring.h"
@@ -52,7 +51,6 @@ genreAlloc (void)
   }
 
   genre = mdmalloc (sizeof (genre_t));
-  assert (genre != NULL);
 
   genre->path = mdstrdup (fname);
   genre->df = NULL;

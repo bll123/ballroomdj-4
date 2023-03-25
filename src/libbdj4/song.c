@@ -9,7 +9,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <inttypes.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdjopt.h"
@@ -102,7 +101,6 @@ songAlloc (void)
   songInit ();
 
   song = mdmalloc (sizeof (song_t));
-  assert (song != NULL);
   song->changed = false;
   song->songlistchange = false;
   song->songInfo = nlistAlloc ("song", LIST_ORDERED, NULL);

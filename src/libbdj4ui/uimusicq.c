@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <assert.h>
 
 #include "audioadjust.h"
 #include "bdj4intl.h"
@@ -44,7 +43,6 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   logProcBegin (LOG_PROC, "uimusicqInit");
 
   uimusicq = mdmalloc (sizeof (uimusicq_t));
-  assert (uimusicq != NULL);
 
   uimusicq->tag = tag;
   uimusicq->conn = conn;

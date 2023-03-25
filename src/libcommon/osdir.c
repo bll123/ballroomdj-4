@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -43,7 +42,6 @@ osDirOpen (const char *dirname)
   dirhandle_t   *dirh;
 
   dirh = mdmalloc (sizeof (dirhandle_t));
-  assert (dirh != NULL);
   dirh->dirname = NULL;
   dirh->dh = NULL;
 

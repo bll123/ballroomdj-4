@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <inttypes.h>
-#include <assert.h>
 
 #include "bdjstring.h"
 #include "istring.h"
@@ -36,10 +35,8 @@ listAlloc (const char *name, listorder_t ordered, listFree_t valueFreeHook)
   list_t    *list;
 
   list = mdmalloc (sizeof (list_t));
-  assert (list != NULL);
   /* always allocate the name so that dynamic names can be created */
   list->name = mdstrdup (name);
-  assert (list->name != NULL);
   list->data = NULL;
   list->version = 1;
   list->count = 0;
@@ -111,7 +108,6 @@ listSetSize (list_t *list, listidx_t siz)
     list->allocCount = siz;
     list->data = mdrealloc (list->data,
         (size_t) list->allocCount * sizeof (listitem_t));
-    assert (list->data != NULL);
     memset (list->data + tsiz, '\0', sizeof (listitem_t) * (siz - tsiz));
   }
 }
@@ -548,12 +544,10 @@ listInsert (list_t *list, listidx_t loc, listitem_t *item)
     list->allocCount += 5;
     list->data = mdrealloc (list->data,
         (size_t) list->allocCount * sizeof (listitem_t));
-    assert (list->data != NULL);
   }
 
-  assert (list->data != NULL);
-  assert ((list->count > 0 && loc < list->count) ||
-          (list->count == 0 && loc == 0));
+  //assert ((list->count > 0 && loc < list->count) ||
+  //        (list->count == 0 && loc == 0));
 
   copycount = list->count - (loc + 1);
   if (loc != -1 && copycount > 0) {
@@ -567,9 +561,8 @@ listInsert (list_t *list, listidx_t loc, listitem_t *item)
 static void
 listReplace (list_t *list, listidx_t loc, listitem_t *item)
 {
-  assert (list->data != NULL);
-  assert ((list->count > 0 && loc < list->count) ||
-          (list->count == 0 && loc == 0));
+  //assert ((list->count > 0 && loc < list->count) ||
+  //        (list->count == 0 && loc == 0));
 
   listFreeItem (list, loc);
   memcpy (&list->data [loc], item, sizeof (listitem_t));

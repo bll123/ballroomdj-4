@@ -9,7 +9,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
-#include <assert.h>
 
 #include "audiofile.h"
 #include "audiotag.h"

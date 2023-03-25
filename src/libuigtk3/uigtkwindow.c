@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include <ctype.h>
 #include <math.h>
 
@@ -45,7 +44,6 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   GError    *gerr = NULL;
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  assert (window != NULL);
   gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_NORMAL);
   if (imagenm != NULL) {
     gtk_window_set_icon_from_file (GTK_WINDOW (window), imagenm, &gerr);
@@ -231,7 +229,6 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
   GtkWidget *window;
 
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  assert (window != NULL);
   if (attachment != NULL) {
     gtk_window_set_attached_to (GTK_WINDOW (window), attachment->widget);
   }

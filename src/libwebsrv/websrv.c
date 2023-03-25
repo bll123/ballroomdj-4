@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #include <sys/time.h> // for mongoose
 #include <dirent.h> // for mongoose
 
@@ -29,7 +28,6 @@ websrvInit (uint16_t listenPort, mg_event_handler_t eventHandler,
   char            tbuff [100];
 
   websrv = mdmalloc (sizeof (websrv_t));
-  assert (websrv != NULL);
 
   mg_log_set_fn (websrvLog, NULL);
   if (logCheck (LOG_DBG, LOG_WEBSRV)) {

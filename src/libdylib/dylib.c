@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #if _hdr_dlfcn
 # include <dlfcn.h>
 #endif

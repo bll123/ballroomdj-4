@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdjstring.h"
@@ -46,7 +45,6 @@ sequenceAlloc (const char *fname)
   }
 
   sequence = mdmalloc (sizeof (sequence_t));
-  assert (sequence != NULL);
   sequence->name = mdstrdup (fname);
   sequence->path = mdstrdup (fn);
 
@@ -81,7 +79,6 @@ sequenceCreate (const char *fname)
   pathbldMakePath (fn, sizeof (fn), fname, BDJ4_SEQUENCE_EXT, PATHBLD_MP_DREL_DATA);
 
   sequence = mdmalloc (sizeof (sequence_t));
-  assert (sequence != NULL);
   sequence->name = mdstrdup (fname);
   sequence->path = mdstrdup (fn);
 

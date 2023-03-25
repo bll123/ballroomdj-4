@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include <ctype.h>
 #include <math.h>
 
@@ -38,7 +37,6 @@ uiTextBoxCreate (int height, const char *hlcolor)
   uitextbox_t   *tb;
 
   tb = mdmalloc (sizeof (uitextbox_t));
-  assert (tb != NULL);
   tb->scw = NULL;
   tb->textbox = uiwcontAlloc ();
   tb->buffer = uiwcontAlloc ();

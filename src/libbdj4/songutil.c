@@ -9,7 +9,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
-#include <assert.h>
 #include <math.h>
 
 #include "bdj4.h"
@@ -32,7 +31,6 @@ songutilFullFileName (const char *sfname)
   }
 
   tname = mdmalloc (MAXPATHLEN);
-  assert (tname != NULL);
 
   len = strlen (sfname);
   if ((len > 0 && sfname [0] == '/') ||

@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include <ctype.h>
 #include <math.h>
 
@@ -38,7 +37,6 @@ uiCreateScale (double lower, double upper,
 
   adjustment = gtk_adjustment_new (0.0, lower, upper, stepinc, pageinc, 0.0);
   scale = gtk_scale_new (GTK_ORIENTATION_HORIZONTAL, adjustment);
-  assert (scale != NULL);
   gtk_widget_set_size_request (scale, 200, 5);
   gtk_scale_set_value_pos (GTK_SCALE (scale), GTK_POS_RIGHT);
   /* the problem with the gtk scale drawing routine is that */

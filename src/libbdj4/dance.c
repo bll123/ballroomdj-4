@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdjstring.h"
@@ -74,7 +73,6 @@ danceAlloc (void)
   }
 
   dance = mdmalloc (sizeof (dance_t));
-  assert (dance != NULL);
 
   dance->path = mdstrdup (fname);
   dance->danceList = NULL;

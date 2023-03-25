@@ -10,7 +10,6 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#include <assert.h>
 #include <math.h>
 
 #include "bdj4.h"
@@ -31,7 +30,6 @@ uisongeditInit (conn_t *conn, musicdb_t *musicdb,
   logProcBegin (LOG_PROC, "uisongeditInit");
 
   uisongedit = mdmalloc (sizeof (uisongedit_t));
-  assert (uisongedit != NULL);
 
   uisongedit->conn = conn;
   uisongedit->dispsel = dispsel;

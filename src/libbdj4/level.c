@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdjstring.h"
@@ -55,7 +54,6 @@ levelAlloc ()
   }
 
   level = mdmalloc (sizeof (level_t));
-  assert (level != NULL);
 
   level->path = mdstrdup (fname);
   level->df = datafileAllocParse ("level", DFTYPE_INDIRECT, fname,

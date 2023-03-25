@@ -19,7 +19,6 @@ enum {
 #include <stdarg.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <assert.h>
 #include <string.h>
 #include <math.h>
 
@@ -246,7 +245,6 @@ vlcAudioDevSet (vlcData_t *vlcData, const char *dev)
   vlcData->device = NULL;
   if (dev != NULL && strlen (dev) > 0) {
     vlcData->device = mdstrdup (dev);
-    assert (vlcData->device != NULL);
   }
 
   return 0;
@@ -385,7 +383,6 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
   int           j;
 
   vlcData = (vlcData_t *) mdmalloc (sizeof (vlcData_t));
-  assert (vlcData != NULL);
   vlcData->inst = NULL;
   vlcData->m = NULL;
   vlcData->mp = NULL;
@@ -395,11 +392,9 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
   vlcData->initialvolume = 1;
 
   vlcData->argv = (char **) mdmalloc (sizeof (char *) * (size_t) (vlcargc + 1));
-  assert (vlcData->argv != NULL);
 
   for (i = 0; i < vlcargc; ++i) {
     nptr = mdstrdup (vlcargv [i]);
-    assert (nptr != NULL);
     vlcData->argv [i] = nptr;
   }
 
@@ -409,7 +404,6 @@ vlcInit (int vlcargc, char *vlcargv [], char *vlcopt [])
     vlcData->argv = (char **) mdrealloc (vlcData->argv,
         sizeof (char *) * (size_t) (vlcargc + 1));
     nptr = mdstrdup (tptr);
-    assert (nptr != NULL);
     vlcData->argv [i] = nptr;
     ++i;
     ++j;

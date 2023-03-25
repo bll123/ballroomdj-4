@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 
 #if _hdr_MacTypes
 # if defined (BDJ4_MEM_DEBUG)
@@ -42,7 +41,6 @@ volumeInit (const char *volpkg)
   char      dlpath [MAXPATHLEN];
 
   volume = mdmalloc (sizeof (volume_t));
-  assert (volume != NULL);
   volume->volumeProcess = NULL;
   volume->volumeDisconnect = NULL;
   volume->volumeCleanup = NULL;
@@ -60,11 +58,8 @@ volumeInit (const char *volpkg)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpedantic"
   volume->volumeProcess = dylibLookup (volume->dlHandle, "volumeProcess");
-  assert (volume->volumeProcess != NULL);
   volume->volumeDisconnect = dylibLookup (volume->dlHandle, "volumeDisconnect");
-  assert (volume->volumeDisconnect != NULL);
   volume->volumeCleanup = dylibLookup (volume->dlHandle, "volumeCleanup");
-  assert (volume->volumeCleanup != NULL);
 #pragma clang diagnostic pop
 
   return volume;

@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #include <getopt.h>
 #include <unistd.h>
 
@@ -365,7 +364,6 @@ main (int argc, char * argv[])
 
 
     npath = mdmalloc (sz);
-    assert (npath != NULL);
 
     path = getenv ("PATH");
     *npath = '\0';

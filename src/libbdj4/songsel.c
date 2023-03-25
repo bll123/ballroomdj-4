@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "autosel.h"
 #include "bdjvarsdf.h"
@@ -126,7 +125,6 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist,
 
   logProcBegin (LOG_PROC, "songselAlloc");
   songsel = mdmalloc (sizeof (songsel_t));
-  assert (songsel != NULL);
   songsel->danceSelList = nlistAlloc ("songsel-sel", LIST_ORDERED, songselDanceFree);
   nlistSetSize (songsel->danceSelList, nlistGetCount (dancelist));
 
@@ -140,7 +138,6 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist,
   while ((danceIdx = nlistIterateKey (dancelist, &iteridx)) >= 0) {
     logMsg (LOG_DBG, LOG_SONGSEL, "adding dance: %d", danceIdx);
     songseldance = mdmalloc (sizeof (songseldance_t));
-    assert (songseldance != NULL);
     songseldance->danceIdx = danceIdx;
     songseldance->songIdxList = nlistAlloc ("songsel-songidx",
         LIST_ORDERED, songselSongDataFree);
@@ -285,7 +282,6 @@ songselAlloc (musicdb_t *musicdb, nlist_t *dancelist,
         nlistIterateValueData (songseldance->songIdxList, &siteridx)) != NULL) {
       /* save the list index */
       songidx = mdmalloc (sizeof (songselidx_t));
-      assert (songidx != NULL);
       songidx->idx = idx;
       songdata->idx = idx;
       logMsg (LOG_DBG, LOG_SONGSEL, "  push song idx: %d", songidx->idx);
@@ -428,7 +424,6 @@ songselAllocAddSong (songsel_t *songsel, dbidx_t dbidx,
   ++perc->count;
 
   songdata = mdmalloc (sizeof (songselsongdata_t));
-  assert (songdata != NULL);
   songdata->dbidx = dbidx;
   songdata->percentage = 0.0;
   songdata->attrIdx [SONGSEL_ATTR_RATING] = rating;
@@ -459,7 +454,6 @@ songselRemoveSong (songsel_t *songsel,
     nlistStartIterator (songseldance->songIdxList, &iteridx);
     while ((songdata = nlistIterateValueData (songseldance->songIdxList, &iteridx)) != NULL) {
       songidx = mdmalloc (sizeof (songselidx_t));
-      assert (songidx != NULL);
       songidx->idx = songdata->idx;
       queuePush (songseldance->currentIndexes, songidx);
       nlistSetNum (nlist, songdata->idx, songdata->idx);
@@ -605,7 +599,6 @@ songselInitPerc (list_t *attrlist, nlistidx_t idx, int weight)
 
   logProcBegin (LOG_PROC, "songselInitPerc");
   perc = mdmalloc (sizeof (songselperc_t));
-  assert (perc != NULL);
   perc->origCount = 0;
   perc->weight = weight;
   perc->count = 0;

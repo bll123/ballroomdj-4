@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdj4intl.h"
@@ -50,7 +49,6 @@ sortoptAlloc (void)
   }
 
   sortopt = mdmalloc (sizeof (sortopt_t));
-  assert (sortopt != NULL);
 
   sortopt->df = datafileAllocParse ("sortopt", DFTYPE_LIST, fname, NULL, 0);
   dflist = datafileGetList (sortopt->df);

@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "dnctypes.h"
@@ -38,7 +37,6 @@ dnctypesAlloc (void)
   }
 
   dnctypes = mdmalloc (sizeof (dnctype_t));
-  assert (dnctypes != NULL);
 
   dnctypes->df = datafileAllocParse ("dance-types", DFTYPE_LIST, fname,
       NULL, 0);
@@ -77,7 +75,6 @@ dnctypesConv (datafileconv_t *conv)
   char            *sval = NULL;
 
   dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
-  assert (dnctypes != NULL);
 
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {

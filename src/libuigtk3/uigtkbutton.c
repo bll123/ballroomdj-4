@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include <ctype.h>
 #include <math.h>
 
@@ -59,7 +58,6 @@ uiCreateButton (callback_t *uicb,
   uibutton = mdmalloc (sizeof (uibutton_t));
 
   widget = gtk_button_new ();
-  assert (widget != NULL);
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   if (imagenm != NULL) {

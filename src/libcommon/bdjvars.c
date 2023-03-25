@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdj4intl.h"

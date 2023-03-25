@@ -10,7 +10,6 @@
 #include <string.h>
 #include <inttypes.h>
 #include <errno.h>
-#include <assert.h>
 
 #include <curl/curl.h>
 #include <glib.h>
@@ -66,7 +65,6 @@ webclientAlloc (void *userdata, webclientcb_t callback)
   webclient_t   *webclient;
 
   webclient = mdmalloc (sizeof (webclient_t));
-  assert (webclient != NULL);
   webclient->userdata = userdata;
   webclient->callback = callback;
   webclient->curl = NULL;
@@ -267,11 +265,9 @@ webclientCompressFile (const char *infn, const char *outfn)
   }
 
   buff = mdmalloc (SUPPORT_BUFF_SZ);
-  assert (buff != NULL);
   /* if the database becomes so large that 10 megs compressed can't hold it */
   /* then there will be a problem */
   obuff = mdmalloc (SUPPORT_BUFF_SZ);
-  assert (obuff != NULL);
 
   zs = webclientGzipInit (obuff, SUPPORT_BUFF_SZ);
   while ((r = fread (buff, 1, SUPPORT_BUFF_SZ, infh)) > 0) {
@@ -295,7 +291,6 @@ static void
 webclientInit (webclient_t *webclient)
 {
   webclient->curl = curl_easy_init ();
-  assert (webclient->curl != NULL);
   if (logCheck (LOG_DBG, LOG_WEBCLIENT)) {
     curl_easy_setopt (webclient->curl, CURLOPT_DEBUGFUNCTION, webclientDebugCallback);
     curl_easy_setopt (webclient->curl, CURLOPT_VERBOSE, 1);

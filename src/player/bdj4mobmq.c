@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #include <getopt.h>
 #include <sys/time.h> // for mongoose
 #include <dirent.h> // for mongoose
@@ -267,7 +266,6 @@ mobmqProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           mobmqData->finished = false;
           dataFree (mobmqData->marqueeData);
           mobmqData->marqueeData = mdstrdup (args);
-          assert (mobmqData->marqueeData != NULL);
           break;
         }
         case MSG_FINISHED: {

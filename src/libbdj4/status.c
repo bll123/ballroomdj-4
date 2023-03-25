@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdjstring.h"
@@ -53,7 +52,6 @@ statusAlloc (void)
   }
 
   status = mdmalloc (sizeof (status_t));
-  assert (status != NULL);
 
   status->path = mdstrdup (fname);
   status->df = datafileAllocParse ("status", DFTYPE_INDIRECT, fname,

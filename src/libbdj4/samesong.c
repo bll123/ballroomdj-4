@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "colorutils.h"
 #include "mdebug.h"
@@ -43,7 +42,6 @@ samesongAlloc (musicdb_t *musicdb)
 
 
   ss = mdmalloc (sizeof (samesong_t));
-  assert (ss != NULL);
 
   ss->nextssidx = 1;
   ss->musicdb = musicdb;

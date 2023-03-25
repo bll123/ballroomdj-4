@@ -10,7 +10,6 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#include <assert.h>
 #include <math.h>
 
 #include "bdj4.h"
@@ -36,7 +35,6 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   logProcBegin (LOG_PROC, "uisongselInit");
 
   uisongsel = mdmalloc (sizeof (uisongsel_t));
-  assert (uisongsel != NULL);
 
   uisongsel->tag = tag;
   uisongsel->windowp = NULL;

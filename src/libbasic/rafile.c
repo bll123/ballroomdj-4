@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <inttypes.h>
-#include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -52,7 +51,6 @@ raOpen (char *fname, int version)
 
   logProcBegin (LOG_PROC, "raOpen");
   rafile = mdmalloc (sizeof (rafile_t));
-  assert (rafile != NULL);
   rafile->fh = NULL;
 
   frc = stat (fname, &statbuf);
@@ -90,7 +88,6 @@ raOpen (char *fname, int version)
     raUnlock (rafile);
   }
   rafile->fname = mdstrdup (fname);
-  assert (rafile->fname != NULL);
   memset (ranulls, 0, RAFILE_REC_SIZE);
   logProcEnd (LOG_PROC, "raOpen", "");
   return rafile;

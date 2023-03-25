@@ -10,7 +10,6 @@
 #include <string.h>
 #include <inttypes.h>
 #include <errno.h>
-#include <assert.h>
 
 #if _hdr_winsock2
 # include <winsock2.h>
@@ -35,7 +34,6 @@ pathInfo (const char *path)
 
 
   pi = mdmalloc (sizeof (pathinfo_t));
-  assert (pi != NULL);
 
   pi->dirname = path;
   pi->filename = NULL;

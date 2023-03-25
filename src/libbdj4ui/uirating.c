@@ -10,7 +10,6 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#include <assert.h>
 #include <math.h>
 
 #include "bdj4intl.h"

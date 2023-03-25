@@ -13,7 +13,6 @@
 #include <inttypes.h>
 #include <errno.h>
 #include <unistd.h>
-#include <assert.h>
 #include <ctype.h>
 #include <wchar.h>
 
@@ -111,7 +110,6 @@ orgAlloc (char *orgpath)
   }
 
   org = mdmalloc (sizeof (org_t));
-  assert (org != NULL);
   org->havealbumartist = false;
   org->haveartist = false;
   org->havedance = false;

@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -63,7 +62,6 @@ main (int argc, const char *argv [])
 #endif
 
   buff = malloc (BUFFSZ);
-  assert (buff != NULL);
 
   /* a mess to make sure the tag string doesn't appear in the bdj4se binary */
   strlcpy (tagstr, TAGSTRPFX, sizeof (tagstr));

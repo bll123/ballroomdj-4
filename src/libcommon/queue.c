@@ -23,7 +23,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 
 #include "bdjstring.h"
 #include "log.h"
@@ -66,7 +65,6 @@ queueAlloc (const char *name, queueFree_t freeHook)
 
   logProcBegin (LOG_PROC, "queueAlloc");
   q = mdmalloc (sizeof (queue_t));
-  assert (q != NULL);
   q->name = mdstrdup (name);
   q->count = 0;
   q->cacheNode = NULL;
@@ -128,7 +126,6 @@ queuePush (queue_t *q, void *data)
   }
 
   node = mdmalloc (sizeof (queuenode_t));
-  assert (node != NULL);
   node->prev = q->tail;
   node->next = NULL;
   node->data = data;
@@ -160,7 +157,6 @@ queuePushHead (queue_t *q, void *data)
   }
 
   node = mdmalloc (sizeof (queuenode_t));
-  assert (node != NULL);
   node->prev = NULL;
   node->next = q->head;
   node->data = data;
@@ -336,7 +332,6 @@ queueInsert (queue_t *q, qidx_t idx, void *data)
 
   node = mdmalloc (sizeof (queuenode_t));
 
-  assert (node != NULL);
   node->prev = NULL;
   node->next = NULL;
   node->data = data;

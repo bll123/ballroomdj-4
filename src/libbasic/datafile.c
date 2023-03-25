@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <inttypes.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdjstring.h"
@@ -64,7 +63,6 @@ parseInit (void)
 
   logProcBegin (LOG_PROC, "parseInit");
   pi = mdmalloc (sizeof (parseinfo_t));
-  assert (pi != NULL);
   pi->strdata = NULL;
   pi->allocCount = 0;
   pi->count = 0;
@@ -143,7 +141,6 @@ convTextList (datafileconv_t *conv)
 
     conv->valuetype = VALUE_LIST;
     tlist = slistAlloc ("textlist", LIST_UNORDERED, NULL);
-    assert (conv->list != NULL);
 
     if (conv->str != NULL && *conv->str) {
       p = strtok_r (str, " ,;", &tokptr);
@@ -223,7 +220,6 @@ datafileAlloc (const char *name)
 
   logProcBegin (LOG_PROC, "datafileAlloc");
   df = mdmalloc (sizeof (datafile_t));
-  assert (df != NULL);
   df->name = mdstrdup (name);
   df->fname = NULL;
   df->data = NULL;
@@ -285,7 +281,6 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
   df->dftype = dftype;
   if (df->fname == NULL) {
     df->fname = mdstrdup (fname);
-    assert (df->fname != NULL);
   }
 
   /* load the new filename */
@@ -332,7 +327,10 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
   logMsg (LOG_DBG, LOG_DATAFILE, "begin parse %s", name);
 
   if (dfkeys != NULL) {
-    assert (datafileCheckDfkeys (name, dfkeys, dfkeycount));
+    if (datafileCheckDfkeys (name, dfkeys, dfkeycount) != true) {
+      fprintf (stderr, "ERR: df-keys are not valid\n");
+      return NULL;
+    }
   }
 
   pi = parseInit ();
@@ -782,7 +780,6 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers)
     pi->allocCount = 60;
     pi->strdata = mdrealloc (pi->strdata,
         sizeof (char *) * (size_t) pi->allocCount);
-    assert (pi->strdata != NULL);
   }
 
   dataCounter = 0;
@@ -802,7 +799,6 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers)
       pi->allocCount += 10;
       pi->strdata = mdrealloc (pi->strdata,
           sizeof (char *) * (size_t) pi->allocCount);
-      assert (pi->strdata != NULL);
     }
     if (parsetype == PARSE_KEYVALUE && dataCounter % 2 == 1) {
       /* value data is indented */

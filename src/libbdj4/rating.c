@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 
 #include "bdj4.h"
 #include "bdjstring.h"
@@ -52,7 +51,6 @@ ratingAlloc (void)
   }
 
   rating = mdmalloc (sizeof (rating_t));
-  assert (rating != NULL);
 
   rating->path = mdstrdup (fname);
   rating->df = datafileAllocParse ("rating", DFTYPE_INDIRECT, fname,

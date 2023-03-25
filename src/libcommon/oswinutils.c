@@ -10,7 +10,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -105,7 +104,6 @@ osFromWideChar (const void *buff)
   tbuff = mdmalloc (len + 1);
   WideCharToMultiByte (CP_UTF8, 0, buff, -1, tbuff, len, NULL, NULL);
   tbuff [len] = '\0';
-  assert (tbuff != NULL);
   return tbuff;
 }
 

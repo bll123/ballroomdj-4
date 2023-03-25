@@ -9,7 +9,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
-#include <assert.h>
 
 #include "bdjvarsdf.h"
 #include "dance.h"
@@ -50,11 +49,8 @@ musicqAlloc (musicdb_t *db)
   musicq_t  *musicq;
 
   logProcBegin (LOG_PROC, "musicqAlloc");
-  assert ((int) MUSICQ_HISTORY == (int) BDJ4_QUEUE_MAX);
-  assert ((int) MUSICQ_DISP_MAX == (int) (BDJ4_QUEUE_MAX + 1));
 
   musicq = mdmalloc (sizeof (musicq_t));
-  assert (musicq != NULL);
   musicq->musicdb = db;
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     char  tmp [40];
@@ -113,7 +109,6 @@ musicqPush (musicq_t *musicq, musicqidx_t musicqidx, dbidx_t dbidx,
   }
 
   musicqitem = mdmalloc (sizeof (musicqitem_t));
-  assert (musicqitem != NULL);
 
   musicqitem->dispidx = musicq->dispidx [musicqidx];
   ++(musicq->dispidx [musicqidx]);
@@ -140,7 +135,6 @@ musicqPushHeadEmpty (musicq_t *musicq, musicqidx_t musicqidx)
   }
 
   musicqitem = mdmalloc (sizeof (musicqitem_t));
-  assert (musicqitem != NULL);
   musicqitem->dispidx = 0;
   musicqitem->uniqueidx = guniqueidx++;
   musicqitem->dbidx = -1;
@@ -199,7 +193,6 @@ musicqInsert (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx,
   olddispidx = musicqRenumberStart (musicq, musicqidx);
 
   musicqitem = mdmalloc (sizeof (musicqitem_t));
-  assert (musicqitem != NULL);
   musicqitem->dbidx = dbidx;
   musicqitem->playlistIdx = MUSICQ_PLAYLIST_EMPTY;
   musicqitem->announce = NULL;
