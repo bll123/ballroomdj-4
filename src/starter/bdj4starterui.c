@@ -569,6 +569,7 @@ starterBuildUI (startui_t  *starter)
 
   menubar = uiCreateMenubar ();
   uiBoxPackStart (hbox, menubar);
+  uiwcontFree (hbox);
 
   /* CONTEXT: starterui: action menu for the starter user interface */
   menuitem = uiMenuCreateItem (menubar, _("Actions"), NULL);
@@ -610,7 +611,6 @@ starterBuildUI (startui_t  *starter)
   }
 
   /* main display */
-  uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiWidgetSetMarginTop (hbox, 4);
   uiBoxPackStart (vbox, hbox);
@@ -633,6 +633,7 @@ starterBuildUI (startui_t  *starter)
   uiBoxPackStart (hbox, uiwidgetp);
 
   uiwcontFree (hbox);
+
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -647,6 +648,8 @@ starterBuildUI (startui_t  *starter)
   uiWidgetSetAllMargins (uiwidgetp, 10);
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
+
+  uiwcontFree (hbox);
 
   starter->callbacks [START_CB_PLAYER] = callbackInit (
       starterStartPlayerui, starter, NULL);
@@ -726,7 +729,6 @@ starterBuildUI (startui_t  *starter)
 
   uiwcontFree (vbox);
   uiwcontFree (bvbox);
-  uiwcontFree (hbox);
   uiwcontFree (szgrp);
   uiwcontFree (menu);
   uiwcontFree (menubar);
@@ -1298,8 +1300,9 @@ starterProcessSupport (void *udata)
   uiBoxPackEnd (hbox, uiwidgetp);
   starter->wcont [START_W_STATUS_DISP_MSG] = uiwidgetp;
 
-  /* begin line */
   uiwcontFree (hbox);
+
+  /* begin line */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -1321,8 +1324,9 @@ starterProcessSupport (void *udata)
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  /* begin line */
   uiwcontFree (hbox);
+
+  /* begin line */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -1401,8 +1405,9 @@ starterProcessSupport (void *udata)
   uiBoxPackStart (vbox, uiwidgetp);
   starter->linkinfo [START_LINK_CB_TICKETS].uiwidgetp = uiwidgetp;
 
-  /* begin line */
   uiwcontFree (hbox);
+
+  /* begin line */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -1414,11 +1419,12 @@ starterProcessSupport (void *udata)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackStart (hbox, uiwidgetp);
 
+  uiwcontFree (hbox);
+
   starter->wcont [START_W_SUPPORT_DIALOG] = uidialog;
   uiDialogShow (uidialog);
 
   uiwcontFree (vbox);
-  uiwcontFree (hbox);
   uiwcontFree (szgrp);
 
   return UICB_CONT;

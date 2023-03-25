@@ -81,7 +81,7 @@ typedef struct uisongfilter {
   callback_t        *danceselcb;
   songfilter_t      *songfilter;
   uiwcont_t         *filterDialog;
-  uiwcont_t         playlistdisp;
+  uiwcont_t         *playlistdisp;
   uidropdown_t      *playlistfilter;
   uidropdown_t      *sortbyfilter;
   uidance_t         *uidance;
@@ -142,7 +142,7 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->playlistfilter = uiDropDownInit ();
   uisf->sortbyfilter = uiDropDownInit ();
   uisf->uidance = NULL;
-  uiwcontInit (&uisf->playlistdisp);
+  uisf->playlistdisp = NULL;
   uisf->searchentry = uiEntryInit (20, 100);
   uisf->uigenre = NULL;
   uisf->uirating = NULL;
@@ -475,7 +475,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
-  uiwcontCopy (&uisf->playlistdisp, hbox);
+  uisf->playlistdisp = hbox;
 
   /* CONTEXT: song selection filter: a filter: select a playlist to work with (music manager) */
   uiwidgetp = uiCreateColonLabel (_("Playlist"));
@@ -492,7 +492,6 @@ uisfCreateDialog (uisongfilter_t *uisf)
   /* looks bad if added to the size group */
 
   /* sort-by : always available */
-  uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -911,7 +910,7 @@ uisfUpdateFilterDialogDisplay (uisongfilter_t *uisf)
       return;
     }
 
-    uiWidgetShowAll (&uisf->playlistdisp);
+    uiWidgetShowAll (uisf->playlistdisp);
   }
 
   if (! uisf->showplaylist) {
@@ -921,7 +920,7 @@ uisfUpdateFilterDialogDisplay (uisongfilter_t *uisf)
       return;
     }
 
-    uiWidgetHide (&uisf->playlistdisp);
+    uiWidgetHide (uisf->playlistdisp);
   }
 
   if (songfilterInUse (uisf->songfilter, SONG_FILTER_PLAYLIST)) {
