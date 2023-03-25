@@ -485,7 +485,7 @@ static int
 marqueeMainLoop (void *tmarquee)
 {
   marquee_t   *marquee = tmarquee;
-  int         stop = FALSE;
+  int         stop = false;
 
   if (! stop) {
     uiUIProcessEvents ();

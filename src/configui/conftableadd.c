@@ -85,25 +85,25 @@ confuiTableAdd (void *udata)
 
     case CONFUI_ID_GENRES: {
       /* CONTEXT: configuration: genre name that is set when adding a new genre */
-      confuiGenreSet (uitree, TRUE, _("New Genre"), 0);
+      confuiGenreSet (uitree, true, _("New Genre"), 0);
       break;
     }
 
     case CONFUI_ID_RATINGS: {
       /* CONTEXT: configuration: rating name that is set when adding a new rating */
-      confuiRatingSet (uitree, TRUE, _("New Rating"), 0);
+      confuiRatingSet (uitree, true, _("New Rating"), 0);
       break;
     }
 
     case CONFUI_ID_LEVELS: {
       /* CONTEXT: configuration: level name that is set when adding a new level */
-      confuiLevelSet (uitree, TRUE, _("New Level"), 0, 0);
+      confuiLevelSet (uitree, true, _("New Level"), 0, 0);
       break;
     }
 
     case CONFUI_ID_STATUS: {
       /* CONTEXT: configuration: status name that is set when adding a new status */
-      confuiStatusSet (uitree, TRUE, _("New Status"), 0);
+      confuiStatusSet (uitree, true, _("New Status"), 0);
       break;
     }
 

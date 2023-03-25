@@ -76,7 +76,7 @@ confuiRatingSet (uitree_t *uitree,
   adjustment = uiCreateAdjustment (weight, 0.0, 100.0, 1.0, 5.0, 0.0);
   uiTreeViewSetValues (uitree,
       CONFUI_RATING_COL_R_EDITABLE, (treeint_t) editable,
-      CONFUI_RATING_COL_W_EDITABLE, (treeint_t) TRUE,
+      CONFUI_RATING_COL_W_EDITABLE, (treeint_t) true,
       CONFUI_RATING_COL_RATING, ratingdisp,
       CONFUI_RATING_COL_WEIGHT, (treenum_t) weight,
       CONFUI_RATING_COL_ADJUST, uiAdjustmentGetAdjustment (adjustment),

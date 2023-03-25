@@ -740,7 +740,7 @@ int
 starterMainLoop (void *tstarter)
 {
   startui_t   *starter = tstarter;
-  int         stop = FALSE;
+  int         stop = false;
   /* support message handling */
   char        tbuff [MAXPATHLEN];
 

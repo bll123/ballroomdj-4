@@ -120,7 +120,6 @@ typedef struct uiplayer {
   bool            volumeLock;
   mstime_t        volumeLockTimeout;
   mstime_t        volumeLockSend;
-  uiwcont_t      volumeDisplayLab;
   bool            uibuilt;
 } uiplayer_t;
 

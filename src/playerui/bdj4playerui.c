@@ -698,7 +698,7 @@ static int
 pluiMainLoop (void *tplui)
 {
   playerui_t  *plui = tplui;
-  int         stop = FALSE;
+  int         stop = false;
 
   uiUIProcessEvents ();
 

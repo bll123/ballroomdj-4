@@ -1140,21 +1140,21 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *hbox, uiwcont_t *sg, int
       }
       if (tagkey == TAG_DANCELEVEL) {
         seint->items [seint->itemcount].uilevel =
-            uilevelSpinboxCreate (hbox, FALSE);
+            uilevelSpinboxCreate (hbox, false);
         uilevelSizeGroupAdd (seint->items [seint->itemcount].uilevel, seint->szgrp [UISE_SZGRP_SPIN_TEXT]);
         uilevelSetChangedCallback (seint->items [seint->itemcount].uilevel,
             seint->callbacks [UISE_CB_CHANGED]);
       }
       if (tagkey == TAG_DANCERATING) {
         seint->items [seint->itemcount].uirating =
-            uiratingSpinboxCreate (hbox, FALSE);
+            uiratingSpinboxCreate (hbox, false);
         uiratingSizeGroupAdd (seint->items [seint->itemcount].uirating, seint->szgrp [UISE_SZGRP_SPIN_TEXT]);
         uiratingSetChangedCallback (seint->items [seint->itemcount].uirating,
             seint->callbacks [UISE_CB_CHANGED]);
       }
       if (tagkey == TAG_STATUS) {
         seint->items [seint->itemcount].uistatus =
-            uistatusSpinboxCreate (hbox, FALSE);
+            uistatusSpinboxCreate (hbox, false);
         uistatusSizeGroupAdd (seint->items [seint->itemcount].uistatus, seint->szgrp [UISE_SZGRP_SPIN_TEXT]);
         uistatusSetChangedCallback (seint->items [seint->itemcount].uistatus,
             seint->callbacks [UISE_CB_CHANGED]);

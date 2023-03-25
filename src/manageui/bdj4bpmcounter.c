@@ -516,7 +516,7 @@ static int
 bpmcounterMainLoop (void *tbpmcounter)
 {
   bpmcounter_t  *bpmcounter = tbpmcounter;
-  int           stop = FALSE;
+  int           stop = false;
 
   if (! stop) {
     uiUIProcessEvents ();

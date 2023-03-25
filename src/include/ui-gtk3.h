@@ -19,6 +19,8 @@ enum {
   UIWIDGET_ENABLE = true,
   UI_TOGGLE_BUTTON_ON = true,
   UI_TOGGLE_BUTTON_OFF = false,
+  UI_FOREACH_STOP = true,
+  UI_FOREACH_CONT = false,
 };
 
 #endif /* INC_UIGTK_H */

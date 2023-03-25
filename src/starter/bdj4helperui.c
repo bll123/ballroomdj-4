@@ -245,10 +245,10 @@ helperBuildUI (helperui_t  *helper)
 static int
 helperMainLoop (void *thelper)
 {
-  helperui_t   *helper = thelper;
-  int         stop = FALSE;
-  /* support message handling */
+  helperui_t    *helper = thelper;
+  int           stop = false;
 
+  /* support message handling */
 
   if (! stop) {
     uiUIProcessEvents ();

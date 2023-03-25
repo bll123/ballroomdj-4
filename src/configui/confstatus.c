@@ -91,7 +91,7 @@ confuiCreateStatusTable (confuigui_t *gui)
 
   statusStartIterator (status, &iteridx);
 
-  editable = FALSE;
+  editable = false;
   while ((key = statusIterate (status, &iteridx)) >= 0) {
     char    *statusdisp;
     long playflag;
@@ -100,13 +100,13 @@ confuiCreateStatusTable (confuigui_t *gui)
     playflag = statusGetPlayFlag (status, key);
 
     if (key == statusGetCount (status) - 1) {
-      editable = FALSE;
+      editable = false;
     }
 
     uiTreeViewValueAppend (uitree);
     confuiStatusSet (uitree, editable, statusdisp, playflag);
     /* all cells other than the very first (Unrated) are editable */
-    editable = TRUE;
+    editable = true;
     gui->tables [CONFUI_ID_STATUS].currcount += 1;
   }
 
@@ -146,7 +146,7 @@ confuiStatusListCreate (void *udata)
   gui->tables [CONFUI_ID_STATUS].saveidx += 1;
   dataFree (statusdisp);
   logProcEnd (LOG_PROC, "confuiStatusListCreate", "");
-  return FALSE;
+  return UI_FOREACH_CONT;
 }
 
 static void

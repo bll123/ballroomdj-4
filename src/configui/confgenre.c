@@ -96,7 +96,7 @@ confuiCreateGenreTable (confuigui_t *gui)
     clflag = genreGetClassicalFlag (genres, key);
 
     uiTreeViewValueAppend (uitree);
-    confuiGenreSet (uitree, TRUE, genredisp, clflag);
+    confuiGenreSet (uitree, true, genredisp, clflag);
     gui->tables [CONFUI_ID_GENRES].currcount += 1;
   }
 
@@ -143,7 +143,7 @@ confuiGenreListCreate (void *udata)
   gui->tables [CONFUI_ID_GENRES].saveidx += 1;
   dataFree (genredisp);
   logProcEnd (LOG_PROC, "confuiGenreListCreate", "");
-  return FALSE;
+  return UI_FOREACH_CONT;
 }
 
 static void

@@ -32,27 +32,3 @@ uiwcontFree (uiwcont_t *uiwidget)
     mdfree (uiwidget);
   }
 }
-
-/* the following routines will be removed at a later date */
-
-void
-uiwcontInit (uiwcont_t *uiwidget)
-{
-  if (uiwidget == NULL) {
-    return;
-  }
-  uiwidget->widget = NULL;
-}
-
-void
-uiwcontCopy (uiwcont_t *target, uiwcont_t *source)
-{
-  if (target == NULL) {
-    return;
-  }
-  if (source == NULL) {
-    return;
-  }
-  memcpy (target, source, sizeof (uiwcont_t));
-}
-

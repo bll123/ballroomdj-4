@@ -517,20 +517,20 @@ uiduallistSourceSearch (void *udata)
     if (istringCompare (duallist->searchstr, str) < 0) {
       duallist->searchfound = true;
       dataFree (str);
-      return TRUE;
+      return UI_FOREACH_STOP;
     }
   }
   if (duallist->searchtype == DUALLIST_SEARCH_REMOVE) {
     if (istringCompare (duallist->searchstr, str) == 0) {
       duallist->searchfound = true;
       dataFree (str);
-      return TRUE;
+      return UI_FOREACH_STOP;
     }
   }
 
   dataFree (str);
   duallist->pos += 1;
-  return FALSE; // continue iterating
+  return UI_FOREACH_CONT;
 }
 
 static bool
@@ -546,7 +546,7 @@ uiduallistGetData (void *udata)
   tval = uiTreeViewGetValue (uittree, DUALLIST_COL_DISP_IDX);
   slistSetNum (duallist->savelist, str, tval);
   dataFree (str);
-  return FALSE;     // continue iterating
+  return UI_FOREACH_CONT;
 }
 
 

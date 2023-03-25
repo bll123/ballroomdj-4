@@ -101,7 +101,7 @@ typedef struct {
   uientry_t       *targetEntry;
   uientry_t       *nameEntry;
   uiwcont_t       *reinstWidget;
-  uiwcont_t       feedbackMsg;
+  uiwcont_t       *feedbackMsg;
   uitextbox_t     *disptb;
   /* flags */
   bool            uiBuilt : 1;
@@ -192,7 +192,7 @@ main (int argc, char *argv[])
   altsetup.verbose = false;
   altsetup.unattended = false;
   altsetup.reinstWidget = NULL;
-  uiwcontInit (&altsetup.feedbackMsg);
+  altsetup.feedbackMsg = NULL;
   for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
     altsetup.buttons [i] = NULL;
   }
@@ -286,7 +286,6 @@ altsetupBuildUI (altsetup_t *altsetup)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
-  uiwcont_t     uiwidget;
   uibutton_t    *uibutton;
   uiwcont_t     *uiwidgetp;
   char          tbuff [100];
@@ -294,8 +293,6 @@ altsetupBuildUI (altsetup_t *altsetup)
 
   uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
   uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
-
-  uiwcontInit (&uiwidget);
 
   strlcpy (imgbuff, "img/bdj4_icon_inst.png", sizeof (imgbuff));
   osuiSetIcon (imgbuff);
@@ -315,10 +312,11 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiWidgetExpandVert (vbox);
   uiBoxPackInWindow (altsetup->window, vbox);
 
-  uiCreateLabelOld (&uiwidget,
+  uiwidgetp = uiCreateLabel (
       /* CONTEXT: set up alternate: ask for alternate folder */
       _("Enter the alternate folder."));
-  uiBoxPackStart (vbox, &uiwidget);
+  uiBoxPackStart (vbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -349,10 +347,11 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiCreateColonLabelOld (&uiwidget,
+  uiwidgetp = uiCreateColonLabel (
       /* CONTEXT: set up alternate: name (for shortcut) */
       _("Name"));
-  uiBoxPackStart (hbox, &uiwidget);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
 
   uiEntryCreate (altsetup->nameEntry);
   uiEntrySetValue (altsetup->nameEntry, "BDJ4 B");
@@ -360,6 +359,8 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiBoxPackStart (hbox, uiwidgetp);
 
   uiwcontFree (hbox);
+
+  /* begin line */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -372,17 +373,18 @@ altsetupBuildUI (altsetup_t *altsetup)
       altsetupCheckDirTarget, altsetup, NULL);
   uiToggleButtonSetCallback (altsetup->reinstWidget, altsetup->callbacks [ALT_CB_REINST]);
 
-  uiCreateLabelOld (&altsetup->feedbackMsg, "");
-  uiWidgetSetClass (&altsetup->feedbackMsg, INST_HL_CLASS);
-  uiBoxPackStart (hbox, &altsetup->feedbackMsg);
+  altsetup->feedbackMsg = uiCreateLabel ("");
+  uiWidgetSetClass (altsetup->feedbackMsg, INST_HL_CLASS);
+  uiBoxPackStart (hbox, altsetup->feedbackMsg);
 
   uiwidgetp = uiCreateHorizSeparator ();
   uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
-
-  /* button box */
   uiwcontFree (hbox);
+
+  /* begin line */
+  /* button box */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -433,7 +435,7 @@ altsetupMainLoop (void *udata)
       altsetup->scrolltoend = false;
       uiUIProcessWaitEvents ();
       /* go through the main loop once more */
-      return TRUE;
+      return true;
     }
   }
 
@@ -505,7 +507,7 @@ altsetupMainLoop (void *udata)
     }
   }
 
-  return TRUE;
+  return true;
 }
 
 static bool
@@ -556,17 +558,17 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
     if (tbool) {
       /* CONTEXT: set up alternate: message indicating the action that will be taken */
       snprintf (tbuff, sizeof (tbuff), _("Re-install existing alternate."));
-      uiLabelSetText (&altsetup->feedbackMsg, tbuff);
+      uiLabelSetText (altsetup->feedbackMsg, tbuff);
     } else {
       /* CONTEXT: set up alternate: message indicating the action that will be taken */
       snprintf (tbuff, sizeof (tbuff), _("Updating existing alternate."));
-      uiLabelSetText (&altsetup->feedbackMsg, tbuff);
+      uiLabelSetText (altsetup->feedbackMsg, tbuff);
     }
   } else {
     altsetup->newinstall = true;
     /* CONTEXT: set up alternate: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("New alternate folder."));
-    uiLabelSetText (&altsetup->feedbackMsg, tbuff);
+    uiLabelSetText (altsetup->feedbackMsg, tbuff);
   }
 
   if (! *dir) {
@@ -866,6 +868,7 @@ altsetupCleanup (altsetup_t *altsetup)
   if (altsetup->target != NULL) {
     uiwcontFree (altsetup->window);
     uiwcontFree (altsetup->reinstWidget);
+    uiwcontFree (altsetup->feedbackMsg);
     for (int i = 0; i < ALT_CB_MAX; ++i) {
       callbackFree (altsetup->callbacks [i]);
     }

@@ -114,7 +114,7 @@ confuiCreateLevelTable (confuigui_t *gui)
     }
 
     uiTreeViewValueAppend (uitree);
-    confuiLevelSet (uitree, TRUE, leveldisp, weight, def);
+    confuiLevelSet (uitree, true, leveldisp, weight, def);
     /* all cells other than the very first (Unrated) are editable */
     gui->tables [CONFUI_ID_LEVELS].currcount += 1;
   }
@@ -170,7 +170,7 @@ confuiLevelListCreate (void *udata)
   gui->tables [CONFUI_ID_LEVELS].saveidx += 1;
   dataFree (leveldisp);
   logProcEnd (LOG_PROC, "confuiLevelListCreate", "");
-  return FALSE;
+  return UI_FOREACH_CONT;
 }
 
 static void

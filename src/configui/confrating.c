@@ -23,7 +23,7 @@
 #include "rating.h"
 #include "ui.h"
 
-static bool confuiRatingListCreate (void *udata);
+static bool   confuiRatingListCreate (void *udata);
 static void   confuiRatingSave (confuigui_t *gui);
 
 void
@@ -96,7 +96,7 @@ confuiCreateRatingTable (confuigui_t *gui)
 
   ratingStartIterator (ratings, &iteridx);
 
-  editable = FALSE;
+  editable = false;
   while ((key = ratingIterate (ratings, &iteridx)) >= 0) {
     char    *ratingdisp;
     long weight;
@@ -107,7 +107,7 @@ confuiCreateRatingTable (confuigui_t *gui)
     uiTreeViewValueAppend (uitree);
     confuiRatingSet (uitree, editable, ratingdisp, weight);
     /* all cells other than the very first (Unrated) are editable */
-    editable = TRUE;
+    editable = true;
     gui->tables [CONFUI_ID_RATINGS].currcount += 1;
   }
 
@@ -150,7 +150,7 @@ confuiRatingListCreate (void *udata)
   dataFree (ratingdisp);
   gui->tables [CONFUI_ID_RATINGS].saveidx += 1;
   logProcEnd (LOG_PROC, "confuiRatingListCreate", "");
-  return FALSE;
+  return UI_FOREACH_CONT;
 }
 
 static void

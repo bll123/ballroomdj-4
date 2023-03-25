@@ -743,7 +743,7 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
       uiTreeViewSetValues (mqint->musicqTree,
           MUSICQ_COL_FONT, listingFont,
           MUSICQ_COL_DISP_IDX_COLOR, bdjoptGetStr (OPT_P_UI_ACCENT_COL),
-          MUSICQ_COL_DISP_IDX_COLOR_SET, (treebool_t) FALSE,
+          MUSICQ_COL_DISP_IDX_COLOR_SET, (treebool_t) false,
           MUSICQ_COL_DISP_IDX, (treenum_t) musicqupditem->dispidx,
           MUSICQ_COL_UNIQUE_IDX, (treenum_t) musicqupditem->uniqueidx,
           MUSICQ_COL_DBIDX, (treenum_t) musicqupditem->dbidx,
@@ -753,7 +753,7 @@ uimusicqProcessMusicQueueDisplay (uimusicq_t *uimusicq,
       uiTreeViewSelectSet (mqint->musicqTree, row);
       /* all data must be updated, except the font and ellipsize */
       uiTreeViewSetValues (mqint->musicqTree,
-          MUSICQ_COL_DISP_IDX_COLOR_SET, (treebool_t) FALSE,
+          MUSICQ_COL_DISP_IDX_COLOR_SET, (treebool_t) false,
           MUSICQ_COL_DISP_IDX, (treenum_t) musicqupditem->dispidx,
           MUSICQ_COL_UNIQUE_IDX, (treenum_t) musicqupditem->uniqueidx,
           MUSICQ_COL_DBIDX, (treenum_t) musicqupditem->dbidx,
@@ -982,11 +982,11 @@ uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, long loc)
   }
 
   if (! sameprev) {
-    uimusicqMarkPreviousSelection (uimusicq, FALSE);
+    uimusicqMarkPreviousSelection (uimusicq, false);
     uimusicq->ui [ci].prevSelection = uimusicq->ui [ci].currSelection;
     uimusicq->ui [ci].currSelection = loc;
   }
-  uimusicqMarkPreviousSelection (uimusicq, TRUE);
+  uimusicqMarkPreviousSelection (uimusicq, true);
 
   for (int i = 0; i < uimusicq->peercount; ++i) {
     if (uimusicq->peers [i] == NULL) {
@@ -996,7 +996,7 @@ uimusicqSelectionPreviousProcess (uimusicq_t *uimusicq, long loc)
     if (! sameprev) {
       uimusicqCopySelections (uimusicq, uimusicq->peers [i], ci);
     }
-    uimusicqMarkPreviousSelection (uimusicq->peers [i], TRUE);
+    uimusicqMarkPreviousSelection (uimusicq->peers [i], true);
     uimusicqSetPeerFlag (uimusicq->peers [i], false);
   }
 }
@@ -1285,7 +1285,7 @@ uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp)
 static void
 uimusicqCopySelections (uimusicq_t *uimusicq, uimusicq_t *peer, int mqidx)
 {
-  uimusicqMarkPreviousSelection (peer, FALSE);
+  uimusicqMarkPreviousSelection (peer, false);
   peer->ui [mqidx].prevSelection = uimusicq->ui [mqidx].prevSelection;
   peer->ui [mqidx].currSelection = uimusicq->ui [mqidx].currSelection;
 }

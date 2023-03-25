@@ -64,7 +64,7 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
     si.hStdError = outhandle;
     si.hStdInput = GetStdHandle (STD_INPUT_HANDLE);
     si.dwFlags |= STARTF_USESTDHANDLES;
-    inherit = TRUE;
+    inherit = true;
   }
 
   buff [0] = '\0';
