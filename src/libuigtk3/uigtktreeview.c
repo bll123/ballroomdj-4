@@ -677,7 +677,7 @@ uiTreeViewValueRemove (uitree_t *uitree)
   }
 
   idx = uiTreeViewSelectGetIndex (uitree);
-  gtk_list_store_remove (GTK_LIST_STORE (uitree->model), &uitree->selectiter);
+  valid = gtk_list_store_remove (GTK_LIST_STORE (uitree->model), &uitree->selectiter);
   --uitree->valueRowCount;
   uitree->selectset = false;
   count = gtk_tree_selection_count_selected_rows (uitree->sel);
@@ -702,6 +702,9 @@ uiTreeViewValueClear (uitree_t *uitree, int startrow)
   if (uitree == NULL) {
     return;
   }
+  if (uitree->model == NULL) {
+    return;
+  }
 
   if (startrow == 0) {
     gtk_list_store_clear (GTK_LIST_STORE (uitree->model));
@@ -714,9 +717,8 @@ uiTreeViewValueClear (uitree_t *uitree, int startrow)
     snprintf (tbuff, sizeof (tbuff), "%d", startrow);
     valid = gtk_tree_model_get_iter_from_string (uitree->model, &iter, tbuff);
     while (valid) {
-      gtk_list_store_remove (GTK_LIST_STORE (uitree->model), &iter);
+      valid = gtk_list_store_remove (GTK_LIST_STORE (uitree->model), &iter);
       --uitree->valueRowCount;
-      valid = gtk_tree_model_iter_next (uitree->model, &iter);
     }
   }
 }
@@ -848,6 +850,9 @@ uiTreeViewSelectCurrent (uitree_t *uitree)
   if (uitree == NULL) {
     return;
   }
+  if (uitree->model == NULL) {
+    return;
+  }
 
   /* select-get-count will handle the select-single case */
   if (uitree->selmode == SELECT_SINGLE) {
@@ -932,6 +937,13 @@ uiTreeViewSelectDefault (uitree_t *uitree)
 {
   int   count = 0;
 
+  if (uitree == NULL) {
+    return;
+  }
+  if (uitree->model == NULL) {
+    return;
+  }
+
   count = uiTreeViewSelectGetCount (uitree);
   if (count != 1) {
     uiTreeViewSelectSet (uitree, 0);
@@ -942,6 +954,9 @@ void
 uiTreeViewSelectSave (uitree_t *uitree)
 {
   if (uitree == NULL) {
+    return;
+  }
+  if (uitree->model == NULL) {
     return;
   }
   if (! uitree->selectset) {
@@ -1130,6 +1145,12 @@ uiTreeViewSelectSet (uitree_t *uitree, int row)
   GtkTreePath *path = NULL;
 
   uitree->selectset = false;
+  if (uitree == NULL) {
+    return;
+  }
+  if (uitree->model == NULL) {
+    return;
+  }
   if (row < 0) {
     return;
   }
@@ -1163,6 +1184,12 @@ uiTreeViewValueIteratorSet (uitree_t *uitree, int row)
 
   uitree->valueiterset = false;
 
+  if (uitree == NULL) {
+    return;
+  }
+  if (uitree->model == NULL) {
+    return;
+  }
   if (row < 0) {
     return;
   }
@@ -1188,6 +1215,9 @@ uiTreeViewScrollToCell (uitree_t *uitree)
   if (uitree == NULL) {
     return;
   }
+  if (uitree->model == NULL) {
+    return;
+  }
 
   if (! GTK_IS_TREE_VIEW (uitree->tree->widget)) {
     return;
@@ -1207,6 +1237,13 @@ void
 uiTreeViewAttachScrollController (uitree_t *uitree, double upper)
 {
   GtkAdjustment       *adjustment;
+
+  if (uitree == NULL) {
+    return;
+  }
+  if (uitree->tree == NULL) {
+    return;
+  }
 
   adjustment = gtk_scrollable_get_vadjustment (
       GTK_SCROLLABLE (uitree->tree->widget));
@@ -1232,6 +1269,9 @@ uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* pathstr,
   char          *oldstr = NULL;
 
   if (uitree == NULL) {
+    return;
+  }
+  if (uitree->model == NULL) {
     return;
   }
 
@@ -1276,6 +1316,9 @@ uiTreeViewCheckboxHandler (GtkCellRendererToggle *r,
   if (uitree == NULL) {
     return;
   }
+  if (uitree->model == NULL) {
+    return;
+  }
 
   tree = uitree->tree->widget;
 
@@ -1304,6 +1347,9 @@ uiTreeViewRadioHandler (GtkCellRendererToggle *r,
   int           col;
 
   if (uitree == NULL) {
+    return;
+  }
+  if (uitree->model == NULL) {
     return;
   }
 
@@ -1343,6 +1389,9 @@ uiTreeViewRowActiveHandler (GtkTreeView* tv, GtkTreePath* path,
   if (uitree == NULL) {
     return;
   }
+  if (uitree->model == NULL) {
+    return;
+  }
 
   if (uitree->activeColumn != NULL) {
     if (uitree->activeColumn == column) {
@@ -1371,6 +1420,13 @@ uiTreeViewForeachHandler (GtkTreeModel* model, GtkTreePath* path,
 {
   uitree_t  *uitree = udata;
   bool      rc = UICB_CONT;
+
+  if (uitree == NULL) {
+    return rc;
+  }
+  if (uitree->model == NULL) {
+    return rc;
+  }
 
   memcpy (&uitree->selectiter, iter, sizeof (GtkTreeIter));
   uitree->selectset = true;
@@ -1554,4 +1610,3 @@ uiTreeViewScrollEventHandler (GtkWidget* tv, GdkEventScroll *event,
 
   return rc;
 }
-
