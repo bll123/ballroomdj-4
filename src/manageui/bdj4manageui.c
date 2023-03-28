@@ -3134,16 +3134,16 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
   if (id == MANAGE_TAB_MAIN_SL) {
     if (uisfPlaylistInUse (manage->uisongfilter) ||
         manage->lastdisp == MANAGE_DISP_SONG_LIST) {
-      long        loc;
+      nlistidx_t    nidx;
 
-      loc = uisongselGetSelectLocation (manage->mmsongsel);
+      nidx = uisongselGetSelectLocation (manage->mmsongsel);
       uisfClearPlaylist (manage->uisongfilter);
       manage->selbypass = true;
       uisongselApplySongFilter (manage->mmsongsel);
       manage->selbypass = false;
       uisongselRestoreSelections (manage->mmsongsel);
       if (manage->selusesonglist) {
-        uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, loc);
+        uimusicqSetSelectLocation (manage->slmusicq, manage->musicqManageIdx, nidx);
       }
       manage->lastdisp = MANAGE_DISP_SONG_SEL;
     }

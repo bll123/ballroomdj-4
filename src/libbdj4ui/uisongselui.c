@@ -604,21 +604,28 @@ uisongselFirstSelection (void *udata)
   return UICB_CONT;
 }
 
-long
+nlistidx_t
 uisongselGetSelectLocation (uisongsel_t *uisongsel)
 {
-  ss_internal_t  *ssint;
+  ss_internal_t   *ssint;
   int             count;
-  long            loc = -1;
+  nlistidx_t      nidx;
 
   ssint = uisongsel->ssInternalData;
-  count = uiTreeViewSelectGetCount (ssint->songselTree);
+  count = nlistGetCount (ssint->selectedList);
   if (count != 1) {
     return -1;
   }
 
-  loc = uiTreeViewSelectGetIndex (ssint->songselTree);
-  return loc + uisongsel->idxStart;
+  /* get the select location from the selected list, not from on-screen */
+  if (count == 1) {
+    nlistidx_t    iteridx;
+
+    nlistStartIterator (ssint->selectedList, &iteridx);
+    nidx = nlistIterateKey (ssint->selectedList, &iteridx);
+  }
+
+  return nidx;
 }
 
 bool
@@ -1437,7 +1444,7 @@ uisongselPopulateDataCallback (int col, long num, const char *str, void *udata)
 
 
 static void
-uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
+uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
 {
   uisongsel_t     *uisongsel = udata;
   ss_internal_t   *ssint;
@@ -1462,11 +1469,11 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
     /* need to be able to move forwards and backwards within the select-list */
     /* do not change the gtk selection */
 
-    if (where == UISONGSEL_FIRST) {
+    if (direction == UISONGSEL_FIRST) {
       nlistStartIterator (ssint->selectedList, &ssint->selectListIter);
       ssint->selectListKey = nlistIterateKey (ssint->selectedList, &ssint->selectListIter);
     }
-    if (where == UISONGSEL_NEXT) {
+    if (direction == UISONGSEL_NEXT) {
       nlistidx_t  pkey;
       nlistidx_t  piter;
 
@@ -1480,7 +1487,7 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
         ssint->selectListIter = piter;
       }
     }
-    if (where == UISONGSEL_PREVIOUS) {
+    if (direction == UISONGSEL_PREVIOUS) {
       ssint->selectListKey = nlistIterateKeyPrevious (ssint->selectedList, &ssint->selectListIter);
       if (ssint->selectListKey < 0) {
         /* reset to the beginning */
@@ -1488,7 +1495,7 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
       }
     }
 
-    uisongselScrollSelection (uisongsel, ssint->selectListKey, UISONGSEL_SCROLL_NORMAL, where);
+    uisongselScrollSelection (uisongsel, ssint->selectListKey, UISONGSEL_SCROLL_NORMAL, direction);
     if (uisongsel->newselcb != NULL) {
       dbidx_t   dbidx;
 
@@ -1502,19 +1509,26 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
   if (count == 1) {
     uiTreeViewSelectCurrent (ssint->songselTree);
     nidx = uisongselGetSelectLocation (uisongsel);
+    if (nidx < uisongsel->idxStart ||
+        nidx >= uisongsel->idxStart + ssint->maxRows) {
+      /* off-screen, scroll into view */
+      uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_NEXT);
+    }
+
     loc = nidx - uisongsel->idxStart;
+
 
     /* there's only one selected, clear them all */
     uisongselClearSelections (uisongsel);
     uisongselClearAllUISelections (uisongsel);
 
-    if (where == UISONGSEL_FIRST) {
+    if (direction == UISONGSEL_FIRST) {
       nidx = 0;
       loc = 0;
       scrolled = uisongselScrollSelection (uisongsel, 0, UISONGSEL_SCROLL_NORMAL, UISONGSEL_DIR_NONE);
       uiTreeViewSelectFirst (ssint->songselTree);
     }
-    if (where == UISONGSEL_NEXT) {
+    if (direction == UISONGSEL_NEXT) {
       while (lines > 0) {
         ++nidx;
         scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_NEXT);
@@ -1535,7 +1549,7 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
         --lines;
       }
     }
-    if (where == UISONGSEL_PREVIOUS) {
+    if (direction == UISONGSEL_PREVIOUS) {
       while (lines > 0) {
         --nidx;
         scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_PREVIOUS);
@@ -1557,7 +1571,7 @@ uisongselMoveSelection (void *udata, int where, int lines, int moveflag)
     /* row (but a new dbidx), re-select it */
     /* if the iter was moved, it is pointing at the new selection */
     /* if the iter was not moved, the original must be re-selected */
-    if (where != UISONGSEL_FIRST) {
+    if (direction != UISONGSEL_FIRST) {
       uiTreeViewSelectSet (ssint->songselTree, loc);
     }
     uiTreeViewSelectCurrent (ssint->songselTree);
