@@ -40,10 +40,8 @@ Release Notes:
   Not yet implemented:
     - Auto-Organization.
     - Song List Editor:
-      - Batch editing.
       - Export for BDJ/Import from BDJ.
     - Music Manager:
-      - Apply Adjustments (speed, song start, song end) to a song.
       - Audio Identification.
 
   This installation will not affect any BallroomDJ 3 installation.
@@ -52,10 +50,6 @@ Release Notes:
    'Write BDJ3 Compatible Audio Tags' is on).
 
 Known Issues:
-  Mac OS
-    - The drop-downs do not work properly the first time.  They have to
-      be closed and then re-opened.
-    - Dialogs do not grab focus.
   Windows
     - The marquee position is not saved when it is iconified (close the
       window instead).
