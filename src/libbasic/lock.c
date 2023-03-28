@@ -99,7 +99,6 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
 {
   int       fd;
   size_t    len;
-  ssize_t   rwlen;
   int       rc;
   int       count;
   char      pidstr [16];
@@ -146,7 +145,7 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   if (fd >= 0) {
     snprintf (pidstr, sizeof (pidstr), "%"PRId64, (int64_t) pid);
     len = strnlen (pidstr, sizeof (pidstr));
-    rwlen = write (fd, pidstr, len);
+    (void) ! write (fd, pidstr, len);
     close (fd);
   }
   return fd;

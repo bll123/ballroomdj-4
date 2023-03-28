@@ -609,7 +609,8 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
 {
   ss_internal_t   *ssint;
   int             count;
-  nlistidx_t      nidx;
+  nlistidx_t      nidx = -1;
+  nlistidx_t      iteridx;
 
   ssint = uisongsel->ssInternalData;
   count = nlistGetCount (ssint->selectedList);
@@ -618,13 +619,8 @@ uisongselGetSelectLocation (uisongsel_t *uisongsel)
   }
 
   /* get the select location from the selected list, not from on-screen */
-  if (count == 1) {
-    nlistidx_t    iteridx;
-
-    nlistStartIterator (ssint->selectedList, &iteridx);
-    nidx = nlistIterateKey (ssint->selectedList, &iteridx);
-  }
-
+  nlistStartIterator (ssint->selectedList, &iteridx);
+  nidx = nlistIterateKey (ssint->selectedList, &iteridx);
   return nidx;
 }
 

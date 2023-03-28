@@ -158,7 +158,6 @@ sysvarsInit (const char *argv0)
   size_t        dlen;
   bool          alternatepath = false;
 #if _lib_uname
-  int             rc;
   struct utsname  ubuf;
 #endif
 #if _lib_RtlGetVersion
@@ -184,7 +183,7 @@ sysvarsInit (const char *argv0)
   lsysvars [SVL_IS_WINDOWS] = false;
 
 #if _lib_uname
-  rc = uname (&ubuf);
+  uname (&ubuf);
   strlcpy (sysvars [SV_OSNAME], ubuf.sysname, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSDISP], ubuf.sysname, SV_MAX_SZ);
   strlcpy (sysvars [SV_OSVERS], ubuf.version, SV_MAX_SZ);
