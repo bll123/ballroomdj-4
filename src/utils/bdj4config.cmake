@@ -5,7 +5,6 @@
 include (CheckFunctionExists)
 include (CheckIncludeFile)
 include (CheckIncludeFileCXX)
-# include (CheckIncludeFiles)
 include (CheckLibraryExists)
 include (CheckLinkerFlag)
 include (CheckSymbolExists)
@@ -29,19 +28,53 @@ if (NOT LIBVLC_LIBRARY)
   set (LIBVLC_FOUND TRUE)
 endif()
 
-pkg_check_modules (ALSA alsa)
+#### BDJ4 UI type
+
+# check for all supported ui interfaces
+if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
+else()
+  message (FATAL_ERROR "BDJ4_UI (${BDJ4_UI}) not supported")
+endif()
+
+if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
+  add_compile_options (-DBDJ4_USE_GTK=1)
+endif()
+
+#### bits / check supported platforms
+
+if("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
+  set (BDJ4_BITS 64)
+else()
+  set (BDJ4_BITS 32)
+endif()
+
+if (WIN32 AND BDJ4_BITS EQUAL 32)
+  message (FATAL_ERROR "Platform not supported.")
+endif()
+
+#### pkg-config / modules
+
+if (LINUX)
+  pkg_check_modules (ALSA alsa)
+endif()
 pkg_check_modules (CHECK check)
 pkg_check_modules (CURL libcurl)
 pkg_check_modules (GLIB glib-2.0)
-pkg_check_modules (GTK gtk+-3.0)
+if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
+  pkg_check_modules (GTK gtk+-3.0)
+endif()
 pkg_check_modules (OPENSSL openssl)
-pkg_check_modules (PA libpulse)
+if (LINUX)
+  pkg_check_modules (PA libpulse)
+endif()
 pkg_check_modules (XML2 libxml-2.0)
 
 if (NOT WIN32)
   set (ENV{PKG_CONFIG_PATH} "../packages/icu/lib/pkgconfig")
 endif()
 pkg_check_modules (ICU icu-i18n)
+
+#### generic compile options
 
 add_compile_options (-DGDK_DISABLE_DEPRECATED)
 add_compile_options (-DGTK_DISABLE_DEPRECATED)
@@ -61,6 +94,8 @@ add_compile_options (-Wformat)
 add_compile_options (-Wformat-security)
 add_compile_options (-Werror=format-security)
 add_compile_options (-Wdeprecated-declarations)
+
+#### compiler-specific compile options
 
 if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
   add_compile_options (-Wmaybe-uninitialized)
@@ -86,7 +121,7 @@ if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
   add_compile_options (-Wno-documentation)
 endif()
 
-set (BDJ4_UI "GTK")
+#### build compile options
 
 if (BDJ4_BUILD STREQUAL "Release")
   message ("Release Build")
@@ -115,10 +150,6 @@ if (BDJ4_BUILD STREQUAL "Profile")
   add_link_options (-pg)
 endif()
 
-if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
-  add_compile_options (-DBDJ4_USE_GTK=1)
-endif()
-
 add_compile_options (-g)
 add_link_options (-g)
 if (NOT WIN32)
@@ -130,6 +161,8 @@ if (WIN32)
 else()
   add_compile_options (-I${ICU_INCLUDE_DIRS})
 endif()
+
+#### more compile options: fortification/address sanitizer
 
 set (BDJ4_FORTIFY T)
 
@@ -205,6 +238,8 @@ else()
   add_compile_options (-D_FORTIFY_SOURCE=0)
 endif()
 
+#### system specific compile options
+
 if (NOT WIN32)
   SET (CMAKE_INSTALL_RPATH "\${ORIGIN}")
   if (APPLE)
@@ -221,6 +256,8 @@ else()
   add_link_options (-static-libgcc)
   add_link_options (-static-libstdc++)
 endif()
+
+#### checks for include files
 
 set (CMAKE_REQUIRED_INCLUDES
   /opt/local/include
@@ -268,6 +305,8 @@ check_include_file (sys/time.h _sys_time)
 check_include_file (sys/utsname.h _sys_utsname)
 check_include_file (sys/wait.h _sys_wait)
 check_include_file (sys/xattr.h _sys_xattr)
+
+#### checks for functions
 
 set (CMAKE_REQUIRED_INCLUDES windows.h)
 check_function_exists (CloseHandle _lib_CloseHandle)
@@ -372,6 +411,8 @@ check_function_exists (libvlc_new _lib_libvlc_new)
 check_function_exists (libvlc_audio_output_device_enum _lib_libvlc_audio_output_device_enum)
 set (CMAKE_REQUIRED_LIBRARIES "")
 
+#### checks for symbols and other stuff
+
 check_prototype_definition (mkdir
     "int mkdir(const char *pathname, mode_t mode)"
     0
@@ -406,6 +447,8 @@ check_type_size (SOCKET _typ_SOCKET)
 set (CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)
 check_type_size (socklen_t _typ_socklen_t)
 set (CMAKE_EXTRA_INCLUDE_FILES "")
+
+#### build the config file
 
 configure_file (config.h.in config.h)
 

@@ -9,6 +9,7 @@ GCC = gcc
 GXX = g++
 CLANG = clang
 CLANGXX = clang++
+BDJ4_UI = GTK
 
 .PHONY: release
 release:
@@ -118,6 +119,7 @@ cmake-unix:
 		-DCMAKE_C_COMPILER=$(COMP) \
 		-DCMAKE_CXX_COMPILER=$(COMPXX) \
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
+		-DBDJ4_UI=$(BDJ4_UI) \
 		-S . -B $(BUILDDIR) -Werror=deprecated
 
 .PHONY: cmake-windows
@@ -126,6 +128,7 @@ cmake-windows:
 		-DCMAKE_C_COMPILER="$(COMP)" \
 		-DCMAKE_CXX_COMPILER="$(COMPXX)" \
 		-DBDJ4_BUILD:STATIC=$(BDJ4_BUILD) \
+		-DBDJ4_UI=$(BDJ4_UI) \
 		-G "MSYS Makefiles" \
 		-S . -B $(BUILDDIR) -Werror=deprecated
 
