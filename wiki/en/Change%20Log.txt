@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Song Selection: Fix movement keys when the selection is off-screen.
+    * Song Selection: Fix selection issues with movement keys.
     * Mac OS: Fix support links.
 * Internal:
     * Code cleanup.

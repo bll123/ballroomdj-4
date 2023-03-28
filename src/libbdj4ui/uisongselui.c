@@ -806,9 +806,7 @@ uisongselClearAllUISelections (uisongsel_t *uisongsel)
   ss_internal_t  *ssint;
 
   ssint = uisongsel->ssInternalData;
-  ssint->inselectchgprocess = true;
   uiTreeViewSelectClearAll (ssint->songselTree);
-  ssint->inselectchgprocess = false;
 }
 
 void
@@ -879,7 +877,6 @@ uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart,
     uisongsel->idxStart = idxStart;
   }
 
-  uisongselPopulateData (uisongsel);
   uisongselScroll (uisongsel, (double) uisongsel->idxStart);
 
   scrolled = true;
@@ -1148,10 +1145,11 @@ uisongselUpdateSelections (uisongsel_t *uisongsel)
 
   ssint = uisongsel->ssInternalData;
 
+  ssint->inselectchgprocess = true;
+
   /* clear the current selections */
   uisongselClearAllUISelections (uisongsel);
 
-  ssint->inselectchgprocess = true;
   /* set the selections based on the saved selection list */
   nlistStartIterator (ssint->selectedList, &iteridx);
   while ((idx = nlistIterateKey (ssint->selectedList, &iteridx)) >= 0) {
@@ -1513,7 +1511,6 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
 
     loc = nidx - uisongsel->idxStart;
 
-
     /* there's only one selected, clear them all */
     uisongselClearSelections (uisongsel);
     uisongselClearAllUISelections (uisongsel);
@@ -1535,7 +1532,6 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
           if (loc < ssint->maxRows - 1 &&
               idx < uisongsel->dfilterCount - 1) {
             /* any current selection must be re-cleared */
-            uisongselClearAllUISelections (uisongsel);
             uiTreeViewSelectNext (ssint->songselTree);
             ++loc;
           } else {
@@ -1552,7 +1548,6 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
         if (! scrolled) {
           if (loc > 0) {
             /* any current selection must be re-cleared */
-            uisongselClearAllUISelections (uisongsel);
             uiTreeViewSelectPrevious (ssint->songselTree);
             --loc;
           } else {
@@ -1562,6 +1557,8 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
         --lines;
       }
     }
+
+    uisongselClearAllUISelections (uisongsel);
 
     /* if the scroll was bumped, the iterator is still pointing to the same */
     /* row (but a new dbidx), re-select it */
