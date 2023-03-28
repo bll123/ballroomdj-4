@@ -17,6 +17,9 @@
 #   everything following is for any os
 #
 
+####
+# main-dir, all platforms
+
 # old (alpha) template naming convention
 # this can be removed later
 templates/[^/]*\.nl$
@@ -25,24 +28,23 @@ templates/[^/]*\.en_US$
 # old library (early alpha)
 # this can be removed later
 bin/libbdj4uigtk\.(so|dylib|dll)$
-bin/testsuite$
-bin/testsuite\.exe$
-bin/tmusicsetup$
-bin/tmusicsetup\.exe$
 
-# unneeded executables
+# unneeded executables (windows)
 plocal/bin/curl\.exe$
 plocal/bin/openssl\.exe$
 
 # old conversion program (alpha 2022-11)
+# this can be removed later
 conv/sort-options\.tcl$
 
 # windows make shortcut rename (alpha 2022-12)
+# this can be removed later
 install/makeshortcut\.bat$
 install/makeshortcut\.vbs$
 
 # templates that changed location (alpha 2022-12)
 # moved to http/
+# this can be removed later
 img/ballroomdj4\.svg$
 img/favicon\.ico$
 img/mrc$
@@ -52,6 +54,7 @@ img/bluebox\.svg$
 templates/[^/]*\.svg$
 
 # installed files that should not have been (alpha 2022-12)
+# this can be removed later
 img/[^/]*-base\.svg$
 img/mkmacicon\.sh$
 # these belong in img/profileNN
@@ -63,6 +66,7 @@ img/switch-on\.svg$
 img/switch-on\.svg\.bak\.1$
 
 # installed locales that should not have been
+# note that if turkish is re-enabled, this must be removed.
 locale/tr$
 locale/tr_TR$
 
@@ -72,10 +76,23 @@ install/install-startup\.bat$
 templates/nl/wachtrijendans.pldances$
 templates/nl/wachtrijendans.pl$
 
+# files that were not supposed to be installed (4.3.0.4 2023-3)
+bin/testsuite$
+bin/testsuite\.exe$
+bin/tmusicsetup$
+bin/tmusicsetup\.exe$
+
+####
+# mac-os
+
 ::macosonly
 
 # this should have been in the data/ directory (alpha 2022-12)
+# this can be removed later
 img/profile\d\d$
+
+####
+# data-dir
 
 ::datatopdir
 ::allos
@@ -106,7 +123,7 @@ http/mrc/light/[^/]*\.bak\.1$
 # ui-starter.txt moved to main data dir
 data/profile\d\d/ui-starter.txt$
 
-# removed 2023-2 (4.1.0)
+# removed 2023-2, old, incorrect name (4.1.0)
 data/nl/wachtrijendans.pldances$
 data/nl/wachtrijendans.pldances.bak.\d$
 data/nl/wachtrijendans.pl$

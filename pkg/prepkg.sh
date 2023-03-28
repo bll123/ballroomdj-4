@@ -28,9 +28,8 @@ case $systype in
     sfx=.exe
     ;;
   MINGW32*)
-    tag=win32
-    platform=windows
-    sfx=.exe
+    echo "Platform not supported."
+    exit 1
     ;;
 esac
 

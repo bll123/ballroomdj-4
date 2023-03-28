@@ -23,8 +23,8 @@ case $systype in
     platform=windows
     ;;
   MINGW32*)
-    os=win32
-    platform=windows
+    echo "Platform not supported"
+    exit 1
     ;;
 esac
 

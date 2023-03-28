@@ -81,7 +81,11 @@ function copyreleasefiles {
       dirlist+=" plocal/lib"
       dirlist+=" plocal/share/themes/macOS*"
       ;;
-    win64|win32)
+    win32)
+      echo "Not supported on this platform"
+      exit 1
+      ;;
+    win64)
       rm -rf plocal/lib/libicu*.so*
       cp -f packages/fpcalc-windows.exe plocal/bin/fpcalc.exe
       filelist+=" plocal/bin/fpcalc.exe"
@@ -108,8 +112,9 @@ function copyreleasefiles {
 
   echo "   removing exclusions"
   # bdj4se is only used for packaging
-  # testing: tdbcompare, tdbdump, tmusicsetup,
+  # testing:
   #   check_all, chkprocess, chkfileshared,
+  #   tdbcompare, tdbdump, testsuite, tmusicsetup,
   #   vlcsinklist, voltest, vsencdec
   # img/profile[1-9] may be left over from testing
   rm -f \
@@ -344,7 +349,7 @@ case $tag in
     cat bin/bdj4se ${tmpsep} ${tmpnm} > ${nm}
     rm -f ${tmpnm} ${tmpsep}
     ;;
-  win64|win32)
+  win64)
     copyreleasefiles ${tag} ${stagedir}
 
     tfnl=$(find ${stagedir}/templates -name bdjconfig.txt.mp)

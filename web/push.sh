@@ -27,9 +27,8 @@ case $systype in
     echo "sshpass is currently broken in msys2 "
     ;;
   MINGW32*)
-    tag=win32
-    platform=windows
-    echo "sshpass is currently broken in msys2 "
+    echo "Platform not supported."
+    exit 1
     ;;
 esac
 
