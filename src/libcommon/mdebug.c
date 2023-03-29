@@ -12,6 +12,9 @@
 #include <string.h>
 #include <inttypes.h>
 #include <stdarg.h>
+#if _hdr_execinfo
+# include <execinfo.h>
+#endif
 
 #include "mdebug.h"
 
@@ -26,6 +29,8 @@ typedef enum {
 
 enum {
   MDEBUG_ALLOC_BUMP = 1000,
+  MDEBUG_BACKTRACE_SIZE = 30,
+  MDEBUG_ENABLE_BACKTRACE = false,
 };
 
 enum {
@@ -48,6 +53,7 @@ typedef struct {
   const char    *fn;
   int           lineno;
   long          loc;
+  char          *bt;
 } mdebug_t;
 
 static char     mdebugtag [20] = { "none" };
@@ -60,10 +66,11 @@ static void mdebugResize (void);
 static void mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno);
 static void mdebugDel (long idx);
 static long mdebugFind (void *data);
-static int mdebugComp (const void *a, const void *b);
+static int  mdebugComp (const void *a, const void *b);
 static void mdebugSort (void);
 static void mdebugLog (const char *fmt, ...)
     __attribute__ ((format (printf, 1, 2)));
+static char *mdebugBacktrace (void);
 
 void
 mdfree_r (void *data, const char *fn, int lineno)
@@ -224,6 +231,11 @@ mdebugInit (const char *tag)
     for (int i = 0; i < MDEBUG_MAX; ++i) {
       mdebugcounts [i] = 0;
     }
+    if (MDEBUG_ENABLE_BACKTRACE) {
+      for (int i = 0; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
+        mdebug [i].bt = NULL;
+      }
+    }
     initialized = true;
   }
 }
@@ -236,6 +248,13 @@ mdebugReport (void)
     for (long i = 0; i < mdebugcounts [MDEBUG_COUNT]; ++i) {
       mdebugLog ("%4s 0x%08" PRIx64 " no-free %c %s %d\n", mdebugtag,
           (int64_t) mdebug [i].addr, mdebug [i].type, mdebug [i].fn, mdebug [i].lineno);
+      if (MDEBUG_ENABLE_BACKTRACE) {
+        if (mdebug [i].bt != NULL) {
+          mdebugLog ("%s\n", mdebug [i].bt);
+          free (mdebug [i].bt);
+        }
+        mdebug [i].bt = NULL;
+      }
       mdebugcounts [MDEBUG_ERRORS] += 1;
     }
     mdebugLog ("  count: %ld\n", mdebugcounts [MDEBUG_COUNT]);
@@ -254,6 +273,13 @@ void
 mdebugCleanup (void)
 {
   if (initialized) {
+    if (MDEBUG_ENABLE_BACKTRACE) {
+      for (int i = 0; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
+        if (mdebug [i].bt != NULL) {
+          free (mdebug [i].bt);
+        }
+      }
+    }
     if (mdebug != NULL) {
       free (mdebug);
       mdebug = NULL;
@@ -289,17 +315,28 @@ mdebugResize (void)
     mdebugcounts [MDEBUG_INT_ALLOC] += MDEBUG_ALLOC_BUMP;
     mdebug = realloc (mdebug, mdebugcounts [MDEBUG_INT_ALLOC] *
         sizeof (mdebug_t));
+    if (MDEBUG_ENABLE_BACKTRACE) {
+      for (int i = tval; i < mdebugcounts [MDEBUG_INT_ALLOC]; ++i) {
+        mdebug [i].bt = NULL;
+      }
+    }
   }
 }
 
 static void
 mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno)
 {
-  mdebug [mdebugcounts [MDEBUG_COUNT]].addr = (ssize_t) data;
-  mdebug [mdebugcounts [MDEBUG_COUNT]].type = type;
-  mdebug [mdebugcounts [MDEBUG_COUNT]].fn = fn;
-  mdebug [mdebugcounts [MDEBUG_COUNT]].lineno = lineno;
-  mdebug [mdebugcounts [MDEBUG_COUNT]].loc = mdebugcounts [MDEBUG_COUNT];
+  size_t    tidx;
+
+  tidx = mdebugcounts [MDEBUG_COUNT];
+  mdebug [tidx].addr = (ssize_t) data;
+  mdebug [tidx].type = type;
+  mdebug [tidx].fn = fn;
+  mdebug [tidx].lineno = lineno;
+  mdebug [tidx].loc = mdebugcounts [MDEBUG_COUNT];
+  if (MDEBUG_ENABLE_BACKTRACE) {
+    mdebug [tidx].bt = mdebugBacktrace ();
+  }
   mdebugcounts [MDEBUG_COUNT] += 1;
   if (mdebugcounts [MDEBUG_COUNT] > mdebugcounts [MDEBUG_COUNT_MAX]) {
     mdebugcounts [MDEBUG_COUNT_MAX] = mdebugcounts [MDEBUG_COUNT];
@@ -310,6 +347,12 @@ mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno)
 static void
 mdebugDel (long idx)
 {
+  if (MDEBUG_ENABLE_BACKTRACE) {
+    if (mdebug [idx].bt != NULL) {
+      free (mdebug [idx].bt);
+    }
+    mdebug [idx].bt = NULL;
+  }
   for (long i = idx; i + 1 < mdebugcounts [MDEBUG_COUNT]; ++i) {
     memcpy (&mdebug [i], &mdebug [i + 1], sizeof (mdebug_t));
     mdebug [i].loc = i;
@@ -389,5 +432,35 @@ mdebugLog (const char *fmt, ...)
   vfprintf (stderr, fmt, args);
   va_end (args);
 #endif
+}
+
+static char *
+mdebugBacktrace (void)
+{
+  char    *disp = NULL;
+
+#if _lib_backtrace
+  void    *array [MDEBUG_BACKTRACE_SIZE];
+  char    **out;
+  size_t  size;
+  size_t  dsz = 0;
+  char    tmp [2048];
+
+  size = backtrace (array, MDEBUG_BACKTRACE_SIZE);
+  out = backtrace_symbols (array, size);
+  for (size_t i = 0; i < size; ++i) {
+    size_t    odsz;
+
+    odsz = dsz;
+    dsz += snprintf (tmp, sizeof (tmp), "  %2ld: %s\n", i, out [i]);
+    dsz += 1;
+    disp = realloc (disp, dsz);
+    disp [odsz] = '\0';
+    strcat (disp, tmp);
+  }
+  free (out);
+#endif
+
+  return disp;
 }
 

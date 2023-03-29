@@ -44,16 +44,17 @@ uiImageFromFile (const char *fn)
 uiwcont_t *
 uiImageScaledFromFile (const char *fn, int scale)
 {
-  uiwcont_t *uiwidget;
+  uiwcont_t *uiwidget = NULL;
   GdkPixbuf *pixbuf;
-  GtkWidget *image;
-  GError    *gerr = NULL;
+  GtkWidget *image = NULL;
 
-  pixbuf = gdk_pixbuf_new_from_file_at_scale (fn, scale, -1, TRUE, &gerr);
-  image = gtk_image_new ();
-  gtk_image_set_from_pixbuf (GTK_IMAGE (image), pixbuf);
-  uiwidget = uiwcontAlloc ();
-  uiwidget->widget = image;
+  pixbuf = gdk_pixbuf_new_from_file_at_scale (fn, scale, -1, TRUE, NULL);
+  if (pixbuf != NULL) {
+    image = gtk_image_new ();
+    gtk_image_set_from_pixbuf (GTK_IMAGE (image), pixbuf);
+    uiwidget = uiwcontAlloc ();
+    uiwidget->widget = image;
+  }
   return uiwidget;
 }
 

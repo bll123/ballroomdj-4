@@ -42,7 +42,6 @@ dirlistBasicDirList (const char *dirname, const char *extension)
   char          temp [MAXPATHLEN];
   char          *cvtname;
   gsize         bread, bwrite;
-  GError        *gerr = NULL;
 
 
   if (! fileopIsDirectory (dirname)) {
@@ -73,14 +72,13 @@ dirlistBasicDirList (const char *dirname, const char *extension)
       pathInfoFree (pi);
     }
 
-    gerr = NULL;
     // ### can this be replaced with a call to the ICU library?
     // macos-NFD to utf8
     // the ICU library would need to convert to unicode and
     // back again.
     // glib is not a major issue.
     cvtname = g_filename_to_utf8 (fname, strlen (fname),
-        &bread, &bwrite, &gerr);
+        &bread, &bwrite, NULL);
     mdextalloc (cvtname);
     if (cvtname != NULL) {
       slistSetStr (fileList, cvtname, NULL);
@@ -105,7 +103,6 @@ dirlistRecursiveDirList (const char *dirname, int flags)
   char          *p;
   size_t        dirnamelen;
   gsize         bread, bwrite;
-  GError        *gerr = NULL;
 
   if (! fileopIsDirectory (dirname)) {
     return NULL;
@@ -130,9 +127,8 @@ dirlistRecursiveDirList (const char *dirname, int flags)
         continue;
       }
 
-      gerr = NULL;
       cvtname = g_filename_to_utf8 (fname, strlen (fname),
-          &bread, &bwrite, &gerr);
+          &bread, &bwrite, NULL);
       mdextalloc (cvtname);
       if (cvtname != NULL) {
         snprintf (temp, sizeof (temp), "%s/%s", dir, cvtname);

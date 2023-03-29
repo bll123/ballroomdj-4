@@ -15,7 +15,7 @@
 #include "osuiutils.h"
 
 void
-osuiSetIcon (char *fname)
+osuiSetIcon (const char *fname)
 {
   return;
 }

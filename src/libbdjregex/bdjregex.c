@@ -20,13 +20,12 @@ regexInit (const char *pattern)
 {
   bdjregex_t  *rx;
   GRegex      *regex;
-  GError      *gerr = NULL;
 
   if (pattern == NULL) {
     return NULL;
   }
 
-  regex = g_regex_new (pattern, G_REGEX_OPTIMIZE, 0, &gerr);
+  regex = g_regex_new (pattern, G_REGEX_OPTIMIZE, 0, NULL);
   if (regex == NULL) {
     fprintf (stderr, "ERR: failed to compile %s\n", pattern);
     return NULL;

@@ -264,6 +264,13 @@ uiWidgetGetPosition (uiwcont_t *uiwidget, int *x, int *y)
 {
   GtkAllocation alloc;
 
+  if (uiwidget == NULL) {
+    return;
+  }
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
   gtk_widget_get_allocation (uiwidget->widget, &alloc);
   *x = alloc.x;
   *y = alloc.y;
@@ -272,6 +279,13 @@ uiWidgetGetPosition (uiwcont_t *uiwidget, int *x, int *y)
 void
 uiWidgetSetClass (uiwcont_t *uiwidget, const char *class)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
   gtk_style_context_add_class (
      gtk_widget_get_style_context (uiwidget->widget), class);
 }
@@ -279,6 +293,13 @@ uiWidgetSetClass (uiwcont_t *uiwidget, const char *class)
 void
 uiWidgetRemoveClass (uiwcont_t *uiwidget, const char *class)
 {
+  if (uiwidget == NULL) {
+    return;
+  }
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
   gtk_style_context_remove_class (
       gtk_widget_get_style_context (uiwidget->widget), class);
 }

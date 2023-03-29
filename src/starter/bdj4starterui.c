@@ -116,7 +116,7 @@ enum {
   START_W_SUPPORT_MSG_DIALOG,
   START_W_SUPPORT_SEND_FILES,
   START_W_SUPPORT_SEND_DB,
-  START_WCONT_MAX,
+  START_W_MAX,
 };
 
 typedef struct {
@@ -158,7 +158,7 @@ typedef struct {
   startlinkinfo_t linkinfo [START_LINK_CB_MAX];
   uispinbox_t     *profilesel;
   uibutton_t      *buttons [START_BUTTON_MAX];
-  uiwcont_t       *wcont [START_WCONT_MAX];
+  uiwcont_t       *wcont [START_W_MAX];
   uitextbox_t     *supporttb;
   uientry_t       *supportsubject;
   uientry_t       *supportemail;
@@ -301,7 +301,7 @@ main (int argc, char *argv[])
   for (int i = 0; i < START_BUTTON_MAX; ++i) {
     starter.buttons [i] = NULL;
   }
-  for (int i = 0; i < START_WCONT_MAX; ++i) {
+  for (int i = 0; i < START_W_MAX; ++i) {
     starter.wcont [i] = NULL;
   }
   starter.support = NULL;
@@ -482,7 +482,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   starterSupportMsgDialogClear (starter);
   uiDialogDestroy (starter->wcont [START_W_SUPPORT_DIALOG]);
   starterSupportDialogClear (starter);
-  for (int i = 0; i < START_WCONT_MAX; ++i) {
+  for (int i = 0; i < START_W_MAX; ++i) {
     uiwcontFree (starter->wcont [i]);
   }
   for (int i = 0; i < START_BUTTON_MAX; ++i) {

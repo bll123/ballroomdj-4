@@ -86,6 +86,13 @@ enum {
   ALT_TARGET,
 };
 
+enum {
+  ALT_W_WINDOW,
+  ALT_W_REINST,
+  ALT_W_FEEDBACK_MSG,
+  ALT_W_MAX,
+};
+
 typedef struct {
   altsetupstate_t instState;
   callback_t      *callbacks [ALT_CB_MAX];
@@ -96,11 +103,9 @@ typedef struct {
   char            *home;
   char            dlfname [MAXPATHLEN];
   /* conversion */
-  uiwcont_t       *window;
+  uiwcont_t       *wcont [ALT_W_MAX];
   uientry_t       *targetEntry;
   uientry_t       *nameEntry;
-  uiwcont_t       *reinstWidget;
-  uiwcont_t       *feedbackMsg;
   uitextbox_t     *disptb;
   /* flags */
   bool            uiBuilt : 1;
@@ -176,7 +181,6 @@ main (int argc, char *argv[])
 
   buff [0] = '\0';
 
-  altsetup.window = NULL;
   altsetup.instState = ALT_PRE_INIT;
   altsetup.target = mdstrdup ("");
   altsetup.uiBuilt = false;
@@ -190,8 +194,9 @@ main (int argc, char *argv[])
   altsetup.quiet = false;
   altsetup.verbose = false;
   altsetup.unattended = false;
-  altsetup.reinstWidget = NULL;
-  altsetup.feedbackMsg = NULL;
+  for (int i = 0; i < ALT_W_MAX; ++i) {
+    altsetup.wcont [i] = NULL;
+  }
   for (int i = 0; i < ALT_BUTTON_MAX; ++i) {
     altsetup.buttons [i] = NULL;
   }
@@ -265,7 +270,7 @@ main (int argc, char *argv[])
   if (altsetup.guienabled) {
     /* process any final events */
     uiUIProcessEvents ();
-    uiCloseWindow (altsetup.window);
+    uiCloseWindow (altsetup.wcont [ALT_W_WINDOW]);
     uiCleanup ();
   }
 
@@ -301,15 +306,15 @@ altsetupBuildUI (altsetup_t *altsetup)
   snprintf (tbuff, sizeof (tbuff), _("%s Set Up Alternate"), BDJ4_NAME);
   altsetup->callbacks [ALT_CB_EXIT] = callbackInit (
       altsetupExitCallback, altsetup, NULL);
-  altsetup->window = uiCreateMainWindow (
+  altsetup->wcont [ALT_W_WINDOW] = uiCreateMainWindow (
       altsetup->callbacks [ALT_CB_EXIT], tbuff, imgbuff);
-  uiWindowSetDefaultSize (altsetup->window, 1000, 600);
+  uiWindowSetDefaultSize (altsetup->wcont [ALT_W_WINDOW], 1000, 600);
 
   vbox = uiCreateVertBox ();
   uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
-  uiBoxPackInWindow (altsetup->window, vbox);
+  uiBoxPackInWindow (altsetup->wcont [ALT_W_WINDOW], vbox);
 
   uiwidgetp = uiCreateLabel (
       /* CONTEXT: set up alternate: ask for alternate folder */
@@ -365,16 +370,16 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiBoxPackStart (vbox, hbox);
 
   /* CONTEXT: set up alternate: checkbox: re-install alternate */
-  altsetup->reinstWidget = uiCreateCheckButton (_("Re-Install"),
+  altsetup->wcont [ALT_W_REINST] = uiCreateCheckButton (_("Re-Install"),
       altsetup->reinstall);
-  uiBoxPackStart (hbox, altsetup->reinstWidget);
+  uiBoxPackStart (hbox, altsetup->wcont [ALT_W_REINST]);
   altsetup->callbacks [ALT_CB_REINST] = callbackInit (
       altsetupCheckDirTarget, altsetup, NULL);
-  uiToggleButtonSetCallback (altsetup->reinstWidget, altsetup->callbacks [ALT_CB_REINST]);
+  uiToggleButtonSetCallback (altsetup->wcont [ALT_W_REINST], altsetup->callbacks [ALT_CB_REINST]);
 
-  altsetup->feedbackMsg = uiCreateLabel ("");
-  uiWidgetSetClass (altsetup->feedbackMsg, INST_HL_CLASS);
-  uiBoxPackStart (hbox, altsetup->feedbackMsg);
+  altsetup->wcont [ALT_W_FEEDBACK_MSG] = uiCreateLabel ("");
+  uiWidgetSetClass (altsetup->wcont [ALT_W_FEEDBACK_MSG], INST_HL_CLASS);
+  uiBoxPackStart (hbox, altsetup->wcont [ALT_W_FEEDBACK_MSG]);
 
   uiwidgetp = uiCreateHorizSeparator ();
   uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
@@ -412,7 +417,7 @@ altsetupBuildUI (altsetup_t *altsetup)
   uiTextBoxVertExpand (altsetup->disptb);
   uiBoxPackStartExpand (vbox, uiTextBoxGetScrolledWindow (altsetup->disptb));
 
-  uiWidgetShowAll (altsetup->window);
+  uiWidgetShowAll (altsetup->wcont [ALT_W_WINDOW]);
   altsetup->uiBuilt = true;
 
   uiwcontFree (vbox);
@@ -537,7 +542,7 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
   }
 
   dir = uiEntryGetValue (altsetup->targetEntry);
-  tbool = uiToggleButtonIsActive (altsetup->reinstWidget);
+  tbool = uiToggleButtonIsActive (altsetup->wcont [ALT_W_REINST]);
   altsetup->newinstall = false;
   altsetup->reinstall = tbool;
 
@@ -557,17 +562,17 @@ altsetupValidateTarget (uientry_t *entry, void *udata)
     if (tbool) {
       /* CONTEXT: set up alternate: message indicating the action that will be taken */
       snprintf (tbuff, sizeof (tbuff), _("Re-install existing alternate."));
-      uiLabelSetText (altsetup->feedbackMsg, tbuff);
+      uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], tbuff);
     } else {
       /* CONTEXT: set up alternate: message indicating the action that will be taken */
       snprintf (tbuff, sizeof (tbuff), _("Updating existing alternate."));
-      uiLabelSetText (altsetup->feedbackMsg, tbuff);
+      uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], tbuff);
     }
   } else {
     altsetup->newinstall = true;
     /* CONTEXT: set up alternate: message indicating the action that will be taken */
     snprintf (tbuff, sizeof (tbuff), _("New alternate folder."));
-    uiLabelSetText (altsetup->feedbackMsg, tbuff);
+    uiLabelSetText (altsetup->wcont [ALT_W_FEEDBACK_MSG], tbuff);
   }
 
   if (! *dir) {
@@ -587,7 +592,7 @@ altsetupTargetDirDialog (void *udata)
   char        *fn = NULL;
   uiselect_t  *selectdata;
 
-  selectdata = uiDialogCreateSelect (altsetup->window,
+  selectdata = uiDialogCreateSelect (altsetup->wcont [ALT_W_WINDOW],
       /* CONTEXT: set up alternate: dialog title for selecting location */
       _("Alternate Location"),
       uiEntryGetValue (altsetup->targetEntry), NULL, NULL, NULL);
@@ -635,7 +640,7 @@ static void
 altsetupInit (altsetup_t *altsetup)
 {
   altsetupSetPaths (altsetup);
-  altsetup->reinstall = uiToggleButtonIsActive (altsetup->reinstWidget);
+  altsetup->reinstall = uiToggleButtonIsActive (altsetup->wcont [ALT_W_REINST]);
   altsetup->instState = ALT_MAKE_TARGET;
 }
 
@@ -864,10 +869,10 @@ altsetupUpdateProcess (altsetup_t *altsetup)
 static void
 altsetupCleanup (altsetup_t *altsetup)
 {
-  if (altsetup->target != NULL) {
-    uiwcontFree (altsetup->window);
-    uiwcontFree (altsetup->reinstWidget);
-    uiwcontFree (altsetup->feedbackMsg);
+  if (altsetup != NULL) {
+    for (int i = 0; i < ALT_W_MAX; ++i) {
+      uiwcontFree (altsetup->wcont [i]);
+    }
     for (int i = 0; i < ALT_CB_MAX; ++i) {
       callbackFree (altsetup->callbacks [i]);
     }
@@ -876,7 +881,8 @@ altsetupCleanup (altsetup_t *altsetup)
     }
     uiEntryFree (altsetup->nameEntry);
     uiEntryFree (altsetup->targetEntry);
-    mdfree (altsetup->target);
+    uiTextBoxFree (altsetup->disptb);
+    dataFree (altsetup->target);
   }
 }
 
