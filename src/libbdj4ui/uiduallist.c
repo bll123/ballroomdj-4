@@ -324,7 +324,6 @@ uiduallistSet (uiduallist_t *duallist, slist_t *slist, int which)
   }
 
   uiduallistSetDefaultSelection (duallist, which);
-  uiTreeViewSelectSet (uistree, 0);
 }
 
 bool
@@ -474,7 +473,6 @@ uiduallistDispRemove (void *udata)
   if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
     char          *str;
     long          tval;
-    callback_t    *cb;
 
     str = uiTreeViewGetValueStr (uittree, DUALLIST_COL_DISP);
     tval = uiTreeViewGetValue (uittree, DUALLIST_COL_DISP_IDX);
@@ -483,8 +481,7 @@ uiduallistDispRemove (void *udata)
     duallist->searchstr = str;
     duallist->searchtype = DUALLIST_SEARCH_INSERT;
     duallist->searchfound = false;
-    cb = callbackInit (uiduallistSourceSearch, duallist, NULL);
-    uiTreeViewForeach (uistree, cb);
+    uiTreeViewForeach (uistree, duallist->callbacks [DUALLIST_CB_SRC_SEARCH]);
 
     if (! duallist->searchfound) {
       duallist->pos = -1;

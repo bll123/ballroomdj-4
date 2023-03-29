@@ -794,8 +794,11 @@ uiTreeViewSelectGetCount (uitree_t *uitree)
   }
 
   count = gtk_tree_selection_count_selected_rows (uitree->sel);
+  /* don't muck up uitree->selectset if in multi-selection mode */
+  if (count == 0 && uitree->selmode == SELECT_SINGLE) {
+    uitree->selectset = false;
+  }
   if (count == 1 && uitree->selmode == SELECT_SINGLE) {
-    /* don't muck up uitree->selectset if in multi-selection mode */
     uitree->selectset = false;
     /* this only works if the treeview is in single-selection mode */
     valid = gtk_tree_selection_get_selected (uitree->sel, &uitree->model, &uitree->selectiter);
@@ -863,9 +866,9 @@ uiTreeViewSelectCurrent (uitree_t *uitree)
     uitree->selectprocessmode = SELECT_PROCESS_GET_SELECT_ITER;
     uiTreeViewSelectForeach (uitree, NULL);
     uitree->selectprocessmode = SELECT_PROCESS_NONE;
-  }
-  if (uitree->selectset) {
-    gtk_tree_selection_select_iter (uitree->sel, &uitree->selectiter);
+    if (uitree->selectset) {
+      gtk_tree_selection_select_iter (uitree->sel, &uitree->selectiter);
+    }
   }
 }
 
@@ -1284,6 +1287,7 @@ uiTreeViewEditedHandler (GtkCellRendererText* r, const gchar* pathstr,
 
   if (coltype == G_TYPE_STRING) {
     gtk_tree_model_get (uitree->model, &iter, col, &oldstr, -1);
+    mdextalloc (oldstr);
     gtk_list_store_set (GTK_LIST_STORE (uitree->model), &iter, col, ntext, -1);
   }
   if (coltype == G_TYPE_LONG) {

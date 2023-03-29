@@ -305,13 +305,21 @@ confuiSelectiTunesFile (void *udata)
   char        *fn = NULL;
   uiselect_t  *selectdata;
   char        tbuff [MAXPATHLEN];
+  char        dirbuff [MAXPATHLEN];
+  pathinfo_t  *pi;
 
   logProcBegin (LOG_PROC, "confuiSelectiTunesFile");
   /* CONTEXT: configuration: itunes xml file selection dialog: window title */
   snprintf (tbuff, sizeof (tbuff), _("Select %s XML File"), ITUNES_NAME);
+  strlcpy (dirbuff, bdjoptGetStr (OPT_M_ITUNES_XML_FILE), sizeof (dirbuff));
+  pi = pathInfo (dirbuff);
+  dirbuff [pi->dlen] = '\0';
+  pathInfoFree (pi);
+
   selectdata = uiDialogCreateSelect (gui->window, tbuff,
+      dirbuff, NULL,
       /* CONTEXT: configuration: dialog: XML file types */
-      bdjoptGetStr (OPT_M_ITUNES_XML_FILE), NULL, _("XML Files"), "application/xml");
+      _("XML Files"), "application/xml");
   fn = uiSelectFileDialog (selectdata);
   if (fn != NULL) {
     uiEntrySetValue (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry, fn);

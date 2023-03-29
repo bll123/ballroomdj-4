@@ -7,9 +7,10 @@
 **4.3.0.4 2023-4---**
 
 * Bug Fixes:
+    * Configuration: iTunes: Fix directory setting for choose file dialog.
+    * Mac OS: Fix support links.
     * Song Selection: Fix movement keys when the selection is off-screen.
     * Song Selection: Fix selection issues with movement keys.
-    * Mac OS: Fix support links.
 * Internal:
     * Code cleanup.
 
