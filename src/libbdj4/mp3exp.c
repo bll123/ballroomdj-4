@@ -33,7 +33,7 @@ enum {
 typedef struct mp3exp {
   char      *msgdata;
   musicdb_t *musicdb;
-  const char *dirname;
+  char      *dirname;
   int       mqidx;
   nlist_t   *savelist;
   int       counter;
@@ -53,7 +53,7 @@ mp3ExportInit (char *msgdata, musicdb_t *musicdb,
   mp3exp = mdmalloc (sizeof (mp3exp_t));
   mp3exp->msgdata = msgdata;
   mp3exp->musicdb = musicdb;
-  mp3exp->dirname = dirname;
+  mp3exp->dirname = mdstrdup (dirname);
   mp3exp->mqidx = mqidx;
   mp3exp->savelist = NULL;
   mp3exp->counter = 0;
@@ -70,6 +70,7 @@ void
 mp3ExportFree (mp3exp_t *mp3exp)
 {
   if (mp3exp != NULL) {
+    dataFree (mp3exp->dirname);
     dataFree (mp3exp->msgdata);
     nlistFree (mp3exp->savelist);
     mdfree (mp3exp);

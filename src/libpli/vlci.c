@@ -53,7 +53,7 @@ static const stateMap_t stateMap[] = {
   { libvlc_Error,           "error" }
 };
 enum {
-  stateMapMax = (sizeof(stateMap)/sizeof(stateMap_t))
+  stateMapMax = (sizeof (stateMap) / sizeof (stateMap_t))
 };
 
 static const char *   stateToStr (libvlc_state_t state);
@@ -317,7 +317,7 @@ vlcStateStr (vlcData_t *vlcData)
   }
 
   plstate = vlcData->state;
-  return (stateToStr(plstate));
+  return (stateToStr (plstate));
 }
 
 void

@@ -62,7 +62,7 @@ typedef union {
   char            defname [500];
   pa_cvolume      *vol;
   volsinklist_t   *sinklist;
-} callback_t;
+} pacallback_t;
 
 void
 volumeDisconnect (void)
@@ -93,7 +93,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     int *vol, volsinklist_t *sinklist, void **udata)
 {
   pa_operation    *op = NULL;
-  callback_t      cbdata;
+  pacallback_t    cbdata;
   unsigned int    tvol;
   int             count;
   char            defsinkname [200];
@@ -271,7 +271,7 @@ serverInfoCallback (
   const pa_server_info  *i,
   void                  *userdata)
 {
-  callback_t    *cbdata = (callback_t *) userdata;
+  pacallback_t  *cbdata = (pacallback_t *) userdata;
 
   strlcpy (cbdata->defname, i->default_sink_name, sizeof (cbdata->defname));
   pa_threaded_mainloop_signal (gstate.pamainloop, 0);
@@ -284,7 +284,7 @@ sinkVolCallback (
   int eol,
   void *userdata)
 {
-  callback_t    *cbdata = (callback_t *) userdata;
+  pacallback_t  *cbdata = (pacallback_t *) userdata;
 
   if (eol != 0) {
     pa_threaded_mainloop_signal (gstate.pamainloop, 0);
@@ -414,7 +414,7 @@ getSinkCallback (
   int                   eol,
   void                  *userdata)
 {
-  callback_t    *cbdata = (callback_t *) userdata;
+  pacallback_t  *cbdata = (pacallback_t *) userdata;
   int           defflag = 0;
   size_t        idx;
 
