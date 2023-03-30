@@ -228,6 +228,7 @@ distclean:
 .PHONY: clean
 clean:
 	@-$(MAKE) tclean
+	@-$(RM) -f zz ../zz ../*/zz
 	@-$(MAKE) eclean
 	@-test -d build && cmake --build build --target clean
 

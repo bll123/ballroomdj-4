@@ -30,6 +30,24 @@ esac
 
 FLAG=data/mktestdb.txt
 
+function copytestf {
+  ftype=$1
+  tag=$2
+  suffix=$3
+
+  to=test-${ftype}-${tag}
+
+  ftag=a
+  if [[ -f test-templates/test-${ftype}-${tag}.${suffix} ]]; then
+    ftag=$tag
+  fi
+  if [[ -f test-templates/test-${ftype}-${ftag}.${suffix} ]]; then
+    cp -f test-templates/test-${ftype}-${ftag}.${suffix} data/${to}.${suffix}
+  fi
+}
+
+
+
 # copy this stuff before creating the database...
 # otherwise the dances.txt file may be incorrect.
 
@@ -85,75 +103,20 @@ cp -f test-templates/ds-songfilter.txt data/profile00
 cp -f test-templates/ui-*.txt data/profile00
 mv -f data/profile00/ui-starter.txt data
 
-# songlist a
-to=test-sl-a
-cp -f test-templates/test-sl-a.pl data/${to}.pl
-cp -f test-templates/test-sl-a.pldances data/${to}.pldances
-cp -f test-templates/test-sl-a.songlist data/${to}.songlist
-# songlist b
-to=test-sl-b
-cp -f test-templates/test-sl-a.pl data/${to}.pl
-cp -f test-templates/test-sl-b.pldances data/${to}.pldances
-cp -f test-templates/test-sl-a.songlist data/${to}.songlist
-# songlist c
-to=test-sl-c
-cp -f test-templates/test-sl-c.pl data/${to}.pl
-cp -f test-templates/test-sl-a.pldances data/${to}.pldances
-cp -f test-templates/test-sl-a.songlist data/${to}.songlist
-# songlist d
-to=test-sl-d
-cp -f test-templates/test-sl-d.pl data/${to}.pl
-cp -f test-templates/test-sl-a.pldances data/${to}.pldances
-cp -f test-templates/test-sl-a.songlist data/${to}.songlist
-# songlist e
-to=test-sl-e
-cp -f test-templates/test-sl-e.pl data/${to}.pl
-cp -f test-templates/test-sl-a.pldances data/${to}.pldances
-cp -f test-templates/test-sl-a.songlist data/${to}.songlist
-# songlist f
-to=test-sl-f
-cp -f test-templates/test-sl-f.pl data/${to}.pl
-cp -f test-templates/test-sl-a.pldances data/${to}.pldances
-cp -f test-templates/test-sl-a.songlist data/${to}.songlist
-# songlist g
-to=test-sl-g
-cp -f test-templates/test-sl-g.pl data/${to}.pl
-cp -f test-templates/test-sl-a.pldances data/${to}.pldances
-cp -f test-templates/test-sl-a.songlist data/${to}.songlist
-
-# sequence a
-to=test-seq-a
-cp -f test-templates/test-seq-a.pl data/${to}.pl
-cp -f test-templates/test-seq-a.pldances data/${to}.pldances
-cp -f test-templates/test-seq-a.sequence data/${to}.sequence
-# sequence b
-to=test-seq-b
-cp -f test-templates/test-seq-a.pl data/${to}.pl
-cp -f test-templates/test-seq-b.pldances data/${to}.pldances
-cp -f test-templates/test-seq-a.sequence data/${to}.sequence
-# sequence c
-to=test-seq-c
-cp -f test-templates/test-seq-a.pl data/${to}.pl
-cp -f test-templates/test-seq-c.pldances data/${to}.pldances
-cp -f test-templates/test-seq-a.sequence data/${to}.sequence
-# sequence d
-to=test-seq-d
-cp -f test-templates/test-seq-d.pl data/${to}.pl
-cp -f test-templates/test-seq-a.pldances data/${to}.pldances
-cp -f test-templates/test-seq-a.sequence data/${to}.sequence
-
-# auto a
-to=test-auto-a
-cp -f test-templates/test-auto-a.pl data/${to}.pl
-cp -f test-templates/test-auto-a.pldances data/${to}.pldances
-# auto b
-to=test-auto-b
-cp -f test-templates/test-auto-a.pl data/${to}.pl
-cp -f test-templates/test-auto-b.pldances data/${to}.pldances
-# auto c
-to=test-auto-c
-cp -f test-templates/test-auto-a.pl data/${to}.pl
-cp -f test-templates/test-auto-c.pldances data/${to}.pldances
+for ftype in sl seq auto; do
+  for tag in a b c d e f g; do
+    if [[ $ftype == auto && $tag == d ]]; then
+      break
+    fi
+    if [[ $ftype == seq && $tag == e ]]; then
+      break
+    fi
+    copytestf ${ftype} ${tag} pl 1
+    copytestf ${ftype} ${tag} pldances 0
+    copytestf ${ftype} ${tag} songlist 0
+    copytestf ${ftype} ${tag} sequence 0
+  done
+done
 
 for tfn in data/profile00/bdjconfig.q?.txt; do
   sed -e '/^FADEOUTTIME/ { n ; s/.*/..4000/ ; }' \

@@ -1,0 +1,38 @@
+# songlist
+# 2022-08-22 19:14:32
+version
+..1
+count
+..4
+KEY
+..0
+FILE
+..006-tango.mp3
+TITLE
+..006-tango
+DANCE
+..Tango
+KEY
+..1
+FILE
+..006-viennesewaltz.mp3
+TITLE
+..006-viennesewaltz
+DANCE
+..Viennese Waltz
+KEY
+..2
+FILE
+..006-waltz.mp3
+TITLE
+..006-waltz
+DANCE
+..Waltz
+KEY
+..3
+FILE
+..006-westcoastswing.mp3
+TITLE
+..006-westcoastswing
+DANCE
+..West Coast Swing
