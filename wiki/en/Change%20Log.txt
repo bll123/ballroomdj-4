@@ -12,6 +12,8 @@
     * Mac OS: Fix support links.
     * Song Selection: Fix movement keys when the selection is off-screen.
     * Song Selection: Fix selection issues with movement keys.
+* Changes:
+    * History: Add a label indicating which queue is being managed when show extra queues is on.
 * Internal:
     * Code cleanup.
 

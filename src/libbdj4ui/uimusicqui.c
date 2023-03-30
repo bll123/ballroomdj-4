@@ -88,12 +88,18 @@ enum {
   UIMUSICQ_BUTTON_MAX,
 };
 
+enum {
+  UIMUSICQ_W_REQ_QUEUE,
+  UIMUSICQ_W_MAX,
+};
+
 typedef struct mq_internal {
   uidance_t         *uidance;
   uidance_t         *uidance5;
   uitree_t          *musicqTree;
   callback_t        *callbacks [UIMUSICQ_CB_MAX];
   uibutton_t        *buttons [UIMUSICQ_BUTTON_MAX];
+  uiwcont_t         *wcont [UIMUSICQ_W_MAX];
   int               *typelist;
   uikey_t           *uikey;
   int               colcount;         // for the display type callback
@@ -144,6 +150,9 @@ uimusicqUIInit (uimusicq_t *uimusicq)
     for (int j = 0; j < UIMUSICQ_CB_MAX; ++j) {
       mqint->callbacks [j] = NULL;
     }
+    for (int j = 0; j < UIMUSICQ_W_MAX; ++j) {
+      mqint->wcont [j] = NULL;
+    }
   }
 }
 
@@ -160,6 +169,9 @@ uimusicqUIFree (uimusicq_t *uimusicq)
       }
       for (int j = 0; j < UIMUSICQ_BUTTON_MAX; ++j) {
         uiButtonFree (mqint->buttons [j]);
+      }
+      for (int j = 0; j < UIMUSICQ_W_MAX; ++j) {
+        uiwcontFree (mqint->wcont [j]);
       }
       uidanceFree (mqint->uidance);
       uidanceFree (mqint->uidance5);
@@ -312,6 +324,11 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     mqint->buttons [UIMUSICQ_BUTTON_QUEUE] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (hbox, uiwidgetp);
+
+    uiwidgetp = uiCreateLabel ("");
+    uiWidgetSetClass (uiwidgetp, DARKACCENT_CLASS);
+    uiBoxPackStart (hbox, uiwidgetp);
+    mqint->wcont [UIMUSICQ_W_REQ_QUEUE] = uiwidgetp;
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
@@ -661,6 +678,19 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
 
   uimusicqProcessMusicQueueDisplay (uimusicq, musicqupdate);
   logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueDataUpdate", "");
+}
+
+void
+uimusicqSetRequestLabel (uimusicq_t *uimusicq, const char *txt)
+{
+  mq_internal_t  *mqint;
+
+  if (uimusicq == NULL) {
+    return;
+  }
+
+  mqint = uimusicq->ui [MUSICQ_HISTORY].mqInternalData;
+  uiLabelSetText (mqint->wcont [UIMUSICQ_W_REQ_QUEUE], txt);
 }
 
 /* internal routines */

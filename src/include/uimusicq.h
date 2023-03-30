@@ -123,6 +123,7 @@ bool      uimusicqTruncateQueueCallback (void *udata);
 void      uimusicqSetPlayButtonState (uimusicq_t *uimusicq, int active);
 void      uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate);
 void      uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqupdate, int newdispflag);
+void      uimusicqSetRequestLabel (uimusicq_t *uimusicq, const char *txt);
 
 /* uimusicqcommon.c */
 void  uimusicqQueueDanceProcess (uimusicq_t *uimusicq, long idx, int count);

@@ -1226,8 +1226,11 @@ pluiSetManageQueue (playerui_t *plui, musicqidx_t mqidx)
     if (val) {
       uisongselSetRequestLabel (plui->uisongsel,
           bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, mqidx));
+      uimusicqSetRequestLabel (plui->uimusicq,
+          bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, mqidx));
     } else {
       uisongselSetRequestLabel (plui->uisongsel, "");
+      uimusicqSetRequestLabel (plui->uimusicq, "");
     }
   }
 
@@ -1254,8 +1257,11 @@ pluiToggleExtraQueues (void *udata)
   if (! val) {
     pluiSetPlaybackQueue (plui, MUSICQ_PB_A, PLUI_UPDATE_MAIN);
     uisongselSetRequestLabel (plui->uisongsel, "");
+    uimusicqSetRequestLabel (plui->uimusicq, "");
   } else {
     uisongselSetRequestLabel (plui->uisongsel,
+        bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, plui->musicqManageIdx));
+    uimusicqSetRequestLabel (plui->uimusicq,
         bdjoptGetStrPerQueue (OPT_Q_QUEUE_NAME, plui->musicqManageIdx));
   }
   logProcEnd (LOG_PROC, "pluiToggleExtraQueues", "");
