@@ -174,8 +174,8 @@ uimusicqPlay (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)
 void
 uimusicqQueue (uimusicq_t *uimusicq, int mqidx, dbidx_t dbidx)
 {
-  if (uimusicq->queuecb != NULL) {
-    callbackHandlerLongInt (uimusicq->queuecb, dbidx, mqidx);
+  if (uimusicq->cbcopy [MUSICQ_CBC_QUEUE] != NULL) {
+    callbackHandlerLongInt (uimusicq->cbcopy [MUSICQ_CBC_QUEUE], dbidx, mqidx);
   }
 }
 

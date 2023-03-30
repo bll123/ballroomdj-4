@@ -1502,6 +1502,7 @@ pluiQueueProcess (void *udata, long dbidx, int mqidx)
   }
 
   loc = uimusicqGetSelectLocation (plui->uimusicq, mqidx);
+fprintf (stderr, "plui: q-process: mqidx: %d loc: %ld\n", mqidx, loc);
 
   /* increment the location by 1 as the tree-view index is one less than */
   /* the music queue index */

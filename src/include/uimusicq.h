@@ -31,6 +31,24 @@ enum {
   UIMUSICQ_REPEAT_TIME = 200,
 };
 
+enum {
+  MUSICQ_CB_QUEUE_PLAYLIST,
+  MUSICQ_CB_QUEUE_DANCE,
+  MUSICQ_CB_SAVE_LIST,
+  MUSICQ_CB_MAX,
+};
+
+/* these are copies of the callbacks and should not be freed */
+enum {
+  MUSICQ_CBC_CLEAR_QUEUE,
+  MUSICQ_CBC_EDIT,
+  MUSICQ_CBC_ITERATE,        // temporary for save
+  MUSICQ_CBC_NEW_SEL,
+  MUSICQ_CBC_QUEUE,
+  MUSICQ_CBC_SONG_SAVE,
+  MUSICQ_CBC_MAX,
+};
+
 typedef struct mq_internal mq_internal_t;
 
 typedef struct {
@@ -50,6 +68,7 @@ typedef struct {
   bool          hasui : 1;
   bool          haveselloc : 1;
   bool          selchgbypass : 1;
+  bool          newflag : 1;
 } uimusicqui_t;
 
 typedef struct uimusicq uimusicq_t;
@@ -64,26 +83,18 @@ typedef struct uimusicq {
   uiwcont_t         *parentwin;
   uiwcont_t         *pausePixbuf;
   uiwcont_t         *statusMsg;
-  callback_t        *newselcb;
-  callback_t        *editcb;
-  callback_t        *songsavecb;
-  callback_t        *queuecb;
-  callback_t        *clearqueuecb;
-  callback_t        *queueplcb;
-  callback_t        *queuedancecb;
-  callback_t        *savelistcb;
+  callback_t        *callbacks [MUSICQ_CB_MAX];
+  callback_t        *cbcopy [MUSICQ_CBC_MAX];
   uimusicqui_t      ui [MUSICQ_MAX];
   /* peers */
   int               peercount;
   uimusicq_t        *peers [UIMUSICQ_PEER_MAX];
   bool              ispeercall;
   /* temporary for save */
-  callback_t        *iteratecb;
   nlist_t           *savelist;
   int               cbci;
   bool              backupcreated : 1;
   bool              changed : 1;
-  bool              newflag : 1;
 } uimusicq_t;
 
 /* uimusicq.c */
