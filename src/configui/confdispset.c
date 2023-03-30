@@ -34,6 +34,8 @@ confuiInitDispSettings (confuigui_t *gui)
   snprintf (tbuff, sizeof (tbuff), _("Song Editor - Column %d"), 1);
   snprintf (tbuffb, sizeof (tbuffb), _("Song Editor - Column %d"), 2);
   snprintf (tbuffc, sizeof (tbuffc), _("Song Editor - Column %d"), 3);
+  /* as this list is set up manually, it will automatically skip */
+  /* the disp-sel-max-player marker */
   confuiSpinboxTextInitDataNum (gui, "cu-disp-settings",
       CONFUI_SPINBOX_DISP_SEL,
       /* CONTEXT: configuration: display settings for: music queue */

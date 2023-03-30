@@ -462,7 +462,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, &manage.musicdb, "mui", ROUTE_MANAGEUI, &flags);
   logProcBegin (LOG_PROC, "manageui");
 
-  manage.dispsel = dispselAlloc ();
+  manage.dispsel = dispselAlloc (DISP_SEL_LOAD_MANAGE);
 
   listenPort = bdjvarsGetNum (BDJVL_MANAGEUI_PORT);
   manage.conn = connInit (ROUTE_MANAGEUI);

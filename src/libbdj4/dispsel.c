@@ -40,7 +40,7 @@ static char *dispselmap [DISP_SEL_MAX] = {
 static void dispselCreateList (dispsel_t *dispsel, slist_t *tlist, int selidx);
 
 dispsel_t *
-dispselAlloc (void)
+dispselAlloc (int loadtype)
 {
   dispsel_t     *dispsel;
   slist_t       *tlist;
@@ -53,6 +53,16 @@ dispselAlloc (void)
     dispsel->dispsel [i] = NULL;
     dispsel->df [i] = NULL;
     dispsel->name [i] = NULL;
+
+    if (loadtype == DISP_SEL_LOAD_PLAYER && i >= DISP_SEL_MAX_PLAYER) {
+      continue;
+    }
+    if (loadtype == DISP_SEL_LOAD_MANAGE && i <= DISP_SEL_MAX_PLAYER) {
+      continue;
+    }
+    if (i == DISP_SEL_MAX_PLAYER) {
+      continue;
+    }
 
     pathbldMakePath (fn, sizeof (fn),
         dispselmap [i], BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
@@ -94,6 +104,9 @@ dispselGetList (dispsel_t *dispsel, dispselsel_t idx)
   if (idx >= DISP_SEL_MAX) {
     return NULL;
   }
+  if (idx == DISP_SEL_MAX_PLAYER) {
+    return NULL;
+  }
 
   return dispsel->dispsel [idx];
 }
@@ -105,6 +118,9 @@ dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list)
     return;
   }
   if (idx >= DISP_SEL_MAX) {
+    return;
+  }
+  if (idx == DISP_SEL_MAX_PLAYER) {
     return;
   }
 

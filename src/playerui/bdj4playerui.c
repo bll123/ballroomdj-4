@@ -262,7 +262,7 @@ main (int argc, char *argv[])
   if (bdjoptGetNum (OPT_P_MARQUEE_SHOW) == MARQUEE_SHOW_OFF) {
     plui.marqueeoff = true;
   }
-  plui.dispsel = dispselAlloc ();
+  plui.dispsel = dispselAlloc (DISP_SEL_LOAD_PLAYER);
 
   listenPort = bdjvarsGetNum (BDJVL_PLAYERUI_PORT);
   plui.conn = connInit (ROUTE_PLAYERUI);

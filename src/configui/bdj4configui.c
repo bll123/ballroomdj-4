@@ -193,7 +193,7 @@ main (int argc, char *argv[])
   bdj4startup (argc, argv, NULL, "cfui", ROUTE_CONFIGUI, &confui.dbgflags);
   logProcBegin (LOG_PROC, "configui");
 
-  confui.gui.dispsel = dispselAlloc ();
+  confui.gui.dispsel = dispselAlloc (DISP_SEL_LOAD_ALL);
 
   confuiInitGeneral (&confui.gui);
   confuiInitPlayer (&confui.gui);

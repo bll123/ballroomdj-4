@@ -7,13 +7,22 @@
 #include "datafile.h"
 #include "slist.h"
 
+enum {
+  DISP_SEL_LOAD_PLAYER,
+  DISP_SEL_LOAD_MANAGE,
+  DISP_SEL_LOAD_ALL,
+};
+
 typedef enum {
+  /* the following are used by the player ui */
+  DISP_SEL_HISTORY,
+  DISP_SEL_MUSICQ,
+  DISP_SEL_REQUEST,
+  DISP_SEL_MAX_PLAYER,
+  /* the following are used by the management ui */
   DISP_SEL_EZSONGLIST,
   DISP_SEL_EZSONGSEL,
   DISP_SEL_MM,
-  DISP_SEL_MUSICQ,
-  DISP_SEL_HISTORY,
-  DISP_SEL_REQUEST,
   DISP_SEL_SONGEDIT_A,
   DISP_SEL_SONGEDIT_B,
   DISP_SEL_SONGEDIT_C,
@@ -24,7 +33,7 @@ typedef enum {
 
 typedef struct dispsel dispsel_t;
 
-dispsel_t * dispselAlloc (void);
+dispsel_t * dispselAlloc (int loadtype);
 void      dispselFree (dispsel_t *dispsel);
 slist_t   * dispselGetList (dispsel_t *dispsel, dispselsel_t idx);
 void      dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list);

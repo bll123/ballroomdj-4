@@ -36,7 +36,7 @@ START_TEST(dispsel_alloc)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dispsel_alloc");
 
-  dsel = dispselAlloc ();
+  dsel = dispselAlloc (DISP_SEL_LOAD_ALL);
   dispselFree (dsel);
 }
 END_TEST
@@ -49,7 +49,7 @@ START_TEST(dispsel_get_list)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dispsel_get_list");
 
 
-  dsel = dispselAlloc ();
+  dsel = dispselAlloc (DISP_SEL_LOAD_ALL);
   tlist = dispselGetList (dsel, DISP_SEL_MUSICQ);
   ck_assert_int_gt (slistGetCount (tlist), 0);
   tlist = dispselGetList (dsel, DISP_SEL_SONGEDIT_A);
@@ -73,7 +73,7 @@ START_TEST(dispsel_save)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dispsel_save");
 
-  dsel = dispselAlloc ();
+  dsel = dispselAlloc (DISP_SEL_LOAD_ALL);
   tlist = dispselGetList (dsel, DISP_SEL_MUSICQ);
   ck_assert_int_gt (slistGetCount (tlist), 0);
 
