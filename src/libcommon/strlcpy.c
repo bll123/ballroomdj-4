@@ -1,6 +1,3 @@
-/*
- * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
- */
 /* from: https://doxygen.postgresql.org/strlcpy_8c_source.html */
 /*-------------------------------------------------------------------------
  *
