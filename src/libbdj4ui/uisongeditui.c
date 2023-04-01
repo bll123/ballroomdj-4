@@ -51,11 +51,15 @@ enum {
 
 enum {
   UISE_SZGRP_ENTRY,
+  /* label_A through label_C must be sequential */
+  UISE_SZGRP_LABEL_A,
+  UISE_SZGRP_LABEL_B,
+  UISE_SZGRP_LABEL_C,
+  UISE_SZGRP_SCALE,
+  UISE_SZGRP_SCALE_DISP,
   UISE_SZGRP_SPIN_NUM,
   UISE_SZGRP_SPIN_TEXT,
   UISE_SZGRP_SPIN_TIME,
-  UISE_SZGRP_SCALE,
-  UISE_SZGRP_SCALE_DISP,
   UISE_SZGRP_MAX,
 };
 
@@ -191,20 +195,13 @@ uisongeditUIInit (uisongedit_t *uisongedit)
     seint->callbacks [i] = NULL;
   }
   for (int i = 0; i < UISE_SZGRP_MAX; ++i) {
-    seint->szgrp [i] = NULL;
+    seint->szgrp [i] = uiCreateSizeGroupHoriz ();
   }
   for (int i = 0; i < UISE_W_MAX; ++i) {
     seint->wcont [i] = NULL;
   }
   seint->checkchanged = false;
   seint->ineditallapply = false;
-
-  seint->szgrp [UISE_SZGRP_ENTRY] = uiCreateSizeGroupHoriz ();
-  seint->szgrp [UISE_SZGRP_SPIN_NUM] = uiCreateSizeGroupHoriz ();
-  seint->szgrp [UISE_SZGRP_SPIN_TEXT] = uiCreateSizeGroupHoriz ();
-  seint->szgrp [UISE_SZGRP_SPIN_TIME] = uiCreateSizeGroupHoriz ();
-  seint->szgrp [UISE_SZGRP_SCALE] = uiCreateSizeGroupHoriz ();
-  seint->szgrp [UISE_SZGRP_SCALE_DISP] = uiCreateSizeGroupHoriz ();
 
   uisongedit->seInternalData = seint;
   logProcEnd (LOG_PROC, "uisongeditUIInit", "");
@@ -313,7 +310,6 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
 {
   se_internal_t     *seint;
   uiwcont_t         *hbox;
-  uiwcont_t         *szgrp;
   uibutton_t        *uibutton;
   uiwcont_t         *uiwidgetp;
   int               count;
@@ -482,8 +478,6 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
   seint->callbacks [UISE_CB_CHANGED] = callbackInit (
       uisongeditChangedCallback, seint, NULL);
 
-  szgrp = uiCreateSizeGroupHoriz ();
-
   for (int i = DISP_SEL_SONGEDIT_A; i <= DISP_SEL_SONGEDIT_C; ++i) {
     uiwcont_t   *col;
 
@@ -493,12 +487,12 @@ uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit,
     uiWidgetExpandVert (col);
     uiBoxPackStartExpand (hbox, col);
 
-    uisongeditAddDisplay (uisongedit, col, szgrp, i);
+    uisongeditAddDisplay (uisongedit, col,
+        seint->szgrp [UISE_SZGRP_LABEL_A + i - DISP_SEL_SONGEDIT_A], i);
     uiwcontFree (col);
   }
 
   uiwcontFree (hbox);
-  uiwcontFree (szgrp);
 
   logProcEnd (LOG_PROC, "uisongeditBuildUI", "");
   return seint->wcont [UISE_W_MAIN_VBOX];
@@ -1104,6 +1098,7 @@ uisongeditAddItem (uisongedit_t *uisongedit, uiwcont_t *hbox, uiwcont_t *sg, int
     seint->items [seint->itemcount].lastchanged = false;
 
     uiwidgetp = uiCreateColonLabel (tagdefs [tagkey].displayname);
+    uiWidgetSetMarginEnd (uiwidgetp, 4);
     uiBoxPackStart (hbox, uiwidgetp);
     uiSizeGroupAdd (sg, uiwidgetp);
     seint->items [seint->itemcount].label = uiwidgetp;

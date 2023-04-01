@@ -11,6 +11,7 @@
     * Player: Previous selection is no longer highlighted.
     * Configuration: iTunes: Fix directory setting for choose file dialog.
     * Mac OS: Fix support links.
+    * Song Editor: Adjust column labels to reduce horizontal space used.
     * Song Selection: Fix movement keys when the selection is off-screen.
     * Song Selection: Fix selection issues with movement keys.
     * Starter: Fix re-positioning of starter window.

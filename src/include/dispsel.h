@@ -23,6 +23,7 @@ typedef enum {
   DISP_SEL_EZSONGLIST,
   DISP_SEL_EZSONGSEL,
   DISP_SEL_MM,
+  /* songedit_a through songedit_c must be sequential */
   DISP_SEL_SONGEDIT_A,
   DISP_SEL_SONGEDIT_B,
   DISP_SEL_SONGEDIT_C,
