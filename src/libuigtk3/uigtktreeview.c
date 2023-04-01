@@ -989,6 +989,23 @@ uiTreeViewSelectRestore (uitree_t *uitree)
   }
 }
 
+void
+uiTreeViewSelectClear (uitree_t *uitree)
+{
+  if (uitree == NULL) {
+    return;
+  }
+  if (uitree->model == NULL) {
+    return;
+  }
+  if (! uitree->selectset) {
+    return;
+  }
+
+  gtk_tree_selection_unselect_iter (uitree->sel, &uitree->selectiter);
+  uitree->selectset = false;
+}
+
 /* use when the select mode is select-multiple */
 void
 uiTreeViewSelectClearAll (uitree_t *uitree)

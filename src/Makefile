@@ -9,6 +9,8 @@ GCC = gcc
 GXX = g++
 CLANG = clang
 CLANGXX = clang++
+
+# bdj4 options
 BDJ4_UI = GTK
 
 .PHONY: release
@@ -128,7 +130,7 @@ cmake-windows:
 		-G "MSYS Makefiles" \
 		-S . -B $(BUILDDIR) -Werror=deprecated
 
-# windows installs extra unneeded crap
+# cmake on windows installs extra unneeded crap
 # --parallel does not work correctly on msys2
 .PHONY: build
 build:

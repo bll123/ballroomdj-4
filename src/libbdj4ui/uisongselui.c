@@ -1511,15 +1511,10 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
 
     loc = nidx - uisongsel->idxStart;
 
-    /* there's only one selected, clear them all */
-    uisongselClearSelections (uisongsel);
-    uisongselClearAllUISelections (uisongsel);
-
     if (direction == UISONGSEL_FIRST) {
       nidx = 0;
       loc = 0;
       scrolled = uisongselScrollSelection (uisongsel, 0, UISONGSEL_SCROLL_NORMAL, UISONGSEL_DIR_NONE);
-      uiTreeViewSelectFirst (ssint->songselTree);
     }
     if (direction == UISONGSEL_NEXT) {
       while (lines > 0) {
@@ -1530,8 +1525,8 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
 
           idx = uiTreeViewGetValue (ssint->songselTree, SONGSEL_COL_IDX);
           if (loc < ssint->maxRows - 1 &&
-              idx < uisongsel->dfilterCount - 1) {
-            /* any current selection must be re-cleared */
+              idx < (long) uisongsel->dfilterCount - 1) {
+            uiTreeViewSelectClear (ssint->songselTree);
             uiTreeViewSelectNext (ssint->songselTree);
             ++loc;
           } else {
@@ -1547,7 +1542,7 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
         scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_PREVIOUS);
         if (! scrolled) {
           if (loc > 0) {
-            /* any current selection must be re-cleared */
+            uiTreeViewSelectClear (ssint->songselTree);
             uiTreeViewSelectPrevious (ssint->songselTree);
             --loc;
           } else {
@@ -1558,16 +1553,13 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
       }
     }
 
-    uisongselClearAllUISelections (uisongsel);
+    uiTreeViewSelectClear (ssint->songselTree);
 
     /* if the scroll was bumped, the iterator is still pointing to the same */
     /* row (but a new dbidx), re-select it */
     /* if the iter was moved, it is pointing at the new selection */
     /* if the iter was not moved, the original must be re-selected */
-    if (direction != UISONGSEL_FIRST) {
-      uiTreeViewSelectSet (ssint->songselTree, loc);
-    }
-    uiTreeViewSelectCurrent (ssint->songselTree);
+    uiTreeViewSelectSet (ssint->songselTree, loc);
   }
 }
 

@@ -95,6 +95,7 @@ bool  uiTreeViewSelectPrevious (uitree_t *uitree);
 void  uiTreeViewSelectDefault (uitree_t *uitree);
 void  uiTreeViewSelectSave (uitree_t *uitree);
 void  uiTreeViewSelectRestore (uitree_t *uitree);
+void  uiTreeViewSelectClear (uitree_t *uitree);
 void  uiTreeViewSelectClearAll (uitree_t *uitree);
 void  uiTreeViewSelectForeach (uitree_t *uitree, callback_t *cb);
 void  uiTreeViewMoveBefore (uitree_t *uitree);
