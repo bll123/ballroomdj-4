@@ -167,7 +167,7 @@ uisfFree (uisongfilter_t *uisf)
 {
   if (uisf != NULL) {
     dataFree (uisf->playlistname);
-    uiDialogDestroy (uisf->filterDialog);
+    uiwcontFree (uisf->playlistdisp);
     uiwcontFree (uisf->filterDialog);
     uiDropDownFree (uisf->playlistfilter);
     uiDropDownFree (uisf->sortbyfilter);
@@ -469,9 +469,11 @@ uisfCreateDialog (uisongfilter_t *uisf)
   hbox = accent.hbox;
   uiwcontFree (accent.label);
 
+  uiwcontFree (hbox);
+  /* begin line */
+
   /* playlist : only available for the music manager */
   /* in this case, the entire hbox will be shown/hidden */
-  uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
   uisf->playlistdisp = hbox;
@@ -489,6 +491,9 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uisfCreatePlaylistList (uisf);
   uiBoxPackStart (hbox, uiwidgetp);
   /* looks bad if added to the size group */
+
+  /* do not free hbox (playlistdisp) */
+  /* begin line */
 
   /* sort-by : always available */
   hbox = uiCreateHorizBox ();
@@ -508,8 +513,10 @@ uisfCreateDialog (uisongfilter_t *uisf)
   uiBoxPackStart (hbox, uiwidgetp);
   /* looks bad if added to the size group */
 
-  /* search : always available */
   uiwcontFree (hbox);
+  /* begin line */
+
+  /* search : always available */
   hbox = uiCreateHorizBox ();
   uiBoxPackStart (vbox, hbox);
 
@@ -541,7 +548,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
     uisf->uigenre = uigenreDropDownCreate (hbox, uisf->filterDialog, true);
     uigenreSetCallback (uisf->uigenre, uisf->callbacks [UISF_CB_GENRE_SEL]);
     /* looks bad if added to the size group */
- }
+  }
 
   /* dance : always available */
   uiwcontFree (hbox);

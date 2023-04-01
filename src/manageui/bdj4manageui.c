@@ -584,8 +584,6 @@ manageClosingCallback (void *udata, programstate_t programState)
 
   manageDbClose (manage->managedb);
 
-  uiDialogDestroy (manage->wcont [MANAGE_W_ITUNES_SEL_DIALOG]);
-  uiDialogDestroy (manage->wcont [MANAGE_W_CFPL_DIALOG]);
   for (int i = 0; i < MANAGE_W_MAX; ++i) {
     if (i == MANAGE_W_SL_MUSICQ_TAB ||
         i == MANAGE_W_SONGSEL_TAB) {
