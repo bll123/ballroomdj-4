@@ -8,6 +8,7 @@
 
 * Bug Fixes:
     * Player: Export as MP3: Fix a crash.
+    * Player: Previous selection is no longer highlighted.
     * Configuration: iTunes: Fix directory setting for choose file dialog.
     * Mac OS: Fix support links.
     * Song Selection: Fix movement keys when the selection is off-screen.

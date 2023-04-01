@@ -1277,6 +1277,11 @@ uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp)
   mq_internal_t *mqint;
 
   ci = uimusicq->musicqManageIdx;
+  if (ci != MUSICQ_SL) {
+    /* only the song list queue has the previous selection marked */
+    return;
+  }
+
   mqint = uimusicq->ui [ci].mqInternalData;
 
   if (! uimusicq->ui [ci].hasui) {
