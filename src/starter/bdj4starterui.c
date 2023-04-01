@@ -235,6 +235,7 @@ static bool     starterForumLinkHandler (void *udata);
 static bool     starterTicketLinkHandler (void *udata);
 static void     starterLinkHandler (void *udata, int cbidx);
 
+static void     starterSaveWindowPosition (startui_t *starter);
 static void     starterSetWindowPosition (startui_t *starter);
 static void     starterLoadOptions (startui_t *starter);
 static bool     starterSetUpAlternate (void *udata);
@@ -432,7 +433,6 @@ static bool
 starterStoppingCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
-  int         x, y, ws;
 
   logProcBegin (LOG_PROC, "starterStoppingCallback");
 
@@ -444,12 +444,7 @@ starterStoppingCallback (void *udata, programstate_t programState)
     }
   }
 
-  uiWindowGetSize (starter->wcont [START_W_WINDOW], &x, &y);
-  nlistSetNum (starter->options, STARTERUI_SIZE_X, x);
-  nlistSetNum (starter->options, STARTERUI_SIZE_Y, y);
-  uiWindowGetPosition (starter->wcont [START_W_WINDOW], &x, &y, &ws);
-  nlistSetNum (starter->options, STARTERUI_POSITION_X, x);
-  nlistSetNum (starter->options, STARTERUI_POSITION_Y, y);
+  starterSaveWindowPosition (starter);
 
   procutilStopAllProcess (starter->processes, starter->conn, false);
 
@@ -1639,7 +1634,6 @@ starterCheckProfile (startui_t *starter)
     uiLabelSetText (starter->wcont [START_W_STATUS_MSG], _("Profile in use"));
   } else {
     uiSpinboxSetState (starter->profilesel, UIWIDGET_DISABLE);
-    starterSetWindowPosition (starter);
   }
 
   return rc;
@@ -2164,6 +2158,19 @@ starterLinkHandler (void *udata, int cbidx)
     snprintf (tmp, sizeof (tmp), "open %s", uri);
     (void) ! system (tmp);
   }
+}
+
+static void
+starterSaveWindowPosition (startui_t *starter)
+{
+  int     x, y, ws;
+
+  uiWindowGetSize (starter->wcont [START_W_WINDOW], &x, &y);
+  nlistSetNum (starter->options, STARTERUI_SIZE_X, x);
+  nlistSetNum (starter->options, STARTERUI_SIZE_Y, y);
+  uiWindowGetPosition (starter->wcont [START_W_WINDOW], &x, &y, &ws);
+  nlistSetNum (starter->options, STARTERUI_POSITION_X, x);
+  nlistSetNum (starter->options, STARTERUI_POSITION_Y, y);
 }
 
 static void

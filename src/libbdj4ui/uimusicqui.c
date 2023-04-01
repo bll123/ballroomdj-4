@@ -615,7 +615,6 @@ uimusicqProcessMusicQueueData (uimusicq_t *uimusicq, mp_musicqupdate_t *musicqup
   if (uimusicq->ui [ci].newflag) {
     newdispflag = MUSICQ_NEW_DISP;
   }
-fprintf (stderr, "%s musq: process-data %d new: %d\n", uimusicq->tag, ci, uimusicq->ui [ci].newflag);
   uimusicqProcessMusicQueueDataUpdate (uimusicq, musicqupdate, newdispflag);
   logProcEnd (LOG_PROC, "uimusicqProcessMusicQueueData", "");
 }
