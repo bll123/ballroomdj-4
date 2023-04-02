@@ -25,6 +25,7 @@ uiCreateSizeGroupHoriz (void)
 
   sg = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
   szgrp = uiwcontAlloc ();
+  szgrp->wtype = WCONT_T_SIZE_GROUP;
   szgrp->sg = sg;
   return szgrp;
 }

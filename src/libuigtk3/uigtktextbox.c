@@ -43,6 +43,7 @@ uiTextBoxCreate (int height, const char *hlcolor)
 
   tb->scw = uiCreateScrolledWindow (height);
 
+  tb->buffer->wtype = WCONT_T_TEXT_BUFFER;
   tb->buffer->buffer = gtk_text_buffer_new (NULL);
   gtk_text_buffer_create_tag (tb->buffer->buffer, "bold", "weight", PANGO_WEIGHT_BOLD, NULL);
   if (hlcolor == NULL) {

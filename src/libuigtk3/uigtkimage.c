@@ -84,6 +84,7 @@ uiImageConvertToPixbuf (uiwcont_t *uiwidget)
   }
 
   pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (uiwidget->widget));
+  uiwidget->wtype = WCONT_T_PIXBUF;
   uiwidget->pixbuf = pixbuf;
 }
 

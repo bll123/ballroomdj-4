@@ -20,6 +20,7 @@ uiwcontAlloc (void)
   uiwcont_t    *uiwidget;
 
   uiwidget = mdmalloc (sizeof (uiwcont_t));
+  uiwidget->wtype = WCONT_T_WIDGET;
   uiwidget->widget = NULL;
   return uiwidget;
 }

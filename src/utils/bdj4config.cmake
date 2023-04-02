@@ -39,7 +39,7 @@ endif()
 
 if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
   add_compile_options (-DBDJ4_USE_GTK=1)
-  set (BDJ4_UI_LIB -llibuigtk3)
+  set (BDJ4_UI_LIB libuigtk3)
 endif()
 
 if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
