@@ -37,7 +37,7 @@ if (WIN32)
   target_compile_options (bdj4configui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4configui
-  libbdj4ui libuigtk3 libbdj4vol libbdj4pli libbdj4 libbdj4basic libbdj4common
+  libbdj4ui ${BDJ4_UI_LIB} libbdj4vol libbdj4pli libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}

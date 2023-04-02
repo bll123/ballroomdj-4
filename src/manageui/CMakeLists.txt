@@ -21,7 +21,7 @@ if (WIN32)
   target_compile_options (bdj4manageui PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4manageui
-  libbdj4ui libuigtk3 libbdj4 libbdj4basic libbdj4common
+  libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}
@@ -39,7 +39,7 @@ if (WIN32)
   target_compile_options (bdj4bpmcounter PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4bpmcounter
-  libbdj4ui libuigtk3 libbdj4 libbdj4common
+  libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GTK_LDFLAGS}

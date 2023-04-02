@@ -18,4 +18,14 @@ typedef struct uiwidget {
 
 # endif /* BDJ4_USE_GTK */
 
+# if BDJ4_USE_NULLUI
+
+typedef struct uiwidget {
+  union {
+    void      *widget;
+  };
+} uiwcont_t;
+
+# endif /* BDJ4_USE_NULLUI */
+
 #endif /* INC_UIWCONT_INT_H */

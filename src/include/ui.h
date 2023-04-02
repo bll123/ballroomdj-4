@@ -10,6 +10,9 @@
 #if BDJ4_USE_GTK
 # include "ui-gtk3.h"
 #endif
+#if BDJ4_USE_NULLUI
+# include "ui-null.h"
+#endif
 
 #include "ui/uiadjustment.h"
 #include "ui/uibox.h"

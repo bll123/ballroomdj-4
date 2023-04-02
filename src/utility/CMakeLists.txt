@@ -9,6 +9,9 @@ add_executable (bdj4info bdj4info.c)
 if (WIN32)
   target_compile_options (bdj4info PRIVATE -municode)
 endif()
+target_include_directories (bdj4info
+  PUBLIC ${GTK_INCLUDE_DIRS}
+)
 target_link_libraries (bdj4info
   libbdj4basic libbdj4common
   ${ICU_LDFLAGS}

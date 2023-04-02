@@ -31,13 +31,20 @@ endif()
 #### BDJ4 UI type
 
 # check for all supported ui interfaces
-if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
+if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk" OR
+    BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
 else()
   message (FATAL_ERROR "BDJ4_UI (${BDJ4_UI}) not supported")
 endif()
 
 if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
   add_compile_options (-DBDJ4_USE_GTK=1)
+  set (BDJ4_UI_LIB -llibuigtk3)
+endif()
+
+if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
+  add_compile_options (-DBDJ4_USE_NULLUI=1)
+  set (BDJ4_UI_LIB libuinull)
 endif()
 
 #### bits / check supported platforms
@@ -76,10 +83,10 @@ pkg_check_modules (ICU icu-i18n)
 
 #### generic compile options
 
-add_compile_options (-DGDK_DISABLE_DEPRECATED)
-add_compile_options (-DGTK_DISABLE_DEPRECATED)
-# does not work.
-# add_compile_options (-DU_FORCE_HIDE_DEPRECATED_API)
+if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
+  add_compile_options (-DGDK_DISABLE_DEPRECATED)
+  add_compile_options (-DGTK_DISABLE_DEPRECATED)
+endif()
 
 add_compile_options (-fPIC)
 
@@ -169,7 +176,6 @@ set (BDJ4_FORTIFY T)
 # address sanitizer
 if (BDJ4_BUILD STREQUAL "SanitizeAddress" OR BDJ4_BUILD STREQUAL "Memdebug-Sanitize")
   message ("Sanitize Address Build")
-  add_compile_options (-DBDJ4_USE_GTK=1)
   set (BDJ4_FORTIFY F)
   add_compile_options (-O0)
   add_compile_options (-g)
@@ -191,7 +197,6 @@ endif()
 # undef sanitizer
 if (BDJ4_BUILD STREQUAL "SanitizeUndef")
   message ("Sanitize Undefined Build")
-  add_compile_options (-DBDJ4_USE_GTK=1)
   set (BDJ4_FORTIFY F)
   add_compile_options (-O0)
   add_compile_options (-g)
@@ -276,10 +281,12 @@ set (CMAKE_REQUIRED_INCLUDES ${LIBVLC_INCLUDE_DIR})
 check_include_file (vlc/vlc.h _hdr_vlc_vlc)
 set (CMAKE_REQUIRED_INCLUDES "")
 
-set (CMAKE_REQUIRED_INCLUDES ${GTK_INCLUDE_DIRS})
-check_include_file (gdk/gdkx.h _hdr_gdk_gdkx)
-check_include_file (gtk/gtk.h _hdr_gtk_gtk)
-set (CMAKE_REQUIRED_INCLUDES "")
+if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
+  set (CMAKE_REQUIRED_INCLUDES ${GTK_INCLUDE_DIRS})
+  check_include_file (gdk/gdkx.h _hdr_gdk_gdkx)
+  check_include_file (gtk/gtk.h _hdr_gtk_gtk)
+  set (CMAKE_REQUIRED_INCLUDES "")
+endif()
 
 check_include_file (sys/resource.h _sys_resource)
 check_include_file (sys/select.h _sys_select)

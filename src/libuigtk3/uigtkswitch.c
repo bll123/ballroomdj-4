@@ -11,6 +11,8 @@
 #include <ctype.h>
 #include <math.h>
 
+#include <gtk/gtk.h>
+
 #include "bdj4.h"
 #include "callback.h"
 #include "mdebug.h"
