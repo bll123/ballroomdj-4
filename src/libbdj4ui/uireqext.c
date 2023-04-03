@@ -109,7 +109,6 @@ uireqextFree (uireqext_t *uireqext)
     uiEntryFree (uireqext->audioFileEntry);
     uiEntryFree (uireqext->artistEntry);
     uiEntryFree (uireqext->titleEntry);
-    uiDialogDestroy (uireqext->reqextDialog);
     uiwcontFree (uireqext->reqextDialog);
     uiButtonFree (uireqext->audioFileDialogButton);
     uidanceFree (uireqext->uidance);

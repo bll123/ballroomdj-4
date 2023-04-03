@@ -71,6 +71,7 @@ uiCreateBox (int orientation)
 
   box = gtk_box_new (orientation, 0);
   uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_BOX;
   uiwidget->widget = box;
   return uiwidget;
 }

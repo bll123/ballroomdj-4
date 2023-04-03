@@ -32,6 +32,7 @@ uiCreateCheckButton (const char *txt, int value)
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
   uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_CHECK_BOX;
   uiwidget->widget = widget;
   return uiwidget;
 }
@@ -52,6 +53,7 @@ uiCreateRadioButton (uiwcont_t *widgetgrp, const char *txt, int value)
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), value);
   uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_RADIO_BUTTON;
   uiwidget->widget = widget;
   return uiwidget;
 }
@@ -85,6 +87,7 @@ uiCreateToggleButton (const char *txt,
     gtk_widget_set_tooltip_text (widget, tooltiptxt);
   }
   uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_TOGGLE_BUTTON;
   uiwidget->widget = widget;
   return uiwidget;
 }

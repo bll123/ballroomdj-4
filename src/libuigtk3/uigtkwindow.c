@@ -55,6 +55,7 @@ uiCreateMainWindow (callback_t *uicb, const char *title, const char *imagenm)
   }
 
   uiwin = uiwcontAlloc ();
+  uiwin->wtype = WCONT_T_WINDOW;
   uiwin->widget = window;
   return uiwin;
 }
@@ -209,6 +210,7 @@ uiCreateScrolledWindow (int minheight)
   gtk_widget_set_vexpand (widget, FALSE);
 
   scwindow = uiwcontAlloc ();
+  scwindow->wtype = WCONT_T_SCROLL_WINDOW;
   scwindow->widget = widget;
   return scwindow;
 }
@@ -254,6 +256,7 @@ uiCreateDialogWindow (uiwcont_t *parentwin,
   }
 
   uiwindow = uiwcontAlloc ();
+  uiwindow->wtype = WCONT_T_DIALOG_WINDOW;
   uiwindow->widget = window;
   return uiwindow;
 }

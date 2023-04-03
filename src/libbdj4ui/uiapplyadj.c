@@ -86,7 +86,6 @@ void
 uiaaFree (uiaa_t *uiaa)
 {
   if (uiaa != NULL) {
-    uiDialogDestroy (uiaa->aaDialog);
     uiaaDialogClear (uiaa);
     uiwcontFree (uiaa->cbTrim);
     uiwcontFree (uiaa->cbNorm);

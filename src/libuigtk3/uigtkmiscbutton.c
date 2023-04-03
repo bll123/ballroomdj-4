@@ -30,6 +30,7 @@ uiCreateFontButton (const char *fontname)
     fb = gtk_font_button_new ();
   }
   uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_FONT_BUTTON;
   uiwidget->widget = fb;
   return uiwidget;
 }
@@ -57,6 +58,7 @@ uiCreateColorButton (const char *color)
     cb = gtk_color_button_new ();
   }
   uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_COLOR_BUTTON;
   uiwidget->widget = cb;
   return uiwidget;
 }

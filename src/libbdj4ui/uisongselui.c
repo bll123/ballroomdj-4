@@ -1515,6 +1515,7 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
       nidx = 0;
       loc = 0;
       scrolled = uisongselScrollSelection (uisongsel, 0, UISONGSEL_SCROLL_NORMAL, UISONGSEL_DIR_NONE);
+      uiTreeViewSelectFirst (ssint->songselTree);
     }
     if (direction == UISONGSEL_NEXT) {
       while (lines > 0) {
@@ -1526,7 +1527,6 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
           idx = uiTreeViewGetValue (ssint->songselTree, SONGSEL_COL_IDX);
           if (loc < ssint->maxRows - 1 &&
               idx < (long) uisongsel->dfilterCount - 1) {
-            uiTreeViewSelectClear (ssint->songselTree);
             uiTreeViewSelectNext (ssint->songselTree);
             ++loc;
           } else {
@@ -1542,7 +1542,6 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
         scrolled = uisongselScrollSelection (uisongsel, nidx, UISONGSEL_SCROLL_NORMAL, UISONGSEL_PREVIOUS);
         if (! scrolled) {
           if (loc > 0) {
-            uiTreeViewSelectClear (ssint->songselTree);
             uiTreeViewSelectPrevious (ssint->songselTree);
             --loc;
           } else {
@@ -1553,6 +1552,8 @@ uisongselMoveSelection (void *udata, int direction, int lines, int moveflag)
       }
     }
 
+    /* works around gtk tree view issues where the prior */
+    /* selection is not cleared */
     uiTreeViewSelectClear (ssint->songselTree);
 
     /* if the scroll was bumped, the iterator is still pointing to the same */

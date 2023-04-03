@@ -63,6 +63,7 @@ uiCreateSwitch (int value)
 
   widget = gtk_toggle_button_new ();
   uiswitch->switchw = uiwcontAlloc ();
+  uiswitch->switchw->wtype = WCONT_T_SWITCH;
   uiswitch->switchw->widget = widget;
 
   gtk_widget_set_margin_top (widget, uiBaseMarginSz);

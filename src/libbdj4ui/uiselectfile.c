@@ -104,7 +104,6 @@ void
 selectFileFree (uiselectfile_t *selectfile)
 {
   if (selectfile != NULL) {
-    uiDialogDestroy (selectfile->selfileDialog);
     uiwcontFree (selectfile->selfileDialog);
     callbackFree (selectfile->respcb);
     callbackFree (selectfile->rowactivecb);

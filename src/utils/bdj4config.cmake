@@ -61,7 +61,9 @@ endif()
 
 #### pkg-config / modules
 
-if (LINUX)
+# not win and not apple == linux
+# if (linux) does not work (2023-4-3)
+if (NOT WIN32 AND NOT APPLE)
   pkg_check_modules (ALSA alsa)
 endif()
 pkg_check_modules (CHECK check)
@@ -71,11 +73,13 @@ if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
   pkg_check_modules (GTK gtk+-3.0)
 endif()
 pkg_check_modules (OPENSSL openssl)
-if (LINUX)
+if (NOT WIN32 AND NOT APPLE)
   pkg_check_modules (PA libpulse)
 endif()
 pkg_check_modules (XML2 libxml-2.0)
 
+# The ICU library must be pre-compiled and shipped with Linux and MacOS.
+# ICU has incorrect library versioning procedures.
 if (NOT WIN32)
   set (ENV{PKG_CONFIG_PATH} "../packages/icu/lib/pkgconfig")
 endif()

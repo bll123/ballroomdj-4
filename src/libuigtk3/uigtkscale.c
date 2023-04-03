@@ -49,6 +49,7 @@ uiCreateScale (double lower, double upper,
   gtk_range_set_value (GTK_RANGE (scale), initvalue);
 
   uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_SCALE;
   uiwidget->widget = scale;
 
   uiWidgetSetMarginTop (uiwidget, 1);

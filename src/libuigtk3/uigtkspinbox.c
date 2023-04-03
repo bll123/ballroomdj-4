@@ -115,6 +115,7 @@ uiSpinboxTextCreate (uispinbox_t *uispinbox, void *udata)
   uispinbox->udata = udata;
 
   uispinbox->spinbox = uiwcontAlloc ();
+  uispinbox->spinbox->wtype = WCONT_T_SPINBOX_TEXT;
   uispinbox->spinbox->widget = widget;
 
   uiWidgetSetClass (uispinbox->spinbox, SPINBOX_READONLY_CLASS);
@@ -237,6 +238,7 @@ uiSpinboxTimeCreate (uispinbox_t *uispinbox, void *udata, callback_t *convcb)
   uispinbox->udata = udata;
 
   uispinbox->spinbox = uiwcontAlloc ();
+  uispinbox->spinbox->wtype = WCONT_T_SPINBOX_TIME;
   uispinbox->spinbox->widget = widget;
   return;
 }
@@ -292,6 +294,7 @@ uiSpinboxIntCreate (void)
       G_CALLBACK (uiSpinboxNumInput), NULL);
 
   uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_SPINBOX_NUM;
   uiwidget->widget = spinbox;
   return uiwidget;
 }
@@ -313,6 +316,7 @@ uiSpinboxDoubleCreate (void)
       G_CALLBACK (uiSpinboxDoubleInput), NULL);
 
   uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_SPINBOX_DOUBLE;
   uiwidget->widget = spinbox;
   return uiwidget;
 }
@@ -335,6 +339,7 @@ uiSpinboxDoubleDefaultCreate (uispinbox_t *uispinbox)
       G_CALLBACK (uiSpinboxDoubleInput), NULL);
 
   uispinbox->spinbox = uiwcontAlloc ();
+  uispinbox->spinbox->wtype = WCONT_T_SPINBOX_DOUBLE_DFLT;
   uispinbox->spinbox->widget = widget;
 }
 

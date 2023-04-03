@@ -37,6 +37,7 @@ uiCreateVerticalScrollbar (double upper)
   sb = mdmalloc (sizeof (uiscrollbar_t));
   sb->changecb = NULL;
   sb->wcont = uiwcontAlloc ();
+  sb->wcont->wtype = WCONT_T_SCROLLBAR;
 
   adjustment = gtk_adjustment_new (0.0, 0.0, upper, 1.0, 10.0, 10.0);
   widget = gtk_scrollbar_new (GTK_ORIENTATION_VERTICAL, adjustment);

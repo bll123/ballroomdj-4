@@ -41,6 +41,7 @@ uiCreateLink (const char *label, const char *uri)
   gtk_label_set_track_visited_links (GTK_LABEL (lwidget), FALSE);
 
   uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_LINK;
   uiwidget->widget = widget;
   return uiwidget;
 }

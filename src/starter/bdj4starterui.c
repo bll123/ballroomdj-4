@@ -473,9 +473,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   uiCloseWindow (starter->wcont [START_W_WINDOW]);
   uiCleanup ();
 
-  uiDialogDestroy (starter->wcont [START_W_SUPPORT_MSG_DIALOG]);
   starterSupportMsgDialogClear (starter);
-  uiDialogDestroy (starter->wcont [START_W_SUPPORT_DIALOG]);
   starterSupportDialogClear (starter);
   for (int i = 0; i < START_W_MAX; ++i) {
     uiwcontFree (starter->wcont [i]);

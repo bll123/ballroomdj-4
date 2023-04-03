@@ -31,6 +31,7 @@ uiCreateLabel (const char *label)
   gtk_widget_set_margin_start (widget, uiBaseMarginSz);
 
   uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_LABEL;
   uiwidget->widget = widget;
   return uiwidget;
 }

@@ -41,6 +41,7 @@ uiCreateChangeIndicator (uiwcont_t *boxp)
   gtk_widget_set_margin_end (widget, uiBaseMarginSz);
 
   uichgind->label = uiwcontAlloc ();
+  uichgind->label->wtype = WCONT_T_CHGIND;
   uichgind->label->widget = widget;
   uiBoxPackStart (boxp, uichgind->label);
   return uichgind;

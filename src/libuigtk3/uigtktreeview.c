@@ -103,6 +103,7 @@ uiCreateTreeView (void)
   gtk_widget_set_hexpand (tree, FALSE);
   gtk_widget_set_vexpand (tree, FALSE);
   uitree->tree = uiwcontAlloc ();
+  uitree->tree->wtype = WCONT_T_TREE;
   uitree->tree->widget = tree;
   uitree->sel = sel;
   uitree->selectset = false;
@@ -884,6 +885,9 @@ uiTreeViewSelectFirst (uitree_t *uitree)
     return valid;
   }
 
+  if (uitree->selmode == SELECT_MULTIPLE && uitree->selectset) {
+    gtk_tree_selection_unselect_iter (uitree->sel, &uitree->selectiter);
+  }
   uitree->selectset = false;
   valid = gtk_tree_model_get_iter_first (uitree->model, &uitree->selectiter);
   if (valid) {
@@ -905,6 +909,9 @@ uiTreeViewSelectNext (uitree_t *uitree)
     return valid;
   }
 
+  if (uitree->selmode == SELECT_MULTIPLE && uitree->selectset) {
+    gtk_tree_selection_unselect_iter (uitree->sel, &uitree->selectiter);
+  }
   uitree->selectset = false;
   valid = gtk_tree_model_iter_next (uitree->model, &uitree->selectiter);
   if (valid) {
@@ -926,6 +933,9 @@ uiTreeViewSelectPrevious (uitree_t *uitree)
     return valid;
   }
 
+  if (uitree->selmode == SELECT_MULTIPLE && uitree->selectset) {
+    gtk_tree_selection_unselect_iter (uitree->sel, &uitree->selectiter);
+  }
   uitree->selectset = false;
   valid = gtk_tree_model_iter_previous (uitree->model, &uitree->selectiter);
   if (valid) {

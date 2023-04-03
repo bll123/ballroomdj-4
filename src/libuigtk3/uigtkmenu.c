@@ -37,6 +37,7 @@ uiCreateMenubar (void)
 
   menubar = gtk_menu_bar_new ();
   uiwidget = uiwcontAlloc ();
+  uiwidget->wtype = WCONT_T_MENUBAR;
   uiwidget->widget = menubar;
   return uiwidget;
 }
@@ -50,6 +51,7 @@ uiCreateSubMenu (uiwcont_t *uimenuitem)
   menu = gtk_menu_new ();
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (uimenuitem->widget), menu);
   uimenu = uiwcontAlloc ();
+  uimenu->wtype = WCONT_T_MENU_SUB;
   uimenu->widget = menu;
   return uimenu;
 }
@@ -67,6 +69,7 @@ uiMenuCreateItem (uiwcont_t *uimenu, const char *txt, callback_t *uicb)
         G_CALLBACK (uiMenuActivateHandler), uicb);
   }
   uimenuitem = uiwcontAlloc ();
+  uimenuitem->wtype = WCONT_T_MENU_ITEM;
   uimenuitem->widget = menuitem;
   return uimenuitem;
 }
@@ -95,6 +98,7 @@ uiMenuCreateCheckbox (uiwcont_t *uimenu,
         G_CALLBACK (uiMenuToggleHandler), uicb);
   }
   uimenuitem = uiwcontAlloc ();
+  uimenuitem->wtype = WCONT_T_MENU_CHECK_BOX;
   uimenuitem->widget = menuitem;
   return uimenuitem;
 }
@@ -157,12 +161,14 @@ uiMenuAddMainItem (uiwcont_t *uimenubar, uimenu_t *menu, const char *txt)
   i = menu->menucount;
   ++menu->menucount;
   uimenuitem = uiwcontAlloc ();
+  uimenuitem->wtype = WCONT_T_MENU_MAIN_ITEM;
   uimenuitem->widget = gtk_menu_item_new_with_label (txt);
   gtk_menu_shell_append (GTK_MENU_SHELL (uimenubar->widget),
       uimenuitem->widget);
   uiWidgetHide (uimenuitem);
   /* create our own copy here */
   menu->menuitem [i] = uiwcontAlloc ();
+  menu->menuitem [i]->wtype = WCONT_T_MENU_MAIN_ITEM;
   menu->menuitem [i]->widget = uimenuitem->widget;
   return uimenuitem;
 }
