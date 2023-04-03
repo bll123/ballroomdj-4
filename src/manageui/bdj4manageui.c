@@ -1288,6 +1288,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
                 UISONGSEL_MARK_REPLACE);
           }
           msgparseMusicQueueDataFree (musicqupdate);
+          uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], "");
           break;
         }
         case MSG_SONG_SELECT: {
@@ -2540,6 +2541,7 @@ manageSonglistMix (void *udata)
 
   logProcBegin (LOG_PROC, "manageSonglistMix");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: mix songlist");
+  uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], manage->pleasewaitmsg);
   snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
   connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_MIX, tbuff);
   logProcEnd (LOG_PROC, "manageSonglistMix", "");
