@@ -423,6 +423,9 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
     }
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
+    if (i < BPMCOUNT_DISP_BPM) {
+      uiwcontFree (uiwidgetp);
+    }
 
     bpmcounter->dispvalue [i] = uiCreateLabel ("");
     uiLabelAlignEnd (bpmcounter->dispvalue [i]);
