@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-15 07:18-0700\n"
+"POT-Creation-Date: 2023-04-03 11:29-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -719,7 +719,6 @@ msgid "Exit"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: export actions for song list
-#. CONTEXT: playerui: menu selection: export
 msgid "Export"
 msgstr ""
 
@@ -832,7 +831,7 @@ msgid "Hide Unselected"
 msgstr ""
 
 #. CONTEXT: configuration: dances: high BPM (or MPM) setting
-#. CONTEXT: playlist management: high bpm/mpm column
+#. CONTEXT: playlist management: high bpm/mpm column header
 #, c-format
 msgid "High %s"
 msgstr ""
@@ -918,7 +917,6 @@ msgstr ""
 msgid "Latest Version"
 msgstr ""
 
-#. CONTEXT: configuration: level: title of the level name column
 #. CONTEXT: label: dance level (short name for listing)
 msgid "Level"
 msgstr ""
@@ -986,7 +984,6 @@ msgstr ""
 
 #. CONTEXT: configuration: options associated with the marquee
 #. CONTEXT: marquee: marquee window title
-#. CONTEXT: playerui: menu selection: marquee related options
 msgid "Marquee"
 msgstr ""
 
@@ -1192,7 +1189,6 @@ msgid "Off"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: song list: options menu
-#. CONTEXT: playerui: menu selection: options for the player
 msgid "Options"
 msgstr ""
 
@@ -1409,7 +1405,6 @@ msgid "Quickstep"
 msgstr ""
 
 #. CONTEXT: configuration: itunes: label for itunes rating conversion
-#. CONTEXT: configuration: rating: title of the rating name column
 #. CONTEXT: label: dance rating (short name for listing)
 msgid "Rating"
 msgstr ""

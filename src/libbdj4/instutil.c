@@ -139,6 +139,7 @@ instutilCopyTemplates (void)
 
     if (pathInfoExtCheck (pi, ".crt")) {
       templateHttpCopy (fname, fname);
+      pathInfoFree (pi);
       continue;
     } else if (strncmp (fname, "bdjconfig", 9) == 0) {
       pathbldMakePath (from, sizeof (from), fname, "", PATHBLD_MP_DIR_TEMPLATE);

@@ -28,7 +28,6 @@
 #include "bdjvars.h"
 #include "callback.h"
 #include "datafile.h"
-#include "dirlist.h"
 #include "dirop.h"
 #include "filedata.h"
 #include "fileop.h"

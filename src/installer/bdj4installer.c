@@ -565,7 +565,6 @@ main (int argc, char *argv[])
   /* process any final events */
   if (installer.guienabled) {
     uiUIProcessEvents ();
-    uiCloseWindow (installer.wcont [INST_W_WINDOW]);
     uiCleanup ();
   }
 
@@ -732,6 +731,8 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (hbox, uiwidgetp);
 
   uiwcontFree (hbox);
+
+  /* begin line */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -758,6 +759,9 @@ installerBuildUI (installer_t *installer)
 
   szgrp = uiCreateSizeGroupHoriz ();
 
+  uiwcontFree (hbox);
+
+  /* begin line */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -771,8 +775,10 @@ installerBuildUI (installer_t *installer)
   uiWidgetSetClass (installer->wcont [INST_W_VLC_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_VLC_MSG]);
 
-  /* python status */
   uiwcontFree (hbox);
+
+  /* begin line */
+  /* python status */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -786,8 +792,10 @@ installerBuildUI (installer_t *installer)
   uiWidgetSetClass (installer->wcont [INST_W_PYTHON_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_PYTHON_MSG]);
 
-  /* mutagen status */
   uiwcontFree (hbox);
+
+  /* begin line */
+  /* mutagen status */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -801,8 +809,10 @@ installerBuildUI (installer_t *installer)
   uiWidgetSetClass (installer->wcont [INST_W_MUTAGEN_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_MUTAGEN_MSG]);
 
-  /* button box */
   uiwcontFree (hbox);
+
+  /* begin line */
+  /* button box */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);

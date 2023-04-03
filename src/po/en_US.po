@@ -2,10 +2,10 @@
 # -- english/us
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.3.0.3\n"
+"Project-Id-Version: ballroomdj-4 4.3.0.4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2023-03-15\n"
-"PO-Revision-Date: 2023-03-15\n"
+"POT-Creation-Date: 2023-04-03\n"
+"PO-Revision-Date: 2023-04-03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/us\n"
 "Language: en\n"
@@ -715,7 +715,6 @@ msgid "Exit"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: export actions for song list
-#. CONTEXT: playerui: menu selection: export
 msgid "Export"
 msgstr ""
 
@@ -828,7 +827,7 @@ msgid "Hide Unselected"
 msgstr ""
 
 #. CONTEXT: configuration: dances: high BPM (or MPM) setting
-#. CONTEXT: playlist management: high bpm/mpm column
+#. CONTEXT: playlist management: high bpm/mpm column header
 #, c-format
 msgid "High %s"
 msgstr ""
@@ -914,7 +913,6 @@ msgstr ""
 msgid "Latest Version"
 msgstr ""
 
-#. CONTEXT: configuration: level: title of the level name column
 #. CONTEXT: label: dance level (short name for listing)
 msgid "Level"
 msgstr ""
@@ -982,7 +980,6 @@ msgstr ""
 
 #. CONTEXT: configuration: options associated with the marquee
 #. CONTEXT: marquee: marquee window title
-#. CONTEXT: playerui: menu selection: marquee related options
 msgid "Marquee"
 msgstr ""
 
@@ -1188,7 +1185,6 @@ msgid "Off"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: song list: options menu
-#. CONTEXT: playerui: menu selection: options for the player
 msgid "Options"
 msgstr ""
 
@@ -1405,7 +1401,6 @@ msgid "Quickstep"
 msgstr ""
 
 #. CONTEXT: configuration: itunes: label for itunes rating conversion
-#. CONTEXT: configuration: rating: title of the rating name column
 #. CONTEXT: label: dance rating (short name for listing)
 msgid "Rating"
 msgstr ""

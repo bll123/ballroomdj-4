@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <inttypes.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
@@ -522,9 +523,14 @@ main (int argc, char *argv [])
   }
 
   if (processaf || processdb) {
+    mstime_t    dbmt;
+
     pathbldMakePath (tbuff, sizeof (tbuff),
         MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
+    mstimestart (&dbmt);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "Database read: started");
     musicdb = dbOpen (tbuff);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "Database read: %d items in %"PRId64" ms", dbCount(musicdb), (int64_t) mstimeend (&dbmt));
   }
 
   if (processaf) {
@@ -646,6 +652,7 @@ updaterCleanFiles (void)
   bool    processflag = false;
 
   /* look for development directories and do not run if any are found */
+  /* this works for the relative case */
   if (fileopIsDirectory ("dev") ||
       fileopIsDirectory ("test-music-orig") ||
       fileopIsDirectory ("packages")) {
@@ -655,6 +662,21 @@ updaterCleanFiles (void)
   pathbldMakePath (fname, sizeof (fname),
       "cleanuplist", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
   basedir = sysvarsGetStr (SV_BDJ4_DIR_MAIN);
+
+  /* more checks for development directories */
+  snprintf (fname, sizeof (fname), "%s/dev", basedir);
+  if (fileopIsDirectory (fname)) {
+    return;
+  }
+  snprintf (fname, sizeof (fname), "%s/test-music-orig", basedir);
+  if (fileopIsDirectory (fname)) {
+    return;
+  }
+  snprintf (fname, sizeof (fname), "%s/packages", basedir);
+  if (fileopIsDirectory (fname)) {
+    return;
+  }
+
   cleanlist = nlistAlloc ("clean-regex", LIST_UNORDERED, updaterCleanlistFree);
 
   count = 0;
@@ -673,6 +695,7 @@ updaterCleanFiles (void)
       if (*pattern == '\0') {
         continue;
       }
+      // logMsg (LOG_INSTALL, LOG_IMPORTANT, "pattern: %s", pattern);
 
       /* on any change of directory or flag, process what has been queued */
       if (strcmp (pattern, "::macosonly") == 0 ||
@@ -787,7 +810,7 @@ updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *cleanlist)
     while ((key = nlistIterateKey (cleanlist, &cliteridx)) >= 0) {
       rx = nlistGetData (cleanlist, key);
       if (regexMatch (rx, fn)) {
-        // fprintf (stderr, "  match %s\n", fn);
+        // logMsg (LOG_INSTALL, LOG_IMPORTANT, "  match %s", fn);
         if (osIsLink (fn)) {
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "delete link %s", fn);
           fileopDelete (fn);

@@ -71,6 +71,13 @@ uiWindowSetTitle (uiwcont_t *uiwidget, const char *title)
 void
 uiCloseWindow (uiwcont_t *uiwindow)
 {
+  if (uiwindow == NULL) {
+    return;
+  }
+  if (uiwindow->widget == NULL) {
+    return;
+  }
+
   if (GTK_IS_WIDGET (uiwindow->widget)) {
     gtk_widget_destroy (uiwindow->widget);
   }

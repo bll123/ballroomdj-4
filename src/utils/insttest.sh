@@ -671,8 +671,8 @@ if [[ $crc -eq 0 ]]; then
   checkInstallation $section $tname "$out" $rc u y
 fi
 
-#cleanInstTest
-#test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
+cleanInstTest
+test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
 
 echo "tests: $tcount pass: $pass fail: $fail"
 
