@@ -422,6 +422,12 @@ musicqPop (musicq_t *musicq, musicqidx_t musicqidx)
     musicq->duration [musicqidx] -= musicqitem->dur;
   }
   musicqQueueItemFree (musicqitem);
+
+  /* this handles the case where the player's queue is now empty */
+  /* otherwise the display index resumes at the last known display index */
+  if (queueGetCount (musicq->q [musicqidx]) == 0) {
+    musicq->dispidx [musicqidx] = 1;
+  }
   logProcEnd (LOG_PROC, "musicqPop", "");
 }
 
@@ -483,7 +489,7 @@ musicqRemove (musicq_t *musicq, musicqidx_t musicqidx, qidx_t idx)
   queueRemoveByIdx (musicq->q [musicqidx], idx);
 
   musicqRenumber (musicq, musicqidx, olddispidx);
-  --musicq->dispidx [musicqidx];
+  --(musicq->dispidx [musicqidx]);
 
   musicqQueueItemFree (musicqitem);
 

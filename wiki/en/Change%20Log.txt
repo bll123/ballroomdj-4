@@ -7,18 +7,19 @@
 **4.3.0.4 2023-4---**
 
 * Bug Fixes:
-    * Player: Export as MP3: Fix a crash.
-    * Player: Previous selection is no longer highlighted.
     * Configuration: iTunes: Fix directory setting for choose file dialog.
     * Mac OS: Fix support links.
+    * Player: Export as MP3: Fix a crash.
+    * Player: Fix music queue display index when queue is emptied.
+    * Player: Previous selection is no longer highlighted.
     * Song Editor: Adjust column labels to reduce horizontal space used.
     * Song Selection: Fix movement keys when the selection is off-screen.
     * Song Selection: Fix selection issues with movement keys.
     * Starter: Fix re-positioning of starter window.
 * Changes:
     * History: Add a label indicating which queue is being managed when show extra queues is on.
-    * Song List Editor: Added a 'please wait...' message for actions->mix.
     * Song Editor: Trim Silence: change detection level to -35dB.
+    * Song List Editor: Added a 'please wait...' message for actions->mix.
 * Internal:
     * Code cleanup.
 
