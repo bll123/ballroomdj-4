@@ -1,19 +1,19 @@
 # audioadjust
-# 2023-2-18
-# version 3
+# 2023-4-4
+# version 4
 version
-..3
+..4
 #
 # variables for trim silence
 # trimsilence-periods : numeric (1)
 # trimsilence-start : double (0.1)
-# trimsilence-threshold : numeric, decibels (-50)
+# trimsilence-threshold : numeric, decibels (-35)
 TRIMSILENCE_PERIOD
 ..1
 TRIMSILENCE_START
 ..100
 TRIMSILENCE_THRESHOLD
-..-50
+..-35
 #
 # normalize volume
 #

@@ -18,6 +18,7 @@
 * Changes:
     * History: Add a label indicating which queue is being managed when show extra queues is on.
     * Song List Editor: Added a 'please wait...' message for actions->mix.
+    * Song Editor: Trim Silence: change detection level to -35dB.
 * Internal:
     * Code cleanup.
 
