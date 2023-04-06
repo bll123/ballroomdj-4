@@ -7,13 +7,13 @@ version
 # variables for trim silence
 # trimsilence-periods : numeric (1)
 # trimsilence-start : double (0.1)
-# trimsilence-threshold : numeric, decibels (-35)
+# trimsilence-threshold : numeric, decibels (-37)
 TRIMSILENCE_PERIOD
 ..1
 TRIMSILENCE_START
 ..100
 TRIMSILENCE_THRESHOLD
-..-35
+..-37
 #
 # normalize volume
 #

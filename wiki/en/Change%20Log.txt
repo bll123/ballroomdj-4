@@ -18,7 +18,7 @@
     * Starter: Fix re-positioning of starter window.
 * Changes:
     * History: Add a label indicating which queue is being managed when show extra queues is on.
-    * Song Editor: Trim Silence: change detection level to -35dB.
+    * Song Editor: Trim Silence: change detection level to -37dB.
     * Song List Editor: Added a 'please wait...' message for actions->mix.
 * Internal:
     * Code cleanup.
