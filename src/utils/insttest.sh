@@ -489,6 +489,22 @@ function checkInstallation {
     else
       echo "  $(basename '$fn') exists"
     fi
+
+    res=$(($res+1))  # playerintfc.txt file removed
+    fn="${DATADIR}/playerintfc.txt"
+    if [[ $fin == T && ! -f "$fn" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  $(basename '$fn') exists"
+    fi
+
+    res=$(($res+1))  # audiotagintfc.txt file removed
+    fn="${DATADIR}/audiotagintfc.txt"
+    if [[ $fin == T && ! -f "$fn" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  $(basename '$fn') exists"
+    fi
   fi
 
   res=$(($res+1))  # bin dir

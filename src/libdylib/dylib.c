@@ -22,6 +22,7 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "dylib.h"
+#include "mdebug.h"
 #include "pathutil.h"
 
 dlhandle_t *
@@ -41,6 +42,7 @@ dylibLoad (const char *path)
   whandle = LoadLibrary (npath);
   handle = whandle;
 #endif
+  mdextalloc (handle);
 #if 0 // debugging
   if (handle == NULL) {
     fprintf (stderr, "dylib open %s failed: %d %s\n", path, errno, strerror (errno));
@@ -55,6 +57,7 @@ dylibLoad (const char *path)
 void
 dylibClose (dlhandle_t *handle)
 {
+  mdextfree (handle);
 #if _lib_dlopen
   dlclose (handle);
 #endif

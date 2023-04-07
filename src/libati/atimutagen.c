@@ -39,6 +39,12 @@ static int  atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn, slist
 static void atimutagenMakeTempFilename (char *fn, size_t sz);
 static int  atimutagenRunUpdate (const char *fn);
 
+const char *
+atiiDesc (void)
+{
+  return "Mutagen";
+}
+
 atidata_t *
 atiiInit (const char *atipkg, int writetags,
     taglookup_t tagLookup, tagcheck_t tagCheck,

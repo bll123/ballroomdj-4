@@ -33,7 +33,7 @@ static void nullCallback (pa_context* context, int success, void* userdata);
 static void waitop (pa_operation *op);
 static void pulse_close (void);
 static void pulse_disconnect (void);
-static void volumeProcessFailure (char *name);
+static void voliProcessFailure (char *name);
 static void init_context (void);
 static void getSinkCallback (pa_context *context, const pa_sink_info *i, int eol, void *userdata);
 
@@ -65,13 +65,13 @@ typedef union {
 } pacallback_t;
 
 const char *
-volumeDesc (void)
+voliDesc (void)
 {
   return "Pulse Audio";
 }
 
 void
-volumeDisconnect (void)
+voliDisconnect (void)
 {
   /*
    * If this program is made efficient by keeping a connection open
@@ -83,7 +83,7 @@ volumeDisconnect (void)
 }
 
 void
-volumeCleanup (void **udata) {
+voliCleanup (void **udata) {
   if (*udata != NULL) {
     pa_track_data_t *trackdata = *udata;
 
@@ -95,7 +95,7 @@ volumeCleanup (void **udata) {
 }
 
 int
-volumeProcess (volaction_t action, const char *sinkname,
+voliProcess (volaction_t action, const char *sinkname,
     int *vol, volsinklist_t *sinklist, void **udata)
 {
   pa_operation    *op = NULL;
@@ -137,7 +137,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     }
 
     rc = pa_context_errno (gstate.pacontext);
-    volumeProcessFailure ("init-context");
+    voliProcessFailure ("init-context");
 
     if (rc == PA_ERR_CONNECTIONREFUSED) {
       (void) ! system ("/usr/bin/pulseaudio -D");
@@ -149,7 +149,7 @@ volumeProcess (volaction_t action, const char *sinkname,
   }
 
   if (gstate.pastate != PA_CONTEXT_READY) {
-    volumeProcessFailure ("init context");
+    voliProcessFailure ("init context");
     return -1;
   }
 
@@ -161,7 +161,7 @@ volumeProcess (volaction_t action, const char *sinkname,
   mdextalloc (op);
   if (! op) {
     pa_threaded_mainloop_unlock (gstate.pamainloop);
-    volumeProcessFailure ("serverinfo");
+    voliProcessFailure ("serverinfo");
     return -1;
   }
   waitop (op);
@@ -191,7 +191,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     mdextalloc (op);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
-      volumeProcessFailure ("getsink");
+      voliProcessFailure ("getsink");
       return -1;
     }
     waitop (op);
@@ -222,7 +222,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     mdextalloc (op);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
-      volumeProcessFailure ("getsinkbyname");
+      voliProcessFailure ("getsinkbyname");
       return -1;
     }
     waitop (op);
@@ -249,7 +249,7 @@ volumeProcess (volaction_t action, const char *sinkname,
       mdextalloc (op);
       if (! op) {
         pa_threaded_mainloop_unlock (gstate.pamainloop);
-        volumeProcessFailure ("setvol");
+        voliProcessFailure ("setvol");
         return -1;
       }
       waitop (op);
@@ -262,7 +262,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     mdextalloc (op);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
-      volumeProcessFailure ("getvol");
+      voliProcessFailure ("getvol");
       return -1;
     }
     waitop (op);
@@ -383,7 +383,7 @@ pulse_disconnect (void)
 }
 
 static void
-volumeProcessFailure (char *name)
+voliProcessFailure (char *name)
 {
   int       rc;
 
@@ -411,7 +411,7 @@ init_context (void)
   pa_proplist_free (paprop);
   if (gstate.pacontext == NULL) {
     pa_threaded_mainloop_unlock (gstate.pamainloop);
-    volumeProcessFailure ("new context");
+    voliProcessFailure ("new context");
     return;
   }
 

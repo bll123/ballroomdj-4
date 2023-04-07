@@ -34,11 +34,11 @@ void      volumeSetSystemDefault (volume_t *volume, const char *sinkname);
 void      volumeFreeSinkList (volsinklist_t *sinklist);
 slist_t   *volumeInterfaceList (void);
 
-const char *volumeDesc (void);
-int       volumeProcess (volaction_t action, const char *sinkname,
+const char *voliDesc (void);
+int       voliProcess (volaction_t action, const char *sinkname,
               int *vol, volsinklist_t *sinklist, void **udata);
-void      volumeDisconnect (void);
-void      volumeCleanup (void **udata);
+void      voliDisconnect (void);
+void      voliCleanup (void **udata);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

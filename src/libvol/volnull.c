@@ -23,23 +23,23 @@ static int gvol [3] = { 30, 20, 10 };
 static int gsink = 0;
 
 const char *
-volumeDesc (void)
+voliDesc (void)
 {
   return "Null Audio";
 }
 
 void
-volumeDisconnect (void) {
+voliDisconnect (void) {
   return;
 }
 
 void
-volumeCleanup (void **udata) {
+voliCleanup (void **udata) {
   return;
 }
 
 int
-volumeProcess (volaction_t action, const char *sinkname,
+voliProcess (volaction_t action, const char *sinkname,
     int *vol, volsinklist_t *sinklist, void **udata)
 {
   if (action == VOL_HAVE_SINK_LIST) {

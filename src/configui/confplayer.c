@@ -13,6 +13,7 @@
 #include <math.h>
 #include <stdarg.h>
 
+#include "ati.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
@@ -146,8 +147,8 @@ confuiLoadVolIntfcList (confuigui_t *gui)
 
   interfaces = volumeInterfaceList ();
 
-  tlist = nlistAlloc ("cu-volintfc-list", LIST_UNORDERED, NULL);
-  llist = nlistAlloc ("cu-volintfc-list-l", LIST_UNORDERED, NULL);
+  tlist = nlistAlloc ("cu-voli-list", LIST_UNORDERED, NULL);
+  llist = nlistAlloc ("cu-voli-list-l", LIST_UNORDERED, NULL);
 
   slistStartIterator (interfaces, &iteridx);
   count = 0;
@@ -182,8 +183,8 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
 
   interfaces = pliInterfaceList ();
 
-  tlist = nlistAlloc ("cu-playerintfc-list", LIST_ORDERED, NULL);
-  llist = nlistAlloc ("cu-playerintfc-list-l", LIST_ORDERED, NULL);
+  tlist = nlistAlloc ("cu-pli-list", LIST_UNORDERED, NULL);
+  llist = nlistAlloc ("cu-pli-list-l", LIST_UNORDERED, NULL);
 
   slistStartIterator (interfaces, &iteridx);
   count = 0;
@@ -208,38 +209,23 @@ confuiLoadPlayerIntfcList (confuigui_t *gui)
 static void
 confuiLoadAudioTagIntfcList (confuigui_t *gui)
 {
-  char          tbuff [MAXPATHLEN];
-  nlist_t       *tlist = NULL;
-  datafile_t    *df = NULL;
-  ilist_t       *list = NULL;
-  ilistidx_t    iteridx;
-  ilistidx_t    key;
-  char          *intfc;
-  char          *desc;
-  nlist_t       *llist;
-  int           count;
+  slist_t     *interfaces;
+  slistidx_t  iteridx;
+  const char  *desc;
+  const char  *intfc;
+  int         count;
+  nlist_t     *tlist;
+  nlist_t     *llist;
 
-  static datafilekey_t dfkeys [CONFUI_ATI_MAX] = {
-    { "DESC",   CONFUI_ATI_DESC,  VALUE_STR, NULL, -1 },
-    { "INTFC",  CONFUI_ATI_INTFC, VALUE_STR, NULL, -1 },
-  };
+  interfaces = atiInterfaceList ();
 
-  logProcBegin (LOG_PROC, "confuiLoadAudioTagIntfcList");
+  tlist = nlistAlloc ("cu-ati-list", LIST_UNORDERED, NULL);
+  llist = nlistAlloc ("cu-ati-list-l", LIST_UNORDERED, NULL);
 
-  tlist = nlistAlloc ("cu-audiotagintfc-list", LIST_ORDERED, NULL);
-  llist = nlistAlloc ("cu-audiotagintfc-list-l", LIST_ORDERED, NULL);
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      AUDIOTAGINTFC_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
-  df = datafileAllocParse ("conf-audiotagintfc-list", DFTYPE_INDIRECT, tbuff,
-      dfkeys, CONFUI_ATI_MAX);
-  list = datafileGetList (df);
-
-  ilistStartIterator (list, &iteridx);
+  slistStartIterator (interfaces, &iteridx);
   count = 0;
-  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
-    intfc = ilistGetStr (list, key, CONFUI_ATI_INTFC);
-    desc = ilistGetStr (list, key, CONFUI_ATI_DESC);
+  while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
+    intfc = slistGetStr (interfaces, desc);
     if (strcmp (intfc, bdjoptGetStr (OPT_M_AUDIOTAG_INTFC)) == 0) {
       gui->uiitem [CONFUI_SPINBOX_ATI].listidx = count;
     }
@@ -247,10 +233,11 @@ confuiLoadAudioTagIntfcList (confuigui_t *gui)
     nlistSetStr (llist, count, intfc);
     ++count;
   }
-  datafileFree (df);
+  nlistSort (tlist);
+  nlistSort (llist);
+  slistFree (interfaces);
 
   gui->uiitem [CONFUI_SPINBOX_ATI].displist = tlist;
   gui->uiitem [CONFUI_SPINBOX_ATI].sbkeylist = llist;
-  logProcEnd (LOG_PROC, "confuiLoadAudioTagIntfcList", "");
 }
 

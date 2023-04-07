@@ -13,6 +13,7 @@
 #include "ati.h"
 #include "audiofile.h"
 #include "bdj4.h"
+#include "dyintfc.h"
 #include "dylib.h"
 #include "log.h"
 #include "mdebug.h"
@@ -116,4 +117,13 @@ atiWriteTags (ati_t *ati, const char *ffn,
         tagtype, filetype);
   }
   return 0;
+}
+
+slist_t *
+atiInterfaceList (void)
+{
+  slist_t     *interfaces;
+
+  interfaces = dyInterfaceList ("libati", "atiiDesc");
+  return interfaces;
 }

@@ -29,9 +29,9 @@
 
 typedef struct volume {
   dlhandle_t  *dlHandle;
-  int         (*volumeProcess) (volaction_t, const char *, int *, volsinklist_t *, void **);
-  void        (*volumeDisconnect) (void);
-  void        (*volumeCleanup) (void **);
+  int         (*voliProcess) (volaction_t, const char *, int *, volsinklist_t *, void **);
+  void        (*voliDisconnect) (void);
+  void        (*voliCleanup) (void **);
   void        *udata;
 } volume_t;
 
@@ -42,9 +42,9 @@ volumeInit (const char *volpkg)
   char      dlpath [MAXPATHLEN];
 
   volume = mdmalloc (sizeof (volume_t));
-  volume->volumeProcess = NULL;
-  volume->volumeDisconnect = NULL;
-  volume->volumeCleanup = NULL;
+  volume->voliProcess = NULL;
+  volume->voliDisconnect = NULL;
+  volume->voliCleanup = NULL;
   volume->udata = NULL;
 
   pathbldMakePath (dlpath, sizeof (dlpath),
@@ -58,9 +58,9 @@ volumeInit (const char *volpkg)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpedantic"
-  volume->volumeProcess = dylibLookup (volume->dlHandle, "volumeProcess");
-  volume->volumeDisconnect = dylibLookup (volume->dlHandle, "volumeDisconnect");
-  volume->volumeCleanup = dylibLookup (volume->dlHandle, "volumeCleanup");
+  volume->voliProcess = dylibLookup (volume->dlHandle, "voliProcess");
+  volume->voliDisconnect = dylibLookup (volume->dlHandle, "voliDisconnect");
+  volume->voliCleanup = dylibLookup (volume->dlHandle, "voliCleanup");
 #pragma clang diagnostic pop
 
   return volume;
@@ -70,7 +70,7 @@ void
 volumeFree (volume_t *volume)
 {
   if (volume != NULL) {
-    volume->volumeCleanup (&volume->udata);
+    volume->voliCleanup (&volume->udata);
     if (volume->dlHandle != NULL) {
       dylibClose (volume->dlHandle);
     }
@@ -81,7 +81,7 @@ volumeFree (volume_t *volume)
 bool
 volumeHaveSinkList (volume_t *volume)
 {
-  return volume->volumeProcess (VOL_HAVE_SINK_LIST, NULL, NULL, NULL,
+  return volume->voliProcess (VOL_HAVE_SINK_LIST, NULL, NULL, NULL,
       &volume->udata);
 }
 
@@ -99,25 +99,25 @@ volumeGet (volume_t *volume, const char *sinkname)
   int               vol;
 
   vol = 0;
-  volume->volumeProcess (VOL_GET, sinkname, &vol, NULL, &volume->udata);
-  volume->volumeDisconnect ();
+  volume->voliProcess (VOL_GET, sinkname, &vol, NULL, &volume->udata);
+  volume->voliDisconnect ();
   return vol;
 }
 
 int
 volumeSet (volume_t *volume, const char *sinkname, int vol)
 {
-  volume->volumeProcess (VOL_SET, sinkname, &vol, NULL, &volume->udata);
-  volume->volumeDisconnect ();
+  volume->voliProcess (VOL_SET, sinkname, &vol, NULL, &volume->udata);
+  volume->voliDisconnect ();
   return vol;
 }
 
 void
 volumeSetSystemDefault (volume_t *volume, const char *sinkname)
 {
-  volume->volumeProcess (VOL_SET_SYSTEM_DFLT, sinkname, NULL, NULL,
+  volume->voliProcess (VOL_SET_SYSTEM_DFLT, sinkname, NULL, NULL,
       &volume->udata);
-  volume->volumeDisconnect ();
+  volume->voliDisconnect ();
 }
 
 int
@@ -125,9 +125,9 @@ volumeGetSinkList (volume_t *volume, const char *sinkname, volsinklist_t *sinkli
 {
   int     rc;
 
-  rc = volume->volumeProcess (VOL_GETSINKLIST, sinkname, NULL, sinklist,
+  rc = volume->voliProcess (VOL_GETSINKLIST, sinkname, NULL, sinklist,
       &volume->udata);
-  volume->volumeDisconnect ();
+  volume->voliDisconnect ();
   return rc;
 }
 
@@ -152,6 +152,6 @@ volumeInterfaceList (void)
 {
   slist_t     *interfaces;
 
-  interfaces = dyInterfaceList ("libvol", "volumeDesc");
+  interfaces = dyInterfaceList ("libvol", "voliDesc");
   return interfaces;
 }

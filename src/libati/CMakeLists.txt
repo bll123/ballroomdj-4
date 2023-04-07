@@ -10,7 +10,8 @@ add_library (libbdj4ati SHARED
 )
 target_link_libraries (libbdj4ati
   libdylib
-  libbdj4common
+  libdyintfc
+  libbdj4basic libbdj4common
   m
 )
 

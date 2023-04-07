@@ -28,6 +28,12 @@ typedef struct atidata {
   audiotaglookup_t  audioTagLookup;
 } atidata_t;
 
+const char *
+atiiDesc (void)
+{
+  return "taglib";
+}
+
 atidata_t *
 atiiInit (const char *atipkg, int writetags,
     taglookup_t tagLookup, tagcheck_t tagCheck,
