@@ -28,6 +28,7 @@
 #include "volsink.h"
 #include "volume.h"
 
+static void confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces, int svidx, int spinboxidx);
 static void confuiLoadVolIntfcList (confuigui_t *gui);
 static void confuiLoadPlayerIntfcList (confuigui_t *gui);
 static void confuiLoadAudioTagIntfcList (confuigui_t *gui);
@@ -135,9 +136,9 @@ confuiBuildUIPlayer (confuigui_t *gui)
 }
 
 static void
-confuiLoadVolIntfcList (confuigui_t *gui)
+confuiLoadIntfcList (confuigui_t *gui, slist_t *interfaces,
+    int svidx, int spinboxidx)
 {
-  slist_t     *interfaces;
   slistidx_t  iteridx;
   const char  *desc;
   const char  *intfc;
@@ -145,17 +146,15 @@ confuiLoadVolIntfcList (confuigui_t *gui)
   nlist_t     *tlist;
   nlist_t     *llist;
 
-  interfaces = volumeInterfaceList ();
-
-  tlist = nlistAlloc ("cu-voli-list", LIST_UNORDERED, NULL);
-  llist = nlistAlloc ("cu-voli-list-l", LIST_UNORDERED, NULL);
+  tlist = nlistAlloc ("cu-i-list", LIST_UNORDERED, NULL);
+  llist = nlistAlloc ("cu-i-list-l", LIST_UNORDERED, NULL);
 
   slistStartIterator (interfaces, &iteridx);
   count = 0;
   while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
     intfc = slistGetStr (interfaces, desc);
-    if (strcmp (intfc, bdjoptGetStr (OPT_M_VOLUME_INTFC)) == 0) {
-      gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx = count;
+    if (strcmp (intfc, bdjoptGetStr (svidx)) == 0) {
+      gui->uiitem [spinboxidx].listidx = count;
     }
     nlistSetStr (tlist, count, desc);
     nlistSetStr (llist, count, intfc);
@@ -165,79 +164,34 @@ confuiLoadVolIntfcList (confuigui_t *gui)
   nlistSort (llist);
   slistFree (interfaces);
 
-  gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].sbkeylist = llist;
-  logProcEnd (LOG_PROC, "confuiLoadVolIntfcList", "");
+  gui->uiitem [spinboxidx].displist = tlist;
+  gui->uiitem [spinboxidx].sbkeylist = llist;
+}
+
+static void
+confuiLoadVolIntfcList (confuigui_t *gui)
+{
+  slist_t     *interfaces;
+
+  interfaces = volumeInterfaceList ();
+  confuiLoadIntfcList (gui, interfaces, OPT_M_VOLUME_INTFC, CONFUI_SPINBOX_VOL_INTFC);
 }
 
 static void
 confuiLoadPlayerIntfcList (confuigui_t *gui)
 {
   slist_t     *interfaces;
-  slistidx_t  iteridx;
-  const char  *desc;
-  const char  *intfc;
-  int         count;
-  nlist_t     *tlist;
-  nlist_t     *llist;
 
   interfaces = pliInterfaceList ();
-
-  tlist = nlistAlloc ("cu-pli-list", LIST_UNORDERED, NULL);
-  llist = nlistAlloc ("cu-pli-list-l", LIST_UNORDERED, NULL);
-
-  slistStartIterator (interfaces, &iteridx);
-  count = 0;
-  while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
-    intfc = slistGetStr (interfaces, desc);
-    if (strcmp (intfc, bdjoptGetStr (OPT_M_PLAYER_INTFC)) == 0) {
-      gui->uiitem [CONFUI_SPINBOX_PLI].listidx = count;
-    }
-    nlistSetStr (tlist, count, desc);
-    nlistSetStr (llist, count, intfc);
-    ++count;
-  }
-  nlistSort (tlist);
-  nlistSort (llist);
-  slistFree (interfaces);
-
-  gui->uiitem [CONFUI_SPINBOX_PLI].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_PLI].sbkeylist = llist;
-  logProcEnd (LOG_PROC, "confuiLoadPlayerIntfcList", "");
+  confuiLoadIntfcList (gui, interfaces, OPT_M_PLAYER_INTFC, CONFUI_SPINBOX_PLI);
 }
 
 static void
 confuiLoadAudioTagIntfcList (confuigui_t *gui)
 {
   slist_t     *interfaces;
-  slistidx_t  iteridx;
-  const char  *desc;
-  const char  *intfc;
-  int         count;
-  nlist_t     *tlist;
-  nlist_t     *llist;
 
   interfaces = atiInterfaceList ();
-
-  tlist = nlistAlloc ("cu-ati-list", LIST_UNORDERED, NULL);
-  llist = nlistAlloc ("cu-ati-list-l", LIST_UNORDERED, NULL);
-
-  slistStartIterator (interfaces, &iteridx);
-  count = 0;
-  while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
-    intfc = slistGetStr (interfaces, desc);
-    if (strcmp (intfc, bdjoptGetStr (OPT_M_AUDIOTAG_INTFC)) == 0) {
-      gui->uiitem [CONFUI_SPINBOX_ATI].listidx = count;
-    }
-    nlistSetStr (tlist, count, desc);
-    nlistSetStr (llist, count, intfc);
-    ++count;
-  }
-  nlistSort (tlist);
-  nlistSort (llist);
-  slistFree (interfaces);
-
-  gui->uiitem [CONFUI_SPINBOX_ATI].displist = tlist;
-  gui->uiitem [CONFUI_SPINBOX_ATI].sbkeylist = llist;
+  confuiLoadIntfcList (gui, interfaces, OPT_M_AUDIOTAG_INTFC, CONFUI_SPINBOX_ATI);
 }
 
