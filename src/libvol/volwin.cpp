@@ -35,6 +35,12 @@
 
 extern "C" {
 
+const char *
+volumeDesc (void)
+{
+  return "Windows";
+}
+
 void
 volumeDisconnect (void) {
   return;

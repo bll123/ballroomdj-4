@@ -26,6 +26,12 @@ enum {
   CHAN_STEREO = 2,
 };
 
+const char *
+volumeDesc (void)
+{
+  return "MacOS";
+}
+
 void
 volumeDisconnect (void) {
   return;

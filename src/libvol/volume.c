@@ -19,14 +19,17 @@
 #include "bdj4.h"
 #include "bdjstring.h"
 #include "pathbld.h"
+#include "dirlist.h"
 #include "dylib.h"
 #include "mdebug.h"
+#include "slist.h"
 #include "sysvars.h"
 #include "volsink.h"
 #include "volume.h"
 
 typedef struct volume {
   dlhandle_t  *dlHandle;
+  const char  *(*volumeDesc) (void);
   int         (*volumeProcess) (volaction_t, const char *, int *, volsinklist_t *, void **);
   void        (*volumeDisconnect) (void);
   void        (*volumeCleanup) (void **);
@@ -36,11 +39,11 @@ typedef struct volume {
 volume_t *
 volumeInit (const char *volpkg)
 {
-  volume_t      *volume;
-
+  volume_t  *volume;
   char      dlpath [MAXPATHLEN];
 
   volume = mdmalloc (sizeof (volume_t));
+  volume->volumeDesc = NULL;
   volume->volumeProcess = NULL;
   volume->volumeDisconnect = NULL;
   volume->volumeCleanup = NULL;
@@ -57,6 +60,7 @@ volumeInit (const char *volpkg)
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpedantic"
+  volume->volumeDesc = dylibLookup (volume->dlHandle, "volumeDesc");
   volume->volumeProcess = dylibLookup (volume->dlHandle, "volumeProcess");
   volume->volumeDisconnect = dylibLookup (volume->dlHandle, "volumeDisconnect");
   volume->volumeCleanup = dylibLookup (volume->dlHandle, "volumeCleanup");
@@ -75,6 +79,12 @@ volumeFree (volume_t *volume)
     }
     mdfree (volume);
   }
+}
+
+const char *
+volumeDescription (volume_t *volume)
+{
+  return volume->volumeDesc ();
 }
 
 bool
@@ -146,3 +156,38 @@ volumeFreeSinkList (volsinklist_t *sinklist)
   }
 }
 
+slist_t *
+volumeInterfaceList (void)
+{
+  slist_t     *interfaces;
+  slist_t     *files;
+  slistidx_t  iteridx;
+  const char  *fn;
+  dlhandle_t  *dlHandle;
+  char        dlpath [MAXPATHLEN];
+  char        tmp [100];
+  const char  *(*volumeDesc) (void);
+  const char  *desc;
+
+  interfaces = slistAlloc ("vol-intfc", LIST_UNORDERED, NULL);
+  files = dirlistBasicDirList (sysvarsGetStr (SV_BDJ4_DIR_EXEC), sysvarsGetStr (SV_SHLIB_EXT));
+  slistStartIterator (files, &iteridx);
+  while ((fn = slistIterateKey (files, &iteridx)) != NULL) {
+    if (strncmp (fn, "libvol", 6) == 0) {
+      pathbldMakePath (dlpath, sizeof (dlpath), fn, "", PATHBLD_MP_DIR_EXEC);
+      dlHandle = dylibLoad (dlpath);
+      volumeDesc = dylibLookup (dlHandle, "volumeDesc");
+      if (volumeDesc != NULL) {
+        desc = volumeDesc ();
+        strlcpy (tmp, fn, sizeof (tmp));
+        tmp [strlen (tmp) - strlen (sysvarsGetStr (SV_SHLIB_EXT))] = '\0';
+        slistSetStr (interfaces, desc, tmp);
+      }
+      dylibClose (dlHandle);
+    }
+  }
+  slistFree (files);
+  slistSort (interfaces);
+
+  return interfaces;
+}

@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 #include "dylib.h"
+#include "slist.h"
 
 typedef struct volsinklist volsinklist_t;
 
@@ -22,6 +23,7 @@ typedef enum {
 
 typedef struct volume volume_t;
 
+const char *volumeDescription (volume_t *volume);
 volume_t  *volumeInit (const char *volpkg);
 void      volumeFree (volume_t *volume);
 bool      volumeHaveSinkList (volume_t *volume);
@@ -31,7 +33,9 @@ int       volumeSet (volume_t *volume, const char *sinkname, int vol);
 int       volumeGetSinkList (volume_t *volume, const char *sinkname, volsinklist_t *sinklist);
 void      volumeSetSystemDefault (volume_t *volume, const char *sinkname);
 void      volumeFreeSinkList (volsinklist_t *sinklist);
+slist_t   *volumeInterfaceList (void);
 
+const char *volumeDesc (void);
 int       volumeProcess (volaction_t action, const char *sinkname,
               int *vol, volsinklist_t *sinklist, void **udata);
 void      volumeDisconnect (void);

@@ -16,14 +16,16 @@
 #include "mdebug.h"
 #include "volsink.h"
 #include "volume.h"
+#include "slist.h"
 #include "sysvars.h"
 
 int
 main (int argc, char *argv [])
 {
-  volume_t      *volume;
+  volume_t      *volume = NULL;
   volsinklist_t sinklist;
   int           vol;
+  bool          doinit = true;
 
   if (argc < 2) {
     fprintf (stdout, "usage: voltest {getsinklist|setdflt <sink>|get <sink>|set <sink> <vol>}\n");
@@ -41,8 +43,25 @@ main (int argc, char *argv [])
   sysvarsInit (argv [0]);
   bdjoptInit ();
 
-  volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
-  volumeSinklistInit (&sinklist);
+  if (argc == 2 && strcmp (argv [1], "interfaces") == 0) {
+    slist_t     *interfaces;
+    slistidx_t  iteridx;
+    const char  *desc;
+    const char  *fn;
+
+    interfaces = volumeInterfaceList ();
+    slistStartIterator (interfaces, &iteridx);
+    while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
+      fprintf (stderr, "%s %s\n", desc, slistGetStr (interfaces, desc));
+    }
+    slistFree (interfaces);
+    doinit = false;
+  }
+
+  if (doinit) {
+    volume = volumeInit (bdjoptGetStr (OPT_M_VOLUME_INTFC));
+    volumeSinklistInit (&sinklist);
+  }
 
   if (argc == 2 && strcmp (argv [1], "getsinklist") == 0) {
     volumeGetSinkList (volume, "", &sinklist);

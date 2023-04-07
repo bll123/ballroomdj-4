@@ -64,6 +64,12 @@ typedef union {
   volsinklist_t   *sinklist;
 } pacallback_t;
 
+const char *
+volumeDesc (void)
+{
+  return "Pulse Audio";
+}
+
 void
 volumeDisconnect (void)
 {
@@ -111,6 +117,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     if (! ginit) {
       gstate.pacontext = NULL;
       gstate.pamainloop = pa_threaded_mainloop_new();
+      mdextalloc (gstate.pamainloop);
       pa_threaded_mainloop_start (gstate.pamainloop);
       ginit = 1;
     }
@@ -151,6 +158,7 @@ volumeProcess (volaction_t action, const char *sinkname,
   pa_threaded_mainloop_lock (gstate.pamainloop);
   op = pa_context_get_server_info (
       gstate.pacontext, &serverInfoCallback, &cbdata);
+  mdextalloc (op);
   if (! op) {
     pa_threaded_mainloop_unlock (gstate.pamainloop);
     volumeProcessFailure ("serverinfo");
@@ -180,6 +188,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     pa_threaded_mainloop_lock (gstate.pamainloop);
     op = pa_context_get_sink_info_list (
         gstate.pacontext, &getSinkCallback, &cbdata);
+    mdextalloc (op);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
       volumeProcessFailure ("getsink");
@@ -210,6 +219,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     pa_threaded_mainloop_lock (gstate.pamainloop);
     op = pa_context_get_sink_info_by_name (
         gstate.pacontext, sinkname, &sinkVolCallback, &cbdata);
+    mdextalloc (op);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
       volumeProcessFailure ("getsinkbyname");
@@ -236,6 +246,7 @@ volumeProcess (volaction_t action, const char *sinkname,
       pa_threaded_mainloop_lock (gstate.pamainloop);
       op = pa_context_set_sink_volume_by_name (
           gstate.pacontext, sinkname, nvol, nullCallback, NULL);
+      mdextalloc (op);
       if (! op) {
         pa_threaded_mainloop_unlock (gstate.pamainloop);
         volumeProcessFailure ("setvol");
@@ -248,6 +259,7 @@ volumeProcess (volaction_t action, const char *sinkname,
     pa_threaded_mainloop_lock (gstate.pamainloop);
     op = pa_context_get_sink_info_by_name (
         gstate.pacontext, sinkname, &sinkVolCallback, &cbdata);
+    mdextalloc (op);
     if (! op) {
       pa_threaded_mainloop_unlock (gstate.pamainloop);
       volumeProcessFailure ("getvol");
@@ -342,6 +354,7 @@ waitop (pa_operation *op)
   while (pa_operation_get_state (op) == PA_OPERATION_RUNNING) {
     pa_threaded_mainloop_wait (gstate.pamainloop);
   }
+  mdextfree (op);
   pa_operation_unref (op);
 }
 
@@ -350,6 +363,7 @@ pulse_close (void)
 {
   if (ginit) {
     pa_threaded_mainloop_stop (gstate.pamainloop);
+    mdextfree (gstate.pamainloop);
     pa_threaded_mainloop_free (gstate.pamainloop);
   }
   ginit = 0;
@@ -361,6 +375,7 @@ pulse_disconnect (void)
   if (gstate.pacontext != NULL) {
     pa_threaded_mainloop_lock (gstate.pamainloop);
     pa_context_disconnect (gstate.pacontext);
+    mdextfree (gstate.pacontext);
     pa_context_unref (gstate.pacontext);
     gstate.pacontext = NULL;
     pa_threaded_mainloop_unlock (gstate.pamainloop);
@@ -392,6 +407,7 @@ init_context (void)
   pa_proplist_sets (paprop, PA_PROP_APPLICATION_NAME, "bdj4");
   pa_proplist_sets (paprop, PA_PROP_MEDIA_ROLE, "music");
   gstate.pacontext = pa_context_new_with_proplist (paapi, "bdj4", paprop);
+  mdextalloc (gstate.pacontext);
   pa_proplist_free (paprop);
   if (gstate.pacontext == NULL) {
     pa_threaded_mainloop_unlock (gstate.pamainloop);

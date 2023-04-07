@@ -99,7 +99,7 @@ function checkUpdaterClean {
   # audio adjust file should be installed if missing or wrong version
   fn="$DATADIR/audioadjust.txt"
   # rm -f "$fn"
-  sed -e 's/version [23]/version 1/;s/^\.\.[23]/..1/' "$fn" > "$fn.n"
+  sed -e 's/version [234]/version 1/;s/^\.\.[234]/..1/' "$fn" > "$fn.n"
   mv -f "$fn.n" "$fn"
 
   # gtk-static.css file should be installed if missing
@@ -346,10 +346,10 @@ function checkInstallation {
     res=$(($res+1))  # audioadjust.txt file
     fn="${DATADIR}/audioadjust.txt"
     if [[ $fin == T && -f "$fn" ]]; then
-      grep 'version 3' "$fn" > /dev/null 2>&1
+      grep 'version 4' "$fn" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
-        grep '^\.\.3' "$fn" > /dev/null 2>&1
+        grep '^\.\.4' "$fn" > /dev/null 2>&1
         rc=$?
         if [[ $rc -eq 0 ]]; then
           chk=$(($chk+1))
@@ -433,18 +433,18 @@ function checkInstallation {
     fi
     if [[ $fin == T && -f ${fna} ]]; then
       if [[ -f ${fnb} ]]; then
-        echo "  extra $(basename "$fnb") file"
+        echo "  extra $(basename '$fnb') file"
       else
         grep '^\.\.15000' "$fn" > /dev/null 2>&1
         rc=$?
         if [[ $rc -ne 0 ]]; then
           chk=$(($chk+1))
         else
-          echo "  $(basename "$fna") has bad vw maxplaytime"
+          echo "  $(basename '$fna') has bad vw maxplaytime"
         fi
       fi
     else
-      echo "  no $(basename "$fna") file"
+      echo "  no $(basename '$fna') file"
     fi
 
     res=$(($res+1))  # queuedance.pl file
@@ -457,12 +457,12 @@ function checkInstallation {
     fi
     if [[ $fin == T && -f ${fna} ]]; then
       if [[ -f ${fnb} ]]; then
-        echo "  extra $(basename "$fnb") file"
+        echo "  extra $(basename '$fnb') file"
       else
         chk=$(($chk+1))
       fi
     else
-      echo "  no $(basename "$fna") file"
+      echo "  no $(basename '$fna') file"
     fi
 
     res=$(($res+1))  # standardround.pldances file
@@ -476,10 +476,18 @@ function checkInstallation {
       if [[ $rc -ne 0 ]]; then
         chk=$(($chk+1))
       else
-        echo "  $(basename "$fn") has bad vw maxplaytime"
+        echo "  $(basename '$fn') has bad vw maxplaytime"
       fi
     else
-      echo "  no $(basename "$fn") file"
+      echo "  no $(basename '$fn') file"
+    fi
+
+    res=$(($res+1))  # volintfc.txt file removed
+    fn="${DATADIR}/volintfc.txt"
+    if [[ $fin == T && ! -f "$fn" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  $(basename '$fn') exists"
     fi
   fi
 

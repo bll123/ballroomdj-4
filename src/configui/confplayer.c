@@ -136,52 +136,33 @@ confuiBuildUIPlayer (confuigui_t *gui)
 static void
 confuiLoadVolIntfcList (confuigui_t *gui)
 {
-  char          tbuff [MAXPATHLEN];
-  nlist_t       *tlist = NULL;
-  datafile_t    *df = NULL;
-  ilist_t       *list = NULL;
-  ilistidx_t    iteridx;
-  ilistidx_t    key;
-  char          *os;
-  char          *intfc;
-  char          *desc;
-  nlist_t       *llist;
-  int           count;
+  slist_t     *interfaces;
+  slistidx_t  iteridx;
+  const char  *desc;
+  const char  *intfc;
+  int         count;
+  nlist_t     *tlist;
+  nlist_t     *llist;
 
-  static datafilekey_t dfkeys [CONFUI_VOL_MAX] = {
-    { "DESC",   CONFUI_VOL_DESC,  VALUE_STR, NULL, -1 },
-    { "INTFC",  CONFUI_VOL_INTFC, VALUE_STR, NULL, -1 },
-    { "OS",     CONFUI_VOL_OS,    VALUE_STR, NULL, -1 },
-  };
+  interfaces = volumeInterfaceList ();
 
-  logProcBegin (LOG_PROC, "confuiLoadVolIntfcList");
+  tlist = nlistAlloc ("cu-volintfc-list", LIST_UNORDERED, NULL);
+  llist = nlistAlloc ("cu-volintfc-list-l", LIST_UNORDERED, NULL);
 
-  tlist = nlistAlloc ("cu-volintfc-list", LIST_ORDERED, NULL);
-  llist = nlistAlloc ("cu-volintfc-list-l", LIST_ORDERED, NULL);
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "volintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
-  df = datafileAllocParse ("conf-volintfc-list", DFTYPE_INDIRECT, tbuff,
-      dfkeys, CONFUI_VOL_MAX);
-  list = datafileGetList (df);
-
-  ilistStartIterator (list, &iteridx);
+  slistStartIterator (interfaces, &iteridx);
   count = 0;
-  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
-    intfc = ilistGetStr (list, key, CONFUI_VOL_INTFC);
-    desc = ilistGetStr (list, key, CONFUI_VOL_DESC);
-    os = ilistGetStr (list, key, CONFUI_VOL_OS);
-    if (strcmp (os, sysvarsGetStr (SV_OSNAME)) == 0 ||
-        strcmp (os, "all") == 0) {
-      if (strcmp (intfc, bdjoptGetStr (OPT_M_VOLUME_INTFC)) == 0) {
-        gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx = count;
-      }
-      nlistSetStr (tlist, count, desc);
-      nlistSetStr (llist, count, intfc);
-      ++count;
+  while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
+    intfc = slistGetStr (interfaces, desc);
+    if (strcmp (intfc, bdjoptGetStr (OPT_M_VOLUME_INTFC)) == 0) {
+      gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].listidx = count;
     }
+    nlistSetStr (tlist, count, desc);
+    nlistSetStr (llist, count, intfc);
+    ++count;
   }
-  datafileFree (df);
+  nlistSort (tlist);
+  nlistSort (llist);
+  slistFree (interfaces);
 
   gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].displist = tlist;
   gui->uiitem [CONFUI_SPINBOX_VOL_INTFC].sbkeylist = llist;

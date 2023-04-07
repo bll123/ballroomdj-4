@@ -22,6 +22,12 @@
 static int gvol [3] = { 30, 20, 10 };
 static int gsink = 0;
 
+const char *
+volumeDesc (void)
+{
+  return "Null Audio";
+}
+
 void
 volumeDisconnect (void) {
   return;
