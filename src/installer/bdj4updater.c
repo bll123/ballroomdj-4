@@ -439,12 +439,6 @@ main (int argc, char *argv [])
     updaterCopyIfNotPresent (_("QueueDance"), BDJ4_PL_DANCE_EXT);
   }
 
-  {
-    /* 4.2.1 2023-3-7 audiotagintfc.txt */
-    /* new */
-    updaterCopyIfNotPresent (AUDIOTAGINTFC_FN, BDJ4_CONFIG_EXT);
-  }
-
   /* The datafiles must now be loaded. */
 
   if (bdjvarsdfloadInit () < 0) {

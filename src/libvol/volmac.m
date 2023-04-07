@@ -27,23 +27,23 @@ enum {
 };
 
 const char *
-volumeDesc (void)
+voliDesc (void)
 {
   return "MacOS";
 }
 
 void
-volumeDisconnect (void) {
+voliDisconnect (void) {
   return;
 }
 
 void
-volumeCleanup (void **udata) {
+voliCleanup (void **udata) {
   return;
 }
 
 int
-volumeProcess (volaction_t action, const char *sinkname,
+voliProcess (volaction_t action, const char *sinkname,
     int *vol, volsinklist_t *sinklist, void **udata)
 {
   AudioDeviceID   outputDeviceID = 0;

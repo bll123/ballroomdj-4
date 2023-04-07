@@ -47,7 +47,6 @@ main (int argc, char *argv [])
     slist_t     *interfaces;
     slistidx_t  iteridx;
     const char  *desc;
-    const char  *fn;
 
     interfaces = volumeInterfaceList ();
     slistStartIterator (interfaces, &iteridx);
