@@ -104,20 +104,22 @@ add_subdirectory (libbasic)
 add_subdirectory (libbdj4)
 add_subdirectory (libpli)
 add_subdirectory (libvol)
-add_subdirectory (utility)
+# executables, no gui
 add_subdirectory (player)
+add_subdirectory (utility)
+# ui libraries
 if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
   add_subdirectory (libuigtk3)
 endif()
 if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
   add_subdirectory (libuinull)
 endif()
-# executables
 add_subdirectory (libbdj4ui)
-add_subdirectory (installer)
-add_subdirectory (starter)
+# executables
 add_subdirectory (configui)
-add_subdirectory (playerui)
+add_subdirectory (installer)
 add_subdirectory (manageui)
+add_subdirectory (playerui)
+add_subdirectory (starter)
 # testing
 add_subdirectory (check)
