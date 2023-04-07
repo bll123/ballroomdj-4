@@ -45,6 +45,12 @@ enum {
 
 static void     pliiWaitUntilPlaying (plidata_t *pliData);
 
+const char *
+pliiDesc (void)
+{
+  return "Integrated VLC";
+}
+
 plidata_t *
 pliiInit (const char *volpkg, const char *sinkname)
 {

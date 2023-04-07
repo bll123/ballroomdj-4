@@ -15,6 +15,12 @@
 #include "tmutil.h"
 #include "volsink.h"
 
+const char *
+pliiDesc (void)
+{
+  return "Null Player";
+}
+
 plidata_t *
 pliiInit (const char *volpkg, const char *sinkname)
 {

@@ -25,7 +25,7 @@
 #include "pathutil.h"
 
 dlhandle_t *
-dylibLoad (char *path)
+dylibLoad (const char *path)
 {
   void      *handle = NULL;
 
@@ -65,7 +65,7 @@ dylibClose (dlhandle_t *handle)
 }
 
 void *
-dylibLookup (dlhandle_t *handle, char *funcname)
+dylibLookup (dlhandle_t *handle, const char *funcname)
 {
   void      *addr = NULL;
 

@@ -172,52 +172,33 @@ confuiLoadVolIntfcList (confuigui_t *gui)
 static void
 confuiLoadPlayerIntfcList (confuigui_t *gui)
 {
-  char          tbuff [MAXPATHLEN];
-  nlist_t       *tlist = NULL;
-  datafile_t    *df = NULL;
-  ilist_t       *list = NULL;
-  ilistidx_t    iteridx;
-  ilistidx_t    key;
-  char          *os;
-  char          *intfc;
-  char          *desc;
-  nlist_t       *llist;
-  int           count;
+  slist_t     *interfaces;
+  slistidx_t  iteridx;
+  const char  *desc;
+  const char  *intfc;
+  int         count;
+  nlist_t     *tlist;
+  nlist_t     *llist;
 
-  static datafilekey_t dfkeys [CONFUI_PLI_MAX] = {
-    { "DESC",   CONFUI_PLI_DESC,  VALUE_STR, NULL, -1 },
-    { "INTFC",  CONFUI_PLI_INTFC, VALUE_STR, NULL, -1 },
-    { "OS",     CONFUI_PLI_OS,    VALUE_STR, NULL, -1 },
-  };
-
-  logProcBegin (LOG_PROC, "confuiLoadPlayerIntfcList");
+  interfaces = pliInterfaceList ();
 
   tlist = nlistAlloc ("cu-playerintfc-list", LIST_ORDERED, NULL);
   llist = nlistAlloc ("cu-playerintfc-list-l", LIST_ORDERED, NULL);
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "playerintfc", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
-  df = datafileAllocParse ("conf-playerintfc-list", DFTYPE_INDIRECT, tbuff,
-      dfkeys, CONFUI_PLI_MAX);
-  list = datafileGetList (df);
-
-  ilistStartIterator (list, &iteridx);
+  slistStartIterator (interfaces, &iteridx);
   count = 0;
-  while ((key = ilistIterateKey (list, &iteridx)) >= 0) {
-    intfc = ilistGetStr (list, key, CONFUI_PLI_INTFC);
-    desc = ilistGetStr (list, key, CONFUI_PLI_DESC);
-    os = ilistGetStr (list, key, CONFUI_PLI_OS);
-    if (strcmp (os, sysvarsGetStr (SV_OSNAME)) == 0 ||
-        strcmp (os, "all") == 0) {
-      if (strcmp (intfc, bdjoptGetStr (OPT_M_PLAYER_INTFC)) == 0) {
-        gui->uiitem [CONFUI_SPINBOX_PLI].listidx = count;
-      }
-      nlistSetStr (tlist, count, desc);
-      nlistSetStr (llist, count, intfc);
-      ++count;
+  while ((desc = slistIterateKey (interfaces, &iteridx)) != NULL) {
+    intfc = slistGetStr (interfaces, desc);
+    if (strcmp (intfc, bdjoptGetStr (OPT_M_PLAYER_INTFC)) == 0) {
+      gui->uiitem [CONFUI_SPINBOX_PLI].listidx = count;
     }
+    nlistSetStr (tlist, count, desc);
+    nlistSetStr (llist, count, intfc);
+    ++count;
   }
-  datafileFree (df);
+  nlistSort (tlist);
+  nlistSort (llist);
+  slistFree (interfaces);
 
   gui->uiitem [CONFUI_SPINBOX_PLI].displist = tlist;
   gui->uiitem [CONFUI_SPINBOX_PLI].sbkeylist = llist;

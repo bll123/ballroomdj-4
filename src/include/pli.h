@@ -4,6 +4,7 @@
 #ifndef INC_PLI_H
 #define INC_PLI_H
 
+#include "slist.h"
 #include "tmutil.h"
 #include "volsink.h"
 
@@ -51,6 +52,7 @@ plistate_t    pliState (pli_t *pli);
 int           pliSetAudioDevice (pli_t *pli, const char *dev);
 int           pliAudioDeviceList (pli_t *pli, volsinklist_t *sinklist);
 const char    *pliStateText (pli_t *pli);
+slist_t       *pliInterfaceList (void);
 
 plidata_t     *pliiInit (const char *volpkg, const char *sinkname);
 void          pliiFree (plidata_t *pliData);
@@ -67,5 +69,6 @@ ssize_t       pliiGetTime (plidata_t *pliData);
 plistate_t    pliiState (plidata_t *pliData);
 int           pliiSetAudioDevice (plidata_t *pliData, const char *dev);
 int           pliiAudioDeviceList (plidata_t *pliData, volsinklist_t *);
+const char    *pliiDesc (void);
 
 #endif

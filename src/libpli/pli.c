@@ -12,9 +12,11 @@
 
 #include "bdj4.h"
 #include "pathbld.h"
+#include "dyintfc.h"
 #include "dylib.h"
 #include "mdebug.h"
 #include "pli.h"
+#include "slist.h"
 #include "sysvars.h"
 #include "volsink.h"
 
@@ -254,4 +256,13 @@ pliStateText (pli_t *pli)
   }
 
   return plistateTxt [pli->pliiState (pli->pliData)];
+}
+
+slist_t *
+pliInterfaceList (void)
+{
+  slist_t   *interfaces;
+
+  interfaces = dyInterfaceList ("libpli", "pliiDesc");
+  return interfaces;
 }

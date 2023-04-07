@@ -11,3 +11,12 @@ add_library (libdylib STATIC
 target_link_libraries (libdylib
   ${CMAKE_DL_LIBS}
 )
+
+add_library (libdyintfc STATIC
+  dyintfc.c
+)
+target_link_libraries (libdyintfc
+  libdylib
+  libbdj4basic libbdj4common
+  ${CMAKE_DL_LIBS}
+)

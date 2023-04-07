@@ -9,6 +9,7 @@ add_library (libbdj4vol SHARED
   volume.c
 )
 target_link_libraries (libbdj4vol
+  libdyintfc
   libdylib
   libbdj4basic libbdj4common
   m

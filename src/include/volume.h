@@ -23,7 +23,6 @@ typedef enum {
 
 typedef struct volume volume_t;
 
-const char *volumeDescription (volume_t *volume);
 volume_t  *volumeInit (const char *volpkg);
 void      volumeFree (volume_t *volume);
 bool      volumeHaveSinkList (volume_t *volume);

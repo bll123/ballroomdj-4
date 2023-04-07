@@ -83,7 +83,8 @@ bin/tmusicsetup$
 bin/tmusicsetup\.exe$
 
 # removed 2023-4-7, no longer needed (4.3.0.4)
-templates/volintfc.txt
+templates/volintfc\.txt$
+templates/playerintfc\.txt$
 
 ####
 # mac-os
@@ -133,5 +134,6 @@ data/nl/wachtrijendans.pl$
 data/nl/wachtrijendans.pl.bak.\d$
 
 # removed 2023-4-7, no longer needed (4.3.0.4)
-data/volintfc.txt
+data/volintfc\.txt$
+data/playerintfc\.txt$
 

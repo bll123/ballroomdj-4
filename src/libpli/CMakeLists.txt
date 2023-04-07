@@ -10,7 +10,8 @@ add_library (libbdj4pli SHARED
 )
 target_link_libraries (libbdj4pli
   libdylib
-  libbdj4common
+  libdyintfc
+  libbdj4basic libbdj4common
   m
 )
 

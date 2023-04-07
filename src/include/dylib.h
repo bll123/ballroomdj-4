@@ -6,8 +6,8 @@
 
 typedef void dlhandle_t;
 
-dlhandle_t    *dylibLoad (char *path);
+dlhandle_t    *dylibLoad (const char *path);
 void          dylibClose (dlhandle_t *dlhandle);
-void          *dylibLookup (dlhandle_t *dlhandle, char *funcname);
+void          *dylibLookup (dlhandle_t *dlhandle, const char *funcname);
 
 #endif /* INC_DYLIB_H */
