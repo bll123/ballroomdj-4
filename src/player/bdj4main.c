@@ -1754,6 +1754,16 @@ mainMusicqMove (maindata_t *mainData, char *args, mainmove_t direction)
     return;
   }
 
+  if (fromidx == 1 && toidx == 0) {
+    dbidx_t   dbidx;
+
+    dbidx = musicqGetByIdx (mainData->musicQueue, mi, 0);
+    if (dbidx < 0) {
+      logProcEnd (LOG_PROC, "mainMusicqMove", "to-0-diff-q");
+      return;
+    }
+  }
+
   if (toidx > fromidx && fromidx >= musicqLen) {
     logProcEnd (LOG_PROC, "mainMusicqMove", "bad-move");
     return;

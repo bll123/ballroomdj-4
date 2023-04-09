@@ -8,10 +8,11 @@
 
 * Bug Fixes:
     * Marquee: Correctly displays upcoming songs when switch-queue-when-empty is active.
+    * Player: Move up will not change the current song if associated with a different queue.
     * Player: Request: Fixed invalid queue to history.
     * Player: Request: In queue marks did not always display correctly.
     * PENDING: Player: Fix current song display when pause-at-end is active and the playback queue has been changed.
-    * PENDING: Player: Swap will no longer swap if the current song is associated with a different queue.
+    * PENDING: Player: Fix wrong selection after move up to the current song.
 
 -->
 
