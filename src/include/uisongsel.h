@@ -24,11 +24,6 @@ typedef struct uisongsel uisongsel_t;
 typedef struct ss_internal ss_internal_t;
 
 enum {
-  UISONGSEL_MARK_REPLACE,
-  UISONGSEL_MARK_UPDATE,
-};
-
-enum {
   UISONGSEL_PEER_MAX = 2,
 };
 
@@ -49,6 +44,7 @@ typedef struct uisongsel {
   callback_t        *editcb;
   callback_t        *songsavecb;
   dbidx_t           lastdbidx;
+  nlist_t           *musicqdbidxlist [MUSICQ_MAX];
   nlist_t           *songlistdbidxlist;
   /* peers */
   int               peercount;
@@ -83,7 +79,7 @@ void  uisongselSetPlayCallback (uisongsel_t *uisongsel, callback_t *uicb);
 void  uisongselSetSongSaveCallback (uisongsel_t *uisongsel, callback_t *uicb);
 /* song filter */
 void  uisongselSetEditCallback (uisongsel_t *uisongsel, callback_t *uicb);
-void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t *musicqupdate, int updflag);
+void  uisongselProcessMusicQueueData (uisongsel_t *uisongsel, mp_musicqupdate_t *musicqupdate);
 
 /* uisongselui.c */
 void  uisongselUIInit (uisongsel_t *uisongsel);

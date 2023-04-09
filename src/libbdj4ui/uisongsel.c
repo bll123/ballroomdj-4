@@ -71,6 +71,9 @@ uisongselInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uisongsel->playcb = NULL;
   uisongsel->editcb = NULL;
   uisongsel->songsavecb = NULL;
+  for (int i = 0; i < MUSICQ_MAX; ++i) {
+    uisongsel->musicqdbidxlist [i] = NULL;
+  }
   uisongsel->songlistdbidxlist = NULL;
 
   uisongselUIInit (uisongsel);
@@ -107,6 +110,9 @@ uisongselFree (uisongsel_t *uisongsel)
   logProcBegin (LOG_PROC, "uisongselFree");
 
   if (uisongsel != NULL) {
+    for (int i = 0; i < MUSICQ_MAX; ++i) {
+      nlistFree (uisongsel->musicqdbidxlist [i]);
+    }
     nlistFree (uisongsel->songlistdbidxlist);
     uidanceFree (uisongsel->uidance);
     uisongselUIFree (uisongsel);
@@ -172,30 +178,54 @@ uisongselSetSongSaveCallback (uisongsel_t *uisongsel, callback_t *uicb)
 
 void
 uisongselProcessMusicQueueData (uisongsel_t *uisongsel,
-    mp_musicqupdate_t *musicqupdate, int updflag)
+    mp_musicqupdate_t *musicqupdate)
 {
-  nlistidx_t  iteridx;
-  mp_musicqupditem_t   *musicqupditem;
+  nlistidx_t          iteridx;
+  mp_musicqupditem_t  *musicqupditem;
+  int                 mqidx;
+  int                 count;
 
-  if (updflag == UISONGSEL_MARK_REPLACE ||
-      uisongsel->songlistdbidxlist == NULL) {
-    nlistFree (uisongsel->songlistdbidxlist);
-    uisongsel->songlistdbidxlist = NULL;
-    uisongsel->songlistdbidxlist = nlistAlloc ("songlist-dbidx",
-        LIST_UNORDERED, NULL);
-    nlistSetSize (uisongsel->songlistdbidxlist, nlistGetCount (musicqupdate->dispList));
-    updflag = UISONGSEL_MARK_REPLACE;
+  mqidx = musicqupdate->mqidx;
+
+  nlistFree (uisongsel->musicqdbidxlist [mqidx]);
+  /* no need to order the individual music-q dbidx lists */
+  uisongsel->musicqdbidxlist [mqidx] = nlistAlloc ("musicq-dbidx",
+      LIST_UNORDERED, NULL);
+  nlistSetSize (uisongsel->musicqdbidxlist [mqidx], nlistGetCount (musicqupdate->dispList));
+
+  if (musicqupdate->currdbidx >= 0) {
+    nlistSetNum (uisongsel->musicqdbidxlist [mqidx], musicqupdate->currdbidx, 0);
   }
-
-  nlistSetNum (uisongsel->songlistdbidxlist, musicqupdate->currdbidx, 0);
 
   nlistStartIterator (musicqupdate->dispList, &iteridx);
   while ((musicqupditem = nlistIterateValueData (musicqupdate->dispList, &iteridx)) != NULL) {
-    nlistSetNum (uisongsel->songlistdbidxlist, musicqupditem->dbidx, 0);
+    nlistSetNum (uisongsel->musicqdbidxlist [mqidx], musicqupditem->dbidx, 0);
   }
 
-  if (updflag == UISONGSEL_MARK_REPLACE) {
-    nlistSort (uisongsel->songlistdbidxlist);
+  /* now rebuild the complete list using each music-queue-dbidx-list */
+  nlistFree (uisongsel->songlistdbidxlist);
+  /* there may be duplicate db indexes, so start as ordered */
+  uisongsel->songlistdbidxlist = nlistAlloc ("songlist-dbidx",
+      LIST_ORDERED, NULL);
+  count = 0;
+  for (int i = 0; i < MUSICQ_MAX; ++i) {
+    if (uisongsel->musicqdbidxlist [i] == NULL) {
+      continue;
+    }
+    count += nlistGetCount (uisongsel->musicqdbidxlist [i]);
+  }
+  nlistSetSize (uisongsel->songlistdbidxlist, count);
+
+  for (int i = 0; i < MUSICQ_MAX; ++i) {
+    dbidx_t   dbidx;
+
+    if (uisongsel->musicqdbidxlist [i] == NULL) {
+      continue;
+    }
+    nlistStartIterator (uisongsel->musicqdbidxlist [i], &iteridx);
+    while ((dbidx = nlistIterateKey (uisongsel->musicqdbidxlist [i], &iteridx)) >=0) {
+      nlistSetNum (uisongsel->songlistdbidxlist, dbidx, 0);
+    }
   }
 
   uisongselPopulateData (uisongsel);
