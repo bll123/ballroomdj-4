@@ -900,7 +900,7 @@ uimusicqQueueCallback (void *udata)
   dbidx = uimusicqGetSelectionDbidx (uimusicq);
 
   if (uimusicq->cbcopy [MUSICQ_CBC_QUEUE] != NULL) {
-    callbackHandlerLongInt (uimusicq->cbcopy [MUSICQ_CBC_QUEUE], dbidx, MUSICQ_LAST);
+    callbackHandlerLong (uimusicq->cbcopy [MUSICQ_CBC_QUEUE], dbidx);
   }
   return UICB_CONT;
 }

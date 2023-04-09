@@ -2588,12 +2588,12 @@ mainParseQueuePlaylist (maindata_t *mainData, char *args, char **b, int *editmod
 static inline int
 mainMusicqIndexParse (maindata_t *mainData, const char *p)
 {
-  int   mi = MUSICQ_CURRENT;
+  int   mi = -1;
 
   if (p != NULL) {
     mi = atoi (p);
   }
-  if (mi != MUSICQ_CURRENT && mi >= 0 && mi < MUSICQ_MAX) {
+  if (mi >= 0 && mi < MUSICQ_MAX) {
     /* the managed queue is changed to the requested queue */
     /* otherwise, just leave musicqManageIdx as is */
     mainData->musicqManageIdx = mi;

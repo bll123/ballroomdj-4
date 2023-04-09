@@ -1407,11 +1407,6 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
       p = tmp;
     }
 
-    if (strncmp (p, "current~", 8) == 0) {
-      snprintf (tmp, sizeof (tmp), "%d~%s", MUSICQ_CURRENT, p + 8);
-      p = tmp;
-    }
-
     dlen = strlen (p);
     d = filedataReplace (p, &dlen, "~", MSG_ARGS_RS_STR);
   }

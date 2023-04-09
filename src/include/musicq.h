@@ -23,8 +23,6 @@ typedef enum {
   MUSICQ_SL,                        // for the song list editor
   MUSICQ_MNG_PB,                    // hidden q used by manageui for playback
   MUSICQ_MAX,
-  MUSICQ_CURRENT,                   // currently managed queue
-  MUSICQ_LAST,                      // to handle history queue button
 } musicqidx_t;
 
 enum {

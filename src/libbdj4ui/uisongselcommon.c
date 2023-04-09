@@ -19,10 +19,10 @@
 #include "ui.h"
 
 void
-uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx)
+uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx)
 {
   if (uisongsel->queuecb != NULL) {
-    callbackHandlerLongInt (uisongsel->queuecb, dbidx, mqidx);
+    callbackHandlerLong (uisongsel->queuecb, dbidx);
   }
 }
 

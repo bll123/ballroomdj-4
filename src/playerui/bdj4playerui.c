@@ -93,9 +93,9 @@ typedef struct {
   char            *locknm;
   conn_t          *conn;
   musicdb_t       *musicdb;
-  musicqidx_t     musicqPlayIdx;
-  musicqidx_t     musicqLastManageIdx;
-  musicqidx_t     musicqManageIdx;
+  int             musicqPlayIdx;
+  int             musicqRequestIdx;
+  int             musicqManageIdx;
   dispsel_t       *dispsel;
   long            dbgflags;
   int             marqueeIsMaximized;
@@ -175,8 +175,8 @@ static bool     pluiExportMP3Status (void *udata, int count, int tot);
 static bool     pluiSwitchPage (void *udata, long pagenum);
 static void     pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum);
 static bool     pluiProcessSetPlaybackQueue (void *udata);
-static void     pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newqueue, int updateFlag);
-static void     pluiSetManageQueue (playerui_t *plui, musicqidx_t newqueue);
+static void     pluiSetPlaybackQueue (playerui_t *plui, int newqueue, int updateFlag);
+static void     pluiSetManageQueue (playerui_t *plui, int newqueue);
 /* option handlers */
 static bool     pluiToggleExtraQueues (void *udata);
 static void     pluiSetExtraQueues (playerui_t *plui);
@@ -190,7 +190,7 @@ static bool     pluiMarqueeFontSizeChg (void *udata);
 static bool     pluiMarqueeFind (void *udata);
 static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
-static bool     pluiQueueProcess (void *udata, long dbidx, int mqidx);
+static bool     pluiQueueProcess (void *udata, long dbidx);
 static bool     pluiSongSaveCallback (void *udata, long dbidx);
 static bool     pluiClearQueueCallback (void *udata);
 static void     pluiPushHistory (playerui_t *plui, const char *args);
@@ -223,7 +223,7 @@ main (int argc, char *argv[])
   plui.uimusicq = NULL;
   plui.uisongsel = NULL;
   plui.musicqPlayIdx = MUSICQ_PB_A;
-  plui.musicqLastManageIdx = MUSICQ_PB_A;
+  plui.musicqRequestIdx = MUSICQ_PB_A;
   plui.musicqManageIdx = MUSICQ_PB_A;
   plui.marqueeIsMaximized = false;
   plui.marqueeFontSize = 36;
@@ -680,7 +680,7 @@ pluiInitializeUI (playerui_t *plui)
   plui->uisongsel = uisongselInit ("plui-req", plui->conn, plui->musicdb,
       plui->dispsel, NULL, plui->options,
       plui->uisongfilter, DISP_SEL_REQUEST);
-  plui->callbacks [PLUI_CB_QUEUE_SL] = callbackInitLongInt (
+  plui->callbacks [PLUI_CB_QUEUE_SL] = callbackInitLong (
       pluiQueueProcess, plui);
   uisongselSetQueueCallback (plui->uisongsel,
       plui->callbacks [PLUI_CB_QUEUE_SL]);
@@ -1009,7 +1009,6 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           int     mqidx;
 
           mqidx = atoi (targs);
-          plui->musicqLastManageIdx = mqidx;
           plui->musicqManageIdx = mqidx;
           uimusicqSetManageIdx (plui->uimusicq, mqidx);
           break;
@@ -1183,7 +1182,7 @@ pluiProcessSetPlaybackQueue (void *udata)
 }
 
 static void
-pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue, int updateFlag)
+pluiSetPlaybackQueue (playerui_t *plui, int newQueue, int updateFlag)
 {
   char            tbuff [40];
 
@@ -1215,13 +1214,14 @@ pluiSetPlaybackQueue (playerui_t *plui, musicqidx_t newQueue, int updateFlag)
 }
 
 static void
-pluiSetManageQueue (playerui_t *plui, musicqidx_t mqidx)
+pluiSetManageQueue (playerui_t *plui, int mqidx)
 {
   char  tbuff [40];
 
-  if ((int) mqidx < MUSICQ_PB_MAX) {
+  if (mqidx < MUSICQ_PB_MAX) {
     int   val;
 
+    plui->musicqRequestIdx = mqidx;
     val = nlistGetNum (plui->options, PLUI_SHOW_EXTRA_QUEUES);
     if (val) {
       uisongselSetRequestLabel (plui->uisongsel,
@@ -1234,8 +1234,6 @@ pluiSetManageQueue (playerui_t *plui, musicqidx_t mqidx)
     }
   }
 
-  /* need to save the last managed to handle history queue button */
-  plui->musicqLastManageIdx = plui->musicqManageIdx;
   plui->musicqManageIdx = mqidx;
   uimusicqSetManageIdx (plui->uimusicq, mqidx);
   snprintf (tbuff, sizeof (tbuff), "%d", mqidx);
@@ -1488,19 +1486,14 @@ pluisetMarqueeFontSizes (playerui_t *plui, char *args)
 }
 
 static bool
-pluiQueueProcess (void *udata, long dbidx, int mqidx)
+pluiQueueProcess (void *udata, long dbidx)
 {
   playerui_t  *plui = udata;
   long        loc;
   char        tbuff [100];
+  int         mqidx;
 
-  if (mqidx == MUSICQ_CURRENT) {
-    mqidx = plui->musicqManageIdx;
-  }
-  if (mqidx == MUSICQ_LAST) {
-    mqidx = plui->musicqLastManageIdx;
-  }
-
+  mqidx = plui->musicqRequestIdx;
   loc = uimusicqGetSelectLocation (plui->uimusicq, mqidx);
 
   /* increment the location by 1 as the tree-view index is one less than */
@@ -1588,7 +1581,7 @@ pluiReqextCallback (void *udata)
           songentrytext);
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_DB_ENTRY_TEMP_ADD, tbuff);
       dataFree (tbuff);
-      pluiQueueProcess (plui, dbidx, MUSICQ_CURRENT);
+      pluiQueueProcess (plui, dbidx);
     }
   }
   return UICB_CONT;

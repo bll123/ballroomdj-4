@@ -889,11 +889,9 @@ uisongselScrollSelection (uisongsel_t *uisongsel, long idxStart,
 static bool
 uisongselQueueCallback (void *udata)
 {
-  musicqidx_t mqidx;
   uisongsel_t *uisongsel = udata;
 
-  mqidx = MUSICQ_CURRENT;
-  uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_QUEUE);
+  uisongselQueueHandler (uisongsel, -1, UISONGSEL_QUEUE);
   return UICB_CONT;
 }
 
@@ -909,7 +907,7 @@ uisongselQueueHandler (uisongsel_t *uisongsel, musicqidx_t mqidx, int action)
   nlistStartIterator (ssint->selectedList, &iteridx);
   while ((dbidx = nlistIterateValueNum (ssint->selectedList, &iteridx)) >= 0) {
     if (action == UISONGSEL_QUEUE) {
-      uisongselQueueProcess (uisongsel, dbidx, mqidx);
+      uisongselQueueProcess (uisongsel, dbidx);
     }
     if (action == UISONGSEL_PLAY) {
       uisongselPlayProcess (uisongsel, dbidx, mqidx);

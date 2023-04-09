@@ -4,29 +4,6 @@ section 70 Music-Queue-Dual
 # that inherits the main music queue's configuration.
 
 # dual musicq queues
-# check to make sure insertion to the current queue works
-test 70-10 Insert-Current
-msg main MUSICQ_INSERT current~999~0
-get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
-chk mqmanage 0 mq0len 1 mq1len 1 mq0idx0 0 mq1idx1 -1
-msg main MUSICQ_SET_MANAGE 1
-msg main MUSICQ_INSERT current~999~1
-get main CHK_MAIN_MUSICQ
-# note that an empty entry has been pushed on to the head of
-# the non-playback queue
-chk mqmanage 1 mq0len 1 mq1len 2 mq0idx0 0 mq1idx1 1
-msg main MUSICQ_SET_MANAGE 0
-msg main MUSICQ_INSERT current~999~2
-get main CHK_MAIN_MUSICQ
-chk mqmanage 0 mq0len 2 mq1len 2 mq0idx0 0 mq0idx1 2 mq1idx1 1
-msg main MUSICQ_SET_MANAGE 1
-msg main MUSICQ_INSERT current~999~3
-get main CHK_MAIN_MUSICQ
-chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
-end
-
-# dual musicq queues
 # check to make sure insertion to a specific queue works
 test 70-20 Insert-Specific
 get main CHK_MAIN_MUSICQ
@@ -48,29 +25,9 @@ chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
 end
 
 # dual musicq queues
-# check to make sure insertion to a specific queue and the current queue works
-test 70-21 Insert-Specific-Current
-msg main MUSICQ_INSERT 0~999~0
-get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
-chk mqmanage 0 mq0len 1 mq1len 1 mq0idx0 0 mq1idx1 -1
-msg main MUSICQ_INSERT current~999~2
-get main CHK_MAIN_MUSICQ
-chk mqmanage 0 mq0len 2 mq1len 1 mq0idx0 0 mq0idx1 2 mq1idx1 -1
-msg main MUSICQ_INSERT 1~999~1
-get main CHK_MAIN_MUSICQ
-# note that an empty entry has been pushed on to the head of
-# the non-playback queue
-chk mqmanage 1 mq0len 2 mq1len 2 mq0idx0 0 mq0idx1 2 mq1idx1 1
-msg main MUSICQ_INSERT current~999~3
-get main CHK_MAIN_MUSICQ
-chk mqmanage 1 mq0len 2 mq1len 3 mq0idx0 0 mq0idx1 2 mq1idx1 1 mq1idx2 3
-end
-
-# dual musicq queues
 # check to make sure playback while dual queues are active works.
 test 70-30 Playback
-msg main MUSICQ_INSERT current~999~2
+msg main MUSICQ_INSERT 0~999~2
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -84,19 +41,19 @@ chk mqmanage 0 mqplay 0 mq0len 1 mq1len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_SET_MANAGE 1
-msg main MUSICQ_INSERT current~999~3
+msg main MUSICQ_INSERT 1~999~3
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
 chk mqmanage 1 mqplay 0 mq0len 1 mq1len 2 mq0idx0 2 mq1idx1 3
 msg main MUSICQ_SET_MANAGE 0
-msg main MUSICQ_INSERT current~999~4
+msg main MUSICQ_INSERT 0~999~4
 get main CHK_MAIN_MUSICQ
 chk mqmanage 0 mqplay 0 mq0len 2 mq1len 2 mq0idx0 2 mq0idx1 4 mq1idx1 3 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_SET_MANAGE 1
-msg main MUSICQ_INSERT current~999~5
+msg main MUSICQ_INSERT 1~999~5
 get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
 get player CHK_PLAYER_STATUS
@@ -113,7 +70,7 @@ end
 # dual musicq queues
 # check to make sure queue selection works for playback
 test 70-40 Select-Playback-Queue
-msg main MUSICQ_INSERT current~999~2
+msg main MUSICQ_INSERT 0~999~2
 msg main CMD_PLAY
 resptimeout 2000
 get player CHK_PLAYER_STATUS
@@ -127,19 +84,19 @@ chk mqmanage 0 mqplay 0 mq0len 1 mq1len 1 mq0idx0 2 mq1idx1 -1 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_SET_MANAGE 1
-msg main MUSICQ_INSERT current~999~3
+msg main MUSICQ_INSERT 1~999~3
 get main CHK_MAIN_MUSICQ
 # note that an empty entry has been pushed on to the head of
 # the non-playback queue
 chk mqmanage 1 mqplay 0 mq0len 1 mq1len 2 mq0idx0 2 mq1idx1 3
 msg main MUSICQ_SET_MANAGE 0
-msg main MUSICQ_INSERT current~999~4
+msg main MUSICQ_INSERT 0~999~4
 get main CHK_MAIN_MUSICQ
 chk mqmanage 0 mqplay 0 mq0len 2 mq1len 2 mq0idx0 2 mq0idx1 4 mq1idx1 3 dbidx 2
 get player CHK_PLAYER_STATUS
 chk playstate playing
 msg main MUSICQ_SET_MANAGE 1
-msg main MUSICQ_INSERT current~999~5
+msg main MUSICQ_INSERT 1~999~5
 get main CHK_MAIN_MUSICQ
 chk mqmanage 1 mqplay 0 mq0len 2 mq1len 3 mq0idx0 2 mq0idx1 4 mq1idx1 3 mq1idx2 5 dbidx 2
 get player CHK_PLAYER_STATUS

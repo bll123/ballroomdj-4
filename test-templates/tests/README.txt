@@ -1,4 +1,4 @@
-# 2022-9-28
+# 2023-4-9
 #
 # test songs are all between 29 and 32 seconds long
 # fade-out default: 4000
@@ -19,7 +19,6 @@
 #   file {rm|exists|not-exists|copy} <fn> [<fn2>]
 #   get <route> <msg>
 #   msg <route> <msg>
-#     special values: current (music queue)
 #   mssleep <time>
 #   print <text>
 #   resptimeout <time>

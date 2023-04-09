@@ -112,7 +112,7 @@ void uisongselClearAllUISelections (uisongsel_t *uisongsel);
 void uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt);
 
 /* uisongselcommon.c */
-void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);
+void  uisongselQueueProcess (uisongsel_t *uisongsel, dbidx_t dbidx);
 void  uisongselPlayProcess (uisongsel_t *uisongsel, dbidx_t dbidx, musicqidx_t mqidx);
 void  uisongselSetPeerFlag (uisongsel_t *uisongsel, bool val);
 void  uisongselChangeFavorite (uisongsel_t *uisongsel, dbidx_t dbidx);
