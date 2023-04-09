@@ -406,7 +406,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiwcontFree (uiwidgetp);
 
   uiplayer->callbacks [UIPL_CB_FADE] = callbackInit (
-      uiplayerFadeProcess, uiplayer, NULL);
+      uiplayerFadeProcess, uiplayer, "fade");
   uibutton = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_FADE],
       /* CONTEXT: playerui: button: fade out the song and stop playing it */
@@ -416,7 +416,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, uiwidgetp);
 
   uiplayer->callbacks [UIPL_CB_PLAYPAUSE] = callbackInit (
-      uiplayerPlayPauseProcess, uiplayer, NULL);
+      uiplayerPlayPauseProcess, uiplayer, "play-pause");
   uibutton = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_PLAYPAUSE],
       /* CONTEXT: playerui: button: tooltip: play or pause the song */
@@ -428,7 +428,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   pathbldMakePath (tbuff, sizeof (tbuff), "button_repeat", ".svg",
       PATHBLD_MP_DREL_IMG | PATHBLD_MP_USEIDX);
   uiplayer->callbacks [UIPL_CB_REPEAT] = callbackInit (
-      uiplayerRepeatCallback, uiplayer, NULL);
+      uiplayerRepeatCallback, uiplayer, "repeat");
   uiplayer->wcont [UIPL_W_REPEAT_B] = uiCreateToggleButton ("", tbuff,
       /* CONTEXT: playerui: button: tooltip: toggle the repeat song on and off */
       _("Toggle Repeat"), NULL, 0);
@@ -437,7 +437,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
       uiplayer->callbacks [UIPL_CB_REPEAT]);
 
   uiplayer->callbacks [UIPL_CB_BEGSONG] = callbackInit (
-      uiplayerSongBeginProcess, uiplayer, NULL);
+      uiplayerSongBeginProcess, uiplayer, "begin-song");
   uibutton = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_BEGSONG],
       /* CONTEXT: playerui: button: tooltip: return to the beginning of the song */
@@ -447,7 +447,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiBoxPackStart (hbox, uiwidgetp);
 
   uiplayer->callbacks [UIPL_CB_NEXTSONG] = callbackInit (
-      uiplayerNextSongProcess, uiplayer, NULL);
+      uiplayerNextSongProcess, uiplayer, "next-song");
   uibutton = uiCreateButton (
       uiplayer->callbacks [UIPL_CB_NEXTSONG],
       /* CONTEXT: playerui: button: tooltip: start playing the next song (immediate) */
@@ -467,7 +467,7 @@ uiplayerBuildUI (uiplayer_t *uiplayer)
   uiWidgetMakePersistent (uiplayer->images [UIPL_IMG_LED_OFF]);
 
   uiplayer->callbacks [UIPL_CB_PAUSEATEND] = callbackInit (
-      uiplayerPauseatendCallback, uiplayer, NULL);
+      uiplayerPauseatendCallback, uiplayer, "pause-at-end");
   /* CONTEXT: playerui: button: pause at the end of the song (toggle) */
   uiplayer->wcont [UIPL_W_PAUSE_AT_END_B] = uiCreateToggleButton (_("Pause at End"),
       NULL, NULL, uiplayer->images [UIPL_IMG_LED_OFF], 0);
@@ -898,7 +898,6 @@ uiplayerFadeProcess (void *udata)
   uiplayer_t      *uiplayer = udata;
 
   logProcBegin (LOG_PROC, "uiplayerFadeProcess");
-  logMsg (LOG_DBG, LOG_ACTIONS, "=action: fade button");
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_FADE, NULL);
   logProcEnd (LOG_PROC, "uiplayerFadeProcess", "");
   return UICB_CONT;
@@ -910,7 +909,6 @@ uiplayerPlayPauseProcess (void *udata)
   uiplayer_t      *uiplayer = udata;
 
   logProcBegin (LOG_PROC, "uiplayerPlayPauseProcess");
-  logMsg (LOG_DBG, LOG_ACTIONS, "=action: play/pause button");
   connSendMessage (uiplayer->conn, ROUTE_MAIN, MSG_CMD_PLAYPAUSE, NULL);
   logProcEnd (LOG_PROC, "uiplayerPlayPauseProcess", "");
   return UICB_CONT;
@@ -922,7 +920,6 @@ uiplayerRepeatCallback (void *udata)
   uiplayer_t      *uiplayer = udata;
 
   logProcBegin (LOG_PROC, "uiplayerRepeatCallback");
-  logMsg (LOG_DBG, LOG_ACTIONS, "=action: repeat button");
 
   if (uiplayer->repeatLock) {
     logProcEnd (LOG_PROC, "uiplayerRepeatCallback", "repeat-lock");
@@ -940,7 +937,6 @@ uiplayerSongBeginProcess (void *udata)
   uiplayer_t      *uiplayer = udata;
 
   logProcBegin (LOG_PROC, "uiplayerSongBeginProcess");
-  logMsg (LOG_DBG, LOG_ACTIONS, "=action: song begin button");
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_SONG_BEGIN, NULL);
   logProcEnd (LOG_PROC, "uiplayerSongBeginProcess", "");
   return UICB_CONT;
@@ -952,7 +948,6 @@ uiplayerNextSongProcess (void *udata)
   uiplayer_t      *uiplayer = udata;
 
   logProcBegin (LOG_PROC, "uiplayerNextSongProcess");
-  logMsg (LOG_DBG, LOG_ACTIONS, "=action: next song button");
   connSendMessage (uiplayer->conn, ROUTE_PLAYER, MSG_PLAY_NEXTSONG, NULL);
   logProcEnd (LOG_PROC, "uiplayerNextSongProcess", "");
   return UICB_CONT;
@@ -964,7 +959,6 @@ uiplayerPauseatendCallback (void *udata)
   uiplayer_t      *uiplayer = udata;
 
   logProcBegin (LOG_PROC, "uiplayerPauseatendCallback");
-  logMsg (LOG_DBG, LOG_ACTIONS, "=action: pause-at-end button");
 
   if (uiplayer->pauseatendLock) {
     logProcEnd (LOG_PROC, "uiplayerPauseatendCallback", "pae-lock");

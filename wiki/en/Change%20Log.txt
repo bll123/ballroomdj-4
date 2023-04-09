@@ -6,6 +6,12 @@
 
 **4.3.0.5 2023-4---**
 
+* Bug Fixes:
+    * Marquee: Correctly displays upcoming songs when switch-queue-when-empty is active.
+    * PENDING: Player: Fix current song display when pause-at-end is active and the playback queue has been changed.
+    * PENDING: Player: Swap will no longer swap if the current song is associated with a different queue.
+    * PENDING: Player: Request: Fixed invalid queue to history.
+
 -->
 
 **4.3.0.4 2023-4-8**
