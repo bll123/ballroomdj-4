@@ -69,7 +69,7 @@ BEGINFAST
 #
 # song selection
 #
-# the weight of a rating and level.  These should add together to 1.0
+# the weight of a rating and level.  These should add together to 1000 (1.0)
 # the percentages here adjust which song (for the dance) is selected
 # (rating: 0.90, level: 0.10)
 RATINGWEIGHT

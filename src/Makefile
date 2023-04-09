@@ -100,7 +100,7 @@ cmakesinglecpuverbose:
 cmakeclang:
 	if test $$(uname -s) = Linux; then \
 	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
-	  pmode=--parallel $(MAKE) build \
+	  pmode=--parallel $(MAKE) build; \
 	elif test $$(uname -s) = Darwin; then \
 	  COMP=$(CLANG) COMPXX=$(CLANGXX) $(MAKE) cmake-unix; \
 	  pmode=--parallel $(MAKE) build; \

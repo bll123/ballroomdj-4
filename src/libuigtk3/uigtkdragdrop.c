@@ -79,10 +79,9 @@ fprintf (stderr, "format: %d\n", gtk_selection_data_get_format (seldata));
       mdextfree (uri);
       g_strfreev (uri);
 #if 0
-      if (response == GTK_RESPONSE_YES) {
-        action = GDK_ACTION_MOVE;
-      } else {
+      if (rc == UICB_CONT) {
         action = GDK_ACTION_COPY;
+        /* what was done w/the new action? */
       }
 #endif
       gtk_drag_finish (context, TRUE, FALSE, tm);
