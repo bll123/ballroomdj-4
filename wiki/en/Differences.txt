@@ -7,8 +7,7 @@ As of 2023-1-23:
 At this time the supported platforms for BallroomDJ 4 will probably be:
 
 * 64-bit Windows 10, 11
-* MacOS Intel: Catalina, Big Sur, Monterey, Ventura
-* MacOS Apple Silicon: Big Sur, Monterey, Ventura
+* MacOS: Catalina, Big Sur, Monterey, Ventura
 * 64-bit Linux
 
 __Features that will NOT be implemented in BallroomDJ&nbsp;4:__
@@ -36,12 +35,12 @@ Renaming playlists is much simpler.
 
 __Features that have changed in BallroomDJ&nbsp;4:__
 
-* Playlist: Stop In/At &lt;time&lt; pause/continue.
-<br>__BDJ4 only supports: Stop At &lt;time&gt; (per playlist and per queue).__
+* Playlist: Stop In/At &lt;time&gt; pause/continue.
+<br>__BDJ4 only supports: Stop At &lt;time&gt; (playlist and music queue).__
 * Playlist: Stop After &lt;song-count&gt; pause/continue.
-<br>__BDJ4 only supports: Stop After &lt;song-count&gt; (per playlist).__
+<br>__BDJ4 only supports: Stop After &lt;song-count&gt; (playlist).__
 * Playlist: Pause after each song.
-<br>__BDJ4 has a pause each song switch in the player per-queue configuration.__
+<br>__BDJ4 has a pause each song switch in the music queue configuration.__
 * Fade Out: If a fade out time is set, the fade out is always applied.
 * Auto Organization
 <br>BDJ4 has no auto organization path editor.   To add a new path, the
@@ -71,7 +70,7 @@ files have been renamed.
 
 __New Features:__
 
-* Player per queue configuration (fade in time, fade out time, maximum play
+* Player per music queue configuration (fade in time, fade out time, maximum play
 time, stop at time, play announcements, pause each song).
 * Switch playback to the next music queue when the current music
 queue is empty.

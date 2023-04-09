@@ -2236,8 +2236,17 @@ mainMusicQueueFinish (maindata_t *mainData, const char *args)
   }
 
   musicqPop (mainData->musicQueue, mainData->musicqPlayIdx);
+
   mainData->musicqChanged [mainData->musicqPlayIdx] = MAIN_CHG_START;
   mainData->marqueeChanged = true;
+
+  /* if the queue is being stopped, need to check if the playback */
+  /* queue needs to be switched */
+  if (mainData->musicqDeferredPlayIdx != MAIN_NOT_SET) {
+    mainMusicqSwitch (mainData, mainData->musicqDeferredPlayIdx);
+    mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
+  }
+
   mainSendMusicqStatus (mainData);
   logProcEnd (LOG_PROC, "mainMusicQueueFinish", "");
 }
