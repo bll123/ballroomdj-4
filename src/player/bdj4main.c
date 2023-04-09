@@ -131,7 +131,6 @@ static bool mainClosingCallback (void *tmaindata, programstate_t programState);
 static void mainSendMusicQueueData (maindata_t *mainData, int musicqidx);
 static void mainSendMarqueeData (maindata_t *mainData);
 static char * mainSongGetDanceDisplay (maindata_t *mainData, int mqidx, int idx);
-static void mainSendMobileMarqueeData (maindata_t *mainData);
 static void mainQueueClear (maindata_t *mainData, char *args);
 static void mainQueueDance (maindata_t *mainData, char *args, int count);
 static void mainQueuePlaylist (maindata_t *mainData, char *plname);
@@ -761,7 +760,6 @@ mainProcessing (void *udata)
 
   if (mainData->marqueeChanged) {
     mainSendMarqueeData (mainData);
-//    mainSendMobileMarqueeData (mainData);
     mainData->marqueeChanged = false;
     if (mainData->finished && mainData->playerState == PL_STATE_STOPPED) {
       mainData->finished = false;
@@ -1109,8 +1107,6 @@ mainSendMarqueeData (maindata_t *mainData)
   mqLen = bdjoptGetNum (OPT_P_MQQLEN);
   mqidx = mainData->musicqPlayIdx;
   musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
-fprintf (stderr, "== smqdata\n");
-fprintf (stderr, "    mq:%d len:%d\n", mqidx, musicqLen);
 
   if (mobmarqueeactive) {
     const char  *title = NULL;
@@ -1151,42 +1147,34 @@ fprintf (stderr, "    mq:%d len:%d\n", mqidx, musicqLen);
     if (mainData->stopTime [mqidx] > 0 &&
         (currTime + qdur) > mainData->nStopTime [mqidx]) {
       /* process stoptime for the marquee display */
-fprintf (stderr, "    stop-time\n");
       dstr = MSG_ARGS_EMPTY_STR;
       if (lastmqidx != mainData->musicqPlayIdx) {
         docheck = true;
       }
     } else if ((marqueeidx > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
         (marqueeidx > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
-fprintf (stderr, "    in-gap/fadeout\n");
       dstr = MSG_ARGS_EMPTY_STR;
     } else if (qoffset >= musicqLen) {
-fprintf (stderr, "    no-more-songs\n");
       dstr = MSG_ARGS_EMPTY_STR;
       if (lastmqidx != mainData->musicqPlayIdx) {
         docheck = true;
       }
     } else {
       dstr = mainSongGetDanceDisplay (mainData, mqidx, qoffset);
-fprintf (stderr, "    mq:%d q-offset:%d %s\n", mqidx, qoffset, dstr);
     }
 
     /* if the queue is empty (or will be empty), and */
     /* switch-queue-when-empty is on */
     /* check the next queue for display */
     if (docheck && mainData->switchQueueWhenEmpty) {
-fprintf (stderr, "  do-check\n");
       lastmqidx = mqidx;
       mqidx = musicqNextQueue (mqidx);
       musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
-fprintf (stderr, "    mq:%d len:%d\n", mqidx, musicqLen);
       while (mqidx != mainData->musicqPlayIdx && musicqLen == 0) {
         mqidx = musicqNextQueue (mqidx);
         musicqLen = musicqGetLen (mainData->musicQueue, mqidx);
-fprintf (stderr, "    mq:%d len:%d\n", mqidx, musicqLen);
       }
       if (mqidx != mainData->musicqPlayIdx) {
-fprintf (stderr, "    ok, cont\n");
         /* offset 0 is not active if this is not the queue set for playback */
         qoffset = 1;
         continue;
@@ -1269,97 +1257,6 @@ mainSongGetDanceDisplay (maindata_t *mainData, int mqidx, int idx)
   return dstr;
 }
 
-
-static void
-mainSendMobileMarqueeData (maindata_t *mainData)
-{
-  char        tbuff [200];
-  char        *jbuff = NULL;
-  char        *title = NULL;
-  char        *dstr = NULL;
-  int         mqLen = 0;
-  int         musicqLen = 0;
-  time_t      currTime;
-  time_t      qdur = 0;
-
-  logProcBegin (LOG_PROC, "mainSendMobileMarqueeData");
-
-  if (! bdjoptGetNum (OPT_P_MOBILEMARQUEE)) {
-    logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "is-off");
-    return;
-  }
-  if (mainData->finished) {
-    logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "finished");
-    return;
-  }
-
-  jbuff = mdmalloc (BDJMSG_MAX);
-
-  mqLen = bdjoptGetNum (OPT_P_MQQLEN);
-  musicqLen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
-  title = bdjoptGetStr (OPT_P_MOBILEMQTITLE);
-  if (title == NULL) {
-    title = "";
-  }
-
-  strlcpy (jbuff, "{ ", BDJMSG_MAX);
-
-  snprintf (tbuff, sizeof (tbuff), "\"mqlen\" : \"%d\", ", mqLen);
-  strlcat (jbuff, tbuff, BDJMSG_MAX);
-  snprintf (tbuff, sizeof (tbuff), "\"title\" : \"%s\"", title);
-  strlcat (jbuff, tbuff, BDJMSG_MAX);
-
-  currTime = mstime ();
-  if (musicqLen > 0) {
-    for (int i = 0; i <= mqLen; ++i) {
-      dbidx_t   dbidx;
-      song_t    *song;
-
-      /* process stoptime for the marquee display */
-      if (mainData->stopTime [mainData->musicqPlayIdx] > 0 &&
-          (currTime + qdur) > mainData->nStopTime [mainData->musicqPlayIdx]) {
-        dstr = "";
-      } else if ((i > 0 && mainData->playerState == PL_STATE_IN_GAP) ||
-          (i > 1 && mainData->playerState == PL_STATE_IN_FADEOUT)) {
-        dstr = "";
-      } else if (i > musicqLen) {
-        dstr = "";
-      } else {
-        dstr = mainSongGetDanceDisplay (mainData, mainData->musicqPlayIdx, i);
-        if (dstr == NULL) {
-          dstr = "";
-        }
-      }
-
-      /* queue duration data needed for stoptime check */
-      dbidx = musicqGetByIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
-      if (dbidx >= 0) {
-        int   plidx;
-
-        song = dbGetByIdx (mainData->musicdb, dbidx);
-        plidx = musicqGetPlaylistIdx (mainData->musicQueue, mainData->musicqPlayIdx, i);
-        qdur += mainCalculateSongDuration (mainData, song, plidx, mainData->musicqPlayIdx, MAIN_CALC_WITH_SPEED);
-      }
-
-      if (i == 0) {
-        snprintf (tbuff, sizeof (tbuff), "\"current\" : \"%s\"", dstr);
-      } else {
-        snprintf (tbuff, sizeof (tbuff), "\"mq%d\" : \"%s\"", i, dstr);
-      }
-      strlcat (jbuff, ", ", BDJMSG_MAX);
-      strlcat (jbuff, tbuff, BDJMSG_MAX);
-    }
-  } else {
-    strlcat (jbuff, ", ", BDJMSG_MAX);
-    strlcat (jbuff, "\"skip\" : \"true\"", sizeof (jbuff));
-  }
-  strlcat (jbuff, " }", BDJMSG_MAX);
-
-  connSendMessage (mainData->conn, ROUTE_MOBILEMQ, MSG_MARQUEE_DATA, jbuff);
-
-  dataFree (jbuff);
-  logProcEnd (LOG_PROC, "mainSendMobileMarqueeData", "");
-}
 
 /* clears both the playlist and music queues */
 static void

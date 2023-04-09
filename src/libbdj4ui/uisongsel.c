@@ -177,12 +177,14 @@ uisongselProcessMusicQueueData (uisongsel_t *uisongsel,
   nlistidx_t  iteridx;
   mp_musicqupditem_t   *musicqupditem;
 
-  if (updflag == UISONGSEL_MARK_REPLACE) {
+  if (updflag == UISONGSEL_MARK_REPLACE ||
+      uisongsel->songlistdbidxlist == NULL) {
     nlistFree (uisongsel->songlistdbidxlist);
     uisongsel->songlistdbidxlist = NULL;
     uisongsel->songlistdbidxlist = nlistAlloc ("songlist-dbidx",
         LIST_UNORDERED, NULL);
     nlistSetSize (uisongsel->songlistdbidxlist, nlistGetCount (musicqupdate->dispList));
+    updflag = UISONGSEL_MARK_REPLACE;
   }
 
   nlistSetNum (uisongsel->songlistdbidxlist, musicqupdate->currdbidx, 0);
