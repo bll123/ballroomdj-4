@@ -7,6 +7,7 @@
 **4.3.0.5 2023-4---**
 
 * Bug Fixes:
+    * Display Settings: Fix lost selection on first change.
     * Marquee: Correctly displays upcoming songs when switch-queue-when-empty is active.
     * Player: Fix current song display when pause-at-end is active and the playback queue has been changed.
     * Player: Fix wrong selection after move up to the current song.

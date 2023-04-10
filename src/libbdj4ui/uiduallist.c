@@ -420,6 +420,7 @@ uiduallistDispSelect (void *udata)
   uitree_t          *uittree;
   char              *str;
   int               tval;
+  int               idx;
 
   uistree = duallist->uitrees [DUALLIST_TREE_SOURCE];
 
@@ -433,6 +434,7 @@ uiduallistDispSelect (void *udata)
 
   str = uiTreeViewGetValueStr (uistree, DUALLIST_COL_DISP);
   tval = uiTreeViewGetValue (uistree, DUALLIST_COL_DISP_IDX);
+  idx = uiTreeViewSelectGetIndex (uistree);
 
   uiTreeViewValueInsertAfter (uittree);
   uiTreeViewSetValues (uittree,
@@ -444,6 +446,7 @@ uiduallistDispSelect (void *udata)
 
   if ((duallist->flags & DUALLIST_FLAGS_PERSISTENT) != DUALLIST_FLAGS_PERSISTENT) {
     uiTreeViewValueRemove (uistree);
+    uiTreeViewSelectSet (uistree, idx);
   }
   duallist->changed = true;
   return UICB_CONT;
@@ -459,6 +462,7 @@ uiduallistDispRemove (void *udata)
   uitree_t      *uittree;
   uitree_t      *uistree;
   int           count;
+  int           idx;
 
 
   uittree = duallist->uitrees [DUALLIST_TREE_TARGET];
@@ -496,7 +500,9 @@ uiduallistDispRemove (void *udata)
     dataFree (str);
   }
 
+  idx = uiTreeViewSelectGetIndex (uittree);
   uiTreeViewValueRemove (uittree);
+  uiTreeViewSelectSet (uittree, idx);
   duallist->changed = true;
   return UICB_CONT;
 }
