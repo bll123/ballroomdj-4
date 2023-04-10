@@ -71,6 +71,7 @@ enum {
   PLUI_CB_REQ_EXT,
   PLUI_CB_KEYB,
   PLUI_CB_FONT_SZ_CHG,
+  PLUI_CB_DRAG_DROP,
   PLUI_CB_MAX,
 };
 
@@ -198,6 +199,7 @@ static bool     pluiRequestExternalDialog (void *udata);
 static bool     pluiReqextCallback (void *udata);
 static bool     pluiKeyEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
+static long     pluiDragDropCallback (void *udata, const char *uri);
 
 static int gKillReceived = 0;
 
@@ -579,6 +581,9 @@ pluiBuildUI (playerui_t *plui)
   uiNotebookSetActionWidget (plui->wcont [PLUI_W_NOTEBOOK], uiwidgetp);
   uiWidgetShowAll (uiwidgetp);
 
+  plui->callbacks [PLUI_CB_DRAG_DROP] = callbackInitStr (
+      pluiDragDropCallback, plui);
+
   for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
     int   tabtype;
     /* music queue tab */
@@ -595,6 +600,7 @@ pluiBuildUI (playerui_t *plui)
 
     uip = uimusicqBuildUI (plui->uimusicq, plui->wcont [PLUI_W_WINDOW], i,
         plui->wcont [PLUI_W_ERROR_MSG], NULL);
+
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
     if (tabtype == UI_TAB_HISTORY) {
@@ -607,11 +613,13 @@ pluiBuildUI (playerui_t *plui)
     uiwidgetp = uiCreateLabel (str);
     uiBoxPackStart (hbox, uiwidgetp);
 
-    if (i < MUSICQ_HISTORY) {
+    if (tabtype == UI_TAB_MUSICQ) {
       plui->musicqImage [i] = uiImageNew ();
       uiImageSetFromPixbuf (plui->musicqImage [i], plui->wcont [PLUI_W_LED_ON]);
       uiWidgetSetMarginStart (plui->musicqImage [i], 1);
       uiBoxPackStart (hbox, plui->musicqImage [i]);
+
+      uimusicqDragDropSetCallback (plui->uimusicq, i, plui->callbacks [PLUI_CB_DRAG_DROP]);
     }
 
     uiNotebookAppendPage (plui->wcont [PLUI_W_NOTEBOOK], uip, hbox);
@@ -1545,7 +1553,7 @@ pluiRequestExternalDialog (void *udata)
   playerui_t    *plui = udata;
   bool          rc;
 
-  rc = uireqextDialog (plui->uireqext);
+  rc = uireqextDialog (plui->uireqext, NULL);
   return rc;
 }
 
@@ -1624,3 +1632,18 @@ pluiExportMP3 (void *udata)
   return UICB_CONT;
 }
 
+static long
+pluiDragDropCallback (void *udata, const char *uri)
+{
+  playerui_t        *plui = udata;
+  static const char *filepfx = "file://";
+  int               filepfxlen = strlen (filepfx);
+
+fprintf (stderr, "plui-dd-cb: %s\n", uri);
+  if (strncmp (uri, filepfx, filepfxlen) != 0) {
+    return UICB_STOP;
+  }
+
+  uireqextDialog (plui->uireqext, uri + filepfxlen);
+  return UICB_CONT;
+}

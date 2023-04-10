@@ -61,7 +61,7 @@ typedef struct uireqext {
 static void   uireqextCreateDialog (uireqext_t *uireqext);
 static bool   uireqextAudioFileDialog (void *udata);
 static bool   uireqextDanceSelectHandler (void *udata, long idx, int count);
-static void   uireqextInitDisplay (uireqext_t *uireqext);
+static void   uireqextInitDisplay (uireqext_t *uireqext, const char *fn);
 static void   uireqextClearSong (uireqext_t *uireqext);
 static bool   uireqextResponseHandler (void *udata, long responseid);
 static void   uireqextProcessAudioFile (uireqext_t *uireqext);
@@ -126,7 +126,7 @@ uireqextSetResponseCallback (uireqext_t *uireqext, callback_t *uicb)
 }
 
 bool
-uireqextDialog (uireqext_t *uireqext)
+uireqextDialog (uireqext_t *uireqext, const char *fn)
 {
   int         x, y;
 
@@ -136,7 +136,7 @@ uireqextDialog (uireqext_t *uireqext)
 
   logProcBegin (LOG_PROC, "uireqextDialog");
   uireqextCreateDialog (uireqext);
-  uireqextInitDisplay (uireqext);
+  uireqextInitDisplay (uireqext, fn);
   uiDialogShow (uireqext->reqextDialog);
   uireqext->isactive = true;
 
@@ -365,7 +365,7 @@ uireqextDanceSelectHandler (void *udata, long idx, int count)
 }
 
 static void
-uireqextInitDisplay (uireqext_t *uireqext)
+uireqextInitDisplay (uireqext_t *uireqext, const char *fn)
 {
   if (uireqext == NULL) {
     return;
@@ -373,6 +373,10 @@ uireqextInitDisplay (uireqext_t *uireqext)
 
   uireqextClearSong (uireqext);
   uiEntrySetValue (uireqext->audioFileEntry, "");
+  if (fn != NULL) {
+    uiEntrySetValue (uireqext->audioFileEntry, fn);
+    uireqextProcessAudioFile (uireqext);
+  }
   uiEntrySetValue (uireqext->artistEntry, "");
   uiEntrySetValue (uireqext->titleEntry, "");
   uidanceSetValue (uireqext->uidance, -1);

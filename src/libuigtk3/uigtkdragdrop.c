@@ -29,13 +29,13 @@ static void uiDragDropSignalHandler (GtkWidget *w, GdkDragContext *context,
     gint x, gint y, GtkSelectionData *seldata, guint info, guint time,
     gpointer udata);
 
-/* this is not working at this time */
-/* I need better examples */
-/* I'd like to wrap an event box around another box or somesuch */
-
 void
 uiDragDropSetCallback (uiwcont_t *uiwcont, callback_t *cb)
 {
+  static GtkTargetEntry targetentries[] = {
+    { "text/uri-list", 0, 0}
+  };
+
   if (uiwcont == NULL) {
     return;
   }
@@ -43,11 +43,10 @@ uiDragDropSetCallback (uiwcont_t *uiwcont, callback_t *cb)
     return;
   }
 
-  gtk_drag_dest_set (uiwcont->widget,
-      GTK_DEST_DEFAULT_DROP | GTK_DEST_DEFAULT_HIGHLIGHT,
-      NULL, 0, GDK_ACTION_ASK);
-  gtk_drag_dest_add_uri_targets (uiwcont->widget);
-  g_signal_connect (uiwcont->widget, "drag-drop-received",
+  gtk_drag_dest_set (uiwcont->widget, GTK_DEST_DEFAULT_ALL,
+      targetentries, 1, GDK_ACTION_COPY);
+//  gtk_drag_dest_add_uri_targets (uiwcont->widget);
+  g_signal_connect (GTK_WIDGET (uiwcont->widget), "drag-data-received",
       G_CALLBACK (uiDragDropSignalHandler), cb);
 }
 
@@ -66,29 +65,18 @@ fprintf (stderr, "format: %d\n", gtk_selection_data_get_format (seldata));
   /* what are the possible formats? why is there no define for it? */
   if (gtk_selection_data_get_length (seldata) >= 0 &&
       gtk_selection_data_get_format (seldata) == 8) {
-    GdkDragAction action;
+    char  **urilist = NULL;
+    int   rc;
 
-    action = gdk_drag_context_get_selected_action (context);
-    if (action == GDK_ACTION_ASK) {
-      int   rc;
-      char  **uri = NULL;
+    urilist = gtk_selection_data_get_uris (seldata);
+    mdextalloc (urilist);
 
-      uri = gtk_selection_data_get_uris (seldata);
-      mdextalloc (uri);
-      rc = callbackHandlerStr (cb, uri [0]);
-      mdextfree (uri);
-      g_strfreev (uri);
-#if 0
-      if (rc == UICB_CONT) {
-        action = GDK_ACTION_COPY;
-        /* what was done w/the new action? */
-      }
-#endif
-      gtk_drag_finish (context, TRUE, FALSE, tm);
-    } else {
-      gtk_drag_finish (context, FALSE, FALSE, tm);
-    }
+    rc = callbackHandlerStr (cb, urilist [0]);
+    mdextfree (urilist);
+    g_strfreev (urilist);
+    gtk_drag_finish (context, rc, FALSE, tm);
   }
-  /* is gtk_drag_finish required for other data formats? */
+
+  g_signal_stop_emission_by_name (G_OBJECT (w), "drag-data-received");
 }
 

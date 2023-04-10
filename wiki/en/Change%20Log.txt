@@ -6,6 +6,9 @@
 
 **4.3.0.6 2023-4---**
 
+* New Features:
+    * Drag & Drop: An audio file may be dragged to a queue in the player.
+
 -->
 
 **4.3.0.5 2023-4-10**

@@ -13,7 +13,7 @@ typedef struct uireqext uireqext_t;
 uireqext_t  *uireqextInit (uiwcont_t *windowp, nlist_t *opts);
 void    uireqextFree (uireqext_t *uireqext);
 void    uireqextSetResponseCallback (uireqext_t *uireqext, callback_t *uicb);
-bool    uireqextDialog (uireqext_t *uireqext);
+bool    uireqextDialog (uireqext_t *uireqext, const char *fn);
 song_t  *uireqextGetSong (uireqext_t *uireqext);
 char    *uireqextGetSongEntryText (uireqext_t *uireqext);
 void    uireqextProcess (uireqext_t *uireqext);

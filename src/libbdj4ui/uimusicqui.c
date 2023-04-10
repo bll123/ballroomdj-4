@@ -436,6 +436,19 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 }
 
 void
+uimusicqDragDropSetCallback (uimusicq_t *uimusicq, int ci, callback_t *cb)
+{
+  mq_internal_t     *mqint;
+
+  if (ci < 0 || ci >= MUSICQ_DISP_MAX) {
+    return;
+  }
+
+  mqint = uimusicq->ui [ci].mqInternalData;
+  uiDragDropSetCallback (uiTreeViewGetWidgetContainer (mqint->musicqTree), cb);
+}
+
+void
 uimusicqUIMainLoop (uimusicq_t *uimusicq)
 {
   mq_internal_t *mqint;
