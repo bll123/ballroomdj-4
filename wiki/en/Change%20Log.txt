@@ -4,18 +4,20 @@
 
 <!--
 
-**4.3.0.5 2023-4---**
+**4.3.0.6 2023-4---**
+
+-->
+
+**4.3.0.5 2023-4-10**
 
 * Bug Fixes:
     * Display Settings: Fix lost selection on first change.
     * Marquee: Correctly displays upcoming songs when switch-queue-when-empty is active.
-    * Player: Fix current song display when pause-at-end is active and the playback queue has been changed.
+    * Player: Fix current song display after pause-at-end and the playback queue has been changed.
     * Player: Fix wrong selection after move up to the current song.
     * Player: Move up will not change the current song if associated with a different queue.
     * Player: Request: Fixed invalid queue to history.
-    * Player: Request: In queue marks did not always display correctly.
-
--->
+    * Player: Request: Fix incorrect display of in queue marks.
 
 **4.3.0.4 2023-4-8**
 
@@ -332,4 +334,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-04-08 18:41:59; BDJ4 version 4.3.0.4)_
+<br>_(Updated 2023-04-10 09:50:31; BDJ4 version 4.3.0.5)_
