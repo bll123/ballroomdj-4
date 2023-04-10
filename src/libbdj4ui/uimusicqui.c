@@ -1125,7 +1125,9 @@ uimusicqMoveUpCallback (void *udata)
   }
   ++idx;
 
-  uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_PREV);
+  if (idx > 1) {
+    uimusicqMusicQueueSetSelected (uimusicq, ci, UIMUSICQ_SEL_PREV);
+  }
   uimusicqMoveUp (uimusicq, ci, idx);
   return UICB_CONT;
 }
