@@ -677,7 +677,8 @@ pluiInitializeUI (playerui_t *plui)
 {
   plui->uiplayer = uiplayerInit (plui->progstate, plui->conn, plui->musicdb);
 
-  plui->uireqext = uireqextInit (plui->wcont [PLUI_W_WINDOW], plui->options);
+  plui->uireqext = uireqextInit (plui->wcont [PLUI_W_WINDOW],
+      plui->musicdb, plui->options);
   plui->callbacks [PLUI_CB_REQ_EXT] = callbackInit (
       pluiReqextCallback,
       plui, "musicq: request external response");

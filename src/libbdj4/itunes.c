@@ -18,18 +18,19 @@
 #include <libxml/xpathInternals.h>
 
 #include "bdj4.h"
-#include "itunes.h"
 #include "bdjopt.h"
 #include "datafile.h"
 #include "fileop.h"
 #include "genre.h"
+#include "itunes.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
 #include "rating.h"
-#include "songfav.h"
 #include "slist.h"
+#include "songfav.h"
+#include "songutil.h"
 #include "tagdef.h"
 
 static const xmlChar * datamainxpath = (const xmlChar *)
@@ -544,9 +545,11 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
       if (tagidx < 0) {
         continue;
       }
+
       if (tagidx == TAG_FILE) {
         bool    ok = false;
         int     offset = 0;
+
         if (strncmp (val, ITUNES_LOCALHOST, strlen (ITUNES_LOCALHOST)) == 0) {
           offset = strlen (ITUNES_LOCALHOST);
           ok = true;
@@ -558,17 +561,12 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
         }
 
         if (ok) {
-          const char  *musicdir;
-          int         mdirlen;
           char        *nstr;
 
-          musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
-          mdirlen = strlen (musicdir);
-          if (strncmp (val + offset, musicdir, mdirlen) == 0) {
-            offset += mdirlen + 1;
-          }
+          val += offset;
+          val = songutilGetRelativePath (val);
           /* not sure that the string is decomposed */
-          nstr = g_uri_unescape_string (val + offset, NULL);
+          nstr = g_uri_unescape_string (val, NULL);
           mdextalloc (nstr);
           nlistSetStr (entry, tagidx, nstr);
           logMsg (LOG_DBG, LOG_ITUNES, "song: %s %s", tagdefs [tagidx].tag, nstr);

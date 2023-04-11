@@ -191,3 +191,20 @@ songutilNormalizeBPM (int bpm, int speed)
   return nbpm;
 }
 
+const char *
+songutilGetRelativePath (const char *fn)
+{
+  const char  *musicdir;
+  size_t      musicdirlen;
+  const char  *p;
+
+  musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
+  musicdirlen = strlen (musicdir);
+  p = fn;
+  if (strncmp (fn, musicdir, musicdirlen) == 0) {
+    p += musicdirlen + 1;
+  }
+
+  return p;
+}
+

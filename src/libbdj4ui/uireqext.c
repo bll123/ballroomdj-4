@@ -27,6 +27,7 @@
 #include "slist.h"
 #include "song.h"
 #include "songfav.h"
+#include "songutil.h"
 #include "tagdef.h"
 #include "ui.h"
 #include "callback.h"
@@ -41,8 +42,9 @@ enum {
 };
 
 typedef struct uireqext {
-  uiwcont_t      *parentwin;
-  uiwcont_t      *statusMsg;
+  uiwcont_t       *parentwin;
+  musicdb_t       *musicdb;
+  uiwcont_t       *statusMsg;
   nlist_t         *options;
   uiwcont_t       *reqextDialog;
   uientry_t       *audioFileEntry;
@@ -70,7 +72,7 @@ static int    uireqextValidateArtist (uientry_t *entry, void *udata);
 static int    uireqextValidateTitle (uientry_t *entry, void *udata);
 
 uireqext_t *
-uireqextInit (uiwcont_t *windowp, nlist_t *opts)
+uireqextInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
 {
   uireqext_t  *uireqext;
 
@@ -91,6 +93,7 @@ uireqextInit (uiwcont_t *windowp, nlist_t *opts)
   uireqext->audioFileDialogButton = NULL;
   uireqext->responsecb = NULL;
   uireqext->isactive = false;
+  uireqext->musicdb = musicdb;
 
   return uireqext;
 }
@@ -247,8 +250,6 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
-  uiEntrySetValidate (uireqext->audioFileEntry, uireqextValidateAudioFile,
-      uireqext, UIENTRY_DELAYED);
 
   uireqext->callbacks [UIREQEXT_CB_AUDIO_FILE] = callbackInit (
       uireqextAudioFileDialog, uireqext, NULL);
@@ -276,8 +277,6 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiwidgetp = uiEntryGetWidgetContainer (uireqext->artistEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiEntrySetValidate (uireqext->artistEntry, uireqextValidateArtist,
-      uireqext, UIENTRY_IMMEDIATE);
 
   /* title display */
   uiwcontFree (hbox);
@@ -294,8 +293,6 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiwidgetp = uiEntryGetWidgetContainer (uireqext->titleEntry);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiBoxPackStart (hbox, uiwidgetp);
-  uiEntrySetValidate (uireqext->titleEntry, uireqextValidateTitle,
-      uireqext, UIENTRY_IMMEDIATE);
 
   /* dance : always available */
   uiwcontFree (hbox);
@@ -318,6 +315,13 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiwcontFree (vbox);
   uiwcontFree (szgrp);
   uiwcontFree (szgrpEntry);
+
+  uiEntrySetValidate (uireqext->audioFileEntry, uireqextValidateAudioFile,
+      uireqext, UIENTRY_DELAYED);
+  uiEntrySetValidate (uireqext->artistEntry, uireqextValidateArtist,
+      uireqext, UIENTRY_IMMEDIATE);
+  uiEntrySetValidate (uireqext->titleEntry, uireqextValidateTitle,
+      uireqext, UIENTRY_IMMEDIATE);
 
   logProcEnd (LOG_PROC, "uireqextCreateDialog", "");
 }
@@ -342,9 +346,9 @@ uireqextAudioFileDialog (void *udata)
       _("Audio Files"), "audio/*");
   fn = uiSelectFileDialog (selectdata);
   if (fn != NULL) {
+    /* the validation process will be called */
     uiEntrySetValue (uireqext->audioFileEntry, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
-    uireqextProcessAudioFile (uireqext);
     mdfree (fn);   // allocated by gtk
   }
   mdfree (selectdata);
@@ -372,10 +376,11 @@ uireqextInitDisplay (uireqext_t *uireqext, const char *fn)
   }
 
   uireqextClearSong (uireqext);
-  uiEntrySetValue (uireqext->audioFileEntry, "");
+  /* the validation routine will process the entry */
   if (fn != NULL) {
     uiEntrySetValue (uireqext->audioFileEntry, fn);
-    uireqextProcessAudioFile (uireqext);
+  } else {
+    uiEntrySetValue (uireqext->audioFileEntry, "");
   }
   uiEntrySetValue (uireqext->artistEntry, "");
   uiEntrySetValue (uireqext->titleEntry, "");
@@ -447,20 +452,32 @@ uireqextProcessAudioFile (uireqext_t *uireqext)
   ffn = uiEntryGetValue (uireqext->audioFileEntry);
   if (*ffn) {
     if (fileopFileExists (ffn)) {
+      const char      *tfn;
       char            *data;
       slist_t         *tagdata;
       int             rewrite;
+      song_t          *dbsong;
 
-      data = audiotagReadTags (ffn);
-      if (data == NULL) {
-        return;
-      }
+      tfn = songutilGetRelativePath (ffn);
+      dbsong = dbGetByName (uireqext->musicdb, tfn);
+      if (dbsong != NULL) {
+        tagdata = songTagList (dbsong);
+        if (slistGetCount (tagdata) == 0) {
+          slistFree (tagdata);
+          return;
+        }
+      } else {
+        data = audiotagReadTags (ffn);
+        if (data == NULL) {
+          return;
+        }
 
-      tagdata = audiotagParseData (ffn, data, &rewrite);
-      mdfree (data);
-      if (slistGetCount (tagdata) == 0) {
-        slistFree (tagdata);
-        return;
+        tagdata = audiotagParseData (ffn, data, &rewrite);
+        mdfree (data);
+        if (slistGetCount (tagdata) == 0) {
+          slistFree (tagdata);
+          return;
+        }
       }
 
       /* set favorite to the imported symbol */

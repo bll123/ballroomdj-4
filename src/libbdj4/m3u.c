@@ -87,7 +87,7 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
   nlist_t     *list;
   char        *musicdir;
   size_t      musicdirlen;
-  char        *p;
+  const char  *p;
   song_t      *song;
   dbidx_t     dbidx;
   char        tbuff [MAXPATHLEN];
@@ -126,11 +126,7 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
       continue;
     }
 
-    p = tbuff;
-    if (strncmp (p, musicdir, musicdirlen) == 0) {
-      p += musicdirlen;
-      p += 1;
-    }
+    p = songutilGetRelativePath (tbuff);
 
     song = dbGetByName (musicdb, p);
     dbidx = songGetNum (song, TAG_DBIDX);

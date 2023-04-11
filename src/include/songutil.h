@@ -34,5 +34,6 @@ ssize_t songutilAdjustPosReal (ssize_t pos, int speed);
 ssize_t songutilNormalizePosition (ssize_t pos, int speed);
 int   songutilAdjustBPM (int bpm, int speed);
 int   songutilNormalizeBPM (int bpm, int speed);
+const char * songutilGetRelativePath (const char *fn);
 
 #endif /* INC_SONGUTIL_H */

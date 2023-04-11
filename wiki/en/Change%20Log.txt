@@ -7,7 +7,8 @@
 **4.3.1 2023-4---**
 
 * Bug Fixes:
-    * PENDING: Request External: Get song information from database if possible.
+    * Request External: Get song information from database if possible.
+    * Player/Management: Only display pause indicator column for music queues.
 * New Features:
     * Drag & Drop: An audio file may be dragged to a queue in the player.
 

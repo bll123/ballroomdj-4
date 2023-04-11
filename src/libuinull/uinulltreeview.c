@@ -41,6 +41,11 @@ uiTreeViewFree (uitree_t *uitree)
   return;
 }
 
+int
+uiTreeViewGetDragDropRow (uiwcont_t *uiwcont, int x, int y)
+{
+  return 0;
+}
 
 void
 uiTreeViewEnableHeaders (uitree_t *uitree)
