@@ -109,5 +109,6 @@ void  uiTreeViewValueIteratorSet (uitree_t *uitree, int row);
 void  uiTreeViewValueIteratorClear (uitree_t *uitree);
 void  uiTreeViewScrollToCell (uitree_t *uitree);
 void  uiTreeViewAttachScrollController (uitree_t *uitree, double upper);
+int   uiTreeViewGetDragDropRow (uiwcont_t *uiwcont, int x, int y);
 
 #endif /* INC_UITREEVIEW_H */

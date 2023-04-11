@@ -32,9 +32,9 @@ static void uiDragDropSignalHandler (GtkWidget *w, GdkDragContext *context,
 void
 uiDragDropSetCallback (uiwcont_t *uiwcont, callback_t *cb)
 {
-  static GtkTargetEntry targetentries[] = {
-    { "text/uri-list", 0, 0}
-  };
+//  static GtkTargetEntry targetentries[] = {
+//    { "text/uri-list", 0, 0}
+//  };
 
   if (uiwcont == NULL) {
     return;
@@ -43,9 +43,14 @@ uiDragDropSetCallback (uiwcont_t *uiwcont, callback_t *cb)
     return;
   }
 
-  gtk_drag_dest_set (uiwcont->widget, GTK_DEST_DEFAULT_ALL,
-      targetentries, 1, GDK_ACTION_COPY);
-//  gtk_drag_dest_add_uri_targets (uiwcont->widget);
+  if (GTK_IS_TREE_VIEW (uiwcont->widget)) {
+    gtk_tree_view_enable_model_drag_dest (GTK_TREE_VIEW (uiwcont->widget),
+        NULL, 0, GDK_ACTION_COPY);
+  } else {
+    gtk_drag_dest_set (uiwcont->widget, GTK_DEST_DEFAULT_ALL,
+        NULL, 0, GDK_ACTION_COPY);
+  }
+  gtk_drag_dest_add_uri_targets (uiwcont->widget);
   g_signal_connect (GTK_WIDGET (uiwcont->widget), "drag-data-received",
       G_CALLBACK (uiDragDropSignalHandler), cb);
 }
@@ -59,19 +64,24 @@ uiDragDropSignalHandler (GtkWidget *w, GdkDragContext *context,
 {
   callback_t    *cb = udata;
 
-fprintf (stderr, "info: %d\n", info);
-fprintf (stderr, "length: %d\n", gtk_selection_data_get_length (seldata));
-fprintf (stderr, "format: %d\n", gtk_selection_data_get_format (seldata));
   /* what are the possible formats? why is there no define for it? */
   if (gtk_selection_data_get_length (seldata) >= 0 &&
       gtk_selection_data_get_format (seldata) == 8) {
-    char  **urilist = NULL;
-    int   rc;
+    char                **urilist = NULL;
+    int                 row = -1;
+    int                 rc;
 
     urilist = gtk_selection_data_get_uris (seldata);
     mdextalloc (urilist);
 
-    rc = callbackHandlerStr (cb, urilist [0]);
+    if (GTK_IS_TREE_VIEW (w)) {
+      uiwcont_t   uiwcont;
+
+      uiwcont.widget = w;
+      row = uiTreeViewGetDragDropRow (&uiwcont, x, y);
+    }
+
+    rc = callbackHandlerStrInt (cb, urilist [0], row);
     mdextfree (urilist);
     g_strfreev (urilist);
     gtk_drag_finish (context, rc, FALSE, tm);

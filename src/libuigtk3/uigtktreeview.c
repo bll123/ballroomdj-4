@@ -1285,6 +1285,30 @@ uiTreeViewAttachScrollController (uitree_t *uitree, double upper)
   gtk_widget_add_events (uitree->tree->widget, GDK_SCROLL_MASK);
 }
 
+int
+uiTreeViewGetDragDropRow (uiwcont_t *uiwcont, int x, int y)
+{
+  int                     row;
+  GtkTreePath             *path;
+  GtkTreeViewDropPosition pos;
+
+  row = -1;
+  if (gtk_tree_view_get_dest_row_at_pos (GTK_TREE_VIEW (uiwcont->widget),
+      x, y, &path, &pos)) {
+    char      *pathstr;
+
+    mdextalloc (path);
+    pathstr = gtk_tree_path_to_string (path);
+    mdextalloc (pathstr);
+    row = atoi (pathstr);
+    mdfree (pathstr);
+    mdextfree (path);
+    gtk_tree_path_free (path);
+  }
+
+  return row;
+}
+
 /* internal routines */
 
 /* used by the editable column routines */

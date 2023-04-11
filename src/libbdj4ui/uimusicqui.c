@@ -551,6 +551,10 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
 void
 uimusicqSetSelectLocation (uimusicq_t *uimusicq, int mqidx, long loc)
 {
+  if (loc < 0) {
+    return;
+  }
+
   uimusicq->ui [mqidx].selectLocation = loc;
   uimusicqSetSelection (uimusicq, mqidx);
 }

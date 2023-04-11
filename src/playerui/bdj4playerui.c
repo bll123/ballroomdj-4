@@ -106,9 +106,11 @@ typedef struct {
   int             stopwaitcount;
   mstime_t        clockCheck;
   uisongfilter_t  *uisongfilter;
-  uireqext_t      *uireqext;
   uikey_t         *uikey;
   uiwcont_t       *wcont [PLUI_W_MAX];
+  /* request external */
+  int             reqextRow;
+  uireqext_t      *uireqext;
   /* notebook */
   uinbtabid_t     *nbtabid;
   int             currpage;
@@ -199,7 +201,7 @@ static bool     pluiRequestExternalDialog (void *udata);
 static bool     pluiReqextCallback (void *udata);
 static bool     pluiKeyEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
-static long     pluiDragDropCallback (void *udata, const char *uri);
+static bool     pluiDragDropCallback (void *udata, const char *uri, int row);
 
 static int gKillReceived = 0;
 
@@ -235,6 +237,7 @@ main (int argc, char *argv[])
   plui.stopwaitcount = 0;
   plui.nbtabid = uinbutilIDInit ();
   plui.uisongfilter = NULL;
+  plui.reqextRow = -1;
   plui.uireqext = NULL;
   plui.uikey = NULL;
   plui.uibuilt = false;
@@ -581,7 +584,7 @@ pluiBuildUI (playerui_t *plui)
   uiNotebookSetActionWidget (plui->wcont [PLUI_W_NOTEBOOK], uiwidgetp);
   uiWidgetShowAll (uiwidgetp);
 
-  plui->callbacks [PLUI_CB_DRAG_DROP] = callbackInitStr (
+  plui->callbacks [PLUI_CB_DRAG_DROP] = callbackInitStrInt (
       pluiDragDropCallback, plui);
 
   for (int i = 0; i < MUSICQ_DISP_MAX; ++i) {
@@ -1582,6 +1585,13 @@ pluiReqextCallback (void *udata)
           songentrytext);
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_DB_ENTRY_TEMP_ADD, tbuff);
       dataFree (tbuff);
+
+      if (plui->reqextRow >= 0) {
+        uimusicqSetSelectLocation (plui->uimusicq, plui->musicqRequestIdx,
+            plui->reqextRow);
+        plui->reqextRow = -1;
+      }
+
       pluiQueueProcess (plui, dbidx);
     }
   }
@@ -1632,17 +1642,19 @@ pluiExportMP3 (void *udata)
   return UICB_CONT;
 }
 
-static long
-pluiDragDropCallback (void *udata, const char *uri)
+static bool
+pluiDragDropCallback (void *udata, const char *uri, int row)
 {
   playerui_t        *plui = udata;
   static const char *filepfx = "file://";
   int               filepfxlen = strlen (filepfx);
 
-fprintf (stderr, "plui-dd-cb: %s\n", uri);
   if (strncmp (uri, filepfx, filepfxlen) != 0) {
     return UICB_STOP;
   }
+
+  plui->musicqRequestIdx = plui->musicqManageIdx;
+  plui->reqextRow = row;
 
   uireqextDialog (plui->uireqext, uri + filepfxlen);
   return UICB_CONT;

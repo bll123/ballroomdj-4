@@ -4,8 +4,10 @@
 
 <!--
 
-**4.3.0.6 2023-4---**
+**4.3.1 2023-4---**
 
+* Bug Fixes:
+    * PENDING: Request External: Get song information from database if possible.
 * New Features:
     * Drag & Drop: An audio file may be dragged to a queue in the player.
 
