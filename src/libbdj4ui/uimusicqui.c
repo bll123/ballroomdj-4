@@ -431,6 +431,34 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   uiwcontFree (hbox);
 
+  /* initialize the musicq storage */
+
+  mqint->typelist = mdmalloc (sizeof (int) * UIMUSICQ_COL_MAX);
+  mqint->colcount = 0;
+  mqint->rowcount = 0;
+  /* attributes: ellipsize / font */
+  mqint->typelist [mqint->colcount++] = TREE_TYPE_ELLIPSIZE;
+  mqint->typelist [mqint->colcount++] = TREE_TYPE_STRING;
+  /* unique idx / dbidx */
+  mqint->typelist [mqint->colcount++] = TREE_TYPE_NUM;
+  mqint->typelist [mqint->colcount++] = TREE_TYPE_NUM;
+  /* disp idx color / disp idx color set / display disp idx / pause ind */
+  mqint->typelist [mqint->colcount++] = TREE_TYPE_STRING;
+  mqint->typelist [mqint->colcount++] = TREE_TYPE_BOOLEAN;
+  mqint->typelist [mqint->colcount++] = TREE_TYPE_NUM;
+  mqint->typelist [mqint->colcount++] = TREE_TYPE_IMAGE;
+  if (mqint->colcount != UIMUSICQ_COL_MAX) {
+    fprintf (stderr, "ERR: mismatched UIMUSICQ_COL_MAX %d\n", mqint->colcount);
+  }
+
+  sellist = dispselGetList (uimusicq->dispsel, uimusicq->ui [ci].dispselType);
+  uimusicq->cbci = ci;
+  uisongAddDisplayTypes (sellist,
+      uimusicqProcessMusicQueueDataNewCallback, uimusicq);
+
+  uiTreeViewCreateValueStoreFromList (mqint->musicqTree, mqint->colcount, mqint->typelist);
+  mdfree (mqint->typelist);
+
   logProcEnd (LOG_PROC, "uimusicqBuildUI", "");
   return uimusicq->ui [ci].mainbox;
 }
@@ -649,7 +677,7 @@ uimusicqProcessMusicQueueDataUpdate (uimusicq_t *uimusicq,
   ci = musicqupdate->mqidx;
   mqint = uimusicq->ui [ci].mqInternalData;
 
-  if (newdispflag == MUSICQ_NEW_DISP) {
+  if (0 && newdispflag == MUSICQ_NEW_DISP) {
     mqint->typelist = mdmalloc (sizeof (int) * UIMUSICQ_COL_MAX);
     mqint->colcount = 0;
     mqint->rowcount = 0;

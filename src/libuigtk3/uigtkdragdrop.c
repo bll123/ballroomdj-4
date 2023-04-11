@@ -32,10 +32,6 @@ static void uiDragDropSignalHandler (GtkWidget *w, GdkDragContext *context,
 void
 uiDragDropSetCallback (uiwcont_t *uiwcont, callback_t *cb)
 {
-//  static GtkTargetEntry targetentries[] = {
-//    { "text/uri-list", 0, 0}
-//  };
-
   if (uiwcont == NULL) {
     return;
   }

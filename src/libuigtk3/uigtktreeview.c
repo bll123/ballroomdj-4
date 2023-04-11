@@ -1301,6 +1301,9 @@ uiTreeViewGetDragDropRow (uiwcont_t *uiwcont, int x, int y)
     pathstr = gtk_tree_path_to_string (path);
     mdextalloc (pathstr);
     row = atoi (pathstr);
+    if (pos == GTK_TREE_VIEW_DROP_BEFORE && row > 0) {
+      --row;
+    }
     mdfree (pathstr);
     mdextfree (path);
     gtk_tree_path_free (path);
