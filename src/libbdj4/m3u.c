@@ -85,8 +85,6 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
 {
   FILE        *fh;
   nlist_t     *list;
-  char        *musicdir;
-  size_t      musicdirlen;
   const char  *p;
   song_t      *song;
   dbidx_t     dbidx;
@@ -99,8 +97,6 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
   }
 
   list = nlistAlloc ("m3uimport", LIST_UNORDERED, NULL);
-  musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
-  musicdirlen = strlen (musicdir);
 
   while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
     if (strncmp (tbuff, "#PLAYLIST:", 10) == 0) {

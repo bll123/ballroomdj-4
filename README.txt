@@ -4,7 +4,6 @@ Contents
   Installation
   Change Log
   Converting BallroomDJ 3
-  Release Information
   Release Notes
   Known Issues
   Feedback
@@ -24,16 +23,6 @@ Change Log:
 
 Converting BallroomDJ 3:
   https://sourceforge.net/p/ballroomdj4/wiki/en-Install-Converting%20BDJ3
-
-Release Information
-
-  BallroomDJ 4 is currently under development.
-
-  Beta releases are unfinished.  Some functionality may be missing.
-  There may still be bugs present in the software.
-
-  The beta releases will be backwards compatible.  Unlike the alpha
-  releases, upgrading from a beta release will not require a re-install.
 
 Release Notes:
 

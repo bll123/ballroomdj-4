@@ -456,7 +456,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
   slist_t     *rawdata;
   slistidx_t  iteridx;
   char        *key;
-  char        *val;
+  const char  *val;
   long        lastval = -1;
   nlist_t     *entry = NULL;
   bool        ratingset = false;
@@ -601,7 +601,7 @@ itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx,
 
         conv.allocated = false;
         conv.valuetype = VALUE_STR;
-        conv.str = val;
+        conv.str = (char *) val;
         genreConv (&conv);
         nlistSetNum (entry, tagidx, conv.num);
         logMsg (LOG_DBG, LOG_ITUNES, "song: %s %ld", tagdefs [tagidx].tag, (long) conv.num);

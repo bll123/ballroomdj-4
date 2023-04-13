@@ -59,13 +59,22 @@ function updateimages {
         continue
         ;;
     esac
-    data=$(identify $ifile)
-    set $data
-    sz=$(echo $3 | sed 's,x.*,,')
-    if [[ $sz -gt 800 ]]; then
-      pct=$(dc -e "4k 800 $sz / 100 * p")
-      convert -resize ${pct}% $ifile $ifn
-    fi
+    case $ifile in
+      *.svg)
+        rm -f $ifn
+        ifn=$(echo $ifn | sed 's,svg$,png,')
+        convert $ifile $ifn
+        ;;
+      *)
+        data=$(identify $ifile)
+        set $data
+        sz=$(echo $3 | sed 's,x.*,,')
+        if [[ $sz -gt 800 ]]; then
+          pct=$(dc -e "4k 800 $sz / 100 * p")
+          convert -resize ${pct}% $ifile $ifn
+        fi
+        ;;
+    esac
     touch -r $ifile $ifn
   done
   echo "Enter SourceForge password"

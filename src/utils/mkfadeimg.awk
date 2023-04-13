@@ -2,8 +2,8 @@
 
 function points(type) {
   tag = "M";
-  range = 700;
-  ovol = 700;
+  range = 256;
+  ovol = 256;
   for (i = 0; i < range; ++i) {
     idx = range - i;
     fidx = idx / range;
@@ -27,7 +27,7 @@ function points(type) {
 BEGIN {
   M_PI = 3.141592653589793;
 
-  print "<svg height=\"700\" width=\"700\" id=\"fades\" viewbox=\"0 0 700 700\">\n";
+  print "<svg height=\"256\" width=\"256\" id=\"fades\" viewbox=\"0 0 256 256\">\n";
   tarr ["esin"] = "cyan";
   tarr ["ipar"] = "black";
   tarr ["hsin"] = "green";

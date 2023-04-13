@@ -103,6 +103,7 @@
 <br>__Advanced Setup__
 <br>&nbsp;&nbsp;&nbsp;[Alternate Folders](en-Subjects-Alternate%20Folders)
 <br>&nbsp;&nbsp;&nbsp;[Profiles](en-Subjects-Profiles)
+<br>&nbsp;&nbsp;&nbsp;[Manual Configuration Items](en-Subjects-Manual%20Configuration)
 
 ### How To
 [Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
@@ -114,4 +115,4 @@
 
 <small>[Developer Notes](Development-Developer%20Notes)</small>
 
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-04-13 09:49:43; BDJ4 version 4.3.0.5)_
