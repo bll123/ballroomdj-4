@@ -13,6 +13,7 @@
       hh:mm am/pm
     * time24
       hh:mm
+    * off
 
 ###### data/profile00/bdjconfig.txt
 
@@ -31,4 +32,4 @@
 <br><span style="color:#4559bf;">**Fade Types**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-04-13 10:20:42; BDJ4 version 4.3.0.5)_
+<br>_(Updated 2023-04-13 10:28:45; BDJ4 version 4.3.0.5)_
