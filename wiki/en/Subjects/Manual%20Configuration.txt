@@ -2,6 +2,8 @@
 
 ### Manual Configuration Items
 
+These items are not configurable via the user interface.
+
 ###### data/bdjconfig.txt
 
  * CLOCKDISP : Clock Display
@@ -20,11 +22,15 @@
   * FADETYPE : Fade Type
     triangle (blue), quartersine (red), halfsine (green),
     exponentialsine (cyan), invertedparaboloa (black), quadratic (magenta)
-  * MQ_INFO_COL : Marquee Artist/Title Line Color
-  * MQ_TEXT_COL : Marquee Text Color
-  * UI_ERROR_COL : User Interaface Error Color
+  * MQ_INFO_COL
+    Marquee Artist/Title Line Color.
+  * MQ_TEXT_COL
+    Marquee Text Color.
+  * UI_ERROR_COL
+    User Interaface Error Color.
     The color of error messages.
-  * UI_MARK_COL : User Interface Mark Color
+  * UI_MARK_COL
+    User Interface Mark Color.
     The color for the request list in-queue mark.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -32,4 +38,4 @@
 <br><span style="color:#4559bf;">**Fade Types**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-04-13 10:28:45; BDJ4 version 4.3.0.5)_
+<br>_(Updated 2023-04-14 05:01:59; BDJ4 version 4.3.0.5)_
