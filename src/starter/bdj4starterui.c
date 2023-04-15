@@ -37,6 +37,7 @@
 #include "progstate.h"
 #include "sock.h"
 #include "sockh.h"
+#include "startutil.h"
 #include "support.h"
 #include "sysvars.h"
 #include "templateutil.h"
@@ -127,7 +128,6 @@ typedef struct {
 
 typedef struct {
   progstate_t     *progstate;
-  char            *locknm;
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
   int             currprofile;
@@ -226,8 +226,7 @@ static bool     starterSupportMsgHandler (void *udata, long responseid);
 static void     starterSendFilesInit (startui_t *starter, char *dir, int type);
 static void     starterSendFiles (startui_t *starter);
 
-static bool     starterStopAllProcesses (void *udata);
-static int      starterCountProcesses (startui_t *starter);
+static bool     starterStopAllProcessCallback (void *udata);
 
 static bool     starterDownloadLinkHandler (void *udata);
 static bool     starterWikiLinkHandler (void *udata);
@@ -239,7 +238,6 @@ static void     starterSaveWindowPosition (startui_t *starter);
 static void     starterSetWindowPosition (startui_t *starter);
 static void     starterLoadOptions (startui_t *starter);
 static bool     starterSetUpAlternate (void *udata);
-static void     starterQuickConnect (startui_t *starter, bdjmsgroute_t route);
 static void     starterSendPlayerActive (startui_t *starter);
 
 static bool gKillReceived = false;
@@ -439,14 +437,14 @@ starterStoppingCallback (void *udata, programstate_t programState)
   for (int route = 0; route < ROUTE_MAX; ++route) {
     if (starter->started [route] > 0) {
       procutilStopProcess (starter->processes [route],
-          starter->conn, route, false);
+          starter->conn, route, PROCUTIL_NORM_TERM);
       starter->started [route] = 0;
     }
   }
 
   starterSaveWindowPosition (starter);
 
-  procutilStopAllProcess (starter->processes, starter->conn, false);
+  procutilStopAllProcess (starter->processes, starter->conn, PROCUTIL_NORM_TERM);
 
   logProcEnd (LOG_PROC, "starterStoppingCallback", "");
   return STATE_FINISHED;
@@ -485,7 +483,7 @@ starterClosingCallback (void *udata, programstate_t programState)
     callbackFree (starter->callbacks [i]);
   }
 
-  procutilStopAllProcess (starter->processes, starter->conn, true);
+  procutilStopAllProcess (starter->processes, starter->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (starter->processes);
 
   bdj4shutdown (ROUTE_STARTERUI, NULL);
@@ -571,7 +569,7 @@ starterBuildUI (startui_t  *starter)
   /* CONTEXT: starterui: menu item: stop all BDJ4 processes */
   snprintf (tbuff, sizeof (tbuff), _("Stop All %s Processes"), BDJ4_NAME);
   starter->callbacks [START_CB_MENU_STOP_ALL] = callbackInit (
-      starterStopAllProcesses, starter, NULL);
+      starterStopAllProcessCallback, starter, NULL);
   menuitem = uiMenuCreateItem (menu, tbuff,
       starter->callbacks [START_CB_MENU_STOP_ALL]);
   uiwcontFree (menuitem);
@@ -1150,7 +1148,7 @@ starterStopMain (startui_t *starter, bdjmsgroute_t routefrom)
     --starter->started [ROUTE_MAIN];
     if (starter->started [ROUTE_MAIN] <= 0) {
       procutilStopProcess (starter->processes [ROUTE_MAIN],
-          starter->conn, ROUTE_MAIN, false);
+          starter->conn, ROUTE_MAIN, PROCUTIL_NORM_TERM);
       starter->started [ROUTE_MAIN] = 0;
     }
     starter->mainstart [routefrom] = 0;
@@ -1546,6 +1544,12 @@ starterGetProfiles (startui_t *starter)
   }
 
   bdjvarsAdjustPorts ();
+
+  if (dispidx == 0) {
+    logMsg (LOG_DBG, LOG_IMPORTANT, "clean old locks");
+    starterRemoveAllLocks ();
+  }
+
   return dispidx;
 }
 
@@ -1932,188 +1936,12 @@ starterSendFiles (startui_t *starter)
 }
 
 static bool
-starterStopAllProcesses (void *udata)
+starterStopAllProcessCallback (void *udata)
 {
-  startui_t     *starter = udata;
-  bdjmsgroute_t route;
-  char          *locknm;
-  pid_t         pid;
-  int           count;
-  char          tbuff [MAXPATHLEN];
+  startui_t   *starter = udata;
 
-
-  logProcBegin (LOG_PROC, "starterStopAllProcesses");
-  fprintf (stderr, "stop-all-processes\n");
-
-  count = starterCountProcesses (starter);
-  if (count == 0) {
-    logProcEnd (LOG_PROC, "starterStopAllProcesses", "begin-none");
-    fprintf (stderr, "done\n");
-    return UICB_CONT;
-  }
-
-  /* send the standard exit request to the main controlling processes first */
-  logMsg (LOG_DBG, LOG_IMPORTANT, "send exit request to ui");
-  fprintf (stderr, "send exit request to ui\n");
-  starterQuickConnect (starter, ROUTE_PLAYERUI);
-  connSendMessage (starter->conn, ROUTE_PLAYERUI, MSG_EXIT_REQUEST, NULL);
-  starterQuickConnect (starter, ROUTE_MANAGEUI);
-  connSendMessage (starter->conn, ROUTE_MANAGEUI, MSG_EXIT_REQUEST, NULL);
-  starterQuickConnect (starter, ROUTE_CONFIGUI);
-  connSendMessage (starter->conn, ROUTE_CONFIGUI, MSG_EXIT_REQUEST, NULL);
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
-  fprintf (stderr, "sleeping\n");
-  mssleep (1000);
-
-  count = starterCountProcesses (starter);
-  if (count == 0) {
-    logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-ui");
-    fprintf (stderr, "done\n");
-    return UICB_CONT;
-  }
-
-  if (isWindows ()) {
-    /* windows is slow */
-    mssleep (1500);
-  }
-
-  /* send the exit request to main */
-  starterQuickConnect (starter, ROUTE_MAIN);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "send exit request to main");
-  fprintf (stderr, "send exit request to main\n");
-  connSendMessage (starter->conn, ROUTE_MAIN, MSG_EXIT_REQUEST, NULL);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
-  fprintf (stderr, "sleeping\n");
-  mssleep (1500);
-
-  count = starterCountProcesses (starter);
-  if (count == 0) {
-    logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-main");
-    fprintf (stderr, "done\n");
-    return UICB_CONT;
-  }
-
-  /* see which lock files exist, and send exit requests to them */
-  count = 0;
-  for (route = ROUTE_NONE + 1; route < ROUTE_MAX; ++route) {
-    if (route == ROUTE_STARTERUI) {
-      continue;
-    }
-
-    locknm = lockName (route);
-    pid = lockExists (locknm, PATHBLD_MP_USEIDX);
-    if (pid > 0) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "route %d %s exists; send exit request",
-          route, msgRouteDebugText (route));
-      fprintf (stderr, "route %d %s exists; send exit request\n",
-          route, msgRouteDebugText (route));
-      starterQuickConnect (starter, route);
-      connSendMessage (starter->conn, route, MSG_EXIT_REQUEST, NULL);
-      ++count;
-    }
-  }
-
-  if (count <= 0) {
-    logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-exit-all");
-    fprintf (stderr, "done\n");
-    return UICB_CONT;
-  }
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
-  fprintf (stderr, "sleeping\n");
-  mssleep (1500);
-
-  /* see which lock files still exist and kill the processes */
-  count = 0;
-  for (route = ROUTE_NONE + 1; route < ROUTE_MAX; ++route) {
-    if (route == ROUTE_STARTERUI) {
-      continue;
-    }
-
-    locknm = lockName (route);
-    pid = lockExists (locknm, PATHBLD_MP_USEIDX);
-    if (pid > 0) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "lock %d %s exists; send terminate",
-          route, msgRouteDebugText (route));
-      fprintf (stderr, "lock %d %s exists; send terminate\n",
-          route, msgRouteDebugText (route));
-      procutilTerminate (pid, false);
-      ++count;
-    }
-  }
-
-  if (count <= 0) {
-    logProcEnd (LOG_PROC, "starterStopAllProcesses", "after-term");
-    fprintf (stderr, "done\n");
-    return UICB_CONT;
-  }
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "sleeping");
-  fprintf (stderr, "sleeping\n");
-  mssleep (1500);
-
-  /* see which lock files still exist and kill the processes with */
-  /* a signal that is not caught; remove the lock file */
-  for (route = ROUTE_NONE + 1; route < ROUTE_MAX; ++route) {
-    if (route == ROUTE_STARTERUI) {
-      continue;
-    }
-
-    locknm = lockName (route);
-    pid = lockExists (locknm, PATHBLD_MP_USEIDX);
-    if (pid > 0) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "lock %d %s exists; force terminate",
-          route, msgRouteDebugText (route));
-      fprintf (stderr, "lock %d %s exists; force terminate\n",
-          route, msgRouteDebugText (route));
-      procutilTerminate (pid, true);
-    }
-    mssleep (100);
-    pid = lockExists (locknm, PATHBLD_MP_USEIDX);
-    if (pid > 0) {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "removing lock %d %s",
-          route, msgRouteDebugText (route));
-      fprintf (stderr, "removing lock %d %s\n",
-          route, msgRouteDebugText (route));
-      fileopDelete (locknm);
-    }
-  }
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  fileopDelete (tbuff);
-  volregClearBDJ4Flag ();
-
-  fprintf (stderr, "done\n");
-  logProcEnd (LOG_PROC, "starterStopAllProcesses", "");
+  starterStopAllProcesses (starter->conn);
   return UICB_CONT;
-}
-
-static int
-starterCountProcesses (startui_t *starter)
-{
-  bdjmsgroute_t route;
-  char          *locknm;
-  pid_t         pid;
-  int           count;
-
-  logProcBegin (LOG_PROC, "starterCountProcesses");
-  count = 0;
-  for (route = ROUTE_NONE + 1; route < ROUTE_MAX; ++route) {
-    if (route == ROUTE_STARTERUI) {
-      continue;
-    }
-
-    locknm = lockName (route);
-    pid = lockExists (locknm, PATHBLD_MP_USEIDX);
-    if (pid > 0) {
-      ++count;
-    }
-  }
-
-  logProcEnd (LOG_PROC, "starterCountProcesses", "");
-  return count;
 }
 
 static inline bool
@@ -2229,22 +2057,6 @@ starterSetUpAlternate (void *udata)
 
   logProcEnd (LOG_PROC, "starterSetUpAlternate", "");
   return UICB_CONT;
-}
-
-static void
-starterQuickConnect (startui_t *starter, bdjmsgroute_t route)
-{
-  int   count;
-
-  count = 0;
-  while (! connIsConnected (starter->conn, route)) {
-    connConnect (starter->conn, route);
-    if (count > 5) {
-      break;
-    }
-    mssleep (10);
-    ++count;
-  }
 }
 
 static void

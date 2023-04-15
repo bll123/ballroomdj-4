@@ -528,7 +528,7 @@ tsStoppingCallback (void *tts, programstate_t programState)
 {
   testsuite_t *testsuite = tts;
 
-  procutilStopAllProcess (testsuite->processes, testsuite->conn, false);
+  procutilStopAllProcess (testsuite->processes, testsuite->conn, PROCUTIL_NORM_TERM);
 
   connDisconnect (testsuite->conn, ROUTE_MAIN);
   connDisconnect (testsuite->conn, ROUTE_PLAYER);
@@ -556,7 +556,7 @@ tsClosingCallback (void *tts, programstate_t programState)
     testsuite->fh = NULL;
   }
   bdj4shutdown (ROUTE_TEST_SUITE, NULL);
-  procutilStopAllProcess (testsuite->processes, testsuite->conn, true);
+  procutilStopAllProcess (testsuite->processes, testsuite->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (testsuite->processes);
   connFree (testsuite->conn);
   slistFree (testsuite->testlist);

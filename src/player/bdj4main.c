@@ -283,7 +283,7 @@ mainStoppingCallback (void *tmaindata, programstate_t programState)
 
   logProcBegin (LOG_PROC, "mainStoppingCallback");
 
-  procutilStopAllProcess (mainData->processes, mainData->conn, false);
+  procutilStopAllProcess (mainData->processes, mainData->conn, PROCUTIL_NORM_TERM);
   connDisconnectAll (mainData->conn);
   logProcEnd (LOG_PROC, "mainStoppingCallback", "");
   return STATE_FINISHED;
@@ -320,7 +320,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   dataFree (mainData->mobmqUserkey);
   dataFree (mainData->pbfinishArgs);
 
-  procutilStopAllProcess (mainData->processes, mainData->conn, true);
+  procutilStopAllProcess (mainData->processes, mainData->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (mainData->processes);
 
   script = bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT);

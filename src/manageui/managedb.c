@@ -145,7 +145,7 @@ void
 manageDbFree (managedb_t *managedb)
 {
   if (managedb != NULL) {
-    procutilStopAllProcess (managedb->processes, managedb->conn, false);
+    procutilStopAllProcess (managedb->processes, managedb->conn, PROCUTIL_NORM_TERM);
     nlistFree (managedb->dblist);
     nlistFree (managedb->dbhelp);
 
@@ -365,7 +365,7 @@ manageDbFinish (managedb_t *managedb, int routefrom)
 void
 manageDbClose (managedb_t *managedb)
 {
-  procutilStopAllProcess (managedb->processes, managedb->conn, true);
+  procutilStopAllProcess (managedb->processes, managedb->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (managedb->processes);
 }
 

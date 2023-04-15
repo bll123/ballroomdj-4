@@ -58,7 +58,10 @@ target_link_libraries (bdj4g
 addWinSockLibrary (bdj4g)
 addWinNtdllLibrary (bdj4g)
 
-add_executable (bdj4starterui bdj4starterui.c)
+add_executable (bdj4starterui
+  bdj4starterui.c
+  startutil.c
+)
 if (WIN32)
   target_compile_options (bdj4starterui PRIVATE -municode)
   target_compile_options (bdj4starterui PRIVATE -mwindows)

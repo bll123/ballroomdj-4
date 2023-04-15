@@ -1085,6 +1085,7 @@ pluiCloseWin (void *udata)
 static void
 pluiSigHandler (int sig)
 {
+logMsg (LOG_DBG, LOG_IMPORTANT, "===== got sig %d", sig);
   gKillReceived = 1;
 }
 

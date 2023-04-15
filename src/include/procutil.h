@@ -18,6 +18,11 @@ enum {
   PROCUTIL_DETACH,
 };
 
+enum {
+  PROCUTIL_NORM_TERM = false,
+  PROCUTIL_FORCE_TERM = true,
+};
+
 typedef struct {
   void      *processHandle;
   pid_t     pid;

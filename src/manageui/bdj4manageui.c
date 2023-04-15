@@ -536,11 +536,11 @@ manageStoppingCallback (void *udata, programstate_t programState)
   logProcBegin (LOG_PROC, "manageStoppingCallback");
   connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_STOP_MAIN, NULL);
 
-  procutilStopAllProcess (manage->processes, manage->conn, false);
+  procutilStopAllProcess (manage->processes, manage->conn, PROCUTIL_NORM_TERM);
 
   if (manage->bpmcounterstarted > 0) {
     procutilStopProcess (manage->processes [ROUTE_BPM_COUNTER],
-        manage->conn, ROUTE_BPM_COUNTER, false);
+        manage->conn, ROUTE_BPM_COUNTER, PROCUTIL_NORM_TERM);
     manage->bpmcounterstarted = false;
   }
 
@@ -599,7 +599,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uiButtonFree (manage->selectButton);
   uiaaFree (manage->uiaa);
 
-  procutilStopAllProcess (manage->processes, manage->conn, true);
+  procutilStopAllProcess (manage->processes, manage->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (manage->processes);
 
   pathbldMakePath (fn, sizeof (fn),

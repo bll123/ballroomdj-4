@@ -17,7 +17,7 @@ osSetStandardSignals (void (*sigHandler)(int))
 #if _define_SIGHUP
   osCatchSignal (sigHandler, SIGHUP);
 #endif
-  osDefaultSignal (SIGTERM);
+  osCatchSignal (sigHandler, SIGTERM);
 #if _define_SIGCHLD
   osIgnoreSignal (SIGCHLD);
 #endif

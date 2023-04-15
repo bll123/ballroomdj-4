@@ -275,7 +275,7 @@ procutilStopProcess (procutil_t *process, conn_t *conn,
     return;
   }
 
-  if (! force) {
+  if (force == PROCUTIL_NORM_TERM) {
     if (! process->started) {
       logProcEnd (LOG_PROC, "procutilStopProcess", "not-started");
       return;
@@ -283,7 +283,7 @@ procutilStopProcess (procutil_t *process, conn_t *conn,
     connSendMessage (conn, route, MSG_EXIT_REQUEST, NULL);
     process->started = false;
   }
-  if (force) {
+  if (force == PROCUTIL_FORCE_TERM) {
     procutilForceStop (process, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX, route);
   }
   logProcEnd (LOG_PROC, "procutilStopProcess", "");

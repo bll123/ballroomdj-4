@@ -104,6 +104,16 @@ volregClearBDJ4Flag (void)
   fileopDelete (fn);
 }
 
+void
+volregClean (void)
+{
+  char  fn [MAXPATHLEN];
+
+  volregUnlock ();
+  volregDataFilename (fn, sizeof (fn));
+  fileopDelete (fn);
+}
+
 /* internal routines */
 
 static void

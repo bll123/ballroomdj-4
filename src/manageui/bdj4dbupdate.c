@@ -753,7 +753,7 @@ dbupdateStoppingCallback (void *tdbupdate, programstate_t programState)
 
   logProcBegin (LOG_PROC, "dbupdateStoppingCallback");
 
-  procutilStopAllProcess (dbupdate->processes, dbupdate->conn, false);
+  procutilStopAllProcess (dbupdate->processes, dbupdate->conn, PROCUTIL_NORM_TERM);
   connDisconnect (dbupdate->conn, ROUTE_MANAGEUI);
   logProcEnd (LOG_PROC, "dbupdateStoppingCallback", "");
   return STATE_FINISHED;
@@ -781,7 +781,7 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
     dbClose (dbupdate->newmusicdb);
   }
 
-  procutilStopAllProcess (dbupdate->processes, dbupdate->conn, true);
+  procutilStopAllProcess (dbupdate->processes, dbupdate->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (dbupdate->processes);
 
   itunesFree (dbupdate->itunes);

@@ -9,5 +9,6 @@ int volregClear (const char *sink);
 bool volregCheckBDJ3Flag (void);
 void volregCreateBDJ4Flag (void);
 void volregClearBDJ4Flag (void);
+void volregClean (void);
 
 #endif /* INC_VOLREG_H */
