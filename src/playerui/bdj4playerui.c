@@ -622,7 +622,7 @@ pluiBuildUI (playerui_t *plui)
       uiWidgetSetMarginStart (plui->musicqImage [i], 1);
       uiBoxPackStart (hbox, plui->musicqImage [i]);
 
-      uimusicqDragDropSetCallback (plui->uimusicq, i, plui->callbacks [PLUI_CB_DRAG_DROP]);
+      uimusicqDragDropSetURICallback (plui->uimusicq, i, plui->callbacks [PLUI_CB_DRAG_DROP]);
     }
 
     uiNotebookAppendPage (plui->wcont [PLUI_W_NOTEBOOK], uip, hbox);

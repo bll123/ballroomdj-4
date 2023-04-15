@@ -7,6 +7,8 @@
 #include "callback.h"
 #include "uiwcont.h"
 
-void uiDragDropSetCallback (uiwcont_t *uiwcont, callback_t *cb);
+void uiDragDropSetDestURICallback (uiwcont_t *uiwcont, callback_t *cb);
+void uiDragDropSetDestDataCallback (uiwcont_t *uiwcont, callback_t *cb);
+void uiDragDropSetSourceDataCallback (uiwcont_t *uiwcont, callback_t *cb);
 
 #endif /* INC_UIDRAGDROP_H */

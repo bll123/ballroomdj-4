@@ -468,7 +468,7 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 }
 
 void
-uimusicqDragDropSetCallback (uimusicq_t *uimusicq, int ci, callback_t *cb)
+uimusicqDragDropSetURICallback (uimusicq_t *uimusicq, int ci, callback_t *cb)
 {
   mq_internal_t     *mqint;
 
@@ -477,7 +477,20 @@ uimusicqDragDropSetCallback (uimusicq_t *uimusicq, int ci, callback_t *cb)
   }
 
   mqint = uimusicq->ui [ci].mqInternalData;
-  uiDragDropSetCallback (uiTreeViewGetWidgetContainer (mqint->musicqTree), cb);
+  uiDragDropSetDestURICallback (uiTreeViewGetWidgetContainer (mqint->musicqTree), cb);
+}
+
+void
+uimusicqDragDropSetDBidxCallback (uimusicq_t *uimusicq, int ci, callback_t *cb)
+{
+  mq_internal_t     *mqint;
+
+  if (ci < 0 || ci >= MUSICQ_MAX) {
+    return;
+  }
+
+  mqint = uimusicq->ui [ci].mqInternalData;
+  uiDragDropSetDestDataCallback (uiTreeViewGetWidgetContainer (mqint->musicqTree), cb);
 }
 
 void

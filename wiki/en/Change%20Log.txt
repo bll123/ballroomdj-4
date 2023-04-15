@@ -11,6 +11,8 @@
     * Player/Management: Only display pause indicator column for music queues.
 * New Features:
     * Drag & Drop: An audio file may be dragged to a queue in the player.
+* Internal:
+    * Improve lock handling.
 
 -->
 

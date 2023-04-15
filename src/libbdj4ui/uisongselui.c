@@ -822,6 +822,15 @@ uisongselSetRequestLabel (uisongsel_t *uisongsel, const char *txt)
   uiLabelSetText (ssint->wcont [SONGSEL_W_REQ_QUEUE], txt);
 }
 
+void
+uisongselDragDropSetDBidxCallback (uisongsel_t *uisongsel, callback_t *cb)
+{
+  ss_internal_t  *ssint;
+
+  ssint = uisongsel->ssInternalData;
+  uiDragDropSetSourceDataCallback (uiTreeViewGetWidgetContainer (ssint->songselTree), cb);
+}
+
 /* internal routines */
 
 static void
