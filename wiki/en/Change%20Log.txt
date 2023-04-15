@@ -6,16 +6,18 @@
 
 **4.3.1 2023-4---**
 
+-->
+
+**4.3.1 2023-4-15**
+
 * Bug Fixes:
-    * PENDING: Management: Fix select processing adding songs to song list.
+    * Management: Fix adding songs to song list (broken in 4.3.0.5).
     * Request External: Get song information from database if possible.
     * Player/Management: Only display pause indicator column for music queues.
 * New Features:
     * Drag & Drop: An audio file may be dragged to a queue in the player.
 * Internal:
     * Improve lock handling.
-
--->
 
 **4.3.0.5 2023-4-10**
 
@@ -343,4 +345,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-04-13 09:49:43; BDJ4 version 4.3.0.5)_
+<br>_(Updated 2023-04-15 14:37:28; BDJ4 version 4.3.1)_

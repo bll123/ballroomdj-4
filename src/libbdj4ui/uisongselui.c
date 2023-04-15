@@ -524,7 +524,6 @@ bool
 uisongselSelectCallback (void *udata)
 {
   uisongsel_t       *uisongsel = udata;
-  musicqidx_t       mqidx;
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel select");
   /* only the song selection and ez song selection have a select button */

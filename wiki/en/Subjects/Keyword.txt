@@ -17,4 +17,4 @@ songs will be excluded from automatic and sequenced playlists unless
 the playlist configuration allows the keyword.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-04-14 05:25:18; BDJ4 version 4.3.0.5)_
+<br>_(Updated 2023-04-15 14:37:28; BDJ4 version 4.3.1)_
