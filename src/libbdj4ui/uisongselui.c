@@ -529,8 +529,7 @@ uisongselSelectCallback (void *udata)
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: songsel select");
   /* only the song selection and ez song selection have a select button */
   /* queue to the song list */
-  mqidx = MUSICQ_SL;
-  uisongselQueueHandler (uisongsel, mqidx, UISONGSEL_QUEUE);
+  uisongselQueueHandler (uisongsel, -1, UISONGSEL_QUEUE);
   /* don't clear the selected list or the displayed selections */
   /* it's confusing for the user */
   return UICB_CONT;

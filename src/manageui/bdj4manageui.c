@@ -348,8 +348,8 @@ static void     manageSetSonglistName (manageui_t *manage, const char *nm);
 static bool     managePlayProcessSonglist (void *udata, long dbidx, int mqidx);
 static bool     managePlayProcessEasySonglist (void *udata, long dbidx, int mqidx);
 static bool     managePlayProcessMusicManager (void *udata, long dbidx, int mqidx);
-static bool     manageQueueProcessSonglist (void *udata, long dbidx, int mqidx);
-static bool     manageQueueProcessEasySonglist (void *udata, long dbidx, int mqidx);
+static bool     manageQueueProcessSonglist (void *udata, long dbidx);
+static bool     manageQueueProcessEasySonglist (void *udata, long dbidx);
 static void     manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action);
 static bool     manageSonglistExportM3U (void *udata);
 static bool     manageSonglistImportM3U (void *udata);
@@ -837,7 +837,7 @@ manageInitializeUI (manageui_t *manage)
       managePlayProcessSonglist, manage);
   uisongselSetPlayCallback (manage->slsongsel,
       manage->callbacks [MANAGE_CB_PLAY_SL]);
-  manage->callbacks [MANAGE_CB_QUEUE_SL] = callbackInitLongInt (
+  manage->callbacks [MANAGE_CB_QUEUE_SL] = callbackInitLong (
       manageQueueProcessSonglist, manage);
   uisongselSetQueueCallback (manage->slsongsel,
       manage->callbacks [MANAGE_CB_QUEUE_SL]);
@@ -853,7 +853,7 @@ manageInitializeUI (manageui_t *manage)
       managePlayProcessEasySonglist, manage);
   uisongselSetPlayCallback (manage->slezsongsel,
       manage->callbacks [MANAGE_CB_PLAY_SL_EZ]);
-  manage->callbacks [MANAGE_CB_QUEUE_SL_EZ] = callbackInitLongInt (
+  manage->callbacks [MANAGE_CB_QUEUE_SL_EZ] = callbackInitLong (
       manageQueueProcessEasySonglist, manage);
   uisongselSetQueueCallback (manage->slezsongsel,
       manage->callbacks [MANAGE_CB_QUEUE_SL_EZ]);
@@ -2782,18 +2782,18 @@ managePlayProcessMusicManager (void *udata, long dbidx, int mqidx)
 }
 
 static bool
-manageQueueProcessSonglist (void *udata, long dbidx, int mqidx)
+manageQueueProcessSonglist (void *udata, long dbidx)
 {
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: queue to songlist");
-  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_SONGLIST, MANAGE_QUEUE);
+  manageQueueProcess (udata, dbidx, MUSICQ_SL, DISP_SEL_SONGLIST, MANAGE_QUEUE);
   return UICB_CONT;
 }
 
 static bool
-manageQueueProcessEasySonglist (void *udata, long dbidx, int mqidx)
+manageQueueProcessEasySonglist (void *udata, long dbidx)
 {
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: queue to ez songlist");
-  manageQueueProcess (udata, dbidx, mqidx, DISP_SEL_EZSONGLIST, MANAGE_QUEUE);
+  manageQueueProcess (udata, dbidx, MUSICQ_SL, DISP_SEL_EZSONGLIST, MANAGE_QUEUE);
   return UICB_CONT;
 }
 

@@ -1903,7 +1903,7 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
 {
   char      *tokstr = NULL;
   char      *p = NULL;
-  long      idx;
+  int       idx;
   dbidx_t   dbidx;
   song_t    *song = NULL;
   long      currlen;
