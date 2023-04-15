@@ -25,25 +25,9 @@
 
 #include "ui/uidragdrop.h"
 
-/*
- * info:
- *   0 : uri
- *   1 : int32_t
- */
-
 static void uiDragDropDestHandler (GtkWidget *w, GdkDragContext *context,
     gint x, gint y, GtkSelectionData *seldata, guint info, guint time,
     gpointer udata);
-static void uiDragDropSourceDataHandler (GtkWidget *w, GdkDragContext *context,
-    GtkSelectionData *seldata, guint info, guint time,
-    gpointer udata);
-
-static const GtkTargetEntry targetlist[] = {
-  { "bdj4/int32_t", GTK_TARGET_SAME_APP, 1, }
-};
-enum {
-  TARGETENTRIES = sizeof (targetlist) / sizeof (GtkTargetEntry),
-};
 
 void
 uiDragDropSetDestURICallback (uiwcont_t *uiwcont, callback_t *cb)
@@ -67,49 +51,6 @@ uiDragDropSetDestURICallback (uiwcont_t *uiwcont, callback_t *cb)
       G_CALLBACK (uiDragDropDestHandler), cb);
 }
 
-void
-uiDragDropSetDestDataCallback (uiwcont_t *uiwcont, callback_t *cb)
-{
-  if (uiwcont == NULL) {
-    return;
-  }
-  if (uiwcont->widget == NULL) {
-    return;
-  }
-
-  if (GTK_IS_TREE_VIEW (uiwcont->widget)) {
-    gtk_tree_view_enable_model_drag_dest (GTK_TREE_VIEW (uiwcont->widget),
-        targetlist, TARGETENTRIES, GDK_ACTION_COPY);
-  } else {
-    gtk_drag_dest_set (uiwcont->widget, GTK_DEST_DEFAULT_ALL,
-        targetlist, TARGETENTRIES, GDK_ACTION_COPY);
-  }
-  g_signal_connect (GTK_WIDGET (uiwcont->widget), "drag-data-received",
-      G_CALLBACK (uiDragDropDestHandler), cb);
-}
-
-void
-uiDragDropSetSourceDataCallback (uiwcont_t *uiwcont, callback_t *cb)
-{
-  if (uiwcont == NULL) {
-    return;
-  }
-  if (uiwcont->widget == NULL) {
-    return;
-  }
-
-  if (GTK_IS_TREE_VIEW (uiwcont->widget)) {
-    gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (uiwcont->widget),
-        GDK_BUTTON1_MASK,
-        targetlist, TARGETENTRIES, GDK_ACTION_COPY);
-  } else {
-    gtk_drag_source_set (uiwcont->widget,
-        GDK_BUTTON1_MASK,
-        targetlist, TARGETENTRIES, GDK_ACTION_COPY);
-  }
-  g_signal_connect (GTK_WIDGET (uiwcont->widget), "drag-data-get",
-      G_CALLBACK (uiDragDropSourceDataHandler), cb);
-}
 
 /* internal routines */
 
@@ -155,18 +96,4 @@ uiDragDropDestHandler (GtkWidget *w, GdkDragContext *context,
 
   g_signal_stop_emission_by_name (G_OBJECT (w), "drag-data-received");
 }
-
-static void
-uiDragDropSourceDataHandler (GtkWidget *w, GdkDragContext *context,
-    GtkSelectionData *seldata, guint info, guint tm,
-    gpointer udata)
-{
-  int32_t       val = -1;
-
-  /* data is not set to anything special, not used */
-  gtk_selection_data_set (seldata,
-      gtk_selection_data_get_target (seldata),
-      sizeof (val) * 8, (const guchar *) &val, sizeof (val));
-}
-
 

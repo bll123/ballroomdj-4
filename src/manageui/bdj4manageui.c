@@ -118,7 +118,6 @@ enum {
   MANAGE_MENU_CB_SL_ITUNES_IMP,
   /* other callbacks */
   MANAGE_CB_EZ_SELECT,
-  MANAGE_CB_EZ_DRAG_SELECT,
   MANAGE_CB_NEW_SEL_SONGSEL,
   MANAGE_CB_NEW_SEL_SONGLIST,
   MANAGE_CB_QUEUE_SL,
@@ -141,7 +140,6 @@ enum {
   MANAGE_CB_ITUNES_SEL,
   MANAGE_CB_APPLY_ADJ,
   MANAGE_CB_SL_SEL_FILE,
-  MANAGE_CB_SL_DRAG_DBIDX,
   MANAGE_CB_MAX,
 };
 
@@ -367,8 +365,6 @@ static void     manageSonglistLoadCheck (manageui_t *manage);
 static bool     manageSameSongSetMark (void *udata);
 static bool     manageSameSongClearMark (void *udata);
 static void     manageSameSongChangeMark (manageui_t *manage, int flag);
-
-static bool     manageuiDragDropCallback (void *udata, long row);
 
 static int gKillReceived = false;
 
@@ -953,10 +949,6 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiwidgetp = uimusicqBuildUI (manage->slezmusicq, manage->wcont [MANAGE_W_WINDOW], MUSICQ_SL,
       manage->wcont [MANAGE_W_ERROR_MSG], manageValidateName);
   uiBoxPackStartExpand (hbox, uiwidgetp);
-  manage->callbacks [MANAGE_CB_EZ_DRAG_SELECT] = callbackInitLong (
-      manageuiDragDropCallback, manage);
-  uimusicqDragDropSetDBidxCallback (manage->slezmusicq, MUSICQ_SL,
-      manage->callbacks [MANAGE_CB_EZ_DRAG_SELECT]);
 
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
@@ -977,7 +969,6 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   uiwidgetp = uisongselBuildUI (manage->slezsongsel, manage->wcont [MANAGE_W_WINDOW]);
   uiBoxPackStartExpand (hbox, uiwidgetp);
-  uisongselDragDropSetDBidxCallback (manage->slezsongsel, NULL);
 
   /* song list editor: music queue tab */
   uip = uimusicqBuildUI (manage->slmusicq, manage->wcont [MANAGE_W_WINDOW], MUSICQ_SL,
@@ -3306,12 +3297,3 @@ manageSameSongChangeMark (manageui_t *manage, int flag)
   logProcEnd (LOG_PROC, "manageSameSongChangeMark", "");
 }
 
-static bool
-manageuiDragDropCallback (void *udata, long row)
-{
-  manageui_t  *manage = udata;
-
-  uimusicqSetSelectLocation (manage->slezmusicq, MUSICQ_SL, row);
-  uisongselSelectCallback (manage->slezsongsel);
-  return UICB_CONT;
-}

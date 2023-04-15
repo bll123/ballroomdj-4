@@ -481,19 +481,6 @@ uimusicqDragDropSetURICallback (uimusicq_t *uimusicq, int ci, callback_t *cb)
 }
 
 void
-uimusicqDragDropSetDBidxCallback (uimusicq_t *uimusicq, int ci, callback_t *cb)
-{
-  mq_internal_t     *mqint;
-
-  if (ci < 0 || ci >= MUSICQ_MAX) {
-    return;
-  }
-
-  mqint = uimusicq->ui [ci].mqInternalData;
-  uiDragDropSetDestDataCallback (uiTreeViewGetWidgetContainer (mqint->musicqTree), cb);
-}
-
-void
 uimusicqUIMainLoop (uimusicq_t *uimusicq)
 {
   mq_internal_t *mqint;

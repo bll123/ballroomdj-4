@@ -26,25 +26,3 @@ uiDragDropSetDestURICallback (uiwcont_t *uiwcont, callback_t *cb)
   }
 }
 
-void
-uiDragDropSetDestDataCallback (uiwcont_t *uiwcont, callback_t *cb)
-{
-  if (uiwcont == NULL) {
-    return;
-  }
-  if (uiwcont->widget == NULL) {
-    return;
-  }
-}
-
-void
-uiDragDropSetSourceDataCallback (uiwcont_t *uiwcont, callback_t *cb)
-{
-  if (uiwcont == NULL) {
-    return;
-  }
-  if (uiwcont->widget == NULL) {
-    return;
-  }
-}
-
