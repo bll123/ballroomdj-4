@@ -170,6 +170,7 @@ START_TEST(songlist_save)
 
   slb = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (slb);
+  ck_assert_int_eq (songlistDistVersion (sl), songlistDistVersion (slb));
 
   songlistStartIterator (sl, &iteridx);
   songlistStartIterator (slb, &iteridxb);
