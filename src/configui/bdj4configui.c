@@ -308,12 +308,12 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   pathbldMakePath (fn, sizeof (fn),
       CONFIGUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("configui", fn, configuidfkeys,
-      CONFUI_KEY_MAX, confui->options, 0);
+      CONFUI_KEY_MAX, confui->options, 0, 1);
 
   pathbldMakePath (fn, sizeof (fn),
       "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   datafileSaveKeyVal ("ds-songfilter", fn, filterdisplaydfkeys,
-      FILTER_DISP_MAX, confui->gui.filterDisplaySel, 0);
+      FILTER_DISP_MAX, confui->gui.filterDisplaySel, 0, 1);
 
   connDisconnect (confui->conn, ROUTE_STARTERUI);
 

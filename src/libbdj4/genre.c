@@ -154,5 +154,5 @@ void
 genreSave (genre_t *genre, ilist_t *list)
 {
   datafileSaveIndirect ("genre", genre->path, genredfkeys,
-      GENRE_KEY_MAX, list);
+      GENRE_KEY_MAX, list, datafileDistVersion (genre->df));
 }

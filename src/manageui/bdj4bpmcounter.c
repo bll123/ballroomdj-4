@@ -317,7 +317,7 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
 
   pathbldMakePath (fn, sizeof (fn),
       BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal ("bpmcounter", fn, bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX, bpmcounter->options, 0);
+  datafileSaveKeyVal ("bpmcounter", fn, bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX, bpmcounter->options, 0, 1);
 
   bdj4shutdown (ROUTE_BPM_COUNTER, NULL);
 

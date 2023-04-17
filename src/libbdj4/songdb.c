@@ -104,7 +104,7 @@ songUpdateAllSonglists (song_t *song)
       }
     }
     if (chg) {
-      songlistSave (songlist, SONGLIST_PRESERVE_TIMESTAMP);
+      songlistSave (songlist, SONGLIST_PRESERVE_TIMESTAMP, SONGLIST_USE_DIST_VERSION);
     }
     songlistFree (songlist);
   }

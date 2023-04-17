@@ -8,11 +8,7 @@
 #include "nlist.h"
 #include "slist.h"
 
-typedef struct {
-  nlist_t  *sequence;
-  char     *name;
-  char     *path;
-} sequence_t;
+typedef struct sequence sequence_t;
 
 sequence_t    *sequenceAlloc (const char *fname);
 sequence_t    *sequenceCreate (const char *fname);

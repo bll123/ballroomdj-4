@@ -241,7 +241,7 @@ itunesSaveStars (itunes_t *itunes)
   pathbldMakePath (tbuff, sizeof (tbuff),
       ITUNES_STARS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   datafileSaveKeyVal ("itunes-stars", tbuff, starsdfkeys,
-      ITUNES_STARS_MAX, itunes->stars, 0);
+      ITUNES_STARS_MAX, itunes->stars, 0, datafileDistVersion (itunes->starsdf));
 }
 
 int
@@ -276,7 +276,8 @@ itunesSaveFields (itunes_t *itunes)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  datafileSaveList ("itunes-fields", tbuff, newlist);
+  datafileSaveList ("itunes-fields", tbuff, newlist,
+      datafileDistVersion (itunes->fieldsdf));
 }
 
 void

@@ -495,7 +495,7 @@ starterClosingCallback (void *udata, programstate_t programState)
 
   pathbldMakePath (fn, sizeof (fn),
       STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options, 0);
+  datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options, 0, 1);
 
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
     uiwcontFree (starter->linkinfo [i].uiwidgetp);

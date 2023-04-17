@@ -49,7 +49,7 @@ typedef struct datafile {
 static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers);
 static void     datafileFreeInternal (datafile_t *df);
 static bool     datafileCheckDfkeys (const char *name, datafilekey_t *dfkeys, int dfkeycount);
-static FILE *   datafileSavePrep (char *fn, const char *tag);
+static FILE *   datafileSavePrep (char *fn, const char *tag, int distvers);
 static void     datafileSaveItem (char *buff, size_t sz, char *name, dfConvFunc_t convFunc, datafileconv_t *conv);
 static void     datafileLoadConv (datafilekey_t *dfkey, nlist_t *list, datafileconv_t *conv, int offset);
 static void     datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc, datafileconv_t *conv);
@@ -571,13 +571,13 @@ datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag,
 
 void
 datafileSaveKeyVal (const char *tag, char *fn, datafilekey_t *dfkeys,
-    int dfkeycount, nlist_t *list, int offset)
+    int dfkeycount, nlist_t *list, int offset, int distvers)
 {
   FILE    *fh;
   char    buff [DATAFILE_MAX_SIZE];
 
   *buff = '\0';
-  fh = datafileSavePrep (fn, tag);
+  fh = datafileSavePrep (fn, tag, distvers);
   if (fh == NULL) {
     return;
   }
@@ -590,7 +590,7 @@ datafileSaveKeyVal (const char *tag, char *fn, datafilekey_t *dfkeys,
 
 void
 datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys,
-    int dfkeycount, ilist_t *list)
+    int dfkeycount, ilist_t *list, int distvers)
 {
   FILE            *fh;
   datafileconv_t  conv;
@@ -601,7 +601,7 @@ datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys,
   char            buff [DATAFILE_MAX_SIZE];
 
   *buff = '\0';
-  fh = datafileSavePrep (fn, tag);
+  fh = datafileSavePrep (fn, tag, distvers);
   if (fh == NULL) {
     return;
   }
@@ -651,7 +651,7 @@ datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys,
 }
 
 void
-datafileSaveList (const char *tag, char *fn, slist_t *list)
+datafileSaveList (const char *tag, char *fn, slist_t *list, int distvers)
 {
   FILE            *fh;
   slistidx_t      iteridx;
@@ -661,7 +661,7 @@ datafileSaveList (const char *tag, char *fn, slist_t *list)
 
   logProcBegin (LOG_PROC, "datafileSaveList");
   *buff = '\0';
-  fh = datafileSavePrep (fn, tag);
+  fh = datafileSavePrep (fn, tag, distvers);
   if (fh == NULL) {
     logProcEnd (LOG_PROC, "datafileSaveList", "no-file");
     return;
@@ -887,7 +887,7 @@ datafileCheckDfkeys (const char *name, datafilekey_t *dfkeys, int dfkeycount)
 }
 
 static FILE *
-datafileSavePrep (char *fn, const char *tag)
+datafileSavePrep (char *fn, const char *tag, int distvers)
 {
   FILE    *fh;
   char    tbuff [100];
@@ -903,6 +903,7 @@ datafileSavePrep (char *fn, const char *tag)
   fprintf (fh, "# %s\n", tag);
   fprintf (fh, "# %s ", tmutilDstamp (tbuff, sizeof (tbuff)));
   fprintf (fh, "%s\n", tmutilTstamp (tbuff, sizeof (tbuff)));
+  fprintf (fh, "# version %d\n", distvers);
   return fh;
 }
 

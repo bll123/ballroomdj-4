@@ -92,9 +92,9 @@ list_t *      datafileGetList (datafile_t *);
 void          datafileSetData (datafile_t *df, void *data);
 slist_t *     datafileSaveKeyValList (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list);
 void          datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset);
-void          datafileSaveKeyVal (const char *tag, char *fn, datafilekey_t *dfkeys, int count, nlist_t *list, int offset);
-void          datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys, int count, nlist_t *list);
-void          datafileSaveList (const char *tag, char *fn, slist_t *list);
+void          datafileSaveKeyVal (const char *tag, char *fn, datafilekey_t *dfkeys, int count, nlist_t *list, int offset, int distvers);
+void          datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys, int count, nlist_t *list, int distvers);
+void          datafileSaveList (const char *tag, char *fn, slist_t *list, int distvers);
 void          datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset);
 int           datafileDistVersion (datafile_t *df);
 

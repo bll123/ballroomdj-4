@@ -154,5 +154,5 @@ void
 ratingSave (rating_t *rating, ilist_t *list)
 {
   datafileSaveIndirect ("rating", rating->path, ratingdfkeys,
-      RATING_KEY_MAX, list);
+      RATING_KEY_MAX, list, datafileDistVersion (rating->df));
 }

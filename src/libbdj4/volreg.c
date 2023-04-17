@@ -236,7 +236,8 @@ volregUpdate (const char *sink, int originalVolume, int inc)
     }
   }
 
-  datafileSaveIndirect ("volreg", fn, volregdfkeys, VOLREG_KEY_MAX, vlist);
+  datafileSaveIndirect ("volreg", fn, volregdfkeys, VOLREG_KEY_MAX, vlist,
+      datafileDistVersion (df));
   datafileFree (df);
   if (newvlist) {
     ilistFree (vlist);

@@ -20,6 +20,10 @@ enum {
   SONGLIST_PRESERVE_TIMESTAMP,
 };
 
+enum {
+  SONGLIST_USE_DIST_VERSION = -3,
+};
+
 typedef struct songlist songlist_t;
 
 songlist_t * songlistAlloc (const char *fname);
@@ -32,6 +36,7 @@ ilistidx_t songlistGetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx);
 char * songlistGetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx);
 void songlistSetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, ilistidx_t val);
 void songlistSetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, const char *sval);
-void songlistSave (songlist_t *sl, int tmflag);
+void songlistSave (songlist_t *sl, int tmflag, int distvers);
+int songlistDistVersion (songlist_t *sl);
 
 #endif /* INC_SONGLIST_H */

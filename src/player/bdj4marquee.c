@@ -304,7 +304,7 @@ marqueeClosingCallback (void *udata, programstate_t programState)
 
   pathbldMakePath (fn, sizeof (fn),
       "marquee", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal ("marquee", fn, mqdfkeys, MQ_KEY_MAX, marquee->options, 0);
+  datafileSaveKeyVal ("marquee", fn, mqdfkeys, MQ_KEY_MAX, marquee->options, 0, 1);
 
   bdj4shutdown (ROUTE_MARQUEE, NULL);
 

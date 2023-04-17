@@ -250,8 +250,10 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
   nlistidx_t  iteridx;
   dbidx_t     dbidx;
   songlist_t  *songlist;
+  songlist_t  *tsl;
   song_t      *song;
   ilistidx_t  key;
+  int         distvers;
 
   logProcBegin (LOG_PROC, "uimusicqSave");
 
@@ -277,7 +279,10 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
     ++key;
   }
 
-  songlistSave (songlist, SONGLIST_UPDATE_TIMESTAMP);
+  tsl = songlistLoad (fname);
+  distvers = songlistDistVersion (tsl);
+  songlistFree (tsl);
+  songlistSave (songlist, SONGLIST_UPDATE_TIMESTAMP, distvers);
   songlistFree (songlist);
   nlistFree (uimusicq->savelist);
   uimusicq->savelist = NULL;

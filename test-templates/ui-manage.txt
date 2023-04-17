@@ -1,5 +1,6 @@
 # manageui
 # 2022-11-10 09:26:56.166
+# version 1
 version
 ..1
 EASY_SONGLIST

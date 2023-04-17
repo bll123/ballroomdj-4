@@ -206,7 +206,7 @@ danceSave (dance_t *dances, ilist_t *list)
     list = dances->dances;
   }
   datafileSaveIndirect ("dance", dances->path, dancedfkeys,
-      DANCE_KEY_MAX, list);
+      DANCE_KEY_MAX, list, datafileDistVersion (dances->df));
 }
 
 void

@@ -1,5 +1,6 @@
 # test-m-regex-tag.txt
 # 2022-11-4
+# version 1
 #
 # 'dance/artist - title' as filename
 # dance, artist, title tags are set so that a comparison can be made.

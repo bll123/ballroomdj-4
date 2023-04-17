@@ -3,7 +3,6 @@
  */
 #include "config.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -24,6 +23,13 @@
 enum {
   SEQUENCE_VERSION = 1,
 };
+
+typedef struct sequence {
+  nlist_t   *sequence;
+  char      *name;
+  char      *path;
+  int       distvers;
+} sequence_t;
 
 sequence_t *
 sequenceAlloc (const char *fname)
@@ -50,6 +56,7 @@ sequenceAlloc (const char *fname)
 
   df = datafileAllocParse ("sequence", DFTYPE_LIST, fn, NULL, 0);
   tlist = datafileGetList (df);
+  sequence->distvers = datafileDistVersion (df);
 
   sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, NULL);
   nlistSetSize (sequence->sequence, slistGetCount (tlist));
@@ -153,5 +160,5 @@ sequenceSave (sequence_t *sequence, slist_t *slist)
   }
 
   slistSetVersion (slist, SEQUENCE_VERSION);
-  datafileSaveList ("sequence", sequence->path, slist);
+  datafileSaveList ("sequence", sequence->path, slist, sequence->distvers);
 }

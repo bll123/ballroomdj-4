@@ -97,11 +97,8 @@ playlistFree (void *tpl)
     } else {
       nlistFree (pl->plinfo);
     }
-    if (pl->pldancesdf != NULL) {
-      datafileFree (pl->pldancesdf);
-    } else {
-      ilistFree (pl->pldances);
-    }
+    datafileFree (pl->pldancesdf);
+    ilistFree (pl->pldances);
     songlistFree (pl->songlist);
     songfilterFree (pl->songfilter);
     sequenceFree (pl->sequence);
@@ -182,8 +179,6 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
       }
     }
   }
-  datafileFree (pl->pldancesdf);
-  pl->pldancesdf = NULL;
 
   ilistDumpInfo (pl->pldances);
 
@@ -612,12 +607,12 @@ playlistSave (playlist_t *pl, const char *name)
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
   datafileSaveKeyVal ("playlist", tfn, playlistdfkeys,
-      PLAYLIST_KEY_MAX, pl->plinfo, 0);
+      PLAYLIST_KEY_MAX, pl->plinfo, 0, datafileDistVersion (pl->plinfodf));
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
   datafileSaveIndirect ("playlist-dances", tfn, playlistdancedfkeys,
-      PLDANCE_KEY_MAX, pl->pldances);
+      PLDANCE_KEY_MAX, pl->pldances, datafileDistVersion (pl->pldancesdf));
 }
 
 void

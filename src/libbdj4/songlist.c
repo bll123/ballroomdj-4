@@ -170,7 +170,7 @@ songlistSetStr (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx, const char *sv
 }
 
 void
-songlistSave (songlist_t *sl, int tmflag)
+songlistSave (songlist_t *sl, int tmflag, int distvers)
 {
   time_t    origtm = 0;
 
@@ -180,9 +180,22 @@ songlistSave (songlist_t *sl, int tmflag)
 
   origtm = fileopModTime (sl->path);
   ilistSetVersion (sl->songlist, SONGLIST_VERSION);
+  if (distvers == SONGLIST_USE_DIST_VERSION) {
+    distvers = datafileDistVersion (sl->df);
+  }
   datafileSaveIndirect ("songlist", sl->path, songlistdfkeys,
-      SONGLIST_KEY_MAX, sl->songlist);
+      SONGLIST_KEY_MAX, sl->songlist, distvers);
   if (tmflag == SONGLIST_PRESERVE_TIMESTAMP) {
     fileopSetModTime (sl->path, origtm);
   }
+}
+
+int
+songlistDistVersion (songlist_t *sl)
+{
+  if (sl == NULL) {
+    return 1;
+  }
+
+  return datafileDistVersion (sl->df);
 }

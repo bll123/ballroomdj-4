@@ -196,5 +196,5 @@ void
 levelSave (level_t *level, ilist_t *list)
 {
   datafileSaveIndirect ("level", level->path, leveldfkeys,
-      LEVEL_KEY_MAX, list);
+      LEVEL_KEY_MAX, list, datafileDistVersion (level->df));
 }

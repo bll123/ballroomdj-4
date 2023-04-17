@@ -39,6 +39,7 @@ typedef struct {
   int           dfcount [OPTTYPE_MAX];
   const char    *tag [OPTTYPE_MAX];
   const char    *shorttag [OPTTYPE_MAX];
+  int           distvers [OPTTYPE_MAX];
 } bdjopt_t;
 
 static bdjopt_t   *bdjopt = NULL;
@@ -195,16 +196,20 @@ bdjoptInit (void)
   df = datafileAllocParse (bdjopt->tag [OPTTYPE_GLOBAL], DFTYPE_KEY_VAL,
       bdjopt->fname [OPTTYPE_GLOBAL], bdjopt->dfkeys [OPTTYPE_GLOBAL],
       bdjopt->dfcount [OPTTYPE_GLOBAL]);
+  bdjopt->distvers [OPTTYPE_GLOBAL] = datafileDistVersion (df);
 
   for (int i = 1; i < OPTTYPE_MAX; ++i) {
+    int     distvers;
+
     if (i == OPTTYPE_QUEUE) {
       continue;
     }
     ddata = datafileLoad (df, DFTYPE_KEY_VAL, bdjopt->fname [i]);
     tlist = datafileGetList (df);
     datafileParseMerge (tlist, ddata, bdjopt->tag [i], DFTYPE_KEY_VAL,
-        bdjopt->dfkeys [i], bdjopt->dfcount [i], 0, NULL);
+        bdjopt->dfkeys [i], bdjopt->dfcount [i], 0, &distvers);
     datafileSetData (df, tlist);
+    bdjopt->distvers [i] = distvers;
     mdfree (ddata);
   }
 
@@ -215,14 +220,17 @@ bdjoptInit (void)
 
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
     int   offset;
+    int   distvers;
 
     snprintf (path, sizeof (path), "%s.q%d%s",
         bdjopt->fname [OPTTYPE_QUEUE], i, BDJ4_CONFIG_EXT);
     ddata = datafileLoad (df, DFTYPE_KEY_VAL, path);
     tlist = datafileGetList (df);
     offset = bdjopt->dfcount [OPTTYPE_QUEUE] * i;
-    datafileParseMerge (tlist, ddata, bdjopt->tag [OPTTYPE_QUEUE], DFTYPE_KEY_VAL,
-        bdjopt->dfkeys [OPTTYPE_QUEUE], bdjopt->dfcount [OPTTYPE_QUEUE], offset, NULL);
+    datafileParseMerge (tlist, ddata, bdjopt->tag [OPTTYPE_QUEUE],
+        DFTYPE_KEY_VAL, bdjopt->dfkeys [OPTTYPE_QUEUE],
+        bdjopt->dfcount [OPTTYPE_QUEUE], offset, &distvers);
+    bdjopt->distvers [OPTTYPE_QUEUE] = distvers;
     datafileSetData (df, tlist);
     mdfree (ddata);
   }
@@ -403,7 +411,8 @@ bdjoptSave (void)
       continue;
     }
     datafileSaveKeyVal (bdjopt->tag [i], bdjopt->fname [i],
-        bdjopt->dfkeys [i], bdjopt->dfcount [i], bdjopt->bdjoptList, 0);
+        bdjopt->dfkeys [i], bdjopt->dfcount [i], bdjopt->bdjoptList, 0,
+        bdjopt->distvers [i]);
   }
 
   for (int i = 0; i < BDJ4_QUEUE_MAX; ++i) {
@@ -414,7 +423,7 @@ bdjoptSave (void)
     offset = bdjopt->dfcount [OPTTYPE_QUEUE] * i;
     datafileSaveKeyVal (bdjopt->tag [OPTTYPE_QUEUE], path,
         bdjopt->dfkeys [OPTTYPE_QUEUE], bdjopt->dfcount [OPTTYPE_QUEUE],
-        bdjopt->bdjoptList, offset);
+        bdjopt->bdjoptList, offset, bdjopt->distvers [OPTTYPE_QUEUE]);
   }
 }
 

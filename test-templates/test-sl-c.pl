@@ -1,5 +1,6 @@
 # playlist
 # 2022-10-21
+# version 1
 #
 # maximum-play-time set to 10 seconds
 #

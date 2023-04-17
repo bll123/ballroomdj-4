@@ -1,5 +1,6 @@
 # playlist
 # 2022-10-21
+# version 1
 ALLOWEDKEYWORDS
 ..
 DANCERATING

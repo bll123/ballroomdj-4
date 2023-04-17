@@ -1,5 +1,6 @@
 # configui
 # 2022-11-10 09:27:06.576
+# version 1
 version
 ..1
 CONFUI_POS_X

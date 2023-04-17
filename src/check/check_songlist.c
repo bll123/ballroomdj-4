@@ -159,12 +159,12 @@ START_TEST(songlist_save)
   sl = songlistLoad (SLFN);
   ck_assert_ptr_nonnull (sl);
   tma = fileopModTime (SLFFN);
-  songlistSave (sl, SONGLIST_PRESERVE_TIMESTAMP);
+  songlistSave (sl, SONGLIST_PRESERVE_TIMESTAMP, SONGLIST_USE_DIST_VERSION);
   tmb = fileopModTime (SLFFN);
   ck_assert_int_eq (tma, tmb);
   /* the timestamp has a granularity of one second */
   mssleep (1000);
-  songlistSave (sl, SONGLIST_UPDATE_TIMESTAMP);
+  songlistSave (sl, SONGLIST_UPDATE_TIMESTAMP, SONGLIST_USE_DIST_VERSION);
   tmb = fileopModTime (SLFFN);
   ck_assert_int_ne (tma, tmb);
 

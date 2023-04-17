@@ -1,5 +1,6 @@
 # test-music.txt
 # 2022-9-5
+# version 1
 # for creating test music files and a test database.
 #
 # the testing processes can change the song data as needed, so not

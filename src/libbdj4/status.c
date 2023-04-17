@@ -169,5 +169,5 @@ void
 statusSave (status_t *status, ilist_t *list)
 {
   datafileSaveIndirect ("status", status->path, statusdfkeys,
-      STATUS_KEY_MAX, list);
+      STATUS_KEY_MAX, list, datafileDistVersion (status->df));
 }

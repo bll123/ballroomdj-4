@@ -581,7 +581,8 @@ main (int argc, char *argv [])
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "updater", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  datafileSaveKeyVal ("updater", tbuff, upddfkeys, UPD_DF_COUNT, updlist, 0);
+  datafileSaveKeyVal ("updater", tbuff, upddfkeys, UPD_DF_COUNT, updlist, 0,
+      datafileDistVersion (df));
   datafileFree (df);
 
   bdj4shutdown (ROUTE_NONE, NULL);

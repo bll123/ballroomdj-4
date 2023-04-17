@@ -124,7 +124,8 @@ dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list)
     return;
   }
 
-  datafileSaveList (dispselmap [idx], dispsel->name [idx], list);
+  datafileSaveList (dispselmap [idx], dispsel->name [idx], list,
+      datafileDistVersion (dispsel->df [idx]));
   dispselCreateList (dispsel, list, idx);
 }
 

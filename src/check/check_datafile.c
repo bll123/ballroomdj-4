@@ -87,17 +87,17 @@ START_TEST(parse_keyvalue)
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_keyvalue");
-  tstr = mdstrdup ("version\n..3\nA\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
+  tstr = mdstrdup ("# version 3\nversion\n..4\nA\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   count = parseKeyValue (pi, tstr, &distvers);
   ck_assert_int_eq (count, 16);
-  ck_assert_int_eq (distvers, 1);
+  ck_assert_int_eq (distvers, 3);
   ck_assert_int_ge (parseGetAllocCount (pi), 16);
   strdata = parseGetData (pi);
   ck_assert_ptr_eq (parseGetData (pi), strdata);
   ck_assert_str_eq (strdata[0], "version");
-  ck_assert_str_eq (strdata[1], "3");
+  ck_assert_str_eq (strdata[1], "4");
   ck_assert_str_eq (strdata[2], "A");
   ck_assert_str_eq (strdata[3], "a");
   ck_assert_str_eq (strdata[4], "B");
@@ -126,17 +126,17 @@ START_TEST(parse_with_comments)
   int             distvers = 1;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_with_comments");
-  tstr = mdstrdup ("# comment\n# version 3\nversion\n..4\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
+  tstr = mdstrdup ("# comment\n# version 4\nversion\n..5\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
   count = parseKeyValue (pi, tstr, &distvers);
   ck_assert_int_eq (count, 16);
-  ck_assert_int_eq (distvers, 3);
+  ck_assert_int_eq (distvers, 4);
   ck_assert_int_ge (parseGetAllocCount (pi), 16);
   strdata = parseGetData (pi);
   ck_assert_ptr_eq (parseGetData (pi), strdata);
   ck_assert_str_eq (strdata[0], "version");
-  ck_assert_str_eq (strdata[1], "4");
+  ck_assert_str_eq (strdata[1], "5");
   ck_assert_str_eq (strdata[2], "A");
   ck_assert_str_eq (strdata[3], "a");
   ck_assert_str_eq (strdata[4], "B");
@@ -176,6 +176,7 @@ START_TEST(datafile_simple)
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-a", DFTYPE_LIST, fn, NULL, 0);
+  ck_assert_int_eq (datafileDistVersion (df), 5);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (datafileGetType (df), DFTYPE_LIST);
   ck_assert_str_eq (datafileGetFname (df), fn);
@@ -257,12 +258,13 @@ START_TEST(datafile_keyval_dfkey)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_dfkey");
   fn = "tmp/dftestb.txt";
-  tstr = "# test 6\n# version 5\nversion\n..6\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "# test 6\n# version 6\nversion\n..7\nA\n..a\nB\n..5\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-b", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT);
+  ck_assert_int_eq (datafileDistVersion (df), 6);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (datafileGetType (df), DFTYPE_KEY_VAL);
   ck_assert_str_eq (datafileGetFname (df), fn);
@@ -270,7 +272,7 @@ START_TEST(datafile_keyval_dfkey)
 
   list = datafileGetList (df);
   vers = nlistGetVersion (list);
-  ck_assert_int_eq (vers, 6);
+  ck_assert_int_eq (vers, 7);
 
   nlistStartIterator (list, &iteridx);
 
@@ -368,12 +370,13 @@ START_TEST(datafile_keyval_df_extra)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_keyval_df_extra");
   fn = "tmp/dftestc.txt";
-  tstr = "# test 7\n# version 6\nversion\n..7\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
+  tstr = "# test 7\n# version 7\nversion\n..8\nA\n..a\nB\n..5\nQQ\n..qq\nC\n..c\nD\n..on\nE\n..e\nF\n..f\nG\n..1200\nH\n..aaa bbb ccc\nI\n..off\nJ\n..yes\nK\n..no\n";
   fh = fopen (fn, "w");
   fprintf (fh, "%s", tstr);
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-c", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT);
+  ck_assert_int_eq (datafileDistVersion (df), 7);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (datafileGetType (df), DFTYPE_KEY_VAL);
   ck_assert_str_eq (datafileGetFname (df), fn);
@@ -382,7 +385,7 @@ START_TEST(datafile_keyval_df_extra)
   list = datafileGetList (df);
 
   vers = nlistGetVersion (list);
-  ck_assert_int_eq (vers, 7);
+  ck_assert_int_eq (vers, 8);
 
   nlistStartIterator (list, &iteridx);
 
@@ -476,7 +479,7 @@ START_TEST(datafile_indirect)
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- datafile_indirect");
   fn = "tmp/dftestd.txt";
-  tstr = "# version 7\nversion\n..8\nKEY\n..0\nA\n..a\nB\n..0\n"
+  tstr = "# version 8\nversion\n..9\nKEY\n..0\nA\n..a\nB\n..0\n"
       "KEY\n..1\nA\n..a\nB\n..1\n"
       "KEY\n..2\nA\n..a\nB\n..2\n"
       "KEY\n..3\nA\n..a\nB\n..3\n";
@@ -486,6 +489,7 @@ START_TEST(datafile_indirect)
 
   df = datafileAllocParse ("chk-df-d", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT);
   ck_assert_ptr_nonnull (df);
+  ck_assert_int_eq (datafileDistVersion (df), 8);
   ck_assert_int_eq (datafileGetType (df), DFTYPE_INDIRECT);
   ck_assert_str_eq (datafileGetFname (df), fn);
   ck_assert_ptr_nonnull (datafileGetData (df));
@@ -493,7 +497,7 @@ START_TEST(datafile_indirect)
   list = datafileGetList (df);
 
   vers = ilistGetVersion (list);
-  ck_assert_int_eq (vers, 8);
+  ck_assert_int_eq (vers, 9);
 
   ilistStartIterator (list, &iteridx);
   key = ilistIterateKey (list, &iteridx);
@@ -573,6 +577,7 @@ START_TEST(datafile_indirect_missing)
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-f", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT);
+  ck_assert_int_eq (datafileDistVersion (df), 9);
   ck_assert_ptr_nonnull (df);
   ck_assert_int_eq (datafileGetType (df), DFTYPE_INDIRECT);
   ck_assert_str_eq (datafileGetFname (df), fn);
@@ -668,6 +673,7 @@ START_TEST(datafile_keyval_savelist)
 
   df = datafileAllocParse ("chk-df-g", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT);
 
+  ck_assert_int_eq (datafileDistVersion (df), 10);
   list = datafileGetList (df);
   vers = nlistGetVersion (list);
   ck_assert_int_eq (vers, 11);
@@ -750,6 +756,7 @@ START_TEST(datafile_keyval_savebuffer)
   df = datafileAllocParse ("chk-df-h", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT);
   unlink (fn);
 
+  ck_assert_int_eq (datafileDistVersion (df), 11);
   list = datafileGetList (df);
   vers = nlistGetVersion (list);
   ck_assert_int_eq (vers, 12);
@@ -829,13 +836,16 @@ START_TEST(datafile_keyval_save)
   df = datafileAllocParse ("chk-df-i", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT);
   unlink (fn);
 
+  ck_assert_int_eq (datafileDistVersion (df), 12);
   list = datafileGetList (df);
   vers = nlistGetVersion (list);
   ck_assert_int_eq (vers, 13);
 
   fn = "tmp/dftestl.txt";
-  datafileSaveKeyVal ("chk-df-i", fn, dfkeyskl, DFKEY_COUNT, list, 0);
+  datafileSaveKeyVal ("chk-df-i", fn, dfkeyskl, DFKEY_COUNT, list, 0,
+      datafileDistVersion (df));
   tdf = datafileAllocParse ("chk-df-i", DFTYPE_KEY_VAL, fn, dfkeyskl, DFKEY_COUNT);
+  ck_assert_int_eq (datafileDistVersion (df), datafileDistVersion (tdf));
 
   tlist = datafileGetList (tdf);
   vers = -1;
@@ -916,14 +926,17 @@ START_TEST(datafile_indirect_save)
   fclose (fh);
 
   df = datafileAllocParse ("chk-df-j", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT);
+  ck_assert_int_eq (datafileDistVersion (df), 13);
   list = datafileGetList (df);
   vers = ilistGetVersion (list);
   ck_assert_int_eq (vers, 14);
   unlink (fn);
 
   fn = "tmp/dftestn.txt";
-  datafileSaveIndirect ("chk-df-j", fn, dfkeyskl, DFKEY_COUNT, list);
+  datafileSaveIndirect ("chk-df-j", fn, dfkeyskl, DFKEY_COUNT, list,
+      datafileDistVersion (df));
   tdf = datafileAllocParse ("chk-df-j", DFTYPE_INDIRECT, fn, dfkeyskl, DFKEY_COUNT);
+  ck_assert_int_eq (datafileDistVersion (df), datafileDistVersion (tdf));
 
   tlist = datafileGetList (tdf);
   vers = -1;
@@ -972,14 +985,16 @@ START_TEST(datafile_simple_save)
   df = datafileAllocParse ("chk-df-k", DFTYPE_LIST, fn, NULL, 0);
   unlink (fn);
 
+  ck_assert_int_eq (datafileDistVersion (df), 15);
   list = datafileGetList (df);
   vers = slistGetVersion (list);
   ck_assert_int_eq (vers, 15);
 
   fn = "tmp/dftestp.txt";
-  datafileSaveList ("chk-df-k", fn, list);
+  datafileSaveList ("chk-df-k", fn, list, datafileDistVersion (df));
   tdf = datafileAllocParse ("chk-df-k", DFTYPE_LIST, fn, NULL, 0);
   tlist = datafileGetList (tdf);
+  ck_assert_int_eq (datafileDistVersion (df), datafileDistVersion (tdf));
 
   vers = -1;
   vers = slistGetVersion (tlist);

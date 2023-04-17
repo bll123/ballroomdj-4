@@ -1,5 +1,6 @@
 # playlist
 # 2022-10-21
+# version 1
 #
 # gap set to 0 seconds
 # stop-after set to 2

@@ -384,7 +384,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
 
   pathbldMakePath (fn, sizeof (fn),
       PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options, 0);
+  datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options, 0, 1);
 
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);
