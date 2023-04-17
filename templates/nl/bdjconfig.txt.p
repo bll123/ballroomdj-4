@@ -1,5 +1,6 @@
 # config-profile
 # 2022-11-26
+# version 2
 version
 ..2
 DEFAULTVOLUME

@@ -1,5 +1,6 @@
 # playlist
 # 2022-10-19
+# version 1
 version
 ..1
 ALLOWEDKEYWORDS

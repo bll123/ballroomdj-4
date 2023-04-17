@@ -1,5 +1,6 @@
 # favorites
 # 2023-3-5
+# version 1
 #
 #   There is no configuration tool to change the favorites, but they
 #     may be changed manually.

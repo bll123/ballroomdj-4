@@ -1,5 +1,6 @@
 # config-global
 # 2022-12-10
+# version 1
 version
 ..1
 ACOUSTID_KEY

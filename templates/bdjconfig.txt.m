@@ -1,5 +1,6 @@
 # config-machine
 # 2023-1-27
+# version 1
 version
 ..1
 AUDIOTAG

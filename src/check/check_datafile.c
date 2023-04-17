@@ -83,14 +83,16 @@ START_TEST(parse_keyvalue)
   char            *tstr = NULL;
   ssize_t         count;
   char            **strdata = NULL;
+  int             distvers = 1;
 
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_keyvalue");
   tstr = mdstrdup ("version\n..3\nA\n..a\nB\n..b\nC\n..c\nD\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
-  count = parseKeyValue (pi, tstr);
+  count = parseKeyValue (pi, tstr, &distvers);
   ck_assert_int_eq (count, 16);
+  ck_assert_int_eq (distvers, 1);
   ck_assert_int_ge (parseGetAllocCount (pi), 16);
   strdata = parseGetData (pi);
   ck_assert_ptr_eq (parseGetData (pi), strdata);
@@ -121,13 +123,15 @@ START_TEST(parse_with_comments)
   char            *tstr = NULL;
   ssize_t         count;
   char            **strdata = NULL;
+  int             distvers = 1;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- parse_with_comments");
   tstr = mdstrdup ("# comment\n# version 3\nversion\n..4\nA\n..a\n# comment\nB\n..b\nC\n..c\nD\n# comment\n..d\nE\n..e\nF\n..f\nG\n..1200\n");
   pi = parseInit ();
   ck_assert_ptr_nonnull (pi);
-  count = parseKeyValue (pi, tstr);
+  count = parseKeyValue (pi, tstr, &distvers);
   ck_assert_int_eq (count, 16);
+  ck_assert_int_eq (distvers, 3);
   ck_assert_int_ge (parseGetAllocCount (pi), 16);
   strdata = parseGetData (pi);
   ck_assert_ptr_eq (parseGetData (pi), strdata);

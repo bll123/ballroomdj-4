@@ -1,5 +1,6 @@
 # config-machine-profile
 # 2022-8-4
+# version 1
 version
 ..1
 AUDIOSINK

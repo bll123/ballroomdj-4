@@ -39,10 +39,11 @@ typedef struct datafile {
   char            *fname;
   datafiletype_t  dftype;
   list_t          *data;
+  int             distvers;
 } datafile_t;
 
 #define DF_VERSION_STR      "version"
-#define DF_VERSION_SIMP_STR "# version "
+#define DF_VERSION_DIST_STR "# version "
 #define DF_VERSION_FMT      "# version %d"
 
 static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers);
@@ -88,15 +89,15 @@ parseGetData (parseinfo_t *pi)
 }
 
 ssize_t
-parseSimple (parseinfo_t *pi, char *data, int *vers)
+parseSimple (parseinfo_t *pi, char *data, int *distvers)
 {
-  return parse (pi, data, PARSE_SIMPLE, vers);
+  return parse (pi, data, PARSE_SIMPLE, distvers);
 }
 
 ssize_t
-parseKeyValue (parseinfo_t *pi, char *data)
+parseKeyValue (parseinfo_t *pi, char *data, int *distvers)
 {
-  return parse (pi, data, PARSE_KEYVALUE, NULL);
+  return parse (pi, data, PARSE_KEYVALUE, distvers);
 }
 
 void
@@ -224,6 +225,7 @@ datafileAlloc (const char *name)
   df->fname = NULL;
   df->data = NULL;
   df->dftype = DFTYPE_NONE;
+  df->distvers = 1;
   logProcEnd (LOG_PROC, "datafileAlloc", "");
   return df;
 }
@@ -233,7 +235,7 @@ datafileAllocParse (const char *name, datafiletype_t dftype, const char *fname,
     datafilekey_t *dfkeys, int dfkeycount)
 {
   datafile_t      *df;
-
+  int             distvers = 1;
 
   logProcBegin (LOG_PROC, "datafileAllocParse");
   logMsg (LOG_DBG, LOG_DATAFILE, "datafile alloc/parse %s", fname);
@@ -241,7 +243,8 @@ datafileAllocParse (const char *name, datafiletype_t dftype, const char *fname,
   if (df != NULL) {
     char *ddata = datafileLoad (df, dftype, fname);
     if (ddata != NULL) {
-      df->data = datafileParse (ddata, name, dftype, dfkeys, dfkeycount);
+      df->data = datafileParse (ddata, name, dftype, dfkeys, dfkeycount, &distvers);
+      df->distvers = distvers;
       if (dftype == DFTYPE_KEY_VAL && dfkeys == NULL) {
         slistSort (df->data);
       } else if (dftype == DFTYPE_KEY_VAL) {
@@ -291,19 +294,19 @@ datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
 
 list_t *
 datafileParse (char *data, const char *name, datafiletype_t dftype,
-    datafilekey_t *dfkeys, int dfkeycount)
+    datafilekey_t *dfkeys, int dfkeycount, int *distvers)
 {
   list_t        *datalist = NULL;
 
   datalist = datafileParseMerge (datalist, data, name, dftype,
-      dfkeys, dfkeycount, 0);
+      dfkeys, dfkeycount, 0, distvers);
   return datalist;
 }
 
 list_t *
 datafileParseMerge (list_t *datalist, char *data, const char *name,
     datafiletype_t dftype, datafilekey_t *dfkeys,
-    int dfkeycount, int offset)
+    int dfkeycount, int offset, int *distvers)
 {
   char          **strdata = NULL;
   parseinfo_t   *pi = NULL;
@@ -320,7 +323,6 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
   char          *tkeystr;
   char          *tvalstr = NULL;
   datafileconv_t conv;
-  int           simpvers;
 
 
   logProcBegin (LOG_PROC, "datafileParseMerge");
@@ -335,9 +337,9 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
 
   pi = parseInit ();
   if (dftype == DFTYPE_LIST) {
-    dataCount = parseSimple (pi, data, &simpvers);
+    dataCount = parseSimple (pi, data, distvers);
   } else {
-    dataCount = parseKeyValue (pi, data);
+    dataCount = parseKeyValue (pi, data, distvers);
   }
   strdata = parseGetData (pi);
 
@@ -351,7 +353,10 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
       } else {
         slistSetSize (datalist, dataCount + slistGetCount (datalist));
       }
-      listSetVersion (datalist, simpvers);
+      /* for simple datafiles, the distvers and the version are the same */
+      if (distvers != NULL) {
+        listSetVersion (datalist, *distvers);
+      }
       break;
     }
     case DFTYPE_INDIRECT: {
@@ -734,6 +739,17 @@ datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys,
   }
 }
 
+int
+datafileDistVersion (datafile_t *df)
+{
+  if (df == NULL) {
+    return 0;
+  }
+
+  return df->distvers;
+}
+
+
 /* for debugging only */
 
 datafiletype_t
@@ -763,7 +779,7 @@ parseGetAllocCount (parseinfo_t *pi)
 /* internal parse routines */
 
 static ssize_t
-parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers)
+parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *distvers)
 {
   char        *tokptr;
   char        *str;
@@ -786,10 +802,9 @@ parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers)
   str = strtok_r (data, "\r\n", &tokptr);
   while (str != NULL) {
     if (*str == '#') {
-      if (parsetype == PARSE_SIMPLE &&
-          vers != NULL &&
-          strncmp (str, DF_VERSION_SIMP_STR, strlen (DF_VERSION_SIMP_STR)) == 0) {
-        sscanf (str, DF_VERSION_FMT, vers);
+      if (distvers != NULL &&
+          strncmp (str, DF_VERSION_DIST_STR, strlen (DF_VERSION_DIST_STR)) == 0) {
+        sscanf (str, DF_VERSION_FMT, distvers);
       }
       str = strtok_r (NULL, "\r\n", &tokptr);
       continue;

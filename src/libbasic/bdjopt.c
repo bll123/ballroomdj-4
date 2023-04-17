@@ -203,7 +203,7 @@ bdjoptInit (void)
     ddata = datafileLoad (df, DFTYPE_KEY_VAL, bdjopt->fname [i]);
     tlist = datafileGetList (df);
     datafileParseMerge (tlist, ddata, bdjopt->tag [i], DFTYPE_KEY_VAL,
-        bdjopt->dfkeys [i], bdjopt->dfcount [i], 0);
+        bdjopt->dfkeys [i], bdjopt->dfcount [i], 0, NULL);
     datafileSetData (df, tlist);
     mdfree (ddata);
   }
@@ -222,7 +222,7 @@ bdjoptInit (void)
     tlist = datafileGetList (df);
     offset = bdjopt->dfcount [OPTTYPE_QUEUE] * i;
     datafileParseMerge (tlist, ddata, bdjopt->tag [OPTTYPE_QUEUE], DFTYPE_KEY_VAL,
-        bdjopt->dfkeys [OPTTYPE_QUEUE], bdjopt->dfcount [OPTTYPE_QUEUE], offset);
+        bdjopt->dfkeys [OPTTYPE_QUEUE], bdjopt->dfcount [OPTTYPE_QUEUE], offset, NULL);
     datafileSetData (df, tlist);
     mdfree (ddata);
   }

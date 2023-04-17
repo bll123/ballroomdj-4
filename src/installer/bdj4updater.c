@@ -439,56 +439,21 @@ main (int argc, char *argv [])
     updaterCopyIfNotPresent (_("QueueDance"), BDJ4_PL_DANCE_EXT);
   }
 
+  {
+    /* 2023-1-21 : The QueueDance playlist had bad data in it. */
+    /* 2023-1-21 : The StandardRounds playlist had bad data in it. */
+    /* 2023-4-17 : QueueDance updated so that the mm filter would */
+    /*             display the queuedance playlist properly. */
+    updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, DFTYPE_KEY_VAL, 3);
+    updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, DFTYPE_KEY_VAL, 2);
+  }
+
   /* The datafiles must now be loaded. */
 
   if (bdjvarsdfloadInit () < 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "Unable to load all data files");
     fprintf (stderr, "Unable to load all data files\n");
     exit (1);
-  }
-
-  {
-    playlist_t  *pl;
-    dance_t     *dances;
-    slist_t     *dnclist;
-    int         didx;
-    long        mpt;
-
-    /* 2023-1-21 : The QueueDance playlist had bad data in it. */
-    /* 2023-1-21 : The StandardRounds playlist had bad data in it. */
-    /* check for VW w/a time limit of 0:15 and if there, reset it, */
-    /* and reset the BPM limits on waltz. */
-
-    /* the music db is not needed to load the playlist */
-
-    dances = bdjvarsdfGet (BDJVDF_DANCES);
-    dnclist = danceGetDanceList (dances);
-
-    didx = slistGetNum (dnclist, _("Viennese Waltz"));
-    pl = playlistLoad (_("QueueDance"), NULL);
-    mpt = playlistGetDanceNum (pl, didx, PLDANCE_MAXPLAYTIME);
-    if (mpt == 15000) {
-      playlistSetDanceNum (pl, didx, PLDANCE_MAXPLAYTIME, 0);
-      didx = slistGetNum (dnclist, _("Waltz"));
-      playlistSetDanceNum (pl, didx, PLDANCE_BPM_HIGH, 0);
-      playlistSetDanceNum (pl, didx, PLDANCE_BPM_LOW, 0);
-      playlistSave (pl, _("QueueDance"));
-      logMsg (LOG_INSTALL, LOG_MAIN, "queuedance playlist updated");
-    }
-    playlistFree (pl);
-
-    didx = slistGetNum (dnclist, _("Viennese Waltz"));
-    pl = playlistLoad (_("standardrounds"), NULL);
-    mpt = playlistGetDanceNum (pl, didx, PLDANCE_MAXPLAYTIME);
-    if (mpt == 15000) {
-      playlistSetDanceNum (pl, didx, PLDANCE_MAXPLAYTIME, 0);
-      didx = slistGetNum (dnclist, _("Waltz"));
-      playlistSetDanceNum (pl, didx, PLDANCE_BPM_HIGH, 0);
-      playlistSetDanceNum (pl, didx, PLDANCE_BPM_LOW, 0);
-      playlistSave (pl, _("standardrounds"));
-      logMsg (LOG_INSTALL, LOG_MAIN, "standardrounds playlist updated");
-    }
-    playlistFree (pl);
   }
 
   /* All database processing must be done last after the updates to the */
@@ -853,13 +818,11 @@ updaterCopyVersionCheck (const char *fn, const char *ext,
 {
   datafile_t  *tmpdf;
   int         version;
-  slist_t     *slist;
   char        tbuff [MAXPATHLEN];
 
   pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
   tmpdf = datafileAllocParse (fn, dftype, tbuff, NULL, 0);
-  slist = datafileGetList (tmpdf);
-  version = slistGetVersion (slist);
+  version = datafileDistVersion (tmpdf);
   logMsg (LOG_INSTALL, LOG_MAIN, "version check %s : %d < %d", fn, version, currvers);
   if (version < currvers) {
     char  tmp [MAXPATHLEN];

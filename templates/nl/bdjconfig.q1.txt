@@ -1,5 +1,6 @@
 # config-queue
 # 2022-11-26
+# version 1
 version
 ..1
 ACTIVE

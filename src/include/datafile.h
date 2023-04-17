@@ -70,8 +70,8 @@ enum {
 parseinfo_t * parseInit (void);
 void          parseFree (parseinfo_t *);
 char **       parseGetData (parseinfo_t *);
-ssize_t       parseSimple (parseinfo_t *, char *, int *vers);
-ssize_t       parseKeyValue (parseinfo_t *, char *);
+ssize_t       parseSimple (parseinfo_t *, char *, int *distvers);
+ssize_t       parseKeyValue (parseinfo_t *, char *, int *distvers);
 void          convBoolean (datafileconv_t *conv);
 void          convTextList (datafileconv_t *conv);
 void          convMS (datafileconv_t *conv);
@@ -82,10 +82,10 @@ datafile_t *  datafileAllocParse (const char *name, datafiletype_t dftype,
 void          datafileFree (void *);
 char *        datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname);
 list_t        *datafileParse (char *data, const char *name, datafiletype_t dftype,
-                  datafilekey_t *dfkeys, int dfkeycount);
+                  datafilekey_t *dfkeys, int dfkeycount, int *distvers);
 list_t        *datafileParseMerge (list_t *nlist, char *data, const char *name,
-                  datafiletype_t dftype,
-                  datafilekey_t *dfkeys, int dfkeycount, int offset);
+                  datafiletype_t dftype, datafilekey_t *dfkeys,
+                  int dfkeycount, int offset, int *distvers);
 listidx_t     dfkeyBinarySearch (const datafilekey_t *dfkeys,
                   int count, const char *key);
 list_t *      datafileGetList (datafile_t *);
@@ -96,6 +96,7 @@ void          datafileSaveKeyVal (const char *tag, char *fn, datafilekey_t *dfke
 void          datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys, int count, nlist_t *list);
 void          datafileSaveList (const char *tag, char *fn, slist_t *list);
 void          datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset);
+int           datafileDistVersion (datafile_t *df);
 
 /* for debugging only */
 datafiletype_t datafileGetType (datafile_t *df);

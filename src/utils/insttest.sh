@@ -435,12 +435,11 @@ function checkInstallation {
       if [[ -f ${fnb} ]]; then
         echo "  extra $(basename '$fnb') file"
       else
-        grep '^\.\.15000' "$fn" > /dev/null 2>&1
-        rc=$?
-        if [[ $rc -ne 0 ]]; then
+        grep '# version 3' "$fn" > /dev/null 2>&1
+        if [[ $rc -eq 0 ]]; then
           chk=$(($chk+1))
         else
-          echo "  $(basename '$fna') has bad vw maxplaytime"
+          echo "  $(basename '$fna') incorrect version"
         fi
       fi
     else
@@ -471,12 +470,11 @@ function checkInstallation {
       fn="${DATADIR}/Standaardrondes.pldances"
     fi
     if [[ $fin == T && -f $fn ]]; then
-      grep '^\.\.15000' "$fn" > /dev/null 2>&1
-      rc=$?
-      if [[ $rc -ne 0 ]]; then
+      grep '# version 2' "$fn" > /dev/null 2>&1
+      if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
       else
-        echo "  $(basename '$fn') has bad vw maxplaytime"
+        echo "  $(basename '$fna') incorrect version"
       fi
     else
       echo "  no $(basename '$fn') file"

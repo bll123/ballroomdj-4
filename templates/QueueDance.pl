@@ -1,5 +1,6 @@
 # playlist
 # 2023-1-30
+# version 1
 version
 ..1
 ALLOWEDKEYWORDS
