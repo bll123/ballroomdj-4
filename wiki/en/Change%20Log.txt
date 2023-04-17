@@ -4,14 +4,17 @@
 
 <!--
 
-**4.3.1 2023-4---**
+**4.3.2 2023-4---**
+
+* Changes:
+    * Music Manager: Filters: Selection of automatic and sequenced playlists is now possible.
 
 -->
 
 **4.3.1 2023-4-15**
 
 * Bug Fixes:
-    * Management: Fix adding songs to song list (broken in 4.3.0.5).
+    * Song List Editor: Fix adding songs to song list (broken in 4.3.0.5).
     * Request External: Get song information from database if possible.
     * Player/Management: Only display pause indicator column for music queues.
 * New Features:

@@ -79,6 +79,7 @@ typedef struct uisongfilter {
   callback_t        *applycb;
   callback_t        *danceselcb;
   songfilter_t      *songfilter;
+  playlist_t        *playlist;
   uiwcont_t         *filterDialog;
   uiwcont_t         *playlistdisp;
   uidropdown_t      *playlistfilter;
@@ -133,11 +134,11 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->parentwin = windowp;
   uisf->options = options;
   uisf->songfilter = songfilterAlloc ();
-  songfilterSetSort (uisf->songfilter,
-      nlistGetStr (options, SONGSEL_SORT_BY));
+  uisf->playlist = NULL;
+  songfilterSetSort (uisf->songfilter, nlistGetStr (options, SONGSEL_SORT_BY));
+  songfilterSetNum (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE, pbflag);
   uisf->filterDialog = NULL;
   uisf->dfltpbflag = pbflag;
-  songfilterSetNum (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE, pbflag);
   uisf->playlistfilter = uiDropDownInit ();
   uisf->sortbyfilter = uiDropDownInit ();
   uisf->uidance = NULL;
@@ -181,6 +182,7 @@ uisfFree (uisongfilter_t *uisf)
     uiSwitchFree (uisf->playstatusswitch);
     sortoptFree (uisf->sortopt);
     songfilterFree (uisf->songfilter);
+    playlistFree (uisf->playlist);
     for (int i = 0; i < UISF_LABEL_MAX; ++i) {
       uiwcontFree (uisf->labels [i]);
     }
@@ -251,7 +253,7 @@ uisfDialog (void *udata)
 
   uisfCreateDialog (uisf);
   uisfInitDisplay (uisf);
-  if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
+  if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUS_PLAYABLE)) {
     uiSwitchSetValue (uisf->playstatusswitch, uisf->dfltpbflag);
   }
   uiDialogShow (uisf->filterDialog);
@@ -266,16 +268,19 @@ uisfDialog (void *udata)
 }
 
 void
-uisfSetPlaylist (uisongfilter_t *uisf, char *slname)
+uisfSetPlaylist (uisongfilter_t *uisf, char *plname)
 {
   if (uisf == NULL) {
     return;
   }
 
-  uiDropDownSelectionSetStr (uisf->playlistfilter, slname);
+  uiDropDownSelectionSetStr (uisf->playlistfilter, plname);
   dataFree (uisf->playlistname);
-  uisf->playlistname = mdstrdup (slname);
-  songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, slname);
+  uisf->playlistname = mdstrdup (plname);
+  songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, plname);
+  songfilterSetNum (uisf->songfilter, SONG_FILTER_PL_TYPE,
+      playlistGetType (plname));
+
   uisfUpdateFilterDialogDisplay (uisf);
 }
 
@@ -353,14 +358,25 @@ uisfInitDisplay (uisongfilter_t *uisf)
 static void
 uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx)
 {
-  char  *str;
+  char        *str;
+  pltype_t    pltype;
 
   logProcBegin (LOG_PROC, "uisfPlaylistSelect");
   if (idx >= 0) {
     str = uiDropDownGetString (uisf->playlistfilter);
     songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, str);
+
+    pltype = playlistGetType (str);
+    songfilterSetNum (uisf->songfilter, SONG_FILTER_PL_TYPE, pltype);
+    if (pltype == PLTYPE_AUTO || pltype == PLTYPE_SEQUENCE) {
+      playlistFree (uisf->playlist);
+      uisf->playlist = playlistLoad (str, NULL);
+      playlistSetSongFilter (uisf->playlist, uisf->songfilter);
+    }
+    uisfDisableWidgets (uisf);
   } else {
     songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
+    uisfEnableWidgets (uisf);
   }
   uisf->playlistsel = true;
   logProcEnd (LOG_PROC, "uisfPlaylistSelect", "");
@@ -374,7 +390,7 @@ uisfCreatePlaylistList (uisongfilter_t *uisf)
   logProcBegin (LOG_PROC, "uisfCreatePlaylistList");
 
   /* at this time, only song lists are supported */
-  pllist = playlistGetPlaylistList (PL_LIST_SONGLIST);
+  pllist = playlistGetPlaylistList (PL_LIST_ALL);
   /* what text is best to use for 'no selection'? */
   uiDropDownSetList (uisf->playlistfilter, pllist, "");
   slistFree (pllist);
@@ -626,7 +642,7 @@ uisfCreateDialog (uisongfilter_t *uisf)
   }
 
   /* status playable */
-  if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
+  if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUS_PLAYABLE)) {
     uiwcontFree (hbox);
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
@@ -693,13 +709,15 @@ uisfResponseHandler (void *udata, long responseid)
       songfilterReset (uisf->songfilter);
       dataFree (uisf->playlistname);
       uisf->playlistname = NULL;
+      playlistFree (uisf->playlist);
+      uisf->playlist = NULL;
       uisf->danceIdx = -1;
       uidanceSetValue (uisf->uidance, uisf->danceIdx);
       if (uisf->danceselcb != NULL) {
         callbackHandlerLong (uisf->danceselcb, uisf->danceIdx);
       }
       uisfInitDisplay (uisf);
-      if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
+      if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUS_PLAYABLE)) {
         uiSwitchSetValue (uisf->playstatusswitch, uisf->dfltpbflag);
       }
       break;
@@ -798,7 +816,7 @@ uisfUpdate (uisongfilter_t *uisf)
     }
   }
 
-  if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUSPLAYABLE)) {
+  if (songfilterCheckSelection (uisf->songfilter, FILTER_DISP_STATUS_PLAYABLE)) {
     nval = uiSwitchGetValue (uisf->playstatusswitch);
   } else {
     nval = uisf->dfltpbflag;

@@ -1,5 +1,6 @@
 # playlist-dances
-# 2023-01-20
+# 2023-4-17
+# version 2
 version
 ..1
 count
@@ -11,13 +12,13 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..Argentijnse Tango
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes
 KEY
 ..1
 BPMHIGH
@@ -25,13 +26,13 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..Cha Cha
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes
 KEY
 ..2
 BPMHIGH
@@ -39,13 +40,13 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..Foxtrot
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes
 KEY
 ..3
 BPMHIGH
@@ -53,13 +54,13 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..Jive
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes
 KEY
 ..4
 BPMHIGH
@@ -67,13 +68,13 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..Paso Doble
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes
 KEY
 ..5
 BPMHIGH
@@ -81,13 +82,13 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..Quickstep
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes
 KEY
 ..6
 BPMHIGH
@@ -95,13 +96,13 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..Rumba
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes
 KEY
 ..7
 BPMHIGH
@@ -109,13 +110,13 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..Salsa
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes
 KEY
 ..8
 BPMHIGH
@@ -123,13 +124,13 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..Samba
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes
 KEY
 ..9
 BPMHIGH
@@ -137,13 +138,13 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..Tango
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes
 KEY
 ..10
 BPMHIGH
@@ -151,13 +152,13 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..Weense wals
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes
 KEY
 ..11
 BPMHIGH
@@ -165,13 +166,13 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..Engelse wals
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes
 KEY
 ..12
 BPMHIGH
@@ -179,10 +180,10 @@ BPMHIGH
 BPMLOW
 ..0
 COUNT
-..0
+..1
 DANCE
 ..West Coast Swing
 MAXPLAYTIME
 ..0
 SELECTED
-..no
+..yes

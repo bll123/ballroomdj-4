@@ -83,11 +83,13 @@ void      playlistAddPlayed (playlist_t *, song_t *song);
 void      playlistSave (playlist_t *, const char *name);
 void      playlistSetEditMode (playlist_t *pl, int editmode);
 int       playlistGetEditMode (playlist_t *pl);
+void      playlistSetSongFilter (playlist_t *pl, songfilter_t *sf);
 
 bool      playlistExists (const char *name);
 void      playlistRename (const char *oldname, const char *newname);
 void      playlistCheckAndCreate (const char *name, pltype_t pltype);
 void      playlistDelete (const char *name);
 void      playlistCopy (const char *oldname, const char *newname);
+pltype_t  playlistGetType (const char *name);
 
 #endif /* INC_PLAYLIST_H */

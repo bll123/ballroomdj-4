@@ -143,6 +143,10 @@ slistGetIdx (slist_t *list, const char *sidx)
 {
   listkeylookup_t   key;
 
+  if (sidx == NULL) {
+    return LIST_LOC_INVALID;
+  }
+
   key.strkey = sidx;
   return listGetIdx (list, &key);
 }

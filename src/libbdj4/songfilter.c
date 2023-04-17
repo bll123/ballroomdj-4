@@ -22,6 +22,7 @@
 #include "musicdb.h"
 #include "nlist.h"
 #include "pathbld.h"
+#include "playlist.h"
 #include "rating.h"
 #include "slist.h"
 #include "song.h"
@@ -65,7 +66,7 @@ datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX] = {
   { "FAVORITE",       FILTER_DISP_FAVORITE,        VALUE_NUM, convBoolean, -1 },
   { "GENRE",          FILTER_DISP_GENRE,           VALUE_NUM, convBoolean, -1 },
   { "STATUS",         FILTER_DISP_STATUS,          VALUE_NUM, convBoolean, -1 },
-  { "STATUSPLAYABLE", FILTER_DISP_STATUSPLAYABLE,  VALUE_NUM, convBoolean, -1 },
+  { "STATUSPLAYABLE", FILTER_DISP_STATUS_PLAYABLE, VALUE_NUM, convBoolean, -1 },
 };
 
 static int valueTypeLookup [SONG_FILTER_MAX] = {
@@ -79,6 +80,7 @@ static int valueTypeLookup [SONG_FILTER_MAX] = {
   [SONG_FILTER_LEVEL_HIGH] =        SONG_FILTER_NUM,
   [SONG_FILTER_LEVEL_LOW] =         SONG_FILTER_NUM,
   [SONG_FILTER_PLAYLIST] =          SONG_FILTER_STR,
+  [SONG_FILTER_PL_TYPE] =           SONG_FILTER_NUM,
   [SONG_FILTER_RATING] =            SONG_FILTER_NUM,
   [SONG_FILTER_SEARCH] =            SONG_FILTER_STR,
   [SONG_FILTER_STATUS] =            SONG_FILTER_NUM,
@@ -341,6 +343,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
   nlistidx_t  idx;
   char        sortkey [1024];
   song_t      *song;
+  pltype_t    pltype = PLTYPE_NONE;
 
   logProcBegin (LOG_PROC, "songfilterProcess");
 
@@ -362,13 +365,17 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
   sf->sortList = slistAlloc ("songfilter-sort-idx", LIST_UNORDERED, NULL);
   sf->indexList = nlistAlloc ("songfilter-num-idx", LIST_UNORDERED, NULL);
 
-  /* A playlist filter overrides any other filter setting */
+  if (sf->inuse [SONG_FILTER_PLAYLIST]) {
+    pltype = sf->numfilter [SONG_FILTER_PL_TYPE];
+  }
+
+  /* A song list filter overrides any other filter setting */
   /* simply traverse the song list and add those songs. */
   /* Currently it is assumed that the playlist being */
   /* filtered is a song list. */
   /* Sequences and automatic playlists are not supported at this time */
   /* (and would not be handled in this fashion). */
-  if (sf->inuse [SONG_FILTER_PLAYLIST]) {
+  if (sf->inuse [SONG_FILTER_PLAYLIST] && pltype == PLTYPE_SONGLIST) {
     songlist_t  *sl;
     ilistidx_t  sliter;
     ilistidx_t  slkey;
@@ -394,7 +401,7 @@ songfilterProcess (songfilter_t *sf, musicdb_t *musicdb)
     logMsg (LOG_DBG, LOG_SONGSEL, "selected: %d songs from playlist", nlistGetCount (sf->indexList));
   }
 
-  if (! sf->inuse [SONG_FILTER_PLAYLIST]) {
+  if (! sf->inuse [SONG_FILTER_PLAYLIST] || pltype != PLTYPE_SONGLIST) {
     dbStartIterator (musicdb, &dbiteridx);
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
       if (! songfilterFilterSong (sf, song)) {
@@ -444,6 +451,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     /* the dance idx filter is one dance, or all */
     danceIdx = songGetNum (song, TAG_DANCE);
     if (danceIdx != sf->numfilter [SONG_FILTER_DANCE_IDX]) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "dance-idx: reject: %d %d", dbidx, danceIdx);
       logProcEnd (LOG_PROC, "songfilterFilterSong", "dance-idx-reject");
       return false;
     } else {
@@ -461,6 +469,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     danceIdx = songGetNum (song, TAG_DANCE);
     danceFilterList = sf->datafilter [SONG_FILTER_DANCE_LIST];
     if (danceFilterList != NULL && ! ilistExists (danceFilterList, danceIdx)) {
+      logMsg (LOG_DBG, LOG_SONGSEL, "dance-list: reject: %d %d", dbidx, danceIdx);
       logProcEnd (LOG_PROC, "songfilterFilterSong", "dance-list-reject");
       return false;
     } else {
