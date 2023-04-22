@@ -189,8 +189,7 @@ static bool     pluiMarqueeFontSizeDialog (void *udata);
 static void     pluiCreateMarqueeFontSizeDialog (playerui_t *plui);
 static bool     pluiMarqueeFontSizeDialogResponse (void *udata, long responseid);
 static bool     pluiMarqueeFontSizeChg (void *udata);
-//static void     pluiMarqueeFontSizeChg (GtkSpinButton *fb, gpointer udata);
-static bool     pluiMarqueeFind (void *udata);
+static bool     pluiMarqueeRecover (void *udata);
 static void     pluisetMarqueeIsMaximized (playerui_t *plui, char *args);
 static void     pluisetMarqueeFontSizes (playerui_t *plui, char *args);
 static bool     pluiQueueProcess (void *udata, long dbidx);
@@ -245,6 +244,7 @@ main (int argc, char *argv[])
   plui.currpage = 0;
   plui.mainalready = false;
   plui.marqueeoff = false;
+  plui.mqfontsizeactive = false;
   plui.expmp3state = BDJ4_STATE_OFF;
   plui.setPlaybackButton = NULL;
   for (int i = 0; i < PLUI_CB_MAX; ++i) {
@@ -514,7 +514,7 @@ pluiBuildUI (playerui_t *plui)
   uiwcontFree (menuitem);
 
   plui->callbacks [PLUI_MENU_CB_MQ_FIND] = callbackInit (
-      pluiMarqueeFind, plui, NULL);
+      pluiMarqueeRecover, plui, NULL);
   /* CONTEXT: playerui: menu selection: marquee: bring the marquee window back to the main screen */
   menuitem = uiMenuCreateItem (menu, _("Recover Marquee"),
       plui->callbacks [PLUI_MENU_CB_MQ_FIND]);
@@ -1462,9 +1462,13 @@ pluiMarqueeFontSizeChg (void *udata)
 }
 
 static bool
-pluiMarqueeFind (void *udata)
+pluiMarqueeRecover (void *udata)
 {
   playerui_t  *plui = udata;
+
+  if (plui->marqueeoff) {
+    return UICB_CONT;
+  }
 
   connSendMessage (plui->conn, ROUTE_MARQUEE, MSG_WINDOW_FIND, NULL);
   return UICB_CONT;

@@ -141,8 +141,9 @@ static void marqueeSetFontSize (marquee_t *marquee, uiwcont_t *lab, const char *
 static void marqueePopulate (marquee_t *marquee, char *args);
 static void marqueeSetTimer (marquee_t *marquee, char *args);
 static void marqueeSetFont (marquee_t *marquee, int sz);
-static void marqueeFind (marquee_t *marquee);
+static void marqueeRecover (marquee_t *marquee);
 static void marqueeDisplayCompletion (marquee_t *marquee);
+static void marqueeSendFontSizes (marquee_t *marquee);
 
 static int gKillReceived = 0;
 
@@ -219,7 +220,7 @@ main (int argc, char *argv[])
     nlistSetNum (marquee.options, MQ_POSITION_X, -1);
     nlistSetNum (marquee.options, MQ_POSITION_Y, -1);
     nlistSetNum (marquee.options, MQ_SIZE_X, 600);
-    nlistSetNum (marquee.options, MQ_SIZE_Y, 600);
+    nlistSetNum (marquee.options, MQ_SIZE_Y, -1);
     nlistSetNum (marquee.options, MQ_FONT_SZ, 36);
     nlistSetNum (marquee.options, MQ_FONT_SZ_FS, 60);
   }
@@ -557,14 +558,7 @@ marqueeHandshakeCallback (void *udata, programstate_t programState)
 
   if (connHaveHandshake (marquee->conn, ROUTE_MAIN) &&
       connHaveHandshake (marquee->conn, ROUTE_PLAYERUI)) {
-    char    tbuff [100];
-
-    snprintf (tbuff, sizeof (tbuff), "%"PRId64"%c%"PRId64,
-        nlistGetNum (marquee->options, MQ_FONT_SZ),
-        MSG_ARGS_RS,
-        nlistGetNum (marquee->options, MQ_FONT_SZ_FS));
-    connSendMessage (marquee->conn, ROUTE_PLAYERUI,
-        MSG_MARQUEE_FONT_SIZES, tbuff);
+    marqueeSendFontSizes (marquee);
     rc = STATE_FINISHED;
   }
 
@@ -615,7 +609,7 @@ marqueeProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_WINDOW_FIND: {
-          marqueeFind (marquee);
+          marqueeRecover (marquee);
           dbgdisp = true;
           break;
         }
@@ -1009,7 +1003,7 @@ marqueeSetFont (marquee_t *marquee, int sz)
 }
 
 static void
-marqueeFind (marquee_t *marquee)
+marqueeRecover (marquee_t *marquee)
 {
   /* on linux XFCE, this will position the window at this location in */
   /* its current workspace */
@@ -1019,11 +1013,17 @@ marqueeFind (marquee_t *marquee)
   if (marquee->isIconified) {
     uiWindowDeIconify (marquee->wcont [MQ_W_WINDOW]);
   }
+  nlistSetNum (marquee->options, MQ_FONT_SZ, 36);
+  nlistSetNum (marquee->options, MQ_FONT_SZ_FS, 60);
+  nlistSetNum (marquee->options, MQ_SIZE_X, 600);
+  nlistSetNum (marquee->options, MQ_SIZE_Y, -1);
+  uiWindowSetDefaultSize (marquee->wcont [MQ_W_WINDOW], 600, -1);
   marqueeSetNotMaximized (marquee);
   marqueeMoveWindow (marquee);
   uiWindowFind (marquee->wcont [MQ_W_WINDOW]);
   uiWindowPresent (marquee->wcont [MQ_W_WINDOW]);
   marqueeSaveWindowPosition (marquee);
+  marqueeSendFontSizes (marquee);
 }
 
 static void
@@ -1041,4 +1041,17 @@ marqueeDisplayCompletion (marquee_t *marquee)
   if (! marquee->mqShowInfo) {
     uiWidgetShowAll (marquee->wcont [MQ_W_INFOBOX]);
   }
+}
+
+static void
+marqueeSendFontSizes (marquee_t *marquee)
+{
+  char    tbuff [100];
+
+  snprintf (tbuff, sizeof (tbuff), "%"PRId64"%c%"PRId64,
+      nlistGetNum (marquee->options, MQ_FONT_SZ),
+      MSG_ARGS_RS,
+      nlistGetNum (marquee->options, MQ_FONT_SZ_FS));
+  connSendMessage (marquee->conn, ROUTE_PLAYERUI,
+      MSG_MARQUEE_FONT_SIZES, tbuff);
 }
