@@ -193,3 +193,14 @@ uiTextBoxSetHeight (uitextbox_t *tb, int h)
   uiWidgetSetSizeRequest (tb->textbox, -1, h);
 }
 
+void
+uiTextBoxSetParagraph (uitextbox_t *tb, int indent, int interpara)
+{
+  if (tb == NULL) {
+    return;
+  }
+
+  gtk_text_view_set_indent (GTK_TEXT_VIEW (tb->textbox->widget), indent);
+  gtk_text_view_set_pixels_below_lines (GTK_TEXT_VIEW (tb->textbox->widget),
+      interpara);
+}

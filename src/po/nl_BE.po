@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-04-15\n"
+"PO-Revision-Date: 2023-04-22\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -2052,6 +2052,16 @@ msgid "helptext_check_dance"
 msgstr "=> Select 'Music Manager' on the left side of the 'BDJ4 Management' window. Scroll through the list of songs and check to make sure the dance is set for each song.  To set the dance for a song: => Select the song. => Select the 'Song Editor' tab (below the player, above the list of songs). => Next to the 'Dance' label, use the dance drop-down selection and select the dance for the song. => In the upper right of the 'Song Editor' tab, select the 'Save' button. You can switch back to the 'Music Manager' tab and check for other songs that need to have the dance set. => Leave the 'BDJ4 Management' window open."
 
 #. CONTEXT: title of a getting started help section
+msgid "Finished"
+msgstr ""
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_finished"
+msgstr ""
+"Please enjoy BallroomDJ 4.  Please do not hesitate to ask for help"
+" as suggested."
+
+#. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"
 msgstr ""
 
@@ -2074,6 +2084,22 @@ msgstr ""
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_music_location"
 msgstr "The first step is to configure the location of the music folder. => Select the 'Configure' button. In the 'BDJ4 Configuration' window, the 'General Options' section is displayed. The first item in 'General Options' is the 'Music Folder'. => Change the 'Music Folder' to the location of your music. => Leave the 'BDJ4 Configuration' window open."
+
+#. CONTEXT: title of a getting started help section
+msgid "Verify the Configured Dances"
+msgstr ""
+
+#. CONTEXT: text-key for getting started help section (translate the text, not the key)
+msgid "helptext_configure_dances"
+msgstr ""
+"The names of the dances need to match what you use."
+" => Select 'Edit Dances' in the left side of the 'BDJ4 Configuration' window."
+" Review the list of dances.  If a dance has a different name than"
+" what you use, select the dance and change the name."
+" If a dance you use is missing, select the 'Add' button and add the dance."
+" If there are dances you will never use, select the dance,"
+" then select the 'Remove' button."
+" => Close the 'BDJ4 Organisation' window."
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"

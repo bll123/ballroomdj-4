@@ -205,7 +205,8 @@ helperBuildUI (helperui_t  *helper)
   uiWidgetSetAllMargins (vbox, 2);
   uiBoxPackInWindow (helper->window, vbox);
 
-  helper->tb = uiTextBoxCreate (400, NULL);
+  helper->tb = uiTextBoxCreate (400, bdjoptGetStr (OPT_P_UI_ACCENT_COL));
+  uiTextBoxSetParagraph (helper->tb, 0, 5);
   uiTextBoxHorizExpand (helper->tb);
   uiTextBoxVertExpand (helper->tb);
   uiTextBoxSetReadonly (helper->tb);
@@ -229,7 +230,7 @@ helperBuildUI (helperui_t  *helper)
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
   uiBoxPackEnd (hbox, uiwidgetp);
 
-  uiWindowSetDefaultSize (helper->window, 1100, 400);
+  uiWindowSetDefaultSize (helper->window, 1100, 550);
 
   pathbldMakePath (imgbuff, sizeof (imgbuff),
       "bdj4_icon", BDJ4_IMG_PNG_EXT, PATHBLD_MP_DIR_IMG);
@@ -377,11 +378,30 @@ helpDisplay (helperui_t *helper)
     text = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TEXT);
     ttext = _(text);
     dlen = strlen (ttext);
-    ntext = filedataReplace (ttext, &dlen, ". ", ".\n");
+    ntext = filedataReplace (ttext, &dlen, "<br>", "\n");
+
+    ttext = ntext;
+    ntext = filedataReplace (ttext, &dlen, ".\n ", ".\n");
+    mdfree (ttext);
+
+    ttext = ntext;
+    ntext = filedataReplace (ttext, &dlen, ".", ".  ");
+    mdfree (ttext);
+
+    ttext = ntext;
+    ntext = filedataReplace (ttext, &dlen, "=>", "\n=>");
+    mdfree (ttext);
+
+    if (helper->helpkey > 0) {
+      uiTextBoxAppendStr (helper->tb, "\n\n");
+    }
+    uiTextBoxAppendHighlightStr (helper->tb, _(title));
     uiTextBoxAppendStr (helper->tb, "\n\n");
-    uiTextBoxAppendBoldStr (helper->tb, _(title));
-    uiTextBoxAppendStr (helper->tb, "\n\n");
-    uiTextBoxAppendStr (helper->tb, ntext);
+    ttext = ntext;
+    while (*ttext == ' ' || *ttext == '\n') {
+      ++ttext;
+    }
+    uiTextBoxAppendStr (helper->tb, ttext);
     helper->scrollendflag = true;
     mdfree (ntext);
   }

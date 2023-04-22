@@ -22,5 +22,6 @@ void  uiTextBoxDarken (uitextbox_t *tb);
 void  uiTextBoxHorizExpand (uitextbox_t *tb);
 void  uiTextBoxVertExpand (uitextbox_t *tb);
 void  uiTextBoxSetHeight (uitextbox_t *tb, int h);
+void  uiTextBoxSetParagraph (uitextbox_t *tb, int indent, int interpara);
 
 #endif /* INC_UITEXTBOX_H */

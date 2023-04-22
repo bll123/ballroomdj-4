@@ -139,3 +139,5 @@ data/volintfc\.txt$
 data/playerintfc\.txt$
 data/audiotagintfc\.txt$
 
+# removed 2023-4-22, not needed in data dir (4.3.2)
+data/helpdata\.txt$

@@ -5,6 +5,7 @@
 
 BEGIN {
   intext = 0;
+  intextfirst = 1;
   intextkey = 0;
   intitle = 0;
   text = "msgstr \"\"\n";
@@ -19,6 +20,7 @@ BEGIN {
         helpfound[textkey] = 0;
       }
       intext = 0;
+      intextfirst = 1;
       text = "msgstr \"\"\n";
     }
     if ($0 ~ /^TITLE/) {
@@ -44,7 +46,12 @@ BEGIN {
       if (intext) {
         tline = $0;
         gsub (/^#/, "", tline);
+        gsub (/^ /, "", tline);
+        if (! intextfirst && tline !~ /^[=<]/) {
+          gsub (/^/, " ", tline);
+        }
         text = text "\"" tline "\"\n";
+        intextfirst = 0;
       }
     }
   }
