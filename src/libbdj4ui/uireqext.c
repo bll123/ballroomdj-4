@@ -227,8 +227,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
       );
 
   vbox = uiCreateVertBox ();
-  uiWidgetSetAllMargins (vbox, 10);
-  uiWidgetSetMarginTop (vbox, 20);
+  uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
   uiDialogPackInDialog (uireqext->reqextDialog, vbox);

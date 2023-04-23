@@ -497,7 +497,7 @@ playlistGetNextSong (playlist_t *pl,
 }
 
 slist_t *
-playlistGetPlaylistList (int flag)
+playlistGetPlaylistList (int flag, const char *dir)
 {
   char        *tplfnm;
   char        tfn [MAXPATHLEN];
@@ -508,6 +508,10 @@ playlistGetPlaylistList (int flag)
   slistidx_t  iteridx;
   char        *ext = NULL;
 
+
+  if (flag < 0 || flag >= PL_LIST_MAX) {
+    return NULL;
+  }
 
   pnlist = slistAlloc ("playlistlist", LIST_ORDERED, NULL);
 
@@ -520,6 +524,10 @@ playlistGetPlaylistList (int flag)
     ext = BDJ4_SEQUENCE_EXT;
   }
   if (flag == PL_LIST_ALL) {
+    ext = BDJ4_PLAYLIST_EXT;
+  }
+  if (flag == PL_LIST_DIR) {
+    strlcpy (tfn, dir, sizeof (tfn));
     ext = BDJ4_PLAYLIST_EXT;
   }
   filelist = dirlistBasicDirList (tfn, ext);

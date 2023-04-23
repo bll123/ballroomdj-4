@@ -83,7 +83,7 @@ songUpdateAllSonglists (song_t *song)
 
   // ### TODO for re-organization, the old filename will be needed.
   songfn = songGetStr (song, TAG_FILE);
-  filelist = playlistGetPlaylistList (PL_LIST_SONGLIST);
+  filelist = playlistGetPlaylistList (PL_LIST_SONGLIST, NULL);
   slistStartIterator (filelist, &fiteridx);
   while ((fn = slistIterateKey (filelist, &fiteridx)) != NULL) {
     ilistidx_t  key;

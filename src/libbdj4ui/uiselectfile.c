@@ -87,7 +87,7 @@ selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
   }
 
   if (cb != NULL) {
-    filelist = playlistGetPlaylistList (playlistSel);
+    filelist = playlistGetPlaylistList (playlistSel, NULL);
 
     selectFileCreateDialog (selectfile, filelist, title, cb);
     uiDialogShow (selectfile->selfileDialog);

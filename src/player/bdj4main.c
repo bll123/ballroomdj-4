@@ -2341,7 +2341,7 @@ mainSendPlaylistList (maindata_t *mainData, bdjmsgroute_t route)
 
   logProcBegin (LOG_PROC, "mainSendPlaylistList");
 
-  plList = playlistGetPlaylistList (PL_LIST_NORMAL);
+  plList = playlistGetPlaylistList (PL_LIST_NORMAL, NULL);
 
   rbuff = mdmalloc (BDJMSG_MAX);
   rbuff [0] = '\0';

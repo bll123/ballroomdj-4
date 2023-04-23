@@ -135,7 +135,6 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->parentwin = windowp;
   uisf->options = options;
   uisf->songfilter = songfilterAlloc ();
-  uisf->uiplaylist = NULL;
   songfilterSetSort (uisf->songfilter, nlistGetStr (options, SONGSEL_SORT_BY));
   songfilterSetNum (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE, pbflag);
   uisf->filterDialog = NULL;

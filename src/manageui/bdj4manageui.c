@@ -57,6 +57,7 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiapplyadj.h"
+#include "uiexpimpbdj4.h"
 #include "uimusicq.h"
 #include "uinbutil.h"
 #include "uiplayer.h"
@@ -112,8 +113,8 @@ enum {
   /* sl export menu */
   MANAGE_MENU_CB_SL_M3U_EXP,
   MANAGE_MENU_CB_SL_MP3_EXP,
-  MANAGE_MENU_CB_SL_BDJ_EXP,
-  MANAGE_MENU_CB_SL_BDJ_IMP,
+  MANAGE_MENU_CB_SL_BDJ4_EXP,
+  MANAGE_MENU_CB_SL_BDJ4_IMP,
   /* sl import menu */
   MANAGE_MENU_CB_SL_M3U_IMP,
   MANAGE_MENU_CB_SL_ITUNES_IMP,
@@ -190,6 +191,7 @@ typedef struct {
   int               stopwaitcount;
   uiwcont_t         *wcont [MANAGE_W_MAX];
   const char        *pleasewaitmsg;
+  uieibdj4_t        *uieibdj4;
   /* notebook tab handling */
   int               mainlasttab;
   int               sllasttab;
@@ -254,8 +256,10 @@ typedef struct {
   bool              selbypass : 1;
   bool              createfromplaylistactive : 1;
   bool              importitunesactive : 1;
-  bool              importm3uactive : 1;
   bool              exportm3uactive : 1;
+  bool              importm3uactive : 1;
+  bool              exportbdj4active : 1;
+  bool              importbdj4active : 1;
   bool              enablerestoreorig : 1;
   bool              ineditall : 1;
   bool              optionsalloc : 1;
@@ -270,6 +274,8 @@ static datafilekey_t manageuidfkeys [] = {
   { "FILTER_POS_Y",     SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, -1 },
   { "MNG_CFPL_POS_X",   MANAGE_CFPL_POSITION_X,     VALUE_NUM, NULL, -1 },
   { "MNG_CFPL_POS_Y",   MANAGE_CFPL_POSITION_Y,     VALUE_NUM, NULL, -1 },
+  { "MNG_EXPIMP_POS_X", EXP_IMP_BDJ4_POSITION_X,    VALUE_NUM, NULL, -1 },
+  { "MNG_EXPIMP_POS_Y", EXP_IMP_BDJ4_POSITION_Y,    VALUE_NUM, NULL, -1 },
   { "MNG_POS_X",        MANAGE_POSITION_X,          VALUE_NUM, NULL, -1 },
   { "MNG_POS_Y",        MANAGE_POSITION_Y,          VALUE_NUM, NULL, -1 },
   { "MNG_SELFILE_POS_X",MANAGE_SELFILE_POSITION_X,  VALUE_NUM, NULL, -1 },
@@ -349,8 +355,12 @@ static bool     managePlayProcessMusicManager (void *udata, long dbidx, int mqid
 static bool     manageQueueProcessSonglist (void *udata, long dbidx);
 static bool     manageQueueProcessEasySonglist (void *udata, long dbidx);
 static void     manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action);
+/* m3u */
 static bool     manageSonglistExportM3U (void *udata);
 static bool     manageSonglistImportM3U (void *udata);
+/* export/import bdj4 */
+static bool     manageSonglistExportBDJ4 (void *udata);
+static bool     manageSonglistImportBDJ4 (void *udata);
 /* general */
 static bool     manageSwitchPageMain (void *udata, long pagenum);
 static bool     manageSwitchPageSonglist (void *udata, long pagenum);
@@ -398,6 +408,7 @@ main (int argc, char *argv[])
   manage.mmmusicq = NULL;
   manage.mmsongsel = NULL;
   manage.mmsongedit = NULL;
+  manage.uieibdj4 = NULL;
   manage.musicqPlayIdx = MUSICQ_MNG_PB;
   manage.musicqManageIdx = MUSICQ_SL;
   manage.stopwaitcount = 0;
@@ -438,8 +449,10 @@ main (int argc, char *argv[])
   manage.selectButton = NULL;
   manage.createfromplaylistactive = false;
   manage.importitunesactive = false;
-  manage.importm3uactive = false;
   manage.exportm3uactive = false;
+  manage.importm3uactive = false;
+  manage.exportbdj4active = false;
+  manage.importbdj4active = false;
   manage.enablerestoreorig = false;
   manage.ineditall = false;
   manage.applyadjstate = BDJ4_STATE_OFF;
@@ -488,6 +501,8 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, MANAGE_CFPL_POSITION_Y, -1);
     nlistSetNum (manage.options, APPLY_ADJ_POSITION_X, -1);
     nlistSetNum (manage.options, APPLY_ADJ_POSITION_Y, -1);
+    nlistSetNum (manage.options, EXP_IMP_BDJ4_POSITION_X, -1);
+    nlistSetNum (manage.options, EXP_IMP_BDJ4_POSITION_Y, -1);
   }
 
   uiUIInitialize ();
@@ -595,6 +610,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   samesongFree (manage->samesong);
   uiButtonFree (manage->selectButton);
   uiaaFree (manage->uiaa);
+  uieibdj4Free (manage->uieibdj4);
 
   procutilStopAllProcess (manage->processes, manage->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (manage->processes);
@@ -1034,6 +1050,8 @@ manageMainLoop (void *tmanage)
       manageSendBPMCounter (manage);
     }
   }
+
+  uieibdj4Process (manage->uieibdj4);
 
   /* apply adjustments processing */
 
@@ -2156,10 +2174,12 @@ manageSonglistMenu (manageui_t *manage)
       manage->callbacks [MANAGE_MENU_CB_SL_M3U_EXP]);
   uiwcontFree (menuitem);
 
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_BDJ4_EXP,
+      manageSonglistExportBDJ4);
   /* CONTEXT: managementui: menu selection: song list: export: export for ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
-  menuitem = uiMenuCreateItem (menu, tbuff, NULL);
-  uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+  menuitem = uiMenuCreateItem (menu, tbuff,
+      manage->callbacks [MANAGE_MENU_CB_SL_BDJ4_EXP]);
   uiwcontFree (menuitem);
 
   /* import */
@@ -2177,10 +2197,12 @@ manageSonglistMenu (manageui_t *manage)
       manage->callbacks [MANAGE_MENU_CB_SL_M3U_IMP]);
   uiwcontFree (menuitem);
 
+  manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_BDJ4_IMP,
+      manageSonglistImportBDJ4);
   /* CONTEXT: managementui: menu selection: song list: import: import from ballroomdj */
   snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
-  menuitem = uiMenuCreateItem (menu, tbuff, NULL);
-  uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+  menuitem = uiMenuCreateItem (menu, tbuff,
+      manage->callbacks [MANAGE_MENU_CB_SL_BDJ4_IMP]);
   uiwcontFree (menuitem);
 
   manageSetMenuCallback (manage, MANAGE_MENU_CB_SL_ITUNES_IMP,
@@ -2818,6 +2840,8 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
   logProcEnd (LOG_PROC, "manageQueueProcess", "");
 }
 
+/* m3u */
+
 static bool
 manageSonglistExportM3U (void *udata)
 {
@@ -2932,6 +2956,53 @@ manageSonglistImportM3U (void *udata)
   manageLoadPlaylistCB (manage, nplname);
   manage->importm3uactive = false;
   logProcEnd (LOG_PROC, "manageSonglistImportM3U", "");
+  return UICB_CONT;
+}
+
+
+/* export/import bdj4 */
+
+static bool
+manageSonglistExportBDJ4 (void *udata)
+{
+  manageui_t  *manage = udata;
+
+  if (manage->exportbdj4active) {
+    return UICB_STOP;
+  }
+
+  manage->exportbdj4active = true;
+  logProcBegin (LOG_PROC, "manageSonglistExportBDJ4");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: export bdj4");
+
+  manage->uieibdj4 = uieibdj4Init (manage->wcont [MANAGE_W_WINDOW],
+      manage->options);
+  uieibdj4Dialog (manage->uieibdj4, UIEIBDJ4_EXPORT);
+
+  manage->exportbdj4active = false;
+  logProcEnd (LOG_PROC, "manageSonglistExportBDJ4", "");
+  return UICB_CONT;
+}
+
+static bool
+manageSonglistImportBDJ4 (void *udata)
+{
+  manageui_t  *manage = udata;
+
+  if (manage->importbdj4active) {
+    return UICB_STOP;
+  }
+
+  manage->importbdj4active = true;
+  logProcBegin (LOG_PROC, "manageSonglistImportBDJ4");
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: import bdj4");
+
+  manage->uieibdj4 = uieibdj4Init (manage->wcont [MANAGE_W_WINDOW],
+      manage->options);
+  uieibdj4Dialog (manage->uieibdj4, UIEIBDJ4_IMPORT);
+
+  manage->importbdj4active = false;
+  logProcEnd (LOG_PROC, "manageSonglistImportBDJ4", "");
   return UICB_CONT;
 }
 

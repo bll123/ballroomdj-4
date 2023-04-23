@@ -8,16 +8,17 @@
 #include "ui.h"
 
 enum {
-  UIEXPIMPBDJ4_EXPORT,
-  UIEXPIMPBDJ4_IMPORT,
-  UIEXPIMPBDJ4_MAX,
+  UIEIBDJ4_EXPORT,
+  UIEIBDJ4_IMPORT,
+  UIEIBDJ4_MAX,
 };
 
-typedef struct uiexpimpbdj4 uiexpimpbdj4_t;
+typedef struct uieibdj4 uieibdj4_t;
 
-uiexpimpbdj4_t  *uiexpimpbdj4Init (uiwcont_t *windowp, nlist_t *opts);
-void    uiexpimpbdj4Free (uiexpimpbdj4_t *uiexpimpbdj4);
-void    uiexpimpbdj4SetResponseCallback (uiexpimpbdj4_t *uiexpimpbdj4, callback_t *uicb);
-bool    uiexpimpbdj4Dialog (uiexpimpbdj4_t *uiexpimpbdj4, int expimptype);
+uieibdj4_t  *uieibdj4Init (uiwcont_t *windowp, nlist_t *opts);
+void    uieibdj4Free (uieibdj4_t *uieibdj4);
+void    uieibdj4SetResponseCallback (uieibdj4_t *uieibdj4, callback_t *uicb, int expimptype);
+bool    uieibdj4Dialog (uieibdj4_t *uieibdj4, int expimptype);
+void    uieibdj4Process (uieibdj4_t *uieibdj4);
 
 #endif /* INC_UIEXPIMPBDJ4_H */

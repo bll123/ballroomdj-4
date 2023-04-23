@@ -144,7 +144,7 @@ uimusicqCreatePlaylistList (uimusicq_t *uimusicq)
 
   ci = uimusicq->musicqManageIdx;
 
-  plList = playlistGetPlaylistList (PL_LIST_NORMAL);
+  plList = playlistGetPlaylistList (PL_LIST_NORMAL, NULL);
   uiDropDownSetList (uimusicq->ui [ci].playlistsel, plList, NULL);
   slistFree (plList);
   logProcEnd (LOG_PROC, "uimusicqCreatePlaylistList", "");

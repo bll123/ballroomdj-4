@@ -46,13 +46,14 @@ uiplaylistCreate (uiwcont_t *parentwin, uiwcont_t *hbox, int type)
   for (int i = 0; i < UIPLAYLIST_CB_MAX; ++i) {
     uiplaylist->callbacks [i] = NULL;
   }
+  uiplaylist->selectcb = NULL;
 
   uiplaylist->callbacks [UIPLAYLIST_CB_SEL] =
       callbackInitLong (uiplaylistSelectHandler, uiplaylist);
   uiwidgetp = uiComboboxCreate (uiplaylist->dropdown,
       parentwin, "",
       uiplaylist->callbacks [UIPLAYLIST_CB_SEL], uiplaylist);
-  uiplaylistSetList (uiplaylist, type);
+  uiplaylistSetList (uiplaylist, type, NULL);
   uiBoxPackStart (hbox, uiwidgetp);
 
   uiplaylist->uiwidgetp = uiwidgetp;
@@ -69,11 +70,11 @@ uiplaylistFree (uiplaylist_t *uiplaylist)
 }
 
 void
-uiplaylistSetList (uiplaylist_t *uiplaylist, int type)
+uiplaylistSetList (uiplaylist_t *uiplaylist, int type, const char *dir)
 {
   slist_t           *pllist;
 
-  pllist = playlistGetPlaylistList (type);
+  pllist = playlistGetPlaylistList (type, dir);
   /* what text is best to use for 'no selection'? */
   uiDropDownSetList (uiplaylist->dropdown, pllist, "");
   slistFree (pllist);
