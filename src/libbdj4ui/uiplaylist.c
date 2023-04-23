@@ -82,6 +82,12 @@ uiplaylistSetList (uiplaylist_t *uiplaylist, int type)
 static bool
 uiplaylistSelectHandler (void *udata, long idx)
 {
+  uiplaylist_t  *uiplaylist = udata;
+
+  if (uiplaylist->selectcb != NULL) {
+    callbackHandlerLong (uiplaylist->selectcb, idx);
+  }
+
   return UICB_CONT;
 }
 
@@ -98,17 +104,15 @@ uiplaylistGetValue (uiplaylist_t *uiplaylist)
   return fn;
 }
 
-#if 0
 void
-uiplaylistSetValue (uiplaylist_t *uiplaylist, int value)
+uiplaylistSetValue (uiplaylist_t *uiplaylist, const char *fn)
 {
   if (uiplaylist == NULL) {
     return;
   }
 
-//  uiSpinboxTextSetValue (uiplaylist->spinbox, value);
+  uiDropDownSelectionSetStr (uiplaylist->dropdown, fn);
 }
-#endif
 
 void
 uiplaylistSizeGroupAdd (uiplaylist_t *uiplaylist, uiwcont_t *sg)

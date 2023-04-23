@@ -39,6 +39,7 @@
 #include "uifavorite.h"
 #include "uigenre.h"
 #include "uilevel.h"
+#include "uiplaylist.h"
 #include "uirating.h"
 #include "uisongfilter.h"
 #include "uistatus.h"
@@ -81,8 +82,8 @@ typedef struct uisongfilter {
   songfilter_t      *songfilter;
   playlist_t        *playlist;
   uiwcont_t         *filterDialog;
+  uiplaylist_t      *uiplaylist;
   uiwcont_t         *playlistdisp;
-  uidropdown_t      *playlistfilter;
   uidropdown_t      *sortbyfilter;
   uidance_t         *uidance;
   uigenre_t         *uigenre;
@@ -111,7 +112,6 @@ static bool uisfGenreSelectHandler (void *udata, long idx);
 static bool uisfDanceSelectHandler (void *udata, long idx, int count);
 static void uisfInitDisplay (uisongfilter_t *uisf);
 static void uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx);
-static void uisfCreatePlaylistList (uisongfilter_t *uisf);
 static void uisfSortBySelect (uisongfilter_t *uisf, ssize_t idx);
 static void uisfCreateSortByList (uisongfilter_t *uisf);
 static void uisfGenreSelect (uisongfilter_t *uisf, ssize_t idx);
@@ -125,6 +125,7 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf = mdmalloc (sizeof (uisongfilter_t));
 
   uisf->playlistname = NULL;
+  uisf->playlist = NULL;
   uisf->ratings = bdjvarsdfGet (BDJVDF_RATINGS);
   uisf->levels = bdjvarsdfGet (BDJVDF_LEVELS);
   uisf->status = bdjvarsdfGet (BDJVDF_STATUS);
@@ -134,12 +135,12 @@ uisfInit (uiwcont_t *windowp, nlist_t *options, songfilterpb_t pbflag)
   uisf->parentwin = windowp;
   uisf->options = options;
   uisf->songfilter = songfilterAlloc ();
-  uisf->playlist = NULL;
+  uisf->uiplaylist = NULL;
   songfilterSetSort (uisf->songfilter, nlistGetStr (options, SONGSEL_SORT_BY));
   songfilterSetNum (uisf->songfilter, SONG_FILTER_STATUS_PLAYABLE, pbflag);
   uisf->filterDialog = NULL;
   uisf->dfltpbflag = pbflag;
-  uisf->playlistfilter = uiDropDownInit ();
+  uisf->uiplaylist = NULL;
   uisf->sortbyfilter = uiDropDownInit ();
   uisf->uidance = NULL;
   uisf->playlistdisp = NULL;
@@ -170,7 +171,7 @@ uisfFree (uisongfilter_t *uisf)
     dataFree (uisf->playlistname);
     uiwcontFree (uisf->playlistdisp);
     uiwcontFree (uisf->filterDialog);
-    uiDropDownFree (uisf->playlistfilter);
+    uiplaylistFree (uisf->uiplaylist);
     uiDropDownFree (uisf->sortbyfilter);
     uiEntryFree (uisf->searchentry);
     uidanceFree (uisf->uidance);
@@ -274,7 +275,7 @@ uisfSetPlaylist (uisongfilter_t *uisf, char *plname)
     return;
   }
 
-  uiDropDownSelectionSetStr (uisf->playlistfilter, plname);
+  uiplaylistSetValue (uisf->uiplaylist, plname);
   dataFree (uisf->playlistname);
   uisf->playlistname = mdstrdup (plname);
   songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, plname);
@@ -291,7 +292,7 @@ uisfClearPlaylist (uisongfilter_t *uisf)
     return;
   }
 
-  uiDropDownSelectionSetNum (uisf->playlistfilter, -1);
+  uiplaylistSetValue (uisf->uiplaylist, "");
   dataFree (uisf->playlistname);
   uisf->playlistname = NULL;
   songfilterClear (uisf->songfilter, SONG_FILTER_PLAYLIST);
@@ -338,9 +339,9 @@ uisfInitDisplay (uisongfilter_t *uisf)
   /* all items need to be set, as after a reset, they need to be updated */
   /* sort-by and dance are important, the others can be reset */
 
-  uiDropDownSelectionSetNum (uisf->playlistfilter, -1);
+  uiplaylistSetValue (uisf->uiplaylist, "");
   if (uisf->playlistname != NULL) {
-    uiDropDownSelectionSetStr (uisf->playlistfilter, uisf->playlistname);
+    uiplaylistSetValue (uisf->uiplaylist, uisf->playlistname);
   }
 
   sortby = songfilterGetSort (uisf->songfilter);
@@ -358,13 +359,13 @@ uisfInitDisplay (uisongfilter_t *uisf)
 static void
 uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx)
 {
-  char        *str;
+  const char  *str;
   pltype_t    pltype;
 
   logProcBegin (LOG_PROC, "uisfPlaylistSelect");
   if (idx >= 0) {
-    str = uiDropDownGetString (uisf->playlistfilter);
-    songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, str);
+    str = uiplaylistGetValue (uisf->uiplaylist);
+    songfilterSetData (uisf->songfilter, SONG_FILTER_PLAYLIST, (void *) str);
 
     pltype = playlistGetType (str);
     songfilterSetNum (uisf->songfilter, SONG_FILTER_PL_TYPE, pltype);
@@ -380,21 +381,6 @@ uisfPlaylistSelect (uisongfilter_t *uisf, ssize_t idx)
   }
   uisf->playlistsel = true;
   logProcEnd (LOG_PROC, "uisfPlaylistSelect", "");
-}
-
-static void
-uisfCreatePlaylistList (uisongfilter_t *uisf)
-{
-  slist_t           *pllist;
-
-  logProcBegin (LOG_PROC, "uisfCreatePlaylistList");
-
-  /* at this time, only song lists are supported */
-  pllist = playlistGetPlaylistList (PL_LIST_ALL);
-  /* what text is best to use for 'no selection'? */
-  uiDropDownSetList (uisf->playlistfilter, pllist, "");
-  slistFree (pllist);
-  logProcEnd (LOG_PROC, "uisfCreatePlaylistList", "");
 }
 
 static void
@@ -502,10 +488,8 @@ uisfCreateDialog (uisongfilter_t *uisf)
 
   uisf->callbacks [UISF_CB_PLAYLIST_SEL] = callbackInitLong (
       uisfPlaylistSelectHandler, uisf);
-  uiwidgetp = uiComboboxCreate (uisf->playlistfilter,
-      uisf->filterDialog, "", uisf->callbacks [UISF_CB_PLAYLIST_SEL], uisf);
-  uisfCreatePlaylistList (uisf);
-  uiBoxPackStart (hbox, uiwidgetp);
+  uisf->uiplaylist = uiplaylistCreate (uisf->filterDialog, hbox, PL_LIST_ALL);
+  uiplaylistSetSelectCallback (uisf->uiplaylist, uisf->callbacks [UISF_CB_PLAYLIST_SEL]);
   /* looks bad if added to the size group */
 
   /* do not free hbox (playlistdisp) */
