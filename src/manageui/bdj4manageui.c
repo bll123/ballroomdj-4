@@ -60,6 +60,7 @@
 #include "uimusicq.h"
 #include "uinbutil.h"
 #include "uiplayer.h"
+#include "uiplaylist.h"
 #include "uiselectfile.h"
 #include "uisongedit.h"
 #include "uisongfilter.h"
@@ -135,7 +136,6 @@ enum {
   MANAGE_CB_PL_LOAD,
   MANAGE_CB_SAVE,
   MANAGE_CB_CFPL_DIALOG,
-  MANAGE_CB_CFPL_PLAYLIST_SEL,
   MANAGE_CB_ITUNES_DIALOG,
   MANAGE_CB_ITUNES_SEL,
   MANAGE_CB_APPLY_ADJ,
@@ -218,7 +218,7 @@ typedef struct {
   /* prior name is used by create-from-playlist */
   char              *slpriorname;
   uisongfilter_t    *uisongfilter;
-  uidropdown_t      *cfplsel;
+  uiplaylist_t      *cfpl;
   uispinbox_t       *cfpltmlimit;
   /* music manager ui */
   uiplayer_t        *mmplayer;
@@ -332,8 +332,6 @@ static bool     manageSonglistDelete (void *udata);
 static bool     manageSonglistTruncate (void *udata);
 static bool     manageSonglistCreateFromPlaylist (void *udata);
 static void     manageSongListCFPLCreateDialog (manageui_t *manage);
-static void     manageCFPLCreatePlaylistList (manageui_t *manage);
-static bool     manageCFPLPlaylistSelectHandler (void *udata, long idx);
 static bool     manageCFPLResponseHandler (void *udata, long responseid);
 static bool     manageSonglistMix (void *udata);
 static bool     manageSonglistSwap (void *udata);
@@ -434,7 +432,7 @@ main (int argc, char *argv[])
   manage.bpmcounterstarted = false;
   manage.currbpmsel = BPM_BPM;
   manage.currtimesig = DANCE_TIMESIG_44;
-  manage.cfplsel = uiDropDownInit ();
+  manage.cfpl = NULL;
   manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.pluiActive = false;
   manage.selectButton = NULL;
@@ -631,7 +629,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uisongselFree (manage->mmsongsel);
   uisongeditFree (manage->mmsongedit);
 
-  uiDropDownFree (manage->cfplsel);
+  uiplaylistFree (manage->cfpl);
   uiSpinboxFree (manage->cfpltmlimit);
   dispselFree (manage->dispsel);
 
@@ -816,8 +814,6 @@ manageInitializeUI (manageui_t *manage)
       manageiTunesDialogResponseHandler, manage);
   manage->callbacks [MANAGE_CB_ITUNES_SEL] = callbackInitLong (
       manageiTunesDialogSelectHandler, manage);
-  manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL] = callbackInitLong (
-      manageCFPLPlaylistSelectHandler, manage);
 
   manage->samesong = samesongAlloc (manage->musicdb);
   manage->uisongfilter = uisfInit (manage->wcont [MANAGE_W_WINDOW], manage->options,
@@ -2348,7 +2344,6 @@ manageSonglistCreateFromPlaylist (void *udata)
     manage->slpriorname = uimusicqGetSonglistName (manage->slmusicq);
   }
   manageSongListCFPLCreateDialog (manage);
-  uiDropDownSelectionSetNum (manage->cfplsel, -1);
 
   uiDialogShow (manage->wcont [MANAGE_W_CFPL_DIALOG]);
 
@@ -2402,10 +2397,8 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
-  uiwidgetp = uiComboboxCreate (manage->cfplsel, manage->wcont [MANAGE_W_CFPL_DIALOG], "",
-      manage->callbacks [MANAGE_CB_CFPL_PLAYLIST_SEL], manage);
-  manageCFPLCreatePlaylistList (manage);
-  uiBoxPackStart (hbox, uiwidgetp);
+  manage->cfpl = uiplaylistCreate (manage->wcont [MANAGE_W_CFPL_DIALOG],
+      hbox, PL_LIST_AUTO_SEQ);
 
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
@@ -2428,26 +2421,6 @@ manageSongListCFPLCreateDialog (manageui_t *manage)
   uiwcontFree (szgrp);
 
   logProcEnd (LOG_PROC, "manageSongListCFPLCreateDialog", "");
-}
-
-static void
-manageCFPLCreatePlaylistList (manageui_t *manage)
-{
-  slist_t           *pllist;
-
-  logProcBegin (LOG_PROC, "manageCreatePlaylistList");
-
-  pllist = playlistGetPlaylistList (PL_LIST_AUTO_SEQ);
-  /* what text is best to use for 'no selection'? */
-  uiDropDownSetList (manage->cfplsel, pllist, "");
-  slistFree (pllist);
-  logProcEnd (LOG_PROC, "manageCFPLCreatePlaylistList", "");
-}
-
-static bool
-manageCFPLPlaylistSelectHandler (void *udata, long idx)
-{
-  return UICB_CONT;
 }
 
 static bool
@@ -2476,13 +2449,13 @@ manageCFPLResponseHandler (void *udata, long responseid)
       break;
     }
     case RESPONSE_APPLY: {
-      char    *fn;
-      char    *tnm;
-      long    stoptime;
-      char    tbuff [40];
+      const char  *fn;
+      char        *tnm;
+      long        stoptime;
+      char        tbuff [40];
 
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: create");
-      fn = uiDropDownGetString (manage->cfplsel);
+      fn = uiplaylistGetValue (manage->cfpl);
       stoptime = uiSpinboxTimeGetValue (manage->cfpltmlimit);
       /* convert from mm:ss to hh:mm */
       stoptime *= 60;

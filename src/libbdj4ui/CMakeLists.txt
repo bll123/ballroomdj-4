@@ -15,6 +15,7 @@ add_library (libbdj4ui SHARED
   uiapplyadj.c
   uidance.c
   uiduallist.c
+  uiexpimpbdj4.c
   uifavorite.c
   uigenre.c
   uilevel.c
@@ -23,6 +24,7 @@ add_library (libbdj4ui SHARED
   uimusicqui.c
   uinbutil.c
   uiplayer.c
+  uiplaylist.c
   uirating.c
   uireqext.c
   uiselectfile.c

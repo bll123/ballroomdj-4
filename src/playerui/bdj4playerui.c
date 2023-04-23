@@ -146,6 +146,8 @@ static datafilekey_t playeruidfkeys [] = {
   { "PLUI_SIZE_Y",              PLUI_SIZE_Y,                VALUE_NUM, NULL, -1 },
   { "REQ_EXT_X",                REQ_EXT_POSITION_X,         VALUE_NUM, NULL, -1 },
   { "REQ_EXT_Y",                REQ_EXT_POSITION_Y,         VALUE_NUM, NULL, -1 },
+  { "EXP_IMP_BDJ4_X",           EXP_IMP_BDJ4_POSITION_X,    VALUE_NUM, NULL, -1 },
+  { "EXP_IMP_BDJ4_Y",           EXP_IMP_BDJ4_POSITION_Y,    VALUE_NUM, NULL, -1 },
   { "SHOW_EXTRA_QUEUES",        PLUI_SHOW_EXTRA_QUEUES,     VALUE_NUM, NULL, -1 },
   { "SORT_BY",                  SONGSEL_SORT_BY,            VALUE_STR, NULL, -1 },
   { "SWITCH_QUEUE_WHEN_EMPTY",  PLUI_SWITCH_QUEUE_WHEN_EMPTY, VALUE_NUM, NULL, -1 },
@@ -292,6 +294,8 @@ main (int argc, char *argv[])
     nlistSetNum (plui.options, PLUI_SIZE_Y, 600);
     nlistSetNum (plui.options, REQ_EXT_POSITION_X, -1);
     nlistSetNum (plui.options, REQ_EXT_POSITION_Y, -1);
+    nlistSetNum (plui.options, EXP_IMP_BDJ4_POSITION_X, -1);
+    nlistSetNum (plui.options, EXP_IMP_BDJ4_POSITION_Y, -1);
     nlistSetStr (plui.options, SONGSEL_SORT_BY, "TITLE");
   }
 

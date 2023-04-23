@@ -409,6 +409,7 @@ msgid "Click the mouse in the blue box in time with the beat."
 msgstr "Klik met de muisaanwijzer in het blauwe vak op de maat van de muziek."
 
 #. CONTEXT: apply adjustment dialog: closes the dialog
+#. CONTEXT: export/import bdj4 request external dialog: closes the dialog
 #. CONTEXT: request external dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
@@ -720,6 +721,7 @@ msgstr "Voorbeelden"
 msgid "Exit"
 msgstr "Afsluiten"
 
+#. CONTEXT: export/import bdj4 dialog: export
 #. CONTEXT: managementui: menu selection: export actions for song list
 msgid "Export"
 msgstr "Exporteren"
@@ -782,6 +784,7 @@ msgstr "Filter"
 msgid "First"
 msgstr "Eerste"
 
+#. CONTEXT: request external: enter the audio file location
 #. CONTEXT: select folder dialog: filter on folders.
 msgid "Folder"
 msgstr "Map"
@@ -856,6 +859,7 @@ msgstr "Als er geen %s installatie is, voer dan een enkele '-' in."
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "Als er geen BallroomDJ 3 installatie is, laat u de invoer leeg."
 
+#. CONTEXT: export/import bdj4 dialog: import
 #. CONTEXT: import from itunes: import the selected itunes playlist
 #. CONTEXT: managementui: menu selection: import actions for song list
 msgid "Import"
@@ -1267,6 +1271,7 @@ msgstr ""
 msgid "Player"
 msgstr "Speler"
 
+#. CONTEXT: export/import bdj4: playlist: select the playlist
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
 #. CONTEXT: create from playlist: select the playlist to use
@@ -1576,10 +1581,18 @@ msgstr ""
 msgid "Select File"
 msgstr "Selecteer bestand"
 
+#. CONTEXT: export/import bdj4 folder selection dialog: window title
+msgid "Select Folder"
+msgstr ""
+
 #. CONTEXT: configuration: folder selection dialog: window title
 #. CONTEXT: update database: dialog title for selecting database music folder
 #, c-format
 msgid "Select Music Folder Location"
+msgstr ""
+
+#. CONTEXT: export/import bdj4 dialog: title for the dialog
+msgid "Select Target Folder"
 msgstr ""
 
 #. CONTEXT: starterui: basic support dialog: button: support option
@@ -2050,16 +2063,6 @@ msgstr ""
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_check_dance"
 msgstr "=> Select 'Music Manager' on the left side of the 'BDJ4 Management' window. Scroll through the list of songs and check to make sure the dance is set for each song.  To set the dance for a song: => Select the song. => Select the 'Song Editor' tab (below the player, above the list of songs). => Next to the 'Dance' label, use the dance drop-down selection and select the dance for the song. => In the upper right of the 'Song Editor' tab, select the 'Save' button. You can switch back to the 'Music Manager' tab and check for other songs that need to have the dance set. => Leave the 'BDJ4 Management' window open."
-
-#. CONTEXT: title of a getting started help section
-msgid "Finished"
-msgstr ""
-
-#. CONTEXT: text-key for getting started help section (translate the text, not the key)
-msgid "helptext_finished"
-msgstr ""
-"Please enjoy BallroomDJ 4.  Please do not hesitate to ask for help"
-" as suggested."
 
 #. CONTEXT: title of a getting started help section
 msgid "Build the Database for the First Time"

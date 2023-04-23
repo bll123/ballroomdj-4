@@ -143,13 +143,5 @@ TEXT
 # To get support, select the 'Support' button. There are links to the
 # wiki, forums and problem ticketing system. Or use the
 # 'Send Support Message' button to send a message.
-KEY
-..9
-TITLE
-..Finished
-TEXT
-..helptext_finished
-# Please enjoy BallroomDJ 4.  Please do not hesitate to ask for help
-# as suggested.
 
 
