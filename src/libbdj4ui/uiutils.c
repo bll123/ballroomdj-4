@@ -12,10 +12,12 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "bdj4intl.h"
 #include "bdjopt.h"
+#include "sysvars.h"
 #include "ui.h"
 #include "uiutils.h"
-#include "sysvars.h"
+#include "validate.h"
 
 /* as a side effect, hbox is set, and */
 /* uiwidget is set to the accent color box (needed by bdj4starterui) */
@@ -61,3 +63,51 @@ uiutilsGetCurrentFont (void)
   }
   return tstr;
 }
+
+int
+uiutilsValidateSongListName (uientry_t *entry, void *udata)
+{
+  uiwcont_t   *statusMsg = udata;
+  int         rc;
+  const char  *str;
+  char        tbuff [200];
+  const char  *valstr;
+
+  rc = UIENTRY_OK;
+  if (statusMsg != NULL) {
+    uiLabelSetText (statusMsg, "");
+  }
+  str = uiEntryGetValue (entry);
+  valstr = validate (str, VAL_NOT_EMPTY | VAL_NO_SLASHES);
+  if (valstr != NULL) {
+    if (statusMsg != NULL) {
+      snprintf (tbuff, sizeof (tbuff), valstr, str);
+      uiLabelSetText (statusMsg, tbuff);
+    }
+    rc = UIENTRY_ERROR;
+  }
+
+  return rc;
+}
+
+
+void
+uiutilsProgressStatus (uiwcont_t *statusMsg, int count, int tot)
+{
+  char        tbuff [200];
+
+  if (statusMsg == NULL) {
+    return;
+  }
+
+  if (count < 0 && tot < 0) {
+    uiLabelSetText (statusMsg, "");
+  } else {
+    /* CONTEXT: please wait... (count/total) status message */
+    snprintf (tbuff, sizeof (tbuff), _("Please wait\xe2\x80\xa6 (%1$d/%2$d)"), count, tot);
+    uiLabelSetText (statusMsg, tbuff);
+  }
+
+  return;
+}
+

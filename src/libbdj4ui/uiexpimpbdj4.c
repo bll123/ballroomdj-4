@@ -25,6 +25,8 @@
 #include "ui.h"
 #include "uiexpimpbdj4.h"
 #include "uiplaylist.h"
+#include "uiutils.h"
+#include "validate.h"
 
 enum {
   UIEIBDJ4_CB_DIALOG,
@@ -154,6 +156,34 @@ uieibdj4Process (uieibdj4_t *uieibdj4)
   uiEntryValidate (uieibdj4->dialog [uieibdj4->currtype].target, false);
 }
 
+const char *
+uieibdj4GetDir (uieibdj4_t *uieibdj4)
+{
+  const char  *dir;
+
+  dir = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].target);
+  return dir;
+}
+
+const char *
+uieibdj4GetPlaylist (uieibdj4_t *uieibdj4)
+{
+  const char  *plname;
+
+  plname = uiplaylistGetValue (uieibdj4->dialog [uieibdj4->currtype].uiplaylist);
+  return plname;
+}
+
+const char *
+uieibdj4GetNewName (uieibdj4_t *uieibdj4)
+{
+  const char  *newname;
+
+  newname = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].newname);
+  return newname;
+}
+
+
 /* internal routines */
 
 static void
@@ -161,7 +191,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 {
   uiwcont_t     *vbox;
   uiwcont_t     *hbox;
-  uiwcont_t     *uiwidgetp;
+  uiwcont_t     *uiwidgetp = NULL;
   uibutton_t    *uibutton;
   uiwcont_t     *szgrp;  // labels
   const char    *buttontext;
@@ -238,9 +268,16 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
 
-  uiwidgetp = uiCreateColonLabel (
-      /* CONTEXT: export/import bdj4: folder location */
-      _("Folder"));
+  if (currtype == UIEIBDJ4_EXPORT) {
+    uiwidgetp = uiCreateColonLabel (
+        /* CONTEXT: export/import bdj4: folder location */
+        _("Export to"));
+  }
+  if (currtype == UIEIBDJ4_IMPORT) {
+    uiwidgetp = uiCreateColonLabel (
+        /* CONTEXT: export/import bdj4: folder location */
+        _("Import from"));
+  }
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
   uiwcontFree (uiwidgetp);
@@ -303,6 +340,10 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiEntrySetValue (uieibdj4->dialog [currtype].newname, "");
     uiwidgetp = uiEntryGetWidgetContainer (uieibdj4->dialog [currtype].newname);
     uiBoxPackStart (hbox, uiwidgetp);
+
+    uiEntrySetValidate (uieibdj4->dialog [currtype].newname,
+        uiutilsValidateSongListName, uieibdj4->dialog [currtype].errorMsg,
+        UIENTRY_IMMEDIATE);
   }
 
   uiwcontFree (hbox);
@@ -428,6 +469,7 @@ uieibdj4ValidateTarget (uientry_t *entry, void *udata)
   }
   return UIENTRY_OK;
 }
+
 
 static bool
 uieibdj4SelectHandler (void *udata, long idx)

@@ -27,6 +27,7 @@
 #include "dance.h"
 #include "datafile.h"
 #include "dispsel.h"
+#include "expimpbdj4.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "itunes.h"
@@ -141,6 +142,8 @@ enum {
   MANAGE_CB_ITUNES_SEL,
   MANAGE_CB_APPLY_ADJ,
   MANAGE_CB_SL_SEL_FILE,
+  MANAGE_CB_BDJ4_EXP,
+  MANAGE_CB_BDJ4_IMP,
   MANAGE_CB_MAX,
 };
 
@@ -191,7 +194,6 @@ typedef struct {
   int               stopwaitcount;
   uiwcont_t         *wcont [MANAGE_W_MAX];
   const char        *pleasewaitmsg;
-  uieibdj4_t        *uieibdj4;
   /* notebook tab handling */
   int               mainlasttab;
   int               sllasttab;
@@ -244,6 +246,11 @@ typedef struct {
   int               aaflags;
   int               applyadjstate;
   int               impitunesstate;
+  /* export/import bdj4 */
+  uieibdj4_t        *uieibdj4;
+  eibdj4_t          *eibdj4;
+  mstime_t          eibdj4ChkTime;
+  int               expimpbdj4state;
   /* options */
   datafile_t        *optiondf;
   nlist_t           *options;
@@ -361,6 +368,9 @@ static bool     manageSonglistImportM3U (void *udata);
 /* export/import bdj4 */
 static bool     manageSonglistExportBDJ4 (void *udata);
 static bool     manageSonglistImportBDJ4 (void *udata);
+static bool     manageExportBDJ4ResponseHandler (void *udata);
+static bool     manageImportBDJ4ResponseHandler (void *udata);
+static bool     manageExpImpBDJ4Status (void *udata, int count, int tot);
 /* general */
 static bool     manageSwitchPageMain (void *udata, long pagenum);
 static bool     manageSwitchPageSonglist (void *udata, long pagenum);
@@ -409,6 +419,7 @@ main (int argc, char *argv[])
   manage.mmsongsel = NULL;
   manage.mmsongedit = NULL;
   manage.uieibdj4 = NULL;
+  manage.expimpbdj4state = BDJ4_STATE_OFF;
   manage.musicqPlayIdx = MUSICQ_MNG_PB;
   manage.musicqManageIdx = MUSICQ_SL;
   manage.stopwaitcount = 0;
@@ -830,6 +841,10 @@ manageInitializeUI (manageui_t *manage)
       manageiTunesDialogResponseHandler, manage);
   manage->callbacks [MANAGE_CB_ITUNES_SEL] = callbackInitLong (
       manageiTunesDialogSelectHandler, manage);
+  manage->callbacks [MANAGE_CB_BDJ4_EXP] = callbackInit (
+      manageExportBDJ4ResponseHandler, manage, NULL);
+  manage->callbacks [MANAGE_CB_BDJ4_IMP] = callbackInit (
+      manageImportBDJ4ResponseHandler, manage, NULL);
 
   manage->samesong = samesongAlloc (manage->musicdb);
   manage->uisongfilter = uisfInit (manage->wcont [MANAGE_W_WINDOW], manage->options,
@@ -959,7 +974,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStartExpand (mainhbox, hbox);
 
   uiwidgetp = uimusicqBuildUI (manage->slezmusicq, manage->wcont [MANAGE_W_WINDOW], MUSICQ_SL,
-      manage->wcont [MANAGE_W_ERROR_MSG], manageValidateName);
+      manage->wcont [MANAGE_W_ERROR_MSG], uiutilsValidateSongListName);
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
   uiwcontFree (vbox);
@@ -984,7 +999,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* song list editor: music queue tab */
   uip = uimusicqBuildUI (manage->slmusicq, manage->wcont [MANAGE_W_WINDOW], MUSICQ_SL,
-      manage->wcont [MANAGE_W_ERROR_MSG], manageValidateName);
+      manage->wcont [MANAGE_W_ERROR_MSG], uiutilsValidateSongListName);
   /* CONTEXT: managementui: name of song list notebook tab */
   uiwidgetp = uiCreateLabel (_("Song List"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], uip, uiwidgetp);
@@ -1052,6 +1067,29 @@ manageMainLoop (void *tmanage)
   }
 
   uieibdj4Process (manage->uieibdj4);
+
+  if (manage->expimpbdj4state == BDJ4_STATE_PROCESS) {
+    if (mstimeCheck (&manage->eibdj4ChkTime)) {
+      int   count, tot;
+
+      eibdj4GetCount (manage->eibdj4, &count, &tot);
+      manageExpImpBDJ4Status (manage, count, tot);
+      mstimeset (&manage->eibdj4ChkTime, 500);
+    }
+
+    if (eibdj4Process (manage->eibdj4)) {
+      manageExpImpBDJ4Status (manage, -1, -1);
+      eibdj4Free (manage->eibdj4);
+      manage->expimpbdj4state = BDJ4_STATE_OFF;
+    }
+  }
+
+  if (manage->expimpbdj4state == BDJ4_STATE_START) {
+    uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG],
+        manage->pleasewaitmsg);
+
+    manage->expimpbdj4state = BDJ4_STATE_WAIT;
+  }
 
   /* apply adjustments processing */
 
@@ -2975,8 +3013,12 @@ manageSonglistExportBDJ4 (void *udata)
   logProcBegin (LOG_PROC, "manageSonglistExportBDJ4");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: export bdj4");
 
+  manageSonglistSave (manage);
+
   manage->uieibdj4 = uieibdj4Init (manage->wcont [MANAGE_W_WINDOW],
       manage->options);
+  uieibdj4SetResponseCallback (manage->uieibdj4,
+      manage->callbacks [MANAGE_CB_BDJ4_EXP], UIEIBDJ4_EXPORT);
   uieibdj4Dialog (manage->uieibdj4, UIEIBDJ4_EXPORT);
 
   manage->exportbdj4active = false;
@@ -2997,12 +3039,74 @@ manageSonglistImportBDJ4 (void *udata)
   logProcBegin (LOG_PROC, "manageSonglistImportBDJ4");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: import bdj4");
 
+  manageSonglistSave (manage);
+
   manage->uieibdj4 = uieibdj4Init (manage->wcont [MANAGE_W_WINDOW],
       manage->options);
+  uieibdj4SetResponseCallback (manage->uieibdj4,
+      manage->callbacks [MANAGE_CB_BDJ4_IMP], UIEIBDJ4_IMPORT);
   uieibdj4Dialog (manage->uieibdj4, UIEIBDJ4_IMPORT);
 
   manage->importbdj4active = false;
   logProcEnd (LOG_PROC, "manageSonglistImportBDJ4", "");
+  return UICB_CONT;
+}
+
+static bool
+manageExportBDJ4ResponseHandler (void *udata)
+{
+  manageui_t  *manage = udata;
+  char        *slname;
+  const char  *dir = NULL;
+
+  slname = uimusicqGetSonglistName (manage->slmusicq);
+
+  dir = uieibdj4GetDir (manage->uieibdj4);
+  manage->eibdj4 = eibdj4Init (manage->musicdb, dir, EIBDJ4_EXPORT);
+  manage->expimpbdj4state = BDJ4_STATE_PROCESS;
+  mstimeset (&manage->eibdj4ChkTime, 500);
+
+  mdfree (slname);
+  return UICB_CONT;
+}
+
+static bool
+manageImportBDJ4ResponseHandler (void *udata)
+{
+  manageui_t  *manage = udata;
+  const char  *dir = NULL;
+
+// need playlist name
+// need new name
+  dir = uieibdj4GetDir (manage->uieibdj4);
+  manage->eibdj4 = eibdj4Init (manage->musicdb, dir, EIBDJ4_IMPORT);
+  manage->expimpbdj4state = BDJ4_STATE_PROCESS;
+  mstimeset (&manage->eibdj4ChkTime, 500);
+
+  return UICB_CONT;
+}
+
+static bool
+manageExpImpBDJ4Status (void *udata, int count, int tot)
+{
+  manageui_t  *manage = udata;
+  uiwcont_t   *statusMsg = manage->wcont [MANAGE_W_STATUS_MSG];
+  char        tbuff [100];
+
+  if (statusMsg == NULL) {
+    return UICB_CONT;
+  }
+
+  if (count < 0 && tot < 0) {
+    uiLabelSetText (statusMsg, "");
+    manage->expimpbdj4state = BDJ4_STATE_OFF;
+  } else {
+    /* CONTEXT: please wait... (count/total) status message */
+    snprintf (tbuff, sizeof (tbuff), _("Please wait\xe2\x80\xa6 (%1$d/%2$d)"), count, tot);
+    uiLabelSetText (statusMsg, tbuff);
+  }
+  uiUIProcessEvents ();
+
   return UICB_CONT;
 }
 

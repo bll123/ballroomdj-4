@@ -16,6 +16,7 @@ add_library (libbdj4 SHARED
   dancesel.c
   dispsel.c
   dnctypes.c
+  expimpbdj4.c
   genre.c
   instutil.c
   itunes.c

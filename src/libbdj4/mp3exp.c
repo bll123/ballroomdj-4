@@ -23,13 +23,6 @@
 #include "tagdef.h"
 #include "tmutil.h"
 
-enum {
-  MP3EXP_STATE_OFF,
-  MP3EXP_STATE_INIT,
-  MP3EXP_STATE_PROCESS,
-  MP3EXP_STATE_FINISH,
-};
-
 typedef struct mp3exp {
   char      *msgdata;
   musicdb_t *musicdb;
@@ -61,7 +54,7 @@ mp3ExportInit (char *msgdata, musicdb_t *musicdb,
   mp3exp->tokstr = NULL;
   mp3exp->fadein = bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, mqidx);
   mp3exp->fadeout = bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, mqidx);
-  mp3exp->state = MP3EXP_STATE_INIT;
+  mp3exp->state = BDJ4_STATE_START;
 
   return mp3exp;
 }
@@ -90,21 +83,21 @@ mp3ExportQueue (mp3exp_t *mp3exp)
   pathinfo_t  *pi = NULL;
   char        *p = NULL;
 
-  if (mp3exp->state == MP3EXP_STATE_INIT) {
+  if (mp3exp->state == BDJ4_STATE_START) {
     mp3exp->savelist = nlistAlloc ("mp3-export-nm", LIST_UNORDERED, NULL);
 
     mp3exp->counter = 1;
     p = strtok_r (mp3exp->msgdata, MSG_ARGS_RS_STR, &mp3exp->tokstr);
     if (p == NULL) {
-      mp3exp->state = MP3EXP_STATE_OFF;
+      mp3exp->state = BDJ4_STATE_OFF;
       return true;
     }
     mp3exp->totcount = atoi (p);
-    mp3exp->state = MP3EXP_STATE_PROCESS;
+    mp3exp->state = BDJ4_STATE_PROCESS;
     return false;
   }
 
-  if (mp3exp->state == MP3EXP_STATE_PROCESS) {
+  if (mp3exp->state == BDJ4_STATE_PROCESS) {
     char    outfn [MAXPATHLEN];
     char    *ffn;
 
@@ -151,12 +144,12 @@ mp3ExportQueue (mp3exp_t *mp3exp)
     }
 
     if (p == NULL) {
-      mp3exp->state = MP3EXP_STATE_FINISH;
+      mp3exp->state = BDJ4_STATE_FINISH;
     }
     return false;
   }
 
-  if (mp3exp->state == MP3EXP_STATE_FINISH) {
+  if (mp3exp->state == BDJ4_STATE_FINISH) {
     char        tname [MAXPATHLEN];
     char        tslname [200];
 
@@ -168,6 +161,7 @@ mp3ExportQueue (mp3exp_t *mp3exp)
     pathInfoFree (pi);
 
     m3uExport (mp3exp->musicdb, mp3exp->savelist, tname, tslname);
+    mp3exp->state = BDJ4_STATE_OFF;
     return true;
   }
 

@@ -146,8 +146,6 @@ static datafilekey_t playeruidfkeys [] = {
   { "PLUI_SIZE_Y",              PLUI_SIZE_Y,                VALUE_NUM, NULL, -1 },
   { "REQ_EXT_X",                REQ_EXT_POSITION_X,         VALUE_NUM, NULL, -1 },
   { "REQ_EXT_Y",                REQ_EXT_POSITION_Y,         VALUE_NUM, NULL, -1 },
-  { "EXP_IMP_BDJ4_X",           EXP_IMP_BDJ4_POSITION_X,    VALUE_NUM, NULL, -1 },
-  { "EXP_IMP_BDJ4_Y",           EXP_IMP_BDJ4_POSITION_Y,    VALUE_NUM, NULL, -1 },
   { "SHOW_EXTRA_QUEUES",        PLUI_SHOW_EXTRA_QUEUES,     VALUE_NUM, NULL, -1 },
   { "SORT_BY",                  SONGSEL_SORT_BY,            VALUE_STR, NULL, -1 },
   { "SWITCH_QUEUE_WHEN_EMPTY",  PLUI_SWITCH_QUEUE_WHEN_EMPTY, VALUE_NUM, NULL, -1 },
@@ -175,7 +173,6 @@ static int      pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 static bool     pluiCloseWin (void *udata);
 static void     pluiSigHandler (int sig);
 static char *   pluiExportMP3Dialog (uiwcont_t *windowp);
-static bool     pluiExportMP3Status (void *udata, int count, int tot);
 /* queue selection handlers */
 static bool     pluiSwitchPage (void *udata, long pagenum);
 static void     pluiPlaybackButtonHideShow (playerui_t *plui, long pagenum);
@@ -735,12 +732,12 @@ pluiMainLoop (void *tplui)
       int   count, tot;
 
       mp3ExportGetCount (plui->mp3exp, &count, &tot);
-      pluiExportMP3Status (plui, count, tot);
+      uiutilsProgressStatus (plui->wcont [PLUI_W_STATUS_MSG], count, tot);
       mstimeset (&plui->expmp3chkTime, 500);
     }
 
     if (mp3ExportQueue (plui->mp3exp)) {
-      pluiExportMP3Status (plui, -1, -1);
+      uiutilsProgressStatus (plui->wcont [PLUI_W_STATUS_MSG], -1, -1);
       mp3ExportFree (plui->mp3exp);
       plui->expmp3state = BDJ4_STATE_OFF;
     }
@@ -1109,30 +1106,6 @@ pluiExportMP3Dialog (uiwcont_t *windowp)
   dir = uiSelectDirDialog (selectdata);
   mdfree (selectdata);
   return dir;
-}
-
-static bool
-pluiExportMP3Status (void *udata, int count, int tot)
-{
-  playerui_t  *plui = udata;
-  uiwcont_t   *statusMsg = plui->wcont [PLUI_W_STATUS_MSG];
-  char        tbuff [200];
-
-  if (statusMsg == NULL) {
-    return UICB_CONT;
-  }
-
-  if (count < 0 && tot < 0) {
-    uiLabelSetText (statusMsg, "");
-    plui->expmp3state = BDJ4_STATE_OFF;
-  } else {
-    /* CONTEXT: please wait... (count/total) status message */
-    snprintf (tbuff, sizeof (tbuff), _("Please wait\xe2\x80\xa6 (%1$d/%2$d)"), count, tot);
-    uiLabelSetText (statusMsg, tbuff);
-  }
-  uiUIProcessEvents ();
-
-  return UICB_CONT;
 }
 
 static bool

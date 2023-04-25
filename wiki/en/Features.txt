@@ -65,6 +65,7 @@
         * Trim Silence.
         * Normalize Volume.
         * Adjust: apply speed, song start, song end to a song.
+    * Batch Edit songs.
 * iTunes Support.
     * Update the information in the database from iTunes.
     * Import an iTunes playlist.
@@ -76,8 +77,6 @@
 
 ##### Future Features
 
-* Song Editor.
-    * Batch Edit songs.
 * Audio Identification via MusicBrainz and AcoustID.
 * Automatic Organization.
 

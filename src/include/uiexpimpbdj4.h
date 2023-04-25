@@ -20,5 +20,8 @@ void    uieibdj4Free (uieibdj4_t *uieibdj4);
 void    uieibdj4SetResponseCallback (uieibdj4_t *uieibdj4, callback_t *uicb, int expimptype);
 bool    uieibdj4Dialog (uieibdj4_t *uieibdj4, int expimptype);
 void    uieibdj4Process (uieibdj4_t *uieibdj4);
+const char  *uieibdj4GetDir (uieibdj4_t *uieibdj4);
+const char  *uieibdj4GetPlaylist (uieibdj4_t *uieibdj4);
+const char  *uieibdj4GetNewName(uieibdj4_t *uieibdj4);
 
 #endif /* INC_UIEXPIMPBDJ4_H */

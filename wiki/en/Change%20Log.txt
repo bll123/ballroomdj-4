@@ -11,6 +11,8 @@
     * Getting Started Helper: Improve,
 * Changes:
     * Music Manager: Filters: Selection of automatic and sequenced playlists is now possible.
+* New Features:
+    * PENDING: Song List Editor: Export for BDJ4 / Import from BDJ4
 
 -->
 
