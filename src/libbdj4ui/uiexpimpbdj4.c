@@ -35,10 +35,15 @@ enum {
   UIEIBDJ4_CB_MAX,
 };
 
+enum {
+  UIEIBDJ4_W_STATUS_MSG,
+  UIEIBDJ4_W_ERROR_MSG,
+  UIEIBDJ4_W_DIALOG,
+  UIEIBDJ4_W_MAX,
+};
+
 typedef struct {
-  uiwcont_t       *statusMsg;
-  uiwcont_t       *errorMsg;
-  uiwcont_t       *dialog;
+  uiwcont_t       *wcont [UIEIBDJ4_W_MAX];
   uientry_t       *target;
   uientry_t       *newname;
   uiplaylist_t    *uiplaylist;
@@ -71,10 +76,11 @@ uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
 
   uieibdj4 = mdmalloc (sizeof (uieibdj4_t));
   for (int i = 0; i < UIEIBDJ4_MAX; ++i) {
-    uieibdj4->dialog [i].dialog = NULL;
+    for (int j = 0; j < UIEIBDJ4_W_MAX; ++j) {
+      uieibdj4->dialog [i].wcont [j] = NULL;
+    }
     uieibdj4->dialog [i].target = uiEntryInit (50, MAXPATHLEN);
     uieibdj4->dialog [i].newname = uiEntryInit (30, MAXPATHLEN);
-    uieibdj4->dialog [i].statusMsg = NULL;
     uieibdj4->dialog [i].targetButton = NULL;
     uieibdj4->dialog [i].uiplaylist = NULL;
     uieibdj4->dialog [i].responsecb = NULL;
@@ -132,14 +138,24 @@ uieibdj4Dialog (uieibdj4_t *uieibdj4, int expimptype)
   uieibdj4->currtype = expimptype;
   uieibdj4CreateDialog (uieibdj4);
   uieibdj4InitDisplay (uieibdj4);
-  uiDialogShow (uieibdj4->dialog [expimptype].dialog);
+  uiDialogShow (uieibdj4->dialog [expimptype].wcont [UIEIBDJ4_W_DIALOG]);
   uieibdj4->isactive = true;
 
   x = nlistGetNum (uieibdj4->options, EXP_IMP_BDJ4_POSITION_X);
   y = nlistGetNum (uieibdj4->options, EXP_IMP_BDJ4_POSITION_Y);
-  uiWindowMove (uieibdj4->dialog [expimptype].dialog, x, y, -1);
+  uiWindowMove (uieibdj4->dialog [expimptype].wcont [UIEIBDJ4_W_DIALOG], x, y, -1);
   logProcEnd (LOG_PROC, "uieibdj4Dialog", "");
   return UICB_CONT;
+}
+
+void
+uieibdj4DialogClear (uieibdj4_t *uieibdj4)
+{
+  if (uieibdj4 == NULL) {
+    return;
+  }
+
+  uiWidgetHide (uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_DIALOG]);
 }
 
 /* delayed entry validation for the audio file needs to be run */
@@ -184,6 +200,18 @@ uieibdj4GetNewName (uieibdj4_t *uieibdj4)
 }
 
 
+void
+uieibdj4UpdateStatus (uieibdj4_t *uieibdj4, int count, int tot)
+{
+  if (uieibdj4 == NULL) {
+    return;
+  }
+
+  uiutilsProgressStatus (
+      uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_STATUS_MSG],
+      count, tot);
+}
+
 /* internal routines */
 
 static void
@@ -220,7 +248,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
   }
 
-  if (uieibdj4->dialog [currtype].dialog != NULL) {
+  if (uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG] != NULL) {
     return;
   }
 
@@ -228,7 +256,8 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 
   uieibdj4->callbacks [UIEIBDJ4_CB_DIALOG] = callbackInitLong (
       uieibdj4ResponseHandler, uieibdj4);
-  uieibdj4->dialog [currtype].dialog = uiCreateDialog (uieibdj4->parentwin,
+  uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG] =
+      uiCreateDialog (uieibdj4->parentwin,
       uieibdj4->callbacks [UIEIBDJ4_CB_DIALOG],
       tbuff,
       /* CONTEXT: export/import bdj4 dialog: closes the dialog */
@@ -243,7 +272,8 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiWidgetSetAllMargins (vbox, 4);
   uiWidgetExpandHoriz (vbox);
   uiWidgetExpandVert (vbox);
-  uiDialogPackInDialog (uieibdj4->dialog [currtype].dialog, vbox);
+  uiDialogPackInDialog (
+      uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG], vbox);
 
   /* status msg */
   hbox = uiCreateHorizBox ();
@@ -253,13 +283,13 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
   uiWidgetSetClass (uiwidgetp, ACCENT_CLASS);
-  uieibdj4->dialog [currtype].statusMsg = uiwidgetp;
+  uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_STATUS_MSG] = uiwidgetp;
 
   /* error msg */
   uiwidgetp = uiCreateLabel ("");
   uiBoxPackEnd (hbox, uiwidgetp);
   uiWidgetSetClass (uiwidgetp, ERROR_CLASS);
-  uieibdj4->dialog [currtype].errorMsg = uiwidgetp;
+  uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG] = uiwidgetp;
 
   uiwcontFree (hbox);
 
@@ -317,7 +347,8 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiwcontFree (uiwidgetp);
 
     uieibdj4->dialog [currtype].uiplaylist = uiplaylistCreate (
-        uieibdj4->dialog [currtype].dialog, hbox, PL_LIST_NORMAL);
+        uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG],
+        hbox, PL_LIST_NORMAL);
     uieibdj4->callbacks [UIEIBDJ4_CB_SEL] = callbackInitLong (
         uieibdj4SelectHandler, uieibdj4);
     uiplaylistSetSelectCallback (uieibdj4->dialog [currtype].uiplaylist,
@@ -342,7 +373,8 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiBoxPackStart (hbox, uiwidgetp);
 
     uiEntrySetValidate (uieibdj4->dialog [currtype].newname,
-        uiutilsValidateSongListName, uieibdj4->dialog [currtype].errorMsg,
+        uiutilsValidateSongListName,
+        uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG],
         UIENTRY_IMMEDIATE);
   }
 
@@ -396,7 +428,8 @@ uieibdj4ResponseHandler (void *udata, long responseid)
   int             currtype;
 
   currtype = uieibdj4->currtype;
-  uiWindowGetPosition (uieibdj4->dialog [currtype].dialog, &x, &y, &ws);
+  uiWindowGetPosition (
+      uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG], &x, &y, &ws);
   nlistSetNum (uieibdj4->options, EXP_IMP_BDJ4_POSITION_X, x);
   nlistSetNum (uieibdj4->options, EXP_IMP_BDJ4_POSITION_Y, y);
 
@@ -410,12 +443,17 @@ uieibdj4ResponseHandler (void *udata, long responseid)
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: close window");
-      uiWidgetHide (uieibdj4->dialog [currtype].dialog);
+      uiWidgetHide (uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG]);
       break;
     }
     case RESPONSE_APPLY: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: expimpbdj4: apply");
-      uiWidgetHide (uieibdj4->dialog [currtype].dialog);
+      uiLabelSetText (
+          uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_STATUS_MSG],
+          /* CONTEXT: please wait... status message */
+          _("Please wait\xe2\x80\xa6"));
+      /* do not close or hide the dialog; it will stay active and */
+      /* the status message will be updated */
       if (uieibdj4->dialog [currtype].responsecb != NULL) {
         callbackHandler (uieibdj4->dialog [currtype].responsecb);
       }
@@ -430,8 +468,10 @@ uieibdj4ResponseHandler (void *udata, long responseid)
 static void
 uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype)
 {
-  uiwcontFree (uieibdj4->dialog [expimptype].dialog);
-  uieibdj4->dialog [expimptype].dialog = NULL;
+  for (int j = 0; j < UIEIBDJ4_W_MAX; ++j) {
+    uiwcontFree (uieibdj4->dialog [expimptype].wcont [j]);
+    uieibdj4->dialog [expimptype].wcont [j] = NULL;
+  }
   uiEntryFree (uieibdj4->dialog [expimptype].target);
   uieibdj4->dialog [expimptype].target = NULL;
   uiEntryFree (uieibdj4->dialog [expimptype].newname);
@@ -450,13 +490,14 @@ uieibdj4ValidateTarget (uientry_t *entry, void *udata)
   int             currtype;
 
   currtype = uieibdj4->currtype;
-  if (uieibdj4->dialog [currtype].errorMsg != NULL) {
-    uiLabelSetText (uieibdj4->dialog [currtype].errorMsg, "");
+  if (uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG] != NULL) {
+    uiLabelSetText (
+        uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG], "");
   }
   str = uiEntryGetValue (entry);
   if (! *str || ! fileopIsDirectory (str)) {
     if (*str) {
-      uiLabelSetText (uieibdj4->dialog [currtype].errorMsg,
+      uiLabelSetText (uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG],
           /* CONTEXT: export/import bdj4: invalid target folder */
           _("Invalid Folder"));
     }

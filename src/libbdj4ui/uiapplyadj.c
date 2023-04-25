@@ -36,7 +36,7 @@ enum {
 };
 
 typedef struct uiaa {
-  uiwcont_t      *parentwin;
+  uiwcont_t       *parentwin;
   nlist_t         *options;
   uiwcont_t       *aaDialog;
   uiwcont_t       *statusMsg;
