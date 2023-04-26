@@ -247,6 +247,16 @@ dbDisableLastUpdateTime (musicdb_t *musicdb)
   musicdb->updatelast = false;
 }
 
+void
+dbEnableLastUpdateTime (musicdb_t *musicdb)
+{
+  if (musicdb == NULL) {
+    return;
+  }
+
+  musicdb->updatelast = true;
+}
+
 song_t *
 dbGetByName (musicdb_t *musicdb, const char *songname)
 {

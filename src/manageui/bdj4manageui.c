@@ -3070,10 +3070,13 @@ manageExportBDJ4ResponseHandler (void *udata)
 
   dir = uieibdj4GetDir (manage->uieibdj4);
   nlistSetStr (manage->options, MANAGE_EXP_BDJ4_DIR, dir);
+
   eibdj4Free (manage->eibdj4);
   manage->eibdj4 = eibdj4Init (manage->musicdb, dir, EIBDJ4_EXPORT);
-  eibdj4SetName (manage->eibdj4, slname);
+
+  eibdj4SetPlaylist (manage->eibdj4, slname);
   eibdj4SetDBIdxList (manage->eibdj4, dbidxlist);
+
   manage->expimpbdj4state = BDJ4_STATE_PROCESS;
   mstimeset (&manage->eibdj4ChkTime, 200);
 
@@ -3086,13 +3089,20 @@ manageImportBDJ4ResponseHandler (void *udata)
 {
   manageui_t  *manage = udata;
   const char  *dir = NULL;
+  const char  *plname = NULL;
+  const char  *newname = NULL;
 
   dir = uieibdj4GetDir (manage->uieibdj4);
   nlistSetStr (manage->options, MANAGE_EXP_BDJ4_DIR, dir);
+  plname = uieibdj4GetPlaylist (manage->uieibdj4);
+  newname = uieibdj4GetNewName (manage->uieibdj4);
+
   eibdj4Free (manage->eibdj4);
   manage->eibdj4 = eibdj4Init (manage->musicdb, dir, EIBDJ4_IMPORT);
-// need playlist name
-// need new name
+
+  eibdj4SetPlaylist (manage->eibdj4, plname);
+  eibdj4SetNewName (manage->eibdj4, newname);
+
   manage->expimpbdj4state = BDJ4_STATE_PROCESS;
   mstimeset (&manage->eibdj4ChkTime, 500);
 

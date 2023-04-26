@@ -528,17 +528,19 @@ playlistGetPlaylistList (int flag, const char *dir)
   }
   if (flag == PL_LIST_DIR) {
     strlcpy (tfn, dir, sizeof (tfn));
+fprintf (stderr, "playlist-list-dir: %s\n", tfn);
     ext = BDJ4_PLAYLIST_EXT;
   }
   filelist = dirlistBasicDirList (tfn, ext);
 
   slistStartIterator (filelist, &iteridx);
   while ((tplfnm = slistIterateKey (filelist, &iteridx)) != NULL) {
+fprintf (stderr, "  fn: %s\n", tplfnm);
     pi = pathInfo (tplfnm);
     strlcpy (tfn, pi->basename, pi->blen + 1);
     tfn [pi->blen] = '\0';
-
     pathInfoFree (pi);
+
     if ((flag == PL_LIST_NORMAL || flag == PL_LIST_AUTO_SEQ) &&
         /* CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button */
         strcmp (tfn, _("QueueDance")) == 0) {

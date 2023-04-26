@@ -501,16 +501,29 @@ static int
 uieibdj4ValidateTarget (uientry_t *entry, void *udata)
 {
   uieibdj4_t  *uieibdj4 = udata;
-  const char      *str;
-  int             currtype;
+  const char  *str;
+  int         currtype;
+  char        tbuff [MAXPATHLEN];
 
   currtype = uieibdj4->currtype;
   if (uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG] != NULL) {
     uiLabelSetText (
         uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG], "");
   }
+
   str = uiEntryGetValue (entry);
-  if (! *str || ! fileopIsDirectory (str)) {
+  *tbuff = '\0';
+  if (str != NULL) {
+    snprintf (tbuff, sizeof (tbuff), "%s/data", str);
+  }
+
+  /* validation failures:
+   *   target is not set (no message displayed)
+   *   target is not a directory
+   *   if importing, target/data is not a directory
+   */
+  if (! *str || ! fileopIsDirectory (str) ||
+      (currtype == UIEIBDJ4_IMPORT && ! fileopIsDirectory (tbuff))) {
     if (*str) {
       uiLabelSetText (uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG],
           /* CONTEXT: export/import bdj4: invalid target folder */
@@ -521,7 +534,7 @@ uieibdj4ValidateTarget (uientry_t *entry, void *udata)
 
   if (uieibdj4->currtype == UIEIBDJ4_IMPORT) {
     uiplaylistSetList (uieibdj4->dialog [currtype].uiplaylist,
-        PL_LIST_DIR, str);
+        PL_LIST_DIR, tbuff);
   }
   return UIENTRY_OK;
 }
