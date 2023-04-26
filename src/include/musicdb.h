@@ -30,6 +30,7 @@ int       dbLoad (musicdb_t *);
 void      dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx);
 void      dbStartBatch (musicdb_t *db);
 void      dbEndBatch (musicdb_t *db);
+void      dbDisableLastUpdateTime (musicdb_t *db);
 size_t    dbWriteSong (musicdb_t *musicdb, song_t *song);
 size_t    dbWrite (musicdb_t *db, const char *fn, slist_t *tagList, dbidx_t rrn);
 size_t    dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList, const char *fn, dbidx_t rrn);

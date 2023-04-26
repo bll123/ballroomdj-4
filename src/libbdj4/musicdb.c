@@ -38,6 +38,7 @@ typedef struct musicdb {
   char          *fn;
   nlist_t       *tempSongs;
   bool          inbatch;
+  bool          updatelast;
 } musicdb_t;
 
 static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn);
@@ -61,6 +62,7 @@ dbOpen (const char *fn)
   musicdb->count = 0L;
   musicdb->radb = NULL;
   musicdb->inbatch = false;
+  musicdb->updatelast = true;
   musicdb->fn = mdstrdup (fn);
   /* tempsongs is ordered by dbidx */
   musicdb->tempSongs = nlistAlloc ("db-temp-songs", LIST_ORDERED, songFree);
@@ -148,6 +150,7 @@ dbLoad (musicdb_t *musicdb)
       }
       songSetNum (song, TAG_RRN, i);
       slistSetData (musicdb->songs, fstr, song);
+fprintf (stderr, "db-load: %s\n", fstr);
       ++musicdb->count;
     }
   }
@@ -196,8 +199,12 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   songSetNum (song, TAG_DBIDX, dbidx);
   if (song != NULL) {
     slistSetData (musicdb->songs, fstr, song);
+fprintf (stderr, "db-load-entry: %s\n", fstr);
   }
   if (! musicdb->inbatch) {
+// ### FIX
+    /* this is really gross. I'd like to know why it does not work */
+    /* re-test this and see what's going on */
     /* this is inefficient, but otherwise the disk buffering / file handling */
     /* causes issues w/reading an updated entry */
     raClose (musicdb->radb);
@@ -208,6 +215,10 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
 void
 dbStartBatch (musicdb_t *musicdb)
 {
+  if (musicdb == NULL) {
+    return;
+  }
+
   if (musicdb->radb == NULL) {
     musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   }
@@ -218,10 +229,24 @@ dbStartBatch (musicdb_t *musicdb)
 void
 dbEndBatch (musicdb_t *musicdb)
 {
+  if (musicdb == NULL) {
+    return;
+  }
+
   raEndBatch (musicdb->radb);
   raClose (musicdb->radb);
   musicdb->radb = NULL;
   musicdb->inbatch = false;
+}
+
+void
+dbDisableLastUpdateTime (musicdb_t *musicdb)
+{
+  if (musicdb == NULL) {
+    return;
+  }
+
+  musicdb->updatelast = false;
 }
 
 song_t *
@@ -254,6 +279,7 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
 {
   slist_t   *taglist;
   bool      rc;
+  time_t    currtime;
 
   if (song == NULL) {
     return 0;
@@ -263,6 +289,10 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
     return 0;
   }
 
+  if (musicdb->updatelast) {
+    currtime = time (NULL);
+    songSetNum (song, TAG_LAST_UPDATED, currtime);
+  }
   taglist = songTagList (song);
   rc = dbWrite (musicdb, songGetStr (song, TAG_FILE),
       taglist, songGetNum (song, TAG_RRN));
@@ -288,6 +318,9 @@ dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
   raWrite (musicdb->radb, rrn, tbuff);
 
   if (! musicdb->inbatch) {
+// ### FIX
+// figure out what's going on here.
+// this should not be necessary.
     /* this is inefficient, but otherwise the disk buffering / file handling */
     /* causes issues w/reading an updated entry */
     raClose (musicdb->radb);
@@ -302,11 +335,10 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
 {
   size_t        tblen = 0;
   slistidx_t    iteridx;
-  char          tmp [60];
   char          *tag;
   char          *data;
-  time_t        currtime;
   bool          havestatus = false;
+  char          tmp [100];
 
 
   tbuff [0] = '\0';
@@ -321,10 +353,6 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
   while ((tag = slistIterateKey (tagList, &iteridx)) != NULL) {
     if (strcmp (tag, tagdefs [TAG_FILE].tag) == 0) {
       /* already handled, must be first */
-      continue;
-    }
-    if (strcmp (tag, tagdefs [TAG_LAST_UPDATED].tag) == 0) {
-      /* will be re-written */
       continue;
     }
     if (strcmp (tag, tagdefs [TAG_STATUS].tag) == 0) {
@@ -362,15 +390,6 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
     tblen = stringAppend (tbuff, sz, tblen, _("New"));
     tblen = stringAppend (tbuff, sz, tblen, "\n");
   }
-
-  /* last-updated is always updated */
-  tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_LAST_UPDATED].tag);
-  tblen = stringAppend (tbuff, sz, tblen, "\n");
-  tblen = stringAppend (tbuff, sz, tblen, "..");
-  currtime = time (NULL);
-  snprintf (tmp, sizeof (tmp), "%"PRIu64, (uint64_t) currtime);
-  tblen = stringAppend (tbuff, sz, tblen, tmp);
-  tblen = stringAppend (tbuff, sz, tblen, "\n");
 
   return tblen;
 }

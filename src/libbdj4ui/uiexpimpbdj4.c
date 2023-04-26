@@ -225,6 +225,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   const char    *buttontext;
   char          tbuff [100];
   int           currtype;
+  const char    *odir = NULL;
 
   logProcBegin (LOG_PROC, "uieibdj4CreateDialog");
 
@@ -319,6 +320,18 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
+  if (uieibdj4->currtype == UIEIBDJ4_EXPORT) {
+    odir = nlistGetStr (uieibdj4->options, MANAGE_EXP_BDJ4_DIR);
+  }
+  if (uieibdj4->currtype == UIEIBDJ4_IMPORT) {
+    odir = nlistGetStr (uieibdj4->options, MANAGE_IMP_BDJ4_DIR);
+  }
+  if (odir == NULL) {
+    odir = sysvarsGetStr (SV_HOME);
+  }
+fprintf (stderr, "uiei: odir: %s\n", odir);
+  uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].target, odir);
+
   uieibdj4->callbacks [UIEIBDJ4_CB_TARGET] = callbackInit (
       uieibdj4TargetDialog, uieibdj4, NULL);
   uibutton = uiCreateButton (
@@ -389,22 +402,25 @@ static bool
 uieibdj4TargetDialog (void *udata)
 {
   uieibdj4_t  *uieibdj4 = udata;
-  char        *fn = NULL;
   uiselect_t  *selectdata;
+  const char  *odir = NULL;
+  char        *dir = NULL;
 
   if (uieibdj4 == NULL) {
     return UICB_STOP;
   }
 
+  odir = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].target);
   selectdata = uiDialogCreateSelect (uieibdj4->parentwin,
       /* CONTEXT: export/import bdj4 folder selection dialog: window title */
-      _("Select Folder"), sysvarsGetStr (SV_HOME), NULL, NULL, NULL);
-  fn = uiSelectDirDialog (selectdata);
-  if (fn != NULL) {
+      _("Select Folder"), odir, NULL, NULL, NULL);
+
+  dir = uiSelectDirDialog (selectdata);
+  if (dir != NULL) {
     /* the validation process will be called */
-    uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].target, fn);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
-    mdfree (fn);   // allocated by gtk
+    uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].target, dir);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", dir);
+    mdfree (dir);   // allocated by gtk
   }
   mdfree (selectdata);
 

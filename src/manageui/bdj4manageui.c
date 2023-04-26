@@ -283,6 +283,8 @@ static datafilekey_t manageuidfkeys [] = {
   { "MNG_CFPL_POS_Y",   MANAGE_CFPL_POSITION_Y,     VALUE_NUM, NULL, -1 },
   { "MNG_EXPIMP_POS_X", EXP_IMP_BDJ4_POSITION_X,    VALUE_NUM, NULL, -1 },
   { "MNG_EXPIMP_POS_Y", EXP_IMP_BDJ4_POSITION_Y,    VALUE_NUM, NULL, -1 },
+  { "MNG_EXP_BDJ4_DIR", MANAGE_EXP_BDJ4_DIR,        VALUE_STR, NULL, -1 },
+  { "MNG_IMP_BDJ4_DIR", MANAGE_IMP_BDJ4_DIR,        VALUE_STR, NULL, -1 },
   { "MNG_POS_X",        MANAGE_POSITION_X,          VALUE_NUM, NULL, -1 },
   { "MNG_POS_Y",        MANAGE_POSITION_Y,          VALUE_NUM, NULL, -1 },
   { "MNG_SELFILE_POS_X",MANAGE_SELFILE_POSITION_X,  VALUE_NUM, NULL, -1 },
@@ -515,6 +517,8 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, APPLY_ADJ_POSITION_Y, -1);
     nlistSetNum (manage.options, EXP_IMP_BDJ4_POSITION_X, -1);
     nlistSetNum (manage.options, EXP_IMP_BDJ4_POSITION_Y, -1);
+    nlistSetStr (manage.options, MANAGE_EXP_BDJ4_DIR, NULL);
+    nlistSetStr (manage.options, MANAGE_IMP_BDJ4_DIR, NULL);
   }
 
   uiUIInitialize ();
@@ -1088,8 +1092,6 @@ manageMainLoop (void *tmanage)
     if (eibdj4Process (manage->eibdj4)) {
       uiutilsProgressStatus (manage->wcont [MANAGE_W_STATUS_MSG], -1, -1);
       uieibdj4UpdateStatus (manage->uieibdj4, -1, -1);
-      eibdj4Free (manage->eibdj4);
-      manage->eibdj4 = NULL;
       uieibdj4DialogClear (manage->uieibdj4);
       manage->expimpbdj4state = BDJ4_STATE_OFF;
     }
@@ -3064,11 +3066,10 @@ manageExportBDJ4ResponseHandler (void *udata)
   nlist_t     *dbidxlist;
 
   slname = uimusicqGetSonglistName (manage->slmusicq);
-fprintf (stderr, "slname: %s\n", slname);
   dbidxlist = uimusicqGetDBIdxList (manage->slmusicq, MUSICQ_SL);
 
   dir = uieibdj4GetDir (manage->uieibdj4);
-fprintf (stderr, "dir: %s\n", dir);
+  nlistSetStr (manage->options, MANAGE_EXP_BDJ4_DIR, dir);
   eibdj4Free (manage->eibdj4);
   manage->eibdj4 = eibdj4Init (manage->musicdb, dir, EIBDJ4_EXPORT);
   eibdj4SetName (manage->eibdj4, slname);
@@ -3086,11 +3087,12 @@ manageImportBDJ4ResponseHandler (void *udata)
   manageui_t  *manage = udata;
   const char  *dir = NULL;
 
-// need playlist name
-// need new name
   dir = uieibdj4GetDir (manage->uieibdj4);
+  nlistSetStr (manage->options, MANAGE_EXP_BDJ4_DIR, dir);
   eibdj4Free (manage->eibdj4);
   manage->eibdj4 = eibdj4Init (manage->musicdb, dir, EIBDJ4_IMPORT);
+// need playlist name
+// need new name
   manage->expimpbdj4state = BDJ4_STATE_PROCESS;
   mstimeset (&manage->eibdj4ChkTime, 500);
 
