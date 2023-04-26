@@ -43,21 +43,21 @@ enum {
 };
 
 enum {
-  UIMUSICQ_CB_MOVE_TOP,
-  UIMUSICQ_CB_MOVE_UP,
-  UIMUSICQ_CB_MOVE_DOWN,
-  UIMUSICQ_CB_TOGGLE_PAUSE,
-  UIMUSICQ_CB_AUDIO_REMOVE,
-  UIMUSICQ_CB_REQ_EXTERNAL,
-  UIMUSICQ_CB_CLEAR_QUEUE,
-  UIMUSICQ_CB_EDIT_LOCAL,
-  UIMUSICQ_CB_PLAY,
-  UIMUSICQ_CB_HIST_QUEUE,
-  UIMUSICQ_CB_KEYB,
-  UIMUSICQ_CB_CHK_FAV_CHG,
-  UIMUSICQ_CB_SEL_CHG,
-  UIMUSICQ_CB_INT_ITERATE,
-  UIMUSICQ_CB_MAX,
+  MQINT_CB_MOVE_TOP,
+  MQINT_CB_MOVE_UP,
+  MQINT_CB_MOVE_DOWN,
+  MQINT_CB_TOGGLE_PAUSE,
+  MQINT_CB_AUDIO_REMOVE,
+  MQINT_CB_REQ_EXTERNAL,
+  MQINT_CB_CLEAR_QUEUE,
+  MQINT_CB_EDIT_LOCAL,
+  MQINT_CB_PLAY,
+  MQINT_CB_HIST_QUEUE,
+  MQINT_CB_KEYB,
+  MQINT_CB_CHK_FAV_CHG,
+  MQINT_CB_SEL_CHG,
+  MQINT_CB_INT_ITERATE,
+  MQINT_CB_MAX,
 };
 
 enum {
@@ -82,7 +82,7 @@ typedef struct mq_internal {
   uidance_t         *uidance;
   uidance_t         *uidance5;
   uitree_t          *musicqTree;
-  callback_t        *callbacks [UIMUSICQ_CB_MAX];
+  callback_t        *callbacks [MQINT_CB_MAX];
   uibutton_t        *buttons [UIMUSICQ_BUTTON_MAX];
   uiwcont_t         *wcont [UIMUSICQ_W_MAX];
   int               *typelist;
@@ -117,6 +117,7 @@ static bool   uimusicqKeyEvent (void *udata);
 static void   uimusicqMarkPreviousSelection (uimusicq_t *uimusicq, bool disp);
 static void   uimusicqCopySelections (uimusicq_t *uimusicq, uimusicq_t *peer, int mqidx);
 
+
 void
 uimusicqUIInit (uimusicq_t *uimusicq)
 {
@@ -132,7 +133,7 @@ uimusicqUIInit (uimusicq_t *uimusicq)
     for (int j = 0; j < UIMUSICQ_BUTTON_MAX; ++j) {
       mqint->buttons [j] = NULL;
     }
-    for (int j = 0; j < UIMUSICQ_CB_MAX; ++j) {
+    for (int j = 0; j < MQINT_CB_MAX; ++j) {
       mqint->callbacks [j] = NULL;
     }
     for (int j = 0; j < UIMUSICQ_W_MAX; ++j) {
@@ -149,7 +150,7 @@ uimusicqUIFree (uimusicq_t *uimusicq)
   for (int i = 0; i < MUSICQ_MAX; ++i) {
     mqint = uimusicq->ui [i].mqInternalData;
     if (mqint != NULL) {
-      for (int j = 0; j < UIMUSICQ_CB_MAX; ++j) {
+      for (int j = 0; j < MQINT_CB_MAX; ++j) {
         callbackFree (mqint->callbacks [j]);
       }
       for (int j = 0; j < UIMUSICQ_BUTTON_MAX; ++j) {
@@ -207,19 +208,19 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_EZSONGLIST) {
-    mqint->callbacks [UIMUSICQ_CB_MOVE_TOP] = callbackInit (
+    mqint->callbacks [MQINT_CB_MOVE_TOP] = callbackInit (
         uimusicqMoveTopCallback, uimusicq, "musicq: move-to-top");
     uibutton = uiCreateButton (
-        mqint->callbacks [UIMUSICQ_CB_MOVE_TOP],
+        mqint->callbacks [MQINT_CB_MOVE_TOP],
         /* CONTEXT: music queue: button: move the selected song to the top of the queue */
         _("Move to Top"), "button_movetop");
     mqint->buttons [UIMUSICQ_BUTTON_MOVE_TOP] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (hbox, uiwidgetp);
 
-    mqint->callbacks [UIMUSICQ_CB_MOVE_UP] = callbackInit (
+    mqint->callbacks [MQINT_CB_MOVE_UP] = callbackInit (
         uimusicqMoveUpCallback, uimusicq, "musicq: move-up");
-    uibutton = uiCreateButton (mqint->callbacks [UIMUSICQ_CB_MOVE_UP],
+    uibutton = uiCreateButton (mqint->callbacks [MQINT_CB_MOVE_UP],
         /* CONTEXT: music queue: button: move the selected song up in the queue */
         _("Move Up"), "button_up");
     mqint->buttons [UIMUSICQ_BUTTON_MOVE_UP] = uibutton;
@@ -227,9 +228,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (hbox, uiwidgetp);
 
-    mqint->callbacks [UIMUSICQ_CB_MOVE_DOWN] = callbackInit (
+    mqint->callbacks [MQINT_CB_MOVE_DOWN] = callbackInit (
         uimusicqMoveDownCallback, uimusicq, "musicq: move-down");
-    uibutton = uiCreateButton (mqint->callbacks [UIMUSICQ_CB_MOVE_DOWN],
+    uibutton = uiCreateButton (mqint->callbacks [MQINT_CB_MOVE_DOWN],
         /* CONTEXT: music queue: button: move the selected song down in the queue */
         _("Move Down"), "button_down");
     mqint->buttons [UIMUSICQ_BUTTON_MOVE_DOWN] = uibutton;
@@ -239,10 +240,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
-    mqint->callbacks [UIMUSICQ_CB_TOGGLE_PAUSE] = callbackInit (
+    mqint->callbacks [MQINT_CB_TOGGLE_PAUSE] = callbackInit (
         uimusicqTogglePauseCallback, uimusicq, "musicq: toggle-pause");
     uibutton = uiCreateButton (
-        mqint->callbacks [UIMUSICQ_CB_TOGGLE_PAUSE],
+        mqint->callbacks [MQINT_CB_TOGGLE_PAUSE],
         /* CONTEXT: music queue: button: set playback to pause after the selected song is played (toggle) */
         _("Toggle Pause"), "button_pause");
     mqint->buttons [UIMUSICQ_BUTTON_TOGGLE_PAUSE] = uibutton;
@@ -253,10 +254,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ ||
       uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_EZSONGLIST) {
-    mqint->callbacks [UIMUSICQ_CB_AUDIO_REMOVE] = callbackInit (
+    mqint->callbacks [MQINT_CB_AUDIO_REMOVE] = callbackInit (
         uimusicqRemoveCallback, uimusicq, "musicq: remove-from-queue");
     uibutton = uiCreateButton (
-        mqint->callbacks [UIMUSICQ_CB_AUDIO_REMOVE],
+        mqint->callbacks [MQINT_CB_AUDIO_REMOVE],
         /* CONTEXT: music queue: button: remove the song from the queue */
         _("Remove"), "button_audioremove");
     mqint->buttons [UIMUSICQ_BUTTON_REMOVE] = uibutton;
@@ -267,10 +268,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
-    mqint->callbacks [UIMUSICQ_CB_CLEAR_QUEUE] = callbackInit (
+    mqint->callbacks [MQINT_CB_CLEAR_QUEUE] = callbackInit (
         uimusicqTruncateQueueCallback, uimusicq, "musicq: clear-queue");
     uibutton = uiCreateButton (
-        mqint->callbacks [UIMUSICQ_CB_CLEAR_QUEUE],
+        mqint->callbacks [MQINT_CB_CLEAR_QUEUE],
         /* CONTEXT: music queue: button: clear the queue */
         _("Clear Queue"), NULL);
     mqint->buttons [UIMUSICQ_BUTTON_CLEAR_QUEUE] = uibutton;
@@ -281,18 +282,18 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_EZSONGLIST) {
-    mqint->callbacks [UIMUSICQ_CB_EDIT_LOCAL] = callbackInit (
+    mqint->callbacks [MQINT_CB_EDIT_LOCAL] = callbackInit (
         uimusicqSongEditCallback, uimusicq, "musicq: edit");
-    uibutton = uiCreateButton (mqint->callbacks [UIMUSICQ_CB_EDIT_LOCAL],
+    uibutton = uiCreateButton (mqint->callbacks [MQINT_CB_EDIT_LOCAL],
         /* CONTEXT: music queue: edit the selected song */
         _("Edit"), "button_edit");
     mqint->buttons [UIMUSICQ_BUTTON_EDIT] = uibutton;
     uiwidgetp = uiButtonGetWidgetContainer (uibutton);
     uiBoxPackStart (hbox, uiwidgetp);
 
-    mqint->callbacks [UIMUSICQ_CB_PLAY] = callbackInit (
+    mqint->callbacks [MQINT_CB_PLAY] = callbackInit (
         uimusicqPlayCallback, uimusicq, "musicq: play");
-    uibutton = uiCreateButton (mqint->callbacks [UIMUSICQ_CB_PLAY],
+    uibutton = uiCreateButton (mqint->callbacks [MQINT_CB_PLAY],
         /* CONTEXT: music queue: play the selected song */
         _("Play"), NULL);
     mqint->buttons [UIMUSICQ_BUTTON_PLAY] = uibutton;
@@ -301,9 +302,9 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_HISTORY) {
-    mqint->callbacks [UIMUSICQ_CB_HIST_QUEUE] = callbackInit (
+    mqint->callbacks [MQINT_CB_HIST_QUEUE] = callbackInit (
         uimusicqQueueCallback, uimusicq, "musicq: queue");
-    uibutton = uiCreateButton (mqint->callbacks [UIMUSICQ_CB_HIST_QUEUE],
+    uibutton = uiCreateButton (mqint->callbacks [MQINT_CB_HIST_QUEUE],
         /* CONTEXT: (verb) history: re-queue the selected song */
         _("Queue"), NULL);
     mqint->buttons [UIMUSICQ_BUTTON_QUEUE] = uibutton;
@@ -317,30 +318,30 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   }
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_MUSICQ) {
-    if (uimusicq->callbacks [MUSICQ_CB_QUEUE_PLAYLIST] == NULL) {
-      uimusicq->callbacks [MUSICQ_CB_QUEUE_PLAYLIST] = callbackInitLong (
+    if (uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST] == NULL) {
+      uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST] = callbackInitLong (
           uimusicqQueuePlaylistCallback, uimusicq);
     }
     uiwidgetp = uiDropDownCreate (uimusicq->ui [ci].playlistsel, parentwin,
         /* CONTEXT: (verb) music queue: button: queue a playlist for playback */
-        _("Queue Playlist"), uimusicq->callbacks [MUSICQ_CB_QUEUE_PLAYLIST], uimusicq);
+        _("Queue Playlist"), uimusicq->callbacks [UIMUSICQ_CB_QUEUE_PLAYLIST], uimusicq);
     uiBoxPackEnd (hbox, uiwidgetp);
     uimusicqCreatePlaylistList (uimusicq);
 
     if (bdjoptGetNumPerQueue (OPT_Q_SHOW_QUEUE_DANCE, ci)) {
-      if (uimusicq->callbacks [MUSICQ_CB_QUEUE_DANCE] == NULL) {
-        uimusicq->callbacks [MUSICQ_CB_QUEUE_DANCE] = callbackInitLongInt (
+      if (uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE] == NULL) {
+        uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE] = callbackInitLongInt (
             uimusicqQueueDanceCallback, uimusicq);
       }
       mqint->uidance5 = uidanceDropDownCreate (hbox, parentwin,
           /* CONTEXT: (verb) music queue: button: queue 5 dances for playback */
           UIDANCE_NONE, _("Queue 5"), UIDANCE_PACK_END, 5);
-      uidanceSetCallback (mqint->uidance5, uimusicq->callbacks [MUSICQ_CB_QUEUE_DANCE]);
+      uidanceSetCallback (mqint->uidance5, uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE]);
 
       mqint->uidance = uidanceDropDownCreate (hbox, parentwin,
           /* CONTEXT: (verb) music queue: button: queue a dance for playback */
           UIDANCE_NONE, _("Queue Dance"), UIDANCE_PACK_END, 1);
-      uidanceSetCallback (mqint->uidance, uimusicq->callbacks [MUSICQ_CB_QUEUE_DANCE]);
+      uidanceSetCallback (mqint->uidance, uimusicq->callbacks [UIMUSICQ_CB_QUEUE_DANCE]);
     }
   }
 
@@ -386,10 +387,10 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
   uiBoxPackInWindow (scwin, uitreewidgetp);
   uiwcontFree (scwin);
 
-  mqint->callbacks [UIMUSICQ_CB_CHK_FAV_CHG] = callbackInitLong (
+  mqint->callbacks [MQINT_CB_CHK_FAV_CHG] = callbackInitLong (
         uimusicqCheckFavChgCallback, uimusicq);
   uiTreeViewSetRowActivatedCallback (mqint->musicqTree,
-        mqint->callbacks [UIMUSICQ_CB_CHK_FAV_CHG]);
+        mqint->callbacks [MQINT_CB_CHK_FAV_CHG]);
 
   uiTreeViewAppendColumn (mqint->musicqTree, TREE_NO_COLUMN,
       TREE_WIDGET_TEXT, TREE_ALIGN_RIGHT,
@@ -414,21 +415,21 @@ uimusicqBuildUI (uimusicq_t *uimusicq, uiwcont_t *parentwin, int ci,
 
   uimusicq->musicqManageIdx = saveci;
 
-  mqint->callbacks [UIMUSICQ_CB_SEL_CHG] = callbackInit (
+  mqint->callbacks [MQINT_CB_SEL_CHG] = callbackInit (
         uimusicqSelectionChgCallback, uimusicq, NULL);
   uiTreeViewSetSelectChangedCallback (mqint->musicqTree,
-        mqint->callbacks [UIMUSICQ_CB_SEL_CHG]);
+        mqint->callbacks [MQINT_CB_SEL_CHG]);
 
   if (uimusicq->ui [ci].dispselType == DISP_SEL_SONGLIST ||
       uimusicq->ui [ci].dispselType == DISP_SEL_EZSONGLIST) {
     mqint->uikey = uiKeyAlloc ();
-    mqint->callbacks [UIMUSICQ_CB_KEYB] = callbackInit (
+    mqint->callbacks [MQINT_CB_KEYB] = callbackInit (
         uimusicqKeyEvent, uimusicq, NULL);
     uiKeySetKeyCallback (mqint->uikey, uitreewidgetp,
-        mqint->callbacks [UIMUSICQ_CB_KEYB]);
+        mqint->callbacks [MQINT_CB_KEYB]);
   }
 
-  mqint->callbacks [UIMUSICQ_CB_INT_ITERATE] = callbackInit (
+  mqint->callbacks [MQINT_CB_INT_ITERATE] = callbackInit (
         uimusicqIterateCallback, uimusicq, NULL);
 
   uiwcontFree (hbox);
@@ -548,17 +549,23 @@ uimusicqMusicQueueSetSelected (uimusicq_t *uimusicq, int mqidx, int which)
   logProcEnd (LOG_PROC, "uimusicqMusicQueueSetSelected", "");
 }
 
-void
-uimusicqIterate (uimusicq_t *uimusicq, callback_t *cb, musicqidx_t mqidx)
+nlist_t *
+uimusicqGetDBIdxList (uimusicq_t *uimusicq, musicqidx_t mqidx)
 {
-  mq_internal_t *mqint;
+  mq_internal_t   *mqint;
 
-  uimusicq->cbcopy [MUSICQ_CBC_ITERATE] = cb;
   mqint = uimusicq->ui [mqidx].mqInternalData;
+
+  uimusicq->cbcopy [UIMUSICQ_CBC_ITERATE] =
+      uimusicq->callbacks [UIMUSICQ_CB_SAVE_LIST];
+  nlistFree (uimusicq->savelist);
+  uimusicq->savelist = nlistAlloc ("savelist", LIST_UNORDERED, NULL);
   uiTreeViewValueIteratorSet (mqint->musicqTree, 0);
   uiTreeViewForeach (mqint->musicqTree,
-      mqint->callbacks [UIMUSICQ_CB_INT_ITERATE]);
+      mqint->callbacks [MQINT_CB_INT_ITERATE]);
   uiTreeViewValueIteratorClear (mqint->musicqTree);
+
+  return uimusicq->savelist;
 }
 
 long
@@ -604,8 +611,8 @@ uimusicqTruncateQueueCallback (void *udata)
 
   ci = uimusicq->musicqManageIdx;
 
-  if (uimusicq->cbcopy [MUSICQ_CBC_CLEAR_QUEUE] != NULL) {
-    callbackHandler (uimusicq->cbcopy [MUSICQ_CBC_CLEAR_QUEUE]);
+  if (uimusicq->cbcopy [UIMUSICQ_CBC_CLEAR_QUEUE] != NULL) {
+    callbackHandler (uimusicq->cbcopy [UIMUSICQ_CBC_CLEAR_QUEUE]);
   }
 
   idx = uimusicqGetSelectLocation (uimusicq, ci);
@@ -847,8 +854,8 @@ uimusicqIterateCallback (void *udata)
   }
 
   dbidx = uiTreeViewGetValue (mqint->musicqTree, UIMUSICQ_COL_DBIDX);
-  if (uimusicq->cbcopy [MUSICQ_CBC_ITERATE] != NULL) {
-    callbackHandlerLong (uimusicq->cbcopy [MUSICQ_CBC_ITERATE], dbidx);
+  if (uimusicq->cbcopy [UIMUSICQ_CBC_ITERATE] != NULL) {
+    callbackHandlerLong (uimusicq->cbcopy [UIMUSICQ_CBC_ITERATE], dbidx);
   }
   return UICB_CONT;
 }
@@ -898,8 +905,8 @@ uimusicqQueueCallback (void *udata)
 
   dbidx = uimusicqGetSelectionDbidx (uimusicq);
 
-  if (uimusicq->cbcopy [MUSICQ_CBC_QUEUE] != NULL) {
-    callbackHandlerLong (uimusicq->cbcopy [MUSICQ_CBC_QUEUE], dbidx);
+  if (uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE] != NULL) {
+    callbackHandlerLong (uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE], dbidx);
   }
   return UICB_CONT;
 }
@@ -964,8 +971,8 @@ uimusicqSelectionChgProcess (uimusicq_t *uimusicq)
 
   dbidx = uimusicqGetSelectionDbidx (uimusicq);
   if (dbidx >= 0 &&
-      uimusicq->cbcopy [MUSICQ_CBC_NEW_SEL] != NULL) {
-    callbackHandlerLong (uimusicq->cbcopy [MUSICQ_CBC_NEW_SEL], dbidx);
+      uimusicq->cbcopy [UIMUSICQ_CBC_NEW_SEL] != NULL) {
+    callbackHandlerLong (uimusicq->cbcopy [UIMUSICQ_CBC_NEW_SEL], dbidx);
   }
 
   if (loc != MUSICQ_FORCE_LAST) {
@@ -1071,14 +1078,14 @@ uimusicqSongEditCallback (void *udata)
   dbidx_t         dbidx;
 
 
-  if (uimusicq->cbcopy [MUSICQ_CBC_NEW_SEL] != NULL) {
+  if (uimusicq->cbcopy [UIMUSICQ_CBC_NEW_SEL] != NULL) {
     dbidx = uimusicqGetSelectionDbidx (uimusicq);
     if (dbidx < 0) {
       return UICB_CONT;
     }
-    callbackHandlerLong (uimusicq->cbcopy [MUSICQ_CBC_NEW_SEL], dbidx);
+    callbackHandlerLong (uimusicq->cbcopy [UIMUSICQ_CBC_NEW_SEL], dbidx);
   }
-  return callbackHandler (uimusicq->cbcopy [MUSICQ_CBC_EDIT]);
+  return callbackHandler (uimusicq->cbcopy [UIMUSICQ_CBC_EDIT]);
 }
 
 static bool
@@ -1222,8 +1229,8 @@ uimusicqCheckFavChgCallback (void *udata, long col)
   song = dbGetByIdx (uimusicq->musicdb, dbidx);
   if (song != NULL) {
     songChangeFavorite (song);
-    if (uimusicq->cbcopy [MUSICQ_CBC_SONG_SAVE] != NULL) {
-      callbackHandlerLong (uimusicq->cbcopy [MUSICQ_CBC_SONG_SAVE], dbidx);
+    if (uimusicq->cbcopy [UIMUSICQ_CBC_SONG_SAVE] != NULL) {
+      callbackHandlerLong (uimusicq->cbcopy [UIMUSICQ_CBC_SONG_SAVE], dbidx);
     }
   }
 

@@ -37,6 +37,7 @@ add_library (libbdj4 SHARED
   songfav.c
   songfilter.c
   songlist.c
+  songlistutil.c
   songsel.c
   songutil.c
   sortopt.c

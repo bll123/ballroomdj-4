@@ -25,13 +25,12 @@
 #include "pathutil.h"
 #include "song.h"
 #include "songlist.h"
+#include "songlistutil.h"
 #include "sysvars.h"
 #include "tagdef.h"
 #include "ui.h"
 #include "callback.h"
 #include "uimusicq.h"
-
-static bool   uimusicqSaveListCallback (void *udata, long dbidx);
 
 uimusicq_t *
 uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
@@ -49,14 +48,12 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
   uimusicq->dispsel = dispsel;
   uimusicq->musicdb = musicdb;
   uimusicq->statusMsg = NULL;
-  for (int i = 0; i < MUSICQ_CB_MAX; ++i) {
+  for (int i = 0; i < UIMUSICQ_CB_MAX; ++i) {
     uimusicq->callbacks [i] = NULL;
   }
-  for (int i = 0; i < MUSICQ_CBC_MAX; ++i) {
+  for (int i = 0; i < UIMUSICQ_CBC_MAX; ++i) {
     uimusicq->cbcopy [i] = NULL;
   }
-  uimusicq->callbacks [MUSICQ_CB_SAVE_LIST] = callbackInitLong (
-        uimusicqSaveListCallback, uimusicq);
   uimusicq->musicqManageIdx = MUSICQ_PB_A;
   uimusicq->musicqPlayIdx = MUSICQ_PB_A;
   uimusicq->savelist = NULL;
@@ -107,6 +104,9 @@ uimusicqInit (const char *tag, conn_t *conn, musicdb_t *musicdb,
     uimusicq->ui [i].slname = uiEntryInit (sz, 40);
   }
 
+  uimusicq->callbacks [UIMUSICQ_CB_SAVE_LIST] =
+      callbackInitLong (uimusicqSaveListCallback, uimusicq);
+
   logProcEnd (LOG_PROC, "uimusicqInit", "");
   return uimusicq;
 }
@@ -132,7 +132,7 @@ uimusicqFree (uimusicq_t *uimusicq)
 {
   logProcBegin (LOG_PROC, "uimusicqFree");
   if (uimusicq != NULL) {
-    for (int i = 0; i < MUSICQ_CB_MAX; ++i) {
+    for (int i = 0; i < UIMUSICQ_CB_MAX; ++i) {
       callbackFree (uimusicq->callbacks [i]);
     }
     for (int i = 0; i < MUSICQ_MAX; ++i) {
@@ -144,6 +144,7 @@ uimusicqFree (uimusicq_t *uimusicq)
 
     uiWidgetClearPersistent (uimusicq->pausePixbuf);
     uiwcontFree (uimusicq->pausePixbuf);
+    nlistFree (uimusicq->savelist);
 
     mdfree (uimusicq);
   }
@@ -175,7 +176,7 @@ uimusicqSetSelectionCallback (uimusicq_t *uimusicq, callback_t *uicbdbidx)
   if (uimusicq == NULL) {
     return;
   }
-  uimusicq->cbcopy [MUSICQ_CBC_NEW_SEL] = uicbdbidx;
+  uimusicq->cbcopy [UIMUSICQ_CBC_NEW_SEL] = uicbdbidx;
 }
 
 void
@@ -184,7 +185,7 @@ uimusicqSetSongSaveCallback (uimusicq_t *uimusicq, callback_t *uicb)
   if (uimusicq == NULL) {
     return;
   }
-  uimusicq->cbcopy [MUSICQ_CBC_SONG_SAVE] = uicb;
+  uimusicq->cbcopy [UIMUSICQ_CBC_SONG_SAVE] = uicb;
 }
 
 void
@@ -193,7 +194,7 @@ uimusicqSetClearQueueCallback (uimusicq_t *uimusicq, callback_t *uicb)
   if (uimusicq == NULL) {
     return;
   }
-  uimusicq->cbcopy [MUSICQ_CBC_CLEAR_QUEUE] = uicb;
+  uimusicq->cbcopy [UIMUSICQ_CBC_CLEAR_QUEUE] = uicb;
 }
 
 void
@@ -246,15 +247,6 @@ uimusicqGetCount (uimusicq_t *uimusicq)
 void
 uimusicqSave (uimusicq_t *uimusicq, const char *fname)
 {
-  char        tbuff [MAXPATHLEN];
-  nlistidx_t  iteridx;
-  dbidx_t     dbidx;
-  songlist_t  *songlist;
-  songlist_t  *tsl;
-  song_t      *song;
-  ilistidx_t  key;
-  int         distvers;
-
   logProcBegin (LOG_PROC, "uimusicqSave");
 
   if (! uimusicq->changed) {
@@ -262,31 +254,11 @@ uimusicqSave (uimusicq_t *uimusicq, const char *fname)
     return;
   }
 
-  snprintf (tbuff, sizeof (tbuff), "save-%s", fname);
-  uimusicq->savelist = nlistAlloc (tbuff, LIST_UNORDERED, NULL);
-  uimusicqIterate (uimusicq, uimusicq->callbacks [MUSICQ_CB_SAVE_LIST], MUSICQ_SL);
+  uimusicqGetDBIdxList (uimusicq, MUSICQ_SL);
+  songlistutilCreateFromList (uimusicq->musicdb, fname, uimusicq->savelist);
 
-  songlist = songlistAlloc (fname);
-
-  nlistStartIterator (uimusicq->savelist, &iteridx);
-  key = 0;
-  while ((dbidx = nlistIterateKey (uimusicq->savelist, &iteridx)) >= 0) {
-    song = dbGetByIdx (uimusicq->musicdb, dbidx);
-
-    songlistSetStr (songlist, key, SONGLIST_FILE, songGetStr (song, TAG_FILE));
-    songlistSetStr (songlist, key, SONGLIST_TITLE, songGetStr (song, TAG_TITLE));
-    songlistSetNum (songlist, key, SONGLIST_DANCE, songGetNum (song, TAG_DANCE));
-    ++key;
-  }
-
-  tsl = songlistLoad (fname);
-  distvers = songlistDistVersion (tsl);
-  songlistFree (tsl);
-  songlistSave (songlist, SONGLIST_UPDATE_TIMESTAMP, distvers);
-  songlistFree (songlist);
-  nlistFree (uimusicq->savelist);
-  uimusicq->savelist = NULL;
   uimusicq->changed = false;
+
   logProcEnd (LOG_PROC, "uimusicqSave", "");
 }
 
@@ -297,19 +269,14 @@ uimusicqSetEditCallback (uimusicq_t *uimusicq, callback_t *uicb)
     return;
   }
 
-  uimusicq->cbcopy [MUSICQ_CBC_EDIT] = uicb;
+  uimusicq->cbcopy [UIMUSICQ_CBC_EDIT] = uicb;
 }
 
 void
 uimusicqExportM3U (uimusicq_t *uimusicq, const char *fname, const char *slname)
 {
-  uimusicq->savelist = nlistAlloc ("m3u-export", LIST_UNORDERED, NULL);
-  uimusicqIterate (uimusicq, uimusicq->callbacks [MUSICQ_CB_SAVE_LIST], MUSICQ_SL);
-
+  uimusicqGetDBIdxList (uimusicq, MUSICQ_SL);
   m3uExport (uimusicq->musicdb, uimusicq->savelist, fname, slname);
-
-  nlistFree (uimusicq->savelist);
-  uimusicq->savelist = NULL;
 }
 
 void
@@ -325,16 +292,5 @@ uimusicqSetQueueCallback (uimusicq_t *uimusicq, callback_t *uicb)
   if (uimusicq == NULL) {
     return;
   }
-  uimusicq->cbcopy [MUSICQ_CBC_QUEUE] = uicb;
-}
-
-/* internal routines */
-
-static bool
-uimusicqSaveListCallback (void *udata, long dbidx)
-{
-  uimusicq_t  *uimusicq = udata;
-
-  nlistSetStr (uimusicq->savelist, dbidx, NULL);
-  return UICB_CONT;
+  uimusicq->cbcopy [UIMUSICQ_CBC_QUEUE] = uicb;
 }
