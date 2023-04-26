@@ -3093,7 +3093,7 @@ manageImportBDJ4ResponseHandler (void *udata)
   const char  *newname = NULL;
 
   dir = uieibdj4GetDir (manage->uieibdj4);
-  nlistSetStr (manage->options, MANAGE_EXP_BDJ4_DIR, dir);
+  nlistSetStr (manage->options, MANAGE_IMP_BDJ4_DIR, dir);
   plname = uieibdj4GetPlaylist (manage->uieibdj4);
   newname = uieibdj4GetNewName (manage->uieibdj4);
 

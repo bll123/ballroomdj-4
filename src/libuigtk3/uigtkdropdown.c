@@ -127,6 +127,7 @@ uiDropDownCreate (uidropdown_t *dropdown, uiwcont_t *parentwin,
   dropdown->title = mdstrdup (title);
   uiDropDownButtonCreate (dropdown);
   uiDropDownWindowCreate (dropdown, uicb, udata);
+
   return uiButtonGetWidgetContainer (dropdown->button);
 }
 
@@ -150,8 +151,6 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   char              *dispval;
   GtkTreeIter       iter;
   GtkListStore      *store = NULL;
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
   ilistidx_t        iteridx;
   nlistidx_t        internalidx;
   uiwcont_t        *uitreewidgetp;
@@ -164,6 +163,7 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_LONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 
+  slistFree (dropdown->strIndexMap);
   dropdown->strIndexMap = slistAlloc ("uiutils-str-index", LIST_ORDERED, NULL);
   internalidx = 0;
 
@@ -203,18 +203,6 @@ uiDropDownSetList (uidropdown_t *dropdown, slist_t *list,
     ++internalidx;
   }
 
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", UIUTILS_DROPDOWN_COL_DISP, NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", UIUTILS_DROPDOWN_COL_SB_PAD, NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
-
   gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget),
       GTK_TREE_MODEL (store));
   g_object_unref (store);
@@ -227,13 +215,11 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
   char              *dispval;
   GtkTreeIter       iter;
   GtkListStore      *store = NULL;
-  GtkCellRenderer   *renderer = NULL;
-  GtkTreeViewColumn *column = NULL;
   char              tbuff [200];
   ilistidx_t        iteridx;
   nlistidx_t        internalidx;
   nlistidx_t        idx;
-  uiwcont_t        *uitreewidgetp;
+  uiwcont_t         *uitreewidgetp;
 
   store = gtk_list_store_new (UIUTILS_DROPDOWN_COL_MAX,
       G_TYPE_LONG, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
@@ -279,18 +265,6 @@ uiDropDownSetNumList (uidropdown_t *dropdown, slist_t *list,
         -1);
     ++internalidx;
   }
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", UIUTILS_DROPDOWN_COL_DISP, NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
-
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes ("",
-      renderer, "text", UIUTILS_DROPDOWN_COL_SB_PAD, NULL);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_append_column (GTK_TREE_VIEW (uitreewidgetp->widget), column);
 
   gtk_tree_view_set_model (GTK_TREE_VIEW (uitreewidgetp->widget),
       GTK_TREE_MODEL (store));
@@ -401,7 +375,7 @@ uiDropDownButtonCreate (uidropdown_t *dropdown)
 {
   uiwcont_t  *uiwidgetp;
 
-  dropdown->buttoncb = callbackInit ( uiDropDownWindowShow, dropdown, NULL);
+  dropdown->buttoncb = callbackInit (uiDropDownWindowShow, dropdown, NULL);
   dropdown->button = uiCreateButton (dropdown->buttoncb, NULL,
       "button_down_small");
   uiButtonAlignLeft (dropdown->button);
@@ -416,10 +390,12 @@ static void
 uiDropDownWindowCreate (uidropdown_t *dropdown,
     callback_t *uicb, void *udata)
 {
-  uiwcont_t        *uiwidgetp;
-  uiwcont_t        *vbox = NULL;
-  uiwcont_t        *mainvbox = NULL;
-  uiwcont_t        *uiscwin;
+  uiwcont_t         *uiwidgetp;
+  uiwcont_t         *vbox = NULL;
+  uiwcont_t         *mainvbox = NULL;
+  uiwcont_t         *uiscwin;
+  GtkCellRenderer   *renderer = NULL;
+  GtkTreeViewColumn *column = NULL;
 
 
   dropdown->closecb = callbackInit ( uiDropDownClose, dropdown, NULL);
@@ -448,6 +424,19 @@ uiDropDownWindowCreate (uidropdown_t *dropdown,
   uiWidgetExpandHoriz (uiwidgetp);
   uiWidgetExpandVert (uiwidgetp);
   uiBoxPackInWindow (uiscwin, uiwidgetp);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("",
+      renderer, "text", UIUTILS_DROPDOWN_COL_DISP, NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_GROW_ONLY);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uiwidgetp->widget), column);
+
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("",
+      renderer, "text", UIUTILS_DROPDOWN_COL_SB_PAD, NULL);
+  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (uiwidgetp->widget), column);
+
   if (uicb != NULL) {
     dropdown->selectcb = uicb;
     g_signal_connect (uiwidgetp->widget, "row-activated",
@@ -467,7 +456,7 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
   GtkTreeIter   iter;
   char          tbuff [200];
   char          *p;
-  uiwcont_t    *uitreewidgetp;
+  uiwcont_t     *uitreewidgetp;
 
 
   if (dropdown == NULL || dropdown->uitree == NULL) {
@@ -484,7 +473,6 @@ uiDropDownSelectionSet (uidropdown_t *dropdown, nlistidx_t internalidx)
 
   uiTreeViewSelectSet (dropdown->uitree, internalidx);
 
-  // the next two lines can be removed once path is no longer needed.
   snprintf (tbuff, sizeof (tbuff), "%d", internalidx);
   path = gtk_tree_path_new_from_string (tbuff);
   mdextalloc (path);

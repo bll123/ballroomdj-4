@@ -64,6 +64,9 @@ void
 uiplaylistFree (uiplaylist_t *uiplaylist)
 {
   if (uiplaylist != NULL) {
+    for (int i = 0; i < UIPLAYLIST_CB_MAX; ++i) {
+      callbackFree (uiplaylist->callbacks [i]);
+    }
     uiDropDownFree (uiplaylist->dropdown);
     mdfree (uiplaylist);
   }

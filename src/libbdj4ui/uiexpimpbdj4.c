@@ -92,6 +92,13 @@ uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
   }
   uieibdj4->isactive = false;
 
+  uieibdj4->callbacks [UIEIBDJ4_CB_DIALOG] = callbackInitLong (
+      uieibdj4ResponseHandler, uieibdj4);
+  uieibdj4->callbacks [UIEIBDJ4_CB_TARGET] = callbackInit (
+      uieibdj4TargetDialog, uieibdj4, NULL);
+  uieibdj4->callbacks [UIEIBDJ4_CB_SEL] = callbackInitLong (
+      uieibdj4SelectHandler, uieibdj4);
+
   return uieibdj4;
 }
 
@@ -255,8 +262,6 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 
   szgrp = uiCreateSizeGroupHoriz ();
 
-  uieibdj4->callbacks [UIEIBDJ4_CB_DIALOG] = callbackInitLong (
-      uieibdj4ResponseHandler, uieibdj4);
   uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG] =
       uiCreateDialog (uieibdj4->parentwin,
       uieibdj4->callbacks [UIEIBDJ4_CB_DIALOG],
@@ -331,8 +336,6 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   }
   uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].target, odir);
 
-  uieibdj4->callbacks [UIEIBDJ4_CB_TARGET] = callbackInit (
-      uieibdj4TargetDialog, uieibdj4, NULL);
   uibutton = uiCreateButton (
       uieibdj4->callbacks [UIEIBDJ4_CB_TARGET],
       "", NULL);
@@ -361,8 +364,6 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uieibdj4->dialog [currtype].uiplaylist = uiplaylistCreate (
         uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_DIALOG],
         hbox, PL_LIST_NORMAL);
-    uieibdj4->callbacks [UIEIBDJ4_CB_SEL] = callbackInitLong (
-        uieibdj4SelectHandler, uieibdj4);
     uiplaylistSetSelectCallback (uieibdj4->dialog [currtype].uiplaylist,
         uieibdj4->callbacks [UIEIBDJ4_CB_SEL]);
 

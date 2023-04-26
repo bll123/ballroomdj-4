@@ -33,10 +33,11 @@ typedef struct eibdj4 {
   char        dbfname [MAXPATHLEN];
   char        musicdir [MAXPATHLEN];
   char        origmusicdir [MAXPATHLEN];
-  nlist_t     *dbidxlist;
-  nlistidx_t  dbidxiter;
   char        *plName;
   char        *newName;
+  nlist_t     *dbidxlist;
+  nlistidx_t  dbidxiter;
+  slistidx_t  dbiteridx;
   int         eiflag;
   int         counter;
   int         totcount;
@@ -100,6 +101,9 @@ eibdj4SetPlaylist (eibdj4_t *eibdj4, const char *name)
   if (eibdj4 == NULL) {
     return;
   }
+  if (name == NULL) {
+    return;
+  }
 
   eibdj4->plName = mdstrdup (name);
 }
@@ -108,6 +112,9 @@ void
 eibdj4SetNewName (eibdj4_t *eibdj4, const char *name)
 {
   if (eibdj4 == NULL) {
+    return;
+  }
+  if (name == NULL) {
     return;
   }
 
@@ -304,7 +311,6 @@ static bool
 eibdj4ProcessImport (eibdj4_t *eibdj4)
 {
   bool        rc = true;
-  slistidx_t  dbiteridx;
 
   if (eibdj4 == NULL) {
     return rc;
@@ -317,7 +323,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
     eibdj4->totcount = dbCount (eibdj4->eimusicdb);
 
     dbDisableLastUpdateTime (eibdj4->musicdb);
-    dbStartIterator (eibdj4->eimusicdb, &dbiteridx);
+    dbStartIterator (eibdj4->eimusicdb, &eibdj4->dbiteridx);
 
     eibdj4->state = BDJ4_STATE_PROCESS;
     rc = false;
@@ -327,7 +333,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
     song_t    *song;
     dbidx_t   dbidx;
 
-    song = dbIterate (eibdj4->eimusicdb, &dbidx, &dbiteridx);
+    song = dbIterate (eibdj4->eimusicdb, &dbidx, &eibdj4->dbiteridx);
 
     if (song != NULL) {
       const char    *songfn;

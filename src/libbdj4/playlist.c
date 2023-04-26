@@ -513,7 +513,7 @@ playlistGetPlaylistList (int flag, const char *dir)
     return NULL;
   }
 
-  pnlist = slistAlloc ("playlistlist", LIST_ORDERED, NULL);
+  pnlist = slistAlloc ("playlistlist", LIST_UNORDERED, NULL);
 
   pathbldMakePath (tfn, sizeof (tfn), "", "", PATHBLD_MP_DREL_DATA);
   ext = BDJ4_PLAYLIST_EXT;
@@ -528,14 +528,12 @@ playlistGetPlaylistList (int flag, const char *dir)
   }
   if (flag == PL_LIST_DIR) {
     strlcpy (tfn, dir, sizeof (tfn));
-fprintf (stderr, "playlist-list-dir: %s\n", tfn);
     ext = BDJ4_PLAYLIST_EXT;
   }
   filelist = dirlistBasicDirList (tfn, ext);
 
   slistStartIterator (filelist, &iteridx);
   while ((tplfnm = slistIterateKey (filelist, &iteridx)) != NULL) {
-fprintf (stderr, "  fn: %s\n", tplfnm);
     pi = pathInfo (tplfnm);
     strlcpy (tfn, pi->basename, pi->blen + 1);
     tfn [pi->blen] = '\0';
@@ -543,7 +541,8 @@ fprintf (stderr, "  fn: %s\n", tplfnm);
 
     if ((flag == PL_LIST_NORMAL || flag == PL_LIST_AUTO_SEQ) &&
         /* CONTEXT: playlist: the name for the special playlist used for the 'queue dance' button */
-        strcmp (tfn, _("QueueDance")) == 0) {
+        (strcmp (tfn, _("QueueDance")) == 0 ||
+        strcmp (tfn, "QueueDance") == 0)) {
       continue;
     }
     if (flag == PL_LIST_AUTO_SEQ) {
@@ -555,6 +554,7 @@ fprintf (stderr, "  fn: %s\n", tplfnm);
     slistSetStr (pnlist, tfn, tfn);
   }
 
+  slistSort (pnlist);
   slistFree (filelist);
 
   return pnlist;
