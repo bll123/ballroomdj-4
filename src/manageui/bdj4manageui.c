@@ -1086,7 +1086,7 @@ manageMainLoop (void *tmanage)
       eibdj4GetCount (manage->eibdj4, &count, &tot);
       uiutilsProgressStatus (manage->wcont [MANAGE_W_STATUS_MSG], count, tot);
       uieibdj4UpdateStatus (manage->uieibdj4, count, tot);
-      mstimeset (&manage->eibdj4ChkTime, 500);
+      mstimeset (&manage->eibdj4ChkTime, 200);
     }
 
     if (eibdj4Process (manage->eibdj4)) {
@@ -3075,7 +3075,7 @@ manageExportBDJ4ResponseHandler (void *udata)
   eibdj4SetName (manage->eibdj4, slname);
   eibdj4SetDBIdxList (manage->eibdj4, dbidxlist);
   manage->expimpbdj4state = BDJ4_STATE_PROCESS;
-  mstimeset (&manage->eibdj4ChkTime, 500);
+  mstimeset (&manage->eibdj4ChkTime, 200);
 
   mdfree (slname);
   return UICB_CONT;

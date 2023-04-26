@@ -156,6 +156,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
 
   if (eibdj4->state == BDJ4_STATE_START) {
     nlistStartIterator (eibdj4->dbidxlist, &eibdj4->dbidxiter);
+    eibdj4->totcount = nlistGetCount (eibdj4->dbidxlist);
 
     snprintf (tbuff, sizeof (tbuff), "%s/data", eibdj4->dirname);
     diropMakeDir (tbuff);
@@ -195,6 +196,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
     song_t      *song;
     song_t      *tsong;
     bool        doupdate = true;
+    bool        docopy = true;
     const char  *fstr;
     char        *ffn;
     char        tfn [MAXPATHLEN];
@@ -202,11 +204,9 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
     pathinfo_t  *pi;
 
     if ((dbidx = nlistIterateKey (eibdj4->dbidxlist, &eibdj4->dbidxiter)) >= 0) {
-fprintf (stderr, "export %d\n", dbidx);
       song = dbGetByIdx (eibdj4->musicdb, dbidx);
 
       fstr = songGetStr (song, TAG_FILE);
-fprintf (stderr, "  fn: %s\n", fstr);
       strlcpy (tfn, fstr, sizeof (tfn));
       ffn = songutilFullFileName (fstr);
       if (songutilIsAbsolutePath (fstr)) {
@@ -217,15 +217,12 @@ fprintf (stderr, "  fn: %s\n", fstr);
       }
       /* tbuff holds new full pathname of the exported song */
       snprintf (tbuff, sizeof (tbuff), "%s/%s", eibdj4->musicdir, tfn);
-fprintf (stderr, "  path: %s\n", tbuff);
       if (isabsolute) {
         songSetStr (song, TAG_FILE, tfn);
       }
 
-fprintf (stderr, "  search: %s\n", tfn);
       tsong = dbGetByName (eibdj4->eimusicdb, tfn);
       if (tsong == NULL) {
-fprintf (stderr, "  song not found: new\n");
         songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
       } else {
         time_t    oupd;
@@ -234,9 +231,12 @@ fprintf (stderr, "  song not found: new\n");
         oupd = songGetNum (tsong, TAG_LAST_UPDATED);
         nupd = songGetNum (song, TAG_LAST_UPDATED);
         doupdate = false;
-fprintf (stderr, "  song found: %ld > %ld?\n", nupd, oupd);
+        docopy = false;
         if (nupd > oupd) {
           doupdate = true;
+          if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
+            docopy = true;
+          }
           songSetNum (song, TAG_RRN, songGetNum (tsong, TAG_RRN));
         }
       }
@@ -244,20 +244,17 @@ fprintf (stderr, "  song found: %ld > %ld?\n", nupd, oupd);
       if (doupdate) {
         pathinfo_t  *pi;
 
-fprintf (stderr, "  doupdate\n");
         pi = pathInfo (tbuff);
         snprintf (tfn, sizeof (tfn), "%.*s", (int) pi->dlen, pi->dirname);
-fprintf (stderr, "  mkdir: %s\n", tfn);
         diropMakeDir (tfn);
         pathInfoFree (pi);
 
         dbWriteSong (eibdj4->eimusicdb, song);
       }
-      if (doupdate || ! fileopFileExists (tbuff)) {
-fprintf (stderr, "copy-ffn: %s\n", ffn);
-fprintf (stderr, "     new: %s\n", tbuff);
+      if (docopy || ! fileopFileExists (tbuff)) {
         filemanipCopy (ffn, tbuff);
       }
+      eibdj4->counter += 1;
       rc = false;
     } else {
       eibdj4->state = BDJ4_STATE_FINISH;

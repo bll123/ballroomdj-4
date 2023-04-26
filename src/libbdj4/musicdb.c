@@ -150,7 +150,6 @@ dbLoad (musicdb_t *musicdb)
       }
       songSetNum (song, TAG_RRN, i);
       slistSetData (musicdb->songs, fstr, song);
-fprintf (stderr, "db-load: %s\n", fstr);
       ++musicdb->count;
     }
   }
@@ -199,7 +198,6 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   songSetNum (song, TAG_DBIDX, dbidx);
   if (song != NULL) {
     slistSetData (musicdb->songs, fstr, song);
-fprintf (stderr, "db-load-entry: %s\n", fstr);
   }
   if (! musicdb->inbatch) {
 // ### FIX
