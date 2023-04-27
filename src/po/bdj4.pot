@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-22 17:04-0700\n"
+"POT-Creation-Date: 2023-04-26 20:20-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -407,7 +407,7 @@ msgid "Click the mouse in the blue box in time with the beat."
 msgstr ""
 
 #. CONTEXT: apply adjustment dialog: closes the dialog
-#. CONTEXT: export/import bdj4 request external dialog: closes the dialog
+#. CONTEXT: export/import bdj4 dialog: closes the dialog
 #. CONTEXT: request external dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
@@ -736,9 +736,14 @@ msgstr ""
 msgid "Export as M3U Playlist"
 msgstr ""
 
+#. CONTEXT: export for ballroomdj: title of dialog
 #. CONTEXT: managementui: menu selection: song list: export: export for ballroomdj
 #, c-format
 msgid "Export for %s"
+msgstr ""
+
+#. CONTEXT: export/import bdj4: folder location
+msgid "Export to"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
@@ -782,7 +787,6 @@ msgstr ""
 msgid "First"
 msgstr ""
 
-#. CONTEXT: request external: enter the audio file location
 #. CONTEXT: select folder dialog: filter on folders.
 msgid "Folder"
 msgstr ""
@@ -848,6 +852,11 @@ msgstr ""
 msgid "History"
 msgstr ""
 
+#. CONTEXT: configuration: the ip address to use for the mobile marquee
+#. CONTEXT: configuration: remote control: the ip address to use for remote control
+msgid "IP Address"
+msgstr ""
+
 #. CONTEXT: installer: command line interface: instructions
 #, c-format
 msgid "If there is no %s installation, enter a single '-'."
@@ -868,6 +877,11 @@ msgstr ""
 msgid "Import M3U"
 msgstr ""
 
+#. CONTEXT: export/import bdj4: folder location
+msgid "Import from"
+msgstr ""
+
+#. CONTEXT: import from ballroomdj: title of dialog
 #. CONTEXT: import from itunes: title for the dialog
 #. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
 #. CONTEXT: managementui: menu selection: song list: import: import from itunes
@@ -899,6 +913,10 @@ msgstr ""
 #. CONTEXT: installer: status message
 #, c-format
 msgid "Installing %s."
+msgstr ""
+
+#. CONTEXT: export/import bdj4: invalid target folder
+msgid "Invalid Folder"
 msgstr ""
 
 #. CONTEXT: configuration file: genre
@@ -1135,6 +1153,10 @@ msgstr ""
 msgid "New Song List"
 msgstr ""
 
+#. CONTEXT: export/import bdj4: new song list name
+msgid "New Song List Name"
+msgstr ""
+
 #. CONTEXT: configuration: status name that is set when adding a new status
 msgid "New Status"
 msgstr ""
@@ -1268,7 +1290,6 @@ msgstr ""
 msgid "Player"
 msgstr ""
 
-#. CONTEXT: export/import bdj4: playlist: select the playlist
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
 #. CONTEXT: create from playlist: select the playlist to use
@@ -1286,6 +1307,7 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 #. CONTEXT: apply adjustments: please wait... status message
+#. CONTEXT: please wait... status message
 #. CONTEXT: management ui: please wait... status message
 #. CONTEXT: export as mp3: please wait... status message
 msgid "Please wait…"
@@ -1588,10 +1610,6 @@ msgstr ""
 msgid "Select Music Folder Location"
 msgstr ""
 
-#. CONTEXT: export/import bdj4 dialog: title for the dialog
-msgid "Select Target Folder"
-msgstr ""
-
 #. CONTEXT: starterui: basic support dialog: button: support option
 #. CONTEXT: starterui: support message dialog: sends the support message
 msgid "Send Support Message"
@@ -1675,6 +1693,7 @@ msgid "Song End"
 msgstr ""
 
 #. CONTEXT: configuration: display settings for: song list
+#. CONTEXT: export/import bdj4: playlist: select the song list
 #. CONTEXT: music queue: label for song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
 #. CONTEXT: managementui: name of easy song list song selection tab

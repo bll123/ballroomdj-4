@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-04-22\n"
+"PO-Revision-Date: 2023-04-26\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -409,7 +409,7 @@ msgid "Click the mouse in the blue box in time with the beat."
 msgstr "Klik met de muisaanwijzer in het blauwe vak op de maat van de muziek."
 
 #. CONTEXT: apply adjustment dialog: closes the dialog
-#. CONTEXT: export/import bdj4 request external dialog: closes the dialog
+#. CONTEXT: export/import bdj4 dialog: closes the dialog
 #. CONTEXT: request external dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
@@ -738,10 +738,15 @@ msgstr "Exporteren als %s"
 msgid "Export as M3U Playlist"
 msgstr "Exporteren als M3U afspeellijst"
 
+#. CONTEXT: export for ballroomdj: title of dialog
 #. CONTEXT: managementui: menu selection: song list: export: export for ballroomdj
 #, c-format
 msgid "Export for %s"
 msgstr "Export voor %s"
+
+#. CONTEXT: export/import bdj4: folder location
+msgid "Export to"
+msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: playerui: button: fade out the song and stop playing it
@@ -784,7 +789,6 @@ msgstr "Filter"
 msgid "First"
 msgstr "Eerste"
 
-#. CONTEXT: request external: enter the audio file location
 #. CONTEXT: select folder dialog: filter on folders.
 msgid "Folder"
 msgstr "Map"
@@ -850,6 +854,11 @@ msgstr ""
 msgid "History"
 msgstr "Hystoriek"
 
+#. CONTEXT: configuration: the ip address to use for the mobile marquee
+#. CONTEXT: configuration: remote control: the ip address to use for remote control
+msgid "IP Address"
+msgstr ""
+
 #. CONTEXT: installer: command line interface: instructions
 #, c-format
 msgid "If there is no %s installation, enter a single '-'."
@@ -870,6 +879,11 @@ msgstr "Importeer"
 msgid "Import M3U"
 msgstr "Importeer M3U"
 
+#. CONTEXT: export/import bdj4: folder location
+msgid "Import from"
+msgstr ""
+
+#. CONTEXT: import from ballroomdj: title of dialog
 #. CONTEXT: import from itunes: title for the dialog
 #. CONTEXT: managementui: menu selection: song list: import: import from ballroomdj
 #. CONTEXT: managementui: menu selection: song list: import: import from itunes
@@ -902,6 +916,10 @@ msgstr "Installatie voltooid."
 #, c-format
 msgid "Installing %s."
 msgstr "%s Installeren."
+
+#. CONTEXT: export/import bdj4: invalid target folder
+msgid "Invalid Folder"
+msgstr ""
 
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
@@ -1138,6 +1156,10 @@ msgstr "Nieuw sequentie"
 msgid "New Song List"
 msgstr ""
 
+#. CONTEXT: export/import bdj4: new song list name
+msgid "New Song List Name"
+msgstr "Nieuwe naam songlijst"
+
 #. CONTEXT: configuration: status name that is set when adding a new status
 msgid "New Status"
 msgstr ""
@@ -1271,7 +1293,6 @@ msgstr ""
 msgid "Player"
 msgstr "Speler"
 
-#. CONTEXT: export/import bdj4: playlist: select the playlist
 #. CONTEXT: select file: file type for the file selection dialog (playlist)
 #. CONTEXT: song selection filter: a filter: select a playlist to work with (music manager)
 #. CONTEXT: create from playlist: select the playlist to use
@@ -1289,6 +1310,7 @@ msgstr ""
 
 #. CONTEXT: installer: status message
 #. CONTEXT: apply adjustments: please wait... status message
+#. CONTEXT: please wait... status message
 #. CONTEXT: management ui: please wait... status message
 #. CONTEXT: export as mp3: please wait... status message
 msgid "Please wait…"
@@ -1591,10 +1613,6 @@ msgstr ""
 msgid "Select Music Folder Location"
 msgstr ""
 
-#. CONTEXT: export/import bdj4 dialog: title for the dialog
-msgid "Select Target Folder"
-msgstr ""
-
 #. CONTEXT: starterui: basic support dialog: button: support option
 #. CONTEXT: starterui: support message dialog: sends the support message
 msgid "Send Support Message"
@@ -1678,6 +1696,7 @@ msgid "Song End"
 msgstr "Song Einde"
 
 #. CONTEXT: configuration: display settings for: song list
+#. CONTEXT: export/import bdj4: playlist: select the song list
 #. CONTEXT: music queue: label for song list name
 #. CONTEXT: select file: file type for the file selection dialog (song list)
 #. CONTEXT: managementui: name of easy song list song selection tab
