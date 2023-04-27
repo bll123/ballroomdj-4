@@ -220,10 +220,11 @@ typedef struct {
   itunes_t          *itunes;
   uidropdown_t      *itunessel;
   /* prior name is used by create-from-playlist */
-  char              *slpriorname;
   uisongfilter_t    *uisongfilter;
   uiplaylist_t      *cfpl;
   uispinbox_t       *cfpltmlimit;
+  char              *slpriorname;
+  char              *cfplfn;
   /* music manager ui */
   uiplayer_t        *mmplayer;
   uimusicq_t        *mmmusicq;
@@ -261,7 +262,9 @@ typedef struct {
   bool              bpmcounterstarted : 1;
   bool              pluiActive : 1;
   bool              selbypass : 1;
-  bool              createfromplaylistactive : 1;
+  bool              cfplactive : 1;
+  bool              cfplpostprocess : 1;
+  bool              musicqupdated : 1;
   bool              importitunesactive : 1;
   bool              exportm3uactive : 1;
   bool              importm3uactive : 1;
@@ -348,6 +351,8 @@ static bool     manageSonglistTruncate (void *udata);
 static bool     manageSonglistCreateFromPlaylist (void *udata);
 static void     manageSongListCFPLCreateDialog (manageui_t *manage);
 static bool     manageCFPLResponseHandler (void *udata, long responseid);
+static void     manageCFPLCreate (manageui_t *manage);
+static void     manageCFPLPostProcess (manageui_t *manage);
 static bool     manageSonglistMix (void *udata);
 static bool     manageSonglistSwap (void *udata);
 static void     manageSonglistLoadFile (void *udata, const char *fn, int preloadflag);
@@ -437,6 +442,7 @@ main (int argc, char *argv[])
   manage.mmnbtabid = uinbutilIDInit ();
   manage.sloldname = NULL;
   manage.slpriorname = NULL;
+  manage.cfplfn = NULL;
   manage.itunes = NULL;
   manage.itunessel = uiDropDownInit ();
   manage.slbackupcreated = false;
@@ -460,7 +466,9 @@ main (int argc, char *argv[])
   manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.pluiActive = false;
   manage.selectButton = NULL;
-  manage.createfromplaylistactive = false;
+  manage.cfplactive = false;
+  manage.cfplpostprocess = false;
+  manage.musicqupdated = false;
   manage.importitunesactive = false;
   manage.exportm3uactive = false;
   manage.importm3uactive = false;
@@ -644,6 +652,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   uisfFree (manage->uisongfilter);
   dataFree (manage->sloldname);
   dataFree (manage->slpriorname);
+  dataFree (manage->cfplfn);
   uinbutilIDFree (manage->mainnbtabid);
   uinbutilIDFree (manage->slnbtabid);
   uinbutilIDFree (manage->mmnbtabid);
@@ -1160,6 +1169,11 @@ manageMainLoop (void *tmanage)
     manage->impitunesstate = BDJ4_STATE_PROCESS;
   }
 
+  /* create from playlist post process */
+  if (manage->cfplpostprocess && manage->musicqupdated) {
+    manageCFPLPostProcess (manage);
+  }
+
   uiplayerMainLoop (manage->slplayer);
   uiplayerMainLoop (manage->mmplayer);
   uimusicqMainLoop (manage->slmusicq);
@@ -1352,6 +1366,9 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           }
           msgparseMusicQueueDataFree (musicqupdate);
           uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], "");
+          if (uimusicqGetCount (manage->slmusicq) > 0) {
+            manage->musicqupdated = true;
+          }
           break;
         }
         case MSG_SONG_SELECT: {
@@ -2342,15 +2359,13 @@ static bool
 manageSonglistNew (void *udata)
 {
   manageui_t  *manage = udata;
-  char        tbuff [200];
 
   logProcBegin (LOG_PROC, "manageSonglistNew");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: new songlist");
   manageSonglistSave (manage);
 
   /* CONTEXT: managementui: song list: default name for a new song list */
-  snprintf (tbuff, sizeof (tbuff), _("New Song List"));
-  manageSetSonglistName (manage, tbuff);
+  manageSetSonglistName (manage, _("New Song List"));
   manage->slbackupcreated = false;
   uimusicqSetSelectionFirst (manage->slmusicq, manage->musicqManageIdx);
   uimusicqTruncateQueueCallback (manage->slmusicq);
@@ -2400,11 +2415,11 @@ manageSonglistCreateFromPlaylist (void *udata)
   manageui_t  *manage = udata;
   int         x, y;
 
-  if (manage->createfromplaylistactive) {
+  if (manage->cfplactive) {
     return UICB_STOP;
   }
 
-  manage->createfromplaylistactive = true;
+  manage->cfplactive = true;
   logProcBegin (LOG_PROC, "manageSonglistCreateFromPlaylist");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: create from playlist");
   manageSonglistSave (manage);
@@ -2512,74 +2527,132 @@ manageCFPLResponseHandler (void *udata, long responseid)
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: del window");
       uiwcontFree (manage->wcont [MANAGE_W_CFPL_DIALOG]);
       manage->wcont [MANAGE_W_CFPL_DIALOG] = NULL;
-      manage->createfromplaylistactive = false;
+      manage->cfplactive = false;
       break;
     }
     case RESPONSE_CLOSE: {
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: close window");
       uiWidgetHide (manage->wcont [MANAGE_W_CFPL_DIALOG]);
-      manage->createfromplaylistactive = false;
+      manage->cfplactive = false;
       break;
     }
     case RESPONSE_APPLY: {
-      const char  *fn;
-      char        *tnm;
-      long        stoptime;
-      char        tbuff [40];
-
-      logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: create");
-
-      fn = uiplaylistGetValue (manage->cfpl);
-      stoptime = uiSpinboxTimeGetValue (manage->cfpltmlimit);
-      /* convert from mm:ss to hh:mm */
-      stoptime *= 60;
-      /* adjust : add in the current hh:mm */
-      stoptime += mstime () - mstimestartofday ();
-
-      snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
-      connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tbuff);
-
-      /* overriding the stop time will set the stop time for the next */
-      /* playlist that is loaded */
-      snprintf (tbuff, sizeof (tbuff), "%ld", stoptime);
-      connSendMessage (manage->conn, ROUTE_MAIN,
-          MSG_PL_OVERRIDE_STOP_TIME, tbuff);
-
-      /* the edit mode must be false to allow the stop time to be applied */
-      manage->editmode = EDIT_FALSE;
-      /* re-use songlist-load-file to load the auto/seq playlist */
-      manageSonglistLoadFile (manage, fn, MANAGE_CREATE);
-
-      /* make sure no save happens with the playlist being used */
-      dataFree (manage->sloldname);
-      manage->sloldname = NULL;
-      manage->editmode = EDIT_TRUE;
-      if (manage->slpriorname != NULL) {
-        manageSetSonglistName (manage, manage->slpriorname);
-      } else {
-        /* CONTEXT: managementui: song list: default name for a new song list */
-        manageSetSonglistName (manage, _("New Song List"));
-      }
-
-      /* now tell main to clear the playlist queue so that the */
-      /* automatic/sequenced playlist is no longer present */
-      snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
-      connSendMessage (manage->conn, ROUTE_MAIN, MSG_PL_CLEAR_QUEUE, tbuff);
-      manage->slbackupcreated = false;
-
-      uiWidgetHide (manage->wcont [MANAGE_W_CFPL_DIALOG]);
-
-      tnm = uimusicqGetSonglistName (manage->slmusicq);
-      manageLoadPlaylistCB (manage, tnm);
-      mdfree (tnm);
-
-      manage->createfromplaylistactive = false;
+      manageCFPLCreate (manage);
       break;
     }
   }
 
   logProcEnd (LOG_PROC, "manageCFPLResponseHandler", "");
   return UICB_CONT;
+}
+
+static void
+manageCFPLCreate (manageui_t *manage)
+{
+  const char  *fn;
+  long        stoptime;
+  char        tbuff [40];
+
+  logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: create");
+
+  manage->musicqupdated = false;
+
+  fn = uiplaylistGetValue (manage->cfpl);
+
+  if (fn == NULL || ! *fn) {
+    manage->cfplactive = false;
+    return;
+  }
+
+  dataFree (manage->cfplfn);
+  manage->cfplfn = mdstrdup (fn);
+  stoptime = uiSpinboxTimeGetValue (manage->cfpltmlimit);
+  /* convert from mm:ss to hh:mm */
+  stoptime *= 60;
+  /* adjust : add in the current hh:mm */
+  stoptime += mstime () - mstimestartofday ();
+
+  snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
+  connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR, tbuff);
+
+  /* overriding the stop time will set the stop time for the next */
+  /* playlist that is loaded */
+  snprintf (tbuff, sizeof (tbuff), "%ld", stoptime);
+  connSendMessage (manage->conn, ROUTE_MAIN,
+      MSG_PL_OVERRIDE_STOP_TIME, tbuff);
+
+  /* the edit mode must be false to allow the stop time to be applied */
+  manage->editmode = EDIT_FALSE;
+  /* re-use songlist-load-file to load the auto/seq playlist */
+  manageSonglistLoadFile (manage, fn, MANAGE_CREATE);
+
+  /* make sure no save happens with the playlist being used */
+  dataFree (manage->sloldname);
+  manage->sloldname = NULL;
+  manage->editmode = EDIT_TRUE;
+  if (manage->slpriorname != NULL) {
+    manageSetSonglistName (manage, manage->slpriorname);
+  } else {
+    /* CONTEXT: managementui: song list: default name for a new song list */
+    manageSetSonglistName (manage, _("New Song List"));
+  }
+
+  /* now tell main to clear the playlist queue so that the */
+  /* automatic/sequenced playlist is no longer present */
+  snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
+  connSendMessage (manage->conn, ROUTE_MAIN, MSG_PL_CLEAR_QUEUE, tbuff);
+  manage->slbackupcreated = false;
+
+  uiWidgetHide (manage->wcont [MANAGE_W_CFPL_DIALOG]);
+
+  manage->cfplpostprocess = true;
+  manage->cfplactive = false;
+}
+
+static void
+manageCFPLPostProcess (manageui_t *manage)
+{
+  playlist_t  *autopl;
+  playlist_t  *pl;
+  dance_t     *dances;
+  ilistidx_t  diteridx;
+  ilistidx_t  dkey;
+  char        *tnm;
+
+  tnm = uimusicqGetSonglistName (manage->slmusicq);
+  manageSonglistSave (manage);
+
+  /* copy the settings from the base playlist to the new song list */
+  pl = playlistLoad (tnm, NULL);
+  autopl = playlistLoad (manage->cfplfn, NULL);
+
+  if (pl != NULL && autopl != NULL) {
+    playlistSetConfigNum (pl, PLAYLIST_MAX_PLAY_TIME,
+        playlistGetConfigNum (autopl, PLAYLIST_MAX_PLAY_TIME));
+    playlistSetConfigNum (pl, PLAYLIST_STOP_TIME,
+        playlistGetConfigNum (autopl, PLAYLIST_STOP_TIME));
+    playlistSetConfigNum (pl, PLAYLIST_GAP,
+        playlistGetConfigNum (autopl, PLAYLIST_GAP));
+    playlistSetConfigNum (pl, PLAYLIST_ANNOUNCE,
+        playlistGetConfigNum (autopl, PLAYLIST_ANNOUNCE));
+
+    dances = bdjvarsdfGet (BDJVDF_DANCES);
+    danceStartIterator (dances, &diteridx);
+    while ((dkey = danceIterate (dances, &diteridx)) >= 0) {
+      playlistSetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME,
+          playlistGetDanceNum (autopl, dkey, PLDANCE_MAXPLAYTIME));
+    }
+    playlistSave (pl, tnm);
+  }
+
+  playlistFree (autopl);
+  playlistFree (pl);
+
+  /* update the playlist tab */
+  managePlaylistLoadFile (manage->managepl, tnm, MANAGE_PRELOAD_FORCE);
+  mdfree (tnm);
+
+  manage->cfplpostprocess = false;
 }
 
 static bool

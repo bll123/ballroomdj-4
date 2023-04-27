@@ -14,6 +14,7 @@
 
 enum {
   MANAGE_PRELOAD,
+  MANAGE_PRELOAD_FORCE,
   MANAGE_STD,
   MANAGE_CREATE,    // used for create-from-playlist
 };

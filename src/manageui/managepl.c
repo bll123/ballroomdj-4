@@ -535,7 +535,8 @@ managePlaylistLoadFile (managepl_t *managepl, const char *fn, int preloadflag)
   }
   logProcBegin (LOG_PROC, "managePlaylistLoadFile");
 
-  if (managepl->playlist != NULL &&
+  if (preloadflag != MANAGE_PRELOAD_FORCE &&
+      managepl->playlist != NULL &&
       strcmp (fn, playlistGetName (managepl->playlist)) == 0) {
     logProcEnd (LOG_PROC, "managePlaylistLoadFile", "already");
     return;
@@ -698,14 +699,14 @@ managePlaylistUpdateData (managepl_t *managepl)
       playlistGetConfigNum (pl, PLAYLIST_STOP_AFTER));
   uiSpinboxSetValue (uiSpinboxGetWidgetContainer (managepl->uigap),
       (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0);
+  uiSwitchSetValue (managepl->plannswitch,
+      playlistGetConfigNum (pl, PLAYLIST_ANNOUNCE));
   uiratingSetValue (managepl->uirating,
       playlistGetConfigNum (pl, PLAYLIST_RATING));
   uilevelSetValue (managepl->uihighlevel,
       playlistGetConfigNum (pl, PLAYLIST_LEVEL_LOW));
   uilevelSetValue (managepl->uihighlevel,
       playlistGetConfigNum (pl, PLAYLIST_LEVEL_HIGH));
-  uiSwitchSetValue (managepl->plannswitch,
-      playlistGetConfigNum (pl, PLAYLIST_ANNOUNCE));
 
   managepl->plbackupcreated = false;
   logProcEnd (LOG_PROC, "managePlaylistUpdateData", "");
@@ -847,6 +848,9 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   dval = uiSpinboxGetValue (uiSpinboxGetWidgetContainer (managepl->uigap));
   playlistSetConfigNum (pl, PLAYLIST_GAP, (long) (dval * 1000.0));
 
+  tval = uiSwitchGetValue (managepl->plannswitch);
+  playlistSetConfigNum (pl, PLAYLIST_ANNOUNCE, tval);
+
   tval = uiratingGetValue (managepl->uirating);
   playlistSetConfigNum (pl, PLAYLIST_RATING, tval);
 
@@ -859,8 +863,6 @@ managePlaylistUpdatePlaylist (managepl_t *managepl)
   tstr = uiEntryGetValue (managepl->allowedkeywords);
   playlistSetConfigList (pl, PLAYLIST_ALLOWED_KEYWORDS, tstr);
 
-  tval = uiSwitchGetValue (managepl->plannswitch);
-  playlistSetConfigNum (pl, PLAYLIST_ANNOUNCE, tval);
   logProcEnd (LOG_PROC, "managePlaylistUpdatePlaylist", "");
 }
 
@@ -897,6 +899,11 @@ managePlaylistCheckChanged (managepl_t *managepl)
 
   dval = uiSpinboxGetValue (uiSpinboxGetWidgetContainer (managepl->uigap));
   if (dval != (double) playlistGetConfigNum (pl, PLAYLIST_GAP) / 1000.0 ) {
+    managepl->changed = true;
+  }
+
+  tval = uiSwitchGetValue (managepl->plannswitch);
+  if (tval != playlistGetConfigNum (pl, PLAYLIST_ANNOUNCE)) {
     managepl->changed = true;
   }
 
