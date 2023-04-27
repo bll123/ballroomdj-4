@@ -89,6 +89,7 @@ static void updaterCleanRegex (const char *basedir, slist_t *filelist, nlist_t *
 static int  updaterGetStatus (nlist_t *updlist, int key);
 static void updaterCopyIfNotPresent (const char *fn, const char *ext);
 static void updaterCopyVersionCheck (const char *fn, const char *ext, int dftype, int currvers);
+static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
 
 int
 main (int argc, char *argv [])
@@ -416,7 +417,7 @@ main (int argc, char *argv [])
 
   {
     /* 4.2.0 2023-3-5 autoselection.txt */
-    /* updated value (version 3) */
+    /* updated values (version 3) */
     updaterCopyVersionCheck (AUTOSEL_FN, BDJ4_CONFIG_EXT, DFTYPE_KEY_VAL, 3);
   }
 
@@ -446,6 +447,11 @@ main (int argc, char *argv [])
     /*             display the queuedance playlist properly. */
     updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, DFTYPE_KEY_VAL, 3);
     updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, DFTYPE_KEY_VAL, 2);
+  }
+
+  {
+    /* 4.3.2: 2023-4-27 : Mobile marquee HTML file has minor updates. */
+    updaterCopyHTMLVersionCheck ("mobilemq", BDJ4_HTML_EXT, 2);
   }
 
   /* The datafiles must now be loaded. */
@@ -833,4 +839,34 @@ updaterCopyVersionCheck (const char *fn, const char *ext,
     logMsg (LOG_INSTALL, LOG_MAIN, "%s updated", fn);
   }
   datafileFree (tmpdf);
+}
+
+static void
+updaterCopyHTMLVersionCheck (const char *fn, const char *ext,
+    int currvers)
+{
+  int         version;
+  char        from [MAXPATHLEN];
+  char        tmp [MAXPATHLEN];
+  FILE        *fh;
+
+  pathbldMakePath (from, sizeof (from), fn, ext, PATHBLD_MP_DREL_HTTP);
+  fh = fileopOpen (from, "r");
+  if (fh == NULL) {
+    return;
+  }
+  *tmp = '\0';
+  (void) ! fgets (tmp, sizeof (tmp), fh);
+  (void) ! fgets (tmp, sizeof (tmp), fh);
+  fclose (fh);
+  if (sscanf (tmp, "<!-- VERSION %d", &version) != 1) {
+    version = 1;
+  }
+
+  logMsg (LOG_INSTALL, LOG_MAIN, "version check %s : %d < %d", fn, version, currvers);
+  if (version < currvers) {
+    snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
+    templateHttpCopy (tmp, tmp);
+    logMsg (LOG_INSTALL, LOG_MAIN, "%s updated", fn);
+  }
 }

@@ -36,6 +36,7 @@ enum {
 #define BDJ4_MP3_LABEL    "MP3"
 
 #define BDJ4_DB_EXT       ".dat"
+#define BDJ4_HTML_EXT     ".html"
 #define BDJ4_LOCK_EXT     ".lck"
 #define BDJ4_LINK_EXT     ".link"
 #define BDJ4_PLAYLIST_EXT ".pl"

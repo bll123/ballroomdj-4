@@ -15,11 +15,15 @@ pass=0
 fail=0
 grc=0
 verbose=F
+keep=F
 
 while test $# -gt 0; do
   case $1 in
     --verbose)
       verbose=T
+      ;;
+    --keep)
+      keep=T
       ;;
   esac
   shift
@@ -62,6 +66,7 @@ if [[ $tag == macos ]]; then
   DATATOPDIR="$HOME/Library/Application Support/BDJ4"
 fi
 DATADIR="${DATATOPDIR}/data"
+HTTPDIR="${DATATOPDIR}/http"
 UNPACKDIR="${cwd}/tmp/bdj4-install"
 UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
 UNPACKDIRTMP="$UNPACKDIR.tmp"
@@ -130,6 +135,11 @@ function checkUpdaterClean {
   if [[ -f $fn ]]; then
     mkBadPldance "$fn"
   fi
+
+  # mobilemq.html version number should be updated to version 2.
+  fn="$HTTPDIR/mobilemq.html"
+  sed -e 's/VERSION 2/VERSION 1/' "$fn" > "$fn.n"
+  mv -f "$fn.n" "$fn"
 }
 
 function checkInstallation {
@@ -308,7 +318,7 @@ function checkInstallation {
     fi
 
     res=$(($res+1))  # http dir
-    if [[ $fin == T && -d "${DATATOPDIR}/http" ]]; then
+    if [[ $fin == T && -d "${HTTPDIR}" ]]; then
       chk=$(($chk+1))
     else
       echo "  no http directory"
@@ -316,28 +326,35 @@ function checkInstallation {
 
     # various http files
     res=$(($res+1))
-    if [[ $fin == T && -f "${DATATOPDIR}/http/led_on.svg" ]]; then
+    if [[ $fin == T && -f "${HTTPDIR}/led_on.svg" ]]; then
       chk=$(($chk+1))
     else
       echo "  no http/led_on.svg file"
     fi
 
     res=$(($res+1))
-    if [[ $fin == T && -f "${DATATOPDIR}/http/ballroomdj4.svg" ]]; then
+    if [[ $fin == T && -f "${HTTPDIR}/ballroomdj4.svg" ]]; then
       chk=$(($chk+1))
     else
       echo "  no http/ballroomdj4.svg file"
     fi
 
     res=$(($res+1))
-    if [[ $fin == T && -f "${DATATOPDIR}/http/favicon.ico" ]]; then
+    if [[ $fin == T && -f "${HTTPDIR}/favicon.ico" ]]; then
       chk=$(($chk+1))
     else
       echo "  no http/favicon.ico file"
     fi
 
     res=$(($res+1))
-    if [[ $fin == T && -f "${DATATOPDIR}/http/mrc/dark/play.svg" ]]; then
+    if [[ $fin == T && -f "${HTTPDIR}/mobilemq.html" ]]; then
+      chk=$(($chk+1))
+    else
+      echo "  no http/mobilemq.html file"
+    fi
+
+    res=$(($res+1))
+    if [[ $fin == T && -f "${HTTPDIR}/mrc/dark/play.svg" ]]; then
       chk=$(($chk+1))
     else
       echo "  no http/mrc/dark/play.svg file"
@@ -502,6 +519,19 @@ function checkInstallation {
       chk=$(($chk+1))
     else
       echo "  $(basename '$fn') exists"
+    fi
+
+    res=$(($res+1))  # mobilemq.html file
+    fn="${HTTPDIR}/mobilemq.html"
+    if [[ $fin == T && -f $fn ]]; then
+      grep '<!-- VERSION 2' "$fn" > /dev/null 2>&1
+      if [[ $rc -eq 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  $(basename '$fna') incorrect version"
+      fi
+    else
+      echo "  no $(basename '$fn') file"
     fi
   fi
 
@@ -693,8 +723,10 @@ if [[ $crc -eq 0 ]]; then
   checkInstallation $section $tname "$out" $rc u y
 fi
 
-cleanInstTest
-test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
+if [[ $keep == F ]]; then
+  cleanInstTest
+  test -d "$UNPACKDIRTMP" && rm -rf "$UNPACKDIRTMP"
+fi
 
 echo "tests: $tcount pass: $pass fail: $fail"
 

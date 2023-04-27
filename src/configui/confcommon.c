@@ -434,7 +434,7 @@ confuiMakeQRCodeFile (char *title, char *uri)
   pathbldMakePath (baseuri, sizeof (baseuri),
       "", "", PATHBLD_MP_DIR_TEMPLATE);
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "qrcode", ".html", PATHBLD_MP_DIR_TEMPLATE);
+      "qrcode", BDJ4_HTML_EXT, PATHBLD_MP_DIR_TEMPLATE);
 
   /* this is gross */
   data = filedataReadAll (tbuff, &dlen);
@@ -448,7 +448,7 @@ confuiMakeQRCodeFile (char *title, char *uri)
   mdfree (data);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
-      "qrcode", ".html", PATHBLD_MP_DREL_TMP);
+      "qrcode", BDJ4_HTML_EXT, PATHBLD_MP_DREL_TMP);
   fh = fileopOpen (tbuff, "w");
   fwrite (ndata, dlen, 1, fh);
   fclose (fh);

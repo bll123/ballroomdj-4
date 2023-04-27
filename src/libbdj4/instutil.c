@@ -132,7 +132,7 @@ instutilCopyTemplates (void)
     }
 
     pi = pathInfo (fname);
-    if (pathInfoExtCheck (pi, ".html")) {
+    if (pathInfoExtCheck (pi, BDJ4_HTML_EXT)) {
       pathInfoFree (pi);
       continue;
     }
