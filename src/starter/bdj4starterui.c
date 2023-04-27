@@ -1250,8 +1250,9 @@ starterProcessSupport (void *udata)
   uiwcont_t     *szgrp = NULL;
   uibutton_t    *uibutton;
   char          tbuff [MAXPATHLEN];
-  char          *builddate;
-  char          *rlslvl;
+  const char    *builddate;
+  const char    *rlslvl;
+  const char    *devmode;
   uiutilsaccent_t accent;
 
   if (starter->supportactive) {
@@ -1308,8 +1309,10 @@ starterProcessSupport (void *udata)
   if (strcmp (rlslvl, "production") == 0) {
     rlslvl="";
   }
-  snprintf (tbuff, sizeof (tbuff), "%s %s (%s)",
-      sysvarsGetStr (SV_BDJ4_VERSION), rlslvl, builddate);
+  devmode = sysvarsGetStr (SV_BDJ4_DEVELOPMENT);
+  snprintf (tbuff, sizeof (tbuff), "%s %s (%s) %s",
+      sysvarsGetStr (SV_BDJ4_VERSION), rlslvl, builddate, devmode);
+
   uiwidgetp = uiCreateLabel (tbuff);
   uiBoxPackStart (hbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
