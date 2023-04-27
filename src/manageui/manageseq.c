@@ -29,6 +29,7 @@
 #include "ui.h"
 #include "uiduallist.h"
 #include "uiselectfile.h"
+#include "uiutils.h"
 
 enum {
   MSEQ_MENU_CB_SEQ_LOAD,
@@ -145,7 +146,7 @@ manageBuildUISequence (manageseq_t *manageseq, uiwcont_t *vboxp)
   uiwcontFree (uiwidgetp);
 
   uiEntryCreate (manageseq->seqname);
-  uiEntrySetValidate (manageseq->seqname, manageValidateName,
+  uiEntrySetValidate (manageseq->seqname, uiutilsValidatePlaylistName,
       manageseq->statusMsg, UIENTRY_IMMEDIATE);
   uiWidgetSetClass (uiEntryGetWidgetContainer (manageseq->seqname), ACCENT_CLASS);
   /* CONTEXT: sequence editor: default name for a new sequence */

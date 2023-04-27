@@ -15,7 +15,7 @@ typedef struct {
 void uiutilsAddAccentColorDisplay (uiwcont_t *vbox, uiutilsaccent_t *accent);
 void uiutilsSetAccentColor (uiwcont_t *uiwidgetp);
 const char * uiutilsGetCurrentFont (void);
-int uiutilsValidateSongListName (uientry_t *entry, void *udata);
+int uiutilsValidatePlaylistName (uientry_t *entry, void *udata);
 void uiutilsProgressStatus (uiwcont_t *statusMsg, int count, int tot);
 
 #endif /* INC_UIUTILS_H */

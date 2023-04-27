@@ -386,7 +386,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiBoxPackStart (hbox, uiwidgetp);
 
     uiEntrySetValidate (uieibdj4->dialog [currtype].newname,
-        uiutilsValidateSongListName,
+        uiutilsValidatePlaylistName,
         uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG],
         UIENTRY_IMMEDIATE);
   }

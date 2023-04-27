@@ -28,6 +28,7 @@
 #include "uilevel.h"
 #include "uirating.h"
 #include "uiselectfile.h"
+#include "uiutils.h"
 #include "validate.h"
 
 enum {
@@ -209,7 +210,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiwcontFree (uiwidgetp);
 
   uiEntryCreate (managepl->plname);
-  uiEntrySetValidate (managepl->plname, manageValidateName,
+  uiEntrySetValidate (managepl->plname, uiutilsValidatePlaylistName,
       managepl->statusMsg, UIENTRY_IMMEDIATE);
   uiWidgetSetClass (uiEntryGetWidgetContainer (managepl->plname), ACCENT_CLASS);
   uiBoxPackStart (hbox, uiEntryGetWidgetContainer (managepl->plname));

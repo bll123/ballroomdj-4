@@ -77,7 +77,6 @@ void  manageDbResetButtons (managedb_t *managedb);
 /* managemisc.c */
 bool manageCreatePlaylistCopy (uiwcont_t *statusMsg,
     const char *oname, const char *newname);
-int manageValidateName (uientry_t *entry, void *udata);
 void manageDeletePlaylist (uiwcont_t *statusMsg, const char *name);
 char * manageTrimName (const char *name);
 

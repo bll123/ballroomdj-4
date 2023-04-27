@@ -987,7 +987,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStartExpand (mainhbox, hbox);
 
   uiwidgetp = uimusicqBuildUI (manage->slezmusicq, manage->wcont [MANAGE_W_WINDOW], MUSICQ_SL,
-      manage->wcont [MANAGE_W_ERROR_MSG], uiutilsValidateSongListName);
+      manage->wcont [MANAGE_W_ERROR_MSG], uiutilsValidatePlaylistName);
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
   uiwcontFree (vbox);
@@ -1012,7 +1012,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* song list editor: music queue tab */
   uip = uimusicqBuildUI (manage->slmusicq, manage->wcont [MANAGE_W_WINDOW], MUSICQ_SL,
-      manage->wcont [MANAGE_W_ERROR_MSG], uiutilsValidateSongListName);
+      manage->wcont [MANAGE_W_ERROR_MSG], uiutilsValidatePlaylistName);
   /* CONTEXT: managementui: name of song list notebook tab */
   uiwidgetp = uiCreateLabel (_("Song List"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], uip, uiwidgetp);
@@ -2404,8 +2404,8 @@ manageSonglistCreateFromPlaylist (void *udata)
     return UICB_STOP;
   }
 
-  logProcBegin (LOG_PROC, "manageSonglistCreateFromPlaylist");
   manage->createfromplaylistactive = true;
+  logProcBegin (LOG_PROC, "manageSonglistCreateFromPlaylist");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: create from playlist");
   manageSonglistSave (manage);
 
@@ -2528,6 +2528,7 @@ manageCFPLResponseHandler (void *udata, long responseid)
       char        tbuff [40];
 
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: cfpl: create");
+
       fn = uiplaylistGetValue (manage->cfpl);
       stoptime = uiSpinboxTimeGetValue (manage->cfpltmlimit);
       /* convert from mm:ss to hh:mm */
@@ -2559,15 +2560,19 @@ manageCFPLResponseHandler (void *udata, long responseid)
         /* CONTEXT: managementui: song list: default name for a new song list */
         manageSetSonglistName (manage, _("New Song List"));
       }
+
       /* now tell main to clear the playlist queue so that the */
       /* automatic/sequenced playlist is no longer present */
       snprintf (tbuff, sizeof (tbuff), "%d", manage->musicqManageIdx);
       connSendMessage (manage->conn, ROUTE_MAIN, MSG_PL_CLEAR_QUEUE, tbuff);
       manage->slbackupcreated = false;
+
       uiWidgetHide (manage->wcont [MANAGE_W_CFPL_DIALOG]);
+
       tnm = uimusicqGetSonglistName (manage->slmusicq);
       manageLoadPlaylistCB (manage, tnm);
       mdfree (tnm);
+
       manage->createfromplaylistactive = false;
       break;
     }

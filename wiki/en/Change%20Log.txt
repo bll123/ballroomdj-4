@@ -14,6 +14,7 @@
     * Remote Control: Allow manual entry of local ip address.
 * Changes:
     * Music Manager: Filters: Selection of automatic and sequenced playlists is now possible.
+    * PENDING: Create From Playlist: Copy playlist settings to new song list.
 * New Features:
     * PENDING: Song List Editor: Export for BDJ4 / Import from BDJ4
 
