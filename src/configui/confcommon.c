@@ -36,7 +36,6 @@
 
 static nlist_t * confuiGetThemeList (void);
 static slist_t * confuiGetThemeNames (slist_t *themelist, slist_t *filelist);
-static char * confuiGetLocalIP (confuigui_t *gui);
 static char * confuiMakeQRCodeFile (char *title, char *uri);
 static void confuiUpdateOrgExample (org_t *org, char *data, uiwcont_t *uiwidgetp);
 static bool confuiSearchDispSel (confuigui_t *gui, int selidx, const char *disp);
@@ -100,11 +99,14 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
     qruri = "";
   }
   if (enabled) {
-    char *ip;
+    char  *ip;
 
-    ip = confuiGetLocalIP (gui);
-    snprintf (uridisp, sizeof (uridisp), "http://%s:%"PRId64,
-        ip, bdjoptGetNum (OPT_P_MOBILEMQPORT));
+    ip = bdjoptGetStr (OPT_M_LOCAL_IP_ADDR);
+    if (ip == NULL) {
+      ip = "";
+    }
+    snprintf (uridisp, sizeof (uridisp), "http://%s:%"PRId64, ip,
+        bdjoptGetNum (OPT_P_MOBILEMQPORT));
   }
 
   if (enabled) {
@@ -141,11 +143,14 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
     qruri = "";
   }
   if (enabled) {
-    char *ip;
+    char  *ip;
 
-    ip = confuiGetLocalIP (gui);
-    snprintf (uridisp, sizeof (uridisp), "http://%s:%"PRId64,
-        ip, bdjoptGetNum (OPT_P_REMCONTROLPORT));
+    ip = bdjoptGetStr (OPT_M_LOCAL_IP_ADDR);
+    if (ip == NULL) {
+      ip = "";
+    }
+    snprintf (uridisp, sizeof (uridisp), "http://%s:%"PRId64, ip,
+        bdjoptGetNum (OPT_P_REMCONTROLPORT));
   }
 
   if (enabled) {
@@ -285,6 +290,34 @@ confuiCreateTagSelectedDisp (confuigui_t *gui)
   logProcEnd (LOG_PROC, "confuiCreateTagSelectedDisp", "");
 }
 
+char *
+confuiGetLocalIP (confuigui_t *gui)
+{
+  char    *ip;
+
+  if (gui->localip == NULL) {
+    ip = webclientGetLocalIP ();
+    gui->localip = mdstrdup (ip);
+    mdfree (ip);
+  }
+
+  return gui->localip;
+}
+
+void
+confuiSetLocalIPAddr (confuigui_t *gui, int widx, bool enabled)
+{
+  const char    *ip;
+
+  ip = bdjoptGetStr (OPT_M_LOCAL_IP_ADDR);
+  if (enabled && (ip == NULL || ! *ip)) {
+    confuiSetStatusMsg (gui, _("Please wait\xe2\x80\xa6"));
+    ip = confuiGetLocalIP (gui);
+    confuiSetStatusMsg (gui, "");
+  }
+  uiEntrySetValue (gui->uiitem [widx].entry, ip);
+}
+
 /* internal routines */
 
 static nlist_t *
@@ -382,20 +415,6 @@ confuiGetThemeNames (slist_t *themelist, slist_t *filelist)
 
   logProcEnd (LOG_PROC, "confuiGetThemeNames", "");
   return themelist;
-}
-
-static char *
-confuiGetLocalIP (confuigui_t *gui)
-{
-  char    *ip;
-
-  if (gui->localip == NULL) {
-    ip = webclientGetLocalIP ();
-    gui->localip = mdstrdup (ip);
-    mdfree (ip);
-  }
-
-  return gui->localip;
 }
 
 static char *

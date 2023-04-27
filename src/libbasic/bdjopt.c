@@ -98,16 +98,17 @@ static datafilekey_t bdjoptqueuedfkeys [] = {
 };
 
 static datafilekey_t bdjoptmachinedfkeys [] = {
-  { "AUDIOTAG",       OPT_M_AUDIOTAG_INTFC, VALUE_STR, NULL, -1 },
-  { "DIRITUNESMEDIA", OPT_M_DIR_ITUNES_MEDIA,VALUE_STR, NULL, -1 },
-  { "DIRMUSIC",       OPT_M_DIR_MUSIC,      VALUE_STR, NULL, -1 },
-  { "DIROLDSKIP",     OPT_M_DIR_OLD_SKIP,   VALUE_STR, NULL, -1 },
-  { "ITUNESXMLFILE",  OPT_M_ITUNES_XML_FILE,VALUE_STR, NULL, -1 },
-  { "PLAYER",         OPT_M_PLAYER_INTFC,   VALUE_STR, NULL, -1 },
-  { "SCALE",          OPT_M_SCALE,          VALUE_NUM, NULL, -1 },
-  { "SHUTDOWNSCRIPT", OPT_M_SHUTDOWNSCRIPT, VALUE_STR, NULL, -1 },
-  { "STARTUPSCRIPT",  OPT_M_STARTUPSCRIPT,  VALUE_STR, NULL, -1 },
-  { "VOLUME",         OPT_M_VOLUME_INTFC,   VALUE_STR, NULL, -1 },
+  { "AUDIOTAG",       OPT_M_AUDIOTAG_INTFC,     VALUE_STR, NULL, -1 },
+  { "DIRITUNESMEDIA", OPT_M_DIR_ITUNES_MEDIA,   VALUE_STR, NULL, -1 },
+  { "DIRMUSIC",       OPT_M_DIR_MUSIC,          VALUE_STR, NULL, -1 },
+  { "DIROLDSKIP",     OPT_M_DIR_OLD_SKIP,       VALUE_STR, NULL, -1 },
+  { "ITUNESXMLFILE",  OPT_M_ITUNES_XML_FILE,    VALUE_STR, NULL, -1 },
+  { "LOCALIPADDR",    OPT_M_LOCAL_IP_ADDR,      VALUE_STR, NULL, -1 },
+  { "PLAYER",         OPT_M_PLAYER_INTFC,       VALUE_STR, NULL, -1 },
+  { "SCALE",          OPT_M_SCALE,              VALUE_NUM, NULL, -1 },
+  { "SHUTDOWNSCRIPT", OPT_M_SHUTDOWNSCRIPT,     VALUE_STR, NULL, -1 },
+  { "STARTUPSCRIPT",  OPT_M_STARTUPSCRIPT,      VALUE_STR, NULL, -1 },
+  { "VOLUME",         OPT_M_VOLUME_INTFC,       VALUE_STR, NULL, -1 },
 };
 
 static datafilekey_t bdjoptmachprofdfkeys [] = {

@@ -172,6 +172,9 @@ uiEntryValidate (uientry_t *uientry, bool forceflag)
   if (uientry == NULL) {
     return UIENTRY_OK;
   }
+  if (uientry->entry == NULL) {
+    return UIENTRY_OK;
+  }
   if (uientry->entry->widget == NULL) {
     return UIENTRY_OK;
   }

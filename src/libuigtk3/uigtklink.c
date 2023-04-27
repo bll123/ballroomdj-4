@@ -49,6 +49,13 @@ uiCreateLink (const char *label, const char *uri)
 void
 uiLinkSet (uiwcont_t *uilink, const char *label, const char *uri)
 {
+  if (uilink == NULL) {
+    return;
+  }
+  if (uilink->widget == NULL) {
+    return;
+  }
+
   if (uri != NULL) {
     gtk_link_button_set_uri (GTK_LINK_BUTTON (uilink->widget), uri);
   }

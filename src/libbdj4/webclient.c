@@ -231,6 +231,7 @@ webclientGetLocalIP (void)
   curl_easy_setopt (webclient->curl, CURLOPT_URL, tbuff);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEDATA, NULL);
   curl_easy_setopt (webclient->curl, CURLOPT_WRITEFUNCTION, webclientNullCallback);
+  curl_easy_setopt (webclient->curl, CURLOPT_TIMEOUT, 5);
   curl_easy_perform (webclient->curl);
   curl_easy_getinfo (webclient->curl, CURLINFO_LOCAL_IP, &tip);
   ip = mdstrdup (tip);

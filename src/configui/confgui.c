@@ -511,7 +511,7 @@ confuiMakeItemEntryBasic (confuigui_t *gui, uiwcont_t *boxp, uiwcont_t *szgrp,
     const char *txt, int widx, int bdjoptIdx, const char *disp,
     int indent, int expand)
 {
-  uiwcont_t*uiwidgetp;
+  uiwcont_t   *uiwidgetp;
 
   gui->uiitem [widx].basetype = CONFUI_ENTRY;
   gui->uiitem [widx].outtype = CONFUI_OUT_STR;

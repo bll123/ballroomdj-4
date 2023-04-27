@@ -46,14 +46,14 @@ enum {
   CONFUI_COMBOBOX_ORGPATH,
   CONFUI_COMBOBOX_MAX,
   CONFUI_ENTRY_BEGIN,
+  CONFUI_ENTRY_COMPLETE_MSG,
   CONFUI_ENTRY_DANCE_TAGS,
   CONFUI_ENTRY_DANCE_DANCE,
-  CONFUI_ENTRY_MM_TITLE,
+  CONFUI_ENTRY_MMQ_IPADDR,
+  CONFUI_ENTRY_MMQ_TITLE,
   CONFUI_ENTRY_PROFILE_NAME,
-  CONFUI_ENTRY_COMPLETE_MSG,
-  /* the queue name identifiers must be in sequence */
-  /* the number of queue names must match MUSICQ_PB_MAX */
   CONFUI_ENTRY_QUEUE_NM,
+  CONFUI_ENTRY_RC_IPADDR,
   CONFUI_ENTRY_RC_PASS,
   CONFUI_ENTRY_RC_USER_ID,
   CONFUI_ENTRY_MAX,
@@ -169,6 +169,7 @@ enum {
   CONFUI_WIDGET_ITUNES_FIELD_18,
   CONFUI_WIDGET_ITUNES_FIELD_19,
   CONFUI_WIDGET_ITUNES_FIELD_20,
+  CONFUI_WIDGET_MMQ_IPADDR,
   CONFUI_WIDGET_MMQ_PORT,
   CONFUI_WIDGET_MMQ_QR_CODE,
   CONFUI_WIDGET_MQ_ACCENT_COLOR,
@@ -179,6 +180,7 @@ enum {
   CONFUI_WIDGET_Q_FADE_IN_TIME,       // per queue
   CONFUI_WIDGET_Q_FADE_OUT_TIME,      // per queue
   CONFUI_WIDGET_Q_GAP,                // per queue
+  CONFUI_WIDGET_RC_IPADDR,
   CONFUI_WIDGET_RC_PORT,
   CONFUI_WIDGET_RC_QR_CODE,
   CONFUI_WIDGET_UI_ACCENT_COLOR,
@@ -404,6 +406,8 @@ void confuiCreateTagListingDisp (confuigui_t *gui);
 void confuiCreateTagSelectedDisp (confuigui_t *gui);
 void confuiUpdateOrgExamples (confuigui_t *gui, char *orgpath);
 bool confuiOrgPathSelect (void *udata, long idx);
+char *confuiGetLocalIP (confuigui_t *gui);
+void confuiSetLocalIPAddr (confuigui_t *gui, int widx, bool enabled);
 
 /* confdance.c */
 void confuiInitEditDances (confuigui_t *gui);

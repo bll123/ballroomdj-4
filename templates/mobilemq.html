@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<!-- VERSION 2022-1-15 -->
+<!-- 2022-2-26 -->
+<!-- VERSION 2 -->
 <html>
 <head>
   <title>Marquee</title>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="Description" content="BallroomDJ Marquee">
-  <meta http-equiv="Cache-Control" content="no-store">
+  <meta http-equiv="Cache-Control" content="no-store, max-age=0, no-cache">
   <style type="text/css">
     body {
       background-color: #33393b;
@@ -167,8 +168,6 @@ bdj.updateData = function (data) {
 }
 bdj.doUpdate = function () {
   var tag = null;
-//WEB  var urlParams = new URLSearchParams(window.location.search);
-//WEB  tag = urlParams.get('tag');
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -185,7 +184,7 @@ bdj.doUpdate = function () {
 bdj.doLoad = function () {
   if (bdj.updIntervalId == '') {
     bdj.doUpdate();
-    bdj.updIntervalId = setInterval(bdj.doUpdate,1000);
+    bdj.updIntervalId = setInterval(bdj.doUpdate,500);
   }
 }
 
