@@ -7,11 +7,11 @@
 **4.3.2 2023-4---**
 
 * Bug Fixes:
-    * Player/Marquee: Improve recover marquee.
     * Getting Started Helper: Improve,
     * Mobile Marquee: Allow manual entry of local ip address.
+    * Mobile Marquee: Fix display on song change.
+    * Player/Marquee: Improve recover marquee.
     * Remote Control: Allow manual entry of local ip address.
-    * PENDING: Mobile Marquee: Fix display.
 * Changes:
     * Music Manager: Filters: Selection of automatic and sequenced playlists is now possible.
 * New Features:
