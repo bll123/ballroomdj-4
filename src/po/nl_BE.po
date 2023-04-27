@@ -721,7 +721,7 @@ msgstr "Voorbeelden"
 msgid "Exit"
 msgstr "Afsluiten"
 
-#. CONTEXT: export/import bdj4 dialog: export
+#. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: managementui: menu selection: export actions for song list
 msgid "Export"
 msgstr "Exporteren"
@@ -744,7 +744,7 @@ msgstr "Exporteren als M3U afspeellijst"
 msgid "Export for %s"
 msgstr "Export voor %s"
 
-#. CONTEXT: export/import bdj4: folder location
+#. CONTEXT: export/import bdj4: export folder location
 msgid "Export to"
 msgstr ""
 
@@ -868,7 +868,7 @@ msgstr "Als er geen %s installatie is, voer dan een enkele '-' in."
 msgid "If there is no BallroomDJ 3 installation, leave the entry blank."
 msgstr "Als er geen BallroomDJ 3 installatie is, laat u de invoer leeg."
 
-#. CONTEXT: export/import bdj4 dialog: import
+#. CONTEXT: export/import bdj4 dialog: import button
 #. CONTEXT: import from itunes: import the selected itunes playlist
 #. CONTEXT: managementui: menu selection: import actions for song list
 msgid "Import"
@@ -879,7 +879,7 @@ msgstr "Importeer"
 msgid "Import M3U"
 msgstr "Importeer M3U"
 
-#. CONTEXT: export/import bdj4: folder location
+#. CONTEXT: export/import bdj4: import folder location
 msgid "Import from"
 msgstr ""
 
@@ -1152,7 +1152,6 @@ msgid "New Sequence"
 msgstr "Nieuw sequentie"
 
 #. CONTEXT: managementui: song list: default name for a new song list
-#, c-format
 msgid "New Song List"
 msgstr ""
 
@@ -1921,6 +1920,10 @@ msgstr ""
 #. CONTEXT: database update: updates the database using the tags from the audio files
 msgid "Update from Audio File Tags"
 msgstr "Bijwerken vanuit audio tags"
+
+#. CONTEXT: import from bdj4 : update database/audio files when newer
+msgid "Update when newer"
+msgstr ""
 
 #. CONTEXT: database update: status message: number of files updated in the database
 #. CONTEXT: database update: status message: number of files updated
