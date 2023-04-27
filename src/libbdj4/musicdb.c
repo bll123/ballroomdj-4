@@ -41,6 +41,7 @@ typedef struct musicdb {
   bool          updatelast;
 } musicdb_t;
 
+static size_t dbWriteInternal (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn);
 static song_t *dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn);
 
 musicdb_t *
@@ -302,7 +303,7 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
     songSetNum (song, TAG_LAST_UPDATED, currtime);
   }
   taglist = songTagList (song);
-  rc = dbWrite (musicdb, songGetStr (song, TAG_FILE),
+  rc = dbWriteInternal (musicdb, songGetStr (song, TAG_FILE),
       taglist, songGetNum (song, TAG_RRN));
   slistFree (taglist);
   return rc;
@@ -311,29 +312,17 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
 size_t
 dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
 {
-  char          tbuff [RAFILE_REC_SIZE];
-  size_t        tblen;
+  size_t    tblen;
+  time_t    currtime;
 
-  if (musicdb == NULL) {
-    return false;
+  if (musicdb->updatelast) {
+    char tmp [40];
+
+    currtime = time (NULL);
+    snprintf (tmp, sizeof (tmp), "%ld", currtime);
+    slistSetStr (tagList, tagdefs [TAG_LAST_UPDATED].tag, tmp);
   }
-
-  if (musicdb->radb == NULL) {
-    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
-  }
-
-  tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn, rrn);
-  raWrite (musicdb->radb, rrn, tbuff);
-
-  if (! musicdb->inbatch) {
-// ### FIX
-// figure out what's going on here.
-// this should not be necessary.
-    /* this is inefficient, but otherwise the disk buffering / file handling */
-    /* causes issues w/reading an updated entry */
-    raClose (musicdb->radb);
-    musicdb->radb = NULL;
-  }
+  tblen = dbWriteInternal (musicdb, fn, tagList, rrn);
   return tblen;
 }
 
@@ -464,6 +453,36 @@ dbAddTemporarySong (musicdb_t *musicdb, song_t *song)
 }
 
 /* internal routines */
+
+static size_t
+dbWriteInternal (musicdb_t *musicdb, const char *fn,
+    slist_t *tagList, dbidx_t rrn)
+{
+  char          tbuff [RAFILE_REC_SIZE];
+  size_t        tblen;
+
+  if (musicdb == NULL) {
+    return false;
+  }
+
+  if (musicdb->radb == NULL) {
+    musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
+  }
+
+  tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn, rrn);
+  raWrite (musicdb->radb, rrn, tbuff);
+
+  if (! musicdb->inbatch) {
+// ### FIX
+// figure out what's going on here.
+// this should not be necessary.
+    /* this is inefficient, but otherwise the disk buffering / file handling */
+    /* causes issues w/reading an updated entry */
+    raClose (musicdb->radb);
+    musicdb->radb = NULL;
+  }
+  return tblen;
+}
 
 static song_t *
 dbReadEntry (musicdb_t *musicdb, rafileidx_t rrn)

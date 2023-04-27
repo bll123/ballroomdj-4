@@ -47,6 +47,7 @@ typedef struct {
   uientry_t       *target;
   uientry_t       *newname;
   uiplaylist_t    *uiplaylist;
+  uiswitch_t      *uiupdate;
   uibutton_t      *targetButton;
   callback_t      *responsecb;
 } uieibdj4dialog_t;
@@ -184,6 +185,10 @@ uieibdj4GetDir (uieibdj4_t *uieibdj4)
 {
   const char  *dir;
 
+  if (uieibdj4 == NULL) {
+    return NULL;
+  }
+
   dir = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].target);
   return dir;
 }
@@ -192,6 +197,10 @@ const char *
 uieibdj4GetPlaylist (uieibdj4_t *uieibdj4)
 {
   const char  *plname;
+
+  if (uieibdj4 == NULL) {
+    return NULL;
+  }
 
   plname = uiplaylistGetValue (uieibdj4->dialog [uieibdj4->currtype].uiplaylist);
   return plname;
@@ -202,8 +211,25 @@ uieibdj4GetNewName (uieibdj4_t *uieibdj4)
 {
   const char  *newname;
 
+  if (uieibdj4 == NULL) {
+    return NULL;
+  }
+
   newname = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].newname);
   return newname;
+}
+
+bool
+uieibdj4GetUpdate (uieibdj4_t *uieibdj4)
+{
+  bool      tbool;
+
+  if (uieibdj4 == NULL) {
+    return false;
+  }
+
+  tbool = uiSwitchGetValue (uieibdj4->dialog [uieibdj4->currtype].uiupdate);
+  return tbool;
 }
 
 
@@ -244,13 +270,13 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   buttontext = "";
   *tbuff = '\0';
   if (currtype == UIEIBDJ4_EXPORT) {
-    /* CONTEXT: export/import bdj4 dialog: export */
+    /* CONTEXT: export/import bdj4 dialog: export button */
     buttontext = _("Export");
     /* CONTEXT: export for ballroomdj: title of dialog */
     snprintf (tbuff, sizeof (tbuff), _("Export for %s"), BDJ4_NAME);
   }
   if (currtype == UIEIBDJ4_IMPORT) {
-    /* CONTEXT: export/import bdj4 dialog: import */
+    /* CONTEXT: export/import bdj4 dialog: import button */
     buttontext = _("Import");
     /* CONTEXT: import from ballroomdj: title of dialog */
     snprintf (tbuff, sizeof (tbuff), _("Import from %s"), BDJ4_NAME);
@@ -306,12 +332,12 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 
   if (currtype == UIEIBDJ4_EXPORT) {
     uiwidgetp = uiCreateColonLabel (
-        /* CONTEXT: export/import bdj4: folder location */
+        /* CONTEXT: export/import bdj4: export folder location */
         _("Export to"));
   }
   if (currtype == UIEIBDJ4_IMPORT) {
     uiwidgetp = uiCreateColonLabel (
-        /* CONTEXT: export/import bdj4: folder location */
+        /* CONTEXT: export/import bdj4: import folder location */
         _("Import from"));
   }
   uiBoxPackStart (hbox, uiwidgetp);
@@ -389,6 +415,23 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
         uiutilsValidatePlaylistName,
         uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG],
         UIENTRY_IMMEDIATE);
+
+    uiwcontFree (hbox);
+
+    /* update-if-newer */
+    hbox = uiCreateHorizBox ();
+    uiBoxPackStart (vbox, hbox);
+
+    uiwidgetp = uiCreateColonLabel (
+        /* CONTEXT: import from bdj4 : update database/audio files when newer */
+        _("Update when newer"));
+    uiBoxPackStart (hbox, uiwidgetp);
+    uiSizeGroupAdd (szgrp, uiwidgetp);
+    uiwcontFree (uiwidgetp);
+
+    uieibdj4->dialog [currtype].uiupdate = uiCreateSwitch (false);
+    uiwidgetp = uiSwitchGetWidgetContainer (uieibdj4->dialog [currtype].uiupdate);
+    uiBoxPackStart (hbox, uiwidgetp);
   }
 
   uiwcontFree (hbox);

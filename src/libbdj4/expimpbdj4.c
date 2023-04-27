@@ -35,6 +35,7 @@ typedef struct eibdj4 {
   char        origmusicdir [MAXPATHLEN];
   char        *plName;
   char        *newName;
+  int         updateflag;
   nlist_t     *dbidxlist;
   nlistidx_t  dbidxiter;
   slistidx_t  dbiteridx;
@@ -58,6 +59,7 @@ eibdj4Init (musicdb_t *musicdb, const char *dirname, int eiflag)
   eibdj4->dbidxlist = NULL;
   eibdj4->plName = NULL;
   eibdj4->newName = NULL;
+  eibdj4->updateflag = false;
   eibdj4->eiflag = eiflag;
   eibdj4->counter = 0;
   eibdj4->totcount = 0;
@@ -119,6 +121,16 @@ eibdj4SetNewName (eibdj4_t *eibdj4, const char *name)
   }
 
   eibdj4->newName = mdstrdup (name);
+}
+
+void
+eibdj4SetUpdate (eibdj4_t *eibdj4, bool updateflag)
+{
+  if (eibdj4 == NULL) {
+    return;
+  }
+
+  eibdj4->updateflag = updateflag;
 }
 
 void
@@ -341,18 +353,42 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
       char          *nfn = NULL;
       char          tbuff [MAXPATHLEN];
       song_t        *tsong;
+      bool          doupdate;
 
       songfn = songGetStr (song, TAG_FILE);
+      ffn = songutilFullFileName (songfn);
       snprintf (tbuff, sizeof (tbuff), "%s/%s", eibdj4->musicdir, songfn);
 
       tsong = dbGetByName (eibdj4->musicdb, songfn);
 
+      doupdate = false;
+
       /* only import an audio file if it does not exist in the database */
+      /* or if the user has specifically turned on the update, and the */
+      /* db entry is newer */
       if (tsong == NULL) {
 fprintf (stderr, "%s is new\n", songfn);
+        doupdate = true;
+      }
+      if (tsong != NULL && eibdj4->updateflag) {
+        time_t    oupd;
+        time_t    nupd;
+
+        oupd = songGetNum (tsong, TAG_LAST_UPDATED);
+        nupd = songGetNum (song, TAG_LAST_UPDATED);
+        if (nupd > oupd) {
+fprintf (stderr, "%s is newer\n", songfn);
+          doupdate = true;
+        } else {
+fprintf (stderr, "%ld > %ld false\n", nupd, oupd);
+        }
+      }
+      if (doupdate) {
         dbWriteSong (eibdj4->musicdb, song);
         nfn = songutilFullFileName (songfn);
-        filemanipCopy (tbuff, ffn);
+fprintf (stderr, "copy: from: %s\n", tbuff);
+fprintf (stderr, "        to: %s\n", ffn);
+          filemanipCopy (tbuff, ffn);
       } else {
 fprintf (stderr, "found %s in main db\n", songfn);
       }

@@ -3169,17 +3169,20 @@ manageImportBDJ4ResponseHandler (void *udata)
   const char  *dir = NULL;
   const char  *plname = NULL;
   const char  *newname = NULL;
+  bool        updateflag;
 
   dir = uieibdj4GetDir (manage->uieibdj4);
   nlistSetStr (manage->options, MANAGE_IMP_BDJ4_DIR, dir);
   plname = uieibdj4GetPlaylist (manage->uieibdj4);
   newname = uieibdj4GetNewName (manage->uieibdj4);
+  updateflag = uieibdj4GetUpdate (manage->uieibdj4);
 
   eibdj4Free (manage->eibdj4);
   manage->eibdj4 = eibdj4Init (manage->musicdb, dir, EIBDJ4_IMPORT);
 
   eibdj4SetPlaylist (manage->eibdj4, plname);
   eibdj4SetNewName (manage->eibdj4, newname);
+  eibdj4SetUpdate (manage->eibdj4, updateflag);
 
   manage->expimpbdj4state = BDJ4_STATE_PROCESS;
   mstimeset (&manage->eibdj4ChkTime, 500);

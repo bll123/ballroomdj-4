@@ -23,7 +23,8 @@ void    uieibdj4DialogClear (uieibdj4_t *uieibdj4);
 void    uieibdj4Process (uieibdj4_t *uieibdj4);
 const char  *uieibdj4GetDir (uieibdj4_t *uieibdj4);
 const char  *uieibdj4GetPlaylist (uieibdj4_t *uieibdj4);
-const char  *uieibdj4GetNewName(uieibdj4_t *uieibdj4);
+const char  *uieibdj4GetNewName (uieibdj4_t *uieibdj4);
+bool    uieibdj4GetUpdate (uieibdj4_t *uieibdj4);
 void uieibdj4UpdateStatus (uieibdj4_t *uieibdj4, int count, int tot);
 
 #endif /* INC_UIEXPIMPBDJ4_H */
