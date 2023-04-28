@@ -366,6 +366,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
       char          tbuff [MAXPATHLEN];
       song_t        *tsong;
       bool          doupdate;
+      bool          docopy;
 
       songfn = songGetStr (song, TAG_FILE);
       ffn = songutilFullFileName (songfn);
@@ -374,6 +375,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
       tsong = dbGetByName (eibdj4->musicdb, songfn);
 
       doupdate = false;
+      docopy = false;
 
       /* only import an audio file if it does not exist in the database */
       /* or if the user has specifically turned on the update, and the */
@@ -381,29 +383,35 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
       if (tsong == NULL) {
 fprintf (stderr, "%s is new\n", songfn);
         doupdate = true;
+        docopy = true;
       }
       if (tsong != NULL && eibdj4->updateflag) {
         time_t    oupd;
         time_t    nupd;
 
+fprintf (stderr, "found %s in main db\n", songfn);
         oupd = songGetNum (tsong, TAG_LAST_UPDATED);
         nupd = songGetNum (song, TAG_LAST_UPDATED);
         if (nupd > oupd) {
 fprintf (stderr, "%s is newer\n", songfn);
           doupdate = true;
+          if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
+            docopy = true;
+          }
         } else {
 fprintf (stderr, "%ld > %ld false\n", nupd, oupd);
         }
       }
       if (doupdate) {
         eibdj4->dbchanged = true;
+fprintf (stderr, "  update db\n");
         dbWriteSong (eibdj4->musicdb, song);
+      }
+      if (docopy) {
         nfn = songutilFullFileName (songfn);
-fprintf (stderr, "copy: from: %s\n", tbuff);
-fprintf (stderr, "        to: %s\n", ffn);
-          filemanipCopy (tbuff, ffn);
-      } else {
-fprintf (stderr, "found %s in main db\n", songfn);
+fprintf (stderr, "  copy: from: %s\n", tbuff);
+fprintf (stderr, "          to: %s\n", ffn);
+        filemanipCopy (tbuff, ffn);
       }
 
       dataFree (ffn);

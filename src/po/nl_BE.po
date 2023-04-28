@@ -201,6 +201,7 @@ msgstr "4/8"
 msgid "Accent Colour"
 msgstr "Accentkleur"
 
+#. CONTEXT: import from bdj4 : how to process, select action
 #. CONTEXT: update database: select database update action
 msgid "Action"
 msgstr "Actie"
@@ -900,6 +901,10 @@ msgstr ""
 msgid "Import from %s"
 msgstr "Importeren van %s"
 
+#. CONTEXT: import for bdj4: only import when there is no database entry
+msgid "Import when not found"
+msgstr ""
+
 #. CONTEXT: set up alternate: status message
 msgid "Initial Setup."
 msgstr "Oorspronkelijke instelling."
@@ -1387,8 +1392,8 @@ msgid "QR Code"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
-#. CONTEXT: (verb) history: re-queue the selected song
 #. CONTEXT: (verb) external request dialog: queue the selected file
+#. CONTEXT: (verb) history: re-queue the selected song
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
 msgstr "Nummer Toevoegen"
@@ -1496,6 +1501,10 @@ msgstr "Reorganiseren"
 #. CONTEXT: text from the HTML templates (buttons and labels)
 msgid "Repeat"
 msgstr "Herhalen"
+
+#. CONTEXT: import for bdj4: replace database entry if newer
+msgid "Replace if newer"
+msgstr ""
 
 #. CONTEXT: database update: rebuild: help text
 msgid ""
@@ -1921,10 +1930,6 @@ msgstr ""
 #. CONTEXT: database update: updates the database using the tags from the audio files
 msgid "Update from Audio File Tags"
 msgstr "Bijwerken vanuit audio tags"
-
-#. CONTEXT: import from bdj4 : update database/audio files when newer
-msgid "Update when newer"
-msgstr ""
 
 #. CONTEXT: database update: status message: number of files updated in the database
 #. CONTEXT: database update: status message: number of files updated

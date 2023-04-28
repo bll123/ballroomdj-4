@@ -33,6 +33,7 @@
  *  strt - starter
  *  tdbc - tdbcompare
  *  tdbd - tdbdump
+ *  tdbs - tdbsetval
  *  tags - bdj4tags
  *  tset - tmusicsetup
  *  ts   - testsuite

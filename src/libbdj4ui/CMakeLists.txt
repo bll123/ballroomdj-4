@@ -26,7 +26,7 @@ add_library (libbdj4ui SHARED
   uiplayer.c
   uiplaylist.c
   uirating.c
-  uireqext.c
+  uiextreq.c
   uiselectfile.c
   uisong.c
   uisongedit.c

@@ -44,6 +44,7 @@ main (int argc, char *argv [])
   int         argcount = 0;
   slistidx_t  dbiteridx;
   dbidx_t     dbkey;
+  int         tagidx;
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
@@ -96,6 +97,11 @@ main (int argc, char *argv [])
     }
     if (argcount == 1 && tagname == NULL) {
       tagname = argv [i];
+      tagidx = tagdefLookup (tagname);
+      if (tagidx < 0) {
+        fprintf (stderr, "unknown tag name %s\n", tagname);
+        exit (1);
+      }
     }
     if (argcount == 2 && valuestr == NULL) {
       valuestr = argv [i];
@@ -117,17 +123,18 @@ main (int argc, char *argv [])
   }
 
   db = dbOpen (dbfn);
+  dbDisableLastUpdateTime (db);
   if (db == NULL) {
     fprintf (stderr, "unable to open %s\n", dbfn);
     return 1;
   }
 
+  logStart ("tdbsetval", "tdbs",
+      LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_MSGS | LOG_ACTIONS | LOG_DB);
+
   dbStartIterator (db, &dbiteridx);
   while ((song = dbIterate (db, &dbkey, &dbiteridx)) != NULL) {
     if (song != NULL) {
-      int     tagidx;
-
-      tagidx = tagdefLookup (tagname);
       if (tagdefs [tagidx].valueType == VALUE_NUM) {
         songSetNum (song, tagidx, atol (valuestr));
       } else if (tagdefs [tagidx].valueType == VALUE_STR) {

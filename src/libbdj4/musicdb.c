@@ -236,6 +236,7 @@ dbDisableLastUpdateTime (musicdb_t *musicdb)
     return;
   }
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "INFO: database disabled last update time");
   musicdb->updatelast = false;
 }
 
@@ -246,6 +247,7 @@ dbEnableLastUpdateTime (musicdb_t *musicdb)
     return;
   }
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "INFO: database enabled last update time");
   musicdb->updatelast = true;
 }
 

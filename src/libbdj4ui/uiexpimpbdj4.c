@@ -48,7 +48,7 @@ typedef struct {
   uientry_t       *target;
   uientry_t       *newname;
   uiplaylist_t    *uiplaylist;
-  uiswitch_t      *uiupdate;
+  uispinbox_t     *action;
   uibutton_t      *targetButton;
   callback_t      *responsecb;
 } uieibdj4dialog_t;
@@ -59,6 +59,8 @@ typedef struct uieibdj4 {
   uieibdj4dialog_t  dialog [UIEIBDJ4_MAX];
   int               currtype;
   callback_t        *callbacks [UIEIBDJ4_CB_MAX];
+  nlist_t           *actionList;
+  unsigned int      actionMaxWidth;
   bool              isactive : 1;
 } uieibdj4_t;
 
@@ -71,11 +73,14 @@ static void   uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype);
 static int    uieibdj4ValidateTarget (uientry_t *entry, void *udata);
 static bool   uieibdj4SelectHandler (void *udata, long idx);
 static int    uieibdj4ValidateNewName (uientry_t *entry, void *udata);
+static const char * uieibdj4ActionGet (void *udata, int idx);
 
 uieibdj4_t *
 uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
 {
   uieibdj4_t  *uieibdj4;
+  nlistidx_t  iteridx;
+  const char  *str;
 
   uieibdj4 = mdmalloc (sizeof (uieibdj4_t));
   for (int i = 0; i < UIEIBDJ4_MAX; ++i) {
@@ -95,6 +100,23 @@ uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
   }
   uieibdj4->isactive = false;
 
+  uieibdj4->actionList = nlistAlloc ("imp-actions", LIST_ORDERED, NULL);
+  /* CONTEXT: import for bdj4: only import when there is no database entry */
+  nlistSetStr (uieibdj4->actionList, 0, _("Import when not found"));
+  /* CONTEXT: import for bdj4: replace database entry if newer */
+  nlistSetStr (uieibdj4->actionList, 1, _("Replace if newer"));
+
+  uieibdj4->actionMaxWidth = 0;
+  nlistStartIterator (uieibdj4->actionList, &iteridx);
+  while ((str = nlistIterateValueData (uieibdj4->actionList, &iteridx)) != NULL) {
+    size_t      len;
+
+    len = strlen (str);
+    if (len > uieibdj4->actionMaxWidth) {
+      uieibdj4->actionMaxWidth = len;
+    }
+  }
+
   uieibdj4->callbacks [UIEIBDJ4_CB_DIALOG] = callbackInitLong (
       uieibdj4ResponseHandler, uieibdj4);
   uieibdj4->callbacks [UIEIBDJ4_CB_TARGET] = callbackInit (
@@ -109,6 +131,7 @@ void
 uieibdj4Free (uieibdj4_t *uieibdj4)
 {
   if (uieibdj4 != NULL) {
+    nlistFree (uieibdj4->actionList);
     for (int i = 0; i < UIEIBDJ4_CB_MAX; ++i) {
       callbackFree (uieibdj4->callbacks [i]);
     }
@@ -224,13 +247,13 @@ uieibdj4GetNewName (uieibdj4_t *uieibdj4)
 bool
 uieibdj4GetUpdate (uieibdj4_t *uieibdj4)
 {
-  bool      tbool;
+  bool      tbool = false;
 
   if (uieibdj4 == NULL) {
     return false;
   }
 
-  tbool = uiSwitchGetValue (uieibdj4->dialog [uieibdj4->currtype].uiupdate);
+//  tbool = uiSwitchGetValue (uieibdj4->dialog [uieibdj4->currtype].uiupdate);
   return tbool;
 }
 
@@ -423,14 +446,20 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiBoxPackStart (vbox, hbox);
 
     uiwidgetp = uiCreateColonLabel (
-        /* CONTEXT: import from bdj4 : update database/audio files when newer */
-        _("Update when newer"));
+        /* CONTEXT: import from bdj4 : how to process, select action */
+        _("Action"));
     uiBoxPackStart (hbox, uiwidgetp);
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uiwcontFree (uiwidgetp);
 
-    uieibdj4->dialog [currtype].uiupdate = uiCreateSwitch (false);
-    uiwidgetp = uiSwitchGetWidgetContainer (uieibdj4->dialog [currtype].uiupdate);
+    uieibdj4->dialog [currtype].action = uiSpinboxInit ();
+    uiSpinboxTextCreate (uieibdj4->dialog [currtype].action, uieibdj4);
+
+    uiSpinboxTextSet (uieibdj4->dialog [currtype].action, 0,
+        nlistGetCount (uieibdj4->actionList),
+        uieibdj4->actionMaxWidth,
+        NULL, NULL, uieibdj4ActionGet);
+    uiwidgetp = uiSpinboxGetWidgetContainer (uieibdj4->dialog [currtype].action);
     uiBoxPackStart (hbox, uiwidgetp);
   }
 
@@ -539,6 +568,8 @@ uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype)
   uieibdj4->dialog [expimptype].targetButton = NULL;
   uiplaylistFree (uieibdj4->dialog [expimptype].uiplaylist);
   uieibdj4->dialog [expimptype].uiplaylist = NULL;
+  uiSpinboxFree (uieibdj4->dialog [expimptype].action);
+  uieibdj4->dialog [expimptype].action = NULL;
 }
 
 static int
@@ -629,3 +660,14 @@ uieibdj4ValidateNewName (uientry_t *entry, void *udata)
 
   return rc;
 }
+
+static const char *
+uieibdj4ActionGet (void *udata, int idx)
+{
+  uieibdj4_t    *uieibdj4 = udata;
+  const char    *disp;
+
+  disp = nlistGetStr (uieibdj4->actionList, idx);
+  return disp;
+}
+

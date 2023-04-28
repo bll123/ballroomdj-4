@@ -48,7 +48,7 @@
 #include "uimusicq.h"
 #include "uinbutil.h"
 #include "uiplayer.h"
-#include "uireqext.h"
+#include "uiextreq.h"
 #include "uisongfilter.h"
 #include "uisongsel.h"
 #include "uiutils.h"
@@ -109,8 +109,8 @@ typedef struct {
   uikey_t         *uikey;
   uiwcont_t       *wcont [PLUI_W_MAX];
   /* external request */
-  int             reqextRow;
-  uireqext_t      *uireqext;
+  int             extreqRow;
+  uiextreq_t      *uiextreq;
   /* notebook */
   uinbtabid_t     *nbtabid;
   int             currpage;
@@ -196,7 +196,7 @@ static bool     pluiSongSaveCallback (void *udata, long dbidx);
 static bool     pluiClearQueueCallback (void *udata);
 static void     pluiPushHistory (playerui_t *plui, const char *args);
 static bool     pluiRequestExternalDialog (void *udata);
-static bool     pluiReqextCallback (void *udata);
+static bool     pluiExtReqCallback (void *udata);
 static bool     pluiKeyEvent (void *udata);
 static bool     pluiExportMP3 (void *udata);
 static bool     pluiDragDropCallback (void *udata, const char *uri, int row);
@@ -235,8 +235,8 @@ main (int argc, char *argv[])
   plui.stopwaitcount = 0;
   plui.nbtabid = uinbutilIDInit ();
   plui.uisongfilter = NULL;
-  plui.reqextRow = -1;
-  plui.uireqext = NULL;
+  plui.extreqRow = -1;
+  plui.uiextreq = NULL;
   plui.uikey = NULL;
   plui.uibuilt = false;
   plui.fontszdialogcreated = false;
@@ -393,7 +393,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
   uinbutilIDFree (plui->nbtabid);
   uisfFree (plui->uisongfilter);
   uiKeyFree (plui->uikey);
-  uireqextFree (plui->uireqext);
+  uiextreqFree (plui->uiextreq);
   if (plui->optionsalloc) {
     nlistFree (plui->options);
   }
@@ -678,12 +678,12 @@ pluiInitializeUI (playerui_t *plui)
 {
   plui->uiplayer = uiplayerInit (plui->progstate, plui->conn, plui->musicdb);
 
-  plui->uireqext = uireqextInit (plui->wcont [PLUI_W_WINDOW],
+  plui->uiextreq = uiextreqInit (plui->wcont [PLUI_W_WINDOW],
       plui->musicdb, plui->options);
   plui->callbacks [PLUI_CB_REQ_EXT] = callbackInit (
-      pluiReqextCallback,
+      pluiExtReqCallback,
       plui, "musicq: external request response");
-  uireqextSetResponseCallback (plui->uireqext, plui->callbacks [PLUI_CB_REQ_EXT]);
+  uiextreqSetResponseCallback (plui->uiextreq, plui->callbacks [PLUI_CB_REQ_EXT]);
 
   plui->uimusicq = uimusicqInit ("plui", plui->conn, plui->musicdb,
       plui->dispsel, DISP_SEL_MUSICQ);
@@ -774,7 +774,7 @@ pluiMainLoop (void *tplui)
   uiplayerMainLoop (plui->uiplayer);
   uimusicqMainLoop (plui->uimusicq);
   uisongselMainLoop (plui->uisongsel);
-  uireqextProcess (plui->uireqext);
+  uiextreqProcess (plui->uiextreq);
 
   if (gKillReceived) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "got kill signal");
@@ -1539,17 +1539,17 @@ pluiRequestExternalDialog (void *udata)
   playerui_t    *plui = udata;
   bool          rc;
 
-  rc = uireqextDialog (plui->uireqext, NULL);
+  rc = uiextreqDialog (plui->uiextreq, NULL);
   return rc;
 }
 
 static bool
-pluiReqextCallback (void *udata)
+pluiExtReqCallback (void *udata)
 {
   playerui_t    *plui = udata;
   song_t        *song;
 
-  song = uireqextGetSong (plui->uireqext);
+  song = uiextreqGetSong (plui->uiextreq);
   if (song != NULL) {
     dbidx_t     dbidx;
     char        *songentrytext;
@@ -1557,7 +1557,7 @@ pluiReqextCallback (void *udata)
     /* add to the player's copy of the database */
     dbidx = dbAddTemporarySong (plui->musicdb, song);
 
-    songentrytext = uireqextGetSongEntryText (plui->uireqext);
+    songentrytext = uiextreqGetSongEntryText (plui->uiextreq);
     if (songentrytext != NULL) {
       char        *tbuff;
 
@@ -1569,10 +1569,10 @@ pluiReqextCallback (void *udata)
       connSendMessage (plui->conn, ROUTE_MAIN, MSG_DB_ENTRY_TEMP_ADD, tbuff);
       dataFree (tbuff);
 
-      if (plui->reqextRow >= 0) {
+      if (plui->extreqRow >= 0) {
         uimusicqSetSelectLocation (plui->uimusicq, plui->musicqRequestIdx,
-            plui->reqextRow);
-        plui->reqextRow = -1;
+            plui->extreqRow);
+        plui->extreqRow = -1;
       }
 
       pluiQueueProcess (plui, dbidx);
@@ -1637,8 +1637,8 @@ pluiDragDropCallback (void *udata, const char *uri, int row)
   }
 
   plui->musicqRequestIdx = plui->musicqManageIdx;
-  plui->reqextRow = row;
+  plui->extreqRow = row;
 
-  uireqextDialog (plui->uireqext, uri + filepfxlen);
+  uiextreqDialog (plui->uiextreq, uri + filepfxlen);
   return UICB_CONT;
 }
