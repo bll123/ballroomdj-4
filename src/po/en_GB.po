@@ -258,6 +258,10 @@ msgstr ""
 msgid "Allowed Keywords"
 msgstr ""
 
+#. CONTEXT: import from bdj4: error message if the target song list already exists
+msgid "Already Exists"
+msgstr ""
+
 #. CONTEXT: set up alternate: dialog title for selecting location
 msgid "Alternate Location"
 msgstr ""

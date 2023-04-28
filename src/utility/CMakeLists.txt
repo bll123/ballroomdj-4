@@ -53,6 +53,17 @@ target_link_libraries (tdbdump
   m
 )
 
+add_executable (tdbsetval tdbsetval.c)
+if (WIN32)
+  target_compile_options (tdbsetval PRIVATE -municode)
+endif()
+target_link_libraries (tdbsetval
+  libbdj4ati libbdj4 libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
+  z
+  m
+)
+
 add_executable (testsuite
   testsuite.c
 )
@@ -89,7 +100,7 @@ target_link_libraries (vsed
 )
 
 install (TARGETS
-  bdj4info bdj4tags tdbcompare tdbdump testsuite tmusicsetup
+  bdj4info bdj4tags tdbcompare tdbdump tdbsetval testsuite tmusicsetup
   vlcsinklist vsed
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
@@ -98,6 +109,7 @@ updateRPath (bdj4info)
 updateRPath (bdj4tags)
 updateRPath (tdbcompare)
 updateRPath (tdbdump)
+updateRPath (tdbsetval)
 updateRPath (testsuite)
 updateRPath (tmusicsetup)
 updateRPath (vlcsinklist)

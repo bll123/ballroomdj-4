@@ -79,6 +79,7 @@ main (int argc, char * argv[])
     { "check_all",      no_argument,        NULL,   1 },
     { "tdbcompare",     no_argument,        NULL,   23 },
     { "tdbdump",        no_argument,        NULL,   24 },
+    { "tdbsetval",      no_argument,        NULL,   26 },
     { "testsuite",      no_argument,        NULL,   22 },
     { "tmusicsetup",    no_argument,        NULL,   21 },
     { "vlcsinklist",    no_argument,        NULL,   25 },
@@ -293,6 +294,13 @@ main (int argc, char * argv[])
       }
       case 25: {
         prog = "vlcsinklist";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 26: {
+        prog = "tdbsetval";
         nodetach = true;
         wait = true;
         ++validargs;

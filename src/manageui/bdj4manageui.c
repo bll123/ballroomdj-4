@@ -385,6 +385,7 @@ static void     manageSwitchPage (manageui_t *manage, long pagenum, int which);
 static void     manageSetDisplayPerSelection (manageui_t *manage, int id);
 static void     manageSetMenuCallback (manageui_t *manage, int midx, callbackFunc cb);
 static void     manageSonglistLoadCheck (manageui_t *manage);
+static void     manageProcessDatabaseUpdate (manageui_t *manage);
 /* same song */
 static bool     manageSameSongSetMark (void *udata);
 static bool     manageSameSongClearMark (void *udata);
@@ -1099,8 +1100,13 @@ manageMainLoop (void *tmanage)
     }
 
     if (eibdj4Process (manage->eibdj4)) {
+      if (eibdj4DatabaseChanged (manage->eibdj4)) {
+        manageProcessDatabaseUpdate (manage);
+      }
       uiutilsProgressStatus (manage->wcont [MANAGE_W_STATUS_MSG], -1, -1);
       uieibdj4UpdateStatus (manage->uieibdj4, -1, -1);
+      manageSonglistLoadFile (manage,
+          uieibdj4GetNewName (manage->uieibdj4), MANAGE_STD);
       uieibdj4DialogClear (manage->uieibdj4);
       manage->expimpbdj4state = BDJ4_STATE_OFF;
     }
@@ -1324,27 +1330,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           /* the database has been updated, tell the other processes to */
           /* reload it, and reload it ourselves */
 
-          samesongFree (manage->samesong);
-          manage->musicdb = bdj4ReloadDatabase (manage->musicdb);
-          manage->samesong = samesongAlloc (manage->musicdb);
-
-          manageStatsSetDatabase (manage->slstats, manage->musicdb);
-          uiplayerSetDatabase (manage->slplayer, manage->musicdb);
-          uiplayerSetDatabase (manage->mmplayer, manage->musicdb);
-          uisongselSetDatabase (manage->slsongsel, manage->musicdb);
-          uisongselSetSamesong (manage->slsongsel, manage->samesong);
-          uisongselSetDatabase (manage->slezsongsel, manage->musicdb);
-          uisongselSetSamesong (manage->slezsongsel, manage->samesong);
-          uisongselSetDatabase (manage->mmsongsel, manage->musicdb);
-          uisongselSetSamesong (manage->mmsongsel, manage->samesong);
-          uimusicqSetDatabase (manage->slmusicq, manage->musicdb);
-          uimusicqSetDatabase (manage->slezmusicq, manage->musicdb);
-          uimusicqSetDatabase (manage->mmmusicq, manage->musicdb);
-
-          connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
-
-          uisongselApplySongFilter (manage->slsongsel);
-
+          manageProcessDatabaseUpdate (manage);
           manageDbResetButtons (manage->managedb);
           break;
         }
@@ -3472,6 +3458,31 @@ manageSonglistLoadCheck (manageui_t *manage)
   logProcEnd (LOG_PROC, "manageSonglistLoadCheck", "");
 }
 
+static void
+manageProcessDatabaseUpdate (manageui_t *manage)
+{
+  samesongFree (manage->samesong);
+  manage->musicdb = bdj4ReloadDatabase (manage->musicdb);
+  manage->samesong = samesongAlloc (manage->musicdb);
+
+  manageStatsSetDatabase (manage->slstats, manage->musicdb);
+  uiplayerSetDatabase (manage->slplayer, manage->musicdb);
+  uiplayerSetDatabase (manage->mmplayer, manage->musicdb);
+  uisongselSetDatabase (manage->slsongsel, manage->musicdb);
+  uisongselSetSamesong (manage->slsongsel, manage->samesong);
+  uisongselSetDatabase (manage->slezsongsel, manage->musicdb);
+  uisongselSetSamesong (manage->slezsongsel, manage->samesong);
+  uisongselSetDatabase (manage->mmsongsel, manage->musicdb);
+  uisongselSetSamesong (manage->mmsongsel, manage->samesong);
+  uimusicqSetDatabase (manage->slmusicq, manage->musicdb);
+  uimusicqSetDatabase (manage->slezmusicq, manage->musicdb);
+  uimusicqSetDatabase (manage->mmmusicq, manage->musicdb);
+
+  connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DATABASE_UPDATE, NULL);
+
+  uisongselApplySongFilter (manage->slsongsel);
+}
+
 /* same song */
 
 static bool
@@ -3524,4 +3535,3 @@ manageSameSongChangeMark (manageui_t *manage, int flag)
   uisongselPopulateData (manage->mmsongsel);
   logProcEnd (LOG_PROC, "manageSameSongChangeMark", "");
 }
-

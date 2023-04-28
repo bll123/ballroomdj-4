@@ -264,6 +264,10 @@ msgstr "Alle Tags"
 msgid "Allowed Keywords"
 msgstr "Toegestane zoekwoorden"
 
+#. CONTEXT: import from bdj4: error message if the target song list already exists
+msgid "Already Exists"
+msgstr ""
+
 #. CONTEXT: set up alternate: dialog title for selecting location
 msgid "Alternate Location"
 msgstr "Alternatieve Locatie"
@@ -751,7 +755,7 @@ msgstr ""
 #. CONTEXT: external request dialog: title for the dialog
 #. CONTEXT: playerui: menu selection: action: external request
 msgid "External Request"
-msgstr "Extern Verzoek"
+msgstr "Externe Toevoeging"
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: playerui: button: fade out the song and stop playing it

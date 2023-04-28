@@ -43,6 +43,7 @@ typedef struct eibdj4 {
   int         counter;
   int         totcount;
   int         state;
+  bool        dbchanged : 1;
 } eibdj4_t;
 
 static bool eibdj4ProcessExport (eibdj4_t *eibdj4);
@@ -64,6 +65,7 @@ eibdj4Init (musicdb_t *musicdb, const char *dirname, int eiflag)
   eibdj4->counter = 0;
   eibdj4->totcount = 0;
   eibdj4->state = BDJ4_STATE_START;
+  eibdj4->dbchanged = false;
 
   strlcpy (eibdj4->origmusicdir,
       bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (eibdj4->origmusicdir));
@@ -184,6 +186,16 @@ eibdj4Process (eibdj4_t *eibdj4)
   }
 
   return rc;
+}
+
+bool
+eibdj4DatabaseChanged (eibdj4_t *eibdj4)
+{
+  if (eibdj4 == NULL) {
+    return false;
+  }
+
+  return eibdj4->dbchanged;
 }
 
 /* internal routines */
@@ -384,6 +396,7 @@ fprintf (stderr, "%ld > %ld false\n", nupd, oupd);
         }
       }
       if (doupdate) {
+        eibdj4->dbchanged = true;
         dbWriteSong (eibdj4->musicdb, song);
         nfn = songutilFullFileName (songfn);
 fprintf (stderr, "copy: from: %s\n", tbuff);
@@ -398,6 +411,29 @@ fprintf (stderr, "found %s in main db\n", songfn);
       eibdj4->counter += 1;
       rc = false;
     } else {
+      char  from [MAXPATHLEN];
+      char  to [MAXPATHLEN];
+
+      /* only copy the song list after the database has been updated */
+
+      snprintf (from, sizeof (from), "%s/%s%s", eibdj4->datadir,
+          eibdj4->plName, BDJ4_PLAYLIST_EXT);
+      pathbldMakePath (to, sizeof (to),
+          eibdj4->newName, BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
+      filemanipCopy (from, to);
+
+      snprintf (from, sizeof (from), "%s/%s%s", eibdj4->datadir,
+          eibdj4->plName, BDJ4_PL_DANCE_EXT);
+      pathbldMakePath (to, sizeof (to),
+          eibdj4->newName, BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
+      filemanipCopy (from, to);
+
+      snprintf (from, sizeof (from), "%s/%s%s", eibdj4->datadir,
+          eibdj4->plName, BDJ4_SONGLIST_EXT);
+      pathbldMakePath (to, sizeof (to),
+          eibdj4->newName, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
+      filemanipCopy (from, to);
+
       eibdj4->state = BDJ4_STATE_FINISH;
     }
   }

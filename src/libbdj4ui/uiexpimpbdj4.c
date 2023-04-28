@@ -20,6 +20,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
+#include "pathbld.h"
 #include "playlist.h"
 #include "sysvars.h"
 #include "ui.h"
@@ -69,6 +70,7 @@ static bool   uieibdj4ResponseHandler (void *udata, long responseid);
 static void   uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype);
 static int    uieibdj4ValidateTarget (uientry_t *entry, void *udata);
 static bool   uieibdj4SelectHandler (void *udata, long idx);
+static int    uieibdj4ValidateNewName (uientry_t *entry, void *udata);
 
 uieibdj4_t *
 uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
@@ -412,9 +414,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiBoxPackStart (hbox, uiwidgetp);
 
     uiEntrySetValidate (uieibdj4->dialog [currtype].newname,
-        uiutilsValidatePlaylistName,
-        uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG],
-        UIENTRY_IMMEDIATE);
+        uieibdj4ValidateNewName, uieibdj4, UIENTRY_IMMEDIATE);
 
     uiwcontFree (hbox);
 
@@ -595,4 +595,37 @@ uieibdj4SelectHandler (void *udata, long idx)
   str = uiplaylistGetValue (uieibdj4->dialog [currtype].uiplaylist);
   uiEntrySetValue (uieibdj4->dialog [currtype].newname, str);
   return UICB_CONT;
+}
+
+static int
+uieibdj4ValidateNewName (uientry_t *entry, void *udata)
+{
+  uieibdj4_t  *uieibdj4 = udata;
+  uiwcont_t   *statusMsg = NULL;
+  uiwcont_t   *errorMsg = NULL;
+  int         rc = UIENTRY_ERROR;
+  const char  *str;
+  char        fn [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
+
+  statusMsg = uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_STATUS_MSG];
+  errorMsg = uieibdj4->dialog [uieibdj4->currtype].wcont [UIEIBDJ4_W_ERROR_MSG];
+  uiLabelSetText (statusMsg, "");
+  uiLabelSetText (errorMsg, "");
+  rc = uiutilsValidatePlaylistName (entry, errorMsg);
+
+  if (rc == UIENTRY_OK) {
+    str = uiEntryGetValue (entry);
+    if (*str) {
+      pathbldMakePath (fn, sizeof (fn),
+          str, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
+      if (fileopFileExists (fn)) {
+        /* CONTEXT: import from bdj4: error message if the target song list already exists */
+        snprintf (tbuff, sizeof (tbuff), "%s: %s", str, _("Already Exists"));
+        uiLabelSetText (statusMsg, tbuff);
+      }
+    }
+  }
+
+  return rc;
 }
