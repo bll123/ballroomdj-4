@@ -48,6 +48,7 @@
 #cmakedefine01 _lib_CopyFileW
 #cmakedefine01 _lib_CreateFile
 #cmakedefine01 _lib_CreateProcess
+#cmakedefine01 _lib_FlushFileBuffers
 #cmakedefine01 _lib_FindFirstFileW
 #cmakedefine01 _lib_GetFullPathName
 #cmakedefine01 _lib_GetNativeSystemInfo

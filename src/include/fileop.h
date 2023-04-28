@@ -8,13 +8,14 @@
 #include <stdio.h>
 #include <time.h>
 
-bool  fileopFileExists (const char *fname);
+bool    fileopFileExists (const char *fname);
 ssize_t fileopSize (const char *fname);
 time_t  fileopModTime (const char *fname);
-void  fileopSetModTime (const char *fname, time_t tm);
+void    fileopSetModTime (const char *fname, time_t tm);
 time_t  fileopCreateTime (const char *fname);
-bool  fileopIsDirectory (const char *fname);
-int   fileopDelete (const char *fname);
-FILE  * fileopOpen (const char *fname, const char *mode);
+bool    fileopIsDirectory (const char *fname);
+int     fileopDelete (const char *fname);
+FILE    * fileopOpen (const char *fname, const char *mode);
+void    fileopSync (FILE *fh);
 
 #endif /* INC_FILEOP_H */

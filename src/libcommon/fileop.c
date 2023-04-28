@@ -288,3 +288,13 @@ fileopOpen (const char *fname, const char *mode)
   return fh;
 }
 
+void
+fileopSync (FILE *fh)
+{
+#if _lib_FlushFileBuffers
+  FlushFileBuffers ((HANDLE) _get_osfhandle (_fileno(fh)));
+#endif
+#if _lib_fsync
+  fsync (fileno (fh));
+#endif
+}

@@ -17,7 +17,9 @@
     * Create From Playlist: Copy playlist settings to new song list.
     * Music Manager: Filters: Selection of automatic and sequenced playlists is now possible.
 * New Features:
-    * PENDING: Song List Editor: Export for BDJ4 / Import from BDJ4
+    * PENDING: Song List Editor: Export for BDJ4 / Import from BDJ4.
+* Internal:
+    * Cleanup (file sync).
 
 -->
 

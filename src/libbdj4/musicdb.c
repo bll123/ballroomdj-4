@@ -200,15 +200,6 @@ dbLoadEntry (musicdb_t *musicdb, dbidx_t dbidx)
   if (song != NULL) {
     slistSetData (musicdb->songs, fstr, song);
   }
-  if (! musicdb->inbatch) {
-// ### FIX
-    /* this is really gross. I'd like to know why it does not work */
-    /* re-test this and see what's going on */
-    /* this is inefficient, but otherwise the disk buffering / file handling */
-    /* causes issues w/reading an updated entry */
-    raClose (musicdb->radb);
-    musicdb->radb = NULL;
-  }
 }
 
 void
@@ -319,7 +310,7 @@ dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
     char tmp [40];
 
     currtime = time (NULL);
-    snprintf (tmp, sizeof (tmp), "%ld", currtime);
+    snprintf (tmp, sizeof (tmp), "%"PRId64, (int64_t) currtime);
     slistSetStr (tagList, tagdefs [TAG_LAST_UPDATED].tag, tmp);
   }
   tblen = dbWriteInternal (musicdb, fn, tagList, rrn);

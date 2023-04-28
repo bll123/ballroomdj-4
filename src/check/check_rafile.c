@@ -259,6 +259,62 @@ START_TEST(rafile_reread)
 }
 END_TEST
 
+START_TEST(rafile_write_read)
+{
+  rafile_t      *rafile;
+  struct stat   statbuf;
+  ssize_t       rc;
+  off_t         lastsize;
+  char          data [RAFILE_REC_SIZE];
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- rafile_rewrite");
+
+  rafile = raOpen (RAFN, 10);
+  ck_assert_ptr_nonnull (rafile);
+  ck_assert_int_eq (raGetVersion (rafile), 10);
+  ck_assert_int_eq (raGetCount (rafile), 6);
+  rc = stat (RAFN, &statbuf);
+  ck_assert_int_eq (rc, 0);
+  lastsize = statbuf.st_size;
+
+  raWrite (rafile, 4, "jjjj");
+  rc = stat (RAFN, &statbuf);
+  ck_assert_int_eq (rc, 0);
+  ck_assert_int_eq (statbuf.st_size, lastsize);
+  lastsize = statbuf.st_size;
+
+  rc = raRead (rafile, 4, data);
+  ck_assert_int_eq (rc, 1);
+  ck_assert_str_eq (data, "jjjj");
+
+  raWrite (rafile, 3, "kkkk");
+  rc = stat (RAFN, &statbuf);
+  ck_assert_int_eq (rc, 0);
+  ck_assert_int_eq (statbuf.st_size, lastsize);
+  lastsize = statbuf.st_size;
+
+  rc = raRead (rafile, 3, data);
+  ck_assert_int_eq (rc, 1);
+  ck_assert_str_eq (data, "kkkk");
+
+  raWrite (rafile, 2, "llll");
+  rc = stat (RAFN, &statbuf);
+  ck_assert_int_eq (rc, 0);
+  ck_assert_int_eq (statbuf.st_size, lastsize);
+
+  rc = raRead (rafile, 2, data);
+  ck_assert_int_eq (rc, 1);
+  ck_assert_str_eq (data, "llll");
+
+  rc = raRead (rafile, 1, data);
+  ck_assert_int_eq (rc, 1);
+  ck_assert_str_eq (data, "iiii");
+
+  ck_assert_int_eq (raGetNextRRN (rafile), 7);
+  ck_assert_int_eq (raGetCount (rafile), 6);
+  raClose (rafile);
+}
+END_TEST
 
 START_TEST(rafile_bad_write_len)
 {
@@ -301,7 +357,7 @@ START_TEST(rafile_clear)
   ck_assert_str_eq (data, "");
   rc = raRead (rafile, 3, data);
   ck_assert_int_eq (rc, 1);
-  ck_assert_str_eq (data, "gggg");
+  ck_assert_str_eq (data, "kkkk");
 
   raClose (rafile);
 }
@@ -370,6 +426,7 @@ rafile_suite (void)
   tcase_add_test (tc, rafile_read);
   tcase_add_test (tc, rafile_rewrite);
   tcase_add_test (tc, rafile_reread);
+  tcase_add_test (tc, rafile_write_read);
   tcase_add_test (tc, rafile_bad_write_len);
   tcase_add_test (tc, rafile_clear);
   tcase_add_test (tc, rafile_bad_read);
