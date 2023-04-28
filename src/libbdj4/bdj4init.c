@@ -279,7 +279,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     logStartAppend (lockName (route), tag, loglevel);
   }
   logProcBegin (LOG_PROC, "bdj4startup");
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %"PRId64, sysvarsGetNum (SVL_BDJIDX));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Using profile %" PRId64, sysvarsGetNum (SVL_BDJIDX));
   if (route == ROUTE_STARTERUI) {
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale: %s", sysvarsGetStr (SV_LOCALE));
     logMsg (LOG_SESS, LOG_IMPORTANT, "locale-short: %s", sysvarsGetStr (SV_LOCALE_SHORT));
@@ -304,9 +304,9 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     pathbldMakePath (tbuff, sizeof (tbuff),
         MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
     *musicdb = dbOpen (tbuff);
-    logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %d items in %"PRId64" ms", dbCount(*musicdb), (int64_t) mstimeend (&dbmt));
+    logMsg (LOG_SESS, LOG_IMPORTANT, "Database read: %d items in %" PRId64 " ms", dbCount(*musicdb), (int64_t) mstimeend (&dbmt));
   }
-  logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %"PRId64" ms", (int64_t) mstimeend (&mt));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "Total init time: %" PRId64 " ms", (int64_t) mstimeend (&mt));
 
   logProcEnd (LOG_PROC, "bdj4startup", "");
   return loglevel;
@@ -326,7 +326,7 @@ bdj4ReloadDatabase (musicdb_t *musicdb)
   pathbldMakePath (tbuff, sizeof (tbuff),
       MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
   musicdb = dbOpen (tbuff);
-  logMsg (LOG_DBG, LOG_IMPORTANT, "Database read: %d items in %"PRId64" ms", dbCount(musicdb), (int64_t) mstimeend (&dbmt));
+  logMsg (LOG_DBG, LOG_IMPORTANT, "Database read: %d items in %" PRId64 " ms", dbCount(musicdb), (int64_t) mstimeend (&dbmt));
   return musicdb;
 }
 
@@ -357,7 +357,7 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   bdjvarsCleanup ();
   audiotagCleanup ();
   localeCleanup ();
-  logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %"PRId64" ms", (int64_t) mstimeend (&mt));
+  logMsg (LOG_SESS, LOG_IMPORTANT, "init cleanup time: %" PRId64 " ms", (int64_t) mstimeend (&mt));
   if (route != ROUTE_NONE) {
     lockRelease (lockName (route), PATHBLD_MP_USEIDX);
   }

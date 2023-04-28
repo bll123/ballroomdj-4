@@ -147,7 +147,7 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data)
   logProcBegin (LOG_PROC, "raWrite");
   /* leave one byte for the terminating null */
   if (len > (RAFILE_REC_SIZE - 1)) {
-    logMsg (LOG_DBG, LOG_RAFILE, "bad data len %"PRId64, (int64_t) len);
+    logMsg (LOG_DBG, LOG_RAFILE, "bad data len %" PRId64, (int64_t) len);
     return 1;
   }
 

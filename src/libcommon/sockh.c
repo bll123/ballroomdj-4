@@ -65,7 +65,7 @@ sockhStartServer (uint16_t listenPort)
   logProcBegin (LOG_PROC, "sockhMainLoop");
   sockserver->listenSock = sockServer (listenPort, &err);
   sockserver->si = sockAddCheck (sockserver->si, sockserver->listenSock);
-  logMsg (LOG_DBG, LOG_SOCKET, "add listen sock %"PRId64,
+  logMsg (LOG_DBG, LOG_SOCKET, "add listen sock %" PRId64,
       (int64_t) sockserver->listenSock);
   return sockserver;
 }
@@ -155,7 +155,7 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
       if (! socketInvalid (clsock)) {
         logMsg (LOG_DBG, LOG_SOCKET, "connected");
         sockserver->si = sockAddCheck (sockserver->si, clsock);
-        logMsg (LOG_DBG, LOG_SOCKET, "add client sock %"PRId64, (int64_t) clsock);
+        logMsg (LOG_DBG, LOG_SOCKET, "add client sock %" PRId64, (int64_t) clsock);
       }
     } else {
       char *rval = sockReadBuff (msgsock, &len, msgbuff, sizeof (msgbuff));
@@ -165,7 +165,7 @@ sockhProcessMain (sockserver_t *sockserver, sockhProcessMsg_t msgFunc,
          * the message buffer is too short,
          * or that the socket has been closed.
          */
-        logMsg (LOG_DBG, LOG_SOCKET, "remove sock %"PRId64, (int64_t) msgsock);
+        logMsg (LOG_DBG, LOG_SOCKET, "remove sock %" PRId64, (int64_t) msgsock);
         sockRemoveCheck (sockserver->si, msgsock);
         sockClose (msgsock);
         return done;

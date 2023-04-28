@@ -1048,7 +1048,7 @@ marqueeSendFontSizes (marquee_t *marquee)
 {
   char    tbuff [100];
 
-  snprintf (tbuff, sizeof (tbuff), "%"PRId64"%c%"PRId64,
+  snprintf (tbuff, sizeof (tbuff), "%" PRId64 "%c%" PRId64,
       nlistGetNum (marquee->options, MQ_FONT_SZ),
       MSG_ARGS_RS,
       nlistGetNum (marquee->options, MQ_FONT_SZ_FS));

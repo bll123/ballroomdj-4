@@ -58,7 +58,7 @@ START_TEST(lock_acquire_release)
   ck_assert_int_eq (rc, 0);
   ck_assert_int_gt (statbuf.st_size, 0);
   fh = fopen (FULL_LOCK_FN, "r");
-  rc = fscanf (fh, "%"PRId64, &temp);
+  rc = fscanf (fh, "%" PRId64, &temp);
   fpid = (pid_t) temp;
   fclose (fh);
   ck_assert_int_eq (fpid, pid);
@@ -155,7 +155,7 @@ START_TEST(lock_exists)
   ck_assert_int_gt (rc, 0);
 
   fh = fopen (FULL_LOCK_FN, "r");
-  rc = fscanf (fh, "%"PRId64, &temp);
+  rc = fscanf (fh, "%" PRId64, &temp);
   fpid = (pid_t) temp;
   fclose (fh);
   ck_assert_int_eq (fpid, pid);
@@ -176,7 +176,7 @@ START_TEST(lock_exists)
 
   fh = fopen (FULL_LOCK_FN, "w");
   temp = 94534;
-  fprintf (fh, "%"PRId64, temp);
+  fprintf (fh, "%" PRId64, temp);
   fclose (fh);
   /* lock file exists, no associated process */
   tpid = lockExists (LOCK_FN, PATHBLD_MP_DREL_TMP);

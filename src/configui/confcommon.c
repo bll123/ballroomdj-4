@@ -105,7 +105,7 @@ confuiUpdateMobmqQrcode (confuigui_t *gui)
     if (ip == NULL) {
       ip = "";
     }
-    snprintf (uridisp, sizeof (uridisp), "http://%s:%"PRId64, ip,
+    snprintf (uridisp, sizeof (uridisp), "http://%s:%" PRId64, ip,
         bdjoptGetNum (OPT_P_MOBILEMQPORT));
   }
 
@@ -149,7 +149,7 @@ confuiUpdateRemctrlQrcode (confuigui_t *gui)
     if (ip == NULL) {
       ip = "";
     }
-    snprintf (uridisp, sizeof (uridisp), "http://%s:%"PRId64, ip,
+    snprintf (uridisp, sizeof (uridisp), "http://%s:%" PRId64, ip,
         bdjoptGetNum (OPT_P_REMCONTROLPORT));
   }
 

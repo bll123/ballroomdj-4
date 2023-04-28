@@ -310,7 +310,7 @@ dbWrite (musicdb_t *musicdb, const char *fn, slist_t *tagList, dbidx_t rrn)
     char tmp [40];
 
     currtime = time (NULL);
-    snprintf (tmp, sizeof (tmp), "%"PRId64, (int64_t) currtime);
+    snprintf (tmp, sizeof (tmp), "%" PRId64, (int64_t) currtime);
     slistSetStr (tagList, tagdefs [TAG_LAST_UPDATED].tag, tmp);
   }
   tblen = dbWriteInternal (musicdb, fn, tagList, rrn);

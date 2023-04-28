@@ -291,7 +291,7 @@ confuiStoppingCallback (void *udata, programstate_t programState)
 
   confuiPopulateOptions (&confui->gui);
 
-  snprintf (tmp, sizeof (tmp), "%"PRId64, bdjoptGetNum (OPT_G_DEBUGLVL));
+  snprintf (tmp, sizeof (tmp), "%" PRId64, bdjoptGetNum (OPT_G_DEBUGLVL));
   connSendMessage (confui->conn, ROUTE_STARTERUI, MSG_DEBUG_LEVEL, tmp);
 
   bdjoptSave ();

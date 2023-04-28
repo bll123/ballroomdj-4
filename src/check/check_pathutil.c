@@ -69,35 +69,35 @@ START_TEST(pathinfo_chk)
     pi = pathInfo (tests[i].path);
     if (pi->dlen > 0) {
       ck_assert_msg (pi->dirname != NULL,
-          "dirname: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+          "dirname: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
           "dlen", i, (int64_t) pi->dlen, (int64_t) tests[i].dlen);
     }
     if (pi->flen > 0) {
       ck_assert_msg (pi->filename != NULL,
-          "filename: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+          "filename: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
           "flen", i, (int64_t) pi->flen, (int64_t) tests[i].flen);
     }
     if (pi->blen > 0) {
       ck_assert_msg (pi->basename != NULL,
-          "basename: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+          "basename: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
           "blen", i, (int64_t) pi->blen, (int64_t) tests[i].blen);
     }
     if (pi->elen > 0) {
       ck_assert_msg (pi->extension != NULL,
-          "extension: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+          "extension: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
           "elen", i, (int64_t) pi->elen, (int64_t) tests[i].elen);
     }
     ck_assert_msg (pi->dlen == tests[i].dlen,
-        "dlen: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+        "dlen: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
         "dlen", i, (int64_t) pi->dlen, (int64_t) tests[i].dlen);
     ck_assert_msg (pi->flen == tests[i].flen,
-        "flen: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+        "flen: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
         "flen", i, (int64_t) pi->flen, (int64_t) tests[i].flen);
     ck_assert_msg (pi->blen == tests[i].blen,
-        "blen: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+        "blen: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
         "blen", i, (int64_t) pi->blen, (int64_t) tests[i].blen);
     ck_assert_msg (pi->elen == tests[i].elen,
-        "elen: %s: i:%"PRId64" have: %"PRId64" want: %"PRId64,
+        "elen: %s: i:%" PRId64 " have: %" PRId64 " want: %" PRId64,
         "elen", i, (int64_t) pi->elen, (int64_t) tests[i].elen);
 
     /* the dirname pointer always points to the beginning */

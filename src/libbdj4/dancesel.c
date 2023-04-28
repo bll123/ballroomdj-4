@@ -167,7 +167,7 @@ danceselDecrementBase (dancesel_t *dancesel, ilistidx_t danceIdx)
 
   nlistDecrement (dancesel->base, danceIdx);
   dancesel->basetotal -= 1.0;
-  logMsg (LOG_DBG, LOG_DANCESEL, "decrement %d/%s now %"PRId64" total %.0f", danceIdx,
+  logMsg (LOG_DBG, LOG_DANCESEL, "decrement %d/%s now %" PRId64 " total %.0f", danceIdx,
       danceGetStr (dancesel->dances, danceIdx, DANCE_DANCE),
       nlistGetNum (dancesel->base, danceIdx), dancesel->basetotal);
   /* keep the original distances */

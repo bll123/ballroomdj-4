@@ -705,7 +705,7 @@ START_TEST(datafile_keyval_savelist)
           mdfree (conv.str);
         }
       } else {
-        snprintf (tmp, sizeof (tmp), "%"PRId64,
+        snprintf (tmp, sizeof (tmp), "%" PRId64,
             nlistGetNum (list, dfkeyskl [i].itemkey));
         ck_assert_str_eq (tmp, tstr);
       }

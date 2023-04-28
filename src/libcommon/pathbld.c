@@ -76,9 +76,9 @@ pathbldMakePath (char *buff, size_t buffsz,
     if ((flags & PATHBLD_MP_DREL_TMP) == PATHBLD_MP_DREL_TMP) {
       /* if the tmp dir is being used, there is no prefix directory */
       /* use a filename prefix */
-      snprintf (profpath, sizeof (profpath), "l%02"PRId64"-", sysvarsGetNum (SVL_BDJIDX));
+      snprintf (profpath, sizeof (profpath), "l%02" PRId64 "-", sysvarsGetNum (SVL_BDJIDX));
     } else {
-      snprintf (profpath, sizeof (profpath), "profile%02"PRId64"/", sysvarsGetNum (SVL_BDJIDX));
+      snprintf (profpath, sizeof (profpath), "profile%02" PRId64 "/", sysvarsGetNum (SVL_BDJIDX));
     }
   }
   if ((flags & PATHBLD_MP_HOSTNAME) == PATHBLD_MP_HOSTNAME) {

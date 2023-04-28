@@ -88,10 +88,10 @@ pathInfo (const char *path)
     ++pi->dlen;
   }
 #if 0  // debugging
- fprintf (stderr, "%s : last:%"PRId64" pos:%"PRId64"\n", path, (int64_t) last, (int64_t) pos);
- fprintf (stderr, "  dlen:%"PRId64"\n", (int64_t) pi->dlen);
+ fprintf (stderr, "%s : last:%" PRId64 " pos:%" PRId64 "\n", path, (int64_t) last, (int64_t) pos);
+ fprintf (stderr, "  dlen:%" PRId64 "\n", (int64_t) pi->dlen);
  fprintf (stderr, "  dir:%.*s\n", (int) pi->dlen, pi->dirname);
- fprintf (stderr, "  flen:%"PRId64" blen:%"PRId64" elen:%"PRId64" ts:%d\n", (int64_t) pi->flen, (int64_t) pi->blen, (int64_t) pi->elen, trailingslash);
+ fprintf (stderr, "  flen:%" PRId64 " blen:%" PRId64 " elen:%" PRId64 " ts:%d\n", (int64_t) pi->flen, (int64_t) pi->blen, (int64_t) pi->elen, trailingslash);
  fprintf (stderr, "  file:%.*s\n", (int) pi->flen, pi->filename);
  fprintf (stderr, "  base:%.*s\n", (int) pi->blen, pi->basename);
  fprintf (stderr, "  ext:%.*s\n", (int) pi->elen, pi->extension);

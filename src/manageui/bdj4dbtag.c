@@ -298,7 +298,7 @@ dbtagProcessing (void *udata)
         dbtag->numActiveThreads == 0 &&
         dbtag->havealldata) {
       connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_TAG_FINISHED, NULL);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "-- queue empty: %"PRId64" ms",
+      logMsg (LOG_DBG, LOG_IMPORTANT, "-- queue empty: %" PRId64 " ms",
           (int64_t) mstimeend (&dbtag->starttm));
       logMsg (LOG_DBG, LOG_IMPORTANT, "     received: %d", dbtag->received);
       logMsg (LOG_DBG, LOG_IMPORTANT, "         sent: %d", dbtag->sent);

@@ -196,7 +196,7 @@ listGetNum (list_t *list, const char *keydata)
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%"PRId64, list->name, keydata, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%" PRId64, list->name, keydata, idx, value);
   return value;
 }
 
@@ -243,7 +243,7 @@ listSort (list_t *list)
   swaps = mergeSort (list, 0, list->count - 1);
   elapsed = mstimeend (&tm);
   if (elapsed > 0) {
-    logMsg (LOG_DBG, LOG_LIST, "sort of %s took %"PRId64" ms with %ld swaps", list->name, (int64_t) elapsed, swaps);
+    logMsg (LOG_DBG, LOG_LIST, "sort of %s took %" PRId64 " ms with %ld swaps", list->name, (int64_t) elapsed, swaps);
   }
 }
 

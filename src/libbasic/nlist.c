@@ -251,7 +251,7 @@ nlistGetNum (nlist_t *list, nlistidx_t lidx)
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%"PRId64, list->name, lidx, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%d idx:%d value:%" PRId64, list->name, lidx, idx, value);
   return value;
 }
 

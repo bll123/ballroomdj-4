@@ -495,7 +495,7 @@ main (int argc, char *argv [])
     mstimestart (&dbmt);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "Database read: started");
     musicdb = dbOpen (tbuff);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "Database read: %d items in %"PRId64" ms", dbCount(musicdb), (int64_t) mstimeend (&dbmt));
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "Database read: %d items in %" PRId64 " ms", dbCount(musicdb), (int64_t) mstimeend (&dbmt));
   }
 
   if (processaf) {

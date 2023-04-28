@@ -599,7 +599,7 @@ atimutagenMakeTempFilename (char *fn, size_t sz)
 {
   char        tbuff [MAXPATHLEN];
 
-  snprintf (tbuff, sizeof (tbuff), "atimutagen-%"PRId64".py", (int64_t) globalCounter++);
+  snprintf (tbuff, sizeof (tbuff), "atimutagen-%" PRId64 ".py", (int64_t) globalCounter++);
   pathbldMakePath (fn, sz, tbuff, "", PATHBLD_MP_DREL_TMP);
 }
 

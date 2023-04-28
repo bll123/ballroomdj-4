@@ -489,7 +489,7 @@ songDump (song_t *song)
         break;
       }
       case VALUE_NUM: {
-        fprintf (stderr, "%s : %"PRId64"\n", songdfkeys [i].name, songGetNum (song, songdfkeys [i].itemkey));
+        fprintf (stderr, "%s : %" PRId64 "\n", songdfkeys [i].name, songGetNum (song, songdfkeys [i].itemkey));
         break;
       }
       case VALUE_DOUBLE: {

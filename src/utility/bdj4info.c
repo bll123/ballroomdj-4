@@ -97,7 +97,7 @@ main (int argc, char *argv [])
   }
 
   for (int i = 0; i < SVL_MAX; ++i) {
-    fprintf (stdout, "sl: %-20s %"PRId64" (%d)\n", sysvarslDesc (i), sysvarsGetNum (i), i);
+    fprintf (stdout, "sl: %-20s %" PRId64 " (%d)\n", sysvarslDesc (i), sysvarsGetNum (i), i);
   }
 
   bdjoptInit ();

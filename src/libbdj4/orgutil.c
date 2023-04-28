@@ -362,15 +362,15 @@ orgMakeSongPath (org_t *org, song_t *song)
 
         val = songGetNum (song, orginfo->tagkey);
         if (orginfo->orgkey == ORG_TRACKNUM) {
-          snprintf (tmp, sizeof (tmp), "%"PRId64, val);
+          snprintf (tmp, sizeof (tmp), "%" PRId64, val);
           p = tmp;
         }
         if (orginfo->orgkey == ORG_DISC) {
-          snprintf (tmp, sizeof (tmp), "%02"PRId64, val);
+          snprintf (tmp, sizeof (tmp), "%02" PRId64, val);
           p = tmp;
         }
         if (orginfo->orgkey == ORG_TRACKNUM0) {
-          snprintf (tmp, sizeof (tmp), "%03"PRId64, val);
+          snprintf (tmp, sizeof (tmp), "%03" PRId64, val);
           p = tmp;
         }
         if (orginfo->convFunc != NULL) {

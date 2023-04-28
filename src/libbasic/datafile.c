@@ -457,7 +457,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
           if (vt == VALUE_NUM) {
             if (conv.num == LIST_VALUE_INVALID &&
                 dfkeys [idx].backupKey > DATAFILE_NO_BACKUPKEY) {
-              logMsg (LOG_DBG, LOG_DATAFILE, "invalid value; backup key %"PRId64" set data to %s", (int64_t) dfkeys [idx].backupKey, tvalstr);
+              logMsg (LOG_DBG, LOG_DATAFILE, "invalid value; backup key %" PRId64 " set data to %s", (int64_t) dfkeys [idx].backupKey, tvalstr);
               if (dftype == DFTYPE_INDIRECT) {
                 nlistSetStr (itemList, dfkeys [idx].backupKey, tvalstr);
               }
@@ -466,7 +466,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
               }
             } else {
               lval = conv.num;
-              logMsg (LOG_DBG, LOG_DATAFILE, "converted value: %s to %"PRId64, tvalstr, lval);
+              logMsg (LOG_DBG, LOG_DATAFILE, "converted value: %s to %" PRId64, tvalstr, lval);
             }
           }
         } else {
@@ -476,7 +476,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
             } else {
               lval = atol (tvalstr);
             }
-            logMsg (LOG_DBG, LOG_DATAFILE, "value: %"PRId64, lval);
+            logMsg (LOG_DBG, LOG_DATAFILE, "value: %" PRId64, lval);
           }
           if (vt == VALUE_DOUBLE) {
             if (strcmp (tvalstr, "") == 0) {
@@ -962,7 +962,7 @@ datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc,
   *buff = '\0';
   if (vt == VALUE_NUM) {
     if (conv->num != LIST_VALUE_INVALID) {
-      snprintf (buff, sz, "%"PRId64, conv->num);
+      snprintf (buff, sz, "%" PRId64, conv->num);
     }
   }
   if (vt == VALUE_DOUBLE) {

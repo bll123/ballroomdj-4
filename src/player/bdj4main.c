@@ -1019,7 +1019,7 @@ mainSendMusicQueueData (maindata_t *mainData, int musicqidx)
   dbidx = musicqGetByIdx (mainData->musicQueue, musicqidx, 0);
 
   sbuff = mdmalloc (BDJMSG_MAX);
-  snprintf (sbuff, BDJMSG_MAX, "%d%c%"PRId64"%c%d%c",
+  snprintf (sbuff, BDJMSG_MAX, "%d%c%" PRId64 "%c%d%c",
       musicqidx, MSG_ARGS_RS, (int64_t) qDuration, MSG_ARGS_RS,
       dbidx, MSG_ARGS_RS);
 
@@ -1676,7 +1676,7 @@ mainPrepSong (maindata_t *mainData, int prepflag, int mqidx,
     } /* announcements are on */
   } /* if this is a normal song */
 
-  snprintf (tbuff, sizeof (tbuff), "%s%c%"PRId64"%c%"PRId64"%c%d%c%.1f%c%d%c%ld",
+  snprintf (tbuff, sizeof (tbuff), "%s%c%" PRId64 "%c%" PRId64 "%c%d%c%.1f%c%d%c%ld",
       sfname, MSG_ARGS_RS,
       (int64_t) dur, MSG_ARGS_RS,
       (int64_t) songstart, MSG_ARGS_RS,
@@ -2025,10 +2025,10 @@ mainMusicqSendConfig (maindata_t *mainData)
 {
   char          tmp [40];
 
-  snprintf (tmp, sizeof (tmp), "%"PRId64,
+  snprintf (tmp, sizeof (tmp), "%" PRId64,
       (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEINTIME, mainData->musicqPlayIdx));
   connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEIN, tmp);
-  snprintf (tmp, sizeof (tmp), "%"PRId64,
+  snprintf (tmp, sizeof (tmp), "%" PRId64,
       (int64_t) bdjoptGetNumPerQueue (OPT_Q_FADEOUTTIME, mainData->musicqPlayIdx));
   connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_FADEOUT, tmp);
 }

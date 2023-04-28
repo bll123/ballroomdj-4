@@ -415,7 +415,7 @@ dbupdateProcessing (void *udata)
 
     dbupdate->counts [C_FILE_COUNT] = slistGetCount (dbupdate->fileList);
     mstimeend (&dbupdate->starttm);
-    logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %"PRId64" ms",
+    logMsg (LOG_DBG, LOG_IMPORTANT, "read directory %s: %" PRId64 " ms",
         dbupdate->dbtopdir, (int64_t) mstimeend (&dbupdate->starttm));
     logMsg (LOG_DBG, LOG_IMPORTANT, "  %u files found", dbupdate->counts [C_FILE_COUNT]);
 
@@ -519,7 +519,7 @@ dbupdateProcessing (void *udata)
 
     if (fn == NULL) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "-- skipped (%u)", dbupdate->counts [C_FILE_SKIPPED]);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%u): %"PRId64" ms",
+      logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%u): %" PRId64 " ms",
           dbupdate->counts [C_FILE_SENT], (int64_t) mstimeend (&dbupdate->starttm));
       connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_ALL_FILES_SENT, NULL);
       dbupdate->state = DB_UPD_PROCESS;
@@ -618,7 +618,7 @@ dbupdateProcessing (void *udata)
     snprintf (tbuff, sizeof (tbuff), "-- %s", msg);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
 
-    logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %"PRId64" ms stop-req: %d",
+    logMsg (LOG_DBG, LOG_IMPORTANT, "-- finish: %" PRId64 " ms stop-req: %d",
         (int64_t) mstimeend (&dbupdate->starttm), dbupdate->stoprequest);
     logMsg (LOG_DBG, LOG_IMPORTANT, "    found: %u", dbupdate->counts [C_FILE_COUNT]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %u", dbupdate->counts [C_FILE_SKIPPED]);

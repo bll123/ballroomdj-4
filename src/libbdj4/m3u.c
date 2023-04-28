@@ -56,7 +56,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
       snprintf (tbuff, sizeof (tbuff), "%s - ", str);
     }
     strlcat (tbuff, songGetStr (song, TAG_TITLE), sizeof (tbuff));
-    fprintf (fh, "#EXTINF:%"PRId64",%s\n",
+    fprintf (fh, "#EXTINF:%" PRId64 ",%s\n",
         songGetNum (song, TAG_DURATION) / 1000, tbuff);
     str = songGetStr (song, TAG_ALBUMARTIST);
     if (str != NULL && *str) {

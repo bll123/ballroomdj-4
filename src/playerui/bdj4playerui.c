@@ -1303,7 +1303,7 @@ pluiSetSwitchQueue (playerui_t *plui)
   char  tbuff [40];
 
   logProcBegin (LOG_PROC, "pluiSetSwitchQueue");
-  snprintf (tbuff, sizeof (tbuff), "%"PRId64,
+  snprintf (tbuff, sizeof (tbuff), "%" PRId64,
       nlistGetNum (plui->options, PLUI_SWITCH_QUEUE_WHEN_EMPTY));
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, tbuff);
   logProcEnd (LOG_PROC, "pluiSetSwitchQueue", "");

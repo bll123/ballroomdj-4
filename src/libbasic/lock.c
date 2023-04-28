@@ -143,7 +143,7 @@ lockAcquirePid (char *fn, pid_t pid, int flags)
   }
 
   if (fd >= 0) {
-    snprintf (pidstr, sizeof (pidstr), "%"PRId64, (int64_t) pid);
+    snprintf (pidstr, sizeof (pidstr), "%" PRId64, (int64_t) pid);
     len = strnlen (pidstr, sizeof (pidstr));
     (void) ! write (fd, pidstr, len);
     close (fd);
@@ -187,7 +187,7 @@ getPidFromFile (char *fn)
   pid_t pid = -1;
   fh = fileopOpen (fn, "r");
   if (fh != NULL) {
-    int rc = fscanf (fh, "%"PRId64, &temp);
+    int rc = fscanf (fh, "%" PRId64, &temp);
     pid = (pid_t) temp;
     if (rc != 1) {
       pid = -1;

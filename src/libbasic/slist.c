@@ -200,7 +200,7 @@ slistGetNum (slist_t *list, const char *sidx)
   if (idx >= 0) {
     value = list->data [idx].value.num;
   }
-  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%"PRId64, list->name, sidx, idx, value);
+  logMsg (LOG_DBG, LOG_LIST, "list:%s key:%s idx:%d value:%" PRId64, list->name, sidx, idx, value);
   return value;
 }
 
