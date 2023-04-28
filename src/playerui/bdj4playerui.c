@@ -108,7 +108,7 @@ typedef struct {
   uisongfilter_t  *uisongfilter;
   uikey_t         *uikey;
   uiwcont_t       *wcont [PLUI_W_MAX];
-  /* request external */
+  /* external request */
   int             reqextRow;
   uireqext_t      *uireqext;
   /* notebook */
@@ -492,8 +492,8 @@ pluiBuildUI (playerui_t *plui)
 
   plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL] = callbackInit (
       pluiRequestExternalDialog, plui, NULL);
-  /* CONTEXT: playerui: menu selection: action: request external */
-  menuitem = uiMenuCreateItem (menu, _("Request External"),
+  /* CONTEXT: playerui: menu selection: action: external request */
+  menuitem = uiMenuCreateItem (menu, _("External Request"),
       plui->callbacks [PLUI_MENU_CB_REQ_EXTERNAL]);
   uiwcontFree (menuitem);
 
@@ -682,7 +682,7 @@ pluiInitializeUI (playerui_t *plui)
       plui->musicdb, plui->options);
   plui->callbacks [PLUI_CB_REQ_EXT] = callbackInit (
       pluiReqextCallback,
-      plui, "musicq: request external response");
+      plui, "musicq: external request response");
   uireqextSetResponseCallback (plui->uireqext, plui->callbacks [PLUI_CB_REQ_EXT]);
 
   plui->uimusicq = uimusicqInit ("plui", plui->conn, plui->musicdb,

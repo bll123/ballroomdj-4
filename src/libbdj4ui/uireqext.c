@@ -59,7 +59,7 @@ typedef struct uireqext {
   bool            isactive : 1;
 } uireqext_t;
 
-/* request external */
+/* external request */
 static void   uireqextCreateDialog (uireqext_t *uireqext);
 static bool   uireqextAudioFileDialog (void *udata);
 static bool   uireqextDanceSelectHandler (void *udata, long idx, int count);
@@ -215,12 +215,12 @@ uireqextCreateDialog (uireqext_t *uireqext)
       uireqextResponseHandler, uireqext);
   uireqext->reqextDialog = uiCreateDialog (uireqext->parentwin,
       uireqext->callbacks [UIREQEXT_CB_DIALOG],
-      /* CONTEXT: request external dialog: title for the dialog */
-      _("Select Audio File"),
-      /* CONTEXT: request external dialog: closes the dialog */
+      /* CONTEXT: external request dialog: title for the dialog */
+      _("External Request"),
+      /* CONTEXT: external request dialog: closes the dialog */
       _("Close"),
       RESPONSE_CLOSE,
-      /* CONTEXT: (verb) request external dialog: queue the selected file */
+      /* CONTEXT: (verb) external request dialog: queue the selected file */
       _("Queue"),
       RESPONSE_APPLY,
       NULL
@@ -237,7 +237,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uiBoxPackStart (vbox, hbox);
 
   uiwidgetp = uiCreateColonLabel (
-      /* CONTEXT: request external: enter the audio file location */
+      /* CONTEXT: external request: enter the audio file location */
       _("Audio File"));
   uiBoxPackStart (hbox, uiwidgetp);
   uiSizeGroupAdd (szgrp, uiwidgetp);
@@ -306,7 +306,7 @@ uireqextCreateDialog (uireqext_t *uireqext)
   uireqext->callbacks [UIREQEXT_CB_DANCE] = callbackInitLongInt (
       uireqextDanceSelectHandler, uireqext);
   uireqext->uidance = uidanceDropDownCreate (hbox, uireqext->reqextDialog,
-      /* CONTEXT: request external: dance drop-down */
+      /* CONTEXT: external request: dance drop-down */
       UIDANCE_EMPTY_DANCE, _("Select Dance"), UIDANCE_PACK_START, 1);
   uidanceSetCallback (uireqext->uidance, uireqext->callbacks [UIREQEXT_CB_DANCE]);
 
@@ -337,11 +337,11 @@ uireqextAudioFileDialog (void *udata)
   }
 
   selectdata = uiDialogCreateSelect (uireqext->parentwin,
-      /* CONTEXT: request external: file selection dialog: window title */
+      /* CONTEXT: external request: file selection dialog: window title */
       _("Select File"),
       bdjoptGetStr (OPT_M_DIR_MUSIC),
       NULL,
-      /* CONTEXT: request external: file selection dialog: audio file filter */
+      /* CONTEXT: external request: file selection dialog: audio file filter */
       _("Audio Files"), "audio/*");
   fn = uiSelectFileDialog (selectdata);
   if (fn != NULL) {

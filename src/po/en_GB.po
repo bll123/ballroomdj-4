@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.3.2\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2023-04-27\n"
-"PO-Revision-Date: 2023-04-27\n"
+"POT-Creation-Date: 2023-04-28\n"
+"PO-Revision-Date: 2023-04-28\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -305,12 +305,12 @@ msgstr ""
 msgid "Audio"
 msgstr ""
 
-#. CONTEXT: request external: enter the audio file location
+#. CONTEXT: external request: enter the audio file location
 msgid "Audio File"
 msgstr ""
 
 #. CONTEXT: configuration: announcement selection dialog: audio file filter
-#. CONTEXT: request external: file selection dialog: audio file filter
+#. CONTEXT: external request: file selection dialog: audio file filter
 msgid "Audio Files"
 msgstr ""
 
@@ -404,7 +404,7 @@ msgstr ""
 
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
-#. CONTEXT: request external dialog: closes the dialog
+#. CONTEXT: external request dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
@@ -740,6 +740,11 @@ msgstr ""
 
 #. CONTEXT: export/import bdj4: export folder location
 msgid "Export to"
+msgstr ""
+
+#. CONTEXT: external request dialog: title for the dialog
+#. CONTEXT: playerui: menu selection: action: external request
+msgid "External Request"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
@@ -1372,7 +1377,7 @@ msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: (verb) history: re-queue the selected song
-#. CONTEXT: (verb) request external dialog: queue the selected file
+#. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
 msgstr ""
@@ -1492,10 +1497,6 @@ msgstr ""
 msgid "Request"
 msgstr ""
 
-#. CONTEXT: playerui: menu selection: action: request external
-msgid "Request External"
-msgstr ""
-
 #. CONTEXT: song selection filter: filter dialog: resets the selections
 #. CONTEXT: bpm counter: reset button
 msgid "Reset"
@@ -1582,16 +1583,12 @@ msgstr ""
 msgid "Select %s XML File"
 msgstr ""
 
-#. CONTEXT: request external dialog: title for the dialog
-msgid "Select Audio File"
-msgstr ""
-
-#. CONTEXT: request external: dance drop-down
+#. CONTEXT: external request: dance drop-down
 msgid "Select Dance"
 msgstr ""
 
 #. CONTEXT: configuration: file selection dialog: window title
-#. CONTEXT: request external: file selection dialog: window title
+#. CONTEXT: external request: file selection dialog: window title
 msgid "Select File"
 msgstr ""
 

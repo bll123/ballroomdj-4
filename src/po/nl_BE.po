@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-04-27\n"
+"PO-Revision-Date: 2023-04-28\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -223,7 +223,7 @@ msgstr "Voeg nieuwe toe"
 
 #. CONTEXT: apply adjustments: adjust speed/song start/song end checkbox
 msgid "Adjust Speed, Song Start and Song End"
-msgstr "Snelheid aanpassen, Song Begin en Song Einde"
+msgstr "Snelheid aanpassen, Nummer Begin en Nummer Einde"
 
 #. CONTEXT: configuration file: dance level
 msgid "Advanced"
@@ -311,12 +311,12 @@ msgstr "Database koppelen"
 msgid "Audio"
 msgstr "Audio"
 
-#. CONTEXT: request external: enter the audio file location
+#. CONTEXT: external request: enter the audio file location
 msgid "Audio File"
 msgstr "Audiobestand"
 
 #. CONTEXT: configuration: announcement selection dialog: audio file filter
-#. CONTEXT: request external: file selection dialog: audio file filter
+#. CONTEXT: external request: file selection dialog: audio file filter
 msgid "Audio Files"
 msgstr "Audiobestanden"
 
@@ -410,7 +410,7 @@ msgstr "Klik met de muisaanwijzer in het blauwe vak op de maat van de muziek."
 
 #. CONTEXT: apply adjustment dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
-#. CONTEXT: request external dialog: closes the dialog
+#. CONTEXT: external request dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
 #. CONTEXT: song selection filter: filter dialog: closes the dialog
 #. CONTEXT: select folder dialog: close
@@ -747,6 +747,11 @@ msgstr "Export voor %s"
 #. CONTEXT: export/import bdj4: export folder location
 msgid "Export to"
 msgstr ""
+
+#. CONTEXT: external request dialog: title for the dialog
+#. CONTEXT: playerui: menu selection: action: external request
+msgid "External Request"
+msgstr "Extern Verzoek"
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: playerui: button: fade out the song and stop playing it
@@ -1379,7 +1384,7 @@ msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
 #. CONTEXT: (verb) history: re-queue the selected song
-#. CONTEXT: (verb) request external dialog: queue the selected file
+#. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
 msgstr "Nummer Toevoegen"
@@ -1499,10 +1504,6 @@ msgstr ""
 msgid "Request"
 msgstr "Verzoek"
 
-#. CONTEXT: playerui: menu selection: action: request external
-msgid "Request External"
-msgstr "Externe Aanvraag"
-
 #. CONTEXT: song selection filter: filter dialog: resets the selections
 #. CONTEXT: bpm counter: reset button
 msgid "Reset"
@@ -1589,16 +1590,12 @@ msgstr ""
 msgid "Select %s XML File"
 msgstr ""
 
-#. CONTEXT: request external dialog: title for the dialog
-msgid "Select Audio File"
-msgstr "Selecteer Audio-bestand"
-
-#. CONTEXT: request external: dance drop-down
+#. CONTEXT: external request: dance drop-down
 msgid "Select Dance"
 msgstr ""
 
 #. CONTEXT: configuration: file selection dialog: window title
-#. CONTEXT: request external: file selection dialog: window title
+#. CONTEXT: external request: file selection dialog: window title
 msgid "Select File"
 msgstr "Selecteer bestand"
 
