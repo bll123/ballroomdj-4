@@ -43,6 +43,12 @@ enum {
   UIEIBDJ4_W_MAX,
 };
 
+enum {
+  ACTION_IMPORT,    // only when not found
+  ACTION_REPLACE,
+  ACTION_MAX,
+};
+
 typedef struct {
   uiwcont_t       *wcont [UIEIBDJ4_W_MAX];
   uientry_t       *target;
@@ -92,6 +98,7 @@ uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
     uieibdj4->dialog [i].targetButton = NULL;
     uieibdj4->dialog [i].uiplaylist = NULL;
     uieibdj4->dialog [i].responsecb = NULL;
+    uieibdj4->dialog [i].action = NULL;
   }
   uieibdj4->parentwin = windowp;
   uieibdj4->options = opts;
@@ -102,9 +109,9 @@ uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
 
   uieibdj4->actionList = nlistAlloc ("imp-actions", LIST_ORDERED, NULL);
   /* CONTEXT: import for bdj4: only import when there is no database entry */
-  nlistSetStr (uieibdj4->actionList, 0, _("Import when not found"));
+  nlistSetStr (uieibdj4->actionList, ACTION_IMPORT, _("Import when not found"));
   /* CONTEXT: import for bdj4: replace database entry if newer */
-  nlistSetStr (uieibdj4->actionList, 1, _("Replace if newer"));
+  nlistSetStr (uieibdj4->actionList, ACTION_REPLACE, _("Replace if newer"));
 
   uieibdj4->actionMaxWidth = 0;
   nlistStartIterator (uieibdj4->actionList, &iteridx);
@@ -247,13 +254,17 @@ uieibdj4GetNewName (uieibdj4_t *uieibdj4)
 bool
 uieibdj4GetUpdate (uieibdj4_t *uieibdj4)
 {
-  bool      tbool = false;
+  bool  tbool = false;
+  int   idx;
 
   if (uieibdj4 == NULL) {
     return false;
   }
 
-//  tbool = uiSwitchGetValue (uieibdj4->dialog [uieibdj4->currtype].uiupdate);
+  idx = uiSpinboxTextGetValue (uieibdj4->dialog [uieibdj4->currtype].action);
+  if (idx == ACTION_REPLACE) {
+    tbool = true;
+  }
   return tbool;
 }
 
@@ -456,8 +467,7 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
     uiSpinboxTextCreate (uieibdj4->dialog [currtype].action, uieibdj4);
 
     uiSpinboxTextSet (uieibdj4->dialog [currtype].action, 0,
-        nlistGetCount (uieibdj4->actionList),
-        uieibdj4->actionMaxWidth,
+        ACTION_MAX, uieibdj4->actionMaxWidth,
         NULL, NULL, uieibdj4ActionGet);
     uiwidgetp = uiSpinboxGetWidgetContainer (uieibdj4->dialog [currtype].action);
     uiBoxPackStart (hbox, uiwidgetp);

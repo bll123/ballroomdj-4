@@ -393,13 +393,13 @@ fprintf (stderr, "found %s in main db\n", songfn);
         oupd = songGetNum (tsong, TAG_LAST_UPDATED);
         nupd = songGetNum (song, TAG_LAST_UPDATED);
         if (nupd > oupd) {
-fprintf (stderr, "%s is newer\n", songfn);
+fprintf (stderr, "  %s is newer\n", songfn);
           doupdate = true;
           if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
             docopy = true;
           }
         } else {
-fprintf (stderr, "%ld > %ld false\n", nupd, oupd);
+fprintf (stderr, "  %ld > %ld false\n", nupd, oupd);
         }
       }
       if (doupdate) {
