@@ -99,7 +99,6 @@ typedef struct {
   int               musicqDeferredPlayIdx;
   slist_t           *announceList;
   playerstate_t     playerState;
-  long              lastGapSent;
   char              *mobmqUserkey;
   int               stopwaitcount;
   char              *pbfinishArgs;
@@ -151,7 +150,7 @@ static void mainNextSong (maindata_t *mainData);
 static void mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t route, char *args);
 static void mainMusicqSetManage (maindata_t *mainData, char *args);
 static void mainMusicqSetPlayback (maindata_t *mainData, char *args);
-static void mainMusicqSendConfig (maindata_t *mainData);
+static void mainMusicqSendQueueConfig (maindata_t *mainData);
 static void mainMusicqSwitch (maindata_t *mainData, int newidx);
 static void mainPlaybackBegin (maindata_t *mainData);
 static void mainMusicQueuePlay (maindata_t *mainData);
@@ -176,6 +175,7 @@ static void mainPlaybackSendSongFinish (maindata_t *mainData, const char *args);
 static void mainStatusRequest (maindata_t *mainData, bdjmsgroute_t routefrom);
 static void mainAddTemporarySong (maindata_t *mainData, char *args);
 static time_t mainCalcStopTime (time_t stopTime);
+static void mainSendPlaybackGap (maindata_t *mainData);
 static void mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom, const char *args);
 static bool mainCheckMusicQStopTime (maindata_t *mainData, time_t nStopTime);
 static playlist_t * mainNextPlaylist (maindata_t *mainData);
@@ -241,7 +241,6 @@ main (int argc, char *argv[])
       "main", ROUTE_MAIN, &mainData.startflags);
   logProcBegin (LOG_PROC, "main");
 
-  mainData.lastGapSent = -2;
   /* calculate the stop time once only per queue */
   for (musicqidx_t i = 0; i < MUSICQ_MAX; ++i) {
     mainData.stopTime [i] = bdjoptGetNumPerQueue (OPT_Q_STOP_AT_TIME, i);
@@ -646,7 +645,7 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CHK_MAIN_SET_GAP: {
           bdjoptSetNumPerQueue (OPT_Q_GAP, atoi (targs), mainData->musicqPlayIdx);
-          connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, targs);
+          mainMusicqSendQueueConfig (mainData);
           dbgdisp = true;
           break;
         }
@@ -684,13 +683,13 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_CHK_MAIN_SET_FADEIN: {
           bdjoptSetNumPerQueue (OPT_Q_FADEINTIME, atoi (targs), mainData->musicqPlayIdx);
-          mainMusicqSendConfig (mainData);
+          mainMusicqSendQueueConfig (mainData);
           dbgdisp = true;
           break;
         }
         case MSG_CHK_MAIN_SET_FADEOUT: {
           bdjoptSetNumPerQueue (OPT_Q_FADEOUTTIME, atoi (targs), mainData->musicqPlayIdx);
-          mainMusicqSendConfig (mainData);
+          mainMusicqSendQueueConfig (mainData);
           dbgdisp = true;
           break;
         }
@@ -940,19 +939,10 @@ mainHandshakeCallback (void *tmaindata, programstate_t programState)
   /* one of manageui and playerui */
   /* alternatively, a connection to the player and the testsuite */
   if (conn == 3) {
-    char    tmp [40];
-    long    gap;
-
-    gap = bdjoptGetNumPerQueue (OPT_Q_GAP, mainData->musicqPlayIdx);
-
-    if (gap != mainData->lastGapSent) {
-      snprintf (tmp, sizeof (tmp), "%ld", gap);
-      connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, tmp);
-      mainData->lastGapSent = gap;
-    }
-
     /* send the player the fade-in and fade-out times for the playback queue */
-    mainMusicqSendConfig (mainData);
+    mainMusicqSendQueueConfig (mainData);
+    /* also send the gap */
+    mainSendPlaybackGap (mainData);
 
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_MAIN_READY, NULL);
     rc = STATE_FINISHED;
@@ -1527,26 +1517,6 @@ mainMusicQueuePrep (maindata_t *mainData, int mqidx)
       announceflag = playlistGetConfigNum (playlist, PLAYLIST_ANNOUNCE);
     }
 
-    if (i == 1) {
-      long  gap;
-      long  plgap = -1;
-      char  tmp [40];
-
-      gap = bdjoptGetNumPerQueue (OPT_Q_GAP, mqidx);
-      /* special case: the manage ui playback queue has no gap */
-      /* the manage ui playback queue otherwise inherits from the music q */
-      if (mqidx == MUSICQ_MNG_PB) {
-        gap = 0;
-      }
-      plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
-      if (plgap >= 0) {
-        gap = plgap;
-      }
-
-      snprintf (tmp, sizeof (tmp), "%ld", gap);
-      connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, tmp);
-    }
-
     if (song != NULL &&
         (flags & MUSICQ_FLAG_PREP) != MUSICQ_FLAG_PREP) {
       long uniqueidx;
@@ -1559,13 +1529,19 @@ mainMusicQueuePrep (maindata_t *mainData, int mqidx)
 
       if (announceflag == 1) {
         if (annfname != NULL && *annfname) {
-          musicqSetFlag (mainData->musicQueue, mqidx,
-              i, MUSICQ_FLAG_ANNOUNCE);
+          musicqSetFlag (mainData->musicQueue, mqidx, i, MUSICQ_FLAG_ANNOUNCE);
           musicqSetAnnounce (mainData->musicQueue, mqidx, i, annfname);
         }
       }
-    }
+    } /* announcement */
   }
+
+  /* if the queue being prepped is the playback queue, re-send the gap, */
+  /* as the songs may have changed */
+  if (mqidx == mainData->musicqPlayIdx) {
+    mainSendPlaybackGap (mainData);
+  }
+
   logProcEnd (LOG_PROC, "mainMusicQueuePrep", "");
 }
 
@@ -2021,7 +1997,7 @@ mainMusicqSetPlayback (maindata_t *mainData, char *args)
 }
 
 static void
-mainMusicqSendConfig (maindata_t *mainData)
+mainMusicqSendQueueConfig (maindata_t *mainData)
 {
   char          tmp [40];
 
@@ -2057,7 +2033,8 @@ mainMusicqSwitch (maindata_t *mainData, int newMusicqIdx)
   mainData->musicqDeferredPlayIdx = MAIN_NOT_SET;
 
   /* send the player the fade-in and fade-out times for this queue */
-  mainMusicqSendConfig (mainData);
+  mainMusicqSendQueueConfig (mainData);
+  mainSendPlaybackGap (mainData);
 
   /* having switched the playback music queue, the songs must be prepped */
   mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
@@ -2156,6 +2133,8 @@ mainMusicQueuePlay (maindata_t *mainData)
       sfname = songGetStr (song, TAG_FILE);
       snprintf (tmp, sizeof (tmp), "%ld%c%s", uniqueidx, MSG_ARGS_RS, sfname);
       connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SONG_PLAY, tmp);
+      /* set the gap for the upcoming song */
+      mainSendPlaybackGap (mainData);
       ++mainData->songplaysentcount;
     }
 
@@ -2169,6 +2148,7 @@ mainMusicQueuePlay (maindata_t *mainData)
 
         logMsg (LOG_DBG, LOG_MAIN, "switch queues");
         mainData->musicqPlayIdx = musicqNextQueue (mainData->musicqPlayIdx);
+        mainMusicqSendQueueConfig (mainData);
         currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
 
         /* locate a queue that has songs in it */
@@ -2178,10 +2158,10 @@ mainMusicQueuePlay (maindata_t *mainData)
           currlen = musicqGetLen (mainData->musicQueue, mainData->musicqPlayIdx);
         }
 
-        /* the songs must be prepped */
-        mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
-
         if (currlen > 0) {
+          /* the songs must be prepped */
+          mainMusicQueuePrep (mainData, mainData->musicqPlayIdx);
+
           snprintf (tmp, sizeof (tmp), "%d", mainData->musicqPlayIdx);
           connSendMessage (mainData->conn, ROUTE_PLAYERUI, MSG_QUEUE_SWITCH, tmp);
           /* and start up playback for the new queue */
@@ -2207,9 +2187,12 @@ mainMusicQueuePlay (maindata_t *mainData)
   /* this handles the user-selected play button when the song is paused */
   /* it no longer handles in-gap due to some changes */
   /* this might need to be moved to the message handler */
-  if (! mainData->finished && mainData->playerState == PL_STATE_PAUSED) {
-    logMsg (LOG_DBG, LOG_MAIN, "player is paused, send play msg");
+  if (! mainData->finished &&
+      (mainData->playerState == PL_STATE_PAUSED ||
+      mainData->playerState == PL_STATE_IN_GAP)) {
+    logMsg (LOG_DBG, LOG_MAIN, "player is paused/gap, send play msg");
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_PLAY, NULL);
+    mainSendPlaybackGap (mainData);
   }
 
   logProcEnd (LOG_PROC, "mainMusicQueuePlay", "");
@@ -2968,6 +2951,39 @@ mainCalcStopTime (time_t stopTime)
 }
 
 static void
+mainSendPlaybackGap (maindata_t *mainData)
+{
+  int         mqidx;
+  long        gap;
+  long        plgap = -1;
+  char        tmp [40];
+  int         playlistIdx;
+  playlist_t  *playlist = NULL;
+
+  mqidx = mainData->musicqPlayIdx;
+
+  /* always get the gap from the next song */
+  playlistIdx = musicqGetPlaylistIdx (mainData->musicQueue, mqidx, 1);
+  if (playlistIdx != MUSICQ_PLAYLIST_EMPTY) {
+    playlist = nlistGetData (mainData->playlistCache, playlistIdx);
+  }
+
+  gap = bdjoptGetNumPerQueue (OPT_Q_GAP, mqidx);
+  /* special case: the manage ui playback queue has no gap */
+  /* the manage ui playback queue otherwise inherits from the music q */
+  if (mqidx == MUSICQ_MNG_PB) {
+    gap = 0;
+  }
+  plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
+  if (plgap >= 0) {
+    gap = plgap;
+  }
+
+  snprintf (tmp, sizeof (tmp), "%ld", gap);
+  connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_SET_PLAYBACK_GAP, tmp);
+}
+
+static void
 mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
     const char *args)
 {
@@ -3018,6 +3034,9 @@ mainQueueInfoRequest (maindata_t *mainData, bdjmsgroute_t routefrom,
       strlcat (sbuff, tbuff, BDJMSG_MAX);
 
       gap = bdjoptGetNumPerQueue (OPT_Q_GAP, musicqidx);
+      if (musicqidx == MUSICQ_MNG_PB) {
+        gap = 0;
+      }
       plgap = playlistGetConfigNum (playlist, PLAYLIST_GAP);
       if (plgap >= 0) {
         gap = plgap;
@@ -3167,3 +3186,4 @@ mainChkMusicq (maindata_t *mainData, bdjmsgroute_t routefrom)
       MSG_ARGS_RS, mainData->songplaysentcount);
   connSendMessage (mainData->conn, routefrom, MSG_CHK_MAIN_MUSICQ, tmp);
 }
+
