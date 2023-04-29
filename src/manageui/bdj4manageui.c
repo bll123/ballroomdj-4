@@ -233,6 +233,7 @@ typedef struct {
   int               lastdisp;
   int               dbchangecount;
   int               editmode;
+  int               lastinsertlocation;
   /* sequence */
   manageseq_t       *manageseq;
   /* playlist management */
@@ -273,6 +274,7 @@ typedef struct {
   bool              enablerestoreorig : 1;
   bool              ineditall : 1;
   bool              optionsalloc : 1;
+  bool              musicqueueprocessflag : 1;
 } manageui_t;
 
 /* re-use the plui enums so that the songsel filter enums can also be used */
@@ -467,6 +469,7 @@ main (int argc, char *argv[])
   manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
   manage.pluiActive = false;
   manage.selectButton = NULL;
+  manage.lastinsertlocation = QUEUE_LOC_LAST;
   manage.cfplactive = false;
   manage.cfplpostprocess = false;
   manage.musicqupdated = false;
@@ -477,6 +480,7 @@ main (int argc, char *argv[])
   manage.importbdj4active = false;
   manage.enablerestoreorig = false;
   manage.ineditall = false;
+  manage.musicqueueprocessflag = false;
   manage.applyadjstate = BDJ4_STATE_OFF;
   manage.impitunesstate = BDJ4_STATE_OFF;
   manage.uiaa = NULL;
@@ -1355,6 +1359,7 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           if (uimusicqGetCount (manage->slmusicq) > 0) {
             manage->musicqupdated = true;
           }
+          manage->musicqueueprocessflag = true;
           break;
         }
         case MSG_SONG_SELECT: {
@@ -2023,7 +2028,7 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
         if (song != NULL) {
           dbidx = songGetNum (song, TAG_DBIDX);
           snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d",
-              manage->musicqManageIdx, MSG_ARGS_RS, 999, MSG_ARGS_RS, dbidx);
+              manage->musicqManageIdx, MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
           connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
         } else {
           logMsg (LOG_DBG, LOG_MAIN, "itunes import: song not found %s", songfn);
@@ -2912,7 +2917,7 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
 {
   manageui_t  *manage = udata;
   char        tbuff [100];
-  long        loc = 999;
+  long        loc = QUEUE_LOC_LAST;
   uimusicq_t  *uimusicq = NULL;
 
   logProcBegin (LOG_PROC, "manageQueueProcess");
@@ -2930,18 +2935,24 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
     /* on a queue action, queue after the current selection */
     loc = uimusicqGetSelectLocation (uimusicq, mqidx);
     if (loc < 0) {
-      loc = 999;
+      loc = QUEUE_LOC_LAST;
+    }
+    if (! manage->musicqueueprocessflag) {
+      /* the queue has not yet been processed, add 1 to the last location */
+      loc = manage->lastinsertlocation + 1;
     }
   }
 
   if (action == MANAGE_QUEUE_LAST) {
     action = MANAGE_QUEUE;
-    loc = 999;
+    loc = QUEUE_LOC_LAST;
   }
 
   if (action == MANAGE_QUEUE) {
     /* add 1 to the index, as the tree-view index is one less than */
     /* the music queue index */
+    manage->musicqueueprocessflag = false;
+    manage->lastinsertlocation = loc;
     snprintf (tbuff, sizeof (tbuff), "%d%c%ld%c%ld", mqidx,
         MSG_ARGS_RS, loc + 1, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
@@ -2949,7 +2960,7 @@ manageQueueProcess (void *udata, long dbidx, int mqidx, int dispsel, int action)
 
   if (action == MANAGE_PLAY) {
     snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%ld", mqidx,
-        MSG_ARGS_RS, 999, MSG_ARGS_RS, dbidx);
+        MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
     connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_CLEAR_PLAY, tbuff);
   }
   logProcEnd (LOG_PROC, "manageQueueProcess", "");

@@ -1529,7 +1529,7 @@ pluiPushHistory (playerui_t *plui, const char *args)
   dbidx = atol (args);
 
   snprintf (tbuff, sizeof (tbuff), "%d%c%d%c%d", MUSICQ_HISTORY,
-      MSG_ARGS_RS, 999, MSG_ARGS_RS, dbidx);
+      MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
   connSendMessage (plui->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
 }
 

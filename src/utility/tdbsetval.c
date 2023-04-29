@@ -44,7 +44,7 @@ main (int argc, char *argv [])
   int         argcount = 0;
   slistidx_t  dbiteridx;
   dbidx_t     dbkey;
-  int         tagidx;
+  int         tagidx = -1;
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },

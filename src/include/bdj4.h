@@ -28,6 +28,7 @@ enum {
   INSERT_AT_SELECTION = -2,
   /* when changing the queue max, be sure to update include/musicq.h */
   BDJ4_QUEUE_MAX = 4,
+  QUEUE_LOC_LAST = 999,
 };
 
 #define BDJ4_LONG_NAME    "BallroomDJ 4"

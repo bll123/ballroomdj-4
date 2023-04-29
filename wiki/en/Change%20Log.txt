@@ -11,11 +11,13 @@
     * Configuration: Remote Control: Allow manual entry of local ip address.
     * Getting Started Helper: Improve.
     * Mobile Marquee: Fix display on song change.
+    * Player/Marquee: Improve recover marquee.
     * Player: Fix gap changes not being processed correctly.
     * Player: Fix play button not working during gap.
     * Player: Reset fade in/out times on music queue switch.
-    * Player/Marquee: Improve recover marquee.
     * Playlist Management: Fix save of 'play announcements'.
+    * Song List Editor: Fix song addition order for multiple selection.
+    * Song List Editor: Fix song addition when using shift-click.
 * Changes:
     * Create From Playlist: Copy playlist settings to new song list.
     * Music Manager: Filters: Selection of automatic and sequenced playlists is now possible.

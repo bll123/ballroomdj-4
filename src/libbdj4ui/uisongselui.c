@@ -1409,7 +1409,7 @@ uisongselProcessSelection (void *udata, long row)
     }
 
     for (nlistidx_t i = beg; i <= end; ++i) {
-      dbidx = songfilterGetByIdx (uisongsel->songfilter, idx);
+      dbidx = songfilterGetByIdx (uisongsel->songfilter, i);
       nlistSetNum (ssint->selectedList, i, dbidx);
     }
   } else {

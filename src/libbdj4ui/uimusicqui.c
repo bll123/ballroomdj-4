@@ -39,10 +39,6 @@ enum {
 };
 
 enum {
-  MUSICQ_FORCE_LAST = 999,
-};
-
-enum {
   MQINT_CB_MOVE_TOP,
   MQINT_CB_MOVE_UP,
   MQINT_CB_MOVE_DOWN,
@@ -576,7 +572,7 @@ uimusicqGetSelectLocation (uimusicq_t *uimusicq, int mqidx)
 
   mqint = uimusicq->ui [mqidx].mqInternalData;
 
-  loc = MUSICQ_FORCE_LAST;
+  loc = QUEUE_LOC_LAST;
   if (mqint->musicqTree == NULL) {
     return loc;
   }
@@ -975,7 +971,7 @@ uimusicqSelectionChgProcess (uimusicq_t *uimusicq)
     callbackHandlerLong (uimusicq->cbcopy [UIMUSICQ_CBC_NEW_SEL], dbidx);
   }
 
-  if (loc != MUSICQ_FORCE_LAST) {
+  if (loc != QUEUE_LOC_LAST) {
     uimusicq->ui [ci].lastLocation = loc;
   }
 
@@ -1052,7 +1048,7 @@ uimusicqSetSelection (uimusicq_t *uimusicq, int mqidx)
   }
   mqint = uimusicq->ui [mqidx].mqInternalData;
 
-  if (uimusicq->ui [mqidx].selectLocation == MUSICQ_FORCE_LAST) {
+  if (uimusicq->ui [mqidx].selectLocation == QUEUE_LOC_LAST) {
     logProcEnd (LOG_PROC, "uimusicqSetSelection", "select-999");
     return;
   }
