@@ -896,7 +896,7 @@ msgid "Import from %s"
 msgstr ""
 
 #. CONTEXT: import for bdj4: only import when there is no database entry
-msgid "Import when not found"
+msgid "Import song when not found"
 msgstr ""
 
 #. CONTEXT: set up alternate: status message
@@ -1496,7 +1496,7 @@ msgid "Repeat"
 msgstr ""
 
 #. CONTEXT: import for bdj4: replace database entry if newer
-msgid "Replace if newer"
+msgid "Replace song if newer"
 msgstr ""
 
 #. CONTEXT: database update: rebuild: help text

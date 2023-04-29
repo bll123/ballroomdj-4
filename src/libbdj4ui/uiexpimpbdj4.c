@@ -109,9 +109,9 @@ uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
 
   uieibdj4->actionList = nlistAlloc ("imp-actions", LIST_ORDERED, NULL);
   /* CONTEXT: import for bdj4: only import when there is no database entry */
-  nlistSetStr (uieibdj4->actionList, ACTION_IMPORT, _("Import when not found"));
+  nlistSetStr (uieibdj4->actionList, ACTION_IMPORT, _("Import song when not found"));
   /* CONTEXT: import for bdj4: replace database entry if newer */
-  nlistSetStr (uieibdj4->actionList, ACTION_REPLACE, _("Replace if newer"));
+  nlistSetStr (uieibdj4->actionList, ACTION_REPLACE, _("Replace song if newer"));
 
   uieibdj4->actionMaxWidth = 0;
   nlistStartIterator (uieibdj4->actionList, &iteridx);
