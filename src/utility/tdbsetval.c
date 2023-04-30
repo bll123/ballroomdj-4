@@ -30,7 +30,6 @@ main (int argc, char *argv [])
 {
   musicdb_t   *db;
   bool        isbdj4 = false;
-  bool        verbose = false;
   const char  *dbfn = NULL;
   const char  *tagname = NULL;
   const char  *valuestr = NULL;
@@ -63,10 +62,6 @@ main (int argc, char *argv [])
     switch (c) {
       case 'B': {
         isbdj4 = true;
-        break;
-      }
-      case 'V': {
-        verbose = true;
         break;
       }
       default: {

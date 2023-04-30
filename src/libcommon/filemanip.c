@@ -66,12 +66,16 @@ filemanipCopy (const char *fname, const char *nfn)
   char      tfname [MAXPATHLEN];
   char      tnfn [MAXPATHLEN];
   int       rc = -1;
+  time_t    origtm;
+
+  origtm = fileopModTime (fname);
 
   if (isWindows ()) {
     strlcpy (tfname, fname, sizeof (tfname));
     pathWinPath (tfname, sizeof (tfname));
     strlcpy (tnfn, nfn, sizeof (tnfn));
     pathWinPath (tnfn, sizeof (tnfn));
+    origtm = fileopModTime (tfname);
 #if _lib_CopyFileW
     {
       wchar_t   *wtfname;
@@ -84,6 +88,7 @@ filemanipCopy (const char *fname, const char *nfn)
       mdfree (wtfname);
       mdfree (wtnfn);
     }
+    fileopSetModTime (tnfn, origtm);
 #endif
   } else {
     char    *data;
@@ -102,6 +107,9 @@ filemanipCopy (const char *fname, const char *nfn)
     }
     rc = trc == 1 ? 0 : -1;
   }
+
+  fileopSetModTime (nfn, origtm);
+
   return rc;
 }
 

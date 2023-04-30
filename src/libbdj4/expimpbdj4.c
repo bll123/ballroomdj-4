@@ -22,6 +22,7 @@
 #include "pathbld.h"
 #include "slist.h"
 #include "song.h"
+#include "songlist.h"
 #include "songutil.h"
 #include "tagdef.h"
 
@@ -39,6 +40,8 @@ typedef struct eibdj4 {
   nlist_t     *dbidxlist;
   nlistidx_t  dbidxiter;
   slistidx_t  dbiteridx;
+  songlist_t  *sl;
+  ilistidx_t  sliteridx;
   int         eiflag;
   int         counter;
   int         totcount;
@@ -264,7 +267,7 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
       songfn = songGetStr (song, TAG_FILE);
       strlcpy (tfn, songfn, sizeof (tfn));
       ffn = songutilFullFileName (songfn);
-      if (songutilIsAbsolutePath (songfn)) {
+      if (fileopIsAbsolutePath (songfn)) {
         isabsolute = true;
         pi = pathInfo (songfn);
         snprintf (tfn, sizeof (tfn), "%.*s", (int) pi->flen, pi->filename);
@@ -341,83 +344,100 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
   }
 
   if (eibdj4->state == BDJ4_STATE_START) {
+    char        tbuff [MAXPATHLEN];
+
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->musicdir);
     eibdj4->eimusicdb = dbOpen (eibdj4->dbfname);
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->origmusicdir);
     eibdj4->totcount = dbCount (eibdj4->eimusicdb);
 
     dbDisableLastUpdateTime (eibdj4->musicdb);
-    dbStartIterator (eibdj4->eimusicdb, &eibdj4->dbiteridx);
+
+    snprintf (tbuff, sizeof (tbuff), "%s/%s%s", eibdj4->datadir,
+        eibdj4->plName, BDJ4_SONGLIST_EXT);
+    eibdj4->sl = songlistLoad (tbuff);
+    songlistStartIterator (eibdj4->sl, &eibdj4->sliteridx);
 
     eibdj4->state = BDJ4_STATE_PROCESS;
     rc = false;
   }
 
   if (eibdj4->state == BDJ4_STATE_PROCESS) {
-    song_t    *song;
-    dbidx_t   dbidx;
+    song_t      *song;
+    ilistidx_t  slidx;
+    const char  *slfn;
 
-    song = dbIterate (eibdj4->eimusicdb, &dbidx, &eibdj4->dbiteridx);
+    slidx = songlistIterate (eibdj4->sl, &eibdj4->sliteridx);
+fprintf (stderr, "slidx: %ld\n", (long) slidx);
+    if (slidx >= 0) {
+      slfn = songlistGetStr (eibdj4->sl, slidx, SONGLIST_FILE);
+fprintf (stderr, "slfn: %s\n", slfn);
+      song = dbGetByName (eibdj4->eimusicdb, slfn);
+fprintf (stderr, "song is null: %d\n", song == NULL);
 
-    if (song != NULL) {
-      const char    *songfn;
-      char          *ffn = NULL;
-      char          *nfn = NULL;
-      char          tbuff [MAXPATHLEN];
-      song_t        *tsong;
-      bool          doupdate;
-      bool          docopy;
+      if (song != NULL) {
+        const char    *songfn;
+        char          *ffn = NULL;
+        char          *nfn = NULL;
+        char          tbuff [MAXPATHLEN];
+        song_t        *tsong;
+        bool          doupdate;
+        bool          docopy;
 
-      songfn = songGetStr (song, TAG_FILE);
-      ffn = songutilFullFileName (songfn);
-      snprintf (tbuff, sizeof (tbuff), "%s/%s", eibdj4->musicdir, songfn);
+        songfn = songGetStr (song, TAG_FILE);
+        ffn = songutilFullFileName (songfn);
+        snprintf (tbuff, sizeof (tbuff), "%s/%s", eibdj4->musicdir, songfn);
 
-      tsong = dbGetByName (eibdj4->musicdb, songfn);
+        tsong = dbGetByName (eibdj4->musicdb, songfn);
 
-      doupdate = false;
-      docopy = false;
+        doupdate = false;
+        docopy = false;
 
-      /* only import an audio file if it does not exist in the database */
-      /* or if the user has specifically turned on the update, and the */
-      /* db entry is newer */
-      if (tsong == NULL) {
+        /* only import an audio file if it does not exist in the database */
+        /* or if the user has specifically turned on the update, and the */
+        /* db entry is newer */
+        if (tsong == NULL) {
 fprintf (stderr, "%s is new\n", songfn);
-        doupdate = true;
-        docopy = true;
-      }
-      if (tsong != NULL && eibdj4->updateflag) {
-        time_t    oupd;
-        time_t    nupd;
+          doupdate = true;
+          docopy = true;
+        }
+        if (tsong != NULL && eibdj4->updateflag) {
+          time_t    oupd;
+          time_t    nupd;
 
 fprintf (stderr, "found %s in main db\n", songfn);
-        oupd = songGetNum (tsong, TAG_LAST_UPDATED);
-        nupd = songGetNum (song, TAG_LAST_UPDATED);
-        if (nupd > oupd) {
+          oupd = songGetNum (tsong, TAG_LAST_UPDATED);
+          nupd = songGetNum (song, TAG_LAST_UPDATED);
+          if (nupd > oupd) {
 fprintf (stderr, "  %s is newer\n", songfn);
-          doupdate = true;
-          if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
+            doupdate = true;
+            if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
+              docopy = true;
+            }
+          } else {
+fprintf (stderr, "  %ld > %ld false\n", nupd, oupd);
+          }
+          if (! fileopFileExists (ffn)) {
             docopy = true;
           }
-        } else {
-fprintf (stderr, "  %ld > %ld false\n", nupd, oupd);
         }
-      }
-      if (doupdate) {
-        eibdj4->dbchanged = true;
+        if (doupdate) {
+          eibdj4->dbchanged = true;
 fprintf (stderr, "  update db\n");
-        dbWriteSong (eibdj4->musicdb, song);
-      }
-      if (docopy) {
-        nfn = songutilFullFileName (songfn);
+          dbWriteSong (eibdj4->musicdb, song);
+        }
+        if (docopy) {
+          nfn = songutilFullFileName (songfn);
 fprintf (stderr, "  copy: from: %s\n", tbuff);
 fprintf (stderr, "          to: %s\n", ffn);
-        filemanipCopy (tbuff, ffn);
-      }
+          filemanipCopy (tbuff, ffn);
+        }
 
-      dataFree (ffn);
-      dataFree (nfn);
-      eibdj4->counter += 1;
-      rc = false;
+        dataFree (ffn);
+        dataFree (nfn);
+        eibdj4->counter += 1;
+        rc = false;
+      }
     } else {
       char  from [MAXPATHLEN];
       char  to [MAXPATHLEN];

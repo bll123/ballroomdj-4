@@ -298,3 +298,19 @@ fileopSync (FILE *fh)
   fsync (fileno (fh));
 #endif
 }
+
+bool
+fileopIsAbsolutePath (const char *fname)
+{
+  bool    rc = false;
+  size_t  len;
+
+  len = strlen (fname);
+  if ((len > 0 && fname [0] == '/') ||
+      (len > 2 && fname [1] == ':' && fname [2] == '/')) {
+    rc = true;
+  }
+
+  return rc;
+}
+

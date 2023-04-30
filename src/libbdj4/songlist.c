@@ -17,6 +17,7 @@
 #include "log.h"
 #include "mdebug.h"
 #include "pathbld.h"
+#include "pathutil.h"
 #include "songlist.h"
 
 enum {
@@ -44,14 +45,25 @@ songlistAlloc (const char *fname)
 {
   songlist_t    *sl;
   char          tfn [MAXPATHLEN];
+  pathinfo_t    *pi;
 
   sl = mdmalloc (sizeof (songlist_t));
   sl->df = NULL;
   sl->songlist = NULL;
-  sl->fname = mdstrdup (fname);
-  pathbldMakePath (tfn, sizeof (tfn), fname,
-      BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
+  if (fileopIsAbsolutePath (fname)) {
+    pi = pathInfo (fname);
+    snprintf (tfn, sizeof (tfn), "%.*s", (int) pi->blen, pi->basename);
+    sl->fname = mdstrdup (tfn);
+    pathInfoFree (pi);
+    strlcpy (tfn, fname, sizeof (tfn));
+  } else {
+    sl->fname = mdstrdup (fname);
+    pathbldMakePath (tfn, sizeof (tfn), fname,
+        BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
+  }
+fprintf (stderr, "fname: %s\n", sl->fname);
   sl->path = mdstrdup (tfn);
+fprintf (stderr, " path: %s\n", sl->path);
   sl->songlist = ilistAlloc (fname, LIST_ORDERED);
   ilistSetVersion (sl->songlist, SONGLIST_VERSION);
   return sl;

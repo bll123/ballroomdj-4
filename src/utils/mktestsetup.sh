@@ -75,7 +75,13 @@ for f in templates/*.txt; do
     *bdjconfig.txt*)
       continue
       ;;
+    *bdjconfig.q?.txt)
+      continue
+      ;;
     *ds-*.txt)
+      continue
+      ;;
+    *ui-*.txt)
       continue
       ;;
   esac

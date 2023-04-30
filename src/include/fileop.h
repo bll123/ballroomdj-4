@@ -17,5 +17,6 @@ bool    fileopIsDirectory (const char *fname);
 int     fileopDelete (const char *fname);
 FILE    * fileopOpen (const char *fname, const char *mode);
 void    fileopSync (FILE *fh);
+bool    fileopIsAbsolutePath (const char *fname);
 
 #endif /* INC_FILEOP_H */

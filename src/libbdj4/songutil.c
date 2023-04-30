@@ -31,28 +31,13 @@ songutilFullFileName (const char *sfname)
 
   tname = mdmalloc (MAXPATHLEN);
 
-  if (songutilIsAbsolutePath (sfname)) {
+  if (fileopIsAbsolutePath (sfname)) {
     strlcpy (tname, sfname, MAXPATHLEN);
   } else {
     snprintf (tname, MAXPATHLEN, "%s/%s",
         bdjoptGetStr (OPT_M_DIR_MUSIC), sfname);
   }
   return tname;
-}
-
-bool
-songutilIsAbsolutePath (const char *sfname)
-{
-  bool    rc = false;
-  size_t  len;
-
-  len = strlen (sfname);
-  if ((len > 0 && sfname [0] == '/') ||
-      (len > 2 && sfname [1] == ':' && sfname [2] == '/')) {
-    rc = true;
-  }
-
-  return rc;
 }
 
 bool

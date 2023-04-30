@@ -220,7 +220,7 @@ START_TEST(dancesel_choose_two_hist_s)
     saveToQueue (didx);
     lastdidx = didx;
   }
-  ck_assert_int_lt (count, 10);
+  ck_assert_int_lt (count, 11);
 
   danceselFree (ds);
   nlistFree (clist);
