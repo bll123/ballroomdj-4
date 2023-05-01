@@ -32,6 +32,12 @@ songWriteDB (musicdb_t *musicdb, dbidx_t dbidx)
   song_t    *song;
 
   song = dbGetByIdx (musicdb, dbidx);
+  songWriteDBSong (musicdb, song);
+}
+
+void
+songWriteDBSong (musicdb_t *musicdb, song_t *song)
+{
   if (song != NULL) {
     if (! songIsChanged (song)) {
       return;

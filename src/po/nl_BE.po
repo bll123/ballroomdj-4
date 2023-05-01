@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-04-28\n"
+"PO-Revision-Date: 2023-04-30\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -201,7 +201,6 @@ msgstr "4/8"
 msgid "Accent Colour"
 msgstr "Accentkleur"
 
-#. CONTEXT: import from bdj4 : how to process, select action
 #. CONTEXT: update database: select database update action
 msgid "Action"
 msgstr "Actie"
@@ -901,10 +900,6 @@ msgstr ""
 msgid "Import from %s"
 msgstr "Importeren van %s"
 
-#. CONTEXT: import for bdj4: only import when there is no database entry
-msgid "Import song when not found"
-msgstr ""
-
 #. CONTEXT: set up alternate: status message
 msgid "Initial Setup."
 msgstr "Oorspronkelijke instelling."
@@ -1501,10 +1496,6 @@ msgstr "Reorganiseren"
 #. CONTEXT: text from the HTML templates (buttons and labels)
 msgid "Repeat"
 msgstr "Herhalen"
-
-#. CONTEXT: import for bdj4: replace database entry if newer
-msgid "Replace song if newer"
-msgstr ""
 
 #. CONTEXT: database update: rebuild: help text
 msgid ""

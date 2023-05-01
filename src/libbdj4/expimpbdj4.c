@@ -36,7 +36,6 @@ typedef struct eibdj4 {
   char        origmusicdir [MAXPATHLEN];
   char        *plName;
   char        *newName;
-  int         updateflag;
   nlist_t     *dbidxlist;
   nlistidx_t  dbidxiter;
   slistidx_t  dbiteridx;
@@ -63,7 +62,6 @@ eibdj4Init (musicdb_t *musicdb, const char *dirname, int eiflag)
   eibdj4->dbidxlist = NULL;
   eibdj4->plName = NULL;
   eibdj4->newName = NULL;
-  eibdj4->updateflag = false;
   eibdj4->eiflag = eiflag;
   eibdj4->counter = 0;
   eibdj4->totcount = 0;
@@ -126,16 +124,6 @@ eibdj4SetNewName (eibdj4_t *eibdj4, const char *name)
   }
 
   eibdj4->newName = mdstrdup (name);
-}
-
-void
-eibdj4SetUpdate (eibdj4_t *eibdj4, bool updateflag)
-{
-  if (eibdj4 == NULL) {
-    return;
-  }
-
-  eibdj4->updateflag = updateflag;
 }
 
 void
@@ -292,9 +280,6 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
         nupd = songGetNum (song, TAG_LAST_UPDATED);
         if (nupd > oupd) {
           doupdate = true;
-          if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
-            docopy = true;
-          }
           songSetNum (song, TAG_RRN, songGetNum (tsong, TAG_RRN));
         }
         if (! docopy && ! fileopFileExists (tbuff)) {
@@ -401,7 +386,7 @@ fprintf (stderr, "%s is new\n", songfn);
           doupdate = true;
           docopy = true;
         }
-        if (tsong != NULL && eibdj4->updateflag) {
+        if (tsong != NULL) {
           time_t    oupd;
           time_t    nupd;
 
@@ -411,20 +396,18 @@ fprintf (stderr, "found %s in main db\n", songfn);
           if (nupd > oupd) {
 fprintf (stderr, "  %s is newer\n", songfn);
             doupdate = true;
-            if (bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE) {
-              docopy = true;
-            }
           } else {
 fprintf (stderr, "  %ld > %ld false\n", nupd, oupd);
           }
-          if (! fileopFileExists (ffn)) {
-            docopy = true;
-          }
+        }
+        if (! docopy && ! fileopFileExists (ffn)) {
+          docopy = true;
         }
         if (doupdate) {
           eibdj4->dbchanged = true;
 fprintf (stderr, "  update db\n");
-          dbWriteSong (eibdj4->musicdb, song);
+          songSetChanged (song);
+          songWriteDBSong (eibdj4->musicdb, song);
         }
         if (docopy) {
           nfn = songutilFullFileName (songfn);

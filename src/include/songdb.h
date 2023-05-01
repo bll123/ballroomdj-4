@@ -8,5 +8,6 @@
 #include "song.h"
 
 void  songWriteDB (musicdb_t *musicdb, dbidx_t dbidx);
+void  songWriteDBSong (musicdb_t *musicdb, song_t *song);
 
 #endif /* INC_SONGDB_H */

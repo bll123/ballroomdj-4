@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-28 11:37-0700\n"
+"POT-Creation-Date: 2023-04-30 12:20-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -199,7 +199,6 @@ msgstr ""
 msgid "Accent Colour"
 msgstr ""
 
-#. CONTEXT: import from bdj4 : how to process, select action
 #. CONTEXT: update database: select database update action
 msgid "Action"
 msgstr ""
@@ -899,10 +898,6 @@ msgstr ""
 msgid "Import from %s"
 msgstr ""
 
-#. CONTEXT: import for bdj4: only import when there is no database entry
-msgid "Import song when not found"
-msgstr ""
-
 #. CONTEXT: set up alternate: status message
 msgid "Initial Setup."
 msgstr ""
@@ -1497,10 +1492,6 @@ msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)
 msgid "Repeat"
-msgstr ""
-
-#. CONTEXT: import for bdj4: replace database entry if newer
-msgid "Replace song if newer"
 msgstr ""
 
 #. CONTEXT: database update: rebuild: help text

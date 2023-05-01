@@ -43,18 +43,11 @@ enum {
   UIEIBDJ4_W_MAX,
 };
 
-enum {
-  ACTION_IMPORT,    // only when not found
-  ACTION_REPLACE,
-  ACTION_MAX,
-};
-
 typedef struct {
   uiwcont_t       *wcont [UIEIBDJ4_W_MAX];
   uientry_t       *target;
   uientry_t       *newname;
   uiplaylist_t    *uiplaylist;
-  uispinbox_t     *action;
   uibutton_t      *targetButton;
   callback_t      *responsecb;
 } uieibdj4dialog_t;
@@ -65,8 +58,6 @@ typedef struct uieibdj4 {
   uieibdj4dialog_t  dialog [UIEIBDJ4_MAX];
   int               currtype;
   callback_t        *callbacks [UIEIBDJ4_CB_MAX];
-  nlist_t           *actionList;
-  unsigned int      actionMaxWidth;
   bool              isactive : 1;
 } uieibdj4_t;
 
@@ -79,14 +70,11 @@ static void   uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype);
 static int    uieibdj4ValidateTarget (uientry_t *entry, void *udata);
 static bool   uieibdj4SelectHandler (void *udata, long idx);
 static int    uieibdj4ValidateNewName (uientry_t *entry, void *udata);
-static const char * uieibdj4ActionGet (void *udata, int idx);
 
 uieibdj4_t *
 uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
 {
   uieibdj4_t  *uieibdj4;
-  nlistidx_t  iteridx;
-  const char  *str;
 
   uieibdj4 = mdmalloc (sizeof (uieibdj4_t));
   for (int i = 0; i < UIEIBDJ4_MAX; ++i) {
@@ -98,7 +86,6 @@ uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
     uieibdj4->dialog [i].targetButton = NULL;
     uieibdj4->dialog [i].uiplaylist = NULL;
     uieibdj4->dialog [i].responsecb = NULL;
-    uieibdj4->dialog [i].action = NULL;
   }
   uieibdj4->parentwin = windowp;
   uieibdj4->options = opts;
@@ -106,23 +93,6 @@ uieibdj4Init (uiwcont_t *windowp, nlist_t *opts)
     uieibdj4->callbacks [i] = NULL;
   }
   uieibdj4->isactive = false;
-
-  uieibdj4->actionList = nlistAlloc ("imp-actions", LIST_ORDERED, NULL);
-  /* CONTEXT: import for bdj4: only import when there is no database entry */
-  nlistSetStr (uieibdj4->actionList, ACTION_IMPORT, _("Import song when not found"));
-  /* CONTEXT: import for bdj4: replace database entry if newer */
-  nlistSetStr (uieibdj4->actionList, ACTION_REPLACE, _("Replace song if newer"));
-
-  uieibdj4->actionMaxWidth = 0;
-  nlistStartIterator (uieibdj4->actionList, &iteridx);
-  while ((str = nlistIterateValueData (uieibdj4->actionList, &iteridx)) != NULL) {
-    size_t      len;
-
-    len = strlen (str);
-    if (len > uieibdj4->actionMaxWidth) {
-      uieibdj4->actionMaxWidth = len;
-    }
-  }
 
   uieibdj4->callbacks [UIEIBDJ4_CB_DIALOG] = callbackInitLong (
       uieibdj4ResponseHandler, uieibdj4);
@@ -138,7 +108,6 @@ void
 uieibdj4Free (uieibdj4_t *uieibdj4)
 {
   if (uieibdj4 != NULL) {
-    nlistFree (uieibdj4->actionList);
     for (int i = 0; i < UIEIBDJ4_CB_MAX; ++i) {
       callbackFree (uieibdj4->callbacks [i]);
     }
@@ -250,24 +219,6 @@ uieibdj4GetNewName (uieibdj4_t *uieibdj4)
   newname = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].newname);
   return newname;
 }
-
-bool
-uieibdj4GetUpdate (uieibdj4_t *uieibdj4)
-{
-  bool  tbool = false;
-  int   idx;
-
-  if (uieibdj4 == NULL) {
-    return false;
-  }
-
-  idx = uiSpinboxTextGetValue (uieibdj4->dialog [uieibdj4->currtype].action);
-  if (idx == ACTION_REPLACE) {
-    tbool = true;
-  }
-  return tbool;
-}
-
 
 void
 uieibdj4UpdateStatus (uieibdj4_t *uieibdj4, int count, int tot)
@@ -449,28 +400,6 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
 
     uiEntrySetValidate (uieibdj4->dialog [currtype].newname,
         uieibdj4ValidateNewName, uieibdj4, UIENTRY_IMMEDIATE);
-
-    uiwcontFree (hbox);
-
-    /* update-if-newer */
-    hbox = uiCreateHorizBox ();
-    uiBoxPackStart (vbox, hbox);
-
-    uiwidgetp = uiCreateColonLabel (
-        /* CONTEXT: import from bdj4 : how to process, select action */
-        _("Action"));
-    uiBoxPackStart (hbox, uiwidgetp);
-    uiSizeGroupAdd (szgrp, uiwidgetp);
-    uiwcontFree (uiwidgetp);
-
-    uieibdj4->dialog [currtype].action = uiSpinboxInit ();
-    uiSpinboxTextCreate (uieibdj4->dialog [currtype].action, uieibdj4);
-
-    uiSpinboxTextSet (uieibdj4->dialog [currtype].action, 0,
-        ACTION_MAX, uieibdj4->actionMaxWidth,
-        NULL, NULL, uieibdj4ActionGet);
-    uiwidgetp = uiSpinboxGetWidgetContainer (uieibdj4->dialog [currtype].action);
-    uiBoxPackStart (hbox, uiwidgetp);
   }
 
   uiwcontFree (hbox);
@@ -578,8 +507,6 @@ uieibdj4FreeDialog (uieibdj4_t *uieibdj4, int expimptype)
   uieibdj4->dialog [expimptype].targetButton = NULL;
   uiplaylistFree (uieibdj4->dialog [expimptype].uiplaylist);
   uieibdj4->dialog [expimptype].uiplaylist = NULL;
-  uiSpinboxFree (uieibdj4->dialog [expimptype].action);
-  uieibdj4->dialog [expimptype].action = NULL;
 }
 
 static int
@@ -670,14 +597,3 @@ uieibdj4ValidateNewName (uientry_t *entry, void *udata)
 
   return rc;
 }
-
-static const char *
-uieibdj4ActionGet (void *udata, int idx)
-{
-  uieibdj4_t    *uieibdj4 = udata;
-  const char    *disp;
-
-  disp = nlistGetStr (uieibdj4->actionList, idx);
-  return disp;
-}
-

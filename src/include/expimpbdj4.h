@@ -16,7 +16,6 @@ void eibdj4Free (eibdj4_t *eibdj4);
 void eibdj4SetDBIdxList (eibdj4_t *eibdj4, nlist_t *dbidxlist);
 void eibdj4SetPlaylist (eibdj4_t *eibdj4, const char *name);
 void eibdj4SetNewName (eibdj4_t *eibdj4, const char *name);
-void eibdj4SetUpdate (eibdj4_t *eibdj4, bool updateflag);
 void eibdj4GetCount (eibdj4_t *eibdj4, int *count, int *tot);
 bool eibdj4Process (eibdj4_t *eibdj4);
 bool eibdj4DatabaseChanged (eibdj4_t *eibdj4);

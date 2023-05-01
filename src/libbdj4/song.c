@@ -432,18 +432,37 @@ songTagList (song_t *song)
 bool
 songIsChanged (song_t *song)
 {
+  if (song == NULL) {
+    return false;
+  }
   return song->changed;
+}
+
+void
+songSetChanged (song_t *song)
+{
+  if (song == NULL) {
+    return;
+  }
+  song->changed = true;
 }
 
 bool
 songHasSonglistChange (song_t *song)
 {
+  if (song == NULL) {
+    return false;
+  }
   return song->songlistchange;
 }
 
 void
 songClearChanged (song_t *song)
 {
+  if (song == NULL) {
+    return;
+  }
+
   song->changed = false;
   song->songlistchange = false;
 }
