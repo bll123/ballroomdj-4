@@ -22,6 +22,7 @@
 #include "pathbld.h"
 #include "slist.h"
 #include "song.h"
+#include "songdb.h"
 #include "songlist.h"
 #include "songutil.h"
 #include "tagdef.h"
@@ -353,12 +354,9 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
     const char  *slfn;
 
     slidx = songlistIterate (eibdj4->sl, &eibdj4->sliteridx);
-fprintf (stderr, "slidx: %ld\n", (long) slidx);
     if (slidx >= 0) {
       slfn = songlistGetStr (eibdj4->sl, slidx, SONGLIST_FILE);
-fprintf (stderr, "slfn: %s\n", slfn);
       song = dbGetByName (eibdj4->eimusicdb, slfn);
-fprintf (stderr, "song is null: %d\n", song == NULL);
 
       if (song != NULL) {
         const char    *songfn;
@@ -382,7 +380,6 @@ fprintf (stderr, "song is null: %d\n", song == NULL);
         /* or if the user has specifically turned on the update, and the */
         /* db entry is newer */
         if (tsong == NULL) {
-fprintf (stderr, "%s is new\n", songfn);
           doupdate = true;
           docopy = true;
         }
@@ -390,14 +387,10 @@ fprintf (stderr, "%s is new\n", songfn);
           time_t    oupd;
           time_t    nupd;
 
-fprintf (stderr, "found %s in main db\n", songfn);
           oupd = songGetNum (tsong, TAG_LAST_UPDATED);
           nupd = songGetNum (song, TAG_LAST_UPDATED);
           if (nupd > oupd) {
-fprintf (stderr, "  %s is newer\n", songfn);
             doupdate = true;
-          } else {
-fprintf (stderr, "  %ld > %ld false\n", nupd, oupd);
           }
         }
         if (! docopy && ! fileopFileExists (ffn)) {
@@ -405,14 +398,11 @@ fprintf (stderr, "  %ld > %ld false\n", nupd, oupd);
         }
         if (doupdate) {
           eibdj4->dbchanged = true;
-fprintf (stderr, "  update db\n");
           songSetChanged (song);
           songWriteDBSong (eibdj4->musicdb, song);
         }
         if (docopy) {
           nfn = songutilFullFileName (songfn);
-fprintf (stderr, "  copy: from: %s\n", tbuff);
-fprintf (stderr, "          to: %s\n", ffn);
           filemanipCopy (tbuff, ffn);
         }
 

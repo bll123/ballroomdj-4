@@ -61,9 +61,7 @@ songlistAlloc (const char *fname)
     pathbldMakePath (tfn, sizeof (tfn), fname,
         BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
   }
-fprintf (stderr, "fname: %s\n", sl->fname);
   sl->path = mdstrdup (tfn);
-fprintf (stderr, " path: %s\n", sl->path);
   sl->songlist = ilistAlloc (fname, LIST_ORDERED);
   ilistSetVersion (sl->songlist, SONGLIST_VERSION);
   return sl;
