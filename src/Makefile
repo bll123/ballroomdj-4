@@ -249,5 +249,5 @@ tclean:
 	@-$(RM) -f ../vgcore.* ../core gmon.out ../gmon.out
 	@-$(RM) -f launcher.rc bdj4_icon.ico
 	@-$(RM) -f selauncher.rc bdj4_icon_inst.ico
-	@-$(RM) -f inctest.log dep-in.txt dep-sort.txt
+	@-$(RM) -f inctest.c inctest.log dep-in.txt dep-sort.txt
 

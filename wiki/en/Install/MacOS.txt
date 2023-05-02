@@ -25,7 +25,7 @@ this script.  This will fix various Mac OS problems.
 This step only needs to be run once, not for every installation or
 update.
 
-Download the macos-pre-install-macports-v9.sh script from sourceforge.
+Download the macos-pre-install-macports-v10.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
@@ -34,7 +34,7 @@ script using the following command. This may take a very long time to
 finish. You may be required to enter your administrative password more
 than once during the installation process.
 
-    bash macos-pre-install-macports-v9.sh
+    bash macos-pre-install-macports-v10.sh
 
 This script performs the following actions:
 

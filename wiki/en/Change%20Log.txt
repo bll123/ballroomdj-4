@@ -4,12 +4,17 @@
 
 <!--
 
-**4.3.2 2023-5---**
+**4.3.3 2023-5---**
+
+-->
+
+**4.3.2 2023-5-2**
 
 * Bug Fixes:
     * Configuration: Mobile Marquee: Allow manual entry of local ip address.
     * Configuration: Remote Control: Allow manual entry of local ip address.
     * Getting Started Helper: Improve.
+    * Install: MacOS: update pre-install; patches no longer necessary.
     * Mobile Marquee: Fix display on song change.
     * Player/Marquee: Improve recover marquee.
     * Player: Fix gap changes not being processed correctly.
@@ -25,8 +30,6 @@
     * Song List Editor: Export for BDJ4 / Import from BDJ4.
 * Internal:
     * Cleanup (file sync).
-
--->
 
 **4.3.1 2023-4-15**
 

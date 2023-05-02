@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=9
+ver=10
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -22,170 +22,6 @@ function getresponse {
   esac
   echo $answer
 }
-
-function mkgtkpatch {
-  outnm=$1
-
-  cat > "$outnm" << '_HERE_'
-diff --git a/gnome/gtk3/Portfile b/gnome/gtk3/Portfile
-index d5fe438f929..0a0d781b7b7 100644
---- a/gnome/gtk3/Portfile
-+++ b/gnome/gtk3/Portfile
-@@ -6,12 +6,13 @@ PortGroup           xcodeversion 1.0
- PortGroup           active_variants 1.1
- PortGroup           compiler_blacklist_versions 1.0
- PortGroup           legacysupport 1.1
-+PortGroup           meson 1.0
-
- name                gtk3
- conflicts           gtk3-devel
- set my_name         gtk3
--version             3.24.34
--revision            2
-+version             3.24.37
-+revision            0
- epoch               1
-
- set proj_name       gtk+
-@@ -33,10 +34,9 @@ distname            ${proj_name}-${version}
- dist_subdir         ${my_name}
- use_xz              yes
- master_sites        gnome:sources/${proj_name}/${branch}/
--
--checksums           rmd160  2060a89575f9adf938bf91e4f06935ea619f7577 \
--                    sha256  dbc69f90ddc821b8d1441f00374dc1da4323a2eafa9078e61edbe5eeefa852ec \
--                    size    21587592
-+checksums           rmd160  afab13f415e5923bb185d923f3a37734e0f346d7 \
-+                    sha256  6745f0b4c053794151fd0f0e2474b077cccff5f83e9dd1bf3d39fe9fe5fb7f57 \
-+                    size    12401196
-
- minimum_xcodeversions {9 3.1}
-
-@@ -59,9 +59,7 @@ depends_run         port:shared-mime-info \
- # darwin 10 and earlier requires legacy support for O_CLOEXEC
- legacysupport.newest_darwin_requires_legacy 10
-
--# use autoreconf to deal with dependency tracking issues in configure
--use_autoreconf      yes
--autoreconf.args     -fvi
-+patchfiles         patch-meson_build.diff
-
- # gtk3 +quartz uses instancetype which is not available
- # before approximately Xcode 4.6 (#49391)
-@@ -84,10 +82,10 @@ if {${universal_possible} && [variant_isset universal]} {
-         lappend merger_destroot_args(${arch})  CC_FOR_BUILD='${configure.cc} -arch ${arch}'
-     }
- } else {
--    build.args-append       CC="${configure.cc} ${configure.cc_archflags}" \
--                            CC_FOR_BUILD="${configure.cc} ${configure.cc_archflags}"
--    destroot.args-append    CC="${configure.cc} ${configure.cc_archflags}" \
--                            CC_FOR_BUILD="${configure.cc} ${configure.cc_archflags}"
-+#     build.args-append       CC="${configure.cc} ${configure.cc_archflags}" \
-+#                             CC_FOR_BUILD="${configure.cc} ${configure.cc_archflags}"
-+#     destroot.args-append    CC="${configure.cc} ${configure.cc_archflags}" \
-+#                             CC_FOR_BUILD="${configure.cc} ${configure.cc_archflags}"
- }
-
- pre-configure {
-@@ -104,23 +102,23 @@ configure.cppflags-append \
- configure.cflags-append \
-                     -fstrict-aliasing
-
--configure.args      --enable-static \
--                    --disable-glibtest \
--                    --enable-introspection \
--                    --disable-wayland-backend \
--                    --disable-schemas-compile \
--                    gio_can_sniff=yes
--
--build.args-append   V=1 \
--                    CPP_FOR_BUILD="${configure.cpp}"
-+configure.args      -Dgtk_doc=false \
-+                    -Dman=true \
-+                    -Dintrospection=true \
-+                    -Ddemos=false \
-+                    -Dexamples=false \
-+                    -Dtests=false \
-+                    -Dprofiler=false
-
-+# almost all tests failing??
- test.run            yes
--test.target         check
-+
-+destroot.post_args-append -v
-
- post-destroot {
-     set docdir ${prefix}/share/doc/${name}
-     xinstall -d ${destroot}${docdir}
--    xinstall -m 644 -W ${worksrcpath} AUTHORS COPYING HACKING NEWS README \
-+    xinstall -m 644 -W ${worksrcpath} CONTRIBUTING.md COPYING NEWS README.md \
-         ${destroot}${docdir}
-
-     # avoid conflict with the gtk-update-icon-cache installed by gtk2
-@@ -146,7 +144,7 @@ platform darwin {
-         }
-
-         # https://trac.macports.org/ticket/63151
--        configure.args-append --disable-dependency-tracking
-+#         configure.args-append --disable-dependency-tracking
-     }
-
-     if {${os.major} <= 10} {
-@@ -157,7 +155,7 @@ platform darwin {
-     }
-     if {${os.major} <= 12} {
-         # requires cups 1.7
--        configure.args-append --disable-cups
-+        configure.args-append -Dprint_backends=file,lpr,test
-     }
- }
-
-@@ -240,7 +238,8 @@ variant quartz conflicts x11 {
-     require_active_variants path:lib/pkgconfig/cairo.pc:cairo quartz
-     require_active_variants path:lib/pkgconfig/pango.pc:pango quartz
-
--    configure.args-append   --enable-quartz-backend
-+    configure.args-append  -Dx11_backend=false \
-+                           -Dquartz_backend=true
- }
-
- variant x11 conflicts quartz {
-@@ -256,10 +255,9 @@ variant x11 conflicts quartz {
-                             port:xorg-libXfixes \
-                             port:at-spi2-atk
-
--    configure.args-append   --enable-xinerama \
--                            --x-include=${prefix}/include \
--                            --x-lib=${prefix}/lib \
--                            --enable-x11-backend
-+    configure.args-append  -Dx11_backend=true \
-+                           -Dquartz_backend=false \
-+                           -Dxinerama=yes
- }
-
- if {![variant_isset quartz]} {
-_HERE_
-}
-
-function mkgtkmesonpatch {
-  outnm=$1
-
-  cat > $outnm << '_HERE_'
---- meson.build.orig	2023-01-09 13:44:54.000000000 -0500
-+++ meson.build	2023-01-09 13:45:30.000000000 -0500
-@@ -158,7 +158,7 @@
-
- if os_darwin
-   wayland_enabled = false
--  x11_enabled = false
-+#  x11_enabled = false
- else
-   quartz_enabled = false
- endif
-_HERE_
-}
-
-
 
 if [[ $(uname -s) != Darwin ]]; then
   echo "Not running on MacOS"
@@ -320,20 +156,6 @@ if [[ $rc -ne 0 ]]; then
   cp $VARIANTSCONF "$TFN"
   echo "-x11 +no_x11 +quartz" >> "$TFN"
   sudo cp "$TFN" $VARIANTSCONF
-  rm -f "$TFN"
-fi
-
-GTKPORTDIR=/opt/local/var/macports/sources/rsync.macports.org/macports/release/tarballs/ports/gnome/gtk3
-GTKPORTFILE=${GTKPORTDIR}/Portfile
-GTKFILEDIR=${GTKPORTDIR}/files
-# version             3.24.37
-gtkvers=$(grep '^version' $GTKPORTFILE | sed 's/^version *//')
-if [[ $gtkvers == "3.24.34" ]]; then
-  echo "-- Patching gtk Portfile"
-  mkgtkpatch "$TFN"
-  sudo patch -p0 $GTKPORTFILE < "$TFN"
-  mkgtkmesonpatch "$TFN"
-  sudo cp "$TFN" $GTKFILEDIR/patch-meson_build.diff
   rm -f "$TFN"
 fi
 
