@@ -88,6 +88,7 @@ msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_MAXPLAYTIME 360000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
 msg main MUSICQ_SET_PLAYBACK 0
+msg main MUSICQ_SET_MANAGE 0
 msg main CHK_MAIN_SET_MAXPLAYTIME 360000
 end
 
@@ -233,8 +234,9 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
 msg main MUSICQ_SET_PLAYBACK 1
-msg main CHK_MAIN_SET_GAP 0
+msg main CHK_MAIN_SET_GAP 2000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
+msg main MUSICQ_SET_MANAGE 0
 msg main MUSICQ_SET_PLAYBACK 0
 end
 
@@ -243,6 +245,7 @@ test 150-21 Gap-Switch-Queue
 msg main QUEUE_SWITCH_EMPTY 1
 msg main MUSICQ_SET_PLAYBACK 1
 msg main MUSICQ_INSERT 1~999~6
+msg main MUSICQ_INSERT 1~999~5
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
 msg main CHK_MAIN_SET_GAP 0
 msg main MUSICQ_SET_PLAYBACK 0
@@ -271,17 +274,33 @@ get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
 get main CHK_MAIN_MUSICQ
 # mq 1 has an empty head pushed
-chk mqplay 0 mq0len 3 mq1len 2
+chk mqplay 0 mq0len 3 mq1len 3
 #
 msg main MUSICQ_SET_PLAYBACK 1
 msg player PLAY_FADE
 resptimeout 4500
 get player CHK_PLAYER_STATUS
 # should be a gap
-# the gap is set from the prior song
+# the gap is set from the prior queue
 wait playstate in-gap
 resptimeout 3000
 get player CHK_PLAYER_STATUS
+wait playstate playing
+mssleep 1500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+get main CHK_MAIN_MUSICQ
+# mq 1 has an empty head pushed
+chk mqplay 1 mq0len 3 mq1len 2
+#
+msg player PLAY_FADE
+resptimeout 4500
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+wait-not playstate in-fadeout
+# should not be a gap
+# the gap is being set from the current queue
+chk-or playstate stopped loading playing
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
@@ -293,10 +312,11 @@ chk mqplay 1 mq0len 3 mq1len 1
 msg player PLAY_FADE
 resptimeout 4500
 get player CHK_PLAYER_STATUS
-wait playstate in-fadeout
-wait-not playstate in-fadeout
-# should not be a gap
-chk-or playstate stopped loading playing
+# should be a gap
+# the gap is set from the next queue as the current is emptied
+wait playstate in-gap
+resptimeout 3000
+get player CHK_PLAYER_STATUS
 wait playstate playing
 mssleep 1500
 get player CHK_PLAYER_STATUS
@@ -309,7 +329,7 @@ msg player PLAY_FADE
 resptimeout 4500
 get player CHK_PLAYER_STATUS
 # should be a gap
-# the gap is set from the prior song
+# the gap is set from the prior queue
 wait playstate in-gap
 resptimeout 3000
 get player CHK_PLAYER_STATUS
@@ -323,7 +343,7 @@ chk mqplay 0 mq0len 1 mq1len 1
 #
 msg main QUEUE_SWITCH_EMPTY 0
 msg main MUSICQ_SET_PLAYBACK 1
-msg main CHK_MAIN_SET_GAP 0
+msg main CHK_MAIN_SET_GAP 2000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
 msg main MUSICQ_SET_PLAYBACK 0
 end
@@ -332,7 +352,6 @@ end
 # check playback with no fade-in set
 test 150-30 Fade-In
 msg player PLAYER_VOLUME 30
-msg main MUSICQ_SET_PLAYBACK 0
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
 msg main CHK_MAIN_SET_FADEIN 0
@@ -383,6 +402,7 @@ chk actualvolume 30
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_FADEIN 400
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
+msg main MUSICQ_SET_MANAGE 0
 msg main MUSICQ_SET_PLAYBACK 0
 end
 
@@ -443,6 +463,7 @@ mssleep 1500
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_FADEOUT 4000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
+msg main MUSICQ_SET_MANAGE 0
 msg main MUSICQ_SET_PLAYBACK 0
 end
 
@@ -493,10 +514,14 @@ get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
 wait playstate playing
 mssleep 1500
+get main CHK_MAIN_MUSICQ
+# mq 1 has an empty head pushed
+chk mqplay 0 mq0len 2 mq1len 1
 #
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_FADEOUT 4000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
+msg main MUSICQ_SET_MANAGE 0
 msg main MUSICQ_SET_PLAYBACK 0
 msg main QUEUE_SWITCH_EMPTY 0
 end
@@ -504,7 +529,6 @@ end
 
 # play when queued
 test 150-50 Play-When-Queued
-msg main MUSICQ_SET_PLAYBACK 0
 msg main MUSICQ_SET_PLAYBACK 1
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
 msg main CHK_MAIN_SET_PLAY_WHEN_QUEUED 1

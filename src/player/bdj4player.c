@@ -105,7 +105,7 @@ typedef struct {
   mstime_t        playEndCheck;
   mstime_t        fadeTimeCheck;
   mstime_t        volumeTimeCheck;
-  long            priorGap;
+  long            priorGap;           // used for announcements
   long            gap;
   mstime_t        gapFinishTime;
   int             fadeType;

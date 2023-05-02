@@ -4,7 +4,7 @@
 
 <!--
 
-**4.3.2 2023-4---**
+**4.3.2 2023-5---**
 
 * Bug Fixes:
     * Configuration: Mobile Marquee: Allow manual entry of local ip address.
@@ -22,7 +22,7 @@
     * Create From Playlist: Copy playlist settings to new song list.
     * Music Manager: Filters: Selection of automatic and sequenced playlists is now possible.
 * New Features:
-    * PENDING: Song List Editor: Export for BDJ4 / Import from BDJ4.
+    * Song List Editor: Export for BDJ4 / Import from BDJ4.
 * Internal:
     * Cleanup (file sync).
 
