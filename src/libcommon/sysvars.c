@@ -504,14 +504,27 @@ sysvarsInit (const char *argv0)
   sysvarsCheckPaths (NULL);
 
   if (strcmp (sysvars [SV_OSNAME], "darwin") == 0) {
-    char *data;
+    char  *data;
+    char  *tdata;
 
     strlcpy (sysvars [SV_OSDISP], "MacOS", SV_MAX_SZ);
     data = osRunProgram (sysvars [SV_TEMP_A], "-productVersion", NULL);
     stringTrim (data);
     strlcpy (sysvars [SV_OSVERS], data, SV_MAX_SZ);
+    dataFree (data);
+
+    tdata = osRunProgram (sysvars [SV_TEMP_A], "-productVersionExtra", NULL);
+    stringTrim (tdata);
+    if (tdata != NULL && *tdata == '(') {
+      *(tdata + 2) = '\0';
+      strlcat (sysvars [SV_OSVERS], "-", SV_MAX_SZ);
+      strlcat (sysvars [SV_OSVERS], tdata + 1, SV_MAX_SZ);
+    }
+    dataFree (tdata);
+
+    data = sysvars [SV_OSVERS];
     if (data != NULL) {
-      if (strcmp (data, "13") > 0) {
+      if (strcmp (data, "14") > 0) {
         strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
         strlcat (sysvars [SV_OSDISP], data, SV_MAX_SZ);
       } else if (strcmp (data, "13") > 0) {
@@ -529,7 +542,6 @@ sysvarsInit (const char *argv0)
         strlcat (sysvars [SV_OSDISP], data, SV_MAX_SZ);
       }
     }
-    mdfree (data);
   }
   if (strcmp (sysvars [SV_OSNAME], "linux") == 0) {
     static char *fna = "/etc/lsb-release";
