@@ -108,7 +108,7 @@ add_subdirectory (libvol)
 # executables, no gui
 add_subdirectory (utility)
 # ui libraries
-if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
+if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   add_subdirectory (libuigtk3)
 endif()
 if (BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
