@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <limits.h>
 
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
 # include <gtk/gtk.h>
 #endif
 
@@ -83,7 +83,7 @@ main (int argc, char *argv [])
   fprintf (stdout, " i: time_t %ld\n", (long) sizeof (time_t));
   fprintf (stdout, " i: uint32_t %ld %ld\n", (long) sizeof (uint32_t), (long) INT32_MAX);
   fprintf (stdout, " i: uint64_t %ld\n", (long) sizeof (uint64_t));
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
   fprintf (stdout, " i: gboolean %ld\n", (long) sizeof (gboolean));
   fprintf (stdout, " i: gint  %ld\n", (long) sizeof (gint));
   fprintf (stdout, " i: glong %ld\n", (long) sizeof (glong));

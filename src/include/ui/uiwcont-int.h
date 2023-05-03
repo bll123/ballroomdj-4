@@ -80,7 +80,7 @@ typedef union {
     uitree_t      *uitree;
 } uiwcontint_t;
 
-# if BDJ4_USE_GTK /* gtk3 */
+# if BDJ4_USE_GTK3 /* gtk3 */
 
 #  include <gtk/gtk.h>
 
@@ -96,7 +96,7 @@ typedef struct uiwidget {
   uiwcontint_t    uiint;
 } uiwcont_t;
 
-# endif /* BDJ4_USE_GTK */
+# endif /* BDJ4_USE_GTK3 */
 
 # if BDJ4_USE_NULLUI
 

@@ -56,7 +56,7 @@ main (int argc, const char *argv [])
 #if __WINNT__
   isWindows = true;
   archivenm = "bdj4-install.cab";
-# if BDJ4_USE_GTK
+# if BDJ4_USE_GTK3
   osSetEnv ("GTK_THEME", "Windows-10-Dark");
 # endif
 #endif

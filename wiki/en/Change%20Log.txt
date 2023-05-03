@@ -4,7 +4,12 @@
 
 <!--
 
-**4.3.3 2023-5---**
+**4.3.3 2023-6---**
+
+**4.3.2.1 2023-5---**
+
+* Bug Fixes:
+    * PENDING: Playlist Management: Fix lost data when toggling 'hide unselected'.
 
 -->
 

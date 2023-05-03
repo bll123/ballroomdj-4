@@ -7,7 +7,7 @@
 #include "uiclass.h"
 #include "uiwcont.h"
 
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
 # include "ui-gtk3.h"
 #endif
 #if BDJ4_USE_NULLUI

@@ -31,14 +31,14 @@ endif()
 #### BDJ4 UI type
 
 # check for all supported ui interfaces
-if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk" OR
+if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3" OR
     BDJ4_UI STREQUAL "NULL" OR BDJ4_UI STREQUAL "null")
 else()
   message (FATAL_ERROR "BDJ4_UI (${BDJ4_UI}) not supported")
 endif()
 
-if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
-  add_compile_options (-DBDJ4_USE_GTK=1)
+if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
+  add_compile_options (-DBDJ4_USE_GTK3=1)
   set (BDJ4_UI_LIB libuigtk3)
 endif()
 
@@ -69,7 +69,7 @@ endif()
 pkg_check_modules (CHECK check)
 pkg_check_modules (CURL libcurl)
 pkg_check_modules (GLIB glib-2.0)
-if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
+if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   pkg_check_modules (GTK gtk+-3.0)
 endif()
 pkg_check_modules (OPENSSL openssl)
@@ -87,7 +87,7 @@ pkg_check_modules (ICU icu-i18n)
 
 #### generic compile options
 
-if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
+if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   add_compile_options (-DGDK_DISABLE_DEPRECATED)
   add_compile_options (-DGTK_DISABLE_DEPRECATED)
 endif()
@@ -283,7 +283,7 @@ set (CMAKE_REQUIRED_INCLUDES ${LIBVLC_INCLUDE_DIR})
 check_include_file (vlc/vlc.h _hdr_vlc_vlc)
 set (CMAKE_REQUIRED_INCLUDES "")
 
-if (BDJ4_UI STREQUAL "GTK" OR BDJ4_UI STREQUAL "gtk")
+if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   set (CMAKE_REQUIRED_INCLUDES ${GTK_INCLUDE_DIRS})
   check_include_file (gdk/gdkx.h _hdr_gdk_gdkx)
   check_include_file (gtk/gtk.h _hdr_gtk_gtk)

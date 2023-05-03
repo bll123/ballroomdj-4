@@ -973,7 +973,7 @@ mainStartMarquee (maindata_t *mainData)
 
   /* set the theme for the marquee */
   theme = bdjoptGetStr (OPT_MP_MQ_THEME);
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
   osSetEnv ("GTK_THEME", theme);
 #endif
 

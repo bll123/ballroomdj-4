@@ -11,7 +11,7 @@
 #include <getopt.h>
 #include <unistd.h>
 
-#if BDJ4_GUI_LAUNCHER && BDJ4_USE_GTK
+#if BDJ4_GUI_LAUNCHER && BDJ4_USE_GTK3
 # include <gtk/gtk.h>
 #endif
 
@@ -139,7 +139,7 @@ main (int argc, char * argv[])
   mdebugInit ("lnch");
 #endif
 
-#if BDJ4_GUI_LAUNCHER && BDJ4_USE_GTK
+#if BDJ4_GUI_LAUNCHER && BDJ4_USE_GTK3
   /* for macos; turns the launcher into a gui program, then the icon */
   /* shows up in the dock */
   gtk_init (&argc, NULL);
@@ -148,7 +148,7 @@ main (int argc, char * argv[])
   prog = "bdj4starterui";  // default
 
   sysvarsInit (argv [0]);
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
   if (getenv ("GTK_THEME") != NULL) {
     havetheme = true;
   }
@@ -329,14 +329,14 @@ main (int argc, char * argv[])
         break;
       }
       case 'T': {
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
         osSetEnv ("GTK_THEME", optarg);
 #endif
         havetheme = true;
         break;
       }
       case 'S': {
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
         osSetEnv ("GDK_SCALE", optarg);
 #endif
         havescale = true;
@@ -360,7 +360,7 @@ main (int argc, char * argv[])
     }
   }
 
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
   osSetEnv ("GTK_CSD", "0");
 #endif
   osSetEnv ("PYTHONIOENCODING", "utf-8");
@@ -425,7 +425,7 @@ main (int argc, char * argv[])
       fprintf (stderr, "final PATH=%s\n", getenv ("PATH"));
     }
 
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
     osSetEnv ("PANGOCAIRO_BACKEND", "fc");
 #endif
 
@@ -442,7 +442,7 @@ main (int argc, char * argv[])
       (void) ! fgets (buff, sizeof (buff), fh);
       fclose (fh);
       stringTrim (buff);
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
       osSetEnv ("GTK_THEME", buff);
 #endif
       havetheme = true;
@@ -459,7 +459,7 @@ main (int argc, char * argv[])
       (void) ! fgets (buff, sizeof (buff), fh);
       fclose (fh);
       stringTrim (buff);
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
       osSetEnv ("GDK_SCALE", buff);
 #endif
       havescale = true;
@@ -467,12 +467,12 @@ main (int argc, char * argv[])
   }
 
   if (! havetheme && isWindows ()) {
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
     osSetEnv ("GTK_THEME", "Windows-10-Dark");
 #endif
   }
   if (! havetheme && isMacOS ()) {
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
     osSetEnv ("GTK_THEME", "macOS-Mojave-dark");
 #endif
   }
@@ -480,7 +480,7 @@ main (int argc, char * argv[])
   /* launch the program */
 
   if (debugself) {
-#if BDJ4_USE_GTK
+#if BDJ4_USE_GTK3
     fprintf (stderr, "GTK_THEME=%s\n", getenv ("GTK_THEME"));
     fprintf (stderr, "GTK_CSD=%s\n", getenv ("GTK_CSD"));
     fprintf (stderr, "PANGOCAIRO_BACKEND=%s\n", getenv ("PANGOCAIRO_BACKEND"));

@@ -140,13 +140,15 @@ sudo -v
 pkglist=""
 if [[ -f /usr/bin/pacman ]]; then
   # arch based linux
+  # tested 2023-5-3
   pkglist="ffmpeg
       python-setuptools python-pip
       libmad lame twolame libid3tag
-      pulseaudio curl"
+      pulseaudio curl taglib"
 fi
 if [[ -f /usr/bin/apt ]]; then
   # debian based linux
+  # tested 2022
   pkglist="ffmpeg
       python3-setuptools python3-pip python3-wheel
       libcurl4 libtag1v5"
@@ -182,7 +184,7 @@ if [[ "$pkgprog" != "" && "$pkglist" != "" ]]; then
 fi
 
 if [[ -f /usr/bin/pacman ]]; then
-  # manjaro linux has vlc-nightly installed.
+  # manjaro linux may have vlc-nightly installed.
   # want something more stable.
   echo "== Remove vlc-nightly" >> $LOG
   sudo $pkgprog $pkgrm $pkgconfirm vlc-nightly >> $LOG 2>&1

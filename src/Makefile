@@ -11,7 +11,7 @@ CLANG = clang
 CLANGXX = clang++
 
 # bdj4 options
-BDJ4_UI = GTK
+BDJ4_UI = GTK3
 
 .PHONY: release
 release:
