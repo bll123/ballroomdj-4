@@ -60,7 +60,7 @@ the music queue.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![showcase-req-ext-a](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-req-ext-A.png)
-<br><span style="color:#4559bf;">**Player / Actions / Request External**</span> </div>
+<br><span style="color:#4559bf;">**Player / Actions / External Request**</span> </div>
 
 ###### Playing a Song in the Database
 
@@ -90,4 +90,4 @@ ready to be played.  The Tango will be ready to play, and the Waltz
 will be put back into the music queue.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-05-03 11:39:21; BDJ4 version 4.3.2)_

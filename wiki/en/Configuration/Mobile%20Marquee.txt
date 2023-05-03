@@ -18,6 +18,17 @@ marquee is activated when then player is started.
 
 __Title__: An optional title to display on the mobile marquee.
 
+__IP Address__: The local IP address.  If the computer is connected to
+the internet, this field will automatically be filled in.
+
+If the computer is not connected to the internet, enter the computer's
+local IP address.
+
+If the IP address has already been set, it will not be replaced.  If
+the computer is connected to the internet and you want to reset it,
+blank out the field, then turn _Enable&nbsp;Mobile&nbsp;Marquee_ off
+and on again.
+
 __Port__: The port to connect to.  This usually does not need to be
 changed unless there is another device using this port.
 
@@ -26,7 +37,7 @@ QR code can be copied from the browser and embedded in a document to
 be printed out so that the dancers can scan the QR Code.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![mobile-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileMarquee-D.png)
+![mobile-marquee](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/MobileMarquee-E.png)
 <br><span style="color:#4559bf;">__Configure / Mobile Marquee__</span> </div>
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -34,4 +45,4 @@ be printed out so that the dancers can scan the QR Code.
 <br><span style="color:#4559bf;">__Mobile Device / Mobile Marquee__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-05-03 08:36:40; BDJ4 version 4.3.2)_

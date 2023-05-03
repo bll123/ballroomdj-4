@@ -35,7 +35,7 @@
 
 * Bug Fixes:
     * Song List Editor: Fix adding songs to song list (broken in 4.3.0.5).
-    * Request External: Get song information from database if possible.
+    * External Request: Get song information from database if possible.
     * Player/Management: Only display pause indicator column for music queues.
 * New Features:
     * Drag & Drop: An audio file may be dragged to a queue in the player.
@@ -355,7 +355,7 @@
     * management: rearrange user interface.
     * marquee: changed hide-marquee-on-start to show-marquee and added an 'off' setting.
     * mobile marquee: remove internet mode.
-    * player user interface: moved 'request external' into a menu.
+    * player user interface: moved 'external request' into a menu.
     * player user interface: the queue dance buttons are only shown per the queue configuration.
     * player user interface: remove 'play when queued' from options menu.
     * playlist management: disallow deletion of special QueueDance playlist.
@@ -368,4 +368,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-02 11:40:11; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-05-03 11:39:21; BDJ4 version 4.3.2)_

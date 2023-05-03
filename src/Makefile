@@ -242,6 +242,7 @@ eclean:
 tclean:
 	@find .. -name '*~' -print0 | xargs -0 rm -f
 	@find .. -name '*.orig' -print0 | xargs -0 rm -f
+	@find ../wiki -name '*.txt.bak' -print0 | xargs -0 rm -f
 	@-$(RM) -f w ww www ../w ../ww ../www ../*/w ../*/ww ../*/www
 	@-$(RM) -f po/w po/ww ../asan.* ./asan.*
 	@-$(RM) -f test.log ../mdebug.txt

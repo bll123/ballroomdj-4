@@ -1,0 +1,95 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_An automatic or sequenced playlist may
+be used to create a song list._</span>
+
+[TOC]
+
+### Create a Song List from a Playlist
+
+A song list may be created from an automatic or sequenced playlist.
+The song list can then be adjusted afterwards.  In the following
+example, an automatic playlist is used to create a song list.
+
+##### Create an Automatic Playlist
+
+For this example, the automatic playlist will be set to have the
+following dances with a count of 5: _Waltz_, _Foxtrot_, _Tango_.
+_Rumba_, _Cha&nbsp;Cha_, _Jive_ and _Samba_ will added with a count of
+3. _Viennese&nbsp;Waltz_ will be added with a count of 1.
+
+The counts are relative to each other and are not absolute.  A dance
+with a count of 5 will appear about 5 times more often than a dance
+with a count of 1. A dance with a count of 3 will appear about 3/5 as
+often as a dance with a count of 5.
+
+[Management&nbsp;/&nbsp;Playlist&nbsp;Management](en-Management-Playlist%20Management)
+is used to set up the automatic playlist.
+
+The automatic playlist will be named _example-auto_.  The maximum play
+time will be set to 2:45.  The stop at time will be set to 22:00.  The
+dance rating will be set to _Great_.  In addition, the maximum play
+time for _Viennese&nbsp;Waltz_ will be set to 2:00.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![create-sl-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-A.png)
+<br><span style="color:#4559bf;">__Management / Playlist Management__</span> </div>
+
+##### Create a Song List Using the Automatic Playlist
+
+Now switch to [Edit&nbsp;Song&nbsp;Lists](en-Management-Edit%20Song%20Lists).
+Select the __Actions&nbsp;/&nbsp;Create from Playlist__ menu item.
+
+In the __Create&nbsp;from&nbsp;Playlist__ dialog, select
+_example-auto_ in the playlist drop-down.  For the purposes of this
+example, a time limit of thirty minutes is used.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![create-sl-cfpl-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-cfpl-A.png)
+<br><span style="color:#4559bf;">__Edit Song Lists / Actions / Create from Playlist__</span> </div>
+
+After creation, the created song list is re-named to _example-create_.
+
+##### Playlist Settings are Copied
+
+The playlist settings from the automatic or sequenced playlist are
+copied to the new song list.  The _Maximum&nbsp;Play&nbsp;Time_,
+_Stop&nbsp;At_, _Gap&nbsp;Between&nbsp;Songs_ and
+_Play&nbsp;Announcements_ settings are copied from the automatic or
+sequenced playlist to the created song list.
+
+In addition, the _Maximum&nbsp;Play&nbsp;Time_ settings for each dance is
+also copied to the created song list.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![create-sl-sl-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-sl-A.png)
+<br><span style="color:#4559bf;">__Management / Playlist Management__</span> </div>
+
+##### Statistics
+
+Looking at the statistics of the created song list, 60 songs were
+added to the song list (the test songs used for this example are
+short).  The percentages do not match because (a) 60 songs is not an
+exact multiple of the total count (28) in the automatic playlist, and
+(b) the dance selection is random, meaning that sometimes one dance or
+another may show up a little more or a little less often.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![create-sl-stats-a](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/create-song-list-stats-A.png)
+<br><span style="color:#4559bf;">__Edit Song Lists / Statistics__</span> </div>
+
+ Dance|Automatic Playlist|Song List
+ -----|---------|---------
+ Cha Cha|10.7%|11.6%
+ Foxtrot|17.8%|15%
+ Jive|10.7%|13.3%
+ Rumba|10.7%|11.6%
+ Samba|10.7%|11.6%
+ Tango|17.8%|16.6%
+ Viennese Waltz|3.5%|3.3%
+ Waltz|17.8%|16.6%
+
+[Management&nbsp;/&nbsp;Playlist&nbsp;Management](en-Management-Playlist%20Management)
+
+[Wiki Home](Home)
+<br>_(Updated 2023-05-03 11:35:41; BDJ4 version 4.3.2)_

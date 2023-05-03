@@ -116,8 +116,10 @@ name.  This defaults to _New&nbsp;Playlist_.  Click in the entry
 box and change the name of the playlist.  If there is a song list or
 sequence associated with the playlist, it will also be renamed.
 
-If you forget to change the name, the song list will be saved as
-_New&nbsp;Playlist_.
+If you forget to change the name, the automatic playlist will be saved
+as _New&nbsp;Playlist_. To rename it afterwards, simply select
+__Edit&nbsp;/&nbsp;Load__ from the menu.  Select _New&nbsp;Playlist_,
+then enter the new name of the automatic playlist.
 
 ##### Edit Menu
 
@@ -142,4 +144,4 @@ __Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded playlist
 from your storage device and start a new automatic playlist.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-05-03 08:48:33; BDJ4 version 4.3.2)_

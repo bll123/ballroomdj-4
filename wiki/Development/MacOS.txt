@@ -56,7 +56,7 @@ sudo port install autossh di rlwrap                   # for bll
 <br>    Hold down the Shift key.
 <br>  To select a partition to boot:
 <br>    Hold down the Alt key.
-<br>  To restart to access disk utilitiy, etc:
+<br>  To restart to access disk utility, etc:
 <br>    Hold down Meta-R.
 <br>  To clear PRAM/NVRAM:
 <br>    Hold down Meta-Alt-P-R.
@@ -65,4 +65,4 @@ sudo port install autossh di rlwrap                   # for bll
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2023-04-15 14:37:28; BDJ4 version 4.3.1)_
+<br>_(Updated 2023-05-03 07:53:39; BDJ4 version 4.3.2)_

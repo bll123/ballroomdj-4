@@ -12,12 +12,12 @@ must be configured to share the iTunes library information.  In iTunes,
 select the __Edit&nbsp;/&nbsp;Preferences__ menu item.  In the
 preferences dialog, select the __Advanced__ tab.
 
+In the iTunes advanced preferences, select the __Share iTunes Library
+XML with other applications__ checkbox.
+
 <div markdown style="margin-right: 20px; text-align: center;">
 ![iTunes Advanced Preferences](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/itunes-pref-A.png)
 <br><span style="color:#4559bf;">**iTunes Advanced Preferences**</span> </div>
-
-In the iTunes advanced preferences, select the __Share iTunes Library
-XML with other applications__ checkbox.
 
 ##### Configuring BallroomDJ 4 for iTunes
 
@@ -40,4 +40,4 @@ function is used.
 <br><span style="color:#4559bf;">__Configure / iTunes__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-05-03 08:36:40; BDJ4 version 4.3.2)_

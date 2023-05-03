@@ -12,10 +12,13 @@
 * Any audio file that can be played by VLC is supported (MP3, FLAC, Opus, OGG, etc.)
 * Fully configurable.
     * Player, Marquee, User Interface, Dances, Dance Ratings, etc.
-* Multiple profiles can be set up for different playback needs.
 * Player.
+  (See: [Player / Player](en-Player-Player))
+    * Marquee.
+    (See: [Player / Marquee](en-Player-Marquee))
     * Requests.
         * Column display is fully configurable.
+        (See: [Configuration / Display Settings](en-Configuration-Display%20Settings))
         * Filter your song collection to select the requested song.
     * Request an external song not in the database.
     * Player Controls.
@@ -27,9 +30,14 @@
         * Speed with pitch control.
         * Volume.
     * Multiple queues.
+    (See: [Subjects / Music Queues](en-Subjects-Music%20Queues)
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[How To / Playing a Mixer](en-HowTo-Playing%20a%20Mixer)
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[How To / Running a Showcase](en-HowTo-Running%20a%20Showcase))
         * Column display is fully configurable.
+        (See: [Configuration / Display Settings](en-Configuration-Display%20Settings))
         * Songs can be added to / moved within / removed from the queue while playing.
         * Queue configuration.
+        (See: [Configuration / Music Queues](en-Configuration-Music%20Queues))
             * Fade-in time.
             * Fade-out time.
             * Gap between songs.
@@ -41,21 +49,29 @@
     * Export the playlist as MP3 files.
 * Playlists
     * Song lists : pick and choose the songs to play.
+    (See: [Management / Edit Song Lists](en-Management-Edit%20Song%20Lists))
         * Create song lists using sequenced or automatic playlists.
         * Export a song list for BDJ4 / Import a song list from BDJ4.
     * Sequenced : specify which dances and the order in which they are played.
+    (See: [Management / Edit Sequences](en-Management-Edit%20Sequences))
     * Automatic : choose how many of each dance play and let BDJ4 do the rest.
+    (See: [Management / Playlist Management](en-Management-Playlist%20Management))
     * Playlist Controls
+    (See: [Management / Playlist Management](en-Management-Playlist%20Management))
         * Maximum play time for the playlist or for a particular dance.
         * Gap between songs.
         * Stop at a particular time.
         * Stop after some number of songs have played.
 * Music Manager
+    (See: [Management / Music Manager](en-Management-Music%20Manager))
     * Easily filter your song collection to select the songs to work with
     * Mark songs as the _same song_ to prevent similar songs from being selected in automatic and sequenced playlists.
     * Column display is fully configurable.
+    (See: [Configuration / Display Settings](en-Configuration-Display%20Settings))
 * Song Editor
+    (See: [Management / Song Editor](en-Management-Song%20Editor))
     * Field display is fully configurable.
+    (See: [Configuration / Display Settings](en-Configuration-Display%20Settings))
     * BPM Counter.
     * Optionally update the audio file tags.
     * Song adjustments for playback.
@@ -70,11 +86,16 @@
 * iTunes Support.
     * Update the information in the database from iTunes.
     * Import an iTunes playlist.
+    (See: [Configuration / iTunes](en-Configuration-iTunes))
 * Mobile Remote Control
     * Control BDJ4 from your mobile device.
+    (See: [Configuration / Mobile Remote Control](en-Configuration-Mobile%20Remote%20Control))
 * Mobile Marquee
     * Dancers can view upcoming songs on their mobile device.
+    (See: [Configuration / Mobile Marquee](en-Configuration-Mobile%20Marquee))
+
 * Secondary installations with separate databases.
+* Multiple profiles can be set up for different playback needs.
 
 ##### Future Features
 
@@ -82,4 +103,4 @@
 * Automatic Organization.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-02 11:51:22; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-05-03 08:56:14; BDJ4 version 4.3.2)_
