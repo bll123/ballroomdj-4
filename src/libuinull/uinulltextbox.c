@@ -113,3 +113,8 @@ uiTextBoxSetHeight (uitextbox_t *tb, int h)
   return;
 }
 
+void
+uiTextBoxSetParagraph (uitextbox_t *tb, int indent, int interpara)
+{
+  return;
+}
