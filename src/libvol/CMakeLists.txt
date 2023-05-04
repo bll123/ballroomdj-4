@@ -8,7 +8,7 @@ include (../utils/bdj4macros.cmake)
 add_library (libbdj4vol SHARED
   volume.c
 )
-target_link_libraries (libbdj4vol
+target_link_libraries (libbdj4vol PUBLIC
   libdyintfc
   libdylib
   libbdj4basic libbdj4common
@@ -16,14 +16,14 @@ target_link_libraries (libbdj4vol
 )
 
 add_library (libvolnull SHARED volnull.c)
-target_link_libraries (libvolnull
+target_link_libraries (libvolnull PUBLIC
   libbdj4string
 )
 
 if (APPLE)
   add_library (libvolmac SHARED volmac.m)
-  target_link_libraries (libvolmac
-    PUBLIC "-framework Cocoa" "-framework CoreAudio"
+  target_link_libraries (libvolmac PUBLIC
+    "-framework Cocoa" "-framework CoreAudio"
   )
 endif()
 
@@ -33,7 +33,7 @@ if (NOT WIN32 AND NOT APPLE)
     target_include_directories (libvolpa
       PUBLIC "${PA_INCLUDE_DIRS}"
     )
-    target_link_libraries (libvolpa
+    target_link_libraries (libvolpa PUBLIC
       ${PA_LDFLAGS}
       m
     )
@@ -43,14 +43,14 @@ endif()
 if (WIN32)
   add_library (libvolwin SHARED volwin.cpp)
   target_compile_options (libvolwin PRIVATE -static-libstdc++)
-  target_link_libraries (libvolwin
+  target_link_libraries (libvolwin PUBLIC
     libbdj4fileop
     libbdj4string
   )
 endif()
 
 add_executable (voltest voltest.c)
-target_link_libraries (voltest
+target_link_libraries (voltest PUBLIC
   libbdj4vol libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   m

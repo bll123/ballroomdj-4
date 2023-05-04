@@ -1,0 +1,22 @@
+[Wiki Home](Home)
+
+Arch based
+~~~
+pacman -Syu
+pacman -S name    # install a package
+pacman -Su name   # update a package
+pacman -Ss name   # search
+pacman -Rcns name # remove and remove dependencies
+~~~
+
+OpenSUSE
+~~~
+zypper refresh
+zypper update
+zypper install name
+zypper search name
+zypper remove virtualbox-guest-kmp-default virtualbox-guest-x11 virtualbox-guest-tools
+~~~
+
+[Wiki Home](Home)
+<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_

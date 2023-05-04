@@ -23,7 +23,7 @@ add_executable (bdj4se bdj4se.c)
 if (WIN32)
   target_compile_options (bdj4se PRIVATE -municode)
 endif()
-target_link_libraries (bdj4se
+target_link_libraries (bdj4se PUBLIC
   libbdj4fileop
   libbdj4osutils
   libbdj4string
@@ -37,7 +37,7 @@ add_executable (bdj4installer bdj4installer.c)
 if (WIN32)
   target_compile_options (bdj4installer PRIVATE -municode)
 endif()
-target_link_libraries (bdj4installer
+target_link_libraries (bdj4installer PUBLIC
   liblocatebdj3
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
@@ -52,7 +52,7 @@ add_executable (bdj4altsetup bdj4altsetup.c)
 if (WIN32)
   target_compile_options (bdj4altsetup PRIVATE -municode)
 endif()
-target_link_libraries (bdj4altsetup
+target_link_libraries (bdj4altsetup PUBLIC
   liblocatebdj3
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
@@ -68,7 +68,7 @@ if (WIN32)
   target_compile_options (bdj4updater PRIVATE -municode)
   target_compile_options (bdj4updater PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4updater
+target_link_libraries (bdj4updater PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z

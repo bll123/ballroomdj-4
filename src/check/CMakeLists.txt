@@ -75,7 +75,7 @@ add_executable (check_all
   check_volreg.c
   check_webclient.c
 )
-target_link_libraries (check_all
+target_link_libraries (check_all PUBLIC
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -89,7 +89,7 @@ addIntlLibrary (check_all)
 addWinSockLibrary (check_all)
 
 add_executable (chkfileshared chkfileshared.c)
-target_link_libraries (chkfileshared
+target_link_libraries (chkfileshared PUBLIC
   libbdj4common
   z
   m

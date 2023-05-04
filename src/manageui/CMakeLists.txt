@@ -20,7 +20,7 @@ endif()
 if (WIN32)
   target_compile_options (bdj4manageui PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4manageui
+target_link_libraries (bdj4manageui PUBLIC
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -38,7 +38,7 @@ if (WIN32)
   target_compile_options (bdj4bpmcounter PRIVATE -municode)
   target_compile_options (bdj4bpmcounter PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4bpmcounter
+target_link_libraries (bdj4bpmcounter PUBLIC
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -54,14 +54,16 @@ if (WIN32)
   target_compile_options (bdj4dbupdate PRIVATE -municode)
   target_compile_options (bdj4dbupdate PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4dbupdate
+target_link_libraries (bdj4dbupdate PUBLIC
   libbdj4ati libbdjregex libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
   m
 )
 if (WIN32)
-  target_link_libraries (bdj4dbupdate -lregex)
+  target_link_libraries (bdj4dbupdate PUBLIC
+    -lregex
+  )
 endif()
 addIntlLibrary (bdj4dbupdate)
 addWinSockLibrary (bdj4dbupdate)
@@ -71,14 +73,14 @@ if (WIN32)
   target_compile_options (bdj4dbtag PRIVATE -municode)
   target_compile_options (bdj4dbtag PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4dbtag
+target_link_libraries (bdj4dbtag PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
   m
 )
 target_compile_options (bdj4dbtag PRIVATE -pthread)
-target_link_options (bdj4dbtag PRIVATE -pthread)
+target_link_options (bdj4dbtag PUBLIC -pthread)
 addIntlLibrary (bdj4dbtag)
 addWinSockLibrary (bdj4dbtag)
 

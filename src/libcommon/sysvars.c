@@ -674,6 +674,14 @@ sysvarsCheckPaths (const char *otherpaths)
   }
   if (fileopIsDirectory (tbuff) || fileopFileExists (tbuff)) {
     strlcpy (sysvars [SV_PATH_VLC], tbuff, SV_MAX_SZ);
+  } else {
+    /* one more try for linux (opensuse) */
+    if (isLinux ()) {
+      strlcpy (tbuff, "/usr/lib64/libvlc.so.5", sizeof (tbuff));
+    }
+    if (fileopFileExists (tbuff)) {
+      strlcpy (sysvars [SV_PATH_VLC], tbuff, SV_MAX_SZ);
+    }
   }
 }
 

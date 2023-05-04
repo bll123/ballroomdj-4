@@ -37,7 +37,7 @@ add_library (libuinull SHARED
   uinullwindow.c
   uiwcont.c
 )
-target_link_libraries (libuinull
+target_link_libraries (libuinull PUBLIC
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z

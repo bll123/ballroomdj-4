@@ -11,6 +11,6 @@ add_library (libbdjregex STATIC
 target_include_directories (libbdjregex
   PUBLIC "${GLIB_INCLUDE_DIRS}"
 )
-target_link_libraries (libbdjregex
+target_link_libraries (libbdjregex PUBLIC
   ${GLIB_LDFLAGS}
 )

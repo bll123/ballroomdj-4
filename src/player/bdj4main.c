@@ -305,7 +305,7 @@ static bool
 mainClosingCallback (void *tmaindata, programstate_t programState)
 {
   maindata_t    *mainData = tmaindata;
-  char          *script;
+//  char          *script;
 
   logProcBegin (LOG_PROC, "mainClosingCallback");
 
@@ -325,6 +325,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
   procutilStopAllProcess (mainData->processes, mainData->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (mainData->processes);
 
+#if 0
   script = bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT);
   if (script != NULL &&
       *script &&
@@ -335,6 +336,7 @@ mainClosingCallback (void *tmaindata, programstate_t programState)
     targv [1] = NULL;
     osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
   }
+#endif
 
   bdj4shutdown (ROUTE_MAIN, mainData->musicdb);
 
@@ -812,6 +814,7 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
   }
 
   if ((mainData->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
+#if 0
     char          *script;
 
     script = bdjoptGetStr (OPT_M_STARTUPSCRIPT);
@@ -824,6 +827,7 @@ mainListeningCallback (void *tmaindata, programstate_t programState)
       targv [1] = NULL;
       osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
     }
+#endif
 
     mainData->processes [ROUTE_PLAYER] = procutilStartProcess (
         ROUTE_PLAYER, "bdj4player", flags, NULL);

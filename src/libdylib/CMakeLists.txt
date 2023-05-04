@@ -8,14 +8,14 @@ include (../utils/bdj4macros.cmake)
 add_library (libdylib STATIC
   dylib.c
 )
-target_link_libraries (libdylib
+target_link_libraries (libdylib PUBLIC
   ${CMAKE_DL_LIBS}
 )
 
 add_library (libdyintfc STATIC
   dyintfc.c
 )
-target_link_libraries (libdyintfc
+target_link_libraries (libdyintfc PUBLIC
   libdylib
   libbdj4basic libbdj4common
   ${CMAKE_DL_LIBS}

@@ -5,9 +5,12 @@
 
 #include "bdj4.h"
 #include "bdjmsg.h"
+#include "bdjopt.h"
 #include "conn.h"
 #include "fileop.h"
 #include "lock.h"
+#include "osprocess.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "procutil.h"
 #include "startutil.h"
@@ -147,6 +150,44 @@ starterCleanVolumeReg (void)
 {
   volregClean ();
   volregClearBDJ4Flag ();
+}
+
+void
+starterPlayerStartup (void)
+{
+  const char    *script;
+
+  osSuspendSleep ();
+
+  script = bdjoptGetStr (OPT_M_STARTUPSCRIPT);
+  if (script != NULL &&
+      *script &&
+      fileopFileExists (script)) {
+    const char  *targv [2];
+
+    targv [0] = script;
+    targv [1] = NULL;
+    osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+  }
+}
+
+void
+starterPlayerShutdown (void)
+{
+  const char    *script;
+
+  osResumeSleep ();
+
+  script = bdjoptGetStr (OPT_M_SHUTDOWNSCRIPT);
+  if (script != NULL &&
+      *script &&
+      fileopFileExists (script)) {
+    const char  *targv [2];
+
+    targv [0] = script;
+    targv [1] = NULL;
+    osProcessStart (targv, OS_PROC_DETACH, NULL, NULL);
+  }
 }
 
 /* internal routines */

@@ -40,7 +40,7 @@ add_library (libuigtk3 SHARED
 target_include_directories (libuigtk3
   PUBLIC ${GTK_INCLUDE_DIRS}
 )
-target_link_libraries (libuigtk3
+target_link_libraries (libuigtk3 PUBLIC
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${GTK_LDFLAGS}

@@ -42,7 +42,7 @@ add_library (libbdj4ui SHARED
 target_include_directories (libbdj4ui
   PUBLIC ${GTK_INCLUDE_DIRS}
 )
-target_link_libraries (libbdj4ui
+target_link_libraries (libbdj4ui PUBLIC
   ${BDJ4_UI_LIB} libbdj4ati libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${GTK_LDFLAGS}

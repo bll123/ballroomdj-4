@@ -6,5 +6,7 @@
 void starterStopAllProcesses (conn_t *conn);
 void starterRemoveAllLocks (void);
 void starterCleanVolumeReg (void);
+void starterPlayerStartup (void);
+void starterPlayerShutdown (void);
 
 #endif /* INC_STARTUTIL_H */

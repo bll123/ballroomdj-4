@@ -10,7 +10,7 @@ if (WIN32)
   target_compile_options (bdj4main PRIVATE -municode)
   target_compile_options (bdj4main PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4main
+target_link_libraries (bdj4main PUBLIC
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -25,7 +25,7 @@ if (WIN32)
   target_compile_options (bdj4player PRIVATE -municode)
   target_compile_options (bdj4player PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4player
+target_link_libraries (bdj4player PUBLIC
   libbdj4pli libbdj4vol libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -40,7 +40,7 @@ if (WIN32)
   target_compile_options (bdj4marquee PRIVATE -municode)
   target_compile_options (bdj4marquee PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4marquee
+target_link_libraries (bdj4marquee PUBLIC
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -59,7 +59,7 @@ if (WIN32)
   target_compile_options (bdj4rc PRIVATE -municode)
   target_compile_options (bdj4rc PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4rc
+target_link_libraries (bdj4rc PUBLIC
   libwebsrv
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
@@ -77,7 +77,7 @@ if (WIN32)
   target_compile_options (bdj4mobmq PRIVATE -municode)
   target_compile_options (bdj4mobmq PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4mobmq
+target_link_libraries (bdj4mobmq PUBLIC
   libwebsrv
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}

@@ -53,7 +53,7 @@ target_include_directories (libbdj4
   PUBLIC "${CURL_INCLUDE_DIRS}"
   PUBLIC "${XML2_INCLUDE_DIRS}"
 )
-target_link_libraries (libbdj4
+target_link_libraries (libbdj4 PUBLIC
   libbdjregex libbdj4ati libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -63,7 +63,7 @@ target_link_libraries (libbdj4
   m
 )
 if (APPLE)
-  target_link_libraries (libbdj4
+  target_link_libraries (libbdj4 PUBLIC
     "-framework Cocoa"
   )
 endif()

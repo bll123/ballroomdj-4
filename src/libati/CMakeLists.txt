@@ -8,7 +8,7 @@ include (../utils/bdj4macros.cmake)
 add_library (libbdj4ati SHARED
   ati.c
 )
-target_link_libraries (libbdj4ati
+target_link_libraries (libbdj4ati PUBLIC
   libdylib
   libdyintfc
   libbdj4basic libbdj4common
@@ -16,14 +16,14 @@ target_link_libraries (libbdj4ati
 )
 
 add_library (libatimutagen SHARED atimutagen.c)
-target_link_libraries (libatimutagen
+target_link_libraries (libatimutagen PUBLIC
   libbdj4basic
   libbdj4common
   m
 )
 
 add_library (libatitaglib SHARED atitaglib.cpp)
-target_link_libraries (libatitaglib
+target_link_libraries (libatitaglib PUBLIC
   libbdj4basic
   libbdj4common
   m

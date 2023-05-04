@@ -75,6 +75,8 @@ do_gsettings $schema false \
 schema=org.gnome.desktop.screensaver
 do_gsettings $schema false \
     idle-activation-enabled
+
+# gnome notifications
 schema=org.gnome.desktop.notifications
 do_gsettings $schema false \
     show-banners
@@ -91,6 +93,7 @@ do_gsettings $schema false \
 schema=org.mate.screensaver
 do_gsettings $schema false \
     idle-activation-enabled
+# mate notifications
 schema=org.mate.caja.preferences
 do_gsettings $schema false \
     show-notifications

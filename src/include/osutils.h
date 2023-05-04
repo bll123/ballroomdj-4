@@ -35,6 +35,8 @@ void    osGetEnv (const char *name, char *buff, size_t sz);
 int     osSetEnv (const char *name, const char *value);
 int     osCreateLink (const char *target, const char *linkpath);
 bool    osIsLink (const char *path);
+void    osSuspendSleep (void);
+void    osResumeSleep (void);
 
 /* system specific functions in separate files */
 char    *osRegistryGet (char *key, char *name);

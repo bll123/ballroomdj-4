@@ -57,7 +57,7 @@ add_library (libbdj4string STATIC
 add_library (libbdj4tmutil STATIC
   libcommon/tmutil.c
 )
-target_link_libraries (libbdj4tmutil
+target_link_libraries (libbdj4tmutil PUBLIC
   m
 )
 
@@ -69,16 +69,18 @@ add_library (libbdj4osutils STATIC
   libcommon/oswinprocess.c
   libcommon/oswinutils.c
 )
-target_link_libraries (libbdj4osutils
+target_link_libraries (libbdj4osutils PUBLIC
   libbdj4tmutil
   libbdj4string
   m
 )
+addIOKitFramework (libbdj4osutils)
+addIntlLibrary (libbdj4osutils)
 
 add_library (libbdj4fileop STATIC
   libcommon/fileop.c
 )
-target_link_libraries (libbdj4fileop
+target_link_libraries (libbdj4fileop PUBLIC
   libbdj4osutils
   libbdj4tmutil
   libbdj4string

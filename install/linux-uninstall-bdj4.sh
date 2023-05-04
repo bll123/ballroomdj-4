@@ -45,6 +45,7 @@ if [[ $gr == Y ]]; then
   fi
   test -d ${confdir} && rm -rf ${confdir}
   test -f ${desktop}/BDJ4.desktop && rm -f ${desktop}/BDJ4.desktop
+  test -f ${desktop}/bdj4.desktop && rm -f ${desktop}/bdj4.desktop
   test -f ${appdir}/BDJ4.desktop && rm -f ${appdir}/BDJ4.desktop
   echo "-- BDJ4 application removed."
 fi

@@ -107,4 +107,16 @@ osFromWideChar (const void *buff)
   return tbuff;
 }
 
+void
+osSuspendSleep (void)
+{
+  SetThreadExecutionState (ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED);
+}
+
+void
+osResumeSleep (void)
+{
+  SetThreadExecutionState (ES_CONTINUOUS);
+}
+
 #endif /* __WINNT__ */

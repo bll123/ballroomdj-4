@@ -32,7 +32,7 @@ add_library (libbdj4common SHARED
 target_include_directories (libbdj4common
   PUBLIC "${GLIB_INCLUDE_DIRS}"
 )
-target_link_libraries (libbdj4common
+target_link_libraries (libbdj4common PUBLIC
   libbdj4fileop     # fileop.c
   libbdj4osutils    # osutils.c, osprocess.c
   libbdj4tmutil     # tmutil.c
@@ -40,6 +40,8 @@ target_link_libraries (libbdj4common
   ${GLIB_LDFLAGS}
   m
 )
+addIOKitFramework (libbdj4common)
+addIntlLibrary (libbdj4common)
 addWinSockLibrary (libbdj4common)
 # for RtlGetVersion
 addWinNtdllLibrary (libbdj4common)

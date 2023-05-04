@@ -25,6 +25,14 @@ fi
 
 desktop=$(xdg-user-dir DESKTOP)
 for idir in "$desktop" "$HOME/.local/share/applications"; do
+  if [[ ${scname} == BDJ4 ]]; then
+    # remove old shortcuts that have a lower case name
+    tname=bdj4
+    fpath="$idir/${tname}.desktop"
+    if [[ -f ${fpath} ]]; then
+      rm -f "${fpath}"
+    fi
+  fi
   fpath="$idir/${scname}.desktop"
   if [[ -d $idir ]]; then
     if [[ ! -f $fpath ]]; then

@@ -23,7 +23,7 @@ add_library (libbdj4basic SHARED
 target_include_directories (libbdj4basic
   PUBLIC "${GLIB_INCLUDE_DIRS}"
 )
-target_link_libraries (libbdj4basic
+target_link_libraries (libbdj4basic PUBLIC
   libbdj4common
   ${ICU_LDFLAGS}
   ${GLIB_LDFLAGS}

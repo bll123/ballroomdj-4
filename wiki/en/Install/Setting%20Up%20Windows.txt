@@ -45,32 +45,9 @@ hours you prefer).
 
 ##### Power Settings
 
-###### Windows 10
-
-From the __Settings__ home, select __System__. Select
-__Power&nbsp;&amp;&nbsp;Sleep__.
-
-In both the __On&nbsp;battery&nbsp;power__ and the
-__When&nbsp;plugged&nbsp;in__ drop-downs, select __Never__.
-
-<div markdown style="margin-right: 20px; text-align: center;">
-![set-win10-power](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win10-power-A.png)
-<br><span style="color:#4559bf;">__Settings / Power &amp; Sleep__</span> </div>
-</div>
-
-###### Windows 11
-
-From the __Settings__ home, select __System__. Select
-__Power&nbsp;&amp;&nbsp;battery__.  Select
-__Screen&nbsp;&amp;&nbsp;Sleep__.
-
-In both the __On&nbsp;battery&nbsp;power__ and the
-__When&nbsp;plugged&nbsp;in__ drop-downs, select __Never__.
-
-<div markdown style="margin-right: 20px; text-align: center;">
-![set-win11-power](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/set-win11-power-A.png)
-<br><span style="color:#4559bf;">__Settings / Power &amp; Sleep__</span> </div>
-</div>
+Starting with version 4.3.2.1, the BDJ4 player will prevent the
+Windows system from going to sleep.  The power settings can be set to
+your preference.
 
 ##### Notification Settings
 

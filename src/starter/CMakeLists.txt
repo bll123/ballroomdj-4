@@ -25,7 +25,7 @@ if (WIN32)
   target_compile_options (bdj4 PRIVATE -mwindows)
   target_sources (bdj4 PRIVATE launcher.o)
 endif()
-target_link_libraries (bdj4
+target_link_libraries (bdj4 PUBLIC
   libbdj4launcher
   libbdj4fileop
   libbdj4osutils
@@ -47,7 +47,7 @@ target_include_directories (bdj4g
   PUBLIC ${GTK_INCLUDE_DIRS}
 )
 target_compile_options (bdj4g PRIVATE -DBDJ4_GUI_LAUNCHER=1)
-target_link_libraries (bdj4g
+target_link_libraries (bdj4g PUBLIC
   libbdj4launcher
   libbdj4fileop
   libbdj4osutils
@@ -66,7 +66,7 @@ if (WIN32)
   target_compile_options (bdj4starterui PRIVATE -municode)
   target_compile_options (bdj4starterui PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4starterui
+target_link_libraries (bdj4starterui PUBLIC
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
@@ -82,7 +82,7 @@ if (WIN32)
   target_compile_options (bdj4helperui PRIVATE -municode)
   target_compile_options (bdj4helperui PRIVATE -mwindows)
 endif()
-target_link_libraries (bdj4helperui
+target_link_libraries (bdj4helperui PUBLIC
   libbdj4ui ${BDJ4_UI_LIB} libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${GTK_LDFLAGS}

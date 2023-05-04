@@ -4,22 +4,30 @@
 
 macro (addIntlLibrary name)
   if (Intl_LIBRARY)
-    target_link_libraries (${name}
+    target_link_libraries (${name} PUBLIC
       ${Intl_LIBRARY}
       ${Iconv_LIBRARY}
     )
   endif()
 endmacro()
 
+macro (addIOKitFramework name)
+  if (APPLE)
+    target_link_libraries (${name} PUBLIC
+      "-framework IOKit" "-framework CoreFoundation"
+    )
+  endif()
+endmacro()
+
 macro (addWinSockLibrary name)
   if (WIN32)
-    target_link_libraries (${name} ws2_32)
+    target_link_libraries (${name} PUBLIC ws2_32)
   endif()
 endmacro()
 # the ntdll library is used for RtlGetVersion()
 macro (addWinNtdllLibrary name)
   if (WIN32)
-    target_link_libraries (${name} ntdll)
+    target_link_libraries (${name} PUBLIC ntdll)
   endif()
 endmacro()
 

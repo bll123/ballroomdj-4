@@ -76,7 +76,7 @@ osSetEnv (const char *name, const char *value)
   return rc;
 }
 
-#if _lib_symlink
+#if _lib_symlink    // both linux and macos
 
 int
 osCreateLink (const char *target, const char *linkpath)

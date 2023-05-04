@@ -15,6 +15,10 @@
 * Bug Fixes:
     * Playlist Management: Fix lost data when toggling 'hide unselected'.
     * Song Editor: Disable apply adjustments if ffmpeg is not available.
+    * Linux: Updated pre-install script to support other distributions.
+* Changes:
+    * Mac OS: When the player is active, the screensaver is disabled.
+    * Windows: When the player is active, the screensaver is disabled.
 
 -->
 

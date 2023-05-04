@@ -10,19 +10,24 @@ Supported Platforms as of 2023-3-15: Linux 64-bit.
     * Debian based (MX Linux, Ubuntu, etc.)
     * Arch based (Arch, Manjaro, etc.)
     * Red Hat based (Fedora)
-* Distributions that have not been tested.
-    * SUSE
+      ffmpeg doesn't seem to be available for recent Fedora distributions.
+    * OpenSUSE
+      Works on 15.4.
+      Fails to install on OpenSUSE 15.1 (old glibc).
 * Desktop Environments that have been tested (as of 2023-5-3).
     * Budgie
     * Cinnamon
     * GNOME
-      The dock does not display the BDJ4 icon correctly (Ubuntu 22.04, Fedora)
+      The dock does not display the BDJ4 icon (Ubuntu 22.04, recent Fedora)
       But it does work in Ubuntu 20.04.
     * Mate
     * XFCE
 * Desktop Environments that have not been tested.
     * KDE/Plasma
-    The linux player start and stop scripts do not support KDE.
+    The linux player start and stop scripts do not support KDE (turns off screensaver, notifications).
+
+If you have a distribution or desktop environment that you want
+supported, please [let me know](Getting%20Help).
 
 #### Updating BallroomDJ 4 : Make a Backup
 
@@ -57,8 +62,8 @@ This script performs the following actions:
 #### Internet Connection
 
 An internet connection is required the first time BallroomDJ&nbsp;4 is
-installed.  There are requisite packages (Mutagen) that
-need to be installed from the internet.
+installed.  There are requisite packages (Mutagen) that need to be
+installed from the internet.
 
 #### Install BallroomDJ 4
 
@@ -66,7 +71,7 @@ Download the Linux installer from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
-Make sure to exit BDJ4 if it is already started.
+Be sure to exit BDJ4 if it is already started.
 
 Open a terminal and run the installer:
 

@@ -166,13 +166,13 @@ if [[ -f /usr/bin/dnf ]]; then
   stoolspkg=$(instcheck python3-setuptools python-setuptools)
   pkglist="
       ${stoolspkg} ${pippkg} ${pwpkg}
-      libcurl"
+      libcurl taglib"
 fi
 if [[ -f /usr/bin/zypper ]]; then
   # opensuse
   pkglist="ffmpeg
       python3-setuptools python3-pip
-      libcurl4"
+      libcurl4 taglib"
 fi
 
 pkglist="$pkglist vlc"

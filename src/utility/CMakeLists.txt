@@ -12,7 +12,7 @@ endif()
 target_include_directories (bdj4info
   PUBLIC ${GTK_INCLUDE_DIRS}
 )
-target_link_libraries (bdj4info
+target_link_libraries (bdj4info PUBLIC
   libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   m
@@ -23,7 +23,7 @@ add_executable (bdj4tags bdj4tags.c)
 if (WIN32)
   target_compile_options (bdj4tags PRIVATE -municode)
 endif()
-target_link_libraries (bdj4tags
+target_link_libraries (bdj4tags PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
@@ -35,7 +35,7 @@ add_executable (tdbcompare tdbcompare.c)
 if (WIN32)
   target_compile_options (tdbcompare PRIVATE -municode)
 endif()
-target_link_libraries (tdbcompare
+target_link_libraries (tdbcompare PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
@@ -46,7 +46,7 @@ add_executable (tdbdump tdbdump.c)
 if (WIN32)
   target_compile_options (tdbdump PRIVATE -municode)
 endif()
-target_link_libraries (tdbdump
+target_link_libraries (tdbdump PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
@@ -57,7 +57,7 @@ add_executable (tdbsetval tdbsetval.c)
 if (WIN32)
   target_compile_options (tdbsetval PRIVATE -municode)
 endif()
-target_link_libraries (tdbsetval
+target_link_libraries (tdbsetval PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
@@ -67,7 +67,7 @@ target_link_libraries (tdbsetval
 add_executable (testsuite
   testsuite.c
 )
-target_link_libraries (testsuite
+target_link_libraries (testsuite PUBLIC
   libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
@@ -78,7 +78,7 @@ add_executable (tmusicsetup tmusicsetup.c)
 if (WIN32)
   target_compile_options (tmusicsetup PRIVATE -municode)
 endif()
-target_link_libraries (tmusicsetup
+target_link_libraries (tmusicsetup PUBLIC
   libbdj4ati libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
@@ -87,14 +87,14 @@ target_link_libraries (tmusicsetup
 addIntlLibrary (tmusicsetup)
 
 add_executable (vlcsinklist vlcsinklist.c)
-target_link_libraries (vlcsinklist
+target_link_libraries (vlcsinklist PUBLIC
   libbdj4pli libbdj4vol libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   m
 )
 
 add_executable (vsed vsed.c)
-target_link_libraries (vsed
+target_link_libraries (vsed PUBLIC
   libbdj4common
   m
 )
