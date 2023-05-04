@@ -8,9 +8,7 @@
 
 -->
 
-<!--
-
-**4.3.2.1 2023-5---**
+**4.3.2.1 2023-5-4**
 
 * Bug Fixes:
     * Playlist Management: Fix lost data when toggling 'hide unselected'.
@@ -19,8 +17,6 @@
 * Changes:
     * Mac OS: When the player is active, the screensaver is disabled.
     * Windows: When the player is active, the screensaver is disabled.
-
--->
 
 **4.3.2 2023-5-2**
 

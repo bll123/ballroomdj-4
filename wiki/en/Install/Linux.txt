@@ -12,8 +12,6 @@ Supported Platforms as of 2023-3-15: Linux 64-bit.
     * Red Hat based (Fedora)
       ffmpeg doesn't seem to be available for recent Fedora distributions.
     * OpenSUSE
-      Works on 15.4.
-      Fails to install on OpenSUSE 15.1 (old glibc).
 * Desktop Environments that have been tested (as of 2023-5-3).
     * Budgie
     * Cinnamon
@@ -43,14 +41,14 @@ $HOME/BDJ4 folder
 This step only needs to be run once, not for every installation or
 update.
 
-Download the linux-pre-install-v3.sh script from sourceforge.
+Download the linux-pre-install-v4.sh script from sourceforge.
 
 [BDJ4 files on SourceForge](https://sourceforge.net/projects/ballroomdj4/files/)
 
 Open a terminal and run this script using the following command:
 
 ~~~
-bash linux-pre-install-v3.sh
+bash linux-pre-install-v4.sh
 ~~~
 
 This script performs the following actions:
@@ -77,7 +75,7 @@ Open a terminal and run the installer:
 
 (This is an example and may not be up to date.)
 ~~~
-$HOME/Downloads/bdj4-installer-linux-4.1.1-beta
+$HOME/Downloads/bdj4-installer-linux-4.3.2.1-beta
 ~~~
 
 Choose the folder in which to install BallroomDJ 4.  The $HOME/BDJ4
