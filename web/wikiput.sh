@@ -87,7 +87,7 @@ function updateimages {
 
 function getupdate {
   tfn=$1
-  grep 'Updated [0-9]*' $tfn |
+  grep 'Updated [0-9][0-9]*' $tfn |
   sed \
     -e 's/.*Updated \([0-9 :-]*\); BDJ4 version.*/\1/'
 }
