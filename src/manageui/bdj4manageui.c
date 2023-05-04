@@ -1455,6 +1455,7 @@ manageSongEditMenu (manageui_t *manage)
 {
   uiwcont_t   *menu = NULL;
   uiwcont_t   *menuitem = NULL;
+  const char  *p;
   void        *tempp;
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
@@ -1510,6 +1511,10 @@ manageSongEditMenu (manageui_t *manage)
     /* CONTEXT: managementui: menu selection: song editor: apply adjustments */
     menuitem = uiMenuCreateItem (menu, _("Apply Adjustments"),
         manage->callbacks [MANAGE_MENU_CB_SE_APPLY_ADJ]);
+    p = sysvarsGetStr (SV_PATH_FFMPEG);
+    if (p == NULL || ! *p) {
+      uiWidgetSetState (menuitem, UIWIDGET_DISABLE);
+    }
     uiwcontFree (menuitem);
 
     manage->callbacks [MANAGE_MENU_CB_SE_RESTORE_ORIG] = callbackInit (

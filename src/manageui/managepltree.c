@@ -504,6 +504,7 @@ managePlaylistTreeHideUnselectedCallback (void *udata)
   if (! managepltree->inprepop) {
     managepltree->hideunselected = ! managepltree->hideunselected;
   }
+  managePlaylistTreeUpdatePlaylist (managepltree);
   managePlaylistTreeCreate (managepltree);
   managePlaylistTreePopulate (managepltree, managepltree->playlist);
   managepltree->changed = tchg;

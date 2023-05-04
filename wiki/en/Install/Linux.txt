@@ -6,6 +6,24 @@
 
 Supported Platforms as of 2023-3-15: Linux 64-bit.
 
+* Distributions that have been tested (as of 2023-5-3).
+    * Debian based (MX Linux, Ubuntu, etc.)
+    * Arch based (Arch, Manjaro, etc.)
+    * Red Hat based (Fedora)
+* Distributions that have not been tested.
+    * SUSE
+* Desktop Environments that have been tested (as of 2023-5-3).
+    * Budgie
+    * Cinnamon
+    * GNOME
+      The dock does not display the BDJ4 icon correctly (Ubuntu 22.04, Fedora)
+      But it does work in Ubuntu 20.04.
+    * Mate
+    * XFCE
+* Desktop Environments that have not been tested.
+    * KDE/Plasma
+    The linux player start and stop scripts do not support KDE.
+
 #### Updating BallroomDJ 4 : Make a Backup
 
 Be sure to exit BallroomDJ 4 before creating a backup or updating the

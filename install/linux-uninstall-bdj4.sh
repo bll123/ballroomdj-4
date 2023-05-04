@@ -41,9 +41,7 @@ if [[ $gr == Y ]]; then
     dir=$(cat $instdir)
   fi
   if [[ $dir != "" ]]; then
-if [[ $dir != $HOME/BDJ4 ]]; then
     test -d ${dir} && rm -rf ${dir}
-fi
   fi
   test -d ${confdir} && rm -rf ${confdir}
   test -f ${desktop}/BDJ4.desktop && rm -f ${desktop}/BDJ4.desktop

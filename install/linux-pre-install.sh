@@ -89,7 +89,9 @@ if [[ -f /usr/bin/dnf ]]; then
   pkgprog=/usr/bin/dnf
   pkgrm=remove
   pkginst=install
-  pkginstflags=
+  # fedora needs to have libcurl-minimal replaced with libcurl
+  # these flags are dangerous
+  pkginstflags="--best --allowerasing"
   pkgconfirm=-y
   pkgchk=info
 fi
@@ -114,7 +116,9 @@ sudo -v
 
 if [[ -f /usr/bin/dnf ]]; then
   # redhat based linux (fedora/rhel/centos, dnf)
-  echo "-- To install: ffmpeg and vlc, the 'rpmfusion' repository"
+  # in the latest fedora38, ffmpeg cannot be installed due to packaging
+  # conflicts.
+  echo "-- To install vlc, the 'rpmfusion' repository"
   echo "-- is required. Proceed with 'rpmfusion' repository installation?"
   gr=$(getresponse)
   if [[ $gr = Y ]]; then
@@ -156,10 +160,11 @@ fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora
   # from the rpmfusion repository: ffmpeg, vlc
+  # latest fedora cannot seem to install ffmpeg
   pwpkg=$(instcheck python3-pip-wheel python-pip-wheel python-pip-whl)
   pippkg=$(instcheck python3-pip python-pip)
   stoolspkg=$(instcheck python3-setuptools python-setuptools)
-  pkglist="ffmpeg
+  pkglist="
       ${stoolspkg} ${pippkg} ${pwpkg}
       libcurl"
 fi
