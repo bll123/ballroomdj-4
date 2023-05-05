@@ -42,8 +42,8 @@ if [[ $tag == linux || $tag == macos ]]; then
   cp -pf packages/icu/share/icu/72.1/LICENSE ${licdir}/icu.LICENCE
 fi
 if [[ $platform == windows ]]; then
-  cp -pf packages/libressl*/COPYING ${licdir}/libressl.LICENSE
   cp -pf packages/curl*/COPYING ${licdir}/curl.LICENSE
+  cp -pf packages/taglib*/COPYING.MPL ${licdir}/taglib.LICENSE
 fi
 
 (cd src; make tclean > /dev/null 2>&1)

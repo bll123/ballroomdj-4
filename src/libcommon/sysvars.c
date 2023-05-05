@@ -544,10 +544,6 @@ sysvarsInit (const char *argv0)
         strlcat (sysvars [SV_OSDISP], " High Sierra", SV_MAX_SZ);
       } else if (strcmp (data, "10.12") > 0) {
         strlcat (sysvars [SV_OSDISP], " Sierra", SV_MAX_SZ);
-      } else if (strcmp (data, "10.11") > 0) {
-        strlcat (sysvars [SV_OSDISP], " El Capitan", SV_MAX_SZ);
-      } else if (strcmp (data, "10.10") > 0) {
-        strlcat (sysvars [SV_OSDISP], " Yosemite", SV_MAX_SZ);
       } else {
         strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
         strlcat (sysvars [SV_OSDISP], data, SV_MAX_SZ);

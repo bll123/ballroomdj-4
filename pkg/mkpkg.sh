@@ -139,10 +139,10 @@ function copyreleasefiles {
       ${stage}/img/mkmacicon.sh \
       ${stage}/img/README.txt \
       ${stage}/plocal/bin/checkmk \
+      ${stage}/plocal/bin/curl-config \
       ${stage}/plocal/bin/curl.exe \
       ${stage}/plocal/bin/libcheck-*.dll \
-      ${stage}/plocal/bin/ocspcheck.exe \
-      ${stage}/plocal/bin/openssl.exe
+      ${stage}/plocal/bin/taglib-config.cmd \
   rm -rf \
       ${stage}/img/profile0[0-9]
 }

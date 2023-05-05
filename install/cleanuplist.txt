@@ -29,8 +29,9 @@ templates/[^/]*\.en_US$
 # this can be removed later
 bin/libbdj4uigtk\.(so|dylib|dll)$
 
-# unneeded executables (windows)
+# windows: unneeded stuff in plocal (2023-5-5)
 plocal/bin/curl\.exe$
+plocal/bin/curl-config$
 plocal/bin/openssl\.exe$
 
 # old conversion program (alpha 2022-11)
@@ -71,10 +72,10 @@ locale/tr$
 locale/tr_TR$
 
 # removed 2023-2 (4.1.0)
-install/install-startup\.sh$
 install/install-startup\.bat$
-templates/nl/wachtrijendans.pldances$
+install/install-startup\.sh$
 templates/nl/wachtrijendans.pl$
+templates/nl/wachtrijendans.pldances$
 
 # files that were not supposed to be installed (4.3.0.4 2023-3)
 bin/testsuite$
@@ -83,14 +84,28 @@ bin/tmusicsetup$
 bin/tmusicsetup\.exe$
 
 # removed 2023-4-7, no longer needed (4.3.0.4)
-templates/volintfc\.txt$
-templates/playerintfc\.txt$
 templates/audiotagintfc\.txt$
+templates/playerintfc\.txt$
+templates/volintfc\.txt$
 
 # removed 2023-5-2, no longer needed (4.3.2)
 install/patch-gtk3-devel_Portfile_v0\.2\.diff$
 install/patch-gtk3_Portfile_v0\.2\.diff$
 install/patch-meson_build\.diff$
+
+# 2023-5-5
+# windows: remove old stuff from distribution
+plocal/bin/libcares-5\.dll$
+plocal/bin/libcrypto-1_1-x86\.dll$
+plocal/bin/libssl-1_1-x86\.dll$
+plocal/bin/libunistring-2\.dll$
+
+# 2023-5-5
+# windows: remove libressl from distribution
+licenses/libressl\.LICENSE$
+plocal/bin/libcrypto-50\.dll$
+plocal/bin/libssl-53\.dll$
+plocal/bin/libtls-26\.dll$
 
 ####
 # mac-os

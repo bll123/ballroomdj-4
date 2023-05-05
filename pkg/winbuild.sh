@@ -2,6 +2,12 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
+# 2023-5-5
+#   Could not get curl to link with libressl, so I just removed libressl.
+#   This means that the msys2 openssl libraries and dependencies get shipped.
+#   Perhaps a later release of curl will work better, and libressl can
+#   be put back in.
+#
 # windows
 
 while test ! \( -d src -a -d web -a -d wiki \); do
@@ -88,47 +94,6 @@ if [[ $pkgname == "" || $pkgname = "check" ]]; then
   fi
 fi
 
-if [[ $pkgname == "" || $pkgname = "libressl" ]]; then
-  cd $cwd
-  cd libressl-*
-  if [ $? -eq 0 ]; then
-    echo "## build libressl"
-    if [ $noclean = F ]; then
-      make distclean
-    fi
-    # make sure it is set later than configure.ac
-    touch aclocal.m4
-    sleep 2
-    touch configure Makefile.in
-
-    cppflags=""
-    if [ $b = 32 ]; then
-      cppflags=-D__MINGW_USE_VC2005_COMPAT
-    fi
-
-    if [ $noconf = F ]; then
-      ./configure \
-          CPPFLAGS=${cppflags} \
-          CC="${CC} -static-libgcc -static-libstdc++" \
-          --prefix=$INSTLOC \
-          --exec-prefix=$INSTLOC \
-          --disable-static \
-          --disable-hardening \
-          --enable-fast-install \
-          --disable-dependency-tracking \
-          --disable-windows-ssp
-    fi
-    if [ $noclean = F ]; then
-      make clean
-    fi
-    make -j $procs
-    make installdirs
-    make install-pkgconfigDATA
-    make install-exec
-    make -C include/openssl install-data
-  fi
-fi
-
 if [[ $pkgname == "" || $pkgname = "nghttp2" ]]; then
   cd $cwd
   cd nghttp2*
@@ -159,7 +124,8 @@ if [[ $pkgname == "" || $pkgname = "curl" ]]; then
     echo "## build curl"
 
     if [ $noclean = F ]; then
-      # make distclean does not work well.
+      make -k distclean
+      # make distclean does not always work well.
       make clean
       test -f config.cache && rm -f config.cache
     fi
@@ -169,7 +135,7 @@ if [[ $pkgname == "" || $pkgname = "curl" ]]; then
           --prefix=$INSTLOC \
           --with-zlib \
           --with-zstd \
-          --with-openssl=$(pwd)/../../plocal \
+          --with-openssl \
           --enable-sspi \
           --with-nghttp2=$(pwd)/../../plocal \
           --with-winidn \
@@ -192,22 +158,6 @@ if [[ $pkgname == "" || $pkgname = "curl" ]]; then
           --disable-manual \
           --disable-alt-svc \
           --without-amissl
-
-      # https://github.com/curl/curl/pull/9805/commits
-      fn=src/Makefile
-      if [ ! -f $fn.orig ]; then
-        cp -f $fn $fn.orig
-      fi
-      cp -f $fn.orig $fn
-      ed $fn << _HERE_
-/RCFLAGS/
-s/^	/	#/
-a
-	\$(RC) -I\$(top_srcdir)/include -DCURL_EMBED_MANIFEST \$(RCFLAGS) -i \$< -o \$@
-.
-w
-q
-_HERE_
 
       sleep 2
       find . -name '*.Plo' -print0 | xargs -0 touch
@@ -233,7 +183,6 @@ if [[ $pkgname == "" || $pkgname = "taglib" ]]; then
     LDFLAGS="-static-libgcc -static-libstdc++" \
     cmake -DCMAKE_INSTALL_PREFIX=$INSTLOC \
         -G "MSYS Makefiles" \
-        -DWITH_MP4=ON \
         -DBUILD_TESTING=OFF \
 	-DBUILD_SHARED_LIBS=ON \
 	-DBUILD_EXAMPLES=OFF \

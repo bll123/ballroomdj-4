@@ -61,7 +61,5 @@ Licenses:
       msys2      : BSD 3-Clause ( https://github.com/msys2/MSYS2-packages/blob/master/LICENSE )
       ffmpeg     : GPLv3 License
       curl       : MIT License
-      c-ares     : MIT License
       nghttp2    : MIT License
-      zlib       : zlib/libpng License
-      zstd       : BSD License
+      taglib     : Mozilla Public License
