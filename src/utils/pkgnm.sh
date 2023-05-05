@@ -66,9 +66,8 @@ function pkgnmgetdata {
       pn_archtag=
       ;;
     MINGW32*)
-      pn_tag=win32
-      pn_sfx=.exe
-      pn_archtag=
+      echo "Platform not supported"
+      exit 1
       ;;
   esac
 }

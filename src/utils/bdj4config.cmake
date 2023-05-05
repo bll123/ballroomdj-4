@@ -76,6 +76,7 @@ pkg_check_modules (OPENSSL openssl)
 if (NOT WIN32 AND NOT APPLE)
   pkg_check_modules (PA libpulse)
 endif()
+pkg_check_modules (TAGLIB taglib)
 pkg_check_modules (XML2 libxml-2.0)
 
 # The ICU library must be pre-compiled and shipped with Linux and MacOS.

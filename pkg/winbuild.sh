@@ -47,11 +47,8 @@ fi
 
 case $MSYSTEM in
   *32)
-    b=32
-    CFLAGS=-m32
-    LDFLAGS=-m32
-    PKG_CFLAGS=-m32
-    export CFLAGS PKG_CFLAGS LDFLAGS
+    echo "32 bit platform not supported"
+    exit 1
     ;;
   *64)
     b=64
@@ -233,8 +230,10 @@ if [[ $pkgname == "" || $pkgname = "taglib" ]]; then
       cmake --build . --target clean
       rm -f CMakeCache.txt
     fi
+    LDFLAGS="-static-libgcc -static-libstdc++" \
     cmake -DCMAKE_INSTALL_PREFIX=$INSTLOC \
         -G "MSYS Makefiles" \
+        -DWITH_MP4=ON \
         -DBUILD_TESTING=OFF \
 	-DBUILD_SHARED_LIBS=ON \
 	-DBUILD_EXAMPLES=OFF \

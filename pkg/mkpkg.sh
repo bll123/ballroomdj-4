@@ -82,7 +82,7 @@ function copyreleasefiles {
       dirlist+=" plocal/share/themes/macOS*"
       ;;
     win32)
-      echo "Not supported on this platform"
+      echo "Platform not supported"
       exit 1
       ;;
     win64)
@@ -191,7 +191,8 @@ case $systype in
     tag=win64
     ;;
   MINGW32*)
-    tag=win32
+    echo "Platform not supported"
+    exit 1
     ;;
 esac
 
