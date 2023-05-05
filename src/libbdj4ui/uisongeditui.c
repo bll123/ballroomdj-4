@@ -1203,7 +1203,7 @@ uisongeditAddEntry (uisongedit_t *uisongedit, uiwcont_t *hbox, int tagkey)
 
   logProcBegin (LOG_PROC, "uisongeditAddEntry");
   seint = uisongedit->seInternalData;
-  entryp = uiEntryInit (20, 100);
+  entryp = uiEntryInit (20, 200);
   seint->items [seint->itemcount].entry = entryp;
   uiEntryCreate (entryp);
   /* set the validate callback to set the changed flag */
