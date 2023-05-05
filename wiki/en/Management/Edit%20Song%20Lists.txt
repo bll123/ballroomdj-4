@@ -136,10 +136,6 @@ each dance is displayed.
 
 ##### Edit Menu
 
-<div markdown style="margin-right: 20px; text-align: center;">
-![sl-edit-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-edit-menu-B.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Edit Menu**</span> </div>
-
 An existing song list can be loaded by selecting
 __Edit&nbsp;/&nbsp;Load__ from the menu.  A dialog will open
 allowing selection of an existing song list.
@@ -155,11 +151,11 @@ _Copy&nbsp;of_ prefixed to the old name.
 __Edit&nbsp;/&nbsp;Delete__ will delete the currently loaded
 song list from your storage device and start a new song list.
 
-##### Actions Menu
-
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-actions-menu-C.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Actions Menu**</span> </div>
+![sl-edit-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-edit-menu-B.png)
+<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Edit Menu**</span> </div>
+
+##### Actions Menu
 
 __Actions&nbsp;/&nbsp;Mix__ will use BDJ4's automatic dance
 and song selection process to mix the songs in the song list into a
@@ -185,11 +181,11 @@ select the playlist from which to build a new song list.  Adjust the
 time limit (HH:MM) to set how many hours and minutes of songs will be
 played.
 
-##### Export Menu
-
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-export-menu-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-export-menu-B.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Export Menu**</span> </div>
+![sl-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-actions-menu-C.png)
+<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Actions Menu**</span> </div>
+
+##### Export Menu
 
 __Export&nbsp;/&nbsp;Export&nbsp;as&nbsp;M3U&nbsp;Playlist__
 creates an M3U8 playlist file that can be used in other players.
@@ -198,11 +194,11 @@ __Export&nbsp;/&nbsp;Export&nbsp;for&nbsp;BDJ4__ creates a
 folder with songs and database that can be imported into another
 instance of BDJ4.
 
-##### Import Menu
-
 <div markdown style="margin-right: 20px; text-align: center;">
-![sl-import-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-import-menu-C.png)
-<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Import Menu**</span> </div>
+![sl-export-menu-c](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-export-menu-C.png)
+<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Export Menu**</span> </div>
+
+##### Import Menu
 
 __Import&nbsp;/&nbsp;Import&nbsp;M3U__ imports an M3U playlist
 file and creates a song list.
@@ -214,5 +210,9 @@ __Export&nbsp;/&nbsp;Export&nbsp;for&nbsp;BDJ4__.
 __Import&nbsp;/&nbsp;Import&nbsp;from&nbsp;iTunes__ imports a
 playlist from iTunes.
 
+<div markdown style="margin-right: 20px; text-align: center;">
+![sl-import-menu-d](https://ballroomdj4.sourceforge.io/wikiimg/en/Management/sl-import-menu-D.png)
+<br><span style="color:#4559bf;">**Manage / Edit Song Lists / Import Menu**</span> </div>
+
 [Wiki Home](Home)
-<br>_(Updated 2023-05-03 08:54:46; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-05-05 09:05:17; BDJ4 version 4.3.2.1)_

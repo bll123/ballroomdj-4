@@ -19,19 +19,19 @@ Remove and remove dependencies:
 <br> pacman -Rcns name
 
 # tools
-<br>pacman -S ed make rsync vim rlwrap tar unzip zip diffutils
+<br>pacman -S ed make rsync vim rlwrap tar unzip zip diffutils man
 <br># libraries
 <br>pacman -S gettext gettext-devel
-<br># current clang (32/64)
+<br># current clang (64)
 <br>pacman -S mingw-w64-x86_64-clang
-<br># current gcc (32/64)
+<br># current gcc (64)
 <br>pacman -S mingw-w64-x86_64-gcc
+<br># objective C compiler
+<br>pacman -S mingw64/mingw-w64-x86_64-gcc-objc
 <br># gdb
 <br>pacman -S mingw-w64-x86_64-gdb
-<br># building nghttp2 et. al.
+<br># needed for buildling bdj4/cmake
 <br>pacman -S pkg-config
-<br># bdj4
-<br>pacman -S mingw64/mingw-w64-x86_64-gcc-objc
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)

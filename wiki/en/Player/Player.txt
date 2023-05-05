@@ -147,7 +147,7 @@ song in the music queue.
 ##### Actions Menu
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-C.png)
+![player-actions-menu](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-actions-menu-D.png)
 <br><span style="color:#4559bf;">**Player / Actions Menu**</span> </div>
 
 __Actions / External Request__: Starts a dialog to select an audio file. After
@@ -156,8 +156,11 @@ from the audio file tags if possible.  The artist, title and dance may
 be changed. After setting the song information, select the __Queue__
 button to add the song to the music queue.
 
+When an audio file is dragged from the file manager and dropped in
+a music queue, the external request dialog is started.
+
 <div markdown style="margin-right: 20px; text-align: center;">
-![player-req-ext](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-req-ext-B.png)
+![player-ext-req-c](https://ballroomdj4.sourceforge.io/wikiimg/en/Player/player-ext-req-C.png)
 <br><span style="color:#4559bf;">**Player / External Request**</span> </div>
 
 ##### Marquee Menu
@@ -208,4 +211,4 @@ See also
 <br>[Configuration / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-03 11:39:21; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-05-05 08:57:41; BDJ4 version 4.3.2.1)_

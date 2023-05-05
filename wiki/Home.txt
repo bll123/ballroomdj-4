@@ -94,6 +94,7 @@
 [Adding Songs to the Database](en-Subjects-Adding%20Songs)
 <br>[Announcements](en-Subjects-Announcements)
 <br>[Create a Song List from a Playlist](en-Subjects-Create%20Song%20List)
+<br>[Export to BDJ4 / Import from BDJ4](en-Subjects-Export%20Import%20BDJ4)
 <br>[Keyboard Shortcuts](en-Subjects-Keyboard%20Shortcuts)
 <br>[Keyword](en-Subjects-Keyword)
 <br>[Music Queues](en-Subjects-Music%20Queues)

@@ -47,7 +47,7 @@ __Set&nbsp;Queue&nbsp;for&nbsp;Playback__ button.
 
 ###### Playing a Song not in the Database
 
-In the __Actions__ menu, select __Request&nbsp;External__.  A dialog
+In the __Actions__ menu, select __External&nbsp;Request__.  A dialog
 will open.  Use the file chooser button with the folder icon to select
 the audio file to play.  Select the __Queue__ button to queue the song
 for playback.
@@ -59,7 +59,7 @@ toggle will be turned on as __Pause&nbsp;Each&nbsp;Song__ is set on for
 the music queue.
 
 <div markdown style="margin-right: 20px; text-align: center;">
-![showcase-req-ext-a](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-req-ext-A.png)
+![showcase-ext-req-b](https://ballroomdj4.sourceforge.io/wikiimg/en/HowTo/showcase-ext-req-B.png)
 <br><span style="color:#4559bf;">**Player / Actions / External Request**</span> </div>
 
 ###### Playing a Song in the Database
@@ -90,4 +90,4 @@ ready to be played.  The Tango will be ready to play, and the Waltz
 will be put back into the music queue.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-03 11:39:21; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-05-05 08:45:56; BDJ4 version 4.3.2.1)_
