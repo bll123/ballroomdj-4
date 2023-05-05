@@ -131,7 +131,7 @@ xgettext -s -d bdj4 \
     --no-location \
     --keyword=_ \
     --flag=_:1:pass-c-format \
-    *.c */*.c \
+    *.c */*.c */*.m */*.cpp \
     -p po -o ${POTFILE}
 
 rm -f $TMP

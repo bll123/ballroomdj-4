@@ -2,7 +2,7 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.3.2.1\n"
+"Project-Id-Version: ballroomdj-4 4.3.2.2\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-05-04\n"
 "PO-Revision-Date: 2023-05-04\n"
@@ -76,6 +76,11 @@ msgstr ""
 #. CONTEXT: playerui: main window title
 #, c-format
 msgid "%s Player"
+msgstr ""
+
+#. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
+#, c-format
+msgid "%s Player is Active"
 msgstr ""
 
 #. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)

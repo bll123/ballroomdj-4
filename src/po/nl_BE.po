@@ -84,6 +84,11 @@ msgstr "%s Media Folder"
 msgid "%s Player"
 msgstr "%s Speler"
 
+#. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
+#, c-format
+msgid "%s Player is Active"
+msgstr ""
+
 #. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
 #, c-format
 msgid "%s Playlist"

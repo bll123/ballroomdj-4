@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-04 14:18-0700\n"
+"POT-Creation-Date: 2023-05-04 17:22-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,6 +80,11 @@ msgstr ""
 #. CONTEXT: playerui: main window title
 #, c-format
 msgid "%s Player"
+msgstr ""
+
+#. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
+#, c-format
+msgid "%s Player is Active"
 msgstr ""
 
 #. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
