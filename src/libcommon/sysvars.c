@@ -507,16 +507,19 @@ sysvarsInit (const char *argv0)
     char  *data;
     char  *tdata;
 
-    strlcpy (sysvars [SV_OSDISP], "MacOS", SV_MAX_SZ);
+    strlcpy (sysvars [SV_OSDISP], "macOS", SV_MAX_SZ);
     data = osRunProgram (sysvars [SV_TEMP_A], "-productVersion", NULL);
     stringTrim (data);
     strlcpy (sysvars [SV_OSVERS], data, SV_MAX_SZ);
     dataFree (data);
 
     tdata = osRunProgram (sysvars [SV_TEMP_A], "-productVersionExtra", NULL);
-    stringTrim (tdata);
     if (tdata != NULL && *tdata == '(') {
-      *(tdata + 2) = '\0';
+      size_t    len;
+
+      stringTrim (tdata);
+      len = strlen (tdata);
+      *(tdata + len - 1) = '\0';
       strlcat (sysvars [SV_OSVERS], "-", SV_MAX_SZ);
       strlcat (sysvars [SV_OSVERS], tdata + 1, SV_MAX_SZ);
     }
@@ -537,6 +540,14 @@ sysvarsInit (const char *argv0)
         strlcat (sysvars [SV_OSDISP], " Catalina", SV_MAX_SZ);
       } else if (strcmp (data, "10.14") > 0) {
         strlcat (sysvars [SV_OSDISP], " Mojave", SV_MAX_SZ);
+      } else if (strcmp (data, "10.13") > 0) {
+        strlcat (sysvars [SV_OSDISP], " High Sierra", SV_MAX_SZ);
+      } else if (strcmp (data, "10.12") > 0) {
+        strlcat (sysvars [SV_OSDISP], " Sierra", SV_MAX_SZ);
+      } else if (strcmp (data, "10.11") > 0) {
+        strlcat (sysvars [SV_OSDISP], " El Capitan", SV_MAX_SZ);
+      } else if (strcmp (data, "10.10") > 0) {
+        strlcat (sysvars [SV_OSDISP], " Yosemite", SV_MAX_SZ);
       } else {
         strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
         strlcat (sysvars [SV_OSDISP], data, SV_MAX_SZ);

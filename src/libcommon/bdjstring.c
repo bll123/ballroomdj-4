@@ -19,6 +19,10 @@ static const char *versionNext (const char *tv1);
 char *
 stringAsciiToLower (char * s)
 {
+  if (s == NULL) {
+    return s;
+  }
+
   for (char *p = s; *p; p++) {
     *p = tolower (*p);
   }
@@ -29,6 +33,10 @@ stringAsciiToLower (char * s)
 char *
 stringAsciiToUpper (char * s)
 {
+  if (s == NULL) {
+    return s;
+  }
+
   for (char *p = s; *p; p++) {
     *p = toupper (*p);
   }
@@ -39,6 +47,10 @@ void
 stringTrim (char *s)
 {
   ssize_t     len;
+
+  if (s == NULL) {
+    return;
+  }
 
   len = strlen (s);
   --len;
@@ -55,6 +67,10 @@ stringTrimChar (char *s, unsigned char c)
 {
   ssize_t     len;
 
+  if (s == NULL) {
+    return;
+  }
+
   len = strlen (s);
   --len;
   while (len >= 0 && s [len] == c) {
@@ -69,7 +85,18 @@ int
 versionCompare (const char *v1, const char *v2)
 {
   const char  *tv1, *tv2;
-  int         iv1, iv2, rc;
+  int         iv1, iv2;
+  int         rc = 0;
+
+  if (v1 == NULL && v2 == NULL) {
+    return rc;
+  }
+  if (v1 != NULL && v2 == NULL) {
+    return 1;
+  }
+  if (v1 == NULL && v2 != NULL) {
+    return -1;
+  }
 
   tv1 = v1;
   tv2 = v2;
