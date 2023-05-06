@@ -465,15 +465,6 @@ dbWriteInternal (musicdb_t *musicdb, const char *fn,
   tblen = dbCreateSongEntryFromTags (tbuff, sizeof (tbuff), tagList, fn, rrn);
   raWrite (musicdb->radb, rrn, tbuff);
 
-  if (! musicdb->inbatch) {
-// ### FIX
-// figure out what's going on here.
-// this should not be necessary.
-    /* this is inefficient, but otherwise the disk buffering / file handling */
-    /* causes issues w/reading an updated entry */
-    raClose (musicdb->radb);
-    musicdb->radb = NULL;
-  }
   return tblen;
 }
 
