@@ -243,11 +243,15 @@ end
 
 test 150-21 Gap-Switch-Queue
 msg main QUEUE_SWITCH_EMPTY 1
+msg main MUSICQ_SET_MANAGE 1
 msg main MUSICQ_SET_PLAYBACK 1
+msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
+msg main CHK_MAIN_SET_MAXPLAYTIME 10000
+msg main CHK_MAIN_SET_GAP 0
 msg main MUSICQ_INSERT 1~999~6
 msg main MUSICQ_INSERT 1~999~5
-msg main CHK_MAIN_SET_QUEUE_ACTIVE 1
-msg main CHK_MAIN_SET_GAP 0
+msg main MUSICQ_INSERT 1~999~4
+msg main MUSICQ_SET_MANAGE 0
 msg main MUSICQ_SET_PLAYBACK 0
 msg main MUSICQ_INSERT 0~999~7
 msg main MUSICQ_INSERT 0~999~8
@@ -266,6 +270,8 @@ resptimeout 4500
 get player CHK_PLAYER_STATUS
 # should be a gap
 wait playstate in-gap
+# emulate history
+msg main MUSICQ_INSERT 4~999~7
 resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
@@ -274,7 +280,7 @@ get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
 get main CHK_MAIN_MUSICQ
 # mq 1 has an empty head pushed
-chk mqplay 0 mq0len 3 mq1len 3
+chk mqplay 0 mq0len 3 mq1len 4
 #
 msg main MUSICQ_SET_PLAYBACK 1
 msg player PLAY_FADE
@@ -283,6 +289,8 @@ get player CHK_PLAYER_STATUS
 # should be a gap
 # the gap is set from the prior queue
 wait playstate in-gap
+# emulate history
+msg main MUSICQ_INSERT 4~999~8
 resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
@@ -290,13 +298,15 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
 get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
-chk mqplay 1 mq0len 3 mq1len 2
+# mq 0 has an empty head pushed
+chk mqplay 1 mq0len 3 mq1len 3
 #
 msg player PLAY_FADE
 resptimeout 4500
 get player CHK_PLAYER_STATUS
 wait playstate in-fadeout
+# emulate history
+msg main MUSICQ_INSERT 4~999~6
 wait-not playstate in-fadeout
 # should not be a gap
 # the gap is being set from the current queue
@@ -306,7 +316,25 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
 get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
+# mq 0 has an empty head pushed
+chk mqplay 1 mq0len 3 mq1len 2
+#
+msg player PLAY_FADE
+resptimeout 4500
+get player CHK_PLAYER_STATUS
+wait playstate in-fadeout
+# emulate history
+msg main MUSICQ_INSERT 4~999~5
+wait-not playstate in-fadeout
+# should not be a gap
+# the gap is being set from the current queue
+chk-or playstate stopped loading playing
+wait playstate playing
+mssleep 1500
+get player CHK_PLAYER_STATUS
+chk currvolume defaultvol actualvolume defaultvol
+get main CHK_MAIN_MUSICQ
+# mq 0 has an empty head pushed
 chk mqplay 1 mq0len 3 mq1len 1
 #
 msg player PLAY_FADE
@@ -315,6 +343,8 @@ get player CHK_PLAYER_STATUS
 # should be a gap
 # the gap is set from the next queue as the current is emptied
 wait playstate in-gap
+# emulate history
+msg main MUSICQ_INSERT 4~999~9
 resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
@@ -322,8 +352,8 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
 get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
-chk mqplay 0 mq0len 2 mq1len 1
+# mq 1 is fully empty
+chk mqplay 0 mq0len 2 mq1len 0
 #
 msg player PLAY_FADE
 resptimeout 4500
@@ -331,6 +361,8 @@ get player CHK_PLAYER_STATUS
 # should be a gap
 # the gap is set from the prior queue
 wait playstate in-gap
+# emulate history
+msg main MUSICQ_INSERT 4~999~10
 resptimeout 3000
 get player CHK_PLAYER_STATUS
 wait playstate playing
@@ -338,13 +370,13 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol actualvolume defaultvol
 get main CHK_MAIN_MUSICQ
-# mq 1 has an empty head pushed
-chk mqplay 0 mq0len 1 mq1len 1
+chk mqplay 0 mq0len 1 mq1len 0
 #
 msg main QUEUE_SWITCH_EMPTY 0
 msg main MUSICQ_SET_PLAYBACK 1
-msg main CHK_MAIN_SET_GAP 2000
 msg main CHK_MAIN_SET_QUEUE_ACTIVE 0
+msg main CHK_MAIN_SET_GAP 2000
+msg main CHK_MAIN_SET_MAXPLAYTIME 360000
 msg main MUSICQ_SET_PLAYBACK 0
 end
 

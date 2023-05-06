@@ -30,10 +30,6 @@ enum {
   MUSICQ_DISP_MAX = MUSICQ_SL,      // music queues including history
 };
 
-#if BDJ4_QUEUE_MAX != MUSCIQ_HISTORY
-# error queue-max not equal to history
-#endif
-
 typedef enum {
   MUSICQ_FLAG_NONE      = 0x0000,
   MUSICQ_FLAG_PREP      = 0x0001,

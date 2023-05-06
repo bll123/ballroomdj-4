@@ -14,8 +14,10 @@
 
 * Bug Fixes:
     * Song Editor: increase allowed entry length to 200 characters.
+    * Player: Fix gap changes not being processed correctly (redux).
 * Internal:
     * Windows: clean up distributed libraries.
+    * Player: Fix wrong queue being prepared.
 
 -->
 

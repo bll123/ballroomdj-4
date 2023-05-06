@@ -48,6 +48,11 @@ musicqAlloc (musicdb_t *db)
 {
   musicq_t  *musicq;
 
+  if ((int) BDJ4_QUEUE_MAX != (int) MUSICQ_HISTORY) {
+    fprintf (stderr, "FATAL: bdj4-queue-max != musicq-history\n");
+    exit (1);
+  }
+
   logProcBegin (LOG_PROC, "musicqAlloc");
 
   musicq = mdmalloc (sizeof (musicq_t));

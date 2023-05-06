@@ -1022,12 +1022,12 @@ tsScriptPrint (testsuite_t *testsuite, const char *tcmd)
     mdfree (tstr);
     return TS_BAD_COMMAND;
   }
-  p = strtok_r (NULL, " ", &tokstr);
-  if (p == NULL) {
-    mdfree (tstr);
-    return TS_BAD_COMMAND;
-  }
+  p += strlen (p);
+  p += 1;
   fprintf (stdout, " %s", p);
+  if (testsuite->verbose) {
+    fprintf (stdout, "\n");
+  }
   fflush (stdout);
   mdfree (tstr);
   return TS_OK;
