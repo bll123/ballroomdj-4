@@ -306,7 +306,6 @@ static bool
 mainClosingCallback (void *tmaindata, programstate_t programState)
 {
   maindata_t    *mainData = tmaindata;
-//  char          *script;
 
   logProcBegin (LOG_PROC, "mainClosingCallback");
 
@@ -2206,8 +2205,7 @@ mainMusicQueuePlay (maindata_t *mainData)
       mainData->playerState == PL_STATE_IN_GAP)) {
     logMsg (LOG_DBG, LOG_MAIN, "player is paused/gap, send play msg");
     connSendMessage (mainData->conn, ROUTE_PLAYER, MSG_PLAY_PLAY, NULL);
-//fprintf (stderr, "main: play-button: send-gap\n");
-//    mainSendPlaybackGap (mainData);
+    mainSendPlaybackGap (mainData);
   }
 
   logProcEnd (LOG_PROC, "mainMusicQueuePlay", "");
