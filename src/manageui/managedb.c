@@ -44,7 +44,7 @@ enum {
 };
 
 typedef struct managedb {
-  uiwcont_t        *windowp;
+  uiwcont_t         *windowp;
   nlist_t           *options;
   uiwcont_t         *statusMsg;
   procutil_t        **processes;
@@ -164,6 +164,15 @@ manageDbFree (managedb_t *managedb)
   }
 }
 
+void
+manageDbProcess (managedb_t *managedb)
+{
+  if (managedb == NULL) {
+    return;
+  }
+
+  uiEntryValidate (managedb->dbtopdir, false);
+}
 
 void
 manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
@@ -236,6 +245,8 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiEntrySetValidate (managedb->dbtopdir,
+      uiEntryValidateDir, NULL, UIENTRY_DELAYED);
 
   managedb->callbacks [MDB_CB_TOPDIR_SEL] = callbackInit (
       manageDbSelectDirCallback, managedb, NULL);
@@ -476,4 +487,5 @@ manageDbSelectDirCallback (void *udata)
   mdfree (selectdata);
   return UICB_CONT;
 }
+
 

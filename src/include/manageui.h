@@ -67,6 +67,7 @@ typedef struct managedb managedb_t;
 
 managedb_t *manageDbAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg, conn_t *conn, procutil_t **processes);
 void  manageDbFree (managedb_t *managedb);
+void  manageDbProcess (managedb_t *managedb);
 void  manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp);
 bool  manageDbChg (void *udata);
 void  manageDbProgressMsg (managedb_t *managedb, char *args);

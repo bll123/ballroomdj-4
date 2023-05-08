@@ -109,6 +109,7 @@ typedef struct {
   char              *musicdir;
   size_t            musicdirlen;
   char              *dbtopdir;
+  int               prefixlen;
   size_t            dbtopdirlen;
   mstime_t          outputTimer;
   org_t             *org;
@@ -399,6 +400,7 @@ dbupdateProcessing (void *udata)
 
     dbupdateOutputProgress (dbupdate);
 
+    dbupdate->prefixlen = 0;
     dbupdate->usingmusicdir = true;
     dbupdate->musicdir = bdjoptGetStr (OPT_M_DIR_MUSIC);
     dbupdate->musicdirlen = strlen (dbupdate->musicdir);
@@ -407,6 +409,7 @@ dbupdateProcessing (void *udata)
     if (strcmp (tstr, dbupdate->musicdir) != 0) {
       dbupdate->usingmusicdir = false;
       dbupdate->dbtopdir = tstr;
+      dbupdate->prefixlen = strlen (tstr) + 1;  // include the slash
     }
     dbupdate->dbtopdirlen = strlen (dbupdate->dbtopdir);
 
@@ -482,7 +485,13 @@ dbupdateProcessing (void *udata)
       if (! dbupdate->rebuild && fn != NULL) {
         const char  *p;
 
-        p = dbupdateGetRelativePath (dbupdate, fn);
+        p = fn;
+        if (dbupdate->usingmusicdir) {
+          p = dbupdateGetRelativePath (dbupdate, fn);
+        }
+fprintf (stderr, "db-top-dir: %s\n", dbupdate->dbtopdir);
+fprintf (stderr, "   fn: %s\n", fn);
+fprintf (stderr, "   rel-path: %s\n", p);
         if (dbGetByName (dbupdate->musicdb, p) != NULL) {
           dbupdateIncCount (dbupdate, C_IN_DB);
           logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database (%u) ", dbupdate->counts [C_IN_DB]);
@@ -892,13 +901,16 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
       continue;
     }
 
-    /* use the relfname here, want the prefix stripped before doing */
+    /* use the relative path here, want the dbupdate->dbtopdir stripped */
+    /* before running the regex match */
     relfname = dbupdateGetRelativePath (dbupdate, ffn);
+fprintf (stderr, "regex: ffn: %s\n", ffn);
+fprintf (stderr, "       relfname: %s\n", relfname);
     /* a regex check */
     val = orgGetFromPath (dbupdate->org, relfname, tagkey);
     if (val != NULL && *val) {
       slistSetStr (tagdata, tagdefs [tagkey].tag, val);
-      logMsg (LOG_DBG, LOG_DBUPDATE, "  %s : %s", tagdefs [tagkey].tag, val);
+      logMsg (LOG_DBG, LOG_DBUPDATE, "  regex: %s : %s", tagdefs [tagkey].tag, val);
     }
   }
 
@@ -919,6 +931,15 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
         slistSetStr (tagdata, tagdefs [TAG_DBADDDATE].tag, tmp);
       }
     }
+  }
+
+  /* set the prefix length. this is used by export to/import from */
+  /* so that secondary folders can preserve the directory structure */
+  {
+    char    tmp [40];
+
+    snprintf (tmp, sizeof (tmp), "%d", dbupdate->prefixlen);
+    slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
   }
 
   /* the dbWrite() procedure will set the FILE tag */
@@ -1093,16 +1114,16 @@ dbupdateOutputProgress (dbupdate_t *dbupdate)
   }
 }
 
+/* this gets the relative path w/o regards to whether the standard musicdir */
+/* or a secondary directory is in use */
+/* the full file name is always passed in */
 static const char *
 dbupdateGetRelativePath (dbupdate_t *dbupdate, const char *fn)
 {
   const char  *p;
 
   p = fn;
-  if (strncmp (fn, dbupdate->dbtopdir, dbupdate->dbtopdirlen) == 0) {
-    p += dbupdate->musicdirlen + 1;
-  }
-
+  p += dbupdate->dbtopdirlen + 1;
   return p;
 }
 

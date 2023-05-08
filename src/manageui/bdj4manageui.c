@@ -1122,6 +1122,7 @@ manageMainLoop (void *tmanage)
   }
 
   uieibdj4Process (manage->uieibdj4);
+  manageDbProcess (manage->managedb);
 
   /* apply adjustments processing */
 

@@ -87,6 +87,7 @@ typedef enum {
   TAG_KEYWORD,                //
   TAG_MQDISPLAY,              //
   TAG_NOTES,                  //
+  TAG_PREFIX_LEN,             // used for secondary directories
   TAG_RECORDING_ID,           // musicbrainz_trackid
   TAG_RRN,                    // not saved to db or af
   TAG_SAMESONG,               //

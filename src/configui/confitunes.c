@@ -172,7 +172,7 @@ confuiBuildUIiTunes (confuigui_t *gui)
       CONFUI_ENTRY_CHOOSE_ITUNES_XML, OPT_M_ITUNES_XML_FILE,
       tbuff, confuiSelectiTunesFile);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_ITUNES_XML].entry,
-      uiEntryValidateFile, gui, UIENTRY_DELAYED);
+      uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   mhbox = uiCreateHorizBox ();
   uiBoxPackStart (mvbox, mhbox);

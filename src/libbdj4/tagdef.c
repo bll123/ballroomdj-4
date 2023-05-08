@@ -976,6 +976,31 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* text search          */
     false,                        /* is org tag           */
   },
+  [TAG_PREFIX_LEN] =
+  { "PFXLEN",                     /* tag */
+    NULL,                         /* display name         */
+    NULL,                         /* short display name   */
+    { { NULL, NULL, NULL },
+      { NULL, NULL, NULL, },
+      { NULL, NULL, NULL, },
+      { NULL, NULL, NULL }
+    },        /* audio tags */
+    NULL,                         /* itunes name          */
+    ET_NA,                        /* edit type            */
+    VALUE_NUM,                    /* value type           */
+    NULL,                         /* conv func            */
+    DISP_NO,                      /* audio id disp        */
+    false,                        /* listing display      */
+    false,                        /* secondary display    */
+    false,                        /* ellipsize            */
+    false,                        /* align right          */
+    false,                        /* is bdj tag           */
+    false,                        /* is norm tag          */
+    false,                        /* edit-all             */
+    false,                        /* editable             */
+    false,                        /* text search          */
+    false,                        /* is org tag           */
+  },
   [TAG_TEMPORARY] =
   { "TEMPORARY",                  /* tag */
     NULL,                         /* display name         */

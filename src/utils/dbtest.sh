@@ -380,10 +380,6 @@ dispres $tname $rc $crc
 ./src/utils/mktestsetup.sh \
     --infile $INRDT \
     --outfile $TDBRDT
-# copy the test-music to an alternate folder for testing
-# secondary folder builds
-test -d $TMDT && rm -rf $TMDT
-cp -r test-music $TMDT
 # create test regex db w/tags (dance/title) and w/alternate entries
 tdir=$(echo ${musicdir} | sed 's,/test-music.*,,')
 ./src/utils/mktestsetup.sh \
@@ -398,6 +394,12 @@ tdir=$(echo ${musicdir} | sed 's,/test-music.*,,')
 ./src/utils/mktestsetup.sh \
     --infile $INR \
     --outfile $TMPA
+# copy the test-music to an alternate folder for testing
+# secondary folder builds
+test -d $TMDT && rm -rf $TMDT
+cp -r test-music $TMDT
+
+exit 1
 
 # test regex db : get dance/artist/title from file path
 tname=rebuild-file-path-dat

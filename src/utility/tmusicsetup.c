@@ -221,11 +221,16 @@ main (int argc, char *argv [])
       slistFree (tagdata);
       tagdata = slistAlloc ("tm-slist", LIST_ORDERED, NULL);
     }
+    slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, "0");
     dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
     if (*altdir) {
+      char    tmp [40];
+
       /* if the alternate dir is set, create a duplicate entry */
       snprintf (tbuff, sizeof (tbuff), "%s/%s", altdir, fn + strlen (tmusicdir) + 1);
       slistSetStr (tagdata, tagdefs [TAG_FILE].tag, tbuff);
+      snprintf (tmp, sizeof (tmp), "%d", (int) strlen (altdir) + 1);
+      slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, tmp);
       dbWrite (db, tbuff, tagdata, MUSICDB_ENTRY_NEW);
     }
     slistFree (tagdata);
