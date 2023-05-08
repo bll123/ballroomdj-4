@@ -136,7 +136,11 @@ TDBC=tmp/test-m-c.dat
 TDBD=tmp/test-m-d.dat
 TDBRDAT=tmp/test-m-r-dat.dat
 TDBRDT=tmp/test-m-r-dt.dat
+TDBRDTALT=tmp/test-m-r-dt-alt.dat
+TMDT=tmp/test-music-dt
 TDBRDTAT=tmp/test-m-r-dtat.dat
+
+
 TMPA=tmp/dbtesta.txt
 TMPB=tmp/dbtestb.txt
 
@@ -376,17 +380,26 @@ dispres $tname $rc $crc
 ./src/utils/mktestsetup.sh \
     --infile $INRDT \
     --outfile $TDBRDT
+# copy the test-music to an alternate folder for testing
+# secondary folder builds
+test -d $TMDT && rm -rf $TMDT
+cp -r test-music $TMDT
+# create test regex db w/tags (dance/title) and w/alternate entries
+tdir=$(echo ${musicdir} | sed 's,/test-music.*,,')
+./src/utils/mktestsetup.sh \
+    --infile $INRDT \
+    --outfile $TDBRDTALT \
+    --altdir ${tdir}/$TMDT
 # create test regex db w/tags (dance/tn-artist - title)
 ./src/utils/mktestsetup.sh \
     --infile $INRDTAT \
     --outfile $TDBRDTAT
-# create test regex db w/o tags
-# only want test music, not db
+# create test music dir w/o any tags, tmpa is not used
 ./src/utils/mktestsetup.sh \
     --infile $INR \
     --outfile $TMPA
 
-# test regex db : get artist/title from file path
+# test regex db : get dance/artist/title from file path
 tname=rebuild-file-path-dat
 setorgregex '{%DANCE%/}{%ARTIST% - }{%TITLE%}'
 got=$(./bin/bdj4 --bdj4dbupdate \
@@ -404,7 +417,7 @@ updateCounts $crc
 msg+=$(compcheck $tname $crc)
 dispres $tname $rc $crc
 
-# test regex db : get artist/title from file path
+# test regex db : get dance/title from file path
 tname=rebuild-file-path-dt
 setorgregex '{%DANCE%/}{%TITLE%}'
 got=$(./bin/bdj4 --bdj4dbupdate \
@@ -422,7 +435,26 @@ updateCounts $crc
 msg+=$(compcheck $tname $crc)
 dispres $tname $rc $crc
 
-# test regex db : get tracknum-artist/title from file path
+# test secondary folder: regex db : get dance/title from file path
+tname=rebuild-file-path-dt-alt
+tdir=$(echo ${musicdir} | sed 's,/test-music.*,,')
+setorgregex '{%DANCE%/}{%TITLE%}'
+got=$(./bin/bdj4 --bdj4dbupdate \
+  --debug 262175 \
+  --checknew \
+  --dbtopdir "${tdir}/${TMDT}" \
+  --cli --wait --verbose)
+exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
+msg+=$(checkres $tname "$got" "$exp")
+rc=$?
+updateCounts $rc
+msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDTALT)
+crc=$?
+updateCounts $crc
+msg+=$(compcheck $tname $crc)
+dispres $tname $rc $crc
+
+# test regex db : get date/tracknum-artist-title from file path
 tname=rebuild-file-path-dtat
 setorgregex '{%DANCE%/}{%TRACKNUMBER0%-}{%ARTIST% - }{%TITLE%}'
 got=$(./bin/bdj4 --bdj4dbupdate \
@@ -441,7 +473,8 @@ msg+=$(compcheck $tname $crc)
 dispres $tname $rc $crc
 
 # remove test db, temporary files
-rm -f $TDBB $TDBC $TDBD $TDBRDAT $TDBRDT $TDBRDTAT $TMPA $TMPB
+rm -f $TDBB $TDBC $TDBD $TDBRDAT $TDBRDT %TDBRDTALT $TDBRDTAT $TMPA $TMPB
+rm -rf $TMDT
 
 echo "tests: $tcount pass: $pass fail: $fail"
 rc=1

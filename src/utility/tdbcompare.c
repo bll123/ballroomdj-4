@@ -189,6 +189,17 @@ main (int argc, char *argv [])
       }
     }
 
+    /* it's ok for lastupdated to be mismatched, but it must exist in both */
+    for (int i = 0; i < DB_MAX; ++i) {
+      char    *val;
+
+      val = songGetStr (song [i], TAG_LAST_UPDATED);
+      if (val == NULL) {
+        fprintf (stderr, "    last-updated missing in %d\n", i);
+        grc = 1;
+      }
+    }
+
     slistStartIterator (taglist [DB_A], &tagiteridx [DB_A]);
     while ((tag [DB_A] = slistIterateKey (taglist [DB_A], &tagiteridx [DB_A])) != NULL) {
       char  *val [DB_MAX];

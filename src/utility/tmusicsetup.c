@@ -97,6 +97,8 @@ main (int argc, char *argv [])
   ilistidx_t  key;
   char        dbfn [MAXPATHLEN];
   char        infn [MAXPATHLEN];
+  char        altdir [MAXPATHLEN];
+  char        tbuff [MAXPATHLEN];
   musicdb_t   *db;
   slist_t     *empty = NULL;
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN | LOG_LIST;
@@ -111,6 +113,7 @@ main (int argc, char *argv [])
     { "infile",       required_argument,  NULL,   'I' },
     { "nodetach",     no_argument,        NULL,   0, },
     { "outfile",      required_argument,  NULL,   'O' },
+    { "altdir",       required_argument,  NULL,   'A' },
     { "scale",        required_argument,  NULL,   0 },
     { "theme",        required_argument,  NULL,   0 },
     { "tmusicsetup",  no_argument,        NULL,   0 },
@@ -122,6 +125,7 @@ main (int argc, char *argv [])
 
   strlcpy (dbfn, "test-templates/musicdb.dat", sizeof (dbfn));
   strlcpy (infn, "test-templates/test-music.txt", sizeof (infn));
+  *altdir = '\0';
 
   while ((c = getopt_long_only (argc, argv, "B3O:I:Ed:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -150,6 +154,10 @@ main (int argc, char *argv [])
       }
       case 'I': {
         strlcpy (infn, optarg, sizeof (infn));
+        break;
+      }
+      case 'A': {
+        strlcpy (altdir, optarg, sizeof (altdir));
         break;
       }
       default: {
@@ -214,6 +222,12 @@ main (int argc, char *argv [])
       tagdata = slistAlloc ("tm-slist", LIST_ORDERED, NULL);
     }
     dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
+    if (*altdir) {
+      /* if the alternate dir is set, create a duplicate entry */
+      snprintf (tbuff, sizeof (tbuff), "%s/%s", altdir, fn + strlen (tmusicdir) + 1);
+      slistSetStr (tagdata, tagdefs [TAG_FILE].tag, tbuff);
+      dbWrite (db, tbuff, tagdata, MUSICDB_ENTRY_NEW);
+    }
     slistFree (tagdata);
     mdfree (fn);
   }

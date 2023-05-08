@@ -127,6 +127,7 @@ main (int argc, char * argv[])
     { "emptydb",        no_argument,        NULL,   0 },
     { "infile",         required_argument,  NULL,   0 },
     { "outfile",        required_argument,  NULL,   0 },
+    { "altdir",         required_argument,  NULL,   0 },
     /* general options */
     { "cli",            no_argument,        NULL,   'c' },
     { "progress",       no_argument,        NULL,   0 },

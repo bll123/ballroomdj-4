@@ -49,6 +49,14 @@ while test $# -gt 0; do
       args+=" "
       rmflag=T
       ;;
+    --altdir)
+      args+=$1
+      args+=" "
+      shift
+      altdir=$1
+      args+=$1
+      args+=" "
+      ;;
     *)
       echo "unknown argument $1"
       exit 1
