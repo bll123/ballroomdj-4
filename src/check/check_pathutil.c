@@ -112,22 +112,6 @@ START_TEST(pathinfo_chk)
 }
 END_TEST
 
-START_TEST(path_winpath)
-{
-  char    to [MAXPATHLEN];
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_winpath");
-
-  strlcpy (to, "/tmp/abc.txt", sizeof (to));
-  pathWinPath (to, sizeof (to));
-  ck_assert_str_eq (to, "\\tmp\\abc.txt");
-
-  strlcpy (to, "C:/tmp/abc.txt", sizeof (to));
-  pathWinPath (to, sizeof (to));
-  ck_assert_str_eq (to, "C:\\tmp\\abc.txt");
-}
-END_TEST
-
 START_TEST(path_normpath)
 {
   char    to [MAXPATHLEN];
@@ -135,19 +119,19 @@ START_TEST(path_normpath)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_normpath");
 
   strlcpy (to, "/tmp/abc.txt", sizeof (to));
-  pathNormPath (to, sizeof (to));
+  pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, "/tmp/abc.txt");
 
   strlcpy (to, "\\tmp\\abc.txt", sizeof (to));
-  pathNormPath (to, sizeof (to));
+  pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, "/tmp/abc.txt");
 
   strlcpy (to, "C:/tmp/abc.txt", sizeof (to));
-  pathNormPath (to, sizeof (to));
+  pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, "C:/tmp/abc.txt");
 
   strlcpy (to, "C:\\tmp\\abc.txt", sizeof (to));
-  pathNormPath (to, sizeof (to));
+  pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, "C:/tmp/abc.txt");
 }
 END_TEST
@@ -195,7 +179,7 @@ START_TEST(path_realpath)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- path_realpath");
 
   (void) ! getcwd (cwd, sizeof (cwd));
-  pathNormPath (cwd, sizeof (cwd));
+  pathNormalizePath (cwd, sizeof (cwd));
 
   strlcpy (from, "tmp/abc.txt", sizeof (from));
   fh = fopen (from, "w");
@@ -203,23 +187,23 @@ START_TEST(path_realpath)
   snprintf (actual, sizeof (actual), "%s/%s", cwd, from);
 
   pathRealPath (to, from, sizeof (to));
-  pathNormPath (to, sizeof (to));
+  pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, actual);
 
   strlcpy (from, "tmp/../tmp/abc.txt", sizeof (from));
   pathRealPath (to, from, sizeof (to));
-  pathNormPath (to, sizeof (to));
+  pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, actual);
 
   strlcpy (from, actual, sizeof (from));
   pathRealPath (to, from, sizeof (to));
-  pathNormPath (to, sizeof (to));
+  pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, actual);
 
 #if _lib_symlink
   (void) ! symlink (from, "tmp/def.txt");
   pathRealPath (to, "tmp/def.txt", sizeof (to));
-  pathNormPath (to, sizeof (to));
+  pathNormalizePath (to, sizeof (to));
   ck_assert_str_eq (to, actual);
 #endif
   unlink ("tmp/def.txt");
@@ -237,7 +221,6 @@ pathutil_suite (void)
   tc = tcase_create ("pathutil");
   tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, pathinfo_chk);
-  tcase_add_test (tc, path_winpath);
   tcase_add_test (tc, path_normpath);
   tcase_add_test (tc, path_strippath);
   tcase_add_test (tc, path_realpath);

@@ -477,9 +477,7 @@ confuiUpdateOrgExample (org_t *org, char *data, uiwcont_t *uiwidgetp)
   song = songAlloc ();
   songParse (song, tdata, 0);
   disp = orgMakeSongPath (org, song);
-  if (isWindows ()) {
-    pathWinPath (disp, strlen (disp));
-  }
+  pathDisplayPath (disp, strlen (disp));
   uiLabelSetText (uiwidgetp, disp);
   songFree (song);
   mdfree (disp);

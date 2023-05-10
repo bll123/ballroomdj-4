@@ -15,12 +15,14 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdj4ui.h"
+#include "bdjstring.h"
 #include "callback.h"
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
 #include "pathbld.h"
+#include "pathutil.h"
 #include "playlist.h"
 #include "sysvars.h"
 #include "ui.h"
@@ -181,16 +183,18 @@ uieibdj4Process (uieibdj4_t *uieibdj4)
   uiEntryValidate (uieibdj4->dialog [uieibdj4->currtype].target, false);
 }
 
-const char *
+char *
 uieibdj4GetDir (uieibdj4_t *uieibdj4)
 {
-  const char  *dir;
+  const char  *tdir;
+  char        *dir;
 
   if (uieibdj4 == NULL) {
     return NULL;
   }
 
-  dir = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].target);
+  tdir = uiEntryGetValue (uieibdj4->dialog [uieibdj4->currtype].target);
+  dir = mdstrdup (tdir);
   return dir;
 }
 
@@ -347,7 +351,9 @@ uieibdj4CreateDialog (uieibdj4_t *uieibdj4)
   if (odir == NULL) {
     odir = sysvarsGetStr (SV_HOME);
   }
-  uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].target, odir);
+  strlcpy (tbuff, odir, sizeof (tbuff));
+  pathDisplayPath (tbuff, sizeof (tbuff));
+  uiEntrySetValue (uieibdj4->dialog [uieibdj4->currtype].target, tbuff);
 
   uibutton = uiCreateButton (
       uieibdj4->callbacks [UIEIBDJ4_CB_TARGET],
@@ -526,6 +532,7 @@ uieibdj4ValidateTarget (uientry_t *entry, void *udata)
   if (str != NULL) {
     snprintf (tbuff, sizeof (tbuff), "%s/data", str);
   }
+  pathNormalizePath (tbuff, sizeof (tbuff));
 
   /* validation failures:
    *   target is not set (no message displayed)

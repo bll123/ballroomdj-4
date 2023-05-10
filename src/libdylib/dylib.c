@@ -23,7 +23,7 @@
 #include "bdjstring.h"
 #include "dylib.h"
 #include "mdebug.h"
-#include "pathutil.h"
+#include "pathdisp.h"
 
 dlhandle_t *
 dylibLoad (const char *path)
@@ -38,7 +38,7 @@ dylibLoad (const char *path)
   char      npath [MAXPATHLEN];
 
   strlcpy (npath, path, sizeof (npath));
-  pathWinPath (npath, sizeof (npath));
+  pathDisplayPath (npath, sizeof (npath));
   whandle = LoadLibrary (npath);
   handle = whandle;
 #endif

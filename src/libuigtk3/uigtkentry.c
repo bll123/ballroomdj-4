@@ -215,7 +215,7 @@ uiEntryValidateDir (uientry_t *uientry, void *udata)
     dir = gtk_entry_buffer_get_text (uientry->buffer);
     if (dir != NULL) {
       strlcpy (tbuff, dir, sizeof (tbuff));
-      pathNormPath (tbuff, sizeof (tbuff));
+      pathNormalizePath (tbuff, sizeof (tbuff));
       if (fileopIsDirectory (tbuff)) {
         rc = UIENTRY_OK;
       } /* exists */
@@ -241,7 +241,7 @@ uiEntryValidateFile (uientry_t *uientry, void *udata)
         rc = UIENTRY_OK;
       } else {
         strlcpy (tbuff, fn, sizeof (tbuff));
-        pathNormPath (tbuff, sizeof (tbuff));
+        pathNormalizePath (tbuff, sizeof (tbuff));
         if (fileopFileExists (tbuff)) {
           rc = UIENTRY_OK;
         } /* exists */

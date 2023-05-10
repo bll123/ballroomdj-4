@@ -37,6 +37,7 @@ Suite *     osrandom_suite (void);
 Suite *     ossignal_suite (void);
 Suite *     osutils_suite (void);
 Suite *     pathbld_suite (void);
+Suite *     pathdisp_suite (void);
 Suite *     pathutil_suite (void);
 Suite *     procutil_suite (void);
 Suite *     queue_suite (void);

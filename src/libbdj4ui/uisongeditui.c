@@ -1734,9 +1734,7 @@ uisongeditCopyPath (void *udata)
   ffn = songutilFullFileName (txt);
   strlcpy (tbuff, ffn, sizeof (tbuff));
   mdfree (ffn);
-  if (isWindows ()) {
-    pathWinPath (tbuff, sizeof (tbuff));
-  }
+  pathDisplayPath (tbuff, sizeof (tbuff));
   uiClipboardSet (tbuff);
 
   return UICB_CONT;

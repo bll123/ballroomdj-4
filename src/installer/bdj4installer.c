@@ -517,9 +517,7 @@ main (int argc, char *argv[])
     }
   }
 
-  if (isWindows ()) {
-    pathWinPath (installer.target, strlen (installer.target));
-  }
+  pathDisplayPath (installer.target, strlen (installer.target));
 
   if (installer.guienabled) {
     char *uifont;
@@ -1186,7 +1184,7 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
   /* bdj3 location validation */
 
   strlcpy (tbuff, uiEntryGetValue (installer->bdj3locEntry), sizeof (tbuff));
-  pathNormPath (tbuff, strlen (tbuff));
+  pathNormalizePath (tbuff, strlen (tbuff));
   if (*tbuff == '\0' || strcmp (tbuff, "-") == 0) {
     locok = true;
   } else {
@@ -1249,9 +1247,7 @@ installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc)
   char    tbuff [MAXPATHLEN];
 
   strlcpy (tbuff, bdj3loc, sizeof (tbuff));
-  if (isWindows ()) {
-    pathWinPath (tbuff, sizeof (tbuff));
-  }
+  pathDisplayPath (tbuff, sizeof (tbuff));
   uiEntrySetValue (installer->bdj3locEntry, tbuff);
 }
 
@@ -1642,7 +1638,7 @@ installerCopyFiles (installer_t *installer)
 
   if (isWindows ()) {
     strlcpy (tmp, installer->rundir, sizeof (tmp));
-    pathWinPath (tmp, sizeof (tmp));
+    pathDisplayPath (tmp, sizeof (tmp));
     snprintf (tbuff, sizeof (tbuff),
         "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl . \"%s\"",
         tmp);
@@ -1915,9 +1911,7 @@ installerConvertStart (installer_t *installer)
     }
 
     if (installer->tclshloc == NULL && fileopFileExists (tbuff)) {
-      if (isWindows ()) {
-        pathWinPath (tbuff, sizeof (tbuff));
-      }
+      pathDisplayPath (tbuff, sizeof (tbuff));
       installer->tclshloc = mdstrdup (tbuff);
       /* CONTEXT: installer: status message */
       installerDisplayText (installer, INST_DISP_STATUS, _("Located 'tclsh'."), false);
@@ -2577,7 +2571,7 @@ installerSetrundir (installer_t *installer, const char *dir)
     if (isMacOS ()) {
       strlcat (installer->rundir, MACOS_PREFIX, sizeof (installer->rundir));
     }
-    pathNormPath (installer->rundir, sizeof (installer->rundir));
+    pathNormalizePath (installer->rundir, sizeof (installer->rundir));
   }
 }
 
@@ -2773,7 +2767,7 @@ installerSetTargetDir (installer_t *installer, const char *fn)
   tmp = mdstrdup (fn);
   dataFree (installer->target);
   installer->target = tmp;
-  pathNormPath (installer->target, strlen (installer->target));
+  pathNormalizePath (installer->target, strlen (installer->target));
 }
 
 static void
@@ -2781,7 +2775,7 @@ installerSetBDJ3LocDir (installer_t *installer, const char *fn)
 {
   dataFree (installer->bdj3loc);
   installer->bdj3loc = mdstrdup (fn);
-  pathNormPath (installer->bdj3loc, strlen (installer->bdj3loc));
+  pathNormalizePath (installer->bdj3loc, strlen (installer->bdj3loc));
 }
 
 static void

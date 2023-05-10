@@ -916,6 +916,6 @@ altsetupSetTargetDir (altsetup_t *altsetup, const char *fn)
 {
   dataFree (altsetup->target);
   altsetup->target = mdstrdup (fn);
-  pathNormPath (altsetup->target, strlen (altsetup->target));
+  pathNormalizePath (altsetup->target, strlen (altsetup->target));
 }
 

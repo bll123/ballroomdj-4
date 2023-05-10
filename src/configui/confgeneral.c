@@ -73,9 +73,7 @@ confuiBuildUIGeneral (confuigui_t *gui)
       _("General"), CONFUI_ID_NONE);
 
   strlcpy (tbuff, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (tbuff));
-  if (isWindows ()) {
-    pathWinPath (tbuff, sizeof (tbuff));
-  }
+  pathDisplayPath (tbuff, sizeof (tbuff));
 
   /* CONTEXT: configuration: the music folder where the user store their music */
   confuiMakeItemEntryChooser (gui, vbox, szgrp, _("Music Folder"),

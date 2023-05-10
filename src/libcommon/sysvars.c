@@ -170,7 +170,7 @@ sysvarsInit (const char *argv0)
 
 
   (void) ! getcwd (tcwd, sizeof (tcwd));
-  pathNormPath (tcwd, SV_MAX_SZ);
+  pathNormalizePath (tcwd, SV_MAX_SZ);
 
   strlcpy (sysvars [SV_OSNAME], "", SV_MAX_SZ);
   strlcpy (sysvars [SV_OSDISP], "", SV_MAX_SZ);
@@ -275,7 +275,7 @@ sysvarsInit (const char *argv0)
 
   if (isWindows ()) {
     osGetEnv ("USERPROFILE", sysvars [SV_HOME], SV_MAX_SZ);
-    pathNormPath (sysvars [SV_HOME], SV_MAX_SZ);
+    pathNormalizePath (sysvars [SV_HOME], SV_MAX_SZ);
     osGetEnv ("USERNAME", sysvars [SV_USER], SV_MAX_SZ);
   } else {
     osGetEnv ("HOME", sysvars [SV_HOME], SV_MAX_SZ);
@@ -295,7 +295,7 @@ sysvarsInit (const char *argv0)
 
   strlcpy (tbuff, argv0, sizeof (tbuff));
   strlcpy (buff, argv0, sizeof (buff));
-  pathNormPath (buff, SV_MAX_SZ);
+  pathNormalizePath (buff, SV_MAX_SZ);
   /* handle relative pathnames */
   if ((strlen (buff) > 2 && *(buff + 1) == ':' && *(buff + 2) != '/') ||
      (*buff != '/' && strlen (buff) > 1 && *(buff + 1) != ':')) {
@@ -307,11 +307,11 @@ sysvarsInit (const char *argv0)
   /* save this path so that it can be used to check for a data dir */
   strlcpy (altpath, tbuff, sizeof (altpath));
   pathStripPath (altpath, sizeof (altpath));
-  pathNormPath (altpath, sizeof (altpath));
+  pathNormalizePath (altpath, sizeof (altpath));
 
   /* this gives us the real path to the executable */
   pathRealPath (buff, tbuff, sizeof (buff));
-  pathNormPath (buff, sizeof (buff));
+  pathNormalizePath (buff, sizeof (buff));
 
   if (strcmp (altpath, buff) != 0) {
     alternatepath = true;
@@ -639,7 +639,7 @@ sysvarsCheckPaths (const char *otherpaths)
     }
 
     strlcpy (tbuff, p, sizeof (tbuff));
-    pathNormPath (tbuff, sizeof (tbuff));
+    pathNormalizePath (tbuff, sizeof (tbuff));
     stringTrimChar (tbuff, '/');
 
     if (*sysvars [SV_PATH_FFMPEG] == '\0') {
@@ -843,7 +843,7 @@ sysvarsCheckMutagen (void)
       }
     }
   }
-  pathNormPath (sysvars [SV_PYTHON_MUTAGEN], SV_MAX_SZ);
+  pathNormalizePath (sysvars [SV_PYTHON_MUTAGEN], SV_MAX_SZ);
 }
 
 char *

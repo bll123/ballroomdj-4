@@ -21,6 +21,8 @@
 #include "nlist.h"
 #include "osprocess.h"
 #include "pathbld.h"
+#include "pathdisp.h"
+#include "pathutil.h"
 #include "procutil.h"
 #include "sysvars.h"
 #include "ui.h"
@@ -195,6 +197,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiwcont_t     *hbox;
   uiwcont_t     *szgrp;
   uitextbox_t   *tb;
+  char          tbuff [MAXPATHLEN];
 
 
   szgrp = uiCreateSizeGroupHoriz ();   // labels
@@ -255,7 +258,9 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiwcontFree (uiwidgetp);
 
   uiEntryCreate (managedb->dbtopdir);
-  uiEntrySetValue (managedb->dbtopdir, bdjoptGetStr (OPT_M_DIR_MUSIC));
+  strlcpy (tbuff, bdjoptGetStr (OPT_M_DIR_MUSIC), sizeof (tbuff));
+  pathDisplayPath (tbuff, sizeof (tbuff));
+  uiEntrySetValue (managedb->dbtopdir, tbuff);
   uiwidgetp = uiEntryGetWidgetContainer (managedb->dbtopdir);
   uiWidgetAlignHorizFill (uiwidgetp);
   uiWidgetExpandHoriz (uiwidgetp);
@@ -481,7 +486,9 @@ manageDbStart (void *udata)
 
   targv [targc++] = "--progress";
   targv [targc++] = "--dbtopdir";
-  targv [targc++] = uiEntryGetValue (managedb->dbtopdir);
+  strlcpy (tbuff, uiEntryGetValue (managedb->dbtopdir), sizeof (tbuff));
+  pathNormalizePath (tbuff, sizeof (tbuff));
+  targv [targc++] = tbuff;
   targv [targc++] = NULL;
   logMsg (LOG_DBG, LOG_BASIC, "start dbupdate %s", uiEntryGetValue (managedb->dbtopdir));
 

@@ -3144,7 +3144,7 @@ manageExportBDJ4ResponseHandler (void *udata)
 {
   manageui_t  *manage = udata;
   char        *slname;
-  const char  *dir = NULL;
+  char        *dir = NULL;
   nlist_t     *dbidxlist;
 
   slname = uimusicqGetSonglistName (manage->slmusicq);
@@ -3152,6 +3152,7 @@ manageExportBDJ4ResponseHandler (void *udata)
 
   dir = uieibdj4GetDir (manage->uieibdj4);
   nlistSetStr (manage->options, MANAGE_EXP_BDJ4_DIR, dir);
+  dataFree (dir);
 
   eibdj4Free (manage->eibdj4);
   manage->eibdj4 = eibdj4Init (manage->musicdb, dir, EIBDJ4_EXPORT);
@@ -3170,12 +3171,13 @@ static bool
 manageImportBDJ4ResponseHandler (void *udata)
 {
   manageui_t  *manage = udata;
-  const char  *dir = NULL;
+  char        *dir = NULL;
   const char  *plname = NULL;
   const char  *newname = NULL;
 
   dir = uieibdj4GetDir (manage->uieibdj4);
   nlistSetStr (manage->options, MANAGE_IMP_BDJ4_DIR, dir);
+  dataFree (dir);
   plname = uieibdj4GetPlaylist (manage->uieibdj4);
   newname = uieibdj4GetNewName (manage->uieibdj4);
 

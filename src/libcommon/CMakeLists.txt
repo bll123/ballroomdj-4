@@ -22,6 +22,7 @@ add_library (libbdj4common SHARED
   osrandom.c
   ossignal.c
   pathbld.c
+  pathdisp.c
   pathutil.c
   queue.c
   sock.c

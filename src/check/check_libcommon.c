@@ -37,6 +37,7 @@ check_libcommon (SRunner *sr)
    *  osprocess   complete                // uses procutil, pathbld, ossignal
    *  filedata    complete
    *  osnetutils  complete 2022-12-27
+   *  pathdisp    complete
    *  pathutil    complete
    *  mdebug      complete
    *  sysvars
@@ -81,6 +82,9 @@ check_libcommon (SRunner *sr)
   srunner_add_suite (sr, s);
 
   s = osnetutils_suite();
+  srunner_add_suite (sr, s);
+
+  s = pathdisp_suite();
   srunner_add_suite (sr, s);
 
   s = pathutil_suite();

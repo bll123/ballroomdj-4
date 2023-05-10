@@ -28,6 +28,7 @@ add_executable (check_all
   check_ossignal.c
   check_osutils.c
   check_pathbld.c
+  check_pathdisp.c
   check_pathutil.c
   check_procutil.c
   check_queue.c

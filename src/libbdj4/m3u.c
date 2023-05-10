@@ -69,9 +69,7 @@ m3uExport (musicdb_t *musicdb, nlist_t *list,
       ffn = songutilFullFileName (str);
       ffnallocated = true;
     }
-    if (isWindows ()) {
-      pathWinPath (ffn, strlen (ffn));
-    }
+    pathDisplayPath (ffn, strlen (ffn));
     fprintf (fh, "%s\n", ffn);
     if (ffnallocated) {
       dataFree (ffn);
@@ -117,7 +115,7 @@ m3uImport (musicdb_t *musicdb, const char *fname, char *plname, size_t plsz)
 
     stringTrim (tbuff);
 
-    pathNormPath (tbuff, strlen (tbuff));
+    pathNormalizePath (tbuff, strlen (tbuff));
     if (! fileopFileExists (tbuff)) {
       continue;
     }

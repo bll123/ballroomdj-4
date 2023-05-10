@@ -47,10 +47,10 @@ instutilCreateShortcut (const char *name, const char *maindir,
       targv [targc++] = path;
       pathbldMakePath (buff, sizeof (buff),
           "bdj4", ".exe", PATHBLD_MP_DIR_EXEC);
-      pathWinPath (buff, sizeof (buff));
+      pathDisplayPath (buff, sizeof (buff));
       targv [targc++] = buff;
       strlcpy (tbuff, target, sizeof (tbuff));
-      pathWinPath (tbuff, sizeof (tbuff));
+      pathDisplayPath (tbuff, sizeof (tbuff));
       targv [targc++] = tbuff;
       snprintf (tmp, sizeof (tmp), "%d", profilenum);
       targv [targc++] = tmp;
@@ -253,8 +253,8 @@ instutilCopyHttpFiles (void)
       "mrc", "", PATHBLD_MP_DREL_HTTP);
   *tbuff = '\0';
   if (isWindows ()) {
-    pathWinPath (from, sizeof (from));
-    pathWinPath (to, sizeof (to));
+    pathDisplayPath (from, sizeof (from));
+    pathDisplayPath (to, sizeof (to));
     snprintf (tbuff, sizeof (tbuff), "robocopy /e /j /dcopy:DAT /timfix /njh /njs /np /ndl /nfl \"%s\" \"%s\"",
         from, to);
   } else {

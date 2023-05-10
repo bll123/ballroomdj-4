@@ -90,6 +90,7 @@ add_library (libbdj4launcher STATIC
   libcommon/filedata.c
   libcommon/osnetutils.c
   libcommon/pathbld.c
+  libcommon/pathdisp.c
   libcommon/pathutil.c
   libcommon/sysvars.c
 )

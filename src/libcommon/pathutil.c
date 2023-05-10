@@ -133,22 +133,8 @@ pathInfoExtCheck (pathinfo_t *pi, const char *extension)
   return false;
 }
 
-
 void
-pathWinPath (char *buff, size_t len)
-{
-  for (size_t i = 0; i < len; ++i) {
-    if (buff [i] == '\0') {
-      break;
-    }
-    if (buff [i] == '/') {
-      buff [i] = '\\';
-    }
-  }
-}
-
-void
-pathNormPath (char *buff, size_t len)
+pathNormalizePath (char *buff, size_t len)
 {
   for (size_t i = 0; i < len; ++i) {
     if (buff [i] == '\0') {
@@ -169,7 +155,7 @@ pathStripPath (char *buff, size_t len)
   size_t  lastslash = 0;
   char    *p;
 
-  pathNormPath (buff, len);
+  pathNormalizePath (buff, len);
   j = 0;
   p = buff;
   for (size_t i = 0; i < len; ++i) {

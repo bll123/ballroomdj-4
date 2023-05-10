@@ -422,7 +422,7 @@ confuiDanceValidateAnnouncement (uientry_t *entry, confuigui_t *gui)
   }
 
   strlcpy (nfn, fn, sizeof (nfn));
-  pathNormPath (nfn, sizeof (nfn));
+  pathNormalizePath (nfn, sizeof (nfn));
   if (strncmp (musicdir, fn, mlen) == 0) {
     strlcpy (nfn, fn + mlen + 1, sizeof (nfn));
     uiEntrySetValue (entry, nfn);

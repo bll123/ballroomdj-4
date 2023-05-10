@@ -29,6 +29,7 @@
 #include "osprocess.h"
 #include "osutils.h"
 #include "pathbld.h"
+#include "pathdisp.h"
 #include "pathutil.h"
 #include "sysvars.h"
 
@@ -403,7 +404,7 @@ main (int argc, char * argv[])
     *path = '\0';
 
     strlcpy (pbuff, sysvarsGetStr (SV_BDJ4_DIR_EXEC), sz);
-    pathWinPath (pbuff, sz);
+    pathDisplayPath (pbuff, sz);
     strlcat (path, pbuff, sz);
     strlcat (path, ";", sz);
 

@@ -83,9 +83,7 @@ orgoptAlloc (void)
       }
     }
 
-    if (isWindows ()) {
-      pathWinPath (dispstr, sizeof (dispstr));
-    }
+    pathDisplayPath (dispstr, sizeof (dispstr));
     slistSetStr (list, dispstr, value);
     orgFree (org);
   }

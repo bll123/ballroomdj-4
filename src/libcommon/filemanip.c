@@ -72,9 +72,9 @@ filemanipCopy (const char *fname, const char *nfn)
 
   if (isWindows ()) {
     strlcpy (tfname, fname, sizeof (tfname));
-    pathWinPath (tfname, sizeof (tfname));
+    pathDisplayPath (tfname, sizeof (tfname));
     strlcpy (tnfn, nfn, sizeof (tnfn));
-    pathWinPath (tnfn, sizeof (tnfn));
+    pathDisplayPath (tnfn, sizeof (tnfn));
     origtm = fileopModTime (tfname);
 #if _lib_CopyFileW
     {

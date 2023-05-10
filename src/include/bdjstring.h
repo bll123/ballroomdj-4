@@ -23,6 +23,9 @@ size_t strlcpy(char *dst, const char *src, size_t siz);
 /*_sprintf_p doesn't seem to be in the library... */
 /* use _sprintf_p_l instead with a null locale */
 #if _lib__sprintf_p_l
+# ifdef snprintf
+#  undef snprintf   // undo mongoose snprintf define
+# endif
 # define snprintf(s,ssz,fmt,...) _sprintf_p_l (s, ssz, fmt, NULL, ##__VA_ARGS__)
 #endif
 

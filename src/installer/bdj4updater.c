@@ -261,7 +261,7 @@ main (int argc, char *argv [])
   if (isMacOS ()) {
     snprintf (homemusicdir, sizeof (homemusicdir), "%s/Music", home);
   }
-  pathNormPath (homemusicdir, sizeof (homemusicdir));
+  pathNormalizePath (homemusicdir, sizeof (homemusicdir));
 
   logMsg (LOG_INSTALL, LOG_MAIN, "homemusicdir: %s", homemusicdir);
 

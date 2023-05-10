@@ -16,11 +16,13 @@
     * Export for BDJ4: Fix issues with exporting secondary music folders.
     * Export for BDJ4: Fix window position.
     * Export for BDJ4: Preserve secondary music folder structure.
+    * Export for/Import from BDJ4: Fix path display on windows.
     * Import for BDJ4: Fix folder structure creation.
     * Player: Fix gap changes not being processed correctly (redux).
     * Song Editor: increase allowed entry length to 250 characters.
     * Update Database: Add validation for music folder entry.
     * Update Database: Fix bugs processing secondary music folders.
+    * Update Database: Fix path display on windows.
     * Windows: Fix status messages that have positional arguments.
 * Changes:
     * Update Database: Add compact function.
