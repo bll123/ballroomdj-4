@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-05-04\n"
+"PO-Revision-Date: 2023-05-10\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -434,6 +434,14 @@ msgstr "Klik met de muisaanwijzer in het blauwe vak op de maat van de muziek."
 #. CONTEXT: starterui: support message dialog: closes the dialog
 msgid "Close"
 msgstr "Sluiten"
+
+#. CONTEXT: database update: check for new audio files
+msgid "Compact"
+msgstr ""
+
+#. CONTEXT: database update: compact: help text
+msgid "Compact the database.  Use after audio files have been deleted."
+msgstr ""
 
 #. CONTEXT: configuration file: status
 #. CONTEXT: database update: status message

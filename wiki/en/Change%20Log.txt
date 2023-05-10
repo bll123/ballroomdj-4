@@ -22,6 +22,8 @@
     * Player: Fix gap changes not being processed correctly (redux).
     * Song Editor: increase allowed entry length to 250 characters.
     * Windows: Fix status messages that have positional arguments.
+* Changes:
+    * Update Database: Add compact function.
 * Internal:
     * Windows: clean up distributed libraries.
     * code cleanup (db).

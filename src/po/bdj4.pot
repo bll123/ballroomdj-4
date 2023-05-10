@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-04 17:22-0700\n"
+"POT-Creation-Date: 2023-05-10 09:01-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -431,6 +431,14 @@ msgstr ""
 #. CONTEXT: starterui: support dialog: closes the dialog
 #. CONTEXT: starterui: support message dialog: closes the dialog
 msgid "Close"
+msgstr ""
+
+#. CONTEXT: database update: check for new audio files
+msgid "Compact"
+msgstr ""
+
+#. CONTEXT: database update: compact: help text
+msgid "Compact the database.  Use after audio files have been deleted."
 msgstr ""
 
 #. CONTEXT: configuration file: status

@@ -28,6 +28,7 @@
 
 enum {
   MANAGE_DB_CHECK_NEW,
+  MANAGE_DB_COMPACT,
   MANAGE_DB_REORGANIZE,
   MANAGE_DB_UPD_FROM_TAGS,
   MANAGE_DB_WRITE_TAGS,
@@ -102,6 +103,12 @@ manageDbAlloc (uiwcont_t *window, nlist_t *options,
   nlistSetStr (hlist, MANAGE_DB_CHECK_NEW,
       /* CONTEXT: database update: check for new: help text */
       _("Checks for new audio files."));
+
+  /* CONTEXT: database update: check for new audio files */
+  nlistSetStr (tlist, MANAGE_DB_COMPACT, _("Compact"));
+  nlistSetStr (hlist, MANAGE_DB_COMPACT,
+      /* CONTEXT: database update: compact: help text */
+      _("Compact the database.  Use after audio files have been deleted."));
 
   /* CONTEXT: database update: reorganize : renames audio files based on organization settings */
   nlistSetStr (tlist, MANAGE_DB_REORGANIZE, _("Reorganize"));
@@ -222,6 +229,7 @@ manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp)
   uiwcontFree (uiwidgetp);
 
   uiwidgetp = uiCreateLabel ("");
+  uiLabelWrapOn (uiwidgetp);
   uiBoxPackStartExpand (hbox, uiwidgetp);
   uiWidgetSetMarginStart (uiwidgetp, 6);
   managedb->dbhelpdisp = uiwidgetp;
@@ -418,6 +426,10 @@ manageDbStart (void *udata)
   switch (nval) {
     case MANAGE_DB_CHECK_NEW: {
       targv [targc++] = "--checknew";
+      break;
+    }
+    case MANAGE_DB_COMPACT: {
+      targv [targc++] = "--compact";
       break;
     }
     case MANAGE_DB_REORGANIZE: {

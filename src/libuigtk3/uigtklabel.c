@@ -103,6 +103,16 @@ uiLabelEllipsizeOn (uiwcont_t *uiwidget)
 }
 
 void
+uiLabelWrapOn (uiwcont_t *uiwidget)
+{
+  if (uiwidget->widget == NULL) {
+    return;
+  }
+
+  gtk_label_set_line_wrap (GTK_LABEL (uiwidget->widget), TRUE);
+}
+
+void
 uiLabelSetSelectable (uiwcont_t *uiwidget)
 {
   if (uiwidget->widget == NULL) {

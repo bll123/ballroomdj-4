@@ -59,6 +59,12 @@ uiLabelEllipsizeOn (uiwcont_t *uiwidget)
 }
 
 void
+uiLabelWrapOn (uiwcont_t *uiwidget)
+{
+  return;
+}
+
+void
 uiLabelSetSelectable (uiwcont_t *uiwidget)
 {
   return;

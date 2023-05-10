@@ -278,8 +278,6 @@ updateCounts $crc
 msg+=$(compcheck $tname $rc)
 dispres $tname $rc $crc
 
-exit 1
-
 # restore all foxtrot
 mv -f tmp/*-foxtrot.mp3 test-music
 
