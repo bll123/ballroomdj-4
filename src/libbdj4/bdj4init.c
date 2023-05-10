@@ -86,6 +86,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     /* dbupdate options */
     { "rebuild",        no_argument,        NULL,   'R' },
     { "checknew",       no_argument,        NULL,   'C' },
+    { "compact",        no_argument,        NULL,   127 },
     { "reorganize",     no_argument,        NULL,   'O' },
     { "updfromtags",    no_argument,        NULL,   'u' },
     { "updfromitunes",  no_argument,        NULL,   'I' },
@@ -127,6 +128,10 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
       }
       case 'C': {
         *flags |= BDJ4_DB_CHECK_NEW;
+        break;
+      }
+      case 127: {
+        *flags |= BDJ4_DB_COMPACT;
         break;
       }
       case 'P': {
