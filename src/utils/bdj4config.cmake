@@ -391,6 +391,9 @@ check_function_exists (setenv _lib_setenv)
 check_function_exists (setrlimit _lib_setrlimit)
 check_function_exists (sigaction _lib_sigaction)
 check_function_exists (signal _lib_signal)
+# needed for windows positional parameters
+# _sprintf_p does not appear to exist in the library
+check_function_exists (_sprintf_p_l _lib__sprintf_p_l)
 check_function_exists (srand48 _lib_srand48)
 check_function_exists (srand _lib_srand)
 check_function_exists (srandom _lib_srandom)
