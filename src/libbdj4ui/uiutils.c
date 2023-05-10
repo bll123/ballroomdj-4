@@ -75,16 +75,12 @@ uiutilsValidatePlaylistName (uientry_t *entry, void *udata)
   const char  *valstr;
 
   rc = UIENTRY_OK;
-  if (statusMsg != NULL) {
-    uiLabelSetText (statusMsg, "");
-  }
+  uiLabelSetText (statusMsg, "");
   str = uiEntryGetValue (entry);
   valstr = validate (str, VAL_NOT_EMPTY | VAL_NO_SLASHES);
   if (valstr != NULL) {
-    if (statusMsg != NULL) {
-      snprintf (tbuff, sizeof (tbuff), valstr, str);
-      uiLabelSetText (statusMsg, tbuff);
-    }
+    snprintf (tbuff, sizeof (tbuff), valstr, str);
+    uiLabelSetText (statusMsg, tbuff);
     rc = UIENTRY_ERROR;
   }
 

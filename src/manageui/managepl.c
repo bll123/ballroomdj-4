@@ -54,7 +54,7 @@ enum {
 typedef struct managepl {
   uiwcont_t       *windowp;
   nlist_t         *options;
-  uiwcont_t       *statusMsg;
+  uiwcont_t       *errorMsg;
   uimenu_t        *plmenu;
   uiwcont_t       *menuDelete;
   callback_t      *callbacks [MPL_CB_MAX];
@@ -93,7 +93,7 @@ static bool managePlaylistCheckChanged (managepl_t *managepl);
 static int  managePlaylistAllowedKeywordsChg (uientry_t *e, void *udata);
 
 managepl_t *
-managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg)
+managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *errorMsg)
 {
   managepl_t *managepl;
 
@@ -103,7 +103,7 @@ managePlaylistAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg)
   managepl->plbackupcreated = false;
   managepl->plmenu = uiMenuAlloc ();
   managepl->plname = uiEntryInit (20, 50);
-  managepl->statusMsg = statusMsg;
+  managepl->errorMsg = errorMsg;
   managepl->windowp = window;
   managepl->options = options;
   managepl->pltype = PLTYPE_AUTO;
@@ -211,7 +211,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
 
   uiEntryCreate (managepl->plname);
   uiEntrySetValidate (managepl->plname, uiutilsValidatePlaylistName,
-      managepl->statusMsg, UIENTRY_IMMEDIATE);
+      managepl->errorMsg, UIENTRY_IMMEDIATE);
   uiWidgetSetClass (uiEntryGetWidgetContainer (managepl->plname), ACCENT_CLASS);
   uiBoxPackStart (hbox, uiEntryGetWidgetContainer (managepl->plname));
 
@@ -392,7 +392,7 @@ manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp)
   uiWidgetSetMarginStart (rcolvbox, 8);
   uiBoxPackStartExpand (mainhbox, rcolvbox);
 
-  managepl->managepltree = managePlaylistTreeAlloc (managepl->statusMsg);
+  managepl->managepltree = managePlaylistTreeAlloc (managepl->errorMsg);
   manageBuildUIPlaylistTree (managepl->managepltree, rcolvbox, tophbox);
   uiSpinboxResetChanged (managepl->uimaxplaytime);
   uiSpinboxResetChanged (managepl->uistopat);
@@ -726,7 +726,7 @@ managePlaylistCopy (void *udata)
   oname = manageTrimName (uiEntryGetValue (managepl->plname));
   /* CONTEXT: playlist management: the new name after 'create copy' (e.g. "Copy of DJ-2022-04") */
   snprintf (newname, sizeof (newname), _("Copy of %s"), oname);
-  if (manageCreatePlaylistCopy (managepl->statusMsg, oname, newname)) {
+  if (manageCreatePlaylistCopy (managepl->errorMsg, oname, newname)) {
     manageSetPlaylistName (managepl, newname);
     managepl->plbackupcreated = false;
     uiSpinboxResetChanged (managepl->uimaxplaytime);
@@ -752,7 +752,7 @@ managePlaylistDelete (void *udata)
   logProcBegin (LOG_PROC, "managePlaylistDelete");
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: delete playlist");
   oname = manageTrimName (uiEntryGetValue (managepl->plname));
-  manageDeletePlaylist (managepl->statusMsg, oname);
+  manageDeletePlaylist (managepl->errorMsg, oname);
   uiSpinboxResetChanged (managepl->uimaxplaytime);
   uiSpinboxResetChanged (managepl->uistopat);
   uiSpinboxResetChanged (managepl->uigap);
@@ -784,11 +784,11 @@ managePlaylistValMSCallback (void *udata, const char *txt)
   long        value;
 
   logProcBegin (LOG_PROC, "managePlaylistValMSCallback");
-  uiLabelSetText (managepl->statusMsg, "");
+  uiLabelSetText (managepl->errorMsg, "");
   valstr = validate (txt, VAL_MIN_SEC);
   if (valstr != NULL) {
     snprintf (tbuff, sizeof (tbuff), valstr, txt);
-    uiLabelSetText (managepl->statusMsg, tbuff);
+    uiLabelSetText (managepl->errorMsg, tbuff);
     logProcEnd (LOG_PROC, "managePlaylistValMSCallback", "not-valid");
     return -1;
   }
@@ -807,11 +807,11 @@ managePlaylistValHMCallback (void *udata, const char *txt)
   long        value;
 
   logProcBegin (LOG_PROC, "managePlaylistValHMCallback");
-  uiLabelSetText (managepl->statusMsg, "");
+  uiLabelSetText (managepl->errorMsg, "");
   valstr = validate (txt, VAL_HOUR_MIN);
   if (valstr != NULL) {
     snprintf (tbuff, sizeof (tbuff), valstr, txt);
-    uiLabelSetText (managepl->statusMsg, tbuff);
+    uiLabelSetText (managepl->errorMsg, tbuff);
     logProcEnd (LOG_PROC, "managePlaylistValHMCallback", "not-valid");
     return -1;
   }

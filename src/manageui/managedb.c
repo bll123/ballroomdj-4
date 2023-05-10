@@ -48,6 +48,8 @@ typedef struct managedb {
   uiwcont_t         *windowp;
   nlist_t           *options;
   uiwcont_t         *statusMsg;
+  uiwcont_t         *errorMsg;
+  const char        *pleasewaitmsg;
   procutil_t        **processes;
   conn_t            *conn;
   uientry_t         *dbtopdir;
@@ -61,6 +63,7 @@ typedef struct managedb {
   nlist_t           *dblist;
   nlist_t           *dbhelp;
   uiwcont_t         *dbpbar;
+  bool              compact : 1;
 } managedb_t;
 
 static bool manageDbStart (void *udata);
@@ -69,7 +72,8 @@ static bool manageDbSelectDirCallback (void *udata);
 
 managedb_t *
 manageDbAlloc (uiwcont_t *window, nlist_t *options,
-    uiwcont_t *statusMsg, conn_t *conn, procutil_t **processes)
+    uiwcont_t *statusMsg, uiwcont_t *errorMsg, const char *pleasewaitmsg,
+    conn_t *conn, procutil_t **processes)
 {
   managedb_t      *managedb;
   nlist_t         *tlist;
@@ -91,6 +95,9 @@ manageDbAlloc (uiwcont_t *window, nlist_t *options,
   managedb->dbtopdir = uiEntryInit (50, 200);
   managedb->dbspinbox = uiSpinboxInit ();
   managedb->statusMsg = statusMsg;
+  managedb->errorMsg = errorMsg;
+  managedb->pleasewaitmsg = pleasewaitmsg;
+  managedb->compact = false;
   for (int i = 0; i < MDB_CB_MAX; ++i) {
     managedb->callbacks [i] = NULL;
   }
@@ -321,7 +328,7 @@ manageDbChg (void *udata)
   value = uiSpinboxTextGetValue (managedb->dbspinbox);
   nval = (int) value;
 
-  uiLabelSetText (managedb->statusMsg, "");
+  uiLabelSetText (managedb->errorMsg, "");
   sval = nlistGetStr (managedb->dbhelp, nval);
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db chg selector : %s", sval);
 
@@ -341,7 +348,7 @@ manageDbChg (void *udata)
 
         /* CONTEXT: manage ui: status message: itunes is not configured */
         snprintf (tbuff, sizeof (tbuff), _("%s is not configured."), ITUNES_NAME);
-        uiLabelSetText (managedb->statusMsg, tbuff);
+        uiLabelSetText (managedb->errorMsg, tbuff);
         uiwidgetp = uiButtonGetWidgetContainer (managedb->dbstart);
         uiWidgetSetState (uiwidgetp, UIWIDGET_DISABLE);
       }
@@ -391,6 +398,17 @@ manageDbClose (managedb_t *managedb)
 void
 manageDbResetButtons (managedb_t *managedb)
 {
+  if (managedb->compact) {
+    char  tbuff [200];
+
+    /* CONTEXT: update database: exit BDJ4 and restart */
+    snprintf (tbuff, sizeof (tbuff), _("Exit %s and restart."), BDJ4_NAME);
+    uiLabelSetText (managedb->statusMsg, tbuff);
+  } else {
+    uiLabelSetText (managedb->statusMsg, "");
+  }
+  managedb->compact = false;
+
   uiButtonSetState (managedb->dbstart, UIWIDGET_ENABLE);
   uiButtonSetState (managedb->dbstop, UIWIDGET_DISABLE);
   uiSpinboxSetState (managedb->dbspinbox, UIWIDGET_ENABLE);
@@ -409,6 +427,10 @@ manageDbStart (void *udata)
   char        tbuff [MAXPATHLEN];
 
   logMsg (LOG_DBG, LOG_ACTIONS, "= action: db start");
+
+  uiLabelSetText (managedb->statusMsg, "");
+  uiLabelSetText (managedb->errorMsg, "");
+
   uiButtonSetState (managedb->dbstart, UIWIDGET_DISABLE);
   uiButtonSetState (managedb->dbstop, UIWIDGET_ENABLE);
   uiSpinboxSetState (managedb->dbspinbox, UIWIDGET_DISABLE);
@@ -423,12 +445,15 @@ manageDbStart (void *udata)
   uiTextBoxAppendStr (managedb->dbstatus, sval);
   uiTextBoxAppendStr (managedb->dbstatus, "\n");
 
+  uiLabelSetText (managedb->statusMsg, managedb->pleasewaitmsg);
+
   switch (nval) {
     case MANAGE_DB_CHECK_NEW: {
       targv [targc++] = "--checknew";
       break;
     }
     case MANAGE_DB_COMPACT: {
+      managedb->compact = true;
       targv [targc++] = "--compact";
       break;
     }

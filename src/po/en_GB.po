@@ -732,6 +732,11 @@ msgstr ""
 msgid "Exit"
 msgstr ""
 
+#. CONTEXT: update database: exit BDJ4 and restart
+#, c-format
+msgid "Exit %s and restart."
+msgstr ""
+
 #. CONTEXT: export/import bdj4 dialog: export button
 #. CONTEXT: managementui: menu selection: export actions for song list
 msgid "Export"

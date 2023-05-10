@@ -28,7 +28,7 @@
 #include "validate.h"
 
 bool
-manageCreatePlaylistCopy (uiwcont_t *statusMsg,
+manageCreatePlaylistCopy (uiwcont_t *errorMsg,
     const char *oname, const char *newname)
 {
   char  tbuff [MAXPATHLEN];
@@ -37,7 +37,7 @@ manageCreatePlaylistCopy (uiwcont_t *statusMsg,
   if (playlistExists (newname)) {
     /* CONTEXT: manageui: failure status message */
     snprintf (tbuff, sizeof (tbuff), _("Copy already exists."));
-    uiLabelSetText (statusMsg, tbuff);
+    uiLabelSetText (errorMsg, tbuff);
     rc = false;
   }
   if (rc) {
@@ -54,9 +54,7 @@ manageDeletePlaylist (uiwcont_t *statusMsg, const char *name)
   playlistDelete (name);
 
   snprintf (tbuff, sizeof (tbuff), "%s deleted.", name);
-  if (statusMsg != NULL) {
-    uiLabelSetText (statusMsg, tbuff);
-  }
+  uiLabelSetText (statusMsg, tbuff);
 }
 
 char *

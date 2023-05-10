@@ -518,10 +518,8 @@ uieibdj4ValidateTarget (uientry_t *entry, void *udata)
   char        tbuff [MAXPATHLEN];
 
   currtype = uieibdj4->currtype;
-  if (uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG] != NULL) {
-    uiLabelSetText (
-        uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG], "");
-  }
+  uiLabelSetText (
+      uieibdj4->dialog [currtype].wcont [UIEIBDJ4_W_ERROR_MSG], "");
 
   str = uiEntryGetValue (entry);
   *tbuff = '\0';

@@ -48,7 +48,7 @@ enum {
 
 typedef struct managepltree {
   uitree_t          *uitree;
-  uiwcont_t         *statusMsg;
+  uiwcont_t         *errorMsg;
   uiwcont_t         *uihideunsel;
   callback_t        *callbacks [MPLTREE_CB_MAX];
   playlist_t        *playlist;
@@ -64,13 +64,13 @@ static void managePlaylistTreeCreate (managepltree_t *managepltree);
 static bool managePlaylistTreeHideUnselectedCallback (void *udata);
 
 managepltree_t *
-managePlaylistTreeAlloc (uiwcont_t *statusMsg)
+managePlaylistTreeAlloc (uiwcont_t *errorMsg)
 {
   managepltree_t *managepltree;
 
   managepltree = mdmalloc (sizeof (managepltree_t));
   managepltree->uitree = NULL;
-  managepltree->statusMsg = statusMsg;
+  managepltree->errorMsg = errorMsg;
   managepltree->playlist = NULL;
   managepltree->currcount = 0;
   managepltree->changed = false;
@@ -395,7 +395,7 @@ managePlaylistTreeChanged (void *udata, long col)
 
   uiTreeViewSelectCurrent (managepltree->uitree);
 
-  uiLabelSetText (managepltree->statusMsg, "");
+  uiLabelSetText (managepltree->errorMsg, "");
   managepltree->changed = true;
 
   if (col == MPLTREE_COL_MAXPLAYTIME) {
@@ -407,7 +407,7 @@ managePlaylistTreeChanged (void *udata, long col)
     valstr = validate (str, VAL_MIN_SEC);
     if (valstr != NULL) {
       snprintf (tbuff, sizeof (tbuff), valstr, str);
-      uiLabelSetText (managepltree->statusMsg, tbuff);
+      uiLabelSetText (managepltree->errorMsg, tbuff);
       managepltree->changed = false;
       rc = UICB_STOP;
     }

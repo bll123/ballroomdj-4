@@ -27,7 +27,7 @@ enum {
 typedef struct managepl managepl_t;
 
 managepl_t *managePlaylistAlloc (uiwcont_t *window, nlist_t *options,
-    uiwcont_t *statusMsg);
+    uiwcont_t *errorMsg);
 void managePlaylistFree (managepl_t *managepl);
 void managePlaylistSetLoadCallback (managepl_t *managepl, callback_t *uicb);
 void manageBuildUIPlaylist (managepl_t *managepl, uiwcont_t *vboxp);
@@ -40,7 +40,7 @@ bool managePlaylistNew (managepl_t *managepl, int preloadflag);
 /* managepltree.c */
 typedef struct managepltree managepltree_t;
 
-managepltree_t *managePlaylistTreeAlloc (uiwcont_t *statusMsg);
+managepltree_t *managePlaylistTreeAlloc (uiwcont_t *errorMsg);
 void managePlaylistTreeFree (managepltree_t *managepltree);
 void manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,  uiwcont_t *tophbox);
 void managePlaylistTreePrePopulate (managepltree_t *managepltree, playlist_t *pl);
@@ -52,7 +52,7 @@ void managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree);
 typedef struct manageseq manageseq_t;
 
 manageseq_t *manageSequenceAlloc (uiwcont_t *window, nlist_t *options,
-    uiwcont_t *statusMsg);
+    uiwcont_t *errorMsg);
 void manageSequenceFree (manageseq_t *manageseq);
 void manageSequenceSetLoadCallback (manageseq_t *manageseq, callback_t *uicb);
 void manageSequenceSetNewCallback (manageseq_t *manageseq, callback_t *uicb);
@@ -65,7 +65,7 @@ void manageSequenceLoadFile (manageseq_t *manageseq, const char *fn, int preload
 /* managedb.c */
 typedef struct managedb managedb_t;
 
-managedb_t *manageDbAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg, conn_t *conn, procutil_t **processes);
+managedb_t *manageDbAlloc (uiwcont_t *window, nlist_t *options, uiwcont_t *statusMsg, uiwcont_t *errorMsg, const char *pleasewaitmsg, conn_t *conn, procutil_t **processes);
 void  manageDbFree (managedb_t *managedb);
 void  manageDbProcess (managedb_t *managedb);
 void  manageBuildUIUpdateDatabase (managedb_t *managedb, uiwcont_t *vboxp);
@@ -77,7 +77,7 @@ void  manageDbClose (managedb_t *managedb);
 void  manageDbResetButtons (managedb_t *managedb);
 
 /* managemisc.c */
-bool manageCreatePlaylistCopy (uiwcont_t *statusMsg,
+bool manageCreatePlaylistCopy (uiwcont_t *errorMsg,
     const char *oname, const char *newname);
 void manageDeletePlaylist (uiwcont_t *statusMsg, const char *name);
 char * manageTrimName (const char *name);

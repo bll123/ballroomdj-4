@@ -780,7 +780,9 @@ manageBuildUI (manageui_t *manage)
 
   /* update database */
   manage->managedb = manageDbAlloc (manage->wcont [MANAGE_W_WINDOW],
-      manage->options, manage->wcont [MANAGE_W_ERROR_MSG], manage->conn, manage->processes);
+      manage->options, manage->wcont [MANAGE_W_STATUS_MSG],
+      manage->wcont [MANAGE_W_ERROR_MSG], manage->pleasewaitmsg,
+      manage->conn, manage->processes);
 
   uiwcontFree (vbox);
   vbox = uiCreateVertBox ();
@@ -1001,7 +1003,7 @@ manageBuildUISongListEditor (manageui_t *manage)
   uiBoxPackStartExpand (mainhbox, hbox);
 
   uiwidgetp = uimusicqBuildUI (manage->slezmusicq, manage->wcont [MANAGE_W_WINDOW], MUSICQ_SL,
-      manage->wcont [MANAGE_W_ERROR_MSG], uiutilsValidatePlaylistName);
+      manage->wcont [MANAGE_W_STATUS_MSG], uiutilsValidatePlaylistName);
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
   uiwcontFree (vbox);
@@ -1026,7 +1028,7 @@ manageBuildUISongListEditor (manageui_t *manage)
 
   /* song list editor: music queue tab */
   uip = uimusicqBuildUI (manage->slmusicq, manage->wcont [MANAGE_W_WINDOW], MUSICQ_SL,
-      manage->wcont [MANAGE_W_ERROR_MSG], uiutilsValidatePlaylistName);
+      manage->wcont [MANAGE_W_STATUS_MSG], uiutilsValidatePlaylistName);
   /* CONTEXT: managementui: name of song list notebook tab */
   uiwidgetp = uiCreateLabel (_("Song List"));
   uiNotebookAppendPage (manage->wcont [MANAGE_W_SONGLIST_NB], uip, uiwidgetp);
@@ -1356,7 +1358,6 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             uisongselProcessMusicQueueData (manage->slezsongsel, musicqupdate);
           }
           msgparseMusicQueueDataFree (musicqupdate);
-          uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], "");
           if (uimusicqGetCount (manage->slmusicq) > 0) {
             manage->musicqupdated = true;
           }

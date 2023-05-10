@@ -526,9 +526,7 @@ uiextreqValidateArtist (uientry_t *entry, void *udata)
   uiextreq_t  *uiextreq = udata;
   const char  *str;
 
-  if (uiextreq->statusMsg != NULL) {
-    uiLabelSetText (uiextreq->statusMsg, "");
-  }
+  uiLabelSetText (uiextreq->statusMsg, "");
   str = uiEntryGetValue (entry);
   if (uiextreq->song != NULL) {
     songSetStr (uiextreq->song, TAG_ARTIST, str);
@@ -542,9 +540,7 @@ uiextreqValidateTitle (uientry_t *entry, void *udata)
   uiextreq_t  *uiextreq = udata;
   const char  *str;
 
-  if (uiextreq->statusMsg != NULL) {
-    uiLabelSetText (uiextreq->statusMsg, "");
-  }
+  uiLabelSetText (uiextreq->statusMsg, "");
   str = uiEntryGetValue (entry);
   if (uiextreq->song != NULL) {
     songSetStr (uiextreq->song, TAG_TITLE, str);
