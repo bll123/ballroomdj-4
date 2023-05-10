@@ -110,6 +110,7 @@ main (int argc, char * argv[])
     { "wait",           no_argument,        NULL,   'w' },
     /* dbupdate options */
     { "checknew",       no_argument,        NULL,   0 },
+    { "compact",        no_argument,        NULL,   0 },
     { "dbtopdir",       required_argument,  NULL,   0 },
     { "rebuild",        no_argument,        NULL,   0 },
     { "reorganize",     no_argument,        NULL,   0 },
