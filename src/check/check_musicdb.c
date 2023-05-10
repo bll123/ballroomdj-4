@@ -544,6 +544,7 @@ START_TEST(musicdb_load_get_byname)
       ck_assert_int_eq (songGetNum (dbsong, TAG_DBIDX), count);
       ck_assert_str_eq (songGetStr (song, TAG_ARTIST),
           songGetStr (dbsong, TAG_ARTIST));
+
       songFree (song);
       ++count;
     }

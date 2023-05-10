@@ -75,13 +75,16 @@ dbOpen (const char *fn)
 void
 dbClose (musicdb_t *musicdb)
 {
-  /* for each song in db, free the song */
   if (musicdb != NULL) {
+    if (musicdb->inbatch) {
+      dbEndBatch (musicdb);
+    }
+    raClose (musicdb->radb);
+    musicdb->radb = NULL;
+
     slistFree (musicdb->songs);
     nlistFree (musicdb->danceCounts);
     dataFree (musicdb->fn);
-    raClose (musicdb->radb);
-    musicdb->radb = NULL;
     nlistFree (musicdb->tempSongs);
     mdfree (musicdb);
   }
@@ -101,55 +104,29 @@ dbCount (musicdb_t *musicdb)
 int
 dbLoad (musicdb_t *musicdb)
 {
-  char        data [RAFILE_REC_SIZE];
-  char        *fstr;
-  char        *ffn;
+  char        *fstr = NULL;
   song_t      *song;
-  rafileidx_t rc;
   nlistidx_t  dkey;
   nlistidx_t  iteridx;
   slistidx_t  dbidx;
   slistidx_t  siteridx;
-  bool        ok;
 
 
-  fstr = "";
   musicdb->radb = raOpen (musicdb->fn, MUSICDB_VERSION);
   slistSetSize (musicdb->songs, raGetCount (musicdb->radb));
 
   raStartBatch (musicdb->radb);
 
   for (rafileidx_t i = 1L; i <= raGetCount (musicdb->radb); ++i) {
-    /* should be able to replace the below code with dbReadEntry() */
-    /* but bdj4main crashes, and I don't know why */
-    rc = raRead (musicdb->radb, i, data);
-    if (rc != 1) {
-      logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Unable to access rrn %d", i);
-    }
-    if (rc == 0 || ! *data) {
-      continue;
-    }
+    song = dbReadEntry (musicdb, i);
 
-    song = songAlloc ();
-    songParse (song, data, i);
-    fstr = songGetStr (song, TAG_FILE);
-    ffn = songutilFullFileName (fstr);
-    ok = false;
-    if (fileopFileExists (ffn)) {
-      ok = true;
-    } else {
-      logMsg (LOG_DBG, LOG_IMPORTANT, "song %s not found", fstr);
-      songFree (song);
-      song = NULL;
-    }
-    mdfree (ffn);
-
-    if (ok) {
+    if (song != NULL) {
       dkey = songGetNum (song, TAG_DANCE);
       if (dkey >= 0) {
         nlistIncrement (musicdb->danceCounts, dkey);
       }
       songSetNum (song, TAG_RRN, i);
+      fstr = songGetStr (song, TAG_FILE);
       slistSetData (musicdb->songs, fstr, song);
       ++musicdb->count;
     }
@@ -224,8 +201,6 @@ dbEndBatch (musicdb_t *musicdb)
   }
 
   raEndBatch (musicdb->radb);
-  raClose (musicdb->radb);
-  musicdb->radb = NULL;
   musicdb->inbatch = false;
 }
 
@@ -444,6 +419,23 @@ dbAddTemporarySong (musicdb_t *musicdb, song_t *song)
   nlistSetData (musicdb->tempSongs, dbidx, song);
   return dbidx;
 }
+
+#if 0
+void
+dbDumpSongList (musicdb_t *musicdb)
+{
+  slistidx_t    siteridx;
+  const char    *key;
+  song_t        *song;
+
+  slistStartIterator (musicdb->songs, &siteridx);
+  while ((key = slistIterateKey (musicdb->songs, &siteridx)) != NULL) {
+    fprintf (stderr, "key: %s\n", key);
+    song = slistGetData (musicdb->songs, key);
+    fprintf (stderr, "  song: %s\n", songGetStr (song, TAG_FILE));
+  }
+}
+#endif
 
 /* internal routines */
 
