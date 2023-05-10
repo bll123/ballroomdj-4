@@ -162,10 +162,10 @@ uiWindowMove (uiwcont_t *uiwindow, int x, int y, int ws)
 {
   GdkWindow *gdkwin;
 
-  if (x != -1 && y != -1) {
+  if (x >= 0 && y>= 0) {
     gtk_window_move (GTK_WINDOW (uiwindow->widget), x, y);
   }
-  if (ws != -1) {
+  if (ws >= 0) {
     gdkwin = gtk_widget_get_window (uiwindow->widget);
     if (gdkwin != NULL) {
 #if _hdr_gdk_gdkx

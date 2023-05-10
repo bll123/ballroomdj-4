@@ -14,6 +14,7 @@
 
 #include "bdj4intl.h"
 #include "bdjopt.h"
+#include "bdjstring.h"      // needed for snprintf macro
 #include "sysvars.h"
 #include "ui.h"
 #include "uiutils.h"

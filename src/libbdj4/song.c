@@ -66,6 +66,7 @@ static datafilekey_t songdfkeys [] = {
   { "LASTUPDATED",          TAG_LAST_UPDATED,         VALUE_NUM, NULL, -1 },
   { "MQDISPLAY",            TAG_MQDISPLAY,            VALUE_STR, NULL, -1 },
   { "NOTES",                TAG_NOTES,                VALUE_STR, NULL, -1 },
+  { "PFXLEN",               TAG_PREFIX_LEN,           VALUE_NUM, NULL, -1 },
   { "RECORDING_ID",         TAG_RECORDING_ID,         VALUE_STR, NULL, -1 },
   { "SAMESONG",             TAG_SAMESONG,             VALUE_NUM, NULL, -1 },
   { "SONGEND",              TAG_SONGEND,              VALUE_NUM, NULL, -1 },

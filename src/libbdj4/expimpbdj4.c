@@ -14,6 +14,7 @@
 #include "expimpbdj4.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "ilist.h"
 #include "log.h"
 #include "mdebug.h"
 #include "musicdb.h"
@@ -37,10 +38,12 @@ typedef struct eibdj4 {
   char        origmusicdir [MAXPATHLEN];
   char        *plName;
   char        *newName;
+  /* export uses the dbidxlist to determine which songs to export */
   nlist_t     *dbidxlist;
   nlistidx_t  dbidxiter;
   slistidx_t  dbiteridx;
   songlist_t  *sl;
+  ilistidx_t  slkey;
   ilistidx_t  sliteridx;
   int         eiflag;
   int         counter;
@@ -63,6 +66,7 @@ eibdj4Init (musicdb_t *musicdb, const char *dirname, int eiflag)
   eibdj4->dbidxlist = NULL;
   eibdj4->plName = NULL;
   eibdj4->newName = NULL;
+  eibdj4->sl = NULL;
   eibdj4->eiflag = eiflag;
   eibdj4->counter = 0;
   eibdj4->totcount = 0;
@@ -87,6 +91,7 @@ eibdj4Free (eibdj4_t *eibdj4)
   if (eibdj4 != NULL) {
     dataFree (eibdj4->plName);
     dataFree (eibdj4->newName);
+    songlistFree (eibdj4->sl);
     mdfree (eibdj4);
   }
 }
@@ -223,17 +228,17 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
         eibdj4->plName, BDJ4_PL_DANCE_EXT);
     filemanipCopy (from, tbuff);
 
-    pathbldMakePath (from, sizeof (from),
-        eibdj4->plName, BDJ4_SONGLIST_EXT, PATHBLD_MP_DREL_DATA);
-    snprintf (tbuff, sizeof (tbuff), "%s/%s%s", eibdj4->datadir,
-        eibdj4->plName, BDJ4_SONGLIST_EXT);
-    filemanipCopy (from, tbuff);
-
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->musicdir);
     eibdj4->eimusicdb = dbOpen (eibdj4->dbfname);
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->origmusicdir);
     dbStartBatch (eibdj4->eimusicdb);
     dbDisableLastUpdateTime (eibdj4->eimusicdb);
+
+    snprintf (tbuff, sizeof (tbuff), "%s/%s%s", eibdj4->datadir,
+        eibdj4->plName, BDJ4_SONGLIST_EXT);
+    songlistFree (eibdj4->sl);
+    eibdj4->sl = songlistAlloc (tbuff);
+    eibdj4->slkey = 0;
 
     eibdj4->state = BDJ4_STATE_PROCESS;
     rc = false;
@@ -246,29 +251,36 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
     bool        docopy = false;
     const char  *songfn;
     char        *ffn = NULL;
-    char        tfn [MAXPATHLEN];
+    char        nsongfn [MAXPATHLEN];
     bool        isabsolute = false;
-    pathinfo_t  *pi;
 
     if ((dbidx = nlistIterateKey (eibdj4->dbidxlist, &eibdj4->dbidxiter)) >= 0) {
       song = dbGetByIdx (eibdj4->musicdb, dbidx);
 
       songfn = songGetStr (song, TAG_FILE);
-      strlcpy (tfn, songfn, sizeof (tfn));
+      strlcpy (nsongfn, songfn, sizeof (nsongfn));
       ffn = songutilFullFileName (songfn);
       if (fileopIsAbsolutePath (songfn)) {
+        int     pfxlen;
+
         isabsolute = true;
-        pi = pathInfo (songfn);
-        snprintf (tfn, sizeof (tfn), "%.*s", (int) pi->flen, pi->filename);
-        pathInfoFree (pi);
+        pfxlen = songGetNum (song, TAG_PREFIX_LEN);
+        if (pfxlen < 0) {
+          pfxlen = 0;
+        }
+        snprintf (nsongfn, sizeof (nsongfn), "%s", songfn + pfxlen);
       }
       /* tbuff holds new full pathname of the exported song */
-      snprintf (tbuff, sizeof (tbuff), "%s/%s", eibdj4->musicdir, tfn);
+      snprintf (tbuff, sizeof (tbuff), "%s/%s", eibdj4->musicdir, nsongfn);
       if (isabsolute) {
-        songSetStr (song, TAG_FILE, tfn);
+        songSetStr (song, TAG_FILE, nsongfn);
       }
 
-      tsong = dbGetByName (eibdj4->eimusicdb, tfn);
+      doupdate = false;
+      docopy = false;
+      /* a song in a secondary folder w/the same name is going to be */
+      /* kicked out, as it will be found in the export music-db */
+      tsong = dbGetByName (eibdj4->eimusicdb, nsongfn);
       if (tsong == NULL) {
         songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
         doupdate = true;
@@ -288,16 +300,26 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
         }
       }
 
+      songlistSetStr (eibdj4->sl, eibdj4->slkey, SONGLIST_FILE, nsongfn);
+      songlistSetStr (eibdj4->sl, eibdj4->slkey, SONGLIST_TITLE,
+          songGetStr (song, TAG_TITLE));
+      songlistSetNum (eibdj4->sl, eibdj4->slkey, SONGLIST_DANCE,
+          songGetNum (song, TAG_DANCE));
+      ++eibdj4->slkey;
+fprintf (stderr, "exp: %s %d\n", nsongfn, dbidx);
+
       if (doupdate) {
         pathinfo_t  *pi;
+        char        tdir [MAXPATHLEN];
 
         pi = pathInfo (tbuff);
-        snprintf (tfn, sizeof (tfn), "%.*s", (int) pi->dlen, pi->dirname);
-        diropMakeDir (tfn);
+        snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
+        diropMakeDir (tdir);
         pathInfoFree (pi);
 
         dbWriteSong (eibdj4->eimusicdb, song);
       }
+
       if (docopy) {
         filemanipCopy (ffn, tbuff);
       }
@@ -311,6 +333,9 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
   }
 
   if (eibdj4->state == BDJ4_STATE_FINISH) {
+    songlistSave (eibdj4->sl, SONGLIST_UPDATE_TIMESTAMP, 1);
+    songlistFree (eibdj4->sl);
+    eibdj4->sl = NULL;
     dbEndBatch (eibdj4->eimusicdb);
     dbClose (eibdj4->eimusicdb);
     eibdj4->dbidxlist = NULL;
@@ -334,6 +359,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
 
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->musicdir);
     eibdj4->eimusicdb = dbOpen (eibdj4->dbfname);
+fprintf (stderr, "dbfname: %s\n", eibdj4->dbfname);
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->origmusicdir);
     eibdj4->totcount = dbCount (eibdj4->eimusicdb);
 
@@ -357,19 +383,23 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
     if (slidx >= 0) {
       slfn = songlistGetStr (eibdj4->sl, slidx, SONGLIST_FILE);
       song = dbGetByName (eibdj4->eimusicdb, slfn);
+fprintf (stderr, "slfn: %s\n", slfn);
 
       if (song != NULL) {
         const char    *songfn;
-        char          *ffn = NULL;
         char          *nfn = NULL;
-        char          tbuff [MAXPATHLEN];
+        char          ifn [MAXPATHLEN];
         song_t        *tsong;
         bool          doupdate;
         bool          docopy;
 
+fprintf (stderr, "  have song\n");
         songfn = songGetStr (song, TAG_FILE);
-        ffn = songutilFullFileName (songfn);
-        snprintf (tbuff, sizeof (tbuff), "%s/%s", eibdj4->musicdir, songfn);
+fprintf (stderr, "  songfn: %s\n", songfn);
+        nfn = songutilFullFileName (songfn);
+fprintf (stderr, "  nfn: %s\n", nfn);
+        snprintf (ifn, sizeof (ifn), "%s/%s", eibdj4->musicdir, songfn);
+fprintf (stderr, "  ifn: %s\n", ifn);
 
         tsong = dbGetByName (eibdj4->musicdb, songfn);
 
@@ -393,20 +423,29 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
             doupdate = true;
           }
         }
-        if (! docopy && ! fileopFileExists (ffn)) {
+        if (! docopy && ! fileopFileExists (nfn)) {
           docopy = true;
         }
         if (doupdate) {
+fprintf (stderr, "  doupdate\n");
           eibdj4->dbchanged = true;
           songSetChanged (song);
           songWriteDBSong (eibdj4->musicdb, song);
         }
         if (docopy) {
-          nfn = songutilFullFileName (songfn);
-          filemanipCopy (tbuff, ffn);
+          pathinfo_t  *pi;
+          char        tdir [MAXPATHLEN];
+
+fprintf (stderr, "  docopy\n");
+fprintf (stderr, "    from: %s\n", ifn);
+fprintf (stderr, "      to: %s\n", nfn);
+          pi = pathInfo (nfn);
+          snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
+          diropMakeDir (tdir);
+          filemanipCopy (ifn, nfn);
+          pathInfoFree (pi);
         }
 
-        dataFree (ffn);
         dataFree (nfn);
         eibdj4->counter += 1;
         rc = false;
@@ -440,6 +479,8 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
   }
 
   if (eibdj4->state == BDJ4_STATE_FINISH) {
+    songlistFree (eibdj4->sl);
+    eibdj4->sl = NULL;
     dbEnableLastUpdateTime (eibdj4->musicdb);
     dbClose (eibdj4->eimusicdb);
     rc = true;

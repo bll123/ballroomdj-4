@@ -13,12 +13,18 @@
 **4.3.2.2 2023-5---**
 
 * Bug Fixes:
-    * Database Update: Fix bugs processing secondary folders.
-    * PENDING: Database Update: Fix missing validation for music folder entry.
-    * Song Editor: increase allowed entry length to 200 characters.
+    * Database Update: Add validation for music folder entry.
+    * Database Update: Fix bugs processing secondary music folders.
+    * Export for BDJ4: Fix issues with exporting secondary music folders.
+    * Export for BDJ4: Fix window position.
+    * Export for BDJ4: Preserve secondary music folder structure.
+    * Import for BDJ4: Fix folder structure creation.
     * Player: Fix gap changes not being processed correctly (redux).
+    * Song Editor: increase allowed entry length to 250 characters.
+    * Windows: Fix status messages that have positional arguments.
 * Internal:
     * Windows: clean up distributed libraries.
+    * code cleanup (db).
 
 -->
 

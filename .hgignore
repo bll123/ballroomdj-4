@@ -29,6 +29,7 @@ syntax: regexp
 ^src/w$
 ^test-files/
 ^test-music/
+^test-music-org/
 ^test-music-orig/
 ^tmp/
 ^web/lastversion.txt$

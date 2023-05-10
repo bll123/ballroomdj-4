@@ -243,6 +243,8 @@ procutilStartProcess (bdjmsgroute_t route, const char *fname, int detachflag,
   if (process == NULL) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "%s %s failed to start", fname, tbuff);
   } else {
+    logMsg (LOG_SESS, LOG_IMPORTANT, "%s started pid: %" PRId64, fname,
+        (int64_t) process->pid);
     logMsg (LOG_DBG, LOG_BASIC, "%s started pid: %" PRId64, fname,
         (int64_t) process->pid);
     process->started = true;

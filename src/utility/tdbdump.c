@@ -130,6 +130,7 @@ main (int argc, char *argv [])
           (strcmp (tag, "DBADDDATE") == 0 ||
           strcmp (tag, "FILE") == 0 ||
           strcmp (tag, "LASTUPDATED") == 0 ||
+          strcmp (tag, "PFXLEN") == 0 ||
           strcmp (tag, "RRN") == 0)) {
         continue;
       }

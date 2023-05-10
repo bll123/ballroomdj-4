@@ -57,12 +57,14 @@ dylibLoad (const char *path)
 void
 dylibClose (dlhandle_t *handle)
 {
-  mdextfree (handle);
 #if _lib_dlopen
+  mdextfree (handle);
   dlclose (handle);
 #endif
 #if _lib_LoadLibrary
   HMODULE   whandle = handle;
+
+  mdextfree (handle);
   FreeLibrary (whandle);
 #endif
 }

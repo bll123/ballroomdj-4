@@ -165,7 +165,7 @@ mdrealloc_r (void *data, size_t sz, const char *fn, int lineno)
   ndata = realloc (data, sz);
   if (initialized) {
     if (mdebugverbose) {
-      mdebugLog ("%4s %p realloc-init %s %d\n", mdebugtag, data, fn, lineno);
+      mdebugLog ("%4s %p realloc-init %s %d\n", mdebugtag, ndata, fn, lineno);
     }
     mdebugAdd (ndata, MDEBUG_TYPE_REALLOC, fn, lineno);
   }
