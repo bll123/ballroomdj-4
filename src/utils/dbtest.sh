@@ -119,21 +119,28 @@ function setorgregex {
   mv -f ${gconf}.n ${gconf}
 }
 
+# norm
 NUMM=120
+# deleted foxtrot
+NUMC=$(($NUMM-6))
 NUMB=15
 NUMBL1=$(($NUMB-1))
 NUMR=13
 
-INB=test-templates/test-m-b.txt
-INC=test-templates/test-m-c.txt
-IND=test-templates/test-m-c.txt
+DATADB=data/musicdb.dat
+TMAINDB=test-templates/musicdb.dat
+INNOCHACHA=test-templates/test-m-nochacha.txt
+INALL=test-templates/test-m-all.txt
+INNOFOXTROT=test-templates/test-m-nofoxtrot.txt
 INR=test-templates/test-m-regex.txt
 INRDAT=test-templates/test-m-regex-dat.txt
 INRDT=test-templates/test-m-regex-dt.txt
 INRDTAT=test-templates/test-m-regex-dtat.txt
-TDBB=tmp/test-m-b.dat
-TDBC=tmp/test-m-c.dat
-TDBD=tmp/test-m-d.dat
+TDBNOCHACHA=tmp/test-m-nochacha.dat
+TDBNOFOXTROT=tmp/test-m-nofoxtrot.dat
+TDBALL=tmp/test-m-all.dat
+TDBEMPTY=tmp/test-m-empty.dat
+TDBCOMPACT=tmp/test-m-compact.dat
 TDBRDAT=tmp/test-m-r-dat.dat
 TDBRDT=tmp/test-m-r-dt.dat
 TDBRDTALT=tmp/test-m-r-dt-alt.dat
@@ -162,7 +169,7 @@ exp="found ${NUMM} skip 0 indb 0 new ${NUMM} updated 0 notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
 updateCounts $rc
-msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat test-templates/musicdb.dat)
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)
 crc=$?
 updateCounts $crc
 msg+=$(compcheck $tname $crc)
@@ -179,7 +186,7 @@ exp="found ${NUMM} skip ${NUMM} indb ${NUMM} new 0 updated 0 notaudio 0 writetag
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
 updateCounts $rc
-msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat test-templates/musicdb.dat)
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)
 crc=$?
 updateCounts $crc
 msg+=$(compcheck $tname $rc)
@@ -196,30 +203,105 @@ exp="found ${NUMM} skip 0 indb ${NUMM} new 0 updated ${NUMM} notaudio 0 writetag
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
 updateCounts $rc
-msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat test-templates/musicdb.dat)
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)
 crc=$?
 updateCounts $crc
 msg+=$(compcheck $tname $rc)
 dispres $tname $rc $crc
 
+# main test db : compact with no changes
+tname=compact-basic
+got=$(./bin/bdj4 --bdj4dbupdate \
+  --debug 262175 \
+  --compact \
+  --dbtopdir "${musicdir}" \
+  --cli --wait --verbose)
+exp="found ${NUMM} skip 0 indb ${NUMM} new 0 updated ${NUMM} notaudio 0 writetag 0"
+msg+=$(checkres $tname "$got" "$exp")
+rc=$?
+updateCounts $rc
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)
+crc=$?
+updateCounts $crc
+msg+=$(compcheck $tname $rc)
+dispres $tname $rc $crc
+
+# clean any leftover foxtrot
+rm -f tmp/*-foxtrot.mp3
+# save all foxtrot
+mv -f test-music/*-foxtrot.mp3 tmp
+
+# create test db w/no foxtrot
+./src/utils/mktestsetup.sh \
+    --infile $INNOFOXTROT \
+    --outfile $TDBNOFOXTROT
+
+# restore the main database
+cp -f $TMAINDB $DATADB
+
+# main test db : check-new with deleted files
+tname=checknew-delete
+got=$(./bin/bdj4 --bdj4dbupdate \
+  --debug 262175 \
+  --checknew \
+  --dbtopdir "${musicdir}" \
+  --cli --wait --verbose)
+# note that the music database still has the entries for the
+# deleted files in it.
+exp="found ${NUMC} skip ${NUMC} indb ${NUMC} new 0 updated 0 notaudio 0 writetag 0"
+msg+=$(checkres $tname "$got" "$exp")
+rc=$?
+updateCounts $rc
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)
+crc=$?
+updateCounts $crc
+msg+=$(compcheck $tname $rc)
+dispres $tname $rc $crc
+
+# restore the main database
+cp -f $TMAINDB $DATADB
+
+# main test db : compact with deleted files
+tname=compact-deleted
+got=$(./bin/bdj4 --bdj4dbupdate \
+  --debug 262175 \
+  --compact \
+  --dbtopdir "${musicdir}" \
+  --cli --wait --verbose)
+exp="found ${NUMC} skip 0 indb ${NUMC} new 0 updated ${NUMC} notaudio 0 writetag 0"
+msg+=$(checkres $tname "$got" "$exp")
+rc=$?
+updateCounts $rc
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBNOFOXTROT)
+crc=$?
+updateCounts $crc
+msg+=$(compcheck $tname $rc)
+dispres $tname $rc $crc
+
+exit 1
+
+# restore all foxtrot
+mv -f tmp/*-foxtrot.mp3 test-music
+
 # create test db w/no data
 ./src/utils/mktestsetup.sh \
     --emptydb \
-    --infile $INC \
-    --outfile $TDBD
+    --infile $INALL \
+    --outfile $TDBEMPTY
 # create test db w/all songs
 ./src/utils/mktestsetup.sh \
-    --infile $INC \
-    --outfile $TDBC
+    --infile $INALL \
+    --outfile $TDBALL
 # save the cha cha
+rm -f tmp/001-chacha.mp3
 mv -f test-music/001-chacha.mp3 tmp
 # create test db w/o chacha
 # will copy tmp/test-m-b.dat to data/
 ./src/utils/mktestsetup.sh \
-    --infile $INB \
-    --outfile $TDBB
+    --infile $INNOCHACHA \
+    --outfile $TDBNOCHACHA
 
-# test db : rebuild of test-m-b
+# test db : rebuild of test-m-nochacha
 if [[ -f test-music/001-chacha.mp3 ]]; then
   echo "cha cha present when it should not be"
   rc=1
@@ -236,7 +318,7 @@ else
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBB)
+  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBNOCHACHA)
   crc=$?
   updateCounts $crc
   msg+=$(compcheck $tname $rc)
@@ -257,7 +339,7 @@ exp="found ${NUMB} skip ${NUMBL1} indb ${NUMBL1} new 1 updated 0 notaudio 0 writ
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
 updateCounts $rc
-msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC)
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBALL)
 crc=$?
 updateCounts $crc
 msg+=$(compcheck $tname $crc)
@@ -281,7 +363,7 @@ updateCounts $rc
 dispres $tname $rc $rc
 
 # restore the -c database, needed for write tags check
-cp -f $TDBC data/musicdb.dat
+cp -f $TDBALL $DATADB
 
 # test db : write tags
 tname=writetags-bdj3-compat-on
@@ -296,7 +378,7 @@ exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated 0 notaudio 0 writetag ${NUM
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
 updateCounts $rc
-msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC)
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBALL)
 crc=$?
 updateCounts $crc
 msg+=$(compcheck $tname $crc)
@@ -312,7 +394,7 @@ fi
 dispres $tname $rc $crc
 
 # restore the -c database again, needed for write tags check
-cp -f $TDBC data/musicdb.dat
+cp -f $TDBALL $DATADB
 
 # test db : write tags
 tname=writetags-bdj3-compat-off
@@ -327,7 +409,7 @@ exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated 0 notaudio 0 writetag ${NUM
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
 updateCounts $rc
-msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC)
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBALL)
 crc=$?
 updateCounts $crc
 msg+=$(compcheck $tname $crc)
@@ -343,7 +425,7 @@ fi
 dispres $tname $rc $crc
 
 # restore the -d database (empty of tags), needed for update from tags check
-cp -f $TDBD data/musicdb.dat
+cp -f $TDBEMPTY $DATADB
 
 # test db : update from tags
 tname=update-from-tags-empty-db
@@ -357,7 +439,7 @@ exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated ${NUMB} notaudio 0 writetag
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
 updateCounts $rc
-msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBC)
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBALL)
 crc=$?
 updateCounts $crc
 msg+=$(compcheck $tname $crc)
@@ -399,8 +481,6 @@ tdir=$(echo ${musicdir} | sed 's,/test-music.*,,')
 test -d $TMDT && rm -rf $TMDT
 cp -r test-music $TMDT
 
-exit 1
-
 # test regex db : get dance/artist/title from file path
 tname=rebuild-file-path-dat
 setorgregex '{%DANCE%/}{%ARTIST% - }{%TITLE%}'
@@ -413,7 +493,7 @@ exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
 updateCounts $rc
-msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDAT)
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBRDAT)
 crc=$?
 updateCounts $crc
 msg+=$(compcheck $tname $crc)
@@ -431,7 +511,7 @@ exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
 updateCounts $rc
-msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDT)
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBRDT)
 crc=$?
 updateCounts $crc
 msg+=$(compcheck $tname $crc)
@@ -450,7 +530,7 @@ exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
 updateCounts $rc
-msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDTALT)
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBRDTALT)
 crc=$?
 updateCounts $crc
 msg+=$(compcheck $tname $crc)
@@ -468,15 +548,19 @@ exp="found ${NUMR} skip 0 indb 0 new ${NUMR} updated 0 notaudio 0 writetag 0"
 msg+=$(checkres $tname "$got" "$exp")
 rc=$?
 updateCounts $rc
-msg+=$(./bin/bdj4 --tdbcompare data/musicdb.dat $TDBRDTAT)
+msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBRDTAT)
 crc=$?
 updateCounts $crc
 msg+=$(compcheck $tname $crc)
 dispres $tname $rc $crc
 
 # remove test db, temporary files
-rm -f $TDBB $TDBC $TDBD $TDBRDAT $TDBRDT %TDBRDTALT $TDBRDTAT $TMPA $TMPB
+rm -f $TDBNOCHACHA $TDBALL $TDBEMPTY $TDBCOMPACT
+rm -f $TDBRDAT $TDBRDT $TDBRDTALT $TDBRDTAT
+rm -f $TMPA $TMPB
 rm -rf $TMDT
+# clean any leftover foxtrot
+rm -f tmp/*-foxtrot.mp3
 
 echo "tests: $tcount pass: $pass fail: $fail"
 rc=1

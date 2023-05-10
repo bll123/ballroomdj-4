@@ -15,6 +15,9 @@
  *      are loaded and updated in the database.
  *      so the processing is similar to a rebuild, but using the
  *      existing database and updating the records in the database.
+ *    - compact
+ *      create a new db file, bypass any deleted entries.
+ *      may be used in conjunction w/check-for-new.
  *    - write tags
  *      write db tags to the audio files
  *    - reorganize
@@ -122,20 +125,24 @@ typedef struct {
   int               stopwaitcount;
   char              *olddirlist;
   itunes_t          *itunes;
-  bool              rebuild : 1;
+  /* base database operations */
   bool              checknew : 1;
-  bool              progress : 1;
-  bool              cli : 1;
-  bool              verbose : 1;
-  bool              updfromtags : 1;
-  bool              updfromitunes : 1;
-  bool              writetags : 1;
+  bool              compact : 1;
+  bool              rebuild : 1;
   bool              reorganize : 1;
-  bool              newdatabase : 1;
+  bool              updfromitunes : 1;
+  bool              updfromtags : 1;
+  bool              writetags : 1;
+  /* database handling */
+  bool              cleandatabase : 1;
+  /* other stuff */
+  bool              cli : 1;
   bool              dancefromgenre : 1;
-  bool              usingmusicdir : 1;
   bool              haveolddirlist : 1;
+  bool              progress : 1;
   bool              stoprequest : 1;
+  bool              usingmusicdir : 1;
+  bool              verbose : 1;
 } dbupdate_t;
 
 enum {
@@ -183,21 +190,22 @@ main (int argc, char *argv[])
   dbupdate.stopwaitcount = 0;
   dbupdate.itunes = NULL;
   dbupdate.org = NULL;
-  dbupdate.rebuild = false;
   dbupdate.checknew = false;
-  dbupdate.progress = false;
-  dbupdate.cli = false;
-  dbupdate.verbose = false;
-  dbupdate.updfromtags = false;
-  dbupdate.updfromitunes = false;
-  dbupdate.writetags = false;
+  dbupdate.compact = false;
+  dbupdate.rebuild = false;
   dbupdate.reorganize = false;
-  dbupdate.newdatabase = false;
+  dbupdate.updfromitunes = false;
+  dbupdate.updfromtags = false;
+  dbupdate.writetags = false;
+  dbupdate.cleandatabase = false;
+  dbupdate.cli = false;
   dbupdate.dancefromgenre = false;
-  dbupdate.usingmusicdir = true;
-  dbupdate.olddirlist = NULL;
   dbupdate.haveolddirlist = false;
+  dbupdate.olddirlist = NULL;
+  dbupdate.progress = false;
   dbupdate.stoprequest = false;
+  dbupdate.usingmusicdir = true;
+  dbupdate.verbose = false;
   mstimeset (&dbupdate.outputTimer, 0);
 
   dbupdate.dancefromgenre = bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE);
@@ -242,6 +250,9 @@ main (int argc, char *argv[])
 
   if ((dbupdate.startflags & BDJ4_DB_CHECK_NEW) == BDJ4_DB_CHECK_NEW) {
     dbupdate.checknew = true;
+  }
+  if ((dbupdate.startflags & BDJ4_DB_COMPACT) == BDJ4_DB_COMPACT) {
+    dbupdate.compact = true;
   }
   if ((dbupdate.startflags & BDJ4_DB_REBUILD) == BDJ4_DB_REBUILD) {
     dbupdate.rebuild = true;
@@ -373,12 +384,15 @@ dbupdateProcessing (void *udata)
 
   if (dbupdate->state == DB_UPD_INIT) {
     if (dbupdate->rebuild) {
-      dbupdate->newdatabase = true;
+      dbupdate->cleandatabase = true;
+    }
+    if (dbupdate->compact) {
+      dbupdate->cleandatabase = true;
     }
 
     dbBackup ();
 
-    if (dbupdate->newdatabase) {
+    if (dbupdate->cleandatabase) {
       char  tbuff [MAXPATHLEN];
 
       pathbldMakePath (tbuff, sizeof (tbuff),
@@ -386,9 +400,10 @@ dbupdateProcessing (void *udata)
       fileopDelete (tbuff);
       dbupdate->newmusicdb = dbOpen (tbuff);
       dbStartBatch (dbupdate->newmusicdb);
-    } else {
-      dbStartBatch (dbupdate->musicdb);
     }
+
+    dbStartBatch (dbupdate->musicdb);
+
     dbupdate->state = DB_UPD_PREP;
   }
 
@@ -481,7 +496,7 @@ dbupdateProcessing (void *udata)
       /* check to see if the audio file is already in the database */
       /* this is done for all modes except for rebuild */
       /* 'checknew' skips any processing for an audio file */
-      /* that is already present */
+      /* that is already present unless the compact flag is on */
       if (! dbupdate->rebuild && fn != NULL) {
         const char  *p;
 
@@ -489,16 +504,14 @@ dbupdateProcessing (void *udata)
         if (dbupdate->usingmusicdir) {
           p = dbupdateGetRelativePath (dbupdate, fn);
         }
-fprintf (stderr, "db-top-dir: %s\n", dbupdate->dbtopdir);
-fprintf (stderr, "   fn: %s\n", fn);
-fprintf (stderr, "   rel-path: %s\n", p);
         if (dbGetByName (dbupdate->musicdb, p) != NULL) {
           dbupdateIncCount (dbupdate, C_IN_DB);
           logMsg (LOG_DBG, LOG_DBUPDATE, "  in-database (%u) ", dbupdate->counts [C_IN_DB]);
 
           /* if doing a checknew, no need for further processing */
           /* the file exists, don't change the file or the database */
-          if (dbupdate->checknew) {
+          /* but if the database is being compacted, don't skip */
+          if (dbupdate->checknew && ! dbupdate->compact) {
             dbupdateIncCount (dbupdate, C_FILE_SKIPPED);
             dbupdateOutputProgress (dbupdate);
             ++count;
@@ -547,6 +560,7 @@ fprintf (stderr, "   rel-path: %s\n", p);
         dbupdate->counts [C_FILE_COUNT]) {
       logMsg (LOG_DBG, LOG_DBUPDATE, "  done");
       dbupdate->state = DB_UPD_FINISH;
+
       if (dbupdate->cli) {
         if (dbupdate->progress) {
           fprintf (stdout, "\r100.00\n");
@@ -576,39 +590,45 @@ fprintf (stderr, "   rel-path: %s\n", p);
     pathbldMakePath (dbfname, sizeof (dbfname),
         MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
 
-    if (dbupdate->newdatabase) {
+    dbEndBatch (dbupdate->musicdb);
+
+    if (dbupdate->cleandatabase) {
       dbEndBatch (dbupdate->newmusicdb);
       dbClose (dbupdate->newmusicdb);
       dbupdate->newmusicdb = NULL;
       /* rename the database file */
       filemanipMove (tbuff, dbfname);
-    } else {
-      dbEndBatch (dbupdate->musicdb);
     }
 
     dbupdateOutputProgress (dbupdate);
+
     /* CONTEXT: database update: status message: total number of files found */
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Total Files"), dbupdate->counts [C_FILE_COUNT]);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+
     if (! dbupdate->rebuild) {
       /* CONTEXT: database update: status message: files found in the database */
       snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Loaded from Database"), dbupdate->counts [C_IN_DB]);
       connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     }
+
     /* CONTEXT: database update: status message: new files saved to the database */
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("New Files"), dbupdate->counts [C_NEW]);
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
+
     if (! dbupdate->rebuild && ! dbupdate->writetags) {
       /* CONTEXT: database update: status message: number of files updated in the database */
       snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Updated"), dbupdate->counts [C_UPDATED]);
       connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     }
+
     if (dbupdate->writetags) {
       /* re-use the 'Updated' label for write-tags */
       /* CONTEXT: database update: status message: number of files updated */
       snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Updated"), dbupdate->counts [C_WRITE_TAGS]);
       connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_STATUS_MSG, tbuff);
     }
+
     /* CONTEXT: database update: status message: other files that cannot be processed */
     snprintf (tbuff, sizeof (tbuff), "%s : %u", _("Other Files"),
         dbupdate->counts [C_BAD] + dbupdate->counts [C_NULL_DATA] +
@@ -857,6 +877,8 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     return;
   }
 
+  /* check-for-new, compact, rebuild, update-from-tags */
+
   if (dbupdate->dancefromgenre) {
     val = slistGetStr (tagdata, tagdefs [TAG_DANCE].tag);
     if (val == NULL || ! *val) {
@@ -867,6 +889,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     }
   }
 
+  /* a level must be set */
   val = slistGetStr (tagdata, tagdefs [TAG_DANCELEVEL].tag);
   if (val == NULL || ! *val) {
     level_t *levels;
@@ -904,8 +927,6 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     /* use the relative path here, want the dbupdate->dbtopdir stripped */
     /* before running the regex match */
     relfname = dbupdateGetRelativePath (dbupdate, ffn);
-fprintf (stderr, "regex: ffn: %s\n", ffn);
-fprintf (stderr, "       relfname: %s\n", relfname);
     /* a regex check */
     val = orgGetFromPath (dbupdate->org, relfname, tagkey);
     if (val != NULL && *val) {
@@ -920,7 +941,9 @@ fprintf (stderr, "       relfname: %s\n", relfname);
   }
 
   rrn = MUSICDB_ENTRY_NEW;
-  if (! dbupdate->rebuild) {
+  /* rebuild and compact create entirely new databases */
+  /* always use a new rrn */
+  if (! dbupdate->rebuild && ! dbupdate->compact) {
     song = dbGetByName (dbupdate->musicdb, dbfname);
     if (song != NULL) {
       char      *tmp;
@@ -944,11 +967,11 @@ fprintf (stderr, "       relfname: %s\n", relfname);
 
   /* the dbWrite() procedure will set the FILE tag */
   currdb = dbupdate->musicdb;
-  if (dbupdate->newdatabase) {
+  if (dbupdate->cleandatabase) {
     currdb = dbupdate->newmusicdb;
   }
   len = dbWrite (currdb, dbfname, tagdata, rrn);
-  if (rrn == MUSICDB_ENTRY_NEW) {
+  if (rrn == MUSICDB_ENTRY_NEW && ! dbupdate->compact) {
     dbupdateIncCount (dbupdate, C_NEW);
   } else {
     dbupdateIncCount (dbupdate, C_UPDATED);
@@ -1016,7 +1039,7 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
   }
 
   currdb = dbupdate->musicdb;
-  if (dbupdate->newdatabase) {
+  if (dbupdate->cleandatabase) {
     currdb = dbupdate->newmusicdb;
   }
 
