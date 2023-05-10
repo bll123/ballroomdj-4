@@ -19,5 +19,11 @@ size_t strlcat(char *dst, const char *src, size_t siz);
 #if ! _lib_strlcpy
 size_t strlcpy(char *dst, const char *src, size_t siz);
 #endif
+/* windows snprintf does not support positional parameters. */
+/*_sprintf_p doesn't seem to be in the library... */
+/* use _sprintf_p_l instead with a null locale */
+#if _lib__sprintf_p_l
+# define snprintf(s,ssz,fmt,...) _sprintf_p_l (s, ssz, fmt, NULL, ##__VA_ARGS__)
+#endif
 
 #endif /* INC_BDJSTRING */

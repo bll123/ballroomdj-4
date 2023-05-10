@@ -98,6 +98,7 @@
 #cmakedefine01 _lib_setrlimit
 #cmakedefine01 _lib_sigaction
 #cmakedefine01 _lib_signal
+#cmakedefine01 _lib__sprintf_p_l
 #cmakedefine01 _lib_srand48
 #cmakedefine01 _lib_srandom
 #cmakedefine01 _lib_srand
