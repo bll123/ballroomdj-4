@@ -1160,6 +1160,10 @@ mainSendMarqueeData (maindata_t *mainData)
       dstr = mainSongGetDanceDisplay (mainData, mqidx, qoffset);
     }
 
+    if (mainData->musicqDeferredPlayIdx != MAIN_NOT_SET) {
+      mqidx = mainData->musicqDeferredPlayIdx;
+    }
+
     /* if the queue is empty (or will be empty), and */
     /* switch-queue-when-empty is on */
     /* check the next queue for display */
@@ -2011,6 +2015,7 @@ mainMusicqSetPlayback (maindata_t *mainData, char *args)
   } else {
     mainMusicqSwitch (mainData, mqidx);
   }
+  mainData->marqueeChanged = true;
   logProcEnd (LOG_PROC, "mainMusicqSetPlayback", "");
 }
 

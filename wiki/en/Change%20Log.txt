@@ -19,6 +19,8 @@
     * Export for/Import from BDJ4: Fix path display on windows.
     * Import for BDJ4: Fix folder structure creation.
     * Player: Fix gap changes not being processed correctly (redux).
+    * Marquee: Fix display issues when a music queue is set for playback.
+    * PENDING Player: Fix issues with display when queues are switched.
     * Song Editor: increase allowed entry length to 250 characters.
     * Update Database: Add validation for music folder entry.
     * Update Database: Fix bugs processing secondary music folders.
