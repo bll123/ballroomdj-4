@@ -199,6 +199,7 @@ main (int argc, char *argv [])
   /* create an entirely new database */
   fileopDelete (dbfn);
   db = dbOpen (dbfn);
+  dbStartBatch (db);
 
   df = datafileAllocParse ("test-music", DFTYPE_INDIRECT, infn,
       tmdfkeys, tmdfcount);
@@ -240,6 +241,7 @@ main (int argc, char *argv [])
   datafileFree (df);
   slistFree (empty);
 
+  dbEndBatch (db);
   dbClose (db);
 
   bdjvarsdfloadCleanup ();

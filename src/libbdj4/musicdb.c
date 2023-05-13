@@ -307,6 +307,7 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
 
 
   tbuff [0] = '\0';
+  tmutilDstamp (tmp, sizeof (tmp));
 
   tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_FILE].tag);
   tblen = stringAppend (tbuff, sz, tblen, "\n");
@@ -342,7 +343,6 @@ dbCreateSongEntryFromTags (char *tbuff, size_t sz, slist_t *tagList,
     tblen = stringAppend (tbuff, sz, tblen, tagdefs [TAG_DBADDDATE].tag);
     tblen = stringAppend (tbuff, sz, tblen, "\n");
     tblen = stringAppend (tbuff, sz, tblen, "..");
-    tmutilDstamp (tmp, sizeof (tmp));
     tblen = stringAppend (tbuff, sz, tblen, tmp);
     tblen = stringAppend (tbuff, sz, tblen, "\n");
   }

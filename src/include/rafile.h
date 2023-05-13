@@ -17,7 +17,6 @@ enum {
   RAFILE_HDR_SIZE = 128,
 };
 #define RAFILE_LOCK_FN      "rafile"
-#define RRN_TO_OFFSET(rrn)  (((rrn) - 1L) * RAFILE_REC_SIZE + RAFILE_HDR_SIZE)
 
 rafile_t *    raOpen (char *fname, int version);
 void          raClose (rafile_t *rafile);
@@ -33,5 +32,6 @@ void          raEndBatch (rafile_t *rafile);
 
 rafileidx_t   raGetSize (rafile_t *rafile);
 rafileidx_t   raGetVersion (rafile_t *rafile);
+#define RRN_TO_OFFSET(rrn)  (((rrn) - 1L) * RAFILE_REC_SIZE + RAFILE_HDR_SIZE)
 
 #endif /* INC_RAFILE_H */

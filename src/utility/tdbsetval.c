@@ -119,6 +119,8 @@ main (int argc, char *argv [])
 
   db = dbOpen (dbfn);
   dbDisableLastUpdateTime (db);
+  dbStartBatch (db);
+
   if (db == NULL) {
     fprintf (stderr, "unable to open %s\n", dbfn);
     return 1;
@@ -143,6 +145,7 @@ main (int argc, char *argv [])
     }
   }
 
+  dbEndBatch (db);
   dbClose (db);
 
   audiotagCleanup ();

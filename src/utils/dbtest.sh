@@ -151,6 +151,7 @@ TDBRDTAT=tmp/test-m-r-dtat.dat
 TMPA=tmp/dbtesta.txt
 TMPB=tmp/dbtestb.txt
 
+echo "## make test setup"
 ./src/utils/mktestsetup.sh --force
 
 # get music dir

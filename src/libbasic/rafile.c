@@ -33,12 +33,13 @@ typedef struct rafile {
   unsigned int  locked : 1;
 } rafile_t;
 
+static char ranulls [RAFILE_REC_SIZE];
+
 static int  raReadHeader (rafile_t *);
 static void raWriteHeader (rafile_t *, int);
 static void raLock (rafile_t *);
 static void raUnlock (rafile_t *);
-
-static char ranulls [RAFILE_REC_SIZE];
+static size_t rrnToOffset (rafileidx_t rrn);
 
 rafile_t *
 raOpen (char *fname, int version)
@@ -164,15 +165,15 @@ raWrite (rafile_t *rafile, rafileidx_t rrn, char *data)
     }
   }
   if (! isnew) {
-    fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
+    fseek (rafile->fh, rrnToOffset (rrn), SEEK_SET);
     fwrite (ranulls, RAFILE_REC_SIZE, 1, rafile->fh);
   }
-  fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
+  fseek (rafile->fh, rrnToOffset (rrn), SEEK_SET);
   fwrite (data, len, 1, rafile->fh);
   if (isnew) {
     /* write one null byte to the next record so */
     /* that the last record has a size and is readable */
-    fseek (rafile->fh, RRN_TO_OFFSET (rrn + 1), SEEK_SET);
+    fseek (rafile->fh, rrnToOffset (rrn + 1), SEEK_SET);
     fwrite (ranulls, 1, 1, rafile->fh);
   }
   fflush (rafile->fh);
@@ -191,7 +192,7 @@ raClear (rafile_t *rafile, rafileidx_t rrn)
     return 1;
   }
   raLock (rafile);
-  fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
+  fseek (rafile->fh, rrnToOffset (rrn), SEEK_SET);
   fwrite (ranulls, RAFILE_REC_SIZE, 1, rafile->fh);
   fflush (rafile->fh);
   fileopSync (rafile->fh);
@@ -212,7 +213,7 @@ raRead (rafile_t *rafile, rafileidx_t rrn, char *data)
   }
 
   raLock (rafile);
-  fseek (rafile->fh, RRN_TO_OFFSET (rrn), SEEK_SET);
+  fseek (rafile->fh, rrnToOffset (rrn), SEEK_SET);
   rc = (rafileidx_t) fread (data, RAFILE_REC_SIZE, 1, rafile->fh);
   raUnlock (rafile);
   logProcEnd (LOG_PROC, "raRead", "");
@@ -322,6 +323,11 @@ raUnlock (rafile_t *rafile)
   logProcEnd (LOG_PROC, "raUnlock", "");
 }
 
+static inline size_t
+rrnToOffset (rafileidx_t rrn) {
+ return ((rrn - 1) * RAFILE_REC_SIZE + RAFILE_HDR_SIZE);
+}
+
 /* for debugging only */
 
 rafileidx_t
@@ -335,3 +341,4 @@ raGetVersion (rafile_t *rafile)
 {
   return rafile->version;
 }
+

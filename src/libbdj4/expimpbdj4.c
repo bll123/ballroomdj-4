@@ -306,7 +306,6 @@ eibdj4ProcessExport (eibdj4_t *eibdj4)
       songlistSetNum (eibdj4->sl, eibdj4->slkey, SONGLIST_DANCE,
           songGetNum (song, TAG_DANCE));
       ++eibdj4->slkey;
-fprintf (stderr, "exp: %s %d\n", nsongfn, dbidx);
 
       if (doupdate) {
         pathinfo_t  *pi;
@@ -359,7 +358,6 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
 
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->musicdir);
     eibdj4->eimusicdb = dbOpen (eibdj4->dbfname);
-fprintf (stderr, "dbfname: %s\n", eibdj4->dbfname);
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->origmusicdir);
     eibdj4->totcount = dbCount (eibdj4->eimusicdb);
 
@@ -383,7 +381,6 @@ fprintf (stderr, "dbfname: %s\n", eibdj4->dbfname);
     if (slidx >= 0) {
       slfn = songlistGetStr (eibdj4->sl, slidx, SONGLIST_FILE);
       song = dbGetByName (eibdj4->eimusicdb, slfn);
-fprintf (stderr, "slfn: %s\n", slfn);
 
       if (song != NULL) {
         const char    *songfn;
@@ -393,13 +390,9 @@ fprintf (stderr, "slfn: %s\n", slfn);
         bool          doupdate;
         bool          docopy;
 
-fprintf (stderr, "  have song\n");
         songfn = songGetStr (song, TAG_FILE);
-fprintf (stderr, "  songfn: %s\n", songfn);
         nfn = songutilFullFileName (songfn);
-fprintf (stderr, "  nfn: %s\n", nfn);
         snprintf (ifn, sizeof (ifn), "%s/%s", eibdj4->musicdir, songfn);
-fprintf (stderr, "  ifn: %s\n", ifn);
 
         tsong = dbGetByName (eibdj4->musicdb, songfn);
 
@@ -427,7 +420,6 @@ fprintf (stderr, "  ifn: %s\n", ifn);
           docopy = true;
         }
         if (doupdate) {
-fprintf (stderr, "  doupdate\n");
           eibdj4->dbchanged = true;
           songSetChanged (song);
           songWriteDBSong (eibdj4->musicdb, song);
@@ -436,9 +428,6 @@ fprintf (stderr, "  doupdate\n");
           pathinfo_t  *pi;
           char        tdir [MAXPATHLEN];
 
-fprintf (stderr, "  docopy\n");
-fprintf (stderr, "    from: %s\n", ifn);
-fprintf (stderr, "      to: %s\n", nfn);
           pi = pathInfo (nfn);
           snprintf (tdir, sizeof (tdir), "%.*s", (int) pi->dlen, pi->dirname);
           diropMakeDir (tdir);

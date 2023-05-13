@@ -324,9 +324,7 @@ bdj4ReloadDatabase (musicdb_t *musicdb)
   char        tbuff [MAXPATHLEN];
 
   mstimestart (&dbmt);
-  if (musicdb != NULL) {
-    dbClose (musicdb);
-  }
+  dbClose (musicdb);
   logMsg (LOG_DBG, LOG_IMPORTANT, "Database read: started");
   pathbldMakePath (tbuff, sizeof (tbuff),
       MUSICDB_FNAME, MUSICDB_EXT, PATHBLD_MP_DREL_DATA);
@@ -355,9 +353,7 @@ bdj4shutdown (bdjmsgroute_t route, musicdb_t *musicdb)
   mstimestart (&mt);
   tagdefCleanup ();
   bdjoptCleanup ();
-  if (musicdb != NULL) {
-    dbClose (musicdb);
-  }
+  dbClose (musicdb);
   bdjvarsdfloadCleanup ();
   bdjvarsCleanup ();
   audiotagCleanup ();

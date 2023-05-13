@@ -278,11 +278,14 @@ logBacktraceHandler (int sig)
 void
 logBasic (const char *fmt, ...)
 {
+  char      ttm [40];
   FILE      *fh;
   va_list   args;
 
+  tmutilTstamp (ttm, sizeof (ttm));
   fh = fileopOpen ("out.txt", "a");
   va_start (args, fmt);
+  fprintf (fh, "%s ", ttm);
   vfprintf (fh, fmt, args);
   va_end (args);
   fclose (fh);

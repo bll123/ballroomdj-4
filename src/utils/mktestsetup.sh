@@ -211,6 +211,7 @@ fi
 
 tfn=data/${hostname}/bdjconfig.txt
 sed -e "/^DIRITUNESMEDIA/ { n ; s,.*,..${cwd}/test-music, ; }" \
+    -e '/^ORGPATH/ { n ; s,.*,..{%DANCE%/}{%TITLE%}, ; }' \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 

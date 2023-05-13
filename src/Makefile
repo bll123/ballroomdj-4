@@ -245,7 +245,7 @@ tclean:
 	@find ../wiki -name '*.txt.bak' -print0 | xargs -0 rm -f
 	@-$(RM) -f w ww www ../w ../ww ../www ../*/w ../*/ww ../*/www
 	@-$(RM) -f po/w po/ww ../asan.* ./asan.*
-	@-$(RM) -f test.log ../mdebug.txt
+	@-$(RM) -f test.log ../mdebug.txt ../out.txt
 	@-$(RM) -f ../vlc-log.txt vlc-log.txt
 	@-$(RM) -f ../vgcore.* ../core gmon.out ../gmon.out
 	@-$(RM) -f launcher.rc bdj4_icon.ico

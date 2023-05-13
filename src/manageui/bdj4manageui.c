@@ -1333,10 +1333,11 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         }
         case MSG_DB_FINISH: {
           manageDbFinish (manage->managedb, routefrom);
+          /* the currently open database pointer is no longer valid */
+          /* if a rebuild or a compact was run */
 
           /* the database has been updated, tell the other processes to */
           /* reload it, and reload it ourselves */
-
           manageProcessDatabaseUpdate (manage);
           manageDbResetButtons (manage->managedb);
           break;
@@ -3152,10 +3153,11 @@ manageExportBDJ4ResponseHandler (void *udata)
 
   dir = uieibdj4GetDir (manage->uieibdj4);
   nlistSetStr (manage->options, MANAGE_EXP_BDJ4_DIR, dir);
-  dataFree (dir);
 
+  pathNormalizePath (dir, strlen (dir));
   eibdj4Free (manage->eibdj4);
   manage->eibdj4 = eibdj4Init (manage->musicdb, dir, EIBDJ4_EXPORT);
+  dataFree (dir);
 
   eibdj4SetPlaylist (manage->eibdj4, slname);
   eibdj4SetDBIdxList (manage->eibdj4, dbidxlist);
@@ -3177,12 +3179,13 @@ manageImportBDJ4ResponseHandler (void *udata)
 
   dir = uieibdj4GetDir (manage->uieibdj4);
   nlistSetStr (manage->options, MANAGE_IMP_BDJ4_DIR, dir);
-  dataFree (dir);
   plname = uieibdj4GetPlaylist (manage->uieibdj4);
   newname = uieibdj4GetNewName (manage->uieibdj4);
 
+  pathNormalizePath (dir, strlen (dir));
   eibdj4Free (manage->eibdj4);
   manage->eibdj4 = eibdj4Init (manage->musicdb, dir, EIBDJ4_IMPORT);
+  dataFree (dir);
 
   eibdj4SetPlaylist (manage->eibdj4, plname);
   eibdj4SetNewName (manage->eibdj4, newname);

@@ -596,6 +596,9 @@ dbupdateProcessing (void *udata)
       dbEndBatch (dbupdate->newmusicdb);
       dbClose (dbupdate->newmusicdb);
       dbupdate->newmusicdb = NULL;
+      /* the old db must be closed for the rename on windows */
+      dbClose (dbupdate->musicdb);
+      dbupdate->musicdb = NULL;
       /* rename the database file */
       filemanipMove (tbuff, dbfname);
     }
@@ -806,9 +809,7 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
   logProcBegin (LOG_PROC, "dbupdateClosingCallback");
 
   bdj4shutdown (ROUTE_DBUPDATE, dbupdate->musicdb);
-  if (dbupdate->newmusicdb != NULL) {
-    dbClose (dbupdate->newmusicdb);
-  }
+  dbClose (dbupdate->newmusicdb);
 
   procutilStopAllProcess (dbupdate->processes, dbupdate->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (dbupdate->processes);
@@ -825,19 +826,20 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
 static void
 dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
 {
-  slist_t   *tagdata;
-  char      *ffn;
-  const char *dbfname;
-  char      *data;
-  char      *tokstr;
-  slistidx_t orgiteridx;
-  int       tagkey;
-  dbidx_t   rrn;
-  musicdb_t *currdb = NULL;
-  song_t    *song = NULL;
-  size_t    len;
-  char      *val;
-  int       rewrite;
+  slist_t     *tagdata;
+  char        *ffn;
+  const char  *songfname;
+  char        *data;
+  char        *tokstr;
+  slistidx_t  orgiteridx;
+  int         tagkey;
+  dbidx_t     rrn;
+  musicdb_t   *currdb = NULL;
+  song_t      *song = NULL;
+  size_t      len;
+  const char  *relfname;
+  char        *val;
+  int         rewrite;
 
 
   ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
@@ -914,9 +916,12 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   /* the data that is found there. */
   logMsg (LOG_DBG, LOG_DBUPDATE, "regex-parse:");
   orgStartIterator (dbupdate->org, &orgiteridx);
-  while ((tagkey = orgIterateTagKey (dbupdate->org, &orgiteridx)) >= 0) {
-    const char  *relfname;
 
+  /* use the relative path here, want the dbupdate->dbtopdir stripped */
+  /* before running the regex match */
+  relfname = dbupdateGetRelativePath (dbupdate, ffn);
+
+  while ((tagkey = orgIterateTagKey (dbupdate->org, &orgiteridx)) >= 0) {
     val = slistGetStr (tagdata, tagdefs [tagkey].tag);
     if (val != NULL && *val) {
       /* this tag already exists in the tagdata, keep it */
@@ -924,9 +929,6 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
       continue;
     }
 
-    /* use the relative path here, want the dbupdate->dbtopdir stripped */
-    /* before running the regex match */
-    relfname = dbupdateGetRelativePath (dbupdate, ffn);
     /* a regex check */
     val = orgGetFromPath (dbupdate->org, relfname, tagkey);
     if (val != NULL && *val) {
@@ -935,16 +937,16 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
     }
   }
 
-  dbfname = ffn;
+  songfname = ffn;
   if (dbupdate->usingmusicdir) {
-    dbfname = dbupdateGetRelativePath (dbupdate, ffn);
+    songfname = relfname;
   }
 
   rrn = MUSICDB_ENTRY_NEW;
   /* rebuild and compact create entirely new databases */
   /* always use a new rrn */
   if (! dbupdate->rebuild && ! dbupdate->compact) {
-    song = dbGetByName (dbupdate->musicdb, dbfname);
+    song = dbGetByName (dbupdate->musicdb, songfname);
     if (song != NULL) {
       char      *tmp;
 
@@ -970,7 +972,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   if (dbupdate->cleandatabase) {
     currdb = dbupdate->newmusicdb;
   }
-  len = dbWrite (currdb, dbfname, tagdata, rrn);
+  len = dbWrite (currdb, songfname, tagdata, rrn);
   if (rrn == MUSICDB_ENTRY_NEW && ! dbupdate->compact) {
     dbupdateIncCount (dbupdate, C_NEW);
   } else {
@@ -987,7 +989,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
 static void
 dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
 {
-  const char  *dbfname;
+  const char  *songfname;
   song_t      *song;
   slist_t     *newtaglist;
 
@@ -995,11 +997,11 @@ dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
     return;
   }
 
-  dbfname = ffn;
+  songfname = ffn;
   if (dbupdate->usingmusicdir) {
-    dbfname = dbupdateGetRelativePath (dbupdate, ffn);
+    songfname = dbupdateGetRelativePath (dbupdate, ffn);
   }
-  song = dbGetByName (dbupdate->musicdb, dbfname);
+  song = dbGetByName (dbupdate->musicdb, songfname);
   if (song == NULL) {
     dbupdateIncCount (dbupdate, C_FILE_PROC);
     return;
@@ -1015,7 +1017,7 @@ dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
 static void
 dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
 {
-  const char  *dbfname = NULL;
+  const char  *songfname = NULL;
   song_t      *song = NULL;
   slist_t     *newtaglist = NULL;
   int         tagidx;
@@ -1028,11 +1030,11 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
     return;
   }
 
-  dbfname = ffn;
+  songfname = ffn;
   if (dbupdate->usingmusicdir) {
-    dbfname = dbupdateGetRelativePath (dbupdate, ffn);
+    songfname = dbupdateGetRelativePath (dbupdate, ffn);
   }
-  song = dbGetByName (dbupdate->musicdb, dbfname);
+  song = dbGetByName (dbupdate->musicdb, songfname);
   if (song == NULL) {
     dbupdateIncCount (dbupdate, C_FILE_PROC);
     return;
@@ -1045,10 +1047,10 @@ dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata)
 
   /* for itunes, just update the song data directly, */
   /* write the song to the db, and write the song tags */
-  entry = itunesGetSongDataByName (dbupdate->itunes, dbfname);
+  entry = itunesGetSongDataByName (dbupdate->itunes, songfname);
   changed = false;
   if (entry != NULL) {
-    logMsg (LOG_DBG, LOG_DBUPDATE, "upd-from-itunes: found %s", dbfname);
+    logMsg (LOG_DBG, LOG_DBUPDATE, "upd-from-itunes: found %s", songfname);
     nlistStartIterator (entry, &iteridx);
     while ((tagidx = nlistIterateKey (entry, &iteridx)) >= 0) {
       if (itunesGetField (dbupdate->itunes, tagidx) <= 0) {
