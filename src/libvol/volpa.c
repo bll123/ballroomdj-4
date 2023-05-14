@@ -83,7 +83,8 @@ voliDisconnect (void)
 }
 
 void
-voliCleanup (void **udata) {
+voliCleanup (void **udata)
+{
   if (*udata != NULL) {
     pa_track_data_t *trackdata = *udata;
 

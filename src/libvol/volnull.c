@@ -29,12 +29,14 @@ voliDesc (void)
 }
 
 void
-voliDisconnect (void) {
+voliDisconnect (void)
+{
   return;
 }
 
 void
-voliCleanup (void **udata) {
+voliCleanup (void **udata)
+{
   return;
 }
 
