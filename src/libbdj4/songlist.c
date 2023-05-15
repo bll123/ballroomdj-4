@@ -115,6 +115,15 @@ songlistExists (const char *name)
   return fileopFileExists (tfn);
 }
 
+int
+songlistGetCount (songlist_t *sl)
+{
+  if (sl == NULL || sl->songlist == NULL) {
+    return 0;
+  }
+  return ilistGetCount (sl->songlist);
+}
+
 void
 songlistStartIterator (songlist_t *sl, ilistidx_t *iteridx)
 {

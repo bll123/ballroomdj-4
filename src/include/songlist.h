@@ -30,6 +30,7 @@ songlist_t * songlistAlloc (const char *fname);
 songlist_t * songlistLoad (const char *fname);
 void songlistFree (songlist_t *);
 bool songlistExists (const char *name);
+int  songlistGetCount (songlist_t *);
 void songlistStartIterator (songlist_t *sl, ilistidx_t *iteridx);
 ilistidx_t songlistIterate (songlist_t *sl, ilistidx_t *iteridx);
 ilistidx_t songlistGetNum (songlist_t *sl, ilistidx_t ikey, ilistidx_t lidx);

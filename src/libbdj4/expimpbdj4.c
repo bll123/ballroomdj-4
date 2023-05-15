@@ -359,7 +359,6 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->musicdir);
     eibdj4->eimusicdb = dbOpen (eibdj4->dbfname);
     bdjoptSetStr (OPT_M_DIR_MUSIC, eibdj4->origmusicdir);
-    eibdj4->totcount = dbCount (eibdj4->eimusicdb);
 
     dbDisableLastUpdateTime (eibdj4->musicdb);
 
@@ -367,6 +366,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
         eibdj4->plName, BDJ4_SONGLIST_EXT);
     eibdj4->sl = songlistLoad (tbuff);
     songlistStartIterator (eibdj4->sl, &eibdj4->sliteridx);
+    eibdj4->totcount = songlistGetCount (eibdj4->sl);
 
     eibdj4->state = BDJ4_STATE_PROCESS;
     rc = false;

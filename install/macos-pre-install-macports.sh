@@ -61,6 +61,8 @@ fi
 # not sure if there's a way to determine the latest python version
 # this needs to be fixed.
 
+# When macports transitions to a new version of python, the builds and
+# dependencies can be unstable.  Be conservative about changing this.
 # 2023-3-10 m1-ventura still has a dependency on python310 for glib2
 oldpyverlist="310"
 pyver=311
