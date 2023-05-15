@@ -28,8 +28,6 @@ Release Notes:
 
   Not yet implemented:
     - Auto-Organization.
-    - Song List Editor:
-      - Export for BDJ/Import from BDJ.
     - Music Manager:
       - Audio Identification.
 

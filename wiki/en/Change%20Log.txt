@@ -8,9 +8,7 @@
 
 -->
 
-<!--
-
-**4.3.2.2 2023-5---**
+**4.3.2.2 2023-5-15**
 
 * Bug Fixes:
     * Configuration: Music Queues: Remove gtk insensitive settings for
@@ -33,8 +31,6 @@
 * Internal:
     * Windows: clean up distributed libraries.
     * Code cleanup (db).
-
--->
 
 **4.3.2.1 2023-5-4**
 
