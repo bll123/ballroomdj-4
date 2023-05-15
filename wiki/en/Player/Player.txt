@@ -211,4 +211,4 @@ See also
 <br>[Configuration / Marquee](en-Configuration-Marquee)
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-05 08:57:41; BDJ4 version 4.3.2.1)_
+<br>_(Updated 2023-05-15 12:15:10; BDJ4 version 4.3.2.2)_

@@ -19,4 +19,4 @@ zypper remove virtualbox-guest-kmp-default virtualbox-guest-x11 virtualbox-guest
 ~~~
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-04 15:46:30; BDJ4 version 4.3.2.1)_
+<br>_(Updated 2023-05-15 12:15:10; BDJ4 version 4.3.2.2)_
