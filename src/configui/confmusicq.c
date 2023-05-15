@@ -26,6 +26,7 @@
 #include "ui.h"
 
 static bool confuiMusicQActiveChg (void *udata);
+static bool confuiMusicQDisplayChg (void *udata);
 static bool confuiMusicQChg (void *udata);
 static void confuiMusicQUpdateState (confuigui_t *gui, int idx);
 static void confuiSetMusicQList (confuigui_t *gui);
@@ -78,7 +79,8 @@ confuiBuildUIMusicQs (confuigui_t *gui)
   /* CONTEXT: configuration: queue: whether to display the queue */
   confuiMakeItemSwitch (gui, vbox, szgrp, _("Display"),
       CONFUI_SWITCH_Q_DISPLAY, OPT_Q_DISPLAY,
-      bdjoptGetNumPerQueue (OPT_Q_DISPLAY, 0), NULL, CONFUI_INDENT);
+      bdjoptGetNumPerQueue (OPT_Q_DISPLAY, 0),
+      confuiMusicQDisplayChg, CONFUI_INDENT);
 
   /* CONTEXT: configuration: queue: the amount of time to do a volume fade-in when playing a song */
   confuiMakeItemSpinboxDouble (gui, vbox, szgrp, szgrpB, _("Fade In Time"),
@@ -144,6 +146,7 @@ confuiMusicQActiveChg (void *udata)
   confuigui_t *gui = udata;
   int         tval = 0;
   int         state;
+  int         selidx;
 
   if (gui->inbuild) {
     return UICB_CONT;
@@ -153,6 +156,14 @@ confuiMusicQActiveChg (void *udata)
   }
 
   tval = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch);
+
+  /* force a no-change for ui backends where enable/disable are buggy */
+  selidx = uiSpinboxTextGetValue (gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].spinbox);
+  if (selidx == 0 && tval == 0) {
+    uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_ACTIVE].uiswitch, 1);
+    return UICB_CONT;
+  }
+
   state = UIWIDGET_DISABLE;
   if (tval) {
     state = UIWIDGET_ENABLE;
@@ -168,8 +179,31 @@ confuiMusicQActiveChg (void *udata)
   uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_PLAY_WHEN_QUEUED].uiswitch, state);
   uiSwitchSetState (gui->uiitem [CONFUI_SWITCH_Q_SHOW_QUEUE_DANCE].uiswitch, state);
 
-  /* if called from init or from queue-chg, this is incorrect */
-  confuiMusicQUpdateState (gui, 1);
+  return UICB_CONT;
+}
+
+static bool
+confuiMusicQDisplayChg (void *udata)
+{
+  confuigui_t *gui = udata;
+  int         tval = 0;
+  int         selidx;
+
+  if (gui->inbuild) {
+    return UICB_CONT;
+  }
+  if (gui->inchange) {
+    return UICB_CONT;
+  }
+
+  tval = uiSwitchGetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch);
+
+  /* force a no-change for ui backends where enable/disable are buggy */
+  selidx = uiSpinboxTextGetValue (gui->uiitem [CONFUI_SPINBOX_MUSIC_QUEUE].spinbox);
+  if (selidx == 0 && tval == 0) {
+    uiSwitchSetValue (gui->uiitem [CONFUI_SWITCH_Q_DISPLAY].uiswitch, 1);
+    return UICB_CONT;
+  }
 
   return UICB_CONT;
 }
@@ -237,9 +271,6 @@ confuiMusicQChg (void *udata)
   gui->inchange = false;
 
   confuiMusicQActiveChg (gui);
-
-  /* do this after the values have changed, otherwise the switches */
-  /* may not display the insensitive/sensitive state correctly */
   confuiMusicQUpdateState (gui, nselidx);
 
   logProcEnd (LOG_PROC, "confuiMusicQChg", "");
@@ -250,6 +281,12 @@ static void
 confuiMusicQUpdateState (confuigui_t *gui, int idx)
 {
   int   state;
+
+  if (strcmp (uiBackend (), "gtk3") == 0) {
+    /* enabling and disabling these is buggy on gtk3 */
+    /* skip it altogether */
+    return;
+  }
 
   state = UIWIDGET_ENABLE;
   if (idx == 0) {

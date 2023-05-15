@@ -19,6 +19,12 @@
 
 int uiBaseMarginSz = UIUTILS_BASE_MARGIN_SZ;
 
+const char *
+uiBackend (void)
+{
+  return "null";
+}
+
 void
 uiUIInitialize (void)
 {
