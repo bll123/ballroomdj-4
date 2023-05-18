@@ -19,9 +19,8 @@ There are some important differences from song selection.
 ##### Filter Dialog
 
 The filter dialog has an additional drop-down where a playlist may be
-selected (_At this time, only song lists are supported.  This may
-change in the future._).  When a playlist is selected, the other
-filters are disabled, and the songs from the playlist are listed.
+selected.  When a playlist is selected, the other filters are
+disabled, and the songs from the playlist are listed.
 
 The song editor can then be used to edit the songs from the selected
 playlist.
@@ -85,4 +84,4 @@ marked as the same song.
 <br><span style="color:#4559bf;">**Manage / Music Manager / Same Song Marks**</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-05-18 13:39:05; BDJ4 version 4.3.2.2)_

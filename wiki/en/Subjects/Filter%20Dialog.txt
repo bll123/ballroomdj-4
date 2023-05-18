@@ -1,0 +1,83 @@
+[Wiki Home](Home)
+
+<span style="color:#4559bf;">_The song selection, request and music
+manager song listings can be filtered to display selected songs._</span>
+
+### Filter Dialog
+
+The filter dialog is available in the song selection, request and
+music manager song listings by selecting the __Filters__ button.
+
+The following filters are available:
+
+* Playlist (Music Manager only)
+* Sort by
+* Search
+* Genre
+* Dance
+* Dance Rating
+* Dance Level
+* Status
+* Favorite
+* Playable Status
+
+The Genre, Dance Level, Status, Favorite and Playable Status filters
+are not displayed in the default configuration.  These can be turned
+on in [Filter&nbsp;Display](en-Configuration-Filter%20Display).
+
+After selecting the filters to be applied, select the __Apply__ button
+to update the song listing.
+
+Selecting __Reset__ will reset the filters back to their defaults and
+update the song listing.
+
+The _Request_ song listing will always set the _Playable&nbsp;Status_
+filter on.  If the [status](en-Configuration-Edit%20Status) field is
+not in use, this has no effect, as all songs are set to be playable.
+
+__Playlist__: Only available in the music manager.  Selecting a
+playlist will filter the song listing based on the type of playlist
+and the playlist settings.  Selecting a song list will only show the
+songs in the song list.  Selecting an automatic or sequenced playlist
+will show all songs that could be played by the selected playlist.
+When a playlist is selected, all other filters are disabled.
+
+__Sort by__: Allows selection of what sort order to apply to the song
+listing.
+
+__Search__: Searches the title, artist, album artist, notes, keyword,
+tags, album, composer and conductor for the specified text. The search
+is not case sensitive.
+
+__Genre__: Matches the selected genre (not displayed in default
+configuration).
+
+__Dance__: Matches the selected dance.
+
+__Dance Rating__: Matches any song with rating at the selected level
+or better.
+
+__Dance Level__: Matches the selected dance level (not displayed in
+default configuration).
+
+__Status__: Matches the selected status (not displayed in default
+configuration).
+
+__Favorite__: Matches the selected favorite setting (not displayed in
+default configuration).
+
+__Playable Status__: Matches any song with a
+[status](en-Configuration-Edit%20Status) that has the _Play?_ checkbox
+turned on (not displayed in default configuration).
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![filter-norm](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/filter-norm-B.png)
+<br><span style="color:#4559bf;">__Filter Dialog__</span></div>
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![filter-pl](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/filter-pl-B.png)
+<br><span style="color:#4559bf;">__Filter Dialog - Playlist Selected__</span></div>
+
+[Wiki Home](Home)
+
+<br>_(Updated 2023-05-18 13:52:25; BDJ4 version 4.3.2.2)_

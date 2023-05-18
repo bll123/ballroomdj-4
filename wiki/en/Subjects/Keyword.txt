@@ -6,15 +6,29 @@ sequenced playlists._</span>
 
 ### Keyword
 
-A single keyword may be set for a song in the [Song&nbsp;Editor].
-When a keyword is set, the song will not be selected for automatic and
-sequenced playlists unless the playlist has the keyword present in the
-__Allowed Keywords__ list.
+A single keyword may be set for a song in the
+[Song&nbsp;Editor](en-Management-Song%20Editor). When a keyword is
+set, the song will not be selected for automatic and sequenced
+playlists unless the playlist has the keyword present in the _Allowed
+Keywords_ list.
 
 The common use of the keyword is to indicate holiday songs.  Songs
 that are for holiday occasions would have the keyword set.  These
 songs will be excluded from automatic and sequenced playlists unless
 the playlist configuration allows the keyword.
 
+Example of setting the keyword for a song:
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![keyword-song-editor](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/keyword-song-editor-A.png)
+<br><span style="color:#4559bf;">**Music Manager / Song Editor**</span> </div>
+
+Example playlist settings for an automatic playlist that includes
+holiday songs:
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![keyword-playlist](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/keyword-playlist-A.png)
+<br><span style="color:#4559bf;">**Playlist Management**</span> </div>
+
 [Wiki Home](Home)
-<br>_(Updated 2023-04-15 14:37:28; BDJ4 version 4.3.1)_
+<br>_(Updated 2023-05-18 13:06:32; BDJ4 version 4.3.2.2)_

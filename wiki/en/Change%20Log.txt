@@ -4,7 +4,11 @@
 
 <!--
 
-**4.3.3  2023-6---**
+**4.3.3.3  2023-5---**
+
+* Bug Fixes:
+    * Filters: Fixed search to also search composer and conductor.
+    * PENDING: Edit Song Lists: Enforce a maximum of 1000 songs.
 
 -->
 
@@ -402,4 +406,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-15 12:15:10; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-05-18 13:39:05; BDJ4 version 4.3.2.2)_

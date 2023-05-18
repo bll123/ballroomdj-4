@@ -678,6 +678,12 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
       found = songfilterCheckStr (songGetStr (song, TAG_ALBUM), searchstr);
     }
     if (! found) {
+      found = songfilterCheckStr (songGetStr (song, TAG_COMPOSER), searchstr);
+    }
+    if (! found) {
+      found = songfilterCheckStr (songGetStr (song, TAG_CONDUCTOR), searchstr);
+    }
+    if (! found) {
       logProcEnd (LOG_PROC, "songfilterFilterSong", "search-reject");
       return false;
     }
