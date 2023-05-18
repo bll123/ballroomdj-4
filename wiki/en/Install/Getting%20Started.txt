@@ -10,7 +10,7 @@
 
 The first step is to configure the location of your music folder.
 Start BDJ4.  The window that displays is the _Starter_ window. Select
-the _Configure_ button.
+the __Configure__ button.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![Starter](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-starter-B.png)
@@ -36,7 +36,7 @@ about your songs when the database is built.  Most importantly, the
 dance associated with each song, which is not usually stored in the
 audio file tags.
 
-In the configuration window, select the _Organization_ section from
+In the configuration window, select the __Organization__ section from
 the list on the left side of the window.
 
 <div markdown style="margin-right: 20px; text-align: center;">
@@ -61,18 +61,41 @@ using one of the methods in [Getting&nbsp;Help](en-Getting%20Help).
 Many different organization paths are supported, but not all are
 listed in the drop-down.
 
+Leave the configuration window open.
+
+##### Check the configured dances
+
+It is best to make sure all the dances that you use are set up
+correctly before adding songs to the database.
+
+In the configuration window, select __Edit&nbsp;Dances__ from the list
+in the left side of the window.
+
+Check that all the dances that you use are listed.  Add any dances you
+use that are missing from the list.  Also check to make sure the
+spelling of each dance matches what you use.  For example, _Waltz_ may
+need to be changed to _Slow&nbsp;Waltz_.  Any dances that you do not
+use may be deleted. <br>See also: [Configuration / Edit
+Dances](en-Configuration-Edit%20Dances)
+
 Close the configuration window.
+
+<!-- appears in configuration/edit dances.txt also -->
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![edit-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-E.png)
+<br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 #### Creating the database for the first time
 
 The BDJ4 database contains the information about your songs.  The
 information in the database must be populated the first time.
 
-In the _Starter_ window, select the _Manage_ button.  This will open
-the management user interface.  Select the _Update&nbsp;Database_ section
-in the left side of the management window.
+In the _Starter_ window, select the __Manage__ button.  This will open
+the management user interface.  Select the __Update&nbsp;Database__
+section in the left side of the management window.
 
-Use the plus and minus buttons to change the _Action_ to
+Use the plus and minus buttons to change __Action__ to
 _Rebuild&nbsp;Database_.  Select the __Start__ button.  Depending on how
 many songs you have, the database rebuild may take a long time.  Wait
 for the database rebuild to finish.  A _Complete_ message will be
@@ -86,10 +109,10 @@ Leave the management window open.
 
 #### Check the dance for each song
 
-Select _Music&nbsp;Manager_ in the left side of the management window.
-Scroll through the list of songs and check to make sure the dance is
-set for each song.  It is OK if some songs are left without an
-assigned dance, but most should have a dance set.
+Select __Music&nbsp;Manager__ in the left side of the management
+window. Scroll through the list of songs and check to make sure the
+dance is set for each song.  It is OK if some songs are left without
+an assigned dance, but most should have a dance set.
 
 <div markdown style="margin-right: 20px; text-align: center;">
 ![gs-mm](https://ballroomdj4.sourceforge.io/wikiimg/en/Install/gs-mm-B.png)
@@ -110,10 +133,10 @@ Leave the management window open.
 
 #### Create an example playlist
 
-Select _Edit&nbsp;Song&nbsp;Lists_ in the left side of the management
-window.  On the right side of the window below the player is a list of
-your songs.  Select a song in the right side of the window.  Select
-the left arrow button
+Select __Edit&nbsp;Song&nbsp;Lists__ in the left side of the
+management window.  On the right side of the window below the player
+is a list of your songs.  Select a song in the right side of the
+window.  Select the left arrow button
 (![left-arrow](https://ballroomdj4.sourceforge.io/wikiimg/LeftButton-B.png))
 in the middle of the lower section.  This will add the song you
 selected to the song list that is being created.
@@ -150,7 +173,7 @@ to start the music playing.
 There is more information available here on the [wiki](Home) on many
 different subjects.
 
-#### Getting help
+##### Getting help
 
 If you need help getting started, understanding how something in BDJ4
 functions, or want to learn how to accomplish a particular goal in
@@ -158,4 +181,4 @@ BDJ4, use one of the methods in
 [Getting&nbsp;Help](en-Getting%20Help).
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-02 11:40:11; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-05-18 10:38:26; BDJ4 version 4.3.2.2)_

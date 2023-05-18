@@ -27,7 +27,7 @@ Supported Platforms as of 2023-3-15: Linux 64-bit.
 If you have a distribution or desktop environment that you want
 supported, please [let me know](Getting%20Help).
 
-#### Updating BallroomDJ 4 : Make a Backup
+##### Updating BallroomDJ 4 : Make a Backup
 
 Be sure to exit BallroomDJ 4 before creating a backup or updating the
 software.
@@ -36,7 +36,7 @@ If you are updating BallroomDJ 4 to a new version, be sure to create a
 backup of your BDJ4 installation.  On Linux, make a copy of the
 $HOME/BDJ4 folder
 
-#### Install the Requisite Software
+##### Install the Requisite Software
 
 This step only needs to be run once, not for every installation or
 update.
@@ -57,13 +57,13 @@ This script performs the following actions:
 * Adds the user to the 'audio' group.
 * Sets 'flat-volumes = no' in the $HOME/.config/pulse/daemon.conf file.
 
-#### Internet Connection
+##### Internet Connection
 
 An internet connection is required the first time BallroomDJ&nbsp;4 is
 installed.  There are requisite packages (Mutagen) that need to be
 installed from the internet.
 
-#### Install BallroomDJ 4
+##### Install BallroomDJ 4
 
 Download the Linux installer from sourceforge.
 
@@ -97,4 +97,4 @@ button and wait for the __Installation Completed__ message.
 <br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Linux__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-15 12:15:10; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-05-18 10:29:33; BDJ4 version 4.3.2.2)_

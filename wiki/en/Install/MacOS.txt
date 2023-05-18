@@ -7,7 +7,7 @@
 Supported Platforms as of 2023-3-15: Mojave, Catalina, Big&nbsp;Sur,
 Monterey, Ventura.
 
-#### Updating BallroomDJ 4 : Make a Backup
+##### Updating BallroomDJ 4 : Make a Backup
 
 Be sure to exit BallroomDJ 4 before creating a backup or updating the
 software.
@@ -17,7 +17,7 @@ backup of your BDJ4 installation.  On Mac OS make a copy of the
 $HOME/Applications/BDJ4.app folder and the
 $HOME/Library/Application&nbsp;Support/BDJ4 folder.
 
-#### Install the Requisite Software
+##### Install the Requisite Software
 
 If a pre-install script before version 9 was run, you must re-run
 this script.  This will fix various Mac OS problems.
@@ -40,13 +40,13 @@ This script performs the following actions:
 
 * Installs the required software used by BallroomDJ 4.
 
-#### Internet Connection
+##### Internet Connection
 
 An internet connection is required the first time BallroomDJ&nbsp;4 is
 installed.  There are requisite packages (Mutagen) that
 need to be installed from the internet.
 
-#### Install BallroomDJ 4
+##### Install BallroomDJ 4
 
 Download the Mac OS installer from sourceforge.
 Be sure to select the correct architecture (Intel or Apple Silicon).
@@ -91,4 +91,4 @@ icon to the Applications Folder icon.
 <br><span style="color:#4559bf;">__VLC Installation on Mac OS__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-02 11:40:11; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-05-18 10:29:33; BDJ4 version 4.3.2.2)_

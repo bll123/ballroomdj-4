@@ -43,9 +43,11 @@ __Time Signature__: This is used by the BPM counter to select the
 proper default when MPM is selected in the
 [General](en-Configuration-General) configuration.
 
+<!-- appears in install/getting started.txt also -->
+
 <div markdown style="margin-right: 20px; text-align: center;">
 ![edit-dances](https://ballroomdj4.sourceforge.io/wikiimg/en/Configuration/EditDances-E.png)
 <br><span style="color:#4559bf;">__Configure / Edit Dances__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-03-09 09:15:36; BDJ4 version 4.3.0)_
+<br>_(Updated 2023-05-18 10:35:37; BDJ4 version 4.3.2.2)_

@@ -7,7 +7,7 @@
 Supported Platforms as of 2023-3-15: Windows&nbsp;10&nbsp;(64-bit),
 Windows&nbsp;11&nbsp;(64-bit).
 
-#### Updating BallroomDJ 4 : Make a Backup
+##### Updating BallroomDJ 4 : Make a Backup
 
 Be sure to exit BallroomDJ 4 before creating a backup or updating the
 software.
@@ -16,7 +16,7 @@ If you are updating BallroomDJ 4 to a new version, be sure to create a
 backup of your BDJ4 installation.  On Windows, simply make a copy of
 the entire BDJ4 folder.
 
-#### Windows 11 bug / Installation Issues
+##### Windows 11 bug / Installation Issues
 
 Windows 11 has a bug where the BallroomDJ 4 installer will just exit
 or return an error 0xC0000142.
@@ -35,7 +35,7 @@ user account will stay uncorrupted.
 
 As far as I know, this bug does not occur on Windows 10.
 
-#### Windows Account Names with Diacritical Marks
+##### Windows Account Names with Diacritical Marks
 
 The BallroomDJ 4 installer may not run if the windows account name
 has any diacritical marks (e.g. Gergő; accents, umlauts, circumflex,
@@ -43,13 +43,13 @@ etc.).  You will need to change your account name (quite difficult),
 or create a new account for BDJ4 that does not have any diacritical
 marks.
 
-#### Internet Connection
+##### Internet Connection
 
 An internet connection is required the first time BallroomDJ&nbsp;4 is
 installed.  There are requisite packages (VLC, Python, Mutagen) that
 need to be installed from the internet.
 
-#### Install BallroomDJ 4
+##### Install BallroomDJ 4
 
 Download the Windows installer from sourceforge.
 
@@ -109,4 +109,4 @@ installation is complete, turn off the __Run VLC media player__
 checkbox, and select __Finish__.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-03 07:53:39; BDJ4 version 4.3.2)_
+<br>_(Updated 2023-05-18 10:29:33; BDJ4 version 4.3.2.2)_
