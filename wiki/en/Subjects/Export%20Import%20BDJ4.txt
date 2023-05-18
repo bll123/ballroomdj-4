@@ -4,9 +4,55 @@
 can be used to transfer playlists and music from one computer to
 another._</span>
 
+[TOC]
+
 ### Export to BDJ4 / Import from BDJ4
 
-To be written.
+##### Exporting song lists and audio files
+
+In __Manage&nbsp;/&nbsp;Edit&nbsp;Song&nbsp;Lists__, load the song list
+to be exported.
+
+Select the __Export&nbsp;/&nbsp;Export&nbsp;for&nbsp;BDJ4__ menu item.
+The dialog will prompt for a folder where the audio files, song list
+and the database will be exported.  The selected folder should be
+empty or a folder that has been previously used for an export. BDJ4
+will create _data_ and _music_ folders within the selected folder.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![ei-export-dialog-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ei-export-dialog-A.png)
+<br><span style="color:#4559bf;">**Export / Export for BDJ4**</span> </div>
+
+When the __Export__ button is selected, BDJ4 will process each song in
+the song list.  If the song does not exist in the export database, the
+export database will be updated and the audio file copied to the
+export folder. If the song already exists in the export database, the
+export database entry will be updated if it is older than the song's
+current database entry.
+
+More than one song list may be exported to the same export folder.
+
+##### Importing song lists and audio files
+
+In __Manage&nbsp;/&nbsp;Edit&nbsp;Song&nbsp;Lists__, select the
+__Import&nbsp;/&nbsp;Import&nbsp;from&nbsp;BDJ4__ menu item. The dialog
+will prompt for a folder.  The selected folder must have been created
+by a prior __Export&nbsp;for&nbsp;BDJ4__.
+
+<div markdown style="margin-right: 20px; text-align: center;">
+![ei-import-dialog-A](https://ballroomdj4.sourceforge.io/wikiimg/en/Subjects/ei-import-dialog-A.png)
+<br><span style="color:#4559bf;">**Import / Import from BDJ4**</span> </div>
+
+Select the song list to import.  The
+_New&nbsp;Song&nbsp;List&nbsp;Name_ will be pre-filled with the
+imported song list name. A new song list name may be entered. If the
+song list already exists, a status message will be displayed. If the
+song list already exists, it will be overwritten on import.
+
+Select the __Import__ button to start the import process.   The audio
+file will only be copied if it does not already exist.  The database
+entry will be added if it is new, or updated if the import database
+entry is newer.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-15 12:15:10; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-05-18 10:07:10; BDJ4 version 4.3.2.2)_

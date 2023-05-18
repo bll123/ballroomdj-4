@@ -399,9 +399,7 @@ eibdj4ProcessImport (eibdj4_t *eibdj4)
         doupdate = false;
         docopy = false;
 
-        /* only import an audio file if it does not exist in the database */
-        /* or if the user has specifically turned on the update, and the */
-        /* db entry is newer */
+        /* only import an audio file if it does not exist in the database. */
         if (tsong == NULL) {
           doupdate = true;
           docopy = true;
