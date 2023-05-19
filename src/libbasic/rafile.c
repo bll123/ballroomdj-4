@@ -212,6 +212,9 @@ raRead (rafile_t *rafile, rafileidx_t rrn, char *data)
     return 0;
   }
 
+  /* as there are multiple processes, */
+  /* the reader's buffers must also be flushed */
+  fflush (rafile->fh);
   raLock (rafile);
   fseek (rafile->fh, rrnToOffset (rrn), SEEK_SET);
   rc = (rafileidx_t) fread (data, RAFILE_REC_SIZE, 1, rafile->fh);
@@ -233,6 +236,9 @@ raReadHeader (rafile_t *rafile)
   rafileidx_t    count;
 
   logProcBegin (LOG_PROC, "raReadHeader");
+  /* as there are multiple processes, */
+  /* the reader's buffers must also be flushed */
+  fflush (rafile->fh);
   raLock (rafile);
   rrc = 1;
   fseek (rafile->fh, 0L, SEEK_SET);

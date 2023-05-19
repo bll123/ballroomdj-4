@@ -7,8 +7,9 @@
 **4.3.3.3  2023-5---**
 
 * Bug Fixes:
-    * Filters: Fixed search to also search composer and conductor.
     * PENDING: Edit Song Lists: Enforce a maximum of 1000 songs.
+    * Filters: Fixed search to also search composer and conductor.
+    * Player, et.al.: Fix re-read of database when song was just written.
     * Song Editor: Fix incorrect BPM range display when not set.
 
 -->
