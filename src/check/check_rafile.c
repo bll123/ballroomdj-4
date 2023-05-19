@@ -224,6 +224,7 @@ START_TEST(rafile_rewrite)
   ck_assert_int_eq (rc, 0);
   ck_assert_int_eq (statbuf.st_size, lastsize);
   lastsize = statbuf.st_size;
+
   raWrite (rafile, 1, "iiii");
   rc = stat (RAFN, &statbuf);
   ck_assert_int_eq (rc, 0);
@@ -286,6 +287,16 @@ START_TEST(rafile_write_read)
   rc = raRead (rafile, 4, data);
   ck_assert_int_eq (rc, 1);
   ck_assert_str_eq (data, "jjjj");
+
+  raWrite (rafile, 4, "mmmm");
+  rc = stat (RAFN, &statbuf);
+  ck_assert_int_eq (rc, 0);
+  ck_assert_int_eq (statbuf.st_size, lastsize);
+  lastsize = statbuf.st_size;
+
+  rc = raRead (rafile, 4, data);
+  ck_assert_int_eq (rc, 1);
+  ck_assert_str_eq (data, "mmmm");
 
   raWrite (rafile, 3, "kkkk");
   rc = stat (RAFN, &statbuf);
