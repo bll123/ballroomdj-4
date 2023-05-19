@@ -1910,7 +1910,8 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
   int       idx;
   dbidx_t   dbidx;
   song_t    *song = NULL;
-  long      currlen;
+  int       currlen;
+  int       playerqlen;
 
 
   logProcBegin (LOG_PROC, "mainMusicqInsert");
@@ -1936,9 +1937,15 @@ mainMusicqInsert (maindata_t *mainData, bdjmsgroute_t routefrom, char *args)
   }
   dbidx = atol (p);
 
+  currlen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);
+  playerqlen = bdjoptGetNum (OPT_G_PLAYERQLEN);
+  if (currlen >= playerqlen) {
+    logProcEnd (LOG_PROC, "mainMusicqInsert", "reached-song-list-limit");
+    return;
+  }
+
   song = dbGetByIdx (mainData->musicdb, dbidx);
 
-  currlen = musicqGetLen (mainData->musicQueue, mainData->musicqManageIdx);
   if (currlen == 0 &&
       mainData->musicqPlayIdx != mainData->musicqManageIdx) {
     musicqPushHeadEmpty (mainData->musicQueue, mainData->musicqManageIdx);

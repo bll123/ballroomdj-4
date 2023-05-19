@@ -1394,7 +1394,8 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
             snprintf (tmp, sizeof (tmp), "%d", MUSICQ_MNG_PB);
             connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_PLAYBACK, tmp);
             connSendMessage (manage->conn, ROUTE_MAIN, MSG_QUEUE_SWITCH_EMPTY, "0");
-            connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_LEN, "999");
+            snprintf (tmp, sizeof (tmp), "%d", SONG_LIST_LIMIT);
+            connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_SET_LEN, tmp);
           }
           break;
         }
