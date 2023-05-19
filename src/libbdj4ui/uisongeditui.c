@@ -1825,7 +1825,7 @@ uisongeditGetBPMRangeDisplay (int danceidx)
   lowbpm = danceGetNum (dances, danceidx, DANCE_LOW_BPM);
   highbpm = danceGetNum (dances, danceidx, DANCE_HIGH_BPM);
   *tbuff = '\0';
-  if (lowbpm != 0 && highbpm != 0) {
+  if (lowbpm > 0 && highbpm > 0) {
     if (lowbpm == highbpm) {
       snprintf (tbuff, sizeof (tbuff), " (%d)", lowbpm);
     } else {
