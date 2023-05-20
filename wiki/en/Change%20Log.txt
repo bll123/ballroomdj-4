@@ -4,15 +4,17 @@
 
 <!--
 
-**4.3.3.3  2023-5---**
+**4.3.2.4 2023-5---**
+
+-->
+
+**4.3.2.3 2023-5-20**
 
 * Bug Fixes:
     * Edit Song Lists: Enforce a maximum of 900 songs in a song list.
     * Filters: Fixed search to also search composer and conductor.
     * Player, et.al.: Fix re-read of database when song was just written.
     * Song Editor: Fix incorrect BPM range display when not set.
-
--->
 
 **4.3.2.2 2023-5-15**
 
@@ -408,4 +410,4 @@
     * code cleanup.
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-18 13:39:05; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-05-20 10:40:51; BDJ4 version 4.3.2.3)_
