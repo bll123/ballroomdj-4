@@ -52,7 +52,7 @@ confuiDanceSelect (void *udata, long col)
 }
 
 void
-confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key)
+confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t danceIdx)
 {
   dance_t         *dances;
   char            *sval;
@@ -60,14 +60,15 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key)
   datafileconv_t  conv;
   int             widx;
   nlistidx_t      num;
+  int             timesig;
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
 
-  sval = danceGetStr (dances, key, DANCE_DANCE);
+  sval = danceGetStr (dances, danceIdx, DANCE_DANCE);
   widx = CONFUI_ENTRY_DANCE_DANCE;
   uiEntrySetValue (gui->uiitem [widx].entry, sval);
 
-  slist = danceGetList (dances, key, DANCE_TAGS);
+  slist = danceGetList (dances, danceIdx, DANCE_TAGS);
   conv.allocated = false;
   conv.list = slist;
   conv.valuetype = VALUE_LIST;
@@ -80,27 +81,34 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t key)
     sval = NULL;
   }
 
-  sval = danceGetStr (dances, key, DANCE_ANNOUNCE);
+  timesig = danceGetTimeSignature (danceIdx);
+
+  sval = danceGetStr (dances, danceIdx, DANCE_ANNOUNCE);
   widx = CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT;
   uiEntrySetValue (gui->uiitem [widx].entry, sval);
 
-  num = danceGetNum (dances, key, DANCE_HIGH_BPM);
-  widx = CONFUI_WIDGET_DANCE_HIGH_BPM;
+  num = danceGetNum (dances, danceIdx, DANCE_HIGH_MPM);
+  widx = CONFUI_WIDGET_DANCE_HIGH_MPM;
+  if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+    num *= danceTimesigValues [timesig];
+  }
   uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
 
-  num = danceGetNum (dances, key, DANCE_LOW_BPM);
-  widx = CONFUI_WIDGET_DANCE_LOW_BPM;
+  num = danceGetNum (dances, danceIdx, DANCE_LOW_MPM);
+  widx = CONFUI_WIDGET_DANCE_LOW_MPM;
+  if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+    num *= danceTimesigValues [timesig];
+  }
   uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
 
-  num = danceGetNum (dances, key, DANCE_SPEED);
+  num = danceGetNum (dances, danceIdx, DANCE_SPEED);
   widx = CONFUI_SPINBOX_DANCE_SPEED;
   uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, num);
 
-  num = danceGetNum (dances, key, DANCE_TIMESIG);
   widx = CONFUI_SPINBOX_DANCE_TIME_SIG;
-  uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, num);
+  uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, timesig);
 
-  num = danceGetNum (dances, key, DANCE_TYPE);
+  num = danceGetNum (dances, danceIdx, DANCE_TYPE);
   widx = CONFUI_SPINBOX_DANCE_TYPE;
   uiSpinboxTextSetValue (gui->uiitem [widx].spinbox, num);
 }

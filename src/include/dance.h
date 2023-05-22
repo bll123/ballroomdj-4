@@ -11,8 +11,8 @@
 typedef enum {
   DANCE_ANNOUNCE,           //
   DANCE_DANCE,              //
-  DANCE_HIGH_BPM,           //
-  DANCE_LOW_BPM,            //
+  DANCE_HIGH_MPM,           //
+  DANCE_LOW_MPM,            //
   DANCE_SPEED,              //
   DANCE_TAGS,               //
   DANCE_TIMESIG,
@@ -37,6 +37,8 @@ typedef enum {
   DANCE_TIMESIG_MAX,
 } dancetimesig_t;
 
+extern int danceTimesigValues [DANCE_TIMESIG_MAX];
+
 typedef struct dance dance_t;
 
 dance_t       *danceAlloc (void);
@@ -55,5 +57,6 @@ void          danceConvDance (datafileconv_t *conv);
 void          danceSave (dance_t *dances, ilist_t *list);
 void          danceDelete (dance_t *dances, ilistidx_t dkey);
 ilistidx_t    danceAdd (dance_t *dances, char *name);
+int           danceGetTimeSignature (ilistidx_t danceIdx);
 
 #endif /* INC_DANCE_H */

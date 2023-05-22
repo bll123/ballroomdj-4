@@ -21,6 +21,13 @@
 #include "pathbld.h"
 #include "slist.h"
 
+int danceTimesigValues [DANCE_TIMESIG_MAX] = {
+  [DANCE_TIMESIG_24] = 2,
+  [DANCE_TIMESIG_34] = 3,
+  [DANCE_TIMESIG_44] = 4,
+  [DANCE_TIMESIG_48] = 4,
+};
+
 typedef struct dance {
   datafile_t      *df;
   ilist_t         *dances;
@@ -35,8 +42,8 @@ static void danceConvTimeSig (datafileconv_t *conv);
 static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
   { "ANNOUNCE",   DANCE_ANNOUNCE, VALUE_STR, NULL, -1 },
   { "DANCE",      DANCE_DANCE,    VALUE_STR, NULL, -1 },
-  { "HIGHBPM",    DANCE_HIGH_BPM, VALUE_NUM, NULL, -1 },
-  { "LOWBPM",     DANCE_LOW_BPM,  VALUE_NUM, NULL, -1 },
+  { "HIGHMPM",    DANCE_HIGH_MPM, VALUE_NUM, NULL, -1 },
+  { "LOWMPM",     DANCE_LOW_MPM,  VALUE_NUM, NULL, -1 },
   { "SPEED",      DANCE_SPEED,    VALUE_NUM, danceConvSpeed, -1 },
   { "TAGS",       DANCE_TAGS,     VALUE_LIST, convTextList, -1 },
   { "TIMESIG",    DANCE_TIMESIG,  VALUE_NUM, danceConvTimeSig, -1 },
@@ -225,11 +232,32 @@ danceAdd (dance_t *dances, char *name)
   ilistSetNum (dances->dances, count, DANCE_SPEED, DANCE_SPEED_NORMAL);
   ilistSetNum (dances->dances, count, DANCE_TYPE, 0);
   ilistSetNum (dances->dances, count, DANCE_TIMESIG, DANCE_TIMESIG_44);
-  ilistSetNum (dances->dances, count, DANCE_HIGH_BPM, 0);
-  ilistSetNum (dances->dances, count, DANCE_LOW_BPM, 0);
+  ilistSetNum (dances->dances, count, DANCE_HIGH_MPM, 0);
+  ilistSetNum (dances->dances, count, DANCE_LOW_MPM, 0);
   ilistSetStr (dances->dances, count, DANCE_ANNOUNCE, "");
   ilistSetList (dances->dances, count, DANCE_TAGS, NULL);
   return count;
+}
+
+int
+danceGetTimeSignature (ilistidx_t danceIdx)
+{
+  dance_t     *dances;
+  int         timesig;
+
+  dances = bdjvarsdfGet (BDJVDF_DANCES);
+  if (danceIdx < 0) {
+    /* unknown / not-set dance */
+    timesig = DANCE_TIMESIG_44;
+  } else {
+    timesig = danceGetNum (dances, danceIdx, DANCE_TIMESIG);
+  }
+  /* 4/8 is handled the same as 4/4 in the bpm counter */
+  if (timesig == DANCE_TIMESIG_48) {
+    timesig = DANCE_TIMESIG_44;
+  }
+
+  return timesig;
 }
 
 /* internal routines */

@@ -1832,32 +1832,15 @@ manageStartBPMCounter (void *udata)
 static void
 manageSetBPMCounter (manageui_t *manage, song_t *song)
 {
-  int         bpmsel;
-  int         timesig = 0;
+  ilistidx_t  danceIdx;
 
   logProcBegin (LOG_PROC, "manageSetBPMCounter");
-  bpmsel = bdjoptGetNum (OPT_G_BPM);
-  if (bpmsel == BPM_MPM) {
-    dance_t     *dances;
-    ilistidx_t  danceIdx;
 
-    dances = bdjvarsdfGet (BDJVDF_DANCES);
-    danceIdx = songGetNum (song, TAG_DANCE);
-    if (danceIdx < 0) {
-      /* unknown / not-set dance */
-      timesig = DANCE_TIMESIG_44;
-    } else {
-      timesig = danceGetNum (dances, danceIdx, DANCE_TIMESIG);
-    }
-    /* 4/8 is handled the same as 4/4 in the bpm counter */
-    if (timesig == DANCE_TIMESIG_48) {
-      timesig = DANCE_TIMESIG_44;
-    }
-  }
+  manage->currbpmsel = bdjoptGetNum (OPT_G_BPM);
 
+  danceIdx = songGetNum (song, TAG_DANCE);
+  manage->currtimesig = danceGetTimeSignature (danceIdx);
 
-  manage->currbpmsel = bpmsel;
-  manage->currtimesig = timesig;
   manageSendBPMCounter (manage);
   logProcEnd (LOG_PROC, "manageSetBPMCounter", "");
 }

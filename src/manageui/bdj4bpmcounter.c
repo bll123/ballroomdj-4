@@ -21,6 +21,7 @@
 #include "bdjvars.h"
 #include "callback.h"
 #include "conn.h"
+#include "dance.h"
 #include "log.h"
 #include "mdebug.h"
 #include "ossignal.h"
@@ -694,17 +695,20 @@ bpmcounterProcessClick (void *udata)
     snprintf (tbuff, sizeof (tbuff), "%d", (int) dval);
     uiLabelSetText (bpmcounter->dispvalue [BPMCOUNT_DISP_BPM], tbuff);
 
-    bpmcounter->values [BPMCOUNT_DISP_MPM_24] = (int) (dval / 2.0);
+    bpmcounter->values [BPMCOUNT_DISP_MPM_24] =
+        (int) (dval / (double) danceTimesigValues [DANCE_TIMESIG_24]);
     snprintf (tbuff, sizeof (tbuff), "%d",
         bpmcounter->values [BPMCOUNT_DISP_MPM_24]);
     uiLabelSetText (bpmcounter->dispvalue [BPMCOUNT_DISP_MPM_24], tbuff);
 
-    bpmcounter->values [BPMCOUNT_DISP_MPM_34] = (int) (dval / 3.0);
+    bpmcounter->values [BPMCOUNT_DISP_MPM_34] =
+        (int) (dval / (double) danceTimesigValues [DANCE_TIMESIG_34]);
     snprintf (tbuff, sizeof (tbuff), "%d",
         bpmcounter->values [BPMCOUNT_DISP_MPM_34]);
     uiLabelSetText (bpmcounter->dispvalue [BPMCOUNT_DISP_MPM_34], tbuff);
 
-    bpmcounter->values [BPMCOUNT_DISP_MPM_44] = (int) (dval / 4.0);
+    bpmcounter->values [BPMCOUNT_DISP_MPM_44] =
+        (int) (dval / (double) danceTimesigValues [DANCE_TIMESIG_44]);
     snprintf (tbuff, sizeof (tbuff), "%d",
         bpmcounter->values [BPMCOUNT_DISP_MPM_44]);
     uiLabelSetText (bpmcounter->dispvalue [BPMCOUNT_DISP_MPM_44], tbuff);

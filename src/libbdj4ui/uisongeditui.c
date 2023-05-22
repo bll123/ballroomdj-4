@@ -1822,8 +1822,8 @@ uisongeditGetBPMRangeDisplay (int danceidx)
   char    *str;
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
-  lowbpm = danceGetNum (dances, danceidx, DANCE_LOW_BPM);
-  highbpm = danceGetNum (dances, danceidx, DANCE_HIGH_BPM);
+  lowbpm = danceGetNum (dances, danceidx, DANCE_LOW_MPM);
+  highbpm = danceGetNum (dances, danceidx, DANCE_HIGH_MPM);
   *tbuff = '\0';
   if (lowbpm > 0 && highbpm > 0) {
     if (lowbpm == highbpm) {

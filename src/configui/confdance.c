@@ -39,8 +39,8 @@ static int  confuiDanceEntryAnnouncementChg (uientry_t *entry, void *udata);
 static int  confuiDanceEntryChg (uientry_t *e, void *udata, int widx);
 static bool confuiDanceSpinboxTypeChg (void *udata);
 static bool confuiDanceSpinboxSpeedChg (void *udata);
-static bool confuiDanceSpinboxLowBPMChg (void *udata);
-static bool confuiDanceSpinboxHighBPMChg (void *udata);
+static bool confuiDanceSpinboxLowMPMChg (void *udata);
+static bool confuiDanceSpinboxHighMPMChg (void *udata);
 static bool confuiDanceSpinboxTimeSigChg (void *udata);
 static void confuiDanceSpinboxChg (void *udata, int widx);
 static int  confuiDanceValidateAnnouncement (uientry_t *entry, confuigui_t *gui);
@@ -152,16 +152,16 @@ confuiBuildUIEditDances (confuigui_t *gui)
   /* CONTEXT: configuration: dances: low BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("Low %s"), bpmstr);
   confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpC, tbuff,
-      CONFUI_WIDGET_DANCE_LOW_BPM, -1, 10, 500, 0,
-      confuiDanceSpinboxLowBPMChg);
-  gui->uiitem [CONFUI_WIDGET_DANCE_LOW_BPM].danceidx = DANCE_LOW_BPM;
+      CONFUI_WIDGET_DANCE_LOW_MPM, -1, 10, 500, 0,
+      confuiDanceSpinboxLowMPMChg);
+  gui->uiitem [CONFUI_WIDGET_DANCE_LOW_MPM].danceidx = DANCE_LOW_MPM;
 
   /* CONTEXT: configuration: dances: high BPM (or MPM) setting */
   snprintf (tbuff, sizeof (tbuff), _("High %s"), bpmstr);
   confuiMakeItemSpinboxNum (gui, dvbox, szgrp, szgrpC, tbuff,
-      CONFUI_WIDGET_DANCE_HIGH_BPM, -1, 10, 500, 0,
-      confuiDanceSpinboxHighBPMChg);
-  gui->uiitem [CONFUI_WIDGET_DANCE_HIGH_BPM].danceidx = DANCE_HIGH_BPM;
+      CONFUI_WIDGET_DANCE_HIGH_MPM, -1, 10, 500, 0,
+      confuiDanceSpinboxHighMPMChg);
+  gui->uiitem [CONFUI_WIDGET_DANCE_HIGH_MPM].danceidx = DANCE_HIGH_MPM;
 
   /* CONTEXT: configuration: dances: time signature for the dance */
   confuiMakeItemSpinboxText (gui, dvbox, szgrp, szgrpC, _("Time Signature"),
@@ -336,16 +336,16 @@ confuiDanceSpinboxSpeedChg (void *udata)
 }
 
 static bool
-confuiDanceSpinboxLowBPMChg (void *udata)
+confuiDanceSpinboxLowMPMChg (void *udata)
 {
-  confuiDanceSpinboxChg (udata, CONFUI_WIDGET_DANCE_LOW_BPM);
+  confuiDanceSpinboxChg (udata, CONFUI_WIDGET_DANCE_LOW_MPM);
   return UICB_CONT;
 }
 
 static bool
-confuiDanceSpinboxHighBPMChg (void *udata)
+confuiDanceSpinboxHighMPMChg (void *udata)
 {
-  confuiDanceSpinboxChg (udata, CONFUI_WIDGET_DANCE_HIGH_BPM);
+  confuiDanceSpinboxChg (udata, CONFUI_WIDGET_DANCE_HIGH_MPM);
   return UICB_CONT;
 }
 
@@ -394,6 +394,14 @@ confuiDanceSpinboxChg (void *udata, int widx)
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   key = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
+  if (key == DANCE_HIGH_MPM || key == DANCE_LOW_MPM) {
+    if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+      int   timesig;
+
+      timesig = danceGetTimeSignature (didx);
+      nval /= danceTimesigValues [timesig];
+    }
+  }
   danceSetNum (dances, key, didx, nval);
   gui->tables [gui->tablecurr].changed = true;
   logProcEnd (LOG_PROC, "confuiDanceSpinboxChg", "");
