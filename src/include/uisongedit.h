@@ -54,7 +54,7 @@ void  uisongeditUIFree (uisongedit_t *uisongedit);
 uiwcont_t   * uisongeditBuildUI (uisongsel_t *uisongsel, uisongedit_t *uisongedit, uiwcont_t *parentwin, uiwcont_t *statusMsg);
 void  uisongeditLoadData (uisongedit_t *uisongedit, song_t *song, dbidx_t dbidx, int editallflag);
 void  uisongeditUIMainLoop (uisongedit_t *uisongedit);
-void  uisongeditSetBPMValue (uisongedit_t *uisongedit, const char *args);
+void  uisongeditSetBPMValue (uisongedit_t *uisongedit, int val);
 void  uisongeditSetPlayButtonState (uisongedit_t *uisongedit, int active);
 void  uisongeditEditAllSetFields (uisongedit_t *uisongedit, int editflag);
 void  uisongeditClearChanged (uisongedit_t *uisongedit, int editallflag);

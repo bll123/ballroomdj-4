@@ -241,7 +241,6 @@ typedef struct {
   /* update database */
   managedb_t        *managedb;
   /* bpm counter */
-  int               currbpmsel;
   int               currtimesig;
   /* song editor */
   uiaa_t            *uiaa;
@@ -463,7 +462,6 @@ main (int argc, char *argv[])
   manage.managepl = NULL;   /* allocated within buildui */
   manage.managedb = NULL;   /* allocated within buildui */
   manage.bpmcounterstarted = false;
-  manage.currbpmsel = BPM_BPM;
   manage.currtimesig = DANCE_TIMESIG_44;
   manage.cfpl = NULL;
   manage.cfpltmlimit = uiSpinboxTimeInit (SB_TIME_BASIC);
@@ -1836,8 +1834,6 @@ manageSetBPMCounter (manageui_t *manage, song_t *song)
 
   logProcBegin (LOG_PROC, "manageSetBPMCounter");
 
-  manage->currbpmsel = bdjoptGetNum (OPT_G_BPM);
-
   danceIdx = songGetNum (song, TAG_DANCE);
   manage->currtimesig = danceGetTimeSignature (danceIdx);
 
@@ -1856,8 +1852,7 @@ manageSendBPMCounter (manageui_t *manage)
     return;
   }
 
-  snprintf (tbuff, sizeof (tbuff), "%d%c%d",
-      manage->currbpmsel, MSG_ARGS_RS, manage->currtimesig);
+  snprintf (tbuff, sizeof (tbuff), "%d", manage->currtimesig);
   connSendMessage (manage->conn, ROUTE_BPM_COUNTER, MSG_BPM_TIMESIG, tbuff);
   logProcEnd (LOG_PROC, "manageSendBPMCounter", "");
 }

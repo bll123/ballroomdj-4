@@ -77,7 +77,7 @@ uisongeditProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
     case ROUTE_MANAGEUI: {
       switch (msg) {
         case MSG_BPM_SET: {
-          uisongeditSetBPMValue (uisongedit, args);
+          uisongeditSetBPMValue (uisongedit, atoi (args));
           dbgdisp = true;
           break;
         }
