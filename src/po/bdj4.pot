@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-20 09:27-0700\n"
+"POT-Creation-Date: 2023-05-22 07:39-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1505,7 +1505,7 @@ msgid "Renames the audio files based on the organization settings."
 msgstr ""
 
 #. CONTEXT: database update: reorganize : renames audio files based on organization settings
-msgid "Reorganize"
+msgid "Reorganise"
 msgstr ""
 
 #. CONTEXT: text from the HTML templates (buttons and labels)

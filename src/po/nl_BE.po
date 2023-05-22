@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-05-20\n"
+"PO-Revision-Date: 2023-05-22\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -1508,7 +1508,7 @@ msgid "Renames the audio files based on the organization settings."
 msgstr ""
 
 #. CONTEXT: database update: reorganize : renames audio files based on organization settings
-msgid "Reorganize"
+msgid "Reorganise"
 msgstr "Reorganiseren"
 
 #. CONTEXT: text from the HTML templates (buttons and labels)

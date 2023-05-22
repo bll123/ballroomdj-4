@@ -120,7 +120,7 @@ manageDbAlloc (uiwcont_t *window, nlist_t *options,
       _("Compact the database.  Use after audio files have been deleted."));
 
   /* CONTEXT: database update: reorganize : renames audio files based on organization settings */
-  nlistSetStr (tlist, MANAGE_DB_REORGANIZE, _("Reorganize"));
+  nlistSetStr (tlist, MANAGE_DB_REORGANIZE, _("Reorganise"));
   nlistSetStr (hlist, MANAGE_DB_REORGANIZE,
       /* CONTEXT: database update: reorganize : help text */
       _("Renames the audio files based on the organization settings."));
