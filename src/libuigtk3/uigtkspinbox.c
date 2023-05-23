@@ -346,58 +346,84 @@ uiSpinboxDoubleDefaultCreate (uispinbox_t *uispinbox)
 void
 uiSpinboxSetRange (uispinbox_t *uispinbox, double min, double max)
 {
+  if (uispinbox == NULL || uispinbox->spinbox == NULL ||
+      uispinbox->spinbox->widget == NULL) {
+    return;
+  }
+
   gtk_spin_button_set_range (GTK_SPIN_BUTTON (uispinbox->spinbox->widget),
       min, max);
+}
+
+void
+uiSpinboxSetIncrement (uiwcont_t *spinbox, double incr, double pageincr)
+{
+  if (spinbox == NULL ||
+      spinbox->widget == NULL) {
+    return;
+  }
+
+  gtk_spin_button_set_increments (GTK_SPIN_BUTTON (spinbox->widget),
+      incr, pageincr);
 }
 
 
 void
 uiSpinboxWrap (uispinbox_t *uispinbox)
 {
+  if (uispinbox == NULL || uispinbox->spinbox == NULL ||
+      uispinbox->spinbox->widget == NULL) {
+    return;
+  }
+
   gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (uispinbox->spinbox->widget), TRUE);
 }
 
 void
-uiSpinboxSet (uiwcont_t *uispinbox, double min, double max)
+uiSpinboxSet (uiwcont_t *spinbox, double min, double max)
 {
-  gtk_spin_button_set_range (GTK_SPIN_BUTTON (uispinbox->widget), min, max);
-  gtk_spin_button_set_value (GTK_SPIN_BUTTON (uispinbox->widget), min);
+  if (spinbox == NULL || spinbox->widget == NULL) {
+    return;
+  }
+
+  gtk_spin_button_set_range (GTK_SPIN_BUTTON (spinbox->widget), min, max);
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (spinbox->widget), min);
 }
 
 double
-uiSpinboxGetValue (uiwcont_t *uispinbox)
+uiSpinboxGetValue (uiwcont_t *spinbox)
 {
   GtkAdjustment     *adjustment;
   gdouble           value;
 
 
-  if (uispinbox == NULL) {
+  if (spinbox == NULL) {
     return -1;
   }
-  if (uispinbox->widget == NULL) {
+  if (spinbox->widget == NULL) {
     return -1;
   }
 
   adjustment = gtk_spin_button_get_adjustment (
-      GTK_SPIN_BUTTON (uispinbox->widget));
+      GTK_SPIN_BUTTON (spinbox->widget));
   value = gtk_adjustment_get_value (adjustment);
   return value;
 }
 
 void
-uiSpinboxSetValue (uiwcont_t *uispinbox, double value)
+uiSpinboxSetValue (uiwcont_t *spinbox, double value)
 {
   GtkAdjustment     *adjustment;
 
-  if (uispinbox == NULL) {
+  if (spinbox == NULL) {
     return;
   }
-  if (uispinbox->widget == NULL) {
+  if (spinbox->widget == NULL) {
     return;
   }
 
   adjustment = gtk_spin_button_get_adjustment (
-      GTK_SPIN_BUTTON (uispinbox->widget));
+      GTK_SPIN_BUTTON (spinbox->widget));
   gtk_adjustment_set_value (adjustment, value);
 }
 
@@ -423,6 +449,9 @@ uiSpinboxResetChanged (uispinbox_t *uispinbox)
 void
 uiSpinboxAlignRight (uispinbox_t *uispinbox)
 {
+  if (uispinbox == NULL) {
+    return;
+  }
   gtk_entry_set_alignment (GTK_ENTRY (uispinbox->spinbox->widget), 1.0);
 }
 
@@ -438,6 +467,9 @@ uiSpinboxAddClass (const char *classnm, const char *color)
 uiwcont_t *
 uiSpinboxGetWidgetContainer (uispinbox_t *uispinbox)
 {
+  if (uispinbox == NULL) {
+    return NULL;
+  }
   return uispinbox->spinbox;
 }
 

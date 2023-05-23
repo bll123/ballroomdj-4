@@ -147,6 +147,11 @@ uiSpinboxSetRange (uispinbox_t *uispinbox, double min, double max)
   return;
 }
 
+void
+uiSpinboxSetIncrement (uiwcont_t *spinbox, double incr, double pageincr)
+{
+  return;
+}
 
 void
 uiSpinboxWrap (uispinbox_t *uispinbox)

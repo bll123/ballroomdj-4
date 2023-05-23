@@ -71,6 +71,7 @@ enum {
   UPD_FIX_DANCE_MPM,    // 2023-5-22 4.3.2.4
   UPD_FIX_DB_MPM,       // 2023-5-22 4.3.2.4
   UPD_FIX_AF_MPM,       // 2023-5-22 4.3.2.4
+  UPD_FIX_PL_MPM,       // 2023-5-22 4.3.2.4
   UPD_MAX,
 };
 enum {
@@ -86,6 +87,7 @@ static datafilekey_t upddfkeys[] = {
   { "FIX_DANCE_MPM",    UPD_FIX_DANCE_MPM,  VALUE_NUM, NULL, -1 },
   { "FIX_DB_ADD_DATE",  UPD_FIX_DB_ADDDATE, VALUE_NUM, NULL, -1 },
   { "FIX_DB_MPM",       UPD_FIX_DB_MPM,     VALUE_NUM, NULL, -1 },
+  { "FIX_PL_MPM",       UPD_FIX_PL_MPM,     VALUE_NUM, NULL, -1 },
 };
 enum {
   UPD_DF_COUNT = (sizeof (upddfkeys) / sizeof (datafilekey_t))

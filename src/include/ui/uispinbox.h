@@ -40,10 +40,11 @@ ssize_t uiSpinboxTimeGetValue (uispinbox_t *spinbox);
 void  uiSpinboxTimeSetValue (uispinbox_t *spinbox, ssize_t value);
 
 void  uiSpinboxSetRange (uispinbox_t *spinbox, double min, double max);
+void  uiSpinboxSetIncrement (uiwcont_t *spinbox, double incr, double pageincr);
 void  uiSpinboxWrap (uispinbox_t *spinbox);
 void  uiSpinboxSet (uiwcont_t *uispinbox, double min, double max);
-double uiSpinboxGetValue (uiwcont_t *uispinbox);
-void  uiSpinboxSetValue (uiwcont_t *uispinbox, double ivalue);
+double uiSpinboxGetValue (uiwcont_t *spinbox);
+void  uiSpinboxSetValue (uiwcont_t *spinbox, double ivalue);
 bool  uiSpinboxIsChanged (uispinbox_t *spinbox);
 void  uiSpinboxResetChanged (uispinbox_t *spinbox);
 void  uiSpinboxAlignRight (uispinbox_t *spinbox);

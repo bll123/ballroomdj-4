@@ -64,6 +64,10 @@ enum {
   UISE_SZGRP_MAX,
 };
 
+enum {
+  UISE_NOT_DISPLAYED = -1,
+};
+
 typedef struct se_internal se_internal_t;
 
 typedef struct {
@@ -171,6 +175,8 @@ static int uisongeditEntryChangedCallback (uientry_t *entry, void *udata);
 static bool uisongeditChangedCallback (void *udata);
 static char * uisongeditGetBPMRangeDisplay (int danceidx);
 static int  uisongeditBPMDisplay (ilistidx_t danceidx, int val);
+static void uisongeditSetBPMRangeDisplay (se_internal_t *seint, int bpmdispidx, ilistidx_t danceidx);
+static void uisongeditSetBPMIncrement (se_internal_t *seint, ilistidx_t danceidx);
 
 void
 uisongeditUIInit (uisongedit_t *uisongedit)
@@ -185,10 +191,10 @@ uisongeditUIInit (uisongedit_t *uisongedit)
   seint->changed = 0;
   seint->uikey = NULL;
   seint->levels = bdjvarsdfGet (BDJVDF_LEVELS);
-  seint->bpmidx = -1;
-  seint->songstartidx = -1;
-  seint->songendidx = -1;
-  seint->speedidx = -1;
+  seint->bpmidx = UISE_NOT_DISPLAYED;
+  seint->songstartidx = UISE_NOT_DISPLAYED;
+  seint->songendidx = UISE_NOT_DISPLAYED;
+  seint->speedidx = UISE_NOT_DISPLAYED;
   seint->dbidx = -1;
   seint->lastspeed = -1;
   for (int i = 0; i < UISE_BUTTON_MAX; ++i) {
@@ -509,7 +515,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
   char            *data;
   long            val;
   double          dval;
-  int             bpmdispidx = -1;
+  int             bpmdispidx = UISE_NOT_DISPLAYED;
 
   logProcBegin (LOG_PROC, "uisongeditLoadData");
   seint = uisongedit->seInternalData;
@@ -568,6 +574,7 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
         if (tagkey == TAG_DANCE) {
           if (val < 0) { val = -1; } // empty value
           uidanceSetValue (seint->items [count].uidance, val);
+          seint->currdanceidx = val;
         }
         if (tagkey == TAG_GENRE) {
           if (val < 0) { val = 0; }
@@ -639,21 +646,15 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
     data = NULL;
   }
 
-  if (seint->bpmidx != -1) {
+  if (seint->bpmidx != UISE_NOT_DISPLAYED) {
     val = songGetNum (song, TAG_BPM);
     if (val < 0) { val = 0; }
     val = uisongeditBPMDisplay (seint->currdanceidx, val);
     uiSpinboxSetValue (seint->items [seint->bpmidx].uiwidgetp, val);
   }
 
-  if (bpmdispidx != -1) {
-    seint->currdanceidx = songGetNum (song, TAG_DANCE);
-
-    data = uisongeditGetBPMRangeDisplay (seint->currdanceidx);
-    uiLabelSetText (seint->items [bpmdispidx].uiwidgetp, data);
-    dataFree (data);
-    data = NULL;
-  }
+  uisongeditSetBPMRangeDisplay (seint, bpmdispidx, seint->currdanceidx);
+  uisongeditSetBPMIncrement (seint, seint->currdanceidx);
 
   logProcEnd (LOG_PROC, "uisongeditLoadData", "");
 }
@@ -866,10 +867,10 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
   long            nval = LIST_VALUE_INVALID;
   char            *songdata = NULL;
   const char      *ndata = NULL;
-  int             bpmdispidx = -1;
+  int             bpmdispidx = UISE_NOT_DISPLAYED;
   bool            spdchanged = false;
   int             speed = 100;
-  int             danceidx = -1;
+  int             danceidx = UISE_NOT_DISPLAYED;
 
   seint = uisongedit->seInternalData;
 
@@ -1025,7 +1026,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
     }
 
     if (spdchanged) {
-      if (seint->songstartidx != -1) {
+      if (seint->songstartidx != UISE_NOT_DISPLAYED) {
         nval = uiSpinboxTimeGetValue (seint->items [seint->songstartidx].spinbox);
         if (nval > 0) {
           nval = songutilNormalizePosition (nval, seint->lastspeed);
@@ -1033,7 +1034,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
           uiSpinboxTimeSetValue (seint->items [seint->songstartidx].spinbox, nval);
         }
       }
-      if (seint->songendidx != -1) {
+      if (seint->songendidx != UISE_NOT_DISPLAYED) {
         nval = uiSpinboxTimeGetValue (seint->items [seint->songendidx].spinbox);
         if (nval > 0) {
           nval = songutilNormalizePosition (nval, seint->lastspeed);
@@ -1041,7 +1042,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
           uiSpinboxTimeSetValue (seint->items [seint->songendidx].spinbox, nval);
         }
       }
-      if (seint->bpmidx != -1) {
+      if (seint->bpmidx != UISE_NOT_DISPLAYED) {
         nval = uiSpinboxGetValue (seint->items [seint->bpmidx].uiwidgetp);
         if (nval > 0) {
           nval = songutilNormalizeBPM (nval, seint->lastspeed);
@@ -1053,13 +1054,8 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
     }
 
     /* always re-create the BPM display */
-    if (bpmdispidx != -1 && danceidx != -1) {
-      char    *data;
-
-      data = uisongeditGetBPMRangeDisplay (danceidx);
-      uiLabelSetText (seint->items [bpmdispidx].uiwidgetp, data);
-      dataFree (data);
-    }
+    uisongeditSetBPMRangeDisplay (seint, bpmdispidx, danceidx);
+    uisongeditSetBPMIncrement (seint, danceidx);
 
     seint->checkchanged = false;
   } /* check changed is true */
@@ -1522,21 +1518,24 @@ uisongeditSave (void *udata, nlist_t *chglist)
 
     speed = songGetNum (seint->song, TAG_SPEEDADJUSTMENT);
     if (speed > 0 && speed != 100) {
-      if (seint->songstartidx != -1 && seint->items [seint->songstartidx].changed) {
+      if (seint->songstartidx != UISE_NOT_DISPLAYED &&
+          seint->items [seint->songstartidx].changed) {
         val = songGetNum (seint->song, TAG_SONGSTART);
         if (val > 0) {
           val = songutilNormalizePosition (val, speed);
           songSetNum (seint->song, TAG_SONGSTART, val);
         }
       }
-      if (seint->songendidx != -1 && seint->items [seint->songendidx].changed) {
+      if (seint->songendidx != UISE_NOT_DISPLAYED &&
+          seint->items [seint->songendidx].changed) {
         val = songGetNum (seint->song, TAG_SONGEND);
         if (val > 0) {
           val = songutilNormalizePosition (val, speed);
           songSetNum (seint->song, TAG_SONGEND, val);
         }
       }
-      if (seint->bpmidx != -1 && seint->items [seint->bpmidx].changed) {
+      if (seint->bpmidx != UISE_NOT_DISPLAYED &&
+          seint->items [seint->bpmidx].changed) {
         val = songGetNum (seint->song, TAG_BPM);
         if (val > 0) {
           int   timesig;
@@ -1862,6 +1861,10 @@ uisongeditGetBPMRangeDisplay (int danceidx)
   char    tbuff [100];
   char    *str;
 
+  if (danceidx < 0) {
+    return "";
+  }
+
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   lowbpm = danceGetNum (dances, danceidx, DANCE_LOW_MPM);
   highbpm = danceGetNum (dances, danceidx, DANCE_HIGH_MPM);
@@ -1883,7 +1886,8 @@ uisongeditGetBPMRangeDisplay (int danceidx)
 static int
 uisongeditBPMDisplay (ilistidx_t danceidx, int val)
 {
-  if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+  if (danceidx >= 0 &&
+      bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
     int   timesig;
 
     timesig = danceGetTimeSignature (danceidx);
@@ -1891,4 +1895,34 @@ uisongeditBPMDisplay (ilistidx_t danceidx, int val)
   }
 
   return val;
+}
+
+static void
+uisongeditSetBPMRangeDisplay (se_internal_t *seint,
+    int bpmdispidx, ilistidx_t danceidx)
+{
+  if (bpmdispidx != UISE_NOT_DISPLAYED &&
+      danceidx >= 0) {
+    char    *data;
+
+    data = uisongeditGetBPMRangeDisplay (danceidx);
+    uiLabelSetText (seint->items [bpmdispidx].uiwidgetp, data);
+    dataFree (data);
+  }
+}
+
+static void
+uisongeditSetBPMIncrement (se_internal_t *seint, ilistidx_t danceidx)
+{
+  if (seint->bpmidx != UISE_NOT_DISPLAYED &&
+      danceidx >= 0 &&
+      bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+    int   timesig;
+
+    /* set the bpm increment values */
+    timesig = danceGetTimeSignature (danceidx);
+    uiSpinboxSetIncrement (seint->items [seint->bpmidx].uiwidgetp,
+        (double) danceTimesigValues [timesig],
+        (double) danceTimesigValues [timesig] * 5.0);
+  }
 }
