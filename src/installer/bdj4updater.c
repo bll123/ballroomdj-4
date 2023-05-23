@@ -502,6 +502,7 @@ main (int argc, char *argv [])
 
   logMsg (LOG_INSTALL, LOG_MAIN, "loaded data files A");
 
+  /* 4.3.2.4 */
   /* this requires that the data files be loaded */
   if (statusflags [UPD_FIX_DANCE_MPM] == UPD_NOT_DONE) {
     dance_t     *odances;
@@ -511,6 +512,7 @@ main (int argc, char *argv [])
     ilistidx_t  didx, ndidx;
     char        from [MAXPATHLEN];
     char        tbuff [MAXPATHLEN];
+    bool        keepold = false;
 
     logMsg (LOG_INSTALL, LOG_MAIN, "-- 4.3.2.4 : update dance mpm");
 
@@ -531,7 +533,6 @@ main (int argc, char *argv [])
       int   olowmpm, ohighmpm, otimesig;
       int   nlowmpm, nhighmpm, ntimesig;
 
-      /* if the dance exists in the new dances.txt, copy the data over */
       if (origbpmtype == BPM_BPM) {
         olowmpm = danceGetNum (odances, didx, DANCE_MPM_LOW);
         ohighmpm = danceGetNum (odances, didx, DANCE_MPM_HIGH);
@@ -539,11 +540,13 @@ main (int argc, char *argv [])
 
         ndidx = slistGetNum (ndancelist, danceGetStr (odances, didx, DANCE_DANCE));
         if (ndidx >= 0) {
+          /* if the dance exists in the new dances.txt, copy the data over */
           nlowmpm = danceGetNum (ndances, ndidx, DANCE_MPM_LOW);
           nhighmpm = danceGetNum (ndances, ndidx, DANCE_MPM_HIGH);
           /* time signature was changed for tango and argentine tango */
           ntimesig = danceGetNum (ndances, ndidx, DANCE_TIMESIG);
         } else {
+          /* otherwise convert the data that is present */
           nlowmpm = olowmpm;
           nhighmpm = ohighmpm;
           ntimesig = otimesig;
@@ -556,7 +559,9 @@ main (int argc, char *argv [])
           }
         }
 
-        if (ohighmpm < nhighmpm + 10) {
+        /* this is a bit difficult if there is a user-entered dance */
+        /* and no prior known dances have been processed */
+        if (keepold || (ndidx >= 0 && ohighmpm < nhighmpm + 10)) {
           /* handle case where label is bpm, values are mpm */
           /* keep the user's settings */
           nlowmpm = olowmpm;
@@ -565,6 +570,7 @@ main (int argc, char *argv [])
           statusflags [UPD_FIX_PL_MPM] = UPD_SKIP;
           statusflags [UPD_FIX_DB_MPM] = UPD_SKIP;
           statusflags [UPD_FIX_AF_MPM] = UPD_SKIP;
+          keepold = true;
         }
 
         danceSetNum (odances, didx, DANCE_MPM_LOW, nlowmpm);

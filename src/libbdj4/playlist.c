@@ -80,6 +80,7 @@ static datafilekey_t playlistdfkeys [PLAYLIST_KEY_MAX] = {
 
 /* must be sorted in ascii order */
 static datafilekey_t playlistdancedfkeys [] = {
+  /* bpmhigh and bpmlow are old names (version 1) */
   { "BPMHIGH",        PLDANCE_MPM_HIGH,     VALUE_NUM, NULL, DF_NO_WRITE },
   { "BPMLOW",         PLDANCE_MPM_LOW,      VALUE_NUM, NULL, DF_NO_WRITE },
   { "COUNT",          PLDANCE_COUNT,        VALUE_NUM, NULL, DF_NORM },
