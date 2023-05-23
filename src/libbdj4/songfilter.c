@@ -62,16 +62,16 @@ typedef struct songfilter {
 
 /* these are the user configurable filter displays */
 datafilekey_t filterdisplaydfkeys [FILTER_DISP_MAX] = {
-  { "DANCELEVEL",     FILTER_DISP_DANCELEVEL,      VALUE_NUM, convBoolean, -1 },
-  { "FAVORITE",       FILTER_DISP_FAVORITE,        VALUE_NUM, convBoolean, -1 },
-  { "GENRE",          FILTER_DISP_GENRE,           VALUE_NUM, convBoolean, -1 },
-  { "STATUS",         FILTER_DISP_STATUS,          VALUE_NUM, convBoolean, -1 },
-  { "STATUSPLAYABLE", FILTER_DISP_STATUS_PLAYABLE, VALUE_NUM, convBoolean, -1 },
+  { "DANCELEVEL",     FILTER_DISP_DANCELEVEL,      VALUE_NUM, convBoolean, DF_NORM },
+  { "FAVORITE",       FILTER_DISP_FAVORITE,        VALUE_NUM, convBoolean, DF_NORM },
+  { "GENRE",          FILTER_DISP_GENRE,           VALUE_NUM, convBoolean, DF_NORM },
+  { "STATUS",         FILTER_DISP_STATUS,          VALUE_NUM, convBoolean, DF_NORM },
+  { "STATUSPLAYABLE", FILTER_DISP_STATUS_PLAYABLE, VALUE_NUM, convBoolean, DF_NORM },
 };
 
 static int valueTypeLookup [SONG_FILTER_MAX] = {
-  [SONG_FILTER_BPM_HIGH] =          SONG_FILTER_NUM,
-  [SONG_FILTER_BPM_LOW] =           SONG_FILTER_NUM,
+  [SONG_FILTER_MPM_HIGH] =          SONG_FILTER_NUM,
+  [SONG_FILTER_MPM_LOW] =           SONG_FILTER_NUM,
   [SONG_FILTER_DANCE_LIST] =        SONG_FILTER_ILIST,
   [SONG_FILTER_DANCE_IDX] =         SONG_FILTER_NUM,
   [SONG_FILTER_FAVORITE] =          SONG_FILTER_NUM,
@@ -579,7 +579,7 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
 
   /* used by playlist.c */
   /* note that the dance filter list must also be set */
-  if (sf->inuse [SONG_FILTER_BPM_LOW] && sf->inuse [SONG_FILTER_BPM_HIGH]) {
+  if (sf->inuse [SONG_FILTER_MPM_LOW] && sf->inuse [SONG_FILTER_MPM_HIGH]) {
     ilistidx_t    danceIdx;
     int           bpmlow = 0;
     int           bpmhigh = 0;
@@ -590,8 +590,8 @@ songfilterFilterSong (songfilter_t *sf, song_t *song)
     if (danceFilterList != NULL) {
       danceIdx = songGetNum (song, TAG_DANCE);
 
-      bpmlow = ilistGetNum (danceFilterList, danceIdx, SONG_FILTER_BPM_LOW);
-      bpmhigh = ilistGetNum (danceFilterList, danceIdx, SONG_FILTER_BPM_HIGH);
+      bpmlow = ilistGetNum (danceFilterList, danceIdx, SONG_FILTER_MPM_LOW);
+      bpmhigh = ilistGetNum (danceFilterList, danceIdx, SONG_FILTER_MPM_HIGH);
     }
 
     if (bpmlow > 0 && bpmhigh > 0) {

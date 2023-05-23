@@ -11,8 +11,8 @@
 typedef enum {
   DANCE_ANNOUNCE,           //
   DANCE_DANCE,              //
-  DANCE_HIGH_MPM,           //
-  DANCE_LOW_MPM,            //
+  DANCE_MPM_HIGH,           //
+  DANCE_MPM_LOW,            //
   DANCE_SPEED,              //
   DANCE_TAGS,               //
   DANCE_TIMESIG,

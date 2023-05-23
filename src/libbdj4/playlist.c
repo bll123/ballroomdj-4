@@ -57,31 +57,40 @@ typedef struct playlist {
   nlistidx_t    seqiteridx;
 } playlist_t;
 
+enum {
+  PL_DANCE_VERSION = 2,
+};
+
 static playlist_t *playlistAlloc (musicdb_t *musicdb);
 static void plConvType (datafileconv_t *conv);
 
 /* must be sorted in ascii order */
 static datafilekey_t playlistdfkeys [PLAYLIST_KEY_MAX] = {
-  { "ALLOWEDKEYWORDS",PLAYLIST_ALLOWED_KEYWORDS,  VALUE_LIST, convTextList, -1 },
-  { "DANCELEVELHIGH", PLAYLIST_LEVEL_HIGH,        VALUE_NUM, levelConv, -1 },
-  { "DANCELEVELLOW",  PLAYLIST_LEVEL_LOW,         VALUE_NUM, levelConv, -1 },
-  { "DANCERATING",    PLAYLIST_RATING,            VALUE_NUM, ratingConv, -1 },
-  { "GAP",            PLAYLIST_GAP,               VALUE_NUM, NULL, -1 },
-  { "MAXPLAYTIME",    PLAYLIST_MAX_PLAY_TIME,     VALUE_NUM, NULL, -1 },
-  { "PLAYANNOUNCE",   PLAYLIST_ANNOUNCE,          VALUE_NUM, convBoolean, -1 },
-  { "STOPAFTER",      PLAYLIST_STOP_AFTER,        VALUE_NUM, NULL, -1 },
-  { "STOPTIME",       PLAYLIST_STOP_TIME,         VALUE_NUM, NULL, -1 },
-  { "TYPE",           PLAYLIST_TYPE,              VALUE_NUM, plConvType, -1 },
+  { "ALLOWEDKEYWORDS",PLAYLIST_ALLOWED_KEYWORDS,  VALUE_LIST, convTextList, DF_NORM },
+  { "DANCELEVELHIGH", PLAYLIST_LEVEL_HIGH,        VALUE_NUM, levelConv, DF_NORM },
+  { "DANCELEVELLOW",  PLAYLIST_LEVEL_LOW,         VALUE_NUM, levelConv, DF_NORM },
+  { "DANCERATING",    PLAYLIST_RATING,            VALUE_NUM, ratingConv, DF_NORM },
+  { "GAP",            PLAYLIST_GAP,               VALUE_NUM, NULL, DF_NORM },
+  { "MAXPLAYTIME",    PLAYLIST_MAX_PLAY_TIME,     VALUE_NUM, NULL, DF_NORM },
+  { "PLAYANNOUNCE",   PLAYLIST_ANNOUNCE,          VALUE_NUM, convBoolean, DF_NORM },
+  { "STOPAFTER",      PLAYLIST_STOP_AFTER,        VALUE_NUM, NULL, DF_NORM },
+  { "STOPTIME",       PLAYLIST_STOP_TIME,         VALUE_NUM, NULL, DF_NORM },
+  { "TYPE",           PLAYLIST_TYPE,              VALUE_NUM, plConvType, DF_NORM },
 };
 
 /* must be sorted in ascii order */
-static datafilekey_t playlistdancedfkeys [PLDANCE_KEY_MAX] = {
-  { "BPMHIGH",        PLDANCE_BPM_HIGH,     VALUE_NUM, NULL, -1 },
-  { "BPMLOW",         PLDANCE_BPM_LOW,      VALUE_NUM, NULL, -1 },
-  { "COUNT",          PLDANCE_COUNT,        VALUE_NUM, NULL, -1 },
-  { "DANCE",          PLDANCE_DANCE,        VALUE_NUM, danceConvDance, -1 },
-  { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_NUM, NULL, -1 },
-  { "SELECTED",       PLDANCE_SELECTED,     VALUE_NUM, convBoolean, -1 },
+static datafilekey_t playlistdancedfkeys [] = {
+  { "BPMHIGH",        PLDANCE_MPM_HIGH,     VALUE_NUM, NULL, DF_NO_WRITE },
+  { "BPMLOW",         PLDANCE_MPM_LOW,      VALUE_NUM, NULL, DF_NO_WRITE },
+  { "COUNT",          PLDANCE_COUNT,        VALUE_NUM, NULL, DF_NORM },
+  { "DANCE",          PLDANCE_DANCE,        VALUE_NUM, danceConvDance, DF_NORM },
+  { "MAXPLAYTIME",    PLDANCE_MAXPLAYTIME,  VALUE_NUM, NULL, DF_NORM },
+  { "MPMHIGH",        PLDANCE_MPM_HIGH,     VALUE_NUM, NULL, DF_NORM },
+  { "MPMLOW",         PLDANCE_MPM_LOW,      VALUE_NUM, NULL, DF_NORM },
+  { "SELECTED",       PLDANCE_SELECTED,     VALUE_NUM, convBoolean, DF_NORM },
+};
+enum {
+  pldancedfcount = sizeof (playlistdancedfkeys) / sizeof (datafilekey_t),
 };
 
 static void playlistCountList (playlist_t *pl);
@@ -151,7 +160,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
   }
 
   pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_INDIRECT, tfn,
-      playlistdancedfkeys, PLDANCE_KEY_MAX);
+      playlistdancedfkeys, pldancedfcount);
   if (pl->pldancesdf == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Bad playlist-dance %s", tfn);
     playlistFree (pl);
@@ -265,8 +274,8 @@ playlistCreate (const char *plname, pltype_t type, musicdb_t *musicdb)
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   danceStartIterator (dances, &iteridx);
   while ((didx = danceIterate (dances, &iteridx)) >= 0) {
-    ilistSetNum (pl->pldances, didx, PLDANCE_BPM_HIGH, LIST_VALUE_INVALID);
-    ilistSetNum (pl->pldances, didx, PLDANCE_BPM_LOW, LIST_VALUE_INVALID);
+    ilistSetNum (pl->pldances, didx, PLDANCE_MPM_HIGH, LIST_VALUE_INVALID);
+    ilistSetNum (pl->pldances, didx, PLDANCE_MPM_LOW, LIST_VALUE_INVALID);
     ilistSetNum (pl->pldances, didx, PLDANCE_COUNT, 0);
     ilistSetNum (pl->pldances, didx, PLDANCE_DANCE, didx);
     ilistSetNum (pl->pldances, didx, PLDANCE_MAXPLAYTIME, 0);
@@ -607,8 +616,9 @@ playlistSave (playlist_t *pl, const char *name)
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
+  ilistSetVersion (pl->pldances, PL_DANCE_VERSION);
   datafileSaveIndirect ("playlist-dances", tfn, playlistdancedfkeys,
-      PLDANCE_KEY_MAX, pl->pldances, datafileDistVersion (pl->pldancesdf));
+      pldancedfcount, pl->pldances, datafileDistVersion (pl->pldancesdf));
 }
 
 void
@@ -682,11 +692,11 @@ playlistSetSongFilter (playlist_t *pl, songfilter_t *sf)
       /* any value will work; the danceIdx just needs to exist in the list */
       ilistSetNum (danceList, danceIdx, 0, 0);
 
-      plbpmlow = ilistGetNum (pl->pldances, danceIdx, PLDANCE_BPM_LOW);
-      plbpmhigh = ilistGetNum (pl->pldances, danceIdx, PLDANCE_BPM_HIGH);
+      plbpmlow = ilistGetNum (pl->pldances, danceIdx, PLDANCE_MPM_LOW);
+      plbpmhigh = ilistGetNum (pl->pldances, danceIdx, PLDANCE_MPM_HIGH);
       if (plbpmlow > 0 && plbpmhigh > 0) {
-        songfilterDanceSet (sf, danceIdx, SONG_FILTER_BPM_LOW, plbpmlow);
-        songfilterDanceSet (sf, danceIdx, SONG_FILTER_BPM_HIGH, plbpmhigh);
+        songfilterDanceSet (sf, danceIdx, SONG_FILTER_MPM_LOW, plbpmlow);
+        songfilterDanceSet (sf, danceIdx, SONG_FILTER_MPM_HIGH, plbpmhigh);
       }
     }
   }

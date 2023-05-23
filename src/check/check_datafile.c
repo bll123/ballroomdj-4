@@ -225,17 +225,17 @@ START_TEST(datafile_simple)
 END_TEST
 
 static datafilekey_t dfkeyskl[] = {
-  { "A", 14, VALUE_STR, NULL, -1 },
-  { "B", 15, VALUE_NUM,  NULL, -1 },
-  { "C", 16, VALUE_STR,  NULL, -1 },
-  { "D", 17, VALUE_NUM, convBoolean, -1 },
-  { "E", 18, VALUE_STR, NULL, -1 },
-  { "F", 19, VALUE_STR, NULL, -1 },
-  { "G", 20, VALUE_DOUBLE, NULL, -1 },
-  { "H", 21, VALUE_LIST, convTextList, -1 },
-  { "I", 22, VALUE_NUM, convBoolean, -1 },
-  { "J", 23, VALUE_NUM, convBoolean, -1 },
-  { "K", 24, VALUE_NUM, convBoolean, -1 },
+  { "A", 14, VALUE_STR, NULL, DF_NORM },
+  { "B", 15, VALUE_NUM,  NULL, DF_NORM },
+  { "C", 16, VALUE_STR,  NULL, DF_NORM },
+  { "D", 17, VALUE_NUM, convBoolean, DF_NORM },
+  { "E", 18, VALUE_STR, NULL, DF_NORM },
+  { "F", 19, VALUE_STR, NULL, DF_NORM },
+  { "G", 20, VALUE_DOUBLE, NULL, DF_NORM },
+  { "H", 21, VALUE_LIST, convTextList, DF_NORM },
+  { "I", 22, VALUE_NUM, convBoolean, DF_NORM },
+  { "J", 23, VALUE_NUM, convBoolean, DF_NORM },
+  { "K", 24, VALUE_NUM, convBoolean, DF_NORM },
 };
 #define DFKEY_COUNT 11
 

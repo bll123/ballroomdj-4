@@ -56,10 +56,10 @@ typedef struct configui {
 } configui_t;
 
 static datafilekey_t configuidfkeys [CONFUI_KEY_MAX] = {
-  { "CONFUI_POS_X",     CONFUI_POSITION_X,    VALUE_NUM, NULL, -1 },
-  { "CONFUI_POS_Y",     CONFUI_POSITION_Y,    VALUE_NUM, NULL, -1 },
-  { "CONFUI_SIZE_X",    CONFUI_SIZE_X,        VALUE_NUM, NULL, -1 },
-  { "CONFUI_SIZE_Y",    CONFUI_SIZE_Y,        VALUE_NUM, NULL, -1 },
+  { "CONFUI_POS_X",     CONFUI_POSITION_X,    VALUE_NUM, NULL, DF_NORM },
+  { "CONFUI_POS_Y",     CONFUI_POSITION_Y,    VALUE_NUM, NULL, DF_NORM },
+  { "CONFUI_SIZE_X",    CONFUI_SIZE_X,        VALUE_NUM, NULL, DF_NORM },
+  { "CONFUI_SIZE_Y",    CONFUI_SIZE_Y,        VALUE_NUM, NULL, DF_NORM },
 };
 
 static bool confuiHandshakeCallback (void *udata, programstate_t programState);

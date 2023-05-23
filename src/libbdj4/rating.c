@@ -31,8 +31,8 @@ typedef struct rating {
 
 /* must be sorted in ascii order */
 static datafilekey_t ratingdfkeys [RATING_KEY_MAX] = {
-  { "RATING", RATING_RATING, VALUE_STR, NULL, -1 },
-  { "WEIGHT", RATING_WEIGHT, VALUE_NUM, NULL, -1 },
+  { "RATING", RATING_RATING, VALUE_STR, NULL, DF_NORM },
+  { "WEIGHT", RATING_WEIGHT, VALUE_NUM, NULL, DF_NORM },
 };
 
 rating_t *

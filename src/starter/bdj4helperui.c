@@ -73,8 +73,8 @@ enum {
 };
 
 static datafilekey_t helptextdfkeys [HELP_TEXT_MAX] = {
-  { "TEXT",   HELP_TEXT_TEXT,   VALUE_STR, NULL, -1 },
-  { "TITLE",  HELP_TEXT_TITLE,  VALUE_STR, NULL, -1 },
+  { "TEXT",   HELP_TEXT_TEXT,   VALUE_STR, NULL, DF_NORM },
+  { "TITLE",  HELP_TEXT_TITLE,  VALUE_STR, NULL, DF_NORM },
 };
 
 int

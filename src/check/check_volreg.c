@@ -36,9 +36,9 @@ enum {
 };
 
 static datafilekey_t volregdfkeys [VOLREG_KEY_MAX] = {
-  { "COUNT",              VOLREG_COUNT,     VALUE_NUM, NULL, -1 },
-  { "ORIGVOL",            VOLREG_ORIG_VOL,  VALUE_NUM, NULL, -1 },
-  { "SINK",               VOLREG_SINK,      VALUE_STR, NULL, -1 },
+  { "COUNT",              VOLREG_COUNT,     VALUE_NUM, NULL, DF_NORM },
+  { "ORIGVOL",            VOLREG_ORIG_VOL,  VALUE_NUM, NULL, DF_NORM },
+  { "SINK",               VOLREG_SINK,      VALUE_STR, NULL, DF_NORM },
 };
 
 #define TESTSINK  "quiet"

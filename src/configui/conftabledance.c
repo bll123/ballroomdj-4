@@ -87,15 +87,15 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t danceIdx)
   widx = CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT;
   uiEntrySetValue (gui->uiitem [widx].entry, sval);
 
-  num = danceGetNum (dances, danceIdx, DANCE_HIGH_MPM);
-  widx = CONFUI_WIDGET_DANCE_HIGH_MPM;
+  num = danceGetNum (dances, danceIdx, DANCE_MPM_HIGH);
+  widx = CONFUI_WIDGET_DANCE_MPM_HIGH;
   if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
     num *= danceTimesigValues [timesig];
   }
   uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
 
-  num = danceGetNum (dances, danceIdx, DANCE_LOW_MPM);
-  widx = CONFUI_WIDGET_DANCE_LOW_MPM;
+  num = danceGetNum (dances, danceIdx, DANCE_MPM_LOW);
+  widx = CONFUI_WIDGET_DANCE_MPM_LOW;
   if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
     num *= danceTimesigValues [timesig];
   }

@@ -91,10 +91,10 @@ enum {
 };
 
 static datafilekey_t bpmcounteruidfkeys [BPMCOUNTER_KEY_MAX] = {
-  { "BPMCOUNTER_POS_X",     BPMCOUNTER_POSITION_X,    VALUE_NUM, NULL, -1 },
-  { "BPMCOUNTER_POS_Y",     BPMCOUNTER_POSITION_Y,    VALUE_NUM, NULL, -1 },
-  { "BPMCOUNTER_SIZE_X",    BPMCOUNTER_SIZE_X,        VALUE_NUM, NULL, -1 },
-  { "BPMCOUNTER_SIZE_Y",    BPMCOUNTER_SIZE_Y,        VALUE_NUM, NULL, -1 },
+  { "BPMCOUNTER_POS_X",     BPMCOUNTER_POSITION_X,    VALUE_NUM, NULL, DF_NORM },
+  { "BPMCOUNTER_POS_Y",     BPMCOUNTER_POSITION_Y,    VALUE_NUM, NULL, DF_NORM },
+  { "BPMCOUNTER_SIZE_X",    BPMCOUNTER_SIZE_X,        VALUE_NUM, NULL, DF_NORM },
+  { "BPMCOUNTER_SIZE_Y",    BPMCOUNTER_SIZE_Y,        VALUE_NUM, NULL, DF_NORM },
 };
 
 static bool     bpmcounterConnectingCallback (void *udata, programstate_t programState);

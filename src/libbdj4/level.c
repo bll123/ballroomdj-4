@@ -33,9 +33,9 @@ typedef struct level {
 
   /* must be sorted in ascii order */
 static datafilekey_t leveldfkeys [LEVEL_KEY_MAX] = {
-  { "DEFAULT",  LEVEL_DEFAULT_FLAG, VALUE_NUM, convBoolean, -1 },
-  { "LEVEL",    LEVEL_LEVEL,        VALUE_STR, NULL, -1 },
-  { "WEIGHT",   LEVEL_WEIGHT,       VALUE_NUM, NULL, -1 },
+  { "DEFAULT",  LEVEL_DEFAULT_FLAG, VALUE_NUM, convBoolean, DF_NORM },
+  { "LEVEL",    LEVEL_LEVEL,        VALUE_STR, NULL, DF_NORM },
+  { "WEIGHT",   LEVEL_WEIGHT,       VALUE_NUM, NULL, DF_NORM },
 };
 
 level_t *

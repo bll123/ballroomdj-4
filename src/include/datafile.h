@@ -55,11 +55,12 @@ typedef struct {
   int             itemkey;
   valuetype_t     valuetype;
   dfConvFunc_t    convFunc;
-  int             aliaskey;
+  int             writeFlag;
 } datafilekey_t;
 
 enum {
-  DF_NOT_SET = -1,
+  DF_NORM = -1,
+  DF_NO_WRITE = -2,
   /* the largest standard datafile is 3.6k in size */
   /* a database entry is 2k */
   DATAFILE_MAX_SIZE = 16384,

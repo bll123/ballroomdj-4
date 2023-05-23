@@ -26,6 +26,11 @@ Converting BallroomDJ 3:
 
 Release Notes:
 
+  4.3.2.4:
+    The configuration/general option BPM has been set to MPM.
+    If you want to display beats per minute, reset this configuration
+    item to BPM.
+
   Not yet implemented:
     - Auto-Organization.
     - Music Manager:

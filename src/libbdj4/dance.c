@@ -35,32 +35,41 @@ typedef struct dance {
   char            *path;
 } dance_t;
 
+enum {
+  DANCE_DF_VERSION = 2,
+};
+
 static void danceConvSpeed (datafileconv_t *conv);
 static void danceConvTimeSig (datafileconv_t *conv);
 
 /* must be sorted in ascii order */
-static datafilekey_t dancedfkeys [DANCE_KEY_MAX] = {
-  { "ANNOUNCE",   DANCE_ANNOUNCE, VALUE_STR, NULL, -1 },
-  { "DANCE",      DANCE_DANCE,    VALUE_STR, NULL, -1 },
-  { "HIGHMPM",    DANCE_HIGH_MPM, VALUE_NUM, NULL, -1 },
-  { "LOWMPM",     DANCE_LOW_MPM,  VALUE_NUM, NULL, -1 },
-  { "SPEED",      DANCE_SPEED,    VALUE_NUM, danceConvSpeed, -1 },
-  { "TAGS",       DANCE_TAGS,     VALUE_LIST, convTextList, -1 },
-  { "TIMESIG",    DANCE_TIMESIG,  VALUE_NUM, danceConvTimeSig, -1 },
-  { "TYPE",       DANCE_TYPE,     VALUE_NUM, dnctypesConv, -1 },
+static datafilekey_t dancedfkeys [] = {
+  { "ANNOUNCE",   DANCE_ANNOUNCE, VALUE_STR, NULL, DF_NORM },
+  { "DANCE",      DANCE_DANCE,    VALUE_STR, NULL, DF_NORM },
+  { "HIGHBPM",    DANCE_MPM_HIGH, VALUE_NUM, NULL, DF_NO_WRITE }, // version 1
+  { "HIGHMPM",    DANCE_MPM_HIGH, VALUE_NUM, NULL, DF_NORM },
+  { "LOWBPM",     DANCE_MPM_LOW,  VALUE_NUM, NULL, DF_NO_WRITE }, // version 1
+  { "LOWMPM",     DANCE_MPM_LOW,  VALUE_NUM, NULL, DF_NORM },
+  { "SPEED",      DANCE_SPEED,    VALUE_NUM, danceConvSpeed, DF_NORM },
+  { "TAGS",       DANCE_TAGS,     VALUE_LIST, convTextList, DF_NORM },
+  { "TIMESIG",    DANCE_TIMESIG,  VALUE_NUM, danceConvTimeSig, DF_NORM },
+  { "TYPE",       DANCE_TYPE,     VALUE_NUM, dnctypesConv, DF_NORM },
+};
+enum {
+  dancedfcount = sizeof (dancedfkeys) / sizeof (datafilekey_t),
 };
 
 static datafilekey_t dancespeeddfkeys [DANCE_SPEED_MAX] = {
-  { "fast",       DANCE_SPEED_FAST,   VALUE_NUM, NULL, -1 },
-  { "normal",     DANCE_SPEED_NORMAL, VALUE_NUM, NULL, -1 },
-  { "slow",       DANCE_SPEED_SLOW,   VALUE_NUM, NULL, -1 },
+  { "fast",       DANCE_SPEED_FAST,   VALUE_NUM, NULL, DF_NORM },
+  { "normal",     DANCE_SPEED_NORMAL, VALUE_NUM, NULL, DF_NORM },
+  { "slow",       DANCE_SPEED_SLOW,   VALUE_NUM, NULL, DF_NORM },
 };
 
 static datafilekey_t dancetimesigdfkeys [DANCE_TIMESIG_MAX] = {
-  { "2/4",       DANCE_TIMESIG_24,   VALUE_NUM, NULL, -1 },
-  { "3/4",       DANCE_TIMESIG_34,   VALUE_NUM, NULL, -1 },
-  { "4/4",       DANCE_TIMESIG_44,   VALUE_NUM, NULL, -1 },
-  { "4/8",       DANCE_TIMESIG_48,   VALUE_NUM, NULL, -1 },
+  { "2/4",       DANCE_TIMESIG_24,   VALUE_NUM, NULL, DF_NORM },
+  { "3/4",       DANCE_TIMESIG_34,   VALUE_NUM, NULL, DF_NORM },
+  { "4/4",       DANCE_TIMESIG_44,   VALUE_NUM, NULL, DF_NORM },
+  { "4/8",       DANCE_TIMESIG_48,   VALUE_NUM, NULL, DF_NORM },
 };
 
 dance_t *
@@ -89,7 +98,7 @@ danceAlloc (const char *altfname)
   dance->danceList = NULL;
 
   dance->df = datafileAllocParse ("dance", DFTYPE_INDIRECT, fname,
-      dancedfkeys, DANCE_KEY_MAX);
+      dancedfkeys, dancedfcount);
   dance->dances = datafileGetList (dance->df);
 
   dance->danceList = slistAlloc ("dance-list", LIST_UNORDERED, NULL);
@@ -222,8 +231,9 @@ danceSave (dance_t *dances, ilist_t *list, int newdistvers)
   if (newdistvers > distvers) {
     distvers = newdistvers;
   }
+  ilistSetVersion (list, DANCE_DF_VERSION);
   datafileSaveIndirect ("dance", dances->path, dancedfkeys,
-      DANCE_KEY_MAX, list, distvers);
+      dancedfcount, list, distvers);
 }
 
 void
@@ -242,8 +252,8 @@ danceAdd (dance_t *dances, char *name)
   ilistSetNum (dances->dances, count, DANCE_SPEED, DANCE_SPEED_NORMAL);
   ilistSetNum (dances->dances, count, DANCE_TYPE, 0);
   ilistSetNum (dances->dances, count, DANCE_TIMESIG, DANCE_TIMESIG_44);
-  ilistSetNum (dances->dances, count, DANCE_HIGH_MPM, 0);
-  ilistSetNum (dances->dances, count, DANCE_LOW_MPM, 0);
+  ilistSetNum (dances->dances, count, DANCE_MPM_HIGH, 0);
+  ilistSetNum (dances->dances, count, DANCE_MPM_LOW, 0);
   ilistSetStr (dances->dances, count, DANCE_ANNOUNCE, "");
   ilistSetList (dances->dances, count, DANCE_TAGS, NULL);
   return count;

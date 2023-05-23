@@ -22,10 +22,10 @@
 
 /* must be sorted in ascii order */
 static datafilekey_t songfavdfkeys [SONGFAV_KEY_MAX] = {
-  { "COLOR",    SONGFAV_COLOR,    VALUE_STR, NULL, -1 },
-  { "DISPLAY",  SONGFAV_DISPLAY,  VALUE_STR, NULL, -1 },
-  { "NAME",     SONGFAV_NAME,     VALUE_STR, NULL, -1 },
-  { "USERSEL",  SONGFAV_USERSEL,  VALUE_NUM, convBoolean, -1 },
+  { "COLOR",    SONGFAV_COLOR,    VALUE_STR, NULL, DF_NORM },
+  { "DISPLAY",  SONGFAV_DISPLAY,  VALUE_STR, NULL, DF_NORM },
+  { "NAME",     SONGFAV_NAME,     VALUE_STR, NULL, DF_NORM },
+  { "USERSEL",  SONGFAV_USERSEL,  VALUE_NUM, convBoolean, DF_NORM },
 };
 
 typedef struct songfav {

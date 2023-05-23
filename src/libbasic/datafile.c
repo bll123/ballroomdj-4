@@ -612,6 +612,10 @@ datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys,
     datafileSaveItem (buff, sizeof (buff), "KEY", NULL, &conv);
 
     for (ssize_t i = 0; i < dfkeycount; ++i) {
+      if (dfkeys [i].writeFlag == DF_NO_WRITE) {
+        continue;
+      }
+
       vt = dfkeys [i].valuetype;
       conv.valuetype = vt;
 

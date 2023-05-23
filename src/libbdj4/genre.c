@@ -30,8 +30,8 @@ typedef struct genre {
 
   /* must be sorted in ascii order */
 static datafilekey_t genredfkeys [GENRE_KEY_MAX] = {
-  { "CLASSICAL",  GENRE_CLASSICAL_FLAG, VALUE_NUM, convBoolean, -1 },
-  { "GENRE",      GENRE_GENRE,          VALUE_STR, NULL, -1 },
+  { "CLASSICAL",  GENRE_CLASSICAL_FLAG, VALUE_NUM, convBoolean, DF_NORM },
+  { "GENRE",      GENRE_GENRE,          VALUE_STR, NULL, DF_NORM },
 };
 
 genre_t *

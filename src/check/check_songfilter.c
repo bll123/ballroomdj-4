@@ -757,16 +757,16 @@ START_TEST(songfilter_bpm)
   ck_assert_int_gt (rv, 0);
   rvw = rv;
 
-  songfilterDanceSet (sf, wkey, SONG_FILTER_BPM_LOW, 84);
-  songfilterDanceSet (sf, wkey, SONG_FILTER_BPM_HIGH, 84);
+  songfilterDanceSet (sf, wkey, SONG_FILTER_MPM_LOW, 84);
+  songfilterDanceSet (sf, wkey, SONG_FILTER_MPM_HIGH, 84);
   rv = songfilterProcess (sf, db);
   ck_assert_int_lt (rv, arv);
   ck_assert_int_gt (rv, 0);
   ck_assert_int_lt (rv, rvw);
   rva = rv;
 
-  songfilterDanceSet (sf, wkey, SONG_FILTER_BPM_LOW, 87);
-  songfilterDanceSet (sf, wkey, SONG_FILTER_BPM_HIGH, 87);
+  songfilterDanceSet (sf, wkey, SONG_FILTER_MPM_LOW, 87);
+  songfilterDanceSet (sf, wkey, SONG_FILTER_MPM_HIGH, 87);
   rv = songfilterProcess (sf, db);
   ck_assert_int_lt (rv, arv);
   ck_assert_int_gt (rv, 0);
@@ -774,8 +774,8 @@ START_TEST(songfilter_bpm)
   rvb = rv;
   ck_assert_int_eq (rvw, rva + rvb);
 
-  songfilterDanceSet (sf, wkey, SONG_FILTER_BPM_LOW, 84);
-  songfilterDanceSet (sf, wkey, SONG_FILTER_BPM_HIGH, 87);
+  songfilterDanceSet (sf, wkey, SONG_FILTER_MPM_LOW, 84);
+  songfilterDanceSet (sf, wkey, SONG_FILTER_MPM_HIGH, 87);
   rv = songfilterProcess (sf, db);
   ck_assert_int_lt (rv, arv);
   ck_assert_int_gt (rv, 0);

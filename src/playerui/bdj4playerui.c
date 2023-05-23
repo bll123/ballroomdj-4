@@ -138,17 +138,17 @@ typedef struct {
 } playerui_t;
 
 static datafilekey_t playeruidfkeys [] = {
-  { "FILTER_POS_X",             SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, -1 },
-  { "FILTER_POS_Y",             SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, -1 },
-  { "PLUI_POS_X",               PLUI_POSITION_X,            VALUE_NUM, NULL, -1 },
-  { "PLUI_POS_Y",               PLUI_POSITION_Y,            VALUE_NUM, NULL, -1 },
-  { "PLUI_SIZE_X",              PLUI_SIZE_X,                VALUE_NUM, NULL, -1 },
-  { "PLUI_SIZE_Y",              PLUI_SIZE_Y,                VALUE_NUM, NULL, -1 },
-  { "REQ_EXT_X",                REQ_EXT_POSITION_X,         VALUE_NUM, NULL, -1 },
-  { "REQ_EXT_Y",                REQ_EXT_POSITION_Y,         VALUE_NUM, NULL, -1 },
-  { "SHOW_EXTRA_QUEUES",        PLUI_SHOW_EXTRA_QUEUES,     VALUE_NUM, NULL, -1 },
-  { "SORT_BY",                  SONGSEL_SORT_BY,            VALUE_STR, NULL, -1 },
-  { "SWITCH_QUEUE_WHEN_EMPTY",  PLUI_SWITCH_QUEUE_WHEN_EMPTY, VALUE_NUM, NULL, -1 },
+  { "FILTER_POS_X",             SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, DF_NORM },
+  { "FILTER_POS_Y",             SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, DF_NORM },
+  { "PLUI_POS_X",               PLUI_POSITION_X,            VALUE_NUM, NULL, DF_NORM },
+  { "PLUI_POS_Y",               PLUI_POSITION_Y,            VALUE_NUM, NULL, DF_NORM },
+  { "PLUI_SIZE_X",              PLUI_SIZE_X,                VALUE_NUM, NULL, DF_NORM },
+  { "PLUI_SIZE_Y",              PLUI_SIZE_Y,                VALUE_NUM, NULL, DF_NORM },
+  { "REQ_EXT_X",                REQ_EXT_POSITION_X,         VALUE_NUM, NULL, DF_NORM },
+  { "REQ_EXT_Y",                REQ_EXT_POSITION_Y,         VALUE_NUM, NULL, DF_NORM },
+  { "SHOW_EXTRA_QUEUES",        PLUI_SHOW_EXTRA_QUEUES,     VALUE_NUM, NULL, DF_NORM },
+  { "SORT_BY",                  SONGSEL_SORT_BY,            VALUE_STR, NULL, DF_NORM },
+  { "SWITCH_QUEUE_WHEN_EMPTY",  PLUI_SWITCH_QUEUE_WHEN_EMPTY, VALUE_NUM, NULL, DF_NORM },
 };
 enum {
   PLAYERUI_DFKEY_COUNT = (sizeof (playeruidfkeys) / sizeof (datafilekey_t)),

@@ -34,8 +34,8 @@ typedef enum {
 
 typedef enum {
   PLDANCE_DANCE,
-  PLDANCE_BPM_LOW,                //
-  PLDANCE_BPM_HIGH,               //
+  PLDANCE_MPM_LOW,                //
+  PLDANCE_MPM_HIGH,               //
   PLDANCE_COUNT,
   PLDANCE_MAXPLAYTIME,            //
   PLDANCE_SELECTED,

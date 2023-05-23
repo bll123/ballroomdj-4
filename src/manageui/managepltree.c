@@ -274,9 +274,9 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
     mpt = playlistGetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME);
     if (mpt < 0) { mpt = 0; }
     tmutilToMS (mpt, mptdisp, sizeof (mptdisp));
-    bpmlow = playlistGetDanceNum (pl, dkey, PLDANCE_BPM_LOW);
+    bpmlow = playlistGetDanceNum (pl, dkey, PLDANCE_MPM_LOW);
     bpmlow = managePlaylistTreeBPMDisplay (dkey, bpmlow);
-    bpmhigh = playlistGetDanceNum (pl, dkey, PLDANCE_BPM_HIGH);
+    bpmhigh = playlistGetDanceNum (pl, dkey, PLDANCE_MPM_HIGH);
     bpmhigh = managePlaylistTreeBPMDisplay (dkey, bpmhigh);
 
     uiTreeViewSelectSet (managepltree->uitree, count);
@@ -340,11 +340,11 @@ managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree)
 
     tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_LOWMPM);
     tval = managePlaylistTreeBPMConvert (dkey, tval);
-    playlistSetDanceNum (pl, dkey, PLDANCE_BPM_LOW, tval);
+    playlistSetDanceNum (pl, dkey, PLDANCE_MPM_LOW, tval);
 
     tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_HIGHMPM);
     tval = managePlaylistTreeBPMConvert (dkey, tval);
-    playlistSetDanceNum (pl, dkey, PLDANCE_BPM_HIGH, tval);
+    playlistSetDanceNum (pl, dkey, PLDANCE_MPM_HIGH, tval);
   }
 
   uiTreeViewSelectRestore (managepltree->uitree);

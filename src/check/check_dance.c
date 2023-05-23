@@ -70,8 +70,8 @@ START_TEST(dance_iterate)
     danceGetStr (dance, key, DANCE_DANCE);
 
     danceGetStr (dance, key, DANCE_ANNOUNCE);
-    danceGetNum (dance, key, DANCE_HIGH_MPM);
-    danceGetNum (dance, key, DANCE_LOW_MPM);
+    danceGetNum (dance, key, DANCE_MPM_HIGH);
+    danceGetNum (dance, key, DANCE_MPM_LOW);
     spd = danceGetNum (dance, key, DANCE_SPEED);
     ck_assert_int_ge (spd, 0);
     ck_assert_int_le (spd, 2);
@@ -141,15 +141,15 @@ START_TEST(dance_set)
     ck_assert_str_eq (tann, "abc123");
     mdfree (ann);
 
-    hbpm = danceGetNum (dance, key, DANCE_HIGH_MPM);
-    danceSetNum (dance, key, DANCE_HIGH_MPM, 5);
-    thbpm = danceGetNum (dance, key, DANCE_HIGH_MPM);
+    hbpm = danceGetNum (dance, key, DANCE_MPM_HIGH);
+    danceSetNum (dance, key, DANCE_MPM_HIGH, 5);
+    thbpm = danceGetNum (dance, key, DANCE_MPM_HIGH);
     ck_assert_int_eq (thbpm, 5);
     ck_assert_int_ne (hbpm, thbpm);
 
-    lbpm = danceGetNum (dance, key, DANCE_LOW_MPM);
-    danceSetNum (dance, key, DANCE_LOW_MPM, 5);
-    tlbpm = danceGetNum (dance, key, DANCE_LOW_MPM);
+    lbpm = danceGetNum (dance, key, DANCE_MPM_LOW);
+    danceSetNum (dance, key, DANCE_MPM_LOW, 5);
+    tlbpm = danceGetNum (dance, key, DANCE_MPM_LOW);
     ck_assert_int_eq (tlbpm, 5);
     ck_assert_int_ne (lbpm, tlbpm);
 
@@ -276,8 +276,8 @@ START_TEST(dance_save)
   while ((key = danceIterate (dance, &diteridx)) >= 0) {
     val = danceGetStr (dance, key, DANCE_DANCE);
     ann = danceGetStr (dance, key, DANCE_ANNOUNCE);
-    hbpm = danceGetNum (dance, key, DANCE_HIGH_MPM);
-    lbpm = danceGetNum (dance, key, DANCE_LOW_MPM);
+    hbpm = danceGetNum (dance, key, DANCE_MPM_HIGH);
+    lbpm = danceGetNum (dance, key, DANCE_MPM_LOW);
     spd = danceGetNum (dance, key, DANCE_SPEED);
     tags = danceGetList (dance, key, DANCE_TAGS);
     ts = danceGetNum (dance, key, DANCE_TIMESIG);
@@ -285,8 +285,8 @@ START_TEST(dance_save)
 
     ilistSetStr (tlist, key, DANCE_DANCE, val);
     ilistSetStr (tlist, key, DANCE_ANNOUNCE, ann);
-    ilistSetNum (tlist, key, DANCE_HIGH_MPM, hbpm);
-    ilistSetNum (tlist, key, DANCE_LOW_MPM, lbpm);
+    ilistSetNum (tlist, key, DANCE_MPM_HIGH, hbpm);
+    ilistSetNum (tlist, key, DANCE_MPM_LOW, lbpm);
     ilistSetNum (tlist, key, DANCE_SPEED, spd);
     ilistSetNum (tlist, key, DANCE_TIMESIG, ts);
     ilistSetNum (tlist, key, DANCE_TYPE, type);
@@ -312,8 +312,8 @@ START_TEST(dance_save)
   while ((key = danceIterate (dance, &diteridx)) >= 0) {
     val = danceGetStr (dance, key, DANCE_DANCE);
     ann = danceGetStr (dance, key, DANCE_ANNOUNCE);
-    hbpm = danceGetNum (dance, key, DANCE_HIGH_MPM);
-    lbpm = danceGetNum (dance, key, DANCE_LOW_MPM);
+    hbpm = danceGetNum (dance, key, DANCE_MPM_HIGH);
+    lbpm = danceGetNum (dance, key, DANCE_MPM_LOW);
     spd = danceGetNum (dance, key, DANCE_SPEED);
     tags = danceGetList (dance, key, DANCE_TAGS);
     ts = danceGetNum (dance, key, DANCE_TIMESIG);
@@ -322,8 +322,8 @@ START_TEST(dance_save)
     tkey = ilistIterateKey (tlist, &iiteridx);
     tval = ilistGetStr (tlist, key, DANCE_DANCE);
     tann = ilistGetStr (tlist, key, DANCE_ANNOUNCE);
-    thbpm = ilistGetNum (tlist, key, DANCE_HIGH_MPM);
-    tlbpm = ilistGetNum (tlist, key, DANCE_LOW_MPM);
+    thbpm = ilistGetNum (tlist, key, DANCE_MPM_HIGH);
+    tlbpm = ilistGetNum (tlist, key, DANCE_MPM_LOW);
     tspd = ilistGetNum (tlist, key, DANCE_SPEED);
     ttags = ilistGetList (tlist, key, DANCE_TAGS);
     tts = ilistGetNum (tlist, key, DANCE_TIMESIG);

@@ -70,16 +70,16 @@ typedef struct itunes {
 
 /* must be sorted in ascii order */
 static datafilekey_t starsdfkeys [ITUNES_STARS_MAX] = {
-  { "10",   ITUNES_STARS_10,      VALUE_NUM,  ratingConv, -1 },
-  { "100",  ITUNES_STARS_100,     VALUE_NUM,  ratingConv, -1 },
-  { "20",   ITUNES_STARS_20,      VALUE_NUM,  ratingConv, -1 },
-  { "30",   ITUNES_STARS_30,      VALUE_NUM,  ratingConv, -1 },
-  { "40",   ITUNES_STARS_40,      VALUE_NUM,  ratingConv, -1 },
-  { "50",   ITUNES_STARS_50,      VALUE_NUM,  ratingConv, -1 },
-  { "60",   ITUNES_STARS_60,      VALUE_NUM,  ratingConv, -1 },
-  { "70",   ITUNES_STARS_70,      VALUE_NUM,  ratingConv, -1 },
-  { "80",   ITUNES_STARS_80,      VALUE_NUM,  ratingConv, -1 },
-  { "90",   ITUNES_STARS_90,      VALUE_NUM,  ratingConv, -1 },
+  { "10",   ITUNES_STARS_10,      VALUE_NUM,  ratingConv, DF_NORM },
+  { "100",  ITUNES_STARS_100,     VALUE_NUM,  ratingConv, DF_NORM },
+  { "20",   ITUNES_STARS_20,      VALUE_NUM,  ratingConv, DF_NORM },
+  { "30",   ITUNES_STARS_30,      VALUE_NUM,  ratingConv, DF_NORM },
+  { "40",   ITUNES_STARS_40,      VALUE_NUM,  ratingConv, DF_NORM },
+  { "50",   ITUNES_STARS_50,      VALUE_NUM,  ratingConv, DF_NORM },
+  { "60",   ITUNES_STARS_60,      VALUE_NUM,  ratingConv, DF_NORM },
+  { "70",   ITUNES_STARS_70,      VALUE_NUM,  ratingConv, DF_NORM },
+  { "80",   ITUNES_STARS_80,      VALUE_NUM,  ratingConv, DF_NORM },
+  { "90",   ITUNES_STARS_90,      VALUE_NUM,  ratingConv, DF_NORM },
 };
 
 static bool itunesParseData (itunes_t *itunes, xmlXPathContextPtr xpathCtx, const xmlChar *xpathExpr);

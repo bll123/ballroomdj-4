@@ -80,14 +80,14 @@ enum {
 
 
 static datafilekey_t upddfkeys[] = {
-  { "CONVERTED",        UPD_CONVERTED,      VALUE_NUM, NULL, -1 },
-  { "FIRSTVERSION",     UPD_FIRST_VERS,     VALUE_STR, NULL, -1 },
-  { "FIX_AF_MPM",       UPD_FIX_AF_MPM,     VALUE_NUM, NULL, -1 },
-  { "FIX_AF_TAGS",      UPD_FIX_AF_TAGS,    VALUE_NUM, NULL, -1 },
-  { "FIX_DANCE_MPM",    UPD_FIX_DANCE_MPM,  VALUE_NUM, NULL, -1 },
-  { "FIX_DB_ADD_DATE",  UPD_FIX_DB_ADDDATE, VALUE_NUM, NULL, -1 },
-  { "FIX_DB_MPM",       UPD_FIX_DB_MPM,     VALUE_NUM, NULL, -1 },
-  { "FIX_PL_MPM",       UPD_FIX_PL_MPM,     VALUE_NUM, NULL, -1 },
+  { "CONVERTED",        UPD_CONVERTED,      VALUE_NUM, NULL, DF_NORM },
+  { "FIRSTVERSION",     UPD_FIRST_VERS,     VALUE_STR, NULL, DF_NORM },
+  { "FIX_AF_MPM",       UPD_FIX_AF_MPM,     VALUE_NUM, NULL, DF_NORM },
+  { "FIX_AF_TAGS",      UPD_FIX_AF_TAGS,    VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DANCE_MPM",    UPD_FIX_DANCE_MPM,  VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DB_ADD_DATE",  UPD_FIX_DB_ADDDATE, VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DB_MPM",       UPD_FIX_DB_MPM,     VALUE_NUM, NULL, DF_NORM },
+  { "FIX_PL_MPM",       UPD_FIX_PL_MPM,     VALUE_NUM, NULL, DF_NORM },
 };
 enum {
   UPD_DF_COUNT = (sizeof (upddfkeys) / sizeof (datafilekey_t))
@@ -101,7 +101,6 @@ static int  updaterGetStatus (nlist_t *updlist, int key);
 static void updaterCopyIfNotPresent (const char *fn, const char *ext);
 static void updaterCopyVersionCheck (const char *fn, const char *ext, int dftype, int currvers);
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
-static void updaterReplaceKeyNames (const char *fn, const char *ext, ...);
 
 int
 main (int argc, char *argv [])
@@ -467,8 +466,11 @@ main (int argc, char *argv [])
     /* 2023-1-21 : The StandardRounds playlist had bad data in it. */
     /* 2023-4-17 : QueueDance updated so that the mm filter would */
     /*             display the queuedance playlist properly. */
-    updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, DFTYPE_KEY_VAL, 3);
-    updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, DFTYPE_KEY_VAL, 2);
+    /* 2023-5-23 : 4.3.2.4 */
+    /*             Updated internal key names */
+    updaterCopyVersionCheck (_("QueueDance"), BDJ4_PL_DANCE_EXT, DFTYPE_KEY_VAL, 4);
+    updaterCopyVersionCheck (_("standardrounds"), BDJ4_PL_DANCE_EXT, DFTYPE_KEY_VAL, 3);
+    updaterCopyVersionCheck (_("automatic"), BDJ4_PL_DANCE_EXT, DFTYPE_KEY_VAL, 2);
   }
 
   {
@@ -500,10 +502,6 @@ main (int argc, char *argv [])
     logMsg (LOG_INSTALL, LOG_MAIN, "-- 4.3.2.4 : update dance mpm");
     bpmtype = bdjoptGetNum (OPT_G_BPM);
 
-    /* the key names were changed */
-    updaterReplaceKeyNames (DANCE_FN, BDJ4_CONFIG_EXT,
-        "HIGHBPM", "HIGHMPM", "LOWBPM", "LOWMPM", NULL);
-
     /* need a copy of the new dances.txt file */
     snprintf (from, sizeof (from), "%s%s", DANCE_FN, BDJ4_CONFIG_EXT);
     snprintf (tbuff, sizeof (tbuff), "%s%s", UPDATER_TMP_FILE, BDJ4_CONFIG_EXT);
@@ -523,14 +521,14 @@ main (int argc, char *argv [])
 
       /* if the dance exists in the new dances.txt, copy the data over */
       if (bpmtype == BPM_BPM) {
-        olowmpm = danceGetNum (odances, didx, DANCE_LOW_MPM);
-        ohighmpm = danceGetNum (odances, didx, DANCE_HIGH_MPM);
+        olowmpm = danceGetNum (odances, didx, DANCE_MPM_LOW);
+        ohighmpm = danceGetNum (odances, didx, DANCE_MPM_HIGH);
         otimesig = danceGetNum (odances, didx, DANCE_TIMESIG);
 
         ndidx = slistGetNum (ndancelist, danceGetStr (odances, didx, DANCE_DANCE));
         if (ndidx >= 0) {
-          nlowmpm = danceGetNum (ndances, ndidx, DANCE_LOW_MPM);
-          nhighmpm = danceGetNum (ndances, ndidx, DANCE_HIGH_MPM);
+          nlowmpm = danceGetNum (ndances, ndidx, DANCE_MPM_LOW);
+          nhighmpm = danceGetNum (ndances, ndidx, DANCE_MPM_HIGH);
           /* time signature was changed for tango and argentine tango */
           ntimesig = danceGetNum (ndances, ndidx, DANCE_TIMESIG);
         } else {
@@ -552,15 +550,16 @@ main (int argc, char *argv [])
           nlowmpm = olowmpm;
           nhighmpm = ohighmpm;
           ntimesig = otimesig;
+          statusflags [UPD_FIX_PL_MPM] = UPD_SKIP;
         }
 
-        danceSetNum (odances, didx, DANCE_LOW_MPM, nlowmpm);
-        danceSetNum (odances, didx, DANCE_HIGH_MPM, nhighmpm);
+        danceSetNum (odances, didx, DANCE_MPM_LOW, nlowmpm);
+        danceSetNum (odances, didx, DANCE_MPM_HIGH, nhighmpm);
         danceSetNum (odances, didx, DANCE_TIMESIG, ntimesig);
       }
     }
 
-    /* 4.3.2.4: 2023-5-22 : Update dances.txt to version 2 */
+    /* 4.3.2.4: 2023-5-22 : Update dances.txt to dist version 2 */
 
     danceSave (odances, NULL, 2);
     danceFree (ndances);
@@ -580,6 +579,20 @@ main (int argc, char *argv [])
   }
 
   logMsg (LOG_INSTALL, LOG_MAIN, "loaded data files B");
+
+  /* playlist updates */
+
+  {
+    slist_t         *pllist;
+    slistidx_t      pliteridx;
+    const char      *plnm;
+    // playlist_t      *pl;
+
+    pllist = playlistGetPlaylistList (PL_LIST_ALL, NULL);
+    slistStartIterator (pllist, &pliteridx);
+    while ((plnm = slistIterateKey (pllist, &pliteridx)) != NULL) {
+    }
+  }
 
   /* All database processing must be done last after the updates to the */
   /* datafiles are done. */
@@ -990,41 +1003,3 @@ updaterCopyHTMLVersionCheck (const char *fn, const char *ext,
   }
 }
 
-static void
-updaterReplaceKeyNames (const char *fn, const char *ext, ...)
-{
-  char        tbuff [MAXPATHLEN];
-  char        *data;
-  char        *ndata;
-  size_t      fsz;
-  va_list     valist;
-  const char  *orig;
-  const char  *repl;
-  FILE        *fh;
-  time_t      mtime;
-
-  pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
-  mtime = fileopModTime (tbuff);
-  data = filedataReadAll (tbuff, &fsz);
-
-  va_start (valist, ext);
-  orig = va_arg (valist, const char *);
-  while (orig != NULL) {
-    repl = va_arg (valist, const char *);
-    ndata = filedataReplace (data, &fsz, orig, repl);
-    orig = va_arg (valist, const char *);
-    dataFree (data);
-    data = ndata;
-  }
-  va_end (valist);
-
-  fh = fileopOpen (tbuff, "w");
-  if (fh == NULL) {
-    return;
-  }
-  fwrite (data, fsz, 1, fh);
-  fclose (fh);
-  fileopSetModTime (tbuff, mtime);
-
-  dataFree (data);
-}

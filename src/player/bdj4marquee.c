@@ -74,13 +74,13 @@ enum {
 
 /* sort by ascii values */
 static datafilekey_t mqdfkeys [MQ_KEY_MAX] = {
-  { "MQ_FONT_SZ",   MQ_FONT_SZ,       VALUE_NUM, NULL, -1 },
-  { "MQ_FONT_SZ_FS",MQ_FONT_SZ_FS,    VALUE_NUM, NULL, -1 },
-  { "MQ_POS_X",     MQ_POSITION_X,    VALUE_NUM, NULL, -1 },
-  { "MQ_POS_Y",     MQ_POSITION_Y,    VALUE_NUM, NULL, -1 },
-  { "MQ_SIZE_X",    MQ_SIZE_X,        VALUE_NUM, NULL, -1 },
-  { "MQ_SIZE_Y",    MQ_SIZE_Y,        VALUE_NUM, NULL, -1 },
-  { "MQ_WORKSPACE", MQ_WORKSPACE,     VALUE_NUM, NULL, -1 },
+  { "MQ_FONT_SZ",   MQ_FONT_SZ,       VALUE_NUM, NULL, DF_NORM },
+  { "MQ_FONT_SZ_FS",MQ_FONT_SZ_FS,    VALUE_NUM, NULL, DF_NORM },
+  { "MQ_POS_X",     MQ_POSITION_X,    VALUE_NUM, NULL, DF_NORM },
+  { "MQ_POS_Y",     MQ_POSITION_Y,    VALUE_NUM, NULL, DF_NORM },
+  { "MQ_SIZE_X",    MQ_SIZE_X,        VALUE_NUM, NULL, DF_NORM },
+  { "MQ_SIZE_Y",    MQ_SIZE_Y,        VALUE_NUM, NULL, DF_NORM },
+  { "MQ_WORKSPACE", MQ_WORKSPACE,     VALUE_NUM, NULL, DF_NORM },
 };
 
 typedef struct {

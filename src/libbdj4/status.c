@@ -31,8 +31,8 @@ typedef struct status {
 
   /* must be sorted in ascii order */
 static datafilekey_t statusdfkeys [STATUS_KEY_MAX] = {
-  { "PLAYFLAG",   STATUS_PLAY_FLAG,   VALUE_NUM, convBoolean, -1 },
-  { "STATUS",     STATUS_STATUS,      VALUE_STR, NULL, -1 },
+  { "PLAYFLAG",   STATUS_PLAY_FLAG,   VALUE_NUM, convBoolean, DF_NORM },
+  { "STATUS",     STATUS_STATUS,      VALUE_STR, NULL, DF_NORM },
 };
 
 status_t *

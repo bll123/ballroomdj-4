@@ -1856,7 +1856,7 @@ uisongeditChangedCallback (void *udata)
 static char *
 uisongeditGetBPMRangeDisplay (int danceidx)
 {
-  int     lowbpm, highbpm;
+  int     lowmpm, highmpm;
   dance_t *dances;
   char    tbuff [100];
   char    *str;
@@ -1866,17 +1866,17 @@ uisongeditGetBPMRangeDisplay (int danceidx)
   }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
-  lowbpm = danceGetNum (dances, danceidx, DANCE_LOW_MPM);
-  highbpm = danceGetNum (dances, danceidx, DANCE_HIGH_MPM);
-  lowbpm = uisongeditBPMDisplay (danceidx, lowbpm);
-  highbpm = uisongeditBPMDisplay (danceidx, highbpm);
+  lowmpm = danceGetNum (dances, danceidx, DANCE_MPM_LOW);
+  highmpm = danceGetNum (dances, danceidx, DANCE_MPM_HIGH);
+  lowmpm = uisongeditBPMDisplay (danceidx, lowmpm);
+  highmpm = uisongeditBPMDisplay (danceidx, highmpm);
 
   *tbuff = '\0';
-  if (lowbpm > 0 && highbpm > 0) {
-    if (lowbpm == highbpm) {
-      snprintf (tbuff, sizeof (tbuff), " (%d)", lowbpm);
+  if (lowmpm > 0 && highmpm > 0) {
+    if (lowmpm == highmpm) {
+      snprintf (tbuff, sizeof (tbuff), " (%d)", lowmpm);
     } else {
-      snprintf (tbuff, sizeof (tbuff), " (%d - %d)", lowbpm, highbpm);
+      snprintf (tbuff, sizeof (tbuff), " (%d - %d)", lowmpm, highmpm);
     }
   }
   str = mdstrdup (tbuff);
