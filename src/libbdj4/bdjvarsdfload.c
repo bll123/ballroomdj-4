@@ -37,7 +37,7 @@ bdjvarsdfloadInit (void)
   /* the database load depends on dances */
   /* playlist loads depend on dances */
   /* sequence loads depend on dances */
-  bdjvarsdfSet (BDJVDF_DANCES, danceAlloc ());
+  bdjvarsdfSet (BDJVDF_DANCES, danceAlloc (NULL));
 
   /* the database load depends on ratings, levels and status */
   /* playlist loads depend on ratings, levels and status */

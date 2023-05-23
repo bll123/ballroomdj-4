@@ -41,7 +41,7 @@ START_TEST(dance_alloc)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_alloc");
 
   bdjvarsdfloadInit ();
-  dance = danceAlloc ();
+  dance = danceAlloc (NULL);
   ck_assert_ptr_nonnull (dance);
   danceFree (dance);
   bdjvarsdfloadCleanup ();
@@ -63,7 +63,7 @@ START_TEST(dance_iterate)
 
   bdjvarsdfloadInit ();
 
-  dance = danceAlloc ();
+  dance = danceAlloc (NULL);
   danceStartIterator (dance, &iteridx);
   count = 0;
   while ((key = danceIterate (dance, &iteridx)) >= 0) {
@@ -120,7 +120,7 @@ START_TEST(dance_set)
 
   bdjvarsdfloadInit ();
 
-  dance = danceAlloc ();
+  dance = danceAlloc (NULL);
   danceStartIterator (dance, &iteridx);
   count = 0;
   while ((key = danceIterate (dance, &iteridx)) >= 0) {
@@ -201,7 +201,7 @@ START_TEST(dance_conv)
 
   bdjvarsdfloadInit ();
 
-  dance = danceAlloc ();
+  dance = danceAlloc (NULL);
   danceStartIterator (dance, &iteridx);
   count = 0;
   while ((key = danceIterate (dance, &iteridx)) >= 0) {
@@ -269,7 +269,7 @@ START_TEST(dance_save)
   /* required for the dance conversion function */
   bdjvarsdfloadInit ();
 
-  dance = danceAlloc ();
+  dance = danceAlloc (NULL);
 
   danceStartIterator (dance, &diteridx);
   tlist = ilistAlloc ("chk-dance-a", LIST_ORDERED);
@@ -303,7 +303,7 @@ START_TEST(dance_save)
   danceSave (dance, tlist);
   danceFree (dance);
 
-  dance = danceAlloc ();
+  dance = danceAlloc (NULL);
 
   ck_assert_int_eq (ilistGetCount (tlist), danceGetCount (dance));
 
@@ -368,7 +368,7 @@ START_TEST(dance_delete)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_delete");
 
   bdjvarsdfloadInit ();
-  dance = danceAlloc ();
+  dance = danceAlloc (NULL);
 
   count = 0;
   danceStartIterator (dance, &diteridx);
@@ -407,7 +407,7 @@ START_TEST(dance_add)
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dance_add");
 
   bdjvarsdfloadInit ();
-  dance = danceAlloc ();
+  dance = danceAlloc (NULL);
 
   danceAdd (dance, "testdance");
 

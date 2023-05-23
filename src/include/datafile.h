@@ -55,12 +55,11 @@ typedef struct {
   int             itemkey;
   valuetype_t     valuetype;
   dfConvFunc_t    convFunc;
-  int             backupKey;
+  int             aliaskey;
 } datafilekey_t;
 
 enum {
-  DATAFILE_NO_BACKUPKEY = -1,
-  DATAFILE_NO_WRITE = -2,
+  DF_NOT_SET = -1,
   /* the largest standard datafile is 3.6k in size */
   /* a database entry is 2k */
   DATAFILE_MAX_SIZE = 16384,
@@ -78,7 +77,7 @@ void          convMS (datafileconv_t *conv);
 
 datafile_t *  datafileAlloc (const char *name);
 datafile_t *  datafileAllocParse (const char *name, datafiletype_t dftype,
-                  const char *fname, datafilekey_t *dfkeys, int     dfkeycount);
+                  const char *fname, datafilekey_t *dfkeys, int dfkeycount);
 void          datafileFree (void *);
 char *        datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname);
 list_t        *datafileParse (char *data, const char *name, datafiletype_t dftype,

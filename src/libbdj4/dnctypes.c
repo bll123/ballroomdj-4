@@ -58,23 +58,32 @@ dnctypesFree (dnctype_t *dnctypes)
 void
 dnctypesStartIterator (dnctype_t *dnctypes, slistidx_t *iteridx)
 {
+  if (dnctypes == NULL) {
+    return;
+  }
   slistStartIterator (dnctypes->dnctypes, iteridx);
 }
 
 char *
 dnctypesIterate (dnctype_t *dnctypes, slistidx_t *iteridx)
 {
+  if (dnctypes == NULL) {
+    return NULL;
+  }
   return slistIterateKey (dnctypes->dnctypes, iteridx);
 }
 
 void
 dnctypesConv (datafileconv_t *conv)
 {
-  dnctype_t       *dnctypes;
+  dnctype_t       *dnctypes = NULL;
   ssize_t         num;
   char            *sval = NULL;
 
   dnctypes = bdjvarsdfGet (BDJVDF_DANCE_TYPES);
+  if (dnctypes == NULL) {
+    return;
+  }
 
   conv->allocated = false;
   if (conv->valuetype == VALUE_STR) {

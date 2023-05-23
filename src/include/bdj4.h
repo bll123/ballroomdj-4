@@ -60,6 +60,7 @@ enum {
 #define AUDIOADJ_FN         "audioadjust"
 #define AUDIOTAGINTFC_FN    "audiotagintfc"
 #define AUTOSEL_FN          "autoselection"
+#define DANCE_FN            "dances"
 #define ITUNES_FIELDS_FN    "itunes-fields"
 #define ITUNES_STARS_FN     "itunes-stars"
 /* option data files */

@@ -467,21 +467,7 @@ playlistGetNextSong (playlist_t *pl,
     while (sfname != NULL) {
       song = dbGetByName (pl->musicdb, sfname);
       if (song != NULL && songAudioFileExists (song)) {
-        ilistidx_t  tval;
-        char        *tstr;
-
-        /* check for unknown dances */
-        /* put something into the marquee display field if possible */
-        tval = songGetNum (song, TAG_DANCE);
-        if (tval < 0) {
-          tstr = songGetStr (song, TAG_MQDISPLAY);
-          if (tstr == NULL) {
-            tstr = songlistGetStr (pl->songlist, slkey, SONGLIST_DANCESTR);
-            if (tstr != NULL) {
-              songSetStr (song, TAG_MQDISPLAY, tstr);
-            }
-          }
-        }
+        /* is ok */
         break;
       }
       song = NULL;

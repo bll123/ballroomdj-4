@@ -455,16 +455,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
 
           vt = conv.valuetype;
           if (vt == VALUE_NUM) {
-            if (conv.num == LIST_VALUE_INVALID &&
-                dfkeys [idx].backupKey > DATAFILE_NO_BACKUPKEY) {
-              logMsg (LOG_DBG, LOG_DATAFILE, "invalid value; backup key %" PRId64 " set data to %s", (int64_t) dfkeys [idx].backupKey, tvalstr);
-              if (dftype == DFTYPE_INDIRECT) {
-                nlistSetStr (itemList, dfkeys [idx].backupKey, tvalstr);
-              }
-              if (dftype == DFTYPE_KEY_VAL) {
-                nlistSetStr (datalist, dfkeys [idx].backupKey, tvalstr);
-              }
-            } else {
+            if (conv.num != LIST_VALUE_INVALID) {
               lval = conv.num;
               logMsg (LOG_DBG, LOG_DATAFILE, "converted value: %s to %" PRId64, tvalstr, lval);
             }
@@ -621,10 +612,6 @@ datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys,
     datafileSaveItem (buff, sizeof (buff), "KEY", NULL, &conv);
 
     for (ssize_t i = 0; i < dfkeycount; ++i) {
-      if (dfkeys [i].backupKey == DATAFILE_NO_WRITE) {
-        continue;
-      }
-
       vt = dfkeys [i].valuetype;
       conv.valuetype = vt;
 

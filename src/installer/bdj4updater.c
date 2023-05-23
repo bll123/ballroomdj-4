@@ -14,9 +14,7 @@
 #include <stdbool.h>
 #include <inttypes.h>
 #include <string.h>
-#include <errno.h>
-#include <getopt.h>
-#include <unistd.h>
+#include <stdarg.h>
 #include <getopt.h>
 
 #include "audiotag.h"
@@ -53,7 +51,7 @@
 #include "tmutil.h"
 #include "volreg.h"
 
-#define UPDATER_TMP_FILE "tmpupdater.txt"
+#define UPDATER_TMP_FILE "tmpupdater"
 
 enum {
   UPD_NOT_DONE,
@@ -67,16 +65,27 @@ enum {
 enum {
   UPD_FIRST_VERS,
   UPD_CONVERTED,        // was the original installation converted ?
+  /* all fix flags go below */
   UPD_FIX_AF_TAGS,
-  UPD_FIX_DBADDDATE,    // 2023-3-13 4.3.0.2
+  UPD_FIX_DB_ADDDATE,   // 2023-3-13 4.3.0.2
+  UPD_FIX_DANCE_MPM,    // 2023-5-22 4.3.2.4
+  UPD_FIX_DB_MPM,       // 2023-5-22 4.3.2.4
+  UPD_FIX_AF_MPM,       // 2023-5-22 4.3.2.4
   UPD_MAX,
 };
+enum {
+  UPD_FIRST = UPD_CONVERTED + 1,
+};
+
 
 static datafilekey_t upddfkeys[] = {
   { "CONVERTED",        UPD_CONVERTED,      VALUE_NUM, NULL, -1 },
   { "FIRSTVERSION",     UPD_FIRST_VERS,     VALUE_STR, NULL, -1 },
+  { "FIX_AF_MPM",       UPD_FIX_AF_MPM,     VALUE_NUM, NULL, -1 },
   { "FIX_AF_TAGS",      UPD_FIX_AF_TAGS,    VALUE_NUM, NULL, -1 },
-  { "FIX_DB_ADD_DATE",  UPD_FIX_DBADDDATE,  VALUE_NUM, NULL, -1 },
+  { "FIX_DANCE_MPM",    UPD_FIX_DANCE_MPM,  VALUE_NUM, NULL, -1 },
+  { "FIX_DB_ADD_DATE",  UPD_FIX_DB_ADDDATE, VALUE_NUM, NULL, -1 },
+  { "FIX_DB_MPM",       UPD_FIX_DB_MPM,     VALUE_NUM, NULL, -1 },
 };
 enum {
   UPD_DF_COUNT = (sizeof (upddfkeys) / sizeof (datafilekey_t))
@@ -90,6 +99,7 @@ static int  updaterGetStatus (nlist_t *updlist, int key);
 static void updaterCopyIfNotPresent (const char *fn, const char *ext);
 static void updaterCopyVersionCheck (const char *fn, const char *ext, int dftype, int currvers);
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
+static void updaterReplaceKeyNames (const char *fn, const char *ext, ...);
 
 int
 main (int argc, char *argv [])
@@ -265,8 +275,9 @@ main (int argc, char *argv [])
 
   logMsg (LOG_INSTALL, LOG_MAIN, "homemusicdir: %s", homemusicdir);
 
-  statusflags [UPD_FIX_AF_TAGS] = updaterGetStatus (updlist, UPD_FIX_AF_TAGS);
-  statusflags [UPD_FIX_DBADDDATE] = updaterGetStatus (updlist, UPD_FIX_DBADDDATE);
+  for (int i = UPD_FIRST; i < UPD_MAX; ++i) {
+    statusflags [i] = updaterGetStatus (updlist, i);
+  }
 
   if (newinstall) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "new install or re-install");
@@ -306,8 +317,8 @@ main (int argc, char *argv [])
     if (! converted) {
       const char  *uifont = NULL;
 
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "not converted");
       bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, false);
-      statusflags [UPD_FIX_AF_TAGS] = UPD_SKIP;
       nlistSetNum (updlist, UPD_FIX_AF_TAGS, statusflags [UPD_FIX_AF_TAGS]);
 
       /* need some decent default fonts for windows and macos */
@@ -331,7 +342,13 @@ main (int argc, char *argv [])
         }
         bdjoptSetStr (OPT_MP_LISTING_FONT, uifont);
       }
+
+      /* new install and no conversion, so none of these issues are present */
+      for (int i = UPD_FIRST; i < UPD_MAX; ++i) {
+        statusflags [i] = UPD_SKIP;
+      }
     }
+
     logMsg (LOG_INSTALL, LOG_MAIN, "finish new install");
   }
 
@@ -381,6 +398,7 @@ main (int argc, char *argv [])
   }
 
   if (musicdir != NULL) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "musicdir: %s", musicdir);
     bdjoptSetStr (OPT_M_DIR_MUSIC, musicdir);
   }
 
@@ -388,12 +406,14 @@ main (int argc, char *argv [])
     /* 4.1.0 change name of audiotag dylib (prep) */
     tval = bdjoptGetStr (OPT_M_AUDIOTAG_INTFC);
     if (strcmp (tval, "libaudiotagmutagen") == 0) {
+      logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.1.0 : chg name of audiotag dylib");
       bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, "libatimutagen");
       bdjoptchanged = true;
     }
   }
 
   if (bdjoptchanged) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "save bdjopt");
     bdjoptSave ();
   }
 
@@ -462,6 +482,96 @@ main (int argc, char *argv [])
     exit (1);
   }
 
+  logMsg (LOG_INSTALL, LOG_MAIN, "loaded data files A");
+
+  /* this requires that the data files be loaded */
+  if (statusflags [UPD_FIX_DANCE_MPM] == UPD_NOT_DONE) {
+    dance_t     *odances;
+    dance_t     *ndances = NULL;
+    slist_t     *ndancelist = NULL;
+    ilistidx_t  oiteridx;
+    ilistidx_t  didx, ndidx;
+    int         bpmtype;
+    int         lowmpm, highmpm, timesig;
+    char        from [MAXPATHLEN];
+    char        tbuff [MAXPATHLEN];
+
+    logMsg (LOG_INSTALL, LOG_MAIN, "-- 4.3.2.4 : update dance mpm");
+    bpmtype = bdjoptGetNum (OPT_G_BPM);
+
+    /* the key names were changed */
+    updaterReplaceKeyNames (DANCE_FN, BDJ4_CONFIG_EXT,
+        "HIGHBPM", "HIGHMPM", "LOWBPM", "LOWMPM", NULL);
+
+    /* need a copy of the new dances.txt file */
+    snprintf (from, sizeof (from), "%s%s", DANCE_FN, BDJ4_CONFIG_EXT);
+    snprintf (tbuff, sizeof (tbuff), "%s%s", UPDATER_TMP_FILE, BDJ4_CONFIG_EXT);
+fprintf (stderr, "from: %s\n", from);
+fprintf (stderr, "  to: %s\n", tbuff);
+    templateFileCopy (from, tbuff);
+
+    pathbldMakePath (tbuff, sizeof (tbuff),
+        UPDATER_TMP_FILE, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+    ndances = danceAlloc (tbuff);
+    ndancelist = danceGetDanceList (ndances);
+
+    /* convert the bpm values */
+    odances = bdjvarsdfGet (BDJVDF_DANCES);
+    danceStartIterator (odances, &oiteridx);
+    while ((didx = danceIterate (odances, &oiteridx)) >= 0) {
+fprintf (stderr, "process %d %s / %d\n", didx, danceGetStr (odances, didx, DANCE_DANCE), bpmtype);
+      /* if the dance exists in the new dances.txt, copy the data over */
+      if (bpmtype == BPM_BPM) {
+fprintf (stderr, "  bpm-bpm\n");
+        ndidx = slistGetNum (ndancelist, danceGetStr (odances, didx, DANCE_DANCE));
+        if (ndidx >= 0) {
+fprintf (stderr, "  found dance in new\n");
+          lowmpm = danceGetNum (ndances, ndidx, DANCE_LOW_MPM);
+          highmpm = danceGetNum (ndances, ndidx, DANCE_HIGH_MPM);
+          /* time signature was changed for tango and argentine tango */
+          timesig = danceGetNum (ndances, ndidx, DANCE_TIMESIG);
+fprintf (stderr, "  in-n: lowbpm: %d highbpm: %d timesig: %d\n", lowmpm, highmpm, timesig);
+        } else {
+          /* dance does not exist, convert the BPM value */
+          lowmpm = danceGetNum (odances, didx, DANCE_LOW_MPM);
+          highmpm = danceGetNum (odances, didx, DANCE_HIGH_MPM);
+          timesig = danceGetNum (odances, didx, DANCE_TIMESIG);
+fprintf (stderr, "  in-o: lowbpm: %d highbpm: %d timesig: %d\n", lowmpm, highmpm, timesig);
+          if (lowmpm > 0) {
+            lowmpm /= danceTimesigValues [timesig];
+          }
+          if (highmpm > 0) {
+            highmpm /= danceTimesigValues [timesig];
+          }
+        }
+fprintf (stderr, "  out: lowbpm: %d highbpm: %d timesig: %d\n", lowmpm, highmpm, timesig);
+        danceSetNum (odances, didx, DANCE_LOW_MPM, lowmpm);
+        danceSetNum (odances, didx, DANCE_HIGH_MPM, highmpm);
+        danceSetNum (odances, didx, DANCE_TIMESIG, timesig);
+      }
+    }
+
+    /* 4.3.2.4: 2023-5-22 : Update dances.txt to version 2 */
+
+    danceSave (odances, NULL);
+    danceFree (ndances);
+    fileopDelete (tbuff);
+    nlistSetNum (updlist, UPD_FIX_DANCE_MPM, UPD_COMPLETE);
+    logMsg (LOG_INSTALL, LOG_MAIN, "-- 4.3.2.4 : update dance mpm complete");
+  }
+
+  /* now re-load the data files */
+
+  bdjvarsdfloadCleanup ();
+
+  if (bdjvarsdfloadInit () < 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "Unable to load all data files");
+    fprintf (stderr, "Unable to load all data files\n");
+    exit (1);
+  }
+
+  logMsg (LOG_INSTALL, LOG_MAIN, "loaded data files B");
+
   /* All database processing must be done last after the updates to the */
   /* datafiles are done. */
 
@@ -481,9 +591,9 @@ main (int argc, char *argv [])
       bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) == false;
   if (processflags [UPD_FIX_AF_TAGS]) { processaf = true; }
 
-  if (statusflags [UPD_FIX_DBADDDATE] == UPD_NOT_DONE) {
+  if (statusflags [UPD_FIX_DB_ADDDATE] == UPD_NOT_DONE) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "process db : fix db add date");
-    processflags [UPD_FIX_DBADDDATE] = true;
+    processflags [UPD_FIX_DB_ADDDATE] = true;
     processdb = true;
   }
 
@@ -556,7 +666,7 @@ main (int argc, char *argv [])
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
       char      *ffn;
 
-      if (processflags [UPD_FIX_DBADDDATE]) {
+      if (processflags [UPD_FIX_DB_ADDDATE]) {
         /* 2023-3-13 : the database add date could be missing due to */
         /* bugs in restore-original and restore audio file data */
         if (songGetStr (song, TAG_DBADDDATE) == NULL) {
@@ -579,8 +689,8 @@ main (int argc, char *argv [])
     if (processflags [UPD_FIX_AF_TAGS]) {
       nlistSetNum (updlist, UPD_FIX_AF_TAGS, UPD_COMPLETE);
     }
-    if (processflags [UPD_FIX_DBADDDATE]) {
-      nlistSetNum (updlist, UPD_FIX_DBADDDATE, UPD_COMPLETE);
+    if (processflags [UPD_FIX_DB_ADDDATE]) {
+      nlistSetNum (updlist, UPD_FIX_DB_ADDDATE, UPD_COMPLETE);
     }
     dbClose (musicdb);
   }
@@ -869,4 +979,43 @@ updaterCopyHTMLVersionCheck (const char *fn, const char *ext,
     templateHttpCopy (tmp, tmp);
     logMsg (LOG_INSTALL, LOG_MAIN, "%s updated", fn);
   }
+}
+
+static void
+updaterReplaceKeyNames (const char *fn, const char *ext, ...)
+{
+  char        tbuff [MAXPATHLEN];
+  char        *data;
+  char        *ndata;
+  size_t      fsz;
+  va_list     valist;
+  const char  *orig;
+  const char  *repl;
+  FILE        *fh;
+  time_t      mtime;
+
+  pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
+  mtime = fileopModTime (tbuff);
+  data = filedataReadAll (tbuff, &fsz);
+
+  va_start (valist, ext);
+  orig = va_arg (valist, const char *);
+  while (orig != NULL) {
+    repl = va_arg (valist, const char *);
+    ndata = filedataReplace (data, &fsz, orig, repl);
+    orig = va_arg (valist, const char *);
+    dataFree (data);
+    data = ndata;
+  }
+  va_end (valist);
+
+  fh = fileopOpen (tbuff, "w");
+  if (fh == NULL) {
+    return;
+  }
+  fwrite (data, fsz, 1, fh);
+  fclose (fh);
+  fileopSetModTime (tbuff, mtime);
+
+  dataFree (data);
 }

@@ -33,6 +33,7 @@ typedef enum {
   VALUE_STR,
   VALUE_NUM,
   VALUE_LIST,
+  VALUE_ALIAS,
 } valuetype_t;
 
 typedef void (*listFree_t)(void *);

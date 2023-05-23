@@ -34,10 +34,9 @@ typedef struct songlist {
 
 /* must be sorted in ascii order */
 static datafilekey_t songlistdfkeys [SONGLIST_KEY_MAX] = {
-  { "DANCE",    SONGLIST_DANCE,     VALUE_NUM, danceConvDance, SONGLIST_DANCESTR },
-  { "DANCESTR", SONGLIST_DANCESTR,  VALUE_STR, NULL, DATAFILE_NO_WRITE },
-  { "FILE",     SONGLIST_FILE,      VALUE_STR, NULL, DATAFILE_NO_BACKUPKEY },
-  { "TITLE",    SONGLIST_TITLE,     VALUE_STR, NULL, DATAFILE_NO_BACKUPKEY },
+  { "DANCE",    SONGLIST_DANCE,     VALUE_NUM, danceConvDance, -1, },
+  { "FILE",     SONGLIST_FILE,      VALUE_STR, NULL, -1 },
+  { "TITLE",    SONGLIST_TITLE,     VALUE_STR, NULL, -1 },
 };
 
 songlist_t *

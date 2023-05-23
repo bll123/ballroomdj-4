@@ -64,7 +64,7 @@ static datafilekey_t dancetimesigdfkeys [DANCE_TIMESIG_MAX] = {
 };
 
 dance_t *
-danceAlloc (void)
+danceAlloc (const char *altfname)
 {
   dance_t     *dance;
   char        fname [MAXPATHLEN];
@@ -72,8 +72,12 @@ danceAlloc (void)
   int         key;
   ilistidx_t  iteridx;
 
-  pathbldMakePath (fname, sizeof (fname), "dances",
-      BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+  if (altfname != NULL) {
+    strlcpy (fname, altfname, sizeof (fname));
+  } else {
+    pathbldMakePath (fname, sizeof (fname), DANCE_FN,
+        BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
+  }
   if (! fileopFileExists (fname)) {
     logMsg (LOG_DBG, LOG_IMPORTANT, "dance: missing: %s", fname);
     return NULL;

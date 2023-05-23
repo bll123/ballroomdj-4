@@ -11,7 +11,6 @@ typedef enum {
   SONGLIST_FILE,
   SONGLIST_TITLE,
   SONGLIST_DANCE,
-  SONGLIST_DANCESTR,
   SONGLIST_KEY_MAX
 } songlistkey_t;
 
