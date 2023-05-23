@@ -144,7 +144,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     false,                        /* secondary display    */
     false,                        /* ellipsize            */
     true,                         /* align right          */
-    true,                         /* is bdj tag           */
+    false,                        /* is bdj tag           */
     true,                         /* is norm tag          */
     false,                        /* edit-all             */
     true,                         /* editable             */
@@ -1126,6 +1126,10 @@ tagdefInit (void)
   tagdefinfo.taglookup = slistAlloc ("tagdef", LIST_UNORDERED, NULL);
   slistSetSize (tagdefinfo.taglookup, TAG_KEY_MAX);
   for (tagdefkey_t i = 0; i < TAG_KEY_MAX; ++i) {
+    if (tagdefs [i].isBDJTag && tagdefs [i].isNormTag) {
+      fprintf (stderr, "FATAL: invalid tagdef: %s both bdj-tag and norm-tag are set\n", tagdefs [i].tag);
+      exit (1);
+    }
     slistSetNum (tagdefinfo.taglookup, tagdefs [i].tag, i);
   }
   slistSort (tagdefinfo.taglookup);

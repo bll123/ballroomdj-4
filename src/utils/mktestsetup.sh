@@ -148,6 +148,7 @@ mv -f ${tfn}.n ${tfn}
 tfn=data/bdjconfig.txt
 sed -e '/^DEBUGLVL/ { n ; s/.*/..31/ ; }' \
     -e '/^CLOCKDISP/ { n ; s/.*/..iso/ ; }' \
+    -e '/^BPM/ { n ; s/.*/..BPM/ ; }' \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 
