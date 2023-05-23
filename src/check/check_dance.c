@@ -300,7 +300,7 @@ START_TEST(dance_save)
     ilistSetList (tlist, key, DANCE_TAGS, ttags);
   }
 
-  danceSave (dance, tlist);
+  danceSave (dance, tlist, -1);
   danceFree (dance);
 
   dance = danceAlloc (NULL);

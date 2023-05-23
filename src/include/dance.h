@@ -54,7 +54,7 @@ void          danceSetNum (dance_t *, ilistidx_t dkey, ilistidx_t idx, ssize_t v
 void          danceSetList (dance_t *, ilistidx_t dkey, ilistidx_t idx, slist_t *list);
 slist_t       *danceGetDanceList (dance_t *);
 void          danceConvDance (datafileconv_t *conv);
-void          danceSave (dance_t *dances, ilist_t *list);
+void          danceSave (dance_t *dances, ilist_t *list, int newdistvers);
 void          danceDelete (dance_t *dances, ilistidx_t dkey);
 ilistidx_t    danceAdd (dance_t *dances, char *name);
 int           danceGetTimeSignature (ilistidx_t danceIdx);

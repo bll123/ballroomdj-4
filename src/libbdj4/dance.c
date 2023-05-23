@@ -208,16 +208,22 @@ danceConvDance (datafileconv_t *conv)
 }
 
 void
-danceSave (dance_t *dances, ilist_t *list)
+danceSave (dance_t *dances, ilist_t *list, int newdistvers)
 {
+  int   distvers;
+
   if (dances == NULL) {
     return;
   }
   if (list == NULL) {
     list = dances->dances;
   }
+  distvers = datafileDistVersion (dances->df);
+  if (newdistvers > distvers) {
+    distvers = newdistvers;
+  }
   datafileSaveIndirect ("dance", dances->path, dancedfkeys,
-      DANCE_KEY_MAX, list, datafileDistVersion (dances->df));
+      DANCE_KEY_MAX, list, distvers);
 }
 
 void

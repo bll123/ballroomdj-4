@@ -30,8 +30,8 @@ enum {
   MPLTREE_COL_DANCE,
   MPLTREE_COL_COUNT,
   MPLTREE_COL_MAXPLAYTIME,
-  MPLTREE_COL_LOWBPM,
-  MPLTREE_COL_HIGHBPM,
+  MPLTREE_COL_LOWMPM,
+  MPLTREE_COL_HIGHMPM,
   MPLTREE_COL_SB_PAD,
   MPLTREE_COL_DANCE_IDX,
   MPLTREE_COL_EDITABLE,
@@ -62,6 +62,8 @@ static void managePlaylistTreeSetColumnVisibility (managepltree_t *managepltree,
 static bool managePlaylistTreeChanged (void *udata, long col);
 static void managePlaylistTreeCreate (managepltree_t *managepltree);
 static bool managePlaylistTreeHideUnselectedCallback (void *udata);
+static int  managePlaylistTreeBPMDisplay (ilistidx_t dkey, int bpm);
+static int  managePlaylistTreeBPMConvert (ilistidx_t dkey, int bpm);
 
 managepltree_t *
 managePlaylistTreeAlloc (uiwcont_t *errorMsg)
@@ -176,7 +178,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
   uiTreeViewAppendColumn (managepltree->uitree, TREE_NO_COLUMN,
       TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       TREE_COL_DISP_GROW, tbuff,
-      TREE_COL_TYPE_TEXT, MPLTREE_COL_LOWBPM,
+      TREE_COL_TYPE_TEXT, MPLTREE_COL_LOWMPM,
       TREE_COL_TYPE_EDITABLE, MPLTREE_COL_EDITABLE,
       TREE_COL_TYPE_ADJUSTMENT, MPLTREE_COL_ADJUST,
       TREE_COL_TYPE_DIGITS, MPLTREE_COL_DIGITS,
@@ -187,7 +189,7 @@ manageBuildUIPlaylistTree (managepltree_t *managepltree, uiwcont_t *vboxp,
   uiTreeViewAppendColumn (managepltree->uitree, TREE_NO_COLUMN,
       TREE_WIDGET_SPINBOX, TREE_ALIGN_RIGHT,
       TREE_COL_DISP_GROW, tbuff,
-      TREE_COL_TYPE_TEXT, MPLTREE_COL_HIGHBPM,
+      TREE_COL_TYPE_TEXT, MPLTREE_COL_HIGHMPM,
       TREE_COL_TYPE_EDITABLE, MPLTREE_COL_EDITABLE,
       TREE_COL_TYPE_ADJUSTMENT, MPLTREE_COL_ADJUST,
       TREE_COL_TYPE_DIGITS, MPLTREE_COL_DIGITS,
@@ -254,7 +256,8 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
   danceStartIterator (dances, &iteridx);
   count = 0;
   while ((dkey = danceIterate (dances, &iteridx)) >= 0) {
-    long  sel, dcount, bpmlow, bpmhigh, mpt;
+    long  sel, dcount, mpt;
+    int   bpmlow, bpmhigh;
     char  mptdisp [40];
 
     sel = playlistGetDanceNum (pl, dkey, PLDANCE_SELECTED);
@@ -272,17 +275,17 @@ managePlaylistTreePopulate (managepltree_t *managepltree, playlist_t *pl)
     if (mpt < 0) { mpt = 0; }
     tmutilToMS (mpt, mptdisp, sizeof (mptdisp));
     bpmlow = playlistGetDanceNum (pl, dkey, PLDANCE_BPM_LOW);
-    if (bpmlow < 0) { bpmlow = 0; }
+    bpmlow = managePlaylistTreeBPMDisplay (dkey, bpmlow);
     bpmhigh = playlistGetDanceNum (pl, dkey, PLDANCE_BPM_HIGH);
-    if (bpmhigh < 0) { bpmhigh = 0; }
+    bpmhigh = managePlaylistTreeBPMDisplay (dkey, bpmhigh);
 
     uiTreeViewSelectSet (managepltree->uitree, count);
     uiTreeViewSetValues (managepltree->uitree,
         MPLTREE_COL_DANCE_SELECT, (treebool_t) sel,
         MPLTREE_COL_MAXPLAYTIME, mptdisp,
         MPLTREE_COL_COUNT, (treenum_t) dcount,
-        MPLTREE_COL_LOWBPM, (treenum_t) bpmlow,
-        MPLTREE_COL_HIGHBPM, (treenum_t) bpmhigh,
+        MPLTREE_COL_LOWMPM, (treenum_t) bpmlow,
+        MPLTREE_COL_HIGHMPM, (treenum_t) bpmhigh,
         TREE_VALUE_END);
     ++count;
   }
@@ -335,10 +338,12 @@ managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree)
     dataFree (tstr);
     playlistSetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME, tval);
 
-    tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_LOWBPM);
+    tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_LOWMPM);
+    tval = managePlaylistTreeBPMConvert (dkey, tval);
     playlistSetDanceNum (pl, dkey, PLDANCE_BPM_LOW, tval);
 
-    tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_HIGHBPM);
+    tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_HIGHMPM);
+    tval = managePlaylistTreeBPMConvert (dkey, tval);
     playlistSetDanceNum (pl, dkey, PLDANCE_BPM_HIGH, tval);
   }
 
@@ -357,9 +362,9 @@ managePlaylistTreeSetColumnVisibility (managepltree_t *managepltree, int pltype)
       uiTreeViewColumnSetVisible (managepltree->uitree,
           MPLTREE_COL_COUNT, TREE_COLUMN_HIDDEN);
       uiTreeViewColumnSetVisible (managepltree->uitree,
-          MPLTREE_COL_LOWBPM, TREE_COLUMN_HIDDEN);
+          MPLTREE_COL_LOWMPM, TREE_COLUMN_HIDDEN);
       uiTreeViewColumnSetVisible (managepltree->uitree,
-          MPLTREE_COL_HIGHBPM, TREE_COLUMN_HIDDEN);
+          MPLTREE_COL_HIGHMPM, TREE_COLUMN_HIDDEN);
       break;
     }
     case PLTYPE_AUTO: {
@@ -368,9 +373,9 @@ managePlaylistTreeSetColumnVisibility (managepltree_t *managepltree, int pltype)
       uiTreeViewColumnSetVisible (managepltree->uitree,
           MPLTREE_COL_COUNT, TREE_COLUMN_SHOWN);
       uiTreeViewColumnSetVisible (managepltree->uitree,
-          MPLTREE_COL_LOWBPM, TREE_COLUMN_SHOWN);
+          MPLTREE_COL_LOWMPM, TREE_COLUMN_SHOWN);
       uiTreeViewColumnSetVisible (managepltree->uitree,
-          MPLTREE_COL_HIGHBPM, TREE_COLUMN_SHOWN);
+          MPLTREE_COL_HIGHMPM, TREE_COLUMN_SHOWN);
       break;
     }
     case PLTYPE_SEQUENCE: {
@@ -379,9 +384,9 @@ managePlaylistTreeSetColumnVisibility (managepltree_t *managepltree, int pltype)
       uiTreeViewColumnSetVisible (managepltree->uitree,
           MPLTREE_COL_COUNT, TREE_COLUMN_HIDDEN);
       uiTreeViewColumnSetVisible (managepltree->uitree,
-          MPLTREE_COL_LOWBPM, TREE_COLUMN_SHOWN);
+          MPLTREE_COL_LOWMPM, TREE_COLUMN_SHOWN);
       uiTreeViewColumnSetVisible (managepltree->uitree,
-          MPLTREE_COL_HIGHBPM, TREE_COLUMN_SHOWN);
+          MPLTREE_COL_HIGHMPM, TREE_COLUMN_SHOWN);
       break;
     }
   }
@@ -473,13 +478,13 @@ managePlaylistTreeCreate (managepltree_t *managepltree)
     }
 
     uiTreeViewValueAppend (uitree);
-    adjustment = uiCreateAdjustment (0, 0.0, 200.0, 1.0, 5.0, 0.0);
+    adjustment = uiCreateAdjustment (0, 0.0, 400.0, 1.0, 5.0, 0.0);
     uiTreeViewSetValues (managepltree->uitree,
         MPLTREE_COL_DANCE_SELECT, (treebool_t) 0,
         MPLTREE_COL_DANCE, dancedisp,
         MPLTREE_COL_MAXPLAYTIME, "0:00",
-        MPLTREE_COL_LOWBPM, (treenum_t) 0,
-        MPLTREE_COL_HIGHBPM, (treenum_t) 0,
+        MPLTREE_COL_LOWMPM, (treenum_t) 0,
+        MPLTREE_COL_HIGHMPM, (treenum_t) 0,
         MPLTREE_COL_SB_PAD, "  ",
         MPLTREE_COL_DANCE_IDX, (treenum_t) key,
         MPLTREE_COL_EDITABLE, (treeint_t) 1,
@@ -511,3 +516,36 @@ managePlaylistTreeHideUnselectedCallback (void *udata)
   return UICB_CONT;
 }
 
+static int
+managePlaylistTreeBPMDisplay (ilistidx_t dkey, int bpm)
+{
+  if (bpm < 0) {
+    bpm = 0;
+  }
+
+  if (dkey >= 0 &&
+      bpm > 0 &&
+      bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+    int   timesig;
+
+    timesig = danceGetTimeSignature (dkey);
+    bpm *= danceTimesigValues [timesig];
+  }
+
+  return bpm;
+}
+
+static int
+managePlaylistTreeBPMConvert (ilistidx_t dkey, int bpm)
+{
+  if (dkey >= 0 &&
+      bpm > 0 &&
+      bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+    int   timesig;
+
+    timesig = danceGetTimeSignature (dkey);
+    bpm /= danceTimesigValues [timesig];
+  }
+
+  return bpm;
+}

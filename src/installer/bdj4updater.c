@@ -476,7 +476,7 @@ main (int argc, char *argv [])
     updaterCopyHTMLVersionCheck ("mobilemq", BDJ4_HTML_EXT, 2);
   }
 
-  /* The datafiles must now be loaded. */
+  /* The datafiles must be loaded for the MPM update process */
 
   if (bdjvarsdfloadInit () < 0) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "Unable to load all data files");
@@ -494,7 +494,6 @@ main (int argc, char *argv [])
     ilistidx_t  oiteridx;
     ilistidx_t  didx, ndidx;
     int         bpmtype;
-    int         lowmpm, highmpm, timesig;
     char        from [MAXPATHLEN];
     char        tbuff [MAXPATHLEN];
 
@@ -508,8 +507,6 @@ main (int argc, char *argv [])
     /* need a copy of the new dances.txt file */
     snprintf (from, sizeof (from), "%s%s", DANCE_FN, BDJ4_CONFIG_EXT);
     snprintf (tbuff, sizeof (tbuff), "%s%s", UPDATER_TMP_FILE, BDJ4_CONFIG_EXT);
-fprintf (stderr, "from: %s\n", from);
-fprintf (stderr, "  to: %s\n", tbuff);
     templateFileCopy (from, tbuff);
 
     pathbldMakePath (tbuff, sizeof (tbuff),
@@ -521,41 +518,51 @@ fprintf (stderr, "  to: %s\n", tbuff);
     odances = bdjvarsdfGet (BDJVDF_DANCES);
     danceStartIterator (odances, &oiteridx);
     while ((didx = danceIterate (odances, &oiteridx)) >= 0) {
-fprintf (stderr, "process %d %s / %d\n", didx, danceGetStr (odances, didx, DANCE_DANCE), bpmtype);
+      int   olowmpm, ohighmpm, otimesig;
+      int   nlowmpm, nhighmpm, ntimesig;
+
       /* if the dance exists in the new dances.txt, copy the data over */
       if (bpmtype == BPM_BPM) {
-fprintf (stderr, "  bpm-bpm\n");
+        olowmpm = danceGetNum (odances, didx, DANCE_LOW_MPM);
+        ohighmpm = danceGetNum (odances, didx, DANCE_HIGH_MPM);
+        otimesig = danceGetNum (odances, didx, DANCE_TIMESIG);
+
         ndidx = slistGetNum (ndancelist, danceGetStr (odances, didx, DANCE_DANCE));
         if (ndidx >= 0) {
-fprintf (stderr, "  found dance in new\n");
-          lowmpm = danceGetNum (ndances, ndidx, DANCE_LOW_MPM);
-          highmpm = danceGetNum (ndances, ndidx, DANCE_HIGH_MPM);
+          nlowmpm = danceGetNum (ndances, ndidx, DANCE_LOW_MPM);
+          nhighmpm = danceGetNum (ndances, ndidx, DANCE_HIGH_MPM);
           /* time signature was changed for tango and argentine tango */
-          timesig = danceGetNum (ndances, ndidx, DANCE_TIMESIG);
-fprintf (stderr, "  in-n: lowbpm: %d highbpm: %d timesig: %d\n", lowmpm, highmpm, timesig);
+          ntimesig = danceGetNum (ndances, ndidx, DANCE_TIMESIG);
         } else {
+          nlowmpm = olowmpm;
+          nhighmpm = ohighmpm;
+          ntimesig = otimesig;
           /* dance does not exist, convert the BPM value */
-          lowmpm = danceGetNum (odances, didx, DANCE_LOW_MPM);
-          highmpm = danceGetNum (odances, didx, DANCE_HIGH_MPM);
-          timesig = danceGetNum (odances, didx, DANCE_TIMESIG);
-fprintf (stderr, "  in-o: lowbpm: %d highbpm: %d timesig: %d\n", lowmpm, highmpm, timesig);
-          if (lowmpm > 0) {
-            lowmpm /= danceTimesigValues [timesig];
+          if (nlowmpm > 0) {
+            nlowmpm /= danceTimesigValues [ntimesig];
           }
-          if (highmpm > 0) {
-            highmpm /= danceTimesigValues [timesig];
+          if (nhighmpm > 0) {
+            nhighmpm /= danceTimesigValues [ntimesig];
           }
         }
-fprintf (stderr, "  out: lowbpm: %d highbpm: %d timesig: %d\n", lowmpm, highmpm, timesig);
-        danceSetNum (odances, didx, DANCE_LOW_MPM, lowmpm);
-        danceSetNum (odances, didx, DANCE_HIGH_MPM, highmpm);
-        danceSetNum (odances, didx, DANCE_TIMESIG, timesig);
+
+        if (ohighmpm < nhighmpm + 10) {
+          /* handle case where label is bpm, values are mpm */
+          /* keep the user's settings */
+          nlowmpm = olowmpm;
+          nhighmpm = ohighmpm;
+          ntimesig = otimesig;
+        }
+
+        danceSetNum (odances, didx, DANCE_LOW_MPM, nlowmpm);
+        danceSetNum (odances, didx, DANCE_HIGH_MPM, nhighmpm);
+        danceSetNum (odances, didx, DANCE_TIMESIG, ntimesig);
       }
     }
 
     /* 4.3.2.4: 2023-5-22 : Update dances.txt to version 2 */
 
-    danceSave (odances, NULL);
+    danceSave (odances, NULL, 2);
     danceFree (ndances);
     fileopDelete (tbuff);
     nlistSetNum (updlist, UPD_FIX_DANCE_MPM, UPD_COMPLETE);
