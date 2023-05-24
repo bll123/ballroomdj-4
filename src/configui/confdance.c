@@ -395,12 +395,7 @@ confuiDanceSpinboxChg (void *udata, int widx)
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   key = uiTreeViewGetValue (uitree, CONFUI_DANCE_COL_DANCE_IDX);
   if (key == DANCE_MPM_HIGH || key == DANCE_MPM_LOW) {
-    if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
-      int   timesig;
-
-      timesig = danceGetTimeSignature (didx);
-      nval /= danceTimesigValues [timesig];
-    }
+    nval = danceConvertBPMtoMPM (didx, nval);
   }
   danceSetNum (dances, key, didx, nval);
   gui->tables [gui->tablecurr].changed = true;

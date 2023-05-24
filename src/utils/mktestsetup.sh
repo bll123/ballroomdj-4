@@ -202,6 +202,11 @@ cwd=$(pwd)
 ./bin/bdj4 --bdj4updater --newinstall \
     --musicdir "${cwd}/test-music"
 
+tfn=data/updater.txt
+sed -e '/^FIX_AF_MPM/ { n ; s/.*/..0/ ; }' \
+    ${tfn} > ${tfn}.n
+mv -f ${tfn}.n ${tfn}
+
 if [[ $os == macos ]]; then
   # reset the debug level on macos back to 31
   tfn=data/bdjconfig.txt

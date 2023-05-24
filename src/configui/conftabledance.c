@@ -89,16 +89,12 @@ confuiDanceSelectLoadValues (confuigui_t *gui, ilistidx_t danceIdx)
 
   num = danceGetNum (dances, danceIdx, DANCE_MPM_HIGH);
   widx = CONFUI_WIDGET_DANCE_MPM_HIGH;
-  if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
-    num *= danceTimesigValues [timesig];
-  }
+  num = danceConvertMPMtoBPM (danceIdx, num);
   uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
 
   num = danceGetNum (dances, danceIdx, DANCE_MPM_LOW);
   widx = CONFUI_WIDGET_DANCE_MPM_LOW;
-  if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
-    num *= danceTimesigValues [timesig];
-  }
+  num = danceConvertMPMtoBPM (danceIdx, num);
   uiSpinboxSetValue (gui->uiitem [widx].uiwidgetp, num);
 
   num = danceGetNum (dances, danceIdx, DANCE_SPEED);

@@ -63,7 +63,6 @@ static bool managePlaylistTreeChanged (void *udata, long col);
 static void managePlaylistTreeCreate (managepltree_t *managepltree);
 static bool managePlaylistTreeHideUnselectedCallback (void *udata);
 static int  managePlaylistTreeBPMDisplay (ilistidx_t dkey, int bpm);
-static int  managePlaylistTreeBPMConvert (ilistidx_t dkey, int bpm);
 
 managepltree_t *
 managePlaylistTreeAlloc (uiwcont_t *errorMsg)
@@ -339,11 +338,11 @@ managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree)
     playlistSetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME, tval);
 
     tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_LOWMPM);
-    tval = managePlaylistTreeBPMConvert (dkey, tval);
+    tval = danceConvertBPMtoMPM (dkey, tval);
     playlistSetDanceNum (pl, dkey, PLDANCE_MPM_LOW, tval);
 
     tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_HIGHMPM);
-    tval = managePlaylistTreeBPMConvert (dkey, tval);
+    tval = danceConvertBPMtoMPM (dkey, tval);
     playlistSetDanceNum (pl, dkey, PLDANCE_MPM_HIGH, tval);
   }
 
@@ -523,29 +522,7 @@ managePlaylistTreeBPMDisplay (ilistidx_t dkey, int bpm)
     bpm = 0;
   }
 
-  if (dkey >= 0 &&
-      bpm > 0 &&
-      bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
-    int   timesig;
-
-    timesig = danceGetTimeSignature (dkey);
-    bpm *= danceTimesigValues [timesig];
-  }
-
+  bpm = danceConvertMPMtoBPM (dkey, bpm);
   return bpm;
 }
 
-static int
-managePlaylistTreeBPMConvert (ilistidx_t dkey, int bpm)
-{
-  if (dkey >= 0 &&
-      bpm > 0 &&
-      bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
-    int   timesig;
-
-    timesig = danceGetTimeSignature (dkey);
-    bpm /= danceTimesigValues [timesig];
-  }
-
-  return bpm;
-}

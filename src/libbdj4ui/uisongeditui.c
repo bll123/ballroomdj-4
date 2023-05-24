@@ -174,7 +174,6 @@ static bool uisongeditApplyAdjCallback (void *udata);
 static int uisongeditEntryChangedCallback (uientry_t *entry, void *udata);
 static bool uisongeditChangedCallback (void *udata);
 static char * uisongeditGetBPMRangeDisplay (int danceidx);
-static int  uisongeditBPMDisplay (ilistidx_t danceidx, int val);
 static void uisongeditSetBPMRangeDisplay (se_internal_t *seint, int bpmdispidx, ilistidx_t danceidx);
 static void uisongeditSetBPMIncrement (se_internal_t *seint, ilistidx_t danceidx);
 
@@ -647,9 +646,13 @@ uisongeditLoadData (uisongedit_t *uisongedit, song_t *song,
   }
 
   if (seint->bpmidx != UISE_NOT_DISPLAYED) {
+    int     speed;
+
     val = songGetNum (song, TAG_BPM);
     if (val < 0) { val = 0; }
-    val = uisongeditBPMDisplay (seint->currdanceidx, val);
+    speed = songGetNum (seint->song, TAG_SPEEDADJUSTMENT);
+    val = songutilAdjustBPM (val, speed);
+    val = danceConvertMPMtoBPM (seint->currdanceidx, val);
     uiSpinboxSetValue (seint->items [seint->bpmidx].uiwidgetp, val);
   }
 
@@ -676,6 +679,7 @@ void
 uisongeditSetBPMValue (uisongedit_t *uisongedit, int val)
 {
   se_internal_t *seint;
+  int           speed;
 
   logProcBegin (LOG_PROC, "uisongeditSetBPMValue");
   seint = uisongedit->seInternalData;
@@ -686,7 +690,8 @@ uisongeditSetBPMValue (uisongedit_t *uisongedit, int val)
   }
 
   /* the bpm value received from the bpm counter is always mpm */
-  val = uisongeditBPMDisplay (seint->currdanceidx, val);
+  speed = songGetNum (seint->song, TAG_SPEEDADJUSTMENT);
+  val = danceConvertMPMtoBPM (seint->currdanceidx, val);
 
   uiSpinboxSetValue (seint->items [seint->bpmidx].uiwidgetp, val);
   logProcEnd (LOG_PROC, "uisongeditSetBPMValue", "");
@@ -924,13 +929,9 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
         case ET_SPINBOX: {
           if (val < 0) { val = 0; }
           nval = uiSpinboxGetValue (seint->items [count].uiwidgetp);
-          if (count == seint->bpmidx &&
-              nval > 0 &&
-              bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
-            int   timesig;
-
-            timesig = danceGetTimeSignature (seint->currdanceidx);
-            nval /= danceTimesigValues [timesig];
+          if (count == seint->bpmidx) {
+            nval = songutilNormalizeBPM (nval, seint->lastspeed);
+            nval = danceConvertBPMtoMPM (seint->currdanceidx, nval);
           }
           break;
         }
@@ -1487,15 +1488,14 @@ uisongeditSave (void *udata, nlist_t *chglist)
       nval = nlistGetNum (chglist, tagkey);
 
       if (tagkey == TAG_BPM) {
+        int     speed;
+
         if (nval == 0) {
           nval = LIST_VALUE_INVALID;
         }
-        if (nval > 0 && bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
-          int   timesig;
-
-          timesig = danceGetTimeSignature (seint->currdanceidx);
-          nval /= danceTimesigValues [timesig];
-        }
+        speed = songGetNum (seint->song, TAG_SPEEDADJUSTMENT);
+        nval = songutilNormalizeBPM (nval, speed);
+        nval = danceConvertBPMtoMPM (seint->currdanceidx, nval);
       }
       songSetNum (seint->song, tagkey, nval);
     }
@@ -1532,20 +1532,6 @@ uisongeditSave (void *udata, nlist_t *chglist)
         if (val > 0) {
           val = songutilNormalizePosition (val, speed);
           songSetNum (seint->song, TAG_SONGEND, val);
-        }
-      }
-      if (seint->bpmidx != UISE_NOT_DISPLAYED &&
-          seint->items [seint->bpmidx].changed) {
-        val = songGetNum (seint->song, TAG_BPM);
-        if (val > 0) {
-          int   timesig;
-
-          val = songutilNormalizeBPM (val, speed);
-          if (val > 0 && bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
-            timesig = danceGetTimeSignature (seint->currdanceidx);
-            val /= danceTimesigValues [timesig];
-          }
-          songSetNum (seint->song, TAG_BPM, val);
         }
       }
     }
@@ -1866,10 +1852,12 @@ uisongeditGetBPMRangeDisplay (int danceidx)
   }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
+
   lowmpm = danceGetNum (dances, danceidx, DANCE_MPM_LOW);
+  lowmpm = danceConvertMPMtoBPM (danceidx, lowmpm);
+
   highmpm = danceGetNum (dances, danceidx, DANCE_MPM_HIGH);
-  lowmpm = uisongeditBPMDisplay (danceidx, lowmpm);
-  highmpm = uisongeditBPMDisplay (danceidx, highmpm);
+  highmpm = danceConvertMPMtoBPM (danceidx, highmpm);
 
   *tbuff = '\0';
   if (lowmpm > 0 && highmpm > 0) {
@@ -1881,20 +1869,6 @@ uisongeditGetBPMRangeDisplay (int danceidx)
   }
   str = mdstrdup (tbuff);
   return str;
-}
-
-static int
-uisongeditBPMDisplay (ilistidx_t danceidx, int val)
-{
-  if (danceidx >= 0 &&
-      bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
-    int   timesig;
-
-    timesig = danceGetTimeSignature (danceidx);
-    val *= danceTimesigValues [timesig];
-  }
-
-  return val;
 }
 
 static void

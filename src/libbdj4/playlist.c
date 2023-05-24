@@ -171,7 +171,6 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
 
   /* pldances must be rebuilt to use the dance key as the index   */
   /* the playlist datafiles have a generic key value */
-  logMsg (LOG_DBG, LOG_MAIN, "rebuilding playlist");
   pl->pldances = ilistAlloc ("playlist-dances-n", LIST_ORDERED);
   ilistSetSize (pl->pldances, ilistGetCount (tpldances));
   ilistStartIterator (tpldances, &iteridx);

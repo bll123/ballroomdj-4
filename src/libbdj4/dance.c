@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "bdj4.h"
+#include "bdjopt.h"
 #include "bdjstring.h"
 #include "bdjvarsdf.h"
 #include "dance.h"
@@ -276,9 +277,39 @@ danceGetTimeSignature (ilistidx_t danceIdx)
   if (timesig == DANCE_TIMESIG_48) {
     timesig = DANCE_TIMESIG_44;
   }
+  if (timesig < 0) {
+    timesig = DANCE_TIMESIG_44;
+  }
 
   return timesig;
 }
+
+int
+danceConvertBPMtoMPM (int danceidx, int bpm)
+{
+  if (bpm > 0 && bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+    int   timesig;
+
+    timesig = danceGetTimeSignature (danceidx);
+    bpm /= danceTimesigValues [timesig];
+  }
+
+  return bpm;
+}
+
+int
+danceConvertMPMtoBPM (int danceidx, int bpm)
+{
+  if (bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+    int   timesig;
+
+    timesig = danceGetTimeSignature (danceidx);
+    bpm *= danceTimesigValues [timesig];
+  }
+
+  return bpm;
+}
+
 
 /* internal routines */
 

@@ -37,6 +37,7 @@ typedef enum {
   DANCE_TIMESIG_MAX,
 } dancetimesig_t;
 
+/* used by dance.c, uisongeditui.c, bdj4bpmcounter.c */
 extern int danceTimesigValues [DANCE_TIMESIG_MAX];
 
 typedef struct dance dance_t;
@@ -58,5 +59,7 @@ void          danceSave (dance_t *dances, ilist_t *list, int newdistvers);
 void          danceDelete (dance_t *dances, ilistidx_t dkey);
 ilistidx_t    danceAdd (dance_t *dances, char *name);
 int           danceGetTimeSignature (ilistidx_t danceIdx);
+int           danceConvertBPMtoMPM (int danceidx, int bpm);
+int           danceConvertMPMtoBPM (int danceidx, int bpm);
 
 #endif /* INC_DANCE_H */

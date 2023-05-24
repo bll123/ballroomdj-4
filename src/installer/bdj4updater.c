@@ -17,6 +17,7 @@
 #include <stdarg.h>
 #include <getopt.h>
 
+#include "audiofile.h"
 #include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4init.h"
@@ -69,23 +70,29 @@ enum {
 
   /* fix-af-tags applies any fixes identified by the parsetags routine. */
   /* These are leftovers and conversions from bdj3 */
-  /* and fix-af-tags is only run for converted installations.
+  /* and fix-af-tags is only run for converted installations. */
   /* a) variousartists removed */
   /* b) mangled (by mutagen) musizbrainz tag */
   UPD_FIX_AF_TAGS,
+  /* 2023-3-13 4.3.0.2 */
   /* fix-db-adddate sets any missing date-added fields in the database */
-  UPD_FIX_DB_ADDDATE,   // 2023-3-13 4.3.0.2
+  UPD_FIX_DB_ADDDATE,
+  /* 2023-5-22 4.3.2.4 */
   /* fix-dance-mpm dances.txt bpm/mpm settings are re-written in mpm */
-  UPD_FIX_DANCE_MPM,    // 2023-5-22 4.3.2.4
+  UPD_FIX_DANCE_MPM,
+  /* 2023-5-22 4.3.2.4 */
   /* fix-db-mpm: the database bpm/mpm settings are re-written in mpm */
-  UPD_FIX_DB_MPM,       // 2023-5-22 4.3.2.4
+  UPD_FIX_DB_MPM,
+  /* 2023-5-22 4.3.2.4 */
   /* fix-af-mpm: the audio files bpm/mpm settings are re-written in mpm */
-  UPD_FIX_AF_MPM,       // 2023-5-22 4.3.2.4
+  UPD_FIX_AF_MPM,
+  /* 2023-5-22 4.3.2.4 */
   /* fix-pl-mpm: the playlist bpm/mpm settings are re-written in mpm */
-  UPD_FIX_PL_MPM,       // 2023-5-22 4.3.2.4
+  UPD_FIX_PL_MPM,
+  /* 2023-5-22 4.3.2.4 */
   /* set-mpm changes the configure/general/bpm setting to mpm */
   /* only want to do this once */
-  UPD_SET_MPM,          // 2023-5-22 4.3.2.4
+  UPD_SET_MPM,
   UPD_MAX,
 };
 enum {
@@ -115,7 +122,7 @@ static int  updaterGetStatus (nlist_t *updlist, int key);
 static void updaterCopyIfNotPresent (const char *fn, const char *ext);
 static void updaterCopyVersionCheck (const char *fn, const char *ext, int dftype, int currvers);
 static void updaterCopyHTMLVersionCheck (const char *fn, const char *ext, int currvers);
-static int  updaterGetMPMValue (dance_t *dances, song_t *song);
+static int  updaterGetMPMValue (song_t *song);
 
 int
 main (int argc, char *argv [])
@@ -564,10 +571,10 @@ main (int argc, char *argv [])
           nhighmpm = ohighmpm;
           ntimesig = otimesig;
           /* dance does not exist, convert the BPM value */
-          if (nlowmpm > 0) {
-            nlowmpm /= danceTimesigValues [ntimesig];
+          if (nhighmpm > 0 && ntimesig >= 0) {
+            nhighmpm /= danceTimesigValues [ntimesig];
           }
-          if (nhighmpm > 0) {
+          if (nhighmpm > 0 && ntimesig >= 0) {
             nhighmpm /= danceTimesigValues [ntimesig];
           }
         }
@@ -646,25 +653,27 @@ main (int argc, char *argv [])
           timesig = danceGetNum (dances, didx, DANCE_TIMESIG);
           tval = playlistGetDanceNum (pl, didx, PLDANCE_MPM_LOW);
           if (tval > 0) {
-            tval /= danceTimesigValues [timesig];
+            tval = danceConvertBPMtoMPM (didx, tval);
             playlistSetDanceNum (pl, didx, PLDANCE_MPM_LOW, tval);
             doplsave = true;
           }
           tval = playlistGetDanceNum (pl, didx, PLDANCE_MPM_HIGH);
           if (tval > 0) {
-            tval /= danceTimesigValues [timesig];
+            tval = danceConvertBPMtoMPM (didx, tval);
             playlistSetDanceNum (pl, didx, PLDANCE_MPM_HIGH, tval);
             doplsave = true;
           }
         }
 
         if (doplsave) {
+          logMsg (LOG_INSTALL, LOG_MAIN, "  4.3.2.4 : update pl %s", plnm);
           playlistSave (pl, NULL);
         }
       }
     }
 
     if (statusflags [UPD_FIX_PL_MPM] == UPD_NOT_DONE) {
+      logMsg (LOG_INSTALL, LOG_MAIN, "-- 4.3.2.4 : update pl mpm complete");
       nlistSetNum (updlist, UPD_FIX_PL_MPM, UPD_COMPLETE);
     }
   }
@@ -687,6 +696,7 @@ main (int argc, char *argv [])
       bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE &&
       bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) == false;
   if (processflags [UPD_FIX_AF_TAGS]) {
+    logMsg (LOG_INSTALL, LOG_MAIN, "-- fix af tags");
     processaf = true;
   } else {
     nlistSetNum (updlist, UPD_FIX_AF_TAGS, UPD_SKIP);
@@ -696,18 +706,19 @@ main (int argc, char *argv [])
       statusflags [UPD_FIX_AF_MPM] == UPD_NOT_DONE &&
       bdjoptGetNum (OPT_G_WRITETAGS) == WRITE_TAGS_ALL;
   if (processflags [UPD_FIX_AF_MPM]) {
+    logMsg (LOG_INSTALL, LOG_MAIN, "-- 4.3.2.4 : fix af mpm");
     processaf = true;
   } else {
     nlistSetNum (updlist, UPD_FIX_AF_MPM, UPD_SKIP);
   }
 
   if (statusflags [UPD_FIX_DB_ADDDATE] == UPD_NOT_DONE) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "process db : fix db add date");
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.3.0.2 : process db : fix db add date");
     processflags [UPD_FIX_DB_ADDDATE] = true;
     processdb = true;
   }
   if (statusflags [UPD_FIX_DB_MPM] == UPD_NOT_DONE) {
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "process db : fix db mpm");
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.3.2.4 : process db : fix db mpm");
     processflags [UPD_FIX_DB_MPM] = true;
     processdb = true;
   }
@@ -733,14 +744,15 @@ main (int argc, char *argv [])
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
       char        *ffn;
       char        *data;
+      const char  *tkey;
       int         rewrite;
       bool        updmpm = false;
       bool        process = false;
       int         newbpmval = LIST_VALUE_INVALID;
       slist_t     *taglist;
-      dance_t     *dances;
+      slist_t     *newtaglist;
+      slistidx_t  siteridx;
 
-      dances = bdjvarsdfGet (BDJVDF_DANCES);
       ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
 
       if (processflags [UPD_FIX_AF_TAGS]) {
@@ -755,14 +767,17 @@ main (int argc, char *argv [])
         pathInfoFree (pi);
       }
 
-      if (processflags [UPD_FIX_DB_MPM]) {
-      }
-
       if (processflags [UPD_FIX_AF_MPM]) {
-        newbpmval = updaterGetMPMValue (dances, song);
-        if (newbpmval > 0) {
-          process = true;
-          updmpm = true;
+        int     obpmval;
+
+        obpmval = songGetNum (song, TAG_BPM);
+        newbpmval = obpmval;
+        if (obpmval > 70) {
+          newbpmval = updaterGetMPMValue (song);
+          if (newbpmval > 0) {
+            process = true;
+            updmpm = true;
+          }
         }
       }
 
@@ -774,21 +789,31 @@ main (int argc, char *argv [])
       data = audiotagReadTags (ffn);
       taglist = audiotagParseData (ffn, data, &rewrite);
 
+      newtaglist = slistAlloc ("new-taglist", LIST_UNORDERED, NULL);
+      slistSetSize (newtaglist, slistGetCount (taglist));
+      slistStartIterator (taglist, &siteridx);
+      while ((tkey = slistIterateKey (taglist, &siteridx)) != NULL) {
+        slistSetStr (newtaglist, tkey, slistGetStr (taglist, tkey));
+      }
+      slistSort (newtaglist);
+
       if (updmpm) {
         char    tmp [40];
 
         snprintf (tmp, sizeof (tmp), "%d", newbpmval);
-        slistSetStr (taglist, tagdefs [TAG_BPM].tag, tmp);
+        slistSetStr (newtaglist, tagdefs [TAG_BPM].tag, tmp);
       }
 
-      if ((processflags [UPD_FIX_AF_TAGS] && rewrite) ||
+      if ((processflags [UPD_FIX_AF_TAGS] &&
+          rewrite != AF_REWRITE_NONE) ||
           (processflags [UPD_FIX_AF_MPM] && updmpm)) {
         logMsg (LOG_INSTALL, LOG_IMPORTANT, "write audio tags: %d %s", dbidx, ffn);
-        audiotagWriteTags (ffn, taglist, taglist, rewrite, AT_KEEP_MOD_TIME);
+        audiotagWriteTags (ffn, taglist, newtaglist, rewrite, AT_KEEP_MOD_TIME);
       }
 
       mdfree (data);
       slistFree (taglist);
+      slistFree (newtaglist);
       mdfree (ffn);
     }
   }
@@ -797,9 +822,6 @@ main (int argc, char *argv [])
     slistidx_t  dbiteridx;
     song_t      *song;
     dbidx_t     dbidx;
-    dance_t     *dances;
-
-    dances = bdjvarsdfGet (BDJVDF_DANCES);
 
     dbStartBatch (musicdb);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "processing database");
@@ -824,15 +846,17 @@ main (int argc, char *argv [])
           mdfree (ffn);
         }
       }
+
       if (processflags [UPD_FIX_DB_MPM]) {
         int   newbpmval;
 
-        newbpmval = updaterGetMPMValue (dances, song);
+        newbpmval = updaterGetMPMValue (song);
         if (newbpmval > 0) {
           songSetNum (song, TAG_BPM, newbpmval);
           dowrite = true;
         }
       }
+
       if (dowrite) {
         dbWriteSong (musicdb, song);
       }
@@ -1143,19 +1167,19 @@ updaterCopyHTMLVersionCheck (const char *fn, const char *ext,
 }
 
 static int
-updaterGetMPMValue (dance_t *dances, song_t *song)
+updaterGetMPMValue (song_t *song)
 {
-  int     tval = LIST_VALUE_INVALID;
+  ilistidx_t  didx;
+  int         tval = LIST_VALUE_INVALID;
 
+  /* as the bpm/mpm flag has been set to mpm, force the conversion */
+  didx = songGetNum (song, TAG_DANCE);
   tval = songGetNum (song, TAG_BPM);
-  if (tval > 0) {
-    ilistidx_t  didx;
-    int         timesig;
+  if (didx >= 0) {
+    int   timesig;
 
-    didx = songGetNum (song, TAG_DANCE);
-    timesig = danceGetNum (dances, didx, DANCE_TIMESIG);
+    timesig = danceGetTimeSignature (didx);
     tval /= danceTimesigValues [timesig];
   }
-
   return tval;
 }

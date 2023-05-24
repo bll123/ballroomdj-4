@@ -30,9 +30,9 @@ ANNOUNCE
 DANCE
 ..Cha Cha
 LOWMPM
-..29
+..30
 HIGHMPM
-..29
+..30
 SPEED
 ..normal
 TAGS
@@ -210,9 +210,9 @@ ANNOUNCE
 DANCE
 ..Waltz
 LOWMPM
-..84
+..28
 HIGHMPM
-..90
+..29
 SPEED
 ..normal
 TAGS

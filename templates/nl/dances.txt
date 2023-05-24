@@ -30,9 +30,9 @@ ANNOUNCE
 DANCE
 ..Cha Cha
 LOWMPM
-..29
+..30
 HIGHMPM
-..29
+..30
 SPEED
 ..normal
 TAGS
@@ -212,7 +212,7 @@ DANCE
 LOWMPM
 ..28
 HIGHMPM
-..28
+..29
 SPEED
 ..normal
 TAGS

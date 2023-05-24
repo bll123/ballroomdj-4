@@ -174,9 +174,9 @@ ANNOUNCE
 DANCE
 ..Merengue
 LOWMPM
-..29
+..58
 HIGHMPM
-..32
+..64
 SPEED
 ..normal
 TAGS
