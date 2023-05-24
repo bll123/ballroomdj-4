@@ -65,13 +65,26 @@ enum {
 enum {
   UPD_FIRST_VERS,
   UPD_CONVERTED,        // was the original installation converted ?
-  /* all fix flags go below */
+  /* all fix flags go below upd-converted */
+
+  /* fix-af-tags applies any fixes identified by the parsetags routine. */
+  /* These are leftovers and conversions from bdj3 */
+  /* and fix-af-tags is only run for converted installations.
+  /* a) variousartists removed */
+  /* b) mangled (by mutagen) musizbrainz tag */
   UPD_FIX_AF_TAGS,
+  /* fix-db-adddate sets any missing date-added fields in the database */
   UPD_FIX_DB_ADDDATE,   // 2023-3-13 4.3.0.2
+  /* fix-dance-mpm dances.txt bpm/mpm settings are re-written in mpm */
   UPD_FIX_DANCE_MPM,    // 2023-5-22 4.3.2.4
+  /* fix-db-mpm: the database bpm/mpm settings are re-written in mpm */
   UPD_FIX_DB_MPM,       // 2023-5-22 4.3.2.4
+  /* fix-af-mpm: the audio files bpm/mpm settings are re-written in mpm */
   UPD_FIX_AF_MPM,       // 2023-5-22 4.3.2.4
+  /* fix-pl-mpm: the playlist bpm/mpm settings are re-written in mpm */
   UPD_FIX_PL_MPM,       // 2023-5-22 4.3.2.4
+  /* set-mpm changes the configure/general/bpm setting to mpm */
+  /* only want to do this once */
   UPD_SET_MPM,          // 2023-5-22 4.3.2.4
   UPD_MAX,
 };
@@ -543,7 +556,7 @@ main (int argc, char *argv [])
           /* if the dance exists in the new dances.txt, copy the data over */
           nlowmpm = danceGetNum (ndances, ndidx, DANCE_MPM_LOW);
           nhighmpm = danceGetNum (ndances, ndidx, DANCE_MPM_HIGH);
-          /* time signature was changed for tango and argentine tango */
+          /* time signature was changed for tango, argentine tango and merengue */
           ntimesig = danceGetNum (ndances, ndidx, DANCE_TIMESIG);
         } else {
           /* otherwise convert the data that is present */

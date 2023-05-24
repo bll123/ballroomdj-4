@@ -1823,6 +1823,7 @@ manageStartBPMCounter (void *udata)
         ROUTE_MAIN, "bdj4bpmcounter", flags, targv);
   }
 
+  manageSendBPMCounter (manage);
   logProcEnd (LOG_PROC, "manageStartBPMCounter", "");
   return UICB_CONT;
 }

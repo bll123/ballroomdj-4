@@ -182,7 +182,7 @@ SPEED
 TAGS
 ..
 TIMESIG
-..4/4
+..2/4
 TYPE
 ..latin
 KEY

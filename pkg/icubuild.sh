@@ -1,4 +1,14 @@
 #!/bin/bash
+#
+# ICU changes the library version number with each release.
+# Because of this, the ICU library on various linux distributions are
+# all different versions, and the MacPorts ICU library version gets
+# changed on updates.
+#
+# In order to ship software linked with libicu on linux and MacOS, BDJ4
+# must ship its own copy of libicu, otherwise the ICU versioning will
+# prevent it from running unless there is an exact match.
+#
 
 while test ! \( -d src -a -d web -a -d wiki \); do
   cd ..
@@ -29,6 +39,14 @@ case $systype in
         archtag=-applesilicon
         ;;
     esac
+    ;;
+  MINGW64*)
+    echo "ICU build not needed, uses msys2 libraries"
+    exit 1
+    ;;
+  MINGW32*)
+    echo "Platform not supported"
+    exit 1
     ;;
 esac
 

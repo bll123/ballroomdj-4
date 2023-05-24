@@ -8,8 +8,9 @@
 
 * Changes:
     * Configuration/General: The BPM display is reset to MPM by default.
+    * BPM Counter: Only MPM selections are available.
 * Internal:
-    * Re-work how BPM/MPM is handled.
+    * Database and audio files always stores MPM.
 
 -->
 

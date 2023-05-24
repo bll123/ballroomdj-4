@@ -39,6 +39,7 @@ enum {
   BPMCOUNT_CB_SAVE,
   BPMCOUNT_CB_RESET,
   BPMCOUNT_CB_CLICK,
+  BPMCOUNT_CB_RADIO,
   BPMCOUNT_CB_MAX,
 };
 
@@ -60,21 +61,22 @@ enum {
   BPMCOUNT_BUTTON_MAX,
 };
 
-static char *disptxt [BPMCOUNT_DISP_MAX];
-
 typedef struct {
   progstate_t     *progstate;
   char            *locknm;
+  const char      *disptxt [BPMCOUNT_DISP_MAX];
   procutil_t      *processes [ROUTE_MAX];
   conn_t          *conn;
   uiwcont_t       *window;
   uiwcont_t       *dispvalue [BPMCOUNT_DISP_MAX];
+  uiwcont_t       *radiobutton [BPMCOUNT_DISP_MAX];
   uibutton_t      *buttons [BPMCOUNT_BUTTON_MAX];
   int             values [BPMCOUNT_DISP_MAX];
   callback_t      *callbacks [BPMCOUNT_CB_MAX];
   int             stopwaitcount;
   int             count;
   time_t          begtime;
+  int             timesigidx;
   int             timesig;
   /* options */
   datafile_t      *optiondf;
@@ -112,6 +114,7 @@ static bool     bpmcounterProcessSave (void *udata);
 static bool     bpmcounterProcessReset (void *udata);
 static bool     bpmcounterProcessClick (void *udata);
 static void     bpmcounterProcessTimesig (bpmcounter_t *bpmcounter, char *args);
+static bool     bpmcounterRadioChanged (void *udata);
 
 static int gKillReceived = 0;
 
@@ -129,23 +132,25 @@ main (int argc, char *argv[])
 #endif
 
   /* CONTEXT: bpm counter: number of beats */
-  disptxt [BPMCOUNT_DISP_BEATS] = _("Beats");
+  bpmcounter.disptxt [BPMCOUNT_DISP_BEATS] = _("Beats");
   /* CONTEXT: bpm counter: number of seconds */
-  disptxt [BPMCOUNT_DISP_SECONDS] = _("Seconds");
+  bpmcounter.disptxt [BPMCOUNT_DISP_SECONDS] = _("Seconds");
   /* CONTEXT: bpm counter: BPM */
-  disptxt [BPMCOUNT_DISP_BPM] = _("BPM");
+  bpmcounter.disptxt [BPMCOUNT_DISP_BPM] = _("BPM");
   /* CONTEXT: bpm counter: MPM in 2/4 time */
-  disptxt [BPMCOUNT_DISP_MPM_24] = _("MPM (2/4 time)");
+  bpmcounter.disptxt [BPMCOUNT_DISP_MPM_24] = _("MPM (2/4 time)");
   /* CONTEXT: bpm counter: MPM in 3/4 time */
-  disptxt [BPMCOUNT_DISP_MPM_34] = _("MPM (3/4 time)");
+  bpmcounter.disptxt [BPMCOUNT_DISP_MPM_34] = _("MPM (3/4 time)");
   /* CONTEXT: bpm counter: MPM in 4/4 or 4/8 time */
-  disptxt [BPMCOUNT_DISP_MPM_44] = _("MPM (4/4 or 4/8 time)");
+  bpmcounter.disptxt [BPMCOUNT_DISP_MPM_44] = _("MPM (4/4 or 4/8 time)");
 
   bpmcounter.count = 0;
   bpmcounter.begtime = 0;
+  bpmcounter.timesigidx = BPMCOUNT_DISP_MPM_24;
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     bpmcounter.values [i] = 0;
     bpmcounter.dispvalue [i] = NULL;
+    bpmcounter.radiobutton [i] = NULL;
   }
   for (int i = 0; i < BPMCOUNT_CB_MAX; ++i) {
     bpmcounter.callbacks [i] = NULL;
@@ -306,6 +311,7 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
   }
   for (int i = 0; i < BPMCOUNT_DISP_MAX; ++i) {
     uiwcontFree (bpmcounter->dispvalue [i]);
+    uiwcontFree (bpmcounter->radiobutton [i]);
   }
 
   procutilFreeAll (bpmcounter->processes);
@@ -330,6 +336,7 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
 {
   uibutton_t  *uibutton;
   uiwcont_t   *uiwidgetp = NULL;
+  uiwcont_t   *grpuiwidgetp = NULL;
   uiwcont_t   *vboxmain;
   uiwcont_t   *vbox;
   uiwcont_t   *hboxbpm;
@@ -341,6 +348,10 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
   uiutilsaccent_t accent;
 
   logProcBegin (LOG_PROC, "bpmcounterBuildUI");
+
+  bpmcounter->callbacks [BPMCOUNT_CB_RADIO] = callbackInit (
+      bpmcounterRadioChanged, bpmcounter, NULL);
+
   szgrp = uiCreateSizeGroupHoriz ();      // labels
   szgrpDisp = uiCreateSizeGroupHoriz ();     // display
 
@@ -398,16 +409,21 @@ bpmcounterBuildUI (bpmcounter_t  *bpmcounter)
     hbox = uiCreateHorizBox ();
     uiBoxPackStart (vbox, hbox);
 
-    if (i < BPMCOUNT_DISP_BPM) {
-      uiwidgetp = uiCreateColonLabel (disptxt [i]);
+    if (i <= BPMCOUNT_DISP_BPM) {
+      uiwidgetp = uiCreateColonLabel (bpmcounter->disptxt [i]);
+    } else if (i == BPMCOUNT_DISP_MPM_24) {
+      uiwidgetp = uiCreateRadioButton (NULL, bpmcounter->disptxt [i], 1);
+      grpuiwidgetp = uiwidgetp;
     } else {
-      uiwidgetp = uiCreateLabel (disptxt [i]);
+      uiwidgetp = uiCreateRadioButton (grpuiwidgetp, bpmcounter->disptxt [i], 0);
+    }
+    if (i >= BPMCOUNT_DISP_MPM_24) {
+      uiToggleButtonSetCallback (uiwidgetp,
+          bpmcounter->callbacks [BPMCOUNT_CB_RADIO]);
     }
     uiSizeGroupAdd (szgrp, uiwidgetp);
     uiBoxPackStart (hbox, uiwidgetp);
-    if (i < BPMCOUNT_DISP_BPM) {
-      uiwcontFree (uiwidgetp);
-    }
+    bpmcounter->radiobutton [i] = uiwidgetp;
 
     bpmcounter->dispvalue [i] = uiCreateLabel ("");
     uiLabelAlignEnd (bpmcounter->dispvalue [i]);
@@ -617,7 +633,7 @@ bpmcounterProcessSave (void *udata)
 
   /* always return the MPM */
   snprintf (tbuff, sizeof (tbuff), "%d",
-      bpmcounter->values [bpmcounter->timesig + BPMCOUNT_DISP_BPM + 1]);
+      bpmcounter->values [bpmcounter->timesigidx]);
   connSendMessage (bpmcounter->conn, ROUTE_MANAGEUI, MSG_BPM_SET, tbuff);
   bpmcounterCloseCallback (bpmcounter);
   return UICB_CONT;
@@ -708,16 +724,33 @@ bpmcounterProcessClick (void *udata)
 static void
 bpmcounterProcessTimesig (bpmcounter_t *bpmcounter, char *args)
 {
-  char    *p;
-  char    *tokstr;
   int     timesig;
 
-  p = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
   timesig = DANCE_TIMESIG_44;
-  if (p != NULL) {
-    timesig = atoi (p);
+  if (args != NULL && *args) {
+    timesig = atoi (args);
   }
 
   bpmcounter->timesig = timesig;
+
+  uiToggleButtonSetState (
+      bpmcounter->radiobutton [timesig + BPMCOUNT_DISP_MPM_24],
+      UI_TOGGLE_BUTTON_ON);
+  bpmcounterRadioChanged (bpmcounter);
 }
 
+static bool
+bpmcounterRadioChanged (void *udata)
+{
+  bpmcounter_t  *bpmcounter = udata;
+
+  /* gtk radio buttons are not very friendly */
+  for (int i = BPMCOUNT_DISP_MPM_24; i < BPMCOUNT_DISP_MAX; ++i) {
+    uiWidgetRemoveClass (bpmcounter->dispvalue [i], ACCENT_CLASS);
+    if (uiToggleButtonIsActive (bpmcounter->radiobutton [i])) {
+      uiWidgetSetClass (bpmcounter->dispvalue [i], ACCENT_CLASS);
+      bpmcounter->timesigidx = i;
+    }
+  }
+  return UICB_CONT;
+}
