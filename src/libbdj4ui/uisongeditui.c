@@ -679,7 +679,6 @@ void
 uisongeditSetBPMValue (uisongedit_t *uisongedit, int val)
 {
   se_internal_t *seint;
-  int           speed;
 
   logProcBegin (LOG_PROC, "uisongeditSetBPMValue");
   seint = uisongedit->seInternalData;
@@ -690,7 +689,6 @@ uisongeditSetBPMValue (uisongedit_t *uisongedit, int val)
   }
 
   /* the bpm value received from the bpm counter is always mpm */
-  speed = songGetNum (seint->song, TAG_SPEEDADJUSTMENT);
   val = danceConvertMPMtoBPM (seint->currdanceidx, val);
 
   uiSpinboxSetValue (seint->items [seint->bpmidx].uiwidgetp, val);

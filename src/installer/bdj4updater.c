@@ -647,10 +647,8 @@ main (int argc, char *argv [])
         dances = bdjvarsdfGet (BDJVDF_DANCES);
         danceStartIterator (dances, &iteridx);
         while ((didx = danceIterate (dances, &iteridx)) >= 0) {
-          int     timesig;
           int     tval;
 
-          timesig = danceGetNum (dances, didx, DANCE_TIMESIG);
           tval = playlistGetDanceNum (pl, didx, PLDANCE_MPM_LOW);
           if (tval > 0) {
             tval = danceConvertBPMtoMPM (didx, tval);
