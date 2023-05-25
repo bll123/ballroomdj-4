@@ -13,7 +13,7 @@ KEY
 DANCE
 ..Argentine Tango
 SELECTED
-..0
+..no
 COUNT
 ..2
 MAXPLAYTIME
@@ -27,7 +27,7 @@ KEY
 DANCE
 ..Cha Cha
 SELECTED
-..0
+..no
 COUNT
 ..5
 MAXPLAYTIME
@@ -41,7 +41,7 @@ KEY
 DANCE
 ..Foxtrot
 SELECTED
-..1
+..yes
 COUNT
 ..5
 MAXPLAYTIME
@@ -55,7 +55,7 @@ KEY
 DANCE
 ..Jive
 SELECTED
-..0
+..no
 COUNT
 ..1
 MAXPLAYTIME
@@ -69,7 +69,7 @@ KEY
 DANCE
 ..Paso Doble
 SELECTED
-..0
+..no
 COUNT
 ..4
 MAXPLAYTIME
@@ -83,7 +83,7 @@ KEY
 DANCE
 ..Quickstep
 SELECTED
-..0
+..no
 COUNT
 ..4
 MAXPLAYTIME
@@ -97,7 +97,7 @@ KEY
 DANCE
 ..Rumba
 SELECTED
-..0
+..no
 COUNT
 ..5
 MAXPLAYTIME
@@ -111,7 +111,7 @@ KEY
 DANCE
 ..Salsa
 SELECTED
-..0
+..no
 COUNT
 ..2
 MAXPLAYTIME
@@ -125,7 +125,7 @@ KEY
 DANCE
 ..Samba
 SELECTED
-..0
+..no
 COUNT
 ..3
 MAXPLAYTIME
@@ -139,7 +139,7 @@ KEY
 DANCE
 ..Tango
 SELECTED
-..1
+..yes
 COUNT
 ..5
 MAXPLAYTIME
@@ -153,7 +153,7 @@ KEY
 DANCE
 ..Viennese Waltz
 SELECTED
-..0
+..no
 COUNT
 ..3
 MAXPLAYTIME
@@ -167,7 +167,7 @@ KEY
 DANCE
 ..Waltz
 SELECTED
-..1
+..yes
 COUNT
 ..5
 MAXPLAYTIME
@@ -181,7 +181,7 @@ KEY
 DANCE
 ..West Coast Swing
 SELECTED
-..0
+..no
 COUNT
 ..5
 MAXPLAYTIME

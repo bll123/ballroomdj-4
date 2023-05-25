@@ -285,9 +285,11 @@ danceGetTimeSignature (ilistidx_t danceIdx)
 }
 
 int
-danceConvertBPMtoMPM (int danceidx, int bpm)
+danceConvertBPMtoMPM (int danceidx, int bpm, int forceflag)
 {
-  if (bpm > 0 && bdjoptGetNum (OPT_G_BPM) == BPM_BPM) {
+  if (bpm > 0 &&
+      (bdjoptGetNum (OPT_G_BPM) == BPM_BPM ||
+      forceflag == DANCE_FORCE_CONV)) {
     int   timesig;
 
     timesig = danceGetTimeSignature (danceidx);

@@ -571,12 +571,8 @@ main (int argc, char *argv [])
           nhighmpm = ohighmpm;
           ntimesig = otimesig;
           /* dance does not exist, convert the BPM value */
-          if (nhighmpm > 0 && ntimesig >= 0) {
-            nhighmpm /= danceTimesigValues [ntimesig];
-          }
-          if (nhighmpm > 0 && ntimesig >= 0) {
-            nhighmpm /= danceTimesigValues [ntimesig];
-          }
+          nhighmpm = danceConvertBPMtoMPM (didx, nhighmpm, DANCE_FORCE_CONV);
+          nlowmpm = danceConvertBPMtoMPM (didx, nlowmpm, DANCE_FORCE_CONV);
         }
 
         /* this is a bit difficult if there is a user-entered dance */
@@ -651,20 +647,20 @@ main (int argc, char *argv [])
 
           tval = playlistGetDanceNum (pl, didx, PLDANCE_MPM_LOW);
           if (tval > 0) {
-            tval = danceConvertBPMtoMPM (didx, tval);
+            tval = danceConvertBPMtoMPM (didx, tval, DANCE_FORCE_CONV);
             playlistSetDanceNum (pl, didx, PLDANCE_MPM_LOW, tval);
             doplsave = true;
           }
           tval = playlistGetDanceNum (pl, didx, PLDANCE_MPM_HIGH);
           if (tval > 0) {
-            tval = danceConvertBPMtoMPM (didx, tval);
+            tval = danceConvertBPMtoMPM (didx, tval, DANCE_FORCE_CONV);
             playlistSetDanceNum (pl, didx, PLDANCE_MPM_HIGH, tval);
             doplsave = true;
           }
         }
 
         if (doplsave) {
-          logMsg (LOG_INSTALL, LOG_MAIN, "  4.3.2.4 : update pl %s", plnm);
+          logMsg (LOG_INSTALL, LOG_MAIN, "-- 4.3.2.4 : update pl %s", plnm);
           playlistSave (pl, NULL);
         }
       }
@@ -1170,14 +1166,8 @@ updaterGetMPMValue (song_t *song)
   ilistidx_t  didx;
   int         tval = LIST_VALUE_INVALID;
 
-  /* as the bpm/mpm flag has been set to mpm, force the conversion */
   didx = songGetNum (song, TAG_DANCE);
   tval = songGetNum (song, TAG_BPM);
-  if (didx >= 0) {
-    int   timesig;
-
-    timesig = danceGetTimeSignature (didx);
-    tval /= danceTimesigValues [timesig];
-  }
+  tval = danceConvertBPMtoMPM (didx, tval, DANCE_FORCE_CONV);
   return tval;
 }

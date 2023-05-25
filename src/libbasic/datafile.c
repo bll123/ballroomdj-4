@@ -38,6 +38,8 @@ typedef struct datafile {
   char            *name;
   char            *fname;
   datafiletype_t  dftype;
+  datafilekey_t   *dfkeys;
+  int             dfkeycount;
   list_t          *data;
   int             distvers;
 } datafile_t;
@@ -241,7 +243,13 @@ datafileAllocParse (const char *name, datafiletype_t dftype, const char *fname,
   logMsg (LOG_DBG, LOG_DATAFILE, "datafile alloc/parse %s", fname);
   df = datafileAlloc (name);
   if (df != NULL) {
-    char *ddata = datafileLoad (df, dftype, fname);
+    char *ddata;
+
+    df->dfkeys = dfkeys;
+    df->dfkeycount = dfkeycount;
+
+    ddata = datafileLoad (df, dftype, fname);
+
     if (ddata != NULL) {
       df->data = datafileParse (ddata, name, dftype, dfkeys, dfkeycount, &distvers);
       df->distvers = distvers;

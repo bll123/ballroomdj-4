@@ -83,7 +83,7 @@ mssleep 1500
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-chk mq0len 91 dance Waltz bpm 84
+chk mq0len 91 dance Waltz bpm 28
 msg main CMD_NEXTSONG
 mssleep 1500
 msg main CMD_NEXTSONG
@@ -97,7 +97,7 @@ wait playstate playing
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-chk mq0len 91 dance Waltz bpm 84
+chk mq0len 91 dance Waltz bpm 28
 msg main CMD_NEXTSONG
 mssleep 1500
 msg main CMD_NEXTSONG
@@ -111,7 +111,7 @@ wait playstate playing
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-chk mq0len 91 dance Waltz bpm 84
+chk mq0len 91 dance Waltz bpm 28
 msg main CMD_NEXTSONG
 mssleep 1500
 msg main CMD_NEXTSONG
@@ -125,7 +125,7 @@ wait playstate playing
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-chk mq0len 91 dance Waltz bpm 84
+chk mq0len 91 dance Waltz bpm 28
 msg main CMD_NEXTSONG
 mssleep 1500
 msg main CMD_NEXTSONG
@@ -139,7 +139,7 @@ wait playstate playing
 get player CHK_PLAYER_STATUS
 chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
-chk mq0len 91 dance Waltz bpm 84
+chk mq0len 91 dance Waltz bpm 28
 end
 
 test 120-30 Dance-MaxPlaytime

@@ -929,7 +929,7 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
           nval = uiSpinboxGetValue (seint->items [count].uiwidgetp);
           if (count == seint->bpmidx) {
             nval = songutilNormalizeBPM (nval, seint->lastspeed);
-            nval = danceConvertBPMtoMPM (seint->currdanceidx, nval);
+            nval = danceConvertBPMtoMPM (seint->currdanceidx, nval, DANCE_NO_FORCE);
           }
           break;
         }
@@ -1493,7 +1493,7 @@ uisongeditSave (void *udata, nlist_t *chglist)
         }
         speed = songGetNum (seint->song, TAG_SPEEDADJUSTMENT);
         nval = songutilNormalizeBPM (nval, speed);
-        nval = danceConvertBPMtoMPM (seint->currdanceidx, nval);
+        nval = danceConvertBPMtoMPM (seint->currdanceidx, nval, DANCE_NO_FORCE);
       }
       songSetNum (seint->song, tagkey, nval);
     }

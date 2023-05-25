@@ -114,6 +114,11 @@ danceselAlloc (nlist_t *countList,
   dancesel->expectedMult = autoselGetDouble (dancesel->autosel, AUTOSEL_EXPECTED_MULT);
   dancesel->expectedHigh = autoselGetDouble (dancesel->autosel, AUTOSEL_EXPECTED_HIGH);
 
+  logMsg (LOG_DBG, LOG_DANCESEL, "countlist: %d", nlistGetCount (countList));
+  if (DANCESEL_DEBUG) {
+    fprintf (stderr, "countlist: %d\n", nlistGetCount (countList));
+  }
+
   nlistStartIterator (countList, &iteridx);
   while ((didx = nlistIterateKey (countList, &iteridx)) >= 0) {
     long    count;

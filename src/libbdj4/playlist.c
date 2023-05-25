@@ -176,13 +176,16 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
   ilistStartIterator (tpldances, &iteridx);
   while ((tidx = ilistIterateKey (tpldances, &iteridx)) >= 0) {
     /* have to make a clone of the data */
-    /* tidx is a generic key and has no relation to what was loaded */
+    /* tidx is a generic key and may have no relation to what was loaded */
     /* into dances.txt. Want to have pl->pldances use the danceidx as */
     /* the key. */
     didx = ilistGetNum (tpldances, tidx, PLDANCE_DANCE);
     /* skip any unknown dances */
     if (didx != LIST_VALUE_INVALID) {
-      for (size_t i = 0; i < PLDANCE_KEY_MAX; ++i) {
+      for (size_t i = 0; i < pldancedfcount; ++i) {
+        if (playlistdancedfkeys [i].writeFlag == DF_NO_WRITE) {
+          continue;
+        }
         ilistSetNum (pl->pldances, didx, playlistdancedfkeys [i].itemkey,
             ilistGetNum (tpldances, tidx, playlistdancedfkeys [i].itemkey));
       }

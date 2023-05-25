@@ -338,11 +338,11 @@ managePlaylistTreeUpdatePlaylist (managepltree_t *managepltree)
     playlistSetDanceNum (pl, dkey, PLDANCE_MAXPLAYTIME, tval);
 
     tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_LOWMPM);
-    tval = danceConvertBPMtoMPM (dkey, tval);
+    tval = danceConvertBPMtoMPM (dkey, tval, DANCE_NO_FORCE);
     playlistSetDanceNum (pl, dkey, PLDANCE_MPM_LOW, tval);
 
     tval = uiTreeViewGetValue (managepltree->uitree, MPLTREE_COL_HIGHMPM);
-    tval = danceConvertBPMtoMPM (dkey, tval);
+    tval = danceConvertBPMtoMPM (dkey, tval, DANCE_NO_FORCE);
     playlistSetDanceNum (pl, dkey, PLDANCE_MPM_HIGH, tval);
   }
 

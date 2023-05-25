@@ -198,9 +198,12 @@ fi
 
 cwd=$(pwd)
 
-# make sure various variables are set appropriately.
+# run with the newinstall flag to make sure various variables are
+# set correctly.
 ./bin/bdj4 --bdj4updater --newinstall \
     --musicdir "${cwd}/test-music"
+# run again w/o newinstall to perform the updates
+./bin/bdj4 --bdj4updater
 
 tfn=data/updater.txt
 sed -e '/^FIX_AF_MPM/ { n ; s/.*/..0/ ; }' \
