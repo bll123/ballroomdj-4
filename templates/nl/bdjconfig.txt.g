@@ -1,8 +1,8 @@
 # config-global
-# 2022-12-10
-# version 1
+# 2022-5-25
+# version 2
 version
-..1
+..2
 ACOUSTID_KEY
 ..ENCTFdHUmEcJxkaKAAABRY=
 AUTOORGANIZE
@@ -13,6 +13,8 @@ BPM
 ..MPM
 CLOCKDISP
 ..local
+DANCESELMETHOD
+..expectedcount
 DEBUGLVL
 ..27
 LOADDANCEFROMGENRE

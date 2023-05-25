@@ -29,6 +29,7 @@ static void bdjoptConvFadeType (datafileconv_t *conv);
 static void bdjoptConvWriteTags (datafileconv_t *conv);
 static void bdjoptConvMarqueeShow (datafileconv_t *conv);
 static void bdjoptCreateNewConfigs (void);
+static void bdjoptConvDanceselMethod (datafileconv_t *conv);
 
 typedef struct {
   int           currprofile;
@@ -42,6 +43,10 @@ typedef struct {
   int           distvers [OPTTYPE_MAX];
 } bdjopt_t;
 
+enum {
+  BDJOPT_G_VERSION = 2,
+};
+
 static bdjopt_t   *bdjopt = NULL;
 
 static datafilekey_t bdjoptglobaldfkeys [] = {
@@ -50,6 +55,7 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "BDJ3COMPATTAGS",     OPT_G_BDJ3_COMPAT_TAGS,   VALUE_NUM, convBoolean, DF_NORM },
   { "BPM",                OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, DF_NORM },
   { "CLOCKDISP",          OPT_G_CLOCK_DISP,         VALUE_NUM, bdjoptConvClock, DF_NORM },
+  { "DANCESELMETHOD",     OPT_G_DANCESEL_METHOD,    VALUE_NUM, bdjoptConvDanceselMethod, DF_NORM },
   { "DEBUGLVL",           OPT_G_DEBUGLVL,           VALUE_NUM, NULL, DF_NORM },
   { "LOADDANCEFROMGENRE", OPT_G_LOADDANCEFROMGENRE, VALUE_NUM, convBoolean, DF_NORM },
   { "ORGPATH",            OPT_G_ORGPATH,            VALUE_STR, NULL, DF_NORM },
@@ -199,10 +205,10 @@ bdjoptInit (void)
       bdjopt->dfcount [OPTTYPE_GLOBAL]);
   bdjopt->distvers [OPTTYPE_GLOBAL] = datafileDistVersion (df);
 
-  for (int i = 1; i < OPTTYPE_MAX; ++i) {
+  for (int i = 0; i < OPTTYPE_MAX; ++i) {
     int     distvers;
 
-    if (i == OPTTYPE_QUEUE) {
+    if (i == OPTTYPE_GLOBAL || i == OPTTYPE_QUEUE) {
       continue;
     }
     ddata = datafileLoad (df, DFTYPE_KEY_VAL, bdjopt->fname [i]);
@@ -238,6 +244,12 @@ bdjoptInit (void)
 
   bdjopt->df = df;
   bdjopt->bdjoptList = datafileGetList (df);
+
+  /* added 4.3.2.4, make sure it has a default */
+  if (nlistGetNum (bdjopt->bdjoptList, OPT_G_DANCESEL_METHOD) < 0) {
+    nlistSetNum (bdjopt->bdjoptList, OPT_G_DANCESEL_METHOD,
+        DANCESEL_METHOD_EXPECTED_COUNT);
+  }
 }
 
 void
@@ -410,6 +422,9 @@ bdjoptSave (void)
   for (int i = 0; i < OPTTYPE_MAX; ++i) {
     if (i == OPTTYPE_QUEUE) {
       continue;
+    }
+    if (i == OPTTYPE_GLOBAL) {
+      nlistSetVersion (bdjopt->bdjoptList, BDJOPT_G_VERSION);
     }
     datafileSaveKeyVal (bdjopt->tag [i], bdjopt->fname [i],
         bdjopt->dfkeys [i], bdjopt->dfcount [i], bdjopt->bdjoptList, 0,
@@ -740,5 +755,33 @@ bdjoptCreateNewConfigs (void)
   sysvarsSetNum (SVL_BDJIDX, bdjopt->currprofile);
   filemanipCopy (path, bdjopt->fname [OPTTYPE_MACH_PROF]);
 }
+
+static void
+bdjoptConvDanceselMethod (datafileconv_t *conv)
+{
+  int   method = DANCESEL_METHOD_EXPECTED_COUNT;
+  char  *sval = NULL;
+
+  conv->allocated = false;
+  if (conv->valuetype == VALUE_STR) {
+    conv->valuetype = VALUE_NUM;
+
+    if (strcmp (conv->str, "windowed") == 0) {
+      method = DANCESEL_METHOD_WINDOWED;
+    }
+    if (strcmp (conv->str, "expectedcount") == 0) {
+      method = DANCESEL_METHOD_EXPECTED_COUNT;
+    }
+    conv->num = method;
+  } else if (conv->valuetype == VALUE_NUM) {
+    conv->valuetype = VALUE_STR;
+    switch (conv->num) {
+      case DANCESEL_METHOD_EXPECTED_COUNT: { sval = "expectedcount"; break; }
+      case DANCESEL_METHOD_WINDOWED: { sval = "windowed"; break; }
+    }
+    conv->str = sval;
+  }
+}
+
 
 

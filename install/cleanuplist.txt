@@ -102,6 +102,7 @@ plocal/bin/libunistring-2\.dll$
 
 # 2023-5-5
 # windows: remove libressl from distribution
+# the curl/libressl build combination is not working.
 licenses/libressl\.LICENSE$
 plocal/bin/libcrypto-50\.dll$
 plocal/bin/libssl-53\.dll$

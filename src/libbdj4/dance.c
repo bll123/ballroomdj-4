@@ -284,6 +284,7 @@ danceGetTimeSignature (ilistidx_t danceIdx)
   return timesig;
 }
 
+/* the forceflag is used by bdj4updater */
 int
 danceConvertBPMtoMPM (int danceidx, int bpm, int forceflag)
 {

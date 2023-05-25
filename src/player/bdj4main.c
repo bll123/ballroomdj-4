@@ -2894,6 +2894,7 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
 
   mainData->musicqChanged [mqidx] = MAIN_CHG_START;
   mainData->marqueeChanged = true;
+  connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_PROCESSING_FINISH, NULL);
 }
 
 static void

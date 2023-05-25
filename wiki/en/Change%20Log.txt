@@ -7,12 +7,14 @@
 **4.3.2.4 2023-5---**
 
 * Bug Fixes:
+    * Edit Song Lists: Clear please wait message after mix.
     * Song Editor: Fix bugs with BPM and speed interactions.
 * Changes:
     * Configuration/General: The BPM display is reset to MPM by default.
-    * BPM Counter: Only display the correct MPM for the song.
+    * BPM Counter: Remove MPM selections.
+    * PENDING: Dance Selection: New algorithm.
 * Internal:
-    * Database and audio files always stores MPM.
+    * Database and audio files always store MPM.
 
 -->
 

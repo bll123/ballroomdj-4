@@ -129,6 +129,7 @@ typedef enum {
   MSG_MAIN_REQ_QUEUE_INFO,  // args: queue number
                             // request complete queue information from main
   MSG_MAIN_QUEUE_INFO,      //
+  MSG_PROCESSING_FINISH,    // essentially asks manageui to clear the status
 
   /* to/from starterui */
   MSG_START_MAIN,           // arg: true for --nomarquee
@@ -151,7 +152,7 @@ typedef enum {
   MSG_MARQUEE_IS_MAX,       // args: boolean flag
   MSG_MARQUEE_FONT_SIZES,   // args: font-size, font-size-fs
 
-  /* to/from dbudpate */
+  /* to/from dbupdate */
   MSG_DB_STOP_REQ,
   MSG_DB_FILE_TAGS,         // args: filename, tag data
   MSG_DB_PROGRESS,          // args: % complete
