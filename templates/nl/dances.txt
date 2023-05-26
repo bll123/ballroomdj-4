@@ -12,9 +12,9 @@ ANNOUNCE
 DANCE
 ..Argentijnse Tango
 LOWMPM
-..28
+..30
 HIGHMPM
-..35
+..32
 SPEED
 ..normal
 TAGS

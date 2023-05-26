@@ -71,8 +71,6 @@ confuiInitEditDances (confuigui_t *gui)
       DANCE_TIMESIG_34, _("3/4"),
       /* CONTEXT: configuration: dance time signature */
       DANCE_TIMESIG_44, _("4/4"),
-      /* CONTEXT: configuration: dance time signature */
-      DANCE_TIMESIG_48, _("4/8"),
       -1);
 }
 

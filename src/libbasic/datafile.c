@@ -23,6 +23,8 @@
 #include "slist.h"
 #include "tmutil.h"
 
+#include "tagdef.h" // ### REMOVE
+
 typedef enum {
   PARSE_SIMPLE,
   PARSE_KEYVALUE
@@ -461,12 +463,11 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
           conv.str = tvalstr;
           dfkeys [idx].convFunc (&conv);
 
+
           vt = conv.valuetype;
           if (vt == VALUE_NUM) {
-            if (conv.num != LIST_VALUE_INVALID) {
-              lval = conv.num;
-              logMsg (LOG_DBG, LOG_DATAFILE, "converted value: %s to %" PRId64, tvalstr, lval);
-            }
+            lval = conv.num;
+            logMsg (LOG_DBG, LOG_DATAFILE, "converted value: %s to %" PRId64, tvalstr, lval);
           }
         } else {
           if (vt == VALUE_NUM) {
@@ -493,6 +494,7 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
 
       logMsg (LOG_DBG, LOG_DATAFILE, "set: dftype:%d vt:%d", dftype, vt);
 
+      /* use the 'setlist' temporary variable to hold the correct list var */
       if (dftype == DFTYPE_INDIRECT) {
         setlist = itemList;
       }
@@ -500,7 +502,6 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
         setlist = datalist;
       }
 
-      /* use the 'setlist' temporary variable to hold the correct list var */
       if (vt == VALUE_STR) {
         nlistSetStr (setlist, ikey + offset, tvalstr);
       }

@@ -138,7 +138,7 @@ main (int argc, char *argv [])
   }
 
   if (count [DB_A] != count [DB_B]) {
-    fprintf (stderr, "  dbcompare: count mismatch %d/%d\n", count [DB_A], count [DB_B]);
+    fprintf (stderr, "  dbcompare: count mismatch /%d/%d/\n", count [DB_A], count [DB_B]);
     grc = 1;
   }
 
@@ -172,8 +172,8 @@ main (int argc, char *argv [])
     }
 
     if (slistGetCount (taglist [DB_A]) != slistGetCount (taglist [DB_B])) {
-      fprintf (stderr, "    song tag count mismatch %d/%d\n",
-          slistGetCount (taglist [DB_A]), slistGetCount (taglist [DB_B]));
+      fprintf (stderr, "    song tag count mismatch /%d/%d/ %s\n",
+          slistGetCount (taglist [DB_A]), slistGetCount (taglist [DB_B]), fn);
       grc = 1;
       continue;
     }
@@ -184,7 +184,7 @@ main (int argc, char *argv [])
 
       val = songGetStr (song [i], TAG_DBADDDATE);
       if (val == NULL) {
-        fprintf (stderr, "    dbadddate missing in %d\n", i);
+        fprintf (stderr, "    dbadddate missing in %d %s\n", i, fn);
         grc = 1;
       }
     }
@@ -195,7 +195,7 @@ main (int argc, char *argv [])
 
       val = songGetStr (song [i], TAG_LAST_UPDATED);
       if (val == NULL) {
-        fprintf (stderr, "    last-updated missing in %d\n", i);
+        fprintf (stderr, "    last-updated missing in %d %s\n", i, fn);
         grc = 1;
       }
     }
@@ -222,16 +222,16 @@ main (int argc, char *argv [])
       }
 
       if (val [DB_A] == NULL && val [DB_B] != NULL) {
-        fprintf (stderr, "    null tag %s mismatch (null)/%s\n", tag [DB_A], val [DB_B]);
+        fprintf (stderr, "    null tag %s mismatch /(null)/%s/ %s\n", tag [DB_A], val [DB_B], fn);
         grc = 1;
       }
       if (val [DB_A] != NULL && val [DB_B] == NULL) {
-        fprintf (stderr, "    null tag %s mismatch %s/(null)\n", tag [DB_A], val [DB_A]);
+        fprintf (stderr, "    null tag %s mismatch /%s/(null)/ %s\n", tag [DB_A], val [DB_A], fn);
         grc = 1;
       }
       if (val [DB_A] != NULL && val [DB_B] != NULL &&
           strcmp (val [DB_A], val [DB_B]) != 0) {
-        fprintf (stderr, "    tag %s mismatch %s/%s\n", tag [DB_A], val [DB_A], val [DB_B]);
+        fprintf (stderr, "    tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [DB_B], fn);
         grc = 1;
       }
     }

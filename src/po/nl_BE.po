@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-05-22\n"
+"PO-Revision-Date: 2023-05-26\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -1010,20 +1010,9 @@ msgid "M3U Files"
 msgstr ""
 
 #. CONTEXT: label: measures per minute
+#. CONTEXT: bpm counter: MPM
 msgid "MPM"
 msgstr "MPM"
-
-#. CONTEXT: bpm counter: MPM in 2/4 time
-msgid "MPM (2/4 time)"
-msgstr "MPM (2/4 tijd)"
-
-#. CONTEXT: bpm counter: MPM in 3/4 time
-msgid "MPM (3/4 time)"
-msgstr "MPM (3/4 tijd)"
-
-#. CONTEXT: bpm counter: MPM in 4/4 or 4/8 time
-msgid "MPM (4/4 or 4/8 time)"
-msgstr "MPM (4/4 of 4/8 tijd)"
 
 #. CONTEXT: starterui: button: starts the management user interface
 msgid "Manage"

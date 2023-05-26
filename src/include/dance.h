@@ -33,7 +33,6 @@ typedef enum {
   DANCE_TIMESIG_24,
   DANCE_TIMESIG_34,
   DANCE_TIMESIG_44,
-  DANCE_TIMESIG_48,
   DANCE_TIMESIG_MAX,
 } dancetimesig_t;
 

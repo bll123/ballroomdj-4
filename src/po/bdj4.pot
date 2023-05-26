@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-22 07:39-0700\n"
+"POT-Creation-Date: 2023-05-26 08:16-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1008,19 +1008,8 @@ msgid "M3U Files"
 msgstr ""
 
 #. CONTEXT: label: measures per minute
+#. CONTEXT: bpm counter: MPM
 msgid "MPM"
-msgstr ""
-
-#. CONTEXT: bpm counter: MPM in 2/4 time
-msgid "MPM (2/4 time)"
-msgstr ""
-
-#. CONTEXT: bpm counter: MPM in 3/4 time
-msgid "MPM (3/4 time)"
-msgstr ""
-
-#. CONTEXT: bpm counter: MPM in 4/4 or 4/8 time
-msgid "MPM (4/4 or 4/8 time)"
 msgstr ""
 
 #. CONTEXT: starterui: button: starts the management user interface

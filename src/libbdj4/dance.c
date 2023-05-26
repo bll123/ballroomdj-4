@@ -26,7 +26,6 @@ int danceTimesigValues [DANCE_TIMESIG_MAX] = {
   [DANCE_TIMESIG_24] = 2,
   [DANCE_TIMESIG_34] = 3,
   [DANCE_TIMESIG_44] = 4,
-  [DANCE_TIMESIG_48] = 4,
 };
 
 typedef struct dance {
@@ -70,7 +69,6 @@ static datafilekey_t dancetimesigdfkeys [DANCE_TIMESIG_MAX] = {
   { "2/4",       DANCE_TIMESIG_24,   VALUE_NUM, NULL, DF_NORM },
   { "3/4",       DANCE_TIMESIG_34,   VALUE_NUM, NULL, DF_NORM },
   { "4/4",       DANCE_TIMESIG_44,   VALUE_NUM, NULL, DF_NORM },
-  { "4/8",       DANCE_TIMESIG_48,   VALUE_NUM, NULL, DF_NORM },
 };
 
 dance_t *
@@ -180,7 +178,7 @@ ssize_t
 danceGetNum (dance_t *dances, ilistidx_t dkey, ilistidx_t idx)
 {
   if (dances == NULL || dances->dances == NULL) {
-    return -1;
+    return LIST_VALUE_INVALID;
   }
   return ilistGetNum (dances->dances, dkey, idx);
 }
@@ -226,6 +224,10 @@ danceConvDance (datafileconv_t *conv)
 {
   dance_t   *dance;
   ssize_t   num;
+
+  if (conv == NULL) {
+    return;
+  }
 
   dance = bdjvarsdfGet (BDJVDF_DANCES);
 
@@ -296,10 +298,6 @@ danceGetTimeSignature (ilistidx_t danceIdx)
     timesig = DANCE_TIMESIG_44;
   } else {
     timesig = danceGetNum (dances, danceIdx, DANCE_TIMESIG);
-  }
-  /* 4/8 is handled the same as 4/4 in the bpm counter */
-  if (timesig == DANCE_TIMESIG_48) {
-    timesig = DANCE_TIMESIG_44;
   }
   if (timesig < 0) {
     timesig = DANCE_TIMESIG_44;
@@ -378,6 +376,9 @@ danceConvTimeSig (datafileconv_t *conv)
     conv->num = LIST_VALUE_INVALID;
     if (idx >= 0) {
       conv->num = dancetimesigdfkeys [idx].itemkey;
+    } else {
+      /* in case there are any leftover 4/8 settings */
+      conv->num = DANCE_TIMESIG_44;
     }
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;

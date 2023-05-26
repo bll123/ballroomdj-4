@@ -169,9 +169,9 @@ START_TEST(dance_set)
     ck_assert_str_eq (val, "tag");
 
     danceGetNum (dance, key, DANCE_TIMESIG);
-    danceSetNum (dance, key, DANCE_TIMESIG, DANCE_TIMESIG_48);
+    danceSetNum (dance, key, DANCE_TIMESIG, DANCE_TIMESIG_24);
     tts = danceGetNum (dance, key, DANCE_TIMESIG);
-    ck_assert_int_eq (tts, DANCE_TIMESIG_48);
+    ck_assert_int_eq (tts, DANCE_TIMESIG_24);
 
     danceGetNum (dance, key, DANCE_TYPE);
     danceSetNum (dance, key, DANCE_TYPE, 2);
