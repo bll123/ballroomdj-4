@@ -317,7 +317,7 @@ procutilForceStop (procutil_t *process, int flags, bdjmsgroute_t route)
 
   while (count < 10) {
     if (procutilExists (process) != 0) {
-      logMsg (LOG_DBG, LOG_MAIN, "%d/%s is gone", route, msgRouteDebugText (route));
+      logMsg (LOG_DBG, LOG_INFO, "%d/%s is gone", route, msgRouteDebugText (route));
       exists = 0;
       break;
     }

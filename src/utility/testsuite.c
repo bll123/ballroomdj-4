@@ -179,7 +179,7 @@ main (int argc, char *argv [])
   logEnd ();
 
   logStart ("testsuite", "ts",
-      LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_MSGS | LOG_ACTIONS);
+      LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_MSGS | LOG_ACTIONS);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       VOLREG_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);

@@ -285,7 +285,7 @@ aaTrimSilence (musicdb_t *musicdb, dbidx_t dbidx,
 
   resp = mdmalloc (AA_RESP_BUFF_SZ);
   rc = aaProcess ("aa-trim", targv, targc, resp);
-  logMsg (LOG_DBG, LOG_MAIN, "aa-trim: elapsed: %ld",
+  logMsg (LOG_DBG, LOG_INFO, "aa-trim: elapsed: %ld",
       (long) mstimeend (&etm));
 
   if (rc == 0) {
@@ -360,7 +360,7 @@ aaNormalize (const char *infn, const char *outfn)
     dataFree (resp);
     return;
   }
-  logMsg (LOG_DBG, LOG_MAIN, "aa-norm-vd: elapsed: %ld",
+  logMsg (LOG_DBG, LOG_INFO, "aa-norm-vd: elapsed: %ld",
       (long) mstimeend (&etm));
 
   /* run the loudness normalization first pass to get the input */
@@ -386,7 +386,7 @@ aaNormalize (const char *infn, const char *outfn)
   targv [targc++] = NULL;
 
   aaProcess ("aa-norm-ln", targv, targc, resp);
-  logMsg (LOG_DBG, LOG_MAIN, "aa-norm-ln: elapsed: %ld",
+  logMsg (LOG_DBG, LOG_INFO, "aa-norm-ln: elapsed: %ld",
       (long) mstimeend (&etm));
 
 /*
@@ -431,8 +431,8 @@ aaNormalize (const char *infn, const char *outfn)
 
   targetvol = nlistGetDouble (aa->values, AA_NORMVOL_TARGET);
   targetmax= nlistGetDouble (aa->values, AA_NORMVOL_MAX);
-  logMsg (LOG_DBG, LOG_MAIN, "aa-norm: max volume: %.2f", maxvol);
-  logMsg (LOG_DBG, LOG_MAIN, "aa-norm: measured I: %.2f", measuredi);
+  logMsg (LOG_DBG, LOG_INFO, "aa-norm: max volume: %.2f", maxvol);
+  logMsg (LOG_DBG, LOG_INFO, "aa-norm: measured I: %.2f", measuredi);
 
   /* there are various situations to handle */
   /*
@@ -448,7 +448,7 @@ aaNormalize (const char *infn, const char *outfn)
     /* softer */
     /* - -9 + -10 = -1 lower by 1 dB */
     voldiff = (- measuredi) + targetvol;
-    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mi-high: voldiff: %.2f (softer)", voldiff);
+    logMsg (LOG_DBG, LOG_INFO, "aa-norm: mi-high: voldiff: %.2f (softer)", voldiff);
   }
   if (measuredi < targetvol) {
     double    dvol;
@@ -458,18 +458,18 @@ aaNormalize (const char *infn, const char *outfn)
     dvol = (- measuredi) + targetvol;
     dmax = (- maxvol) + targetmax;
     voldiff = dmax < dvol ? dmax : dvol;
-    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mi-low: initial: dmax:%.2f dvol:%2.f (louder)", dmax, dvol);
+    logMsg (LOG_DBG, LOG_INFO, "aa-norm: mi-low: initial: dmax:%.2f dvol:%2.f (louder)", dmax, dvol);
     /* -15 - -1 : -16 */
     if (measuredi - voldiff < targetvol) {
       dmax = (- maxvol);
       voldiff = dmax < dvol ? dmax : dvol;
-      logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mi-low: second: dmax:%.2f dvol:%2.f (louder)", dmax, dvol);
+      logMsg (LOG_DBG, LOG_INFO, "aa-norm: mi-low: second: dmax:%.2f dvol:%2.f (louder)", dmax, dvol);
     }
-    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: mi-low: voldiff: %.2f (louder)", voldiff);
+    logMsg (LOG_DBG, LOG_INFO, "aa-norm: mi-low: voldiff: %.2f (louder)", voldiff);
   }
 
   if (voldiff > -0.05 && voldiff < 0.05) {
-    logMsg (LOG_DBG, LOG_MAIN, "aa-norm: not worth processing.");
+    logMsg (LOG_DBG, LOG_INFO, "aa-norm: not worth processing.");
     dataFree (resp);
     return;
   }
@@ -493,7 +493,7 @@ aaNormalize (const char *infn, const char *outfn)
   targv [targc++] = NULL;
 
   aaProcess ("aa-norm-vol", targv, targc, resp);
-  logMsg (LOG_DBG, LOG_MAIN, "aa-norm-vol: elapsed: %ld",
+  logMsg (LOG_DBG, LOG_INFO, "aa-norm-vol: elapsed: %ld",
       (long) mstimeend (&etm));
   dataFree (resp);
   return;
@@ -626,7 +626,7 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
 
   resp = mdmalloc (AA_RESP_BUFF_SZ);
   rc = aaProcess ("aa-adjust", targv, targc, resp);
-  logMsg (LOG_DBG, LOG_MAIN, "aa: adjust: elapsed: %ld",
+  logMsg (LOG_DBG, LOG_INFO, "aa: adjust: elapsed: %ld",
       (long) mstimeend (&etm));
 
   /* applying the speed change afterwards is slower, but saves a lot */
@@ -638,7 +638,7 @@ aaAdjust (musicdb_t *musicdb, song_t *song,
     filemanipMove (outfn, tmpfn);
     aaApplySpeed (song, tmpfn, outfn, speed, gap);
     fileopDelete (tmpfn);
-    logMsg (LOG_DBG, LOG_MAIN, "aa: adjust-with-speed: elapsed: %ld",
+    logMsg (LOG_DBG, LOG_INFO, "aa: adjust-with-speed: elapsed: %ld",
         (long) mstimeend (&etm));
   }
 

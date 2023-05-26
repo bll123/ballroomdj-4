@@ -50,7 +50,7 @@ enum {
   LOG_IMPORTANT       = 0x00000001,  // 1
   LOG_BASIC           = 0x00000002,  // 2
   LOG_MSGS            = 0x00000004,  // 4
-  LOG_MAIN            = 0x00000008,  // 8
+  LOG_INFO            = 0x00000008,  // 8
   LOG_ACTIONS         = 0x00000010,  // 16
   LOG_LIST            = 0x00000020,  // 32
   LOG_SONGSEL         = 0x00000040,  // 64

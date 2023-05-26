@@ -127,7 +127,7 @@ main (int argc, char *argv [])
   }
 
   logStart ("tdbsetval", "tdbs",
-      LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_MSGS | LOG_ACTIONS | LOG_DB);
+      LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_MSGS | LOG_ACTIONS | LOG_DB);
 
   dbStartIterator (db, &dbiteridx);
   while ((song = dbIterate (db, &dbkey, &dbiteridx)) != NULL) {

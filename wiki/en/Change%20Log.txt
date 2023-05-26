@@ -12,7 +12,7 @@
 * Changes:
     * Configuration/General: The BPM display is reset to MPM by default.
     * BPM Counter: Remove MPM selections.
-    * PENDING: Dance Selection: New algorithm.
+    * Dance Selection: New algorithm: 'windowed'.
 * Internal:
     * Database and audio files always store MPM.
 

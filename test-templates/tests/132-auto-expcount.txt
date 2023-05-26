@@ -1,8 +1,9 @@
-section 130 Automatic
+section 132 Automatic-Expected-Count
 
 # basic automatic playlist test
 # test-auto-a only has waltz, tango, foxtrot
-test 130-10 Basic
+test 132-10 Basic
+msg main CHK_MAIN_SET_DANCESEL_METHOD expectedcount
 msg main QUEUE_PLAYLIST 0~test-auto-a
 msg main CMD_PLAY
 resptimeout 2000
@@ -82,7 +83,8 @@ end
 
 # automatic playlist test max-play-time
 # test-auto-b only has waltz, tango, foxtrot
-test 130-20 Auto-MaxPlayTime
+test 132-20 Auto-MaxPlayTime
+msg main CHK_MAIN_SET_DANCESEL_METHOD expectedcount
 msg main QUEUE_PLAYLIST 0~test-auto-b
 msg main CMD_PLAY
 resptimeout 2000
@@ -178,7 +180,8 @@ end
 
 # automatic playlist test max-play-time
 # test-auto-c only has waltz, tango, foxtrot
-test 130-30 Auto-BPM
+test 132-30 Auto-BPM
+msg main CHK_MAIN_SET_DANCESEL_METHOD expectedcount
 msg main QUEUE_PLAYLIST 0~test-auto-c
 msg main CMD_PLAY
 resptimeout 2000

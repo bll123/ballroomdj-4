@@ -31,7 +31,7 @@ starterStopAllProcesses (conn_t *conn)
   int           count;
 
   logProcBegin (LOG_PROC, "starterStopAllProcesses");
-  logMsg (LOG_DBG, LOG_MAIN, "stop-all-processes");
+  logMsg (LOG_DBG, LOG_INFO, "stop-all-processes");
 
   count = starterCountProcesses ();
   if (count == 0) {

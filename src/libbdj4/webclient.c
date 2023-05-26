@@ -131,7 +131,7 @@ webclientDownload (webclient_t *webclient, const char *uri, const char *outfile)
   fclose (fh);
   webclient->dlFH = NULL;
   tm = mstimeend (&webclient->dlStart);
-  logMsg (LOG_DBG, LOG_MAIN, "%s : %"PRIu64" bytes; %"PRIu64" msec; %"PRIu64" chunks; %.1f b/s",
+  logMsg (LOG_DBG, LOG_INFO, "%s : %"PRIu64" bytes; %"PRIu64" msec; %"PRIu64" chunks; %.1f b/s",
       outfile, (uint64_t) webclient->dlSize, (uint64_t) tm,
       (uint64_t) webclient->dlChunks,
       (double) webclient->dlSize / (double) tm);
@@ -190,7 +190,7 @@ webclientUploadFile (webclient_t *webclient, const char *uri,
   curl_easy_getinfo (webclient->curl, CURLINFO_SPEED_UPLOAD_T, &speed_upload);
   curl_easy_getinfo (webclient->curl, CURLINFO_TOTAL_TIME_T, &total_time);
 
-  logMsg (LOG_DBG, LOG_MAIN,
+  logMsg (LOG_DBG, LOG_INFO,
       "%s : %"PRIu64" : %"PRIu64" b/sec : %"PRIu64".%02"PRIu64" sec",
       fn,
       (uint64_t) fsize,

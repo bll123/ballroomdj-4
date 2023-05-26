@@ -183,6 +183,7 @@ typedef enum {
   MSG_CHK_MAIN_SET_FADEIN,        // args: fade-in
   MSG_CHK_MAIN_SET_FADEOUT,       // args: fade-out
   MSG_CHK_MAIN_SET_PAUSE_EACH_SONG, // args: true/false
+  MSG_CHK_MAIN_SET_DANCESEL_METHOD,   // args: windowed/expectedcount
 
   MSG_CHK_CLEAR_PREP_Q,
 

@@ -974,7 +974,7 @@ pluiProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
 
           if ((int) musicqupdate->mqidx >= MUSICQ_DISP_MAX ||
               ! bdjoptGetNumPerQueue (OPT_Q_DISPLAY, musicqupdate->mqidx)) {
-            logMsg (LOG_DBG, LOG_MAIN, "music queue data: mq idx %d not valid", musicqupdate->mqidx);
+            logMsg (LOG_DBG, LOG_INFO, "music queue data: mq idx %d not valid", musicqupdate->mqidx);
             break;
           }
 

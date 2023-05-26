@@ -2023,7 +2023,7 @@ manageiTunesDialogResponseHandler (void *udata, long responseid)
               manage->musicqManageIdx, MSG_ARGS_RS, QUEUE_LOC_LAST, MSG_ARGS_RS, dbidx);
           connSendMessage (manage->conn, ROUTE_MAIN, MSG_MUSICQ_INSERT, tbuff);
         } else {
-          logMsg (LOG_DBG, LOG_MAIN, "itunes import: song not found %s", songfn);
+          logMsg (LOG_DBG, LOG_INFO, "itunes import: song not found %s", songfn);
         }
       }
 
@@ -2729,7 +2729,7 @@ manageLoadPlaylistCB (void *udata, const char *fn)
 {
   manageui_t    *manage = udata;
 
-  logMsg (LOG_DBG, LOG_MAIN, "load playlist cb: %s", fn);
+  logMsg (LOG_DBG, LOG_INFO, "load playlist cb: %s", fn);
   managePlaylistLoadFile (manage->managepl, fn, MANAGE_PRELOAD);
   return UICB_CONT;
 }
@@ -2740,7 +2740,7 @@ manageNewPlaylistCB (void *udata)
 {
   manageui_t    *manage = udata;
 
-  logMsg (LOG_DBG, LOG_MAIN, "new playlist cb");
+  logMsg (LOG_DBG, LOG_INFO, "new playlist cb");
   managePlaylistNew (manage->managepl, MANAGE_PRELOAD);
   return UICB_CONT;
 }
@@ -3225,17 +3225,17 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
   /* need to know which notebook is selected so that the correct id value */
   /* can be retrieved */
   if (which == MANAGE_NB_MAIN) {
-    logMsg (LOG_DBG, LOG_MAIN, "switch page to main");
+    logMsg (LOG_DBG, LOG_INFO, "switch page to main");
     nbtabid = manage->mainnbtabid;
     mainnb = true;
   }
   if (which == MANAGE_NB_SONGLIST) {
-    logMsg (LOG_DBG, LOG_MAIN, "switch page to songlist");
+    logMsg (LOG_DBG, LOG_INFO, "switch page to songlist");
     nbtabid = manage->slnbtabid;
     slnb = true;
   }
   if (which == MANAGE_NB_MM) {
-    logMsg (LOG_DBG, LOG_MAIN, "switch page to mm");
+    logMsg (LOG_DBG, LOG_INFO, "switch page to mm");
     nbtabid = manage->mmnbtabid;
     mmnb = true;
   }
@@ -3246,15 +3246,15 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
 
   if (mainnb) {
     if (manage->mainlasttab == MANAGE_TAB_MAIN_SL) {
-      logMsg (LOG_DBG, LOG_MAIN, "last tab: songlist");
+      logMsg (LOG_DBG, LOG_INFO, "last tab: songlist");
       manageSonglistSave (manage);
     }
     if (manage->mainlasttab == MANAGE_TAB_MAIN_SEQ) {
-      logMsg (LOG_DBG, LOG_MAIN, "last tab: sequence");
+      logMsg (LOG_DBG, LOG_INFO, "last tab: sequence");
       manageSequenceSave (manage->manageseq);
     }
     if (manage->mainlasttab == MANAGE_TAB_MAIN_PL) {
-      logMsg (LOG_DBG, LOG_MAIN, "last tab: playlist");
+      logMsg (LOG_DBG, LOG_INFO, "last tab: playlist");
       managePlaylistSave (manage->managepl);
     }
   }
@@ -3277,24 +3277,24 @@ manageSwitchPage (manageui_t *manage, long pagenum, int which)
 
   switch (id) {
     case MANAGE_TAB_MAIN_SL: {
-      logMsg (LOG_DBG, LOG_MAIN, "new tab: main-sl");
+      logMsg (LOG_DBG, LOG_INFO, "new tab: main-sl");
       manageSetDisplayPerSelection (manage, id);
       manageSonglistLoadCheck (manage);
       break;
     }
     case MANAGE_TAB_MAIN_MM: {
-      logMsg (LOG_DBG, LOG_MAIN, "new tab: main-mm");
+      logMsg (LOG_DBG, LOG_INFO, "new tab: main-mm");
       manageSetDisplayPerSelection (manage, id);
       break;
     }
     case MANAGE_TAB_MAIN_PL: {
-      logMsg (LOG_DBG, LOG_MAIN, "new tab: main-pl");
+      logMsg (LOG_DBG, LOG_INFO, "new tab: main-pl");
       managePlaylistLoadCheck (manage->managepl);
       manage->currmenu = managePlaylistMenu (manage->managepl, manage->wcont [MANAGE_W_MENUBAR]);
       break;
     }
     case MANAGE_TAB_MAIN_SEQ: {
-      logMsg (LOG_DBG, LOG_MAIN, "new tab: main-seq");
+      logMsg (LOG_DBG, LOG_INFO, "new tab: main-seq");
       manageSequenceLoadCheck (manage->manageseq);
       manage->currmenu = manageSequenceMenu (manage->manageseq, manage->wcont [MANAGE_W_MENUBAR]);
       break;
@@ -3450,7 +3450,7 @@ manageSonglistLoadCheck (manageui_t *manage)
   name = uimusicqGetSonglistName (manage->slmusicq);
 
   if (! songlistExists (name)) {
-    logMsg (LOG_DBG, LOG_MAIN, "no songlist %s", name);
+    logMsg (LOG_DBG, LOG_INFO, "no songlist %s", name);
     /* make sure no save happens */
     dataFree (manage->sloldname);
     manage->sloldname = NULL;

@@ -46,7 +46,7 @@ main (int argc, char *argv [])
   int         grc = 0;
   int         argcount = 0;
   dbidx_t     dbidx [DB_MAX];
-  loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN;
+  loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO;
   bool        loglevelset = false;
 
   static struct option bdj_options [] = {

@@ -336,7 +336,7 @@ dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_STOP_REQ: {
-          logMsg (LOG_DBG, LOG_MAIN, "stop request received");
+          logMsg (LOG_DBG, LOG_INFO, "stop request received");
           dbupdate->state = DB_UPD_FINISH;
           dbupdate->stoprequest = true;
           break;

@@ -101,7 +101,7 @@ main (int argc, char *argv [])
   bdjoptInit ();
   tagdefInit ();
   audiotagInit ();
-  logStartAppend ("bdj4tags", "tags", LOG_DBUPDATE | LOG_IMPORTANT | LOG_BASIC | LOG_MAIN);
+  logStartAppend ("bdj4tags", "tags", LOG_DBUPDATE | LOG_IMPORTANT | LOG_BASIC | LOG_INFO);
 
   if (clbdj3tags) {
     bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, clbdj3tags);

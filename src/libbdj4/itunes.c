@@ -312,7 +312,7 @@ itunesParse (itunes_t *itunes)
   time_t              xmlts;
 
   if (! itunesConfigured ()) {
-    logMsg (LOG_DBG, LOG_MAIN, "itunesParse: itunes not configured");
+    logMsg (LOG_DBG, LOG_INFO, "itunesParse: itunes not configured");
     return false;
   }
 
@@ -326,14 +326,14 @@ itunesParse (itunes_t *itunes)
 
   doc = xmlParseFile (fn);
   if (doc == NULL)  {
-    logMsg (LOG_DBG, LOG_MAIN, "itunesParse: unable to parse %s", fn);
+    logMsg (LOG_DBG, LOG_INFO, "itunesParse: unable to parse %s", fn);
     xmlCleanupParser ();
     return false;
   }
 
   xpathCtx = xmlXPathNewContext (doc);
   if (xpathCtx == NULL)  {
-    logMsg (LOG_DBG, LOG_MAIN, "itunesParse: unable to create xpath context");
+    logMsg (LOG_DBG, LOG_INFO, "itunesParse: unable to create xpath context");
     xmlFreeDoc (doc);
     xmlCleanupParser ();
     return false;

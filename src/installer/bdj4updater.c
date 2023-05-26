@@ -206,8 +206,8 @@ main (int argc, char *argv [])
 
   flags = BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
   bdj4startup (argc, argv, NULL, "updt", ROUTE_NONE, &flags);
-  logSetLevel (LOG_INSTALL, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN, "updt");
-  logSetLevel (LOG_DBG, LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST, "updt");
+  logSetLevel (LOG_INSTALL, LOG_IMPORTANT | LOG_BASIC | LOG_INFO, "updt");
+  logSetLevel (LOG_DBG, LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST, "updt");
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "=== updater started");
 
   pathbldMakePath (tbuff, sizeof (tbuff),
@@ -238,7 +238,7 @@ main (int argc, char *argv [])
       VOLREG_BDJ3_EXT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_CONFIG);
   fileopDelete (tbuff);
 
-  logMsg (LOG_INSTALL, LOG_MAIN, "cleaned volreg/flag");
+  logMsg (LOG_INSTALL, LOG_INFO, "cleaned volreg/flag");
 
   /* always figure out where the home music dir is */
   /* this is used on new intalls to set the music dir */
@@ -297,7 +297,7 @@ main (int argc, char *argv [])
   }
   pathNormalizePath (homemusicdir, sizeof (homemusicdir));
 
-  logMsg (LOG_INSTALL, LOG_MAIN, "homemusicdir: %s", homemusicdir);
+  logMsg (LOG_INSTALL, LOG_INFO, "homemusicdir: %s", homemusicdir);
 
   for (int i = UPD_FIRST; i < UPD_MAX; ++i) {
     statusflags [i] = updaterGetStatus (updlist, i);
@@ -373,7 +373,7 @@ main (int argc, char *argv [])
       }
     }
 
-    logMsg (LOG_INSTALL, LOG_MAIN, "finish new install");
+    logMsg (LOG_INSTALL, LOG_INFO, "finish new install");
   }
 
   /* always check and see if itunes exists, unless a conversion was run */
@@ -454,11 +454,11 @@ main (int argc, char *argv [])
 
   /* clean up any old files and directories */
 
-  logMsg (LOG_INSTALL, LOG_MAIN, "start clean");
+  logMsg (LOG_INSTALL, LOG_INFO, "start clean");
 
   updaterCleanFiles ();
 
-  logMsg (LOG_INSTALL, LOG_MAIN, "end clean");
+  logMsg (LOG_INSTALL, LOG_INFO, "end clean");
 
   /* datafile updates */
 
@@ -473,7 +473,9 @@ main (int argc, char *argv [])
   {
     /* 4.2.0 2023-3-5 autoselection.txt */
     /* updated values (version 3) */
-    updaterCopyVersionCheck (AUTOSEL_FN, BDJ4_CONFIG_EXT, DFTYPE_KEY_VAL, 3);
+    /* 4.3.2.4 2023-5-26 */
+    /* added windowed values (version 4) */
+    updaterCopyVersionCheck (AUTOSEL_FN, BDJ4_CONFIG_EXT, DFTYPE_KEY_VAL, 4);
   }
 
   {
@@ -520,7 +522,7 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  logMsg (LOG_INSTALL, LOG_MAIN, "loaded data files A");
+  logMsg (LOG_INSTALL, LOG_INFO, "loaded data files A");
 
   /* 4.3.2.4 */
   /* this requires that the data files be loaded */
@@ -534,7 +536,7 @@ main (int argc, char *argv [])
     char        tbuff [MAXPATHLEN];
     bool        keepold = false;
 
-    logMsg (LOG_INSTALL, LOG_MAIN, "-- 4.3.2.4 : update dance mpm");
+    logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : update dance mpm");
 
     /* need a copy of the new dances.txt file */
     snprintf (from, sizeof (from), "%s%s", DANCE_FN, BDJ4_CONFIG_EXT);
@@ -606,7 +608,7 @@ main (int argc, char *argv [])
     danceFree (ndances);
     fileopDelete (tbuff);
     nlistSetNum (updlist, UPD_FIX_DANCE_MPM, UPD_COMPLETE);
-    logMsg (LOG_INSTALL, LOG_MAIN, "-- 4.3.2.4 : update dance mpm complete");
+    logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : update dance mpm complete");
   }
 
   /* now re-load the data files */
@@ -619,7 +621,7 @@ main (int argc, char *argv [])
     exit (1);
   }
 
-  logMsg (LOG_INSTALL, LOG_MAIN, "loaded data files B");
+  logMsg (LOG_INSTALL, LOG_INFO, "loaded data files B");
 
   /* playlist updates */
 
@@ -627,20 +629,21 @@ main (int argc, char *argv [])
     slist_t         *pllist;
     slistidx_t      pliteridx;
     const char      *plnm;
+    dance_t         *dances = NULL;
+
+    dances = bdjvarsdfGet (BDJVDF_DANCES);
 
     pllist = playlistGetPlaylistList (PL_LIST_ALL, NULL);
     slistStartIterator (pllist, &pliteridx);
     while ((plnm = slistIterateKey (pllist, &pliteridx)) != NULL) {
       if (statusflags [UPD_FIX_PL_MPM] == UPD_NOT_DONE) {
         playlist_t    *pl;
-        dance_t       *dances;
         ilistidx_t    iteridx;
         ilistidx_t    didx;
         bool          doplsave = false;
 
         pl = playlistLoad (plnm, NULL);
 
-        dances = bdjvarsdfGet (BDJVDF_DANCES);
         danceStartIterator (dances, &iteridx);
         while ((didx = danceIterate (dances, &iteridx)) >= 0) {
           int     tval;
@@ -660,14 +663,14 @@ main (int argc, char *argv [])
         }
 
         if (doplsave) {
-          logMsg (LOG_INSTALL, LOG_MAIN, "-- 4.3.2.4 : update pl %s", plnm);
+          logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : update pl %s", plnm);
           playlistSave (pl, NULL);
         }
       }
     }
 
     if (statusflags [UPD_FIX_PL_MPM] == UPD_NOT_DONE) {
-      logMsg (LOG_INSTALL, LOG_MAIN, "-- 4.3.2.4 : update pl mpm complete");
+      logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : update pl mpm complete");
       nlistSetNum (updlist, UPD_FIX_PL_MPM, UPD_COMPLETE);
     }
   }
@@ -690,7 +693,7 @@ main (int argc, char *argv [])
       bdjoptGetNum (OPT_G_WRITETAGS) != WRITE_TAGS_NONE &&
       bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) == false;
   if (processflags [UPD_FIX_AF_TAGS]) {
-    logMsg (LOG_INSTALL, LOG_MAIN, "-- fix af tags");
+    logMsg (LOG_INSTALL, LOG_INFO, "-- fix af tags");
     processaf = true;
   } else {
     nlistSetNum (updlist, UPD_FIX_AF_TAGS, UPD_SKIP);
@@ -700,7 +703,7 @@ main (int argc, char *argv [])
       statusflags [UPD_FIX_AF_MPM] == UPD_NOT_DONE &&
       bdjoptGetNum (OPT_G_WRITETAGS) == WRITE_TAGS_ALL;
   if (processflags [UPD_FIX_AF_MPM]) {
-    logMsg (LOG_INSTALL, LOG_MAIN, "-- 4.3.2.4 : fix af mpm");
+    logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : fix af mpm");
     processaf = true;
   } else {
     nlistSetNum (updlist, UPD_FIX_AF_MPM, UPD_SKIP);
@@ -732,8 +735,11 @@ main (int argc, char *argv [])
     slistidx_t  dbiteridx;
     song_t      *song;
     dbidx_t     dbidx;
+    dance_t     *dances;
 
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "processing audio files");
+    dances = bdjvarsdfGet (BDJVDF_DANCES);
+
     dbStartIterator (musicdb, &dbiteridx);
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
       char        *ffn;
@@ -763,10 +769,14 @@ main (int argc, char *argv [])
 
       if (processflags [UPD_FIX_AF_MPM]) {
         int     obpmval;
+        int     didx;
+        int     thighmpm;
 
         obpmval = songGetNum (song, TAG_BPM);
+        didx = songGetNum (song, TAG_DANCE);
+        thighmpm = danceGetNum (dances, didx, DANCE_MPM_HIGH);
         newbpmval = obpmval;
-        if (obpmval > 70) {
+        if (didx >= 0 && thighmpm > 0 && obpmval > thighmpm + 10) {
           newbpmval = updaterGetMPMValue (song);
           if (newbpmval > 0) {
             process = true;
@@ -1104,7 +1114,7 @@ updaterCopyIfNotPresent (const char *fn, const char *ext)
   if (! fileopFileExists (tbuff)) {
     snprintf (tbuff, sizeof (tbuff), "%s%s", fn, ext);
     templateFileCopy (tbuff, tbuff);
-    logMsg (LOG_INSTALL, LOG_MAIN, "%s%s installed", fn, ext);
+    logMsg (LOG_INSTALL, LOG_INFO, "%s%s installed", fn, ext);
   }
 }
 
@@ -1119,13 +1129,13 @@ updaterCopyVersionCheck (const char *fn, const char *ext,
   pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
   tmpdf = datafileAllocParse (fn, dftype, tbuff, NULL, 0);
   version = datafileDistVersion (tmpdf);
-  logMsg (LOG_INSTALL, LOG_MAIN, "version check %s : %d < %d", fn, version, currvers);
+  logMsg (LOG_INSTALL, LOG_INFO, "version check %s : %d < %d", fn, version, currvers);
   if (version < currvers) {
     char  tmp [MAXPATHLEN];
 
     snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
     templateFileCopy (tmp, tmp);
-    logMsg (LOG_INSTALL, LOG_MAIN, "%s updated", fn);
+    logMsg (LOG_INSTALL, LOG_INFO, "%s updated", fn);
   }
   datafileFree (tmpdf);
 }
@@ -1152,11 +1162,11 @@ updaterCopyHTMLVersionCheck (const char *fn, const char *ext,
     version = 1;
   }
 
-  logMsg (LOG_INSTALL, LOG_MAIN, "version check %s : %d < %d", fn, version, currvers);
+  logMsg (LOG_INSTALL, LOG_INFO, "version check %s : %d < %d", fn, version, currvers);
   if (version < currvers) {
     snprintf (tmp, sizeof (tmp), "%s%s", fn, ext);
     templateHttpCopy (tmp, tmp);
-    logMsg (LOG_INSTALL, LOG_MAIN, "%s updated", fn);
+    logMsg (LOG_INSTALL, LOG_INFO, "%s updated", fn);
   }
 }
 

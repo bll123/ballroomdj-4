@@ -338,7 +338,7 @@ main (int argc, char *argv[])
     installer.wcont [i] = NULL;
   }
 
-  installer.loglevel = LOG_IMPORTANT | LOG_BASIC | LOG_MAIN | LOG_REDIR_INST;
+  installer.loglevel = LOG_IMPORTANT | LOG_BASIC | LOG_INFO | LOG_REDIR_INST;
   (void) ! getcwd (installer.currdir, sizeof (installer.currdir));
   installer.webclient = NULL;
   strcpy (installer.vlcversion, "");

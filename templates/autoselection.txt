@@ -1,7 +1,8 @@
 # autoselection
 # 2023-3-5
-# version 4 2023-5-25 added windowed method settings
-#         3 2023-3-5 updated tagmatch, typematch values
+# version 4
+#    v4 2023-5-25 added windowed method settings
+#    v3 2023-3-5 updated tagmatch, typematch values
 version
 ..4
 #
@@ -53,12 +54,12 @@ TAGMATCH
 TAGMATCHEXP
 ..1300
 #
-## method: expected-count
-#
 # f(x) = - (3.0 ^ (dist - hist-distance) + 1.0)
 # adjust by very small increments (3.0)
 PRIORVAR
 ..3000
+#
+## method: expected-count
 #
 # f(x) = 3.0 ^ (1.1 * dist - expected-distance)
 # adjust by very small increments (3.0) (1.1)
@@ -72,6 +73,18 @@ EXPECTEDHIGH
 ..3000
 #
 ## method: windowed
+#
+#
+# diff <= 1.0 (0.5)
+WINDIFFA
+..500
+# diff <= 2.0 (0.35)
+WINDIFFB
+..350
+# diff <= 3.0 (0.1)
+WINDIFFC
+..100
+#
 #
 # song selection
 #

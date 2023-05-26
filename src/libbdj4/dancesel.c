@@ -65,6 +65,9 @@ typedef struct dancesel {
   double        expectedVar;
   double        expectedMult;
   double        expectedHigh;
+  double        windowedDiffA;
+  double        windowedDiffB;
+  double        windowedDiffC;
 } dancesel_t;
 
 static void   danceselPlayedFree (void *data);
@@ -101,6 +104,7 @@ danceselAlloc (nlist_t *countList,
   dancesel = mdmalloc (sizeof (dancesel_t));
 
   dancesel->method = bdjoptGetNum (OPT_G_DANCESEL_METHOD);
+  logMsg (LOG_DBG, LOG_INFO, "dancesel-method: %d", dancesel->method);
   dancesel->dances = bdjvarsdfGet (BDJVDF_DANCES);
   dancesel->autosel = bdjvarsdfGet (BDJVDF_AUTO_SEL);
 
@@ -134,6 +138,9 @@ danceselAlloc (nlist_t *countList,
   dancesel->expectedVar = autoselGetDouble (dancesel->autosel, AUTOSEL_EXPECTED_VAR);
   dancesel->expectedMult = autoselGetDouble (dancesel->autosel, AUTOSEL_EXPECTED_MULT);
   dancesel->expectedHigh = autoselGetDouble (dancesel->autosel, AUTOSEL_EXPECTED_HIGH);
+  dancesel->windowedDiffA = autoselGetDouble (dancesel->autosel, AUTOSEL_WINDOWED_DIFF_A);
+  dancesel->windowedDiffB = autoselGetDouble (dancesel->autosel, AUTOSEL_WINDOWED_DIFF_B);
+  dancesel->windowedDiffC = autoselGetDouble (dancesel->autosel, AUTOSEL_WINDOWED_DIFF_C);
 
   logMsg (LOG_DBG, LOG_DANCESEL, "countlist: %d", nlistGetCount (countList));
   if (DANCESEL_DEBUG) {
@@ -381,15 +388,14 @@ danceselSelect (dancesel_t *dancesel, ilistidx_t queueCount)
       } else {
         if (diff > 0.0) {
           tbase = 0.0;
-// ### FIX replace with logarithm and changable value.
           if (diff <= 1.0) {
-            tbase = 0.5;
+            tbase = dancesel->windowedDiffA;
           }
           if (diff <= 2.0) {
-            tbase = 0.35;
+            tbase = dancesel->windowedDiffB;
           }
           if (diff < 3.0) {
-            tbase = 0.1;
+            tbase = dancesel->windowedDiffC;
           }
         }
       }

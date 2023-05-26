@@ -101,7 +101,7 @@ main (int argc, char *argv [])
   char        tbuff [MAXPATHLEN];
   musicdb_t   *db;
   slist_t     *empty = NULL;
-  loglevel_t  loglevel = LOG_IMPORTANT | LOG_MAIN | LOG_LIST;
+  loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO | LOG_LIST;
   bool        loglevelset = false;
 
   static struct option bdj_options [] = {

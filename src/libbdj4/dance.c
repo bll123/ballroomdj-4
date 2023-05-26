@@ -150,51 +150,75 @@ danceIterate (dance_t *dances, ilistidx_t *iteridx)
 }
 
 ssize_t
-danceGetCount (dance_t *dance)
+danceGetCount (dance_t *dances)
 {
-  return ilistGetCount (dance->dances);
+  if (dances == NULL || dances->dances == NULL) {
+    return 0;
+  }
+  return ilistGetCount (dances->dances);
 }
 
 char *
-danceGetStr (dance_t *dance, ilistidx_t dkey, ilistidx_t idx)
+danceGetStr (dance_t *dances, ilistidx_t dkey, ilistidx_t idx)
 {
-  return ilistGetStr (dance->dances, dkey, idx);
+  if (dances == NULL || dances->dances == NULL) {
+    return NULL;
+  }
+  return ilistGetStr (dances->dances, dkey, idx);
 }
 
 slist_t *
-danceGetList (dance_t *dance, ilistidx_t dkey, ilistidx_t idx)
+danceGetList (dance_t *dances, ilistidx_t dkey, ilistidx_t idx)
 {
-  return ilistGetList (dance->dances, dkey, idx);
+  if (dances == NULL || dances->dances == NULL) {
+    return NULL;
+  }
+  return ilistGetList (dances->dances, dkey, idx);
 }
 
 ssize_t
-danceGetNum (dance_t *dance, ilistidx_t dkey, ilistidx_t idx)
+danceGetNum (dance_t *dances, ilistidx_t dkey, ilistidx_t idx)
 {
-  return ilistGetNum (dance->dances, dkey, idx);
+  if (dances == NULL || dances->dances == NULL) {
+    return -1;
+  }
+  return ilistGetNum (dances->dances, dkey, idx);
 }
 
 void
 danceSetStr (dance_t *dances, ilistidx_t dkey, ilistidx_t idx, const char *str)
 {
+  if (dances == NULL || dances->dances == NULL) {
+    return;
+  }
   ilistSetStr (dances->dances, dkey, idx, str);
 }
 
 void
 danceSetNum (dance_t *dances, ilistidx_t dkey, ilistidx_t idx, ssize_t value)
 {
+  if (dances == NULL || dances->dances == NULL) {
+    return;
+  }
   ilistSetNum (dances->dances, dkey, idx, value);
 }
 
 void
 danceSetList (dance_t *dances, ilistidx_t dkey, ilistidx_t idx, slist_t *list)
 {
+  if (dances == NULL || dances->dances == NULL) {
+    return;
+  }
   ilistSetList (dances->dances, dkey, idx, list);
 }
 
 slist_t *
-danceGetDanceList (dance_t *dance)
+danceGetDanceList (dance_t *dances)
 {
-  return dance->danceList;
+  if (dances == NULL || dances->dances == NULL) {
+    return NULL;
+  }
+  return dances->danceList;
 }
 
 void
