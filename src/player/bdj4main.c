@@ -2820,6 +2820,7 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
   dance_t       *dances;
   int           totcount;
   int           currlen;
+  int           failcount = 0;
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   mqidx = mainMusicqIndexParse (mainData, args);
@@ -2862,15 +2863,21 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
   songsel = songselAlloc (mainData->musicdb, danceCounts, songList, NULL);
 
   currlen = 0;
-  while (currlen < totcount) {
+  while (currlen < totcount && failcount < 100) {
     /* as there is always an empty head on the music queue, */
     /* the prior-index must point at currlen + 1 */
     danceIdx = danceselSelect (dancesel, currlen + 1);
+    if (danceIdx < 0) {
+      /* selection failed */
+      ++failcount;
+      continue;
+    }
 
     /* check and see if this dance is used up */
-    if (nlistGetNum (danceCounts, danceIdx) == 0) {
+    if (nlistGetNum (danceCounts, danceIdx) <= 0) {
       logMsg (LOG_DBG, LOG_INFO, "mix: dance %d/%s at 0", danceIdx,
           danceGetStr (dances, danceIdx, DANCE_DANCE));
+      ++failcount;
       continue;
     }
 
@@ -2904,7 +2911,11 @@ mainMusicQueueMix (maindata_t *mainData, char *args)
 
   mainData->musicqChanged [mqidx] = MAIN_CHG_START;
   mainData->marqueeChanged = true;
-  connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_PROCESSING_FINISH, NULL);
+  if (failcount >= 100) {
+    connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_PROCESSING_FAIL, NULL);
+  } else {
+    connSendMessage (mainData->conn, ROUTE_MANAGEUI, MSG_PROCESSING_FINISH, NULL);
+  }
 }
 
 static void

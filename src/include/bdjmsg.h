@@ -130,6 +130,7 @@ typedef enum {
                             // request complete queue information from main
   MSG_MAIN_QUEUE_INFO,      //
   MSG_PROCESSING_FINISH,    // essentially asks manageui to clear the status
+  MSG_PROCESSING_FAIL,      //
 
   /* to/from starterui */
   MSG_START_MAIN,           // arg: true for --nomarquee

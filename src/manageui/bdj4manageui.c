@@ -1402,6 +1402,10 @@ manageProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           manageRePopulateData (manage);
           break;
         }
+        case MSG_PROCESSING_FAIL: {
+          uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], _("Action failed"));
+          break;
+        }
         case MSG_PROCESSING_FINISH: {
           uiLabelSetText (manage->wcont [MANAGE_W_STATUS_MSG], "");
           break;
