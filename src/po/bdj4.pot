@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-26 08:16-0700\n"
+"POT-Creation-Date: 2023-05-26 11:41-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -193,10 +193,6 @@ msgstr ""
 
 #. CONTEXT: configuration: dance time signature
 msgid "4/4"
-msgstr ""
-
-#. CONTEXT: configuration: dance time signature
-msgid "4/8"
 msgstr ""
 
 #. CONTEXT: configuration: marquee: the accent color used for the marquee

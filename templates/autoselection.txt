@@ -35,31 +35,31 @@ BEGINFAST
 BOTHFAST
 ..1000000
 #
-# if the dance has a tag that matches the previous dance (20.0)
+# if the dance has a tag that matches the previous dance (40.0)
 PREVTAGMATCH
-..20000
-#
-# if the dance's type matches the previous dance (40.0)
-TYPEMATCH
 ..40000
+#
+# if the dance's type matches the previous dance (50.0)
+TYPEMATCH
+..50000
 #
 # how many songs to search back in history (5)
 HISTDISTANCE
 ..5
 #
-# 7.0 / dist ^ 1.3
-# if the dance has a tag that matches a prior dance (10.0) (1.3)
+# 20.0 / dist ^ 1.3
+# if the dance has a tag that matches a prior dance (20.0) (1.3)
 TAGMATCH
-..10000
-TAGMATCHEXP
+..20000
+PRIOREXP
 ..1300
+#
+## method: expected-count
 #
 # f(x) = - (3.0 ^ (dist - hist-distance) + 1.0)
 # adjust by very small increments (3.0)
 PRIORVAR
 ..3000
-#
-## method: expected-count
 #
 # f(x) = 3.0 ^ (1.1 * dist - expected-distance)
 # adjust by very small increments (3.0) (1.1)
@@ -74,13 +74,13 @@ EXPECTEDHIGH
 #
 ## method: windowed
 #
-#
+# base percentage chance when the window is almost open again
 # diff <= 1.0 (0.5)
 WINDIFFA
 ..500
-# diff <= 2.0 (0.35)
+# diff <= 2.0 (0.25)
 WINDIFFB
-..350
+..250
 # diff <= 3.0 (0.1)
 WINDIFFC
 ..100

@@ -22,7 +22,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..smooth
+..club
 KEY
 ..1
 ANNOUNCE
@@ -40,7 +40,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..latin
+..club
 KEY
 ..2
 ANNOUNCE
@@ -112,7 +112,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..smooth
+..standard
 KEY
 ..6
 ANNOUNCE
@@ -238,7 +238,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..smooth
+..standard
 KEY
 ..13
 ANNOUNCE
@@ -310,7 +310,7 @@ TAGS
 TIMESIG
 ..4/4
 TYPE
-..smooth
+..standard
 KEY
 ..17
 ANNOUNCE
@@ -328,7 +328,7 @@ TAGS
 TIMESIG
 ..3/4
 TYPE
-..smooth
+..standard
 KEY
 ..18
 ANNOUNCE
@@ -346,7 +346,7 @@ TAGS
 TIMESIG
 ..3/4
 TYPE
-..smooth
+..standard
 KEY
 ..19
 ANNOUNCE

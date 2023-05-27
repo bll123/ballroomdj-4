@@ -22,7 +22,7 @@ typedef struct autosel {
   nlist_t         *autosel;
 } autosel_t;
 
-static datafilekey_t autoseldfkeys [AUTOSEL_KEY_MAX] = {
+static datafilekey_t autoseldfkeys [] = {
   { "BEGINCOUNT",     AUTOSEL_BEG_COUNT,        VALUE_NUM,    NULL, DF_NORM },
   { "BEGINFAST",      AUTOSEL_BEG_FAST,         VALUE_DOUBLE, NULL, DF_NORM },
   { "BOTHFAST",       AUTOSEL_BOTHFAST,         VALUE_DOUBLE, NULL, DF_NORM },
@@ -34,14 +34,18 @@ static datafilekey_t autoseldfkeys [AUTOSEL_KEY_MAX] = {
   { "LEVELWEIGHT",    AUTOSEL_LEVEL_WEIGHT,     VALUE_DOUBLE, NULL, DF_NORM },
   { "LIMIT",          AUTOSEL_LIMIT,            VALUE_DOUBLE, NULL, DF_NORM },
   { "PREVTAGMATCH",   AUTOSEL_PREV_TAGMATCH,    VALUE_DOUBLE, NULL, DF_NORM },
+  { "PRIOREXP",       AUTOSEL_PRIOR_EXP,        VALUE_DOUBLE, NULL, DF_NORM },
   { "PRIORVAR",       AUTOSEL_PRIOR_VAR,        VALUE_DOUBLE, NULL, DF_NORM },
   { "RATINGWEIGHT",   AUTOSEL_RATING_WEIGHT,    VALUE_DOUBLE, NULL, DF_NORM },
   { "TAGMATCH",       AUTOSEL_TAGMATCH,         VALUE_DOUBLE, NULL, DF_NORM },
-  { "TAGMATCHEXP",    AUTOSEL_TAGMATCH_EXP,     VALUE_DOUBLE, NULL, DF_NORM },
+  { "TAGMATCHEXP",    AUTOSEL_PRIOR_EXP,        VALUE_DOUBLE, NULL, DF_NO_WRITE },
   { "TYPEMATCH",      AUTOSEL_TYPE_MATCH,       VALUE_DOUBLE, NULL, DF_NORM },
   { "WINDIFFA",       AUTOSEL_WINDOWED_DIFF_A,  VALUE_DOUBLE, NULL, DF_NORM },
   { "WINDIFFB",       AUTOSEL_WINDOWED_DIFF_B,  VALUE_DOUBLE, NULL, DF_NORM },
   { "WINDIFFC",       AUTOSEL_WINDOWED_DIFF_C,  VALUE_DOUBLE, NULL, DF_NORM },
+};
+enum {
+  autoseldfcount = sizeof (autoseldfkeys) / sizeof (datafilekey_t),
 };
 
 autosel_t *
@@ -60,7 +64,7 @@ autoselAlloc (void)
   autosel = mdmalloc (sizeof (autosel_t));
 
   autosel->df = datafileAllocParse ("autosel", DFTYPE_KEY_VAL, fname,
-      autoseldfkeys, AUTOSEL_KEY_MAX);
+      autoseldfkeys, autoseldfcount);
   autosel->autosel = datafileGetList (autosel->df);
   return autosel;
 }

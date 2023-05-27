@@ -197,10 +197,6 @@ msgstr "3/4"
 msgid "4/4"
 msgstr "4/4"
 
-#. CONTEXT: configuration: dance time signature
-msgid "4/8"
-msgstr "4/8"
-
 #. CONTEXT: configuration: marquee: the accent color used for the marquee
 #. CONTEXT: configuration: the accent color to use for the user interface
 msgid "Accent Colour"

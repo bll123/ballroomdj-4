@@ -534,7 +534,6 @@ main (int argc, char *argv [])
     ilistidx_t  didx, ndidx;
     char        from [MAXPATHLEN];
     char        tbuff [MAXPATHLEN];
-    bool        keepold = false;
 
     logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : update dance mpm");
 
@@ -552,13 +551,14 @@ main (int argc, char *argv [])
     odances = bdjvarsdfGet (BDJVDF_DANCES);
     danceStartIterator (odances, &oiteridx);
     while ((didx = danceIterate (odances, &oiteridx)) >= 0) {
-      int   olowmpm, ohighmpm, otimesig;
-      int   nlowmpm, nhighmpm, ntimesig;
+      int   olowmpm, ohighmpm, otimesig, otype;
+      int   nlowmpm, nhighmpm, ntimesig, ntype;
 
       if (origbpmtype == BPM_BPM) {
         olowmpm = danceGetNum (odances, didx, DANCE_MPM_LOW);
         ohighmpm = danceGetNum (odances, didx, DANCE_MPM_HIGH);
         otimesig = danceGetNum (odances, didx, DANCE_TIMESIG);
+        otype = danceGetNum (odances, didx, DANCE_TYPE);
 
         ndidx = slistGetNum (ndancelist, danceGetStr (odances, didx, DANCE_DANCE));
         if (ndidx >= 0) {
@@ -567,11 +567,14 @@ main (int argc, char *argv [])
           nhighmpm = danceGetNum (ndances, ndidx, DANCE_MPM_HIGH);
           /* time signature was changed for tango, argentine tango and merengue */
           ntimesig = danceGetNum (ndances, ndidx, DANCE_TIMESIG);
+          /* type was fixed for en_US, changed for some dances */
+          ntype = danceGetNum (ndances, ndidx, DANCE_TYPE);
         } else {
           /* otherwise convert the data that is present */
           nlowmpm = olowmpm;
           nhighmpm = ohighmpm;
           ntimesig = otimesig;
+          ntype = otype;
           /* dance does not exist, convert the BPM value */
           nhighmpm = danceConvertBPMtoMPM (didx, nhighmpm, DANCE_FORCE_CONV);
           nlowmpm = danceConvertBPMtoMPM (didx, nlowmpm, DANCE_FORCE_CONV);
@@ -579,23 +582,22 @@ main (int argc, char *argv [])
 
         /* this is a bit difficult if there is a user-entered dance */
         /* and no prior known dances have been processed */
-        if (keepold || (ndidx >= 0 && ohighmpm < nhighmpm + 10)) {
+        if (ohighmpm > 0 && ndidx >= 0 && ohighmpm < nhighmpm + 10) {
           /* handle case where label is bpm, values are mpm */
           /* keep the user's settings */
           nlowmpm = olowmpm;
           nhighmpm = ohighmpm;
           ntimesig = otimesig;
-          statusflags [UPD_FIX_PL_MPM] = UPD_SKIP;
-          statusflags [UPD_FIX_DB_MPM] = UPD_SKIP;
-          statusflags [UPD_FIX_AF_MPM] = UPD_SKIP;
-          keepold = true;
+          ntype = otype;
         }
 
         danceSetNum (odances, didx, DANCE_MPM_LOW, nlowmpm);
         danceSetNum (odances, didx, DANCE_MPM_HIGH, nhighmpm);
         danceSetNum (odances, didx, DANCE_TIMESIG, ntimesig);
+        danceSetNum (odances, didx, DANCE_TYPE, ntype);
       } else {
         /* already set to mpm */
+fprintf (stderr, "already mpm\n");
         statusflags [UPD_FIX_PL_MPM] = UPD_SKIP;
         statusflags [UPD_FIX_DB_MPM] = UPD_SKIP;
         statusflags [UPD_FIX_AF_MPM] = UPD_SKIP;
@@ -696,7 +698,10 @@ main (int argc, char *argv [])
     logMsg (LOG_INSTALL, LOG_INFO, "-- fix af tags");
     processaf = true;
   } else {
-    nlistSetNum (updlist, UPD_FIX_AF_TAGS, UPD_SKIP);
+    if (strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") != 0 &&
+        bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) == false) {
+      nlistSetNum (updlist, UPD_FIX_AF_TAGS, UPD_SKIP);
+    }
   }
 
   processflags [UPD_FIX_AF_MPM] =

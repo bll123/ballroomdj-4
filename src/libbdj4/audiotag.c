@@ -240,7 +240,8 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   if ((rewrite & AF_REWRITE_MB) == AF_REWRITE_MB) {
     newvalue = slistGetStr (newtaglist, tagdefs [TAG_RECORDING_ID].tag);
     value = slistGetStr (tagdata, tagdefs [TAG_RECORDING_ID].tag);
-    if ((newvalue == NULL || ! *newvalue) && ! *value) {
+fprintf (stderr, "newvalue: %s value: %s\n", newvalue, value);
+    if ((newvalue == NULL || ! *newvalue) && (value != NULL)) {
       slistSetNum (dellist, tag, 0);
     }
   }
