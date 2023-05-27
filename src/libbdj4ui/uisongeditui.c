@@ -927,7 +927,8 @@ uisongeditCheckChanged (uisongedit_t *uisongedit)
         case ET_SPINBOX: {
           if (val < 0) { val = 0; }
           nval = uiSpinboxGetValue (seint->items [count].uiwidgetp);
-          if (count == seint->bpmidx) {
+          if (nval < 0) { nval = 0; }
+          if (count == seint->bpmidx && nval > 0) {
             nval = songutilNormalizeBPM (nval, seint->lastspeed);
             nval = danceConvertBPMtoMPM (seint->currdanceidx, nval, DANCE_NO_FORCE);
           }
@@ -1488,12 +1489,14 @@ uisongeditSave (void *udata, nlist_t *chglist)
       if (tagkey == TAG_BPM) {
         int     speed;
 
-        if (nval == 0) {
+        if (nval <= 0) {
           nval = LIST_VALUE_INVALID;
         }
         speed = songGetNum (seint->song, TAG_SPEEDADJUSTMENT);
-        nval = songutilNormalizeBPM (nval, speed);
-        nval = danceConvertBPMtoMPM (seint->currdanceidx, nval, DANCE_NO_FORCE);
+        if (nval > 0) {
+          nval = songutilNormalizeBPM (nval, speed);
+          nval = danceConvertBPMtoMPM (seint->currdanceidx, nval, DANCE_NO_FORCE);
+        }
       }
       songSetNum (seint->song, tagkey, nval);
     }
@@ -1689,7 +1692,7 @@ uisongeditGetChangedData (uisongedit_t *uisongedit)
 
     if (chkvalue == UISE_CHK_NUM) {
       if (tagkey == TAG_BPM) {
-        if (nval == 0) {
+        if (nval <= 0) {
           nval = LIST_VALUE_INVALID;
         }
       }

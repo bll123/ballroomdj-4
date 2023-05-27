@@ -597,7 +597,6 @@ main (int argc, char *argv [])
         danceSetNum (odances, didx, DANCE_TYPE, ntype);
       } else {
         /* already set to mpm */
-fprintf (stderr, "already mpm\n");
         statusflags [UPD_FIX_PL_MPM] = UPD_SKIP;
         statusflags [UPD_FIX_DB_MPM] = UPD_SKIP;
         statusflags [UPD_FIX_AF_MPM] = UPD_SKIP;
@@ -781,7 +780,7 @@ fprintf (stderr, "already mpm\n");
         didx = songGetNum (song, TAG_DANCE);
         thighmpm = danceGetNum (dances, didx, DANCE_MPM_HIGH);
         newbpmval = obpmval;
-        if (didx >= 0 && thighmpm > 0 && obpmval > thighmpm + 10) {
+        if (didx >= 0 && obpmval > 0 && obpmval > thighmpm + 10) {
           newbpmval = updaterGetMPMValue (song);
           if (newbpmval > 0) {
             process = true;
