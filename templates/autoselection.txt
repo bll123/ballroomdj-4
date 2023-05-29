@@ -35,9 +35,9 @@ BEGINFAST
 BOTHFAST
 ..1000000
 #
-# if the dance has a tag that matches the previous dance (40.0)
+# if the dance has a tag that matches the previous dance (80.0)
 PREVTAGMATCH
-..40000
+..80000
 #
 # if the dance's type matches the previous dance (50.0)
 TYPEMATCH
@@ -53,24 +53,6 @@ TAGMATCH
 ..20000
 PRIOREXP
 ..1300
-#
-## method: expected-count
-#
-# f(x) = - (3.0 ^ (dist - hist-distance) + 1.0)
-# adjust by very small increments (3.0)
-PRIORVAR
-..3000
-#
-# f(x) = 3.0 ^ (1.1 * dist - expected-distance)
-# adjust by very small increments (3.0) (1.1)
-EXPECTEDVAR
-..3000
-EXPECTEDMULT
-..1100
-#
-# when a dance appears more often than expected (3.0)
-EXPECTEDHIGH
-..3000
 #
 ## method: windowed
 #

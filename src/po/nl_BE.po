@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
 "POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-05-26\n"
+"PO-Revision-Date: 2023-05-29\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -205,6 +205,9 @@ msgstr "Accentkleur"
 #. CONTEXT: update database: select database update action
 msgid "Action"
 msgstr "Actie"
+
+msgid "Action failed"
+msgstr ""
 
 #. CONTEXT: managementui: menu selection: actions for song editor
 #. CONTEXT: managementui: menu selection: actions for music manager

@@ -35,8 +35,8 @@ typedef enum {
   BPM_MPM,
 } bdjbpm_t;
 
+/* expected-count removed 4.3.2.4 */
 enum {
-  DANCESEL_METHOD_EXPECTED_COUNT,
   DANCESEL_METHOD_WINDOWED,
 };
 

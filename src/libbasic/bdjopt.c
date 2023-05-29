@@ -248,7 +248,7 @@ bdjoptInit (void)
   /* added 4.3.2.4, make sure it has a default */
   if (nlistGetNum (bdjopt->bdjoptList, OPT_G_DANCESEL_METHOD) < 0) {
     nlistSetNum (bdjopt->bdjoptList, OPT_G_DANCESEL_METHOD,
-        DANCESEL_METHOD_EXPECTED_COUNT);
+        DANCESEL_METHOD_WINDOWED);
   }
 }
 
@@ -759,7 +759,7 @@ bdjoptCreateNewConfigs (void)
 static void
 bdjoptConvDanceselMethod (datafileconv_t *conv)
 {
-  int   method = DANCESEL_METHOD_EXPECTED_COUNT;
+  int   method = DANCESEL_METHOD_WINDOWED;
   char  *sval = NULL;
 
   conv->allocated = false;
@@ -769,14 +769,10 @@ bdjoptConvDanceselMethod (datafileconv_t *conv)
     if (strcmp (conv->str, "windowed") == 0) {
       method = DANCESEL_METHOD_WINDOWED;
     }
-    if (strcmp (conv->str, "expectedcount") == 0) {
-      method = DANCESEL_METHOD_EXPECTED_COUNT;
-    }
     conv->num = method;
   } else if (conv->valuetype == VALUE_NUM) {
     conv->valuetype = VALUE_STR;
     switch (conv->num) {
-      case DANCESEL_METHOD_EXPECTED_COUNT: { sval = "expectedcount"; break; }
       case DANCESEL_METHOD_WINDOWED: { sval = "windowed"; break; }
     }
     conv->str = sval;

@@ -4,7 +4,11 @@
 
 <!--
 
-**4.3.2.4 2023-5---**
+**4.3.2.5 2023-5--**
+
+-->
+
+**4.3.2.4 2023-5-29**
 
 * Bug Fixes:
     * Edit Song Lists: Clear please wait message after mix.
@@ -16,8 +20,6 @@
     * Dance Selection: New algorithm: 'windowed'.
 * Internal:
     * Database and audio files always store MPM.
-
--->
 
 **4.3.2.3 2023-5-20**
 

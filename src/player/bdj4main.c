@@ -711,7 +711,8 @@ mainProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
         case MSG_CHK_MAIN_SET_DANCESEL_METHOD: {
           int   method;
 
-          method = DANCESEL_METHOD_EXPECTED_COUNT;
+          /* currently not in use by the test suite */
+          method = DANCESEL_METHOD_WINDOWED;
           if (strcmp (targs, "windowed") == 0) {
             method = DANCESEL_METHOD_WINDOWED;
           }

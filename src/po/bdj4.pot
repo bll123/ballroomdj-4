@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-26 11:41-0700\n"
+"POT-Creation-Date: 2023-05-29 10:14-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -202,6 +202,9 @@ msgstr ""
 
 #. CONTEXT: update database: select database update action
 msgid "Action"
+msgstr ""
+
+msgid "Action failed"
 msgstr ""
 
 #. CONTEXT: managementui: menu selection: actions for song editor

@@ -64,7 +64,7 @@ START_TEST(autosel_get)
   ck_assert_int_eq (val, 5);
 
   dval = autoselGetDouble (autosel, AUTOSEL_PREV_TAGMATCH);
-  ck_assert_float_eq (dval, 40.0);
+  ck_assert_float_eq (dval, 80.0);
   dval = autoselGetDouble (autosel, AUTOSEL_TYPE_MATCH);
   ck_assert_float_eq (dval, 50.0);
   dval = autoselGetDouble (autosel, AUTOSEL_TAGMATCH);
@@ -83,15 +83,6 @@ START_TEST(autosel_get)
   ck_assert_float_eq (dval, 0.1);
   dval += autoselGetDouble (autosel, AUTOSEL_RATING_WEIGHT);
   ck_assert_float_eq (dval, 1.0);
-
-  dval = autoselGetDouble (autosel, AUTOSEL_PRIOR_VAR);
-  ck_assert_float_eq (dval, 3.0);
-  dval = autoselGetDouble (autosel, AUTOSEL_EXPECTED_VAR);
-  ck_assert_float_eq (dval, 3.0);
-  dval = autoselGetDouble (autosel, AUTOSEL_EXPECTED_MULT);
-  ck_assert_float_eq (dval, 1.1);
-  dval = autoselGetDouble (autosel, AUTOSEL_EXPECTED_HIGH);
-  ck_assert_float_eq (dval, 3.0);
 
   dval = autoselGetDouble (autosel, AUTOSEL_WINDOWED_DIFF_A);
   ck_assert_float_eq (dval, 0.5);

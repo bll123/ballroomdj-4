@@ -14,7 +14,7 @@ BPM
 CLOCKDISP
 ..local
 DANCESELMETHOD
-..expectedcount
+..windowed
 DEBUGLVL
 ..27
 LOADDANCEFROMGENRE

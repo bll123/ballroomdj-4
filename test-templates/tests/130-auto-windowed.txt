@@ -3,7 +3,6 @@ section 130 Automatic-Windowed
 # basic automatic playlist test
 # test-auto-a only has waltz, tango, foxtrot
 test 130-10 Basic
-msg main CHK_MAIN_SET_DANCESEL_METHOD windowed
 msg main QUEUE_PLAYLIST 0~test-auto-a
 msg main CMD_PLAY
 resptimeout 2000
@@ -79,13 +78,11 @@ chk currvolume defaultvol
 get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
-msg main CHK_MAIN_SET_DANCESEL_METHOD expectedcount
 end
 
 # automatic playlist test max-play-time
 # test-auto-b only has waltz, tango, foxtrot
 test 130-20 Auto-MaxPlayTime
-msg main CHK_MAIN_SET_DANCESEL_METHOD windowed
 msg main QUEUE_PLAYLIST 0~test-auto-b
 msg main CMD_PLAY
 resptimeout 2000
@@ -177,13 +174,11 @@ chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
 get player CHK_PLAYER_SONG
 chk p-duration 10000
-msg main CHK_MAIN_SET_DANCESEL_METHOD expectedcount
 end
 
 # automatic playlist test max-play-time
 # test-auto-c only has waltz, tango, foxtrot
 test 130-30 Auto-BPM
-msg main CHK_MAIN_SET_DANCESEL_METHOD windowed
 msg main QUEUE_PLAYLIST 0~test-auto-c
 msg main CMD_PLAY
 resptimeout 2000
@@ -267,6 +262,5 @@ get main CHK_MAIN_MUSICQ
 chk mq0len 91
 chk-or dance Waltz Tango Foxtrot
 chk-or bpm 28 -65534
-msg main CHK_MAIN_SET_DANCESEL_METHOD expectedcount
 end
 

@@ -238,10 +238,9 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
 
   /* special case */
   if ((rewrite & AF_REWRITE_MB) == AF_REWRITE_MB) {
-    newvalue = slistGetStr (newtaglist, tagdefs [TAG_RECORDING_ID].tag);
     value = slistGetStr (tagdata, tagdefs [TAG_RECORDING_ID].tag);
-    if ((newvalue == NULL || ! *newvalue) && (value != NULL)) {
-fprintf (stderr, "del rec-id: newvalue: %s value: %s\n", newvalue, value);
+    newvalue = slistGetStr (newtaglist, tagdefs [TAG_RECORDING_ID].tag);
+    if ((newvalue == NULL || ! *newvalue) && value != NULL && *value) {
       slistSetNum (dellist, tag, 0);
     }
   }

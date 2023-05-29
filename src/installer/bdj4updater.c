@@ -445,6 +445,10 @@ main (int argc, char *argv [])
       bdjoptchanged = true;
       nlistSetNum (updlist, UPD_SET_MPM, UPD_COMPLETE);
     }
+
+    /* 4.3.2.4 : change dancesel method to windowed */
+    bdjoptSetNum (OPT_G_DANCESEL_METHOD, DANCESEL_METHOD_WINDOWED);
+    bdjoptchanged = true;
   }
 
   if (bdjoptchanged) {
@@ -765,7 +769,9 @@ main (int argc, char *argv [])
         pi = pathInfo (ffn);
         if (pathInfoExtCheck (pi, ".mp3") ||
             pathInfoExtCheck (pi, ".flac") ||
-            pathInfoExtCheck (pi, ".ogg")) {
+            pathInfoExtCheck (pi, ".ogg") ||
+            pathInfoExtCheck (pi, ".m4a") ||
+            pathInfoExtCheck (pi, ".opus")) {
           process = true;
         }
         pathInfoFree (pi);

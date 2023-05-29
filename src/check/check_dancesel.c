@@ -82,6 +82,9 @@ START_TEST(dancesel_alloc)
   ilistidx_t  wkey;
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- dancesel_alloc");
+  if (DANCESEL_DEBUG) {
+    fprintf (stderr, "--chk-- dancesel_alloc\n");
+  }
 
   dances = bdjvarsdfGet (BDJVDF_DANCES);
   dlist = danceGetDanceList (dances);
@@ -275,7 +278,7 @@ START_TEST(dancesel_choose_two_hist_a)
   /* with only two dances, the chances of a non-symmetric outcome */
   /* are low, but happen, so test a range */
   val = abs (counts [wkey] - counts [tkey]);
-  ck_assert_int_le (val, 5);
+  ck_assert_int_le (val, 6);
 
   danceselFree (ds);
   nlistFree (clist);
@@ -369,11 +372,11 @@ START_TEST(dancesel_choose_multi_tag)
   rkey = slistGetNum (dlist, "Rumba");
 
   clist = nlistAlloc ("count-list", LIST_ORDERED, NULL);
-  nlistSetNum (clist, wkey, 8);
-  nlistSetNum (clist, jkey, 8);
-  nlistSetNum (clist, wcskey, 8);
-  nlistSetNum (clist, rkey, 8);
-  nlistSetNum (clist, fkey, 8);
+  nlistSetNum (clist, wkey, 20);
+  nlistSetNum (clist, jkey, 20);
+  nlistSetNum (clist, wcskey, 20);
+  nlistSetNum (clist, rkey, 20);
+  nlistSetNum (clist, fkey, 20);
   ds = danceselAlloc (clist, chkQueue, NULL);
 
   count = 0;
@@ -390,13 +393,8 @@ START_TEST(dancesel_choose_multi_tag)
     ck_assert_int_ne (didx, lastdidx);
     /* the tag match should help prevent a jive and a wcs */
     /* next to each other, but not always */
-    if (didx == wcskey) {
-      if (lastdidx == jkey) {
-        ++count;
-      }
-    }
-    if (didx == jkey) {
-      if (lastdidx == wcskey) {
+    if (didx == wcskey || didx == jkey) {
+      if (lastdidx == jkey || lastdidx == wcskey) {
         ++count;
       }
     }
