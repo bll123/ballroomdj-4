@@ -13,11 +13,11 @@
 * Bug Fixes:
     * Edit Song Lists: Clear please wait message after mix.
     * Song Editor: Fix bugs with BPM and speed interactions.
-    * Edit Dances: Remove 4/8 time signature.
 * Changes:
     * Configuration/General: The BPM display is reset to MPM by default.
     * BPM Counter: Remove MPM selections.
-    * Dance Selection: New algorithm: 'windowed'.
+    * Dance Selection: New algorithm.
+    * Edit Dances: Remove 4/8 time signature.
 * Internal:
     * Database and audio files always store MPM.
 
