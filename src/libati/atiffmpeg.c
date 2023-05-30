@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include <string.h>
 #include <inttypes.h>
 #include <errno.h>
@@ -38,6 +39,8 @@ atiiDesc (void)
   return "ffmpeg";
 }
 
+static void atiffmpegLogCallback (void *avcl, int level, const char *fmt, va_list vl);
+
 atidata_t *
 atiiInit (const char *atipkg, int writetags,
     taglookup_t tagLookup, tagcheck_t tagCheck,
@@ -52,6 +55,8 @@ atiiInit (const char *atipkg, int writetags,
   atidata->tagName = tagName;
   atidata->audioTagLookup = audioTagLookup;
 
+  /* turn off logging */
+  av_log_set_callback (atiffmpegLogCallback);
   return atidata;
 }
 
@@ -77,6 +82,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
     int tagtype, int *rewrite)
 {
   AVFormatContext         *fctx = NULL;
+  const AVDictionary      *dict = NULL;
   const AVDictionaryEntry *tag = NULL;
   int                     rc;
   int64_t                 duration;
@@ -86,10 +92,13 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
   writetags = atidata->writetags;
 
   if ((rc = avformat_open_input (&fctx, data, NULL, NULL))) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to open %d %s\n", rc, data);
     return;
   }
 
   if ((rc = avformat_find_stream_info (fctx, NULL)) < 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to load stream info %d %s\n", rc, data);
+    avformat_close_input (&fctx);
     return;
   }
 
@@ -98,20 +107,30 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
   snprintf (pbuff, sizeof (pbuff), "%ld", (long) duration);
   slistSetStr (tagdata, atidata->tagName (TAG_DURATION), pbuff);
 
-  while ((tag = av_dict_get (fctx->metadata, "", tag, AV_DICT_IGNORE_SUFFIX)) != NULL) {
+  dict = fctx->metadata;
+  /* ogg stores the metadata in with the stream, apparently */
+  if (av_dict_count (dict) == 0) {
+    for (unsigned int i = 0; i < fctx->nb_streams; ++i) {
+      dict = fctx->streams [i]->metadata;
+      if (av_dict_count (dict) > 0) {
+        break;
+      }
+    }
+  }
+
+  while ((tag = av_dict_get (dict, "", tag, AV_DICT_IGNORE_SUFFIX)) != NULL) {
     const char  *tagname;
     int         tagkey;
 
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: %s=%s", tag->key, tag->value);
-// fprintf (stderr, "raw: %s=%s\n", tag->key, tag->value);
 
-    /* use the ffmpeg tag type, not the audio file type */
+    /* use the ffmpeg tag type, not the audio file type, */
+    /* as ffmpeg converts the tag names */
     tagname = atidata->tagLookup (TAG_TYPE_FFMPEG, tag->key);
     if (tagname == NULL) {
       tagname = atidata->tagLookup (tagtype, tag->key);
     }
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag: %s raw-tag: %s", tagname, tag->key);
-// fprintf (stderr, "tag: %s raw-tag: %s\n", tagname, tag->key);
 
     if (tagname != NULL && *tagname) {
       const char  *p;
@@ -152,10 +171,28 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
     slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
     int tagtype, int filetype)
 {
-  int         rc = -1;
+  AVFormatContext   *fctx = NULL;
+  int               rc = -1;
+
+  if ((rc = avformat_open_input (&fctx, ffn, NULL, NULL))) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to open %d %s\n", rc, ffn);
+    return -1;
+  }
+
+  if ((rc = avformat_find_stream_info (fctx, NULL)) < 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to load stream info %d %s\n", rc, ffn);
+    avformat_close_input (&fctx);
+    return -1;
+  }
+
+  avformat_close_input (&fctx);
 
   return rc;
 }
 
 
-
+static void
+atiffmpegLogCallback (void *avcl, int level, const char *fmt, va_list vl)
+{
+  return;
+}

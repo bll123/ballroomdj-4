@@ -1,12 +1,15 @@
 [Wiki Home](Home)
 <br>[Developer Notes](Development-Developer%20Notes)
 
-<br>[Mutagen](Development-Mutagen)
+[Mutagen](Development-Mutagen)
 
 Another possibility to look at is taglib.  This will require writing a
-C wrapper around the C++ code.
+C wrapper around the C++ code.  It appears that taglib does not return
+the data for unsupported tags.  Rather useless.
 
 [taglib](https://taglib.org/)
+
+ffmpeg's libav* libraries appear to support the metadata quite well.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
