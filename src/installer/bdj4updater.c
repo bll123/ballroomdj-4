@@ -612,7 +612,9 @@ main (int argc, char *argv [])
     danceSave (odances, NULL, 2);
     danceFree (ndances);
     fileopDelete (tbuff);
-    nlistSetNum (updlist, UPD_FIX_DANCE_MPM, UPD_COMPLETE);
+    if (statusflags [UPD_FIX_DANCE_MPM] == UPD_NOT_DONE) {
+      nlistSetNum (updlist, UPD_FIX_DANCE_MPM, UPD_COMPLETE);
+    }
     logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : update dance mpm complete");
   }
 
@@ -701,9 +703,11 @@ main (int argc, char *argv [])
     logMsg (LOG_INSTALL, LOG_INFO, "-- fix af tags");
     processaf = true;
   } else {
-    if (strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") != 0 &&
-        bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) == false) {
-      nlistSetNum (updlist, UPD_FIX_AF_TAGS, UPD_SKIP);
+    if (statusflags [UPD_FIX_AF_TAGS] == UPD_NOT_DONE) {
+      if (strcmp (sysvarsGetStr (SV_BDJ4_DEVELOPMENT), "dev") != 0 &&
+          bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) == false) {
+        nlistSetNum (updlist, UPD_FIX_AF_TAGS, UPD_SKIP);
+      }
     }
   }
 
@@ -714,7 +718,9 @@ main (int argc, char *argv [])
     logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : fix af mpm");
     processaf = true;
   } else {
-    nlistSetNum (updlist, UPD_FIX_AF_MPM, UPD_SKIP);
+    if (statusflags [UPD_FIX_AF_MPM] == UPD_NOT_DONE) {
+      nlistSetNum (updlist, UPD_FIX_AF_MPM, UPD_SKIP);
+    }
   }
 
   if (statusflags [UPD_FIX_DB_ADDDATE] == UPD_NOT_DONE) {
