@@ -39,9 +39,11 @@ dyInterfaceList (const char *pfx, const char *funcnm)
       descProc = dylibLookup (dlHandle, funcnm);
       if (descProc != NULL) {
         desc = descProc ();
-        strlcpy (tmp, fn, sizeof (tmp));
-        tmp [strlen (tmp) - strlen (sysvarsGetStr (SV_SHLIB_EXT))] = '\0';
-        slistSetStr (interfaces, desc, tmp);
+        if (desc != NULL) {
+          strlcpy (tmp, fn, sizeof (tmp));
+          tmp [strlen (tmp) - strlen (sysvarsGetStr (SV_SHLIB_EXT))] = '\0';
+          slistSetStr (interfaces, desc, tmp);
+        }
       }
       dylibClose (dlHandle);
     }

@@ -33,7 +33,6 @@ typedef struct atidata {
 
 static ssize_t globalCounter = 0;
 
-static void atimutagenParseNumberPair (atidata_t *atidata, char *data, int *a, int *b);
 static int  atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist);
 static int  atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 static void atimutagenMakeTempFilename (char *fn, size_t sz);
@@ -197,14 +196,11 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
       }
 
       tagname = atidata->tagLookup (tagtype, p);
-      if (tagname != NULL) {
-        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "taglookup: %s %s", p, tagname);
-        tagkey = atidata->tagCheck (writetags, tagtype, tagname, AF_REWRITE_NONE);
-        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag: %s raw-tag: %s", tagname, p);
-      }
-
       if (tagname != NULL && *tagname != '\0') {
         int   outidx;
+
+        tagkey = atidata->tagCheck (writetags, tagtype, tagname, AF_REWRITE_NONE);
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag: %s raw-tag: %s", tagname, p);
 
         p = strtok_r (NULL, "=", &tokstrB);
         /* p is pointing to the tag data */
@@ -281,29 +277,15 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
         }
 
         /* track number / track total handling */
-        if (strcmp (tagname, atidata->tagName (TAG_TRACKNUMBER)) == 0) {
-          int   tnum, ttot;
-          atimutagenParseNumberPair (atidata, p, &tnum, &ttot);
-
-          if (ttot != 0) {
-            snprintf (pbuff, sizeof (pbuff), "%d", ttot);
-            slistSetStr (tagdata, atidata->tagName (TAG_TRACKTOTAL), pbuff);
-          }
-          snprintf (pbuff, sizeof (pbuff), "%d", tnum);
-          p = pbuff;
+        if (tagkey == TAG_TRACKNUMBER) {
+          p = (char *) atiParsePair (tagdata, atidata->tagName (TAG_TRACKTOTAL),
+              p, pbuff, sizeof (pbuff));
         }
 
         /* disc number / disc total handling */
-        if (strcmp (tagname, atidata->tagName (TAG_DISCNUMBER)) == 0) {
-          int   dnum, dtot;
-          atimutagenParseNumberPair (atidata, p, &dnum, &dtot);
-
-          if (dtot != 0) {
-            snprintf (pbuff, sizeof (pbuff), "%d", dtot);
-            slistSetStr (tagdata, atidata->tagName (TAG_DISCTOTAL), pbuff);
-          }
-          snprintf (pbuff, sizeof (pbuff), "%d", dnum);
-          p = pbuff;
+        if (tagkey == TAG_DISCNUMBER) {
+          p = (char *) atiParsePair (tagdata, atidata->tagName (TAG_DISCTOTAL),
+              p, pbuff, sizeof (pbuff));
         }
 
         /* p is pointing to the tag value */
@@ -334,37 +316,6 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
 
   return rc;
 }
-
-static void
-atimutagenParseNumberPair (atidata_t *atidata, char *data, int *a, int *b)
-{
-  char    *p;
-
-  *a = 0;
-  *b = 0;
-
-  /* apple style track number */
-  if (*data == '(') {
-    p = data;
-    ++p;
-    *a = atoi (p);
-    p = strstr (p, " ");
-    if (p != NULL) {
-      ++p;
-      *b = atoi (p);
-    }
-    return;
-  }
-
-  /* track/total style */
-  p = strstr (data, "/");
-  *a = atoi (data);
-  if (p != NULL) {
-    ++p;
-    *b = atoi (p);
-  }
-}
-
 
 static int
 atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,

@@ -108,6 +108,11 @@ plocal/bin/libcrypto-50\.dll$
 plocal/bin/libssl-53\.dll$
 plocal/bin/libtls-26\.dll$
 
+# 2023-5-30
+# taglib doesn't appear to be useful. unsupported tags are not supported.
+plocal/bin/libtag\.dll$
+bin/libatitaglib\.(so|dylib|dll)$
+
 ####
 # mac-os
 

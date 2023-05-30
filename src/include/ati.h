@@ -47,6 +47,9 @@ char    *atiiReadTags (atidata_t *atidata, const char *ffn);
 void    atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data, int tagtype, int *rewrite);
 int     atiiWriteTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 
+/* utility routines */
+const char *atiParsePair (slist_t *tagdata, const char *tagname, const char *value, char *pbuff, size_t sz);
+
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */
 #endif

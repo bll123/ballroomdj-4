@@ -4,7 +4,10 @@
 
 <!--
 
-**4.3.2.5 2023-5--**
+**4.3.3 2023-6--**
+
+* New Features:
+    * PENDING: Audio Tags: Now uses the ffmpeg libraries to access the audio tags.
 
 -->
 

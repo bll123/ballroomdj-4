@@ -528,6 +528,7 @@ audiotagTagLookup (int tagtype, const char *val)
 {
   const char  *tagname;
 
+  audiotagCreateLookupTable (tagtype);
   tagname = slistGetStr (at->tagTypeLookup [tagtype], val);
   return tagname;
 }

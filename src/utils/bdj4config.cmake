@@ -76,7 +76,8 @@ pkg_check_modules (OPENSSL openssl)
 if (NOT WIN32 AND NOT APPLE)
   pkg_check_modules (PA libpulse)
 endif()
-pkg_check_modules (TAGLIB taglib)
+pkg_check_modules (LIBAVFORMAT libavformat)
+pkg_check_modules (LIBAVUTIL libavutil)
 pkg_check_modules (XML2 libxml-2.0)
 
 # The ICU library must be pre-compiled and shipped with Linux and MacOS.
@@ -92,6 +93,8 @@ if (BDJ4_UI STREQUAL "GTK3" OR BDJ4_UI STREQUAL "gtk3")
   add_compile_options (-DGDK_DISABLE_DEPRECATED)
   add_compile_options (-DGTK_DISABLE_DEPRECATED)
 endif()
+
+add_compile_options (-DFF_ENABLE_DEPRECATION_WARNINGS)
 
 add_compile_options (-fPIC)
 
