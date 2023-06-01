@@ -251,6 +251,11 @@ bdjoptInit (void)
     nlistSetNum (bdjopt->bdjoptList, OPT_G_DANCESEL_METHOD,
         DANCESEL_METHOD_WINDOWED);
   }
+
+  /* added 4.3.3, make sure it has a default */
+  if (nlistGetNum (bdjopt->bdjoptList, OPT_G_BDJ3_COMPAT_TAGS_LAST) < 0) {
+    nlistSetNum (bdjopt->bdjoptList, OPT_G_BDJ3_COMPAT_TAGS_LAST, true);
+  }
 }
 
 void

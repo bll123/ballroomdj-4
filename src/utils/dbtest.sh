@@ -165,6 +165,7 @@ TDBRDT=tmp/test-m-r-dt.dat
 TDBRDTALT=tmp/test-m-r-dt-alt.dat
 TMDT=tmp/test-music-dt
 TDBRDTAT=tmp/test-m-r-dtat.dat
+TMSONGEND=test-music/033-all-tags-mp3-a.mp3
 
 TMPA=tmp/dbtesta.txt
 TMPB=tmp/dbtestb.txt
@@ -190,7 +191,7 @@ hostname=$(hostname)
 mconf=data/${hostname}/bdjconfig.txt
 musicdir=$(sed -n -e '/^DIRMUSIC/ { n; s/^\.\.//; p ; }' $mconf)
 
-TESTON=F
+TESTON=T
 
 if [[ $TESTON == T ]]; then
   # main test db : rebuild of standard test database
@@ -272,13 +273,11 @@ fi
 # only the main db has songs with song-start/song-end/vol-adjust-perc
 cp -f $TMAINDB $DATADB
 
-TESTON=T
-echo "write-tags-bdj3-compat-on BEGIN"
-
 if [[ $TESTON == T ]]; then
   # test db : write tags
   # note that if the ati interface can't write tags, no changes are made
   # to the audio files, and everything will still look ok.
+  # this test may look ok, as the default is to have bdj3 compatibility on
   tname=writetags-bdj3-compat-on
   setwritetagson
   setbdj3compaton
@@ -306,7 +305,7 @@ if [[ $TESTON == T ]]; then
   fi
 
   # check one of the files
-  val=$(python3 scripts/mutagen-inspect test-music/033-all-tags-mp3-a.mp3 | grep SONGEND)
+  val=$(python3 scripts/mutagen-inspect "${TMSONGEND}" | grep SONGEND)
   case ${val} in
     *=0:29.0)
       ;;
@@ -321,9 +320,6 @@ fi
 # restore the main test database again, needed for write tags check
 # only the main db has songs with song-start/song-end/vol-adjust-perc
 cp -f $TMAINDB $DATADB
-
-TESTON=T
-echo "write-tags-bdj3-compat-off BEGIN"
 
 # the prior writetags test should be run to make sure the audio tag was
 # re-written
@@ -358,7 +354,7 @@ if [[ $TESTON == T ]]; then
   fi
 
   # check one of the files
-  val=$(python3 scripts/mutagen-inspect test-music/033-all-tags-mp3-a.mp3 | grep SONGEND)
+  val=$(python3 scripts/mutagen-inspect "${TMSONGEND}" | grep SONGEND)
   case ${val} in
     *=0:29.0)
       msg+="audio tags not written"
