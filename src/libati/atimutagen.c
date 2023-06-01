@@ -195,6 +195,12 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
         *rewrite |= AF_REWRITE_VARIOUS;
       }
 
+      if (strcmp (p, "TXXX=DURATION") == 0 ||
+          strcmp (p, "DURATION") == 0) {
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "rewrite: duration");
+        *rewrite |= AF_REWRITE_DURATION;
+      }
+
       tagname = atidata->tagLookup (tagtype, p);
       if (tagname != NULL && *tagname != '\0') {
         int   outidx;

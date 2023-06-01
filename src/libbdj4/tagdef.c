@@ -216,7 +216,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       { "----:com.apple.iTunes:CONDUCTOR", "----", "CONDUCTOR" },
       { "TPE3", NULL, NULL },
       { "WM/Conductor", NULL, NULL },
-      { "conductor", NULL, NULL }
+      { "performer", NULL, NULL }
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_ENTRY,                     /* edit type            */
@@ -580,7 +580,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       { "----:com.apple.iTunes:MusicBrainz Track Id", "----", "MusicBrainz Track Id" },
       { "UFID=http://musicbrainz.org", "UFID", "http://musicbrainz.org" },
       { "MusicBrainz/Track Id", NULL, NULL },
-      { "musicbrainz_trackid", NULL, NULL }
+      { "MusicBrainz Track Id", NULL, NULL }
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -606,7 +606,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       { "----:com.apple.iTunes:MusicBrainz Work Id", "----", "MusicBrainz Work Id" },
       { "TXXX=MusicBrainz Work Id", "TXXX", "MusicBrainz Work Id" },
       { "MusicBrainz/Work Id", NULL, NULL },
-      { "musicbrainz_workid", NULL, NULL }
+      { "MusicBrainz Work Id", NULL, NULL }
     },       /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */
@@ -632,7 +632,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
       { "----:com.apple.iTunes:MusicBrainz Release Track Id", "----", "MusicBrainz Release Track Id" },
       { "TXXX=MusicBrainz Release Track Id", "TXXX", "MusicBrainz Release Track Id" },
       { "MusicBrainz/Release Track Id", NULL, NULL },
-      { "musicbrainz_releasetrackid", NULL, NULL }
+      { "MusicBrainz Release Track Id", NULL, NULL }
     },  /* audio tags */
     NULL,                         /* itunes name          */
     ET_NA,                        /* edit type            */

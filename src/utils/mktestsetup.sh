@@ -46,8 +46,6 @@ function copytestf {
   fi
 }
 
-
-
 # copy this stuff before creating the database...
 # otherwise the dances.txt file may be incorrect.
 
@@ -66,6 +64,15 @@ if [[ -f $(basename $FLAG) ]]; then
   # preserve the flag file
   mv $(basename $FLAG) $FLAG
 fi
+
+ATIFFMPEG=F
+for arg in "$@"; do
+  case $arg in
+    --atiffmpeg)
+      ATIFFMPEG=T
+      ;;
+  esac
+done
 
 for f in templates/ds-*.txt; do
   cp -f $f data/profile00
@@ -138,10 +145,15 @@ sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 
+ATII=libatimutagen
+if [[ $ATIFFMPEG == T ]]; then
+  ATII=libatiffmpeg
+fi
 tfn=data/${hostname}/bdjconfig.txt
 sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
     -e "/^DIRMUSIC/ { n ; s,.*,..${cwd}/test-music, ; }" \
     -e "/^ITUNESXMLFILE/ { n ; s,.*,..${cwd}/test-files/iTunes-test-music.xml, ; }" \
+    -e "/^AUDIOTAG/ { n ; s,.*,..${ATII}, ; }" \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 

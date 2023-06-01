@@ -121,16 +121,21 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
   while ((tag = av_dict_get (dict, "", tag, AV_DICT_IGNORE_SUFFIX)) != NULL) {
     const char  *tagname;
     int         tagkey;
-
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: %s=%s", tag->key, tag->value);
+    int         tagnamecount = 0;     // for debugging
 
     /* use the ffmpeg tag type, not the audio file type, */
     /* as ffmpeg converts the tag names */
+    /* then if not found, try the vorbis name */
     tagname = atidata->tagLookup (TAG_TYPE_FFMPEG, tag->key);
     if (tagname == NULL) {
-      tagname = atidata->tagLookup (tagtype, tag->key);
+      ++tagnamecount;
+      tagname = atidata->tagLookup (TAG_TYPE_VORBIS, tag->key);
+      if (tagname == NULL) {
+        ++tagnamecount;
+        tagname = atidata->tagLookup (tagtype, tag->key);
+      }
     }
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag: %s raw-tag: %s", tagname, tag->key);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s (%d) raw: %s=%s", tagname, tagnamecount, tag->key, tag->value);
 
     if (tagname != NULL && *tagname) {
       const char  *p;
@@ -140,6 +145,12 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
       if (strcmp (tag->key, "VARIOUSARTISTS") == 0) {
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "rewrite: various");
         *rewrite |= AF_REWRITE_VARIOUS;
+        continue;
+      }
+
+      if (strcmp (tag->key, "DURATION") == 0) {
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "rewrite: duration");
+        *rewrite |= AF_REWRITE_DURATION;
         continue;
       }
 

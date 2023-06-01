@@ -177,6 +177,7 @@ if [[ $pkgname == "" || $pkgname = "ffmpeg" ]]; then
     echo "## install ffmpeg"
     cp -f bin/*.dll $INSTLOC/bin
     cp -f bin/ffmpeg.exe $INSTLOC/bin
+    cp -rf include/* $INSTLOC/include
   fi
 fi
 

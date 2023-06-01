@@ -119,8 +119,20 @@ function setorgregex {
   mv -f ${gconf}.n ${gconf}
 }
 
+ATIFFMPEG=F
+for arg in "$@"; do
+  case $arg in
+    --atiffmpegro)
+      ATIFFMPEG=RO
+      ;;
+    --atiffmpeg)
+      ATIFFMPEG=T
+      ;;
+  esac
+done
+
 # norm
-NUMM=120
+NUMM=130
 # deleted foxtrot
 NUMC=$(($NUMM-6))
 NUMB=15
@@ -152,7 +164,20 @@ TMPA=tmp/dbtesta.txt
 TMPB=tmp/dbtestb.txt
 
 echo "## make test setup"
-./src/utils/mktestsetup.sh --force
+ATIFLAG=""
+if [[ $ATIFFMPEG == T ]]; then
+  ATIFLAG=--atiffmpeg
+fi
+./src/utils/mktestsetup.sh --force ${ATIFLAG}
+
+if [[ $ATIFFMPEG == T || $ATIFFMPEG == RO ]]; then
+  ATII=libatiffmpeg
+  hostname=$(hostname)
+  tfn=data/${hostname}/bdjconfig.txt
+  sed -e "/^AUDIOTAG/ { n ; s,.*,..${ATII}, ; }" \
+      ${tfn} > ${tfn}.n
+  mv -f ${tfn}.n ${tfn}
+fi
 
 # get music dir
 hostname=$(hostname)

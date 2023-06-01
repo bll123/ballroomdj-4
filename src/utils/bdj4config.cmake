@@ -80,6 +80,14 @@ pkg_check_modules (LIBAVFORMAT libavformat)
 pkg_check_modules (LIBAVUTIL libavutil)
 pkg_check_modules (XML2 libxml-2.0)
 
+if (WIN32)
+  # the include directory is already there
+  # dependency on specific version numbers. is there a better way?
+  # a different pre-built for windows package may be a possibility
+  set (LIBAVFORMAT_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avformat-59.dll")
+  set (LIBAVUTIL_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avutil-57.dll")
+endif()
+
 # The ICU library must be pre-compiled and shipped with Linux and MacOS.
 # ICU has incorrect library versioning procedures.
 if (NOT WIN32)

@@ -331,12 +331,6 @@ audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
 
   slistStartIterator (tagdata, &iteridx);
   while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
-    /* some old audio file tag handling */
-    if (strcmp (tag, tagdefs [TAG_DURATION].tag) == 0) {
-      logMsg (LOG_DBG, LOG_DBUPDATE, "rewrite: duration");
-      *rewrite |= AF_REWRITE_DURATION;
-    }
-
     /* old songend/songstart handling */
     if (strcmp (tag, tagdefs [TAG_SONGSTART].tag) == 0 ||
         strcmp (tag, tagdefs [TAG_SONGEND].tag) == 0) {

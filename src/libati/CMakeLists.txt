@@ -15,6 +15,14 @@ target_link_libraries (libbdj4ati PUBLIC
   m
 )
 
+add_library (libbdjatiutil STATIC
+  atiutil.c
+)
+target_link_libraries (libbdjatiutil PUBLIC
+  libbdj4basic libbdj4common
+  m
+)
+
 add_library (libatiffmpeg SHARED atiffmpeg.c)
 target_include_directories (libatiffmpeg
   PUBLIC "${LIBAVFORMAT_INCLUDE_DIRS}" "${LIBAVUTIL_INCLUDE_DIRS}"
@@ -22,6 +30,7 @@ target_include_directories (libatiffmpeg
 target_link_libraries (libatiffmpeg PUBLIC
   ${LIBAVFORMAT_LDFLAGS}
   ${LIBAVUTIL_LDFLAGS}
+  libbdjatiutil
   libbdj4basic
   libbdj4common
   m
@@ -29,6 +38,7 @@ target_link_libraries (libatiffmpeg PUBLIC
 
 add_library (libatimutagen SHARED atimutagen.c)
 target_link_libraries (libatimutagen PUBLIC
+  libbdjatiutil
   libbdj4basic
   libbdj4common
   m

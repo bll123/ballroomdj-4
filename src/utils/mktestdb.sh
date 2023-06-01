@@ -57,6 +57,9 @@ while test $# -gt 0; do
       args+=$1
       args+=" "
       ;;
+    --atiffmpeg)
+      # ignored
+      ;;
     *)
       echo "unknown argument $1"
       exit 1
