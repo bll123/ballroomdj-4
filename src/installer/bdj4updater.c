@@ -451,6 +451,12 @@ main (int argc, char *argv [])
     bdjoptchanged = true;
   }
 
+  if (bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS_LAST) < 0) {
+    bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS_LAST,
+        bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS));
+    bdjoptchanged = true;
+  }
+
   if (bdjoptchanged) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "save bdjopt");
     bdjoptSave ();

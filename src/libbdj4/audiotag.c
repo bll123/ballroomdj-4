@@ -124,8 +124,10 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
 
   logProcBegin (LOG_PROC, "audiotagWriteTags");
 
+fprintf (stderr, "-- write %s\n", ffn);
   writetags = bdjoptGetNum (OPT_G_WRITETAGS);
   if (writetags == WRITE_TAGS_NONE) {
+fprintf (stderr, "  write-tags off\n");
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-tags-none");
     logProcEnd (LOG_PROC, "audiotagsWriteTags", "write-none");
     return AUDIOTAG_WRITE_OFF;
@@ -137,6 +139,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   if (tagtype != TAG_TYPE_VORBIS &&
       tagtype != TAG_TYPE_MP3 &&
       tagtype != TAG_TYPE_MP4) {
+fprintf (stderr, "  tag type not-supported\n");
     logProcEnd (LOG_PROC, "audiotagsWriteTags", "not-supported-tag");
     return AUDIOTAG_NOT_SUPPORTED;
   }
@@ -146,6 +149,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
       filetype != AFILE_TYPE_FLAC &&
       filetype != AFILE_TYPE_MP3 &&
       filetype != AFILE_TYPE_MP4) {
+fprintf (stderr, "  file type not-supported\n");
     logProcEnd (LOG_PROC, "audiotagsWriteTags", "not-supported-file");
     return AUDIOTAG_NOT_SUPPORTED;
   }
@@ -165,43 +169,64 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   slistStartIterator (newtaglist, &iteridx);
   while ((tag = slistIterateKey (newtaglist, &iteridx)) != NULL) {
     bool  upd;
+    bool  compatconv;
 
     upd = false;
+    compatconv = false;
     tagkey = audiotagTagCheck (writetags, tagtype, tag, rewrite);
     if (tagkey < 0) {
       continue;
     }
+fprintf (stderr, "  tagkey: %d\n", tagkey);
 
     newvalue = slistGetStr (newtaglist, tag);
 
     if (tagdefs [tagkey].isBDJTag &&
         (rewrite & AF_FORCE_WRITE_BDJ) == AF_FORCE_WRITE_BDJ) {
+fprintf (stderr, "  upd: force-write bdj\n");
       upd = true;
     }
 
     value = slistGetStr (tagdata, tag);
-    if (newvalue != NULL && *newvalue && value == NULL) {
+    if (! upd && newvalue != NULL && *newvalue && value == NULL) {
+fprintf (stderr, "  upd: %s old-value null\n", tag);
       upd = true;
     }
-    if (newvalue != NULL && value != NULL &&
+    if (! upd && newvalue != NULL && value != NULL &&
         *newvalue && strcmp (newvalue, value) != 0) {
+fprintf (stderr, "  upd: %s changed\n", tag);
       upd = true;
     }
-    if (nlistGetNum (datalist, tagkey) == 1) {
+    if (! upd && nlistGetNum (datalist, tagkey) == 1) {
       /* for track/disc total changes */
+fprintf (stderr, "  upd: %s track/disc changes\n", tag);
+      upd = true;
+    }
+
+    /* special case */
+    if (! upd && tagkey == TAG_RECORDING_ID &&
+        (rewrite & AF_REWRITE_MB) == AF_REWRITE_MB &&
+        newvalue != NULL && *newvalue) {
+fprintf (stderr, "  upd: rewrite-mb\n");
       upd = true;
     }
 
     /* convert to bdj3 form after the update check */
     if (audiotagBDJ3CompatCheck (tmp, sizeof (tmp), tagkey, newvalue)) {
-      newvalue = tmp;
-      upd = true;
+      if (*tmp) {
+fprintf (stderr, "  compat: newvalue: %s\n", tmp);
+        newvalue = tmp;
+      } else {
+fprintf (stderr, "  compat: newvalue-null\n");
+        newvalue = NULL;
+      }
+      compatconv = true;
     }
-
-    /* special case */
-    if (tagkey == TAG_RECORDING_ID &&
-        (rewrite & AF_REWRITE_MB) == AF_REWRITE_MB &&
-        newvalue != NULL && *newvalue) {
+    /* check if the bdj3 compatibility flag has changed */
+    if ((compatconv || ! bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS)) &&
+        bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) !=
+        bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS_LAST)) {
+fprintf (stderr, "  upd: compat changed\n");
       upd = true;
     }
 
@@ -252,7 +277,26 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "writing tags");
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  %s", ffn);
     origtm = fileopModTime (ffn);
-
+{
+slistidx_t  iteridx;
+const char *tag, *value;
+if (slistGetCount (updatelist) > 0) {
+fprintf (stderr, "  -- update: %d %s\n", slistGetCount (updatelist), ffn);
+slistStartIterator (updatelist, &iteridx);
+while ((tag = slistIterateKey (updatelist, &iteridx)) != NULL) {
+value = slistGetStr (updatelist, tag);
+fprintf (stderr, "    %s %s\n", tag, value);
+}
+}
+if (slistGetCount (dellist) > 0) {
+fprintf (stderr, "  -- del: %d %s\n", slistGetCount (dellist), ffn);
+slistStartIterator (dellist, &iteridx);
+while ((tag = slistIterateKey (dellist, &iteridx)) != NULL) {
+value = slistGetStr (dellist, tag);
+fprintf (stderr, "    %s %s\n", tag, value);
+}
+}
+}
     atiWriteTags (at->ati, ffn, updatelist, dellist, datalist,
         tagtype, filetype);
 
@@ -260,6 +304,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
       fileopSetModTime (ffn, origtm);
     }
   }
+
   slistFree (updatelist);
   slistFree (dellist);
   nlistFree (datalist);
@@ -427,37 +472,43 @@ audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value)
   bool    rc = false;
 
   if (value == NULL || ! *value) {
+fprintf (stderr, "  compat: is-null\n");
     return rc;
   }
 
-  if (bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS)) {
-    if (tagkey == TAG_SONGSTART ||
-        tagkey == TAG_SONGEND) {
-      ssize_t   val;
+  if (! bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS)) {
+fprintf (stderr, "  compat: not on\n");
+    return rc;
+  }
 
-      /* bdj3 song start/song end are stored as mm:ss.d */
-      val = atoll (value);
-      tmutilToMSD (val, tmp, sz, 1);
-      rc = true;
-    }
-    if (tagkey == TAG_VOLUMEADJUSTPERC) {
-      double    val;
-      char      *radix;
-      char      *tptr;
+  if (tagkey == TAG_SONGSTART ||
+      tagkey == TAG_SONGEND) {
+    ssize_t   val;
 
-      val = atof (value);
-      val /= DF_DOUBLE_MULT;
-      val *= 10.0;
-      /* bdj3 volume adjust percentage should be stored */
-      /* with a decimal point if possible */
-      snprintf (tmp, sz, "%.2f", val);
-      radix = sysvarsGetStr (SV_LOCALE_RADIX);
-      tptr = strstr (tmp, radix);
-      if (tptr != NULL) {
-        *tptr = '.';
-      }
-      rc = true;
+    /* bdj3 song start/song end are stored as mm:ss.d */
+    val = atoll (value);
+    tmutilToMSD (val, tmp, sz, 1);
+fprintf (stderr, "    == tagkey: %d val: %s compat: %s\n", tagkey, value, tmp);
+    rc = true;
+  }
+  if (tagkey == TAG_VOLUMEADJUSTPERC) {
+    double    val;
+    char      *radix;
+    char      *tptr;
+
+    val = atof (value);
+    val /= DF_DOUBLE_MULT;
+    val *= 10.0;
+    /* bdj3 volume adjust percentage should be stored */
+    /* with a decimal point if possible */
+    snprintf (tmp, sz, "%.2f", val);
+    radix = sysvarsGetStr (SV_LOCALE_RADIX);
+    tptr = strstr (tmp, radix);
+    if (tptr != NULL) {
+      *tptr = '.';
     }
+fprintf (stderr, "    == tagkey: %d val: %s compat: %s\n", tagkey, value, tmp);
+    rc = true;
   }
 
   return rc;

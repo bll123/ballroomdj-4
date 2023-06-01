@@ -573,7 +573,7 @@ atimutagenRunUpdate (const char *fn)
   /* the wait flag is on, the return code is the process return code */
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, dbuff, sizeof (dbuff), NULL);
   if (rc == 0) {
-//    fileopDelete (fn);
+    fileopDelete (fn);
   } else {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write tags failed %d (%s)", rc, fn);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  output: %s", dbuff);

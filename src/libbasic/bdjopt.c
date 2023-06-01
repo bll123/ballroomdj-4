@@ -53,6 +53,7 @@ static datafilekey_t bdjoptglobaldfkeys [] = {
   { "ACOUSTID_KEY",       OPT_G_ACOUSTID_KEY,       VALUE_STR, NULL, DF_NORM },
   { "AUTOORGANIZE",       OPT_G_AUTOORGANIZE,       VALUE_NUM, convBoolean, DF_NORM },
   { "BDJ3COMPATTAGS",     OPT_G_BDJ3_COMPAT_TAGS,   VALUE_NUM, convBoolean, DF_NORM },
+  { "BDJ3COMPATTAGSLAST", OPT_G_BDJ3_COMPAT_TAGS_LAST,VALUE_NUM, convBoolean, DF_NORM },
   { "BPM",                OPT_G_BPM,                VALUE_NUM, bdjoptConvBPM, DF_NORM },
   { "CLOCKDISP",          OPT_G_CLOCK_DISP,         VALUE_NUM, bdjoptConvClock, DF_NORM },
   { "DANCESELMETHOD",     OPT_G_DANCESEL_METHOD,    VALUE_NUM, bdjoptConvDanceselMethod, DF_NORM },
