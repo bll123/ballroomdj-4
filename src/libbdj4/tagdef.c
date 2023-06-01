@@ -318,7 +318,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* short display name   */
     { { "DATE", NULL, NULL },
       { "©day", NULL, NULL },
-      { "TYER", NULL, NULL },
+      { "TDRC", NULL, NULL },
       { "WM/Year", NULL, NULL },
       { "date", NULL, NULL }
     },       /* audio tags */

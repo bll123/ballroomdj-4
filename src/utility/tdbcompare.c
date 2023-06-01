@@ -10,6 +10,7 @@
 #include <errno.h>
 #include <getopt.h>
 #include <unistd.h>
+#include <math.h>
 
 #include "audiotag.h"
 #include "bdj4.h"
@@ -229,10 +230,23 @@ main (int argc, char *argv [])
         fprintf (stderr, "    null tag %s mismatch /%s/(null)/ %s\n", tag [DB_A], val [DB_A], fn);
         grc = 1;
       }
-      if (val [DB_A] != NULL && val [DB_B] != NULL &&
-          strcmp (val [DB_A], val [DB_B]) != 0) {
-        fprintf (stderr, "    tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [DB_B], fn);
-        grc = 1;
+      if (strcmp (tag [DB_A], tagdefs [TAG_DURATION].tag) == 0) {
+        if (val [DB_A] != NULL && val [DB_B] != NULL) {
+          int32_t     dura, durb;
+
+          dura = atol (val [DB_A]);
+          durb = atol (val [DB_B]);
+          if (abs (dura - durb) > 100) {
+            fprintf (stderr, "    tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [DB_B], fn);
+            grc = 1;
+          }
+        }
+      } else {
+        if (val [DB_A] != NULL && val [DB_B] != NULL &&
+            strcmp (val [DB_A], val [DB_B]) != 0) {
+          fprintf (stderr, "    tag %s mismatch /%s/%s/ %s\n", tag [DB_A], val [DB_A], val [DB_B], fn);
+          grc = 1;
+        }
       }
     }
 

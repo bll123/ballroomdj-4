@@ -107,7 +107,6 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
   char        pbuff [40];
   char        tbuff [1024];
   int         count;
-  int         tagkey;
   int         writetags;
 
   writetags = atidata->writetags;
@@ -205,7 +204,6 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
       if (tagname != NULL && *tagname != '\0') {
         int   outidx;
 
-        tagkey = atidata->tagCheck (writetags, tagtype, tagname, AF_REWRITE_NONE);
         logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag: %s raw-tag: %s", tagname, p);
 
         p = strtok_r (NULL, "=", &tokstrB);
@@ -263,7 +261,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
         /* put in some extra checks for odd mutagen python output */
         /* this stuff always appears in the UFID tag output */
         if (p != NULL) {
-          if (tagkey == TAG_RECORDING_ID) {
+          if (strcmp (tagname, atidata->tagName (TAG_TRACKNUMBER)) == 0) {
             /* check for old mangled data */
             /* note that mutagen-inspect always outputs the b', */
             /* so we need to look for b'', b'b', etc. */
@@ -283,13 +281,13 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
         }
 
         /* track number / track total handling */
-        if (tagkey == TAG_TRACKNUMBER) {
+        if (strcmp (tagname, atidata->tagName (TAG_TRACKNUMBER)) == 0) {
           p = (char *) atiParsePair (tagdata, atidata->tagName (TAG_TRACKTOTAL),
               p, pbuff, sizeof (pbuff));
         }
 
         /* disc number / disc total handling */
-        if (tagkey == TAG_DISCNUMBER) {
+        if (strcmp (tagname, atidata->tagName (TAG_DISCNUMBER)) == 0) {
           p = (char *) atiParsePair (tagdata, atidata->tagName (TAG_DISCTOTAL),
               p, pbuff, sizeof (pbuff));
         }
@@ -343,7 +341,8 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
 
   atimutagenMakeTempFilename (fn, sizeof (fn));
   ofh = fileopOpen (fn, "w");
-  fprintf (ofh, "from mutagen.id3 import ID3,TXXX,UFID");
+  /* include TYER and TDAT in case of an idv2.3 tag */
+  fprintf (ofh, "from mutagen.id3 import ID3,TXXX,UFID,TYER,TDAT");
   for (int i = 0; i < TAG_KEY_MAX; ++i) {
     audiotag = atidata->audioTagLookup (i, TAG_TYPE_MP3);
     if (audiotag->tag != NULL && audiotag->desc == NULL) {
@@ -574,7 +573,7 @@ atimutagenRunUpdate (const char *fn)
   /* the wait flag is on, the return code is the process return code */
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, dbuff, sizeof (dbuff), NULL);
   if (rc == 0) {
-    fileopDelete (fn);
+//    fileopDelete (fn);
   } else {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write tags failed %d (%s)", rc, fn);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  output: %s", dbuff);
