@@ -210,7 +210,10 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
       }
       compatconv = true;
     }
-    /* check if the bdj3 compatibility flag has changed */
+
+    /* if the compatibility conversion was done, or */
+    /* if the bdj3 compatibility flag has changed, */
+    /* then write the data */
     if ((compatconv || ! bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS)) &&
         bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) !=
         bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS_LAST)) {

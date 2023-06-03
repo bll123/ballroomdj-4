@@ -76,17 +76,33 @@ pkg_check_modules (OPENSSL openssl)
 if (NOT WIN32 AND NOT APPLE)
   pkg_check_modules (PA libpulse)
 endif()
-pkg_check_modules (LIBAVFORMAT libavformat)
-pkg_check_modules (LIBAVUTIL libavutil)
 pkg_check_modules (XML2 libxml-2.0)
 
+#### tag parsing modules
+
+# not in use
+# pkg_check_modules (TAGLIB taglib)
+
+# ffmpeg : libavformat / libavutil
+pkg_check_modules (LIBAVFORMAT libavformat)
+pkg_check_modules (LIBAVUTIL libavutil)
 if (WIN32)
   # the include directory is already there
   # dependency on specific version numbers. is there a better way?
-  # a different pre-built for windows package may be a possibility
+  # a different pre-built package for windows package may be a possibility
   set (LIBAVFORMAT_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avformat-59.dll")
   set (LIBAVUTIL_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avutil-57.dll")
 endif()
+
+# tagparser
+# the include directory is already present
+if (WIN32)
+  set (TAGPARSER_LDFLAGS -L${PROJECT_SOURCE_DIR}/../plocal/bin -ltagparser -lc++utilities)
+else()
+  set (TAGPARSER_LDFLAGS -L${PROJECT_SOURCE_DIR}/../plocal/lib -ltagparser -lc++utilities)
+endif()
+
+#### ICU string library
 
 # The ICU library must be pre-compiled and shipped with Linux and MacOS.
 # ICU has incorrect library versioning procedures.
