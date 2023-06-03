@@ -44,36 +44,9 @@ target_link_libraries (libatimutagen PUBLIC
   m
 )
 
-# At this time, I don't see a method where taglib
-# can retrieve the "unsupported" tag data.
-#
-# add_library (libatitaglib SHARED atitaglib.cpp)
-# target_include_directories (libatitaglib
-#   PUBLIC "${TAGLIB_INCLUDE_DIRS}"
-# )
-# target_link_libraries (libatitaglib PUBLIC
-#   ${TAGLIB_LDFLAGS}
-#   libbdj4basic
-#   libbdj4common
-#   m
-# )
-
-add_library (libatitagparser SHARED atitagparser.cpp)
-target_compile_options (libatitagparser PRIVATE "-std=gnu++17")
-target_link_options (libatitagparser PRIVATE "-std=gnu++17")
-target_link_libraries (libatitagparser PUBLIC
-  ${TAGPARSER_LDFLAGS}
-  libbdj4basic
-  libbdj4common
-  m
-)
-
 install (TARGETS
   libbdj4ati
   libatiffmpeg
   libatimutagen
-  libatitagparser
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
-
-updateRPath (libatitagparser)

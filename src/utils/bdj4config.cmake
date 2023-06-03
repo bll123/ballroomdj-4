@@ -80,9 +80,6 @@ pkg_check_modules (XML2 libxml-2.0)
 
 #### tag parsing modules
 
-# not in use
-# pkg_check_modules (TAGLIB taglib)
-
 # ffmpeg : libavformat / libavutil
 pkg_check_modules (LIBAVFORMAT libavformat)
 pkg_check_modules (LIBAVUTIL libavutil)
@@ -92,14 +89,6 @@ if (WIN32)
   # a different pre-built package for windows package may be a possibility
   set (LIBAVFORMAT_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avformat-59.dll")
   set (LIBAVUTIL_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avutil-57.dll")
-endif()
-
-# tagparser
-# the include directory is already present
-if (WIN32)
-  set (TAGPARSER_LDFLAGS -L${PROJECT_SOURCE_DIR}/../plocal/bin -ltagparser -lc++utilities)
-else()
-  set (TAGPARSER_LDFLAGS -L${PROJECT_SOURCE_DIR}/../plocal/lib -ltagparser -lc++utilities)
 endif()
 
 #### ICU string library
