@@ -71,7 +71,7 @@ atiiFree (atidata_t *atidata)
   }
 }
 
-char *
+void *
 atiiReadTags (atidata_t *atidata, const char *ffn)
 {
   char        * data;
@@ -94,9 +94,10 @@ atiiReadTags (atidata_t *atidata, const char *ffn)
 }
 
 void
-atiiParseTags (atidata_t *atidata, slist_t *tagdata, char *data,
+atiiParseTags (atidata_t *atidata, slist_t *tagdata, void *tdata,
     int tagtype, int *rewrite)
 {
+  char        *data = tdata;
   char        *tstr;
   char        *tokstr;
   char        *p;
