@@ -95,7 +95,7 @@ atiiReadTags (atidata_t *atidata, const char *ffn)
 
 void
 atiiParseTags (atidata_t *atidata, slist_t *tagdata, void *tdata,
-    int tagtype, int *rewrite)
+    int filetype, int tagtype, int *rewrite)
 {
   char        *data = tdata;
   char        *tstr;

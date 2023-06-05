@@ -763,7 +763,7 @@ main (int argc, char *argv [])
     dbStartIterator (musicdb, &dbiteridx);
     while ((song = dbIterate (musicdb, &dbidx, &dbiteridx)) != NULL) {
       char        *ffn;
-      char        *data;
+      void        *data;
       const char  *tkey;
       int         rewrite;
       bool        updmpm = false;

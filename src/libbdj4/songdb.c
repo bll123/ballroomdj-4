@@ -58,7 +58,7 @@ static void
 songWriteAudioTags (song_t *song)
 {
   char  *ffn;
-  char  *data;
+  void  *data;
 
   ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
   data = audiotagReadTags (ffn);

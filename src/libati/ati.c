@@ -27,7 +27,7 @@ typedef struct ati {
   atidata_t         *(*atiiInit) (const char *, int, taglookup_t, tagcheck_t, tagname_t, audiotaglookup_t);
   void              (*atiiFree) (atidata_t *atidata);
   void              *(*atiiReadTags) (atidata_t *atidata, const char *ffn);
-  void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, void *tdata, int tagtype, int *rewrite);
+  void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, void *tdata, int filetype, int tagtype, int *rewrite);
   int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
   atidata_t         *atidata;
 } ati_t;
@@ -97,10 +97,10 @@ atiReadTags (ati_t *ati, const char *ffn)
 
 void
 atiParseTags (ati_t *ati, slist_t *tagdata,
-    void *tdata, int tagtype, int *rewrite)
+    void *tdata, int filetype, int tagtype, int *rewrite)
 {
   if (ati != NULL && ati->atiiParseTags != NULL) {
-    ati->atiiParseTags (ati->atidata, tagdata, tdata, tagtype, rewrite);
+    ati->atiiParseTags (ati->atidata, tagdata, tdata, filetype, tagtype, rewrite);
   }
 
   return;

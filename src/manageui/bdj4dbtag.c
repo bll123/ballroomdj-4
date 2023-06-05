@@ -59,7 +59,7 @@ typedef struct {
   int         idx;
   long        count;
   char        *fn;
-  char        * data;
+  void        * data;
 } dbthread_t;
 
 typedef struct {

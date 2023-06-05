@@ -33,7 +33,7 @@ typedef struct audiotag {
 static audiotag_t *at = NULL;
 
 static void audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype);
-static void audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite);
+static void audiotagParseTags (slist_t *tagdata, char *data, int filetype, int tagtype, int *rewrite);
 static void audiotagCreateLookupTable (int tagtype);
 static bool audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value);
 static int  audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite);
@@ -82,14 +82,14 @@ audiotagCleanup (void)
  *    trck=17/21
  */
 
-char *
+void *
 audiotagReadTags (const char *ffn)
 {
   return atiReadTags (at->ati, ffn);
 }
 
 slist_t *
-audiotagParseData (const char *ffn, char *data, int *rewrite)
+audiotagParseData (const char *ffn, void *data, int *rewrite)
 {
   slist_t     *tagdata;
   int         tagtype;
@@ -99,7 +99,7 @@ audiotagParseData (const char *ffn, char *data, int *rewrite)
   tagdata = slistAlloc ("atag", LIST_ORDERED, NULL);
   audiotagDetermineTagType (ffn, &tagtype, &filetype);
   audiotagCreateLookupTable (tagtype);
-  audiotagParseTags (tagdata, data, tagtype, rewrite);
+  audiotagParseTags (tagdata, data, filetype, tagtype, rewrite);
   return tagdata;
 }
 
@@ -338,12 +338,13 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 }
 
 static void
-audiotagParseTags (slist_t *tagdata, char *data, int tagtype, int *rewrite)
+audiotagParseTags (slist_t *tagdata, char *data,
+    int filetype, int tagtype, int *rewrite)
 {
   slistidx_t    iteridx;
   const char    *tag;
 
-  atiParseTags (at->ati, tagdata, data, tagtype, rewrite);
+  atiParseTags (at->ati, tagdata, data, filetype, tagtype, rewrite);
 
   slistStartIterator (tagdata, &iteridx);
   while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {
@@ -434,9 +435,8 @@ audiotagCreateLookupTable (int tagtype)
     if (tagdefs [i].audiotags [tagtype].tag != NULL) {
       slistSetStr (taglist, tagdefs [i].audiotags [tagtype].tag, tagdefs [i].tag);
       if (tagdefs [i].audiotags [tagtype].desc != NULL) {
-        /* for mp3: also add w/the txxx= prefix */
+        /* for mp3: also add w/o the txxx= prefix */
         slistSetStr (taglist, tagdefs [i].audiotags [tagtype].desc, tagdefs [i].tag);
-fprintf (stderr, "add: %s %s\n", tagdefs [i].audiotags [tagtype].desc, tagdefs [i].tag);
       } /* has a desc */
     } /* if there is a tag conversion */
   }

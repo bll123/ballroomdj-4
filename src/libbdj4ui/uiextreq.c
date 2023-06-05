@@ -452,7 +452,7 @@ uiextreqProcessAudioFile (uiextreq_t *uiextreq)
   if (*ffn) {
     if (fileopFileExists (ffn)) {
       const char      *tfn;
-      char            *data;
+      void            *data;
       slist_t         *tagdata;
       int             rewrite;
       song_t          *dbsong;

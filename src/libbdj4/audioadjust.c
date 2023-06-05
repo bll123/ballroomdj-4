@@ -705,7 +705,7 @@ static void
 aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
     const char *infn, const char *songfn)
 {
-  char        *data = NULL;
+  void      *data = NULL;
 
   data = audiotagReadTags (infn);
   if (data != NULL) {
@@ -748,7 +748,7 @@ aaRestoreTags (musicdb_t *musicdb, song_t *song, dbidx_t dbidx,
 static void
 aaSetDuration (musicdb_t *musicdb, song_t *song, const char *ffn)
 {
-  char  *data = NULL;
+  void    *data = NULL;
 
   if (! fileopFileExists (ffn)) {
     return;

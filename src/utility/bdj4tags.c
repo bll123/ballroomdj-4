@@ -25,7 +25,7 @@
 int
 main (int argc, char *argv [])
 {
-  char        *data = NULL;
+  void        *data = NULL;
   slist_t     *wlist = NULL;
   slistidx_t  iteridx;
   char        *key = NULL;
@@ -123,9 +123,6 @@ main (int argc, char *argv [])
   }
 
   data = audiotagReadTags (argv [fidx]);
-  if (verbose && rawdata) {
-    fprintf (stdout, "%s\n", data);
-  }
   tagdata = audiotagParseData (argv [fidx], data, &rewrite);
   logMsg (LOG_DBG, LOG_BASIC, "rewrite: %08x", rewrite);
 
@@ -173,13 +170,6 @@ main (int argc, char *argv [])
   }
   slistFree (tagdata);
   dataFree (data);
-
-  /* output the tags after writing the new ones */
-  if (verbose && rawdata) {
-    data = audiotagReadTags (argv [fidx]);
-    fprintf (stdout, "%s\n", data);
-    dataFree (data);
-  }
 
   if (verbose) {
     // fprintf (stdout, "-- %s\n", argv [fidx]);

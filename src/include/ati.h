@@ -36,7 +36,7 @@ typedef const tagaudiotag_t *(*audiotaglookup_t)(int, int);
 ati_t   *atiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck, tagname_t tagName, audiotaglookup_t tagRawLookup);
 void    atiFree (ati_t *ati);
 void    *atiReadTags (ati_t *ati, const char *ffn);
-void    atiParseTags (ati_t *ati, slist_t *tagdata, void *tdata, int tagtype, int *rewrite);
+void    atiParseTags (ati_t *ati, slist_t *tagdata, void *tdata, int filetype, int tagtype, int *rewrite);
 int     atiWriteTags (ati_t *ati, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 slist_t *atiInterfaceList (void);
 
@@ -44,7 +44,7 @@ const char *atiiDesc (void);
 atidata_t *atiiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck, tagname_t tagName, audiotaglookup_t tagRawLookup);
 void    atiiFree (atidata_t *atidata);
 void    *atiiReadTags (atidata_t *atidata, const char *ffn);
-void    atiiParseTags (atidata_t *atidata, slist_t *tagdata, void *tdata, int tagtype, int *rewrite);
+void    atiiParseTags (atidata_t *atidata, slist_t *tagdata, void *tdata, int filetype, int tagtype, int *rewrite);
 int     atiiWriteTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 
 /* atiutil.c */

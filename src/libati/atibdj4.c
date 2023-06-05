@@ -25,17 +25,7 @@
 #define MB_TAG      "http://musicbrainz.org"
 
 typedef struct {
-  int     junk;
-} vorbisdata_t;
-
-typedef struct {
-  int     junk;
-} mp4data_t;
-
-typedef struct {
   char          *ffn;
-  vorbisdata_t  *vorbisdata;
-  mp4data_t     *mp4data;
 } atibdj4data_t;
 
 typedef struct atidata {
@@ -48,7 +38,8 @@ typedef struct atidata {
 } atidata_t;
 
 static void atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata, atibdj4data_t *data, int tagtype, int *rewrite);
-static void atibdj4ParseVorbisTags (atidata_t *atidata, slist_t *tagdata, atibdj4data_t *data, int tagtype, int *rewrite);
+static void atibdj4ParseOggVorbisTags (atidata_t *atidata, slist_t *tagdata, atibdj4data_t *data, int tagtype, int *rewrite);
+static void atibdj4ParseFlacVorbisTags (atidata_t *atidata, slist_t *tagdata, atibdj4data_t *data, int tagtype, int *rewrite);
 static void atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata, atibdj4data_t *data, int tagtype, int *rewrite);
 
 const char *
@@ -99,15 +90,20 @@ atiiReadTags (atidata_t *atidata, const char *ffn)
 
 void
 atiiParseTags (atidata_t *atidata, slist_t *tagdata, void *tdata,
-    int tagtype, int *rewrite)
+    int filetype, int tagtype, int *rewrite)
 {
   atibdj4data_t     *data = tdata;
 
   if (tagtype == TAG_TYPE_MP3) {
     atibdj4ParseMP3Tags (atidata, tagdata, data, tagtype, rewrite);
   }
-  if (tagtype == TAG_TYPE_VORBIS) {
-    atibdj4ParseVorbisTags (atidata, tagdata, data, tagtype, rewrite);
+  if ((filetype == AFILE_TYPE_OGGVORBIS ||
+      filetype == AFILE_TYPE_OGGOPUS) &&
+      tagtype == TAG_TYPE_VORBIS) {
+    atibdj4ParseOggVorbisTags (atidata, tagdata, data, tagtype, rewrite);
+  }
+  if (filetype == AFILE_TYPE_FLAC && tagtype == TAG_TYPE_VORBIS) {
+    atibdj4ParseFlacVorbisTags (atidata, tagdata, data, tagtype, rewrite);
   }
   if (tagtype == TAG_TYPE_MP4) {
     atibdj4ParseMP4Tags (atidata, tagdata, data, tagtype, rewrite);
@@ -274,7 +270,14 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 }
 
 static void
-atibdj4ParseVorbisTags (atidata_t *atidata, slist_t *tagdata,
+atibdj4ParseOggVorbisTags (atidata_t *atidata, slist_t *tagdata,
+    atibdj4data_t *data, int tagtype, int *rewrite)
+{
+  return;
+}
+
+static void
+atibdj4ParseFlacVorbisTags (atidata_t *atidata, slist_t *tagdata,
     atibdj4data_t *data, int tagtype, int *rewrite)
 {
   return;
