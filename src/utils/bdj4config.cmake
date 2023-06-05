@@ -82,9 +82,9 @@ pkg_check_modules (XML2 libxml-2.0)
 
 # libid3tag
 if (WIN32)
-  set (LIBID3TAG0_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libid3tag0.dll")
+  set (LIBID3TAG_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libid3tag0.dll")
 else()
-  set (LIBID3TAG0_LDFLAGS -llibid3tag0)
+  set (LIBID3TAG_LDFLAGS -lid3tag)
 endif()
 
 #### ICU string library

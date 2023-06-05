@@ -28,6 +28,7 @@ target_link_libraries (libatibdj4 PUBLIC
   libbdjatiutil
   libbdj4basic
   libbdj4common
+  ${LIBID3TAG_LDFLAGS}
   m
 )
 
