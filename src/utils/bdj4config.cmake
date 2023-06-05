@@ -80,15 +80,11 @@ pkg_check_modules (XML2 libxml-2.0)
 
 #### tag parsing modules
 
-# ffmpeg : libavformat / libavutil
-pkg_check_modules (LIBAVFORMAT libavformat)
-pkg_check_modules (LIBAVUTIL libavutil)
+# libid3tag
 if (WIN32)
-  # the include directory is already there
-  # dependency on specific version numbers. is there a better way?
-  # a different pre-built package for windows package may be a possibility
-  set (LIBAVFORMAT_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avformat-59.dll")
-  set (LIBAVUTIL_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avutil-57.dll")
+  set (LIBID3TAG0_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libid3tag0.dll")
+else()
+  set (LIBID3TAG0_LDFLAGS -llibid3tag0)
 endif()
 
 #### ICU string library

@@ -23,13 +23,8 @@ target_link_libraries (libbdjatiutil PUBLIC
   m
 )
 
-add_library (libatiffmpeg SHARED atiffmpeg.c)
-target_include_directories (libatiffmpeg
-  PUBLIC "${LIBAVFORMAT_INCLUDE_DIRS}" "${LIBAVUTIL_INCLUDE_DIRS}"
-)
-target_link_libraries (libatiffmpeg PUBLIC
-  ${LIBAVFORMAT_LDFLAGS}
-  ${LIBAVUTIL_LDFLAGS}
+add_library (libatibdj4 SHARED atibdj4.c)
+target_link_libraries (libatibdj4 PUBLIC
   libbdjatiutil
   libbdj4basic
   libbdj4common
@@ -46,7 +41,7 @@ target_link_libraries (libatimutagen PUBLIC
 
 install (TARGETS
   libbdj4ati
-  libatiffmpeg
+  libatibdj4
   libatimutagen
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
