@@ -143,15 +143,14 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
     const char          *tagname;
     id3_latin1_t const  *ufid;
 
-fprintf (stderr, "id: %s\n", id3frame->id);
     tagname = NULL;
     ufid = NULL;
-    if (strcmp (id3frame->id, "TXXX") != 0) {
+    if (strcmp (id3frame->id, "TXXX") != 0 &&
+        strcmp (id3frame->id, "UFID") != 0) {
       tagname = atidata->tagLookup (tagtype, id3frame->id);
       if (tagname == NULL) {
         tagname = id3frame->id;
       }
-fprintf (stderr, "  tagname: %s\n", tagname);
     }
 
     for (size_t i = 0; i < id3frame->nfields; ++i) {
@@ -159,7 +158,6 @@ fprintf (stderr, "  tagname: %s\n", tagname);
 
       field = &id3frame->fields [i];
 
-fprintf (stderr, "  %d %d\n", i, id3frame->fields [i].type);
       switch (id3frame->fields [i].type) {
         case ID3_FIELD_TYPE_TEXTENCODING: {
           enum id3_field_textencoding   te;
@@ -177,7 +175,12 @@ fprintf (stderr, "  %d %d\n", i, id3frame->fields [i].type);
           id3_latin1_t const *str;
 
           str = id3_field_getlatin1 (field);
-          slistSetStr (tagdata, tagname, (const char *) str);
+          if (strcmp (id3frame->id, "UFID") == 0) {
+            ufid = str;
+            tagname = atidata->tagLookup (tagtype, (const char *) str);
+          } else {
+            slistSetStr (tagdata, tagname, (const char *) str);
+          }
           break;
         }
         case ID3_FIELD_TYPE_LATIN1FULL: {
@@ -196,11 +199,8 @@ fprintf (stderr, "  %d %d\n", i, id3frame->fields [i].type);
 
           ustr = id3_field_getstring (field);
           str = id3_ucs4_utf8duplicate (ustr);
-          if (strcmp (id3frame->id, "UFID") == 0) {
-            ufid = str;
-          } else if (tagname == NULL) {
-            tagname = (const char *) str;
-fprintf (stderr, "  tagname: %s\n", tagname);
+          if (tagname == NULL) {
+            tagname = atidata->tagLookup (tagtype, (const char *) str);
           } else {
             slistSetStr (tagdata, tagname, (const char *) str);
           }

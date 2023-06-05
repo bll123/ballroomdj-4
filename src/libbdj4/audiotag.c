@@ -433,7 +433,12 @@ audiotagCreateLookupTable (int tagtype)
     }
     if (tagdefs [i].audiotags [tagtype].tag != NULL) {
       slistSetStr (taglist, tagdefs [i].audiotags [tagtype].tag, tagdefs [i].tag);
-    }
+      if (tagdefs [i].audiotags [tagtype].desc != NULL) {
+        /* for mp3: also add w/the txxx= prefix */
+        slistSetStr (taglist, tagdefs [i].audiotags [tagtype].desc, tagdefs [i].tag);
+fprintf (stderr, "add: %s %s\n", tagdefs [i].audiotags [tagtype].desc, tagdefs [i].tag);
+      } /* has a desc */
+    } /* if there is a tag conversion */
   }
 }
 
