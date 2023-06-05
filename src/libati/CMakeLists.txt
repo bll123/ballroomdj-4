@@ -29,6 +29,9 @@ target_link_libraries (libatibdj4 PUBLIC
   libbdj4basic
   libbdj4common
   ${LIBID3TAG_LDFLAGS}
+  ${LIBVORBIS_LDFLAGS}
+  ${LIBVORBISFILE_LDFLAGS}
+  ${LIBMP4V2_LDFLAGS}
   m
 )
 

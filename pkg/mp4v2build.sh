@@ -58,9 +58,9 @@ procs=$(getconf _NPROCESSORS_ONLN)
 echo "= procs: $procs"
 
 cd $cwd
-cd cpp-utilities*
+cd mp4v2*
 if [ $? -eq 0 ]; then
-  echo "## build cpp-utilities"
+  echo "## build mp4v2"
   sdir=$(pwd)
   bdir="${sdir}/build"
 
@@ -74,30 +74,5 @@ if [ $? -eq 0 ]; then
   cmake --build "${bdir}" ${pbld} --verbose
 
   cmake --install "${bdir}"
-fi
-
-cd $cwd
-cd tagparser*
-if [ $? -eq 0 ]; then
-  echo "## build tagparser"
-  sdir=$(pwd)
-  bdir="${sdir}/build"
-
-  test -d "${bdir}" && rm -rf "${bdir}"
-  cmake -G "$cmg" \
-      -S "${sdir}" \
-      -B "${bdir}" \
-      -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_INSTALL_PREFIX="$INSTLOC" \
-      -DBUILD_SHARED_LIBS=on
-  cmake --build "${bdir}" ${pbld} --verbose
-
-  cmake --install "${bdir}"
-  case $tag in
-    linux)
-      patchelf \
-          --set-rpath \$ORIGIN "${INSTLOC}/lib/libtagparser.so"
-      ;;
-  esac
 fi
 

@@ -142,9 +142,11 @@ function copyreleasefiles {
       ${stage}/plocal/bin/curl-config \
       ${stage}/plocal/bin/curl.exe \
       ${stage}/plocal/bin/libcheck-*.dll \
+      ${stage}/plocal/bin/mp4* \
       ${stage}/plocal/bin/taglib-config.cmd
   rm -rf \
-      ${stage}/img/profile0[0-9]
+      ${stage}/img/profile0[0-9] \
+      ${stage}/plocal/lib/pkgconfig
 }
 
 function setLibVol {

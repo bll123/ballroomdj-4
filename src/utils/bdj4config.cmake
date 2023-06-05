@@ -82,10 +82,22 @@ pkg_check_modules (XML2 libxml-2.0)
 
 # libid3tag
 if (WIN32)
-  set (LIBID3TAG_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libid3tag0.dll")
+  set (LIBID3TAG_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libid3tag.dll")
 else()
   set (LIBID3TAG_LDFLAGS -lid3tag)
 endif()
+
+# libvorbisfile
+if (WIN32)
+  set (LIBVORBIS_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libvorbis.dll")
+  set (LIBVORBISFILE_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libvorbisfile.dll")
+else()
+  set (LIBVORBIS_LDFLAGS -lvorbis)
+  set (LIBVORBISFILE_LDFLAGS -lvorbisfile)
+endif()
+
+set (ENV{PKG_CONFIG_PATH} "../plocal/lib/pkgconfig")
+pkg_check_modules (MP4V2 libmp4v2)
 
 #### ICU string library
 

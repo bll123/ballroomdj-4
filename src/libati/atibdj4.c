@@ -273,6 +273,35 @@ static void
 atibdj4ParseOggVorbisTags (atidata_t *atidata, slist_t *tagdata,
     atibdj4data_t *data, int tagtype, int *rewrite)
 {
+  OggVorbis_File        ovf;
+  int                   rc;
+  struct vorbis_comment *vc;
+
+  rc = ov_fopen (data->ffn, &ovf);
+  vc = ovf.vc;
+  for (int i = 0; i < vc->comments; ++i) {
+    const char  *val;
+    const char  *kw;
+    const char  *tagname;
+    int         len;
+    char        *tmp [100];
+
+    kw = vc->user_comments [i];
+    val = strstr (kw, "=");
+    if (val == NULL) {
+      continue;
+    }
+    len = val - kw;
+    strlcpy (tmp, kw, len + 1);
+    tmp [len] = '\0';
+    ++val;
+    tagname = atidata->tagLookup (tagtype, tmp);
+    if (tagname == NULL) {
+      tagname = tmp;
+    }
+    slistSetStr (tagdata, tagname, val);
+  }
+  ov_clear (&ovf);
   return;
 }
 

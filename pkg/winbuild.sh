@@ -5,8 +5,7 @@
 # 2023-5-5
 #   Could not get curl to link with libressl, so I just removed libressl.
 #   This means that the msys2 openssl libraries and dependencies get shipped.
-#   Perhaps a later release of curl will work better, and libressl can
-#   be put back in.
+#   There may be some issue in the way libressl is being built.
 #
 # windows
 
@@ -166,6 +165,20 @@ if [[ $pkgname == "" || $pkgname = "curl" ]]; then
       make clean
     fi
     make -j $procs LIBS="-static-libgcc"
+    make install
+  fi
+fi
+
+if [[ $pkgname == "" || $pkgname = "vorbis-tools" ]]; then
+  cd $cwd
+  cd vorbis-tools*
+  if [ $? -eq 0 ]; then
+    echo "## build vorbis-tools"
+    if [ $noclean = F ]; then
+      make distclean
+    fi
+    ./configure --prefix=$INSTLOC --disable-static
+    make -j $procs
     make install
   fi
 fi
