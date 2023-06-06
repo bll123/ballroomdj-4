@@ -126,14 +126,14 @@ function setorgregex {
   mv -f ${gconf}.n ${gconf}
 }
 
-ATIFFMPEG=F
+ATIBDJ4=F
 for arg in "$@"; do
   case $arg in
-    --atiffmpegro)
-      ATIFFMPEG=RO
+    --atibdj4ro)
+      ATIBDJ4=RO
       ;;
-    --atiffmpeg)
-      ATIFFMPEG=T
+    --atibdj4)
+      ATIBDJ4=T
       ;;
   esac
 done
@@ -172,13 +172,13 @@ TMPB=tmp/dbtestb.txt
 
 echo "## make test setup"
 ATIFLAG=""
-if [[ $ATIFFMPEG == T ]]; then
-  ATIFLAG=--atiffmpeg
+if [[ $ATIBDJ4 == T ]]; then
+  ATIFLAG=--atibdj4
 fi
 ./src/utils/mktestsetup.sh --force ${ATIFLAG}
 
-if [[ $ATIFFMPEG == T || $ATIFFMPEG == RO ]]; then
-  ATII=libatiffmpeg
+if [[ $ATIBDJ4 == T || $ATIBDJ4 == RO ]]; then
+  ATII=libatibdj4
   hostname=$(hostname)
   tfn=data/${hostname}/bdjconfig.txt
   sed -e "/^AUDIOTAG/ { n ; s,.*,..${ATII}, ; }" \
@@ -211,6 +211,8 @@ if [[ $TESTON == T ]]; then
   msg+=$(compcheck $tname $crc)
   dispres $tname $rc $crc
 fi
+
+TESTON=F
 
 if [[ $TESTON == T ]]; then
   # main test db : check-new with no changes

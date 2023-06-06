@@ -33,7 +33,7 @@ typedef struct audiotag {
 static audiotag_t *at = NULL;
 
 static void audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype);
-static void audiotagParseTags (slist_t *tagdata, char *data, int filetype, int tagtype, int *rewrite);
+static void audiotagParseTags (slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
 static void audiotagCreateLookupTable (int tagtype);
 static bool audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value);
 static int  audiotagTagCheck (int writetags, int tagtype, const char *tag, int rewrite);
@@ -75,21 +75,20 @@ audiotagCleanup (void)
   at = NULL;
 }
 
-/*
- * .m4a:
- *    trkn=(17, 21)
- * mp3
- *    trck=17/21
- */
+bool
+audiotagUseReader (void)
+{
+  return atiUseReader (at->ati);
+}
 
-void *
+char *
 audiotagReadTags (const char *ffn)
 {
   return atiReadTags (at->ati, ffn);
 }
 
 slist_t *
-audiotagParseData (const char *ffn, void *data, int *rewrite)
+audiotagParseData (const char *ffn, char *data, int *rewrite)
 {
   slist_t     *tagdata;
   int         tagtype;
@@ -99,7 +98,7 @@ audiotagParseData (const char *ffn, void *data, int *rewrite)
   tagdata = slistAlloc ("atag", LIST_ORDERED, NULL);
   audiotagDetermineTagType (ffn, &tagtype, &filetype);
   audiotagCreateLookupTable (tagtype);
-  audiotagParseTags (tagdata, data, filetype, tagtype, rewrite);
+  audiotagParseTags (tagdata, ffn, data, filetype, tagtype, rewrite);
   return tagdata;
 }
 
@@ -141,8 +140,8 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
     return AUDIOTAG_NOT_SUPPORTED;
   }
 
-  if (filetype != AFILE_TYPE_OGGOPUS &&
-      filetype != AFILE_TYPE_OGGVORBIS &&
+  if (filetype != AFILE_TYPE_OPUS &&
+      filetype != AFILE_TYPE_OGG &&
       filetype != AFILE_TYPE_FLAC &&
       filetype != AFILE_TYPE_MP3 &&
       filetype != AFILE_TYPE_MP4) {
@@ -322,10 +321,10 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
     *filetype = AFILE_TYPE_WMA;
   } else if (pathInfoExtCheck (pi, ".ogg")) {
     *tagtype = TAG_TYPE_VORBIS;
-    *filetype = AFILE_TYPE_OGGVORBIS;
+    *filetype = AFILE_TYPE_OGG;
   } else if (pathInfoExtCheck (pi, ".opus")) {
     *tagtype = TAG_TYPE_VORBIS;
-    *filetype = AFILE_TYPE_OGGOPUS;
+    *filetype = AFILE_TYPE_OPUS;
   } else if (pathInfoExtCheck (pi, ".flac")) {
     *tagtype = TAG_TYPE_VORBIS;
     *filetype = AFILE_TYPE_FLAC;
@@ -338,13 +337,13 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 }
 
 static void
-audiotagParseTags (slist_t *tagdata, char *data,
+audiotagParseTags (slist_t *tagdata, const char *ffn, char *data,
     int filetype, int tagtype, int *rewrite)
 {
   slistidx_t    iteridx;
   const char    *tag;
 
-  atiParseTags (at->ati, tagdata, data, filetype, tagtype, rewrite);
+  atiParseTags (at->ati, tagdata, ffn, data, filetype, tagtype, rewrite);
 
   slistStartIterator (tagdata, &iteridx);
   while ((tag = slistIterateKey (tagdata, &iteridx)) != NULL) {

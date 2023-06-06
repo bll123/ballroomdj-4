@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=5
+ver=6
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -155,7 +155,7 @@ if [[ -f /usr/bin/apt ]]; then
   # tested 2022
   pkglist="ffmpeg
       python3-setuptools python3-pip python3-wheel
-      libcurl4"
+      libcurl4 libopusfile0"
 fi
 if [[ -f /usr/bin/dnf ]]; then
   # redhat/fedora

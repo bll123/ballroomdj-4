@@ -71,7 +71,13 @@ atiiFree (atidata_t *atidata)
   }
 }
 
-void *
+bool
+atiiUseReader (void)
+{
+  return true;
+}
+
+char *
 atiiReadTags (atidata_t *atidata, const char *ffn)
 {
   char        * data;
@@ -94,10 +100,9 @@ atiiReadTags (atidata_t *atidata, const char *ffn)
 }
 
 void
-atiiParseTags (atidata_t *atidata, slist_t *tagdata, void *tdata,
-    int filetype, int tagtype, int *rewrite)
+atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
+    char *data, int filetype, int tagtype, int *rewrite)
 {
-  char        *data = tdata;
   char        *tstr;
   char        *tokstr;
   char        *p;
@@ -468,12 +473,12 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
     fprintf (ofh, "from mutagen.mp4 import MP4\n");
     fprintf (ofh, "audio = MP4('%s')\n", ffn);
   }
-  if (filetype == AFILE_TYPE_OGGOPUS) {
+  if (filetype == AFILE_TYPE_OPUS) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: opus");
     fprintf (ofh, "from mutagen.oggopus import OggOpus\n");
     fprintf (ofh, "audio = OggOpus('%s')\n", ffn);
   }
-  if (filetype == AFILE_TYPE_OGGVORBIS) {
+  if (filetype == AFILE_TYPE_OGG) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: oggvorbis");
     fprintf (ofh, "from mutagen.oggvorbis import OggVorbis\n");
     fprintf (ofh, "audio = OggVorbis('%s')\n", ffn);

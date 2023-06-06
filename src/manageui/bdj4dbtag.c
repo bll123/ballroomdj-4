@@ -249,7 +249,7 @@ dbtagProcessing (void *udata)
     if (dbtag->threads [i].state == DBTAG_T_STATE_HAVE_DATA) {
       pthread_join (dbtag->threads [i].thread, NULL);
       snprintf (sbuff, sizeof (sbuff), "%s%c%s",
-          dbtag->threads [i].fn, MSG_ARGS_RS, dbtag->threads [i].data);
+          dbtag->threads [i].fn, MSG_ARGS_RS, (char *) dbtag->threads [i].data);
       ++dbtag->sent;
       connSendMessage (dbtag->conn, ROUTE_DBUPDATE, MSG_DB_FILE_TAGS, sbuff);
       dataFree (dbtag->threads [i].fn);

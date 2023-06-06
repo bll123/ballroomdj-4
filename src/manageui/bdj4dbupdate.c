@@ -143,6 +143,7 @@ typedef struct {
   bool              stoprequest : 1;
   bool              usingmusicdir : 1;
   bool              verbose : 1;
+  bool              usereader : 1;
 } dbupdate_t;
 
 enum {
@@ -206,6 +207,7 @@ main (int argc, char *argv[])
   dbupdate.stoprequest = false;
   dbupdate.usingmusicdir = true;
   dbupdate.verbose = false;
+  dbupdate.usereader = false;
   mstimeset (&dbupdate.outputTimer, 0);
 
   dbupdate.dancefromgenre = bdjoptGetNum (OPT_G_LOADDANCEFROMGENRE);
@@ -233,6 +235,7 @@ main (int argc, char *argv[])
       "dbup", ROUTE_DBUPDATE, &dbupdate.startflags);
   logProcBegin (LOG_PROC, "dbupdate");
 
+  dbupdate.usereader = audiotagUseReader ();
   dbupdate.olddirlist = bdjoptGetStr (OPT_M_DIR_OLD_SKIP);
   if (dbupdate.olddirlist != NULL && *dbupdate.olddirlist) {
     dbupdate.haveolddirlist = true;
@@ -530,8 +533,13 @@ dbupdateProcessing (void *udata)
         continue;
       }
 
-      connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_FILE_CHK, fn);
-      logMsg (LOG_DBG, LOG_DBUPDATE, "  send %s", fn);
+      if (dbupdate->usereader) {
+        connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_FILE_CHK, fn);
+        logMsg (LOG_DBG, LOG_DBUPDATE, "  send %s", fn);
+      } else {
+        dbupdateProcessTagData (dbupdate, fn);
+      }
+
       dbupdateIncCount (dbupdate, C_FILE_SENT);
       ++count;
       if (count > FNAMES_SENT_PER_ITER) {
@@ -541,9 +549,11 @@ dbupdateProcessing (void *udata)
 
     if (fn == NULL) {
       logMsg (LOG_DBG, LOG_IMPORTANT, "-- skipped (%u)", dbupdate->counts [C_FILE_SKIPPED]);
-      logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%u): %" PRId64 " ms",
-          dbupdate->counts [C_FILE_SENT], (int64_t) mstimeend (&dbupdate->starttm));
-      connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_ALL_FILES_SENT, NULL);
+      if (dbupdate->usereader) {
+        logMsg (LOG_DBG, LOG_IMPORTANT, "-- all filenames sent (%u): %" PRId64 " ms",
+            dbupdate->counts [C_FILE_SENT], (int64_t) mstimeend (&dbupdate->starttm));
+        connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_ALL_FILES_SENT, NULL);
+      }
       dbupdate->state = DB_UPD_PROCESS;
     }
   }
@@ -698,7 +708,8 @@ dbupdateListeningCallback (void *tdbupdate, programstate_t programState)
     flags = PROCUTIL_NO_DETACH;
   }
 
-  if ((dbupdate->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
+  if (dbupdate->usereader &&
+      (dbupdate->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
     dbupdate->processes [ROUTE_DBTAG] = procutilStartProcess (
         ROUTE_PLAYER, "bdj4dbtag", flags, NULL);
   }
@@ -719,27 +730,25 @@ dbupdateConnectingCallback (void *tdbupdate, programstate_t programState)
   connProcessUnconnected (dbupdate->conn);
 
   if ((dbupdate->startflags & BDJ4_INIT_NO_START) != BDJ4_INIT_NO_START) {
-    if (! connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
+    if (dbupdate->usereader &&
+        ! connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
       connConnect (dbupdate->conn, ROUTE_DBTAG);
     }
-    if (! dbupdate->cli) {
-      if (! connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
-        connConnect (dbupdate->conn, ROUTE_MANAGEUI);
-      }
+    if (! dbupdate->cli &&
+        ! connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
+      connConnect (dbupdate->conn, ROUTE_MANAGEUI);
     }
   }
 
-  if (connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
+  if (! dbupdate->usereader ||
+      connIsConnected (dbupdate->conn, ROUTE_DBTAG)) {
     ++c;
   }
-  if (connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
+  if (dbupdate->cli ||
+      connIsConnected (dbupdate->conn, ROUTE_MANAGEUI)) {
     ++c;
   }
-  if (dbupdate->cli) {
-    if (c == 1) { rc = STATE_FINISHED; }
-  } else {
-    if (c == 2) { rc = STATE_FINISHED; }
-  }
+  if (c == 2) { rc = STATE_FINISHED; }
 
   logProcEnd (LOG_PROC, "dbupdateConnectingCallback", "");
   return rc;
@@ -756,17 +765,15 @@ dbupdateHandshakeCallback (void *tdbupdate, programstate_t programState)
 
   connProcessUnconnected (dbupdate->conn);
 
-  if (connHaveHandshake (dbupdate->conn, ROUTE_DBTAG)) {
+  if (! dbupdate->usereader ||
+      connHaveHandshake (dbupdate->conn, ROUTE_DBTAG)) {
     ++c;
   }
-  if (connHaveHandshake (dbupdate->conn, ROUTE_MANAGEUI)) {
+  if (dbupdate->cli ||
+      connHaveHandshake (dbupdate->conn, ROUTE_MANAGEUI)) {
     ++c;
   }
-  if (dbupdate->cli) {
-    if (c == 1) { rc = STATE_FINISHED; }
-  } else {
-    if (c == 2) { rc = STATE_FINISHED; }
-  }
+  if (c == 2) { rc = STATE_FINISHED; }
 
   if (rc == STATE_FINISHED && dbupdate->updfromitunes) {
     connSendMessage (dbupdate->conn, ROUTE_MANAGEUI, MSG_DB_WAIT, NULL);
@@ -847,7 +854,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
 
   logMsg (LOG_DBG, LOG_DBUPDATE, "__ process %s", ffn);
 
-  if (data == NULL) {
+  if (dbupdate->usereader && data == NULL) {
     /* complete failure */
     logMsg (LOG_DBG, LOG_DBUPDATE, "  null data");
     dbupdateIncCount (dbupdate, C_NULL_DATA);

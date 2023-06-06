@@ -26,8 +26,9 @@ typedef struct ati {
   dlhandle_t        *dlHandle;
   atidata_t         *(*atiiInit) (const char *, int, taglookup_t, tagcheck_t, tagname_t, audiotaglookup_t);
   void              (*atiiFree) (atidata_t *atidata);
-  void              *(*atiiReadTags) (atidata_t *atidata, const char *ffn);
-  void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, void *tdata, int filetype, int tagtype, int *rewrite);
+  bool              *(*atiiUseReader) (void);
+  char              *(*atiiReadTags) (atidata_t *atidata, const char *ffn);
+  void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
   int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
   atidata_t         *atidata;
 } ati_t;
@@ -43,6 +44,7 @@ atiInit (const char *atipkg, int writetags,
   ati = mdmalloc (sizeof (ati_t));
   ati->atiiInit = NULL;
   ati->atiiFree = NULL;
+  ati->atiiUseReader = NULL;
   ati->atiiReadTags = NULL;
   ati->atiiParseTags = NULL;
   ati->atiiWriteTags = NULL;
@@ -60,6 +62,7 @@ atiInit (const char *atipkg, int writetags,
 #pragma clang diagnostic ignored "-Wpedantic"
   ati->atiiInit = dylibLookup (ati->dlHandle, "atiiInit");
   ati->atiiFree = dylibLookup (ati->dlHandle, "atiiFree");
+  ati->atiiUseReader = dylibLookup (ati->dlHandle, "atiiUseReader");
   ati->atiiReadTags = dylibLookup (ati->dlHandle, "atiiReadTags");
   ati->atiiParseTags = dylibLookup (ati->dlHandle, "atiiParseTags");
   ati->atiiWriteTags = dylibLookup (ati->dlHandle, "atiiWriteTags");
@@ -86,7 +89,16 @@ atiFree (ati_t *ati)
   }
 }
 
-void *
+bool
+atiUseReader (ati_t *ati)
+{
+  if (ati != NULL && ati->atiiUseReader != NULL) {
+    return ati->atiiUseReader ();
+  }
+  return false;
+}
+
+char *
 atiReadTags (ati_t *ati, const char *ffn)
 {
   if (ati != NULL && ati->atiiReadTags != NULL) {
@@ -96,11 +108,11 @@ atiReadTags (ati_t *ati, const char *ffn)
 }
 
 void
-atiParseTags (ati_t *ati, slist_t *tagdata,
-    void *tdata, int filetype, int tagtype, int *rewrite)
+atiParseTags (ati_t *ati, slist_t *tagdata, const char *ffn,
+    char *data, int filetype, int tagtype, int *rewrite)
 {
   if (ati != NULL && ati->atiiParseTags != NULL) {
-    ati->atiiParseTags (ati->atidata, tagdata, tdata, filetype, tagtype, rewrite);
+    ati->atiiParseTags (ati->atidata, tagdata, ffn, data, filetype, tagtype, rewrite);
   }
 
   return;

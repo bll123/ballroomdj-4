@@ -57,7 +57,7 @@ while test $# -gt 0; do
       args+=$1
       args+=" "
       ;;
-    --atiffmpeg)
+    --atibdj4)
       # ignored
       ;;
     *)

@@ -24,15 +24,19 @@ target_link_libraries (libbdjatiutil PUBLIC
 )
 
 add_library (libatibdj4 SHARED atibdj4.c)
+target_include_directories (libatibdj4
+  PUBLIC ${LIBOPUS_INCLUDE_DIRS}
+)
 target_link_libraries (libatibdj4 PUBLIC
   libbdjatiutil
   libbdj4basic
   libbdj4common
-  ${ID3TAG_LDFLAGS}
-  ${VORBIS_LDFLAGS}
-  ${VORBISFILE_LDFLAGS}
-  ${FLAC_LDFLAGS}
-  ${MP4V2_LDFLAGS}
+  ${LIBAVFORMAT_LDFLAGS}
+  ${LIBID3TAG_LDFLAGS}
+  ${LIBVORBIS_LDFLAGS}
+  ${LIBVORBISFILE_LDFLAGS}
+  ${LIBOPUS_LDFLAGS}
+  ${LIBFLAC_LDFLAGS}
   m
 )
 

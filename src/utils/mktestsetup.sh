@@ -65,11 +65,11 @@ if [[ -f $(basename $FLAG) ]]; then
   mv $(basename $FLAG) $FLAG
 fi
 
-ATIFFMPEG=F
+ATIBDJ4=F
 for arg in "$@"; do
   case $arg in
-    --atiffmpeg)
-      ATIFFMPEG=T
+    --atibdj4)
+      ATIBDJ4=T
       ;;
   esac
 done
@@ -146,8 +146,8 @@ sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
 mv -f ${tfn}.n ${tfn}
 
 ATII=libatimutagen
-if [[ $ATIFFMPEG == T ]]; then
-  ATII=libatiffmpeg
+if [[ $ATIBDJ4 == T ]]; then
+  ATII=libatibdj4
 fi
 tfn=data/${hostname}/bdjconfig.txt
 sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \

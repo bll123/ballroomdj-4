@@ -90,24 +90,27 @@ endif()
 
 # libid3tag
 if (WIN32)
-  set (ID3TAG_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libid3tag.dll")
+  set (LIBID3TAG_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libid3tag.dll")
 else()
-  set (ID3TAG_LDFLAGS -lid3tag)
+  set (LIBID3TAG_LDFLAGS -lid3tag)
 endif()
 
 # libvorbisfile
 if (WIN32)
-  set (VORBIS_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libvorbis.dll")
-  set (VORBISFILE_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libvorbisfile.dll")
+  set (LIBVORBIS_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libvorbis.dll")
+  set (LIBVORBISFILE_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libvorbisfile.dll")
 else()
-  set (VORBIS_LDFLAGS -lvorbis)
-  set (VORBISFILE_LDFLAGS -lvorbisfile)
+  set (LIBVORBIS_LDFLAGS -lvorbis)
+  set (LIBVORBISFILE_LDFLAGS -lvorbisfile)
 endif()
 
 set (ENV{PKG_CONFIG_PATH} "${PROJECT_SOURCE_DIR}/../plocal/lib/pkgconfig")
 
 # libflac
-pkg_check_modules (FLAC flac)
+pkg_check_modules (LIBFLAC flac)
+
+# libopus
+pkg_check_modules (LIBOPUS opus)
 
 # mp4v2
 # the .pc file is incorrect
