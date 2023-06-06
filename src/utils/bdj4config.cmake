@@ -80,24 +80,42 @@ pkg_check_modules (XML2 libxml-2.0)
 
 #### tag parsing modules
 
+# ffmpeg : libavformat / libavutil
+pkg_check_modules (LIBAVFORMAT libavformat)
+pkg_check_modules (LIBAVUTIL libavutil)
+if (WIN32)
+  set (LIBAVFORMAT_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avformat-59.dll")
+  set (LIBAVUTIL_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avutil-57.dll")
+endif()
+
 # libid3tag
 if (WIN32)
-  set (LIBID3TAG_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libid3tag.dll")
+  set (ID3TAG_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libid3tag.dll")
 else()
-  set (LIBID3TAG_LDFLAGS -lid3tag)
+  set (ID3TAG_LDFLAGS -lid3tag)
 endif()
 
 # libvorbisfile
 if (WIN32)
-  set (LIBVORBIS_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libvorbis.dll")
-  set (LIBVORBISFILE_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libvorbisfile.dll")
+  set (VORBIS_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libvorbis.dll")
+  set (VORBISFILE_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libvorbisfile.dll")
 else()
-  set (LIBVORBIS_LDFLAGS -lvorbis)
-  set (LIBVORBISFILE_LDFLAGS -lvorbisfile)
+  set (VORBIS_LDFLAGS -lvorbis)
+  set (VORBISFILE_LDFLAGS -lvorbisfile)
 endif()
 
-set (ENV{PKG_CONFIG_PATH} "../plocal/lib/pkgconfig")
-pkg_check_modules (MP4V2 libmp4v2)
+set (ENV{PKG_CONFIG_PATH} "${PROJECT_SOURCE_DIR}/../plocal/lib/pkgconfig")
+
+# libflac
+pkg_check_modules (FLAC flac)
+
+# mp4v2
+# the .pc file is incorrect
+if (WIN32)
+  set (MP4V2_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libmp4v2.dll")
+else()
+  set (MP4V2_LDFLAGS -L"${PROJECT_SOURCE_DIR}/../plocal/lib" -lmp4v2)
+endif()
 
 #### ICU string library
 

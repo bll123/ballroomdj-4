@@ -11,6 +11,7 @@
 #include <inttypes.h>
 #include <errno.h>
 
+#include <libavformat/avformat.h>
 #include <id3tag.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
@@ -41,6 +42,7 @@ static void atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata, atibdj4da
 static void atibdj4ParseOggVorbisTags (atidata_t *atidata, slist_t *tagdata, atibdj4data_t *data, int tagtype, int *rewrite);
 static void atibdj4ParseFlacVorbisTags (atidata_t *atidata, slist_t *tagdata, atibdj4data_t *data, int tagtype, int *rewrite);
 static void atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata, atibdj4data_t *data, int tagtype, int *rewrite);
+static void atiffmpegLogCallback (void *avcl, int level, const char *fmt, va_list vl);
 
 const char *
 atiiDesc (void)
@@ -62,6 +64,9 @@ atiiInit (const char *atipkg, int writetags,
   atidata->tagName = tagName;
   atidata->audioTagLookup = audioTagLookup;
   atidata->data = NULL;
+
+  /* turn off logging */
+  av_log_set_callback (atiffmpegLogCallback);
 
   return atidata;
 }
@@ -93,6 +98,29 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, void *tdata,
     int filetype, int tagtype, int *rewrite)
 {
   atibdj4data_t     *data = tdata;
+  AVFormatContext   *ictx = NULL;
+  char              pbuff [100];
+  int32_t           duration;
+  int               rc;
+
+  if ((rc = avformat_open_input (&ictx, data->ffn, NULL, NULL))) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to open %d %s\n", rc, data->ffn);
+    return;
+  }
+
+  if ((rc = avformat_find_stream_info (ictx, NULL)) < 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to load stream info %d %s\n", rc, data->ffn);
+    avformat_close_input (&ictx);
+    return;
+  }
+
+  duration = ictx->duration;
+  duration /= 1000;
+  snprintf (pbuff, sizeof (pbuff), "%ld", (long) duration);
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: %s\n", pbuff);
+  slistSetStr (tagdata, atidata->tagName (TAG_DURATION), pbuff);
+
+  avformat_close_input (&ictx);
 
   if (tagtype == TAG_TYPE_MP3) {
     atibdj4ParseMP3Tags (atidata, tagdata, data, tagtype, rewrite);
@@ -175,6 +203,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
             ufid = str;
             tagname = atidata->tagLookup (tagtype, (const char *) str);
           } else {
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, str);
             slistSetStr (tagdata, tagname, (const char *) str);
           }
           break;
@@ -183,6 +212,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           id3_latin1_t const *str;
 
           str = id3_field_getfulllatin1 (field);
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, str);
           slistSetStr (tagdata, tagname, (const char *) str);
           break;
         }
@@ -198,6 +228,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           if (tagname == NULL) {
             tagname = atidata->tagLookup (tagtype, (const char *) str);
           } else {
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, str);
             slistSetStr (tagdata, tagname, (const char *) str);
           }
           break;
@@ -208,6 +239,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
           ustr = id3_field_getstring (field);
           str = id3_ucs4_utf8duplicate (ustr);
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, str);
           slistSetStr (tagdata, tagname, (const char *) str);
           break;
         }
@@ -221,6 +253,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
             ustr = id3_field_getstrings (field, j);
             str = id3_ucs4_utf8duplicate (ustr);
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, str);
             slistSetStr (tagdata, tagname, (const char *) str);
           }
           break;
@@ -232,6 +265,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           id3_latin1_t const *str;
 
           str = id3_field_getlatin1 (field);
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, str);
           slistSetStr (tagdata, tagname, (const char *) str);
           break;
         }
@@ -245,6 +279,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
           val = id3_field_getint (field);
           snprintf (tmp, sizeof (tmp), "%ld", val);
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, tmp);
           slistSetStr (tagdata, tagname, tmp);
           break;
         }
@@ -257,6 +292,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
             bstr = id3_field_getbinarydata (field, &blen);
             memcpy (tmp, bstr, blen);
             tmp [blen] = '\0';
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s=%s", tagname, id3frame->id, ufid, tmp);
             slistSetStr (tagdata, tagname, tmp);
           }
           break;
@@ -284,7 +320,7 @@ atibdj4ParseOggVorbisTags (atidata_t *atidata, slist_t *tagdata,
     const char  *kw;
     const char  *tagname;
     int         len;
-    char        *tmp [100];
+    char        tmp [100];
 
     kw = vc->user_comments [i];
     val = strstr (kw, "=");
@@ -316,5 +352,12 @@ static void
 atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata,
     atibdj4data_t *data, int tagtype, int *rewrite)
 {
+  return;
+}
+
+static void
+atiffmpegLogCallback (void *avcl, int level, const char *fmt, va_list vl)
+{
+//  vfprintf (stderr, fmt, vl);
   return;
 }

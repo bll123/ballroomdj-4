@@ -12,7 +12,9 @@
   libressl | https://www.libressl.org/
   mongoose | https://github.com/cesanta/mongoose
   &nbsp; |
-  taglib | https://taglib.org/
+  vorbis-tools | https://xiph.org
+  flac | https://xiph.org
+  id3tag | https://github.com/audacity/libid3tag
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
