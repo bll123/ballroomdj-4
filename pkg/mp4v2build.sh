@@ -70,7 +70,7 @@ if [ $? -eq 0 ]; then
       -B "${bdir}" \
       -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX="$INSTLOC" \
-      -DBUILD_SHARED_LIBS=on
+      -DBUILD_UTILS=off
   cmake --build "${bdir}" ${pbld} --verbose
 
   cmake --install "${bdir}"
