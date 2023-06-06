@@ -124,18 +124,23 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
   avformat_close_input (&ictx);
 
   if (tagtype == TAG_TYPE_MP3) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
     atibdj4ParseMP3Tags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_OGG) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg/vorbis");
     atibdj4ParseOggTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_OPUS) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus/vorbis");
     atibdj4ParseOpusTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_FLAC) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac/vorbis");
     atibdj4ParseFlacTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (tagtype == TAG_TYPE_MP4) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
     atibdj4ParseMP4Tags (atidata, tagdata, ffn, tagtype, rewrite);
   }
 
@@ -334,7 +339,6 @@ atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata,
 
   vc = ovf.vc;
   if (vc == NULL) {
-fprintf (stderr, "null %s\n", ffn);
     return;
   }
 
@@ -382,7 +386,6 @@ atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata,
   linknum = op_current_link (of);
   tags = op_tags (of, linknum);
   if (tags == NULL) {
-fprintf (stderr, "null tags %s\n", ffn);
     return;
   }
 

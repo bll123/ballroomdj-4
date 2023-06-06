@@ -25,7 +25,7 @@ target_link_libraries (libbdjatiutil PUBLIC
 
 add_library (libatibdj4 SHARED atibdj4.c)
 target_include_directories (libatibdj4
-  PUBLIC ${LIBOPUS_INCLUDE_DIRS}
+  PUBLIC ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
 )
 target_link_libraries (libatibdj4 PUBLIC
   libbdjatiutil
@@ -33,8 +33,9 @@ target_link_libraries (libatibdj4 PUBLIC
   libbdj4common
   ${LIBAVFORMAT_LDFLAGS}
   ${LIBID3TAG_LDFLAGS}
-  ${LIBVORBIS_LDFLAGS}
   ${LIBVORBISFILE_LDFLAGS}
+  ${LIBVORBIS_LDFLAGS}
+  ${LIBOPUSFILE_LDFLAGS}
   ${LIBOPUS_LDFLAGS}
   ${LIBFLAC_LDFLAGS}
   m

@@ -12,7 +12,10 @@
   libressl | https://www.libressl.org/
   mongoose | https://github.com/cesanta/mongoose
   &nbsp; |
-  vorbis-tools | https://xiph.org
+  libogg | https://xiph.org
+  libvorbis | https://xiph.org
+  opus | https://xiph.org
+  opusfile | https://xiph.org
   flac | https://xiph.org
   id3tag | https://github.com/audacity/libid3tag
 

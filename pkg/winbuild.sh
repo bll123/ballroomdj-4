@@ -169,16 +169,124 @@ if [[ $pkgname == "" || $pkgname = "curl" ]]; then
   fi
 fi
 
-if [[ $pkgname == "" || $pkgname = "vorbis-tools" ]]; then
+if [[ $pkgname == "" || $pkgname = "libid3tag" ]]; then
   cd $cwd
-  cd vorbis-tools*
+  cd libid3tag*
   if [ $? -eq 0 ]; then
-    echo "## build vorbis-tools"
+    echo "## build libid3tag"
     if [ $noclean = F ]; then
       make distclean
     fi
-    ./configure --prefix=$INSTLOC --disable-static
-    make -j $procs
+    if [ $noconf = F ]; then
+      ./configure $args \
+          --prefix=$INSTLOC
+    fi
+    if [ $noclean = F ]; then
+      make clean
+    fi
+    make -j $procs LIBS="-static-libgcc -static-libstdc++"
+    make install
+  fi
+fi
+
+if [[ $pkgname == "" || $pkgname = "libogg" ]]; then
+  cd $cwd
+  cd libogg*
+  if [ $? -eq 0 ]; then
+    echo "## build libogg"
+    if [ $noclean = F ]; then
+      make distclean
+    fi
+    if [ $noconf = F ]; then
+      ./configure $args \
+          --prefix=$INSTLOC
+    fi
+    if [ $noclean = F ]; then
+      make clean
+    fi
+    make -j $procs LIBS="-static-libgcc -static-libstdc++"
+    make install
+  fi
+fi
+
+if [[ $pkgname == "" || $pkgname = "libvorbis" ]]; then
+  cd $cwd
+  cd libvorbis*
+  if [ $? -eq 0 ]; then
+    echo "## build libvorbis"
+    if [ $noclean = F ]; then
+      make distclean
+    fi
+    if [ $noconf = F ]; then
+      ./configure $args \
+          --prefix=$INSTLOC
+    fi
+    if [ $noclean = F ]; then
+      make clean
+    fi
+    make -j $procs LIBS="-static-libgcc -static-libstdc++"
+    make install
+  fi
+fi
+
+if [[ $pkgname == "" || $pkgname = "libopus" ]]; then
+  cd $cwd
+  cd opus-1*
+  if [ $? -eq 0 ]; then
+    echo "## build libopus"
+    if [ $noclean = F ]; then
+      make distclean
+    fi
+    if [ $noconf = F ]; then
+      ./configure $args \
+          --prefix=$INSTLOC
+    fi
+    if [ $noclean = F ]; then
+      make clean
+    fi
+    make -j $procs LIBS="-static-libgcc -static-libstdc++"
+    make install
+  fi
+fi
+
+if [[ $pkgname == "" || $pkgname = "libopusfile" ]]; then
+  cd $cwd
+  cd opusfile*
+  if [ $? -eq 0 ]; then
+    echo "## build libopusfile"
+    if [ $noclean = F ]; then
+      make distclean
+    fi
+    if [ $noconf = F ]; then
+      ./configure $args \
+          --prefix=$INSTLOC
+    fi
+    if [ $noclean = F ]; then
+      make clean
+    fi
+    make -j $procs LIBS="-static-libgcc -static-libstdc++"
+    make install
+  fi
+fi
+
+if [[ $pkgname == "" || $pkgname = "libflac" ]]; then
+  cd $cwd
+  cd flac*
+  if [ $? -eq 0 ]; then
+    echo "## build libflac"
+    if [ $noclean = F ]; then
+      make distclean
+    fi
+    if [ $noconf = F ]; then
+      ./configure $args \
+          --prefix=$INSTLOC \
+          --disable-programs \
+          --disable-examples
+    fi
+    if [ $noclean = F ]; then
+      make clean
+    fi
+    make -j $procs LIBS="-static-libgcc -static-libstdc++"
     make install
   fi
 fi
