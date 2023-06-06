@@ -527,9 +527,11 @@ sysvarsInit (const char *argv0)
 
     data = sysvars [SV_OSVERS];
     if (data != NULL) {
-      if (strcmp (data, "14") > 0) {
+      if (strcmp (data, "15") > 0) {
         strlcat (sysvars [SV_OSDISP], " ", SV_MAX_SZ);
         strlcat (sysvars [SV_OSDISP], data, SV_MAX_SZ);
+      } else if (strcmp (data, "14") > 0) {
+        strlcat (sysvars [SV_OSDISP], " Sonoma", SV_MAX_SZ);
       } else if (strcmp (data, "13") > 0) {
         strlcat (sysvars [SV_OSDISP], " Ventura", SV_MAX_SZ);
       } else if (strcmp (data, "12") > 0) {
