@@ -97,4 +97,4 @@ button and wait for the __Installation Completed__ message.
 <br><span style="color:#4559bf;">__BallroomDJ 4 Installer on Linux__</span> </div>
 
 [Wiki Home](Home)
-<br>_(Updated 2023-05-18 10:29:33; BDJ4 version 4.3.2.2)_
+<br>_(Updated 2023-06-06 12:22:02; BDJ4 version 4.3.2.4)_

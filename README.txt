@@ -65,4 +65,11 @@ Licenses:
       ffmpeg     : GPLv3 License
       curl       : MIT License
       nghttp2    : MIT License
-      taglib     : Mozilla Public License
+      libid3tag  : GPLv2 License
+      libogg     : Xiph/MIT License
+      libvorbis  : Xiph/MIT License
+      opus       : Xiph/MIT License
+      opusfile   : Xiph/MIT License
+      flac       : GPLv2, GPLv2.1, Xiph/MIT License
+
+

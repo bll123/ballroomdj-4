@@ -32,6 +32,7 @@ target_link_libraries (libatibdj4 PUBLIC
   libbdj4basic
   libbdj4common
   ${LIBAVFORMAT_LDFLAGS}
+  ${LIBAVUTIL_LDFLAGS}
   ${LIBID3TAG_LDFLAGS}
   ${LIBVORBISFILE_LDFLAGS}
   ${LIBVORBIS_LDFLAGS}

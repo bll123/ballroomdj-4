@@ -81,11 +81,12 @@ pkg_check_modules (XML2 libxml-2.0)
 #### tag parsing modules
 
 # ffmpeg : libavformat / libavutil
-pkg_check_modules (LIBAVFORMAT libavformat)
-pkg_check_modules (LIBAVUTIL libavutil)
 if (WIN32)
-  set (LIBAVFORMAT_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avformat-59.dll")
-  set (LIBAVUTIL_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avutil-57.dll")
+  set (LIBAVFORMAT_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avformat-60.dll")
+  set (LIBAVUTIL_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/avutil-58.dll")
+else()
+  pkg_check_modules (LIBAVFORMAT libavformat)
+  pkg_check_modules (LIBAVUTIL libavutil)
 endif()
 
 # libid3tag
@@ -108,13 +109,13 @@ pkg_check_modules (LIBFLAC flac)
 pkg_check_modules (LIBOPUS opus)
 pkg_check_modules (LIBOPUSFILE opusfile)
 
-# mp4v2
-# the .pc file is incorrect
-if (WIN32)
-  set (MP4V2_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libmp4v2.dll")
-else()
-  set (MP4V2_LDFLAGS -L"${PROJECT_SOURCE_DIR}/../plocal/lib" -lmp4v2)
-endif()
+# # mp4v2
+# # the .pc file is incorrect
+# if (WIN32)
+#   set (MP4V2_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libmp4v2.dll")
+# else()
+#   set (MP4V2_LDFLAGS -L"${PROJECT_SOURCE_DIR}/../plocal/lib" -lmp4v2)
+# endif()
 
 #### ICU string library
 

@@ -57,7 +57,6 @@ case $MSYSTEM in
     ;;
   *64)
     b=64
-    args="--enable-64bit"
     CFLAGS=-m64
     LDFLAGS=-m64
     PKG_CFLAGS=-m64
@@ -172,20 +171,34 @@ fi
 if [[ $pkgname == "" || $pkgname = "libid3tag" ]]; then
   cd $cwd
   cd libid3tag*
+
   if [ $? -eq 0 ]; then
     echo "## build libid3tag"
+    sdir=$(pwd)
+    bdir=$(pwd)/build
+
+    fn=CMakeLists.txt
+    if [[ ! -f ${fn}.orig ]]; then
+      cp -f ${fn} ${fn}.orig
+    fi
+    cp -f ${fn}.orig ${fn}
+    sed -i -e 's/^cmake_dep/# cmake_dep/' -e '/^set..TARGET/ s/libid3tag/id3tag/' ${fn}
+
     if [ $noclean = F ]; then
-      make distclean
+      test -d build && rm -rf build
     fi
     if [ $noconf = F ]; then
-      ./configure $args \
-          --prefix=$INSTLOC
+      cmake -G "MSYS Makefiles" \
+          -S ${sdir} \
+          -B ${bdir} \
+          -DBUILD_SHARED=ON \
+          -DCMAKE_INSTALL_PREFIX="$INSTLOC"
     fi
     if [ $noclean = F ]; then
-      make clean
+      cmake --build "${bdir}" --target clean
     fi
-    make -j $procs LIBS="-static-libgcc -static-libstdc++"
-    make install
+    cmake --build "${bdir}" --verbose
+    cmake --install "${bdir}"
   fi
 fi
 
@@ -199,7 +212,8 @@ if [[ $pkgname == "" || $pkgname = "libogg" ]]; then
     fi
     if [ $noconf = F ]; then
       ./configure $args \
-          --prefix=$INSTLOC
+          --prefix=$INSTLOC \
+          --disable-static
     fi
     if [ $noclean = F ]; then
       make clean
@@ -219,7 +233,9 @@ if [[ $pkgname == "" || $pkgname = "libvorbis" ]]; then
     fi
     if [ $noconf = F ]; then
       ./configure $args \
-          --prefix=$INSTLOC
+          --prefix=$INSTLOC \
+          --disable-static \
+          --disable-examples
     fi
     if [ $noclean = F ]; then
       make clean
@@ -239,7 +255,8 @@ if [[ $pkgname == "" || $pkgname = "libopus" ]]; then
     fi
     if [ $noconf = F ]; then
       ./configure $args \
-          --prefix=$INSTLOC
+          --prefix=$INSTLOC \
+          --disable-static
     fi
     if [ $noclean = F ]; then
       make clean
@@ -259,7 +276,10 @@ if [[ $pkgname == "" || $pkgname = "libopusfile" ]]; then
     fi
     if [ $noconf = F ]; then
       ./configure $args \
-          --prefix=$INSTLOC
+          --prefix=$INSTLOC \
+          --disable-static \
+          --disable-http \
+          --disable-examples
     fi
     if [ $noclean = F ]; then
       make clean
@@ -280,6 +300,7 @@ if [[ $pkgname == "" || $pkgname = "libflac" ]]; then
     if [ $noconf = F ]; then
       ./configure $args \
           --prefix=$INSTLOC \
+          --disable-static \
           --disable-programs \
           --disable-examples
     fi
@@ -288,6 +309,8 @@ if [[ $pkgname == "" || $pkgname = "libflac" ]]; then
     fi
     make -j $procs LIBS="-static-libgcc -static-libstdc++"
     make install
+    # don't need the c++ version
+    rm -f "$INSTLOC/bin/libFLAC++*" "$INSTLOC/lib/libFLAC++*" "$INSTLOC/lib/pkgconfig/flac++.pc"
   fi
 fi
 

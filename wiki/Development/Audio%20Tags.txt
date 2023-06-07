@@ -1,16 +1,34 @@
 [Wiki Home](Home)
 <br>[Developer Notes](Development-Developer%20Notes)
 
+For a metadata library, I want support for MP3, Ogg, Opus, FLAC, and
+M4A.
+
+Unfortunately, the tagging libraries that are available often skip
+over unknown tags.
+
+An audio tagging library should never lose any metadata when
+reading in tags and then subsequently writing out the tags.
+
+At this time, I am working on writing my own interfaces to various
+metadata libraries.  MP3, Ogg, Opus and FLAC are all fairly easy,
+though I will have to be sure to meet the requirement of not losing
+any metadata.
+
+I am still looking for an M4A metadata library.
+
 [Mutagen](Development-Mutagen)
 
 Another possibility to look at is taglib.  This will require writing a
 C wrapper around the C++ code.  It appears that taglib does not return
 the data for unsupported tags.  Rather useless.
 
-[taglib](https://taglib.org/)
+tagparser also did not support all tags.
 
-ffmpeg's libav* libraries appear to support the metadata quite well.
+ffmpeg's libav* libraries appear to support the metadata quite well, but
+MP3 _UFID_ tag and M4A _tmpo_ tag are not supported.  Custom M4A audio
+tags are skipped completely.
 
 [Developer Notes](Development-Developer%20Notes)
 <br>[Wiki Home](Home)
-<br>_(Updated 2023-01-24 09:56:06; BDJ4 version 4.0.9-beta)_
+<br>_(Updated 2023-06-06 12:23:42; BDJ4 version 4.3.2.4)_

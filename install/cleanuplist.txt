@@ -99,6 +99,12 @@ plocal/bin/libcares-5\.dll$
 plocal/bin/libcrypto-1_1-x86\.dll$
 plocal/bin/libssl-1_1-x86\.dll$
 plocal/bin/libunistring-2\.dll$
+# 2023-6 windows upgrade to ffmpeg-60
+plocal/bin/avcodec-59\.dll$
+plocal/bin/avdevice-59\.dll$
+plocal/bin/avfilter-8\.dll$
+plocal/bin/avformat-59\.dll$
+plocal/bin/avutil-57\.dll$
 
 # 2023-5-5
 # windows: remove libressl from distribution
@@ -110,6 +116,7 @@ plocal/bin/libtls-26\.dll$
 
 # 2023-5-30
 # taglib doesn't appear to be useful. unsupported tags are not supported.
+# taglib was shipped before being researched properly.
 plocal/bin/libtag\.dll$
 bin/libatitaglib\.(so|dylib|dll)$
 

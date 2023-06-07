@@ -14,7 +14,16 @@
 #include <libavformat/avformat.h>
 #include <id3tag.h>
 #include <vorbis/codec.h>
+
+/* vorbisfile.h has some static callback structures that are unused */
+#pragma GCC diagnostic push
+#pragma CLANG diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#pragma CLANG diagnostic ignored "-Wunused-variable"
 #include <vorbis/vorbisfile.h>
+#pragma GCC diagnostic pop
+#pragma CLANG diagnostic pop
+
 #include <opus/opusfile.h>
 #include <FLAC/metadata.h>
 
@@ -40,7 +49,8 @@ static void atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata, const cha
 static void atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 static void atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 static void atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
-static void atiffmpegLogCallback (void *avcl, int level, const char *fmt, va_list vl);
+static void atibdj4ProcessVorbisComment (atidata_t *atidata, slist_t *tagdata, int tagtype, const char *kw);
+static void atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list vl);
 
 const char *
 atiiDesc (void)
@@ -63,7 +73,7 @@ atiiInit (const char *atipkg, int writetags,
   atidata->audioTagLookup = audioTagLookup;
 
   /* turn off logging */
-  av_log_set_callback (atiffmpegLogCallback);
+  av_log_set_callback (atibdj4LogCallback);
 
   return atidata;
 }
@@ -96,6 +106,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
   char              pbuff [100];
   int32_t           duration;
   int               rc;
+  bool              needduration = true;
 
   if (! fileopFileExists (ffn)) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "no file %s", ffn);
@@ -104,30 +115,12 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
 
   logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "parse tags %s", ffn);
 
-  if ((rc = avformat_open_input (&ictx, ffn, NULL, NULL))) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to open %d %s", rc, ffn);
-    return;
-  }
-
-  if ((rc = avformat_find_stream_info (ictx, NULL)) < 0) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to load stream info %d %s", rc, ffn);
-    avformat_close_input (&ictx);
-    return;
-  }
-
-  duration = ictx->duration;
-  duration /= 1000;
-  snprintf (pbuff, sizeof (pbuff), "%ld", (long) duration);
-  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: %s", pbuff);
-  slistSetStr (tagdata, atidata->tagName (TAG_DURATION), pbuff);
-
-  avformat_close_input (&ictx);
-
   if (tagtype == TAG_TYPE_MP3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
     atibdj4ParseMP3Tags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_OGG) {
+    needduration = false;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg/vorbis");
     atibdj4ParseOggTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
@@ -136,12 +129,36 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
     atibdj4ParseOpusTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_FLAC) {
+    needduration = false;
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac/vorbis");
     atibdj4ParseFlacTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (tagtype == TAG_TYPE_MP4) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
     atibdj4ParseMP4Tags (atidata, tagdata, ffn, tagtype, rewrite);
+  }
+
+  if (needduration) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: use avformat");
+
+    if ((rc = avformat_open_input (&ictx, ffn, NULL, NULL))) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to open %d %s", rc, ffn);
+      return;
+    }
+
+    if ((rc = avformat_find_stream_info (ictx, NULL)) < 0) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "unable to load stream info %d %s", rc, ffn);
+      avformat_close_input (&ictx);
+      return;
+    }
+
+    duration = ictx->duration;
+    duration /= 1000;
+    snprintf (pbuff, sizeof (pbuff), "%ld", (long) duration);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: %s", pbuff);
+    slistSetStr (tagdata, atidata->tagName (TAG_DURATION), pbuff);
+
+    avformat_close_input (&ictx);
   }
 
   return;
@@ -211,7 +228,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
             ufid = str;
             tagname = atidata->tagLookup (tagtype, (const char *) str);
           } else {
-            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, str);
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (1): %s %s=%s", tagname, id3frame->id, str);
             slistSetStr (tagdata, tagname, (const char *) str);
           }
           break;
@@ -220,7 +237,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           id3_latin1_t const *str;
 
           str = id3_field_getfulllatin1 (field);
-          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, str);
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (2): %s %s=%s", tagname, id3frame->id, str);
           slistSetStr (tagdata, tagname, (const char *) str);
           break;
         }
@@ -236,7 +253,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           if (tagname == NULL) {
             tagname = atidata->tagLookup (tagtype, (const char *) str);
           } else {
-            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, str);
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (3): %s %s=%s", tagname, id3frame->id, str);
             slistSetStr (tagdata, tagname, (const char *) str);
           }
           break;
@@ -247,7 +264,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
           ustr = id3_field_getstring (field);
           str = id3_ucs4_utf8duplicate (ustr);
-          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, str);
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (4): %s %s=%s", tagname, id3frame->id, str);
           slistSetStr (tagdata, tagname, (const char *) str);
           break;
         }
@@ -262,13 +279,13 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
             ustr = id3_field_getstrings (field, j);
             str = id3_ucs4_utf8duplicate (ustr);
-            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, str);
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (5): %s %s=%s", tagname, id3frame->id, str);
             p = (const char *) str;
-            if (strcmp (tagname, tagdefs [TAG_DISCNUMBER].tag) == 0) {
+            if (strcmp (tagname, atidata->tagName (TAG_DISCNUMBER)) == 0) {
                 p = atiParsePair (tagdata, atidata->tagName (TAG_DISCTOTAL),
                     p, pbuff, sizeof (pbuff));
             }
-            if (strcmp (tagname, tagdefs [TAG_TRACKNUMBER].tag) == 0) {
+            if (strcmp (tagname, atidata->tagName (TAG_TRACKNUMBER)) == 0) {
                 p = atiParsePair (tagdata, atidata->tagName (TAG_TRACKTOTAL),
                     p, pbuff, sizeof (pbuff));
             }
@@ -283,7 +300,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           id3_latin1_t const *str;
 
           str = id3_field_getlatin1 (field);
-          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, str);
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (6): %s %s=%s", tagname, id3frame->id, str);
           slistSetStr (tagdata, tagname, (const char *) str);
           break;
         }
@@ -297,7 +314,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
           val = id3_field_getint (field);
           snprintf (tmp, sizeof (tmp), "%ld", val);
-          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s", tagname, id3frame->id, tmp);
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (7): %s %s=%s", tagname, id3frame->id, tmp);
           slistSetStr (tagdata, tagname, tmp);
           break;
         }
@@ -310,7 +327,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
             bstr = id3_field_getbinarydata (field, &blen);
             memcpy (tmp, bstr, blen);
             tmp [blen] = '\0';
-            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "%s raw: %s=%s=%s", tagname, id3frame->id, ufid, tmp);
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (8): %s %s=%s=%s", tagname, id3frame->id, ufid, tmp);
             slistSetStr (tagdata, tagname, tmp);
           }
           break;
@@ -330,6 +347,8 @@ atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata,
   OggVorbis_File        ovf;
   int                   rc;
   struct vorbis_comment *vc;
+  double                ddur;
+  char                  tmp [40];
 
   rc = ov_fopen (ffn, &ovf);
   if (rc < 0) {
@@ -342,27 +361,16 @@ atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata,
     return;
   }
 
+  ddur = ov_time_total (&ovf, -1);
+  snprintf (tmp, sizeof (tmp), "%.0f", ddur * 1000);
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: %s", tmp);
+  slistSetStr (tagdata, atidata->tagName (TAG_DURATION), tmp);
+
   for (int i = 0; i < vc->comments; ++i) {
-    const char  *val;
     const char  *kw;
-    const char  *tagname;
-    int         len;
-    char        tmp [100];
 
     kw = vc->user_comments [i];
-    val = strstr (kw, "=");
-    if (val == NULL) {
-      continue;
-    }
-    len = val - kw;
-    strlcpy (tmp, kw, len + 1);
-    tmp [len] = '\0';
-    ++val;
-    tagname = atidata->tagLookup (tagtype, tmp);
-    if (tagname == NULL) {
-      tagname = tmp;
-    }
-    slistSetStr (tagdata, tagname, val);
+    atibdj4ProcessVorbisComment (atidata, tagdata, tagtype, kw);
   }
   ov_clear (&ovf);
   return;
@@ -390,30 +398,14 @@ atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata,
   }
 
   for (int i = 0; i < tags->comments; ++i) {
-    const char  *val;
     const char  *kw;
-    const char  *tagname;
-    int         len;
-    char        tmp [100];
 
     kw = tags->user_comments [i];
     if (opus_tagncompare ("METADATA_BLOCK_PICTURE", 22, kw) == 0) {
       continue;
     }
 
-    val = strstr (kw, "=");
-    if (val == NULL) {
-      continue;
-    }
-    len = val - kw;
-    strlcpy (tmp, kw, len + 1);
-    tmp [len] = '\0';
-    ++val;
-    tagname = atidata->tagLookup (tagtype, tmp);
-    if (tagname == NULL) {
-      tagname = tmp;
-    }
-    slistSetStr (tagdata, tagname, val);
+    atibdj4ProcessVorbisComment (atidata, tagdata, tagtype, kw);
   }
   op_free (of);
   return;
@@ -423,6 +415,58 @@ static void
 atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
     const char *ffn, int tagtype, int *rewrite)
 {
+  FLAC__Metadata_Chain    *chain = NULL;
+  FLAC__Metadata_Iterator *iterator = NULL;
+  FLAC__StreamMetadata    *block;
+  bool                    cont;
+
+  chain = FLAC__metadata_chain_new ();
+  FLAC__metadata_chain_read (chain, ffn);
+  iterator = FLAC__metadata_iterator_new ();
+  FLAC__metadata_iterator_init (iterator, chain);
+  cont = true;
+  while (cont) {
+    block = FLAC__metadata_iterator_get_block (iterator);
+    switch (block->type) {
+      case FLAC__METADATA_TYPE_PICTURE:
+      case FLAC__METADATA_TYPE_CUESHEET:
+      case FLAC__METADATA_TYPE_SEEKTABLE:
+      case FLAC__METADATA_TYPE_APPLICATION:
+      case FLAC__METADATA_TYPE_PADDING: {
+        break;
+      }
+      case FLAC__METADATA_TYPE_STREAMINFO: {
+        int64_t   dur;
+        char      tmp [40];
+
+        /* want duration in milliseconds */
+        dur = block->data.stream_info.total_samples * 1000;
+        dur /= block->data.stream_info.sample_rate;
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG,
+            "total-samples: %" PRId64 " sample-rate: %d",
+            block->data.stream_info.total_samples, block->data.stream_info.sample_rate);
+        snprintf (tmp, sizeof (tmp), "%" PRId64, dur);
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "duration: %s", tmp);
+        slistSetStr (tagdata, atidata->tagName (TAG_DURATION), tmp);
+        break;
+      }
+      case FLAC__METADATA_TYPE_VORBIS_COMMENT: {
+        for (FLAC__uint32 i = 0; i < block->data.vorbis_comment.num_comments; i++) {
+          FLAC__StreamMetadata_VorbisComment_Entry *entry;
+
+          entry = &block->data.vorbis_comment.comments [i];
+          atibdj4ProcessVorbisComment (atidata, tagdata, tagtype,
+              (const char *) entry->entry);
+        }
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    cont = FLAC__metadata_iterator_next (iterator);
+  }
+  FLAC__metadata_chain_delete (chain);
   return;
 }
 
@@ -434,8 +478,37 @@ atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata,
 }
 
 static void
-atiffmpegLogCallback (void *avcl, int level, const char *fmt, va_list vl)
+atibdj4ProcessVorbisComment (atidata_t *atidata, slist_t *tagdata,
+    int tagtype, const char *kw)
+{
+  const char  *val;
+  const char  *tagname;
+  size_t      len;
+  char        tmp [300];
+
+  val = strstr (kw, "=");
+  if (val == NULL) {
+    return;
+  }
+  len = val - kw;
+  if (len > sizeof (tmp)) {
+    len = sizeof (tmp);
+  }
+  strlcpy (tmp, kw, len + 1);
+  tmp [len] = '\0';
+  ++val;
+  tagname = atidata->tagLookup (tagtype, tmp);
+  if (tagname == NULL) {
+    tagname = tmp;
+  }
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: %s %s", tagname, kw);
+  slistSetStr (tagdata, tagname, val);
+}
+
+static void
+atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list vl)
 {
 //  vfprintf (stderr, fmt, vl);
   return;
 }
+
