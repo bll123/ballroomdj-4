@@ -368,7 +368,7 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-exit 1
+TESTON=F
 
 # clean any leftover foxtrot
 rm -f tmp/*-foxtrot.mp3

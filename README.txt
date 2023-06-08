@@ -56,20 +56,20 @@ Copyright:
   Copyright 2021-2023 Brad Lanam Pleasant Hill, CA
 
 Licenses:
-    BDJ4    : zlib/libpng License
-    mutagen : GPLv2 License
-    qrcode  : MIT License (templates/qrcode/LICENSE)
+    BDJ4        : zlib/libpng License
+    mutagen     : GPLv2 License
+    qrcode      : MIT License (templates/qrcode/LICENSE)
+    Bento4      : GPLv2
+    ICU         ; ICU
     img/musicbrainz-logo.svg : GPLv2
     Windows:
-      msys2      : BSD 3-Clause ( https://github.com/msys2/MSYS2-packages/blob/master/LICENSE )
-      ffmpeg     : GPLv3 License
-      curl       : MIT License
-      nghttp2    : MIT License
-      libid3tag  : GPLv2 License
-      libogg     : Xiph/MIT License
-      libvorbis  : Xiph/MIT License
-      opus       : Xiph/MIT License
-      opusfile   : Xiph/MIT License
-      flac       : GPLv2, GPLv2.1, Xiph/MIT License
-
-
+      msys2     : BSD 3-Clause ( https://github.com/msys2/MSYS2-packages/blob/master/LICENSE )
+      ffmpeg    : GPLv3 License
+      curl      : MIT License
+      nghttp2   : MIT License
+      libid3tag : GPLv2 License
+      libogg    : Xiph/BSD License
+      libvorbis : Xiph/BSD License
+      opus      : Xiph/BSD License
+      opusfile  : Xiph/BSD License
+      flac      : GPLv2, GPLv2.1, Xiph/BSD License

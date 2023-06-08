@@ -23,7 +23,7 @@ target_link_libraries (libbdjatiutil PUBLIC
   m
 )
 
-add_library (libatibdj4 SHARED atibdj4.c)
+add_library (libatibdj4 SHARED atibdj4.c atibdj4mp4.cpp)
 target_include_directories (libatibdj4
   PUBLIC ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
 )
@@ -39,6 +39,7 @@ target_link_libraries (libatibdj4 PUBLIC
   ${LIBOPUSFILE_LDFLAGS}
   ${LIBOPUS_LDFLAGS}
   ${LIBFLAC_LDFLAGS}
+  ${LIBBENTO4_LDFLAGS}
   m
 )
 
@@ -56,3 +57,5 @@ install (TARGETS
   libatimutagen
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
+
+updateRPath (libatibdj4)

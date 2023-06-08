@@ -197,7 +197,7 @@ if [[ $pkgname == "" || $pkgname = "libid3tag" ]]; then
     if [ $noclean = F ]; then
       cmake --build "${bdir}" --target clean
     fi
-    cmake --build "${bdir}" --verbose
+    cmake --build "${bdir}"
     cmake --install "${bdir}"
   fi
 fi

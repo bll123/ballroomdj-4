@@ -28,6 +28,7 @@
 #include <FLAC/metadata.h>
 
 #include "ati.h"
+#include "atibdj4.h"
 #include "audiofile.h"
 #include "fileop.h"
 #include "log.h"
@@ -36,19 +37,10 @@
 
 #define MB_TAG      "http://musicbrainz.org"
 
-typedef struct atidata {
-  int               writetags;
-  taglookup_t       tagLookup;
-  tagcheck_t        tagCheck;
-  tagname_t         tagName;
-  audiotaglookup_t  audioTagLookup;
-} atidata_t;
-
 static void atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 static void atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 static void atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 static void atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
-static void atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 static void atibdj4ProcessVorbisComment (atidata_t *atidata, slist_t *tagdata, int tagtype, const char *kw);
 static void atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list vl);
 
@@ -467,13 +459,6 @@ atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
     cont = FLAC__metadata_iterator_next (iterator);
   }
   FLAC__metadata_chain_delete (chain);
-  return;
-}
-
-static void
-atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata,
-    const char *ffn, int tagtype, int *rewrite)
-{
   return;
 }
 
