@@ -274,12 +274,12 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
             logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (5): %s %s=%s", tagname, id3frame->id, str);
             p = (const char *) str;
             if (strcmp (tagname, atidata->tagName (TAG_DISCNUMBER)) == 0) {
-                p = atiParsePair (tagdata, atidata->tagName (TAG_DISCTOTAL),
-                    p, pbuff, sizeof (pbuff));
+              p = atiParsePair (tagdata, atidata->tagName (TAG_DISCTOTAL),
+                  p, pbuff, sizeof (pbuff));
             }
             if (strcmp (tagname, atidata->tagName (TAG_TRACKNUMBER)) == 0) {
-                p = atiParsePair (tagdata, atidata->tagName (TAG_TRACKTOTAL),
-                    p, pbuff, sizeof (pbuff));
+              p = atiParsePair (tagdata, atidata->tagName (TAG_TRACKTOTAL),
+                  p, pbuff, sizeof (pbuff));
             }
             slistSetStr (tagdata, tagname, p);
           }

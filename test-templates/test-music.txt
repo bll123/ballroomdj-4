@@ -4237,7 +4237,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 spaces bpm ss
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-mp3-a
 TRACKNUMBER
@@ -4306,7 +4306,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 spaces bpm ss
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-mp3-b
 TRACKNUMBER
@@ -4375,7 +4375,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 spaces bpm ss
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-m4a-c
 TRACKNUMBER
@@ -4444,7 +4444,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 spaces bpm ss
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-m4a-d
 TRACKNUMBER
@@ -4513,7 +4513,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 spaces bpm ss
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-flac-e
 TRACKNUMBER
@@ -4582,7 +4582,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 spaces bpm ss
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-flac-f
 TRACKNUMBER
@@ -4651,7 +4651,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 spaces bpm ss
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-ogg-g
 TRACKNUMBER
@@ -4720,7 +4720,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 spaces bpm ss
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-ogg-h
 TRACKNUMBER
@@ -4789,7 +4789,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 spaces bpm ss
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-opus-i
 TRACKNUMBER
@@ -4858,7 +4858,7 @@ SPEEDADJUSTMENT
 STATUS
 ..Complete
 TAGS
-..tag4 TAG5 spaces bpm ss
+..tag4 TAG5 bpm ss
 TITLE
 ..%03d-all-tags-opus-j
 TRACKNUMBER

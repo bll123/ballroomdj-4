@@ -213,6 +213,7 @@ if [[ $TESTON == T ]]; then
 fi
 
 TESTON=F
+exit 1
 
 if [[ $TESTON == T ]]; then
   # main test db : check-new with no changes
