@@ -11,8 +11,7 @@ typedef struct atidata {
   audiotaglookup_t  audioTagLookup;
 } atidata_t;
 
-void atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata,
-    const char *ffn, int tagtype, int *rewrite);
-
+void atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
+int  atibdj4WriteMP4Tags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 
 #endif /* INC_ATIBDJ4_H */

@@ -41,6 +41,10 @@ static void atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata, const cha
 static void atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 static void atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 static void atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
+static int  atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+static int  atibdj4WriteOggTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+static int  atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+static int  atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 static void atibdj4ProcessVorbisComment (atidata_t *atidata, slist_t *tagdata, int tagtype, const char *kw);
 static void atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list vl);
 
@@ -162,6 +166,34 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
     int tagtype, int filetype)
 {
   int         rc = -1;
+
+  if (! fileopFileExists (ffn)) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "no file %s", ffn);
+    return -1;
+  }
+
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write tags %s", ffn);
+
+  if (tagtype == TAG_TYPE_MP3) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
+    rc = atibdj4WriteMP3Tags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
+  }
+  if (filetype == AFILE_TYPE_OGG) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg/vorbis");
+    rc = atibdj4WriteOggTags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
+  }
+  if (filetype == AFILE_TYPE_OPUS) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus/vorbis");
+    rc = atibdj4WriteOpusTags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
+  }
+  if (filetype == AFILE_TYPE_FLAC) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac/vorbis");
+    rc = atibdj4WriteFlacTags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
+  }
+  if (tagtype == TAG_TYPE_MP4) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp4");
+    rc = atibdj4WriteMP4Tags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
+  }
 
   return rc;
 }
@@ -458,8 +490,113 @@ atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
     }
     cont = FLAC__metadata_iterator_next (iterator);
   }
+
+  FLAC__metadata_iterator_delete (iterator);
   FLAC__metadata_chain_delete (chain);
   return;
+}
+
+static int
+atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn,
+    slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
+    int tagtype, int filetype)
+{
+  return -1;
+}
+
+static int
+atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
+    slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
+    int tagtype, int filetype)
+{
+  return -1;
+}
+
+static int
+atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
+    slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
+    int tagtype, int filetype)
+{
+  return -1;
+}
+
+static int
+atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
+    slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
+    int tagtype, int filetype)
+{
+  FLAC__Metadata_Chain    *chain = NULL;
+  FLAC__StreamMetadata    *block = NULL;
+  FLAC__Metadata_Iterator *iterator = NULL;
+  const char              *key;
+  slistidx_t              iteridx;
+  bool                    cont;
+
+  chain = FLAC__metadata_chain_new ();
+  FLAC__metadata_chain_read (chain, ffn);
+
+  /* find the comment block */
+  iterator = FLAC__metadata_iterator_new ();
+  FLAC__metadata_iterator_init (iterator, chain);
+  cont = true;
+  while (cont) {
+    block = FLAC__metadata_iterator_get_block (iterator);
+    if (block->type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
+      break;
+    }
+    cont = FLAC__metadata_iterator_next (iterator);
+  }
+
+  if (block == NULL) {
+    /* if the comment block was not found, create a new one */
+    block = FLAC__metadata_object_new (FLAC__METADATA_TYPE_VORBIS_COMMENT);
+    while (FLAC__metadata_iterator_next (iterator))
+      ;
+    if (! FLAC__metadata_iterator_insert_block_after (iterator, block)) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: unable to insert new comment block");
+      return -1;
+    }
+  }
+
+  /* when updating, remove the entry from the vorbis comment first */
+  slistStartIterator (updatelist, &iteridx);
+  while ((key = slistIterateKey (updatelist, &iteridx)) != NULL) {
+    FLAC__metadata_object_vorbiscomment_remove_entries_matching (block, key);
+  }
+  slistStartIterator (dellist, &iteridx);
+  while ((key = slistIterateKey (dellist, &iteridx)) != NULL) {
+    FLAC__metadata_object_vorbiscomment_remove_entries_matching (block, key);
+  }
+
+  /* add all the updates back into the vorbis comment */
+  slistStartIterator (updatelist, &iteridx);
+  while ((key = slistIterateKey (updatelist, &iteridx)) != NULL) {
+    FLAC__StreamMetadata_VorbisComment_Entry  entry;
+
+    if (! FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair (
+        &entry, key, slistGetStr (updatelist, key))) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: invalid data: %s %s", key, slistGetStr (updatelist, key));
+      continue;
+    }
+    entry.length = strlen ((const char *) entry.entry);
+    if (! FLAC__format_vorbiscomment_entry_is_legal (entry.entry, entry.length)) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: not legal: %s %s", key, slistGetStr (updatelist, key));
+      continue;
+    }
+
+    if (! FLAC__metadata_object_vorbiscomment_append_comment (
+        block, entry, /*copy*/ false)) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: unable to append: %s %s", key, slistGetStr (updatelist, key));
+      continue;
+    }
+  }
+
+  FLAC__metadata_chain_sort_padding (chain);
+  FLAC__metadata_chain_write (chain, true, true);
+
+  FLAC__metadata_iterator_delete (iterator);
+  FLAC__metadata_chain_delete (chain);
+  return -1;
 }
 
 static void
