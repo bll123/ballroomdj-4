@@ -723,10 +723,8 @@ static int
 atibdj4WriteOggFile (const char *ffn, struct vorbis_comment *newvc)
 {
   FILE             *ifh  = NULL;
-  char              tbuff [MAXPATHLEN];
   char              outfn [MAXPATHLEN];
   int               rc = -1;
-  time_t            omodtime;
   FILE             *ofh = NULL;
   ogg_sync_state    oy_in;
   ogg_stream_state  os_in;
@@ -947,17 +945,7 @@ bos_label:
   ofh = NULL;
   state = VC_DONE_SUCCESS;
 
-  omodtime = fileopModTime (ffn);
-  snprintf (tbuff, sizeof (tbuff), "%s.bak", ffn);
-  if (filemanipMove (ffn, tbuff) == 0) {
-    if (filemanipMove (outfn, ffn) == 0) {
-      fileopSetModTime (ffn, omodtime);
-      fileopDelete (tbuff);
-      rc = 0;
-    } else {
-      filemanipMove (tbuff, ffn);
-    }
-  }
+  atiReplaceFile (ffn, outfn);
 
 cleanup_label:
   if (state >= VC_STREAMS_INITIALIZED) {

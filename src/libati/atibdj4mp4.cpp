@@ -24,10 +24,14 @@ extern "C" {
 #include "atibdj4.h"
 #include "audiofile.h"
 #include "fileop.h"
+#include "filemanip.h"
 #include "log.h"
 #include "mdebug.h"
 #include "slist.h"
 #include "tagdef.h"
+
+#define MP4_A9_SYMBOL "©"
+#define MP4_A9_SYMBOL_LEN (strlen (MP4_A9_SYMBOL))
 
 static int atibdj4AddMP4Tag (AP4_File *file, int tagkey, const char *tag, const char *base, const char *desc, const char *val);
 static void atibdj4RemoveMP4Tag (AP4_File *file, const char *tag, const char *base, const char *desc);
@@ -187,11 +191,14 @@ atibdj4WriteMP4Tags (atidata_t *atidata, const char *ffn,
     slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
     int tagtype, int filetype)
 {
-  AP4_ByteStream*     input     = NULL;
-  AP4_File*           file      = NULL;
-  AP4_Result          result    = AP4_SUCCESS;
-  slistidx_t          iteridx;
-  const char          *tag;
+  AP4_ByteStream    *input = NULL;
+  AP4_File          *file = NULL;
+  AP4_ByteStream    *outfile = NULL;
+  AP4_Result        result = AP4_SUCCESS;
+  slistidx_t        iteridx;
+  const char        *tag;
+  char              outfn [MAXPATHLEN];
+  int               rc;
 
   result = AP4_FileByteStream::Create (ffn,
       AP4_FileByteStream::STREAM_MODE_READ, input);
@@ -213,15 +220,33 @@ atibdj4WriteMP4Tags (atidata_t *atidata, const char *ffn,
     const tagaudiotag_t *audiotag;
 
     tagkey = atidata->tagCheck (atidata->writetags, tagtype, tag, AF_REWRITE_NONE);
+    if (tagkey == TAG_TRACKNUMBER || tagkey == TAG_TRACKTOTAL ||
+        tagkey == TAG_DISCNUMBER || tagkey == TAG_DISCTOTAL) {
+      /* these will be re-worked later */
+      continue;
+    }
     audiotag = atidata->audioTagLookup (tagkey, tagtype);
     atibdj4RemoveMP4Tag (file, audiotag->tag, audiotag->base, audiotag->desc);
     atibdj4AddMP4Tag (file, tagkey, audiotag->tag, audiotag->base, audiotag->desc,
         slistGetStr (updatelist, tag));
   }
 
+  snprintf (outfn, sizeof (outfn), "%s.m4a-tmp", ffn);
+  result = AP4_FileByteStream::Create (outfn,
+      AP4_FileByteStream::STREAM_MODE_WRITE, outfile);
+  if (AP4_FAILED(result)) {
+    fprintf(stderr, "ERROR: cannot open output file for writing\n");
+  } else {
+    AP4_FileCopier::Write(*file, *outfile);
+    delete outfile;
+  }
+
   delete file;
   delete input;
-  return -1;
+
+  rc = atiReplaceFile (ffn, outfn);
+
+  return rc;
 }
 
 static int
@@ -233,6 +258,8 @@ atibdj4AddMP4Tag (AP4_File *file, int tagkey, const char *tag, const char *base,
 
   if (base == NULL) {
     long    nval;
+    char    ttag [5];
+    int     i, j, len;
 
     if (tagkey == TAG_BPM) {
       nval = atol (val);
@@ -240,7 +267,22 @@ atibdj4AddMP4Tag (AP4_File *file, int tagkey, const char *tag, const char *base,
     } else {
       vobj = new AP4_StringMetaDataValue (val);
     }
-    entry = new AP4_MetaData::Entry (tag, "meta", vobj);
+
+    /* convert the four character display tag to the internal tag value */
+    /* i is the index into the display tag */
+    /* j is the index into the internal tag name */
+    memset (ttag, '\0', sizeof (ttag));
+    i = 0;
+    j = 0;
+    if (strncmp (tag, MP4_A9_SYMBOL, MP4_A9_SYMBOL_LEN) == 0) {
+      ttag [j++] = 0xa9;
+      i += MP4_A9_SYMBOL_LEN;
+    }
+    len = strlen (tag);
+    for ( ; i < len; ++i) {
+      ttag [j++] = tag [i];
+    }
+    entry = new AP4_MetaData::Entry (ttag, "meta", vobj);
   } else {
     vobj = new AP4_StringMetaDataValue (val);
     entry = new AP4_MetaData::Entry (desc, base, vobj);

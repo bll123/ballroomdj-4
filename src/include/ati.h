@@ -52,6 +52,7 @@ int     atiiWriteTags (atidata_t *atidata, const char *ffn, slist_t *updatelist,
 /* atiutil.c */
 /* utility routines */
 const char *atiParsePair (slist_t *tagdata, const char *tagname, const char *value, char *pbuff, size_t sz);
+int atiReplaceFile (const char *ffn, const char *outfn);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

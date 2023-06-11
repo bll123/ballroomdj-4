@@ -11,6 +11,9 @@
 #include <errno.h>
 
 #include "ati.h"
+#include "bdj4.h"
+#include "fileop.h"
+#include "filemanip.h"
 #include "slist.h"
 
 static void  atiParseNumberPair (const char *data, int *a, int *b);
@@ -66,3 +69,23 @@ atiParseNumberPair (const char *data, int *a, int *b)
   }
 }
 
+int
+atiReplaceFile (const char *ffn, const char *outfn)
+{
+  int     rc = -1;
+  char    tbuff [MAXPATHLEN];
+  time_t  omodtime;
+
+  omodtime = fileopModTime (ffn);
+  snprintf (tbuff, sizeof (tbuff), "%s.bak", ffn);
+  if (filemanipMove (ffn, tbuff) == 0) {
+    if (filemanipMove (outfn, ffn) == 0) {
+      fileopSetModTime (ffn, omodtime);
+      fileopDelete (tbuff);
+      rc = 0;
+    } else {
+      filemanipMove (tbuff, ffn);
+    }
+  }
+  return rc;
+}

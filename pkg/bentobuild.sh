@@ -83,7 +83,7 @@ if [ $? -eq 0 ]; then
       -B "${bdir}" \
       -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX="$INSTLOC" \
-      -DBUILD_APPS=OFF
+      -DBUILD_APPS=ON
   cmake --build "${bdir}" ${pbld}
   cmake --install "${bdir}"
   rm -rf "${INSTLOC}/lib/cmake"
