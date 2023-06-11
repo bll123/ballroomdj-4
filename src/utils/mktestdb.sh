@@ -23,6 +23,13 @@ rmflag=F
 outfile=""
 while test $# -gt 0; do
   case $1 in
+    --debug)
+      args+=$1
+      args+=" "
+      shift
+      args+=$1
+      args+=" "
+      ;;
     --force)
       rm -f $FLAG
       ;;
@@ -56,6 +63,9 @@ while test $# -gt 0; do
       altdir=$1
       args+=$1
       args+=" "
+      ;;
+    --atiffmpeg)
+      # ignored
       ;;
     --atibdj4)
       # ignored

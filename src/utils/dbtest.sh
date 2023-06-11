@@ -138,6 +138,8 @@ for arg in "$@"; do
   esac
 done
 
+# debug level
+DBG=4456459
 # norm
 NUMM=130
 # deleted foxtrot
@@ -175,7 +177,7 @@ ATIFLAG=""
 if [[ $ATIBDJ4 == T ]]; then
   ATIFLAG=--atibdj4
 fi
-./src/utils/mktestsetup.sh --force ${ATIFLAG}
+./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
 
 if [[ $ATIBDJ4 == T || $ATIBDJ4 == RO ]]; then
   ATII=libatibdj4
@@ -197,7 +199,7 @@ if [[ $TESTON == T ]]; then
   # main test db : rebuild of standard test database
   tname=rebuild-basic
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -219,7 +221,7 @@ if [[ $TESTON == T ]]; then
   # main test db : check-new with no changes
   tname=checknew-basic
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --checknew \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -238,7 +240,7 @@ if [[ $TESTON == T ]]; then
   # main test db : update-from-tags with no changes
   tname=updfromtags-basic
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --updfromtags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -257,7 +259,7 @@ if [[ $TESTON == T ]]; then
   # main test db : compact with no changes
   tname=compact-basic
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --compact \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -285,7 +287,7 @@ if [[ $TESTON == T ]]; then
   setwritetagson
   setbdj3compaton
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --writetags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -334,7 +336,7 @@ if [[ $TESTON == T ]]; then
   setwritetagson
   setbdj3compatoff
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --writetags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -388,7 +390,7 @@ if [[ $TESTON == T ]]; then
   # main test db : check-new with deleted files
   tname=checknew-delete
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --checknew \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -412,7 +414,7 @@ if [[ $TESTON == T ]]; then
   # main test db : compact with deleted files
   tname=compact-deleted
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --compact \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -458,7 +460,7 @@ if [[ $TESTON == T ]]; then
   else
     tname=rebuild-test-db
     got=$(./bin/bdj4 --bdj4dbupdate \
-      --debug 262175 \
+      --debug ${DBG} \
       --rebuild \
       --dbtopdir "${musicdir}" \
       --cli --wait --verbose)
@@ -481,7 +483,7 @@ if [[ $TESTON == T ]]; then
   # test db : check-new w/cha cha
   tname=checknew-chacha
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --checknew \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -503,7 +505,7 @@ if [[ $TESTON == T ]]; then
   # test db : rebuild with no tags
   tname=rebuild-no-tags
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -523,7 +525,7 @@ if [[ $TESTON == T ]]; then
   tname=update-from-tags-empty-db
   setwritetagson
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --updfromtags \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -579,7 +581,7 @@ if [[ $TESTON == T ]]; then
   tname=rebuild-file-path-dat
   setorgregex '{%DANCE%/}{%ARTIST% - }{%TITLE%}'
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -599,7 +601,7 @@ if [[ $TESTON == T ]]; then
   tname=rebuild-file-path-dt
   setorgregex '{%DANCE%/}{%TITLE%}'
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
@@ -620,7 +622,7 @@ if [[ $TESTON == T ]]; then
   tdir=$(echo ${musicdir} | sed 's,/test-music.*,,')
   setorgregex '{%DANCE%/}{%TITLE%}'
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --checknew \
     --dbtopdir "${tdir}/${TMDT}" \
     --cli --wait --verbose)
@@ -640,7 +642,7 @@ if [[ $TESTON == T ]]; then
   tname=rebuild-file-path-dtat
   setorgregex '{%DANCE%/}{%TRACKNUMBER0%-}{%ARTIST% - }{%TITLE%}'
   got=$(./bin/bdj4 --bdj4dbupdate \
-    --debug 262175 \
+    --debug ${DBG} \
     --rebuild \
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)

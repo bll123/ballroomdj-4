@@ -26,9 +26,11 @@
 #include "ati.h"
 #include "atibdj4.h"
 #include "audiofile.h"
+#include "filemanip.h"
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
+#include "slist.h"
 #include "tagdef.h"
 
 #define MB_TAG      "http://musicbrainz.org"
@@ -42,14 +44,15 @@ static int  atibdj4WriteOggTags (atidata_t *atidata, const char *ffn, slist_t *u
 static int  atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 static int  atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 static void atibdj4ProcessVorbisComment (atidata_t *atidata, slist_t *tagdata, int tagtype, const char *kw);
+static const char * atibdj4ParseVorbisComment (const char *kw, char *buff, size_t sz);
 static int  atibdj4WriteOggPage (ogg_page *p, FILE *fp);
-static int  atibdj4WriteOggFile (const char *path_in, struct vorbis_comment *vc_out, const char *path_out);
+static int  atibdj4WriteOggFile (const char *ffn, struct vorbis_comment *newvc);
 static void atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list vl);
 
 const char *
 atiiDesc (void)
 {
-  return "BDJ4: MP3/Ogg/Opus/FLAC";
+  return "BDJ4 Internal";
 }
 
 atidata_t *
@@ -115,16 +118,16 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
   }
   if (filetype == AFILE_TYPE_OGG) {
     needduration = false;
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg/vorbis");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
     atibdj4ParseOggTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_OPUS) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus/vorbis");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus");
     atibdj4ParseOpusTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (filetype == AFILE_TYPE_FLAC) {
     needduration = false;
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac/vorbis");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
     atibdj4ParseFlacTags (atidata, tagdata, ffn, tagtype, rewrite);
   }
   if (tagtype == TAG_TYPE_MP4) {
@@ -177,15 +180,15 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
     rc = atibdj4WriteMP3Tags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
   }
   if (filetype == AFILE_TYPE_OGG) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg/vorbis");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
     rc = atibdj4WriteOggTags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
   }
   if (filetype == AFILE_TYPE_OPUS) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus/vorbis");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus");
     rc = atibdj4WriteOpusTags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
   }
   if (filetype == AFILE_TYPE_FLAC) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac/vorbis");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
     rc = atibdj4WriteFlacTags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
   }
   if (tagtype == TAG_TYPE_MP4) {
@@ -508,9 +511,11 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
     int tagtype, int filetype)
 {
   OggVorbis_File        ovf;
-  int                   rc;
+  int                   rc = -1;
   struct vorbis_comment *vc;
+  struct vorbis_comment newvc;
   slistidx_t            iteridx;
+  slist_t               *upddone;
   const char            *key;
 
   rc = ov_fopen (ffn, &ovf);
@@ -521,22 +526,52 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
 
   vc = ovf.vc;
   if (vc == NULL) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "no vc %s", ffn);
     return -1;
   }
 
-  /* when updating, remove the entry from the vorbis comment first */
+  vorbis_comment_init (&newvc);
+  upddone = slistAlloc ("upd-done", LIST_ORDERED, NULL);
+
+  for (int i = 0; i < vc->comments; ++i) {
+    const char  *kw;
+    const char  *val;
+    char        ttag [300];
+
+    kw = vc->user_comments [i];
+    val = atibdj4ParseVorbisComment (kw, ttag, sizeof (ttag));
+    if (slistGetStr (dellist, ttag) != NULL) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", ttag);
+      continue;
+    }
+    if (slistGetStr (updatelist, ttag) != NULL) {
+      val = slistGetStr (updatelist, ttag);
+      vorbis_comment_add_tag (&newvc, ttag, val);
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: update: %s=%s", ttag, val);
+      slistSetNum (upddone, ttag, 1);
+    } else {
+      /* the tag has not changed, or is unknown to bdj4 */
+      vorbis_comment_add (&newvc, kw);
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: existing: %s", kw);
+    }
+  }
+
   slistStartIterator (updatelist, &iteridx);
   while ((key = slistIterateKey (updatelist, &iteridx)) != NULL) {
-    vorbis_comment_add_tag (vc, key, slistGetStr (updatelist, key));
+    if (slistGetNum (upddone, key) > 0) {
+      continue;
+    }
+    vorbis_comment_add_tag (&newvc, key, slistGetStr (updatelist, key));
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: new: %s=%s", key, slistGetStr (updatelist, key));
   }
-  slistStartIterator (dellist, &iteridx);
-  while ((key = slistIterateKey (dellist, &iteridx)) != NULL) {
-//    _vorbis_comment_rm_tag (vc, key);
-  }
+  slistFree (upddone);
 
+  rc = atibdj4WriteOggFile (ffn, &newvc);
+
+  vorbis_comment_clear (&newvc);
   ov_clear (&ovf);
 
-  return -1;
+  return rc;
 }
 
 static int
@@ -577,8 +612,9 @@ atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
   if (block == NULL) {
     /* if the comment block was not found, create a new one */
     block = FLAC__metadata_object_new (FLAC__METADATA_TYPE_VORBIS_COMMENT);
-    while (FLAC__metadata_iterator_next (iterator))
+    while (FLAC__metadata_iterator_next (iterator)) {
       ;
+    }
     if (! FLAC__metadata_iterator_insert_block_after (iterator, block)) {
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: unable to insert new comment block");
       return -1;
@@ -592,6 +628,7 @@ atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
   }
   slistStartIterator (dellist, &iteridx);
   while ((key = slistIterateKey (dellist, &iteridx)) != NULL) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", key);
     FLAC__metadata_object_vorbiscomment_remove_entries_matching (block, key);
   }
 
@@ -616,6 +653,7 @@ atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: unable to append: %s %s", key, slistGetStr (updatelist, key));
       continue;
     }
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: update: %s=%s", key, slistGetStr (updatelist, key));
   }
 
   FLAC__metadata_chain_sort_padding (chain);
@@ -632,27 +670,38 @@ atibdj4ProcessVorbisComment (atidata_t *atidata, slist_t *tagdata,
 {
   const char  *val;
   const char  *tagname;
-  size_t      len;
-  char        tmp [300];
+  char        ttag [300];
 
-  val = strstr (kw, "=");
-  if (val == NULL) {
-    return;
-  }
-  len = val - kw;
-  if (len > sizeof (tmp)) {
-    len = sizeof (tmp);
-  }
-  strlcpy (tmp, kw, len + 1);
-  tmp [len] = '\0';
-  ++val;
-  tagname = atidata->tagLookup (tagtype, tmp);
+  val = atibdj4ParseVorbisComment (kw, ttag, sizeof (ttag));
+  tagname = atidata->tagLookup (tagtype, ttag);
   if (tagname == NULL) {
-    tagname = tmp;
+    tagname = ttag;
   }
   logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: %s %s", tagname, kw);
   slistSetStr (tagdata, tagname, val);
 }
+
+static const char *
+atibdj4ParseVorbisComment (const char *kw, char *buff, size_t sz)
+{
+  const char  *val;
+  size_t      len;
+
+  val = strstr (kw, "=");
+  if (val == NULL) {
+    return NULL;
+  }
+  len = val - kw;
+  if (len > sz) {
+    len = sz - 1;
+  }
+  strlcpy (buff, kw, len + 1);
+  buff [len] = '\0';
+  ++val;
+
+  return val;
+}
+
 
 /* from tagutil: BSD 2-Clause License */
 /* originally posted at : https://kaworu.ch/blog/2013/09/29/writting-ogg-slash-vorbis-comment-in-c/ */
@@ -668,17 +717,17 @@ atibdj4WriteOggPage (ogg_page *p, FILE *fp)
   return 0;
 }
 
-/* can the vorbis comment page be padded? is there a way to determine */
-/* if there is enough space to write it out w/o creating a copy of the file? */
-
 /* from tagutil: BSD 2-Clause License */
 /* originally posted at : https://kaworu.ch/blog/2013/09/29/writting-ogg-slash-vorbis-comment-in-c/ */
 static int
-atibdj4WriteOggFile (const char *path_in, struct vorbis_comment *vc_out,
-    const char *path_out)
+atibdj4WriteOggFile (const char *ffn, struct vorbis_comment *newvc)
 {
-  FILE             *fp_in  = NULL;
-  FILE             *fp_out = NULL;
+  FILE             *ifh  = NULL;
+  char              tbuff [MAXPATHLEN];
+  char              outfn [MAXPATHLEN];
+  int               rc = -1;
+  time_t            omodtime;
+  FILE             *ofh = NULL;
   ogg_sync_state    oy_in;
   ogg_stream_state  os_in;
   ogg_stream_state  os_out;
@@ -716,16 +765,17 @@ atibdj4WriteOggFile (const char *path_in, struct vorbis_comment *vc_out,
    */
 
   state = VC_BUILD_PACKET;
-  if (vorbis_commentheader_out (vc_out, &my_vc_packet) != 0) {
+  if (vorbis_commentheader_out (newvc, &my_vc_packet) != 0) {
     goto cleanup_label;
   }
 
   state = VC_SETUP;
   (void) ogg_sync_init (&oy_in); /* always return 0 */
-  if ((fp_in = fopen (path_in, "r")) == NULL) {
+  if ((ifh = fileopOpen (ffn, "r")) == NULL) {
     goto cleanup_label;
   }
-  if ((fp_out = (path_out == NULL ? stdout : fopen (path_out, "w"))) == NULL) {
+  snprintf (outfn, sizeof (outfn), "%s.ogg-tmp", ffn);
+  if ((ofh = fileopOpen (outfn, "w")) == NULL) {
     goto cleanup_label;
   }
   lastblocksz = granulepos = 0;
@@ -733,7 +783,7 @@ atibdj4WriteOggFile (const char *path_in, struct vorbis_comment *vc_out,
   nstream_in = 0;
 
 bos_label:
-  state = VC_BEG_OF_STREAM; /* never read, but that's fine */
+  state = VC_BEG_OF_STREAM;
   nstream_in += 1;
   npage_in = npacket_in = 0;
   vorbis_info_init (&vi_in);
@@ -742,9 +792,11 @@ bos_label:
   state = VC_START_READING;
   while (state != VC_END_OF_STREAM) {
     switch (ogg_sync_pageout (&oy_in, &og_in)) {
-    case 0:  /* more data needed or an internal error occurred. */
-    case -1: /* stream has not yet captured sync (bytes were skipped). */
-      if (feof (fp_in)) {
+    case 0:
+      /* more data needed or an internal error occurred. */
+    case -1:
+      /* stream has not yet captured sync (bytes were skipped). */
+      if (feof (ifh)) {
         if (state < VC_READING_DATA) {
           goto cleanup_label;
         }
@@ -756,7 +808,7 @@ bos_label:
         if ((buf = ogg_sync_buffer (&oy_in, BUFSIZ)) == NULL) {
           goto cleanup_label;
         }
-        if ((s = fread (buf, sizeof (char), BUFSIZ, fp_in)) == 0) {
+        if ((s = fread (buf, sizeof (char), BUFSIZ, ifh)) == 0) {
           goto cleanup_label;
         }
         if (ogg_sync_wrote (&oy_in, s) == -1) {
@@ -822,13 +874,13 @@ bos_label:
 
         if (state == VC_READING_DATA_NEED_FLUSH) {
           while (ogg_stream_flush (&os_out, &og_out)) {
-            if (atibdj4WriteOggPage (&og_out, fp_out) == -1) {
+            if (atibdj4WriteOggPage (&og_out, ofh) == -1) {
               goto cleanup_label;
             }
           }
         } else if (state == VC_READING_DATA_NEED_PAGEOUT) {
           while (ogg_stream_pageout (&os_out, &og_out)) {
-            if (atibdj4WriteOggPage (&og_out, fp_out) == -1) {
+            if (atibdj4WriteOggPage (&og_out, ofh) == -1) {
               goto cleanup_label;
             }
           }
@@ -870,12 +922,12 @@ bos_label:
   /* forces remaining packets into a last page */
   os_out.e_o_s = 1;
   while (ogg_stream_flush (&os_out, &og_out)) {
-    if (atibdj4WriteOggPage (&og_out, fp_out) == -1) {
+    if (atibdj4WriteOggPage (&og_out, ofh) == -1) {
       goto cleanup_label;
     }
   }
 
-  if (! feof (fp_in)) {
+  if (! feof (ifh)) {
     ogg_stream_clear (&os_in);
     ogg_stream_clear (&os_out);
     vorbis_comment_clear (&vc_in);
@@ -884,16 +936,28 @@ bos_label:
     /* even though bdj4 doesn't support these */
     goto bos_label;
   } else {
-    fclose (fp_in);
-    fp_in = NULL;
+    fclose (ifh);
+    ifh = NULL;
   }
 
   state = VC_WRITE_FINISH;
-  if (fp_out != stdout && fclose (fp_out) != 0) {
+  if (ofh != stdout && fclose (ofh) != 0) {
     goto cleanup_label;
   }
-  fp_out = NULL;
+  ofh = NULL;
   state = VC_DONE_SUCCESS;
+
+  omodtime = fileopModTime (ffn);
+  snprintf (tbuff, sizeof (tbuff), "%s.bak", ffn);
+  if (filemanipMove (ffn, tbuff) == 0) {
+    if (filemanipMove (outfn, ffn) == 0) {
+      fileopSetModTime (ffn, omodtime);
+      fileopDelete (tbuff);
+      rc = 0;
+    } else {
+      filemanipMove (tbuff, ffn);
+    }
+  }
 
 cleanup_label:
   if (state >= VC_STREAMS_INITIALIZED) {
@@ -905,18 +969,19 @@ cleanup_label:
     vorbis_info_clear (&vi_in);
   }
   ogg_sync_clear (&oy_in);
-  if (fp_out != stdout && fp_out != NULL) {
-    fclose (fp_out);
+  if (ofh != stdout && ofh != NULL) {
+    fclose (ofh);
   }
-  if (fp_in != NULL) {
-    fclose (fp_in);
+  if (ifh != NULL) {
+    fclose (ifh);
   }
   ogg_packet_clear (&my_vc_packet);
 
-  return (state == VC_DONE_SUCCESS ? 0 : -1);
+  return rc;
 }
 
 
+/* for logging ffmpeg output */
 static void
 atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list vl)
 {

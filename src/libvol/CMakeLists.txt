@@ -28,8 +28,8 @@ if (APPLE)
 endif()
 
 if (NOT WIN32 AND NOT APPLE)
-  add_library (libvolpa SHARED volpa.c)
   if (PA_FOUND)
+    add_library (libvolpa SHARED volpa.c)
     target_include_directories (libvolpa
       PUBLIC "${PA_INCLUDE_DIRS}"
     )
@@ -41,8 +41,8 @@ if (NOT WIN32 AND NOT APPLE)
 endif()
 
 if (NOT WIN32 AND NOT APPLE)
-  add_library (libvolpipewire SHARED volpipewire.c)
   if (PIPEWIRE_FOUND)
+    add_library (libvolpipewire SHARED volpipewire.c)
     target_include_directories (libvolpipewire
       PUBLIC "${PIPEWIRE_INCLUDE_DIRS}"
     )

@@ -113,14 +113,14 @@ main (int argc, char *argv [])
   char        tbuff [MAXPATHLEN];
   musicdb_t   *db;
   slist_t     *empty = NULL;
-  loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO | LOG_LIST;
+  loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO;
   bool        loglevelset = false;
 
   static struct option bdj_options [] = {
     { "bdj3tags",     no_argument,        NULL,   '3' },
     { "bdj4",         no_argument,        NULL,   'B' },
     { "debugself",    no_argument,        NULL,   0 },
-    { "debug",        no_argument,        NULL,   'd' },
+    { "debug",        required_argument,  NULL,   'd' },
     { "emptydb",      no_argument,        NULL,   'E' },
     { "infile",       required_argument,  NULL,   'I' },
     { "nodetach",     no_argument,        NULL,   0, },
