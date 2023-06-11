@@ -40,6 +40,19 @@ if (NOT WIN32 AND NOT APPLE)
   endif()
 endif()
 
+if (NOT WIN32 AND NOT APPLE)
+  add_library (libvolpipewire SHARED volpipewire.c)
+  if (PIPEWIRE_FOUND)
+    target_include_directories (libvolpipewire
+      PUBLIC "${PIPEWIRE_INCLUDE_DIRS}"
+    )
+    target_link_libraries (libvolpipewire PUBLIC
+      ${PIPEWIRE_LDFLAGS}
+      m
+    )
+  endif()
+endif()
+
 if (WIN32)
   add_library (libvolwin SHARED volwin.cpp)
   target_compile_options (libvolwin PRIVATE -static-libstdc++)
@@ -66,6 +79,10 @@ if (NOT WIN32 AND NOT APPLE)
     libvolpa
     DESTINATION ${PROJECT_SOURCE_DIR}/../bin
   )
+#  install (TARGETS
+#    libvolpipewire
+#    DESTINATION ${PROJECT_SOURCE_DIR}/../bin
+#  )
 endif()
 if (APPLE)
   install (TARGETS

@@ -75,6 +75,7 @@ endif()
 pkg_check_modules (OPENSSL openssl)
 if (NOT WIN32 AND NOT APPLE)
   pkg_check_modules (PA libpulse)
+  pkg_check_modules (PIPEWIRE libpipewire-0.3)
 endif()
 pkg_check_modules (XML2 libxml-2.0)
 
@@ -101,6 +102,7 @@ set (ENV{PKG_CONFIG_PATH} "${PROJECT_SOURCE_DIR}/../plocal/lib/pkgconfig")
 # libvorbisfile
 pkg_check_modules (LIBVORBISFILE vorbisfile)
 pkg_check_modules (LIBVORBIS vorbis)
+pkg_check_modules (LIBOGG ogg)
 
 # libflac
 pkg_check_modules (LIBFLAC flac)
@@ -113,7 +115,7 @@ pkg_check_modules (LIBOPUSFILE opusfile)
 if (WIN32)
   set (LIBBENTO4_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libap4.dll")
 else()
-  set (LIBBENTO4_LDFLAGS -lap4)
+  set (LIBBENTO4_LDFLAGS -L${PROJECT_SOURCE_DIR}/../plocal/lib -lap4)
 endif()
 
 #### ICU string library
@@ -310,6 +312,7 @@ check_include_file (MacTypes.h _hdr_MacTypes)
 check_include_file (math.h _hdr_math)
 check_include_file (netdb.h _hdr_netdb)
 check_include_file (netinet/in.h _hdr_netinet_in)
+check_include_file (pipewire/pipewire _hdr_pipewire_pipewire)
 check_include_file (poll.h _hdr_poll)
 check_include_file (pthread.h _hdr_pthread)
 check_include_file (pulse/pulseaudio.h _hdr_pulse_pulseaudio)
