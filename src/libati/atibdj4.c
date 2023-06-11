@@ -692,7 +692,7 @@ atibdj4ParseVorbisComment (const char *kw, char *buff, size_t sz)
     return NULL;
   }
   len = val - kw;
-  if (len > sz) {
+  if (len >= sz) {
     len = sz - 1;
   }
   strlcpy (buff, kw, len + 1);

@@ -31,7 +31,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "ADJUSTFLAGS", NULL, NULL },
-      { "----:BDJ4:ADJUSTFLAGS", "----", "ADJUSTFLAGS" },
+      { "----:BDJ4:ADJUSTFLAGS", "BDJ4", "ADJUSTFLAGS" },
       { "TXXX=ADJUSTFLAGS", "TXXX", "ADJUSTFLAGS" },
       { NULL, NULL, NULL },
       { "ADJUSTFLAGS", NULL, NULL }
@@ -213,7 +213,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "CONDUCTOR", NULL, NULL },
-      { "----:com.apple.iTunes:CONDUCTOR", "----", "CONDUCTOR" },
+      { "----:com.apple.iTunes:CONDUCTOR", "BDJ4", "CONDUCTOR" },
       { "TPE3", NULL, NULL },
       { "WM/Conductor", NULL, NULL },
       { "performer", NULL, NULL }
@@ -239,7 +239,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "DANCE", NULL, NULL },
-      { "----:BDJ4:DANCE", "----", "DANCE" },
+      { "----:BDJ4:DANCE", "BDJ4", "DANCE" },
       { "TXXX=DANCE", "TXXX", "DANCE" },
       { NULL, NULL, NULL },
       { "DANCE", NULL, NULL }
@@ -265,7 +265,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "DANCELEVEL", NULL, NULL },
-      { "----:BDJ4:DANCELEVEL", "----", "DANCELEVEL" },
+      { "----:BDJ4:DANCELEVEL", "BDJ4", "DANCELEVEL" },
       { "TXXX=DANCELEVEL", "TXXX", "DANCELEVEL" },
       { NULL, NULL, NULL },
       { "DANCELEVEL", NULL, NULL }
@@ -291,7 +291,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "DANCERATING", NULL, NULL },
-      { "----:BDJ4:DANCERATING", "----", "DANCERATING" },
+      { "----:BDJ4:DANCERATING", "BDJ4", "DANCERATING" },
       { "TXXX=DANCERATING", "TXXX", "DANCERATING" },
       { NULL, NULL, NULL },
       { "DANCERATING", NULL, NULL }
@@ -473,7 +473,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "FAVORITE", NULL, NULL },
-      { "----:BDJ4:FAVORITE", "----", "FAVORITE" },
+      { "----:BDJ4:FAVORITE", "BDJ4", "FAVORITE" },
       { "TXXX=FAVORITE", "TXXX", "FAVORITE" },
       { NULL, NULL, NULL },
       { "FAVORITE", NULL, NULL }
@@ -525,7 +525,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "KEYWORD", NULL, NULL },
-      { "----:BDJ4:KEYWORD", "----", "KEYWORD" },
+      { "----:BDJ4:KEYWORD", "BDJ4", "KEYWORD" },
       { "TXXX=KEYWORD", "TXXX", "KEYWORD" },
       { NULL, NULL, NULL },
       { "KEYWORD", NULL, NULL }
@@ -551,7 +551,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "MQDISPLAY", NULL, NULL },
-      { "----:BDJ4:MQDISPLAY", "----", "MQDISPLAY" },
+      { "----:BDJ4:MQDISPLAY", "BDJ4", "MQDISPLAY" },
       { "TXXX=MQDISPLAY", "TXXX", "MQDISPLAY" },
       { NULL, NULL, NULL },
       { "MQDISPLAY", NULL, NULL }
@@ -577,7 +577,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "MUSICBRAINZ_TRACKID", NULL, NULL },
-      { "----:com.apple.iTunes:MusicBrainz Track Id", "----", "MusicBrainz Track Id" },
+      { "----:com.apple.iTunes:MusicBrainz Track Id", "BDJ4", "MusicBrainz Track Id" },
       { "UFID=http://musicbrainz.org", "UFID", "http://musicbrainz.org" },
       { "MusicBrainz/Track Id", NULL, NULL },
       { "MusicBrainz Track Id", NULL, NULL }
@@ -603,7 +603,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "MUSICBRAINZ_WORKID", NULL, NULL },
-      { "----:com.apple.iTunes:MusicBrainz Work Id", "----", "MusicBrainz Work Id" },
+      { "----:com.apple.iTunes:MusicBrainz Work Id", "BDJ4", "MusicBrainz Work Id" },
       { "TXXX=MusicBrainz Work Id", "TXXX", "MusicBrainz Work Id" },
       { "MusicBrainz/Work Id", NULL, NULL },
       { "MusicBrainz Work Id", NULL, NULL }
@@ -629,7 +629,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "MUSICBRAINZ_RELEASETRACKID", NULL, NULL },
-      { "----:com.apple.iTunes:MusicBrainz Release Track Id", "----", "MusicBrainz Release Track Id" },
+      { "----:com.apple.iTunes:MusicBrainz Release Track Id", "BDJ4", "MusicBrainz Release Track Id" },
       { "TXXX=MusicBrainz Release Track Id", "TXXX", "MusicBrainz Release Track Id" },
       { "MusicBrainz/Release Track Id", NULL, NULL },
       { "MusicBrainz Release Track Id", NULL, NULL }
@@ -655,7 +655,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "NOTES", NULL, NULL },
-      { "----:BDJ4:NOTES", "----", "NOTES" },
+      { "----:BDJ4:NOTES", "BDJ4", "NOTES" },
       { "TXXX=NOTES", "TXXX", "NOTES" },
       { NULL, NULL, NULL },
       { "NOTES", NULL, NULL }
@@ -681,7 +681,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "SAMESONG", NULL, NULL },
-      { "----:BDJ4:SAMESONG", "----", "SAMESONG" },
+      { "----:BDJ4:SAMESONG", "BDJ4", "SAMESONG" },
       { "TXXX=SAMESONG", "TXXX", "SAMESONG" },
       { NULL, NULL, NULL },
       { "SAMESONG", NULL, NULL }
@@ -707,7 +707,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "SONGEND", NULL, NULL },
-      { "----:BDJ4:SONGEND", "----", "SONGEND" },
+      { "----:BDJ4:SONGEND", "BDJ4", "SONGEND" },
       { "TXXX=SONGEND", "TXXX", "SONGEND" },
       { NULL, NULL, NULL },
       { "SONGEND", NULL, NULL }
@@ -733,7 +733,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "SONGSTART", NULL, NULL },
-      { "----:BDJ4:SONGSTART", "----", "SONGSTART" },
+      { "----:BDJ4:SONGSTART", "BDJ4", "SONGSTART" },
       { "TXXX=SONGSTART", "TXXX", "SONGSTART" },
       { NULL, NULL, NULL },
       { "SONGSTART", NULL, NULL }
@@ -759,7 +759,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "SPEEDADJUSTMENT", NULL, NULL },
-      { "----:BDJ4:SPEEDADJUSTMENT", "----", "SPEEDADJUSTMENT" },
+      { "----:BDJ4:SPEEDADJUSTMENT", "BDJ4", "SPEEDADJUSTMENT" },
       { "TXXX=SPEEDADJUSTMENT", "TXXX", "SPEEDADJUSTMENT" },
       { NULL, NULL, NULL },
       { "SPEEDADJUSTMENT", NULL, NULL }
@@ -785,7 +785,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "STATUS", NULL, NULL },
-      { "----:BDJ4:STATUS", "----", "STATUS" },
+      { "----:BDJ4:STATUS", "BDJ4", "STATUS" },
       { "TXXX=STATUS", "TXXX", "STATUS" },
       { NULL, NULL, NULL },
       { "STATUS", NULL, NULL }
@@ -941,7 +941,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     NULL,                         /* display name         */
     NULL,                         /* short display name   */
     { { "VOLUMEADJUSTPERC", NULL, NULL },
-      { "----:BDJ4:VOLUMEADJUSTPERC", "----", "VOLUMEADJUSTPERC" },
+      { "----:BDJ4:VOLUMEADJUSTPERC", "BDJ4", "VOLUMEADJUSTPERC" },
       { "TXXX=VOLUMEADJUSTPERC", "TXXX", "VOLUMEADJUSTPERC" },
       { NULL, NULL, NULL },
       { "VOLUMEADJUSTPERC", NULL, NULL }

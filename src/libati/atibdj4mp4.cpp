@@ -26,7 +26,11 @@ extern "C" {
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
+#include "slist.h"
 #include "tagdef.h"
+
+static int atibdj4AddMP4Tag (AP4_File *file, int tagkey, const char *tag, const char *base, const char *desc, const char *val);
+static void atibdj4RemoveMP4Tag (AP4_File *file, const char *tag, const char *base, const char *desc);
 
 void
 atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata,
@@ -142,7 +146,7 @@ atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata,
       } else if (type == AP4_MetaData::Value::TYPE_INT_32_BE) {
         if (! AP4_FAILED (entry->m_Value->ToBytes (buffer))) {
           memcpy (&tlong, buffer.GetData (), buffer.GetDataSize ());
-          valuea = ntohs (tlong);
+          valuea = ntohl (tlong);
           snprintf (tvalue, sizeof (tvalue), "%ld", valuea);
         }
       }
@@ -183,7 +187,103 @@ atibdj4WriteMP4Tags (atidata_t *atidata, const char *ffn,
     slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
     int tagtype, int filetype)
 {
+  AP4_ByteStream*     input     = NULL;
+  AP4_File*           file      = NULL;
+  AP4_Result          result    = AP4_SUCCESS;
+  slistidx_t          iteridx;
+  const char          *tag;
+
+  result = AP4_FileByteStream::Create (ffn,
+      AP4_FileByteStream::STREAM_MODE_READ, input);
+  file = new AP4_File (*input);
+
+  slistStartIterator (dellist, &iteridx);
+  while ((tag = slistIterateKey (dellist, &iteridx)) != NULL) {
+    int                 tagkey;
+    const tagaudiotag_t *audiotag;
+
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", tag);
+    tagkey = atidata->tagCheck (atidata->writetags, tagtype, tag, AF_REWRITE_NONE);
+    audiotag = atidata->audioTagLookup (tagkey, tagtype);
+    atibdj4RemoveMP4Tag (file, audiotag->tag, audiotag->base, audiotag->desc);
+  }
+  slistStartIterator (updatelist, &iteridx);
+  while ((tag = slistIterateKey (updatelist, &iteridx)) != NULL) {
+    int                 tagkey;
+    const tagaudiotag_t *audiotag;
+
+    tagkey = atidata->tagCheck (atidata->writetags, tagtype, tag, AF_REWRITE_NONE);
+    audiotag = atidata->audioTagLookup (tagkey, tagtype);
+    atibdj4RemoveMP4Tag (file, audiotag->tag, audiotag->base, audiotag->desc);
+    atibdj4AddMP4Tag (file, tagkey, audiotag->tag, audiotag->base, audiotag->desc,
+        slistGetStr (updatelist, tag));
+  }
+
+  delete file;
+  delete input;
   return -1;
 }
+
+static int
+atibdj4AddMP4Tag (AP4_File *file, int tagkey, const char *tag, const char *base, const char *desc, const char *val)
+{
+  AP4_MetaData::Value *vobj = NULL;
+  AP4_MetaData::Entry *entry = NULL;
+  AP4_Result          result;
+
+  if (base == NULL) {
+    long    nval;
+
+    if (tagkey == TAG_BPM) {
+      nval = atol (val);
+      vobj = new AP4_IntegerMetaDataValue (AP4_MetaData::Value::TYPE_INT_16_BE, nval);
+    } else {
+      vobj = new AP4_StringMetaDataValue (val);
+    }
+    entry = new AP4_MetaData::Entry (tag, "meta", vobj);
+  } else {
+    vobj = new AP4_StringMetaDataValue (val);
+    entry = new AP4_MetaData::Entry (desc, base, vobj);
+  }
+
+  result = entry->AddToFile (*file, 0);
+  if (AP4_FAILED (result)) {
+    fprintf(stderr, "ERROR: cannot add entry %s (%d:%s)\n",
+        tag, result, AP4_ResultText (result));
+  }
+
+  delete entry;
+  return 0;
+}
+
+static void
+atibdj4RemoveMP4Tag (AP4_File *file, const char *tag, const char *base, const char *desc)
+{
+  AP4_String      *ap4key;
+  AP4_String          *key_namespace = NULL;
+  AP4_String          *key_name = NULL;
+  //AP4_Ordinal       key_index = 0;
+  AP4_MetaData::Entry *entry;
+
+
+  ap4key = new AP4_String (tag);
+  if (base != NULL) {
+    key_namespace = new AP4_String (base);
+    key_name = new AP4_String (desc);
+  } else {
+    key_namespace = new AP4_String ("meta");
+    key_name = new AP4_String (tag);
+  }
+
+  /* for the moment, ignore key-index, but it will need to be parsed later */
+  entry = new AP4_MetaData::Entry (key_name->GetChars(), key_namespace->GetChars(), NULL);
+  entry->RemoveFromFile (*file, 0);
+
+  delete ap4key;
+  delete key_namespace;
+  delete key_name;
+  delete entry;
+}
+
 
 } /* extern C */
