@@ -15,12 +15,16 @@
 
 #include "ati.h"
 #include "atibdj4.h"
+#include "audiofile.h"
 #include "log.h"
 #include "mdebug.h"
 #include "slist.h"
 #include "tagdef.h"
 
 #define MB_TAG      "http://musicbrainz.org"
+
+static void atibdj4AddMP3Tag (atidata_t *atidata, struct id3_tag *id3tag, const char *tag, const char *val, int tagtype);
+static const char * atibdj4GetMP3TagName (atidata_t *atidata, struct id3_frame *id3frame, int tagtype);
 
 void
 atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
@@ -32,30 +36,26 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
   int               idx;
   char              pbuff [100];
 
-  id3file = id3_file_open (ffn, ID3_FILE_MODE_READWRITE);
+  id3file = id3_file_open (ffn, ID3_FILE_MODE_READONLY);
   id3tag = id3_file_tag (id3file);
 
   idx = 0;
   while ((id3frame = id3_tag_findframe (id3tag, "", idx)) != NULL) {
-    const char          *tagname;
-    id3_latin1_t const  *ufid;
+    const char  *ufid;
+    const char  *tagname;
 
-    tagname = NULL;
     ufid = NULL;
-    if (strcmp (id3frame->id, "TXXX") != 0 &&
-        strcmp (id3frame->id, "UFID") != 0) {
-      tagname = atidata->tagLookup (tagtype, id3frame->id);
-      if (tagname == NULL) {
-        tagname = id3frame->id;
-      }
-    }
+    tagname = atibdj4GetMP3TagName (atidata, id3frame, tagtype);
 
+    /* ufid: field 0 is the name, field 1 is the data */
+    /* txxx: field 0 is the text encoding, field 1 is the name, field 2 is the data */
+    /* t---: field 0 is the text encoding, field 1 is the data */
     for (size_t i = 0; i < id3frame->nfields; ++i) {
-      const union id3_field   *field;
+      const union id3_field *field;
 
       field = &id3frame->fields [i];
 
-      switch (id3frame->fields [i].type) {
+      switch (field->type) {
         case ID3_FIELD_TYPE_TEXTENCODING: {
           enum id3_field_textencoding   te;
 
@@ -72,11 +72,11 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           id3_latin1_t const  *str;
 
           str = id3_field_getlatin1 (field);
+fprintf (stderr, "l1: %s %s %d %s\n", id3frame->id, tagname, i, str);
           if (strcmp (id3frame->id, "UFID") == 0) {
-            ufid = str;
-            tagname = atidata->tagLookup (tagtype, (const char *) str);
+            ufid = (const char *) str;
           } else {
-            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (1): %s %s=%s", tagname, id3frame->id, str);
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (1): %s %s=%s", tagname, id3frame->id, str);
             slistSetStr (tagdata, tagname, (const char *) str);
           }
           break;
@@ -85,11 +85,13 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           id3_latin1_t const *str;
 
           str = id3_field_getfulllatin1 (field);
-          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (2): %s %s=%s", tagname, id3frame->id, str);
+fprintf (stderr, "l1f: %s %s %d %s\n", id3frame->id, tagname, i, str);
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (2): %s %s=%s", tagname, id3frame->id, str);
           slistSetStr (tagdata, tagname, (const char *) str);
           break;
         }
         case ID3_FIELD_TYPE_LATIN1LIST: {
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (9): ERR: %s not handled", tagname);
           break;
         }
         case ID3_FIELD_TYPE_STRING: {
@@ -98,10 +100,10 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
           ustr = id3_field_getstring (field);
           str = id3_ucs4_utf8duplicate (ustr);
-          if (tagname == NULL) {
-            tagname = atidata->tagLookup (tagtype, (const char *) str);
-          } else {
-            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (3): %s %s=%s", tagname, id3frame->id, str);
+fprintf (stderr, "str: %s %s %d %s\n", id3frame->id, tagname, i, str);
+          mdextalloc (str);
+          if (i != 1 || strcmp (id3frame->id, "TXXX") != 0) {
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (3): %s %s=%s", tagname, id3frame->id, str);
             slistSetStr (tagdata, tagname, (const char *) str);
           }
           break;
@@ -112,7 +114,9 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
           ustr = id3_field_getstring (field);
           str = id3_ucs4_utf8duplicate (ustr);
-          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (4): %s %s=%s", tagname, id3frame->id, str);
+fprintf (stderr, "str-full: %s %s %d %s\n", id3frame->id, tagname, i, str);
+          mdextalloc (str);
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (4): %s %s=%s", tagname, id3frame->id, str);
           slistSetStr (tagdata, tagname, (const char *) str);
           break;
         }
@@ -127,7 +131,9 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
             ustr = id3_field_getstrings (field, j);
             str = id3_ucs4_utf8duplicate (ustr);
-            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (5): %s %s=%s", tagname, id3frame->id, str);
+fprintf (stderr, "str-list: %s %s %d %d %s\n", id3frame->id, tagname, i, j, str);
+            mdextalloc (str);
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (5): %s %s=%s", tagname, id3frame->id, str);
             p = (const char *) str;
             if (strcmp (tagname, atidata->tagName (TAG_DISCNUMBER)) == 0) {
               p = atiParsePair (tagdata, atidata->tagName (TAG_DISCTOTAL),
@@ -137,6 +143,8 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
               p = atiParsePair (tagdata, atidata->tagName (TAG_TRACKTOTAL),
                   p, pbuff, sizeof (pbuff));
             }
+// ### need to handle multiple items; each should have a different encoding
+// or somesuch.
             slistSetStr (tagdata, tagname, p);
           }
           break;
@@ -148,7 +156,8 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           id3_latin1_t const *str;
 
           str = id3_field_getlatin1 (field);
-          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (6): %s %s=%s", tagname, id3frame->id, str);
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (6): %s %s=%s", tagname, id3frame->id, str);
+fprintf (stderr, "date (latin1): %s %s\n", tagname, (const char *) str);
           slistSetStr (tagdata, tagname, (const char *) str);
           break;
         }
@@ -162,26 +171,34 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
           val = id3_field_getint (field);
           snprintf (tmp, sizeof (tmp), "%ld", val);
-          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (7): %s %s=%s", tagname, id3frame->id, tmp);
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (7): %s %s=%s", tagname, id3frame->id, tmp);
+fprintf (stderr, "numeric: %s %s\n", tagname, tmp);
           slistSetStr (tagdata, tagname, tmp);
           break;
         }
         case ID3_FIELD_TYPE_BINARYDATA: {
           id3_byte_t const  *bstr;
           id3_length_t      blen;
-          char              tmp [100];
+          char              *tmp;
+
+          bstr = id3_field_getbinarydata (field, &blen);
+          tmp = mdmalloc (blen + 1);
+          memcpy (tmp, bstr, blen);
+          tmp [blen] = '\0';
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (8): %s %s=%s", tagname, id3frame->id, tmp);
 
           if (ufid != NULL && strcmp ((const char *) ufid, MB_TAG) == 0) {
-            bstr = id3_field_getbinarydata (field, &blen);
-            memcpy (tmp, bstr, blen);
-            tmp [blen] = '\0';
-            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw (8): %s %s=%s=%s", tagname, id3frame->id, ufid, tmp);
+            /* the musicbrainz recording id is not binary */
             slistSetStr (tagdata, tagname, tmp);
+            mdfree (tmp);
+          } else {
+            slistSetData (tagdata, tagname, tmp);
           }
           break;
         }
       }
     }
+
     ++idx;
   }
 
@@ -193,6 +210,137 @@ atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn,
     slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
     int tagtype, int filetype)
 {
+  struct id3_file     *id3file;
+  struct id3_tag      *oid3tags = NULL;
+  struct id3_tag      *nid3tags = NULL;
+  struct id3_frame    *id3frame;
+  int                 idx;
+  slistidx_t          iteridx;
+  const char          *key;
+  const char          *tagname;
+
+  id3file = id3_file_open (ffn, ID3_FILE_MODE_READWRITE);
+  oid3tags = id3_file_tag (id3file);
+
+  nid3tags = id3_tag_new ();
+
+  idx = 0;
+  while ((id3frame = id3_tag_findframe (oid3tags, "", idx)) != NULL) {
+    tagname = atibdj4GetMP3TagName (atidata, id3frame, tagtype);
+    if (slistGetStr (dellist, tagname) != NULL) {
+      continue;
+    }
+    id3_tag_attachframe (nid3tags, id3frame);
+  }
+
+  slistStartIterator (updatelist, &iteridx);
+  while ((key = slistIterateKey (updatelist, &iteridx)) != NULL) {
+    atibdj4AddMP3Tag (atidata, nid3tags, key, slistGetStr (updatelist, key), tagtype);
+  }
+
+  id3_file_update (id3file);
+  id3_file_close (id3file);
+
   return -1;
 }
 
+/* bdj4 only uses string tags and ufid (binary) */
+/* support for the other types is not needed here */
+static void
+atibdj4AddMP3Tag (atidata_t *atidata, struct id3_tag *id3tags,
+    const char *tag, const char *val, int tagtype)
+{
+  int                 writetags;
+  int                 tagkey;
+  const tagaudiotag_t *audiotag;
+  struct id3_frame    *frame = NULL;
+  int                 idx;
+  id3_ucs4_t          *id3val = NULL;
+  id3_ucs4_t          *ttag = NULL;
+  const char          *id3tagname = NULL;
+  bool                found = false;
+
+  writetags = atidata->writetags;
+  tagkey = atidata->tagCheck (writetags, tagtype, tag, AF_REWRITE_NONE);
+  audiotag = atidata->audioTagLookup (tagkey, tagtype);
+  if (audiotag->base != NULL) {
+    id3tagname = audiotag->base;
+  } else {
+    id3tagname = audiotag->tag;
+  }
+
+  /* find any existing frame with this tag */
+  idx = 0;
+  while ((frame = id3_tag_findframe (id3tags, id3tagname, idx)) != NULL) {
+    if (audiotag->base != NULL) {
+      if (strcmp (tag, frame->id) == 0) {
+        found = true;
+        break;
+      }
+    } else {
+      found = true;
+    }
+    ++idx;
+  }
+  if (! found) {
+    frame = id3_frame_new (audiotag->tag);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: new: %s=%s", tag, val);
+  } else {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: upd: %s=%s", tag, val);
+  }
+
+  id3val = id3_utf8_ucs4duplicate ((id3_utf8_t *) val);
+  mdextalloc (id3val);
+
+  if (tagkey == TAG_RECORDING_ID) {
+  } else if (audiotag->base != NULL) {
+    ttag = id3_utf8_ucs4duplicate ((id3_utf8_t *) tag);
+    mdextalloc (ttag);
+    id3_field_setstring (id3_frame_field (frame, 1), ttag);
+    id3_field_setstring (id3_frame_field (frame, 2), id3val);
+  } else {
+    /* all of the non-txxx id3 tags are string lists */
+    id3_field_setstrings (id3_frame_field (frame, 1), 1, &id3val);
+  }
+  if (! found) {
+    id3_tag_attachframe (id3tags, frame);
+  }
+}
+
+static const char *
+atibdj4GetMP3TagName (atidata_t *atidata, struct id3_frame *id3frame, int tagtype)
+{
+  const char            *tagname = NULL;
+  const union id3_field *field;
+
+  if (strcmp (id3frame->id, "UFID") == 0 && id3frame->nfields >= 2) {
+    const id3_latin1_t *str;
+
+    /* for binary data, there is no encoding field */
+    field = &id3frame->fields [0];
+    str = id3_field_getlatin1 (field);
+    tagname = atidata->tagLookup (tagtype, (const char *) str);
+  } else if (strcmp (id3frame->id, "TXXX") == 0 && id3frame->nfields >= 2) {
+    const id3_ucs4_t  *ustr;
+    id3_utf8_t        *str;
+
+    field = &id3frame->fields [1];
+    ustr = id3_field_getstring (field);
+    str = id3_ucs4_utf8duplicate (ustr);
+    mdextalloc (str);
+    tagname = atidata->tagLookup (tagtype, (const char *) str);
+    dataFree (str);
+  } else {
+    tagname = atidata->tagLookup (tagtype, id3frame->id);
+  }
+
+  /* this is correct for any id3frame->id that is not known to bdj4 */
+  /* and is there to handle any unknown cases where the tagname is not found */
+  /* e.g. audacity does not handle txxx frames correctly and */
+  /* writes the data out to the wrong fields */
+  if (tagname == NULL) {
+    tagname = id3frame->id;
+  }
+
+  return tagname;
+}
