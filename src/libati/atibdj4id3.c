@@ -72,7 +72,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
           id3_latin1_t const  *str;
 
           str = id3_field_getlatin1 (field);
-fprintf (stderr, "l1: %s %s %d %s\n", id3frame->id, tagname, i, str);
+fprintf (stderr, "l1: %s %s %d %s\n", id3frame->id, tagname, (int) i, str);
           if (strcmp (id3frame->id, "UFID") == 0) {
             ufid = (const char *) str;
           } else {
@@ -85,7 +85,7 @@ fprintf (stderr, "l1: %s %s %d %s\n", id3frame->id, tagname, i, str);
           id3_latin1_t const *str;
 
           str = id3_field_getfulllatin1 (field);
-fprintf (stderr, "l1f: %s %s %d %s\n", id3frame->id, tagname, i, str);
+fprintf (stderr, "l1f: %s %s %d %s\n", id3frame->id, tagname, (int) i, str);
           logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (2): %s %s=%s", tagname, id3frame->id, str);
           slistSetStr (tagdata, tagname, (const char *) str);
           break;
@@ -100,7 +100,7 @@ fprintf (stderr, "l1f: %s %s %d %s\n", id3frame->id, tagname, i, str);
 
           ustr = id3_field_getstring (field);
           str = id3_ucs4_utf8duplicate (ustr);
-fprintf (stderr, "str: %s %s %d %s\n", id3frame->id, tagname, i, str);
+fprintf (stderr, "str: %s %s %d %s\n", id3frame->id, tagname, (int) i, str);
           mdextalloc (str);
           if (i != 1 || strcmp (id3frame->id, "TXXX") != 0) {
             logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (3): %s %s=%s", tagname, id3frame->id, str);
@@ -114,7 +114,7 @@ fprintf (stderr, "str: %s %s %d %s\n", id3frame->id, tagname, i, str);
 
           ustr = id3_field_getstring (field);
           str = id3_ucs4_utf8duplicate (ustr);
-fprintf (stderr, "str-full: %s %s %d %s\n", id3frame->id, tagname, i, str);
+fprintf (stderr, "str-full: %s %s %d %s\n", id3frame->id, tagname, (int) i, str);
           mdextalloc (str);
           logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (4): %s %s=%s", tagname, id3frame->id, str);
           slistSetStr (tagdata, tagname, (const char *) str);
@@ -131,7 +131,7 @@ fprintf (stderr, "str-full: %s %s %d %s\n", id3frame->id, tagname, i, str);
 
             ustr = id3_field_getstrings (field, j);
             str = id3_ucs4_utf8duplicate (ustr);
-fprintf (stderr, "str-list: %s %s %d %d %s\n", id3frame->id, tagname, i, j, str);
+fprintf (stderr, "str-list: %s %s %d %d %s\n", id3frame->id, tagname, (int) i, (int) j, str);
             mdextalloc (str);
             logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  raw (5): %s %s=%s", tagname, id3frame->id, str);
             p = (const char *) str;
@@ -228,10 +228,13 @@ atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn,
   while ((id3frame = id3_tag_findframe (oid3tags, "", idx)) != NULL) {
     tagname = atibdj4GetMP3TagName (atidata, id3frame, tagtype);
     if (slistGetStr (dellist, tagname) != NULL) {
+fprintf (stderr, "del %s %s\n", id3frame->id, tagname);
       continue;
     }
     id3_tag_attachframe (nid3tags, id3frame);
+    ++idx;
   }
+fprintf (stderr, "%d existing frames\n", idx);
 
   slistStartIterator (updatelist, &iteridx);
   while ((key = slistIterateKey (updatelist, &iteridx)) != NULL) {
@@ -268,24 +271,39 @@ atibdj4AddMP3Tag (atidata_t *atidata, struct id3_tag *id3tags,
   } else {
     id3tagname = audiotag->tag;
   }
+fprintf (stderr, "write: tagkey: %d audio-tag: %s\n", tagkey, audiotag->tag);
+fprintf (stderr, "    base: %s desc: %s\n", audiotag->base, audiotag->desc);
 
   /* find any existing frame with this tag */
   idx = 0;
+fprintf (stderr, "  search: %s\n", id3tagname);
   while ((frame = id3_tag_findframe (id3tags, id3tagname, idx)) != NULL) {
+    const char  *ttagname;
+
+    ttagname = atibdj4GetMP3TagName (atidata, frame, tagtype);
+fprintf (stderr, "    chk: %s %d %s %s\n", id3tagname, idx, frame->id, ttagname);
+
     if (audiotag->base != NULL) {
-      if (strcmp (tag, frame->id) == 0) {
+      if (strcmp (audiotag->base, frame->id) == 0 &&
+          strcmp (audiotag->desc, ttagname) == 0) {
+fprintf (stderr, "  found: %s %d %s\n", id3tagname, idx, frame->id);
         found = true;
         break;
       }
     } else {
+fprintf (stderr, "  found: %s %d %s\n", id3tagname, idx, frame->id);
       found = true;
+      break;
     }
     ++idx;
   }
   if (! found) {
+fprintf (stderr, "  not found %s\n", id3tagname);
     frame = id3_frame_new (audiotag->tag);
+fprintf (stderr, "write new %s %s\n", tag, val);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: new: %s=%s", tag, val);
   } else {
+fprintf (stderr, "write upd %s %s\n", tag, val);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: upd: %s=%s", tag, val);
   }
 
@@ -293,6 +311,7 @@ atibdj4AddMP3Tag (atidata_t *atidata, struct id3_tag *id3tags,
   mdextalloc (id3val);
 
   if (tagkey == TAG_RECORDING_ID) {
+fprintf (stderr, "ufid not handled yet\n");
   } else if (audiotag->base != NULL) {
     ttag = id3_utf8_ucs4duplicate ((id3_utf8_t *) tag);
     mdextalloc (ttag);
