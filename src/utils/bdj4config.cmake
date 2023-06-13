@@ -94,7 +94,7 @@ endif()
 if (WIN32)
   set (LIBID3TAG_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libid3tag.dll")
 else()
-  set (LIBID3TAG_LDFLAGS -lid3tag)
+  set (LIBID3TAG_LDFLAGS ${PROJECT_SOURCE_DIR}/../plocal/lib/libid3tag.a)
 endif()
 
 set (ENV{PKG_CONFIG_PATH} "${PROJECT_SOURCE_DIR}/../plocal/lib/pkgconfig")
