@@ -35,18 +35,24 @@ target_include_directories (libatibdj4
   PUBLIC ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
 )
 target_link_libraries (libatibdj4 PUBLIC
-  ${LIBID3TAG_LDFLAGS}
   libbdjatiutil
   libbdj4basic
   libbdj4common
+  # ffmpeg
   ${LIBAVFORMAT_LDFLAGS}
   ${LIBAVUTIL_LDFLAGS}
+  # libidtag
+  ${LIBID3TAG_LDFLAGS}
+  # ogg
   ${LIBVORBISFILE_LDFLAGS}
   ${LIBVORBIS_LDFLAGS}
   ${LIBOGG_LDFLAGS}
+  # opus
   ${LIBOPUSFILE_LDFLAGS}
   ${LIBOPUS_LDFLAGS}
+  # flac
   ${LIBFLAC_LDFLAGS}
+  # bento4 mp4 library
   ${LIBBENTO4_LDFLAGS}
   m
 )
