@@ -30,6 +30,8 @@ typedef struct ati {
   char              *(*atiiReadTags) (atidata_t *atidata, const char *ffn);
   void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
   int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+  atipreserve_t     *(*atiiPreserveTags) (atidata_t *atidata, const char *ffn);
+  int               (*atiiWritePreservedTags) (atidata_t *atidata, atipreserve_t *atipreserve, const char *ffn);
   atidata_t         *atidata;
 } ati_t;
 
@@ -130,6 +132,25 @@ atiWriteTags (ati_t *ati, const char *ffn,
   }
   return 0;
 }
+
+atipreserve_t *
+atiPreserveTags (ati_t *ati, const char *ffn)
+{
+  if (ati != NULL && ati->atiiPreserveTags != NULL) {
+    return ati->atiiPreserveTags (ati->atidata, ffn);
+  }
+  return NULL;
+}
+
+int
+atiWritePreservedTags (ati_t *ati, atipreserve_t *atipreserve, const char *ffn)
+{
+  if (ati != NULL && ati->atiiWritePreservedTags != NULL) {
+    return ati->atiiWritePreservedTags (ati->atidata, atipreserve, ffn);
+  }
+  return 0;
+}
+
 
 slist_t *
 atiInterfaceList (void)

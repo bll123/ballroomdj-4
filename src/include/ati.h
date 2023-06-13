@@ -27,6 +27,7 @@ enum {
 };
 
 typedef struct ati ati_t;
+typedef struct atipreserve atipreserve_t;
 typedef struct atidata atidata_t;
 typedef const char *(*taglookup_t)(int, const char *);
 typedef int (*tagcheck_t)(int, int, const char *, int);
@@ -40,6 +41,8 @@ char    *atiReadTags (ati_t *ati, const char *ffn);
 void    atiParseTags (ati_t *ati, slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
 int     atiWriteTags (ati_t *ati, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 slist_t *atiInterfaceList (void);
+atipreserve_t *atiPreserveTags (ati_t *ati, const char *ffn);
+int     atiWritePreservedTags (ati_t *ati, atipreserve_t *atipreserve, const char *ffn);
 
 const char *atiiDesc (void);
 bool    atiiUseReader (void);
@@ -48,6 +51,8 @@ void    atiiFree (atidata_t *atidata);
 char    *atiiReadTags (atidata_t *atidata, const char *ffn);
 void    atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
 int     atiiWriteTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+atipreserve_t *atiiPreserveTags (atidata_t *atidata, const char *ffn);
+int     atiiWritePreservedTags (atidata_t *atidata, atipreserve_t *atipreserve, const char *ffn);
 
 /* atiutil.c */
 /* utility routines */

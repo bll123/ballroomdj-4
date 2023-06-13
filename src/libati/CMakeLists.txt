@@ -26,7 +26,7 @@ target_link_libraries (libbdjatiutil PUBLIC
 add_library (libatibdj4 SHARED
   atibdj4.c
   atibdj4flac.c
-  atibdj4id3.c
+  atibdj4mp3.c
   atibdj4mp4.cpp
   atibdj4ogg.c
   atibdj4opus.c

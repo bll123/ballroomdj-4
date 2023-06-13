@@ -164,10 +164,8 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   slistStartIterator (newtaglist, &iteridx);
   while ((tag = slistIterateKey (newtaglist, &iteridx)) != NULL) {
     bool  upd;
-    bool  compatconv;
 
     upd = false;
-    compatconv = false;
     tagkey = audiotagTagCheck (writetags, tagtype, tag, rewrite);
     if (tagkey < 0) {
       continue;
@@ -207,16 +205,6 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
       } else {
         newvalue = NULL;
       }
-      compatconv = true;
-    }
-
-    /* if the compatibility conversion was done, or */
-    /* if the bdj3 compatibility flag has changed, */
-    /* then write the data */
-    if ((compatconv || ! bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS)) &&
-        bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS) !=
-        bdjoptGetNum (OPT_G_BDJ3_COMPAT_TAGS_LAST)) {
-      upd = true;
     }
 
     if (upd) {
