@@ -214,6 +214,11 @@ atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn,
   const char          *key;
   const char          *tagname;
 
+#if ! defined (ID3_VERSION_FILE_UPDATE_PATCH)
+  fprintf (stderr, "ERR: incorrect id3tag.h loaded\n");
+  return -1;
+#endif
+
   id3file = id3_file_open (ffn, ID3_FILE_MODE_READWRITE);
   id3tags = id3_file_tag (id3file);
   id3_tag_options (id3tags, ID3_TAG_OPTION_COMPRESSION, 0);
