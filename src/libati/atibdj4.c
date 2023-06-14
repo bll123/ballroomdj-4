@@ -182,6 +182,29 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
   return rc;
 }
 
+atisaved_t *
+atiiSaveTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype)
+{
+  atisaved_t *atisaved = NULL;
+
+  if (tagtype == TAG_TYPE_MP3) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
+    atisaved = atibdj4SaveMP3Tags (atidata, ffn, tagtype, filetype);
+  }
+  return atisaved;
+}
+
+int
+atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
+    const char *ffn, int tagtype, int filetype)
+{
+  if (tagtype == TAG_TYPE_MP3) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
+    atibdj4RestoreMP3Tags (atidata, atisaved, ffn, tagtype, filetype);
+  }
+  return 0;
+}
+
 void
 atibdj4ProcessVorbisComment (atidata_t *atidata, slist_t *tagdata,
     int tagtype, const char *kw)
@@ -220,6 +243,7 @@ atibdj4ParseVorbisComment (const char *kw, char *buff, size_t sz)
   return val;
 }
 
+/* internal routines */
 
 /* for logging ffmpeg output */
 static void

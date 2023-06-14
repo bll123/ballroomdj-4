@@ -270,6 +270,30 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   return rc;
 }
 
+void *
+audiotagSaveTags (const char *ffn)
+{
+  int   tagtype;
+  int   filetype;
+  void *sdata;
+
+  audiotagDetermineTagType (ffn, &tagtype, &filetype);
+  sdata = atiSaveTags (at->ati, ffn, tagtype, filetype);
+  return sdata;
+}
+
+void
+audiotagRestoreTags (const char *ffn, void *sdata)
+{
+  int   tagtype;
+  int   filetype;
+
+  audiotagDetermineTagType (ffn, &tagtype, &filetype);
+  atiRestoreTags (at->ati, sdata, ffn, tagtype, filetype);
+}
+
+/* internal routines */
+
 static void
 audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 {

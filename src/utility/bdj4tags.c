@@ -35,6 +35,7 @@ main (int argc, char *argv [])
   int         c = 0;
   int         option_index = 0;
   int         fidx = -1;
+  int         fbidx = -1;
   tagdefkey_t tagkey;
   bool        clbdj3tags = false;
   slist_t     *tagdata;
@@ -42,12 +43,14 @@ main (int argc, char *argv [])
   int         rewrite;
   bool        verbose = true;
   bool        cleantags = false;
+  bool        copy = false;
   int         rc = AUDIOTAG_WRITE_OK;
 
 
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
     { "bdj4tags",     no_argument,      NULL,   0 },
+    { "copy",           no_argument,        NULL,   'c' },
 //    { "rawdata",      no_argument,      NULL,   'r' },
     { "bdj3tags",     no_argument,      NULL,   '3' },
     { "debugself",    no_argument,      NULL,   0 },
@@ -71,6 +74,10 @@ main (int argc, char *argv [])
       }
       case 'B': {
         isbdj4 = true;
+        break;
+      }
+      case 'c': {
+        copy = true;
         break;
       }
 //      case 'r': {
@@ -111,15 +118,36 @@ main (int argc, char *argv [])
     if (strncmp (argv [i], "--", 2) == 0) {
       continue;
     }
-    fidx = i;
-    break;
+    if (copy && fidx != -1 && fbidx == -1) {
+      fbidx = i;
+      break;
+    }
+    if (fidx == -1) {
+      fidx = i;
+      if (! copy) {
+        break;
+      }
+    }
   }
 
   if (! fileopFileExists (argv [fidx])) {
     fprintf (stderr, "no file %s\n", argv [fidx]);
-    bdjoptCleanup ();
-    audiotagCleanup ();
-    exit (1);
+    rc = AUDIOTAG_WRITE_FAILED;
+    goto finish;
+  }
+
+  if (copy && ! fileopFileExists (argv [fbidx])) {
+    fprintf (stderr, "no file %s\n", argv [fidx]);
+    rc = AUDIOTAG_WRITE_FAILED;
+    goto finish;
+  }
+
+  if (copy) {
+    void    *sdata;
+
+    sdata = audiotagSaveTags (argv [fidx]);
+    audiotagRestoreTags (argv [fbidx], sdata);
+    goto finish;
   }
 
   data = audiotagReadTags (argv [fidx]);
@@ -183,6 +211,7 @@ main (int argc, char *argv [])
   }
   slistFree (wlist);
 
+finish:
   tagdefCleanup ();
   bdjoptCleanup ();
   audiotagCleanup ();

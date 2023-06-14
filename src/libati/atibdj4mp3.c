@@ -24,7 +24,12 @@
 
 #define MB_TAG      "http://musicbrainz.org"
 
-static void atibdj4AddMP3Tag (atidata_t *atidata, nlist_t *datalist, struct id3_tag *id3tag, const char *tag, const char *val, int tagtype);
+typedef struct atisaved {
+  struct id3_file   *id3file;
+  struct id3_tag    *id3tags;
+} atisaved_t;
+
+static void atibdj4AddMP3Tag (atidata_t *atidata, nlist_t *datalist, struct id3_tag *id3tags, const char *tag, const char *val, int tagtype);
 static const char * atibdj4GetMP3TagName (atidata_t *atidata, struct id3_frame *id3frame, int tagtype);
 
 void
@@ -38,7 +43,7 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
     const char *ffn, int tagtype, int *rewrite)
 {
   struct id3_file   *id3file;
-  struct id3_tag    *id3tag;
+  struct id3_tag    *id3tags;
   struct id3_frame  *id3frame;
   int               idx;
   char              pbuff [100];
@@ -47,16 +52,22 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
   if (id3file == NULL) {
     return;
   }
-  id3tag = id3_file_tag (id3file);
+  id3tags = id3_file_tag (id3file);
 
   idx = 0;
-  while ((id3frame = id3_tag_findframe (id3tag, "", idx)) != NULL) {
+  while ((id3frame = id3_tag_findframe (id3tags, "", idx)) != NULL) {
     const char                  *ufid;
     const char                  *tagname;
 //    enum id3_field_textencoding te = ID3_FIELD_TEXTENCODING_UTF_8;
 
     ufid = NULL;
     tagname = atibdj4GetMP3TagName (atidata, id3frame, tagtype);
+
+    if (tagname == NULL) {
+      /* this is not a tag that bdj4 uses */
+      ++idx;
+      continue;
+    }
 
     /* ufid: field 0 is the name, field 1 is the data */
     /* txxx: field 0 is the text encoding, field 1 is the name, field 2 is the data */
@@ -235,6 +246,12 @@ atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn,
   idx = 0;
   while ((id3frame = id3_tag_findframe (id3tags, "", idx)) != NULL) {
     tagname = atibdj4GetMP3TagName (atidata, id3frame, tagtype);
+    if (tagname == NULL) {
+      /* this is not a tag that bdj4 uses */
+      ++idx;
+      continue;
+    }
+
     if (slistGetStr (dellist, tagname) != NULL) {
       id3_tag_detachframe (id3tags, id3frame);
       id3_frame_delete (id3frame);
@@ -249,11 +266,83 @@ atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn,
   }
 
   if (id3_file_update (id3file) != 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  file update failed %s", ffn);
   }
   id3_file_close (id3file);
 
   return -1;
 }
+
+atisaved_t *
+atibdj4SaveMP3Tags (atidata_t *atidata, const char *ffn,
+    int tagtype, int filetype)
+{
+  atisaved_t        *atisaved = NULL;
+  struct id3_file   *id3file;
+  struct id3_tag    *id3tags;
+
+fprintf (stderr, "save: %s\n", ffn);
+  id3file = id3_file_open (ffn, ID3_FILE_MODE_READONLY);
+  if (id3file == NULL) {
+    return atisaved;
+  }
+  id3tags = id3_file_tag (id3file);
+
+  atisaved = mdmalloc (sizeof (atisaved_t));
+  atisaved->id3file = id3file;
+  atisaved->id3tags = id3tags;
+
+  /* the file is left open */
+  /* it should only be deleted after the restore processing is complete */
+
+  return atisaved;
+}
+
+void
+atibdj4RestoreMP3Tags (atidata_t *atidata,
+    atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
+{
+  struct id3_file   *id3file;
+  struct id3_tag    *id3tags;
+  struct id3_frame  *id3frame;
+  int               idx;
+
+  if (atisaved == NULL) {
+    return;
+  }
+
+fprintf (stderr, "restore: %s\n", ffn);
+  id3file = id3_file_open (ffn, ID3_FILE_MODE_READWRITE);
+  if (id3file == NULL) {
+    return;
+  }
+  id3tags = id3_file_tag (id3file);
+
+  idx = 0;
+  while ((id3frame = id3_tag_findframe (id3tags, "", idx)) != NULL) {
+fprintf (stderr, "detach-a: %s\n", id3frame->id);
+    id3_tag_detachframe (id3tags, id3frame);
+    id3_frame_delete (id3frame);
+  }
+
+  idx = 0;
+  while ((id3frame = id3_tag_findframe (atisaved->id3tags, "", idx)) != NULL) {
+fprintf (stderr, "detach/attach: %s\n", id3frame->id);
+    id3_tag_detachframe (atisaved->id3tags, id3frame);
+    id3_tag_attachframe (id3tags, id3frame);
+  }
+
+  if (id3_file_update (id3file) != 0) {
+fprintf (stderr, "restore:file update failed\n");
+  }
+  id3_file_close (id3file);
+  id3_file_close (atisaved->id3file);
+  mdfree (atisaved);
+
+  return;
+}
+
+/* internal routines */
 
 /* bdj4 only uses string tags and ufid (binary) */
 /* support for the other types is not needed here */
@@ -310,6 +399,11 @@ atibdj4AddMP3Tag (atidata_t *atidata, nlist_t *datalist,
     const char  *ttagname;
 
     ttagname = atibdj4GetMP3TagName (atidata, frame, tagtype);
+    if (ttagname == NULL) {
+      /* this is not a tag that bdj4 uses */
+      ++idx;
+      continue;
+    }
 
     if (audiotag->base != NULL) {
       if (strcmp (audiotag->base, frame->id) == 0 &&
@@ -381,14 +475,6 @@ atibdj4GetMP3TagName (atidata_t *atidata, struct id3_frame *id3frame, int tagtyp
     dataFree (str);
   } else {
     tagname = atidata->tagLookup (tagtype, id3frame->id);
-  }
-
-  /* this is correct for any id3frame->id that is not known to bdj4 */
-  /* and is there to handle any unknown cases where the tagname is not found */
-  /* e.g. audacity does not handle txxx frames correctly and */
-  /* writes the data out to the wrong fields */
-  if (tagname == NULL) {
-    tagname = id3frame->id;
   }
 
   return tagname;

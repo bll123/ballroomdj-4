@@ -30,8 +30,8 @@ typedef struct ati {
   char              *(*atiiReadTags) (atidata_t *atidata, const char *ffn);
   void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
   int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
-  atipreserve_t     *(*atiiPreserveTags) (atidata_t *atidata, const char *ffn);
-  int               (*atiiWritePreservedTags) (atidata_t *atidata, atipreserve_t *atipreserve, const char *ffn);
+  atisaved_t     *(*atiiSaveTags) (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
+  int               (*atiiRestoreTags) (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
   atidata_t         *atidata;
 } ati_t;
 
@@ -50,6 +50,8 @@ atiInit (const char *atipkg, int writetags,
   ati->atiiReadTags = NULL;
   ati->atiiParseTags = NULL;
   ati->atiiWriteTags = NULL;
+  ati->atiiSaveTags = NULL;
+  ati->atiiRestoreTags = NULL;
 
   pathbldMakePath (dlpath, sizeof (dlpath),
       atipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
@@ -68,6 +70,8 @@ atiInit (const char *atipkg, int writetags,
   ati->atiiReadTags = dylibLookup (ati->dlHandle, "atiiReadTags");
   ati->atiiParseTags = dylibLookup (ati->dlHandle, "atiiParseTags");
   ati->atiiWriteTags = dylibLookup (ati->dlHandle, "atiiWriteTags");
+  ati->atiiSaveTags = dylibLookup (ati->dlHandle, "atiiSaveTags");
+  ati->atiiRestoreTags = dylibLookup (ati->dlHandle, "atiiRestoreTags");
 #pragma clang diagnostic pop
 
   if (ati->atiiInit != NULL) {
@@ -133,20 +137,21 @@ atiWriteTags (ati_t *ati, const char *ffn,
   return 0;
 }
 
-atipreserve_t *
-atiPreserveTags (ati_t *ati, const char *ffn)
+atisaved_t *
+atiSaveTags (ati_t *ati, const char *ffn, int tagtype, int filetype)
 {
-  if (ati != NULL && ati->atiiPreserveTags != NULL) {
-    return ati->atiiPreserveTags (ati->atidata, ffn);
+  if (ati != NULL && ati->atiiSaveTags != NULL) {
+    return ati->atiiSaveTags (ati->atidata, ffn, tagtype, filetype);
   }
   return NULL;
 }
 
 int
-atiWritePreservedTags (ati_t *ati, atipreserve_t *atipreserve, const char *ffn)
+atiRestoreTags (ati_t *ati, atisaved_t *atisaved, const char *ffn,
+    int tagtype, int filetype)
 {
-  if (ati != NULL && ati->atiiWritePreservedTags != NULL) {
-    return ati->atiiWritePreservedTags (ati->atidata, atipreserve, ffn);
+  if (ati != NULL && ati->atiiRestoreTags != NULL) {
+    return ati->atiiRestoreTags (ati->atidata, atisaved, ffn, tagtype, filetype);
   }
   return 0;
 }

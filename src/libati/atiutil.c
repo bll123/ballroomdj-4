@@ -89,3 +89,4 @@ atiReplaceFile (const char *ffn, const char *outfn)
   }
   return rc;
 }
+

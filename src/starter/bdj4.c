@@ -120,6 +120,7 @@ main (int argc, char * argv[])
     /* bdjtags */
     { "bdj3tags",       no_argument,        NULL,   0 },
     { "cleantags",      no_argument,        NULL,   0 },
+    { "copy",           no_argument,        NULL,   0 },
     { "rawdata",        no_argument,        NULL,   0 },
     /* test suite options */
     { "runsection",     required_argument,  NULL,   0 },
