@@ -15,6 +15,9 @@
 #if _hdr_arpa_inet
 # include <arpa/inet.h>
 #endif
+#if _hdr_winsock2
+# include <winsock2.h>
+#endif
 
 #include <bento4/Ap4.h>
 
@@ -42,11 +45,10 @@ atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata,
 {
   AP4_ByteStream*     input     = NULL;
   AP4_File*           file      = NULL;
-  AP4_Result          result    = AP4_SUCCESS;
   const AP4_MetaData  *metadata;
   AP4_List<AP4_MetaData::Entry>::Item*  item;
 
-  result = AP4_FileByteStream::Create (ffn,
+  AP4_FileByteStream::Create (ffn,
       AP4_FileByteStream::STREAM_MODE_READ, input);
   file = new AP4_File (*input);
 

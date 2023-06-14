@@ -2,7 +2,7 @@
 #
 # Copyright 2021-2023 Brad Lanam Pleasant Hill CA
 #
-ver=11
+ver=12
 
 if [[ $1 == --version ]]; then
   echo ${ver}
@@ -177,6 +177,11 @@ sudo port -N install \
     glib2 +quartz \
     gtk3 +quartz \
     adwaita-icon-theme \
+    libogg \
+    libopus \
+    opusfile \
+    libvorbis \
+    flac \
     ffmpeg +nonfree -x11
 sudo -v
 sudo port select --set python python${pyver}

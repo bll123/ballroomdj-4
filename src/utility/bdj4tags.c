@@ -30,7 +30,7 @@ main (int argc, char *argv [])
   slistidx_t  iteridx;
   char        *key = NULL;
   char        *val = NULL;
-  bool        rawdata = false;
+//  bool        rawdata = false;
   bool        isbdj4 = false;
   int         c = 0;
   int         option_index = 0;
@@ -48,7 +48,7 @@ main (int argc, char *argv [])
   static struct option bdj_options [] = {
     { "bdj4",         no_argument,      NULL,   'B' },
     { "bdj4tags",     no_argument,      NULL,   0 },
-    { "rawdata",      no_argument,      NULL,   'r' },
+//    { "rawdata",      no_argument,      NULL,   'r' },
     { "bdj3tags",     no_argument,      NULL,   '3' },
     { "debugself",    no_argument,      NULL,   0 },
     { "verbose",      no_argument,      NULL,   0, },
@@ -73,10 +73,10 @@ main (int argc, char *argv [])
         isbdj4 = true;
         break;
       }
-      case 'r': {
-        rawdata = true;
-        break;
-      }
+//      case 'r': {
+//        rawdata = true;
+//        break;
+//      }
       case 'Q': {
         verbose = false;
         break;

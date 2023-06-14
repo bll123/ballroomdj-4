@@ -19,10 +19,17 @@ install_name_tool \
   $target
 
 # /Volumes/Users/bll/bdj4/packages/icu/lib/libicudata.72.dylib
+# @rpath/libid3tag.0.16.3
+# @rpath/libap4
 count=0
 cmd="install_name_tool "
-for l in libicudata libicui18n libicuuc; do
+for l in libicudata libicui18n libicuuc libid3tag.0.16.3 libap4; do
   path=$(otool -L $target | grep $l | sed 's,^[^/]*,,;s,dylib .*,dylib,')
+  case $l in
+    libid3tag*|libap4*)
+      path="@rpath${path}"
+      ;;
+  esac
   if [[ $path != "" ]]; then
     fulllib=$(echo $path | sed 's,.*/,,')
     cmd+="-change $path @executable_path/../plocal/lib/${fulllib} "
@@ -31,6 +38,7 @@ for l in libicudata libicui18n libicuuc; do
 done
 
 if [[ $count -gt 0 ]]; then
+  echo "== $target : library paths updated" >&2
   cmd+=" $target"
   eval $cmd
 fi

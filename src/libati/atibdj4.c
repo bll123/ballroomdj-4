@@ -24,6 +24,8 @@
 #include "tagdef.h"
 
 static void atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list vl);
+static void atibdj4LogVersion (void);
+static bool gversionlogged = false;
 
 const char *
 atiiDesc (void)
@@ -46,7 +48,7 @@ atiiInit (const char *atipkg, int writetags,
   atidata->audioTagLookup = audioTagLookup;
   atidata->data = NULL;
 
-  /* turn off logging */
+  /* turn off logging for ffmpeg */
   av_log_set_callback (atibdj4LogCallback);
 
   return atidata;
@@ -81,6 +83,8 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
   int32_t           duration;
   int               rc;
   bool              needduration = true;
+
+  atibdj4LogVersion ();
 
   if (! fileopFileExists (ffn)) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "no file %s", ffn);
@@ -144,6 +148,8 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
     int tagtype, int filetype)
 {
   int         rc = -1;
+
+  atibdj4LogVersion ();
 
   if (! fileopFileExists (ffn)) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "no file %s", ffn);
@@ -223,3 +229,11 @@ atibdj4LogCallback (void *avcl, int level, const char *fmt, va_list vl)
   return;
 }
 
+static void
+atibdj4LogVersion (void)
+{
+  if (! gversionlogged) {
+    atibdj4LogMP3Version ();
+    gversionlogged = true;
+  }
+}

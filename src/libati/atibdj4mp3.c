@@ -28,6 +28,12 @@ static void atibdj4AddMP3Tag (atidata_t *atidata, nlist_t *datalist, struct id3_
 static const char * atibdj4GetMP3TagName (atidata_t *atidata, struct id3_frame *id3frame, int tagtype);
 
 void
+atibdj4LogMP3Version (void)
+{
+  logMsg (LOG_DBG, LOG_INFO, "libid3tag version %s", ID3_VERSION);
+}
+
+void
 atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
     const char *ffn, int tagtype, int *rewrite)
 {
@@ -38,13 +44,16 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
   char              pbuff [100];
 
   id3file = id3_file_open (ffn, ID3_FILE_MODE_READONLY);
+  if (id3file == NULL) {
+    return;
+  }
   id3tag = id3_file_tag (id3file);
 
   idx = 0;
   while ((id3frame = id3_tag_findframe (id3tag, "", idx)) != NULL) {
     const char                  *ufid;
     const char                  *tagname;
-    enum id3_field_textencoding te = ID3_FIELD_TEXTENCODING_UTF_8;
+//    enum id3_field_textencoding te = ID3_FIELD_TEXTENCODING_UTF_8;
 
     ufid = NULL;
     tagname = atibdj4GetMP3TagName (atidata, id3frame, tagtype);
@@ -59,13 +68,13 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
       switch (field->type) {
         case ID3_FIELD_TYPE_TEXTENCODING: {
-          te = id3_field_gettextencoding (field);
+          //te = id3_field_gettextencoding (field);
           break;
         }
         case ID3_FIELD_TYPE_FRAMEID: {
-          char const *str;
+          //char const *str;
 
-          str = id3_field_getframeid (field);
+          //str = id3_field_getframeid (field);
           break;
         }
         case ID3_FIELD_TYPE_LATIN1: {
@@ -214,12 +223,10 @@ atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn,
   const char          *key;
   const char          *tagname;
 
-#if ! defined (ID3_VERSION_FILE_UPDATE_PATCH)
-  fprintf (stderr, "ERR: incorrect id3tag.h loaded\n");
-  return -1;
-#endif
-
   id3file = id3_file_open (ffn, ID3_FILE_MODE_READWRITE);
+  if (id3file == NULL) {
+    return -1;
+  }
   id3tags = id3_file_tag (id3file);
   id3_tag_options (id3tags, ID3_TAG_OPTION_COMPRESSION, 0);
   /* turning off crc turns off the extended header */

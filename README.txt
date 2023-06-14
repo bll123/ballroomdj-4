@@ -60,14 +60,14 @@ Licenses:
     mutagen     : GPLv2 License
     qrcode      : MIT License (templates/qrcode/LICENSE)
     Bento4      : GPLv2
-    ICU         ; ICU
+    ICU         : ICU
+    libid3tag   : GPLv2 License
     img/musicbrainz-logo.svg : GPLv2
     Windows:
       msys2     : BSD 3-Clause ( https://github.com/msys2/MSYS2-packages/blob/master/LICENSE )
       ffmpeg    : GPLv3 License
       curl      : MIT License
       nghttp2   : MIT License
-      libid3tag : GPLv2 License
       libogg    : Xiph/BSD License
       libvorbis : Xiph/BSD License
       opus      : Xiph/BSD License

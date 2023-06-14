@@ -35,14 +35,15 @@ target_include_directories (libatibdj4
   PUBLIC ${LIBOPUS_INCLUDE_DIRS} ${LIBOPUSFILE_INCLUDE_DIRS}
 )
 target_link_libraries (libatibdj4 PUBLIC
+  # put this first, otherwise the wrong libid3tag library is picked up
+  # libidtag
+  ${LIBID3TAG_LDFLAGS}
   libbdjatiutil
   libbdj4basic
   libbdj4common
   # ffmpeg
   ${LIBAVFORMAT_LDFLAGS}
   ${LIBAVUTIL_LDFLAGS}
-  # libidtag
-  ${LIBID3TAG_LDFLAGS}
   # ogg
   ${LIBVORBISFILE_LDFLAGS}
   ${LIBVORBIS_LDFLAGS}

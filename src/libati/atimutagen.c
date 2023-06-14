@@ -113,9 +113,6 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
   char        pbuff [40];
   char        tbuff [1024];
   int         count;
-  int         writetags;
-
-  writetags = atidata->writetags;
 
   /*
    * mutagen output:
