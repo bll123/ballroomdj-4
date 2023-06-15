@@ -208,17 +208,6 @@ uiaaCreateDialog (uiaa_t *uiaa, int aaflags, bool hasorig)
   uiBoxPackStart (hbox, uiwidgetp);
   uiaa->cbTrim = uiwidgetp;
 
-  /* normalize audio */
-  uiwcontFree (hbox);
-  hbox = uiCreateHorizBox ();
-  uiBoxPackStart (vbox, hbox);
-
-  /* CONTEXT: apply adjustments: normalize volume checkbox */
-  uiwidgetp = uiCreateCheckButton (_("Normalize Volume"),
-      (aaflags & SONG_ADJUST_NORM) == SONG_ADJUST_NORM);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiaa->cbNorm = uiwidgetp;
-
   /* adjust audio */
   uiwcontFree (hbox);
   hbox = uiCreateHorizBox ();
