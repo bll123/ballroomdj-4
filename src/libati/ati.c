@@ -32,6 +32,7 @@ typedef struct ati {
   int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
   atisaved_t     *(*atiiSaveTags) (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
   int               (*atiiRestoreTags) (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
+  void              (*atiiCleanTags) (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
   atidata_t         *atidata;
 } ati_t;
 
@@ -52,6 +53,7 @@ atiInit (const char *atipkg, int writetags,
   ati->atiiWriteTags = NULL;
   ati->atiiSaveTags = NULL;
   ati->atiiRestoreTags = NULL;
+  ati->atiiCleanTags = NULL;
 
   pathbldMakePath (dlpath, sizeof (dlpath),
       atipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
@@ -72,6 +74,7 @@ atiInit (const char *atipkg, int writetags,
   ati->atiiWriteTags = dylibLookup (ati->dlHandle, "atiiWriteTags");
   ati->atiiSaveTags = dylibLookup (ati->dlHandle, "atiiSaveTags");
   ati->atiiRestoreTags = dylibLookup (ati->dlHandle, "atiiRestoreTags");
+  ati->atiiCleanTags = dylibLookup (ati->dlHandle, "atiiCleanTags");
 #pragma clang diagnostic pop
 
   if (ati->atiiInit != NULL) {
@@ -154,6 +157,14 @@ atiRestoreTags (ati_t *ati, atisaved_t *atisaved, const char *ffn,
     return ati->atiiRestoreTags (ati->atidata, atisaved, ffn, tagtype, filetype);
   }
   return 0;
+}
+
+void
+atiCleanTags (ati_t *ati, const char *ffn, int tagtype, int filetype)
+{
+  if (ati != NULL && ati->atiiCleanTags != NULL) {
+    ati->atiiCleanTags (ati->atidata, ffn, tagtype, filetype);
+  }
 }
 
 

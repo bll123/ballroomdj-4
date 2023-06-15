@@ -43,6 +43,7 @@ int     atiWriteTags (ati_t *ati, const char *ffn, slist_t *updatelist, slist_t 
 slist_t *atiInterfaceList (void);
 atisaved_t *atiSaveTags (ati_t *ati, const char *ffn, int tagtype, int filetype);
 int     atiRestoreTags (ati_t *ati, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
+void    atiCleanTags (ati_t *ati, const char *ffn, int tagtype, int filetype);
 
 const char *atiiDesc (void);
 bool    atiiUseReader (void);
@@ -53,6 +54,7 @@ void    atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, ch
 int     atiiWriteTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 atisaved_t *atiiSaveTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
 int     atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
+void    atiiCleanTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
 
 /* atiutil.c */
 /* utility routines */
