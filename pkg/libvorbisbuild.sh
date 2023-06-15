@@ -62,18 +62,19 @@ if [[ $platform == windows ]]; then
 fi
 
 cd $cwd
-cd libid3tag*
+cd libvorbis*
 if [ $? -eq 0 ]; then
-  echo "## build libid3tag"
+  echo "## build libvorbis"
   sdir=$(pwd)
   bdir=build
 
-  test -d "${bdir}" && rm -rf "${bdir}"
-  cmake -G "$cmg" \
-      -B "${bdir}" \
-      -DCMAKE_INSTALL_PREFIX="$INSTLOC"
-  cmake --build "${bdir}" ${pbld}
-  cmake --install "${bdir}"
-  rm -rf "${INSTLOC}/lib/cmake"
-  rm -rf "${bdir}"
+  make distclean
+  ./configure $args \
+      --prefix=$INSTLOC \
+      --disable-static \
+      --disable-examples
+  make clean
+  make -j $procs LIBS="-static-libgcc -static-libstdc++"
+  make install
+  make distclean
 fi

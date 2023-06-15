@@ -141,7 +141,7 @@ done
 # debug level
 DBG=4456459
 # norm
-NUMM=130
+NUMM=134
 # deleted foxtrot
 NUMC=$(($NUMM-6))
 NUMB=15

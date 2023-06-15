@@ -93,7 +93,7 @@ endif()
 # libid3tag
 pkg_check_modules (LIBID3TAG id3tag)
 
-# libvorbisfile
+# libvorbisfile, libvorbis, libogg
 pkg_check_modules (LIBVORBISFILE vorbisfile)
 pkg_check_modules (LIBVORBIS vorbis)
 pkg_check_modules (LIBOGG ogg)

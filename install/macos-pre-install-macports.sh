@@ -167,6 +167,8 @@ sudo port upgrade outdated
 sudo -v
 
 echo "-- Installing packages needed by BDJ4"
+# libid3tag and libvorbis do not have windows unicode fopen support
+# ship our own.
 sudo port -N install \
     python${pyver} \
     py${pyver}-pip \
@@ -180,7 +182,6 @@ sudo port -N install \
     libogg \
     libopus \
     opusfile \
-    libvorbis \
     flac \
     ffmpeg +nonfree -x11
 sudo -v

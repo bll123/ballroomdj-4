@@ -9,7 +9,7 @@
 version
 ..1
 count
-..130
+..134
 
 # standard dances
 
@@ -3203,6 +3203,162 @@ DEST
 KEY
 ..91
 SOURCE
+..waltz.ogg
+DURATION
+..30630
+NOTES
+..notes5 notes6  ÄääääÄÄÄ
+BPM
+..84
+TAGS
+..tag1 tag2 tag3 utf8 bpm ss ogg
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Jazz
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+FAVORITE
+..bluestar
+SAMESONG
+..5
+TITLE
+..%03d-こんにちは-ja
+DEST
+..%03d-こんにちは-ja
+
+KEY
+..92
+SOURCE
+..waltz.opus
+DURATION
+..30630
+NOTES
+..notes5 notes6  ÄääääÄÄÄ
+BPM
+..84
+TAGS
+..tag1 tag2 tag3 utf8 bpm ss opus
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Jazz
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+FAVORITE
+..bluestar
+SAMESONG
+..5
+TITLE
+..%03d-こんにちは-ja
+DEST
+..%03d-こんにちは-ja
+
+KEY
+..93
+SOURCE
+..waltz.flac
+DURATION
+..30630
+NOTES
+..notes5 notes6  ÄääääÄÄÄ
+BPM
+..84
+TAGS
+..tag1 tag2 tag3 utf8 bpm ss flac
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Jazz
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+FAVORITE
+..bluestar
+SAMESONG
+..5
+TITLE
+..%03d-こんにちは-ja
+DEST
+..%03d-こんにちは-ja
+
+KEY
+..94
+SOURCE
+..waltz.m4a
+DURATION
+..30630
+NOTES
+..notes5 notes6  ÄääääÄÄÄ
+BPM
+..84
+TAGS
+..tag1 tag2 tag3 utf8 bpm ss m4a
+STATUS
+..New
+DANCELEVEL
+..Easy
+GENRE
+..Jazz
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+ALBUM
+..%03d-album
+TRACKNUMBER
+..%d
+DANCE
+..Waltz
+DANCERATING
+..Great
+FAVORITE
+..bluestar
+SAMESONG
+..5
+TITLE
+..%03d-こんにちは-ja
+DEST
+..%03d-こんにちは-ja
+
+KEY
+..95
+SOURCE
 ..waltz.mp3
 DURATION
 ..30630
@@ -3238,7 +3394,7 @@ DEST
 ..%03d-夕陽伴我歸-zh
 
 KEY
-..92
+..96
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3274,7 +3430,7 @@ DEST
 
 # 'iconv' on macos does not recognize this character
 KEY
-..93
+..97
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3309,7 +3465,7 @@ DEST
 ..%03d-Roman_Pokorný-cs
 
 KEY
-..94
+..98
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3344,7 +3500,7 @@ DEST
 ..%03d-Ne_Русский_Шторм-ru
 
 KEY
-..95
+..99
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3381,7 +3537,7 @@ DEST
 # utf8 sort check
 
 KEY
-..96
+..100
 SOURCE
 ..rumba.mp3
 DURATION
@@ -3416,7 +3572,7 @@ DEST
 ..900-ZZZZ
 
 KEY
-..97
+..101
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3453,7 +3609,7 @@ DEST
 ..900-ÄÄÄÄ
 
 KEY
-..98
+..102
 SOURCE
 ..tango.mp3
 DURATION
@@ -3488,7 +3644,7 @@ DEST
 # keywords
 
 KEY
-..99
+..103
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3525,7 +3681,7 @@ DEST
 ..%03d-waltz
 
 KEY
-..100
+..104
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3562,7 +3718,7 @@ DEST
 ..%03d-waltz
 
 KEY
-..101
+..105
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3601,7 +3757,7 @@ DEST
 ..%03d-waltz
 
 KEY
-..102
+..106
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3640,7 +3796,7 @@ DEST
 ..%03d-waltz
 
 KEY
-..103
+..107
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3677,7 +3833,7 @@ DEST
 ..%03d-waltz
 
 KEY
-..104
+..108
 SOURCE
 ..waltz.mp3
 DURATION
@@ -3712,7 +3868,7 @@ DEST
 ..%03d-waltz
 
 KEY
-..105
+..109
 SOURCE
 ..tango.mp3
 DURATION
@@ -3749,7 +3905,7 @@ DEST
 ..%03d-tango
 
 KEY
-..106
+..110
 SOURCE
 ..tango.mp3
 DURATION
@@ -3786,7 +3942,7 @@ DEST
 ..%03d-tango
 
 KEY
-..107
+..111
 SOURCE
 ..tango.mp3
 DURATION
@@ -3823,7 +3979,7 @@ DEST
 ..%03d-tango
 
 KEY
-..108
+..112
 SOURCE
 ..tango.mp3
 DURATION
@@ -3856,7 +4012,7 @@ DEST
 ..%03d-tango
 
 KEY
-..109
+..113
 SOURCE
 ..tango.mp3
 DURATION
@@ -3891,7 +4047,7 @@ DEST
 ..%03d-tango
 
 KEY
-..110
+..114
 SOURCE
 ..tango.mp3
 DURATION
@@ -3930,7 +4086,7 @@ DEST
 # .ogg
 
 KEY
-..111
+..115
 SOURCE
 ..tango.ogg
 DURATION
@@ -3965,7 +4121,7 @@ DEST
 ..%03d-tango-ogg
 
 KEY
-..112
+..116
 SOURCE
 ..tango.ogg
 DURATION
@@ -4000,7 +4156,7 @@ DEST
 ..%03d-tango-ogg
 
 KEY
-..113
+..117
 SOURCE
 ..tango.ogg
 DURATION
@@ -4033,7 +4189,7 @@ DEST
 ..%03d-tango-ogg
 
 KEY
-..114
+..118
 SOURCE
 ..waltz.ogg
 DURATION
@@ -4068,7 +4224,7 @@ DEST
 ..%03d-waltz-ogg
 
 KEY
-..115
+..119
 SOURCE
 ..waltz.ogg
 DURATION
@@ -4105,7 +4261,7 @@ DEST
 ..%03d-waltz-ogg
 
 KEY
-..116
+..120
 SOURCE
 ..waltz.ogg
 DURATION
@@ -4142,7 +4298,7 @@ DEST
 # other filenames
 
 KEY
-..117
+..121
 SOURCE
 ..waltz.mp3
 DURATION
@@ -4179,285 +4335,9 @@ DEST
 # all tags
 
 KEY
-..118
-SOURCE
-..waltz.mp3
-ADJUSTFLAGS
-..T
-ALBUM
-..%03d-album
-ALBUMARTIST
-..%03d-utf8-albartist
-ARTIST
-..%03d-utf8-artist
-BPM
-..87
-COMPOSER
-..%03d-composer
-CONDUCTOR
-..%03d-conductor
-DANCE
-..Waltz
-DANCELEVEL
-..Normal
-DANCERATING
-..Great
-DATE
-..2023-06-01
-DISC
-..1
-DISCTOTAL
-..5
-DURATION
-..30630
-FAVORITE
-..bluestar
-GENRE
-..Rock
-KEYWORD
-..fff
-MQDISPLAY
-..%03d-mqdisplay
-RECORDING_ID
-..1234
-WORK_ID
-..5678
-TRACK_ID
-..9012
-NOTES
-..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
-SAMESONG
-..14
-SONGEND
-..29000
-SONGSTART
-..1000
-SPEEDADJUSTMENT
-..101
-STATUS
-..Complete
-TAGS
-..tag4 TAG5 bpm ss
-TITLE
-..%03d-all-tags-mp3-a
-TRACKNUMBER
-..%d
-TRACKTOTAL
-..12
-VOLUMEADJUSTPERC
-..1000
-DEST
-..%03d-all-tags-mp3-a
-
-KEY
-..119
-SOURCE
-..waltz.mp3
-ADJUSTFLAGS
-..T
-ALBUM
-..%03d-album
-ALBUMARTIST
-..%03d-utf8-albartist
-ARTIST
-..%03d-utf8-artist
-BPM
-..87
-COMPOSER
-..%03d-composer
-CONDUCTOR
-..%03d-conductor
-DANCE
-..Waltz
-DANCELEVEL
-..Normal
-DANCERATING
-..Great
-DATE
-..2023-06-01
-DISC
-..1
-DURATION
-..30630
-FAVORITE
-..bluestar
-GENRE
-..Rock
-KEYWORD
-..fff
-MQDISPLAY
-..%03d-mqdisplay
-RECORDING_ID
-..1234
-WORK_ID
-..5678
-TRACK_ID
-..9012
-NOTES
-..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
-SAMESONG
-..14
-SONGEND
-..29000
-SONGSTART
-..1000
-SPEEDADJUSTMENT
-..101
-STATUS
-..Complete
-TAGS
-..tag4 TAG5 bpm ss
-TITLE
-..%03d-all-tags-mp3-b
-TRACKNUMBER
-..%d
-VOLUMEADJUSTPERC
-..1000
-DEST
-..%03d-all-tags-mp3-b
-
-KEY
-..120
-SOURCE
-..waltz.m4a
-ADJUSTFLAGS
-..T
-ALBUM
-..%03d-album
-ALBUMARTIST
-..%03d-utf8-albartist
-ARTIST
-..%03d-utf8-artist
-BPM
-..87
-COMPOSER
-..%03d-composer
-CONDUCTOR
-..%03d-conductor
-DANCE
-..Waltz
-DANCELEVEL
-..Normal
-DANCERATING
-..Great
-DATE
-..2023-06-01
-DISC
-..1
-DISCTOTAL
-..5
-DURATION
-..30660
-FAVORITE
-..bluestar
-GENRE
-..Rock
-KEYWORD
-..fff
-MQDISPLAY
-..%03d-mqdisplay
-RECORDING_ID
-..1234
-WORK_ID
-..5678
-TRACK_ID
-..9012
-NOTES
-..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
-SAMESONG
-..14
-SONGEND
-..29000
-SONGSTART
-..1000
-SPEEDADJUSTMENT
-..101
-STATUS
-..Complete
-TAGS
-..tag4 TAG5 bpm ss
-TITLE
-..%03d-all-tags-m4a-c
-TRACKNUMBER
-..%d
-TRACKTOTAL
-..12
-VOLUMEADJUSTPERC
-..1000
-DEST
-..%03d-all-tags-m4a-c
-
-KEY
-..121
-SOURCE
-..waltz.m4a
-ADJUSTFLAGS
-..T
-ALBUM
-..%03d-album
-ALBUMARTIST
-..%03d-utf8-albartist
-ARTIST
-..%03d-utf8-artist
-BPM
-..87
-COMPOSER
-..%03d-composer
-CONDUCTOR
-..%03d-conductor
-DANCE
-..Waltz
-DANCELEVEL
-..Normal
-DANCERATING
-..Great
-DATE
-..2023-06-01
-DISC
-..1
-DURATION
-..30660
-FAVORITE
-..bluestar
-GENRE
-..Rock
-KEYWORD
-..fff
-MQDISPLAY
-..%03d-mqdisplay
-RECORDING_ID
-..1234
-WORK_ID
-..5678
-TRACK_ID
-..9012
-NOTES
-..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
-SAMESONG
-..14
-SONGEND
-..29000
-SONGSTART
-..1000
-SPEEDADJUSTMENT
-..101
-STATUS
-..Complete
-TAGS
-..tag4 TAG5 bpm ss
-TITLE
-..%03d-all-tags-m4a-d
-TRACKNUMBER
-..%d
-VOLUMEADJUSTPERC
-..1000
-DEST
-..%03d-all-tags-m4a-d
-
-KEY
 ..122
 SOURCE
-..waltz.flac
+..waltz.mp3
 ADJUSTFLAGS
 ..T
 ALBUM
@@ -4515,7 +4395,7 @@ STATUS
 TAGS
 ..tag4 TAG5 bpm ss
 TITLE
-..%03d-all-tags-flac-e
+..%03d-all-tags-mp3-a
 TRACKNUMBER
 ..%d
 TRACKTOTAL
@@ -4523,11 +4403,287 @@ TRACKTOTAL
 VOLUMEADJUSTPERC
 ..1000
 DEST
-..%03d-all-tags-flac-e
+..%03d-all-tags-mp3-a
 
 KEY
 ..123
 SOURCE
+..waltz.mp3
+ADJUSTFLAGS
+..T
+ALBUM
+..%03d-album
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+BPM
+..87
+COMPOSER
+..%03d-composer
+CONDUCTOR
+..%03d-conductor
+DANCE
+..Waltz
+DANCELEVEL
+..Normal
+DANCERATING
+..Great
+DATE
+..2023-06-01
+DISC
+..1
+DURATION
+..30630
+FAVORITE
+..bluestar
+GENRE
+..Rock
+KEYWORD
+..fff
+MQDISPLAY
+..%03d-mqdisplay
+RECORDING_ID
+..1234
+WORK_ID
+..5678
+TRACK_ID
+..9012
+NOTES
+..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
+SAMESONG
+..14
+SONGEND
+..29000
+SONGSTART
+..1000
+SPEEDADJUSTMENT
+..101
+STATUS
+..Complete
+TAGS
+..tag4 TAG5 bpm ss
+TITLE
+..%03d-all-tags-mp3-b
+TRACKNUMBER
+..%d
+VOLUMEADJUSTPERC
+..1000
+DEST
+..%03d-all-tags-mp3-b
+
+KEY
+..124
+SOURCE
+..waltz.m4a
+ADJUSTFLAGS
+..T
+ALBUM
+..%03d-album
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+BPM
+..87
+COMPOSER
+..%03d-composer
+CONDUCTOR
+..%03d-conductor
+DANCE
+..Waltz
+DANCELEVEL
+..Normal
+DANCERATING
+..Great
+DATE
+..2023-06-01
+DISC
+..1
+DISCTOTAL
+..5
+DURATION
+..30660
+FAVORITE
+..bluestar
+GENRE
+..Rock
+KEYWORD
+..fff
+MQDISPLAY
+..%03d-mqdisplay
+RECORDING_ID
+..1234
+WORK_ID
+..5678
+TRACK_ID
+..9012
+NOTES
+..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
+SAMESONG
+..14
+SONGEND
+..29000
+SONGSTART
+..1000
+SPEEDADJUSTMENT
+..101
+STATUS
+..Complete
+TAGS
+..tag4 TAG5 bpm ss
+TITLE
+..%03d-all-tags-m4a-c
+TRACKNUMBER
+..%d
+TRACKTOTAL
+..12
+VOLUMEADJUSTPERC
+..1000
+DEST
+..%03d-all-tags-m4a-c
+
+KEY
+..125
+SOURCE
+..waltz.m4a
+ADJUSTFLAGS
+..T
+ALBUM
+..%03d-album
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+BPM
+..87
+COMPOSER
+..%03d-composer
+CONDUCTOR
+..%03d-conductor
+DANCE
+..Waltz
+DANCELEVEL
+..Normal
+DANCERATING
+..Great
+DATE
+..2023-06-01
+DISC
+..1
+DURATION
+..30660
+FAVORITE
+..bluestar
+GENRE
+..Rock
+KEYWORD
+..fff
+MQDISPLAY
+..%03d-mqdisplay
+RECORDING_ID
+..1234
+WORK_ID
+..5678
+TRACK_ID
+..9012
+NOTES
+..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
+SAMESONG
+..14
+SONGEND
+..29000
+SONGSTART
+..1000
+SPEEDADJUSTMENT
+..101
+STATUS
+..Complete
+TAGS
+..tag4 TAG5 bpm ss
+TITLE
+..%03d-all-tags-m4a-d
+TRACKNUMBER
+..%d
+VOLUMEADJUSTPERC
+..1000
+DEST
+..%03d-all-tags-m4a-d
+
+KEY
+..126
+SOURCE
+..waltz.flac
+ADJUSTFLAGS
+..T
+ALBUM
+..%03d-album
+ALBUMARTIST
+..%03d-utf8-albartist
+ARTIST
+..%03d-utf8-artist
+BPM
+..87
+COMPOSER
+..%03d-composer
+CONDUCTOR
+..%03d-conductor
+DANCE
+..Waltz
+DANCELEVEL
+..Normal
+DANCERATING
+..Great
+DATE
+..2023-06-01
+DISC
+..1
+DISCTOTAL
+..5
+DURATION
+..30630
+FAVORITE
+..bluestar
+GENRE
+..Rock
+KEYWORD
+..fff
+MQDISPLAY
+..%03d-mqdisplay
+RECORDING_ID
+..1234
+WORK_ID
+..5678
+TRACK_ID
+..9012
+NOTES
+..NOTES3 NOTES4 ÄÄÄÄÄÄÄÄ
+SAMESONG
+..14
+SONGEND
+..29000
+SONGSTART
+..1000
+SPEEDADJUSTMENT
+..101
+STATUS
+..Complete
+TAGS
+..tag4 TAG5 bpm ss
+TITLE
+..%03d-all-tags-flac-e
+TRACKNUMBER
+..%d
+TRACKTOTAL
+..12
+VOLUMEADJUSTPERC
+..1000
+DEST
+..%03d-all-tags-flac-e
+
+KEY
+..127
+SOURCE
 ..waltz.flac
 ADJUSTFLAGS
 ..T
@@ -4593,7 +4749,7 @@ DEST
 ..%03d-all-tags-flac-f
 
 KEY
-..124
+..128
 SOURCE
 ..waltz.ogg
 ADJUSTFLAGS
@@ -4664,7 +4820,7 @@ DEST
 ..%03d-all-tags-ogg-g
 
 KEY
-..125
+..129
 SOURCE
 ..waltz.ogg
 ADJUSTFLAGS
@@ -4731,7 +4887,7 @@ DEST
 ..%03d-all-tags-ogg-h
 
 KEY
-..126
+..130
 SOURCE
 ..waltz.opus
 ADJUSTFLAGS
@@ -4802,7 +4958,7 @@ DEST
 ..%03d-all-tags-opus-i
 
 KEY
-..127
+..131
 SOURCE
 ..waltz.opus
 ADJUSTFLAGS
@@ -4871,7 +5027,7 @@ DEST
 # announcements
 
 KEY
-..128
+..132
 SOURCE
 ..ann-waltz.mp3
 DURATION
@@ -4906,7 +5062,7 @@ DEST
 ..Announce/waltz
 
 KEY
-..129
+..133
 SOURCE
 ..ann-tango.mp3
 DURATION

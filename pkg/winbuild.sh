@@ -223,27 +223,8 @@ if [[ $pkgname == "" || $pkgname = "libogg" ]]; then
   fi
 fi
 
-if [[ $pkgname == "" || $pkgname = "libvorbis" ]]; then
-  cd $cwd
-  cd libvorbis*
-  if [ $? -eq 0 ]; then
-    echo "## build libvorbis"
-    if [ $noclean = F ]; then
-      make distclean
-    fi
-    if [ $noconf = F ]; then
-      ./configure $args \
-          --prefix=$INSTLOC \
-          --disable-static \
-          --disable-examples
-    fi
-    if [ $noclean = F ]; then
-      make clean
-    fi
-    make -j $procs LIBS="-static-libgcc -static-libstdc++"
-    make install
-  fi
-fi
+# libid3tag is built separately
+# libvorbis is built separately
 
 if [[ $pkgname == "" || $pkgname = "libopus" ]]; then
   cd $cwd
