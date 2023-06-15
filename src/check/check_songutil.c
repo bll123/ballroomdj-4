@@ -48,7 +48,7 @@ START_TEST(songutil_chk)
   for (int i = 0; i < tvaluesz; ++i) {
     val = songutilFullFileName (tvalues [i].test);
     ck_assert_str_eq (val, tvalues [i].result);
-    mdfree (val);
+    dataFree (val);
   }
   bdjoptCleanup ();
 }

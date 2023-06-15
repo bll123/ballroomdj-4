@@ -73,7 +73,7 @@ dispselAlloc (int loadtype)
     dispsel->name [i] = mdstrdup (fn);
 
     dispsel->df [i] = datafileAllocParse (dispselmap [i],
-        DFTYPE_LIST, fn, NULL, 0);
+        DFTYPE_LIST, fn, NULL, 0, DF_NO_OFFSET, NULL);
     tlist = datafileGetList (dispsel->df [i]);
 
     dispselCreateList (dispsel, tlist, i);
@@ -124,7 +124,7 @@ dispselSave (dispsel_t *dispsel, dispselsel_t idx, slist_t *list)
     return;
   }
 
-  datafileSaveList (dispselmap [idx], dispsel->name [idx], list,
+  datafileSave (dispsel->df [idx], NULL, list, DF_NO_OFFSET,
       datafileDistVersion (dispsel->df [idx]));
   dispselCreateList (dispsel, list, idx);
 }

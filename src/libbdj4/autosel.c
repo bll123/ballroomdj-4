@@ -64,7 +64,7 @@ autoselAlloc (void)
   autosel = mdmalloc (sizeof (autosel_t));
 
   autosel->df = datafileAllocParse ("autosel", DFTYPE_KEY_VAL, fname,
-      autoseldfkeys, autoseldfcount);
+      autoseldfkeys, autoseldfcount, DF_NO_OFFSET, NULL);
   autosel->autosel = datafileGetList (autosel->df);
   return autosel;
 }

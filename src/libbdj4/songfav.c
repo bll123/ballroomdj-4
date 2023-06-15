@@ -55,7 +55,7 @@ songFavoriteAlloc (void)
   songfav = mdmalloc (sizeof (songfav_t));
 
   songfav->df = datafileAllocParse ("favorites", DFTYPE_INDIRECT, fname,
-        songfavdfkeys, SONGFAV_KEY_MAX);
+        songfavdfkeys, SONGFAV_KEY_MAX, DF_NO_OFFSET, NULL);
   songfav->songfavList = datafileGetList (songfav->df);
   /* temporarily, count is the max number of favorites */
   songfav->count = ilistGetCount (songfav->songfavList);

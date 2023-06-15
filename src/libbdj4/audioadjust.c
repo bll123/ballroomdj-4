@@ -79,7 +79,7 @@ aaAlloc (void)
   aa = mdmalloc (sizeof (aa_t));
 
   aa->df = datafileAllocParse ("audioadjust", DFTYPE_KEY_VAL, fname,
-      aadfkeys, AA_KEY_MAX);
+      aadfkeys, AA_KEY_MAX, DF_NO_OFFSET, NULL);
   aa->values = datafileGetList (aa->df);
 
   return aa;

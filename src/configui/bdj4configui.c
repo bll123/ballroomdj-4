@@ -215,7 +215,8 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff),
       "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   confui.filterDisplayDf = datafileAllocParse ("cu-filter",
-      DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX);
+      DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX,
+      DF_NO_OFFSET, NULL);
   confui.gui.filterDisplaySel = datafileGetList (confui.filterDisplayDf);
   llist = nlistAlloc ("cu-filter-out", LIST_ORDERED, NULL);
   nlistStartIterator (confui.gui.filterDisplaySel, &iteridx);
@@ -232,7 +233,7 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff),
       CONFIGUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   confui.optiondf = datafileAllocParse ("configui-opt", DFTYPE_KEY_VAL, tbuff,
-      configuidfkeys, CONFUI_KEY_MAX);
+      configuidfkeys, CONFUI_KEY_MAX, DF_NO_OFFSET, NULL);
   confui.options = datafileGetList (confui.optiondf);
   if (confui.options == NULL) {
     confui.optionsalloc = true;
@@ -284,7 +285,6 @@ confuiStoppingCallback (void *udata, programstate_t programState)
 {
   configui_t    * confui = udata;
   int           x, y, ws;
-  char          fn [MAXPATHLEN];
   char          tmp [40];
 
   logProcBegin (LOG_PROC, "confuiStoppingCallback");
@@ -307,15 +307,10 @@ confuiStoppingCallback (void *udata, programstate_t programState)
   nlistSetNum (confui->options, CONFUI_POSITION_X, x);
   nlistSetNum (confui->options, CONFUI_POSITION_Y, y);
 
-  pathbldMakePath (fn, sizeof (fn),
-      CONFIGUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal ("configui", fn, configuidfkeys,
-      CONFUI_KEY_MAX, confui->options, 0, 1);
+  datafileSave (confui->optiondf, NULL, confui->options, DF_NO_OFFSET, 1);
 
-  pathbldMakePath (fn, sizeof (fn),
-      "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal ("ds-songfilter", fn, filterdisplaydfkeys,
-      FILTER_DISP_MAX, confui->gui.filterDisplaySel, 0, 1);
+  datafileSave (confui->filterDisplayDf, NULL, confui->gui.filterDisplaySel,
+      DF_NO_OFFSET, 1);
 
   connDisconnect (confui->conn, ROUTE_STARTERUI);
 

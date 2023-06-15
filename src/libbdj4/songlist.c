@@ -79,7 +79,7 @@ songlistLoad (const char *fname)
     return NULL;
   }
   sl->df = datafileAllocParse ("songlist", DFTYPE_INDIRECT, sl->path,
-      songlistdfkeys, SONGLIST_KEY_MAX);
+      songlistdfkeys, SONGLIST_KEY_MAX, DF_NO_OFFSET, NULL);
   if (sl->df == NULL) {
     songlistFree (sl);
     return NULL;
@@ -201,8 +201,7 @@ songlistSave (songlist_t *sl, int tmflag, int distvers)
   if (distvers == SONGLIST_USE_DIST_VERSION) {
     distvers = datafileDistVersion (sl->df);
   }
-  datafileSaveIndirect ("songlist", sl->path, songlistdfkeys,
-      SONGLIST_KEY_MAX, sl->songlist, distvers);
+  datafileSave (sl->df, NULL, sl->songlist, DF_NO_OFFSET, distvers);
   if (tmflag == SONGLIST_PRESERVE_TIMESTAMP) {
     fileopSetModTime (sl->path, origtm);
   }

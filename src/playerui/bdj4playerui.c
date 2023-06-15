@@ -274,7 +274,7 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff),
       PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   plui.optiondf = datafileAllocParse ("playerui-opt", DFTYPE_KEY_VAL, tbuff,
-      playeruidfkeys, PLAYERUI_DFKEY_COUNT);
+      playeruidfkeys, PLAYERUI_DFKEY_COUNT, DF_NO_OFFSET, NULL);
   plui.options = datafileGetList (plui.optiondf);
   plui.optionsalloc = false;
   if (plui.options == NULL) {
@@ -362,7 +362,6 @@ static bool
 pluiClosingCallback (void *udata, programstate_t programState)
 {
   playerui_t    *plui = udata;
-  char          fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "pluiClosingCallback");
 
@@ -383,9 +382,7 @@ pluiClosingCallback (void *udata, programstate_t programState)
     uiwcontFree (plui->wcont [i]);
   }
 
-  pathbldMakePath (fn, sizeof (fn),
-      PLAYERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal ("playerui", fn, playeruidfkeys, PLAYERUI_DFKEY_COUNT, plui->options, 0, 1);
+  datafileSave (plui->optiondf, NULL, plui->options, DF_NO_OFFSET, 1);
 
   bdj4shutdown (ROUTE_PLAYERUI, plui->musicdb);
   dispselFree (plui->dispsel);

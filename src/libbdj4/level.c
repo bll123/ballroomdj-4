@@ -57,7 +57,7 @@ levelAlloc ()
 
   level->path = mdstrdup (fname);
   level->df = datafileAllocParse ("level", DFTYPE_INDIRECT, fname,
-      leveldfkeys, LEVEL_KEY_MAX);
+      leveldfkeys, LEVEL_KEY_MAX, DF_NO_OFFSET, NULL);
   level->level = datafileGetList (level->df);
   ilistDumpInfo (level->level);
 
@@ -195,6 +195,6 @@ levelConv (datafileconv_t *conv)
 void
 levelSave (level_t *level, ilist_t *list)
 {
-  datafileSaveIndirect ("level", level->path, leveldfkeys,
-      LEVEL_KEY_MAX, list, datafileDistVersion (level->df));
+  datafileSave (level->df, NULL, list, DF_NO_OFFSET,
+      datafileDistVersion (level->df));
 }

@@ -209,7 +209,8 @@ confuiLoadLocaleList (confuigui_t *gui)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "locales", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_LOCALE);
-  df = datafileAllocParse ("conf-locale-list", DFTYPE_KEY_VAL, tbuff, NULL, 0);
+  df = datafileAllocParse ("conf-locale-list", DFTYPE_KEY_VAL, tbuff,
+      NULL, 0, DF_NO_OFFSET, NULL);
   list = datafileGetList (df);
 
   slistStartIterator (list, &iteridx);

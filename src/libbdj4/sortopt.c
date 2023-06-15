@@ -50,7 +50,7 @@ sortoptAlloc (void)
 
   sortopt = mdmalloc (sizeof (sortopt_t));
 
-  sortopt->df = datafileAllocParse ("sortopt", DFTYPE_LIST, fname, NULL, 0);
+  sortopt->df = datafileAllocParse ("sortopt", DFTYPE_LIST, fname, NULL, 0, DF_NO_OFFSET, NULL);
   dflist = datafileGetList (sortopt->df);
 
   list = slistAlloc ("sortopt-disp", LIST_UNORDERED, NULL);

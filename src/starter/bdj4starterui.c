@@ -464,7 +464,6 @@ static bool
 starterClosingCallback (void *udata, programstate_t programState)
 {
   startui_t   *starter = udata;
-  char        fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "starterClosingCallback");
 
@@ -497,9 +496,7 @@ starterClosingCallback (void *udata, programstate_t programState)
   uiTextBoxFree (starter->supporttb);
   uiSpinboxFree (starter->profilesel);
 
-  pathbldMakePath (fn, sizeof (fn),
-      STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  datafileSaveKeyVal ("starterui", fn, starteruidfkeys, STARTERUI_KEY_MAX, starter->options, 0, 1);
+  datafileSave (starter->optiondf, NULL, starter->options, DF_NO_OFFSET, 1);
 
   for (int i = 0; i < START_LINK_CB_MAX; ++i) {
     uiwcontFree (starter->linkinfo [i].uiwidgetp);
@@ -2034,7 +2031,7 @@ starterLoadOptions (startui_t *starter)
   pathbldMakePath (tbuff, sizeof (tbuff),
       STARTERUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   starter->optiondf = datafileAllocParse ("starterui-opt", DFTYPE_KEY_VAL, tbuff,
-      starteruidfkeys, STARTERUI_KEY_MAX);
+      starteruidfkeys, STARTERUI_KEY_MAX, DF_NO_OFFSET, NULL);
   starter->options = datafileGetList (starter->optiondf);
   if (starter->options == NULL) {
     starter->optionsalloc = true;

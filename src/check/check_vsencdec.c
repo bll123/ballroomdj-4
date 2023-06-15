@@ -61,6 +61,7 @@ vsencdec_suite (void)
 
   s = suite_create ("vsencdec");
   tc = tcase_create ("vsencdec");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, vsencdec_encdec);
   suite_add_tcase (s, tc);
   return s;

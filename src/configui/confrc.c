@@ -163,7 +163,8 @@ confuiLoadHTMLList (confuigui_t *gui)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "html-list", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_TEMPLATE);
-  df = datafileAllocParse ("conf-html-list", DFTYPE_KEY_VAL, tbuff, NULL, 0);
+  df = datafileAllocParse ("conf-html-list", DFTYPE_KEY_VAL, tbuff,
+      NULL, 0, DF_NO_OFFSET, NULL);
   list = datafileGetList (df);
 
   tstr = bdjoptGetStr (OPT_G_REMCONTROLHTML);

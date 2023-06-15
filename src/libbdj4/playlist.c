@@ -148,7 +148,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
   pl->name = mdstrdup (fname);
 
   pl->plinfodf = datafileAllocParse ("playlist-pl", DFTYPE_KEY_VAL, tfn,
-      playlistdfkeys, PLAYLIST_KEY_MAX);
+      playlistdfkeys, PLAYLIST_KEY_MAX, DF_NO_OFFSET, NULL);
   pl->plinfo = datafileGetList (pl->plinfodf);
   nlistDumpInfo (pl->plinfo);
 
@@ -161,7 +161,7 @@ playlistLoad (const char *fname, musicdb_t *musicdb)
   }
 
   pl->pldancesdf = datafileAllocParse ("playlist-dances", DFTYPE_INDIRECT, tfn,
-      playlistdancedfkeys, pldancedfcount);
+      playlistdancedfkeys, pldancedfcount, DF_NO_OFFSET, NULL);
   if (pl->pldancesdf == NULL) {
     logMsg (LOG_ERR, LOG_IMPORTANT, "ERR: Bad playlist-dance %s", tfn);
     playlistFree (pl);
@@ -614,14 +614,14 @@ playlistSave (playlist_t *pl, const char *name)
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PLAYLIST_EXT, PATHBLD_MP_DREL_DATA);
-  datafileSaveKeyVal ("playlist", tfn, playlistdfkeys,
-      PLAYLIST_KEY_MAX, pl->plinfo, 0, datafileDistVersion (pl->plinfodf));
+  datafileSave (pl->plinfodf, tfn, pl->plinfo, DF_NO_OFFSET,
+      datafileDistVersion (pl->plinfodf));
 
   pathbldMakePath (tfn, sizeof (tfn), pl->name,
       BDJ4_PL_DANCE_EXT, PATHBLD_MP_DREL_DATA);
   ilistSetVersion (pl->pldances, PL_DANCE_VERSION);
-  datafileSaveIndirect ("playlist-dances", tfn, playlistdancedfkeys,
-      pldancedfcount, pl->pldances, datafileDistVersion (pl->pldancesdf));
+  datafileSave (pl->pldancesdf, tfn, pl->pldances, DF_NO_OFFSET,
+      datafileDistVersion (pl->pldancesdf));
 }
 
 void

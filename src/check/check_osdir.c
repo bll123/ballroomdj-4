@@ -103,7 +103,7 @@ osdir_suite (void)
 
   s = suite_create ("osdir");
   tc = tcase_create ("osdir");
-  tcase_set_tags (tc, "libbdj4");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, osdir_chk);
   suite_add_tcase (s, tc);
 

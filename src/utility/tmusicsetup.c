@@ -214,7 +214,7 @@ main (int argc, char *argv [])
   dbStartBatch (db);
 
   df = datafileAllocParse ("test-music", DFTYPE_INDIRECT, infn,
-      tmdfkeys, tmdfcount);
+      tmdfkeys, tmdfcount, DF_NO_OFFSET, NULL);
   tmlist = datafileGetList (df);
 
   ilistStartIterator (tmlist, &tmiteridx);

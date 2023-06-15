@@ -749,8 +749,8 @@ musicdb_suite (void)
   suite_add_tcase (s, tc);
 
   tc = tcase_create ("musicdb-write");
-  tcase_set_timeout (tc, 4.0);
   tcase_set_tags (tc, "libbdj4");
+  tcase_set_timeout (tc, 4.0);
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, musicdb_write);
   tcase_add_test (tc, musicdb_load_get_byidx);
@@ -764,8 +764,8 @@ musicdb_suite (void)
   suite_add_tcase (s, tc);
 
   tc = tcase_create ("musicdb-batch-write");
-  tcase_set_timeout (tc, 4.0);
   tcase_set_tags (tc, "libbdj4");
+  tcase_set_timeout (tc, 4.0);
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, musicdb_batch_write);
   tcase_add_test (tc, musicdb_load_get_byidx);
@@ -779,8 +779,8 @@ musicdb_suite (void)
   suite_add_tcase (s, tc);
 
   tc = tcase_create ("musicdb-write-song");
-  tcase_set_timeout (tc, 4.0);
   tcase_set_tags (tc, "libbdj4");
+  tcase_set_timeout (tc, 4.0);
   tcase_add_unchecked_fixture (tc, setup, NULL);
   tcase_add_test (tc, musicdb_write_song);
   tcase_add_test (tc, musicdb_load_get_byidx);

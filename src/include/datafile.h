@@ -61,6 +61,7 @@ typedef struct {
 enum {
   DF_NORM = -1,
   DF_NO_WRITE = -2,
+  DF_NO_OFFSET = 0,
   /* the largest standard datafile is 3.6k in size */
   /* a database entry is 2k */
   DATAFILE_MAX_SIZE = 16384,
@@ -76,25 +77,17 @@ void          convBoolean (datafileconv_t *conv);
 void          convTextList (datafileconv_t *conv);
 void          convMS (datafileconv_t *conv);
 
-datafile_t *  datafileAlloc (const char *name);
-datafile_t *  datafileAllocParse (const char *name, datafiletype_t dftype,
-                  const char *fname, datafilekey_t *dfkeys, int dfkeycount);
+datafile_t *  datafileAlloc (const char *tag);
+datafile_t *  datafileAllocParse (const char *tag, datafiletype_t dftype, const char *fname, datafilekey_t *dfkeys, int dfkeycount, int offset, datafile_t *mergedf);
 void          datafileFree (void *);
 char *        datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname);
-list_t        *datafileParse (char *data, const char *name, datafiletype_t dftype,
-                  datafilekey_t *dfkeys, int dfkeycount, int *distvers);
-list_t        *datafileParseMerge (list_t *nlist, char *data, const char *name,
-                  datafiletype_t dftype, datafilekey_t *dfkeys,
-                  int dfkeycount, int offset, int *distvers);
-listidx_t     dfkeyBinarySearch (const datafilekey_t *dfkeys,
-                  int count, const char *key);
+list_t        *datafileParse (char *data, const char *name, datafiletype_t dftype, datafilekey_t *dfkeys, int dfkeycount, int *distvers);
+listidx_t     dfkeyBinarySearch (const datafilekey_t *dfkeys, int count, const char *key);
 list_t *      datafileGetList (datafile_t *);
 void          datafileSetData (datafile_t *df, void *data);
 slist_t *     datafileSaveKeyValList (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list);
 void          datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset);
-void          datafileSaveKeyVal (const char *tag, char *fn, datafilekey_t *dfkeys, int count, nlist_t *list, int offset, int distvers);
-void          datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys, int count, nlist_t *list, int distvers);
-void          datafileSaveList (const char *tag, char *fn, slist_t *list, int distvers);
+void          datafileSave (datafile_t *df, const char *fn, nlist_t *list, int offset, int distvers);
 void          datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset);
 int           datafileDistVersion (datafile_t *df);
 

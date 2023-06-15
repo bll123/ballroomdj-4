@@ -147,7 +147,7 @@ osutils_suite (void)
 
   s = suite_create ("osutils");
   tc = tcase_create ("osutils");
-  tcase_set_tags (tc, "libbdj4");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, osutils_setenv);
   tcase_add_test (tc, osutils_link);
   tcase_add_test (tc, osutils_getsysfont);

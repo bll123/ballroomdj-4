@@ -7,7 +7,10 @@
 **4.3.3 2023-6--**
 
 * New Features:
-    * PENDING: Audio Tags: Now uses the ffmpeg libraries to access the audio tags.
+    * Configuration: Selection audio tag processing method.
+    * Audio Tags: Added internal processing (MP3 only at this time).
+* Internal:
+    * Code cleanup.
 
 -->
 

@@ -181,6 +181,7 @@ bdjstring_suite (void)
 
   s = suite_create ("bdjstring");
   tc = tcase_create ("bdjstring");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, bdjstring_string_to_lower);
   tcase_add_test (tc, bdjstring_string_to_upper);
   tcase_add_test (tc, bdjstring_string_trim);

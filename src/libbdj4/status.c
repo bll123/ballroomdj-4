@@ -55,7 +55,7 @@ statusAlloc (void)
 
   status->path = mdstrdup (fname);
   status->df = datafileAllocParse ("status", DFTYPE_INDIRECT, fname,
-      statusdfkeys, STATUS_KEY_MAX);
+      statusdfkeys, STATUS_KEY_MAX, DF_NO_OFFSET, NULL);
   status->status = datafileGetList (status->df);
   ilistDumpInfo (status->status);
 
@@ -168,6 +168,6 @@ statusConv (datafileconv_t *conv)
 void
 statusSave (status_t *status, ilist_t *list)
 {
-  datafileSaveIndirect ("status", status->path, statusdfkeys,
-      STATUS_KEY_MAX, list, datafileDistVersion (status->df));
+  datafileSave (status->df, NULL, list, DF_NO_OFFSET,
+      datafileDistVersion (status->df));
 }

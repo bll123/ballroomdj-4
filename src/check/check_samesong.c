@@ -104,9 +104,9 @@ START_TEST(samesong_basic)
       }
     }
   }
-  /* as of 2022-8-28, there are 3 same-song marks set in the test database */
+  /* as of 2023-6-15, there are 4 same-song marks set in the test database */
   /* and each has two or more associated songs */
-  ck_assert_int_eq (ucount, 3);
+  ck_assert_int_eq (ucount, 4);
   ck_assert_int_ge (count, 7);
 
   ssListGetCounts (tlist, &tcount, &val);

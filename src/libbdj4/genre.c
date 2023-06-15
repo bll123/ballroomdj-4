@@ -57,7 +57,7 @@ genreAlloc (void)
   genre->genreList = NULL;
 
   genre->df = datafileAllocParse ("genre", DFTYPE_INDIRECT, fname,
-      genredfkeys, GENRE_KEY_MAX);
+      genredfkeys, GENRE_KEY_MAX, DF_NO_OFFSET, NULL);
   genre->genre = datafileGetList (genre->df);
   ilistDumpInfo (genre->genre);
 
@@ -153,6 +153,6 @@ genreGetList (genre_t *genre)
 void
 genreSave (genre_t *genre, ilist_t *list)
 {
-  datafileSaveIndirect ("genre", genre->path, genredfkeys,
-      GENRE_KEY_MAX, list, datafileDistVersion (genre->df));
+  datafileSave (genre->df, NULL, list, DF_NO_OFFSET,
+      datafileDistVersion (genre->df));
 }

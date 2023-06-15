@@ -173,7 +173,7 @@ checkSink (const char *fn, const char *testsink, int origvol, int count)
   int         val;
 
   df = datafileAllocParse ("volreg", DFTYPE_INDIRECT, fn,
-      volregdfkeys, VOLREG_KEY_MAX);
+      volregdfkeys, VOLREG_KEY_MAX, DF_NO_OFFSET, NULL);
   vlist = datafileGetList (df);
   ilistStartIterator (vlist, &iteridx);
   while ((idx = ilistIterateKey (vlist, &iteridx)) >= 0) {

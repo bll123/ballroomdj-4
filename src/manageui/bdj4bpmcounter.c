@@ -180,7 +180,7 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff),
       BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   bpmcounter.optiondf = datafileAllocParse ("bpmcounter-opt", DFTYPE_KEY_VAL, tbuff,
-      bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX);
+      bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX, DF_NO_OFFSET, NULL);
   bpmcounter.options = datafileGetList (bpmcounter.optiondf);
   bpmcounter.optionsalloc = false;
   if (bpmcounter.options == NULL) {
@@ -288,7 +288,6 @@ static bool
 bpmcounterClosingCallback (void *udata, programstate_t programState)
 {
   bpmcounter_t   *bpmcounter = udata;
-  char        fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "bpmcounterClosingCallback");
   uiCloseWindow (bpmcounter->window);
@@ -307,9 +306,7 @@ bpmcounterClosingCallback (void *udata, programstate_t programState)
 
   procutilFreeAll (bpmcounter->processes);
 
-  pathbldMakePath (fn, sizeof (fn),
-      BPMCOUNTER_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal ("bpmcounter", fn, bpmcounteruidfkeys, BPMCOUNTER_KEY_MAX, bpmcounter->options, 0, 1);
+  datafileSave (bpmcounter->optiondf, NULL, bpmcounter->options, DF_NO_OFFSET, 1);
 
   bdj4shutdown (ROUTE_BPM_COUNTER, NULL);
 

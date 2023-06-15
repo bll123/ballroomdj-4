@@ -382,6 +382,7 @@ tmutil_suite (void)
 
   s = suite_create ("tmutil");
   tc = tcase_create ("tmutil-base");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, mstime_chk);
   suite_add_tcase (s, tc);
   tc = tcase_create ("tmutil-timers");

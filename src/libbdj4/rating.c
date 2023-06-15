@@ -54,7 +54,7 @@ ratingAlloc (void)
 
   rating->path = mdstrdup (fname);
   rating->df = datafileAllocParse ("rating", DFTYPE_INDIRECT, fname,
-      ratingdfkeys, RATING_KEY_MAX);
+      ratingdfkeys, RATING_KEY_MAX, DF_NO_OFFSET, NULL);
   rating->rating = datafileGetList (rating->df);
   ilistDumpInfo (rating->rating);
 
@@ -153,6 +153,6 @@ ratingConv (datafileconv_t *conv)
 void
 ratingSave (rating_t *rating, ilist_t *list)
 {
-  datafileSaveIndirect ("rating", rating->path, ratingdfkeys,
-      RATING_KEY_MAX, list, datafileDistVersion (rating->df));
+  datafileSave (rating->df, NULL, list, DF_NO_OFFSET,
+      datafileDistVersion (rating->df));
 }

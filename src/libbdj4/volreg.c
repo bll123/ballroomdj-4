@@ -171,7 +171,7 @@ volregUpdate (const char *sink, int originalVolume, int inc)
   volregLockWait ();
   volregDataFilename (fn, sizeof (fn));
   df = datafileAllocParse ("volreg", DFTYPE_INDIRECT, fn,
-      volregdfkeys, VOLREG_KEY_MAX);
+      volregdfkeys, VOLREG_KEY_MAX, DF_NO_OFFSET, NULL);
   vlist = datafileGetList (df);
 
   vkey = -1;
@@ -236,8 +236,7 @@ volregUpdate (const char *sink, int originalVolume, int inc)
     }
   }
 
-  datafileSaveIndirect ("volreg", fn, volregdfkeys, VOLREG_KEY_MAX, vlist,
-      datafileDistVersion (df));
+  datafileSave (df, NULL, vlist, DF_NO_OFFSET, datafileDistVersion (df));
   datafileFree (df);
   if (newvlist) {
     ilistFree (vlist);

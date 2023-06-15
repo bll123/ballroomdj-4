@@ -505,7 +505,7 @@ main (int argc, char *argv[])
   pathbldMakePath (tbuff, sizeof (tbuff),
       MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   manage.optiondf = datafileAllocParse ("manageui-opt", DFTYPE_KEY_VAL, tbuff,
-      manageuidfkeys, MANAGEUI_DFKEY_COUNT);
+      manageuidfkeys, MANAGEUI_DFKEY_COUNT, DF_NO_OFFSET, NULL);
   manage.options = datafileGetList (manage.optiondf);
   manage.optionsalloc = false;
   if (manage.options == NULL) {
@@ -614,7 +614,6 @@ static bool
 manageClosingCallback (void *udata, programstate_t programState)
 {
   manageui_t    *manage = udata;
-  char          fn [MAXPATHLEN];
 
   logProcBegin (LOG_PROC, "manageClosingCallback");
 
@@ -643,9 +642,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   procutilStopAllProcess (manage->processes, manage->conn, PROCUTIL_FORCE_TERM);
   procutilFreeAll (manage->processes);
 
-  pathbldMakePath (fn, sizeof (fn),
-      MANAGEUI_OPT_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
-  datafileSaveKeyVal ("manageui", fn, manageuidfkeys, MANAGEUI_DFKEY_COUNT, manage->options, 0, 1);
+  datafileSave (manage->optiondf, NULL, manage->options, DF_NO_OFFSET, 1);
 
   bdj4shutdown (ROUTE_MANAGEUI, manage->musicdb);
   manageSequenceFree (manage->manageseq);

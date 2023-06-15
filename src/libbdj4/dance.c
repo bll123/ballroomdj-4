@@ -97,7 +97,7 @@ danceAlloc (const char *altfname)
   dance->danceList = NULL;
 
   dance->df = datafileAllocParse ("dance", DFTYPE_INDIRECT, fname,
-      dancedfkeys, dancedfcount);
+      dancedfkeys, dancedfcount, DF_NO_OFFSET, NULL);
   dance->dances = datafileGetList (dance->df);
 
   dance->danceList = slistAlloc ("dance-list", LIST_UNORDERED, NULL);
@@ -259,8 +259,7 @@ danceSave (dance_t *dances, ilist_t *list, int newdistvers)
     distvers = newdistvers;
   }
   ilistSetVersion (list, DANCE_DF_VERSION);
-  datafileSaveIndirect ("dance", dances->path, dancedfkeys,
-      dancedfcount, list, distvers);
+  datafileSave (dances->df, NULL, list, DF_NO_OFFSET, distvers);
 }
 
 void

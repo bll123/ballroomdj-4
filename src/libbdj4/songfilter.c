@@ -954,7 +954,7 @@ songfilterLoadFilterDisplay (songfilter_t *sf)
   pathbldMakePath (tbuff, sizeof (tbuff),
       "ds-songfilter", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA | PATHBLD_MP_USEIDX);
   sf->filterDisplayDf = datafileAllocParse ("sf-songfilter",
-      DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX);
+      DFTYPE_KEY_VAL, tbuff, filterdisplaydfkeys, FILTER_DISP_MAX, DF_NO_OFFSET, NULL);
   sf->filterDisplaySel = datafileGetList (sf->filterDisplayDf);
   logProcEnd (LOG_PROC, "songfilterLoadFilterDisplay", "");
 }

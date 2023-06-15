@@ -53,7 +53,7 @@ orgoptAlloc (void)
 
   orgopt = mdmalloc (sizeof (orgopt_t));
 
-  orgopt->df = datafileAllocParse ("org", DFTYPE_LIST, path, NULL, 0);
+  orgopt->df = datafileAllocParse ("org", DFTYPE_LIST, path, NULL, 0, DF_NO_OFFSET, NULL);
   dflist = datafileGetList (orgopt->df);
 
   list = slistAlloc ("org-disp", LIST_UNORDERED, NULL);

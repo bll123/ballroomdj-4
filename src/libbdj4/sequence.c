@@ -25,10 +25,11 @@ enum {
 };
 
 typedef struct sequence {
-  nlist_t   *sequence;
-  char      *name;
-  char      *path;
-  int       distvers;
+  datafile_t  *df;
+  nlist_t     *sequence;
+  char        *name;
+  char        *path;
+  int         distvers;
 } sequence_t;
 
 sequence_t *
@@ -36,7 +37,6 @@ sequenceAlloc (const char *fname)
 {
   sequence_t    *sequence;
   slist_t       *tlist;
-  datafile_t    *df;
   char          *seqkey;
   slistidx_t    lkey;
   char          fn [MAXPATHLEN];
@@ -54,9 +54,9 @@ sequenceAlloc (const char *fname)
   sequence->name = mdstrdup (fname);
   sequence->path = mdstrdup (fn);
 
-  df = datafileAllocParse ("sequence", DFTYPE_LIST, fn, NULL, 0);
-  tlist = datafileGetList (df);
-  sequence->distvers = datafileDistVersion (df);
+  sequence->df = datafileAllocParse ("sequence", DFTYPE_LIST, fn, NULL, 0, DF_NO_OFFSET, NULL);
+  tlist = datafileGetList (sequence->df);
+  sequence->distvers = datafileDistVersion (sequence->df);
 
   sequence->sequence = nlistAlloc ("sequence", LIST_UNORDERED, NULL);
   nlistSetSize (sequence->sequence, slistGetCount (tlist));
@@ -70,7 +70,7 @@ sequenceAlloc (const char *fname)
     lkey = conv.num;
     nlistSetStr (sequence->sequence, lkey, seqkey);
   }
-  datafileFree (df);
+  datafileFree (sequence->df);
   nlistDumpInfo (sequence->sequence);
 
   return sequence;
@@ -160,5 +160,5 @@ sequenceSave (sequence_t *sequence, slist_t *slist)
   }
 
   slistSetVersion (slist, SEQUENCE_VERSION);
-  datafileSaveList ("sequence", sequence->path, slist, sequence->distvers);
+  datafileSave (sequence->df, NULL, slist, DF_NO_OFFSET, sequence->distvers);
 }

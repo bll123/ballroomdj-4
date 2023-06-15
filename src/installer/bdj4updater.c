@@ -213,7 +213,7 @@ main (int argc, char *argv [])
   pathbldMakePath (tbuff, sizeof (tbuff),
       "updater", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   df = datafileAllocParse ("updater", DFTYPE_KEY_VAL, tbuff,
-      upddfkeys, UPD_DF_COUNT);
+      upddfkeys, UPD_DF_COUNT, DF_NO_OFFSET, NULL);
   updlist = datafileGetList (df);
 
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "converted: %d", converted);
@@ -900,10 +900,7 @@ main (int argc, char *argv [])
     dbClose (musicdb);
   }
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      "updater", BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  datafileSaveKeyVal ("updater", tbuff, upddfkeys, UPD_DF_COUNT, updlist, 0,
-      datafileDistVersion (df));
+  datafileSave (df, NULL, updlist, DF_NO_OFFSET, datafileDistVersion (df));
   datafileFree (df);
 
   bdj4shutdown (ROUTE_NONE, NULL);
@@ -1143,7 +1140,7 @@ updaterCopyVersionCheck (const char *fn, const char *ext,
   char        tbuff [MAXPATHLEN];
 
   pathbldMakePath (tbuff, sizeof (tbuff), fn, ext, PATHBLD_MP_DREL_DATA);
-  tmpdf = datafileAllocParse (fn, dftype, tbuff, NULL, 0);
+  tmpdf = datafileAllocParse (fn, dftype, tbuff, NULL, 0, DF_NO_OFFSET, NULL);
   version = datafileDistVersion (tmpdf);
   logMsg (LOG_INSTALL, LOG_INFO, "version check %s : %d < %d", fn, version, currvers);
   if (version < currvers) {

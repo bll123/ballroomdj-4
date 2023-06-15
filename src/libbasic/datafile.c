@@ -37,13 +37,13 @@ typedef struct parseinfo {
 } parseinfo_t;
 
 typedef struct datafile {
-  char            *name;
+  char            *tag;
   char            *fname;
   datafiletype_t  dftype;
   datafilekey_t   *dfkeys;
+  int             distvers;
   int             dfkeycount;
   list_t          *data;
-  int             distvers;
 } datafile_t;
 
 #define DF_VERSION_STR      "version"
@@ -51,9 +51,13 @@ typedef struct datafile {
 #define DF_VERSION_FMT      "# version %d"
 
 static ssize_t  parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *vers);
-static void     datafileFreeInternal (datafile_t *df);
-static bool     datafileCheckDfkeys (const char *name, datafilekey_t *dfkeys, int dfkeycount);
-static FILE *   datafileSavePrep (char *fn, const char *tag, int distvers);
+static void     datafileFreeData (datafile_t *df);
+static list_t   *datafileParseMerge (list_t *nlist, char *data, const char *name, datafiletype_t dftype, datafilekey_t *dfkeys, int dfkeycount, int offset, int *distvers);
+static bool     datafileCheckDfkeys (const char *tag, datafilekey_t *dfkeys, int dfkeycount);
+static void     datafileSaveKeyVal (datafile_t *df, const char *fn, nlist_t *list, int offset, int distvers);
+static void     datafileSaveIndirect (datafile_t *df, const char *fn, nlist_t *list, int distvers);
+static void     datafileSaveList (datafile_t *df, const char *fn, nlist_t *list, int distvers);
+static FILE *   datafileSavePrep (const char *fn, const char *tag, int distvers);
 static void     datafileSaveItem (char *buff, size_t sz, char *name, dfConvFunc_t convFunc, datafileconv_t *conv);
 static void     datafileLoadConv (datafilekey_t *dfkey, nlist_t *list, datafileconv_t *conv, int offset);
 static void     datafileConvertValue (char *buff, size_t sz, dfConvFunc_t convFunc, datafileconv_t *conv);
@@ -219,41 +223,53 @@ convMS (datafileconv_t *conv)
 /* datafile loading routines */
 
 datafile_t *
-datafileAlloc (const char *name)
+datafileAlloc (const char *tag)
 {
   datafile_t      *df;
 
   logProcBegin (LOG_PROC, "datafileAlloc");
   df = mdmalloc (sizeof (datafile_t));
-  df->name = mdstrdup (name);
+  df->tag = mdstrdup (tag);
   df->fname = NULL;
-  df->data = NULL;
   df->dftype = DFTYPE_NONE;
+  df->dfkeys = NULL;
+  df->dfkeycount = 0;
   df->distvers = 1;
+  df->data = NULL;
   logProcEnd (LOG_PROC, "datafileAlloc", "");
   return df;
 }
 
 datafile_t *
-datafileAllocParse (const char *name, datafiletype_t dftype, const char *fname,
-    datafilekey_t *dfkeys, int dfkeycount)
+datafileAllocParse (const char *tag, datafiletype_t dftype, const char *fname,
+    datafilekey_t *dfkeys, int dfkeycount, int offset, datafile_t *mergedf)
 {
   datafile_t      *df;
   int             distvers = 1;
 
   logProcBegin (LOG_PROC, "datafileAllocParse");
   logMsg (LOG_DBG, LOG_DATAFILE, "datafile alloc/parse %s", fname);
-  df = datafileAlloc (name);
+  df = datafileAlloc (tag);
   if (df != NULL) {
     char *ddata;
 
     df->dfkeys = dfkeys;
     df->dfkeycount = dfkeycount;
+    df->dftype = dftype;
+    df->fname = mdstrdup (fname);
 
     ddata = datafileLoad (df, dftype, fname);
 
     if (ddata != NULL) {
-      df->data = datafileParse (ddata, name, dftype, dfkeys, dfkeycount, &distvers);
+      void    *tlist;
+
+      tlist = df->data;
+      if (mergedf != NULL) {
+        tlist = datafileGetList (mergedf);
+      }
+
+      df->data = datafileParseMerge (tlist, ddata, tag, dftype,
+          dfkeys, dfkeycount, offset, &distvers);
       df->distvers = distvers;
       if (dftype == DFTYPE_KEY_VAL && dfkeys == NULL) {
         slistSort (df->data);
@@ -263,6 +279,11 @@ datafileAllocParse (const char *name, datafiletype_t dftype, const char *fname,
         ilistSort (df->data);
       }
       mdfree (ddata);
+      if (mergedf != NULL) {
+        mergedf->data = df->data;
+        /* so that the data does not get freed twice */
+        df->data = NULL;
+      }
     }
   }
   logProcEnd (LOG_PROC, "datafileAllocParse", "");
@@ -277,13 +298,16 @@ datafileFree (void *tdf)
   logProcBegin (LOG_PROC, "datafileFree");
   if (df != NULL) {
     logMsg (LOG_DBG, LOG_INFO | LOG_DATAFILE, "datafile free %s", df->fname);
-    datafileFreeInternal (df);
-    dataFree (df->name);
+    datafileFreeData (df);
+    dataFree (df->tag);
+    dataFree (df->fname);
     mdfree (df);
   }
   logProcEnd (LOG_PROC, "datafileFree", "");
 }
 
+/* datafileLoad is also used by bdjopt to load the data before */
+/* a parse-merge */
 char *
 datafileLoad (datafile_t *df, datafiletype_t dftype, const char *fname)
 {
@@ -313,7 +337,244 @@ datafileParse (char *data, const char *name, datafiletype_t dftype,
   return datalist;
 }
 
+/* save the key-value data to a list */
+slist_t *
+datafileSaveKeyValList (const char *tag,
+    datafilekey_t *dfkeys, int dfkeycount, nlist_t *list)
+{
+  datafileconv_t  conv;
+  slist_t         *slist;
+  char            tbuff [1024];
+
+  slist = slistAlloc (tag, LIST_ORDERED, NULL);
+
+  for (ssize_t i = 0; i < dfkeycount; ++i) {
+    datafileLoadConv (&dfkeys [i], list, &conv, 0);
+    datafileConvertValue (tbuff, sizeof (tbuff), dfkeys [i].convFunc, &conv);
+    slistSetStr (slist, dfkeys [i].name, tbuff);
+  }
+
+  return slist;
+}
+
+/* save the key-value data to a buffer */
+void
+datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag,
+    datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset)
+{
+  datafileconv_t  conv;
+
+  *buff = '\0';
+
+  for (ssize_t i = 0; i < dfkeycount; ++i) {
+    datafileLoadConv (&dfkeys [i], list, &conv, offset);
+    datafileSaveItem (buff, sz, dfkeys [i].name, dfkeys [i].convFunc, &conv);
+  }
+}
+
+void
+datafileSave (datafile_t *df, const char *fname, nlist_t *list,
+    int offset, int distvers)
+{
+  if (df == NULL) {
+    return;
+  }
+
+  if (fname == NULL) {
+    fname = df->fname;
+  }
+
+  if (df->dftype == DFTYPE_LIST) {
+    datafileSaveList (df, fname, list, distvers);
+  }
+  if (df->dftype == DFTYPE_KEY_VAL) {
+    datafileSaveKeyVal (df, fname, list, offset, distvers);
+  }
+  if (df->dftype == DFTYPE_INDIRECT) {
+    datafileSaveIndirect (df, fname, list, distvers);
+  }
+}
+
+listidx_t
+dfkeyBinarySearch (const datafilekey_t *dfkeys, int count, const char *key)
+{
+  listidx_t     l = 0;
+  listidx_t     r = count - 1;
+  listidx_t     m = 0;
+  int           rc;
+
+  while (l <= r) {
+    m = l + (r - l) / 2;
+
+    rc = strcmp (dfkeys [m].name, key);
+    if (rc == 0) {
+      return m;
+    }
+
+    if (rc < 0) {
+      l = m + 1;
+    } else {
+      r = m - 1;
+    }
+  }
+
+  return -1;
+}
+
 list_t *
+datafileGetList (datafile_t *df)
+{
+  if (df != NULL) {
+    return df->data;
+  }
+  return NULL;
+}
+
+void
+datafileSetData (datafile_t *df, void *data)
+{
+  if (df != NULL) {
+    return;
+  }
+  df->data = data;
+  return;
+}
+
+void
+datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys,
+    int dfkeycount, nlist_t *list, int offset)
+{
+  datafileconv_t  conv;
+
+  for (ssize_t i = 0; i < dfkeycount; ++i) {
+    datafileLoadConv (&dfkeys [i], list, &conv, offset);
+    datafileDumpItem (tag, dfkeys [i].name, dfkeys [i].convFunc, &conv);
+  }
+}
+
+int
+datafileDistVersion (datafile_t *df)
+{
+  if (df == NULL) {
+    return 0;
+  }
+
+  return df->distvers;
+}
+
+
+/* for debugging only */
+
+datafiletype_t
+datafileGetType (datafile_t *df)
+{
+  return df->dftype;
+}
+
+char *
+datafileGetFname (datafile_t *df)
+{
+  return df->fname;
+}
+
+list_t *
+datafileGetData (datafile_t *df)
+{
+  return df->data;
+}
+
+listidx_t
+parseGetAllocCount (parseinfo_t *pi)
+{
+  return pi->allocCount;
+}
+
+/* internal parse routines */
+
+static ssize_t
+parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *distvers)
+{
+  char        *tokptr;
+  char        *str;
+  ssize_t     dataCounter;
+
+  logProcBegin (LOG_PROC, "parse");
+  tokptr = NULL;
+  if (data == NULL) {
+    logProcEnd (LOG_PROC, "parse", "null-data");
+    return 0;
+  }
+
+  if (pi->allocCount < 60) {
+    pi->allocCount = 60;
+    pi->strdata = mdrealloc (pi->strdata,
+        sizeof (char *) * (size_t) pi->allocCount);
+  }
+
+  dataCounter = 0;
+  str = strtok_r (data, "\r\n", &tokptr);
+  while (str != NULL) {
+    if (*str == '#') {
+      if (distvers != NULL &&
+          strncmp (str, DF_VERSION_DIST_STR, strlen (DF_VERSION_DIST_STR)) == 0) {
+        sscanf (str, DF_VERSION_FMT, distvers);
+      }
+      str = strtok_r (NULL, "\r\n", &tokptr);
+      continue;
+    }
+
+    if (dataCounter >= pi->allocCount) {
+      pi->allocCount += 10;
+      pi->strdata = mdrealloc (pi->strdata,
+          sizeof (char *) * (size_t) pi->allocCount);
+    }
+    if (parsetype == PARSE_KEYVALUE && dataCounter % 2 == 1) {
+      /* value data is indented */
+      str += 2;
+    }
+    pi->strdata [dataCounter] = str;
+    ++dataCounter;
+    str = strtok_r (NULL, "\r\n", &tokptr);
+  }
+  pi->count = dataCounter;
+  logProcEnd (LOG_PROC, "parse", "");
+  return dataCounter;
+}
+
+/* internal datafile routines */
+
+static void
+datafileFreeData (datafile_t *df)
+{
+  logProcBegin (LOG_PROC, "datafileFreeData");
+  if (df != NULL) {
+    if (df->data != NULL) {
+      switch (df->dftype) {
+        case DFTYPE_LIST: {
+          listFree (df->data);
+          break;
+        }
+        case DFTYPE_INDIRECT: {
+          nlistFree (df->data);
+          break;
+        }
+        case DFTYPE_KEY_VAL:
+        {
+          nlistFree (df->data);
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+      df->data = NULL;
+    }
+  }
+  logProcEnd (LOG_PROC, "datafileFreeData", "");
+}
+
+
+static list_t *
 datafileParseMerge (list_t *datalist, char *data, const char *name,
     datafiletype_t dftype, datafilekey_t *dfkeys,
     int dfkeycount, int offset, int *distvers)
@@ -536,61 +797,46 @@ datafileParseMerge (list_t *datalist, char *data, const char *name,
   return datalist;
 }
 
-slist_t *
-datafileSaveKeyValList (const char *tag,
-    datafilekey_t *dfkeys, int dfkeycount, nlist_t *list)
+static bool
+datafileCheckDfkeys (const char *name, datafilekey_t *dfkeys, int dfkeycount)
 {
-  datafileconv_t  conv;
-  slist_t         *slist;
-  char            tbuff [1024];
-
-  slist = slistAlloc (tag, LIST_ORDERED, NULL);
+  char  *last = "";
+  bool  ok = true;
 
   for (ssize_t i = 0; i < dfkeycount; ++i) {
-    datafileLoadConv (&dfkeys [i], list, &conv, 0);
-    datafileConvertValue (tbuff, sizeof (tbuff), dfkeys [i].convFunc, &conv);
-    slistSetStr (slist, dfkeys [i].name, tbuff);
+    if (strcmp (dfkeys [i].name, last) <= 0) {
+      fprintf (stderr, "datafile: %s dfkey out of order: %s\n", name, dfkeys [i].name);
+      logMsg (LOG_ERR, LOG_IMPORTANT | LOG_DATAFILE, "ERR: datafile: %s dfkey out of order: %s", name, dfkeys [i].name);
+      ok = false;
+    }
+    last = dfkeys [i].name;
   }
-
-  return slist;
+  return ok;
 }
 
-void
-datafileSaveKeyValBuffer (char *buff, size_t sz, const char *tag,
-    datafilekey_t *dfkeys, int dfkeycount, nlist_t *list, int offset)
-{
-  datafileconv_t  conv;
-
-  *buff = '\0';
-
-  for (ssize_t i = 0; i < dfkeycount; ++i) {
-    datafileLoadConv (&dfkeys [i], list, &conv, offset);
-    datafileSaveItem (buff, sz, dfkeys [i].name, dfkeys [i].convFunc, &conv);
-  }
-}
-
-void
-datafileSaveKeyVal (const char *tag, char *fn, datafilekey_t *dfkeys,
-    int dfkeycount, nlist_t *list, int offset, int distvers)
+static void
+datafileSaveKeyVal (datafile_t *df, const char *fn,
+    nlist_t *list, int offset, int distvers)
 {
   FILE    *fh;
   char    buff [DATAFILE_MAX_SIZE];
 
   *buff = '\0';
-  fh = datafileSavePrep (fn, tag, distvers);
+  fh = datafileSavePrep (fn, df->tag, distvers);
   if (fh == NULL) {
     return;
   }
 
   fprintf (fh, "%s\n..%d\n", DF_VERSION_STR, listGetVersion (list));
-  datafileSaveKeyValBuffer (buff, sizeof (buff), tag, dfkeys, dfkeycount, list, offset);
+  datafileSaveKeyValBuffer (buff, sizeof (buff), df->tag,
+      df->dfkeys, df->dfkeycount, list, offset);
   fprintf (fh, "%s", buff);
   fclose (fh);
 }
 
-void
-datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys,
-    int dfkeycount, ilist_t *list, int distvers)
+static void
+datafileSaveIndirect (datafile_t *df, const char *fn,
+    ilist_t *list, int distvers)
 {
   FILE            *fh;
   datafileconv_t  conv;
@@ -601,7 +847,7 @@ datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys,
   char            buff [DATAFILE_MAX_SIZE];
 
   *buff = '\0';
-  fh = datafileSavePrep (fn, tag, distvers);
+  fh = datafileSavePrep (fn, df->tag, distvers);
   if (fh == NULL) {
     return;
   }
@@ -620,38 +866,39 @@ datafileSaveIndirect (const char *tag, char *fn, datafilekey_t *dfkeys,
     conv.num = count++;
     datafileSaveItem (buff, sizeof (buff), "KEY", NULL, &conv);
 
-    for (ssize_t i = 0; i < dfkeycount; ++i) {
-      if (dfkeys [i].writeFlag == DF_NO_WRITE) {
+    for (ssize_t i = 0; i < df->dfkeycount; ++i) {
+      if (df->dfkeys [i].writeFlag == DF_NO_WRITE) {
         continue;
       }
 
-      vt = dfkeys [i].valuetype;
+      vt = df->dfkeys [i].valuetype;
       conv.valuetype = vt;
 
       /* load the data value into the conv structure so that retrieval is */
       /* the same for both non-converted and converted values */
       if (vt == VALUE_NUM) {
-        conv.num = ilistGetNum (list, key, dfkeys [i].itemkey);
+        conv.num = ilistGetNum (list, key, df->dfkeys [i].itemkey);
       }
       if (vt == VALUE_STR) {
-        conv.str = ilistGetStr (list, key, dfkeys [i].itemkey);
+        conv.str = ilistGetStr (list, key, df->dfkeys [i].itemkey);
       }
       if (vt == VALUE_LIST) {
-        conv.list = ilistGetList (list, key, dfkeys [i].itemkey);
+        conv.list = ilistGetList (list, key, df->dfkeys [i].itemkey);
       }
       if (vt == VALUE_DOUBLE) {
-        conv.dval = ilistGetDouble (list, key, dfkeys [i].itemkey);
+        conv.dval = ilistGetDouble (list, key, df->dfkeys [i].itemkey);
       }
 
-      datafileSaveItem (buff, sizeof (buff), dfkeys [i].name, dfkeys [i].convFunc, &conv);
+      datafileSaveItem (buff, sizeof (buff), df->dfkeys [i].name,
+          df->dfkeys [i].convFunc, &conv);
     }
   }
   fprintf (fh, "%s", buff);
   fclose (fh);
 }
 
-void
-datafileSaveList (const char *tag, char *fn, slist_t *list, int distvers)
+static void
+datafileSaveList (datafile_t *df, const char *fn, slist_t *list, int distvers)
 {
   FILE            *fh;
   slistidx_t      iteridx;
@@ -661,7 +908,7 @@ datafileSaveList (const char *tag, char *fn, slist_t *list, int distvers)
 
   logProcBegin (LOG_PROC, "datafileSaveList");
   *buff = '\0';
-  fh = datafileSavePrep (fn, tag, distvers);
+  fh = datafileSavePrep (fn, df->tag, distvers);
   if (fh == NULL) {
     logProcEnd (LOG_PROC, "datafileSaveList", "no-file");
     return;
@@ -682,212 +929,8 @@ datafileSaveList (const char *tag, char *fn, slist_t *list, int distvers)
   logProcEnd (LOG_PROC, "datafileSaveList", "");
 }
 
-listidx_t
-dfkeyBinarySearch (const datafilekey_t *dfkeys, int count, const char *key)
-{
-  listidx_t     l = 0;
-  listidx_t     r = count - 1;
-  listidx_t     m = 0;
-  int           rc;
-
-  while (l <= r) {
-    m = l + (r - l) / 2;
-
-    rc = strcmp (dfkeys [m].name, key);
-    if (rc == 0) {
-      return m;
-    }
-
-    if (rc < 0) {
-      l = m + 1;
-    } else {
-      r = m - 1;
-    }
-  }
-
-  return -1;
-}
-
-list_t *
-datafileGetList (datafile_t *df)
-{
-  if (df != NULL) {
-    return df->data;
-  }
-  return NULL;
-}
-
-void
-datafileSetData (datafile_t *df, void *data)
-{
-  if (df != NULL) {
-    return;
-  }
-  df->data = data;
-  return;
-}
-
-void
-datafileDumpKeyVal (const char *tag, datafilekey_t *dfkeys,
-    int dfkeycount, nlist_t *list, int offset)
-{
-  datafileconv_t  conv;
-
-  for (ssize_t i = 0; i < dfkeycount; ++i) {
-    datafileLoadConv (&dfkeys [i], list, &conv, offset);
-    datafileDumpItem (tag, dfkeys [i].name, dfkeys [i].convFunc, &conv);
-  }
-}
-
-int
-datafileDistVersion (datafile_t *df)
-{
-  if (df == NULL) {
-    return 0;
-  }
-
-  return df->distvers;
-}
-
-
-/* for debugging only */
-
-datafiletype_t
-datafileGetType (datafile_t *df)
-{
-  return df->dftype;
-}
-
-char *
-datafileGetFname (datafile_t *df)
-{
-  return df->fname;
-}
-
-list_t *
-datafileGetData (datafile_t *df)
-{
-  return df->data;
-}
-
-listidx_t
-parseGetAllocCount (parseinfo_t *pi)
-{
-  return pi->allocCount;
-}
-
-/* internal parse routines */
-
-static ssize_t
-parse (parseinfo_t *pi, char *data, parsetype_t parsetype, int *distvers)
-{
-  char        *tokptr;
-  char        *str;
-  ssize_t     dataCounter;
-
-  logProcBegin (LOG_PROC, "parse");
-  tokptr = NULL;
-  if (data == NULL) {
-    logProcEnd (LOG_PROC, "parse", "null-data");
-    return 0;
-  }
-
-  if (pi->allocCount < 60) {
-    pi->allocCount = 60;
-    pi->strdata = mdrealloc (pi->strdata,
-        sizeof (char *) * (size_t) pi->allocCount);
-  }
-
-  dataCounter = 0;
-  str = strtok_r (data, "\r\n", &tokptr);
-  while (str != NULL) {
-    if (*str == '#') {
-      if (distvers != NULL &&
-          strncmp (str, DF_VERSION_DIST_STR, strlen (DF_VERSION_DIST_STR)) == 0) {
-        sscanf (str, DF_VERSION_FMT, distvers);
-      }
-      str = strtok_r (NULL, "\r\n", &tokptr);
-      continue;
-    }
-
-    if (dataCounter >= pi->allocCount) {
-      pi->allocCount += 10;
-      pi->strdata = mdrealloc (pi->strdata,
-          sizeof (char *) * (size_t) pi->allocCount);
-    }
-    if (parsetype == PARSE_KEYVALUE && dataCounter % 2 == 1) {
-      /* value data is indented */
-      str += 2;
-    }
-    pi->strdata [dataCounter] = str;
-    ++dataCounter;
-    str = strtok_r (NULL, "\r\n", &tokptr);
-  }
-  pi->count = dataCounter;
-  logProcEnd (LOG_PROC, "parse", "");
-  return dataCounter;
-}
-
-/* internal datafile routines */
-
-static void
-datafileFreeInternal (datafile_t *df)
-{
-  logProcBegin (LOG_PROC, "datafileFreeInternal");
-  if (df != NULL) {
-    dataFree (df->fname);
-    df->fname = NULL;
-    if (df->data != NULL) {
-      switch (df->dftype) {
-        case DFTYPE_LIST: {
-          listFree (df->data);
-          break;
-        }
-        case DFTYPE_INDIRECT: {
-          nlistFree (df->data);
-          break;
-        }
-        case DFTYPE_KEY_VAL:
-        {
-          list_t    *tlist;
-
-          tlist = df->data;
-          if (tlist->keytype == LIST_KEY_STR) {
-            listFree (df->data);
-          } else {
-            nlistFree (df->data);
-          }
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-      df->data = NULL;
-    }
-  }
-  logProcEnd (LOG_PROC, "datafileFreeInternal", "");
-}
-
-static bool
-datafileCheckDfkeys (const char *name, datafilekey_t *dfkeys, int dfkeycount)
-{
-  char  *last = "";
-  bool  ok = true;
-
-  for (ssize_t i = 0; i < dfkeycount; ++i) {
-    if (strcmp (dfkeys [i].name, last) <= 0) {
-      fprintf (stderr, "datafile: %s dfkey out of order: %s\n", name, dfkeys [i].name);
-      logMsg (LOG_ERR, LOG_IMPORTANT | LOG_DATAFILE, "ERR: datafile: %s dfkey out of order: %s", name, dfkeys [i].name);
-      ok = false;
-    }
-    last = dfkeys [i].name;
-  }
-  return ok;
-}
-
 static FILE *
-datafileSavePrep (char *fn, const char *tag, int distvers)
+datafileSavePrep (const char *fn, const char *tag, int distvers)
 {
   FILE    *fh;
   char    tbuff [100];

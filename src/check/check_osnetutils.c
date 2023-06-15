@@ -43,7 +43,7 @@ osnetutils_suite (void)
 
   s = suite_create ("osnetutils");
   tc = tcase_create ("osnetutils");
-  tcase_set_tags (tc, "libbdj4");
+  tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, osnetutils_chk);
   suite_add_tcase (s, tc);
 

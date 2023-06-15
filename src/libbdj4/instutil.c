@@ -88,13 +88,13 @@ instutilCopyTemplates (void)
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       "localized-sr", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
-  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
+  srdf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0, DF_NO_OFFSET, NULL);
   pathbldMakePath (tbuff, sizeof (tbuff),
       "localized-auto", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
-  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0);
+  autodf = datafileAllocParse ("loc-sr", DFTYPE_KEY_VAL, tbuff, NULL, 0, DF_NO_OFFSET, NULL);
   pathbldMakePath (tbuff, sizeof (tbuff),
       "localized-qd", BDJ4_CONFIG_EXT, PATHBLD_MP_DIR_INST);
-  qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL, tbuff, NULL, 0);
+  qddf = datafileAllocParse ("loc-qd", DFTYPE_KEY_VAL, tbuff, NULL, 0, DF_NO_OFFSET, NULL);
 
   pathbldMakePath (tbuff, sizeof (tbuff), "", "", PATHBLD_MP_DIR_TEMPLATE);
 

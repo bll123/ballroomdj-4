@@ -117,13 +117,13 @@ itunesAlloc (void)
   pathbldMakePath (tbuff, sizeof (tbuff),
       ITUNES_STARS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   itunes->starsdf = datafileAllocParse (ITUNES_STARS_FN,
-      DFTYPE_KEY_VAL, tbuff, starsdfkeys, ITUNES_STARS_MAX);
+      DFTYPE_KEY_VAL, tbuff, starsdfkeys, ITUNES_STARS_MAX, DF_NO_OFFSET, NULL);
   itunes->stars = datafileGetList (itunes->starsdf);
 
   pathbldMakePath (tbuff, sizeof (tbuff),
       ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
   itunes->fieldsdf = datafileAllocParse (ITUNES_FIELDS_FN,
-      DFTYPE_LIST, tbuff, NULL, 0);
+      DFTYPE_LIST, tbuff, NULL, 0, DF_NO_OFFSET, NULL);
   tlist = datafileGetList (itunes->fieldsdf);
 
   itunes->fields = nlistAlloc ("itunes-fields", LIST_ORDERED, NULL);
@@ -236,12 +236,8 @@ itunesSetStars (itunes_t *itunes, int idx, int value)
 void
 itunesSaveStars (itunes_t *itunes)
 {
-  char        tbuff [MAXPATHLEN];
-
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      ITUNES_STARS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  datafileSaveKeyVal ("itunes-stars", tbuff, starsdfkeys,
-      ITUNES_STARS_MAX, itunes->stars, 0, datafileDistVersion (itunes->starsdf));
+  datafileSave (itunes->starsdf, NULL, itunes->stars, DF_NO_OFFSET,
+      datafileDistVersion (itunes->starsdf));
 }
 
 int
@@ -259,7 +255,6 @@ itunesSetField (itunes_t *itunes, int idx, int value)
 void
 itunesSaveFields (itunes_t *itunes)
 {
-  char        tbuff [MAXPATHLEN];
   int         key;
   int         tval;
   nlistidx_t  iteridx;
@@ -274,9 +269,7 @@ itunesSaveFields (itunes_t *itunes)
     }
   }
 
-  pathbldMakePath (tbuff, sizeof (tbuff),
-      ITUNES_FIELDS_FN, BDJ4_CONFIG_EXT, PATHBLD_MP_DREL_DATA);
-  datafileSaveList ("itunes-fields", tbuff, newlist,
+  datafileSave (itunes->fieldsdf, NULL, newlist, DF_NO_OFFSET,
       datafileDistVersion (itunes->fieldsdf));
 }
 
