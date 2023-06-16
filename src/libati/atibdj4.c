@@ -16,7 +16,6 @@
 #include "ati.h"
 #include "atibdj4.h"
 #include "audiofile.h"
-#include "filemanip.h"
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"

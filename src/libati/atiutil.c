@@ -14,6 +14,7 @@
 #include "bdj4.h"
 #include "fileop.h"
 #include "filemanip.h"
+#include "log.h"
 #include "slist.h"
 
 static void  atiParseNumberPair (const char *data, int *a, int *b);
@@ -85,8 +86,13 @@ atiReplaceFile (const char *ffn, const char *outfn)
       fileopDelete (tbuff);
       rc = 0;
     } else {
-      filemanipMove (tbuff, ffn);
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "rename failed");
+      if (filemanipMove (tbuff, ffn) != 0) {
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "restore backup failed");
+      }
     }
+  } else {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "move to backup failed");
   }
   return rc;
 }

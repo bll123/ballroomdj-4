@@ -80,7 +80,7 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
 
   rc = ov_fopen (ffn, &ovf);
   if (rc < 0) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "bad return %d %s", rc, ffn);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ov_fopen %d %s", rc, ffn);
     return -1;
   }
 
@@ -126,10 +126,11 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
   }
   slistFree (upddone);
 
+  ov_clear (&ovf);
+
   rc = atibdj4WriteOggFile (ffn, &newvc);
 
   vorbis_comment_clear (&newvc);
-  ov_clear (&ovf);
 
   return rc;
 }
@@ -222,11 +223,13 @@ atibdj4WriteOggFile (const char *ffn, struct vorbis_comment *newvc)
 
   state = VC_SETUP;
   (void) ogg_sync_init (&oy_in); /* always return 0 */
-  if ((ifh = fileopOpen (ffn, "r")) == NULL) {
+  if ((ifh = fileopOpen (ffn, "rb")) == NULL) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "open input failed %s", ffn);
     goto cleanup_label;
   }
   snprintf (outfn, sizeof (outfn), "%s.ogg-tmp", ffn);
-  if ((ofh = fileopOpen (outfn, "w")) == NULL) {
+  if ((ofh = fileopOpen (outfn, "wb")) == NULL) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "open output failed %s", ffn);
     goto cleanup_label;
   }
   lastblocksz = granulepos = 0;
@@ -243,38 +246,45 @@ bos_label:
   state = VC_START_READING;
   while (state != VC_END_OF_STREAM) {
     switch (ogg_sync_pageout (&oy_in, &og_in)) {
-    case 0:
-      /* more data needed or an internal error occurred. */
-    case -1:
-      /* stream has not yet captured sync (bytes were skipped). */
-      if (feof (ifh)) {
-        if (state < VC_READING_DATA) {
-          goto cleanup_label;
-        }
-        state = VC_END_OF_STREAM;
-      } else {
-        char *buf;
-        size_t s;
+      case 0:
+        /* more data needed or an internal error occurred. */
+      case -1: {
+        /* stream has not yet captured sync (bytes were skipped). */
+        if (feof (ifh)) {
+          if (state < VC_READING_DATA) {
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "eof on input");
+            goto cleanup_label;
+          }
+          state = VC_END_OF_STREAM;
+        } else {
+          char *buf;
+          size_t s;
 
-        if ((buf = ogg_sync_buffer (&oy_in, BUFSIZ)) == NULL) {
-          goto cleanup_label;
+          if ((buf = ogg_sync_buffer (&oy_in, BUFSIZ)) == NULL) {
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "sync failed");
+            goto cleanup_label;
+          }
+          if ((s = fread (buf, sizeof (char), BUFSIZ, ifh)) == 0) {
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "fread failed");
+            goto cleanup_label;
+          }
+          if (ogg_sync_wrote (&oy_in, s) == -1) {
+            logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "sync-write failed");
+            goto cleanup_label;
+          }
         }
-        if ((s = fread (buf, sizeof (char), BUFSIZ, ifh)) == 0) {
-          goto cleanup_label;
-        }
-        if (ogg_sync_wrote (&oy_in, s) == -1) {
-          goto cleanup_label;
-        }
+        continue;
       }
-      continue;
     }
     if (++npage_in == 1) {
       /* init both input and output streams with the serialno
          of the first page */
       if (ogg_stream_init (&os_in, ogg_page_serialno (&og_in)) == -1) {
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "init input failed");
         goto cleanup_label;
       }
       if (ogg_stream_init (&os_out, ogg_page_serialno (&og_in)) == -1) {
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "init output failed");
         ogg_stream_clear (&os_in);
         goto cleanup_label;
       }
@@ -282,6 +292,7 @@ bos_label:
     }
 
     if (ogg_stream_pagein (&os_in, &og_in) == -1) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "page-in failed");
       goto cleanup_label;
     }
     while (ogg_stream_packetout (&os_in, &op_in) == 1) {
@@ -295,6 +306,7 @@ bos_label:
 
       if (npacket_in <= 3) {
         if (vorbis_synthesis_headerin (&vi_in, &vc_in, &op_in) != 0) {
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "header-in failed");
           goto cleanup_label;
         }
         state = (npacket_in == 3 ? VC_READING_DATA_NEED_FLUSH : VC_READING_HEADERS);
@@ -326,12 +338,14 @@ bos_label:
         if (state == VC_READING_DATA_NEED_FLUSH) {
           while (ogg_stream_flush (&os_out, &og_out)) {
             if (atibdj4WriteOggPage (&og_out, ofh) == -1) {
+              logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-page a failed");
               goto cleanup_label;
             }
           }
         } else if (state == VC_READING_DATA_NEED_PAGEOUT) {
           while (ogg_stream_pageout (&os_out, &og_out)) {
             if (atibdj4WriteOggPage (&og_out, ofh) == -1) {
+              logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-page b failed");
               goto cleanup_label;
             }
           }
@@ -362,6 +376,7 @@ bos_label:
         }
       }
       if (ogg_stream_packetin (&os_out, target) == -1) {
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "packet-in failed");
         goto cleanup_label;
       }
     }
@@ -374,6 +389,7 @@ bos_label:
   os_out.e_o_s = 1;
   while (ogg_stream_flush (&os_out, &og_out)) {
     if (atibdj4WriteOggPage (&og_out, ofh) == -1) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-page failed");
       goto cleanup_label;
     }
   }
@@ -398,8 +414,6 @@ bos_label:
   ofh = NULL;
   state = VC_DONE_SUCCESS;
 
-  atiReplaceFile (ffn, outfn);
-
 cleanup_label:
   if (state >= VC_STREAMS_INITIALIZED) {
     ogg_stream_clear (&os_in);
@@ -417,6 +431,12 @@ cleanup_label:
     fclose (ifh);
   }
   ogg_packet_clear (&my_vc_packet);
+
+  if (state == VC_DONE_SUCCESS) {
+    atiReplaceFile (ffn, outfn);
+  } else {
+    fileopDelete (outfn);
+  }
 
   return rc;
 }

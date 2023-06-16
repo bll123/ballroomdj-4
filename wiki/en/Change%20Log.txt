@@ -6,11 +6,12 @@
 
 **4.3.3 2023-6--**
 
+* Changes:
+    * Apply Adjustments: Removed normalize as it doesn't work well.
 * New Features:
-    * Configuration: Selection audio tag processing method.
-    * Audio Tags: Added internal processing (MP3 only at this time).
+    * Audio Tags: Added additional processing method (MP3, Ogg, FLAC at this time).
 * Internal:
-    * Code cleanup.
+    * Code cleanup (datafile).
 
 -->
 
