@@ -19,11 +19,13 @@ install_name_tool \
   $target
 
 # /Volumes/Users/bll/bdj4/packages/icu/lib/libicudata.72.dylib
+# /Volumes/Users/bll/bdj4/bin/../plocal/lib/libvorbisfile.3.dylib
 # @rpath/libid3tag.0.16.3
 # @rpath/libap4
 count=0
 cmd="install_name_tool "
-for l in libicudata libicui18n libicuuc libid3tag.0.16.3 libap4; do
+for l in libicudata libicui18n libicuuc \
+    libid3tag.0.16.3 libap4 libvorbisfile.3 libvorbis.0; do
   path=$(otool -L $target | grep $l | sed 's,^[^/]*,,;s,dylib .*,dylib,')
   case $l in
     libid3tag*|libap4*)

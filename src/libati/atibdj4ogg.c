@@ -134,6 +134,14 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
   return rc;
 }
 
+void
+atibdj4LogOggVersion (void)
+{
+  logMsg (LOG_DBG, LOG_INFO, "libvorbis version %s", vorbis_version_string());
+}
+
+/* internal routines */
+
 /* from tagutil: BSD 2-Clause License */
 /* originally posted at : https://kaworu.ch/blog/2013/09/29/writting-ogg-slash-vorbis-comment-in-c/ */
 static int

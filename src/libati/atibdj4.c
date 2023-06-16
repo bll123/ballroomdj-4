@@ -258,6 +258,8 @@ atibdj4LogVersion (void)
 {
   if (! gversionlogged) {
     atibdj4LogMP3Version ();
+    atibdj4LogOggVersion ();
+    atibdj4LogOpusVersion ();
     gversionlogged = true;
   }
 }

@@ -36,9 +36,11 @@ int  atibdj4WriteMP4Tags (atidata_t *atidata, const char *ffn, slist_t *updateli
 /* atibdj4ogg.c */
 void atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 int  atibdj4WriteOggTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+void atibdj4LogOggVersion (void);
 
 /* atibdj4opus.c */
 void atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 int  atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+void atibdj4LogOpusVersion (void);
 
 #endif /* INC_ATIBDJ4_H */

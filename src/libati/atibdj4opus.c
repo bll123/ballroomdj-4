@@ -63,3 +63,9 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
   return -1;
 }
 
+void
+atibdj4LogOpusVersion (void)
+{
+  logMsg (LOG_DBG, LOG_INFO, "opus version %s", opus_get_version_string());
+}
+
