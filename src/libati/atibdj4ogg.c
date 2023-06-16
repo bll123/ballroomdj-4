@@ -96,7 +96,7 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
   for (int i = 0; i < vc->comments; ++i) {
     const char  *kw;
     const char  *val;
-    char        ttag [300];
+    char        ttag [300];     /* vorbis tag name */
 
     kw = vc->user_comments [i];
     val = atibdj4ParseVorbisComment (kw, ttag, sizeof (ttag));
