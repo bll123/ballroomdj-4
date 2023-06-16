@@ -21,13 +21,16 @@ const char * atibdj4ParseVorbisComment (const char *kw, char *buff, size_t sz);
 /* atibdj4flac.c */
 void atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 int  atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+atisaved_t * atibdj4SaveFlacTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
+void atibdj4RestoreFlacTags (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
+void atibdj4LogFlacVersion (void);
 
 /* atibdj4id3.c */
-void atibdj4LogMP3Version (void);
 void atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 int  atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 atisaved_t * atibdj4SaveMP3Tags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
 void atibdj4RestoreMP3Tags (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
+void atibdj4LogMP3Version (void);
 
 /* atibdj4mp4.cpp */
 void atibdj4ParseMP4Tags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
@@ -36,6 +39,8 @@ int  atibdj4WriteMP4Tags (atidata_t *atidata, const char *ffn, slist_t *updateli
 /* atibdj4ogg.c */
 void atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);
 int  atibdj4WriteOggTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
+atisaved_t * atibdj4SaveOggTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
+void atibdj4RestoreOggTags (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
 void atibdj4LogOggVersion (void);
 
 /* atibdj4opus.c */

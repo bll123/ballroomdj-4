@@ -134,6 +134,20 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
   return rc;
 }
 
+atisaved_t *
+atibdj4SaveOggTags (atidata_t *atidata, const char *ffn,
+    int tagtype, int filetype)
+{
+  return NULL;
+}
+
+void
+atibdj4RestoreOggTags (atidata_t *atidata,
+    atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
+{
+  return;
+}
+
 void
 atibdj4LogOggVersion (void)
 {

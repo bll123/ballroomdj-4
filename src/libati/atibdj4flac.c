@@ -11,6 +11,7 @@
 #include <inttypes.h>
 #include <errno.h>
 
+#include <FLAC/format.h>
 #include <FLAC/metadata.h>
 
 #include "ati.h"
@@ -161,5 +162,25 @@ atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
   FLAC__metadata_iterator_delete (iterator);
   FLAC__metadata_chain_delete (chain);
   return 0;
+}
+
+atisaved_t *
+atibdj4SaveFlacTags (atidata_t *atidata, const char *ffn,
+    int tagtype, int filetype)
+{
+  return NULL;
+}
+
+void
+atibdj4RestoreFlacTags (atidata_t *atidata,
+    atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
+{
+  return;
+}
+
+void
+atibdj4LogFlacVersion (void)
+{
+  logMsg (LOG_DBG, LOG_INFO, "libflac version %s", FLAC__VERSION_STRING);
 }
 

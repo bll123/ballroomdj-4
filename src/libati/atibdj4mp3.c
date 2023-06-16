@@ -58,7 +58,6 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
   while ((id3frame = id3_tag_findframe (id3tags, "", idx)) != NULL) {
     const char                  *ufid;
     const char                  *tagname;
-//    enum id3_field_textencoding te = ID3_FIELD_TEXTENCODING_UTF_8;
 
     ufid = NULL;
     tagname = atibdj4GetMP3TagName (atidata, id3frame, tagtype);
@@ -79,13 +78,9 @@ atibdj4ParseMP3Tags (atidata_t *atidata, slist_t *tagdata,
 
       switch (field->type) {
         case ID3_FIELD_TYPE_TEXTENCODING: {
-          //te = id3_field_gettextencoding (field);
           break;
         }
         case ID3_FIELD_TYPE_FRAMEID: {
-          //char const *str;
-
-          //str = id3_field_getframeid (field);
           break;
         }
         case ID3_FIELD_TYPE_LATIN1: {
@@ -255,6 +250,9 @@ atibdj4WriteMP3Tags (atidata_t *atidata, const char *ffn,
     if (slistGetStr (dellist, tagname) != NULL) {
       id3_tag_detachframe (id3tags, id3frame);
       id3_frame_delete (id3frame);
+      /* when the frame is detached, */
+      /* the index does not need to be incremented */
+      /* as the next frame drops down to the current position */
       continue;
     }
     ++idx;
@@ -281,7 +279,6 @@ atibdj4SaveMP3Tags (atidata_t *atidata, const char *ffn,
   struct id3_file   *id3file;
   struct id3_tag    *id3tags;
 
-fprintf (stderr, "save: %s\n", ffn);
   id3file = id3_file_open (ffn, ID3_FILE_MODE_READONLY);
   if (id3file == NULL) {
     return atisaved;
@@ -311,7 +308,6 @@ atibdj4RestoreMP3Tags (atidata_t *atidata,
     return;
   }
 
-fprintf (stderr, "restore: %s\n", ffn);
   id3file = id3_file_open (ffn, ID3_FILE_MODE_READWRITE);
   if (id3file == NULL) {
     return;
@@ -320,20 +316,21 @@ fprintf (stderr, "restore: %s\n", ffn);
 
   idx = 0;
   while ((id3frame = id3_tag_findframe (id3tags, "", idx)) != NULL) {
-fprintf (stderr, "detach-a: %s\n", id3frame->id);
     id3_tag_detachframe (id3tags, id3frame);
     id3_frame_delete (id3frame);
+    /* when the frame is detached, */
+    /* the index does not need to be incremented */
+    /* as the next frame drops down to the current position */
   }
 
   idx = 0;
   while ((id3frame = id3_tag_findframe (atisaved->id3tags, "", idx)) != NULL) {
-fprintf (stderr, "detach/attach: %s\n", id3frame->id);
     id3_tag_detachframe (atisaved->id3tags, id3frame);
     id3_tag_attachframe (id3tags, id3frame);
   }
 
   if (id3_file_update (id3file) != 0) {
-fprintf (stderr, "restore:file update failed\n");
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  file update failed %s", ffn);
   }
   id3_file_close (id3file);
   id3_file_close (atisaved->id3file);

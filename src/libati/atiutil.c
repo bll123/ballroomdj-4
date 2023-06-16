@@ -18,6 +18,7 @@
 
 static void  atiParseNumberPair (const char *data, int *a, int *b);
 
+/* used to parse disc/disc-total and track/track-total number pairs */
 const char *
 atiParsePair (slist_t *tagdata, const char *tagname,
     const char *value, char *pbuff, size_t sz)
