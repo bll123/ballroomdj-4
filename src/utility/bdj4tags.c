@@ -137,7 +137,7 @@ main (int argc, char *argv [])
   }
 
   if (copy && ! fileopFileExists (argv [fbidx])) {
-    fprintf (stderr, "no file %s\n", argv [fidx]);
+    fprintf (stderr, "no file %s\n", argv [fbidx]);
     rc = AUDIOTAG_WRITE_FAILED;
     goto finish;
   }

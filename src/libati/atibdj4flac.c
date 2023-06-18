@@ -21,6 +21,11 @@
 #include "slist.h"
 #include "tagdef.h"
 
+typedef struct atisaved {
+  bool                    hasdata;
+  FLAC__StreamMetadata    *vcblock;
+} atisaved_t;
+
 void
 atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
     const char *ffn, int tagtype, int *rewrite)
@@ -31,7 +36,9 @@ atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
   bool                    cont;
 
   chain = FLAC__metadata_chain_new ();
-  FLAC__metadata_chain_read (chain, ffn);
+  if (! FLAC__metadata_chain_read (chain, ffn)) {
+    return;
+  }
   iterator = FLAC__metadata_iterator_new ();
   FLAC__metadata_iterator_init (iterator, chain);
   cont = true;
@@ -95,7 +102,9 @@ atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
   bool                    cont;
 
   chain = FLAC__metadata_chain_new ();
-  FLAC__metadata_chain_read (chain, ffn);
+  if (! FLAC__metadata_chain_read (chain, ffn)) {
+    return -1;
+  }
 
   /* find the comment block */
   iterator = FLAC__metadata_iterator_new ();
@@ -168,12 +177,111 @@ atisaved_t *
 atibdj4SaveFlacTags (atidata_t *atidata, const char *ffn,
     int tagtype, int filetype)
 {
-  return NULL;
+  atisaved_t              *atisaved;
+  FLAC__Metadata_Chain    *chain = NULL;
+  FLAC__StreamMetadata    *block = NULL;
+  FLAC__Metadata_Iterator *iterator = NULL;
+  bool                    cont;
+
+  chain = FLAC__metadata_chain_new ();
+  FLAC__metadata_chain_read (chain, ffn);
+
+  /* find the comment block */
+  iterator = FLAC__metadata_iterator_new ();
+  FLAC__metadata_iterator_init (iterator, chain);
+  cont = true;
+  while (cont) {
+    block = FLAC__metadata_iterator_get_block (iterator);
+    if (block->type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
+      break;
+    }
+    cont = FLAC__metadata_iterator_next (iterator);
+  }
+
+  if (block == NULL) {
+    return NULL;
+  }
+
+  atisaved = mdmalloc (sizeof (atisaved_t));
+  atisaved->hasdata = true;
+  atisaved->vcblock = FLAC__metadata_object_new (FLAC__METADATA_TYPE_VORBIS_COMMENT);
+  for (FLAC__uint32 i = 0; i < block->data.vorbis_comment.num_comments; i++) {
+    FLAC__StreamMetadata_VorbisComment_Entry *entry;
+
+    entry = &block->data.vorbis_comment.comments [i];
+    FLAC__metadata_object_vorbiscomment_append_comment (atisaved->vcblock, *entry, true);
+  }
+
+  FLAC__metadata_iterator_delete (iterator);
+  FLAC__metadata_chain_delete (chain);
+  return atisaved;
 }
 
 void
 atibdj4RestoreFlacTags (atidata_t *atidata,
     atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
+{
+  FLAC__Metadata_Chain    *chain = NULL;
+  FLAC__StreamMetadata    *block = NULL;
+  FLAC__Metadata_Iterator *iterator = NULL;
+  bool                    cont;
+
+  if (atisaved == NULL) {
+    return;
+  }
+
+  if (! atisaved->hasdata) {
+    return;
+  }
+
+  chain = FLAC__metadata_chain_new ();
+  if (! FLAC__metadata_chain_read (chain, ffn)) {
+    return;
+  }
+
+  /* find the comment block */
+  iterator = FLAC__metadata_iterator_new ();
+  FLAC__metadata_iterator_init (iterator, chain);
+  cont = true;
+  while (cont) {
+    block = FLAC__metadata_iterator_get_block (iterator);
+    if (block->type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
+      break;
+    }
+    cont = FLAC__metadata_iterator_next (iterator);
+  }
+
+  if (block == NULL) {
+    /* if the comment block was not found, create a new one */
+    block = FLAC__metadata_object_new (FLAC__METADATA_TYPE_VORBIS_COMMENT);
+    while (FLAC__metadata_iterator_next (iterator)) {
+      ;
+    }
+    if (! FLAC__metadata_iterator_insert_block_after (iterator, block)) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: unable to insert new comment block");
+      return;
+    }
+  }
+
+  FLAC__metadata_object_vorbiscomment_resize_comments (block, 0);
+  for (FLAC__uint32 i = 0; i < atisaved->vcblock->data.vorbis_comment.num_comments; i++) {
+    FLAC__StreamMetadata_VorbisComment_Entry *entry;
+
+    entry = &atisaved->vcblock->data.vorbis_comment.comments [i];
+    FLAC__metadata_object_vorbiscomment_append_comment (block, *entry, true);
+  }
+
+  FLAC__metadata_chain_sort_padding (chain);
+  FLAC__metadata_chain_write (chain, true, true);
+
+  FLAC__metadata_iterator_delete (iterator);
+  FLAC__metadata_chain_delete (chain);
+  return;
+}
+
+void
+atibdj4CleanFlacTags (atidata_t *atidata,
+    const char *ffn, int tagtype, int filetype)
 {
   return;
 }

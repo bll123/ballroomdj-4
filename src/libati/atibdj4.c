@@ -198,6 +198,10 @@ atiiSaveTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype)
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
     atisaved = atibdj4SaveFlacTags (atidata, ffn, tagtype, filetype);
   }
+  if (filetype == AFILE_TYPE_OPUS) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus");
+    atisaved = atibdj4SaveOpusTags (atidata, ffn, tagtype, filetype);
+  }
   return atisaved;
 }
 
@@ -217,7 +221,33 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
     atibdj4RestoreFlacTags (atidata, atisaved, ffn, tagtype, filetype);
   }
+  if (filetype == AFILE_TYPE_OPUS) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus");
+    atibdj4RestoreOpusTags (atidata, atisaved, ffn, tagtype, filetype);
+  }
   return 0;
+}
+
+void
+atiiCleanTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype)
+{
+  if (tagtype == TAG_TYPE_MP3) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
+    atibdj4CleanMP3Tags (atidata, ffn, tagtype, filetype);
+  }
+  if (filetype == AFILE_TYPE_OGG) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: ogg");
+    atibdj4CleanOggTags (atidata, ffn, tagtype, filetype);
+  }
+  if (filetype == AFILE_TYPE_FLAC) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: flac");
+    atibdj4CleanFlacTags (atidata, ffn, tagtype, filetype);
+  }
+  if (filetype == AFILE_TYPE_OPUS) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: opus");
+    atibdj4CleanOpusTags (atidata, ffn, tagtype, filetype);
+  }
+  return;
 }
 
 void

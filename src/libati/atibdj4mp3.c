@@ -25,7 +25,7 @@
 #define MB_TAG      "http://musicbrainz.org"
 
 typedef struct atisaved {
-  struct id3_file   *id3file;
+  bool              hasdata;
   struct id3_tag    *id3tags;
 } atisaved_t;
 
@@ -278,16 +278,29 @@ atibdj4SaveMP3Tags (atidata_t *atidata, const char *ffn,
   atisaved_t        *atisaved = NULL;
   struct id3_file   *id3file;
   struct id3_tag    *id3tags;
+  struct id3_tag    *nid3tags;
+  struct id3_frame  *id3frame;
+  int               idx;
 
   id3file = id3_file_open (ffn, ID3_FILE_MODE_READONLY);
   if (id3file == NULL) {
     return atisaved;
   }
   id3tags = id3_file_tag (id3file);
+  nid3tags = id3_tag_new ();
+
+  idx = 0;
+  while ((id3frame = id3_tag_findframe (id3tags, "", idx)) != NULL) {
+    id3_tag_detachframe (id3tags, id3frame);
+    id3_tag_attachframe (nid3tags, id3frame);
+    /* when the frame is detached, */
+    /* the index does not need to be incremented */
+    /* as the next frame drops down to the current position */
+  }
 
   atisaved = mdmalloc (sizeof (atisaved_t));
-  atisaved->id3file = id3file;
-  atisaved->id3tags = id3tags;
+  atisaved->hasdata = true;
+  atisaved->id3tags = nid3tags;
 
   /* the file is left open */
   /* it should only be deleted after the restore processing is complete */
@@ -305,6 +318,10 @@ atibdj4RestoreMP3Tags (atidata_t *atidata,
   int               idx;
 
   if (atisaved == NULL) {
+    return;
+  }
+
+  if (! atisaved->hasdata) {
     return;
   }
 
@@ -333,9 +350,17 @@ atibdj4RestoreMP3Tags (atidata_t *atidata,
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  file update failed %s", ffn);
   }
   id3_file_close (id3file);
-  id3_file_close (atisaved->id3file);
+  atisaved->hasdata = false;
+  id3_tag_delete (atisaved->id3tags);
   mdfree (atisaved);
 
+  return;
+}
+
+void
+atibdj4CleanMP3Tags (atidata_t *atidata,
+    const char *ffn, int tagtype, int filetype)
+{
   return;
 }
 

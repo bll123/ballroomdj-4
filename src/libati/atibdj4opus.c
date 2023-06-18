@@ -63,6 +63,27 @@ atibdj4WriteOpusTags (atidata_t *atidata, const char *ffn,
   return -1;
 }
 
+atisaved_t *
+atibdj4SaveOpusTags (atidata_t *atidata,
+    const char *ffn, int tagtype, int filetype)
+{
+  return NULL;
+}
+
+void
+atibdj4RestoreOpusTags (atidata_t *atidata,
+    atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
+{
+  return;
+}
+
+void
+atibdj4CleanOpusTags (atidata_t *atidata,
+    const char *ffn, int tagtype, int filetype)
+{
+  return;
+}
+
 void
 atibdj4LogOpusVersion (void)
 {

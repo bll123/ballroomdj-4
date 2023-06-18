@@ -26,6 +26,11 @@
 #include "slist.h"
 #include "tagdef.h"
 
+typedef struct atisaved {
+  bool                  hasdata;
+  struct vorbis_comment *vc;
+} atisaved_t;
+
 static int  atibdj4WriteOggPage (ogg_page *p, FILE *fp);
 static int  atibdj4WriteOggFile (const char *ffn, struct vorbis_comment *newvc);
 
@@ -139,12 +144,93 @@ atisaved_t *
 atibdj4SaveOggTags (atidata_t *atidata, const char *ffn,
     int tagtype, int filetype)
 {
-  return NULL;
+  atisaved_t            *atisaved;
+  OggVorbis_File        ovf;
+  int                   rc = -1;
+  struct vorbis_comment *vc;
+  struct vorbis_comment *newvc;
+
+  rc = ov_fopen (ffn, &ovf);
+  if (rc < 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ov_fopen %d %s", rc, ffn);
+    return NULL;
+  }
+
+  vc = ovf.vc;
+  if (vc == NULL) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "no vc %s", ffn);
+    return NULL;
+  }
+
+  newvc = mdmalloc (sizeof (struct vorbis_comment));
+  vorbis_comment_init (newvc);
+
+  for (int i = 0; i < vc->comments; ++i) {
+    const char  *kw;
+
+    kw = vc->user_comments [i];
+    vorbis_comment_add (newvc, kw);
+  }
+
+  ov_clear (&ovf);
+  atisaved = mdmalloc (sizeof (atisaved_t));
+  atisaved->hasdata = true;
+  atisaved->vc = newvc;
+
+  return atisaved;
 }
 
 void
 atibdj4RestoreOggTags (atidata_t *atidata,
     atisaved_t *atisaved, const char *ffn, int tagtype, int filetype)
+{
+  OggVorbis_File        ovf;
+  int                   rc = -1;
+  struct vorbis_comment *vc;
+  struct vorbis_comment newvc;
+
+  if (atisaved == NULL) {
+    return;
+  }
+
+  if (! atisaved->hasdata) {
+    return;
+  }
+
+  rc = ov_fopen (ffn, &ovf);
+  if (rc < 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ov_fopen %d %s", rc, ffn);
+    return;
+  }
+
+  vc = ovf.vc;
+  if (vc == NULL) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "no vc %s", ffn);
+    return;
+  }
+
+  vorbis_comment_init (&newvc);
+
+  for (int i = 0; i < atisaved->vc->comments; ++i) {
+    const char  *kw;
+
+    kw = atisaved->vc->user_comments [i];
+    vorbis_comment_add (&newvc, kw);
+  }
+
+  ov_clear (&ovf);
+
+  rc = atibdj4WriteOggFile (ffn, &newvc);
+
+  vorbis_comment_clear (atisaved->vc);
+  atisaved->hasdata = false;
+  mdfree (atisaved->vc);
+  mdfree (atisaved);
+}
+
+void
+atibdj4CleanOggTags (atidata_t *atidata,
+    const char *ffn, int tagtype, int filetype)
 {
   return;
 }
