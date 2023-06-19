@@ -12,5 +12,6 @@ char * regexEscape (const char *str);
 bool regexMatch (bdjregex_t *rx, const char *str);
 char ** regexGet (bdjregex_t *rx, const char *str);
 void regexGetFree (char **val);
+char *regexReplace (bdjregex_t *rx, const char *str, const char *repl);
 
 #endif /* INC_BDJREGEX_H */

@@ -23,7 +23,9 @@ enum {
 };
 
 enum {
-  ATI_TAG_BUFF_SIZE = 16384,
+  /* is this large enough to hold a pic &etc.? */
+  /* lyrics &etc. might come out to 200k */
+  ATI_TAG_BUFF_SIZE = (5 * 1024 * 1024),
 };
 
 typedef struct ati ati_t;

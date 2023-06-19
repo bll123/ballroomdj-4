@@ -7,6 +7,7 @@
 #include <errno.h>
 
 #include <glib.h>
+#include <glib/gregex.h>
 
 #include "bdjregex.h"
 #include "mdebug.h"
@@ -26,6 +27,7 @@ regexInit (const char *pattern)
   }
 
   regex = g_regex_new (pattern, G_REGEX_OPTIMIZE, 0, NULL);
+  mdextalloc (regex);
   if (regex == NULL) {
     fprintf (stderr, "ERR: failed to compile %s\n", pattern);
     return NULL;
@@ -40,6 +42,7 @@ regexFree (bdjregex_t *rx)
 {
   if (rx != NULL) {
     if (rx->regex != NULL) {
+      mdextfree (regex);
       g_regex_unref (rx->regex);
     }
     mdfree (rx);
@@ -79,11 +82,23 @@ regexGet (bdjregex_t *rx, const char *str)
   }
 
   val = g_regex_split (rx->regex, str, 0);
+  mdextalloc (val);
   return val;
 }
 
 void
 regexGetFree (char **val)
 {
+  mdextfree (val);
   g_strfreev (val);
+}
+
+char *
+regexReplace (bdjregex_t *rx, const char *str, const char *repl)
+{
+  char  *nstr = NULL;
+  /* G_REGEX_MATCH_DEFAULT is not defined */
+  nstr = g_regex_replace (rx->regex, str, -1, 0, repl, 0, NULL);
+  mdextalloc (nstr);
+  return nstr;
 }
