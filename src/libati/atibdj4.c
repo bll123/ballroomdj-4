@@ -92,7 +92,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
 
   logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "parse tags %s", ffn);
 
-  if (tagtype == TAG_TYPE_MP3) {
+  if (tagtype == TAG_TYPE_ID3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
     atibdj4ParseMP3Tags (atidata, tagdata, ffn, tagtype, rewrite);
   }
@@ -157,7 +157,7 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
 
   logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write tags %s", ffn);
 
-  if (tagtype == TAG_TYPE_MP3) {
+  if (tagtype == TAG_TYPE_ID3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
     rc = atibdj4WriteMP3Tags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
   }
@@ -186,7 +186,7 @@ atiiSaveTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype)
 {
   atisaved_t *atisaved = NULL;
 
-  if (tagtype == TAG_TYPE_MP3) {
+  if (tagtype == TAG_TYPE_ID3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
     atisaved = atibdj4SaveMP3Tags (atidata, ffn, tagtype, filetype);
   }
@@ -209,7 +209,7 @@ int
 atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
     const char *ffn, int tagtype, int filetype)
 {
-  if (tagtype == TAG_TYPE_MP3) {
+  if (tagtype == TAG_TYPE_ID3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
     atibdj4RestoreMP3Tags (atidata, atisaved, ffn, tagtype, filetype);
   }
@@ -231,7 +231,7 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
 void
 atiiCleanTags (atidata_t *atidata, const char *ffn, int tagtype, int filetype)
 {
-  if (tagtype == TAG_TYPE_MP3) {
+  if (tagtype == TAG_TYPE_ID3) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tag-type: mp3");
     atibdj4CleanMP3Tags (atidata, ffn, tagtype, filetype);
   }

@@ -29,5 +29,6 @@ slist_t * audiotagParseData (const char *ffn, char *data, int *rewrite);
 int     audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist, int rewrite, int modTimeFlag);
 void    *audiotagSaveTags (const char *ffn);
 void    audiotagRestoreTags (const char *ffn, void *sdata);
+void    audiotagCleanTags (const char *ffn);
 
 #endif /* INC_AUDIOTAG_H */

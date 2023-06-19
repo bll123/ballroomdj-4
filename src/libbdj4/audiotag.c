@@ -134,7 +134,7 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "tagtype: %d afile-type: %d", tagtype, filetype);
 
   if (tagtype != TAG_TYPE_VORBIS &&
-      tagtype != TAG_TYPE_MP3 &&
+      tagtype != TAG_TYPE_ID3 &&
       tagtype != TAG_TYPE_MP4) {
     logProcEnd (LOG_PROC, "audiotagsWriteTags", "not-supported-tag");
     return AUDIOTAG_NOT_SUPPORTED;
@@ -292,6 +292,16 @@ audiotagRestoreTags (const char *ffn, void *sdata)
   atiRestoreTags (at->ati, sdata, ffn, tagtype, filetype);
 }
 
+void
+audiotagCleanTags (const char *ffn)
+{
+  int   tagtype;
+  int   filetype;
+
+  audiotagDetermineTagType (ffn, &tagtype, &filetype);
+  atiCleanTags (at->ati, ffn, tagtype, filetype);
+}
+
 /* internal routines */
 
 static void
@@ -323,7 +333,7 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
   }
 
   if (pathInfoExtCheck (pi, ".mp3")) {
-    *tagtype = TAG_TYPE_MP3;
+    *tagtype = TAG_TYPE_ID3;
     *filetype = AFILE_TYPE_MP3;
   } else if (pathInfoExtCheck (pi, ".m4a")) {
     *tagtype = TAG_TYPE_MP4;

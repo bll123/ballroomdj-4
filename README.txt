@@ -62,14 +62,16 @@ Licenses:
     Bento4      : GPLv2
     ICU         : ICU
     libid3tag   : GPLv2 License
+                  Changes made to the library available upon request.
     libvorbis   : Xiph/BSD License
+                  Changes made to the library available upon request.
     img/musicbrainz-logo.svg : GPLv2
-    opusfile    : Xiph/BSD License
-    flac        : GPLv2, GPLv2.1, Xiph/BSD License
     Windows:
       msys2     : BSD 3-Clause ( https://github.com/msys2/MSYS2-packages/blob/master/LICENSE )
+      flac      : GPLv2, GPLv2.1, Xiph/BSD License
       ffmpeg    : GPLv3 License
       curl      : MIT License
       nghttp2   : MIT License
       libogg    : Xiph/BSD License
       opus      : Xiph/BSD License
+      opusfile  : Xiph/BSD License

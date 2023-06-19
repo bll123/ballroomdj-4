@@ -283,6 +283,46 @@ void
 atibdj4CleanFlacTags (atidata_t *atidata,
     const char *ffn, int tagtype, int filetype)
 {
+  FLAC__Metadata_Chain    *chain = NULL;
+  FLAC__StreamMetadata    *block = NULL;
+  FLAC__Metadata_Iterator *iterator = NULL;
+  bool                    cont;
+
+  chain = FLAC__metadata_chain_new ();
+  if (! FLAC__metadata_chain_read (chain, ffn)) {
+    return;
+  }
+
+  /* find the comment block */
+  iterator = FLAC__metadata_iterator_new ();
+  FLAC__metadata_iterator_init (iterator, chain);
+  cont = true;
+  while (cont) {
+    block = FLAC__metadata_iterator_get_block (iterator);
+    if (block->type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
+      break;
+    }
+    cont = FLAC__metadata_iterator_next (iterator);
+  }
+
+  if (block == NULL) {
+    /* if the comment block was not found, create a new one */
+    block = FLAC__metadata_object_new (FLAC__METADATA_TYPE_VORBIS_COMMENT);
+    while (FLAC__metadata_iterator_next (iterator)) {
+      ;
+    }
+    if (! FLAC__metadata_iterator_insert_block_after (iterator, block)) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: unable to insert new comment block");
+      return;
+    }
+  }
+
+  FLAC__metadata_object_vorbiscomment_resize_comments (block, 0);
+  FLAC__metadata_chain_sort_padding (chain);
+  FLAC__metadata_chain_write (chain, true, true);
+
+  FLAC__metadata_iterator_delete (iterator);
+  FLAC__metadata_chain_delete (chain);
   return;
 }
 

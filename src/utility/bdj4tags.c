@@ -150,6 +150,11 @@ main (int argc, char *argv [])
     goto finish;
   }
 
+  if (cleantags) {
+    audiotagCleanTags (argv [fidx]);
+    goto finish;
+  }
+
   data = audiotagReadTags (argv [fidx]);
   tagdata = audiotagParseData (argv [fidx], data, &rewrite);
   logMsg (LOG_DBG, LOG_BASIC, "rewrite: %08x", rewrite);

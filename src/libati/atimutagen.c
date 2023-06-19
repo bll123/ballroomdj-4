@@ -37,6 +37,12 @@ static int  atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn, slist_t
 static int  atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
 static void atimutagenMakeTempFilename (char *fn, size_t sz);
 static int  atimutagenRunUpdate (const char *fn);
+static void atimutagenWritePythonHeader (atidata_t *atidata, const char *ffn, FILE *ofh, int tagtype, int filetype);
+static void atimutagenWritePythonTrailer (FILE *ofh, int tagtype, int filetype);
+
+typedef struct atisaved {
+  bool        hasdata;
+} atisaved_t;
 
 const char *
 atiiDesc (void)
@@ -315,7 +321,7 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
 {
   int         rc = -1;
 
-  if (tagtype == TAG_TYPE_MP3 && filetype == AFILE_TYPE_MP3) {
+  if (tagtype == TAG_TYPE_ID3 && filetype == AFILE_TYPE_MP3) {
     rc = atimutagenWriteMP3Tags (atidata, ffn, updatelist, dellist, datalist);
   } else {
     rc = atimutagenWriteOtherTags (atidata, ffn, updatelist, dellist, datalist, tagtype, filetype);
@@ -323,6 +329,73 @@ atiiWriteTags (atidata_t *atidata, const char *ffn,
 
   return rc;
 }
+
+atisaved_t *
+atiiSaveTags (atidata_t *atidata,
+    const char *ffn, int tagtype, int filetype)
+{
+  atisaved_t    *atisaved;
+
+  atisaved = mdmalloc (sizeof (atisaved_t));
+  atisaved->hasdata = false;
+
+  return atisaved;
+}
+
+int
+atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
+    const char *ffn, int tagtype, int filetype)
+{
+  if (atisaved == NULL) {
+    return -1;
+  }
+
+  if (! atisaved->hasdata) {
+    return -1;
+  }
+
+  atisaved->hasdata = false;
+  mdfree (atisaved);
+  return 0;
+}
+
+void
+atiiCleanTags (atidata_t *atidata,
+    const char *ffn, int tagtype, int filetype)
+{
+  char        fn [MAXPATHLEN];
+  FILE        *ofh;
+  int         rc = -1;
+  const char  *spacer = "";
+
+  logProcBegin (LOG_PROC, "atimutagenCleanTags");
+
+  atimutagenMakeTempFilename (fn, sizeof (fn));
+  ofh = fileopOpen (fn, "w");
+
+  atimutagenWritePythonHeader (atidata, ffn, ofh, tagtype, filetype);
+  if (tagtype == TAG_TYPE_ID3) {
+    spacer = "  ";
+  }
+  fprintf (ofh, "%sfor k in list(audio.keys()):\n", spacer);
+  if (tagtype == TAG_TYPE_ID3) {
+    fprintf (ofh, "%s  audio.delall(k)\n", spacer);
+  } else {
+    fprintf (ofh, "%s  audio.pop(k)\n", spacer);
+  }
+  atimutagenWritePythonTrailer (ofh, tagtype, filetype);
+  fclose (ofh);
+
+  rc = atimutagenRunUpdate (fn);
+  if (rc != 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write failed: %s", ffn);
+  }
+
+  logProcEnd (LOG_PROC, "atimutagenCleanTags", "");
+  return;
+}
+
+/* internal routines */
 
 static int
 atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
@@ -344,17 +417,7 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
 
   atimutagenMakeTempFilename (fn, sizeof (fn));
   ofh = fileopOpen (fn, "w");
-  /* include TYER and TDAT in case of an idv2.3 tag */
-  fprintf (ofh, "from mutagen.id3 import ID3,TXXX,UFID,TYER,TDAT");
-  for (int i = 0; i < TAG_KEY_MAX; ++i) {
-    audiotag = atidata->audioTagLookup (i, TAG_TYPE_MP3);
-    if (audiotag->tag != NULL && audiotag->desc == NULL) {
-      fprintf (ofh, ",%s", audiotag->tag);
-    }
-  }
-  fprintf (ofh, ",ID3NoHeaderError\n");
-  fprintf (ofh, "try:\n");
-  fprintf (ofh, "  audio = ID3('%s')\n", ffn);
+  atimutagenWritePythonHeader (atidata, ffn, ofh, TAG_TYPE_ID3, AFILE_TYPE_MP3);
 
   slistStartIterator (dellist, &iteridx);
   while ((tag = slistIterateKey (dellist, &iteridx)) != NULL) {
@@ -368,12 +431,12 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
       continue;
     }
 
-    tagkey = atidata->tagCheck (writetags, TAG_TYPE_MP3, tag, AF_REWRITE_NONE);
+    tagkey = atidata->tagCheck (writetags, TAG_TYPE_ID3, tag, AF_REWRITE_NONE);
     if (tagkey < 0) {
       continue;
     }
 
-    audiotag = atidata->audioTagLookup (tagkey, TAG_TYPE_MP3);
+    audiotag = atidata->audioTagLookup (tagkey, TAG_TYPE_ID3);
     if (audiotag->desc != NULL) {
       fprintf (ofh, "  audio.delall('%s:%s')\n",
           audiotag->base, audiotag->desc);
@@ -384,14 +447,14 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
 
   slistStartIterator (updatelist, &iteridx);
   while ((tag = slistIterateKey (updatelist, &iteridx)) != NULL) {
-    tagkey = atidata->tagCheck (writetags, TAG_TYPE_MP3, tag, AF_REWRITE_NONE);
+    tagkey = atidata->tagCheck (writetags, TAG_TYPE_ID3, tag, AF_REWRITE_NONE);
     if (tagkey < 0) {
       continue;
     }
 
     value = slistGetStr (updatelist, tag);
 
-    audiotag = atidata->audioTagLookup (tagkey, TAG_TYPE_MP3);
+    audiotag = atidata->audioTagLookup (tagkey, TAG_TYPE_ID3);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write: %s %s",
         audiotag->tag, value);
     if (tagkey == TAG_RECORDING_ID) {
@@ -426,9 +489,7 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
     }
   }
 
-  fprintf (ofh, "  audio.save()\n");
-  fprintf (ofh, "except ID3NoHeaderError as e:\n");
-  fprintf (ofh, "  exit (1)\n");
+  atimutagenWritePythonTrailer (ofh, TAG_TYPE_ID3, AFILE_TYPE_MP3);
   fclose (ofh);
 
   rc = atimutagenRunUpdate (fn);
@@ -460,26 +521,7 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
 
   atimutagenMakeTempFilename (fn, sizeof (fn));
   ofh = fileopOpen (fn, "w");
-  if (filetype == AFILE_TYPE_FLAC) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: flac");
-    fprintf (ofh, "from mutagen.flac import FLAC\n");
-    fprintf (ofh, "audio = FLAC('%s')\n", ffn);
-  }
-  if (filetype == AFILE_TYPE_MP4) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: mp4");
-    fprintf (ofh, "from mutagen.mp4 import MP4\n");
-    fprintf (ofh, "audio = MP4('%s')\n", ffn);
-  }
-  if (filetype == AFILE_TYPE_OPUS) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: opus");
-    fprintf (ofh, "from mutagen.oggopus import OggOpus\n");
-    fprintf (ofh, "audio = OggOpus('%s')\n", ffn);
-  }
-  if (filetype == AFILE_TYPE_OGG) {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: oggvorbis");
-    fprintf (ofh, "from mutagen.oggvorbis import OggVorbis\n");
-    fprintf (ofh, "audio = OggVorbis('%s')\n", ffn);
-  }
+  atimutagenWritePythonHeader (atidata, ffn, ofh, tagtype, filetype);
 
   slistStartIterator (dellist, &iteridx);
   while ((tag = slistIterateKey (dellist, &iteridx)) != NULL) {
@@ -541,7 +583,7 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
     }
   }
 
-  fprintf (ofh, "audio.save()\n");
+  atimutagenWritePythonTrailer (ofh, tagtype, filetype);
   fclose (ofh);
 
   rc = atimutagenRunUpdate (fn);
@@ -582,5 +624,58 @@ atimutagenRunUpdate (const char *fn)
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  output: %s", dbuff);
   }
   return rc;
+}
+
+static void
+atimutagenWritePythonHeader (atidata_t *atidata, const char *ffn,
+    FILE *ofh, int tagtype, int filetype)
+{
+  if (tagtype == TAG_TYPE_ID3 && filetype == AFILE_TYPE_MP3) {
+    /* include TYER and TDAT in case of an idv2.3 tag */
+    fprintf (ofh, "from mutagen.id3 import ID3,TXXX,UFID,TYER,TDAT");
+    for (int i = 0; i < TAG_KEY_MAX; ++i) {
+      const tagaudiotag_t *audiotag;
+
+      audiotag = atidata->audioTagLookup (i, TAG_TYPE_ID3);
+      if (audiotag->tag != NULL && audiotag->desc == NULL) {
+        fprintf (ofh, ",%s", audiotag->tag);
+      }
+    }
+    fprintf (ofh, ",ID3NoHeaderError\n");
+    fprintf (ofh, "try:\n");
+    fprintf (ofh, "  audio = ID3('%s')\n", ffn);
+  }
+  if (filetype == AFILE_TYPE_FLAC) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: flac");
+    fprintf (ofh, "from mutagen.flac import FLAC\n");
+    fprintf (ofh, "audio = FLAC('%s')\n", ffn);
+  }
+  if (filetype == AFILE_TYPE_MP4) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: mp4");
+    fprintf (ofh, "from mutagen.mp4 import MP4\n");
+    fprintf (ofh, "audio = MP4('%s')\n", ffn);
+  }
+  if (filetype == AFILE_TYPE_OPUS) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: opus");
+    fprintf (ofh, "from mutagen.oggopus import OggOpus\n");
+    fprintf (ofh, "audio = OggOpus('%s')\n", ffn);
+  }
+  if (filetype == AFILE_TYPE_OGG) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: oggvorbis");
+    fprintf (ofh, "from mutagen.oggvorbis import OggVorbis\n");
+    fprintf (ofh, "audio = OggVorbis('%s')\n", ffn);
+  }
+}
+
+static void
+atimutagenWritePythonTrailer (FILE *ofh, int tagtype, int filetype)
+{
+  if (tagtype == TAG_TYPE_ID3 && filetype == AFILE_TYPE_MP3) {
+    fprintf (ofh, "  audio.save()\n");
+    fprintf (ofh, "except ID3NoHeaderError as e:\n");
+    fprintf (ofh, "  exit (1)\n");
+  } else {
+    fprintf (ofh, "audio.save()\n");
+  }
 }
 

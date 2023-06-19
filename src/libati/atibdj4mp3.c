@@ -302,8 +302,7 @@ atibdj4SaveMP3Tags (atidata_t *atidata, const char *ffn,
   atisaved->hasdata = true;
   atisaved->id3tags = nid3tags;
 
-  /* the file is left open */
-  /* it should only be deleted after the restore processing is complete */
+  id3_file_close (id3file);
 
   return atisaved;
 }
@@ -361,6 +360,28 @@ void
 atibdj4CleanMP3Tags (atidata_t *atidata,
     const char *ffn, int tagtype, int filetype)
 {
+  struct id3_file   *id3file;
+  struct id3_tag    *id3tags;
+  struct id3_frame  *id3frame;
+  int               idx;
+
+  id3file = id3_file_open (ffn, ID3_FILE_MODE_READWRITE);
+  if (id3file == NULL) {
+    return;
+  }
+  id3tags = id3_file_tag (id3file);
+
+  idx = 0;
+  while ((id3frame = id3_tag_findframe (id3tags, "", idx)) != NULL) {
+    id3_tag_detachframe (id3tags, id3frame);
+    id3_frame_delete (id3frame);
+  }
+
+  if (id3_file_update (id3file) != 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  file update failed %s", ffn);
+  }
+  id3_file_close (id3file);
+
   return;
 }
 

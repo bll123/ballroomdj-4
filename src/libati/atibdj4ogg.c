@@ -232,6 +232,27 @@ void
 atibdj4CleanOggTags (atidata_t *atidata,
     const char *ffn, int tagtype, int filetype)
 {
+  OggVorbis_File        ovf;
+  int                   rc = -1;
+  struct vorbis_comment *vc;
+  struct vorbis_comment newvc;
+
+  rc = ov_fopen (ffn, &ovf);
+  if (rc < 0) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ov_fopen %d %s", rc, ffn);
+    return;
+  }
+
+  vc = ovf.vc;
+  if (vc == NULL) {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "no vc %s", ffn);
+    return;
+  }
+
+  vorbis_comment_init (&newvc);
+  ov_clear (&ovf);
+  rc = atibdj4WriteOggFile (ffn, &newvc);
+
   return;
 }
 
