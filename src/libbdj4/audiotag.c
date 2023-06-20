@@ -14,6 +14,7 @@
 #include "audiofile.h"
 #include "audiotag.h"
 #include "bdj4.h"
+#include "bdj4intl.h"
 #include "bdjopt.h"
 #include "bdjstring.h"
 #include "fileop.h"
@@ -30,6 +31,28 @@ typedef struct audiotag {
   slist_t   *tagTypeLookup [TAG_TYPE_MAX];
 } audiotag_t;
 
+typedef struct {
+  const char  *ext;
+  int         tagtype;
+  int         filetype;
+} filetypelookup_t;
+
+/* must be sorted by extension */
+filetypelookup_t filetypelookup [] = {
+  { ".aac",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
+  { ".alac",  TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
+  { ".flac",  TAG_TYPE_VORBIS,  AFILE_TYPE_FLAC, },
+  { ".m4a",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
+  { ".m4r",   TAG_TYPE_MP4,     AFILE_TYPE_MP4, },
+  { ".mp3",   TAG_TYPE_ID3,     AFILE_TYPE_MP3, },
+  { ".ogg",   TAG_TYPE_VORBIS,  AFILE_TYPE_OGG, },
+  { ".opus",  TAG_TYPE_VORBIS,  AFILE_TYPE_OPUS, },
+  { ".wma",   TAG_TYPE_WMA,     AFILE_TYPE_WMA, }
+};
+enum {
+  filetypelookupsz = sizeof (filetypelookup) / sizeof (filetypelookup_t),
+};
+
 static audiotag_t *at = NULL;
 
 static void audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype);
@@ -42,6 +65,7 @@ static void audiotagPrepareTotals (slist_t *tagdata, slist_t *newtaglist,
 static const char * audiotagTagLookup (int tagtype, const char *val);
 static const char * audiotagTagName (int tagkey);
 static const tagaudiotag_t *audiotagRawLookup (int tagkey, int tagtype);
+static int  audiotagCompareExt (const void *ta, const void *tb);
 
 void
 audiotagInit (void)
@@ -307,58 +331,34 @@ audiotagCleanTags (const char *ffn)
 static void
 audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 {
-  pathinfo_t  *pi;
-  char        tmp [MAXPATHLEN];
-  bool        found = false;
+  pathinfo_t        *pi;
+  char              tmp [MAXPATHLEN];
+  filetypelookup_t  *ftl;
+  filetypelookup_t  tftl = { NULL, 0, 0 };
 
   pi = pathInfo (ffn);
 
   *filetype = AFILE_TYPE_UNKNOWN;
   *tagtype = TAG_TYPE_VORBIS;
 
-  if (pathInfoExtCheck (pi, ".mp3") ||
-      pathInfoExtCheck (pi, ".m4a") ||
-      pathInfoExtCheck (pi, ".aac") ||
-      pathInfoExtCheck (pi, ".alac") ||
-      pathInfoExtCheck (pi, ".a4r") ||
-      pathInfoExtCheck (pi, ".wma") ||
-      pathInfoExtCheck (pi, ".ogg") ||
-      pathInfoExtCheck (pi, ".opus") ||
-      pathInfoExtCheck (pi, ".flac")) {
-    found = true;
-  }
+  snprintf (tmp, sizeof (tmp), "%.*s", (int) pi->elen, pi->extension);
+  tftl.ext = tmp;
+  ftl = bsearch (&tftl, filetypelookup, filetypelookupsz,
+      sizeof (filetypelookup_t), audiotagCompareExt);
 
-  if (! found) {
-    /* this handles .mp3.original situations */
+  if (ftl == NULL) {
+    /* possible an alternate extension such as .original or .tmp */
     snprintf (tmp, sizeof (tmp), "%.*s", (int) pi->blen, pi->basename);
     pathInfoFree (pi);
     pi = pathInfo (tmp);
+    snprintf (tmp, sizeof (tmp), "%.*s", (int) pi->elen, pi->extension);
+    ftl = bsearch (&tftl, filetypelookup, filetypelookupsz,
+        sizeof (filetypelookup_t), audiotagCompareExt);
   }
 
-  if (pathInfoExtCheck (pi, ".mp3")) {
-    *tagtype = TAG_TYPE_ID3;
-    *filetype = AFILE_TYPE_MP3;
-  } else if (pathInfoExtCheck (pi, ".m4a") ||
-      pathInfoExtCheck (pi, ".aac") ||
-      pathInfoExtCheck (pi, ".m4r") ||
-      pathInfoExtCheck (pi, ".alac")) {
-    *tagtype = TAG_TYPE_MP4;
-    *filetype = AFILE_TYPE_MP4;
-  } else if (pathInfoExtCheck (pi, ".wma")) {
-    *tagtype = TAG_TYPE_WMA;
-    *filetype = AFILE_TYPE_WMA;
-  } else if (pathInfoExtCheck (pi, ".ogg")) {
-    *tagtype = TAG_TYPE_VORBIS;
-    *filetype = AFILE_TYPE_OGG;
-  } else if (pathInfoExtCheck (pi, ".opus")) {
-    *tagtype = TAG_TYPE_VORBIS;
-    *filetype = AFILE_TYPE_OPUS;
-  } else if (pathInfoExtCheck (pi, ".flac")) {
-    *tagtype = TAG_TYPE_VORBIS;
-    *filetype = AFILE_TYPE_FLAC;
-  } else {
-    *tagtype = TAG_TYPE_VORBIS;
-    *filetype = AFILE_TYPE_UNKNOWN;
+  if (ftl != NULL) {
+    *tagtype = ftl->tagtype;
+    *filetype = ftl->filetype;
   }
 
   pathInfoFree (pi);
@@ -591,4 +591,14 @@ static const tagaudiotag_t *
 audiotagRawLookup (int tagkey, int tagtype)
 {
   return &tagdefs [tagkey].audiotags [tagtype];
+}
+
+
+static int
+audiotagCompareExt (const void *ta, const void *tb)
+{
+  const filetypelookup_t    *a = ta;
+  const filetypelookup_t    *b = tb;
+
+  return strcmp (a->ext, b->ext);
 }

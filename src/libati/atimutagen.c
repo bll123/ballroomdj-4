@@ -707,7 +707,7 @@ atimutagenRunUpdate (const char *fn, char *dbuff, size_t sz)
   /* the wait flag is on, the return code is the process return code */
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, dbuff, sz, NULL);
   if (rc == 0) {
-//    fileopDelete (fn);
+    fileopDelete (fn);
   } else {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write tags failed %d (%s)", rc, fn);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  output: %s", dbuff);
@@ -725,9 +725,13 @@ atimutagenWritePythonHeader (atidata_t *atidata, const char *ffn,
     fprintf (ofh, "from mutagen.mp3 import MP3\n");
     fprintf (ofh, "from mutagen.id3 import ID3,ID3NoHeaderError\n");
     fprintf (ofh, "try:\n");
+    /* reads the file twice */
+    /* but resolves the no-header situation */
     fprintf (ofh, "  audio = MP3('%s')\n", ffn);
     fprintf (ofh, "  if audio.tags is None:\n");
     fprintf (ofh, "    audio.add_tags()\n");
+    fprintf (ofh, "    audio.save()\n");
+    fprintf (ofh, "  audio = ID3('%s')\n", ffn);
   }
   if (filetype == AFILE_TYPE_FLAC) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "file-type: flac");
