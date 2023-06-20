@@ -34,6 +34,7 @@ main (int argc, char *argv [])
   bool        isbdj4 = false;
   int         c = 0;
   int         option_index = 0;
+  int         startidx = 1;
   int         fidx = -1;
   int         fbidx = -1;
   tagdefkey_t tagkey;
@@ -45,6 +46,8 @@ main (int argc, char *argv [])
   bool        cleantags = false;
   bool        copy = false;
   int         rc = AUDIOTAG_WRITE_OK;
+  char        infn [MAXPATHLEN];
+  char        origcwd [MAXPATHLEN];
 
 
   static struct option bdj_options [] = {
@@ -58,6 +61,7 @@ main (int argc, char *argv [])
     { "quiet",        no_argument,      NULL,   'Q', },
     { "cleantags",    no_argument,      NULL,   'L', },
     { "nodetach",     no_argument,      NULL,   0, },
+    { "origcwd",      required_argument,  NULL,   'C' },
     { "scale",        required_argument,NULL,   0 },
     { "theme",        required_argument,NULL,   0 },
   };
@@ -65,6 +69,8 @@ main (int argc, char *argv [])
 #if BDJ4_MEM_DEBUG
   mdebugInit ("tags");
 #endif
+
+  *origcwd = '\0';
 
   while ((c = getopt_long_only (argc, argv, "BCp:d:mnNRs", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -84,6 +90,10 @@ main (int argc, char *argv [])
 //        rawdata = true;
 //        break;
 //      }
+      case 'C': {
+        strlcpy (origcwd, optarg, sizeof (origcwd));
+        break;
+      }
       case 'Q': {
         verbose = false;
         break;
@@ -114,10 +124,7 @@ main (int argc, char *argv [])
     bdjoptSetNum (OPT_G_BDJ3_COMPAT_TAGS, clbdj3tags);
   }
 
-  for (int i = 1; i < argc; ++i) {
-    if (strncmp (argv [i], "--", 2) == 0) {
-      continue;
-    }
+  for (int i = optind; i < argc; ++i) {
     if (copy && fidx != -1 && fbidx == -1) {
       fbidx = i;
       break;
@@ -130,10 +137,15 @@ main (int argc, char *argv [])
     }
   }
 
-  if (! fileopFileExists (argv [fidx])) {
-    fprintf (stderr, "no file %s\n", argv [fidx]);
-    rc = AUDIOTAG_WRITE_FAILED;
-    goto finish;
+  strlcpy (infn, argv [fidx], sizeof (infn));
+  if (! fileopFileExists (infn)) {
+    /* try a relative path name */
+    snprintf (infn, sizeof (infn), "%s/%s", origcwd, argv [fidx]);
+    if (! fileopFileExists (infn)) {
+      fprintf (stderr, "no file %s\n", infn);
+      rc = AUDIOTAG_WRITE_FAILED;
+      goto finish;
+    }
   }
 
   if (copy && ! fileopFileExists (argv [fbidx])) {
@@ -145,18 +157,18 @@ main (int argc, char *argv [])
   if (copy) {
     void    *sdata;
 
-    sdata = audiotagSaveTags (argv [fidx]);
+    sdata = audiotagSaveTags (infn);
     audiotagRestoreTags (argv [fbidx], sdata);
     goto finish;
   }
 
   if (cleantags) {
-    audiotagCleanTags (argv [fidx]);
+    audiotagCleanTags (infn);
     goto finish;
   }
 
-  data = audiotagReadTags (argv [fidx]);
-  tagdata = audiotagParseData (argv [fidx], data, &rewrite);
+  data = audiotagReadTags (infn);
+  tagdata = audiotagParseData (infn, data, &rewrite);
   logMsg (LOG_DBG, LOG_BASIC, "rewrite: %08x", rewrite);
 
   wlist = slistAlloc ("bdj4tags-write", LIST_ORDERED, NULL);
@@ -198,14 +210,14 @@ main (int argc, char *argv [])
 
     value = bdjoptGetNum (OPT_G_WRITETAGS);
     bdjoptSetNum (OPT_G_WRITETAGS, WRITE_TAGS_ALL);
-    rc = audiotagWriteTags (argv [fidx], tagdata, wlist, rewrite, AT_UPDATE_MOD_TIME);
+    rc = audiotagWriteTags (infn, tagdata, wlist, rewrite, AT_UPDATE_MOD_TIME);
     bdjoptSetNum (OPT_G_WRITETAGS, value);
   }
   slistFree (tagdata);
   dataFree (data);
 
   if (verbose) {
-    // fprintf (stdout, "-- %s\n", argv [fidx]);
+    // fprintf (stdout, "-- %s\n", infn);
     slistStartIterator (wlist, &iteridx);
     while ((key = slistIterateKey (wlist, &iteridx)) != NULL) {
       val = slistGetStr (wlist, key);

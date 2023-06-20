@@ -57,6 +57,7 @@ main (int argc, char *argv [])
     { "debugself",    no_argument,        NULL,   0 },
     { "nodetach",     no_argument,        NULL,   0, },
     { "verbose",      no_argument,        NULL,   'V', },
+    { "origcwd",      required_argument,  NULL,   0 },
   };
 
 #if BDJ4_MEM_DEBUG
@@ -110,10 +111,7 @@ main (int argc, char *argv [])
     song [i] = NULL;
   }
 
-  for (int i = 1; i < argc; ++i) {
-    if (strncmp (argv [i], "--", 2) == 0) {
-      continue;
-    }
+  for (int i = optind; i < argc; ++i) {
     dbfn [argcount] = argv [i];
     argcount++;
   }

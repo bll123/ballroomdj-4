@@ -26,6 +26,7 @@ main (int argc, char *argv[])
     { "profile",    required_argument,  NULL,   'p' },
     { "debug",      required_argument,  NULL,   'd' },
     { "theme",      required_argument,  NULL,   't' },
+    { "origcwd",      required_argument,  NULL,   0 },
     { NULL,         0,                  NULL,   0 }
   };
 

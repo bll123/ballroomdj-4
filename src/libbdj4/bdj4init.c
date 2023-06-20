@@ -97,6 +97,7 @@ bdj4startup (int argc, char *argv[], musicdb_t **musicdb,
     { "cli",            no_argument,        NULL,   'c' },
     { "verbose",        no_argument,        NULL,   'V' },
     { "quiet",          no_argument,        NULL,   'Q' },
+    { "origcwd",        required_argument,  NULL,   0 },
     /* test suite options */
     { "runsection",     required_argument,  NULL,   'S' },
     { "runtest",        required_argument,  NULL,   'T' },

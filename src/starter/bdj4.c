@@ -34,13 +34,14 @@
 #include "sysvars.h"
 
 enum {
-  BDJ4_LAUNCHER_MAX_ARGS = 30,
+  BDJ4_LAUNCHER_MAX_ARGS = 40,
 };
 
 int
 main (int argc, char * argv[])
 {
   char      buff [MAXPATHLEN];
+  char      origcwd [MAXPATHLEN];
   int       validargs = 0;
   int       c = 0;
   int       option_index = 0;
@@ -357,6 +358,8 @@ main (int argc, char * argv[])
     exit (1);
   }
 
+  (void) ! getcwd (origcwd, sizeof (origcwd));
+
   if (isinstaller == false) {
     if (chdir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {
       fprintf (stderr, "Unable to set working dir: %s\n", sysvarsGetStr (SV_BDJ4_DIR_DATATOP));
@@ -367,7 +370,7 @@ main (int argc, char * argv[])
 #if BDJ4_USE_GTK3
   osSetEnv ("GTK_CSD", "0");
 #endif
-  osSetEnv ("PYTHONIOENCODING", "utf-8");
+  osSetEnv ("PYTHONIOENCODING", "utf-8");       // for ati-mutagen
 
   if (isMacOS ()) {
     char      *path = NULL;
@@ -509,6 +512,8 @@ main (int argc, char * argv[])
     exit (1);
   }
   targv [targc++] = "--bdj4";
+  targv [targc++] = "--origcwd";
+  targv [targc++] = origcwd;
   targv [targc++] = NULL;
 
   pathbldMakePath (buff, sizeof (buff),

@@ -318,6 +318,9 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 
   if (pathInfoExtCheck (pi, ".mp3") ||
       pathInfoExtCheck (pi, ".m4a") ||
+      pathInfoExtCheck (pi, ".aac") ||
+      pathInfoExtCheck (pi, ".alac") ||
+      pathInfoExtCheck (pi, ".a4r") ||
       pathInfoExtCheck (pi, ".wma") ||
       pathInfoExtCheck (pi, ".ogg") ||
       pathInfoExtCheck (pi, ".opus") ||
@@ -335,7 +338,10 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
   if (pathInfoExtCheck (pi, ".mp3")) {
     *tagtype = TAG_TYPE_ID3;
     *filetype = AFILE_TYPE_MP3;
-  } else if (pathInfoExtCheck (pi, ".m4a")) {
+  } else if (pathInfoExtCheck (pi, ".m4a") ||
+      pathInfoExtCheck (pi, ".aac") ||
+      pathInfoExtCheck (pi, ".m4r") ||
+      pathInfoExtCheck (pi, ".alac")) {
     *tagtype = TAG_TYPE_MP4;
     *filetype = AFILE_TYPE_MP4;
   } else if (pathInfoExtCheck (pi, ".wma")) {

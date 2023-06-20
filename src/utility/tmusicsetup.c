@@ -129,6 +129,7 @@ main (int argc, char *argv [])
     { "scale",        required_argument,  NULL,   0 },
     { "theme",        required_argument,  NULL,   0 },
     { "tmusicsetup",  no_argument,        NULL,   0 },
+    { "origcwd",      required_argument,  NULL,   0 },
   };
 
 #if BDJ4_MEM_DEBUG
