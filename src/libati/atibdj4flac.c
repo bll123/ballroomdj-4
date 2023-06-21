@@ -24,6 +24,7 @@
 typedef struct atisaved {
   bool                    hasdata;
   FLAC__StreamMetadata    *vcblock;
+  bool                    haspicture;
 } atisaved_t;
 
 void
@@ -182,18 +183,31 @@ atibdj4SaveFlacTags (atidata_t *atidata, const char *ffn,
   FLAC__StreamMetadata    *block = NULL;
   FLAC__Metadata_Iterator *iterator = NULL;
   bool                    cont;
+  bool                    haspicture = false;
 
   chain = FLAC__metadata_chain_new ();
   FLAC__metadata_chain_read (chain, ffn);
 
   /* find the comment block */
+  /* and check and see if any pictures are present */
   iterator = FLAC__metadata_iterator_new ();
   FLAC__metadata_iterator_init (iterator, chain);
   cont = true;
   while (cont) {
-    block = FLAC__metadata_iterator_get_block (iterator);
-    if (block->type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
-      break;
+    FLAC__StreamMetadata    *tblock;
+
+    tblock = FLAC__metadata_iterator_get_block (iterator);
+    if (tblock->type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
+      block = tblock;
+      if (haspicture) {
+        break;
+      }
+    }
+    if (tblock->type == FLAC__METADATA_TYPE_PICTURE) {
+      haspicture = true;
+      if (block != NULL) {
+        break;
+      }
     }
     cont = FLAC__metadata_iterator_next (iterator);
   }
@@ -205,6 +219,7 @@ atibdj4SaveFlacTags (atidata_t *atidata, const char *ffn,
   atisaved = mdmalloc (sizeof (atisaved_t));
   atisaved->hasdata = true;
   atisaved->vcblock = FLAC__metadata_object_new (FLAC__METADATA_TYPE_VORBIS_COMMENT);
+  atisaved->haspicture = haspicture;
   for (FLAC__uint32 i = 0; i < block->data.vorbis_comment.num_comments; i++) {
     FLAC__StreamMetadata_VorbisComment_Entry *entry;
 
@@ -214,6 +229,7 @@ atibdj4SaveFlacTags (atidata_t *atidata, const char *ffn,
 
   FLAC__metadata_iterator_delete (iterator);
   FLAC__metadata_chain_delete (chain);
+
   return atisaved;
 }
 
@@ -276,6 +292,14 @@ atibdj4RestoreFlacTags (atidata_t *atidata,
 
   FLAC__metadata_iterator_delete (iterator);
   FLAC__metadata_chain_delete (chain);
+
+  if (atisaved->haspicture) {
+    /* in this case, the entire file must be re-written */
+  }
+
+  FLAC__metadata_object_delete (atisaved->vcblock);
+  atisaved->hasdata = false;
+  mdfree (atisaved);
   return;
 }
 

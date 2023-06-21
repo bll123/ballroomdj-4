@@ -674,8 +674,10 @@ main (int argc, char *argv [])
           logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : update pl %s", plnm);
           playlistSave (pl, NULL);
         }
+        playlistFree (pl);
       }
     }
+    slistFree (pllist);
 
     if (statusflags [UPD_FIX_PL_MPM] == UPD_NOT_DONE) {
       logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : update pl mpm complete");

@@ -69,7 +69,8 @@ if [ $? -eq 0 ]; then
   bdir=build
 
   make distclean
-  ./configure $args \
+  ./configure \
+      CFLAGS=-g \
       --prefix=$INSTLOC \
       --disable-static \
       --disable-examples

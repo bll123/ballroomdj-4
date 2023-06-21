@@ -34,7 +34,6 @@ main (int argc, char *argv [])
   bool        isbdj4 = false;
   int         c = 0;
   int         option_index = 0;
-  int         startidx = 1;
   int         fidx = -1;
   int         fbidx = -1;
   tagdefkey_t tagkey;

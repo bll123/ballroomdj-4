@@ -482,6 +482,7 @@ atibdj4AddMP3Tag (atidata_t *atidata, nlist_t *datalist,
     id3_field_settextencoding (id3_frame_field (frame, 0), ID3_FIELD_TEXTENCODING_UTF_8);
     id3_field_setstring (id3_frame_field (frame, 1), ttag);
     id3_field_setstring (id3_frame_field (frame, 2), id3val);
+    dataFree (ttag);
   } else {
     /* all of the non-txxx id3 tags are string lists */
     id3_field_settextencoding (id3_frame_field (frame, 0), ID3_FIELD_TEXTENCODING_UTF_8);

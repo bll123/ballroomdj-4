@@ -158,7 +158,7 @@ sed -e '/^DEFAULTVOLUME/ { n ; s/.*/..25/ ; }' \
 mv -f ${tfn}.n ${tfn}
 
 tfn=data/bdjconfig.txt
-sed -e '/^DEBUGLVL/ { n ; s/.*/..31/ ; }' \
+sed -e '/^DEBUGLVL/ { n ; s/.*/..4456459/ ; }' \
     -e '/^CLOCKDISP/ { n ; s/.*/..iso/ ; }' \
     -e '/^BPM/ { n ; s/.*/..BPM/ ; }' \
     ${tfn} > ${tfn}.n

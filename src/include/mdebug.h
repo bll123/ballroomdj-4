@@ -39,6 +39,7 @@ void mdebugInit (const char *tag);
 void mdebugCleanup (void);
 long mdebugCount (void);
 long mdebugErrors (void);
+void mdebugSetNoOutput (void);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 }

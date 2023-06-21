@@ -30,6 +30,7 @@ START_TEST(mdebug_valid)
   logMsg (LOG_DBG, LOG_IMPORTANT, "valid");
   mdebugCleanup ();
   mdebugInit ("chk-md-v");
+  mdebugSetNoOutput ();
   data = mdmalloc (10);
   mdfree (data);
   ck_assert_int_eq (mdebugCount (), 0);
@@ -45,6 +46,7 @@ START_TEST(mdebug_valid_b)
   logMsg (LOG_DBG, LOG_IMPORTANT, "valid-b");
   mdebugCleanup ();
   mdebugInit ("chk-md-vb");
+  mdebugSetNoOutput ();
   data [0] = mdmalloc (10);
   data [1] = mdmalloc (10);
   mdfree (data [0]);
@@ -80,6 +82,40 @@ START_TEST(mdebug_valid_b)
 }
 END_TEST
 
+START_TEST(mdebug_valid_ext_a)
+{
+  void  *data;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "valid");
+  mdebugCleanup ();
+  mdebugInit ("chk-md-v");
+  mdebugSetNoOutput ();
+  data = malloc (10);
+  mdextalloc (data);
+  mdextfree (data);
+  ck_assert_int_eq (mdebugCount (), 0);
+  ck_assert_int_eq (mdebugErrors (), 0);
+  mdebugCleanup ();
+}
+END_TEST
+
+START_TEST(mdebug_valid_ext_b)
+{
+  void  *data;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "valid");
+  mdebugCleanup ();
+  mdebugInit ("chk-md-v");
+  mdebugSetNoOutput ();
+  data = malloc (10);
+  mdextalloc (data);
+  mdfree (data);
+  ck_assert_int_eq (mdebugCount (), 0);
+  ck_assert_int_eq (mdebugErrors (), 0);
+  mdebugCleanup ();
+}
+END_TEST
+
 START_TEST(mdebug_no_free)
 {
   void  *data;
@@ -87,11 +123,27 @@ START_TEST(mdebug_no_free)
   logMsg (LOG_DBG, LOG_IMPORTANT, "no-free");
   mdebugCleanup ();
   mdebugInit ("chk-md-nf");
+  mdebugSetNoOutput ();
   data = mdmalloc (10);
   ck_assert_int_eq (mdebugCount (), 1);
   mdebugReport ();
   ck_assert_int_eq (mdebugErrors (), 1);
   mdfree (data);
+  mdebugCleanup ();
+}
+END_TEST
+
+START_TEST(mdebug_null_free)
+{
+  void  *data = NULL;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "null-free");
+  mdebugCleanup ();
+  mdebugInit ("chk-md-nullf");
+  mdebugSetNoOutput ();
+  mdfree (data);
+  ck_assert_int_eq (mdebugCount (), 0);
+  ck_assert_int_eq (mdebugErrors (), 1);
   mdebugCleanup ();
 }
 END_TEST
@@ -103,6 +155,7 @@ START_TEST(mdebug_unknown_free)
   logMsg (LOG_DBG, LOG_IMPORTANT, "unknown-free");
   mdebugCleanup ();
   mdebugInit ("chk-md-uf");
+  mdebugSetNoOutput ();
   data = malloc (10);
   mdfree (data);
   ck_assert_int_eq (mdebugCount (), 0);
@@ -118,6 +171,7 @@ START_TEST(mdebug_bad_realloc)
   logMsg (LOG_DBG, LOG_IMPORTANT, "bad-realloc");
   mdebugCleanup ();
   mdebugInit ("chk-md-br");
+  mdebugSetNoOutput ();
   data = malloc (55);
   data = mdrealloc (data, 95);
   mdfree (data);
@@ -138,7 +192,10 @@ mdebug_suite (void)
   tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, mdebug_valid);
   tcase_add_test (tc, mdebug_valid_b);
+  tcase_add_test (tc, mdebug_valid_ext_a);
+  tcase_add_test (tc, mdebug_valid_ext_b);
   tcase_add_test (tc, mdebug_no_free);
+  tcase_add_test (tc, mdebug_null_free);
   tcase_add_test (tc, mdebug_unknown_free);
   tcase_add_test (tc, mdebug_bad_realloc);
   suite_add_tcase (s, tc);

@@ -42,7 +42,7 @@ regexFree (bdjregex_t *rx)
 {
   if (rx != NULL) {
     if (rx->regex != NULL) {
-      mdextfree (regex);
+      mdextfree (rx->regex);
       g_regex_unref (rx->regex);
     }
     mdfree (rx);

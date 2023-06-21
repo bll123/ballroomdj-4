@@ -538,11 +538,9 @@ main (int argc, char * argv[])
     flags &= ~OS_PROC_DETACH;
   }
   rc = osProcessStart (targv, flags, NULL, NULL);
-  if (forcewait || wait) {
-    return rc;
-  }
 #if BDJ4_MEM_DEBUG
-  mdebugReport ();
+  /* report is generally not needed unless source is changed */
+  //mdebugReport ();
   mdebugCleanup ();
 #endif
   return 0;

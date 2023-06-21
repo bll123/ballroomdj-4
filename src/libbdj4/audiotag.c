@@ -399,6 +399,7 @@ audiotagParseTags (slist_t *tagdata, const char *ffn, char *data,
         }
         mdfree (tmp);
       }
+      continue;
     }
 
     /* old volumeadjustperc handling */

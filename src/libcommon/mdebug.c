@@ -61,6 +61,7 @@ static mdebug_t *mdebug = NULL;
 static long     mdebugcounts [MDEBUG_MAX];
 static bool     initialized = false;
 static bool     mdebugverbose = false;
+static bool     mdebugnooutput = false;
 
 static void mdebugResize (void);
 static void mdebugAdd (void *data, mdebugtype_t type, const char *fn, int lineno);
@@ -79,6 +80,7 @@ mdfree_r (void *data, const char *fn, int lineno)
 
   if (initialized && data == NULL) {
     mdebugLog ("%4s %p free-null %s %d\n", mdebugtag, data, fn, lineno);
+    mdebugcounts [MDEBUG_ERRORS] += 1;
   }
   if (initialized && data != NULL) {
     loc = mdebugFind (data);
@@ -103,6 +105,10 @@ mdextfree_r (void *data, const char *fn, int lineno)
 {
   long  loc;
 
+  if (initialized && data == NULL) {
+    mdebugLog ("%4s %p ext-free-null %s %d\n", mdebugtag, data, fn, lineno);
+    mdebugcounts [MDEBUG_ERRORS] += 1;
+  }
   if (initialized && data != NULL) {
     loc = mdebugFind (data);
     if (loc >= 0) {
@@ -145,6 +151,9 @@ mdrealloc_r (void *data, size_t sz, const char *fn, int lineno)
   if (initialized) {
     mdebugResize ();
   }
+  if (initialized && data == NULL) {
+    mdebugcounts [MDEBUG_MALLOC] += 1;
+  }
   if (initialized && data != NULL) {
     long  loc;
 
@@ -159,13 +168,17 @@ mdrealloc_r (void *data, size_t sz, const char *fn, int lineno)
       mdebugcounts [MDEBUG_ERRORS] += 1;
     }
     mdebugcounts [MDEBUG_REALLOC] += 1;
-  } else {
-    mdebugcounts [MDEBUG_MALLOC] += 1;
   }
   ndata = realloc (data, sz);
-  if (initialized) {
+  if (initialized && data == NULL) {
     if (mdebugverbose) {
       mdebugLog ("%4s %p realloc-init %s %d\n", mdebugtag, ndata, fn, lineno);
+    }
+    mdebugAdd (ndata, MDEBUG_TYPE_ALLOC, fn, lineno);
+  }
+  if (initialized && data != NULL) {
+    if (mdebugverbose) {
+      mdebugLog ("%4s %p realloc %s %d\n", mdebugtag, ndata, fn, lineno);
     }
     mdebugAdd (ndata, MDEBUG_TYPE_REALLOC, fn, lineno);
   }
@@ -199,7 +212,7 @@ mdextalloc_r (void *data, const char *fn, int lineno)
     if (mdebugverbose) {
       mdebugLog ("%4s %p ext-alloc %s %d\n", mdebugtag, data, fn, lineno);
     }
-    mdebugAdd (data, MDEBUG_TYPE_ALLOC, fn, lineno);
+    mdebugAdd (data, MDEBUG_TYPE_EXT_ALLOC, fn, lineno);
     mdebugcounts [MDEBUG_EXTALLOC] += 1;
   }
   return data;
@@ -244,8 +257,15 @@ void
 mdebugReport (void)
 {
   if (initialized) {
-    mdebugLog ("== %s ==\n", mdebugtag);
+    if (! mdebugnooutput) {
+      mdebugLog ("== %s ==\n", mdebugtag);
+    }
+
     for (long i = 0; i < mdebugcounts [MDEBUG_COUNT]; ++i) {
+      mdebugcounts [MDEBUG_ERRORS] += 1;
+      if (mdebugnooutput) {
+        continue;
+      }
       mdebugLog ("%4s 0x%08" PRIx64 " no-free %c %s %d\n", mdebugtag,
           (int64_t) mdebug [i].addr, mdebug [i].type, mdebug [i].fn, mdebug [i].lineno);
       if (MDEBUG_ENABLE_BACKTRACE) {
@@ -255,8 +275,12 @@ mdebugReport (void)
         }
         mdebug [i].bt = NULL;
       }
-      mdebugcounts [MDEBUG_ERRORS] += 1;
     }
+
+    if (mdebugnooutput) {
+      return;
+    }
+
     mdebugLog ("  count: %ld\n", mdebugcounts [MDEBUG_COUNT]);
     mdebugLog (" ERRORS: %ld\n", mdebugcounts [MDEBUG_ERRORS]);
     mdebugLog (" malloc: %ld\n", mdebugcounts [MDEBUG_MALLOC]);
@@ -291,6 +315,8 @@ mdebugCleanup (void)
   }
 }
 
+/* the following routines are for the test suite */
+
 long
 mdebugCount (void)
 {
@@ -301,6 +327,12 @@ long
 mdebugErrors (void)
 {
   return mdebugcounts [MDEBUG_ERRORS];
+}
+
+void
+mdebugSetNoOutput (void)
+{
+  mdebugnooutput = true;
 }
 
 /* internal routines */
@@ -419,18 +451,22 @@ static void
 mdebugLog (const char *fmt, ...)
 {
   va_list   args;
-#if __WINNT__
   FILE      *fh;
 
+  if (mdebugnooutput) {
+    return;
+  }
+
+#if __WINNT__
   fh = fopen ("mdebug.txt", "a");
+#else
+  fh = stderr;
+#endif
   va_start (args, fmt);
   vfprintf (fh, fmt, args);
   va_end (args);
+#if __WINNT__
   fclose (fh);
-#else
-  va_start (args, fmt);
-  vfprintf (stderr, fmt, args);
-  va_end (args);
 #endif
 }
 

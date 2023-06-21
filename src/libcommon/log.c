@@ -321,7 +321,7 @@ rlogStart (const char *processnm, const char *processtag,
         PATHBLD_MP_DREL_DATA | PATHBLD_MP_HOSTNAME | PATHBLD_MP_USEIDX);
     rlogOpen (idx, tnm, processtag, truncflag);
     syslogs [idx]->level = level;
-    rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s", processnm, tdt);
+    rlogVarMsg (idx, LOG_IMPORTANT, NULL, 0, "=== %s started %s pid %ld", processnm, tdt, (long) getpid ());
   }
 }
 
