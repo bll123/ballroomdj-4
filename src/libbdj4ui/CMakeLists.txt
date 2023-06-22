@@ -13,6 +13,7 @@ add_library (libbdj4ui SHARED
   osuimacutils.m
   osuiwinutils.c
   uiapplyadj.c
+  uicopytags.c
   uidance.c
   uiduallist.c
   uiexpimpbdj4.c

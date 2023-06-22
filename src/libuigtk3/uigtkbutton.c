@@ -148,6 +148,12 @@ uiButtonSetImageIcon (uibutton_t *uibutton, const char *nm)
 {
   GtkWidget *image;
 
+  if (uibutton == NULL ||
+      uibutton->button == NULL ||
+      uibutton->button->widget == NULL) {
+    return;
+  }
+
   image = gtk_image_new_from_icon_name (nm, GTK_ICON_SIZE_BUTTON);
   gtk_button_set_image (GTK_BUTTON (uibutton->button->widget), image);
   gtk_button_set_always_show_image (

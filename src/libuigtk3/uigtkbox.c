@@ -36,30 +36,60 @@ uiCreateHorizBox (void)
 void
 uiBoxPackInWindow (uiwcont_t *uiwindow, uiwcont_t *uibox)
 {
+  if (uiwindow == NULL || uiwindow->widget == NULL) {
+    return;
+  }
+  if (uibox == NULL || uibox->widget == NULL) {
+    return;
+  }
   gtk_container_add (GTK_CONTAINER (uiwindow->widget), uibox->widget);
 }
 
 void
 uiBoxPackStart (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
+  if (uibox == NULL || uibox->widget == NULL) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return;
+  }
   gtk_box_pack_start (GTK_BOX (uibox->widget), uiwidget->widget, FALSE, FALSE, 0);
 }
 
 void
 uiBoxPackStartExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
+  if (uibox == NULL || uibox->widget == NULL) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return;
+  }
   gtk_box_pack_start (GTK_BOX (uibox->widget), uiwidget->widget, TRUE, TRUE, 0);
 }
 
 void
 uiBoxPackEnd (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
+  if (uibox == NULL || uibox->widget == NULL) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return;
+  }
   gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, FALSE, FALSE, 0);
 }
 
 void
 uiBoxPackEndExpand (uiwcont_t *uibox, uiwcont_t *uiwidget)
 {
+  if (uibox == NULL || uibox->widget == NULL) {
+    return;
+  }
+  if (uiwidget == NULL || uiwidget->widget == NULL) {
+    return;
+  }
   gtk_box_pack_end (GTK_BOX (uibox->widget), uiwidget->widget, TRUE, TRUE, 0);
 }
 

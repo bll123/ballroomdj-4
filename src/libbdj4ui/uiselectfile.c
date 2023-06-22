@@ -14,6 +14,7 @@
 
 #include "bdj4intl.h"
 #include "bdj4ui.h"
+#include "bdjopt.h"
 #include "mdebug.h"
 #include "nlist.h"
 #include "playlist.h"
@@ -111,6 +112,33 @@ selectFileFree (uiselectfile_t *selectfile)
     mdfree (selectfile);
   }
 }
+
+bool
+selectAudioFileCallback (void *udata)
+{
+  uisfcb_t    *uisfcb = udata;
+  char        *fn = NULL;
+  uiselect_t  *selectdata;
+  char        tbuff [100];
+
+  /* CONTEXT: select audio file: dialog title for selecting audio files */
+  snprintf (tbuff, sizeof (tbuff), _("Select Audio File"));
+  selectdata = uiDialogCreateSelect (uisfcb->window,
+      tbuff,
+      bdjoptGetStr (OPT_M_DIR_MUSIC),
+      uiEntryGetValue (uisfcb->entry),
+      /* CONTEXT: select audio file: file selection dialog: audio file filter */
+      _("Audio Files"), "audio/*");
+  fn = uiSelectFileDialog (selectdata);
+  if (fn != NULL) {
+    uiEntrySetValue (uisfcb->entry, fn);
+    mdfree (fn);
+  }
+  mdfree (selectdata);
+  return UICB_CONT;
+}
+
+/* internal routines */
 
 static void
 selectFileCreateDialog (uiselectfile_t *selectfile,

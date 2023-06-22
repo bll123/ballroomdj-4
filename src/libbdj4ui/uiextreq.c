@@ -33,6 +33,7 @@
 #include "callback.h"
 #include "uidance.h"
 #include "uiextreq.h"
+#include "uiselectfile.h"
 
 enum {
   UIEXTREQ_CB_DIALOG,
@@ -48,10 +49,11 @@ typedef struct uiextreq {
   nlist_t         *options;
   uiwcont_t       *extreqDialog;
   uientry_t       *audioFileEntry;
+  uibutton_t      *audioFileDialogButton;
+  uisfcb_t        audiofilesfcb;
   uientry_t       *artistEntry;
   uientry_t       *titleEntry;
   uidance_t       *uidance;
-  uibutton_t      *audioFileDialogButton;
   callback_t      *callbacks [UIEXTREQ_CB_MAX];
   callback_t      *responsecb;
   song_t          *song;
@@ -61,7 +63,6 @@ typedef struct uiextreq {
 
 /* external request */
 static void   uiextreqCreateDialog (uiextreq_t *uiextreq);
-static bool   uiextreqAudioFileDialog (void *udata);
 static bool   uiextreqDanceSelectHandler (void *udata, long idx, int count);
 static void   uiextreqInitDisplay (uiextreq_t *uiextreq, const char *fn);
 static void   uiextreqClearSong (uiextreq_t *uiextreq);
@@ -94,6 +95,9 @@ uiextreqInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
   uiextreq->responsecb = NULL;
   uiextreq->isactive = false;
   uiextreq->musicdb = musicdb;
+
+  uiextreq->audiofilesfcb.entry = uiextreq->audioFileEntry;
+  uiextreq->audiofilesfcb.window = uiextreq->parentwin;
 
   return uiextreq;
 }
@@ -251,7 +255,7 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
   uiBoxPackStartExpand (hbox, uiwidgetp);
 
   uiextreq->callbacks [UIEXTREQ_CB_AUDIO_FILE] = callbackInit (
-      uiextreqAudioFileDialog, uiextreq, NULL);
+      selectAudioFileCallback, &uiextreq->audiofilesfcb, NULL);
   uibutton = uiCreateButton (
       uiextreq->callbacks [UIEXTREQ_CB_AUDIO_FILE],
       "", NULL);
@@ -323,36 +327,6 @@ uiextreqCreateDialog (uiextreq_t *uiextreq)
       uiextreq, UIENTRY_IMMEDIATE);
 
   logProcEnd (LOG_PROC, "uiextreqCreateDialog", "");
-}
-
-static bool
-uiextreqAudioFileDialog (void *udata)
-{
-  uiextreq_t  *uiextreq = udata;
-  char        *fn = NULL;
-  uiselect_t  *selectdata;
-
-  if (uiextreq == NULL) {
-    return UICB_STOP;
-  }
-
-  selectdata = uiDialogCreateSelect (uiextreq->parentwin,
-      /* CONTEXT: external request: file selection dialog: window title */
-      _("Select File"),
-      bdjoptGetStr (OPT_M_DIR_MUSIC),
-      NULL,
-      /* CONTEXT: external request: file selection dialog: audio file filter */
-      _("Audio Files"), "audio/*");
-  fn = uiSelectFileDialog (selectdata);
-  if (fn != NULL) {
-    /* the validation process will be called */
-    uiEntrySetValue (uiextreq->audioFileEntry, fn);
-    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected loc: %s", fn);
-    mdfree (fn);   // allocated by gtk
-  }
-  mdfree (selectdata);
-
-  return UICB_CONT;
 }
 
 /* count is not used */

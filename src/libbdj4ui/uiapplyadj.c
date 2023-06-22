@@ -41,7 +41,6 @@ typedef struct uiaa {
   uiwcont_t       *aaDialog;
   uiwcont_t       *statusMsg;
   uiwcont_t       *cbTrim;
-  uiwcont_t       *cbNorm;
   uiwcont_t       *cbAdjust;
   callback_t      *callbacks [UIAA_CB_MAX];
   callback_t      *responsecb;
@@ -66,7 +65,6 @@ uiaaInit (uiwcont_t *windowp, nlist_t *opts)
   uiaa->song = NULL;
   uiaa->statusMsg = NULL;
   uiaa->cbTrim = NULL;
-  uiaa->cbNorm = NULL;
   uiaa->cbAdjust = NULL;
   for (int i = 0; i < UIAA_CB_MAX; ++i) {
     uiaa->callbacks [i] = NULL;
@@ -88,7 +86,6 @@ uiaaFree (uiaa_t *uiaa)
   if (uiaa != NULL) {
     uiaaDialogClear (uiaa);
     uiwcontFree (uiaa->cbTrim);
-    uiwcontFree (uiaa->cbNorm);
     uiwcontFree (uiaa->cbAdjust);
     for (int i = 0; i < UIAA_CB_MAX; ++i) {
       callbackFree (uiaa->callbacks [i]);
@@ -272,9 +269,6 @@ uiaaResponseHandler (void *udata, long responseid)
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: apply");
       if (uiToggleButtonIsActive (uiaa->cbTrim)) {
         aaflags |= SONG_ADJUST_TRIM;
-      }
-      if (uiToggleButtonIsActive (uiaa->cbNorm)) {
-        aaflags |= SONG_ADJUST_NORM;
       }
       if (uiToggleButtonIsActive (uiaa->cbAdjust)) {
         aaflags |= SONG_ADJUST_ADJUST;

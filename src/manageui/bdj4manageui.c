@@ -58,6 +58,7 @@
 #include "tmutil.h"
 #include "ui.h"
 #include "uiapplyadj.h"
+#include "uicopytags.h"
 #include "uiexpimpbdj4.h"
 #include "uimusicq.h"
 #include "uinbutil.h"
@@ -94,6 +95,7 @@ enum {
   MANAGE_MENU_CB_MM_SET_MARK,
   /* song editor */
   MANAGE_MENU_CB_SE_BPM,
+  MANAGE_MENU_CB_SE_COPY_TAGS,
   MANAGE_MENU_CB_SE_APPLY_EDIT_ALL,
   MANAGE_MENU_CB_SE_CANCEL_EDIT_ALL,
   MANAGE_MENU_CB_SE_START_EDIT_ALL,
@@ -243,6 +245,7 @@ typedef struct {
   /* bpm counter */
   int               currtimesig;
   /* song editor */
+  uict_t            *uict;
   uiaa_t            *uiaa;
   int               aaflags;
   int               applyadjstate;
@@ -280,6 +283,8 @@ typedef struct {
 static datafilekey_t manageuidfkeys [] = {
   { "APPLY_ADJ_POS_X",  APPLY_ADJ_POSITION_X,       VALUE_NUM, NULL, DF_NORM },
   { "APPLY_ADJ_POS_Y",  APPLY_ADJ_POSITION_Y,       VALUE_NUM, NULL, DF_NORM },
+  { "COPY_TAGS_POS_X",  COPY_TAGS_POSITION_X,       VALUE_NUM, NULL, DF_NORM },
+  { "COPY_TAGS_POS_Y",  COPY_TAGS_POSITION_Y,       VALUE_NUM, NULL, DF_NORM },
   { "EASY_SONGLIST",    MANAGE_EASY_SONGLIST,       VALUE_NUM, convBoolean, DF_NORM },
   { "FILTER_POS_X",     SONGSEL_FILTER_POSITION_X,  VALUE_NUM, NULL, DF_NORM },
   { "FILTER_POS_Y",     SONGSEL_FILTER_POSITION_Y,  VALUE_NUM, NULL, DF_NORM },
@@ -324,6 +329,7 @@ static void     manageSetEditMenuItems (manageui_t *manage);
 static bool     manageApplyAdjDialog (void *udata);
 static bool     manageApplyAdjCallback (void *udata, long aaflags);
 static bool     manageRestoreOrigCallback (void *udata);
+static bool     manageCopyTagsStart (void *udata);
 static bool     manageEditAllStart (void *udata);
 static bool     manageEditAllApply (void *udata);
 static bool     manageEditAllCancel (void *udata);
@@ -481,6 +487,7 @@ main (int argc, char *argv[])
   manage.musicqueueprocessflag = false;
   manage.applyadjstate = BDJ4_STATE_OFF;
   manage.impitunesstate = BDJ4_STATE_OFF;
+  manage.uict = NULL;
   manage.uiaa = NULL;
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
@@ -526,6 +533,8 @@ main (int argc, char *argv[])
     nlistSetNum (manage.options, MANAGE_CFPL_POSITION_Y, -1);
     nlistSetNum (manage.options, APPLY_ADJ_POSITION_X, -1);
     nlistSetNum (manage.options, APPLY_ADJ_POSITION_Y, -1);
+    nlistSetNum (manage.options, COPY_TAGS_POSITION_X, -1);
+    nlistSetNum (manage.options, COPY_TAGS_POSITION_Y, -1);
     nlistSetNum (manage.options, EXP_IMP_BDJ4_POSITION_X, -1);
     nlistSetNum (manage.options, EXP_IMP_BDJ4_POSITION_Y, -1);
     nlistSetStr (manage.options, MANAGE_EXP_BDJ4_DIR, NULL);
@@ -635,6 +644,7 @@ manageClosingCallback (void *udata, programstate_t programState)
   itunesFree (manage->itunes);
   samesongFree (manage->samesong);
   uiButtonFree (manage->selectButton);
+  uicopytagsFree (manage->uict);
   uiaaFree (manage->uiaa);
   uieibdj4Free (manage->uieibdj4);
   eibdj4Free (manage->eibdj4);
@@ -1120,6 +1130,7 @@ manageMainLoop (void *tmanage)
 
   uieibdj4Process (manage->uieibdj4);
   manageDbProcess (manage->managedb);
+  uicopytagsProcess (manage->uict);
 
   /* apply adjustments processing */
 
@@ -1467,6 +1478,7 @@ manageSongEditMenu (manageui_t *manage)
 
   logProcBegin (LOG_PROC, "manageSongEditMenu");
   if (! uiMenuInitialized (manage->songeditmenu)) {
+    manage->uict = uicopytagsInit (manage->wcont [MANAGE_W_WINDOW], manage->options);
     manage->uiaa = uiaaInit (manage->wcont [MANAGE_W_WINDOW], manage->options);
     manage->callbacks [MANAGE_CB_APPLY_ADJ] = callbackInitLong (
         manageApplyAdjCallback, manage);
@@ -1485,6 +1497,13 @@ manageSongEditMenu (manageui_t *manage)
         manageStartBPMCounter, manage, NULL);
     menuitem = uiMenuCreateItem (menu, tagdefs [TAG_BPM].displayname,
         manage->callbacks [MANAGE_MENU_CB_SE_BPM]);
+    uiwcontFree (menuitem);
+
+    manage->callbacks [MANAGE_MENU_CB_SE_COPY_TAGS] = callbackInit (
+        manageCopyTagsStart, manage, NULL);
+    /* CONTEXT: managementui: menu selection: song editor: copy audio tags */
+    menuitem = uiMenuCreateItem (menu, _("Copy Audio Tags"),
+        manage->callbacks [MANAGE_MENU_CB_SE_COPY_TAGS]);
     uiwcontFree (menuitem);
 
     uiMenuAddSeparator (menu);
@@ -1745,6 +1764,16 @@ manageRestoreOrigCallback (void *udata)
   manage->applyadjstate = BDJ4_STATE_START;
 
   return UICB_CONT;
+}
+
+static bool
+manageCopyTagsStart (void *udata)
+{
+  manageui_t  *manage = udata;
+  int         rc;
+
+  rc = uicopytagsDialog (manage->uict);
+  return rc;
 }
 
 /* edit all */
