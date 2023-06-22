@@ -191,7 +191,7 @@ uicopytagsCreateDialog (uict_t *uict)
       uiEntryValidateFile, NULL, UIENTRY_DELAYED);
 
   uict->callbacks [UICT_CB_SOURCE_SEL] = callbackInit (
-      selectAudioFileCallback, &uict->sourcesfcb, NULL);
+      selectAllFileCallback, &uict->sourcesfcb, NULL);
   uict->sourcesel = uiCreateButton (
       uict->callbacks [UICT_CB_SOURCE_SEL], "", NULL);
   uiButtonSetImageIcon (uict->sourcesel, "folder");

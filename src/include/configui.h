@@ -11,6 +11,7 @@
 #include "callback.h"
 #include "uiduallist.h"
 #include "uinbutil.h"
+#include "uiselectfile.h"
 
 #include "ui.h"
 
@@ -203,6 +204,7 @@ typedef struct {
     uiswitch_t    *uiswitch;
   };
   uibutton_t  *uibutton;      // for entry chooser
+  uisfcb_t    sfcb;           // for entry chooser
   int         listidx;        // for combobox, spinbox
   nlist_t     *displist;      // indexed by spinbox/combobox index
                               //    value: display

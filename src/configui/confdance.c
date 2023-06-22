@@ -30,6 +30,7 @@
 #include "pathutil.h"
 #include "slist.h"
 #include "ui.h"
+#include "uiselectfile.h"
 
 /* dance table */
 static void confuiCreateDanceTable (confuigui_t *gui);
@@ -45,7 +46,6 @@ static bool confuiDanceSpinboxTimeSigChg (void *udata);
 static void confuiDanceSpinboxChg (void *udata, int widx);
 static int  confuiDanceValidateAnnouncement (uientry_t *entry, confuigui_t *gui);
 static void confuiDanceSave (confuigui_t *gui);
-static bool confuiSelectAnnouncement (void *udata);
 static void confuiLoadDanceTypeList (confuigui_t *gui);
 
 void
@@ -141,7 +141,7 @@ confuiBuildUIEditDances (confuigui_t *gui)
   /* CONTEXT: configuration: dances: play the selected announcement before the dance is played */
   confuiMakeItemEntryChooser (gui, dvbox, szgrp, _("Announcement"),
       CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT, -1, "",
-      confuiSelectAnnouncement);
+      selectAudioFileCallback);
   uiEntrySetValidate (gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].entry,
       confuiDanceEntryAnnouncementChg, gui, UIENTRY_DELAYED);
   gui->uiitem [CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT].danceidx = DANCE_ANNOUNCE;
@@ -470,19 +470,6 @@ confuiDanceSave (confuigui_t *gui)
   /* the data is already saved in the dance list; just re-use it */
   danceSave (dances, NULL, -1);
   logProcEnd (LOG_PROC, "confuiDanceSave", "");
-}
-
-static bool
-confuiSelectAnnouncement (void *udata)
-{
-  confuigui_t *gui = udata;
-
-  logProcBegin (LOG_PROC, "confuiSelectAnnouncement");
-  confuiSelectFileDialog (gui, CONFUI_ENTRY_CHOOSE_DANCE_ANNOUNCEMENT,
-      /* CONTEXT: configuration: announcement selection dialog: audio file filter */
-      bdjoptGetStr (OPT_M_DIR_MUSIC), _("Audio Files"), "audio/*");
-  logProcEnd (LOG_PROC, "confuiSelectAnnouncement", "");
-  return UICB_CONT;
 }
 
 static void

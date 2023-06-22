@@ -153,6 +153,8 @@ main (int argc, char *argv[])
     confui.gui.uiitem [i].danceidx = DANCE_DANCE;
     confui.gui.uiitem [i].uiwidgetp = NULL;
     confui.gui.uiitem [i].callback = NULL;
+    confui.gui.uiitem [i].sfcb.entry = NULL;
+    confui.gui.uiitem [i].sfcb.window = NULL;
     confui.gui.uiitem [i].uri = NULL;
 
     if (i > CONFUI_COMBOBOX_BEGIN && i < CONFUI_COMBOBOX_MAX) {

@@ -42,6 +42,7 @@ static void selectFileCreateDialog (uiselectfile_t *selectfile,
     slist_t *filelist, const char *filetype, callback_t *cb);
 static bool selectFileSelect (void *udata, long col);
 static bool selectFileResponseHandler (void *udata, long responseid);
+static bool selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype);
 
 void
 selectFileDialog (int type, uiwcont_t *window, nlist_t *options,
@@ -117,25 +118,22 @@ bool
 selectAudioFileCallback (void *udata)
 {
   uisfcb_t    *uisfcb = udata;
-  char        *fn = NULL;
-  uiselect_t  *selectdata;
-  char        tbuff [100];
+  int         rc;
 
-  /* CONTEXT: select audio file: dialog title for selecting audio files */
-  snprintf (tbuff, sizeof (tbuff), _("Select Audio File"));
-  selectdata = uiDialogCreateSelect (uisfcb->window,
-      tbuff,
-      bdjoptGetStr (OPT_M_DIR_MUSIC),
-      uiEntryGetValue (uisfcb->entry),
+  rc = selectFileCallback (uisfcb,
       /* CONTEXT: select audio file: file selection dialog: audio file filter */
       _("Audio Files"), "audio/*");
-  fn = uiSelectFileDialog (selectdata);
-  if (fn != NULL) {
-    uiEntrySetValue (uisfcb->entry, fn);
-    mdfree (fn);
-  }
-  mdfree (selectdata);
-  return UICB_CONT;
+  return rc;
+}
+
+bool
+selectAllFileCallback (void *udata)
+{
+  uisfcb_t    *uisfcb = udata;
+  int         rc;
+
+  rc = selectFileCallback (uisfcb, NULL, NULL);
+  return rc;
 }
 
 /* internal routines */
@@ -276,6 +274,31 @@ selectFileResponseHandler (void *udata, long responseid)
   }
 
   selectFileFree (selectfile);
+  return UICB_CONT;
+}
+
+
+
+static bool
+selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype)
+{
+  char        *fn = NULL;
+  uiselect_t  *selectdata;
+  char        tbuff [100];
+
+  /* CONTEXT: select audio file: dialog title for selecting audio files */
+  snprintf (tbuff, sizeof (tbuff), _("Select Audio File"));
+  selectdata = uiDialogCreateSelect (uisfcb->window,
+      tbuff,
+      bdjoptGetStr (OPT_M_DIR_MUSIC),
+      uiEntryGetValue (uisfcb->entry),
+      disp, mimetype);
+  fn = uiSelectFileDialog (selectdata);
+  if (fn != NULL) {
+    uiEntrySetValue (uisfcb->entry, fn);
+    mdfree (fn);
+  }
+  mdfree (selectdata);
   return UICB_CONT;
 }
 

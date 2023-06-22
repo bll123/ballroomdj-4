@@ -82,7 +82,9 @@ confuiMakeItemEntryChooser (confuigui_t *gui, uiwcont_t *boxp,
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   confuiMakeItemEntryBasic (gui, hbox, szgrp, txt, widx, bdjoptIdx, disp, CONFUI_NO_INDENT, CONFUI_EXPAND);
-  gui->uiitem [widx].callback = callbackInit (dialogFunc, gui, NULL);
+  gui->uiitem [widx].sfcb.entry = gui->uiitem [widx].entry;
+  gui->uiitem [widx].sfcb.window = gui->window;
+  gui->uiitem [widx].callback = callbackInit (dialogFunc, &gui->uiitem [widx].sfcb, NULL);
   uibutton = uiCreateButton (gui->uiitem [widx].callback, "", NULL);
   gui->uiitem [widx].uibutton = uibutton;
   uiwidgetp = uiButtonGetWidgetContainer (uibutton);
