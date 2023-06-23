@@ -99,7 +99,6 @@ add_library (libbdj4launcher STATIC
 add_subdirectory (libcommon)
 add_subdirectory (libbasic)
 # static libraries for build
-add_subdirectory (libbdjregex)
 add_subdirectory (libdylib)
 add_subdirectory (liblocbdj3)
 add_subdirectory (libwebsrv)

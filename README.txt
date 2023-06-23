@@ -26,6 +26,12 @@ Converting BallroomDJ 3:
 
 Release Notes:
 
+  4.3.3:
+    MacOS Installation:
+      The macos-pre-install-macports-v12.sh script must be run.
+    Linux Installation:
+      The linux-pre-install-v6.sh script must be run.
+
   4.3.2.4:
     The Configuration / General option 'BPM' has been set to MPM.
     If you want to display beats per minute, reset this configuration

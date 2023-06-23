@@ -75,7 +75,7 @@ if [ $? -eq 0 ]; then
       --disable-static \
       --disable-examples
   make clean
-  make -j $procs LIBS="-static-libgcc -static-libstdc++"
+  make -j $procs
   make install
   make distclean
 fi

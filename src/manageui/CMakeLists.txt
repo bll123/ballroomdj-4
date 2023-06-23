@@ -55,16 +55,11 @@ if (WIN32)
   target_compile_options (bdj4dbupdate PRIVATE -mwindows)
 endif()
 target_link_libraries (bdj4dbupdate PUBLIC
-  libbdj4ati libbdjregex libbdj4 libbdj4basic libbdj4common
+  libbdj4ati libbdj4 libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   z
   m
 )
-if (WIN32)
-  target_link_libraries (bdj4dbupdate PUBLIC
-    -lregex
-  )
-endif()
 addIntlLibrary (bdj4dbupdate)
 addWinSockLibrary (bdj4dbupdate)
 

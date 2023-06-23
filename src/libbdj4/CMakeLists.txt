@@ -54,7 +54,7 @@ target_include_directories (libbdj4
   PUBLIC "${XML2_INCLUDE_DIRS}"
 )
 target_link_libraries (libbdj4 PUBLIC
-  libbdjregex libbdj4ati libbdj4basic libbdj4common
+  libbdj4ati libbdj4basic libbdj4common
   ${ICU_LDFLAGS}
   ${CURL_LDFLAGS} ${OPENSSL_LDFLAGS}
   ${GLIB_LDFLAGS}

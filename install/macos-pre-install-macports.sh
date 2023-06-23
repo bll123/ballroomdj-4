@@ -81,6 +81,10 @@ case $vers in
     fi
     skipmpinst=T
     ;;
+  14*)
+    mp_os_nm=Sonoma
+    mp_os_vers=14
+    ;;
   13*)
     mp_os_nm=Ventura
     mp_os_vers=13

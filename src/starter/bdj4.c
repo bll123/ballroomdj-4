@@ -58,7 +58,6 @@ main (int argc, char * argv[])
   bool      havetheme = false;
   bool      havescale = false;
   FILE      *fh = NULL;
-  int       rc;
 
   static struct option bdj_options [] = {
     { "bdj4altsetup",   no_argument,        NULL,   20 },
@@ -537,7 +536,7 @@ main (int argc, char * argv[])
     flags |= OS_PROC_WAIT;
     flags &= ~OS_PROC_DETACH;
   }
-  rc = osProcessStart (targv, flags, NULL, NULL);
+  osProcessStart (targv, flags, NULL, NULL);
 #if BDJ4_MEM_DEBUG
   /* report is generally not needed unless source is changed */
   //mdebugReport ();

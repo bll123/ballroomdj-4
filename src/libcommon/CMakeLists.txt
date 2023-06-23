@@ -7,6 +7,7 @@ include (../utils/bdj4macros.cmake)
 
 add_library (libbdj4common SHARED
   bdjmsg.c
+  bdjregex.c
   bdjvars.c
   callback.c
   colorutils.c
@@ -41,6 +42,12 @@ target_link_libraries (libbdj4common PUBLIC
   ${GLIB_LDFLAGS}
   m
 )
+# have to see if this is needed
+#if (WIN32)
+#  target_link_libraries (bdj4dbupdate PUBLIC
+#    -lregex
+#  )
+#endif()
 addIOKitFramework (libbdj4common)
 addIntlLibrary (libbdj4common)
 addWinSockLibrary (libbdj4common)

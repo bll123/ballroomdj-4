@@ -2,10 +2,10 @@
 # -- english/gb
 msgid ""
 msgstr ""
-"Project-Id-Version: ballroomdj-4 4.3.2.4\n"
+"Project-Id-Version: ballroomdj-4 4.3.3\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2023-05-29\n"
-"PO-Revision-Date: 2023-05-29\n"
+"POT-Creation-Date: 2023-06-23\n"
+"PO-Revision-Date: 2023-06-23\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -317,8 +317,7 @@ msgstr ""
 msgid "Audio File"
 msgstr ""
 
-#. CONTEXT: configuration: announcement selection dialog: audio file filter
-#. CONTEXT: external request: file selection dialog: audio file filter
+#. CONTEXT: select audio file: file selection dialog: audio file filter
 msgid "Audio Files"
 msgstr ""
 
@@ -411,6 +410,7 @@ msgid "Click the mouse in the blue box in time with the beat."
 msgstr ""
 
 #. CONTEXT: apply adjustment dialog: closes the dialog
+#. CONTEXT: copy tags dialog: closes the dialog
 #. CONTEXT: export/import bdj4 dialog: closes the dialog
 #. CONTEXT: external request dialog: closes the dialog
 #. CONTEXT: select file: closes the dialog
@@ -437,6 +437,7 @@ msgid "Compact the database.  Use after audio files have been deleted."
 msgstr ""
 
 #. CONTEXT: configuration file: status
+#. CONTEXT: copy audio tags: copy of audio tags completed
 #. CONTEXT: database update: status message
 msgid "Complete"
 msgstr ""
@@ -464,6 +465,12 @@ msgstr ""
 #. CONTEXT: installer: checkbox: convert the BallroomDJ 3 installation
 #, c-format
 msgid "Convert %s"
+msgstr ""
+
+#. CONTEXT: copy tags dialog: title for the dialog
+#. CONTEXT: copy tags dialog: copy audio tags button
+#. CONTEXT: managementui: menu selection: song editor: copy audio tags
+msgid "Copy Audio Tags"
 msgstr ""
 
 #. CONTEXT: manageui: failure status message
@@ -941,6 +948,10 @@ msgstr ""
 msgid "Invalid Folder"
 msgstr ""
 
+#. CONTEXT: copy audio tags: one of the files does not exist
+msgid "Invalid Selections"
+msgstr ""
+
 #. CONTEXT: configuration file: genre
 msgid "Jazz"
 msgstr ""
@@ -1200,10 +1211,6 @@ msgstr ""
 
 #. CONTEXT: configuration file: dance level
 msgid "Normal"
-msgstr ""
-
-#. CONTEXT: apply adjustments: normalize volume checkbox
-msgid "Normalize Volume"
 msgstr ""
 
 #. CONTEXT: marquee: displayed when nothing is set to be played
@@ -1593,12 +1600,16 @@ msgstr ""
 msgid "Select %s XML File"
 msgstr ""
 
+#. CONTEXT: select audio file: dialog title for selecting audio files
+#, c-format
+msgid "Select Audio File"
+msgstr ""
+
 #. CONTEXT: external request: dance drop-down
 msgid "Select Dance"
 msgstr ""
 
 #. CONTEXT: configuration: file selection dialog: window title
-#. CONTEXT: external request: file selection dialog: window title
 msgid "Select File"
 msgstr ""
 
