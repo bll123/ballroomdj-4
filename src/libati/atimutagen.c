@@ -48,6 +48,8 @@ static void atimutagenWritePythonTrailer (FILE *ofh, int tagtype, int filetype);
 
 typedef struct atisaved {
   bool        hasdata;
+  int         filetype;
+  int         tagtype;
   char        *data;
   size_t      dlen;
 } atisaved_t;
@@ -375,6 +377,8 @@ atiiSaveTags (atidata_t *atidata,
 
   atisaved = mdmalloc (sizeof (atisaved_t));
   atisaved->hasdata = false;
+  atisaved->tagtype = tagtype;
+  atisaved->filetype = filetype;
   tdata = mdmalloc (ATI_TAG_BUFF_SIZE);
 
   rc = atimutagenRunUpdate (fn, tdata, ATI_TAG_BUFF_SIZE);
@@ -426,6 +430,13 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
   }
 
   if (! atisaved->hasdata) {
+    return -1;
+  }
+
+  if (atisaved->tagtype != tagtype) {
+    return -1;
+  }
+  if (atisaved->filetype != filetype) {
     return -1;
   }
 

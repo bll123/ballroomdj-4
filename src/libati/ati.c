@@ -30,7 +30,7 @@ typedef struct ati {
   char              *(*atiiReadTags) (atidata_t *atidata, const char *ffn);
   void              (*atiiParseTags) (atidata_t *atidata, slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
   int               (*atiiWriteTags) (atidata_t *atidata, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
-  atisaved_t     *(*atiiSaveTags) (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
+  atisaved_t        *(*atiiSaveTags) (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
   int               (*atiiRestoreTags) (atidata_t *atidata, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
   void              (*atiiCleanTags) (atidata_t *atidata, const char *ffn, int tagtype, int filetype);
   atidata_t         *atidata;

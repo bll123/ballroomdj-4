@@ -28,6 +28,8 @@
 
 typedef struct atisaved {
   bool                  hasdata;
+  int                   filetype;
+  int                   tagtype;
   struct vorbis_comment *vc;
 } atisaved_t;
 
@@ -175,6 +177,8 @@ atibdj4SaveOggTags (atidata_t *atidata, const char *ffn,
   ov_clear (&ovf);
   atisaved = mdmalloc (sizeof (atisaved_t));
   atisaved->hasdata = true;
+  atisaved->tagtype = tagtype;
+  atisaved->filetype = filetype;
   atisaved->vc = newvc;
 
   return atisaved;
@@ -194,6 +198,13 @@ atibdj4RestoreOggTags (atidata_t *atidata,
   }
 
   if (! atisaved->hasdata) {
+    return;
+  }
+
+  if (atisaved->tagtype != tagtype) {
+    return;
+  }
+  if (atisaved->filetype != filetype) {
     return;
   }
 

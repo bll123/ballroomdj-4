@@ -22,9 +22,11 @@
 #include "tagdef.h"
 
 typedef struct atisaved {
-  bool                    hasdata;
-  FLAC__StreamMetadata    *vcblock;
-  bool                    haspicture;
+  bool                  hasdata;
+  int                   filetype;
+  int                   tagtype;
+  FLAC__StreamMetadata  *vcblock;
+  bool                  haspicture;
 } atisaved_t;
 
 void
@@ -218,6 +220,8 @@ atibdj4SaveFlacTags (atidata_t *atidata, const char *ffn,
 
   atisaved = mdmalloc (sizeof (atisaved_t));
   atisaved->hasdata = true;
+  atisaved->tagtype = tagtype;
+  atisaved->filetype = filetype;
   atisaved->vcblock = FLAC__metadata_object_new (FLAC__METADATA_TYPE_VORBIS_COMMENT);
   atisaved->haspicture = haspicture;
   for (FLAC__uint32 i = 0; i < block->data.vorbis_comment.num_comments; i++) {
@@ -247,6 +251,13 @@ atibdj4RestoreFlacTags (atidata_t *atidata,
   }
 
   if (! atisaved->hasdata) {
+    return;
+  }
+
+  if (atisaved->tagtype != tagtype) {
+    return;
+  }
+  if (atisaved->filetype != filetype) {
     return;
   }
 

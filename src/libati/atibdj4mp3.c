@@ -25,8 +25,10 @@
 #define MB_TAG      "http://musicbrainz.org"
 
 typedef struct atisaved {
-  bool              hasdata;
-  struct id3_tag    *id3tags;
+  bool            hasdata;
+  int             filetype;
+  int             tagtype;
+  struct id3_tag  *id3tags;
 } atisaved_t;
 
 static void atibdj4AddMP3Tag (atidata_t *atidata, nlist_t *datalist, struct id3_tag *id3tags, const char *tag, const char *val, int tagtype);
@@ -300,6 +302,8 @@ atibdj4SaveMP3Tags (atidata_t *atidata, const char *ffn,
 
   atisaved = mdmalloc (sizeof (atisaved_t));
   atisaved->hasdata = true;
+  atisaved->tagtype = tagtype;
+  atisaved->filetype = filetype;
   atisaved->id3tags = nid3tags;
 
   id3_file_close (id3file);
@@ -321,6 +325,13 @@ atibdj4RestoreMP3Tags (atidata_t *atidata,
   }
 
   if (! atisaved->hasdata) {
+    return;
+  }
+
+  if (atisaved->tagtype != tagtype) {
+    return;
+  }
+  if (atisaved->filetype != filetype) {
     return;
   }
 
