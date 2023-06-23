@@ -219,7 +219,7 @@ connProcessUnconnected (conn_t *conn)
 
 void
 connSendMessage (conn_t *conn, bdjmsgroute_t route,
-    bdjmsgmsg_t msg, char *args)
+    bdjmsgmsg_t msg, const char *args)
 {
   int         rc;
 

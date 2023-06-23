@@ -158,7 +158,7 @@ const char *bdjmsgtxt [MSG_MAX] = {
 
 size_t
 msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route,
-    bdjmsgmsg_t msg, char *args, char *msgbuff, size_t mlen)
+    bdjmsgmsg_t msg, const char *args, char *msgbuff, size_t mlen)
 {
   size_t      len;
 

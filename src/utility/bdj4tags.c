@@ -22,6 +22,8 @@
 #include "sysvars.h"
 #include "tagdef.h"
 
+static void bdj4tagsCleanup (void);
+
 int
 main (int argc, char *argv [])
 {
@@ -143,14 +145,16 @@ main (int argc, char *argv [])
     if (! fileopFileExists (infn)) {
       fprintf (stderr, "no file %s\n", infn);
       rc = AUDIOTAG_WRITE_FAILED;
-      goto finish;
+      bdj4tagsCleanup ();
+      return rc;
     }
   }
 
   if (copy && ! fileopFileExists (argv [fbidx])) {
     fprintf (stderr, "no file %s\n", argv [fbidx]);
     rc = AUDIOTAG_WRITE_FAILED;
-    goto finish;
+    bdj4tagsCleanup ();
+    return rc;
   }
 
   if (copy) {
@@ -158,12 +162,14 @@ main (int argc, char *argv [])
 
     sdata = audiotagSaveTags (infn);
     audiotagRestoreTags (argv [fbidx], sdata);
-    goto finish;
+    bdj4tagsCleanup ();
+    return rc;
   }
 
   if (cleantags) {
     audiotagCleanTags (infn);
-    goto finish;
+    bdj4tagsCleanup ();
+    return rc;
   }
 
   data = audiotagReadTags (infn);
@@ -227,7 +233,13 @@ main (int argc, char *argv [])
   }
   slistFree (wlist);
 
-finish:
+  bdj4tagsCleanup ();
+  return rc;
+}
+
+static void
+bdj4tagsCleanup (void)
+{
   tagdefCleanup ();
   bdjoptCleanup ();
   audiotagCleanup ();
@@ -237,5 +249,4 @@ finish:
   mdebugReport ();
   mdebugCleanup ();
 #endif
-  return rc;
 }

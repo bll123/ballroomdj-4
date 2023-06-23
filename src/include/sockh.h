@@ -28,7 +28,7 @@ void  sockhMainLoop (uint16_t listenPort, sockhProcessMsg_t msgFunc, sockhProces
 sockserver_t  * sockhStartServer (uint16_t listenPort);
 void  sockhCloseServer (sockserver_t *sockserver);
 void  sockhCheck (uint16_t listenPort, sockhProcessMsg_t msgProc, sockhProcessFunc_t, void *userData);
-int   sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, char *args);
+int   sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom, bdjmsgroute_t route, bdjmsgmsg_t msg, const char *args);
 void  sockhRequestClose (sockinfo_t *sockinfo);
 void  sockhCloseClients (sockinfo_t *sockinfo);
 

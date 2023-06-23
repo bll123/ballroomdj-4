@@ -97,3 +97,41 @@ atiReplaceFile (const char *ffn, const char *outfn)
   return rc;
 }
 
+void
+atiProcessVorbisComment (taglookup_t tagLookup, slist_t *tagdata,
+    int tagtype, const char *kw)
+{
+  const char  *val;
+  const char  *tagname;
+  char        ttag [300];
+
+  val = atiParseVorbisComment (kw, ttag, sizeof (ttag));
+  tagname = tagLookup (tagtype, ttag);
+  if (tagname == NULL) {
+    tagname = ttag;
+  }
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: %s %s", tagname, kw);
+  slistSetStr (tagdata, tagname, val);
+}
+
+const char *
+atiParseVorbisComment (const char *kw, char *buff, size_t sz)
+{
+  const char  *val;
+  size_t      len;
+
+  val = strstr (kw, "=");
+  if (val == NULL) {
+    return NULL;
+  }
+  len = val - kw;
+  if (len >= sz) {
+    len = sz - 1;
+  }
+  strlcpy (buff, kw, len + 1);
+  buff [len] = '\0';
+  ++val;
+
+  return val;
+}
+

@@ -83,7 +83,7 @@ sockhCloseServer (sockserver_t *sockserver)
 
 int
 sockhSendMessage (Sock_t sock, bdjmsgroute_t routefrom,
-    bdjmsgroute_t route, bdjmsgmsg_t msg, char *args)
+    bdjmsgroute_t route, bdjmsgmsg_t msg, const char *args)
 {
   char        msgbuff [BDJMSG_MAX];   // keep static to reduce latency
   size_t      len;

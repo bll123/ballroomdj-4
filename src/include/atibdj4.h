@@ -1,6 +1,7 @@
 #ifndef INC_ATIBDJ4_H
 #define INC_ATIBDJ4_H
 
+#include "ati.h"
 #include "slist.h"
 
 typedef struct atidatatag atidatatag_t;
@@ -13,10 +14,6 @@ typedef struct atidata {
   audiotaglookup_t  audioTagLookup;
   atidatatag_t      *data;
 } atidata_t;
-
-/* atibdj4.c */
-void atibdj4ProcessVorbisComment (atidata_t *atidata, slist_t *tagdata, int tagtype, const char *kw);
-const char * atibdj4ParseVorbisComment (const char *kw, char *buff, size_t sz);
 
 /* atibdj4flac.c */
 void atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata, const char *ffn, int tagtype, int *rewrite);

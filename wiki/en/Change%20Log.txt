@@ -14,6 +14,7 @@
     * Apply Adjustments: Removed normalize as it doesn't work well.
 * New Features:
     * Audio Tags: Alternate processing method (MP3, Ogg, FLAC at this time).
+    * Song Editor: Copy audio tags action.
 * Internal:
     * Code cleanup (datafile).
 

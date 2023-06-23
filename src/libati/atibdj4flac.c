@@ -73,7 +73,7 @@ atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
           FLAC__StreamMetadata_VorbisComment_Entry *entry;
 
           entry = &block->data.vorbis_comment.comments [i];
-          atibdj4ProcessVorbisComment (atidata, tagdata, tagtype,
+          atiProcessVorbisComment (atidata->tagLookup, tagdata, tagtype,
               (const char *) entry->entry);
         }
         break;

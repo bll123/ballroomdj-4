@@ -13,5 +13,8 @@ uict_t  *uicopytagsInit (uiwcont_t *windowp, nlist_t *opts);
 void    uicopytagsFree (uict_t *uict);
 bool    uicopytagsDialog (uict_t *uict);
 void    uicopytagsProcess (uict_t *uict);
+int     uicopytagsState (uict_t *uict);
+void    uicopytagsReset (uict_t *uict);
+const char * uicopytagsGetFilename (uict_t *uict);
 
 #endif /* INC_UICOPYTAGS_H */

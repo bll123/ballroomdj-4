@@ -88,7 +88,7 @@ void      connProcessUnconnected (conn_t *conn);
  * @param[in] args Any arguments to the message or NULL.
  */
 void      connSendMessage (conn_t *conn, bdjmsgroute_t route,
-              bdjmsgmsg_t msg, char *args);
+              bdjmsgmsg_t msg, const char *args);
 
 /**
  * Check and see if a connection is active.

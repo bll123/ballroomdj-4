@@ -64,7 +64,7 @@ atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata,
     const char  *kw;
 
     kw = vc->user_comments [i];
-    atibdj4ProcessVorbisComment (atidata, tagdata, tagtype, kw);
+    atiProcessVorbisComment (atidata->tagLookup, tagdata, tagtype, kw);
   }
   ov_clear (&ovf);
   return;
@@ -104,7 +104,7 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
     char        ttag [300];     /* vorbis tag name */
 
     kw = vc->user_comments [i];
-    val = atibdj4ParseVorbisComment (kw, ttag, sizeof (ttag));
+    val = atiParseVorbisComment (kw, ttag, sizeof (ttag));
     if (slistGetStr (dellist, ttag) != NULL) {
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", ttag);
       continue;

@@ -67,7 +67,7 @@ rm -f $INCTOUT
 # b) check the include file hierarchy for problems.
 echo "## checking include file hierarchy"
 > $TIN
-for fn in */*.c */*.h */ui/*.h build/config.h; do
+for fn in */*.c */*.cpp */*.m */*.h */ui/*.h build/config.h; do
   echo $fn $fn >> $TIN
   grep -E '^#include "' $fn |
       sed -e 's,^#include ",,' \

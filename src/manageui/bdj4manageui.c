@@ -13,6 +13,7 @@
 #include <math.h>
 
 #include "audioadjust.h"
+#include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4init.h"
 #include "bdj4intl.h"
@@ -246,6 +247,7 @@ typedef struct {
   int               currtimesig;
   /* song editor */
   uict_t            *uict;
+  int               ctstate;
   uiaa_t            *uiaa;
   int               aaflags;
   int               applyadjstate;
@@ -333,6 +335,7 @@ static bool     manageCopyTagsStart (void *udata);
 static bool     manageEditAllStart (void *udata);
 static bool     manageEditAllApply (void *udata);
 static bool     manageEditAllCancel (void *udata);
+static void     manageReloadSongEdit (manageui_t *manage);
 /* bpm counter */
 static bool     manageStartBPMCounter (void *udata);
 static void     manageSetBPMCounter (manageui_t *manage, song_t *song);
@@ -488,6 +491,7 @@ main (int argc, char *argv[])
   manage.applyadjstate = BDJ4_STATE_OFF;
   manage.impitunesstate = BDJ4_STATE_OFF;
   manage.uict = NULL;
+  manage.ctstate = BDJ4_STATE_OFF;
   manage.uiaa = NULL;
   for (int i = 0; i < MANAGE_CB_MAX; ++i) {
     manage.callbacks [i] = NULL;
@@ -1132,6 +1136,61 @@ manageMainLoop (void *tmanage)
   manageDbProcess (manage->managedb);
   uicopytagsProcess (manage->uict);
 
+  /* copy tags processing */
+
+  if (manage->ctstate == BDJ4_STATE_PROCESS) {
+    int   state;
+
+    state = uicopytagsState (manage->uict);
+    if (state == BDJ4_STATE_FINISH) {
+      const char  *outfn;
+      const char  *tfn;
+      song_t      *song;
+
+
+      outfn = uicopytagsGetFilename (manage->uict);
+      tfn = songutilGetRelativePath (outfn);
+      song = dbGetByName (manage->musicdb, tfn);
+      if (song != NULL) {
+        void        *data;
+        dbidx_t     rrn;
+        dbidx_t     dbidx;
+        char        tmp [40];
+
+        rrn = songGetNum (song, TAG_RRN);
+        dbidx = songGetNum (song, TAG_DBIDX);
+        data = audiotagReadTags (outfn);
+        if (data != NULL) {
+          slist_t     *tagdata;
+          int         rewrite;
+
+          tagdata = audiotagParseData (outfn, data, &rewrite);
+          if (slistGetCount (tagdata) > 0) {
+            dbWrite (manage->musicdb, tfn, tagdata, rrn);
+          }
+
+          dbLoadEntry (manage->musicdb, dbidx);
+          manageRePopulateData (manage);
+          if (manage->songeditdbidx == dbidx) {
+            manageReloadSongEdit (manage);
+          }
+          snprintf (tmp, sizeof (tmp), "%d", dbidx);
+          connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
+        }
+      }
+      // send the db entry update message
+      //   (see apply adj processing below)
+    }
+    if (state != BDJ4_STATE_WAIT) {
+      manage->ctstate = BDJ4_STATE_OFF;
+      uicopytagsReset (manage->uict);
+    }
+  }
+
+  if (manage->ctstate == BDJ4_STATE_START) {
+    manage->ctstate = BDJ4_STATE_PROCESS;
+  }
+
   /* apply adjustments processing */
 
   if (manage->applyadjstate == BDJ4_STATE_PROCESS) {
@@ -1140,14 +1199,10 @@ manageMainLoop (void *tmanage)
     changed = aaApplyAdjustments (manage->musicdb, manage->songeditdbidx, manage->aaflags);
 
     if (changed) {
-      song_t  *song = NULL;
       char    tmp [40];
 
       manageRePopulateData (manage);
-      song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-      uisongeditLoadData (manage->mmsongedit, song,
-          manage->songeditdbidx, UISONGEDIT_ALL);
-      manageSetEditMenuItems (manage);
+      manageReloadSongEdit (manage);
 
       snprintf (tmp, sizeof (tmp), "%d", manage->songeditdbidx);
       connSendMessage (manage->conn, ROUTE_STARTERUI, MSG_DB_ENTRY_UPDATE, tmp);
@@ -1593,10 +1648,9 @@ manageNewSelectionSongSel (void *udata, long dbidx)
   }
   manage->seldbidx = dbidx;
 
-  song = dbGetByIdx (manage->musicdb, dbidx);
   manage->songeditdbidx = dbidx;
-  uisongeditLoadData (manage->mmsongedit, song, dbidx, UISONGEDIT_ALL);
-  manageSetEditMenuItems (manage);
+  manageReloadSongEdit (manage);
+  song = dbGetByIdx (manage->musicdb, dbidx);
   manageSetBPMCounter (manage, song);
 
   logProcEnd (LOG_PROC, "manageNewSelectionSongSel", "");
@@ -1649,7 +1703,6 @@ static bool
 manageSongEditSaveCallback (void *udata, long dbidx)
 {
   manageui_t  *manage = udata;
-  song_t      *song = NULL;
   char        tmp [40];
 
   logProcBegin (LOG_PROC, "manageSongEditSaveCallback");
@@ -1672,10 +1725,8 @@ manageSongEditSaveCallback (void *udata, long dbidx)
   /* re-load the song into the song editor */
   /* it is unknown if called from saving a favorite or from the song editor */
   /* the overhead is minor */
-  song = dbGetByIdx (manage->musicdb, dbidx);
   manage->songeditdbidx = dbidx;
-  uisongeditLoadData (manage->mmsongedit, song, dbidx, UISONGEDIT_ALL);
-  manageSetEditMenuItems (manage);
+  manageReloadSongEdit (manage);
 
   ++manage->dbchangecount;
 
@@ -1773,6 +1824,7 @@ manageCopyTagsStart (void *udata)
   int         rc;
 
   rc = uicopytagsDialog (manage->uict);
+  manage->ctstate = BDJ4_STATE_START;
   return rc;
 }
 
@@ -1782,12 +1834,9 @@ static bool
 manageEditAllStart (void *udata)
 {
   manageui_t  *manage = udata;
-  song_t      *song;
 
   /* do this to make sure any changes to non edit-all fields are reverted */
-  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-  uisongeditLoadData (manage->mmsongedit, song, manage->songeditdbidx,
-      UISONGEDIT_EDITALL);
+  manageReloadSongEdit (manage);
   uisongeditClearChanged (manage->mmsongedit, UISONGEDIT_EDITALL);
   uisongeditEditAllSetFields (manage->mmsongedit, UISONGEDIT_EDITALL_ON);
   manage->ineditall = true;
@@ -1814,21 +1863,29 @@ static bool
 manageEditAllCancel (void *udata)
 {
   manageui_t  *manage = udata;
-  song_t      *song;
 
   if (! manage->ineditall) {
     return UICB_STOP;
   }
 
   /* revert any changes */
-  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
-  uisongeditLoadData (manage->mmsongedit, song, manage->songeditdbidx,
-      UISONGEDIT_ALL);
+  manageReloadSongEdit (manage);
   uisongeditClearChanged (manage->mmsongedit, UISONGEDIT_ALL);
   uisongeditEditAllSetFields (manage->mmsongedit, UISONGEDIT_EDITALL_OFF);
   manage->ineditall = false;
 
   return UICB_CONT;
+}
+
+static void
+manageReloadSongEdit (manageui_t *manage)
+{
+  song_t    *song;
+
+  song = dbGetByIdx (manage->musicdb, manage->songeditdbidx);
+  uisongeditLoadData (manage->mmsongedit, song,
+      manage->songeditdbidx, UISONGEDIT_ALL);
+  manageSetEditMenuItems (manage);
 }
 
 /* bpm counter */
@@ -3446,10 +3503,9 @@ manageSetDisplayPerSelection (manageui_t *manage, int id)
       dbidx = manage->seldbidx;
     }
 
-    song = dbGetByIdx (manage->musicdb, dbidx);
     manage->songeditdbidx = dbidx;
-    uisongeditLoadData (manage->mmsongedit, song, dbidx, UISONGEDIT_ALL);
-    manageSetEditMenuItems (manage);
+    manageReloadSongEdit (manage);
+    song = dbGetByIdx (manage->musicdb, dbidx);
     manageSetBPMCounter (manage, song);
   }
   logProcEnd (LOG_PROC, "manageSetDisplayPerSelection", "");

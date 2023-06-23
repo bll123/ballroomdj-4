@@ -363,7 +363,11 @@ atiiSaveTags (atidata_t *atidata,
   if (tagtype == TAG_TYPE_ID3) {
     spacer = "  ";
   }
-  fprintf (ofh, "%stags = audio.tags\n", spacer);
+  if (tagtype == TAG_TYPE_ID3) {
+    fprintf (ofh, "%stags = audiof.tags\n", spacer);
+  } else {
+    fprintf (ofh, "%stags = audio.tags\n", spacer);
+  }
 
   fprintf (ofh, "%sprint (tags)\n", spacer);
   atimutagenWritePythonTrailer (ofh, tagtype, filetype);
@@ -727,10 +731,10 @@ atimutagenWritePythonHeader (atidata_t *atidata, const char *ffn,
     fprintf (ofh, "try:\n");
     /* reads the file twice */
     /* but resolves the no-header situation */
-    fprintf (ofh, "  audio = MP3('%s')\n", ffn);
-    fprintf (ofh, "  if audio.tags is None:\n");
-    fprintf (ofh, "    audio.add_tags()\n");
-    fprintf (ofh, "    audio.save()\n");
+    fprintf (ofh, "  audiof = MP3('%s')\n", ffn);
+    fprintf (ofh, "  if audiof.tags is None:\n");
+    fprintf (ofh, "    audiof.add_tags()\n");
+    fprintf (ofh, "    audiof.save()\n");
     fprintf (ofh, "  audio = ID3('%s')\n", ffn);
   }
   if (filetype == AFILE_TYPE_FLAC) {

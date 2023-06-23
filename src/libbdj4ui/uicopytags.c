@@ -12,10 +12,12 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdj4ui.h"
 #include "bdjopt.h"
+#include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
 #include "nlist.h"
@@ -43,6 +45,7 @@ typedef struct uict {
   uibutton_t      *targetsel;
   uisfcb_t        targetsfcb;
   callback_t      *callbacks [UICT_CB_MAX];
+  int             state;
   bool            isactive : 1;
 } uict_t;
 
@@ -67,6 +70,7 @@ uicopytagsInit (uiwcont_t *windowp, nlist_t *opts)
     uict->callbacks [i] = NULL;
   }
   uict->isactive = false;
+  uict->state = BDJ4_STATE_OFF;
 
   uict->sourcesfcb.title = NULL;
   uict->sourcesfcb.entry = uict->source;
@@ -106,6 +110,7 @@ uicopytagsDialog (uict_t *uict)
   }
 
   logProcBegin (LOG_PROC, "uicopytagsDialog");
+  uict->state = BDJ4_STATE_WAIT;
   uicopytagsCreateDialog (uict);
   uiDialogShow (uict->ctDialog);
   uict->isactive = true;
@@ -129,6 +134,25 @@ uicopytagsProcess (uict_t *uict)
 
   uiEntryValidate (uict->source, false);
   uiEntryValidate (uict->target, false);
+}
+
+int
+uicopytagsState (uict_t *uict)
+{
+  return uict->state;
+}
+
+const char *
+uicopytagsGetFilename (uict_t *uict)
+{
+  return uiEntryGetValue (uict->target);
+}
+
+void
+uicopytagsReset (uict_t *uict)
+{
+  uiWidgetHide (uict->ctDialog);
+  uict->state = BDJ4_STATE_OFF;
 }
 
 /* internal routines */
@@ -240,21 +264,39 @@ uicopytagsResponseHandler (void *udata, long responseid)
 
   switch (responseid) {
     case RESPONSE_DELETE_WIN: {
-      logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: del window");
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy tags: del window");
+      /* dialog was destroyed */
       uiwcontFree (uict->ctDialog);
       uict->ctDialog = NULL;
+      uict->state = BDJ4_STATE_OFF;
       break;
     }
     case RESPONSE_CLOSE: {
-      logMsg (LOG_DBG, LOG_ACTIONS, "= action: apply adjust: close window");
-      /* dialog should be destroyed, as the buttons are re-created each time */
-      uiDialogDestroy (uict->ctDialog);
-      uiwcontFree (uict->ctDialog);
-      uict->ctDialog = NULL;
+      logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy tags: close window");
+      uiWidgetHide (uict->ctDialog);
+      uict->state = BDJ4_STATE_OFF;
       break;
     }
     case RESPONSE_APPLY: {
+      const char  *infn;
+      const char  *outfn;
+      void        *sdata;
+
       logMsg (LOG_DBG, LOG_ACTIONS, "= action: copy tags");
+      uiLabelSetText (uict->statusMsg, "");
+      infn = uiEntryGetValue (uict->source);
+      outfn = uiEntryGetValue (uict->target);
+      if (! fileopFileExists (infn) ||
+          ! fileopFileExists (outfn)) {
+        /* CONTEXT: copy audio tags: one of the files does not exist */
+        uiLabelSetText (uict->statusMsg, _("Invalid Selections"));
+        break;
+      }
+      sdata = audiotagSaveTags (infn);
+      audiotagRestoreTags (outfn, sdata);
+      /* CONTEXT: copy audio tags: copy of audio tags completed */
+      uiLabelSetText (uict->statusMsg, _("Complete"));
+      uict->state = BDJ4_STATE_FINISH;
       break;
     }
   }

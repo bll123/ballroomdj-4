@@ -215,7 +215,7 @@ extern const char *bdjmsgroutetxt [ROUTE_MAX];
 extern const char *bdjmsgtxt [MSG_MAX];
 
 size_t    msgEncode (bdjmsgroute_t routefrom, bdjmsgroute_t route,
-              bdjmsgmsg_t msg, char *args, char *msgbuff, size_t mlen);
+              bdjmsgmsg_t msg, const char *args, char *msgbuff, size_t mlen);
 void      msgDecode (char *msgbuff, bdjmsgroute_t *routefrom,
               bdjmsgroute_t *route, bdjmsgmsg_t *msg, char *args, size_t alen);
 const char *msgDebugText (bdjmsgmsg_t msg);
