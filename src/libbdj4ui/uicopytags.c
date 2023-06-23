@@ -68,8 +68,10 @@ uicopytagsInit (uiwcont_t *windowp, nlist_t *opts)
   }
   uict->isactive = false;
 
+  uict->sourcesfcb.title = NULL;
   uict->sourcesfcb.entry = uict->source;
   uict->sourcesfcb.window = uict->parentwin;
+  uict->targetsfcb.title = NULL;
   uict->targetsfcb.entry = uict->target;
   uict->targetsfcb.window = uict->parentwin;
 

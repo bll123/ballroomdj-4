@@ -15,6 +15,7 @@ enum {
 };
 
 typedef struct {
+  const char  *title;
   uientry_t   *entry;
   uiwcont_t   *window;
 } uisfcb_t;

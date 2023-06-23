@@ -286,8 +286,10 @@ selectFileCallback (uisfcb_t *uisfcb, const char *disp, const char *mimetype)
   uiselect_t  *selectdata;
   char        tbuff [100];
 
-  /* CONTEXT: select audio file: dialog title for selecting audio files */
-  snprintf (tbuff, sizeof (tbuff), _("Select Audio File"));
+  if (uisfcb->title == NULL) {
+    /* CONTEXT: select audio file: dialog title for selecting audio files */
+    snprintf (tbuff, sizeof (tbuff), _("Select Audio File"));
+  }
   selectdata = uiDialogCreateSelect (uisfcb->window,
       tbuff,
       bdjoptGetStr (OPT_M_DIR_MUSIC),

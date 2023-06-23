@@ -96,6 +96,7 @@ uiextreqInit (uiwcont_t *windowp, musicdb_t *musicdb, nlist_t *opts)
   uiextreq->isactive = false;
   uiextreq->musicdb = musicdb;
 
+  uiextreq->audiofilesfcb.title = NULL;
   uiextreq->audiofilesfcb.entry = uiextreq->audioFileEntry;
   uiextreq->audiofilesfcb.window = uiextreq->parentwin;
 
