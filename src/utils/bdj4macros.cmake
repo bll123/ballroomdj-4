@@ -45,8 +45,7 @@ macro (updateRPath name)
     add_custom_command(TARGET ${name}
         POST_BUILD
         COMMAND
-          patchelf
-              --set-rpath \$ORIGIN:\$ORIGIN/../plocal/lib
+          ${PROJECT_SOURCE_DIR}/utils/linuxfixrpath.sh
               $<TARGET_FILE:${name}>
         VERBATIM
     )

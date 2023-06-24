@@ -16,6 +16,8 @@ TRIMSILENCE_THRESHOLD
 ..-37
 #
 # normalize volume
+# At this time, these values are not used.
+# Normalization did not work well, and was removed.
 #
 # normvol-target : double (-10.0)
 # normvol-max : double (-1.0)

@@ -105,6 +105,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
   char        fullfn [MAXPATHLEN];
   char        outfn [MAXPATHLEN];
   bool        changed = false;
+  void        *savedtags = NULL;
 
   song = dbGetByIdx (musicdb, dbidx);
   if (song == NULL) {
@@ -113,6 +114,7 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
 
   songfn = songGetStr (song, TAG_FILE);
   infn = songutilFullFileName (songfn);
+
   strlcpy (fullfn, infn, sizeof (fullfn));
   snprintf (origfn, sizeof (origfn), "%s%s",
       infn, bdjvarsGetStr (BDJV_ORIGINAL_EXT));
@@ -159,6 +161,10 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
       (int) pi->flen, pi->filename);
   pathInfoFree (pi);
   dataFree (infn);
+
+  /* ffmpeg (et.al.) does not handle all tags properly. */
+  /* save all the original tags */
+  savedtags = audiotagSaveTags (fullfn);
 
   /* start with the input as the original filename */
   infn = origfn;
@@ -214,8 +220,14 @@ aaApplyAdjustments (musicdb_t *musicdb, dbidx_t dbidx, int aaflags)
   }
 
   if (changed) {
+    /* ffmpeg (et.al.) does not handle all tags properly. */
+    /* restore all the original tags */
+    audiotagRestoreTags (fullfn, savedtags);
+    savedtags = NULL;
+
     songWriteDB (musicdb, dbidx);
   }
+  dataFree (savedtags);
 
   return changed;
 }

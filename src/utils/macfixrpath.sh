@@ -7,6 +7,7 @@ fi
 
 target=$1
 
+echo "== $target : library paths updated" >&2
 install_name_tool \
   -change "@rpath/libbdj4ati.dylib" "@executable_path/libbdj4ati.dylib" \
   -change "@rpath/libbdj4basic.dylib" "@executable_path/libbdj4basic.dylib" \
@@ -40,7 +41,6 @@ for l in libicudata libicui18n libicuuc \
 done
 
 if [[ $count -gt 0 ]]; then
-  echo "== $target : library paths updated" >&2
   cmd+=" $target"
   eval $cmd
 fi

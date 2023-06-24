@@ -36,16 +36,18 @@ dyInterfaceList (const char *pfx, const char *funcnm)
     if (strncmp (fn, pfx, strlen (pfx)) == 0) {
       pathbldMakePath (dlpath, sizeof (dlpath), fn, "", PATHBLD_MP_DIR_EXEC);
       dlHandle = dylibLoad (dlpath);
-      descProc = dylibLookup (dlHandle, funcnm);
-      if (descProc != NULL) {
-        desc = descProc ();
-        if (desc != NULL) {
-          strlcpy (tmp, fn, sizeof (tmp));
-          tmp [strlen (tmp) - strlen (sysvarsGetStr (SV_SHLIB_EXT))] = '\0';
-          slistSetStr (interfaces, desc, tmp);
+      if (dlHandle != NULL) {
+        descProc = dylibLookup (dlHandle, funcnm);
+        if (descProc != NULL) {
+          desc = descProc ();
+          if (desc != NULL) {
+            strlcpy (tmp, fn, sizeof (tmp));
+            tmp [strlen (tmp) - strlen (sysvarsGetStr (SV_SHLIB_EXT))] = '\0';
+            slistSetStr (interfaces, desc, tmp);
+          }
         }
+        dylibClose (dlHandle);
       }
-      dylibClose (dlHandle);
     }
   }
   slistFree (files);

@@ -84,7 +84,7 @@ fi
 # cp -pf templates/img/*.svg img/profile00
 
 if [[ $tag == linux || $tag == macos ]]; then
-  rsync -aS --delete packages/icu/lib plocal
+  rsync -aS packages/icu/lib plocal
   rm -f plocal/lib/libicutest* plocal/lib/libicutu*
   rm -rf plocal/lib/pkgconfig plocal/lib/icu
 fi

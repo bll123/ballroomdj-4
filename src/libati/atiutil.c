@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
+#include <ctype.h>
 
 #include "ati.h"
 #include "bdj4.h"
@@ -50,24 +51,40 @@ atiParseNumberPair (const char *data, int *a, int *b)
   *b = 0;
 
   /* apple style track number */
-  if (*data == '(') {
-    p = data;
+  p = data;
+  while (*p == ' ') {
     ++p;
-    *a = atoi (p);
-    p = strstr (p, " ");
-    if (p != NULL) {
-      ++p;
-      *b = atoi (p);
+  }
+
+  if (*p == '(') {
+    ++p;
+    if (isdigit (*p)) {
+      *a = atoi (p);
+      p = strstr (p, " ");
+      if (p != NULL) {
+        ++p;
+        *b = atoi (p);
+      }
     }
     return;
   }
 
   /* track/total style */
-  p = strstr (data, "/");
-  *a = atoi (data);
-  if (p != NULL) {
-    ++p;
-    *b = atoi (p);
+  if (isdigit (*p)) {
+    p = strstr (data, "/");
+    *a = atoi (data);
+    if (p != NULL) {
+      ++p;
+      *b = atoi (p);
+    }
+  }
+
+  /* and do a reasonableness check */
+  if (*a < 0 || *a > 5000) {
+    *a = 0;
+  }
+  if (*b < 0 || *b > 5000) {
+    *b = 0;
   }
 }
 

@@ -87,6 +87,9 @@ songutilConvAdjustFlags (datafileconv_t *conv)
       if (*str == SONG_ADJUST_STR_ADJUST) {
         num |= SONG_ADJUST_ADJUST;
       }
+      if (*str == SONG_ADJUST_STR_TEST) {
+        num |= SONG_ADJUST_TEST;
+      }
       ++str;
     }
 
@@ -115,6 +118,9 @@ songutilConvAdjustFlags (datafileconv_t *conv)
       }
       if ((num & SONG_ADJUST_NORM) == SONG_ADJUST_NORM) {
         *str++ = SONG_ADJUST_STR_NORM;
+      }
+      if ((num & SONG_ADJUST_TEST) == SONG_ADJUST_TEST) {
+        *str++ = SONG_ADJUST_STR_TEST;
       }
     }
     *str = '\0';
