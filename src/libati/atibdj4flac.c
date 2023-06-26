@@ -27,7 +27,8 @@ typedef struct atisaved {
   int                   filetype;
   int                   tagtype;
   FLAC__StreamMetadata  *vcblock;
-  bool                  haspicture;
+  char                  *origfn;
+  bool                  hasotherdata;
 } atisaved_t;
 
 static void atibdj4FlacAddVorbisComment (FLAC__StreamMetadata *block, FLAC__StreamMetadata_VorbisComment_Entry *entry, int tagkey, const char *tagname, const char *val);
@@ -49,8 +50,10 @@ atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
   FLAC__metadata_iterator_init (iterator, chain);
   cont = true;
   while (cont) {
-    block = FLAC__metadata_iterator_get_block (iterator);
-    switch (block->type) {
+    FLAC__MetadataType      type;
+
+    type = FLAC__metadata_iterator_get_block_type (iterator);
+    switch (type) {
       case FLAC__METADATA_TYPE_PICTURE:
       case FLAC__METADATA_TYPE_CUESHEET:
       case FLAC__METADATA_TYPE_SEEKTABLE:
@@ -62,6 +65,7 @@ atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
         int64_t   dur;
         char      tmp [40];
 
+        block = FLAC__metadata_iterator_get_block (iterator);
         /* want duration in milliseconds */
         dur = block->data.stream_info.total_samples * 1000;
         dur /= block->data.stream_info.sample_rate;
@@ -74,6 +78,7 @@ atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
         break;
       }
       case FLAC__METADATA_TYPE_VORBIS_COMMENT: {
+        block = FLAC__metadata_iterator_get_block (iterator);
         for (FLAC__uint32 i = 0; i < block->data.vorbis_comment.num_comments; i++) {
           FLAC__StreamMetadata_VorbisComment_Entry *entry;
 
@@ -120,8 +125,11 @@ atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
   FLAC__metadata_iterator_init (iterator, chain);
   cont = true;
   while (cont) {
-    block = FLAC__metadata_iterator_get_block (iterator);
-    if (block->type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
+    FLAC__MetadataType      type;
+
+    type = FLAC__metadata_iterator_get_block_type (iterator);
+    if (type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
+      block = FLAC__metadata_iterator_get_block (iterator);
       break;
     }
     cont = FLAC__metadata_iterator_next (iterator);
@@ -186,7 +194,7 @@ atibdj4SaveFlacTags (atidata_t *atidata, const char *ffn,
   FLAC__StreamMetadata    *block = NULL;
   FLAC__Metadata_Iterator *iterator = NULL;
   bool                    cont;
-  bool                    haspicture = false;
+  bool                    hasotherdata = false;
 
   chain = FLAC__metadata_chain_new ();
   FLAC__metadata_chain_read (chain, ffn);
@@ -197,26 +205,18 @@ atibdj4SaveFlacTags (atidata_t *atidata, const char *ffn,
   FLAC__metadata_iterator_init (iterator, chain);
   cont = true;
   while (cont) {
-    FLAC__StreamMetadata    *tblock;
+    FLAC__MetadataType      type;
 
-    tblock = FLAC__metadata_iterator_get_block (iterator);
-    if (tblock->type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
-      block = tblock;
-      if (haspicture) {
-        break;
-      }
+    type = FLAC__metadata_iterator_get_block_type (iterator);
+    if (type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
+      block = FLAC__metadata_iterator_get_block (iterator);
     }
-    if (tblock->type == FLAC__METADATA_TYPE_PICTURE) {
-      haspicture = true;
-      if (block != NULL) {
-        break;
-      }
+    if (type == FLAC__METADATA_TYPE_PICTURE ||
+        type == FLAC__METADATA_TYPE_CUESHEET ||
+        type == FLAC__METADATA_TYPE_APPLICATION) {
+      hasotherdata = true;
     }
     cont = FLAC__metadata_iterator_next (iterator);
-  }
-
-  if (block == NULL) {
-    return NULL;
   }
 
   atisaved = mdmalloc (sizeof (atisaved_t));
@@ -224,12 +224,16 @@ atibdj4SaveFlacTags (atidata_t *atidata, const char *ffn,
   atisaved->tagtype = tagtype;
   atisaved->filetype = filetype;
   atisaved->vcblock = FLAC__metadata_object_new (FLAC__METADATA_TYPE_VORBIS_COMMENT);
-  atisaved->haspicture = haspicture;
-  for (FLAC__uint32 i = 0; i < block->data.vorbis_comment.num_comments; i++) {
-    FLAC__StreamMetadata_VorbisComment_Entry *entry;
+  atisaved->hasotherdata = hasotherdata;
+  atisaved->origfn = mdstrdup (ffn);
 
-    entry = &block->data.vorbis_comment.comments [i];
-    FLAC__metadata_object_vorbiscomment_append_comment (atisaved->vcblock, *entry, true);
+  if (block != NULL) {
+    for (FLAC__uint32 i = 0; i < block->data.vorbis_comment.num_comments; i++) {
+      FLAC__StreamMetadata_VorbisComment_Entry *entry;
+
+      entry = &block->data.vorbis_comment.comments [i];
+      FLAC__metadata_object_vorbiscomment_append_comment (atisaved->vcblock, *entry, true);
+    }
   }
 
   FLAC__metadata_iterator_delete (iterator);
@@ -246,6 +250,7 @@ atibdj4RestoreFlacTags (atidata_t *atidata,
   FLAC__StreamMetadata    *block = NULL;
   FLAC__Metadata_Iterator *iterator = NULL;
   bool                    cont;
+  bool                    done;
 
   if (atisaved == NULL) {
     return;
@@ -269,15 +274,79 @@ atibdj4RestoreFlacTags (atidata_t *atidata,
 
   /* find the comment block */
   iterator = FLAC__metadata_iterator_new ();
-  FLAC__metadata_iterator_init (iterator, chain);
-  cont = true;
-  while (cont) {
-    block = FLAC__metadata_iterator_get_block (iterator);
-    if (block->type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
-      break;
+  done = false;
+  while (! done) {
+    FLAC__metadata_iterator_init (iterator, chain);
+
+    cont = true;
+    while (cont) {
+      FLAC__MetadataType      type;
+
+      type = FLAC__metadata_iterator_get_block_type (iterator);
+      if (type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
+        block = FLAC__metadata_iterator_get_block (iterator);
+      }
+      if (atisaved->hasotherdata &&
+          (type == FLAC__METADATA_TYPE_PICTURE ||
+          type == FLAC__METADATA_TYPE_CUESHEET ||
+          type == FLAC__METADATA_TYPE_APPLICATION)) {
+        FLAC__metadata_iterator_delete_block (iterator, true);
+        /* the iterator is no longer valid, restart the iterator loop */
+        done = false;
+        break;
+      }
+      cont = FLAC__metadata_iterator_next (iterator);
+      if (! cont) {
+        done = true;
+      }
     }
-    cont = FLAC__metadata_iterator_next (iterator);
-  }
+  } /* not done */
+
+  /* get all the padding to the end */
+  FLAC__metadata_chain_sort_padding (chain);
+
+  if (atisaved->hasotherdata) {
+    FLAC__Metadata_Chain    *ochain = NULL;
+    FLAC__Metadata_Iterator *oiterator = NULL;
+
+    ochain = FLAC__metadata_chain_new ();
+    if (! FLAC__metadata_chain_read (ochain, atisaved->origfn)) {
+      return;
+    }
+
+    /* the iterator does not appear to be valid any longer, re-init */
+    /* and skip to the end */
+    FLAC__metadata_iterator_init (iterator, chain);
+    while (FLAC__metadata_iterator_next (iterator)) {
+      ;
+    }
+
+    oiterator = FLAC__metadata_iterator_new ();
+    FLAC__metadata_iterator_init (oiterator, ochain);
+    cont = true;
+    while (cont) {
+      FLAC__MetadataType      type;
+
+      type = FLAC__metadata_iterator_get_block_type (oiterator);
+      if (type == FLAC__METADATA_TYPE_PICTURE ||
+          type == FLAC__METADATA_TYPE_CUESHEET ||
+          type == FLAC__METADATA_TYPE_APPLICATION) {
+        FLAC__StreamMetadata    *oblock = NULL;
+        FLAC__StreamMetadata    *nblock = NULL;
+
+        oblock = FLAC__metadata_iterator_get_block (oiterator);
+        nblock = FLAC__metadata_object_clone (oblock);
+        if (! FLAC__metadata_iterator_insert_block_after (iterator, nblock)) {
+          logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: unable to insert data block");
+          break;
+        }
+      }
+      cont = FLAC__metadata_iterator_next (oiterator);
+    }
+
+    FLAC__metadata_iterator_delete (oiterator);
+    FLAC__metadata_chain_delete (ochain);
+  } /* has other (picture, application, cuesheet) data */
 
   if (block == NULL) {
     /* if the comment block was not found, create a new one */
@@ -305,12 +374,13 @@ atibdj4RestoreFlacTags (atidata_t *atidata,
   FLAC__metadata_iterator_delete (iterator);
   FLAC__metadata_chain_delete (chain);
 
-  if (atisaved->haspicture) {
+  if (atisaved->hasotherdata) {
     /* in this case, the entire file must be re-written */
   }
 
   FLAC__metadata_object_delete (atisaved->vcblock);
   atisaved->hasdata = false;
+  dataFree (atisaved->origfn);
   mdfree (atisaved);
   return;
 }
@@ -334,8 +404,11 @@ atibdj4CleanFlacTags (atidata_t *atidata,
   FLAC__metadata_iterator_init (iterator, chain);
   cont = true;
   while (cont) {
-    block = FLAC__metadata_iterator_get_block (iterator);
-    if (block->type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
+    FLAC__MetadataType      type;
+
+    type = FLAC__metadata_iterator_get_block_type (iterator);
+    if (type == FLAC__METADATA_TYPE_VORBIS_COMMENT) {
+      block = FLAC__metadata_iterator_get_block (iterator);
       break;
     }
     cont = FLAC__metadata_iterator_next (iterator);
