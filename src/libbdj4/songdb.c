@@ -38,7 +38,6 @@ songWriteDB (musicdb_t *musicdb, dbidx_t dbidx)
 void
 songWriteDBSong (musicdb_t *musicdb, song_t *song)
 {
-fprintf (stderr, "song-write-db-song\n");
   if (song != NULL) {
     if (! songIsChanged (song)) {
       return;
@@ -66,7 +65,6 @@ songWriteAudioTags (song_t *song)
 
   ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
   data = audiotagReadTags (ffn);
-fprintf (stderr, "song-write-audio-tags: %p\n", data);
   tagdata = audiotagParseData (ffn, data, &rewrite);
   mdfree (data);
   newtaglist = songTagList (song);

@@ -114,7 +114,6 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
     val = atiParseVorbisComment (kw, ttag, sizeof (ttag));
 
     if (slistGetStr (dellist, ttag) != NULL) {
-fprintf (stderr, "del %s\n", ttag);
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", ttag);
       continue;
     }
@@ -130,12 +129,10 @@ fprintf (stderr, "del %s\n", ttag);
       }
 
       val = slistGetStr (updatelist, ttag);
-fprintf (stderr, "upd %s %s\n", ttag, val);
       atibdj4OggAddVorbisComment (&newvc, tagkey, ttag, val);
       slistSetNum (upddone, ttag, 1);
     } else {
       /* the tag has not changed, or is unknown to bdj4 */
-fprintf (stderr, "no-chg %s\n", kw);
       vorbis_comment_add (&newvc, kw);
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: existing: %s", kw);
     }
@@ -155,7 +152,6 @@ fprintf (stderr, "no-chg %s\n", kw);
     }
 
     tval = slistGetStr (updatelist, key);
-fprintf (stderr, "new %s %s\n", key, tval);
     atibdj4OggAddVorbisComment (&newvc, tagkey, key, tval);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: new: %s=%s", key, tval);
   }

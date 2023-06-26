@@ -148,7 +148,6 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
   logProcBegin (LOG_PROC, "audiotagWriteTags");
 
   writetags = bdjoptGetNum (OPT_G_WRITETAGS);
-fprintf (stderr, "at: write-tags: %d\n", writetags);
   if (writetags == WRITE_TAGS_NONE) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "write-tags-none");
     logProcEnd (LOG_PROC, "audiotagsWriteTags", "write-none");

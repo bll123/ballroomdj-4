@@ -258,7 +258,6 @@ dbWriteSong (musicdb_t *musicdb, song_t *song)
   bool      rc;
   time_t    currtime;
 
-fprintf (stderr, "db-write-song\n");
   if (song == NULL) {
     return 0;
   }

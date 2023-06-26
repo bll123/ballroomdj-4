@@ -132,7 +132,6 @@ atiWriteTags (ati_t *ati, const char *ffn,
     slist_t *updatelist, slist_t *dellist, nlist_t *datalist,
     int tagtype, int filetype)
 {
-fprintf (stderr, "ati: write-tags: %d %d\n", tagtype, filetype);
   if (ati != NULL && ati->atiiWriteTags != NULL) {
     return ati->atiiWriteTags (ati->atidata, ffn,
         updatelist, dellist, datalist,
