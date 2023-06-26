@@ -16,6 +16,7 @@
 
 #include "ati.h"
 #include "atibdj4.h"
+#include "audiofile.h"
 #include "log.h"
 #include "mdebug.h"
 #include "slist.h"
@@ -28,6 +29,8 @@ typedef struct atisaved {
   FLAC__StreamMetadata  *vcblock;
   bool                  haspicture;
 } atisaved_t;
+
+static void atibdj4FlacAddVorbisComment (FLAC__StreamMetadata *block, FLAC__StreamMetadata_VorbisComment_Entry *entry, int tagkey, const char *tagname, const char *val);
 
 void
 atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
@@ -75,7 +78,7 @@ atibdj4ParseFlacTags (atidata_t *atidata, slist_t *tagdata,
           FLAC__StreamMetadata_VorbisComment_Entry *entry;
 
           entry = &block->data.vorbis_comment.comments [i];
-          atiProcessVorbisComment (atidata->tagLookup, tagdata, tagtype,
+          atiProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype,
               (const char *) entry->entry);
         }
         break;
@@ -103,7 +106,10 @@ atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
   const char              *key;
   slistidx_t              iteridx;
   bool                    cont;
+  int                     writetags;
+  int                     tagkey;
 
+  writetags = atidata->writetags;
   chain = FLAC__metadata_chain_new ();
   if (! FLAC__metadata_chain_read (chain, ffn)) {
     return -1;
@@ -136,6 +142,11 @@ atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
   /* when updating, remove the entry from the vorbis comment first */
   slistStartIterator (updatelist, &iteridx);
   while ((key = slistIterateKey (updatelist, &iteridx)) != NULL) {
+    tagkey = atidata->tagCheck (writetags, tagtype, key, AF_REWRITE_NONE);
+    if (tagkey < 0) {
+      continue;
+    }
+
     FLAC__metadata_object_vorbiscomment_remove_entries_matching (block, key);
   }
   slistStartIterator (dellist, &iteridx);
@@ -149,22 +160,12 @@ atibdj4WriteFlacTags (atidata_t *atidata, const char *ffn,
   while ((key = slistIterateKey (updatelist, &iteridx)) != NULL) {
     FLAC__StreamMetadata_VorbisComment_Entry  entry;
 
-    if (! FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair (
-        &entry, key, slistGetStr (updatelist, key))) {
-      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: invalid data: %s %s", key, slistGetStr (updatelist, key));
-      continue;
-    }
-    entry.length = strlen ((const char *) entry.entry);
-    if (! FLAC__format_vorbiscomment_entry_is_legal (entry.entry, entry.length)) {
-      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: not legal: %s %s", key, slistGetStr (updatelist, key));
+    tagkey = atidata->tagCheck (writetags, tagtype, key, AF_REWRITE_NONE);
+    if (tagkey < 0) {
       continue;
     }
 
-    if (! FLAC__metadata_object_vorbiscomment_append_comment (
-        block, entry, /*copy*/ false)) {
-      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: unable to append: %s %s", key, slistGetStr (updatelist, key));
-      continue;
-    }
+    atibdj4FlacAddVorbisComment (block, &entry, tagkey, key, slistGetStr (updatelist, key));
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: update: %s=%s", key, slistGetStr (updatelist, key));
   }
 
@@ -365,5 +366,39 @@ void
 atibdj4LogFlacVersion (void)
 {
   logMsg (LOG_DBG, LOG_INFO, "libflac version %s", FLAC__VERSION_STRING);
+}
+
+static void
+atibdj4FlacAddVorbisComment (FLAC__StreamMetadata *block,
+    FLAC__StreamMetadata_VorbisComment_Entry *entry,
+    int tagkey, const char *tagname, const char *val)
+{
+  slist_t     *vallist;
+  slistidx_t  viteridx;
+  const char  *tval;
+
+  vallist = atiSplitVorbisComment (tagkey, tagname, val);
+  slistStartIterator (vallist, &viteridx);
+  while ((tval = slistIterateKey (vallist, &viteridx)) != NULL) {
+    if (! FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair (
+        entry, tagname, tval)) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: invalid data: %s %s", tagname, val);
+      return;
+    }
+
+    entry->length = strlen ((const char *) entry->entry);
+    if (! FLAC__format_vorbiscomment_entry_is_legal (entry->entry, entry->length)) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: not legal: %s %s", tagname, val);
+      return;
+    }
+
+    if (! FLAC__metadata_object_vorbiscomment_append_comment (
+        block, *entry, /*copy*/ false)) {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ERR: flac: write: unable to append: %s %s", tagname, val);
+      return;
+    }
+  }
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: update: %s=%s", tagname, val);
+  slistFree (vallist);
 }
 

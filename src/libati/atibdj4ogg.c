@@ -20,6 +20,7 @@
 
 #include "ati.h"
 #include "atibdj4.h"
+#include "audiofile.h"
 #include "fileop.h"
 #include "log.h"
 #include "mdebug.h"
@@ -35,6 +36,7 @@ typedef struct atisaved {
 
 static int  atibdj4WriteOggPage (ogg_page *p, FILE *fp);
 static int  atibdj4WriteOggFile (const char *ffn, struct vorbis_comment *newvc);
+static void atibdj4OggAddVorbisComment (struct vorbis_comment *newvc, int tagkey, const char *tagname, const char *val);
 
 void
 atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata,
@@ -66,7 +68,7 @@ atibdj4ParseOggTags (atidata_t *atidata, slist_t *tagdata,
     const char  *kw;
 
     kw = vc->user_comments [i];
-    atiProcessVorbisComment (atidata->tagLookup, tagdata, tagtype, kw);
+    atiProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype, kw);
   }
   ov_clear (&ovf);
   return;
@@ -84,7 +86,10 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
   slistidx_t            iteridx;
   slist_t               *upddone;
   const char            *key;
+  int                   writetags;
+  int                   tagkey;
 
+  writetags = atidata->writetags;
   rc = ov_fopen (ffn, &ovf);
   if (rc < 0) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "ov_fopen %d %s", rc, ffn);
@@ -107,17 +112,30 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
 
     kw = vc->user_comments [i];
     val = atiParseVorbisComment (kw, ttag, sizeof (ttag));
+
     if (slistGetStr (dellist, ttag) != NULL) {
+fprintf (stderr, "del %s\n", ttag);
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: del: %s", ttag);
       continue;
     }
+
     if (slistGetStr (updatelist, ttag) != NULL) {
+      if (slistGetNum (upddone, ttag) == 1) {
+        continue;
+      }
+
+      tagkey = atidata->tagCheck (writetags, tagtype, ttag, AF_REWRITE_NONE);
+      if (tagkey < 0) {
+        continue;
+      }
+
       val = slistGetStr (updatelist, ttag);
-      vorbis_comment_add_tag (&newvc, ttag, val);
-      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: update: %s=%s", ttag, val);
+fprintf (stderr, "upd %s %s\n", ttag, val);
+      atibdj4OggAddVorbisComment (&newvc, tagkey, ttag, val);
       slistSetNum (upddone, ttag, 1);
     } else {
       /* the tag has not changed, or is unknown to bdj4 */
+fprintf (stderr, "no-chg %s\n", kw);
       vorbis_comment_add (&newvc, kw);
       logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: existing: %s", kw);
     }
@@ -125,11 +143,21 @@ atibdj4WriteOggTags (atidata_t *atidata, const char *ffn,
 
   slistStartIterator (updatelist, &iteridx);
   while ((key = slistIterateKey (updatelist, &iteridx)) != NULL) {
+    const char  *tval;
+
     if (slistGetNum (upddone, key) > 0) {
       continue;
     }
-    vorbis_comment_add_tag (&newvc, key, slistGetStr (updatelist, key));
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: new: %s=%s", key, slistGetStr (updatelist, key));
+
+    tagkey = atidata->tagCheck (writetags, tagtype, key, AF_REWRITE_NONE);
+    if (tagkey < 0) {
+      continue;
+    }
+
+    tval = slistGetStr (updatelist, key);
+fprintf (stderr, "new %s %s\n", key, tval);
+    atibdj4OggAddVorbisComment (&newvc, tagkey, key, tval);
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: new: %s=%s", key, tval);
   }
   slistFree (upddone);
 
@@ -559,4 +587,20 @@ cleanup_label:
   return rc;
 }
 
+static void
+atibdj4OggAddVorbisComment (struct vorbis_comment *newvc, int tagkey,
+    const char *tagname, const char *val)
+{
+  slist_t     *vallist;
+  slistidx_t  viteridx;
+  const char  *tval;
+
+  vallist = atiSplitVorbisComment (tagkey, tagname, val);
+  slistStartIterator (vallist, &viteridx);
+  while ((tval = slistIterateKey (vallist, &viteridx)) != NULL) {
+    vorbis_comment_add_tag (newvc, tagname, tval);
+  }
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write-raw: update: %s=%s", tagname, val);
+  slistFree (vallist);
+}
 

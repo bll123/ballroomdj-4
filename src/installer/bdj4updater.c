@@ -93,6 +93,10 @@ enum {
   /* set-mpm changes the configure/general/bpm setting to mpm */
   /* only want to do this once */
   UPD_SET_MPM,
+  /* 2023-6-24 4.3.3 */
+  /* there are bad disc numbers present in some data, and some were */
+  /* converted to negative numbers */
+  UPD_FIX_DB_DISCNUM,
   UPD_MAX,
 };
 enum {
@@ -107,6 +111,7 @@ static datafilekey_t upddfkeys[] = {
   { "FIX_AF_TAGS",      UPD_FIX_AF_TAGS,    VALUE_NUM, NULL, DF_NORM },
   { "FIX_DANCE_MPM",    UPD_FIX_DANCE_MPM,  VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_ADD_DATE",  UPD_FIX_DB_ADDDATE, VALUE_NUM, NULL, DF_NORM },
+  { "FIX_DB_DISCNUM",   UPD_FIX_DB_DISCNUM, VALUE_NUM, NULL, DF_NORM },
   { "FIX_DB_MPM",       UPD_FIX_DB_MPM,     VALUE_NUM, NULL, DF_NORM },
   { "FIX_PL_MPM",       UPD_FIX_PL_MPM,     VALUE_NUM, NULL, DF_NORM },
 };
@@ -140,6 +145,7 @@ main (int argc, char *argv [])
   bool        bdjoptchanged = false;
   int         haveitunes = 0;
   int         statusflags [UPD_MAX];
+  int         counters [UPD_MAX];
   bool        processflags [UPD_MAX];
   bool        processaf = false;
   bool        processdb = false;
@@ -203,6 +209,7 @@ main (int argc, char *argv [])
 
   for (int i = 0; i < UPD_MAX; ++i) {
     processflags [i] = false;
+    counters [i] = 0;
   }
 
   flags = BDJ4_INIT_NO_LOCK | BDJ4_INIT_NO_DB_LOAD | BDJ4_INIT_NO_DATAFILE_LOAD;
@@ -673,6 +680,7 @@ main (int argc, char *argv [])
         if (doplsave) {
           logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : update pl %s", plnm);
           playlistSave (pl, NULL);
+          counters [UPD_FIX_PL_MPM] += 1;
         }
         playlistFree (pl);
       }
@@ -734,6 +742,11 @@ main (int argc, char *argv [])
   if (statusflags [UPD_FIX_DB_MPM] == UPD_NOT_DONE) {
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.3.2.4 : process db : fix db mpm");
     processflags [UPD_FIX_DB_MPM] = true;
+    processdb = true;
+  }
+  if (statusflags [UPD_FIX_DB_DISCNUM] == UPD_NOT_DONE) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.3.3 : process db : fix db discnum");
+    processflags [UPD_FIX_DB_DISCNUM] = true;
     processdb = true;
   }
 
@@ -798,6 +811,7 @@ main (int argc, char *argv [])
         if (didx >= 0 && obpmval > 0 && obpmval > thighmpm + 10) {
           newbpmval = updaterGetMPMValue (song);
           if (newbpmval > 0) {
+            counters [UPD_FIX_AF_MPM] += 1;
             process = true;
             updmpm = true;
           }
@@ -865,6 +879,7 @@ main (int argc, char *argv [])
           tmutilToDate (ctime * 1000, tbuff, sizeof (tbuff));
           songSetStr (song, TAG_DBADDDATE, tbuff);
           dowrite = true;
+          counters [UPD_FIX_DB_ADDDATE] += 1;
           logMsg (LOG_INSTALL, LOG_IMPORTANT, "fix dbadddate: %s", ffn);
           mdfree (ffn);
         }
@@ -877,6 +892,18 @@ main (int argc, char *argv [])
         if (newbpmval > 0) {
           songSetNum (song, TAG_BPM, newbpmval);
           dowrite = true;
+          counters [UPD_FIX_DB_MPM] += 1;
+        }
+      }
+
+      if (processflags [UPD_FIX_DB_DISCNUM]) {
+        int   val;
+
+        val = songGetNum (song, TAG_DISCNUMBER);
+        if (val < 0 || val > 5000) {
+          songSetNum (song, TAG_DISCNUMBER, 0);
+          dowrite = true;
+          counters [UPD_FIX_DB_DISCNUM] += 1;
         }
       }
 
@@ -900,7 +927,26 @@ main (int argc, char *argv [])
     if (processflags [UPD_FIX_DB_MPM]) {
       nlistSetNum (updlist, UPD_FIX_DB_MPM, UPD_COMPLETE);
     }
+    if (processflags [UPD_FIX_DB_DISCNUM]) {
+      nlistSetNum (updlist, UPD_FIX_DB_DISCNUM, UPD_COMPLETE);
+    }
     dbClose (musicdb);
+  }
+
+  if (counters [UPD_FIX_PL_MPM] > 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: pl-mpm: %d", counters [UPD_FIX_PL_MPM]);
+  }
+  if (counters [UPD_FIX_AF_MPM] > 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: af-mpm: %d", counters [UPD_FIX_AF_MPM]);
+  }
+  if (counters [UPD_FIX_DB_ADDDATE] > 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-adddate: %d", counters [UPD_FIX_DB_ADDDATE]);
+  }
+  if (counters [UPD_FIX_DB_MPM] > 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-mpm: %d", counters [UPD_FIX_DB_MPM]);
+  }
+  if (counters [UPD_FIX_DB_DISCNUM] > 0) {
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "count: db-discnum: %d", counters [UPD_FIX_DB_DISCNUM]);
   }
 
   datafileSave (df, NULL, updlist, DF_NO_OFFSET, datafileDistVersion (df));

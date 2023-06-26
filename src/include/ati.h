@@ -62,8 +62,10 @@ void    atiiCleanTags (atidata_t *atidata, const char *ffn, int tagtype, int fil
 /* utility routines */
 const char *atiParsePair (slist_t *tagdata, const char *tagname, const char *value, char *pbuff, size_t sz);
 int atiReplaceFile (const char *ffn, const char *outfn);
-void atiProcessVorbisComment (taglookup_t tagLookup, slist_t *tagdata, int tagtype, const char *kw);
+void atiProcessVorbisCommentCombined (taglookup_t tagLookup, slist_t *tagdata, int tagtype, const char *kw);
+void atiProcessVorbisComment (taglookup_t tagLookup, slist_t *tagdata, int tagtype, const char *tag, const char *val);
 const char * atiParseVorbisComment (const char *kw, char *buff, size_t sz);
+slist_t *atiSplitVorbisComment (int tagkey, const char *tagname, const char *val);
 
 #if defined (__cplusplus) || defined (c_plusplus)
 } /* extern C */

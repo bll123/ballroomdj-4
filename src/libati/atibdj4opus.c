@@ -49,7 +49,7 @@ atibdj4ParseOpusTags (atidata_t *atidata, slist_t *tagdata,
       continue;
     }
 
-    atiProcessVorbisComment (atidata->tagLookup, tagdata, tagtype, kw);
+    atiProcessVorbisCommentCombined (atidata->tagLookup, tagdata, tagtype, kw);
   }
   op_free (of);
   return;

@@ -136,6 +136,10 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
   char        tbuff [1024];
   int         count;
 
+  if (data == NULL) {
+    return;
+  }
+
   /*
    * mutagen output:
    *
@@ -284,7 +288,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
         }
 
         /* put in some extra checks for odd mutagen python output */
-        /* this stuff always appears in the UFID tag output */
+        /* this stuff always appears in the UFID tag output (binary) */
         if (p != NULL) {
           if (strcmp (tagname, atidata->tagName (TAG_TRACKNUMBER)) == 0) {
             /* check for old mangled data */
@@ -320,7 +324,7 @@ atiiParseTags (atidata_t *atidata, slist_t *tagdata, const char *ffn,
         /* p is pointing to the tag value */
 
         if (p != NULL && *p != '\0') {
-          slistSetStr (tagdata, tagname, p);
+          atiProcessVorbisComment (atidata->tagLookup, tagdata, tagtype, tagname, p);
         }
       } /* have a tag name */
     } /* tag processing */
@@ -722,7 +726,7 @@ atimutagenRunUpdate (const char *fn, char *dbuff, size_t sz)
   /* the wait flag is on, the return code is the process return code */
   rc = osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, dbuff, sz, NULL);
   if (rc == 0) {
-//    fileopDelete (fn);
+    fileopDelete (fn);
   } else {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write tags failed %d (%s)", rc, fn);
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  output: %s", dbuff);

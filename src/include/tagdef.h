@@ -28,9 +28,9 @@ typedef enum {
 } tagedittype_t;
 
 enum {
-  TAG_TYPE_VORBIS,    // .ogg, .flac, et. al.
-  TAG_TYPE_MP4,       // .m4a
-  TAG_TYPE_ID3,
+  TAG_TYPE_VORBIS,    // .ogg, .flac, .opus
+  TAG_TYPE_MP4,       // .m4a, et.al.
+  TAG_TYPE_ID3,       // .mp3
   TAG_TYPE_WMA,
   TAG_TYPE_FFMPEG,    // libavformat has its own conversions
   TAG_TYPE_MAX,
@@ -62,6 +62,7 @@ typedef struct {
   bool                isEditable : 1;
   bool                textSearchable : 1;
   bool                isOrgTag : 1;
+  bool                vorbisMulti : 1;
 } tagdef_t;
 
 typedef enum {

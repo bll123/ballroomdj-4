@@ -13,10 +13,13 @@
 
 #include "ati.h"
 #include "bdj4.h"
+#include "bdjstring.h"
 #include "fileop.h"
 #include "filemanip.h"
 #include "log.h"
+#include "mdebug.h"
 #include "slist.h"
+#include "tagdef.h"
 
 static void  atiParseNumberPair (const char *data, int *a, int *b);
 
@@ -38,6 +41,131 @@ atiParsePair (slist_t *tagdata, const char *tagname,
   snprintf (pbuff, sz, "%d", tnum);
   p = pbuff;
   return p;
+}
+
+int
+atiReplaceFile (const char *ffn, const char *outfn)
+{
+  int     rc = -1;
+  char    tbuff [MAXPATHLEN];
+  time_t  omodtime;
+
+  omodtime = fileopModTime (ffn);
+  snprintf (tbuff, sizeof (tbuff), "%s.bak", ffn);
+  if (filemanipMove (ffn, tbuff) == 0) {
+    if (filemanipMove (outfn, ffn) == 0) {
+      fileopSetModTime (ffn, omodtime);
+      fileopDelete (tbuff);
+      rc = 0;
+    } else {
+      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "rename failed");
+      if (filemanipMove (tbuff, ffn) != 0) {
+        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "restore backup failed");
+      }
+    }
+  } else {
+    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "move to backup failed");
+  }
+  return rc;
+}
+
+void
+atiProcessVorbisCommentCombined (taglookup_t tagLookup, slist_t *tagdata,
+    int tagtype, const char *kw)
+{
+  const char  *val;
+  char        ttag [300];
+
+  val = atiParseVorbisComment (kw, ttag, sizeof (ttag));
+  /* vorbis comments are not case sensitive */
+  stringAsciiToUpper (ttag);
+  atiProcessVorbisComment (tagLookup, tagdata, tagtype, ttag, val);
+}
+
+void
+atiProcessVorbisComment (taglookup_t tagLookup, slist_t *tagdata,
+    int tagtype, const char *tag, const char *val)
+{
+  const char  *tagname;
+  bool        exists = false;
+  char        *tmp;
+
+  /* vorbis comments are not case sensitive */
+  tagname = tagLookup (tagtype, tag);
+  if (tagname == NULL) {
+    tagname = tag;
+  }
+  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: %s %s=%s", tagname, tag, val);
+  if (slistGetStr (tagdata, tagname) != NULL) {
+    const char  *oval;
+    size_t      sz;
+
+    oval = slistGetStr (tagdata, tagname);
+    sz = strlen (oval) + strlen (val) + 3;
+    tmp = mdmalloc (sz);
+    snprintf (tmp, sz, "%s; %s\n", oval, val);
+    val = tmp;
+    exists = true;
+  }
+  slistSetStr (tagdata, tagname, val);
+  if (exists) {
+    mdfree (tmp);
+  }
+}
+
+const char *
+atiParseVorbisComment (const char *kw, char *buff, size_t sz)
+{
+  const char  *val;
+  size_t      len;
+
+  val = strstr (kw, "=");
+  if (val == NULL) {
+    return NULL;
+  }
+  len = val - kw;
+  if (len >= sz) {
+    len = sz - 1;
+  }
+  strlcpy (buff, kw, len + 1);
+  buff [len] = '\0';
+  ++val;
+
+  return val;
+}
+
+/* the caller must free the return value */
+slist_t *
+atiSplitVorbisComment (int tagkey, const char *tagname, const char *val)
+{
+  slist_t     *vallist = NULL;
+  char        *tokstr;
+  char        *p;
+  bool        split = false;
+
+  /* known tags that should be split: */
+  /* genre, artist, album-artist, composer */
+
+  vallist = slistAlloc ("vc-list", LIST_UNORDERED, NULL);
+  split = tagdefs [tagkey].vorbisMulti;
+
+  if (split && strstr (val, ";") != NULL) {
+    char      *tval;
+
+    tval = mdstrdup (val);
+    p = strtok_r (tval, ";", &tokstr);
+    while (p != NULL) {
+      while (*p == ' ') {
+        ++p;
+      }
+      slistSetNum (vallist, p, 0);
+      p = strtok_r (NULL, ";", &tokstr);
+    }
+  } else {
+    slistSetNum (vallist, val, 0);
+  }
+
+  return vallist;
 }
 
 /* internal routines */
@@ -88,67 +216,4 @@ atiParseNumberPair (const char *data, int *a, int *b)
   }
 }
 
-int
-atiReplaceFile (const char *ffn, const char *outfn)
-{
-  int     rc = -1;
-  char    tbuff [MAXPATHLEN];
-  time_t  omodtime;
-
-  omodtime = fileopModTime (ffn);
-  snprintf (tbuff, sizeof (tbuff), "%s.bak", ffn);
-  if (filemanipMove (ffn, tbuff) == 0) {
-    if (filemanipMove (outfn, ffn) == 0) {
-      fileopSetModTime (ffn, omodtime);
-      fileopDelete (tbuff);
-      rc = 0;
-    } else {
-      logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "rename failed");
-      if (filemanipMove (tbuff, ffn) != 0) {
-        logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "restore backup failed");
-      }
-    }
-  } else {
-    logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "move to backup failed");
-  }
-  return rc;
-}
-
-void
-atiProcessVorbisComment (taglookup_t tagLookup, slist_t *tagdata,
-    int tagtype, const char *kw)
-{
-  const char  *val;
-  const char  *tagname;
-  char        ttag [300];
-
-  val = atiParseVorbisComment (kw, ttag, sizeof (ttag));
-  tagname = tagLookup (tagtype, ttag);
-  if (tagname == NULL) {
-    tagname = ttag;
-  }
-  logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "raw: %s %s", tagname, kw);
-  slistSetStr (tagdata, tagname, val);
-}
-
-const char *
-atiParseVorbisComment (const char *kw, char *buff, size_t sz)
-{
-  const char  *val;
-  size_t      len;
-
-  val = strstr (kw, "=");
-  if (val == NULL) {
-    return NULL;
-  }
-  len = val - kw;
-  if (len >= sz) {
-    len = sz - 1;
-  }
-  strlcpy (buff, kw, len + 1);
-  buff [len] = '\0';
-  ++val;
-
-  return val;
-}
 

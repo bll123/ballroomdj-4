@@ -38,6 +38,7 @@ songWriteDB (musicdb_t *musicdb, dbidx_t dbidx)
 void
 songWriteDBSong (musicdb_t *musicdb, song_t *song)
 {
+fprintf (stderr, "song-write-db-song\n");
   if (song != NULL) {
     if (! songIsChanged (song)) {
       return;
@@ -57,23 +58,21 @@ songWriteDBSong (musicdb_t *musicdb, song_t *song)
 static void
 songWriteAudioTags (song_t *song)
 {
-  char  *ffn;
-  void  *data;
+  char    *ffn;
+  void    *data;
+  slist_t *tagdata;
+  slist_t *newtaglist;
+  int     rewrite;
 
   ffn = songutilFullFileName (songGetStr (song, TAG_FILE));
   data = audiotagReadTags (ffn);
-  if (data != NULL) {
-    slist_t *tagdata;
-    slist_t *newtaglist;
-    int     rewrite;
-
-    tagdata = audiotagParseData (ffn, data, &rewrite);
-    mdfree (data);
-    newtaglist = songTagList (song);
-    audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
-    slistFree (tagdata);
-    slistFree (newtaglist);
-  }
+fprintf (stderr, "song-write-audio-tags: %p\n", data);
+  tagdata = audiotagParseData (ffn, data, &rewrite);
+  mdfree (data);
+  newtaglist = songTagList (song);
+  audiotagWriteTags (ffn, tagdata, newtaglist, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
+  slistFree (tagdata);
+  slistFree (newtaglist);
   mdfree (ffn);
 }
 
