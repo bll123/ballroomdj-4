@@ -66,6 +66,8 @@ target_link_libraries (libatimutagen PUBLIC
   m
 )
 
+# if another ati library is added, be sure to update the installer.
+# the ati interface names are hard coded there.
 install (TARGETS
   libbdj4ati
   libatibdj4

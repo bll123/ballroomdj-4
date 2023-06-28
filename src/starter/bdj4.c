@@ -89,6 +89,7 @@ main (int argc, char * argv[])
     { "musicdir",       required_argument,  NULL,   0 },
     { "newinstall",     no_argument,        NULL,   0 },
     /* used by installer */
+    { "ati",            required_argument,  NULL,   0 },
     { "bdj3dir",        required_argument,  NULL,   0 },
     { "nomutagen",      no_argument,        NULL,   0 },
     { "nodatafiles",    no_argument,        NULL,   0 },

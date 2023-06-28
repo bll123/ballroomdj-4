@@ -70,6 +70,8 @@ HTTPDIR="${DATATOPDIR}/http"
 UNPACKDIR="${cwd}/tmp/bdj4-install"
 UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
 UNPACKDIRTMP="$UNPACKDIR.tmp"
+#ATI=libatimutagen
+ATI=libatibdj4
 LOG="tmp/insttest-log.txt"
 
 currvers=$(pkglongvers)
@@ -98,48 +100,48 @@ function checkUpdaterClean {
 
   # 4.2.0 2023-3-5 autoselection values changed
   fn="$DATADIR/autoselection.txt"
-  sed -e 's/version [234]/version 1/;s/^\.\.[234]/..1/' "$fn" > "$fn.n"
-  mv -f "$fn.n" "$fn"
+  sed -e 's/version [234]/version 1/;s/^\.\.[234]/..1/' "${fn}" > "${fn}.n"
+  mv -f "${fn}.n" "${fn}"
 
   # audio adjust file should be installed if missing or wrong version
   fn="$DATADIR/audioadjust.txt"
-  # rm -f "$fn"
-  sed -e 's/version [234]/version 1/;s/^\.\.[234]/..1/' "$fn" > "$fn.n"
-  mv -f "$fn.n" "$fn"
+  # rm -f "${fn}"
+  sed -e 's/version [234]/version 1/;s/^\.\.[234]/..1/' "${fn}" > "${fn}.n"
+  mv -f "${fn}.n" "${fn}"
 
   # gtk-static.css file should be installed if missing
   rm -f "$DATADIR/gtk-static.css"
 
   # itunes-fields version number should be updated to version 2.
   fn="$DATADIR/itunes-fields.txt"
-  sed -e 's/version 2/version 1/' "$fn" > "$fn.n"
-  mv -f "$fn.n" "$fn"
+  sed -e 's/version 2/version 1/' "${fn}" > "${fn}.n"
+  mv -f "${fn}.n" "${fn}"
 
   # standard rounds had bad data
   fn="$DATADIR/standardrounds.pldances"
   if [[ $section == nl ]]; then
     fn="$DATADIR/Standaardrondes.pldances"
   fi
-  if [[ -f $fn ]]; then
-    mkBadPldance "$fn"
+  if [[ -f ${fn} ]]; then
+    mkBadPldance "${fn}"
   fi
   # queue dance had bad data
   fn="$DATADIR/QueueDance.pldances"
   if [[ $section == nl ]]; then
     fn="$DATADIR/DansToevoegen.pl"
     # nl was renamed after the bad data situation
-    rm -f "$fn"
+    rm -f "${fn}"
     fn="$DATADIR/DansToevoegen.pldances"
-    rm -f "$fn"
+    rm -f "${fn}"
   fi
-  if [[ -f $fn ]]; then
-    mkBadPldance "$fn"
+  if [[ -f ${fn} ]]; then
+    mkBadPldance "${fn}"
   fi
 
   # mobilemq.html version number should be updated to version 2.
   fn="$HTTPDIR/mobilemq.html"
-  sed -e 's/VERSION 2/VERSION 1/' "$fn" > "$fn.n"
-  mv -f "$fn.n" "$fn"
+  sed -e 's/VERSION 2/VERSION 1/' "${fn}" > "${fn}.n"
+  mv -f "${fn}.n" "${fn}"
 }
 
 function checkInstallation {
@@ -251,34 +253,43 @@ function checkInstallation {
 
     fn=${DATADIR}/bdjconfig.txt
     res=$(($res+1))
-    if [[ $fin == T && -f $fn ]]; then
+    if [[ $fin == T && -f ${fn} ]]; then
       chk=$(($chk+1))
     else
-      echo "  no $fn"
+      echo "  no ${fn}"
     fi
 
     fn=${DATADIR}/profile00/bdjconfig.txt
     res=$(($res+1))
-    if [[ $fin == T && -f $fn ]]; then
+    if [[ $fin == T && -f ${fn} ]]; then
       chk=$(($chk+1))
     else
-      echo "  no $fn"
+      echo "  no ${fn}"
     fi
 
     fn=${DATADIR}/${hostname}/bdjconfig.txt
     res=$(($res+1))
-    if [[ $fin == T && -f $fn ]]; then
+    if [[ $fin == T && -f ${fn} ]]; then
       chk=$(($chk+1))
+      # check <hostname>/bdjconfig.txt for proper ati interface
+      res=$(($res+1))
+      grep "${ATI}" "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -eq 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  incorrect ati interface $(grep ${ATI} ${fn})"
+      fi
     else
-      echo "  no $fn"
+      echo "  no ${fn}"
     fi
 
     fn=${DATADIR}/${hostname}/profile00/bdjconfig.txt
     res=$(($res+1))
-    if [[ $fin == T && -f $fn ]]; then
+    if [[ $fin == T && -f ${fn} ]]; then
       chk=$(($chk+1))
     else
-      echo "  no $fn"
+      echo "  no ${fn}"
     fi
 
     # main image files
@@ -362,11 +373,11 @@ function checkInstallation {
 
     res=$(($res+1))  # audioadjust.txt file
     fn="${DATADIR}/audioadjust.txt"
-    if [[ $fin == T && -f "$fn" ]]; then
-      grep 'version 4' "$fn" > /dev/null 2>&1
+    if [[ $fin == T && -f "${fn}" ]]; then
+      grep 'version 4' "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
-        grep '^\.\.4' "$fn" > /dev/null 2>&1
+        grep '^\.\.4' "${fn}" > /dev/null 2>&1
         rc=$?
         if [[ $rc -eq 0 ]]; then
           chk=$(($chk+1))
@@ -382,11 +393,11 @@ function checkInstallation {
 
     res=$(($res+1))  # autoselection.txt file
     fn="${DATADIR}/autoselection.txt"
-    if [[ $fin == T && -f "$fn" ]]; then
-      grep 'version 4' "$fn" > /dev/null 2>&1
+    if [[ $fin == T && -f "${fn}" ]]; then
+      grep 'version 4' "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
-        grep '^\.\.4' "$fn" > /dev/null 2>&1
+        grep '^\.\.4' "${fn}" > /dev/null 2>&1
         rc=$?
         if [[ $rc -eq 0 ]]; then
           chk=$(($chk+1))
@@ -411,8 +422,8 @@ function checkInstallation {
     fna="${DATADIR}/automatic.pl"
     fnb="${DATADIR}/Automatisch.pl"
     if [[ $section == nl ]]; then
-      temp="$fna"
-      fna="$fnb"
+      temp="${fna}"
+      fna="${fnb}"
       fnb="$temp"
     fi
     res=$(($res+1))
@@ -428,8 +439,8 @@ function checkInstallation {
 
     res=$(($res+1))  # itunes-fields.txt file
     fn="${DATADIR}/itunes-fields.txt"
-    if [[ $fin == T && -f $fn ]]; then
-      grep 'version 2' "$fn" > /dev/null 2>&1
+    if [[ $fin == T && -f ${fn} ]]; then
+      grep 'version 2' "${fn}" > /dev/null 2>&1
       rc=$?
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
@@ -444,41 +455,41 @@ function checkInstallation {
     fna="${DATADIR}/QueueDance.pldances"
     fnb="${DATADIR}/DansToevoegen.pldances"
     if [[ $section == nl ]]; then
-      temp="$fna"
-      fna="$fnb"
+      temp="${fna}"
+      fna="${fnb}"
       fnb="$temp"
     fi
     if [[ $fin == T && -f ${fna} ]]; then
       if [[ -f ${fnb} ]]; then
-        echo "  extra $(basename '$fnb') file"
+        echo "  extra $(basename ${fnb}) file"
       else
-        grep '# version 3' "$fn" > /dev/null 2>&1
+        grep '# version 3' "${fna}" > /dev/null 2>&1
         if [[ $rc -eq 0 ]]; then
           chk=$(($chk+1))
         else
-          echo "  $(basename '$fna') incorrect version"
+          echo "  $(basename ${fna}) incorrect version"
         fi
       fi
     else
-      echo "  no $(basename '$fna') file"
+      echo "  no $(basename ${fna}) file"
     fi
 
     res=$(($res+1))  # queuedance.pl file
     fna="${DATADIR}/QueueDance.pl"
     fnb="${DATADIR}/DansToevoegen.pl"
     if [[ $section == nl ]]; then
-      temp="$fna"
-      fna="$fnb"
+      temp="${fna}"
+      fna="${fnb}"
       fnb="$temp"
     fi
     if [[ $fin == T && -f ${fna} ]]; then
       if [[ -f ${fnb} ]]; then
-        echo "  extra $(basename '$fnb') file"
+        echo "  extra $(basename ${fnb}) file"
       else
         chk=$(($chk+1))
       fi
     else
-      echo "  no $(basename '$fna') file"
+      echo "  no $(basename ${fna}) file"
     fi
 
     res=$(($res+1))  # standardround.pldances file
@@ -486,52 +497,52 @@ function checkInstallation {
     if [[ $section == nl ]]; then
       fn="${DATADIR}/Standaardrondes.pldances"
     fi
-    if [[ $fin == T && -f $fn ]]; then
-      grep '# version 2' "$fn" > /dev/null 2>&1
+    if [[ $fin == T && -f ${fn} ]]; then
+      grep '# version 2' "${fn}" > /dev/null 2>&1
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
       else
-        echo "  $(basename '$fna') incorrect version"
+        echo "  $(basename ${fn}) incorrect version"
       fi
     else
-      echo "  no $(basename '$fn') file"
+      echo "  no $(basename ${fn}) file"
     fi
 
     res=$(($res+1))  # volintfc.txt file removed
     fn="${DATADIR}/volintfc.txt"
-    if [[ $fin == T && ! -f "$fn" ]]; then
+    if [[ $fin == T && ! -f "${fn}" ]]; then
       chk=$(($chk+1))
     else
-      echo "  $(basename '$fn') exists"
+      echo "  $(basename ${fn}) exists"
     fi
 
     res=$(($res+1))  # playerintfc.txt file removed
     fn="${DATADIR}/playerintfc.txt"
-    if [[ $fin == T && ! -f "$fn" ]]; then
+    if [[ $fin == T && ! -f "${fn}" ]]; then
       chk=$(($chk+1))
     else
-      echo "  $(basename '$fn') exists"
+      echo "  $(basename ${fn}) exists"
     fi
 
     res=$(($res+1))  # audiotagintfc.txt file removed
     fn="${DATADIR}/audiotagintfc.txt"
-    if [[ $fin == T && ! -f "$fn" ]]; then
+    if [[ $fin == T && ! -f "${fn}" ]]; then
       chk=$(($chk+1))
     else
-      echo "  $(basename '$fn') exists"
+      echo "  $(basename ${fn}) exists"
     fi
 
     res=$(($res+1))  # mobilemq.html file
     fn="${HTTPDIR}/mobilemq.html"
-    if [[ $fin == T && -f $fn ]]; then
-      grep '<!-- VERSION 2' "$fn" > /dev/null 2>&1
+    if [[ $fin == T && -f ${fn} ]]; then
+      grep '<!-- VERSION 2' "${fn}" > /dev/null 2>&1
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
       else
-        echo "  $(basename '$fna') incorrect version"
+        echo "  $(basename ${fn}) incorrect version"
       fi
     else
-      echo "  no $(basename '$fn') file"
+      echo "  no $(basename ${fn}) file"
     fi
   fi
 
@@ -571,6 +582,11 @@ function checkInstallation {
     c=$(ls -1 "${DATADIR}/asan*" 2>/dev/null | wc -l)
     if [[ $c -ne 0 ]]; then
       echo "ASAN files found"
+      exit 1
+    fi
+    c=$(ls -1 "${TARGETDIR}/core" 2>/dev/null | wc -l)
+    if [[ $c -ne 0 ]]; then
+      echo "core file found"
       exit 1
     fi
   fi
@@ -620,6 +636,7 @@ echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --nomutagen \
+    --ati ${ATI} \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
     )
@@ -635,6 +652,7 @@ if [[ $crc -eq 0 ]]; then
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --nomutagen \
+      --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
       --reinstall \
@@ -649,6 +667,7 @@ if [[ $crc -eq 0 ]]; then
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --nomutagen \
+      --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
       )
@@ -664,6 +683,7 @@ if [[ $crc -eq 0 ]]; then
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --nomutagen \
+      --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
       )
@@ -679,6 +699,7 @@ echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --nomutagen \
+    --ati ${ATI} \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
     --nodatafiles \
@@ -698,6 +719,7 @@ echo "== $section $tname"
 out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --verbose --unattended --quiet \
     --nomutagen \
+    --ati ${ATI} \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
     --locale ${locale} \
@@ -715,6 +737,7 @@ if [[ $crc -eq 0 ]]; then
   out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
       --verbose --unattended --quiet \
       --nomutagen \
+      --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
       --locale ${locale} \

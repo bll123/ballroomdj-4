@@ -66,22 +66,23 @@ typedef enum {
   INST_COPY_START,
   INST_COPY_FILES,
   INST_MAKE_DATA_TOP,
-  INST_CREATE_DIRS,
+  INST_CREATE_DIRS,           // 11
   INST_COPY_TEMPLATES_INIT,
   INST_COPY_TEMPLATES,
   INST_CONVERT_START,
   INST_CONVERT,
   INST_CONVERT_FINISH,
   INST_CREATE_SHORTCUT,
-  INST_VLC_CHECK,
+  INST_SET_ATI,               // 18
+  INST_VLC_CHECK,             // 19
   INST_VLC_DOWNLOAD,
   INST_VLC_INSTALL,
-  INST_PYTHON_CHECK,
+  INST_PYTHON_CHECK,          // 22
   INST_PYTHON_DOWNLOAD,
   INST_PYTHON_INSTALL,
-  INST_MUTAGEN_CHECK,
-  INST_MUTAGEN_INSTALL,
-  INST_UPDATE_PROCESS_INIT,
+  INST_MUTAGEN_CHECK,         // 25
+  INST_MUTAGEN_INSTALL,       // 26
+  INST_UPDATE_PROCESS_INIT,   // 27
   INST_UPDATE_PROCESS,
   INST_FINALIZE,
   INST_REGISTER_INIT,
@@ -97,6 +98,7 @@ enum {
   INST_CB_INSTALL,
   INST_CB_REINST,
   INST_CB_CONV,
+  INST_CB_ATI_SELECT,
   INST_CB_MAX,
 };
 
@@ -115,6 +117,9 @@ enum {
   INST_W_FEEDBACK_MSG,
   INST_W_CONVERT,
   INST_W_CONV_FEEDBACK_MSG,
+  /* make sure these are in the same order as the INST_ATI_* enums below */
+  INST_W_RADIO_ATI_BDJ4,
+  INST_W_RADIO_ATI_MUTAGEN,
   INST_W_VLC_MSG,
   INST_W_PYTHON_MSG,
   INST_W_MUTAGEN_MSG,
@@ -124,6 +129,23 @@ enum {
 enum {
   INST_TARGET,
   INST_BDJ3LOC,
+};
+
+enum {
+  /* make sure these are in the same order as the radio buttons */
+  INST_ATI_BDJ4,
+  INST_ATI_MUTAGEN,
+  INST_ATI_MAX,
+};
+
+typedef struct {
+  const char  *name;
+  bool        needmutagen;
+} instati_t;
+
+static instati_t instati [INST_ATI_MAX] = {
+  [INST_ATI_BDJ4] = { "libatibdj4", false },
+  [INST_ATI_MUTAGEN] = { "libatimutagen", true },
 };
 
 #define INST_DISP_ACTION "-- "
@@ -140,6 +162,7 @@ typedef struct {
   char            *home;
   char            *target;
   char            *hostname;
+  char            ati [40];
   char            rundir [MAXPATHLEN];
   char            datatopdir [MAXPATHLEN];
   char            currdir [MAXPATHLEN];
@@ -154,6 +177,7 @@ typedef struct {
   char            *webresponse;
   size_t          webresplen;
   const char      *pleasewaitmsg;
+  int             atiselect;
   /* conversion */
   char            *bdj3loc;
   char            *tclshloc;
@@ -165,6 +189,7 @@ typedef struct {
   uitextbox_t     *disptb;
   uibutton_t      *buttons [INST_BUTTON_MAX];
   /* flags */
+  bool            bdjoptloaded : 1;
   bool            convprocess : 1;
   bool            guienabled : 1;
   bool            inSetConvert : 1;
@@ -229,6 +254,7 @@ static void installerConvertFinish (installer_t *installer);
 static void installerCreateShortcut (installer_t *installer);
 static void installerUpdateProcessInit (installer_t *installer);
 static void installerUpdateProcess (installer_t *installer);
+static void installerSetATI (installer_t *installer);
 static void installerVLCCheck (installer_t *installer);
 static void installerVLCDownload (installer_t *installer);
 static void installerVLCInstall (installer_t *installer);
@@ -255,6 +281,8 @@ static void installerSetTargetDir (installer_t *installer, const char *fn);
 static void installerSetBDJ3LocDir (installer_t *installer, const char *fn);
 static void installerCheckAndFixTarget (char *buff, size_t sz);
 static bool installerWinVerifyProcess (installer_t *installer);
+static void installerSetATISelect (installer_t *installer);
+static bool installerATISelectCallback (void *udata);
 
 int
 main (int argc, char *argv[])
@@ -267,6 +295,7 @@ main (int argc, char *argv[])
   int           option_index = 0;
 
   static struct option bdj_options [] = {
+    { "ati",        required_argument,  NULL,   'A' },
     { "bdj3dir",    required_argument,  NULL,   '3' },
     { "bdj4installer",no_argument,      NULL,   0 },
     { "nomutagen",  no_argument,        NULL,   'M' },
@@ -314,7 +343,10 @@ main (int argc, char *argv[])
   installer.disptb = NULL;
   /* CONTEXT: installer: status message */
   installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
+  strlcpy (installer.ati, instati [INST_ATI_BDJ4].name, sizeof (installer.ati));
+  installerSetATISelect (&installer);
 
+  installer.bdjoptloaded = false;
   installer.convprocess = false;
   installer.guienabled = true;
   installer.inSetConvert = false;
@@ -408,6 +440,11 @@ main (int argc, char *argv[])
       }
       case 'u': {
         strlcpy (installer.unpackdir, optarg, sizeof (installer.unpackdir));
+        break;
+      }
+      case 'A': {
+        strlcpy (installer.ati, optarg, sizeof (installer.ati));
+        installerSetATISelect (&installer);
         break;
       }
       case 'V': {
@@ -628,7 +665,7 @@ installerBuildUI (installer_t *installer)
 
   uiwcontFree (hbox);
 
-  /* begin line */
+  /* begin line : target entry */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -698,7 +735,7 @@ installerBuildUI (installer_t *installer)
 
   uiwcontFree (hbox);
 
-  /* begin line */
+  /* begin line : bdj3 location */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -731,7 +768,7 @@ installerBuildUI (installer_t *installer)
 
   uiwcontFree (hbox);
 
-  /* begin line */
+  /* begin line : conversion checkbox */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -760,7 +797,40 @@ installerBuildUI (installer_t *installer)
 
   uiwcontFree (hbox);
 
-  /* begin line */
+  /* begin line : ati bdj4 internal */
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  /* only need this once for both radio buttons */
+  installer->callbacks [INST_CB_ATI_SELECT] = callbackInit (
+      installerATISelectCallback, installer, NULL);
+
+  /* default to using the ati-bdj4 interface */
+  uiwidgetp = uiCreateRadioButton (NULL,
+      /* CONTEXT: installer: radio button: audio file type selection */
+      _("Audio Files: Only MP3, Ogg, and FLAC files are present"), true);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiToggleButtonSetCallback (uiwidgetp, installer->callbacks [INST_CB_ATI_SELECT]);
+  installer->wcont [INST_W_RADIO_ATI_BDJ4] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  /* begin line : ati mutagen */
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  uiwidgetp = uiCreateRadioButton (installer->wcont [INST_W_RADIO_ATI_BDJ4],
+      /* CONTEXT: installer: radio button: audio file type selection */
+      _("Audio Files: Support for all audio file types"), false);
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiToggleButtonSetCallback (uiwidgetp, installer->callbacks [INST_CB_ATI_SELECT]);
+  installer->wcont [INST_W_RADIO_ATI_MUTAGEN] = uiwidgetp;
+
+  uiwcontFree (hbox);
+
+  /* begin line : vlc message */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -776,7 +846,7 @@ installerBuildUI (installer_t *installer)
 
   uiwcontFree (hbox);
 
-  /* begin line */
+  /* begin line : python message */
   /* python status */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -793,7 +863,7 @@ installerBuildUI (installer_t *installer)
 
   uiwcontFree (hbox);
 
-  /* begin line */
+  /* begin line : mutagen message */
   /* mutagen status */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -810,7 +880,7 @@ installerBuildUI (installer_t *installer)
 
   uiwcontFree (hbox);
 
-  /* begin line */
+  /* begin line : buttons */
   /* button box */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
@@ -842,6 +912,9 @@ installerBuildUI (installer_t *installer)
 
   uiWidgetShowAll (installer->wcont [INST_W_WINDOW]);
   installer->uiBuilt = true;
+
+  /* call this again to set the radio buttons */
+  installerSetATISelect (installer);
 
   uiwcontFree (hbox);
   uiwcontFree (vbox);
@@ -960,6 +1033,10 @@ installerMainLoop (void *udata)
     }
     case INST_CREATE_SHORTCUT: {
       installerCreateShortcut (installer);
+      break;
+    }
+    case INST_SET_ATI: {
+      installerSetATI (installer);
       break;
     }
     case INST_VLC_CHECK: {
@@ -1683,6 +1760,16 @@ installerMakeDataTop (installer_t *installer)
 static void
 installerCreateDirs (installer_t *installer)
 {
+  if (! installer->newinstall && ! installer->reinstall) {
+    bdjoptInit ();
+    installer->bdjoptloaded = true;
+
+    strlcpy (installer->ati, bdjoptGetStr (OPT_M_AUDIOTAG_INTFC), sizeof (installer->ati));
+    installerSetATISelect (installer);
+    installer->instState = INST_CONVERT_START;
+    return;
+  }
+
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Creating folder structure."), false);
 
@@ -1700,11 +1787,6 @@ installerCreateDirs (installer_t *installer)
 static void
 installerCopyTemplatesInit (installer_t *installer)
 {
-  if (! installer->newinstall && ! installer->reinstall) {
-    installer->instState = INST_CONVERT_START;
-    return;
-  }
-
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_ACTION, _("Copying template files."), false);
   installer->instState = INST_COPY_TEMPLATES;
@@ -2008,6 +2090,21 @@ installerCreateShortcut (installer_t *installer)
 #endif
   }
 
+  installer->instState = INST_SET_ATI;
+}
+
+static void
+installerSetATI (installer_t *installer)
+{
+  if (! installer->bdjoptloaded) {
+    /* the audio tag interface must be saved */
+    bdjoptInit ();
+    installer->bdjoptloaded = true;
+  }
+
+  if (installer->bdjoptloaded) {
+    bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, installer->ati);
+  }
   installer->instState = INST_VLC_CHECK;
 }
 
@@ -2018,7 +2115,11 @@ installerVLCCheck (installer_t *installer)
 
   /* on linux, vlc is installed via other methods */
   if (installer->vlcinstalled || isLinux ()) {
-    installer->instState = INST_PYTHON_CHECK;
+    if (instati [installer->atiselect].needmutagen) {
+      installer->instState = INST_PYTHON_CHECK;
+    } else {
+      installer->instState = INST_UPDATE_PROCESS_INIT;
+    }
     return;
   }
 
@@ -2033,7 +2134,12 @@ installerVLCCheck (installer_t *installer)
         /* CONTEXT: installer: status message */
         _("Unable to determine %s version."), "VLC");
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-    installer->instState = INST_PYTHON_CHECK;
+
+    if (instati [installer->atiselect].needmutagen) {
+      installer->instState = INST_PYTHON_CHECK;
+    } else {
+      installer->instState = INST_UPDATE_PROCESS_INIT;
+    }
   }
 }
 
@@ -2087,7 +2193,12 @@ installerVLCDownload (installer_t *installer)
     /* CONTEXT: installer: status message */
     snprintf (tbuff, sizeof (tbuff), _("Download of %s failed."), "VLC");
     installerDisplayText (installer, INST_DISP_ACTION, tbuff, false);
-    installer->instState = INST_PYTHON_CHECK;
+
+    if (instati [installer->atiselect].needmutagen) {
+      installer->instState = INST_PYTHON_CHECK;
+    } else {
+      installer->instState = INST_UPDATE_PROCESS_INIT;
+    }
   }
 }
 
@@ -2114,7 +2225,12 @@ installerVLCInstall (installer_t *installer)
   fileopDelete (installer->dlfname);
   uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], "");
   installerCheckPackages (installer);
-  installer->instState = INST_PYTHON_CHECK;
+
+  if (instati [installer->atiselect].needmutagen) {
+    installer->instState = INST_PYTHON_CHECK;
+  } else {
+    installer->instState = INST_UPDATE_PROCESS_INIT;
+  }
 }
 
 static void
@@ -2481,6 +2597,11 @@ installerCleanup (installer_t *installer)
   char  buff [MAXPATHLEN];
   const char  *targv [10];
 
+  if (installer->bdjoptloaded) {
+    bdjoptSave ();
+    bdjoptCleanup ();
+  }
+
   if (installer->guienabled) {
     uiEntryFree (installer->targetEntry);
     uiEntryFree (installer->bdj3locEntry);
@@ -2679,20 +2800,18 @@ installerCheckPackages (installer_t *installer)
         installer->home, tver);
   }
   sysvarsCheckPaths (pypath);
-  sysvarsGetPythonVersion ();
-  sysvarsCheckMutagen ();
 
   tmp = sysvarsGetStr (SV_PATH_VLC);
 
   if (*tmp) {
-    if (installer->uiBuilt) {
+    if (installer->guienabled && installer->uiBuilt) {
       /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "VLC");
       uiLabelSetText (installer->wcont [INST_W_VLC_MSG], tbuff);
     }
     installer->vlcinstalled = true;
   } else {
-    if (installer->uiBuilt) {
+    if (installer->guienabled && installer->uiBuilt) {
       /* CONTEXT: installer: display of package status */
       snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "VLC");
       uiLabelSetText (installer->wcont [INST_W_VLC_MSG], tbuff);
@@ -2700,38 +2819,48 @@ installerCheckPackages (installer_t *installer)
     installer->vlcinstalled = false;
   }
 
-  tmp = sysvarsGetStr (SV_PATH_PYTHON);
-
-  if (*tmp) {
-    if (installer->uiBuilt) {
-      /* CONTEXT: installer: display of package status */
-      snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
-      uiLabelSetText (installer->wcont [INST_W_PYTHON_MSG], tbuff);
-    }
-    installer->pythoninstalled = true;
+  if (instati [installer->atiselect].needmutagen == false) {
+    /* CONTEXT: installer: display of package status */
+    snprintf (tbuff, sizeof (tbuff), _("Not needed"));
+    uiLabelSetText (installer->wcont [INST_W_PYTHON_MSG], tbuff);
+    uiLabelSetText (installer->wcont [INST_W_MUTAGEN_MSG], tbuff);
   } else {
-    if (installer->uiBuilt) {
-      /* CONTEXT: installer: display of package status */
-      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
-      uiLabelSetText (installer->wcont [INST_W_PYTHON_MSG], tbuff);
-      /* CONTEXT: installer: display of package status */
-      snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
-      uiLabelSetText (installer->wcont [INST_W_MUTAGEN_MSG], tbuff);
-    }
-    installer->pythoninstalled = false;
-  }
+    sysvarsGetPythonVersion ();
+    sysvarsCheckMutagen ();
 
-  if (installer->pythoninstalled) {
-    tmp = sysvarsGetStr (SV_PYTHON_MUTAGEN);
-    if (installer->uiBuilt) {
-      if (*tmp) {
+    tmp = sysvarsGetStr (SV_PATH_PYTHON);
+
+    if (*tmp) {
+      if (installer->guienabled && installer->uiBuilt) {
         /* CONTEXT: installer: display of package status */
-        snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
-        uiLabelSetText (installer->wcont [INST_W_MUTAGEN_MSG], tbuff);
-      } else {
+        snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Python");
+        uiLabelSetText (installer->wcont [INST_W_PYTHON_MSG], tbuff);
+      }
+      installer->pythoninstalled = true;
+    } else {
+      if (installer->guienabled && installer->uiBuilt) {
+        /* CONTEXT: installer: display of package status */
+        snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Python");
+        uiLabelSetText (installer->wcont [INST_W_PYTHON_MSG], tbuff);
         /* CONTEXT: installer: display of package status */
         snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
         uiLabelSetText (installer->wcont [INST_W_MUTAGEN_MSG], tbuff);
+      }
+      installer->pythoninstalled = false;
+    }
+
+    if (installer->pythoninstalled) {
+      tmp = sysvarsGetStr (SV_PYTHON_MUTAGEN);
+      if (installer->guienabled && installer->uiBuilt) {
+        if (*tmp) {
+          /* CONTEXT: installer: display of package status */
+          snprintf (tbuff, sizeof (tbuff), _("%s is installed"), "Mutagen");
+          uiLabelSetText (installer->wcont [INST_W_MUTAGEN_MSG], tbuff);
+        } else {
+          /* CONTEXT: installer: display of package status */
+          snprintf (tbuff, sizeof (tbuff), _("%s is not installed"), "Mutagen");
+          uiLabelSetText (installer->wcont [INST_W_MUTAGEN_MSG], tbuff);
+        }
       }
     }
   }
@@ -2858,4 +2987,45 @@ installerWinVerifyProcess (installer_t *installer)
   fclose (fh);
 
   return rc;
+}
+
+static void
+installerSetATISelect (installer_t *installer)
+{
+  for (int i = 0; i < INST_ATI_MAX; ++i) {
+    if (strcmp (installer->ati, instati [i].name) == 0) {
+      installer->atiselect = i;
+      break;
+    }
+  }
+
+  if (installer->guienabled && installer->uiBuilt) {
+    for (int i = INST_ATI_BDJ4; i < INST_ATI_MAX; ++i) {
+      int   tval;
+      int   idx;
+
+      tval = false;
+      if (installer->atiselect == i) {
+        tval = true;
+      }
+      idx = INST_W_RADIO_ATI_BDJ4 + i;
+      uiToggleButtonSetState (installer->wcont [idx], tval);
+    }
+  }
+}
+
+static bool
+installerATISelectCallback (void *udata)
+{
+  installer_t   *installer = udata;
+
+  for (int i = 0; i < INST_ATI_MAX; ++i) {
+    if (uiToggleButtonIsActive (installer->wcont [INST_W_RADIO_ATI_BDJ4 + i])) {
+      strlcpy (installer->ati, instati [i].name, sizeof (installer->ati));
+      installerSetATISelect (installer);
+      break;
+    }
+  }
+  installerCheckPackages (installer);
+  return UICB_CONT;
 }
