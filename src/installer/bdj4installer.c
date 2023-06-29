@@ -3161,6 +3161,9 @@ installerGetOldData (installer_t *installer)
   }
 }
 
+/* scan the music directory and determine which */
+/* ati interface has the best support */
+/* prefer bdj4 internal ati where possible */
 static void
 installerScanMusicDir (installer_t *installer)
 {
@@ -3169,39 +3172,57 @@ installerScanMusicDir (installer_t *installer)
   const char  *fn;
   int         tagtype;
   int         filetype;
-  long        counts [AFILE_TYPE_MAX];
-  int         other;
+  int         flags [AFILE_TYPE_MAX];
+  int         supported [INST_ATI_MAX][AFILE_TYPE_MAX];
+  int         suppval [INST_ATI_MAX];
+  int         max;
+  int         idx;
+
+  for (int j = 0; j < AFILE_TYPE_MAX; ++j) {
+    flags [j] = 0;
+  }
 
   mlist = dirlistRecursiveDirList (installer->musicdir, DIRLIST_FILES);
   slistStartIterator (mlist, &iteridx);
   while ((fn = slistIterateKey (mlist, &iteridx)) != NULL) {
     audiotagDetermineTagType (fn, &tagtype, &filetype);
-    counts [filetype] += 1;
+    flags [filetype] = 1;
   }
   slistFree (mlist);
 
-  other = 0;
-  for (int i = 0; i < AFILE_TYPE_MAX; ++i) {
-    /* these are the file types supported by the bdj4 internal ATI */
-    /* this must be updated manually */
-    /* current as of 2023-6-29 */
-    if (i == AFILE_TYPE_MP3 || i == AFILE_TYPE_OGG || i == AFILE_TYPE_FLAC) {
-      continue;
-    }
-    /* don't worry about unknown types */
-    if (i == AFILE_TYPE_UNKNOWN) {
-      continue;
-    }
-    if (counts [i] > 0) {
-      other += 1;
+  for (int i = 0; i < INST_ATI_MAX; ++i) {
+    atiGetSupportedTypes (instati [i].name, supported [i]);
+  }
+
+  for (int i = 0; i < INST_ATI_MAX; ++i) {
+    suppval [i] = 0;
+
+    for (int j = 0; j < AFILE_TYPE_MAX; ++j) {
+      /* don't worry about unknown types */
+      if (j == AFILE_TYPE_UNKNOWN) {
+        continue;
+      }
+      if (flags [j] > 0) {
+        if (supported [i][j] == ATI_READ_WRITE) {
+          suppval [i] += 2;
+        }
+        if (supported [i][j] == ATI_READ) {
+          suppval [i] += 1;
+        }
+      }
     }
   }
 
-fprintf (stderr, "other: %d\n", other);
-  /* default to bdj4 internal ATI if possible */
-  strlcpy (installer->ati, instati [INST_ATI_BDJ4].name, sizeof (installer->ati));
-  if (other) {
-    strlcpy (installer->ati, instati [INST_ATI_MUTAGEN].name, sizeof (installer->ati));
+  /* want bdj4 internal ati if possible */
+  idx = INST_ATI_BDJ4;
+  max = suppval [idx];
+  for (int i = 0; i < INST_ATI_MAX; ++i) {
+    if (suppval [i] > max) {
+      max = suppval [i];
+      idx = i;
+    }
   }
+
+  strlcpy (installer->ati, instati [idx].name, sizeof (installer->ati));
   installerSetATISelect (installer);
 }

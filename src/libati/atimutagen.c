@@ -93,6 +93,19 @@ atiiFree (atidata_t *atidata)
   }
 }
 
+void
+atiiSupportedTypes (int supported [])
+{
+  /* as of 2023-6-29 */
+  /* this needs to be checked */
+  for (int i = 0; i < AFILE_TYPE_MAX; ++i) {
+    if (i == AFILE_TYPE_UNKNOWN) {
+      continue;
+    }
+    supported [i] = ATI_READ_WRITE;
+  }
+}
+
 bool
 atiiUseReader (void)
 {

@@ -61,6 +61,17 @@ atiiFree (atidata_t *atidata)
   }
 }
 
+void
+atiiSupportedTypes (int supported [])
+{
+  /* as of 2023-6-29 */
+  supported [AFILE_TYPE_MP3] = ATI_READ_WRITE;
+  supported [AFILE_TYPE_OGG] = ATI_READ_WRITE;
+  supported [AFILE_TYPE_FLAC] = ATI_READ_WRITE;
+  supported [AFILE_TYPE_OPUS] = ATI_READ;
+  supported [AFILE_TYPE_MP4] = ATI_READ;
+}
+
 bool
 atiiUseReader (void)
 {

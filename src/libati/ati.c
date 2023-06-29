@@ -172,6 +172,34 @@ atiInterfaceList (void)
 {
   slist_t     *interfaces;
 
-  interfaces = dyInterfaceList ("libati", "atiiDesc");
+  interfaces = dyInterfaceList (LIBATI_PFX, "atiiDesc");
   return interfaces;
+}
+
+void
+atiGetSupportedTypes (const char *atipkg, int supported [])
+{
+  dlhandle_t  *dlHandle;
+  void        *(*sproc) (int supported []);
+  char        dlpath [MAXPATHLEN];
+
+  for (int i = 0; i < AFILE_TYPE_MAX; ++i) {
+    supported [i] = ATI_NONE;
+  }
+
+  pathbldMakePath (dlpath, sizeof (dlpath),
+      atipkg, sysvarsGetStr (SV_SHLIB_EXT), PATHBLD_MP_DIR_EXEC);
+  dlHandle = dylibLoad (dlpath);
+  if (dlHandle != NULL) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpedantic"
+    sproc = dylibLookup (dlHandle, "atiiSupportedTypes");
+#pragma clang diagnostic pop
+
+    if (sproc != NULL) {
+      sproc (supported);
+    }
+    dylibClose (dlHandle);
+  }
+  return;
 }

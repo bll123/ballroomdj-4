@@ -12,6 +12,8 @@ extern "C" {
 #include "slist.h"
 #include "tagdef.h"
 
+#define LIBATI_PFX  "libati"
+
 enum {
   AFILE_TYPE_UNKNOWN,
   AFILE_TYPE_FLAC,
@@ -21,6 +23,12 @@ enum {
   AFILE_TYPE_OGG,
   AFILE_TYPE_WMA,
   AFILE_TYPE_MAX,
+};
+
+enum {
+  ATI_READ,
+  ATI_READ_WRITE,
+  ATI_NONE,
 };
 
 enum {
@@ -39,16 +47,20 @@ typedef const tagaudiotag_t *(*audiotaglookup_t)(int, int);
 
 ati_t   *atiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck, tagname_t tagName, audiotaglookup_t tagRawLookup);
 void    atiFree (ati_t *ati);
+void    atiSupportedTypes (ati_t *ati, int supported []);
 bool    atiUseReader (ati_t *ati);
 char    *atiReadTags (ati_t *ati, const char *ffn);
 void    atiParseTags (ati_t *ati, slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
 int     atiWriteTags (ati_t *ati, const char *ffn, slist_t *updatelist, slist_t *dellist, nlist_t *datalist, int tagtype, int filetype);
-slist_t *atiInterfaceList (void);
 atisaved_t *atiSaveTags (ati_t *ati, const char *ffn, int tagtype, int filetype);
 int     atiRestoreTags (ati_t *ati, atisaved_t *atisaved, const char *ffn, int tagtype, int filetype);
 void    atiCleanTags (ati_t *ati, const char *ffn, int tagtype, int filetype);
 
+slist_t *atiInterfaceList (void);
+void    atiGetSupportedTypes (const char *atipkg, int supported []);
+
 const char *atiiDesc (void);
+void    atiiSupportedTypes (int supported []);
 bool    atiiUseReader (void);
 atidata_t *atiiInit (const char *atipkg, int writetags, taglookup_t tagLookup, tagcheck_t tagCheck, tagname_t tagName, audiotaglookup_t tagRawLookup);
 void    atiiFree (atidata_t *atidata);
