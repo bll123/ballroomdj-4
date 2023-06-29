@@ -138,7 +138,6 @@ main (int argc, char *argv [])
   int         c = 0;
   int         option_index = 0;
   char        *musicdir = NULL;
-  char        *home = NULL;
   char        homemusicdir [MAXPATHLEN];
   char        tbuff [MAXPATHLEN];
   char        *tval = NULL;
@@ -250,7 +249,7 @@ main (int argc, char *argv [])
   logMsg (LOG_INSTALL, LOG_INFO, "cleaned volreg/flag");
 
   /* always figure out where the home music dir is */
-  /* this is used on new intalls to set the music dir */
+  /* this is used on new installs to set the music dir */
   /* also needed to check for the itunes dir every time */
   instutilGetMusicDir (homemusicdir, sizeof (homemusicdir));
   logMsg (LOG_INSTALL, LOG_INFO, "homemusicdir: %s", homemusicdir);

@@ -167,7 +167,6 @@ atiCleanTags (ati_t *ati, const char *ffn, int tagtype, int filetype)
   }
 }
 
-
 slist_t *
 atiInterfaceList (void)
 {
@@ -176,4 +175,3 @@ atiInterfaceList (void)
   interfaces = dyInterfaceList ("libati", "atiiDesc");
   return interfaces;
 }
-

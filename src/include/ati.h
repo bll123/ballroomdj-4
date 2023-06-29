@@ -20,6 +20,7 @@ enum {
   AFILE_TYPE_OPUS,
   AFILE_TYPE_OGG,
   AFILE_TYPE_WMA,
+  AFILE_TYPE_MAX,
 };
 
 enum {

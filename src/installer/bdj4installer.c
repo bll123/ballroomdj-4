@@ -25,6 +25,8 @@
 # include <windows.h>
 #endif
 
+#include "ati.h"
+#include "audiotag.h"
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
@@ -66,23 +68,23 @@ typedef enum {
   INST_COPY_START,
   INST_COPY_FILES,
   INST_MAKE_DATA_TOP,
-  INST_CREATE_DIRS,           // 11
+  INST_CREATE_DIRS,
   INST_COPY_TEMPLATES_INIT,
   INST_COPY_TEMPLATES,
   INST_CONVERT_START,
   INST_CONVERT,
   INST_CONVERT_FINISH,
   INST_CREATE_SHORTCUT,
-  INST_SET_ATI,               // 18
-  INST_VLC_CHECK,             // 19
+  INST_SET_ATI,
+  INST_VLC_CHECK,
   INST_VLC_DOWNLOAD,
   INST_VLC_INSTALL,
-  INST_PYTHON_CHECK,          // 22
+  INST_PYTHON_CHECK,
   INST_PYTHON_DOWNLOAD,
   INST_PYTHON_INSTALL,
-  INST_MUTAGEN_CHECK,         // 25
-  INST_MUTAGEN_INSTALL,       // 26
-  INST_UPDATE_PROCESS_INIT,   // 27
+  INST_MUTAGEN_CHECK,
+  INST_MUTAGEN_INSTALL,
+  INST_UPDATE_PROCESS_INIT,
   INST_UPDATE_PROCESS,
   INST_FINALIZE,
   INST_REGISTER_INIT,
@@ -290,6 +292,7 @@ static void installerCheckAndFixTarget (char *buff, size_t sz);
 static bool installerWinVerifyProcess (installer_t *installer);
 static void installerSetATISelect (installer_t *installer);
 static void installerGetOldData (installer_t *installer);
+static void installerScanMusicDir (installer_t *installer);
 
 int
 main (int argc, char *argv[])
@@ -2202,7 +2205,16 @@ installerSetATI (installer_t *installer)
     installer->bdjoptloaded = true;
   }
 
+  if (installer->newinstall || installer->reinstall) {
+    /* CONTEXT: installer: status message */
+    installerDisplayText (installer, INST_DISP_ACTION, _("Scanning music folder."), false);
+
+    /* this will scan the music dir and set the audio tag interface */
+    installerScanMusicDir (installer);
+  }
+
   if (installer->bdjoptloaded) {
+    bdjoptSetStr (OPT_M_DIR_MUSIC, installer->musicdir);
     bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, installer->ati);
   }
   installer->instState = INST_VLC_CHECK;
@@ -3147,4 +3159,49 @@ installerGetOldData (installer_t *installer)
       installerFailWorkingDir (installer, installer->datatopdir, "get-old-b");
     }
   }
+}
+
+static void
+installerScanMusicDir (installer_t *installer)
+{
+  slist_t     *mlist;
+  slistidx_t  iteridx;
+  const char  *fn;
+  int         tagtype;
+  int         filetype;
+  long        counts [AFILE_TYPE_MAX];
+  int         other;
+
+  mlist = dirlistRecursiveDirList (installer->musicdir, DIRLIST_FILES);
+  slistStartIterator (mlist, &iteridx);
+  while ((fn = slistIterateKey (mlist, &iteridx)) != NULL) {
+    audiotagDetermineTagType (fn, &tagtype, &filetype);
+    counts [filetype] += 1;
+  }
+  slistFree (mlist);
+
+  other = 0;
+  for (int i = 0; i < AFILE_TYPE_MAX; ++i) {
+    /* these are the file types supported by the bdj4 internal ATI */
+    /* this must be updated manually */
+    /* current as of 2023-6-29 */
+    if (i == AFILE_TYPE_MP3 || i == AFILE_TYPE_OGG || i == AFILE_TYPE_FLAC) {
+      continue;
+    }
+    /* don't worry about unknown types */
+    if (i == AFILE_TYPE_UNKNOWN) {
+      continue;
+    }
+    if (counts [i] > 0) {
+      other += 1;
+    }
+  }
+
+fprintf (stderr, "other: %d\n", other);
+  /* default to bdj4 internal ATI if possible */
+  strlcpy (installer->ati, instati [INST_ATI_BDJ4].name, sizeof (installer->ati));
+  if (other) {
+    strlcpy (installer->ati, instati [INST_ATI_MUTAGEN].name, sizeof (installer->ati));
+  }
+  installerSetATISelect (installer);
 }

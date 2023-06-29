@@ -55,7 +55,6 @@ enum {
 
 static audiotag_t *at = NULL;
 
-static void audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype);
 static void audiotagParseTags (slist_t *tagdata, const char *ffn, char *data, int filetype, int tagtype, int *rewrite);
 static void audiotagCreateLookupTable (int tagtype);
 static bool audiotagBDJ3CompatCheck (char *tmp, size_t sz, int tagkey, const char *value);
@@ -330,9 +329,7 @@ audiotagCleanTags (const char *ffn)
   atiCleanTags (at->ati, ffn, tagtype, filetype);
 }
 
-/* internal routines */
-
-static void
+void
 audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 {
   pathinfo_t        *pi;
@@ -367,6 +364,8 @@ audiotagDetermineTagType (const char *ffn, int *tagtype, int *filetype)
 
   pathInfoFree (pi);
 }
+
+/* internal routines */
 
 static void
 audiotagParseTags (slist_t *tagdata, const char *ffn, char *data,
