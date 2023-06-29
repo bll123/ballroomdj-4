@@ -94,17 +94,18 @@ typedef enum {
 enum {
   INST_CB_TARGET_DIR,
   INST_CB_BDJ3LOC_DIR,
+  INST_CB_MUSIC_DIR,
   INST_CB_EXIT,
   INST_CB_INSTALL,
   INST_CB_REINST,
   INST_CB_CONV,
-  INST_CB_ATI_SELECT,
   INST_CB_MAX,
 };
 
 enum {
   INST_BUTTON_TARGET_DIR,
   INST_BUTTON_BDJ3LOC_DIR,
+  INST_BUTTON_MUSIC_DIR,
   INST_BUTTON_EXIT,
   INST_BUTTON_INSTALL,
   INST_BUTTON_MAX,
@@ -118,8 +119,7 @@ enum {
   INST_W_CONVERT,
   INST_W_CONV_FEEDBACK_MSG,
   /* make sure these are in the same order as the INST_ATI_* enums below */
-  INST_W_RADIO_ATI_BDJ4,
-  INST_W_RADIO_ATI_MUTAGEN,
+  INST_W_MUSIC_DIR,
   INST_W_VLC_MSG,
   INST_W_PYTHON_MSG,
   INST_W_MUTAGEN_MSG,
@@ -129,10 +129,10 @@ enum {
 enum {
   INST_TARGET,
   INST_BDJ3LOC,
+  INST_MUSICDIR,
 };
 
 enum {
-  /* make sure these are in the same order as the radio buttons */
   INST_ATI_BDJ4,
   INST_ATI_MUTAGEN,
   INST_ATI_MAX,
@@ -177,7 +177,6 @@ typedef struct {
   char            *webresponse;
   size_t          webresplen;
   const char      *pleasewaitmsg;
-  int             atiselect;
   /* conversion */
   char            *bdj3loc;
   char            *tclshloc;
@@ -186,8 +185,12 @@ typedef struct {
   uiwcont_t       *wcont [INST_W_MAX];
   uientry_t       *targetEntry;
   uientry_t       *bdj3locEntry;
+  uientry_t       *musicdirEntry;
   uitextbox_t     *disptb;
   uibutton_t      *buttons [INST_BUTTON_MAX];
+  /* ati */
+  char            *musicdir;
+  int             atiselect;
   /* flags */
   bool            bdjoptloaded : 1;
   bool            convprocess : 1;
@@ -227,10 +230,13 @@ static bool installerCheckDirTarget (void *udata);
 static bool installerCheckDirConv (void *udata);
 static bool installerTargetDirDialog (void *udata);
 static void installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc);
+static void installerSetMusicDirEntry (installer_t *installer, const char *musicdir);
 static bool installerBDJ3LocDirDialog (void *udata);
+static bool installerMusicDirDialog (void *udata);
 static int  installerValidateTarget (uientry_t *entry, void *udata);
 static int  installerValidateProcessTarget (installer_t *installer, const char *dir);
 static int  installerValidateBDJ3Loc (uientry_t *entry, void *udata);
+static int  installerValidateMusicDir (uientry_t *entry, void *udata);
 static void installerSetConvert (installer_t *installer, int val);
 static void installerDisplayConvert (installer_t *installer);
 static bool installerInstallCallback (void *udata);
@@ -279,10 +285,11 @@ static void installerWebResponseCallback (void *userdata, char *resp, size_t len
 static void installerFailWorkingDir (installer_t *installer, const char *dir, const char *msg);
 static void installerSetTargetDir (installer_t *installer, const char *fn);
 static void installerSetBDJ3LocDir (installer_t *installer, const char *fn);
+static void installerSetMusicDir (installer_t *installer, const char *fn);
 static void installerCheckAndFixTarget (char *buff, size_t sz);
 static bool installerWinVerifyProcess (installer_t *installer);
 static void installerSetATISelect (installer_t *installer);
-static bool installerATISelectCallback (void *udata);
+static void installerGetOldData (installer_t *installer);
 
 int
 main (int argc, char *argv[])
@@ -336,6 +343,7 @@ main (int argc, char *argv[])
   installer.target = mdstrdup ("");
   installer.rundir [0] = '\0';
   installer.bdj3loc = mdstrdup ("");
+  installer.musicdir = mdstrdup ("");
   installer.convidx = 0;
   installer.convlist = NULL;
   installer.tclshloc = NULL;
@@ -343,8 +351,6 @@ main (int argc, char *argv[])
   installer.disptb = NULL;
   /* CONTEXT: installer: status message */
   installer.pleasewaitmsg = _("Please wait\xe2\x80\xa6");
-  strlcpy (installer.ati, instati [INST_ATI_BDJ4].name, sizeof (installer.ati));
-  installerSetATISelect (&installer);
 
   installer.bdjoptloaded = false;
   installer.convprocess = false;
@@ -383,11 +389,15 @@ main (int argc, char *argv[])
   }
   installer.targetEntry = NULL;
   installer.bdj3locEntry = NULL;
+  installer.musicdirEntry = NULL;
 
   /* the data in sysvars will not be correct.  don't use it.  */
   /* the installer only needs the home, hostname, os info and locale */
   sysvarsInit (argv[0]);
   localeInit ();
+
+  strlcpy (installer.ati, instati [INST_ATI_BDJ4].name, sizeof (installer.ati));
+  installerSetATISelect (&installer);
 
   installer.hostname = sysvarsGetStr (SV_HOSTNAME);
   installer.home = sysvarsGetStr (SV_HOME);
@@ -409,6 +419,9 @@ main (int argc, char *argv[])
   /* at this point the target dir will have either a good default */
   /* or the saved target name */
   installerSetTargetDir (&installer, buff);
+
+  instutilGetMusicDir (buff, sizeof (buff));
+  installer.musicdir = mdstrdup (buff);
 
   while ((c = getopt_long_only (argc, argv, "Cru:l:", bdj_options, &option_index)) != -1) {
     switch (c) {
@@ -488,6 +501,7 @@ main (int argc, char *argv[])
   if (installer.guienabled) {
     installer.targetEntry = uiEntryInit (80, MAXPATHLEN);
     installer.bdj3locEntry = uiEntryInit (80, MAXPATHLEN);
+    installer.musicdirEntry = uiEntryInit (60, MAXPATHLEN);
   }
 
   if (installer.unattended) {
@@ -516,6 +530,7 @@ main (int argc, char *argv[])
       fprintf (stdout, "finish NG\n");
       dataFree (installer.target);
       dataFree (installer.bdj3loc);
+      dataFree (installer.musicdir);
 #if BDJ4_MEM_DEBUG
       mdebugReport ();
       mdebugCleanup ();
@@ -529,6 +544,7 @@ main (int argc, char *argv[])
     fprintf (stdout, "finish NG\n");
     dataFree (installer.target);
     dataFree (installer.bdj3loc);
+    dataFree (installer.musicdir);
 #if BDJ4_MEM_DEBUG
     mdebugReport ();
     mdebugCleanup ();
@@ -626,6 +642,8 @@ installerBuildUI (installer_t *installer)
   char          tbuff [100];
   char          imgbuff [MAXPATHLEN];
 
+  szgrp = uiCreateSizeGroupHoriz ();
+
   uiLabelAddClass (INST_HL_CLASS, INST_HL_COLOR);
   uiSeparatorAddClass (INST_SEP_CLASS, INST_SEP_COLOR);
 
@@ -648,6 +666,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetExpandVert (vbox);
   uiBoxPackInWindow (installer->wcont [INST_W_WINDOW], vbox);
 
+  /* begin line : status message */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -657,6 +676,7 @@ installerBuildUI (installer_t *installer)
   uiWidgetSetClass (installer->wcont [INST_W_STATUS_MSG], INST_HL_CLASS);
   uiBoxPackEndExpand (hbox, installer->wcont [INST_W_STATUS_MSG]);
 
+  /* begin line : target instructions */
   uiwidgetp = uiCreateLabel (
       /* CONTEXT: installer: where BDJ4 gets installed */
       _("Enter the destination folder where BDJ4 will be installed."));
@@ -691,6 +711,8 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (hbox, uiwidgetp);
 
   uiwcontFree (hbox);
+
+  /* begin line : re-install bdj4 */
   hbox = uiCreateHorizBox ();
   uiWidgetExpandHoriz (hbox);
   uiBoxPackStart (vbox, hbox);
@@ -708,11 +730,51 @@ installerBuildUI (installer_t *installer)
   uiWidgetSetClass (installer->wcont [INST_W_FEEDBACK_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_FEEDBACK_MSG]);
 
+  uiwcontFree (hbox);
+
+  /* begin line : music dir */
+  /* the music dir is scanned in order to set the audio tag interface */
+  /* appropriately */
+  hbox = uiCreateHorizBox ();
+  uiWidgetExpandHoriz (hbox);
+  uiBoxPackStart (vbox, hbox);
+
+  /* CONTEXT: installation: the music folder where the user stores their music */
+  uiwidgetp = uiCreateColonLabel (_("Music Folder"));
+  uiBoxPackStart (hbox, uiwidgetp);
+  uiwcontFree (uiwidgetp);
+
+  uiEntryCreate (installer->musicdirEntry);
+  installerSetMusicDirEntry (installer, installer->musicdir);
+  uiwidgetp = uiEntryGetWidgetContainer (installer->musicdirEntry);
+  uiWidgetAlignHorizFill (uiwidgetp);
+  uiWidgetExpandHoriz (uiwidgetp);
+  uiBoxPackStartExpand (hbox, uiwidgetp);
+  uiEntrySetValidate (installer->musicdirEntry,
+      installerValidateMusicDir, installer, UIENTRY_DELAYED);
+
+  installer->callbacks [INST_CB_MUSIC_DIR] = callbackInit (
+      installerMusicDirDialog, installer, NULL);
+  uibutton = uiCreateButton (
+      installer->callbacks [INST_CB_MUSIC_DIR],
+      "", NULL);
+  installer->buttons [INST_BUTTON_MUSIC_DIR] = uibutton;
+  uiwidgetp = uiButtonGetWidgetContainer (uibutton);
+  uiButtonSetImageIcon (uibutton, "folder");
+  uiWidgetSetMarginStart (uiwidgetp, 0);
+  uiBoxPackStart (hbox, uiwidgetp);
+
+  uiwcontFree (hbox);
+
+  /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
+  uiWidgetSetMarginTop (uiwidgetp, 2);
+  uiWidgetSetMarginBottom (uiwidgetp, 2);
   uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  /* begin line : instructions a */
   /* conversion process */
   snprintf (tbuff, sizeof (tbuff),
       /* CONTEXT: installer: asking where BallroomDJ 3 is installed */
@@ -721,19 +783,19 @@ installerBuildUI (installer_t *installer)
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  /* begin line : instructions b */
   uiwidgetp = uiCreateLabel (
       /* CONTEXT: installer: instructions */
       _("If there is no BallroomDJ 3 installation, leave the entry blank."));
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
 
+  /* begin line : instructions c */
   uiwidgetp = uiCreateLabel (
       /* CONTEXT: installer: instructions */
       _("The conversion process will only run for new installations and for re-installations."));
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
-
-  uiwcontFree (hbox);
 
   /* begin line : bdj3 location */
   hbox = uiCreateHorizBox ();
@@ -786,49 +848,15 @@ installerBuildUI (installer_t *installer)
   uiWidgetSetClass (installer->wcont [INST_W_CONV_FEEDBACK_MSG], INST_HL_CLASS);
   uiBoxPackStart (hbox, installer->wcont [INST_W_CONV_FEEDBACK_MSG]);
 
-  /* VLC status */
+  uiwcontFree (hbox);
 
+  /* begin line : separator */
   uiwidgetp = uiCreateHorizSeparator ();
+  uiWidgetSetMarginTop (uiwidgetp, 2);
+  uiWidgetSetMarginBottom (uiwidgetp, 2);
   uiWidgetSetClass (uiwidgetp, INST_SEP_CLASS);
   uiBoxPackStart (vbox, uiwidgetp);
   uiwcontFree (uiwidgetp);
-
-  szgrp = uiCreateSizeGroupHoriz ();
-
-  uiwcontFree (hbox);
-
-  /* begin line : ati bdj4 internal */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
-
-  /* only need this once for both radio buttons */
-  installer->callbacks [INST_CB_ATI_SELECT] = callbackInit (
-      installerATISelectCallback, installer, NULL);
-
-  /* default to using the ati-bdj4 interface */
-  uiwidgetp = uiCreateRadioButton (NULL,
-      /* CONTEXT: installer: radio button: audio file type selection */
-      _("Audio Files: Only MP3, Ogg, and FLAC files are present"), true);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiToggleButtonSetCallback (uiwidgetp, installer->callbacks [INST_CB_ATI_SELECT]);
-  installer->wcont [INST_W_RADIO_ATI_BDJ4] = uiwidgetp;
-
-  uiwcontFree (hbox);
-
-  /* begin line : ati mutagen */
-  hbox = uiCreateHorizBox ();
-  uiWidgetExpandHoriz (hbox);
-  uiBoxPackStart (vbox, hbox);
-
-  uiwidgetp = uiCreateRadioButton (installer->wcont [INST_W_RADIO_ATI_BDJ4],
-      /* CONTEXT: installer: radio button: audio file type selection */
-      _("Audio Files: Support for all audio file types"), false);
-  uiBoxPackStart (hbox, uiwidgetp);
-  uiToggleButtonSetCallback (uiwidgetp, installer->callbacks [INST_CB_ATI_SELECT]);
-  installer->wcont [INST_W_RADIO_ATI_MUTAGEN] = uiwidgetp;
-
-  uiwcontFree (hbox);
 
   /* begin line : vlc message */
   hbox = uiCreateHorizBox ();
@@ -1294,6 +1322,44 @@ installerValidateBDJ3Loc (uientry_t *entry, void *udata)
   return rc;
 }
 
+static int
+installerValidateMusicDir (uientry_t *entry, void *udata)
+{
+  installer_t   *installer = udata;
+  bool          locok = false;
+  char          tbuff [200];
+  int           rc = UIENTRY_OK;
+
+  if (! installer->guienabled) {
+    return UIENTRY_ERROR;
+  }
+
+  if (! installer->uiBuilt) {
+    return UIENTRY_RESET;
+  }
+
+  /* music dir validation */
+
+  strlcpy (tbuff, uiEntryGetValue (installer->musicdirEntry), sizeof (tbuff));
+  pathNormalizePath (tbuff, strlen (tbuff));
+  if (*tbuff &&
+      fileopIsDirectory (tbuff)) {
+    locok = true;
+  }
+
+  if (! locok) {
+    rc = UIENTRY_ERROR;
+    /* CONTEXT: installer: the location entered is not a valid music dir. */
+    snprintf (tbuff, sizeof (tbuff), _("Not a valid %s folder."), BDJ3_NAME);
+    uiLabelSetText (installer->wcont [INST_W_CONV_FEEDBACK_MSG], tbuff);
+    installerSetConvert (installer, UI_TOGGLE_BUTTON_OFF);
+  }
+
+  /* will call display-convert */
+  installerSetPaths (installer);
+  return rc;
+}
+
 static bool
 installerTargetDirDialog (void *udata)
 {
@@ -1329,6 +1395,16 @@ installerSetBDJ3LocEntry (installer_t *installer, const char *bdj3loc)
   uiEntrySetValue (installer->bdj3locEntry, tbuff);
 }
 
+static void
+installerSetMusicDirEntry (installer_t *installer, const char *musicdir)
+{
+  char    tbuff [MAXPATHLEN];
+
+  strlcpy (tbuff, musicdir, sizeof (tbuff));
+  pathDisplayPath (tbuff, sizeof (tbuff));
+  uiEntrySetValue (installer->musicdirEntry, tbuff);
+}
+
 static bool
 installerBDJ3LocDirDialog (void *udata)
 {
@@ -1345,6 +1421,28 @@ installerBDJ3LocDirDialog (void *udata)
   if (fn != NULL) {
     installerSetBDJ3LocEntry (installer, fn);
     logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected bdj3 loc: %s", installer->bdj3loc);
+    mdfree (fn);
+  }
+  mdfree (selectdata);
+  return UICB_CONT;
+}
+
+static bool
+installerMusicDirDialog (void *udata)
+{
+  installer_t *installer = udata;
+  char        *fn = NULL;
+  uiselect_t  *selectdata;
+  char        tbuff [100];
+
+  /* CONTEXT: installer: music folder selection dialog: window title */
+  snprintf (tbuff, sizeof (tbuff), _("Select Music Folder Location"));
+  selectdata = uiDialogCreateSelect (installer->wcont [INST_W_WINDOW],
+      tbuff, uiEntryGetValue (installer->musicdirEntry), NULL, NULL, NULL);
+  fn = uiSelectDirDialog (selectdata);
+  if (fn != NULL) {
+    installerSetMusicDirEntry (installer, fn);
+    logMsg (LOG_INSTALL, LOG_IMPORTANT, "selected music dir: %s", installer->musicdir);
     mdfree (fn);
   }
   mdfree (selectdata);
@@ -1436,6 +1534,16 @@ installerCheckTarget (installer_t *installer, const char *dir)
     installer->newinstall = true;
   }
 
+  strlcpy (installer->datatopdir, installer->rundir, MAXPATHLEN);
+  if (isMacOS ()) {
+    snprintf (installer->datatopdir, MAXPATHLEN,
+        "%s/Library/Application Support/BDJ4",
+        installer->home);
+  }
+
+  if (exists) {
+    installerGetOldData (installer);
+  }
   return exists;
 }
 
@@ -1444,6 +1552,7 @@ installerSetPaths (installer_t *installer)
 {
   /* the target dir should already be set by the validation process */
   installerSetBDJ3LocDir (installer, uiEntryGetValue (installer->bdj3locEntry));
+  installerSetMusicDir (installer, uiEntryGetValue (installer->musicdirEntry));
   installerDisplayConvert (installer);
 }
 
@@ -1509,9 +1618,7 @@ installerInstInit (installer_t *installer)
 
   if (installer->guienabled) {
     installerSetPaths (installer);
-  }
 
-  if (installer->guienabled) {
     installer->reinstall = uiToggleButtonIsActive (installer->wcont [INST_W_RE_INSTALL]);
     if (installer->newinstall) {
       installer->reinstall = false;
@@ -1740,13 +1847,6 @@ installerCopyFiles (installer_t *installer)
 static void
 installerMakeDataTop (installer_t *installer)
 {
-  strlcpy (installer->datatopdir, installer->rundir, MAXPATHLEN);
-  if (isMacOS ()) {
-    snprintf (installer->datatopdir, MAXPATHLEN,
-        "%s/Library/Application Support/BDJ4",
-        installer->home);
-  }
-
   diropMakeDir (installer->datatopdir);
 
   if (chdir (installer->datatopdir)) {
@@ -1760,12 +1860,11 @@ installerMakeDataTop (installer_t *installer)
 static void
 installerCreateDirs (installer_t *installer)
 {
-  if (! installer->newinstall && ! installer->reinstall) {
-    bdjoptInit ();
-    installer->bdjoptloaded = true;
+  if (! installer->newinstall) {
+    installerGetOldData (installer);
+  }
 
-    strlcpy (installer->ati, bdjoptGetStr (OPT_M_AUDIOTAG_INTFC), sizeof (installer->ati));
-    installerSetATISelect (installer);
+  if (! installer->newinstall && ! installer->reinstall) {
     installer->instState = INST_CONVERT_START;
     return;
   }
@@ -1797,7 +1896,6 @@ installerCopyTemplates (installer_t *installer)
 {
   char    from [MAXPATHLEN];
   char    to [MAXPATHLEN];
-
 
   if (chdir (installer->datatopdir)) {
     installerFailWorkingDir (installer, installer->datatopdir, "copytemplates");
@@ -2052,6 +2150,8 @@ installerConvert (installer_t *installer)
 static void
 installerConvertFinish (installer_t *installer)
 {
+  installerGetOldData (installer);
+
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_STATUS, _("Conversion complete."), false);
   installer->instState = INST_CREATE_SHORTCUT;
@@ -2909,6 +3009,14 @@ installerSetBDJ3LocDir (installer_t *installer, const char *fn)
 }
 
 static void
+installerSetMusicDir (installer_t *installer, const char *fn)
+{
+  dataFree (installer->musicdir);
+  installer->musicdir = mdstrdup (fn);
+  pathNormalizePath (installer->musicdir, strlen (installer->musicdir));
+}
+
+static void
 installerCheckAndFixTarget (char *buff, size_t sz)
 {
   pathinfo_t  *pi;
@@ -2998,34 +3106,45 @@ installerSetATISelect (installer_t *installer)
       break;
     }
   }
-
-  if (installer->guienabled && installer->uiBuilt) {
-    for (int i = INST_ATI_BDJ4; i < INST_ATI_MAX; ++i) {
-      int   tval;
-      int   idx;
-
-      tval = false;
-      if (installer->atiselect == i) {
-        tval = true;
-      }
-      idx = INST_W_RADIO_ATI_BDJ4 + i;
-      uiToggleButtonSetState (installer->wcont [idx], tval);
-    }
-  }
+  installerCheckPackages (installer);
 }
 
-static bool
-installerATISelectCallback (void *udata)
+static void
+installerGetOldData (installer_t *installer)
 {
-  installer_t   *installer = udata;
+  const char  *tmp = NULL;
+  char        cwd [MAXPATHLEN];
 
-  for (int i = 0; i < INST_ATI_MAX; ++i) {
-    if (uiToggleButtonIsActive (installer->wcont [INST_W_RADIO_ATI_BDJ4 + i])) {
-      strlcpy (installer->ati, instati [i].name, sizeof (installer->ati));
-      installerSetATISelect (installer);
-      break;
+
+  if (installer->bdjoptloaded) {
+    bdjoptCleanup ();
+    installer->bdjoptloaded = false;
+  }
+
+  if (! installer->newinstall) {
+    (void) ! getcwd (cwd, sizeof (cwd));
+    if (chdir (installer->datatopdir)) {
+      return;
     }
   }
-  installerCheckPackages (installer);
-  return UICB_CONT;
+
+  bdjoptInit ();
+  installer->bdjoptloaded = true;
+
+  tmp = bdjoptGetStr (OPT_M_DIR_MUSIC);
+  if (tmp != NULL) {
+    installer->musicdir = mdstrdup (tmp);
+    installerSetMusicDirEntry (installer, installer->musicdir);
+  }
+  tmp = bdjoptGetStr (OPT_M_AUDIOTAG_INTFC);
+  if (tmp != NULL) {
+    strlcpy (installer->ati, tmp, sizeof (installer->ati));
+    installerSetATISelect (installer);
+  }
+
+  if (! installer->newinstall) {
+    if (chdir (cwd)) {
+      installerFailWorkingDir (installer, installer->datatopdir, "get-old-b");
+    }
+  }
 }

@@ -8,5 +8,6 @@ void  instutilCreateShortcut (const char *name, const char *maindir,
           const char *target, int profilenum);
 void  instutilCopyTemplates (void);
 void  instutilCopyHttpFiles (void);
+void  instutilGetMusicDir (char *homemusicdir, size_t sz);
 
 #endif /* INC_INSTUTIL_H */

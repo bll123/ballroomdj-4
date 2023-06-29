@@ -17,6 +17,7 @@
 #include "instutil.h"
 #include "log.h"
 #include "osprocess.h"
+#include "osutils.h"
 #include "pathbld.h"
 #include "pathutil.h"
 #include "sysvars.h"
@@ -264,6 +265,70 @@ instutilCopyHttpFiles (void)
   (void) ! system (tbuff);
 }
 
+void
+instutilGetMusicDir (char *homemusicdir, size_t sz)
+{
+  const char    *home;
+
+  home = sysvarsGetStr (SV_HOME);
+
+  if (isLinux ()) {
+    const char  *targv [5];
+    int         targc = 0;
+    char        data [200];
+    char        *prog;
+
+    prog = sysvarsGetStr (SV_PATH_XDGUSERDIR);
+    if (*prog) {
+      *data = '\0';
+      targc = 0;
+      targv [targc++] = prog;
+      targv [targc++] = "MUSIC";
+      targv [targc++] = NULL;
+      osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data), NULL);
+      stringTrim (data);
+      stringTrimChar (data, '/');
+
+      /* xdg-user-dir returns the home folder if the music dir does */
+      /* not exist */
+      if (*data && strcmp (data, home) != 0) {
+        strlcpy (homemusicdir, data, sz);
+      } else {
+        snprintf (homemusicdir, sz, "%s/Music", home);
+      }
+    }
+  }
+
+  if (isWindows ()) {
+    char    *data;
+
+    snprintf (homemusicdir, sz, "%s/Music", home);
+    data = osRegistryGet (
+        "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders",
+        "My Music");
+    if (data != NULL && *data) {
+      /* windows returns the path with %USERPROFILE% */
+      strlcpy (homemusicdir, home, sz);
+      strlcat (homemusicdir, data + 13, sz);
+    } else {
+      data = osRegistryGet (
+          "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders",
+          "My Music");
+      if (data != NULL && *data) {
+        /* windows returns the path with %USERPROFILE% */
+        strlcpy (homemusicdir, home, sz);
+        strlcat (homemusicdir, data + 13, sz);
+      }
+    }
+  }
+
+  if (isMacOS ()) {
+    snprintf (homemusicdir, sz, "%s/Music", home);
+  }
+
+  pathNormalizePath (homemusicdir, sz);
+}
+
 /* internal routines */
 
 static void
@@ -278,3 +343,4 @@ instutilCopyHttpSVGFile (const char *fn)
       fn, BDJ4_IMG_SVG_EXT, PATHBLD_MP_DREL_HTTP);
   filemanipCopy (from, to);
 }
+

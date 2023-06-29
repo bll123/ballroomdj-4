@@ -33,6 +33,7 @@
 #include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
+#include "instutil.h"
 #include "log.h"
 #include "localeutil.h"
 #include "mdebug.h"
@@ -251,60 +252,7 @@ main (int argc, char *argv [])
   /* always figure out where the home music dir is */
   /* this is used on new intalls to set the music dir */
   /* also needed to check for the itunes dir every time */
-  home = sysvarsGetStr (SV_HOME);
-  if (isLinux ()) {
-    const char  *targv [5];
-    int         targc = 0;
-    char        data [200];
-    char        *prog;
-
-    prog = sysvarsGetStr (SV_PATH_XDGUSERDIR);
-    if (*prog) {
-      *data = '\0';
-      targc = 0;
-      targv [targc++] = prog;
-      targv [targc++] = "MUSIC";
-      targv [targc++] = NULL;
-      osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, sizeof (data), NULL);
-      stringTrim (data);
-      stringTrimChar (data, '/');
-
-      /* xdg-user-dir returns the home folder if the music dir does */
-      /* not exist */
-      if (*data && strcmp (data, home) != 0) {
-        strlcpy (homemusicdir, data, sizeof (homemusicdir));
-      } else {
-        snprintf (homemusicdir, sizeof (homemusicdir), "%s/Music", home);
-      }
-    }
-  }
-  if (isWindows ()) {
-    char    *data;
-
-    snprintf (homemusicdir, sizeof (homemusicdir), "%s/Music", home);
-    data = osRegistryGet (
-        "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders",
-        "My Music");
-    if (data != NULL && *data) {
-      /* windows returns the path with %USERPROFILE% */
-      strlcpy (homemusicdir, home, sizeof (homemusicdir));
-      strlcat (homemusicdir, data + 13, sizeof (homemusicdir));
-    } else {
-      data = osRegistryGet (
-          "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders",
-          "My Music");
-      if (data != NULL && *data) {
-        /* windows returns the path with %USERPROFILE% */
-        strlcpy (homemusicdir, home, sizeof (homemusicdir));
-        strlcat (homemusicdir, data + 13, sizeof (homemusicdir));
-      }
-    }
-  }
-  if (isMacOS ()) {
-    snprintf (homemusicdir, sizeof (homemusicdir), "%s/Music", home);
-  }
-  pathNormalizePath (homemusicdir, sizeof (homemusicdir));
-
+  instutilGetMusicDir (homemusicdir, sizeof (homemusicdir));
   logMsg (LOG_INSTALL, LOG_INFO, "homemusicdir: %s", homemusicdir);
 
   for (int i = UPD_FIRST; i < UPD_MAX; ++i) {
