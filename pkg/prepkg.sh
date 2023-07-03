@@ -86,7 +86,7 @@ fi
 if [[ $tag == linux || $tag == macos ]]; then
   rsync -aS packages/icu/lib plocal
   rm -f plocal/lib/libicutest* plocal/lib/libicutu*
-  rm -rf plocal/lib/pkgconfig plocal/lib/icu
+  rm -rf plocal/lib/icu
 fi
 
 # on windows, copy all of the required .dll files to plocal/bin

@@ -118,13 +118,16 @@ char *
 atiiReadTags (atidata_t *atidata, const char *ffn)
 {
   char        * data;
-  const char  * targv [5];
+  const char  * targv [10];
+  int         targc = 0;
   size_t      retsz;
 
-  targv [0] = atidata->python;
-  targv [1] = atidata->mutagen;
-  targv [2] = ffn;
-  targv [3] = NULL;
+  targv [targc++] = atidata->python;
+  targv [targc++] = "-X";
+  targv [targc++] = "utf8";
+  targv [targc++] = atidata->mutagen;
+  targv [targc++] = ffn;
+  targv [targc++] = NULL;
 
   data = mdmalloc (ATI_TAG_BUFF_SIZE);
   osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, data, ATI_TAG_BUFF_SIZE, &retsz);
@@ -764,6 +767,8 @@ atimutagenRunUpdate (const char *fn, char *dbuff, size_t sz)
   int         rc;
 
   targv [targc++] = sysvarsGetStr (SV_PATH_PYTHON);
+  targv [targc++] = "-X";
+  targv [targc++] = "utf8";
   targv [targc++] = fn;
   targv [targc++] = NULL;
   /* the wait flag is on, the return code is the process return code */

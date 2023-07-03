@@ -361,7 +361,9 @@ main (int argc, char * argv[])
     exit (1);
   }
 
+
   (void) ! getcwd (origcwd, sizeof (origcwd));
+  pathNormalizePath (origcwd, sizeof (origcwd));
 
   if (isinstaller == false) {
     if (chdir (sysvarsGetStr (SV_BDJ4_DIR_DATATOP)) < 0) {

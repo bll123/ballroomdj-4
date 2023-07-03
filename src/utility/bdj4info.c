@@ -18,11 +18,34 @@
 # include <gtk/gtk.h>
 #endif
 
+#include "bdj4.h"
 #include "bdjopt.h"
 #include "fileop.h"
 #include "localeutil.h"
 #include "mdebug.h"
+#include "osutils.h"
 #include "sysvars.h"
+
+const char *envitems [] = {
+  "GDK_SCALE",
+  "GTK_CSD",
+  "GTK_THEME",
+  "HOME",
+  "LC_ALL",
+  "NUMBER_OF_PROCESSORS",
+  "PANGOCAIRO_BACKEND",
+  "PATH",
+  "PYTHONIOENCODING",
+  "TEMP",
+  "TMP",
+  "TMPDIR",
+  "USER",
+  "USERNAME",
+  "USERPROFILE",
+};
+enum {
+  ENV_MAX = sizeof (envitems) / sizeof (const char *),
+};
 
 int
 main (int argc, char *argv [])
@@ -89,6 +112,15 @@ main (int argc, char *argv [])
   fprintf (stdout, " i: gint  %ld\n", (long) sizeof (gint));
   fprintf (stdout, " i: glong %ld\n", (long) sizeof (glong));
 #endif
+
+  for (int i = 0; i < ENV_MAX; ++i) {
+    char  tmp [MAXPATHLEN];
+
+    osGetEnv (envitems [i], tmp, sizeof (tmp));
+    if (*tmp) {
+      fprintf (stdout, "e: %-20s %s\n", envitems [i], tmp);
+    }
+  }
 
   for (int i = 0; i < SV_MAX; ++i) {
     if (i == SV_TEMP_A || i == SV_TEMP_B) {
