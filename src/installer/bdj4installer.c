@@ -1361,8 +1361,8 @@ installerValidateMusicDir (uientry_t *entry, void *udata)
 
   if (! locok) {
     rc = UIENTRY_ERROR;
-    /* CONTEXT: installer: the location entered is not a valid music dir. */
-    snprintf (tbuff, sizeof (tbuff), _("Not a valid %s folder."), BDJ3_NAME);
+    /* CONTEXT: installer: the location entered is not a valid music folder. */
+    snprintf (tbuff, sizeof (tbuff), _("Not a valid music folder."));
     uiLabelSetText (installer->wcont [INST_W_CONV_FEEDBACK_MSG], tbuff);
     installerSetConvert (installer, UI_TOGGLE_BUTTON_OFF);
   }

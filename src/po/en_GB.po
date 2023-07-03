@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4 4.3.3\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2023-06-24\n"
-"PO-Revision-Date: 2023-06-24\n"
+"POT-Creation-Date: 2023-07-03\n"
+"PO-Revision-Date: 2023-07-03\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: english/gb\n"
 "Language: en\n"
@@ -714,6 +714,11 @@ msgstr ""
 msgid "Enter the folder where %s is installed."
 msgstr ""
 
+#. CONTEXT: installer: command line interface: asking for the user's music folder
+#, c-format
+msgid "Enter the music folder."
+msgstr ""
+
 #. CONTEXT: installer: command line interface: the selected folder exists and is not a BDJ4 installation
 #, c-format
 msgid "Error: Folder %s already exists."
@@ -1096,7 +1101,8 @@ msgstr ""
 msgid "Move to Top"
 msgstr ""
 
-#. CONTEXT: configuration: the music folder where the user store their music
+#. CONTEXT: configuration: the music folder where the user stores their music
+#. CONTEXT: installation: the music folder where the user stores their music
 #. CONTEXT: update database: music folder to process
 msgid "Music Folder"
 msgstr ""
@@ -1221,6 +1227,16 @@ msgstr ""
 #. CONTEXT: installer: the location entered is not a valid BDJ3 location.
 #, c-format
 msgid "Not a valid %s folder."
+msgstr ""
+
+#. CONTEXT: installer: the location entered is not a valid music folder.
+#, c-format
+msgid "Not a valid music folder."
+msgstr ""
+
+#. CONTEXT: installer: display of package status
+#, c-format
+msgid "Not needed"
 msgstr ""
 
 #. CONTEXT: label: notes
@@ -1563,6 +1579,10 @@ msgstr ""
 msgid "Scale"
 msgstr ""
 
+#. CONTEXT: installer: status message
+msgid "Scanning music folder."
+msgstr ""
+
 #. CONTEXT: song selection filter: a filter: filter the song selection with a search for text
 msgid "Search"
 msgstr ""
@@ -1618,6 +1638,7 @@ msgid "Select Folder"
 msgstr ""
 
 #. CONTEXT: configuration: folder selection dialog: window title
+#. CONTEXT: installer: music folder selection dialog: window title
 #. CONTEXT: update database: dialog title for selecting database music folder
 #, c-format
 msgid "Select Music Folder Location"
