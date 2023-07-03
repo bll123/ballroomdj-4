@@ -140,11 +140,20 @@ done
 DBG=4456459
 # norm
 NUMM=134
+# cha cha
+NUMB=15
+# regex
+NUMR=13
+if [[ $ATIBDJ4 == T ]]; then
+  NUMM=$((NUMM-9))    # opus
+  NUMM=$((NUMM-9))    # m4a
+  NUMB=$((NUMB-2))    # opus, m4a
+  NUMR=$((NUMB-2))    # opus, m4a
+fi
 # deleted foxtrot
 NUMC=$(($NUMM-6))
-NUMB=15
+# deleted cha cha
 NUMBL1=$(($NUMB-1))
-NUMR=13
 
 DATADB=data/musicdb.dat
 TMAINDB=test-templates/musicdb.dat

@@ -11,6 +11,7 @@
 #include <getopt.h>
 #include <unistd.h>
 
+#include "ati.h"
 #include "audiofile.h"
 #include "audiotag.h"
 #include "bdjstring.h"
@@ -116,6 +117,9 @@ main (int argc, char *argv [])
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO;
   bool        loglevelset = false;
   bool        keepmusic = false;
+  int         supported [AFILE_TYPE_MAX];
+  int         tagtype;
+  int         filetype;
 
   static struct option bdj_options [] = {
     { "bdj3tags",     no_argument,        NULL,   '3' },
@@ -217,6 +221,7 @@ main (int argc, char *argv [])
   logStartAppend ("tmusicsetup", "tset", loglevel);
 
   logMsg (LOG_DBG, LOG_IMPORTANT, "ati: %s", bdjoptGetStr (OPT_M_AUDIOTAG_INTFC));
+  atiGetSupportedTypes (bdjoptGetStr (OPT_M_AUDIOTAG_INTFC), supported);
 
   /* create an entirely new database */
   fileopDelete (dbfn);
@@ -238,6 +243,12 @@ main (int argc, char *argv [])
 
     src = ilistGetStr (tmlist, key, TM_SOURCE);
     dest = ilistGetStr (tmlist, key, TM_DEST);
+
+    audiotagDetermineTagType (src, &tagtype, &filetype);
+    if (supported [filetype] != ATI_READ_WRITE) {
+      continue;
+    }
+
     fn = createFile (src, dest, keepmusic);
     if (! keepmusic) {
       audiotagWriteTags (fn, empty, tagdata, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);

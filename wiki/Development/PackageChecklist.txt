@@ -10,6 +10,7 @@
     * make 2>&1 | tee w
     * make check
     * utils/dbtest.sh
+    * utils/dbtest.sh --atibdj4
     * utils/insttest.sh
     * make testsuite
     * pkg/mkpkg.sh
@@ -24,6 +25,7 @@ on the other platforms.
 * for each macos, windows
     * make check
     * utils/dbtest.sh
+    * utils/dbtest.sh --atibdj4
     * utils/insttest.sh
     * make testsuite
 * for each macos, windows
