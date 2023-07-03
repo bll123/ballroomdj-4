@@ -14,6 +14,8 @@ extern "C" {
 
 #define LIBATI_PFX  "libati"
 
+/* these are file types that have audio tag support */
+/* other audio file types may still be playable by vlc */
 enum {
   AFILE_TYPE_UNKNOWN,
   AFILE_TYPE_FLAC,

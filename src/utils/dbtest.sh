@@ -98,7 +98,6 @@ function setwritetagson {
 function setbdj3compaton {
   gconf=data/bdjconfig.txt
   sed -e '/^BDJ3COMPATTAGS$/ { n ; s/.*/..yes/ ; }' \
-      -e '/^BDJ3COMPATTAGSLAST$/ { n ; s/.*/..no/ ; }' \
       ${gconf} > ${gconf}.n
   mv -f ${gconf}.n ${gconf}
 }
@@ -106,7 +105,6 @@ function setbdj3compaton {
 function setbdj3compatoff {
   gconf=data/bdjconfig.txt
   sed -e '/^BDJ3COMPATTAGS$/ { n ; s/.*/..no/ ; }' \
-      -e '/^BDJ3COMPATTAGSLAST$/ { n ; s/.*/..yes/ ; }' \
       ${gconf} > ${gconf}.n
   mv -f ${gconf}.n ${gconf}
 }
@@ -150,9 +148,11 @@ NUMR=13
 
 DATADB=data/musicdb.dat
 TMAINDB=test-templates/musicdb.dat
+INMAINDB=test-templates/test-music.txt
 INNOCHACHA=test-templates/test-m-nochacha.txt
 INCHACHA=test-templates/test-m-chacha.txt
 INNOFOXTROT=test-templates/test-m-nofoxtrot.txt
+INCOMPAT=tmp/test-music-compat.txt
 INR=test-templates/test-m-regex.txt
 INRDAT=test-templates/test-m-regex-dat.txt
 INRDT=test-templates/test-m-regex-dt.txt
@@ -162,12 +162,13 @@ TDBNOFOXTROT=tmp/test-m-nofoxtrot.dat
 TDBCHACHA=tmp/test-m-chacha.dat
 TDBEMPTY=tmp/test-m-empty.dat
 TDBCOMPACT=tmp/test-m-compact.dat
+TDBCOMPAT=tmp/test-m-compat.dat
 TDBRDAT=tmp/test-m-r-dat.dat
 TDBRDT=tmp/test-m-r-dt.dat
 TDBRDTALT=tmp/test-m-r-dt-alt.dat
 TMDT=tmp/test-music-dt
 TDBRDTAT=tmp/test-m-r-dtat.dat
-TMSONGEND=test-music/033-all-tags-mp3-a.mp3
+TMSONGEND=test-music/037-all-tags-mp3-a.mp3
 
 TMPA=tmp/dbtesta.txt
 TMPB=tmp/dbtestb.txt
@@ -213,9 +214,6 @@ if [[ $TESTON == T ]]; then
   msg+=$(compcheck $tname $crc)
   dispres $tname $rc $crc
 fi
-
-TESTON=F
-exit 1
 
 if [[ $TESTON == T ]]; then
   # main test db : check-new with no changes
@@ -312,7 +310,7 @@ if [[ $TESTON == T ]]; then
   # check one of the files
   val=$(python3 scripts/mutagen-inspect "${TMSONGEND}" | grep SONGEND)
   case ${val} in
-    *=0:29.0)
+    TXXX=SONGEND=0:29.0)
       ;;
     *)
       msg+="audio tags not written"
@@ -322,12 +320,23 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $crc
 fi
 
-# restore the main test database again, needed for write tags check
-# only the main db has songs with song-start/song-end/vol-adjust-perc
-cp -f $TMAINDB $DATADB
+# create test db w/different song-end
+# the problem here is that with bdj3 compatibility off, there is no
+# forced rewrite of the tags, therefore to test, the value must be
+# different
+cp -f $INMAINDB $INCOMPAT
+tfn=$INCOMPAT
+sed -e '/^SONGEND/ { n ; s/.*/..28000/ ; }' \
+    ${tfn} > ${tfn}.n
+mv -f ${tfn}.n ${tfn}
+./src/utils/mktestsetup.sh \
+    --infile $INCOMPAT \
+    --outfile $TDBCOMPAT \
+    --debug ${DBG} ${ATIFLAG} \
+    --keepmusic
+# want the fixed version after the udpater has run
+cp -f $DATADB $TDBCOMPAT
 
-# the prior writetags test should be run to make sure the audio tag was
-# re-written
 if [[ $TESTON == T ]]; then
   # test db : write tags
   # note that if the ati interface can't write tags, no changes are made
@@ -344,7 +353,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)
+  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBCOMPAT)
   crc=$?
   updateCounts $crc
   msg+=$(compcheck $tname $crc)
@@ -361,27 +370,30 @@ if [[ $TESTON == T ]]; then
   # check one of the files
   val=$(python3 scripts/mutagen-inspect "${TMSONGEND}" | grep SONGEND)
   case ${val} in
-    *=0:29.0)
-      msg+="audio tags not written"
-      rc=1
+    TXXX=SONGEND=28000)
       ;;
     *)
+      msg+="audio tags not written"
+      rc=1
       ;;
   esac
   dispres $tname $rc $crc
 fi
 
-TESTON=F
+# the tags are now incorrect due to the prior test.
+# re-create the main database and test music
+./src/utils/mktestsetup.sh --force --debug ${DBG} ${ATIFLAG}
 
-# clean any leftover foxtrot
+# clean any leftover foxtrot from the tmp dir
 rm -f tmp/*-foxtrot.mp3
 # save all foxtrot
 mv -f test-music/*-foxtrot.mp3 tmp
 
-# create test db w/no foxtrot
+# create test setup/db w/no foxtrot
 ./src/utils/mktestsetup.sh \
     --infile $INNOFOXTROT \
-    --outfile $TDBNOFOXTROT
+    --outfile $TDBNOFOXTROT \
+    --debug ${DBG} ${ATIFLAG}
 
 # restore the main database
 cp -f $TMAINDB $DATADB
@@ -400,7 +412,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)
+  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBNOFOXTROT)
   crc=$?
   updateCounts $crc
   msg+=$(compcheck $tname $rc)
@@ -436,11 +448,13 @@ mv -f tmp/*-foxtrot.mp3 test-music
 ./src/utils/mktestsetup.sh \
     --emptydb \
     --infile $INCHACHA \
-    --outfile $TDBEMPTY
+    --outfile $TDBEMPTY \
+    --debug ${DBG} ${ATIFLAG}
 # create test db w/chacha
 ./src/utils/mktestsetup.sh \
     --infile $INCHACHA \
-    --outfile $TDBCHACHA
+    --outfile $TDBCHACHA \
+    --debug ${DBG} ${ATIFLAG}
 # save the cha cha
 rm -f tmp/001-chacha.mp3
 mv -f test-music/001-chacha.mp3 tmp
@@ -448,7 +462,8 @@ mv -f test-music/001-chacha.mp3 tmp
 # will copy tmp/test-m-b.dat to data/
 ./src/utils/mktestsetup.sh \
     --infile $INNOCHACHA \
-    --outfile $TDBNOCHACHA
+    --outfile $TDBNOCHACHA \
+    --debug ${DBG} ${ATIFLAG}
 
 if [[ $TESTON == T ]]; then
   # test db : rebuild of test-m-nochacha
@@ -517,7 +532,7 @@ if [[ $TESTON == T ]]; then
   dispres $tname $rc $rc
 fi
 
-# restore the empty database (empty of tags), needed for update from tags check
+# restore the empty database needed for update from tags check
 cp -f $TDBEMPTY $DATADB
 
 if [[ $TESTON == T ]]; then
@@ -530,6 +545,38 @@ if [[ $TESTON == T ]]; then
     --dbtopdir "${musicdir}" \
     --cli --wait --verbose)
   exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated ${NUMB} notaudio 0 writetag 0"
+  msg+=$(checkres $tname "$got" "$exp")
+  rc=$?
+  updateCounts $rc
+  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBEMPTY)
+  crc=$?
+  updateCounts $crc
+  msg+=$(compcheck $tname $crc)
+
+  if [[ $rc -eq 0 && $crc -eq 0 ]]; then
+    msg+=$(checkaudiotags $tname)
+    trc=$?
+    updateCounts $trc
+    if [[ $trc -ne 0 ]]; then
+      rc=$trc
+    fi
+  fi
+  dispres $tname $rc $crc
+fi
+
+# restore the cha cha database
+cp -f $TDBCHACHA $DATADB
+
+if [[ $TESTON == T ]]; then
+  # test db : write tags
+  tname=write-tags
+  setwritetagson
+  got=$(./bin/bdj4 --bdj4dbupdate \
+    --debug ${DBG} \
+    --writetags \
+    --dbtopdir "${musicdir}" \
+    --cli --wait --verbose)
+  exp="found ${NUMB} skip 0 indb ${NUMB} new 0 updated 0 notaudio 0 writetag ${NUMB}"
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
@@ -552,25 +599,30 @@ fi
 # create test regex db w/tags (dance/artist - title)
 ./src/utils/mktestsetup.sh \
     --infile $INRDAT \
-    --outfile $TDBRDAT
+    --outfile $TDBRDAT \
+    --debug ${DBG} ${ATIFLAG}
 # create test regex db w/tags (dance/title)
 ./src/utils/mktestsetup.sh \
     --infile $INRDT \
-    --outfile $TDBRDT
+    --outfile $TDBRDT \
+    --debug ${DBG} ${ATIFLAG}
 # create test regex db w/tags (dance/title) and w/alternate entries
 tdir=$(echo ${musicdir} | sed 's,/test-music.*,,')
 ./src/utils/mktestsetup.sh \
     --infile $INRDT \
     --outfile $TDBRDTALT \
-    --altdir ${tdir}/$TMDT
+    --altdir ${tdir}/$TMDT \
+    --debug ${DBG} ${ATIFLAG}
 # create test regex db w/tags (dance/tn-artist - title)
 ./src/utils/mktestsetup.sh \
     --infile $INRDTAT \
-    --outfile $TDBRDTAT
+    --outfile $TDBRDTAT \
+    --debug ${DBG} ${ATIFLAG}
 # create test music dir w/o any tags, tmpa is not used
 ./src/utils/mktestsetup.sh \
     --infile $INR \
-    --outfile $TMPA
+    --outfile $TMPA \
+    --debug ${DBG} ${ATIFLAG}
 # copy the test-music to an alternate folder for testing
 # secondary folder builds
 test -d $TMDT && rm -rf $TMDT

@@ -149,6 +149,7 @@ main (int argc, char *argv [])
   bool        processflags [UPD_MAX];
   bool        processaf = false;
   bool        processdb = false;
+  bool        forcewritetags = false;
   datafile_t  *df;
   nlist_t     *updlist = NULL;
   musicdb_t   *musicdb = NULL;
@@ -159,6 +160,7 @@ main (int argc, char *argv [])
     { "newinstall", no_argument,        NULL,   'n' },
     { "converted",  no_argument,        NULL,   'c' },
     { "musicdir",   required_argument,  NULL,   'm' },
+    { "writetags",  no_argument,        NULL,   'W' },
     { "bdj4updater",no_argument,        NULL,   0 },
     { "bdj4",       no_argument,        NULL,   'B' },
     /* ignored */
@@ -188,6 +190,10 @@ main (int argc, char *argv [])
       }
       case 'c': {
         converted = true;
+        break;
+      }
+      case 'W': {
+        forcewritetags = true;
         break;
       }
       case 'm': {
@@ -671,7 +677,7 @@ main (int argc, char *argv [])
 
   processflags [UPD_FIX_AF_MPM] =
       statusflags [UPD_FIX_AF_MPM] == UPD_NOT_DONE &&
-      bdjoptGetNum (OPT_G_WRITETAGS) == WRITE_TAGS_ALL;
+      (forcewritetags || bdjoptGetNum (OPT_G_WRITETAGS) == WRITE_TAGS_ALL);
   if (processflags [UPD_FIX_AF_MPM]) {
     logMsg (LOG_INSTALL, LOG_INFO, "-- 4.3.2.4 : fix af mpm");
     processaf = true;

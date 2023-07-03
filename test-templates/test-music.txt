@@ -1,10 +1,13 @@
 # test-music.txt
-# 2022-9-5
-# version 1
+# 2023-6-24
+# version 2
+#
 # for creating test music files and a test database.
 #
 # the testing processes can change the song data as needed, so not
 # all variations are included
+#
+# The BPM is set to the old method so that the updater can be tested.
 #
 version
 ..1

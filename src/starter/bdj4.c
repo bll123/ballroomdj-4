@@ -58,6 +58,7 @@ main (int argc, char * argv[])
   bool      havetheme = false;
   bool      havescale = false;
   FILE      *fh = NULL;
+  int       rc;
 
   static struct option bdj_options [] = {
     { "bdj4altsetup",   no_argument,        NULL,   20 },
@@ -91,14 +92,15 @@ main (int argc, char * argv[])
     /* used by installer */
     { "ati",            required_argument,  NULL,   0 },
     { "bdj3dir",        required_argument,  NULL,   0 },
-    { "nomutagen",      no_argument,        NULL,   0 },
+    { "locale",         required_argument,  NULL,   0 },
+    { "musicdir",       required_argument,  NULL,   0 },
     { "nodatafiles",    no_argument,        NULL,   0 },
+    { "nomutagen",      no_argument,        NULL,   0 },
     { "reinstall",      no_argument,        NULL,   0 },
     { "targetdir",      required_argument,  NULL,   0 },
     { "testregistration", no_argument,      NULL,   0 },
     { "unattended",     no_argument,        NULL,   0 },
     { "unpackdir",      required_argument,  NULL,   0 },
-    { "locale",         required_argument,  NULL,   0 },
     /* standard stuff */
     { "debug",          required_argument,  NULL,   0 },
     { "ignorelock",     no_argument,        NULL,   0 },
@@ -128,10 +130,11 @@ main (int argc, char * argv[])
     { "runtest",        required_argument,  NULL,   0 },
     { "starttest",      required_argument,  NULL,   0 },
     /* tmusicsetup */
+    { "altdir",         required_argument,  NULL,   0 },
     { "emptydb",        no_argument,        NULL,   0 },
     { "infile",         required_argument,  NULL,   0 },
+    { "keepmusic",      no_argument,        NULL,   0 },
     { "outfile",        required_argument,  NULL,   0 },
-    { "altdir",         required_argument,  NULL,   0 },
     /* general options */
     { "cli",            no_argument,        NULL,   'c' },
     { "progress",       no_argument,        NULL,   0 },
@@ -537,12 +540,12 @@ main (int argc, char * argv[])
     flags |= OS_PROC_WAIT;
     flags &= ~OS_PROC_DETACH;
   }
-  osProcessStart (targv, flags, NULL, NULL);
+  rc = osProcessStart (targv, flags, NULL, NULL);
 #if BDJ4_MEM_DEBUG
   /* report is generally not needed unless source is changed */
   //mdebugReport ();
   mdebugCleanup ();
 #endif
-  return 0;
+  return rc;
 }
 

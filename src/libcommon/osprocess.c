@@ -54,6 +54,7 @@ osProcessStart (const char *targv[], int flags, void **handle, char *outfname)
   /* this may be slower, but it works; speed is not a major issue */
   tpid = fork ();
   if (tpid < 0) {
+    fprintf (stderr, "ERR: %d %s\n", errno, strerror (errno));
     return tpid;
   }
 
@@ -126,9 +127,22 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
     return -1;
   }
 
+#if 0
+    {
+      int   k = 0;
+      fprintf (stderr, "== pipe: ");
+      while (targv [k] != NULL) {
+        fprintf (stderr, "%s ", targv [k]);
+        ++k;
+      }
+      fprintf (stderr, "\n");
+    }
+#endif
+
   /* this may be slower, but it works; speed is not a major issue */
   tpid = fork ();
   if (tpid < 0) {
+    fprintf (stderr, "ERR: %d %s\n", errno, strerror (errno));
     return tpid;
   }
 
@@ -161,7 +175,8 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 
     rbuff [sz - 1] = '\0';
 
-    while (1) {
+    wait = true;
+    while (wait) {
       size_t    rbytes;
 
       rbytes = read (pipefd [0], rbuff + bytesread, sz - bytesread);
@@ -172,9 +187,6 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
       if (retsz != NULL) {
         *retsz = bytesread;
       }
-      if (! wait) {
-        break;
-      }
       if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
         rc = waitpid (pid, &wstatus, WNOHANG);
         if (rc < 0) {
@@ -184,9 +196,6 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
         } else if (rc != 0) {
           rc = osProcessWaitStatus (wstatus);
           wait = false;
-        } else {
-          /* force continuation */
-          wait = true;
         }
         if (wait) {
           mssleep (2);

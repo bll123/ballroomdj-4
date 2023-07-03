@@ -1,4 +1,4 @@
-# test-m-b.txt
+# test-m-nochacha.txt
 # 2022-11-4
 # version 1
 #

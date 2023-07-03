@@ -291,7 +291,7 @@ static void installerSetMusicDir (installer_t *installer, const char *fn);
 static void installerCheckAndFixTarget (char *buff, size_t sz);
 static bool installerWinVerifyProcess (installer_t *installer);
 static void installerSetATISelect (installer_t *installer);
-static void installerGetOldData (installer_t *installer);
+static void installerGetExistingData (installer_t *installer);
 static void installerScanMusicDir (installer_t *installer);
 
 int
@@ -308,14 +308,15 @@ main (int argc, char *argv[])
     { "ati",        required_argument,  NULL,   'A' },
     { "bdj3dir",    required_argument,  NULL,   '3' },
     { "bdj4installer",no_argument,      NULL,   0 },
-    { "nomutagen",  no_argument,        NULL,   'M' },
+    { "locale",     required_argument,  NULL,   'L' },
+    { "musicdir",   required_argument,  NULL,   'm' },
     { "nodatafiles", no_argument,       NULL,   'N' },
+    { "nomutagen",  no_argument,        NULL,   'M' },
     { "reinstall",  no_argument,        NULL,   'r' },
     { "targetdir",  required_argument,  NULL,   't' },
     { "testregistration", no_argument,  NULL,   'T' },
     { "unattended", no_argument,        NULL,   'U' },
     { "unpackdir",  required_argument,  NULL,   'u' },
-    { "locale",     required_argument,  NULL,   'L' },
     /* generic args */
     { "cli",        no_argument,        NULL,   'C' },
     { "quiet"  ,    no_argument,        NULL,   'Q' },
@@ -424,6 +425,7 @@ main (int argc, char *argv[])
   installerSetTargetDir (&installer, buff);
 
   instutilGetMusicDir (buff, sizeof (buff));
+  dataFree (installer.musicdir);
   installer.musicdir = mdstrdup (buff);
 
   while ((c = getopt_long_only (argc, argv, "Cru:l:", bdj_options, &option_index)) != -1) {
@@ -485,6 +487,11 @@ main (int argc, char *argv[])
         sysvarsSetStr (SV_LOCALE_SHORT, tbuff);
         sysvarsSetNum (SVL_LOCALE_SET, 1);
         installer.localespecified = true;
+        break;
+      }
+      case 'm': {
+        dataFree (installer.musicdir);
+        installer.musicdir = mdstrdup (optarg);
         break;
       }
       case 'M': {
@@ -963,6 +970,7 @@ installerMainLoop (void *udata)
 
   uiEntryValidate (installer->targetEntry, false);
   uiEntryValidate (installer->bdj3locEntry, false);
+  uiEntryValidate (installer->musicdirEntry, false);
 
   if (installer->guienabled && installer->scrolltoend) {
     uiTextBoxScrollToEnd (installer->disptb);
@@ -996,6 +1004,7 @@ installerMainLoop (void *udata)
 
       uiEntryValidate (installer->targetEntry, true);
       uiEntryValidate (installer->bdj3locEntry, true);
+      uiEntryValidate (installer->musicdirEntry, true);
       installer->instState = INST_WAIT_USER;
       break;
     }
@@ -1545,7 +1554,7 @@ installerCheckTarget (installer_t *installer, const char *dir)
   }
 
   if (exists) {
-    installerGetOldData (installer);
+    installerGetExistingData (installer);
   }
   return exists;
 }
@@ -1629,6 +1638,8 @@ installerInstInit (installer_t *installer)
   }
 
   if (! installer->guienabled && ! installer->unattended) {
+    /* target directory */
+
     tbuff [0] = '\0';
     /* CONTEXT: installer: command line interface: asking for the BDJ4 destination */
     printf (_("Enter the destination folder."));
@@ -1661,6 +1672,24 @@ installerInstInit (installer_t *installer)
       }
       printf ("\n");
       fflush (stdout);
+
+      /* music directory */
+
+      tbuff [0] = '\0';
+      /* CONTEXT: installer: command line interface: asking for the user's music folder */
+      printf (_("Enter the music folder."));
+      printf ("\n");
+      /* CONTEXT: installer: command line interface: instructions */
+      printf (_("Press 'Enter' to select the default."));
+      printf ("\n");
+      printf ("[%s] : ", installer->musicdir);
+      fflush (stdout);
+      (void) ! fgets (tbuff, sizeof (tbuff), stdin);
+      stringTrim (tbuff);
+      if (*tbuff != '\0') {
+        dataFree (installer->musicdir);
+        installer->musicdir = mdstrdup (tbuff);
+      }
 
       /* CONTEXT: installer: command line interface: prompt to continue */
       printf (_("Proceed with installation?"));
@@ -1864,7 +1893,7 @@ static void
 installerCreateDirs (installer_t *installer)
 {
   if (! installer->newinstall) {
-    installerGetOldData (installer);
+    installerGetExistingData (installer);
   }
 
   if (! installer->newinstall && ! installer->reinstall) {
@@ -2153,7 +2182,7 @@ installerConvert (installer_t *installer)
 static void
 installerConvertFinish (installer_t *installer)
 {
-  installerGetOldData (installer);
+  installerGetExistingData (installer);
 
   /* CONTEXT: installer: status message */
   installerDisplayText (installer, INST_DISP_STATUS, _("Conversion complete."), false);
@@ -3097,7 +3126,7 @@ installerWinVerifyProcess (installer_t *installer)
     stringTrim (fn);
 
     targv [fnidx] = fn;
-    osProcessPipe (targv, OS_PROC_WAIT, tmp, sizeof (tmp), NULL);
+    osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, tmp, sizeof (tmp), NULL);
     p = strtok_r (tmp, " ", &tokstr);
     if (strcmp (p, chksum) != 0) {
       rc = false;
@@ -3122,7 +3151,7 @@ installerSetATISelect (installer_t *installer)
 }
 
 static void
-installerGetOldData (installer_t *installer)
+installerGetExistingData (installer_t *installer)
 {
   const char  *tmp = NULL;
   char        cwd [MAXPATHLEN];

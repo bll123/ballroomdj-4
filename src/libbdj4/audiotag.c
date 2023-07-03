@@ -196,6 +196,17 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
 
     newvalue = slistGetStr (newtaglist, tag);
 
+    /* convert to bdj3 form before the update check */
+    /* this works if the prior setting of bdj3-compat was off */
+    /* but does not if the prior setting of bdj3-compat was on */
+    if (audiotagBDJ3CompatCheck (tmp, sizeof (tmp), tagkey, newvalue)) {
+      if (*tmp) {
+        newvalue = tmp;
+      } else {
+        newvalue = NULL;
+      }
+    }
+
     if (tagdefs [tagkey].isBDJTag &&
         (rewrite & AF_FORCE_WRITE_BDJ) == AF_FORCE_WRITE_BDJ) {
       upd = true;
@@ -219,15 +230,6 @@ audiotagWriteTags (const char *ffn, slist_t *tagdata, slist_t *newtaglist,
         (rewrite & AF_REWRITE_MB) == AF_REWRITE_MB &&
         newvalue != NULL && *newvalue) {
       upd = true;
-    }
-
-    /* convert to bdj3 form after the update check */
-    if (audiotagBDJ3CompatCheck (tmp, sizeof (tmp), tagkey, newvalue)) {
-      if (*tmp) {
-        newvalue = tmp;
-      } else {
-        newvalue = NULL;
-      }
     }
 
     if (upd) {

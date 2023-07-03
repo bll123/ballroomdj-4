@@ -223,7 +223,47 @@ START_TEST(osprocess_pipe)
   targv [targc++] = "xyzzy";          // data to write
   targv [targc++] = "--bdj4";
   targv [targc++] = NULL;
-  flags = OS_PROC_WAIT;           // must have wait on
+  flags = OS_PROC_WAIT | OS_PROC_DETACH;           // must have wait on
+  rc = osProcessPipe (targv, flags, tbuff, sizeof (tbuff), &retsz);
+  ck_assert_int_eq (rc, 0);
+  stringTrim (tbuff);
+  ck_assert_str_eq (tbuff, "xyzzy");
+  /* retsz still includes the trailing newline */
+  if (isWindows ()) {
+    ck_assert_int_eq (retsz, 7);
+  } else {
+    ck_assert_int_eq (retsz, 6);
+  }
+}
+END_TEST
+
+START_TEST(osprocess_pipe_wait)
+{
+  char        tbuff [MAXPATHLEN];
+  char        pbuff [MAXPATHLEN];
+  const char  *targv [10];
+  int         targc = 0;
+  int         rc = -2;
+  char        *extension;
+  int         flags = 0;
+  size_t      retsz;
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- osprocess_pipe_wait");
+
+  extension = "";
+  if (isWindows ()) {
+    extension = ".exe";
+  }
+  snprintf (pbuff, sizeof (pbuff), "bin/chkprocess%s", extension);
+
+  targv [targc++] = pbuff;
+  targv [targc++] = "--profile";
+  targv [targc++] = "3";          // time to sleep
+  targv [targc++] = "--theme";
+  targv [targc++] = "xyzzy";          // data to write
+  targv [targc++] = "--bdj4";
+  targv [targc++] = NULL;
+  flags = OS_PROC_WAIT | OS_PROC_DETACH;           // must have wait on
   rc = osProcessPipe (targv, flags, tbuff, sizeof (tbuff), &retsz);
   ck_assert_int_eq (rc, 0);
   stringTrim (tbuff);
@@ -329,6 +369,7 @@ osprocess_suite (void)
   tcase_add_test (tc, osprocess_start_handle);
   tcase_add_test (tc, osprocess_start_redirect);
   tcase_add_test (tc, osprocess_pipe);
+  tcase_add_test (tc, osprocess_pipe_wait);
   tcase_add_test (tc, osprocess_pipe_rc);
   tcase_add_test (tc, osprocess_run);
   suite_add_tcase (s, tc);

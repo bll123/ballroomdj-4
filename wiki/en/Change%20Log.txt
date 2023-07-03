@@ -7,9 +7,10 @@
 **4.3.3 2023-6--**
 
 * Bug Fixes:
-    * PENDING: Apply Adjustments: Audio file tags are preserved.
-    * PENDING: Audio Tags: Process duplicates correctly (FLAC, Ogg, Opus).
+    * Apply Adjustments: Audio file tags are preserved.
+    * Audio Tags: Process duplicates correctly (FLAC, Ogg, Opus).
     * Audio Tags: Recognize more MP4 extensions.
+    * Audio Tags: Fixed an intermittent issue using the mutagen interface.
 * Changes:
     * Apply Adjustments: Removed normalize as it doesn't work well.
 * New Features:

@@ -56,8 +56,9 @@ main (int argc, char *argv [])
     { "debug",        required_argument,  NULL,   'd' },
     { "debugself",    no_argument,        NULL,   0 },
     { "nodetach",     no_argument,        NULL,   0, },
-    { "verbose",      no_argument,        NULL,   'V', },
     { "origcwd",      required_argument,  NULL,   0 },
+    { "verbose",      no_argument,        NULL,   'V', },
+    { "wait",         no_argument,        NULL,   0, },
   };
 
 #if BDJ4_MEM_DEBUG
@@ -103,6 +104,8 @@ main (int argc, char *argv [])
     loglevel = bdjoptGetNum (OPT_G_DEBUGLVL);
   }
   logStartAppend ("tdbcompare", "tdbc", loglevel);
+
+  logMsg (LOG_DBG, LOG_IMPORTANT, "ati: %s", bdjoptGetStr (OPT_M_AUDIOTAG_INTFC));
 
   for (int i = 0; i < DB_MAX; ++i) {
     dbfn [i] = NULL;
@@ -228,6 +231,7 @@ main (int argc, char *argv [])
         fprintf (stderr, "    null tag %s mismatch /%s/(null)/ %s\n", tag [DB_A], val [DB_A], fn);
         grc = 1;
       }
+
       if (strcmp (tag [DB_A], tagdefs [TAG_DURATION].tag) == 0) {
         if (val [DB_A] != NULL && val [DB_B] != NULL) {
           int32_t     dura, durb;

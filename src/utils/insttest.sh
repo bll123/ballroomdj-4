@@ -70,6 +70,7 @@ HTTPDIR="${DATATOPDIR}/http"
 UNPACKDIR="${cwd}/tmp/bdj4-install"
 UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
 UNPACKDIRTMP="$UNPACKDIR.tmp"
+MUSICDIR="${cwd}/test-music"
 #ATI=libatimutagen
 ATI=libatibdj4
 LOG="tmp/insttest-log.txt"
@@ -639,6 +640,7 @@ out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --ati ${ATI} \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
+    --musicdir "$MUSICDIR" \
     )
 rc=$?
 checkInstallation $section $tname "$out" $rc n y
@@ -655,6 +657,7 @@ if [[ $crc -eq 0 ]]; then
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
+      --musicdir "$MUSICDIR" \
       --reinstall \
       )
   rc=$?
@@ -670,6 +673,7 @@ if [[ $crc -eq 0 ]]; then
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
+      --musicdir "$MUSICDIR" \
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc u y
@@ -686,6 +690,7 @@ if [[ $crc -eq 0 ]]; then
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
+      --musicdir "$MUSICDIR" \
       )
   rc=$?
   checkInstallation $section $tname "$out" $rc u y
@@ -702,6 +707,7 @@ out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --ati ${ATI} \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
+    --musicdir "$MUSICDIR" \
     --nodatafiles \
     )
 rc=$?
@@ -722,6 +728,7 @@ out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
     --ati ${ATI} \
     --targetdir "$TARGETTOPDIR" \
     --unpackdir "$UNPACKDIR" \
+    --musicdir "$MUSICDIR" \
     --locale ${locale} \
     )
 rc=$?
@@ -740,6 +747,7 @@ if [[ $crc -eq 0 ]]; then
       --ati ${ATI} \
       --targetdir "$TARGETTOPDIR" \
       --unpackdir "$UNPACKDIR" \
+      --musicdir "$MUSICDIR" \
       --locale ${locale} \
       )
   rc=$?

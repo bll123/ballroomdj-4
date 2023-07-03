@@ -21,6 +21,7 @@ args=""
 infile=$TESTMUSIC
 rmflag=F
 outfile=""
+keepmusic=F
 while test $# -gt 0; do
   case $1 in
     --debug)
@@ -56,6 +57,11 @@ while test $# -gt 0; do
       args+=" "
       rmflag=T
       ;;
+    --keepmusic)
+      args+=$1
+      args+=" "
+      keepmusic=T
+      ;;
     --altdir)
       args+=$1
       args+=" "
@@ -71,7 +77,7 @@ while test $# -gt 0; do
       # ignored
       ;;
     *)
-      echo "unknown argument $1"
+      echo "unknown argument $1" >&2
       exit 1
       ;;
   esac
@@ -84,10 +90,10 @@ if [[ ! -f $FLAG ||
     $infile -nt $TESTDB ||
     $infile -nt $FLAG ]]; then
   if [[ ! -d data || ! -d src || ! -d tmp ]]; then
-    echo "invalid current dir $(pwd)"
+    echo "invalid current dir $(pwd)" >&2
     exit 1
   fi
-  if [[ -d test-music ]]; then
+  if [[ $keepmusic == F && -d test-music ]]; then
     rm -rf test-music/*
   fi
   ./bin/bdj4 --tmusicsetup $args

@@ -88,7 +88,7 @@ enum {
 };
 
 static slist_t *updateData (ilist_t *tmlist, ilistidx_t key);
-static char *createFile (const char *src, const char *dest);
+static char *createFile (const char *src, const char *dest, bool keepmusic);
 
 static int  gtracknum [TM_MAX_DANCE];
 static int  gseqnum [TM_MAX_DANCE];
@@ -115,21 +115,24 @@ main (int argc, char *argv [])
   slist_t     *empty = NULL;
   loglevel_t  loglevel = LOG_IMPORTANT | LOG_INFO;
   bool        loglevelset = false;
+  bool        keepmusic = false;
 
   static struct option bdj_options [] = {
     { "bdj3tags",     no_argument,        NULL,   '3' },
     { "bdj4",         no_argument,        NULL,   'B' },
-    { "debugself",    no_argument,        NULL,   0 },
-    { "debug",        required_argument,  NULL,   'd' },
+    { "altdir",       required_argument,  NULL,   'A' },
     { "emptydb",      no_argument,        NULL,   'E' },
     { "infile",       required_argument,  NULL,   'I' },
-    { "nodetach",     no_argument,        NULL,   0, },
+    { "keepmusic",    no_argument,        NULL,   'K' },
     { "outfile",      required_argument,  NULL,   'O' },
-    { "altdir",       required_argument,  NULL,   'A' },
+    { "tmusicsetup",  no_argument,        NULL,   0 },
+    /* launcher options */
+    { "debugself",    no_argument,        NULL,   0 },
+    { "debug",        required_argument,  NULL,   'd' },
+    { "nodetach",     no_argument,        NULL,   0, },
+    { "origcwd",      required_argument,  NULL,   0 },
     { "scale",        required_argument,  NULL,   0 },
     { "theme",        required_argument,  NULL,   0 },
-    { "tmusicsetup",  no_argument,        NULL,   0 },
-    { "origcwd",      required_argument,  NULL,   0 },
   };
 
 #if BDJ4_MEM_DEBUG
@@ -167,6 +170,10 @@ main (int argc, char *argv [])
       }
       case 'I': {
         strlcpy (infn, optarg, sizeof (infn));
+        break;
+      }
+      case 'K': {
+        keepmusic = true;
         break;
       }
       case 'A': {
@@ -209,6 +216,8 @@ main (int argc, char *argv [])
   }
   logStartAppend ("tmusicsetup", "tset", loglevel);
 
+  logMsg (LOG_DBG, LOG_IMPORTANT, "ati: %s", bdjoptGetStr (OPT_M_AUDIOTAG_INTFC));
+
   /* create an entirely new database */
   fileopDelete (dbfn);
   db = dbOpen (dbfn);
@@ -229,11 +238,22 @@ main (int argc, char *argv [])
 
     src = ilistGetStr (tmlist, key, TM_SOURCE);
     dest = ilistGetStr (tmlist, key, TM_DEST);
-    fn = createFile (src, dest);
-    audiotagWriteTags (fn, empty, tagdata, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
+    fn = createFile (src, dest, keepmusic);
+    if (! keepmusic) {
+      audiotagWriteTags (fn, empty, tagdata, AF_REWRITE_NONE, AT_UPDATE_MOD_TIME);
+    }
     if (emptydb) {
+      char    *dur;
+      char    *title;
+
+      dur = mdstrdup (slistGetStr (tagdata, tagdefs [TAG_DURATION].tag));
+      title = mdstrdup (slistGetStr (tagdata, tagdefs [TAG_TITLE].tag));
       slistFree (tagdata);
       tagdata = slistAlloc ("tm-slist", LIST_ORDERED, NULL);
+      slistSetStr (tagdata, tagdefs [TAG_DURATION].tag, dur);
+      slistSetStr (tagdata, tagdefs [TAG_TITLE].tag, title);
+      mdfree (dur);
+      mdfree (title);
     }
     slistSetStr (tagdata, tagdefs [TAG_PREFIX_LEN].tag, "0");
     dbWrite (db, fn + strlen (tmusicdir) + 1, tagdata, MUSICDB_ENTRY_NEW);
@@ -325,7 +345,7 @@ updateData (ilist_t *tmlist, ilistidx_t key)
 }
 
 static char *
-createFile (const char *src, const char *dest)
+createFile (const char *src, const char *dest, bool keepmusic)
 {
   char        dir [MAXPATHLEN];
   char        from [MAXPATHLEN];
@@ -336,15 +356,24 @@ createFile (const char *src, const char *dest)
   if (! fileopFileExists (from)) {
     fprintf (stderr, "no source file: %s\n", src);
   }
+
   pi = pathInfo (src);
   snprintf (to, sizeof (to), "%s/%s%.*s", tmusicdir, dest,
       (int) pi->elen, pi->extension);
-  pathInfoFree (pi);
-  pi = pathInfo (to);
-  snprintf (dir, sizeof (dir), "%.*s", (int) pi->dlen, pi->dirname);
-  diropMakeDir (dir);
+  if (keepmusic && ! fileopFileExists (to)) {
+    fprintf (stderr, "no dest file: %s\n", to);
+  }
 
-  filemanipCopy (from, to);
+  if (! keepmusic) {
+    pathInfoFree (pi);
+    pi = pathInfo (to);
+    snprintf (dir, sizeof (dir), "%.*s", (int) pi->dlen, pi->dirname);
+    diropMakeDir (dir);
+
+    filemanipCopy (from, to);
+  }
+
   pathInfoFree (pi);
+
   return mdstrdup (to);
 }
