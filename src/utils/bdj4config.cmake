@@ -105,13 +105,6 @@ pkg_check_modules (LIBFLAC flac)
 pkg_check_modules (LIBOPUS opus)
 pkg_check_modules (LIBOPUSFILE opusfile)
 
-# bento4
-if (WIN32)
-  set (LIBBENTO4_LDFLAGS "${PROJECT_SOURCE_DIR}/../plocal/bin/libap4.dll")
-else()
-  set (LIBBENTO4_LDFLAGS -L${PROJECT_SOURCE_DIR}/../plocal/lib -lap4)
-endif()
-
 #### ICU string library
 
 # The ICU library must be pre-compiled and shipped with Linux and MacOS.

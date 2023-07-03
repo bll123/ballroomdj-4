@@ -27,7 +27,6 @@ add_library (libatibdj4 SHARED
   atibdj4.c
   atibdj4flac.c
   atibdj4mp3.c
-  atibdj4mp4.cpp
   atibdj4ogg.c
   atibdj4opus.c
 )
@@ -53,8 +52,6 @@ target_link_libraries (libatibdj4 PUBLIC
   ${LIBOPUS_LDFLAGS}
   # flac
   ${LIBFLAC_LDFLAGS}
-  # bento4 mp4 library
-  ${LIBBENTO4_LDFLAGS}
   m
 )
 
