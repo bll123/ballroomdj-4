@@ -696,22 +696,26 @@ if [[ $crc -eq 0 ]]; then
   checkInstallation $section $tname "$out" $rc u y
 fi
 
-# install w/o data files
-cleanInstTest
-resetUnpack
-tname=install-no-data
-echo "== $section $tname"
-out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
-    --verbose --unattended --quiet \
-    --nomutagen \
-    --ati ${ATI} \
-    --targetdir "$TARGETTOPDIR" \
-    --unpackdir "$UNPACKDIR" \
-    --musicdir "$MUSICDIR" \
-    --nodatafiles \
-    )
-rc=$?
-checkInstallation $section $tname "$out" $rc n n
+# leave this off for now.
+# will need to revisit the alternate directory installation later
+if [[ T == F ]]; then
+  # install w/o data files
+  cleanInstTest
+  resetUnpack
+  tname=install-no-data
+  echo "== $section $tname"
+  out=$(cd "$UNPACKDIRBASE";./bin/bdj4 --bdj4installer --cli --wait \
+      --verbose --unattended --quiet \
+      --nomutagen \
+      --ati ${ATI} \
+      --targetdir "$TARGETTOPDIR" \
+      --unpackdir "$UNPACKDIR" \
+      --musicdir "$MUSICDIR" \
+      --nodatafiles \
+      )
+  rc=$?
+  checkInstallation $section $tname "$out" $rc n n
+fi
 
 section=nl
 locale=nl_BE

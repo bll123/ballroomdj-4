@@ -147,7 +147,12 @@ atiSplitVorbisComment (int tagkey, const char *tagname, const char *val)
   /* genre, artist, album-artist, composer */
 
   vallist = slistAlloc ("vc-list", LIST_UNORDERED, NULL);
-  split = tagdefs [tagkey].vorbisMulti;
+  split = tagkey == TAG_ALBUMARTIST ||
+      tagkey == TAG_ARTIST ||
+      tagkey == TAG_COMPOSER ||
+      tagkey == TAG_CONDUCTOR ||
+      tagkey == TAG_GENRE;
+//  split = tagdefs [tagkey].vorbisMulti;
 
   if (split && strstr (val, ";") != NULL) {
     char      *tval;

@@ -372,7 +372,6 @@ atiiSaveTags (atidata_t *atidata,
   atisaved_t  *atisaved;
   char        fn [MAXPATHLEN];
   FILE        *ofh;
-  int         rc = -1;
   const char  *spacer = "";
   char        *tdata;
   size_t      len;
@@ -404,7 +403,7 @@ atiiSaveTags (atidata_t *atidata,
   atisaved->tagtype = tagtype;
   atisaved->filetype = filetype;
 
-  rc = atimutagenRunUpdate (fn, tdata, ATI_TAG_BUFF_SIZE);
+  atimutagenRunUpdate (fn, tdata, ATI_TAG_BUFF_SIZE);
   stringTrim (tdata);
   len = strlen (tdata);
   if (tagtype == TAG_TYPE_ID3) {

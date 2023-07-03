@@ -390,7 +390,7 @@ main (int argc, char *argv [])
   {
     /* 4.1.0 change name of audiotag dylib (prep) */
     tval = bdjoptGetStr (OPT_M_AUDIOTAG_INTFC);
-    if (strcmp (tval, "libaudiotagmutagen") == 0) {
+    if (tval != NULL && strcmp (tval, "libaudiotagmutagen") == 0) {
       logMsg (LOG_INSTALL, LOG_IMPORTANT, "-- 4.1.0 : chg name of audiotag dylib");
       bdjoptSetStr (OPT_M_AUDIOTAG_INTFC, "libatimutagen");
       bdjoptchanged = true;

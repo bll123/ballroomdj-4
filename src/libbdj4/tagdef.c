@@ -240,7 +240,7 @@ tagdef_t tagdefs [TAG_KEY_MAX] = {
     true,                         /* editable             */
     true,                         /* text search          */
     true,                         /* is org tag           */
-    false,                        /* vorbis multi         */
+    true,                         /* vorbis multi         */
   },
   [TAG_DANCE] =
   { "DANCE",                /* tag */
