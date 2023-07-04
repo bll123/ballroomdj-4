@@ -32,11 +32,11 @@
  *  rc   - mobile remote control
  *  strt - starter
  *  tdbc - tdbcompare
- *  tdbd - tdbdump
  *  tdbs - tdbsetval
  *  tags - bdj4tags
  *  tset - tmusicsetup
  *  ts   - testsuite
+ *  ttdc - ttagdbchk
  *  tvlc - vlcsinklist
  *  tvol - voltest
  *  updt - updater

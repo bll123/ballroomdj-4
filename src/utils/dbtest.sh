@@ -54,24 +54,11 @@ function compcheck {
 
 function checkaudiotags {
   tname=$1
+  flags=$2
 
-  grc=0
-  find test-music -print |
-  while read f; do
-    if [[ ! -f "$f" ]]; then
-      continue
-    fi
-    ./bin/bdj4 --bdj4tags "$f" > $TMPA
-    bf=$(echo "$f" | sed 's,^test-music/,,')
-    ./bin/bdj4 --tdbdump data/musicdb.dat "$bf" > $TMPB
-    diff $TMPA $TMPB > /dev/null 2>&1
-    trc=$?
-    if [[ $trc -ne 0 ]]; then
-      echo "    audio tag check failed"
-      grc=1
-    fi
-  done
-  return $grc
+  ./bin/bdj4 --ttagdbchk data/musicdb.dat ${flags}
+  atrc=$?
+  return $atrc
 }
 
 function dispres {
@@ -563,7 +550,7 @@ if [[ $TESTON == T ]]; then
   msg+=$(compcheck $tname $crc)
 
   if [[ $rc -eq 0 && $crc -eq 0 ]]; then
-    msg+=$(checkaudiotags $tname)
+    msg+=$(checkaudiotags $tname --ignoremissing)
     trc=$?
     updateCounts $trc
     if [[ $trc -ne 0 ]]; then
@@ -719,7 +706,8 @@ if [[ $TESTON == T ]]; then
 fi
 
 # remove test db, temporary files
-rm -f $TDBNOCHACHA $TDBCHACHA $TDBEMPTY $TDBCOMPACT
+rm -f $TDBNOCHACHA $TDBCHACHA $TDBEMPTY $TDBCOMPACT $TDBCOMPAT
+rm -f $INCOMPAT
 rm -f $TDBRDAT $TDBRDT $TDBRDTALT $TDBRDTAT
 rm -f $TMPA $TMPB
 rm -rf $TMDT

@@ -229,6 +229,7 @@ main (int argc, char *argv [])
   df = datafileAllocParse ("updater", DFTYPE_KEY_VAL, tbuff,
       upddfkeys, UPD_DF_COUNT, DF_NO_OFFSET, NULL);
   updlist = datafileGetList (df);
+  listSetVersion (updlist, 3);
 
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "converted: %d", converted);
 
@@ -853,8 +854,8 @@ main (int argc, char *argv [])
         int   val;
 
         val = songGetNum (song, TAG_DISCNUMBER);
-        if (val < 0 || val > 5000) {
-          songSetNum (song, TAG_DISCNUMBER, 0);
+        if (val < -1 || val > 5000) {
+          songSetNum (song, TAG_DISCNUMBER, 1);
           dowrite = true;
           counters [UPD_FIX_DB_DISCNUM] += 1;
         }

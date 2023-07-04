@@ -80,20 +80,18 @@ main (int argc, char * argv[])
     { "bdj4updater",    no_argument,        NULL,   16 },
     { "check_all",      no_argument,        NULL,   1 },
     { "tdbcompare",     no_argument,        NULL,   23 },
-    { "tdbdump",        no_argument,        NULL,   24 },
     { "tdbsetval",      no_argument,        NULL,   26 },
     { "testsuite",      no_argument,        NULL,   22 },
     { "tmusicsetup",    no_argument,        NULL,   21 },
+    { "ttagdbchk",      no_argument,        NULL,   27 },
     { "vlcsinklist",    no_argument,        NULL,   25 },
     /* bdj4updater */
     { "converted",      no_argument,        NULL,   0 },
-    { "musicdir",       required_argument,  NULL,   0 },
     { "newinstall",     no_argument,        NULL,   0 },
     /* used by installer */
     { "ati",            required_argument,  NULL,   0 },
     { "bdj3dir",        required_argument,  NULL,   0 },
     { "locale",         required_argument,  NULL,   0 },
-    { "musicdir",       required_argument,  NULL,   0 },
     { "nodatafiles",    no_argument,        NULL,   0 },
     { "nomutagen",      no_argument,        NULL,   0 },
     { "reinstall",      no_argument,        NULL,   0 },
@@ -101,9 +99,10 @@ main (int argc, char * argv[])
     { "testregistration", no_argument,      NULL,   0 },
     { "unattended",     no_argument,        NULL,   0 },
     { "unpackdir",      required_argument,  NULL,   0 },
+    /* updater, installer */
+    { "musicdir",       required_argument,  NULL,   0 },
     /* standard stuff */
     { "debug",          required_argument,  NULL,   0 },
-    { "ignorelock",     no_argument,        NULL,   0 },
     { "profile",        required_argument,  NULL,   'p' },
     { "scale",          required_argument,  NULL,   'S' },
     { "theme",          required_argument,  NULL,   'T' },
@@ -135,6 +134,8 @@ main (int argc, char * argv[])
     { "infile",         required_argument,  NULL,   0 },
     { "keepmusic",      no_argument,        NULL,   0 },
     { "outfile",        required_argument,  NULL,   0 },
+    /* ttagdbchk */
+    { "ignoremissing",  no_argument,        NULL,   0 },
     /* general options */
     { "cli",            no_argument,        NULL,   'c' },
     { "progress",       no_argument,        NULL,   0 },
@@ -309,6 +310,13 @@ main (int argc, char * argv[])
       }
       case 26: {
         prog = "tdbsetval";
+        nodetach = true;
+        wait = true;
+        ++validargs;
+        break;
+      }
+      case 27: {
+        prog = "ttagdbchk";
         nodetach = true;
         wait = true;
         ++validargs;

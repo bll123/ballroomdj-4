@@ -42,17 +42,6 @@ target_link_libraries (tdbcompare PUBLIC
   m
 )
 
-add_executable (tdbdump tdbdump.c)
-if (WIN32)
-  target_compile_options (tdbdump PRIVATE -municode)
-endif()
-target_link_libraries (tdbdump PUBLIC
-  libbdj4ati libbdj4 libbdj4basic libbdj4common
-  ${ICU_LDFLAGS}
-  z
-  m
-)
-
 add_executable (tdbsetval tdbsetval.c)
 if (WIN32)
   target_compile_options (tdbsetval PRIVATE -municode)
@@ -86,6 +75,17 @@ target_link_libraries (tmusicsetup PUBLIC
 )
 addIntlLibrary (tmusicsetup)
 
+add_executable (ttagdbchk ttagdbchk.c)
+if (WIN32)
+  target_compile_options (ttagdbchk PRIVATE -municode)
+endif()
+target_link_libraries (ttagdbchk PUBLIC
+  libbdj4ati libbdj4 libbdj4basic libbdj4common
+  ${ICU_LDFLAGS}
+  z
+  m
+)
+
 add_executable (vlcsinklist vlcsinklist.c)
 target_link_libraries (vlcsinklist PUBLIC
   libbdj4pli libbdj4vol libbdj4basic libbdj4common
@@ -100,7 +100,7 @@ target_link_libraries (vsed PUBLIC
 )
 
 install (TARGETS
-  bdj4info bdj4tags tdbcompare tdbdump tdbsetval testsuite tmusicsetup
+  bdj4info bdj4tags tdbcompare tdbsetval testsuite tmusicsetup ttagdbchk
   vlcsinklist vsed
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
@@ -108,7 +108,7 @@ install (TARGETS
 updateRPath (bdj4info)
 updateRPath (bdj4tags)
 updateRPath (tdbcompare)
-updateRPath (tdbdump)
+updateRPath (ttagdbchk)
 updateRPath (tdbsetval)
 updateRPath (testsuite)
 updateRPath (tmusicsetup)

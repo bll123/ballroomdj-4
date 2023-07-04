@@ -114,7 +114,7 @@ function copyreleasefiles {
   # bdj4se is only used for packaging
   # testing:
   #   check_all, chkprocess, chkfileshared,
-  #   tdbcompare, tdbdump, tdbsetval, testsuite, tmusicsetup,
+  #   tdbcompare, tdbsetval, testsuite, tmusicsetup, ttagdbchk
   #   vlcsinklist, voltest, vsencdec
   # img/profile[1-9] may be left over from testing
   rm -f \
@@ -123,10 +123,10 @@ function copyreleasefiles {
       ${stage}/bin/chkfileshared \
       ${stage}/bin/chkprocess \
       ${stage}/bin/tdbcompare \
-      ${stage}/bin/tdbdump \
       ${stage}/bin/tdbsetval \
       ${stage}/bin/testsuite \
       ${stage}/bin/tmusicsetup \
+      ${stage}/bin/ttagdbchk \
       ${stage}/bin/vlcsinklist \
       ${stage}/bin/voltest \
       ${stage}/bin/vsed \
