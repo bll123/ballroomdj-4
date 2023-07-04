@@ -289,7 +289,6 @@ static void installerSetTargetDir (installer_t *installer, const char *fn);
 static void installerSetBDJ3LocDir (installer_t *installer, const char *fn);
 static void installerSetMusicDir (installer_t *installer, const char *fn);
 static void installerCheckAndFixTarget (char *buff, size_t sz);
-static bool installerWinVerifyProcess (installer_t *installer);
 static void installerSetATISelect (installer_t *installer);
 static void installerGetExistingData (installer_t *installer);
 static void installerScanMusicDir (installer_t *installer);
@@ -1595,11 +1594,8 @@ installerVerifyInstall (installer_t *installer)
   const char  *targv [2];
 
   if (isWindows ()) {
-    if (installerWinVerifyProcess (installer)) {
-      strlcpy (tmp, "OK", sizeof (tmp));
-    } else {
-      strlcpy (tmp, "NG", sizeof (tmp));
-    }
+    /* verification on windows is too slow */
+    strlcpy (tmp, "OK", sizeof (tmp));
   } else {
     targv [0] = "./install/verifychksum.sh";
     if (isMacOS ()) {
@@ -3078,64 +3074,6 @@ installerCheckAndFixTarget (char *buff, size_t sz)
     strlcat (buff, nm, sz);
   }
   pathInfoFree (pi);
-}
-
-/* not in use */
-/* windows verification is too slow */
-static bool
-installerWinVerifyProcess (installer_t *installer)
-{
-  FILE        *fh;
-  char        tbuff [1024];
-  char        tmp [1024];
-  int         rc = true;
-  const char  *targv [10];
-  int         targc = 0;
-  char        *p;
-  char        *fn;
-  char        *chksum;
-  char        *tokstr;
-  int         fnidx;
-
-  if (! chdir ("bdj4-install")) {
-    return false;
-  }
-
-  fh = fileopOpen ("install/checksum.txt", "r");
-  if (fh == NULL) {
-    return false;
-  }
-
-  /* the build process would need to leave openssl.exe intact */
-  /* see also cleanuplist.txt */
-  targv [targc++] = ".\\plocal\\bin\\openssl.exe";
-  targv [targc++] = "sha512";
-  targv [targc++] = "-r";
-  fnidx = targc;
-  targv [targc++] = NULL;
-  targv [targc++] = NULL;
-
-  while (fgets (tbuff, sizeof (tbuff), fh) != NULL) {
-    p = strtok_r (tbuff, " ", &tokstr);
-    chksum = p;
-    p = strtok_r (NULL, " ", &tokstr);
-    if (*p == '*') {
-      ++p;
-    }
-    fn = p;
-    stringTrim (fn);
-
-    targv [fnidx] = fn;
-    osProcessPipe (targv, OS_PROC_WAIT | OS_PROC_DETACH, tmp, sizeof (tmp), NULL);
-    p = strtok_r (tmp, " ", &tokstr);
-    if (strcmp (p, chksum) != 0) {
-      rc = false;
-      break;
-    }
-  }
-  fclose (fh);
-
-  return rc;
 }
 
 static void

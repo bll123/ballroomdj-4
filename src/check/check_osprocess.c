@@ -274,6 +274,10 @@ START_TEST(osprocess_pipe_wait)
   } else {
     ck_assert_int_eq (retsz, 6);
   }
+
+  /* again, without a buffer */
+  rc = osProcessPipe (targv, flags, NULL, 0, NULL);
+  ck_assert_int_eq (rc, 0);
 }
 END_TEST
 
@@ -362,6 +366,7 @@ osprocess_suite (void)
 
   s = suite_create ("osprocess");
   tc = tcase_create ("osprocess");
+  tcase_set_timeout (tc, 8.0);
   tcase_set_tags (tc, "libcommon slow");
   tcase_add_test (tc, osprocess_start);
   tcase_add_test (tc, osprocess_start_detach);

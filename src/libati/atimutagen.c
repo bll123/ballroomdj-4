@@ -444,7 +444,6 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
   FILE        *ofh;
   int         rc = -1;
   const char  *spacer = "";
-  char        *tdata;
 
   if (atisaved == NULL) {
     return -1;
@@ -467,8 +466,6 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
     return -1;
   }
 
-  tdata = mdmalloc (ATI_TAG_BUFF_SIZE);
-
   atimutagenWritePythonHeader (atidata, ffn, ofh, tagtype, filetype);
   if (tagtype == TAG_TYPE_ID3) {
     spacer = "  ";
@@ -484,7 +481,7 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
   atimutagenWritePythonTrailer (ofh, tagtype, filetype);
   fclose (ofh);
 
-  rc = atimutagenRunUpdate (fn, tdata, ATI_TAG_BUFF_SIZE);
+  rc = atimutagenRunUpdate (fn, NULL, 0);
   if (rc != 0) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write failed: %s", ffn);
   }
@@ -492,7 +489,6 @@ atiiRestoreTags (atidata_t *atidata, atisaved_t *atisaved,
   atisaved->hasdata = false;
   dataFree (atisaved->data);
   mdfree (atisaved);
-  mdfree (tdata);
   return 0;
 }
 
@@ -504,7 +500,6 @@ atiiCleanTags (atidata_t *atidata,
   FILE        *ofh;
   int         rc = -1;
   const char  *spacer = "";
-  char        *tdata;
 
   logProcBegin (LOG_PROC, "atimutagenCleanTags");
 
@@ -514,8 +509,6 @@ atiiCleanTags (atidata_t *atidata,
     return;
   }
 
-  tdata = mdmalloc (ATI_TAG_BUFF_SIZE);
-
   atimutagenWritePythonHeader (atidata, ffn, ofh, tagtype, filetype);
   if (tagtype == TAG_TYPE_ID3) {
     spacer = "  ";
@@ -524,12 +517,11 @@ atiiCleanTags (atidata_t *atidata,
   atimutagenWritePythonTrailer (ofh, tagtype, filetype);
   fclose (ofh);
 
-  rc = atimutagenRunUpdate (fn, tdata, ATI_TAG_BUFF_SIZE);
+  rc = atimutagenRunUpdate (fn, NULL, 0);
   if (rc != 0) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write failed: %s", ffn);
   }
 
-  mdfree (tdata);
   logProcEnd (LOG_PROC, "atimutagenCleanTags", "");
   return;
 }
@@ -550,7 +542,6 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
   int                 rc;
   int                 writetags;
   const tagaudiotag_t *audiotag;
-  char                *tdata;
 
   logProcBegin (LOG_PROC, "atimutagenWriteMP3Tags");
   writetags = atidata->writetags;
@@ -560,8 +551,6 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
   if (ofh == NULL) {
     return -1;
   }
-
-  tdata = mdmalloc (ATI_TAG_BUFF_SIZE);
 
   atimutagenWritePythonHeader (atidata, ffn, ofh, TAG_TYPE_ID3, AFILE_TYPE_MP3);
 
@@ -638,12 +627,11 @@ atimutagenWriteMP3Tags (atidata_t *atidata, const char *ffn,
   atimutagenWritePythonTrailer (ofh, TAG_TYPE_ID3, AFILE_TYPE_MP3);
   fclose (ofh);
 
-  rc = atimutagenRunUpdate (fn, tdata, ATI_TAG_BUFF_SIZE);
+  rc = atimutagenRunUpdate (fn, NULL, 0);
   if (rc != 0) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write failed: %s", ffn);
   }
 
-  mdfree (tdata);
   logProcEnd (LOG_PROC, "atimutagenWriteMP3Tags", "");
   return rc;
 }
@@ -662,7 +650,6 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
   int                 rc;
   int                 writetags;
   const tagaudiotag_t *audiotag;
-  char                *tdata;
 
   logProcBegin (LOG_PROC, "atimutagenWriteOtherTags");
   writetags = atidata->writetags;
@@ -672,8 +659,6 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
   if (ofh == NULL) {
     return -1;
   }
-
-  tdata = mdmalloc (ATI_TAG_BUFF_SIZE);
 
   atimutagenWritePythonHeader (atidata, ffn, ofh, tagtype, filetype);
 
@@ -740,12 +725,11 @@ atimutagenWriteOtherTags (atidata_t *atidata, const char *ffn,
   atimutagenWritePythonTrailer (ofh, tagtype, filetype);
   fclose (ofh);
 
-  rc = atimutagenRunUpdate (fn, tdata, ATI_TAG_BUFF_SIZE);
+  rc = atimutagenRunUpdate (fn, NULL, 0);
   if (rc != 0) {
     logMsg (LOG_DBG, LOG_DBUPDATE | LOG_AUDIO_TAG, "  write failed: %s", ffn);
   }
 
-  mdfree (tdata);
   logProcEnd (LOG_PROC, "atimutagenWriteOtherTags", "");
   return rc;
 }

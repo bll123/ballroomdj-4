@@ -228,20 +228,24 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 
   CloseHandle (handleStdoutWrite);
 
-  if (rbuff != NULL) {
+  {
     ssize_t bytesread = 0;
     bool    wait = true;
 
-    rbuff [sz - 1] = '\0';
+    if (rbuff != NULL) {
+      rbuff [sz - 1] = '\0';
+    }
 
     while (1) {
-      ReadFile (handleStdoutRead, rbuff + bytesread, sz - bytesread, &rbytes, NULL);
-      bytesread += rbytes;
-      if (bytesread < (ssize_t) sz) {
-        rbuff [bytesread] = '\0';
-      }
-      if (retsz != NULL) {
-        *retsz = bytesread;
+      if (rbuff != NULL) {
+        ReadFile (handleStdoutRead, rbuff + bytesread, sz - bytesread, &rbytes, NULL);
+        bytesread += rbytes;
+        if (bytesread < (ssize_t) sz) {
+          rbuff [bytesread] = '\0';
+        }
+        if (retsz != NULL) {
+          *retsz = bytesread;
+        }
       }
       if (! wait) {
         break;

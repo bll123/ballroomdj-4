@@ -168,24 +168,28 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
 
   pid = tpid;
 
-  if (rbuff != NULL) {
+  {
     bool    wait = true;
     int     wstatus;
     ssize_t bytesread = 0;
 
-    rbuff [sz - 1] = '\0';
+    if (rbuff != NULL) {
+      rbuff [sz - 1] = '\0';
+    }
 
     wait = true;
     while (wait) {
-      size_t    rbytes;
+      if (rbuff != NULL) {
+        size_t    rbytes;
 
-      rbytes = read (pipefd [0], rbuff + bytesread, sz - bytesread);
-      bytesread += rbytes;
-      if (bytesread < (ssize_t) sz) {
-        rbuff [bytesread] = '\0';
-      }
-      if (retsz != NULL) {
-        *retsz = bytesread;
+        rbytes = read (pipefd [0], rbuff + bytesread, sz - bytesread);
+        bytesread += rbytes;
+        if (bytesread < (ssize_t) sz) {
+          rbuff [bytesread] = '\0';
+        }
+        if (retsz != NULL) {
+          *retsz = bytesread;
+        }
       }
       if ((flags & OS_PROC_WAIT) == OS_PROC_WAIT) {
         rc = waitpid (pid, &wstatus, WNOHANG);
@@ -203,10 +207,6 @@ osProcessPipe (const char *targv[], int flags, char *rbuff, size_t sz, size_t *r
       }
     }
     close (pipefd [0]);
-  } else {
-    /* set up so the application can read from stdin */
-    close (STDIN_FILENO);
-    dup2 (pipefd [0], STDIN_FILENO);
   }
 
   return rc;
