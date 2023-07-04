@@ -246,6 +246,7 @@ main (int argc, char *argv [])
 
     audiotagDetermineTagType (src, &tagtype, &filetype);
     if (supported [filetype] != ATI_READ_WRITE) {
+      slistFree (tagdata);
       continue;
     }
 

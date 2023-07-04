@@ -150,6 +150,7 @@ main (int argc, char *argv [])
   bool        processaf = false;
   bool        processdb = false;
   bool        forcewritetags = false;
+  bool        updlistallocated = false;
   datafile_t  *df;
   nlist_t     *updlist = NULL;
   musicdb_t   *musicdb = NULL;
@@ -229,6 +230,10 @@ main (int argc, char *argv [])
   df = datafileAllocParse ("updater", DFTYPE_KEY_VAL, tbuff,
       upddfkeys, UPD_DF_COUNT, DF_NO_OFFSET, NULL);
   updlist = datafileGetList (df);
+  if (updlist == NULL) {
+    updlist = nlistAlloc ("updater-updlist", LIST_ORDERED, NULL);
+    updlistallocated = true;
+  }
   listSetVersion (updlist, 3);
 
   logMsg (LOG_INSTALL, LOG_IMPORTANT, "converted: %d", converted);
@@ -802,7 +807,7 @@ main (int argc, char *argv [])
         audiotagWriteTags (ffn, taglist, newtaglist, rewrite, AT_KEEP_MOD_TIME);
       }
 
-      mdfree (data);
+      dataFree (data);
       slistFree (taglist);
       slistFree (newtaglist);
       mdfree (ffn);
@@ -905,6 +910,9 @@ main (int argc, char *argv [])
 
   datafileSave (df, NULL, updlist, DF_NO_OFFSET, datafileDistVersion (df));
   datafileFree (df);
+  if (updlistallocated) {
+    slistFree (updlist);
+  }
 
   bdj4shutdown (ROUTE_NONE, NULL);
   bdjoptCleanup ();

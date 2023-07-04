@@ -131,6 +131,7 @@ main (int argc, char *argv [])
     if (dbCompare (db, fn, tagdata)) {
       grc = 1;
     }
+    dataFree (atdata);
     slistFree (tagdata);
   }
 
@@ -231,6 +232,7 @@ dbCompare (musicdb_t *db, const char *fn, slist_t *tagdata)
     }
 
     slistFree (taglist);
+    slistFree (processed);
   }
 
   return rc;
