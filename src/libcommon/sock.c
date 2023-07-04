@@ -2,7 +2,7 @@
  * Copyright 2021-2023 Brad Lanam Pleasant Hill CA
  */
 /*
- * https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
+ * https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
  */
 
 #include "config.h"
@@ -797,10 +797,9 @@ sockSetOptions (Sock_t sock, int *err)
   rc = setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, (const char *) &opt, sizeof (opt));
   if (rc != 0) {
     *err = errno;
-    logError ("setsockopt:");
+    logError ("setsockopt-addr:");
 #if _lib_WSAGetLastError
     logMsg (LOG_ERR, LOG_SOCKET, "setsockopt: wsa last-error: %d", WSAGetLastError() );
-    logMsg (LOG_DBG, LOG_SOCKET, "setsockopt: wsa last-error: %d", WSAGetLastError() );
 #endif
     close (sock);
     return INVALID_SOCKET;
@@ -808,7 +807,7 @@ sockSetOptions (Sock_t sock, int *err)
 #if _define_SO_REUSEPORT
   rc = setsockopt (sock, SOL_SOCKET, SO_REUSEPORT, (const char *) &opt, sizeof (opt));
   if (rc != 0) {
-    logError ("setsockopt-b:");
+    logError ("setsockopt-port:");
     *err = errno;
     close (sock);
     return INVALID_SOCKET;

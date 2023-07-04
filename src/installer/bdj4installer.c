@@ -2755,6 +2755,7 @@ installerCleanup (installer_t *installer)
   }
   dataFree (installer->target);
   dataFree (installer->bdj3loc);
+  dataFree (installer->musicdir);
   slistFree (installer->convlist);
   dataFree (installer->tclshloc);
 
@@ -3112,6 +3113,7 @@ installerGetExistingData (installer_t *installer)
 
   tmp = bdjoptGetStr (OPT_M_DIR_MUSIC);
   if (tmp != NULL) {
+    dataFree (installer->musicdir);
     installer->musicdir = mdstrdup (tmp);
     installerSetMusicDirEntry (installer, installer->musicdir);
   }

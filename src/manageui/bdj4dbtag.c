@@ -49,6 +49,7 @@ enum {
   DBTAG_T_STATE_HAVE_DATA,
   DBTAG_STATE_NOT_RUNNING,
   DBTAG_STATE_RUNNING,
+  DBTAG_STATE_PAUSED,
   DBTAG_STATE_WAIT,
   DBTAG_STATE_FINISH,
 };
@@ -79,7 +80,7 @@ typedef struct {
   mstime_t          waitCheck;
   int               iterations;
   int               threadActiveSum;
-  int               running;
+  int               state;
   bool              havealldata : 1;
 } dbtag_t;
 
@@ -121,7 +122,7 @@ main (int argc, char *argv[])
 #endif
 
   dbtag.threads = mdmalloc (sizeof (dbthread_t) * dbtag.maxThreads);
-  dbtag.running = DBTAG_STATE_NOT_RUNNING;
+  dbtag.state = DBTAG_STATE_NOT_RUNNING;
   dbtag.havealldata = false;
   dbtag.numActiveThreads = 0;
   dbtag.iterations = 0;
@@ -207,6 +208,16 @@ dbtagProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           dbtag->havealldata = true;
           break;
         }
+        case MSG_DB_PAUSE: {
+          if (dbtag->state == DBTAG_STATE_RUNNING) {
+            dbtag->state = DBTAG_STATE_PAUSED;
+          }
+          break;
+        }
+        case MSG_DB_CONTINUE: {
+          dbtag->state = DBTAG_STATE_RUNNING;
+          break;
+        }
         default: {
           break;
         }
@@ -261,7 +272,7 @@ dbtagProcessing (void *udata)
     }
   }
 
-  if (dbtag->running == DBTAG_STATE_RUNNING) {
+  if (dbtag->state == DBTAG_STATE_RUNNING) {
     count = queueGetCount (dbtag->fileQueue);
     if (count > dbtag->maxqueuelen) {
       dbtag->maxqueuelen = count;
@@ -308,14 +319,15 @@ dbtagProcessing (void *udata)
           (double) (dbtag->iterations - dbtag->maxThreads));
       /* windows had some issues with the socket buffering, so wait a bit */
       /* before exiting. */
-      mstimeset (&dbtag->waitCheck, 2000);
-      dbtag->running = DBTAG_STATE_WAIT;
+      /* 4.3.3 bump this value up */
+      mstimeset (&dbtag->waitCheck, 4000);
+      dbtag->state = DBTAG_STATE_WAIT;
     }
   }
 
-  if (dbtag->running == DBTAG_STATE_WAIT) {
+  if (dbtag->state == DBTAG_STATE_WAIT) {
     if (mstimeCheck (&dbtag->waitCheck)) {
-      dbtag->running = DBTAG_STATE_FINISH;
+      dbtag->state = DBTAG_STATE_FINISH;
       progstateShutdownProcess (dbtag->progstate);
     }
   }
@@ -406,8 +418,8 @@ dbtagClosingCallback (void *tdbtag, programstate_t programState)
 static void
 dbtagProcessFileMsg (dbtag_t *dbtag, char *args)
 {
-  if (dbtag->running == DBTAG_STATE_NOT_RUNNING) {
-    dbtag->running = DBTAG_STATE_RUNNING;
+  if (dbtag->state == DBTAG_STATE_NOT_RUNNING) {
+    dbtag->state = DBTAG_STATE_RUNNING;
     mstimestart (&dbtag->starttm);
   }
   ++dbtag->received;

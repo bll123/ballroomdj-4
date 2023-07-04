@@ -71,8 +71,8 @@ UNPACKDIR="${cwd}/tmp/bdj4-install"
 UNPACKDIRBASE="${cwd}/tmp/bdj4-install${macdir}"
 UNPACKDIRTMP="$UNPACKDIR.tmp"
 MUSICDIR="${cwd}/test-music"
-#ATI=libatimutagen
-ATI=libatibdj4
+ATI=libatimutagen
+#ATI=libatibdj4
 LOG="tmp/insttest-log.txt"
 
 currvers=$(pkglongvers)
@@ -279,7 +279,8 @@ function checkInstallation {
       if [[ $rc -eq 0 ]]; then
         chk=$(($chk+1))
       else
-        echo "  incorrect ati interface $(grep ${ATI} ${fn})"
+        tval=$(grep "${ATI}" "${fn}")
+        echo "  incorrect ati interface $tval"
       fi
     else
       echo "  no ${fn}"

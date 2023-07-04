@@ -65,6 +65,7 @@
 #include "pathutil.h"
 #include "progstate.h"
 #include "procutil.h"
+#include "queue.h"
 #include "rafile.h"
 #include "slist.h"
 #include "sockh.h"
@@ -77,6 +78,8 @@ enum {
   DB_UPD_INIT,
   DB_UPD_PREP,
   DB_UPD_SEND,
+  DB_UPD_WAIT,
+  DB_UPD_PAUSE_PROCESS,
   DB_UPD_PROCESS,
   DB_UPD_FINISH,
 };
@@ -86,7 +89,7 @@ enum {
   C_FILE_PROC,
   C_FILE_SKIPPED,
   C_FILE_SENT,
-  C_FILE_RCV,
+  C_QUEUE_MAX,
   C_IN_DB,
   C_NEW,
   C_UPDATED,
@@ -100,6 +103,11 @@ enum {
   C_NO_TAGS,
   C_MAX,
 };
+
+typedef struct {
+  char        *ffn;
+  char        *data;
+} tagdataitem_t;
 
 typedef struct {
   progstate_t       *progstate;
@@ -125,6 +133,8 @@ typedef struct {
   int               stopwaitcount;
   char              *olddirlist;
   itunes_t          *itunes;
+  queue_t           *tagdataq;
+  int               waitcount;
   /* base database operations */
   bool              checknew : 1;
   bool              compact : 1;
@@ -148,6 +158,7 @@ typedef struct {
 
 enum {
   FNAMES_SENT_PER_ITER = 30,
+  QUEUE_PROCESS_LIMIT = 30,
 };
 
 static int      dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
@@ -159,7 +170,10 @@ static bool     dbupdateHandshakeCallback (void *tdbupdate, programstate_t progr
 static bool     dbupdateStoppingCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateStopWaitCallback (void *tdbupdate, programstate_t programState);
 static bool     dbupdateClosingCallback (void *tdbupdate, programstate_t programState);
-static void     dbupdateProcessTagData (dbupdate_t *dbupdate, char *args);
+static void     dbupdateQueueTagData (dbupdate_t *dbupdate, char *args);
+static void     dbupdateTagDataFree (void *data);
+static void     dbupdateProcessTagDataQueue (dbupdate_t *dbupdate);
+static void     dbupdateProcessTagData (dbupdate_t *dbupdate, const char *ffn, char *data);
 static void     dbupdateWriteTags (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
 static void     dbupdateFromiTunes (dbupdate_t *dbupdate, const char *ffn, slist_t *tagdata);
 static void     dbupdateSigHandler (int sig);
@@ -190,6 +204,8 @@ main (int argc, char *argv[])
   dbupdate.maxWriteLen = 0;
   dbupdate.stopwaitcount = 0;
   dbupdate.itunes = NULL;
+  dbupdate.tagdataq = queueAlloc ("tagdata-q", dbupdateTagDataFree);
+  dbupdate.waitcount = 0;
   dbupdate.org = NULL;
   dbupdate.checknew = false;
   dbupdate.compact = false;
@@ -345,7 +361,7 @@ dbupdateProcessMsg (bdjmsgroute_t routefrom, bdjmsgroute_t route,
           break;
         }
         case MSG_DB_FILE_TAGS: {
-          dbupdateProcessTagData (dbupdate, args);
+          dbupdateQueueTagData (dbupdate, args);
           break;
         }
         default: {
@@ -449,7 +465,10 @@ dbupdateProcessing (void *udata)
     dbupdate->state = DB_UPD_SEND;
   }
 
-  if (dbupdate->state == DB_UPD_SEND) {
+  /* need to check the queue count so that too much memory is not used */
+  /* all at once */
+  if (dbupdate->state == DB_UPD_SEND &&
+      queueGetCount (dbupdate->tagdataq) <= QUEUE_PROCESS_LIMIT) {
     int         count = 0;
     char        *fn;
     pathinfo_t  *pi;
@@ -537,7 +556,7 @@ dbupdateProcessing (void *udata)
         connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_FILE_CHK, fn);
         logMsg (LOG_DBG, LOG_DBUPDATE, "  send %s", fn);
       } else {
-        dbupdateProcessTagData (dbupdate, fn);
+        dbupdateQueueTagData (dbupdate, fn);
       }
 
       dbupdateIncCount (dbupdate, C_FILE_SENT);
@@ -555,41 +574,81 @@ dbupdateProcessing (void *udata)
         connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_ALL_FILES_SENT, NULL);
       }
       dbupdate->state = DB_UPD_PROCESS;
+      /* writing tags on windows can be very slow */
+      /* and the socket data gets lost */
+      if (dbupdate->usereader && dbupdate->writetags) {
+        dbupdate->state = DB_UPD_WAIT;
+        dbupdate->waitcount = 10;
+      }
+    }
+  }
+
+  if (dbupdate->state == DB_UPD_WAIT) {
+    --dbupdate->waitcount;
+    if (dbupdate->waitcount <= 0) {
+      dbupdate->state = DB_UPD_PROCESS;
     }
   }
 
   if (dbupdate->state == DB_UPD_SEND ||
+      dbupdate->state == DB_UPD_PAUSE_PROCESS ||
       dbupdate->state == DB_UPD_PROCESS) {
-    dbupdateOutputProgress (dbupdate);
-    logMsg (LOG_DBG, LOG_DBUPDATE, "progress: %u+%u(%u) >= %u",
-        dbupdate->counts [C_FILE_PROC],
-        dbupdate->counts [C_FILE_SKIPPED],
-        dbupdate->counts [C_FILE_PROC] + dbupdate->counts [C_FILE_SKIPPED],
-        dbupdate->counts [C_FILE_COUNT]);
-    if (dbupdate->counts [C_FILE_PROC] + dbupdate->counts [C_FILE_SKIPPED] >=
-        dbupdate->counts [C_FILE_COUNT]) {
-      logMsg (LOG_DBG, LOG_DBUPDATE, "  done");
-      dbupdate->state = DB_UPD_FINISH;
+    bool  process = false;
 
-      if (dbupdate->cli) {
-        if (dbupdate->progress) {
-          fprintf (stdout, "\r100.00\n");
-        }
-        if (dbupdate->verbose) {
-          fprintf (stdout,
-              "found %u skip %u indb %u new %u updated %u notaudio %u writetag %u\n",
-              dbupdate->counts [C_FILE_COUNT],
-              dbupdate->counts [C_FILE_SKIPPED],
-              dbupdate->counts [C_IN_DB],
-              dbupdate->counts [C_NEW],
-              dbupdate->counts [C_UPDATED],
-              dbupdate->counts [C_NON_AUDIO],
-              dbupdate->counts [C_WRITE_TAGS]);
-        }
-        fflush (stdout);
-      }
+    /* writing tags on windows can be very slow */
+    /* and the socket data gets lost */
+    if (! dbupdate->usereader ||
+        ! dbupdate->writetags ||
+        dbupdate->state == DB_UPD_PAUSE_PROCESS ||
+        dbupdate->state == DB_UPD_PROCESS) {
+      process = true;
     }
-  }
+
+    if (process) {
+      dbupdateProcessTagDataQueue (dbupdate);
+      dbupdateOutputProgress (dbupdate);
+
+      logMsg (LOG_DBG, LOG_DBUPDATE, "progress: %u+%u(%u) >= %u",
+          dbupdate->counts [C_FILE_PROC],
+          dbupdate->counts [C_FILE_SKIPPED],
+          dbupdate->counts [C_FILE_PROC] + dbupdate->counts [C_FILE_SKIPPED],
+          dbupdate->counts [C_FILE_COUNT]);
+
+      if (dbupdate->counts [C_FILE_PROC] + dbupdate->counts [C_FILE_SKIPPED] >=
+          dbupdate->counts [C_FILE_COUNT]) {
+        logMsg (LOG_DBG, LOG_DBUPDATE, "  done");
+        dbupdate->state = DB_UPD_FINISH;
+
+        if (dbupdate->cli) {
+          if (dbupdate->progress) {
+            fprintf (stdout, "\r100.00\n");
+          }
+          if (dbupdate->verbose) {
+            fprintf (stdout,
+                "found %u skip %u indb %u new %u updated %u notaudio %u writetag %u\n",
+                dbupdate->counts [C_FILE_COUNT],
+                dbupdate->counts [C_FILE_SKIPPED],
+                dbupdate->counts [C_IN_DB],
+                dbupdate->counts [C_NEW],
+                dbupdate->counts [C_UPDATED],
+                dbupdate->counts [C_NON_AUDIO],
+                dbupdate->counts [C_WRITE_TAGS]);
+          }
+          fflush (stdout);
+        } /* if command line interface (testing) */
+      } else {
+        /* not done */
+        if (dbupdate->state == DB_UPD_PAUSE_PROCESS) {
+          if (queueGetCount (dbupdate->tagdataq) <= 0) {
+            // fprintf (stderr, "-- continue\n");
+            connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_CONTINUE, NULL);
+            dbupdate->state = DB_UPD_WAIT;
+            dbupdate->waitcount = 0;
+          }
+        }
+      } /* not done */
+    } /* not write-tags or in process state */
+  } /* send or process */
 
   if (dbupdate->state == DB_UPD_FINISH) {
     char  tbuff [MAXPATHLEN];
@@ -666,6 +725,7 @@ dbupdateProcessing (void *udata)
     logMsg (LOG_DBG, LOG_IMPORTANT, "  skipped: %u", dbupdate->counts [C_FILE_SKIPPED]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "     sent: %u", dbupdate->counts [C_FILE_SENT]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "processed: %u", dbupdate->counts [C_FILE_PROC]);
+    logMsg (LOG_DBG, LOG_IMPORTANT, "queue-max: %u", dbupdate->counts [C_QUEUE_MAX]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "    in-db: %u", dbupdate->counts [C_IN_DB]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "      new: %u", dbupdate->counts [C_NEW]);
     logMsg (LOG_DBG, LOG_IMPORTANT, "  updated: %u", dbupdate->counts [C_UPDATED]);
@@ -825,19 +885,91 @@ dbupdateClosingCallback (void *tdbupdate, programstate_t programState)
   orgFree (dbupdate->org);
   regexFree (dbupdate->badfnregex);
   slistFree (dbupdate->fileList);
+  queueFree (dbupdate->tagdataq);
 
   logProcEnd (LOG_PROC, "dbupdateClosingCallback", "");
   return STATE_FINISHED;
 }
 
 static void
-dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
+dbupdateQueueTagData (dbupdate_t *dbupdate, char *args)
+{
+  char          *ffn;
+  char          *data;
+  tagdataitem_t *tdi;
+  char          *tokstr;
+  dbidx_t       count;
+
+  ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
+  data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
+
+  if (dbupdate->usereader && data == NULL) {
+    /* complete failure */
+    logMsg (LOG_DBG, LOG_DBUPDATE, "  null data");
+    dbupdateIncCount (dbupdate, C_NULL_DATA);
+    dbupdateIncCount (dbupdate, C_FILE_PROC);
+    return;
+  }
+
+  tdi = mdmalloc (sizeof (tagdataitem_t));
+  tdi->ffn = mdstrdup (ffn);
+  tdi->data = NULL;
+  if (data != NULL) {
+    tdi->data = mdstrdup (data);
+  }
+  queuePush (dbupdate->tagdataq, tdi);
+  count = queueGetCount (dbupdate->tagdataq);
+  // fprintf (stderr, "q-push: %s %d\n", ffn, count);
+  if (count > dbupdate->counts [C_QUEUE_MAX]) {
+    dbupdate->counts [C_QUEUE_MAX] = count;
+  }
+  if (dbupdate->usereader &&
+      dbupdate->writetags &&
+      (dbupdate->state == DB_UPD_WAIT ||
+      dbupdate->state == DB_UPD_PROCESS)) {
+    dbupdate->waitcount = 10;
+    dbupdate->state = DB_UPD_WAIT;
+  }
+  if (dbupdate->state == DB_UPD_WAIT &&
+      count >= QUEUE_PROCESS_LIMIT) {
+    // fprintf (stderr, "-- pause\n");
+    connSendMessage (dbupdate->conn, ROUTE_DBTAG, MSG_DB_PAUSE, NULL);
+    dbupdate->state = DB_UPD_PAUSE_PROCESS;
+  }
+}
+
+static void
+dbupdateTagDataFree (void *data)
+{
+  tagdataitem_t   *tdi = data;
+
+  if (tdi != NULL) {
+    dataFree (tdi->ffn);
+    dataFree (tdi->data);
+    mdfree (tdi);
+  }
+}
+
+static void
+dbupdateProcessTagDataQueue (dbupdate_t *dbupdate)
+{
+  tagdataitem_t *tdi;
+
+  if (queueGetCount (dbupdate->tagdataq) <= 0) {
+    return;
+  }
+
+  tdi = queuePop (dbupdate->tagdataq);
+  // fprintf (stderr, "  pop: %s\n", tdi->ffn);
+  dbupdateProcessTagData (dbupdate, tdi->ffn, tdi->data);
+  dbupdateTagDataFree (tdi);
+}
+
+static void
+dbupdateProcessTagData (dbupdate_t *dbupdate, const char *ffn, char *data)
 {
   slist_t     *tagdata;
-  char        *ffn;
   const char  *songfname;
-  char        *data;
-  char        *tokstr;
   slistidx_t  orgiteridx;
   int         tagkey;
   dbidx_t     rrn;
@@ -848,19 +980,7 @@ dbupdateProcessTagData (dbupdate_t *dbupdate, char *args)
   char        *val;
   int         rewrite;
 
-
-  ffn = strtok_r (args, MSG_ARGS_RS_STR, &tokstr);
-  data = strtok_r (NULL, MSG_ARGS_RS_STR, &tokstr);
-
   logMsg (LOG_DBG, LOG_DBUPDATE, "__ process %s", ffn);
-
-  if (dbupdate->usereader && data == NULL) {
-    /* complete failure */
-    logMsg (LOG_DBG, LOG_DBUPDATE, "  null data");
-    dbupdateIncCount (dbupdate, C_NULL_DATA);
-    dbupdateIncCount (dbupdate, C_FILE_PROC);
-    return;
-  }
 
   tagdata = audiotagParseData (ffn, data, &rewrite);
   if (slistGetCount (tagdata) == 0) {

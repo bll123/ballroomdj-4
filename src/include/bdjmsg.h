@@ -165,6 +165,8 @@ typedef enum {
   /* to dbtag */
   MSG_DB_FILE_CHK,          // args: filename to check
   MSG_DB_ALL_FILES_SENT,    // all filenames sent to dbtag
+  MSG_DB_PAUSE,             // pause processing
+  MSG_DB_CONTINUE,          // continue processing
   /* to/from bpm counter */
   MSG_BPM_TIMESIG,          // args: bpm/mpm time-signature(mpm)
   MSG_BPM_SET,              // args: bpm

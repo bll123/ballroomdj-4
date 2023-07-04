@@ -11,6 +11,7 @@
     * Audio Tags: Process duplicates correctly (FLAC, Ogg, Opus).
     * Audio Tags: Recognize more MP4 extensions.
     * Audio Tags: Fixed an intermittent issue using the mutagen interface.
+    * Internal: Fixed issue with sockets not being held open long enough.
 * Changes:
     * Apply Adjustments: Removed normalize as it doesn't work well.
 * New Features:
