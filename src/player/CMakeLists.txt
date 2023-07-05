@@ -35,6 +35,7 @@ target_link_libraries (bdj4player PUBLIC
 addIntlLibrary (bdj4player)
 addWinSockLibrary (bdj4player)
 
+
 add_executable (bdj4marquee bdj4marquee.c)
 if (WIN32)
   target_compile_options (bdj4marquee PRIVATE -municode)
@@ -92,8 +93,8 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
- updateRPath (bdj4main)
- updateRPath (bdj4player)
- updateRPath (bdj4marquee)
- updateRPath (bdj4rc)
- updateRPath (bdj4mobmq)
+updateRPath (bdj4main)
+updateRPath (bdj4player)
+updateRPath (bdj4marquee)
+updateRPath (bdj4rc)
+updateRPath (bdj4mobmq)

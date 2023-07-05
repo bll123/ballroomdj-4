@@ -45,10 +45,10 @@ target_link_libraries (bdj4configui PUBLIC
 )
 addIntlLibrary (bdj4configui)
 addWinSockLibrary (bdj4configui)
+updateRPath (bdj4configui)
 
 install (TARGETS
   bdj4configui
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-updateRPath (bdj4configui)

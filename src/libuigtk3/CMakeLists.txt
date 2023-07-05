@@ -49,6 +49,7 @@ target_link_libraries (libuigtk3 PUBLIC
 )
 addIntlLibrary (libuigtk3)
 addWinSockLibrary (libuigtk3)
+updateRPath (libuigtk3)
 
 install (TARGETS
   libuigtk3

@@ -38,6 +38,7 @@ target_link_libraries (bdj4 PUBLIC
 # for gethostname
 addWinSockLibrary (bdj4)
 addWinNtdllLibrary (bdj4)
+updateRPath (bdj4)
 
 # this is only used on macos
 add_executable (bdj4g bdj4.c)
@@ -59,6 +60,7 @@ target_link_libraries (bdj4g PUBLIC
 )
 addWinSockLibrary (bdj4g)
 addWinNtdllLibrary (bdj4g)
+updateRPath (bdj4g)
 
 add_executable (bdj4starterui
   bdj4starterui.c
@@ -78,6 +80,7 @@ target_link_libraries (bdj4starterui PUBLIC
 )
 addIntlLibrary (bdj4starterui)
 addWinSockLibrary (bdj4starterui)
+updateRPath (bdj4starterui)
 
 add_executable (bdj4helperui bdj4helperui.c)
 if (WIN32)
@@ -93,6 +96,7 @@ target_link_libraries (bdj4helperui PUBLIC
 )
 addIntlLibrary (bdj4helperui)
 addWinSockLibrary (bdj4helperui)
+updateRPath (bdj4helperui)
 
 install (TARGETS
   bdj4 bdj4g
@@ -100,7 +104,3 @@ install (TARGETS
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-updateRPath (bdj4)
-updateRPath (bdj4g)
-updateRPath (bdj4starterui)
-updateRPath (bdj4helperui)

@@ -14,6 +14,7 @@ target_link_libraries (libbdj4vol PUBLIC
   libbdj4basic libbdj4common
   m
 )
+updateRPath (libbdj4vol)
 
 add_library (libvolnull SHARED volnull.c)
 target_link_libraries (libvolnull PUBLIC
@@ -50,7 +51,7 @@ if (NOT WIN32 AND NOT APPLE)
       ${PIPEWIRE_LDFLAGS}
       m
     )
-  endif()
+      endif()
 endif()
 
 if (WIN32)
@@ -60,7 +61,7 @@ if (WIN32)
     libbdj4fileop
     libbdj4string
   )
-endif()
+  endif()
 
 add_executable (voltest voltest.c)
 target_link_libraries (voltest PUBLIC
@@ -68,6 +69,7 @@ target_link_libraries (voltest PUBLIC
   ${ICU_LDFLAGS}
   m
 )
+updateRPath (voltest)
 
 install (TARGETS
   libbdj4vol libvolnull
@@ -96,6 +98,4 @@ if (WIN32)
     DESTINATION ${PROJECT_SOURCE_DIR}/../bin
   )
 endif()
-
-updateRPath (voltest)
 

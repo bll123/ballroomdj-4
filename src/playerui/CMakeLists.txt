@@ -20,11 +20,10 @@ target_link_libraries (bdj4playerui PUBLIC
 )
 addIntlLibrary (bdj4playerui)
 addWinSockLibrary (bdj4playerui)
-
+updateRPath (bdj4playerui)
 
 install (TARGETS
   bdj4playerui
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-updateRPath (bdj4playerui)

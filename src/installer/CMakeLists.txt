@@ -47,6 +47,7 @@ target_link_libraries (bdj4installer PUBLIC
   m
 )
 addIntlLibrary (bdj4installer)
+updateRPath (bdj4installer)
 
 add_executable (bdj4altsetup bdj4altsetup.c)
 if (WIN32)
@@ -62,6 +63,7 @@ target_link_libraries (bdj4altsetup PUBLIC
   m
 )
 addIntlLibrary (bdj4altsetup)
+updateRPath (bdj4altsetup)
 
 add_executable (bdj4updater bdj4updater.c)
 if (WIN32)
@@ -75,13 +77,10 @@ target_link_libraries (bdj4updater PUBLIC
   m
 )
 addIntlLibrary (bdj4updater)
+updateRPath (bdj4updater)
 
 install (TARGETS
   bdj4se bdj4installer bdj4altsetup bdj4updater
   DESTINATION ${PROJECT_SOURCE_DIR}/../bin
 )
 
-updateRPath (bdj4se)
-updateRPath (bdj4installer)
-updateRPath (bdj4altsetup)
-updateRPath (bdj4updater)

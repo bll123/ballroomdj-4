@@ -33,6 +33,12 @@ endmacro()
 
 macro (updateRPath name)
   if (APPLE)
+    set_property (TARGET ${name}
+        PROPERTY INSTALL_RPATH
+        "@loader_path"
+        "@loader_path/../plocal/lib"
+    )
+    # libvorbis and libicu don't have the proper path when linked
     add_custom_command(TARGET ${name}
         POST_BUILD
         COMMAND
@@ -42,12 +48,10 @@ macro (updateRPath name)
     )
   endif()
   if (NOT APPLE AND NOT WIN32)
-    add_custom_command(TARGET ${name}
-        POST_BUILD
-        COMMAND
-          ${PROJECT_SOURCE_DIR}/utils/linuxfixrpath.sh
-              $<TARGET_FILE:${name}>
-        VERBATIM
+    set_property (TARGET ${name}
+        PROPERTY INSTALL_RPATH
+        "\${ORIGIN}"
+        "\${ORIGIN}/../plocal/lib"
     )
   endif()
 endmacro()

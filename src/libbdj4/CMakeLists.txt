@@ -69,6 +69,7 @@ if (APPLE)
 endif()
 addIntlLibrary (libbdj4)
 addWinSockLibrary (libbdj4)
+updateRPath (libbdj4)
 
 install (TARGETS
   libbdj4
