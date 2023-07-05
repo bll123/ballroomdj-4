@@ -139,7 +139,6 @@ START_TEST(musicdb_write)
 {
   musicdb_t *db;
   char      tmp [200];
-  size_t    len;
   song_t    *song;
   int       count;
   char      *ndata;
@@ -161,7 +160,6 @@ START_TEST(musicdb_write)
       song = songAlloc ();
       ck_assert_ptr_nonnull (song);
       snprintf (tmp, sizeof (tmp), "%02d", count);
-      len = strlen (songparsedata [i]);
       ndata = regexReplaceLiteral (songparsedata [i], "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
@@ -192,7 +190,6 @@ START_TEST(musicdb_overwrite)
 {
   musicdb_t *db;
   char      tmp [200];
-  size_t    len;
   song_t    *song;
   int       count;
   char      *ndata;
@@ -214,7 +211,6 @@ START_TEST(musicdb_overwrite)
       song = songAlloc ();
       ck_assert_ptr_nonnull (song);
       snprintf (tmp, sizeof (tmp), "%02d", count);
-      len = strlen (songparsedata [i]);
       ndata = regexReplaceLiteral (songparsedata [i], "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
@@ -247,7 +243,6 @@ START_TEST(musicdb_batch_write)
 {
   musicdb_t *db;
   char      tmp [200];
-  size_t    len;
   song_t    *song;
   int       count;
   char      *ndata;
@@ -270,7 +265,6 @@ START_TEST(musicdb_batch_write)
       song = songAlloc ();
       ck_assert_ptr_nonnull (song);
       snprintf (tmp, sizeof (tmp), "%02d", count);
-      len = strlen (songparsedata [i]);
       ndata = regexReplaceLiteral (songparsedata [i], "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
@@ -301,7 +295,6 @@ START_TEST(musicdb_batch_overwrite)
 {
   musicdb_t *db;
   char      tmp [200];
-  size_t    len;
   song_t    *song;
   int       count;
   char      *ndata;
@@ -324,7 +317,6 @@ START_TEST(musicdb_batch_overwrite)
       song = songAlloc ();
       ck_assert_ptr_nonnull (song);
       snprintf (tmp, sizeof (tmp), "%02d", count);
-      len = strlen (songparsedata [i]);
       ndata = regexReplaceLiteral (songparsedata [i], "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
@@ -358,7 +350,6 @@ START_TEST(musicdb_write_song)
 {
   musicdb_t *db;
   char      tmp [200];
-  size_t    len;
   song_t    *song;
   int       count;
   char      *ndata;
@@ -382,7 +373,6 @@ START_TEST(musicdb_write_song)
       song = songAlloc ();
       ck_assert_ptr_nonnull (song);
       snprintf (tmp, sizeof (tmp), "%02d", count);
-      len = strlen (songparsedata [i]);
       ndata = regexReplaceLiteral (songparsedata [i], "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, MUSICDB_ENTRY_NEW);
@@ -410,7 +400,6 @@ START_TEST(musicdb_overwrite_song)
 {
   musicdb_t *db;
   char      tmp [200];
-  size_t    len;
   song_t    *song;
   int       count;
   char      *ndata;
@@ -431,7 +420,6 @@ START_TEST(musicdb_overwrite_song)
       song = songAlloc ();
       ck_assert_ptr_nonnull (song);
       snprintf (tmp, sizeof (tmp), "%02d", count);
-      len = strlen (songparsedata [i]);
       ndata = regexReplaceLiteral (songparsedata [i], "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
@@ -459,7 +447,6 @@ START_TEST(musicdb_load_get_byidx)
 {
   musicdb_t *db;
   char      tmp [40];
-  size_t    len;
   song_t    *song;
   song_t    *dbsong;
   int       count;
@@ -481,7 +468,6 @@ START_TEST(musicdb_load_get_byidx)
       song = songAlloc ();
       ck_assert_ptr_nonnull (song);
       snprintf (tmp, sizeof (tmp), "%02d", count);
-      len = strlen (songparsedata [i]);
       ndata = regexReplaceLiteral (songparsedata [i], "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
@@ -509,7 +495,6 @@ START_TEST(musicdb_load_get_byname)
 {
   musicdb_t *db;
   char      tmp [40];
-  size_t    len;
   song_t    *song;
   song_t    *dbsong;
   int       count;
@@ -532,7 +517,6 @@ START_TEST(musicdb_load_get_byname)
       song = songAlloc ();
       ck_assert_ptr_nonnull (song);
       snprintf (tmp, sizeof (tmp), "%02d", count);
-      len = strlen (songparsedata [i]);
       ndata = regexReplaceLiteral (songparsedata [i], "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);
@@ -562,7 +546,6 @@ START_TEST(musicdb_iterate)
 {
   musicdb_t *db;
   char      tmp [40];
-  size_t    len;
   song_t    *song;
   song_t    *dbsong;
   int       count;
@@ -586,7 +569,6 @@ START_TEST(musicdb_iterate)
       song = songAlloc ();
       ck_assert_ptr_nonnull (song);
       snprintf (tmp, sizeof (tmp), "%02d", count);
-      len = strlen (songparsedata [i]);
       ndata = regexReplaceLiteral (songparsedata [i], "%d", tmp);
       songParse (song, ndata, count);
       songSetNum (song, TAG_RRN, count + 1);

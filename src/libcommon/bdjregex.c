@@ -103,6 +103,8 @@ regexReplace (bdjregex_t *rx, const char *str, const char *repl)
   return nstr;
 }
 
+/* this routine re-creates the regex every time */
+/* if it is re-used, consider creating a normal regex */
 char *
 regexReplaceLiteral (const char *str, const char *tgt, const char *repl)
 {
