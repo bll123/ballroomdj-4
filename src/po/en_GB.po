@@ -1900,7 +1900,6 @@ msgstr ""
 msgid "Toggle Pause"
 msgstr ""
 
-#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
 msgstr ""

@@ -437,7 +437,6 @@ confuiMakeQRCodeFile (char *title, char *uri)
   pathbldMakePath (tbuff, sizeof (tbuff),
       "qrcode", BDJ4_HTML_EXT, PATHBLD_MP_DIR_TEMPLATE);
 
-  /* this is gross */
   data = filedataReadAll (tbuff, &dlen);
   ndata = regexReplaceLiteral (data, "#TITLE#", title);
   mdfree (data);
@@ -451,6 +450,7 @@ confuiMakeQRCodeFile (char *title, char *uri)
   pathbldMakePath (tbuff, sizeof (tbuff),
       "qrcode", BDJ4_HTML_EXT, PATHBLD_MP_DREL_TMP);
   fh = fileopOpen (tbuff, "w");
+  dlen = strlen (ndata);
   fwrite (ndata, dlen, 1, fh);
   fclose (fh);
   /* windows requires an extra slash in front, and it doesn't hurt on linux */
