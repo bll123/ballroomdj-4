@@ -17,6 +17,7 @@
 #include "bdj4.h"
 #include "bdj4intl.h"
 #include "bdjopt.h"
+#include "bdjregex.h"
 #include "bdjstring.h"
 #include "configui.h"
 #include "dirlist.h"
@@ -438,13 +439,13 @@ confuiMakeQRCodeFile (char *title, char *uri)
 
   /* this is gross */
   data = filedataReadAll (tbuff, &dlen);
-  ndata = filedataReplace (data, &dlen, "#TITLE#", title);
+  ndata = regexReplaceLiteral (data, "#TITLE#", title);
   mdfree (data);
   data = ndata;
-  ndata = filedataReplace (data, &dlen, "#BASEURL#", baseuri);
+  ndata = regexReplaceLiteral (data, "#BASEURL#", baseuri);
   mdfree (data);
   data = ndata;
-  ndata = filedataReplace (data, &dlen, "#QRCODEURL#", uri);
+  ndata = regexReplaceLiteral (data, "#QRCODEURL#", uri);
   mdfree (data);
 
   pathbldMakePath (tbuff, sizeof (tbuff),

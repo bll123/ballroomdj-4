@@ -19,6 +19,8 @@ if (WIN32)
   )
 endif()
 
+# want to keep the launcher at a minimum size and statically linked
+# with no shared library dependencies.
 add_executable (bdj4 bdj4.c)
 if (WIN32)
   target_compile_options (bdj4 PRIVATE -municode)

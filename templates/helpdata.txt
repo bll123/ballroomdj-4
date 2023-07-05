@@ -66,7 +66,7 @@ TEXT
 # If a dance you use is missing, select the 'Add' button and add the dance.
 # If there are dances you will never use, select the dance,
 # then select the 'Remove' button.
-# => Close the 'BDJ4 Organisation' window.
+# => Close the 'BDJ4 Configuration' window.
 KEY
 ..4
 TITLE

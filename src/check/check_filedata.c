@@ -65,44 +65,6 @@ START_TEST(filedata_readall)
 }
 END_TEST
 
-typedef struct {
-  char  *str;
-  char  *repl;
-  char  *result;
-} chk_filedata_t;
-
-static char *teststr = "abc123def456ghi789qwertyzzz123def456ghi789";
-static chk_filedata_t tvalues [] = {
-  { "qwerty", "ASDFGH", "abc123def456ghi789ASDFGHzzz123def456ghi789" },
-  { "qwerty", "ABC", "abc123def456ghi789ABCzzz123def456ghi789" },
-  { "qwerty", "ABCDEFGHIJKL", "abc123def456ghi789ABCDEFGHIJKLzzz123def456ghi789" },
-  { "456", "ABC", "abc123defABCghi789qwertyzzz123defABCghi789" },
-  { "123", "Z", "abcZdef456ghi789qwertyzzzZdef456ghi789" },
-  { "123", "VWXYZ", "abcVWXYZdef456ghi789qwertyzzzVWXYZdef456ghi789" }
-};
-enum {
-  tvaluesz = sizeof (tvalues) / sizeof (chk_filedata_t),
-};
-
-START_TEST(filedata_repl)
-{
-  char    *data = NULL;
-  size_t  len;
-  char    *ndata = NULL;
-
-  logMsg (LOG_DBG, LOG_IMPORTANT, "--chk-- filedata_repl");
-
-  for (int i = 0; i < tvaluesz; ++i) {
-    data = teststr;
-    len = strlen (data);
-    ndata = filedataReplace (data, &len, tvalues [i].str, tvalues [i].repl);
-    ck_assert_int_eq (strlen (tvalues [i].result), len);
-    ck_assert_mem_eq (ndata, tvalues [i].result, len);
-    mdfree (ndata);
-  }
-}
-END_TEST
-
 Suite *
 filedata_suite (void)
 {
@@ -113,7 +75,6 @@ filedata_suite (void)
   tc = tcase_create ("filedata");
   tcase_set_tags (tc, "libcommon");
   tcase_add_test (tc, filedata_readall);
-  tcase_add_test (tc, filedata_repl);
   suite_add_tcase (s, tc);
   return s;
 }

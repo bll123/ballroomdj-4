@@ -16,10 +16,10 @@
 #include "bdj4intl.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
+#include "bdjregex.h"
 #include "bdjvars.h"
 #include "callback.h"
 #include "conn.h"
-#include "filedata.h"
 #include "datafile.h"
 #include "ilist.h"
 #include "log.h"
@@ -50,6 +50,10 @@ typedef struct {
   ilist_t         *helplist;
   ilistidx_t      helpiter;
   ilistidx_t      helpkey;
+  bdjregex_t      *rx_br;
+  bdjregex_t      *rx_dotnlsp;
+  bdjregex_t      *rx_dot;
+  bdjregex_t      *rx_eqgt;
   bool            scrollendflag : 1;
 } helperui_t;
 
@@ -102,6 +106,10 @@ main (int argc, char *argv[])
   }
   helper.closeCallback = NULL;
   helper.nextCallback = NULL;
+  helper.rx_br = regexInit ("<br>");
+  helper.rx_dotnlsp = regexInit ("\\.\\n ");
+  helper.rx_dot = regexInit ("\\.");
+  helper.rx_eqgt = regexInit ("=>");
 
   helper.progstate = progstateInit ("helperui");
   progstateSetCallback (helper.progstate, STATE_STOPPING,
@@ -175,6 +183,10 @@ helperClosingCallback (void *udata, programstate_t programState)
   for (int i = 0; i < HELPER_BUTTON_MAX; ++i) {
     uiButtonFree (helper->buttons [i]);
   }
+  regexFree (helper->rx_br);
+  regexFree (helper->rx_dotnlsp);
+  regexFree (helper->rx_dot);
+  regexFree (helper->rx_eqgt);
 
   bdj4shutdown (ROUTE_HELPERUI, NULL);
 
@@ -371,25 +383,23 @@ helpDisplay (helperui_t *helper)
   char    *text;
   char    *ttext;
   char    *ntext;
-  size_t  dlen;
 
   if (helper->helpkey >= 0) {
     title = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TITLE);
     text = ilistGetStr (helper->helplist, helper->helpkey, HELP_TEXT_TEXT);
     ttext = _(text);
-    dlen = strlen (ttext);
-    ntext = filedataReplace (ttext, &dlen, "<br>", "\n");
+    ntext = regexReplace (helper->rx_br, ttext, "\n");
 
     ttext = ntext;
-    ntext = filedataReplace (ttext, &dlen, ".\n ", ".\n");
+    ntext = regexReplace (helper->rx_dotnlsp, ttext, ".\n");
     mdfree (ttext);
 
     ttext = ntext;
-    ntext = filedataReplace (ttext, &dlen, ".", ".  ");
+    ntext = regexReplace (helper->rx_dot, ttext, ".  ");
     mdfree (ttext);
 
     ttext = ntext;
-    ntext = filedataReplace (ttext, &dlen, "=>", "\n=>");
+    ntext = regexReplace (helper->rx_eqgt, ttext, "\n=>");
     mdfree (ttext);
 
     if (helper->helpkey > 0) {

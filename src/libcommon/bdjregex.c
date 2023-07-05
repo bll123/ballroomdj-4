@@ -102,3 +102,24 @@ regexReplace (bdjregex_t *rx, const char *str, const char *repl)
   mdextalloc (nstr);
   return nstr;
 }
+
+char *
+regexReplaceLiteral (const char *str, const char *tgt, const char *repl)
+{
+  bdjregex_t  *rx;
+  char        *nstr = NULL;
+  char        *tmptgt;
+  size_t      len;
+
+  len = strlen (tgt) + 5;
+  tmptgt = mdmalloc (len);
+  snprintf (tmptgt, len, "\\Q%s\\E", tgt);
+  rx = regexInit (tmptgt);
+  /* G_REGEX_MATCH_DEFAULT is not defined */
+  nstr = g_regex_replace_literal (rx->regex, str, -1, 0, repl, 0, NULL);
+  mdextalloc (nstr);
+  mdfree (tmptgt);
+  regexFree (rx);
+  return nstr;
+}
+

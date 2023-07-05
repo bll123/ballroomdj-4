@@ -18,11 +18,11 @@
 #include "bdj4init.h"
 #include "bdjmsg.h"
 #include "bdjopt.h"
+#include "bdjregex.h"
 #include "bdjstring.h"
 #include "bdjvars.h"
 #include "conn.h"
 #include "dirlist.h"
-#include "filedata.h"
 #include "filemanip.h"
 #include "fileop.h"
 #include "istring.h"
@@ -1345,7 +1345,6 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
   char    *tstr;
   char    *p;
   char    *d;
-  size_t  dlen;
   char    *tokstr;
   int     route;
   int     msg;
@@ -1407,8 +1406,7 @@ tsSendMessage (testsuite_t *testsuite, const char *tcmd, int type)
       p = tmp;
     }
 
-    dlen = strlen (p);
-    d = filedataReplace (p, &dlen, "~", MSG_ARGS_RS_STR);
+    d = regexReplaceLiteral (p, "~", MSG_ARGS_RS_STR);
   }
   if (type == TS_TYPE_GET) {
     testsuite->waitRoute = route;

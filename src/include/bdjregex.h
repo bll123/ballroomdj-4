@@ -13,5 +13,6 @@ bool regexMatch (bdjregex_t *rx, const char *str);
 char ** regexGet (bdjregex_t *rx, const char *str);
 void regexGetFree (char **val);
 char *regexReplace (bdjregex_t *rx, const char *str, const char *repl);
+char *regexReplaceLiteral (const char *str, const char *tgt, const char *repl);
 
 #endif /* INC_BDJREGEX_H */

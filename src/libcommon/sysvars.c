@@ -282,10 +282,13 @@ sysvarsInit (const char *argv0)
     osGetEnv ("HOME", sysvars [SV_HOME], SV_MAX_SZ);
     osGetEnv ("USER", sysvars [SV_USER], SV_MAX_SZ);
   }
-  dlen = strlen (sysvars [SV_USER]) + 1;
-  tptr = filedataReplace (sysvars [SV_USER], &dlen, " ", "-");
-  strlcpy (sysvars [SV_USER_MUNGE], tptr, SV_MAX_SZ);
-  mdfree (tptr);
+  dlen = strlen (sysvars [SV_USER]);
+  strlcpy (sysvars [SV_USER_MUNGE], sysvars [SV_USER], SV_MAX_SZ);
+  for (size_t i = 0; i < dlen; ++i) {
+    if (sysvars [SV_USER_MUNGE][i] == ' ') {
+      sysvars [SV_USER_MUNGE][i] = '-';
+    }
+  }
 
   if (isWindows ()) {
     snprintf (tbuff, sizeof (tbuff), "%s/AppData/Roaming/%s", sysvars [SV_HOME], BDJ4_NAME);

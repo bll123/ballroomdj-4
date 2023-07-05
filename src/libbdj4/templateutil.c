@@ -15,6 +15,7 @@
 
 #include "bdj4.h"
 #include "bdj4intl.h"
+#include "bdjregex.h"
 #include "bdjstring.h"
 #include "dirlist.h"
 #include "dirop.h"
@@ -137,7 +138,8 @@ templateCopy (const char *fromdir, const char *fromfn, const char *to, const cha
     if (data != NULL) {
       fh = fileopOpen (to, "w");
       if (fh != NULL) {
-        ndata = filedataReplace (data, &len, "#ffa600", color);
+        ndata = regexReplaceLiteral (data, "#ffa600", color);
+        len = strlen (ndata);
         fwrite (ndata, len, 1, fh);
         fclose (fh);
         dataFree (ndata);
