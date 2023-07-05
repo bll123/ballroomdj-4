@@ -226,6 +226,9 @@ function checkInstallation {
           fi
         fi
         ;;
+      *)
+        # ignore any debugging
+        ;;
     esac
     shift
   done
@@ -256,6 +259,14 @@ function checkInstallation {
     res=$(($res+1))
     if [[ $fin == T && -f ${fn} ]]; then
       chk=$(($chk+1))
+      res=$(($res+1))
+      grep "^\.\.-1" "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -ne 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  incorrect version in bdjconfig.txt"
+      fi
     else
       echo "  no ${fn}"
     fi
@@ -264,6 +275,14 @@ function checkInstallation {
     res=$(($res+1))
     if [[ $fin == T && -f ${fn} ]]; then
       chk=$(($chk+1))
+      res=$(($res+1))
+      grep "^\.\.-1" "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -ne 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  incorrect version in profile00/bdjconfig.txt"
+      fi
     else
       echo "  no ${fn}"
     fi
@@ -272,6 +291,14 @@ function checkInstallation {
     res=$(($res+1))
     if [[ $fin == T && -f ${fn} ]]; then
       chk=$(($chk+1))
+      res=$(($res+1))
+      grep "^\.\.-1" "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -ne 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  incorrect version in ${hostname}/bdjconfig.txt"
+      fi
       # check <hostname>/bdjconfig.txt for proper ati interface
       res=$(($res+1))
       grep "${ATI}" "${fn}" > /dev/null 2>&1
@@ -290,6 +317,14 @@ function checkInstallation {
     res=$(($res+1))
     if [[ $fin == T && -f ${fn} ]]; then
       chk=$(($chk+1))
+      res=$(($res+1))
+      grep "^\.\.-1" "${fn}" > /dev/null 2>&1
+      rc=$?
+      if [[ $rc -ne 0 ]]; then
+        chk=$(($chk+1))
+      else
+        echo "  incorrect version in ${hostname}/profile00/bdjconfig.txt"
+      fi
     else
       echo "  no ${fn}"
     fi
@@ -629,6 +664,8 @@ mv -f "$UNPACKDIR" "$UNPACKDIRTMP"
 
 section=basic
 
+echo "-- $(date +%T) creating test music"
+./src/utils/mktestsetup.sh --force
 cleanInstTest
 resetUnpack
 

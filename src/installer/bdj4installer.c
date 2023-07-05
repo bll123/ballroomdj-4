@@ -1577,7 +1577,7 @@ installerVerifyInstInit (installer_t *installer)
   installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
   uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], installer->pleasewaitmsg);
 
-  /* the unpackdir is not necessarily the same as the current dir */
+  /* the unpackdir is not necessarily the same as the rundir */
   /* on mac os, they are different */
   if (chdir (installer->unpackdir) < 0) {
     installerFailWorkingDir (installer, installer->unpackdir, "verifyinstinit");
@@ -1833,7 +1833,7 @@ installerCopyStart (installer_t *installer)
   installerDisplayText (installer, INST_DISP_STATUS, installer->pleasewaitmsg, false);
   uiLabelSetText (installer->wcont [INST_W_STATUS_MSG], installer->pleasewaitmsg);
 
-  /* the unpackdir is not necessarily the same as the current dir */
+  /* the unpackdir is not necessarily the same as the rundir */
   /* on mac os, they are different */
   if (chdir (installer->unpackdir) < 0) {
     installerFailWorkingDir (installer, installer->unpackdir, "copystart");
@@ -2224,6 +2224,11 @@ installerCreateShortcut (installer_t *installer)
 static void
 installerSetATI (installer_t *installer)
 {
+  if (chdir (installer->datatopdir)) {
+    installerFailWorkingDir (installer, installer->rundir, "createshortcut");
+    return;
+  }
+
   if (! installer->bdjoptloaded) {
     /* the audio tag interface must be saved */
     bdjoptInit ();
@@ -3139,6 +3144,7 @@ installerScanMusicDir (installer_t *installer)
   slist_t     *mlist;
   slistidx_t  iteridx;
   const char  *fn;
+  char        tbuff [MAXPATHLEN];
   int         tagtype;
   int         filetype;
   int         flags [AFILE_TYPE_MAX];
@@ -3159,6 +3165,8 @@ installerScanMusicDir (installer_t *installer)
   }
   slistFree (mlist);
 
+  snprintf (tbuff, sizeof (tbuff), "%s/bin", installer->rundir);
+  sysvarsSetStr (SV_BDJ4_DIR_EXEC, tbuff);
   for (int i = 0; i < INST_ATI_MAX; ++i) {
     atiGetSupportedTypes (instati [i].name, supported [i]);
   }

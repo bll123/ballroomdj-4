@@ -232,9 +232,14 @@ if [[ $os == macos ]]; then
   mv -f ${tfn}.n ${tfn}
 fi
 
+# bdj4updater will change the itunes media dir
 tfn=data/${hostname}/bdjconfig.txt
 sed -e "/^DIRITUNESMEDIA/ { n ; s,.*,..${cwd}/test-music, ; }" \
-    -e '/^ORGPATH/ { n ; s,.*,..{%DANCE%/}{%TITLE%}, ; }' \
+    ${tfn} > ${tfn}.n
+mv -f ${tfn}.n ${tfn}
+# bdj4updater will change the orgpath to the itunes orgpath.
+tfn=data/bdjconfig.txt
+sed -e '/^ORGPATH/ { n ; s,.*,..{%DANCE%/}{%TITLE%}, ; }' \
     ${tfn} > ${tfn}.n
 mv -f ${tfn}.n ${tfn}
 

@@ -204,10 +204,10 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $crc)
+  msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
 fi
 
@@ -223,10 +223,10 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $rc)
+  msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
 fi
 
@@ -242,10 +242,10 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $rc)
+  msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
 fi
 
@@ -261,10 +261,10 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $rc)
+  msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
 fi
 
@@ -289,13 +289,13 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TMAINDB)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $crc)
+  msg+="$(compcheck $tname $crc)"
 
   if [[ $rc -eq 0 && $crc -eq 0 ]]; then
-    msg+=$(checkaudiotags $tname)
+    msg+="$(checkaudiotags $tname)"
     trc=$?
     updateCounts $trc
     if [[ $trc -ne 0 ]]; then
@@ -349,13 +349,13 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBCOMPAT)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBCOMPAT)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $crc)
+  msg+="$(compcheck $tname $crc)"
 
   if [[ $rc -eq 0 && $crc -eq 0 ]]; then
-    msg+=$(checkaudiotags $tname)
+    msg+="$(checkaudiotags $tname)"
     trc=$?
     updateCounts $trc
     if [[ $trc -ne 0 ]]; then
@@ -408,10 +408,10 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBNOFOXTROT)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBNOFOXTROT)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $rc)
+  msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
 fi
 
@@ -430,10 +430,10 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBNOFOXTROT)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBNOFOXTROT)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $rc)
+  msg+="$(compcheck $tname $rc)"
   dispres $tname $rc $crc
 fi
 
@@ -479,10 +479,10 @@ if [[ $TESTON == T ]]; then
     msg+=$(checkres $tname "$got" "$exp")
     rc=$?
     updateCounts $rc
-    msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBNOCHACHA)
+    msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBNOCHACHA)"
     crc=$?
     updateCounts $crc
-    msg+=$(compcheck $tname $rc)
+    msg+="$(compcheck $tname $rc)"
     dispres $tname $rc $crc
   fi
 fi
@@ -502,10 +502,10 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBCHACHA)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBCHACHA)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $crc)
+  msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
 fi
 
@@ -544,13 +544,13 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBEMPTY)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBEMPTY)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $crc)
+  msg+="$(compcheck $tname $crc)"
 
   if [[ $rc -eq 0 && $crc -eq 0 ]]; then
-    msg+=$(checkaudiotags $tname --ignoremissing)
+    msg+="$(checkaudiotags $tname --ignoremissing)"
     trc=$?
     updateCounts $trc
     if [[ $trc -ne 0 ]]; then
@@ -576,13 +576,13 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBCHACHA)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBCHACHA)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $crc)
+  msg+="$(compcheck $tname $crc)"
 
   if [[ $rc -eq 0 && $crc -eq 0 ]]; then
-    msg+=$(checkaudiotags $tname)
+    msg+="$(checkaudiotags $tname)"
     trc=$?
     updateCounts $trc
     if [[ $trc -ne 0 ]]; then
@@ -637,10 +637,10 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBRDAT)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBRDAT)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $crc)
+  msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
 fi
 
@@ -657,10 +657,10 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBRDT)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBRDT)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $crc)
+  msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
 fi
 
@@ -678,10 +678,10 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBRDTALT)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBRDTALT)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $crc)
+  msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
 fi
 
@@ -698,10 +698,10 @@ if [[ $TESTON == T ]]; then
   msg+=$(checkres $tname "$got" "$exp")
   rc=$?
   updateCounts $rc
-  msg+=$(./bin/bdj4 --tdbcompare $DATADB $TDBRDTAT)
+  msg+="$(./bin/bdj4 --tdbcompare $DATADB $TDBRDTAT)"
   crc=$?
   updateCounts $crc
-  msg+=$(compcheck $tname $crc)
+  msg+="$(compcheck $tname $crc)"
   dispres $tname $rc $crc
 fi
 

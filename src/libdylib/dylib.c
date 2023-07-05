@@ -43,13 +43,9 @@ dylibLoad (const char *path)
   handle = whandle;
 #endif
   mdextalloc (handle);
-#if 0 // debugging
   if (handle == NULL) {
-    fprintf (stderr, "dylib open %s failed: %d %s\n", path, errno, strerror (errno));
-  } else {
-    fprintf (stderr, "dylib open %s OK\n", path);
+    fprintf (stderr, "ERR: dylib open %s failed: %d %s\n", path, errno, strerror (errno));
   }
-#endif
 
   return handle;
 }
