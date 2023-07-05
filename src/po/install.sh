@@ -73,6 +73,7 @@ function mkhtmlsub {
     esac
     xl=$(echo $xl | sed -e 's,^msgstr ",,' -e 's,"$,,' -e 's,\&,\\&amp;,g')
     sedcmd+="-e '\~value=\"${nl}\"~ s~value=\"${nl}\"~value=\"${xl}\"~' "
+    sedcmd+="-e '\~alt=\"${nl}\"~ s~alt=\"${nl}\"~alt=\"${xl}\"~' "
     sedcmd+="-e '\~>${nl}</p>~ s~${nl}~${xl}~' "
     ok=T
   done < $tempf
@@ -242,6 +243,8 @@ while read -r line; do
     esac
     grep -E 'value=' $fn |
         sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' > $TMP
+    grep -E 'alt=' $fn |
+        sed -e 's,.*alt=",,' -e 's,".*,,' -e '/^BDJ4$/ d' >> $TMP
     grep -E '<p[^>]*>[A-Za-z][A-Za-z]*</p>' $fn |
         sed -e 's, *<p[^>]*>,,' -e 's,</p>,,' >> $TMP
     sort -u $TMP > $TMP.n

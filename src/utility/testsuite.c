@@ -199,10 +199,10 @@ main (int argc, char *argv [])
   mstimeset (&testsuite.waitCheck, 100);
   mstimeset (&testsuite.responseStart, 0);
   mstimeset (&testsuite.responseTimeoutCheck, TS_CHK_TIMEOUT);
-  strlcpy (testsuite.sectionnum, "1", sizeof (testsuite.sectionnum));
-  strlcpy (testsuite.sectionname, "Init", sizeof (testsuite.sectionname));
-  strlcpy (testsuite.testnum, "1", sizeof (testsuite.testnum));
-  strlcpy (testsuite.testname, "Init", sizeof (testsuite.testname));
+  *testsuite.sectionnum = '\0';
+  *testsuite.sectionname = '\0';
+  *testsuite.testnum = '\0';
+  *testsuite.testname = '\0';
   testsuite.fh = NULL;
   testsuite.runsection = false;
   testsuite.runtest = false;
@@ -274,14 +274,16 @@ main (int argc, char *argv [])
   listenPort = bdjvarsGetNum (BDJVL_TEST_SUITE_PORT);
   sockhMainLoop (listenPort, tsProcessMsg, tsProcessing, &testsuite);
 
-  strlcpy (testsuite.testnum, "", sizeof (testsuite.testnum));
-  strlcpy (testsuite.testname, "", sizeof (testsuite.testname));
+  /* for the results display */
+  *testsuite.testnum = '\0';
+  *testsuite.testname = '\0';
 
   if (testsuite.processsection) {
     printResults (&testsuite, &testsuite.sresults);
   }
 
-  strlcpy (testsuite.sectionnum, "", sizeof (testsuite.sectionnum));
+  /* for the results display */
+  *testsuite.sectionnum = '\0';
   strlcpy (testsuite.sectionname, "Final", sizeof (testsuite.sectionname));
   state = "FAIL";
   rc = 1;

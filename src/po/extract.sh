@@ -99,9 +99,12 @@ for qn in 0 1 2 3; do
   sed -n -e "/^QUEUE_NAME/ {n;s,^,${ctxt}\n,;p}" $fn >> $TMP
 done
 
-ctxt="// CONTEXT: text from the HTML templates (buttons and labels)"
+ctxt="// CONTEXT: text from the HTML templates (buttons/labels/alt-text)"
 grep -E 'value=' ../templates/*.html |
   sed -e 's,.*value=",,' -e 's,".*,,' -e '/^100$/ d' \
+      -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMP
+grep -E 'alt=' ../templates/*.html |
+  sed -e 's,.*alt=",,' -e 's,".*,,' -e '/^BDJ4$/ d' \
       -e 's,^,..,' -e "s,^,${ctxt}\n," >> $TMP
 grep -E '<p[^>]*>[A-Za-z][A-Za-z]*</p>' ../templates/*.html |
   sed -e 's,.*: *<,<,' -e 's,<[^>]*>,,g' -e 's,^ *,,' -e 's, *$,,' \

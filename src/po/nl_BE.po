@@ -398,11 +398,11 @@ msgstr "Klassiek"
 msgid "Classical?"
 msgstr "Klassiek?"
 
-#. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 msgid "Clear & Play"
 msgstr "Wissen & Afspelen"
 
-#. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: music queue: button: clear the queue
 msgid "Clear Queue"
 msgstr "Wachtrij wissen"
@@ -786,7 +786,7 @@ msgstr "Exporteer naar"
 msgid "External Request"
 msgstr "Externe Toevoeging"
 
-#. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: fade out the song and stop playing it
 msgid "Fade"
 msgstr "Fade"
@@ -1129,6 +1129,10 @@ msgstr "Muziek wachtrij"
 msgid "Music Queues"
 msgstr "Muziek Wachtrijen"
 
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Mute"
+msgstr ""
+
 #. CONTEXT: set up alternate: name (for shortcut)
 msgid "Name"
 msgstr "Naam"
@@ -1200,12 +1204,13 @@ msgstr "Nieuwe Status"
 msgid "New alternate folder."
 msgstr "Nieuwe Alternatieve map."
 
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: song editor : next song
 #. CONTEXT: helperui: proceed to the next step
 msgid "Next"
 msgstr "Volgende"
 
-#. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: tooltip: start playing the next song (immediate)
 msgid "Next Song"
 msgstr "Volgende nummer"
@@ -1286,11 +1291,15 @@ msgstr "Paso Doble"
 msgid "Password"
 msgstr "Wachtwoord"
 
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
+msgid "Pause"
+msgstr "Pauseren"
+
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
 msgstr "Pauzeer elk nummer"
 
-#. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: pause at the end of the song (toggle)
 msgid "Pause at End"
 msgstr "Pauzeer aan einde"
@@ -1301,7 +1310,7 @@ msgstr "Pauzeer aan einde"
 msgid "Play"
 msgstr "Afspelen"
 
-#. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: tooltip: play or pause the song
 msgid "Play / Pause"
 msgstr "Afspelen / Pauseren"
@@ -1415,14 +1424,14 @@ msgstr ""
 msgid "QR Code"
 msgstr ""
 
-#. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) external request dialog: queue the selected file
 #. CONTEXT: (verb) history: re-queue the selected song
 #. CONTEXT: (verb) song-selection: queue a song to be played
 msgid "Queue"
 msgstr "Nummer Toevoegen"
 
-#. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: (verb) music queue: button: queue 5 dances for playback
 msgid "Queue 5"
 msgstr "5 Toevoegen"
@@ -1522,7 +1531,7 @@ msgstr ""
 msgid "Reorganise"
 msgstr "Reorganiseren"
 
-#. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 msgid "Repeat"
 msgstr "Herhalen"
 
@@ -1760,7 +1769,7 @@ msgstr "Songs"
 msgid "Sort by"
 msgstr ""
 
-#. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: configuration: dances: the speed of the dance (fast/normal/slow)
 #. CONTEXT: playerui: the current speed for song playback
 msgid "Speed"
@@ -1799,6 +1808,7 @@ msgstr ""
 msgid "Status"
 msgstr "Status"
 
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: update database: button to stop the database update process
 msgid "Stop"
 msgstr "Stop"
@@ -1897,6 +1907,7 @@ msgstr "Titel"
 msgid "Toggle Pause"
 msgstr "Pauze omschakelen"
 
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: button: tooltip: toggle the repeat song on and off
 msgid "Toggle Repeat"
 msgstr ""
@@ -2021,7 +2032,7 @@ msgstr "Weense wals"
 msgid "Visible"
 msgstr ""
 
-#. CONTEXT: text from the HTML templates (buttons and labels)
+#. CONTEXT: text from the HTML templates (buttons/labels/alt-text)
 #. CONTEXT: playerui: The current volume of the song
 msgid "Volume"
 msgstr "Volume"
