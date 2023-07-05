@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ballroomdj-4\n"
 "Report-Msgid-Bugs-To: brad.lanam.comp@gmail.com\n"
-"POT-Creation-Date: 2023-01-31\n"
-"PO-Revision-Date: 2023-07-04\n"
+"POT-Creation-Date: 2023-07-04\n"
+"PO-Revision-Date: 2023-07-05\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -42,7 +42,7 @@ msgstr "%s configuratie"
 #. CONTEXT: starterui: basic support dialog: support option (bdj4 download)
 #, c-format
 msgid "%s Download"
-msgstr ""
+msgstr "%s Downloaden"
 
 #. CONTEXT: installer: command line interface: BDJ3 location prompt
 #, c-format
@@ -87,7 +87,7 @@ msgstr "%s Speler"
 #. CONTEXT: MacOS: reason for disabling sleep: BDJ4 Player is Active
 #, c-format
 msgid "%s Player is Active"
-msgstr ""
+msgstr "%s Speler is Actief"
 
 #. CONTEXT: import from itunes: select the itunes playlist to use (iTunes Playlist)
 #, c-format
@@ -148,7 +148,7 @@ msgstr "%s is niet geïnstalleerd"
 #. CONTEXT: song editor: status msg: (song end may not exceed the song duration)
 #, c-format
 msgid "%s may not exceed the song duration"
-msgstr ""
+msgstr "%s mag de speelduur van de song niet overschrijden"
 
 #. CONTEXT: validation: must be a numeric value
 #, c-format
@@ -207,7 +207,7 @@ msgid "Action"
 msgstr "Actie"
 
 msgid "Action failed"
-msgstr ""
+msgstr "Actie mislukt"
 
 #. CONTEXT: managementui: menu selection: actions for song editor
 #. CONTEXT: managementui: menu selection: actions for music manager
@@ -270,7 +270,7 @@ msgstr "Toegestane zoekwoorden"
 
 #. CONTEXT: import from bdj4: error message if the target song list already exists
 msgid "Already Exists"
-msgstr ""
+msgstr "Bestaat al"
 
 #. CONTEXT: set up alternate: dialog title for selecting location
 msgid "Alternate Location"
@@ -333,7 +333,7 @@ msgstr "Audio-Output"
 
 #. CONTEXT: configuration: which audio tag interface to use
 msgid "Audio Tags"
-msgstr ""
+msgstr "Audio Labels"
 
 #. CONTEXT: configuration: checkbox: is automatic organization enabled
 msgid "Auto Organise"
@@ -436,11 +436,11 @@ msgstr "Sluiten"
 
 #. CONTEXT: database update: check for new audio files
 msgid "Compact"
-msgstr ""
+msgstr "Compacteren"
 
 #. CONTEXT: database update: compact: help text
 msgid "Compact the database.  Use after audio files have been deleted."
-msgstr ""
+msgstr "Compacteer de database. Gebruik deze na het verwijderen van audiobestanden."
 
 #. CONTEXT: configuration file: status
 #. CONTEXT: copy audio tags: copy of audio tags completed
@@ -779,7 +779,7 @@ msgstr "Export voor %s"
 
 #. CONTEXT: export/import bdj4: export folder location
 msgid "Export to"
-msgstr ""
+msgstr "Exporteer naar"
 
 #. CONTEXT: external request dialog: title for the dialog
 #. CONTEXT: playerui: menu selection: action: external request
@@ -895,7 +895,7 @@ msgstr "Hystoriek"
 #. CONTEXT: configuration: the ip address to use for the mobile marquee
 #. CONTEXT: configuration: remote control: the ip address to use for remote control
 msgid "IP Address"
-msgstr ""
+msgstr "IP-adres"
 
 #. CONTEXT: installer: command line interface: instructions
 #, c-format
@@ -919,7 +919,7 @@ msgstr "Importeer M3U"
 
 #. CONTEXT: export/import bdj4: import folder location
 msgid "Import from"
-msgstr ""
+msgstr "Importeren uit"
 
 #. CONTEXT: import from ballroomdj: title of dialog
 #. CONTEXT: import from itunes: title for the dialog
@@ -957,7 +957,7 @@ msgstr "%s Installeren."
 
 #. CONTEXT: export/import bdj4: invalid target folder
 msgid "Invalid Folder"
-msgstr ""
+msgstr "Ongeldige Map"
 
 #. CONTEXT: copy audio tags: one of the files does not exist
 msgid "Invalid Selections"
@@ -989,7 +989,7 @@ msgstr "Niveau"
 
 #. CONTEXT: configuration: the font to use for the queues and song lists
 msgid "Listing Font"
-msgstr ""
+msgstr "Lettertype"
 
 #. CONTEXT: managementui: menu selection: song list: edit menu: load
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: load
@@ -1007,7 +1007,7 @@ msgstr "Taalregio"
 
 #. CONTEXT: installer: status message
 msgid "Located 'tclsh'."
-msgstr ""
+msgstr "Bevindt zich op 'tclsh'."
 
 #. CONTEXT: configuration: dances: low BPM (or MPM) setting
 #. CONTEXT: playlist management: low bpm/mpm column header
@@ -1022,7 +1022,7 @@ msgstr ""
 #. CONTEXT: managementui: song list export: name of file save type
 #. CONTEXT: managementui: song list import: name of file type
 msgid "M3U Files"
-msgstr ""
+msgstr "M3U bestanden"
 
 #. CONTEXT: label: measures per minute
 #. CONTEXT: bpm counter: MPM
@@ -1031,7 +1031,7 @@ msgstr "MPM"
 
 #. CONTEXT: starterui: button: starts the management user interface
 msgid "Manage"
-msgstr ""
+msgstr "Beheren"
 
 #. CONTEXT: managementui: menu selection: music manager: set same-song mark
 msgid "Mark as Same Song"
@@ -1056,7 +1056,7 @@ msgstr "Marquee lettergrootte"
 
 #. CONTEXT: configuration: The theme to use for the marquee display
 msgid "Marquee Theme"
-msgstr ""
+msgstr "Marquee Thema"
 
 #. CONTEXT: playlist management: max play time column header (keep short)
 msgid ""
@@ -1076,7 +1076,7 @@ msgstr "Bericht"
 
 #. CONTEXT: configuration: show-marquee: minimize
 msgid "Minimized"
-msgstr ""
+msgstr "Geminimaliseerd"
 
 #. CONTEXT: managementui: menu selection: song list: actions menu: rearrange the songs and create a new mix
 msgid "Mix"
@@ -1085,12 +1085,12 @@ msgstr "Mix"
 #. CONTEXT: configuration: qr code: title display for mobile marquee
 #. CONTEXT: configuration: options associated with the mobile marquee
 msgid "Mobile Marquee"
-msgstr ""
+msgstr "Mobiele Marquee"
 
 #. CONTEXT: configuration: qr code: title display for mobile remote control
 #. CONTEXT: configuration: options associated with mobile remote control
 msgid "Mobile Remote Control"
-msgstr ""
+msgstr "Mobiele Afstandsbediening"
 
 #. CONTEXT: configuration: table edit: button: move selection down
 #. CONTEXT: side-by-side list: button: move the selected field down
@@ -1106,7 +1106,7 @@ msgstr "Verplaats Omhoog"
 
 #. CONTEXT: music queue: button: move the selected song to the top of the queue
 msgid "Move to Top"
-msgstr ""
+msgstr "Naar Boven Verplaatsen"
 
 #. CONTEXT: configuration: the music folder where the user stores their music
 #. CONTEXT: installation: the music folder where the user stores their music
@@ -1127,11 +1127,11 @@ msgstr "Muziek wachtrij"
 
 #. CONTEXT: configuration: music queue configuration
 msgid "Music Queues"
-msgstr ""
+msgstr "Muziek Wachtrijen"
 
 #. CONTEXT: set up alternate: name (for shortcut)
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #. CONTEXT: configuration file: status
 #. CONTEXT: music database: default status
@@ -1142,15 +1142,15 @@ msgstr "Nieuw"
 #. CONTEXT: installer: command line interface: indicating action
 #, c-format
 msgid "New %s installation."
-msgstr ""
+msgstr "Nieuwe %s installatie."
 
 #. CONTEXT: playlist management: menu selection: playlist: edit menu: new automatic playlist
 msgid "New Automatic Playlist"
-msgstr ""
+msgstr "Nieuwe Automatische Speellijst"
 
 #. CONTEXT: configuration: dance name that is set when adding a new dance
 msgid "New Dance"
-msgstr ""
+msgstr "Nieuwe Dansstijl"
 
 #. CONTEXT: database update: status message: new files saved to the database
 msgid "New Files"
@@ -1167,7 +1167,7 @@ msgstr "Nieuw niveau"
 #. CONTEXT: playlist management: default name for a new playlist
 #, c-format
 msgid "New Playlist"
-msgstr ""
+msgstr "Nieuwe Speellijst"
 
 #. CONTEXT: starterui: name of the new profile (New profile 9)
 #, c-format
@@ -1185,7 +1185,7 @@ msgstr "Nieuw sequentie"
 
 #. CONTEXT: managementui: song list: default name for a new song list
 msgid "New Song List"
-msgstr ""
+msgstr "Nieuwe Songlijst"
 
 #. CONTEXT: export/import bdj4: new song list name
 msgid "New Song List Name"
@@ -1193,12 +1193,12 @@ msgstr "Nieuwe naam songlijst"
 
 #. CONTEXT: configuration: status name that is set when adding a new status
 msgid "New Status"
-msgstr ""
+msgstr "Nieuwe Status"
 
 #. CONTEXT: set up alternate: message indicating the action that will be taken
 #, c-format
 msgid "New alternate folder."
-msgstr ""
+msgstr "Nieuwe Alternatieve map."
 
 #. CONTEXT: song editor : next song
 #. CONTEXT: helperui: proceed to the next step
@@ -1212,7 +1212,7 @@ msgstr "Volgende nummer"
 
 #. CONTEXT: installer: message indicating the conversion action that will be taken
 msgid "No folder specified."
-msgstr ""
+msgstr "Geen map gespecifieerd."
 
 #. CONTEXT: starterui: no internet connection
 msgid "No internet connection"
@@ -1229,12 +1229,12 @@ msgstr "Standaard"
 #. CONTEXT: marquee: displayed when nothing is set to be played
 #. CONTEXT: mobile marquee: playback is not active
 msgid "Not Playing"
-msgstr ""
+msgstr "Speelt Niet"
 
 #. CONTEXT: installer: the location entered is not a valid BDJ3 location.
 #, c-format
 msgid "Not a valid %s folder."
-msgstr ""
+msgstr "Geen geldige %s map."
 
 #. CONTEXT: installer: the location entered is not a valid music folder.
 #, c-format
@@ -1264,7 +1264,7 @@ msgstr "Ordenen van gemakkelijk naar moeilijk."
 
 #. CONTEXT: configuration: dance ratings: information on how to order the ratings
 msgid "Order from the lowest rating to the highest rating."
-msgstr ""
+msgstr "Rangschikking van de laagste waardering naar de hoogste waardering."
 
 #. CONTEXT: configuration: options associated with how audio files are organized
 msgid "Organisation"
@@ -1272,11 +1272,11 @@ msgstr "Organisatie"
 
 #. CONTEXT: configuration: the audio file organization path
 msgid "Organisation Path"
-msgstr ""
+msgstr "Organisatie Pad"
 
 #. CONTEXT: database update: status message: other files that cannot be processed
 msgid "Other Files"
-msgstr ""
+msgstr "Andere Bestanden"
 
 #. CONTEXT: configuration file: dance
 msgid "Paso Doble"
@@ -1284,7 +1284,7 @@ msgstr "Paso Doble"
 
 #. CONTEXT: configuration: remote control: the password for sign-on to remote control
 msgid "Password"
-msgstr ""
+msgstr "Wachtwoord"
 
 #. CONTEXT: configuration: queue: pause each song
 msgid "Pause Each Song"
@@ -1309,11 +1309,11 @@ msgstr "Afspelen / Pauseren"
 #. CONTEXT: configuration: queue: whether to play announcements
 #. CONTEXT: playlist management: Play Announcements
 msgid "Play Announcements"
-msgstr ""
+msgstr "Aankondigingen Afspelen"
 
 #. CONTEXT: configuration: queue: play when queued (verb)
 msgid "Play When Queued"
-msgstr ""
+msgstr "Afspelen Wanneer in Wachtrij"
 
 #. CONTEXT: configuration: status: title of the "playable" column
 msgid "Play?"
@@ -1322,7 +1322,7 @@ msgstr "Afspelen?"
 #. CONTEXT: configuration: filter display: checkbox: status is playable
 #. CONTEXT: song selection filter: a filter: the song status is marked as playable
 msgid "Playable Status"
-msgstr ""
+msgstr "Afspeelbare Status"
 
 #. CONTEXT: configuration: options associated with the player
 #. CONTEXT: configuration: which player interface to use
@@ -1343,7 +1343,7 @@ msgstr "Afspeellijst beheer"
 
 #. CONTEXT: playlist management: label for playlist name
 msgid "Playlist Type"
-msgstr ""
+msgstr "Type Speellijst"
 
 #. CONTEXT: installer: status message
 #. CONTEXT: apply adjustments: please wait... status message
@@ -1365,17 +1365,17 @@ msgstr "Slecht"
 #. CONTEXT: configuration: the port to use for the mobile marquee
 #. CONTEXT: configuration: remote control: the port to use for remote control
 msgid "Port"
-msgstr ""
+msgstr "Poort"
 
 #. CONTEXT: playerui: the current position of the song during song playback
 msgid "Position"
-msgstr ""
+msgstr "Positie"
 
 #. CONTEXT: installer: command line interface: instructions
 #. CONTEXT: installer: command line interface: accept BDJ3 location default
 #, c-format
 msgid "Press 'Enter' to select the default."
-msgstr ""
+msgstr "Druk op 'Enter' om de standaardwaarde te selecteren."
 
 #. CONTEXT: song editor : previous song
 msgid "Previous"
@@ -2151,15 +2151,7 @@ msgstr ""
 
 #. CONTEXT: text-key for getting started help section (translate the text, not the key)
 msgid "helptext_configure_dances"
-msgstr ""
-"The names of the dances need to match what you use."
-" => Select 'Edit Dances' in the left side of the 'BDJ4 Configuration' window."
-" Review the list of dances.  If a dance has a different name than"
-" what you use, select the dance and change the name."
-" If a dance you use is missing, select the 'Add' button and add the dance."
-" If there are dances you will never use, select the dance,"
-" then select the 'Remove' button."
-" => Close the 'BDJ4 Organisation' window."
+msgstr "The names of the dances need to match what you use. => Select 'Edit Dances' in the left side of the 'BDJ4 Configuration' window. Review the list of dances.  If a dance has a different name than what you use, select the dance and change the name. If a dance you use is missing, select the 'Add' button and add the dance. If there are dances you will never use, select the dance, then select the 'Remove' button. => Close the 'BDJ4 Organisation' window."
 
 #. CONTEXT: title of a getting started help section
 msgid "Introduction / Getting Started"

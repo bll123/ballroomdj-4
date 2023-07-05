@@ -4,19 +4,19 @@
 
 <!--
 
-**4.3.3 2023-6--**
+**4.3.3 2023-7--**
 
 * Bug Fixes:
     * Apply Adjustments: Audio file tags are preserved.
     * Audio Tags: Process duplicates correctly (FLAC, Ogg, Opus).
     * Audio Tags: Recognize more MP4 extensions.
     * Audio Tags: Fixed an intermittent issue using the mutagen interface.
-    * Internal: Fixed issue with sockets not being held open long enough.
+    * Windows: Fixed some database processing issues.
 * Changes:
     * Apply Adjustments: Removed normalize as it doesn't work well.
 * New Features:
     * Audio Tags: Alternate processing method (MP3, Ogg, FLAC at this time).
-    * Song Editor: Copy audio tags action.
+    * Song Editor: Added 'Copy audio tags' dialog.
 * Internal:
     * Code cleanup (datafile).
 
