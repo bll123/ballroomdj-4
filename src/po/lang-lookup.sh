@@ -23,13 +23,13 @@ for pofile in "$@"; do
 
   NPOFILE=$pofile.n
   TMPPOFILE=$pofile.tmp
-  OLDPOFILE=$pofile.old
+  CURRPOFILE=$pofile.current
   DBGPOFILE=$pofile.debug
 
   test -f $NPOFILE && rm -f $NPOFILE
   test -f $DBGPOFILE && rm -f $DBGPOFILE
 
-  for oldpo in $OLDPOFILE $bdj3pofile; do
+  for oldpo in $CURRPOFILE $bdj3pofile; do
     if [[ ! -f $oldpo ]]; then
       continue
     fi
@@ -44,7 +44,7 @@ for pofile in "$@"; do
   done
 
   mv -f $NPOFILE $pofile
-  test -f $OLDPOFILE && rm -f $OLDPOFILE
+  test -f $CURRPOFILE && rm -f $CURRPOFILE
   if [[ ! -s $DBGPOFILE ]]; then
     rm -f $DBGPOFILE
   fi

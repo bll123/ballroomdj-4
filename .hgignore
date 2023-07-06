@@ -26,6 +26,7 @@ syntax: regexp
 ^src/build/
 ^src/po/.*\.bak$
 ^src/po/.*\.backup$
+^src/po/.*\.debug$
 ^src/w$
 ^test-files/
 ^test-music/

@@ -66,11 +66,30 @@ function printmsg() {
   print pstrline >> DBGFILE;
 }
 
+function saveolddata() {
+  print "## -- save old data " tmid >> DBGFILE;
+  omid = tmid;
+  # always remove colons
+  sub (/:"$/, "\"", omid);
+  sub (/:"$/, "\"", tmstr);
+  if (tmstr == "\"\"") {
+    tmstr = "";
+  }
+  olddata [omid] = tmstr;
+  # if the string has a period, create a second entry w/o the period.
+  sub (/\."$/, "\"", tmid);
+  if (tmid != omid) {
+    sub (/\."$/, "\"", tmstr);
+    olddata [tmid] = tmstr;
+  }
+}
+
 function dumpmsg() {
   print "## -- nidline = " nidline >> DBGFILE;
   print "## -- nmid = " nmid >> DBGFILE;
   print "## -- msgstr = " nstrline >> DBGFILE;
-  if (nstrline != "\"\"") {
+  # for the helptext_* items, prefer the data from the current file
+  if (nstrline != "\"\"" && nmid !~ /helptext_/) {
     print "## -- already present" >> DBGFILE;
     pstrline = nstrline;
     printmsg();
@@ -134,6 +153,10 @@ BEGIN {
 
 {
   if (FNR == 1) {
+    if (state == 1 && doprocess && instr) {
+      saveolddata();
+    }
+
     state++;
     if (state == 1) {
       print "## -- == reading old data " FILENAME >> DBGFILE;
@@ -170,20 +193,7 @@ BEGIN {
   print "## -- p" state ": line: " $0 >> DBGFILE;
   if (state == 1) {
     processitem();
-    omid = tmid;
-    # always remove colons
-    sub (/:"$/, "\"", omid);
-    sub (/:"$/, "\"", tmstr);
-    if (tmstr == "\"\"") {
-      tmstr = "";
-    }
-    olddata [omid] = tmstr;
-    # if the string has a period, create a second entry w/o the period.
-    sub (/\."$/, "\"", tmid);
-    if (tmid != omid) {
-      sub (/\."$/, "\"", tmstr);
-      olddata [tmid] = tmstr;
-    }
+    saveolddata();
   }
   if (state == 2) {
     # the old data has been read in, process the existing po file.

@@ -40,10 +40,10 @@ function mkpo {
   echo "-- $(date +%T) creating $out"
   if [[ -f ${out} && ${out} != en_GB.po ]]; then
     # re-use data from existing file
-    mv -f ${out} ${out}.old
+    mv -f ${out} ${out}.current
     > ${out}
 
-    sed -n '1,/^$/ p' ${out}.old >> ${out}
+    sed -n '1,/^$/ p' ${out}.current >> ${out}
     # "POT-Creation-Date: 2022-05-26"
     cdt=$(grep -E '^"POT-Creation-Date:' bdj4.pot)
     # "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE"
